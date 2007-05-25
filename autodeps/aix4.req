@@ -5,7 +5,7 @@
 #
 # This file is distributed under the terms of the GNU Public License
 #
-# find-requires is part of RPM, the RedHat Package Manager.  find-requires
+# find-requires is part of RPM, the RPM Package Manager.  find-requires
 # reads a list of full pathnames (in a package) on stdin, and outputs all
 # shared libraries the package requires to run correctly.
 #

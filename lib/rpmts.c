@@ -8,18 +8,22 @@
 #include <rpmlib.h>
 #include <rpmmacro.h>		/* XXX rpmtsOpenDB() needs rpmGetPath */
 
+#define	_RPMDB_INTERNAL		/* XXX almost opaque sigh */
 #include "rpmdb.h"		/* XXX stealing db->db_mode. */
 
 #include "rpmal.h"
 #include "rpmds.h"
 #include "rpmfi.h"
 #include "rpmlock.h"
+#include "rpmns.h"
 
 #define	_RPMTE_INTERNAL		/* XXX te->h */
 #include "rpmte.h"
 
 #define	_RPMTS_INTERNAL
 #include "rpmts.h"
+
+#include "fs.h"
 
 /* XXX FIXME: merge with existing (broken?) tests in system.h */
 /* portability fiddles */
@@ -67,71 +71,6 @@ int _rpmts_debug = 0;
 
 /*@unchecked@*/
 int _rpmts_stats = 0;
-
-char * hGetNEVR(Header h, const char ** np)
-{
-    const char * n, * v, * r;
-    char * NVR, * t;
-
-    (void) headerNVR(h, &n, &v, &r);
-    NVR = t = xcalloc(1, strlen(n) + strlen(v) + strlen(r) + sizeof("--"));
-/*@-boundswrite@*/
-    t = stpcpy(t, n);
-    t = stpcpy(t, "-");
-    t = stpcpy(t, v);
-    t = stpcpy(t, "-");
-    t = stpcpy(t, r);
-    if (np)
-	*np = n;
-/*@=boundswrite@*/
-    return NVR;
-}
-
-char * hGetNEVRA(Header h, const char ** np)
-{
-    const char * n, * v, * r, * a;
-    char * NVRA, * t;
-    int xx;
-
-    (void) headerNVR(h, &n, &v, &r);
-    xx = headerGetEntry(h, RPMTAG_ARCH, NULL, (void **) &a, NULL);
-    NVRA = t = xcalloc(1, strlen(n) + strlen(v) + strlen(r) + strlen(a) + sizeof("--."));
-/*@-boundswrite@*/
-    t = stpcpy(t, n);
-    t = stpcpy(t, "-");
-    t = stpcpy(t, v);
-    t = stpcpy(t, "-");
-    t = stpcpy(t, r);
-    t = stpcpy(t, ".");
-    t = stpcpy(t, a);
-    if (np)
-	*np = n;
-/*@=boundswrite@*/
-    return NVRA;
-}
-
-uint_32 hGetColor(Header h)
-{
-    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
-    uint_32 hcolor = 0;
-    uint_32 * fcolors;
-    int_32 ncolors;
-    int i;
-
-    fcolors = NULL;
-    ncolors = 0;
-    if (hge(h, RPMTAG_FILECOLORS, NULL, (void **)&fcolors, &ncolors)
-     && fcolors != NULL && ncolors > 0)
-    {
-/*@-boundsread@*/
-	for (i = 0; i < ncolors; i++)
-	    hcolor |= fcolors[i];
-/*@=boundsread@*/
-    }
-    hcolor &= 0x0f;
-
-    return hcolor;
-}
 
 rpmts XrpmtsUnlink(rpmts ts, const char * msg, const char * fn, unsigned ln)
 {
@@ -193,23 +132,20 @@ int rpmtsOpenDB(rpmts ts, int dbmode)
 int rpmtsInitDB(rpmts ts, int dbmode)
 {
     void *lock = rpmtsAcquireLock(ts);
-    int rc = -1;
-    if (lock)
-	    rc = rpmdbInit(ts->rootDir, dbmode);
-    rpmtsFreeLock(lock);
+    int rc = rpmdbInit(ts->rootDir, dbmode);
+    lock = rpmtsFreeLock(lock);
     return rc;
 }
 
 int rpmtsRebuildDB(rpmts ts)
 {
-    int rc;
     void *lock = rpmtsAcquireLock(ts);
-    if (!lock) return -1;
+    int rc;
     if (!(ts->vsflags & RPMVSF_NOHDRCHK))
 	rc = rpmdbRebuild(ts->rootDir, ts, headerCheck);
     else
 	rc = rpmdbRebuild(ts->rootDir, NULL, NULL);
-    rpmtsFreeLock(lock);
+    lock = rpmtsFreeLock(lock);
     return rc;
 }
 
@@ -217,40 +153,6 @@ int rpmtsVerifyDB(rpmts ts)
 {
     return rpmdbVerify(ts->rootDir);
 }
-
-/*@-boundsread@*/
-static int isArch(const char * arch)
-	/*@*/
-{
-    const char ** av;
-/*@-nullassign@*/
-    /*@observer@*/
-    static const char *arches[] = {
-	"i386", "i486", "i586", "i686", "athlon", "pentium3", "pentium4", "x86_64", "amd64", "ia32e",
-	"alpha", "alphaev5", "alphaev56", "alphapca56", "alphaev6", "alphaev67",
-	"sparc", "sun4", "sun4m", "sun4c", "sun4d", "sparcv8", "sparcv9",
-	"sparc64", "sun4u",
-	"mips", "mipsel", "IP",
-	"ppc", "ppciseries", "ppcpseries",
-	"ppc64", "ppc64iseries", "ppc64pseries",
-	"m68k",
-	"rs6000",
-	"ia64",
-	"armv3l", "armv4b", "armv4l",
-	"s390", "i370", "s390x",
-	"sh", "xtensa",
-	"noarch",
-	NULL,
-    };
-/*@=nullassign@*/
-
-    for (av = arches; *av != NULL; av++) {
-	if (!strcmp(arch, *av))
-	    return 1;
-    }
-    return 0;
-}
-/*@=boundsread@*/
 
 /*@-compdef@*/ /* keyp might no be defined. */
 rpmdbMatchIterator rpmtsInitIterator(const rpmts ts, rpmTag rpmtag,
@@ -315,7 +217,7 @@ rpmdbMatchIterator rpmtsInitIterator(const rpmts ts, rpmTag rpmtag,
 	t = (char *) keyp;
 	t = strrchr(t, '.');
 	/* Is this a valid ".arch" suffix? */
-	if (t != NULL && isArch(t+1)) {
+	if (t != NULL && rpmnsArch(t+1)) {
 	   *t++ = '\0';
 	   arch = t;
 	}
@@ -521,6 +423,8 @@ int rpmtsOpenSDB(rpmts ts, int dbmode)
 	rpmMessage(RPMMESS_WARNING,
 			_("cannot open Solve database in %s\n"), dn);
 	dn = _free(dn);
+	/* XXX only try to open the solvedb once. */
+	has_sdbpath = 0;
     }
     delMacro(NULL, "_dbpath");
 
@@ -547,25 +451,33 @@ static int sugcmp(const void * a, const void * b)
 int rpmtsSolve(rpmts ts, rpmds ds, /*@unused@*/ const void * data)
 {
     const char * errstr;
-    const char * str;
+    const char * str = NULL;
     const char * qfmt;
     rpmdbMatchIterator mi;
-    Header bh;
-    Header h;
-    size_t bhnamelen;
-    time_t bhtime;
+    Header bh = NULL;
+    Header h = NULL;
+    size_t bhnamelen = 0;
+    time_t bhtime = 0;
     rpmTag rpmtag;
     const char * keyp;
-    size_t keylen;
+    size_t keylen = 0;
     int rc = 1;	/* assume not found */
     int xx;
 
-    /* Make suggestions only for install Requires: */
+    /* Make suggestions only for installing Requires: */
     if (ts->goal != TSM_INSTALL)
 	return rc;
 
-    if (rpmdsTagN(ds) != RPMTAG_REQUIRENAME)
+    switch (rpmdsTagN(ds)) {
+    case RPMTAG_CONFLICTNAME:
+    default:
 	return rc;
+	/*@notreached@*/ break;
+    case RPMTAG_DIRNAMES:	/* XXX perhaps too many wrong answers */
+    case RPMTAG_REQUIRENAME:
+    case RPMTAG_FILELINKTOS:
+	break;
+    }
 
     keyp = rpmdsN(ds);
     if (keyp == NULL)
@@ -578,11 +490,7 @@ int rpmtsSolve(rpmts ts, rpmds ds, /*@unused@*/ const void * data)
 
     /* Look for a matching Provides: in suggested universe. */
     rpmtag = (*keyp == '/' ? RPMTAG_BASENAMES : RPMTAG_PROVIDENAME);
-    keylen = 0;
     mi = rpmdbInitIterator(ts->sdb, rpmtag, keyp, keylen);
-    bhnamelen = 0;
-    bhtime = 0;
-    bh = NULL;
     while ((h = rpmdbNextIterator(mi)) != NULL) {
 	const char * hname;
 	size_t hnamelen;
@@ -592,15 +500,17 @@ int rpmtsSolve(rpmts ts, rpmds ds, /*@unused@*/ const void * data)
 	if (rpmtag == RPMTAG_PROVIDENAME && !rpmdsAnyMatchesDep(h, ds, 1))
 	    continue;
 
-	/* XXX Prefer the shortest name if given alternatives. */
 	hname = NULL;
 	hnamelen = 0;
 	if (headerGetEntry(h, RPMTAG_NAME, NULL, (void **)&hname, NULL)) {
 	    if (hname)
 		hnamelen = strlen(hname);
 	}
-	if (bhnamelen > 0 && hnamelen > bhnamelen)
-	    continue;
+
+	/* XXX Prefer the shortest pkg N for basenames/provides resp. */
+	if (bhnamelen > 0)
+	    if (hnamelen > bhnamelen)
+		continue;
 
 	/* XXX Prefer the newest build if given alternatives. */
 	htime = 0;
@@ -610,6 +520,7 @@ int rpmtsSolve(rpmts ts, rpmds ds, /*@unused@*/ const void * data)
 	if (htime <= bhtime)
 	    continue;
 
+	/* Save new "best" candidate. */
 	bh = headerFree(bh);
 	bh = headerLink(h);
 	bhtime = htime;
@@ -621,7 +532,7 @@ int rpmtsSolve(rpmts ts, rpmds ds, /*@unused@*/ const void * data)
     if (bh == NULL)
 	goto exit;
 
-    /* Format the suggestion. */
+    /* Format the suggested resolution path. */
     qfmt = rpmExpand("%{?_solve_name_fmt}", NULL);
     if (qfmt == NULL || *qfmt == '\0')
 	goto exit;
@@ -629,16 +540,15 @@ int rpmtsSolve(rpmts ts, rpmds ds, /*@unused@*/ const void * data)
     bh = headerFree(bh);
     qfmt = _free(qfmt);
     if (str == NULL) {
-	rpmError(RPMERR_QFMT, _("incorrect format: %s\n"), errstr);
+	rpmError(RPMERR_QFMT, _("incorrect solve path format: %s\n"), errstr);
 	goto exit;
     }
 
-    if (ts->transFlags & RPMTRANS_FLAG_ADDINDEPS) {
+    if (ts->depFlags & RPMDEPS_FLAG_ADDINDEPS) {
 	FD_t fd;
 	rpmRC rpmrc;
 
-	h = headerFree(h);
-	fd = Fopen(str, "r.ufdio");
+	fd = Fopen(str, "r");
 	if (fd == NULL || Ferror(fd)) {
 	    rpmError(RPMERR_OPEN, _("open of %s failed: %s\n"), str,
 			Fstrerror(fd));
@@ -653,7 +563,6 @@ int rpmtsSolve(rpmts ts, rpmds ds, /*@unused@*/ const void * data)
 	xx = Fclose(fd);
 	switch (rpmrc) {
 	default:
-	    str = _free(str);
 	    break;
 	case RPMRC_NOTTRUSTED:
 	case RPMRC_NOKEY:
@@ -662,13 +571,12 @@ int rpmtsSolve(rpmts ts, rpmds ds, /*@unused@*/ const void * data)
 	        !rpmtsAddInstallElement(ts, h, (fnpyKey)str, 1, NULL))
 	    {
 		rpmMessage(RPMMESS_DEBUG, _("Adding: %s\n"), str);
-		rc = -1;
-		/* XXX str memory leak */
+		rc = -1;	/* XXX restart unsatisfiedDepends() */
 		break;
 	    }
-	    str = _free(str);
 	    break;
 	}
+	str = _free(str);
 	h = headerFree(h);
 	goto exit;
     }
@@ -678,7 +586,10 @@ int rpmtsSolve(rpmts ts, rpmds ds, /*@unused@*/ const void * data)
     if (ts->suggests != NULL && ts->nsuggests > 0) {
 	if (bsearch(&str, ts->suggests, ts->nsuggests,
 			sizeof(*ts->suggests), sugcmp))
+	{
+	    str = _free(str);
 	    goto exit;
+	}
     }
 
     /* Add a new (unique) suggestion. */
@@ -746,7 +657,7 @@ rpmps rpmtsProblems(rpmts ts)
     rpmps ps = NULL;
     if (ts) {
 	if (ts->probs)
-	    ps = rpmpsLink(ts->probs, NULL);
+	    ps = rpmpsLink(ts->probs, __FUNCTION__);
     }
     return ps;
 }
@@ -772,6 +683,9 @@ void rpmtsClean(rpmts ts)
 
     ts->addedPackages = rpmalFree(ts->addedPackages);
     ts->numAddedPackages = 0;
+
+    ts->erasedPackages = rpmalFree(ts->erasedPackages);
+    ts->numErasedPackages = 0;
 
     ts->suggests = _free(ts->suggests);
     ts->nsuggests = 0;
@@ -816,7 +730,7 @@ static void rpmtsPrintStat(const char * name, /*@null@*/ struct rpmop_s * op)
 {
     static unsigned int scale = (1000 * 1000);
     if (op != NULL && op->count > 0)
-	fprintf(stderr, "   %s %6d %6lu.%06lu MB %6lu.%06lu secs\n",
+	fprintf(stderr, "   %s %8d %6lu.%06lu MB %6lu.%06lu secs\n",
 		name, op->count,
 		(unsigned long)op->bytes/scale, (unsigned long)op->bytes%scale,
 		op->usecs/scale, op->usecs%scale);
@@ -845,6 +759,7 @@ static void rpmtsPrintStats(rpmts ts)
     rpmtsPrintStat("dbget:       ", rpmtsOp(ts, RPMTS_OP_DBGET));
     rpmtsPrintStat("dbput:       ", rpmtsOp(ts, RPMTS_OP_DBPUT));
     rpmtsPrintStat("dbdel:       ", rpmtsOp(ts, RPMTS_OP_DBDEL));
+    rpmtsPrintStat("readhdr:     ", rpmtsOp(ts, RPMTS_OP_READHDR));
 }
 
 rpmts rpmtsFree(rpmts ts)
@@ -858,6 +773,8 @@ rpmts rpmtsFree(rpmts ts)
 /*@-nullstate@*/	/* FIX: partial annotations */
     rpmtsEmpty(ts);
 /*@=nullstate@*/
+
+    ts->PRCO = rpmdsFreePRCO(ts->PRCO);
 
     (void) rpmtsCloseDB(ts);
 
@@ -892,11 +809,6 @@ rpmts rpmtsFree(rpmts ts)
     if (_rpmts_stats)
 	rpmtsPrintStats(ts);
 
-    /* Free up the memory used by the rpmtsScore */
-/*@-kepttrans -onlytrans @*/
-    ts->score = rpmtsScoreFree(ts->score);
-/*@=kepttrans =onlytrans @*/
-
     (void) rpmtsUnlink(ts, "tsCreate");
 
     /*@-refcounttrans -usereleased @*/
@@ -924,49 +836,41 @@ rpmVSFlags rpmtsSetVSFlags(rpmts ts, rpmVSFlags vsflags)
     return ovsflags;
 }
 
-/* 
+/*
  * This allows us to mark transactions as being of a certain type.
  * The three types are:
- * 
+ *
  *     RPM_TRANS_NORMAL 	
  *     RPM_TRANS_ROLLBACK
  *     RPM_TRANS_AUTOROLLBACK
- * 
+ *
  * ROLLBACK and AUTOROLLBACK transactions should always be ran as
- * a best effort.  In particular this is important to the autorollback 
- * feature to avoid rolling back a rollback (otherwise known as 
- * dueling rollbacks (-;).  AUTOROLLBACK's additionally need instance 
+ * a best effort.  In particular this is important to the autorollback
+ * feature to avoid rolling back a rollback (otherwise known as
+ * dueling rollbacks (-;).  AUTOROLLBACK's additionally need instance
  * counts passed to scriptlets to be altered.
  */
-void rpmtsSetType(rpmts ts, rpmtsType type)
+/* Let them know what type of transaction we are */
+rpmTSType rpmtsType(rpmts ts)
 {
-    if (ts != NULL) {
-	ts->type = type;
-    }	 
+    return ((ts != NULL) ? ts->type : 0);
 }
 
-/* Let them know what type of transaction we are */
-rpmtsType rpmtsGetType(rpmts ts) 
+void rpmtsSetType(rpmts ts, rpmTSType type)
 {
-    if (ts != NULL) 
-	return ts->type;
-    else
-	return 0;
+    if (ts != NULL)
+	ts->type = type;
+}
+
+uint_32 rpmtsARBGoal(rpmts ts)
+{
+    return ((ts != NULL) ?  ts->arbgoal : 0);
 }
 
 void rpmtsSetARBGoal(rpmts ts, uint_32 goal)
 {
-    if(ts != NULL) {
+    if (ts != NULL)
 	ts->arbgoal = goal;
-    }	 
-}
-
-uint_32 rpmtsGetARBGoal(rpmts ts) 
-{
-    if(ts != NULL) 
-	return ts->arbgoal;
-    else
-	return 0;
 }
 
 int rpmtsUnorderedSuccessors(rpmts ts, int first)
@@ -1118,7 +1022,7 @@ int rpmtsSetREContext(rpmts ts, rpmsx sx)
 
 int_32 rpmtsGetTid(rpmts ts)
 {
-    int_32 tid = 0;
+    int_32 tid = -1;	/* XXX -1 is time(2) error return. */
     if (ts != NULL) {
 	tid = ts->tid;
     }
@@ -1127,7 +1031,7 @@ int_32 rpmtsGetTid(rpmts ts)
 
 int_32 rpmtsSetTid(rpmts ts, int_32 tid)
 {
-    int_32 otid = 0;
+    int_32 otid = -1;	/* XXX -1 is time(2) error return. */
     if (ts != NULL) {
 	otid = ts->tid;
 	ts->tid = tid;
@@ -1223,6 +1127,13 @@ rpmdb rpmtsGetRdb(rpmts ts)
 /*@=compdef =refcounttrans =usereleased @*/
 }
 
+rpmPRCO rpmtsPRCO(rpmts ts)
+{
+/*@-compdef -retexpose -usereleased @*/
+    return (ts != NULL ? ts->PRCO : NULL);
+/*@=compdef =retexpose =usereleased @*/
+}
+
 int rpmtsInitDSI(const rpmts ts)
 {
     rpmDiskSpaceInfo dsi;
@@ -1231,6 +1142,8 @@ int rpmtsInitDSI(const rpmts ts)
     int i;
 
     if (rpmtsFilterFlags(ts) & RPMPROB_FILTER_DISKSPACE)
+	return 0;
+    if (ts->filesystems != NULL)
 	return 0;
 
     rpmMessage(RPMMESS_DEBUG, _("mounted filesystems:\n"));
@@ -1275,25 +1188,51 @@ int rpmtsInitDSI(const rpmts ts)
 	if (rc)
 	    break;
 	dsi->dev = sb.st_dev;
+/* XXX figger out how to get this info for non-statvfs systems. */
+#if STATFS_IN_SYS_STATVFS
+	dsi->f_frsize = sfb.f_frsize;
+	dsi->f_fsid = sfb.f_fsid;
+	dsi->f_flag = sfb.f_flag;
+	dsi->f_favail = sfb.f_favail;
+	dsi->f_namemax = sfb.f_namemax;
+#else
+	dsi->f_fsid = sfb.f_fsid;
+	dsi->f_namemax = sfb.f_namelen;
+#endif
 
-	dsi->bsize = sfb.f_bsize;
+	dsi->f_bsize = sfb.f_bsize;
+	dsi->f_blocks = sfb.f_blocks;
+	dsi->f_bfree = sfb.f_bfree;
+	dsi->f_files = sfb.f_files;
+	dsi->f_ffree = sfb.f_ffree;
+
 	dsi->bneeded = 0;
 	dsi->ineeded = 0;
 #ifdef STATFS_HAS_F_BAVAIL
-	dsi->bavail = sfb.f_bavail;
+	dsi->f_bavail = sfb.f_bavail;
+	if (sfb.f_ffree > 0 && sfb.f_files > 0 && sfb.f_favail > 0)
+	    dsi->f_favail = sfb.f_favail;
+	else	/* XXX who knows what evil lurks here? */
+	    dsi->f_favail = !(sfb.f_ffree == 0 && sfb.f_files == 0)
+				? sfb.f_ffree : -1;
 #else
 /* FIXME: the statfs struct doesn't have a member to tell how many blocks are
  * available for non-superusers.  f_blocks - f_bfree is probably too big, but
  * it's about all we can do.
  */
-	dsi->bavail = sfb.f_blocks - sfb.f_bfree;
-#endif
+	dsi->f_bavail = sfb.f_blocks - sfb.f_bfree;
 	/* XXX Avoid FAT and other file systems that have not inodes. */
-	dsi->iavail = !(sfb.f_ffree == 0 && sfb.f_files == 0)
+	dsi->f_favail = !(sfb.f_ffree == 0 && sfb.f_files == 0)
 				? sfb.f_ffree : -1;
-	rpmMessage(RPMMESS_DEBUG, _("%5d 0x%08x %8u %12ld %12ld %s\n"),
-		i, (unsigned) dsi->dev, (unsigned) dsi->bsize,
-		(signed long) dsi->bavail, (signed long) dsi->iavail,
+#endif
+
+#if !defined(ST_RDONLY)
+#define	ST_RDONLY	1
+#endif
+	rpmMessage(RPMMESS_DEBUG, _("%5d 0x%08x %8u %12ld %12ld %s %s\n"),
+		i, (unsigned) dsi->dev, (unsigned) dsi->f_bsize,
+		(signed long) dsi->f_bavail, (signed long) dsi->f_favail,
+		((dsi->f_flag & ST_RDONLY) ? "ro" : "rw"),
 		ts->filesystems[i]);
     }
     return rc;
@@ -1304,19 +1243,19 @@ void rpmtsUpdateDSI(const rpmts ts, dev_t dev,
 		fileAction action)
 {
     rpmDiskSpaceInfo dsi;
-    uint_32 bneeded;
+    unsigned long long bneeded;
 
     dsi = ts->dsi;
     if (dsi) {
-	while (dsi->bsize && dsi->dev != dev)
+	while (dsi->f_bsize && dsi->dev != dev)
 	    dsi++;
-	if (dsi->bsize == 0)
+	if (dsi->f_bsize == 0)
 	    dsi = NULL;
     }
     if (dsi == NULL)
 	return;
 
-    bneeded = BLOCK_ROUND(fileSize, dsi->bsize);
+    bneeded = BLOCK_ROUND(fileSize, dsi->f_bsize);
 
     switch (action) {
     case FA_BACKUP:
@@ -1333,7 +1272,7 @@ void rpmtsUpdateDSI(const rpmts ts, dev_t dev,
      */
     case FA_CREATE:
 	dsi->bneeded += bneeded;
-	dsi->bneeded -= BLOCK_ROUND(prevSize, dsi->bsize);
+	dsi->bneeded -= BLOCK_ROUND(prevSize, dsi->f_bsize);
 	/*@switchbreak@*/ break;
 
     case FA_ERASE:
@@ -1346,7 +1285,7 @@ void rpmtsUpdateDSI(const rpmts ts, dev_t dev,
     }
 
     if (fixupSize)
-	dsi->bneeded -= BLOCK_ROUND(fixupSize, dsi->bsize);
+	dsi->bneeded -= BLOCK_ROUND(fixupSize, dsi->f_bsize);
 }
 
 void rpmtsCheckDSIProblems(const rpmts ts, const rpmte te)
@@ -1369,25 +1308,31 @@ void rpmtsCheckDSIProblems(const rpmts ts, const rpmte te)
     ps = rpmtsProblems(ts);
     for (i = 0; i < ts->filesystemCount; i++, dsi++) {
 
-	if (dsi->bavail > 0 && adj_fs_blocks(dsi->bneeded) > dsi->bavail) {
+	if (dsi->f_bavail > 0 && adj_fs_blocks(dsi->bneeded) > dsi->f_bavail) {
 	    rpmpsAppend(ps, RPMPROB_DISKSPACE,
 			rpmteNEVR(te), rpmteKey(te),
 			ts->filesystems[i], NULL, NULL,
- 	   (adj_fs_blocks(dsi->bneeded) - dsi->bavail) * dsi->bsize);
+ 	   (adj_fs_blocks(dsi->bneeded) - dsi->f_bavail) * dsi->f_bsize);
 	}
 
-	if (dsi->iavail > 0 && adj_fs_blocks(dsi->ineeded) > dsi->iavail) {
+	if (dsi->f_favail > 0 && adj_fs_blocks(dsi->ineeded) > dsi->f_favail) {
 	    rpmpsAppend(ps, RPMPROB_DISKNODES,
 			rpmteNEVR(te), rpmteKey(te),
 			ts->filesystems[i], NULL, NULL,
- 	    (adj_fs_blocks(dsi->ineeded) - dsi->iavail));
+ 	    (adj_fs_blocks(dsi->ineeded) - dsi->f_favail));
+	}
+
+	if ((dsi->bneeded || dsi->ineeded) && (dsi->f_flag & ST_RDONLY)) {
+	    rpmpsAppend(ps, RPMPROB_RDONLY,
+			rpmteNEVR(te), rpmteKey(te),
+			ts->filesystems[i], NULL, NULL, 0);
 	}
     }
     ps = rpmpsFree(ps);
 }
 
 void * rpmtsNotify(rpmts ts, rpmte te,
-		rpmCallbackType what, unsigned long amount, unsigned long total)
+		rpmCallbackType what, unsigned long long amount, unsigned long long total)
 {
     void * ptr = NULL;
     if (ts && ts->notify && te) {
@@ -1443,6 +1388,21 @@ rpmtransFlags rpmtsSetFlags(rpmts ts, rpmtransFlags transFlags)
     return otransFlags;
 }
 
+rpmdepFlags rpmtsDFlags(rpmts ts)
+{
+    return (ts != NULL ? ts->depFlags : 0);
+}
+
+rpmdepFlags rpmtsSetDFlags(rpmts ts, rpmdepFlags depFlags)
+{
+    rpmdepFlags odepFlags = 0;
+    if (ts != NULL) {
+	odepFlags = ts->depFlags;
+	ts->depFlags = depFlags;
+    }
+    return odepFlags;
+}
+
 Spec rpmtsSpec(rpmts ts)
 {
 /*@-compdef -retexpose -usereleased@*/
@@ -1490,6 +1450,11 @@ uint_32 rpmtsSetColor(rpmts ts, uint_32 color)
     return ocolor;
 }
 
+uint_32 rpmtsPrefColor(rpmts ts)
+{
+    return (ts != NULL ? ts->prefcolor : 0);
+}
+
 rpmop rpmtsOp(rpmts ts, rpmtsOpX opx)
 {
     rpmop op = NULL;
@@ -1511,39 +1476,10 @@ int rpmtsSetNotifyCallback(rpmts ts,
     return 0;
 }
 
-int rpmtsGetKeys(const rpmts ts, fnpyKey ** ep, int * nep)
-{
-    int rc = 0;
-
-    if (nep) *nep = ts->orderCount;
-    if (ep) {
-	rpmtsi pi;	rpmte p;
-	fnpyKey * e;
-
-	*ep = e = xmalloc(ts->orderCount * sizeof(*e));
-	pi = rpmtsiInit(ts);
-	while ((p = rpmtsiNext(pi, 0)) != NULL) {
-	    switch (rpmteType(p)) {
-	    case TR_ADDED:
-		/*@-dependenttrans@*/
-		*e = rpmteKey(p);
-		/*@=dependenttrans@*/
-		/*@switchbreak@*/ break;
-	    case TR_REMOVED:
-	    default:
-		*e = NULL;
-		/*@switchbreak@*/ break;
-	    }
-	    e++;
-	}
-	pi = rpmtsiFree(pi);
-    }
-    return rc;
-}
-
 rpmts rpmtsCreate(void)
 {
     rpmts ts;
+    int xx;
 
     ts = xcalloc(1, sizeof(*ts));
     memset(&ts->ops, 0, sizeof(ts->ops));
@@ -1558,6 +1494,14 @@ rpmts rpmtsCreate(void)
     ts->solveData = NULL;
     ts->nsuggests = 0;
     ts->suggests = NULL;
+
+    ts->PRCO = rpmdsNewPRCO(NULL);
+    {	const char * fn = rpmGetPath("%{?_rpmds_sysinfo_path}", NULL);
+	if (fn && *fn != '\0' && !rpmioAccess(fn, NULL, R_OK))
+	   xx = rpmdsSysinfo(ts->PRCO, NULL);
+	fn = _free(fn);
+    }
+
     ts->sdb = NULL;
     ts->sdbmode = O_RDONLY;
 
@@ -1569,6 +1513,8 @@ rpmts rpmtsCreate(void)
     ts->delta = 5;
 
     ts->color = rpmExpandNumeric("%{?_transaction_color}");
+    ts->prefcolor = rpmExpandNumeric("%{?_prefer_color}");
+    if (!ts->prefcolor) ts->prefcolor = 0x2;
 
     ts->numRemovedPackages = 0;
     ts->allocedRemovedPackages = ts->delta;
@@ -1583,6 +1529,9 @@ rpmts rpmtsCreate(void)
 
     ts->numAddedPackages = 0;
     ts->addedPackages = NULL;
+
+    ts->numErasedPackages = 0;
+    ts->erasedPackages = NULL;
 
     ts->numAvailablePackages = 0;
     ts->availablePackages = NULL;
@@ -1601,237 +1550,10 @@ rpmts rpmtsCreate(void)
     memset(ts->pksignid, 0, sizeof(ts->pksignid));
     ts->dig = NULL;
 
-    /* 
-     * We only use the score in an autorollback.  So set this to
-     * NULL by default.
-     */
-    ts->score = NULL;
-
     /* Set autorollback goal to the end of time. */
     ts->arbgoal = 0xffffffff;
 
     ts->nrefs = 0;
 
     return rpmtsLink(ts, "tsCreate");
-}
-
-/**********************
- * Transaction Scores *
- **********************/
-
-
-rpmRC rpmtsScoreInit(rpmts runningTS, rpmts rollbackTS) 
-{
-    rpmtsScore score;
-    rpmtsi     pi;
-    rpmte      p;
-    int        i;
-    int        tranElements;  /* Number of transaction elements in runningTS */
-    int        found = 0;
-    rpmRC      rc = RPMRC_OK; /* Assume success */
-    rpmtsScoreEntry se;
-
-    rpmMessage(RPMMESS_DEBUG, _("Creating transaction score board(%p, %p)\n"),
-	runningTS, rollbackTS); 
-
-    /* Allocate space for score board */
-    score = xcalloc(1, sizeof(*score));
-    rpmMessage(RPMMESS_DEBUG, _("\tScore board address:  %p\n"), score);
-
-    /* 
-     * Determine the maximum size needed for the entry list.
-     * XXX: Today, I just get the count of rpmts elements, and allocate
-     *      an array that big.  Yes this is guaranteed to waste memory.
-     *      Future updates will hopefully make this more efficient,
-     *      but for now it will work.
-     */
-    tranElements  = rpmtsNElements(runningTS);
-    rpmMessage(RPMMESS_DEBUG, _("\tAllocating space for %d entries\n"), tranElements);
-    score->scores = xcalloc(tranElements, sizeof(score->scores));
-
-    /* Initialize score entry count */
-    score->entries = 0;
-    score->nrefs   = 0;
-
-    /*
-     * Increment through transaction elements and make sure for every 
-     * N there is an rpmtsScoreEntry.
-     */
-    pi = rpmtsiInit(runningTS); 
-    while ((p = rpmtsiNext(pi, TR_ADDED|TR_REMOVED)) != NULL) {
-	found  = 0;
-
-	/* Try to find the entry in the score list */
-	for(i = 0; i < score->entries; i++) {
-	    se = score->scores[i]; 
-  	    if (strcmp(rpmteN(p), se->N) == 0) {
-		found = 1;
-	 	/*@innerbreak@*/ break;
-	    }
-	}
-
-	/* If we did not find the entry then allocate space for it */
-	if (!found) {
-/*@-compdef -usereleased@*/ /* XXX p->fi->te undefined. */
-    	    rpmMessage(RPMMESS_DEBUG, _("\tAdding entry for %s to score board.\n"),
-		rpmteN(p));
-/*@=compdef =usereleased@*/
-    	    se = xcalloc(1, sizeof(*(*(score->scores))));
-    	    rpmMessage(RPMMESS_DEBUG, _("\t\tEntry address:  %p\n"), se);
-	    se->N         = xstrdup(rpmteN(p));
-	    se->te_types  = rpmteType(p); 
-	    se->installed = 0;
-	    se->erased    = 0; 
-	    se->tid       = 0xffffffff; 
-	    score->scores[score->entries] = se;
-	    score->entries++;
-	} else {
-	    /* We found this one, so just add the element type to the one 
-	     * already there.
-	     */
-    	    rpmMessage(RPMMESS_DEBUG, _("\tUpdating entry for %s in score board.\n"),
-		rpmteN(p));
-	    score->scores[i]->te_types |= rpmteType(p);
-	    se = score->scores[i];
-	}
-
-	/* Now if this is an erase element then get its install tid, and set
-	 * it in the score entry.
-	 */
-	if(rpmteType(p) == TR_REMOVED) {
-	    int_32 * tidp = NULL;
-	    int db_instance = rpmteDBOffset(p);
-	    Header h;
-	    rpmdbMatchIterator mi;
-	    int xx;
-
-	    /* Get the header from the DB */
-	    mi = rpmtsInitIterator(runningTS, RPMDBI_PACKAGES,
-		&db_instance, sizeof(db_instance));
-	    h = rpmdbNextIterator(mi);
-	    if(h != NULL) h = headerLink(h);
-	    mi = rpmdbFreeIterator(mi);
-	    if(h == NULL) {
- 		/* Header was not there??? */
-		rpmMessage(RPMMESS_ERROR,
-  		    _("Could not get header for transaction score!\n"));
-		rpmMessage(RPMMESS_ERROR, _("NEVRA: %s"), rpmteNEVRA);
-		goto cleanup;
-            }
-
-	    /* Now get install tid from header, and set in score entry. */
-	    xx = headerGetEntry(h, RPMTAG_INSTALLTID, NULL, (void **) &tidp, 
-		NULL);
-	    if(tidp == NULL) {
-		rpmMessage(RPMMESS_ERROR, 
-		    _("\tCould not get INSTALLTID for %s.\n"), rpmteNEVRA(p));
-		rc = RPMRC_FAIL;
-		goto cleanup;
-	    }
-	    rpmMessage(RPMMESS_DEBUG, 
-		    _("\tINSTALLTID for %s is 0x%08x.\n"), rpmteNEVRA(p), *tidp);
-	    se->tid = *tidp;
-	}
-	 
-    }
-    pi = rpmtsiFree(pi);
- 
-    /* 
-     * Attach the score to the running transaction and the autorollback
-     * transaction.
-     */
-    runningTS->score  = score;
-    score->nrefs++;
-    rollbackTS->score = score;
-    score->nrefs++;
-
-cleanup:
-    return rc;
-}
-
-rpmtsScore rpmtsScoreFree(rpmtsScore score) 
-{
-    rpmtsScoreEntry se = NULL;
-    int i;
-
-    rpmMessage(RPMMESS_DEBUG, _("May free Score board(%p)\n"), score);
-
-    /* If score is not initialized, then just return.
-     * This is likely the case if autorollbacks are not enabled.
-     */
-    if (score == NULL) return NULL;
-
-    /* Decrement the reference count */
-    score->nrefs--;
-
-    /* Do we have any more references?  If so
-     * just return.
-     */
-    if (score->nrefs > 0) return NULL;
-
-    rpmMessage(RPMMESS_DEBUG, _("\tRefcount is zero...will free\n"));
-    /* No more references, lets clean up  */
-    /* First deallocate the score entries */
-/*@-branchstate@*/
-    for(i = 0; i < score->entries; i++) {
-	/* Get the score for the ith entry */
-	se = score->scores[i]; 
-	
-	/* Deallocate the score entries name */
-	se->N = _free(se->N);
-
-	/* Deallocate the score entry itself */
-	se = _free(se);
-    }
-/*@=branchstate@*/
-
-    /* Next deallocate the score entry table */
-    score->scores = _free(score->scores);
-
-    /* Finally deallocate the score itself */
-    score = _free(score);
-
-    return NULL;
-}
-
-/* 
- * XXX: Do not get the score and then store it aside for later use.
- *      we will delete it out from under you.  There is no rpmtsScoreLink()
- *      as this may be a very temporary fix for autorollbacks.
- */
-rpmtsScore rpmtsGetScore(rpmts ts) 
-{
-    if (ts == NULL) return NULL;
-    return ts->score;
-}
-
-/* 
- * XXX: Do not get the score entry and then store it aside for later use.
- *      we will delete it out from under you.  There is no 
- *      rpmtsScoreEntryLink() as this may be a very temporary fix 
- *      for autorollbacks.
- * XXX: The scores are not sorted.  This should be fixed at earliest
- *      opportunity (i.e. when we have the whole autorollback working).
- */
-rpmtsScoreEntry rpmtsScoreGetEntry(rpmtsScore score, const char *N) 
-{
-    int i;
-    rpmtsScoreEntry se;
-    rpmtsScoreEntry ret = NULL; /* Assume we don't find it */
-
-    rpmMessage(RPMMESS_DEBUG, _("Looking in score board(%p) for %s\n"), score, N);
-
-    /* Try to find the entry in the score list */
-    for(i = 0; i < score->entries; i++) {
-	se = score->scores[i]; 
- 	if (strcmp(N, se->N) == 0) {
-    	    rpmMessage(RPMMESS_DEBUG, _("\tFound entry at address:  %p\n"), se);
-	    ret = se;
-	    break;
-	}
-    }
-	
-/*@-compdef@*/ /* XXX score->scores undefined. */
-    return ret;	
-/*@=compdef@*/
 }

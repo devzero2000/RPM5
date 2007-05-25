@@ -20,6 +20,9 @@
 
 /*@access FSM_t @*/
 
+/*@unchecked@*/
+int _cpio_debug = 0;
+
 /**
  * Convert string to unsigned integer (with buffer size check).
  * @param str		input string
@@ -97,6 +100,9 @@ int cpioHeaderWrite(FSM_t fsm, struct stat * st)
     dev_t dev;
     int rc = 0;
 
+if (_cpio_debug)
+fprintf(stderr, "    %s(%p, %p)\n", __FUNCTION__, fsm, st);
+
     memcpy(hdr->magic, CPIO_NEWC_MAGIC, sizeof(hdr->magic));
     SET_NUM_FIELD(hdr->inode, st->st_ino, field);
     SET_NUM_FIELD(hdr->mode, st->st_mode, field);
@@ -124,6 +130,18 @@ int cpioHeaderWrite(FSM_t fsm, struct stat * st)
 	rc = CPIOERR_WRITE_FAILED;
     if (!rc)
 	rc = fsmNext(fsm, FSM_PAD);
+
+    if (!rc && S_ISLNK(st->st_mode)) {
+assert(fsm->lpath != NULL);
+	fsm->rdnb = strlen(fsm->lpath);
+	memcpy(fsm->rdbuf, fsm->lpath, fsm->rdnb);
+	rc = fsmNext(fsm, FSM_DWRITE);
+	if (!rc && fsm->rdnb != fsm->wrnb)
+	    rc = CPIOERR_WRITE_FAILED;
+	if (!rc)
+	    rc = fsmNext(fsm, FSM_PAD);
+    }
+
     return rc;
 }
 
@@ -135,6 +153,9 @@ int cpioHeaderRead(FSM_t fsm, struct stat * st)
     char * end;
     int major, minor;
     int rc = 0;
+
+if (_cpio_debug)
+fprintf(stderr, "    %s(%p, %p)\n", __FUNCTION__, fsm, st);
 
     fsm->wrlen = PHYS_HDR_SIZE;
     rc = fsmNext(fsm, FSM_DREAD);
@@ -190,10 +211,30 @@ int cpioHeaderRead(FSM_t fsm, struct stat * st)
 	fsm->path = t;
     }
 
-    return 0;
+    if (S_ISLNK(st->st_mode)) {
+	rc = fsmNext(fsm, FSM_POS);
+	if (rc) return rc;
+	fsm->wrlen = st->st_size;
+	rc = fsmNext(fsm, FSM_DREAD);
+	if (!rc && fsm->rdnb != fsm->wrlen)
+	    rc = CPIOERR_READ_FAILED;
+	if (rc) return rc;
+/*@-boundswrite@*/
+	fsm->wrbuf[st->st_size] = '\0';
+/*@=boundswrite@*/
+	fsm->lpath = xstrdup(fsm->wrbuf);
+    }
+
+if (_cpio_debug)
+fprintf(stderr, "\t     %06o%3d (%4d,%4d)%10d %s\n\t-> %s\n",
+                (unsigned)st->st_mode, (int)st->st_nlink,
+                (int)st->st_uid, (int)st->st_gid, (int)st->st_size,
+                (fsm->path ? fsm->path : ""), (fsm->lpath ? fsm->lpath : ""));
+
+    return rc;
 }
 
-const char *const cpioStrerror(int rc)
+const char * cpioStrerror(int rc)
 {
     static char msg[256];
     char *s;
@@ -233,7 +274,7 @@ const char *const cpioStrerror(int rc)
     case CPIOERR_HDR_SIZE:	s = _("Header size too big");	break;
     case CPIOERR_UNKNOWN_FILETYPE: s = _("Unknown file type");	break;
     case CPIOERR_MISSING_HARDLINK: s = _("Missing hard link(s)"); break;
-    case CPIOERR_MD5SUM_MISMATCH: s = _("MD5 sum mismatch");	break;
+    case CPIOERR_DIGEST_MISMATCH: s = _("File digest mismatch");	break;
     case CPIOERR_INTERNAL:	s = _("Internal error");	break;
     case CPIOERR_UNMAPPED_FILE:	s = _("Archive file not in header"); break;
     case CPIOERR_ENOENT:	s = strerror(ENOENT); break;

@@ -18,7 +18,21 @@ extern "C" {
 #endif
 
 /**
- * Return MD5 sum and size of a file.
+ * Return digest and size of a file.
+ * @param digestalgo	digest algorithm to use
+ * @param fn		file name
+ * @retval digest	address of md5sum
+ * @param asAscii	return md5sum as ascii string?
+ * @retval *fsizep	file size pointer (or NULL)
+ * @return		0 on success, 1 on error
+ */
+int dodigest(int digestalgo, const char * fn, /*@out@*/ unsigned char * digest,
+		int asAscii, /*@null@*/ /*@out@*/ size_t *fsizep)
+	/*@globals h_errno, fileSystem, internalState @*/
+	/*@modifies digest, *fsizep, fileSystem, internalState @*/;
+
+/**
+ * Return MD5 digest and size of a file.
  * @param fn		file name
  * @retval digest	address of md5sum
  * @param asAscii	return md5sum as ascii string?
@@ -29,13 +43,6 @@ int domd5(const char * fn, /*@out@*/ unsigned char * digest, int asAscii,
 		/*@null@*/ /*@out@*/ size_t *fsizep)
 	/*@globals h_errno, fileSystem, internalState @*/
 	/*@modifies digest, *fsizep, fileSystem, internalState @*/;
-
-/**
- * Convert absolute path tag to (dirname,basename,dirindex) tags.
- * @param h		header
- */
-void compressFilelist(Header h)
-	/*@modifies h @*/;
 
 /**
  * Retrieve file names from header.
@@ -57,29 +64,6 @@ void compressFilelist(Header h)
 void rpmfiBuildFNames(Header h, rpmTag tagN,
 		/*@out@*/ const char *** fnp, /*@out@*/ int * fcp)
 	/*@modifies *fnp, *fcp @*/;
-
-/**
- * Convert (dirname,basename,dirindex) tags to absolute path tag.
- * @param h		header
- */
-void expandFilelist(Header h)
-	/*@modifies h @*/;
-
-/**
- * Retrofit a Provides: name = version-release dependency into legacy
- * package headers.
- * @param h		header
- */
-void providePackageNVR(Header h)
-	/*@modifies h @*/;
-
-/**
- * Do all necessary retorfits for a package header.
- * @param h		header
- * @param lead
- */
-void legacyRetrofit(Header h, const struct rpmlead * lead)
-	/*@modifies h@*/;
 
 #ifdef __cplusplus
 }

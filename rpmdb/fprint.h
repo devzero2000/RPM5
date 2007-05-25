@@ -45,14 +45,18 @@ struct fingerPrint_s {
 /*! directory finger print entry (the directory path is stat(2)-able */
     const struct fprintCacheEntry_s * entry;
 /*! trailing sub-directory path (directories that are not stat(2)-able */
-/*@owned@*/ /*@null@*/ const char * subDir;
-/*@dependent@*/ const char * baseName;	/*!< file base name */
+/*@owned@*/ /*@relnull@*/
+    const char * subDir;
+/*@dependent@*/
+    const char * baseName;	/*!< file base name */
 };
 
-/** */
+/**
+ */
 #define	FP_ENTRY_EQUAL(a, b) (((a)->dev == (b)->dev) && ((a)->ino == (b)->ino))
 
-/** */
+/**
+*/
 #define FP_EQUAL(a, b) ( \
 	FP_ENTRY_EQUAL((a).entry, (b).entry) && \
 	!strcmp((a).baseName, (b).baseName) && ( \
@@ -71,15 +75,17 @@ extern "C" {
  * @param fpList	fingerprint array
  * @retval matchList	returned fingerprint matches
  * @param numItems	number of fingerprint items
+ * @param exclude	excluded header instance (0 to disable)
  * @return		0 always
  */
 int rpmdbFindFpList(/*@null@*/ rpmdb db, fingerPrint  * fpList,
-		/*@out@*/ dbiIndexSet * matchList, int numItems)
+		/*@out@*/ dbiIndexSet * matchList, int numItems,
+		unsigned int exclude)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies db, *matchList, rpmGlobalMacroContext,
 		fileSystem, internalState @*/;
 
-/* Be carefull with the memory... assert(*fullName == '/' || !scareMemory) */
+/* Be carefull with the memory... assert(*fullName == '/' || !scareMem) */
 
 /**
  * Create finger print cache.
@@ -103,20 +109,22 @@ fingerPrintCache fpCacheFree(/*@only@*/ fingerPrintCache cache)
  * @param cache		pointer to fingerprint cache
  * @param dirName	leading directory name of file path
  * @param baseName	base name of file path
- * @param scareMemory
+ * @param scareMem
  * @return pointer to the finger print associated with a file path.
  */
 fingerPrint fpLookup(fingerPrintCache cache, const char * dirName, 
-			const char * baseName, int scareMemory)
+			const char * baseName, int scareMem)
 	/*@modifies cache @*/;
 
 /**
  * Return hash value for a finger print.
  * Hash based on dev and inode only!
- * @param key		pointer to finger print entry
- * @return hash value
+ * @param h		hash initial value
+ * @param *data		finger print entry
+ * @param size		size of fingerprint entry
+ * @return		hash value
  */
-unsigned int fpHashFunction(const void * key)
+uint32_t fpHashFunction(uint32_t h, const void * data, size_t size)
 	/*@*/;
 
 /**
@@ -131,16 +139,16 @@ int fpEqual(const void * key1, const void * key2)
 
 /**
  * Return finger prints of an array of file paths.
- * @warning: scareMemory is assumed!
+ * @warning: scareMem is assumed!
  * @param cache		pointer to fingerprint cache
  * @param dirNames	directory names
  * @param baseNames	file base names
  * @param dirIndexes	index into dirNames for each baseNames
  * @param fileCount	number of file entries
- * @retval fpList	pointer to array of finger prints
+ * @retval *fpList	array of finger prints
  */
 void fpLookupList(fingerPrintCache cache, const char ** dirNames, 
-		  const char ** baseNames, const int * dirIndexes, 
+		  const char ** baseNames, const uint_32 * dirIndexes, 
 		  int fileCount, fingerPrint * fpList)
 	/*@modifies cache, *fpList @*/;
 

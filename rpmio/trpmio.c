@@ -10,35 +10,45 @@ int main (void)
 {
     FD_t f1, f2, f3, f4, f5;
  
-    printf ("open http://www.gnome.org/\n");
-    f1 = Fopen ("http://www.gnome.org/", "r.fdio");
+    fprintf (stderr, "open http://www.gnome.org/\n");
+    f1 = Fopen ("http://www.gnome.org/", "r.ufdio");
  
-    printf ("open http://people.redhat.com/\n");
+    fprintf (stderr, "open http://people.redhat.com/\n");
     f2 = Fopen ("http://people.redhat.com/", "r.ufdio");
  
-    printf ("close http://www.gnome.org/\n");
+  if (f1) {
+    fprintf (stderr, "close http://www.gnome.org/\n");
     Fclose (f1);
+  }
  
-    printf ("open http://www.redhat.com/\n");
+    fprintf (stderr, "open http://www.redhat.com/\n");
     f3 = Fopen ("http://www.redhat.com/", "r.ufdio");
  
-    printf ("close http://people.redhat.com/\n");
+  if (f2) {
+    fprintf (stderr, "close http://people.redhat.com/\n");
     Fclose (f2);
+  }
  
-    printf ("open http://www.slashdot.org/\n");
-    f4 = Fopen ("http://www.slashdot.org/", "r.ufdio");
+    fprintf (stderr, "open http://www.wraptastic.org/\n");
+    f4 = Fopen ("http://www.wraptastic.org/", "r.ufdio");
  
-    printf ("close http://people.redhat.com/\n");
+  if (f3) {
+    fprintf (stderr, "close http://people.redhat.com/\n");
     Fclose (f3);
+  }
  
-    printf ("open http://people.redhat.com/\n");
+    fprintf (stderr, "open http://people.redhat.com/\n");
     f5 = Fopen ("http://people.redhat.com/", "r.ufdio");
  
-    printf ("close http://www.slashdot.org/\n");
+  if (f4) {
+    fprintf (stderr, "close http://www.wraptastic.org/\n");
     Fclose (f4);
+  }
  
-    printf ("close http://people.redhat.com/\n");
+  if (f5) {
+    fprintf (stderr, "close http://people.redhat.com/\n");
     Fclose (f5);
+  }
  
     return 0;
 }

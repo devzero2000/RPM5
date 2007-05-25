@@ -9,6 +9,43 @@
 # include <machine/types.h>
 #endif
 
+#if HAVE_SYS_SOCKET_H
+# include <sys/socket.h>
+#endif
+
+#if defined(__LCLINT__)
+struct addrinfo
+{
+  int ai_flags;			/* Input flags.  */
+  int ai_family;		/* Protocol family for socket.  */
+  int ai_socktype;		/* Socket type.  */
+  int ai_protocol;		/* Protocol for socket.  */
+  socklen_t ai_addrlen;		/* Length of socket address.  */
+  struct sockaddr *ai_addr;	/* Socket address for socket.  */
+  char *ai_canonname;		/* Canonical name for service location.  */
+  struct addrinfo *ai_next;	/* Pointer to next in list.  */
+};
+
+/*@-exportheader@*/
+extern int getaddrinfo (__const char *__restrict __name,
+			__const char *__restrict __service,
+			__const struct addrinfo *__restrict __req,
+			/*@out@*/ struct addrinfo **__restrict __pai)
+	/*@modifies *__pai @*/;
+
+extern int getnameinfo (__const struct sockaddr *__restrict __sa,
+			socklen_t __salen, /*@out@*/ char *__restrict __host,
+			socklen_t __hostlen, /*@out@*/ char *__restrict __serv,
+			socklen_t __servlen, unsigned int __flags)
+	/*@modifies __host, __serv @*/;
+
+extern void freeaddrinfo (/*@only@*/ struct addrinfo *__ai)
+	/*@modifies __ai @*/;
+/*@=exportheader@*/
+#else
+#include <netdb.h>		/* XXX getaddrinfo et al */
+#endif
+
 #include <netinet/in.h>
 #include <arpa/inet.h>		/* XXX for inet_aton and HP-UX */
 
@@ -17,12 +54,14 @@
 # include <netinet/in_systm.h>
 #endif
 
+#include <rpmmacro.h>		/* XXX rpmioAccess needs rpmCleanPath() */
+
 #if HAVE_LIBIO_H && defined(_G_IO_IO_FILE_VERSION)
 #define	_USE_LIBIO	1
 #endif
 
 /* XXX HP-UX w/o -D_XOPEN_SOURCE needs */
-#if !defined(HAVE_HERRNO) && (defined(__hpux) || defined(__LCLINT__))
+#if !defined(HAVE_HERRNO) && (defined(hpux) || defined(__hpux) || defined(__LCLINT__))
 /*@unchecked@*/
 extern int h_errno;
 #endif
@@ -80,6 +119,7 @@ static int inet_aton(const char *cp, struct in_addr *inp)
 #define	FDONLY(fd)	assert(fdGetIo(fd) == fdio)
 #define	GZDONLY(fd)	assert(fdGetIo(fd) == gzdio)
 #define	BZDONLY(fd)	assert(fdGetIo(fd) == bzdio)
+#define	LZDONLY(fd)	assert(fdGetIo(fd) == lzdio)
 
 #define	UFDONLY(fd)	/* assert(fdGetIo(fd) == ufdio) */
 
@@ -94,20 +134,12 @@ int noLibio = 0;
 int noLibio = 1;
 #endif
 
-/*@unchecked@*/
-int noNeon = 0;
-
 #define TIMEOUT_SECS 60
 
 /**
  */
 /*@unchecked@*/
 static int ftpTimeoutSecs = TIMEOUT_SECS;
-
-/**
- */
-/*@unchecked@*/
-static int httpTimeoutSecs = TIMEOUT_SECS;
 
 /**
  */
@@ -166,11 +198,11 @@ static /*@observer@*/ const char * fdbg(/*@null@*/ FD_t fd)
     if (fd->bytesRemain != -1) {
 	sprintf(be, " clen %d", (int)fd->bytesRemain);
 	be += strlen(be);
-     }
+    }
     if (fd->wr_chunked) {
 	strcpy(be, " chunked");
 	be += strlen(be);
-     }
+    }
     *be++ = '\t';
     for (i = fd->nfps; i >= 0; i--) {
 	FDSTACK_t * fps = &fd->fps[i];
@@ -188,6 +220,8 @@ static /*@observer@*/ const char * fdbg(/*@null@*/ FD_t fd)
 	} else if (fps->io == bzdio) {
 	    sprintf(be, "BZD %p fdno %d", fps->fp, fps->fdno);
 #endif
+	} else if (fps->io == lzdio) {
+	    sprintf(be, "LZD %p fdno %d", fps->fp, fps->fdno);
 	} else if (fps->io == fpio) {
 	    /*@+voidabstract@*/
 	    sprintf(be, "%s %p(%d) fdno %d",
@@ -209,7 +243,7 @@ static /*@observer@*/ const char * fdbg(/*@null@*/ FD_t fd)
 off_t fdSize(FD_t fd)
 {
     struct stat sb;
-    off_t rc = -1; 
+    off_t rc = -1;
 
 #ifdef	NOISY
 DBGIO(0, (stderr, "==>\tfdSize(%p) rc %ld\n", fd, (long)rc));
@@ -338,7 +372,7 @@ FD_t XfdNew(const char * msg, const char * file, unsigned line)
     fd->nfps = 0;
     memset(fd->fps, 0, sizeof(fd->fps));
 
-    fd->fps[0].io = fdio;
+    fd->fps[0].io = ufdio;
     fd->fps[0].fp = NULL;
     fd->fps[0].fdno = -1;
 
@@ -357,8 +391,6 @@ FD_t XfdNew(const char * msg, const char * file, unsigned line)
     memset(fd->digests, 0, sizeof(fd->digests));
 
     fd->ftpFileDoneNeeded = 0;
-    fd->firstFree = 0;
-    fd->fileSize = 0;
     fd->fd_cpioPos = 0;
 
     return XfdLink(fd, msg, file, line);
@@ -407,22 +439,6 @@ static ssize_t fdWrite(void * cookie, const char * buf, size_t count)
 
     if (fd->ndigests && count > 0) fdUpdateDigests(fd, (void *)buf, count);
 
-#define	NEONBLOWSCHUNKS
-#ifdef	NEONBLOWSCHUNKS
-    if (fd->req == NULL)
-#endif
-    if (fd->wr_chunked) {
-	char chunksize[20];	/* HACK: big enough. */
-	sprintf(chunksize, "%x\r\n", (unsigned)count);
-#ifndef	NEONBLOWSCHUNKS
-	/* HACK: flimsy wiring for davWrite */
-	if (fd->req != NULL)
-	    rc = davWrite(fd, chunksize, strlen(chunksize));
-	else
-#endif
-	    rc = write(fdno, chunksize, strlen(chunksize));
-	if (rc == -1)	fd->syserrno = errno;
-    }
     if (count == 0) return 0;
 
     fdstat_enter(fd, FDSTAT_WRITE);
@@ -434,23 +450,6 @@ static ssize_t fdWrite(void * cookie, const char * buf, size_t count)
 	rc = write(fdno, buf, (count > fd->bytesRemain ? fd->bytesRemain : count));
 /*@=boundsread@*/
     fdstat_exit(fd, FDSTAT_WRITE, rc);
-
-#ifdef	NEONBLOWSCHUNKS
-    if (fd->req == NULL)
-#endif
-    if (fd->wr_chunked) {
-	int ec;
-/*@-boundsread@*/
-#ifndef	NEONBLOWSCHUNKS
-	/* HACK: flimsy wiring for davWrite */
-	if (fd->req != NULL)
-	    ec = davWrite(fd, "\r\n", sizeof("\r\n")-1);
-	else
-#endif
-	    ec = write(fdno, "\r\n", sizeof("\r\n")-1);
-/*@=boundsread@*/
-	if (ec == -1)	fd->syserrno = errno;
-    }
 
 DBGIO(fd, (stderr, "==>\tfdWrite(%p,%p,%ld) rc %ld %s\n", cookie, buf, (long)count, (long)rc, fdbg(fd)));
 
@@ -779,10 +778,10 @@ const char *urlStrerror(const char *url)
     case URL_IS_FTP:
     {	urlinfo u;
 /* XXX This only works for httpReq/ftpLogin/ftpReq failures */
-	if (urlSplit(url, &u) == 0) {
+	if (urlSplit(url, &u) == 0)
 	    retstr = ftpStrerror(u->openError);
-	} else
-	    retstr = "Malformed URL";
+	else
+	    retstr = _("Malformed URL");
     }	break;
     default:
 	retstr = strerror(errno);
@@ -792,7 +791,8 @@ const char *urlStrerror(const char *url)
     return retstr;
 }
 
-#if !defined(USE_ALT_DNS) || !USE_ALT_DNS 
+#if !defined(HAVE_GETADDRINFO)
+#if !defined(USE_ALT_DNS) || !USE_ALT_DNS
 static int mygethostbyname(const char * host,
 		/*@out@*/ struct in_addr * address)
 	/*@globals h_errno @*/
@@ -837,19 +837,58 @@ static int getHostAddress(const char * host, /*@out@*/ struct in_addr * address)
 	    return FTPERR_BAD_HOSTNAME;
 	}
     }
-    
+
     return 0;
 }
 /*@=compdef@*/
 /*@=boundsread@*/
+#endif	/* HAVE_GETADDRINFO */
 
 static int tcpConnect(FD_t ctrl, const char * host, int port)
-	/*@globals h_errno, fileSystem, internalState @*/
+	/*@globals fileSystem, internalState @*/
 	/*@modifies ctrl, fileSystem, internalState @*/
 {
-    struct sockaddr_in sin;
     int fdno = -1;
     int rc;
+#ifdef	HAVE_GETADDRINFO
+/*@-unrecog@*/
+    struct addrinfo hints, *res, *res0;
+    char pbuf[NI_MAXSERV];
+    int xx;
+
+    memset(&hints, 0, sizeof(hints));
+    hints.ai_family = AF_UNSPEC;
+    hints.ai_socktype = SOCK_STREAM;
+    sprintf(pbuf, "%d", port);
+    pbuf[sizeof(pbuf)-1] = '\0';
+    rc = FTPERR_FAILED_CONNECT;
+    if (getaddrinfo(host, pbuf, &hints, &res0) == 0) {
+	for (res = res0; res != NULL; res = res->ai_next) {
+	    if ((fdno = socket(res->ai_family, res->ai_socktype, res->ai_protocol)) < 0)
+		continue;
+	    if (connect(fdno, res->ai_addr, res->ai_addrlen) < 0) {
+		xx = close(fdno);
+		continue;
+	    }
+	    /* success */
+	    rc = 0;
+	    if (_ftp_debug) {
+		char hbuf[NI_MAXHOST];
+		hbuf[0] = '\0';
+		xx = getnameinfo(res->ai_addr, res->ai_addrlen, hbuf, sizeof(hbuf),
+				NULL, 0, NI_NUMERICHOST);
+		fprintf(stderr,"++ connect [%s]:%d on fdno %d\n",
+				/*@-unrecog@*/ hbuf /*@=unrecog@*/, port, fdno);
+	    }
+	    break;
+	}
+	freeaddrinfo(res0);
+    }
+    if (rc < 0)
+	goto errxit;
+/*@=unrecog@*/
+#else	/* HAVE_GETADDRINFO */
+    struct sockaddr_in sin;
 
 /*@-boundswrite@*/
     memset(&sin, 0, sizeof(sin));
@@ -857,7 +896,7 @@ static int tcpConnect(FD_t ctrl, const char * host, int port)
     sin.sin_family = AF_INET;
     sin.sin_port = htons(port);
     sin.sin_addr.s_addr = INADDR_ANY;
-    
+
   do {
     if ((rc = getHostAddress(host, &sin.sin_addr)) < 0)
 	break;
@@ -884,6 +923,7 @@ fprintf(stderr,"++ connect %s:%d on fdno %d\n",
 inet_ntoa(sin.sin_addr)
 /*@=unrecog =moduncon =evalorderuncon @*/ ,
 (int)ntohs(sin.sin_port), fdno);
+#endif	/* HAVE_GETADDRINFO */
 
     fdSetFdno(ctrl, (fdno >= 0 ? fdno : -1));
     return 0;
@@ -906,13 +946,13 @@ static int checkResponse(void * uu, FD_t ctrl,
     urlinfo u = uu;
     char *buf;
     size_t bufAlloced;
-    int bufLength = 0; 
+    int bufLength = 0;
     const char *s;
     char *se;
     int ec = 0;
     int moretodo = 1;
     char errorCode[4];
- 
+
     URLSANE(u);
     if (u->bufAlloced == 0 || u->buf == NULL) {
 	u->bufAlloced = _url_iobuf_size;
@@ -923,7 +963,7 @@ static int checkResponse(void * uu, FD_t ctrl,
     *buf = '\0';
 
     errorCode[0] = '\0';
-    
+
     do {
 	int rc;
 
@@ -1000,13 +1040,13 @@ fprintf(stderr, "<- %s\n", s);
 #endif
 		    if (!strncmp(s, "Accept-Ranges:", ne)) {
 			if (!strcmp(e, "bytes"))
-			    u->httpHasRange = 1;
+			    u->allow |= RPMURL_SERVER_HASRANGE;
 			if (!strcmp(e, "none"))
-			    u->httpHasRange = 0;
+			    u->allow &= ~RPMURL_SERVER_HASRANGE;
 		    } else
 		    if (!strncmp(s, "Content-Length:", ne)) {
 			if (strchr("0123456789", *e))
-			    ctrl->contentLength = atoi(e);
+			    ctrl->contentLength = atol(e);
 		    } else
 		    if (!strncmp(s, "Connection:", ne)) {
 			if (!strcmp(e, "close"))
@@ -1129,7 +1169,7 @@ fprintf(stderr, "-> %s", t);
 }
 
 static int ftpLogin(urlinfo u)
-	/*@globals h_errno, fileSystem, internalState @*/
+	/*@globals fileSystem, internalState @*/
 	/*@modifies u, fileSystem, internalState @*/
 {
     const char * host;
@@ -1216,13 +1256,19 @@ errxit2:
 int ftpReq(FD_t data, const char * ftpCmd, const char * ftpArg)
 {
     urlinfo u = data->url;
+#if !defined(HAVE_GETADDRINFO)
     struct sockaddr_in dataAddress;
+#endif	/* HAVE_GETADDRINFO */
+    char remoteIP[NI_MAXHOST];
     char * cmd;
     int cmdlen;
     char * passReply;
     char * chptr;
     int rc;
+    int epsv;
+    int port;
 
+    remoteIP[0] = '\0';
 /*@-boundswrite@*/
     URLSANE(u);
     if (ftpCmd == NULL)
@@ -1256,8 +1302,37 @@ int ftpReq(FD_t data, const char * ftpCmd, const char * ftpArg)
 	data->contentLength = cl;
     }
 
+    epsv = 0;
     passReply = NULL;
-    rc = ftpCommand(u, &passReply, "PASV", NULL);
+#ifdef HAVE_GETNAMEINFO
+    rc = ftpCommand(u, &passReply, "EPSV", NULL);
+    if (rc == 0) {
+#ifdef HAVE_GETADDRINFO
+	struct sockaddr_storage ss;
+#else /* HAVE_GETADDRINFO */
+	struct sockaddr_in ss;
+#endif /* HAVE_GETADDRINFO */
+	socklen_t sslen = sizeof(ss);
+
+	/* we need to know IP of remote host */
+	if ((getpeername(fdFileno(c2f(u->ctrl)), (struct sockaddr *)&ss, &sslen) == 0)
+	 && (getnameinfo((struct sockaddr *)&ss, sslen,
+			remoteIP, sizeof(remoteIP),
+			NULL, 0, NI_NUMERICHOST) == 0))
+	{
+		epsv++;
+	} else {
+		/* abort EPSV and fall back to PASV */
+		rc = ftpCommand(u, &passReply, "ABOR", NULL);
+		if (rc) {
+		    rc = FTPERR_PASSIVE_ERROR;
+		    goto errxit;
+		}
+	}
+    }
+   if (epsv == 0)
+#endif /* HAVE_GETNAMEINFO */
+	rc = ftpCommand(u, &passReply, "PASV", NULL);
     if (rc) {
 	rc = FTPERR_PASSIVE_ERROR;
 	goto errxit;
@@ -1265,12 +1340,21 @@ int ftpReq(FD_t data, const char * ftpCmd, const char * ftpArg)
 
     chptr = passReply;
     while (*chptr && *chptr != '(') chptr++;
-    if (*chptr != '(') return FTPERR_PASSIVE_ERROR; 
+    if (*chptr != '(') return FTPERR_PASSIVE_ERROR;
     chptr++;
     passReply = chptr;
     while (*chptr && *chptr != ')') chptr++;
     if (*chptr != ')') return FTPERR_PASSIVE_ERROR;
     *chptr-- = '\0';
+
+  if (epsv) {
+	int i;
+	if(sscanf(passReply,"%*c%*c%*c%d%*c",&i) != 1) {
+	   rc = FTPERR_PASSIVE_ERROR;
+	   goto errxit;
+	}
+	port = i;
+  } else {
 
     while (*chptr && *chptr != ',') chptr--;
     if (*chptr != ',') return FTPERR_PASSIVE_ERROR;
@@ -1278,18 +1362,16 @@ int ftpReq(FD_t data, const char * ftpCmd, const char * ftpArg)
     while (*chptr && *chptr != ',') chptr--;
     if (*chptr != ',') return FTPERR_PASSIVE_ERROR;
     *chptr++ = '\0';
-    
+
     /* now passReply points to the IP portion, and chptr points to the
        port number portion */
 
     {	int i, j;
-	memset(&dataAddress, 0, sizeof(dataAddress));
-	dataAddress.sin_family = AF_INET;
 	if (sscanf(chptr, "%d,%d", &i, &j) != 2) {
 	    rc = FTPERR_PASSIVE_ERROR;
 	    goto errxit;
 	}
-	dataAddress.sin_port = htons((((unsigned)i) << 8) + j);
+	port = (((unsigned)i) << 8) + j;
     }
 
     chptr = passReply;
@@ -1297,9 +1379,82 @@ int ftpReq(FD_t data, const char * ftpCmd, const char * ftpArg)
 	if (*chptr == ',') *chptr = '.';
     }
 /*@=boundswrite@*/
+    sprintf(remoteIP, "%s", passReply);
+  } /* if (epsv) */
+
+#ifdef HAVE_GETADDRINFO
+/*@-unrecog@*/
+    {
+	struct addrinfo hints, *res, *res0;
+	char pbuf[NI_MAXSERV];
+	int xx;
+
+	memset(&hints, 0, sizeof(hints));
+	hints.ai_family = AF_UNSPEC;
+	hints.ai_socktype = SOCK_STREAM;
+	hints.ai_flags = AI_NUMERICHOST;
+#if defined(AI_IDN)
+	hints.ai_flags |= AI_IDN;
+#endif
+	sprintf(pbuf, "%d", port);
+	pbuf[sizeof(pbuf)-1] = '\0';
+	if (getaddrinfo(remoteIP, pbuf, &hints, &res0)) {
+	    rc = FTPERR_PASSIVE_ERROR;
+	    goto errxit;
+	}
+
+	for (res = res0; res != NULL; res = res->ai_next) {
+	    rc = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
+	    fdSetFdno(data, (rc >= 0 ? rc : -1));
+	    if (rc < 0) {
+	        if (res->ai_next)
+		    continue;
+		else {
+		    rc = FTPERR_FAILED_CONNECT;
+		    freeaddrinfo(res0);
+		    goto errxit;
+		}
+	    }
+	    data = fdLink(data, "open data (ftpReq)");
+
+	    /* XXX setsockopt SO_LINGER */
+	    /* XXX setsockopt SO_KEEPALIVE */
+	    /* XXX setsockopt SO_TOS IPTOS_THROUGHPUT */
+
+	    {
+		int criterr = 0;
+	        while (connect(fdFileno(data), res->ai_addr, res->ai_addrlen) < 0) {
+	            if (errno == EINTR)
+		        /*@innercontinue@*/ continue;
+		    criterr++;
+		}
+		if (criterr) {
+		    if (res->ai_addr) {
+/*@-refcounttrans@*/
+		        xx = fdClose(data);
+/*@=refcounttrans@*/
+		        continue;
+		    } else {
+		        rc = FTPERR_PASSIVE_ERROR;
+		        freeaddrinfo(res0);
+		        goto errxit;
+		    }
+		}
+	    }
+	    /* success */
+	    rc = 0;
+	    break;
+	}
+	freeaddrinfo(res0);
+    }
+/*@=unrecog@*/
+#else /* HAVE_GETADDRINFO */
+    memset(&dataAddress, 0, sizeof(dataAddress));
+    dataAddress.sin_family = AF_INET;
+    dataAddress.sin_port = htons(port);
 
     /*@-moduncon@*/
-    if (!inet_aton(passReply, &dataAddress.sin_addr)) {
+    if (!inet_aton(remoteIP, &dataAddress.sin_addr)) {
 	rc = FTPERR_PASSIVE_ERROR;
 	goto errxit;
     }
@@ -1318,7 +1473,7 @@ int ftpReq(FD_t data, const char * ftpCmd, const char * ftpArg)
     /* XXX setsockopt SO_TOS IPTOS_THROUGHPUT */
 
     /*@-internalglobs@*/
-    while (connect(fdFileno(data), (struct sockaddr *) &dataAddress, 
+    while (connect(fdFileno(data), (struct sockaddr *) &dataAddress,
 	        sizeof(dataAddress)) < 0)
     {
 	if (errno == EINTR)
@@ -1327,6 +1482,7 @@ int ftpReq(FD_t data, const char * ftpCmd, const char * ftpArg)
 	goto errxit;
     }
     /*@=internalglobs@*/
+#endif /* HAVE_GETADDRINFO */
 
 if (_ftp_debug)
 fprintf(stderr, "-> %s", cmd);
@@ -1386,7 +1542,7 @@ int ufdCopy(FD_t sfd, FD_t tfd)
 	/*@=noeffectuncon @*/
 /*@=boundsread@*/
     }
-    
+
     while (1) {
 	rc = Fread(buf, sizeof(buf[0]), sizeof(buf), sfd);
 	if (rc < 0)
@@ -1430,7 +1586,7 @@ int ufdCopy(FD_t sfd, FD_t tfd)
 	/*@=noeffectuncon @*/
 /*@=boundsread@*/
     }
-    
+
     return rc;
 }
 
@@ -1605,6 +1761,7 @@ static int ftpFileDone(urlinfo u, FD_t data)
     return rc;
 }
 
+#ifdef DEAD
 static int httpResp(urlinfo u, FD_t ctrl, /*@out@*/ char ** str)
 	/*@globals fileSystem @*/
 	/*@modifies ctrl, *str, fileSystem @*/
@@ -1641,6 +1798,7 @@ static int httpReq(FD_t ctrl, const char * httpCmd, const char * httpArg)
     urlinfo u;
     const char * host;
     const char * path;
+    char hthost[NI_MAXHOST];
     int port;
     int rc;
     char * req;
@@ -1653,6 +1811,10 @@ assert(ctrl != NULL);
 
     if (((host = (u->proxyh ? u->proxyh : u->host)) == NULL))
 	return FTPERR_BAD_HOSTNAME;
+    if (strchr(host, ':'))
+	sprintf(hthost, "[%s]", host);
+    else
+	strcpy(hthost, host);
 
     if ((port = (u->proxyp > 0 ? u->proxyp : u->port)) < 0) port = 80;
     path = (u->proxyh || u->proxyp > 0) ? u->url : httpArg;
@@ -1682,7 +1844,7 @@ Host: y:z\r\n\
 Accept: text/plain\r\n\
 Transfer-Encoding: chunked\r\n\
 \r\n\
-") + strlen(httpCmd) + strlen(path) + sizeof(VERSION) + strlen(host) + 20;
+") + strlen(httpCmd) + strlen(path) + sizeof(VERSION) + strlen(hthost) + 20;
 
 /*@-boundswrite@*/
     req = alloca(len);
@@ -1696,7 +1858,7 @@ Host: %s:%d\r\n\
 Accept: text/plain\r\n\
 Transfer-Encoding: chunked\r\n\
 \r\n\
-",	httpCmd, path, (u->httpVersion ? 1 : 0), VERSION, host, port);
+",	httpCmd, path, (u->httpVersion ? 1 : 0), VERSION, hthost, port);
 } else {
     sprintf(req, "\
 %s %s HTTP/1.%d\r\n\
@@ -1704,7 +1866,7 @@ User-Agent: rpm/%s\r\n\
 Host: %s:%d\r\n\
 Accept: text/plain\r\n\
 \r\n\
-",	httpCmd, path, (u->httpVersion ? 1 : 0), VERSION, host, port);
+",	httpCmd, path, (u->httpVersion ? 1 : 0), VERSION, hthost, port);
 }
 /*@=boundswrite@*/
 
@@ -1750,6 +1912,7 @@ errxit2:
     return rc;
 /*@=usereleased@*/
 }
+#endif
 
 /* XXX DYING: unused */
 void * ufdGetUrlinfo(FD_t fd)
@@ -1764,8 +1927,8 @@ void * ufdGetUrlinfo(FD_t fd)
 static ssize_t ufdRead(void * cookie, /*@out@*/ char * buf, size_t count)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies buf, fileSystem, internalState @*/
-        /*@requires maxSet(buf) >= (count - 1) @*/
-        /*@ensures maxRead(buf) == result @*/
+	/*@requires maxSet(buf) >= (count - 1) @*/
+	/*@ensures maxRead(buf) == result @*/
 {
     FD_t fd = c2f(cookie);
     int bytesRead;
@@ -1909,7 +2072,7 @@ static inline int ufdSeek(void * cookie, _libio_pos_t pos, int whence)
     case URL_IS_FTP:
     case URL_IS_DASH:
     default:
-        return -2;
+	return -2;
 	/*@notreached@*/ break;
     }
     return fdSeek(cookie, pos, whence);
@@ -1990,40 +2153,6 @@ int ufdClose( /*@only@*/ void * cookie)
 	if (u->scheme != NULL
 	 && (!strncmp(u->scheme, "http", sizeof("http")-1) || !strncmp(u->scheme, "hkp", sizeof("hkp")-1)))
 	{
-	    if (fd->wr_chunked) {
-		int rc;
-
-#ifdef	NEONBLOWSCHUNKS
-		if (!noNeon) {
-		    fd->wr_chunked = 0;
-		    /* HACK: flimsy wiring for davWrite */
-#if 0	/* HACK build against upstream neon for now. */
-		    rc = ne_send_request_chunk(fd->req, (void *)NULL, (size_t)0);
-		    rc = ne_finish_request(fd->req);
-#endif
-		    rc = davResp(u, fd, NULL);
-		} else
-#endif
-		{
-		    /* XXX HTTP PUT requires terminating 0 length chunk. */
-		    (void) fdWrite(fd, NULL, 0);
-		    fd->wr_chunked = 0;
-		    /* XXX HTTP PUT requires terminating entity-header. */
-if (_ftp_debug)
-fprintf(stderr, "-> \r\n");
-		    (void) fdWrite(fd, "\r\n", sizeof("\r\n")-1);
-#ifndef	NEONBLOWSCHUNKS
-		    if (!noNeon) {
-			rc = ne_finish_request(fd->req);
-			rc = davResp(u, fd, NULL);
-		    } else
-#endif
-			rc = httpResp(u, fd, NULL);
-		}
-if ((_ftp_debug || _rpmio_debug) && rc)	/* HACK: PUT rc not returned to Fclose. */
-fprintf(stderr, "*** ufdClose: httpResp rc %d errno(%d) %s\n", rc, fd->syserrno, strerror(fd->syserrno));
-	    }
-
 	    /*
 	     * HTTP has 4 (or 5 if persistent malloc) refs on the fd:
 	     *	"persist ctrl"				url.c:177
@@ -2107,56 +2236,6 @@ exit:
 }
 /*@=nullstate@*/
 
-/*@-nullstate@*/	/* FIX: u->{ctrl,data}->url undef after XurlLink. */
-static /*@null@*/ FD_t httpOpen(const char * url, /*@unused@*/ int flags,
-		/*@unused@*/ mode_t mode, /*@out@*/ urlinfo * uret)
-	/*@globals h_errno, internalState @*/
-	/*@modifies *uret, internalState @*/
-{
-    urlinfo u = NULL;
-    FD_t fd = NULL;
-
-#if 0	/* XXX makeTempFile() heartburn */
-    assert(!(flags & O_RDWR));
-#endif
-    if (urlSplit(url, &u))
-	goto exit;
-
-    if (u->ctrl == NULL)
-	u->ctrl = fdNew("persist ctrl (httpOpen)");
-    if (u->ctrl->nrefs > 2 && u->data == NULL)
-	u->data = fdNew("persist data (httpOpen)");
-
-    if (u->ctrl->url == NULL)
-	fd = fdLink(u->ctrl, "grab ctrl (httpOpen persist ctrl)");
-    else if (u->data->url == NULL)
-	fd = fdLink(u->data, "grab ctrl (httpOpen persist data)");
-    else
-	fd = fdNew("grab ctrl (httpOpen)");
-
-    if (fd) {
-	fdSetOpen(fd, url, flags, mode);
-	fdSetIo(fd, ufdio);
-	fd->ftpFileDoneNeeded = 0;
-	fd->rd_timeoutsecs = httpTimeoutSecs;
-	fd->contentLength = fd->bytesRemain = -1;
-	fd->url = urlLink(u, "url (httpOpen)");
-	fd = fdLink(fd, "grab data (httpOpen)");
-assert(u->urltype == URL_IS_HTTP);
-	fd->urlType = u->urltype;
-    }
-
-exit:
-/*@-boundswrite@*/
-    if (uret)
-	*uret = u;
-/*@=boundswrite@*/
-    /*@-refcounttrans@*/
-    return fd;
-    /*@=refcounttrans@*/
-}
-/*@=nullstate@*/
-
 static /*@null@*/ FD_t ufdOpen(const char * url, int flags, mode_t mode)
 	/*@globals h_errno, fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/
@@ -2178,7 +2257,7 @@ fprintf(stderr, "*** ufdOpen(%s,0x%x,0%o)\n", url, (unsigned)flags, (unsigned)mo
 	    break;
 
 	/* XXX W2DO? use STOU rather than STOR to prevent clobbering */
-	cmd = ((flags & O_WRONLY) 
+	cmd = ((flags & O_WRONLY)
 		?  ((flags & O_APPEND) ? "APPE" :
 		   ((flags & O_CREAT) ? "STOR" : "STOR"))
 		:  ((flags & O_CREAT) ? "STOR" : "RETR"));
@@ -2195,7 +2274,6 @@ fprintf(stderr, "*** ufdOpen(%s,0x%x,0%o)\n", url, (unsigned)flags, (unsigned)mo
     case URL_IS_HTTPS:
     case URL_IS_HTTP:
     case URL_IS_HKP:
-      if (!noNeon) {
 	fd = davOpen(url, flags, mode, &u);
 	if (fd == NULL || u == NULL)
 	    break;
@@ -2215,27 +2293,6 @@ fprintf(stderr, "*** ufdOpen(%s,0x%x,0%o)\n", url, (unsigned)flags, (unsigned)mo
 	    fd->wr_chunked = ((!strcmp(cmd, "PUT"))
 		?  fd->wr_chunked : 0);
 	}
-      } else {
-	fd = httpOpen(url, flags, mode, &u);
-	if (fd == NULL || u == NULL)
-	    break;
-
-	cmd = ((flags & O_WRONLY)
-		?  ((flags & O_APPEND) ? "PUT" :
-		   ((flags & O_CREAT) ? "PUT" : "PUT"))
-		: "GET");
-	u->openError = httpReq(fd, cmd, path);
-	if (u->openError < 0) {
-	    /* XXX make sure that we can exit through ufdClose */
-	    fd = fdLink(fd, "error ctrl (ufdOpen HTTP)");
-	    fd = fdLink(fd, "error data (ufdOpen HTTP)");
-	} else {
-	    fd->bytesRemain = ((!strcmp(cmd, "GET"))
-		?  fd->contentLength : -1);
-	    fd->wr_chunked = ((!strcmp(cmd, "PUT"))
-		?  fd->wr_chunked : 0);
-	}
-      }
 	break;
     case URL_IS_DASH:
 	assert(!(flags & O_RDWR));
@@ -2304,7 +2361,7 @@ static inline /*@dependent@*/ /*@null@*/ void * gzdFileno(FD_t fd)
 	rc = fps->fp;
 	break;
     }
-    
+
     return rc;
 }
 
@@ -2319,7 +2376,7 @@ FD_t gzdOpen(const char * path, const char * fmode)
 	return NULL;
     fd = fdNew("open (gzdOpen)");
     fdPop(fd); fdPush(fd, gzdio, gzfile, -1);
-    
+
 DBGIO(fd, (stderr, "==>\tgzdOpen(\"%s\", \"%s\") fd %p %s\n", path, fmode, (fd ? fd : NULL), fdbg(fd)));
     return fdLink(fd, "gzdOpen");
 }
@@ -2542,7 +2599,7 @@ static inline /*@dependent@*/ void * bzdFileno(FD_t fd)
 	rc = fps->fp;
 	break;
     }
-    
+
     return rc;
 }
 
@@ -2711,6 +2768,347 @@ FDIO_t bzdio = /*@-compmempass@*/ &bzdio_s /*@=compmempass@*/ ;
 #endif	/* HAVE_BZLIB_H */
 
 /* =============================================================== */
+/* Support for LZMA library.
+ */
+#include "LzmaDecode.h"
+
+#define kInBufferSize (1 << 15)
+typedef struct _CBuffer {
+  ILzmaInCallback InCallback;
+/*@dependent@*/
+  FILE *File;
+  unsigned char Buffer[kInBufferSize];
+} CBuffer;
+
+typedef struct lzfile {
+    CBuffer g_InBuffer;
+    CLzmaDecoderState state;  /* it's about 24-80 bytes structure, if int is 32-bit */
+    unsigned char properties[LZMA_PROPERTIES_SIZE];
+
+#if 0
+    FILE *file;
+#endif
+    int pid;
+} LZFILE;
+
+static size_t MyReadFile(FILE *file, void *data, size_t size)
+	/*@globals fileSystem @*/
+	/*@modifies *file, *data, fileSystem @*/
+{ 
+    if (size == 0) return 0;
+    return fread(data, 1, size, file); 
+}
+
+static int MyReadFileAndCheck(FILE *file, void *data, size_t size)
+	/*@globals fileSystem @*/
+	/*@modifies *file, *data, fileSystem @*/
+{
+    return (MyReadFile(file, data, size) == size);
+}
+
+static int LzmaReadCompressed(void *object, const unsigned char **buffer, SizeT *size)
+	/*@globals fileSystem @*/
+	/*@modifies *buffer, *size, fileSystem @*/
+{
+    CBuffer *b = object;
+    *buffer = b->Buffer;
+    *size = MyReadFile(b->File, b->Buffer, kInBufferSize);
+    return LZMA_RESULT_OK;
+}
+
+static inline /*@dependent@*/ void * lzdFileno(FD_t fd)
+	/*@*/
+{
+    void * rc = NULL;
+    int i;
+
+    FDSANE(fd);
+    for (i = fd->nfps; i >= 0; i--) {
+/*@-boundsread@*/
+	    FDSTACK_t * fps = &fd->fps[i];
+/*@=boundsread@*/
+	    if (fps->io != lzdio)
+	        continue;
+	    rc = fps->fp;
+    	break;
+    }
+    
+    return rc;
+}
+
+static FD_t lzdWriteOpen(int fdno, int fopen)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/
+{
+    int pid;
+    int p[2];
+    int xx;
+
+    if (fdno < 0) return NULL;
+    if (pipe(p) < 0) {
+        xx = close(fdno);
+        return NULL;
+    }
+    pid = fork();
+    if (pid < 0) {
+        xx = close(fdno);
+        return NULL;
+    }
+    if (pid) {
+        FD_t fd;
+        LZFILE * lzfile = xcalloc(1, sizeof(*lzfile));
+
+        xx = close(fdno);
+        xx = close(p[0]);
+        lzfile->pid = pid;
+        lzfile->g_InBuffer.File = fdopen(p[1], "wb");
+        if (lzfile->g_InBuffer.File == NULL) {
+            xx = close(p[1]);
+            lzfile = _free(lzfile);
+            return NULL;
+        }
+        fd = fdNew("open (lzdOpen write)");
+        if (fopen) fdPop(fd);
+        fdPush(fd, lzdio, lzfile, -1);
+        return fdLink(fd, "lzdOpen");
+    } else {
+        int i;
+        /* lzma */
+        xx = close(p[1]);
+        xx = dup2(p[0], 0);
+        xx = dup2(fdno, 1);
+        for (i = 3; i < 1024; i++)
+	    xx = close(i);
+        if (execl("/usr/bin/lzma", "lzma", "e", "-si", "-so", NULL))
+            _exit(1);
+    }
+    return NULL; /* warning */
+}
+
+static FD_t lzdReadOpen(int fdno, int fopen)
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/
+{
+    LZFILE *lzfile;
+    unsigned char ff[8];
+    FD_t fd;
+    size_t nb;
+
+    if (fdno < 0) return NULL;
+    lzfile = xcalloc(1, sizeof(*lzfile));
+    if (lzfile == NULL) return NULL;
+    lzfile->g_InBuffer.File = fdopen(fdno, "rb");
+    if (lzfile->g_InBuffer.File == NULL) goto error2;
+
+    if (!MyReadFileAndCheck(lzfile->g_InBuffer.File, lzfile->properties, sizeof(lzfile->properties)))
+            goto error;
+
+    memset(ff, 0, sizeof(ff));
+    if (!MyReadFileAndCheck(lzfile->g_InBuffer.File, ff, 8)) goto error;
+    if (LzmaDecodeProperties(&lzfile->state.Properties, lzfile->properties, LZMA_PROPERTIES_SIZE) != LZMA_RESULT_OK)
+        goto error;
+    nb = LzmaGetNumProbs(&lzfile->state.Properties) * sizeof(*lzfile->state.Probs);
+    lzfile->state.Probs = xmalloc(nb);
+    if (lzfile->state.Probs == NULL) goto error;
+
+    if (lzfile->state.Properties.DictionarySize == 0)
+        lzfile->state.Dictionary = 0;
+    else {
+        lzfile->state.Dictionary = xmalloc(lzfile->state.Properties.DictionarySize);
+        if (lzfile->state.Dictionary == NULL) {
+            lzfile->state.Probs = _free(lzfile->state.Probs);
+            goto error;
+        }
+    }
+    lzfile->g_InBuffer.InCallback.Read = LzmaReadCompressed;
+    LzmaDecoderInit(&lzfile->state);
+
+    fd = fdNew("open (lzdOpen read)");
+    if (fopen) fdPop(fd);
+    fdPush(fd, lzdio, lzfile, -1);
+    return fdLink(fd, "lzdOpen");
+
+error:
+    (void) fclose(lzfile->g_InBuffer.File);
+error2:
+    lzfile = _free(lzfile);
+    return NULL;
+}
+
+/*@-globuse@*/
+static /*@null@*/ FD_t lzdOpen(const char * path, const char * mode)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/
+{
+    if (mode == NULL)
+        return NULL;
+    if (mode[0] == 'w') {
+        int fdno = open(path, O_WRONLY);
+
+        if (fdno < 0) return NULL;
+        return lzdWriteOpen(fdno, 1);
+    } else {
+        int fdno = open(path, O_RDONLY);
+
+        if (fdno < 0) return NULL;
+        return lzdReadOpen(fdno, 1);
+    }
+}
+/*@=globuse@*/
+
+/*@-globuse@*/
+static /*@null@*/ FD_t lzdFdopen(void * cookie, const char * fmode)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/
+{
+    FD_t fd = c2f(cookie);
+    int fdno;
+
+    if (fmode == NULL) return NULL;
+    fdno = fdFileno(fd);
+    fdSetFdno(fd, -1);		/* XXX skip the fdio close */
+    if (fdno < 0) return NULL;
+    if (fmode[0] == 'w') {
+        return lzdWriteOpen(fdno, 0);
+    } else {
+        return lzdReadOpen(fdno, 0);
+    }
+}
+/*@=globuse@*/
+
+/*@-globuse@*/
+static int lzdFlush(FD_t fd)
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/
+{
+    LZFILE *lzfile = lzdFileno(fd);
+
+    if (lzfile == NULL || lzfile->g_InBuffer.File == NULL) return -2;
+    return fflush(lzfile->g_InBuffer.File);
+}
+/*@=globuse@*/
+
+/* =============================================================== */
+/*@-globuse@*/
+/*@-mustmod@*/		/* LCL: *buf is modified */
+static ssize_t lzdRead(void * cookie, /*@out@*/ char * buf, size_t count)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies buf, fileSystem, internalState @*/
+{
+    FD_t fd = c2f(cookie);
+    LZFILE *lzfile;
+    ssize_t rc = 0;
+    int res = 0;
+
+    if (fd->bytesRemain == 0) return 0;	/* XXX simulate EOF */
+    lzfile = lzdFileno(fd);
+    fdstat_enter(fd, FDSTAT_READ);
+    if (lzfile->g_InBuffer.File)
+/*@-compdef@*/
+	res = LzmaDecode(&lzfile->state, &lzfile->g_InBuffer.InCallback, buf, count, &rc);
+/*@=compdef@*/
+    if (res) {
+	if (lzfile)
+	    fd->errcookie = "Lzma: decoding error";
+    } else if (rc >= 0) {
+	fdstat_exit(fd, FDSTAT_READ, rc);
+	/*@-compdef@*/
+	if (fd->ndigests && rc > 0) fdUpdateDigests(fd, (void *)buf, rc);
+	/*@=compdef@*/
+    }
+    return rc;
+}
+/*@=mustmod@*/
+/*@=globuse@*/
+
+/*@-globuse@*/
+static ssize_t lzdWrite(void * cookie, const char * buf, size_t count)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/
+{
+    FD_t fd = c2f(cookie);
+    LZFILE *lzfile;
+    ssize_t rc;
+
+    if (fd->bytesRemain == 0) return 0;	/* XXX simulate EOF */
+
+    if (fd->ndigests && count > 0) fdUpdateDigests(fd, (void *)buf, count);
+
+    lzfile = lzdFileno(fd);
+    fdstat_enter(fd, FDSTAT_WRITE);
+    rc = fwrite((void *)buf, 1, count, lzfile->g_InBuffer.File);
+    if (rc == -1) {
+	fd->errcookie = strerror(ferror(lzfile->g_InBuffer.File));
+    } else if (rc > 0) {
+	fdstat_exit(fd, FDSTAT_WRITE, rc);
+    }
+    return rc;
+}
+/*@=globuse@*/
+
+static inline int lzdSeek(void * cookie, /*@unused@*/ _libio_pos_t pos,
+			/*@unused@*/ int whence)
+	/*@*/
+{
+    FD_t fd = c2f(cookie);
+
+    LZDONLY(fd);
+    return -2;
+}
+
+static int lzdClose( /*@only@*/ void * cookie)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/
+{
+    FD_t fd = c2f(cookie);
+    LZFILE * lzfile = lzdFileno(fd);
+    int rc;
+
+    if (lzfile == NULL) return -2;
+    fdstat_enter(fd, FDSTAT_CLOSE);
+/*@-noeffectuncon@*/ /* FIX: check rc */
+    rc = fclose(lzfile->g_InBuffer.File);
+    if (lzfile->pid)
+	rc = wait4(lzfile->pid, NULL, 0, NULL);
+    else { /* reading */
+        lzfile->state.Probs = _free(lzfile->state.Probs);
+        lzfile->state.Dictionary = _free(lzfile->state.Dictionary);
+    }
+/*@-dependenttrans@*/
+    lzfile = _free(lzfile);
+/*@=dependenttrans@*/
+/*@=noeffectuncon@*/
+    rc = 0;	/* XXX FIXME */
+
+    /* XXX TODO: preserve fd if errors */
+
+    if (fd) {
+	if (rc == -1) {
+	    fd->errcookie = strerror(ferror(lzfile->g_InBuffer.File));
+	} else if (rc >= 0) {
+	    fdstat_exit(fd, FDSTAT_CLOSE, rc);
+	}
+    }
+
+DBGIO(fd, (stderr, "==>\tlzdClose(%p) rc %lx %s\n", cookie, (unsigned long)rc, fdbg(fd)));
+
+    if (_rpmio_debug || rpmIsDebug()) fdstat_print(fd, "LZDIO", stderr);
+    /*@-branchstate@*/
+    if (rc == 0)
+	fd = fdFree(fd, "open (lzdClose)");
+    /*@=branchstate@*/
+    return rc;
+}
+
+/*@-type@*/ /* LCL: function typedefs */
+static struct FDIO_s lzdio_s = {
+  lzdRead, lzdWrite, lzdSeek, lzdClose, XfdLink, XfdFree, XfdNew, fdFileno,
+  NULL, lzdOpen, lzdFileno, lzdFlush,	NULL, NULL, NULL, NULL, NULL
+};
+/*@=type@*/
+FDIO_t lzdio = /*@-compmempass@*/ &lzdio_s /*@=compmempass@*/ ;
+
+/* =============================================================== */
 /*@observer@*/
 static const char * getFdErrstr (FD_t fd)
 	/*@*/
@@ -2728,7 +3126,9 @@ static const char * getFdErrstr (FD_t fd)
 	errstr = fd->errcookie;
     } else
 #endif	/* HAVE_BZLIB_H */
-
+    if (fdGetIo(fd) == lzdio) {
+    errstr = fd->errcookie;
+    } else 
     {
 	errstr = (fd->syserrno ? strerror(fd->syserrno) : "");
     }
@@ -2922,6 +3322,10 @@ DBGIO(fd, (stderr, "==> Fclose(%p) %s\n", (fd ? fd : NULL), fdbg(fd)));
  * Convert stdio fmode to open(2) mode, filtering out zlib/bzlib flags.
  *	returns stdio[0] = NUL on error.
  *
+ * @todo glibc also supports ",ccs="
+ *
+ * - glibc:	m use mmap'd input
+ * - glibc:	c no cancel
  * - gzopen:	[0-9] is compession level
  * - gzopen:	'f' is filtered (Z_FILTERED)
  * - gzopen:	'h' is Huffman encoding (Z_HUFFMAN_ONLY)
@@ -2969,12 +3373,17 @@ static inline void cvtfmode (const char *m,
 	    if (--nstdio > 0) *stdio++ = c;
 	    continue;
 	    /*@notreached@*/ /*@switchbreak@*/ break;
-	case 'b':
+	case 'x':	/* glibc: open file exclusively. */
+	    flags |= O_EXCL;
+	    /*@fallthrough@*/
+	case 'm':	/* glibc: mmap'd reads */
+	case 'c':	/* glibc: no cancel */
+#if defined(__GLIBC__) && __GLIBC__ == 2 && __GLIBC_MINOR__ >= 3
 	    if (--nstdio > 0) *stdio++ = c;
+#endif
 	    continue;
 	    /*@notreached@*/ /*@switchbreak@*/ break;
-	case 'x':
-	    flags |= O_EXCL;
+	case 'b':
 	    if (--nstdio > 0) *stdio++ = c;
 	    continue;
 	    /*@notreached@*/ /*@switchbreak@*/ break;
@@ -3042,6 +3451,9 @@ fprintf(stderr, "*** Fdopen(%p,%s) %s\n", fd, fmode, fdbg(fd));
 	    fd = bzdFdopen(fd, zstdio);
 	    /*@=internalglobs@*/
 #endif
+    } else if (!strcmp(end, "lzdio")) {
+        iof = lzdio;
+        fd = lzdFdopen(fd, zstdio);
 	} else if (!strcmp(end, "ufdio")) {
 	    iof = ufdio;
 	} else if (!strcmp(end, "fpio")) {
@@ -3229,6 +3641,9 @@ int Ferror(FD_t fd)
 	    ec = (fd->syserrno  || fd->errcookie != NULL) ? -1 : 0;
 	    i--;	/* XXX fdio under bzdio always has fdno == -1 */
 #endif
+    } else if (fps->io == lzdio) {
+	    ec = (fd->syserrno  || fd->errcookie != NULL) ? -1 : 0;
+	    i--;	/* XXX fdio under lzdio always has fdno == -1 */
 	} else {
 	/* XXX need to check ufdio/gzdio/bzdio/fdio errors correctly. */
 	    ec = (fdFileno(fd) < 0 ? -1 : 0);
@@ -3253,7 +3668,7 @@ int Fileno(FD_t fd)
 	rc = fd->fps[i].fdno;
 /*@=boundsread@*/
     }
-    
+
 DBGIO(fd, (stderr, "==> Fileno(%p) rc %d %s\n", (fd ? fd : NULL), rc, fdbg(fd)));
     return rc;
 }
@@ -3317,6 +3732,147 @@ int rpmioMkpath(const char * path, mode_t mode, uid_t uid, gid_t gid)
     return rc;
 }
 /*@=bounds@*/
+
+
+#define	_PATH	"/usr/kerberos/sbin:/usr/kerberos/bin:/usr/lib/ccache/bin:/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:/usr/X11R6/bin:~/bin"
+/*@unchecked@*/ /*@observer@*/
+static const char *_path = _PATH;
+
+#define alloca_strdup(_s)       strcpy(alloca(strlen(_s)+1), (_s))
+
+int rpmioAccess(const char * FN, const char * path, int mode)
+{
+    char fn[4096];
+    char * bn;
+    char * r, * re;
+    char * t, * te;
+    int negate = 0;
+    int rc = 0;
+
+    /* Empty paths are always accessible. */
+    if (FN == NULL || *FN == '\0')
+	return 0;
+
+    if (mode == 0)
+	mode = X_OK;
+
+    /* Strip filename out of its name space wrapper. */
+    bn = alloca_strdup(FN);
+    for (t = bn; t && *t; t++) {
+	if (*t != '(')
+	    continue;
+	*t++ = '\0';
+
+	/* Permit negation on name space tests. */
+	if (*bn == '!') {
+	    negate = 1;
+	    bn++;
+	}
+
+	/* Set access flags from name space marker. */
+	if (strlen(bn) == 3
+	 && strchr("Rr_", bn[0]) != NULL
+	 && strchr("Ww_", bn[1]) != NULL
+	 && strchr("Xx_", bn[2]) != NULL) {
+	    mode = 0;
+	    if (strchr("Rr", bn[0]) != NULL)
+		mode |= R_OK;
+	    if (strchr("Ww", bn[1]) != NULL)
+		mode |= W_OK;
+	    if (strchr("Xx", bn[2]) != NULL)
+		mode |= X_OK;
+	    if (mode == 0)
+		mode = F_OK;
+	} else if (!strcmp(bn, "exists"))
+	    mode = F_OK;
+	else if (!strcmp(bn, "executable"))
+	    mode = X_OK;
+	else if (!strcmp(bn, "readable"))
+	    mode = R_OK;
+	else if (!strcmp(bn, "writable"))
+	    mode = W_OK;
+
+	bn = t;
+	te = bn + strlen(t) - 1;
+	if (*te != ')')		/* XXX syntax error, never exists */
+	    return 1;
+	*te = '\0';
+	break;
+    }
+
+    /* Empty paths are always accessible. */
+    if (*bn == '\0')
+	goto exit;
+
+    /* Check absolute path for access. */
+    if (*bn == '/') {
+	rc = (Access(bn, mode) != 0 ? 1 : 0);
+if (_rpmio_debug)
+fprintf(stderr, "*** rpmioAccess(\"%s\", 0x%x) rc %d\n", bn, mode, rc);
+	goto exit;
+    }
+
+    /* Find path to search. */
+    if (path == NULL)
+	path = getenv("PATH");
+    if (path == NULL)
+	path = _path;
+    if (path == NULL) {
+	rc = 1;
+	goto exit;
+    }
+
+    /* Look for relative basename on PATH. */
+/*@-branchstate@*/
+    for (r = alloca_strdup(path); r != NULL && *r != '\0'; r = re) {
+
+	/* Find next element, terminate current element. */
+	for (re = r; (re = strchr(re, ':')) != NULL; re++) {
+	    if (!(re[1] == '/' && re[2] == '/'))
+		/*@innerbreak@*/ break;
+	}
+	if (re && *re == ':')
+	    *re++ = '\0';
+	else
+	    re = r + strlen(r);
+
+	/* Expand ~/ to $HOME/ */
+	fn[0] = '\0';
+	t = fn;
+	*t = '\0';	/* XXX redundant. */
+	if (r[0] == '~' && r[1] == '/') {
+	    const char * home = getenv("HOME");
+	    if (home == NULL)	/* XXX No HOME? */
+		continue;
+	    if (strlen(home) > (sizeof(fn) - strlen(r))) /* XXX too big */
+		continue;
+	    t = stpcpy(t, home);
+	    r++;	/* skip ~ */
+	}
+	t = stpcpy(t, r);
+	if (t[-1] != '/' && *bn != '/')
+	    *t++ = '/';
+	t = stpcpy(t, bn);
+	t = rpmCleanPath(fn);
+	if (t == NULL)	/* XXX can't happen */
+	    continue;
+
+	/* Check absolute path for access. */
+	rc = (Access(t, mode) != 0 ? 1 : 0);
+if (_rpmio_debug)
+fprintf(stderr, "*** rpmioAccess(\"%s\", 0x%x) rc %d\n", t, mode, rc);
+	if (rc == 0)
+	    goto exit;
+    }
+/*@=branchstate@*/
+
+    rc = 1;
+
+exit:
+    if (negate)
+	rc ^= 1;
+    return rc;
+}
 
 /*@-boundswrite@*/
 int rpmioSlurp(const char * fn, const byte ** bp, ssize_t * blenp)

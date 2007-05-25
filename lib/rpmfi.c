@@ -1,4 +1,4 @@
-/** \ingroup rpmdep
+/** \ingroup rpmfi
  * \file lib/rpmfi.c
  * Routines to handle file info tag sets.
  */
@@ -28,6 +28,7 @@
 #include "debug.h"
 
 /*@access rpmte @*/
+/*@access FSM_t @*/	/* XXX fsm->repackaged */
 
 /*@unchecked@*/
 int _rpmfi_debug = 0;
@@ -137,13 +138,15 @@ const char * rpmfiFN(rpmfi fi)
 
     /*@-branchstate@*/
     if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
+	const char *dn;
 	char * t;
 	if (fi->fn == NULL)
 	    fi->fn = xmalloc(fi->fnlen);
 	FN = t = fi->fn;
+	(void) urlPath(fi->dnl[fi->dil[fi->i]], &dn);
 /*@-boundswrite@*/
 	*t = '\0';
-	t = stpcpy(t, fi->dnl[fi->dil[fi->i]]);
+	t = stpcpy(t, dn);
 	t = stpcpy(t, fi->bnl[fi->i]);
 /*@=boundswrite@*/
     }
@@ -151,9 +154,9 @@ const char * rpmfiFN(rpmfi fi)
     return FN;
 }
 
-int_32 rpmfiFFlags(rpmfi fi)
+uint_32 rpmfiFFlags(rpmfi fi)
 {
-    int_32 FFlags = 0;
+    uint_32 FFlags = 0;
 
     if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
 /*@-boundsread@*/
@@ -164,9 +167,24 @@ int_32 rpmfiFFlags(rpmfi fi)
     return FFlags;
 }
 
-int_32 rpmfiVFlags(rpmfi fi)
+uint_32 rpmfiSetFFlags(rpmfi fi, uint_32 FFlags)
 {
-    int_32 VFlags = 0;
+    uint_32 oFFlags = 0;
+
+    if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
+/*@-boundsread@*/
+	if (fi->fflags != NULL && fi->h == NULL) {
+	    oFFlags = fi->fflags[fi->i];
+	    *((uint_32 *)(fi->fflags + fi->i)) = FFlags;
+	}
+/*@=boundsread@*/
+    }
+    return oFFlags;
+}
+
+uint_32 rpmfiVFlags(rpmfi fi)
+{
+    uint_32 VFlags = 0;
 
     if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
 /*@-boundsread@*/
@@ -175,6 +193,21 @@ int_32 rpmfiVFlags(rpmfi fi)
 /*@=boundsread@*/
     }
     return VFlags;
+}
+
+uint_32 rpmfiSetVFlags(rpmfi fi, uint_32 VFlags)
+{
+    uint_32 oVFlags = 0;
+
+    if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
+/*@-boundsread@*/
+	if (fi->vflags != NULL && fi->h == NULL) {
+	    oVFlags = fi->vflags[fi->i];
+	    *((uint_32 *)(fi->vflags + fi->i)) = VFlags;
+	}
+/*@=boundsread@*/
+    }
+    return oVFlags;
 }
 
 int_16 rpmfiFMode(rpmfi fi)
@@ -203,17 +236,38 @@ rpmfileState rpmfiFState(rpmfi fi)
     return fstate;
 }
 
-const unsigned char * rpmfiMD5(rpmfi fi)
+rpmfileState rpmfiSetFState(rpmfi fi, rpmfileState fstate)
 {
-    unsigned char * MD5 = NULL;
+    int_32 ofstate = 0;
 
     if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
 /*@-boundsread@*/
-	if (fi->md5s != NULL)
-	    MD5 = fi->md5s + (16 * fi->i);
+	if (fi->fstates != NULL) {
+	    ofstate = fi->fstates[fi->i];
+	    fi->fstates[fi->i] = fstate;
+	}
 /*@=boundsread@*/
     }
-    return MD5;
+    return ofstate;
+}
+
+const unsigned char * rpmfiDigest(rpmfi fi, int * algop, size_t * lenp)
+{
+    unsigned char * digest = NULL;
+
+    if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
+/*@-boundsread@*/
+	if (fi->digests != NULL) {
+	    digest = fi->digests + (fi->digestlen * fi->i);
+	    if (algop != NULL)
+		*algop = (fi->fdigestalgos
+			? fi->fdigestalgos[fi->i] : fi->digestalgo);
+	    if (lenp != NULL)
+		*lenp = fi->digestlen;
+	}
+/*@=boundsread@*/
+    }
+    return digest;
 }
 
 const char * rpmfiFLink(rpmfi fi)
@@ -320,11 +374,11 @@ const char * rpmfiFContext(rpmfi fi)
     return fcontext;
 }
 
-int_32 rpmfiFDepends(rpmfi fi, const int_32 ** fddictp)
+int_32 rpmfiFDepends(rpmfi fi, const uint_32 ** fddictp)
 {
     int fddictx = -1;
     int fddictn = 0;
-    const int_32 * fddict = NULL;
+    const uint_32 * fddict = NULL;
 
     if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
 /*@-boundsread@*/
@@ -484,7 +538,7 @@ rpmfi rpmfiInitD(rpmfi fi, int dx)
  * @return		string to identify a file type
  */
 static /*@observer@*/
-const char *const ftstring (fileTypes ft)
+const char * ftstring (fileTypes ft)
 	/*@*/
 {
     switch (ft) {
@@ -530,12 +584,19 @@ int rpmfiCompare(const rpmfi afi, const rpmfi bfi)
 	if (blink == NULL) return -1;
 	return strcmp(alink, blink);
     } else if (awhat == REG) {
-	const unsigned char * amd5 = rpmfiMD5(afi);
-	const unsigned char * bmd5 = rpmfiMD5(bfi);
-	if (amd5 == bmd5) return 0;
-	if (amd5 == NULL) return 1;
-	if (bmd5 == NULL) return -1;
-	return memcmp(amd5, bmd5, 16);
+	int aalgo = 0;
+	size_t alen = 0;
+	const unsigned char * adigest = rpmfiDigest(afi, &aalgo, &alen);
+	int balgo = 0;
+	size_t blen = 0;
+	const unsigned char * bdigest = rpmfiDigest(bfi, &balgo, &blen);
+	/* XXX W2DO? changing file digest algo may break rpmfiCompare. */
+	if (!(aalgo == balgo && alen == blen))
+	    return -1;
+	if (adigest == bdigest) return 0;
+	if (adigest == NULL) return 1;
+	if (bdigest == NULL) return -1;
+	return memcmp(adigest, bdigest, alen);
     }
 
     return 0;
@@ -547,7 +608,7 @@ fileAction rpmfiDecideFate(const rpmfi ofi, rpmfi nfi, int skipMissing)
 {
     const char * fn = rpmfiFN(nfi);
     int newFlags = rpmfiFFlags(nfi);
-    char buffer[1024];
+    char buffer[1024+1];
     fileTypes dbWhat, newWhat, diskWhat;
     struct stat sb;
     int save = (newFlags & RPMFILE_NOREPLACE) ? FA_ALTNAME : FA_SAVE;
@@ -577,7 +638,7 @@ fileAction rpmfiDecideFate(const rpmfi ofi, rpmfi nfi, int skipMissing)
     if (newWhat == XDIR)
 	return FA_CREATE;
 
-    if (diskWhat != newWhat)
+    if (diskWhat != newWhat && dbWhat != REG && dbWhat != LINK)
 	return save;
     else if (newWhat != dbWhat && diskWhat != dbWhat)
 	return save;
@@ -592,26 +653,36 @@ fileAction rpmfiDecideFate(const rpmfi ofi, rpmfi nfi, int skipMissing)
      */
     memset(buffer, 0, sizeof(buffer));
     if (dbWhat == REG) {
-	const unsigned char * omd5, * nmd5;
-	/* XXX avoid md5 on sparse /var/log/lastlog file. */
-	if (strcmp(fn, "/var/log/lastlog"))
-	if (domd5(fn, buffer, 0, NULL))
-	    return FA_CREATE;	/* assume file has been removed */
-	omd5 = rpmfiMD5(ofi);
-	if (omd5 && !memcmp(omd5, buffer, 16))
-	    return FA_CREATE;	/* unmodified config file, replace. */
-	nmd5 = rpmfiMD5(nfi);
+	int oalgo = 0;
+	size_t olen = 0;
+	const unsigned char * odigest;
+	int nalgo = 0;
+	size_t nlen = 0;
+	const unsigned char * ndigest;
+	odigest = rpmfiDigest(ofi, &oalgo, &olen);
+	if (diskWhat == REG) {
+	    if (!(newFlags & RPMFILE_SPARSE))
+	    if (dodigest(oalgo, fn, buffer, 0, NULL))
+		return FA_CREATE;	/* assume file has been removed */
+	    if (odigest && !memcmp(odigest, buffer, olen))
+		return FA_CREATE;	/* unmodified config file, replace. */
+	}
+	ndigest = rpmfiDigest(nfi, &nalgo, &nlen);
 /*@-nullpass@*/
-	if (omd5 && nmd5 && !memcmp(omd5, nmd5, 16))
+	if (odigest && ndigest && oalgo == nalgo && olen == nlen
+	 && !memcmp(odigest, ndigest, nlen))
 	    return FA_SKIP;	/* identical file, don't bother. */
 /*@=nullpass@*/
     } else /* dbWhat == LINK */ {
 	const char * oFLink, * nFLink;
-	if (readlink(fn, buffer, sizeof(buffer) - 1) == -1)
-	    return FA_CREATE;	/* assume file has been removed */
 	oFLink = rpmfiFLink(ofi);
-	if (oFLink && !strcmp(oFLink, buffer))
-	    return FA_CREATE;	/* unmodified config file, replace. */
+	if (diskWhat == LINK) {
+	    if (readlink(fn, buffer, sizeof(buffer) - 1) == -1)
+		return FA_CREATE;	/* assume file has been removed */
+	    buffer[sizeof(buffer)-1] = '\0';
+	    if (oFLink && !strcmp(oFLink, buffer))
+		return FA_CREATE;	/* unmodified config file, replace. */
+	}
 	nFLink = rpmfiFLink(nfi);
 /*@-nullpass@*/
 	if (oFLink && nFLink && !strcmp(oFLink, nFLink))
@@ -630,7 +701,7 @@ fileAction rpmfiDecideFate(const rpmfi ofi, rpmfi nfi, int skipMissing)
 /*@=boundsread@*/
 
 /*@observer@*/
-const char *const rpmfiTypeString(rpmfi fi)
+const char * rpmfiTypeString(rpmfi fi)
 {
     switch(rpmteType(fi->te)) {
     case TR_ADDED:	return " install";
@@ -665,7 +736,7 @@ Header relocateFileList(const rpmts ts, rpmfi fi,
     HFD_t hfd = (fi->hfd ? fi->hfd : headerFreeData);
     static int _printed = 0;
     int allowBadRelocate = (rpmtsFilterFlags(ts) & RPMPROB_FILTER_FORCERELOCATE);
-    rpmRelocation * relocations = NULL;
+    rpmRelocation relocations = NULL;
     int numRelocations;
     const char ** validRelocations;
     rpmTagType validType;
@@ -783,7 +854,7 @@ assert(p != NULL);
 	int madeSwap;
 	madeSwap = 0;
 	for (j = 1; j < numRelocations; j++) {
-	    rpmRelocation tmpReloc;
+	    struct rpmRelocation_s tmpReloc;
 	    if (relocations[j - 1].oldPath == NULL || /* XXX can't happen */
 		relocations[j    ].oldPath == NULL || /* XXX can't happen */
 	strcmp(relocations[j - 1].oldPath, relocations[j].oldPath) <= 0)
@@ -1123,8 +1194,8 @@ fprintf(stderr, "*** fi %p\t%s[%d]\n", fi, fi->Type, fi->fc);
 
 	fi->flinks = hfd(fi->flinks, -1);
 	fi->flangs = hfd(fi->flangs, -1);
-	fi->fmd5s = hfd(fi->fmd5s, -1);
-	fi->md5s = _free(fi->md5s);
+	fi->fdigests = hfd(fi->fdigests, -1);
+	fi->digests = _free(fi->digests);
 
 	fi->cdict = hfd(fi->cdict, -1);
 
@@ -1208,11 +1279,12 @@ static inline unsigned char nibble(char c)
     if (hge((_h), (_tag), NULL, (void **) &(_data), NULL)) \
 	_data = xstrdup(_data)
 
-rpmfi rpmfiNew(const rpmts ts, Header h, rpmTag tagN, int scareMem)
+rpmfi rpmfiNew(const rpmts ts, Header h, rpmTag tagN, int flags)
 {
+    HFD_t hfd = headerFreeData;
+    int scareMem = (flags & 0x1);
     HGE_t hge =
 	(scareMem ? (HGE_t) headerGetEntryMinMemory : (HGE_t) headerGetEntry);
-    HFD_t hfd = headerFreeData;
     rpmte p;
     rpmfi fi = NULL;
     const char * Type;
@@ -1223,6 +1295,9 @@ rpmfi rpmfiNew(const rpmts ts, Header h, rpmTag tagN, int scareMem)
     int xx;
     int i;
 
+#ifdef	NOTYET			/* XXX transaction.c still needs scareMem 1 */
+assert(scareMem == 0);		/* XXX always allocate memory */
+#endif
     if (tagN == RPMTAG_BASENAMES) {
 	Type = "Files";
     } else {
@@ -1245,10 +1320,12 @@ rpmfi rpmfiNew(const rpmts ts, Header h, rpmTag tagN, int scareMem)
     fi->hre = (HRE_t) headerRemoveEntry;
     fi->hfd = headerFreeData;
 
-    fi->h = (scareMem ? headerLink(h) : NULL);
+    fi->h = (h != NULL && scareMem ? headerLink(h) : NULL);
 
     if (fi->fsm == NULL)
 	fi->fsm = newFSM();
+
+    fi->fsm->repackaged = (headerIsEntry(h, RPMTAG_REMOVETID) ? 1 : 0);
 
     /* 0 means unknown */
     xx = hge(h, RPMTAG_ARCHIVESIZE, NULL, (void **) &uip, NULL);
@@ -1306,27 +1383,56 @@ if (fi->actions == NULL)
     xx = hge(h, RPMTAG_FILELINKTOS, NULL, (void **) &fi->flinks, NULL);
     xx = hge(h, RPMTAG_FILELANGS, NULL, (void **) &fi->flangs, NULL);
 
-    fi->fmd5s = NULL;
-    xx = hge(h, RPMTAG_FILEMD5S, NULL, (void **) &fi->fmd5s, NULL);
-
-    fi->md5s = NULL;
-    if (fi->fmd5s) {
-	t = xmalloc(fi->fc * 16);
-	fi->md5s = t;
+    fi->digestalgo = PGPHASHALGO_MD5;
+    fi->digestlen = 16;
+    fi->fdigestalgos = NULL;
+    xx = hge(h, RPMTAG_FILEDIGESTALGOS, NULL, (void **) &fi->fdigestalgos, NULL);
+    if (fi->fdigestalgos) {
+	int dalgo = 0;
+	/* XXX Insure that all algorithms are either 0 or constant. */
 	for (i = 0; i < fi->fc; i++) {
-	    const char * fmd5;
+	    if (fi->fdigestalgos[i] == 0)
+		continue;
+	    if (dalgo == 0)
+		dalgo = fi->fdigestalgos[i];
+	    else
+assert(dalgo == fi->fdigestalgos[i]);
+	}
+	fi->digestalgo = dalgo;
+	switch (dalgo) {
+	case PGPHASHALGO_MD5:		fi->digestlen = 128/8;	break;
+	case PGPHASHALGO_SHA1:		fi->digestlen = 160/8;	break;
+	case PGPHASHALGO_RIPEMD128:	fi->digestlen = 128/8;	break;
+	case PGPHASHALGO_RIPEMD160:	fi->digestlen = 160/8;	break;
+	case PGPHASHALGO_SHA256:	fi->digestlen = 256/8;	break;
+	case PGPHASHALGO_SHA384:	fi->digestlen = 384/8;	break;
+	case PGPHASHALGO_SHA512:	fi->digestlen = 512/8;	break;
+	case PGPHASHALGO_CRC32:		fi->digestlen = 32/8;	break;
+	}
+	fi->fdigestalgos = NULL;
+    }
+
+    fi->fdigests = NULL;
+    xx = hge(h, RPMTAG_FILEDIGESTS, NULL, (void **) &fi->fdigests, NULL);
+
+    fi->digests = NULL;
+    if (fi->fdigests) {
+	t = xmalloc(fi->fc * fi->digestlen);
+	fi->digests = t;
+	for (i = 0; i < fi->fc; i++) {
+	    const char * fdigests;
 	    int j;
 
-	    fmd5 = fi->fmd5s[i];
-	    if (!(fmd5 && *fmd5 != '\0')) {
-		memset(t, 0, 16);
-		t += 16;
+	    fdigests = fi->fdigests[i];
+	    if (!(fdigests && *fdigests != '\0')) {
+		memset(t, 0, fi->digestlen);
+		t += fi->digestlen;
 		continue;
 	    }
-	    for (j = 0; j < 16; j++, t++, fmd5 += 2)
-		*t = (nibble(fmd5[0]) << 4) | nibble(fmd5[1]);
+	    for (j = 0; j < fi->digestlen; j++, t++, fdigests += 2)
+		*t = (nibble(fdigests[0]) << 4) | nibble(fdigests[1]);
 	}
-	fi->fmd5s = hfd(fi->fmd5s, -1);
+	fi->fdigests = hfd(fi->fdigests, -1);
     }
 
     /* XXX TR_REMOVED doesn;t need fmtimes, frdevs, finodes, or fcontexts */
@@ -1343,7 +1449,7 @@ if (fi->actions == NULL)
     if (ts != NULL)
     if (fi != NULL)
     if ((p = rpmtsRelocateElement(ts)) != NULL && rpmteType(p) == TR_ADDED
-     && !headerIsEntry(h, RPMTAG_SOURCEPACKAGE)
+     && headerIsEntry(h, RPMTAG_SOURCERPM)
      && !headerIsEntry(h, RPMTAG_ORIGBASENAMES))
     {
 	const char * fmt = rpmGetPath("%{?_autorelocate_path}", NULL);
@@ -1383,9 +1489,8 @@ if (fi->actions == NULL)
 	}
 
 	/* XXX test for incompatible arch triggering autorelocation is dumb. */
-	if (newPath != NULL && *newPath != '\0' && i == p->nrelocs
-	 && p->archScore == 0)
-	{
+	/* XXX DIEDIEDIE: used to test '... && p->archScore == 0' */
+	if (newPath != NULL && *newPath != '\0' && i == p->nrelocs) {
 
 	    p->relocs =
 		xrealloc(p->relocs, (p->nrelocs + 2) * sizeof(*p->relocs));
@@ -1401,7 +1506,7 @@ if (fi->actions == NULL)
 /* XXX DYING */
 if (fi->actions == NULL)
 	fi->actions = xcalloc(fi->fc, sizeof(*fi->actions));
-	/*@-compdef@*/ /* FIX: fi-md5s undefined */
+	/*@-compdef@*/ /* FIX: fi->digests undefined */
 	foo = relocateFileList(ts, fi, h, fi->actions);
 	/*@=compdef@*/
 	fi->h = headerFree(fi->h);
@@ -1730,7 +1835,7 @@ void rpmfiBuildFDeps(Header h, rpmTag tagN,
     char deptype = 'R';
     char mydt;
     const char * DNEVR;
-    const int_32 * ddict;
+    const uint_32 * ddict;
     unsigned ix;
     int ndx;
 

@@ -1,12 +1,12 @@
-ChangeLog
-MANIFEST
+Changes
 Makefile.PL
-constant.c
-rpm.pm
-rpm.xs
+MANIFEST
+README
+RPM.pm
+RPM.xs
 test.pl
+test-rpm-1.0-1.noarch.rpm
+test-rpm-1.0-1.src.rpm
+hdlist-test.hdr
 typemap
-foo.i386.rpm
-junk.xs
-transaction.xs
-header.xs
+META.yml                                 Module meta-data (added by MakeMaker)

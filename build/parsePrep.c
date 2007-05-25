@@ -16,10 +16,10 @@
     static int leaveDirs, skipDefaultAction;
 /*@unchecked@*/
     static int createDir, quietly;
-/*@unchecked@*/
-/*@observer@*/ /*@null@*/ static const char * dirName = NULL;
-/*@unchecked@*/
-/*@observer@*/ static struct poptOption optionsTable[] = {
+/*@unchecked@*/ /*@observer@*/ /*@null@*/
+    static const char * dirName = NULL;
+/*@unchecked@*/ /*@observer@*/
+    static struct poptOption optionsTable[] = {
 	    { NULL, 'a', POPT_ARG_STRING, NULL, 'a',	NULL, NULL},
 	    { NULL, 'b', POPT_ARG_STRING, NULL, 'b',	NULL, NULL},
 	    { NULL, 'c', 0, &createDir, 0,		NULL, NULL},
@@ -65,29 +65,18 @@ static int checkOwners(const char * urlfn)
  * @return		expanded %patch macro (NULL on error)
  */
 /*@-boundswrite@*/
-/*@observer@*/ static char *doPatch(Spec spec, int c, int strip, const char *db,
+/*@observer@*/
+static char *doPatch(Spec spec, int c, int strip, const char *db,
 		     int reverse, int removeEmpties)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/
 {
-    const char *fn, *urlfn;
+    const char *fn, *Lurlfn;
     static char buf[BUFSIZ];
     char args[BUFSIZ];
     struct Source *sp;
     rpmCompressedMagic compressed = COMPRESSED_NOT;
     int urltype;
-
-    for (sp = spec->sources; sp != NULL; sp = sp->next) {
-	if ((sp->flags & RPMBUILD_ISPATCH) && (sp->num == c)) {
-	    break;
-	}
-    }
-    if (sp == NULL) {
-	rpmError(RPMERR_BADSPEC, _("No patch number %d\n"), c);
-	return NULL;
-    }
-
-    urlfn = rpmGetPath("%{_sourcedir}/", sp->source, NULL);
 
     args[0] = '\0';
     if (db) {
@@ -104,14 +93,25 @@ static int checkOwners(const char * urlfn)
 	strcat(args, " -E");
     }
 
+    for (sp = spec->sources; sp != NULL; sp = sp->next) {
+	if ((sp->flags & RPMFILE_PATCH) && (sp->num == c))
+	    break;
+    }
+    if (sp == NULL) {
+	rpmError(RPMERR_BADSPEC, _("No patch number %d\n"), c);
+	return NULL;
+    }
+
+    Lurlfn = rpmGenPath(NULL, "%{_patchdir}/", sp->source);
+
     /* XXX On non-build parse's, file cannot be stat'd or read */
-    if (!spec->force && (isCompressed(urlfn, &compressed) || checkOwners(urlfn))) {
-	urlfn = _free(urlfn);
+    if (!spec->force && (isCompressed(Lurlfn, &compressed) || checkOwners(Lurlfn))) {
+	Lurlfn = _free(Lurlfn);
 	return NULL;
     }
 
     fn = NULL;
-    urltype = urlPath(urlfn, &fn);
+    urltype = urlPath(Lurlfn, &fn);
     switch (urltype) {
     case URL_IS_HTTPS:	/* XXX WRONG WRONG WRONG */
     case URL_IS_HTTP:	/* XXX WRONG WRONG WRONG */
@@ -121,15 +121,31 @@ static int checkOwners(const char * urlfn)
     case URL_IS_UNKNOWN:
 	break;
     case URL_IS_DASH:
-	urlfn = _free(urlfn);
+	Lurlfn = _free(Lurlfn);
 	return NULL;
 	/*@notreached@*/ break;
     }
 
     if (compressed) {
-	const char *zipper = rpmGetPath(
-	    (compressed == COMPRESSED_BZIP2 ? "%{_bzip2bin}" : "%{_gzipbin}"),
-	    NULL);
+	const char *zipper;
+
+	switch (compressed) {
+	case COMPRESSED_NOT:	/* XXX can't happen */
+	case COMPRESSED_OTHER:
+	case COMPRESSED_ZIP:	/* XXX wrong */
+	    zipper = "%{__gzip}";
+	    break;
+	case COMPRESSED_BZIP2:
+	    zipper = "%{__bzip2}";
+	    break;
+	case COMPRESSED_LZOP:
+	    zipper = "%{__lzop}";
+	    break;
+	case COMPRESSED_LZMA:
+	    zipper = "%{__lzma}";
+	    break;
+	}
+	zipper = rpmGetPath(zipper, NULL);
 
 	sprintf(buf,
 		"echo \"Patch #%d (%s):\"\n"
@@ -149,7 +165,7 @@ static int checkOwners(const char * urlfn)
 		strip, args, fn);
     }
 
-    urlfn = _free(urlfn);
+    Lurlfn = _free(Lurlfn);
     return buf;
 }
 /*@=boundswrite@*/
@@ -162,11 +178,12 @@ static int checkOwners(const char * urlfn)
  * @return		expanded %setup macro (NULL on error)
  */
 /*@-boundswrite@*/
-/*@observer@*/ static const char *doUntar(Spec spec, int c, int quietly)
+/*@observer@*/
+static const char *doUntar(Spec spec, int c, int quietly)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/
 {
-    const char *fn, *urlfn;
+    const char *fn, *Lurlfn;
     static char buf[BUFSIZ];
     char *taropts;
     char *t = NULL;
@@ -175,7 +192,7 @@ static int checkOwners(const char * urlfn)
     int urltype;
 
     for (sp = spec->sources; sp != NULL; sp = sp->next) {
-	if ((sp->flags & RPMBUILD_ISSOURCE) && (sp->num == c)) {
+	if ((sp->flags & RPMFILE_SOURCE) && (sp->num == c)) {
 	    break;
 	}
     }
@@ -184,40 +201,20 @@ static int checkOwners(const char * urlfn)
 	return NULL;
     }
 
-    urlfn = rpmGetPath("%{_sourcedir}/", sp->source, NULL);
-
     /*@-internalglobs@*/ /* FIX: shrug */
     taropts = ((rpmIsVerbose() && !quietly) ? "-xvvf" : "-xf");
     /*@=internalglobs@*/
 
-#ifdef AUTOFETCH_NOT	/* XXX don't expect this code to be enabled */
-    /* XXX
-     * XXX If nosource file doesn't exist, try to fetch from url.
-     * XXX TODO: add a "--fetch" enabler.
-     */
-    if (sp->flags & RPMTAG_NOSOURCE && autofetchnosource) {
-	struct stat st;
-	int rc;
-	if (Lstat(urlfn, &st) != 0 && errno == ENOENT &&
-	    urlIsUrl(sp->fullSource) != URL_IS_UNKNOWN) {
-	    if ((rc = urlGetFile(sp->fullSource, urlfn)) != 0) {
-		rpmError(RPMERR_BADFILENAME,
-			_("Couldn't download nosource %s: %s\n"),
-			sp->fullSource, ftpStrerror(rc));
-		return NULL;
-	    }
-	}
-    }
-#endif
+    Lurlfn = rpmGenPath(NULL, "%{_sourcedir}/", sp->source);
 
     /* XXX On non-build parse's, file cannot be stat'd or read */
-    if (!spec->force && (isCompressed(urlfn, &compressed) || checkOwners(urlfn))) {
-	urlfn = _free(urlfn);
+    if (!spec->force && (isCompressed(Lurlfn, &compressed) || checkOwners(Lurlfn))) {
+	Lurlfn = _free(Lurlfn);
 	return NULL;
     }
 
     fn = NULL;
-    urltype = urlPath(urlfn, &fn);
+    urltype = urlPath(Lurlfn, &fn);
     switch (urltype) {
     case URL_IS_HTTPS:	/* XXX WRONG WRONG WRONG */
     case URL_IS_HTTP:	/* XXX WRONG WRONG WRONG */
@@ -227,7 +224,7 @@ static int checkOwners(const char * urlfn)
     case URL_IS_UNKNOWN:
 	break;
     case URL_IS_DASH:
-	urlfn = _free(urlfn);
+	Lurlfn = _free(Lurlfn);
 	return NULL;
 	/*@notreached@*/ break;
     }
@@ -239,16 +236,22 @@ static int checkOwners(const char * urlfn)
 	switch (compressed) {
 	case COMPRESSED_NOT:	/* XXX can't happen */
 	case COMPRESSED_OTHER:
-	    t = "%{_gzipbin} -dc";
+	    t = "%{__gzip} -dc";
 	    break;
 	case COMPRESSED_BZIP2:
-	    t = "%{_bzip2bin} -dc";
+	    t = "%{__bzip2} -dc";
+	    break;
+	case COMPRESSED_LZOP:
+	    t = "%{__lzop} -dc";
+	    break;
+	case COMPRESSED_LZMA:
+	    t = "%{__lzma} -dc";
 	    break;
 	case COMPRESSED_ZIP:
 	    if (rpmIsVerbose() && !quietly)
-		t = "%{_unzipbin}";
+		t = "%{__unzip}";
 	    else
-		t = "%{_unzipbin} -qq";
+		t = "%{__unzip} -qq";
 	    needtar = 0;
 	    break;
 	}
@@ -257,7 +260,9 @@ static int checkOwners(const char * urlfn)
 	t = stpcpy(buf, zipper);
 	zipper = _free(zipper);
 	*t++ = ' ';
+	*t++ = '\'';
 	t = stpcpy(t, fn);
+	*t++ = '\'';
 	if (needtar)
 	    t = stpcpy( stpcpy( stpcpy(t, " | tar "), taropts), " -");
 	t = stpcpy(t,
@@ -273,7 +278,7 @@ static int checkOwners(const char * urlfn)
 	t = stpcpy(t, fn);
     }
 
-    urlfn = _free(urlfn);
+    Lurlfn = _free(Lurlfn);
     return buf;
 }
 /*@=boundswrite@*/
@@ -370,20 +375,20 @@ static int doSetupMacro(Spec spec, char *line)
 	const char *buildDir;
 
 	(void) urlPath(buildDirURL, &buildDir);
-	sprintf(buf, "cd %s", buildDir);
+	sprintf(buf, "cd '%s'", buildDir);
 	appendLineStringBuf(spec->prep, buf);
 	buildDirURL = _free(buildDirURL);
     }
     
     /* delete any old sources */
     if (!leaveDirs) {
-	sprintf(buf, "rm -rf %s", spec->buildSubdir);
+	sprintf(buf, "rm -rf '%s'", spec->buildSubdir);
 	appendLineStringBuf(spec->prep, buf);
     }
 
     /* if necessary, create and cd into the proper dir */
     if (createDir) {
-	sprintf(buf, MKDIR_P " %s\ncd %s",
+	sprintf(buf, MKDIR_P " '%s'\ncd '%s'",
 		spec->buildSubdir, spec->buildSubdir);
 	appendLineStringBuf(spec->prep, buf);
     }
@@ -400,7 +405,7 @@ static int doSetupMacro(Spec spec, char *line)
     before = freeStringBuf(before);
 
     if (!createDir) {
-	sprintf(buf, "cd %s", spec->buildSubdir);
+	sprintf(buf, "cd '%s'", spec->buildSubdir);
 	appendLineStringBuf(spec->prep, buf);
     }
 
@@ -551,7 +556,103 @@ static int doPatchMacro(Spec spec, char *line)
 }
 /*@=boundswrite@*/
 
-int parsePrep(Spec spec)
+/**
+ * Check that all sources/patches/icons exist locally, fetching if necessary.
+ */
+static int prepFetch(Spec spec)
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/
+{
+    const char *Lmacro, *Lurlfn = NULL;
+    const char *Rmacro, *Rurlfn = NULL;
+    struct Source *sp;
+    struct stat st;
+    rpmRC rpmrc;
+    int ec, rc;
+
+    /* XXX insure that %{_sourcedir} exists */
+    rpmrc = RPMRC_OK;
+    Lurlfn = rpmGenPath(NULL, "%{?_sourcedir}", NULL);
+    if (Lurlfn != NULL && *Lurlfn != '\0')
+	rpmrc = rpmMkdirPath(Lurlfn, "_sourcedir");
+    Lurlfn = _free(Lurlfn);
+    if (rpmrc != RPMRC_OK)
+	return -1;
+
+    /* XXX insure that %{_patchdir} exists */
+    rpmrc = RPMRC_OK;
+    Lurlfn = rpmGenPath(NULL, "%{?_patchdir}", NULL);
+    if (Lurlfn != NULL && *Lurlfn != '\0')
+	rpmrc = rpmMkdirPath(Lurlfn, "_patchdir");
+    Lurlfn = _free(Lurlfn);
+    if (rpmrc != RPMRC_OK)
+	return -1;
+
+    /* XXX insure that %{_icondir} exists */
+    rpmrc = RPMRC_OK;
+    Lurlfn = rpmGenPath(NULL, "%{?_icondir}", NULL);
+    if (Lurlfn != NULL && *Lurlfn != '\0')
+	rpmrc = rpmMkdirPath(Lurlfn, "_icondir");
+    Lurlfn = _free(Lurlfn);
+    if (rpmrc != RPMRC_OK)
+	return -1;
+
+/*@-branchstate@*/
+    ec = 0;
+    for (sp = spec->sources; sp != NULL; sp = sp->next) {
+
+	if (sp->flags & RPMFILE_SOURCE) {
+	    Rmacro = "%{_Rsourcedir}/";
+	    Lmacro = "%{_sourcedir}/";
+	} else
+	if (sp->flags & RPMFILE_PATCH) {
+	    Rmacro = "%{_Rpatchdir}/";
+	    Lmacro = "%{_patchdir}/";
+	} else
+	if (sp->flags & RPMFILE_ICON) {
+	    Rmacro = "%{_Ricondir}/";
+	    Lmacro = "%{_icondir}/";
+	} else
+	    continue;
+
+	Lurlfn = rpmGenPath(NULL, Lmacro, sp->source);
+	rc = Lstat(Lurlfn, &st);
+	if (rc == 0)
+	    goto bottom;
+	if (errno != ENOENT) {
+	    ec++;
+	    rpmError(RPMERR_BADFILENAME, _("Missing %s%d %s: %s\n"),
+		((sp->flags & RPMFILE_SOURCE) ? "Source" : "Patch"),
+		sp->num, sp->source, strerror(ENOENT));
+	    goto bottom;
+	}
+
+	Rurlfn = rpmGenPath(NULL, Rmacro, sp->source);
+	if (Rurlfn == NULL || *Rurlfn == '%' || !strcmp(Lurlfn, Rurlfn)) {
+	    rpmError(RPMERR_BADFILENAME, _("file %s missing: %s\n"),
+		Lurlfn, strerror(errno));
+	    ec++;
+	    goto bottom;
+	}
+
+	rc = urlGetFile(Rurlfn, Lurlfn);
+	if (rc != 0) {
+	    rpmError(RPMERR_BADFILENAME, _("Fetching %s failed: %s\n"),
+		Rurlfn, ftpStrerror(rc));
+	    ec++;
+	    goto bottom;
+	}
+
+bottom:
+	Lurlfn = _free(Lurlfn);
+	Rurlfn = _free(Rurlfn);
+    }
+/*@=branchstate@*/
+
+    return ec;
+}
+
+int parsePrep(Spec spec, int verify)
 {
     int nextPart, res, rc;
     StringBuf sb;
@@ -565,11 +666,17 @@ int parsePrep(Spec spec)
     spec->prep = newStringBuf();
 
     /* There are no options to %prep */
-    if ((rc = readLine(spec, STRIP_NOTHING)) > 0) {
+    if ((rc = readLine(spec, STRIP_NOTHING)) > 0)
 	return PART_NONE;
-    }
     if (rc)
 	return rc;
+
+    /* Check to make sure that all sources/patches are present. */
+    if (verify) {
+	rc = prepFetch(spec);
+	if (rc)
+	    return RPMERR_BADSPEC;
+    }
     
     sb = newStringBuf();
     

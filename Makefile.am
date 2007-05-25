@@ -4,18 +4,18 @@ AUTOMAKE_OPTIONS = 1.4 foreign
 
 LINT = splint
 
-EXTRA_DIST = CHANGES CREDITS Doxyheader GROUPS README.amiga INSTALL \
-	RPM-GPG-KEY RPM-PGP-KEY BETA-GPG-KEY \
+EXTRA_DIST = config.rpath m4/ChangeLog  CHANGES CREDITS Doxyheader GROUPS INSTALL \
 	autodeps/none autodeps/*.prov autodeps/*.req autogen.sh \
 	config.site db db3/configure gendiff installplatform platform* \
 	xmlspec/Makefile xmlspec/*.c xmlspec/*.h \
 	xmlspec/examples/*.sh xmlspec/examples/*.lst \
 	xmlspec/examples/*.xmlspec \
-	sqlite/* \
+	perl/* \
+	wdj/JBJ-GPG-KEY wdj/Makefile.in wnh/Makefile.in \
 	po/*.in po/*.po po/rpm.pot \
 	rpm.magic rpmpopt-$(VERSION) rpmqv.c rpm.c
 
-SUBDIRS = intl po misc @WITH_ZLIB_SUBDIR@ @WITH_ELFUTILS_SUBDIR@ @WITH_MAGIC_SUBDIR@ @WITH_DB_SUBDIR@ @WITH_SQLITE3_SUBDIR@ @WITH_POPT_SUBDIR@ @WITH_BEECRYPT_SUBDIR@ @WITH_NEON_SUBDIR@ lua rpmio rpmdb lib build @WITH_PYTHON_SUBDIR@ tools scripts tests doc .
+SUBDIRS = po misc @WITH_ZLIB_SUBDIR@ @WITH_ELFUTILS_SUBDIR@ @WITH_MAGIC_SUBDIR@ @WITH_DB_SUBDIR@ @WITH_SQLITE3_SUBDIR@ @WITH_POPT_SUBDIR@ @WITH_BEECRYPT_SUBDIR@ @WITH_NEON_SUBDIR@ @WITH_SYCK_SUBDIR@ @WITH_LUA_SUBDIR@ rpmio rpmdb lib build @WITH_PYTHON_SUBDIR@ @WITH_PERL_SUBDIR@ tools scripts tests doc .
 
 INCLUDES = \
 	-I$(top_srcdir)/build \
@@ -28,7 +28,7 @@ INCLUDES = \
 	@WITH_LIBELF_INCLUDE@ \
 	@INCPATH@
 
-staticLDFLAGS = @LDFLAGS_STATIC@ @LDFLAGS_NPTL@
+staticLDFLAGS = # @LDFLAGS_STATIC@ # @LDFLAGS_NPTL@
 
 myLDFLAGS = @WITH_LIBELF_LIB@ @WITH_BEECRYPT_LIB@
 
@@ -43,10 +43,9 @@ myLDADD = \
 rpmbindir = `echo $(bindir) | sed -e s,usr/bin,bin,`
 rpmbin_PROGRAMS = rpm
 
-bin_PROGRAMS =		rpm2cpio
 bin_SCRIPTS =		gendiff
 
-pkglibdir =		@RPMCONFIGDIR@
+pkglibdir =		@USRLIBRPM@
 pkglib_PROGRAMS =	rpmb rpmd rpmi rpmk rpmq
 pkglib_DATA =		rpmrc rpmpopt-$(VERSION) macros
 pkglib_SCRIPTS =	find-provides find-requires mkinstalldirs \
@@ -58,46 +57,44 @@ rpmpopt-$(VERSION): rpmpopt
 noinst_HEADERS = build.h debug.h system.h
 
 rpm_SOURCES =
-rpm_LDFLAGS =		$(myLDFLAGS)
+rpm_LDFLAGS =		$(myLDFLAGS) $(staticLDFLAGS)
 rpm_LDADD =		rpm.o $(top_builddir)/build/.libs/librpmbuild.a $(myLDADD)
+#rpm_LDFLAGS =		$(myLDFLAGS)
+#rpm_LDADD =		rpm.o $(top_builddir)/build/.libs/librpmbuild.a $(myLDADD)
 rpm.o:	$(top_srcdir)/rpmqv.c
-	$(COMPILE) -DIAM_RPMDB -DIAM_RPMEIU -DIAM_RPMK -DIAM_RPMQV -o $@ -c $(top_srcdir)/rpmqv.c
+	$(COMPILE) -fpie -DIAM_RPMDB -DIAM_RPMEIU -DIAM_RPMK -DIAM_RPMQV -o $@ -c $<
 
 rpmb_SOURCES =		$(top_srcdir)/build.c
-rpmb_LDFLAGS =		$(myLDFLAGS)
+rpmb_LDFLAGS =		$(myLDFLAGS) $(staticLDFLAGS)
 rpmb_LDADD =		rpmb.o $(top_builddir)/build/librpmbuild.la $(myLDADD)
 rpmb.o:	$(top_srcdir)/rpmqv.c
-	$(COMPILE) -DIAM_RPMBT -o $@ -c $(top_srcdir)/rpmqv.c
+	$(COMPILE) -fpie -DIAM_RPMBT -o $@ -c $<
 
 rpmd_SOURCES =
-rpmd_LDFLAGS =		$(myLDFLAGS)
+rpmd_LDFLAGS =		$(myLDFLAGS) $(staticLDFLAGS)
 rpmd_LDADD =		rpmd.o $(myLDADD)
 rpmd.o:	$(top_srcdir)/rpmqv.c
-	$(COMPILE) -DIAM_RPMDB -o $@ -c $(top_srcdir)/rpmqv.c
+	$(COMPILE) -fpie -DIAM_RPMDB -o $@ -c $<
 
 rpmi_SOURCES =
-#rpmi_LDFLAGS =		$(myLDFLAGS) $(staticLDFLAGS)
-#rpmi_LDADD =		rpmi.o $(myLDADD) @WITH_LIBELF_LIB@ @WITH_BEECRYPT_LIB@
-rpmi_LDFLAGS =		$(myLDFLAGS)
+rpmi_LDFLAGS =		$(myLDFLAGS) # $(staticLDFLAGS)
 rpmi_LDADD =		rpmi.o $(myLDADD)
+#rpmi_LDFLAGS =		$(myLDFLAGS)
+#rpmi_LDADD =		rpmi.o $(myLDADD)
 rpmi.o:	$(top_srcdir)/rpmqv.c
-	$(COMPILE) -DIAM_RPMEIU -o $@ -c $(top_srcdir)/rpmqv.c
+	$(COMPILE) -fpie -DIAM_RPMEIU -o $@ -c $<
 
 rpmk_SOURCES =
-rpmk_LDFLAGS =		$(myLDFLAGS)
+rpmk_LDFLAGS =		$(myLDFLAGS) $(staticLDFLAGS)
 rpmk_LDADD =		rpmk.o $(myLDADD)
 rpmk.o:	$(top_srcdir)/rpmqv.c
-	$(COMPILE) -DIAM_RPMK -o $@ -c $(top_srcdir)/rpmqv.c
+	$(COMPILE) -fpie -DIAM_RPMK -o $@ -c $<
 
 rpmq_SOURCES =
-rpmq_LDFLAGS =		$(myLDFLAGS)
+rpmq_LDFLAGS =		$(myLDFLAGS) # $(staticLDFLAGS)
 rpmq_LDADD =		rpmq.o $(top_builddir)/build/librpmbuild.la $(myLDADD)
 rpmq.o:	$(top_srcdir)/rpmqv.c
-	$(COMPILE) -DIAM_RPMQV -o $@ -c $(top_srcdir)/rpmqv.c
-
-rpm2cpio_SOURCES =	$(top_srcdir)/rpm2cpio.c
-rpm2cpio_LDFLAGS =	$(myLDFLAGS)
-rpm2cpio_LDADD =	$(myLDADD) @LIBMISC@
+	$(COMPILE) -fpie -DIAM_RPMQV -o $@ -c $<
 
 $(PROGRAMS): 		$(myLDADD) @WITH_APIDOCS_TARGET@
 
@@ -124,22 +121,18 @@ lint:
 
 CVSTAG = r$(subst .,-,$(VERSION))
 
-pkgsrcdir = $(prefix)/src/$(RPMCANONVENDOR)
+pkgsrcdir = $(prefix)/src/rpm
 
 install-data-local:
 	@$(mkinstalldirs) $(DESTDIR)$(varprefix)/lib/rpm
-	@rm -f $(DESTDIR)$(libdir)/rpmrc
-	@@LN_S@ rpm/rpmrc $(DESTDIR)$(libdir)/rpmrc
-	@rm -f $(DESTDIR)$(libdir)/rpmpopt
-	@@LN_S@ rpm/rpmpopt $(DESTDIR)$(libdir)/rpmpopt
-	@rm -f $(DESTDIR)$(libdir)/rpm/rpmt
-	@@LN_S@ rpmb $(DESTDIR)$(libdir)/rpm/rpmt
-	@rm -f $(DESTDIR)$(libdir)/rpm/rpme
-	@@LN_S@ rpmi $(DESTDIR)$(libdir)/rpm/rpme
-	@rm -f $(DESTDIR)$(libdir)/rpm/rpmu
-	@@LN_S@ rpmi $(DESTDIR)$(libdir)/rpm/rpmu
-	@rm -f $(DESTDIR)$(libdir)/rpm/rpmv
-	@@LN_S@ rpmq $(DESTDIR)$(libdir)/rpm/rpmv
+	@rm -f $(DESTDIR)$(pkglibdir)/rpmt
+	@@LN_S@ rpmb $(DESTDIR)$(pkglibdir)/rpmt
+	@rm -f $(DESTDIR)$(pkglibdir)/rpme
+	@@LN_S@ rpmi $(DESTDIR)$(pkglibdir)/rpme
+	@rm -f $(DESTDIR)$(pkglibdir)/rpmu
+	@@LN_S@ rpmi $(DESTDIR)$(pkglibdir)/rpmu
+	@rm -f $(DESTDIR)$(pkglibdir)/rpmv
+	@@LN_S@ rpmq $(DESTDIR)$(pkglibdir)/rpmv
 	rm -f $(DESTDIR)$(bindir)/rpmbuild
 	@LN_S@ ../lib/rpm/rpmb $(DESTDIR)$(bindir)/rpmbuild
 	rm -f $(DESTDIR)$(bindir)/rpmquery
@@ -163,6 +156,15 @@ install-data-local:
 		$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/i586 ;\
 		$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/i686 ;\
 		$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/athlon ;;\
+	armv3l)	$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/armv3l ;;\
+	armv4b)	$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/armv4b ;;\
+	armv4l)	$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/armv3l ;\
+		$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/armv4l ;;\
+	armv5teb) $(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/armv4b ;\
+		$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/armv5teb ;;\
+	armv5tel) $(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/armv3l ;\
+		$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/armv4l ;\
+		$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/armv5tel ;;\
 	alpha*) $(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/alpha ;\
 		$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/alphaev6 ;;\
 	sparc*) $(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/sparc ;\
@@ -264,3 +266,5 @@ cscope:
 	@CSCOPE@ -b -R
 
 cref: ctags cscope
+
+ACLOCAL_AMFLAGS = -I m4

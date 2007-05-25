@@ -25,7 +25,8 @@ extern "C" {
  * @param argv		argv array
  * @param fp		output file handle (NULL uses stderr)
  */
-void argvPrint(const char * msg, ARGV_t argv, FILE * fp)
+void argvPrint(/*@null@*/ const char * msg, /*@null@*/ ARGV_t argv,
+		/*@null@*/ FILE * fp)
 	/*@globals fileSystem @*/
 	/*@modifies *fp, fileSystem @*/;
 
@@ -145,11 +146,29 @@ int argvAppend(/*@out@*/ ARGV_t * argvp, const ARGV_t av)
  * Split a string into an argv array.
  * @retval *argvp	argv array
  * @param str		string arg to split
- * @param seps		seperator characters
+ * @param seps		separator characters (NULL is C isspace() chars)
  * @return		0 always
  */
-int argvSplit(ARGV_t * argvp, const char * str, const char * seps)
+int argvSplit(ARGV_t * argvp, const char * str, /*@null@*/ const char * seps)
 	/*@modifies *argvp @*/;
+
+/**
+ * Concatenate an argv array into a string.
+ * @param argv		argv array
+ * @return		concatenated string
+ */
+/*@only@*/
+char * argvJoin(ARGV_t argv)
+	/*@*/;
+
+/**
+ * Read lines into an argv array.
+ * @retval *argvp	argv array
+ * @param fd		rpmio FD_t (NULL uses stdin)
+ * @return		0 on success
+ */
+int argvFgets(ARGV_t * argvp, void * fd)
+	/*@modifies *argvp, fd @*/;
 
 #ifdef __cplusplus
 }

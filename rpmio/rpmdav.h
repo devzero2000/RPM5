@@ -30,8 +30,13 @@ struct __dirstream {
 typedef struct __dirstream *	AVDIR;
 typedef struct __dirstream *	DAVDIR;
 #else
+# if defined(__FreeBSD__)
+typedef struct __dirstream *	AVDIR;
+typedef struct __dirstream *	DAVDIR;
+#else	/* __FreeBSD__ */
 typedef DIR *			AVDIR;
 typedef DIR *			DAVDIR;
+#endif	/* __FreeBSD__ */
 #endif
 
 
@@ -98,9 +103,11 @@ int davReq(FD_t ctrl, const char * httpCmd, /*@null@*/ const char * httpArg)
  * @retval *str		error msg		
  * @returns		0 on success
  */
+/*@-exportlocal@*/
 int davResp(urlinfo u, FD_t ctrl, /*@out@*/ /*@null@*/ char *const * str)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies ctrl, *str, fileSystem, internalState @*/;
+/*@=exportlocal@*/
 
 /**
  */

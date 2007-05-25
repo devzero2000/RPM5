@@ -130,9 +130,9 @@ After RPM has been installed you can run rpm to build an rpm package.
 Edit the rpm.spec file to mirror any special steps you needed to
 follow to make rpm compile and change the specfile to match your
 taste.  You will need to put the rpm source tar file into the
-redhat/SOURCES directory and we suggest putting the specfile in the
-redhat/SPECS directory, then run rpmbuild -ba rpm.spec.  You will end up
-with two rpms which can be found in redhat/RPMS and redhat/SRPMS.
+rpm/SOURCES directory and we suggest putting the specfile in the
+rpm/SPECS directory, then run rpmbuild -ba rpm.spec.  You will end up
+with two rpms which can be found in rpm/RPMS and rpm/SRPMS.
 
 If you are going to install rpm on machines with OS package managers
 other then rpm, you may choose to install the base rpm package via a
@@ -283,6 +283,6 @@ In order to use pgp5, you will need to change:
 (Note: Only one of pgp and pgp5 may be used because of name conflicts.)
 
 You may also need Red Hat GPG/PGP public keys. These can be found in the
-rpm source tarball, in /usr/doc/rpm*, or form http://www.redhat.com. In
+rpm source tarball, in /usr/share/doc/rpm*, or from http://www.redhat.com. In
 order to verify a package signed by Red Hat you will need to import these
 keys onto you key ring. See the GPG/PGP documentation for how to do this.

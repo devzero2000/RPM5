@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-01-05 09:43-0500\n"
+"Report-Msgid-Bugs-To: <rpm-devel@lists.dulug.duke.edu>\n"
+"POT-Creation-Date: 2007-05-21 11:27-0400\n"
 "PO-Revision-Date: 2001-04-05 23:03GMT\n"
 "Last-Translator: Claus Hindsgaul <claus_h@image.dk>\n"
 "Language-Team: Danish <dansk@klid.dk>\n"
@@ -21,236 +21,217 @@ msgstr "afhængighedskrav for pakkeopbygning kunne ikke imødekommes:\n"
 msgid "Unable to open spec file %s: %s\n"
 msgstr "Kan ikke åbne spec-fil %s: %s\n"
 
-#: build.c:150 build.c:162
+#: build.c:146 build.c:158
 #, c-format
 msgid "Failed to open tar pipe: %m\n"
 msgstr "Kunne ikke åbne tar-videreførsel: %m\n"
 
-#. Give up
-#: build.c:169
+#: build.c:165
 #, c-format
 msgid "Failed to read spec file from %s\n"
 msgstr "Kunne ikke læse spec-fil fra %s\n"
 
-#: build.c:197
+#: build.c:193
 #, c-format
 msgid "Failed to rename %s to %s: %m\n"
 msgstr "Kunne ikke omdøbe %s til %s: %m\n"
 
-#: build.c:237
+#: build.c:233
 #, c-format
 msgid "failed to stat %s: %m\n"
 msgstr "kunne ikke finde %s: %m\n"
 
-#: build.c:242
+#: build.c:238
 #, c-format
 msgid "File %s is not a regular file.\n"
 msgstr "Filen %s er ikke en regulær fil.\n"
 
-#: build.c:251
+#: build.c:247
 #, c-format
 msgid "File %s does not appear to be a specfile.\n"
 msgstr "Filen %s synes ikke at være en spec-fil.\n"
 
-#. parse up the build operators
-#: build.c:322
+#: build.c:320
 #, c-format
 msgid "Building target platforms: %s\n"
 msgstr "Opbygger mål-platforme: %s\n"
 
-#: build.c:337
-#, c-format
-msgid "Building for target %s\n"
-msgstr "Opbygger for mål %s\n"
+#: build.c:335 build/spec.c:786
+#, fuzzy, c-format
+msgid "    target platform: %s\n"
+msgstr "Opbygger mål-platforme: %s\n"
 
-#: rpm2cpio.c:55
-#, c-format
-msgid "argument is not an RPM package\n"
-msgstr "parameter er ikke en RPM-pakke\n"
-
-#: rpm2cpio.c:60
-#, c-format
-msgid "error reading header from package\n"
-msgstr "fejl ved læsning af hovedet på pakke\n"
-
-#: rpm2cpio.c:82
-#, c-format
-msgid "cannot re-open payload: %s\n"
-msgstr "kan ikke genåbne pakkeindhold: %s\n"
-
-#: rpmqv.c:72
+#: rpmqv.c:77
 msgid "Query options (with -q or --query):"
 msgstr "Forespørgselstilvalg (med -q eller --query):"
 
-#: rpmqv.c:75
+#: rpmqv.c:80
 msgid "Verify options (with -V or --verify):"
 msgstr "Verifikationstilvalg (med -V eller --verify):"
 
-#: rpmqv.c:79
+#: rpmqv.c:84
 #, fuzzy
 msgid "Source options (with --query or --verify):"
 msgstr "Verifikationstilvalg (med -V eller --verify):"
 
-#: rpmqv.c:83
+#: rpmqv.c:91
+msgid "Dependency check/order options:"
+msgstr ""
+
+#: rpmqv.c:97
 msgid "File tree walk options (with --ftswalk):"
 msgstr ""
 
-#: rpmqv.c:89
+#: rpmqv.c:103
 msgid "Signature options:"
 msgstr "Signaturtilvalg"
 
-#: rpmqv.c:95
+#: rpmqv.c:109
 msgid "Database options:"
 msgstr "Databasetilvalg:"
 
-#: rpmqv.c:101
+#: rpmqv.c:115
 msgid "Build options with [ <specfile> | <tarball> | <source package> ]:"
 msgstr "Opbygningstilvalg med [ <spec-fil> | <tararkiv> | <kildepakke> ]:"
 
-#: rpmqv.c:107
+#: rpmqv.c:121
 msgid "Install/Upgrade/Erase options:"
 msgstr ""
 
-#: rpmqv.c:112 tools/rpmcache.c:523 tools/rpmdeps.c:34 tools/rpmgraph.c:276
+#: rpmqv.c:126 tools/rpmdeps.c:154
 #, fuzzy
 msgid "Common options for all rpm modes and executables:"
 msgstr "Fælles tilvalg for alle rpm-tilstande:"
 
-#. @-modfilesys -globs @
-#: rpmqv.c:129 lib/poptI.c:43
+#: rpmqv.c:143 lib/poptI.c:43
 #, fuzzy, c-format
 msgid "%s: %s\n"
 msgstr "fil %s: %s\n"
 
-#: rpmqv.c:137 lib/poptALL.c:130
+#: rpmqv.c:151 lib/poptALL.c:152
 #, c-format
 msgid "RPM version %s\n"
 msgstr "RPM version %s\n"
 
-#: rpmqv.c:144
+#: rpmqv.c:158
 #, fuzzy, c-format
 msgid "Copyright (C) 1998-2002 - Red Hat, Inc.\n"
 msgstr "Copyright (C) 1998-2000 - Red Hat, Inc."
 
-#: rpmqv.c:145
+#: rpmqv.c:159
 #, fuzzy, c-format
 msgid ""
 "This program may be freely redistributed under the terms of the GNU GPL\n"
 msgstr "Dette program kan frit distribueres under betingelserne i GNU GPL"
 
-#: rpmqv.c:303
-#, c-format
-msgid "Internal error in argument processing (%d) :-(\n"
-msgstr "Intern fejl i parameterfortolkningen (%d) :-(\n"
-
-#: rpmqv.c:341 rpmqv.c:347 rpmqv.c:353 rpmqv.c:390
+#: rpmqv.c:295 rpmqv.c:301 rpmqv.c:307 rpmqv.c:344
 msgid "only one major mode may be specified"
 msgstr "kun ét hovedtilvalg kan angives"
 
-#: rpmqv.c:369
+#: rpmqv.c:323
 msgid "one type of query/verify may be performed at a time"
 msgstr "kun én af forespørgsel/verificér kan udføres ad gangen"
 
-#: rpmqv.c:373
+#: rpmqv.c:327
 msgid "unexpected query flags"
 msgstr "uventet forespørgselsflag"
 
-#: rpmqv.c:376
+#: rpmqv.c:330
 msgid "unexpected query format"
 msgstr "uventet forespørgselsformat"
 
-#: rpmqv.c:379
+#: rpmqv.c:333
 msgid "unexpected query source"
 msgstr "uventet forespørgselskilde"
 
-#: rpmqv.c:422
+#: rpmqv.c:376
 msgid "only installation, upgrading, rmsource and rmspec may be forced"
 msgstr "kun installation, opgradering, rmsource og rmspec kan tvinges igennem"
 
-#: rpmqv.c:424
+#: rpmqv.c:378
 msgid "files may only be relocated during package installation"
 msgstr "filer kan kun omrokeres under installation"
 
-#: rpmqv.c:427
+#: rpmqv.c:381
 msgid "cannot use --prefix with --relocate or --excludepath"
 msgstr ""
 
-#: rpmqv.c:430
+#: rpmqv.c:384
 msgid ""
 "--relocate and --excludepath may only be used when installing new packages"
 msgstr "--relocate og --excludepath kan kun bruges, når nye pakker installeres"
 
-#: rpmqv.c:433
+#: rpmqv.c:387
 msgid "--prefix may only be used when installing new packages"
 msgstr "--prefix kan kun bruges, når nye pakker installeres"
 
-#: rpmqv.c:436
+#: rpmqv.c:390
 msgid "arguments to --prefix must begin with a /"
 msgstr "parametre til --prefix skal starte med et /"
 
-#: rpmqv.c:439
+#: rpmqv.c:393
 msgid "--hash (-h) may only be specified during package installation"
 msgstr "--hash (-h) kan kun angives ved installation"
 
-#: rpmqv.c:443
+#: rpmqv.c:397
 msgid "--percent may only be specified during package installation"
 msgstr "--percent kan kun angives ved installation"
 
-#: rpmqv.c:447
+#: rpmqv.c:401
 msgid "--replacepkgs may only be specified during package installation"
 msgstr "--replacepkgs kan kun angives ved installation"
 
-#: rpmqv.c:451
+#: rpmqv.c:405
 msgid "--excludedocs may only be specified during package installation"
 msgstr "--excludedocs kan kun angives ved installation"
 
-#: rpmqv.c:455
+#: rpmqv.c:409
 msgid "--includedocs may only be specified during package installation"
 msgstr "--includedocs kan kun angives ved installation"
 
-#: rpmqv.c:459
+#: rpmqv.c:413
 msgid "only one of --excludedocs and --includedocs may be specified"
 msgstr "kun én af --excludedocs og --includedocs kan angives"
 
-#: rpmqv.c:463
+#: rpmqv.c:417
 msgid "--ignorearch may only be specified during package installation"
 msgstr "--ignorearch kan kun angives ved installation"
 
-#: rpmqv.c:467
+#: rpmqv.c:421
 msgid "--ignoreos may only be specified during package installation"
 msgstr "--ignoreos kan kun angives ved installation"
 
-#: rpmqv.c:472
+#: rpmqv.c:426
 msgid "--ignoresize may only be specified during package installation"
 msgstr "--ignoresize kan kun angives ved installation"
 
-#: rpmqv.c:476
+#: rpmqv.c:430
 msgid "--allmatches may only be specified during package erasure"
 msgstr "--allmatches kan kun angives ved installation"
 
-#: rpmqv.c:480
+#: rpmqv.c:434
 msgid "--allfiles may only be specified during package installation"
 msgstr "--allfiles kan kun angives ved installation"
 
-#: rpmqv.c:485
+#: rpmqv.c:439
 msgid "--justdb may only be specified during package installation and erasure"
 msgstr "--justdb kan kun angives ved installation og sletning"
 
-#: rpmqv.c:490
+#: rpmqv.c:444
 #, fuzzy
 msgid ""
 "script disabling options may only be specified during package installation "
 "and erasure"
 msgstr "--justdb kan kun angives ved installation og sletning"
 
-#: rpmqv.c:495
+#: rpmqv.c:449
 #, fuzzy
 msgid ""
 "trigger disabling options may only be specified during package installation "
 "and erasure"
 msgstr "--notriggers kan kun angives ved installation og sletning af pakker"
 
-#: rpmqv.c:499
+#: rpmqv.c:453
 msgid ""
 "--nodeps may only be specified during package building, rebuilding, "
 "recompilation, installation,erasure, and verification"
@@ -258,13 +239,13 @@ msgstr ""
 "--nodeps kan kun angives ved opbygning, genopbygning, genoversættelse, "
 "installation, sletning og verifikation"
 
-#: rpmqv.c:504
+#: rpmqv.c:458
 msgid ""
 "--test may only be specified during package installation, erasure, and "
 "building"
 msgstr "--test kan kun angives ved installation, sletning og opbygning"
 
-#: rpmqv.c:509
+#: rpmqv.c:463
 msgid ""
 "--root (-r) may only be specified during installation, erasure, querying, "
 "and database rebuilds"
@@ -272,108 +253,107 @@ msgstr ""
 "--root (-r) kan kun angives ved installation, sletning, forespørgsel og "
 "genopbygning af databasen"
 
-#: rpmqv.c:521
+#: rpmqv.c:475
 msgid "arguments to --root (-r) must begin with a /"
 msgstr "parameteren til --root (-r) skal starte med et /"
 
-#: rpmqv.c:545
+#: rpmqv.c:499
 #, c-format
 msgid "no files to sign\n"
 msgstr "ingen filer at underskrive\n"
 
-#: rpmqv.c:550
+#: rpmqv.c:504
 #, c-format
 msgid "cannot access file %s\n"
 msgstr "kan ikke tilgå filen %s\n"
 
-#: rpmqv.c:569
+#: rpmqv.c:524
 #, c-format
 msgid "pgp not found: "
 msgstr "pgp ikke fundet: "
 
-#: rpmqv.c:574
+#: rpmqv.c:532
 msgid "Enter pass phrase: "
 msgstr "Indtast adgangskode: "
 
-#: rpmqv.c:576
+#: rpmqv.c:534
 #, c-format
 msgid "Pass phrase check failed\n"
 msgstr "Adgangskode ikke godkendt\n"
 
-#: rpmqv.c:580
+#: rpmqv.c:538
 #, c-format
 msgid "Pass phrase is good.\n"
 msgstr "Adgangskode godkendt.\n"
 
-#: rpmqv.c:585
+#: rpmqv.c:543
 #, c-format
 msgid "Invalid %%_signature spec in macro file.\n"
 msgstr "Ugyldig angivelse af %%_signature i makrofil.\n"
 
-#: rpmqv.c:592
+#: rpmqv.c:550
 msgid "--sign may only be used during package building"
 msgstr "--sign kan kun bruges ved pakkeopbygning"
 
-#: rpmqv.c:609
+#: rpmqv.c:567
 #, c-format
 msgid "exec failed\n"
 msgstr "eksekvering mislykkedes\n"
 
-#: rpmqv.c:645
+#: rpmqv.c:603
 msgid "no packages files given for rebuild"
 msgstr "ingen pakkefiler angivet til genopbygning"
 
-#: rpmqv.c:715
+#: rpmqv.c:673
 msgid "no spec files given for build"
 msgstr "ingen spec-fil angivet til opbygning"
 
-#: rpmqv.c:717
+#: rpmqv.c:675
 msgid "no tar files given for build"
 msgstr "ingen tar-arkiver angivet til opbygning"
 
-#: rpmqv.c:739
+#: rpmqv.c:696
 #, fuzzy
 msgid "no packages given for erase"
 msgstr "ingen pakker angivet ved installation"
 
-#: rpmqv.c:779
+#: rpmqv.c:740
 msgid "no packages given for install"
 msgstr "ingen pakker angivet ved installation"
 
-#: rpmqv.c:796
+#: rpmqv.c:760
 msgid "no arguments given for query"
 msgstr "ingen parametre angivet ved forespørgsel"
 
-#: rpmqv.c:811
+#: rpmqv.c:777
 msgid "no arguments given for verify"
 msgstr "ingen parametre angivet ved verifikation"
 
-#: rpmqv.c:826
+#: rpmqv.c:792
 #, fuzzy
 msgid "no arguments given"
 msgstr "ingen parametre angivet ved forespørgsel"
 
-#: build/build.c:132 build/pack.c:511
+#: build/build.c:138 build/pack.c:609
 msgid "Unable to open temp file.\n"
 msgstr "Kunne ikke åbne midlertidig fil.\n"
 
-#: build/build.c:225
+#: build/build.c:231
 #, c-format
 msgid "Executing(%s): %s\n"
 msgstr "Udfører(%s): %s\n"
 
-#. @=boundsread@
-#: build/build.c:235
+#: build/build.c:241
 #, c-format
 msgid "Exec of %s failed (%s): %s\n"
 msgstr "Udførelse af %s mislykkedes (%s): %s\n"
 
-#: build/build.c:244
+#: build/build.c:250
 #, c-format
 msgid "Bad exit status from %s (%s)\n"
 msgstr "Fejl-afslutningsstatus fra %s (%s)\n"
 
-#: build/build.c:355
+#: build/build.c:361
 msgid ""
 "\n"
 "\n"
@@ -403,205 +383,208 @@ msgstr "tolkningsfejl i udtryk\n"
 msgid "unmatched (\n"
 msgstr "uparret (\n"
 
-#: build/expression.c:382
+#: build/expression.c:384
 msgid "- only on numbers\n"
 msgstr "- kun for tal\n"
 
-#: build/expression.c:398
+#: build/expression.c:400
 msgid "! only on numbers\n"
 msgstr "! kun for tal\n"
 
-#: build/expression.c:446 build/expression.c:501 build/expression.c:566
-#: build/expression.c:663
+#: build/expression.c:448 build/expression.c:503 build/expression.c:568
+#: build/expression.c:665
 msgid "types must match\n"
 msgstr "typer skal passe sammen\n"
 
-#: build/expression.c:459
+#: build/expression.c:461
 msgid "* / not suported for strings\n"
 msgstr "* / understøttes ikke for strenge\n"
 
-#: build/expression.c:517
+#: build/expression.c:519
 msgid "- not suported for strings\n"
 msgstr "- understøttes ikke for strenge\n"
 
-#: build/expression.c:676
+#: build/expression.c:678
 msgid "&& and || not suported for strings\n"
 msgstr "&& og || understøttes ikke for strenge\n"
 
-#: build/expression.c:710 build/expression.c:759
+#: build/expression.c:712 build/expression.c:761
 msgid "syntax error in expression\n"
 msgstr "syntaksfejl i udtryk\n"
 
-#: build/files.c:289
+#: build/files.c:290
 #, c-format
 msgid "TIMECHECK failure: %s\n"
 msgstr "TIMECHECK-fejl: %s\n"
 
-#: build/files.c:354 build/files.c:554 build/files.c:750
+#: build/files.c:355 build/files.c:555 build/files.c:751
 #, c-format
 msgid "Missing '(' in %s %s\n"
 msgstr "Manglende '(' i %s %s\n"
 
-#: build/files.c:365 build/files.c:684 build/files.c:761
+#: build/files.c:366 build/files.c:685 build/files.c:762
 #, c-format
 msgid "Missing ')' in %s(%s\n"
 msgstr "Manglende ')' i %s %s\n"
 
-#: build/files.c:403 build/files.c:709
+#: build/files.c:404 build/files.c:710
 #, c-format
 msgid "Invalid %s token: %s\n"
 msgstr "Ugyldigt %s-symbol: %s\n"
 
-#: build/files.c:513
+#: build/files.c:514
 #, fuzzy, c-format
 msgid "Missing %s in %s %s\n"
 msgstr "Manglende '(' i %s %s\n"
 
-#: build/files.c:570
+#: build/files.c:571
 #, c-format
 msgid "Non-white space follows %s(): %s\n"
 msgstr "Ikke-mellemrum efterfølger %s(): %s\n"
 
-#: build/files.c:608
+#: build/files.c:609
 #, c-format
 msgid "Bad syntax: %s(%s)\n"
 msgstr "Ugyldig syntaks: %s(%s)\n"
 
-#: build/files.c:618
+#: build/files.c:619
 #, c-format
 msgid "Bad mode spec: %s(%s)\n"
 msgstr "Ugyldig tilstandsangivelse: %s(%s)\n"
 
-#: build/files.c:630
+#: build/files.c:631
 #, c-format
 msgid "Bad dirmode spec: %s(%s)\n"
 msgstr "Ugyldig dirmode-spec: %s(%s)\n"
 
-#: build/files.c:788
+#: build/files.c:789
 #, c-format
 msgid "Unusual locale length: \"%.*s\" in %%lang(%s)\n"
 msgstr "Anormal locale-længde: \"%.*s\" i %%lang(%s)\n"
 
-#. @innercontinue@
-#: build/files.c:799
+#: build/files.c:800
 #, c-format
 msgid "Duplicate locale %.*s in %%lang(%s)\n"
 msgstr "Dobbelt locale %.*s i %%lang(%s)\n"
 
-#: build/files.c:929
+#: build/files.c:930
 #, c-format
 msgid "Hit limit for %%docdir\n"
 msgstr "Træfningsgrænse for %%docdir\n"
 
-#: build/files.c:937
+#: build/files.c:938
 #, c-format
 msgid "Only one arg for %%docdir\n"
 msgstr "Kun et parameter for %%docdir\n"
 
-#. We already got a file -- error
-#: build/files.c:971
+#: build/files.c:972
 #, c-format
 msgid "Two files on one line: %s\n"
 msgstr "To filer på én linie: %s\n"
 
-#: build/files.c:990
+#: build/files.c:994
 #, c-format
 msgid "File must begin with \"/\": %s\n"
 msgstr "Fil skal begynde med \"/\": %s\n"
 
-#: build/files.c:1003
+#: build/files.c:1012
 #, c-format
 msgid "Can't mix special %%doc with other forms: %s\n"
 msgstr "Kan ikke blande special-%%doc med andre former: %s\n"
 
-#: build/files.c:1161
+#: build/files.c:1029
+#, c-format
+msgid "illegal _docdir_fmt: %s\n"
+msgstr ""
+
+#: build/files.c:1307
 #, c-format
 msgid "File listed twice: %s\n"
 msgstr "Fil angivet to gange: %s\n"
 
-#: build/files.c:1300
+#: build/files.c:1481
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr "Symbolsk lænke peger på BuildRoot: %s -> %s\n"
 
-#: build/files.c:1547
+#: build/files.c:1738
 #, c-format
 msgid "File doesn't match prefix (%s): %s\n"
 msgstr "Fil passer ikke til præfiks (%s): %s\n"
 
-#: build/files.c:1571
+#: build/files.c:1762
 #, c-format
 msgid "File not found: %s\n"
 msgstr "Fil ikke fundet: %s\n"
 
-#: build/files.c:1783
+#: build/files.c:1977
 #, c-format
 msgid "%s: can't load unknown tag (%d).\n"
 msgstr ""
 
-#: build/files.c:1789
+#: build/files.c:1983
 #, fuzzy, c-format
 msgid "%s: public key read failed.\n"
 msgstr "%s: readLead mislykkedes\n"
 
-#: build/files.c:1793 lib/rpmchecksig.c:601
+#: build/files.c:1987 lib/rpmchecksig.c:614
 #, c-format
 msgid "%s: not an armored public key.\n"
 msgstr ""
 
-#: build/files.c:1800
+#: build/files.c:1994
 #, fuzzy, c-format
 msgid "%s: *.te policy read failed.\n"
 msgstr "%s: readLead mislykkedes\n"
 
-#: build/files.c:1853
+#: build/files.c:2047
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "Fil kræver foranstillet \"/\": %s\n"
 
-#: build/files.c:1877
+#: build/files.c:2071
 #, fuzzy, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "linie %d: Filnavn ikke tilladt: %s\n"
 
-#: build/files.c:1894 lib/rpminstall.c:362
+#: build/files.c:2088 lib/rpminstall.c:375
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Fil ikke fundet med glob: %s\n"
 
-#: build/files.c:1954
+#: build/files.c:2148
 #, c-format
 msgid "Could not open %%files file %s: %s\n"
 msgstr "Kunne ikke åbne '%%files'-fil %s: %s\n"
 
-#: build/files.c:1965 build/pack.c:156
+#: build/files.c:2159 build/pack.c:155
 #, c-format
 msgid "line: %s\n"
 msgstr "linie: %s\n"
 
-#: build/files.c:2362
+#: build/files.c:2544
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "Ugyldig fil: %s: %s\n"
 
-#: build/files.c:2374 build/parsePrep.c:50
+#: build/files.c:2556 build/parsePrep.c:50
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "Ugyldig ejer/gruppe: %s\n"
 
-#: build/files.c:2418
+#: build/files.c:2601
 #, fuzzy, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "udpakning af arkiv mislykkedes%s%s: %s\n"
 
-#: build/files.c:2441
+#: build/files.c:2618
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
 "%s"
 msgstr ""
 
-#: build/files.c:2469
+#: build/files.c:2648
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "Gennemløber filer: %s-%s-%s\n"
@@ -657,136 +640,136 @@ msgstr "cpio_copy-skrivning mislykkedes: %s\n"
 msgid "cpio_copy read failed: %s\n"
 msgstr "cpio_copy-læsning mislykkedes: %s\n"
 
-#: build/pack.c:222 build/pack.c:236
+#: build/pack.c:219 build/pack.c:233
 #, c-format
 msgid "Could not open PreIn file: %s\n"
 msgstr "Kunne ikke åbne 'PreIn'-fil: %s\n"
 
-#: build/pack.c:229
+#: build/pack.c:226
 #, c-format
 msgid "Could not open PreUn file: %s\n"
 msgstr "Kunne ikke åbne 'PreUn'-fil: %s\n"
 
-#: build/pack.c:243
+#: build/pack.c:240
 #, c-format
 msgid "Could not open PostIn file: %s\n"
 msgstr "Kunne ikke åbne 'PostIn'-fil: %s\n"
 
-#: build/pack.c:250 build/pack.c:257
+#: build/pack.c:247 build/pack.c:254
 #, c-format
 msgid "Could not open PostUn file: %s\n"
 msgstr "Kunne ikke åbne 'PostUn'-fil: %s\n"
 
-#: build/pack.c:265
+#: build/pack.c:262
 #, c-format
 msgid "Could not open VerifyScript file: %s\n"
 msgstr "Kunne ikke åbne 'VerifyScript'-fil: %s\n"
 
-#: build/pack.c:280
+#: build/pack.c:277
 #, c-format
 msgid "Could not open Trigger script file: %s\n"
 msgstr "Kunne ikke åbne skriptfilen Trigger: %s\n"
 
-#: build/pack.c:309
+#: build/pack.c:306
 #, c-format
 msgid "readRPM: open %s: %s\n"
 msgstr "readRPM: åbn %s: %s\n"
 
-#: build/pack.c:319
+#: build/pack.c:316
 #, c-format
 msgid "readRPM: read %s: %s\n"
 msgstr "readRPM: læs %s: %s\n"
 
-#: build/pack.c:328 build/pack.c:557
+#: build/pack.c:325 build/pack.c:656
 #, fuzzy, c-format
 msgid "%s: Fseek failed: %s\n"
 msgstr "%s: Fread mislykkedes: %s\n"
 
-#: build/pack.c:360
+#: build/pack.c:357
 #, c-format
 msgid "readRPM: %s is not an RPM package\n"
 msgstr "readRPM: %s er ikke nogen RPM-pakke\n"
 
-#: build/pack.c:365
+#: build/pack.c:362
 #, c-format
 msgid "readRPM: reading header from %s\n"
 msgstr "readRPM: læser hoved fra %s\n"
 
-#: build/pack.c:499
+#: build/pack.c:596
 #, fuzzy
 msgid "Unable to create immutable header region.\n"
 msgstr "Kunne ikke læse hoved fra %s: %s\n"
 
-#: build/pack.c:518
+#: build/pack.c:616
 #, fuzzy
 msgid "Unable to write temp header\n"
 msgstr "Kunne ikke skrive hoved til %s: %s\n"
 
-#: build/pack.c:528
+#: build/pack.c:626
 msgid "Bad CSA data\n"
 msgstr "Ugyldige CSA-data\n"
 
-#: build/pack.c:564
+#: build/pack.c:663
 #, fuzzy
 msgid "Unable to write final header\n"
 msgstr "Kunne ikke skrive hoved til %s: %s\n"
 
-#: build/pack.c:584
+#: build/pack.c:683
 #, c-format
 msgid "Generating signature: %d\n"
 msgstr "Genererer signatur: %d\n"
 
-#: build/pack.c:602
+#: build/pack.c:701
 #, fuzzy
 msgid "Unable to reload signature header.\n"
 msgstr "Kunne ikke læse hoved fra %s: %s\n"
 
-#: build/pack.c:610
+#: build/pack.c:709
 #, c-format
 msgid "Could not open %s: %s\n"
 msgstr "Kunne ikke åbne %s: %s\n"
 
-#: build/pack.c:646 lib/psm.c:1632
+#: build/pack.c:744 lib/psm.c:1844
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr "Kunne ikke skrive pakke: %s\n"
 
-#: build/pack.c:661
+#: build/pack.c:759
 #, c-format
 msgid "Unable to open sigtarget %s: %s\n"
 msgstr "Kunne ikke åbne sigtarget %s: %s\n"
 
-#: build/pack.c:672
+#: build/pack.c:770
 #, c-format
 msgid "Unable to read header from %s: %s\n"
 msgstr "Kunne ikke læse hoved fra %s: %s\n"
 
-#: build/pack.c:686
+#: build/pack.c:784
 #, c-format
 msgid "Unable to write header to %s: %s\n"
 msgstr "Kunne ikke skrive hoved til %s: %s\n"
 
-#: build/pack.c:696
+#: build/pack.c:794
 #, c-format
 msgid "Unable to read payload from %s: %s\n"
 msgstr "Kunne ikke læse pakkeindhold fra %s: %s\n"
 
-#: build/pack.c:702
+#: build/pack.c:800
 #, c-format
 msgid "Unable to write payload to %s: %s\n"
 msgstr "Kunne ikke skrive pakkeindhold til %s: %s\n"
 
-#: build/pack.c:739 lib/psm.c:1901
+#: build/pack.c:837 lib/psm.c:2119
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "Skrev: %s\n"
 
-#: build/pack.c:812
+#: build/pack.c:905
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr "Kunne ikke generere filnavn til oprettelse af pakke %s: %s\n"
 
-#: build/pack.c:829
+#: build/pack.c:922
 #, c-format
 msgid "cannot create %s: %s\n"
 msgstr "kan ikke oprette %s: %s\n"
@@ -796,32 +779,32 @@ msgstr "kan ikke oprette %s: %s\n"
 msgid "line %d: second %s\n"
 msgstr "linie %d: anden %s\n"
 
-#: build/parseChangelog.c:128
+#: build/parseChangelog.c:151
 #, c-format
 msgid "%%changelog entries must start with *\n"
 msgstr "'%%changelog'-indgange skal starte med *\n"
 
-#: build/parseChangelog.c:136
+#: build/parseChangelog.c:159
 #, c-format
 msgid "incomplete %%changelog entry\n"
 msgstr "ufærdig '%%changelog'-indgang\n"
 
-#: build/parseChangelog.c:153
+#: build/parseChangelog.c:176
 #, c-format
 msgid "bad date in %%changelog: %s\n"
 msgstr "ugyldig dato i %%changelog: %s\n"
 
-#: build/parseChangelog.c:158
+#: build/parseChangelog.c:181
 #, fuzzy, c-format
 msgid "%%changelog not in descending chronological order\n"
 msgstr "%%changelog ikke i omvendt kronologisk rækkefølge\n"
 
-#: build/parseChangelog.c:166 build/parseChangelog.c:177
+#: build/parseChangelog.c:189 build/parseChangelog.c:200
 #, c-format
 msgid "missing name in %%changelog\n"
 msgstr "navn mangler i %%changelog\n"
 
-#: build/parseChangelog.c:184
+#: build/parseChangelog.c:207
 #, c-format
 msgid "no description in %%changelog\n"
 msgstr "ingen beskrivelse i %%changelog\n"
@@ -831,17 +814,17 @@ msgstr "ingen beskrivelse i %%changelog\n"
 msgid "line %d: Error parsing %%description: %s\n"
 msgstr "linie %d: Fejl ved tolkning af %%description: %s\n"
 
-#: build/parseDescription.c:60 build/parseFiles.c:56 build/parseScript.c:222
+#: build/parseDescription.c:60 build/parseFiles.c:56 build/parseScript.c:232
 #, c-format
 msgid "line %d: Bad option %s: %s\n"
 msgstr "linie %d: Ugyldigt tilvalg %s: %s\n"
 
-#: build/parseDescription.c:71 build/parseFiles.c:70 build/parseScript.c:236
+#: build/parseDescription.c:71 build/parseFiles.c:70 build/parseScript.c:246
 #, c-format
 msgid "line %d: Too many names: %s\n"
 msgstr "line %d: For mange navne: %s\n"
 
-#: build/parseDescription.c:79 build/parseFiles.c:79 build/parseScript.c:245
+#: build/parseDescription.c:79 build/parseFiles.c:79 build/parseScript.c:255
 #, c-format
 msgid "line %d: Package does not exist: %s\n"
 msgstr "line %d: Pakken eksisterer ikke: %s\n"
@@ -861,483 +844,490 @@ msgstr "linie %d: Fejl ved tolkning af %%files: %s\n"
 msgid "line %d: Second %%files list\n"
 msgstr "linie %d: Anden '%%files'-liste\n"
 
-#: build/parsePreamble.c:244
+#: build/parsePreamble.c:243
 #, c-format
 msgid "Architecture is excluded: %s\n"
 msgstr "Arkitekturen er ekskluderet: %s\n"
 
-#: build/parsePreamble.c:249
+#: build/parsePreamble.c:247
 #, c-format
 msgid "Architecture is not included: %s\n"
 msgstr "Arkitekturen er ikke inkluderet: %s\n"
 
-#: build/parsePreamble.c:254
+#: build/parsePreamble.c:251
 #, c-format
 msgid "OS is excluded: %s\n"
 msgstr "OS er ekskluderet: %s\n"
 
-#: build/parsePreamble.c:259
+#: build/parsePreamble.c:255
 #, c-format
 msgid "OS is not included: %s\n"
 msgstr "OS is ikke inkluderet: %s\n"
 
-#: build/parsePreamble.c:282
+#: build/parsePreamble.c:281
 #, c-format
 msgid "%s field must be present in package: %s\n"
 msgstr "'%s'-felt skal være tilstede i pakke : %s\n"
 
-#: build/parsePreamble.c:311
+#: build/parsePreamble.c:310
 #, c-format
 msgid "Duplicate %s entries in package: %s\n"
 msgstr "Flere '%s'-indgange i pakke: %s\n"
 
-#: build/parsePreamble.c:374
+#: build/parsePreamble.c:376
+msgid "No icon file in sources\n"
+msgstr ""
+
+#: build/parsePreamble.c:393
+#, fuzzy, c-format
+msgid "Invalid icon URL: %s\n"
+msgstr "Ugyldigt %s-symbol: %s\n"
+
+#: build/parsePreamble.c:400
 #, c-format
 msgid "Unable to open icon %s: %s\n"
 msgstr "Kunne ikke åbne ikon %s: %s\n"
 
-#: build/parsePreamble.c:392
+#: build/parsePreamble.c:409
 #, c-format
 msgid "Unable to read icon %s: %s\n"
 msgstr "Kunne ikke læse ikon %s: %s\n"
 
-#: build/parsePreamble.c:405
+#: build/parsePreamble.c:414
+#, c-format
+msgid "Icon %s is too big (max. %d bytes)\n"
+msgstr ""
+
+#: build/parsePreamble.c:424
 #, c-format
 msgid "Unknown icon type: %s\n"
 msgstr "Ukendt ikontype: %s\n"
 
-#: build/parsePreamble.c:450
+#: build/parsePreamble.c:472
 #, fuzzy, c-format
 msgid "line %d: Tag takes single token only: %s\n"
 msgstr "linie %d: Ugyldigt tilvalg %s: %s\n"
 
-#: build/parsePreamble.c:490
+#: build/parsePreamble.c:512
 #, c-format
 msgid "line %d: Malformed tag: %s\n"
 msgstr "linie %d: Forkert udformet mærke: %s\n"
 
-#. Empty field
-#: build/parsePreamble.c:498
+#: build/parsePreamble.c:520
 #, c-format
 msgid "line %d: Empty tag: %s\n"
 msgstr "linie %d: Tomt mærke: %s\n"
 
-#: build/parsePreamble.c:522 build/parsePreamble.c:529
+#: build/parsePreamble.c:544 build/parsePreamble.c:551
 #, c-format
 msgid "line %d: Illegal char '-' in %s: %s\n"
 msgstr "linie %d: Ugyldigt tegn '-' i %s: %s\n"
 
-#: build/parsePreamble.c:590 build/parseSpec.c:472
+#: build/parsePreamble.c:584
 #, c-format
 msgid "BuildRoot can not be \"/\": %s\n"
 msgstr "BuildRoot kan ikke være \"/\": %s\n"
 
-#: build/parsePreamble.c:603
+#: build/parsePreamble.c:600
+#, fuzzy, c-format
+msgid "line %d: Prefixes must begin with \"/\": %s\n"
+msgstr "linie %d: Præfikser kan ikke ende på \"/\": %s\n"
+
+#: build/parsePreamble.c:608
 #, c-format
 msgid "line %d: Prefixes must not end with \"/\": %s\n"
 msgstr "linie %d: Præfikser kan ikke ende på \"/\": %s\n"
 
-#: build/parsePreamble.c:615
+#: build/parsePreamble.c:620
 #, c-format
 msgid "line %d: Docdir must begin with '/': %s\n"
 msgstr "linie %d: Docdir skal starte med '/': %s\n"
 
-#: build/parsePreamble.c:627
-#, c-format
-msgid "line %d: Epoch/Serial field must be a number: %s\n"
-msgstr "linie %d: Epoch/Serial-felter skal være et nummer: %s\n"
+#: build/parsePreamble.c:634
+#, fuzzy, c-format
+msgid "line %d: %s takes an integer value: %s\n"
+msgstr "linie %d: Ugyldigt tilvalg %s: %s\n"
 
-#: build/parsePreamble.c:667 build/parsePreamble.c:678
+#: build/parsePreamble.c:676 build/parsePreamble.c:687
 #, c-format
 msgid "line %d: Bad %s: qualifiers: %s\n"
 msgstr "linie %d: Ugyldig %s: angivere: %s\n"
 
-#: build/parsePreamble.c:704
+#: build/parsePreamble.c:731
 #, c-format
 msgid "line %d: Bad BuildArchitecture format: %s\n"
 msgstr "linie %d: Ugyldigt 'BuildArchitecture'-format: %s\n"
 
-#: build/parsePreamble.c:713
+#: build/parsePreamble.c:740
 #, c-format
 msgid "Internal error: Bogus tag %d\n"
 msgstr "Intern fejl: Falsk mærke %d\n"
 
-#: build/parsePreamble.c:815
+#: build/parsePreamble.c:844
 #, c-format
 msgid "Legacy syntax is unsupported: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:882
+#: build/parsePreamble.c:913
 #, c-format
 msgid "Bad package specification: %s\n"
 msgstr "Ugyldig pakkeangivelse: %s\n"
 
-#: build/parsePreamble.c:888
+#: build/parsePreamble.c:919
 #, c-format
 msgid "Package already exists: %s\n"
 msgstr "Pakken eksisterer allerede: %s\n"
 
-#: build/parsePreamble.c:917
+#: build/parsePreamble.c:948
 #, c-format
 msgid "line %d: Unknown tag: %s\n"
 msgstr "linie %d: Ukendt mærke: %s\n"
-
-#: build/parsePreamble.c:939
-msgid "Spec file can't use BuildRoot\n"
-msgstr "Spec-fil kan ikke bruge BuildRoot\n"
 
 #: build/parsePrep.c:45
 #, c-format
 msgid "Bad source: %s: %s\n"
 msgstr "Ugyldig kilde: %s: %s\n"
 
-#: build/parsePrep.c:86
+#: build/parsePrep.c:101
 #, c-format
 msgid "No patch number %d\n"
 msgstr "Ingen lap nummer %d\n"
 
-#: build/parsePrep.c:183
+#: build/parsePrep.c:200
 #, c-format
 msgid "No source number %d\n"
 msgstr "Ingen kilde nummer %d\n"
 
-#: build/parsePrep.c:205
-#, c-format
-msgid "Couldn't download nosource %s: %s\n"
-msgstr "Kunne ikke hente nosource %s: %s\n"
-
-#: build/parsePrep.c:311
+#: build/parsePrep.c:316
 #, c-format
 msgid "Error parsing %%setup: %s\n"
 msgstr "Fejl ved tolking af %%setup: %s\n"
 
-#: build/parsePrep.c:326
+#: build/parsePrep.c:331
 #, fuzzy, c-format
 msgid "line %d: Bad arg to %%setup: %s\n"
 msgstr "linie %d: Ugyldigt parameter til %%setup %c: %s\n"
 
-#: build/parsePrep.c:344
+#: build/parsePrep.c:349
 #, c-format
 msgid "line %d: Bad %%setup option %s: %s\n"
 msgstr "linie %d: Ugyldigt '%%setup'-tilvalg %s: %s\n"
 
-#: build/parsePrep.c:486
+#: build/parsePrep.c:491
 #, c-format
 msgid "line %d: Need arg to %%patch -b: %s\n"
 msgstr "linie %d: Kræver parameter til %%patch -b: %s\n"
 
-#: build/parsePrep.c:495
+#: build/parsePrep.c:500
 #, c-format
 msgid "line %d: Need arg to %%patch -z: %s\n"
 msgstr "linie %d: Kræver parameter til %%patch -z: %s\n"
 
-#: build/parsePrep.c:507
+#: build/parsePrep.c:512
 #, c-format
 msgid "line %d: Need arg to %%patch -p: %s\n"
 msgstr "linie %d: Kræver parameter til %%patch -p: %s\n"
 
-#: build/parsePrep.c:514
+#: build/parsePrep.c:519
 #, c-format
 msgid "line %d: Bad arg to %%patch -p: %s\n"
 msgstr "linie %d: Ugyldigt parameter til %%patch -p: %s\n"
 
-#: build/parsePrep.c:521
+#: build/parsePrep.c:526
 msgid "Too many patches!\n"
 msgstr "For mange lapper (patches)!\n"
 
-#: build/parsePrep.c:525
+#: build/parsePrep.c:530
 #, c-format
 msgid "line %d: Bad arg to %%patch: %s\n"
 msgstr "linie %d: Ugyldigt parameter til %%patch: %s\n"
 
-#: build/parsePrep.c:561
+#: build/parsePrep.c:624
+#, fuzzy, c-format
+msgid "Missing %s%d %s: %s\n"
+msgstr "Manglende '(' i %s %s\n"
+
+#: build/parsePrep.c:632
+#, fuzzy, c-format
+msgid "file %s missing: %s\n"
+msgstr "fil %s: %s\n"
+
+#: build/parsePrep.c:640
+#, fuzzy, c-format
+msgid "Fetching %s failed: %s\n"
+msgstr "%s mislykkedes\n"
+
+#: build/parsePrep.c:662
 #, c-format
 msgid "line %d: second %%prep\n"
 msgstr "linie %d: anden %%prep\n"
 
-#: build/parseReqs.c:102
-#, c-format
+#: build/parseReqs.c:101
+#, fuzzy, c-format
 msgid ""
-"line %d: Dependency tokens must begin with alpha-numeric, '_' or '/': %s\n"
+"line %d: Dependency \"%s\" must begin with alpha-numeric, '_' or '/': %s\n"
 msgstr ""
 "linie %d: Afhængigheds-symbol skal starte med alfanumerisk, '_' eller '/': %"
 "s\n"
 
-#: build/parseReqs.c:130
+#: build/parseReqs.c:125
 #, c-format
 msgid "line %d: Versioned file name not permitted: %s\n"
 msgstr "linie %d: Filnavn med version ikke tilladt: %s\n"
 
-#: build/parseReqs.c:161
+#: build/parseReqs.c:143
 #, c-format
 msgid "line %d: Version required: %s\n"
 msgstr "linie %d: Version kræves %s\n"
 
-#: build/parseScript.c:180
+#: build/parseScript.c:188
 #, c-format
 msgid "line %d: triggers must have --: %s\n"
 msgstr "linie %d: udløsere skal have --: %s\n"
 
-#: build/parseScript.c:190 build/parseScript.c:261
+#: build/parseScript.c:198 build/parseScript.c:271
 #, c-format
 msgid "line %d: Error parsing %s: %s\n"
 msgstr "linie %d: Fejl under tolkning af %s: %s\n"
 
-#: build/parseScript.c:202
+#: build/parseScript.c:210
 #, fuzzy, c-format
 msgid "line %d: internal script must end with '>': %s\n"
 msgstr "linie %d: skriptprogram skal starte med '/': %s\n"
 
-#: build/parseScript.c:209
+#: build/parseScript.c:219
 #, c-format
 msgid "line %d: script program must begin with '/': %s\n"
 msgstr "linie %d: skriptprogram skal starte med '/': %s\n"
 
-#: build/parseScript.c:253
+#: build/parseScript.c:263
 #, c-format
 msgid "line %d: Second %s\n"
 msgstr "linie %d: Anden %s\n"
 
-#: build/parseScript.c:296
+#: build/parseScript.c:309
 #, fuzzy, c-format
 msgid "line %d: unsupported internal script: %s\n"
 msgstr "linie %d: Fejl ved tolkning af %%description: %s\n"
 
-#: build/parseSpec.c:201
+#: build/parseSpec.c:202
 #, c-format
 msgid "line %d: %s\n"
 msgstr "linie %d: %s\n"
 
-#. XXX Fstrerror
-#: build/parseSpec.c:253
+#: build/parseSpec.c:254
 #, c-format
 msgid "Unable to open %s: %s\n"
 msgstr ""
 "Kunne ikke åbne %s: %s\n"
 "\n"
 
-#: build/parseSpec.c:269
+#: build/parseSpec.c:270
 #, c-format
 msgid "Unclosed %%if\n"
 msgstr "Ikke-lukket %%if\n"
 
-#: build/parseSpec.c:346
+#: build/parseSpec.c:340
 #, c-format
 msgid "%s:%d: parseExpressionBoolean returns %d\n"
 msgstr "%s:%d: parseExpressionBoolean returnerer %d\n"
 
-#: build/parseSpec.c:355
+#: build/parseSpec.c:349
 #, c-format
 msgid "%s:%d: Got a %%else with no %%if\n"
 msgstr "%s:%d: Fik et %%else uden et %%if\n"
 
-#: build/parseSpec.c:367
+#: build/parseSpec.c:361
 #, c-format
 msgid "%s:%d: Got a %%endif with no %%if\n"
 msgstr "%s:%d: Fik et %%endif uden et %%if\n"
 
-#: build/parseSpec.c:381 build/parseSpec.c:390
+#: build/parseSpec.c:375 build/parseSpec.c:384
 #, c-format
 msgid "malformed %%include statement\n"
 msgstr "forkert udført '%%include'-kommando\n"
 
-#: build/parseSpec.c:593
+#: build/parseSpec.c:564
 #, fuzzy
 msgid "No compatible architectures found for build\n"
 msgstr "Ingen arkitekturer, der kan opbygges\n"
 
-#: build/parseSpec.c:654
+#: build/parseSpec.c:605
 #, c-format
 msgid "Package has no %%description: %s\n"
 msgstr "Pakke har ingen %%description: %s\n"
 
-#: build/poptBT.c:108
-#, c-format
-msgid "buildroot already specified, ignoring %s\n"
-msgstr ""
-"buildroot allerede angivet, ignorerer %s\n"
-"\n"
-
-#: build/poptBT.c:160
+#: build/poptBT.c:142
 #, c-format
 msgid "build through %prep (unpack sources and apply patches) from <specfile>"
 msgstr "opbyg gennem %prep (udpak kilder og påfør lapper) ud fra <spec-fil>"
 
-#: build/poptBT.c:161 build/poptBT.c:164 build/poptBT.c:167 build/poptBT.c:170
-#: build/poptBT.c:173 build/poptBT.c:176 build/poptBT.c:179
+#: build/poptBT.c:143 build/poptBT.c:146 build/poptBT.c:149 build/poptBT.c:152
+#: build/poptBT.c:155 build/poptBT.c:158 build/poptBT.c:161
 msgid "<specfile>"
 msgstr "<spec-fil>"
 
-#: build/poptBT.c:163
+#: build/poptBT.c:145
 msgid "build through %build (%prep, then compile) from <specfile>"
 msgstr "opbyg gennem %build (%prep, så oversæt) ud fra <spec-fil>"
 
-#: build/poptBT.c:166
+#: build/poptBT.c:148
 msgid "build through %install (%prep, %build, then install) from <specfile>"
 msgstr "opbyg gennem %install (%prep, %build, så installér) ud fra <spec-fil>"
 
-#: build/poptBT.c:169
+#: build/poptBT.c:151
 #, c-format
 msgid "verify %files section from <specfile>"
 msgstr "verificér afsnittet %files ud fra <spec-fil>"
 
-#: build/poptBT.c:172
+#: build/poptBT.c:154
 msgid "build source and binary packages from <specfile>"
 msgstr "opbyg kilde- og binærpakke ud fra <spec-fil>"
 
-#: build/poptBT.c:175
+#: build/poptBT.c:157
 msgid "build binary package only from <specfile>"
 msgstr "opbyg kun binærpakke ud fra <spec-fil>"
 
-#: build/poptBT.c:178
+#: build/poptBT.c:160
 msgid "build source package only from <specfile>"
 msgstr "opbyg kun kildepakke ud fra <spec-fil>"
 
-#: build/poptBT.c:182
+#: build/poptBT.c:164
 #, c-format
 msgid "build through %prep (unpack sources and apply patches) from <tarball>"
 msgstr "opbyg gennem %prep (udpak kilder og påfør lapper) ud fra <tararkiv>"
 
-#: build/poptBT.c:183 build/poptBT.c:186 build/poptBT.c:189 build/poptBT.c:192
-#: build/poptBT.c:195 build/poptBT.c:198 build/poptBT.c:201
+#: build/poptBT.c:165 build/poptBT.c:168 build/poptBT.c:171 build/poptBT.c:174
+#: build/poptBT.c:177 build/poptBT.c:180 build/poptBT.c:183
 msgid "<tarball>"
 msgstr "<tararkiv>"
 
-#: build/poptBT.c:185
+#: build/poptBT.c:167
 msgid "build through %build (%prep, then compile) from <tarball>"
 msgstr "opbyg gennem %build (%prep, så oversæt) ud fra <tararkiv>"
 
-#: build/poptBT.c:188
+#: build/poptBT.c:170
 msgid "build through %install (%prep, %build, then install) from <tarball>"
 msgstr "opbyg gennem %install (%prep, %build, så installér) ud fra <tararkiv>"
 
-#: build/poptBT.c:191
+#: build/poptBT.c:173
 #, c-format
 msgid "verify %files section from <tarball>"
 msgstr "verificér afsnittet %files fra <tararkiv>"
 
-#: build/poptBT.c:194
+#: build/poptBT.c:176
 msgid "build source and binary packages from <tarball>"
 msgstr "opbyg kilde- og binærpakker ud fra <tararkiv>"
 
-#: build/poptBT.c:197
+#: build/poptBT.c:179
 msgid "build binary package only from <tarball>"
 msgstr "opbyg kun binærpakke ud fra <tararkiv>"
 
-#: build/poptBT.c:200
+#: build/poptBT.c:182
 msgid "build source package only from <tarball>"
 msgstr "opbyg kun kildepakke ud fra <tararkiv>"
 
-#: build/poptBT.c:204
+#: build/poptBT.c:186
 msgid "build binary package from <source package>"
 msgstr "opbyg binærpakke ud fra <kildepakke>"
 
-#: build/poptBT.c:205 build/poptBT.c:208
+#: build/poptBT.c:187 build/poptBT.c:190
 msgid "<source package>"
 msgstr "<kildepakke>"
 
-#: build/poptBT.c:207
+#: build/poptBT.c:189
 msgid ""
 "build through %install (%prep, %build, then install) from <source package>"
 msgstr ""
 "opbyg gennem %install (%prep, %build, så installér) ud fra <kildepakke>"
 
-#: build/poptBT.c:211
-msgid "override build root"
-msgstr "gennemtving opbygningsrod"
-
-#: build/poptBT.c:213
+#: build/poptBT.c:193
 msgid "remove build tree when done"
 msgstr "fjern bygge-træ ved afslutning"
 
-#: build/poptBT.c:215 rpmdb/poptDB.c:28
-msgid "generate headers compatible with rpm4 packaging"
-msgstr "generér hoveder, der er kompatible med rpm4-indpakningsversionen"
-
-#: build/poptBT.c:217
+#: build/poptBT.c:195
 msgid "ignore ExcludeArch: directives from spec file"
 msgstr "ignorér 'ExcludeArch':-angivelser fra spec-fil"
 
-#: build/poptBT.c:219
+#: build/poptBT.c:197
 msgid "debug file state machine"
 msgstr ""
 
-#: build/poptBT.c:221
+#: build/poptBT.c:199
 msgid "do not execute any stages of the build"
 msgstr "udfør ingen stadier af opbygningen"
 
-#: build/poptBT.c:223
+#: build/poptBT.c:201
 #, fuzzy
 msgid "do not verify build dependencies"
 msgstr "undlad at tjekke pakkers afhængighedskrav"
 
-#: build/poptBT.c:225
-msgid "generate package header(s) compatible with (legacy) rpm[23] packaging"
-msgstr ""
-"generér pakkehoved(er), der er kompatible med (gamle) rpm[23]-indpakninger"
-
-#: build/poptBT.c:229 lib/poptALL.c:275 lib/poptI.c:283 lib/poptQV.c:363
-#: lib/poptQV.c:372 lib/poptQV.c:413
+#: build/poptBT.c:204 lib/poptALL.c:374 lib/poptI.c:355 lib/poptQV.c:415
+#: lib/poptQV.c:424 lib/poptQV.c:466
 #, fuzzy
 msgid "don't verify package digest(s)"
 msgstr "undlad at tjekke pakkers afhængighedskrav"
 
-#: build/poptBT.c:231 lib/poptALL.c:277 lib/poptI.c:285 lib/poptQV.c:366
-#: lib/poptQV.c:374 lib/poptQV.c:416
+#: build/poptBT.c:206 lib/poptALL.c:376 lib/poptI.c:357 lib/poptQV.c:418
+#: lib/poptQV.c:426 lib/poptQV.c:469
 #, fuzzy
 msgid "don't verify database header(s) when retrieved"
 msgstr "tjek ikke pakkens arkitektur"
 
-#: build/poptBT.c:233 lib/poptALL.c:285 lib/poptI.c:287 lib/poptQV.c:369
-#: lib/poptQV.c:376 lib/poptQV.c:418
+#: build/poptBT.c:208 lib/poptALL.c:382 lib/poptI.c:359 lib/poptQV.c:421
+#: lib/poptQV.c:428 lib/poptQV.c:471
 #, fuzzy
 msgid "don't verify package signature(s)"
 msgstr "verificér pakkesignatur"
 
-#: build/poptBT.c:236
+#: build/poptBT.c:211
 msgid "do not accept i18N msgstr's from specfile"
 msgstr "acceptér ikke i18N msgstr'er fra spec-fil"
 
-#: build/poptBT.c:238
+#: build/poptBT.c:213
 msgid "remove sources when done"
 msgstr "fjern kilder ved afslutning"
 
-#: build/poptBT.c:240
+#: build/poptBT.c:215
 msgid "remove specfile when done"
 msgstr "fjern spec-fil ved afslutning"
 
-#: build/poptBT.c:242
+#: build/poptBT.c:217
 msgid "skip straight to specified stage (only for c,i)"
 msgstr "spring direkte til angivet stadium (kun for c,i)"
 
-#: build/poptBT.c:244
+#: build/poptBT.c:219
 msgid "generate PGP/GPG signature"
 msgstr "generér PGP/GPG-signatur"
 
-#: build/poptBT.c:246
+#: build/poptBT.c:221
 msgid "override target platform"
 msgstr "gennemtving målplatform"
 
-#: build/poptBT.c:248
+#: build/poptBT.c:221 lib/poptALL.c:371 lib/poptQV.c:326
+msgid "CPU-VENDOR-OS"
+msgstr ""
+
+#: build/poptBT.c:223
 msgid "lookup i18N strings in specfile catalog"
 msgstr "slå i18N-strenge op i spec-fil katalog"
 
-#: build/spec.c:237
+#: build/spec.c:235
 #, c-format
 msgid "line %d: Bad number: %s\n"
 msgstr "linie %d: Ugyldigt tal: %s\n"
 
-#: build/spec.c:243
+#: build/spec.c:241
 #, c-format
 msgid "line %d: Bad no%s number: %d\n"
 msgstr "linie %d: Ugyldigt 'no%s'-tal: %d\n"
 
-#: build/spec.c:306
+#: build/spec.c:310
 #, c-format
 msgid "line %d: Bad %s number: %s\n"
 msgstr "linie %d: Ugyldigt %s-tal: %s\n"
 
-#: build/spec.c:642
+#: build/spec.c:634
 #, c-format
 msgid "can't query %s: %s\n"
 msgstr "kunne ikke forespørge %s: %s\n"
@@ -1347,252 +1337,331 @@ msgstr "kunne ikke forespørge %s: %s\n"
 msgid "query of specfile %s failed, can't parse\n"
 msgstr "forespørgsel af spec-fil %s mislykkedes, kunne ikke tolkes\n"
 
-#: lib/cpio.c:207
+#: build/spec.c:774
+#, fuzzy, c-format
+msgid "Query specfile for platform(s): %s\n"
+msgstr "Opbygger mål-platforme: %s\n"
+
+#: lib/cpio.c:248
 #, c-format
 msgid "(error 0x%x)"
 msgstr "(fejl 0x%x)"
 
-#: lib/cpio.c:210
+#: lib/cpio.c:251
 msgid "Bad magic"
 msgstr "Ugyldigt magisk tal"
 
-#: lib/cpio.c:211
+#: lib/cpio.c:252
 msgid "Bad/unreadable  header"
 msgstr "Ugyldigt/ulæseligt hoved"
 
-#: lib/cpio.c:233
+#: lib/cpio.c:274
 msgid "Header size too big"
 msgstr "Hovedstørrelse er for stor"
 
-#: lib/cpio.c:234
+#: lib/cpio.c:275
 msgid "Unknown file type"
 msgstr "Ukendt filtype"
 
-#: lib/cpio.c:235
+#: lib/cpio.c:276
 #, fuzzy
 msgid "Missing hard link(s)"
 msgstr "Manglende hård lænke"
 
-#: lib/cpio.c:236
-msgid "MD5 sum mismatch"
+#: lib/cpio.c:277
+#, fuzzy
+msgid "File digest mismatch"
 msgstr "MD5-sum stemmer ikke"
 
-#: lib/cpio.c:237
+#: lib/cpio.c:278
 msgid "Internal error"
 msgstr "Intern fejl"
 
-#: lib/cpio.c:238
+#: lib/cpio.c:279
 msgid "Archive file not in header"
 msgstr ""
 
-#: lib/cpio.c:251
+#: lib/cpio.c:292
 msgid " failed - "
 msgstr " mislykkedes - "
 
-#: lib/depends.c:205
+#: lib/depends.c:299
 #, fuzzy, c-format
 msgid "package %s was already added, skipping %s\n"
 msgstr "pakken %s er allerede installeret"
 
-#: lib/depends.c:219
+#: lib/depends.c:313
 #, fuzzy, c-format
 msgid "package %s was already added, replacing with %s\n"
 msgstr "pakken %s er allerede installeret"
 
-#. @-nullptrarith@
-#: lib/depends.c:364
+#: lib/depends.c:420
+#, fuzzy, c-format
+msgid "   upgrade erases %s\n"
+msgstr "ingen pakker kræver %s\n"
+
+#: lib/depends.c:490
 #, c-format
 msgid "  Obsoletes: %s\t\terases %s\n"
 msgstr ""
 
-#: lib/depends.c:456
+#: lib/depends.c:591
 msgid "(cached)"
 msgstr ""
 
-#: lib/depends.c:483
+#: lib/depends.c:606
 #, fuzzy
-msgid "(rpmrc provides)"
+msgid "(function probe)"
 msgstr "%s: %-45s JA (rpmrc tilfører)\n"
 
-#: lib/depends.c:500
+#: lib/depends.c:625
+msgid "(user lookup)"
+msgstr ""
+
+#: lib/depends.c:642
+msgid "(group lookup)"
+msgstr ""
+
+#: lib/depends.c:651
+#, fuzzy
+msgid "(access probe)"
+msgstr "%s: %-45s JA (rpmrc tilfører)\n"
+
+#: lib/depends.c:673
+#, fuzzy
+msgid "(mtab probe)"
+msgstr "%s: %-45s JA (rpmrc tilfører)\n"
+
+#: lib/depends.c:728
+#, fuzzy
+msgid "(diskspace probe)"
+msgstr "%s: %-45s JA (rpmrc tilfører)\n"
+
+#: lib/depends.c:758
+#, fuzzy
+msgid "(digest probe)"
+msgstr "%s: %-45s JA (rpmrc tilfører)\n"
+
+#: lib/depends.c:771
+#, fuzzy
+msgid "(gnupg probe)"
+msgstr "%s: %-45s JA (rpmrc tilfører)\n"
+
+#: lib/depends.c:784
+#, fuzzy
+msgid "(macro probe)"
+msgstr "%s: %-45s JA (rpmrc tilfører)\n"
+
+#: lib/depends.c:812
+#, fuzzy
+msgid "(envvar probe)"
+msgstr "%s: %-45s JA (rpmrc tilfører)\n"
+
+#: lib/depends.c:839
+#, fuzzy
+msgid "(running probe)"
+msgstr "%s: %-45s JA (rpmrc tilfører)\n"
+
+#: lib/depends.c:852
+#, fuzzy
+msgid "(sysinfo provides)"
+msgstr "%s: %-45s JA (rpmlib tilfører)\n"
+
+#: lib/depends.c:872
 #, fuzzy
 msgid "(rpmlib provides)"
 msgstr "%s: %-45s JA (rpmlib tilfører)\n"
 
-#: lib/depends.c:529
+#: lib/depends.c:888
+#, fuzzy
+msgid "(cpuinfo provides)"
+msgstr "%s: %-45s JA (rpmlib tilfører)\n"
+
+#: lib/depends.c:904
+#, fuzzy
+msgid "(getconf provides)"
+msgstr "%s: %-45s JA (rpmlib tilfører)\n"
+
+#: lib/depends.c:920
+#, fuzzy
+msgid "(uname provides)"
+msgstr "%s: %-45s JA (tilføjede 'provide')\n"
+
+#: lib/depends.c:952
+#, fuzzy
+msgid "(soname provides)"
+msgstr "%s: %-45s JA (tilføjede 'provide')\n"
+
+#: lib/depends.c:979
 #, fuzzy
 msgid "(db files)"
 msgstr "ugyldig db-fil %s\n"
 
-#: lib/depends.c:542
+#: lib/depends.c:992
 #, fuzzy
 msgid "(db provides)"
 msgstr "%s: %-45s JA (db tilfører)\n"
 
-#: lib/depends.c:555
-#, fuzzy
-msgid "(db package)"
-msgstr "ingen pakker\n"
+#: lib/depends.c:1022
+msgid "(hint skipped)"
+msgstr ""
 
-#: lib/depends.c:914
+#: lib/depends.c:1476
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr ""
 
-#: lib/depends.c:1036
+#: lib/depends.c:1604
 #, fuzzy, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "fjerne %s-%s-%s \"%s\" fra tsort-relationer.\n"
 
-#. Record all relations.
-#: lib/depends.c:1273
+#: lib/depends.c:1880
 msgid "========== recording tsort relations\n"
 msgstr "========== gemmer tsort-relationer\n"
 
-#. T4. Scan for zeroes.
-#: lib/depends.c:1367
+#: lib/depends.c:2001
 msgid ""
-"========== tsorting packages (order, #predecessors, #succesors, tree, depth, "
-"breadth)\n"
+"========== tsorting packages (order, #predecessors, #succesors, tree, "
+"Ldepth, Rbreadth)\n"
 msgstr ""
 
-#: lib/depends.c:1456
+#: lib/depends.c:2092
 #, fuzzy, c-format
 msgid "========== successors only (%d bytes)\n"
 msgstr "========== kun efterfølgere (præsentationsrækkefølge)\n"
 
-#: lib/depends.c:1529
+#: lib/depends.c:2165
 msgid "LOOP:\n"
 msgstr "LØKKE:\n"
 
-#: lib/depends.c:1564
+#: lib/depends.c:2196
 msgid "========== continuing tsort ...\n"
 msgstr "========== fortsætter tsort ...\n"
 
-#. Return no. of packages that could not be ordered.
-#: lib/depends.c:1569
+#: lib/depends.c:2201
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""
 
-#: lib/formats.c:39 lib/formats.c:71 lib/formats.c:106 lib/formats.c:520
-#: rpmdb/header.c:3546 rpmdb/header.c:3575 rpmdb/header.c:3599
-msgid "(not a number)"
-msgstr "(ikke et tal)"
+#: lib/formats.c:44 lib/formats.c:76 lib/formats.c:111 lib/formats.c:189
+#: lib/formats.c:780
+msgid "(invalid type)"
+msgstr ""
 
-#: lib/formats.c:171
+#: lib/formats.c:178
 #, fuzzy
 msgid "(not base64)"
 msgstr "(ikke et tal)"
 
-#: lib/formats.c:181
-msgid "(invalid type)"
-msgstr ""
-
-#: lib/formats.c:206 lib/formats.c:406
+#: lib/formats.c:214 lib/formats.c:668
 #, fuzzy
 msgid "(not a blob)"
 msgstr "(ikke et tal)"
 
-#: lib/formats.c:338
+#: lib/formats.c:370
 msgid "(invalid xml type)"
 msgstr ""
 
-#: lib/formats.c:431
+#: lib/formats.c:584
+msgid "(invalid yaml type)"
+msgstr ""
+
+#: lib/formats.c:693
 #, fuzzy
 msgid "(not an OpenPGP signature)"
 msgstr "overspring eventuelle PGP-signaturer"
 
-#: lib/fs.c:77
+#: lib/fs.c:80
 #, c-format
 msgid "mntctl() failed to return size: %s\n"
 msgstr "mntctl() returnerede ingen størrelse: %s\n"
 
-#: lib/fs.c:92
+#: lib/fs.c:95
 #, c-format
 msgid "mntctl() failed to return mount points: %s\n"
 msgstr "mntctl() returnerede ingen monteringspunkter: %s\n"
 
-#: lib/fs.c:112 lib/fs.c:199 lib/fs.c:318
+#: lib/fs.c:115 lib/fs.c:218 lib/fs.c:342
 #, c-format
 msgid "failed to stat %s: %s\n"
 msgstr "kunne ikke finde %s: %s\n"
 
-#: lib/fs.c:157 rpmio/url.c:552
+#: lib/fs.c:160 rpmio/url.c:556
 #, c-format
 msgid "failed to open %s: %s\n"
 msgstr "kunne ikke åbne %s: %s\n"
 
-#: lib/fs.c:216
+#: lib/fs.c:240
 #, fuzzy, c-format
 msgid "%5d 0x%04x %s %s\n"
 msgstr "Fil %4d: %07o %s.%s\t %s\n"
 
-#: lib/fs.c:341
+#: lib/fs.c:365
 #, c-format
 msgid "file %s is on an unknown device\n"
 msgstr "fil %s er på en ukendt enhed\n"
 
-#: lib/fsm.c:352
+#: lib/fsm.c:358
 msgid "========== Directories not explicitly included in package:\n"
 msgstr ""
 
-#: lib/fsm.c:354
+#: lib/fsm.c:361
 #, fuzzy, c-format
 msgid "%10d %s\n"
 msgstr "linie %d: %s\n"
 
-#: lib/fsm.c:773
+#: lib/fsm.c:805
 #, c-format
 msgid "user %s does not exist - using root\n"
 msgstr "bruger %s eksisterer ikke - bruger root\n"
 
-#: lib/fsm.c:781
+#: lib/fsm.c:813
 #, c-format
 msgid "group %s does not exist - using root\n"
 msgstr "gruppe %s eksisterer ikke - bruger root\n"
 
-#: lib/fsm.c:1350
+#: lib/fsm.c:1416
 #, c-format
 msgid "%s directory created with perms %04o, no context.\n"
 msgstr ""
 
-#: lib/fsm.c:1354
+#: lib/fsm.c:1420
 #, c-format
 msgid "%s directory created with perms %04o, context %s.\n"
 msgstr ""
 
-#: lib/fsm.c:1657
+#: lib/fsm.c:1729
 #, c-format
 msgid "archive file %s was not found in header file list\n"
 msgstr ""
 
-#: lib/fsm.c:1784 lib/fsm.c:1920
+#: lib/fsm.c:1879 lib/fsm.c:2003
 #, c-format
 msgid "%s saved as %s\n"
 msgstr "%s gemt som %s\n"
 
-#: lib/fsm.c:1947
+#: lib/fsm.c:2030
 #, fuzzy, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "kan ikke fjerne %s - katalog ikke tomt\n"
 
-#: lib/fsm.c:1953
+#: lib/fsm.c:2036
 #, fuzzy, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "fjernelse (rmdir) af %s mislykkedes: %s\n"
 
-#: lib/fsm.c:1968
+#: lib/fsm.c:2051
 #, fuzzy, c-format
-msgid "%s unlink of %s failed: %s\n"
+msgid " %s: unlink of %s failed: %s\n"
 msgstr "åbning af %s mislykkedes %s\n"
 
-#: lib/fsm.c:1990
+#: lib/fsm.c:2076
 #, c-format
 msgid "%s created as %s\n"
 msgstr "%s oprettet som %s\n"
 
-#: lib/manifest.c:133
+#: lib/manifest.c:152
 #, fuzzy, c-format
 msgid "adding %d args from manifest.\n"
 msgstr "tilføjer %d indgange til '%s'-indekset.\n"
@@ -1602,274 +1671,325 @@ msgstr "tilføjer %d indgange til '%s'-indekset.\n"
 msgid "cannot create %%%s %s\n"
 msgstr "kan ikke oprette %s: %s\n"
 
-#: lib/misc.c:46
-#, fuzzy, c-format
-msgid "cannot write to %%%s %s\n"
-msgstr "kunne ikke skrive til %s\n"
-
-#: lib/misc.c:191 lib/misc.c:196 lib/misc.c:202
+#: lib/misc.c:187 lib/misc.c:192 lib/misc.c:198
 #, c-format
 msgid "error creating temporary file %s\n"
 msgstr "fejl ved oprettelse af midlertidig fil %s\n"
 
-#: lib/package.c:363
+#: lib/package.c:362
 #, c-format
 msgid "blob size(%d): BAD, 8 + 16 * il(%d) + dl(%d)\n"
 msgstr ""
 
-#: lib/package.c:372 lib/package.c:436 lib/package.c:504 lib/signature.c:233
+#: lib/package.c:371 lib/package.c:435 lib/package.c:512 lib/signature.c:232
 #, c-format
 msgid "tag[%d]: BAD, tag %d type %d offset %d count %d\n"
 msgstr ""
 
-#: lib/package.c:392 lib/signature.c:249
+#: lib/package.c:391 lib/signature.c:248
 #, c-format
 msgid "region offset: BAD, tag %d type %d offset %d count %d\n"
 msgstr ""
 
-#: lib/package.c:413 lib/signature.c:270
+#: lib/package.c:412 lib/signature.c:275
 #, c-format
 msgid "region trailer: BAD, tag %d type %d offset %d count %d\n"
 msgstr ""
 
-#: lib/package.c:427 lib/signature.c:284
+#: lib/package.c:426 lib/signature.c:289
 #, c-format
 msgid "region size: BAD, ril(%d) > il(%d)\n"
 msgstr ""
 
-#: lib/package.c:455
+#: lib/package.c:454
 #, c-format
 msgid "hdr SHA1: BAD, not hex\n"
 msgstr ""
 
-#: lib/package.c:473
+#: lib/package.c:469
+#, c-format
+msgid "hdr RSA: BAD, not binary\n"
+msgstr ""
+
+#: lib/package.c:481
 #, c-format
 msgid "hdr DSA: BAD, not binary\n"
 msgstr ""
 
-#: lib/package.c:539 lib/package.c:581 lib/package.c:916 lib/package.c:943
-#: lib/package.c:976 lib/rpmchecksig.c:835
+#: lib/package.c:545 lib/package.c:585 lib/package.c:929 lib/package.c:955
+#: lib/package.c:987
 #, c-format
-msgid "only V3 signatures can be verified, skipping V%u signature\n"
+msgid "only V3 and V4 signatures can be verified, skipping V%u signature\n"
 msgstr ""
 
-#: lib/package.c:668
+#: lib/package.c:673
 #, c-format
 msgid "hdr size(%d): BAD, read returned %d\n"
 msgstr ""
 
-#: lib/package.c:672
+#: lib/package.c:677
 #, c-format
 msgid "hdr magic: BAD\n"
 msgstr ""
 
-#: lib/package.c:680
+#: lib/package.c:685
 #, c-format
 msgid "hdr tags: BAD, no. of tags(%d) out of range\n"
 msgstr ""
 
-#: lib/package.c:689
+#: lib/package.c:694
 #, c-format
 msgid "hdr data: BAD, no. of bytes(%d) out of range\n"
 msgstr ""
 
-#: lib/package.c:703
+#: lib/package.c:708
 #, c-format
 msgid "hdr blob(%d): BAD, read returned %d\n"
 msgstr ""
 
-#: lib/package.c:716
+#: lib/package.c:721
 #, c-format
 msgid "hdr load: BAD\n"
 msgstr ""
 
-#: lib/package.c:785
+#: lib/package.c:799
 msgid "packaging version 1 is not supported by this version of RPM\n"
 msgstr "indpakningsversion 1 understøttes ikke af denne udgave af RPM\n"
 
-#: lib/package.c:794
+#: lib/package.c:808
 msgid ""
 "only packaging with major numbers <= 4 is supported by this version of RPM\n"
 msgstr ""
 "kun indpakninger med hovedversion <= 4 understøttes af denne udgave af RPM\n"
 
-#: lib/package.c:806 lib/rpmchecksig.c:229 lib/rpmchecksig.c:750
+#: lib/package.c:820 lib/rpmchecksig.c:236 lib/rpmchecksig.c:773
 #, fuzzy, c-format
 msgid "%s: rpmReadSignature failed: %s"
 msgstr "%s: rpmReadSignature mislykkedes\n"
 
-#: lib/package.c:813 lib/rpmchecksig.c:236 lib/rpmchecksig.c:758
+#: lib/package.c:827 lib/rpmchecksig.c:243 lib/rpmchecksig.c:781
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: Ingen tilgængelig signatur\n"
 
-#: lib/package.c:880
+#: lib/package.c:894
 #, fuzzy, c-format
 msgid "%s: headerRead failed: %s"
 msgstr "%s: readLead mislykkedes\n"
 
-#: lib/package.c:991 lib/rpmchecksig.c:116 lib/rpmchecksig.c:673
+#: lib/package.c:1002 lib/rpmchecksig.c:118 lib/rpmchecksig.c:689
 #, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: Fread mislykkedes: %s\n"
 
-#: lib/poptALL.c:232
+#: lib/poptALL.c:285
 msgid "FTS_COMFOLLOW: follow command line symlinks"
 msgstr ""
 
-#: lib/poptALL.c:234
+#: lib/poptALL.c:287
 msgid "FTS_LOGICAL: logical walk"
 msgstr ""
 
-#: lib/poptALL.c:236
+#: lib/poptALL.c:289
 #, fuzzy
 msgid "FTS_NOCHDIR: don't change directories"
 msgstr ""
 "opretter kataloget %s\n"
 "\n"
 
-#: lib/poptALL.c:238
+#: lib/poptALL.c:291
 msgid "FTS_NOSTAT: don't get stat info"
 msgstr ""
 
-#: lib/poptALL.c:240
+#: lib/poptALL.c:293
 msgid "FTS_PHYSICAL: physical walk"
 msgstr ""
 
-#: lib/poptALL.c:242
+#: lib/poptALL.c:295
 msgid "FTS_SEEDOT: return dot and dot-dot"
 msgstr ""
 
-#: lib/poptALL.c:244
+#: lib/poptALL.c:297
 msgid "FTS_XDEV: don't cross devices"
 msgstr ""
 
-#: lib/poptALL.c:246
+#: lib/poptALL.c:299
 msgid "FTS_WHITEOUT: return whiteout information"
 msgstr ""
 
-#: lib/poptALL.c:262
+#: lib/poptALL.c:309 lib/poptI.c:221 lib/poptQV.c:296 lib/poptQV.c:343
+#, fuzzy
+msgid "add suggested packages to transaction"
+msgstr "forespørg/verificér pakke(r) i gruppen"
+
+#: lib/poptALL.c:312 lib/poptI.c:224
+msgid "use anaconda \"presentation order\""
+msgstr ""
+
+#: lib/poptALL.c:315 lib/poptI.c:227
+msgid "print dependency loops as warning"
+msgstr ""
+
+#: lib/poptALL.c:318 lib/poptI.c:230
+msgid "do not suggest missing dependency resolution(s)"
+msgstr ""
+
+#: lib/poptALL.c:321 lib/poptI.c:233
+#, fuzzy
+msgid "do not check added package conflicts"
+msgstr "udfør ingen pakkespecifikke skripter"
+
+#: lib/poptALL.c:324 lib/poptI.c:236
+msgid "ignore added package requires on symlink targets"
+msgstr ""
+
+#: lib/poptALL.c:327 lib/poptI.c:239
+msgid "ignore added package obsoletes"
+msgstr ""
+
+#: lib/poptALL.c:330 lib/poptI.c:242
+msgid "ignore added package requires on file parent directory"
+msgstr ""
+
+#: lib/poptALL.c:333 lib/poptI.c:245
+#, fuzzy
+msgid "do not check added package requires"
+msgstr "udfør ingen pakkespecifikke skripter"
+
+#: lib/poptALL.c:336 lib/poptI.c:248
+#, fuzzy
+msgid "ignore added package upgrades"
+msgstr "ingen pakker tilfører %s\n"
+
+#: lib/poptALL.c:359
 msgid "predefine MACRO with value EXPR"
 msgstr ""
 
-#: lib/poptALL.c:263 lib/poptALL.c:266
+#: lib/poptALL.c:360 lib/poptALL.c:363
 msgid "'MACRO EXPR'"
 msgstr ""
 
-#: lib/poptALL.c:265
+#: lib/poptALL.c:362
 msgid "define MACRO with value EXPR"
 msgstr ""
 
-#: lib/poptALL.c:268
+#: lib/poptALL.c:365
 #, fuzzy
 msgid "print macro expansion of EXPR"
 msgstr "udlæs makroudvidelse af <udtryk>+"
 
-#: lib/poptALL.c:269
+#: lib/poptALL.c:366
 msgid "'EXPR'"
 msgstr ""
 
-#: lib/poptALL.c:271 lib/poptALL.c:292 lib/poptALL.c:296
+#: lib/poptALL.c:368 lib/poptALL.c:389 lib/poptALL.c:393
 #, fuzzy
 msgid "read <FILE:...> instead of default file(s)"
 msgstr "læs <fil:...> i stedet for standard makrofil(er)"
 
-#: lib/poptALL.c:272 lib/poptALL.c:293 lib/poptALL.c:297
+#: lib/poptALL.c:369 lib/poptALL.c:390 lib/poptALL.c:394
 msgid "<FILE:...>"
 msgstr ""
 
-#: lib/poptALL.c:280 lib/poptALL.c:316
+#: lib/poptALL.c:371 lib/poptQV.c:326
+#, fuzzy
+msgid "specify target platform"
+msgstr "gennemtving målplatform"
+
+#: lib/poptALL.c:379 lib/poptALL.c:413
 msgid "disable use of libio(3) API"
 msgstr "undlad at benytte libio(3)-API"
 
-#: lib/poptALL.c:283
-#, fuzzy
-msgid "disable use of libneon for HTTP"
-msgstr "undlad at benytte libio(3)-API"
-
-#: lib/poptALL.c:288
+#: lib/poptALL.c:385
 #, fuzzy
 msgid "send stdout to CMD"
 msgstr "send standard-ud til <kmd>"
 
-#: lib/poptALL.c:289
+#: lib/poptALL.c:386
 msgid "CMD"
 msgstr ""
 
-#: lib/poptALL.c:300
+#: lib/poptALL.c:397
 #, fuzzy
 msgid "use ROOT as top level directory"
 msgstr "brug <katalog> som topniveau-katalog"
 
-#: lib/poptALL.c:301
+#: lib/poptALL.c:398
 msgid "ROOT"
 msgstr ""
 
-#: lib/poptALL.c:304
+#: lib/poptALL.c:401
 msgid "display known query tags"
 msgstr "vis kendte forespørgselsmærker"
 
-#: lib/poptALL.c:306
+#: lib/poptALL.c:403
 msgid "display final rpmrc and macro configuration"
 msgstr "vis den endelige rpmrc og makrokonfiguration"
 
-#: lib/poptALL.c:308
+#: lib/poptALL.c:405
 msgid "provide less detailed output"
 msgstr "medtag mindre detaljerede oplysninger"
 
-#: lib/poptALL.c:310
+#: lib/poptALL.c:407
 msgid "provide more detailed output"
 msgstr "medtag mere detaljerede oplysninger"
 
-#: lib/poptALL.c:312
+#: lib/poptALL.c:409
 msgid "print the version of rpm being used"
 msgstr "vis versionen af rpm som benyttes"
 
-#: lib/poptALL.c:325
+#: lib/poptALL.c:420
+msgid "debug cpio payloads"
+msgstr ""
+
+#: lib/poptALL.c:424
 msgid "debug payload file state machine"
 msgstr ""
 
-#: lib/poptALL.c:327
+#: lib/poptALL.c:426
 msgid "use threads for file state machine"
 msgstr ""
 
-#: lib/poptALL.c:329
+#: lib/poptALL.c:428
 #, fuzzy
 msgid "debug FTP/HTTP data stream"
 msgstr "aflus protokol-datastrøm"
 
-#: lib/poptALL.c:331
+#: lib/poptALL.c:430
 msgid "debug argv collections"
 msgstr ""
 
-#: lib/poptALL.c:333
+#: lib/poptALL.c:432
 #, fuzzy
 msgid "debug WebDAV data stream"
 msgstr "aflus protokol-datastrøm"
 
-#: lib/poptALL.c:338
+#: lib/poptALL.c:439
 #, fuzzy
 msgid "debug option/argument processing"
 msgstr "Intern fejl i parameterfortolkningen (%d) :-(\n"
 
-#: lib/poptALL.c:343
+#: lib/poptALL.c:444
 msgid "debug package state machine"
 msgstr ""
 
-#: lib/poptALL.c:345
+#: lib/poptALL.c:446
 msgid "use threads for package state machine"
 msgstr ""
 
-#: lib/poptALL.c:359
+#: lib/poptALL.c:460
 msgid "debug rpmio I/O"
 msgstr "aflus rpmio I/O"
 
-#: lib/poptALL.c:373
+#: lib/poptALL.c:472
+msgid "debug tar payloads"
+msgstr ""
+
+#: lib/poptALL.c:476
 msgid "debug URL cache handling"
 msgstr "aflus URL-bufferhåndtering"
 
-#. @-nullpass@
-#: lib/poptALL.c:443
+#: lib/poptALL.c:561
 #, c-format
 msgid "%s: option table misconfigured (%d)\n"
 msgstr ""
@@ -1879,37 +1999,55 @@ msgid "exclude paths must begin with a /"
 msgstr "udeladte stier skal begynde med et /"
 
 #: lib/poptI.c:85
+#, fuzzy
+msgid "Option --relocate needs /old/path=/new/path argument"
+msgstr "     --relocate <gammelsti>=<nysti>"
+
+#: lib/poptI.c:87
 msgid "relocations must begin with a /"
 msgstr "omrokeringer skal starte med et /"
 
-#: lib/poptI.c:88
+#: lib/poptI.c:90
 msgid "relocations must contain a ="
 msgstr "omrokeringer skal indeholde et ="
 
-#: lib/poptI.c:91
+#: lib/poptI.c:93
 msgid "relocations must have a / following the ="
 msgstr "i omrokeringer skal = efterfølges af /"
 
-#: lib/poptI.c:106
-msgid "rollback takes a time/date stamp argument"
+#: lib/poptI.c:111
+#, fuzzy
+msgid "Option --rbexclude needs transaction id argument(s)"
+msgstr "     --relocate <gammelsti>=<nysti>"
+
+#: lib/poptI.c:142
+msgid "Option --rollback needs a time/date stamp argument"
 msgstr ""
 
-#: lib/poptI.c:113
+#: lib/poptI.c:146
+#, c-format
+msgid "Rollback goal:  %-24.24s (0x%08x)\n"
+msgstr ""
+
+#: lib/poptI.c:150
 msgid "malformed rollback time/date stamp argument"
 msgstr ""
 
-#: lib/poptI.c:169
-#, fuzzy
-msgid "add suggested packages to transaction"
-msgstr "forespørg/verificér pakke(r) i gruppen"
+#: lib/poptI.c:157
+msgid "arbgoal takes a time/date stamp argument"
+msgstr ""
 
-#: lib/poptI.c:173
+#: lib/poptI.c:164
+msgid "malformed arbgoal time/date stamp argument"
+msgstr ""
+
+#: lib/poptI.c:253
 msgid "install all files, even configurations which might otherwise be skipped"
 msgstr ""
 "installér alle filer -- også konfigurationsfiler, der ellers skulle "
 "overspringes"
 
-#: lib/poptI.c:177
+#: lib/poptI.c:257
 msgid ""
 "remove all packages which match <package> (normally an error is generated if "
 "<package> specified multiple packages)"
@@ -1917,170 +2055,159 @@ msgstr ""
 "fjern alle pakker, som passer med <pakke> (normalt ville det medføre en "
 "fejl, hvis <pakke> angav flere pakker)"
 
-#: lib/poptI.c:182 tools/rpmgraph.c:273
-msgid "use anaconda \"presentation order\""
-msgstr ""
-
-#: lib/poptI.c:187 lib/poptI.c:267
+#: lib/poptI.c:263 lib/poptI.c:339
 #, fuzzy
 msgid "do not execute package scriptlet(s)"
 msgstr "udfør ingen pakkespecifikke skripter"
 
-#: lib/poptI.c:191
+#: lib/poptI.c:267
 #, fuzzy
 msgid "relocate files in non-relocatable package"
 msgstr "omdirigér filer i ikke-omdirigérbar pakke"
 
-#: lib/poptI.c:195
-msgid "print dependency loops as warning"
-msgstr ""
-
-#: lib/poptI.c:199
+#: lib/poptI.c:271
 msgid "save erased package files by renaming into sub-directory"
 msgstr ""
 
-#: lib/poptI.c:202
+#: lib/poptI.c:274
 msgid "erase (uninstall) package"
 msgstr "slet (afinstallér) pakke"
 
-#: lib/poptI.c:202
+#: lib/poptI.c:274
 #, fuzzy
 msgid "<package>+"
 msgstr "<pakke>"
 
-#: lib/poptI.c:205 lib/poptI.c:245
+#: lib/poptI.c:277 lib/poptI.c:319
 #, fuzzy
 msgid "do not install configuration files"
 msgstr "vis alle konfigurationsfiler"
 
-#: lib/poptI.c:208 lib/poptI.c:250
+#: lib/poptI.c:280 lib/poptI.c:324
 msgid "do not install documentation"
 msgstr "installér ikke dokumentation"
 
-#: lib/poptI.c:210
+#: lib/poptI.c:282
 msgid "skip files with leading component <path> "
 msgstr "overspring filer med foranstillet komponent <sti> "
 
-#: lib/poptI.c:211
+#: lib/poptI.c:283
 msgid "<path>"
 msgstr ""
 
-#: lib/poptI.c:215
+#: lib/poptI.c:287
 #, fuzzy
 msgid "detect file conflicts between packages"
 msgstr "omdirigér filer i ikke-omdirigérbar pakke"
 
-#: lib/poptI.c:217
+#: lib/poptI.c:289
 msgid "short hand for --replacepkgs --replacefiles"
 msgstr "forkortelse for --replacepkgs --replacefiles"
 
-#: lib/poptI.c:221
+#: lib/poptI.c:293
 #, fuzzy
 msgid "upgrade package(s) if already installed"
 msgstr "opgradér pakke, hvis den allerede er installeret"
 
-#: lib/poptI.c:222 lib/poptI.c:238 lib/poptI.c:334
+#: lib/poptI.c:294 lib/poptI.c:312 lib/poptI.c:412
 msgid "<packagefile>+"
 msgstr "<pakkefil>+"
 
-#: lib/poptI.c:224
+#: lib/poptI.c:296
 msgid "print hash marks as package installs (good with -v)"
 msgstr "udlæs #'er efterhånden som pakken installeres (virker sammen med -v)"
 
-#: lib/poptI.c:227
+#: lib/poptI.c:300
 msgid "don't verify package architecture"
 msgstr "tjek ikke pakkens arkitektur"
 
-#: lib/poptI.c:230
+#: lib/poptI.c:303
 msgid "don't verify package operating system"
 msgstr "tjek ikke pakkens operativsystem"
 
-#: lib/poptI.c:233
+#: lib/poptI.c:307
 msgid "don't check disk space before installing"
 msgstr "tjek ikke om der er diskplads, før der installeres"
 
-#: lib/poptI.c:235
+#: lib/poptI.c:309
 msgid "install documentation"
 msgstr "installér dokumentation"
 
-#: lib/poptI.c:238
+#: lib/poptI.c:312
 #, fuzzy
 msgid "install package(s)"
 msgstr "installér pakke"
 
-#: lib/poptI.c:241
+#: lib/poptI.c:315
 msgid "update the database, but do not modify the filesystem"
 msgstr "opdatér databasen, men rør ikke filsystemet"
 
-#: lib/poptI.c:247
+#: lib/poptI.c:321
 msgid "do not verify package dependencies"
 msgstr "undlad at tjekke pakkers afhængighedskrav"
 
-#: lib/poptI.c:253 lib/poptQV.c:307 lib/poptQV.c:310
+#: lib/poptI.c:327 lib/poptI.c:329 lib/poptQV.c:357 lib/poptQV.c:360
+#: lib/poptQV.c:362
 #, fuzzy
-msgid "don't verify MD5 digest of files"
-msgstr "verificér ikke filerne i pakke"
+msgid "don't verify file digests"
+msgstr "undlad at tjekke pakkers afhængighedskrav"
 
-#: lib/poptI.c:255
+#: lib/poptI.c:331
 #, fuzzy
 msgid "don't install file security contexts"
 msgstr "vis alle konfigurationsfiler"
 
-#: lib/poptI.c:259
+#: lib/poptI.c:335
 msgid "do not reorder package installation to satisfy dependencies"
 msgstr ""
 "ændr ikke pakkernes installationsrækkefølge for at opfylde afhængigheder"
 
-#: lib/poptI.c:264
-msgid "do not suggest missing dependency resolution(s)"
-msgstr ""
-
-#: lib/poptI.c:271
+#: lib/poptI.c:343
 #, fuzzy, c-format
 msgid "do not execute %%pre scriptlet (if any)"
 msgstr "udfør ikke eventuelle skripter"
 
-#: lib/poptI.c:274
+#: lib/poptI.c:346
 #, fuzzy, c-format
 msgid "do not execute %%post scriptlet (if any)"
 msgstr "udfør ikke eventuelle skripter"
 
-#: lib/poptI.c:277
+#: lib/poptI.c:349
 #, fuzzy, c-format
 msgid "do not execute %%preun scriptlet (if any)"
 msgstr "udfør ikke eventuelle skripter"
 
-#: lib/poptI.c:280
+#: lib/poptI.c:352
 #, fuzzy, c-format
 msgid "do not execute %%postun scriptlet (if any)"
 msgstr "udfør ikke eventuelle skripter"
 
-#: lib/poptI.c:290
+#: lib/poptI.c:362
 #, fuzzy
 msgid "do not execute any scriptlet(s) triggered by this package"
 msgstr "udfør ikke småskripter, der måtte udløses af denne pakke"
 
-#: lib/poptI.c:293
+#: lib/poptI.c:365
 #, fuzzy, c-format
 msgid "do not execute any %%triggerprein scriptlet(s)"
 msgstr "udfør ingen pakkespecifikke skripter"
 
-#: lib/poptI.c:296
+#: lib/poptI.c:368
 #, fuzzy, c-format
 msgid "do not execute any %%triggerin scriptlet(s)"
 msgstr "udfør ingen installations-småskripter"
 
-#: lib/poptI.c:299
+#: lib/poptI.c:371
 #, fuzzy, c-format
 msgid "do not execute any %%triggerun scriptlet(s)"
 msgstr "udfør ingen installations-småskripter"
 
-#: lib/poptI.c:302
+#: lib/poptI.c:374
 #, fuzzy, c-format
 msgid "do not execute any %%triggerpostun scriptlet(s)"
 msgstr "udfør ingen installations-småskripter"
 
-#: lib/poptI.c:306
+#: lib/poptI.c:378
 msgid ""
 "upgrade to an old version of the package (--force on upgrades does this "
 "automatically)"
@@ -2088,303 +2215,348 @@ msgstr ""
 "opgradér til en ældre version af pakken (--force gør ikke dette automatisk "
 "ved opgraderinger)"
 
-#: lib/poptI.c:310
+#: lib/poptI.c:382
 msgid "print percentages as package installs"
 msgstr "vis procenter efterhånden som pakken installeres"
 
-#: lib/poptI.c:312
+#: lib/poptI.c:384
 msgid "relocate the package to <dir>, if relocatable"
 msgstr "omdirigér pakken til <katalog>, hvis omdirigérbar"
 
-#: lib/poptI.c:313
+#: lib/poptI.c:385
 msgid "<dir>"
 msgstr "<katalog>"
 
-#: lib/poptI.c:315
+#: lib/poptI.c:387
 #, fuzzy
 msgid "relocate files from path <old> to <new>"
 msgstr "omdirigér filer fra <gammelsti> til <nysti>"
 
-#: lib/poptI.c:316
+#: lib/poptI.c:388
 #, fuzzy
 msgid "<old>=<new>"
 msgstr "<gammelsti>=<nysti>"
 
-#: lib/poptI.c:319
+#: lib/poptI.c:391
 msgid "save erased package files by repackaging"
 msgstr ""
 
-#: lib/poptI.c:322
+#: lib/poptI.c:394
 msgid "ignore file conflicts between packages"
 msgstr ""
 
-#: lib/poptI.c:325
+#: lib/poptI.c:397
 msgid "reinstall if the package is already present"
 msgstr "geninstallér hvis pakken allerede er installeret"
 
-#: lib/poptI.c:327
+#: lib/poptI.c:399
 msgid "deinstall new, reinstall old, package(s), back to <date>"
 msgstr ""
 
-#: lib/poptI.c:328
+#: lib/poptI.c:400 lib/poptI.c:403
 msgid "<date>"
 msgstr ""
 
-#: lib/poptI.c:330
+#: lib/poptI.c:402
+msgid "If transaction fails rollback to <date>"
+msgstr ""
+
+#: lib/poptI.c:405
+msgid "Exclude Transaction I.D. from rollback"
+msgstr ""
+
+#: lib/poptI.c:406
+#, fuzzy
+msgid "<tid>"
+msgstr "<kmd>"
+
+#: lib/poptI.c:408
 msgid "don't install, but tell if it would work or not"
 msgstr "installér ikke, men fortæl om det ville lykkes eller ej"
 
-#: lib/poptI.c:333
+#: lib/poptI.c:411
 #, fuzzy
 msgid "upgrade package(s)"
 msgstr "opgradér pakke"
 
-#: lib/poptQV.c:103
+#: lib/poptQV.c:115
 msgid "query/verify all packages"
 msgstr "forespørg/verificér alle pakker"
 
-#: lib/poptQV.c:105
+#: lib/poptQV.c:117
 #, fuzzy
 msgid "rpm checksig mode"
 msgstr "rpm verifikationstilstand"
 
-#: lib/poptQV.c:107
+#: lib/poptQV.c:119
 msgid "query/verify package(s) owning file"
 msgstr "forespørg/verificér pakke(r), der ejer filen"
 
-#: lib/poptQV.c:109
+#: lib/poptQV.c:121
 msgid "query/verify package(s) in group"
 msgstr "forespørg/verificér pakke(r) i gruppen"
 
-#: lib/poptQV.c:111
+#: lib/poptQV.c:123
 #, fuzzy
 msgid "query/verify a package file"
 msgstr "forespørg/verificér alle pakker"
 
-#: lib/poptQV.c:114
+#: lib/poptQV.c:126
 #, fuzzy
 msgid "query/verify package(s) from TOP file tree walk"
 msgstr "forespørg/verificér pakke(r) i gruppen"
 
-#: lib/poptQV.c:116
+#: lib/poptQV.c:128
 #, fuzzy
 msgid "query/verify package(s) from system HDLIST"
 msgstr "forespørg/verificér pakke(r) i gruppen"
 
-#: lib/poptQV.c:119
+#: lib/poptQV.c:131
 #, fuzzy
 msgid "query/verify package(s) with package identifier"
 msgstr "forespørg/verificér pakke(r), der ejer filen"
 
-#: lib/poptQV.c:121
+#: lib/poptQV.c:133
 #, fuzzy
 msgid "query/verify package(s) with header identifier"
 msgstr "forespørg/verificér pakke(r), der ejer filen"
 
-#: lib/poptQV.c:123
+#: lib/poptQV.c:135
 #, fuzzy
 msgid "query/verify package(s) with file identifier"
 msgstr "forespørg/verificér pakke(r), der ejer filen"
 
-#: lib/poptQV.c:126
+#: lib/poptQV.c:138
 msgid "rpm query mode"
 msgstr "rpm forespørgselstilstand"
 
-#: lib/poptQV.c:128
+#: lib/poptQV.c:140
 #, fuzzy
 msgid "query/verify a header instance"
 msgstr "forespørg/verificér pakke(r), der ejer filen"
 
-#: lib/poptQV.c:130
+#: lib/poptQV.c:142
 msgid "query a spec file"
 msgstr "forespørg en spec-fil"
 
-#: lib/poptQV.c:130
+#: lib/poptQV.c:142 lib/poptQV.c:144
 msgid "<spec>"
 msgstr "<spec>"
 
-#: lib/poptQV.c:132
+#: lib/poptQV.c:144
+#, fuzzy
+msgid "query source metadata from spec file parse"
+msgstr "opbyg kun kildepakke ud fra <spec-fil>"
+
+#: lib/poptQV.c:146
 #, fuzzy
 msgid "query/verify package(s) from install transaction"
 msgstr "forespørg/verificér pakke(r) i gruppen"
 
-#: lib/poptQV.c:134
+#: lib/poptQV.c:148
 msgid "query the package(s) triggered by the package"
 msgstr "forespørg pakke(r), der udløses af pakken"
 
-#: lib/poptQV.c:136
+#: lib/poptQV.c:150
 msgid "rpm verify mode"
 msgstr "rpm verifikationstilstand"
 
-#: lib/poptQV.c:138
+#: lib/poptQV.c:152
 msgid "query/verify the package(s) which require a dependency"
 msgstr "forespørg/verificér pakke(r), der stiller et krav"
 
-#: lib/poptQV.c:140
+#: lib/poptQV.c:154
+#, fuzzy
+msgid "query/verify the package(s) which require any contained provide"
+msgstr "forespørg/verificér pakke(r), der stiller et krav"
+
+#: lib/poptQV.c:158
 msgid "query/verify the package(s) which provide a dependency"
 msgstr "forespørg/verificér pakke(r), der tilfredsstiller et krav"
 
-#: lib/poptQV.c:143
+#: lib/poptQV.c:161
 msgid "create transaction set"
 msgstr ""
 
-#: lib/poptQV.c:145
+#: lib/poptQV.c:163
 msgid "do not order transaction set"
 msgstr ""
 
-#: lib/poptQV.c:147
+#: lib/poptQV.c:165
 #, fuzzy
 msgid "do not glob arguments"
 msgstr "ingen parametre angivet ved forespørgsel"
 
-#: lib/poptQV.c:149
+#: lib/poptQV.c:167
 msgid "do not process non-package files as manifests"
 msgstr ""
 
-#: lib/poptQV.c:151
+#: lib/poptQV.c:169
 #, fuzzy
 msgid "do not read headers"
 msgstr "%s: kan ikke læse hoved ved 0x%x\n"
 
-#: lib/poptQV.c:258
+#: lib/poptQV.c:284
 msgid "list all configuration files"
 msgstr "vis alle konfigurationsfiler"
 
-#: lib/poptQV.c:260
+#: lib/poptQV.c:286
 msgid "list all documentation files"
 msgstr "vis alle dokumentationsfiler"
 
-#: lib/poptQV.c:262
+#: lib/poptQV.c:288
 msgid "dump basic file information"
 msgstr "vis grundlæggende filinformation"
 
-#: lib/poptQV.c:266
+#: lib/poptQV.c:292
 msgid "list files in package"
 msgstr "vis liste over filerne i pakken"
 
-#: lib/poptQV.c:271
+#: lib/poptQV.c:301 lib/poptQV.c:348
+#, fuzzy, c-format
+msgid "skip %%config files"
+msgstr "%s: readLead mislykkedes\n"
+
+#: lib/poptQV.c:304 lib/poptQV.c:351
+#, fuzzy, c-format
+msgid "skip %%doc files"
+msgstr "%s: readLead mislykkedes\n"
+
+#: lib/poptQV.c:307
 #, c-format
 msgid "skip %%ghost files"
 msgstr ""
 
-#: lib/poptQV.c:275
+#: lib/poptQV.c:311
 #, c-format
 msgid "skip %%license files"
 msgstr ""
 
-#: lib/poptQV.c:278
+#: lib/poptQV.c:314
 #, fuzzy, c-format
 msgid "skip %%readme files"
 msgstr "%s: readLead mislykkedes\n"
 
-#: lib/poptQV.c:284
+#: lib/poptQV.c:320
 msgid "use the following query format"
 msgstr "brug følgende forespørgselsformat"
 
-#: lib/poptQV.c:286
+#: lib/poptQV.c:320
+msgid "QUERYFORMAT"
+msgstr ""
+
+#: lib/poptQV.c:322
 msgid "substitute i18n sections into spec file"
 msgstr "erstat i18n-sektioner i spec-fil"
 
-#: lib/poptQV.c:288
+#: lib/poptQV.c:324
 msgid "display the states of the listed files"
 msgstr "vis filernes status"
 
-#: lib/poptQV.c:314
+#: lib/poptQV.c:366
 #, fuzzy
 msgid "don't verify size of files"
 msgstr "verificér ikke filerne i pakke"
 
-#: lib/poptQV.c:317
+#: lib/poptQV.c:369
 #, fuzzy
 msgid "don't verify symlink path of files"
 msgstr "verificér ikke filerne i pakke"
 
-#: lib/poptQV.c:320
+#: lib/poptQV.c:372
 #, fuzzy
 msgid "don't verify owner of files"
 msgstr "verificér ikke filerne i pakke"
 
-#: lib/poptQV.c:323
+#: lib/poptQV.c:375
 #, fuzzy
 msgid "don't verify group of files"
 msgstr "verificér ikke filerne i pakke"
 
-#: lib/poptQV.c:326
+#: lib/poptQV.c:378
 msgid "don't verify modification time of files"
 msgstr ""
 
-#: lib/poptQV.c:329 lib/poptQV.c:332
+#: lib/poptQV.c:381 lib/poptQV.c:384
 #, fuzzy
 msgid "don't verify mode of files"
 msgstr "verificér ikke filerne i pakke"
 
-#: lib/poptQV.c:335
+#: lib/poptQV.c:387
 #, fuzzy
 msgid "don't verify file security contexts"
 msgstr "verificér ikke filerne i pakke"
 
-#: lib/poptQV.c:337
+#: lib/poptQV.c:389
 msgid "don't verify files in package"
 msgstr "verificér ikke filerne i pakke"
 
-#: lib/poptQV.c:340 lib/poptQV.c:343 tools/rpmgraph.c:267
+#: lib/poptQV.c:392 lib/poptQV.c:395
 #, fuzzy
 msgid "don't verify package dependencies"
 msgstr "undlad at tjekke pakkers afhængighedskrav"
 
-#: lib/poptQV.c:348 lib/poptQV.c:352 lib/poptQV.c:355 lib/poptQV.c:358
+#: lib/poptQV.c:400 lib/poptQV.c:404 lib/poptQV.c:407 lib/poptQV.c:410
 #, fuzzy
 msgid "don't execute verify script(s)"
 msgstr "udfør ikke eventuelt %verifyscript"
 
-#: lib/poptQV.c:382
-#, fuzzy
-msgid "don't verify GPG V3 DSA signature(s)"
-msgstr "verificér ikke filerne i pakke"
-
-#: lib/poptQV.c:385
-#, fuzzy
-msgid "don't verify PGP V3 RSA/MD5 signature(s)"
-msgstr "verificér ikke filerne i pakke"
-
-#: lib/poptQV.c:400
+#: lib/poptQV.c:444
 #, fuzzy
 msgid "sign package(s) (identical to --resign)"
 msgstr "underskriv en pakke (slet nuværende signatur)"
 
-#: lib/poptQV.c:402
+#: lib/poptQV.c:446
 #, fuzzy
 msgid "verify package signature(s)"
 msgstr "verificér pakkesignatur"
 
-#: lib/poptQV.c:404
+#: lib/poptQV.c:448
 #, fuzzy
 msgid "delete package signatures"
 msgstr "verificér pakkesignatur"
 
-#: lib/poptQV.c:406
+#: lib/poptQV.c:450
 msgid "import an armored public key"
 msgstr ""
 
-#: lib/poptQV.c:408
+#: lib/poptQV.c:452
 #, fuzzy
 msgid "sign package(s) (identical to --addsign)"
 msgstr "underskriv en pakke (slet nuværende signatur)"
 
-#: lib/poptQV.c:410
+#: lib/poptQV.c:454
 #, fuzzy
 msgid "generate signature"
 msgstr "generér PGP/GPG-signatur"
 
-#: lib/psm.c:281
+#: lib/poptQV.c:457
+#, fuzzy
+msgid "specify trust metric"
+msgstr "gennemtving målplatform"
+
+#: lib/poptQV.c:460
+msgid "set ultimate trust when importing pubkey(s)"
+msgstr ""
+
+#: lib/poptQV.c:463
+msgid "unset ultimate trust when importing pubkey(s)"
+msgstr ""
+
+#: lib/psm.c:203
 msgid "source package expected, binary found\n"
 msgstr "kildepakke forventet, binær fundet\n"
 
-#: lib/psm.c:399
+#: lib/psm.c:283 lib/psm.c:296
+#, fuzzy, c-format
+msgid "cannot write to %%%s %s\n"
+msgstr "kunne ikke skrive til %s\n"
+
+#: lib/psm.c:329
 msgid "source package contains no .spec file\n"
 msgstr "kildepakke indeholder ingen .spec-fil\n"
 
-#: lib/psm.c:485
+#: lib/psm.c:445
 #, c-format
 msgid "%s: waitpid(%d) rc %d status %x secs %u.%03u\n"
 msgstr ""
@@ -2394,297 +2566,386 @@ msgstr ""
 msgid "%s: %s(%s-%s-%s.%s) running <lua> scriptlet.\n"
 msgstr "kører postinstallations-skript (hvis det findes)\n"
 
-#: lib/psm.c:659
+#: lib/psm.c:658
 #, c-format
 msgid "%s: %s(%s-%s-%s.%s) skipping redundant \"%s\".\n"
 msgstr ""
 
-#: lib/psm.c:667
+#: lib/psm.c:666
 #, c-format
 msgid "%s: %s(%s-%s-%s.%s) %ssynchronous scriptlet start\n"
 msgstr ""
 
-#: lib/psm.c:879
+#: lib/psm.c:878
 #, c-format
 msgid "%s: %s(%s-%s-%s.%s)\texecv(%s) pid %d\n"
 msgstr ""
 
-#: lib/psm.c:919
+#: lib/psm.c:926
 #, fuzzy, c-format
 msgid "%s(%s-%s-%s.%s) scriptlet failed, waitpid(%d) rc %d: %s\n"
 msgstr "overspringer installation af %s-%s-%s, %%pre-småskript fejlede rc %d\n"
 
-#: lib/psm.c:925
+#: lib/psm.c:933
+#, fuzzy, c-format
+msgid "%s(%s-%s-%s.%s) scriptlet failed, signal %d\n"
+msgstr ""
+"kørsel af småskriptet %s fra %s-%s-%s mislykkedes, afslutningsstatus %d\n"
+
+#: lib/psm.c:937
 #, fuzzy, c-format
 msgid "%s(%s-%s-%s.%s) scriptlet failed, exit status %d\n"
 msgstr ""
 "kørsel af småskriptet %s fra %s-%s-%s mislykkedes, afslutningsstatus %d\n"
 
-#: lib/psm.c:1358
+#: lib/psm.c:1571
 #, fuzzy, c-format
 msgid "%s: %s has %d files, test = %d\n"
 msgstr "pakke: %s-%s-%s filer test = %d\n"
 
-#: lib/psm.c:1535
+#: lib/psm.c:1745
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s\n"
 msgstr ""
 
-#: lib/psm.c:1644
+#: lib/psm.c:1856
 #, fuzzy
 msgid "Unable to reload signature header\n"
 msgstr "Kunne ikke læse hoved fra %s: %s\n"
 
-#: lib/psm.c:1722
+#: lib/psm.c:1949
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "udpakning af arkiv mislykkedes%s%s: %s\n"
 
-#: lib/psm.c:1723
+#: lib/psm.c:1950
 msgid " on file "
 msgstr " for fil "
 
-#: lib/psm.c:1909
+#: lib/psm.c:2127
 #, fuzzy, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "kunne ikke åbne %s: %s\n"
 
-#: lib/psm.c:1912
+#: lib/psm.c:2130
 #, fuzzy, c-format
 msgid "%s failed: %s\n"
 msgstr "%s mislykkedes\n"
 
-#: lib/psm.c:2100
-#, c-format
-msgid "Attempting to mark %s as installed in score board(%u).\n"
-msgstr ""
-
-#: lib/psm.c:2133
-#, c-format
-msgid "Attempting to mark %s as erased in score board(0x%x).\n"
-msgstr ""
-
-#: lib/query.c:123 lib/rpmts.c:632
+#: lib/query.c:123
 #, c-format
 msgid "incorrect format: %s\n"
 msgstr "ugyldigt format: %s\n"
 
-#. @-boundswrite@
-#: lib/query.c:170
+#: lib/query.c:194
 msgid "(contains no files)"
 msgstr "(indeholder ingen filer)"
 
-#: lib/query.c:235
+#: lib/query.c:288
 msgid "normal        "
 msgstr "normal        "
 
-#: lib/query.c:238
+#: lib/query.c:291
 msgid "replaced      "
 msgstr "erstattet     "
 
-#: lib/query.c:241
+#: lib/query.c:294
 msgid "not installed "
 msgstr "ej installeret"
 
-#: lib/query.c:244
+#: lib/query.c:297
 msgid "net shared    "
 msgstr "ej delt       "
 
-#: lib/query.c:247
+#: lib/query.c:300
 msgid "wrong color   "
 msgstr ""
 
-#: lib/query.c:250
+#: lib/query.c:303
 msgid "(no state)    "
 msgstr "(ingen status)"
 
-#: lib/query.c:253
+#: lib/query.c:306
 #, c-format
 msgid "(unknown %3d) "
 msgstr "(ukendt %3d)  "
 
-#: lib/query.c:271
+#: lib/query.c:325
 #, fuzzy
 msgid "package has not file owner/group lists\n"
 msgstr "pakke har hverken filejerskabs- eller id-lister\n"
 
-#: lib/query.c:304
+#: lib/query.c:358
 msgid "package has neither file owner or id lists\n"
 msgstr "pakke har hverken filejerskabs- eller id-lister\n"
 
-#: lib/query.c:460
+#: lib/query.c:515
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "gruppe %s indeholder ingen pakker\n"
 
-#: lib/query.c:469
+#: lib/query.c:524
 #, c-format
 msgid "no package triggers %s\n"
 msgstr "ingen pakker udløser %s\n"
 
-#: lib/query.c:482 lib/query.c:503 lib/query.c:523 lib/query.c:557
+#: lib/query.c:537 lib/query.c:558 lib/query.c:580 lib/query.c:615
 #, fuzzy, c-format
 msgid "malformed %s: %s\n"
 msgstr "Kunne ikke læse %s: %s.\n"
 
-#: lib/query.c:492 lib/query.c:509 lib/query.c:533 lib/query.c:562
+#: lib/query.c:547 lib/query.c:564 lib/query.c:591 lib/query.c:620
 #, fuzzy, c-format
 msgid "no package matches %s: %s\n"
 msgstr "ingen pakker udløser %s\n"
 
-#: lib/query.c:572
+#: lib/query.c:631
 #, c-format
 msgid "no package requires %s\n"
 msgstr "ingen pakker kræver %s\n"
 
-#: lib/query.c:583
+#: lib/query.c:642
 #, c-format
 msgid "no package provides %s\n"
 msgstr "ingen pakker tilfører %s\n"
 
-#: lib/query.c:622
+#: lib/query.c:676
 #, c-format
 msgid "file %s: %s\n"
 msgstr "fil %s: %s\n"
 
-#: lib/query.c:626
+#: lib/query.c:679
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "filen %s tilhører ingen pakke\n"
 
-#: lib/query.c:651
+#: lib/query.c:704
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "ugyldigt pakkenummer: %s\n"
 
-#: lib/query.c:654
+#: lib/query.c:707
 #, c-format
 msgid "package record number: %u\n"
 msgstr "pakkens post-nummer: %u\n"
 
-#: lib/query.c:659
+#: lib/query.c:711
 #, fuzzy, c-format
 msgid "record %u could not be read\n"
 msgstr "post %d kunne ikke læses\n"
 
-#: lib/query.c:669 lib/rpminstall.c:796
+#: lib/query.c:721 lib/query.c:727 lib/rpminstall.c:817
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "pakken %s er ikke installeret\n"
 
-#: lib/rpmal.c:778
+#: lib/rpmal.c:782
 #, fuzzy
 msgid "(added files)"
 msgstr "ugyldig db-fil %s\n"
 
-#: lib/rpmal.c:856
+#: lib/rpmal.c:861
 #, fuzzy
 msgid "(added provide)"
 msgstr "%s: %-45s JA (tilføjede 'provide')\n"
 
-#: lib/rpmchecksig.c:55
+#: lib/rpmchecksig.c:57
 #, c-format
 msgid "%s: open failed: %s\n"
 msgstr "%s: åbning mislykkedes: %s\n"
 
-#: lib/rpmchecksig.c:67
+#: lib/rpmchecksig.c:69
 msgid "makeTempFile failed\n"
 msgstr "makeTempFile mislykkedes\n"
 
-#: lib/rpmchecksig.c:110
+#: lib/rpmchecksig.c:112
 #, c-format
 msgid "%s: Fwrite failed: %s\n"
 msgstr "%s: Fwrite mislykkedes: %s\n"
 
-#: lib/rpmchecksig.c:209 lib/rpmchecksig.c:732
+#: lib/rpmchecksig.c:122
+#, fuzzy, c-format
+msgid "%s: Fflush failed: %s\n"
+msgstr "%s: Fread mislykkedes: %s\n"
+
+#: lib/rpmchecksig.c:216 lib/rpmchecksig.c:755
 #, fuzzy, c-format
 msgid "%s: not an rpm package\n"
 msgstr "parameter er ikke en RPM-pakke\n"
 
-#: lib/rpmchecksig.c:214
+#: lib/rpmchecksig.c:221
 #, fuzzy, c-format
 msgid "%s: Can't sign v1 packaging\n"
 msgstr "%s: Kan ikke underskrive v1.0 RPM\n"
 
-#: lib/rpmchecksig.c:218
+#: lib/rpmchecksig.c:225
 #, fuzzy, c-format
 msgid "%s: Can't re-sign v2 packaging\n"
 msgstr "%s: Kan ikke genunderskrive v2.0 RPM\n"
 
-#: lib/rpmchecksig.c:332
+#: lib/rpmchecksig.c:345
 #, c-format
 msgid "%s: was already signed by key ID %s, skipping\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:362
+#: lib/rpmchecksig.c:375
 #, c-format
 msgid "%s: writeLead failed: %s\n"
 msgstr "%s: writeLead mislykkedes: %s\n"
 
-#: lib/rpmchecksig.c:368
+#: lib/rpmchecksig.c:381
 #, c-format
 msgid "%s: rpmWriteSignature failed: %s\n"
 msgstr "%s: rpmWriteSignature mislykkedes: %s\n"
 
-#: lib/rpmchecksig.c:596
+#: lib/rpmchecksig.c:609
 #, fuzzy, c-format
-msgid "%s: import read failed.\n"
+msgid "%s: import read failed(%d).\n"
 msgstr "%s: readLead mislykkedes\n"
 
-#: lib/rpmchecksig.c:608
+#: lib/rpmchecksig.c:621
 #, fuzzy, c-format
 msgid "%s: import failed.\n"
 msgstr "%s: readLead mislykkedes\n"
 
-#: lib/rpmchecksig.c:644
+#: lib/rpmchecksig.c:657
 #, fuzzy, c-format
 msgid "%s: headerRead failed\n"
 msgstr "%s: readLead mislykkedes\n"
 
-#: lib/rpmchecksig.c:658
+#: lib/rpmchecksig.c:671
 #, fuzzy, c-format
 msgid "%s: headerGetEntry failed\n"
 msgstr "%s: readLead mislykkedes\n"
 
-#: lib/rpmchecksig.c:738
+#: lib/rpmchecksig.c:761
 #, c-format
 msgid "%s: No signature available (v1.0 RPM)\n"
 msgstr "%s: Ingen tilgængelig signatur (v1.0 RPM)\n"
 
-#: lib/rpmchecksig.c:1001
+#: lib/rpmchecksig.c:870
+#, c-format
+msgid "only V3 or V4 signatures can be verified, skipping V%u signature\n"
+msgstr ""
+
+#: lib/rpmchecksig.c:1036
 msgid "NOT OK"
 msgstr "IKKE O.K."
 
-#: lib/rpmchecksig.c:1002 lib/rpmchecksig.c:1016
+#: lib/rpmchecksig.c:1037 lib/rpmchecksig.c:1051
 msgid " (MISSING KEYS:"
 msgstr " (MANGLENDE NØGLER:    "
 
-#: lib/rpmchecksig.c:1004 lib/rpmchecksig.c:1018
+#: lib/rpmchecksig.c:1039 lib/rpmchecksig.c:1053
 msgid ") "
 msgstr ") "
 
-#: lib/rpmchecksig.c:1005 lib/rpmchecksig.c:1019
+#: lib/rpmchecksig.c:1040 lib/rpmchecksig.c:1054
 msgid " (UNTRUSTED KEYS:"
 msgstr " (IKKE-BETROEDE NØGLER:"
 
-#: lib/rpmchecksig.c:1007 lib/rpmchecksig.c:1021
+#: lib/rpmchecksig.c:1042 lib/rpmchecksig.c:1056
 msgid ")"
 msgstr ")"
 
-#: lib/rpmchecksig.c:1015
+#: lib/rpmchecksig.c:1050
 msgid "OK"
 msgstr "O.K."
 
-#: lib/rpmds.c:738 lib/rpmds.c:1102
+#: lib/rpmds.c:922 lib/rpmds.c:3711
 #, fuzzy
 msgid "NO "
 msgstr "IKKE O.K."
 
-#: lib/rpmds.c:738 lib/rpmds.c:1102
+#: lib/rpmds.c:922 lib/rpmds.c:3711
 msgid "YES"
 msgstr ""
 
-#: lib/rpmds.c:1068
+#: lib/rpmds.c:1414
+msgid "PreReq:, Provides:, and Obsoletes: dependencies support versions."
+msgstr ""
+
+#: lib/rpmds.c:1417
+msgid "file name(s) stored as (dirName,baseName,dirIndex) tuple, not as path."
+msgstr ""
+
+#: lib/rpmds.c:1420
+msgid "package payload can be compressed using bzip2."
+msgstr ""
+
+#: lib/rpmds.c:1423
+msgid "package payload file(s) have \"./\" prefix."
+msgstr ""
+
+#: lib/rpmds.c:1426
+msgid "package name-version-release is not implicitly provided."
+msgstr ""
+
+#: lib/rpmds.c:1429
+msgid "header tags are always sorted after being loaded."
+msgstr ""
+
+#: lib/rpmds.c:1432
+msgid "the scriptlet interpreter can use arguments from header."
+msgstr ""
+
+#: lib/rpmds.c:1435
+msgid "a hardlink file set may be installed without being complete."
+msgstr ""
+
+#: lib/rpmds.c:1438
+msgid "package scriptlets may access the rpm database while installing."
+msgstr ""
+
+#: lib/rpmds.c:1442
+#, fuzzy
+msgid "internal support for lua scripts."
+msgstr "- understøttes ikke for strenge\n"
+
+#: lib/rpmds.c:1446
+msgid "header tags can be type int_64."
+msgstr ""
+
+#: lib/rpmds.c:1449
+msgid "package payload can be in ustar tar archive format."
+msgstr ""
+
+#: lib/rpmds.c:1452
+msgid "package payload can be compressed using lzma."
+msgstr ""
+
+#: lib/rpmds.c:1455
+msgid "file digests can be other than MD5."
+msgstr ""
+
+#: lib/rpmds.c:1545 lib/rpmds.c:3535
+#, fuzzy, c-format
+msgid "%s:%d \"%s\" has invalid name. Skipping ...\n"
+msgstr "%s har ugyldig talværdi, overspringes\n"
+
+#: lib/rpmds.c:1569 lib/rpmds.c:3553
+#, c-format
+msgid "%s:%d \"%s\" has no comparison operator. Skipping ...\n"
+msgstr ""
+
+#: lib/rpmds.c:1580 lib/rpmds.c:3568
+#, c-format
+msgid "%s:%d \"%s\" has no EVR string. Skipping ...\n"
+msgstr ""
+
+#: lib/rpmds.c:3534 lib/rpmds.c:3552 lib/rpmds.c:3564
+#, c-format
+msgid "running \"%s\" pipe command\n"
+msgstr ""
+
+#: lib/rpmds.c:3566
+#, c-format
+msgid ""
+"\tline %d: No EVR comparison value found.\n"
+" Skipping ..."
+msgstr ""
+
+#: lib/rpmds.c:3675
 #, fuzzy, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
@@ -2693,421 +2954,482 @@ msgstr ""
 "\"B\"-afhængighed kræver en epoke (antager samme som \"A\")\n"
 "\tA %s\tB %s\n"
 
-#: lib/rpmds.c:1101
+#: lib/rpmds.c:3710
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s    A %s\tB %s\n"
 
-#. @=branchstate@
-#: lib/rpmds.c:1125
+#: lib/rpmds.c:3734
 #, fuzzy, c-format
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "pakke %s-%s-%s krav ikke opfyldt: %s\n"
 
-#: lib/rpmfi.c:561
+#: lib/rpmfc.c:93
+#, c-format
+msgid "\texecv(%s) pid %d\n"
+msgstr ""
+
+#: lib/rpmfc.c:99
+#, c-format
+msgid "Couldn't exec %s: %s\n"
+msgstr "Kunne ikke udføre %s: %s\n"
+
+#: lib/rpmfc.c:104
+#, c-format
+msgid "Couldn't fork %s: %s\n"
+msgstr "Kunne ikke fraspalte ny proces til %s: %s\n"
+
+#: lib/rpmfc.c:189
+#, c-format
+msgid "\twaitpid(%d) rc %d status %x\n"
+msgstr ""
+
+#: lib/rpmfc.c:196
+#, c-format
+msgid "Command \"%s\" failed, exit(%d)\n"
+msgstr ""
+
+#: lib/rpmfc.c:201
+#, c-format
+msgid "failed to write all data to %s\n"
+msgstr "kunne ikke skrive alle data til %s\n"
+
+#: lib/rpmfc.c:1003
+#, fuzzy, c-format
+msgid "magic_open(0x%x) failed: %s\n"
+msgstr "åbning af %s mislykkedes %s\n"
+
+#: lib/rpmfc.c:1011
+#, fuzzy, c-format
+msgid "magic_load(ms, \"%s\") failed: %s\n"
+msgstr "fjernelse af %s mislykkedes: %s\n"
+
+#: lib/rpmfc.c:1077
+#, c-format
+msgid "magic_file(ms, \"%s\") failed: mode %06o %s\n"
+msgstr ""
+
+#: lib/rpmfc.c:1295
+#, fuzzy, c-format
+msgid "Finding  %s: %s\n"
+msgstr "Finder %s: (benytter %s)...\n"
+
+#: lib/rpmfc.c:1301 lib/rpmfc.c:1312
+#, c-format
+msgid "Failed to find %s:\n"
+msgstr "Kunne ikke finde %s:\n"
+
+#: lib/rpmfi.c:622
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr "%s oversprunget grundet manglende ok-flag\n"
 
-#: lib/rpmfi.c:803
+#: lib/rpmfi.c:874
 msgid "========== relocations\n"
 msgstr "========== gemmer omrokeringer\n"
 
-#: lib/rpmfi.c:807
+#: lib/rpmfi.c:878
 #, c-format
 msgid "%5d exclude  %s\n"
 msgstr "%5d ekskluderer %s\n"
 
-#: lib/rpmfi.c:810
+#: lib/rpmfi.c:881
 #, c-format
 msgid "%5d relocate %s -> %s\n"
 msgstr "%5d omrokerer %s -> %s\n"
 
-#: lib/rpmfi.c:944
+#: lib/rpmfi.c:1015
 #, c-format
 msgid "excluding %s %s\n"
 msgstr "ekskluderer %s %s\n"
 
-#: lib/rpmfi.c:954
+#: lib/rpmfi.c:1025
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr "omrokerer %s til %s\n"
 
-#: lib/rpmfi.c:1046
+#: lib/rpmfi.c:1117
 #, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "omrokerer kataloget %s til %s\n"
 
-#: lib/rpmgi.c:81 lib/rpminstall.c:124 lib/rpminstall.c:480
-#: lib/rpminstall.c:611 lib/rpminstall.c:1039 lib/rpmts.c:643
-#: tools/rpmgraph.c:120 tools/rpmgraph.c:157
+#: lib/rpmgi.c:91 lib/rpminstall.c:125 lib/rpminstall.c:493
+#: lib/rpminstall.c:622 lib/rpmrollback.c:166 lib/rpmts.c:553
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "åbning af %s mislykkedes %s\n"
 
-#: lib/rpmgi.c:355
+#: lib/rpmgi.c:423
 #, fuzzy, c-format
 msgid "unknown tag: \"%s\"\n"
 msgstr "ukendt mærke"
 
-#. XXX rpminstall will need RPMMESS_ERROR
-#: lib/rpmgi.c:625 lib/rpminstall.c:655 lib/rpminstall.c:830
-#: lib/rpminstall.c:1265 lib/transaction.c:1021 tools/rpmgraph.c:195
+#: lib/rpmgi.c:764 lib/rpminstall.c:666 lib/rpminstall.c:851
 #, fuzzy
 msgid "Failed dependencies:\n"
 msgstr "afhængighedskrav, der ikke kunne imødekommes:\n"
 
-#: lib/rpmgi.c:631 lib/rpminstall.c:662 tools/rpmgraph.c:201
+#: lib/rpmgi.c:770 lib/rpminstall.c:673
 msgid "    Suggested resolutions:\n"
 msgstr ""
 
-#: lib/rpminstall.c:191
+#: lib/rpminstall.c:192
 msgid "Preparing..."
 msgstr "Forbereder..."
 
-#: lib/rpminstall.c:193
+#: lib/rpminstall.c:194
 msgid "Preparing packages for installation..."
 msgstr "Forbereder pakker til installation..."
 
-#: lib/rpminstall.c:211
+#: lib/rpminstall.c:212
 #, fuzzy
 msgid "Repackaging..."
 msgstr "Forbereder..."
 
-#: lib/rpminstall.c:213
+#: lib/rpminstall.c:214
 msgid "Repackaging erased files..."
 msgstr ""
 
-#: lib/rpminstall.c:232
+#: lib/rpminstall.c:233
 #, fuzzy
 msgid "Upgrading..."
 msgstr "Forbereder..."
 
-#: lib/rpminstall.c:234
+#: lib/rpminstall.c:235
 #, fuzzy
 msgid "Upgrading packages..."
 msgstr "opgradér pakke"
 
-#: lib/rpminstall.c:409
+#: lib/rpminstall.c:331 lib/rpminstall.c:795
+#, c-format
+msgid "Autorollback Goal: %-24.24s (0x%08x)\n"
+msgstr ""
+
+#: lib/rpminstall.c:422
 #, fuzzy, c-format
 msgid "Adding goal: %s\n"
 msgstr "Finder %s: (benytter %s)...\n"
 
-#: lib/rpminstall.c:425
+#: lib/rpminstall.c:438
 #, c-format
 msgid "Retrieving %s\n"
 msgstr "Modtager %s\n"
 
-#. XXX undefined %{name}/%{version}/%{release} here
-#. XXX %{_tmpdir} does not exist
-#: lib/rpminstall.c:438
+#: lib/rpminstall.c:451
 #, c-format
 msgid " ... as %s\n"
 msgstr " ... som %s\n"
 
-#: lib/rpminstall.c:442
+#: lib/rpminstall.c:455
 #, c-format
 msgid "skipping %s - transfer failed - %s\n"
 msgstr "overspringer %s - overførsel mislykkedes - %s\n"
 
-#: lib/rpminstall.c:499 lib/rpminstall.c:893 tools/rpmgraph.c:140
+#: lib/rpminstall.c:512 lib/rpminstall.c:911
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s kunne ikke installeres\n"
 
-#: lib/rpminstall.c:516
+#: lib/rpminstall.c:529
 #, fuzzy, c-format
 msgid "\tadded source package [%d]\n"
 msgstr "<kildepakke>"
 
-#: lib/rpminstall.c:541
+#: lib/rpminstall.c:554
 #, fuzzy, c-format
 msgid "package %s is not relocatable\n"
 msgstr "pakke %s kan ikke omrokeres\n"
 
-#: lib/rpminstall.c:586
+#: lib/rpminstall.c:599
 #, fuzzy, c-format
 msgid "\tadded binary package [%d]\n"
 msgstr "installerer binærpakker\n"
 
-#: lib/rpminstall.c:591
-#, c-format
-msgid "error reading from file %s\n"
-msgstr "fejl ved læsning fra filen %s\n"
+#: lib/rpminstall.c:605
+#, fuzzy, c-format
+msgid "package file %s was skipped\n"
+msgstr "pakke %s-%s-%s krav ikke opfyldt: %s\n"
 
-#: lib/rpminstall.c:597
+#: lib/rpminstall.c:609
 #, c-format
 msgid "file %s requires a newer version of RPM\n"
 msgstr "filen %s kræver en nyere version af RPM\n"
 
-#: lib/rpminstall.c:626
+#: lib/rpminstall.c:637
 #, fuzzy, c-format
 msgid "%s: not an rpm package (or package manifest): %s\n"
 msgstr "ingen pakker udløser %s\n"
 
-#: lib/rpminstall.c:641
+#: lib/rpminstall.c:652
 #, c-format
 msgid "found %d source and %d binary packages\n"
 msgstr "fandt %d kilde- og %d binærpakker\n"
 
-#: lib/rpminstall.c:692
+#: lib/rpminstall.c:703
 msgid "installing binary packages\n"
 msgstr "installerer binærpakker\n"
 
-#: lib/rpminstall.c:716
+#: lib/rpminstall.c:727
 #, c-format
 msgid "cannot open file %s: %s\n"
 msgstr "kunne ikke åbne fil %s: %s\n"
 
-#: lib/rpminstall.c:805
+#: lib/rpminstall.c:826
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" angiver flere pakker\n"
 
-#: lib/rpminstall.c:877
+#: lib/rpminstall.c:895
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "kunne ikke åbne %s: %s\n"
 
-#: lib/rpminstall.c:883
+#: lib/rpminstall.c:901
 #, c-format
 msgid "Installing %s\n"
 msgstr "Installerer %s\n"
-
-#: lib/rpminstall.c:1259 lib/transaction.c:1014
-#, c-format
-msgid "Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"
-msgstr ""
-
-#: lib/rpminstall.c:1290 lib/transaction.c:1065
-msgid "Cleaning up repackaged packages:\n"
-msgstr ""
-
-#. @innercontinue@
-#. XXX can't happen
-#: lib/rpminstall.c:1297 lib/transaction.c:1071
-#, fuzzy, c-format
-msgid "\tRemoving %s:\n"
-msgstr "Modtager %s\n"
 
 #: lib/rpmlead.c:56
 #, c-format
 msgid "read failed: %s (%d)\n"
 msgstr "læsning mislykkedes: %s (%d)\n"
 
-#: lib/rpmlibprov.c:29
-msgid "PreReq:, Provides:, and Obsoletes: dependencies support versions."
+#: lib/rpmlock.c:149 lib/rpmlock.c:158
+#, fuzzy, c-format
+msgid "can't create transaction lock on %s\n"
+msgstr "kan ikke opnå %s lås på %s/%s\n"
+
+#: lib/rpmlock.c:154
+#, c-format
+msgid "waiting for transaction lock on %s\n"
 msgstr ""
 
-#: lib/rpmlibprov.c:32
-msgid "file name(s) stored as (dirName,baseName,dirIndex) tuple, not as path."
-msgstr ""
-
-#: lib/rpmlibprov.c:35
-msgid "package payload can be compressed using bzip2."
-msgstr ""
-
-#: lib/rpmlibprov.c:38
-msgid "package payload file(s) have \"./\" prefix."
-msgstr ""
-
-#: lib/rpmlibprov.c:41
-msgid "package name-version-release is not implicitly provided."
-msgstr ""
-
-#: lib/rpmlibprov.c:44
-msgid "header tags are always sorted after being loaded."
-msgstr ""
-
-#: lib/rpmlibprov.c:47
-msgid "the scriptlet interpreter can use arguments from header."
-msgstr ""
-
-#: lib/rpmlibprov.c:50
-msgid "a hardlink file set may be installed without being complete."
-msgstr ""
-
-#: lib/rpmlibprov.c:53
-msgid "package scriptlets may access the rpm database while installing."
-msgstr ""
-
-#: lib/rpmlibprov.c:56
-#, fuzzy
-msgid "internal support for lua scripts."
-msgstr "- understøttes ikke for strenge\n"
-
-#. @observer@
-#: lib/rpmps.c:200
+#: lib/rpmps.c:201
 msgid "different"
 msgstr ""
 
-#: lib/rpmps.c:208
+#: lib/rpmps.c:209
 #, fuzzy, c-format
-msgid "package %s is intended for a %s architecture"
+msgid "package %s is intended for a %s platform"
 msgstr "pakken %s hører til en anden arkitektur"
 
-#: lib/rpmps.c:213
-#, fuzzy, c-format
-msgid "package %s is intended for a %s operating system"
-msgstr "pakken %s hører til et andet operativsystem"
-
-#: lib/rpmps.c:218
+#: lib/rpmps.c:214
 #, c-format
 msgid "package %s is already installed"
 msgstr "pakken %s er allerede installeret"
 
-#: lib/rpmps.c:223
+#: lib/rpmps.c:219
+#, fuzzy, c-format
+msgid "re-packaged package with %s: %s is missing"
+msgstr "ingen pakker udløser %s\n"
+
+#: lib/rpmps.c:224
 #, fuzzy, c-format
 msgid "path %s in package %s is not relocatable"
 msgstr "sti %s i pakke %s kan ikke omrokeres"
 
-#: lib/rpmps.c:228
+#: lib/rpmps.c:229
 #, c-format
 msgid "file %s conflicts between attempted installs of %s and %s"
 msgstr "filen %s skaber konflikt mellem den forsøgte installation af %s og %s"
 
-#: lib/rpmps.c:233
+#: lib/rpmps.c:234
 #, c-format
 msgid "file %s from install of %s conflicts with file from package %s"
 msgstr ""
 "filen %s fra installationen af %s skaber konflikt med fil fra pakken %s"
 
-#: lib/rpmps.c:238
+#: lib/rpmps.c:239
 #, c-format
 msgid "package %s (which is newer than %s) is already installed"
 msgstr "pakke %s (som er nyere end %s) er allerede installeret"
 
-#: lib/rpmps.c:243
+#: lib/rpmps.c:244
 #, fuzzy, c-format
-msgid "installing package %s needs %ld%cB on the %s filesystem"
+msgid "installing package %s needs %lu%cB on the %s filesystem"
 msgstr "installation af pakke %s kræver %ld%cb på %s-filsystemet"
 
-#: lib/rpmps.c:253
-#, c-format
-msgid "installing package %s needs %ld inodes on the %s filesystem"
+#: lib/rpmps.c:254
+#, fuzzy, c-format
+msgid "installing package %s needs %lu inodes on the %s filesystem"
 msgstr "installation af pakken %s kræver %ld inode'r på %s-filsystemet"
 
-#: lib/rpmps.c:258
+#: lib/rpmps.c:259
 #, c-format
 msgid "package %s pre-transaction syscall(s): %s failed: %s"
 msgstr "pakke %s prætransaktion-systemkald: %s mislykkedes: %s"
 
-#: lib/rpmps.c:262
+#: lib/rpmps.c:263
 #, fuzzy, c-format
 msgid "%s is needed by %s%s"
 msgstr " kræves af %s-%s-%s\n"
 
-#: lib/rpmps.c:264 lib/rpmps.c:269
+#: lib/rpmps.c:265 lib/rpmps.c:270
 #, fuzzy
 msgid "(installed) "
 msgstr "ej installeret"
 
-#: lib/rpmps.c:267
+#: lib/rpmps.c:268
 #, fuzzy, c-format
 msgid "%s conflicts with %s%s"
 msgstr " skaber konflikt med %s-%s-%s\n"
 
-#: lib/rpmps.c:273
+#: lib/rpmps.c:274
+#, fuzzy, c-format
+msgid "installing package %s on %s rdonly filesystem"
+msgstr "installation af pakke %s kræver %ld%cb på %s-filsystemet"
+
+#: lib/rpmps.c:279
 #, c-format
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr "ukendt fejl %d under arbejdet med pakken %s"
 
-#: lib/rpmrc.c:198
+#: lib/rpmrc.c:191
 #, c-format
 msgid "missing second ':' at %s:%d\n"
 msgstr "manglende andet ':' ved %s:%d\n"
 
-#: lib/rpmrc.c:201
+#: lib/rpmrc.c:194
 #, c-format
 msgid "missing architecture name at %s:%d\n"
 msgstr "manglende navn på arkitektur ved %s:%d\n"
 
-#: lib/rpmrc.c:355
+#: lib/rpmrc.c:360
 #, c-format
 msgid "Incomplete data line at %s:%d\n"
 msgstr "Ufærdig datalinie ved %s:%d\n"
 
-#: lib/rpmrc.c:360
+#: lib/rpmrc.c:365
 #, c-format
 msgid "Too many args in data line at %s:%d\n"
 msgstr "For mange parametre på datalinie ved %s:%d\n"
 
-#: lib/rpmrc.c:368
+#: lib/rpmrc.c:373
 #, c-format
 msgid "Bad arch/os number: %s (%s:%d)\n"
 msgstr "Ugyldigt arch/os-tal: %s (%s:%d)\n"
 
-#: lib/rpmrc.c:405
+#: lib/rpmrc.c:410
 #, c-format
 msgid "Incomplete default line at %s:%d\n"
 msgstr "Ufuldstændig standardlinie ved %s:%d\n"
 
-#: lib/rpmrc.c:410
+#: lib/rpmrc.c:415
 #, c-format
 msgid "Too many args in default line at %s:%d\n"
 msgstr "For mange parametre i standardlinie ved %s:%d\n"
 
-#. XXX Feof(fd)
-#: lib/rpmrc.c:576
+#: lib/rpmrc.c:675
 #, c-format
 msgid "Failed to read %s: %s.\n"
 msgstr "Kunne ikke læse %s: %s.\n"
 
-#: lib/rpmrc.c:614
+#: lib/rpmrc.c:713
 #, c-format
 msgid "missing ':' (found 0x%02x) at %s:%d\n"
 msgstr "manglende  ':' (fandt 0x%02x) ved %s:%d\n"
 
-#: lib/rpmrc.c:631 lib/rpmrc.c:705
+#: lib/rpmrc.c:730 lib/rpmrc.c:793
 #, c-format
 msgid "missing argument for %s at %s:%d\n"
 msgstr "manglende parameter til %s ved %s:%d\n"
 
-#: lib/rpmrc.c:648 lib/rpmrc.c:670
+#: lib/rpmrc.c:747 lib/rpmrc.c:769
 #, c-format
 msgid "%s expansion failed at %s:%d \"%s\"\n"
 msgstr "%s-udvidelse mislykkedes ved %s:%d \"%s\"\n"
 
-#: lib/rpmrc.c:657
+#: lib/rpmrc.c:756
 #, c-format
 msgid "cannot open %s at %s:%d: %s\n"
 msgstr "kan ikke åbne %s ved %s:%d: %s\n"
 
-#: lib/rpmrc.c:697
+#: lib/rpmrc.c:785
 #, c-format
 msgid "missing architecture for %s at %s:%d\n"
 msgstr "manglende arkitektur for %s ved %s:%d\n"
 
-#: lib/rpmrc.c:764
+#: lib/rpmrc.c:852
 #, c-format
 msgid "bad option '%s' at %s:%d\n"
 msgstr "ugyldig tilvalg '%s' ved %s:%d\n"
 
-#: lib/rpmrc.c:1568
-#, c-format
-msgid "Unknown system: %s\n"
-msgstr ""
-"Ukendt system: %s\n"
-"\n"
-
-#: lib/rpmrc.c:1569
-msgid "Please contact rpm-list@redhat.com\n"
-msgstr "Kontakt venligst rpm-list@redhat.com (på engelsk)\n"
-
-#: lib/rpmrc.c:1806
+#: lib/rpmrc.c:1920
 #, c-format
 msgid "Cannot expand %s\n"
 msgstr "Kan ikke udfolde %s\n"
 
-#: lib/rpmrc.c:1811
+#: lib/rpmrc.c:1925
 #, c-format
 msgid "Cannot read %s, HOME is too large.\n"
 msgstr "Kunne ikke læse %s, HOME er for stor.\n"
 
-#: lib/rpmrc.c:1828
+#: lib/rpmrc.c:1942
 #, c-format
 msgid "Unable to open %s for reading: %s.\n"
 msgstr "Kunne ikke åbne %s for læsning: %s.\n"
+
+#: lib/rpmrc.c:2087
+#, c-format
+msgid "Configured system provides (from /etc/rpm/sysinfo):\n"
+msgstr ""
+
+#: lib/rpmrc.c:2101
+#, c-format
+msgid "Features provided by rpmlib installer:\n"
+msgstr ""
+
+#: lib/rpmrc.c:2115
+#, c-format
+msgid "Features provided by current cpuinfo (from /proc/cpuinfo):\n"
+msgstr ""
+
+#: lib/rpmrc.c:2129
+#, c-format
+msgid "Features provided by current getconf:\n"
+msgstr ""
+
+#: lib/rpmrc.c:2143
+#, c-format
+msgid "Features provided by current uname:\n"
+msgstr ""
+
+#: lib/rpmrollback.c:389
+#, fuzzy
+msgid "Failed dependencies"
+msgstr "afhængighedskrav, der ikke kunne imødekommes:\n"
+
+#: lib/rpmrollback.c:394
+msgid "Ordering problems"
+msgstr ""
+
+#: lib/rpmrollback.c:399
+msgid "Rollback problems"
+msgstr ""
+
+#: lib/rpmrollback.c:518
+#, c-format
+msgid "Excluding TID from rollback: %-24.24s (0x%08x)\n"
+msgstr ""
+
+#: lib/rpmrollback.c:620
+#, fuzzy
+msgid "Missing re-packaged package(s)"
+msgstr "fejl ved læsning af hovedet på pakke\n"
+
+#: lib/rpmrollback.c:628
+#, c-format
+msgid "Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"
+msgstr ""
+
+#: lib/rpmrollback.c:654
+msgid "Cleaning up repackaged packages:\n"
+msgstr ""
+
+#: lib/rpmrollback.c:661
+#, fuzzy, c-format
+msgid "\tRemoving %s:\n"
+msgstr "Modtager %s\n"
 
 #: lib/rpmsx.c:374
 #, c-format
@@ -3134,641 +3456,441 @@ msgstr ""
 msgid "%s:  invalid context %s on line number %d\n"
 msgstr ""
 
-#: lib/rpmts.c:187
+#: lib/rpmts.c:126
 #, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "kunne ikke åbne Packages-database i %s\n"
 
-#: lib/rpmts.c:285
+#: lib/rpmts.c:187
 #, fuzzy, c-format
 msgid "extra '(' in package label: %s\n"
 msgstr "ugyldigt pakkenummer: %s\n"
 
-#: lib/rpmts.c:303
+#: lib/rpmts.c:205
 #, fuzzy, c-format
 msgid "missing '(' in package label: %s\n"
 msgstr "Manglende '(' i %s %s\n"
 
-#: lib/rpmts.c:311
+#: lib/rpmts.c:213
 #, fuzzy, c-format
 msgid "missing ')' in package label: %s\n"
 msgstr "ugyldigt pakkenummer: %s\n"
 
-#: lib/rpmts.c:522
+#: lib/rpmts.c:424
 #, fuzzy, c-format
 msgid "cannot open Solve database in %s\n"
 msgstr "kan ikke åbne rpm-database i %s\n"
 
-#: lib/rpmts.c:664
+#: lib/rpmts.c:543
+#, fuzzy, c-format
+msgid "incorrect solve path format: %s\n"
+msgstr "ugyldigt format: %s\n"
+
+#: lib/rpmts.c:573
 #, fuzzy, c-format
 msgid "Adding: %s\n"
 msgstr "linie: %s\n"
 
-#: lib/rpmts.c:676
+#: lib/rpmts.c:584
 #, fuzzy, c-format
 msgid "Suggesting: %s\n"
 msgstr ""
 "kilder i: %s\n"
 "\n"
 
-#: lib/rpmts.c:1221
+#: lib/rpmts.c:1149
 #, fuzzy
 msgid "mounted filesystems:\n"
 msgstr "henter liste over monterede filsystemer\n"
 
-#: lib/rpmts.c:1223
-msgid "    i    dev bsize       bavail       iavail mount point\n"
+#: lib/rpmts.c:1151
+msgid "    i        dev    bsize       bavail       iavail mount point\n"
 msgstr ""
 
-#: lib/rpmts.c:1279
-#, c-format
-msgid "%5d 0x%04x %5u %12ld %12ld %s\n"
-msgstr ""
-
-#: lib/rpmts.c:1616
-#, c-format
-msgid "Creating transaction score board(%p, %p)\n"
-msgstr ""
-
-#: lib/rpmts.c:1621
-#, c-format
-msgid "\tScore board address:  %p\n"
-msgstr ""
-
-#: lib/rpmts.c:1631
+#: lib/rpmts.c:1232
 #, fuzzy, c-format
-msgid "\tAllocating space for %d entries\n"
-msgstr "omrokerer %s til %s\n"
+msgid "%5d 0x%08x %8u %12ld %12ld %s %s\n"
+msgstr "Fil %4d: %07o %s.%s\t %s\n"
 
-#. @-compdef -usereleased@
-#. XXX p->fi->te undefined.
-#: lib/rpmts.c:1658
-#, c-format
-msgid "\tAdding entry for %s to score board.\n"
-msgstr ""
-
-#: lib/rpmts.c:1662
-#, c-format
-msgid "\t\tEntry address:  %p\n"
-msgstr ""
-
-#. We found this one, so just add the element type to the one
-#. * already there.
-#.
-#: lib/rpmts.c:1673
-#, c-format
-msgid "\tUpdating entry for %s in score board.\n"
-msgstr ""
-
-#: lib/rpmts.c:1698
-#, c-format
-msgid "May free Score board(%p)\n"
-msgstr ""
-
-#: lib/rpmts.c:1713
-msgid "\tRefcount is zero...will free\n"
-msgstr ""
-
-#. Assume we don't find it
-#: lib/rpmts.c:1763
-#, c-format
-msgid "Looking in score board(%p) for %s\n"
-msgstr ""
-
-#: lib/rpmts.c:1769
-#, c-format
-msgid "\tFound entry at address:  %p\n"
-msgstr ""
-
-#: lib/signature.c:140
-#, c-format
-msgid "Expected size: %12d = lead(%d)+sigs(%d)+pad(%d)+data(%d)\n"
+#: lib/signature.c:139
+#, fuzzy, c-format
+msgid "Expected size: %12lu = lead(%d)+sigs(%d)+pad(%d)+data(%lu)\n"
 msgstr "Forventet størrelse: %12d = indled(%d)+sign(%d)+fyld(%d)+data(%d)\n"
 
-#: lib/signature.c:145
-#, c-format
-msgid "  Actual size: %12d\n"
+#: lib/signature.c:144
+#, fuzzy, c-format
+msgid "  Actual size: %12lu\n"
 msgstr "  Faktisk størrelse: %12d\n"
 
-#: lib/signature.c:188
+#: lib/signature.c:187
 #, c-format
 msgid "sigh size(%d): BAD, read returned %d\n"
 msgstr ""
 
-#: lib/signature.c:193
+#: lib/signature.c:192
 #, c-format
 msgid "sigh magic: BAD\n"
 msgstr ""
 
-#: lib/signature.c:201
+#: lib/signature.c:200
 #, c-format
 msgid "sigh tags: BAD, no. of tags(%d) out of range\n"
 msgstr ""
 
-#: lib/signature.c:209
+#: lib/signature.c:208
 #, c-format
 msgid "sigh data: BAD, no. of  bytes(%d) out of range\n"
 msgstr ""
 
-#: lib/signature.c:225
+#: lib/signature.c:224
 #, c-format
 msgid "sigh blob(%d): BAD, read returned %d\n"
 msgstr ""
 
-#: lib/signature.c:297
+#: lib/signature.c:302
 #, c-format
 msgid "sigh tag[%d]: BAD, tag %d type %d offset %d count %d\n"
 msgstr ""
 
-#: lib/signature.c:307
+#: lib/signature.c:312
 #, c-format
 msgid "sigh load: BAD\n"
 msgstr ""
 
-#: lib/signature.c:319
+#: lib/signature.c:324
 #, c-format
 msgid "sigh pad(%d): BAD, read %d bytes\n"
 msgstr ""
 
-#: lib/signature.c:328
+#: lib/signature.c:334
 #, c-format
 msgid "sigh sigSize(%d): BAD, fstat(2) failed\n"
 msgstr ""
 
-#: lib/signature.c:365
+#: lib/signature.c:371
 #, fuzzy, c-format
 msgid "Signature: size(%d)+pad(%d)\n"
 msgstr "Signaturstørrelse: %d\n"
 
-#. @=boundsread@
-#: lib/signature.c:457 lib/signature.c:571 lib/signature.c:846
-#: lib/signature.c:885
+#: lib/signature.c:468 lib/signature.c:595 lib/signature.c:904
+#: lib/signature.c:943
 #, fuzzy, c-format
 msgid "Could not exec %s: %s\n"
 msgstr "Kunne ikke udføre %s: %s\n"
 
-#: lib/signature.c:473
+#: lib/signature.c:484
 msgid "pgp failed\n"
 msgstr "pgp fejlede\n"
 
-#. PGP failed to write signature
-#. Just in case
-#: lib/signature.c:480
+#: lib/signature.c:491
 msgid "pgp failed to write signature\n"
 msgstr "pgp kunne ikke skrive signatur\n"
 
-#: lib/signature.c:486
+#: lib/signature.c:497
 #, c-format
 msgid "PGP sig size: %d\n"
 msgstr "PGP-signaturstørrelse: %d\n"
 
-#. @=boundswrite@
-#: lib/signature.c:504 lib/signature.c:619
+#: lib/signature.c:515 lib/signature.c:643
 msgid "unable to read the signature\n"
 msgstr "kunne ikke læse signaturen\n"
 
-#: lib/signature.c:509
+#: lib/signature.c:520
 #, c-format
 msgid "Got %d bytes of PGP sig\n"
 msgstr "Fik %d byte af PGP-signatur\n"
 
-#: lib/signature.c:588
-msgid "gpg failed\n"
-msgstr "gpg fejlede\n"
+#: lib/signature.c:612
+#, fuzzy, c-format
+msgid "gpg exec failed (%d)\n"
+msgstr "eksekvering mislykkedes\n"
 
-#. GPG failed to write signature
-#. Just in case
-#: lib/signature.c:595
+#: lib/signature.c:619
 msgid "gpg failed to write signature\n"
 msgstr "gpg kunne ikke skrive signaturen\n"
 
-#: lib/signature.c:601
+#: lib/signature.c:625
 #, c-format
 msgid "GPG sig size: %d\n"
 msgstr "GPG-signaturstørrelse: %d\n"
 
-#: lib/signature.c:624
+#: lib/signature.c:648
 #, c-format
 msgid "Got %d bytes of GPG sig\n"
 msgstr "Fik %d byte GPG-signatur\n"
 
-#. @notreached@
-#. This case should have been screened out long ago.
-#. Currently the calling function (rpm.c:main) is checking this and
-#. * doing a better job.  This section should never be accessed.
-#.
-#: lib/signature.c:890 lib/signature.c:945
+#: lib/signature.c:948 lib/signature.c:1001
 #, c-format
 msgid "Invalid %%_signature spec in macro file\n"
 msgstr "Ugyldig angivelse af '%%_signature'-spec i makrofil.\n"
 
-#: lib/signature.c:922
+#: lib/signature.c:981
 #, c-format
 msgid "You must set \"%%_gpg_name\" in your macro file\n"
 msgstr "Du skal angive \"%%_gpg_name\" i din makrofil\n"
 
-#: lib/signature.c:937
+#: lib/signature.c:995
 #, c-format
 msgid "You must set \"%%_pgp_name\" in your macro file\n"
 msgstr "Du skal angive \"%%_pgp_name\" i din makrofil\n"
 
-#: lib/signature.c:986
+#: lib/signature.c:1043
 #, fuzzy
 msgid "Header+Payload size: "
 msgstr "Hovedstørrelse er for stor"
 
-#: lib/signature.c:1027
+#: lib/signature.c:1084
 msgid "MD5 digest: "
 msgstr ""
 
-#: lib/signature.c:1087
+#: lib/signature.c:1144
 #, fuzzy
 msgid "Header SHA1 digest: "
 msgstr "verificér ikke filerne i pakke"
 
-#: lib/signature.c:1164
-#, fuzzy
-msgid "V3 RSA/MD5 signature: "
-msgstr "overspring eventuelle MD5-signaturer"
-
-#: lib/signature.c:1291
+#: lib/signature.c:1225 lib/signature.c:1415
 msgid "Header "
 msgstr ""
 
-#: lib/signature.c:1292
+#: lib/signature.c:1294
 #, fuzzy
-msgid "V3 DSA signature: "
+msgid " signature: "
 msgstr "Ingen signatur\n"
 
-#: lib/signature.c:1376
+#: lib/signature.c:1421
+#, fuzzy
+msgid " DSA signature: "
+msgstr "Ingen signatur\n"
+
+#: lib/signature.c:1503
 #, c-format
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr ""
 
-#: lib/signature.c:1403
+#: lib/signature.c:1534
 #, c-format
 msgid "Broken MD5 digest: UNSUPPORTED\n"
 msgstr ""
 
-#: lib/signature.c:1407
+#: lib/signature.c:1538
 #, fuzzy, c-format
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr "Signaturfyld : %d\n"
 
-#. @innercontinue@
-#: lib/transaction.c:925
+#: lib/transaction.c:890
 #, c-format
 msgid "excluding directory %s\n"
 msgstr "ekskluderer kataloget %s\n"
 
-#: lib/transaction.c:1012
-msgid "Transaction failed...rolling back\n"
-msgstr ""
-
-#: lib/transaction.c:1032
-msgid "Could not order auto-rollback transaction!\n"
-msgstr ""
-
-#: lib/transaction.c:1122
-msgid "Getting repackaged header from transaction element\n"
-msgstr ""
-
-#. Get the index of possible repackaged packages
-#: lib/transaction.c:1147
-#, c-format
-msgid "\tLooking for %s...\n"
-msgstr ""
-
-#: lib/transaction.c:1151
-msgid "\tMatches found.\n"
-msgstr ""
-
-#: lib/transaction.c:1155
-msgid "\tNo matches found.\n"
-msgstr ""
-
-#: lib/transaction.c:1168
-#, fuzzy
-msgid "\tRepackaged package not found!.\n"
-msgstr "kildepakke forventet, binær fundet\n"
-
-#. OK, the tid matches.  Now lets see if the name is the same.
-#. * If I could not get the name from the package, I will go onto
-#. * the next one.  Perhaps I should return an error at this
-#. * point, but if this was not the correct one, at least the correct one
-#. * would be found.
-#. * XXX:  Should Match NAC!
-#.
-#: lib/transaction.c:1189
-msgid "\tREMOVETID matched INSTALLTID.\n"
-msgstr ""
-
-#: lib/transaction.c:1191
-#, c-format
-msgid "\t\tName:  %s.\n"
-msgstr ""
-
-#: lib/transaction.c:1214
+#: lib/transaction.c:1013
 #, fuzzy, c-format
-msgid "\tRepackaged Package was %s...\n"
-msgstr "ingen pakker udløser %s\n"
+msgid "rpmdb erase failed. NEVRA: %s\n"
+msgstr "fjernelse (rmdir) af %s mislykkedes: %s\n"
 
-#: lib/transaction.c:1258
-msgid "Adding install element to auto-rollback transaction.\n"
-msgstr ""
-
-#: lib/transaction.c:1267
-msgid "Could not get install element database instance!\n"
-msgstr ""
-
-#: lib/transaction.c:1280
-msgid "Could not get header for auto-rollback transaction!\n"
-msgstr ""
-
-#: lib/transaction.c:1290
-#, fuzzy, c-format
-msgid "\tAdded repackaged package header: %s.\n"
-msgstr "<kildepakke>"
-
-#: lib/transaction.c:1292 lib/transaction.c:1303
+#: lib/transaction.c:1031
 #, c-format
-msgid "\tAdded from install element %s.\n"
+msgid "Rollback to %-24.24s (0x%08x)\n"
 msgstr ""
 
-#. Add the header as an erase element, we did not
-#. * have a repackaged package
-#.
-#: lib/transaction.c:1301
-msgid "\tAdded erase element.\n"
+#: lib/transaction.c:1178
+msgid "Invalid number of transaction elements.\n"
 msgstr ""
 
-#: lib/transaction.c:1310
-msgid "Could not get repackaged header for auto-rollback transaction!\n"
-msgstr ""
-
-#: lib/transaction.c:1317
-msgid "Add erase element to auto-rollback transaction.\n"
-msgstr ""
-
-#: lib/transaction.c:1325
-msgid "\tFound existing upgrade element.\n"
-msgstr ""
-
-#: lib/transaction.c:1326
-#, c-format
-msgid "\tNot adding erase element for %s.\n"
-msgstr ""
-
-#: lib/transaction.c:1343
-#, fuzzy, c-format
-msgid "\tAdded repackaged package %s.\n"
-msgstr "<kildepakke>"
-
-#: lib/transaction.c:1345
-#, c-format
-msgid "\tAdded from erase element %s.\n"
-msgstr ""
-
-#: lib/transaction.c:1350
-msgid "Could not add erase element to auto-rollback transaction.\n"
-msgstr ""
-
-#: lib/transaction.c:1356
-msgid "\tNo repackaged package...nothing to do.\n"
-msgstr ""
-
-#: lib/transaction.c:1362
-#, fuzzy
-msgid "Failure reading repackaged package!\n"
-msgstr "fejl ved læsning af hovedet på pakke\n"
-
-#. ===============================================
-#. * For packages being installed:
-#. * - verify package arch/os.
-#. * - verify package epoch:version-release is newer.
-#. * - count files.
-#. * For packages being removed:
-#. * - count files.
-#.
-#: lib/transaction.c:1485
+#: lib/transaction.c:1251
 #, c-format
 msgid "sanity checking %d elements\n"
 msgstr ""
 
-#: lib/transaction.c:1571
+#: lib/transaction.c:1324
 #, fuzzy
 msgid "running pre-transaction scripts\n"
 msgstr "kører præinstallations-skript (hvis det findes)\n"
 
-#. ===============================================
-#. * Initialize transaction element file info for package:
-#.
-#.
-#. * FIXME?: we'd be better off assembling one very large file list and
-#. * calling fpLookupList only once. I'm not sure that the speedup is
-#. * worth the trouble though.
-#.
-#: lib/transaction.c:1641
+#: lib/transaction.c:1399
 #, c-format
 msgid "computing %d file fingerprints\n"
 msgstr ""
 
-#. ===============================================
-#. * Compute file disposition for each package in transaction set.
-#.
-#: lib/transaction.c:1722
+#: lib/transaction.c:1488
 msgid "computing file dispositions\n"
 msgstr ""
 
-#: lib/transaction.c:1901
-msgid "Creating auto-rollback transaction\n"
-msgstr ""
-
-#: lib/transaction.c:2055
-msgid "Add failed.  Could not read package header.\n"
-msgstr ""
-
-#: lib/transaction.c:2119
-msgid "Add failed in rpmpsmStage().\n"
-msgstr ""
-
-#: lib/transaction.c:2163
-msgid "Add failed.  Could not get file list.\n"
-msgstr ""
-
-#: lib/transaction.c:2212
-msgid "Erase failed failed in rpmpsmStage().\n"
-msgstr ""
-
-#: lib/transaction.c:2270
+#: lib/transaction.c:1890
 #, fuzzy
 msgid "running post-transaction scripts\n"
 msgstr "kører skriptet postuninstall (hvis det findes)\n"
 
-#: lib/verify.c:321
+#: lib/verify.c:305
 #, fuzzy, c-format
 msgid "missing   %c %s"
 msgstr "manglende  %s"
 
-#: lib/verify.c:437
+#: lib/verify.c:424
 #, fuzzy, c-format
-msgid "Unsatisfied dependencies for %s: "
+msgid "Unsatisfied dependencies for %s:\n"
 msgstr "Ikke-tilfredsstillede afhængighedskrav for %s-%s-%s: "
 
-#: rpmdb/db3.c:160
+#: rpmdb/db3.c:162
 #, c-format
 msgid "db%d error(%d) from %s: %s\n"
 msgstr "db%d fejl(%d) fra %s: %s\n"
 
-#: rpmdb/db3.c:163
+#: rpmdb/db3.c:165
 #, c-format
 msgid "db%d error(%d): %s\n"
 msgstr "db%d fejl(%d): %s\n"
 
-#: rpmdb/db3.c:189
+#: rpmdb/db3.c:191
 #, fuzzy, c-format
 msgid "closed   db environment %s/%s\n"
 msgstr "lukkede db-miljø  %s/%s\n"
 
-#: rpmdb/db3.c:207
+#: rpmdb/db3.c:210
 #, fuzzy, c-format
 msgid "removed  db environment %s/%s\n"
 msgstr "fjernede db-miljø  %s/%s\n"
 
-#: rpmdb/db3.c:296
+#: rpmdb/db3.c:331
 #, fuzzy, c-format
 msgid "opening  db environment %s/%s %s\n"
 msgstr "åbner   db-miljø  %s/%s %s\n"
 
-#: rpmdb/db3.c:792
+#: rpmdb/db3.c:954
 #, fuzzy, c-format
 msgid "closed   db index       %s/%s\n"
 msgstr "lukkede db-indeks %s/%s\n"
 
-#: rpmdb/db3.c:861
+#: rpmdb/db3.c:1024
 #, fuzzy, c-format
 msgid "verified db index       %s/%s\n"
 msgstr "lukkede db-indeks %s/%s\n"
 
-#: rpmdb/db3.c:999
+#: rpmdb/db3.c:1168
 #, c-format
 msgid "unshared posix mutexes found(%d), adding DB_PRIVATE, using fcntl lock\n"
 msgstr ""
 
-#: rpmdb/db3.c:1103
+#: rpmdb/db3.c:1274
+msgid "Runnning db->verify ...\n"
+msgstr ""
+
+#: rpmdb/db3.c:1338
 #, fuzzy, c-format
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
 msgstr "åbner   db-indeks %s/%s %s mode=0x%x\n"
 
-#: rpmdb/db3.c:1341
+#: rpmdb/db3.c:1579
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "kan ikke opnå %s lås på %s/%s\n"
 
-#: rpmdb/db3.c:1343
+#: rpmdb/db3.c:1581
 msgid "exclusive"
 msgstr "eksklusiv"
 
-#: rpmdb/db3.c:1343
+#: rpmdb/db3.c:1581
 msgid "shared"
 msgstr "delt"
 
-#: rpmdb/db3.c:1347
+#: rpmdb/db3.c:1585
 #, fuzzy, c-format
 msgid "locked   db index       %s/%s\n"
 msgstr "låste   db-index  %s/%s\n"
 
-#: rpmdb/dbconfig.c:339
+#: rpmdb/dbconfig.c:575
 #, fuzzy, c-format
 msgid "unrecognized db option: \"%s\" ignored.\n"
 msgstr "ukendt db-tilvalg: \"%s\" ignoreret\n"
 
-#: rpmdb/dbconfig.c:379
+#: rpmdb/dbconfig.c:615
 #, c-format
 msgid "%s has invalid numeric value, skipped\n"
 msgstr "%s har ugyldig talværdi, overspringes\n"
 
-#: rpmdb/dbconfig.c:388
+#: rpmdb/dbconfig.c:624
 #, c-format
 msgid "%s has too large or too small long value, skipped\n"
 msgstr "%s har for stor eller lille 'long'-værdi, overspringes\n"
 
-#: rpmdb/dbconfig.c:397
+#: rpmdb/dbconfig.c:633
 #, c-format
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr "%s har for stor eller lille heltalsværdi, overspringes\n"
 
-#: rpmdb/header.c:2719
+#: rpmdb/header.c:2833
 msgid "missing { after %"
 msgstr "manglende { efter %"
 
-#: rpmdb/header.c:2749
+#: rpmdb/header.c:2863
 msgid "missing } after %{"
 msgstr "manglende } efter %{"
 
-#: rpmdb/header.c:2765
+#: rpmdb/header.c:2879
 msgid "empty tag format"
 msgstr "tomt mærkeformat"
 
-#: rpmdb/header.c:2777
+#: rpmdb/header.c:2891
 msgid "empty tag name"
 msgstr "tomt mærkenavn"
 
-#: rpmdb/header.c:2786
+#: rpmdb/header.c:2900
 msgid "unknown tag"
 msgstr "ukendt mærke"
 
-#: rpmdb/header.c:2813
+#: rpmdb/header.c:2927
 msgid "] expected at end of array"
 msgstr "] forventet ved slutningen af tabel"
 
-#: rpmdb/header.c:2826
+#: rpmdb/header.c:2940
 msgid "unexpected ]"
 msgstr "uventet ]"
 
-#: rpmdb/header.c:2839
+#: rpmdb/header.c:2953
 msgid "unexpected }"
 msgstr "uventet }"
 
-#: rpmdb/header.c:2903
+#: rpmdb/header.c:3017
 msgid "? expected in expression"
 msgstr "? forventet i udtryk"
 
-#: rpmdb/header.c:2910
+#: rpmdb/header.c:3024
 msgid "{ expected after ? in expression"
 msgstr "{ forventet efter ? i udtryk"
 
-#: rpmdb/header.c:2922 rpmdb/header.c:2962
+#: rpmdb/header.c:3036 rpmdb/header.c:3076
 msgid "} expected in expression"
 msgstr "} forventet i udtryk"
 
-#: rpmdb/header.c:2930
+#: rpmdb/header.c:3044
 msgid ": expected following ? subexpression"
 msgstr ": forventet efter ?-underudtryk"
 
-#: rpmdb/header.c:2948
+#: rpmdb/header.c:3062
 msgid "{ expected after : in expression"
 msgstr "{ forventet efter : i udtryk"
 
-#: rpmdb/header.c:2970
+#: rpmdb/header.c:3084
 msgid "| expected at end of expression"
 msgstr "| forventet ved slutningen af udtryk"
 
-#. @=modobserver =observertrans@
-#: rpmdb/header.c:3071
+#: rpmdb/header.c:3187
 msgid "(index out of range)"
 msgstr ""
 
-#: rpmdb/header.c:3318
+#: rpmdb/header.c:3456
 msgid "array iterator used with different sized arrays"
 msgstr ""
 
-#: rpmdb/header.c:3637
+#: rpmdb/header.c:3770 rpmdb/header.c:3807 rpmdb/header.c:3830
+msgid "(not a number)"
+msgstr "(ikke et tal)"
+
+#: rpmdb/header.c:3869
 #, c-format
 msgid "%c"
 msgstr ""
 
-#: rpmdb/header.c:3653
+#: rpmdb/header.c:3886
 msgid "%a %b %d %Y"
 msgstr ""
 
@@ -3790,333 +3912,374 @@ msgstr "genopbyg omvendte databaselister ud fra installerede pakkehoveder"
 msgid "verify database files"
 msgstr "forespørg en spec-fil"
 
-#: rpmdb/poptDB.c:25
-msgid "generate headers compatible with (legacy) rpm[23] packaging"
-msgstr ""
-"generér hoveder, der er kompatible med (gamle) rpm[23]-indpakningsversioner"
-
-#: rpmdb/rpmdb.c:219
+#: rpmdb/rpmdb.c:208
 #, c-format
 msgid "dbiTagsInit: unrecognized tag name: \"%s\" ignored\n"
 msgstr "dbiTagsInit: ukendt mærkenavn: \"%s\" ignoreret\n"
 
-#: rpmdb/rpmdb.c:288
+#: rpmdb/rpmdb.c:319
 #, c-format
 msgid "cannot open %s index using db%d - %s (%d)\n"
 msgstr "kan ikke åbne '%s'-indeks ved brug af db%d - %s (%d)\n"
 
-#: rpmdb/rpmdb.c:308
+#: rpmdb/rpmdb.c:339
 #, c-format
 msgid "cannot open %s index\n"
 msgstr "kan ikke åbne '%s'-indeks\n"
 
-#: rpmdb/rpmdb.c:946
+#: rpmdb/rpmdb.c:809
+#, fuzzy, c-format
+msgid "incorrect format: \"%s\": %s\n"
+msgstr "ugyldigt format: %s\n"
+
+#: rpmdb/rpmdb.c:1130
 msgid "no dbpath has been set\n"
 msgstr "der er ikke sat nogen dbpath\n"
 
-#: rpmdb/rpmdb.c:1224 rpmdb/rpmdb.c:1353 rpmdb/rpmdb.c:1404 rpmdb/rpmdb.c:2364
-#: rpmdb/rpmdb.c:2484 rpmdb/rpmdb.c:3259
+#: rpmdb/rpmdb.c:1444 rpmdb/rpmdb.c:1582 rpmdb/rpmdb.c:1638 rpmdb/rpmdb.c:2542
+#: rpmdb/rpmdb.c:2696 rpmdb/rpmdb.c:3477
 #, c-format
 msgid "error(%d) getting \"%s\" records from %s index\n"
 msgstr "fejl(%d) ved hentning af \"%s\"-poster fra '%s'-indekset\n"
 
-#: rpmdb/rpmdb.c:1598
+#: rpmdb/rpmdb.c:1850
 msgid "miFreeHeader: skipping"
 msgstr ""
 
-#: rpmdb/rpmdb.c:1608
+#: rpmdb/rpmdb.c:1860
 #, fuzzy, c-format
 msgid "error(%d) storing record #%d into %s\n"
 msgstr "fejl(%d) ved gemning af post %s i %s\n"
 
-#: rpmdb/rpmdb.c:2252
+#: rpmdb/rpmdb.c:2420
 msgid "rpmdbNextIterator: skipping"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2284
+#: rpmdb/rpmdb.c:2452
 #, c-format
 msgid "rpmdb: damaged header #%u retrieved -- skipping.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2588
+#: rpmdb/rpmdb.c:2800
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: kan ikke læse hoved ved 0x%x\n"
 
-#: rpmdb/rpmdb.c:2654
+#: rpmdb/rpmdb.c:2869
 #, fuzzy, c-format
 msgid "error(%d) setting header #%d record for %s removal\n"
 msgstr "fejl(%d) ved hentning af \"%s\"-poster fra '%s'-indekset\n"
 
-#: rpmdb/rpmdb.c:2769
+#: rpmdb/rpmdb.c:2980
 #, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "fjerner \"%s\" fra %s-indekset.\n"
 
-#: rpmdb/rpmdb.c:2773
+#: rpmdb/rpmdb.c:2984
 #, c-format
 msgid "removing %d entries from %s index.\n"
 msgstr "fjerne %d indgange fra %s-indekset.\n"
 
-#: rpmdb/rpmdb.c:2801
+#: rpmdb/rpmdb.c:3012
 #, fuzzy, c-format
 msgid "error(%d) setting \"%s\" records from %s index\n"
 msgstr "fejl(%d) ved hentning af \"%s\"-poster fra '%s'-indekset\n"
 
-#: rpmdb/rpmdb.c:2822
+#: rpmdb/rpmdb.c:3033
 #, fuzzy, c-format
 msgid "error(%d) storing record \"%s\" into %s\n"
 msgstr "fejl(%d) ved gemning af post %s i %s\n"
 
-#: rpmdb/rpmdb.c:2832
+#: rpmdb/rpmdb.c:3043
 #, fuzzy, c-format
 msgid "error(%d) removing record \"%s\" from %s\n"
 msgstr "fejl(%d) ved fjernelse af post %s fra %s\n"
 
-#: rpmdb/rpmdb.c:2997
+#: rpmdb/rpmdb.c:3214
 #, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr "fejl(%d) under allokering af ny pakkeinstans\n"
 
-#: rpmdb/rpmdb.c:3062
+#: rpmdb/rpmdb.c:3280
 msgid "rpmdbAdd: skipping"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3234
+#: rpmdb/rpmdb.c:3452
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr ""
 "tilføjer \"%s\" til '%s'-indekset.\n"
 "\n"
 
-#: rpmdb/rpmdb.c:3238
+#: rpmdb/rpmdb.c:3456
 #, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr "tilføjer %d indgange til '%s'-indekset.\n"
 
-#: rpmdb/rpmdb.c:3278
+#: rpmdb/rpmdb.c:3496
 #, c-format
 msgid "error(%d) storing record %s into %s\n"
 msgstr "fejl(%d) ved gemning af post %s i %s\n"
 
-#: rpmdb/rpmdb.c:3682
+#: rpmdb/rpmdb.c:3875
 #, c-format
 msgid "removing %s after successful db3 rebuild.\n"
 msgstr "fjerner %s efter vellykket genopbygning af db3.\n"
 
-#: rpmdb/rpmdb.c:3720
+#: rpmdb/rpmdb.c:3919
 msgid "no dbpath has been set"
 msgstr "der ikke sat nogen dbpath"
 
-#: rpmdb/rpmdb.c:3752
+#: rpmdb/rpmdb.c:3951
 #, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "genopbygger database %s over i %s\n"
 
-#: rpmdb/rpmdb.c:3756
+#: rpmdb/rpmdb.c:3955
 #, c-format
 msgid "temporary database %s already exists\n"
 msgstr "den midlertidige database %s eksisterer allerede\n"
 
-#: rpmdb/rpmdb.c:3762
+#: rpmdb/rpmdb.c:3961
 #, c-format
 msgid "creating directory %s\n"
 msgstr ""
 "opretter kataloget %s\n"
 "\n"
 
-#: rpmdb/rpmdb.c:3764
+#: rpmdb/rpmdb.c:3963
 #, c-format
 msgid "creating directory %s: %s\n"
 msgstr "opretter kataloget %s: %s\n"
 
-#: rpmdb/rpmdb.c:3771
+#: rpmdb/rpmdb.c:3972
 #, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr "åbner gammel database med dbapi %d\n"
 
-#: rpmdb/rpmdb.c:3784
+#: rpmdb/rpmdb.c:3983
 #, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr "åbner ny database med dbapi %d\n"
 
-#: rpmdb/rpmdb.c:3812
+#: rpmdb/rpmdb.c:4014
 #, fuzzy, c-format
 msgid "header #%u in the database is bad -- skipping.\n"
 msgstr "post nummer %d i databasen er fejlbehæftet -- overspringer.\n"
 
-#: rpmdb/rpmdb.c:3852
+#: rpmdb/rpmdb.c:4054
 #, fuzzy, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "kunne ikke tilføje posten, der tidligere var ved %d\n"
 
-#: rpmdb/rpmdb.c:3866
+#: rpmdb/rpmdb.c:4068
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr "kunne ikke genopbygge database: original-databasen beholdes\n"
 
-#: rpmdb/rpmdb.c:3874
+#: rpmdb/rpmdb.c:4080
 msgid "failed to replace old database with new database!\n"
 msgstr "kunne ikke erstatte gammel database med ny database!\n"
 
-#: rpmdb/rpmdb.c:3876
+#: rpmdb/rpmdb.c:4082
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "erstat filer i %s med filer fra %s for at genoprette"
 
-#: rpmdb/rpmdb.c:3886
+#: rpmdb/rpmdb.c:4092
 #, c-format
 msgid "removing directory %s\n"
 msgstr "fjerner kataloget %s\n"
 
-#: rpmdb/rpmdb.c:3888
+#: rpmdb/rpmdb.c:4094
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "kunne ikke fjerne katalog %s: %s\n"
 
-#: rpmio/macro.c:237
+#: rpmdb/sqlite.c:666
+#, c-format
+msgid "Unable to get lock on db %s, retrying... (%d)\n"
+msgstr ""
+
+#: rpmdb/sqlite.c:826
+#, fuzzy, c-format
+msgid "closed   sql db         %s\n"
+msgstr "lukket  db-fil    %s\n"
+
+#: rpmdb/sqlite.c:927
+#, fuzzy, c-format
+msgid "opening  sql db         %s (%s) mode=0x%x\n"
+msgstr "åbner   db-indeks %s/%s %s mode=0x%x\n"
+
+#: rpmio/macro.c:240
 #, c-format
 msgid "======================== active %d empty %d\n"
 msgstr "======================== aktiv %d tom %d\n"
 
-#. XXX just in case
-#: rpmio/macro.c:394
+#: rpmio/macro.c:395
 #, c-format
 msgid "%3d>%*s(empty)"
 msgstr "%3d>%*s(tom)"
 
-#: rpmio/macro.c:437
+#: rpmio/macro.c:438
 #, c-format
 msgid "%3d<%*s(empty)\n"
 msgstr "%3d<%*s(tom)\n"
 
-#: rpmio/macro.c:664 rpmio/macro.c:705
+#: rpmio/macro.c:672 rpmio/macro.c:713
 #, c-format
 msgid "Macro %%%s has unterminated body\n"
 msgstr "Makroen %%%s har et uafsluttet indhold (body)\n"
 
-#: rpmio/macro.c:727
+#: rpmio/macro.c:735
 #, c-format
 msgid "Macro %%%s has illegal name (%%define)\n"
 msgstr "Makroen %%%s har et ugyldig navn (%%define)\n"
 
-#: rpmio/macro.c:733
+#: rpmio/macro.c:741
 #, c-format
 msgid "Macro %%%s has unterminated opts\n"
 msgstr "Makroen %%%s har uafsluttede parametre\n"
 
-#: rpmio/macro.c:738
+#: rpmio/macro.c:746
 #, c-format
 msgid "Macro %%%s has empty body\n"
 msgstr "Makroen %%%s har intet indhold\n"
 
-#: rpmio/macro.c:744
+#: rpmio/macro.c:752
 #, c-format
 msgid "Macro %%%s failed to expand\n"
 msgstr "Makroen %%%s kunne ikke udfoldes\n"
 
-#: rpmio/macro.c:779
+#: rpmio/macro.c:791
 #, c-format
 msgid "Macro %%%s has illegal name (%%undefine)\n"
 msgstr "Makroen %%%s har ugyldigt navn (%%undefine)\n"
 
-#: rpmio/macro.c:897
+#: rpmio/macro.c:915
 #, c-format
 msgid "Macro %%%s (%s) was not used below level %d\n"
 msgstr "Makro %%%s (%s) blev ikke brugt under niveau %d\n"
 
-#: rpmio/macro.c:1024
+#: rpmio/macro.c:1042
 #, c-format
 msgid "Unknown option %c in %s(%s)\n"
 msgstr "Ukendt tilvalg %c i %s(%s)\n"
 
-#: rpmio/macro.c:1224
+#: rpmio/macro.c:1245
 #, c-format
 msgid "Recursion depth(%d) greater than max(%d)\n"
 msgstr "Rekursionsdybde(%d) overskrider maks(%d)\n"
 
-#: rpmio/macro.c:1295 rpmio/macro.c:1312
+#: rpmio/macro.c:1318 rpmio/macro.c:1335
 #, c-format
 msgid "Unterminated %c: %s\n"
 msgstr "Uafsluttet %c: %s\n"
 
-#: rpmio/macro.c:1353
+#: rpmio/macro.c:1376
 #, c-format
 msgid "A %% is followed by an unparseable macro\n"
 msgstr "Et %% efterfølges af en makro, der ikke kan tolkes\n"
 
-#: rpmio/macro.c:1510
+#: rpmio/macro.c:1543
 #, c-format
 msgid "Macro %%%.*s not found, skipping\n"
 msgstr "Makroen %%%.*s blev ikke fundet, overspringer\n"
 
-#: rpmio/macro.c:1846
-msgid "Target buffer overflow\n"
-msgstr "Overløb i målbuffer\n"
+#: rpmio/macro.c:1880
+msgid "Macro expansion too big for target buffer\n"
+msgstr ""
 
-#. XXX Fstrerror
-#: rpmio/macro.c:2052 rpmio/macro.c:2058
+#: rpmio/macro.c:1914
+#, c-format
+msgid "Macro '%s' is readonly and cannot be changed.\n"
+msgstr ""
+
+#: rpmio/macro.c:2113 rpmio/macro.c:2119
 #, c-format
 msgid "File %s: %s\n"
 msgstr "Fil %s: %s\n"
 
-#: rpmio/macro.c:2061
+#: rpmio/macro.c:2122
 #, c-format
 msgid "File %s is smaller than %u bytes\n"
 msgstr "Filen %s er mindre end %u byte\n"
 
-#: rpmio/rpmio.c:714
+#: rpmio/rpmdav.c:662
+msgid "Authorization Required"
+msgstr ""
+
+#: rpmio/rpmdav.c:664
+msgid "Redirect"
+msgstr ""
+
+#: rpmio/rpmdav.c:666
+#, fuzzy
+msgid "Server Error"
+msgstr "I/O-fejl for server"
+
+#: rpmio/rpmdav.c:668
+#, fuzzy
+msgid "Unknown Error"
+msgstr "(ingen fejl)"
+
+#: rpmio/rpmio.c:719
 msgid "Success"
 msgstr "Succes"
 
-#: rpmio/rpmio.c:737
+#: rpmio/rpmio.c:742
 msgid "Bad server response"
 msgstr "Ugyldigt svar fra server"
 
-#: rpmio/rpmio.c:739
+#: rpmio/rpmio.c:744
 msgid "Server I/O error"
 msgstr "I/O-fejl for server"
 
-#: rpmio/rpmio.c:741
+#: rpmio/rpmio.c:746
 msgid "Server timeout"
 msgstr "Tidsudløb for server"
 
-#: rpmio/rpmio.c:743
+#: rpmio/rpmio.c:748
 msgid "Unable to lookup server host address"
 msgstr "Kunne ikke skaffe serverens IP-addresse"
 
-#: rpmio/rpmio.c:745
+#: rpmio/rpmio.c:750
 msgid "Unable to lookup server host name"
 msgstr "Kunne ikke slå serverens navn op"
 
-#: rpmio/rpmio.c:747
+#: rpmio/rpmio.c:752
 msgid "Failed to connect to server"
 msgstr "Kunne ikke etablere en forbindelse til serveren"
 
-#: rpmio/rpmio.c:749
+#: rpmio/rpmio.c:754
 msgid "Failed to establish data connection to server"
 msgstr "Kunne ikke etablere en data-forbindelse til serveren"
 
-#: rpmio/rpmio.c:751
+#: rpmio/rpmio.c:756
 msgid "I/O error to local file"
 msgstr "I/O-fejl i lokal fil"
 
-#: rpmio/rpmio.c:753
+#: rpmio/rpmio.c:758
 msgid "Error setting remote server to passive mode"
 msgstr "Kunne ikke sætte fjernserveren i passiv tilstand"
 
-#: rpmio/rpmio.c:755
+#: rpmio/rpmio.c:760
 msgid "File not found on server"
 msgstr "Fil ikke fundet på server"
 
-#: rpmio/rpmio.c:757
+#: rpmio/rpmio.c:762
 msgid "Abort in progress"
 msgstr "Afbryder programmet"
 
-#: rpmio/rpmio.c:761
+#: rpmio/rpmio.c:766
 msgid "Unknown or unexpected error"
 msgstr "Ukendt eller uventet fejl"
 
-#: rpmio/rpmio.c:1456
+#: rpmio/rpmio.c:784
+#, fuzzy
+msgid "Malformed URL"
+msgstr "Kunne ikke læse %s: %s.\n"
+
+#: rpmio/rpmio.c:1619
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr "logger på %s som %s, adgangskode %s\n"
@@ -4125,21 +4288,42 @@ msgstr "logger på %s som %s, adgangskode %s\n"
 msgid "(no error)"
 msgstr "(ingen fejl)"
 
-#. !< RPMLOG_EMERG
-#. !< RPMLOG_ALERT
 #: rpmio/rpmlog.c:142 rpmio/rpmlog.c:143 rpmio/rpmlog.c:144
 msgid "fatal error: "
 msgstr "fatal fejl: "
 
-#. !< RPMLOG_CRIT
 #: rpmio/rpmlog.c:145
 msgid "error: "
 msgstr "fejl: "
 
-#. !< RPMLOG_ERR
 #: rpmio/rpmlog.c:146
 msgid "warning: "
 msgstr "advarsel: "
+
+#: rpmio/rpmlua.c:498
+#, c-format
+msgid "invalid syntax in lua scriptlet: %s\n"
+msgstr ""
+
+#: rpmio/rpmlua.c:516
+#, fuzzy, c-format
+msgid "invalid syntax in lua script: %s\n"
+msgstr "- understøttes ikke for strenge\n"
+
+#: rpmio/rpmlua.c:521 rpmio/rpmlua.c:540
+#, fuzzy, c-format
+msgid "lua script failed: %s\n"
+msgstr "%s: Fwrite mislykkedes: %s\n"
+
+#: rpmio/rpmlua.c:535
+#, fuzzy, c-format
+msgid "invalid syntax in lua file: %s\n"
+msgstr "ugyldigt pakkenummer: %s\n"
+
+#: rpmio/rpmlua.c:688
+#, fuzzy, c-format
+msgid "lua hook failed: %s\n"
+msgstr "%s mislykkedes\n"
 
 #: rpmio/rpmmalloc.c:15
 #, c-format
@@ -4156,146 +4340,310 @@ msgstr "advarsel: u %p ctrl %p nrefs != 0 (%s %s)\n"
 msgid "warning: u %p data %p nrefs != 0 (%s %s)\n"
 msgstr "advarsel: u %p data %p nrefs != 0 (%s %s)\n"
 
-#: rpmio/url.c:178
+#: rpmio/url.c:174
 #, fuzzy, c-format
 msgid "warning: _url_cache[%d] %p nrefs(%d) != 1 (%s %s)\n"
 msgstr "advarsel: uCache[%d] %p nrefs(%d) != 1 (%s %s)\n"
 
-#: rpmio/url.c:274
+#: rpmio/url.c:270
 #, c-format
 msgid "Password for %s@%s: "
 msgstr "Adgangskode for %s@%s: "
 
-#: rpmio/url.c:303 rpmio/url.c:329
+#: rpmio/url.c:299 rpmio/url.c:325
 #, c-format
 msgid "error: %sport must be a number\n"
 msgstr "Fejl: %sport skal være et tal\n"
 
-#: rpmio/url.c:500
+#: rpmio/url.c:504
 msgid "url port must be a number\n"
 msgstr "url-port skal være et tal\n"
 
-#. XXX Fstrerror
-#: rpmio/url.c:572
+#: rpmio/url.c:576
 #, c-format
 msgid "failed to create %s: %s\n"
 msgstr "kunne ikke oprette %s: %s\n"
 
-#: tools/rpmcache.c:513 tools/rpmgraph.c:269
+#: tools/rpmdeps.c:158
+msgid "print cpuinfo(...) dependency set"
+msgstr ""
+
+#: tools/rpmdeps.c:160
+msgid "print rpmlib(...) dependency set"
+msgstr ""
+
+#: tools/rpmdeps.c:162
+msgid "print /etc/rpm/sysinfo dependency set"
+msgstr ""
+
+#: tools/rpmdeps.c:164
+msgid "print getconf(...) dependency set"
+msgstr ""
+
+#: tools/rpmdeps.c:166
+msgid "print soname(...) dependencies for elf files"
+msgstr ""
+
+#: tools/rpmdeps.c:168
+msgid "print soname(...) dependencies from /etc/ld.so.cache"
+msgstr ""
+
+#: tools/rpmdeps.c:170
+msgid "print uname(...) dependency set"
+msgstr ""
+
+#: tools/rpmdeps.c:172
+msgid "print dependency set from a command pipe"
+msgstr ""
+
+#: tools/rpmdeps.c:175
+msgid "print perl(...) dependency set"
+msgstr ""
+
+#: tools/rpmdeps.c:177
+msgid "print python(...) dependency set"
+msgstr ""
+
+#: tools/rpmdeps.c:179
+msgid "print libtool(...) dependency set"
+msgstr ""
+
+#: tools/rpmdeps.c:181
+msgid "print pkgconfig(...) dependency set"
+msgstr ""
+
+#: tools/rpmdeps.c:184
+msgid "print pubkey(...) dependency set"
+msgstr ""
+
+#: tools/rpmdeps.c:186
+msgid "print arch(...) dependency set"
+msgstr ""
+
+#: tools/rpmdeps.c:188
+msgid "print file(...) dependency set"
+msgstr ""
+
+#: tools/rpmdeps.c:190
+msgid "print soname(...) dependency set"
+msgstr ""
+
+#: tools/rpmdeps.c:192
 #, fuzzy
-msgid "don't verify header+payload signature"
-msgstr "verificér pakkesignatur"
+msgid "print package(...) dependency set"
+msgstr "vis pakkeafhængigheder"
 
-#: tools/rpmcache.c:516
-msgid "don't update cache database, only print package paths"
+#: tools/rpmdeps.c:195
+msgid "print java(...) dependency set"
 msgstr ""
 
-#: tools/rpmcache.c:519
+#: tools/rpmdeps.c:197
+msgid "print php(...) dependency set"
+msgstr ""
+
+#: tools/rpmdeps.c:199
+msgid "print ruby(...) dependency set"
+msgstr ""
+
+#: tools/rpmdeps.c:201
+msgid "print /var/lib/dpkg Provides: dependency set"
+msgstr ""
+
+#: tools/rpmdeps.c:203
+msgid "print /var/lib/dpkg Requires: dependency set"
+msgstr ""
+
+#: tools/rpmdeps.c:206
+msgid "print Provides: dependency set"
+msgstr ""
+
+#: tools/rpmdeps.c:208
+msgid "print Requires: dependency set"
+msgstr ""
+
+#: tools/rpmdeps.c:210
+msgid "check Requires: against Provides: for dependency closure"
+msgstr ""
+
 #, fuzzy
-msgid "File tree walk options:"
-msgstr "Signaturtilvalg"
+#~ msgid "Creating semaphore %s...\n"
+#~ msgstr ""
+#~ "opretter kataloget %s\n"
+#~ "\n"
 
-#: tools/rpmcache.c:555
-#, c-format
-msgid "%s: %%{_cache_dbpath} macro is mis-configured.\n"
-msgstr ""
+#, fuzzy
+#~ msgid "Removing semaphore %s...\n"
+#~ msgstr "fjerner kataloget %s\n"
 
-#: tools/rpmcache.c:595
-#, fuzzy, c-format
-msgid "%s: cache operation failed: ec %d.\n"
-msgstr "%s: åbning mislykkedes: %s\n"
+#, fuzzy
+#~ msgid "\tRepackaged package not found!.\n"
+#~ msgstr "kildepakke forventet, binær fundet\n"
 
-#: tools/rpmgraph.c:170
-#, c-format
-msgid "%s: read manifest failed: %s\n"
-msgstr "%s: læs manifest mislykkedes: %s\n"
+#, fuzzy
+#~ msgid "\tForce adding header to rpmdb.\n"
+#~ msgstr "fejl ved læsning af hovedet på pakke\n"
 
-#: ../rpmpopt:34 ../rpmpopt:290 ../rpmpopt:363
-msgid "list install/erase scriptlets from package(s)"
-msgstr ""
+#, fuzzy
+#~ msgid "\tCould not add failed package header to db!\n"
+#~ msgstr "<kildepakke>"
 
-#: ../rpmpopt:38
-msgid "set permissions of files in a package"
-msgstr ""
+#, fuzzy
+#~ msgid "\tAdded repackaged package header: %s.\n"
+#~ msgstr "<kildepakke>"
 
-#: ../rpmpopt:43
-msgid "set user/group ownership of files in a package"
-msgstr ""
+#, fuzzy
+#~ msgid "\tAdded repackaged package %s.\n"
+#~ msgstr "<kildepakke>"
 
-#: ../rpmpopt:47 ../rpmpopt:294 ../rpmpopt:367
-msgid "list capabilities this package conflicts with"
-msgstr ""
+#, fuzzy
+#~ msgid "Failure reading repackaged package!\n"
+#~ msgstr "fejl ved læsning af hovedet på pakke\n"
 
-#: ../rpmpopt:50 ../rpmpopt:297 ../rpmpopt:370
-msgid "list other packages removed by installing this package"
-msgstr ""
+#, fuzzy
+#~ msgid "%s:%d \"%s\" must begin with alphanumeric, '_', '/' or '%%'.\n"
+#~ msgstr ""
+#~ "linie %d: Afhængigheds-symbol skal starte med alfanumerisk, '_' eller "
+#~ "'/': %s\n"
 
-#: ../rpmpopt:53 ../rpmpopt:300 ../rpmpopt:373
-msgid "list capabilities that this package provides"
-msgstr ""
+#, fuzzy
+#~ msgid ""
+#~ "\tline %d: \"%s\" must begin with alphanumeric, '_', '/' or '%%'. "
+#~ "Skipping ...\n"
+#~ msgstr ""
+#~ "linie %d: Afhængigheds-symbol skal starte med alfanumerisk, '_' eller "
+#~ "'/': %s\n"
 
-#: ../rpmpopt:57 ../rpmpopt:304 ../rpmpopt:377
-msgid "list capabilities required by package(s)"
-msgstr ""
+#~ msgid "argument is not an RPM package\n"
+#~ msgstr "parameter er ikke en RPM-pakke\n"
 
-#: ../rpmpopt:71 ../rpmpopt:318 ../rpmpopt:390
-msgid "list descriptive information from package(s)"
-msgstr ""
+#~ msgid "error reading header from package\n"
+#~ msgstr "fejl ved læsning af hovedet på pakke\n"
 
-#: ../rpmpopt:74 ../rpmpopt:321 ../rpmpopt:393
-msgid "list change logs for this package"
-msgstr ""
+#~ msgid "cannot re-open payload: %s\n"
+#~ msgstr "kan ikke genåbne pakkeindhold: %s\n"
 
-#: ../rpmpopt:80 ../rpmpopt:327 ../rpmpopt:399
-msgid "list trigger scriptlets from package(s)"
-msgstr ""
+#~ msgid "%s failed\n"
+#~ msgstr "%s mislykkedes\n"
 
-#: ../rpmpopt:84 ../rpmpopt:331 ../rpmpopt:403
-msgid "list package(s) by install time, most recent first"
-msgstr ""
+#, fuzzy
+#~ msgid "package %s is intended for a %s operating system"
+#~ msgstr "pakken %s hører til et andet operativsystem"
 
-#: ../rpmpopt:87 ../rpmpopt:334 ../rpmpopt:406
-msgid "list all files from each package"
-msgstr ""
+#~ msgid "error reading from file %s\n"
+#~ msgstr "fejl ved læsning fra filen %s\n"
 
-#: ../rpmpopt:90 ../rpmpopt:93
-msgid ""
-"find package name that contains a provided capability (needs rpmdb-redhat "
-"package installed)"
-msgstr ""
+#, fuzzy
+#~ msgid "don't verify header+payload signature"
+#~ msgstr "verificér pakkesignatur"
 
-#: ../rpmpopt:103
-msgid "set buildroot <policy> (e.g. compress man pages)"
-msgstr ""
+#, fuzzy
+#~ msgid "File tree walk options:"
+#~ msgstr "Signaturtilvalg"
 
-#: ../rpmpopt:104
-msgid "<policy>"
-msgstr ""
+#, fuzzy
+#~ msgid "%s: cache operation failed: ec %d.\n"
+#~ msgstr "%s: åbning mislykkedes: %s\n"
 
-#: ../rpmpopt:179 ../rpmpopt:194 ../rpmpopt:209
-msgid "enable configure <option> for build"
-msgstr ""
+#~ msgid "%s: read manifest failed: %s\n"
+#~ msgstr "%s: læs manifest mislykkedes: %s\n"
 
-#: ../rpmpopt:180 ../rpmpopt:183 ../rpmpopt:195 ../rpmpopt:198 ../rpmpopt:210
-#: ../rpmpopt:213
-msgid "<option>"
-msgstr ""
+#~ msgid "Spec file can't use BuildRoot\n"
+#~ msgstr "Spec-fil kan ikke bruge BuildRoot\n"
 
-#: ../rpmpopt:182 ../rpmpopt:197 ../rpmpopt:212
-msgid "disable configure <option> for build"
-msgstr ""
+#~ msgid "buildroot already specified, ignoring %s\n"
+#~ msgstr ""
+#~ "buildroot allerede angivet, ignorerer %s\n"
+#~ "\n"
 
-#: ../rpmpopt:186 ../rpmpopt:201 ../rpmpopt:216 ../rpmpopt:224 ../rpmpopt:232
-#: ../rpmpopt:240 ../rpmpopt:248 ../rpmpopt:256 ../rpmpopt:264 ../rpmpopt:337
-#: ../rpmpopt:409 ../rpmpopt:417
-msgid "use database in DIRECTORY"
-msgstr ""
+#~ msgid "override build root"
+#~ msgstr "gennemtving opbygningsrod"
 
-#: ../rpmpopt:187 ../rpmpopt:202 ../rpmpopt:217 ../rpmpopt:225 ../rpmpopt:233
-#: ../rpmpopt:241 ../rpmpopt:249 ../rpmpopt:257 ../rpmpopt:265 ../rpmpopt:338
-#: ../rpmpopt:410 ../rpmpopt:418
-msgid "DIRECTORY"
-msgstr ""
+#, fuzzy
+#~ msgid "    %s[%d]: %s\n"
+#~ msgstr "fil %s: %s\n"
+
+#~ msgid "Target buffer overflow\n"
+#~ msgstr "Overløb i målbuffer\n"
+
+#~ msgid "Building for target %s\n"
+#~ msgstr "Opbygger for mål %s\n"
+
+#~ msgid "Internal error in argument processing (%d) :-(\n"
+#~ msgstr "Intern fejl i parameterfortolkningen (%d) :-(\n"
+
+#~ msgid "Couldn't download nosource %s: %s\n"
+#~ msgstr "Kunne ikke hente nosource %s: %s\n"
+
+#~ msgid "line %d: Epoch/Serial field must be a number: %s\n"
+#~ msgstr "linie %d: Epoch/Serial-felter skal være et nummer: %s\n"
+
+#~ msgid "generate headers compatible with rpm4 packaging"
+#~ msgstr "generér hoveder, der er kompatible med rpm4-indpakningsversionen"
+
+#~ msgid ""
+#~ "generate package header(s) compatible with (legacy) rpm[23] packaging"
+#~ msgstr ""
+#~ "generér pakkehoved(er), der er kompatible med (gamle) rpm[23]-indpakninger"
+
+#~ msgid "generate headers compatible with (legacy) rpm[23] packaging"
+#~ msgstr ""
+#~ "generér hoveder, der er kompatible med (gamle) rpm[23]-"
+#~ "indpakningsversioner"
+
+#, fuzzy
+#~ msgid "don't verify MD5 digest of files"
+#~ msgstr "verificér ikke filerne i pakke"
+
+#, fuzzy
+#~ msgid "(db package)"
+#~ msgstr "ingen pakker\n"
+
+#, fuzzy
+#~ msgid "\tForce removing header from rpmdb.\n"
+#~ msgstr "fejl ved læsning af hovedet på pakke\n"
+
+#, fuzzy
+#~ msgid "Could not acquire transaction score entry for %s\n"
+#~ msgstr "kører præinstallations-skript (hvis det findes)\n"
+
+#, fuzzy
+#~ msgid "\tAllocating space for %d entries\n"
+#~ msgstr "omrokerer %s til %s\n"
+
+#, fuzzy
+#~ msgid "Could not acquire transaction score!.\n"
+#~ msgstr "kører præinstallations-skript (hvis det findes)\n"
+
+#, fuzzy
+#~ msgid "Could not acquire score entry %s!.\n"
+#~ msgstr "Kunne ikke åbne 'PreIn'-fil: %s\n"
+
+#, fuzzy
+#~ msgid "don't verify GPG V3 DSA signature(s)"
+#~ msgstr "verificér ikke filerne i pakke"
+
+#, fuzzy
+#~ msgid "don't verify PGP V3 RSA/MD5 signature(s)"
+#~ msgstr "verificér ikke filerne i pakke"
+
+#~ msgid "Unknown system: %s\n"
+#~ msgstr ""
+#~ "Ukendt system: %s\n"
+#~ "\n"
+
+#~ msgid "Please contact rpm-list@redhat.com\n"
+#~ msgstr "Kontakt venligst rpm-list@redhat.com (på engelsk)\n"
+
+#~ msgid "gpg failed\n"
+#~ msgstr "gpg fejlede\n"
+
+#, fuzzy
+#~ msgid "V3 RSA/MD5 signature: "
+#~ msgstr "overspring eventuelle MD5-signaturer"
+
+#, fuzzy
+#~ msgid "disable use of libneon for HTTP"
+#~ msgstr "undlad at benytte libio(3)-API"
 
 #~ msgid "Common options for all rpm modes:"
 #~ msgstr "Fælles tilvalg for alle rpm-tilstande:"
@@ -4321,27 +4669,8 @@ msgstr ""
 #~ msgid "excluding multilib path %s%s\n"
 #~ msgstr "ekskluderer multilib-sti %s%s\n"
 
-#, fuzzy
-#~ msgid "Finding  %s: %s\n"
-#~ msgstr "Finder %s: (benytter %s)...\n"
-
-#~ msgid "Failed to find %s:\n"
-#~ msgstr "Kunne ikke finde %s:\n"
-
 #~ msgid "only one of --prefix or --relocate may be used"
 #~ msgstr "kun én af --prefix eller --relocate kan bruges"
-
-#~ msgid "Couldn't exec %s: %s\n"
-#~ msgstr "Kunne ikke udføre %s: %s\n"
-
-#~ msgid "Couldn't fork %s: %s\n"
-#~ msgstr "Kunne ikke fraspalte ny proces til %s: %s\n"
-
-#~ msgid "%s failed\n"
-#~ msgstr "%s mislykkedes\n"
-
-#~ msgid "failed to write all data to %s\n"
-#~ msgstr "kunne ikke skrive alle data til %s\n"
 
 #~ msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
 #~ msgstr "dataLength() RPM_STRING_TYPE-antal skal være 1.\n"
@@ -4378,9 +4707,6 @@ msgstr ""
 #~ msgid "unexpected arguments to --querytags "
 #~ msgstr "uventede parametre til --querytags "
 
-#~ msgid "<cmd>"
-#~ msgstr "<kmd>"
-
 #~ msgid "read <file:...> instead of default macro file(s)"
 #~ msgstr "læs <fil:...> i stedet for standard makrofil(er)"
 
@@ -4407,10 +4733,6 @@ msgstr ""
 
 #~ msgid "display a verbose file listing"
 #~ msgstr "giv en detaljeret filliste"
-
-#, fuzzy
-#~ msgid "don't verify package digest"
-#~ msgstr "undlad at tjekke pakkers afhængighedskrav"
 
 #, fuzzy
 #~ msgid "don't verify package signature"
@@ -4768,9 +5090,6 @@ msgstr ""
 #~ msgid "list capabilities package provides"
 #~ msgstr "vis de faciliteter, pakken tilbyder"
 
-#~ msgid "list package dependencies"
-#~ msgstr "vis pakkeafhængigheder"
-
 #~ msgid "print the various [un]install scripts"
 #~ msgstr "vis de forskellige [af]installations-skripter"
 
@@ -4832,9 +5151,6 @@ msgstr ""
 
 #~ msgid "    -e <package>          "
 #~ msgstr "    -e <pakke>            "
-
-#~ msgid "do not execute any package specific scripts"
-#~ msgstr "udfør ingen pakkespecifikke skripter"
 
 #~ msgid "    -b<stage> <spec>      "
 #~ msgstr "    -b<stadium> <spec>    "
@@ -5035,9 +5351,6 @@ msgstr ""
 #~ "pakken har hverken en liste over gruppenavne eller id (det burde ikke "
 #~ "kunne ske)\n"
 
-#~ msgid "closed  db file        %s\n"
-#~ msgstr "lukket  db-fil    %s\n"
-
 #~ msgid "removed db file        %s\n"
 #~ msgstr "fjernet db-fil    %s\n"
 
@@ -5219,9 +5532,6 @@ msgstr ""
 #~ msgid "     --prefix <dir>       "
 #~ msgstr "     --prefix <katalog>   "
 
-#~ msgid "     --relocate <oldpath>=<newpath>"
-#~ msgstr "     --relocate <gammelsti>=<nysti>"
-
 #~ msgid "   --upgrade <packagefile>"
 #~ msgstr "   --upgrade <pakkefil>   "
 
@@ -5380,9 +5690,6 @@ msgstr ""
 
 #~ msgid "stopping install as we're running --test\n"
 #~ msgstr "stopper installation, da vi kører --test\n"
-
-#~ msgid "removal of %s failed: %s\n"
-#~ msgstr "fjernelse af %s mislykkedes: %s\n"
 
 #~ msgid "will remove files test = %d\n"
 #~ msgstr "vil fjerne filer test = %d\n"

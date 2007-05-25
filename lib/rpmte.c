@@ -24,11 +24,7 @@ int _rpmte_debug = 0;
 
 void rpmteCleanDS(rpmte te)
 {
-    te->this = rpmdsFree(te->this);
-    te->provides = rpmdsFree(te->provides);
-    te->requires = rpmdsFree(te->requires);
-    te->conflicts = rpmdsFree(te->conflicts);
-    te->obsoletes = rpmdsFree(te->obsoletes);
+    te->PRCO = rpmdsFreePRCO(te->PRCO);
 }
 
 /**
@@ -39,7 +35,7 @@ static void delTE(rpmte p)
 	/*@globals fileSystem @*/
 	/*@modifies p, fileSystem @*/
 {
-    rpmRelocation * r;
+    rpmRelocation r;
 
     if (p->relocs) {
 	for (r = p->relocs; (r->oldPath || r->newPath); r++) {
@@ -62,6 +58,15 @@ static void delTE(rpmte p)
     p->name = _free(p->name);
     p->NEVR = _free(p->NEVR);
     p->NEVRA = _free(p->NEVRA);
+    p->pkgid = _free(p->pkgid);
+    p->hdrid = _free(p->hdrid);
+
+    p->flink.NEVRA = argvFree(p->flink.NEVRA);
+    p->flink.Pkgid = argvFree(p->flink.Pkgid);
+    p->flink.Hdrid = argvFree(p->flink.Hdrid);
+    p->blink.NEVRA = argvFree(p->blink.NEVRA);
+    p->blink.Pkgid = argvFree(p->blink.Pkgid);
+    p->blink.Hdrid = argvFree(p->blink.Hdrid);
 
     p->h = headerFree(p->h);
 
@@ -84,7 +89,7 @@ static void delTE(rpmte p)
 /*@-bounds@*/
 static void addTE(rpmts ts, rpmte p, Header h,
 		/*@dependent@*/ /*@null@*/ fnpyKey key,
-		/*@null@*/ rpmRelocation * relocs)
+		/*@null@*/ rpmRelocation relocs)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, p, h,
 		rpmGlobalMacroContext, fileSystem, internalState @*/
@@ -92,8 +97,9 @@ static void addTE(rpmts ts, rpmte p, Header h,
     int scareMem = 0;
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     rpmte savep;
-    int_32 * ep;
-    const char * arch, * os;
+    int_32 * ep, pkgidcnt;
+    const char * hdrid, * arch, * os;
+    const unsigned char * pkgid;
     char * t;
     size_t nb;
     int xx;
@@ -105,43 +111,58 @@ static void addTE(rpmts ts, rpmte p, Header h,
     if ((p->version = strrchr(p->name, '-')) != NULL)
 	*p->version++ = '\0';
 
-    /* Set db_instance to 0 as it has not been installed
-     * necessarily yet.
-     */
     p->db_instance = 0;
+
+    hdrid = NULL;
+    xx = hge(h, RPMTAG_HDRID, NULL, (void **)&hdrid, NULL);
+    if (hdrid != NULL)
+	p->hdrid = xstrdup(hdrid);
+    else
+	p->hdrid = NULL;
+
+    pkgid = NULL;
+    xx = hge(h, RPMTAG_PKGID, NULL, (void **)&pkgid, &pkgidcnt);
+    if (pkgid != NULL) {
+	static const char hex[] = "0123456789abcdef";
+	int i;
+
+	p->pkgid = t = xmalloc((2*pkgidcnt) + 1);
+	for (i = 0 ; i < pkgidcnt; i++) {
+	    *t++ = hex[ (unsigned)((pkgid[i] >> 4) & 0x0f) ];
+	    *t++ = hex[ (unsigned)((pkgid[i]   ) & 0x0f) ];
+	}
+	*t = '\0';
+#ifdef NOTYET	/* XXX MinMemory. */
+	pkgid = headerFreeData(pkgid, RPM_BIN_TYPE);
+#endif
+    } else
+	p->pkgid = NULL;
 
     arch = NULL;
     xx = hge(h, RPMTAG_ARCH, NULL, (void **)&arch, NULL);
-    if (arch != NULL) {
-	p->arch = xstrdup(arch);
-	p->archScore = rpmMachineScore(RPM_MACHTABLE_INSTARCH, arch);
-    } else {
-	p->arch = NULL;
-	p->archScore = 0;
-    }
+    p->arch = (arch != NULL ? xstrdup(arch) : NULL);
     os = NULL;
     xx = hge(h, RPMTAG_OS, NULL, (void **)&os, NULL);
-    if (os != NULL) {
-	p->os = xstrdup(os);
-	p->osScore = rpmMachineScore(RPM_MACHTABLE_INSTOS, os);
-    } else {
-	p->os = NULL;
-	p->osScore = 0;
-    }
-    p->isSource = headerIsEntry(h, RPMTAG_SOURCEPACKAGE);
+    p->os = (os != NULL ? xstrdup(os) : NULL);
+
+    p->isSource = (headerIsEntry(h, RPMTAG_SOURCERPM) == 0);
 
     nb = strlen(p->NEVR) + 1;
-    if (p->isSource)
+    if (p->arch == NULL)
+	nb += sizeof("pubkey");
+    else if (p->isSource)
 	nb += sizeof("src");
-    else if (p->arch)
+    else
 	nb += strlen(p->arch) + 1;
     t = xmalloc(nb);
     p->NEVRA = t;
     *t = '\0';
     t = stpcpy(t, p->NEVR);
-    if (p->isSource)
+    if (p->arch == NULL)
+	t = stpcpy( t, ".pubkey");
+    else if (p->isSource)
 	t = stpcpy( t, ".src");
-    else if (p->arch)
+    else
 	t = stpcpy( stpcpy( t, "."), p->arch);
 
     ep = NULL;
@@ -154,10 +175,12 @@ static void addTE(rpmts ts, rpmte p, Header h,
 	p->epoch = NULL;
 /*@=branchstate@*/
 
+    p->installed = 0;
+
     p->nrelocs = 0;
     p->relocs = NULL;
     if (relocs != NULL) {
-	rpmRelocation * r;
+	rpmRelocation r;
 	int i;
 
 	for (r = relocs; r->oldPath || r->newPath; r++)
@@ -178,11 +201,7 @@ static void addTE(rpmts ts, rpmte p, Header h,
 
     p->pkgFileSize = 0;
 
-    p->this = rpmdsThis(h, RPMTAG_PROVIDENAME, RPMSENSE_EQUAL);
-    p->provides = rpmdsNew(h, RPMTAG_PROVIDENAME, scareMem);
-    p->requires = rpmdsNew(h, RPMTAG_REQUIRENAME, scareMem);
-    p->conflicts = rpmdsNew(h, RPMTAG_CONFLICTNAME, scareMem);
-    p->obsoletes = rpmdsNew(h, RPMTAG_OBSOLETENAME, scareMem);
+    p->PRCO = rpmdsNewPRCO(h);
 
     savep = rpmtsSetRelocateElement(ts, p);
     p->fi = rpmfiNew(ts, h, RPMTAG_BASENAMES, scareMem);
@@ -209,7 +228,7 @@ rpmte rpmteFree(rpmte te)
 rpmte rpmteNew(const rpmts ts, Header h,
 		rpmElementType type,
 		fnpyKey key,
-		rpmRelocation * relocs,
+		rpmRelocation relocs,
 		int dboffset,
 		alKey pkgKey)
 {
@@ -218,6 +237,7 @@ rpmte rpmteNew(const rpmts ts, Header h,
     int xx;
 
     p->type = type;
+
     addTE(ts, p, h, key, relocs);
     switch (type) {
     case TR_ADDED:
@@ -229,7 +249,7 @@ rpmte rpmteNew(const rpmts ts, Header h,
 	    p->pkgFileSize += 96 + 256 + *ep;
 	break;
     case TR_REMOVED:
-	p->u.removed.dependsOnKey = pkgKey;
+	p->u.addedKey = pkgKey;
 	p->u.removed.dboffset = dboffset;
 	break;
     }
@@ -301,7 +321,7 @@ const char * rpmteO(rpmte te)
 
 int rpmteIsSource(rpmte te)
 {
-    return (te != NULL ? te->isSource : NULL);
+    return (te != NULL ? te->isSource : 0);
 }
 
 uint_32 rpmteColor(rpmte te)
@@ -467,11 +487,6 @@ alKey rpmteSetAddedKey(rpmte te, alKey npkgKey)
 }
 
 
-alKey rpmteDependsOnKey(rpmte te)
-{
-    return (te != NULL ? te->u.removed.dependsOnKey : RPMAL_NOMATCH);
-}
-
 int rpmteDBOffset(rpmte te)
 {
     return (te != NULL ? te->u.removed.dboffset : 0);
@@ -485,6 +500,16 @@ const char * rpmteNEVR(rpmte te)
 const char * rpmteNEVRA(rpmte te)
 {
     return (te != NULL ? te->NEVRA : NULL);
+}
+
+const char * rpmtePkgid(rpmte te)
+{
+    return (te != NULL ? te->pkgid : NULL);
+}
+
+const char * rpmteHdrid(rpmte te)
+{
+    return (te != NULL ? te->hdrid : NULL);
 }
 
 FD_t rpmteFd(rpmte te)
@@ -501,27 +526,7 @@ fnpyKey rpmteKey(rpmte te)
 
 rpmds rpmteDS(rpmte te, rpmTag tag)
 {
-    /*@-compdef -refcounttrans -retalias -retexpose -usereleased @*/
-    if (te == NULL)
-	return NULL;
-
-    if (tag == RPMTAG_NAME)
-	return te->this;
-    else
-    if (tag == RPMTAG_PROVIDENAME)
-	return te->provides;
-    else
-    if (tag == RPMTAG_REQUIRENAME)
-	return te->requires;
-    else
-    if (tag == RPMTAG_CONFLICTNAME)
-	return te->conflicts;
-    else
-    if (tag == RPMTAG_OBSOLETENAME)
-	return te->obsoletes;
-    else
-	return NULL;
-    /*@=compdef =refcounttrans =retalias =retexpose =usereleased @*/
+    return (te != NULL ? rpmdsFromPRCO(te->PRCO, tag) : NULL);
 }
 
 rpmfi rpmteFI(rpmte te, rpmTag tag)
@@ -605,6 +610,87 @@ assert (ix < Count);
     }
 }
 
+/*@unchecked@*/
+static int __mydebug = 0;
+
+int rpmteChain(rpmte p, rpmte q, Header oh, const char * msg)
+{
+    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
+    const char * blinkNEVRA = NULL;
+    const char * blinkPkgid = NULL;
+    const char * blinkHdrid = NULL;
+    const unsigned char * pkgid;
+    int_32 pkgidcnt;
+    int xx;
+
+/*@-branchstate@*/
+    if (msg == NULL)
+	msg = "";
+/*@=branchstate@*/
+    blinkNEVRA = hGetNEVRA(oh, NULL);
+
+    /*
+     * Convert binary pkgid to a string.
+     * XXX Yum's borken conception of a "header" doesn't have signature
+     * tags appended.
+     */
+    pkgid = NULL;
+    pkgidcnt = 0;
+    xx = hge(oh, RPMTAG_PKGID, NULL, (void **)&pkgid, &pkgidcnt);
+    if (pkgid != NULL) {
+	static const char hex[] = "0123456789abcdef";
+	char * t;
+	int i;
+
+	blinkPkgid = t = xmalloc((2*pkgidcnt) + 1);
+	for (i = 0 ; i < pkgidcnt; i++) {
+	    *t++ = hex[ ((pkgid[i] >> 4) & 0x0f) ];
+	    *t++ = hex[ ((pkgid[i]     ) & 0x0f) ];
+	}
+	*t = '\0';
+#if NOTYET	/* XXX MinMemory. */
+	pkgid = headerFreeData(pkgid, RPM_BIN_TYPE);
+#endif
+    } else
+	blinkPkgid = NULL;
+
+    blinkHdrid = NULL;
+    xx = hge(oh, RPMTAG_HDRID, NULL, (void **)&blinkHdrid, NULL);
+
+/*@-modfilesys@*/
+if (__mydebug)
+fprintf(stderr, "%s argvAdd(&q->flink.NEVRA, \"%s\")\n", msg, p->NEVRA);
+	xx = argvAdd(&q->flink.NEVRA, p->NEVRA);
+if (__mydebug)
+fprintf(stderr, "%s argvAdd(&p->blink.NEVRA, \"%s\")\n", msg, blinkNEVRA);
+	xx = argvAdd(&p->blink.NEVRA, blinkNEVRA);
+if (__mydebug)
+fprintf(stderr, "%s argvAdd(&q->flink.Pkgid, \"%s\")\n", msg, p->pkgid);
+    if (p->pkgid != NULL)
+	xx = argvAdd(&q->flink.Pkgid, p->pkgid);
+if (__mydebug)
+fprintf(stderr, "%s argvAdd(&p->blink.Pkgid, \"%s\")\n", msg, blinkPkgid);
+    if (blinkPkgid != NULL)
+	xx = argvAdd(&p->blink.Pkgid, blinkPkgid);
+if (__mydebug)
+fprintf(stderr, "%s argvAdd(&q->flink.Hdrid, \"%s\")\n", msg, p->hdrid);
+    if (p->hdrid != NULL)
+	xx = argvAdd(&q->flink.Hdrid, p->hdrid);
+if (__mydebug)
+fprintf(stderr, "%s argvAdd(&p->blink.Hdrid, \"%s\")\n", msg, blinkHdrid);
+    if (blinkHdrid != NULL)
+	xx = argvAdd(&p->blink.Hdrid, blinkHdrid);
+/*@=modfilesys@*/
+
+    blinkNEVRA = _free(blinkNEVRA);
+    blinkPkgid = _free(blinkPkgid);
+#ifdef	NOTYET	/* XXX MinMemory. */
+    blinkHdrid = _free(blinkHdrid);
+#endif
+
+    return 0;
+}
+
 int rpmtsiOc(rpmtsi tsi)
 {
     return tsi->ocsave;
@@ -632,7 +718,7 @@ rpmtsi XrpmtsiInit(rpmts ts, const char * fn, unsigned int ln)
 
     tsi = xcalloc(1, sizeof(*tsi));
     tsi->ts = rpmtsLink(ts, "rpmtsi");
-    tsi->reverse = ((rpmtsFlags(ts) & RPMTRANS_FLAG_REVERSE) ? 1 : 0);
+    tsi->reverse = 0;
     tsi->oc = (tsi->reverse ? (rpmtsNElements(ts) - 1) : 0);
     tsi->ocsave = tsi->oc;
 /*@-modfilesys@*/

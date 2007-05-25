@@ -25,14 +25,14 @@ tjfn_LDFLAGS = @LDFLAGS_STATIC@
 tjfn_LDADD = librpmdb.la
 
 pkgincdir = $(pkgincludedir)
-pkginc_HEADERS = db.h header.h hdrinline.h rpmdb.h rpmhash.h
+pkginc_HEADERS = db.h header.h hdrinline.h rpmdb.h
 noinst_HEADERS = fprint.h header_internal.h legacy.h
 
-pkgbindir = @RPMCONFIGDIR@
+pkgbindir = @USRLIBRPM@
 pkgbin_PROGRAMS = \
-	rpmdb_archive rpmdb_checkpoint rpmdb_deadlock rpmdb_dump rpmdb_load \
-	rpmdb_printlog rpmdb_recover rpmdb_svc rpmdb_stat rpmdb_upgrade \
-	rpmdb_verify 
+	rpmdb_archive rpmdb_checkpoint rpmdb_deadlock rpmdb_dump \
+	rpmdb_hotbackup rpmdb_load rpmdb_printlog rpmdb_recover \
+	rpmdb_svc rpmdb_stat rpmdb_upgrade rpmdb_verify 
 
 mylibs = librpmdb.la
 
@@ -49,7 +49,7 @@ usrlib_LTLIBRARIES = librpmdb.la
 librpmdb_la_SOURCES = \
 	dbconfig.c fprint.c \
 	hdrNVR.c header.c header_internal.c legacy.c merge.c \
-	poptDB.c rpmhash.c rpmdb.c \
+	poptDB.c rpmdb.c \
 	tagname.c tagtbl.c
 librpmdb_la_LDFLAGS = -no-undefined -release $(LT_CURRENT).$(LT_REVISION) \
 	$(top_builddir)/rpmio/librpmio.la \
@@ -66,14 +66,18 @@ endif
 # XXX make sure that db.h symlink is generated
 dbconfig.c $(DBLIBSRCS): db.h
 
+dbconfig.o: $(top_srcdir)/dbconfig.c
+	$(COMPILE) -o $@ -c $<
+
 tagtbl.c: Makefile.am $(top_srcdir)/lib/rpmlib.h 
 	@echo '/*@-bounds@*/' > $@
 	@echo '#include "system.h"' >> $@
 	@echo '#include <rpmlib.h>' >> $@
+	@echo '#include "debug.h"' >> $@
 	@echo '' >> $@
 	@echo '/*@observer@*/ /*@unchecked@*/' >> $@
 	@echo 'static const struct headerTagTableEntry_s rpmTagTbl[] = {' >> $@
-	${AWK} '/(RPMTAG_[A-Z0-9]*)[ \t]+([0-9]*)/ && !/internal/ { tt = "NULL"; if ($$5 == "c") {tt = "CHAR"} if ($$5 == "h") {tt = "INT16"} if ($$5 == "i") {tt = "INT32"} if ($$5 == "l") {tt = "INT64"} if ($$5 == "s") {tt = "STRING"} if ($$5 == "x") {tt = "BIN"} if ($$5 == "s[]") {tt = "STRING_ARRAY"} if ($$5 == "s{}") {tt = "I18NSTRING"} if ($$2 == "=") { printf("\t{ \"%s\",	%s	RPM_%s_TYPE },\n", $$1, $$3, tt) } else { printf("\t{ \"%s\",	%s,	RPM_%s_TYPE },\n", $$2, $$3, tt) } }' < $(top_srcdir)/lib/rpmlib.h >> $@
+	${AWK} '/(RPMTAG_[A-Z0-9]*)[ \t]+([0-9]*)/ && !/internal/ {tt = "NULL"; ta = "ANY"; if ($$5 == "c") {tt = "CHAR"; ta = "SCALAR"} if ($$5 == "c[]") {tt = "CHAR"; ta = "ARRAY"} if ($$5 == "h") {tt = "INT16"; ta = "SCALAR"} if ($$5 == "h[]") {tt = "INT16"; ta = "ARRAY"} if ($$5 == "i") {tt = "INT32"; ta = "SCALAR"} if ($$5 == "i[]") {tt = "INT32"; ta = "ARRAY"} if ($$5 == "l") {tt = "INT64"; ta = "SCALAR"} if ($$5 == "l[]") {tt = "INT64"; ta = "ARRAY"} if ($$5 == "s") {tt = "STRING"; ta = "SCALAR"} if ($$5 == "s[]") {tt = "STRING_ARRAY"; ta = "ARRAY"} if ($$5 == "s{}") {tt = "I18NSTRING"; ta = "SCALAR"} if ($$5 == "x") {tt = "BIN"; ta = "SCALAR"} if ($$2 == "=") { printf("\t{ \"%s\",	%s	RPM_%s_TYPE + RPM_%s_RETURN_TYPE },\n", $$1, $$3, tt, ta) } else { printf("\t{ \"%s\",	%s,	RPM_%s_TYPE + RPM_%s_RETURN_TYPE  },\n", $$2, $$3, tt, ta) } }' < ${top_srcdir}/lib/rpmlib.h | sort >> $@
 	@echo '	{ NULL, 0, 0 }' >> $@
 	@echo '};' >> $@
 	@echo '' >> $@
@@ -89,7 +93,7 @@ db.h:
 
 # XXX grrr, force noinst libdb.la for db3.
 $(libdb_la):
-	sed -e"/^libdir=/s/^.*$$/libdir=''/" < $(top_builddir)/$(WITH_DB_SUBDIR)/libdb-4.4.la > $(libdb_la)
+	sed -e"/^libdir=/s/^.*$$/libdir=''/" < $(top_builddir)/$(WITH_DB_SUBDIR)/libdb-4.5.la > $(libdb_la)
 
 rpmdb_archive_SOURCES =
 rpmdb_archive_LDADD = \
@@ -115,6 +119,12 @@ rpmdb_dump_SOURCES =
 rpmdb_dump_LDADD = \
 	$(top_builddir)/$(WITH_DB_SUBDIR)/db_dump.o \
 	$(top_builddir)/$(WITH_DB_SUBDIR)/util_cache.o \
+	$(top_builddir)/$(WITH_DB_SUBDIR)/util_sig.o \
+	librpmdb.la
+
+rpmdb_hotbackup_SOURCES =
+rpmdb_hotbackup_LDADD = \
+	$(top_builddir)/$(WITH_DB_SUBDIR)/db_hotbackup.o \
 	$(top_builddir)/$(WITH_DB_SUBDIR)/util_sig.o \
 	librpmdb.la
 
@@ -159,6 +169,7 @@ rpmdb_svc_LDADD = \
 	$(top_builddir)/$(WITH_DB_SUBDIR)/db_server_proc.o \
 	$(top_builddir)/$(WITH_DB_SUBDIR)/db_server_svc.o \
 	$(top_builddir)/$(WITH_DB_SUBDIR)/db_server_util.o \
+	$(top_builddir)/$(WITH_DB_SUBDIR)/db_server_xdr.o \
 	$(top_builddir)/$(WITH_DB_SUBDIR)/gen_db_server.o \
 	$(top_builddir)/$(WITH_DB_SUBDIR)/util_log.o \
 	librpmdb.la
@@ -193,8 +204,23 @@ sources:
 lint:
 	$(LINT) $(DEFS) $(INCLUDES) $(librpmdb_la_SOURCES) $(DBLIBSRCS)
 
-tdbi: librpmdb.la tdbi.o
-	$(LINK) @LDFLAGS_STATIC@ $@.o $< $(mylibpaths) $(mylibs) $(LIBS)
+tdbi: tdbi.o librpmdb.la
+	$(LINK) @LDFLAGS_STATIC@ -o $@ $< $(mylibpaths) $(mylibs) $(LIBS)
 
-tsql: librpmdb.la tsql.o
-	$(LINK) @LDFLAGS_STATIC@ $@.o $< $(mylibpaths) $(mylibs) $(LIBS)
+tdpkg: tdpkg.o librpmdb.la
+	$(LINK) @LDFLAGS_STATIC@ -o $@ $< $(mylibpaths) $(mylibs) $(LIBS)
+
+tmpkg: tmpkg.o librpmdb.la
+	$(LINK) @LDFLAGS_STATIC@ -o $@ $< $(mylibpaths) $(mylibs) $(LIBS)
+
+tsql: tsql.o librpmdb.la
+	$(LINK) @LDFLAGS_STATIC@ -o $@ $< $(mylibpaths) $(mylibs) $(LIBS)
+
+tpkgadd: tpkgadd.o librpmdb.la
+	$(LINK) @LDFLAGS_STATIC@ -o $@ $< $(mylibpaths) $(mylibs) $(LIBS)
+
+trepomd: trepomd.o librpmdb.la
+	$(LINK) @LDFLAGS_STATIC@ -o $@ $< $(mylibpaths) $(mylibs) $(LIBS)
+
+ttag: ttag.o librpmdb.la
+	$(LINK) @LDFLAGS_STATIC@ -o $@ $< $(mylibpaths) $(mylibs) $(LIBS)

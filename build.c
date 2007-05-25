@@ -66,7 +66,7 @@ static int isSpecFile(const char * specfile)
     int count;
     int checking;
 
-    fd = Fopen(specfile, "r.ufdio");
+    fd = Fopen(specfile, "r");
     if (fd == NULL || Ferror(fd)) {
 	rpmError(RPMERR_OPEN, _("Unable to open spec file %s: %s\n"),
 		specfile, Fstrerror(fd));
@@ -105,22 +105,18 @@ static int buildForTarget(rpmts ts, const char * arg, BTA_t ba)
     const char * passPhrase = ba->passPhrase;
     const char * cookie = ba->cookie;
     int buildAmount = ba->buildAmount;
-    const char * buildRootURL = NULL;
     const char * specFile;
     const char * specURL;
     int specut;
     char buf[BUFSIZ];
     Spec spec = NULL;
+    int verify = 1;
+    int xx;
     int rc;
 
 #ifndef	DYING
     rpmSetTables(RPM_MACHTABLE_BUILDARCH, RPM_MACHTABLE_BUILDOS);
 #endif
-
-    /*@-branchstate@*/
-    if (ba->buildRootOverride)
-	buildRootURL = rpmGenPath(NULL, ba->buildRootOverride, NULL);
-    /*@=branchstate@*/
 
     /*@-compmempass@*/ /* FIX: static zcmds heartburn */
     if (ba->buildMode == 't') {
@@ -134,7 +130,7 @@ static int buildForTarget(rpmts ts, const char * arg, BTA_t ba)
 
 	specDir = rpmGetPath("%{_specdir}", NULL);
 
-	tmpSpecFile = rpmGetPath("%{_specdir}/", "rpm-spec.XXXXXX", NULL);
+	tmpSpecFile = (char *) rpmGetPath("%{_specdir}/", "rpm-spec.XXXXXX", NULL);
 #if defined(HAVE_MKSTEMP)
 	(void) close(mkstemp(tmpSpecFile));
 #else
@@ -206,7 +202,7 @@ static int buildForTarget(rpmts ts, const char * arg, BTA_t ba)
 	   directory for this run */
 
 	if (*arg != '/') {
-	    (void)getcwd(buf, BUFSIZ);
+	    if (getcwd(buf, BUFSIZ) == NULL) strcpy(buf, ".");
 	    strcat(buf, "/");
 	    strcat(buf, arg);
 	} else 
@@ -225,7 +221,7 @@ static int buildForTarget(rpmts ts, const char * arg, BTA_t ba)
     specut = urlPath(specURL, &specFile);
     if (*specFile != '/') {
 	char *s = alloca(BUFSIZ);
-	(void)getcwd(s, BUFSIZ);
+	if (getcwd(s, BUFSIZ) == NULL) strcpy(s, ".");
 	strcat(s, "/");
 	strcat(s, arg);
 	specURL = s;
@@ -257,8 +253,8 @@ static int buildForTarget(rpmts ts, const char * arg, BTA_t ba)
     /* Parse the spec file */
 #define	_anyarch(_f)	\
 (((_f)&(RPMBUILD_PREP|RPMBUILD_BUILD|RPMBUILD_INSTALL|RPMBUILD_PACKAGEBINARY)) == 0)
-    if (parseSpec(ts, specURL, ba->rootdir, buildRootURL, 0, passPhrase,
-		cookie, _anyarch(buildAmount), ba->force))
+    if (parseSpec(ts, specURL, ba->rootdir, 0, passPhrase,
+		cookie, _anyarch(buildAmount), ba->force, verify))
     {
 	rc = 1;
 	goto exit;
@@ -270,7 +266,7 @@ static int buildForTarget(rpmts ts, const char * arg, BTA_t ba)
     }
 
     /* Assemble source header from parsed components */
-    initSourceHeader(spec);
+    xx = initSourceHeader(spec, NULL);
 
     /* Check build prerequisites */
     if (!ba->noDeps && checkSpec(ts, spec->sourceHeader)) {
@@ -289,19 +285,20 @@ static int buildForTarget(rpmts ts, const char * arg, BTA_t ba)
 
 exit:
     spec = freeSpec(spec);
-    buildRootURL = _free(buildRootURL);
     return rc;
 }
 /*@=boundswrite@*/
 
 int build(rpmts ts, const char * arg, BTA_t ba, const char * rcfile)
 {
-    char *t, *te;
+    const char *t, *te;
     int rc = 0;
-    char * targets = ba->targets;
+    const char * targets = rpmcliTargets;
+    char *target;
 #define	buildCleanMask	(RPMBUILD_RMSOURCE|RPMBUILD_RMSPEC)
     int cleanFlags = ba->buildAmount & buildCleanMask;
     rpmVSFlags vsflags, ovsflags;
+    int nbuilds = 0;
 
     vsflags = rpmExpandNumeric("%{_vsflags_build}");
     if (ba->qva_flags & VERIFY_DIGEST)
@@ -314,6 +311,7 @@ int build(rpmts ts, const char * arg, BTA_t ba, const char * rcfile)
 
     if (targets == NULL) {
 	rc =  buildForTarget(ts, arg, ba);
+	nbuilds++;
 	goto exit;
     }
 
@@ -323,7 +321,7 @@ int build(rpmts ts, const char * arg, BTA_t ba, const char * rcfile)
 
     ba->buildAmount &= ~buildCleanMask;
     for (t = targets; *t != '\0'; t = te) {
-	char *target;
+	/* Parse out next target platform. */ 
 	if ((te = strchr(t, ',')) == NULL)
 	    te = t + strlen(t);
 	target = alloca(te-t+1);
@@ -334,23 +332,36 @@ int build(rpmts ts, const char * arg, BTA_t ba, const char * rcfile)
 	else	/* XXX Perform clean-up after last target build. */
 	    ba->buildAmount |= cleanFlags;
 
-	printf(_("Building for target %s\n"), target);
+	rpmMessage(RPMMESS_DEBUG, _("    target platform: %s\n"), target);
 
 	/* Read in configuration for target. */
-	rpmFreeMacros(NULL);
-	rpmFreeRpmrc();
-	(void) rpmReadConfigFiles(rcfile, target);
+	if (t != targets) {
+	    rpmFreeMacros(NULL);
+	    rpmFreeRpmrc();
+	    (void) rpmReadConfigFiles(rcfile, target);
+	}
 	rc = buildForTarget(ts, arg, ba);
+	nbuilds++;
 	if (rc)
 	    break;
     }
 
 exit:
-    vsflags = rpmtsSetVSFlags(ts, ovsflags);
     /* Restore original configuration. */
-    rpmFreeMacros(NULL);
-    rpmFreeRpmrc();
-    (void) rpmReadConfigFiles(rcfile, NULL);
+    if (nbuilds > 1) {
+	t = targets;
+	if ((te = strchr(t, ',')) == NULL)
+	    te = t + strlen(t);
+	target = alloca(te-t+1);
+	strncpy(target, t, (te-t));
+	target[te-t] = '\0';
+	if (*te != '\0')
+	    te++;
+	rpmFreeMacros(NULL);
+	rpmFreeRpmrc();
+	(void) rpmReadConfigFiles(rcfile, target);
+    }
+    vsflags = rpmtsSetVSFlags(ts, ovsflags);
 
     return rc;
 }

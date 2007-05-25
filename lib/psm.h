@@ -76,28 +76,32 @@ struct rpmpsm_s {
     FD_t fd;			/*!< Repackage file handle. */
     Header oh;			/*!< Repackage header. */
 /*@null@*/
-    rpmdbMatchIterator mi;
+    rpmdbMatchIterator mi;	/*!< An rpmdb iterator for this psm's use. */
 /*@observer@*/
-    const char * stepName;
+    const char * stepName;	/*!< The current PSM step (for display). */
 /*@only@*/ /*@null@*/
-    const char * rpmio_flags;
+    const char * rpmio_flags;	/*!< Payload compression type/flags. */
+/*@only@*/ /*@null@*/
+    const char * payload_format;/*!< Payload archive format. */
 /*@only@*/ /*@null@*/
     const char * failedFile;
 /*@only@*/ /*@null@*/
     const char * pkgURL;	/*!< Repackage URL. */
 /*@dependent@*/
     const char * pkgfn;		/*!< Repackage file name. */
+/*@only@*/ /*@null@*/
+    int *sstates;		/*!< Scriptlet states and return codes. */
     int scriptTag;		/*!< Scriptlet data tag. */
     int progTag;		/*!< Scriptlet interpreter tag. */
     int npkgs_installed;	/*!< No. of installed instances. */
     int scriptArg;		/*!< Scriptlet package arg. */
-    int sense;			/*!< One of RPMSENSE_TRIGGER{IN,UN,POSTUN}. */
+    int sense;			/*!< One of RPMSENSE_TRIGGER{PREIN,IN,UN,POSTUN}. */
     int countCorrection;	/*!< 0 if installing, -1 if removing. */
     int chrootDone;		/*!< Was chroot(2) done by pkgStage? */
     int unorderedSuccessor;	/*!< Can the PSM be run asynchronously? */
     rpmCallbackType what;	/*!< Callback type. */
-    unsigned long amount;	/*!< Callback amount. */
-    unsigned long total;	/*!< Callback total. */
+    unsigned long long amount;	/*!< Callback amount. */
+    unsigned long long total;	/*!< Callback total. */
     rpmRC rc;
     pkgStage goal;
 /*@unused@*/
@@ -182,24 +186,6 @@ rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies psm, rpmGlobalMacroContext, fileSystem, internalState @*/;
 #define	rpmpsmUNSAFE	rpmpsmSTAGE
-
-/**
- * Add package header to RPM DB.
- * @param ts            RPM Transaction
- * @param te            RPM Transaction Element
- * @param h             Package Header
- * @return              RPMRC_OK on success, RPMRC_FAIL on failure.
- */
-rpmRC psmRPMDBAdd(rpmts ts, rpmte te, Header h);
-
-/**
- * Remove package header from RPM DB.
- * @param ts            RPM Transaction
- * @param te            RPM Transaction Element
- * @param record        Database instance number of header in DB
- * @return              RPMRC_OK on success, RPMRC_FAIL on failure.
- */
-rpmRC psmRPMDBRemove(rpmts ts, rpmte te, int record);
 
 #ifdef __cplusplus
 }

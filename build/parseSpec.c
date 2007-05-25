@@ -38,6 +38,7 @@ static struct PartRec {
     { PART_CHANGELOG,     0, "%changelog"},
     { PART_DESCRIPTION,   0, "%description"},
     { PART_TRIGGERPOSTUN, 0, "%triggerpostun"},
+    { PART_TRIGGERPREIN,  0, "%triggerprein"},
     { PART_TRIGGERUN,     0, "%triggerun"},
     { PART_TRIGGERIN,     0, "%triggerin"},
     { PART_TRIGGERIN,     0, "%trigger"},
@@ -298,13 +299,6 @@ retry:
 	}
     }
     
-#ifdef	DYING
-    arch = NULL;
-    rpmGetArchInfo(&arch, NULL);
-    os = NULL;
-    rpmGetOsInfo(&os, NULL);
-#endif
-
     /* Copy next file line into the spec line buffer */
     if ((rc = copyNextLine(spec, ofi, strip)) != 0) {
 	if (rc == RPMERR_UNMATCHEDIF)
@@ -437,14 +431,11 @@ extern int noLang;		/* XXX FIXME: pass as arg */
 /*@todo Skip parse recursion if os is not compatible. @*/
 /*@-boundswrite@*/
 int parseSpec(rpmts ts, const char *specFile, const char *rootURL,
-		const char *buildRootURL, int recursing, const char *passPhrase,
-		char *cookie, int anyarch, int force)
+		int recursing, const char *passPhrase,
+		char *cookie, int anyarch, int force, int verify)
 {
     rpmParseState parsePart = PART_PREAMBLE;
     int initialPackage = 1;
-#ifdef	DYING
-    const char *saveArch;
-#endif
     Package pkg;
     Spec spec;
     
@@ -461,22 +452,7 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootURL,
     spec->specFile = rpmGetPath(specFile, NULL);
     spec->fileStack = newOpenFileInfo();
     spec->fileStack->fileName = xstrdup(spec->specFile);
-    if (buildRootURL) {
-	const char * buildRoot;
-	(void) urlPath(buildRootURL, &buildRoot);
-	/*@-branchstate@*/
-	if (*buildRoot == '\0') buildRoot = "/";
-	/*@=branchstate@*/
-	if (!strcmp(buildRoot, "/")) {
-            rpmError(RPMERR_BADSPEC,
-                     _("BuildRoot can not be \"/\": %s\n"), buildRootURL);
-            return RPMERR_BADSPEC;
-        }
-	spec->gotBuildRootURL = 1;
-	spec->buildRootURL = xstrdup(buildRootURL);
-	addMacro(spec->macros, "buildroot", NULL, buildRoot, RMIL_SPEC);
-    }
-    addMacro(NULL, "_docdir", NULL, "%{_defaultdocdir}", RMIL_SPEC);
+
     spec->recursing = recursing;
     spec->anyarch = anyarch;
     spec->force = force;
@@ -490,6 +466,9 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootURL,
 
     spec->timeCheck = rpmExpandNumeric("%{_timecheck}");
 
+    /* XXX %_docdir should be set somewhere else. */
+    addMacro(NULL, "_docdir", NULL, "%{_defaultdocdir}", RMIL_SPEC);
+
     /* All the parse*() functions expect to have a line pre-read */
     /* in the spec's line buffer.  Except for parsePreamble(),   */
     /* which handles the initial entry into a spec file.         */
@@ -502,7 +481,7 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootURL,
 	    initialPackage = 0;
 	    /*@switchbreak@*/ break;
 	case PART_PREP:
-	    parsePart = parsePrep(spec);
+	    parsePart = parsePrep(spec, verify);
 	    /*@switchbreak@*/ break;
 	case PART_BUILD:
 	case PART_INSTALL:
@@ -524,6 +503,7 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootURL,
 	case PART_PRETRANS:
 	case PART_POSTTRANS:
 	case PART_VERIFYSCRIPT:
+	case PART_TRIGGERPREIN:
 	case PART_TRIGGERIN:
 	case PART_TRIGGERUN:
 	case PART_TRIGGERPOSTUN:
@@ -557,19 +537,13 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootURL,
 	    if (spec->BANames != NULL)
 	    for (x = 0; x < spec->BACount; x++) {
 
-		/* Skip if not arch is not compatible. */
-		if (!rpmMachineScore(RPM_MACHTABLE_BUILDARCH, spec->BANames[x]))
-		    /*@innercontinue@*/ continue;
-#ifdef	DYING
-		rpmGetMachine(&saveArch, NULL);
-		saveArch = xstrdup(saveArch);
-		rpmSetMachine(spec->BANames[x], NULL);
-#else
+		/* XXX DIEDIEDIE: filter irrelevant platforms here. */
+
+		/* XXX there's more to do than set the macro. */
 		addMacro(NULL, "_target_cpu", NULL, spec->BANames[x], RMIL_RPMRC);
-#endif
 		spec->BASpecs[index] = NULL;
-		if (parseSpec(ts, specFile, spec->rootURL, buildRootURL, 1,
-				  passPhrase, cookie, anyarch, force)
+		if (parseSpec(ts, specFile, spec->rootURL, 1,
+				  passPhrase, cookie, anyarch, force, verify)
 		 || (spec->BASpecs[index] = rpmtsSetSpec(ts, NULL)) == NULL)
 		{
 			spec->BACount = index;
@@ -578,12 +552,9 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootURL,
 			return RPMERR_BADSPEC;
 /*@=nullstate@*/
 		}
-#ifdef	DYING
-		rpmSetMachine(saveArch, NULL);
-		saveArch = _free(saveArch);
-#else
+
+		/* XXX there's more to do than delete the macro. */
 		delMacro(NULL, "_target_cpu");
-#endif
 		index++;
 	    }
 
@@ -623,29 +594,9 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootURL,
 
     /* Check for description in each package and add arch and os */
   {
-#ifdef	DYING
-    const char *arch = NULL;
-    const char *os = NULL;
-    char *myos = NULL;
-
-    rpmGetArchInfo(&arch, NULL);
-    rpmGetOsInfo(&os, NULL);
-    /*
-     * XXX Capitalizing the 'L' is needed to insure that old
-     * XXX os-from-uname (e.g. "Linux") is compatible with the new
-     * XXX os-from-platform (e.g "linux" from "sparc-*-linux").
-     * XXX A copy of this string is embedded in headers.
-     */
-    if (!strcmp(os, "linux")) {
-	myos = xstrdup(os);
-	*myos = 'L';
-	os = myos;
-    }
-#else
     const char *platform = rpmExpand("%{_target_platform}", NULL);
     const char *arch = rpmExpand("%{_target_cpu}", NULL);
     const char *os = rpmExpand("%{_target_os}", NULL);
-#endif
 
     for (pkg = spec->packages; pkg != NULL; pkg = pkg->next) {
 	if (!headerIsEntry(pkg->header, RPMTAG_DESCRIPTION)) {
@@ -660,9 +611,6 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootURL,
 	(void) headerAddEntry(pkg->header, RPMTAG_OS, RPM_STRING_TYPE, os, 1);
 	(void) headerAddEntry(pkg->header, RPMTAG_ARCH,
 		RPM_STRING_TYPE, arch, 1);
-	if (!headerIsEntry(pkg->header, RPMTAG_RHNPLATFORM))
-	    (void) headerAddEntry(pkg->header, RPMTAG_RHNPLATFORM,
-		RPM_STRING_TYPE, arch, 1);
 	(void) headerAddEntry(pkg->header, RPMTAG_PLATFORM,
 		RPM_STRING_TYPE, platform, 1);
 
@@ -670,13 +618,9 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootURL,
 
     }
 
-#ifdef	DYING
-    myos = _free(myos);
-#else
     platform = _free(platform);
     arch = _free(arch);
     os = _free(os);
-#endif
   }
 
     closeSpec(spec);

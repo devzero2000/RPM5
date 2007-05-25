@@ -7,6 +7,7 @@
 #include <rpmlib.h>
 
 #include "rpmal.h"
+#define	_RPMDS_INTERNAL
 #include "rpmds.h"
 #include "rpmfi.h"
 
@@ -20,6 +21,7 @@ int _rpmal_debug = 0;
 /*@access alKey @*/
 /*@access alNum @*/
 /*@access rpmal @*/
+/*@access rpmds @*/
 /*@access availablePackage @*/
 
 /*@access fnpyKey @*/	/* XXX suggestedKeys array */
@@ -344,7 +346,7 @@ fprintf(stderr, "*** del %p[%d]\n", al->list, pkgNum);
 
 /*@-modfilesys@*/
 if (_rpmal_debug)
-fprintf(stderr, "--- die[%5d] %p [%3d] %s\n", (die - al->dirs), die, die->dirNameLen, die->dirName);
+fprintf(stderr, "--- die[%5d] %p [%3d] %s\n", (int)(die - al->dirs), die, die->dirNameLen, die->dirName);
 /*@=modfilesys@*/
 
 	    last = die->numFiles;
@@ -357,7 +359,7 @@ fprintf(stderr, "--- die[%5d] %p [%3d] %s\n", (die - al->dirs), die, die->dirNam
 		if (i < die->numFiles) {
 /*@-modfilesys@*/
 if (_rpmal_debug)
-fprintf(stderr, "\t%p[%3d] memmove(%p:%p,%p:%p,0x%x) %s <- %s\n", die->files, die->numFiles, fie, fie->baseName, fie+1, (fie+1)->baseName, ((die->numFiles - i) * sizeof(*fie)), fie->baseName, (fie+1)->baseName);
+fprintf(stderr, "\t%p[%3d] memmove(%p:%p,%p:%p,0x%x) %s <- %s\n", die->files, die->numFiles, fie, fie->baseName, fie+1, (fie+1)->baseName, (unsigned) ((die->numFiles - i) * sizeof(*fie)), fie->baseName, (fie+1)->baseName);
 /*@=modfilesys@*/
 
 /*@-bounds@*/
@@ -366,7 +368,7 @@ fprintf(stderr, "\t%p[%3d] memmove(%p:%p,%p:%p,0x%x) %s <- %s\n", die->files, di
 		}
 /*@-modfilesys@*/
 if (_rpmal_debug)
-fprintf(stderr, "\t%p[%3d] memset(%p,0,0x%x) %p [%3d] %s\n", die->files, die->numFiles, die->files + die->numFiles, sizeof(*fie), fie->baseName, fie->baseNameLen, fie->baseName);
+fprintf(stderr, "\t%p[%3d] memset(%p,0,0x%x) %p [%3d] %s\n", die->files, die->numFiles, die->files + die->numFiles, (unsigned)sizeof(*fie), fie->baseName, fie->baseNameLen, fie->baseName);
 /*@=modfilesys@*/
 		memset(die->files + die->numFiles, 0, sizeof(*fie)); /* overkill */
 
@@ -383,7 +385,7 @@ fprintf(stderr, "\t%p[%3d] memset(%p,0,0x%x) %p [%3d] %s\n", die->files, die->nu
 	    if ((die - al->dirs) < al->numDirs) {
 /*@-modfilesys@*/
 if (_rpmal_debug)
-fprintf(stderr, "    die[%5d] memmove(%p,%p,0x%x)\n", (die - al->dirs), die, die+1, ((al->numDirs - (die - al->dirs)) * sizeof(*die)));
+fprintf(stderr, "    die[%5d] memmove(%p,%p,0x%x)\n", (int)(die - al->dirs), die, die+1, (unsigned)((al->numDirs - (die - al->dirs)) * sizeof(*die)));
 /*@=modfilesys@*/
 
 /*@-bounds@*/
@@ -393,7 +395,7 @@ fprintf(stderr, "    die[%5d] memmove(%p,%p,0x%x)\n", (die - al->dirs), die, die
 
 /*@-modfilesys@*/
 if (_rpmal_debug)
-fprintf(stderr, "    die[%5d] memset(%p,0,0x%x)\n", al->numDirs, al->dirs + al->numDirs, sizeof(*die));
+fprintf(stderr, "    die[%5d] memset(%p,0,0x%x)\n", al->numDirs, al->dirs + al->numDirs, (unsigned)sizeof(*die));
 /*@=modfilesys@*/
 	    memset(al->dirs + al->numDirs, 0, sizeof(*al->dirs)); /* overkill */
 	}
@@ -468,7 +470,6 @@ fprintf(stderr, "*** add %p[%d] 0x%x\n", al->list, pkgNum, tscolor);
 	const char * DN;
 	int origNumDirs;
 	int first;
-	int i;
 
 	/* XXX FIXME: We ought to relocate the directory list here */
 
@@ -480,6 +481,7 @@ fprintf(stderr, "*** add %p[%d] 0x%x\n", al->list, pkgNum, tscolor);
 
 	/* Package dirnames are not currently unique. Create unique mapping. */
 	for (dx = 0; dx < dc; dx++) {
+	    int i = 0;
 	    (void) rpmfiSetDX(fi, dx);
 	    DN = rpmfiDN(fi);
 	    if (DN != NULL)
@@ -639,7 +641,7 @@ void rpmalAddProvides(rpmal al, alKey pkgKey, rpmds provides, uint_32 tscolor)
     if (rpmdsInit(provides) != NULL)
     while (rpmdsNext(provides) >= 0) {
 
-	if ((Name = rpmdsN(provides)) == NULL)
+	if ((Name = provides->N[provides->i]) == NULL)
 	    continue;	/* XXX can't happen */
 
 	/* Ignore colored provides not in our rainbow. */
@@ -651,7 +653,9 @@ void rpmalAddProvides(rpmal al, alKey pkgKey, rpmds provides, uint_32 tscolor)
 	ai->k++;
 
 	aie->pkgKey = pkgKey;
+/*@-assignexpose@*/
 	aie->entry = Name;
+/*@=assignexpose@*/
 	aie->entryLen = strlen(Name);
 	ix = rpmdsIx(provides);
 
@@ -744,7 +748,7 @@ rpmalAllFileSatisfiesDepend(const rpmal al, const rpmds ds, alKey * keyp)
 
     /*@-branchstate@*/ /* FIX: ret is a problem */
     for (found = 0, ret = NULL;
-	 die <= al->dirs + al->numDirs && dieCompare(die, dieNeedle) == 0;
+	 die < al->dirs + al->numDirs && dieCompare(die, dieNeedle) == 0;
 	 die++)
     {
 
@@ -815,6 +819,7 @@ rpmalAllSatisfiesDepend(const rpmal al, const rpmds ds, alKey * keyp)
 	ret = rpmalAllFileSatisfiesDepend(al, ds, keyp);
 	if (ret != NULL && *ret != NULL)
 	    return ret;
+	ret = _free(ret);
 	/* ... then, look for files "provided" by package. */
     }
 

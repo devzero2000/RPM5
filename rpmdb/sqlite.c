@@ -8,6 +8,7 @@
 /*@-compmempass@*/
 /*@-branchstate@*/
 /*@-modfilesystem@*/
+/*@-evalorderuncon@*/
 
 /*
  * sqlite.c
@@ -40,66 +41,60 @@
 #include <rpmmacro.h>
 #include <rpmurl.h>     /* XXX urlPath proto */
 
+#define	_RPMDB_INTERNAL
 #include <rpmdb.h>
 
-#include "sqlite3.h"
+#include <sqlite3.h>
 
 #include "debug.h"
 
 /*@access rpmdb @*/
 /*@access dbiIndex @*/
 
-#if 0
-  /* Turn off some of the COMMIT transactions */
-  #define SQL_FAST_DB
-#endif
-
-#if 0
-  /* define this to trace the functions that are called in here... */
-  #define SQL_TRACE_FUNCTIONS
-  #define SQL_TRACE_ENCODINGS
-  #define SQL_TRACE_TRANSACTIONS
-  #define SQL_TRACE_CURSOR
-#endif
+/*@unchecked@*/
+static int _debug = 0;
 
 /* Define the things normally in a header... */
-struct __sql_mem;	typedef struct __sql_mem      SQL_MEM;
+struct _sql_db_s;	typedef struct _sql_db_s	SQL_DB;
+struct _sql_dbcursor_s;	typedef struct _sql_dbcursor_s *SCP_t; 
 
-struct __sql_db;	typedef struct __sql_db	      SQL_DB;
-struct __sql_dbcursor;	typedef struct __sql_dbcursor SQL_CURSOR; 
-
-struct __sql_db {
-  sqlite3 * db;     /* Database pointer */
-
-  int transaction; /* Do we have a transaction open? */
-
-  SQL_CURSOR * head_cursor; /* List of open cursors */
-
-  int count;
+struct _sql_db_s {
+    sqlite3 * db;		/* Database pointer */
+    int transaction;		/* Do we have a transaction open? */
 };
 
-struct __sql_dbcursor {
-  DBC * name;  /* Which DBC am I emulating? */
+struct _sql_dbcursor_s {
+/*@shared@*/
+    DB *dbp;
+
+/*@only@*/ /*@relnull@*/
+    char * cmd;			/* SQL command string */
+/*@only@*/ /*@relnull@*/
+    sqlite3_stmt *pStmt;	/* SQL byte code */
+    const char * pzErrmsg;	/* SQL error msg */
 
   /* Table -- result of query */
-  char **resultp;
-  int nrow;
-  int ncolumn;
+/*@only@*/ /*@relnull@*/
+    char ** av;			/* item ptrs */
+/*@only@*/ /*@relnull@*/
+    int * avlen;		/* item sizes */
+    int nalloc;
+    int ac;			/* no. of items */
+    int rx;			/* Which row are we on? 1, 2, 3 ... */
+    int nr;			/* no. of rows */
+    int nc;			/* no. of columns */
 
-  int row_iterator;  /* Which row are we on? 1, 2, 3 ... */
+    int all;			/* sequential iteration cursor */
+/*@relnull@*/
+    DBT ** keys;		/* array of package keys */
+    int nkeys;
 
-  int all; /* Cursor is for all items, not a specific key */
+    int count;
 
-  SQL_MEM * memory;
+    void * lkey;		/* Last key returned */
+    void * ldata;		/* Last data returned */
 
-  int count;
-
-  struct __sql_dbcursor * next_cursor;
-};
-
-struct __sql_mem {
-  void * mem_ptr;
-  SQL_MEM * next;
+    int used;
 };
 
 union _dbswap {
@@ -107,181 +102,487 @@ union _dbswap {
     unsigned char uc[4];
 };
 
+#define _DBSWAP(_a) \
+  { unsigned char _b, *_c = (_a).uc; \
+    _b = _c[3]; _c[3] = _c[0]; _c[0] = _b; \
+    _b = _c[2]; _c[2] = _c[1]; _c[1] = _b; \
+  }
+
 /*@unchecked@*/
 static unsigned int endian = 0x11223344;
 
-/*===================================================================*/
-/*
-** How This Encoder Works
-**
-** The output is allowed to contain any character except 0x27 (') and
-** 0x00.  This is accomplished by using an escape character to encode
-** 0x27 and 0x00 as a two-byte sequence.  The escape character is always
-** 0x01.  An 0x00 is encoded as the two byte sequence 0x01 0x01.  The
-** 0x27 character is encoded as the two byte sequence 0x01 0x28.  Finally,
-** the escape character itself is encoded as the two-character sequence
-** 0x01 0x02.
-**
-** To summarize, the encoder works by using an escape sequences as follows:
-**
-**       0x00  ->  0x01 0x01
-**       0x01  ->  0x01 0x02
-**       0x27  ->  0x01 0x28
-**
-** If that were all the encoder did, it would work, but in certain cases
-** it could double the size of the encoded string.  For example, to
-** encode a string of 100 0x27 characters would require 100 instances of
-** the 0x01 0x03 escape sequence resulting in a 200-character output.
-** We would prefer to keep the size of the encoded string smaller than
-** this.
-**
-** To minimize the encoding size, we first add a fixed offset value to each 
-** byte in the sequence.  The addition is modulo 256.  (That is to say, if
-** the sum of the original character value and the offset exceeds 256, then
-** the higher order bits are truncated.)  The offset is chosen to minimize
-** the number of characters in the string that need to be escaped.  For
-** example, in the case above where the string was composed of 100 0x27
-** characters, the offset might be 0x01.  Each of the 0x27 characters would
-** then be converted into an 0x28 character which would not need to be
-** escaped at all and so the 100 character input string would be converted
-** into just 100 characters of output.  Actually 101 characters of output - 
-** we have to record the offset used as the first byte in the sequence so
-** that the string can be decoded.  Since the offset value is stored as
-** part of the output string and the output string is not allowed to contain
-** characters 0x00 or 0x27, the offset cannot be 0x00 or 0x27.
-**
-** Here, then, are the encoding steps:
-**
-**     (1)   Choose an offset value and make it the first character of
-**           output.
-**
-**     (2)   Copy each input character into the output buffer, one by
-**           one, adding the offset value as you copy.
-**
-**     (3)   If the value of an input character plus offset is 0x00, replace
-**           that one character by the two-character sequence 0x01 0x01.
-**           If the sum is 0x01, replace it with 0x01 0x02.  If the sum
-**           is 0x27, replace it with 0x01 0x03.
-**
-**     (4)   Put a 0x00 terminator at the end of the output.
-**
-** Decoding is obvious:
-**
-**     (5)   Copy encoded characters except the first into the decode 
-**           buffer.  Set the first encoded character aside for use as
-**           the offset in step 7 below.
-**
-**     (6)   Convert each 0x01 0x01 sequence into a single character 0x00.
-**           Convert 0x01 0x02 into 0x01.  Convert 0x01 0x28 into 0x27.
-**
-**     (7)   Subtract the offset value that was the first character of
-**           the encoded buffer from all characters in the output buffer.
-**
-** The only tricky part is step (1) - how to compute an offset value to
-** minimize the size of the output buffer.  This is accomplished by testing
-** all offset values and picking the one that results in the fewest number
-** of escapes.  To do that, we first scan the entire input and count the
-** number of occurances of each character value in the input.  Suppose
-** the number of 0x00 characters is N(0), the number of occurances of 0x01
-** is N(1), and so forth up to the number of occurances of 0xff is N(255).
-** An offset of 0 is not allowed so we don't have to test it.  The number
-** of escapes required for an offset of 1 is N(1)+N(2)+N(40).  The number
-** of escapes required for an offset of 2 is N(2)+N(3)+N(41).  And so forth.
-** In this way we find the offset that gives the minimum number of escapes,
-** and thus minimizes the length of the output string.
-*/
+/*@unchecked@*/ /*@only@*/ /*@null@*/
+static const char * sqlCwd = NULL;
+/*@unchecked@*/
+static int sqlInRoot = 0;
 
-/*
-** Encode a binary buffer "in" of size n bytes so that it contains
-** no instances of characters '\'' or '\000'.  The output is 
-** null-terminated and can be used as a string value in an INSERT
-** or UPDATE statement.  Use sqlite_decode_binary() to convert the
-** string back into its original binary.
-**
-** The result is written into a preallocated output buffer "out".
-** "out" must be able to hold at least 2 +(257*n)/254 bytes.
-** In other words, the output will be expanded by as much as 3
-** bytes for every 254 bytes of input plus 2 bytes of fixed overhead.
-** (This is approximately 2 + 1.0118*n or about a 1.2% size increase.)
-**
-** The return value is the number of characters in the encoded
-** string, excluding the "\000" terminator.
-**
-** If out==NULL then no output is generated but the routine still returns
-** the number of characters that would have been generated if out had
-** not been NULL.
-*/
-static int sqlite_encode_binary(const unsigned char *in, int n, unsigned char *out)
-	/*@modifies *out @*/
+static void enterChroot(dbiIndex dbi)
+	/*@globals sqlCwd, sqlInRoot, internalState @*/
+	/*@modifies sqlCwd, sqlInRoot, internalState @*/
 {
-  int i, j, e = 0, m;
-  unsigned char x;
-  int cnt[256];
-  if( n<=0 ){
-    if( out ){
-      out[0] = 'x';
-      out[1] = 0;
+    char * currDir = NULL; 
+    int xx;
+
+    if ((dbi->dbi_root[0] == '/' && dbi->dbi_root[1] == '\0') || dbi->dbi_rpmdb->db_chrootDone || sqlInRoot)
+       /* Nothing to do, was not already in chroot */
+       return;
+
+if (_debug)
+fprintf(stderr, "sql:chroot(%s)\n", dbi->dbi_root);
+
+    {
+      int currDirLen = 0;
+
+      do {
+        currDirLen += 128;
+        currDir = xrealloc(currDir, currDirLen);
+        memset(currDir, 0, currDirLen);
+      } while (getcwd(currDir, currDirLen) == NULL && errno == ERANGE);
     }
-    return 1;
-  }
-  memset(cnt, 0, sizeof(cnt));
-  for(i=n-1; i>=0; i--){ cnt[in[i]]++; }
-  m = n;
-  for(i=1; i<256; i++){
-    int sum;
-    if( i=='\'' ) continue;
-    sum = cnt[i] + cnt[(i+1)&0xff] + cnt[(i+'\'')&0xff];
-    if( sum<m ){
-      m = sum;
-      e = i;
-      if( m==0 ) break;
-    }
-  }
-  if( out==0 ){
-    return n+m+1;
-  }
-  out[0] = e;
-  j = 1;
-  for(i=0; i<n; i++){
-    x = in[i] - e;
-    if( x==0 || x==1 || x=='\''){
-      out[j++] = 1;
-      x++;
-    }
-    out[j++] = x;
-  }
-  out[j] = 0;
-  assert( j==n+m+1 );
-  return j;
+
+    sqlCwd = currDir;
+/*@-globs@*/
+    xx = Chdir("/");
+/*@=globs@*/
+    xx = Chroot(dbi->dbi_root);
+assert(xx == 0);
+    sqlInRoot=1;
 }
 
-/*
-** Decode the string "in" into binary data and write it into "out".
-** This routine reverses the encoding created by sqlite_encode_binary().
-** The output will always be a few bytes less than the input.  The number
-** of bytes of output is returned.  If the input is not a well-formed
-** encoding, -1 is returned.
-**
-** The "in" and "out" parameters may point to the same buffer in order
-** to decode a string in place.
-*/
-static int sqlite_decode_binary(const unsigned char *in, unsigned char *out)
-	/*@modifies *out @*/
+static void leaveChroot(dbiIndex dbi)
+	/*@globals sqlCwd, sqlInRoot, internalState @*/
+	/*@modifies sqlCwd, sqlInRoot, internalState @*/
 {
-  int i, e;
-  unsigned char c;
-  e = *(in++);
-  i = 0;
-  while( (c = *(in++))!=0 ){
-    if( c==1 ){
-      c = *(in++) - 1;
-    }
-    out[i++] = c + e;
-  }
-  return i;
-}
-/*===================================================================*/
+    int xx;
 
+    if ((dbi->dbi_root[0] == '/' && dbi->dbi_root[1] == '\0') || dbi->dbi_rpmdb->db_chrootDone || !sqlInRoot)
+       /* Nothing to do, not in chroot */
+       return;
+
+if (_debug)
+fprintf(stderr, "sql:chroot(.)\n");
+
+/*@-superuser@*/
+    xx = Chroot(".");
+/*@=superuser@*/
+assert(xx == 0);
+    if (sqlCwd != NULL) {
+/*@-globs@*/
+	xx = Chdir(sqlCwd);
+/*@=globs@*/
+	sqlCwd = _free(sqlCwd);
+    }
+
+    sqlInRoot = 0;
+}
+
+static void dbg_scp(void *ptr)
+	/*@globals stderr, fileSystem @*/
+	/*@modifies stderr, fileSystem @*/
+{
+    SCP_t scp = ptr;
+
+if (_debug)
+fprintf(stderr, "\tscp %p [%d:%d] av %p avlen %p nr [%d:%d] nc %d all %d\n", scp, scp->ac, scp->nalloc, scp->av, scp->avlen, scp->rx, scp->nr, scp->nc, scp->all);
+
+}
+
+static void dbg_keyval(const char * msg, dbiIndex dbi, /*@null@*/ DBC * dbcursor,
+		DBT * key, DBT * data, unsigned int flags)
+	/*@globals stderr, fileSystem @*/
+	/*@modifies stderr, fileSystem @*/
+{
+
+if (!_debug) return;
+
+    fprintf(stderr, "%s on %s (%p,%p,%p,0x%x)", msg, dbi->dbi_subfile, dbcursor, key, data, flags);
+
+    /* XXX FIXME: ptr alignment is fubar here. */
+    if (key != NULL && key->data != NULL) {
+	fprintf(stderr, "  key 0x%x[%d]", *(unsigned int *)key->data, key->size);
+	if (dbi->dbi_rpmtag == RPMTAG_NAME)
+	    fprintf(stderr, " \"%s\"", (const char *)key->data);
+    }
+    if (data != NULL && data->data != NULL)
+	fprintf(stderr, " data 0x%x[%d]", *(unsigned int *)data->data, data->size);
+
+    fprintf(stderr, "\n");
+    if (dbcursor != NULL)
+	dbg_scp(dbcursor);
+}
+
+/*@only@*/ 
+static SCP_t scpResetKeys(/*@only@*/ SCP_t scp)
+	/*@modifies scp @*/
+{
+    int ix;
+
+if (_debug)
+fprintf(stderr, "*** %s(%p)\n", __FUNCTION__, scp);
+dbg_scp(scp);
+
+    for ( ix =0 ; ix < scp->nkeys ; ix++ ) {
+      scp->keys[ix]->data = _free(scp->keys[ix]->data);
+/*@-unqualifiedtrans@*/
+      scp->keys[ix] = _free(scp->keys[ix]);
+/*@=unqualifiedtrans@*/
+    }
+    scp->keys = _free(scp->keys);
+    scp->nkeys = 0;
+
+    return scp;
+}
+
+/*@only@*/ 
+static SCP_t scpResetAv(/*@only@*/ SCP_t scp)
+	/*@modifies scp @*/
+{
+    int xx;
+
+if (_debug)
+fprintf(stderr, "*** %s(%p)\n", __FUNCTION__, scp);
+dbg_scp(scp);
+
+    if (scp->av != NULL) {
+	if (scp->nalloc <= 0) {
+	    /* Clean up SCP_t used by sqlite3_get_table(). */
+	    sqlite3_free_table(scp->av);
+	    scp->av = NULL;
+	    scp->nalloc = 0;
+	} else {
+	    /* Clean up SCP_t used by sql_step(). */
+/*@-unqualifiedtrans@*/
+	    for (xx = 0; xx < scp->ac; xx++)
+		scp->av[xx] = _free(scp->av[xx]);
+/*@=unqualifiedtrans@*/
+	    if (scp->av != NULL)
+		memset(scp->av, 0, scp->nalloc * sizeof(*scp->av));
+	    if (scp->avlen != NULL)
+		memset(scp->avlen, 0, scp->nalloc * sizeof(*scp->avlen));
+	    scp->av = _free(scp->av);
+	    scp->avlen = _free(scp->avlen);
+	    scp->nalloc = 0;
+	}
+    } else
+	scp->nalloc = 0;
+    scp->ac = 0;
+    scp->nr = 0;
+    scp->nc = 0;
+
+    return scp;
+}
+
+/*@only@*/ 
+static SCP_t scpReset(/*@only@*/ SCP_t scp)
+	/*@modifies scp @*/
+{
+    int xx;
+
+if (_debug)
+fprintf(stderr, "*** %s(%p)\n", __FUNCTION__, scp);
+dbg_scp(scp);
+
+    if (scp->cmd) {
+	sqlite3_free(scp->cmd);
+	scp->cmd = NULL;
+    }
+    if (scp->pStmt) {
+	xx = sqlite3_reset(scp->pStmt);
+	if (xx) rpmMessage(RPMMESS_WARNING, "reset %d\n", xx);
+	xx = sqlite3_finalize(scp->pStmt);
+	if (xx) rpmMessage(RPMMESS_WARNING, "finalize %d\n", xx);
+	scp->pStmt = NULL;
+    }
+
+    scp = scpResetAv(scp);
+
+    scp->rx = 0;
+    return scp;
+}
+
+/*@null@*/
+static SCP_t scpFree(/*@only@*/ SCP_t scp)
+	/*@modifies scp @*/
+{
+    scp = scpReset(scp);
+    scp = scpResetKeys(scp);
+    scp->av = _free(scp->av);
+    scp->avlen = _free(scp->avlen);
+
+if (_debug)
+fprintf(stderr, "*** %s(%p)\n", __FUNCTION__, scp);
+    scp = _free(scp);
+    return NULL;
+}
+
+static SCP_t scpNew(DB * dbp)
+	/*@*/
+{
+    SCP_t scp = xcalloc(1, sizeof(*scp));
+/*@-temptrans@*/
+    scp->dbp = dbp;
+/*@=temptrans@*/
+
+    scp->used = 0;
+
+    scp->lkey = NULL;
+    scp->ldata = NULL;
+
+if (_debug)
+fprintf(stderr, "*** %s(%p)\n", __FUNCTION__, scp);
+    return scp;
+}
+
+static int sql_step(dbiIndex dbi, SCP_t scp)
+	/*@modifies dbi, scp @*/
+{
+    int swapped = dbiByteSwapped(dbi);
+    const char * cname;
+    const char * vtype;
+    size_t nb;
+    int loop;
+    int need;
+    int rc;
+    int i;
+
+    scp->nc = sqlite3_column_count(scp->pStmt);
+
+    if (scp->nr == 0 && scp->av != NULL)
+	need = 2 * scp->nc;
+    else
+	need = scp->nc;
+
+    /* XXX scp->nc = need = scp->nalloc = 0 case forces + 1 here */
+    if (!scp->ac && !need && !scp->nalloc)
+	need++;
+   
+    if (scp->ac + need >= scp->nalloc) {
+	/* XXX +4 is bogus, was +1 */
+	scp->nalloc = 2 * scp->nalloc + need + 4;
+	scp->av = xrealloc(scp->av, scp->nalloc * sizeof(*scp->av));
+	scp->avlen = xrealloc(scp->avlen, scp->nalloc * sizeof(*scp->avlen));
+    }
+
+    if (scp->av != NULL && scp->nr == 0) {
+	for (i = 0; i < scp->nc; i++) {
+	    scp->av[scp->ac] = xstrdup(sqlite3_column_name(scp->pStmt, i));
+	    if (scp->avlen) scp->avlen[scp->ac] = strlen(scp->av[scp->ac]) + 1;
+	    scp->ac++;
+assert(scp->ac <= scp->nalloc);
+	}
+    }
+
+/*@-infloopsuncon@*/
+    loop = 1;
+    while (loop) {
+	rc = sqlite3_step(scp->pStmt);
+	switch (rc) {
+	case SQLITE_DONE:
+if (_debug)
+fprintf(stderr, "sqlite3_step: DONE scp %p [%d:%d] av %p avlen %p\n", scp, scp->ac, scp->nalloc, scp->av, scp->avlen);
+	    loop = 0;
+	    /*@switchbreak@*/ break;
+	case SQLITE_ROW:
+	    if (scp->av != NULL)
+	    for (i = 0; i < scp->nc; i++) {
+		/* Expand the row array for new elements */
+    		if (scp->ac + need >= scp->nalloc) {
+		    /* XXX +4 is bogus, was +1 */
+		    scp->nalloc = 2 * scp->nalloc + need + 4;
+		    scp->av = xrealloc(scp->av, scp->nalloc * sizeof(*scp->av));
+		    scp->avlen = xrealloc(scp->avlen, scp->nalloc * sizeof(*scp->avlen));
+	        }
+assert(scp->av != NULL);
+assert(scp->avlen != NULL);
+
+		cname = sqlite3_column_name(scp->pStmt, i);
+		vtype = sqlite3_column_decltype(scp->pStmt, i);
+		nb = 0;
+
+		if (!strcmp(vtype, "blob")) {
+		    const void * v = sqlite3_column_blob(scp->pStmt, i);
+		    nb = sqlite3_column_bytes(scp->pStmt, i);
+if (_debug)
+fprintf(stderr, "\t%d %s %s %p[%d]\n", i, cname, vtype, v, (int)nb);
+		    if (nb > 0) {
+			void * t = xmalloc(nb);
+			scp->av[scp->ac] = memcpy(t, v, nb);
+			scp->avlen[scp->ac] = nb;
+			scp->ac++;
+		    }
+		} else
+		if (!strcmp(vtype, "double")) {
+		    double v = sqlite3_column_double(scp->pStmt, i);
+		    nb = sizeof(v);
+if (_debug)
+fprintf(stderr, "\t%d %s %s %g\n", i, cname, vtype, v);
+		    if (nb > 0) {
+			scp->av[scp->ac] = memcpy(xmalloc(nb), &v, nb);
+			scp->avlen[scp->ac] = nb;
+assert(swapped == 0); /* Byte swap?! */
+			scp->ac++;
+		    }
+		} else
+		if (!strcmp(vtype, "int")) {
+		    int32_t v = sqlite3_column_int(scp->pStmt, i);
+		    nb = sizeof(v);
+if (_debug)
+fprintf(stderr, "\t%d %s %s %d\n", i, cname, vtype, v);
+		    if (nb > 0) {
+			scp->av[scp->ac] = memcpy(xmalloc(nb), &v, nb);
+			scp->avlen[scp->ac] = nb;
+if (swapped == 1) {
+  union _dbswap dbswap;
+  memcpy(&dbswap.ui, scp->av[scp->ac], sizeof(dbswap.ui));
+  _DBSWAP(dbswap);
+  memcpy(scp->av[scp->ac], &dbswap.ui, sizeof(dbswap.ui));
+}
+			scp->ac++;
+		    }
+		} else
+		if (!strcmp(vtype, "int64")) {
+		    int64_t v = sqlite3_column_int64(scp->pStmt, i);
+		    nb = sizeof(v);
+if (_debug)
+fprintf(stderr, "\t%d %s %s %ld\n", i, cname, vtype, (long)v);
+		    if (nb > 0) {
+			scp->av[scp->ac] = memcpy(xmalloc(nb), &v, nb);
+			scp->avlen[scp->ac] = nb;
+assert(swapped == 0); /* Byte swap?! */
+			scp->ac++;
+		    }
+		} else
+		if (!strcmp(vtype, "text")) {
+		    const char * v = sqlite3_column_text(scp->pStmt, i);
+		    nb = strlen(v) + 1;
+if (_debug)
+fprintf(stderr, "\t%d %s %s \"%s\"\n", i, cname, vtype, v);
+		    if (nb > 0) {
+			scp->av[scp->ac] = memcpy(xmalloc(nb), v, nb);
+			scp->avlen[scp->ac] = nb;
+			scp->ac++;
+		    }
+		}
+assert(scp->ac <= scp->nalloc);
+	    }
+	    scp->nr++;
+	    /*@switchbreak@*/ break;
+	case SQLITE_BUSY:
+	    fprintf(stderr, "sqlite3_step: BUSY %d\n", rc);
+	    /*@switchbreak@*/ break;
+	case SQLITE_ERROR:
+	    fprintf(stderr, "sqlite3_step: ERROR %d -- %s\n", rc, scp->cmd);
+	    fprintf(stderr, "              %s (%d)\n", 
+			sqlite3_errmsg(((SQL_DB*)dbi->dbi_db)->db), sqlite3_errcode(((SQL_DB*)dbi->dbi_db)->db));
+/*@-nullpass@*/
+	    fprintf(stderr, "              cwd '%s'\n", getcwd(NULL,0));
+/*@=nullpass@*/
+	    loop = 0;
+	    /*@switchbreak@*/ break;
+	case SQLITE_MISUSE:
+	    fprintf(stderr, "sqlite3_step: MISUSE %d\n", rc);
+	    loop = 0;
+	    /*@switchbreak@*/ break;
+	default:
+	    fprintf(stderr, "sqlite3_step: rc %d\n", rc);
+	    loop = 0;
+	    /*@switchbreak@*/ break;
+	}
+    }
+/*@=infloopsuncon@*/
+
+    if (rc == SQLITE_DONE)
+	rc = SQLITE_OK;
+
+    return rc;
+}
+
+static int sql_bind_key(dbiIndex dbi, SCP_t scp, int pos, DBT * key)
+	/*@modifies dbi, scp @*/
+{
+    int swapped = dbiByteSwapped(dbi);
+    int rc = 0;
+    union _dbswap dbswap;
+
+assert(key->data != NULL);
+    switch (dbi->dbi_rpmtag) {
+    case RPMDBI_PACKAGES:
+	{   unsigned int hnum;
+/*@i@*/ assert(key->size == sizeof(int_32));
+	    memcpy(&hnum, key->data, sizeof(hnum));
+
+if (swapped == 1) {
+  memcpy(&dbswap.ui, &hnum, sizeof(dbswap.ui));
+  _DBSWAP(dbswap);
+  memcpy(&hnum, &dbswap.ui, sizeof(dbswap.ui));
+}
+	    rc = sqlite3_bind_int(scp->pStmt, pos, hnum);
+	} break;
+    default:
+	switch (tagType(dbi->dbi_rpmtag) & RPM_MASK_TYPE) {
+	case RPM_NULL_TYPE:   
+	case RPM_BIN_TYPE:
+/*@-castfcnptr -nullpass@*/ /* FIX: annotate sqlite. */
+	    rc = sqlite3_bind_blob(scp->pStmt, pos, key->data, key->size, SQLITE_STATIC);
+/*@=castfcnptr =nullpass@*/
+	    /*@innerbreak@*/ break;
+	case RPM_CHAR_TYPE:
+	case RPM_INT8_TYPE:
+	{   unsigned char i;
+/*@i@*/ assert(key->size == sizeof(unsigned char));
+assert(swapped == 0); /* Byte swap?! */
+	    memcpy(&i, key->data, sizeof(i));
+	    rc = sqlite3_bind_int(scp->pStmt, pos, i);
+	} /*@innerbreak@*/ break;
+	case RPM_INT16_TYPE:
+	{	unsigned short i;
+/*@i@*/ assert(key->size == sizeof(int_16));
+assert(swapped == 0); /* Byte swap?! */
+	    memcpy(&i, key->data, sizeof(i));
+	    rc = sqlite3_bind_int(scp->pStmt, pos, i);
+	} /*@innerbreak@*/ break;
+        case RPM_INT32_TYPE:
+/*      case RPM_INT64_TYPE: */   
+	default:
+	{   unsigned int i;
+/*@i@*/ assert(key->size == sizeof(int_32));
+	    memcpy(&i, key->data, sizeof(i));
+
+if (swapped == 1)
+{
+  memcpy(&dbswap.ui, &i, sizeof(dbswap.ui));
+  _DBSWAP(dbswap);
+  memcpy(&i, &dbswap.ui, sizeof(dbswap.ui));
+}
+	    rc = sqlite3_bind_int(scp->pStmt, pos, i);
+	}   /*@innerbreak@*/ break;
+        case RPM_STRING_TYPE:
+        case RPM_STRING_ARRAY_TYPE:
+        case RPM_I18NSTRING_TYPE:
+/*@-castfcnptr -nullpass@*/ /* FIX: annotate sqlite. */
+	    rc = sqlite3_bind_text(scp->pStmt, pos, key->data, key->size, SQLITE_STATIC);
+/*@=castfcnptr =nullpass@*/
+	    /*@innerbreak@*/ break;
+        }
+    }
+
+    return rc;
+}
+
+static int sql_bind_data(dbiIndex dbi, SCP_t scp, int pos, DBT * data)
+	/*@modifies scp @*/
+{
+    int rc;
+
+assert(data->data != NULL);
+/*@-castfcnptr -nullpass@*/ /* FIX: annotate sqlite */
+    rc = sqlite3_bind_blob(scp->pStmt, pos, data->data, data->size, SQLITE_STATIC);
+/*@=castfcnptr =nullpass@*/
+
+    return rc;
+}
+
+/*===================================================================*/
 /*
  * Transaction support
  */
@@ -289,23 +590,17 @@ static int sqlite_decode_binary(const unsigned char *in, unsigned char *out)
 static int sql_startTransaction(dbiIndex dbi)
 	/*@*/
 {
-    DB * db = dbi->dbi_db;
-    SQL_DB * sqldb;
+    SQL_DB * sqldb = (SQL_DB *) dbi->dbi_db;
     int rc = 0;
-
-    assert(db != NULL);
-    sqldb = (SQL_DB *)db->app_private;
-    assert(sqldb != NULL && sqldb->db != NULL);
 
     /* XXX:  Transaction Support */
     if (!sqldb->transaction) {
       char * pzErrmsg;
       rc = sqlite3_exec(sqldb->db, "BEGIN TRANSACTION;", NULL, NULL, &pzErrmsg);
 
-#ifdef SQL_TRACE_TRANSACTIONS
-      rpmMessage(RPMMESS_DEBUG, "Begin %s SQL transaction %s (%d)\n",
+if (_debug)
+fprintf(stderr, "Begin %s SQL transaction %s (%d)\n",
 		dbi->dbi_subfile, pzErrmsg, rc);
-#endif
 
       if (rc == 0)
 	sqldb->transaction = 1;
@@ -317,23 +612,17 @@ static int sql_startTransaction(dbiIndex dbi)
 static int sql_endTransaction(dbiIndex dbi)
 	/*@*/
 {
-    DB * db = dbi->dbi_db;
-    SQL_DB * sqldb;
+    SQL_DB * sqldb = (SQL_DB *) dbi->dbi_db;
     int rc=0;
-
-    assert(db != NULL);
-    sqldb = (SQL_DB *)db->app_private;
-    assert(sqldb != NULL && sqldb->db != NULL);
 
     /* XXX:  Transaction Support */
     if (sqldb->transaction) {
       char * pzErrmsg;
       rc = sqlite3_exec(sqldb->db, "END TRANSACTION;", NULL, NULL, &pzErrmsg);
 
-#ifdef SQL_TRACE_TRANSACTIONS
-      rpmMessage(RPMMESS_DEBUG, "End %s SQL transaction %s (%d)\n",
+if (_debug)
+fprintf(stderr, "End %s SQL transaction %s (%d)\n",
 		dbi->dbi_subfile, pzErrmsg, rc);
-#endif
 
       if (rc == 0)
 	sqldb->transaction = 0;
@@ -345,23 +634,17 @@ static int sql_endTransaction(dbiIndex dbi)
 static int sql_commitTransaction(dbiIndex dbi, int flag)
 	/*@*/
 {
-    DB * db = dbi->dbi_db;
-    SQL_DB * sqldb;
+    SQL_DB * sqldb = (SQL_DB *) dbi->dbi_db;
     int rc = 0;
-
-    assert(db != NULL);
-    sqldb = (SQL_DB *)db->app_private;
-    assert(sqldb != NULL && sqldb->db != NULL);
 
     /* XXX:  Transactions */
     if ( sqldb->transaction ) {
       char * pzErrmsg;
       rc = sqlite3_exec(sqldb->db, "COMMIT;", NULL, NULL, &pzErrmsg);
 
-#ifdef SQL_TRACE_TRANSACTIONS
-      rpmMessage(RPMMESS_DEBUG, "Commit %s SQL transaction(s) %s (%d)\n",
+if (_debug)
+fprintf(stderr, "Commit %s SQL transaction(s) %s (%d)\n",
 		dbi->dbi_subfile, pzErrmsg, rc);
-#endif
 
       sqldb->transaction=0;
 
@@ -371,63 +654,6 @@ static int sql_commitTransaction(dbiIndex dbi, int flag)
     }
 
     return rc;
-}
-
-/*
- * Allocate a temporary buffer
- *
- * Life span of memory in db3 is apparently a db_env,
- * this works for db3 because items are mmaped from
- * the database.. however we can't do that...
- *
- * Life span has been changed to the life of a cursor.
- *
- * Minor changes were required to RPM for this to work
- * valgrind was used to verify...
- *
- */
-static void * allocTempBuffer(DBC * dbcursor, size_t len)
-	/*@*/
-{
-    DB * db = dbcursor->dbp;
-    SQL_DB * sqldb;
-    SQL_CURSOR * sqlcursor;
-    SQL_MEM * item;
-
-    assert(db != NULL);
-    sqldb = (SQL_DB *)db->app_private;
-    assert(sqldb != NULL && sqldb->db != NULL);
-    sqlcursor = sqldb->head_cursor;
-
-    /* Find our version of the db3 cursor */
-    while ( sqlcursor != NULL && sqlcursor->name != dbcursor ) {
-      sqlcursor = sqlcursor->next_cursor;
-    }
-
-    assert(sqlcursor != NULL);
-
-    item = xmalloc(sizeof(*item));
-    item->mem_ptr = xmalloc(len);
-
-#if 0
-    /* Only keep two pointers per cursor */
-    if ( sqlcursor->memory ) {
-      if ( sqlcursor->memory->next ) {
-	sqlcursor->memory->next->mem_ptr = _free(sqlcursor->memory->next->mem_ptr);
-
-	sqlcursor->memory->next = _free(sqlcursor->memory->next);
-
-	sqlcursor->count--;
-      }
-    }
-#endif
-
-    item->next = sqlcursor->memory;
-
-    sqlcursor->memory = item;
-    sqlcursor->count++;
-
-    return item->mem_ptr;
 }
 
 static int sql_busy_handler(void * dbi_void, int time)
@@ -445,6 +671,8 @@ static int sql_busy_handler(void * dbi_void, int time)
     return 1;
 }
 
+/*===================================================================*/
+
 /**
  * Verify the DB is setup.. if not initialize it
  *
@@ -453,52 +681,83 @@ static int sql_busy_handler(void * dbi_void, int time)
 static int sql_initDB(dbiIndex dbi)
 	/*@*/
 {
-    DB * db = dbi->dbi_db;
-    SQL_DB * sqldb;
-    int rc = 0;
-
-    char ** resultp;
-    int nrow;
-    int ncolumn;
-    char * pzErrmsg;
+    SQL_DB * sqldb = (SQL_DB *) dbi->dbi_db;
+    SCP_t scp = scpNew(dbi->dbi_db);
     char cmd[BUFSIZ];
-
-#ifdef SQL_TRACE_FUNCTIONS
-    rpmMessage(RPMMESS_DEBUG, "sql_initDB()\n");
-#endif
-
-    assert(db != NULL);
-    sqldb = (SQL_DB *)db->app_private;
-    assert(sqldb != NULL && sqldb->db != NULL);
+    int rc = 0;
 
     /* Check if the table exists... */
     sprintf(cmd,
 	"SELECT name FROM 'sqlite_master' WHERE type='table' and name='%s';",
 		dbi->dbi_subfile);
+/*@-nullstate@*/
     rc = sqlite3_get_table(sqldb->db, cmd,
-	&resultp, &nrow, &ncolumn, &pzErrmsg);
+	&scp->av, &scp->nr, &scp->nc, (char **)&scp->pzErrmsg);
+/*@=nullstate@*/
+    if (rc)
+	goto exit;
 
-    (void) sqlite3_free_table(resultp);
+    if (scp->nr < 1) {
+	const char * valtype = "blob";
+	const char * keytype;
 
-    if ( rc == 0 && nrow < 1 ) {
-      sprintf(cmd, "CREATE TABLE '%s' (key blob UNIQUE, value blob);",
-		dbi->dbi_subfile);
-      rc = sqlite3_exec(sqldb->db, cmd, NULL, NULL, &pzErrmsg);
+	switch (dbi->dbi_rpmtag) {
+	case RPMDBI_PACKAGES:
+	    keytype = "int UNIQUE PRIMARY KEY";
+	    valtype = "blob";
+	    break;
+	default:
+	    switch (tagType(dbi->dbi_rpmtag) & RPM_MASK_TYPE) {
+	    case RPM_NULL_TYPE:
+	    case RPM_BIN_TYPE:
+	    default:
+		keytype = "blob UNIQUE";
+		/*@innerbreak@*/ break;
+	    case RPM_CHAR_TYPE:
+	    case RPM_INT8_TYPE:
+	    case RPM_INT16_TYPE:
+	    case RPM_INT32_TYPE:
+/*	    case RPM_INT64_TYPE: */
+		keytype = "int UNIQUE";
+		/*@innerbreak@*/ break;
+	    case RPM_STRING_TYPE:
+	    case RPM_STRING_ARRAY_TYPE:
+	    case RPM_I18NSTRING_TYPE:
+		keytype = "text UNIQUE";
+		/*@innerbreak@*/ break;
+	    }
+	}
+if (_debug)
+fprintf(stderr, "\t%s(%d) type(%d) keytype %s\n", tagName(dbi->dbi_rpmtag), dbi->dbi_rpmtag, (tagType(dbi->dbi_rpmtag) & RPM_MASK_TYPE), keytype);
+	sprintf(cmd, "CREATE TABLE '%s' (key %s, value %s)",
+			dbi->dbi_subfile, keytype, valtype);
+	rc = sqlite3_exec(sqldb->db, cmd, NULL, NULL, (char **)&scp->pzErrmsg);
+	if (rc)
+	    goto exit;
 
-      if ( rc == 0 ) {
-        sprintf(cmd, "CREATE TABLE 'db_info' (endian TEXT);");
-	rc = sqlite3_exec(sqldb->db, cmd, NULL, NULL, &pzErrmsg);
-      }
+	sprintf(cmd, "CREATE TABLE 'db_info' (endian TEXT)");
+	rc = sqlite3_exec(sqldb->db, cmd, NULL, NULL, (char **)&scp->pzErrmsg);
+	if (rc)
+	    goto exit;
 
-      if ( rc == 0 ) {
-	sprintf(cmd, "INSERT INTO 'db_info' values('%d');", ((union _dbswap *)&endian)->uc[0]);
-	rc = sqlite3_exec(sqldb->db, cmd, NULL, NULL, &pzErrmsg);
-      }
+	sprintf(cmd, "INSERT INTO 'db_info' values('%d')", ((union _dbswap *)&endian)->uc[0]);
+	rc = sqlite3_exec(sqldb->db, cmd, NULL, NULL, (char **)&scp->pzErrmsg);
+	if (rc)
+	    goto exit;
     }
 
-    if ( rc )
-      rpmMessage(RPMMESS_WARNING, "Unable to initDB %s (%d)\n",
-		pzErrmsg, rc);
+    if (dbi->dbi_no_fsync) {
+	int xx;
+        sprintf(cmd, "PRAGMA synchronous = OFF;");
+        xx = sqlite3_exec(sqldb->db, cmd, NULL, NULL, (char **)&scp->pzErrmsg);
+    }
+
+exit:
+    if (rc)
+	rpmMessage(RPMMESS_WARNING, "Unable to initDB %s (%d)\n",
+		scp->pzErrmsg, rc);
+
+    scp = scpFree(scp);
 
     return rc;
 }
@@ -512,79 +771,33 @@ static int sql_initDB(dbiIndex dbi)
  */   
 static int sql_cclose (dbiIndex dbi, /*@only@*/ DBC * dbcursor,
 		unsigned int flags)
-	/*@globals fileSystem @*/
-	/*@modifies dbi, *dbcursor, fileSystem @*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies dbi, *dbcursor, fileSystem, internalState @*/
 {
-    DB * db = dbi->dbi_db;
-    SQL_DB * sqldb;
-    SQL_CURSOR * sqlcursor, *prev;
-    int rc = 0;
+    SCP_t scp = (SCP_t)dbcursor;
+    int rc;
 
-#ifdef SQL_TRACE_FUNCTIONS
-    rpmMessage(RPMMESS_DEBUG, "sql_cclose()\n");
-#endif
+if (_debug)
+fprintf(stderr, "==> %s(%p)\n", __FUNCTION__, scp);
 
-    assert(db != NULL);
-    sqldb = (SQL_DB *)db->app_private;
-    assert(sqldb != NULL && sqldb->db != NULL);
+    if (scp->lkey)
+	scp->lkey = _free(scp->lkey);
 
-    prev=NULL;
-    sqlcursor = sqldb->head_cursor;
+    if (scp->ldata)
+	scp->ldata = _free(scp->ldata);
 
-    /* Find our version of the db3 cursor */
-    while ( sqlcursor != NULL && sqlcursor->name != dbcursor ) {
-      prev = sqlcursor;
-      sqlcursor = sqlcursor->next_cursor;
-    }
+enterChroot(dbi);
 
-    assert(sqlcursor != NULL);
+    if (flags == DB_WRITECURSOR)
+	rc = sql_commitTransaction(dbi, 1);
+    else
+	rc = sql_endTransaction(dbi);
 
-    /* Free memory */
-    if ( sqlcursor->resultp ) {
-      (void) sqlite3_free_table( sqlcursor->resultp );
-    }
+/*@-kepttrans -nullstate@*/
+    scp = scpFree(scp);
+/*@=kepttrans =nullstate@*/
 
-    if ( sqlcursor->memory ) {
-      SQL_MEM * curr_mem = sqlcursor->memory;
-      SQL_MEM * next_mem;
-      int loc_count=0;
-
-      while ( curr_mem ) {
-	next_mem = curr_mem->next;
-	free ( curr_mem->mem_ptr );
-	free ( curr_mem );
-	curr_mem = next_mem;
-	loc_count++;
-      }
-
-      if ( sqlcursor->count != loc_count)
-	rpmMessage(RPMMESS_DEBUG, "Alloced %ld -- free %ld\n", 
-		sqlcursor->count, loc_count);
-    }
-
-    /* Remove from the list */
-    if (prev == NULL) {
-      sqldb->head_cursor = sqlcursor->next_cursor;
-    } else {
-      prev->next_cursor = sqlcursor->next_cursor;
-    }
-
-    sqldb->count--;
-
-/*@-kepttrans@*/
-    sqlcursor = _free(sqlcursor);
-/*@=kepttrans@*/
-    dbcursor = _free(dbcursor);
-
-#ifndef SQL_FAST_DB
-    if ( flags == DB_WRITECURSOR ) {
-       rc = sql_commitTransaction(dbi, 1);
-    } else {
-       rc = sql_endTransaction(dbi);
-    }
-#else
-       rc = sql_endTransaction(dbi);
-#endif
+leaveChroot(dbi);
 
     return rc;
 }
@@ -596,67 +809,33 @@ static int sql_cclose (dbiIndex dbi, /*@only@*/ DBC * dbcursor,
  * @return              0 on success
  */
 static int sql_close(/*@only@*/ dbiIndex dbi, unsigned int flags)
-	/*@globals fileSystem @*/
-	/*@modifies dbi, fileSystem @*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies dbi, fileSystem, internalState @*/
 {
-    DB * db = dbi->dbi_db;
-    SQL_DB * sqldb;
+    SQL_DB * sqldb = (SQL_DB *) dbi->dbi_db;
     int rc = 0;
 
-#ifdef SQL_TRACE_FUNCTIONS
-    rpmMessage(RPMMESS_DEBUG, "sql_close()\n");
-#endif
+    if (sqldb) {
+enterChroot(dbi);
 
-    if (db && db->app_private && ((SQL_DB *)db->app_private)->db)
-    {
-      sqldb = (SQL_DB *)db->app_private;
-      assert(sqldb != NULL && sqldb->db != NULL);
+	/* Commit, don't open a new one */
+	rc = sql_commitTransaction(dbi, 1);
 
-      /* Commit, don't open a new one */
-      rc = sql_commitTransaction(dbi, 1);
+	(void) sqlite3_close(sqldb->db);
 
-      /* close all cursors */
-/*@-infloops@*/
-      while ( sqldb->head_cursor ) {
-	(void) sql_cclose(dbi, sqldb->head_cursor->name, 0);
-      }
-/*@=infloops@*/
-
-      if (sqldb->count)
-	rpmMessage(RPMMESS_DEBUG, "cursors %ld\n", sqldb->count);
-
-      (void) sqlite3_close(sqldb->db);
-
-      rpmMessage(RPMMESS_DEBUG, _("closed   sql db         %s\n"),
+	rpmMessage(RPMMESS_DEBUG, _("closed   sql db         %s\n"),
 		dbi->dbi_subfile);
 
-#if 0
-      /* Since we didn't setup the memory, don't clear it! */
-      /* Free up memory */
-      if (rpmdb->db_dbenv != NULL) {
-	dbenv = rpmdb->db_dbenv;
-	if (rpmdb->db_opens == 1) {
-	  rpmdb->db_dbenv = _free(rpmdb->db_dbenv);
-	}
-	rpmdb->db_opens--;
-      }
-#endif
-
-      if (dbi->dbi_stats) {
 	dbi->dbi_stats = _free(dbi->dbi_stats);
-      }
+	dbi->dbi_file = _free(dbi->dbi_file);
+	dbi->dbi_db = _free(dbi->dbi_db);
 
-      dbi->dbi_file = _free(dbi->dbi_file);
-#if 0
-      /* They're the same so only free one! */
-      dbi->dbi_subfile = _free(dbi->dbi_subfile);
-#endif
-      dbi->dbi_db->app_private = _free(dbi->dbi_db->app_private);  /* sqldb */
-      dbi->dbi_db = _free(dbi->dbi_db);
+leaveChroot(dbi);
     }
+
     dbi = _free(dbi);
 
-    return 0;
+    return rc;
 }
 
 /**
@@ -680,66 +859,43 @@ static int sql_open(rpmdb rpmdb, rpmTag rpmtag, /*@out@*/ dbiIndex * dbip)
     const char * dbfile;  
     const char * dbfname;
     const char * sql_errcode;
+    dbiIndex dbi;
+    SQL_DB * sqldb;
+    size_t len;
     int rc = 0;
     int xx;
-
-    size_t len;
     
-    dbiIndex dbi = NULL;
-    DB * db = NULL;
-
-    SQL_DB * sqldb;
-
-#ifdef SQL_TRACE_FUNCTIONS
-    rpmMessage(RPMMESS_DEBUG, "sql_open()\n");
-#endif
-
-    dbi = xcalloc(1, sizeof(*dbi));
-    
-/*@-assignexpose -newreftrans@*/
-/*@i@*/ dbi->dbi_rpmdb = rpmdb;
-/*@=assignexpose =newreftrans@*/
-    dbi->dbi_rpmtag = rpmtag;
-    dbi->dbi_api = 4; /* I have assigned 4 to sqlite */
-
-    /* 
-     * Inverted lists have join length of 2, primary data has join length of 1.
-     * MGH: No idea what this is for.. but w/o it things don't work...
-     */
-    /*@-sizeoftype@*/
-    switch (dbi->dbi_rpmtag) {
-    case RPMDBI_PACKAGES:
-    case RPMDBI_DEPENDS:   
-	dbi->dbi_jlen = 1 * sizeof(int_32);
-	break;
-    default:
-	dbi->dbi_jlen = 2 * sizeof(int_32);
-	break;
-    }  
-    /*@=sizeoftype@*/
-
-    dbi->dbi_byteswapped = -1;
-  
     if (dbip)
 	*dbip = NULL;
+
+    /*
+     * Parse db configuration parameters.
+     */
+    /*@-mods@*/
+    if ((dbi = db3New(rpmdb, rpmtag)) == NULL)
+	/*@-nullstate@*/
+	return 1;
+	/*@=nullstate@*/
+    /*@=mods@*/
+
    /*
      * Get the prefix/root component and directory path
      */
     root = rpmdb->db_root;
-    if ((root[0] == '/' && root[1] == '\0') || rpmdb->db_chrootDone)
-	root = NULL;
     home = rpmdb->db_home;
     
-    dbi->dbi_root=root;
-    dbi->dbi_home=home;
+    dbi->dbi_root = root;
+    dbi->dbi_home = home;
       
     dbfile = tagName(dbi->dbi_rpmtag);
+
+enterChroot(dbi);
 
     /*
      * Make a copy of the tagName result..
      * use this for the filename and table name
      */
-    {
+    {	
       char * t;
       len = strlen(dbfile);
       t = xcalloc(len + 1, sizeof(*t));
@@ -750,14 +906,14 @@ static int sql_open(rpmdb rpmdb, rpmTag rpmtag, /*@out@*/ dbiIndex * dbip)
 /*@=kepttrans@*/
     }
 
-    dbi->dbi_mode=O_RDWR;
+    dbi->dbi_mode = O_RDWR;
        
     /*
      * Either the root or directory components may be a URL. Concatenate,
      * convert the URL to a path, and add the name of the file.
      */
     /*@-mods@*/
-    urlfn = rpmGenPath(root, home, NULL);
+    urlfn = rpmGenPath(NULL, home, NULL);
     /*@=mods@*/
     (void) urlPath(urlfn, &dbhome);
 
@@ -772,8 +928,7 @@ static int sql_open(rpmdb rpmdb, rpmTag rpmtag, /*@out@*/ dbiIndex * dbip)
 		dbfname, dbi->dbi_subfile, dbi->dbi_mode);
 
     /* Open the Database */
-    db = xcalloc(1, sizeof(*db));
-    sqldb = xcalloc(1,sizeof(*sqldb));
+    sqldb = xcalloc(1, sizeof(*sqldb));
        
     sql_errcode = NULL;
     xx = sqlite3_open(dbfname, &sqldb->db);
@@ -781,49 +936,34 @@ static int sql_open(rpmdb rpmdb, rpmTag rpmtag, /*@out@*/ dbiIndex * dbip)
 	sql_errcode = sqlite3_errmsg(sqldb->db);
 
     if (sqldb->db)
-      (void) sqlite3_busy_handler(sqldb->db, &sql_busy_handler, dbi);
+	(void) sqlite3_busy_handler(sqldb->db, &sql_busy_handler, dbi);
 
     sqldb->transaction = 0;	/* Initialize no current transactions */
-    sqldb->head_cursor = NULL; 	/* no current cursors */
 
-    db->app_private = sqldb;
-    dbi->dbi_db = db;
+    dbi->dbi_db = (DB *)sqldb;
 
-    if (sql_errcode != NULL)
-    {
+    if (sql_errcode != NULL) {
       rpmMessage(RPMMESS_DEBUG, "Unable to open database: %s\n", sql_errcode);
       rc = EINVAL;
     }
 
-#if 0
-    /* This setup colides with db3 if we're using it... */
-    /* Setup my db_env */
-    if ( rpmdb->db_dbenv == NULL ) {
-      dbenv = xcalloc(1, sizeof(DB_ENV));
-
-      rpmdb->db_dbenv = dbenv;
-      rpmdb->db_opens = 1;
-    } else {
-      dbenv = rpmdb->db_dbenv;
-
-      rpmdb->db_opens++;
-    }
-#endif
-
     /* initialize table */
-    if ( rc == 0 )
-      rc = sql_initDB(dbi);
+    if (rc == 0)
+	rc = sql_initDB(dbi);
 
     if (rc == 0 && dbi->dbi_db != NULL && dbip != NULL) {
 	dbi->dbi_vec = &sqlitevec;
 	*dbip = dbi;
-    }
-    else {
+    } else {
 	(void) sql_close(dbi, 0);
     }
  
     urlfn = _free(urlfn);
     dbfname = _free(dbfname);
+
+/*@-usereleased@*/
+leaveChroot(dbi);
+/*@=usereleased@*/
    
     return rc;
 }
@@ -835,24 +975,14 @@ static int sql_open(rpmdb rpmdb, rpmTag rpmtag, /*@out@*/ dbiIndex * dbip)
  * @return              0 on success
  */
 static int sql_sync (dbiIndex dbi, unsigned int flags)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/
 {
-    DB * db = dbi->dbi_db;
-    SQL_DB * sqldb;
     int rc = 0;
 
-#ifdef SQL_TRACE_FUNCTIONS
-    rpmMessage(RPMMESS_DEBUG, "sql_sync()\n");
-#endif
-
-    assert(db != NULL);
-    sqldb = (SQL_DB *)db->app_private;
-    assert(sqldb != NULL && sqldb->db != NULL);
-
-#ifndef SQL_FAST_DB
+enterChroot(dbi);
     rc = sql_commitTransaction(dbi, 0);
-#endif
+leaveChroot(dbi);
 
     return rc;
 }
@@ -867,49 +997,28 @@ static int sql_sync (dbiIndex dbi, unsigned int flags)
  */
 static int sql_copen (dbiIndex dbi, /*@null@*/ DB_TXN * txnid,
 		/*@out@*/ DBC ** dbcp, unsigned int flags)
-	/*@globals fileSystem @*/
-	/*@modifies dbi, *txnid, *dbcp, fileSystem @*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies dbi, *txnid, *dbcp, fileSystem, internalState @*/
 {
-    DB * db = dbi->dbi_db;
-    SQL_DB * sqldb;
-    DBC * dbcursor;
-    SQL_CURSOR * sqlcursor;
+    SCP_t scp = scpNew(dbi->dbi_db);
+    DBC * dbcursor = (DBC *)scp;
     int rc = 0;
 
-#ifdef SQL_TRACE_FUNCTIONS
-    rpmMessage(RPMMESS_DEBUG, "sql_copen()\n");
-#endif
+if (_debug)
+fprintf(stderr, "==> %s(%s) tag %d type %d scp %p\n", __FUNCTION__, tagName(dbi->dbi_rpmtag), dbi->dbi_rpmtag, (tagType(dbi->dbi_rpmtag) & RPM_MASK_TYPE), scp);
 
-    assert(db != NULL);
-    sqldb = (SQL_DB *)db->app_private;
-    assert(sqldb != NULL && sqldb->db != NULL);
-
-    dbcursor = xcalloc(1, sizeof(*dbcursor));
-    dbcursor->dbp=db;
-
-    sqlcursor = xcalloc(1, sizeof(*sqlcursor));
-    sqlcursor->name=dbcursor;
-    sqlcursor->resultp=NULL;
-    sqlcursor->nrow=0;
-    sqlcursor->ncolumn=0;
-    sqlcursor->row_iterator=0;
-    sqlcursor->all=0;
-    sqlcursor->memory=NULL;
-
-    sqlcursor->next_cursor = sqldb->head_cursor;
-    sqldb->head_cursor = sqlcursor;
-
-    sqldb->count++;
+enterChroot(dbi);
 
     /* If we're going to write, start a transaction (lock the DB) */
-    if ( flags == DB_WRITECURSOR ) {
-      rc = sql_startTransaction(dbi);
-    }
+    if (flags == DB_WRITECURSOR)
+	rc = sql_startTransaction(dbi);
 
     if (dbcp)
 	/*@-onlytrans@*/ *dbcp = dbcursor; /*@=onlytrans@*/
     else
-	/*@-kepttrans@*/ (void) sql_cclose(dbi, dbcursor, 0); /*@=kepttrans@*/
+	/*@-kepttrans -nullstate @*/ (void) sql_cclose(dbi, dbcursor, 0); /*@=kepttrans =nullstate @*/
+
+leaveChroot(dbi);
      
     return rc;
 }
@@ -925,56 +1034,32 @@ static int sql_copen (dbiIndex dbi, /*@null@*/ DB_TXN * txnid,
  */
 static int sql_cdel (dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key,
 		DBT * data, unsigned int flags)
-	/*@globals fileSystem @*/
-	/*@modifies *dbcursor, fileSystem @*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies dbi, *dbcursor, fileSystem, internalState @*/
 {
-    DB * db = dbi->dbi_db;
-    SQL_DB * sqldb;
+/*@i@*/    SQL_DB * sqldb = (SQL_DB *) dbi->dbi_db;
+    SCP_t scp = scpNew(dbi->dbi_db);
     int rc = 0;
-    unsigned char * key_enc_string, * data_enc_string;
-    int key_len, data_len;
-    char * pzErrmsg;
-    char * cmd;
 
-#ifdef SQL_TRACE_FUNCTIONS
-    rpmMessage(RPMMESS_DEBUG, "sql_cdel()\n");
-#endif
+dbg_keyval(__FUNCTION__, dbi, dbcursor, key, data, flags);
+enterChroot(dbi);
 
-    assert(db != NULL);
-    sqldb = (SQL_DB *)db->app_private;
-    assert(sqldb != NULL && sqldb->db != NULL);
+    scp->cmd = sqlite3_mprintf("DELETE FROM '%q' WHERE key=? AND value=?;",
+	dbi->dbi_subfile);
 
-#ifdef SQL_TRACE_CURSOR
-    /* XXX FIXME: ptr alignment is fubar here. */
-    rpmMessage(RPMMESS_DEBUG, "  cdel on %s  key 0x%x (%d), data 0x%x (%d), flags %d\n",
-		dbi->dbi_subfile,
-		*(long *)key->data, key->size,
-		*(long *)data->data, data->size,
-		flags);   
-#endif
+    rc = sqlite3_prepare(sqldb->db, scp->cmd, strlen(scp->cmd), &scp->pStmt, &scp->pzErrmsg);
+    if (rc) rpmMessage(RPMMESS_WARNING, "cdel(%s) prepare %s (%d)\n", dbi->dbi_subfile, sqlite3_errmsg(sqldb->db), rc);
+    rc = sql_bind_key(dbi, scp, 1, key);
+    if (rc) rpmMessage(RPMMESS_WARNING, "cdel(%s) bind key %s (%d)\n", dbi->dbi_subfile, sqlite3_errmsg(sqldb->db), rc);
+    rc = sql_bind_data(dbi, scp, 2, data);
+    if (rc) rpmMessage(RPMMESS_WARNING, "cdel(%s) bind data %s (%d)\n", dbi->dbi_subfile, sqlite3_errmsg(sqldb->db), rc);
 
-    key_enc_string = alloca (2 + ((257 * key->size)/254) + 1);
-    key_len=sqlite_encode_binary((char *)key->data, key->size, key_enc_string);
-    key_enc_string[key_len]='\0';
+    rc = sql_step(dbi, scp);
+    if (rc) rpmMessage(RPMMESS_WARNING, "cdel(%s) sql_step rc %d\n", dbi->dbi_subfile, rc);
 
-    data_enc_string = alloca (2 + ((257 * data->size)/254) + 1);
-    data_len=sqlite_encode_binary((char *)data->data, data->size, data_enc_string);
-    data_enc_string[data_len]='\0';
+    scp = scpFree(scp);
 
-#ifdef SQL_TRACE_ENCODINGS
-    /* XXX FIXME: ptr alignment is fubar here. */
-    rpmMessage(RPMMESS_DEBUG, " encoded key  0x%x (%d)\n", *(long *)key_enc_string, key_len);
-    rpmMessage(RPMMESS_DEBUG, " encoded data 0x%x (%d)\n", *(long *)data_enc_string, data_len);
-#endif
-    
-    cmd = sqlite3_mprintf("DELETE FROM '%q' WHERE key='%q' AND value='%q';",
-	dbi->dbi_subfile, key_enc_string, data_enc_string);
-    rc = sqlite3_exec(sqldb->db, cmd, NULL, NULL, &pzErrmsg);
-    sqlite3_free(cmd);
-
-    if ( rc )
-      rpmMessage(RPMMESS_DEBUG, "cdel %s (%d)\n",
-		pzErrmsg, rc);
+leaveChroot(dbi);
 
     return rc;
 }
@@ -990,231 +1075,171 @@ static int sql_cdel (dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key,
  */
 static int sql_cget (dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key,
 		DBT * data, unsigned int flags)
-	/*@globals fileSystem @*/
-	/*@modifies dbi, dbcursor, *key, *data, fileSystem @*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies dbi, dbcursor, *key, *data, fileSystem, internalState @*/
 {
-    DB * db = dbi->dbi_db;
-    SQL_DB * sqldb;
-    SQL_CURSOR * sqlcursor;
+/*@i@*/    SQL_DB * sqldb = (SQL_DB *) dbi->dbi_db;
+    SCP_t scp = (SCP_t)dbcursor;
     int rc = 0;
-    int cleanup = 0;   
-    char * pzErrmsg;
-    char * cmd;
+    int ix;
 
-#ifdef SQL_TRACE_FUNCTIONS
-    rpmMessage(RPMMESS_DEBUG, "sql_cget()\n");
-#endif
+assert(dbcursor != NULL);
+dbg_keyval(__FUNCTION__, dbi, dbcursor, key, data, flags);
 
-    assert(db != NULL);
-    sqldb = (SQL_DB *)db->app_private;
-    assert(sqldb != NULL && sqldb->db != NULL);
-
-    if ( dbcursor == NULL ) {
-      rc = sql_copen ( dbi, NULL, &dbcursor, 0 );
-      cleanup = 1;
-    }
-
-    /* Find our version of the db3 cursor */
-    sqlcursor = sqldb->head_cursor;
-    while ( sqlcursor != NULL && sqlcursor->name != dbcursor ) {
-      sqlcursor = sqlcursor->next_cursor;
-    }
-
-    assert(sqlcursor != NULL);
+enterChroot(dbi);
 
     /*
-     * First determine if we have a key, or if we're going to
-     * scan the whole DB
+     * First determine if this is a new scan or existing scan
      */
 
-    if ( rc == 0 && key->size == 0 ) {
-      sqlcursor->all++;
+if (_debug)
+fprintf(stderr, "\tcget(%s) scp %p rc %d flags %d av %p\n",
+		dbi->dbi_subfile, scp, rc, flags, scp->av);
+    if ( flags == DB_SET || scp->used == 0 ) {
+        scp->used = 1; /* Signal this scp as now in use... */
+/*@i@*/	scp = scpReset(scp);	/* Free av and avlen, reset counters.*/
 
-      /*
-       * Scan the whole db..
-       * We are not guarenteed a return order..
-       * .. so get the 0x0 key first ..
-       * (rpm expects the 0x0 key first)
-       */
-      if ( sqlcursor->all == 1 && dbi->dbi_rpmtag == RPMDBI_PACKAGES ) {
-static int mykeydata;
-	flags=DB_SET;
-	key->size=4;
-/*@-immediatetrans@*/
-if (key->data == NULL) key->data = &mykeydata;
-/*@=immediatetrans@*/
-	memset(key->data, 0, 4);
-      }
-    }
+/* XXX: Should we also reset the key table here?  Can you re-use a cursor? */
 
-    /* New retrieval */
-    if ( rc == 0 &&  ( ( flags == DB_SET ) || ( sqlcursor->resultp == NULL )) ) {
-#ifdef SQL_TRACE_CURSOR
-      rpmMessage(RPMMESS_DEBUG, " cget  rc %d, flags %d, sqlcursor->result 0%x\n",
-		rc, flags, sqlcursor->resultp);
-#endif
+        /*
+         * If we're scanning everything, load the iterator key table
+         */
+        if ( key->size == 0) {
+	    scp->all = 1;
 
-      if ( sqlcursor->resultp ) {
-	(void) sqlite3_free_table( sqlcursor->resultp );
-	sqlcursor->resultp = NULL;
-	sqlcursor->nrow=0;
-	sqlcursor->ncolumn=0;
-	sqlcursor->row_iterator=0;
-      }
+/* 
+ * The only condition not dealt with is if there are multiple identical keys.  This can lead
+ * to later iteration confusion.  (It may return the same value for the multiple keys.)
+ */
 
-      switch(key->size) {
-	case 0:
-	  cmd = sqlite3_mprintf("SELECT key,value FROM '%q';",
-			dbi->dbi_subfile);
-	  rc = sqlite3_get_table(sqldb->db, cmd,
-			&sqlcursor->resultp, &sqlcursor->nrow, &sqlcursor->ncolumn,
-			&pzErrmsg
-		);
-	  sqlite3_free(cmd);
-	  break;
-	default:
-	{
-	  unsigned char * key_enc_string;
-	  int key_len;
+/* Only RPMDBI_PACKAGES is supposed to be iterating, and this is guarenteed to be unique */
+assert(dbi->dbi_rpmtag == RPMDBI_PACKAGES);
 
-#ifdef SQL_TRACE_CURSOR
-    /* XXX FIXME: ptr alignment is fubar here. */
-	  rpmMessage(RPMMESS_DEBUG, "  cget on %s  find   key 0x%x (%d), flags %d\n",
-		dbi->dbi_subfile,
-		key->data == NULL ? 0 : *(long *)key->data, key->size,
-		flags);
-#endif
+	    switch (dbi->dbi_rpmtag) {
+	    case RPMDBI_PACKAGES:
+	        scp->cmd = sqlite3_mprintf("SELECT key FROM '%q' ORDER BY key;",
+		    dbi->dbi_subfile);
+	        break;
+	    default:
+	        scp->cmd = sqlite3_mprintf("SELECT key FROM '%q';",
+		    dbi->dbi_subfile);
+	        break;
+	    }
+	    rc = sqlite3_prepare(sqldb->db, scp->cmd, strlen(scp->cmd), &scp->pStmt, &scp->pzErrmsg);
+	    if (rc) rpmMessage(RPMMESS_WARNING, "cget(%s) sequential prepare %s (%d)\n", dbi->dbi_subfile, sqlite3_errmsg(sqldb->db), rc);
 
-	  key_enc_string = alloca (2 + ((257 * key->size)/254) + 1);
-	  key_len=sqlite_encode_binary((char *)key->data, key->size, key_enc_string);
-	  key_enc_string[key_len]='\0';
+	    rc = sql_step(dbi, scp);
+	    if (rc) rpmMessage(RPMMESS_WARNING, "cget(%s) sequential sql_step rc %d\n", dbi->dbi_subfile, rc);
 
-#ifdef SQL_TRACE_ENCODINGS
-    /* XXX FIXME: ptr alignment is fubar here. */
-	  rpmMessage(RPMMESS_DEBUG, " encoded key  0x%x (%d)\n",
-		 *(long *)key_enc_string, key_len);
-#endif
-
-	  cmd = sqlite3_mprintf("SELECT key,value FROM '%q' WHERE key='%q';",
-			dbi->dbi_subfile, key_enc_string);
-	  rc = sqlite3_get_table(sqldb->db, cmd,
-			&sqlcursor->resultp, &sqlcursor->nrow, &sqlcursor->ncolumn,
-			&pzErrmsg);
-	  sqlite3_free(cmd);
-
-	  break;
+	    scp = scpResetKeys(scp);
+	    scp->nkeys = scp->nr;
+	    scp->keys = xcalloc(scp->nkeys, sizeof(*scp->keys));
+	    for (ix = 0; ix < scp->nkeys; ix++) {
+		scp->keys[ix] = xmalloc(sizeof(*scp->keys[0]));
+		scp->keys[ix]->size = scp->avlen[ix+1];
+		scp->keys[ix]->data = xmalloc(scp->keys[ix]->size);
+		memcpy(scp->keys[ix]->data, scp->av[ix+1], scp->avlen[ix+1]);
+	    }
+        } else {
+	    /*
+	     * We're only scanning ONE element
+	     */
+	    scp = scpResetKeys(scp);
+	    scp->nkeys = 1;
+	    scp->keys = xcalloc(scp->nkeys, sizeof(*scp->keys));
+	    scp->keys[0] = xmalloc(sizeof(*scp->keys[0]));
+	    scp->keys[0]->size = key->size;
+	    scp->keys[0]->data = xmalloc(scp->keys[0]->size);
+	    memcpy(scp->keys[0]->data, key->data, key->size);
 	}
-      }
-#ifdef SQL_TRACE_CURSOR
-      rpmMessage(RPMMESS_DEBUG, "  cget got %d rows, %d columns\n",
-	sqlcursor->nrow, sqlcursor->ncolumn);
-#endif
+
+/*@i@*/	scp = scpReset(scp);	/* reset */
+
+        /* Prepare SQL statement to retrieve the value for the current key */
+        scp->cmd = sqlite3_mprintf("SELECT value FROM '%q' WHERE key=?;", dbi->dbi_subfile);
+        rc = sqlite3_prepare(sqldb->db, scp->cmd, strlen(scp->cmd), &scp->pStmt, &scp->pzErrmsg);
+
+        if (rc) rpmMessage(RPMMESS_WARNING, "cget(%s) prepare %s (%d)\n", dbi->dbi_subfile, sqlite3_errmsg(sqldb->db), rc);
     }
 
-    if ( rc == 0 && ! sqlcursor->resultp )
-      rc = DB_NOTFOUND;
+/*@i@*/ scp = scpResetAv(scp);	/* Free av and avlen, reset counters.*/
 
-repeat:
-    if ( rc == 0 ) {
-      sqlcursor->row_iterator++;
-      if ( sqlcursor->row_iterator > sqlcursor->nrow )
+    /* Now continue with a normal retrive based on key */
+    if ((scp->rx + 1) > scp->nkeys )
 	rc = DB_NOTFOUND; /* At the end of the list */
-      else {
-#ifdef SQL_TRACE_ENCODINGS
-    /* XXX FIXME: ptr alignment is fubar here. */
-	rpmMessage(RPMMESS_DEBUG, " encoded key  0x%x\n",
-		 *(long *)sqlcursor->resultp[((sqlcursor->row_iterator*2)+0)]);
-	rpmMessage(RPMMESS_DEBUG, " encoded data 0x%x\n",
-		 *(long *)sqlcursor->resultp[((sqlcursor->row_iterator*2)+1)]);
-#endif
-	
-	/* If we're looking at the whole db, return the key */
-	if ( sqlcursor->all ) {
-	  unsigned char * key_dec_string;
-	  size_t key_len=strlen(sqlcursor->resultp[((sqlcursor->row_iterator*2)+0)]
-			);
 
-	  key_dec_string=alloca (2 + ((257 * key_len)/254));
+    if (rc != 0)
+	goto exit;
 
-	  key->size=sqlite_decode_binary(
-		sqlcursor->resultp[((sqlcursor->row_iterator*2)+0)],
-		key_dec_string
-		);
+    /* Bind key to prepared statement */
+    rc = sql_bind_key(dbi, scp, 1, scp->keys[scp->rx]);
+    if (rc) rpmMessage(RPMMESS_WARNING, "cget(%s)  key bind %s (%d)\n", dbi->dbi_subfile, sqlite3_errmsg(sqldb->db), rc);
 
-	  if (key->flags & DB_DBT_MALLOC)
-	    key->data=xmalloc(key->size);
-	  else
-	    key->data=allocTempBuffer(dbcursor, key->size);
+    rc = sql_step(dbi, scp);
+    if (rc) rpmMessage(RPMMESS_WARNING, "cget(%s) sql_step rc %d\n", dbi->dbi_subfile, rc);
 
-	  (void) memcpy( key->data, key_dec_string, key->size );
+    rc = sqlite3_reset(scp->pStmt);
+    if (rc) rpmMessage(RPMMESS_WARNING, "reset %d\n", rc);
+
+/* 1 key should return 0 or 1 row/value */
+assert(scp->nr < 2);
+
+    if (scp->nr == 0 && scp->all == 0)
+        rc = DB_NOTFOUND; /* No data for that key found! */
+
+    if (rc != 0)
+	goto exit;
+
+    /* If we're looking at the whole db, return the key */
+    if (scp->all) {
+
+/* To get this far there has to be _1_ key returned! (protect against dup keys) */
+assert(scp->nr == 1);
+
+	if ( scp->lkey ) {
+	    scp->lkey = _free(scp->lkey);
 	}
 
-	/* Decode the data */
-	{
-	  unsigned char * data_dec_string;
-	  size_t data_len=strlen(sqlcursor->resultp[((sqlcursor->row_iterator*2)+1)]);
+	key->size = scp->keys[scp->rx]->size;
+	key->data = xmalloc(key->size);
+	if (! (key->flags & DB_DBT_MALLOC))
+	    scp->lkey = key->data;
 
-	  data_dec_string=alloca (2 + ((257 * data_len)/254));
-
-	  data->size=sqlite_decode_binary(
-		sqlcursor->resultp[((sqlcursor->row_iterator*2)+1)],
-		data_dec_string
-		);
-
-	  if (data->flags & DB_DBT_MALLOC)
-	    data->data=xmalloc(data->size);
-	  else
-	    data->data=allocTempBuffer(dbcursor, data->size);
-
-	  (void) memcpy( data->data, data_dec_string, data->size );
-	}
-
-	/* We need to skip this entry... (we've already returned it) */
-    /* XXX FIXME: ptr alignment is fubar here. */
-	if ( dbi->dbi_rpmtag == RPMDBI_PACKAGES &&
-		sqlcursor->all > 1 &&
-		key->size ==4 && *(long *)key->data == 0 
-	   ) {
-#ifdef SQL_TRACE_CURSOR
-	  rpmMessage(RPMMESS_DEBUG, "  cget on %s  skipping 0x0 record\n",
-		dbi->dbi_subfile);
-#endif
-	  goto repeat;
-	}
-
-#ifdef SQL_TRACE_CURSOR
-    /* XXX FIXME: ptr alignment is fubar here. */
-	rpmMessage(RPMMESS_DEBUG, "  cget on %s  found  key 0x%x (%d)\n",
-		dbi->dbi_subfile,
-		key->data == NULL ? 0 : *(long *)key->data, key->size
-		);
-	rpmMessage(RPMMESS_DEBUG, "  cget on %s  found data 0x%x (%d)\n",
-		dbi->dbi_subfile,
-		key->data == NULL ? 0 : *(long *)data->data, data->size
-		);
-#endif
-      }  
+	(void) memcpy(key->data, scp->keys[scp->rx]->data, key->size);
     }
 
-#ifdef SQL_TRACE_CURSOR
-    if ( rc == DB_NOTFOUND )
-	rpmMessage(RPMMESS_DEBUG, "  cget on %s  not found\n",
-		dbi->dbi_subfile);
-#endif
+    /* Construct and return the data element (element 0 is "value", 1 is _THE_ value)*/
+    switch (dbi->dbi_rpmtag) {
+    default:
+	if ( scp->ldata ) {
+	    scp->ldata = _free(scp->ldata);
+	}
 
-    /* If we retrieved the 0x0 record.. clear so next pass we'll get them all.. */
-    if ( sqlcursor->all == 1 && dbi->dbi_rpmtag == RPMDBI_PACKAGES ) {
-      if ( sqlcursor->resultp ) {
-	(void) sqlite3_free_table( sqlcursor->resultp );
-	sqlcursor->resultp = NULL;
-	sqlcursor->nrow=0;
-	sqlcursor->ncolumn=0;
-	sqlcursor->row_iterator=0;
-      }
+	data->size = scp->avlen[1];
+        data->data = xmalloc(data->size);
+	if (! (data->flags & DB_DBT_MALLOC) )
+	    scp->ldata = data->data;
+
+	(void) memcpy(data->data, scp->av[1], data->size);
     }
 
-    if (cleanup)
-	/*@-temptrans@*/ (void) sql_cclose(dbi, dbcursor, 0); /*@=temptrans@*/
+    scp->rx++;
+
+    /* XXX FIXME: ptr alignment is fubar here. */
+if (_debug)
+fprintf(stderr, "\tcget(%s) found  key 0x%x (%d)\n", dbi->dbi_subfile,
+		key->data == NULL ? 0 : *(unsigned int *)key->data, key->size);
+if (_debug)
+fprintf(stderr, "\tcget(%s) found data 0x%x (%d)\n", dbi->dbi_subfile,
+		key->data == NULL ? 0 : *(unsigned int *)data->data, data->size);
+
+exit:
+    if (rc == DB_NOTFOUND) {
+if (_debug)
+fprintf(stderr, "\tcget(%s) not found\n", dbi->dbi_subfile);
+    }
+
+leaveChroot(dbi);
 
     return rc;
 }
@@ -1230,56 +1255,37 @@ repeat:
  */
 static int sql_cput (dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key,
 			DBT * data, unsigned int flags)
-	/*@globals fileSystem @*/
-	/*@modifies *dbcursor, fileSystem @*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies dbi, *dbcursor, fileSystem, internalState @*/
 {
-    DB * db = dbi->dbi_db;
-    SQL_DB * sqldb;
+/*@i@*/    SQL_DB * sqldb = (SQL_DB *) dbi->dbi_db;
+    SCP_t scp = scpNew(dbi->dbi_db);
     int rc = 0;
-    unsigned char * key_enc_string, * data_enc_string;
-    int key_len, data_len;
-    char * pzErrmsg;
-    char * cmd;
 
-#ifdef SQL_TRACE_FUNCTIONS
-    rpmMessage(RPMMESS_DEBUG, "sql_cput()\n");
-#endif
+dbg_keyval(__FUNCTION__, dbi, dbcursor, key, data, flags);
 
-    assert(db != NULL);
-    sqldb = (SQL_DB *)db->app_private;
-    assert(sqldb != NULL && sqldb->db != NULL);
+enterChroot(dbi);
 
-#ifdef SQL_TRACE_CURSOR
-    /* XXX FIXME: ptr alignment is fubar here. */
-    rpmMessage(RPMMESS_DEBUG, "  cput on %s  key 0x%x (%d), data 0x%x (%d), flags %d\n",
-		dbi->dbi_subfile,
-		*(long *)key->data, key->size,
-		*(long *)data->data, data->size,
-		flags);   
-#endif
+    switch (dbi->dbi_rpmtag) {
+    default:
+	scp->cmd = sqlite3_mprintf("INSERT OR REPLACE INTO '%q' VALUES(?, ?);",
+		dbi->dbi_subfile);
+	rc = sqlite3_prepare(sqldb->db, scp->cmd, strlen(scp->cmd), &scp->pStmt, &scp->pzErrmsg);
+	if (rc) rpmMessage(RPMMESS_WARNING, "cput(%s) prepare %s (%d)\n",dbi->dbi_subfile,  sqlite3_errmsg(sqldb->db), rc);
+	rc = sql_bind_key(dbi, scp, 1, key);
+	if (rc) rpmMessage(RPMMESS_WARNING, "cput(%s)  key bind %s (%d)\n", dbi->dbi_subfile, sqlite3_errmsg(sqldb->db), rc);
+	rc = sql_bind_data(dbi, scp, 2, data);
+	if (rc) rpmMessage(RPMMESS_WARNING, "cput(%s) data bind %s (%d)\n", dbi->dbi_subfile, sqlite3_errmsg(sqldb->db), rc);
 
-    key_enc_string = alloca (2 + ((257 * key->size)/254) + 1);
-    key_len=sqlite_encode_binary((char *)key->data, key->size, key_enc_string);
-    key_enc_string[key_len]='\0';
+	rc = sql_step(dbi, scp);
+	if (rc) rpmMessage(RPMMESS_WARNING, "cput(%s) sql_step rc %d\n", dbi->dbi_subfile, rc);
 
-    data_enc_string = alloca (2 + ((257 * data->size)/254) + 1);
-    data_len=sqlite_encode_binary((char *)data->data, data->size, data_enc_string);
-    data_enc_string[data_len]='\0';
+	break;
+    }
 
-#ifdef SQL_TRACE_ENCODINGS
-    /* XXX FIXME: ptr alignment is fubar here. */
-    rpmMessage(RPMMESS_DEBUG, " encoded key 0x%x (%d)\n", *(long *)key_enc_string, key_len);
-    rpmMessage(RPMMESS_DEBUG, " encoded data 0x%x (%d)\n", *(long *)data_enc_string, data_len);
-#endif
-    
-    cmd = sqlite3_mprintf("INSERT OR REPLACE INTO '%q' VALUES('%q', '%q');",
-	dbi->dbi_subfile, key_enc_string, data_enc_string);
-    rc = sqlite3_exec(sqldb->db, cmd, NULL, NULL, &pzErrmsg);
-    sqlite3_free(cmd);
+    scp = scpFree(scp);
 
-    if ( rc )
-      rpmMessage(RPMMESS_WARNING, "cput %s (%d)\n",
-		pzErrmsg, rc);
+leaveChroot(dbi);
 
     return rc;
 }
@@ -1290,113 +1296,41 @@ static int sql_cput (dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key,
  * @return              0 no
  */
 static int sql_byteswapped (dbiIndex dbi)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/
 {
-    DB * db = dbi->dbi_db;
-    SQL_DB * sqldb;
+    SQL_DB * sqldb = (SQL_DB *) dbi->dbi_db;
+    SCP_t scp = scpNew(dbi->dbi_db);
     int sql_rc, rc = 0;
-    char ** resultp;
-    int nrow;
-    int ncolumn;
-    char * pzErrmsg;
     union _dbswap db_endian;
 
-#ifdef SQL_TRACE_FUNCTIONS
-    rpmMessage(RPMMESS_DEBUG, "sql_byteswapped()\n");
-#endif
+enterChroot(dbi);
 
-    assert(db != NULL);
-    sqldb = (SQL_DB *)db->app_private;
-    assert(sqldb != NULL && sqldb->db != NULL);
-
+/*@-nullstate@*/
     sql_rc = sqlite3_get_table(sqldb->db, "SELECT endian FROM 'db_info';",
-	&resultp, &nrow, &ncolumn, &pzErrmsg);
+	&scp->av, &scp->nr, &scp->nc, (char **)&scp->pzErrmsg);
+/*@=nullstate@*/
 
-    if (sql_rc == 0 && nrow > 0) {
-      db_endian.uc[0] = strtol(resultp[1], NULL, 10);
+    if (sql_rc == 0 && scp->nr > 0) {
+assert(scp->av != NULL);
+	db_endian.uc[0] = strtol(scp->av[1], NULL, 10);
 
-      if ( db_endian.uc[0] == ((union _dbswap *)&endian)->uc[0] )
-	rc = 0; /* Native endian */
-      else
-	rc = 1; /* swapped */
+	if ( db_endian.uc[0] == ((union _dbswap *)&endian)->uc[0] )
+	    rc = 0; /* Native endian */
+	else
+	    rc = 1; /* swapped */
 
-#if 0
-      rpmMessage(RPMMESS_DEBUG, "DB Endian %ld ?= %d = %d\n",
-		db_endian.uc[0], ((union _dbswap *)&endian)->uc[0], rc);
-#endif
     } else {
-      if ( sql_rc ) {
-	rpmMessage(RPMMESS_DEBUG, "db_info failed %s (%d)\n",
-		pzErrmsg, sql_rc);
-      }
-      rpmMessage(RPMMESS_WARNING, "Unable to determine DB endian.\n");
+	if ( sql_rc ) {
+	    rpmMessage(RPMMESS_DEBUG, "db_info failed %s (%d)\n",
+		scp->pzErrmsg, sql_rc);
+	}
+	rpmMessage(RPMMESS_WARNING, "Unable to determine DB endian.\n");
     }
 
-    (void) sqlite3_free_table(resultp);
-   
-    return rc;
-}
+    scp = scpFree(scp);
 
-/** \ingroup dbi
- * Save statistics in database handle.
- * @param dbi           index database handle
- * @param flags         retrieve statistics that don't require traversal?
- * @return              0 on success
- */
-static int sql_stat (dbiIndex dbi, unsigned int flags)
-	/*@globals fileSystem @*/
-	/*@modifies dbi, fileSystem @*/
-{
-    DB * db = dbi->dbi_db;
-    SQL_DB * sqldb;
-    int rc = 0;
-    char ** resultp;
-    int nrow;
-    int ncolumn;
-    char * pzErrmsg;
-    char * cmd;
-    long nkeys = -1;
-
-#ifdef SQL_TRACE_FUNCTIONS
-    rpmMessage(RPMMESS_DEBUG, "sql_stat()\n");
-#endif
-
-    assert(db != NULL);
-    sqldb = (SQL_DB *)db->app_private;
-    assert(sqldb != NULL && sqldb->db != NULL);
-
-    if ( dbi->dbi_stats ) {
-	dbi->dbi_stats = _free(dbi->dbi_stats);
-    }
-
-/*@-sizeoftype@*/
-    dbi->dbi_stats = xcalloc(1, sizeof(DB_HASH_STAT));
-/*@=sizeoftype@*/
-
-    cmd = sqlite3_mprintf("SELECT COUNT('key') FROM '%q';", dbi->dbi_subfile);
-    rc = sqlite3_get_table(sqldb->db, cmd,
-	&resultp, &nrow, &ncolumn, &pzErrmsg);
-    sqlite3_free(cmd);
-
-    if ( rc == 0 && nrow > 0) {
-      nkeys=strtol(resultp[1], NULL, 10);
-
-      rpmMessage(RPMMESS_DEBUG, "  stat on %s nkeys=%ld\n",
-		dbi->dbi_subfile, nkeys);
-    } else {
-      if ( rc ) {
-	rpmMessage(RPMMESS_DEBUG, "stat failed %s (%d)\n",
-		pzErrmsg, rc);
-      }
-    }
-
-    (void) sqlite3_free_table(resultp);
-
-    if (nkeys < 0)
-      nkeys = 4096;  /* Good high value */
-
-    ((DB_HASH_STAT *)(dbi->dbi_stats))->hash_nkeys=nkeys;
+leaveChroot(dbi);
 
     return rc;
 }
@@ -1421,16 +1355,8 @@ static int sql_associate (dbiIndex dbi, dbiIndex dbisecondary,
 		unsigned int flags)
 	/*@*/
 {
-    DB * db = dbi->dbi_db;
-    SQL_DB * sqldb;
- 
-    /* unused */
-    rpmMessage(RPMMESS_ERROR, "sql_associate() not implemented\n");
-
-    assert(db != NULL);
-    sqldb = (SQL_DB *)db->app_private;
-    assert(sqldb != NULL && sqldb->db != NULL);
-
+if (_debug)
+fprintf(stderr, "*** %s:\n", __FUNCTION__);
     return EINVAL;
 }
 
@@ -1447,16 +1373,8 @@ static int sql_join (dbiIndex dbi, DBC ** curslist, /*@out@*/ DBC ** dbcp,
 	/*@globals fileSystem @*/
 	/*@modifies dbi, *dbcp, fileSystem @*/
 {
-    DB * db = dbi->dbi_db;
-    SQL_DB * sqldb;
- 
-    /* unused */
-    rpmMessage(RPMMESS_ERROR, "sql_join() not implemented\n");
-    
-    assert(db != NULL);
-    sqldb = (SQL_DB *)db->app_private;
-    assert(sqldb != NULL && sqldb->db != NULL);
-
+if (_debug)
+fprintf(stderr, "*** %s:\n", __FUNCTION__);
     return EINVAL;
 }
 
@@ -1473,16 +1391,8 @@ static int sql_cdup (dbiIndex dbi, DBC * dbcursor, /*@out@*/ DBC ** dbcp,
 	/*@globals fileSystem @*/
 	/*@modifies dbi, *dbcp, fileSystem @*/
 {
-    DB * db = dbi->dbi_db;
-    SQL_DB * sqldb;
- 
-    /* unused */
-    rpmMessage(RPMMESS_ERROR, "sql_cdup() not implemented\n");
-
-    assert(db != NULL);
-    sqldb = (SQL_DB *)db->app_private;
-    assert(sqldb != NULL && sqldb->db != NULL);
-
+if (_debug)
+fprintf(stderr, "*** %s:\n", __FUNCTION__);
     return EINVAL;
 }
 
@@ -1501,16 +1411,8 @@ static int sql_cpget (dbiIndex dbi, /*@null@*/ DBC * dbcursor,
 	/*@globals fileSystem @*/
 	/*@modifies *dbcursor, *key, *pkey, *data, fileSystem @*/
 {
-    DB * db = dbi->dbi_db;
-    SQL_DB * sqldb;
- 
-    /* unused */
-    rpmMessage(RPMMESS_ERROR, "sql_cpget() not implemented\n");
-
-    assert(db != NULL);
-    sqldb = (SQL_DB *)db->app_private;
-    assert(sqldb != NULL && sqldb->db != NULL);
-
+if (_debug)
+fprintf(stderr, "*** %s:\n", __FUNCTION__);
     return EINVAL;
 }
 
@@ -1528,17 +1430,63 @@ static int sql_ccount (dbiIndex dbi, /*@unused@*/ DBC * dbcursor,
 	/*@globals fileSystem @*/
 	/*@modifies *dbcursor, fileSystem @*/
 {
-    DB * db = dbi->dbi_db;
-    SQL_DB * sqldb;
-
-    /* unused */
-    rpmMessage(RPMMESS_ERROR, "sql_cpget() not implemented\n");
-
-    assert(db != NULL);
-    sqldb = (SQL_DB *)db->app_private;
-    assert(sqldb != NULL && sqldb->db != NULL);
-
+if (_debug)
+fprintf(stderr, "*** %s:\n", __FUNCTION__);
     return EINVAL;
+}
+
+/** \ingroup dbi
+ * Save statistics in database handle.
+ * @param dbi           index database handle
+ * @param flags         retrieve statistics that don't require traversal?
+ * @return              0 on success
+ */
+static int sql_stat (dbiIndex dbi, unsigned int flags)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies dbi, fileSystem, internalState @*/
+{
+/*@i@*/    SQL_DB * sqldb = (SQL_DB *) dbi->dbi_db;
+    SCP_t scp = scpNew(dbi->dbi_db);
+    int rc = 0;
+    long nkeys = -1;
+
+enterChroot(dbi);
+
+    dbi->dbi_stats = _free(dbi->dbi_stats);
+
+/*@-sizeoftype@*/
+    dbi->dbi_stats = xcalloc(1, sizeof(DB_HASH_STAT));
+/*@=sizeoftype@*/
+
+    scp->cmd = sqlite3_mprintf("SELECT COUNT('key') FROM '%q';", dbi->dbi_subfile);
+/*@-nullstate@*/
+    rc = sqlite3_get_table(sqldb->db, scp->cmd,
+		&scp->av, &scp->nr, &scp->nc, (char **)&scp->pzErrmsg);
+/*@=nullstate@*/
+
+    if ( rc == 0 && scp->nr > 0) {
+assert(scp->av != NULL);
+	nkeys = strtol(scp->av[1], NULL, 10);
+
+	rpmMessage(RPMMESS_DEBUG, "  stat on %s nkeys %ld\n",
+		dbi->dbi_subfile, nkeys);
+    } else {
+	if ( rc ) {
+	    rpmMessage(RPMMESS_DEBUG, "stat failed %s (%d)\n",
+		scp->pzErrmsg, rc);
+	}
+    }
+
+    if (nkeys < 0)
+	nkeys = 4096;  /* Good high value */
+
+    ((DB_HASH_STAT *)(dbi->dbi_stats))->hash_nkeys = nkeys;
+
+    scp = scpFree(scp);
+
+leaveChroot(dbi);
+
+    return rc;
 }
 
 /* Major, minor, patch version of DB.. we're not using db.. so set to 0 */
@@ -1566,6 +1514,7 @@ struct _dbiVec sqlitevec = {
     sql_stat
 };
 
+/*@=evalorderuncon@*/
 /*@=modfilesystem@*/
 /*@=branchstate@*/
 /*@=compmempass@*/

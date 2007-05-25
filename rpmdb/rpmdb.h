@@ -8,14 +8,27 @@
  */
 
 #include <assert.h>
-#include "rpmlib.h"
-#include "rpmsw.h"
+#include <rpmlib.h>
+#include <mire.h>
 #include "db.h"
 
 /*@-exportlocal@*/
 /*@unchecked@*/
 extern int _rpmdb_debug;
 /*@=exportlocal@*/
+
+/*@unchecked@*/
+extern int _rsegfault;
+/*@unchecked@*/
+extern int _wsegfault;
+
+#if defined(__LCLINT__)
+#define	RSEGFAULT
+#define	WSEGFAULT
+#else
+#define	RSEGFAULT	{ if (_rsegfault > 0) assert(--_rsegfault); }
+#define	WSEGFAULT	{ if (_wsegfault > 0) assert(--_wsegfault); }
+#endif
 
 #ifdef	NOTYET
 /** \ingroup rpmdb
@@ -30,16 +43,6 @@ typedef /*@abstract@*/ struct _rpmdbMatchIterator * rpmdbMatchIterator;
 #endif
 
 /**
- * Tag value pattern match mode.
- */
-typedef enum rpmMireMode_e {
-    RPMMIRE_DEFAULT	= 0,	/*!< regex with \., .* and ^...$ added */
-    RPMMIRE_STRCMP	= 1,	/*!< strings  using strcmp(3) */
-    RPMMIRE_REGEX	= 2,	/*!< regex(7) patterns through regcomp(3) */
-    RPMMIRE_GLOB	= 3	/*!< glob(7) patterns through fnmatch(3) */
-} rpmMireMode;
-
-/**
  */
 typedef /*@abstract@*/ struct _dbiIndexItem * dbiIndexItem;
 
@@ -52,7 +55,9 @@ typedef /*@abstract@*/ struct _dbiIndexSet * dbiIndexSet;
  */
 typedef /*@abstract@*/ struct _dbiIndex * dbiIndex;
 
-/* this will break if sizeof(int) != 4 */
+#if defined(_RPMDB_INTERNAL)
+#include "rpmsw.h"
+#if !defined(SWIG)	/* XXX inline dbiFoo() need */
 /** \ingroup dbi
  * A single item from an index database (i.e. the "data returned").
  * Note: In rpm-3.0.4 and earlier, this structure was passed by value,
@@ -263,14 +268,13 @@ struct _dbiVec {
     int (*stat) (dbiIndex dbi, unsigned int flags)
 	/*@globals fileSystem @*/
 	/*@modifies dbi, fileSystem @*/;
-
 };
 
 /** \ingroup dbi
  * Describes an index database (implemented on Berkeley db3 functionality).
  */
 struct _dbiIndex {
-/*@null@*/
+/*@relnull@*/
     const char * dbi_root;	/*!< chroot(2) component of path */
 /*@null@*/
     const char * dbi_home;	/*!< directory component of path */
@@ -321,18 +325,40 @@ struct _dbiIndex {
     const char * dbi_errpfx;
     int	dbi_verbose;
     int	dbi_region_init;
-    int	dbi_tas_spins;
-	/* mpool sub-system parameters */
-    int	dbi_mmapsize;	/*!< (10Mb) */
-    int	dbi_cachesize;	/*!< (128Kb) */
-	/* lock sub-system parameters */
-    unsigned int dbi_lk_max;
+    unsigned int dbi_thread_count;
+	/* locking sub-system parameters */
+    unsigned int dbi_lk_max_lockers;
+    unsigned int dbi_lk_max_locks;
+    unsigned int dbi_lk_max_objects;
     unsigned int dbi_lk_detect;
-/*@unused@*/ int dbi_lk_nmodes;
-/*@unused@*/ unsigned char * dbi_lk_conflicts;
-	/* log sub-system parameters */
-    unsigned int dbi_lg_max;
+/*@unused@*/
+    int dbi_lk_nmodes;
+/*@unused@*/
+    unsigned char * dbi_lk_conflicts;
+	/* logging sub-system parameters */
     unsigned int dbi_lg_bsize;
+/*@unused@*/
+    const char * dbi_lg_dir;
+/*@unused@*/
+    unsigned int dbi_lg_filemode;
+    unsigned int dbi_lg_max;
+    unsigned int dbi_lg_regionmax;
+	/* mpool sub-system parameters */
+    int	dbi_mmapsize;		/*!< (10Mb) */
+    int	dbi_cachesize;		/*!< (128Kb) */
+	/* mutex sub-system parameters */
+    unsigned int dbi_mutex_align;
+    unsigned int dbi_mutex_increment;
+    unsigned int dbi_mutex_max;
+    unsigned int dbi_mutex_tas_spins;
+	/* replication sub-system parameters */
+	/* sequences sub-system parameters */
+    unsigned int dbi_seq_cachesize;
+    unsigned int dbi_seq_flags;
+#if 0	/* needs signed 64 bit type */
+    int64_t dbi_seq_min;
+    int64_t dbi_seq_max;
+#endif
 	/* transaction sub-system parameters */
     unsigned int dbi_tx_max;
 #if 0
@@ -378,65 +404,74 @@ struct _dbiIndex {
     rpmTag dbi_rpmtag;		/*!< rpm tag used for index */
     int	dbi_jlen;		/*!< size of join key */
 
-/*@only@*//*@null@*/
+/*@only@*//*@relnull@*/
     DB * dbi_db;		/*!< Berkeley DB * handle */
 /*@only@*//*@null@*/
     DB_TXN * dbi_txnid;		/*!< Bekerley DB_TXN * transaction id */
 /*@only@*//*@null@*/
-    void * dbi_stats;		/*!< Berkeley db statistics */
+    void * dbi_stats;		/*!< Berkeley DB statistics */
 
 /*@observer@*/
     const struct _dbiVec * dbi_vec;	/*!< private methods */
 
 };
+#endif	/* !defined(SWIG) */
 
 /** \ingroup rpmdb
  * Describes the collection of index databases used by rpm.
  */
 struct rpmdb_s {
+/*@owned@*/ /*@relnull@*/
+    const char * db_root;	/*!< rpmdb path prefix */
 /*@owned@*/
-    const char * db_root;/*!< path prefix */
-/*@owned@*/
-    const char * db_home;/*!< directory path */
+    const char * db_home;	/*!< rpmdb directory path */
     int		db_flags;
-    int		db_mode;	/*!< open mode */
-    int		db_perms;	/*!< open permissions */
+    int		db_mode;	/*!< rpmdb pen mode */
+    int		db_perms;	/*!< rpmdb open permissions */
     int		db_api;		/*!< Berkeley API type */
 /*@owned@*/
-    const char * db_errpfx;
-    int		db_remove_env;
-    int		db_filter_dups;
+    const char * db_errpfx;	/*!< Berkeley DB error msg prefix. */
+
+    int		db_remove_env;	/*!< Discard dbenv on close? */
+    int		db_filter_dups;	/*!< Skip duplicate headers with --rebuilddb? */
+    int		db_verifying;
+
     int		db_chrootDone;	/*!< If chroot(2) done, ignore db_root. */
-    void (*db_errcall) (const char *db_errpfx, char *buffer)
+    void (*db_errcall) (const char * db_errpfx, char * buffer)
 	/*@*/;
 /*@shared@*/
-    FILE *	db_errfile;
+    FILE *	db_errfile;	/*!< Berkeley DB stderr clone. */
 /*@only@*/
     void * (*db_malloc) (size_t nbytes)
 	/*@*/;
 /*@only@*/
-    void * (*db_realloc) (/*@only@*//*@null@*/ void * ptr,
-						size_t nbytes)
+    void * (*db_realloc) (/*@only@*//*@null@*/ void * ptr, size_t nbytes)
 	/*@*/;
     void (*db_free) (/*@only@*/ void * ptr)
 	/*@modifies *ptr @*/;
+
+    int	(*db_export) (rpmdb db, Header h, int adding);
+
 /*@only@*/ /*@null@*/
-    unsigned char * db_bits;	/*!< package instance bit mask. */
-    int		db_nbits;	/*!< no. of bits in mask. */
-    rpmdb	db_next;
-    int		db_opens;
+    unsigned char * db_bits;	/*!< Header instance bit mask. */
+    int		db_nbits;	/*!< No. of bits in mask. */
+    rpmdb	db_next;	/*!< Chain of rpmdbOpen'ed rpmdb's. */
+    int		db_opens;	/*!< No. of opens for this rpmdb. */
 /*@only@*/ /*@null@*/
     void *	db_dbenv;	/*!< Berkeley DB_ENV handle. */
+    int *	db_tagn;	/*!< Tag index mappings. */
     int		db_ndbi;	/*!< No. of tag indices. */
+/*@only@*/ /*@null@*/
     dbiIndex * _dbi;		/*!< Tag indices. */
 
-    struct rpmop_s db_getops;
-    struct rpmop_s db_putops;
-    struct rpmop_s db_delops;
+    struct rpmop_s db_getops;	/*!< dbiGet statistics. */
+    struct rpmop_s db_putops;	/*!< dbiPut statistics. */
+    struct rpmop_s db_delops;	/*!< dbiDel statistics. */
 
 /*@refs@*/
     int nrefs;			/*!< Reference count. */
 };
+#endif	/* defined(_RPMDB_INTERNAL) */
 
 /* for RPM's internal use only */
 
@@ -454,6 +489,7 @@ enum rpmdbFlags {
 extern "C" {
 #endif
 
+#if defined(_RPMDB_INTERNAL)
 /*@-exportlocal@*/
 /** \ingroup db3
  * Return new configured index database handle instance.
@@ -463,8 +499,8 @@ extern "C" {
  */
 /*@unused@*/ /*@only@*/ /*@null@*/
 dbiIndex db3New(rpmdb rpmdb, rpmTag rpmtag)
-	/*@globals rpmGlobalMacroContext, h_errno @*/
-	/*@modifies rpmGlobalMacroContext @*/;
+	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
+	/*@modifies rpmGlobalMacroContext, internalState @*/;
 
 /** \ingroup db3
  * Destroy index database handle instance.
@@ -483,7 +519,7 @@ dbiIndex db3Free( /*@only@*/ /*@null@*/ dbiIndex dbi)
  */
 /*@-redecl@*/
 /*@exposed@*/
-extern const char *const prDbiOpenFlags(int dbflags, int print_dbenv_flags)
+extern const char * prDbiOpenFlags(int dbflags, int print_dbenv_flags)
 	/*@*/;
 /*@=redecl@*/
 
@@ -499,6 +535,16 @@ extern const char *const prDbiOpenFlags(int dbflags, int print_dbenv_flags)
 	/*@globals rpmGlobalMacroContext, errno, h_errno @*/
 	/*@modifies db, rpmGlobalMacroContext, errno @*/;
 
+/**
+ * Return dbiStats accumulator structure.
+ * @param dbi		index database handle
+ * @param opx		per-rpmdb accumulator index (aka rpmtsOpX)
+ * @return		per-rpmdb accumulator pointer
+ */
+void * dbiStatsAccumulator(dbiIndex dbi, int opx)
+        /*@*/;
+
+#if !defined(SWIG)
 /*@-globuse -mustmod @*/ /* FIX: vector annotations */
 /** \ingroup dbi
  * Open a database cursor.
@@ -563,11 +609,13 @@ int dbiDel(dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key, DBT * data,
 	/*@globals fileSystem, internalState @*/
 	/*@modifies dbi, *dbcursor, fileSystem, internalState @*/
 {
+    void * sw = dbiStatsAccumulator(dbi, 16);	/* RPMTS_OP_DBDEL */
     int rc;
     assert(key->data != NULL && key->size > 0);
-    (void) rpmswEnter(&dbi->dbi_rpmdb->db_delops, 0);
+    (void) rpmswEnter(sw, 0);
     rc = (dbi->dbi_vec->cdel) (dbi, dbcursor, key, data, flags);
-    (void) rpmswExit(&dbi->dbi_rpmdb->db_delops, data->size);
+    (void) rpmswExit(sw, data->size);
+WSEGFAULT;
     return rc;
 }
 
@@ -586,11 +634,13 @@ int dbiGet(dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key, DBT * data,
 	/*@globals fileSystem, internalState @*/
 	/*@modifies dbi, *dbcursor, *key, *data, fileSystem, internalState @*/
 {
+    void * sw = dbiStatsAccumulator(dbi, 14);	/* RPMTS_OP_DBGET */
     int rc;
     assert((flags == DB_NEXT) || (key->data != NULL && key->size > 0));
-    (void) rpmswEnter(&dbi->dbi_rpmdb->db_getops, 0);
+    (void) rpmswEnter(sw, 0);
     rc = (dbi->dbi_vec->cget) (dbi, dbcursor, key, data, flags);
-    (void) rpmswExit(&dbi->dbi_rpmdb->db_getops, data->size);
+    (void) rpmswExit(sw, data->size);
+RSEGFAULT;
     return rc;
 }
 
@@ -610,11 +660,12 @@ int dbiPget(dbiIndex dbi, /*@null@*/ DBC * dbcursor,
 	/*@globals fileSystem, internalState @*/
 	/*@modifies dbi, *dbcursor, *key, *pkey, *data, fileSystem, internalState @*/
 {
+    void * sw = dbiStatsAccumulator(dbi, 14);	/* RPMTS_OP_DBGET */
     int rc;
     assert((flags == DB_NEXT) || (key->data != NULL && key->size > 0));
-    (void) rpmswEnter(&dbi->dbi_rpmdb->db_getops, 0);
+    (void) rpmswEnter(sw, 0);
     rc = (dbi->dbi_vec->cpget) (dbi, dbcursor, key, pkey, data, flags);
-    (void) rpmswExit(&dbi->dbi_rpmdb->db_getops, data->size);
+    (void) rpmswExit(sw, data->size);
     return rc;
 }
 
@@ -633,11 +684,13 @@ int dbiPut(dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key, DBT * data,
 	/*@globals fileSystem, internalState @*/
 	/*@modifies dbi, *dbcursor, *key, fileSystem, internalState @*/
 {
+    void * sw = dbiStatsAccumulator(dbi, 15);	/* RPMTS_OP_DBPUT */
     int rc;
     assert(key->data != NULL && key->size > 0 && data->data != NULL && data->size > 0);
-    (void) rpmswEnter(&dbi->dbi_rpmdb->db_putops, 0);
+    (void) rpmswEnter(sw, 0);
     rc = (dbi->dbi_vec->cput) (dbi, dbcursor, key, data, flags);
-    (void) rpmswExit(&dbi->dbi_rpmdb->db_putops, data->size);
+    (void) rpmswExit(sw, data->size);
+WSEGFAULT;
     return rc;
 }
 
@@ -749,8 +802,9 @@ int dbiByteSwapped(dbiIndex dbi)
         dbi->dbi_byteswapped = (*dbi->dbi_vec->byteswapped) (dbi);
     return dbi->dbi_byteswapped;
 }
+
 /** \ingroup dbi
- * Is database byte swapped?
+ * Return dbi statistics.
  * @param dbi		index database handle
  * @param flags		DB_FAST_STAT or 0
  * @return		0 on success
@@ -761,7 +815,20 @@ int dbiStat(dbiIndex dbi, unsigned int flags)
 {
     return (*dbi->dbi_vec->stat) (dbi, flags);
 }
+
+/** \ingroup dbi
+ * Return dbi transaction id.
+ * @param dbi		index database handle
+ * @return		transaction id
+ */
+/*@unused@*/ static inline /*@observer@*/ /*@null@*/
+DB_TXN * dbiTxnid(dbiIndex dbi)
+	/*@*/
+{
+    return dbi->dbi_txnid;
+}
 /*@=globuse =mustmod @*/
+#endif	/* !defined(SWIG) */
 
 /*@=exportlocal@*/
 
@@ -775,7 +842,8 @@ unsigned int rpmdbGetIteratorFileNum(rpmdbMatchIterator mi)
  * @param set	set of index database items
  * @return	NULL always
  */
-/*@null@*/ dbiIndexSet dbiFreeIndexSet(/*@only@*/ /*@null@*/ dbiIndexSet set)
+/*@null@*/
+dbiIndexSet dbiFreeIndexSet(/*@only@*/ /*@null@*/ dbiIndexSet set)
 	/*@modifies set @*/;
 
 /** \ingroup dbi
@@ -803,16 +871,7 @@ unsigned int dbiIndexRecordOffset(dbiIndexSet set, int recno)
  */
 unsigned int dbiIndexRecordFileNumber(dbiIndexSet set, int recno)
 	/*@*/;
-
-/** \ingroup rpmdb
- * Tags for which rpmdb indices will be built.
- */
-/*@-exportlocal@*/
-/*@unchecked@*/
-/*@only@*/ /*@null@*/ extern int * dbiTags;
-/*@unchecked@*/
-extern int dbiTagsMax;
-/*@=exportlocal@*/
+#endif	/* defined(_RPMDB_INTERNAL) */
 
 /** \ingroup rpmdb
  * Unreference a database instance.
@@ -875,13 +934,31 @@ int rpmdbInit(/*@null@*/ const char * prefix, int perms)
 	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /** \ingroup rpmdb
- * Verify database components.
+ * Verify all database components.
+ * @param db		rpm database
+ * @return		0 on success
+ */
+int rpmdbVerifyAllDBI(rpmdb db)
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies db, rpmGlobalMacroContext, fileSystem, internalState @*/;
+
+/** \ingroup rpmdb
+ * Open and verify all database components.
  * @param prefix	path to top of install tree
  * @return		0 on success
  */
 int rpmdbVerify(/*@null@*/ const char * prefix)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/;
+
+/**
+ * Block access to a single database index.
+ * @param db		rpm database
+ * @param rpmtag	rpm tag (negative to block)
+ * @return              0 on success
+ */
+int rpmdbBlockDBI(/*@null@*/ rpmdb db, int rpmtag)
+	/*@modifies db @*/;
 
 /**
  * Close a single database index.

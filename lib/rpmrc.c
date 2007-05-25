@@ -6,33 +6,35 @@
 #include <setjmp.h>
 #endif
 
-#include <ctype.h>	/* XXX for /etc/rpm/platform contents */
-
 #if HAVE_SYS_SYSTEMCFG_H
 #include <sys/systemcfg.h>
 #else
 #define __power_pc() 0
 #endif
 
-#include <rpmlib.h>
+#include <rpmcli.h>
 #include <rpmmacro.h>
 #include <rpmlua.h>
+#include <rpmds.h>
+
+#define _MIRE_INTERNAL
+#include <mire.h>
 
 #include "misc.h"
 #include "debug.h"
 
-/*@observer@*/ /*@unchecked@*/
-static const char *defrcfiles = LIBRPMRC_FILENAME ":" VENDORRPMRC_FILENAME ":/etc/rpmrc:~/.rpmrc"; 
-
 /*@observer@*/ /*@checked@*/
-const char * macrofiles = MACROFILES;
+const char *rpmRcfiles = LIBRPMRC_FILENAME ":" VENDORRPMRC_FILENAME ":/etc/rpmrc:~/.rpmrc"; 
+
+/*@unchecked@*/ /*@null@*/
+static const char * configTarget = NULL;
 
 /*@observer@*/ /*@unchecked@*/
 static const char * platform = "/etc/rpm/platform";
 /*@only@*/ /*@relnull@*/ /*@unchecked@*/
-static const char ** platpat = NULL;
+void * platpat = NULL;
 /*@unchecked@*/
-static int nplatpat = 0;
+int nplatpat = 0;
 
 typedef /*@owned@*/ const char * cptr_t;
 
@@ -114,12 +116,16 @@ static struct tableType_s tables[RPM_MACHTABLE_COUNT] = {
 /* this *must* be kept in alphabetical order */
 /* The order of the flags is archSpecific, required, macroize, localize */
 
+#define	RPMVAR_OPTFLAGS			3
+#define	RPMVAR_INCLUDE			43
+#define	RPMVAR_MACROFILES		49
+
+#define	RPMVAR_NUM			55	/* number of RPMVAR entries */
 /*@unchecked@*/
 static struct rpmOption optionTable[] = {
     { "include",		RPMVAR_INCLUDE,			0, 1,	0, 2 },
     { "macrofiles",		RPMVAR_MACROFILES,		0, 0,	0, 1 },
     { "optflags",		RPMVAR_OPTFLAGS,		1, 0,	1, 0 },
-    { "provides",               RPMVAR_PROVIDES,                0, 0,	0, 0 },
 };
 /*@=fullinitblock@*/
 
@@ -142,19 +148,6 @@ static struct rpmvarValue values[RPMVAR_NUM];
 static int defaultsInitialized = 0;
 
 /* prototypes */
-static int doReadRC( /*@killref@*/ FD_t fd, const char * urlfn)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies fd, rpmGlobalMacroContext, fileSystem, internalState @*/;
-
-static void rpmSetVarArch(int var, const char * val,
-		/*@null@*/ const char * arch)
-	/*@globals values, internalState @*/
-	/*@modifies values, internalState @*/;
-
-static void rebuildCompatTables(int type, const char * name)
-	/*@globals internalState @*/
-	/*@modifies internalState @*/;
-
 static void rpmRebuildTargetVars(/*@null@*/ const char **target, /*@null@*/ const char ** canontarget)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies *canontarget, rpmGlobalMacroContext,
@@ -268,7 +261,16 @@ static void machAddEquiv(machEquivTable table, const char * name,
 {
     machEquivInfo equiv;
 
-    equiv = machEquivSearch(table, name);
+    {	int i;
+	equiv = NULL;
+	for (i = 0; i < table->count; i++) {
+	    if (xstrcasecmp(table->list[i].name, name))
+		continue;
+	    equiv = table->list + i;
+	    break;
+	}
+    }
+
     if (!equiv) {
 	if (table->count)
 	    table->list = xrealloc(table->list, (table->count + 1)
@@ -302,10 +304,13 @@ static void machCacheEntryVisit(machCache cache,
     }
 }
 
-static void machFindEquivs(machCache cache, machEquivTable table,
-		const char * key)
-	/*@modifies cache->cache, table->list, table->count @*/
+static void rebuildCompatTables(int type, const char * name)
+	/*@globals tables, internalState @*/
+	/*@modifies tables, internalState @*/
 {
+    machCache cache = &tables[currTables[type]].cache;
+    machEquivTable table = &tables[currTables[type]].equiv;
+    const char * key = name;
     int i;
 
     for (i = 0; i < cache->size; i++)
@@ -449,13 +454,67 @@ const char * lookupInDefaultTable(const char * name,
     return name;
 }
 
+static /*@observer@*/ /*@null@*/
+const char * rpmGetVarArch(int var, /*@null@*/ const char * arch)
+	/*@*/
+{
+    const struct rpmvarValue * next;
+
+    if (arch == NULL) arch = current[ARCH];
+
+    if (arch) {
+	next = &values[var];
+	while (next) {
+	    if (next->arch && !strcmp(next->arch, arch)) return next->value;
+	    next = next->next;
+	}
+    }
+
+    next = values + var;
+    while (next && next->arch) next = next->next;
+
+    return next ? next->value : NULL;
+}
+
+/* this doesn't free the passed pointer! */
+static void freeRpmVar(/*@only@*/ struct rpmvarValue * orig)
+	/*@modifies *orig @*/
+{
+    struct rpmvarValue * next, * var = orig;
+
+    while (var) {
+	next = var->next;
+	var->arch = _free(var->arch);
+	var->value = _free(var->value);
+
+	/*@-branchstate@*/
+	if (var != orig) var = _free(var);
+	/*@=branchstate@*/
+	var = next;
+    }
+}
+
+/** \ingroup rpmrc
+ * Set value of an rpmrc variable.
+ * @deprecated Use rpmDefineMacro() to change appropriate macro instead.
+ */
+static void rpmSetVar(int var, const char * val)
+	/*@globals values @*/
+	/*@modifies values @*/
+{
+    /*@-immediatetrans@*/
+    freeRpmVar(&values[var]);
+    /*@=immediatetrans@*/
+    values[var].value = (val ? xstrdup(val) : NULL);
+}
+
 static void setVarDefault(int var, const char * macroname, const char * val,
 		/*@null@*/ const char * body)
 	/*@globals rpmGlobalMacroContext, internalState @*/
 	/*@modifies rpmGlobalMacroContext, internalState @*/
 {
     if (var >= 0) {	/* XXX Dying ... */
-	if (rpmGetVar(var)) return;
+	if (rpmGetVarArch(var, NULL)) return;
 	rpmSetVar(var, val);
     }
     if (body == NULL)
@@ -472,7 +531,7 @@ static void setPathDefault(int var, const char * macroname, const char * subdir)
 	const char * topdir;
 	char * fn;
 
-	if (rpmGetVar(var)) return;
+	if (rpmGetVarArch(var, NULL)) return;
 
 	topdir = rpmGetPath("%{_topdir}", NULL);
 
@@ -497,7 +556,7 @@ static void setPathDefault(int var, const char * macroname, const char * subdir)
 }
 
 /*@observer@*/ /*@unchecked@*/
-static const char * prescriptenviron = "\n\
+static const char * ___build_pre = "\n\
 RPM_SOURCE_DIR=\"%{_sourcedir}\"\n\
 RPM_BUILD_DIR=\"%{_builddir}\"\n\
 RPM_OPT_FLAGS=\"%{optflags}\"\n\
@@ -521,23 +580,24 @@ static void setDefaults(void)
 
     addMacro(NULL, "_usr", NULL, "/usr", RMIL_DEFAULT);
     addMacro(NULL, "_var", NULL, "/var", RMIL_DEFAULT);
+    addMacro(NULL, "_prefix", NULL, "%{_usr}", RMIL_DEFAULT);
 
-    addMacro(NULL, "_preScriptEnvironment",NULL, prescriptenviron,RMIL_DEFAULT);
+    addMacro(NULL, "___build_pre", NULL, ___build_pre, RMIL_DEFAULT);
 
     setVarDefault(-1,			"_topdir",
-		"/usr/src/redhat",	"%{_usr}/src/redhat");
+		"/usr/src/rpm",		"%{_usr}/src/rpm");
     setVarDefault(-1,			"_tmppath",
 		"/var/tmp",		"%{_var}/tmp");
     setVarDefault(-1,			"_dbpath",
 		"/var/lib/rpm",		"%{_var}/lib/rpm");
     setVarDefault(-1,			"_defaultdocdir",
-		"/usr/doc",		"%{_usr}/doc");
+		"/usr/share/doc",	"%{_usr}/share/doc");
 
     setVarDefault(-1,			"_rpmfilename",
 	"%%{ARCH}/%%{NAME}-%%{VERSION}-%%{RELEASE}.%%{ARCH}.rpm",NULL);
 
     setVarDefault(RPMVAR_OPTFLAGS,	"optflags",
-		"-O2",			NULL);
+		"-O2 -g",			NULL);
     setVarDefault(-1,			"sigtype",
 		"none",			NULL);
     setVarDefault(-1,			"_buildshell",
@@ -549,6 +609,45 @@ static void setDefaults(void)
     setPathDefault(-1,			"_sourcedir",	"SOURCES");
     setPathDefault(-1,			"_specdir",	"SPECS");
 
+}
+
+static void rpmSetVarArch(int var, const char * val,
+		/*@null@*/ const char * arch)
+	/*@globals values, internalState @*/
+	/*@modifies values, internalState @*/
+{
+    struct rpmvarValue * next = values + var;
+
+    if (next->value) {
+	if (arch) {
+	    while (next->next) {
+		if (next->arch && !strcmp(next->arch, arch)) break;
+		next = next->next;
+	    }
+	} else {
+	    while (next->next) {
+		if (!next->arch) break;
+		next = next->next;
+	    }
+	}
+
+	/*@-nullpass@*/	/* LCL: arch != NULL here. */
+	if (next->arch && arch && !strcmp(next->arch, arch)) {
+	/*@=nullpass@*/
+	    next->value = _free(next->value);
+	    next->arch = _free(next->arch);
+	} else if (next->arch || arch) {
+	    next->next = xmalloc(sizeof(*next->next));
+	    next = next->next;
+	    next->value = NULL;
+	    next->arch = NULL;
+	    next->next = NULL;
+	}
+    }
+
+    next->value = _free(next->value);
+    next->value = xstrdup(val);
+    next->arch = (arch ? xstrdup(arch) : NULL);
 }
 
 /*@-usedef@*/	/*@ FIX: se usage inconsistent, W2DO? */
@@ -674,17 +773,6 @@ static int doReadRC( /*@killref@*/ FD_t fd, const char * urlfn)
 		}
 		se = (char *)fn;
 		/*@switchbreak@*/ break;
-	    case RPMVAR_PROVIDES:
-	      {	char *t;
-		s = rpmGetVar(RPMVAR_PROVIDES);
-		if (s == NULL) s = "";
-		fn = t = xmalloc(strlen(s) + strlen(se) + 2);
-		while (*s != '\0') *t++ = *s++;
-		*t++ = ' ';
-		while (*se != '\0') *t++ = *se++;
-		*t++ = '\0';
-		se = (char *)fn;
-	      }	/*@switchbreak@*/ break;
 	    default:
 		/*@switchbreak@*/ break;
 	    }
@@ -772,8 +860,125 @@ static int doReadRC( /*@killref@*/ FD_t fd, const char * urlfn)
 }
 /*@=usedef@*/
 
+typedef struct cpu_vendor_os_gnu {
+/*@owned@*/
+    const char * str;
+/*@observer@*/
+    const char * cpu;
+/*@observer@*/
+    const char * vendor;
+/*@observer@*/
+    const char * os;
+/*@observer@*/
+    const char * gnu;
+} * CVOG_t;
 
 /**
+ */
+/*@-bounds@*/
+static int parseCVOG(const char * str, CVOG_t *cvogp)
+	/*@modifies *cvogp @*/
+{
+    CVOG_t cvog = xcalloc(1, sizeof(*cvog));
+    char * p, * pe;
+
+    cvog->str = p = xstrdup(str);
+    pe = p + strlen(p);
+    while (pe-- > p && isspace(*pe))
+	*pe = '\0';
+
+    cvog->cpu = p;
+    cvog->vendor = "unknown";
+    cvog->os = "unknown";
+    cvog->gnu = "";
+    while (*p && !(*p == '-' || isspace(*p)))
+	    p++;
+    if (*p != '\0') *p++ = '\0';
+
+    cvog->vendor = p;
+    while (*p && !(*p == '-' || isspace(*p)))
+	p++;
+/*@-branchstate@*/
+    if (*p != '-') {
+	if (*p != '\0') *p++ = '\0';
+	cvog->os = cvog->vendor;
+	cvog->vendor = "unknown";
+    } else {
+	if (*p != '\0') *p++ = '\0';
+
+	cvog->os = p;
+	while (*p && !(*p == '-' || isspace(*p)))
+	    p++;
+	if (*p == '-') {
+	    *p++ = '\0';
+
+	    cvog->gnu = p;
+	    while (*p && !(*p == '-' || isspace(*p)))
+		p++;
+	}
+	if (*p != '\0') *p++ = '\0';
+    }
+
+    if (cvogp)
+	*cvogp = cvog;
+    else {
+	cvog->str = _free(cvog->str);
+	cvog = _free(cvog);
+    }
+/*@=branchstate@*/
+    return 0;
+}
+/*@=bounds@*/
+
+/**
+ * Destroy platform patterns.
+ * @param mire		platform pattern array
+ * @param nre		no of patterns in array
+ * @return		NULL always 
+ */
+/*@null@*/
+static void * mireFreeAll(/*@only@*/ /*@null@*/ miRE mire, int nre)
+	/*@modifies mire@*/
+{
+    if (mire != NULL) {
+	int i;
+	for (i = 0; i < nre; i++)
+	    (void) mireClean(mire + i);
+	mire = _free(mire);
+    }
+    return NULL;
+}
+
+/**
+ * Append pattern to array.
+ * @param mode		type of pattern match
+ * @param tag		identifier (like an rpmTag)
+ * @param pattern	pattern to compile
+ * @retval *mi_rep	platform pattern array
+ * @retval *mi_nrep	no. of patterns in array
+ */
+/*@null@*/
+static int mireAppend(rpmMireMode mode, int tag, const char * pattern,
+		miRE * mi_rep, int * mi_nrep)
+	/*@modifies *mi_rep, *mi_nrep @*/
+{
+    miRE mire;
+
+    mire = (*mi_rep);
+    mire = xrealloc(mire, ((*mi_nrep) + 1) * sizeof(*mire));
+    (*mi_rep) = mire;
+    mire += (*mi_nrep);
+    (*mi_nrep)++;
+    memset(mire, 0, sizeof(*mire));
+    mire->mode = mode;
+    mire->tag = tag;
+    return mireRegcomp(mire, pattern);
+}
+
+/**
+ * Read and configure /etc/rpm/platform patterns.
+ * @param platform	path to platform patterns
+ * @return		0 on success
  */
 /*@-bounds@*/
 static int rpmPlatform(const char * platform)
@@ -782,12 +987,15 @@ static int rpmPlatform(const char * platform)
 	/*@modifies nplatpat, platpat,
 		rpmGlobalMacroContext, fileSystem, internalState @*/
 {
-    char *cpu = NULL, *vendor = NULL, *os = NULL, *gnu = NULL;
+    CVOG_t cvog = NULL;
     char * b = NULL;
     ssize_t blen = 0;
     int init_platform = 0;
+    miRE mi_re = NULL;
+    int mi_nre = 0;
     char * p, * pe;
     int rc;
+    int xx;
 
     rc = rpmioSlurp(platform, &b, &blen);
 
@@ -802,83 +1010,70 @@ static int rpmPlatform(const char * platform)
 	if (pe)
 	    *pe++ = '\0';
 
-	while (*p && isspace(*p))
+	while (*p && xisspace(*p))
 	    p++;
 	if (*p == '\0' || *p == '#')
 	    continue;
 
 	if (init_platform) {
 	    char * t = p + strlen(p);
-
-	    while (--t > p && isspace(*t))
+	    while (--t > p && xisspace(*t))
 		*t = '\0';
-	    if (t > p) {
-		platpat = xrealloc(platpat, (nplatpat + 2) * sizeof(*platpat));
-/*@-onlyunqglobaltrans@*/
-		platpat[nplatpat] = xstrdup(p);
-		nplatpat++;
-		platpat[nplatpat] = NULL;
-/*@=onlyunqglobaltrans@*/
-	    }
+	    if (t > p)
+		xx = mireAppend(RPMMIRE_REGEX, 0, p, &mi_re, &mi_nre);
 	    continue;
 	}
 
-	cpu = p;
-	vendor = "unknown";
-	os = "unknown";
-	gnu = NULL;
-	while (*p && !(*p == '-' || isspace(*p)))
-	    p++;
-	if (*p != '\0') *p++ = '\0';
-
-	vendor = p;
-	while (*p && !(*p == '-' || isspace(*p)))
-	    p++;
-/*@-branchstate@*/
-	if (*p != '-') {
-	    if (*p != '\0') *p++ = '\0';
-	    os = vendor;
-	    vendor = "unknown";
-	} else {
-	    if (*p != '\0') *p++ = '\0';
-
-	    os = p;
-	    while (*p && !(*p == '-' || isspace(*p)))
-		p++;
-	    if (*p == '-') {
-		*p++ = '\0';
-
-		gnu = p;
-		while (*p && !(*p == '-' || isspace(*p)))
-		    p++;
-	    }
-	    if (*p != '\0') *p++ = '\0';
+	if (!parseCVOG(p, &cvog) && cvog != NULL) {
+	    addMacro(NULL, "_host_cpu", NULL, cvog->cpu, -1);
+	    addMacro(NULL, "_host_vendor", NULL, cvog->vendor, -1);
+	    addMacro(NULL, "_host_os", NULL, cvog->os, -1);
 	}
-/*@=branchstate@*/
 
-	addMacro(NULL, "_host_cpu", NULL, cpu, -1);
-	addMacro(NULL, "_host_vendor", NULL, vendor, -1);
-	addMacro(NULL, "_host_os", NULL, os, -1);
-
-	platpat = xrealloc(platpat, (nplatpat + 2) * sizeof(*platpat));
-/*@-onlyunqglobaltrans@*/
-	platpat[nplatpat] = rpmExpand("%{_host_cpu}-%{_host_vendor}-%{_host_os}", (gnu && *gnu ? "-" : NULL), gnu, NULL);
-	nplatpat++;
-	platpat[nplatpat] = NULL;
-/*@=onlyunqglobaltrans@*/
+	p = rpmExpand("%{_host_cpu}-%{_host_vendor}-%{_host_os}",
+		(cvog && *cvog->gnu ? "-" : NULL),
+		(cvog ? cvog->gnu : NULL), NULL);
+	xx = mireAppend(RPMMIRE_STRCMP, 0, p, &mi_re, &mi_nre);
+	p = _free(p);
 	
 	init_platform++;
     }
     rc = (init_platform ? 0 : -1);
 
 exit:
+    if (cvog) {
+	cvog->str = _free(cvog->str);
+	cvog = _free(cvog);
+    }
 /*@-modobserver@*/
     b = _free(b);
 /*@=modobserver@*/
+    if (rc == 0) {
+	platpat = mireFreeAll(platpat, nplatpat);
+	platpat = mi_re;
+	nplatpat = mi_nre;
+    }
     return rc;
 }
 /*@=bounds@*/
 
+int rpmPlatformScore(const char * platform, void * mi_re, int mi_nre)
+{
+    miRE mire;
+    int i;
+
+    if (mi_re == NULL) {
+	mi_re = platpat;
+	mi_nre = nplatpat;
+    }
+
+    if ((mire = mi_re) != NULL)
+    for (i = 0; i < mi_nre; i++) {
+	if (!mireRegexec(mire + i, platform))
+	    return (i + 1);
+    }
+    return 0;
+}
 
 #	if defined(__linux__) && defined(__i386__)
 #include <setjmp.h>
@@ -887,7 +1082,7 @@ exit:
 /*
  * Generic CPUID function
  */
-static inline void cpuid(unsigned int op, int *eax, int *ebx, int *ecx, int *edx)
+static inline void cpuid(unsigned int op, unsigned int *eax, unsigned int *ebx, unsigned int *ecx, unsigned int *edx)
 	/*@modifies *eax, *ebx, *ecx, *edx @*/
 {
 #ifdef	__LCLINT__
@@ -1007,7 +1202,7 @@ static int is_athlon(void)
 	return 1;
 }
 
-static int is_pentium3()
+static int is_pentium3(void)
 {
     unsigned int eax, ebx, ecx, edx, family, model;
     char vendor[16];
@@ -1046,7 +1241,7 @@ static int is_pentium3()
     return 0;
 }
 
-static int is_pentium4()
+static int is_pentium4(void)
 {
     unsigned int eax, ebx, ecx, edx, family, model;
     char vendor[16];
@@ -1069,6 +1264,7 @@ static int is_pentium4()
 			// Pentium 4 Xeon, Pentium 4 Xeon MP,
 			// Celeron, Mobile Celron                    (0.13um)
 	    case 3:	// Pentium 4, Celeron                        (0.09um)
+	    case 4:	// Pentium 4 540J
 		return 1;
 	}
     return 0;
@@ -1099,25 +1295,40 @@ static void defaultMachine(/*@out@*/ const char ** arch,
     int rc;
 
     while (!gotDefaults) {
-	if (!rpmPlatform(platform)) {
-	    const char * s;
-	    s = rpmExpand("%{_host_cpu}", NULL);
-	    if (s) {
-		strncpy(un.machine, s, sizeof(un.machine));
-		un.machine[sizeof(un.machine)-1] = '\0';
-		s = _free(s);
-	    }
-	    s = rpmExpand("%{_host_os}", NULL);
-	    if (s) {
-		strncpy(un.sysname, s, sizeof(un.sysname));
-		un.sysname[sizeof(un.sysname)-1] = '\0';
-		s = _free(s);
-	    }
-	    gotDefaults = 1;
-	    break;
-	}
+	CVOG_t cvog = NULL;
 	rc = uname(&un);
 	if (rc < 0) return;
+	if (!rpmPlatform(platform)) {
+	    const char * s;
+	    gotDefaults = 1;
+	    s = rpmExpand("%{?_host_cpu}", NULL);
+	    if (s && *s != '\0') {
+		strncpy(un.machine, s, sizeof(un.machine));
+		un.machine[sizeof(un.machine)-1] = '\0';
+	    }
+	    s = _free(s);
+	    s = rpmExpand("%{?_host_os}", NULL);
+	    if (s && *s != '\0') {
+		strncpy(un.sysname, s, sizeof(un.sysname));
+		un.sysname[sizeof(un.sysname)-1] = '\0';
+	    }
+	    s = _free(s);
+	}
+	if (configTarget && !parseCVOG(configTarget, &cvog) && cvog != NULL) {
+	    gotDefaults = 1;
+	    if (cvog->cpu && cvog->cpu[0] != '\0') {
+		strncpy(un.machine, cvog->cpu, sizeof(un.machine));
+		un.machine[sizeof(un.machine)-1] = '\0';
+	    }
+	    if (cvog->os && cvog->os[0] != '\0') {
+		strncpy(un.sysname, cvog->os, sizeof(un.sysname));
+		un.sysname[sizeof(un.sysname)-1] = '\0';
+	    }
+	    cvog->str = _free(cvog->str);
+	    cvog = _free(cvog);
+	}
+	if (gotDefaults)
+	    break;
 
 #if !defined(__linux__)
 #ifdef SNI
@@ -1337,12 +1548,25 @@ static void defaultMachine(/*@out@*/ const char ** arch,
 
 	    if ( pvr ) {
 		pvr >>= 16;
-		if ( pvr >= 0x40)
-		    strcpy(un.machine, "ppcpseries");
-		else if ( (pvr == 0x36) || (pvr == 0x37) )
+		switch (pvr) {
+		/* IBM750FX, 7410, 7450,  7451, 7441, 7455, 7445 */ 
+		case 0x7000:
+		case 0x8000:
+		case 0x8001:
+		case 0x800c:
+		    strcpy(un.machine, "ppc"); 
+		    break;
+		case 0x36:
+		case 0x37:
 		    strcpy(un.machine, "ppciseries");
-		else
-		    strcpy(un.machine, "ppc");
+		    break;
+		default:
+		    if ( pvr >= 0x40)
+			strcpy(un.machine, "ppcpseries");
+		    else
+			strcpy(un.machine, "ppc");
+		    break;
+		}
 	    }
 	}
 #	endif
@@ -1365,96 +1589,6 @@ static void defaultMachine(/*@out@*/ const char ** arch,
 
     if (arch) *arch = un.machine;
     if (os) *os = un.sysname;
-}
-
-static /*@observer@*/ /*@null@*/
-const char * rpmGetVarArch(int var, /*@null@*/ const char * arch)
-	/*@*/
-{
-    const struct rpmvarValue * next;
-
-    if (arch == NULL) arch = current[ARCH];
-
-    if (arch) {
-	next = &values[var];
-	while (next) {
-	    if (next->arch && !strcmp(next->arch, arch)) return next->value;
-	    next = next->next;
-	}
-    }
-
-    next = values + var;
-    while (next && next->arch) next = next->next;
-
-    return next ? next->value : NULL;
-}
-
-const char *rpmGetVar(int var)
-{
-    return rpmGetVarArch(var, NULL);
-}
-
-/* this doesn't free the passed pointer! */
-static void freeRpmVar(/*@only@*/ struct rpmvarValue * orig)
-	/*@modifies *orig @*/
-{
-    struct rpmvarValue * next, * var = orig;
-
-    while (var) {
-	next = var->next;
-	var->arch = _free(var->arch);
-	var->value = _free(var->value);
-
-	/*@-branchstate@*/
-	if (var != orig) var = _free(var);
-	/*@=branchstate@*/
-	var = next;
-    }
-}
-
-void rpmSetVar(int var, const char * val)
-	/*@globals values @*/
-	/*@modifies values @*/
-{
-    /*@-immediatetrans@*/
-    freeRpmVar(&values[var]);
-    /*@=immediatetrans@*/
-    values[var].value = (val ? xstrdup(val) : NULL);
-}
-
-static void rpmSetVarArch(int var, const char * val, const char * arch)
-{
-    struct rpmvarValue * next = values + var;
-
-    if (next->value) {
-	if (arch) {
-	    while (next->next) {
-		if (next->arch && !strcmp(next->arch, arch)) break;
-		next = next->next;
-	    }
-	} else {
-	    while (next->next) {
-		if (!next->arch) break;
-		next = next->next;
-	    }
-	}
-
-	/*@-nullpass@*/	/* LCL: arch != NULL here. */
-	if (next->arch && arch && !strcmp(next->arch, arch)) {
-	/*@=nullpass@*/
-	    next->value = _free(next->value);
-	    next->arch = _free(next->arch);
-	} else if (next->arch || arch) {
-	    next->next = xmalloc(sizeof(*next->next));
-	    next = next->next;
-	    next->value = NULL;
-	    next->arch = NULL;
-	    next->next = NULL;
-	}
-    }
-
-    next->value = xstrdup(val);		/* XXX memory leak, hard to plug */
-    next->arch = (arch ? xstrdup(arch) : NULL);
 }
 
 void rpmSetTables(int archTable, int osTable)
@@ -1482,6 +1616,7 @@ int rpmMachineScore(int type, const char * name)
     return (info != NULL ? info->score : 0);
 }
 
+/*@-modnomods@*/
 void rpmGetMachine(const char ** arch, const char ** os)
 {
     if (arch)
@@ -1490,64 +1625,45 @@ void rpmGetMachine(const char ** arch, const char ** os)
     if (os)
 	*os = current[OS];
 }
+/*@=modnomods@*/
 
 void rpmSetMachine(const char * arch, const char * os)
 	/*@globals current @*/
 	/*@modifies current @*/
 {
-    const char * host_cpu, * host_os;
-
-    defaultMachine(&host_cpu, &host_os);
-
     if (arch == NULL) {
-	arch = host_cpu;
+/*@i@*/	defaultMachine(&arch, NULL);
 	if (tables[currTables[ARCH]].hasTranslate)
 	    arch = lookupInDefaultTable(arch,
 			    tables[currTables[ARCH]].defaults,
 			    tables[currTables[ARCH]].defaultsLength);
     }
-    if (arch == NULL) return;	/* XXX can't happen */
+assert(arch != NULL);
 
     if (os == NULL) {
-	os = host_os;
+/*@i@*/	defaultMachine(NULL, &os);
 	if (tables[currTables[OS]].hasTranslate)
 	    os = lookupInDefaultTable(os,
 			    tables[currTables[OS]].defaults,
 			    tables[currTables[OS]].defaultsLength);
     }
-    if (os == NULL) return;	/* XXX can't happen */
+assert(os != NULL);
+
 
     if (!current[ARCH] || strcmp(arch, current[ARCH])) {
 	current[ARCH] = _free(current[ARCH]);
 	current[ARCH] = xstrdup(arch);
-	rebuildCompatTables(ARCH, host_cpu);
+	rebuildCompatTables(ARCH, arch);
     }
 
     if (!current[OS] || strcmp(os, current[OS])) {
 	char * t = xstrdup(os);
 	current[OS] = _free(current[OS]);
-	/*
-	 * XXX Capitalizing the 'L' is needed to insure that old
-	 * XXX os-from-uname (e.g. "Linux") is compatible with the new
-	 * XXX os-from-platform (e.g "linux" from "sparc-*-linux").
-	 * XXX A copy of this string is embedded in headers and is
-	 * XXX used by rpmInstallPackage->{os,arch}Okay->rpmMachineScore->
-	 * XXX to verify correct arch/os from headers.
-	 */
 	if (!strcmp(t, "linux"))
 	    *t = 'L';
 	current[OS] = t;
-	
-	rebuildCompatTables(OS, host_os);
+	rebuildCompatTables(OS, os);
     }
-}
-
-static void rebuildCompatTables(int type, const char * name)
-	/*@*/
-{
-    machFindEquivs(&tables[currTables[type]].cache,
-		   &tables[currTables[type]].equiv,
-		   name);
 }
 
 static void getMachineInfo(int type, /*@null@*/ /*@out@*/ const char ** name,
@@ -1570,11 +1686,6 @@ static void getMachineInfo(int type, /*@null@*/ /*@out@*/ const char ** name,
     } else {
 	if (num) *num = 255;
 	if (name) *name = current[type];
-
-	if (tables[currTables[type]].hasCanon) {
-	    rpmMessage(RPMMESS_WARNING, _("Unknown system: %s\n"), current[type]);
-	    rpmMessage(RPMMESS_WARNING, _("Please contact rpm-list@redhat.com\n"));
-	}
     }
 }
 
@@ -1624,9 +1735,9 @@ static void rpmRebuildTargetVars(const char ** target, const char ** canontarget
 	const char *a = NULL;
 	const char *o = NULL;
 	/* Set build target from rpm arch and os */
-	rpmGetArchInfo(&a, NULL);
+	getMachineInfo(ARCH, &a, NULL);
 	ca = (a) ? xstrdup(a) : NULL;
-	rpmGetOsInfo(&o, NULL);
+	getMachineInfo(OS, &o, NULL);
 	co = (o) ? xstrdup(o) : NULL;
     }
     /*@=branchstate@*/
@@ -1637,6 +1748,7 @@ static void rpmRebuildTargetVars(const char ** target, const char ** canontarget
 	defaultMachine(&a, NULL);
 	ca = (a) ? xstrdup(a) : NULL;
     }
+    if (ca != NULL)
     for (x = 0; ca[x] != '\0'; x++)
 	ca[x] = xtolower(ca[x]);
 
@@ -1645,6 +1757,7 @@ static void rpmRebuildTargetVars(const char ** target, const char ** canontarget
 	defaultMachine(NULL, &o);
 	co = (o) ? xstrdup(o) : NULL;
     }
+    if (co != NULL)
     for (x = 0; co[x] != '\0'; x++)
 	co[x] = xtolower(co[x]);
 
@@ -1667,6 +1780,7 @@ static void rpmRebuildTargetVars(const char ** target, const char ** canontarget
 /*
  * XXX Make sure that per-arch optflags is initialized correctly.
  */
+  if (rpmcliRcfile != NULL)
   { const char *optflags = rpmGetVarArch(RPMVAR_OPTFLAGS, ca);
     if (optflags != NULL) {
 	delMacro(NULL, "optflags");
@@ -1687,19 +1801,12 @@ static void rpmRebuildTargetVars(const char ** target, const char ** canontarget
 }
 
 void rpmFreeRpmrc(void)
-	/*@globals current, tables, values, defaultsInitialized,
-		platpat, nplatpat @*/
-	/*@modifies current, tables, values, defaultsInitialized,
-		platpat, nplatpat @*/
+	/*@globals current, tables, values, defaultsInitialized @*/
+	/*@modifies current, tables, values, defaultsInitialized @*/
 {
     int i, j, k;
 
-/*@-onlyunqglobaltrans -unqualifiedtrans @*/
-    if (platpat)
-    for (i = 0; i < nplatpat; i++)
-	platpat[i] = _free(platpat[i]);
-    platpat = _free(platpat);
-/*@-onlyunqglobaltrans =unqualifiedtrans @*/
+    platpat = mireFreeAll(platpat, nplatpat);
     nplatpat = 0;
 
     for (i = 0; i < RPM_MACHTABLE_COUNT; i++) {
@@ -1770,12 +1877,14 @@ void rpmFreeRpmrc(void)
  * @return		0 on succes
  */
 static int rpmReadRC(/*@null@*/ const char * rcfiles)
-	/*@globals defaultsInitialized, rpmGlobalMacroContext,
-		rpmCLIMacroContext, h_errno, fileSystem, internalState @*/
+	/*@globals defaultsInitialized, rpmRcfiles, rpmMacrofiles,
+		rpmGlobalMacroContext, rpmCLIMacroContext, h_errno,
+		fileSystem, internalState @*/
 	/*@modifies defaultsInitialized, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 {
-    char *myrcfiles, *r, *re;
+    char *myrcfiles = NULL;
+    char *r, *re;
     int rc;
 
     if (!defaultsInitialized) {
@@ -1783,11 +1892,9 @@ static int rpmReadRC(/*@null@*/ const char * rcfiles)
 	defaultsInitialized = 1;
     }
 
-    if (rcfiles == NULL)
-	rcfiles = defrcfiles;
-
     /* Read each file in rcfiles. */
     rc = 0;
+    if (rcfiles != NULL)
     for (r = myrcfiles = xstrdup(rcfiles); r && *r != '\0'; r = re) {
 	char fn[4096];
 	FD_t fd;
@@ -1808,7 +1915,7 @@ static int rpmReadRC(/*@null@*/ const char * rcfiles)
 	    const char * home = getenv("HOME");
 	    if (home == NULL) {
 	    /* XXX Only /usr/lib/rpm/rpmrc must exist in default rcfiles list */
-		if (rcfiles == defrcfiles && myrcfiles != r)
+		if (rcfiles == rpmRcfiles && myrcfiles != r)
 		    continue;
 		rpmError(RPMERR_RPMRC, _("Cannot expand %s\n"), r);
 		rc = 1;
@@ -1830,7 +1937,7 @@ static int rpmReadRC(/*@null@*/ const char * rcfiles)
 	fd = Fopen(fn, "r.fpio");
 	if (fd == NULL || Ferror(fd)) {
 	    /* XXX Only /usr/lib/rpm/rpmrc must exist in default rcfiles list */
-	    if (rcfiles == defrcfiles && myrcfiles != r)
+	    if (rcfiles == rpmRcfiles && myrcfiles != r)
 		continue;
 	    rpmError(RPMERR_RPMRC, _("Unable to open %s for reading: %s.\n"),
 		 fn, Fstrerror(fd));
@@ -1845,12 +1952,16 @@ static int rpmReadRC(/*@null@*/ const char * rcfiles)
     if (rc)
 	return rc;
 
-    rpmSetMachine(NULL, NULL);	/* XXX WTFO? Why bother? */
+    /* Read macro files. */
+    {	const char *mfpath = rpmGetVarArch(RPMVAR_MACROFILES, NULL);
 
-    {	const char *mfpath;
-	/*@-branchstate@*/
-	if ((mfpath = rpmGetVar(RPMVAR_MACROFILES)) != NULL) {
+	if (mfpath == NULL)
+	    mfpath = rpmExpand(rpmMacrofiles, NULL);
+	else
 	    mfpath = xstrdup(mfpath);
+	    
+	/*@-branchstate@*/
+	if (mfpath != NULL) {
 	    rpmInitMacros(NULL, mfpath);
 	    mfpath = _free(mfpath);
 	}
@@ -1861,14 +1972,20 @@ static int rpmReadRC(/*@null@*/ const char * rcfiles)
 }
 
 int rpmReadConfigFiles(const char * file, const char * target)
+	/*@globals configTarget @*/
+	/*@modifies configTarget @*/
 {
+
+    configTarget = target;
 
     /* Preset target macros */
     /*@-nullstate@*/	/* FIX: target can be NULL */
     rpmRebuildTargetVars(&target, NULL);
 
     /* Read the files */
+/*@-globs@*/
     if (rpmReadRC(file)) return -1;
+/*@=globs@*/
 
     /* Reset target macros */
     rpmRebuildTargetVars(&target, NULL);
@@ -1881,18 +1998,23 @@ int rpmReadConfigFiles(const char * file, const char * target)
 	cpu = _free(cpu);
 	os = _free(os);
     }
+    configTarget = NULL;
 
     /* Force Lua state initialization */
+#ifdef WITH_LUA
     (void)rpmluaGetPrintBuffer(NULL);
+#endif
 
     return 0;
 }
 
 int rpmShowRC(FILE * fp)
 {
+    rpmds ds = NULL;
     struct rpmOption *opt;
     int i;
     machEquivTable equivTable;
+    int xx;
 
     /* the caller may set the build arch which should be printed here */
     fprintf(fp, "ARCHITECTURE AND OS:\n");
@@ -1912,8 +2034,10 @@ int rpmShowRC(FILE * fp)
 	fprintf(fp," %s", equivTable->list[i].name);
     fprintf(fp, "\n");
 
-    rpmSetTables(RPM_MACHTABLE_INSTARCH, RPM_MACHTABLE_INSTOS);
-    rpmSetMachine(NULL, NULL);	/* XXX WTFO? Why bother? */
+    if (rpmcliRcfile != NULL) {
+	rpmSetTables(RPM_MACHTABLE_INSTARCH, RPM_MACHTABLE_INSTOS);
+	rpmSetMachine(NULL, NULL);	/* XXX WTFO? Why bother? */
+    }
 
     fprintf(fp, "install arch          : %s\n", current[ARCH]);
     fprintf(fp, "install os            : %s\n", current[OS]);
@@ -1930,17 +2054,103 @@ int rpmShowRC(FILE * fp)
 	fprintf(fp," %s", equivTable->list[i].name);
     fprintf(fp, "\n");
 
-    fprintf(fp, "\nRPMRC VALUES:\n");
-    for (i = 0, opt = optionTable; i < optionTableSize; i++, opt++) {
-	const char *s = rpmGetVar(opt->var);
-	if (s != NULL || rpmIsVerbose())
-	    fprintf(fp, "%-21s : %s\n", opt->name, s ? s : "(not set)");
+    if (rpmcliRcfile != NULL) {
+	const char * s = rpmExpand(rpmcliRcfile, NULL);
+	fprintf(fp, "\nRPMRC VALUES:\n");
+	fprintf(fp, "%-21s : %s\n", "rcfiles", ((s && *s) ? s : "(not set)"));
+	s = _free(s);
+/*@-branchstate@*/
+	for (i = 0, opt = optionTable; i < optionTableSize; i++, opt++) {
+	    s = rpmGetVarArch(opt->var, NULL);
+	    if (s != NULL || rpmIsVerbose())
+		fprintf(fp, "%-21s : %s\n", opt->name, s ? s : "(not set)");
+	}
+/*@=branchstate@*/
+	fprintf(fp, "\nMACRO DEFINITIONS:\n");
+    } else {
+	const char * s = rpmExpand("%{?optflags}", NULL);
+	fprintf(fp, "%-21s : %s\n", "optflags", ((s && *s) ? s : "(not set)"));
+	s = _free(s);
+/*@-globs@*/
+	s = rpmExpand(rpmMacrofiles, NULL);
+/*@=globs@*/
+	fprintf(fp, "\nMACRO DEFINITIONS:\n");
+	fprintf(fp, "%-21s : %s\n", "macrofiles", ((s && *s) ? s : "(not set)"));
+	s = _free(s);
     }
-    fprintf(fp, "\n");
 
-    fprintf(fp, "Features supported by rpmlib:\n");
-    rpmShowRpmlibProvides(fp);
-    fprintf(fp, "\n");
+    if (rpmIsVerbose()) {
+	rpmPRCO PRCO = rpmdsNewPRCO(NULL);
+	xx = rpmdsSysinfo(PRCO, NULL);
+	ds = rpmdsFromPRCO(PRCO, RPMTAG_PROVIDENAME);
+	if (ds != NULL) {
+	    fprintf(fp, _("Configured system provides (from /etc/rpm/sysinfo):\n"));
+	    ds = rpmdsInit(ds);
+	    while (rpmdsNext(ds) >= 0) {
+		const char * DNEVR = rpmdsDNEVR(ds);
+		if (DNEVR != NULL)
+		    fprintf(fp, "    %s\n", DNEVR+2);
+	    }
+	    ds = rpmdsFree(ds);
+	    fprintf(fp, "\n");
+	}
+	PRCO = rpmdsFreePRCO(PRCO);
+    }
+
+    if (rpmIsVerbose()) {
+	fprintf(fp, _("Features provided by rpmlib installer:\n"));
+	xx = rpmdsRpmlib(&ds, NULL);
+	ds = rpmdsInit(ds);
+	while (rpmdsNext(ds) >= 0) {
+	    const char * DNEVR = rpmdsDNEVR(ds);
+	    if (DNEVR != NULL)
+		fprintf(fp, "    %s\n", DNEVR+2);
+	}
+	ds = rpmdsFree(ds);
+	fprintf(fp, "\n");
+
+	xx = rpmdsCpuinfo(&ds, NULL);
+	if (ds != NULL) {
+	    fprintf(fp,
+		_("Features provided by current cpuinfo (from /proc/cpuinfo):\n"));
+	    ds = rpmdsInit(ds);
+	    while (rpmdsNext(ds) >= 0) {
+		const char * DNEVR = rpmdsDNEVR(ds);
+		if (DNEVR != NULL)
+		    fprintf(fp, "    %s\n", DNEVR+2);
+	    }
+	    ds = rpmdsFree(ds);
+	    fprintf(fp, "\n");
+	}
+
+	xx = rpmdsGetconf(&ds, NULL);
+	if (ds != NULL) {
+	    fprintf(fp,
+		_("Features provided by current getconf:\n"));
+	    ds = rpmdsInit(ds);
+	    while (rpmdsNext(ds) >= 0) {
+		const char * DNEVR = rpmdsDNEVR(ds);
+		if (DNEVR != NULL)
+		    fprintf(fp, "    %s\n", DNEVR+2);
+	    }
+	    ds = rpmdsFree(ds);
+	    fprintf(fp, "\n");
+	}
+
+	xx = rpmdsUname(&ds, NULL);
+	if (ds != NULL) {
+	    fprintf(fp,
+		_("Features provided by current uname:\n"));
+	    ds = rpmdsInit(ds);
+	    while (rpmdsNext(ds) >= 0) {
+		const char * DNEVR = rpmdsDNEVR(ds);
+		if (DNEVR != NULL)
+		    fprintf(fp, "    %s\n", DNEVR+2);
+	    }
+	    ds = rpmdsFree(ds);
+	    fprintf(fp, "\n");
+	}
+    }
 
     rpmDumpMacroTable(NULL, fp);
 

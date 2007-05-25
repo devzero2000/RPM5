@@ -12,6 +12,8 @@
 #include "header_internal.h"
 
 #include "rpmts.h"	/* XXX rpmtsCreate/rpmtsFree */
+#define	_RPMEVR_INTERNAL
+#include "rpmevr.h"
 
 #include "header-py.h"
 #include "rpmds-py.h"
@@ -72,7 +74,7 @@
 
 /** \ingroup python
  * \class Rpmhdr
- * \brief A python header object represents an RPM package header.
+ * \brief A python rpm.hdr object represents an RPM package header.
  *
  * All RPM packages have headers that provide metadata for the package.
  * Header objects can be returned by database queries or loaded from a
@@ -93,10 +95,10 @@
  * 	fdno = os.open("/tmp/foo-1.0-1.i386.rpm", os.O_RDONLY)
  * 	hdr = ts.hdrFromFdno(fdno)
  *	os.close(fdno)
- *	if hdr[rpm.RPMTAG_SOURCEPACKAGE]:
- *	   print "header is from a source package"
- *	else:
+ *	if hdr[rpm.RPMTAG_SOURCERPM]:
  *	   print "header is from a binary package"
+ *	else:
+ *	   print "header is from a source package"
  * \endcode
  *
  * The Python interface to the header data is quite elegant.  It
@@ -128,11 +130,6 @@
  * will fail.
  */
 
-/** \ingroup python
- * \name Class: rpm.hdr
- */
-/*@{*/
-
 /** \ingroup py_c
  */
 struct hdrObject_s {
@@ -148,6 +145,8 @@ struct hdrObject_s {
     unsigned short * modes;
 } ;
 
+/**
+ */
 /*@unused@*/ static inline Header headerAllocated(Header h)
 	/*@modifies h @*/
 {
@@ -155,7 +154,260 @@ struct hdrObject_s {
     return 0;
 }
 
-/** \ingroup py_c
+/*@-boundsread@*/
+static int dncmp(const void * a, const void * b)
+	/*@*/
+{
+    const char *const * first = a;
+    const char *const * second = b;
+    return strcmp(*first, *second);
+}
+/*@=boundsread@*/
+
+/**
+ * Convert (dirname,basename,dirindex) tags to absolute path tag.
+ * @param h		header
+ */
+static void expandFilelist(Header h)
+        /*@modifies h @*/
+{
+    HAE_t hae = (HAE_t)headerAddEntry;
+    HRE_t hre = (HRE_t)headerRemoveEntry;
+    const char ** fileNames = NULL;
+    int count = 0;
+    int xx;
+
+    /*@-branchstate@*/
+    if (!headerIsEntry(h, RPMTAG_OLDFILENAMES)) {
+	rpmfiBuildFNames(h, RPMTAG_BASENAMES, &fileNames, &count);
+	if (fileNames == NULL || count <= 0)
+	    return;
+	xx = hae(h, RPMTAG_OLDFILENAMES, RPM_STRING_ARRAY_TYPE,
+			fileNames, count);
+	fileNames = _free(fileNames);
+    }
+    /*@=branchstate@*/
+
+    xx = hre(h, RPMTAG_DIRNAMES);
+    xx = hre(h, RPMTAG_BASENAMES);
+    xx = hre(h, RPMTAG_DIRINDEXES);
+}
+
+/*@-bounds@*/
+/**
+ * Convert absolute path tag to (dirname,basename,dirindex) tags.
+ * @param h             header
+ */
+static void compressFilelist(Header h)
+	/*@modifies h @*/
+{
+    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
+    HAE_t hae = (HAE_t)headerAddEntry;
+    HRE_t hre = (HRE_t)headerRemoveEntry;
+    HFD_t hfd = headerFreeData;
+    char ** fileNames;
+    const char ** dirNames;
+    const char ** baseNames;
+    int_32 * dirIndexes;
+    rpmTagType fnt;
+    int count;
+    int i, xx;
+    int dirIndex = -1;
+
+    /*
+     * This assumes the file list is already sorted, and begins with a
+     * single '/'. That assumption isn't critical, but it makes things go
+     * a bit faster.
+     */
+
+    if (headerIsEntry(h, RPMTAG_DIRNAMES)) {
+	xx = hre(h, RPMTAG_OLDFILENAMES);
+	return;		/* Already converted. */
+    }
+
+    if (!hge(h, RPMTAG_OLDFILENAMES, &fnt, (void **) &fileNames, &count))
+	return;		/* no file list */
+    if (fileNames == NULL || count <= 0)
+	return;
+
+    dirNames = alloca(sizeof(*dirNames) * count);	/* worst case */
+    baseNames = alloca(sizeof(*dirNames) * count);
+    dirIndexes = alloca(sizeof(*dirIndexes) * count);
+
+    if (fileNames[0][0] != '/') {
+	/* HACK. Source RPM, so just do things differently */
+	dirIndex = 0;
+	dirNames[dirIndex] = "";
+	for (i = 0; i < count; i++) {
+	    dirIndexes[i] = dirIndex;
+	    baseNames[i] = fileNames[i];
+	}
+	goto exit;
+    }
+
+    /*@-branchstate@*/
+    for (i = 0; i < count; i++) {
+	const char ** needle;
+	char savechar;
+	char * baseName;
+	int len;
+
+	if (fileNames[i] == NULL)	/* XXX can't happen */
+	    continue;
+	baseName = strrchr(fileNames[i], '/') + 1;
+	len = baseName - fileNames[i];
+	needle = dirNames;
+	savechar = *baseName;
+	*baseName = '\0';
+/*@-compdef@*/
+	if (dirIndex < 0 ||
+	    (needle = bsearch(&fileNames[i], dirNames, dirIndex + 1, sizeof(dirNames[0]), dncmp)) == NULL) {
+	    char *s = alloca(len + 1);
+	    memcpy(s, fileNames[i], len + 1);
+	    s[len] = '\0';
+	    dirIndexes[i] = ++dirIndex;
+	    dirNames[dirIndex] = s;
+	} else
+	    dirIndexes[i] = needle - dirNames;
+/*@=compdef@*/
+
+	*baseName = savechar;
+	baseNames[i] = baseName;
+    }
+    /*@=branchstate@*/
+
+exit:
+    if (count > 0) {
+	xx = hae(h, RPMTAG_DIRINDEXES, RPM_INT32_TYPE, dirIndexes, count);
+	xx = hae(h, RPMTAG_BASENAMES, RPM_STRING_ARRAY_TYPE,
+			baseNames, count);
+	xx = hae(h, RPMTAG_DIRNAMES, RPM_STRING_ARRAY_TYPE,
+			dirNames, dirIndex + 1);
+    }
+
+    fileNames = hfd(fileNames, fnt);
+
+    xx = hre(h, RPMTAG_OLDFILENAMES);
+}
+/*@=bounds@*/
+/* make a header with _all_ the tags we need */
+/**
+ */
+static void mungeFilelist(Header h)
+	/*@*/
+{
+    const char ** fileNames = NULL;
+    int count = 0;
+
+    if (!headerIsEntry (h, RPMTAG_BASENAMES)
+	|| !headerIsEntry (h, RPMTAG_DIRNAMES)
+	|| !headerIsEntry (h, RPMTAG_DIRINDEXES))
+	compressFilelist(h);
+
+    rpmfiBuildFNames(h, RPMTAG_BASENAMES, &fileNames, &count);
+
+    if (fileNames == NULL || count <= 0)
+	return;
+
+    /* XXX Legacy tag needs to go away. */
+    headerAddEntry(h, RPMTAG_OLDFILENAMES, RPM_STRING_ARRAY_TYPE,
+			fileNames, count);
+
+    fileNames = _free(fileNames);
+}
+
+/**
+ * Retrofit an explicit Provides: N = E:V-R dependency into package headers.
+ * Up to rpm 3.0.4, packages implicitly provided their own name-version-release.
+ * @param h             header
+ */
+static void providePackageNVR(Header h)
+{
+    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
+    HFD_t hfd = headerFreeData;
+    const char *name, *version, *release;
+    int_32 * epoch;
+    const char *pEVR;
+    char *p;
+    int_32 pFlags = RPMSENSE_EQUAL;
+    const char ** provides = NULL;
+    const char ** providesEVR = NULL;
+    rpmTagType pnt, pvt;
+    int_32 * provideFlags = NULL;
+    int providesCount;
+    int i, xx;
+    int bingo = 1;
+
+    /* Generate provides for this package name-version-release. */
+    xx = headerNVR(h, &name, &version, &release);
+    if (!(name && version && release))
+	return;
+    pEVR = p = alloca(21 + strlen(version) + 1 + strlen(release) + 1);
+    *p = '\0';
+    if (hge(h, RPMTAG_EPOCH, NULL, (void **) &epoch, NULL)) {
+	sprintf(p, "%d:", *epoch);
+	while (*p != '\0')
+	    p++;
+    }
+    (void) stpcpy( stpcpy( stpcpy(p, version) , "-") , release);
+
+    /*
+     * Rpm prior to 3.0.3 does not have versioned provides.
+     * If no provides at all are available, we can just add.
+     */
+    if (!hge(h, RPMTAG_PROVIDENAME, &pnt, (void **) &provides, &providesCount))
+	goto exit;
+
+    /*
+     * Otherwise, fill in entries on legacy packages.
+     */
+    if (!hge(h, RPMTAG_PROVIDEVERSION, &pvt, (void **) &providesEVR, NULL)) {
+	for (i = 0; i < providesCount; i++) {
+	    char * vdummy = "";
+	    int_32 fdummy = RPMSENSE_ANY;
+	    xx = headerAddOrAppendEntry(h, RPMTAG_PROVIDEVERSION, RPM_STRING_ARRAY_TYPE,
+			&vdummy, 1);
+	    xx = headerAddOrAppendEntry(h, RPMTAG_PROVIDEFLAGS, RPM_INT32_TYPE,
+			&fdummy, 1);
+	}
+	goto exit;
+    }
+
+    xx = hge(h, RPMTAG_PROVIDEFLAGS, NULL, (void **) &provideFlags, NULL);
+
+    /*@-nullderef@*/	/* LCL: providesEVR is not NULL */
+    if (provides && providesEVR && provideFlags)
+    for (i = 0; i < providesCount; i++) {
+        if (!(provides[i] && providesEVR[i]))
+            continue;
+	if (!(provideFlags[i] == RPMSENSE_EQUAL &&
+	    !strcmp(name, provides[i]) && !strcmp(pEVR, providesEVR[i])))
+	    continue;
+	bingo = 0;
+	break;
+    }
+    /*@=nullderef@*/
+
+exit:
+    provides = hfd(provides, pnt);
+    providesEVR = hfd(providesEVR, pvt);
+
+    if (bingo) {
+	xx = headerAddOrAppendEntry(h, RPMTAG_PROVIDENAME, RPM_STRING_ARRAY_TYPE,
+		&name, 1);
+	xx = headerAddOrAppendEntry(h, RPMTAG_PROVIDEFLAGS, RPM_INT32_TYPE,
+		&pFlags, 1);
+	xx = headerAddOrAppendEntry(h, RPMTAG_PROVIDEVERSION, RPM_STRING_ARRAY_TYPE,
+		&pEVR, 1);
+    }
+}
+
+/** \ingroup python
+ * \name Class: Rpmhdr
+ */
+/*@{*/
+
+/**
  */
 static PyObject * hdrKeyList(hdrObject * s)
 	/*@*/
@@ -171,11 +423,14 @@ static PyObject * hdrKeyList(hdrObject * s)
         if (tag == HEADER_I18NTABLE) continue;
 
 	switch (type) {
+	case RPM_OPENPGP_TYPE:
+	case RPM_ASN1_TYPE:
 	case RPM_BIN_TYPE:
+	case RPM_INT64_TYPE:
 	case RPM_INT32_TYPE:
-	case RPM_CHAR_TYPE:
-	case RPM_INT8_TYPE:
 	case RPM_INT16_TYPE:
+	case RPM_INT8_TYPE:
+	case RPM_CHAR_TYPE:
 	case RPM_STRING_ARRAY_TYPE:
 	case RPM_STRING_TYPE:
 	    PyList_Append(list, o=PyInt_FromLong(tag));
@@ -187,7 +442,7 @@ static PyObject * hdrKeyList(hdrObject * s)
     return list;
 }
 
-/** \ingroup py_c
+/**
  */
 static PyObject * hdrUnload(hdrObject * s, PyObject * args, PyObject *keywords)
 	/*@*/
@@ -222,7 +477,7 @@ static PyObject * hdrUnload(hdrObject * s, PyObject * args, PyObject *keywords)
     return rc;
 }
 
-/** \ingroup py_c
+/**
  */
 static PyObject * hdrExpandFilelist(hdrObject * s)
 	/*@*/
@@ -233,7 +488,7 @@ static PyObject * hdrExpandFilelist(hdrObject * s)
     return Py_None;
 }
 
-/** \ingroup py_c
+/**
  */
 static PyObject * hdrCompressFilelist(hdrObject * s)
 	/*@*/
@@ -244,92 +499,40 @@ static PyObject * hdrCompressFilelist(hdrObject * s)
     return Py_None;
 }
 
-/* make a header with _all_ the tags we need */
-/** \ingroup py_c
+/**
  */
-static void mungeFilelist(Header h)
+static PyObject * hdrGetOrigin(hdrObject * s)
 	/*@*/
 {
-    const char ** fileNames = NULL;
-    int count = 0;
+    const char * origin = NULL;
+    if (s->h != NULL)
 
-    if (!headerIsEntry (h, RPMTAG_BASENAMES)
-	|| !headerIsEntry (h, RPMTAG_DIRNAMES)
-	|| !headerIsEntry (h, RPMTAG_DIRINDEXES))
-	compressFilelist(h);
-
-    rpmfiBuildFNames(h, RPMTAG_BASENAMES, &fileNames, &count);
-
-    if (fileNames == NULL || count <= 0)
-	return;
-
-    /* XXX Legacy tag needs to go away. */
-    headerAddEntry(h, RPMTAG_OLDFILENAMES, RPM_STRING_ARRAY_TYPE,
-			fileNames, count);
-
-    fileNames = _free(fileNames);
+	origin = headerGetOrigin(s->h);
+    if (origin != NULL)
+	return Py_BuildValue("s", origin);
+    Py_INCREF(Py_None);
+    return Py_None;
 }
 
 /**
  */
-static PyObject * rhnUnload(hdrObject * s)
+static PyObject * hdrSetOrigin(hdrObject * s, PyObject * args, PyObject * kwds)
 	/*@*/
 {
-    int len;
-    char * uh;
-    PyObject * rc;
-    Header h;
+    char * kwlist[] = {"origin", NULL};
+    const char * origin = NULL;
 
-    h = headerLink(s->h);
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "s:SetOrigin", kwlist, &origin))
+        return NULL;
 
-    /* Retrofit a RHNPlatform: tag. */
-    if (!headerIsEntry(h, RPMTAG_RHNPLATFORM)) {
-	const char * arch;
-	int_32 at;
-	if (headerGetEntry(h, RPMTAG_ARCH, &at, (void **)&arch, NULL))
-	    headerAddEntry(h, RPMTAG_RHNPLATFORM, at, arch, 1);
-    }
+    if (s->h != NULL && origin != NULL)
+	headerSetOrigin(s->h, origin);
 
-    /* Legacy headers are forced into immutable region. */
-    if (!headerIsEntry(h, RPMTAG_HEADERIMMUTABLE)) {
-	Header nh = headerReload(h, RPMTAG_HEADERIMMUTABLE);
-	/* XXX Another unload/load cycle to "seal" the immutable region. */
-	uh = headerUnload(nh);
-	headerFree(nh);
-	h = headerLoad(uh);
-	headerAllocated(h);
-    }
-
-    /* All headers have SHA1 digest, compute and add if necessary. */
-    if (!headerIsEntry(h, RPMTAG_SHA1HEADER)) {
-	int_32 uht, uhc;
-	const char * digest;
-        size_t digestlen;
-        DIGEST_CTX ctx;
-
-	headerGetEntry(h, RPMTAG_HEADERIMMUTABLE, &uht, (void **)&uh, &uhc);
-
-	ctx = rpmDigestInit(PGPHASHALGO_SHA1, RPMDIGEST_NONE);
-        rpmDigestUpdate(ctx, uh, uhc);
-        rpmDigestFinal(ctx, (void **)&digest, &digestlen, 1);
-
-	headerAddEntry(h, RPMTAG_SHA1RHN, RPM_STRING_TYPE, digest, 1);
-
-	uh = headerFreeData(uh, uht);
-	digest = _free(digest);
-    }
-
-    len = headerSizeof(h, 0);
-    uh = headerUnload(h);
-    headerFree(h);
-
-    rc = PyString_FromStringAndSize(uh, len);
-    uh = _free(uh);
-
-    return rc;
+    Py_INCREF(Py_None);
+    return Py_None;
 }
 
-/** \ingroup py_c
+/**
  */
 static PyObject * hdrFullFilelist(hdrObject * s)
 	/*@*/
@@ -340,7 +543,7 @@ static PyObject * hdrFullFilelist(hdrObject * s)
     return Py_None;
 }
 
-/** \ingroup py_c
+/**
  */
 static PyObject * hdrSprintf(hdrObject * s, PyObject * args, PyObject * kwds)
 	/*@*/
@@ -366,18 +569,7 @@ static PyObject * hdrSprintf(hdrObject * s, PyObject * args, PyObject * kwds)
     return result;
 }
 
-/**
- */
-static int hdr_compare(hdrObject * a, hdrObject * b)
-	/*@*/
-{
-    return rpmVersionCompare(a->h, b->h);
-}
-
-static long hdr_hash(PyObject * h)
-{
-    return (long) h;
-}
+/*@}*/
 
 /** \ingroup py_c
  */
@@ -393,7 +585,9 @@ static struct PyMethodDef hdr_methods[] = {
 	NULL },
     {"fullFilelist",	(PyCFunction) hdrFullFilelist,	METH_NOARGS,
 	NULL },
-    {"rhnUnload",	(PyCFunction) rhnUnload,	METH_NOARGS,
+    {"getorigin",	(PyCFunction) hdrGetOrigin,	METH_NOARGS,
+	NULL },
+    {"setorigin",	(PyCFunction) hdrSetOrigin,	METH_NOARGS,
 	NULL },
     {"sprintf",		(PyCFunction) hdrSprintf,	METH_VARARGS|METH_KEYWORDS,
 	NULL },
@@ -407,6 +601,19 @@ static struct PyMethodDef hdr_methods[] = {
 
     {NULL,		NULL}		/* sentinel */
 };
+
+/**
+ */
+static int hdr_compare(hdrObject * a, hdrObject * b)
+	/*@*/
+{
+    return rpmVersionCompare(a->h, b->h);
+}
+
+static long hdr_hash(PyObject * h)
+{
+    return (long) h;
+}
 
 static PyObject * hdr_getattro(PyObject * o, PyObject * n)
 	/*@*/
@@ -442,13 +649,75 @@ long tagNumFromPyObject (PyObject *item)
 
     if (PyInt_Check(item)) {
 	return PyInt_AsLong(item);
-    } else if (PyString_Check(item)) {
+    } else if (PyString_Check(item) || PyUnicode_Check(item)) {
 	str = PyString_AsString(item);
 	for (i = 0; i < rpmTagTableSize; i++)
 	    if (!xstrcasecmp(rpmTagTable[i].name + 7, str)) break;
 	if (i < rpmTagTableSize) return rpmTagTable[i].val;
     }
     return -1;
+}
+
+/** \ingroup py_c
+ * Retrieve tag info from header.
+ * This is a "dressed" entry to headerGetEntry to do:
+ *	1) DIRNAME/BASENAME/DIRINDICES -> FILENAMES tag conversions.
+ *	2) i18n lookaside (if enabled).
+ *
+ * @param h		header
+ * @param tag		tag
+ * @retval type		address of tag value data type
+ * @retval p		address of pointer to tag value(s)
+ * @retval c		address of number of values
+ * @return		0 on success, 1 on bad magic, 2 on error
+ */
+static int rpmHeaderGetEntry(Header h, int_32 tag, /*@out@*/ int_32 *type,
+		/*@out@*/ void **p, /*@out@*/ int_32 *c)
+	/*@modifies *type, *p, *c @*/
+{
+    switch (tag) {
+    case RPMTAG_OLDFILENAMES:
+    {	const char ** fl = NULL;
+	int count;
+	rpmfiBuildFNames(h, RPMTAG_BASENAMES, &fl, &count);
+	if (count > 0) {
+	    *p = fl;
+	    if (c)	*c = count;
+	    if (type)	*type = RPM_STRING_ARRAY_TYPE;
+	    return 1;
+	}
+	if (c)	*c = 0;
+	return 0;
+    }	/*@notreached@*/ break;
+
+    case RPMTAG_GROUP:
+    case RPMTAG_DESCRIPTION:
+    case RPMTAG_SUMMARY:
+    {	char fmt[128];
+	const char * msgstr;
+	const char * errstr;
+
+	fmt[0] = '\0';
+	(void) stpcpy( stpcpy( stpcpy( fmt, "%{"), tagName(tag)), "}\n");
+
+	/* XXX FIXME: memory leak. */
+        msgstr = headerSprintf(h, fmt, rpmTagTable, rpmHeaderFormats, &errstr);
+	if (msgstr) {
+	    *p = (void *) msgstr;
+	    if (type)	*type = RPM_STRING_TYPE;
+	    if (c)	*c = 1;
+	    return 1;
+	} else {
+	    if (c)	*c = 0;
+	    return 0;
+	}
+    }	/*@notreached@*/ break;
+
+    default:
+	return headerGetEntry(h, tag, type, p, c);
+	/*@notreached@*/ break;
+    }
+    /*@notreached@*/
 }
 
 /** \ingroup py_c
@@ -463,14 +732,14 @@ static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
     int forceArray = 0;
     int freeData = 0;
     char * str;
-    struct headerSprintfExtension_s * ext = NULL;
+    const struct headerSprintfExtension_s * ext = NULL;
     const struct headerSprintfExtension_s * extensions = rpmHeaderFormats;
 
     if (PyCObject_Check (item))
         ext = PyCObject_AsVoidPtr(item);
     else
 	tag = tagNumFromPyObject (item);
-    if (tag == -1 && PyString_Check(item)) {
+    if (tag == -1 && (PyString_Check(item) || PyUnicode_Check(item))) {
 	/* if we still don't have the tag, go looking for the header
 	   extensions */
 	str = PyString_AsString(item);
@@ -537,6 +806,7 @@ static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
     case RPMTAG_CONFLICTNAME:
     case RPMTAG_CONFLICTFLAGS:
     case RPMTAG_CONFLICTVERSION:
+    case RPMTAG_CHANGELOGTIME:
 	forceArray = 1;
 	break;
     case RPMTAG_SUMMARY:
@@ -549,10 +819,25 @@ static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
     }
 
     switch (type) {
+    case RPM_OPENPGP_TYPE:
+    case RPM_ASN1_TYPE:
     case RPM_BIN_TYPE:
 	o = PyString_FromStringAndSize(data, count);
 	break;
 
+    case RPM_INT64_TYPE:
+	if (count != 1 || forceArray) {
+	    metao = PyList_New(0);
+	    for (i = 0; i < count; i++) {
+		o = PyInt_FromLong(((long long *) data)[i]);
+		PyList_Append(metao, o);
+		Py_DECREF(o);
+	    }
+	    o = metao;
+	} else {
+	    o = PyInt_FromLong(*((long long *) data));
+	}
+	break;
     case RPM_INT32_TYPE:
 	if (count != 1 || forceArray) {
 	    metao = PyList_New(0);
@@ -748,59 +1033,6 @@ PyObject * hdrLoad(PyObject * self, PyObject * args, PyObject * kwds)
     h = headerFree(h);	/* XXX ref held by hdr */
 
     return (PyObject *) hdr;
-}
-
-/**
- */
-PyObject * rhnLoad(PyObject * self, PyObject * args, PyObject * kwds)
-{
-    char * obj, * copy=NULL;
-    Header h;
-    int len;
-    char * kwlist[] = {"headers", NULL};
-
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "s#", kwlist, &obj, &len))
-	return NULL;
-
-    /* malloc is needed to avoid surprises from data swab in headerLoad(). */
-    copy = malloc(len);
-    if (copy == NULL) {
-	PyErr_SetString(pyrpmError, "out of memory");
-	return NULL;
-    }
-    memcpy (copy, obj, len);
-
-    h = headerLoad(copy);
-    if (!h) {
-	PyErr_SetString(pyrpmError, "bad header");
-	return NULL;
-    }
-    headerAllocated(h);
-
-    /* XXX avoid the false OK's from rpmverifyDigest() with missing tags. */
-    if (!headerIsEntry(h, RPMTAG_HEADERIMMUTABLE)) {
-	PyErr_SetString(pyrpmError, "bad header, not immutable");
-	headerFree(h);
-	return NULL;
-    }
-
-    /* XXX avoid the false OK's from rpmverifyDigest() with missing tags. */
-    if (!headerIsEntry(h, RPMTAG_SHA1HEADER)
-    &&  !headerIsEntry(h, RPMTAG_SHA1RHN)) {
-	PyErr_SetString(pyrpmError, "bad header, no digest");
-	headerFree(h);
-	return NULL;
-    }
-
-    /* Retrofit a RHNPlatform: tag. */
-    if (!headerIsEntry(h, RPMTAG_RHNPLATFORM)) {
-	const char * arch;
-	int_32 at;
-	if (headerGetEntry(h, RPMTAG_ARCH, &at, (void **)&arch, NULL))
-	    headerAddEntry(h, RPMTAG_RHNPLATFORM, at, arch, 1);
-    }
-
-    return (PyObject *) hdr_Wrap(h);
 }
 
 /**
@@ -1041,35 +1273,24 @@ PyObject * versionCompare (PyObject * self, PyObject * args, PyObject * kwds)
     return Py_BuildValue("i", hdr_compare(h1, h2));
 }
 
-/**
- */
-static int compare_values(const char *str1, const char *str2)
-{
-    if (!str1 && !str2)
-	return 0;
-    else if (str1 && !str2)
-	return 1;
-    else if (!str1 && str2)
-	return -1;
-    return rpmvercmp(str1, str2);
-}
-
 PyObject * labelCompare (PyObject * self, PyObject * args)
 {
-    char *v1, *r1, *e1, *v2, *r2, *e2;
+    EVR_t A = memset(alloca(sizeof(*A)), 0, sizeof(*A));
+    EVR_t B = memset(alloca(sizeof(*B)), 0, sizeof(*B));
     int rc;
 
     if (!PyArg_ParseTuple(args, "(zzz)(zzz)",
-			&e1, &v1, &r1, &e2, &v2, &r2))
+			&A->E, &A->V, &A->R, &B->E, &B->V, &B->R))
 	return NULL;
 
-    rc = compare_values(e1, e2);
-    if (!rc) {
-	rc = compare_values(v1, v2);
-	if (!rc)
-	    rc = compare_values(r1, r2);
-    }
+    if (A->E == NULL)	A->E = "0";
+    if (B->E == NULL)	B->E = "0";
+    if (A->V == NULL)	A->E = "";
+    if (B->V == NULL)	B->E = "";
+    if (A->R == NULL)	A->E = "";
+    if (B->R == NULL)	B->E = "";
+
+    rc = rpmEVRcompare(A, B);
+
     return Py_BuildValue("i", rc);
 }
-
-/*@}*/

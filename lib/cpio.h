@@ -46,7 +46,7 @@ enum cpioErrorReturns {
 	CPIOERR_HDR_TRAILER	= (24			),
 	CPIOERR_UNKNOWN_FILETYPE= (25			),
 	CPIOERR_MISSING_HARDLINK= (26			),
-	CPIOERR_MD5SUM_MISMATCH	= (27			),
+	CPIOERR_DIGEST_MISMATCH	= (27			),
 	CPIOERR_INTERNAL	= (28			),
 	CPIOERR_UNMAPPED_FILE	= (29			),
 	CPIOERR_ENOENT		= (30			),
@@ -56,15 +56,19 @@ enum cpioErrorReturns {
 /** \ingroup payload
  */
 typedef enum cpioMapFlags_e {
-    CPIO_MAP_PATH	= (1 << 0),
-    CPIO_MAP_MODE	= (1 << 1),
-    CPIO_MAP_UID	= (1 << 2),
-    CPIO_MAP_GID	= (1 << 3),
-    CPIO_FOLLOW_SYMLINKS= (1 << 4), /*!< only for building. */
-    CPIO_MAP_ABSOLUTE	= (1 << 5),
-    CPIO_MAP_ADDDOT	= (1 << 6),
-    CPIO_ALL_HARDLINKS	= (1 << 7), /*!< fail if hardlinks are missing. */
-    CPIO_MAP_TYPE	= (1 << 8)  /*!< only for building. */
+    CPIO_MAP_PATH	= (1 <<  0),
+    CPIO_MAP_MODE	= (1 <<  1),
+    CPIO_MAP_UID	= (1 <<  2),
+    CPIO_MAP_GID	= (1 <<  3),
+    CPIO_FOLLOW_SYMLINKS= (1 <<  4), /*!< only for building. */
+    CPIO_MAP_ABSOLUTE	= (1 <<  5),
+    CPIO_MAP_ADDDOT	= (1 <<  6),
+    CPIO_ALL_HARDLINKS	= (1 <<  7), /*!< fail if hardlinks are missing. */
+    CPIO_MAP_TYPE	= (1 <<  8), /*!< only for building. */
+    CPIO_SBIT_CHECK	= (1 <<  9),
+    CPIO_PAYLOAD_LIST	= (1 << 10),
+    CPIO_PAYLOAD_EXTRACT= (1 << 11),
+    CPIO_PAYLOAD_CREATE	= (1 << 12)
 } cpioMapFlags;
 
 #define CPIO_NEWC_MAGIC	"070701"
@@ -92,6 +96,9 @@ struct cpioCrcPhysicalHeader {
 };
 
 #define	PHYS_HDR_SIZE	110		/* Don't depend on sizeof(struct) */
+
+/*@unchecked@*/
+extern int _cpio_debug;
 
 #ifdef __cplusplus
 extern "C" {
@@ -131,7 +138,7 @@ int cpioHeaderRead(FSM_t fsm, struct stat * st)
  * @param rc		error code
  * @return		formatted error string
  */
-/*@observer@*/ const char *const cpioStrerror(int rc)
+/*@observer@*/ const char * cpioStrerror(int rc)
 	/*@*/;
 
 #ifdef __cplusplus

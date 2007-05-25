@@ -12,7 +12,6 @@
 #include "rpmts.h"
 
 #include "misc.h"	/* XXX stripTrailingChar() */
-#include "legacy.h"	/* XXX legacyRetrofit() */
 #include "rpmlead.h"
 
 #include "header_internal.h"	/* XXX headerCheck */
@@ -463,9 +462,18 @@ rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, const char ** msg)
 		siglen = blen + 1;
 	    }
 	    /*@switchbreak@*/ break;
-#ifdef	NOTYET
 	case RPMTAG_RSAHEADER:
-#endif
+	    if (vsflags & RPMVSF_NORSAHEADER)
+		/*@switchbreak@*/ break;
+	    if (entry->info.type != RPM_BIN_TYPE) {
+		(void) snprintf(buf, sizeof(buf), _("hdr RSA: BAD, not binary\n"));
+		goto exit;
+	    }
+/*@-boundswrite@*/
+	    *info = entry->info;	/* structure assignment */
+/*@=boundswrite@*/
+	    siglen = info->count;
+	    /*@switchbreak@*/ break;
 	case RPMTAG_DSAHEADER:
 	    if (vsflags & RPMVSF_NODSAHEADER)
 		/*@switchbreak@*/ break;
@@ -529,7 +537,6 @@ verifyinfo_exit:
     (void) rpmtsSetSig(ts, info->tag, info->type, sig, info->count);
 
     switch (info->tag) {
-#ifdef	NOTYET
     case RPMTAG_RSAHEADER:
 	/* Parse the parameters from the OpenPGP packets that will be needed. */
 	xx = pgpPrtPkts(sig, info->count, dig, (_print_pkts & rpmIsDebug()));
@@ -546,7 +553,7 @@ verifyinfo_exit:
 	ildl[1] = htonl(ildl[1]);
 
 	(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_DIGEST), 0);
-	dig->hdrmd5ctx = rpmDigestInit(PGPHASHALGO_MD5, RPMDIGEST_NONE);
+	dig->hdrmd5ctx = rpmDigestInit(dig->signature.hash_algo, RPMDIGEST_NONE);
 
 	b = (unsigned char *) header_magic;
 	nb = sizeof(header_magic);
@@ -570,7 +577,6 @@ verifyinfo_exit:
 	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_DIGEST), dig->nbytes);
 
 	break;
-#endif
     case RPMTAG_DSAHEADER:
 	/* Parse the parameters from the OpenPGP packets that will be needed. */
 	xx = pgpPrtPkts(sig, info->count, dig, (_print_pkts & rpmIsDebug()));
@@ -648,6 +654,7 @@ rpmRC rpmReadHeader(rpmts ts, FD_t fd, Header *hdrp, const char ** msg)
     size_t uc;
     int_32 nb;
     Header h = NULL;
+    const char * origin = NULL;
     rpmRC rc = RPMRC_FAIL;		/* assume failure */
     int xx;
 
@@ -716,6 +723,11 @@ rpmRC rpmReadHeader(rpmts ts, FD_t fd, Header *hdrp, const char ** msg)
     }
     h->flags |= HEADERFLAG_ALLOCATED;
     ei = NULL;	/* XXX will be freed with header */
+
+    /* Save the opened path as the header origin. */
+    origin = fdGetOPath(fd);
+    if (origin != NULL)
+	(void) headerSetOrigin(h, origin);
     
 exit:
 /*@-boundswrite@*/
@@ -753,6 +765,7 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
     const char * msg;
     rpmVSFlags vsflags;
     rpmRC rc = RPMRC_FAIL;	/* assume failure */
+    rpmop opsave = memset(alloca(sizeof(*opsave)), 0, sizeof(*opsave));
     int xx;
     int i;
 
@@ -771,6 +784,9 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
 	}
     }
 #endif
+
+    /* Snapshot current I/O counters (cached persistent I/O reuses counters) */
+    (void) rpmswAdd(opsave, fdstat_op(fd, FDSTAT_READ));
 
     memset(l, 0, sizeof(*l));
     rc = readLead(fd, l);
@@ -922,10 +938,10 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
 	if (!headerGetEntry(h, RPMTAG_HEADERIMMUTABLE, &uht, &uh, &uhc))
 	    break;
 	(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_DIGEST), 0);
-	dig->md5ctx = rpmDigestInit(PGPHASHALGO_MD5, RPMDIGEST_NONE);
-	(void) rpmDigestUpdate(dig->md5ctx, header_magic, sizeof(header_magic));
+	dig->hdrmd5ctx = rpmDigestInit(dig->signature.hash_algo, RPMDIGEST_NONE);
+	(void) rpmDigestUpdate(dig->hdrmd5ctx, header_magic, sizeof(header_magic));
 	dig->nbytes += sizeof(header_magic);
-	(void) rpmDigestUpdate(dig->md5ctx, uh, uhc);
+	(void) rpmDigestUpdate(dig->hdrmd5ctx, uh, uhc);
 	dig->nbytes += uhc;
 	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_DIGEST), dig->nbytes);
 	rpmtsOp(ts, RPMTS_OP_DIGEST)->count--;	/* XXX one too many */
@@ -992,17 +1008,24 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
 	/* XXX Steal the digest-in-progress from the file handle. */
 	for (i = fd->ndigests - 1; i >= 0; i--) {
 	    FDDIGEST_t fddig = fd->digests + i;
-	    if (fddig->hashctx == NULL)
-		continue;
-	    if (fddig->hashalgo == PGPHASHALGO_MD5) {
+	    if (fddig->hashctx != NULL)
+	    switch (fddig->hashalgo) {
+	    case PGPHASHALGO_MD5:
 		dig->md5ctx = fddig->hashctx;
 		fddig->hashctx = NULL;
-		continue;
-	    }
-	    if (fddig->hashalgo == PGPHASHALGO_SHA1) {
+		/*@switchbreak@*/ break;
+	    case PGPHASHALGO_SHA1:
+	    case PGPHASHALGO_RIPEMD160:
+#if HAVE_BEECRYPT_API_H
+	    case PGPHASHALGO_SHA256:
+	    case PGPHASHALGO_SHA384:
+	    case PGPHASHALGO_SHA512:
+#endif
 		dig->sha1ctx = fddig->hashctx;
 		fddig->hashctx = NULL;
-		continue;
+		/*@switchbreak@*/ break;
+	    default:
+		/*@switchbreak@*/ break;
 	    }
 	}
 	break;
@@ -1035,9 +1058,7 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
 
 exit:
     if (rc != RPMRC_FAIL && h != NULL && hdrp != NULL) {
-	/* Convert legacy headers on the fly ... */
-	legacyRetrofit(h, l);
-	
+
 	/* Append (and remap) signature tags to the metadata. */
 	headerMergeLegacySigs(h, sigh);
 
@@ -1047,6 +1068,13 @@ exit:
 /*@=boundswrite@*/
     }
     h = headerFree(h);
+
+    /* Accumulate time reading package header. */
+    (void) rpmswAdd(rpmtsOp(ts, RPMTS_OP_READHDR),
+		fdstat_op(fd, FDSTAT_READ));
+    (void) rpmswSub(rpmtsOp(ts, RPMTS_OP_READHDR),
+		opsave);
+
     rpmtsCleanDig(ts);
     sigh = rpmFreeSignature(sigh);
     return rc;

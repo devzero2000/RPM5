@@ -89,7 +89,7 @@ urlinfo XurlNew(const char *msg, const char *file, unsigned line)
     u->data = NULL;
     u->bufAlloced = 0;
     u->buf = NULL;
-    u->httpHasRange = 1;
+    u->allow = RPMURL_SERVER_HASRANGE;
     u->httpVersion = 0;
     u->nrefs = 0;
     u->magic = URLMAGIC;
@@ -146,11 +146,7 @@ URLDBGREFS(0, (stderr, "--> url %p -- %d %s at %s:%u\n", u, u->nrefs, msg, file,
 			(u->scheme ? u->scheme : ""));
 	/*@=usereleased@*/
     }
-    if (u->sess != NULL) {
-	/* HACK: neon include has prototype. */
-	ne_session_destroy(u->sess);
-	u->sess = NULL;
-    }
+    xx = davFree(u);
     u->buf = _free(u->buf);
     u->url = _free(u->url);
     u->scheme = _free((void *)u->scheme);
@@ -431,6 +427,8 @@ urltype urlPath(const char * url, const char ** pathp)
 /*
  * Split URL into components. The URL can look like
  *	scheme://user:password@host:port/path
+  * or as in RFC2732 for IPv6 address
+  *    service://user:password@[ip:v6:ad:dr:es:s]:port/path
  */
 /*@-bounds@*/
 /*@-modfilesys@*/
@@ -487,8 +485,14 @@ int urlSplit(const char * url, urlinfo *uret)
     }
     /*@=branchstate@*/
 
-    /* Look for ...host:port */
+    /* Look for ...host:port or [v6addr]:port*/
     fe = f = s;
+    if (strchr(fe, '[') && strchr(fe, ']'))
+    {
+	    fe = strchr(f, ']');
+	    *f++ = '\0';
+	    *fe++ = '\0';
+    }
     while (*fe && *fe != ':') fe++;
     if (*fe == ':') {
 	*fe++ = '\0';
@@ -547,7 +551,7 @@ int urlGetFile(const char * url, const char * dest)
     if (*sfuPath == '\0')
 	return FTPERR_UNKNOWN;
 	
-    sfd = Fopen(url, "r.ufdio");
+    sfd = Fopen(url, "r");
     if (sfd == NULL || Ferror(sfd)) {
 	rpmMessage(RPMMESS_DEBUG, _("failed to open %s: %s\n"), url, Fstrerror(sfd));
 	rc = FTPERR_UNKNOWN;
@@ -564,11 +568,11 @@ int urlGetFile(const char * url, const char * dest)
     if (dest == NULL)
 	return FTPERR_UNKNOWN;
 
-    tfd = Fopen(dest, "w.ufdio");
+    /* XXX this can fail if directory in path does not exist. */
+    tfd = Fopen(dest, "w");
 if (_url_debug)
 fprintf(stderr, "*** urlGetFile sfd %p %s tfd %p %s\n", sfd, url, (tfd ? tfd : NULL), dest);
     if (tfd == NULL || Ferror(tfd)) {
-	/* XXX Fstrerror */
 	rpmMessage(RPMMESS_DEBUG, _("failed to create %s: %s\n"), dest, Fstrerror(tfd));
 	rc = FTPERR_UNKNOWN;
 	goto exit;

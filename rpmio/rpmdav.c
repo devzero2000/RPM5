@@ -27,6 +27,13 @@
 #include "ne_string.h"
 #include "ne_utils.h"
 
+/* XXX API changes for neon-0.26.0 */
+#if !defined(NE_FREE)
+#define	ne_set_persist(_sess, _flag)
+#define	ne_propfind_set_private(_pfh, _create_item, NULL) \
+	ne_propfind_set_private(_pfh, _create_item, NULL, NULL)
+#endif
+
 #include <rpmio_internal.h>
 
 #define _RPMDAV_INTERNAL
@@ -62,17 +69,28 @@ _free(/*@only@*/ /*@null@*/ /*@out@*/ const void * p)
 }
 
 /* =============================================================== */
-static int davFree(urlinfo u)
+int davFree(urlinfo u)
 	/*@globals internalState @*/
 	/*@modifies u, internalState @*/
 {
-    if (u != NULL && u->sess != NULL) {
-	u->capabilities = _free(u->capabilities);
-	if (u->lockstore != NULL)
-	    ne_lockstore_destroy(u->lockstore);
-	u->lockstore = NULL;
-	ne_session_destroy(u->sess);
-	u->sess = NULL;
+    if (u != NULL) {
+	if (u->sess != NULL) {
+	    ne_session_destroy(u->sess);
+	    u->sess = NULL;
+	}
+	switch (u->urltype) {
+	default:
+	    /*@notreached@*/ break;
+	case URL_IS_HTTPS:
+	case URL_IS_HTTP:
+	case URL_IS_HKP:
+	    u->capabilities = _free(u->capabilities);
+	    if (u->lockstore != NULL)
+		ne_lockstore_destroy(u->lockstore);
+	    u->lockstore = NULL;
+	    ne_sock_exit();
+	    break;
+	}
     }
     return 0;
 }
@@ -272,18 +290,36 @@ static int davConnect(urlinfo u)
     /* HACK: where should server capabilities be read? */
     (void) urlPath(u->url, &path);
     /* HACK: perhaps capture Allow: tag, look for PUT permitted. */
+    /* XXX [hdr] Allow: GET,HEAD,POST,OPTIONS,TRACE */
     rc = ne_options(u->sess, path, u->capabilities);
     switch (rc) {
     case NE_OK:
-	break;
+    {	ne_server_capabilities *cap = u->capabilities;
+	if (cap->dav_class1)
+	    u->allow |= RPMURL_SERVER_HASDAVCLASS1;
+	else
+	    u->allow &= ~RPMURL_SERVER_HASDAVCLASS1;
+	if (cap->dav_class2)
+	    u->allow |= RPMURL_SERVER_HASDAVCLASS2;
+	else
+	    u->allow &= ~RPMURL_SERVER_HASDAVCLASS2;
+	if (cap->dav_executable)
+	    u->allow |= RPMURL_SERVER_HASDAVEXEC;
+	else
+	    u->allow &= ~RPMURL_SERVER_HASDAVEXEC;
+    }	break;
     case NE_ERROR:
 	/* HACK: "301 Moved Permanently" on empty subdir. */
 	if (!strncmp("301 ", ne_get_error(u->sess), sizeof("301 ")-1))
 	    break;
-	/*@fallthrough@*/
-    case NE_CONNECT:
+	errno = EIO;		/* HACK: more precise errno. */
+	goto bottom;
     case NE_LOOKUP:
+	errno = ENOENT;		/* HACK: errno same as non-existent path. */
+	goto bottom;
+    case NE_CONNECT:		/* HACK: errno set already? */
     default:
+bottom:
 if (_dav_debug)
 fprintf(stderr, "*** Connect to %s:%d failed(%d):\n\t%s\n",
 		   u->host, u->port, rc, ne_get_error(u->sess));
@@ -371,7 +407,7 @@ static int davInit(const char * url, urlinfo * uret)
 
 exit:
 /*@-boundswrite@*/
-    if (rc == 0 && uret != NULL)
+    if (uret != NULL)
 	*uret = urlLink(u, __FUNCTION__);
 /*@=boundswrite@*/
     u = urlFree(u, "urlSplit (davInit)");
@@ -406,8 +442,8 @@ struct fetch_resource_s {
 static void *fetch_destroy_item(/*@only@*/ struct fetch_resource_s *res)
 	/*@modifies res @*/
 {
-    NE_FREE(res->uri);
-    NE_FREE(res->error_reason);
+    ne_free(res->uri);
+    ne_free(res->error_reason);
     res = _free(res);
     return NULL;
 }
@@ -446,6 +482,8 @@ struct fetch_context_s {
     int ac;
     int nalloced;
     ARGV_t av;
+/*@null@*/ /*@shared@*/
+    struct stat *st;
     mode_t * modes;
     size_t * sizes;
     time_t * mtimes;
@@ -473,7 +511,7 @@ static void *fetch_destroy_context(/*@only@*/ /*@null@*/ struct fetch_context_s 
 }
 
 /*@null@*/
-static void *fetch_create_context(const char *uri)
+static void *fetch_create_context(const char *uri, /*@null@*/ struct stat *st)
 	/*@globals internalState @*/
 	/*@modifies internalState @*/
 {
@@ -488,6 +526,8 @@ static void *fetch_create_context(const char *uri)
     ctx = ne_calloc(sizeof(*ctx));
     ctx->uri = xstrdup(uri);
     ctx->u = urlLink(u, __FUNCTION__);
+    if ((ctx->st = st) != NULL)
+	memset(ctx->st, 0, sizeof(*ctx->st));
     return ctx;
 }
 
@@ -557,7 +597,7 @@ static int fetch_compare(const struct fetch_resource_s *r1,
     }
 }
 
-static void fetch_results(void *userdata, const char *uri,
+static void fetch_results(void *userdata, void *uarg,
 		    const ne_prop_result_set *set)
 	/*@*/
 {
@@ -568,7 +608,13 @@ static void fetch_results(void *userdata, const char *uri,
     const ne_status *status = NULL;
     const char * path = NULL;
 
+#if !defined(NE_FREE)
+    const ne_uri * uri = uarg;
+    (void) urlPath(uri->path, &path);
+#else
+    const char * uri = uarg;
     (void) urlPath(uri, &path);
+#endif
     if (path == NULL)
 	return;
 
@@ -684,7 +730,7 @@ static int davFetch(const urlinfo u, struct fetch_context_s * ctx)
     (void) urlPath(u->url, &path);
     pfh = ne_propfind_create(u->sess, ctx->uri, depth);
 
-    /* HACK: need to set u->httpHasRange here. */
+    /* HACK: need to set RPMURL_SERVER_HASRANGE in u->allow here. */
 
     ctx->resrock = resrock;
     ctx->include_target = include_target;
@@ -727,7 +773,7 @@ static int davFetch(const urlinfo u, struct fetch_context_s * ctx)
 	xx = argvAdd(&ctx->av, val);
 if (_dav_debug < 0)
 fprintf(stderr, "*** argvAdd(%p,\"%s\")\n", &ctx->av, val);
-	NE_FREE(val);
+	ne_free(val);
 
 	while (ctx->ac >= ctx->nalloced) {
 	    if (ctx->nalloced <= 0)
@@ -764,7 +810,70 @@ fprintf(stderr, "*** argvAdd(%p,\"%s\")\n", &ctx->av, val);
 	current = fetch_destroy_item(current);
     }
     ctx->resrock = NULL;	/* HACK: avoid leaving stack reference. */
+    /* HACK realloc to truncate modes/sizes/mtimes */
 
+    return rc;
+}
+
+/* HACK this should be rewritten to use davReq/davResp w callbacks. */
+static int davHEAD(urlinfo u, struct stat *st) 
+	/*@modifies *st @*/
+{
+    ne_request *req;
+    const char *htag;
+    const char *value = NULL;
+    int rc;
+
+    st->st_mode = S_IFREG;
+    st->st_blksize = 4 * 1024;	/* HACK correct for linux ext */
+    st->st_size = -1;
+    st->st_atime = -1;
+    st->st_mtime = -1;
+    st->st_ctime = -1;
+
+    req = ne_request_create(u->sess, "HEAD", u->url);
+
+    rc = ne_request_dispatch(req);
+    switch (rc) {
+    default:
+	goto exit;
+	/*@notreached@*/
+    case NE_OK:
+	if (ne_get_status(req)->klass != 2) {
+	    rc = NE_ERROR;
+	    goto exit;
+	}
+	break;
+    }
+
+#ifdef	NOTYET
+    htag = "ETag";
+    value = ne_get_response_header(req, htag); 
+    if (value) {
+	/* inode-size-mtime */
+    }
+#endif
+
+    htag = "Content-Length";
+#if defined(HAVE_NEON_NE_GET_RESPONSE_HEADER)
+    value = ne_get_response_header(req, htag); 
+#endif
+    if (value) {
+	st->st_size = strtoll(value, NULL, 10);
+	st->st_blocks = (st->st_size + 511)/512;
+    }
+
+    htag = "Last-Modified";
+#if defined(HAVE_NEON_NE_GET_RESPONSE_HEADER)
+    value = ne_get_response_header(req, htag); 
+#endif
+    if (value) {
+	st->st_mtime = ne_httpdate_parse(value);
+	st->st_atime = st->st_ctime = st->st_mtime;	/* HACK */
+    }
+
+exit:
+    ne_request_destroy(req);
     return rc;
 }
 
@@ -780,11 +889,19 @@ static int davNLST(struct fetch_context_s * ctx)
     if (rc || u == NULL)
 	goto exit;
 
-    rc = davFetch(u, ctx);
+/* HACK do PROPFIND through davFetch iff enabled, otherwise HEAD Content-length/ETag/Last-Modified */
+    if (u->allow & RPMURL_SERVER_HASDAV)
+	   rc = davFetch(u, ctx);	/* use PROPFIND to get contentLength */
+    else
+	   rc = davHEAD(u, ctx->st);	/* use HEAD to get contentLength */
+
     switch (rc) {
     case NE_OK:
         break;
     case NE_ERROR:
+	/* HACK: "405 Method Not Allowed" for PROPFIND on non-DAV servers. */
+	/* XXX #206066 OPTIONS is ok, but PROPFIND from Stat() fails. */
+	/* rpm -qp --rpmiodebug --davdebug http://people.freedesktop.org/~sandmann/metacity-2.16.0-2.fc6/i386/metacity-2.16.0-2.fc6.i386.rpm */
 	/* HACK: "301 Moved Permanently" on empty subdir. */
 	if (!strncmp("301 ", ne_get_error(u->sess), sizeof("301 ")-1))
 	    break;
@@ -797,8 +914,7 @@ fprintf(stderr, "*** Fetch from %s:%d failed:\n\t%s\n",
     }
 
 exit:
-    if (rc)
-	xx = davFree(u);
+    xx = davFree(u);
     return rc;
 }
 
@@ -849,9 +965,9 @@ static void davAcceptRanges(void * userdata, /*@null@*/ const char * value)
 if (_dav_debug < 0)
 fprintf(stderr, "*** u %p Accept-Ranges: %s\n", u, value);
     if (!strcmp(value, "bytes"))
-	u->httpHasRange = 1;
+	u->allow |= RPMURL_SERVER_HASRANGE;
     if (!strcmp(value, "none"))
-	u->httpHasRange = 0;
+	u->allow &= ~RPMURL_SERVER_HASRANGE;
 }
 /*@=mustmod@*/
 
@@ -1072,7 +1188,7 @@ assert(count >= 128);	/* HACK: see ne_request.h comment */
     rc = ne_read_response_block(fd->req, buf, count);
 
 if (_dav_debug < 0) {
-fprintf(stderr, "*** davRead(%p,%p,0x%x) rc 0x%x\n", cookie, buf, count, (unsigned)rc);
+fprintf(stderr, "*** davRead(%p,%p,0x%x) rc 0x%x\n", cookie, buf, (unsigned)count, (unsigned)rc);
 #ifdef	DYING
 hexdump(buf, rc);
 #endif
@@ -1110,7 +1226,7 @@ assert(fd->req != NULL);
     rc = (xx == 0 ? count : -1);
 
 if (_dav_debug < 0)
-fprintf(stderr, "*** davWrite(%p,%p,0x%x) rc 0x%x\n", cookie, buf, count, rc);
+fprintf(stderr, "*** davWrite(%p,%p,0x%x) rc 0x%x\n", cookie, buf, (unsigned)count, (unsigned)rc);
 #ifdef	DYING
 if (count > 0)
 hexdump(buf, count);
@@ -1288,8 +1404,9 @@ int davStat(const char * path, /*@out@*/ struct stat *st)
     int rc = -1;
 
 /* HACK: neon really wants collections with trailing '/' */
-    ctx = fetch_create_context(path);
+    ctx = fetch_create_context(path, st);
     if (ctx == NULL) {
+fprintf(stderr, "==> %s fetch_create_context ctx %p\n", __FUNCTION__, ctx);
 /* HACK: errno = ??? */
 	goto exit;
     }
@@ -1299,10 +1416,11 @@ int davStat(const char * path, /*@out@*/ struct stat *st)
 	goto exit;
     }
 
-    memset(st, 0, sizeof(*st));
-    st->st_mode = ctx->modes[0];
-    st->st_size = ctx->sizes[0];
-    st->st_mtime = ctx->mtimes[0];
+    if (st->st_mode == 0)
+	st->st_mode = (ctx->ac > 1 ? S_IFDIR : S_IFREG);
+    st->st_size = (ctx->sizes ? ctx->sizes[0] : st->st_size);
+    st->st_mtime = (ctx->mtimes ? ctx->mtimes[0] : st->st_mtime);
+    st->st_atime = st->st_ctime = st->st_mtime;	/* HACK */
     if (S_ISDIR(st->st_mode)) {
 	st->st_nlink = 2;
 	st->st_mode |= 0755;
@@ -1315,9 +1433,10 @@ int davStat(const char * path, /*@out@*/ struct stat *st)
     /* XXX fts(3) needs/uses st_ino, make something up for now. */
     if (st->st_ino == 0)
 	st->st_ino = dav_st_ino++;
+
+exit:
 if (_dav_debug < 0)
 fprintf(stderr, "*** davStat(%s) rc %d\n%s", path, rc, statstr(st, buf));
-exit:
     ctx = fetch_destroy_context(ctx);
     return rc;
 }
@@ -1333,7 +1452,7 @@ int davLstat(const char * path, /*@out@*/ struct stat *st)
     int rc = -1;
 
 /* HACK: neon really wants collections with trailing '/' */
-    ctx = fetch_create_context(path);
+    ctx = fetch_create_context(path, st);
     if (ctx == NULL) {
 /* HACK: errno = ??? */
 	goto exit;
@@ -1344,10 +1463,11 @@ int davLstat(const char * path, /*@out@*/ struct stat *st)
 	goto exit;
     }
 
-    memset(st, 0, sizeof(*st));
-    st->st_mode = ctx->modes[0];
-    st->st_size = ctx->sizes[0];
-    st->st_mtime = ctx->mtimes[0];
+    if (st->st_mode == 0)
+	st->st_mode = (ctx->ac > 1 ? S_IFDIR : S_IFREG);
+    st->st_size = (ctx->sizes ? ctx->sizes[0] : st->st_size);
+    st->st_mtime = (ctx->mtimes ? ctx->mtimes[0] : st->st_mtime);
+    st->st_atime = st->st_ctime = st->st_mtime;	/* HACK */
     if (S_ISDIR(st->st_mode)) {
 	st->st_nlink = 2;
 	st->st_mode |= 0755;
@@ -1434,8 +1554,8 @@ struct dirent * avReaddir(DIR * dir)
     dp->d_ino = i + 1;		/* W2DO? */
     dp->d_reclen = 0;		/* W2DO? */
 
-#if !defined(hpux) && !defined(sun)
-#if !defined(__APPLE__)
+#if !(defined(hpux) || defined(__hpux) || defined(sun))
+#if !defined(__APPLE__) && !defined(__FreeBSD_kernel__) && !defined(__FreeBSD__)
     dp->d_off = 0;		/* W2DO? */
 #endif
 /*@-boundsread@*/
@@ -1558,8 +1678,8 @@ struct dirent * davReaddir(DIR * dir)
     dp->d_ino = i + 1;		/* W2DO? */
     dp->d_reclen = 0;		/* W2DO? */
 
-#if !defined(hpux) && !defined(sun)
-#if !defined(__APPLE__)
+#if !(defined(hpux) || defined(__hpux) || defined(sun))
+#if !defined(__APPLE__) && !defined(__FreeBSD_kernel__)
     dp->d_off = 0;		/* W2DO? */
 #endif
 /*@-boundsread@*/
@@ -1603,7 +1723,7 @@ if (_dav_debug < 0)
 fprintf(stderr, "*** davOpendir(%s)\n", path);
 
     /* Load DAV collection into argv. */
-    ctx = fetch_create_context(path);
+    ctx = fetch_create_context(path, NULL);
     if (ctx == NULL) {
 /* HACK: errno = ??? */
 	return NULL;

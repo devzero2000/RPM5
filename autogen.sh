@@ -3,14 +3,14 @@
 export CFLAGS
 export LDFLAGS
 
-LTV="libtoolize (GNU libtool) 1.5.18"
-ACV="autoconf (GNU Autoconf) 2.59"
-AMV="automake (GNU automake) 1.9.5"
+LTV="libtoolize (GNU libtool) 1.5.22"
+ACV="autoconf (GNU Autoconf) 2.61"
+AMV="automake (GNU automake) 1.10"
 USAGE="
 This script documents the versions of the tools I'm using to build rpm:
-	libtool-1.5.18
-	autoconf-2.59
-	automake-1.9.5
+	libtool-1.5.22
+	autoconf-2.61
+	automake-1.10
 Simply edit this script to change the libtool/autoconf/automake versions
 checked if you need to, as rpm should build (and has built) with all
 recent versions of libtool/autoconf/automake.
@@ -31,8 +31,9 @@ esac
 [ "`automake --version | head -1 | sed -e 's/1\.4[a-z]/1.4/'`" != "$AMV" ] && echo "$USAGE" # && exit 1
 
 myopts=
-if [ X"$@" = X  -a "X`uname -s`" = "XDarwin" -a -d /opt/local ]; then
-    export myopts="--prefix=/usr --disable-nls"
+if [ X"$*" = X  -a "X`uname -s`" = "XDarwin" -a -d /opt/local ]; then
+    export myprefix=/opt/local
+    export myopts="--prefix=${myprefix} --disable-nls"
     export CPPFLAGS="-I${myprefix}/include"
 fi
 
@@ -54,9 +55,18 @@ fi
 if [ -d neon ]; then
     (echo "--- neon"; cd neon; sh ./autogen.sh "$@")
 fi
-if [ -d sqlite ]; then
-    (echo "--- sqlite"; cd neon; sh ./autogen.sh --disable-tcl "$@")
+if [ -d syck ]; then
+    (echo "--- syck"; cd syck; sh ./bootstrap "$@")
 fi
+#if [ -d sqlite ]; then
+#    (echo "--- sqlite"; cd sqlite; sh ./autogen.sh --disable-tcl "$@")
+#fi
+
+for d in wdj wnh yaml; do
+    [ -d $d ] && continue
+    mkdir -p $d
+    touch $d/Makefile.in
+done
 
 echo "--- rpm"
 $libtoolize --copy --force
@@ -69,7 +79,7 @@ if [ "$1" = "--noconfigure" ]; then
     exit 0;
 fi
 
-if [ X"$@" = X  -a "X`uname -s`" = "XLinux" ]; then
+if [ X"$*" = X  -a "X`uname -s`" = "XLinux" ]; then
     if [ -d /usr/share/man ]; then
 	mandir=/usr/share/man
 	infodir=/usr/share/info
@@ -77,18 +87,17 @@ if [ X"$@" = X  -a "X`uname -s`" = "XLinux" ]; then
 	mandir=/usr/man
 	infodir=/usr/info
     fi
-    if [ -d /usr/lib/nptl ]; then
-	enable_posixmutexes="--enable-posixmutexes"
-    else
-	enable_posixmutexes=
-    fi
+#    if [ -d /usr/include/nptl ]; then
+#	enable_posixmutexes="--enable-posixmutexes"
+#    else
+#	enable_posixmutexes="--with-mutex=UNIX/fcntl"
+#    fi
     if [ -d /usr/include/selinux ]; then
 	disable_selinux=
     else
 	disable_selinux="--without-selinux"
     fi
-
-    sh ./configure --prefix=/usr --sysconfdir=/etc --localstatedir=/var --infodir=${infodir} --mandir=${mandir} ${enable_posixmutexes} ${disable_selinux} --disable-tcl "$@"
+    sh ./configure --prefix=/usr --sysconfdir=/etc --localstatedir=/var --infodir=${infodir} --mandir=${mandir} ${enable_posixmutexes} ${disable_selinux} "$@"
 else
     ./configure ${myopts} "$@"
 fi

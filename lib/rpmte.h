@@ -5,6 +5,7 @@
  * \file lib/rpmte.h
  * Structures used for an "rpmte" transaction element.
  */
+#include <argv.h>
 
 /**
  */
@@ -45,13 +46,27 @@ struct tsortInfo_s {
 #define	tsi_count	tsi_u.count
 #define	tsi_suc		tsi_u.suc
 /*@owned@*/ /*@null@*/
-    struct tsortInfo_s * tsi_next;
+    tsortInfo	tsi_next;
 /*@exposed@*/ /*@dependent@*/ /*@null@*/
-    rpmte tsi_chain;
+    rpmte	tsi_chain;
+    int		tsi_tagn;
     int		tsi_reqx;
+    int		tsi_queued;
     int		tsi_qcnt;
 };
 /*@=fielduse@*/
+
+/** \ingroup rpmte
+ * Info used to link transaction element upgrade/rollback side effects.
+ */
+struct rpmChainLink_s {
+/*@only@*/ /*@null@*/
+    ARGV_t Pkgid;		/*!< link element pkgid's. */
+/*@only@*/ /*@null@*/
+    ARGV_t Hdrid;		/*!< link element hdrid's. */
+/*@only@*/ /*@null@*/
+    ARGV_t NEVRA;		/*!< link element NEVRA's. */
+};
 
 /** \ingroup rpmte
  * A single package instance to be installed/removed atomically.
@@ -65,6 +80,10 @@ struct rpmte_s {
     const char * NEVR;		/*!< Package name-version-release. */
 /*@only@*/
     const char * NEVRA;		/*!< Package name-version-release.arch. */
+/*@only@*/ /*@relnull@*/
+    const char * pkgid;		/*!< Package identifier (header+payload md5). */
+/*@only@*/ /*@relnull@*/
+    const char * hdrid;		/*!< Package header identifier (header sha1). */
 /*@owned@*/
     const char * name;		/*!< Name: */
 /*@only@*/ /*@null@*/
@@ -77,8 +96,6 @@ struct rpmte_s {
     const char * arch;		/*!< Architecture hint. */
 /*@only@*/ /*@null@*/
     const char * os;		/*!< Operating system hint. */
-    int archScore;		/*!< (TR_ADDED) Arch score. */
-    int osScore;		/*!< (TR_ADDED) Os score. */
     int isSource;		/*!< (TR_ADDED) source rpm? */
 
     rpmte parent;		/*!< Parent transaction element. */
@@ -91,16 +108,9 @@ struct rpmte_s {
 /*@owned@*/
     tsortInfo tsi;		/*!< Dependency ordering chains. */
 
-/*@refcounted@*/ /*@null@*/
-    rpmds this;			/*!< This package's provided NEVR. */
-/*@refcounted@*/ /*@null@*/
-    rpmds provides;		/*!< Provides: dependencies. */
-/*@refcounted@*/ /*@null@*/
-    rpmds requires;		/*!< Requires: dependencies. */
-/*@refcounted@*/ /*@null@*/
-    rpmds conflicts;		/*!< Conflicts: dependencies. */
-/*@refcounted@*/ /*@null@*/
-    rpmds obsoletes;		/*!< Obsoletes: dependencies. */
+/*@null@*/
+    rpmPRCO PRCO;		/*!< Current dependencies. */
+
 /*@refcounted@*/ /*@null@*/
     rpmfi fi;			/*!< File information. */
 
@@ -110,14 +120,21 @@ struct rpmte_s {
 /*@exposed@*/ /*@dependent@*/ /*@null@*/
     fnpyKey key;		/*!< (TR_ADDED) Retrieval key. */
 /*@owned@*/ /*@null@*/
-    rpmRelocation * relocs;	/*!< (TR_ADDED) Payload file relocations. */
+    rpmRelocation relocs;	/*!< (TR_ADDED) Payload file relocations. */
     int nrelocs;		/*!< (TR_ADDED) No. of relocations. */
     int autorelocatex;		/*!< (TR_ADDED) Auto relocation entry index. */
 /*@refcounted@*/ /*@null@*/	
     FD_t fd;			/*!< (TR_ADDED) Payload file descriptor. */
 
-/*@-fielduse@*/	/* LCL: confused by union? */
-    union {
+    struct rpmChainLink_s blink;/*!< Backward link info to erased element. */
+    struct rpmChainLink_s flink;/*!< Forward link info to installed element. */
+    int linkFailed;		/*!< Did the linked element upgrade succeed? */
+    int done;			/*!< Has the element been installed/erased? */
+
+    int installed;		/*!< Was the header installed? */
+    int downgrade;		/*!< Adjust package count on downgrades. */
+
+    struct {
 /*@exposed@*/ /*@dependent@*/ /*@null@*/
 	alKey addedKey;
 	struct {
@@ -126,7 +143,6 @@ struct rpmte_s {
 	    int dboffset;
 	} removed;
     } u;
-/*@=fielduse@*/
 
 };
 
@@ -171,7 +187,7 @@ rpmte rpmteFree(/*@only@*/ /*@null@*/ rpmte te)
 /*@only@*/ /*@null@*/
 rpmte rpmteNew(const rpmts ts, Header h, rpmElementType type,
 		/*@exposed@*/ /*@dependent@*/ /*@null@*/ fnpyKey key,
-		/*@null@*/ rpmRelocation * relocs,
+		/*@null@*/ rpmRelocation relocs,
 		int dboffset,
 		/*@exposed@*/ /*@dependent@*/ /*@null@*/ alKey pkgKey)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
@@ -462,15 +478,6 @@ alKey rpmteSetAddedKey(rpmte te,
 	/*@modifies te @*/;
 
 /**
- * Retrieve dependent pkgKey of TR_REMOVED transaction element.
- * @param te		transaction element
- * @return		dependent pkgKey
- */
-/*@exposed@*/ /*@dependent@*/ /*@null@*/
-alKey rpmteDependsOnKey(rpmte te)
-	/*@*/;
-
-/**
  * Retrieve rpmdb instance of TR_REMOVED transaction element.
  * @param te		transaction element
  * @return		rpmdb instance
@@ -495,6 +502,28 @@ extern const char * rpmteNEVR(rpmte te)
 /*@-exportlocal@*/
 /*@observer@*/
 extern const char * rpmteNEVRA(rpmte te)
+	/*@*/;
+/*@=exportlocal@*/
+
+/**
+ * Retrieve pkgid string from transaction element.
+ * @param te		transaction element
+ * @return		pkgid string
+ */
+/*@-exportlocal@*/
+/*@observer@*/ /*@null@*/
+extern const char * rpmtePkgid(rpmte te)
+	/*@*/;
+/*@=exportlocal@*/
+
+/**
+ * Retrieve hdrid string from transaction element.
+ * @param te		transaction element
+ * @return		hdrid string
+ */
+/*@-exportlocal@*/
+/*@observer@*/ /*@null@*/
+extern const char * rpmteHdrid(rpmte te)
 	/*@*/;
 /*@=exportlocal@*/
 
@@ -542,6 +571,19 @@ rpmfi rpmteFI(rpmte te, rpmTag tag)
 void rpmteColorDS(rpmte te, rpmTag tag)
         /*@modifies te @*/;
 /*@=exportlocal@*/
+
+/**
+ * Chain p <-> q forward/backward transaction element links.
+ * @param p		installed element (needs backward link)
+ * @param q		erased element (needs forward link)
+ * @param oh		erased element header
+ * @param msg		operation identifier for debugging (NULL uses "")
+ * @return		0 on success
+ */
+int rpmteChain(rpmte p, rpmte q, Header oh, /*@null@*/ const char * msg)
+	/*@modifies p, q, oh @*/;
+
+#define	RPMTE_CHAIN_END	"CHAIN END"	/*!< End of chain marker. */
 
 /**
  * Return transaction element index.
@@ -606,6 +648,59 @@ rpmtsi XrpmtsiInit(rpmts ts,
 /*@dependent@*/ /*@null@*/
 rpmte rpmtsiNext(rpmtsi tsi, rpmElementType type)
         /*@modifies tsi @*/;
+
+#if !defined(SWIG)
+#if	defined(_RPMTE_INTERNAL)
+static inline void rpmtePrintID(rpmte p)
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/
+{
+    if (p != NULL) {
+	if (p->blink.Pkgid) argvPrint("blink.Pkgid", p->blink.Pkgid, NULL);
+	if (p->blink.Hdrid) argvPrint("blink.Hdrid", p->blink.Hdrid, NULL);
+	if (p->blink.NEVRA) argvPrint("blink.NEVRA", p->blink.NEVRA, NULL);
+	if (p->flink.Pkgid) argvPrint("flink.Pkgid", p->flink.Pkgid, NULL);
+	if (p->flink.Hdrid) argvPrint("flink.Hdrid", p->flink.Hdrid, NULL);
+	if (p->flink.NEVRA) argvPrint("flink.NEVRA", p->flink.NEVRA, NULL);
+    }
+};
+#endif
+
+static inline void hdrPrintInstalled(Header h)
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/
+{
+    const char * qfmt = "[%{erasednevra} O:%{packageorigin} P:%{erasedpkgid} H:%{erasedhdrid}\n]";
+    const char * errstr = "(unknown error)";
+/*@-modobserver@*/
+    const char * str = headerSprintf(h, qfmt, rpmTagTable, rpmHeaderFormats, &errstr);
+/*@=modobserver@*/
+
+    if (str == NULL)
+	fprintf(stderr, "error: %s\n", errstr);
+    else {
+	fprintf(stderr, "%s", str);
+	str = _free(str);
+    }
+}
+
+static inline void hdrPrintErased(Header h)
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/
+{
+    const char * qfmt = "[%{installednevra} O:%{packageorigin} P:%{installedpkgid} H:%{installedhdrid}\n]";
+    const char * errstr = "(unknown error)";
+/*@-modobserver@*/
+    const char * str = headerSprintf(h, qfmt, rpmTagTable, rpmHeaderFormats, &errstr);
+/*@=modobserver@*/
+    if (str == NULL)
+	fprintf(stderr, "error: %s\n", errstr);
+    else {
+	fprintf(stderr, "%s", str);
+	str = _free(str);
+    }
+}
+#endif
 
 #ifdef __cplusplus
 }

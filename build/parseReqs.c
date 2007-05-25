@@ -5,29 +5,9 @@
 
 #include "system.h"
 
+#define	_RPMEVR_INTERNAL
 #include "rpmbuild.h"
 #include "debug.h"
-
-/**
- */
-/*@observer@*/ /*@unchecked@*/
-static struct ReqComp {
-/*@observer@*/ /*@null@*/ const char * token;
-    rpmsenseFlags sense;
-} ReqComparisons[] = {
-    { "<=", RPMSENSE_LESS | RPMSENSE_EQUAL},
-    { "=<", RPMSENSE_LESS | RPMSENSE_EQUAL},
-    { "<", RPMSENSE_LESS},
-
-    { "==", RPMSENSE_EQUAL},
-    { "=", RPMSENSE_EQUAL},
-    
-    { ">=", RPMSENSE_GREATER | RPMSENSE_EQUAL},
-    { "=>", RPMSENSE_GREATER | RPMSENSE_EQUAL},
-    { ">", RPMSENSE_GREATER},
-
-    { NULL, 0 },
-};
 
 #define	SKIPWHITE(_x)	{while(*(_x) && (xisspace(*_x) || *(_x) == ',')) (_x)++;}
 #define	SKIPNONWHITE(_x){while(*(_x) &&!(xisspace(*_x) || *(_x) == ',')) (_x)++;}
@@ -55,15 +35,15 @@ int parseRCPOT(Spec spec, Package pkg, const char *field, rpmTag tagN,
 	break;
     case RPMTAG_BUILDCONFLICTS:
 	tagflags |= RPMSENSE_CONFLICTS;
-	h = spec->buildRestrictions;
+	h = spec->sourceHeader;
 	break;
     case RPMTAG_PREREQ:
-	tagflags |= RPMSENSE_PREREQ;
+	tagflags |= RPMSENSE_ANY;
 	h = pkg->header;
 	break;
-    case RPMTAG_BUILDPREREQ:
-	tagflags |= RPMSENSE_PREREQ;
-	h = spec->buildRestrictions;
+    case RPMTAG_TRIGGERPREIN:
+	tagflags |= RPMSENSE_TRIGGERPREIN;
+	h = pkg->header;
 	break;
     case RPMTAG_TRIGGERIN:
 	tagflags |= RPMSENSE_TRIGGERIN;
@@ -77,9 +57,23 @@ int parseRCPOT(Spec spec, Package pkg, const char *field, rpmTag tagN,
 	tagflags |= RPMSENSE_TRIGGERUN;
 	h = pkg->header;
 	break;
+    case RPMTAG_BUILDSUGGESTS:
+    case RPMTAG_BUILDENHANCES:
+	tagflags |= RPMSENSE_MISSINGOK;
+	h = spec->sourceHeader;
+	break;
+    case RPMTAG_BUILDPREREQ:
     case RPMTAG_BUILDREQUIRES:
 	tagflags |= RPMSENSE_ANY;
-	h = spec->buildRestrictions;
+	h = spec->sourceHeader;
+	break;
+    case RPMTAG_BUILDPROVIDES:
+	tagflags |= RPMSENSE_PROVIDES;
+	h = spec->sourceHeader;
+	break;
+    case RPMTAG_BUILDOBSOLETES:
+	tagflags |= RPMSENSE_OBSOLETES;
+	h = spec->sourceHeader;
 	break;
     default:
     case RPMTAG_REQUIREFLAGS:
@@ -90,6 +84,7 @@ int parseRCPOT(Spec spec, Package pkg, const char *field, rpmTag tagN,
 
 /*@-boundsread@*/
     for (r = field; *r != '\0'; r = re) {
+	size_t nr;
 	SKIPWHITE(r);
 	if (*r == '\0')
 	    break;
@@ -97,10 +92,14 @@ int parseRCPOT(Spec spec, Package pkg, const char *field, rpmTag tagN,
 	Flags = (tagflags & ~RPMSENSE_SENSEMASK);
 
 	/* Tokens must begin with alphanumeric, _, or / */
-	if (!(xisalnum(r[0]) || r[0] == '_' || r[0] == '/')) {
+	nr = strlen(r);
+	if (!(xisalnum(r[0]) || r[0] == '_' || r[0] == '/'
+	 || (nr > 2 && r[0] == '!')
+	 || (nr > 3 && r[0] == '%' && r[1] == '{' && r[nr-1] == '}')))
+	{
 	    rpmError(RPMERR_BADSPEC,
-		     _("line %d: Dependency tokens must begin with alpha-numeric, '_' or '/': %s\n"),
-		     spec->lineNum, spec->line);
+		     _("line %d: Dependency \"%s\" must begin with alpha-numeric, '_' or '/': %s\n"),
+		     spec->lineNum, spec->line, r);
 	    return RPMERR_BADSPEC;
 	}
 
@@ -120,43 +119,26 @@ int parseRCPOT(Spec spec, Package pkg, const char *field, rpmTag tagN,
 
 	/* Check for possible logical operator */
 	if (ve > v) {
-	  struct ReqComp *rc;
-	  for (rc = ReqComparisons; rc->token != NULL; rc++) {
-	    if ((ve-v) != strlen(rc->token) || strncmp(v, rc->token, (ve-v)))
-		/*@innercontinue@*/ continue;
-
-	    if (r[0] == '/') {
+	    rpmsenseFlags F = rpmEVRflags(v, &ve);
+	    if (F && r[0] == '/') {
 		rpmError(RPMERR_BADSPEC,
 			 _("line %d: Versioned file name not permitted: %s\n"),
 			 spec->lineNum, spec->line);
 		return RPMERR_BADSPEC;
 	    }
-
-	    switch(tagN) {
-	    case RPMTAG_BUILDPREREQ:
-	    case RPMTAG_PREREQ:
-	    case RPMTAG_PROVIDEFLAGS:
-	    case RPMTAG_OBSOLETEFLAGS:
-		/* Add prereq on rpmlib that has versioned dependencies. */
-		if (!rpmExpandNumeric("%{?_noVersionedDependencies}"))
-		    (void) rpmlibNeedsFeature(h, "VersionedDependencies", "3.0.3-1");
-		/*@switchbreak@*/ break;
-	    default:
-		/*@switchbreak@*/ break;
+	    if (F) {
+		/* now parse EVR */
+		v = ve;
+		SKIPWHITE(v);
+		ve = v;
+		SKIPNONWHITE(ve);
 	    }
-	    Flags |= rc->sense;
-
-	    /* now parse EVR */
-	    v = ve;
-	    SKIPWHITE(v);
-	    ve = v;
-	    SKIPNONWHITE(ve);
-	    /*@innerbreak@*/ break;
-	  }
+	    Flags &= ~RPMSENSE_SENSEMASK;
+	    Flags |= F;
 	}
 
 	/*@-branchstate@*/
-	if (Flags & RPMSENSE_SENSEMASK) {
+ 	if (Flags & RPMSENSE_SENSEMASK) {
 	    if (*v == '\0' || ve == v) {
 		rpmError(RPMERR_BADSPEC, _("line %d: Version required: %s\n"),
 			spec->lineNum, spec->line);

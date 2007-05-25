@@ -7,19 +7,20 @@
 #include <rpmcli.h>
 
 #include "rpmdb.h"
-#include "rpmds.h"
+#ifdef	NOTYET
+#include "rpmds.h"		/* XXX ts->suggests, +foo -foo =foo args */
+#endif
 
-#include "rpmte.h"	/* XXX: rpmts.h needs this for rpmtsScoreEntries */
-#define	_RPMTS_INTERNAL		/* ts->goal, ts->dbmode, ts->suggests */
+#include "rpmte.h"		/* XXX rpmtsPrint() */
+#define	_RPMTS_INTERNAL		/* XXX ts->goal, ts->suggests */
 #include "rpmts.h"
 
 #include "manifest.h"
-#include "misc.h"	/* XXX for rpmGlob() */
+#include "misc.h"		/* XXX rpmGlob() */
+#include "rpmgi.h"		/* XXX rpmgiEscapeSpaces */
 #include "debug.h"
 
-/*@access rpmts @*/	/* XXX ts->goal, ts->dbmode */
-/*@access IDTX @*/
-/*@access IDT @*/
+/*@access rpmts @*/	/* XXX ts->goal */
 
 /*@unchecked@*/
 int rpmcliPackagesTotal = 0;
@@ -28,9 +29,9 @@ int rpmcliHashesCurrent = 0;
 /*@unchecked@*/
 int rpmcliHashesTotal = 0;
 /*@unchecked@*/
-int rpmcliProgressCurrent = 0;
+unsigned long long rpmcliProgressCurrent = 0;
 /*@unchecked@*/
-int rpmcliProgressTotal = 0;
+unsigned long long rpmcliProgressTotal = 0;
 
 /**
  * Print a CLI progress bar.
@@ -38,7 +39,7 @@ int rpmcliProgressTotal = 0;
  * @param amount	current
  * @param total		final
  */
-static void printHash(const unsigned long amount, const unsigned long total)
+static void printHash(const unsigned long long amount, const unsigned long long total)
 	/*@globals rpmcliHashesCurrent, rpmcliHashesTotal,
 		rpmcliProgressCurrent, fileSystem @*/
 	/*@modifies rpmcliHashesCurrent, rpmcliHashesTotal,
@@ -91,8 +92,8 @@ static void printHash(const unsigned long amount, const unsigned long total)
 
 void * rpmShowProgress(/*@null@*/ const void * arg,
 			const rpmCallbackType what,
-			const unsigned long amount,
-			const unsigned long total,
+			const unsigned long long amount,
+			const unsigned long long total,
 			/*@null@*/ fnpyKey key,
 			/*@null@*/ void * data)
 	/*@globals rpmcliHashesCurrent, rpmcliProgressCurrent, rpmcliProgressTotal,
@@ -118,7 +119,7 @@ void * rpmShowProgress(/*@null@*/ const void * arg,
 	if (filename == NULL || filename[0] == '\0')
 	    return NULL;
 /*@=boundsread@*/
-	fd = Fopen(filename, "r.ufdio");
+	fd = Fopen(filename, "r");
 	/*@-type@*/ /* FIX: still necessary? */
 	if (fd == NULL || Ferror(fd)) {
 	    rpmError(RPMERR_OPEN, _("open of %s failed: %s\n"), filename,
@@ -154,7 +155,7 @@ void * rpmShowProgress(/*@null@*/ const void * arg,
 	    s = headerSprintf(h, "%{NAME}",
 				rpmTagTable, rpmHeaderFormats, NULL);
 	    if (isatty (STDOUT_FILENO))
-		fprintf(stdout, "%4d:%-23.23s", rpmcliProgressCurrent + 1, s);
+		fprintf(stdout, "%4d:%-23.23s", (int)rpmcliProgressCurrent + 1, s);
 	    else
 		fprintf(stdout, "%-28.28s", s);
 	    (void) fflush(stdout);
@@ -277,23 +278,22 @@ struct rpmEIU {
 /*@only@*/ /*@null@*/
     str_t * argv;
 /*@dependent@*/
-    rpmRelocation * relocations;
+    rpmRelocation relocations;
     rpmRC rpmrc;
 };
 
 /** @todo Generalize --freshen policies. */
 /*@-bounds@*/
-int rpmInstall(rpmts ts,
-		struct rpmInstallArguments_s * ia,
-		const char ** fileArgv)
+int rpmInstall(rpmts ts, QVA_t ia, const char ** fileArgv)
 {
     struct rpmEIU * eiu = memset(alloca(sizeof(*eiu)), 0, sizeof(*eiu));
     rpmps ps;
     rpmprobFilterFlags probFilter;
-    rpmRelocation * relocations;
+    rpmRelocation relocations;
 /*@only@*/ /*@null@*/ const char * fileURL = NULL;
     int stopInstall = 0;
     const char ** av = NULL;
+    const char *fn;
     rpmVSFlags vsflags, ovsflags, tvsflags;
     int ac = 0;
     int rc;
@@ -312,7 +312,7 @@ int rpmInstall(rpmts ts,
     if (!(ia->transFlags & RPMTRANS_FLAG_NOCONTEXTS)) {
 	rpmsx sx = rpmtsREContext(ts);
 	if (sx == NULL) {
-	    const char *fn = rpmGetPath("%{?_install_file_context_path}", NULL);
+	    fn = rpmGetPath("%{?_install_file_context_path}", NULL);
 	    if (fn != NULL && *fn != '\0') {
 		sx = rpmsxNew(fn);
 		(void) rpmtsSetREContext(ts, sx);
@@ -322,16 +322,16 @@ int rpmInstall(rpmts ts,
 	sx = rpmsxFree(sx);
     }
     (void) rpmtsSetFlags(ts, ia->transFlags);
+    (void) rpmtsSetDFlags(ts, ia->depFlags);
 
-    /* Display and set autorollback goal if provided 
-     * iif autorollback requested. 
-     */
-    if(rpmExpandNumeric("%{?_rollback_transaction_on_failure}")) {
-	if(ia->arbtid) {
-	    rpmMessage(RPMMESS_DEBUG, _("Autorollback Goal: %-24.24s\n"),
-		ctime(&(ia->arbtid)));
+    /* Display and set autorollback goal. */
+    if (rpmExpandNumeric("%{?_rollback_transaction_on_failure}")) {
+	if (ia->arbtid) {
+	    time_t ttid = (time_t)ia->arbtid;
+	    rpmMessage(RPMMESS_DEBUG, _("Autorollback Goal: %-24.24s (0x%08x)\n"), 
+		ctime(&ttid), ia->arbtid);
 	    rpmtsSetARBGoal(ts, ia->arbtid);
-	}
+	}	
     }
 
     probFilter = ia->probFilter;
@@ -368,7 +368,9 @@ int rpmInstall(rpmts ts,
     for (eiu->fnp = fileArgv; *eiu->fnp != NULL; eiu->fnp++) {
     /*@=temptrans@*/
 	av = _free(av);	ac = 0;
-	rc = rpmGlob(*eiu->fnp, &ac, &av);
+	fn = rpmgiEscapeSpaces(*eiu->fnp);
+	rc = rpmGlob(fn, &ac, &av);
+	fn = _free(fn);
 	if (rc || ac == 0) {
 	    rpmError(RPMERR_OPEN, _("File not found by glob: %s\n"), *eiu->fnp);
 	    continue;
@@ -486,7 +488,7 @@ if (fileURL[0] == '=') {
 	(void) urlPath(*eiu->fnp, &fileName);
 
 	/* Try to read the header from a package file. */
-	eiu->fd = Fopen(*eiu->fnp, "r.ufdio");
+	eiu->fd = Fopen(*eiu->fnp, "r");
 	if (eiu->fd == NULL || Ferror(eiu->fd)) {
 	    rpmError(RPMERR_OPEN, _("open of %s failed: %s\n"), *eiu->fnp,
 			Fstrerror(eiu->fd));
@@ -521,7 +523,7 @@ if (fileURL[0] == '=') {
 	    /*@switchbreak@*/ break;
 	}
 
-	eiu->isSource = headerIsEntry(eiu->h, RPMTAG_SOURCEPACKAGE);
+	eiu->isSource = (headerIsEntry(eiu->h, RPMTAG_SOURCERPM) == 0);
 
 	if (eiu->isSource) {
 	    rpmMessage(RPMMESS_DEBUG, _("\tadded source package [%d]\n"),
@@ -596,13 +598,12 @@ if (fileURL[0] == '=') {
 	case 0:
 	    rpmMessage(RPMMESS_DEBUG, _("\tadded binary package [%d]\n"),
 			eiu->numRPMS);
+	    eiu->numRPMS++;
 	    /*@switchbreak@*/ break;
 	case 1:
-	    rpmMessage(RPMMESS_ERROR,
-			    _("error reading from file %s\n"), *eiu->fnp);
-	    eiu->numFailed++;
-	    goto exit;
-	    /*@notreached@*/ /*@switchbreak@*/ break;
+	    rpmMessage(RPMMESS_WARNING,
+			    _("package file %s was skipped\n"), *eiu->fnp);
+	    /*@switchbreak@*/ break;
 	case 2:
 	    rpmMessage(RPMMESS_ERROR,
 			    _("file %s requires a newer version of RPM\n"),
@@ -612,7 +613,6 @@ if (fileURL[0] == '=') {
 	    /*@notreached@*/ /*@switchbreak@*/ break;
 	}
 
-	eiu->numRPMS++;
 	continue;
 
 maybe_manifest:
@@ -722,7 +722,7 @@ maybe_manifest:
 	if (eiu->sourceURL != NULL)
 	for (i = 0; i < eiu->numSRPMS; i++) {
 	    if (eiu->sourceURL[i] == NULL) continue;
-	    eiu->fd = Fopen(eiu->sourceURL[i], "r.ufdio");
+	    eiu->fd = Fopen(eiu->sourceURL[i], "r");
 	    if (eiu->fd == NULL || Ferror(eiu->fd)) {
 		rpmMessage(RPMMESS_ERROR, _("cannot open file %s: %s\n"),
 			   eiu->sourceURL[i], Fstrerror(eiu->fd));
@@ -761,8 +761,7 @@ exit:
 }
 /*@=bounds@*/
 
-int rpmErase(rpmts ts, struct rpmInstallArguments_s * ia,
-		const char ** argv)
+int rpmErase(rpmts ts, QVA_t ia, const char ** argv)
 {
     int count;
     const char ** arg;
@@ -787,23 +786,23 @@ int rpmErase(rpmts ts, struct rpmInstallArguments_s * ia,
 	ia->transFlags |= RPMTRANS_FLAG_REPACKAGE;
 
     (void) rpmtsSetFlags(ts, ia->transFlags);
+    (void) rpmtsSetDFlags(ts, ia->depFlags);
 
-    /* Display and set autorollback goal if provided 
-     * iif autorollback requested. 
-     */
-    if(rpmExpandNumeric("%{?_rollback_transaction_on_failure}")) {
-	if(ia->arbtid) {
-	    rpmMessage(RPMMESS_DEBUG, _("Autorollback Goal: %-24.24s\n"), 
-		ctime(&(ia->arbtid)));
+    /* Display and set autorollback goal. */
+    if (rpmExpandNumeric("%{?_rollback_transaction_on_failure}")) {
+	if (ia->arbtid) {
+	    time_t ttid = (time_t)ia->arbtid;
+	    rpmMessage(RPMMESS_DEBUG, _("Autorollback Goal: %-24.24s (0x%08x)\n"), 
+		ctime(&ttid), ia->arbtid);
 	    rpmtsSetARBGoal(ts, ia->arbtid);
 	}	
     }
 
 #ifdef	NOTYET	/* XXX no callbacks on erase yet */
     {	int notifyFlags;
-	notifyFlags = ia->eraseInterfaceFlags | (rpmIsVerbose() ? INSTALL_LABEL : 0 );
+	notifyFlags = ia->installInterfaceFlags | (rpmIsVerbose() ? INSTALL_LABEL : 0 );
 	xx = rpmtsSetNotifyCallback(ts,
-			rpmShowProgress, (void *) ((long)notifyFlags)
+			rpmShowProgress, (void *) ((long)notifyFlags));
     }
 #endif
 
@@ -823,7 +822,7 @@ int rpmErase(rpmts ts, struct rpmInstallArguments_s * ia,
 	    while ((h = rpmdbNextIterator(mi)) != NULL) {
 		unsigned int recOffset = rpmdbGetIteratorOffset(mi);
 
-		if (!(count++ == 0 || (ia->eraseInterfaceFlags & UNINSTALL_ALLMATCHES))) {
+		if (!(count++ == 0 || (ia->installInterfaceFlags & INSTALL_ALLMATCHES))) {
 		    rpmMessage(RPMMESS_ERROR, _("\"%s\" specifies multiple packages\n"),
 			*arg);
 		    numFailed++;
@@ -840,7 +839,7 @@ int rpmErase(rpmts ts, struct rpmInstallArguments_s * ia,
 
     if (numFailed) goto exit;
 
-    if (!(ia->eraseInterfaceFlags & UNINSTALL_NODEPS)) {
+    if (!(ia->installInterfaceFlags & INSTALL_NODEPS)) {
 
 	if (rpmtsCheck(ts)) {
 	    numFailed = numPackages;
@@ -857,17 +856,14 @@ int rpmErase(rpmts ts, struct rpmInstallArguments_s * ia,
 	ps = rpmpsFree(ps);
     }
 
-#ifdef	NOTYET
     if (!stopUninstall && !(ia->installInterfaceFlags & INSTALL_NOORDER)) {
 	if (rpmtsOrder(ts)) {
 	    numFailed += numPackages;
 	    stopUninstall = 1;
 	}
     }
-#endif
 
-    if (!stopUninstall) {
-	(void) rpmtsSetFlags(ts, (rpmtsFlags(ts) | RPMTRANS_FLAG_REVERSE));
+    if (numPackages > 0 && !stopUninstall) {
 
 	/* Drop added/available package indices and dependency sets. */
 	rpmtsClean(ts);
@@ -894,7 +890,7 @@ int rpmInstallSource(rpmts ts, const char * arg,
     int rc;
 
 
-    fd = Fopen(arg, "r.ufdio");
+    fd = Fopen(arg, "r");
     if (fd == NULL || Ferror(fd)) {
 	rpmMessage(RPMMESS_ERROR, _("cannot open %s: %s\n"), arg, Fstrerror(fd));
 	if (fd != NULL) (void) Fclose(fd);
@@ -922,446 +918,6 @@ int rpmInstallSource(rpmts ts, const char * arg,
     }
 
     (void) Fclose(fd);
-
-    return rc;
-}
-
-/*@unchecked@*/
-static int reverse = -1;
-
-/**
- */
-static int IDTintcmp(const void * a, const void * b)
-	/*@*/
-{
-    /*@-castexpose@*/
-    return ( reverse * (((IDT)a)->val.u32 - ((IDT)b)->val.u32) );
-    /*@=castexpose@*/
-}
-
-IDTX IDTXfree(IDTX idtx)
-{
-    if (idtx) {
-	int i;
-	if (idtx->idt)
-	for (i = 0; i < idtx->nidt; i++) {
-	    IDT idt = idtx->idt + i;
-	    idt->h = headerFree(idt->h);
-	    idt->key = _free(idt->key);
-	}
-	idtx->idt = _free(idtx->idt);
-	idtx = _free(idtx);
-    }
-    return NULL;
-}
-
-IDTX IDTXnew(void)
-{
-    IDTX idtx = xcalloc(1, sizeof(*idtx));
-    idtx->delta = 10;
-    idtx->size = sizeof(*((IDT)0));
-    return idtx;
-}
-
-IDTX IDTXgrow(IDTX idtx, int need)
-{
-    if (need < 0) return NULL;
-    if (idtx == NULL)
-	idtx = IDTXnew();
-    if (need == 0) return idtx;
-
-    if ((idtx->nidt + need) > idtx->alloced) {
-	while (need > 0) {
-	    idtx->alloced += idtx->delta;
-	    need -= idtx->delta;
-	}
-	idtx->idt = xrealloc(idtx->idt, (idtx->alloced * idtx->size) );
-    }
-    return idtx;
-}
-
-IDTX IDTXsort(IDTX idtx)
-{
-    if (idtx != NULL && idtx->idt != NULL && idtx->nidt > 0)
-	qsort(idtx->idt, idtx->nidt, idtx->size, IDTintcmp);
-    return idtx;
-}
-
-IDTX IDTXload(rpmts ts, rpmTag tag)
-{
-    IDTX idtx = NULL;
-    rpmdbMatchIterator mi;
-    HGE_t hge = (HGE_t) headerGetEntry;
-    Header h;
-
-    /*@-branchstate@*/
-    mi = rpmtsInitIterator(ts, tag, NULL, 0);
-#ifdef	NOTYET
-    (void) rpmdbSetIteratorRE(mi, RPMTAG_NAME, RPMMIRE_DEFAULT, '!gpg-pubkey');
-#endif
-    while ((h = rpmdbNextIterator(mi)) != NULL) {
-	rpmTagType type = RPM_NULL_TYPE;
-	int_32 count = 0;
-	int_32 * tidp;
-
-	tidp = NULL;
-	if (!hge(h, tag, &type, (void **)&tidp, &count) || tidp == NULL)
-	    continue;
-
-	if (type == RPM_INT32_TYPE && (*tidp == 0 || *tidp == -1))
-	    continue;
-
-	idtx = IDTXgrow(idtx, 1);
-	if (idtx == NULL)
-	    continue;
-	if (idtx->idt == NULL)
-	    continue;
-
-	{   IDT idt;
-	    /*@-nullderef@*/
-	    idt = idtx->idt + idtx->nidt;
-	    /*@=nullderef@*/
-	    idt->h = headerLink(h);
-	    idt->key = NULL;
-	    idt->instance = rpmdbGetIteratorOffset(mi);
-	    idt->val.u32 = *tidp;
-	}
-	idtx->nidt++;
-    }
-    mi = rpmdbFreeIterator(mi);
-    /*@=branchstate@*/
-
-    return IDTXsort(idtx);
-}
-
-IDTX IDTXglob(rpmts ts, const char * globstr, rpmTag tag)
-{
-    IDTX idtx = NULL;
-    HGE_t hge = (HGE_t) headerGetEntry;
-    Header h;
-    int_32 * tidp;
-    FD_t fd;
-    const char ** av = NULL;
-    int ac = 0;
-    rpmRC rpmrc;
-    int xx;
-    int i;
-
-    av = NULL;	ac = 0;
-    xx = rpmGlob(globstr, &ac, &av);
-
-    if (xx == 0)
-    for (i = 0; i < ac; i++) {
-	rpmTagType type;
-	int_32 count;
-	int isSource;
-
-	fd = Fopen(av[i], "r.ufdio");
-	if (fd == NULL || Ferror(fd)) {
-            rpmError(RPMERR_OPEN, _("open of %s failed: %s\n"), av[i],
-                        Fstrerror(fd));
-	    if (fd != NULL) (void) Fclose(fd);
-	    continue;
-	}
-
-	rpmrc = rpmReadPackageFile(ts, fd, av[i], &h);
-	(void) Fclose(fd);
-	switch (rpmrc) {
-	default:
-	    goto bottom;
-	    /*@notreached@*/ /*@switchbreak@*/ break;
-	case RPMRC_NOTTRUSTED:
-	case RPMRC_NOKEY:
-	case RPMRC_OK:
-	    isSource = headerIsEntry(h, RPMTAG_SOURCEPACKAGE);
-	    if (isSource)
-		goto bottom;
-	    /*@switchbreak@*/ break;
-	}
-
-	tidp = NULL;
-	/*@-branchstate@*/
-	if (hge(h, tag, &type, (void **) &tidp, &count) && tidp != NULL) {
-
-	    idtx = IDTXgrow(idtx, 1);
-	    if (idtx == NULL || idtx->idt == NULL)
-		goto bottom;
-
-	    {	IDT idt;
-		idt = idtx->idt + idtx->nidt;
-		idt->h = headerLink(h);
-		idt->key = av[i];
-		av[i] = NULL;
-		idt->instance = 0;
-		idt->val.u32 = *tidp;
-	    }
-	    idtx->nidt++;
-	}
-	/*@=branchstate@*/
-bottom:
-	h = headerFree(h);
-    }
-
-    for (i = 0; i < ac; i++)
-	av[i] = _free(av[i]);
-    av = _free(av);	ac = 0;
-
-    return IDTXsort(idtx);
-}
-
-/** @todo Transaction handling, more, needs work. */
-int rpmRollback(rpmts ts, struct rpmInstallArguments_s * ia, const char ** argv)
-{
-    int ifmask= (INSTALL_UPGRADE|INSTALL_FRESHEN|INSTALL_INSTALL|INSTALL_ERASE);
-    unsigned thistid = 0xffffffff;
-    unsigned prevtid;
-    time_t tid;
-    IDTX itids = NULL;
-    IDTX rtids = NULL;
-    IDT rp;
-    int nrids = 0;
-    IDT ip;
-    int niids = 0;
-    int rc = 0;
-    int vsflags, ovsflags;
-    int numAdded;
-    int numRemoved;
-    int excluded;
-    rpmps ps;
-    int _unsafe_rollbacks = 0;
-    rpmtransFlags transFlags = ia->transFlags;
-
-    if (argv != NULL && *argv != NULL) {
-	rc = -1;
-	goto exit;
-    }
-
-    _unsafe_rollbacks = rpmExpandNumeric("%{?_unsafe_rollbacks}");
-
-    vsflags = rpmExpandNumeric("%{?_vsflags_erase}");
-    if (ia->qva_flags & VERIFY_DIGEST)
-	vsflags |= _RPMVSF_NODIGESTS;
-    if (ia->qva_flags & VERIFY_SIGNATURE)
-	vsflags |= _RPMVSF_NOSIGNATURES;
-    if (ia->qva_flags & VERIFY_HDRCHK)
-	vsflags |= RPMVSF_NOHDRCHK;
-    vsflags |= RPMVSF_NEEDPAYLOAD;	/* XXX no legacy signatures */
-    ovsflags = rpmtsSetVSFlags(ts, vsflags);
-
-    (void) rpmtsSetFlags(ts, transFlags);
-
-    /*  Make the transaction a rollback transaction.  In a rollback
-     *  a best effort is what we want 
-     */
-    rpmtsSetType(ts, RPMTRANS_TYPE_ROLLBACK);
-
-    itids = IDTXload(ts, RPMTAG_INSTALLTID);
-    if (itids != NULL) {
-	ip = itids->idt;
-	niids = itids->nidt;
-    } else {
-	ip = NULL;
-	niids = 0;
-    }
-
-    {	const char * globstr = rpmExpand("%{_repackage_dir}/*.rpm", NULL);
-	if (globstr == NULL || *globstr == '%') {
-	    globstr = _free(globstr);
-	    rc = -1;
-	    goto exit;
-	}
-	rtids = IDTXglob(ts, globstr, RPMTAG_REMOVETID);
-
-	if (rtids != NULL) {
-	    rp = rtids->idt;
-	    nrids = rtids->nidt;
-	} else {
-	    rp = NULL;
-	    nrids = 0;
-	}
-	globstr = _free(globstr);
-    }
-
-    {	int notifyFlags, xx;
-	notifyFlags = ia->installInterfaceFlags | (rpmIsVerbose() ? INSTALL_LABEL : 0 );
-	xx = rpmtsSetNotifyCallback(ts,
-			rpmShowProgress, (void *) ((long)notifyFlags));
-    }
-
-    /* Run transactions until rollback goal is achieved. */
-    do {
-	prevtid = thistid;
-	rc = 0;
-	rpmcliPackagesTotal = 0;
-	numAdded = 0;
-	numRemoved = 0;
-	ia->installInterfaceFlags &= ~ifmask;
-
-	/* Find larger of the remaining install/erase transaction id's. */
-	thistid = 0;
-	if (ip != NULL && ip->val.u32 > thistid)
-	    thistid = ip->val.u32;
-	if (rp != NULL && rp->val.u32 > thistid)
-	    thistid = rp->val.u32;
-
-	/* If we've achieved the rollback goal, then we're done. */
-	if (thistid == 0 || thistid < ia->rbtid)
-	    break;
-
-	/* If we've reached the (configured) rollback goal, then we're done. */
-	if (_unsafe_rollbacks && thistid <= _unsafe_rollbacks)
-	    break;
-
-	/* Make sure this tid is not excluded */
-	excluded = 0;	/* Assume its not */
-	{
-	    uint_32 *excludedTID;
-	    for(excludedTID = ia->rbtidExcludes; 
-		excludedTID < ia->rbtidExcludes + ia->numrbtidExcludes;
-		excludedTID++) {
-		if(thistid == *excludedTID) {
-		    rpmMessage(RPMMESS_NORMAL,
-			_("Excluding TID %d from rollback\n"), thistid);
-		    excluded = 1;
-		    break;	
-		}
-	    }	
-	}
-
-	rpmtsEmpty(ts);
-	(void) rpmtsSetFlags(ts, transFlags);
-
-	/* Install the previously erased packages for this transaction. 
-	 * Provided this transaction is not excluded from the rollback.
-	 */
-	while (rp != NULL && rp->val.u32 == thistid) {
-	    if(!excluded) {
-		rpmMessage(RPMMESS_DEBUG, "\t+++ install %s\n",
-			(rp->key ? rp->key : "???"));
-
-/*@-abstract@*/
-		rc = rpmtsAddInstallElement(ts, rp->h, (fnpyKey)rp->key,
-			       0, ia->relocations);
-
-/*@=abstract@*/
-		if (rc != 0)
-		    goto exit;
-
-		numAdded++;
-		rpmcliPackagesTotal++;
-		if (!(ia->installInterfaceFlags & ifmask))
-		    ia->installInterfaceFlags |= INSTALL_UPGRADE;
-
-#ifdef	NOTYET
-	    	rp->h = headerFree(rp->h);
-#endif
-	    }
-
-	    /* Go to the next repackaged package */
-	    nrids--;
-	    if (nrids > 0)
-		rp++;
-	    else
-		rp = NULL;
-	}
-
-	/* Erase the previously installed packages for this transaction. 
-	 * Provided this transaction is not excluded from the rollback.
-	 */
-	while (ip != NULL && ip->val.u32 == thistid) {
-	    if(!excluded) {
-		rpmMessage(RPMMESS_DEBUG,
-		    "\t--- erase h#%u\n", ip->instance);
-
-		rc = rpmtsAddEraseElement(ts, ip->h, ip->instance);
-		if (rc != 0)
-		    goto exit;
-
-		numRemoved++;
-
-		if (_unsafe_rollbacks)
-		    rpmcliPackagesTotal++;
-
-		if (!(ia->installInterfaceFlags & ifmask)) {
-		    ia->installInterfaceFlags |= INSTALL_ERASE;
-		    (void) rpmtsSetFlags(ts, (transFlags | RPMTRANS_FLAG_REVERSE));
-		}
-
-#ifdef	NOTYET
-		ip->instance = 0;
-#endif
-	    }
-
-	    /* Go to the next header in the rpmdb */
-	    niids--;
-	    if (niids > 0)
-		ip++;
-	    else
-		ip = NULL;
-	}
-
-	/* If this transaction is excluded then continue */
-	if(excluded) continue;
-
-	/* Anything to do? */
-	if (rpmcliPackagesTotal <= 0)
-	    break;
-
-	tid = (time_t)thistid;
-	rpmMessage(RPMMESS_NORMAL,
-		_("Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"),
-			numAdded, numRemoved, ctime(&tid), tid);
-
-	rc = rpmtsCheck(ts);
-	ps = rpmtsProblems(ts);
-	if (rc != 0 && rpmpsNumProblems(ps) > 0) {
-	    rpmMessage(RPMMESS_ERROR, _("Failed dependencies:\n"));
-	    rpmpsPrint(NULL, ps);
-	    ps = rpmpsFree(ps);
-	    goto exit;
-	}
-	ps = rpmpsFree(ps);
-
-	rc = rpmtsOrder(ts);
-	if (rc != 0)
-	    goto exit;
-
-	/* Drop added/available package indices and dependency sets. */
-	rpmtsClean(ts);
-
-	rc = rpmtsRun(ts, NULL, (ia->probFilter|RPMPROB_FILTER_OLDPACKAGE));
-	ps = rpmtsProblems(ts);
-	if (rc > 0 && rpmpsNumProblems(ps) > 0)
-	    rpmpsPrint(stderr, ps);
-	ps = rpmpsFree(ps);
-	if (rc)
-	    goto exit;
-
-	/* Clean up after successful rollback. */
-	if (rtids && !rpmIsDebug()) {
-	    int i;
-	    rpmMessage(RPMMESS_NORMAL, _("Cleaning up repackaged packages:\n"));
-	    if (rtids->idt)
-	    for (i = 0; i < rtids->nidt; i++) {
-		IDT rrp = rtids->idt + i;
-		if (rrp->val.u32 != thistid)
-		    /*@innercontinue@*/ continue;
-		if (rrp->key) {	/* XXX can't happen */
-		    rpmMessage(RPMMESS_NORMAL, _("\tRemoving %s:\n"), rrp->key);
-		    (void) unlink(rrp->key);	/* XXX: Should check rc??? */
-		}
-	    }
-	}
-
-
-    } while (1);
-
-exit:
-    rtids = IDTXfree(rtids);
-    itids = IDTXfree(itids);
-
-    rpmtsEmpty(ts);
-    (void) rpmtsSetFlags(ts, transFlags);
 
     return rc;
 }

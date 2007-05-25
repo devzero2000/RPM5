@@ -186,6 +186,10 @@ char *realpath(const char *path, char resolved_path []);
 #define R_OK 4
 #endif
 
+#ifdef HAVE_SIGNAL_H
+# include <signal.h>
+#endif
+
 #ifdef HAVE_DIRENT_H
 # include <dirent.h>
 # define NLENGTH(direct) (strlen((direct)->d_name))
@@ -291,6 +295,10 @@ extern int _tolower(int) __THROW	/*@*/;
 #include <malloc.h>
 #endif
 
+#if HAVE_LIBGEN_H
+#include <libgen.h>
+#endif
+
 #if WITH_SELINUX
 #include <selinux/selinux.h>
 #else
@@ -313,7 +321,7 @@ typedef	char * security_context_t;
 #define rpm_execcon(_v, _fn, _av, _envp)	(0)
 #endif
 
-#if defined(__LCLINT__)
+#if defined(WITH_SELINUX) && defined(__LCLINT__)
 /*@-incondefs@*/
 extern void freecon(/*@only@*/ security_context_t con)
 	/*@modifies con @*/;
@@ -350,11 +358,9 @@ extern int security_getenforce(void)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
 
-#if 0
 extern int is_selinux_enabled(void)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
-#endif
 /*@=incondefs@*/
 #endif
 
@@ -471,7 +477,7 @@ extern const char *__progname;
 
 #if ENABLE_NLS && !defined(__LCLINT__)
 # include <libintl.h>
-# define _(Text) gettext (Text)
+# define _(Text) dgettext (PACKAGE, Text)
 #else
 # undef bindtextdomain
 # define bindtextdomain(Domain, Directory) /* empty */
@@ -565,6 +571,7 @@ typedef /*@concrete@*/ struct
 /*@=constuse@*/
 #endif
 
+/*@-protoparammatch -redecl@*/
 /*@-type@*/	/* XXX glob64_t */
 extern int glob (const char *__pattern, int __flags,
                       int (*__errfunc) (const char *, int),
@@ -579,6 +586,7 @@ extern void globfree (/*@only@*/ glob_t *__pglob)
 extern int glob_pattern_p (const char *__pattern, int __quote)
 	/*@*/;
 #endif
+/*@=protoparammatch =redecl@*/
 
 #if 0
 /*@-constuse@*/

@@ -9,7 +9,6 @@
 #include <rpmbuild.h>
 
 #include "build.h"
-#include "legacy.h"	/* XXX _noDirTokens */
 #include "debug.h"
 
 /*@unchecked@*/
@@ -19,8 +18,8 @@ struct rpmBuildArguments_s         rpmBTArgs;
 #define	POPT_NOLANG		-1012
 #define	POPT_RMSOURCE		-1013
 #define	POPT_RMBUILD		-1014
-#define	POPT_BUILDROOT		-1015
-#define	POPT_TARGETPLATFORM	-1016
+	/* XXX was POPT_BUILDROOT -1015 */
+
 #define	POPT_NOBUILD		-1017
 #define	POPT_SHORTCIRCUIT	-1018
 #define	POPT_RMSPEC		-1019
@@ -66,9 +65,10 @@ static int useCatalog = 0;
  */
 /*@-boundswrite@*/
 static void buildArgCallback( /*@unused@*/ poptContext con,
-	/*@unused@*/ enum poptCallbackReason reason,
-	const struct poptOption * opt, const char * arg,
-	/*@unused@*/ const void * data)
+		/*@unused@*/ enum poptCallbackReason reason,
+		const struct poptOption * opt,
+		/*@unused@*/ const char * arg,
+		/*@unused@*/ const void * data)
 {
     BTA_t rba = &rpmBTArgs;
 
@@ -103,24 +103,6 @@ static void buildArgCallback( /*@unused@*/ poptContext con,
     case POPT_RMSOURCE: rba->buildAmount |= RPMBUILD_RMSOURCE; break;
     case POPT_RMSPEC: rba->buildAmount |= RPMBUILD_RMSPEC; break;
     case POPT_RMBUILD: rba->buildAmount |= RPMBUILD_RMBUILD; break;
-    case POPT_BUILDROOT:
-	if (rba->buildRootOverride) {
-	    rpmError(RPMERR_BUILDROOT, _("buildroot already specified, ignoring %s\n"), arg);
-	    break;
-	}
-	rba->buildRootOverride = xstrdup(arg);
-	break;
-    case POPT_TARGETPLATFORM:
-	if (rba->targets) {
-	    int len = strlen(rba->targets) + 1 + strlen(arg) + 1;
-	    rba->targets = xrealloc(rba->targets, len);
-	    strcat(rba->targets, ",");
-	} else {
-	    rba->targets = xmalloc(strlen(arg) + 1);
-	    rba->targets[0] = '\0';
-	}
-	strcat(rba->targets, arg);
-	break;
 
     case RPMCLI_POPT_NODIGEST:
 	rba->qva_flags |= VERIFY_DIGEST;
@@ -207,12 +189,8 @@ struct poptOption rpmBuildPoptTable[] = {
 	N_("build through %install (%prep, %build, then install) from <source package>"),
 	N_("<source package>") },
 
- { "buildroot", '\0', POPT_ARG_STRING, 0,  POPT_BUILDROOT,
-	N_("override build root"), "DIRECTORY" },
  { "clean", '\0', 0, 0, POPT_RMBUILD,
 	N_("remove build tree when done"), NULL},
- { "dirtokens", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_noDirTokens, 0,
-	N_("generate headers compatible with rpm4 packaging"), NULL},
  { "force", '\0', POPT_ARGFLAG_DOC_HIDDEN, &rpmBTArgs.force, RPMCLI_POPT_FORCE,
         N_("ignore ExcludeArch: directives from spec file"), NULL},
  { "fsmdebug", '\0', (POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN), &_fsm_debug, -1,
@@ -221,9 +199,6 @@ struct poptOption rpmBuildPoptTable[] = {
 	N_("do not execute any stages of the build"), NULL },
  { "nodeps", '\0', 0, NULL, RPMCLI_POPT_NODEPS,
 	N_("do not verify build dependencies"), NULL },
- { "nodirtokens", '\0', POPT_ARG_VAL, &_noDirTokens, 1,
-	N_("generate package header(s) compatible with (legacy) rpm[23] packaging"),
-	NULL},
 
  { "nodigest", '\0', POPT_ARGFLAG_DOC_HIDDEN, 0, RPMCLI_POPT_NODIGEST,
         N_("don't verify package digest(s)"), NULL },
@@ -242,8 +217,8 @@ struct poptOption rpmBuildPoptTable[] = {
 	N_("skip straight to specified stage (only for c,i)"), NULL },
  { "sign", '\0', POPT_ARGFLAG_DOC_HIDDEN, &signIt, POPT_SIGN,
 	N_("generate PGP/GPG signature"), NULL },
- { "target", '\0', POPT_ARG_STRING, 0,  POPT_TARGETPLATFORM,
-	N_("override target platform"), "CPU-VENDOR-OS" },
+ { "target", '\0', POPT_ARG_STRING, 0,  RPMCLI_POPT_TARGETPLATFORM,
+	N_("override target platform"), N_("CPU-VENDOR-OS") },
  { "usecatalog", '\0', POPT_ARGFLAG_DOC_HIDDEN, &useCatalog, POPT_USECATALOG,
 	N_("lookup i18N strings in specfile catalog"), NULL},
 

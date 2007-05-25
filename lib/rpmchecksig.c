@@ -7,6 +7,8 @@
 
 #include "rpmio_internal.h"
 #include <rpmcli.h>
+#define	_RPMEVR_INTERNAL	/* XXX RPMSENSE_KEYRING */
+#include <rpmevr.h>
 
 #include "rpmdb.h"
 
@@ -50,7 +52,7 @@ static int manageFile(/*@out@*/ FD_t *fdp,
 
     /* open a file and set *fdp */
     if (*fdp == NULL && fnp != NULL && *fnp != NULL) {
-	fd = Fopen(*fnp, ((flags & O_WRONLY) ? "w.ufdio" : "r.ufdio"));
+	fd = Fopen(*fnp, ((flags & O_WRONLY) ? "w" : "r"));
 	if (fd == NULL || Ferror(fd)) {
 	    rpmError(RPMERR_OPEN, _("%s: open failed: %s\n"), *fnp,
 		Fstrerror(fd));
@@ -114,6 +116,11 @@ static int copyFile(FD_t *sfdp, const char **sfnp,
     }
     if (count < 0) {
 	rpmError(RPMERR_FREAD, _("%s: Fread failed: %s\n"), *sfnp, Fstrerror(*sfdp));
+	goto exit;
+    }
+    if (Fflush(*tfdp) != 0) {
+	rpmError(RPMERR_FWRITE, _("%s: Fflush failed: %s\n"), *tfnp,
+	    Fstrerror(*tfdp));
 	goto exit;
     }
 
@@ -306,6 +313,12 @@ static int rpmReSign(/*@unused@*/ rpmts ts,
 	    xx = getSignid(sigh, sigtag, oldsignid);
 
 	    switch (sigtag) {
+	    case RPMSIGTAG_DSA:
+		xx = headerRemoveEntry(sigh, RPMSIGTAG_GPG);
+		/*@switchbreak@*/ break;
+	    case RPMSIGTAG_RSA:
+		xx = headerRemoveEntry(sigh, RPMSIGTAG_PGP);
+		/*@switchbreak@*/ break;
 	    case RPMSIGTAG_GPG:
 		xx = headerRemoveEntry(sigh, RPMSIGTAG_DSA);
 		/*@fallthrough@*/
@@ -661,6 +674,9 @@ static int readFile(FD_t fd, const char * fn, pgpDig dig)
 	    dig->hdrsha1ctx = rpmDigestInit(PGPHASHALGO_SHA1, RPMDIGEST_NONE);
 	    (void) rpmDigestUpdate(dig->hdrsha1ctx, header_magic, sizeof(header_magic));
 	    (void) rpmDigestUpdate(dig->hdrsha1ctx, uh, uhc);
+	    dig->hdrmd5ctx = rpmDigestInit(dig->signature.hash_algo, RPMDIGEST_NONE);
+	    (void) rpmDigestUpdate(dig->hdrmd5ctx, header_magic, sizeof(header_magic));
+	    (void) rpmDigestUpdate(dig->hdrmd5ctx, uh, uhc);
 	    uh = headerFreeData(uh, uht);
 	}
 	h = headerFree(h);
@@ -677,19 +693,26 @@ static int readFile(FD_t fd, const char * fn, pgpDig dig)
     /* XXX Steal the digest-in-progress from the file handle. */
     for (i = fd->ndigests - 1; i >= 0; i--) {
 	FDDIGEST_t fddig = fd->digests + i;
-	if (fddig->hashctx == NULL)
-	    continue;
-	if (fddig->hashalgo == PGPHASHALGO_MD5) {
+	if (fddig->hashctx != NULL)
+	switch (fddig->hashalgo) {
+	case PGPHASHALGO_MD5:
 assert(dig->md5ctx == NULL);
 	    dig->md5ctx = fddig->hashctx;
 	    fddig->hashctx = NULL;
-	    continue;
-	}
-	if (fddig->hashalgo == PGPHASHALGO_SHA1) {
+	    /*@switchbreak@*/ break;
+	case PGPHASHALGO_SHA1:
+	case PGPHASHALGO_RIPEMD160:
+#if HAVE_BEECRYPT_API_H
+	case PGPHASHALGO_SHA256:
+	case PGPHASHALGO_SHA384:
+	case PGPHASHALGO_SHA512:
+#endif
 assert(dig->sha1ctx == NULL);
 	    dig->sha1ctx = fddig->hashctx;
 	    fddig->hashctx = NULL;
-	    continue;
+	    /*@switchbreak@*/ break;
+	default:
+	    /*@switchbreak@*/ break;
 	}
     }
 
@@ -782,15 +805,28 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 		sigtag = RPMSIGTAG_SHA1;	/* XXX never happens */
 	}
 
+	dig = rpmtsDig(ts);
+assert(dig != NULL);
+	sigp = rpmtsSignature(ts);
+
+	/* XXX RSA needs the hash_algo, so decode early. */
+	if (sigtag == RPMSIGTAG_RSA || sigtag == RPMSIGTAG_PGP) {
+	    xx = headerGetEntry(sigh, sigtag, &sigtype, (void **)&sig, &siglen);
+	    xx = pgpPrtPkts(sig, siglen, dig, 0);
+	    sig = headerFreeData(sig, sigtype);
+	    /* XXX assume same hash_algo in header-only and header+payload */
+	    if ((headerIsEntry(sigh, RPMSIGTAG_PGP)
+	      || headerIsEntry(sigh, RPMSIGTAG_PGP5))
+	     && dig->signature.hash_algo != PGPHASHALGO_MD5)
+		fdInitDigest(fd, dig->signature.hash_algo, 0);
+	}
+
 	if (headerIsEntry(sigh, RPMSIGTAG_PGP)
 	||  headerIsEntry(sigh, RPMSIGTAG_PGP5)
 	||  headerIsEntry(sigh, RPMSIGTAG_MD5))
 	    fdInitDigest(fd, PGPHASHALGO_MD5, 0);
 	if (headerIsEntry(sigh, RPMSIGTAG_GPG))
 	    fdInitDigest(fd, PGPHASHALGO_SHA1, 0);
-
-	dig = rpmtsDig(ts);
-	sigp = rpmtsSignature(ts);
 
 	/* Read the file, generating digest(s) on the fly. */
 	if (dig == NULL || sigp == NULL || readFile(fd, fn, dig)) {
@@ -1057,7 +1093,7 @@ int rpmcliSign(rpmts ts, QVA_t qva, const char ** argv)
     while ((arg = *argv++) != NULL) {
 	FD_t fd;
 
-	if ((fd = Fopen(arg, "r.ufdio")) == NULL
+	if ((fd = Fopen(arg, "r")) == NULL
 	 || Ferror(fd)
 	 || rpmVerifySignatures(qva, ts, fd, arg))
 	    res++;

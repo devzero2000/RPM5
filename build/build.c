@@ -23,30 +23,28 @@ static void doRmSource(Spec spec)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies rpmGlobalMacroContext, fileSystem, internalState  @*/
 {
-    struct Source *p;
-    Package pkg;
+    struct Source *sp;
     int rc;
     
 #if 0
     rc = Unlink(spec->specFile);
 #endif
 
-    for (p = spec->sources; p != NULL; p = p->next) {
-	if (! (p->flags & RPMBUILD_ISNO)) {
-	    const char *fn = rpmGetPath("%{_sourcedir}/", p->source, NULL);
-	    rc = Unlink(fn);
-	    fn = _free(fn);
-	}
-    }
-
-    for (pkg = spec->packages; pkg != NULL; pkg = pkg->next) {
-	for (p = pkg->icon; p != NULL; p = p->next) {
-	    if (! (p->flags & RPMBUILD_ISNO)) {
-		const char *fn = rpmGetPath("%{_sourcedir}/", p->source, NULL);
-		rc = Unlink(fn);
-		fn = _free(fn);
-	    }
-	}
+    for (sp = spec->sources; sp != NULL; sp = sp->next) {
+	const char *dn, *fn;
+	if (sp->flags & RPMFILE_GHOST)
+	    continue;
+	if (sp->flags & RPMFILE_SOURCE)
+	    dn = "%{_sourcedir}/";
+	else if (sp->flags & RPMFILE_PATCH)
+	    dn = "%{_patchdir}/";
+	else if (sp->flags & RPMFILE_ICON)
+	    dn = "%{_icondir}/";
+	else
+	    continue;
+	fn = rpmGenPath(NULL, dn, sp->source);
+	rc = Unlink(fn);
+	fn = _free(fn);
     }
 }
 
@@ -180,11 +178,11 @@ int doScript(Spec spec, int what, const char *name, StringBuf sb, int test)
     (void) fputs(buildTemplate, fp);
 
     if (what != RPMBUILD_PREP && what != RPMBUILD_RMBUILD && spec->buildSubdir)
-	fprintf(fp, "cd %s\n", spec->buildSubdir);
+	fprintf(fp, "cd '%s'\n", spec->buildSubdir);
 
     if (what == RPMBUILD_RMBUILD) {
 	if (spec->buildSubdir)
-	    fprintf(fp, "rm -rf %s\n", spec->buildSubdir);
+	    fprintf(fp, "rm -rf '%s'\n", spec->buildSubdir);
     } else if (sb != NULL)
 	fprintf(fp, "%s", getStringBuf(sb));
 

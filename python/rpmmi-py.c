@@ -61,11 +61,6 @@
  *
  */
 
-/** \ingroup python
- * \name Class: Rpmmi
- */
-/*@{*/
-
 /**
  */
 static PyObject *
@@ -111,6 +106,11 @@ rpmmi_Next(rpmmiObject * s)
     }
     return result;
 }
+
+/** \ingroup python
+ * \name Class: Rpmmi
+ */
+/*@{*/
 
 /**
  */
@@ -171,6 +171,8 @@ rpmmi_Pattern(rpmmiObject * s, PyObject * args, PyObject * kwds)
     return Py_None;
 
 }
+
+/*@}*/
 
 /** \ingroup py_c
  */
@@ -282,5 +284,3 @@ rpmmiObject * rpmmi_Wrap(rpmdbMatchIterator mi)
     mio->mi = mi;
     return mio;
 }
-
-/*@}*/

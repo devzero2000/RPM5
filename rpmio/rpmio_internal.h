@@ -67,6 +67,8 @@ struct pgpDig_s {
     struct pgpDigParams_s signature;
     struct pgpDigParams_s pubkey;
 
+    byte ** ppkts;
+    int npkts;
     size_t nbytes;		/*!< No. bytes of plain text. */
 
 /*@only@*/ /*@null@*/
@@ -179,9 +181,7 @@ struct _FD_s {
     struct _FDDIGEST_s	digests[FDDIGEST_MAX];
 
     int		ftpFileDoneNeeded; /* ufdio: (FTP) */
-    unsigned int firstFree;	/* fadio: */
-    long int	fileSize;	/* fadio: */
-    long int	fd_cpioPos;	/* cpio: */
+    unsigned long long	fd_cpioPos;	/* cpio: */
 };
 /*@access FD_t@*/
 
@@ -502,14 +502,14 @@ void fdstat_print(/*@null@*/ FD_t fd, const char * msg, FILE * fp)
 	switch (opx) {
 	case FDSTAT_READ:
 	    if (msg) fprintf(fp, "%s:", msg);
-	    fprintf(fp, "%8d reads, %8ld total bytes in %d.%06d secs\n",
-		op->count, (long)op->bytes,
+	    fprintf(fp, "%8d reads, %8lu total bytes in %d.%06d secs\n",
+		op->count, (unsigned long)op->bytes,
 		(int)(op->usecs/usec_scale), (int)(op->usecs%usec_scale));
 	    /*@switchbreak@*/ break;
 	case FDSTAT_WRITE:
 	    if (msg) fprintf(fp, "%s:", msg);
-	    fprintf(fp, "%8d writes, %8ld total bytes in %d.%06d secs\n",
-		op->count, (long)op->bytes,
+	    fprintf(fp, "%8d writes, %8lu total bytes in %d.%06d secs\n",
+		op->count, (unsigned long)op->bytes,
 		(int)(op->usecs/usec_scale), (int)(op->usecs%usec_scale));
 	    /*@switchbreak@*/ break;
 	case FDSTAT_SEEK:
@@ -547,7 +547,7 @@ int fdGetRdTimeoutSecs(FD_t fd)
 /** \ingroup rpmio
  */
 /*@unused@*/ static inline
-long int fdGetCpioPos(FD_t fd)
+unsigned long long fdGetCpioPos(FD_t fd)
 	/*@*/
 {
     FDSANE(fd);

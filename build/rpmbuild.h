@@ -71,7 +71,8 @@ typedef enum rpmParseState_e {
     PART_VERIFYSCRIPT	= 18,	/*!< */
     PART_BUILDARCHITECTURES= 19,/*!< */
     PART_TRIGGERPOSTUN	= 20,	/*!< */
-    PART_LAST		= 21	/*!< */
+    PART_TRIGGERPREIN	= 21,	/*!< */
+    PART_LAST		= 22	/*!< */
 } rpmParseState;
 
 #define STRIP_NOTHING             0
@@ -154,13 +155,17 @@ gid_t getGidS(const char * gname)
  * Return build hostname.
  * @return		build hostname
  */
-extern /*@observer@*/ const char * const buildHost(void)	/*@*/;
+/*@observer@*/
+extern const char * buildHost(void)
+	/*@*/;
 
 /** \ingroup rpmbuild
  * Return build time stamp.
  * @return		build time stamp
  */
-extern /*@observer@*/ int_32 * const getBuildTime(void)	/*@*/;
+/*@observer@*/
+extern int_32 * getBuildTime(void)
+	/*@*/;
 
 /** \ingroup rpmbuild
  * Read next line from spec file.
@@ -207,6 +212,7 @@ int parseNum(/*@null@*/ const char * line, /*@null@*/ /*@out@*/int * res)
 
 /** \ingroup rpmbuild
  * Add changelog entry to header.
+ * @todo addChangelogEntry should be static.
  * @param h		header
  * @param time		time of change
  * @param name		person who made the change
@@ -279,19 +285,19 @@ int parsePreamble(Spec spec, int initialPackage)
 	/*@modifies spec->packages,
 		spec->fileStack, spec->readStack, spec->line, spec->lineNum,
 		spec->buildSubdir,
-		spec->macros, spec->st, spec->buildRootURL,
+		spec->macros, spec->st,
 		spec->sources, spec->numSources, spec->noSource,
-		spec->buildRestrictions, spec->BANames, spec->BACount,
-		spec->gotBuildRootURL,
+		spec->sourceHeader, spec->BANames, spec->BACount,
 		spec->nextline, spec->nextpeekc, spec->lbuf, spec->sl,
 		rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /** \ingroup rpmbuild
  * Parse %%prep section of a spec file.
  * @param spec		spec file control structure
+ * @param verify	verify existence of sources/patches?
  * @return		>= 0 next rpmParseState, < 0 on error
  */
-int parsePrep(Spec spec)
+int parsePrep(Spec spec, int verify)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies spec->prep, spec->buildSubdir, spec->macros,
 		spec->fileStack, spec->readStack, spec->line, spec->lineNum,
@@ -421,6 +427,25 @@ int addReqProv(/*@unused@*/Spec spec, Header h, rpmTag tagN,
 		int index)
 	/*@modifies h @*/;
 
+/**
+ * Append files (if any) to scriptlet tags.
+ * @param spec		spec file control structure
+ * @param pkg		package control structure
+ * @return		0 on success
+ */
+int processScriptFiles(Spec spec, Package pkg)
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies pkg->header, rpmGlobalMacroContext,
+		fileSystem, internalState @*/;
+
+/**
+ * Retrofit an explicit Provides: N = E:V-R dependency into package headers.
+ * Up to rpm 3.0.4, packages implicitly provided their own name-version-release.
+ * @param h             header
+ */
+void providePackageNVR(Header h)
+	/*@modifies h @*/;
+
 /** \ingroup rpmbuild
  * Add rpmlib feature dependency.
  * @param h		header
@@ -440,7 +465,7 @@ int rpmlibNeedsFeature(Header h, const char * feature, const char * featureEVR)
  */
 int processBinaryFiles(Spec spec, int installSpecialDoc, int test)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies spec->macros,
+	/*@modifies spec->macros, *spec->packages,
 		spec->packages->cpioList, spec->packages->fileList,
 		spec->packages->specialDoc, spec->packages->header,
 		rpmGlobalMacroContext, fileSystem, internalState @*/;
@@ -448,10 +473,12 @@ int processBinaryFiles(Spec spec, int installSpecialDoc, int test)
 /** \ingroup rpmbuild
  * Create and initialize header for source package.
  * @param spec		spec file control structure
+ * @retval *sfp		srpm file list (may be NULL)
+ * @return		0 always
  */
-void initSourceHeader(Spec spec)
+int initSourceHeader(Spec spec, /*@null@*/ StringBuf *sfp)
 	/*@modifies spec->sourceHeader,
-		spec->buildRestrictions, spec->BANames,
+		spec->BANames, *sfp,
 		spec->packages->header @*/;
 
 /** \ingroup rpmbuild
@@ -462,7 +489,7 @@ void initSourceHeader(Spec spec)
 int processSourceFiles(Spec spec)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies spec->sourceHeader, spec->sourceCpioList,
-		spec->buildRestrictions, spec->BANames,
+		spec->BANames,
 		spec->packages->header,
 		rpmGlobalMacroContext, fileSystem, internalState @*/;
 
@@ -471,21 +498,20 @@ int processSourceFiles(Spec spec)
  * @param ts		transaction set (spec file control in ts->spec)
  * @param specFile
  * @param rootURL
- * @param buildRootURL
  * @param recursing	parse is recursive?
  * @param passPhrase
  * @param cookie
  * @param anyarch
  * @param force
+ * @param verify
  * @return
  */
 int parseSpec(rpmts ts, const char * specFile,
 		/*@null@*/ const char * rootURL,
-		/*@null@*/ const char * buildRootURL,
 		int recursing,
 		/*@null@*/ const char * passPhrase,
 		/*@null@*/ char * cookie,
-		int anyarch, int force)
+		int anyarch, int force, int verify)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
@@ -502,7 +528,7 @@ int buildSpec(rpmts ts, Spec spec, int what, int test)
 	/*@modifies spec->sourceHeader, spec->sourceCpioList, spec->cookie,
 		spec->sourceRpmName, spec->sourcePkgId,
 		spec->macros, spec->BASpecs,
-		spec->buildRestrictions, spec->BANames,
+		spec->BANames, *spec->packages,
 		spec->packages->cpioList, spec->packages->fileList,
 		spec->packages->specialDoc, spec->packages->header,
 		rpmGlobalMacroContext, fileSystem, internalState @*/;

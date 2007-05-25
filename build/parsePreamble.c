@@ -6,6 +6,7 @@
 #include "system.h"
 
 #include <rpmio_internal.h>
+#define	_RPMEVR_INTERNAL
 #include <rpmbuild.h>
 #include "debug.h"
 
@@ -24,13 +25,20 @@ static rpmTag copyTagsDuringParse[] = {
     RPMTAG_DISTURL,
     RPMTAG_VENDOR,
     RPMTAG_ICON,
+    RPMTAG_GIF,
+    RPMTAG_XPM,
     RPMTAG_URL,
     RPMTAG_CHANGELOGTIME,
     RPMTAG_CHANGELOGNAME,
     RPMTAG_CHANGELOGTEXT,
     RPMTAG_PREFIXES,
-    RPMTAG_RHNPLATFORM,
     RPMTAG_DISTTAG,
+    RPMTAG_CVSID,
+    RPMTAG_VARIANTS,
+    RPMTAG_XMAJOR,
+    RPMTAG_XMINOR,
+    RPMTAG_REPOTAG,
+    RPMTAG_KEYWORDS,
     0
 };
 
@@ -68,7 +76,8 @@ static void addOrAppendListEntry(Header h, int_32 tag, char * line)
 /**
  */
 /*@-boundswrite@*/
-static int parseSimplePart(char *line, /*@out@*/char **name, /*@out@*/int *flag)
+static int parseSimplePart(char *line, /*@out@*/char **name,
+		/*@out@*/rpmParseState *flag)
 	/*@globals internalState@*/
 	/*@modifies *name, *flag, internalState @*/
 {
@@ -121,13 +130,13 @@ typedef struct tokenBits_s {
 /*@observer@*/ /*@unchecked@*/
 static struct tokenBits_s installScriptBits[] = {
     { "interp",		RPMSENSE_INTERP },
-    { "prereq",		RPMSENSE_PREREQ },
     { "preun",		RPMSENSE_SCRIPT_PREUN },
     { "pre",		RPMSENSE_SCRIPT_PRE },
     { "postun",		RPMSENSE_SCRIPT_POSTUN },
     { "post",		RPMSENSE_SCRIPT_POST },
     { "rpmlib",		RPMSENSE_RPMLIB },
     { "verify",		RPMSENSE_SCRIPT_VERIFY },
+    { "hint",		RPMSENSE_MISSINGOK },
     { NULL, 0 }
 };
 
@@ -139,6 +148,7 @@ static struct tokenBits_s buildScriptBits[] = {
     { "build",		RPMSENSE_SCRIPT_BUILD },
     { "install",	RPMSENSE_SCRIPT_INSTALL },
     { "clean",		RPMSENSE_SCRIPT_CLEAN },
+    { "hint",		RPMSENSE_MISSINGOK },
     { NULL, 0 }
 };
 
@@ -183,21 +193,17 @@ static int parseBits(const char * s, const tokenBits tokbits,
 /**
  */
 static inline char * findLastChar(char * s)
-	/*@*/
+	/*@modifies *s @*/
 {
-    char *res = s;
+    char *se = s + strlen(s);
 
-/*@-boundsread@*/
-    while (*s != '\0') {
-	if (! xisspace(*s))
-	    res = s;
-	s++;
-    }
-/*@=boundsread@*/
-
-    /*@-temptrans -retalias@*/
-    return res;
-    /*@=temptrans =retalias@*/
+/*@-bounds@*/
+    while (--se > s && strchr(" \t\n\r", *se) != NULL)
+	*se = '\0';
+/*@=bounds@*/
+/*@-temptrans -retalias @*/
+    return se;
+/*@=temptrans =retalias @*/
 }
 
 /**
@@ -226,41 +232,34 @@ static int isMemberInEntry(Header h, const char *name, rpmTag tag)
 /**
  */
 static int checkForValidArchitectures(Spec spec)
-	/*@*/
+	/*@globals rpmGlobalMacroContext, h_errno @*/
+	/*@modifies rpmGlobalMacroContext @*/
 {
-#ifndef	DYING
-    const char *arch = NULL;
-    const char *os = NULL;
-
-    rpmGetArchInfo(&arch, NULL);
-    rpmGetOsInfo(&os, NULL);
-#else
     const char *arch = rpmExpand("%{_target_cpu}", NULL);
     const char *os = rpmExpand("%{_target_os}", NULL);
-#endif
+    int rc = RPMERR_BADSPEC;	/* assume failure. */
     
-    if (isMemberInEntry(spec->buildRestrictions,
-			arch, RPMTAG_EXCLUDEARCH) == 1) {
+    if (isMemberInEntry(spec->sourceHeader, arch, RPMTAG_EXCLUDEARCH) == 1) {
 	rpmError(RPMERR_BADSPEC, _("Architecture is excluded: %s\n"), arch);
-	return RPMERR_BADSPEC;
+	goto exit;
     }
-    if (isMemberInEntry(spec->buildRestrictions,
-			arch, RPMTAG_EXCLUSIVEARCH) == 0) {
+    if (isMemberInEntry(spec->sourceHeader, arch, RPMTAG_EXCLUSIVEARCH) == 0) {
 	rpmError(RPMERR_BADSPEC, _("Architecture is not included: %s\n"), arch);
-	return RPMERR_BADSPEC;
+	goto exit;
     }
-    if (isMemberInEntry(spec->buildRestrictions,
-			os, RPMTAG_EXCLUDEOS) == 1) {
+    if (isMemberInEntry(spec->sourceHeader, os, RPMTAG_EXCLUDEOS) == 1) {
 	rpmError(RPMERR_BADSPEC, _("OS is excluded: %s\n"), os);
-	return RPMERR_BADSPEC;
+	goto exit;
     }
-    if (isMemberInEntry(spec->buildRestrictions,
-			os, RPMTAG_EXCLUSIVEOS) == 0) {
+    if (isMemberInEntry(spec->sourceHeader, os, RPMTAG_EXCLUSIVEOS) == 0) {
 	rpmError(RPMERR_BADSPEC, _("OS is not included: %s\n"), os);
-	return RPMERR_BADSPEC;
+	goto exit;
     }
-
-    return 0;
+    rc = 0;
+exit:
+    arch = _free(arch);
+    os = _free(os);
+    return rc;
 }
 
 /**
@@ -355,61 +354,84 @@ static void fillOutMainPackage(Header h)
 /**
  */
 /*@-boundswrite@*/
-static int readIcon(Header h, const char * file)
+static int doIcon(Spec spec, Header h)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies h, rpmGlobalMacroContext, fileSystem, internalState  @*/
+	/*@modifies rpmGlobalMacroContext, fileSystem, internalState  @*/
 {
-    const char *fn = NULL;
-    char *icon;
-    FD_t fd;
-    int rc = 0;
-    off_t size;
-    size_t nb, iconsize;
+    const char *fn, *Lurlfn = NULL;
+    struct Source *sp;
+    size_t iconsize = 2048;	/* XXX big enuf */
+    size_t nb;
+    char *icon = alloca(iconsize+1);
+    FD_t fd = NULL;
+    int rc = RPMERR_BADSPEC;	/* assume error */
+    int urltype;
+    int xx;
 
-    /* XXX use rpmGenPath(rootdir, "%{_sourcedir}/", file) for icon path. */
-    fn = rpmGetPath("%{_sourcedir}/", file, NULL);
+    for (sp = spec->sources; sp != NULL; sp = sp->next) {
+	if (sp->flags & RPMFILE_ICON)
+	    break;
+    }
+    if (sp == NULL) {
+	rpmError(RPMERR_BADSPEC, _("No icon file in sources\n"));
+	goto exit;
+    }
 
-    fd = Fopen(fn, "r.ufdio");
+    Lurlfn = rpmGenPath(NULL, "%{_icondir}/", sp->source);
+
+    fn = NULL;
+    urltype = urlPath(Lurlfn, &fn);
+    switch (urltype) {  
+    case URL_IS_HTTPS: 
+    case URL_IS_HTTP:
+    case URL_IS_FTP:
+    case URL_IS_PATH:
+    case URL_IS_UNKNOWN:
+	break;
+    case URL_IS_DASH:
+    case URL_IS_HKP:
+	rpmError(RPMERR_BADSPEC, _("Invalid icon URL: %s\n"), Lurlfn);
+	goto exit;
+	/*@notreached@*/ break;
+    }
+
+    fd = Fopen(fn, "r");
     if (fd == NULL || Ferror(fd)) {
 	rpmError(RPMERR_BADSPEC, _("Unable to open icon %s: %s\n"),
 		fn, Fstrerror(fd));
 	rc = RPMERR_BADSPEC;
 	goto exit;
     }
-    size = fdSize(fd);
-    iconsize = (size >= 0 ? size : (8 * BUFSIZ));
-    if (iconsize == 0) {
-	(void) Fclose(fd);
-	rc = 0;
-	goto exit;
-    }
 
-    icon = xmalloc(iconsize + 1);
     *icon = '\0';
-
     nb = Fread(icon, sizeof(icon[0]), iconsize, fd);
-    if (Ferror(fd) || (size >= 0 && nb != size)) {
+    if (Ferror(fd) || nb == 0) {
 	rpmError(RPMERR_BADSPEC, _("Unable to read icon %s: %s\n"),
 		fn, Fstrerror(fd));
-	rc = RPMERR_BADSPEC;
-    }
-    (void) Fclose(fd);
-    if (rc)
 	goto exit;
+    }
+    if (nb >= iconsize) {
+	rpmError(RPMERR_BADSPEC, _("Icon %s is too big (max. %d bytes)\n"),
+		fn, iconsize);
+	goto exit;
+    }
 
-    if (! strncmp(icon, "GIF", sizeof("GIF")-1)) {
-	(void) headerAddEntry(h, RPMTAG_GIF, RPM_BIN_TYPE, icon, iconsize);
-    } else if (! strncmp(icon, "/* XPM", sizeof("/* XPM")-1)) {
-	(void) headerAddEntry(h, RPMTAG_XPM, RPM_BIN_TYPE, icon, iconsize);
-    } else {
-	rpmError(RPMERR_BADSPEC, _("Unknown icon type: %s\n"), file);
-	rc = RPMERR_BADSPEC;
+    if (!strncmp(icon, "GIF", sizeof("GIF")-1))
+	xx = headerAddEntry(h, RPMTAG_GIF, RPM_BIN_TYPE, icon, nb);
+    else if (!strncmp(icon, "/* XPM", sizeof("/* XPM")-1))
+	xx = headerAddEntry(h, RPMTAG_XPM, RPM_BIN_TYPE, icon, nb);
+    else {
+	rpmError(RPMERR_BADSPEC, _("Unknown icon type: %s\n"), fn);
 	goto exit;
     }
-    icon = _free(icon);
+    rc = 0;
     
 exit:
-    fn = _free(fn);
+    if (fd) {
+	(void) Fclose(fd);
+	fd = NULL;
+    }
+    Lurlfn = _free(Lurlfn);
     return rc;
 }
 /*@=boundswrite@*/
@@ -462,10 +484,10 @@ extern int noLang;
 static int handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
 		const char *macro, const char *lang)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies spec->macros, spec->st, spec->buildRootURL,
+	/*@modifies spec->macros, spec->st,
 		spec->sources, spec->numSources, spec->noSource,
-		spec->buildRestrictions, spec->BANames, spec->BACount,
-		spec->line, spec->gotBuildRootURL,
+		spec->sourceHeader, spec->BANames, spec->BACount,
+		spec->line,
 		pkg->header, pkg->autoProv, pkg->autoReq, pkg->icon,
 		rpmGlobalMacroContext, fileSystem, internalState @*/
 {
@@ -500,7 +522,6 @@ static int handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
 	return RPMERR_BADSPEC;
     }
     end = findLastChar(field);
-    *(end+1) = '\0';
 
     /* See if this is multi-token */
     end = field;
@@ -513,8 +534,9 @@ static int handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
     case RPMTAG_VERSION:
     case RPMTAG_RELEASE:
     case RPMTAG_URL:
-    case RPMTAG_RHNPLATFORM:
     case RPMTAG_DISTTAG:
+    case RPMTAG_REPOTAG:
+    case RPMTAG_CVSID:
 	SINGLE_TOKEN_ONLY;
 	/* These macros are for backward compatibility */
 	if (tag == RPMTAG_VERSION) {
@@ -547,40 +569,12 @@ static int handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
 	else if (!(noLang && strcmp(lang, RPMBUILD_DEFAULT_LANG)))
 	    (void) headerAddI18NString(pkg->header, tag, field, lang);
 	break;
+    /* XXX silently ignore BuildRoot: */
     case RPMTAG_BUILDROOT:
 	SINGLE_TOKEN_ONLY;
-      {	const char * buildRoot = NULL;
-	const char * buildRootURL = spec->buildRootURL;
-
-	/*
-	 * Note: rpmGenPath should guarantee a "canonical" path. That means
-	 * that the following pathologies should be weeded out:
-	 *          //bin//sh
-	 *          //usr//bin/
-	 *          /.././../usr/../bin//./sh
-	 */
-	if (buildRootURL == NULL) {
-	    buildRootURL = rpmGenPath(NULL, "%{?buildroot:%{buildroot}}", NULL);
-	    if (strcmp(buildRootURL, "/")) {
-		spec->buildRootURL = buildRootURL;
-		macro = NULL;
-	    } else {
-		const char * specURL = field;
-
-		buildRootURL = _free(buildRootURL);
-		(void) urlPath(specURL, (const char **)&field);
-		/*@-branchstate@*/
-		if (*field == '\0') field = "/";
-		/*@=branchstate@*/
-		buildRootURL = rpmGenPath(spec->rootURL, field, NULL);
-		spec->buildRootURL = buildRootURL;
-		field = (char *) buildRootURL;
-	    }
-	    spec->gotBuildRootURL = 1;
-	} else {
-	    macro = NULL;
-	}
-	buildRootURL = rpmGenPath(NULL, spec->buildRootURL, NULL);
+	macro = NULL;
+#ifdef	DYING
+	buildRootURL = rpmGenPath(spec->rootURL, "%{?buildroot}", NULL);
 	(void) urlPath(buildRootURL, &buildRoot);
 	/*@-branchstate@*/
 	if (*buildRoot == '\0') buildRoot = "/";
@@ -592,11 +586,22 @@ static int handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
 	    return RPMERR_BADSPEC;
 	}
 	buildRootURL = _free(buildRootURL);
-      }	break;
+#endif
+	break;
+    case RPMTAG_KEYWORDS:
+    case RPMTAG_VARIANTS:
     case RPMTAG_PREFIXES:
 	addOrAppendListEntry(pkg->header, tag, field);
 	xx = hge(pkg->header, tag, &type, (void **)&array, &num);
+	if (tag == RPMTAG_PREFIXES)
 	while (num--) {
+	    if (array[num][0] != '/') {
+		rpmError(RPMERR_BADSPEC,
+			 _("line %d: Prefixes must begin with \"/\": %s\n"),
+			 spec->lineNum, spec->line);
+		array = hfd(array, type);
+		return RPMERR_BADSPEC;
+	    }
 	    len = strlen(array[num]);
 	    if (array[num][len - 1] == '/' && len > 1) {
 		rpmError(RPMERR_BADSPEC,
@@ -620,12 +625,14 @@ static int handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
 	delMacro(NULL, "_docdir");
 	addMacro(NULL, "_docdir", NULL, field, RMIL_SPEC);
 	break;
+    case RPMTAG_XMAJOR:
+    case RPMTAG_XMINOR:
     case RPMTAG_EPOCH:
 	SINGLE_TOKEN_ONLY;
 	if (parseNum(field, &num)) {
 	    rpmError(RPMERR_BADSPEC,
-		     _("line %d: Epoch/Serial field must be a number: %s\n"),
-		     spec->lineNum, spec->line);
+		     _("line %d: %s takes an integer value: %s\n"),
+		     spec->lineNum, tagName(tag), spec->line);
 	    return RPMERR_BADSPEC;
 	}
 	xx = headerAddEntry(pkg->header, tag, RPM_INT32_TYPE, &num, 1);
@@ -649,10 +656,12 @@ static int handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
 	break;
     case RPMTAG_ICON:
 	SINGLE_TOKEN_ONLY;
+	macro = NULL;
 	if ((rc = addSource(spec, pkg, field, tag)))
 	    return rc;
-	if ((rc = readIcon(pkg->header, field)))
-	    return RPMERR_BADSPEC;
+	/* XXX the fetch/load of icon needs to be elsewhere. */
+	if ((rc = doIcon(spec, pkg->header)))
+	    return rc;
 	break;
     case RPMTAG_NOSOURCE:
     case RPMTAG_NOPATCH:
@@ -671,8 +680,8 @@ static int handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
 	if ((rc = parseRCPOT(spec, pkg, field, tag, 0, tagflags)))
 	    return rc;
 	break;
-    case RPMTAG_REQUIREFLAGS:
     case RPMTAG_PREREQ:
+    case RPMTAG_REQUIREFLAGS:
 	if ((rc = parseBits(lang, installScriptBits, &tagflags))) {
 	    rpmError(RPMERR_BADSPEC,
 		     _("line %d: Bad %s: qualifiers: %s\n"),
@@ -682,6 +691,23 @@ static int handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
 	if ((rc = parseRCPOT(spec, pkg, field, tag, 0, tagflags)))
 	    return rc;
 	break;
+    /* Aliases for BuildRequires(hint): */
+    case RPMTAG_BUILDSUGGESTS:
+    case RPMTAG_BUILDENHANCES:
+	tagflags = RPMSENSE_MISSINGOK;
+	if ((rc = parseRCPOT(spec, pkg, field, tag, 0, tagflags)))
+	    return rc;
+	break;
+    /* Aliases for Requires(hint): */
+    case RPMTAG_SUGGESTSFLAGS:
+    case RPMTAG_ENHANCESFLAGS:
+	tag = RPMTAG_REQUIREFLAGS;
+	tagflags = RPMSENSE_MISSINGOK;
+	if ((rc = parseRCPOT(spec, pkg, field, tag, 0, tagflags)))
+	    return rc;
+	break;
+    case RPMTAG_BUILDOBSOLETES:
+    case RPMTAG_BUILDPROVIDES:
     case RPMTAG_BUILDCONFLICTS:
     case RPMTAG_CONFLICTFLAGS:
     case RPMTAG_OBSOLETEFLAGS:
@@ -690,11 +716,12 @@ static int handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
 	if ((rc = parseRCPOT(spec, pkg, field, tag, 0, tagflags)))
 	    return rc;
 	break;
+    case RPMTAG_BUILDPLATFORMS:		/* XXX needs pattern parsing */
     case RPMTAG_EXCLUDEARCH:
     case RPMTAG_EXCLUSIVEARCH:
     case RPMTAG_EXCLUDEOS:
     case RPMTAG_EXCLUSIVEOS:
-	addOrAppendListEntry(spec->buildRestrictions, tag, field);
+	addOrAppendListEntry(spec->sourceHeader, tag, field);
 	break;
     case RPMTAG_BUILDARCHS:
 	if ((rc = poptParseArgvString(field,
@@ -728,7 +755,6 @@ static int handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
  */
 typedef struct PreambleRec_s {
     rpmTag tag;
-    int len;
     int multiLang;
     int obsolete;
 /*@observer@*/ /*@null@*/
@@ -737,63 +763,67 @@ typedef struct PreambleRec_s {
 
 /*@unchecked@*/
 static struct PreambleRec_s preambleList[] = {
-    {RPMTAG_NAME,		0, 0, 0, "name"},
-    {RPMTAG_VERSION,		0, 0, 0, "version"},
-    {RPMTAG_RELEASE,		0, 0, 0, "release"},
-    {RPMTAG_EPOCH,		0, 0, 0, "epoch"},
-    {RPMTAG_EPOCH,		0, 0, 1, "serial"},
-    {RPMTAG_SUMMARY,		0, 1, 0, "summary"},
-    {RPMTAG_LICENSE,		0, 0, 1, "copyright"},
-    {RPMTAG_LICENSE,		0, 0, 0, "license"},
-    {RPMTAG_DISTRIBUTION,	0, 0, 0, "distribution"},
-    {RPMTAG_DISTURL,		0, 0, 0, "disturl"},
-    {RPMTAG_VENDOR,		0, 0, 0, "vendor"},
-    {RPMTAG_GROUP,		0, 1, 0, "group"},
-    {RPMTAG_PACKAGER,		0, 0, 0, "packager"},
-    {RPMTAG_URL,		0, 0, 0, "url"},
-    {RPMTAG_SOURCE,		0, 0, 0, "source"},
-    {RPMTAG_PATCH,		0, 0, 0, "patch"},
-    {RPMTAG_NOSOURCE,		0, 0, 0, "nosource"},
-    {RPMTAG_NOPATCH,		0, 0, 0, "nopatch"},
-    {RPMTAG_EXCLUDEARCH,	0, 0, 0, "excludearch"},
-    {RPMTAG_EXCLUSIVEARCH,	0, 0, 0, "exclusivearch"},
-    {RPMTAG_EXCLUDEOS,		0, 0, 0, "excludeos"},
-    {RPMTAG_EXCLUSIVEOS,	0, 0, 0, "exclusiveos"},
-    {RPMTAG_ICON,		0, 0, 0, "icon"},
-    {RPMTAG_PROVIDEFLAGS,	0, 0, 0, "provides"},
-    {RPMTAG_REQUIREFLAGS,	0, 1, 0, "requires"},
-    {RPMTAG_PREREQ,		0, 1, 0, "prereq"},
-    {RPMTAG_CONFLICTFLAGS,	0, 0, 0, "conflicts"},
-    {RPMTAG_OBSOLETEFLAGS,	0, 0, 0, "obsoletes"},
-    {RPMTAG_PREFIXES,		0, 0, 0, "prefixes"},
-    {RPMTAG_PREFIXES,		0, 0, 0, "prefix"},
-    {RPMTAG_BUILDROOT,		0, 0, 0, "buildroot"},
-    {RPMTAG_BUILDARCHS,		0, 0, 0, "buildarchitectures"},
-    {RPMTAG_BUILDARCHS,		0, 0, 0, "buildarch"},
-    {RPMTAG_BUILDCONFLICTS,	0, 0, 0, "buildconflicts"},
-    {RPMTAG_BUILDPREREQ,	0, 1, 0, "buildprereq"},
-    {RPMTAG_BUILDREQUIRES,	0, 1, 0, "buildrequires"},
-    {RPMTAG_AUTOREQPROV,	0, 0, 0, "autoreqprov"},
-    {RPMTAG_AUTOREQ,		0, 0, 0, "autoreq"},
-    {RPMTAG_AUTOPROV,		0, 0, 0, "autoprov"},
-    {RPMTAG_DOCDIR,		0, 0, 0, "docdir"},
-    {RPMTAG_RHNPLATFORM,	0, 0, 1, "rhnplatform"},
-    {RPMTAG_DISTTAG,		0, 0, 0, "disttag"},
+    {RPMTAG_NAME,		0, 0, "name"},
+    {RPMTAG_VERSION,		0, 0, "version"},
+    {RPMTAG_RELEASE,		0, 0, "release"},
+    {RPMTAG_EPOCH,		0, 0, "epoch"},
+    {RPMTAG_EPOCH,		0, 1, "serial"},
+    {RPMTAG_SUMMARY,		1, 0, "summary"},
+    {RPMTAG_LICENSE,		0, 0, "copyright"},
+    {RPMTAG_LICENSE,		0, 0, "license"},
+    {RPMTAG_DISTRIBUTION,	0, 0, "distribution"},
+    {RPMTAG_DISTURL,		0, 0, "disturl"},
+    {RPMTAG_VENDOR,		0, 0, "vendor"},
+    {RPMTAG_GROUP,		1, 0, "group"},
+    {RPMTAG_PACKAGER,		0, 0, "packager"},
+    {RPMTAG_URL,		0, 0, "url"},
+    {RPMTAG_SOURCE,		0, 0, "source"},
+    {RPMTAG_PATCH,		0, 0, "patch"},
+    {RPMTAG_NOSOURCE,		0, 0, "nosource"},
+    {RPMTAG_NOPATCH,		0, 0, "nopatch"},
+    {RPMTAG_EXCLUDEARCH,	0, 0, "excludearch"},
+    {RPMTAG_EXCLUSIVEARCH,	0, 0, "exclusivearch"},
+    {RPMTAG_EXCLUDEOS,		0, 0, "excludeos"},
+    {RPMTAG_EXCLUSIVEOS,	0, 0, "exclusiveos"},
+    {RPMTAG_ICON,		0, 0, "icon"},
+    {RPMTAG_PROVIDEFLAGS,	0, 0, "provides"},
+    {RPMTAG_REQUIREFLAGS,	1, 0, "requires"},
+    {RPMTAG_PREREQ,		1, 0, "prereq"},
+    {RPMTAG_CONFLICTFLAGS,	0, 0, "conflicts"},
+    {RPMTAG_OBSOLETEFLAGS,	0, 0, "obsoletes"},
+    {RPMTAG_PREFIXES,		0, 0, "prefixes"},
+    {RPMTAG_PREFIXES,		0, 0, "prefix"},
+    {RPMTAG_BUILDROOT,		0, 0, "buildroot"},
+    {RPMTAG_BUILDARCHS,		0, 0, "buildarchitectures"},
+    {RPMTAG_BUILDARCHS,		0, 0, "buildarch"},
+    {RPMTAG_BUILDCONFLICTS,	0, 0, "buildconflicts"},
+    {RPMTAG_BUILDOBSOLETES,	0, 0, "buildobsoletes"},
+    {RPMTAG_BUILDPREREQ,	1, 0, "buildprereq"},
+    {RPMTAG_BUILDPROVIDES,	0, 0, "buildprovides"},
+    {RPMTAG_BUILDREQUIRES,	1, 0, "buildrequires"},
+    {RPMTAG_AUTOREQPROV,	0, 0, "autoreqprov"},
+    {RPMTAG_AUTOREQ,		0, 0, "autoreq"},
+    {RPMTAG_AUTOPROV,		0, 0, "autoprov"},
+    {RPMTAG_DOCDIR,		0, 0, "docdir"},
+    {RPMTAG_DISTTAG,		0, 0, "disttag"},
+    {RPMTAG_CVSID,		0, 0, "cvsid"},
+    {RPMTAG_SVNID,		0, 0, "svnid"},
+    {RPMTAG_SUGGESTSFLAGS,	0, 0, "suggests"},
+    {RPMTAG_ENHANCESFLAGS,	0, 0, "enhances"},
+    {RPMTAG_BUILDSUGGESTS,	0, 0, "buildsuggests"},
+    {RPMTAG_BUILDENHANCES,	0, 0, "buildenhances"},
+    {RPMTAG_VARIANTS,		0, 0, "variants"},
+    {RPMTAG_VARIANTS,		0, 0, "variant"},
+    {RPMTAG_XMAJOR,		0, 0, "xmajor"},
+    {RPMTAG_XMINOR,		0, 0, "xminor"},
+    {RPMTAG_REPOTAG,		0, 0, "repotag"},
+    {RPMTAG_KEYWORDS,		0, 0, "keywords"},
+    {RPMTAG_KEYWORDS,		0, 0, "keyword"},
+    {RPMTAG_BUILDPLATFORMS,	0, 0, "buildplatforms"},
     /*@-nullassign@*/	/* LCL: can't add null annotation */
-    {0, 0, 0, 0, 0}
+    {0, 0, 0, 0}
     /*@=nullassign@*/
 };
-
-/**
- */
-static inline void initPreambleList(void)
-	/*@globals preambleList @*/
-	/*@modifies preambleList @*/
-{
-    PreambleRec p;
-    for (p = preambleList; p->token != NULL; p++)
-	if (p->token) p->len = strlen(p->token);
-}
 
 /**
  */
@@ -804,12 +834,11 @@ static int findPreambleTag(Spec spec, /*@out@*/rpmTag * tag,
 {
     PreambleRec p;
     char *s;
-
-    if (preambleList[0].len == 0)
-	initPreambleList();
+    size_t len = 0;
 
     for (p = preambleList; p->token != NULL; p++) {
-	if (!(p->token && !xstrncasecmp(spec->line, p->token, p->len)))
+	len = strlen(p->token);
+	if (!(p->token && !xstrncasecmp(spec->line, p->token, len)))
 	    continue;
 	if (p->obsolete) {
 	    rpmError(RPMERR_BADSPEC, _("Legacy syntax is unsupported: %s\n"),
@@ -821,7 +850,7 @@ static int findPreambleTag(Spec spec, /*@out@*/rpmTag * tag,
     if (p == NULL || p->token == NULL)
 	return 1;
 
-    s = spec->line + p->len;
+    s = spec->line + len;
     SKIPSPACE(s);
 
     switch (p->multiLang) {
@@ -862,12 +891,12 @@ static int findPreambleTag(Spec spec, /*@out@*/rpmTag * tag,
 /*@=boundswrite@*/
 
 /*@-boundswrite@*/
+/* XXX should return rpmParseState, but RPMERR_BADSPEC forces int return. */
 int parsePreamble(Spec spec, int initialPackage)
 {
-    int nextPart;
+    rpmParseState nextPart;
     int rc, xx;
     char *name, *linep;
-    int flag;
     Package pkg;
     char NVR[BUFSIZ];
     char lang[BUFSIZ];
@@ -877,7 +906,9 @@ int parsePreamble(Spec spec, int initialPackage)
     pkg = newPackage(spec);
 	
     if (! initialPackage) {
+	rpmParseState flag;
 	/* There is one option to %package: <pkg> or -n <pkg> */
+	flag = PART_NONE;
 	if (parseSimplePart(spec->line, &name, &flag)) {
 	    rpmError(RPMERR_BADSPEC, _("Bad package specification: %s\n"),
 			spec->line);
@@ -935,11 +966,6 @@ int parsePreamble(Spec spec, int initialPackage)
 
     /* Do some final processing on the header */
     
-    if (!spec->gotBuildRootURL && spec->buildRootURL) {
-	rpmError(RPMERR_BADSPEC, _("Spec file can't use BuildRoot\n"));
-	return RPMERR_BADSPEC;
-    }
-
     /* XXX Skip valid arch check if not building binary package */
     if (!spec->anyarch && checkForValidArchitectures(spec))
 	return RPMERR_BADSPEC;

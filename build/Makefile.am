@@ -4,22 +4,24 @@ AUTOMAKE_OPTIONS = 1.4 foreign
 
 LINT = splint
 
+EXTRA_DIST = librpmbuild.vers
+
 INCLUDES = -I. \
 	-I$(top_srcdir) \
 	-I$(top_srcdir)/lib \
 	-I$(top_srcdir)/rpmdb \
 	-I$(top_srcdir)/rpmio \
 	@WITH_BEECRYPT_INCLUDE@ \
-	-I$(top_srcdir)/file/src \
-	-I$(top_srcdir)/popt \
-	-I$(top_srcdir)/misc \
+	@WITH_MAGIC_INCLUDE@ \
+	@WITH_POPT_INCLUDE@ \
 	@WITH_LIBELF_INCLUDE@ \
+	-I$(top_srcdir)/misc \
 	@INCPATH@
 
 LIBS =
 
 pkgincdir = $(pkgincludedir)
-pkginc_HEADERS = rpmbuild.h rpmfc.h rpmfile.h rpmspec.h
+pkginc_HEADERS = rpmbuild.h rpmfile.h rpmspec.h
 noinst_HEADERS = buildio.h
 
 LDFLAGS = -L$(RPM_BUILD_ROOT)$(usrlibdir) -L$(DESTDIR)$(usrlibdir)
@@ -30,12 +32,16 @@ librpmbuild_la_SOURCES = \
 	build.c expression.c files.c misc.c names.c pack.c \
 	parseBuildInstallClean.c parseChangelog.c parseDescription.c \
 	parseFiles.c parsePreamble.c parsePrep.c parseReqs.c parseScript.c \
-	parseSpec.c poptBT.c reqprov.c rpmfc.c spec.c
-librpmbuild_la_LDFLAGS = -release 4.4 $(LDFLAGS) \
+	parseSpec.c poptBT.c reqprov.c spec.c
+librpmbuild_la_LDFLAGS = -no-undefined -release $(LT_CURRENT).$(LT_REVISION) $(LDFLAGS) \
 	$(top_builddir)/lib/librpm.la \
 	$(top_builddir)/rpmdb/librpmdb.la \
 	$(top_builddir)/rpmio/librpmio.la \
 	@WITH_LIBELF_LIB@
+
+if HAVE_LD_VERSION_SCRIPT
+librpmbuild_la_LDFLAGS += -Wl,--version-script=$(srcdir)/librpmbuild.vers
+endif
 
 rpmfile.h:
 	@ln -sf $(top_builddir)/file/src/file.h $@

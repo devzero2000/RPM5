@@ -1,6 +1,6 @@
 /*@-modfilesys@*/
-/** \ingroup rpmio
- * \file rpmio/rpmio.c
+/** \ingroup rpmgi
+ * \file lib/rpmgi.c
  */
 #include "system.h"
 
@@ -22,15 +22,23 @@
 /*@access rpmts @*/
 /*@access rpmps @*/
 
+/**
+ */
 /*@unchecked@*/
 int _rpmgi_debug = 0;
 
+/**
+ */
 /*@unchecked@*/
 rpmgiFlags giFlags = RPMGI_NONE;
 
+/**
+ */
 /*@unchecked@*/
 static int indent = 2;
 
+/**
+ */
 /*@unchecked@*/ /*@observer@*/
 static const char * ftsInfoStrings[] = {
     "UNKNOWN",
@@ -50,6 +58,8 @@ static const char * ftsInfoStrings[] = {
     "W",
 };
 
+/**
+ */
 /*@observer@*/
 static const char * ftsInfoStr(int fts_info)
 	/*@*/
@@ -97,7 +107,7 @@ static rpmRC rpmgiLoadManifest(rpmgi gi, const char * path)
 	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
 	/*@modifies gi, rpmGlobalMacroContext, h_errno, internalState @*/
 {
-    FD_t fd = rpmgiOpen(path, "r.ufdio");
+    FD_t fd = rpmgiOpen(path, "r");
     rpmRC rpmrc = RPMRC_FAIL;
 
     if (fd != NULL) {
@@ -118,7 +128,7 @@ static Header rpmgiReadHeader(rpmgi gi, const char * path)
 	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
 	/*@modifies gi, rpmGlobalMacroContext, h_errno, internalState @*/
 {
-    FD_t fd = rpmgiOpen(path, "r.ufdio");
+    FD_t fd = rpmgiOpen(path, "r");
     Header h = NULL;
 
     if (fd != NULL) {
@@ -145,6 +155,27 @@ static Header rpmgiReadHeader(rpmgi gi, const char * path)
 }
 
 /**
+ * Load next key from argv list.
+ * @param gi		generalized iterator
+ * @return		RPMRC_OK on success
+ */
+static rpmRC rpmgiLoadNextKey(rpmgi gi)
+	/*@modifies gi @*/
+{
+    rpmRC rpmrc = RPMRC_NOTFOUND;
+    if (gi->argv != NULL && gi->argv[gi->i] != NULL) {
+	gi->keyp = gi->argv[gi->i];
+	gi->keylen = 0;
+	rpmrc = RPMRC_OK;
+    } else {
+	gi->i = -1;
+	gi->keyp = NULL;
+	gi->keylen = 0;
+    }
+    return rpmrc;
+}
+
+/**
  * Read next header from package, lazily expanding manifests as found.
  * @todo An empty file read as manifest truncates argv returning RPMRC_NOTFOUND.
  * @todo Errors, e.g. non-existent path in manifest, will terminate iteration.
@@ -152,7 +183,6 @@ static Header rpmgiReadHeader(rpmgi gi, const char * path)
  * @param gi		generalized iterator
  * @return		RPMRC_OK on success
  */
-/*@null@*/
 static rpmRC rpmgiLoadReadHeader(rpmgi gi)
 	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
 	/*@modifies gi, rpmGlobalMacroContext, h_errno, internalState @*/
@@ -173,6 +203,8 @@ static rpmRC rpmgiLoadReadHeader(rpmgi gi)
 	    rpmrc = RPMRC_OK;
 
 	if (rpmrc == RPMRC_OK || gi->flags & RPMGI_NOMANIFEST)
+	    break;
+	if (errno == ENOENT)
 	    break;
 
 	/* Not a header, so try for a manifest. */
@@ -256,7 +288,10 @@ static rpmRC rpmgiWalkReadHeader(rpmgi gi)
 
     if (gi->ftsp != NULL)
     while ((gi->fts = Fts_read(gi->ftsp)) != NULL) {
-	rpmrc = rpmgiWalkPathFilter(gi);
+	if (gi->walkPathFilter)
+	    rpmrc = (*gi->walkPathFilter) (gi);
+	else
+	    rpmrc = rpmgiWalkPathFilter(gi);
 	if (rpmrc == RPMRC_OK)
 	    break;
     }
@@ -268,12 +303,41 @@ static rpmRC rpmgiWalkReadHeader(rpmgi gi)
 	    if (gi->fts != NULL)	/* XXX can't happen */
 		h = rpmgiReadHeader(gi, gi->fts->fts_path);
 	}
-	if (h != NULL)
+	if (h != NULL) {
 	    gi->h = headerLink(h);
-	h = headerFree(h);
+	    h = headerFree(h);
+/*@-noeffectuncon@*/
+	    if (gi->stash != NULL)
+		(void) (*gi->stash) (gi, gi->h);
+/*@=noeffectuncon@*/
+	}
     }
 
     return rpmrc;
+}
+
+const char * rpmgiEscapeSpaces(const char * s)
+{
+    const char * se;
+    const char * t;
+    char * te;
+    size_t nb = 0;
+
+    for (se = s; *se; se++) {
+	if (isspace(*se))
+	    nb++;
+	nb++;
+    }
+    nb++;
+
+    t = te = xmalloc(nb);
+    for (se = s; *se; se++) {
+	if (isspace(*se))
+	    *te++ = '\\';
+	*te++ = *se;
+    }
+    *te = '\0';
+    return t;
 }
 
 /**
@@ -308,12 +372,14 @@ static rpmRC rpmgiGlobArgv(rpmgi gi, /*@null@*/ ARGV_t argv)
 
     if (argv != NULL)
     while ((arg = *argv++) != NULL) {
+	const char * t = rpmgiEscapeSpaces(arg);
 	ARGV_t av = NULL;
 
-	xx = rpmGlob(arg, &ac, &av);
+	xx = rpmGlob(t, &ac, &av);
 	xx = argvAppend(&gi->argv, av);
 	gi->argc += ac;
 	av = argvFree(av);
+	t = _free(t);
 	ac = 0;
     }
     return rpmrc;
@@ -335,36 +401,39 @@ static rpmRC rpmgiInitFilter(rpmgi gi)
     gi->mi = rpmtsInitIterator(gi->ts, gi->tag, gi->keyp, gi->keylen);
 
 if (_rpmgi_debug < 0)
-fprintf(stderr, "*** gi %p\tmi %p\n", gi, gi->mi);
+fprintf(stderr, "*** gi %p key %p[%d]\tmi %p\n", gi, gi->keyp, gi->keylen, gi->mi);
 
     if (gi->argv != NULL)
     for (av = (const char **) gi->argv; *av != NULL; av++) {
-	int tag = RPMTAG_NAME;
-	const char * pat;
-	char * a, * ae;
+	if (gi->tag == RPMDBI_PACKAGES) {
+	    int tag = RPMTAG_NAME;
+	    const char * pat;
+	    char * a, * ae;
 
-	pat = a = xstrdup(*av);
-	tag = RPMTAG_NAME;
+	    pat = a = xstrdup(*av);
+	    tag = RPMTAG_NAME;
 
-	/* Parse for "tag=pattern" args. */
+	    /* Parse for "tag=pattern" args. */
 /*@-branchstate@*/
-	if ((ae = strchr(a, '=')) != NULL) {
-	    *ae++ = '\0';
-	    tag = tagValue(a);
-	    if (tag < 0) {
-		rpmError(RPMERR_QUERYINFO, _("unknown tag: \"%s\"\n"), a);
-		res = 1;
+	    if ((ae = strchr(a, '=')) != NULL) {
+		*ae++ = '\0';
+		if (*a != '\0') {	/* XXX HACK: permit '=foo' */
+		    tag = tagValue(a);
+		    if (tag < 0) {
+			rpmError(RPMERR_QUERYINFO, _("unknown tag: \"%s\"\n"), a);
+			res = 1;
+		    }
+		}
+		pat = ae;
 	    }
-	    pat = ae;
-	}
 /*@=branchstate@*/
-
-	if (!res) {
+	    if (!res) {
 if (_rpmgi_debug  < 0)
-fprintf(stderr, "\tav %p[%d]: \"%s\" -> %s ~= \"%s\"\n", gi->argv, (av - gi->argv), *av, tagName(tag), pat);
-	    res = rpmdbSetIteratorRE(gi->mi, tag, RPMMIRE_DEFAULT, pat);
+fprintf(stderr, "\tav %p[%d]: \"%s\" -> %s ~= \"%s\"\n", gi->argv, (int)(av - gi->argv), *av, tagName(tag), pat);
+		res = rpmdbSetIteratorRE(gi->mi, tag, RPMMIRE_DEFAULT, pat);
+	    }
+	    a = _free(a);
 	}
-	a = _free(a);
 
 	if (res == 0)
 	    continue;
@@ -382,7 +451,7 @@ rpmgi XrpmgiUnlink(rpmgi gi, const char * msg, const char * fn, unsigned ln)
     if (gi == NULL) return NULL;
 
 if (_rpmgi_debug && msg != NULL)
-fprintf(stderr, "--> gi %p -- %d %s at %s:%u\n", gi, gi->nrefs, msg, fn, ln);
+fprintf(stderr, "--> gi %p -- %d %s(%s) at %s:%u\n", gi, gi->nrefs, msg, tagName(gi->tag), fn, ln);
 
     gi->nrefs--;
     return NULL;
@@ -394,7 +463,7 @@ rpmgi XrpmgiLink(rpmgi gi, const char * msg, const char * fn, unsigned ln)
     gi->nrefs++;
 
 if (_rpmgi_debug && msg != NULL)
-fprintf(stderr, "--> gi %p ++ %d %s at %s:%u\n", gi, gi->nrefs, msg, fn, ln);
+fprintf(stderr, "--> gi %p ++ %d %s(%s) at %s:%u\n", gi, gi->nrefs, msg, tagName(gi->tag), fn, ln);
 
     /*@-refcounttrans@*/ return gi; /*@=refcounttrans@*/
 }
@@ -446,6 +515,7 @@ rpmgi rpmgiNew(rpmts ts, int tag, const void * keyp, size_t keylen)
 	return NULL;
 
     gi->ts = rpmtsLink(ts, __FUNCTION__);
+    gi->tsOrder = rpmtsOrder;
     gi->tag = tag;
 /*@-assignexpose@*/
     gi->keyp = keyp;
@@ -466,11 +536,15 @@ rpmgi rpmgiNew(rpmts ts, int tag, const void * keyp, size_t keylen)
     gi->ftsOpts = 0;
     gi->ftsp = NULL;
     gi->fts = NULL;
+    gi->walkPathFilter = NULL;
 
     gi = rpmgiLink(gi, __FUNCTION__);
 
     return gi;
 }
+
+/*@observer@*/ /*@unchecked@*/
+static const char * _query_hdlist_path  = "/usr/share/comps/%{_arch}/hdlist";
 
 rpmRC rpmgiNext(/*@null@*/ rpmgi gi)
 {
@@ -481,6 +555,9 @@ rpmRC rpmgiNext(/*@null@*/ rpmgi gi)
     if (gi == NULL)
 	return rpmrc;
 
+if (_rpmgi_debug)
+fprintf(stderr, "*** %s(%p) tag %s\n", __FUNCTION__, gi, tagName(gi->tag));
+
     /* Free header from previous iteration. */
     gi->h = headerFree(gi->h);
     gi->hdrPath = _free(gi->hdrPath);
@@ -490,6 +567,36 @@ rpmRC rpmgiNext(/*@null@*/ rpmgi gi)
     if (++gi->i >= 0)
     switch (gi->tag) {
     default:
+	if (!gi->active) {
+nextkey:
+	    rpmrc = rpmgiLoadNextKey(gi);
+	    if (rpmrc != RPMRC_OK)
+		goto enditer;
+	    rpmrc = rpmgiInitFilter(gi);
+	    if (rpmrc != RPMRC_OK || gi->mi == NULL) {
+		gi->mi = rpmdbFreeIterator(gi->mi);	/* XXX unnecessary */
+		gi->i++;
+		goto nextkey;
+	    }
+	    rpmrc = RPMRC_NOTFOUND;	/* XXX hack */
+	    gi->active = 1;
+	}
+	if (gi->mi != NULL) {	/* XXX unnecessary */
+	    Header h = rpmdbNextIterator(gi->mi);
+	    if (h != NULL) {
+		if (!(gi->flags & RPMGI_NOHEADER))
+		    gi->h = headerLink(h);
+		sprintf(hnum, "%u", rpmdbGetIteratorOffset(gi->mi));
+		gi->hdrPath = rpmExpand("rpmdb h# ", hnum, NULL);
+		rpmrc = RPMRC_OK;
+		/* XXX header reference held by iterator, so no headerFree */
+	    }
+	}
+	if (rpmrc != RPMRC_OK) {
+	    gi->mi = rpmdbFreeIterator(gi->mi);
+	    goto nextkey;
+	}
+	break;
     case RPMDBI_PACKAGES:
 	if (!gi->active) {
 	    rpmrc = rpmgiInitFilter(gi);
@@ -516,20 +623,27 @@ rpmRC rpmgiNext(/*@null@*/ rpmgi gi)
 	    goto enditer;
 	}
 	break;
+    case RPMDBI_REMOVED:
     case RPMDBI_ADDED:
     {	rpmte p;
+	int teType = 0;
+	const char * teTypeString = NULL;
 
 	if (!gi->active) {
 	    gi->tsi = rpmtsiInit(gi->ts);
 	    gi->active = 1;
 	}
-	if ((p = rpmtsiNext(gi->tsi, TR_ADDED)) != NULL) {
+	if ((p = rpmtsiNext(gi->tsi, teType)) != NULL) {
 	    Header h = rpmteHeader(p);
 	    if (h != NULL)
 		if (!(gi->flags & RPMGI_NOHEADER)) {
 		    gi->h = headerLink(h);
+		switch(rpmteType(p)) {
+		case TR_ADDED:	teTypeString = "+++";	/*@switchbreak@*/break;
+		case TR_REMOVED: teTypeString = "---";	/*@switchbreak@*/break;
+		}
 		sprintf(hnum, "%u", (unsigned)gi->i);
-		gi->hdrPath = rpmExpand("added h# ", hnum, NULL);
+		gi->hdrPath = rpmExpand("%s h# ", teTypeString, hnum, NULL);
 		rpmrc = RPMRC_OK;
 		h = headerFree(h);
 	    }
@@ -541,9 +655,14 @@ rpmRC rpmgiNext(/*@null@*/ rpmgi gi)
     }	break;
     case RPMDBI_HDLIST:
 	if (!gi->active) {
-	    const char * path = "/usr/share/comps/%{_arch}/hdlist";
-	    gi->fd = rpmgiOpen(path, "r.ufdio");
+	    const char * path = rpmExpand("%{?_query_hdlist_path}", NULL);
+	    if (path == NULL || *path == '\0') {
+		path = _free(path);
+		path = rpmExpand(_query_hdlist_path, NULL);
+	    }
+	    gi->fd = rpmgiOpen(path, "rm");
 	    gi->active = 1;
+	    path = _free(path);
 	}
 	if (gi->fd != NULL) {
 	    Header h = headerRead(gi->fd, HEADER_MAGIC_YES);
@@ -575,7 +694,7 @@ fprintf(stderr, "*** gi %p\t%p[%d]: %s\n", gi, gi->argv, gi->i, gi->argv[gi->i])
 	gi->hdrPath = xstrdup(gi->argv[gi->i]);
 	break;
     case RPMDBI_FTSWALK:
-	if (gi->argv == NULL)		/* HACK */
+	if (gi->argv == NULL || gi->argv[0] == NULL)		/* HACK */
 	    goto enditer;
 
 	if (!gi->active) {
@@ -601,7 +720,14 @@ fprintf(stderr, "*** gi %p\t%p[%d]: %s\n", gi, gi->argv, gi->i, gi->argv[gi->i])
 
     if ((gi->flags & RPMGI_TSADD) && gi->h != NULL) {
 	/* XXX rpmgi hack: Save header in transaction element. */
-	xx = rpmtsAddInstallElement(gi->ts, gi->h, (fnpyKey)gi->hdrPath, 2, NULL);
+	if (gi->flags & RPMGI_ERASING) {
+	    static int hdrx = 0;
+	    int dboffset = headerGetInstance(gi->h);
+	    if (dboffset <= 0)
+		dboffset = --hdrx;
+	    xx = rpmtsAddEraseElement(gi->ts, gi->h, dboffset);
+	} else
+	    xx = rpmtsAddInstallElement(gi->ts, gi->h, (fnpyKey)gi->hdrPath, 2, NULL);
     }
 
     return rpmrc;
@@ -612,11 +738,24 @@ enditer:
 	rpmps ps;
 	int i;
 
-	/* XXX installed database needs close here. */
-	xx = rpmtsCloseDB(ts);
-	ts->dbmode = -1;	/* XXX disable lazy opens */
+	/* Block access to indices used for depsolving. */
+	if (!(gi->flags & RPMGI_ERASING)) {
+	    ts->goal = TSM_INSTALL;
+	    xx = rpmdbBlockDBI(ts->rdb, -RPMDBI_DEPENDS);
+	    xx = rpmdbBlockDBI(ts->rdb, -RPMTAG_BASENAMES);
+	    xx = rpmdbBlockDBI(ts->rdb, -RPMTAG_PROVIDENAME);
+	} else {
+	    ts->goal = TSM_ERASE;
+	}
 
 	xx = rpmtsCheck(ts);
+
+	/* Permit access to indices used for depsolving. */
+	if (!(gi->flags & RPMGI_ERASING)) {
+	    xx = rpmdbBlockDBI(ts->rdb, +RPMTAG_PROVIDENAME);
+	    xx = rpmdbBlockDBI(ts->rdb, +RPMTAG_BASENAMES);
+	    xx = rpmdbBlockDBI(ts->rdb, +RPMDBI_DEPENDS);
+	}
 
 	/* XXX query/verify will need the glop added to a buffer instead. */
 	ps = rpmtsProblems(ts);
@@ -648,9 +787,14 @@ enditer:
 	ps = rpmpsFree(ps);
 	ts->probs = rpmpsFree(ts->probs);	/* XXX hackery */
 
-	xx = rpmtsOrder(ts);
+	/* XXX Display dependency loops with rpm -qvT. */
+	if (rpmIsVerbose())
+	    (void) rpmtsSetDFlags(ts, (rpmtsDFlags(ts) | RPMDEPS_FLAG_DEPLOOPS));
 
-	gi->tag = RPMDBI_ADDED;			/* XXX hackery */
+	xx = (*gi->tsOrder) (ts);
+
+	/* XXX hackery alert! */
+	gi->tag = (!(gi->flags & RPMGI_ERASING) ? RPMDBI_ADDED : RPMDBI_REMOVED);
 	gi->flags &= ~(RPMGI_TSADD|RPMGI_TSORDER);
 
     }
@@ -683,6 +827,7 @@ rpmts rpmgiTs(rpmgi gi)
 
 rpmRC rpmgiSetArgs(rpmgi gi, ARGV_t argv, int ftsOpts, rpmgiFlags flags)
 {
+    if (gi == NULL) return RPMRC_FAIL;
     gi->ftsOpts = ftsOpts;
     gi->flags = flags;
     return rpmgiGlobArgv(gi, argv);

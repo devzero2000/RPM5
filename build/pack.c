@@ -6,6 +6,7 @@
 #include "system.h"
 
 #include <rpmio_internal.h>
+#define	_RPMEVR_INTERNAL	/* XXX RPMSENSE_ANY */
 #include <rpmbuild.h>
 
 #include "rpmps.h"
@@ -20,7 +21,6 @@
 
 #include "buildio.h"
 
-#include "legacy.h"	/* XXX providePackageNVR */
 #include "signature.h"
 #include "rpmlead.h"
 #include "debug.h"
@@ -54,7 +54,7 @@ static inline int genSourceRpmName(Spec spec)
  * @todo Create transaction set *much* earlier.
  */
 static int cpio_doio(FD_t fdo, /*@unused@*/ Header h, CSA_t csa,
-		const char * fmodeMacro)
+		const char * payload_format, const char * fmodeMacro)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies fdo, csa, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
@@ -79,7 +79,7 @@ static int cpio_doio(FD_t fdo, /*@unused@*/ Header h, CSA_t csa,
     if (cfd == NULL)
 	return 1;
 
-    rc = fsmSetup(fi->fsm, FSM_PKGBUILD, ts, fi, cfd,
+    rc = fsmSetup(fi->fsm, FSM_PKGBUILD, payload_format, ts, fi, cfd,
 		&csa->cpioArchiveSize, &failedFile);
     (void) Fclose(cfd);
     ec = fsmTeardown(fi->fsm);
@@ -138,10 +138,9 @@ static /*@only@*/ /*@null@*/ StringBuf addFileToTagAux(Spec spec,
     FILE * f;
     FD_t fd;
 
-    /* XXX use rpmGenPath(rootdir, "%{_buildir}/%{_buildsubdir}/", file) */
-    fn = rpmGetPath("%{_builddir}/", spec->buildSubdir, "/", file, NULL);
+    fn = rpmGetPath("%{_builddir}/%{?buildsubdir:%{buildsubdir}/}", file, NULL);
 
-    fd = Fopen(fn, "r.ufdio");
+    fd = Fopen(fn, "r");
     if (fn != buf) fn = _free(fn);
     if (fd == NULL || Ferror(fd)) {
 	sb = freeStringBuf(sb);
@@ -207,9 +206,7 @@ static int addFileToArrayTag(Spec spec, const char *file, Header h, int tag)
     return 0;
 }
 
-/**
- */
-static int processScriptFiles(Spec spec, Package pkg)
+int processScriptFiles(Spec spec, Package pkg)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies pkg->header, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
@@ -302,7 +299,7 @@ int readRPM(const char *fileName, Spec *specp, struct rpmlead *lead,
     rpmRC rc;
 
     fdi = (fileName != NULL)
-	? Fopen(fileName, "r.ufdio")
+	? Fopen(fileName, "r")
 	: fdDup(STDIN_FILENO);
 
     if (fdi == NULL || Ferror(fdi)) {
@@ -412,9 +409,91 @@ static int rpmLeadVersion(void)
     }
 
     rpmlead_version = rpmpkg_version / 10000;
-    if (_noDirTokens || (rpmlead_version < 3 || rpmlead_version > 4))
+    /* XXX silly sanity check. */
+    if (rpmlead_version < 3 || rpmlead_version > 4)
 	rpmlead_version = 3;
     return rpmlead_version;
+}
+
+void providePackageNVR(Header h)
+{
+    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
+    HFD_t hfd = headerFreeData;
+    const char *name, *version, *release;
+    int_32 * epoch;
+    const char *pEVR;
+    char *p;
+    int_32 pFlags = RPMSENSE_EQUAL;
+    const char ** provides = NULL;
+    const char ** providesEVR = NULL;
+    rpmTagType pnt, pvt;
+    int_32 * provideFlags = NULL;
+    int providesCount;
+    int i, xx;
+    int bingo = 1;
+
+    /* Generate provides for this package name-version-release. */
+    xx = headerNVR(h, &name, &version, &release);
+    if (!(name && version && release))
+	return;
+    pEVR = p = alloca(21 + strlen(version) + 1 + strlen(release) + 1);
+    *p = '\0';
+    if (hge(h, RPMTAG_EPOCH, NULL, (void **) &epoch, NULL)) {
+	sprintf(p, "%d:", *epoch);
+	while (*p != '\0')
+	    p++;
+    }
+    (void) stpcpy( stpcpy( stpcpy(p, version) , "-") , release);
+
+    /*
+     * Rpm prior to 3.0.3 does not have versioned provides.
+     * If no provides at all are available, we can just add.
+     */
+    if (!hge(h, RPMTAG_PROVIDENAME, &pnt, (void **) &provides, &providesCount))
+	goto exit;
+
+    /*
+     * Otherwise, fill in entries on legacy packages.
+     */
+    if (!hge(h, RPMTAG_PROVIDEVERSION, &pvt, (void **) &providesEVR, NULL)) {
+	for (i = 0; i < providesCount; i++) {
+	    char * vdummy = "";
+	    int_32 fdummy = RPMSENSE_ANY;
+	    xx = headerAddOrAppendEntry(h, RPMTAG_PROVIDEVERSION, RPM_STRING_ARRAY_TYPE,
+			&vdummy, 1);
+	    xx = headerAddOrAppendEntry(h, RPMTAG_PROVIDEFLAGS, RPM_INT32_TYPE,
+			&fdummy, 1);
+	}
+	goto exit;
+    }
+
+    xx = hge(h, RPMTAG_PROVIDEFLAGS, NULL, (void **) &provideFlags, NULL);
+
+    /*@-nullderef@*/	/* LCL: providesEVR is not NULL */
+    if (provides && providesEVR && provideFlags)
+    for (i = 0; i < providesCount; i++) {
+        if (!(provides[i] && providesEVR[i]))
+            continue;
+	if (!(provideFlags[i] == RPMSENSE_EQUAL &&
+	    !strcmp(name, provides[i]) && !strcmp(pEVR, providesEVR[i])))
+	    continue;
+	bingo = 0;
+	break;
+    }
+    /*@=nullderef@*/
+
+exit:
+    provides = hfd(provides, pnt);
+    providesEVR = hfd(providesEVR, pvt);
+
+    if (bingo) {
+	xx = headerAddOrAppendEntry(h, RPMTAG_PROVIDENAME, RPM_STRING_ARRAY_TYPE,
+		&name, 1);
+	xx = headerAddOrAppendEntry(h, RPMTAG_PROVIDEFLAGS, RPM_INT32_TYPE,
+		&pFlags, 1);
+	xx = headerAddOrAppendEntry(h, RPMTAG_PROVIDEVERSION, RPM_STRING_ARRAY_TYPE,
+		&pEVR, 1);
+    }
 }
 
 /*@-boundswrite@*/
@@ -426,6 +505,7 @@ int writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
     int_32 count, sigtag;
     const char * sigtarget;
     const char * rpmio_flags = NULL;
+    const char * payload_format = NULL;
     const char * SHA1 = NULL;
     char *s;
     char buf[BUFSIZ];
@@ -449,36 +529,53 @@ int writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
     }
 #endif
 
-    /* Binary packages now have explicit Provides: name = version-release. */
-    if (type == RPMLEAD_BINARY)
-	providePackageNVR(h);
-
     /* Save payload information */
     /*@-branchstate@*/
     switch(type) {
     case RPMLEAD_SOURCE:
+	payload_format = rpmExpand("%{?_source_payload_format}", NULL);
 	rpmio_flags = rpmExpand("%{?_source_payload}", NULL);
 	break;
     case RPMLEAD_BINARY:
+	payload_format = rpmExpand("%{?_binary_payload_format}", NULL);
 	rpmio_flags = rpmExpand("%{?_binary_payload}", NULL);
 	break;
     }
     /*@=branchstate@*/
+    if (!(payload_format && *payload_format)) {
+	payload_format = _free(payload_format);
+	payload_format = xstrdup("cpio");
+    }
     if (!(rpmio_flags && *rpmio_flags)) {
 	rpmio_flags = _free(rpmio_flags);
 	rpmio_flags = xstrdup("w9.gzdio");
     }
     s = strchr(rpmio_flags, '.');
     if (s) {
-	(void) headerAddEntry(h, RPMTAG_PAYLOADFORMAT, RPM_STRING_TYPE, "cpio", 1);
+
+	if (payload_format) {
+	    if (!strcmp(payload_format, "tar")
+	     || !strcmp(payload_format, "ustar")) {
+		/* XXX addition to header is too late to be displayed/sorted. */
+		/* Add prereq on rpm version that understands tar payloads */
+		(void) rpmlibNeedsFeature(h, "PayloadIsUstar", "4.4.4-1");
+	    }
+
+	    (void) headerAddEntry(h, RPMTAG_PAYLOADFORMAT, RPM_STRING_TYPE,
+			payload_format, 1);
+	}
+
+	/* XXX addition to header is too late to be displayed/sorted. */
 	if (s[1] == 'g' && s[2] == 'z')
 	    (void) headerAddEntry(h, RPMTAG_PAYLOADCOMPRESSOR, RPM_STRING_TYPE,
 		"gzip", 1);
-	if (s[1] == 'b' && s[2] == 'z') {
+	else if (s[1] == 'b' && s[2] == 'z')
 	    (void) headerAddEntry(h, RPMTAG_PAYLOADCOMPRESSOR, RPM_STRING_TYPE,
 		"bzip2", 1);
-	    /* Add prereq on rpm version that understands bzip2 payloads */
-	    (void) rpmlibNeedsFeature(h, "PayloadIsBzip2", "3.0.5-1");
+	else if (s[1] == 'l' && s[2] == 'z') {
+	    (void) headerAddEntry(h, RPMTAG_PAYLOADCOMPRESSOR, RPM_STRING_TYPE,
+		"lzma", 1);
+	    (void) rpmlibNeedsFeature(h, "PayloadIsLzma", "4.4.6-1");
 	}
 	strcpy(buf, rpmio_flags);
 	buf[s - rpmio_flags] = '\0';
@@ -506,6 +603,7 @@ int writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
      * Write the header+archive into a temp file so that the size of
      * archive (after compression) can be added to the header.
      */
+    sigtarget = NULL;
     if (makeTempFile(NULL, &sigtarget, &fd)) {
 	rc = RPMERR_CREATE;
 	rpmError(RPMERR_CREATE, _("Unable to open temp file.\n"));
@@ -520,7 +618,7 @@ int writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
 	(void) Fflush(fd);
 	fdFiniDigest(fd, PGPHASHALGO_SHA1, (void **)&SHA1, NULL, 1);
 	if (csa->cpioList != NULL) {
-	    rc = cpio_doio(fd, h, csa, rpmio_flags);
+	    rc = cpio_doio(fd, h, csa, payload_format, rpmio_flags);
 	} else if (Fileno(csa->cpioFdIn) >= 0) {
 	    rc = cpio_copy(fd, csa);
 	} else {
@@ -529,6 +627,7 @@ int writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
 	}
     }
     rpmio_flags = _free(rpmio_flags);
+    payload_format = _free(payload_format);
 
     if (rc)
 	goto exit;
@@ -604,7 +703,7 @@ int writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
     }
 
     /* Open the output file */
-    fd = Fopen(fileName, "w.ufdio");
+    fd = Fopen(fileName, "w");
     if (fd == NULL || Ferror(fd)) {
 	rc = RPMERR_CREATE;
 	rpmError(RPMERR_CREATE, _("Could not open %s: %s\n"),
@@ -618,10 +717,9 @@ int writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
 	struct rpmlead lead;
 
 	if (Fileno(csa->cpioFdIn) < 0) {
-#ifndef	DYING
-	    rpmGetArchInfo(NULL, &archnum);
-	    rpmGetOsInfo(NULL, &osnum);
-#endif
+	    /* XXX DIEDIEDIE: legacy values were not 0. */
+	    archnum = 0;
+	    osnum = 0;
 	} else if (csa->lead != NULL) {
 	    archnum = csa->lead->archnum;
 	    osnum = csa->lead->osnum;
@@ -655,7 +753,7 @@ int writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
 	goto exit;
 
     /* Append the header and archive */
-    ifd = Fopen(sigtarget, "r.ufdio");
+    ifd = Fopen(sigtarget, "r");
     if (ifd == NULL || Ferror(ifd)) {
 	rc = RPMERR_READ;
 	rpmError(RPMERR_READ, _("Unable to open sigtarget %s: %s\n"),
@@ -767,9 +865,6 @@ int packageBinaries(Spec spec)
 	if (pkg->fileList == NULL)
 	    continue;
 
-	if ((rc = processScriptFiles(spec, pkg)))
-	    return rc;
-	
 	if (spec->cookie) {
 	    (void) headerAddEntry(pkg->header, RPMTAG_COOKIE,
 			   RPM_STRING_TYPE, spec->cookie, 1);
@@ -784,8 +879,6 @@ int packageBinaries(Spec spec)
 		       RPM_STRING_TYPE, buildHost(), 1);
 	(void) headerAddEntry(pkg->header, RPMTAG_BUILDTIME,
 		       RPM_INT32_TYPE, getBuildTime(), 1);
-
-	providePackageNVR(pkg->header);
 
     {	const char * optflags = rpmExpand("%{optflags}", NULL);
 	(void) headerAddEntry(pkg->header, RPMTAG_OPTFLAGS, RPM_STRING_TYPE,

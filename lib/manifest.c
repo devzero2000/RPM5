@@ -75,14 +75,26 @@ rpmRC rpmReadPackageManifest(FD_t fd, int * argcPtr, const char *** argvPtr)
     const char ** av = NULL;
     int argc = (argcPtr ? *argcPtr : 0);
     const char ** argv = (argvPtr ? *argvPtr : NULL);
-/*@+voidabstract@*/
-    FILE * f = (FILE *) fdGetFp(fd);
-/*@=voidabstract@*/
+    FD_t xfd;
+    FILE * f;
     rpmRC rpmrc = RPMRC_OK;
     int i, j, next, npre;
 
 /*@-boundswrite@*/
-    if (f != NULL)
+/*@-branchstate@*/
+    if (fdGetFp(fd) == NULL)
+	xfd = Fdopen(fd, "r.fpio");
+    else
+	xfd = fd;
+/*@=branchstate@*/
+
+/*@+voidabstract@*/
+    if ((f = (FILE *) fdGetFp(xfd)) == NULL) {
+/*@=voidabstract@*/
+	rpmrc = RPMRC_NOTFOUND;
+	goto exit;
+    }
+
     while (1) {
 	char line[BUFSIZ];
 
@@ -91,6 +103,13 @@ rpmRC rpmReadPackageManifest(FD_t fd, int * argcPtr, const char *** argvPtr)
 	if (s == NULL) {
 	    /* XXX Ferror check needed */
 	    break;
+	}
+
+	/* XXX stop processing manifest if HTML is found. */
+#define	DOCTYPE_HTML_PUBLIC	"<!DOCTYPE HTML PUBLIC"
+	if (!strncmp(line, DOCTYPE_HTML_PUBLIC, sizeof(DOCTYPE_HTML_PUBLIC)-1)) {
+	    rpmrc = RPMRC_NOTFOUND;
+	    goto exit;
 	}
 
 	/* Skip comments. */

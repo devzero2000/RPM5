@@ -103,7 +103,7 @@ static void printFileInfo(char * te, const char * name,
 	(void)strftime(timefield, sizeof(timefield) - 1, fmt, tm);
     }
 
-    sprintf(te, "%s %4d %-8s%-8s %10s %s %s", perms,
+    sprintf(te, "%s %4d %-7s %-8s %10s %s %s", perms,
 	(int)nlink, ownerfield, groupfield, sizefield, timefield, namefield);
     perms = _free(perms);
 }
@@ -124,32 +124,55 @@ static inline /*@null@*/ const char * queryHeader(Header h, const char * qfmt)
     return str;
 }
 
+/**
+ */
+static void flushBuffer(char ** tp, char ** tep, int nonewline)
+	/*@modifies *tp, **tp, *tep, **tep @*/
+{
+    char *t, *te;
+
+    t = *tp;
+    te = *tep;
+    if (te > t) {
+	if (!nonewline) {
+	    *te++ = '\n';
+	    *te = '\0';
+	}
+	rpmMessage(RPMMESS_NORMAL, "%s", t);
+	te = t;
+	*t = '\0';
+    }
+    *tp = t;
+    *tep = te;
+}
+
 int showQueryPackage(QVA_t qva, rpmts ts, Header h)
 {
     int scareMem = 0;
     rpmfi fi = NULL;
+    size_t tb = 2 * BUFSIZ;
+    size_t sb;
     char * t, * te;
     char * prefix = NULL;
     int rc = 0;		/* XXX FIXME: need real return code */
-    int nonewline = 0;
     int i;
 
-    te = t = xmalloc(BUFSIZ);
+    te = t = xmalloc(tb);
 /*@-boundswrite@*/
     *te = '\0';
 /*@=boundswrite@*/
 
     if (qva->qva_queryFormat != NULL) {
 	const char * str = queryHeader(h, qva->qva_queryFormat);
-	nonewline = 1;
 	/*@-branchstate@*/
 	if (str) {
-	    size_t tb = (te - t);
-	    size_t sb = strlen(str);
+	    size_t tx = (te - t);
 
-	    if (sb >= (BUFSIZ - tb)) {
-		t = xrealloc(t, BUFSIZ+sb);
-		te = t + tb;
+	    sb = strlen(str);
+	    if (sb) {
+		tb += sb;
+		t = xrealloc(t, tb);
+		te = t + tx;
 	    }
 /*@-boundswrite@*/
 	    /*@-usereleased@*/
@@ -157,6 +180,7 @@ int showQueryPackage(QVA_t qva, rpmts ts, Header h)
 	    /*@=usereleased@*/
 /*@=boundswrite@*/
 	    str = _free(str);
+	    flushBuffer(&t, &te, 1);
 	}
 	/*@=branchstate@*/
     }
@@ -182,7 +206,7 @@ int showQueryPackage(QVA_t qva, rpmts ts, Header h)
 	rpmfileState fstate;
 	size_t fsize;
 	const char * fn;
-	char fmd5[32+1];
+	const char * fdigest;
 	const char * fuser;
 	const char * fgroup;
 	const char * flink;
@@ -197,11 +221,14 @@ int showQueryPackage(QVA_t qva, rpmts ts, Header h)
 	fn = rpmfiFN(fi);
 /*@-bounds@*/
 	{   static char hex[] = "0123456789abcdef";
-	    const char * s = rpmfiMD5(fi);
-	    char * p = fmd5;
+	    int dalgo = 0;
+	    size_t dlen = 0;
+	    const unsigned char * digest = rpmfiDigest(fi, &dalgo, &dlen);
+	    char * p;
 	    int j;
-	    for (j = 0; j < 16; j++) {
-		unsigned k = *s++;
+	    fdigest = p = xcalloc(1, ((2 * dlen) + 1));
+	    for (j = 0; j < dlen; j++) {
+		unsigned k = *digest++;
 		*p++ = hex[ (k >> 4) & 0xf ];
 		*p++ = hex[ (k     ) & 0xf ];
 	    }
@@ -212,6 +239,8 @@ int showQueryPackage(QVA_t qva, rpmts ts, Header h)
 	fgroup = rpmfiFGroup(fi);
 	flink = rpmfiFLink(fi);
 	fnlink = rpmfiFNlink(fi);
+assert(fn != NULL);
+assert(fdigest != NULL);
 
 	/* If querying only docs, skip non-doc files. */
 	if ((qva->qva_flags & QUERY_FOR_DOCS) && !(fflags & RPMFILE_DOC))
@@ -221,9 +250,33 @@ int showQueryPackage(QVA_t qva, rpmts ts, Header h)
 	if ((qva->qva_flags & QUERY_FOR_CONFIG) && !(fflags & RPMFILE_CONFIG))
 	    continue;
 
-	/* If not querying %ghost, skip ghost files. */
-	if (!(qva->qva_fflags & RPMFILE_GHOST) && (fflags & RPMFILE_GHOST))
+	/* If not querying %config, skip config files. */
+	if ((qva->qva_fflags & RPMFILE_CONFIG) && (fflags & RPMFILE_CONFIG))
 	    continue;
+
+	/* If not querying %doc, skip doc files. */
+	if ((qva->qva_fflags & RPMFILE_DOC) && (fflags & RPMFILE_DOC))
+	    continue;
+
+	/* If not querying %ghost, skip ghost files. */
+	if ((qva->qva_fflags & RPMFILE_GHOST) && (fflags & RPMFILE_GHOST))
+	    continue;
+
+	/* Insure space for header derived data */
+	sb = 0;
+	if (fn)		sb += strlen(fn);
+	if (fdigest)	sb += strlen(fdigest);
+	if (fuser)	sb += strlen(fuser);
+	if (fgroup)	sb += strlen(fgroup);
+	if (flink)	sb += strlen(flink);
+/*@-branchstate@*/
+	if ((sb + BUFSIZ) > tb) {
+	    size_t tx = (te - t);
+	    tb += sb + BUFSIZ;
+	    t = xrealloc(t, tb);
+	    te = t + tx;
+	}
+/*@=branchstate@*/
 
 /*@-boundswrite@*/
 	if (!rpmIsVerbose() && prefix)
@@ -258,7 +311,8 @@ int showQueryPackage(QVA_t qva, rpmts ts, Header h)
 /*@=boundswrite@*/
 
 	if (qva->qva_flags & QUERY_FOR_DUMPFILES) {
-	    sprintf(te, "%s %d %d %s 0%o ", fn, (int)fsize, fmtime, fmd5, fmode);
+	    sprintf(te, "%s %d %d %s 0%o ",
+				fn, (int)fsize, fmtime, fdigest, fmode);
 	    te += strlen(te);
 
 	    if (fuser && fgroup) {
@@ -304,31 +358,14 @@ int showQueryPackage(QVA_t qva, rpmts ts, Header h)
 			_("package has neither file owner or id lists\n"));
 	    }
 	}
-/*@-branchstate@*/
-	if (te > t) {
-/*@-boundswrite@*/
-	    *te++ = '\n';
-	    *te = '\0';
-	    rpmMessage(RPMMESS_NORMAL, "%s", t);
-	    te = t;
-	    *t = '\0';
-/*@=boundswrite@*/
-	}
-/*@=branchstate@*/
+	flushBuffer(&t, &te, 0);
+	fdigest = _free(fdigest);
     }
 	    
     rc = 0;
 
 exit:
-    if (te > t) {
-	if (!nonewline) {
-/*@-boundswrite@*/
-	    *te++ = '\n';
-	    *te = '\0';
-/*@=boundswrite@*/
-	}
-	rpmMessage(RPMMESS_NORMAL, "%s", t);
-    }
+    flushBuffer(&t, &te, 0);
     t = _free(t);
 
     fi = rpmfiFree(fi);
@@ -341,8 +378,22 @@ void rpmDisplayQueryTags(FILE * fp)
     int i;
     const struct headerSprintfExtension_s * ext = rpmHeaderFormats;
 
-    for (i = 0, t = rpmTagTable; i < rpmTagTableSize; i++, t++)
-	if (t->name) fprintf(fp, "%s\n", t->name + 7);
+    for (i = 0, t = rpmTagTable; i < rpmTagTableSize; i++, t++) {
+	if (t->name == NULL)
+	    continue;
+	fprintf(fp, "%-20s", t->name + 7);
+	if (rpmIsVerbose()) {
+	    /*@observer@*/
+	    static const char * tagtypes[] = {
+		"", "char", "int8", "int16", "int32", "int64",
+		"string", "blob", "argv", "i18nstring", "asn1", "openpgp"
+	    };
+	    fprintf(fp, " %6d", t->val);
+	    if (t->type > RPM_NULL_TYPE && t->type <= RPM_MAX_TYPE)
+		fprintf(fp, " %s", tagtypes[t->type]);
+	}
+	fprintf(fp, "\n");
+    }
 
     while (ext->name != NULL) {
 	if (ext->type == HEADER_EXT_MORE) {
@@ -378,6 +429,7 @@ static int rpmgiShowMatches(QVA_t qva, rpmts ts)
 	    continue;
 	if ((rc = qva->qva_showPackage(qva, ts, h)) != 0)
 	    ec = rc;
+RSEGFAULT;
 	if (qva->qva_source == RPMQV_DBOFFSET)
 	    break;
     }
@@ -387,12 +439,15 @@ static int rpmgiShowMatches(QVA_t qva, rpmts ts)
 int rpmcliShowMatches(QVA_t qva, rpmts ts)
 {
     Header h;
-    int ec = 0;
+    int ec = 1;
 
+    qva->qva_showFAIL = qva->qva_showOK = 0;
     while ((h = rpmdbNextIterator(qva->qva_mi)) != NULL) {
-	int rc;
-	if ((rc = qva->qva_showPackage(qva, ts, h)) != 0)
-	    ec = rc;
+	ec = qva->qva_showPackage(qva, ts, h);
+	if (ec)
+	    qva->qva_showFAIL++;
+	else
+	    qva->qva_showOK++;
 	if (qva->qva_source == RPMQV_DBOFFSET)
 	    break;
     }
@@ -417,7 +472,6 @@ static inline unsigned char nibble(char c)
     return 0;
 }
 
-/*@-bounds@*/ /* LCL: segfault (realpath annotation?) */
 int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
 {
     int res = 0;
@@ -448,6 +502,7 @@ int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
 	res = rpmgiShowMatches(qva, ts);
 	break;
 
+    case RPMQV_SPECSRPM:
     case RPMQV_SPECFILE:
 	res = ((qva->qva_specQuery != NULL)
 		? qva->qva_specQuery(ts, qva, arg) : 1);
@@ -514,21 +569,24 @@ int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
 	break;
 
     case RPMQV_FILEID:
-    {	unsigned char MD5[16];
-	unsigned char * t;
+    {	unsigned char * t;
+	unsigned char * digest;
+	size_t dlen;
 
-	for (i = 0, s = arg; *s && isxdigit(*s); s++, i++)
+	/* Insure even no. of digits and at least 8 digits. */
+	for (dlen = 0, s = arg; *s && isxdigit(*s); s++, dlen++)
 	    {};
-	if (i != 32) {
+	if ((dlen & 1) || dlen < 8) {
 	    rpmError(RPMERR_QUERY, _("malformed %s: %s\n"), "fileid", arg);
 	    return 1;
 	}
 
-	MD5[0] = '\0';
-        for (i = 0, t = MD5, s = arg; i < 16; i++, t++, s += 2)
+	dlen /= 2;
+	digest = memset(alloca(dlen), 0, dlen);
+        for (t = digest, s = arg; *s; t++, s += 2)
             *t = (nibble(s[0]) << 4) | nibble(s[1]);
 
-	qva->qva_mi = rpmtsInitIterator(ts, RPMTAG_FILEMD5S, MD5, sizeof(MD5));
+	qva->qva_mi = rpmtsInitIterator(ts, RPMTAG_FILEDIGESTS, digest, dlen);
 	if (qva->qva_mi == NULL) {
 	    rpmError(RPMERR_QUERYINFO, _("no package matches %s: %s\n"),
 			"fileid", arg);
@@ -552,8 +610,8 @@ int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
 		mybase = 16;
 	    }
 	}
-	iid = strtoul(myarg, &end, mybase);
-	if ((*end) || (end == arg) || (iid == ULONG_MAX)) {
+	iid = (unsigned) strtoul(myarg, &end, mybase);
+	if ((*end) || (end == arg) || (iid == UINT_MAX)) {
 	    rpmError(RPMERR_QUERY, _("malformed %s: %s\n"), "tid", arg);
 	    return 1;
 	}
@@ -566,6 +624,7 @@ int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
 	    res = rpmcliShowMatches(qva, ts);
     }	break;
 
+    case RPMQV_WHATNEEDS:
     case RPMQV_WHATREQUIRES:
 	qva->qva_mi = rpmtsInitIterator(ts, RPMTAG_REQUIRENAME, arg, 0);
 	if (qva->qva_mi == NULL) {
@@ -589,7 +648,6 @@ int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
 	/*@fallthrough@*/
     case RPMQV_PATH:
     {   char * fn;
-	int myerrno = 0;
 
 	for (s = arg; *s != '\0'; s++)
 	    if (!(*s == '.' || *s == '/'))
@@ -598,32 +656,27 @@ int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
 	if (*s == '\0') {
 	    char fnbuf[PATH_MAX];
 	    fn = realpath(arg, fnbuf);
-	    if (fn)
-		fn = xstrdup(fn);
-	    else
-		fn = xstrdup(arg);
+	    fn = xstrdup( (fn != NULL ? fn : arg) );
 	} else if (*arg != '/') {
 	    const char *curDir = currentDirectory();
 	    fn = (char *) rpmGetPath(curDir, "/", arg, NULL);
 	    curDir = _free(curDir);
 	} else
 	    fn = xstrdup(arg);
+assert(fn != NULL);
 	(void) rpmCleanPath(fn);
 
 	qva->qva_mi = rpmtsInitIterator(ts, RPMTAG_BASENAMES, fn, 0);
-	if (qva->qva_mi == NULL) {
-	    if (access(fn, F_OK) != 0)
-		myerrno = errno;
-	    else if (!provides_checked)
-		qva->qva_mi = rpmtsInitIterator(ts, RPMTAG_PROVIDENAME, fn, 0);
-	}
+	if (qva->qva_mi == NULL && !provides_checked)
+	    qva->qva_mi = rpmtsInitIterator(ts, RPMTAG_PROVIDENAME, fn, 0);
 
-	if (myerrno != 0) {
-	    rpmError(RPMERR_QUERY, _("file %s: %s\n"), fn, strerror(myerrno));
-	    res = 1;
-	} else if (qva->qva_mi == NULL) {
-	    rpmError(RPMERR_QUERYINFO,
-		_("file %s is not owned by any package\n"), fn);
+	if (qva->qva_mi == NULL) {
+	    struct stat sb;
+	    if (Lstat(fn, &sb) != 0)
+		rpmError(RPMERR_QUERY, _("file %s: %s\n"), fn, strerror(errno));
+	    else
+		rpmError(RPMERR_QUERYINFO,
+			_("file %s is not owned by any package\n"), fn);
 	    res = 1;
 	} else
 	    res = rpmcliShowMatches(qva, ts);
@@ -646,13 +699,12 @@ int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
 		mybase = 16;
 	    }
 	}
-	recOffset = strtoul(myarg, &end, mybase);
-	if ((*end) || (end == arg) || (recOffset == ULONG_MAX)) {
+	recOffset = (unsigned) strtoul(myarg, &end, mybase);
+	if ((*end) || (end == arg) || (recOffset == UINT_MAX)) {
 	    rpmError(RPMERR_QUERYINFO, _("invalid package number: %s\n"), arg);
 	    return 1;
 	}
 	rpmMessage(RPMMESS_DEBUG, _("package record number: %u\n"), recOffset);
-	/* RPMDBI_PACKAGES */
 	qva->qva_mi = rpmtsInitIterator(ts, RPMDBI_PACKAGES, &recOffset, sizeof(recOffset));
 	if (qva->qva_mi == NULL) {
 	    rpmError(RPMERR_QUERYINFO,
@@ -668,15 +720,20 @@ int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
 	if (qva->qva_mi == NULL) {
 	    rpmError(RPMERR_QUERYINFO, _("package %s is not installed\n"), arg);
 	    res = 1;
-	} else
+	} else {
 	    res = rpmcliShowMatches(qva, ts);
+	    /* detect foo.bogusarch empty iterations. */
+	    if (qva->qva_showOK == 0 && qva->qva_showFAIL == 0) {
+		rpmError(RPMERR_QUERYINFO, _("package %s is not installed\n"), arg);
+		res = 1;
+	    }
+	}
 	break;
     }
     /*@=branchstate@*/
    
     return res;
 }
-/*@=bounds@*/
 
 int rpmcliArgIter(rpmts ts, QVA_t qva, ARGV_t argv)
 {
@@ -747,13 +804,32 @@ int rpmcliArgIter(rpmts ts, QVA_t qva, ARGV_t argv)
 	rpmtsEmpty(ts);
 	break;
     default:
+      if (giFlags & RPMGI_TSADD) {
+	qva->qva_gi = rpmgiNew(ts, RPMDBI_LABEL, NULL, 0);
+	qva->qva_rc = rpmgiSetArgs(qva->qva_gi, argv, ftsOpts,
+		(giFlags | (RPMGI_NOGLOB               )));
+	if (qva->qva_gi != NULL && (qva->qva_gi->flags & RPMGI_TSADD))	/* Load the ts with headers. */
+	while ((rpmrc = rpmgiNext(qva->qva_gi)) == RPMRC_OK)
+	    {};
+	if (rpmrc != RPMRC_NOTFOUND)
+	    return 1;	/* XXX should be no. of failures. */
+	qva->qva_source = RPMQV_ALL;
+	/*@-nullpass@*/ /* FIX: argv can be NULL, cast to pass argv array */
+	ec = rpmQueryVerify(qva, ts, NULL);
+	/*@=nullpass@*/
+	rpmtsEmpty(ts);
+      } else {
 	qva->qva_gi = rpmgiNew(ts, RPMDBI_ARGLIST, NULL, 0);
 	qva->qva_rc = rpmgiSetArgs(qva->qva_gi, argv, ftsOpts,
 		(giFlags | (RPMGI_NOGLOB|RPMGI_NOHEADER)));
 	while (rpmgiNext(qva->qva_gi) == RPMRC_OK) {
-	    ec += rpmQueryVerify(qva, ts, rpmgiHdrPath(qva->qva_gi));
+	    const char * path;
+	    path = rpmgiHdrPath(qva->qva_gi);
+assert(path != NULL);
+	    ec += rpmQueryVerify(qva, ts, path);
 	    rpmtsEmpty(ts);
 	}
+      }
 	break;
     }
 
@@ -764,6 +840,8 @@ int rpmcliArgIter(rpmts ts, QVA_t qva, ARGV_t argv)
 
 int rpmcliQuery(rpmts ts, QVA_t qva, const char ** argv)
 {
+    rpmdepFlags depFlags = qva->depFlags, odepFlags;
+    rpmtransFlags transFlags = qva->transFlags, otransFlags;
     rpmVSFlags vsflags, ovsflags;
     int ec = 0;
 
@@ -787,25 +865,13 @@ int rpmcliQuery(rpmts ts, QVA_t qva, const char ** argv)
     if (qva->qva_flags & VERIFY_HDRCHK)
 	vsflags |= RPMVSF_NOHDRCHK;
 
-#ifdef	NOTYET
-    /* Initialize security context patterns (if not already done). */
-    if (!(qva->qva_flags & VERIFY_CONTEXTS)) {
-	rpmsx sx = rpmtsREContext(ts);
-	if (sx == NULL) {
-	    arg = rpmGetPath("%{?_verify_file_context_path}", NULL);
-	    if (arg != NULL && *arg != '\0') {
-		sx = rpmsxNew(arg);
-		(void) rpmtsSetREContext(ts, sx);
-	    }
-	    arg = _free(arg);
-	}
-	sx = rpmsxFree(sx);
-    }
-#endif
-
+    odepFlags = rpmtsSetDFlags(ts, depFlags);
+    otransFlags = rpmtsSetFlags(ts, transFlags);
     ovsflags = rpmtsSetVSFlags(ts, vsflags);
     ec = rpmcliArgIter(ts, qva, argv);
     vsflags = rpmtsSetVSFlags(ts, ovsflags);
+    transFlags = rpmtsSetFlags(ts, otransFlags);
+    depFlags = rpmtsSetDFlags(ts, odepFlags);
 
     if (qva->qva_showPackage == showQueryPackage)
 	qva->qva_showPackage = NULL;

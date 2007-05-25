@@ -1,11 +1,11 @@
-#/*! \page config_macros Default configuration: @RPMCONFIGDIR@/macros
+#/*! \page config_macros Default configuration: @USRLIBRPM@/macros
 # \verbatim
 #
 # $Id$
 #
 # This is a global RPM configuration file. All changes made here will
 # be lost when the rpm package is upgraded. Any per-system configuration
-# should be added to /etc/rpm/macros, while per-user configuration should
+# should be added to %{_etcrpm}/macros, while per-user configuration should
 # be added to ~/.rpmmacros.
 #
 #==============================================================================
@@ -29,39 +29,62 @@
 %_usr			@prefix@
 %_usrsrc		%{_usr}/src
 %_var			@varprefix@
+%_usrlibrpm		@USRLIBRPM@
+%_etcrpm		@SYSCONFIGDIR@
 
 #==============================================================================
 # ---- Generally useful path macros.
 #
 %__awk			@AWK@
-%__bzip2		@BZIP2BIN@
+%__bash			@__BASH@
+%__bzip2		@__BZIP2@
 %__cat			@__CAT@
 %__chgrp		@__CHGRP@
 %__chmod		@__CHMOD@
 %__chown		@__CHOWN@
 %__cp			@__CP@
 %__cpio			@__CPIO@
+%__curl			@__CURL@
+%__cvs			@__CVS@
+%__diff			@__DIFF@
+%__ditto		@__DITTO@
 %__file			@__FILE@
+%__find			@__FIND@
 %__gpg			@__GPG@
 %__grep			@__GREP@
-%__gzip			@GZIPBIN@
+%__gzip			@__GZIP@
+%__hg			@__HG@
 %__id			@__ID@
 %__install		@__INSTALL@
+%__install_info		@__INSTALL_INFO@
+%__ldconfig		@__LDCONFIG@
+%__lua			@__LUA@
 %__ln_s			@LN_S@
+%__lzma			@__LZMA@
+%__lzmash		@__LZMASH@
+%__lzop			@__LZOP@
 %__make			@__MAKE@
+%make			%{__make}
 %__mkdir		@__MKDIR@
 %__mkdir_p		@MKDIR_P@
 %__mv			@__MV@
 %__patch		@__PATCH@
+%__pax			@__PAX@
 %__perl			@__PERL@
-%__pgp			@PGPBIN@
+%__pgp			@__PGP@
+%__php			@__PHP@
 %__python		@__PYTHON@
 %__rm			@__RM@
 %__rsh			@__RSH@
 %__sed			@__SED@
+%__sh			@__SH@
 %__ssh			@__SSH@
+%__svn			@__SVN@
 %__tar			@__TAR@
-%__unzip		@UNZIPBIN@
+%__tclsh		@__TCLSH@
+%__unzip		@__UNZIP@
+%__wget			@__WGET@
+%__xar			@__XAR@
 
 #==============================================================================
 # ---- Build system path macros.
@@ -148,9 +171,6 @@
 #	The interpreter used for build scriptlets.
 %_buildshell		/bin/sh
 
-#	The path to the bzip2 executable (legacy, use %{__bzip2} instead).
-%_bzip2bin		%{__bzip2}
-
 #	The location of the rpm database file(s).
 %_dbpath		%{_var}/lib/rpm
 
@@ -161,7 +181,7 @@
 #	Path to script that creates debug symbols in a /usr/lib/debug
 #	shadow tree.
 %__debug_install_post   \
-   @RPMCONFIGDIR@/find-debuginfo.sh %{_builddir}/%{?buildsubdir}\
+   %{_usrlibrpm}/find-debuginfo.sh %{_builddir}/%{?buildsubdir}\
 %{nil}
 
 #	Template for debug information sub-package.
@@ -183,13 +203,6 @@ package or when debugging this package.\
 
 %_defaultdocdir		%{_usr}/doc
 
-#	The path to the gzip executable (legacy, use %{__gzip} instead).
-%_gzipbin		%{__gzip}
-
-#	The number of changelog entries kept when installing (legacy, unused in
-#	rpm-4.0.1 and later).
-%_instchangelog		5
-
 #	The path to the pgp executable (legacy, use %{__pgp} instead).
 %_pgpbin		%{__pgp}
 
@@ -203,9 +216,12 @@ package or when debugging this package.\
 #	The default signature type.
 %_signature		none
 
-#	The directory where sources/patches from a source package will be
-#	installed. This is also where sources/patches are found when building.
+#	The directories where sources/patches/icons from a source package will
+#	be installed. This is also where sources/patches/icons are found
+#	when building.
 %_sourcedir		%{_topdir}/SOURCES
+%_patchdir		%{_sourcedir}
+%_icondir		%{_sourcedir}
 
 #	The directory where the spec file from a source package will be
 #	installed.
@@ -216,12 +232,10 @@ package or when debugging this package.\
 
 #	Directory where temporaray files can be created.
 %_tmppath		%{_var}/tmp
+%tmpdir			%{_tmppath}
 
 #	Path to top of build area.
-%_topdir		%{_usrsrc}/redhat
-
-#	The path to the unzip executable (legacy, use %{__unzip} instead).
-%_unzipbin		%{__unzip}
+%_topdir		%{_usrsrc}/rpm
 
 #==============================================================================
 # ---- Optional rpmrc macros.
@@ -231,13 +245,20 @@ package or when debugging this package.\
 #	Configurable build root path, same as BuildRoot: in a specfile.
 #	(Note: the configured macro value will override the spec file value).
 #
-#%buildroot
+%buildroot		%{_tmppath}/%{name}-root
 
 #	The sub-directory (relative to %{_builddir}) where sources are compiled.
 #	This macro is set after processing %setup, either explicitly from the
 #	value given to -n or the default name-version.
 #
 #%buildsubdir
+
+#	Truncate changelogs to no. of entries or date.
+#	<=0	disables
+#	<1000	truncates to no. of entries
+#	Otherwise, a get_date string (e.g. "2 years ago") may be entered,
+#`	and changelog entries older than that date will not be added to headers.
+%_changelog_truncate	1 year ago
 
 #	Configurable distribution information, same as Distribution: tag in a
 #	specfile.
@@ -321,9 +342,17 @@ package or when debugging this package.\
 #	Compression type and level for source/binary package payloads.
 #		"w9.gzdio"	gzip level 9 (default).
 #		"w9.bzdio"	bzip2 level 9.
+#		"w9.lzdio"	lzma level 9.
 #
 #%_source_payload	w9.gzdio
 #%_binary_payload	w9.gzdio
+
+#	Archive formats to use for source/binary package payloads.
+#		"cpio"		cpio archive (default)
+#		"ustar"		tar archive
+#
+#%_source_payload_format	cpio
+#%_binary_payload_format	cpio
 
 #	The signature to use and the location of configuration files for
 #	signing packages with PGP.
@@ -355,7 +384,7 @@ package or when debugging this package.\
 # Returns list of unpackaged files, i.e. files in $RPM_BUILD_ROOT not packaged.
 #
 # Note: Disable (by commenting out) for legacy compatibility.
-%__check_files         @RPMCONFIGDIR@/check-files %{buildroot}
+%__check_files         %{_usrlibrpm}/check-files %{buildroot}
 
 #
 # Should unpackaged files in a build root terminate a build?
@@ -371,7 +400,7 @@ package or when debugging this package.\
 
 #
 # Use internal dependency generator rather than external helpers?
-%_use_internal_dependency_generator	1
+%_use_internal_dependency_generator	2
 
 #
 # Filter GLIBC_PRIVATE Provides: and Requires:
@@ -418,30 +447,17 @@ print (t)\
 # Path to scripts to autogenerate package dependencies,
 #
 # Note: Used iff _use_internal_dependency_generator is zero.
-#%__find_provides	@RPMCONFIGDIR@/rpmdeps --provides
-#%__find_requires	@RPMCONFIGDIR@/rpmdeps --requires
-%__find_provides	@RPMCONFIGDIR@/find-provides
-%__find_requires	@RPMCONFIGDIR@/find-requires
+#%__find_provides	%{_usrlibrpm}/rpmdeps --provides
+#%__find_requires	%{_usrlibrpm}/rpmdeps --requires
+%__find_provides	%{_usrlibrpm}/find-provides
+%__find_requires	%{_usrlibrpm}/find-requires
 #%__find_conflicts	???
 #%__find_obsoletes	???
 
 #
-# Path to scripts to autogenerate per-interpreter package dependencies,
-#
-# Note: Used iff _use_internal_dependency_generator is non-zero. The
-# helpers are also used by @RPMCONFIGDIR@/rpmdeps {--provides|--requires}.
-#%__perl_provides	@RPMCONFIGDIR@/perldeps.pl --provides
-#%__perl_requires	@RPMCONFIGDIR@/perldeps.pl --requires
-%__perl_provides	@RPMCONFIGDIR@/perl.prov
-%__perl_requires	@RPMCONFIGDIR@/perl.req
-
-%__python_provides	@RPMCONFIGDIR@/pythondeps.sh --provides
-%__python_requires	@RPMCONFIGDIR@/pythondeps.sh --requires
-
-#
 # fixowner, fixgroup, and fixperms are run at the end of hardcoded setup
 # These macros are necessary only for legacy compatibility, and have moved
-# to per-platform macro configuration (i.e. @RPMCONFIGDIR@/<arch>-<os>/macros)
+# to per-platform macro configuration (i.e. %{_usrlibrpm}/arch>-<os>/macros)
 #
 # Note: These are no longer enabled by default.
 #%__id_u		@__ID_U@
@@ -451,6 +467,32 @@ print (t)\
 #%_fixgroup		[ `%{__id_u}` = '0' ] && %{__chgrp_Rhf} @ROOT_GROUP@
 #%_fixperms		%{__chmod} -Rf @FIXPERMS@
 #
+
+#
+# Choose metadata file digest algorithm:
+#	1 	MD5
+#	2	SHA1
+#	3	RIPEMD-160
+#	5	MD2
+#	6	TIGER-192
+#	8	SHA256
+#	9	SHA384
+#	10	SHA512
+#	104	MD4
+#	105	RIPEMD-128
+#	106	CRC-32
+#	107	ADLER-32
+#	108	CRC-64 (ECMA-182 polynomial, untested uint64_t problems)
+#	109	Jenkins lookup3.c hashlittle()
+#
+# Note: choosing anything but MD5 introduces instant legacy incompatibility.
+%_build_file_digest_algo	1
+%_build_binary_file_digest_algo	%{_build_file_digest_algo}
+%_build_source_file_digest_algo	%{_build_file_digest_algo}
+
+#
+# Path to magic file used for file classification.
+%_rpmfc_magic_path	%{_usr}/lib/rpm/magic
 
 #==============================================================================
 # ---- Database configuration macros.
@@ -542,8 +584,8 @@ print (t)\
 #				mp_mmapsize=8Mb mp_size=512Kb
 
 # Use a CDB database model for concurrent access.
-# XXX Add "private" here for legacy interoperation transiting to glibc+nptl.
-%__dbi_cdb			create cdb mpool mp_mmapsize=16Mb mp_size=1Mb
+%__dbi_cdb			create cdb mpool mp_mmapsize=16Mb mp_size=1Mb \
+				thread_count=64
 
 %__dbi_other			%{?_tmppath:tmpdir=%{_tmppath}} %{?__dbi_cdb}
 
@@ -584,14 +626,7 @@ print (t)\
   %{!?_rpmdb_rebuild:%{__dbi_btconfig_current}}\
 %{nil}
 
-# The list of tags for which indices will be built.
-%_dbi_tags	Packages:Name:Basenames:Group:Requirename:Providename:Conflictname:Triggername:Dirnames:Requireversion:Provideversion:Installtid:Sigmd5:Sha1header:Filemd5s:Depends:Pubkeys
-
-# "Packages" should have shared/exclusive fcntl(2) lock using "lockdbfd".
-%_dbi_config_Packages		%{_dbi_htconfig} lockdbfd
-
-# "Depends" is a per-transaction cache of known dependency resolutions.
-%_dbi_config_Depends		%{_dbi_htconfig} temporary private
+%_dbi_tags      Packages:Name:Basenames:Group:Requirename:Providename:Conflictname:Triggername:Dirnames:Requireversion:Provideversion:Installtid:Sigmd5:Sha1header:Filemd5s:Depends:Pubkeys:Packagecolor
 
 %_dbi_config_Dirnames		%{_dbi_btconfig}
 %_dbi_config_Requireversion	%{_dbi_btconfig}
@@ -599,7 +634,27 @@ print (t)\
 %_dbi_config_Installtid		%{_dbi_btconfig}
 %_dbi_config_Removetid		%{_dbi_btconfig}
 
-%_dbi_config	%{_dbi_htconfig}
+%_dbi_config_Basenames		%{_dbi_btconfig}
+%_dbi_config_Conflictname	%{_dbi_btconfig}
+%_dbi_config_Filedigests	%{_dbi_htconfig}
+%_dbi_config_Group		%{_dbi_btconfig}
+%_dbi_config_Name		%{_dbi_btconfig}
+%_dbi_config_Packagecolor	%{_dbi_htconfig}
+%_dbi_config_Providename	%{_dbi_btconfig}
+%_dbi_config_Pubkeys		%{_dbi_htconfig}
+%_dbi_config_Requirename	%{_dbi_btconfig}
+%_dbi_config_Sha1header		%{_dbi_htconfig}
+%_dbi_config_Sigmd5		%{_dbi_htconfig}
+%_dbi_config_Triggername	%{_dbi_btconfig}
+
+# "Packages" should have shared/exclusive fcntl(2) lock using "lockdbfd".
+%_dbi_config_Packages		%{_dbi_btconfig} lockdbfd
+
+# "Depends" is a per-transaction cache of known dependency resolutions.
+%_dbi_config_Depends		%{_dbi_btconfig} temporary private
+
+# The default database configuration to use
+%_dbi_config    %{_dbi_btconfig}
 
 # XXX legacy configuration.
 # Choose db interface:
@@ -609,6 +664,12 @@ print (t)\
 #
 %_dbapi			3
 %_dbapi_rebuild		3
+
+#
+# Export package NEVRA (stamped with install tid) info for HRMIB on this path.
+#
+# XXX	Note: escaped %% for use in headerSprintf()
+%_hrmib_path	/var/cache/hrmib/%%{NAME}-%%{VERSION}-%%{RELEASE}.%%{ARCH}
 
 #==============================================================================
 # ---- GPG/PGP/PGP5 signature macros.
@@ -632,7 +693,7 @@ print (t)\
 	pgps +batchmode=on +verbose=0 +armor=off \
 	"+myname=%{_pgp_name}" -b %{__plaintext_filename} -o %{__signature_filename}
 
-# XXX rpm-4.1 verifies signatures using beecrypt.
+# rpm-4.1 and later verifies signatures using beecrypt.
 #%__gpg_verify_cmd		%{__gpg} \
 #	gpg --batch --no-verbose --verify --no-secmem-warning \
 #	%{__signature_filename} %{__plaintext_filename}
@@ -646,7 +707,7 @@ print (t)\
 
 #
 # XXX rpm-4.1 verifies prelinked libraries using a prelink undo helper.
-#	Normally this macro is defined in /etc/rpm/macros.prelink, installed
+#	Normally this macro is defined in %{_etcrpm}/macros.prelink, installed
 #	with the prelink package. If the macro is undefined, then prelinked
 #	shared libraries contents are MD5 digest verified (as usual), rather
 #	than MD5 verifying the output of the prelink undo helper.
@@ -658,7 +719,7 @@ print (t)\
 
 # Horowitz Key Protocol server configuration
 #
-%_hkp_keyserver         hkp://pgp.mit.edu
+%_hkp_keyserver         hkp://subkeys.pgp.net
 %_hkp_keyserver_query   %{_hkp_keyserver}/pks/lookup?op=get&search=0x
 
 #==============================================================================
@@ -689,18 +750,22 @@ print (t)\
 #	auto-relocated.
 %_autorelocate_dcolor @autorelocate_dcolor@
 
+#	Open all indices before doing chroot(2).
+#
+%_openall_before_chroot	0
+
 #	The path to the dependency universe database. The default value
-#	is the rpmdb-redhat location. The macro is usually defined in
-#	/etc/rpm/macros.solve, installed with the rpmdb-redhat package.
-#%_solve_dbpath	/usr/lib/rpmdb/%{_arch}-%{_vendor}-%{_os}/redhat
+#	is the rpmdb-vendor location. The macro is usually defined in
+#	%{_etcrpm}/macros.solve, installed with the rpmdb-vendor package.
+#%_solve_dbpath	/usr/lib/rpmdb/%{_arch}-%{_vendor}-%{_os}/rpm
 
 #	The path to the dependency universe packages. This should
 #	be a path to the packages contained in the solve database.
-#%_solve_pkgsdir	/mnt/redhat/test/latest-i386/RedHat/RPMS/
+#%_solve_pkgsdir	/mnt/rpm/test/latest-i386/RedHat/RPMS/
 
 #	The output binary package file name template used when suggesting
 #	binary packages that solve a dependency. The macro is usually defined
-#	in /etc/rpm/macros.solve, installed with the rpmdb-redhat package.
+#	in %{_etcrpm}/macros.solve, installed with the rpmdb-vendor package.
 #
 # XXX	Note: escaped %% for use in headerSprintf()
 #%_solve_name_fmt	%{?_solve_pkgsdir}%%{NAME}-%%{VERSION}-%%{RELEASE}.%%{ARCH}.rpm
@@ -719,17 +784,34 @@ print (t)\
 %_repackage_root	%{nil}
 
 #	If non-zero, all erasures will be automagically repackaged.
-%_repackage_all_erasures	0
+%_repackage_all_erasures	1
 
-# If non-zero, a failed transaction will be automagically rolled 
-# back (sans, the failing transaction element).
+#	Prevent pure erasure transactions with --rollback. Pure
+#	erasure rollback transactions will undo an anaconda install,
+#	for example, which %_unsafe_rollbacks tries to prevent.
+#
+#	Set this to non-zero at your own risk, it's dangerous.
+%_unsafe_rollbacks	0
+
+#	Automate transaction rollbacks on upgrade failure.
+#
+#	Set this to non-zero at your own risk, it's dangerous.
 %_rollback_transaction_on_failure	0
 
 #	Verify digest/signature flags for various rpm modes:
-#	     1	--nohdrchk	if set, don't check rpmdb headers
+#	0x30300 (_RPMVSF_NODIGESTS)    --nohdrchk      if set, don't check digest(s)
+#	0xc0c00 (_RPMVSF_NOSIGNATURES) --nosignature   if set, don't check signature(s)
+#	0xf0000 (_RPMVSF_NOPAYLOAD)    --nolegacy      if set, check header+payload (if possible)
+#	0x00f00 (_RPMVSF_NOHEADER)     --nohdrchk      if set, don't check rpmdb headers
 #
-#	The checking overhead is ~11ms per header for digests/signatures;
-#	each header from the database is checked only when first encountered
+#	For example, the value 0xf0c00 (=0xf0000+0xc0c00) disables legacy
+#	digest/signature checking, disables signature checking, but attempts
+#	digest checking, also when retrieving headers from the database.
+#
+#	The checking overhead was ~11ms per header for digests/signatures on
+#	a 600 Mhz Dell SMP server circa 1998.
+#
+#	Each header from the database is checked only when first encountered
 #	for each database open.
 #
 #	Note: the %_vsflags_erase applies to --upgrade/--freshen modes as
@@ -753,114 +835,106 @@ print (t)\
 # XXX	Note: that there cannot be any whitespace within the string "p>q",
 #	and that both p and q are package names (i.e. no version/release).
 #
-#%_dependency_whiteout_5_2		\
-#	pam>pamconfig
-#%_dependency_whiteout_6_1		\
-#	pilot-link-devel>pilot-link
-#%_dependency_whiteout_6_2		\
-#	egcs-c++>libstdc++
-%_dependency_whiteout_7_0		\
-	pango-gtkbeta-devel>pango-gtkbeta\
-	XFree86>Mesa			\
-	compat-glibc>db2		\
-	compat-glibc>db1		\
-	pam>initscripts			\
-	initscripts>sysklogd
-%_dependency_whiteout_7_1		\
-	arts>kdelibs-sound
-%_dependency_whiteout_7_2		\
-	libgnomeprint15>gnome-print	\
-	nautilus>nautilus-mozilla	\
-	tcl>postgresql-tcl
-#%_dependency_whiteout_8_0		\
-#	perl>perl-Parse-RecDescent	\
-#	XFree86-libs>XFree86-Mesa-libGL	\
-#	perl>perl-Filter		\
-#	perl>mrtg			\
-#	perl>mod_perl			\
-#	mysql>perl-DBD-MySQL		\
-#	ghostscript>gimp-print		\
-#	arts>kde2-compat		\
-#	perl-Date-Calc>perl-Bit-Vector	\
-#	glibc-debug>glibc-devel
-
-%_dependency_whiteout_8_0		\
-	mysql>perl-DBD-MySQL		\
-	perl>perl-Filter		\
-	perl>mrtg			\
-	perl>mod_perl			\
-	perl-Date-Calc>perl-Bit-Vector	\
-
-%_dependency_whiteout_fc3		\
-	coreutils>pam			\
-	nautilus>nautilus-cd-burner	\
-	aspell>aspell-en		\
-	kernel>initscripts		\
-	kernel-smp>initscripts		\
-	xorg-x11-libs>xorg-x11-Mesa-libGL \
-	openldap>cyrus-sasl-md5		\
-	openldap>cyrus-sasl		\
-	openjade>docbook-dtds		\
-	gtk+>gdk-pixbuf			\
-	xorg-x11>xinitrc		\
-	gnome-python2>gnome-python2-bonobo \
-	httpd-suexec>httpd		\
-	xemacs-sumo>apel-xemacs		\
-	php>php-pear			\
-	openoffice.org-libs>openoffice.org
+%_dependency_whiteout_caos_core		\
+	glibc-common>glibc		\
+	glibc>nscd
 
 %_dependency_whiteout			\
 	libtermcap>bash			\
-	modutils>vixie-cron		\
-	ypbind>yp-tools			\
-	ghostscript-fonts>ghostscript	\
-	%{?_dependency_whiteout_fc3}	\
-	%{?_dependency_whiteout_fc2}	\
-	%{?_dependency_whiteout_fc1}	\
-	%{?_dependency_whiteout_9}	\
-	%{?_dependency_whiteout_8_0}	\
-	%{?_dependency_whiteout_7_2}	\
-	%{?_dependency_whiteout_7_1}	\
-	%{?_dependency_whiteout_7_0}	\
-	%{?_dependency_whiteout_6_2}	\
-	%{?_dependency_whiteout_6_1}	\
-	%{?_dependency_whiteout_5_2}	\
+	%{?_dependency_whiteout_caos_core} \
+	%{?_dependency_whiteout_system} \
 	%{nil}
 
+#
+# Default path used for serializing transactions with a  fcntl lock.
+#
+# The original, FHS clompliant, path was /var/lock/run/transaction,
+# but the transaction lock needs to be finer grained, at least
+# per-database, not global, for many rpm operations with transaction sets.
+#
+# The fcntl lock is now off by default, posix mutexes (or equiv) are sufficient.
+# to protect Berkeley DB data, and using multiple databases with concurrent
+# access is a more important feature to rpm than serializing transaction
+# sets. Change your configuration if you disagree.
+#
+# XXX Note: the suggested file name is __db.000 to expedite
+# support issues, because users typically do "rm -f /var/lib/rpm/__db*",
+# which will clean up the fcntl lock.
+#%_rpmlock_path	%{_dbpath}/__db.000
+
+#==============================================================================
+# ---- Query macros.
 #
 # Default headerSprintf() output format string for rpm -qa
 #
 # XXX	Note: escaped %% for use in headerSprintf()
-%_query_all_fmt		%%{name}-%%{version}-%%{release}
+%_query_all_fmt		%%{name}-%%{version}-%%{release}.%%{arch}
 
 #
-# Default path to the file used for transaction fcmtl lock.
+# Path for rpm -qH (default is /usr/share/comps/%{_arch}/hdlist)
+%_query_hdlist_path	%{_datadir}/comps/%{_arch}/hdlist
+
+#==============================================================================
+# ---- Run-time probe dependency macros.
+
 #
-# The previous, FHS clompliant, name was /var/lock/run/transaction,
-# but the transaction lock needs to be per-database, not global, for
-# some rpmdb operations.
+%_rpmds_filter_name	archfilter
+
 #
-# XXX Note: the file name is chosesn as __db.000 to expedite
-# support issues, many users are doing "rm -f /var/lib/rpm/__db*"
-# these days.
-%_rpmlock_path	%{_dbpath}/__db.000
+%_rpmds_cpuinfo_path	/proc/cpuinfo
+
+#
+%_rpmds_sysinfo_path	%{_etcrpm}/sysinfo
+
+#
+%_rpmds_ldconfig_cmd	/sbin/ldconfig -p
+%_rpmds_ldconfig_cache	/etc/ld.so.cache
+
+# A colon-separated list of directories which should match the rld's
+# (runtime loader) list of directories it searches for shared objects.
+# Only used on platforms that don't have a configurable loader search
+# path via ldconfig, crle, or something similar. 
+%_rpmds_rld_search_path	/lib:/usr/lib
+
+#
+# Full path and arguments to Solaris' command to list what directories
+# the runtime loader searches.  Needs to include `-64' for LP64 Solaris
+# systems.
+%_rpmds_crle_cmd		/usr/bin/crle
+
+#
+%_rpmds_getconf_path	/
+
+#
+%_rpmds_perldeps_cmd	%{__find} %{_libdir}/perl5 | %{_usrlibrpm}/perl.prov
+
+#
+%_varrun		/var/run
 
 #==============================================================================
 # ---- Cache configuration macros.
 #	Macro(s) used to configure the universe of headers used to
 #	solve dependencies using rpmcache(8).
 #
-#	Note: These values are specific to my machine, and most certainly
-#	are incorrect for any non-redhat.com machine. The macros are
+#	Note: These values were specific to my machine, and most certainly
+#	are incorrect for any other machine. The macros are
 #	included here only to document the macro names and usage.
-%_bhpath        file://localhost/mnt/dist
-%_bhcoll        @(7.3|7.2|7.1|7.1sbe|7.1k|7.0|7.01j|7.0j|7.0sbe|7.0tc|6.2|6.2ha|6.2ee|6.1|6.0|5.2|5.1|5.0)
-%_bhN           @(SRPMS|i386|alpha|sparc|s390|ia64)
-%_bhVR          RedHat
-%_bhA           RPMS
+#%_bhpath        file://localhost/mnt/dist
+#%_bhcoll        @(7.3|7.2|7.1|7.1sbe|7.1k|7.0|7.01j|7.0j|7.0sbe|7.0tc|6.2|6.2ha|6.2ee|6.1|6.0|5.2|5.1|5.0)
+#%_bhN           @(SRPMS|i386|alpha|sparc|s390|ia64)
+#%_bhVR          @(RedHat|Fedora)
+#%_bhA           RPMS
+
+#
+# A configuration to build an rpmdb from yum package
+%_bhpath        file://localhost/var/cache/yum
+%_bhcoll        @(updates)
+%_bhN           @(packages)
+%_bhVR          %{nil}
+%_bhA           %{nil}
 
 #	The cache database directory.
-%_cache_dbpath		/var/spool/up2date/cache
+%_cache_dbpath		/var/cache/yum/rpmdb
 
 #==============================================================================
 # ---- per-platform macros.
@@ -872,7 +946,10 @@ print (t)\
 %_vendor		@RPMCANONVENDOR@
 %_os			@RPMCANONOS@
 %_gnu			-gnu
-%_target_platform	%{_target_cpu}-%{_vendor}-%{_target_os}%{?_gnu}
+
+%_host_platform		%{_host_cpu}-%{_host_vendor}-%{_host_os}%{?_gnu}
+%_build_platform	%{_build_cpu}-%{_build_vendor}-%{_build_os}%{?_gnu}
+%_target_platform	%{_target_cpu}-%{_target_vendor}-%{_target_os}%{?_gnu}
 
 #
 # Define a generic value for optflags. Normally overridden by per-target macros.
@@ -908,10 +985,14 @@ print (t)\
   export RPM_BUILD_ROOT}\
   %{?_javaclasspath:CLASSPATH=\"%{_javaclasspath}\"\
   export CLASSPATH}\
+  unset PERL_MM_OPT || :\
+  LANG=C\
+  export LANG\
+  unset DISPLAY || :\
   \
   %{verbose:set -x}%{!verbose:exec > /dev/null}\
   umask 022\
-  cd %{u2p:%{_builddir}}\
+  cd '%{u2p:%{_builddir}}'\
 
 
 #%___build_body		%{nil}
@@ -961,7 +1042,8 @@ print (t)\
 %__spec_install_shell	%{___build_shell}
 %__spec_install_args	%{___build_args}
 %__spec_install_cmd	%{___build_cmd}
-%__spec_install_pre	%{___build_pre}
+%__spec_install_pre	%{___build_pre}\
+%{?buildroot:%{__rm} -rf '%{buildroot}'}
 %__spec_install_body	%{___build_body}
 %__spec_install_post\
 %{?__debug_package:%{__debug_install_post}}\
@@ -1008,9 +1090,10 @@ print (t)\
 %__spec_clean_args	%{___build_args}
 %__spec_clean_cmd	%{___build_cmd}
 %__spec_clean_pre	%{___build_pre}
-%__spec_clean_body	%{___build_body}
-%__spec_clean_post	%{___build_post}
-%__spec_clean_template	#!%{__spec_clean_shell}\
+%__spec_clean_body	%{__rm} -rf '%{buildroot}'\
+%{nil}
+%__spec_clean_post	%{nil}
+%__spec_clean_template	#!%{__spec_clean_cmd}\
 %{__spec_clean_pre}\
 %{nil}
 
@@ -1067,6 +1150,7 @@ print (t)\
 %_oldincludedir		/usr/include
 %_infodir		%{_prefix}/info
 %_mandir		%{_prefix}/man
+%_localedir		%{_datadir}/locale
 
 #==============================================================================
 # ---- config.guess platform macros.
@@ -1162,7 +1246,7 @@ print (t)\
   CFLAGS="${CFLAGS:-%optflags}" ; export CFLAGS; \
   LDFLAGS="${LDFLAGS:-%{-s:-s}}"  ; export LDFLAGS; \
   %{-C:_mydir="`pwd`"; %{-M: %{__mkdir} -p %{-C*};} cd %{-C*}} \
-  dirs="`find ${_mydir} -name configure.in -print`"; export dirs; \
+  dirs="`find ${_mydir} -name 'configure.[ai][cn]' -print`"; export dirs; \
     for coin in `echo ${dirs}` \
 do \
   dr=`dirname ${coin}`; \
@@ -1179,20 +1263,20 @@ else \
         ##  echo "**Warning**: No such directory \`${k}'.  Ignored." \
         fi \
       done \
-      if grep "^AM_GNU_GETTEXT" configure.in >/dev/null; then \
-        if grep "sed.*POTFILES" configure.in >/dev/null; then \
-          : do nothing -- we still have an old unmodified configure.in \
+      if grep "^AM_GNU_GETTEXT" configure.[ai][cn] >/dev/null; then \
+        if grep "sed.*POTFILES" configure.[ai][cn] >/dev/null; then \
+          : do nothing -- we still have an old unmodified configure.[ai][cn] \
         else \
           test -r ${dr}/aclocal.m4 || touch ${dr}/aclocal.m4; \
           echo "no" | gettextize --force --copy; \
           test -r ${dr}/aclocal.m4 && %{__chmod} u+w ${dr}/aclocal.m4; \
         fi \
       fi \
-      if grep "^AM_PROG_LIBTOOL" configure.in >/dev/null; then \
+      if grep "^AM_PROG_LIBTOOL" configure.[ai][cn] >/dev/null; then \
         %{__libtoolize} --force --copy; \
       fi \
       aclocal ${aclocalinclude}; \
-      if grep "^AM_CONFIG_HEADER" configure.in >/dev/null; then \
+      if grep "^AM_CONFIG_HEADER" configure.[ai][cn] >/dev/null; then \
         %{__autoheader}; \
       fi \
       echo "Running automake --gnu ${am_opt} ..."; \
@@ -1205,7 +1289,50 @@ done \
   %{-C:cd ${_mydir}; unset _mydir}
 
 #------------------------------------------------------------------------------
-# Useful perl macros (from Artur Frysiak <wiget@t17.ds.pwr.wroc.pl>)
+# arch macro for all Intel i?86 compatibile processors
+#  (Note: This macro (and it's analogues) will probably be obsoleted when
+#   rpm can use regular expressions against target platforms in macro
+#   conditionals.
+#
+%ix86   i386 i486 i586 i686 pentium3 pentium4 athlon
+
+#------------------------------------------------------------------------
+# Use in %install to generate locale specific file lists. For example,
+#
+# %install
+# ...
+# %find_lang %{name}
+# ...
+# %files -f %{name}.lang
+#
+%find_lang	%{_usrlibrpm}/find-lang.sh %{buildroot}
+
+#------------------------------------------------------------------------
+# lua macros
+#
+%rpm_license_check	%{expand:%%define rpm_license_check %{lua:\
+f = io.open("/dev/tty", "w")\
+if f then\
+    f:write ("\\nJust checking to see who is using rpm-@VERSION@.\\nThe RPM Package Manager license is LGPL, as always.\\nRelax ...\\n")\
+    f:close()\
+end\
+}1}%{rpm_license_check}
+
+#------------------------------------------------------------------------
+# perl(...) configuration
+#
+
+# Path to scripts to autogenerate perl package dependencies,
+#
+# Note: Used iff _use_internal_dependency_generator is non-zero. The
+# helpers are also used by %{_usrlibrpm}/rpmdeps {--provides|--requires}.
+#%__perl_provides	%{_usrlibrpm}/perldeps.pl --provides
+#%__perl_requires	%{_usrlibrpm}/perldeps.pl --requires
+%__perl_provides	%{_usrlibrpm}/perl.prov
+%__perl_requires	%{_usrlibrpm}/perl.req
+
+# Useful macros for building *.rpm perl packages.
+#	(from Artur Frysiak <wiget@t17.ds.pwr.wroc.pl>)
 #
 # For example, these can be used as (from ImageMagick.spec from PLD site)
 #	[...]
@@ -1226,32 +1353,94 @@ done \
 #	%{perl_sitearch}/Image
 #	%dir %{perl_sitearch}/auto/Image
 #
+
 %requires_eq()	%(echo '%*' | LC_ALL="C" xargs -r rpm -q --qf 'Requires: %%{name} = %%{epoch}:%%{version}\\n' | sed -e 's/ (none):/ /' -e 's/ 0:/ /' | grep -v "is not")
+
 %perl_sitearch	%(eval "`%{__perl} -V:installsitearch`"; echo $installsitearch)
 %perl_sitelib	%(eval "`%{__perl} -V:installsitelib`"; echo $installsitelib)
 %perl_vendorarch %(eval "`%{__perl} -V:installvendorarch`"; echo $installvendorarch)
 %perl_vendorlib  %(eval "`%{__perl} -V:installvendorlib`"; echo $installvendorlib)
 %perl_archlib	%(eval "`%{__perl} -V:installarchlib`"; echo $installarchlib)
 %perl_privlib	%(eval "`%{__perl} -V:installprivlib`"; echo $installprivlib)
-
-#------------------------------------------------------------------------------
-# arch macro for all Intel i?86 compatibile processors
-#  (Note: This macro (and it's analogues) will probably be obsoleted when
-#   rpm can use regular expressions against target platforms in macro
-#   conditionals.
-#
-%ix86   i386 i486 i586 i686 pentium3 pentium4 athlon
+%perl_version	%(eval "`%{__perl} -V:version`"; echo $version)
 
 #------------------------------------------------------------------------
-# Use in %install to generate locale specific file lists. For example,
+# python(...) configuration.
 #
-# %install
-# ...
-# %find_lang %{name}
-# ...
-# %files -f %{name}.lang
+# Path to scripts to autogenerate python package dependencies,
 #
-%find_lang	@RPMCONFIGDIR@/find-lang.sh %{buildroot}
+# Note: Used iff _use_internal_dependency_generator is non-zero. The
+# helpers are also used by %{_usrlibrpm}/rpmdeps {--provides|--requires}.
+%__python_provides	%{_usrlibrpm}/pythondeps.sh --provides
+%__python_requires	%{_usrlibrpm}/pythondeps.sh --requires
+
+# Useful macros for building *.rpm python packages (for python > 1.6).
+#
+%python_sitearch %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib(1)")
+%python_sitelib	%(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")
+%python_version	%(%{__python} -c "import sys; print(sys.version[0:3])")
+
+%py_compile(O)  \
+find %1 -name '*.pyc' -name '*.pyo' -exec rm -f {} \\; \
+%{__python} %{?O:-O} -c "import sys, os, compileall; br='%{buildroot}'; compileall.compile_dir(sys.argv[1], ddir=br and (sys.argv[1][len(os.path.abspath(br)):]+'/') or None)" %1 \
+
+%py_requires(d) \
+%define maxver %(%{__python} -c "import sys; a,b=sys.version_info[:2]; print '%%d.%%d'%%(a,b+1)" 2>/dev/null || echo PYTHON-NOT-FOUND) \
+BuildRequires: python %{-d:python-devel} \
+PreReq: python >= %{python_version}, python < %{maxver}
+
+#------------------------------------------------------------------------
+# php(...) configuration.
+#
+# Path to scripts to autogenerate php package dependencies,
+#
+# Note: Used iff _use_internal_dependency_generator is non-zero. The
+# helpers are also used by %{_usrlibrpm}/rpmdeps {--provides|--requires}.
+#%__php_provides	%{_usrlibrpm}/phpdeps.sh --provides
+#%__php_requires	%{_usrlibrpm}/phpdeps.sh --requires
+#%__php_provides		%{_usrlibrpm}/php.prov
+#%__php_requires		%{_usrlibrpm}/php.req
+
+#------------------------------------------------------------------------
+# java(...) configuration.
+#
+# Path to scripts to autogenerate java package dependencies,
+#
+# Note: Used iff _use_internal_dependency_generator is non-zero. The
+# helpers are also used by %{_usrlibrpm}/rpmdeps {--provides|--requires}.
+%__java_provides	%{_usrlibrpm}/javadeps.sh --provides
+%__java_requires	%{_usrlibrpm}/javadeps.sh --requires
+
+#------------------------------------------------------------------------
+# libtool(...) configuration.
+#
+# Path to scripts to autogenerate libtool package dependencies,
+#
+# Note: Used iff _use_internal_dependency_generator is non-zero. The
+# helpers are also used by %{_usrlibrpm}/rpmdeps {--provides|--requires}.
+%__libtool_provides	%{_usrlibrpm}/libtooldeps.sh --provides %{buildroot} %{name}
+%__libtool_requires	%{_usrlibrpm}/libtooldeps.sh --requires %{buildroot} %{name}
+
+#------------------------------------------------------------------------
+# pkgconfig(...) configuration.
+#
+# Path to scripts to autogenerate pkgconfig package dependencies,
+#
+# Note: Used iff _use_internal_dependency_generator is non-zero. The
+# helpers are also used by %{_usrlibrpm}/rpmdeps {--provides|--requires}.
+%__pkgconfig_provides	%{_usrlibrpm}/pkgconfigdeps.sh --provides
+%__pkgconfig_requires	%{_usrlibrpm}/pkgconfigdeps.sh --requires
+
+#------------------------------------------------------------------------
+# executable(...) configuration.
+#
+# Path to scripts to autogenerate executable(foo) script dependencies,
+#
+# Note: Used iff _use_internal_dependency_generator is non-zero. The
+# helpers are also used by %{_usrlibrpm}/rpmdeps {--provides|--requires}.
+#%__executable_provides	%{_usrlibrpm}/executabledeps.sh --provides
+#%__executable_requires	%{_usrlibrpm}/executabledeps.sh --requires
+%__scriptlet_requires	/bin/bash --rpm-requires
 
 # \endverbatim
 #*/

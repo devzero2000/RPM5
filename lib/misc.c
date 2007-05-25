@@ -42,10 +42,6 @@ rpmRC rpmMkdirPath (const char * dpath, const char * dname)
 	    return RPMRC_FAIL;
 	}
     }
-    if ((rc = Access(dpath, W_OK))) {
-	rpmError(RPMERR_CREATE, _("cannot write to %%%s %s\n"), dname, dpath);
-	return RPMRC_FAIL;
-    }
     return RPMRC_OK;
 }
 
@@ -176,7 +172,7 @@ int makeTempFile(const char * prefix, const char ** fnptr, FD_t * fdptr)
 	    /*@switchbreak@*/ break;
 	}
 
-	fd = Fopen(tempfn, "w+x.ufdio");
+	fd = Fopen(tempfn, "w+x");
 	/* XXX FIXME: errno may not be correct for ufdio */
     } while ((fd == NULL || Ferror(fd)) && errno == EEXIST);
 
@@ -220,6 +216,8 @@ int makeTempFile(const char * prefix, const char ** fnptr, FD_t * fdptr)
 
 errxit:
     tempfn = _free(tempfn);
+    if (fnptr)
+	*fnptr = NULL;
     /*@-usereleased@*/
     if (fd != NULL) (void) Fclose(fd);
     /*@=usereleased@*/
@@ -238,57 +236,4 @@ char * currentDirectory(void)
     } while (getcwd(currDir, currDirLen) == NULL && errno == ERANGE);
 
     return currDir;
-}
-
-/*
- * XXX This is a "dressed" entry to headerGetEntry to do:
- *      1) DIRNAME/BASENAME/DIRINDICES -> FILENAMES tag conversions.
- *      2) i18n lookaside (if enabled).
- */
-int rpmHeaderGetEntry(Header h, int_32 tag, int_32 *type,
-	void **p, int_32 *c)
-{
-    switch (tag) {
-    case RPMTAG_OLDFILENAMES:
-    {	const char ** fl = NULL;
-	int count;
-	rpmfiBuildFNames(h, RPMTAG_BASENAMES, &fl, &count);
-	if (count > 0) {
-	    *p = fl;
-	    if (c)	*c = count;
-	    if (type)	*type = RPM_STRING_ARRAY_TYPE;
-	    return 1;
-	}
-	if (c)	*c = 0;
-	return 0;
-    }	/*@notreached@*/ break;
-
-    case RPMTAG_GROUP:
-    case RPMTAG_DESCRIPTION:
-    case RPMTAG_SUMMARY:
-    {	char fmt[128];
-	const char * msgstr;
-	const char * errstr;
-
-	fmt[0] = '\0';
-	(void) stpcpy( stpcpy( stpcpy( fmt, "%{"), tagName(tag)), "}\n");
-
-	/* XXX FIXME: memory leak. */
-        msgstr = headerSprintf(h, fmt, rpmTagTable, rpmHeaderFormats, &errstr);
-	if (msgstr) {
-	    *p = (void *) msgstr;
-	    if (type)	*type = RPM_STRING_TYPE;
-	    if (c)	*c = 1;
-	    return 1;
-	} else {
-	    if (c)	*c = 0;
-	    return 0;
-	}
-    }	/*@notreached@*/ break;
-
-    default:
-	return headerGetEntry(h, tag, type, p, c);
-	/*@notreached@*/ break;
-    }
-    /*@notreached@*/
 }

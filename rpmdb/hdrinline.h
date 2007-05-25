@@ -248,6 +248,7 @@ int headerIsEntry(/*@null@*/ Header h, int_32 tag)
 		/*@only@*/ /*@null@*/ const void * data, rpmTagType type)
 	/*@modifies data @*/
 {
+    if (h == NULL) return 0;
     return (h2hv(h)->hdrfreetag) (h, data, type);
 }
 
@@ -271,6 +272,7 @@ int headerGetEntry(Header h, int_32 tag,
 			/*@null@*/ /*@out@*/ hCNT_t c)
 	/*@modifies *type, *p, *c @*/
 {
+    if (h == NULL) return 0;
     return (h2hv(h)->hdrget) (h, tag, type, p, c);
 }
 
@@ -293,6 +295,7 @@ int headerGetEntryMinMemory(Header h, int_32 tag,
 			/*@null@*/ /*@out@*/ hCNT_t c)
 	/*@modifies *type, *p, *c @*/
 {
+    if (h == NULL) return 0;
     return (h2hv(h)->hdrgetmin) (h, tag, type, p, c);
 }
 
@@ -499,6 +502,56 @@ int headerNextIterator(HeaderIterator hi,
 	/*@modifies hi, *tag, *type, *p, *c @*/
 {
     return hdrVec->hdrnextiter(hi, tag, type, p, c);
+}
+
+/** \ingroup header
+ * Return header origin (e.g path or URL).
+ * @param h		header
+ * @return		header origin
+ */
+/*@unused@*/ static inline
+/*@observer@*/ /*@null@*/ const char * headerGetOrigin(/*@null@*/ Header h)
+	/*@*/
+{
+    return hdrVec->hdrgetorigin(h);
+}
+
+/** \ingroup header
+ * Store header origin (e.g path or URL).
+ * @param h		header
+ * @param origin	new header origin
+ * @return		0 always
+ */
+/*@unused@*/ static inline
+int headerSetOrigin(/*@null@*/ Header h, const char * origin)
+	/*@modifies h @*/
+{
+    return hdrVec->hdrsetorigin(h, origin);
+}
+
+/** \ingroup header
+ * Return header instance (if from rpmdb).
+ * @param h		header
+ * @return		header instance
+ */
+/*@unused@*/ static inline
+int headerGetInstance(/*@null@*/ Header h)
+	/*@*/
+{
+    return hdrVec->hdrgetinstance(h);
+}
+
+/** \ingroup header
+ * Store header instance (e.g path or URL).
+ * @param h		header
+ * @param instance	new header instance
+ * @return		0 always
+ */
+/*@unused@*/ static inline
+int headerSetInstance(/*@null@*/ Header h, int instance)
+	/*@modifies h @*/
+{
+    return hdrVec->hdrsetinstance(h, instance);
 }
 
 /*@=voidabstract =nullpass =mustmod =compdef =shadow =predboolothers @*/

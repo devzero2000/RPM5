@@ -7,7 +7,10 @@
 const char *__progname;
 
 #include <rpmcli.h>
+#include <rpmlua.h>		/* XXX rpmluaFree() */
+#include <fs.h>			/* XXX rpmFreeFilesystems() */
 #include <fts.h>
+#include <mire.h>
 
 #include "debug.h"
 
@@ -19,12 +22,24 @@ const char *__progname;
 #define POPT_RCFILE		-995
 #endif
 
+/*@access headerTagIndices @*/		/* XXX rpmcliFini */
+/*@access headerTagTableEntry @*/	/* XXX rpmcliFini */
+
 /*@unchecked@*/
 static int _debug = 0;
+
+/*@unchecked@*/
+extern int _rsegfault;
+
+/*@unchecked@*/
+extern int _wsegfault;
 
 /*@-exportheadervar@*/
 /*@unchecked@*/
 extern int _rpmds_nopromote;
+
+/*@unchecked@*/
+extern int _cpio_debug;
 
 /*@unchecked@*/
 extern int _fps_debug;
@@ -37,6 +52,9 @@ extern int _fsm_threads;
 
 /*@unchecked@*/
 extern int _hdr_debug;
+
+/*@unchecked@*/
+extern int _mire_debug;
 
 /*@unchecked@*/
 extern int _print_pkts;
@@ -85,16 +103,16 @@ extern int _rpmts_debug;
 extern int _rpmts_stats;
 
 /*@unchecked@*/
-extern int noLibio;
+extern int _tar_debug;
 
 /*@unchecked@*/
-extern int noNeon;
+extern int noLibio;
 /*@=exportheadervar@*/
 
-/*@unchecked@*/
+/*@unchecked@*/ /*@null@*/
 const char * rpmcliPipeOutput = NULL;
 
-/*@unchecked@*/
+/*@unchecked@*/ /*@null@*/
 const char * rpmcliRcfile = NULL;
 
 /*@unchecked@*/
@@ -102,6 +120,9 @@ const char * rpmcliRootDir = "/";
 
 /*@unchecked@*/
 rpmQueryFlags rpmcliQueryFlags;
+
+/*@unchecked@*/ /*@null@*/
+const char * rpmcliTargets = NULL;
 
 /*@-exportheadervar@*/
 /*@unchecked@*/
@@ -131,11 +152,6 @@ static void printVersion(FILE * fp)
     fprintf(fp, _("RPM version %s\n"), rpmEVR);
 }
 
-/**
- * Make sure that config files have been read.
- * @warning Options like --rcfile and --verbose must precede callers option.
- */
-/*@mayexit@*/
 void rpmcliConfigured(void)
 	/*@globals rpmcliInitialized, rpmCLIMacroContext, rpmGlobalMacroContext,
 		h_errno, fileSystem, internalState @*/
@@ -143,8 +159,17 @@ void rpmcliConfigured(void)
 		fileSystem, internalState @*/
 {
 
-    if (rpmcliInitialized < 0)
-	rpmcliInitialized = rpmReadConfigFiles(rpmcliRcfile, NULL);
+    if (rpmcliInitialized < 0) {
+	char * t = NULL;
+	if (rpmcliTargets != NULL) {
+	    char *te;
+	    t = xstrdup(rpmcliTargets);
+	    if ((te = strchr(t, ',')) != NULL)
+		*te = '\0';
+	}
+	rpmcliInitialized = rpmReadConfigFiles(rpmcliRcfile, t);
+	t = _free(t);
+    }
     if (rpmcliInitialized)
 	exit(EXIT_FAILURE);
 }
@@ -152,14 +177,14 @@ void rpmcliConfigured(void)
 /**
  */
 /*@-bounds@*/
-static void rpmcliAllArgCallback( /*@unused@*/ poptContext con,
+static void rpmcliAllArgCallback(poptContext con,
                 /*@unused@*/ enum poptCallbackReason reason,
                 const struct poptOption * opt, const char * arg,
                 /*@unused@*/ const void * data)
-	/*@globals rpmcliQueryFlags, rpmCLIMacroContext, rpmGlobalMacroContext,
-		h_errno, fileSystem, internalState @*/
-	/*@modifies rpmcliQueryFlags, rpmCLIMacroContext, rpmGlobalMacroContext,
-		fileSystem, internalState @*/
+	/*@globals rpmRcfiles, rpmcliTargets, rpmcliQueryFlags, rpmCLIMacroContext,
+		rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies con, rpmcliTargets, rpmcliQueryFlags, rpmCLIMacroContext,
+		rpmGlobalMacroContext, fileSystem, internalState @*/
 {
 
     /* XXX avoid accidental collisions with POPT_BIT_SET for flags */
@@ -176,15 +201,25 @@ static void rpmcliAllArgCallback( /*@unused@*/ poptContext con,
 	(void) rpmDefineMacro(NULL, arg, RMIL_CMDLINE);
 	break;
     case 'D':
+    {	char *s, *t;
+	/* XXX Convert '-' in macro name to underscore, skip leading %. */
+	s = t = xstrdup(arg);
+	while (*t && !xisspace(*t)) {
+	    if (*t == '-') *t = '_';
+	    t++;
+	}
+	t = s;
+	if (*t == '%') t++;
 	/* XXX Predefine macro if not initialized yet. */
 	if (rpmcliInitialized < 0)
-	    (void) rpmDefineMacro(NULL, arg, RMIL_CMDLINE);
+	    (void) rpmDefineMacro(NULL, t, RMIL_CMDLINE);
 	rpmcliConfigured();
 /*@-type@*/
-	(void) rpmDefineMacro(NULL, arg, RMIL_CMDLINE);
-	(void) rpmDefineMacro(rpmCLIMacroContext, arg, RMIL_CMDLINE);
+	(void) rpmDefineMacro(NULL, t, RMIL_CMDLINE);
+	(void) rpmDefineMacro(rpmCLIMacroContext, t, RMIL_CMDLINE);
 /*@=type@*/
-	break;
+	s = _free(s);
+    }	break;
     case 'E':
 	rpmcliConfigured();
 	{   const char *val = rpmExpand(arg, NULL);
@@ -194,15 +229,18 @@ static void rpmcliAllArgCallback( /*@unused@*/ poptContext con,
 	break;
     case POPT_SHOWVERSION:
 	printVersion(stdout);
+/*@i@*/	con = rpmcliFini(con);
 	exit(EXIT_SUCCESS);
 	/*@notreached@*/ break;
     case POPT_SHOWRC:
 	rpmcliConfigured();
 	(void) rpmShowRC(stdout);
+/*@i@*/	con = rpmcliFini(con);
 	exit(EXIT_SUCCESS);
 	/*@notreached@*/ break;
     case POPT_QUERYTAGS:
 	rpmDisplayQueryTags(stdout);
+/*@i@*/	con = rpmcliFini(con);
 	exit(EXIT_SUCCESS);
 	/*@notreached@*/ break;
 #if defined(POPT_RCFILE)
@@ -219,6 +257,20 @@ static void rpmcliAllArgCallback( /*@unused@*/ poptContext con,
 
     case RPMCLI_POPT_NOHDRCHK:
 	rpmcliQueryFlags |= VERIFY_HDRCHK;
+	break;
+
+    case RPMCLI_POPT_TARGETPLATFORM:
+	if (rpmcliTargets == NULL)
+	    rpmcliTargets = xstrdup(arg);
+	else {
+/*@-modobserver @*/
+	    char * t = (char *) rpmcliTargets;
+	    size_t nb = strlen(t) + (sizeof(",")-1) + strlen(arg) + 1;
+/*@i@*/	    t = xrealloc(t, nb);
+	    (void) stpcpy( stpcpy(t, ","), arg);
+	    rpmcliTargets = t;
+/*@=modobserver @*/
+	}
 	break;
     }
     /*@=branchstate@*/
@@ -248,6 +300,43 @@ struct poptOption rpmcliFtsPoptTable[] = {
    POPT_TABLEEND
 };
 
+/*@unchecked@*/
+int global_depFlags;
+
+/*@unchecked@*/
+struct poptOption rpmcliDepFlagsPoptTable[] = {
+ { "aid", '\0', POPT_BIT_SET, &global_depFlags, RPMDEPS_FLAG_ADDINDEPS,
+	N_("add suggested packages to transaction"), NULL },
+ { "anaconda", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
+ 	&global_depFlags, RPMDEPS_FLAG_ANACONDA|RPMDEPS_FLAG_DEPLOOPS,
+	N_("use anaconda \"presentation order\""), NULL},
+ { "deploops", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
+ 	&global_depFlags, RPMDEPS_FLAG_DEPLOOPS,
+	N_("print dependency loops as warning"), NULL},
+ { "nosuggest", '\0', POPT_BIT_SET,
+	&global_depFlags, RPMDEPS_FLAG_NOSUGGEST,
+	N_("do not suggest missing dependency resolution(s)"), NULL},
+ { "noconflicts", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
+	&global_depFlags, RPMDEPS_FLAG_NOCONFLICTS,
+	N_("do not check added package conflicts"), NULL},
+ { "nolinktos", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
+	&global_depFlags, RPMDEPS_FLAG_NOLINKTOS,
+	N_("ignore added package requires on symlink targets"), NULL},
+ { "noobsoletes", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
+	&global_depFlags, RPMDEPS_FLAG_NOOBSOLETES,
+	N_("ignore added package obsoletes"), NULL},
+ { "noparentdirs", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
+	&global_depFlags, RPMDEPS_FLAG_NOPARENTDIRS,
+	N_("ignore added package requires on file parent directory"), NULL},
+ { "norequires", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
+	&global_depFlags, RPMDEPS_FLAG_NOREQUIRES,
+	N_("do not check added package requires"), NULL},
+ { "noupgrade", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
+	&global_depFlags, RPMDEPS_FLAG_NOUPGRADE,
+	N_("ignore added package upgrades"), NULL},
+   POPT_TABLEEND
+};
+
 /*@-bitwisesigned -compmempass @*/
 /*@unchecked@*/
 struct poptOption rpmcliAllPoptTable[] = {
@@ -259,7 +348,14 @@ struct poptOption rpmcliAllPoptTable[] = {
  { "debug", 'd', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_debug, -1,
         NULL, NULL },
 
- { "predefine", 'D', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN, 0, POPT_PREDEFINE,
+#if defined(POPT_ARGFLAG_RANDOM)
+ { "rsegfault", '\0', POPT_ARG_INT|POPT_ARGFLAG_RANDOM|POPT_ARGFLAG_DOC_HIDDEN,
+	&_rsegfault, 0, NULL, NULL },
+ { "wsegfault", '\0', POPT_ARG_INT|POPT_ARGFLAG_RANDOM|POPT_ARGFLAG_DOC_HIDDEN,
+	&_wsegfault, 0, NULL, NULL },
+#endif
+
+ { "predefine", '\0', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN, 0, POPT_PREDEFINE,
 	N_("predefine MACRO with value EXPR"),
 	N_("'MACRO EXPR'") },
  { "define", 'D', POPT_ARG_STRING, 0, 'D',
@@ -268,9 +364,11 @@ struct poptOption rpmcliAllPoptTable[] = {
  { "eval", 'E', POPT_ARG_STRING, 0, 'E',
 	N_("print macro expansion of EXPR"),
 	N_("'EXPR'") },
- { "macros", '\0', POPT_ARG_STRING, &macrofiles, 0,
+ { "macros", '\0', POPT_ARG_STRING, &rpmMacrofiles, 0,
 	N_("read <FILE:...> instead of default file(s)"),
 	N_("<FILE:...>") },
+ { "target", '\0', POPT_ARG_STRING, 0,  RPMCLI_POPT_TARGETPLATFORM,
+        N_("specify target platform"), N_("CPU-VENDOR-OS") },
 
  { "nodigest", '\0', 0, 0, RPMCLI_POPT_NODIGEST,
         N_("don't verify package digest(s)"), NULL },
@@ -280,8 +378,6 @@ struct poptOption rpmcliAllPoptTable[] = {
  { "nolibio", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &noLibio, 1,
 	N_("disable use of libio(3) API"), NULL},
 #endif
- { "noneon", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &noNeon, 1,
-	N_("disable use of libneon for HTTP"), NULL},
  { "nosignature", '\0', 0, 0, RPMCLI_POPT_NOSIGNATURE,
         N_("don't verify package signature(s)"), NULL },
 
@@ -320,6 +416,8 @@ struct poptOption rpmcliAllPoptTable[] = {
  { "promoteepoch", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmds_nopromote, 0,
 	NULL, NULL},
 
+ { "cpiodebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_cpio_debug, -1,
+	N_("debug cpio payloads"), NULL},
  { "fpsdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_fps_debug, -1,
 	NULL, NULL},
  { "fsmdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_fsm_debug, -1,
@@ -333,6 +431,8 @@ struct poptOption rpmcliAllPoptTable[] = {
  { "davdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_dav_debug, -1,
 	N_("debug WebDAV data stream"), NULL},
  { "hdrdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_hdr_debug, -1,
+	NULL, NULL},
+ { "miredebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_mire_debug, -1,
 	NULL, NULL},
 #ifdef	DYING
  { "poptdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_popt_debug, -1,
@@ -368,6 +468,8 @@ struct poptOption rpmcliAllPoptTable[] = {
 	NULL, NULL},
  { "rpmtsdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmts_debug, -1,
 	NULL, NULL},
+ { "tardebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_tar_debug, -1,
+	N_("debug tar payloads"), NULL},
  { "stats", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmts_stats, -1,
 	NULL, NULL},
  { "urldebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_url_debug, -1,
@@ -380,6 +482,21 @@ struct poptOption rpmcliAllPoptTable[] = {
 poptContext
 rpmcliFini(poptContext optCon)
 {
+    /* keeps memory leak checkers quiet */
+    rpmFreeMacros(NULL);
+/*@i@*/	rpmFreeMacros(rpmCLIMacroContext);
+    rpmFreeRpmrc();
+#ifdef	WITH_LUA
+    (void) rpmluaFree(NULL);
+#endif
+    rpmFreeFilesystems();
+/*@i@*/	urlFreeCache();
+    rpmlogClose();
+/*@i@*/	rpmcliTargets = _free(rpmcliTargets);
+
+    rpmTags->byName = _free(rpmTags->byName);
+    rpmTags->byValue = _free(rpmTags->byValue);
+
     optCon = poptFreeContext(optCon);
 
 #if HAVE_MCHECK_H && HAVE_MTRACE
@@ -433,7 +550,7 @@ rpmcliInit(int argc, char *const argv[], struct poptOption * optionsTable)
 /*@=nullpass =temptrans@*/
     (void) poptReadConfigFile(optCon, LIBRPMALIAS_FILENAME);
     (void) poptReadDefaultConfig(optCon, 1);
-    poptSetExecPath(optCon, RPMCONFIGDIR, 1);
+    poptSetExecPath(optCon, USRLIBRPM, 1);
 
     /* Process all options, whine if unknown. */
     while ((rc = poptGetNextOpt(optCon)) > 0) {

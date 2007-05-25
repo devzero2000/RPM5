@@ -25,12 +25,13 @@
 
 #include "rpmsx.h"
 
+
 #define	_RPMTE_INTERNAL
 #include "rpmte.h"
 
 #include "buildio.h"
 
-#include "legacy.h"	/* XXX domd5, expandFileList, compressFileList */
+#include "legacy.h"	/* XXX dodigest */
 #include "misc.h"
 #include "debug.h"
 
@@ -219,8 +220,8 @@ static void dumpAttrRec(const char * msg, AttrRec ar)
 #endif
 
 /**
- * @param s
- * @param delim
+ * @param s		string
+ * @param delim		token delimiters
  */
 /*@-boundswrite@*/
 /*@null@*/
@@ -895,8 +896,8 @@ VFA_t virtualFileAttributes[] = {
 
 /**
  * Parse simple attributes (e.g. %dir) from file manifest.
- * @param spec
- * @param pkg
+ * @param spec		spec file control structure
+ * @param pkg		package control structure
  * @param buf		current spec file line
  * @param fl		package file tree walk data
  * @retval *fileName	file name
@@ -985,11 +986,19 @@ static int parseForSimple(/*@unused@*/Spec spec, Package pkg, char * buf,
 	    {
 		*fileName = s;
 	    } else {
-		/* not in %doc, does not begin with / -- error */
-		rpmError(RPMERR_BADSPEC,
-		    _("File must begin with \"/\": %s\n"), s);
-		fl->processingFailed = 1;
-		res = 1;
+		const char * sfn = NULL;
+		int urltype = urlPath(s, &sfn);
+		switch (urltype) {
+		default: /* relative path, not in %doc and not a URL */
+		    rpmError(RPMERR_BADSPEC,
+			_("File must begin with \"/\": %s\n"), s);
+		    fl->processingFailed = 1;
+		    res = 1;
+		    /*@switchbreak@*/ break;
+		case URL_IS_PATH:
+		    *fileName = s;
+		    /*@switchbreak@*/ break;
+		}
 	    }
 	} else {
 	    *fileName = s;
@@ -1006,11 +1015,22 @@ static int parseForSimple(/*@unused@*/Spec spec, Package pkg, char * buf,
 	    res = 1;
 	} else {
 	/* XXX WATCHOUT: buf is an arg */
-	    {	const char *ddir, *n, *v;
-
-		(void) headerNVR(pkg->header, &n, &v, NULL);
-
-		ddir = rpmGetPath("%{_docdir}/", n, "-", v, NULL);
+	   {	static char *_docdir_fmt= 0;
+		static int oneshot = 0;
+		const char *ddir, *fmt, *errstr;
+		if (!oneshot) {
+		    _docdir_fmt = rpmExpand("%{?_docdir_fmt}", NULL);
+		    if (!_docdir_fmt || !*_docdir_fmt)
+			_docdir_fmt = "%{NAME}-%{VERSION}";
+		    oneshot = 1;
+		}
+		fmt = headerSprintf(pkg->header, _docdir_fmt, rpmTagTable, rpmHeaderFormats, &errstr);
+		if (!fmt) {
+		    rpmError(RPMERR_BADSPEC, _("illegal _docdir_fmt: %s\n"), errstr);
+		    fl->processingFailed = 1;
+		    res = 1;
+		}
+		ddir = rpmGetPath("%{_docdir}/", fmt, NULL);
 		strcpy(buf, ddir);
 		ddir = _free(ddir);
 	    }
@@ -1018,12 +1038,19 @@ static int parseForSimple(/*@unused@*/Spec spec, Package pkg, char * buf,
 	/* XXX FIXME: this is easy to do as macro expansion */
 
 	    if (! fl->passedSpecialDoc) {
+	    	char *compress_doc;
+
 		pkg->specialDoc = newStringBuf();
-		appendStringBuf(pkg->specialDoc, "DOCDIR=$RPM_BUILD_ROOT");
+		appendStringBuf(pkg->specialDoc, "DOCDIR=\"$RPM_BUILD_ROOT\"");
 		appendLineStringBuf(pkg->specialDoc, buf);
 		appendLineStringBuf(pkg->specialDoc, "export DOCDIR");
-		appendLineStringBuf(pkg->specialDoc, "rm -rf $DOCDIR");
-		appendLineStringBuf(pkg->specialDoc, MKDIR_P " $DOCDIR");
+		appendLineStringBuf(pkg->specialDoc, "rm -rf \"$DOCDIR\"");
+		appendLineStringBuf(pkg->specialDoc, MKDIR_P " \"$DOCDIR\"");
+
+		compress_doc = rpmExpand("%{__compress_doc}", NULL);
+		if (compress_doc && *compress_doc != '%')
+	    	    appendLineStringBuf(pkg->specialDoc, compress_doc);
+		compress_doc = _free(compress_doc);
 
 		/*@-temptrans@*/
 		*fileName = buf;
@@ -1034,7 +1061,7 @@ static int parseForSimple(/*@unused@*/Spec spec, Package pkg, char * buf,
 
 	    appendStringBuf(pkg->specialDoc, "cp -pr ");
 	    appendStringBuf(pkg->specialDoc, specialDocBuf);
-	    appendLineStringBuf(pkg->specialDoc, " $DOCDIR");
+	    appendLineStringBuf(pkg->specialDoc, " \"$DOCDIR\"");
 	}
     }
 
@@ -1046,8 +1073,12 @@ static int parseForSimple(/*@unused@*/Spec spec, Package pkg, char * buf,
  */
 static int compareFileListRecs(const void * ap, const void * bp)	/*@*/
 {
-    const char *a = ((FileListRec)ap)->fileURL;
-    const char *b = ((FileListRec)bp)->fileURL;
+    const char *aurl = ((FileListRec)ap)->fileURL;
+    const char *a = NULL;
+    const char *burl = ((FileListRec)bp)->fileURL;
+    const char *b = NULL;
+    (void) urlPath(aurl, &a);
+    (void) urlPath(burl, &b);
     return strcmp(a, b);
 }
 
@@ -1102,6 +1133,120 @@ static int checkHardLinks(FileList fl)
     return 0;
 }
 
+/*@-boundsread@*/
+static int dncmp(const void * a, const void * b)
+	/*@*/
+{
+    const char ** aurlp = a;
+    const char ** burlp = b;
+    const char * adn;
+    const char * bdn;
+    (void) urlPath(*aurlp, &adn);
+    (void) urlPath(*burlp, &bdn);
+    return strcmp(adn, bdn);
+}
+/*@=boundsread@*/
+
+/*@-bounds@*/
+/**
+ * Convert absolute path tag to (dirname,basename,dirindex) tags.
+ * @param h             header
+ */
+static void compressFilelist(Header h)
+	/*@modifies h @*/
+{
+    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
+    HAE_t hae = (HAE_t)headerAddEntry;
+    HRE_t hre = (HRE_t)headerRemoveEntry;
+    HFD_t hfd = headerFreeData;
+    char ** fileNames;
+    const char * fn;
+    const char ** dirNames;
+    const char ** baseNames;
+    int_32 * dirIndexes;
+    rpmTagType fnt;
+    int count;
+    int i, xx;
+    int dirIndex = -1;
+
+    /*
+     * This assumes the file list is already sorted, and begins with a
+     * single '/'. That assumption isn't critical, but it makes things go
+     * a bit faster.
+     */
+
+    if (headerIsEntry(h, RPMTAG_DIRNAMES)) {
+	xx = hre(h, RPMTAG_OLDFILENAMES);
+	return;		/* Already converted. */
+    }
+
+    if (!hge(h, RPMTAG_OLDFILENAMES, &fnt, (void **) &fileNames, &count))
+	return;		/* no file list */
+    if (fileNames == NULL || count <= 0)
+	return;
+
+    dirNames = alloca(sizeof(*dirNames) * count);	/* worst case */
+    baseNames = alloca(sizeof(*dirNames) * count);
+    dirIndexes = alloca(sizeof(*dirIndexes) * count);
+
+    (void) urlPath(fileNames[0], &fn);
+    if (fn[0] != '/') {
+	/* HACK. Source RPM, so just do things differently */
+	dirIndex = 0;
+	dirNames[dirIndex] = "";
+	for (i = 0; i < count; i++) {
+	    dirIndexes[i] = dirIndex;
+	    baseNames[i] = fileNames[i];
+	}
+	goto exit;
+    }
+
+    /*@-branchstate@*/
+    for (i = 0; i < count; i++) {
+	const char ** needle;
+	char savechar;
+	char * baseName;
+	int len;
+
+	if (fileNames[i] == NULL)	/* XXX can't happen */
+	    continue;
+	baseName = strrchr(fileNames[i], '/') + 1;
+	len = baseName - fileNames[i];
+	needle = dirNames;
+	savechar = *baseName;
+	*baseName = '\0';
+/*@-compdef@*/
+	if (dirIndex < 0 ||
+	    (needle = bsearch(&fileNames[i], dirNames, dirIndex + 1, sizeof(dirNames[0]), dncmp)) == NULL) {
+	    char *s = alloca(len + 1);
+	    memcpy(s, fileNames[i], len + 1);
+	    s[len] = '\0';
+	    dirIndexes[i] = ++dirIndex;
+	    dirNames[dirIndex] = s;
+	} else
+	    dirIndexes[i] = needle - dirNames;
+/*@=compdef@*/
+
+	*baseName = savechar;
+	baseNames[i] = baseName;
+    }
+    /*@=branchstate@*/
+
+exit:
+    if (count > 0) {
+	xx = hae(h, RPMTAG_DIRINDEXES, RPM_INT32_TYPE, dirIndexes, count);
+	xx = hae(h, RPMTAG_BASENAMES, RPM_STRING_ARRAY_TYPE,
+			baseNames, count);
+	xx = hae(h, RPMTAG_DIRNAMES, RPM_STRING_ARRAY_TYPE,
+			dirNames, dirIndex + 1);
+    }
+
+    fileNames = hfd(fileNames, fnt);
+
+    xx = hre(h, RPMTAG_OLDFILENAMES);
+}
+/*@=bounds@*/
+
 /**
  * Add file entries to header.
  * @todo Should directories have %doc/%config attributes? (#14531)
@@ -1118,7 +1263,8 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 	/*@modifies h, *fip, fl->processingFailed, fl->fileList,
 		rpmGlobalMacroContext, fileSystem, internalState @*/
 {
-    int _addDotSlash = !(isSrc || rpmExpandNumeric("%{_noPayloadPrefix}"));
+    const char * apath;
+    int _addDotSlash = !isSrc;
     int apathlen = 0;
     int dpathlen = 0;
     int skipLen = 0;
@@ -1202,7 +1348,8 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 	if (flp->flags & RPMFILE_EXCLUDE) continue;
 
 	/* Omit '/' and/or URL prefix, leave room for "./" prefix */
-	apathlen += (strlen(flp->fileURL) - skipLen + (_addDotSlash ? 3 : 1));
+	(void) urlPath(flp->fileURL, &apath);
+	apathlen += (strlen(apath) - skipLen + (_addDotSlash ? 3 : 1));
 
 	/* Leave room for both dirname and basename NUL's */
 	dpathlen += (strlen(flp->diskURL) + 2);
@@ -1273,23 +1420,57 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 	(void) headerAddOrAppendEntry(h, RPMTAG_FILELANGS, RPM_STRING_ARRAY_TYPE,
 			       &(flp->langs),  1);
 	
-	/* We used to add these, but they should not be needed */
-	/* (void) headerAddOrAppendEntry(h, RPMTAG_FILEUIDS,
-	 *		   RPM_INT32_TYPE, &(flp->fl_uid), 1);
-	 * (void) headerAddOrAppendEntry(h, RPMTAG_FILEGIDS,
-	 *		   RPM_INT32_TYPE, &(flp->fl_gid), 1);
-	 */
-	
+      { static uint_32 source_file_dalgo = 0;
+	static uint_32 binary_file_dalgo = 0;
+	static int oneshot = 0;
+	uint_32 dalgo = 0;
+
+	if (!oneshot) {
+	    source_file_dalgo =
+		rpmExpandNumeric("%{?_build_source_file_digest_algo}");
+	    binary_file_dalgo =
+		rpmExpandNumeric("%{?_build_binary_file_digest_algo}");
+	    oneshot++;
+	}
+
+	dalgo = (isSrc ? source_file_dalgo : binary_file_dalgo);
+	switch (dalgo) {
+	case PGPHASHALGO_SHA1:
+	case PGPHASHALGO_RIPEMD160:
+	case PGPHASHALGO_MD2:
+	case PGPHASHALGO_TIGER192:
+	case PGPHASHALGO_SHA256:
+	case PGPHASHALGO_SHA384:
+	case PGPHASHALGO_SHA512:
+	case PGPHASHALGO_MD4:
+	case PGPHASHALGO_RIPEMD128:
+	case PGPHASHALGO_CRC32:
+	case PGPHASHALGO_ADLER32:
+	case PGPHASHALGO_CRC64:
+	    (void) rpmlibNeedsFeature(h, "FileDigestParameterized", "4.4.6-1");
+	    /*@switchbreak@*/ break;
+	case PGPHASHALGO_MD5:
+	case PGPHASHALGO_HAVAL_5_160:		/* XXX unimplemented */
+	default:
+	    dalgo = PGPHASHALGO_MD5;
+	    /*@switchbreak@*/ break;
+	}
+	    
 	buf[0] = '\0';
 	if (S_ISREG(flp->fl_mode))
-	    (void) domd5(flp->diskURL, buf, 1, NULL);
+	    (void) dodigest(dalgo, flp->diskURL, (unsigned char *)buf, 1, NULL);
 	s = buf;
-	(void) headerAddOrAppendEntry(h, RPMTAG_FILEMD5S, RPM_STRING_ARRAY_TYPE,
+	(void) headerAddOrAppendEntry(h, RPMTAG_FILEDIGESTS, RPM_STRING_ARRAY_TYPE,
 			       &s, 1);
+	(void) headerAddOrAppendEntry(h, RPMTAG_FILEDIGESTALGOS, RPM_INT32_TYPE,
+			       &dalgo, 1);
+      }
 	
 	buf[0] = '\0';
 	if (S_ISLNK(flp->fl_mode)) {
-	    buf[Readlink(flp->diskURL, buf, BUFSIZ)] = '\0';
+	    int xx = Readlink(flp->diskURL, buf, BUFSIZ);
+	    if (xx >= 0)
+		buf[xx] = '\0';
 	    if (fl->buildRootURL) {
 		const char * buildRoot;
 		(void) urlPath(fl->buildRootURL, &buildRoot);
@@ -1341,17 +1522,7 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
     (void) headerAddEntry(h, RPMTAG_SIZE, RPM_INT32_TYPE,
 		   &(fl->totalFileSize), 1);
 
-    if (_addDotSlash)
-	(void) rpmlibNeedsFeature(h, "PayloadFilesHavePrefix", "4.0-1");
-
-    /* Choose how filenames are represented. */
-    if (_noDirTokens)
-	expandFilelist(h);
-    else {
-	compressFilelist(h);
-	/* Binary packages with dirNames cannot be installed by legacy rpm. */
-	(void) rpmlibNeedsFeature(h, "CompressedFileNames", "3.0.4-1");
-    }
+    compressFilelist(h);
 
   { int scareMem = 0;
     rpmts ts = NULL;	/* XXX FIXME drill rpmts ts all the way down here */
@@ -1369,7 +1540,8 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
     fi->bnl = _free(fi->bnl);
     if (!scareMem) fi->dil = _free(fi->dil);
 
-    fi->dnl = xmalloc(fi->fc * sizeof(*fi->dnl) + dpathlen);
+    /* XXX Insure at least 1 byte is always allocated. */
+    fi->dnl = xmalloc(fi->fc * sizeof(*fi->dnl) + dpathlen + 1);
     d = (char *)(fi->dnl + fi->fc);
     *d = '\0';
 
@@ -1380,7 +1552,8 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 	: (int *)(fi->bnl + fi->fc);
 /*@=dependenttrans@*/
 
-    fi->apath = xmalloc(fi->fc * sizeof(*fi->apath) + apathlen);
+    /* XXX Insure at least 1 byte is always allocated. */
+    fi->apath = xmalloc(fi->fc * sizeof(*fi->apath) + apathlen + 1);
     a = (char *)(fi->apath + fi->fc);
     *a = '\0';
 
@@ -1432,7 +1605,8 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
  	/*@=dependenttrans@*/
 	if (_addDotSlash)
 	    a = stpcpy(a, "./");
-	a = stpcpy(a, (flp->fileURL + skipLen));
+	(void) urlPath(flp->fileURL, &apath);
+	a = stpcpy(a, (apath + skipLen));
 	a++;		/* skip apath NUL */
 
 	if (flp->flags & RPMFILE_GHOST) {
@@ -1501,7 +1675,8 @@ static int addFile(FileList fl, const char * diskURL,
 		check_fileList, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 {
-    const char *fileURL = diskURL;
+    const char *fn = xstrdup(diskURL);
+    const char *fileURL = fn;
     struct stat statbuf;
     mode_t fileMode;
     uid_t fileUid;
@@ -1518,14 +1693,30 @@ static int addFile(FileList fl, const char * diskURL,
      *	=====================================================
      *  processBinaryFile	path			NULL
      *  processBinaryFile	glob result path	NULL
-     *  myftw			path			stat
+     *  recurseDir		path			stat
      *
      */
+/*@-branchstate@*/
     {	const char *fileName;
-	(void) urlPath(fileURL, &fileName);
-	if (fl->buildRootURL && strcmp(fl->buildRootURL, "/"))
-	    fileURL += strlen(fl->buildRootURL);
+	int urltype = urlPath(fileURL, &fileName);
+	switch (urltype) {
+	case URL_IS_PATH:
+	    fileURL += (fileName - fileURL);
+	    if (fl->buildRootURL && strcmp(fl->buildRootURL, "/")) {
+		size_t nb = strlen(fl->buildRootURL);
+		const char * s = fileURL + nb;
+		char * t = (char *) fileURL;
+		(void) memmove(t, s, nb);
+	    }
+	    fileURL = fn;
+	    break;
+	default:
+	    if (fl->buildRootURL && strcmp(fl->buildRootURL, "/"))
+		fileURL += strlen(fl->buildRootURL);
+	    break;
+	}
     }
+/*@=branchstate@*/
 
     /* XXX make sure '/' can be packaged also */
     /*@-branchstate@*/
@@ -1610,7 +1801,9 @@ static int addFile(FileList fl, const char * diskURL,
     
     /* S_XXX macro must be consistent with type in find call at check-files script */
     if (check_fileList && (S_ISREG(fileMode) || S_ISLNK(fileMode))) {
-	appendStringBuf(check_fileList, diskURL);
+	const char * diskfn = NULL;
+	(void) urlPath(diskURL, &diskfn);
+	appendStringBuf(check_fileList, diskfn);
 	appendStringBuf(check_fileList, "\n");
     }
 
@@ -1677,12 +1870,13 @@ static int addFile(FileList fl, const char * diskURL,
 	} else
 	    i = fl->fileListRecsUsed;
 
-	if (S_ISREG(flp->fl_mode) && i >= fl->fileListRecsUsed)
+	if (!(flp->flags & RPMFILE_EXCLUDE) && S_ISREG(flp->fl_mode) && i >= fl->fileListRecsUsed) 
 	    fl->totalFileSize += flp->fl_size;
     }
 
     fl->fileListRecsUsed++;
     fl->fileCount++;
+/*@i@*/ fn = _free(fn);
 
     return 0;
 }
@@ -1745,7 +1939,7 @@ static int recurseDir(FileList fl, const char * diskURL)
 
 /**
  * Add a pubkey/policy/icon to a binary package.
- * @param pkg
+ * @param pkg		package control structure
  * @param fl		package file tree walk data
  * @param fileURL	path to file, relative is builddir, absolute buildroot.
  * @param tag		tag to add
@@ -1826,7 +2020,7 @@ exit:
 
 /**
  * Add a file to a binary package.
- * @param pkg
+ * @param pkg		package control structure
  * @param fl		package file tree walk data
  * @param fileURL
  * @return		0 on success
@@ -1882,7 +2076,7 @@ static int processBinaryFile(/*@unused@*/ Package pkg, FileList fl,
 
 	/*@-branchstate@*/
 	rc = rpmGlob(diskURL, &argc, &argv);
-	if (rc == 0 && argc >= 1 && !Glob_pattern_p(argv[0], quote)) {
+	if (rc == 0 && argc >= 1) {
 	    for (i = 0; i < argc; i++) {
 		rc = addFile(fl, argv[i], NULL);
 /*@-boundswrite@*/
@@ -1942,7 +2136,7 @@ static int processPackageFiles(Spec spec, Package pkg,
 	if (*pkg->fileFile == '/') {
 	    ffn = rpmGetPath(pkg->fileFile, NULL);
 	} else {
-	    /* XXX FIXME: add %{_buildsubdir} */
+	    /* XXX FIXME: add %{buildsubdir} */
 	    ffn = rpmGetPath("%{_builddir}/",
 		(spec->buildSubdir ? spec->buildSubdir : "") ,
 		"/", pkg->fileFile, NULL);
@@ -1973,8 +2167,7 @@ static int processPackageFiles(Spec spec, Package pkg,
     /* Init the file list structure */
     memset(&fl, 0, sizeof(fl));
 
-    /* XXX spec->buildRootURL == NULL, then xstrdup("") is returned */
-    fl.buildRootURL = rpmGenPath(spec->rootURL, spec->buildRootURL, NULL);
+    fl.buildRootURL = rpmGenPath(spec->rootURL, "%{?buildroot}", NULL);
 
     if (hge(pkg->header, RPMTAG_DEFAULTPREFIX, NULL, (void **)&fl.prefix, NULL))
 	fl.prefix = xstrdup(fl.prefix);
@@ -2017,10 +2210,12 @@ static int processPackageFiles(Spec spec, Package pkg,
     fl.docDirs[fl.docDirCount++] = xstrdup("/usr/share/doc");
     fl.docDirs[fl.docDirCount++] = xstrdup("/usr/share/man");
     fl.docDirs[fl.docDirCount++] = xstrdup("/usr/share/info");
+    fl.docDirs[fl.docDirCount++] = xstrdup("/usr/src/examples");
     fl.docDirs[fl.docDirCount++] = rpmGetPath("%{_docdir}", NULL);
     fl.docDirs[fl.docDirCount++] = rpmGetPath("%{_mandir}", NULL);
     fl.docDirs[fl.docDirCount++] = rpmGetPath("%{_infodir}", NULL);
     fl.docDirs[fl.docDirCount++] = rpmGetPath("%{_javadocdir}", NULL);
+    fl.docDirs[fl.docDirCount++] = rpmGetPath("%{_examplesdir}", NULL);
     
     fl.fileList = NULL;
     fl.fileListRecsAlloced = 0;
@@ -2110,15 +2305,10 @@ static int processPackageFiles(Spec spec, Package pkg,
     /* Now process special doc, if there is one */
     if (specialDoc) {
 	if (installSpecialDoc) {
-	    static int _missing_doc_files_terminate_build = 0;
-	    static int oneshot = 0;
+	    int _missing_doc_files_terminate_build =
+		    rpmExpandNumeric("%{?_missing_doc_files_terminate_build}");
 	    int rc;
 
-	    if (!oneshot) {
-	        _missing_doc_files_terminate_build =
-		    rpmExpandNumeric("%{?_missing_doc_files_terminate_build}");
-		oneshot = 1;
-	    }
 	    rc = doScript(spec, RPMBUILD_STRINGBUF, "%doc", pkg->specialDoc, test);
 	    if (rc && _missing_doc_files_terminate_build)
 		fl.processingFailed = rc;
@@ -2128,7 +2318,7 @@ static int processPackageFiles(Spec spec, Package pkg,
 	fl.isDir = 0;
 	fl.inFtw = 0;
 	fl.currentFlags = 0;
-	fl.currentVerifyFlags = 0;
+	fl.currentVerifyFlags = fl.defVerifyFlags;
 
 	fl.noGlob = 0;
  	fl.devtype = 0;
@@ -2194,15 +2384,17 @@ exit:
 }
 /*@=boundswrite@*/
 
-void initSourceHeader(Spec spec)
+int initSourceHeader(Spec spec, StringBuf *sfp)
 {
     HeaderIterator hi;
     int_32 tag, type, count;
     const void * ptr;
+    StringBuf sourceFiles;
+    struct Source *srcPtr;
 
-    spec->sourceHeader = headerNew();
     /* Only specific tags are added to the source package header */
     /*@-branchstate@*/
+  if (!spec->sourceHdrInit) {
     for (hi = headerInitIterator(spec->packages->header);
 	headerNextIterator(hi, &tag, &type, &ptr, &count);
 	ptr = headerFreeData(ptr, type))
@@ -2226,6 +2418,9 @@ void initSourceHeader(Spec spec)
 	case RPMTAG_CHANGELOGNAME:
 	case RPMTAG_CHANGELOGTEXT:
 	case RPMTAG_URL:
+	case RPMTAG_ICON:
+	case RPMTAG_GIF:
+	case RPMTAG_XPM:
 	case HEADER_I18NTABLE:
 	    if (ptr)
 		(void)headerAddEntry(spec->sourceHeader, tag, type, ptr, count);
@@ -2238,93 +2433,80 @@ void initSourceHeader(Spec spec)
     hi = headerFreeIterator(hi);
     /*@=branchstate@*/
 
-    /* Add the build restrictions */
-    /*@-branchstate@*/
-    for (hi = headerInitIterator(spec->buildRestrictions);
-	headerNextIterator(hi, &tag, &type, &ptr, &count);
-	ptr = headerFreeData(ptr, type))
-    {
-	if (ptr)
-	    (void) headerAddEntry(spec->sourceHeader, tag, type, ptr, count);
-    }
-    hi = headerFreeIterator(hi);
-    /*@=branchstate@*/
-
     if (spec->BANames && spec->BACount > 0) {
 	(void) headerAddEntry(spec->sourceHeader, RPMTAG_BUILDARCHS,
 		       RPM_STRING_ARRAY_TYPE,
 		       spec->BANames, spec->BACount);
     }
-}
+  }
 
-int processSourceFiles(Spec spec)
-{
-    struct Source *srcPtr;
-    StringBuf sourceFiles;
-    int x, isSpec = 1;
-    struct FileList_s fl;
-    char *s, **files, **fp;
-    Package pkg;
+    if (sfp != NULL && *sfp != NULL)
+	sourceFiles = *sfp;
+    else
+	sourceFiles = newStringBuf();
 
-    sourceFiles = newStringBuf();
-
-    /* XXX
-     * XXX This is where the source header for noarch packages needs
-     * XXX to be initialized.
-     */
-    if (spec->sourceHeader == NULL)
-	initSourceHeader(spec);
-
-    /* Construct the file list and source entries */
+    /* Construct the source/patch tag entries */
     appendLineStringBuf(sourceFiles, spec->specFile);
     if (spec->sourceHeader != NULL)
     for (srcPtr = spec->sources; srcPtr != NULL; srcPtr = srcPtr->next) {
-	if (srcPtr->flags & RPMBUILD_ISSOURCE) {
-	    (void) headerAddOrAppendEntry(spec->sourceHeader, RPMTAG_SOURCE,
-				   RPM_STRING_ARRAY_TYPE, &srcPtr->source, 1);
-	    if (srcPtr->flags & RPMBUILD_ISNO) {
-		(void) headerAddOrAppendEntry(spec->sourceHeader, RPMTAG_NOSOURCE,
-				       RPM_INT32_TYPE, &srcPtr->num, 1);
-	    }
-	}
-	if (srcPtr->flags & RPMBUILD_ISPATCH) {
-	    (void) headerAddOrAppendEntry(spec->sourceHeader, RPMTAG_PATCH,
-				   RPM_STRING_ARRAY_TYPE, &srcPtr->source, 1);
-	    if (srcPtr->flags & RPMBUILD_ISNO) {
-		(void) headerAddOrAppendEntry(spec->sourceHeader, RPMTAG_NOPATCH,
-				       RPM_INT32_TYPE, &srcPtr->num, 1);
-	    }
-	}
-
       {	const char * sfn;
-	sfn = rpmGetPath( ((srcPtr->flags & RPMBUILD_ISNO) ? "!" : ""),
+	sfn = rpmGetPath( ((srcPtr->flags & RPMFILE_GHOST) ? "!" : ""),
 		"%{_sourcedir}/", srcPtr->source, NULL);
 	appendLineStringBuf(sourceFiles, sfn);
 	sfn = _free(sfn);
       }
-    }
 
-    for (pkg = spec->packages; pkg != NULL; pkg = pkg->next) {
-	for (srcPtr = pkg->icon; srcPtr != NULL; srcPtr = srcPtr->next) {
-	    const char * sfn;
-	    sfn = rpmGetPath( ((srcPtr->flags & RPMBUILD_ISNO) ? "!" : ""),
-		"%{_sourcedir}/", srcPtr->source, NULL);
-	    appendLineStringBuf(sourceFiles, sfn);
-	    sfn = _free(sfn);
+	if (spec->sourceHdrInit)
+	    continue;
+
+	if (srcPtr->flags & RPMFILE_SOURCE) {
+	    (void) headerAddOrAppendEntry(spec->sourceHeader, RPMTAG_SOURCE,
+				   RPM_STRING_ARRAY_TYPE, &srcPtr->source, 1);
+	    if (srcPtr->flags & RPMFILE_GHOST) {
+		(void) headerAddOrAppendEntry(spec->sourceHeader, RPMTAG_NOSOURCE,
+				       RPM_INT32_TYPE, &srcPtr->num, 1);
+	    }
+	}
+	if (srcPtr->flags & RPMFILE_PATCH) {
+	    (void) headerAddOrAppendEntry(spec->sourceHeader, RPMTAG_PATCH,
+				   RPM_STRING_ARRAY_TYPE, &srcPtr->source, 1);
+	    if (srcPtr->flags & RPMFILE_GHOST) {
+		(void) headerAddOrAppendEntry(spec->sourceHeader, RPMTAG_NOPATCH,
+				       RPM_INT32_TYPE, &srcPtr->num, 1);
+	    }
 	}
     }
 
-    spec->sourceCpioList = NULL;
+    if (sfp == NULL)
+	sourceFiles = freeStringBuf(sourceFiles);
 
+    spec->sourceHdrInit = 1;
+
+    return 0;
+}
+
+int processSourceFiles(Spec spec)
+{
+    StringBuf sourceFiles, *sfp = &sourceFiles;
+    int x, isSpec = 1;
+    struct FileList_s fl;
+    char **files, **fp;
+    int rc;
+
+    *sfp = newStringBuf();
+    x = initSourceHeader(spec, sfp);
+
+    /* Construct the SRPM file list. */
     fl.fileList = xcalloc((spec->numSources + 1), sizeof(*fl.fileList));
-    fl.processingFailed = 0;
+    rc = fl.processingFailed = 0;
     fl.fileListRecsUsed = 0;
     fl.totalFileSize = 0;
     fl.prefix = NULL;
     fl.buildRootURL = NULL;
 
-    s = getStringBuf(sourceFiles);
-    files = splitString(s, strlen(s), '\n');
+    {	const char *s = getStringBuf(*sfp);
+	files = splitString(s, strlen(s), '\n');
+    }
 
     /* The first source file is the spec file */
     x = 0;
@@ -2361,7 +2543,7 @@ int processSourceFiles(Spec spec)
 	if (Stat(diskURL, &flp->fl_st)) {
 	    rpmError(RPMERR_BADSPEC, _("Bad file: %s: %s\n"),
 		diskURL, strerror(errno));
-	    fl.processingFailed = 1;
+	    rc = fl.processingFailed = 1;
 	}
 
 	flp->uname = getUname(flp->fl_uid);
@@ -2372,7 +2554,7 @@ int processSourceFiles(Spec spec)
 	
 	if (! (flp->uname && flp->gname)) {
 	    rpmError(RPMERR_BADSPEC, _("Bad owner/group: %s\n"), diskURL);
-	    fl.processingFailed = 1;
+	    rc = fl.processingFailed = 1;
 	}
 
 	isSpec = 0;
@@ -2381,15 +2563,16 @@ int processSourceFiles(Spec spec)
     fl.fileListRecsUsed = x;
     freeSplitString(files);
 
-    if (! fl.processingFailed) {
-	if (spec->sourceHeader != NULL)
-	    genCpioListAndHeader(&fl, &spec->sourceCpioList,
-			spec->sourceHeader, 1);
-    }
+    if (rc)
+	goto exit;
 
-    sourceFiles = freeStringBuf(sourceFiles);
+    spec->sourceCpioList = NULL;
+    genCpioListAndHeader(&fl, &spec->sourceCpioList, spec->sourceHeader, 1);
+
+exit:
+    *sfp = freeStringBuf(*sfp);
     fl.fileList = freeFileList(fl.fileList, fl.fileListRecsUsed);
-    return fl.processingFailed;
+    return rc;
 }
 
 /**
@@ -2424,16 +2607,10 @@ static int checkFiles(StringBuf fileList)
 	goto exit;
     
     if (sb_stdout) {
-	static int _unpackaged_files_terminate_build = 0;
-	static int oneshot = 0;
+	int _unpackaged_files_terminate_build =
+		rpmExpandNumeric("%{?_unpackaged_files_terminate_build}");
 	const char * t;
 
-	if (!oneshot) {
-	    _unpackaged_files_terminate_build =
-		rpmExpandNumeric("%{?_unpackaged_files_terminate_build}");
-	    oneshot = 1;
-	}
-	
 	t = getStringBuf(sb_stdout);
 	if ((*t != '\0') && (*t != '\n')) {
 	    rc = (_unpackaged_files_terminate_build) ? 1 : 0;
@@ -2465,14 +2642,25 @@ int processBinaryFiles(Spec spec, int installSpecialDoc, int test)
 	if (pkg->fileList == NULL)
 	    continue;
 
+	(void) headerMacrosLoad(pkg->header);
+
 	(void) headerNVR(pkg->header, &n, &v, &r);
 	rpmMessage(RPMMESS_NORMAL, _("Processing files: %s-%s-%s\n"), n, v, r);
 		   
 	if ((rc = processPackageFiles(spec, pkg, installSpecialDoc, test)))
 	    res = rc;
 
-	(void) rpmfcGenerateDepends(spec, pkg);
+	/* Finalize package scriptlets before extracting dependencies. */
+	if ((rc = processScriptFiles(spec, pkg)))
+	    res = rc;
 
+	if ((rc = rpmfcGenerateDepends(spec, pkg)))
+	    res = rc;
+
+	/* XXX this should be earlier for deps to be entirely sorted. */
+	providePackageNVR(pkg->header);
+
+	(void) headerMacrosUnload(pkg->header);
     }
 
     /* Now we have in fileList list of files from all packages.

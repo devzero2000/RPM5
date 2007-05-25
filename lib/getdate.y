@@ -95,6 +95,10 @@ struct timeb {
 #include <stdlib.h>
 #endif
 
+#if HAVE_MALLOC_H && !defined(__LCLINT__)
+#include <malloc.h>
+#endif
+
 /* NOTES on rebuilding getdate.c (particularly for inclusion in CVS
    releases):
 
@@ -113,27 +117,15 @@ extern struct tm	*gmtime();
 extern struct tm	*localtime();
 #endif
 
-/*@-exportheader@*/
-extern time_t get_date(char * p, struct timeb * now);
-/*@=exportheader@*/
-
-#define yyparse getdate_yyparse
-#define yylex getdate_yylex
-#define yyerror getdate_yyerror
-
-static int yyparse (void);
-static int yylex (void);
-static int yyerror(const char * s);
-
 #define EPOCH		1970
 #define HOUR(x)		((time_t)(x) * 60)
 #define SECSPERDAY	(24L * 60L * 60L)
-
 
 /*
 **  An entry in the lexical lookup table.
 */
 typedef struct _TABLE {
+/*@observer@*/ /*@relnull@*/
     char	*name;
     int		type;
     time_t	value;
@@ -161,25 +153,57 @@ typedef enum _MERIDIAN {
 **  yacc had the %union construct.)  Maybe someday; right now we only use
 **  the %union very rarely.
 */
+/*@unchecked@*/
 static char	*yyInput;
+/*@unchecked@*/
 static DSTMODE	yyDSTmode;
+/*@unchecked@*/
 static time_t	yyDayOrdinal;
+/*@unchecked@*/
 static time_t	yyDayNumber;
+/*@unchecked@*/
 static int	yyHaveDate;
+/*@unchecked@*/
 static int	yyHaveDay;
+/*@unchecked@*/
 static int	yyHaveRel;
+/*@unchecked@*/
 static int	yyHaveTime;
+/*@unchecked@*/
 static int	yyHaveZone;
+/*@unchecked@*/
 static time_t	yyTimezone;
+/*@unchecked@*/
 static time_t	yyDay;
+/*@unchecked@*/
 static time_t	yyHour;
+/*@unchecked@*/
 static time_t	yyMinutes;
+/*@unchecked@*/
 static time_t	yyMonth;
+/*@unchecked@*/
 static time_t	yySeconds;
+/*@unchecked@*/
 static time_t	yyYear;
+/*@unchecked@*/
 static MERIDIAN	yyMeridian;
+/*@unchecked@*/
 static time_t	yyRelMonth;
+/*@unchecked@*/
 static time_t	yyRelSeconds;
+
+#define yyparse getdate_yyparse
+#define yylex getdate_yylex
+#define yyerror getdate_yyerror
+
+static int yyparse (void);
+static int yylex (void);
+static int yyerror(const char * s)
+	/*@*/;
+
+/*@-exportheader@*/
+extern time_t get_date(char * p, struct timeb * now);
+/*@=exportheader@*/
 
 %}
 
@@ -370,7 +394,7 @@ number	: tUNUMBER {
 	    if (yyHaveTime && yyHaveDate && !yyHaveRel)
 		yyYear = $1;
 	    else {
-		if($1>10000) {
+		if ($1>10000) {
 		    yyHaveDate++;
 		    yyDay= ($1)%100;
 		    yyMonth= ($1/100)%100;
@@ -404,6 +428,7 @@ o_merid	: /* NULL */ {
 %%
 
 /* Month and day table. */
+/*@unchecked@*/ /*@observer@*/
 static TABLE const MonthDayTable[] = {
     { "january",	tMONTH,  1 },
     { "february",	tMONTH,  2 },
@@ -433,6 +458,7 @@ static TABLE const MonthDayTable[] = {
 };
 
 /* Time units table. */
+/*@unchecked@*/ /*@observer@*/
 static TABLE const UnitsTable[] = {
     { "year",		tMONTH_UNIT,	12 },
     { "month",		tMONTH_UNIT,	1 },
@@ -448,6 +474,7 @@ static TABLE const UnitsTable[] = {
 };
 
 /* Assorted relative-time words. */
+/*@unchecked@*/ /*@observer@*/
 static TABLE const OtherTable[] = {
     { "tomorrow",	tMINUTE_UNIT,	1 * 24 * 60 },
     { "yesterday",	tMINUTE_UNIT,	-1 * 24 * 60 },
@@ -474,6 +501,7 @@ static TABLE const OtherTable[] = {
 
 /* The timezone table. */
 /* Some of these are commented out because a time_t can't store a float. */
+/*@unchecked@*/ /*@observer@*/
 static TABLE const TimezoneTable[] = {
     { "gmt",	tZONE,     HOUR( 0) },	/* Greenwich Mean */
     { "ut",	tZONE,     HOUR( 0) },	/* Universal (Coordinated) */
@@ -558,6 +586,7 @@ static TABLE const TimezoneTable[] = {
 };
 
 /* Military timezone table. */
+/*@unchecked@*/ /*@observer@*/
 static TABLE const MilitaryTable[] = {
     { "a",	tZONE,	HOUR(  1) },
     { "b",	tZONE,	HOUR(  2) },
@@ -600,6 +629,7 @@ yyerror(/*@unused@*/ const char * s)
 
 static time_t
 ToSeconds(time_t Hours, time_t Minutes, time_t Seconds, MERIDIAN Meridian)
+	/*@*/
 {
     if (Minutes < 0 || Minutes > 59 || Seconds < 0 || Seconds > 59)
 	return -1;
@@ -635,6 +665,7 @@ static time_t
 Convert(time_t Month, time_t Day, time_t Year,
 	time_t Hours, time_t Minutes, time_t Seconds,
 	MERIDIAN Meridian, DSTMODE DSTmode)
+	/*@*/
 {
     static int DaysInMonth[12] = {
 	31, 0, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31
@@ -677,6 +708,7 @@ Convert(time_t Month, time_t Day, time_t Year,
 
 static time_t
 DSTcorrect(time_t Start, time_t Future)
+	/*@*/
 {
     time_t	StartDay;
     time_t	FutureDay;
@@ -689,6 +721,7 @@ DSTcorrect(time_t Start, time_t Future)
 
 static time_t
 RelativeDate(time_t Start, time_t DayOrdinal, time_t DayNumber)
+	/*@*/
 {
     struct tm	*tm;
     time_t	now;
@@ -703,6 +736,7 @@ RelativeDate(time_t Start, time_t DayOrdinal, time_t DayNumber)
 
 static time_t
 RelativeMonth(time_t Start, time_t RelMonth)
+	/*@*/
 {
     struct tm	*tm;
     time_t	Month;
@@ -723,6 +757,8 @@ RelativeMonth(time_t Start, time_t RelMonth)
 
 static int
 LookupWord(char * buff)
+	/*@globals yylval @*/
+	/*@modifies *buff, yylval @*/
 {
     register char	*p;
     register char	*q;
@@ -827,8 +863,11 @@ LookupWord(char * buff)
 }
 
 
+/*@-incondefs@*/
 static int
 yylex(void)
+	/*@globals yyInput, yylval @*/
+	/*@modifies yyInput, yylval @*/
 {
     register char	c;
     register char	*p;
@@ -880,12 +919,14 @@ yylex(void)
     /*@notreached@*/
     return 0;
 }
+/*@=incondefs@*/
 
 #define TM_YEAR_ORIGIN 1900
 
 /* Yield A - B, measured in seconds.  */
 static long
 difftm (const struct tm * a, const struct tm * b)
+	/*@*/
 {
   unsigned ay = a->tm_year + (TM_YEAR_ORIGIN - 1);
   unsigned by = b->tm_year + (TM_YEAR_ORIGIN - 1);
@@ -946,7 +987,7 @@ get_date(char * p, struct timeb * now)
 	       is zero.  */
 	    ftz.timezone = 0;
 
-	if(tm->tm_isdst)
+	if (tm->tm_isdst)
 	    ftz.timezone += 60;
     }
     else

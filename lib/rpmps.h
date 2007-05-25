@@ -25,8 +25,8 @@ typedef /*@abstract@*/ /*@refcounted@*/ struct rpmps_s * rpmps;
  * Enumerate transaction set problem types.
  */
 typedef enum rpmProblemType_e {
-    RPMPROB_BADARCH,	/*!< package ... is for a different architecture */
-    RPMPROB_BADOS,	/*!< package ... is for a different operating system */
+    RPMPROB_BADARCH,	/*!< (unused) package ... is for a different architecture */
+    RPMPROB_BADOS,	/*!< (unused) package ... is for a different operating system */
     RPMPROB_PKG_INSTALLED, /*!< package ... is already installed */
     RPMPROB_BADRELOCATE,/*!< path ... is not relocatable for package ... */
     RPMPROB_REQUIRES,	/*!< package ... has unsatisfied Requires: ... */
@@ -36,11 +36,15 @@ typedef enum rpmProblemType_e {
     RPMPROB_OLDPACKAGE,	/*!< package ... (which is newer than ...) is already installed */
     RPMPROB_DISKSPACE,	/*!< installing package ... needs ... on the ... filesystem */
     RPMPROB_DISKNODES,	/*!< installing package ... needs ... on the ... filesystem */
-    RPMPROB_BADPRETRANS	/*!< (unimplemented) */
+    RPMPROB_RDONLY,	/*!< installing package ... on ... rdonly filesystem */
+    RPMPROB_BADPRETRANS,/*!< (unimplemented) */
+    RPMPROB_BADPLATFORM,/*!< package ... is for a different platform */
+    RPMPROB_NOREPACKAGE /*!< re-packaged package ... is missing */
  } rpmProblemType;
 
 /**
  */
+#if defined(_RPMPS_INTERNAL)
 struct rpmProblem_s {
 /*@only@*/ /*@null@*/
     char * pkgNEVR;
@@ -52,7 +56,7 @@ struct rpmProblem_s {
     int ignoreProblem;
 /*@only@*/ /*@null@*/
     char * str1;
-    unsigned long ulong1;
+    unsigned long long ulong1;
 };
 
 /**
@@ -64,6 +68,7 @@ struct rpmps_s {
 /*@refs@*/
     int nrefs;			/*!< Reference count. */
 };
+#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -152,6 +157,8 @@ void rpmpsPrint(/*@null@*/ FILE *fp, /*@null@*/ rpmps ps)
 
 /**
  * Append a problem to current set of problems.
+ * @warning This function's args have changed, so the function cannot be
+ * used portably
  * @param ps		problem set
  * @param type		type of problem
  * @param pkgNEVR	package name
@@ -166,7 +173,7 @@ void rpmpsAppend(/*@null@*/ rpmps ps, rpmProblemType type,
 		/*@exposed@*/ /*@null@*/ fnpyKey key,
 		/*@null@*/ const char * dn, /*@null@*/ const char * bn,
 		/*@null@*/ const char * altNEVR,
-		unsigned long ulong1)
+		unsigned long long ulong1)
 	/*@modifies ps @*/;
 
 /**

@@ -37,26 +37,19 @@
 #else
 
 #   define __THROW
-#ifdef  __cplusplus
-# define __BEGIN_DECLS  extern "C" {
-# define __END_DECLS    }
-#else
-# define __BEGIN_DECLS
-# define __END_DECLS
-#endif
 
-#if defined(hpux)
+#if defined(hpux) || defined(__hpux)
 # define _D_EXACT_NAMLEN(d) ((d)->d_namlen)
 # define	_INCLUDE_POSIX_SOURCE
 # define	_LARGEFILE64_SOURCE
 #endif
 
-#if defined(sun)
-# define _D_EXACT_NAMLEN(d) ((d)->d_reclen)
+#if defined(__FreeBSD__)
+# define _D_EXACT_NAMLEN(d) ((d)->d_namlen)
 #endif
 
-#if defined(__APPLE__)
-# define _D_EXACT_NAMLEN(d) ((d)->d_reclen)
+#if !defined(_D_EXACT_NAMLEN) 
+# define _D_EXACT_NAMLEN(d) (strlen((d)->d_name))
 #endif
 
 #endif
@@ -171,7 +164,9 @@ typedef struct _ftsent {
 	char fts_name[1];		/*!< file name */
 } FTSENT;
 
-__BEGIN_DECLS
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /**
  * Return list of children of the current node.
@@ -226,6 +221,8 @@ FTSENT	*Fts_read (/*@null@*/ FTS * sp) __THROW
 int	 Fts_set (FTS * sp, FTSENT * p, int instr) __THROW
 	/*@modifies *p @*/;
 
-__END_DECLS
+#ifdef __cplusplus      
+}
+#endif
 
 #endif /* fts.h */

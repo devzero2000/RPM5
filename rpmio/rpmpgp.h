@@ -10,6 +10,8 @@
  *	Copyright (C) The Internet Society (1998).  All Rights Reserved.
  */
 
+#include <popt.h>
+
 #if !defined(_BEECRYPT_API_H)
 /*@-redef@*/
 typedef unsigned char byte;
@@ -19,6 +21,10 @@ typedef unsigned char byte;
 /**
  */
 typedef /*@abstract@*/ struct DIGEST_CTX_s * DIGEST_CTX;
+
+/**
+ */
+typedef /*@abstract@*/ struct pgpPkt_s * pgpPkt;
 
 /**
  */
@@ -281,14 +287,27 @@ extern struct pgpValTbl_s pgpCompressionTbl[];
  */
 typedef enum pgpHashAlgo_e {
     PGPHASHALGO_MD5		=  1,	/*!< MD5 */
-    PGPHASHALGO_SHA1		=  2,	/*!< SHA1 */
-    PGPHASHALGO_RIPEMD160	=  3,	/*!< RIPEMD160 */
+    PGPHASHALGO_SHA1		=  2,	/*!< SHA-1 */
+    PGPHASHALGO_RIPEMD160	=  3,	/*!< RIPEMD-160 */
     PGPHASHALGO_MD2		=  5,	/*!< MD2 */
-    PGPHASHALGO_TIGER192	=  6,	/*!< TIGER192 */
+    PGPHASHALGO_TIGER192	=  6,	/*!< TIGER-192 */
     PGPHASHALGO_HAVAL_5_160	=  7,	/*!< HAVAL-5-160 */
-    PGPHASHALGO_SHA256		=  8,	/*!< SHA256 */
-    PGPHASHALGO_SHA384		=  9,	/*!< SHA384 */
-    PGPHASHALGO_SHA512		= 10,	/*!< SHA512 */
+    PGPHASHALGO_SHA256		=  8,	/*!< SHA-256 */
+    PGPHASHALGO_SHA384		=  9,	/*!< SHA-384 */
+    PGPHASHALGO_SHA512		= 10,	/*!< SHA-512 */
+
+    PGPHASHALGO_MD4		= 104,	/*!< (private) MD4 */
+    PGPHASHALGO_RIPEMD128	= 105,	/*!< (private) RIPEMD-128 */
+    PGPHASHALGO_CRC32		= 106,	/*!< (private) CRC-32 */
+    PGPHASHALGO_ADLER32		= 107,	/*!< (private) ADLER-32 */
+    PGPHASHALGO_CRC64		= 108,	/*!< (private) CRC-64 */
+    PGPHASHALGO_JLU32		= 109,	/*!< (private) Jenkins lookup3.c */
+    PGPHASHALGO_SHA224		= 110,	/*!< (private) SHA-224 */
+    PGPHASHALGO_RIPEMD256	= 111,	/*!< (private) RIPEMD-256 */
+    PGPHASHALGO_RIPEMD320	= 112,	/*!< (private) RIPEMD-320 */
+    PGPHASHALGO_SALSA10		= 113,	/*!< (private) SALSA-10 */
+    PGPHASHALGO_SALSA20		= 114,	/*!< (private) SALSA-20 */
+
 } pgpHashAlgo;
 
 /**
@@ -976,6 +995,11 @@ typedef enum rpmDigestFlags_e {
     RPMDIGEST_NONE	= 0
 } rpmDigestFlags;
 
+/*@unchecked@*/
+extern pgpHashAlgo rpmDigestHashAlgo;
+
+/*@unchecked@*/ /*@observer@*/
+extern struct poptOption rpmDigestPoptTable[];
 
 /*@-fcnuse@*/
 #ifdef __cplusplus
@@ -1147,16 +1171,17 @@ int pgpValTok(pgpValTbl vs, const char * s, const char * se)
     return vs->val;
 }
 
-/*@-exportlocal@*/
 /**
  * Print an OpenPGP value.
  * @param pre		output prefix
  * @param vs		table of (string,value) pairs
  * @param val		byte value to print
  */
+/*@-exportlocal@*/
 void pgpPrtVal(const char * pre, pgpValTbl vs, byte val)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
+/*@=exportlocal@*/
 
 /**
  * Print/parse an OpenPGP subtype packet.
@@ -1165,53 +1190,53 @@ void pgpPrtVal(const char * pre, pgpValTbl vs, byte val)
  * @param sigtype	signature type
  * @return		0 on success
  */
+/*@-exportlocal@*/
 int pgpPrtSubType(const byte *h, unsigned int hlen, pgpSigType sigtype)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
+/*@=exportlocal@*/
 
 /**
  * Print/parse an OpenPGP signature packet.
- * @param tag		packet tag
- * @param h		packet contents
- * @param hlen		packet length (no. of bytes)
+ * @param pp		packet tag/ptr/len
  * @return		0 on success
  */
-int pgpPrtSig(pgpTag tag, const byte *h, unsigned int hlen)
+/*@-exportlocal@*/
+int pgpPrtSig(const pgpPkt pp)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
+/*@=exportlocal@*/
 
 /**
  * Print/parse an OpenPGP key packet.
- * @param tag		packet tag
- * @param h		packet contents
- * @param hlen		packet length (no. of bytes)
+ * @param pp		packet tag/ptr/len
  * @return		0 on success
  */
-int pgpPrtKey(pgpTag tag, const byte *h, unsigned int hlen)
+int pgpPrtKey(const pgpPkt pp)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
 
 /**
  * Print/parse an OpenPGP userid packet.
- * @param tag		packet tag
- * @param h		packet contents
- * @param hlen		packet length (no. of bytes)
+ * @param pp		packet tag/ptr/len
  * @return		0 on success
  */
-int pgpPrtUserID(pgpTag tag, const byte *h, unsigned int hlen)
+/*@-exportlocal@*/
+int pgpPrtUserID(const pgpPkt pp)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
+/*@=exportlocal@*/
 
 /**
  * Print/parse an OpenPGP comment packet.
- * @param tag		packet tag
- * @param h		packet contents
- * @param hlen		packet length (no. of bytes)
+ * @param pp		packet tag/ptr/len
  * @return		0 on success
  */
-int pgpPrtComment(pgpTag tag, const byte *h, unsigned int hlen)
+/*@-exportlocal@*/
+int pgpPrtComment(const pgpPkt pp)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
+/*@=exportlocal@*/
 
 /**
  * Calculate OpenPGP public key fingerprint.
@@ -1221,9 +1246,11 @@ int pgpPrtComment(pgpTag tag, const byte *h, unsigned int hlen)
  * @retval keyid	publick key fingerprint
  * @return		0 on sucess, else -1
  */
+/*@-exportlocal@*/
 int pgpPubkeyFingerprint(const byte * pkt, unsigned int pktlen,
 		/*@out@*/ byte * keyid)
 	/*@modifies *keyid @*/;
+/*@=exportlocal@*/
 
 /**
  * Extract OpenPGP public key fingerprint from base64 encoded packet.
@@ -1236,11 +1263,22 @@ int pgpExtractPubkeyFingerprint(const char * b64pkt, /*@out@*/ byte * keyid)
 	/*@modifies *keyid @*/;
 
 /**
+ * Return lenth of a OpenPGP packet.
+ * @param pkt		OpenPGP packet (i.e. PGPTAG_PUBLIC_KEY)
+ * @param pleft		OpenPGP packet length (no. of bytes)
+ * @retval pp		packet tag/ptr/len
+ * @return		packet length, <0 on error.
+ */
+int pgpPktLen(const byte *pkt, unsigned int pleft, /*@out@*/ pgpPkt pp)
+	/*@modifies pp @*/;
+
+/**
  * Print/parse next OpenPGP packet.
  * @param pkt		OpenPGP packet
  * @param pleft		no. bytes remaining
  * @return		-1 on error, otherwise this packet length
  */
+/*@-exportlocal@*/
 int pgpPrtPkt(const byte *pkt, unsigned int pleft)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;

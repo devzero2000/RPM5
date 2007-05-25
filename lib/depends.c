@@ -4,12 +4,17 @@
 
 #include "system.h"
 
+#include "rpmio_internal.h"	/* XXX PGPHASHALGO_MD5 */
 #include <rpmcli.h>		/* XXX rpmcliPackagesTotal */
 
 #include <rpmmacro.h>		/* XXX rpmExpand("%{_dependency_whiteout}" */
+#include <envvar.h>
+#include <ugid.h>		/* XXX user()/group() probes */
 
-#include "rpmdb.h"		/* XXX response cache needs dbiOpen et al. */
+#define	_RPMDB_INTERNAL		/* XXX response cache needs dbiOpen et al. */
+#include "rpmdb.h"
 
+#define	_RPMEVR_INTERNAL
 #include "rpmds.h"
 #include "rpmfi.h"
 
@@ -22,9 +27,9 @@
 #include "debug.h"
 
 /*@access tsortInfo @*/
+/*@access rpmte @*/		/* XXX for install <-> erase associate. */
 /*@access rpmts @*/
-
-/*@access dbiIndex @*/		/* XXX for dbi->dbi_txnid */
+/*@access rpmDiskSpaceInfo @*/
 
 /*@access alKey @*/	/* XXX for reordering and RPMAL_NOMATCH assign */
 
@@ -73,22 +78,30 @@ static int intcmp(const void * a, const void * b)
  * @param ts		transaction set
  * @param h		header
  * @param dboffset	rpm database instance
+ * @retval *indexp	removed element index (if not NULL)
  * @param depends	installed package of pair (or RPMAL_NOMATCH on erase)
  * @return		0 on success
  */
 static int removePackage(rpmts ts, Header h, int dboffset,
+		/*@null@*/ int * indexp,
 		/*@exposed@*/ /*@dependent@*/ /*@null@*/ alKey depends)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies ts, h, rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@modifies ts, h, *indexp, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     rpmte p;
 
     /* Filter out duplicate erasures. */
     if (ts->numRemovedPackages > 0 && ts->removedPackages != NULL) {
+	int * needle = NULL;
 /*@-boundswrite@*/
-	if (bsearch(&dboffset, ts->removedPackages, ts->numRemovedPackages,
-			sizeof(*ts->removedPackages), intcmp) != NULL)
+	needle = bsearch(&dboffset, ts->removedPackages, ts->numRemovedPackages,
+			sizeof(*ts->removedPackages), intcmp);
+	if (needle != NULL) {
+	    /* XXX lastx should be per-call, not per-ts. */
+	    if (indexp != NULL)
+	        *indexp = needle - ts->removedPackages;
 	    return 0;
+	}
 /*@=boundswrite@*/
     }
 
@@ -118,15 +131,53 @@ static int removePackage(rpmts ts, Header h, int dboffset,
     p = rpmteNew(ts, h, TR_REMOVED, NULL, NULL, dboffset, depends);
 /*@-boundswrite@*/
     ts->order[ts->orderCount] = p;
+    if (indexp != NULL)
+	*indexp = ts->orderCount;
     ts->orderCount++;
 /*@=boundswrite@*/
 
-    return 0;
+/*@-nullstate@*/	/* XXX FIX: ts->order[] can be NULL. */
+   return 0;
+/*@=nullstate@*/
+}
+
+/**
+ * Are two headers identical?
+ * @param first		first header
+ * @param second	second header
+ * @return		1 if headers are identical, 0 otherwise
+ */
+static int rpmHeadersIdentical(Header first, Header second)
+	/*@*/
+{
+    const char * one, * two;
+    rpmds A, B;
+    int rc;
+
+    if (!headerGetEntry(first, RPMTAG_HDRID, NULL, (void **) &one, NULL))
+	one = NULL;
+    if (!headerGetEntry(second, RPMTAG_HDRID, NULL, (void **) &two, NULL))
+	two = NULL;
+
+    if (one && two)
+	return ((strcmp(one, two) == 0) ? 1 : 0);
+    if (one && !two)
+	return 0;
+    if (!one && two)
+	return 0;
+    /* XXX Headers w/o digests case devolves to NEVR comparison. */
+    A = rpmdsThis(first, RPMTAG_REQUIRENAME, RPMSENSE_EQUAL);
+    B = rpmdsThis(second, RPMTAG_REQUIRENAME, RPMSENSE_EQUAL);
+    rc = rpmdsCompare(A, B);
+    A = rpmdsFree(A);
+    B = rpmdsFree(B);
+    return rc;
 }
 
 int rpmtsAddInstallElement(rpmts ts, Header h,
-			fnpyKey key, int upgrade, rpmRelocation * relocs)
+			fnpyKey key, int upgrade, rpmRelocation relocs)
 {
+    rpmdepFlags depFlags = rpmtsDFlags(ts);
     uint_32 tscolor = rpmtsColor(ts);
     uint_32 dscolor;
     uint_32 hcolor;
@@ -147,35 +198,70 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
     int rc;
     int oc;
 
-    /*
-     * Check for previously added versions with the same name and arch/os.
-     * FIXME: only catches previously added, older packages.
-     */
-    arch = NULL;
-    xx = hge(h, RPMTAG_ARCH, NULL, (void **)&arch, NULL);
-    os = NULL;
-    xx = hge(h, RPMTAG_OS, NULL, (void **)&os, NULL);
     hcolor = hGetColor(h);
     pkgKey = RPMAL_NOMATCH;
 
-    /* XXX Always add source headers. */
-    isSource = headerIsEntry(h, RPMTAG_SOURCEPACKAGE);
+    /*
+     * Always add source headers.
+     */
+    isSource = (headerIsEntry(h, RPMTAG_SOURCERPM) == 0) ;
     if (isSource) {
 	oc = ts->orderCount;
 	goto addheader;
     }
 
+    /*
+     * Check platform affinity of binary packages.
+     */
+    arch = NULL;
+    xx = hge(h, RPMTAG_ARCH, NULL, (void **)&arch, NULL);
+    os = NULL;
+    xx = hge(h, RPMTAG_OS, NULL, (void **)&os, NULL);
+    if (nplatpat > 1) {
+	const char * platform = NULL;
+
+	if (hge(h, RPMTAG_PLATFORM, NULL, (void **)&platform, NULL))
+	    platform = xstrdup(platform);
+	else
+	    platform = rpmExpand(arch, "-unknown-", os, NULL);
+
+	rc = rpmPlatformScore(platform, platpat, nplatpat);
+	if (rc <= 0) {
+	    const char * pkgNEVR = hGetNEVRA(h, NULL);
+	    rpmps ps = rpmtsProblems(ts);
+	    rpmpsAppend(ps, RPMPROB_BADPLATFORM, pkgNEVR, key,
+                        platform, NULL, NULL, 0);
+	    ps = rpmpsFree(ps);
+	    pkgNEVR = _free(pkgNEVR);
+	    ec = 1;
+	}
+	platform = _free(platform);
+	if (ec)
+	    goto exit;
+    }
+
+    /*
+     * Always install compatible binary packages.
+     */
+    if (!upgrade) {
+	oc = ts->orderCount;
+	goto addheader;
+    }
+
+    /*
+     * Check that upgrade package is uniquely newer, replace older if necessary.
+     */
     oldChk = rpmdsThis(h, RPMTAG_REQUIRENAME, (RPMSENSE_LESS));
     newChk = rpmdsThis(h, RPMTAG_REQUIRENAME, (RPMSENSE_EQUAL|RPMSENSE_GREATER));
     /* XXX can't use rpmtsiNext() filter or oc will have wrong value. */
     for (pi = rpmtsiInit(ts), oc = 0; (p = rpmtsiNext(pi, 0)) != NULL; oc++) {
 	rpmds this;
 
-	/* XXX Only added packages need be checked for dupes. */
+	/* XXX Only added packages need be checked for dupes here. */
 	if (rpmteType(p) == TR_REMOVED)
 	    continue;
 
-	/* XXX Never check source headers. */
+	/* XXX Never check source header NEVRAO. */
 	if (rpmteIsSource(p))
 	    continue;
 
@@ -185,9 +271,17 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
 
 	    if (arch == NULL || (parch = rpmteA(p)) == NULL)
 		continue;
+	    /* XXX hackery for i[3456]86 alias matching. */
+	    if (arch[0] == 'i' && arch[2] == '8' && arch[3] == '6') {
+		if (arch[0] != parch[0]) continue;
+		if (arch[2] != parch[2]) continue;
+		if (arch[3] != parch[3]) continue;
+	    } else if (strcmp(arch, parch))
+		continue;
 	    if (os == NULL || (pos = rpmteO(p)) == NULL)
 		continue;
-	    if (strcmp(arch, parch) || strcmp(os, pos))
+
+	    if (strcmp(os, pos))
 		continue;
 	}
 
@@ -195,7 +289,7 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
 	if ((this = rpmteDS(p, RPMTAG_NAME)) == NULL)
 	    continue;	/* XXX can't happen */
 
-	/* If newer NEVR was previously added, then skip adding older. */
+	/* If newer NEVRAO already added, then skip adding older. */
 	rc = rpmdsCompare(newChk, this);
 	if (rc != 0) {
 	    const char * pkgNEVR = rpmdsDNEVR(this);
@@ -209,7 +303,7 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
 	    break;
 	}
 
-	/* If older NEVR was previously added, then replace old with new. */
+	/* If older NEVRAO already added, then replace old with new. */
 	rc = rpmdsCompare(oldChk, this);
 	if (rc != 0) {
 	    const char * pkgNEVR = rpmdsDNEVR(this);
@@ -228,7 +322,7 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
     oldChk = rpmdsFree(oldChk);
     newChk = rpmdsFree(newChk);
 
-    /* If newer NEVR was already added, exit now. */
+    /* If newer (or same) NEVRAO was already added, exit now. */
     if (ec)
 	goto exit;
 
@@ -241,6 +335,7 @@ addheader:
     }
 
     p = rpmteNew(ts, h, TR_ADDED, key, relocs, -1, pkgKey);
+assert(p != NULL);
 
     if (duplicate && oc < ts->orderCount) {
 /*@-type -unqualifiedtrans@*/
@@ -265,6 +360,7 @@ addheader:
 /*@-boundswrite@*/
 	ts->order[oc] = rpmteFree(ts->order[oc]);
 /*@=boundswrite@*/
+	ts->teInstall = NULL;
 	ec = 1;
 	goto exit;
     }
@@ -273,6 +369,8 @@ addheader:
     if (!duplicate) {
 	ts->numAddedPackages++;
     }
+
+    ts->teInstall = ts->order[oc];
 
     /* XXX rpmgi hack: Save header in transaction element if requested. */
     if (upgrade & 0x2)
@@ -294,22 +392,39 @@ addheader:
 
     /* On upgrade, erase older packages of same color (if any). */
 
+  if (!(depFlags & RPMDEPS_FLAG_NOUPGRADE)) {
     mi = rpmtsInitIterator(ts, RPMTAG_PROVIDENAME, rpmteN(p), 0);
     while((oh = rpmdbNextIterator(mi)) != NULL) {
+	int lastx;
+	rpmte q;
 
 	/* Ignore colored packages not in our rainbow. */
 	ohcolor = hGetColor(oh);
 	if (tscolor && hcolor && ohcolor && !(hcolor & ohcolor))
 	    continue;
 
-	/* Skip packages that contain identical NEVR. */
-	if (rpmVersionCompare(h, oh) == 0)
+	/* Skip identical packages. */
+	if (rpmHeadersIdentical(h, oh))
 	    continue;
 
-	xx = removePackage(ts, oh, rpmdbGetIteratorOffset(mi), pkgKey);
+	/* Create an erasure element. */
+	lastx = -1;
+	xx = removePackage(ts, oh, rpmdbGetIteratorOffset(mi), &lastx, pkgKey);
+assert(lastx >= 0 && lastx < ts->orderCount);
+	q = ts->order[lastx];
+
+	/* Chain through upgrade flink. */
+	xx = rpmteChain(p, q, oh, "Upgrades");
+
+/*@-nullptrarith@*/
+	rpmMessage(RPMMESS_DEBUG, _("   upgrade erases %s\n"), rpmteNEVRA(q));
+/*@=nullptrarith@*/
+
     }
     mi = rpmdbFreeIterator(mi);
+  }
 
+  if (!(depFlags & RPMDEPS_FLAG_NOOBSOLETES)) {
     obsoletes = rpmdsLink(rpmteDS(p, RPMTAG_OBSOLETENAME), "Obsoletes");
     obsoletes = rpmdsInit(obsoletes);
     if (obsoletes != NULL)
@@ -333,6 +448,7 @@ addheader:
 	if (!strcmp(rpmteN(p), Name))
 	    continue;
 
+	/* Obsolete containing package if given a file, otherwise provide. */
 	if (Name[0] == '/')
 	    mi = rpmtsInitIterator(ts, RPMTAG_BASENAMES, Name, 0);
 	else
@@ -342,8 +458,12 @@ addheader:
 	    ts->removedPackages, ts->numRemovedPackages, 1);
 
 	while((oh = rpmdbNextIterator(mi)) != NULL) {
+	    int lastx;
+	    rpmte q;
+
 	    /* Ignore colored packages not in our rainbow. */
 	    ohcolor = hGetColor(oh);
+
 	    /* XXX provides *are* colored, effectively limiting Obsoletes:
 		to matching only colored Provides: based on pkg coloring. */
 	    if (tscolor && hcolor && ohcolor && !(hcolor & ohcolor))
@@ -353,23 +473,28 @@ addheader:
 	     * Rpm prior to 3.0.3 does not have versioned obsoletes.
 	     * If no obsoletes version info is available, match all names.
 	     */
-	    if (rpmdsEVR(obsoletes) == NULL
-	     || rpmdsAnyMatchesDep(oh, obsoletes, _rpmds_nopromote)) {
-		const char * ohNEVRA = hGetNEVRA(oh, NULL);
-#ifdef	DYING	/* XXX see http://bugzilla.redhat.com #134497 */
-		if (rpmVersionCompare(h, oh))
-#endif
-		    xx = removePackage(ts, oh, rpmdbGetIteratorOffset(mi), pkgKey);
+	    if (!(rpmdsEVR(obsoletes) == NULL
+	     || rpmdsAnyMatchesDep(oh, obsoletes, _rpmds_nopromote)))
+		/*@innercontinue@*/ continue;
+
+	    /* Create an erasure element. */
+	    lastx = -1;
+	    xx = removePackage(ts, oh, rpmdbGetIteratorOffset(mi), &lastx, pkgKey);
+assert(lastx >= 0 && lastx < ts->orderCount);
+	    q = ts->order[lastx];
+
+	    /* Chain through obsoletes flink. */
+	    xx = rpmteChain(p, q, oh, "Obsoletes");
+
 /*@-nullptrarith@*/
-		rpmMessage(RPMMESS_DEBUG, _("  Obsoletes: %s\t\terases %s\n"),
-			rpmdsDNEVR(obsoletes)+2, ohNEVRA);
+	    rpmMessage(RPMMESS_DEBUG, _("  Obsoletes: %s\t\terases %s\n"),
+			rpmdsDNEVR(obsoletes)+2, rpmteNEVRA(q));
 /*@=nullptrarith@*/
-		ohNEVRA = _free(ohNEVRA);
-	    }
 	}
 	mi = rpmdbFreeIterator(mi);
     }
     obsoletes = rpmdsFree(obsoletes);
+  }
 
     ec = 0;
 
@@ -380,7 +505,13 @@ exit:
 
 int rpmtsAddEraseElement(rpmts ts, Header h, int dboffset)
 {
-    return removePackage(ts, h, dboffset, RPMAL_NOMATCH);
+    int oc = -1;
+    int rc = removePackage(ts, h, dboffset, &oc, RPMAL_NOMATCH);
+    if (rc == 0 && oc >= 0 && oc < ts->orderCount)
+	ts->teErase = ts->order[oc];
+    else
+	ts->teErase = NULL;
+    return rc;
 }
 
 /**
@@ -393,21 +524,25 @@ int rpmtsAddEraseElement(rpmts ts, Header h, int dboffset)
 static int unsatisfiedDepend(rpmts ts, rpmds dep, int adding)
 	/*@globals _cacheDependsRC, rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState @*/
-	/*@modifies ts, _cacheDependsRC, rpmGlobalMacroContext,
+	/*@modifies ts, dep, _cacheDependsRC, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 {
     DBT * key = alloca(sizeof(*key));
     DBT * data = alloca(sizeof(*data));
     rpmdbMatchIterator mi;
+    nsType NSType;
     const char * Name;
+    int_32 Flags;
     Header h;
     int _cacheThisRC = 1;
     int rc;
     int xx;
-    int retrying = 0;
+    int retries = 10;
 
     if ((Name = rpmdsN(dep)) == NULL)
 	return 0;	/* XXX can't happen */
+    Flags = rpmdsFlags(dep);
+    NSType = rpmdsNSType(dep);
 
     /*
      * Check if dbiOpen/dbiPut failed (e.g. permissions), we can't cache.
@@ -428,7 +563,7 @@ static int unsatisfiedDepend(rpmts ts, rpmds dep, int adding)
 		size_t datalen = 0;
 		size_t DNEVRlen = strlen(DNEVR);
 
-		xx = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, 0);
+		xx = dbiCopen(dbi, dbiTxnid(dbi), &dbcursor, 0);
 
 		memset(key, 0, sizeof(*key));
 /*@i@*/		key->data = (void *) DNEVR;
@@ -454,7 +589,7 @@ static int unsatisfiedDepend(rpmts ts, rpmds dep, int adding)
 
 	    if (rc >= 0) {
 		rpmdsNotify(dep, _("(cached)"), rc);
-		return rc;
+		return rpmdsNegateRC(dep, rc);
 	    }
 	}
     }
@@ -462,42 +597,359 @@ static int unsatisfiedDepend(rpmts ts, rpmds dep, int adding)
 retry:
     rc = 0;	/* assume dependency is satisfied */
 
-#if defined(DYING) || defined(__LCLINT__)
-  { static /*@observer@*/ const char noProvidesString[] = "nada";
-    static /*@observer@*/ const char * rcProvidesString = noProvidesString;
-    int_32 Flags = rpmdsFlags(dep);
-    const char * start;
-    int i;
+    /* Expand macro probe dependencies. */
+    if (NSType == RPMNS_TYPE_FUNCTION) {
+	xx = rpmExpandNumeric(Name);
+	rc = (xx ? 0 : 1);
+	if (Flags & RPMSENSE_MISSINGOK)
+	    goto unsatisfied;
+	rpmdsNotify(dep, _("(function probe)"), rc);
+	goto exit;
+    }
 
-    if (rcProvidesString == noProvidesString)
-	rcProvidesString = rpmGetVar(RPMVAR_PROVIDES);
+    /* Evaluate user/group lookup probes. */
+    if (NSType == RPMNS_TYPE_USER) {
+	const char *s;
+	uid_t uid = 0;
+	s = Name; while (*s && xisdigit(*s)) s++;
 
-    if (rcProvidesString != NULL && !(Flags & RPMSENSE_SENSEMASK)) {
+	if (*s)
+	    xx = unameToUid(Name, &uid);
+	else {
+	    uid = strtol(Name, NULL, 10);
+	    xx = (uidToUname(uid) ? 0 : -1);
+	}
+	rc = (xx >= 0 ? 0 : 1);
+	if (Flags & RPMSENSE_MISSINGOK)
+	    goto unsatisfied;
+	rpmdsNotify(dep, _("(user lookup)"), rc);
+	goto exit;
+    }
+    if (NSType == RPMNS_TYPE_GROUP) {
+	const char *s;
+	gid_t gid = 0;
+	s = Name; while (*s && xisdigit(*s)) s++;
 
-	i = strlen(Name);
-	/*@-observertrans -mayaliasunique@*/
-	while ((start = strstr(rcProvidesString, Name))) {
-	/*@=observertrans =mayaliasunique@*/
-/*@-boundsread@*/
-	    if (xisspace(start[i]) || start[i] == '\0' || start[i] == ',') {
-		rpmdsNotify(dep, _("(rpmrc provides)"), rc);
-		goto exit;
-	    }
-/*@=boundsread@*/
-	    rcProvidesString = start + 1;
+	if (*s)
+	    xx = gnameToGid(Name, &gid);
+	else {
+	    gid = strtol(Name, NULL, 10);
+	    xx = (gidToGname(gid) ? 0 : -1);
+	}
+	rc = (xx >= 0 ? 0 : 1);
+	if (Flags & RPMSENSE_MISSINGOK)
+	    goto unsatisfied;
+	rpmdsNotify(dep, _("(group lookup)"), rc);
+	goto exit;
+    }
+
+    /* Evaluate access(2) probe dependencies. */
+    if (NSType == RPMNS_TYPE_ACCESS) {
+	rc = rpmioAccess(Name, NULL, X_OK);
+	if (Flags & RPMSENSE_MISSINGOK)
+	    goto unsatisfied;
+	rpmdsNotify(dep, _("(access probe)"), rc);
+	goto exit;
+    }
+
+    /* Evaluate mtab lookup and diskspace probe dependencies. */
+    if (NSType == RPMNS_TYPE_MOUNTED) {
+	const char ** fs = NULL;
+	int nfs = 0;
+	int i = 0;
+
+	xx = rpmtsInitDSI(ts);
+	fs = ts->filesystems;
+	nfs = ts->filesystemCount;
+
+	if (fs != NULL)
+	for (i = 0; i < nfs; i++) {
+	    if (!strcmp(fs[i], Name))
+		break;
+	}
+	rc = (i < nfs ? 0 : 1);
+	if (Flags & RPMSENSE_MISSINGOK)
+	    goto unsatisfied;
+	rpmdsNotify(dep, _("(mtab probe)"), rc);
+	goto exit;
+    }
+
+    if (NSType == RPMNS_TYPE_DISKSPACE) {
+	size_t nb = strlen(Name);
+	rpmDiskSpaceInfo dsi = NULL;
+	const char ** fs = NULL;
+	size_t fslen = 0, longest = 0;
+	int nfs = 0;
+	int i = 0;
+
+	xx = rpmtsInitDSI(ts);
+	fs = ts->filesystems;
+	nfs = ts->filesystemCount;
+
+	if (fs != NULL)
+	for (i = 0; i < nfs; i++) {
+	    fslen = strlen(fs[i]);
+	    if (fslen > nb)
+		continue;
+	    if (strncmp(fs[i], Name, fslen))
+		continue;
+	    if (fslen > 1 && Name[fslen] != '/' && Name[fslen] != '\0')
+		continue;
+	    if (fslen < longest)
+		continue;
+	    longest = fslen;
+	    dsi = ts->dsi + i;
+	}
+	if (dsi == NULL)
+	    rc = 1;	/* no mounted paths !?! */
+	else {
+	    char * end = NULL;
+	    long long needed = strtoll(rpmdsEVR(dep), &end, 0);
+
+	    if (end && *end) {
+		if (strchr("Gg", end[0]) && strchr("Bb", end[1]) && !end[2])
+		    needed *= 1024 * 1024 * 1024;
+		if (strchr("Mm", end[0]) && strchr("Bb", end[1]) && !end[2])
+		    needed *= 1024 * 1024;
+		if (strchr("Kk", end[0]) && strchr("Bb", end[1]) && !end[2])
+		    needed *= 1024;
+	    } else
+		needed *= 1024 * 1024;	/* XXX assume Mb if no units given */
+
+	    needed = BLOCK_ROUND(needed, dsi->f_bsize);
+	    xx = (dsi->f_bavail - needed);
+	    if ((Flags & RPMSENSE_LESS) && xx < 0) rc = 0;
+	    else if ((Flags & RPMSENSE_GREATER) && xx > 0) rc = 0;
+	    else if ((Flags & RPMSENSE_EQUAL) && xx == 0) rc = 0;
+	    else rc = 1;
+	}
+	if (Flags & RPMSENSE_MISSINGOK)
+	    goto unsatisfied;
+	rpmdsNotify(dep, _("(diskspace probe)"), rc);
+	goto exit;
+    }
+
+    if (NSType == RPMNS_TYPE_DIGEST) {
+	const char * EVR = rpmdsEVR(dep);
+	FD_t fd = Fopen(Name, "r");
+
+	rc = 1;		/* XXX assume failure */
+	if (fd && !Ferror(fd)) {
+	    pgpHashAlgo digestHashAlgo = PGPHASHALGO_MD5;
+	    DIGEST_CTX ctx = rpmDigestInit(digestHashAlgo, RPMDIGEST_NONE);
+	    const char * digest = NULL;
+	    size_t digestlen = 0;
+	    int asAscii = 1;
+	    size_t nbuf = 8 * BUFSIZ;
+	    char * buf = alloca(nbuf);
+	    size_t nb;
+
+	    while ((nb = Fread(buf, sizeof(buf[0]), nbuf, fd)) > 0)
+		xx = rpmDigestUpdate(ctx, buf, nb);
+	    xx = Fclose(fd);	fd = NULL;
+	    xx = rpmDigestFinal(ctx, (void **)&digest, &digestlen, asAscii);
+
+	    xx = (EVR && *EVR && digest && *digest) ? strcmp(EVR, digest) : -1;
+	    /* XXX only equality makes sense for digest compares */
+	    if ((Flags & RPMSENSE_EQUAL) && xx == 0) rc = 0;
+	}
+	if (Flags & RPMSENSE_MISSINGOK)
+	    goto unsatisfied;
+	rpmdsNotify(dep, _("(digest probe)"), rc);
+	goto exit;
+    }
+
+    if (NSType == RPMNS_TYPE_GNUPG) {
+	static const char gnupg_pre[] = "%(%{__gpg} -qv ";
+	static const char gnupg_post[] = " 2>/dev/null; echo $?)";
+	const char * t = rpmExpand(gnupg_pre, Name, gnupg_post, NULL);
+
+	rc = (t && t[0] == '0') ? 0 : 1;
+	t = _free(t);
+	if (Flags & RPMSENSE_MISSINGOK)
+	    goto unsatisfied;
+	rpmdsNotify(dep, _("(gnupg probe)"), rc);
+	goto exit;
+    }
+
+    if (NSType == RPMNS_TYPE_MACRO) {
+	static const char macro_pre[] = "%{?";
+	static const char macro_post[] = ":0}";
+	const char * a = rpmExpand(macro_pre, Name, macro_post, NULL);
+
+	rc = (a && a[0] == '0') ? 0 : 1;
+	a = _free(a);
+	if (Flags & RPMSENSE_MISSINGOK)
+	    goto unsatisfied;
+	rpmdsNotify(dep, _("(macro probe)"), rc);
+	goto exit;
+    }
+
+    if (NSType == RPMNS_TYPE_ENVVAR) {
+	const char * a = envGet(Name);
+	const char * b = rpmdsEVR(dep);
+
+	/* Existence test if EVR is missing/empty. */
+	if (!(b && *b))
+	    rc = (!(a && *a));
+	else {
+	    int sense = (a && *a) ? strcmp(a, b) : -1;
+
+	    if ((Flags & RPMSENSE_SENSEMASK) == RPMSENSE_NOTEQUAL)
+		rc = (sense == 0);
+	    else if (sense < 0 && (Flags & RPMSENSE_LESS))
+		rc = 0;
+	    else if (sense > 0 && (Flags & RPMSENSE_GREATER))
+		rc = 0;
+	    else if (sense == 0 && (Flags & RPMSENSE_EQUAL))
+		rc = 0;
+	    else
+		rc = (sense != 0);
+	}
+
+	if (Flags & RPMSENSE_MISSINGOK)
+	    goto unsatisfied;
+	rpmdsNotify(dep, _("(envvar probe)"), rc);
+	goto exit;
+    }
+
+    if (NSType == RPMNS_TYPE_RUNNING) {
+	char *t = NULL;
+	pid_t pid = strtol(Name, &t, 10);
+
+	if (t == NULL || *t != '\0') {
+	    const char * fn = rpmGetPath("%{_varrun}/", Name, ".pid", NULL);
+	    FD_t fd = NULL;
+
+	    if (fn && *fn != '%' && (fd = Fopen(fn, "r")) && !Ferror(fd)) {
+		char buf[32];
+		size_t nb = Fread(buf, sizeof(buf[0]), sizeof(buf), fd);
+
+		if (nb > 0)
+		    pid = strtol(buf, &t, 10);
+	    } else
+		pid = 0;
+	    if (fd != NULL)
+		(void) Fclose(fd);
+	    fn = _free(fn);
+	}
+	rc = (pid > 0 ? (kill(pid, 0) < 0 && errno == ESRCH) : 1);
+	if (Flags & RPMSENSE_MISSINGOK)
+	    goto unsatisfied;
+	rpmdsNotify(dep, _("(running probe)"), rc);
+	goto exit;
+    }
+
+    /* Search system configured provides. */
+    if (!rpmioAccess("/etc/rpm/sysinfo", NULL, R_OK)) {
+#ifdef	NOTYET	/* XXX just sysinfo Provides: for now. */
+	rpmTag tagN = (Name[0] == '/' ? RPMTAG_DIRNAMES : RPMTAG_PROVIDENAME);
+#else
+	rpmTag tagN = RPMTAG_PROVIDENAME;
+#endif
+	rpmds P = rpmdsFromPRCO(ts->PRCO, tagN);
+	if (rpmdsSearch(P, dep) >= 0) {
+	    rpmdsNotify(dep, _("(sysinfo provides)"), rc);
+	    goto exit;
 	}
     }
-  }
-#endif
 
     /*
      * New features in rpm packaging implicitly add versioned dependencies
      * on rpmlib provides. The dependencies look like "rpmlib(YaddaYadda)".
      * Check those dependencies now.
      */
-    if (!strncmp(Name, "rpmlib(", sizeof("rpmlib(")-1)) {
-	if (rpmCheckRpmlibProvides(dep)) {
+    if (NSType == RPMNS_TYPE_RPMLIB) {
+	static rpmds rpmlibP = NULL;
+	static int oneshot = -1;
+
+	if (oneshot)
+	    oneshot = rpmdsRpmlib(&rpmlibP, NULL);
+	if (rpmlibP == NULL)
+	    goto unsatisfied;
+
+	if (rpmdsSearch(rpmlibP, dep) >= 0) {
 	    rpmdsNotify(dep, _("(rpmlib provides)"), rc);
+	    goto exit;
+	}
+	goto unsatisfied;
+    }
+
+    if (NSType == RPMNS_TYPE_CPUINFO) {
+	static rpmds cpuinfoP = NULL;
+	static int oneshot = -1;
+
+	if (oneshot)
+	    oneshot = rpmdsCpuinfo(&cpuinfoP, NULL);
+	if (cpuinfoP == NULL)
+	    goto unsatisfied;
+
+	if (rpmdsSearch(cpuinfoP, dep) >= 0) {
+	    rpmdsNotify(dep, _("(cpuinfo provides)"), rc);
+	    goto exit;
+	}
+	goto unsatisfied;
+    }
+
+    if (NSType == RPMNS_TYPE_GETCONF) {
+	static rpmds getconfP = NULL;
+	static int oneshot = -1;
+
+	if (oneshot)
+	    oneshot = rpmdsGetconf(&getconfP, NULL);
+	if (getconfP == NULL)
+	    goto unsatisfied;
+
+	if (rpmdsSearch(getconfP, dep) >= 0) {
+	    rpmdsNotify(dep, _("(getconf provides)"), rc);
+	    goto exit;
+	}
+	goto unsatisfied;
+    }
+
+    if (NSType == RPMNS_TYPE_UNAME) {
+	static rpmds unameP = NULL;
+	static int oneshot = -1;
+
+	if (oneshot)
+	    oneshot = rpmdsUname(&unameP, NULL);
+	if (unameP == NULL)
+	    goto unsatisfied;
+
+	if (rpmdsSearch(unameP, dep) >= 0) {
+	    rpmdsNotify(dep, _("(uname provides)"), rc);
+	    goto exit;
+	}
+	goto unsatisfied;
+    }
+
+    if (NSType == RPMNS_TYPE_SONAME) {
+	rpmds sonameP = NULL;
+	rpmPRCO PRCO = rpmdsNewPRCO(NULL);
+	char * fn = strcpy(alloca(strlen(Name)+1), Name);
+	int flags = 0;	/* XXX RPMELF_FLAG_SKIPREQUIRES? */
+	rpmds ds;
+
+	/* XXX Only absolute paths for now. */
+	if (*fn != '/')
+	    goto unsatisfied;
+	fn[strlen(fn)-1] = '\0';
+
+	/* Extract ELF Provides: from /path/to/DSO. */
+	xx = rpmdsELF(fn, flags, rpmdsMergePRCO, PRCO);
+	sonameP = rpmdsFromPRCO(PRCO, RPMTAG_PROVIDENAME);
+	if (!(xx == 0 && sonameP != NULL))
+	    goto unsatisfied;
+
+	/* Search using the original {EVR,"",Flags} from the dep set. */
+	ds = rpmdsSingle(rpmdsTagN(dep), rpmdsEVR(dep), "", Flags);
+	xx = rpmdsSearch(sonameP, ds);
+	ds = rpmdsFree(ds);
+	PRCO = rpmdsFreePRCO(PRCO);
+
+	/* Was the dependency satisfied? */
+	if (xx >= 0) {
+	    rpmdsNotify(dep, _("(soname provides)"), rc);
 	    goto exit;
 	}
 	goto unsatisfied;
@@ -521,10 +973,8 @@ retry:
 	    /* depFlags better be 0! */
 
 	    mi = rpmtsInitIterator(ts, RPMTAG_BASENAMES, Name, 0);
-
 	    (void) rpmdbPruneIterator(mi,
 			ts->removedPackages, ts->numRemovedPackages, 1);
-
 	    while ((h = rpmdbNextIterator(mi)) != NULL) {
 		rpmdsNotify(dep, _("(db files)"), rc);
 		mi = rpmdbFreeIterator(mi);
@@ -546,33 +996,19 @@ retry:
 	}
 	mi = rpmdbFreeIterator(mi);
 
-#if defined(DYING) || defined(__LCLINT__)
-	mi = rpmtsInitIterator(ts, RPMTAG_NAME, Name, 0);
-	(void) rpmdbPruneIterator(mi,
-			ts->removedPackages, ts->numRemovedPackages, 1);
-	while ((h = rpmdbNextIterator(mi)) != NULL) {
-	    if (rpmdsAnyMatchesDep(h, dep, _rpmds_nopromote)) {
-		rpmdsNotify(dep, _("(db package)"), rc);
-		mi = rpmdbFreeIterator(mi);
-		goto exit;
-	    }
-	}
-	mi = rpmdbFreeIterator(mi);
-#endif
-
     }
 
     /*
      * Search for an unsatisfied dependency.
      */
 /*@-boundsread@*/
-    if (adding && !retrying && !(rpmtsFlags(ts) & RPMTRANS_FLAG_NOSUGGEST)) {
+    if (adding == 1 && retries > 0 && !(rpmtsDFlags(ts) & RPMDEPS_FLAG_NOSUGGEST)) {
 	if (ts->solve != NULL) {
 	    xx = (*ts->solve) (ts, dep, ts->solveData);
 	    if (xx == 0)
 		goto exit;
 	    if (xx == -1) {
-		retrying = 1;
+		retries--;
 		rpmalMakeIndex(ts->addedPackages);
 		goto retry;
 	    }
@@ -581,8 +1017,13 @@ retry:
 /*@=boundsread@*/
 
 unsatisfied:
-    rc = 1;	/* dependency is unsatisfied */
-    rpmdsNotify(dep, NULL, rc);
+    if (Flags & RPMSENSE_MISSINGOK) {
+	rc = 0;	/* dependency is unsatisfied, but just a hint. */
+	rpmdsNotify(dep, _("(hint skipped)"), rc);
+    } else {
+	rc = 1;	/* dependency is unsatisfied */
+	rpmdsNotify(dep, NULL, rc);
+    }
 
 exit:
     /*
@@ -601,7 +1042,7 @@ exit:
 		DBC * dbcursor = NULL;
 		size_t DNEVRlen = strlen(DNEVR);
 
-		xx = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, DB_WRITECURSOR);
+		xx = dbiCopen(dbi, dbiTxnid(dbi), &dbcursor, DB_WRITECURSOR);
 
 		memset(key, 0, sizeof(*key));
 /*@i@*/		key->data = (void *) DNEVR;
@@ -620,7 +1061,8 @@ exit:
 		_cacheDependsRC = 0;
 	}
     }
-    return rc;
+
+    return rpmdsNegateRC(dep, rc);
 }
 
 /**
@@ -629,19 +1071,25 @@ exit:
  * @param pkgNEVRA	package name-version-release.arch
  * @param requires	Requires: dependencies (or NULL)
  * @param conflicts	Conflicts: dependencies (or NULL)
+ * @param dirnames	Dirnames: dependencies (or NULL)
+ * @param linktos	Filelinktos: dependencies (or NULL)
  * @param depName	dependency name to filter (or NULL)
  * @param tscolor	color bits for transaction set (0 disables)
  * @param adding	dependency is from added package set?
  * @return		0 no problems found
  */
 static int checkPackageDeps(rpmts ts, const char * pkgNEVRA,
-		/*@null@*/ rpmds requires, /*@null@*/ rpmds conflicts,
+		/*@null@*/ rpmds requires,
+		/*@null@*/ rpmds conflicts,
+		/*@null@*/ rpmds dirnames,
+		/*@null@*/ rpmds linktos,
 		/*@null@*/ const char * depName, uint_32 tscolor, int adding)
 	/*@globals rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState @*/
-	/*@modifies ts, requires, conflicts, rpmGlobalMacroContext,
-		fileSystem, internalState */
+	/*@modifies ts, requires, conflicts, dirnames, linktos,
+		rpmGlobalMacroContext, fileSystem, internalState */
 {
+    rpmps ps = rpmtsProblems(ts);
     uint_32 dscolor;
     const char * Name;
     int rc;
@@ -678,7 +1126,7 @@ static int checkPackageDeps(rpmts ts, const char * pkgNEVRA,
 	    }
 	    /*@=branchstate@*/
 
-	    rpmdsProblem(ts->probs, pkgNEVRA, requires, suggestedKeys, adding);
+	    rpmdsProblem(ps, pkgNEVRA, requires, suggestedKeys, adding);
 
 	}
 	    /*@switchbreak@*/ break;
@@ -710,7 +1158,7 @@ static int checkPackageDeps(rpmts ts, const char * pkgNEVRA,
 	/* 1 == unsatisfied, 0 == satsisfied */
 	switch (rc) {
 	case 0:		/* conflicts exist. */
-	    rpmdsProblem(ts->probs, pkgNEVRA, conflicts, NULL, adding);
+	    rpmdsProblem(ps, pkgNEVRA, conflicts, NULL, adding);
 	    /*@switchbreak@*/ break;
 	case 1:		/* conflicts don't exist. */
 	    /*@switchbreak@*/ break;
@@ -721,6 +1169,93 @@ static int checkPackageDeps(rpmts ts, const char * pkgNEVRA,
 	}
     }
 
+    dirnames = rpmdsInit(dirnames);
+    if (dirnames != NULL)
+    while (!ourrc && rpmdsNext(dirnames) >= 0) {
+
+	if ((Name = rpmdsN(dirnames)) == NULL)
+	    continue;	/* XXX can't happen */
+
+	/* Filter out dirnames that came along for the ride. */
+	if (depName != NULL && strcmp(depName, Name))
+	    continue;
+
+	/* Ignore colored dirnames not in our rainbow. */
+	dscolor = rpmdsColor(dirnames);
+	if (tscolor && dscolor && !(tscolor & dscolor))
+	    continue;
+
+	rc = unsatisfiedDepend(ts, dirnames, adding);
+
+	switch (rc) {
+	case 0:		/* requirements are satisfied. */
+	    /*@switchbreak@*/ break;
+	case 1:		/* requirements are not satisfied. */
+	{   fnpyKey * suggestedKeys = NULL;
+
+	    /*@-branchstate@*/
+	    if (ts->availablePackages != NULL) {
+		suggestedKeys = rpmalAllSatisfiesDepend(ts->availablePackages,
+				dirnames, NULL);
+	    }
+	    /*@=branchstate@*/
+
+	    rpmdsProblem(ps, pkgNEVRA, dirnames, suggestedKeys, adding);
+
+	}
+	    /*@switchbreak@*/ break;
+	case 2:		/* something went wrong! */
+	default:
+	    ourrc = 1;
+	    /*@switchbreak@*/ break;
+	}
+    }
+
+    linktos = rpmdsInit(linktos);
+    if (linktos != NULL)
+    while (!ourrc && rpmdsNext(linktos) >= 0) {
+
+	if ((Name = rpmdsN(linktos)) == NULL)
+	    continue;	/* XXX can't happen */
+	if (*Name == '\0')	/* XXX most linktos are empty */
+		continue;
+
+	/* Filter out linktos that came along for the ride. */
+	if (depName != NULL && strcmp(depName, Name))
+	    continue;
+
+	/* Ignore colored linktos not in our rainbow. */
+	dscolor = rpmdsColor(linktos);
+	if (tscolor && dscolor && !(tscolor & dscolor))
+	    continue;
+
+	rc = unsatisfiedDepend(ts, linktos, adding);
+
+	switch (rc) {
+	case 0:		/* requirements are satisfied. */
+	    /*@switchbreak@*/ break;
+	case 1:		/* requirements are not satisfied. */
+	{   fnpyKey * suggestedKeys = NULL;
+
+	    /*@-branchstate@*/
+	    if (ts->availablePackages != NULL) {
+		suggestedKeys = rpmalAllSatisfiesDepend(ts->availablePackages,
+				linktos, NULL);
+	    }
+	    /*@=branchstate@*/
+
+	    rpmdsProblem(ps, pkgNEVRA, linktos, suggestedKeys, adding);
+
+	}
+	    /*@switchbreak@*/ break;
+	case 2:		/* something went wrong! */
+	default:
+	    ourrc = 1;
+	    /*@switchbreak@*/ break;
+	}
+    }
+
+    ps = rpmpsFree(ps);
     return ourrc;
 }
 
@@ -739,7 +1274,9 @@ static int checkPackageSet(rpmts ts, const char * dep,
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, mi, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
-    int scareMem = 1;
+    rpmdepFlags depFlags = rpmtsDFlags(ts);
+    uint_32 tscolor = rpmtsColor(ts);
+    int scareMem = 0;
     Header h;
     int ec = 0;
 
@@ -747,15 +1284,33 @@ static int checkPackageSet(rpmts ts, const char * dep,
 		ts->removedPackages, ts->numRemovedPackages, 1);
     while ((h = rpmdbNextIterator(mi)) != NULL) {
 	const char * pkgNEVRA;
-	rpmds requires, conflicts;
+	rpmds requires = NULL;
+	rpmds conflicts = NULL;
+	rpmds dirnames = NULL;
+	rpmds linktos = NULL;
 	int rc;
 
 	pkgNEVRA = hGetNEVRA(h, NULL);
-	requires = rpmdsNew(h, RPMTAG_REQUIRENAME, scareMem);
+	if (!(depFlags & RPMDEPS_FLAG_NOREQUIRES))
+	    requires = rpmdsNew(h, RPMTAG_REQUIRENAME, scareMem);
+	if (!(depFlags & RPMDEPS_FLAG_NOCONFLICTS))
+	    conflicts = rpmdsNew(h, RPMTAG_CONFLICTNAME, scareMem);
+	if (!(depFlags & RPMDEPS_FLAG_NOPARENTDIRS))
+	    dirnames = rpmdsNew(h, RPMTAG_DIRNAMES, scareMem);
+	if (!(depFlags & RPMDEPS_FLAG_NOLINKTOS))
+	    linktos = rpmdsNew(h, RPMTAG_FILELINKTOS, scareMem);
+
 	(void) rpmdsSetNoPromote(requires, _rpmds_nopromote);
-	conflicts = rpmdsNew(h, RPMTAG_CONFLICTNAME, scareMem);
 	(void) rpmdsSetNoPromote(conflicts, _rpmds_nopromote);
-	rc = checkPackageDeps(ts, pkgNEVRA, requires, conflicts, dep, 0, adding);
+	(void) rpmdsSetNoPromote(dirnames, _rpmds_nopromote);
+	(void) rpmdsSetNoPromote(linktos, _rpmds_nopromote);
+
+	rc = checkPackageDeps(ts, pkgNEVRA,
+		requires, conflicts, dirnames, linktos,
+		dep, tscolor, adding);
+
+	linktos = rpmdsFree(linktos);
+	dirnames = rpmdsFree(dirnames);
 	conflicts = rpmdsFree(conflicts);
 	requires = rpmdsFree(requires);
 	pkgNEVRA = _free(pkgNEVRA);
@@ -780,9 +1335,15 @@ static int checkDependentPackages(rpmts ts, const char * dep)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
-    rpmdbMatchIterator mi;
-    mi = rpmtsInitIterator(ts, RPMTAG_REQUIRENAME, dep, 0);
-    return checkPackageSet(ts, dep, mi, 0);
+    int rc = 0;
+
+    /* XXX rpmdb can be closed here, avoid error msg. */
+    if (rpmtsGetRdb(ts) != NULL) {
+	rpmdbMatchIterator mi;
+	mi = rpmtsInitIterator(ts, RPMTAG_REQUIRENAME, dep, 0);
+	rc = checkPackageSet(ts, dep, mi, 0);
+    }
+    return rc;
 }
 
 /**
@@ -797,7 +1358,8 @@ static int checkDependentConflicts(rpmts ts, const char * dep)
 {
     int rc = 0;
 
-    if (rpmtsGetRdb(ts) != NULL) {	/* XXX is this necessary? */
+    /* XXX rpmdb can be closed here, avoid error msg. */
+    if (rpmtsGetRdb(ts) != NULL) {
 	rpmdbMatchIterator mi;
 	mi = rpmtsInitIterator(ts, RPMTAG_CONFLICTNAME, dep, 0);
 	rc = checkPackageSet(ts, dep, mi, 1);
@@ -887,8 +1449,8 @@ static int ignoreDep(const rpmts ts, const rpmte p, const rpmte q)
     if (!badDepsInitialized) {
 	char * s = rpmExpand("%{?_dependency_whiteout}", NULL);
 	const char ** av = NULL;
-	int anaconda = rpmtsFlags(ts) & RPMTRANS_FLAG_ANACONDA;
-	int msglvl = (anaconda || (rpmtsFlags(ts) & RPMTRANS_FLAG_DEPLOOPS))
+	int anaconda = rpmtsDFlags(ts) & RPMDEPS_FLAG_ANACONDA;
+	int msglvl = (anaconda || (rpmtsDFlags(ts) & RPMDEPS_FLAG_DEPLOOPS))
 			? RPMMESS_WARNING : RPMMESS_DEBUG;
 	int ac = 0;
 	int i;
@@ -959,11 +1521,14 @@ static void markLoop(/*@special@*/ tsortInfo tsi, rpmte q)
     /*@=branchstate@*/
 }
 
-static inline /*@observer@*/ const char * const identifyDepend(int_32 f)
+/*
+ * Return display string a dependency, adding contextual flags marker.
+ * @param f		dependency flags
+ * @return		display string
+ */
+static inline /*@observer@*/ const char * identifyDepend(int_32 f)
 	/*@*/
 {
-    if (isLegacyPreReq(f))
-	return "PreReq:";
     f = _notpre(f);
     if (f & RPMSENSE_SCRIPT_PRE)
 	return "Requires(pre):";
@@ -975,6 +1540,8 @@ static inline /*@observer@*/ const char * const identifyDepend(int_32 f)
 	return "Requires(postun):";
     if (f & RPMSENSE_SCRIPT_VERIFY)
 	return "Requires(verify):";
+    if (f & RPMSENSE_MISSINGOK)
+	return "Requires(hint):";
     if (f & RPMSENSE_FIND_REQUIRES)
 	return "Requires(auto):";
     return "Requires:";
@@ -987,7 +1554,6 @@ static inline /*@observer@*/ const char * const identifyDepend(int_32 f)
  * pure Requires: dependencies) successor node(s).
  * @param q		sucessor (i.e. package required by p)
  * @param p		predecessor (i.e. package that "Requires: q")
- * @param requires	relation
  * @param zap		max. no. of co-requisites to remove (-1 is all)?
  * @retval nzaps	address of no. of relations removed
  * @param msglvl	message level at which to spew
@@ -997,10 +1563,11 @@ static inline /*@observer@*/ const char * const identifyDepend(int_32 f)
 /*@-mustmod@*/ /* FIX: hack modifies, but -type disables */
 static /*@owned@*/ /*@null@*/ const char *
 zapRelation(rpmte q, rpmte p,
-		/*@null@*/ rpmds requires,
 		int zap, /*@in@*/ /*@out@*/ int * nzaps, int msglvl)
-	/*@modifies q, p, requires, *nzaps @*/
+	/*@globals rpmGlobalMacroContext, h_errno @*/
+	/*@modifies q, p, *nzaps, rpmGlobalMacroContext @*/
 {
+    rpmds requires;
     tsortInfo tsi_prev;
     tsortInfo tsi;
     const char *dp = NULL;
@@ -1019,6 +1586,7 @@ zapRelation(rpmte q, rpmte p,
 	    continue;
 	/*@=abstractcompare@*/
 
+	requires = rpmteDS(p, tsi->tsi_tagn);
 	if (requires == NULL) continue;		/* XXX can't happen */
 
 	(void) rpmdsSetIx(requires, tsi->tsi_reqx);
@@ -1031,7 +1599,7 @@ zapRelation(rpmte q, rpmte p,
 	 * Attempt to unravel a dependency loop by eliminating Requires's.
 	 */
 	/*@-branchstate@*/
-	if (zap && !(Flags & RPMSENSE_PREREQ)) {
+	if (zap) {
 	    rpmMessage(msglvl,
 			_("removing %s \"%s\" from tsort relations.\n"),
 			(rpmteNEVRA(p) ?  rpmteNEVRA(p) : "???"), dp);
@@ -1075,8 +1643,10 @@ static inline int addRelation(rpmts ts,
     tsortInfo tsi;
     const char * Name;
     fnpyKey key;
+    int teType = rpmteType(p);
     alKey pkgKey;
     int i = 0;
+    rpmal al = (teType == TR_ADDED ? ts->addedPackages : ts->erasedPackages);
 
     if ((Name = rpmdsN(requires)) == NULL)
 	return 0;
@@ -1090,33 +1660,30 @@ static inline int addRelation(rpmts ts,
 	return 0;
 
     pkgKey = RPMAL_NOMATCH;
-    key = rpmalSatisfiesDepend(ts->addedPackages, requires, &pkgKey);
+    key = rpmalSatisfiesDepend(al, requires, &pkgKey);
 
-    /* Ordering depends only on added package relations. */
+    /* Ordering depends only on added/erased package relations. */
     if (pkgKey == RPMAL_NOMATCH)
 	return 0;
 
-/* XXX Set q to the added package that has pkgKey == q->u.addedKey */
-/* XXX FIXME: bsearch is possible/needed here */
+/* XXX Set q to the added/removed package that was found. */
+    /* XXX pretend erasedPackages are just appended to addedPackages. */
+    if (teType == TR_REMOVED)
+	pkgKey = (alKey)(((long)pkgKey) + ts->numAddedPackages);
+
     for (qi = rpmtsiInit(ts), i = 0; (q = rpmtsiNext(qi, 0)) != NULL; i++) {
-
-	/* XXX Only added packages need be checked for matches. */
-	if (rpmteType(q) == TR_REMOVED)
-	    continue;
-
 	if (pkgKey == rpmteAddedKey(q))
 	    break;
     }
     qi = rpmtsiFree(qi);
-    if (q == NULL || i == ts->orderCount)
+    if (q == NULL || i >= ts->orderCount)
 	return 0;
 
     /* Avoid certain dependency relations. */
-    if (ignoreDep(ts, p, q))
+    if (teType == TR_ADDED && ignoreDep(ts, p, q))
 	return 0;
 
     /* Avoid redundant relations. */
-    /* XXX TODO: add control bit. */
 /*@-boundsread@*/
     if (selected[i] != 0)
 	return 0;
@@ -1136,6 +1703,7 @@ static inline int addRelation(rpmts ts,
     tsi = xcalloc(1, sizeof(*tsi));
     tsi->tsi_suc = p;
 
+    tsi->tsi_tagn = rpmdsTagN(requires);
     tsi->tsi_reqx = rpmdsIx(requires);
 
     tsi->tsi_next = rpmteTSI(q)->tsi_next;
@@ -1163,20 +1731,22 @@ static int orderListIndexCmp(const void * one, const void * two)	/*@*/
 /**
  * Add element to list sorting by tsi_qcnt.
  * @param p		new element
- * @retval qp		address of first element
- * @retval rp		address of last element
+ * @retval *qp		first element
+ * @retval *rp		last element
+ * @param prefcolor	preferred color
  */
 /*@-boundswrite@*/
 /*@-mustmod@*/
 static void addQ(/*@dependent@*/ rpmte p,
 		/*@in@*/ /*@out@*/ rpmte * qp,
-		/*@in@*/ /*@out@*/ rpmte * rp)
+		/*@in@*/ /*@out@*/ rpmte * rp,
+		uint_32 prefcolor)
 	/*@modifies p, *qp, *rp @*/
 {
     rpmte q, qprev;
 
     /* Mark the package as queued. */
-    rpmteTSI(p)->tsi_reqx = 1;
+    rpmteTSI(p)->tsi_queued = 1;
 
     if ((*rp) == NULL) {	/* 1st element */
 	/*@-dependenttrans@*/ /* FIX: double indirection */
@@ -1190,6 +1760,13 @@ static void addQ(/*@dependent@*/ rpmte p,
 	 q != NULL;
 	 qprev = q, q = rpmteTSI(q)->tsi_suc)
     {
+	/* XXX Insure preferred color first. */
+	if (rpmteColor(p) != prefcolor && rpmteColor(p) != rpmteColor(q))
+	    continue;
+
+	/* XXX Insure removed after added. */
+	if (rpmteType(p) == TR_REMOVED && rpmteType(p) != rpmteType(q))
+	    continue;
 	if (rpmteTSI(q)->tsi_qcnt <= rpmteTSI(p)->tsi_qcnt)
 	    break;
     }
@@ -1212,12 +1789,22 @@ static void addQ(/*@dependent@*/ rpmte p,
 /*@=mustmod@*/
 /*@=boundswrite@*/
 
+/*@unchecked@*/
+#ifdef	NOTYET
+static uint32_t _autobits = _notpre(_ALL_REQUIRES_MASK);
+#define isAuto(_x)	((_x) & _autobits)
+#else
+static uint32_t _autobits = 0xffffffff;
+#define	isAuto(_x)	(1)
+#endif
+
 /*@-bounds@*/
 int rpmtsOrder(rpmts ts)
 {
     rpmds requires;
     int_32 Flags;
-    int anaconda = rpmtsFlags(ts) & RPMTRANS_FLAG_ANACONDA;
+    int anaconda = rpmtsDFlags(ts) & RPMDEPS_FLAG_ANACONDA;
+    uint_32 prefcolor = rpmtsPrefColor(ts);
     rpmtsi pi; rpmte p;
     rpmtsi qi; rpmte q;
     rpmtsi ri; rpmte r;
@@ -1248,6 +1835,26 @@ int rpmtsOrder(rpmts ts)
     rpmalMakeIndex(ts->addedPackages);
 #endif
 
+    /* Create erased package index. */
+    pi = rpmtsiInit(ts);
+    while ((p = rpmtsiNext(pi, TR_REMOVED)) != NULL) {
+	alKey pkgKey;
+	fnpyKey key;
+	uint_32 tscolor = rpmtsColor(ts);
+	pkgKey = RPMAL_NOMATCH;
+/*@-abstract@*/
+	key = (fnpyKey) p;
+/*@=abstract@*/
+	pkgKey = rpmalAdd(&ts->erasedPackages, pkgKey, key,
+			rpmteDS(p, RPMTAG_PROVIDENAME),
+			rpmteFI(p, RPMTAG_BASENAMES), tscolor);
+	/* XXX pretend erasedPackages are just appended to addedPackages. */
+	pkgKey = (alKey)(((long)pkgKey) + ts->numAddedPackages);
+	(void) rpmteSetAddedKey(p, pkgKey);
+    }
+    pi = rpmtsiFree(pi);
+    rpmalMakeIndex(ts->erasedPackages);
+
     (void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_ORDER), 0);
 
     /* T1. Initialize. */
@@ -1274,10 +1881,9 @@ int rpmtsOrder(rpmts ts)
     pi = rpmtsiInit(ts);
     while ((p = rpmtsiNext(pi, oType)) != NULL) {
 
-	if ((requires = rpmteDS(p, RPMTAG_REQUIRENAME)) == NULL)
-	    continue;
-
 	memset(selected, 0, sizeof(*selected) * ts->orderCount);
+
+      if ((requires = rpmteDS(p, RPMTAG_REQUIRENAME)) != NULL) {
 
 	/* Avoid narcisstic relations. */
 	selected[rpmtsiOc(pi)] = 1;
@@ -1290,18 +1896,18 @@ int rpmtsOrder(rpmts ts)
 	while (rpmdsNext(requires) >= 0) {
 
 	    Flags = rpmdsFlags(requires);
+	    if (!isAuto(Flags))
+		/*@innercontinue@*/ continue;
 
 	    switch (rpmteType(p)) {
 	    case TR_REMOVED:
-		/* Skip if not %preun/%postun requires or legacy prereq. */
-		if (isInstallPreReq(Flags)
-		 || !( isErasePreReq(Flags) || isLegacyPreReq(Flags) ) )
+		/* Skip if not %preun/%postun requires. */
+		if (!isErasePreReq(Flags))
 		    /*@innercontinue@*/ continue;
 		/*@switchbreak@*/ break;
 	    case TR_ADDED:
-		/* Skip if not %pre/%post requires or legacy prereq. */
-		if (isErasePreReq(Flags)
-		 || !( isInstallPreReq(Flags) || isLegacyPreReq(Flags) ) )
+		/* Skip if not %pre/%post requires. */
+		if (!isInstallPreReq(Flags))
 		    /*@innercontinue@*/ continue;
 		/*@switchbreak@*/ break;
 	    }
@@ -1317,18 +1923,18 @@ int rpmtsOrder(rpmts ts)
 	while (rpmdsNext(requires) >= 0) {
 
 	    Flags = rpmdsFlags(requires);
+	    if (!isAuto(Flags))
+		/*@innercontinue@*/ continue;
 
 	    switch (rpmteType(p)) {
 	    case TR_REMOVED:
-		/* Skip if %preun/%postun requires or legacy prereq. */
-		if (isInstallPreReq(Flags)
-		 ||  ( isErasePreReq(Flags) || isLegacyPreReq(Flags) ) )
+		/* Skip if %preun/%postun requires. */
+		if (isErasePreReq(Flags))
 		    /*@innercontinue@*/ continue;
 		/*@switchbreak@*/ break;
 	    case TR_ADDED:
-		/* Skip if %pre/%post requires or legacy prereq. */
-		if (isErasePreReq(Flags)
-		 ||  ( isInstallPreReq(Flags) || isLegacyPreReq(Flags) ) )
+		/* Skip if %pre/%post requires. */
+		if (isInstallPreReq(Flags))
 		    /*@innercontinue@*/ continue;
 		/*@switchbreak@*/ break;
 	    }
@@ -1337,6 +1943,32 @@ int rpmtsOrder(rpmts ts)
 	    (void) addRelation(ts, p, selected, requires);
 
 	}
+      }
+
+      if (_autobits != 0xffffffff)
+      {
+
+	/* Order by requiring parent directories pre-requsites. */
+	requires = rpmdsInit(rpmteDS(p, RPMTAG_DIRNAMES));
+	if (requires != NULL)
+	while (rpmdsNext(requires) >= 0) {
+
+	    /* T3. Record next "q <- p" relation (i.e. "p" requires "q"). */
+	    (void) addRelation(ts, p, selected, requires);
+
+	}
+
+	/* Order by requiring no dangling symlinks. */
+	requires = rpmdsInit(rpmteDS(p, RPMTAG_FILELINKTOS));
+	if (requires != NULL)
+	while (rpmdsNext(requires) >= 0) {
+
+	    /* T3. Record next "q <- p" relation (i.e. "p" requires "q"). */
+	    (void) addRelation(ts, p, selected, requires);
+
+	}
+      }
+
     }
     pi = rpmtsiFree(pi);
 
@@ -1349,11 +1981,13 @@ int rpmtsOrder(rpmts ts)
 	npreds = rpmteTSI(p)->tsi_count;
 
 	(void) rpmteSetNpreds(p, npreds);
-	(void) rpmteSetDepth(p, 1);
+	(void) rpmteSetDepth(p, 0);
 
-	if (npreds == 0)
-	    (void) rpmteSetTree(p, treex++);
-	else
+	if (npreds == 0) {
+	    treex++;
+	    (void) rpmteSetTree(p, treex);
+	    (void) rpmteSetBreadth(p, treex);
+	} else
 	    (void) rpmteSetTree(p, -1);
 #ifdef	UNNECESSARY
 	(void) rpmteSetParent(p, NULL);
@@ -1364,7 +1998,7 @@ int rpmtsOrder(rpmts ts)
     ts->ntrees = treex;
 
     /* T4. Scan for zeroes. */
-    rpmMessage(RPMMESS_DEBUG, _("========== tsorting packages (order, #predecessors, #succesors, tree, depth, breadth)\n"));
+    rpmMessage(RPMMESS_DEBUG, _("========== tsorting packages (order, #predecessors, #succesors, tree, Ldepth, Rbreadth)\n"));
 
 rescan:
     if (pi != NULL) pi = rpmtsiFree(pi);
@@ -1380,7 +2014,7 @@ rescan:
 	if (rpmteTSI(p)->tsi_count != 0)
 	    continue;
 	rpmteTSI(p)->tsi_suc = NULL;
-	addQ(p, &q, &r);
+	addQ(p, &q, &r, prefcolor);
 	qlen++;
     }
     pi = rpmtsiFree(pi);
@@ -1389,7 +2023,7 @@ rescan:
     for (; q != NULL; q = rpmteTSI(q)->tsi_suc) {
 
 	/* Mark the package as unqueued. */
-	rpmteTSI(q)->tsi_reqx = 0;
+	rpmteTSI(q)->tsi_queued = 0;
 
 	if (oType != 0)
 	switch (rpmteType(q)) {
@@ -1444,7 +2078,9 @@ rescan:
 
 		/* XXX TODO: add control bit. */
 		rpmteTSI(p)->tsi_suc = NULL;
-		addQ(p, &rpmteTSI(q)->tsi_suc, &r);
+/*@-nullstate@*/	/* XXX FIX: rpmteTSI(q)->tsi_suc can be NULL. */
+		addQ(p, &rpmteTSI(q)->tsi_suc, &r, prefcolor);
+/*@=nullstate@*/
 		qlen++;
 	    }
 	    tsi = _free(tsi);
@@ -1460,7 +2096,7 @@ rescan:
 	    pi = rpmtsiInit(ts);
 	    while ((p = rpmtsiNext(pi, oType)) != NULL) {
 		/* Is this element in the queue? */
-		if (rpmteTSI(p)->tsi_reqx == 0)
+		if (rpmteTSI(p)->tsi_queued == 0)
 		    /*@innercontinue@*/ continue;
 		tsi->tsi_suc = p;
 		tsi = rpmteTSI(p);
@@ -1479,7 +2115,7 @@ rescan:
 	qi = rpmtsiInit(ts);
 	while ((q = rpmtsiNext(qi, oType)) != NULL) {
 	    rpmteTSI(q)->tsi_chain = NULL;
-	    rpmteTSI(q)->tsi_reqx = 0;
+	    rpmteTSI(q)->tsi_queued = 0;
 	    /* Mark packages already sorted. */
 	    if (rpmteTSI(q)->tsi_count == 0)
 		rpmteTSI(q)->tsi_count = -1;
@@ -1509,16 +2145,16 @@ rescan:
 	    for (q = rpmteTSI(r)->tsi_chain; q != NULL;
 		 q = rpmteTSI(q)->tsi_chain)
 	    {
-		if (rpmteTSI(q)->tsi_reqx)
+		if (rpmteTSI(q)->tsi_queued)
 		    /*@innerbreak@*/ break;
-		rpmteTSI(q)->tsi_reqx = 1;
+		rpmteTSI(q)->tsi_queued = 1;
 	    }
 
 	    /* T13. Print predecessor chain from start of loop. */
 	    while ((p = q) != NULL && (q = rpmteTSI(p)->tsi_chain) != NULL) {
 		const char * dp;
 		char buf[4096];
-		int msglvl = (anaconda || (rpmtsFlags(ts) & RPMTRANS_FLAG_DEPLOOPS))
+		int msglvl = (anaconda || (rpmtsDFlags(ts) & RPMDEPS_FLAG_DEPLOOPS))
 			? RPMMESS_WARNING : RPMMESS_DEBUG;
 ;
 
@@ -1531,11 +2167,7 @@ rescan:
 		}
 
 		/* Find (and destroy if co-requisite) "q <- p" relation. */
-		requires = rpmteDS(p, RPMTAG_REQUIRENAME);
-		requires = rpmdsInit(requires);
-		if (requires == NULL)
-		    /*@innercontinue@*/ continue;	/* XXX can't happen */
-		dp = zapRelation(q, p, requires, 1, &nzaps, msglvl);
+		dp = zapRelation(q, p, 1, &nzaps, msglvl);
 
 		/* Print next member of loop. */
 		buf[0] = '\0';
@@ -1553,7 +2185,7 @@ rescan:
 	    {
 		/* Unchain linear part of predecessor loop. */
 		rpmteTSI(p)->tsi_chain = NULL;
-		rpmteTSI(p)->tsi_reqx = 0;
+		rpmteTSI(p)->tsi_queued = 0;
 	    }
 	}
 	ri = rpmtsiFree(ri);
@@ -1568,6 +2200,12 @@ rescan:
 	/* Return no. of packages that could not be ordered. */
 	rpmMessage(RPMMESS_ERROR, _("rpmtsOrder failed, %d elements remain\n"),
 			loopcheck);
+
+#ifdef	NOTYET
+	/* Do autorollback goal since we could not sort this transaction properly. */
+	(void) rpmtsRollback(ts, RPMPROB_FILTER_NONE, 0, NULL);
+#endif
+
 	return loopcheck;
     }
 
@@ -1578,24 +2216,14 @@ rescan:
     pi = rpmtsiFree(pi);
 
     /*
-     * The order ends up as installed packages followed by removed packages,
-     * with removes for upgrades immediately following the installation of
-     * the new package. This would be easier if we could sort the
-     * addedPackages array, but we store indexes into it in various places.
+     * The order ends up as installed packages followed by removed packages.
      */
     orderList = xcalloc(numOrderList, sizeof(*orderList));
     j = 0;
     pi = rpmtsiInit(ts);
     while ((p = rpmtsiNext(pi, oType)) != NULL) {
-	/* Prepare added package ordering permutation. */
-	switch (rpmteType(p)) {
-	case TR_ADDED:
-	    orderList[j].pkgKey = rpmteAddedKey(p);
-	    /*@switchbreak@*/ break;
-	case TR_REMOVED:
-	    orderList[j].pkgKey = RPMAL_NOMATCH;
-	    /*@switchbreak@*/ break;
-	}
+	/* Prepare added/erased package ordering permutation. */
+	orderList[j].pkgKey = rpmteAddedKey(p);
 	orderList[j].orIndex = rpmtsiOc(pi);
 	j++;
     }
@@ -1615,37 +2243,18 @@ rescan:
 	key.pkgKey = ordering[i];
 	needle = bsearch(&key, orderList, numOrderList,
 				sizeof(key), orderListIndexCmp);
-	/* bsearch should never, ever fail */
-	if (needle == NULL)
+	if (needle == NULL)	/* XXX can't happen */
 	    continue;
 
 	j = needle->orIndex;
-	if ((q = ts->order[j]) == NULL)
+	if ((q = ts->order[j]) == NULL || needle->pkgKey == RPMAL_NOMATCH)
 	    continue;
 
 	newOrder[newOrderCount++] = q;
 	ts->order[j] = NULL;
-	if (anaconda)
-	for (j = needle->orIndex + 1; j < ts->orderCount; j++) {
-	    if ((q = ts->order[j]) == NULL)
-		/*@innerbreak@*/ break;
-	    if (rpmteType(q) == TR_REMOVED
-	     && rpmteDependsOnKey(q) == needle->pkgKey)
-	    {
-		newOrder[newOrderCount++] = q;
-		ts->order[j] = NULL;
-	    } else
-		/*@innerbreak@*/ break;
-	}
     }
     /*@=branchstate@*/
 
-    for (j = 0; j < ts->orderCount; j++) {
-	if ((p = ts->order[j]) == NULL)
-	    continue;
-	newOrder[newOrderCount++] = p;
-	ts->order[j] = NULL;
-    }
 assert(newOrderCount == ts->orderCount);
 
 /*@+voidabstract@*/
@@ -1668,6 +2277,7 @@ assert(newOrderCount == ts->orderCount);
 
 int rpmtsCheck(rpmts ts)
 {
+    rpmdepFlags depFlags = rpmtsDFlags(ts);
     uint_32 tscolor = rpmtsColor(ts);
     rpmdbMatchIterator mi = NULL;
     rpmtsi pi = NULL; rpmte p;
@@ -1695,17 +2305,24 @@ int rpmtsCheck(rpmts ts)
      */
     pi = rpmtsiInit(ts);
     while ((p = rpmtsiNext(pi, TR_ADDED)) != NULL) {
-	rpmds provides;
+	rpmds provides, requires, conflicts, dirnames, linktos;
 
 /*@-nullpass@*/	/* FIX: rpmts{A,O} can return null. */
 	rpmMessage(RPMMESS_DEBUG, "========== +++ %s %s/%s 0x%x\n",
 		rpmteNEVR(p), rpmteA(p), rpmteO(p), rpmteColor(p));
 /*@=nullpass@*/
+	requires = (!(depFlags & RPMDEPS_FLAG_NOREQUIRES)
+	    ? rpmteDS(p, RPMTAG_REQUIRENAME) : NULL);
+	conflicts = (!(depFlags & RPMDEPS_FLAG_NOCONFLICTS)
+	    ? rpmteDS(p, RPMTAG_CONFLICTNAME) : NULL);
+	dirnames = (!(depFlags & RPMDEPS_FLAG_NOPARENTDIRS)
+	    ? rpmteDS(p, RPMTAG_DIRNAMES) : NULL);
+	linktos = (!(depFlags & RPMDEPS_FLAG_NOLINKTOS)
+	    ? rpmteDS(p, RPMTAG_FILELINKTOS) : NULL);
+
 	rc = checkPackageDeps(ts, rpmteNEVRA(p),
-			rpmteDS(p, RPMTAG_REQUIRENAME),
-			rpmteDS(p, RPMTAG_CONFLICTNAME),
-			NULL,
-			tscolor, 1);
+			requires, conflicts, dirnames, linktos,
+			NULL, tscolor, 1);
 	if (rc)
 	    goto exit;
 
@@ -1718,6 +2335,18 @@ int rpmtsCheck(rpmts ts)
 
 	    if ((Name = rpmdsN(provides)) == NULL)
 		/*@innercontinue@*/ continue;	/* XXX can't happen */
+
+#ifdef	NOTYET
+	    if (rpmdsNSType(provides) == RPMNS_TYPE_ENVVAR) {
+		const char * EVR = rpmdsEVR(provides);
+		if (rpmdsNegateRC(provides, 0))
+		    EVR = NULL;
+		rc = envPut(Name, EVR);
+		if (!rc)
+		    /*@innercontinue@*/ continue;
+		/*@innerbreak@*/ break;
+	    }
+#endif
 
 	    /* Adding: check provides key against conflicts matches. */
 	    if (!checkDependentConflicts(ts, Name))
@@ -1742,14 +2371,6 @@ int rpmtsCheck(rpmts ts)
 	rpmMessage(RPMMESS_DEBUG, "========== --- %s %s/%s 0x%x\n",
 		rpmteNEVR(p), rpmteA(p), rpmteO(p), rpmteColor(p));
 /*@=nullpass@*/
-
-#if defined(DYING) || defined(__LCLINT__)
-	/* XXX all packages now have Provides: name = version-release */
-	/* Erasing: check name against requiredby matches. */
-	rc = checkDependentPackages(ts, rpmteN(p));
-	if (rc)
-		goto exit;
-#endif
 
 	rc = 0;
 	provides = rpmteDS(p, RPMTAG_PROVIDENAME);
@@ -1787,6 +2408,22 @@ int rpmtsCheck(rpmts ts)
     }
     pi = rpmtsiFree(pi);
 
+    /*
+     * Make sure transaction dependencies are satisfied.
+     */
+    {	const char * tsNEVRA = "transaction dependencies";
+	rpmds R = rpmdsFromPRCO(ts->PRCO, RPMTAG_REQUIRENAME);
+	rpmds C = rpmdsFromPRCO(ts->PRCO, RPMTAG_CONFLICTNAME);
+	rpmds D = NULL;
+	rpmds L = NULL;
+	const char * dep = NULL;
+	int adding = 2;
+	tscolor = 0;	/* XXX no coloring for transaction dependencies. */
+	rc = checkPackageDeps(ts, tsNEVRA, R, C, D, L, dep, tscolor, adding);
+	if (rc)
+	    goto exit;
+    }
+
     rc = 0;
 
 exit:
@@ -1801,5 +2438,15 @@ exit:
     else if (_cacheDependsRC)
 	xx = rpmdbCloseDBI(rpmtsGetRdb(ts), RPMDBI_DEPENDS);
     /*@=branchstate@*/
+
+#ifdef	NOTYET
+     /* On failed dependencies, perform the autorollback goal (if any). */
+    {	rpmps ps = rpmtsProblems(ts);
+	if (rc || rpmpsNumProblems(ps) > 0)
+	    (void) rpmtsRollback(ts, RPMPROB_FILTER_NONE, 0, NULL);
+	ps = rpmpsFree(ps);
+    }
+#endif
+
     return rc;
 }

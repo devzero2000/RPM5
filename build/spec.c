@@ -115,7 +115,6 @@ Package newPackage(Spec spec)
 
     p->header = headerNew();
     p->ds = NULL;
-    p->icon = NULL;
 
     p->autoProv = 1;
     p->autoReq = 1;
@@ -175,7 +174,6 @@ Package freePackage(Package pkg)
     }
 
     pkg->specialDoc = freeStringBuf(pkg->specialDoc);
-    pkg->icon = freeSources(pkg->icon);
     pkg->triggerFiles = freeTriggerFiles(pkg->triggerFiles);
 
     pkg = _free(pkg);
@@ -215,16 +213,16 @@ int parseNoSource(Spec spec, const char * field, int tag)
     int num, flag;
 
     if (tag == RPMTAG_NOSOURCE) {
-	flag = RPMBUILD_ISSOURCE;
+	flag = RPMFILE_SOURCE;
 	name = "source";
     } else {
-	flag = RPMBUILD_ISPATCH;
+	flag = RPMFILE_PATCH;
 	name = "patch";
     }
     
     fe = field;
     for (f = fe; *f != '\0'; f = fe) {
-        struct Source *p;
+	struct Source *p;
 
 	SKIPWHITE(f);
 	if (*f == '\0')
@@ -245,7 +243,7 @@ int parseNoSource(Spec spec, const char * field, int tag)
 	    return RPMERR_BADSPEC;
 	}
 
-	p->flags |= RPMBUILD_ISNO;
+	p->flags |= RPMFILE_GHOST;
 
     }
 
@@ -258,7 +256,8 @@ int addSource(Spec spec, Package pkg, const char *field, int tag)
 {
     struct Source *p;
     int flag = 0;
-    char *name = NULL;
+    const char *name = NULL;
+    const char *mdir = NULL;
     char *nump;
     const char *fieldp = NULL;
     char buf[BUFSIZ];
@@ -267,46 +266,50 @@ int addSource(Spec spec, Package pkg, const char *field, int tag)
     buf[0] = '\0';
     /*@-branchstate@*/
     switch (tag) {
-      case RPMTAG_SOURCE:
-	flag = RPMBUILD_ISSOURCE;
+    case RPMTAG_SOURCE:
+	flag = RPMFILE_SOURCE;
 	name = "source";
-	fieldp = spec->line + 6;
+	mdir = "%{_sourcedir}/";
+	fieldp = spec->line + (sizeof("Source")-1);
 	break;
-      case RPMTAG_PATCH:
-	flag = RPMBUILD_ISPATCH;
+    case RPMTAG_PATCH:
+	flag = RPMFILE_PATCH;
 	name = "patch";
-	fieldp = spec->line + 5;
+	mdir = "%{_patchdir}/";
+	fieldp = spec->line + (sizeof("Patch")-1);
 	break;
-      case RPMTAG_ICON:
-	flag = RPMBUILD_ISICON;
+    case RPMTAG_ICON:
+	flag = RPMFILE_ICON;
+	name = "icon";
+	mdir = "%{_icondir}/";
 	fieldp = NULL;
 	break;
+    default:
+assert(0);
+	/*@notreached@*/ break;
     }
     /*@=branchstate@*/
 
     /* Get the number */
-    if (tag != RPMTAG_ICON) {
+    if (fieldp != NULL) {
 	/* We already know that a ':' exists, and that there */
 	/* are no spaces before it.                          */
 	/* This also now allows for spaces and tabs between  */
 	/* the number and the ':'                            */
 
 	nump = buf;
-	while ((*fieldp != ':') && (*fieldp != ' ') && (*fieldp != '\t')) {
+	while ((*fieldp != ':') && (*fieldp != ' ') && (*fieldp != '\t'))
 	    *nump++ = *fieldp++;
-	}
 	*nump = '\0';
 
 	nump = buf;
 	SKIPSPACE(nump);
-	if (nump == NULL || *nump == '\0') {
+	if (nump == NULL || *nump == '\0')
 	    num = 0;
-	} else {
-	    if (parseNum(buf, &num)) {
-		rpmError(RPMERR_BADSPEC, _("line %d: Bad %s number: %s\n"),
+	else if (parseNum(buf, &num)) {
+	    rpmError(RPMERR_BADSPEC, _("line %d: Bad %s number: %s\n"),
 			 spec->lineNum, name, spec->line);
-		return RPMERR_BADSPEC;
-	    }
+	    return RPMERR_BADSPEC;
 	}
     }
 
@@ -316,32 +319,25 @@ int addSource(Spec spec, Package pkg, const char *field, int tag)
     p->fullSource = xstrdup(field);
     p->flags = flag;
     p->source = strrchr(p->fullSource, '/');
-    if (p->source) {
+    if (p->source)
 	p->source++;
-    } else {
+    else
 	p->source = p->fullSource;
-    }
 
-    if (tag != RPMTAG_ICON) {
-	p->next = spec->sources;
-	spec->sources = p;
-    } else {
-	p->next = pkg->icon;
-	pkg->icon = p;
-    }
+    p->next = spec->sources;
+    spec->sources = p;
 
     spec->numSources++;
 
+    /* XXX FIXME: need to add ICON* macros. */
     if (tag != RPMTAG_ICON) {
-	/*@-nullpass@*/		/* LCL: varargs needs null annotate. */
-	const char *body = rpmGetPath("%{_sourcedir}/", p->source, NULL);
-	/*@=nullpass@*/
+	const char *body = rpmGenPath(NULL, mdir, p->source);
 
 	sprintf(buf, "%s%d",
-		(flag & RPMBUILD_ISPATCH) ? "PATCH" : "SOURCE", num);
+		(flag & RPMFILE_PATCH) ? "PATCH" : "SOURCE", num);
 	addMacro(spec->macros, buf, NULL, body, RMIL_SPEC);
 	sprintf(buf, "%sURL%d",
-		(flag & RPMBUILD_ISPATCH) ? "PATCH" : "SOURCE", num);
+		(flag & RPMFILE_PATCH) ? "PATCH" : "SOURCE", num);
 	addMacro(spec->macros, buf, NULL, p->fullSource, RMIL_SPEC);
 	body = _free(body);
     }
@@ -452,18 +448,15 @@ Spec newSpec(void)
 
     spec->sourceRpmName = NULL;
     spec->sourcePkgId = NULL;
-    spec->sourceHeader = NULL;
+    spec->sourceHeader = headerNew();
     spec->sourceCpioList = NULL;
     
-    spec->gotBuildRootURL = 0;
-    spec->buildRootURL = NULL;
     spec->buildSubdir = NULL;
 
     spec->passPhrase = NULL;
     spec->timeCheck = 0;
     spec->cookie = NULL;
 
-    spec->buildRestrictions = headerNew();
     spec->BANames = NULL;
     spec->BACount = 0;
     spec->recursing = 0;
@@ -473,6 +466,8 @@ Spec newSpec(void)
     spec->anyarch = 0;
 
 /*@i@*/	spec->macros = rpmGlobalMacroContext;
+
+    spec->_parseRCPOT = parseRCPOT;	/* XXX hack around backward linkage. */
     
     return spec;
 }
@@ -492,7 +487,6 @@ Spec freeSpec(Spec spec)
     spec->check = freeStringBuf(spec->check);
     spec->clean = freeStringBuf(spec->clean);
 
-    spec->buildRootURL = _free(spec->buildRootURL);
     spec->buildSubdir = _free(spec->buildSubdir);
     spec->rootURL = _free(spec->rootURL);
     spec->specFile = _free(spec->specFile);
@@ -530,8 +524,6 @@ Spec freeSpec(Spec spec)
 	fi = rpmfiFree(fi);
     }
     
-    spec->buildRestrictions = headerFree(spec->buildRestrictions);
-
     if (!spec->recursing) {
 /*@-boundswrite@*/
 	if (spec->BASpecs != NULL)
@@ -692,30 +684,39 @@ printNewSpecfile(Spec spec)
 /*@=boundsread@*/
 }
 
-int rpmspecQuery(rpmts ts, QVA_t qva, const char * arg)
+/**
+ * Parse a spec file, and query the resultant header.
+ * @param ts		rpm transaction
+ * @param qva		query args
+ * @param specName	specfile to parse
+ * @param target	cpu-vender-os platform for query (NULL is current)
+ * @return              0 on success
+ */
+static int _specQuery(rpmts ts, QVA_t qva, const char *specName,
+		/*@null@*/ const char *target) 
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     Spec spec = NULL;
     Package pkg;
-    char * buildRoot = NULL;
-    int recursing = 0;
+    int res = 1;	/* assume error */
+    int anyarch = (target == NULL) ? 1 : 0;
     char * passPhrase = "";
+    int recursing = 0;
     char *cookie = NULL;
-    int anyarch = 1;
     int force = 1;
-    int res = 1;
+    int verify = 0;
     int xx;
-
-    if (qva->qva_showPackage == NULL)
-	goto exit;
 
 /*@-branchstate@*/
     /*@-mods@*/ /* FIX: make spec abstract */
-    if (parseSpec(ts, arg, "/", buildRoot, recursing, passPhrase,
-		cookie, anyarch, force)
+    if (parseSpec(ts, specName, "/", recursing, passPhrase,
+		cookie, anyarch, force, verify)
       || (spec = rpmtsSetSpec(ts, NULL)) == NULL)
     {
 	rpmError(RPMERR_QUERY,
-	    		_("query of specfile %s failed, can't parse\n"), arg);
+	    _("query of specfile %s failed, can't parse\n"), 
+	    specName);
 	goto exit;
     }
     /*@=mods@*/
@@ -727,10 +728,87 @@ int rpmspecQuery(rpmts ts, QVA_t qva, const char * arg)
 	goto exit;
     }
 
-    for (pkg = spec->packages; pkg != NULL; pkg = pkg->next)
-	xx = qva->qva_showPackage(qva, ts, pkg->header);
+    switch (qva->qva_source) {
+    case RPMQV_SPECSRPM:
+	xx = initSourceHeader(spec, NULL);
+	xx = qva->qva_showPackage(qva, ts, spec->sourceHeader);
+	break;
+    default:
+    case RPMQV_SPECFILE:
+	for (pkg = spec->packages; pkg != NULL; pkg = pkg->next) {
+	    /* If no target was specified, display all packages.
+	     * Packages with empty file lists are not produced.
+	     */
+	    /* XXX DIEDIEDIE: this logic looks flawed. */
+	    if (target == NULL || pkg->fileList != NULL) 
+		xx = qva->qva_showPackage(qva, ts, pkg->header);
+	}
+	break;
+    }
 
 exit:
     spec = freeSpec(spec);
+    return res;
+}
+
+int rpmspecQuery(rpmts ts, QVA_t qva, const char * arg)
+{
+    int res = 1;
+    const char * targets = rpmcliTargets;
+    char *target;
+    const char * t;
+    const char * te;
+    const char * rcfile = rpmcliRcfile;
+    int nqueries = 0;
+
+    if (qva->qva_showPackage == NULL)
+	goto exit;
+
+    if (targets == NULL) {
+	res = _specQuery(ts, qva, arg, NULL); 
+	nqueries++;
+	goto exit;
+    }
+
+    rpmMessage(RPMMESS_DEBUG, 
+	_("Query specfile for platform(s): %s\n"), targets);
+    for (t = targets; *t != '\0'; t = te) {
+	/* Parse out next target platform. */ 
+	if ((te = strchr(t, ',')) == NULL)
+	    te = t + strlen(t);
+	target = alloca(te-t+1);
+	strncpy(target, t, (te-t));
+	target[te-t] = '\0';
+	if (*te != '\0')
+	    te++;
+
+	/* Query spec for this target platform. */
+	rpmMessage(RPMMESS_DEBUG, _("    target platform: %s\n"), target);
+	/* Read in configuration for target. */
+	if (t != targets) {
+	    rpmFreeMacros(NULL);
+	    rpmFreeRpmrc();
+	    (void) rpmReadConfigFiles(rcfile, target);
+	}
+	res = _specQuery(ts, qva, arg, target); 
+	nqueries++;
+	if (res) break;	
+    }
+    
+exit:
+    /* Restore original configuration. */
+    if (nqueries > 1) {
+	t = targets;
+	if ((te = strchr(t, ',')) == NULL)
+	    te = t + strlen(t);
+	target = alloca(te-t+1);
+	strncpy(target, t, (te-t));
+	target[te-t] = '\0';
+	if (*te != '\0')
+	    te++;
+	rpmFreeMacros(NULL);
+	rpmFreeRpmrc();
+	(void) rpmReadConfigFiles(rcfile, target);
+    }
     return res;
 }

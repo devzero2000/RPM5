@@ -15,8 +15,7 @@ fingerPrintCache fpCacheCreate(int sizeHint)
     fingerPrintCache fpc;
 
     fpc = xmalloc(sizeof(*fpc));
-    fpc->ht = htCreate(sizeHint * 2, 0, 1, hashFunctionString,
-		       hashEqualityString);
+    fpc->ht = htCreate(sizeHint * 2, 0, 1, NULL, NULL);
     return fpc;
 }
 
@@ -52,12 +51,12 @@ static /*@null@*/ const struct fprintCacheEntry_s * cacheContainsDirectory(
  * @param cache		pointer to fingerprint cache
  * @param dirName	leading directory name of path
  * @param baseName	file name of path
- * @param scareMemory
+ * @param scareMem
  * @return pointer to the finger print associated with a file path.
  */
 /*@-bounds@*/ /* LCL: segfault */
 static fingerPrint doLookup(fingerPrintCache cache,
-		const char * dirName, const char * baseName, int scareMemory)
+		const char * dirName, const char * baseName, int scareMem)
 	/*@modifies cache @*/
 {
     char dir[PATH_MAX];
@@ -69,7 +68,7 @@ static fingerPrint doLookup(fingerPrintCache cache,
     char * buf;
     const struct fprintCacheEntry_s * cacheHit;
 
-    /* assert(*dirName == '/' || !scareMemory); */
+    /* assert(*dirName == '/' || !scareMem); */
 
     /* XXX WATCHOUT: fp.subDir is set below from relocated dirName arg */
     cleanDirName = dirName;
@@ -77,12 +76,12 @@ static fingerPrint doLookup(fingerPrintCache cache,
 
     if (*cleanDirName == '/') {
 	/*@-branchstate@*/
-	if (!scareMemory)
+	if (!scareMem)
 	    cleanDirName =
 		rpmCleanPath(strcpy(alloca(cdnl+1), dirName));
 	/*@=branchstate@*/
     } else {
-	scareMemory = 0;	/* XXX causes memory leak */
+	scareMem = 0;	/* XXX causes memory leak */
 
 	/* Using realpath on the arg isn't correct if the arg is a symlink,
 	 * especially if the symlink is a dangling link.  What we 
@@ -159,7 +158,7 @@ static fingerPrint doLookup(fingerPrintCache cache,
 	       (fp.subDir[0] == '/' && fp.subDir[1] == '\0'))
 		fp.subDir = NULL;
 	    fp.baseName = baseName;
-	    if (!scareMemory && fp.subDir != NULL)
+	    if (!scareMem && fp.subDir != NULL)
 		fp.subDir = xstrdup(fp.subDir);
 	/*@-compdef@*/ /* FIX: fp.entry.{dirName,dev,ino} undef @*/
 	    return fp;
@@ -187,29 +186,26 @@ static fingerPrint doLookup(fingerPrintCache cache,
 /*@=bounds@*/
 
 fingerPrint fpLookup(fingerPrintCache cache, const char * dirName, 
-			const char * baseName, int scareMemory)
+			const char * baseName, int scareMem)
 {
-    return doLookup(cache, dirName, baseName, scareMemory);
+    return doLookup(cache, dirName, baseName, scareMem);
 }
 
-unsigned int fpHashFunction(const void * key)
+uint32_t fpHashFunction(uint32_t h, const void * data, /*@unused@*/ size_t size)
 {
-    const fingerPrint * fp = key;
-    unsigned int hash = 0;
-    char ch;
-    const char * chptr;
+    const fingerPrint * fp = data;
+    const char * chptr = fp->baseName;
+    unsigned char ch = 0;
 
-    ch = 0;
-    chptr = fp->baseName;
 /*@-boundsread@*/
     while (*chptr != '\0') ch ^= *chptr++;
 /*@=boundsread@*/
 
-    hash |= ((unsigned)ch) << 24;
-    hash |= (((((unsigned)fp->entry->dev) >> 8) ^ fp->entry->dev) & 0xFF) << 16;
-    hash |= fp->entry->ino & 0xFFFF;
+    h |= ((unsigned)ch) << 24;
+    h |= (((((unsigned)fp->entry->dev) >> 8) ^ fp->entry->dev) & 0xFF) << 16;
+    h |= fp->entry->ino & 0xFFFF;
     
-    return hash;
+    return h;
 }
 
 /*@-boundsread@*/
@@ -234,7 +230,7 @@ int fpEqual(const void * key1, const void * key2)
 
 /*@-bounds@*/
 void fpLookupList(fingerPrintCache cache, const char ** dirNames, 
-		  const char ** baseNames, const int * dirIndexes, 
+		  const char ** baseNames, const uint_32 * dirIndexes, 
 		  int fileCount, fingerPrint * fpList)
 {
     int i;
@@ -257,7 +253,7 @@ void fpLookupList(fingerPrintCache cache, const char ** dirNames,
 #ifdef	UNUSED
 /**
  * Return finger prints of all file names in header.
- * @warning: scareMemory is assumed!
+ * @warning: scareMem is assumed!
  * @param cache		pointer to fingerprint cache
  * @param h		package header
  * @retval fpList	pointer to array of finger prints

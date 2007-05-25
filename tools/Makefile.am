@@ -4,77 +4,31 @@ AUTOMAKE_OPTIONS = 1.4 foreign
 
 INCLUDES = -I. \
 	-I$(top_srcdir) \
-	-I$(top_srcdir)/build \
 	-I$(top_srcdir)/lib \
 	-I$(top_srcdir)/rpmdb \
 	-I$(top_srcdir)/rpmio \
 	@WITH_BEECRYPT_INCLUDE@ \
-	@WITH_POPT_INCLUDE@ \
+	@WITH_NEON_INCLUDE@ \
 	@WITH_LIBELF_INCLUDE@ \
-	@WITH_LIBDWARF_INCLUDE@ \
-	-I$(top_srcdir)/file/src \
+	@WITH_MAGIC_INCLUDE@ \
+	@WITH_POPT_INCLUDE@ \
 	-I$(top_srcdir)/misc \
 	@INCPATH@
 
-EXTRA_DIST =	rpminject.c rpmsort.c rpmxml.c rpmxp.c rpmxp.h hashtab.h
+EXTRA_DIST =	hashtab.h
 
-EXTRA_PROGRAMS = debugedit convertdb1 rpminject rpmsort rpmtool rpmxml
+EXTRA_PROGRAMS = debugedit convertdb1
 
-LDADD = \
-	$(top_builddir)/lib/librpm.la
+LDADD = $(top_builddir)/lib/librpm.la
 
-staticLDFLAGS = @LDFLAGS_STATIC@ @LDFLAGS_NPTL@
-
-noinst_PROGRAMS = dumpdb
-
-pkgbindir = @RPMCONFIGDIR@
-pkgbin_PROGRAMS = @WITH_LIBDWARF_DEBUGEDIT@ javadeps rpmcache rpmdeps @WITH_RPMFILE@
-MAGIC	= $(pkgbindir)/magic
-
-bin_PROGRAMS =	rpmgraph
+pkgbindir = @USRLIBRPM@
+pkgbin_PROGRAMS = rpmdeps @WITH_LIBDWARF_DEBUGEDIT@
 
 convertdb1_SOURCES =	convertdb1.c
 
 debugedit_SOURCES =	debugedit.c hashtab.c
-debugedit_LDADD =	@LDFLAGS_STATIC@ \
-	@WITH_LIBELF_LIB@ \
-	@WITH_POPT_LIB@
-
-javadeps_SOURCES =	javadeps.c
-
-rpmcache_SOURCES =	rpmcache.c
-#rpmcache_LDFLAGS =	-L$(libdir) # $(staticLDFLAGS)
+debugedit_LDADD =	@WITH_LIBELF_LIB@ @WITH_POPT_LIB@
 
 rpmdeps_SOURCES =	rpmdeps.c
-#rpmdeps_LDFLAGS =	$(staticLDFLAGS)
-rpmdeps_LDADD =		$(top_builddir)/build/librpmbuild.la
-
-rpmfile.c: $(top_srcdir)/file/src/file.c
-	rm -f $@
-	ln -s $< $@
-
-rpmfile_SOURCES =	rpmfile.c
-rpmfile_CFLAGS =	-DMAGIC='"$(MAGIC)"'
-rpmfile_LDADD =		$(top_builddir)/rpmio/librpmio.la
-#rpmfile_LDFLAGS =	$(staticLDFLAGS)
-
-rpmgraph_SOURCES =	rpmgraph.c
-#rpmgraph_LDFLAGS =	$(staticLDFLAGS)
-
-rpminject_SOURCES =	rpminject.c
-#rpminject_LDFLAGS =	$(staticLDFLAGS)
-
-rpmsort_SOURCES =	rpmsort.c
-#rpmsort_LDFLAGS =	(staticLDFLAGS)
-
-rpmtool_SOURCES =	rpmtool.c rpmxp.c
-rpmtool_CFLAGS =	-I$(includedir)/libxml2
-#rpmtool_LDFLAGS =	$(staticLDFLAGS)
-rpmtool_LDADD =		$(LDADD) -lxml2
-
-rpmxml_SOURCES =	rpmxml.c # rpmxp.c
-rpmxml_CFLAGS =		-I$(includedir)/libxml2
-#rpmxml_LDFLAGS =	$(staticLDFLAGS)
-rpmxml_LDADD =		$(LDADD) -lxml2
 
 $(PROGRAMS): $(LDADD)

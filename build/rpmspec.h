@@ -1,10 +1,12 @@
-#ifndef _H_SPEC_
-#define _H_SPEC_
+#ifndef _H_RPMSPEC_
+#define _H_RPMSPEC_
 
 /** \ingroup rpmbuild
  * \file build/rpmspec.h
  *  The Spec and Package data structures used during build.
  */
+
+#include <rpmevr.h>
 
 /** \ingroup rpmbuild
  */
@@ -14,27 +16,29 @@ typedef struct Package_s * Package;
  */
 struct TriggerFileEntry {
     int index;
-/*@only@*/ char * fileName;
-/*@only@*/ char * script;
-/*@only@*/ char * prog;
-/*@owned@*/ struct TriggerFileEntry * next;
+/*@only@*/
+    char * fileName;
+/*@only@*/
+    char * script;
+/*@only@*/
+    char * prog;
+/*@owned@*/
+    struct TriggerFileEntry * next;
 };
-
-#define RPMBUILD_ISSOURCE	(1 << 0)
-#define RPMBUILD_ISPATCH	(1 << 1)
-#define RPMBUILD_ISICON		(1 << 2)
-#define RPMBUILD_ISNO		(1 << 3)
 
 #define RPMBUILD_DEFAULT_LANG "C"
 
 /** \ingroup rpmbuild
  */
 struct Source {
-/*@owned@*/ char * fullSource;
-/*@dependent@*/ char * source;     /* Pointer into fullSource */
+/*@owned@*/
+    const char * fullSource;
+/*@dependent@*/
+    const char * source;	/* Pointer into fullSource */
     int flags;
     int num;
-/*@owned@*/ struct Source * next;
+/*@owned@*/
+    struct Source * next;
 };
 
 /** \ingroup rpmbuild
@@ -50,7 +54,8 @@ typedef struct ReadLevelEntry {
 /** \ingroup rpmbuild
  */
 typedef struct OpenFileInfo {
-/*@only@*/ const char * fileName;
+/*@only@*/
+    const char * fileName;
     FD_t fd;
     int lineNum;
     char readBuf[BUFSIZ];
@@ -66,14 +71,17 @@ typedef struct spectag_s {
     int t_tag;
     int t_startx;
     int t_nlines;
-/*@only@*/ const char * t_lang;
-/*@only@*/ const char * t_msgid;
+/*@only@*/
+    const char * t_lang;
+/*@only@*/
+    const char * t_msgid;
 } * spectag;
 
 /** \ingroup rpmbuild
  */
 typedef struct spectags_s {
-/*@owned@*/ spectag st_t;
+/*@owned@*/
+    spectag st_t;
     int st_nalloc;
     int st_ntags;
 } * spectags;
@@ -81,7 +89,8 @@ typedef struct spectags_s {
 /** \ingroup rpmbuild
  */
 typedef struct speclines_s {
-/*@only@*/ char **sl_lines;
+/*@only@*/
+    char **sl_lines;
     int sl_nalloc;
     int sl_nlines;
 } * speclines;
@@ -92,8 +101,6 @@ typedef struct speclines_s {
 struct Spec_s {
 /*@only@*/
     const char * specFile;	/*!< Name of the spec file. */
-/*@only@*/
-    const char * buildRootURL;
 /*@only@*/
     const char * buildSubdir;
 /*@only@*/
@@ -119,8 +126,6 @@ struct Spec_s {
 /*@owned@*/
     struct ReadLevelEntry * readStack;
 
-/*@refcounted@*/
-    Header buildRestrictions;
 /*@owned@*/ /*@null@*/
     Spec * BASpecs;
 /*@only@*/ /*@null@*/
@@ -130,8 +135,6 @@ struct Spec_s {
 
     int force;
     int anyarch;
-
-    int gotBuildRootURL;
 
 /*@null@*/
     char * passPhrase;
@@ -152,9 +155,13 @@ struct Spec_s {
     Header sourceHeader;
 /*@refcounted@*/
     rpmfi sourceCpioList;
+    int sourceHdrInit;
 
 /*@dependent@*/ /*@null@*/
     MacroContext macros;
+
+    int (*_parseRCPOT) (Spec spec, Package pkg, const char *field, rpmTag tagN,
+               int index, rpmsenseFlags tagflags);
 
 /*@only@*/
     StringBuf prep;		/*!< %prep scriptlet. */
@@ -181,9 +188,6 @@ struct Package_s {
     rpmds ds;			/*!< Requires: N = EVR */
 /*@refcounted@*/
     rpmfi cpioList;
-
-/*@owned@*/
-    struct Source * icon;
 
     int autoReq;
     int autoProv;
@@ -247,9 +251,9 @@ extern "C" {
  * @return		0 on success, else no. of failures
  */
 int rpmspecQuery(rpmts ts, QVA_t qva, const char * arg)
-	/*@globals rpmGlobalMacroContext, h_errno,
-		fileSystem, internalState @*/
-	/*@modifies ts, qva, rpmGlobalMacroContext,
+	/*@globals rpmRcfiles, rpmCLIMacroContext,
+		rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies ts, qva, rpmCLIMacroContext, rpmGlobalMacroContext,
 		fileSystem, internalState @*/;
 
 /** \ingroup rpmbuild
@@ -259,9 +263,9 @@ struct OpenFileInfo * newOpenFileInfo(void)
 
 /** \ingroup rpmbuild
  * @param spec		spec file control structure
- * @param h
- * @param tag
- * @param lang
+ * @param h		header
+ * @param tag		tag
+ * @param lang		locale
  */
 spectag stashSt(Spec spec, Header h, int tag, const char * lang)
 	/*@modifies spec->st @*/;
@@ -269,20 +273,19 @@ spectag stashSt(Spec spec, Header h, int tag, const char * lang)
 /** \ingroup rpmbuild
  * @param spec		spec file control structure
  * @param pkg		package control
- * @param field
- * @param tag
+ * @param field		field to parse
+ * @param tag		tag
  */
 int addSource(Spec spec, Package pkg, const char * field, int tag)
 	/*@globals rpmGlobalMacroContext, h_errno @*/
 	/*@modifies spec->sources, spec->numSources,
 		spec->st, spec->macros,
-		pkg->icon,
 		rpmGlobalMacroContext @*/;
 
 /** \ingroup rpmbuild
  * @param spec		spec file control structure
- * @param field
- * @param tag
+ * @param field		field to parse
+ * @param tag		tag
  */
 int parseNoSource(Spec spec, const char * field, int tag)
 	/*@modifies nothing @*/;

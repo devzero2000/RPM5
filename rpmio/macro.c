@@ -40,6 +40,9 @@ typedef	FILE * FD_t;
 
 #else
 
+/*@observer@*/ /*@checked@*/
+const char * rpmMacrofiles = MACROFILES;
+
 #include <rpmio_internal.h>
 #include <rpmmessages.h>
 #include <rpmerr.h>
@@ -252,7 +255,6 @@ findEntry(MacroContext mc, const char * name, size_t namelen)
 	/*@*/
 {
     MacroEntry key, *ret;
-    struct MacroEntry_s keybuf;
     char namebuf[1024];
 
 /*@-globs@*/
@@ -269,8 +271,7 @@ findEntry(MacroContext mc, const char * name, size_t namelen)
     }
 /*@=branchstate@*/
     
-    key = &keybuf;
-    memset(key, 0, sizeof(*key));
+    key = memset(alloca(sizeof(*key)), 0, sizeof(*key));
     /*@-temptrans -assignexpose@*/
     key->name = (char *)name;
     /*@=temptrans =assignexpose@*/
@@ -637,11 +638,18 @@ doDefine(MacroBuf mb, /*@returned@*/ const char * se, int level, int expandbody)
 	/*@modifies mb, rpmGlobalMacroContext @*/
 {
     const char *s = se;
-    char buf[BUFSIZ], *n = buf, *ne = n;
+    char buf[BUFSIZ], *n = buf, *ne;
     char *o = NULL, *oe;
     char *b, *be;
     int c;
     int oc = ')';
+
+    SKIPBLANK(s, c);
+    if (c == '.')		/* XXX readonly macros */
+	*n++ = c = *s++;
+    if (c == '.')		/* XXX readonly macros */
+	*n++ = c = *s++;
+    ne = n;
 
     /* Copy name */
     COPYNAME(ne, s, c);
@@ -746,6 +754,10 @@ doDefine(MacroBuf mb, /*@returned@*/ const char * se, int level, int expandbody)
     }
 /*@=modfilesys@*/
 
+    if (n != buf)		/* XXX readonly macros */
+	n--;
+    if (n != buf)		/* XXX readonly macros */
+	n--;
     addMacro(mb->mc, n, o, b, (level - 1));
 
     return se;
@@ -810,22 +822,28 @@ dumpME(const char * msg, MacroEntry me)
  * @param level		macro recursion level
  */
 static void
-pushMacro(/*@out@*/ MacroEntry * mep,
-		const char * n, /*@null@*/ const char * o,
+pushMacro(/*@out@*/ MacroEntry * mep, const char * n, /*@null@*/ const char * o,
 		/*@null@*/ const char * b, int level)
 	/*@modifies *mep @*/
 {
     MacroEntry prev = (mep && *mep ? *mep : NULL);
     MacroEntry me = (MacroEntry) xmalloc(sizeof(*me));
+    const char *name = n;
+
+    if (*name == '.')		/* XXX readonly macros */
+	name++;
+    if (*name == '.')		/* XXX readonly macros */
+	name++;
 
     /*@-assignexpose@*/
     me->prev = prev;
     /*@=assignexpose@*/
-    me->name = (prev ? prev->name : xstrdup(n));
+    me->name = (prev ? prev->name : xstrdup(name));
     me->opts = (o ? xstrdup(o) : NULL);
     me->body = xstrdup(b ? b : "");
     me->used = 0;
     me->level = level;
+    me->flags = (name != n);
 /*@-boundswrite@*/
 /*@-branchstate@*/
     if (mep)
@@ -1154,16 +1172,19 @@ doFoo(MacroBuf mb, int negate, const char * f, size_t fn,
 	switch(compressed) {
 	default:
 	case 0:	/* COMPRESSED_NOT */
-	    sprintf(be, "%%_cat %s", b);
+	    sprintf(be, "%%__cat %s", b);
 	    break;
 	case 1:	/* COMPRESSED_OTHER */
-	    sprintf(be, "%%_gzip -dc %s", b);
+	    sprintf(be, "%%__gzip -dc %s", b);
 	    break;
 	case 2:	/* COMPRESSED_BZIP2 */
-	    sprintf(be, "%%_bzip2 %s", b);
+	    sprintf(be, "%%__bzip2 -dc %s", b);
 	    break;
 	case 3:	/* COMPRESSED_ZIP */
-	    sprintf(be, "%%_unzip %s", b);
+	    sprintf(be, "%%__unzip -qq %s", b);
+	    break;
+	case 4:	/* COMPRESSED_LZOP */
+	    sprintf(be, "%%__lzop %s", b);
 	    break;
 	}
 	b = be;
@@ -1256,7 +1277,7 @@ expandMacro(MacroBuf mb)
 	chkexist = 0;
 	switch ((c = *s)) {
 	default:		/* %name substitution */
-		while (strchr("!?", *s) != NULL) {
+		while (*s != '\0' && strchr("!?", *s) != NULL) {
 			switch(*s++) {
 			case '!':
 				negate = ((negate + 1) % 2);
@@ -1362,6 +1383,16 @@ expandMacro(MacroBuf mb)
 		printMacro(mb, s, se);
 
 	/* Expand builtin macros */
+	if (STREQ("load", f, fn)) {
+		if (g != NULL) {
+		    char * mfn = strncpy(alloca(gn + 1), g, gn);
+		    int xx;
+		    mfn[gn] = '\0';
+		    xx = rpmLoadMacroFile(NULL, mfn);
+		}
+		s = se;
+		continue;
+	}
 	if (STREQ("global", f, fn)) {
 		s = doDefine(mb, se, RMIL_GLOBAL, 1);
 		continue;
@@ -1688,7 +1719,7 @@ int rpmGlob(const char * patterns, int * argcPtr, const char *** argvPtr)
     const char * old_ctype = NULL;
     const char * t;
 #endif
-	size_t maxb, nb;
+    size_t maxb, nb;
     int i, j;
     int rc;
 
@@ -1844,11 +1875,11 @@ expandMacros(void * spec, MacroContext mc, char * sbuf, size_t slen)
 
     rc = expandMacro(mb);
 
+    tbuf[slen] = '\0';
     if (mb->nb == 0)
-	rpmError(RPMERR_BADSPEC, _("Target buffer overflow\n"));
-
-    tbuf[slen] = '\0';	/* XXX just in case */
-    strncpy(sbuf, tbuf, (slen - mb->nb + 1));
+	rpmError(RPMERR_BADSPEC, _("Macro expansion too big for target buffer\n"));
+    else
+	strncpy(sbuf, tbuf, (slen - mb->nb + 1));
 
     return rc;
 }
@@ -1858,11 +1889,17 @@ addMacro(MacroContext mc,
 	const char * n, const char * o, const char * b, int level)
 {
     MacroEntry * mep;
+    const char * name = n;
+
+    if (*name == '.')		/* XXX readonly macros */
+	name++;
+    if (*name == '.')		/* XXX readonly macros */
+	name++;
 
     if (mc == NULL) mc = rpmGlobalMacroContext;
 
     /* If new name, expand macro table */
-    if ((mep = findEntry(mc, n, 0)) == NULL) {
+    if ((mep = findEntry(mc, name, 0)) == NULL) {
 	if (mc->firstFree == mc->macrosAllocated)
 	    expandMacroTable(mc);
 	if (mc->macroTable != NULL)
@@ -1870,6 +1907,13 @@ addMacro(MacroContext mc,
     }
 
     if (mep != NULL) {
+	/* XXX permit "..foo" to be pushed over ".foo" */
+	if (*mep && (*mep)->flags && !(n[0] == '.' && n[1] == '.')) {
+	    /* XXX avoid error message for %buildroot */
+	    if (strcmp((*mep)->name, "buildroot"))
+		rpmError(RPMERR_BADSPEC, _("Macro '%s' is readonly and cannot be changed.\n"), n);
+	    return;
+	}
 	/* Push macro over previous definition */
 	pushMacro(mep, n, o, b, level);
 
@@ -1998,8 +2042,23 @@ rpmInitMacros(MacroContext mc, const char * macrofiles)
 	    continue;
 
 	/* Read macros from each file. */
-	for (i = 0; i < ac; i++)
-	    (void) rpmLoadMacroFile(mc, av[i]);
+
+	for (i = 0; i < ac; i++) {
+	    size_t slen = strlen(av[i]);
+
+	/* Skip backup files and %config leftovers. */
+#define	_suffix(_s, _x) \
+    (slen >= sizeof(_x) && !strcmp((_s)+slen-(sizeof(_x)-1), (_x)))
+	    if (!(_suffix(av[i], "~")
+	       || _suffix(av[i], ".rpmnew")
+	       || _suffix(av[i], ".rpmorig")
+	       || _suffix(av[i], ".rpmsave"))
+	       )
+		   (void) rpmLoadMacroFile(mc, av[i]);
+#undef _suffix
+
+	    av[i] = _free(av[i]);
+	}
 	av = _free(av);
     }
     mfiles = _free(mfiles);
@@ -2044,11 +2103,11 @@ int isCompressed(const char * file, rpmCompressedMagic * compressed)
     FD_t fd;
     ssize_t nb;
     int rc = -1;
-    unsigned char magic[4];
+    unsigned char magic[13];
 
     *compressed = COMPRESSED_NOT;
 
-    fd = Fopen(file, "r.ufdio");
+    fd = Fopen(file, "r");
     if (fd == NULL || Ferror(fd)) {
 	/* XXX Fstrerror */
 	rpmError(RPMERR_BADSPEC, _("File %s: %s\n"), file, Fstrerror(fd));
@@ -2070,19 +2129,28 @@ int isCompressed(const char * file, rpmCompressedMagic * compressed)
 
     rc = 0;
 
-    if ((magic[0] == 'B') && (magic[1] == 'Z')) {
+    if (magic[0] == 'B' && magic[1] == 'Z')
 	*compressed = COMPRESSED_BZIP2;
-    } else if ((magic[0] == 0120) && (magic[1] == 0113) &&
-	 (magic[2] == 0003) && (magic[3] == 0004)) {	/* pkzip */
+    else
+    if (magic[0] == 0120 && magic[1] == 0113
+     &&	magic[2] == 0003 && magic[3] == 0004)	/* pkzip */
 	*compressed = COMPRESSED_ZIP;
-    } else if (((magic[0] == 0037) && (magic[1] == 0213)) || /* gzip */
-	((magic[0] == 0037) && (magic[1] == 0236)) ||	/* old gzip */
-	((magic[0] == 0037) && (magic[1] == 0036)) ||	/* pack */
-	((magic[0] == 0037) && (magic[1] == 0240)) ||	/* SCO lzh */
-	((magic[0] == 0037) && (magic[1] == 0235))	/* compress */
-	) {
+    else
+    if (magic[0] == 0x89 && magic[1] == 'L'
+     &&	magic[2] == 'Z' && magic[3] == 'O')	/* lzop */
+	*compressed = COMPRESSED_LZOP;
+    else
+    /* XXX Ick, LZMA has no magic. See http://lkml.org/lkml/2005/6/13/285 */
+    if (magic[ 9] == 0x00 && magic[10] == 0x00 &&
+	magic[11] == 0x00 && magic[12] == 0x00)	/* lzmash */
+	*compressed = COMPRESSED_LZMA;
+    else
+    if ((magic[0] == 0037 && magic[1] == 0213)	/* gzip */
+     ||	(magic[0] == 0037 && magic[1] == 0236)	/* old gzip */
+     ||	(magic[0] == 0037 && magic[1] == 0036)	/* pack */
+     ||	(magic[0] == 0037 && magic[1] == 0240)	/* SCO lzh */
+     ||	(magic[0] == 0037 && magic[1] == 0235))	/* compress */
 	*compressed = COMPRESSED_OTHER;
-    }
 
     return rc;
 }
@@ -2093,23 +2161,39 @@ int isCompressed(const char * file, rpmCompressedMagic * compressed)
 char * 
 rpmExpand(const char *arg, ...)
 {
-    char buf[BUFSIZ], *p, *pe;
     const char *s;
+    char *t, *te;
+    size_t sn, tn;
+    size_t un = 16 * BUFSIZ;
+
     va_list ap;
 
     if (arg == NULL)
 	return xstrdup("");
 
-    buf[0] = '\0';
-    p = buf;
-    pe = stpcpy(p, arg);
+    t = xmalloc(strlen(arg) + un + 1);
+    *t = '\0';
+    te = stpcpy(t, arg);
 
+/*@-branchstate@*/
     va_start(ap, arg);
-    while ((s = va_arg(ap, const char *)) != NULL)
-	pe = stpcpy(pe, s);
+    while ((s = va_arg(ap, const char *)) != NULL) {
+	sn = strlen(s);
+	tn = (te - t);
+	t = xrealloc(t, tn + sn + un + 1);
+	te = t + tn;
+	te = stpcpy(te, s);
+    }
     va_end(ap);
-    (void) expandMacros(NULL, NULL, buf, sizeof(buf));
-    return xstrdup(buf);
+/*@=branchstate@*/
+
+    *te = '\0';
+    tn = (te - t);
+    (void) expandMacros(NULL, NULL, t, tn + un + 1);
+    t[tn + un] = '\0';
+    t = xrealloc(t, strlen(t) + 1);
+    
+    return t;
 }
 /*@=modfilesys@*/
 
@@ -2159,6 +2243,9 @@ char *rpmCleanPath(char * path)
 	    if (s[1] == '/' && s[2] == '/') {
 		*t++ = *s++;
 		*t++ = *s++;
+		/* XXX handle "file:///" */
+		if (s[0] == '/') *t++ = *s++;
+		te = t;
 		/*@switchbreak@*/ break;
 	    }
 	    begin=1;
@@ -2173,7 +2260,7 @@ char *rpmCleanPath(char * path)
 	    }
 	    while (s[1] == '/')
 		s++;
-	    while (t > path && t[-1] == '/')
+	    while (t > te && t[-1] == '/')
 		t--;
 	    /*@switchbreak@*/ break;
 	case '.':
@@ -2332,7 +2419,7 @@ if (_debug) fprintf(stderr, "*** RGP result %s\n", result);
 
 #if defined(EVAL_MACROS)
 
-char *macrofiles = "/usr/lib/rpm/macros:/etc/rpm/macros:~/.rpmmacros";
+char *rpmMacrofiles = "/usr/lib/rpm/macros:/etc/rpm/macros:~/.rpmmacros";
 
 int
 main(int argc, char *argv[])
@@ -2345,7 +2432,7 @@ main(int argc, char *argv[])
     while ((c = getopt(argc, argv, "f:")) != EOF ) {
 	switch (c) {
 	case 'f':
-	    macrofiles = optarg;
+	    rpmMacrofiles = optarg;
 	    break;
 	case '?':
 	default:
@@ -2358,7 +2445,7 @@ main(int argc, char *argv[])
 	exit(1);
     }
 
-    rpmInitMacros(NULL, macrofiles);
+    rpmInitMacros(NULL, rpmMacrofiles);
     for ( ; optind < argc; optind++) {
 	const char *val;
 
@@ -2374,7 +2461,7 @@ main(int argc, char *argv[])
 
 #else	/* !EVAL_MACROS */
 
-char *macrofiles = "../macros:./testmacros";
+char *rpmMacrofiles = "../macros:./testmacros";
 char *testfile = "./test";
 
 int
@@ -2384,7 +2471,7 @@ main(int argc, char *argv[])
     FILE *fp;
     int x;
 
-    rpmInitMacros(NULL, macrofiles);
+    rpmInitMacros(NULL, rpmMacrofiles);
     rpmDumpMacroTable(NULL, NULL);
 
     if ((fp = fopen(testfile, "r")) != NULL) {

@@ -70,8 +70,8 @@ extern "C" {
 typedef void * (*rpmCallbackFunction)
 		(/*@null@*/ const void * h, 
 		const rpmCallbackType what, 
-		const unsigned long amount, 
-		const unsigned long total,
+		const unsigned long long amount, 
+		const unsigned long long total,
 		/*@null@*/ fnpyKey key,
 		/*@null@*/ rpmCallbackData data)
 	/*@globals internalState@*/

@@ -1,11 +1,12 @@
 #ifndef	H_RPMGI
 #define	H_RPMGI
 
-/** \ingroup rpmio
+/** \ingroup rpmgi
  * \file lib/rpmgi.h
  */
 
 #include <rpmlib.h>
+#include <rpmds.h>
 #include <rpmte.h>
 #include <rpmts.h>
 #include <fts.h>
@@ -26,18 +27,22 @@ typedef enum rpmgiFlags_e {
     RPMGI_TSORDER	= (1 << 1),
     RPMGI_NOGLOB	= (1 << 2),
     RPMGI_NOMANIFEST	= (1 << 3),
-    RPMGI_NOHEADER	= (1 << 4)
+    RPMGI_NOHEADER	= (1 << 4),
+    RPMGI_ERASING	= (1 << 5)
 } rpmgiFlags;
 
+/**
+ */
 /*@unchecked@*/
 extern rpmgiFlags giFlags;
 
 #if defined(_RPMGI_INTERNAL)
-/** \ingroup rpmio
+/** \ingroup rpmgi
  */
 struct rpmgi_s {
 /*@refcounted@*/
     rpmts ts;			/*!< Iterator transaction set. */
+    int (*tsOrder) (rpmts ts);	/*!< Iterator transaction ordering. */
     int tag;			/*!< Iterator type. */
 /*@kept@*/ /*@relnull@*/
     const void * keyp;		/*!< Iterator key. */
@@ -68,6 +73,10 @@ struct rpmgi_s {
     FTS * ftsp;
 /*@relnull@*/
     FTSENT * fts;
+/*@null@*/
+    rpmRC (*walkPathFilter) (rpmgi gi);
+/*@null@*/
+    rpmRC (*stash) (rpmgi gi, Header h);
 
 /*@refs@*/
     int nrefs;			/*!< Reference count. */
@@ -77,6 +86,9 @@ struct rpmgi_s {
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+/** \name RPMGI */
+/*@{*/
 
 /**
  * Unreference a generalized iterator instance.
@@ -109,10 +121,12 @@ rpmgi rpmgiLink (/*@null@*/ rpmgi gi, /*@null@*/ const char * msg)
 	/*@modifies gi @*/;
 
 /** @todo Remove debugging entry from the ABI. */
+/*@-exportlocal@*/
 /*@newref@*/ /*@null@*/
 rpmgi XrpmgiLink (/*@null@*/ rpmgi gi, /*@null@*/ const char * msg,
 		const char * fn, unsigned ln)
         /*@modifies gi @*/;
+/*@=exportlocal@*/
 #define	rpmgiLink(_gi, _msg)	XrpmgiLink(_gi, _msg, __FILE__, __LINE__)
 
 /** Destroy a generalized iterator.
@@ -153,7 +167,7 @@ rpmRC rpmgiNext(/*@null@*/ rpmgi gi)
  * @returns		header path
  */
 /*@observer@*/ /*@null@*/
-const char * rpmgiHdrPath(rpmgi gi)
+const char * rpmgiHdrPath(/*@null@*/ rpmgi gi)
 	/*@*/;
 
 /**
@@ -175,6 +189,14 @@ rpmts rpmgiTs(/*@null@*/ rpmgi gi)
         /*@*/;
 
 /**
+ * Escape isspace(3) characters in string.
+ * @param s		string
+ * @return		escaped string
+ */
+const char * rpmgiEscapeSpaces(const char * s)
+	/*@*/;
+
+/**
  * Load iterator args.
  * @param gi		generalized iterator
  * @param argv		arg list
@@ -182,10 +204,12 @@ rpmts rpmgiTs(/*@null@*/ rpmgi gi)
  * @param flags		iterator flags
  * @returns		RPMRC_OK on success
  */
-rpmRC rpmgiSetArgs(rpmgi gi, /*@null@*/ ARGV_t argv,
+rpmRC rpmgiSetArgs(/*@null@*/ rpmgi gi, /*@null@*/ ARGV_t argv,
 		int ftsOpts, rpmgiFlags flags)
 	/*@globals internalState @*/
 	/*@modifies gi, internalState @*/;
+
+/*@}*/
 
 #ifdef __cplusplus
 }

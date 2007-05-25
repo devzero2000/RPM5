@@ -6,6 +6,7 @@
 
 #include <rpmlib.h>
 
+#define	_RPMPS_INTERNAL
 #include "rpmps.h"
 
 #include "misc.h"
@@ -21,7 +22,7 @@ rpmps XrpmpsUnlink(rpmps ps, const char * msg,
 		const char * fn, unsigned ln)
 {
 /*@-modfilesys@*/
-if (_rpmps_debug > 0 && msg != NULL)
+if (_rpmps_debug && msg != NULL)
 fprintf(stderr, "--> ps %p -- %d %s at %s:%u\n", ps, ps->nrefs, msg, fn, ln);
 /*@=modfilesys@*/
     ps->nrefs--;
@@ -35,7 +36,7 @@ rpmps XrpmpsLink(rpmps ps, const char * msg,
 {
     ps->nrefs++;
 /*@-modfilesys@*/
-if (_rpmps_debug > 0 && msg != NULL)
+if (_rpmps_debug && msg != NULL)
 fprintf(stderr, "--> ps %p ++ %d %s at %s:%u\n", ps, ps->nrefs, msg, fn, ln);
 /*@=modfilesys@*/
 /*@-refcounttrans@*/
@@ -81,7 +82,7 @@ rpmps rpmpsFree(rpmps ps)
 void rpmpsAppend(rpmps ps, rpmProblemType type,
 		const char * pkgNEVR, fnpyKey key,
 		const char * dn, const char * bn,
-		const char * altNEVR, unsigned long ulong1)
+		const char * altNEVR, unsigned long long ulong1)
 {
     rpmProblem p;
     char *t;
@@ -203,20 +204,20 @@ const char * rpmProblemString(const rpmProblem prob)
     int rc;
 
     switch (prob->type) {
-    case RPMPROB_BADARCH:
+    case RPMPROB_BADPLATFORM:
 	rc = snprintf(buf, nb,
-		_("package %s is intended for a %s architecture"),
-		pkgNEVR, str1);
-	break;
-    case RPMPROB_BADOS:
-	rc = snprintf(buf, nb,
-		_("package %s is intended for a %s operating system"),
+		_("package %s is intended for a %s platform"),
 		pkgNEVR, str1);
 	break;
     case RPMPROB_PKG_INSTALLED:
 	rc = snprintf(buf, nb,
 		_("package %s is already installed"),
 		pkgNEVR);
+	break;
+    case RPMPROB_NOREPACKAGE:
+	rc = snprintf(buf, nb,
+		_("re-packaged package with %s: %s is missing"),
+		str1, altNEVR);
 	break;
     case RPMPROB_BADRELOCATE:
 	rc = snprintf(buf, nb,
@@ -240,23 +241,23 @@ const char * rpmProblemString(const rpmProblem prob)
 	break;
     case RPMPROB_DISKSPACE:
 	rc = snprintf(buf, nb,
-	    _("installing package %s needs %ld%cB on the %s filesystem"),
+	    _("installing package %s needs %lu%cB on the %s filesystem"),
 		pkgNEVR,
-		prob->ulong1 > (1024*1024)
+		(unsigned long) (prob->ulong1 > (1024*1024)
 		    ? (prob->ulong1 + 1024 * 1024 - 1) / (1024 * 1024)
-		    : (prob->ulong1 + 1023) / 1024,
+		    : (prob->ulong1 + 1023) / 1024),
 		prob->ulong1 > (1024*1024) ? 'M' : 'K',
 		str1);
 	break;
     case RPMPROB_DISKNODES:
 	rc = snprintf(buf, nb,
-	    _("installing package %s needs %ld inodes on the %s filesystem"),
-		pkgNEVR, (long)prob->ulong1, str1);
+	    _("installing package %s needs %lu inodes on the %s filesystem"),
+		pkgNEVR, (unsigned long)prob->ulong1, str1);
 	break;
     case RPMPROB_BADPRETRANS:
 	rc = snprintf(buf, nb,
 		_("package %s pre-transaction syscall(s): %s failed: %s"),
-		pkgNEVR, str1, strerror(prob->ulong1));
+		pkgNEVR, str1, strerror((int)(prob->ulong1)));
 	break;
     case RPMPROB_REQUIRES:
 	rc = snprintf(buf, nb, _("%s is needed by %s%s"),
@@ -267,6 +268,11 @@ const char * rpmProblemString(const rpmProblem prob)
 	rc = snprintf(buf, nb, _("%s conflicts with %s%s"),
 		altNEVR+2,
 		(prob->ulong1 ? "" : _("(installed) ")), pkgNEVR);
+	break;
+    case RPMPROB_RDONLY:
+	rc = snprintf(buf, nb,
+	    _("installing package %s on %s rdonly filesystem"),
+		pkgNEVR, str1);
 	break;
     default:
 	rc = snprintf(buf, nb,

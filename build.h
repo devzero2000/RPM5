@@ -7,7 +7,7 @@ extern "C" {
 
 int build(rpmts ts, const char * arg, BTA_t ba,
 		/*@null@*/ const char * rcfile)
-	/*@globals rpmGlobalMacroContext, rpmCLIMacroContext,
+	/*@globals rpmRcfiles, rpmGlobalMacroContext, rpmCLIMacroContext,
 		h_errno, fileSystem, internalState @*/
 	/*@modifies ts, ba->buildAmount, rpmGlobalMacroContext, rpmCLIMacroContext,
 		fileSystem, internalState @*/;

@@ -5,6 +5,9 @@
 #include "system.h"
 #include <rpmlib.h>
 #include <rpmmacro.h>	/* XXX for rpmGetPath */
+
+#include "fs.h"
+
 #include "debug.h"
 
 /*@-usereleased -onlytrans@*/
@@ -25,7 +28,7 @@ static const char ** fsnames = NULL;
 /*@unchecked@*/
 static int numFilesystems = 0;
 
-void freeFilesystems(void)
+void rpmFreeFilesystems(void)
 	/*@globals filesystems, fsnames, numFilesystems @*/
 	/*@modifies filesystems, fsnames, numFilesystems @*/
 {
@@ -112,7 +115,7 @@ static int getFilesystemList(void)
 	    rpmError(RPMERR_STAT, _("failed to stat %s: %s\n"), fsnames[i],
 			strerror(errno));
 
-	    freeFilesystems();
+	    rpmFreeFilesystems();
 	    return 1;
 	}
 	
@@ -210,11 +213,18 @@ static int getFilesystemList(void)
 #	endif
 
 	if (stat(mntdir, &sb)) {
-	    rpmError(RPMERR_STAT, _("failed to stat %s: %s\n"), mntdir,
+	    switch(errno) {
+	    default:
+		rpmError(RPMERR_STAT, _("failed to stat %s: %s\n"), mntdir,
 			strerror(errno));
-
-	    freeFilesystems();
-	    return 1;
+		rpmFreeFilesystems();
+		return 1;
+		/*@notreached@*/ /*@switchbreak@*/ break;
+	    case EACCES:	/* XXX fuse fs #220991 */
+	    case ESTALE:
+		continue;
+		/*@notreached@*/ /*@switchbreak@*/ break;
+	    }
 	}
 
 	if ((numFilesystems + 2) == numAlloced) {
@@ -274,9 +284,9 @@ int rpmGetFilesystemList(const char *** listptr, int * num)
 }
 
 int rpmGetFilesystemUsage(const char ** fileList, int_32 * fssizes, int numFiles,
-			  uint_32 ** usagesPtr, /*@unused@*/ int flags)
+			  uint_64 ** usagesPtr, /*@unused@*/ int flags)
 {
-    int_32 * usages;
+    int_64 * usages;
     int i, len, j;
     char * buf, * dirName;
     char * chptr;
@@ -291,7 +301,7 @@ int rpmGetFilesystemUsage(const char ** fileList, int_32 * fssizes, int numFiles
 	if (getFilesystemList())
 	    return 1;
 
-    usages = xcalloc(numFilesystems, sizeof(usages));
+    usages = xcalloc(numFilesystems, sizeof(*usages));
 
     sourceDir = rpmGetPath("%{_sourcedir}", NULL);
 

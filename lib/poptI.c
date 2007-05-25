@@ -13,29 +13,27 @@
 extern time_t get_date(const char * p, void * now);	/* XXX expedient lies */
 /*@=redecl@*/
 
+/*@-fullinitblock@*/
 /*@unchecked@*/
-struct rpmInstallArguments_s rpmIArgs = {
-    0,			/* transFlags */
-			/* probFilter */
-    (RPMPROB_FILTER_REPLACEOLDFILES | RPMPROB_FILTER_REPLACENEWFILES),
-    0,			/* installInterfaceFlags */
-    0,			/* eraseInterfaceFlags */
-    0,			/* qva_flags */
-    0,			/* rbtid */
-    0,			/* numRelocations */
-    0,			/* noDeps */
-    0,			/* incldocs */
-    NULL,		/* relocations */
-    NULL,		/* prefix */
-    NULL		/* rootdir */
+struct rpmQVKArguments_s rpmIArgs = {
+    .probFilter = (RPMPROB_FILTER_REPLACEOLDFILES | RPMPROB_FILTER_REPLACENEWFILES),
 };
+/*@=fullinitblock@*/
 
 #define	POPT_RELOCATE		-1021
 #define	POPT_EXCLUDEPATH	-1022
 #define	POPT_ROLLBACK		-1023
 #define	POPT_ROLLBACK_EXCLUDE	-1024
-#define	POPT_AUTOROLLBACK_GOAL	-1033
+/* -1025 thrugh -1033 are common in rpmcli.h. */
+#define	POPT_AUTOROLLBACK_GOAL	-1036
 
+#define	alloca_strdup(_s)	strcpy(alloca(strlen(_s)+1), (_s))
+
+/**
+ * Print a message and exit.
+ * @todo (CLI embedding) Use rpmMessage/rpmlog instead of fprintf, remove exit.
+ * @param desc		message	
+ */
 /*@exits@*/
 static void argerror(const char * desc)
 	/*@globals stderr, fileSystem @*/
@@ -57,7 +55,7 @@ static void installArgCallback( /*@unused@*/ poptContext con,
 	/*@globals rpmIArgs, stderr, fileSystem @*/
 	/*@modifies rpmIArgs, stderr, fileSystem @*/
 {
-    struct rpmInstallArguments_s * ia = &rpmIArgs;
+    QVA_t ia = &rpmIArgs;
 
     /* XXX avoid accidental collisions with POPT_BIT_SET for flags */
     /*@-branchstate@*/
@@ -83,7 +81,9 @@ static void installArgCallback( /*@unused@*/ poptContext con,
       { char * oldPath = NULL;
 	char * newPath = NULL;
 	
-	if (arg == NULL || *arg != '/') 
+	if (arg == NULL) 
+	    argerror(_("Option --relocate needs /old/path=/new/path argument"));
+	if (*arg != '/') 
 	    argerror(_("relocations must begin with a /"));
 	oldPath = xstrdup(arg);
 	if (!(newPath = strchr(oldPath, '=')))
@@ -103,22 +103,26 @@ static void installArgCallback( /*@unused@*/ poptContext con,
       }	break;
 
     case POPT_ROLLBACK_EXCLUDE:
-    {	time_t tid;
-	char ** excludes = NULL;
-	char ** tid_str;
+    {	int_32 tid;
+	char *t, *te;
 
 	/* Make sure we were given the proper number of args */
 	if (arg == NULL)
-	    argerror(_("rbexclude takes a Transaction I.D. argument"));
+	    argerror(_("Option --rbexclude needs transaction id argument(s)"));
 
-	/* First lets split the space delimited args */
-	excludes = splitString(arg, strlen(arg), ' ');
+	te = alloca_strdup(arg);
+	while (*te != '\0' && strchr(" \t\n,", *te) != NULL)
+	    *te++ = '\0';
+	while ((t = te++) != NULL && *t != '\0') {
+	    /* Find next tid. */
+	    while (*te != '\0' && strchr(" \t\n,", *te) == NULL)
+		te++;
+	    while (*te != '\0' && strchr(" \t\n,", *te) != NULL)
+		*te++ = '\0';
 
-	/* Iterate across the excludes */
-	for(tid_str == excludes; tid_str && *tid_str; tid_str++) {	
 	    /* Convert arg to TID which happens to be time_t */
 	    /* XXX: Need check for arg to be an integer      */
-	    tid = (time_t) strtol(*tid_str, NULL, 10);
+	    tid = (int_32) strtol(t, NULL, 0);
 
 	    /* Allocate space for new exclude tid */
 	    ia->rbtidExcludes = xrealloc(ia->rbtidExcludes, 
@@ -135,10 +139,11 @@ static void installArgCallback( /*@unused@*/ poptContext con,
     case POPT_ROLLBACK:
       {	time_t tid;
 	if (arg == NULL)
-	    argerror(_("rollback takes a time/date stamp argument"));
+	    argerror(_("Option --rollback needs a time/date stamp argument"));
 
 	/*@-moduncon@*/
 	tid = get_date(arg, NULL);
+	rpmMessage(RPMMESS_VERBOSE, _("Rollback goal:  %-24.24s (0x%08x)\n"), ctime(&tid), (int)tid);
 	/*@=moduncon@*/
 
 	if (tid == (time_t)-1 || tid == (time_t)0)
@@ -176,8 +181,8 @@ static void installArgCallback( /*@unused@*/ poptContext con,
 	ia->noDeps = 1;
 	break;
 
-    case RPMCLI_POPT_NOMD5:
-	ia->transFlags |= RPMTRANS_FLAG_NOMD5;
+    case RPMCLI_POPT_NOFDIGESTS:
+	ia->transFlags |= RPMTRANS_FLAG_NOFDIGESTS;
 	break;
 
     case RPMCLI_POPT_NOCONTEXTS:
@@ -211,21 +216,46 @@ struct poptOption rpmInstallPoptTable[] = {
 	installArgCallback, 0, NULL, NULL },
 /*@=type@*/
 
- { "aid", '\0', POPT_BIT_SET, &rpmIArgs.transFlags, RPMTRANS_FLAG_ADDINDEPS,
+#if 0
+ { "aid", '\0', POPT_BIT_SET, &rpmIArgs.depFlags, RPMDEPS_FLAG_ADDINDEPS,
 	N_("add suggested packages to transaction"), NULL },
+ { "anaconda", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
+ 	&rpmIArgs.depFlags, RPMDEPS_FLAG_ANACONDA|RPMDEPS_FLAG_DEPLOOPS,
+	N_("use anaconda \"presentation order\""), NULL},
+ { "deploops", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
+ 	&rpmIArgs.depFlags, RPMDEPS_FLAG_DEPLOOPS,
+	N_("print dependency loops as warning"), NULL},
+ { "nosuggest", '\0', POPT_BIT_SET,
+	&rpmIArgs.depFlags, RPMDEPS_FLAG_NOSUGGEST,
+	N_("do not suggest missing dependency resolution(s)"), NULL},
+ { "noconflicts", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
+	&rpmIArgs.depFlags, RPMDEPS_FLAG_NOCONFLICTS,
+	N_("do not check added package conflicts"), NULL},
+ { "nolinktos", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
+	&rpmIArgs.depFlags, RPMDEPS_FLAG_NOLINKTOS,
+	N_("ignore added package requires on symlink targets"), NULL},
+ { "noobsoletes", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
+	&rpmIArgs.depFlags, RPMDEPS_FLAG_NOOBSOLETES,
+	N_("ignore added package obsoletes"), NULL},
+ { "noparentdirs", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
+	&rpmIArgs.depFlags, RPMDEPS_FLAG_NOPARENTDIRS,
+	N_("ignore added package requires on file parent directory"), NULL},
+ { "norequires", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
+	&rpmIArgs.depFlags, RPMDEPS_FLAG_NOREQUIRES,
+	N_("do not check added package requires"), NULL},
+ { "noupgrade", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
+	&rpmIArgs.depFlags, RPMDEPS_FLAG_NOUPGRADE,
+	N_("ignore added package upgrades"), NULL},
+#endif
 
  { "allfiles", '\0', POPT_BIT_SET,
 	&rpmIArgs.transFlags, RPMTRANS_FLAG_ALLFILES,
   N_("install all files, even configurations which might otherwise be skipped"),
 	NULL},
  { "allmatches", '\0', POPT_BIT_SET,
-	&rpmIArgs.eraseInterfaceFlags, UNINSTALL_ALLMATCHES,
+	&rpmIArgs.installInterfaceFlags, INSTALL_ALLMATCHES,
 	N_("remove all packages which match <package> (normally an error is generated if <package> specified multiple packages)"),
 	NULL},
-
- { "anaconda", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
- 	&rpmIArgs.transFlags, RPMTRANS_FLAG_ANACONDA|RPMTRANS_FLAG_DEPLOOPS,
-	N_("use anaconda \"presentation order\""), NULL},
 
  { "apply", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN, &rpmIArgs.transFlags,
 	(_noTransScripts|_noTransTriggers|
@@ -235,10 +265,6 @@ struct poptOption rpmInstallPoptTable[] = {
  { "badreloc", '\0', POPT_BIT_SET,
 	&rpmIArgs.probFilter, RPMPROB_FILTER_FORCERELOCATE,
 	N_("relocate files in non-relocatable package"), NULL},
-
- { "deploops", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
- 	&rpmIArgs.transFlags, RPMTRANS_FLAG_DEPLOOPS,
-	N_("print dependency loops as warning"), NULL},
 
  { "dirstash", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
 	&rpmIArgs.transFlags, RPMTRANS_FLAG_DIRSTASH,
@@ -268,12 +294,14 @@ struct poptOption rpmInstallPoptTable[] = {
 	N_("<packagefile>+") },
  { "hash", 'h', POPT_BIT_SET, &rpmIArgs.installInterfaceFlags, INSTALL_HASH,
 	N_("print hash marks as package installs (good with -v)"), NULL},
+#ifndef	DIEDIEDIE
  { "ignorearch", '\0', POPT_BIT_SET,
 	&rpmIArgs.probFilter, RPMPROB_FILTER_IGNOREARCH,
 	N_("don't verify package architecture"), NULL},
  { "ignoreos", '\0', POPT_BIT_SET,
 	&rpmIArgs.probFilter, RPMPROB_FILTER_IGNOREOS,
 	N_("don't verify package operating system"), NULL},
+#endif
  { "ignoresize", '\0', POPT_BIT_SET, &rpmIArgs.probFilter,
 	(RPMPROB_FILTER_DISKSPACE|RPMPROB_FILTER_DISKNODES),
 	N_("don't check disk space before installing"), NULL},
@@ -295,8 +323,10 @@ struct poptOption rpmInstallPoptTable[] = {
 	&rpmIArgs.transFlags, RPMTRANS_FLAG_NODOCS,
 	N_("do not install documentation"), NULL},
 
- { "nomd5", '\0', 0, NULL, RPMCLI_POPT_NOMD5,
-	N_("don't verify MD5 digest of files"), NULL },
+ { "nomd5", '\0', POPT_ARGFLAG_DOC_HIDDEN, NULL, RPMCLI_POPT_NOFDIGESTS,
+	N_("don't verify file digests"), NULL },
+ { "nofdigests", '\0', 0, NULL, RPMCLI_POPT_NOFDIGESTS,
+	N_("don't verify file digests"), NULL },
  { "nocontexts", '\0',0,  NULL, RPMCLI_POPT_NOCONTEXTS,
 	N_("don't install file security contexts"), NULL},
 
@@ -304,10 +334,6 @@ struct poptOption rpmInstallPoptTable[] = {
 	&rpmIArgs.installInterfaceFlags, INSTALL_NOORDER,
 	N_("do not reorder package installation to satisfy dependencies"),
 	NULL},
-
- { "nosuggest", '\0', POPT_BIT_SET, &rpmIArgs.transFlags,
-	RPMTRANS_FLAG_NOSUGGEST,
-	N_("do not suggest missing dependency resolution(s)"), NULL},
 
  { "noscripts", '\0', 0, NULL, RPMCLI_POPT_NOSCRIPTS,
 	N_("do not execute package scriptlet(s)"), NULL },
@@ -354,7 +380,7 @@ struct poptOption rpmInstallPoptTable[] = {
  { "percent", '\0', POPT_BIT_SET,
 	&rpmIArgs.installInterfaceFlags, INSTALL_PERCENT,
 	N_("print percentages as package installs"), NULL},
- { "prefix", '\0', POPT_ARG_STRING, &rpmIArgs.prefix, 0,
+ { "prefix", '\0', POPT_ARG_STRING, &rpmIArgs.qva_prefix, 0,
 	N_("relocate the package to <dir>, if relocatable"),
 	N_("<dir>") },
  { "relocate", '\0', POPT_ARG_STRING, 0, POPT_RELOCATE,
@@ -369,13 +395,13 @@ struct poptOption rpmInstallPoptTable[] = {
  { "replacepkgs", '\0', POPT_BIT_SET,
 	&rpmIArgs.probFilter, RPMPROB_FILTER_REPLACEPKG,
 	N_("reinstall if the package is already present"), NULL},
- { "rollback", '\0', POPT_ARG_STRING, 0, POPT_ROLLBACK,
+ { "rollback", '\0', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN, 0, POPT_ROLLBACK,
 	N_("deinstall new, reinstall old, package(s), back to <date>"),
 	N_("<date>") },
- { "arbgoal", '\0', POPT_ARG_STRING, 0, POPT_AUTOROLLBACK_GOAL,
+ { "arbgoal", '\0', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN, 0, POPT_AUTOROLLBACK_GOAL,
 	N_("If transaction fails rollback to <date>"),
 	N_("<date>") },
- { "rbexclude", '\0', POPT_ARG_STRING, 0, POPT_ROLLBACK_EXCLUDE,
+ { "rbexclude", '\0', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN, 0, POPT_ROLLBACK_EXCLUDE,
 	N_("Exclude Transaction I.D. from rollback"),
 	N_("<tid>") },
  { "test", '\0', POPT_BIT_SET, &rpmIArgs.transFlags, RPMTRANS_FLAG_TEST,

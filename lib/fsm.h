@@ -125,6 +125,8 @@ struct fsm_s {
 /*@owned@*/ /*@relnull@*/
     const char * path;		/*!< Current file name. */
 /*@owned@*/ /*@relnull@*/
+    const char * lpath;		/*!< Current link name. */
+/*@owned@*/ /*@relnull@*/
     const char * opath;		/*!< Original file name. */
 /*@relnull@*/
     FD_t cfd;			/*!< Payload file handle. */
@@ -180,15 +182,18 @@ struct fsm_s {
     int astriplen;		/*!< Length of buildroot prefix. */
     int rc;			/*!< External file stage return code. */
     int commit;			/*!< Commit synchronously? */
+    int repackaged;		/*!< Is payload repackaged? */
     cpioMapFlags mapFlags;	/*!< Bit(s) to control mapping. */
+    int fdigestalgo;		/*!< Digest algorithm (~= PGPHASHALGO_MD5) */
+    int digestlen;		/*!< No. of bytes in binary digest (~= 16) */
 /*@shared@*/ /*@relnull@*/
     const char * dirName;	/*!< File directory name. */
 /*@shared@*/ /*@relnull@*/
     const char * baseName;	/*!< File base name. */
 /*@shared@*/ /*@relnull@*/
-    const char * fmd5sum;	/*!< Hex MD5 sum (NULL disables). */
+    const char * fdigest;	/*!< Hex digest (usually MD5, NULL disables). */
 /*@shared@*/ /*@relnull@*/
-    const char * md5sum;	/*!< Binary MD5 sum (NULL disables). */
+    const unsigned char * digest;/*!< Bin digest (usually MD5, NULL disables). */
 /*@dependent@*/ /*@observer@*/ /*@null@*/
     const char * fcontext;	/*!< File security context (NULL disables). */
     
@@ -199,6 +204,11 @@ struct fsm_s {
     fileStage nstage;		/*!< Next file stage. */
     struct stat sb;		/*!< Current file stat(2) info. */
     struct stat osb;		/*!< Original file stat(2) info. */
+
+    unsigned blksize;		/*!< Archive block size. */
+    int (*headerRead) (FSM_t fsm, struct stat *st);
+    int (*headerWrite) (FSM_t fsm, struct stat *st);
+    int (*trailerWrite) (FSM_t fsm);
 };
 
 #ifdef __cplusplus
@@ -211,14 +221,14 @@ extern "C" {
  * @param a		file stage
  * @return		formatted string
  */
-/*@observer@*/ const char *const fileStageString(fileStage a)	/*@*/;
+/*@observer@*/ const char * fileStageString(fileStage a)	/*@*/;
 
 /**
  * Return formatted string representation of file disposition.
  * @param a		file dispostion
  * @return		formatted string
  */
-/*@observer@*/ const char *const fileActionString(fileAction a)	/*@*/;
+/*@observer@*/ const char * fileActionString(fileAction a)	/*@*/;
 /*@=exportlocal@*/
 
 /**
@@ -241,14 +251,15 @@ extern "C" {
  * Load external data into file state machine.
  * @param fsm		file state machine
  * @param goal
+ * @param afmt		archive format (NULL uses cpio)
  * @param ts		transaction set
  * @param fi		transaction element file info
- * @param cfd
+ * @param cfd		payload descriptor
  * @retval archiveSize	pointer to archive size
  * @retval failedFile	pointer to first file name that failed.
  * @return		0 on success
  */
-int fsmSetup(FSM_t fsm, fileStage goal,
+int fsmSetup(FSM_t fsm, fileStage goal, /*@null@*/ const char * afmt,
 		const rpmts ts,
 		const rpmfi fi,
 		FD_t cfd,

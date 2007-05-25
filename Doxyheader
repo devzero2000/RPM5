@@ -10,15 +10,15 @@
  */
 /** \defgroup	rpmrc	RPMRC.
  */
-/** \defgroup	rpmts	Transaction Set API.
+/** \defgroup	rpmts	RPMTS Transaction Set API.
  */
-/** \defgroup	rpmte	Transaction Element API.
+/** \defgroup	rpmte	RPMTE Transaction Element API.
  */
-/** \defgroup	rpmds	Dependency Set API.
+/** \defgroup	rpmds	RPMDS Dependency Set API.
  */
-/** \defgroup	rpmfi	File Info API.
+/** \defgroup	rpmfi	RPMFI File Info API.
  */
-/** \defgroup	rpmgi	Generalized Iterator API.
+/** \defgroup	rpmgi	RPMGI Generalized Iterator API.
  */
 /** \defgroup	lead	LEAD.
  */
@@ -28,17 +28,15 @@
  */
 /** \defgroup	payload	PAYLOAD.
  */
-/** \defgroup	rpmdb	Database API.
+/** \defgroup	rpmdb	RPMDB Database API.
  */
-/** \defgroup	dbi	DataBase Index Element API.
+/** \defgroup	dbi	RPMDBI DataBase Index Element API.
  */
 /** \defgroup	db3	Berkeley DB API.
  */
-/** \defgroup	rpmlua	Embedded Lua.
+/** \defgroup	rpmlua	RPMLUA Embedded Lua.
  */
 /** \defgroup	rpmrpc	RPMRPC.
  */
 /** \defgroup	rpmio	RPMIO.
- */
-/** \defgroup	popt	POPT.
  */

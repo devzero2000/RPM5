@@ -45,7 +45,7 @@ static char sccsid[] = "@(#)fts.c	8.6 (Berkeley) 8/14/94";
 #include <string.h>
 #include <unistd.h>
 #else
-#if defined(hpux)
+#if defined(hpux) || defined(__hpux)
 # define        _INCLUDE_POSIX_SOURCE
 #   define __errno_location() 	(&errno)
 #   define dirfd(dirp)		-1
@@ -65,6 +65,11 @@ static char sccsid[] = "@(#)fts.c	8.6 (Berkeley) 8/14/94";
 #   define _STAT_VER		0
 #   define __fxstat64(_stat_ver, _fd, _sbp)	fstat((_fd), (_sbp))
 #endif
+#if defined(__FreeBSD__)
+#   define __errno_location()  (&errno)
+#   define stat64              stat
+#   define __fxstat64(_stat_ver, _fd, _sbp)    fstat((_fd), (_sbp))
+#endif
 #include "system.h"
 #include "fts.h"
 #include "rpmio.h"
@@ -75,17 +80,25 @@ static char sccsid[] = "@(#)fts.c	8.6 (Berkeley) 8/14/94";
 #   define __fchdir	fchdir
 #endif
 
+#if !defined(USHRT_MAX)
+#define	USHRT_MAX	65535
+#endif
 
 /* Largest alignment size needed, minus one.
    Usually long double is the worst case.  */
 #ifndef ALIGNBYTES
-#define ALIGNBYTES	(__alignof__ (long double) - 1)
+#if defined __GNUC__ && __GNUC__ >= 2
+# define alignof(TYPE) __alignof__ (TYPE)
+#else
+# define alignof(TYPE) \
+    ((int) &((struct { char dummy1; TYPE dummy2; } *) 0)->dummy2)
+#endif
+#define ALIGNBYTES	(alignof(long double) - 1)
 #endif
 /* Align P to that size.  */
 #ifndef ALIGN
 #define	ALIGN(p)	(((unsigned long int) (p) + ALIGNBYTES) & ~ALIGNBYTES)
 #endif
-
 
 /*@only@*/ /*@null@*/
 static FTSENT *	fts_alloc(FTS * sp, const char * name, int namelen)
@@ -113,12 +126,6 @@ static int      fts_safe_changedir(FTS * sp, FTSENT * p, int fd,
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
 
-#ifndef MAX
-#define MAX(a, b)	({ __typeof__ (a) _a = (a); \
-			   __typeof__ (b) _b = (b); \
-			   _a > _b ? _a : _b; })
-#endif
-
 #define	ISDOT(a)	(a[0] == '.' && (!a[1] || (a[1] == '.' && !a[2])))
 
 #define CLR(opt)	(sp->fts_options &= ~(opt))
@@ -139,8 +146,9 @@ Fts_open(char * const * argv, int options,
 	register FTS *sp;
 	register FTSENT *p, *root;
 	register int nitems;
-	FTSENT *parent, *tmp = NULL;
-	int len;
+	FTSENT *parent = NULL;
+	FTSENT *tmp = NULL;
+	size_t len;
 
 	/* Options check. */
 	if (options & ~FTS_OPTIONMASK) {
@@ -173,13 +181,20 @@ Fts_open(char * const * argv, int options,
 #ifndef MAXPATHLEN
 #define MAXPATHLEN 1024
 #endif
-	if (fts_palloc(sp, MAX(fts_maxarglen(argv), MAXPATHLEN)))
+	len = fts_maxarglen(argv);
+	if (len < MAXPATHLEN)
+	    len = MAXPATHLEN;
+	if (fts_palloc(sp, len))
 		goto mem1;
 
 	/* Allocate/initialize root's parent. */
-	if ((parent = fts_alloc(sp, "", 0)) == NULL)
-		goto mem2;
-	parent->fts_level = FTS_ROOTPARENTLEVEL;
+/*@-branchstate@*/
+	if (*argv != NULL) {
+		if ((parent = fts_alloc(sp, "", 0)) == NULL)
+			goto mem2;
+		parent->fts_level = FTS_ROOTPARENTLEVEL;
+	}
+/*@=branchstate@*/
 
 	/* Allocate/initialize root(s). */
 	for (root = NULL, nitems = 0; *argv != NULL; ++argv, ++nitems) {
@@ -457,6 +472,7 @@ Fts_read(FTS * sp)
 		}
 		p = sp->fts_child;
 		sp->fts_child = NULL;
+		sp->fts_cur = p;
 		goto name;
 	}
 
@@ -464,6 +480,7 @@ Fts_read(FTS * sp)
 /*@-boundswrite@*/
 next:	tmp = p;
 	if ((p = p->fts_link) != NULL) {
+		sp->fts_cur = p;
 		free(tmp);
 
 		/*
@@ -476,7 +493,7 @@ next:	tmp = p;
 				return (NULL);
 			}
 			fts_load(sp, p);
-			return (sp->fts_cur = p);
+			return (p);
 		}
 
 		/*
@@ -504,11 +521,12 @@ next:	tmp = p;
 name:		t = sp->fts_path + NAPPEND(p->fts_parent);
 		*t++ = '/';
 		memmove(t, p->fts_name, p->fts_namelen + 1);
-		return (sp->fts_cur = p);
+		return (p);
 	}
 
 	/* Move up to the parent node. */
 	p = tmp->fts_parent;
+	sp->fts_cur = p;
 	free(tmp);
 
 	if (p->fts_level == FTS_ROOTPARENTLEVEL) {
@@ -552,7 +570,7 @@ name:		t = sp->fts_path + NAPPEND(p->fts_parent);
 		return (NULL);
 	}
 	p->fts_info = p->fts_errno ? FTS_ERR : FTS_DP;
-	return (sp->fts_cur = p);
+	return (p);
 }
 
 /*
@@ -668,8 +686,9 @@ fts_build(FTS * sp, int type)
 	FTSENT *cur, *tail;
 	DIR *dirp;
 	void *oldaddr;
-	int cderrno, descend, len, level, maxlen, nlinks, saved_errno,
+	int cderrno, descend, len, level, nlinks, saved_errno,
 	    nostat, doadjust;
+	size_t maxlen;
 	char *cp;
 
 	/* Set current node pointer. */
@@ -833,6 +852,12 @@ mem1:				saved_errno = errno;
 			p->fts_flags |= FTS_ISW;
 #endif
 
+#if 0
+		/*
+		 * Unreachable code.  cderrno is only ever set to a nonnull
+		 * value if dirp is closed at the same time.  But then we
+		 * cannot enter this loop.
+		 */
 		if (cderrno) {
 			if (nlinks) {
 				p->fts_info = FTS_NS;
@@ -840,7 +865,9 @@ mem1:				saved_errno = errno;
 			} else
 				p->fts_info = FTS_NSOK;
 			p->fts_accpath = cur->fts_accpath;
-		} else if (nlinks == 0
+		} else
+#endif
+		if (nlinks == 0
 #if defined DT_DIR && defined _DIRENT_HAVE_D_TYPE
 			   || (nostat &&
 			       dp->d_type != DT_DIR && dp->d_type != DT_UNKNOWN)
@@ -911,6 +938,7 @@ mem1:				saved_errno = errno;
 	     fts_safe_changedir(sp, cur->fts_parent, -1, ".."))) {
 		cur->fts_info = FTS_ERR;
 		SET(FTS_STOP);
+		fts_lfree(head);
 		return (NULL);
 	}
 
@@ -918,6 +946,7 @@ mem1:				saved_errno = errno;
 	if (!nitems) {
 		if (type == BREAD)
 			cur->fts_info = FTS_DP;
+		fts_lfree(head);
 		return (NULL);
 	}
 
@@ -1119,10 +1148,8 @@ fts_palloc(FTS * sp, size_t more)
 	 * We limit fts_pathlen to USHRT_MAX to be safe in both cases.
 	 */
 	if (sp->fts_pathlen < 0 || sp->fts_pathlen >= USHRT_MAX) {
-		if (sp->fts_path) {
+		if (sp->fts_path)
 			free(sp->fts_path);
-			sp->fts_path = NULL;
-		}
 		sp->fts_path = NULL;
 /*@-boundswrite@*/
 		__set_errno (ENAMETOOLONG);

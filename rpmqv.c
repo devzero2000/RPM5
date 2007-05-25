@@ -1,5 +1,5 @@
 #include "system.h"
-const char *__progname;
+extern const char *__progname;
 
 #define	_AUTOHELP
 
@@ -17,6 +17,10 @@ const char *__progname;
 #include "rpmdb.h"
 #include "rpmps.h"
 #include "rpmts.h"
+
+#include "rpmlua.h"	/* XXX for rpmluaFree() */
+
+#include "fs.h"		/* XXX for rpmFreeFilesystems() */
 
 #ifdef	IAM_RPMBT
 #include "build.h"
@@ -80,6 +84,15 @@ static struct poptOption optionsTable[] = {
         N_("Source options (with --query or --verify):"),
         NULL },
 #endif
+#endif	/* IAM_RPMQV */
+
+#if defined(IAM_RPMQV) || defined(IAM_RPMEIU)
+ { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmcliDepFlagsPoptTable, 0,
+        N_("Dependency check/order options:"),
+        NULL },
+#endif	/* IAM_RPMQV */
+
+#ifdef	IAM_RPMQV
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmcliFtsPoptTable, 0,
         N_("File tree walk options (with --ftswalk):"),
         NULL },
@@ -167,12 +180,13 @@ int main(int argc, const char ** argv, /*@unused@*/ char ** envp)
 #else
 int main(int argc, const char ** argv)
 #endif
-	/*@globals __assert_program_name, rpmEVR, RPMVERSION,
+	/*@globals rpmRcfiles, rpmEVR, RPMVERSION,
 		rpmGlobalMacroContext, rpmCLIMacroContext,
 		h_errno, fileSystem, internalState@*/
-	/*@modifies __assert_program_name,
-		fileSystem, internalState@*/
+	/*@modifies fileSystem, internalState@*/
 {
+    poptContext optCon = rpmcliInit(argc, (char *const *)argv, optionsTable);
+
     rpmts ts = NULL;
     enum modes bigMode = MODE_UNKNOWN;
 
@@ -185,11 +199,11 @@ int main(int argc, const char ** argv)
 #endif
 
 #ifdef	IAM_RPMEIU
-   struct rpmInstallArguments_s * ia = &rpmIArgs;
+   QVA_t ia = &rpmIArgs;
 #endif
 
 #if defined(IAM_RPMDB)
-   struct rpmDatabaseArguments_s * da = &rpmDBArgs;
+   QVA_t da = &rpmDBArgs;
 #endif
 
 #if defined(IAM_RPMK)
@@ -200,11 +214,7 @@ int main(int argc, const char ** argv)
     char * passPhrase = "";
 #endif
 
-    int arg;
-
-    const char * optArg;
     pid_t pipeChild = 0;
-    poptContext optCon;
     int ec = 0;
     int status;
     int p[2];
@@ -212,22 +222,9 @@ int main(int argc, const char ** argv)
     int i;
 #endif
 	
-#if HAVE_MCHECK_H && HAVE_MTRACE
-    /*@-noeffect@*/
-    mtrace();	/* Trace malloc only if MALLOC_TRACE=mtrace-output-file. */
-    /*@=noeffect@*/
-#endif
-    setprogname(argv[0]);	/* Retrofit glibc __progname */
-
 #if !defined(__GLIBC__) && !defined(__LCLINT__)
     environ = envp;
 #endif  
-
-    /* XXX glibc churn sanity */
-    if (__progname == NULL) {
-	if ((__progname = strrchr(argv[0], '/')) != NULL) __progname++;
-	else __progname = argv[0];
-    }
 
     /* Set the major mode based on argv[0] */
     /*@-nullpass@*/
@@ -274,45 +271,6 @@ int main(int argc, const char ** argv)
     }
 #endif
 
-#if defined(ENABLE_NLS)
-    /* set up the correct locale */
-    (void) setlocale(LC_ALL, "" );
-
-#ifdef	__LCLINT__
-#define	LOCALEDIR	"/usr/share/locale"
-#endif
-    bindtextdomain(PACKAGE, LOCALEDIR);
-    textdomain(PACKAGE);
-#endif
-
-    rpmSetVerbosity(RPMMESS_NORMAL);	/* XXX silly use by showrc */
-
-    /* Make a first pass through the arguments, looking for --rcfile */
-    /* We need to handle that before dealing with the rest of the arguments. */
-    /*@-nullpass -temptrans@*/
-    optCon = poptGetContext(__progname, argc, argv, optionsTable, 0);
-    /*@=nullpass =temptrans@*/
-    (void) poptReadConfigFile(optCon, LIBRPMALIAS_FILENAME);
-    (void) poptReadDefaultConfig(optCon, 1);
-    poptSetExecPath(optCon, RPMCONFIGDIR, 1);
-
-    while ((arg = poptGetNextOpt(optCon)) > 0) {
-	optArg = poptGetOptArg(optCon);
-
-	switch (arg) {
-	default:
-	    fprintf(stderr, _("Internal error in argument processing (%d) :-(\n"), arg);
-	    exit(EXIT_FAILURE);
-	}
-    }
-
-    if (arg < -1) {
-	fprintf(stderr, "%s: %s\n", 
-		poptBadOption(optCon, POPT_BADOPTION_NOALIAS), 
-		poptStrerror(arg));
-	exit(EXIT_FAILURE);
-    }
-
     rpmcliConfigured();
 
 #ifdef	IAM_RPMBT
@@ -328,11 +286,6 @@ int main(int argc, const char ** argv)
 
     if ((ba->buildAmount & RPMBUILD_RMSPEC) && bigMode == MODE_UNKNOWN)
 	bigMode = MODE_BUILD;
-
-    if (ba->buildRootOverride && bigMode != MODE_BUILD &&
-	bigMode != MODE_REBUILD && bigMode != MODE_TARBUILD) {
-	argerror("--buildroot may only be used during package builds");
-    }
 #endif	/* IAM_RPMBT */
     
 #ifdef	IAM_RPMDB
@@ -424,16 +377,16 @@ int main(int argc, const char ** argv)
     if (bigMode != MODE_INSTALL && (ia->probFilter & RPMPROB_FILTER_FORCERELOCATE))
 	argerror(_("files may only be relocated during package installation"));
 
-    if (ia->relocations && ia->prefix)
+    if (ia->relocations && ia->qva_prefix)
 	argerror(_("cannot use --prefix with --relocate or --excludepath"));
 
     if (bigMode != MODE_INSTALL && ia->relocations)
 	argerror(_("--relocate and --excludepath may only be used when installing new packages"));
 
-    if (bigMode != MODE_INSTALL && ia->prefix)
+    if (bigMode != MODE_INSTALL && ia->qva_prefix)
 	argerror(_("--prefix may only be used when installing new packages"));
 
-    if (ia->prefix && ia->prefix[0] != '/') 
+    if (ia->qva_prefix && ia->qva_prefix[0] != '/') 
 	argerror(_("arguments to --prefix must begin with a /"));
 
     if (bigMode != MODE_INSTALL && (ia->installInterfaceFlags & INSTALL_HASH))
@@ -473,7 +426,7 @@ int main(int argc, const char ** argv)
 	argerror(_("--ignoresize may only be specified during package "
 		   "installation"));
 
-    if ((ia->eraseInterfaceFlags & UNINSTALL_ALLMATCHES) && bigMode != MODE_ERASE)
+    if ((ia->installInterfaceFlags & INSTALL_ALLMATCHES) && bigMode != MODE_ERASE)
 	argerror(_("--allmatches may only be specified during package "
 		   "erasure"));
 
@@ -560,18 +513,22 @@ int main(int argc, const char ** argv)
 	    }
 
             if (poptPeekArg(optCon)) {
-		int sigTag;
-		switch (sigTag = rpmLookupSignatureType(RPMLOOKUPSIG_QUERY)) {
+		int sigTag = rpmLookupSignatureType(RPMLOOKUPSIG_QUERY);
+		switch (sigTag) {
 		  case 0:
 		    break;
 		  case RPMSIGTAG_PGP:
+#ifdef	DYING	/* XXX gpg can now be used for RSA signatures. */
 		    if ((sigTag == RPMSIGTAG_PGP || sigTag == RPMSIGTAG_PGP5) &&
 		        !rpmDetectPGPVersion(NULL)) {
 		        fprintf(stderr, _("pgp not found: "));
 			ec = EXIT_FAILURE;
 			goto exit;
 		    }	/*@fallthrough@*/
+#endif
 		  case RPMSIGTAG_GPG:
+		  case RPMSIGTAG_DSA:
+		  case RPMSIGTAG_RSA:
 		    passPhrase = rpmGetPassPhrase(_("Enter pass phrase: "), sigTag);
 		    if (passPhrase == NULL) {
 			fprintf(stderr, _("Pass phrase check failed\n"));
@@ -620,7 +577,7 @@ int main(int argc, const char ** argv)
     switch (bigMode) {
 #ifdef	IAM_RPMDB
     case MODE_INITDB:
-	(void) rpmtsInitDB(ts, 0644);
+	ec = rpmtsInitDB(ts, 0644);
 	break;
 
     case MODE_REBUILDDB:
@@ -725,21 +682,23 @@ int main(int argc, const char ** argv)
 	    ec = build(ts, pkg, ba, rpmcliRcfile);
 	    if (ec)
 		/*@loopbreak@*/ break;
-	    rpmFreeMacros(NULL);
-	    (void) rpmReadConfigFiles(rpmcliRcfile, NULL);
 	}
     }	break;
 #endif	/* IAM_RPMBT */
 
 #ifdef	IAM_RPMEIU
     case MODE_ERASE:
-	if (ia->noDeps) ia->eraseInterfaceFlags |= UNINSTALL_NODEPS;
+	ia->depFlags = global_depFlags;
+	if (ia->noDeps) ia->installInterfaceFlags |= INSTALL_NODEPS;
 
 	if (!poptPeekArg(optCon)) {
 	    if (ia->rbtid == 0)
 		argerror(_("no packages given for erase"));
-ia->transFlags |= RPMTRANS_FLAG_NOMD5;
+ia->transFlags |= RPMTRANS_FLAG_NOFDIGESTS;
 ia->probFilter |= RPMPROB_FILTER_OLDPACKAGE;
+ia->rbCheck = rpmrbCheck;
+ia->rbOrder = rpmrbOrder;
+ia->rbRun = rpmrbRun;
 	    ec += rpmRollback(ts, ia, NULL);
 	} else {
 	    ec += rpmErase(ts, ia, (const char **) poptGetArgs(optCon));
@@ -750,6 +709,7 @@ ia->probFilter |= RPMPROB_FILTER_OLDPACKAGE;
 
 	/* RPMTRANS_FLAG_KEEPOBSOLETE */
 
+	ia->depFlags = global_depFlags;
 	if (!ia->incldocs) {
 	    if (ia->transFlags & RPMTRANS_FLAG_NODOCS) {
 		;
@@ -761,10 +721,10 @@ ia->probFilter |= RPMPROB_FILTER_OLDPACKAGE;
 
 	/* we've already ensured !(!ia->prefix && !ia->relocations) */
 	/*@-branchstate@*/
-	if (ia->prefix) {
+	if (ia->qva_prefix) {
 	    ia->relocations = xmalloc(2 * sizeof(*ia->relocations));
 	    ia->relocations[0].oldPath = NULL;   /* special case magic */
-	    ia->relocations[0].newPath = ia->prefix;
+	    ia->relocations[0].newPath = ia->qva_prefix;
 	    ia->relocations[1].oldPath = NULL;
 	    ia->relocations[1].newPath = NULL;
 	} else if (ia->relocations) {
@@ -778,8 +738,11 @@ ia->probFilter |= RPMPROB_FILTER_OLDPACKAGE;
 	if (!poptPeekArg(optCon)) {
 	    if (ia->rbtid == 0)
 		argerror(_("no packages given for install"));
-ia->transFlags |= RPMTRANS_FLAG_NOMD5;
+ia->transFlags |= RPMTRANS_FLAG_NOFDIGESTS;
 ia->probFilter |= RPMPROB_FILTER_OLDPACKAGE;
+ia->rbCheck = rpmrbCheck;
+ia->rbOrder = rpmrbOrder;
+ia->rbRun = rpmrbRun;
 /*@i@*/	    ec += rpmRollback(ts, ia, NULL);
 	} else {
 	    /*@-compdef -compmempass@*/ /* FIX: ia->relocations[0].newPath undefined */
@@ -796,6 +759,7 @@ ia->probFilter |= RPMPROB_FILTER_OLDPACKAGE;
 	 && !(qva->qva_source == RPMQV_ALL || qva->qva_source == RPMQV_HDLIST))
 	    argerror(_("no arguments given for query"));
 
+	qva->depFlags = global_depFlags;
 	qva->qva_specQuery = rpmspecQuery;
 	ec = rpmcliQuery(ts, qva, (const char **) poptGetArgs(optCon));
 	qva->qva_specQuery = NULL;
@@ -804,6 +768,7 @@ ia->probFilter |= RPMPROB_FILTER_OLDPACKAGE;
     case MODE_VERIFY:
     {	rpmVerifyFlags verifyFlags = VERIFY_ALL;
 
+	qva->depFlags = global_depFlags;
 	verifyFlags &= ~qva->qva_flags;
 	qva->qva_flags = (rpmQueryFlags) verifyFlags;
 
@@ -817,7 +782,7 @@ ia->probFilter |= RPMPROB_FILTER_OLDPACKAGE;
 #ifdef IAM_RPMK
     case MODE_CHECKSIG:
     {	rpmVerifyFlags verifyFlags =
-		(VERIFY_MD5|VERIFY_DIGEST|VERIFY_SIGNATURE);
+		(VERIFY_FDIGEST|VERIFY_HDRCHK|VERIFY_DIGEST|VERIFY_SIGNATURE);
 
 	verifyFlags &= ~ka->qva_flags;
 	ka->qva_flags = (rpmQueryFlags) verifyFlags;
@@ -855,7 +820,7 @@ ia->probFilter |= RPMPROB_FILTER_OLDPACKAGE;
 #endif
     case MODE_UNKNOWN:
 	if (poptPeekArg(optCon) != NULL || argc <= 1 || rpmIsVerbose()) {
-	    printUsage(optCon, stdout, 0);
+	    printUsage(optCon, stderr, 0);
 	    ec = argc;
 	}
 	break;
@@ -867,21 +832,10 @@ exit:
 
     ts = rpmtsFree(ts);
 
-    optCon = poptFreeContext(optCon);
-    rpmFreeMacros(NULL);
-/*@i@*/	rpmFreeMacros(rpmCLIMacroContext);
-    rpmFreeRpmrc();
-
     if (pipeChild) {
 	(void) fclose(stdout);
 	(void) waitpid(pipeChild, &status, 0);
     }
-
-    /* keeps memory leak checkers quiet */
-    freeFilesystems();
-/*@i@*/	urlFreeCache();
-    rpmlogClose();
-    dbiTags = _free(dbiTags);
 
 #ifdef	IAM_RPMQV
     qva->qva_queryFormat = _free(qva->qva_queryFormat);
@@ -889,8 +843,6 @@ exit:
 
 #ifdef	IAM_RPMBT
     freeNames();
-    ba->buildRootOverride = _free(ba->buildRootOverride);
-    ba->targets = _free(ba->targets);
 #endif
 
 #ifdef	IAM_RPMEIU
@@ -900,11 +852,7 @@ exit:
     ia->relocations = _free(ia->relocations);
 #endif
 
-#if HAVE_MCHECK_H && HAVE_MTRACE
-    /*@-noeffect@*/
-    muntrace();   /* Trace malloc only if MALLOC_TRACE=mtrace-output-file. */
-    /*@=noeffect@*/
-#endif
+    optCon = rpmcliFini(optCon);
 
     /* XXX don't overflow single byte exit status */
     if (ec > 255) ec = 255;

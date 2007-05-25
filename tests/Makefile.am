@@ -2,6 +2,8 @@
 
 AUTOMAKE_OPTIONS = 1.4 foreign
 
+pkglibdir = @USRLIBRPM@
+
 EXTRA_DIST =
 SUBDIRS = hello-test
 

@@ -1,7 +1,7 @@
-#/*! \page config_rpmrc Default configuration: @RPMCONFIGDIR@/rpmrc
+#/*! \page config_rpmrc Default configuration: /usr/lib/rpm/rpmrc
 # \verbatim
 #
-# @RPMCONFIGDIR@/@configure_input@
+# @USRLIBRPM@/@configure_input@
 # $Id$
 #
 # This is a global RPM configuration file. All changes made here will
@@ -15,17 +15,17 @@
 # "fat" binary with both archs, for Darwin
 optflags: fat -O2 -g -arch i386 -arch ppc
 
-optflags: i386 -O2 -g -march=i386 -mcpu=i686
-optflags: i486 -O2 -g -march=i486
-optflags: i586 -O2 -g -march=i586
-optflags: i686 -O2 -g -march=i686
-optflags: pentium3 -O2 -g -march=pentium3
-optflags: pentium4 -O2 -g -march=pentium4
-optflags: athlon -O2 -g -march=athlon
+optflags: i386 -O2 -g -m32 -march=i386 -mtune=generic -fasynchronous-unwind-tables
+optflags: i486 -O2 -g -m32 -march=i486 -fasynchronous-unwind-tables
+optflags: i586 -O2 -g -m32 -march=i586 -fasynchronous-unwind-tables
+optflags: i686 -O2 -g -m32 -march=i686 -mtune=generic -fasynchronous-unwind-tables
+optflags: pentium3 -O2 -g -m32 -march=pentium3 -fasynchronous-unwind-tables
+optflags: pentium4 -O2 -g -m32 -march=pentium4 -fasynchronous-unwind-tables
+optflags: athlon -O2 -g -m32 -march=athlon -fasynchronous-unwind-tables
 optflags: ia64 -O2 -g
-optflags: x86_64 -O2 -g
-optflags: amd64 -O2 -g
-optflags: ia32e -O2 -g
+optflags: x86_64 -O2 -g -m64 -mtune=generic
+optflags: amd64 -O2 -g -m64 -mtune=generic
+optflags: ia32e -O2 -g -m64 -mtune=generic
 
 optflags: alpha -O2 -g -mieee
 optflags: alphaev5 -O2 -g -mieee -mcpu=ev5
@@ -34,20 +34,22 @@ optflags: alphapca56 -O2 -g -mieee -mcpu=pca56
 optflags: alphaev6 -O2 -g -mieee -mcpu=ev6
 optflags: alphaev67 -O2 -g -mieee -mcpu=ev67
 
-optflags: sparc -O2 -g -m32 -mtune=ultrasparc
-optflags: sparcv8 -O2 -g -m32 -mtune=ultrasparc -mv8
+optflags: sparc -O2 -g -m32 -mcpu=v7 -mtune=ultrasparc
+optflags: sparcv8 -O2 -g -m32 -mcpu=v8 -mtune=ultrasparc
 optflags: sparcv9 -O2 -g -m32 -mcpu=ultrasparc
 optflags: sparc64 -O2 -g -m64 -mcpu=ultrasparc
 
 optflags: m68k -O2 -g -fomit-frame-pointer
 
-optflags: ppc -O2 -g -fsigned-char
-optflags: ppc8260 -O2 -g -fsigned-char
-optflags: ppc8560 -O2 -g -fsigned-char
-optflags: ppc32dy4 -O2 -g -fsigned-char
-optflags: ppciseries -O2 -g -fsigned-char
-optflags: ppcpseries -O2 -g -fsigned-char
-optflags: ppc64 -O2 -g -fsigned-char
+optflags: ppc -O2 -g -m32
+optflags: ppc8260 -O2 -g -m32
+optflags: ppc8560 -O2 -g -m32
+optflags: ppc32dy4 -O2 -g -m32
+optflags: ppciseries -O2 -g -m32
+optflags: ppcpseries -O2 -g -m32
+optflags: ppc64 -O2 -g -m64 -mminimal-toc
+optflags: ppciseries -O2 -g -m64 -mminimal-toc
+optflags: ppcpseries -O2 -g -m64 -mminimal-toc
 
 optflags: parisc -O2 -g -mpa-risc-1-0
 optflags: hppa1.0 -O2 -g -mpa-risc-1-0
@@ -61,6 +63,8 @@ optflags: mipsel -O2 -g
 optflags: armv3l -O2 -g -fsigned-char -fomit-frame-pointer -march=armv3
 optflags: armv4b -O2 -g -fsigned-char -fomit-frame-pointer -march=armv4
 optflags: armv4l -O2 -g -fsigned-char -fomit-frame-pointer -march=armv4
+optflags: armv5teb -O2 -g -fsigned-char -fomit-frame-pointer -march=armv5te
+optflags: armv5tel -O2 -g -fsigned-char -fomit-frame-pointer -march=armv5te
 
 optflags: atarist -O2 -g -fomit-frame-pointer
 optflags: atariste -O2 -g -fomit-frame-pointer
@@ -70,8 +74,8 @@ optflags: atariclone -O2 -g -fomit-frame-pointer
 optflags: milan -O2 -g -fomit-frame-pointer
 optflags: hades -O2 -g -fomit-frame-pointer
 
-optflags: s390 -O2 -g
-optflags: s390x -O2 -g
+optflags: s390 -O2 -g -m31
+optflags: s390x -O2 -g -m64
 
 #############################################################
 # Canonical arch names and numbers
@@ -124,6 +128,8 @@ arch_canon:	mipsel:	mipsel	11
 arch_canon:	armv3l: armv3l	12
 arch_canon:     armv4b:	armv4b 	12
 arch_canon:     armv4l:	armv4l 	12
+arch_canon:     armv5teb: armv5teb 	12
+arch_canon:     armv5tel: armv5tel 	12
 
 arch_canon:	m68kmint: m68kmint	13
 arch_canon:	atarist: m68kmint	13
@@ -290,6 +296,8 @@ arch_compat: hppa1.1: hppa1.0
 arch_compat: hppa1.0: parisc
 arch_compat: parisc: noarch
 
+arch_compat: armv5teb: armv4b
+arch_compat: armv5tel: armv4l
 arch_compat: armv4b: noarch
 arch_compat: armv4l: armv3l
 arch_compat: armv3l: noarch
@@ -384,6 +392,8 @@ buildarch_compat: mipsel: noarch
 buildarch_compat: armv3l: noarch
 buildarch_compat: armv4b: noarch
 buildarch_compat: armv4l: noarch
+buildarch_compat: armv5teb: noarch
+buildarch_compat: armv5tel: noarch
 
 buildarch_compat: hppa2.0: hppa1.2
 buildarch_compat: hppa1.2: hppa1.1
@@ -408,7 +418,7 @@ buildarch_compat: x86_64: noarch
 buildarch_compat: amd64: x86_64
 buildarch_compat: ia32e: x86_64
 
-macrofiles:	@RPMCONFIGDIR@/macros:@RPMCONFIGDIR@/%{_target}/macros:@SYSCONFIGDIR@/macros.*:@SYSCONFIGDIR@/macros:@SYSCONFIGDIR@/%{_target}/macros:~/.rpmmacros
+macrofiles:	@USRLIBRPM@/macros:@USRLIBRPM@/%{_target}/macros:@SYSCONFIGDIR@/macros.*:@SYSCONFIGDIR@/macros:@SYSCONFIGDIR@/%{_target}/macros:~/etc/.rpmmacros:~/.rpmmacros
 
 # \endverbatim
 #*/

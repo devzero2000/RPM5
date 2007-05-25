@@ -1,4 +1,4 @@
-/* Copyright (C) 2001, 2002, 2003 Red Hat, Inc.
+/* Copyright (C) 2001, 2002, 2003, 2005 Red Hat, Inc.
    Written by Alexander Larsson <alexl@redhat.com>, 2002
    Based on code by Jakub Jelinek <jakub@redhat.com>, 2001.
 
@@ -34,7 +34,40 @@
 #include <popt.h>
 
 #include <gelf.h>
+
+#if 0		/* XXX compile without dwarf.h */
 #include <dwarf.h>
+#else
+/* some defines taken from the dwarf standard */
+
+#define DW_TAG_compile_unit	0x11
+
+#define DW_AT_name		0x03
+#define DW_AT_stmt_list		0x10
+#define DW_AT_comp_dir		0x1b
+
+#define DW_FORM_addr		0x01
+#define DW_FORM_block2		0x03
+#define DW_FORM_block4		0x04
+#define DW_FORM_data2		0x05
+#define DW_FORM_data4		0x06
+#define DW_FORM_data8		0x07
+#define DW_FORM_string		0x08
+#define DW_FORM_block		0x09
+#define DW_FORM_block1		0x0a
+#define DW_FORM_data1		0x0b
+#define DW_FORM_flag		0x0c
+#define DW_FORM_sdata		0x0d
+#define DW_FORM_strp		0x0e
+#define DW_FORM_udata		0x0f
+#define DW_FORM_ref_addr	0x10
+#define DW_FORM_ref1		0x11
+#define DW_FORM_ref2		0x12
+#define DW_FORM_ref4		0x13
+#define DW_FORM_ref8		0x14
+#define DW_FORM_ref_udata	0x15
+#define DW_FORM_indirect	0x16
+#endif
 
 #include "hashtab.h"
 
@@ -343,13 +376,11 @@ no_memory:
 #define IS_DIR_SEPARATOR(c) ((c)=='/')
 
 static char *
-canonicalize_path (char *s, char *d)
+canonicalize_path (const char *s, char *d)
 {
   char *rv = d;
-  char *sroot, *droot;
-
-  if (d == 0)
-    rv = d = s;
+  const char *sroot;
+  char *droot;
 
   if (IS_DIR_SEPARATOR (*s))
     {
@@ -373,42 +404,45 @@ canonicalize_path (char *s, char *d)
 
       if (s[0] == '.' && (s[1] == 0 || IS_DIR_SEPARATOR (s[1])))
 	{
-	  s ++;
+	  s++;
 	  if (*s)
-	    s++;
-	  else if (d > droot)
-	    d--;
+	    while (IS_DIR_SEPARATOR (*s))
+	      ++s;
 	}
 
       else if (s[0] == '.' && s[1] == '.'
 	       && (s[2] == 0 || IS_DIR_SEPARATOR (s[2])))
 	{
-	  char *pre = d-1; /* includes slash */
+	  char *pre = d - 1; /* includes slash */
 	  while (droot < pre && IS_DIR_SEPARATOR (*pre))
 	    pre--;
 	  if (droot <= pre && ! IS_DIR_SEPARATOR (*pre))
 	    {
-	      d = pre;
-	      while (droot < d && ! IS_DIR_SEPARATOR (*d))
-		d--;
-	      /* d now points to the slash */
-	      if (droot < d)
-		d++;
-	      s += 2;
-	      if (*s)
-		s++;
-	      else if (d > droot)
-		d--;
+	      while (droot < pre && ! IS_DIR_SEPARATOR (*pre))
+		pre--;
+	      /* pre now points to the slash */
+	      if (droot < pre)
+		pre++;
+	      if (pre + 3 == d && pre[0] == '.' && pre[1] == '.')
+		{
+		  *d++ = *s++;
+		  *d++ = *s++;
+		}
+	      else
+		{
+		  d = pre;
+		  s += 2;
+		  if (*s)
+		    while (IS_DIR_SEPARATOR (*s))
+		      s++;
+		}
 	    }
 	  else
 	    {
 	      *d++ = *s++;
 	      *d++ = *s++;
-	      if (*s)
-		*d++ = *s++;
 	    }
 	}
-
       else
 	{
 	  while (*s && ! IS_DIR_SEPARATOR (*s))
@@ -600,6 +634,7 @@ edit_dwarf2_line (DSO *dso, uint_32 off, char *comp_dir, int phase)
       unsigned char *srcptr, *buf = NULL;
       size_t base_len = strlen (base_dir);
       size_t dest_len = strlen (dest_dir);
+      size_t shrank = 0;
 
       if (dest_len == base_len)
 	abs_file_cnt = 0;
@@ -614,24 +649,36 @@ edit_dwarf2_line (DSO *dso, uint_32 off, char *comp_dir, int phase)
       while (*srcptr != 0)
 	{
 	  size_t len = strlen (srcptr) + 1;
+	  const unsigned char *readptr = srcptr;
 
 	  if (*srcptr == '/' && has_prefix (srcptr, base_dir))
 	    {
-	      memcpy (ptr, dest_dir, dest_len);
 	      if (dest_len < base_len)
-		{
-		  memmove (ptr + dest_len, srcptr + base_len,
-			   len - base_len);
-		  ptr += dest_len - base_len;
 		  ++abs_dir_cnt;
+	      memcpy (ptr, dest_dir, dest_len);
+	      ptr += dest_len;
+	      readptr += base_len;
 		}
+	  srcptr += len;
+
+	  shrank += srcptr - readptr;
+	  canonicalize_path (readptr, ptr);
+	  len = strlen (ptr) + 1;
+	  shrank -= len;
+	  ptr += len;
+
 	      elf_flagdata (debug_sections[DEBUG_STR].elf_data,
 			    ELF_C_SET, ELF_F_DIRTY);
 	    }
-	  else if (ptr != srcptr)
-	    memmove (ptr, srcptr, len);
-	  srcptr += len;
-	  ptr += len;
+
+      if (shrank > 0)
+	{
+	  if (--shrank == 0)
+	    error (EXIT_FAILURE, 0,
+		   "canonicalization unexpectedly shrank by one character");
+	  memset (ptr, 'X', shrank);
+	  ptr += shrank;
+	  *ptr++ = '\0';
 	}
 
       if (abs_dir_cnt + abs_file_cnt != 0)
@@ -712,32 +759,57 @@ edit_attributes (DSO *dso, unsigned char *ptr, struct abbrev_tag *t, int phase)
 		}
 	    }
 
-	  if (t->attr[i].attr == DW_AT_comp_dir &&
-	      form == DW_FORM_strp &&
-	      debug_sections[DEBUG_STR].data)
-	    {
-	      char *dir;
-	      
-	      dir = debug_sections[DEBUG_STR].data
-		    + do_read_32_relocated (ptr);
-	      free (comp_dir);
-	      comp_dir = strdup (dir);
-
-	      if (phase == 1 && dest_dir && has_prefix (dir, base_dir))
-		{
-		  base_len = strlen (base_dir);
-		  dest_len = strlen (dest_dir);
+	  if (t->attr[i].attr == DW_AT_comp_dir)
+	  {
+	      if ( form == DW_FORM_string )
+	      {
+		  free (comp_dir);
+		  comp_dir = strdup (ptr);
 		  
-		  memcpy (dir, dest_dir, dest_len);
-		  if (dest_len < base_len)
-		    {
-		      memmove (dir + dest_len, dir + base_len,
-			       strlen (dir + base_len) + 1);
-		    }
-		  elf_flagdata (debug_sections[DEBUG_STR].elf_data,
-				ELF_C_SET, ELF_F_DIRTY);
-		}
-	    }
+		  if (phase == 1 && dest_dir && has_prefix (ptr, base_dir))
+		  {
+		      base_len = strlen (base_dir);
+		      dest_len = strlen (dest_dir);
+		      
+		      memcpy (ptr, dest_dir, dest_len);
+		      if (dest_len < base_len)
+		      {
+			  memset(ptr + dest_len, '/',
+				 base_len - dest_len);
+			  
+		      }
+		      elf_flagdata (debug_sections[DEBUG_INFO].elf_data,
+				    ELF_C_SET, ELF_F_DIRTY);
+		  }
+	      }
+	  
+	      else if (form == DW_FORM_strp &&
+		       debug_sections[DEBUG_STR].data)
+	      {
+		  char *dir;
+
+		  dir = debug_sections[DEBUG_STR].data
+		      + do_read_32_relocated (ptr);
+
+		  free (comp_dir);
+		  comp_dir = strdup (dir);
+
+		  if (phase == 1 && dest_dir && has_prefix (dir, base_dir))
+		  {
+		      base_len = strlen (base_dir);
+		      dest_len = strlen (dest_dir);
+		  
+		      memcpy (dir, dest_dir, dest_len);
+		      if (dest_len < base_len)
+		      {
+			  memmove (dir + dest_len, dir + base_len,
+				   strlen (dir + base_len) + 1);
+		      }
+		      elf_flagdata (debug_sections[DEBUG_STR].elf_data,
+				    ELF_C_SET, ELF_F_DIRTY);
+		  }
+	      }
+	  }
 	  else if ((t->tag == DW_TAG_compile_unit
 		    || t->tag == DW_TAG_partial_unit)
 		   && t->attr[i].attr == DW_AT_name
@@ -1034,7 +1106,7 @@ edit_dwarf2 (DSO *dso)
 		  break;
 		case EM_PPC:
 		case EM_PPC64:
-		  if (rtype != R_PPC_ADDR32 || rtype != R_PPC_UADDR32)
+		  if (rtype != R_PPC_ADDR32 && rtype != R_PPC_UADDR32)
 		    goto fail;
 		  break;
 		case EM_S390:

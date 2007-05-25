@@ -1,7 +1,7 @@
 #ifndef H_RPMFI
 #define H_RPMFI
 
-/** \ingroup rpmdep rpmtrans
+/** \ingroup rpmfi
  * \file lib/rpmfi.h
  * Structure(s) used for file info tag sets.
  */
@@ -25,7 +25,7 @@ struct sharedFileInfo_s {
     int isRemoved;
 };
 
-/**
+/** \ingroup rpmfi
  * A package filename set.
  */
 struct rpmfi_s {
@@ -45,7 +45,9 @@ struct rpmfi_s {
     const char ** dnl;		/*!< Directory name(s) (from header) */
 
 /*@only@*/ /*@relnull@*/
-    const char ** fmd5s;	/*!< File MD5 sum(s) (from header) */
+    const char ** fdigests;	/*!< File digest(s) (from header) */
+/*@only@*/ /*@null@*/
+    uint_32 * fdigestalgos;	/*!< File digest algorithm(s) (from header) */
 /*@only@*/ /*@relnull@*/
     const char ** flinks;	/*!< File link(s) (from header) */
 /*@only@*/ /*@null@*/
@@ -126,15 +128,17 @@ struct rpmfi_s {
     int_32 * odil;		/*!< Original dirindex(s) (from header) */
 
 /*@only@*/ /*@relnull@*/
-    unsigned char * md5s;	/*!< File md5 sums in binary. */
+    unsigned char * digests;	/*!< File digest(s) in binary. */
+    uint_32 digestalgo;		/*!< File digest algorithm. */
+    uint_32 digestlen;		/*!< No. bytes in binary digest. */
 
-/*@only@*/ /*@null@*/
+/*@only@*/ /*@relnull@*/
     const char * pretrans;
-/*@only@*/ /*@null@*/
+/*@only@*/ /*@relnull@*/
     const char * pretransprog;
-/*@only@*/ /*@null@*/
+/*@only@*/ /*@relnull@*/
     const char * posttrans;
-/*@only@*/ /*@null@*/
+/*@only@*/ /*@relnull@*/
     const char * posttransprog;
 
 /*@only@*/ /*@null@*/
@@ -143,8 +147,8 @@ struct rpmfi_s {
 
     int astriplen;
     int striplen;
-    unsigned int archivePos;
-    unsigned int archiveSize;
+    unsigned long long archivePos;
+    unsigned long long archiveSize;
     mode_t dperms;		/*!< Directory perms (0755) if not mapped. */
     mode_t fperms;		/*!< File perms (0644) if not mapped. */
 /*@only@*/ /*@null@*/
@@ -173,6 +177,9 @@ struct rpmfi_s {
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+/** \name RPMFI */
+/*@{*/
 
 /**
  * Unreference a file info set instance.
@@ -307,16 +314,34 @@ extern const char * rpmfiFN(/*@null@*/ rpmfi fi)
  * @param fi		file info set
  * @return		current file flags, 0 on invalid
  */
-int_32 rpmfiFFlags(/*@null@*/ rpmfi fi)
+uint_32 rpmfiFFlags(/*@null@*/ rpmfi fi)
 	/*@*/;
+
+/**
+ * Set current file flags in file info set.
+ * @param fi		file info set
+ * @param FFlags	new file flags
+ * @return		previous file flags, 0 on invalid
+ */
+uint_32 rpmfiSetFFlags(/*@null@*/ rpmfi fi, uint_32 FFlags)
+	/*@modifies fi @*/;
 
 /**
  * Return current file verify flags from file info set.
  * @param fi		file info set
  * @return		current file verify flags, 0 on invalid
  */
-int_32 rpmfiVFlags(/*@null@*/ rpmfi fi)
+uint_32 rpmfiVFlags(/*@null@*/ rpmfi fi)
 	/*@*/;
+
+/**
+ * Set current file verify flags in file info set.
+ * @param fi		file info set
+ * @param VFlags	new file verify flags
+ * @return		previous file verify flags, 0 on invalid
+ */
+uint_32 rpmfiSetVFlags(/*@null@*/ rpmfi fi, uint_32 VFlags)
+	/*@modifies fi @*/;
 
 /**
  * Return current file mode from file info set.
@@ -335,13 +360,26 @@ rpmfileState rpmfiFState(/*@null@*/ rpmfi fi)
 	/*@*/;
 
 /**
- * Return current file (binary) md5 digest from file info set.
+ * Set current file state in file info set.
  * @param fi		file info set
- * @return		current file md5 digest, NULL on invalid
+ * @param fstate	new file state
+ * @return		previous file state, 0 on invalid
+ */
+rpmfileState rpmfiSetFState(/*@null@*/ rpmfi fi, rpmfileState fstate)
+	/*@modifies fi @*/;
+
+/**
+ * Return current file (binary) digest from file info set.
+ * @param fi		file info set
+ * @retval *algop	digest algorithm
+ * @retval *lenp	digest length (in bytes)
+ * @return		current file digest, NULL on invalid
  */
 /*@observer@*/ /*@null@*/
-extern const unsigned char * rpmfiMD5(/*@null@*/ rpmfi fi)
-	/*@*/;
+extern const unsigned char * rpmfiDigest(/*@null@*/ rpmfi fi,
+		/*@out@*/ /*@null@*/ int * algop,
+		/*@out@*/ /*@null@*/ size_t * lenp)
+	/*@modifies *algop, *lenp @*/;
 
 /**
  * Return current file linkto (i.e. symlink(2) target) from file info set.
@@ -421,7 +459,7 @@ extern const char * rpmfiFContext(/*@null@*/ rpmfi fi)
  * @return		no. of file depends entries, 0 on invalid
  */
 int_32 rpmfiFDepends(/*@null@*/ rpmfi fi,
-		/*@out@*/ /*@null@*/ const int_32 ** fddictp)
+		/*@out@*/ /*@null@*/ const uint_32 ** fddictp)
 	/*@modifies *fddictp @*/;
 
 /**
@@ -507,15 +545,14 @@ rpmfi rpmfiFree(/*@killref@*/ /*@only@*/ /*@null@*/ rpmfi fi)
 
 /**
  * Create and load a file info set.
- * @deprecated Only scareMem = 0 will be permitted.
  * @param ts		transaction set (NULL skips path relocation)
  * @param h		header
  * @param tagN		RPMTAG_BASENAMES
- * @param scareMem	Use pointers to refcounted header memory?
+ * @param flags		scareMem(0x1), nofilter(0x2)
  * @return		new file info set
  */
 /*@null@*/
-rpmfi rpmfiNew(/*@null@*/ const rpmts ts, Header h, rpmTag tagN, int scareMem)
+rpmfi rpmfiNew(/*@null@*/ const rpmts ts, Header h, rpmTag tagN, int flags)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem @*/
 	/*@modifies ts, h, rpmGlobalMacroContext, fileSystem @*/;
 
@@ -626,9 +663,11 @@ fileAction rpmfiDecideFate(const rpmfi ofi, rpmfi nfi, int skipMissing)
  */
 /*@-redef@*/
 /*@observer@*/
-const char *const rpmfiTypeString(rpmfi fi)
+const char * rpmfiTypeString(rpmfi fi)
 	/*@*/;
 /*@=redef@*/
+
+/*@}*/
 
 #ifdef __cplusplus
 }

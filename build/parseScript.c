@@ -5,6 +5,7 @@
 
 #include "system.h"
 
+#define	_RPMEVR_INTERNAL
 #include "rpmbuild.h"
 #include "debug.h"
 
@@ -149,6 +150,13 @@ int parseScript(Spec spec, int parsePart)
 	progtag = RPMTAG_VERIFYSCRIPTPROG;
 	partname = "%verifyscript";
 	break;
+      case PART_TRIGGERPREIN:
+	tag = RPMTAG_TRIGGERSCRIPTS;
+	tagflags = 0;
+	reqtag = RPMTAG_TRIGGERPREIN;
+	progtag = RPMTAG_TRIGGERSCRIPTPROG;
+	partname = "%triggerprein";
+	break;
       case PART_TRIGGERIN:
 	tag = RPMTAG_TRIGGERSCRIPTS;
 	tagflags = 0;
@@ -204,6 +212,8 @@ int parseScript(Spec spec, int parsePart)
 		    rc = RPMERR_BADSPEC;
 		    goto exit;
 		}
+	    } else if (prog[0] == '%') {
+		/* XXX check well-formed macro? */
 	    } else if (prog[0] != '/') {
 		rpmError(RPMERR_BADSPEC,
 			 _("line %d: script program must begin "
@@ -283,6 +293,7 @@ int parseScript(Spec spec, int parsePart)
     stripTrailingBlanksStringBuf(sb);
     p = getStringBuf(sb);
 
+#ifdef WITH_LUA
     if (!strcmp(progArgv[0], "<lua>")) {
 	rpmlua lua = NULL; /* Global state. */
 	if (rpmluaCheckScript(lua, p, partname) != RPMRC_OK) {
@@ -291,7 +302,9 @@ int parseScript(Spec spec, int parsePart)
 	}
 	(void) rpmlibNeedsFeature(pkg->header,
 				  "BuiltinLuaScripts", "4.2.2-1");
-    } else if (progArgv[0][0] == '<') {
+    } else
+#endif
+    if (progArgv[0][0] == '<') {
 	rpmError(RPMERR_BADSPEC,
 		 _("line %d: unsupported internal script: %s\n"),
 		 spec->lineNum, progArgv[0]);

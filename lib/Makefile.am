@@ -9,22 +9,23 @@ INCLUDES = -I. \
 	-I$(top_srcdir)/build \
 	-I$(top_srcdir)/rpmdb \
 	-I$(top_srcdir)/rpmio \
+	@WITH_MAGIC_INCLUDE@ \
 	@WITH_BEECRYPT_INCLUDE@ \
 	@WITH_POPT_INCLUDE@ \
 	-I$(top_srcdir)/misc \
 	@INCPATH@
 
-EXTRA_DIST = getdate.y tgi.c rpmgi.c rpmgi.h
+EXTRA_DIST = getdate.y librpm.vers
 
-EXTRA_PROGRAMS = tgi
+EXTRA_PROGRAMS =
 
 pkgincdir = $(pkgincludedir)
 pkginc_HEADERS = \
-	misc.h rpmcli.h rpmlib.h \
-	rpmal.h rpmds.h rpmfi.h rpmgi.h rpmps.h rpmsx.h rpmte.h rpmts.h \
-	stringbuf.h
+	fs.h misc.h rpmcli.h rpmlib.h \
+	rpmal.h rpmdpkg.h rpmds.h rpmevr.h rpmfc.h rpmfi.h rpmgi.h \
+	rpmns.h rpmps.h rpmsx.h rpmte.h rpmts.h stringbuf.h
 noinst_HEADERS = \
-	cpio.h fsm.h manifest.h psm.h rpmlead.h signature.h rpmlock.h
+	cpio.h fsm.h manifest.h psm.h rpmlead.h rpmlock.h signature.h tar.h
 
 mylibs = librpm.la
 LIBS =
@@ -37,16 +38,21 @@ librpm_la_SOURCES = \
 	cpio.c depends.c formats.c fs.c fsm.c getdate.c \
 	manifest.c misc.c package.c \
 	poptALL.c poptI.c poptQV.c psm.c query.c \
-	rpmal.c rpmchecksig.c rpmds.c rpmfi.c rpmgi.c rpminstall.c \
-	rpmlead.c rpmlibprov.c rpmps.c rpmrc.c rpmsx.c rpmte.c rpmts.c \
-	rpmvercmp.c signature.c stringbuf.c transaction.c \
-	verify.c rpmlock.c
-librpm_la_LDFLAGS = -release 4.4 $(LDFLAGS) \
+	rpmal.c rpmchecksig.c rpmdpkg.c rpmds.c rpmevr.c rpmfc.c \
+	rpmfi.c rpmgi.c rpminstall.c rpmrollback.c \
+	rpmlead.c rpmlock.c rpmns.c rpmps.c rpmrc.c rpmsx.c rpmte.c rpmts.c \
+	signature.c stringbuf.c transaction.c \
+	verify.c tar.c
+librpm_la_LDFLAGS = -no-undefined -release $(LT_CURRENT).$(LT_REVISION) $(LDFLAGS) \
 	$(top_builddir)/rpmdb/librpmdb.la \
 	$(top_builddir)/rpmio/librpmio.la \
 	@WITH_POPT_LIB@ \
 	@WITH_SELINUX_LIB@ \
-	@INTLLIBS@
+	@LTLIBINTL@
+
+if HAVE_LD_VERSION_SCRIPT
+librpm_la_LDFLAGS += -Wl,--version-script=$(srcdir)/librpm.vers
+endif
 
 getdate.c: getdate.y
 	@echo expect 10 shift/reduce conflicts
@@ -56,6 +62,7 @@ getdate.c: getdate.y
 	   echo "/*@-retvalint -usedef -varuse -nullderef -nullassign @*/";\
 	   echo "/*@-readonlytrans -modunconnomods -compdef -noeffectuncon @*/";\
 	   echo "/*@-globs -evalorderuncon -modobserveruncon -modnomods @*/";\
+	   echo "/*@-noeffect -branchstate -sizeoftype -usereleased @*/";\
 	   echo "/*@unused@*/";\
 	   sed	-e 's,y.tab.c,getdate.c,' y.tab.c \
 		-e 's,^YYSTYPE ,static &,' \
@@ -63,6 +70,7 @@ getdate.c: getdate.y
 		-e 's,^const short ,static &,' \
 		-e 's,^int yydebug,/*@unused@*/ static &,' \
 		-e 's,^int ,static &,' ;\
+	   echo "/*@=noeffect =branchstate =sizeoftype =usereleased @*/";\
 	   echo "/*@=globs =evalorderuncon =modobserveruncon =modnomods @*/";\
 	   echo "/*@=readonlytrans =modunconnomods =compdef =noeffectuncon @*/";\
 	   echo "/*@=retvalint =usedef =varuse =nullderef =nullassign @*/";\
@@ -79,10 +87,6 @@ getdate.c: getdate.y
 
 BUILT_SOURCES = getdate.c # rpmlib.lcd
 
-#noinst_PROGRAMS = tds
-#tds_SOURCES =	tds.c
-#tds_LDFLAGS =	@LDFLAGS_STATIC@ ./librpm.la
-
 rpmlib.lcd: Makefile.am ${librpm_la_SOURCES} ${pkginc_HEADERS} ${noinst_HEADERS}
 	-lclint ${DEFS} ${INCLUDES} ${librpm_la_SOURCES} -dump $@ 2>/dev/null
 
@@ -93,38 +97,3 @@ sources:
 .PHONY:	lint
 lint:
 	$(LINT) $(DEFS) $(INCLUDES) $(librpm_la_SOURCES)
-
-setfiles: setfiles.o
-	$(LINK) @LDFLAGS_STATIC@ $(CFLAGS) $(DEFS) $(INCLUDES) -o $@ $< \
-	-lselinux \
-	$(top_builddir)/rpmio/librpmio.la \
-	$(top_builddir)/popt/libpopt.la
-	
-#tds: tds.c librpm.la
-#	$(CC) $(CFLAGS) $(DEFS) $(INCLUDES) -o $@ $< $(mylibs)
-
-trb: trb.o librpm.la
-	$(LINK) @LDFLAGS_STATIC@ $(CFLAGS) $(DEFS) $(INCLUDES) -o $@ $< $(mylibs)
-
-tthread: tthread.o librpm.la
-	$(LINK) $(CFLAGS) $(DEFS) $(INCLUDES) -o $@ $< $(mylibs) @WITH_LIBELF_LIB@
-
-tsystem: tsystem.o $(top_builddir)/popt/libpopt.la
-	$(LINK) $(CFLAGS) $(DEFS) $(INCLUDES) -o $@ $< $(top_builddir)/rpmio/librpmio.la $(top_builddir)/popt/libpopt.la
-
-tre: tre.o librpm.la
-	$(LINK) $(CFLAGS) $(DEFS) $(INCLUDES) -o $@ $< \
-	-lselinux  librpm.la
-
-tcpu: tcpu.o librpm.la
-	$(LINK) @LDFLAGS_STATIC@ $(CFLAGS) $(DEFS) $(INCLUDES) -o $@ $< $(mylibs)
-
-tplatform: tplatform.o librpm.la
-	$(LINK) @LDFLAGS_STATIC@ $(CFLAGS) $(DEFS) $(INCLUDES) -o $@ $< $(mylibs)
-
-trhn: trhn.o librpm.la
-	$(LINK) @LDFLAGS_STATIC@ $(CFLAGS) $(DEFS) $(INCLUDES) -o $@ $< $(mylibs)
-
-tgi_SOURCES = tgi.c
-tgi_LDFLAGS = @LDFLAGS_STATIC@
-tgi_LDADD = librpm.la

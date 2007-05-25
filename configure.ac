@@ -1,35 +1,8 @@
-
-echo "
-****************************************************************************
-*                                                                          *
-*                   *** WARNING WARNING WARNING ***                        *
-*                                                                          *
-* This is source code from the development branch of rpm-4.4.3.            *
-*                                                                          *
-* If you want the "production" rpm-4.3.3 code, then you should use a       *
-* rpm-4.3.3 src.rpm. Alternatively, if using a CVS checkout, do            *
-* the following:                                                           *
-*                                                                          *
-*       cvs -d :pserver:anonymous@cvs.rpm.org:/cvs/devel login             *
-*       (no password, just carriage return)                                *
-*       cvs -d :pserver:anonymous@cvs.rpm.org:/cvs/devel get rpm           *
-*       cd rpm                                                             *
-*                                                                          *
-* Here's the rpm-4_3 branch, latest is rpm-4.3.3:                          *
-*       cvs up -r rpm-4_3                                                  *
-*                                                                          *
-* Here's the rpm-4_2 branch, latest is rpm-4.2.3:                          *
-*       cvs up -r rpm-4_2                                                  *
-*                                                                          *
-****************************************************************************
-"
-sleep 10
-
 AC_PREREQ(2.57)
-AC_INIT(rpm, 4.4.3, rpm-devel@lists.dulug.duke.edu)
+AC_INIT(rpm, 4.4.9, rpm-devel@lists.dulug.duke.edu)
 AC_CANONICAL_TARGET
 AC_CONFIG_SRCDIR([rpmqv.c])
-AM_CONFIG_HEADER([config.h])
+AC_CONFIG_HEADERS([config.h])
 
 AM_INIT_AUTOMAKE([foreign])
 
@@ -37,9 +10,10 @@ AM_INIT_AUTOMAKE([foreign])
 # Interfaces changed/added/removed:   CURRENT++       REVISION=0
 # Interfaces added:                             AGE++
 # Interfaces removed:                           AGE=0
+#
 AC_SUBST(LT_CURRENT, 4)
 AC_SUBST(LT_REVISION, 4)
-AC_SUBST(LT_AGE, 0)
+AC_SUBST(LT_AGE, 8)
 
 dnl Set of available languages.
 ALL_LINGUAS="cs da de fi fr gl is ja ko no pl pt pt_BR ro ru sk sl sr sv tr uk"
@@ -52,7 +26,7 @@ AC_PROG_CPP
 AC_PROG_INSTALL
 AC_PROG_LN_S
 AC_PROG_MAKE_SET
-AC_PROG_RANLIB
+dnl AC_PROG_RANLIB
 AC_PROG_YACC
 
 AC_AIX
@@ -61,8 +35,9 @@ AS=${AS-as}
 AC_SUBST(AS)
 if test "$ac_cv_c_compiler_gnu" = yes; then
     CFLAGS="$CFLAGS -fPIC -DPIC -D_GNU_SOURCE -D_REENTRANT -Wall -Wpointer-arith -Wstrict-prototypes -Wmissing-prototypes -Wno-char-subscripts"
+    LDFLAGS="-pie"
 fi
-export CFLAGS
+export CFLAGS LDFLAGS
 
 AC_PROG_GCC_TRADITIONAL
 AC_SYS_LARGEFILE
@@ -161,6 +136,10 @@ if test -f /usr/lib/nptl/libpthread.a ; then
     LDFLAGS_NPTL="-L/usr/lib/nptl"
 #    INCPATH="$INCPATH -I/usr/include/nptl"
 fi
+if test -f /usr/lib64/nptl/libpthread.a ; then
+    LDFLAGS_NPTL="-L/usr/lib64/nptl"
+#    INCPATH="$INCPATH -I/usr/include/nptl"
+fi
 AC_SUBST(LDFLAGS_NPTL)
 
 dnl
@@ -245,18 +224,24 @@ fi
 dnl
 dnl Find some common programs
 dnl
-AC_PATH_PROG(BZIP2BIN, bzip2, /usr/bin/bzip2, $MYPATH)
+AC_PATH_PROG(__BASH, bash, %{_bindir}/bash, $MYPATH)
+AC_PATH_PROG(__BZIP2, bzip2, %{_bindir}/bzip2, $MYPATH)
 AC_PATH_PROG(__CAT, cat, /bin/cat, $MYPATH)
 AC_PATH_PROG(__CHGRP, chgrp, /bin/chgrp, $MYPATH)
 AC_PATH_PROG(__CHMOD, chmod, /bin/chmod, $MYPATH)
 AC_PATH_PROG(__CHOWN, chown, /bin/chown, $MYPATH)
 AC_PATH_PROG(__CP, cp, /bin/cp, $MYPATH)
 AC_PATH_PROG(__CPIO, cpio, /bin/cpio, $MYPATH)
-AC_PATH_PROG(__FILE, file, /usr/bin/file, $MYPATH)
-AC_PATH_PROG(__GPG, gpg, /usr/bin/gpg, $MYPATH)
+AC_PATH_PROG(__CURL, curl, %{_bindir}/curl, $MYPATH)
+AC_PATH_PROG(__CVS, cvs, %{_bindir}/cvs, $MYPATH)
+AC_PATH_PROG(__DIFF, diff, /bin/diff, $MYPATH)
+AC_PATH_PROG(__DITTO, ditto, %{_bindir}/ditto, $MYPATH)
+AC_PATH_PROG(__FILE, file, %{_bindir}/file, $MYPATH)
+AC_PATH_PROG(__FIND, find, %{_bindir}/find, $MYPATH)
+AC_PATH_PROG(__GPG, gpg, %{_bindir}/gpg, $MYPATH)
 AC_PATH_PROG(__GREP, grep, /bin/grep, $MYPATH)
-AC_PATH_PROG(GZIPBIN, gzip, /bin/gzip, $MYPATH)
-AC_PATH_PROG(UNZIPBIN, unzip, /usr/bin/unzip, $MYPATH)
+AC_PATH_PROG(__GZIP, gzip, /bin/gzip, $MYPATH)
+AC_PATH_PROG(__HG, hg, %{_bindir}/hg, $MYPATH)
 
 AC_PATH_PROG(__ID, id, /usr/bin/id, $MYPATH)
 AC_MSG_CHECKING(checking whether id supports -u)
@@ -271,10 +256,16 @@ dnl XXX Watchout for square brackets fed to m4.
 AC_SUBST(__ID_U)
 
 AC_PATH_PROG(__INSTALL, install, /usr/bin/install, $MYPATH)
-AC_PATH_PROG(__MAKE, make, /usr/bin/make, $MYPATH)
+AC_PATH_PROG(__INSTALL_INFO, install-info, /sbin/install-info, $MYPATH)
+AC_PATH_PROG(__LDCONFIG, ldconfig, /sbin/ldconfig, $MYPATH)
+AC_PATH_PROG(__LUA, lua, %{_bindir}/lua, $MYPATH)
+AC_PATH_PROG(__LZMA, lzma, %{_bindir}/lzma, $MYPATH)
+AC_PATH_PROG(__LZMASH, lzmash, %{_bindir}/lzmash, $MYPATH)
+AC_PATH_PROG(__LZOP, lzop, %{_bindir}/lzop, $MYPATH)
+AC_PATH_PROG(__MAKE, make, %{_bindir}/make, $MYPATH)
 AC_PATH_PROG(__MKDIR, mkdir, /bin/mkdir, $MYPATH)
 AC_PATH_PROG(__MV, mv, /bin/mv, $MYPATH)
-AC_PATH_PROG(__PATCH, patch, /usr/bin/patch, $MYPATH)
+AC_PATH_PROG(__PATCH, patch, %{_bindir}/patch, $MYPATH)
 AC_MSG_CHECKING(old version of patch)
     PATCHVERSION=`patch --version 2>&1`
 
@@ -286,26 +277,34 @@ AC_MSG_CHECKING(old version of patch)
 	AC_MSG_RESULT(patch later then 2.2 found)
     fi
 
-AC_PATH_PROG(__PERL, perl, /usr/bin/perl, $MYPATH)
-AC_PATH_PROG(PGPBIN, pgp, /usr/bin/pgp, $MYPATH)
-AC_PATH_PROG(__PYTHON, python, /usr/bin/python, $MYPATH)
+AC_PATH_PROG(__PAX, pax, %{_bindir}/pax, $MYPATH)
+AC_PATH_PROG(__PERL, perl, %{_bindir}/perl, $MYPATH)
+AC_PATH_PROG(__PGP, pgp, %{_bindir}/pgp, $MYPATH)
+AC_PATH_PROG(__PHP, php, %{_bindir}/php, $MYPATH)
+AC_PATH_PROG(__PYTHON, python, %{_bindir}/python, $MYPATH)
 AC_PATH_PROG(__RM, rm, /bin/rm, $MYPATH)
-AC_PATH_PROG(__RSH, rsh, /usr/bin/rsh, $MYPATH)
+AC_PATH_PROG(__RSH, rsh, %{_bindir}/rsh, $MYPATH)
 AC_PATH_PROG(__SED, sed, /bin/sed, $MYPATH)
-AC_PATH_PROG(__SSH, ssh, /usr/bin/ssh, $MYPATH)
+AC_PATH_PROG(__SH, sh, /bin/sh, $MYPATH)
+AC_PATH_PROG(__SSH, ssh, %{_bindir}/ssh, $MYPATH)
+AC_PATH_PROG(__SVN, svn, %{_bindir}/svn, $MYPATH)
 AC_PATH_PROG(__TAR, tar, /bin/tar, $MYPATH)
+AC_PATH_PROG(__TCLSH, tclsh, %{_bindir}/tclsh, $MYPATH)
+AC_PATH_PROG(__UNZIP, unzip, %{_bindir}/unzip, $MYPATH)
+AC_PATH_PROG(__WGET, wget, %{_bindir}/wget, $MYPATH)
+AC_PATH_PROG(__XAR, xar, %{_bindir}/xar, $MYPATH)
 
-AC_PATH_PROG(__LD, ld, /usr/bin/ld, $MYPATH)
-AC_PATH_PROG(__NM, nm, /usr/bin/nm, $MYPATH)
-AC_PATH_PROG(__OBJCOPY, objcopy, /usr/bin/objcopy, $MYPATH)
-AC_PATH_PROG(__OBJDUMP, objdump, /usr/bin/objdump, $MYPATH)
-AC_PATH_PROG(__STRIP, strip, /usr/bin/strip, $MYPATH)
+AC_PATH_PROG(__LD, ld, %{_bindir}/ld, $MYPATH)
+AC_PATH_PROG(__NM, nm, %{_bindir}/nm, $MYPATH)
+AC_PATH_PROG(__OBJCOPY, objcopy, %{_bindir}/objcopy, $MYPATH)
+AC_PATH_PROG(__OBJDUMP, objdump, %{_bindir}/objdump, $MYPATH)
+AC_PATH_PROG(__STRIP, strip, %{_bindir}/strip, $MYPATH)
 
 addlib() {
   l=$1
   shift
   case "$target" in 
-    *-*-solaris*)	LIBS="$LIBS -L$l -R$l $*";;
+    *-*-solaris2.[234567])	LIBS="$LIBS -L$l -R$l $*";;
     *)		LIBS="$LIBS -L$l $*";;
   esac
 }
@@ -359,8 +358,7 @@ localdone=
 
 dirs=$prefix
 if test "$cross_compiling" != "yes"; then
-  dirs="$dirs /usr/local"
-fi
+  dirs="$dirs"
 for dir in $dirs
 do
 	case $dir in
@@ -389,18 +387,23 @@ do
 		AC_MSG_RESULT(no)
 	fi
 done
+fi
 
 AC_MSG_CHECKING(for /usr/ucblib in LIBS)
 if test -d /usr/ucblib ; then
-	if test "$build" = "mips-sni-sysv4" ; then
-		addlib /usr/ccs/lib -lc
-	fi
-
+    case $build in
+    mips-sni-sysv4)
+	addlib /usr/ccs/lib -lc
 	addlib /usr/ucblib
-	
 	AC_MSG_RESULT(yes)
-else
+	;;
+    *-*-solaris2.*)
+	AC_MSG_RESULT(yes)
+	;;
+    *)
 	AC_MSG_RESULT(no)
+	;;
+    esac
 fi
 
 dnl
@@ -458,14 +461,67 @@ AC_CHECK_LIB(port, writev)
 WITH_ELFUTILS_SUBDIR=
 WITH_LIBELF_INCLUDE=
 WITH_LIBELF_LIB=
-AC_CHECK_HEADER([libelf.h])
-AC_CHECK_HEADER([gelf.h], [
-	AC_DEFINE(HAVE_GELF_H, 1, [Define to 1 if you have the <gelf.h> header file.])
-	AC_CHECK_LIB(elf, gelf_getvernaux, [
-	    AC_DEFINE(HAVE_LIBELF, 1, [Define to 1 if you have the 'elf' library (-lelf).])
-	    WITH_LIBELF_LIB="-lelf"
+AC_CHECK_HEADERS([libelf.h])
+
+# libelf.h on Solaris is incompatible with Largefile support.  If
+# we couldn't include libelf.h, see if we can when _FILE_ACCESS_BITS is
+# set for non-LFS.
+if test X"$ac_cv_header_libelf_h" = X"no" ; then
+  AC_MSG_CHECKING([if libelf.h conflicts with _LARGEFILE_SOURCE])
+  AC_COMPILE_IFELSE(
+  [AC_LANG_PROGRAM([[
+#undef _LARGEFILE64_SOURCE
+#undef _LARGEFILE_SOURCE
+#if !defined(_LP64)
+# undef _FILE_OFFSET_BITS
+# define _FILE_OFFSET_BITS 32
+#endif
+#include <libelf.h>
+]],[[Elf_Data foo;]])],
+  [AC_DEFINE(HAVE_LIBELF_H, 1, [Define to 1 if you have libelf.h])
+   AC_DEFINE(LIBELF_H_LFS_CONFLICT, 1,
+	[Define to 1 if libelf.h is incompatible with the Large Files API])
+   AC_MSG_RESULT(yes)
+  ],
+  [AC_MSG_RESULT(no)]
+ )
+fi
+
+AC_CHECK_HEADERS([gelf.h])
+# same for gelf.h, since it probably includes libelf.h
+if test X"$ac_cv_header_gelf_h" = X"no" ; then
+  AC_MSG_CHECKING([if gelf.h conflicts with _LARGEFILE_SOURCE])
+  AC_COMPILE_IFELSE(
+  [AC_LANG_PROGRAM([[
+#undef _LARGEFILE64_SOURCE
+#undef _LARGEFILE_SOURCE
+#if !defined(_LP64)
+# undef _FILE_OFFSET_BITS
+# define _FILE_OFFSET_BITS 32
+#endif
+#include <gelf.h>
+]],[[Elf32_Verdef foo;]])],
+  [AC_DEFINE(HAVE_GELF_H, 1, [Define to 1 if you have gelf.h])
+   ac_cv_header_gelf_h=yes
+   AC_MSG_RESULT(yes)
+  ],
+  [AC_MSG_RESULT(no)]
+ )
+fi
+
+# if we found gelf.h, look for libelf and see if it has gelf_getvernaux
+if test X"$ac_cv_header_gelf_h" = X"yes" ; then
+	AC_CHECK_LIB(elf, elf_version, [
+    		AC_DEFINE(HAVE_LIBELF, 1,
+		  [Define to 1 if you have the 'elf' library (-lelf).])
+    		WITH_LIBELF_LIB="-lelf"
+		AC_CHECK_LIB(elf, gelf_getvernaux, [
+		  AC_DEFINE(HAVE_GELF_GETVERNAUX, 1,
+		  [Define to 1 if you have the gelf_getvernaux() function.])
+		])
 	])
-    ], [
+else
+	# allow for an internalized elfutils
 	if test -d elfutils/libelf ; then
 	    AC_DEFINE(HAVE_GELF_H, 1, [Define to 1 if you have the <gelf.h> header file.])
 	    AC_DEFINE(HAVE_LIBELF, 1, [Define to 1 if you have the 'elf' library (-lelf).])
@@ -473,7 +529,8 @@ AC_CHECK_HEADER([gelf.h], [
 	    WITH_LIBELF_INCLUDE="-I\${top_srcdir}/${WITH_ELFUTILS_SUBDIR}/libelf"
 	    WITH_LIBELF_LIB="\${top_builddir}/${WITH_ELFUTILS_SUBDIR}/libelf/libelf.a"
 	fi
-])
+fi
+
 AC_SUBST(WITH_ELFUTILS_SUBDIR)
 AC_SUBST(WITH_LIBELF_INCLUDE)
 AC_SUBST(WITH_LIBELF_LIB)
@@ -619,11 +676,11 @@ WITH_SQLITE3_INCLUDE=
 WITH_SQLITE3_LIB=
 
 AC_CHECK_HEADER([sqlite3.h], [
-  AC_CHECK_LIB(sqlite3, sqlite3_open, [
+  AC_CHECK_LIB(sqlite, sqlite3_open, [
     AC_DEFINE(HAVE_SQLITE3_H, 1, [Define if you have the <sqlite3.h> header file])
     WITH_SQLITE3_SUBDIR=
     WITH_SQLITE3_INCLUDE=
-    WITH_SQLITE3_LIB="-lsqlite3"
+    WITH_SQLITE3_LIB="-lsqlite"
     DBLIBSRCS="$DBLIBSRCS sqlite.c"
   ])
 ],[
@@ -655,7 +712,8 @@ dnl AmigaOS and IXEmul have a fork() dummy
 	;;
   esac
 
-AM_GNU_GETTEXT
+AC_CHECK_HEADERS(locale.h)
+AM_GNU_GETTEXT([external])
 dnl TVM:
 dnl horrible *temporary* hack to make sure that if we found gettext() in
 dnl -lintl that we add -lintl *back* to $LIBS.
@@ -672,6 +730,7 @@ AC_HEADER_TIME
 
 AC_CHECK_HEADERS(fcntl.h getopt.h grp.h memory.h netdb.h pwd.h utime.h)
 
+AC_CHECK_HEADERS(signal.h)
 AC_CHECK_HEADERS(sys/ipc.h sys/socket.h sys/select.h)
 AC_CHECK_HEADERS(sys/types.h sys/stdtypes.h)
 AC_CHECK_HEADERS(sys/mman.h sys/resource.h sys/utsname.h sys/wait.h)
@@ -682,7 +741,12 @@ AC_CHECK_HEADERS(mntent.h sys/mnttab.h sys/systemcfg.h)
 AC_CHECK_HEADERS(sys/mount.h sys/mntctl.h sys/param.h sys/vmount.h)
 AC_CHECK_HEADERS(bzlib.h libio.h zlib.h)
 AC_CHECK_HEADERS(err.h mcheck.h)
-AC_CHECK_HEADERS(pthread.h)
+
+dnl Some solaris build env needs.
+AC_CHECK_HEADERS(limits.h)
+
+dnl basename(), confstr() on some platforms
+AC_CHECK_HEADERS(libgen.h)
 
 dnl popt w float/double needs.
 AC_CHECK_HEADERS(float.h)
@@ -866,7 +930,8 @@ dnl XXX AC_FUNC_UTIME_NULL
 dnl XXX AC_FUNC_FORK([])
 dnl XXX AC_CHECK_FUNCS(gethostname mkdir mkfifo rmdir select uname)
 
-AC_CHECK_FUNCS(basename getcwd getwd inet_aton mtrace putenv realpath setenv)
+AC_CHECK_FUNCS(basename getaddrinfo getcwd getnameinfo getwd inet_aton)
+AC_CHECK_FUNCS(mtrace putenv realpath setenv)
 AC_CHECK_FUNCS(stpcpy stpncpy strcspn)
 AC_CHECK_FUNCS(strdup strndup strerror strtol strtoul strspn strstr)
 
@@ -944,6 +1009,24 @@ dnl
     AC_LIBOBJ(glob)
     AC_LIBOBJ(fnmatch)
 #fi
+
+dnl
+dnl Auto-detect whether perl bindings should be built.
+dnl
+withval=auto
+AC_ARG_WITH(perl,   [  --with-perl             build rpm perl bindings ])
+WITH_PERL_VERSION=$withval
+if test "$WITH_PERL_VERSION" != no ; then
+  WITH_PERL_SUBDIR=perl
+  WITH_PERL_SUBPACKAGE=1
+else
+  WITH_PERL_SUBDIR=
+  WITH_PERL_SUBPACKAGE=0
+fi
+AC_SUBST(WITH_PERL_SUBDIR)
+AC_SUBST(WITH_PERL_SUBPACKAGE)
+AC_SUBST(WITH_PERL_VERSION)
+
 dnl
 dnl Auto-detect which python bindings should be built.
 dnl
@@ -953,48 +1036,60 @@ AC_ARG_WITH(python, [  --with-python           build rpm python bindings ])
 WITH_PYTHON_VERSION=$withval
 if test $withval = auto ; then
 
-AC_MSG_CHECKING(for python 2.4)
+AC_MSG_CHECKING(for python 2.5)
 AC_RUN_IFELSE([AC_LANG_SOURCE([[
-#include <python2.4/Python.h>
+#include <python2.5/Python.h>
 main() {
-  exit(strncmp("2.4", PY_VERSION, 3));
+  exit(strncmp("2.5", PY_VERSION, 3));
 } ]])],[withval=yes],[withval=no],[withval=yes])
   AC_MSG_RESULT($withval)
   if test $withval = yes ; then
-    WITH_PYTHON_VERSION="2.4"
+    WITH_PYTHON_VERSION="2.5"
   else
-    
-  AC_MSG_CHECKING(for python 2.3)
+      
+  AC_MSG_CHECKING(for python 2.4)
   AC_RUN_IFELSE([AC_LANG_SOURCE([[
-  #include <python2.3/Python.h>
+  #include <python2.4/Python.h>
   main() {
-    exit(strncmp("2.3", PY_VERSION, 3));
+    exit(strncmp("2.4", PY_VERSION, 3));
   } ]])],[withval=yes],[withval=no],[withval=yes])
     AC_MSG_RESULT($withval)
     if test $withval = yes ; then
-      WITH_PYTHON_VERSION="2.3"
+      WITH_PYTHON_VERSION="2.4"
     else
-    
-      AC_MSG_CHECKING(for python 2.2)
-      AC_RUN_IFELSE([AC_LANG_SOURCE([[
-    #include <python2.2/Python.h>
+      
+    AC_MSG_CHECKING(for python 2.3)
+    AC_RUN_IFELSE([AC_LANG_SOURCE([[
+    #include <python2.3/Python.h>
     main() {
-      exit(strncmp("2.2", PY_VERSION, 3));
+      exit(strncmp("2.3", PY_VERSION, 3));
     } ]])],[withval=yes],[withval=no],[withval=yes])
       AC_MSG_RESULT($withval)
       if test $withval = yes ; then
-        WITH_PYTHON_VERSION="2.2"
+        WITH_PYTHON_VERSION="2.3"
       else
-    
-        AC_MSG_CHECKING(for python 1.5.2)
+      
+        AC_MSG_CHECKING(for python 2.2)
         AC_RUN_IFELSE([AC_LANG_SOURCE([[
-    #include <python1.5/Python.h>
-    main() {
-      exit(strcmp("1.5.2", PY_VERSION));
-    } ]])],[withval=yes],[withval=no],[withval=yes])
+      #include <python2.2/Python.h>
+      main() {
+        exit(strncmp("2.2", PY_VERSION, 3));
+      } ]])],[withval=yes],[withval=no],[withval=yes])
         AC_MSG_RESULT($withval)
         if test $withval = yes ; then
-          WITH_PYTHON_VERSION="1.5"
+          WITH_PYTHON_VERSION="2.2"
+        else
+      
+          AC_MSG_CHECKING(for python 1.5.2)
+          AC_RUN_IFELSE([AC_LANG_SOURCE([[
+      #include <python1.5/Python.h>
+      main() {
+        exit(strcmp("1.5.2", PY_VERSION));
+      } ]])],[withval=yes],[withval=no],[withval=yes])
+          AC_MSG_RESULT($withval)
+          if test $withval = yes ; then
+            WITH_PYTHON_VERSION="1.5"
+          fi
         fi
       fi
     fi
@@ -1025,6 +1120,14 @@ if test $withval = auto -a $__DOXYGEN != no ; then
 elif test $withval = yes -a $__DOXYGEN = no ; then
   AC_MSG_ERROR(--> rpm API docs needs doxygen in PATH)
 fi
+if test $withval = yes; then
+  WITH_APIDOCS_TARGET=apidocs
+  WITH_APIDOCS=1
+else
+  WITH_APIDOCS=0
+fi
+AC_SUBST(WITH_APIDOCS_TARGET)
+AC_SUBST(WITH_APIDOCS)
 
 WITH_SELINUX_LIB=
 withval=${with_selinuxval}
@@ -1050,14 +1153,20 @@ AC_SUBST(WITH_LUA_LIB)
 AC_SUBST(WITH_LUA_SUBDIR)
 AC_SUBST(WITH_LUA_INCLUDE)
 
-if test $withval = yes; then
-  WITH_APIDOCS_TARGET=apidocs
-  WITH_APIDOCS=1
-else
-  WITH_APIDOCS=0
+WITH_SYCK_LIB=
+WITH_SYCK_SUBDIR=
+WITH_SYCK_INCLUDE=
+withval=yes
+AC_ARG_WITH(syck, [  --with-syck             build with syck support ])
+if test $withval != no -a -d syck ; then
+  AC_DEFINE(WITH_SYCK, 1, [Build with syck support?])
+  WITH_SYCK_SUBDIR="syck"
+  WITH_SYCK_INCLUDE="-I\${top_srcdir}/${WITH_SYCK_SUBDIR}/lib"
+  WITH_SYCK_LIB="\$(top_builddir)/${WITH_SYCK_SUBDIR}/lib/libsyck.la"
 fi
-AC_SUBST(WITH_APIDOCS_TARGET)
-AC_SUBST(WITH_APIDOCS)
+AC_SUBST(WITH_SYCK_LIB)
+AC_SUBST(WITH_SYCK_SUBDIR)
+AC_SUBST(WITH_SYCK_INCLUDE)
 
 withval=no
 AC_ARG_WITH(dmalloc, [  --with-dmalloc          build with dmalloc debugging support ])
@@ -1261,9 +1370,11 @@ fi
 
 dnl XXX Choose /usr/lib or /usr/lib64 for library installs.
 MARK64=
-case "${target_cpu}" in
-x86_64*|ppc64*|powerpc64*|sparc64*|s390x*)	MARK64=64 ;;
-esac
+if ! echo "${libdir}" | grep -q '64$' ; then
+    case "${target_cpu}" in
+    x86_64*|ppc64*|powerpc64*|sparc64*|s390x*)	MARK64=64 ;;
+    esac
+fi
 AC_SUBST(MARK64)
 
 # For some systems we know that we have ld_version scripts.
@@ -1289,7 +1400,7 @@ dnl Determine the canonical arch-vendor-os for the build machine
 autorelocate_path='%{nil}'
 autorelocate_dcolor='0'
 case "${build_cpu}" in
-*86)		RPMCANONCOLOR=0; RPMCANONARCH=i386 ;;
+*86)		RPMCANONCOLOR=3; RPMCANONARCH=i386 ;;
 ia32e*)		RPMCANONCOLOR=3; RPMCANONARCH=ia32e ;;
 amd64*)		RPMCANONCOLOR=3; RPMCANONARCH=amd64 ;;
 x86_64*)	RPMCANONCOLOR=3; RPMCANONARCH=x86_64 ;;
@@ -1317,7 +1428,7 @@ mint)		RPMCANONARCH=m68kmint ;;
 esac
 RPMCANONVENDOR="$build_vendor"
 case "${build_vendor}" in
-unknown|pc|ibm|redhat|pld|mandrake|conectiva|lvr|yellowdog|caos)
+unknown|pc|ibm|redhat|pld|mandrake|conectiva|lvr|yellowdog|caos|crux)
 	test -f /etc/redhat-release &&		RPMCANONVENDOR=redhat
 	test -f /etc/pld-release &&		RPMCANONVENDOR=pld
 	test -f /etc/mandrake-release &&	RPMCANONVENDOR=mandrake
@@ -1325,6 +1436,7 @@ unknown|pc|ibm|redhat|pld|mandrake|conectiva|lvr|yellowdog|caos)
 	test -f /etc/lvr-release &&		RPMCANONVENDOR=lvr
 	test -f /etc/yellowdog-release &&	RPMCANONVENDOR=yellowdog
 	test -f /etc/caos-release &&		RPMCANONVENDOR=caos
+	test -f /usr/bin/crux &&		RPMCANONVENDOR=crux
 	;;
 esac
 RPMCANONOS="$build_os_noversion"
@@ -1346,40 +1458,40 @@ AC_DEFINE_UNQUOTED(LOCALEDIR, "$LOCALEDIR",
 AC_SUBST(LOCALEDIR)
 LIBDIR="`echo $libdir | sed 's-/lib$-/%{_lib}-'`"
 AC_SUBST(LIBDIR)
-RPMCONFIGDIR="`echo ${usrprefix}/lib/rpm`"
-AC_DEFINE_UNQUOTED(RPMCONFIGDIR, "$RPMCONFIGDIR",
+USRLIBRPM="`echo ${usrprefix}/lib/rpm`"
+AC_DEFINE_UNQUOTED(USRLIBRPM, "$USRLIBRPM",
 	[Full path to rpm global configuration directory (usually /usr/lib/rpm)])
-AC_SUBST(RPMCONFIGDIR)
+AC_SUBST(USRLIBRPM)
 
 SYSCONFIGDIR="`echo /etc/rpm`"
 AC_DEFINE_UNQUOTED(SYSCONFIGDIR, "$SYSCONFIGDIR",
 	[Full path to rpm system configuration directory (usually /etc/rpm)])
 AC_SUBST(SYSCONFIGDIR)
 
-MACROFILES="${RPMCONFIGDIR}/macros:${RPMCONFIGDIR}/%{_target_platform}/macros:${SYSCONFIGDIR}/macros:${SYSCONFIGDIR}/macros.specspo:${SYSCONFIGDIR}/macros.db1:${SYSCONFIGDIR}/%{_target_platform}/macros:~/.rpmmacros"
+MACROFILES="${USRLIBRPM}/macros:${USRLIBRPM}/%{_target}/macros:${SYSCONFIGDIR}/macros.*:${SYSCONFIGDIR}/macros:${SYSCONFIGDIR}/%{_target}/macros:~/.rpmmacros"
 AC_DEFINE_UNQUOTED(MACROFILES, "$MACROFILES",
 	[Colon separated paths of macro files to read.])
 AC_SUBST(MACROFILES)
 
-LIBRPMRC_FILENAME="${RPMCONFIGDIR}/rpmrc"
+LIBRPMRC_FILENAME="${USRLIBRPM}/rpmrc"
 AC_DEFINE_UNQUOTED(LIBRPMRC_FILENAME, "$LIBRPMRC_FILENAME",
 	[Full path to rpmrc configuration file (usually /usr/lib/rpm/rpmrc)])
 AC_SUBST(LIBRPMRC_FILENAME)
 
-VENDORRPMRC_FILENAME="${RPMCONFIGDIR}/${RPMCANONVENDOR}/rpmrc"
+VENDORRPMRC_FILENAME="${USRLIBRPM}/${RPMCANONVENDOR}/rpmrc"
 AC_DEFINE_UNQUOTED(VENDORRPMRC_FILENAME, "$VENDORRPMRC_FILENAME",
        [Full path to vendor rpmrc configuration file (usually /usr/lib/rpm/vendor/rpmrc)])
 AC_SUBST(VENDORRPMRC_FILENAME)
 
-LIBRPMALIAS_FILENAME="${RPMCONFIGDIR}/rpmpopt-${VERSION}"
+LIBRPMALIAS_FILENAME="${USRLIBRPM}/rpmpopt-${VERSION}"
 AC_DEFINE_UNQUOTED(LIBRPMALIAS_FILENAME, "$LIBRPMALIAS_FILENAME",
 	[Full path to rpmpopt configuration file (usually /usr/lib/rpm/rpmpopt)])
 AC_SUBST(LIBRPMALIAS_FILENAME)
-FINDREQUIRES="${RPMCONFIGDIR}/find-requires"
+FINDREQUIRES="${USRLIBRPM}/find-requires"
 AC_DEFINE_UNQUOTED(FINDREQUIRES, "$FINDREQUIRES",
 	[Full path to find-requires script (usually /usr/lib/rpm/find-requires)])
 AC_SUBST(FINDREQUIRES)
-FINDPROVIDES="${RPMCONFIGDIR}/find-provides"
+FINDPROVIDES="${USRLIBRPM}/find-provides"
 AC_DEFINE_UNQUOTED(FINDPROVIDES, "$FINDPROVIDES",
 	[Full path to find-provides script (usually /usr/lib/rpm/find-provides)])
 AC_SUBST(FINDPROVIDES)
@@ -1419,9 +1531,14 @@ AC_CONFIG_FILES([ Doxyfile Makefile rpmrc macros platform rpmpopt rpm.spec
 	python/Makefile
 	python/rpm/Makefile
  	lua/Makefile
+ 	syck/Makefile
+ 	syck/lib/Makefile
+	wdj/Makefile
+	wnh/Makefile
   ])
 AC_CONFIG_COMMANDS([default],[[	echo timestamp > popt/stamp-h.in
 	echo timestamp > stamp-h.in
+	[ -d perl ] && cd perl && perl Makefile.PL
   
 ]],[[]])
 AC_OUTPUT

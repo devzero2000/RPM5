@@ -31,6 +31,11 @@ int specedit = 0;
 #define POPT_HDLIST		-1011
 #define POPT_FTSWALK		-1012
 
+/* -1025 thrugh -1033 are common in rpmcli.h. */
+#define	POPT_TRUST		-1037
+#define	POPT_WHATNEEDS		-1038
+#define	POPT_SPECSRPM		-1039
+
 /* ========== Query/Verify/Signature source args */
 static void rpmQVSourceArgCallback( /*@unused@*/ poptContext con,
 		/*@unused@*/ enum poptCallbackReason reason,
@@ -59,6 +64,8 @@ static void rpmQVSourceArgCallback( /*@unused@*/ poptContext con,
     case 'f': qva->qva_source |= RPMQV_PATH; qva->qva_sourceCount++; break;
     case 'g': qva->qva_source |= RPMQV_GROUP; qva->qva_sourceCount++; break;
     case 'p': qva->qva_source |= RPMQV_RPM; qva->qva_sourceCount++; break;
+    case POPT_WHATNEEDS: qva->qva_source |= RPMQV_WHATNEEDS; 
+				qva->qva_sourceCount++; break;
     case POPT_WHATPROVIDES: qva->qva_source |= RPMQV_WHATPROVIDES; 
 				qva->qva_sourceCount++; break;
     case POPT_WHATREQUIRES: qva->qva_source |= RPMQV_WHATREQUIRES; 
@@ -81,6 +88,11 @@ static void rpmQVSourceArgCallback( /*@unused@*/ poptContext con,
 /* XXX SPECFILE is not verify sources */
     case POPT_SPECFILE:
 	qva->qva_source |= RPMQV_SPECFILE;
+	qva->qva_sourceCount++;
+	break;
+/* XXX SPECSRPM is not verify sources */
+    case POPT_SPECSRPM:
+	qva->qva_source |= RPMQV_SPECSRPM;
 	qva->qva_sourceCount++;
 	break;
     case POPT_QUERYBYNUMBER:
@@ -128,6 +140,8 @@ struct poptOption rpmQVSourcePoptTable[] = {
 	N_("query/verify a header instance"), "HDRNUM" },
  { "specfile", '\0', 0, 0, POPT_SPECFILE,
 	N_("query a spec file"), N_("<spec>") },
+ { "specsrpm", '\0', POPT_ARGFLAG_DOC_HIDDEN, 0, POPT_SPECSRPM,
+	N_("query source metadata from spec file parse"), N_("<spec>") },
  { "tid", '\0', POPT_ARGFLAG_DOC_HIDDEN, 0, POPT_QUERYBYTID,
 	N_("query/verify package(s) from install transaction"), "TID" },
  { "triggeredby", '\0', 0, 0, POPT_TRIGGEREDBY, 
@@ -136,6 +150,10 @@ struct poptOption rpmQVSourcePoptTable[] = {
 	N_("rpm verify mode"), NULL },
  { "whatrequires", '\0', 0, 0, POPT_WHATREQUIRES, 
 	N_("query/verify the package(s) which require a dependency"), "CAPABILITY" },
+ { "whatneeds", '\0', POPT_ARGFLAG_DOC_HIDDEN, 0, POPT_WHATNEEDS, 
+	N_("query/verify the package(s) which require any contained provide"),
+	"CAPABILITY" },
+
  { "whatprovides", '\0', 0, 0, POPT_WHATPROVIDES, 
 	N_("query/verify the package(s) which provide a dependency"), "CAPABILITY" },
 
@@ -218,8 +236,8 @@ static void queryArgCallback(poptContext con,
 	qva->qva_flags |= VERIFY_DEPS;
 	break;
 
-    case RPMCLI_POPT_NOMD5:
-	qva->qva_flags |= VERIFY_MD5;
+    case RPMCLI_POPT_NOFDIGESTS:
+	qva->qva_flags |= VERIFY_FDIGEST;
 	break;
 
     case RPMCLI_POPT_NOCONTEXTS:
@@ -240,6 +258,14 @@ static void queryArgCallback(poptContext con,
 	qva->qva_flags |= VERIFY_SCRIPT;
 	break;
 
+    /* XXX perhaps POPT_ARG_INT instead of callback. */
+    case POPT_TRUST:
+    {	char * end = NULL;
+	long trust = (int) strtol(arg, &end, 0);
+	/* XXX range checks on trust. */
+	/* XXX if (end && *end) argerror(_("non-numeric trust metric.")); */
+	qva->trust = trust;
+    }	break;
     }
 }
 
@@ -265,11 +291,18 @@ struct poptOption rpmQueryPoptTable[] = {
  { "list", 'l', 0, 0, 'l',
 	N_("list files in package"), NULL },
 
+ { "aid", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
+	&rpmQVKArgs.depFlags, RPMDEPS_FLAG_ADDINDEPS,
+	N_("add suggested packages to transaction"), NULL },
+
  /* Duplicate file attr flags from packages into command line options. */
- { "ghost", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
-	&rpmQVKArgs.qva_fflags, RPMFILE_GHOST,
-        N_("include %%ghost files"), NULL },
- { "noghost", '\0', POPT_BIT_CLR|POPT_ARGFLAG_DOC_HIDDEN,
+ { "noconfig", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
+	&rpmQVKArgs.qva_fflags, RPMFILE_CONFIG,
+        N_("skip %%config files"), NULL },
+ { "nodoc", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
+	&rpmQVKArgs.qva_fflags, RPMFILE_DOC,
+        N_("skip %%doc files"), NULL },
+ { "noghost", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
 	&rpmQVKArgs.qva_fflags, RPMFILE_GHOST,
         N_("skip %%ghost files"), NULL },
 #ifdef	NOTEVER		/* XXX there's hardly a need for these */
@@ -284,11 +317,13 @@ struct poptOption rpmQueryPoptTable[] = {
  { "qf", '\0', POPT_ARG_STRING | POPT_ARGFLAG_DOC_HIDDEN, 0, 
 	POPT_QUERYFORMAT, NULL, NULL },
  { "queryformat", '\0', POPT_ARG_STRING, 0, POPT_QUERYFORMAT,
-	N_("use the following query format"), "QUERYFORMAT" },
+	N_("use the following query format"), N_("QUERYFORMAT") },
  { "specedit", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &specedit, -1,
 	N_("substitute i18n sections into spec file"), NULL },
  { "state", 's', 0, 0, 's',
 	N_("display the states of the listed files"), NULL },
+ { "target", '\0', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN, 0,  RPMCLI_POPT_TARGETPLATFORM,
+        N_("specify target platform"), N_("CPU-VENDOR-OS") },
    POPT_TABLEEND
 };
 
@@ -303,14 +338,28 @@ struct poptOption rpmVerifyPoptTable[] = {
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmQVSourcePoptTable, 0,
 	NULL, NULL },
 
+ { "aid", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
+	&rpmQVKArgs.depFlags, RPMDEPS_FLAG_ADDINDEPS,
+	N_("add suggested packages to transaction"), NULL },
+
+ /* Duplicate file attr flags from packages into command line options. */
+ { "noconfig", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
+	&rpmQVKArgs.qva_fflags, RPMFILE_CONFIG,
+        N_("skip %%config files"), NULL },
+ { "nodoc", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
+	&rpmQVKArgs.qva_fflags, RPMFILE_DOC,
+        N_("skip %%doc files"), NULL },
+
  /* Duplicate file verify flags from packages into command line options. */
 /** @todo Add --nomd5 alias to rpmpopt, eliminate. */
 #ifdef	DYING
- { "nomd5", '\0', POPT_BIT_SET, &rpmQVKArgs.qva_flags, VERIFY_MD5,
-	N_("don't verify MD5 digest of files"), NULL },
+ { "nomd5", '\0', POPT_BIT_SET, &rpmQVKArgs.qva_flags, VERIFY_FDIGEST,
+	N_("don't verify file digests"), NULL },
 #else
- { "nomd5", '\0', 0, NULL, RPMCLI_POPT_NOMD5,
-	N_("don't verify MD5 digest of files"), NULL },
+ { "nomd5", '\0', POPT_ARGFLAG_DOC_HIDDEN, NULL, RPMCLI_POPT_NOFDIGESTS,
+	N_("don't verify file digests"), NULL },
+ { "nofdigests", '\0', 0, NULL, RPMCLI_POPT_NOFDIGESTS,
+	N_("don't verify file digests"), NULL },
 #endif
  { "nosize", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
 	&rpmQVKArgs.qva_flags, VERIFY_SIZE,
@@ -379,14 +428,6 @@ struct poptOption rpmVerifyPoptTable[] = {
         N_("don't verify package signature(s)"), NULL },
 #endif
 
-/** @todo Add --nogpg/--nopgp aliases to rpmpopt, eliminate. */
- { "nogpg", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
-	&rpmQVKArgs.qva_flags, VERIFY_SIGNATURE,
-        N_("don't verify GPG V3 DSA signature(s)"), NULL },
- { "nopgp", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
-	&rpmQVKArgs.qva_flags, VERIFY_SIGNATURE,
-        N_("don't verify PGP V3 RSA/MD5 signature(s)"), NULL },
-
     POPT_TABLEEND
 };
 
@@ -411,6 +452,15 @@ struct poptOption rpmSignPoptTable[] = {
 	N_("sign package(s) (identical to --addsign)"), NULL },
  { "sign", '\0', POPT_ARGFLAG_DOC_HIDDEN, &rpmQVKArgs.sign, 0,
 	N_("generate signature"), NULL },
+ /* XXX perhaps POPT_ARG_INT instead of callback. */
+ { "trust", '\0', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN, 0,  POPT_TRUST,
+        N_("specify trust metric"), "TRUST" },
+ { "trusted", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,
+	&rpmQVKArgs.trust, 1,
+        N_("set ultimate trust when importing pubkey(s)"), NULL },
+ { "untrusted", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,
+	&rpmQVKArgs.trust, -1,
+        N_("unset ultimate trust when importing pubkey(s)"), NULL },
 
  { "nodigest", '\0', POPT_BIT_SET, &rpmQVKArgs.qva_flags, VERIFY_DIGEST,
         N_("don't verify package digest(s)"), NULL },

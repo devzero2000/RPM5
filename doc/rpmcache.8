@@ -3,7 +3,7 @@
 .\" <http://shell.ipoline.com/~elmert/comp/docbook2X/> 
 .\" Please send any bug reports, improvements, comments, patches, 
 .\" etc. to Steve Cheng <steve@ggi-project.org>.
-.TH "RPMCACHE" "8" "05 July 2002" "Red Hat, Inc." "Red Hat Linux"
+.TH "RPMCACHE" "8" "05 July 2002" "Wraptastic" "RPM Package Manager"
 .SH NAME
 rpmcache \- Cache RPM Package Headers
 .SH SYNOPSIS
@@ -88,7 +88,7 @@ suggested dependency resolutions.
 .nf
 %_cache_dbpath  /var/spool/up2date/cache
 %_solve_dbpath  %{_cache_dbpath}
-%_bhpath        file://localhost/mnt/redhat/beehive/comps/dist
+%_bhpath        file://localhost/mnt/rpm/beehive/comps/dist
 %_bhcoll        7.3
 %_bhN           @(basesystem|bash|filesystem|glibc-common|glibc|ldconfig|libtermcap|mktemp|setup|termcap)
 %_bhVR          *
@@ -119,4 +119,4 @@ http://bugzilla.redhat.com/ <URL:http://bugzilla.redhat.com/>
 \fR
 .SH "AUTHORS"
 
-Jeff Johnson <jbj@redhat.com>
+Jeff Johnson <jbj@jbj.org>

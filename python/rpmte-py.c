@@ -35,22 +35,30 @@
  * - te.A()	Return package architecture.
  * - te.O()	Return package operating system.
  * - te.NEVR()	Return package name-version-release.
+ * - te.NEVRA()	Return package name-version-release.arch.
+ * - te.Pkgid()	Return package identifier (header+payload md5 digest).
+ * - te.Hdrid()	Return package header identifier (header sha1 digest).
  * - te.Color() Return package color bits.
- * - te.PkgFileSize() Return no. of bytes in package file (approx).
- * - te.Depth()	Return the level in the dependency tree (after ordering).
- * - te.Npreds() Return the number of package prerequisites (after ordering).
+ * - te.PkgFileSize() Return no. of bytes in package file.
+ * - te.Breadth() Return element breadth index.
+ * - te.Depth() Return element depth index.
+ * - te.Npreds() Return the number of package prerequisites.
  * - te.Degree() Return the parent's degree + 1.
  * - te.Parent() Return the parent element index.
  * - te.Tree()	Return the root dependency tree index.
- * - te.AddedKey() Return the added package index (TR_ADDED).
- * - te.DependsOnKey() Return the package index for the added package (TR_REMOVED).
+ * - te.AddedKey() Return the added package index.
  * - te.DBOffset() Return the Packages database instance number (TR_REMOVED)
- * - te.Key()	Return the associated opaque key, i.e. 2nd arg ts.addInstall().
+ * - te.Key()	Return the associated opaque key, i.e. 2nd arg to ts.addInstall().
  * - te.DS(tag)	Return package dependency set.
  * @param tag	'Providename', 'Requirename', 'Obsoletename', 'Conflictname'
  * - te.FI(tag)	Return package file info set.
  * @param tag	'Basenames'
  */
+
+/** \ingroup python
+ * \name Class: Rpmte
+ */
+/*@{*/
 
 /*@null@*/
 static PyObject *
@@ -133,6 +141,30 @@ rpmte_NEVR(rpmteObject * s)
 
 /*@null@*/
 static PyObject *
+rpmte_NEVRA(rpmteObject * s)
+	/*@*/
+{
+    return Py_BuildValue("s", rpmteNEVRA(s->te));
+}
+
+/*@null@*/
+static PyObject *
+rpmte_Pkgid(rpmteObject * s)
+	/*@*/
+{
+    return Py_BuildValue("s", rpmtePkgid(s->te));
+}
+
+/*@null@*/
+static PyObject *
+rpmte_Hdrid(rpmteObject * s)
+	/*@*/
+{
+    return Py_BuildValue("s", rpmteHdrid(s->te));
+}
+
+/*@null@*/
+static PyObject *
 rpmte_Color(rpmteObject * s)
 	/*@*/
 {
@@ -145,6 +177,14 @@ rpmte_PkgFileSize(rpmteObject * s)
 	/*@*/
 {
     return Py_BuildValue("i", rpmtePkgFileSize(s->te));
+}
+
+/*@null@*/
+static PyObject *
+rpmte_Breadth(rpmteObject * s)
+	/*@*/
+{
+    return Py_BuildValue("i", rpmteBreadth(s->te));
 }
 
 /*@null@*/
@@ -197,14 +237,6 @@ rpmte_AddedKey(rpmteObject * s)
 
 /*@null@*/
 static PyObject *
-rpmte_DependsOnKey(rpmteObject * s)
-	/*@*/
-{
-    return Py_BuildValue("i", rpmteDependsOnKey(s->te));
-}
-
-/*@null@*/
-static PyObject *
 rpmte_DBOffset(rpmteObject * s)
 	/*@*/
 {
@@ -219,12 +251,11 @@ rpmte_Key(rpmteObject * s)
 {
     PyObject * Key;
 
-    /* XXX how to insure this is a PyObject??? */
+    /* XXX how to insure that returned Key is a PyObject??? */
     Key = (PyObject *) rpmteKey(s->te);
-    if (Key == NULL) {
-	Py_INCREF(Py_None);
-	return Py_None;
-    }
+    if (Key == NULL)
+	Key = Py_None;
+    Py_INCREF(Key);
     return Key;
 }
 
@@ -250,13 +281,8 @@ rpmte_DS(rpmteObject * s, PyObject * args, PyObject * kwds)
 
     ds = rpmteDS(s->te, tag);
     if (ds == NULL) {
-#ifdef	DYING
-	PyErr_SetString(PyExc_TypeError, "invalid ds tag");
-	return NULL;
-#else
 	Py_INCREF(Py_None);
 	return Py_None;
-#endif
     }
     return (PyObject *) rpmds_Wrap(rpmdsLink(ds, "rpmte_DS"));
 }
@@ -283,16 +309,13 @@ rpmte_FI(rpmteObject * s, PyObject * args, PyObject * kwds)
 
     fi = rpmteFI(s->te, tag);
     if (fi == NULL) {
-#ifdef	DYING
-	PyErr_SetString(PyExc_TypeError, "invalid fi tag");
-	return NULL;
-#else
 	Py_INCREF(Py_None);
 	return Py_None;
-#endif
     }
     return (PyObject *) rpmfi_Wrap(rpmfiLink(fi, "rpmte_FI"));
 }
+
+/*@}*/
 
 /** \ingroup py_c
  */
@@ -325,12 +348,23 @@ static struct PyMethodDef rpmte_methods[] = {
     {"NEVR",	(PyCFunction)rpmte_NEVR,	METH_NOARGS,
 "te.NEVR() -> NEVR\n\
 - Return element name-version-release.\n" },
+    {"NEVRA",	(PyCFunction)rpmte_NEVRA,	METH_NOARGS,
+"te.NEVRA() -> NEVRA\n\
+- Return element name-version-release.arch.\n" },
+    {"Pkgid",	(PyCFunction)rpmte_Pkgid,	METH_NOARGS,
+"te.Pkgid() -> Pkgid\n\
+- Return element pkgid (header+payload md5 digest).\n" },
+    {"Hdrid",	(PyCFunction)rpmte_Hdrid,	METH_NOARGS,
+"te.Hdrid() -> Hdrid\n\
+- Return element hdrid (header sha1 digest).\n" },
     {"Color",(PyCFunction)rpmte_Color,		METH_NOARGS,
 	NULL},
     {"PkgFileSize",(PyCFunction)rpmte_PkgFileSize,	METH_NOARGS,
 	NULL},
+    {"Breadth",	(PyCFunction)rpmte_Breadth,	METH_NOARGS,
+"te.Breadth() -> transaction element breadth index.\n" },
     {"Depth",	(PyCFunction)rpmte_Depth,	METH_NOARGS,
-	NULL},
+"te.Depth() -> transaction element depth index.\n" },
     {"Npreds",	(PyCFunction)rpmte_Npreds,	METH_NOARGS,
 	NULL},
     {"Degree",	(PyCFunction)rpmte_Degree,	METH_NOARGS,
@@ -340,8 +374,6 @@ static struct PyMethodDef rpmte_methods[] = {
     {"Tree",	(PyCFunction)rpmte_Tree,	METH_NOARGS,
 	NULL},
     {"AddedKey",(PyCFunction)rpmte_AddedKey,	METH_NOARGS,
-	NULL},
-    {"DependsOnKey",(PyCFunction)rpmte_DependsOnKey,	METH_NOARGS,
 	NULL},
     {"DBOffset",(PyCFunction)rpmte_DBOffset,	METH_NOARGS,
 	NULL},

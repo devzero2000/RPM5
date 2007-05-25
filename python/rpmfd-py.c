@@ -26,21 +26,6 @@ static int _rpmfd_debug = 1;
  * \brief An python rpm.fd object represents an rpm I/O handle.
  */
 
-/*@null@*/
-static PyObject *
-rpmfd_Debug(/*@unused@*/ rpmfdObject * s, PyObject * args, PyObject * kwds)
-	/*@globals _Py_NoneStruct @*/
-	/*@modifies _Py_NoneStruct @*/
-{
-    char * kwlist[] = {"debugLevel", NULL};
-
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "i", kwlist, &_rpmfd_debug))
-	return NULL;
-
-    Py_INCREF(Py_None);
-    return Py_None;
-}
-
 /**
  */
 typedef struct FDlist_t FDlist;
@@ -95,6 +80,27 @@ static int closeCallback(FILE * f)
     return 0;
 }
 
+/** \ingroup python
+ * \name Class: Rpmfd
+ */
+/*@{*/
+/**
+ */
+/*@null@*/
+static PyObject *
+rpmfd_Debug(/*@unused@*/ rpmfdObject * s, PyObject * args, PyObject * kwds)
+	/*@globals _Py_NoneStruct @*/
+	/*@modifies _Py_NoneStruct @*/
+{
+    char * kwlist[] = {"debugLevel", NULL};
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "i", kwlist, &_rpmfd_debug))
+	return NULL;
+
+    Py_INCREF(Py_None);
+    return Py_None;
+}
+
 /**
  */
 /*@null@*/
@@ -104,7 +110,7 @@ rpmfd_Fopen(/*@unused@*/ PyObject * s, PyObject * args, PyObject * kwds)
 	/*@modifies fdhead, fdtail @*/
 {
     char * path;
-    char * mode = "r.ufdio";
+    char * mode = "r";
     FDlist *node;
     char * kwlist[] = {"path", "mode", NULL};
 
@@ -153,6 +159,8 @@ rpmfd_Fopen(/*@unused@*/ PyObject * s, PyObject * args, PyObject * kwds)
     return PyFile_FromFile (node->f, path, mode, closeCallback);
 }
 
+/*@}*/
+
 /** \ingroup py_c
  */
 /*@-fullinitblock@*/
@@ -199,7 +207,7 @@ static int rpmfd_init(rpmfdObject * s, PyObject *args, PyObject *kwds)
 	/*@modifies s @*/
 {
     char * path;
-    char * mode = "r.ufdio";
+    char * mode = "r";
     char * kwlist[] = {"path", "mode", NULL};
 
 if (_rpmfd_debug)

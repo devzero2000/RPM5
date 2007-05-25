@@ -23,7 +23,7 @@ static int _rc_debug = 0;
  */
 
 /** \ingroup python
- * \name Class: rpm.rc
+ * \name Class: Rpmrc
  */
 /*@{*/
 
@@ -61,6 +61,8 @@ rpmrc_DelMacro(/*@unused@*/ PyObject * self, PyObject * args, PyObject * kwds)
     Py_INCREF(Py_None);
     return Py_None;
 }
+
+/*@}*/
 
 #if Py_TPFLAGS_HAVE_ITER	/* XXX backport to python-1.5.2 */
 /**
@@ -411,5 +413,3 @@ PyObject * rpmrc_Create(/*@unused@*/ PyObject * self, PyObject *args, PyObject *
     return rpmrc_new(&rpmrc_Type, args, kwds);
 }
 #endif
-
-/*@}*/

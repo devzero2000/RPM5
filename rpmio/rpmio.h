@@ -274,8 +274,8 @@ int Fclose( /*@killref@*/ FD_t fd)
 /**
  */
 /*@null@*/ FD_t	Fdopen(FD_t ofd, const char * fmode)
-	/*@globals fileSystem @*/
-	/*@modifies ofd, fileSystem @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies ofd, fileSystem, internalState @*/;
 
 /**
  * fopen(3) clone.
@@ -343,6 +343,14 @@ int Rmdir(const char * path)
 	/*@modifies errno, fileSystem, internalState @*/;
 
 /**
+ * chroot(2) clone.
+ * @todo Implement remotely.
+ */
+int Chroot(const char * path)
+	/*@globals errno, fileSystem, internalState @*/
+	/*@modifies errno, fileSystem, internalState @*/;
+
+/**
  * rename(2) clone.
  */
 int Rename(const char * oldpath, const char * newpath)
@@ -364,17 +372,6 @@ int Unlink(const char * path)
 	/*@modifies errno, fileSystem, internalState @*/;
 
 /**
- * readlink(2) clone.
- */
-/*@-incondefs@*/
-int Readlink(const char * path, /*@out@*/ char * buf, size_t bufsiz)
-	/*@globals errno, h_errno, fileSystem, internalState @*/
-	/*@modifies *buf, errno, fileSystem, internalState @*/
-	/*@requires maxSet(buf) >= (bufsiz - 1) @*/
-	/*@ensures maxRead(buf) <= bufsiz @*/;
-/*@=incondefs@*/
-
-/**
  * stat(2) clone.
  */
 int Stat(const char * path, /*@out@*/ struct stat * st)
@@ -389,7 +386,84 @@ int Lstat(const char * path, /*@out@*/ struct stat * st)
 	/*@modifies *st, errno, fileSystem, internalState @*/;
 
 /**
+ * chown(2) clone.
+ * @todo Implement remotely.
+ */
+int Chown(const char * path, uid_t owner, gid_t group)
+	/*@globals errno, fileSystem, internalState @*/
+	/*@modifies errno, fileSystem, internalState @*/;
+
+/**
+ * lchown(2) clone.
+ * @todo Implement remotely.
+ */
+int Lchown(const char * path, uid_t owner, gid_t group)
+	/*@globals errno, fileSystem, internalState @*/
+	/*@modifies errno, fileSystem, internalState @*/;
+
+/**
+ * chmod(2) clone.
+ * @todo Implement remotely.
+ */
+int Chmod(const char * path, mode_t mode)
+	/*@globals errno, fileSystem, internalState @*/
+	/*@modifies errno, fileSystem, internalState @*/;
+
+/**
+ * mkfifo(3) clone.
+ * @todo Implement remotely.
+ */
+int Mkfifo(const char * path, mode_t mode)
+	/*@globals errno, fileSystem, internalState @*/
+	/*@modifies errno, fileSystem, internalState @*/;
+
+/**
+ * mknod(3) clone.
+ * @todo Implement remotely.
+ */
+int Mknod(const char * path, mode_t mode, dev_t dev)
+	/*@globals errno, fileSystem, internalState @*/
+	/*@modifies errno, fileSystem, internalState @*/;
+
+/**
+ * utime(2) clone.
+ * @todo Implement remotely.
+ */
+int Utime(const char * path, const struct utimbuf * buf)
+	/*@globals errno, fileSystem, internalState @*/
+	/*@modifies errno, fileSystem, internalState @*/;
+
+/**
+ * utimes(2) clone.
+ * @todo Implement remotely.
+ */
+int Utimes(const char * path, const struct timeval * times)
+	/*@globals errno, fileSystem, internalState @*/
+	/*@modifies errno, fileSystem, internalState @*/;
+
+/**
+ * symlink(3) clone.
+ * @todo Implement remotely.
+ */
+int Symlink(const char * oldpath, const char * newpath)
+	/*@globals errno, fileSystem, internalState @*/
+	/*@modifies errno, fileSystem, internalState @*/;
+
+/**
+ * readlink(2) clone.
+ * @todo Implement remotely.
+ */
+/*@-incondefs@*/
+int Readlink(const char * path, /*@out@*/ char * buf, size_t bufsiz)
+	/*@globals errno, h_errno, fileSystem, internalState @*/
+	/*@modifies *buf, errno, fileSystem, internalState @*/
+	/*@requires maxSet(buf) >= (bufsiz - 1) @*/
+	/*@ensures maxRead(buf) <= bufsiz @*/;
+/*@=incondefs@*/
+
+/**
  * access(2) clone.
+ * @todo Implement remotely.
  */
 int Access(const char * path, int amode)
 	/*@globals errno, fileSystem @*/
@@ -446,6 +520,14 @@ struct dirent * Readdir(DIR * dir)
 int Closedir(/*@only@*/ DIR * dir)
 	/*@globals errno, fileSystem @*/
 	/*@modifies *dir, errno, fileSystem @*/;
+
+/**
+ * lseek(2) clone.
+ * @todo Implement SEEK_HOLE/SEEK_DATA.
+ */
+off_t Lseek(int fdno, off_t offset, int whence)
+	/*@globals errno, fileSystem @*/
+	/*@modifies errno, fileSystem @*/;
 
 /*@}*/
 
@@ -556,7 +638,7 @@ int fdReadable(FD_t fd, int secs)
 
 /**
  * Insure that directories in path exist, creating as needed.
- * @param path		diretory path
+ * @param path		directory path
  * @param mode		directory mode (if created)
  * @param uid		directory uid (if created), or -1 to skip
  * @param gid		directory uid (if created), or -1 to skip
@@ -564,6 +646,17 @@ int fdReadable(FD_t fd, int secs)
  */
 int rpmioMkpath(const char * path, mode_t mode, uid_t uid, gid_t gid)
 	/*@globals h_errno, fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/;
+
+/**
+ * Check FN access, expanding relative paths and twiddles.
+ * @param FN		file path to check
+ * @param path		colon separated search path (NULL uses $PATH)
+ * @param mode		type of access(2) to check (0 uses X_OK)
+ * @return		0 if accessible
+ */
+int rpmioAccess(const char *FN, /*@null@*/ const char * path, int mode)
+	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
 
 /**
@@ -662,6 +755,10 @@ int ufdGetFile( /*@killref@*/ FD_t sfd, FD_t tfd)
 
 /**
  */
+/*@observer@*/ /*@unchecked@*/ extern FDIO_t lzdio;
+
+/**
+ */
 /*@observer@*/ /*@unchecked@*/ extern FDIO_t fadio;
 /*@=exportlocal@*/
 /*@}*/
@@ -687,6 +784,21 @@ int ufdGetFile( /*@killref@*/ FD_t sfd, FD_t tfd)
 /*@unused@*/ static inline int xisspace(int c) /*@*/ {
     return (xisblank(c) || c == '\n' || c == '\r' || c == '\f' || c == '\v');
 }
+/*@unused@*/ static inline int xiscntrl(int c) /*@*/ {
+    return (c < ' ');
+}
+/*@unused@*/ static inline int xisascii(int c) /*@*/ {
+    return ((c & 0x80) != 0x80);
+}
+/*@unused@*/ static inline int xisprint(int c) /*@*/ {
+    return (c >= ' ' && xisascii(c));
+}
+/*@unused@*/ static inline int xisgraph(int c) /*@*/ {
+    return (c > ' ' && xisascii(c));
+}
+/*@unused@*/ static inline int xispunct(int c) /*@*/ {
+    return (xisgraph(c) && !xisalnum(c));
+}
 
 /*@unused@*/ static inline int xtolower(int c) /*@*/ {
     return ((xisupper(c)) ? (c | ('a' - 'A')) : c);
@@ -705,6 +817,12 @@ int xstrcasecmp(const char * s1, const char * s2)		/*@*/;
  */
 int xstrncasecmp(const char *s1, const char * s2, size_t n)	/*@*/;
 
+/** \ingroup rpmio
+ * Force encoding of string.
+ */
+/*@only@*/ /*@null@*/
+const char * xstrtolocale(/*@only@*/ const char *str)
+	/*@modifies *str @*/;
 #ifdef __cplusplus
 }
 #endif

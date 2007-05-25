@@ -4,43 +4,53 @@ AUTOMAKE_OPTIONS = 1.4 foreign
 
 LINT = splint
 
-EXTRA_DIST = tax.c tdigest.c tdir.c tficl.c tfts.c tget.c thkp.c tput.c tglob.c tinv.c tkey.c trpmio.c librpmio.vers
+EXTRA_DIST = tax.c tdir.c tficl.c tfts.c tget.c thkp.c tput.c tglob.c tinv.c tkey.c trpmio.c lookup3.c librpmio.vers
 
-EXTRA_PROGRAMS = tax tdigest tdir tfts tget thkp tput tglob tinv tkey tring trpmio tsw html-parse dumpasn1
+EXTRA_PROGRAMS = tax tdir tfts tget thkp tput tglob tinv tkey trpmio tsw dumpasn1 lookup3
 
 INCLUDES = -I. \
 	-I$(top_srcdir) \
 	@WITH_BEECRYPT_INCLUDE@ \
 	@WITH_NEON_INCLUDE@ \
 	@WITH_LUA_INCLUDE@ \
+	@WITH_SYCK_INCLUDE@ \
 	@WITH_POPT_INCLUDE@ \
 	-I$(top_srcdir)/misc \
 	@INCPATH@
 
 pkgincdir = $(pkgincludedir)
 pkginc_HEADERS = \
-	argv.h fts.h rpmdav.h \
+	argv.h envvar.h fts.h mire.h rpmdav.h rpmhash.h \
 	rpmio.h rpmurl.h rpmmacro.h rpmlog.h rpmmessages.h rpmerr.h rpmpgp.h \
 	rpmsq.h rpmsw.h ugid.h
-noinst_HEADERS = rpmio_internal.h rpmlua.h rpmhook.h
+noinst_HEADERS = \
+	md2.h md4.h rmd128.h rmd160.h rmd256.h rmd320.h sha224.h \
+	salsa10.h salsa20.h tiger.h \
+	LzmaDecode.h rpmio_internal.h rpmlua.h rpmhook.h
 
-BEECRYPTLOBJS = $(shell test X"@WITH_BEECRYPT_SUBDIR@" != X && cat $(top_builddir)/@WITH_BEECTYPT_SUBDIR@/listobjs)
+BEECRYPTLOBJS = $(shell test X"@WITH_BEECRYPT_SUBDIR@" != X && cat $(top_builddir)/@WITH_BEECRYPT_SUBDIR@/listobjs)
 
 LDFLAGS = -L$(RPM_BUILD_ROOT)$(usrlibdir) -L$(DESTDIR)$(usrlibdir)
 
 usrlibdir = $(libdir)@MARK64@
 usrlib_LTLIBRARIES = librpmio.la
 librpmio_la_SOURCES = \
-	argv.c digest.c fts.c macro.c rpmdav.c \
-	rpmhook.c rpmio.c rpmlog.c rpmlua.c rpmmalloc.c \
-	rpmpgp.c rpmrpc.c rpmsq.c rpmsw.c strcasecmp.c stubs.c url.c ugid.c
+	argv.c digest.c fts.c macro.c mire.c \
+	md2.c md4.c rmd128.c rmd160.c rmd256.c rmd320.c sha224.c \
+	salsa10.c salsa20.c tiger.c \
+	rpmdav.c rpmhash.c rpmhook.c rpmio.c rpmlog.c rpmlua.c rpmmalloc.c \
+	rpmpgp.c rpmrpc.c rpmsq.c rpmsw.c strcasecmp.c strtolocale.c \
+	stubs.c url.c ugid.c \
+	LzmaDecode.c
 librpmio_la_LDFLAGS = -no-undefined -release $(LT_CURRENT).$(LT_REVISION) $(LDFLAGS) \
 	@WITH_BEECRYPT_LIB@ \
 	@WITH_NEON_LIB@ \
 	@WITH_LUA_LIB@ \
+	@WITH_SYCK_LIB@ \
 	@WITH_MAGIC_LIB@ \
 	@WITH_ZLIB_LIB@ \
-	-lpthread
+	-lpthread \
+	@LTLIBINTL@
 librpmio_la_LIBADD = # $(BEECRYPTLOBJS)
 librpmio_la_DEPENDENCIES = # .created
 
@@ -76,9 +86,6 @@ lint:
 tax_SOURCES = tax.c
 tax_LDADD = librpmio.la
 
-tdigest_SOURCES = tdigest.c
-tdigest_LDADD = librpmio.la $(top_builddir)/popt/libpopt.la -lgcrypt
-
 tdir_SOURCES = tdir.c
 tdir_LDFLAGS = @LDFLAGS_STATIC@
 tdir_LDADD = librpmio.la $(top_builddir)/popt/libpopt.la
@@ -112,10 +119,6 @@ tkey_SOURCES = tkey.c
 tkey_LDFLAGS = @LDFLAGS_STATIC@
 tkey_LDADD = librpmio.la $(top_builddir)/popt/libpopt.la
 
-tring_SOURCES = tring.c
-tring_LDFLAGS = @LDFLAGS_STATIC@
-tring_LDADD = librpmio.la $(top_builddir)/popt/libpopt.la
-
 trpmio_SOURCES = trpmio.c
 trpmio_LDADD = librpmio.la $(top_builddir)/popt/libpopt.la
 
@@ -124,10 +127,9 @@ tsw_LDFLAGS = librpmio.la
 
 dumpasn1_SOURCES = dumpasn1.c
 
-html_parse_SOURCES = html-parse.c
-html_parse_CPPFLAGS = -DSTANDALONE
-html_parse_LDFLAGS = @LDFLAGS_STATIC@
-html_parse_LDADD = librpmio.la $(top_builddir)/popt/libpopt.la
+lookup3_SOURCES = lookup3.c
+lookup3_CFLAGS	= $(CFLAGS) -D_JLU3_SELFTEST
+lookup3_LDADD = librpmio.la
 
 tficl.o: tficl.c
 	$(COMPILE) -I/usr/include/ficl -o $@ -c tficl.c 
