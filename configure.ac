@@ -1,5 +1,5 @@
 AC_PREREQ(2.57)
-AC_INIT(rpm, 4.4.9, rpm-devel@lists.dulug.duke.edu)
+AC_INIT(rpm, 4.5, rpm-devel@lists.dulug.duke.edu)
 AC_CANONICAL_TARGET
 AC_CONFIG_SRCDIR([rpmqv.c])
 AC_CONFIG_HEADERS([config.h])
@@ -635,6 +635,14 @@ AC_SUBST(WITH_MAGIC_INCLUDE)
 AC_SUBST(WITH_MAGIC_LIB)
 
 #=================
+# Check for keyutils library. Prefer external, otherwise none.
+
+AC_CHECK_HEADERS(keyutils.h)
+WITH_KEYUTILS_LIB=
+AC_CHECK_LIB(keyutils, keyctl_read, [WITH_KEYUTILS_LIB="-lkeyutils"])
+AC_SUBST(WITH_KEYUTILS_LIB)
+
+#=================
 # Check for popt library. Prefer internal, otherwise external.
 WITH_POPT_SUBDIR=
 WITH_POPT_INCLUDE=
@@ -931,7 +939,7 @@ dnl XXX AC_FUNC_FORK([])
 dnl XXX AC_CHECK_FUNCS(gethostname mkdir mkfifo rmdir select uname)
 
 AC_CHECK_FUNCS(basename getaddrinfo getcwd getnameinfo getwd inet_aton)
-AC_CHECK_FUNCS(mtrace putenv realpath setenv)
+AC_CHECK_FUNCS(mtrace putenv realpath setenv clearenv)
 AC_CHECK_FUNCS(stpcpy stpncpy strcspn)
 AC_CHECK_FUNCS(strdup strndup strerror strtol strtoul strspn strstr)
 

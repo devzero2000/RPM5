@@ -73,6 +73,7 @@ rpmdb/tagname.c
 rpmio/argv.c
 rpmio/digest.c
 rpmio/fts.c
+rpmio/getpass.c
 rpmio/lookup3.c
 rpmio/macro.c
 rpmio/md2.c

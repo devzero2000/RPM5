@@ -1,4 +1,4 @@
--I. -I.. -I../neon/src -I../lua/include -I../lua/include/local -I../beecrypt -I../popt -I../zlib -DHAVE_CONFIG_H -D_GNU_SOURCE -DHAVE_NEON_NE_GET_RESPONSE_HEADER -D__STDC__=1
+-I. -I.. -I../neon/src -I../lua/include -I../lua/include/local -I../beecrypt -I../popt -I../zlib -DHAVE_CONFIG_H -D_GNU_SOURCE -DHAVE_NEON_NE_GET_RESPONSE_HEADER -D__STDC__=1 -DHAVE_NEON_NE_GET_RESPONSE_HEADER
 
 +partial
 +forcehints
@@ -12,8 +12,15 @@
 +strict			# lclint level
 
 # --- in progress
-+bounds
+#+bounds
 -bufferoverflowhigh
+-shiftimplementation
+-shiftnegative
+
+-forempty
+-looploopbreak
+-nullptrarith
+-shadow
 
 # --- +partial artifacts
 -declundef

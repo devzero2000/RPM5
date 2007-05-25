@@ -642,6 +642,7 @@ INPUT                  = @top_srcdir@/Doxyheader \
                          @top_srcdir@/rpmio/digest.c \
                          @top_srcdir@/rpmio/fts.c \
                          @top_srcdir@/rpmio/fts.h \
+                         @top_srcdir@/rpmio/getpass.c \
                          @top_srcdir@/rpmio/lookup3.c \
                          @top_srcdir@/rpmio/macro.c \
                          @top_srcdir@/rpmio/rpmlog.c \

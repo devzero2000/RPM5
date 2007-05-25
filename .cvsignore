@@ -3,11 +3,13 @@
 .depend-done
 .libs
 Doxyfile
+Doxytags
 Makefile
 Makefile.in
 aclocal.m4
 autom4te*
 apidocs
+compile
 config.cache
 config.guess
 config.h
@@ -38,3 +40,4 @@ rpmpopt*
 rpmrc
 stamp-h*
 rpm-*.tar.gz
+ylwrap

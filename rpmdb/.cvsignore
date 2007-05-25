@@ -9,6 +9,7 @@ rpmdb_archive
 rpmdb_checkpoint
 rpmdb_deadlock
 rpmdb_dump
+rpmdb_hotbackup
 rpmdb_load
 rpmdb_printlog
 rpmdb_recover

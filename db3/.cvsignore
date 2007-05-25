@@ -8,7 +8,6 @@ Makefile.in
 db3lobjs
 config.cache
 config.log
-db_config.h
 libtool
 config.status
 include.tcl
@@ -17,6 +16,7 @@ db_archive
 db_checkpoint
 db_deadlock
 db_dump
+db_hotbackup
 db_load
 db_printlog
 db_recover
@@ -24,15 +24,20 @@ db_stat
 db_upgrade
 db_verify
 db3libobjs
+btree_ext.h
+clib_ext.h
+clib_port.h
+common_ext.h
 db.h
+db_config.h
 db_cxx.h
 db_ext.h
 db_int.h
 db_int_def.h
-btree_ext.h
-clib_ext.h
-common_ext.h
 db_server.h
+db_server_xdr.c
+db_server_svc.c
+db_server_clnt.c
 env_ext.h
 hash_ext.h
 lock_ext.h
@@ -48,7 +53,4 @@ tcl_ext.h
 txn_ext.h
 xa_ext.h
 gen_db_server.c
-db_server_xdr.c
-db_server_svc.c
-db_server_clnt.c
 

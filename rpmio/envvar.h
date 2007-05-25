@@ -9,6 +9,15 @@
 extern "C" {
 #endif
 
+#ifndef HAVE_CLEARENV
+static inline
+int clearenv(void)
+{
+    environ = NULL;
+    return 0;
+}
+#endif
+
 /*@unused@*/
 static inline
 /*@observer@*/ /*@null@*/

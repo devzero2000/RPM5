@@ -270,7 +270,7 @@ static void urlFind(/*@null@*/ /*@in@*/ /*@out@*/ urlinfo * uret, int mustAsk)
 	    sprintf(prompt, _("Password for %s@%s: "), user, host);
 	    u->password = _free(u->password);
 /*@-dependenttrans -moduncon @*/
-	    u->password = /*@-unrecog@*/ getpass(prompt) /*@=unrecog@*/;
+	    u->password = Getpass(prompt);
 /*@=dependenttrans =moduncon @*/
 	    if (u->password)
 		u->password = xstrdup(u->password);
