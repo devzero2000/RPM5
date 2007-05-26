@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm\n"
 "Report-Msgid-Bugs-To: <rpm-devel@lists.dulug.duke.edu>\n"
-"POT-Creation-Date: 2007-05-21 11:27-0400\n"
+"POT-Creation-Date: 2007-05-25 21:25-0400\n"
 "PO-Revision-Date: 2006-10-01 22:31+0200\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <tp-sv@listor.tp-sv.se>\n"
@@ -1497,11 +1497,11 @@ msgstr "ignorera paketnamnsrelation(er) [%d]\t%s -> %s\n"
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "tar bort %s \"%s\" från tsort-relationer.\n"
 
-#: lib/depends.c:1880
+#: lib/depends.c:1899
 msgid "========== recording tsort relations\n"
 msgstr "========== noterar alla relationer\n"
 
-#: lib/depends.c:2001
+#: lib/depends.c:2020
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, "
 "Ldepth, Rbreadth)\n"
@@ -1509,20 +1509,20 @@ msgstr ""
 "========== tsort:erar paket (ordning, #föregångare, #efterföljare, träd, "
 "Ldjup, Rbredd)\n"
 
-#: lib/depends.c:2092
+#: lib/depends.c:2111
 #, c-format
 msgid "========== successors only (%d bytes)\n"
 msgstr "========== endast efterföljare (%d byte)\n"
 
-#: lib/depends.c:2165
+#: lib/depends.c:2184
 msgid "LOOP:\n"
 msgstr "LOOP:\n"
 
-#: lib/depends.c:2196
+#: lib/depends.c:2215
 msgid "========== continuing tsort ...\n"
 msgstr "========== fortsätter med tsort ...\n"
 
-#: lib/depends.c:2201
+#: lib/depends.c:2220
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr "rpmtsOrder misslyckades, %d element återstår\n"
@@ -3554,41 +3554,41 @@ msgstr "Du måste sätta \"%%_gpg_name\" i din makrofil\n"
 msgid "You must set \"%%_pgp_name\" in your macro file\n"
 msgstr "Du måste sätta \"%%_pgp_name\" i din makrofil\n"
 
-#: lib/signature.c:1043
+#: lib/signature.c:1041
 msgid "Header+Payload size: "
 msgstr "Huvud+laststorlek: "
 
-#: lib/signature.c:1084
+#: lib/signature.c:1082
 msgid "MD5 digest: "
 msgstr "MD5-summa: "
 
-#: lib/signature.c:1144
+#: lib/signature.c:1142
 msgid "Header SHA1 digest: "
 msgstr "Huvudets SHA1-summa: "
 
-#: lib/signature.c:1225 lib/signature.c:1415
+#: lib/signature.c:1223 lib/signature.c:1413
 msgid "Header "
 msgstr "Huvud "
 
-#: lib/signature.c:1294
+#: lib/signature.c:1292
 msgid " signature: "
 msgstr "-signatur: "
 
-#: lib/signature.c:1421
+#: lib/signature.c:1419
 msgid " DSA signature: "
 msgstr " DSA-signatur: "
 
-#: lib/signature.c:1503
+#: lib/signature.c:1501
 #, c-format
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr "Verifiera signatur: FELAKTIGA PARAMETRAR\n"
 
-#: lib/signature.c:1534
+#: lib/signature.c:1532
 #, c-format
 msgid "Broken MD5 digest: UNSUPPORTED\n"
 msgstr "Trasig MD5-summa: STÖDS EJ\n"
 
-#: lib/signature.c:1538
+#: lib/signature.c:1536
 #, c-format
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr "Signatur: OKÄND (%d)\n"

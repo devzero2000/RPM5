@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: <rpm-devel@lists.dulug.duke.edu>\n"
-"POT-Creation-Date: 2007-05-21 11:27-0400\n"
+"POT-Creation-Date: 2007-05-25 21:25-0400\n"
 "PO-Revision-Date: 2004-02-29 07:48+0500\n"
 "Last-Translator: Arnaldo Carvalho de Melo <acme@conectiva.com.br>\n"
 "Language-Team: Brazilian Portuguese\n"
@@ -1643,30 +1643,30 @@ msgstr ""
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "No consegui abrir: %s\n"
 
-#: lib/depends.c:1880
+#: lib/depends.c:1899
 msgid "========== recording tsort relations\n"
 msgstr ""
 
-#: lib/depends.c:2001
+#: lib/depends.c:2020
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, "
 "Ldepth, Rbreadth)\n"
 msgstr ""
 
-#: lib/depends.c:2092
+#: lib/depends.c:2111
 #, c-format
 msgid "========== successors only (%d bytes)\n"
 msgstr ""
 
-#: lib/depends.c:2165
+#: lib/depends.c:2184
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:2196
+#: lib/depends.c:2215
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
-#: lib/depends.c:2201
+#: lib/depends.c:2220
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""
@@ -3867,44 +3867,44 @@ msgstr ""
 msgid "You must set \"%%_pgp_name\" in your macro file\n"
 msgstr ""
 
-#: lib/signature.c:1043
+#: lib/signature.c:1041
 msgid "Header+Payload size: "
 msgstr ""
 
-#: lib/signature.c:1084
+#: lib/signature.c:1082
 msgid "MD5 digest: "
 msgstr ""
 
-#: lib/signature.c:1144
+#: lib/signature.c:1142
 #, fuzzy
 msgid "Header SHA1 digest: "
 msgstr "instale pacote"
 
-#: lib/signature.c:1225 lib/signature.c:1415
+#: lib/signature.c:1223 lib/signature.c:1413
 msgid "Header "
 msgstr ""
 
-#: lib/signature.c:1294
+#: lib/signature.c:1292
 #, fuzzy
 msgid " signature: "
 msgstr "gere assinatura PGP"
 
-#: lib/signature.c:1421
+#: lib/signature.c:1419
 #, fuzzy
 msgid " DSA signature: "
 msgstr "gere assinatura PGP"
 
-#: lib/signature.c:1503
+#: lib/signature.c:1501
 #, c-format
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr ""
 
-#: lib/signature.c:1534
+#: lib/signature.c:1532
 #, c-format
 msgid "Broken MD5 digest: UNSUPPORTED\n"
 msgstr ""
 
-#: lib/signature.c:1538
+#: lib/signature.c:1536
 #, c-format
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr ""

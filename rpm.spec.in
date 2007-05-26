@@ -23,8 +23,8 @@ Version: @VERSION@
 Release: 0.3
 Group: System Environment/Base
 URL: http://wraptastic.org
-Source: ftp://wraptastic.org/pub/rpm-devel/rpm-%{version}.tar.gz
-BuildRequires: digest(%{SOURCE0}) = %(md5sum %{SOURCE0} | %{__sed} -e 's/ .*//')
+Source: http://rpm5.org/files/rpm/rpm-4.5/rpm-%{version}.tar.gz
+BuildRequires: digest(%{SOURCE0}) = %(md5http://rpm5.org/files/rpm/rpm-4.5/a/um %{SOURCE0} | %{__sed} -e 's/ .*//')
 License: LGPL
 %ifos linux
 Prereq: fileutils shadow-utils

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.4\n"
 "Report-Msgid-Bugs-To: <rpm-devel@lists.dulug.duke.edu>\n"
-"POT-Creation-Date: 2007-05-21 11:27-0400\n"
+"POT-Creation-Date: 2007-05-25 21:25-0400\n"
 "PO-Revision-Date: 2002-03-04 17:17+0900\n"
 "Last-Translator: Jong-Hoon Ryu <redhat4u@netian.com>\n"
 "Language-Team: GNU Translation project <ko@li.org>\n"
@@ -1505,11 +1505,11 @@ msgstr "다음과 관련된 패키지 이름을 무시합니다 [%d]\t%s -> %s\n"
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "tsort 관계에서 %s-%s-%s \"%s\"(을)를 삭제합니다.\n"
 
-#: lib/depends.c:1880
+#: lib/depends.c:1899
 msgid "========== recording tsort relations\n"
 msgstr "========== tsort 관계를 기록(record)합니다\n"
 
-#: lib/depends.c:2001
+#: lib/depends.c:2020
 #, fuzzy
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, "
@@ -1518,20 +1518,20 @@ msgstr ""
 "========== 패키지를 tsort 합니다 (순서, #선임자, #후임자, 트리, 깊이"
 "[depth])\n"
 
-#: lib/depends.c:2092
+#: lib/depends.c:2111
 #, fuzzy, c-format
 msgid "========== successors only (%d bytes)\n"
 msgstr "========== 후임자만 [successors only] (표현 순)\n"
 
-#: lib/depends.c:2165
+#: lib/depends.c:2184
 msgid "LOOP:\n"
 msgstr "루프(LOOP):\n"
 
-#: lib/depends.c:2196
+#: lib/depends.c:2215
 msgid "========== continuing tsort ...\n"
 msgstr "========== tsort를 진행합니다...\n"
 
-#: lib/depends.c:2201
+#: lib/depends.c:2220
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""
@@ -3625,45 +3625,45 @@ msgstr "매크로 파일 안에 반드시 \"%%_gpg_name\"을 설정해야 합니다\n"
 msgid "You must set \"%%_pgp_name\" in your macro file\n"
 msgstr "매크로 파일 안에 반드시 \"%%_pgp_name\"을 설정해야 합니다\n"
 
-#: lib/signature.c:1043
+#: lib/signature.c:1041
 #, fuzzy
 msgid "Header+Payload size: "
 msgstr "헤더의 크기가 너무 큽니다"
 
-#: lib/signature.c:1084
+#: lib/signature.c:1082
 msgid "MD5 digest: "
 msgstr ""
 
-#: lib/signature.c:1144
+#: lib/signature.c:1142
 #, fuzzy
 msgid "Header SHA1 digest: "
 msgstr "SHA1 축약(digest) 헤더를 검사하지 않습니다"
 
-#: lib/signature.c:1225 lib/signature.c:1415
+#: lib/signature.c:1223 lib/signature.c:1413
 msgid "Header "
 msgstr ""
 
-#: lib/signature.c:1294
+#: lib/signature.c:1292
 #, fuzzy
 msgid " signature: "
 msgstr "서명이 없습니다\n"
 
-#: lib/signature.c:1421
+#: lib/signature.c:1419
 #, fuzzy
 msgid " DSA signature: "
 msgstr "서명이 없습니다\n"
 
-#: lib/signature.c:1503
+#: lib/signature.c:1501
 #, c-format
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr ""
 
-#: lib/signature.c:1534
+#: lib/signature.c:1532
 #, c-format
 msgid "Broken MD5 digest: UNSUPPORTED\n"
 msgstr "손상된 MD5 축약(digest): 지원하지 않음\n"
 
-#: lib/signature.c:1538
+#: lib/signature.c:1536
 #, fuzzy, c-format
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr "서명: size(%d)+pad(%d)\n"

@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm-4.4\n"
 "Report-Msgid-Bugs-To: <rpm-devel@lists.dulug.duke.edu>\n"
-"POT-Creation-Date: 2007-05-21 11:27-0400\n"
+"POT-Creation-Date: 2007-05-25 21:25-0400\n"
 "PO-Revision-Date: 2005-04-04 22:30+1000\n"
 "Last-Translator: SEKINE Tatsuo <tsekine@sdri.co.jp>\n"
 "Language-Team: Japanese <translation-team-ja@lists.sourceforge.net>\n"
@@ -1511,11 +1511,11 @@ msgstr "パッケージ名の関係を無視します [%d]\t%s → %s\n"
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "tsort 関係から %s \"%s\" を削除します。\n"
 
-#: lib/depends.c:1880
+#: lib/depends.c:1899
 msgid "========== recording tsort relations\n"
 msgstr "========== tsort 関係を記録しています\n"
 
-#: lib/depends.c:2001
+#: lib/depends.c:2020
 #, fuzzy
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, "
@@ -1524,20 +1524,20 @@ msgstr ""
 "========== パッケージを tsort (順番、先行数、後続数、ツリー、深さ、幅) してい"
 "ます\n"
 
-#: lib/depends.c:2092
+#: lib/depends.c:2111
 #, c-format
 msgid "========== successors only (%d bytes)\n"
 msgstr "========== 後続のみ (%d バイト)\n"
 
-#: lib/depends.c:2165
+#: lib/depends.c:2184
 msgid "LOOP:\n"
 msgstr "ループ:\n"
 
-#: lib/depends.c:2196
+#: lib/depends.c:2215
 msgid "========== continuing tsort ...\n"
 msgstr "========== tsort を続行中...\n"
 
-#: lib/depends.c:2201
+#: lib/depends.c:2220
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr "rpmtsOrder に失敗, 残り %d 個\n"
@@ -3588,43 +3588,43 @@ msgstr "マクロファイル内で \"%%_gpg_name\" を設定しなければなりません。\n"
 msgid "You must set \"%%_pgp_name\" in your macro file\n"
 msgstr "マクロファイル内で \"%%_pgp_name\" を設定しなければなりません。\n"
 
-#: lib/signature.c:1043
+#: lib/signature.c:1041
 msgid "Header+Payload size: "
 msgstr "ヘッダとペイロードサイズ:"
 
-#: lib/signature.c:1084
+#: lib/signature.c:1082
 msgid "MD5 digest: "
 msgstr "MD5 ダイジェスト: "
 
-#: lib/signature.c:1144
+#: lib/signature.c:1142
 msgid "Header SHA1 digest: "
 msgstr "ヘッダ SHA1 ダイジェスト: "
 
-#: lib/signature.c:1225 lib/signature.c:1415
+#: lib/signature.c:1223 lib/signature.c:1413
 msgid "Header "
 msgstr "ヘッダ "
 
-#: lib/signature.c:1294
+#: lib/signature.c:1292
 #, fuzzy
 msgid " signature: "
 msgstr "V4 DSA 署名: "
 
-#: lib/signature.c:1421
+#: lib/signature.c:1419
 #, fuzzy
 msgid " DSA signature: "
 msgstr "V3 DSA 署名: "
 
-#: lib/signature.c:1503
+#: lib/signature.c:1501
 #, c-format
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr "署名確認: 異常なパラメータです。\n"
 
-#: lib/signature.c:1534
+#: lib/signature.c:1532
 #, c-format
 msgid "Broken MD5 digest: UNSUPPORTED\n"
 msgstr "MD5 ダイジェストが破損: サポートされていません。\n"
 
-#: lib/signature.c:1538
+#: lib/signature.c:1536
 #, c-format
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr "署名: 未知(%d)\n"

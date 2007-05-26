@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.4.8\n"
 "Report-Msgid-Bugs-To: <rpm-devel@lists.dulug.duke.edu>\n"
-"POT-Creation-Date: 2007-05-21 11:27-0400\n"
+"POT-Creation-Date: 2007-05-25 21:25-0400\n"
 "PO-Revision-Date: 2006-02-28 20:20+0100\n"
 "Last-Translator: Arkadiusz Miskiewicz <arekm@pld-linux.org>\n"
 "Language-Team: Polish <translation-team-pl@lists.sourceforge.net>\n"
@@ -1503,11 +1503,11 @@ msgstr "ignoruj relacje nazw pakietów [%d]\t%s -> %s\n"
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "usuwanie %s \"%s\" z relacji tsort.\n"
 
-#: lib/depends.c:1880
+#: lib/depends.c:1899
 msgid "========== recording tsort relations\n"
 msgstr "========== zapisywanie relacji tsort\n"
 
-#: lib/depends.c:2001
+#: lib/depends.c:2020
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, "
 "Ldepth, Rbreadth)\n"
@@ -1515,20 +1515,20 @@ msgstr ""
 "========== tsortowanie pakietów (kolejno¶æ, #poprzedników, #nastêpników, "
 "drzewo, g³êboko¶æ, Rbreadth)\n"
 
-#: lib/depends.c:2092
+#: lib/depends.c:2111
 #, c-format
 msgid "========== successors only (%d bytes)\n"
 msgstr "========== tylko nastêpniki (%d bajtów)\n"
 
-#: lib/depends.c:2165
+#: lib/depends.c:2184
 msgid "LOOP:\n"
 msgstr "PÊTLA:\n"
 
-#: lib/depends.c:2196
+#: lib/depends.c:2215
 msgid "========== continuing tsort ...\n"
 msgstr "========== kontynuowanie tsort ...\n"
 
-#: lib/depends.c:2201
+#: lib/depends.c:2220
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr "rpmtsOrder nie powiod³o siê, zosta³o %d elementów\n"
@@ -3556,41 +3556,41 @@ msgstr "Nale¿y ustawiæ \"%%_gpg_name\" w pliku makr\n"
 msgid "You must set \"%%_pgp_name\" in your macro file\n"
 msgstr "Nale¿y ustawiæ \"%%_pgp_name\" w pliku makr\n"
 
-#: lib/signature.c:1043
+#: lib/signature.c:1041
 msgid "Header+Payload size: "
 msgstr "Rozmiar nag³ówka+danych: "
 
-#: lib/signature.c:1084
+#: lib/signature.c:1082
 msgid "MD5 digest: "
 msgstr "Skrót MD5: "
 
-#: lib/signature.c:1144
+#: lib/signature.c:1142
 msgid "Header SHA1 digest: "
 msgstr "Skrót SHA1 nag³ówka: "
 
-#: lib/signature.c:1225 lib/signature.c:1415
+#: lib/signature.c:1223 lib/signature.c:1413
 msgid "Header "
 msgstr "Nag³ówek "
 
-#: lib/signature.c:1294
+#: lib/signature.c:1292
 msgid " signature: "
 msgstr " sygnatura: "
 
-#: lib/signature.c:1421
+#: lib/signature.c:1419
 msgid " DSA signature: "
 msgstr " sygnatura DSA: "
 
-#: lib/signature.c:1503
+#: lib/signature.c:1501
 #, c-format
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr "Weryfikacja sygnatury: B£ÊDNE PARAMETRY\n"
 
-#: lib/signature.c:1534
+#: lib/signature.c:1532
 #, c-format
 msgid "Broken MD5 digest: UNSUPPORTED\n"
 msgstr "Uszkodzony skrót MD5: NIE OBS£UGIWANY\n"
 
-#: lib/signature.c:1538
+#: lib/signature.c:1536
 #, c-format
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr "Sygnatura: NIEZNANA (%d)\n"

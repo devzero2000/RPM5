@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: <rpm-devel@lists.dulug.duke.edu>\n"
-"POT-Creation-Date: 2007-05-21 11:27-0400\n"
+"POT-Creation-Date: 2007-05-25 21:25-0400\n"
 "PO-Revision-Date: 2004-05-17 14:17+0200\n"
 "Last-Translator: Maxim Dziumanenko <mvd@mylinux.com.ua>\n"
 "Language-Team: Ukrainian <uk@li.org>\n"
@@ -1518,11 +1518,11 @@ msgstr "ігноруються зв'язки між іменами пакеті�
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "видаляється %s \"%s\" із сортованих зв'язків.\n"
 
-#: lib/depends.c:1880
+#: lib/depends.c:1899
 msgid "========== recording tsort relations\n"
 msgstr "========== записуються впорядковані залежності\n"
 
-#: lib/depends.c:2001
+#: lib/depends.c:2020
 #, fuzzy
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, "
@@ -1531,20 +1531,20 @@ msgstr ""
 "========== сортування пакетів (порядок, #predecessors, #succesors, дерево, "
 "глибина)\n"
 
-#: lib/depends.c:2092
+#: lib/depends.c:2111
 #, c-format
 msgid "========== successors only (%d bytes)\n"
 msgstr "========== лише спадкоємці (%d байт)\n"
 
-#: lib/depends.c:2165
+#: lib/depends.c:2184
 msgid "LOOP:\n"
 msgstr "ЦИКЛ:\n"
 
-#: lib/depends.c:2196
+#: lib/depends.c:2215
 msgid "========== continuing tsort ...\n"
 msgstr "========== триває впорядковування ...\n"
 
-#: lib/depends.c:2201
+#: lib/depends.c:2220
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr "помилка rpmtsOrder, залишилось %d елементів\n"
@@ -3598,43 +3598,43 @@ msgstr "У файлі макросів необхідно встановити �
 msgid "You must set \"%%_pgp_name\" in your macro file\n"
 msgstr "У файлі макросів необхідно встановити значення\"%%_pgp_name\"\n"
 
-#: lib/signature.c:1043
+#: lib/signature.c:1041
 msgid "Header+Payload size: "
 msgstr "Розмір заголовок+вміст: "
 
-#: lib/signature.c:1084
+#: lib/signature.c:1082
 msgid "MD5 digest: "
 msgstr "Контрольна сума MD5: "
 
-#: lib/signature.c:1144
+#: lib/signature.c:1142
 msgid "Header SHA1 digest: "
 msgstr "SHA1 контрольна сума заголовка: "
 
-#: lib/signature.c:1225 lib/signature.c:1415
+#: lib/signature.c:1223 lib/signature.c:1413
 msgid "Header "
 msgstr "Заголовок "
 
-#: lib/signature.c:1294
+#: lib/signature.c:1292
 #, fuzzy
 msgid " signature: "
 msgstr "Підпис V3 DSA: "
 
-#: lib/signature.c:1421
+#: lib/signature.c:1419
 #, fuzzy
 msgid " DSA signature: "
 msgstr "Підпис V3 DSA: "
 
-#: lib/signature.c:1503
+#: lib/signature.c:1501
 #, c-format
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr "Перевірка підпису: НЕПРАВИЛЬНІ ПАРАМЕТРИ\n"
 
-#: lib/signature.c:1534
+#: lib/signature.c:1532
 #, c-format
 msgid "Broken MD5 digest: UNSUPPORTED\n"
 msgstr "Неправильна контрольна сума MD5: НЕ ПІДТРИМУЄТЬСЯ\n"
 
-#: lib/signature.c:1538
+#: lib/signature.c:1536
 #, c-format
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr "Підпис: НЕВІДОМИЙ (%d)\n"
