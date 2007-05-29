@@ -6,7 +6,11 @@
 #ifndef  _MD2_H
 #define  _MD2_H
 
+#if USE_INTERNAL_BEECRYPT
 #include "beecrypt.h"
+#else
+#include <beecrypt/beecrypt.h>
+#endif
 
 /*!\brief Holds all the parameters necessary for the MD2 algorithm.
  * \ingroup HASH_md2_h

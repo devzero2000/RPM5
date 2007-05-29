@@ -42,8 +42,13 @@
 #include "system.h"
 
 #include "rmd320.h"      
+#if USE_INTERNAL_BEECRYPT
 #include "mp.h"
 #include "endianness.h"
+#else
+#include "beecrypt/mp.h"
+#include "beecrypt/endianness.h"
+#endif
 
 #include "debug.h"
 

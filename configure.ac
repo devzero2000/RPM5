@@ -561,7 +561,6 @@ AC_CHECK_HEADER([beecrypt/beecrypt.h], [
     AC_CHECK_HEADER([beecrypt/api.h], [
       AC_DEFINE(HAVE_BEECRYPT_API_H, 1, [Define to 1 if you have the <beecrypt/api.h> header file.])
     ])
-    WITH_BEECRYPT_INCLUDE="-I${includedir}/beecrypt"
     WITH_BEECRYPT_LIB="-lbeecrypt"
   ])
 ],[
@@ -570,6 +569,7 @@ AC_CHECK_HEADER([beecrypt/beecrypt.h], [
     WITH_BEECRYPT_SUBDIR=beecrypt
     WITH_BEECRYPT_INCLUDE="-I\${top_srcdir}/${WITH_BEECRYPT_SUBDIR}"
     WITH_BEECRYPT_LIB="\${top_builddir}/${WITH_BEECRYPT_SUBDIR}/libbeecrypt.la"
+    AC_DEFINE(USE_INTERNAL_BEECRYPT, 1, [Define to 1 when using internal beecrypt instead system one.])
   fi
 ])
 AC_SUBST(WITH_BEECRYPT_SUBDIR)
@@ -601,6 +601,7 @@ AC_CHECK_HEADER([neon/ne_session.h], [
     WITH_NEON_SUBDIR=neon
     WITH_NEON_INCLUDE="-I\${top_srcdir}/${WITH_NEON_SUBDIR}/src"
     WITH_NEON_LIB="\${top_builddir}/${WITH_NEON_SUBDIR}/src/libneon.la"
+    AC_DEFINE(USE_INTERNAL_NEON, 1, [Define to 1 when using internal neon instead system one.])
   fi
 ])
 AC_SUBST(WITH_NEON_SUBDIR)
@@ -1041,77 +1042,33 @@ dnl
 withval=auto
 AC_ARG_WITH(python, [  --with-python           build rpm python bindings ])
 
-WITH_PYTHON_VERSION=$withval
+python_version=$withval
 if test $withval = auto ; then
-
-AC_MSG_CHECKING(for python 2.5)
-AC_RUN_IFELSE([AC_LANG_SOURCE([[
-#include <python2.5/Python.h>
-main() {
-  exit(strncmp("2.5", PY_VERSION, 3));
-} ]])],[withval=yes],[withval=no],[withval=yes])
-  AC_MSG_RESULT($withval)
-  if test $withval = yes ; then
-    WITH_PYTHON_VERSION="2.5"
-  else
-      
-  AC_MSG_CHECKING(for python 2.4)
-  AC_RUN_IFELSE([AC_LANG_SOURCE([[
-  #include <python2.4/Python.h>
-  main() {
-    exit(strncmp("2.4", PY_VERSION, 3));
-  } ]])],[withval=yes],[withval=no],[withval=yes])
-    AC_MSG_RESULT($withval)
-    if test $withval = yes ; then
-      WITH_PYTHON_VERSION="2.4"
-    else
-      
-    AC_MSG_CHECKING(for python 2.3)
-    AC_RUN_IFELSE([AC_LANG_SOURCE([[
-    #include <python2.3/Python.h>
-    main() {
-      exit(strncmp("2.3", PY_VERSION, 3));
-    } ]])],[withval=yes],[withval=no],[withval=yes])
-      AC_MSG_RESULT($withval)
-      if test $withval = yes ; then
-        WITH_PYTHON_VERSION="2.3"
-      else
-      
-        AC_MSG_CHECKING(for python 2.2)
-        AC_RUN_IFELSE([AC_LANG_SOURCE([[
-      #include <python2.2/Python.h>
-      main() {
-        exit(strncmp("2.2", PY_VERSION, 3));
-      } ]])],[withval=yes],[withval=no],[withval=yes])
-        AC_MSG_RESULT($withval)
-        if test $withval = yes ; then
-          WITH_PYTHON_VERSION="2.2"
-        else
-      
-          AC_MSG_CHECKING(for python 1.5.2)
-          AC_RUN_IFELSE([AC_LANG_SOURCE([[
-      #include <python1.5/Python.h>
-      main() {
-        exit(strcmp("1.5.2", PY_VERSION));
-      } ]])],[withval=yes],[withval=no],[withval=yes])
-          AC_MSG_RESULT($withval)
-          if test $withval = yes ; then
-            WITH_PYTHON_VERSION="1.5"
-          fi
+    python_version=`python -V 2>&1 | cut -f2 -d" " | cut -f1,2 -d"."`
+fi
+dnl assume no python by default
+WITH_PYTHON_VERSION=no
+WITH_PYTHON_SUBDIR=
+WITH_PYTHON_SUBPACKAGE=0
+if test -n "$WITH_PYTHON_VERSION"; then
+    AC_MSG_CHECKING(for python ${python_version})
+    for dir in /usr/include /usr/local/include ${prefix}/include; do
+        AC_CHECK_HEADER(
+            [${dir}/python${python_version}/Python.h],
+            [ python_dir=${dir} ],
+            [ python_dir="" ]
+        )
+        if test -n "${python_dir}" ; then
+            PYTHON_INC_DIR=${python_dir}/python${python_version}
+            WITH_PYTHON_SUBDIR=python
+            WITH_PYTHON_SUBPACKAGE=1
+            WITH_PYTHON_VERSION=${python_ver}
+            break
         fi
-      fi
-    fi
-  fi
+    done
 fi
 
-if test "$WITH_PYTHON_VERSION" != no ; then
-  WITH_PYTHON_SUBDIR=python
-  WITH_PYTHON_SUBPACKAGE=1
-else
-  WITH_PYTHON_SUBDIR=
-  WITH_PYTHON_SUBPACKAGE=0
-fi
-
+AC_SUBST(PYTHON_INC_DIR)
 AC_SUBST(WITH_PYTHON_SUBDIR)
 AC_SUBST(WITH_PYTHON_SUBPACKAGE)
 AC_SUBST(WITH_PYTHON_VERSION)

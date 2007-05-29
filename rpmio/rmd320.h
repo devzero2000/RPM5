@@ -47,7 +47,11 @@
 #ifndef  _RMD320_H
 #define  _RMD320_H
 
+#if USE_INTERNAL_BEECRYPT
 #include "beecrypt.h"
+#else
+#include <beecrypt/beecrypt.h>
+#endif
 
 /*!\brief Holds all the parameters necessary for the RIPEMD-320 algorithm.
  * \ingroup HASH_rmd320_h

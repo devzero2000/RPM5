@@ -6,7 +6,11 @@
 #ifndef  _SALSA10_H
 #define  _SALSA10_H
 
+#if USE_INTERNAL_BEECRYPT
 #include "beecrypt.h"
+#else
+#include <beecrypt/beecrypt.h>
+#endif
 
 /*!\brief Holds all the parameters necessary for the SALSA-10 algorithm.
  * \ingroup HASH_salsa10_h

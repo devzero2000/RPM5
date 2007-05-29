@@ -9,16 +9,25 @@
 #include <rpmio.h>
 #include <rpmurl.h>
 
+#if USE_INTERNAL_BEECRYPT
 #if HAVE_BEECRYPT_API_H
 #include <api.h>
 #else
 #include <beecrypt.api.h>
+#endif
+#else /* use system beecrypt */
+#if HAVE_BEECRYPT_API_H
+#include <beecrypt/api.h>
+#else
+#include <beecrypt/beecrypt.api.h>
+#endif
 #endif
 
 #include <rpmpgp.h>
 #include <rpmsw.h>
 
 /* Drag in the beecrypt includes. */
+#if USE_INTERNAL_BEECRYPT
 #include <beecrypt.h>
 #include <base64.h>
 #include <dsa.h>
@@ -32,6 +41,22 @@
 #include <sha256.h>
 #include <sha384.h>
 #include <sha512.h>
+#endif
+#else /* use system beecrypt */
+#include <beecrypt/beecrypt.h>
+#include <beecrypt/base64.h>
+#include <beecrypt/dsa.h>
+#include <beecrypt/endianness.h>
+#include <beecrypt/md5.h>
+#include <beecrypt/mp.h>
+#include <beecrypt/rsa.h>
+#include <beecrypt/rsapk.h>
+#include <beecrypt/sha1.h>
+#if HAVE_BEECRYPT_API_H
+#include <beecrypt/sha256.h>
+#include <beecrypt/sha384.h>
+#include <beecrypt/sha512.h>
+#endif
 #endif
 
 /** \ingroup rpmio

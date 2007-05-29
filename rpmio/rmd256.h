@@ -49,7 +49,11 @@
 #ifndef  _RMD256_H
 #define  _RMD256_H
 
+#if USE_INTERNAL_BEECRYPT
 #include "beecrypt.h"
+#else
+#include <beecrypt/beecrypt.h>
+#endif
 
 /*!\brief Holds all the parameters necessary for the RIPEMD-256 algorithm.
  * \ingroup HASH_rmd256_h

@@ -9,11 +9,19 @@
 #include <pthread.h>
 #endif
 
+#if #USE_INTERNAL_NEON
 #include "ne_alloc.h"
 #include "ne_auth.h"
 #include "ne_basic.h"
 #include "ne_dates.h"
 #include "ne_locks.h"
+#else
+#include "neon/ne_alloc.h"
+#include "neon/ne_auth.h"
+#include "neon/ne_basic.h"
+#include "neon/ne_dates.h"
+#include "neon/ne_locks.h"
+#endif
 
 #define	NEONBLOWSCHUNKS
 #ifndef	NEONBLOWSCHUNKS
@@ -21,11 +29,19 @@
 #include "../neon/src/ne_private.h"
 #endif
 
+#if #USE_INTERNAL_NEON
 #include "ne_props.h"
 #include "ne_request.h"
 #include "ne_socket.h"
 #include "ne_string.h"
 #include "ne_utils.h"
+#else
+#include "neon/ne_props.h"
+#include "neon/ne_request.h"
+#include "neon/ne_socket.h"
+#include "neon/ne_string.h"
+#include "neon/ne_utils.h"
+#endif
 
 /* XXX API changes for neon-0.26.0 */
 #if !defined(NE_FREE)
