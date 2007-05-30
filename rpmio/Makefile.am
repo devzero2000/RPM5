@@ -35,7 +35,7 @@ LDFLAGS = -L$(RPM_BUILD_ROOT)$(usrlibdir) -L$(DESTDIR)$(usrlibdir)
 usrlibdir = $(libdir)@MARK64@
 usrlib_LTLIBRARIES = librpmio.la
 librpmio_la_SOURCES = \
-	argv.c digest.c fts.c macro.c mire.c \
+	argv.c digest.c fts.c getpass.c macro.c mire.c \
 	md2.c md4.c rmd128.c rmd160.c rmd256.c rmd320.c sha224.c \
 	salsa10.c salsa20.c tiger.c \
 	rpmdav.c rpmhash.c rpmhook.c rpmio.c rpmlog.c rpmlua.c rpmmalloc.c \
@@ -48,6 +48,7 @@ librpmio_la_LDFLAGS = -no-undefined -release $(LT_CURRENT).$(LT_REVISION) $(LDFL
 	@WITH_LUA_LIB@ \
 	@WITH_SYCK_LIB@ \
 	@WITH_MAGIC_LIB@ \
+	@WITH_KEYUTILS_LIB@ \
 	@WITH_ZLIB_LIB@ \
 	-lpthread \
 	@LTLIBINTL@

@@ -1003,9 +1003,7 @@ char * rpmGetPassPhrase(const char * prompt, const int sigTag)
     }
 
     if (aok) {
-/*@-moduncon -unrecog @*/
-	pass = getpass( (prompt ? prompt : "") );
-/*@=moduncon =unrecog @*/
+	pass = Getpass(prompt);
 
 	if (pass != NULL && checkPassPhrase(pass, sigTag))
 	    pass = NULL;

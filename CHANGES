@@ -1,3 +1,11 @@
+4.4.9 -> 4.5:
+	- start rpm-4.5 development.
+	- fix: avoid accessing freed memory.
+	- solaris: add clearenv stub.
+	- keys: add Getpass stub vector.
+	- fix: swap PART_INSTALL and PART_CLEAN automagic cleanup.
+	- build against rpm5.org cvs,
+	
 4.4.8 -> 4.4.9:
 	- start rpm-4.4.9 devel.
 	- replace rpm2cpio with a shell script (#229422).
@@ -84,6 +92,7 @@
 	- rollback: assertion checks for all header additions.
 	- fix: don't clobber dependency flags, or the comparison bits instead.
 	- fix: convert python->rpmlib missing values before rpmEVRcompare().
+	- release 4.4.9.
 
 4.4.7 -> 4.4.8:
 	- start rpm-4.4.8 development.

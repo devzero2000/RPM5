@@ -78,6 +78,7 @@ LIBRPMIO_0
     Fts_read;
     Fts_set;
     Fwrite;
+    Getpass;
     gidToGname;
     Glob;
     Glob_error;
@@ -142,6 +143,7 @@ LIBRPMIO_0
     Readdir;
     Readlink;
     Rename;
+    _RequestPass;
     Rmdir;
     rpmCleanPath;
     rpmCLIMacroContext;

@@ -660,6 +660,18 @@ int rpmioAccess(const char *FN, /*@null@*/ const char * path, int mode)
 	/*@modifies fileSystem, internalState @*/;
 
 /**
+ * Return a password.
+ * @param prompt	prompt string
+ * @return		password
+ */
+char * (*Getpass) (const char * prompt)
+	/*@*/;
+char * _GetPass (const char * prompt)
+	/*@*/;
+char * _RequestPass (const char * prompt)
+	/*@*/;
+
+/**
  * FTP and HTTP error codes.
  */
 /*@-typeuse@*/

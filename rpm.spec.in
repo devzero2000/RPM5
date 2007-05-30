@@ -20,11 +20,11 @@
 Summary: The RPM package management system.
 Name: rpm
 Version: @VERSION@
-Release: 1
+Release: 0.3
 Group: System Environment/Base
 URL: http://wraptastic.org
-Source: ftp://wraptastic.org/pub/rpm-devel/rpm-%{version}.tar.gz
-BuildRequires: digest(%{SOURCE0}) = %(md5sum %{SOURCE0} | %{__sed} -e 's/ .*//')
+Source: http://rpm5.org/files/rpm/rpm-4.5/rpm-%{version}.tar.gz
+#BuildRequires: digest(%{SOURCE0}) = %(md5sum %{SOURCE0} | %{__sed} -e 's/ .*//')
 License: LGPL
 %ifos linux
 Prereq: fileutils shadow-utils
@@ -144,7 +144,7 @@ programs that will manipulate RPM packages and databases.
 %package -n popt
 Summary: A C library for parsing command line parameters.
 Group: Development/Libraries
-Version: 1.10.9
+Version: 1.11
 
 %description -n popt
 Popt is a C library for parsing command line parameters. Popt was
@@ -545,110 +545,14 @@ exit 0
 %{_includedir}/popt.h
 
 %changelog
-* Mon May 21 2007 Jeff Johnson <jbj@jbj.org> 4.4.9-1
-* release rpm-4.4.9.
+* Fri May 25 2007 Jeff Johnson <jbj@jbj.org> 4.5-0.3
+- solaris: add clearenv stub.
+- keys: add Getpass stub vector.
+- fix: swap PART_INSTALL and PART_CLEAN automagic cleanup.
+- build against rpm5.org cvs,
 
-* Fri May 18 2007 Jeff Johnson <jbj@jbj.org> 4.4.9-0.10
-- fix: don't clobber dependency flags, or the comparison bits instead.
-- fix: convert python->rpmlib missing values before rpmEVRcompare().
+* Tue May 22 2007 Jeff Johnson <jbj@jbj.org> 4.5-0.2
+- fix: avoid accessing freed memory.
 
-* Tue May 15 2007 Jeff Johnson <jbj@jbj.org> 4.4.9-0.9
-- rollback: add REMOVETID subdir to insure unbroken upgrade chain.
-- rpmns: add running() probe with scwewy unexpected non-root behavior.
-- rpmns: classify negated probes correctly.
-- rpmns: add envvar() comparisons.
-- solaris: rpmds.c rearrangements to build against solaris gelf API.
-- rollback: add link terminator to all upgrade chains.
-- rollback: assertion checks for all header additions.
-
-* Sun May 13 2007 Jeff Johnson <jbj@jbj.org> 4.4.9-0.8
-- rpmal: avoid rpmns allocates while iterating added provides.
-- rpmns: finalize '!' as a dependency assertion negation operator.
-- rpmns: add macro()/envvar() probes as existence tests.
-
-* Sat May 12 2007 Jeff Johnson <jbj@jbj.org> 4.4.9-0.7
-- rollback: rewrite and simplify.
-- yaml: expose embedded syck parser in rpmio.
-- fix: don't segfault on header without RPMTAG_NAME (#239557).
-- upgrade to file-4.20 internal.
-- rollback: re-add blink's and installtid's to repackaged headers.
-- rpmns: add digest probe.
-- rpmevr: remove lib/rpmvercmp.c, use rpmEVRcmp() instead.
-- rpmns: add gnupg probe.
-- argv: add argvFgets() to build argv array from stdin lines.
-- argv: permit argvSplit() default whitespace separators.
-- argv: use xmalloc, not alloca, in argvSplit().
-- rpmevr: refactor logical operator parsing, hide implementation.
-- rpmevr: add RPMSENSE_NOTEQUAL and wire up the condition tests.
-- rpmns: negative existence tests as Requires: !foo, take 1.
-
-* Sun May  6 2007 Jeff Johnson <jbj@jbj.org> 4.4.9-0.6
-- rpmns: parse namespace(...) probe markers.
-- rpmns: macro expand all dependency names.
-- rpmns: add user/group lookup probes.
-- rpmns: add mounted/diskspace lookup probes.
-
-* Sat May  5 2007 Jeff Johnson <jbj@jbj.org> 4.4.9-0.5
-- fix: rpmdsSearch() end-of-loop test incorrect at end-of-array.
-- fix: use dgettext, not gettext, everywhere.
-- fix: install preferred color packages first (#214737, #220348).
-- rpmns: create rpmns.c/rpmns.h.
-- fix: there are no leading zeros in the digit string "0".
-- rpmns: refactor .arch suffix table from rpmts.c -> rpmns.c.
-- rpmns: support for Requires: name.arch (#235755).
-
-* Sun Apr 29 2007 Jeff Johnson <jbj@jbj.org> 4.4.9-0.4
-- open existing rpmdb indices with either DB_BTREE or DB_HASH.
-- don't add RPMTAG_RHNPLATFORM to packages and headers.
-- stop adding ancient rpmlib(...) tracking dependencies to headers.
-- python: eliminate rhnLoad/rhnUnload methods.
-- fix: change dbi_type from DB_UNKNOWN iff DB_CREATE is set.
-- add %%{load:/path/to/macros} to read macros from a file during parse.
-- fix: initialize file verify flags for %doc (#235353).
-- solaris: add #ifdef _sun so librpmio needn't export glob/globfree.
-- fix: --verify displays mis-leading dependency checks (#223642).
-- debugedit: canonicalize_path was broken again (#232222).
-- popt: convert gnome UTF-8 to current encoding with --help (#178413).
-- popt: fix compilation on x86_64 from previous patch.
-- rollback: add explicit upgrade pkgid chain marker.
-- rollback: convert assertion to a test.
-- rollback: create rpmrollback.c, refactoring out of rpminstall.c.
-- multilib: _prefer_color macro to choose elf32/elf64 files (#235757).
-- rollback: add (*rbCheck), (*rbOrder), (*rbRun) vectors.
-- strip rpmvercmp down to bare metallic C code.
-- treat all printable non-digits except '.' as alpha comparisons.
-- rpmds: add data elements and methods to handle Name.Arch compounds.
-- rpmds: add opaque EVR parsing vector and container.
-- rpmds: use the parsing vector and container.
-- rpmds: expose methods to parse and compare EVR ala rpm.
-- rpmds: add methods to compare EVR ala dpkg.
-- fix: rpmEVRparser was not terminating epoch correctly.
-
-* Sun Apr  1 2007 Jeff Johnson <jbj@jbj.org> 4.4.9-0.3
-- perl: extract dependencies from *.pm iff on /usr/lib* (#234691).
-- refactor header subroutines out of -lrpmlib into -lrpmdb.
-- add RPMTAG_PACKAGECOLOR at install time, retrofit on --rebuilddb.
-- add Packagecolor index to handle multilib scriptlet instance counts.
-- convert indices with ordering properties from DB_HASH to DB_BTREE.
-- add findfplistexclude.diff patch from <mls@suse.de> (#140055).
-- add taggedfileindex.diff patch from <mls@suse.de> (#103204).
-- rework above 2 patches to be runtime, not compile time, configgerable.
-
-* Sat Mar 31 2007 Jeff Johnson <jbj@jbj.org> 4.4.9-0.2
-- debugedit: canonicalize_path was broken (#232222).
-- permit clean scriptlet element overrides.
-- add RPMTAG_REPOTAG.
-- non-linux: avoid all mutexes if waitpid is used for reaping.
-- use pipe(2) for SIGCHLD receipt signalling.
-- python: teach labelCompare that missing epoch is same as 0 (#227860).
-- add source rpm file attributes, eliminate RPMBUILD_ISFOO.
-- populate sourceHeader with build restrictions early instead.
-- add --specsrpm to permit querying parsed source rpm header.
-- populate sourceHeader with source/patch tags for query (#227513).
-- make sure srpm header is initialized exactly once while refactoring.
-- add Keywords: and BuildPlatforms: syntax.
-- perform an RPMTAG_ICON tracheotomy.
-
-* Tue Feb 20 2007 Jeff Johnson <jbj@jbj.org> 4.4.9-0.1
-- start rpm-4.4.9 devel.
-- replace rpm2cpio with a shell script (#229422).
+* Mon May 21 2007 Jeff Johnson <jbj@jbj.org> 4.5-0.1
+- start rpm-4.5 development.

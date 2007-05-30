@@ -635,6 +635,13 @@ AC_SUBST(WITH_MAGIC_INCLUDE)
 AC_SUBST(WITH_MAGIC_LIB)
 
 #=================
+# Check for keyutils library. Prefer external, otherwise none.
+AC_CHECK_HEADERS(keyutils.h)
+WITH_KEYUTILS_LIB=
+AC_CHECK_LIB(keyutils, keyctl_read, [WITH_KEYUTILS_LIB="-lkeyutils"])
+AC_SUBST(WITH_KEYUTILS_LIB)
+
+#=================
 # Check for popt library. Prefer internal, otherwise external.
 WITH_POPT_SUBDIR=
 WITH_POPT_INCLUDE=
@@ -931,7 +938,7 @@ dnl XXX AC_FUNC_FORK([])
 dnl XXX AC_CHECK_FUNCS(gethostname mkdir mkfifo rmdir select uname)
 
 AC_CHECK_FUNCS(basename getaddrinfo getcwd getnameinfo getwd inet_aton)
-AC_CHECK_FUNCS(mtrace putenv realpath setenv)
+AC_CHECK_FUNCS(mtrace putenv realpath setenv clearenv)
 AC_CHECK_FUNCS(stpcpy stpncpy strcspn)
 AC_CHECK_FUNCS(strdup strndup strerror strtol strtoul strspn strstr)
 
@@ -1518,7 +1525,6 @@ AC_CONFIG_FILES([ Doxyfile Makefile rpmrc macros platform rpmpopt rpm.spec
 	scripts/Makefile scripts/brp-redhat
 	scripts/macros.perl scripts/macros.php scripts/macros.python
 	tools/Makefile
-	tests/Makefile tests/rpmrc tests/macros tests/hello-test/Makefile
 	misc/Makefile intl/Makefile po/Makefile.in
 	doc/Makefile
 	doc/manual/Makefile

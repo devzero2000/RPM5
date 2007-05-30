@@ -1264,12 +1264,12 @@ static int checkPackageDeps(rpmts ts, const char * pkgNEVRA,
  * Adding: check name/provides dep against each conflict match,
  * Erasing: check name/provides/filename dep against each requiredby match.
  * @param ts		transaction set
- * @param dep		dependency name
+ * @param depName	dependency name
  * @param mi		rpm database iterator
  * @param adding	dependency is from added package set?
  * @return		0 no problems found
  */
-static int checkPackageSet(rpmts ts, const char * dep,
+static int checkPackageSet(rpmts ts, const char * depName,
 		/*@only@*/ /*@null@*/ rpmdbMatchIterator mi, int adding)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, mi, rpmGlobalMacroContext, fileSystem, internalState @*/
@@ -1307,7 +1307,7 @@ static int checkPackageSet(rpmts ts, const char * dep,
 
 	rc = checkPackageDeps(ts, pkgNEVRA,
 		requires, conflicts, dirnames, linktos,
-		dep, tscolor, adding);
+		depName, tscolor, adding);
 
 	linktos = rpmdsFree(linktos);
 	dirnames = rpmdsFree(dirnames);
@@ -1328,10 +1328,10 @@ static int checkPackageSet(rpmts ts, const char * dep,
 /**
  * Check to-be-erased dependencies against installed requires.
  * @param ts		transaction set
- * @param dep		requires name
+ * @param depName	requires name
  * @return		0 no problems found
  */
-static int checkDependentPackages(rpmts ts, const char * dep)
+static int checkDependentPackages(rpmts ts, const char * depName)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
@@ -1340,8 +1340,8 @@ static int checkDependentPackages(rpmts ts, const char * dep)
     /* XXX rpmdb can be closed here, avoid error msg. */
     if (rpmtsGetRdb(ts) != NULL) {
 	rpmdbMatchIterator mi;
-	mi = rpmtsInitIterator(ts, RPMTAG_REQUIRENAME, dep, 0);
-	rc = checkPackageSet(ts, dep, mi, 0);
+	mi = rpmtsInitIterator(ts, RPMTAG_REQUIRENAME, depName, 0);
+	rc = checkPackageSet(ts, depName, mi, 0);
     }
     return rc;
 }
@@ -1349,10 +1349,10 @@ static int checkDependentPackages(rpmts ts, const char * dep)
 /**
  * Check to-be-added dependencies against installed conflicts.
  * @param ts		transaction set
- * @param dep		conflicts name
+ * @param depName	conflicts name
  * @return		0 no problems found
  */
-static int checkDependentConflicts(rpmts ts, const char * dep)
+static int checkDependentConflicts(rpmts ts, const char * depName)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
@@ -1361,8 +1361,8 @@ static int checkDependentConflicts(rpmts ts, const char * dep)
     /* XXX rpmdb can be closed here, avoid error msg. */
     if (rpmtsGetRdb(ts) != NULL) {
 	rpmdbMatchIterator mi;
-	mi = rpmtsInitIterator(ts, RPMTAG_CONFLICTNAME, dep, 0);
-	rc = checkPackageSet(ts, dep, mi, 1);
+	mi = rpmtsInitIterator(ts, RPMTAG_CONFLICTNAME, depName, 0);
+	rc = checkPackageSet(ts, depName, mi, 1);
     }
 
     return rc;
@@ -1641,23 +1641,42 @@ static inline int addRelation(rpmts ts,
 {
     rpmtsi qi; rpmte q;
     tsortInfo tsi;
-    const char * Name;
+    nsType NSType = rpmdsNSType(requires);
     fnpyKey key;
     int teType = rpmteType(p);
     alKey pkgKey;
     int i = 0;
     rpmal al = (teType == TR_ADDED ? ts->addedPackages : ts->erasedPackages);
 
-    if ((Name = rpmdsN(requires)) == NULL)
+    /* Avoid certain NS dependencies. */
+    switch (NSType) {
+    case RPMNS_TYPE_RPMLIB:
+    case RPMNS_TYPE_CPUINFO:
+    case RPMNS_TYPE_GETCONF:
+    case RPMNS_TYPE_UNAME:
+    case RPMNS_TYPE_SONAME:
+    case RPMNS_TYPE_ACCESS:
+    case RPMNS_TYPE_USER:
+    case RPMNS_TYPE_GROUP:
+    case RPMNS_TYPE_MOUNTED:
+    case RPMNS_TYPE_DISKSPACE:
+    case RPMNS_TYPE_DIGEST:
+    case RPMNS_TYPE_GNUPG:
+    case RPMNS_TYPE_MACRO:
+    case RPMNS_TYPE_ENVVAR:
+    case RPMNS_TYPE_RUNNING:
 	return 0;
+	/*@notreached@*/ break;
+    default:
+	break;
+    }
 
-    /* Avoid rpmlib feature dependencies. */
-    if (!strncmp(Name, "rpmlib(", sizeof("rpmlib(")-1))
-	return 0;
+    {	const char * Name = rpmdsN(requires);
 
-    /* Avoid package config dependencies. */
-    if (!strncmp(Name, "config(", sizeof("config(")-1))
-	return 0;
+	/* Avoid package config dependencies. */
+	if (Name == NULL || !strncmp(Name, "config(", sizeof("config(")-1))
+	    return 0;
+    }
 
     pkgKey = RPMAL_NOMATCH;
     key = rpmalSatisfiesDepend(al, requires, &pkgKey);
@@ -2277,6 +2296,7 @@ assert(newOrderCount == ts->orderCount);
 
 int rpmtsCheck(rpmts ts)
 {
+    const char * depName = NULL;;
     rpmdepFlags depFlags = rpmtsDFlags(ts);
     uint_32 tscolor = rpmtsColor(ts);
     rpmdbMatchIterator mi = NULL;
@@ -2331,17 +2351,15 @@ int rpmtsCheck(rpmts ts)
 	provides = rpmdsInit(provides);
 	if (provides != NULL)
 	while (rpmdsNext(provides) >= 0) {
-	    const char * Name;
-
-	    if ((Name = rpmdsN(provides)) == NULL)
-		/*@innercontinue@*/ continue;	/* XXX can't happen */
+	    depName = _free(depName);
+	    depName = xstrdup(rpmdsN(provides));
 
 #ifdef	NOTYET
 	    if (rpmdsNSType(provides) == RPMNS_TYPE_ENVVAR) {
 		const char * EVR = rpmdsEVR(provides);
 		if (rpmdsNegateRC(provides, 0))
 		    EVR = NULL;
-		rc = envPut(Name, EVR);
+		rc = envPut(depName, EVR);
 		if (!rc)
 		    /*@innercontinue@*/ continue;
 		/*@innerbreak@*/ break;
@@ -2349,7 +2367,7 @@ int rpmtsCheck(rpmts ts)
 #endif
 
 	    /* Adding: check provides key against conflicts matches. */
-	    if (!checkDependentConflicts(ts, Name))
+	    if (!checkDependentConflicts(ts, depName))
 		/*@innercontinue@*/ continue;
 	    rc = 1;
 	    /*@innerbreak@*/ break;
@@ -2377,13 +2395,11 @@ int rpmtsCheck(rpmts ts)
 	provides = rpmdsInit(provides);
 	if (provides != NULL)
 	while (rpmdsNext(provides) >= 0) {
-	    const char * Name;
-
-	    if ((Name = rpmdsN(provides)) == NULL)
-		/*@innercontinue@*/ continue;	/* XXX can't happen */
+	    depName = _free(depName);
+	    depName = xstrdup(rpmdsN(provides));
 
 	    /* Erasing: check provides against requiredby matches. */
-	    if (!checkDependentPackages(ts, Name))
+	    if (!checkDependentPackages(ts, depName))
 		/*@innercontinue@*/ continue;
 	    rc = 1;
 	    /*@innerbreak@*/ break;
@@ -2395,10 +2411,10 @@ int rpmtsCheck(rpmts ts)
 	fi = rpmteFI(p, RPMTAG_BASENAMES);
 	fi = rpmfiInit(fi, 0);
 	while (rpmfiNext(fi) >= 0) {
-	    const char * fn = rpmfiFN(fi);
-
+	    depName = _free(depName);
+	    depName = xstrdup(rpmfiFN(fi));
 	    /* Erasing: check filename against requiredby matches. */
-	    if (!checkDependentPackages(ts, fn))
+	    if (!checkDependentPackages(ts, depName))
 		/*@innercontinue@*/ continue;
 	    rc = 1;
 	    /*@innerbreak@*/ break;
@@ -2429,6 +2445,7 @@ int rpmtsCheck(rpmts ts)
 exit:
     mi = rpmdbFreeIterator(mi);
     pi = rpmtsiFree(pi);
+    depName = _free(depName);
 
     (void) rpmswExit(rpmtsOp(ts, RPMTS_OP_CHECK), 0);
 
