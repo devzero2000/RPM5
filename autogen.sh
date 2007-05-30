@@ -61,6 +61,9 @@ fi
 #if [ -d sqlite ]; then
 #    (echo "--- sqlite"; cd sqlite; sh ./autogen.sh --disable-tcl "$@")
 #fi
+if [ -d yaml ]; then
+    (echo "--- yaml"; cd yaml; sh ./autogen.sh "$@")
+fi
 
 for d in wdj wnh yaml; do
     [ -d $d ] && continue
