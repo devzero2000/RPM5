@@ -5,6 +5,7 @@
 	- keys: add Getpass stub vector.
 	- fix: swap PART_INSTALL and PART_CLEAN automagic cleanup.
 	- build against rpm5.org cvs,
+	- upgrade to file-4.21 (CVE-2007-2026, CVE-2007-2799).
 	
 4.4.8 -> 4.4.9:
 	- start rpm-4.4.9 devel.
