@@ -201,6 +201,7 @@ static void rpmmi_dealloc(/*@only@*/ /*@null@*/ rpmmiObject * s)
 {
     if (s) {
 	s->mi = rpmdbFreeIterator(s->mi);
+	Py_DECREF(s->ref);
 	PyObject_Del(s);
     }
 }
@@ -273,7 +274,7 @@ PyTypeObject rpmmi_Type = {
 };
 /*@=fullinitblock@*/
 
-rpmmiObject * rpmmi_Wrap(rpmdbMatchIterator mi)
+rpmmiObject * rpmmi_Wrap(rpmdbMatchIterator mi, PyObject *s)
 {
     rpmmiObject * mio = (rpmmiObject *) PyObject_New(rpmmiObject, &rpmmi_Type);
 
@@ -282,5 +283,7 @@ rpmmiObject * rpmmi_Wrap(rpmdbMatchIterator mi)
         return NULL;
     }
     mio->mi = mi;
+    mio->ref = s;
+    Py_INCREF(mio->ref);
     return mio;
 }
