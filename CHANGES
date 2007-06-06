@@ -10,6 +10,7 @@
 	- python: missing ts reference while iterating(#241751).
 	- python: pathetic band-aid pythonic return fixing (#239586).
 	- python: permit hdr.name as well as hdr['name'].
+	- python: restore rpm.RPMSENSE_PREREQ for rpmlint.
 	
 4.4.8 -> 4.4.9:
 	- start rpm-4.4.9 devel.
