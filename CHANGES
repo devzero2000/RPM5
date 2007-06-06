@@ -8,6 +8,7 @@
 	- upgrade to file-4.21 (CVE-2007-2026, CVE-2007-2799).
 	- revert indices to db_hash for compatibility.
 	- python: missing ts reference while iterating(#241751).
+	- python: pathetic band-aid pythonic return fixing (#239586).
 	
 4.4.8 -> 4.4.9:
 	- start rpm-4.4.9 devel.
