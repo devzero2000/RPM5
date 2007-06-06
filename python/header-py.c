@@ -615,21 +615,6 @@ static long hdr_hash(PyObject * h)
     return (long) h;
 }
 
-static PyObject * hdr_getattro(PyObject * o, PyObject * n)
-	/*@*/
-{
-    PyObject * res = PyObject_GenericGetAttr(o, n);
-    if (res == NULL)
-    	res = hdr_subscript(o, n);
-    return res;
-}
-
-static int hdr_setattro(PyObject * o, PyObject * n, PyObject * v)
-	/*@*/
-{
-    return PyObject_GenericSetAttr(o, n, v);
-}
-
 
 /** \ingroup py_c
  */
@@ -922,6 +907,21 @@ static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
     }
 
     return o;
+}
+
+static PyObject * hdr_getattro(PyObject * o, PyObject * n)
+	/*@*/
+{
+    PyObject * res = PyObject_GenericGetAttr(o, n);
+    if (res == NULL)
+    	res = hdr_subscript(o, n);
+    return res;
+}
+
+static int hdr_setattro(PyObject * o, PyObject * n, PyObject * v)
+	/*@*/
+{
+    return PyObject_GenericSetAttr(o, n, v);
 }
 
 /** \ingroup py_c
