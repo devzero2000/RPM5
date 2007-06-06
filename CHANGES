@@ -11,6 +11,7 @@
 	- python: pathetic band-aid pythonic return fixing (#239586).
 	- python: permit hdr.name as well as hdr['name'].
 	- python: restore rpm.RPMSENSE_PREREQ for rpmlint.
+	- popt: allow tests to pass in distcheck where builddir != srcdir.
 	
 4.4.8 -> 4.4.9:
 	- start rpm-4.4.9 devel.
