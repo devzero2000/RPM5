@@ -1433,7 +1433,7 @@ AC_DEFINE_UNQUOTED(SYSCONFIGDIR, "$SYSCONFIGDIR",
 	[Full path to rpm system configuration directory (usually /etc/rpm)])
 AC_SUBST(SYSCONFIGDIR)
 
-MACROFILES="${USRLIBRPM}/macros:${USRLIBRPM}/%{_target}/macros:${SYSCONFIGDIR}/macros.*:${SYSCONFIGDIR}/macros:${SYSCONFIGDIR}/%{_target}/macros:~/.rpmmacros"
+MACROFILES="${USRLIBRPM}/macros:${USRLIBRPM}/%{_target}/macros:${USRLIBRPM}/%{_host_vendor}/macros:${USRLIBRPM}/%{_host_vendor}/%{_target}/macros:${SYSCONFIGDIR}/macros.*:${SYSCONFIGDIR}/macros.d/*.macros:${SYSCONFIGDIR}/macros:${SYSCONFIGDIR}/%{_target}/macros:~/.rpmmacros"
 AC_DEFINE_UNQUOTED(MACROFILES, "$MACROFILES",
 	[Colon separated paths of macro files to read.])
 AC_SUBST(MACROFILES)
