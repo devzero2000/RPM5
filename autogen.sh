@@ -70,7 +70,8 @@ done
 
 echo "--- rpm"
 $libtoolize --copy --force
-aclocal
+[ -f po/Makefile.in.in ] || gettextize --copy --force
+aclocal -I m4
 autoheader
 automake -a -c
 autoconf

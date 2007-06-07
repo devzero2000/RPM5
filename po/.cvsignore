@@ -1,8 +1,15 @@
+ChangeLog
 Makefile
 Makefile.in
+Makefile.in.in
+Makevars.template
 POTFILES
+Rules-quot
 stamp-cat-id
 stamp-po
 cat-id-tbl.c
+*.header
 *.mo
 *.gmo
+*.sed
+*.sin

@@ -1,5 +1,5 @@
 AC_PREREQ(2.57)
-AC_INIT(rpm, 4.5, rpm-devel@lists.dulug.duke.edu)
+AC_INIT(rpm, 4.5, rpm-devel@rpm5.org)
 AC_CANONICAL_TARGET
 AC_CONFIG_SRCDIR([rpmqv.c])
 AC_CONFIG_HEADERS([config.h])
@@ -22,7 +22,6 @@ AC_AIX
 AC_MINIX
 
 dnl Checks for programs.
-AC_PROG_CXX
 AC_PROG_AWK
 AC_PROG_CC
 AC_PROG_CPP
@@ -724,13 +723,6 @@ dnl AmigaOS and IXEmul have a fork() dummy
 
 AC_CHECK_HEADERS(locale.h)
 AM_GNU_GETTEXT([external])
-dnl TVM:
-dnl horrible *temporary* hack to make sure that if we found gettext() in
-dnl -lintl that we add -lintl *back* to $LIBS.
-dnl
-dnl if test X$gt_cv_func_gettext_libintl = Xyes ; then
-dnl     LIBS="-lintl $LIBS"
-dnl fi
 
 dnl Checks for header files we can live without.
 AC_HEADER_STDC
@@ -1484,12 +1476,12 @@ dnl export LIBS INCPATH CONFIG_SITE
 
 AC_CONFIG_SUBDIRS(popt zlib file sqlite db3)
 
-AC_CONFIG_FILES([ Doxyfile Makefile rpmrc macros platform rpmpopt rpm.spec
+AC_CONFIG_FILES([ Doxyfile Makefile rpmrc macros platform rpmpopt rpm.spec po/Makefile.in
 	rpmio/Makefile rpmdb/Makefile lib/Makefile build/Makefile
 	scripts/Makefile scripts/brp-redhat
 	scripts/macros.perl scripts/macros.php scripts/macros.python
 	tools/Makefile
-	misc/Makefile intl/Makefile po/Makefile.in
+	misc/Makefile
 	doc/Makefile
 	doc/manual/Makefile
 	doc/fr/Makefile
