@@ -151,7 +151,7 @@ PROTOTYPES: ENABLE
 BOOT:
     {
 	HV *header_tags, *constants;
-	rpmReadConfigFiles(rpmRcfiles, NULL);
+	rpmReadConfigFiles(NULL, NULL);
 
 	header_tags = perl_get_hv("RPM::header_tag_map", TRUE);
 	_populate_header_tags(header_tags);
