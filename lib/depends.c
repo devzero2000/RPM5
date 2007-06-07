@@ -539,6 +539,8 @@ static int unsatisfiedDepend(rpmts ts, rpmds dep, int adding)
     int xx;
     int retries = 10;
 
+    char * _sysinfo;
+
     if ((Name = rpmdsN(dep)) == NULL)
 	return 0;	/* XXX can't happen */
     Flags = rpmdsFlags(dep);
@@ -841,7 +843,10 @@ retry:
     }
 
     /* Search system configured provides. */
-    if (!rpmioAccess("/etc/rpm/sysinfo", NULL, R_OK)) {
+
+    _sysinfo = rpmGetPath("%{_etcrpm}/sysinfo", NULL);
+
+    if (!rpmioAccess(_sysinfo, NULL, R_OK)) {
 #ifdef	NOTYET	/* XXX just sysinfo Provides: for now. */
 	rpmTag tagN = (Name[0] == '/' ? RPMTAG_DIRNAMES : RPMTAG_PROVIDENAME);
 #else
@@ -1026,6 +1031,7 @@ unsatisfied:
     }
 
 exit:
+    _sysinfo = _free(_sysinfo);
     /*
      * If dbiOpen/dbiPut fails (e.g. permissions), we can't cache.
      */

@@ -24,13 +24,13 @@
 #include "debug.h"
 
 /*@observer@*/ /*@checked@*/
-const char *rpmRcfiles = LIBRPMRC_FILENAME ":" VENDORRPMRC_FILENAME ":/etc/rpmrc:~/.rpmrc"; 
+const char *rpmRcfiles = RPMRCFILES;
 
 /*@unchecked@*/ /*@null@*/
 static const char * configTarget = NULL;
 
 /*@observer@*/ /*@unchecked@*/
-static const char * platform = "/etc/rpm/platform";
+static const char * platform = "platform";
 /*@only@*/ /*@relnull@*/ /*@unchecked@*/
 void * platpat = NULL;
 /*@unchecked@*/
@@ -577,6 +577,8 @@ static void setDefaults(void)
 	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
 	/*@modifies rpmGlobalMacroContext, internalState @*/
 {
+    addMacro(NULL, "_usrlibrpm", NULL, __usrlibrpm, RMIL_DEFAULT);
+    addMacro(NULL, "_etcrpm", NULL, __etcrpm, RMIL_DEFAULT);
 
     addMacro(NULL, "_usr", NULL, "/usr", RMIL_DEFAULT);
     addMacro(NULL, "_var", NULL, "/var", RMIL_DEFAULT);
@@ -1296,9 +1298,14 @@ static void defaultMachine(/*@out@*/ const char ** arch,
 
     while (!gotDefaults) {
 	CVOG_t cvog = NULL;
+	char * _platform;
 	rc = uname(&un);
 	if (rc < 0) return;
-	if (!rpmPlatform(platform)) {
+
+	/* Can't usr %{_etcrpm}, it may not be set yet... */
+	_platform = rpmGetPath(__etcrpm, "/", platform, NULL);
+
+	if (!rpmPlatform(_platform)) {
 	    const char * s;
 	    gotDefaults = 1;
 	    s = rpmExpand("%{?_host_cpu}", NULL);
@@ -1314,6 +1321,8 @@ static void defaultMachine(/*@out@*/ const char ** arch,
 	    }
 	    s = _free(s);
 	}
+	_platform=_free(_platform);
+
 	if (configTarget && !parseCVOG(configTarget, &cvog) && cvog != NULL) {
 	    gotDefaults = 1;
 	    if (cvog->cpu && cvog->cpu[0] != '\0') {

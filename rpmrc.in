@@ -1,4 +1,4 @@
-#/*! \page config_rpmrc Default configuration: /usr/lib/rpm/rpmrc
+#/*! \page config_rpmrc Default configuration: @USRLIBRPM@/rpmrc
 # \verbatim
 #
 # @USRLIBRPM@/@configure_input@
@@ -418,7 +418,7 @@ buildarch_compat: x86_64: noarch
 buildarch_compat: amd64: x86_64
 buildarch_compat: ia32e: x86_64
 
-macrofiles:	@USRLIBRPM@/macros:@USRLIBRPM@/%{_target}/macros:@SYSCONFIGDIR@/macros.*:@SYSCONFIGDIR@/macros:@SYSCONFIGDIR@/%{_target}/macros:~/etc/.rpmmacros:~/.rpmmacros
+macrofiles:	%{_usrlibrpm}/macros:%{_usrlibrpm}/%{_target}/macros:%{_etcrpm}/macros.*:%{_etcrpm}/macros:%{_etcrpm}/%{_target}/macros:~/etc/.rpmmacros:~/.rpmmacros
 
 # \endverbatim
 #*/

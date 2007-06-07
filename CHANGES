@@ -13,6 +13,7 @@
 	- python: restore rpm.RPMSENSE_PREREQ for rpmlint.
 	- popt: allow tests to pass in distcheck where builddir != srcdir.
 	- configure: modern usage.
+        - enable runtime relocation
 	
 4.4.8 -> 4.4.9:
 	- start rpm-4.4.9 devel.

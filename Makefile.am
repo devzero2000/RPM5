@@ -38,12 +38,12 @@ myLDADD = \
 	@LIBMISC@
 
 rpmbindir = `echo $(bindir) | sed -e s,usr/bin,bin,`
-rpmbin_PROGRAMS = rpm
+rpmbin_PROGRAMS = 
 
 bin_SCRIPTS =		gendiff
 
 pkglibdir =		@USRLIBRPM@
-pkglib_PROGRAMS =	rpmb rpmd rpmi rpmk rpmq
+pkglib_PROGRAMS =	rpm rpmb rpmd rpmi rpmk rpmq
 pkglib_DATA =		rpmrc rpmpopt-$(VERSION) macros
 pkglib_SCRIPTS =	find-provides find-requires mkinstalldirs \
 			config.guess config.sub config.site
@@ -130,6 +130,8 @@ install-data-local:
 	@@LN_S@ rpmi $(DESTDIR)$(pkglibdir)/rpmu
 	@rm -f $(DESTDIR)$(pkglibdir)/rpmv
 	@@LN_S@ rpmq $(DESTDIR)$(pkglibdir)/rpmv
+	rm -f $(DESTDIR)$(bindir)/rpm
+	@LN_S@ ../lib/rpm/rpm $(DESTDIR)$(bindir)/rpm
 	rm -f $(DESTDIR)$(bindir)/rpmbuild
 	@LN_S@ ../lib/rpm/rpmb $(DESTDIR)$(bindir)/rpmbuild
 	rm -f $(DESTDIR)$(bindir)/rpmquery

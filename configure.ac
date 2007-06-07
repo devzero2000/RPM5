@@ -1434,33 +1434,38 @@ AC_DEFINE_UNQUOTED(SYSCONFIGDIR, "$SYSCONFIGDIR",
 	[Full path to rpm system configuration directory (usually /etc/rpm)])
 AC_SUBST(SYSCONFIGDIR)
 
-MACROFILES="${USRLIBRPM}/macros:${USRLIBRPM}/%{_target}/macros:${USRLIBRPM}/%{_host_vendor}/macros:${USRLIBRPM}/%{_host_vendor}/%{_target}/macros:${SYSCONFIGDIR}/macros.*:${SYSCONFIGDIR}/macros.d/*.macros:${SYSCONFIGDIR}/macros:${SYSCONFIGDIR}/%{_target}/macros:~/.rpmmacros"
+MACROFILES="%{_usrlibrpm}/macros:%{_usrlibrpm}/%{_target}/macros:%{_usrlibrpm}/%{_host_vendor}/macros:%{_usrlibrpm}/%{_host_vendor}/%{_target}/macros:%{_etcrpm}/macros.*:%{_etcrpm}/macros.d/*.macros:%{_etcrpm}/macros:%{_etcrpm}/%{_target}/macros:~/.rpmmacros"
 AC_DEFINE_UNQUOTED(MACROFILES, "$MACROFILES",
 	[Colon separated paths of macro files to read.])
 AC_SUBST(MACROFILES)
 
-LIBRPMRC_FILENAME="${USRLIBRPM}/rpmrc"
+LIBRPMRC_FILENAME="%{_usrlibrpm}/rpmrc"
 AC_DEFINE_UNQUOTED(LIBRPMRC_FILENAME, "$LIBRPMRC_FILENAME",
 	[Full path to rpmrc configuration file (usually /usr/lib/rpm/rpmrc)])
 AC_SUBST(LIBRPMRC_FILENAME)
 
-VENDORRPMRC_FILENAME="${USRLIBRPM}/${RPMCANONVENDOR}/rpmrc"
+VENDORRPMRC_FILENAME="%{_usrlibrpm}/${RPMCANONVENDOR}/rpmrc"
 AC_DEFINE_UNQUOTED(VENDORRPMRC_FILENAME, "$VENDORRPMRC_FILENAME",
        [Full path to vendor rpmrc configuration file (usually /usr/lib/rpm/vendor/rpmrc)])
 AC_SUBST(VENDORRPMRC_FILENAME)
 
-LIBRPMALIAS_FILENAME="${USRLIBRPM}/rpmpopt-${VERSION}"
+RPMRCFILES="${LIBRPMRC_FILENAME}:${VENDORRPMRC_FILENAME}:/etc/rpmrc:~/.rpmrc"
+AC_DEFINE_UNQUOTED(RPMRCFILES, "$RPMRCFILES",
+	[Colon separated paths of rpmrc files to read.])
+AC_SUBST(RPMRCFILES)
+
+LIBRPMALIAS_FILENAME="rpmpopt-${VERSION}"
 AC_DEFINE_UNQUOTED(LIBRPMALIAS_FILENAME, "$LIBRPMALIAS_FILENAME",
-	[Full path to rpmpopt configuration file (usually /usr/lib/rpm/rpmpopt)])
+	[rpmpopt configuration filename (usually rpmpopt)])
 AC_SUBST(LIBRPMALIAS_FILENAME)
-FINDREQUIRES="${USRLIBRPM}/find-requires"
-AC_DEFINE_UNQUOTED(FINDREQUIRES, "$FINDREQUIRES",
-	[Full path to find-requires script (usually /usr/lib/rpm/find-requires)])
-AC_SUBST(FINDREQUIRES)
-FINDPROVIDES="${USRLIBRPM}/find-provides"
-AC_DEFINE_UNQUOTED(FINDPROVIDES, "$FINDPROVIDES",
-	[Full path to find-provides script (usually /usr/lib/rpm/find-provides)])
-AC_SUBST(FINDPROVIDES)
+dnl FINDREQUIRES="%{_usrlibrpm}/find-requires"
+dnl AC_DEFINE_UNQUOTED(FINDREQUIRES, "$FINDREQUIRES",
+dnl	[Full path to find-requires script (usually /usr/lib/rpm/find-requires)])
+dnl AC_SUBST(FINDREQUIRES)
+dnl FINDPROVIDES="%{_usrlibrpm}/find-provides"
+dnl AC_DEFINE_UNQUOTED(FINDPROVIDES, "$FINDPROVIDES",
+dnl	[Full path to find-provides script (usually /usr/lib/rpm/find-provides)])
+dnl AC_SUBST(FINDPROVIDES)
 
 testdir="`pwd`/tests"
 dnl AC_DEFINE_UNQUOTED(testdir, "$testdir")

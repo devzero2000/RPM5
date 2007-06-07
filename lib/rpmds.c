@@ -1611,7 +1611,7 @@ exit:
     return rc;
 }
 
-#define	_ETC_RPM_SYSINFO	"/etc/rpm/sysinfo"
+#define	_ETC_RPM_SYSINFO	"%{_etcrpm}/sysinfo"
 /*@unchecked@*/ /*@observer@*/ /*@owned@*/ /*@relnull@*/
 static const char *_sysinfo_path = NULL;
 
@@ -1642,7 +1642,7 @@ int rpmdsSysinfo(rpmPRCO PRCO, const char * fn)
 /*@-observertrans @*/
 	    _sysinfo_path = _free(_sysinfo_path);
 /*@=observertrans @*/
-	    _sysinfo_path = xstrdup(_ETC_RPM_SYSINFO);
+	    _sysinfo_path = rpmGetPath(_ETC_RPM_SYSINFO, NULL);
 	}
     }
 /*@=modobserver@*/

@@ -4,10 +4,10 @@
 # of the %install scriptlet.
 
 # Compress man pages (usually with gzip)
-@USRLIBRPM@/brp-compress
+${RPM_USRLIBRPM}/brp-compress
 
 # Strip ELF binaries (ussually with binutils).
-@USRLIBRPM@/brp-strip
+${RPM_USRLIBRPM}/brp-strip
 
 # Strip even more sections (usually with binutils).
-@USRLIBRPM@/brp-strip-comment-note
+${RPM_USRLIBRPM}/brp-strip-comment-note

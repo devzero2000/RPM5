@@ -164,7 +164,7 @@ rpm     alias --flink   --qf '%{name}-%{version}-%{release}.%|SOURCERPM?{%{arch}
 rpm alias --i18ndomains --define '_i18ndomains !#:+'
 
 # Build policies enabled from command line. Last policy applies.
-rpm alias --buildpolicy --define '__os_install_post @USRLIBRPM@/brp-!#:+' \
+rpm alias --buildpolicy --define '__os_install_post %{_usrlibrpm}/brp-!#:+' \
 	--POPTdesc=$"set buildroot <policy> (e.g. compress man pages)" \
 	--POPTargs=$"<policy>"
 

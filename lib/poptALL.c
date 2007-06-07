@@ -6,6 +6,10 @@
 #include "system.h"
 const char *__progname;
 
+const char *__usrlibrpm = USRLIBRPM;
+const char *__etcrpm = SYSCONFIGDIR;
+const char *__localedir = LOCALEDIR;
+
 #include <rpmcli.h>
 #include <rpmlua.h>		/* XXX rpmluaFree() */
 #include <fs.h>			/* XXX rpmFreeFilesystems() */
@@ -508,6 +512,36 @@ rpmcliFini(poptContext optCon)
     return NULL;
 }
 
+void setRuntimeRelocPaths(void)
+{
+    /* 
+     * This is just an example of setting the values using env
+     * variables....  if they're not set, we make sure they get set
+     * for helper apps...  We probably want to escape "%" in the path
+     * to avoid macro expansion.. someone might have a % in a path...
+     */
+
+    __usrlibrpm = getenv("RPM_USRLIBRPM");
+    __etcrpm = getenv("RPM_ETCRPM");
+    __localedir = getenv("RPM_LOCALEDIR");
+
+    if ( __usrlibrpm == NULL ) {
+      __usrlibrpm = USRLIBRPM ;
+      setenv("RPM_USRLIBRPM", USRLIBRPM, 0);
+    }
+
+    if ( __etcrpm == NULL ) {
+      __etcrpm = SYSCONFIGDIR ;
+      setenv("RPM_ETCRPM", SYSCONFIGDIR, 0);
+    }
+
+    if ( __localedir == NULL ) {
+      __localedir = LOCALEDIR ;
+      setenv("RPM_LOCALEDIR", LOCALEDIR, 0);
+    }
+}
+
+
 /*@-globstate@*/
 poptContext
 rpmcliInit(int argc, char *const argv[], struct poptOption * optionsTable)
@@ -531,9 +565,11 @@ rpmcliInit(int argc, char *const argv[], struct poptOption * optionsTable)
     }
 /*@=globs =mods@*/
 
+    (void) setRuntimeRelocPaths();
+
 #if defined(ENABLE_NLS) && !defined(__LCLINT__)
     (void) setlocale(LC_ALL, "" );
-    (void) bindtextdomain(PACKAGE, LOCALEDIR);
+    (void) bindtextdomain(PACKAGE, __localedir);
     (void) textdomain(PACKAGE);
 #endif
 
@@ -548,9 +584,13 @@ rpmcliInit(int argc, char *const argv[], struct poptOption * optionsTable)
 /*@-nullpass -temptrans@*/
     optCon = poptGetContext(__progname, argc, (const char **)argv, optionsTable, 0);
 /*@=nullpass =temptrans@*/
-    (void) poptReadConfigFile(optCon, LIBRPMALIAS_FILENAME);
+    {
+	char * poptAliasFn = rpmGetPath(__usrlibrpm, "/", LIBRPMALIAS_FILENAME, NULL);
+	(void) poptReadConfigFile(optCon, poptAliasFn);
+	poptAliasFn = _free(poptAliasFn);
+    }
     (void) poptReadDefaultConfig(optCon, 1);
-    poptSetExecPath(optCon, USRLIBRPM, 1);
+    poptSetExecPath(optCon, __usrlibrpm, 1);
 
     /* Process all options, whine if unknown. */
     while ((rc = poptGetNextOpt(optCon)) > 0) {

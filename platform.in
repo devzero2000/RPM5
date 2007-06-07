@@ -53,11 +53,11 @@
 %__arch_install_post   @ARCH_INSTALL_POST@
 
 %__os_install_post    \
-    @USRLIBRPM@/brp-compress \
-    @USRLIBRPM@/brp-strip \
-    @USRLIBRPM@/brp-strip-static-archive \
-    @USRLIBRPM@/brp-strip-comment-note \
-    @USRLIBRPM@/brp-nobuildrootpath \
+    %{_usrlibrpm}/brp-compress \
+    %{_usrlibrpm}/brp-strip \
+    %{_usrlibrpm}/brp-strip-static-archive \
+    %{_usrlibrpm}/brp-strip-comment-note \
+    %{_usrlibrpm}/brp-nobuildrootpath \
 %{nil}
 
 %__spec_install_post\
