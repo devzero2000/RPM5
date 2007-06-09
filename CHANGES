@@ -19,6 +19,7 @@
 	- python: don't read rpmrc by default.
 	- perl: don't read rpmrc by default.
 	- add D_(...) i18n marker for debug messages, with default disable.
+	- protottype headerGetEntry 4th arg as void *, not void **.
 	
 4.4.8 -> 4.4.9:
 	- start rpm-4.4.9 devel.

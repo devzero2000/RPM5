@@ -293,7 +293,7 @@ assert(scareMem == 0);		/* XXX always allocate memory */
 	goto exit;
 
     /*@-branchstate@*/
-    if (hge(h, tagN, &Nt, (void **) &N, &Count)
+    if (hge(h, tagN, &Nt, &N, &Count)
      && N != NULL && Count > 0)
     {
 	int xx;
@@ -310,9 +310,9 @@ assert(scareMem == 0);		/* XXX always allocate memory */
 	ds->nopromote = _rpmds_nopromote;
 
 	if (tagEVR > 0)
-	    xx = hge(h, tagEVR, &ds->EVRt, (void **) &ds->EVR, NULL);
+	    xx = hge(h, tagEVR, &ds->EVRt, &ds->EVR, NULL);
 	if (tagF > 0)
-	    xx = hge(h, tagF, &ds->Ft, (void **) &ds->Flags, NULL);
+	    xx = hge(h, tagF, &ds->Ft, &ds->Flags, NULL);
 /*@-boundsread@*/
 	if (!scareMem && ds->Flags != NULL)
 	    ds->Flags = memcpy(xmalloc(ds->Count * sizeof(*ds->Flags)),
@@ -321,14 +321,14 @@ assert(scareMem == 0);		/* XXX always allocate memory */
 	    rpmTagType At;
 	    const char * A = NULL;
 	    if (tagA > 0)
-		xx = hge(h, tagA, &At, (void **) &A, NULL);
+		xx = hge(h, tagA, &At, &A, NULL);
 	    ds->A = (xx && A != NULL ? xstrdup(A) : NULL);
 	}
 	{   rpmTag tagBT = RPMTAG_BUILDTIME;
 	    rpmTagType BTt;
 	    int_32 * BTp = NULL;
 	    if (tagBT > 0)
-		xx = hge(h, tagBT, &BTt, (void **) &BTp, NULL);
+		xx = hge(h, tagBT, &BTt, &BTp, NULL);
 	    ds->BT = (xx && BTp != NULL && BTt == RPM_INT32_TYPE ? *BTp : 0);
 	}
 /*@=boundsread@*/
@@ -530,7 +530,7 @@ rpmds rpmdsThis(Header h, rpmTag tagN, int_32 Flags)
 
     xx = headerNVR(h, &n, &v, &r);
     ep = NULL;
-    xx = hge(h, RPMTAG_EPOCH, NULL, (void **)&ep, NULL);
+    xx = hge(h, RPMTAG_EPOCH, NULL, &ep, NULL);
 
     t = xmalloc(sizeof(*N) + strlen(n) + 1);
 /*@-boundswrite@*/
@@ -568,14 +568,14 @@ rpmds rpmdsThis(Header h, rpmTag tagN, int_32 Flags)
 	    rpmTagType At;
 	    const char * A = NULL;
 	    if (tagA > 0)
-		xx = hge(h, tagA, &At, (void **) &A, NULL);
+		xx = hge(h, tagA, &At, &A, NULL);
 	    ds->A = (xx && A != NULL ? xstrdup(A) : NULL);
 	}
 	{   rpmTag tagBT = RPMTAG_BUILDTIME;
 	    rpmTagType BTt;
 	    int_32 * BTp = NULL;
 	    if (tagBT > 0)
-		xx = hge(h, tagBT, &BTt, (void **) &BTp, NULL);
+		xx = hge(h, tagBT, &BTt, &BTp, NULL);
 	    ds->BT = (xx && BTp != NULL && BTt == RPM_INT32_TYPE ? *BTp : 0);
 	}
     {	char pre[2];
@@ -3830,7 +3830,7 @@ assert((rpmdsFlags(req) & RPMSENSE_SENSEMASK) == req->ns.Flags);
 /*@-boundswrite@*/
     pkgEVR = t = alloca(nb);
     *t = '\0';
-    if (hge(h, RPMTAG_EPOCH, NULL, (void **) &epoch, NULL)) {
+    if (hge(h, RPMTAG_EPOCH, NULL, &epoch, NULL)) {
 	sprintf(t, "%d:", *epoch);
 	t += strlen(t);
     }

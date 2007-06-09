@@ -279,7 +279,7 @@ fprintf(stderr, "*** free pkt %p[%d] id %08x %08x\n", ts->pkpkt, ts->pkpktlen, p
 	    const char ** pubkeys;
 	    int_32 pt, pc;
 
-	    if (!headerGetEntry(h, RPMTAG_PUBKEYS, &pt, (void **)&pubkeys, &pc))
+	    if (!headerGetEntry(h, RPMTAG_PUBKEYS, &pt, &pubkeys, &pc))
 		continue;
 	    hx = rpmdbGetIteratorOffset(mi);
 	    ix = rpmdbGetIteratorFileNum(mi);
@@ -502,7 +502,7 @@ int rpmtsSolve(rpmts ts, rpmds ds, /*@unused@*/ const void * data)
 
 	hname = NULL;
 	hnamelen = 0;
-	if (headerGetEntry(h, RPMTAG_NAME, NULL, (void **)&hname, NULL)) {
+	if (headerGetEntry(h, RPMTAG_NAME, NULL, &hname, NULL)) {
 	    if (hname)
 		hnamelen = strlen(hname);
 	}
@@ -514,7 +514,7 @@ int rpmtsSolve(rpmts ts, rpmds ds, /*@unused@*/ const void * data)
 
 	/* XXX Prefer the newest build if given alternatives. */
 	htime = 0;
-	if (headerGetEntry(h, RPMTAG_BUILDTIME, NULL, (void **)&ip, NULL))
+	if (headerGetEntry(h, RPMTAG_BUILDTIME, NULL, &ip, NULL))
 	    htime = (time_t)*ip;
 
 	if (htime <= bhtime)

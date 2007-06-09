@@ -59,7 +59,7 @@ int addReqProv(/*@unused@*/ Spec spec, Header h, /*@unused@*/ rpmTag tagN,
     /*@=branchstate@*/
     
     /* Check for duplicate dependencies. */
-    if (hge(h, nametag, &dnt, (void **) &names, &len)) {
+    if (hge(h, nametag, &dnt, &names, &len)) {
 	const char ** versions = NULL;
 	rpmTagType dvt = RPM_STRING_ARRAY_TYPE;
 	int *flags = NULL;
@@ -67,11 +67,11 @@ int addReqProv(/*@unused@*/ Spec spec, Header h, /*@unused@*/ rpmTag tagN,
 	int duplicate = 0;
 
 	if (flagtag) {
-	    xx = hge(h, versiontag, &dvt, (void **) &versions, NULL);
-	    xx = hge(h, flagtag, NULL, (void **) &flags, NULL);
+	    xx = hge(h, versiontag, &dvt, &versions, NULL);
+	    xx = hge(h, flagtag, NULL, &flags, NULL);
 	}
 	if (indextag)
-	    xx = hge(h, indextag, NULL, (void **) &indexes, NULL);
+	    xx = hge(h, indextag, NULL, &indexes, NULL);
 
 /*@-boundsread@*/
 	while (len > 0) {

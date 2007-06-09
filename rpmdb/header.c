@@ -1495,9 +1495,9 @@ int headerIsEntry(/*@null@*/Header h, int_32 tag)
  * Retrieve data from header entry.
  * @todo Permit retrieval of regions other than HEADER_IMUTABLE.
  * @param entry		header entry
- * @retval type		address of type (or NULL)
- * @retval p		address of data (or NULL)
- * @retval c		address of count (or NULL)
+ * @retval *type	type (or NULL)
+ * @retval *p		data (or NULL)
+ * @retval *c		count (or NULL)
  * @param minMem	string pointers refer to header memory?
  * @return		1 on success, otherwise error.
  */
@@ -1758,9 +1758,9 @@ headerFindI18NString(Header h, indexEntry entry)
  * Retrieve tag data from header.
  * @param h		header
  * @param tag		tag to retrieve
- * @retval type		address of type (or NULL)
- * @retval p		address of data (or NULL)
- * @retval c		address of count (or NULL)
+ * @retval *type	type (or NULL)
+ * @retval *p		data (or NULL)
+ * @retval *c		count (or NULL)
  * @param minMem	string pointers reference header memory?
  * @return		1 on success, 0 on not found
  */
@@ -1807,7 +1807,7 @@ static int intGetEntry(Header h, int_32 tag,
 /** \ingroup header
  * Free data allocated when retrieved from header.
  * @param h		header
- * @param data		address of data (or NULL)
+ * @param data		data (or NULL)
  * @param type		type of data (or -1 to force free)
  * @return		NULL always
  */
@@ -1837,15 +1837,15 @@ static /*@null@*/ void * headerFreeTag(/*@unused@*/ Header h,
  *
  * @param h		header
  * @param tag		tag
- * @retval type		address of tag value data type (or NULL)
- * @retval p		address of pointer to tag value(s) (or NULL)
- * @retval c		address of number of values (or NULL)
+ * @retval *type	tag value data type (or NULL)
+ * @retval *p		pointer to tag value(s) (or NULL)
+ * @retval *c		number of values (or NULL)
  * @return		1 on success, 0 on failure
  */
 static
 int headerGetEntry(Header h, int_32 tag,
 			/*@null@*/ /*@out@*/ hTYP_t type,
-			/*@null@*/ /*@out@*/ void ** p,
+			/*@null@*/ /*@out@*/ void * p,
 			/*@null@*/ /*@out@*/ hCNT_t c)
 	/*@modifies *type, *p, *c @*/
 	/*@requires maxSet(type) >= 0 /\ maxSet(p) >= 0 /\ maxSet(c) >= 0 @*/
@@ -1860,15 +1860,15 @@ int headerGetEntry(Header h, int_32 tag,
  *
  * @param h		header
  * @param tag		tag
- * @retval type		address of tag value data type (or NULL)
- * @retval p		address of pointer to tag value(s) (or NULL)
- * @retval c		address of number of values (or NULL)
+ * @retval *type	tag value data type (or NULL)
+ * @retval *p		tag value(s) (or NULL)
+ * @retval *c		number of values (or NULL)
  * @return		1 on success, 0 on failure
  */
 static
 int headerGetEntryMinMemory(Header h, int_32 tag,
 			/*@null@*/ /*@out@*/ hTYP_t type,
-			/*@null@*/ /*@out@*/ hPTR_t * p,
+			/*@null@*/ /*@out@*/ void * p,
 			/*@null@*/ /*@out@*/ hCNT_t c)
 	/*@modifies *type, *p, *c @*/
 	/*@requires maxSet(type) >= 0 /\ maxSet(p) >= 0 /\ maxSet(c) >= 0 @*/
@@ -1876,8 +1876,7 @@ int headerGetEntryMinMemory(Header h, int_32 tag,
     return intGetEntry(h, tag, type, p, c, 1);
 }
 
-int headerGetRawEntry(Header h, int_32 tag, int_32 * type, hPTR_t * p,
-		int_32 * c)
+int headerGetRawEntry(Header h, int_32 tag, int_32 * type, void * p, int_32 * c)
 {
     indexEntry entry;
     int rc;
@@ -1889,7 +1888,7 @@ int headerGetRawEntry(Header h, int_32 tag, int_32 * type, hPTR_t * p,
     entry = findEntry(h, tag, RPM_NULL_TYPE);
     /*@=mods@*/
     if (!entry) {
-	if (p) *p = NULL;
+	if (p) *(void **)p = NULL;
 	if (c) *c = 0;
 	return 0;
     }
@@ -3169,7 +3168,7 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
 /*@=boundswrite =branchstate @*/
     } else {
 /*@-boundswrite -branchstate @*/
-	if (!headerGetEntry(hsa->h, tag->tag, &type, (void **)&data, &count)) {
+	if (!headerGetEntry(hsa->h, tag->tag, &type, &data, &count)) {
 	    count = 1;
 	    type = RPM_STRING_TYPE;	
 	    data = "(none)";
@@ -3981,8 +3980,7 @@ void headerCopyTags(Header headerFrom, Header headerTo, hTAG_t tagstocopy)
 	if (headerIsEntry(headerTo, *p))
 	    continue;
 /*@-boundswrite@*/
-	if (!headerGetEntryMinMemory(headerFrom, *p, &type,
-				(hPTR_t *) &s, &count))
+	if (!headerGetEntryMinMemory(headerFrom, *p, &type, &s, &count))
 	    continue;
 /*@=boundswrite@*/
 	(void) headerAddEntry(headerTo, *p, type, s, count);

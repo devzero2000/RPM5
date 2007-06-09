@@ -15,7 +15,7 @@ char ** headerGetLangs(Header h)
     char **s, *e, **table;
     int i, type, count;
 
-    if (!headerGetRawEntry(h, HEADER_I18NTABLE, &type, (const void **)&s, &count))
+    if (!headerGetRawEntry(h, HEADER_I18NTABLE, &type, &s, &count))
 	return NULL;
 
     /* XXX xcalloc never returns NULL. */

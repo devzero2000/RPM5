@@ -1552,6 +1552,7 @@ int Symlink(const char * oldpath, const char * newpath)
     const char * npath;
     int nut = urlPath(newpath, &npath);
 
+    nut = 0;	/* XXX keep gcc quiet. */
 if (_rpmio_debug)
 fprintf(stderr, "*** Symlink(%s,%s)\n", oldpath, newpath);
     switch (out) {

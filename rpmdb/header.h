@@ -505,15 +505,15 @@ typedef
  *
  * @param h		header
  * @param tag		tag
- * @retval type		address of tag value data type (or NULL)
- * @retval p		address of pointer to tag value(s) (or NULL)
- * @retval c		address of number of values (or NULL)
+ * @retval *type	tag value data type (or NULL)
+ * @retval *p		tag value(s) (or NULL)
+ * @retval *c		number of values (or NULL)
  * @return		1 on success, 0 on failure
  */
 typedef
 int (*HDRget) (Header h, int_32 tag,
 			/*@null@*/ /*@out@*/ hTYP_t type,
-			/*@null@*/ /*@out@*/ void ** p,
+			/*@null@*/ /*@out@*/ void * p,
 			/*@null@*/ /*@out@*/ hCNT_t c)
 	/*@modifies *type, *p, *c @*/;
 
@@ -524,15 +524,15 @@ int (*HDRget) (Header h, int_32 tag,
  *
  * @param h		header
  * @param tag		tag
- * @retval type		address of tag value data type (or NULL)
- * @retval p		address of pointer to tag value(s) (or NULL)
- * @retval c		address of number of values (or NULL)
+ * @retval *type	tag value data type (or NULL)
+ * @retval *p		tag value(s) (or NULL)
+ * @retval *c		number of values (or NULL)
  * @return		1 on success, 0 on failure
  */
 typedef
 int (*HDRgetmin) (Header h, int_32 tag,
 			/*@null@*/ /*@out@*/ hTYP_t type,
-			/*@null@*/ /*@out@*/ hPTR_t * p,
+			/*@null@*/ /*@out@*/ void * p,
 			/*@null@*/ /*@out@*/ hCNT_t c)
 	/*@modifies *type, *p, *c @*/;
 
@@ -546,7 +546,7 @@ int (*HDRgetmin) (Header h, int_32 tag,
  * @param h		header
  * @param tag		tag
  * @param type		tag value data type
- * @param p		pointer to tag value(s)
+ * @param p		tag value(s)
  * @param c		number of values
  * @return		1 on success, 0 on failure
  */
@@ -564,7 +564,7 @@ int (*HDRadd) (Header h, int_32 tag, int_32 type, const void * p, int_32 c)
  * @param h		header
  * @param tag		tag
  * @param type		tag value data type
- * @param p		pointer to tag value(s)
+ * @param p		tag value(s)
  * @param c		number of values
  * @return		1 on success, 0 on failure
  */
@@ -578,7 +578,7 @@ int (*HDRappend) (Header h, int_32 tag, int_32 type, const void * p, int_32 c)
  * @param h		header
  * @param tag		tag
  * @param type		tag value data type
- * @param p		pointer to tag value(s)
+ * @param p		tag value(s)
  * @param c		number of values
  * @return		1 on success, 0 on failure
  */
@@ -617,7 +617,7 @@ int (*HDRaddi18n) (Header h, int_32 tag, const char * string,
  * @param h		header
  * @param tag		tag
  * @param type		tag value data type
- * @param p		pointer to tag value(s)
+ * @param p		tag value(s)
  * @param c		number of values
  * @return		1 on success, 0 on failure
  */
@@ -687,10 +687,10 @@ HeaderIterator (*HDRinititer) (Header h)
 /** \ingroup header
  * Return next tag from header.
  * @param hi		header tag iterator
- * @retval tag		address of tag
- * @retval type		address of tag value data type
- * @retval p		address of pointer to tag value(s)
- * @retval c		address of number of values
+ * @retval *tag		tag
+ * @retval *type	tag value data type
+ * @retval *p		tag value(s)
+ * @retval *c		number of values
  * @return		1 on success, 0 on failure
  */
 typedef

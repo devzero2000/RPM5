@@ -1365,14 +1365,14 @@ static int rpmfcGenerateScriptletDeps(const Spec spec, Package pkg)
 
 	/* Retrieve scriptlet interpreter. */
 	s = NULL;
-	if (!hge(pkg->header, dm->ntag, NULL, (void **)&s, NULL) || s == NULL)
+	if (!hge(pkg->header, dm->ntag, NULL, &s, NULL) || s == NULL)
 	    continue;
 	if (strcmp(s, "/bin/sh") && strcmp(s, "/bin/bash"))
 	    continue;
 
 	/* Retrieve scriptlet body. */
 	s = NULL;
-	if (!hge(pkg->header, dm->vtag, NULL, (void **)&s, NULL) || s == NULL)
+	if (!hge(pkg->header, dm->vtag, NULL, &s, NULL) || s == NULL)
 	    continue;
 	truncStringBuf(sb_stdin);
 	appendLineStringBuf(sb_stdin, s);

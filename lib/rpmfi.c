@@ -761,8 +761,7 @@ Header relocateFileList(const rpmts ts, rpmfi fi,
     int len;
     int i, j, xx;
 
-    if (!hge(origH, RPMTAG_PREFIXES, &validType,
-			(void **) &validRelocations, &numValid))
+    if (!hge(origH, RPMTAG_PREFIXES, &validType, &validRelocations, &numValid))
 	numValid = 0;
 
 assert(p != NULL);
@@ -916,12 +915,12 @@ assert(p != NULL);
 	validRelocations = hfd(validRelocations, validType);
     }
 
-    xx = hge(h, RPMTAG_BASENAMES, NULL, (void **) &baseNames, &fileCount);
-    xx = hge(h, RPMTAG_DIRINDEXES, NULL, (void **) &dirIndexes, NULL);
-    xx = hge(h, RPMTAG_DIRNAMES, NULL, (void **) &dirNames, &dirCount);
-    xx = hge(h, RPMTAG_FILEFLAGS, NULL, (void **) &fFlags, NULL);
-    xx = hge(h, RPMTAG_FILECOLORS, NULL, (void **) &fColors, NULL);
-    xx = hge(h, RPMTAG_FILEMODES, NULL, (void **) &fModes, NULL);
+    xx = hge(h, RPMTAG_BASENAMES, NULL, &baseNames, &fileCount);
+    xx = hge(h, RPMTAG_DIRINDEXES, NULL, &dirIndexes, NULL);
+    xx = hge(h, RPMTAG_DIRNAMES, NULL, &dirNames, &dirCount);
+    xx = hge(h, RPMTAG_FILEFLAGS, NULL, &fFlags, NULL);
+    xx = hge(h, RPMTAG_FILECOLORS, NULL, &fColors, NULL);
+    xx = hge(h, RPMTAG_FILEMODES, NULL, &fModes, NULL);
 
     dColors = alloca(dirCount * sizeof(*dColors));
     memset(dColors, 0, dirCount * sizeof(*dColors));
@@ -1145,16 +1144,16 @@ dColors[j] |= fColors[i];
 	xx = hme(h, RPMTAG_BASENAMES, RPM_STRING_ARRAY_TYPE,
 			  baseNames, fileCount);
 	fi->bnl = hfd(fi->bnl, RPM_STRING_ARRAY_TYPE);
-	xx = hge(h, RPMTAG_BASENAMES, NULL, (void **) &fi->bnl, &fi->fc);
+	xx = hge(h, RPMTAG_BASENAMES, NULL, &fi->bnl, &fi->fc);
 
 	xx = hme(h, RPMTAG_DIRNAMES, RPM_STRING_ARRAY_TYPE,
 			  dirNames, dirCount);
 	fi->dnl = hfd(fi->dnl, RPM_STRING_ARRAY_TYPE);
-	xx = hge(h, RPMTAG_DIRNAMES, NULL, (void **) &fi->dnl, &fi->dc);
+	xx = hge(h, RPMTAG_DIRNAMES, NULL, &fi->dnl, &fi->dc);
 
 	xx = hme(h, RPMTAG_DIRINDEXES, RPM_INT32_TYPE,
 			  dirIndexes, fileCount);
-	xx = hge(h, RPMTAG_DIRINDEXES, NULL, (void **) &fi->dil, NULL);
+	xx = hge(h, RPMTAG_DIRINDEXES, NULL, &fi->dil, NULL);
     }
 
     baseNames = hfd(baseNames, RPM_STRING_ARRAY_TYPE);
@@ -1276,7 +1275,7 @@ static inline unsigned char nibble(char c)
 
 /* XXX Ick, not SEF. */
 #define _fdupestring(_h, _tag, _data) \
-    if (hge((_h), (_tag), NULL, (void **) &(_data), NULL)) \
+    if (hge((_h), (_tag), NULL, &(_data), NULL)) \
 	_data = xstrdup(_data)
 
 rpmfi rpmfiNew(const rpmts ts, Header h, rpmTag tagN, int flags)
@@ -1328,7 +1327,7 @@ assert(scareMem == 0);		/* XXX always allocate memory */
     fi->fsm->repackaged = (headerIsEntry(h, RPMTAG_REMOVETID) ? 1 : 0);
 
     /* 0 means unknown */
-    xx = hge(h, RPMTAG_ARCHIVESIZE, NULL, (void **) &uip, NULL);
+    xx = hge(h, RPMTAG_ARCHIVESIZE, NULL, &uip, NULL);
     fi->archivePos = 0;
     fi->archiveSize = (xx ? *uip : 0);
 
@@ -1338,31 +1337,31 @@ assert(scareMem == 0);		/* XXX always allocate memory */
     _fdupestring(h, RPMTAG_POSTTRANS, fi->posttrans);
     _fdupestring(h, RPMTAG_POSTTRANSPROG, fi->posttransprog);
 
-    if (!hge(h, RPMTAG_BASENAMES, NULL, (void **) &fi->bnl, &fi->fc)) {
+    if (!hge(h, RPMTAG_BASENAMES, NULL, &fi->bnl, &fi->fc)) {
 	fi->fc = 0;
 	fi->dc = 0;
 	goto exit;
     }
-    xx = hge(h, RPMTAG_DIRNAMES, NULL, (void **) &fi->dnl, &fi->dc);
-    xx = hge(h, RPMTAG_DIRINDEXES, NULL, (void **) &fi->dil, NULL);
-    xx = hge(h, RPMTAG_FILEMODES, NULL, (void **) &fi->fmodes, NULL);
-    xx = hge(h, RPMTAG_FILEFLAGS, NULL, (void **) &fi->fflags, NULL);
-    xx = hge(h, RPMTAG_FILEVERIFYFLAGS, NULL, (void **) &fi->vflags, NULL);
-    xx = hge(h, RPMTAG_FILESIZES, NULL, (void **) &fi->fsizes, NULL);
+    xx = hge(h, RPMTAG_DIRNAMES, NULL, &fi->dnl, &fi->dc);
+    xx = hge(h, RPMTAG_DIRINDEXES, NULL, &fi->dil, NULL);
+    xx = hge(h, RPMTAG_FILEMODES, NULL, &fi->fmodes, NULL);
+    xx = hge(h, RPMTAG_FILEFLAGS, NULL, &fi->fflags, NULL);
+    xx = hge(h, RPMTAG_FILEVERIFYFLAGS, NULL, &fi->vflags, NULL);
+    xx = hge(h, RPMTAG_FILESIZES, NULL, &fi->fsizes, NULL);
 
-    xx = hge(h, RPMTAG_FILECOLORS, NULL, (void **) &fi->fcolors, NULL);
+    xx = hge(h, RPMTAG_FILECOLORS, NULL, &fi->fcolors, NULL);
     fi->color = 0;
     if (fi->fcolors != NULL)
     for (i = 0; i < fi->fc; i++)
 	fi->color |= fi->fcolors[i];
-    xx = hge(h, RPMTAG_CLASSDICT, NULL, (void **) &fi->cdict, &fi->ncdict);
-    xx = hge(h, RPMTAG_FILECLASS, NULL, (void **) &fi->fcdictx, NULL);
+    xx = hge(h, RPMTAG_CLASSDICT, NULL, &fi->cdict, &fi->ncdict);
+    xx = hge(h, RPMTAG_FILECLASS, NULL, &fi->fcdictx, NULL);
 
-    xx = hge(h, RPMTAG_DEPENDSDICT, NULL, (void **) &fi->ddict, &fi->nddict);
-    xx = hge(h, RPMTAG_FILEDEPENDSX, NULL, (void **) &fi->fddictx, NULL);
-    xx = hge(h, RPMTAG_FILEDEPENDSN, NULL, (void **) &fi->fddictn, NULL);
+    xx = hge(h, RPMTAG_DEPENDSDICT, NULL, &fi->ddict, &fi->nddict);
+    xx = hge(h, RPMTAG_FILEDEPENDSX, NULL, &fi->fddictx, NULL);
+    xx = hge(h, RPMTAG_FILEDEPENDSN, NULL, &fi->fddictn, NULL);
 
-    xx = hge(h, RPMTAG_FILESTATES, NULL, (void **) &fi->fstates, NULL);
+    xx = hge(h, RPMTAG_FILESTATES, NULL, &fi->fstates, NULL);
     if (xx == 0 || fi->fstates == NULL)
 	fi->fstates = xcalloc(fi->fc, sizeof(*fi->fstates));
     else
@@ -1380,13 +1379,13 @@ if (fi->actions == NULL)
     fi->mapflags =
 		CPIO_MAP_PATH | CPIO_MAP_MODE | CPIO_MAP_UID | CPIO_MAP_GID;
 
-    xx = hge(h, RPMTAG_FILELINKTOS, NULL, (void **) &fi->flinks, NULL);
-    xx = hge(h, RPMTAG_FILELANGS, NULL, (void **) &fi->flangs, NULL);
+    xx = hge(h, RPMTAG_FILELINKTOS, NULL, &fi->flinks, NULL);
+    xx = hge(h, RPMTAG_FILELANGS, NULL, &fi->flangs, NULL);
 
     fi->digestalgo = PGPHASHALGO_MD5;
     fi->digestlen = 16;
     fi->fdigestalgos = NULL;
-    xx = hge(h, RPMTAG_FILEDIGESTALGOS, NULL, (void **) &fi->fdigestalgos, NULL);
+    xx = hge(h, RPMTAG_FILEDIGESTALGOS, NULL, &fi->fdigestalgos, NULL);
     if (fi->fdigestalgos) {
 	int dalgo = 0;
 	/* XXX Insure that all algorithms are either 0 or constant. */
@@ -1413,7 +1412,7 @@ assert(dalgo == fi->fdigestalgos[i]);
     }
 
     fi->fdigests = NULL;
-    xx = hge(h, RPMTAG_FILEDIGESTS, NULL, (void **) &fi->fdigests, NULL);
+    xx = hge(h, RPMTAG_FILEDIGESTS, NULL, &fi->fdigests, NULL);
 
     fi->digests = NULL;
     if (fi->fdigests) {
@@ -1436,15 +1435,15 @@ assert(dalgo == fi->fdigestalgos[i]);
     }
 
     /* XXX TR_REMOVED doesn;t need fmtimes, frdevs, finodes, or fcontexts */
-    xx = hge(h, RPMTAG_FILEMTIMES, NULL, (void **) &fi->fmtimes, NULL);
-    xx = hge(h, RPMTAG_FILERDEVS, NULL, (void **) &fi->frdevs, NULL);
-    xx = hge(h, RPMTAG_FILEINODES, NULL, (void **) &fi->finodes, NULL);
-    xx = hge(h, RPMTAG_FILECONTEXTS, NULL, (void **) &fi->fcontexts, NULL);
+    xx = hge(h, RPMTAG_FILEMTIMES, NULL, &fi->fmtimes, NULL);
+    xx = hge(h, RPMTAG_FILERDEVS, NULL, &fi->frdevs, NULL);
+    xx = hge(h, RPMTAG_FILEINODES, NULL, &fi->finodes, NULL);
+    xx = hge(h, RPMTAG_FILECONTEXTS, NULL, &fi->fcontexts, NULL);
 
     fi->replacedSizes = xcalloc(fi->fc, sizeof(*fi->replacedSizes));
 
-    xx = hge(h, RPMTAG_FILEUSERNAME, NULL, (void **) &fi->fuser, NULL);
-    xx = hge(h, RPMTAG_FILEGROUPNAME, NULL, (void **) &fi->fgroup, NULL);
+    xx = hge(h, RPMTAG_FILEUSERNAME, NULL, &fi->fuser, NULL);
+    xx = hge(h, RPMTAG_FILEGROUPNAME, NULL, &fi->fgroup, NULL);
 
     if (ts != NULL)
     if (fi != NULL)

@@ -542,8 +542,8 @@ if (fileURL[0] == '=') {
 	    int pft;
 	    int c;
 
-	    if (headerGetEntry(eiu->h, RPMTAG_PREFIXES, &pft,
-				       (void **) &paths, &c) && (c == 1))
+	    if (headerGetEntry(eiu->h, RPMTAG_PREFIXES, &pft, &paths, &c)
+	     && c == 1)
 	    {
 		eiu->relocations->oldPath = xstrdup(paths[0]);
 		paths = headerFreeData(paths, pft);

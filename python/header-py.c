@@ -225,7 +225,7 @@ static void compressFilelist(Header h)
 	return;		/* Already converted. */
     }
 
-    if (!hge(h, RPMTAG_OLDFILENAMES, &fnt, (void **) &fileNames, &count))
+    if (!hge(h, RPMTAG_OLDFILENAMES, &fnt, &fileNames, &count))
 	return;		/* no file list */
     if (fileNames == NULL || count <= 0)
 	return;
@@ -344,7 +344,7 @@ static void providePackageNVR(Header h)
 	return;
     pEVR = p = alloca(21 + strlen(version) + 1 + strlen(release) + 1);
     *p = '\0';
-    if (hge(h, RPMTAG_EPOCH, NULL, (void **) &epoch, NULL)) {
+    if (hge(h, RPMTAG_EPOCH, NULL, &epoch, NULL)) {
 	sprintf(p, "%d:", *epoch);
 	while (*p != '\0')
 	    p++;
@@ -355,13 +355,13 @@ static void providePackageNVR(Header h)
      * Rpm prior to 3.0.3 does not have versioned provides.
      * If no provides at all are available, we can just add.
      */
-    if (!hge(h, RPMTAG_PROVIDENAME, &pnt, (void **) &provides, &providesCount))
+    if (!hge(h, RPMTAG_PROVIDENAME, &pnt, &provides, &providesCount))
 	goto exit;
 
     /*
      * Otherwise, fill in entries on legacy packages.
      */
-    if (!hge(h, RPMTAG_PROVIDEVERSION, &pvt, (void **) &providesEVR, NULL)) {
+    if (!hge(h, RPMTAG_PROVIDEVERSION, &pvt, &providesEVR, NULL)) {
 	for (i = 0; i < providesCount; i++) {
 	    char * vdummy = "";
 	    int_32 fdummy = RPMSENSE_ANY;
@@ -373,7 +373,7 @@ static void providePackageNVR(Header h)
 	goto exit;
     }
 
-    xx = hge(h, RPMTAG_PROVIDEFLAGS, NULL, (void **) &provideFlags, NULL);
+    xx = hge(h, RPMTAG_PROVIDEFLAGS, NULL, &provideFlags, NULL);
 
     /*@-nullderef@*/	/* LCL: providesEVR is not NULL */
     if (provides && providesEVR && provideFlags)
@@ -1143,7 +1143,7 @@ int rpmMergeHeaders(PyObject * list, FD_t fd, int matchTag)
     Py_END_ALLOW_THREADS
 
     while (h) {
-	if (!headerGetEntry(h, matchTag, NULL, (void **) &newMatch, NULL)) {
+	if (!headerGetEntry(h, matchTag, NULL, &newMatch, NULL)) {
 	    PyErr_SetString(pyrpmError, "match tag missing in new header");
 	    return 1;
 	}
@@ -1151,7 +1151,7 @@ int rpmMergeHeaders(PyObject * list, FD_t fd, int matchTag)
 	hdr = (hdrObject *) PyList_GetItem(list, count++);
 	if (!hdr) return 1;
 
-	if (!headerGetEntry(hdr->h, matchTag, NULL, (void **) &oldMatch, NULL)) {
+	if (!headerGetEntry(hdr->h, matchTag, NULL, &oldMatch, NULL)) {
 	    PyErr_SetString(pyrpmError, "match tag missing in new header");
 	    return 1;
 	}

@@ -281,8 +281,8 @@ static void timeCheck(int tc, Header h)
     int count, x;
     time_t currentTime = time(NULL);
 
-    x = hge(h, RPMTAG_OLDFILENAMES, &fnt, (void **) &files, &count);
-    x = hge(h, RPMTAG_FILEMTIMES, NULL, (void **) &mtime, NULL);
+    x = hge(h, RPMTAG_OLDFILENAMES, &fnt, &files, &count);
+    x = hge(h, RPMTAG_FILEMTIMES, NULL, &mtime, NULL);
     
 /*@-boundsread@*/
     for (x = 0; x < count; x++) {
@@ -1180,7 +1180,7 @@ static void compressFilelist(Header h)
 	return;		/* Already converted. */
     }
 
-    if (!hge(h, RPMTAG_OLDFILENAMES, &fnt, (void **) &fileNames, &count))
+    if (!hge(h, RPMTAG_OLDFILENAMES, &fnt, &fileNames, &count))
 	return;		/* no file list */
     if (fileNames == NULL || count <= 0)
 	return;
@@ -2169,7 +2169,7 @@ static int processPackageFiles(Spec spec, Package pkg,
 
     fl.buildRootURL = rpmGenPath(spec->rootURL, "%{?buildroot}", NULL);
 
-    if (hge(pkg->header, RPMTAG_DEFAULTPREFIX, NULL, (void **)&fl.prefix, NULL))
+    if (hge(pkg->header, RPMTAG_DEFAULTPREFIX, NULL, &fl.prefix, NULL))
 	fl.prefix = xstrdup(fl.prefix);
     else
 	fl.prefix = NULL;

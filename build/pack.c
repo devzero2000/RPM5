@@ -173,7 +173,7 @@ static int addFileToTag(Spec spec, const char * file, Header h, int tag)
     StringBuf sb = newStringBuf();
     char *s;
 
-    if (hge(h, tag, NULL, (void **)&s, NULL)) {
+    if (hge(h, tag, NULL, &s, NULL)) {
 	appendLineStringBuf(sb, s);
 	(void) headerRemoveEntry(h, tag);
     }
@@ -438,7 +438,7 @@ void providePackageNVR(Header h)
 	return;
     pEVR = p = alloca(21 + strlen(version) + 1 + strlen(release) + 1);
     *p = '\0';
-    if (hge(h, RPMTAG_EPOCH, NULL, (void **) &epoch, NULL)) {
+    if (hge(h, RPMTAG_EPOCH, NULL, &epoch, NULL)) {
 	sprintf(p, "%d:", *epoch);
 	while (*p != '\0')
 	    p++;
@@ -449,13 +449,13 @@ void providePackageNVR(Header h)
      * Rpm prior to 3.0.3 does not have versioned provides.
      * If no provides at all are available, we can just add.
      */
-    if (!hge(h, RPMTAG_PROVIDENAME, &pnt, (void **) &provides, &providesCount))
+    if (!hge(h, RPMTAG_PROVIDENAME, &pnt, &provides, &providesCount))
 	goto exit;
 
     /*
      * Otherwise, fill in entries on legacy packages.
      */
-    if (!hge(h, RPMTAG_PROVIDEVERSION, &pvt, (void **) &providesEVR, NULL)) {
+    if (!hge(h, RPMTAG_PROVIDEVERSION, &pvt, &providesEVR, NULL)) {
 	for (i = 0; i < providesCount; i++) {
 	    char * vdummy = "";
 	    int_32 fdummy = RPMSENSE_ANY;
@@ -467,7 +467,7 @@ void providePackageNVR(Header h)
 	goto exit;
     }
 
-    xx = hge(h, RPMTAG_PROVIDEFLAGS, NULL, (void **) &provideFlags, NULL);
+    xx = hge(h, RPMTAG_PROVIDEFLAGS, NULL, &provideFlags, NULL);
 
     /*@-nullderef@*/	/* LCL: providesEVR is not NULL */
     if (provides && providesEVR && provideFlags)
@@ -616,7 +616,7 @@ int writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
 	rpmError(RPMERR_NOSPACE, _("Unable to write temp header\n"));
     } else { /* Write the archive and get the size */
 	(void) Fflush(fd);
-	fdFiniDigest(fd, PGPHASHALGO_SHA1, (void **)&SHA1, NULL, 1);
+	fdFiniDigest(fd, PGPHASHALGO_SHA1, &SHA1, NULL, 1);
 	if (csa->cpioList != NULL) {
 	    rc = cpio_doio(fd, h, csa, payload_format, rpmio_flags);
 	} else if (Fileno(csa->cpioFdIn) >= 0) {
@@ -814,7 +814,7 @@ exit:
 	unsigned char * MD5 = NULL;
 	int_32 c;
 	int xx;
-	xx = headerGetEntry(sig, RPMSIGTAG_MD5, &tagType, (void **)&MD5, &c);
+	xx = headerGetEntry(sig, RPMSIGTAG_MD5, &tagType, &MD5, &c);
 	if (tagType == RPM_BIN_TYPE && MD5 != NULL && c == 16)
 	    *pkgidp = MD5;
     }

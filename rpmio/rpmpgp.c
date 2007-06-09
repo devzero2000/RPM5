@@ -1030,7 +1030,7 @@ int pgpPubkeyFingerprint(const byte * pkt, unsigned int pktlen, byte * keyid)
 	}
 	{   DIGEST_CTX ctx = rpmDigestInit(PGPHASHALGO_SHA1, RPMDIGEST_NONE);
 	    (void) rpmDigestUpdate(ctx, pkt, (se-pkt));
-	    (void) rpmDigestFinal(ctx, (void **)&d, &dlen, 0);
+	    (void) rpmDigestFinal(ctx, &d, &dlen, 0);
 	}
 
 /*@-boundswrite@*/
@@ -1039,7 +1039,8 @@ int pgpPubkeyFingerprint(const byte * pkt, unsigned int pktlen, byte * keyid)
 	d = _free(d);
       } break;
     }
-    return 0;
+    rc = 0;
+    return rc;
 }
 
 int pgpExtractPubkeyFingerprint(const char * b64pkt, byte * keyid)

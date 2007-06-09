@@ -114,14 +114,14 @@ static void addTE(rpmts ts, rpmte p, Header h,
     p->db_instance = 0;
 
     hdrid = NULL;
-    xx = hge(h, RPMTAG_HDRID, NULL, (void **)&hdrid, NULL);
+    xx = hge(h, RPMTAG_HDRID, NULL, &hdrid, NULL);
     if (hdrid != NULL)
 	p->hdrid = xstrdup(hdrid);
     else
 	p->hdrid = NULL;
 
     pkgid = NULL;
-    xx = hge(h, RPMTAG_PKGID, NULL, (void **)&pkgid, &pkgidcnt);
+    xx = hge(h, RPMTAG_PKGID, NULL, &pkgid, &pkgidcnt);
     if (pkgid != NULL) {
 	static const char hex[] = "0123456789abcdef";
 	int i;
@@ -139,10 +139,10 @@ static void addTE(rpmts ts, rpmte p, Header h,
 	p->pkgid = NULL;
 
     arch = NULL;
-    xx = hge(h, RPMTAG_ARCH, NULL, (void **)&arch, NULL);
+    xx = hge(h, RPMTAG_ARCH, NULL, &arch, NULL);
     p->arch = (arch != NULL ? xstrdup(arch) : NULL);
     os = NULL;
-    xx = hge(h, RPMTAG_OS, NULL, (void **)&os, NULL);
+    xx = hge(h, RPMTAG_OS, NULL, &os, NULL);
     p->os = (os != NULL ? xstrdup(os) : NULL);
 
     p->isSource = (headerIsEntry(h, RPMTAG_SOURCERPM) == 0);
@@ -166,7 +166,7 @@ static void addTE(rpmts ts, rpmte p, Header h,
 	t = stpcpy( stpcpy( t, "."), p->arch);
 
     ep = NULL;
-    xx = hge(h, RPMTAG_EPOCH, NULL, (void **)&ep, NULL);
+    xx = hge(h, RPMTAG_EPOCH, NULL, &ep, NULL);
 /*@-branchstate@*/
     if (ep) {
 	p->epoch = xmalloc(20);
@@ -243,7 +243,7 @@ rpmte rpmteNew(const rpmts ts, Header h,
     case TR_ADDED:
 	p->u.addedKey = pkgKey;
 	ep = NULL;
-	xx = headerGetEntry(h, RPMTAG_SIGSIZE, NULL, (void **)&ep, NULL);
+	xx = headerGetEntry(h, RPMTAG_SIGSIZE, NULL, &ep, NULL);
 	/* XXX 256 is only an estimate of signature header. */
 	if (ep != NULL)
 	    p->pkgFileSize += 96 + 256 + *ep;
@@ -636,7 +636,7 @@ int rpmteChain(rpmte p, rpmte q, Header oh, const char * msg)
      */
     pkgid = NULL;
     pkgidcnt = 0;
-    xx = hge(oh, RPMTAG_PKGID, NULL, (void **)&pkgid, &pkgidcnt);
+    xx = hge(oh, RPMTAG_PKGID, NULL, &pkgid, &pkgidcnt);
     if (pkgid != NULL) {
 	static const char hex[] = "0123456789abcdef";
 	char * t;
@@ -655,7 +655,7 @@ int rpmteChain(rpmte p, rpmte q, Header oh, const char * msg)
 	blinkPkgid = NULL;
 
     blinkHdrid = NULL;
-    xx = hge(oh, RPMTAG_HDRID, NULL, (void **)&blinkHdrid, NULL);
+    xx = hge(oh, RPMTAG_HDRID, NULL, &blinkHdrid, NULL);
 
 /*@-modfilesys@*/
 if (__mydebug)

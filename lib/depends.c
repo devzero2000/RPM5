@@ -154,9 +154,9 @@ static int rpmHeadersIdentical(Header first, Header second)
     rpmds A, B;
     int rc;
 
-    if (!headerGetEntry(first, RPMTAG_HDRID, NULL, (void **) &one, NULL))
+    if (!headerGetEntry(first, RPMTAG_HDRID, NULL, &one, NULL))
 	one = NULL;
-    if (!headerGetEntry(second, RPMTAG_HDRID, NULL, (void **) &two, NULL))
+    if (!headerGetEntry(second, RPMTAG_HDRID, NULL, &two, NULL))
 	two = NULL;
 
     if (one && two)
@@ -214,13 +214,13 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
      * Check platform affinity of binary packages.
      */
     arch = NULL;
-    xx = hge(h, RPMTAG_ARCH, NULL, (void **)&arch, NULL);
+    xx = hge(h, RPMTAG_ARCH, NULL, &arch, NULL);
     os = NULL;
-    xx = hge(h, RPMTAG_OS, NULL, (void **)&os, NULL);
+    xx = hge(h, RPMTAG_OS, NULL, &os, NULL);
     if (nplatpat > 1) {
 	const char * platform = NULL;
 
-	if (hge(h, RPMTAG_PLATFORM, NULL, (void **)&platform, NULL))
+	if (hge(h, RPMTAG_PLATFORM, NULL, &platform, NULL))
 	    platform = xstrdup(platform);
 	else
 	    platform = rpmExpand(arch, "-unknown-", os, NULL);
@@ -539,8 +539,6 @@ static int unsatisfiedDepend(rpmts ts, rpmds dep, int adding)
     int xx;
     int retries = 10;
 
-    char * _sysinfo;
-
     if ((Name = rpmdsN(dep)) == NULL)
 	return 0;	/* XXX can't happen */
     Flags = rpmdsFlags(dep);
@@ -749,7 +747,7 @@ retry:
 	    while ((nb = Fread(buf, sizeof(buf[0]), nbuf, fd)) > 0)
 		xx = rpmDigestUpdate(ctx, buf, nb);
 	    xx = Fclose(fd);	fd = NULL;
-	    xx = rpmDigestFinal(ctx, (void **)&digest, &digestlen, asAscii);
+	    xx = rpmDigestFinal(ctx, &digest, &digestlen, asAscii);
 
 	    xx = (EVR && *EVR && digest && *digest) ? strcmp(EVR, digest) : -1;
 	    /* XXX only equality makes sense for digest compares */
@@ -844,9 +842,7 @@ retry:
 
     /* Search system configured provides. */
 
-    _sysinfo = rpmGetPath("%{_etcrpm}/sysinfo", NULL);
-
-    if (!rpmioAccess(_sysinfo, NULL, R_OK)) {
+    if (!rpmioAccess("/etc/rpm/sysinfo", NULL, R_OK)) {
 #ifdef	NOTYET	/* XXX just sysinfo Provides: for now. */
 	rpmTag tagN = (Name[0] == '/' ? RPMTAG_DIRNAMES : RPMTAG_PROVIDENAME);
 #else
@@ -1031,7 +1027,6 @@ unsatisfied:
     }
 
 exit:
-    _sysinfo = _free(_sysinfo);
     /*
      * If dbiOpen/dbiPut fails (e.g. permissions), we can't cache.
      */

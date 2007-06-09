@@ -261,14 +261,14 @@ int headerIsEntry(/*@null@*/ Header h, int_32 tag)
  * @param h		header
  * @param tag		tag
  * @retval *type	tag value data type (or NULL)
- * @retval *p		pointer to tag value(s) (or NULL)
+ * @retval *p		tag value(s) (or NULL)
  * @retval *c		number of values (or NULL)
  * @return		1 on success, 0 on failure
  */
 /*@unused@*/ static inline
 int headerGetEntry(Header h, int_32 tag,
 			/*@null@*/ /*@out@*/ hTYP_t type,
-			/*@null@*/ /*@out@*/ void ** p,
+			/*@null@*/ /*@out@*/ void * p,
 			/*@null@*/ /*@out@*/ hCNT_t c)
 	/*@modifies *type, *p, *c @*/
 {
@@ -284,14 +284,14 @@ int headerGetEntry(Header h, int_32 tag,
  * @param h		header
  * @param tag		tag
  * @retval *type	tag value data type (or NULL)
- * @retval *p		pointer to tag value(s) (or NULL)
+ * @retval *p		tag value(s) (or NULL)
  * @retval *c		number of values (or NULL)
  * @return		1 on success, 0 on failure
  */
 /*@unused@*/ static inline
 int headerGetEntryMinMemory(Header h, int_32 tag,
 			/*@null@*/ /*@out@*/ hTYP_t type,
-			/*@null@*/ /*@out@*/ hPTR_t * p, 
+			/*@null@*/ /*@out@*/ void * p, 
 			/*@null@*/ /*@out@*/ hCNT_t c)
 	/*@modifies *type, *p, *c @*/
 {
