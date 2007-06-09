@@ -219,7 +219,7 @@ char * hGetNEVRA(Header h, const char ** np)
     /* XXX pubkeys have no arch. */
 /*@-branchstate@*/
     a = NULL;
-    if (!headerGetEntry(h, RPMTAG_ARCH, NULL, (void **) &a, NULL) || a == NULL)
+    if (!headerGetEntry(h, RPMTAG_ARCH, NULL, &a, NULL) || a == NULL)
 	a = "pubkey";
 /*@=branchstate@*/
     NVRA = t = xcalloc(1, strlen(n) + strlen(v) + strlen(r) + strlen(a) + sizeof("--."));
@@ -247,7 +247,7 @@ uint_32 hGetColor(Header h)
 
     fcolors = NULL;
     ncolors = 0;
-    if (hge(h, RPMTAG_FILECOLORS, NULL, (void **)&fcolors, &ncolors)
+    if (hge(h, RPMTAG_FILECOLORS, NULL, &fcolors, &ncolors)
      && fcolors != NULL && ncolors > 0)
     {
 /*@-boundsread@*/

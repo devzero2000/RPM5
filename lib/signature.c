@@ -326,7 +326,7 @@ rpmRC rpmReadSignature(FD_t fd, Header * sighp, sigType sig_type,
 	}
 
 	/* Print package component sizes. */
-	if (headerGetEntry(sigh, RPMSIGTAG_SIZE, NULL,(void **)&archSize, NULL)) {
+	if (headerGetEntry(sigh, RPMSIGTAG_SIZE, NULL, &archSize, NULL)) {
 	    size_t datasize = *(uint_32 *)archSize;
 	    rc = printSize(fd, sigSize, pad, datasize);
 	    if (rc != RPMRC_OK)
@@ -737,7 +737,7 @@ static int makeHDRSignature(Header sigh, const char * file, int_32 sigTag,
 	    ctx = rpmDigestInit(PGPHASHALGO_SHA1, RPMDIGEST_NONE);
 	    (void) rpmDigestUpdate(ctx, header_magic, sizeof(header_magic));
 	    (void) rpmDigestUpdate(ctx, uh, uhc);
-	    (void) rpmDigestFinal(ctx, (void **)&SHA1, NULL, 1);
+	    (void) rpmDigestFinal(ctx, &SHA1, NULL, 1);
 	    uh = headerFreeData(uh, uht);
 	}
 	h = headerFree(h);
@@ -1088,8 +1088,7 @@ verifyMD5Signature(const rpmts ts, /*@out@*/ char * t,
     }
 
     (void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_DIGEST), 0);
-    (void) rpmDigestFinal(rpmDigestDup(md5ctx),
-		(void **)&md5sum, &md5len, 0);
+    (void) rpmDigestFinal(rpmDigestDup(md5ctx), &md5sum, &md5len, 0);
     (void) rpmswExit(rpmtsOp(ts, RPMTS_OP_DIGEST), 0);
     rpmtsOp(ts, RPMTS_OP_DIGEST)->count--;	/* XXX one too many */
 
@@ -1148,8 +1147,7 @@ verifySHA1Signature(const rpmts ts, /*@out@*/ char * t,
     }
 
     (void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_DIGEST), 0);
-    (void) rpmDigestFinal(rpmDigestDup(sha1ctx),
-		(void **)&SHA1, NULL, 1);
+    (void) rpmDigestFinal(rpmDigestDup(sha1ctx), &SHA1, NULL, 1);
     (void) rpmswExit(rpmtsOp(ts, RPMTS_OP_DIGEST), 0);
 
     if (SHA1 == NULL || strlen(SHA1) != strlen(sig) || strcmp(SHA1, sig)) {

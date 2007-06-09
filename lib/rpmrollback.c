@@ -103,7 +103,7 @@ IDTX IDTXload(rpmts ts, rpmTag tag, uint_32 rbtid)
 	int_32 * tidp;
 
 	tidp = NULL;
-	if (!hge(h, tag, &type, (void **)&tidp, &count) || tidp == NULL)
+	if (!hge(h, tag, &type, &tidp, &count) || tidp == NULL)
 	    continue;
 
 	if (type == RPM_INT32_TYPE && (*tidp == 0 || *tidp == -1))
@@ -189,7 +189,7 @@ assert(origin != NULL);
 assert(!strcmp(av[i], origin));
 }
 	tidp = NULL;
-	if (!hge(h, tag, &type, (void **) &tidp, &count) || tidp == NULL)
+	if (!hge(h, tag, &type, &tidp, &count) || tidp == NULL)
 	    goto bottom;
 
 	/* Don't bother with headers installed prior to the rollback goal. */
@@ -301,7 +301,7 @@ static int findErases(rpmts ts, /*@null@*/ rpmte p, unsigned thistid,
 	    int_32 pn, hn, nn;
 	    int bingo;
 
-	    xx = hge(ip->h, RPMTAG_BLINKPKGID, &pt, (void **)&flinkPkgid, &pn);
+	    xx = hge(ip->h, RPMTAG_BLINKPKGID, &pt, &flinkPkgid, &pn);
 
 	    /* XXX Always erase packages at beginning of upgrade chain. */
 	    if (pn == 1 && flinkPkgid[0] != NULL && !strcmp(flinkPkgid[0], RPMTE_CHAIN_END)) {
@@ -309,8 +309,8 @@ static int findErases(rpmts ts, /*@null@*/ rpmte p, unsigned thistid,
 		goto erase;
 	    }
 
-	    xx = hge(ip->h, RPMTAG_BLINKHDRID, &ht, (void **)&flinkHdrid, &hn);
-	    xx = hge(ip->h, RPMTAG_BLINKNEVRA, &nt, (void **)&flinkNEVRA, &nn);
+	    xx = hge(ip->h, RPMTAG_BLINKHDRID, &ht, &flinkHdrid, &hn);
+	    xx = hge(ip->h, RPMTAG_BLINKNEVRA, &nt, &flinkNEVRA, &nn);
 
 	    /*
 	     * Link data may be missing and can have multiple entries.

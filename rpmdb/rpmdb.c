@@ -844,7 +844,7 @@ static int rpmdbExportInfo(/*@unused@*/ rpmdb db, Header h, int adding)
 	if (fd != NULL) {
 	    xx = Fclose(fd);
 	    fd = NULL;
-	    if (headerGetEntry(h, RPMTAG_INSTALLTID, NULL, (void **)&iidp, NULL)) {
+	    if (headerGetEntry(h, RPMTAG_INSTALLTID, NULL, &iidp, NULL)) {
 		struct utimbuf stamp;
 		stamp.actime = *iidp;
 		stamp.modtime = *iidp;
@@ -1491,9 +1491,9 @@ if (rc == 0)
 	    continue;
 	}
 
-	xx = hge(h, RPMTAG_BASENAMES, &bnt, (void **) &baseNames, NULL);
-	xx = hge(h, RPMTAG_DIRNAMES, &dnt, (void **) &dirNames, NULL);
-	xx = hge(h, RPMTAG_DIRINDEXES, NULL, (void **) &dirIndexes, NULL);
+	xx = hge(h, RPMTAG_BASENAMES, &bnt, &baseNames, NULL);
+	xx = hge(h, RPMTAG_DIRNAMES, &dnt, &dirNames, NULL);
+	xx = hge(h, RPMTAG_DIRINDEXES, NULL, &dirIndexes, NULL);
 
 	do {
 	    fingerPrint fp2;
@@ -2879,7 +2879,7 @@ if (dbiByteSwapped(dbi) == 1)
 	    }
 	    /*@=branchstate@*/
 	
-	    if (!hge(h, rpmtag, &rpmtype, (void **) &rpmvals, &rpmcnt))
+	    if (!hge(h, rpmtag, &rpmtype, &rpmvals, &rpmcnt))
 		continue;
 
 	  dbi = dbiOpen(db, rpmtag, 0);
@@ -3122,7 +3122,7 @@ memset(data, 0, sizeof(*data));
     }
 
     /* Add the package color if not present. */
-    if (!hge(h, RPMTAG_PACKAGECOLOR, &bnt, (void **) &hcolor, &count)) {
+    if (!hge(h, RPMTAG_PACKAGECOLOR, &bnt, &hcolor, &count)) {
 	hcolor = hGetColor(h);
 	xx = hae(h, RPMTAG_PACKAGECOLOR, RPM_INT32_TYPE, &hcolor, 1);
     }
@@ -3133,9 +3133,9 @@ memset(data, 0, sizeof(*data));
      * being written to the package header database.
      */
 
-    xx = hge(h, RPMTAG_BASENAMES, &bnt, (void **) &baseNames, &count);
-    xx = hge(h, RPMTAG_DIRINDEXES, &dit, (void **) &dirIndexes, NULL);
-    xx = hge(h, RPMTAG_DIRNAMES, &dnt, (void **) &dirNames, NULL);
+    xx = hge(h, RPMTAG_BASENAMES, &bnt, &baseNames, &count);
+    xx = hge(h, RPMTAG_DIRINDEXES, &dit, &dirIndexes, NULL);
+    xx = hge(h, RPMTAG_DIRNAMES, &dnt, &dirNames, NULL);
 
     (void) blockSignals(db, &signalMask);
 
@@ -3302,11 +3302,11 @@ data->size = 0;
 		rpmcnt = count;
 		/*@switchbreak@*/ break;
 	    case RPMTAG_REQUIRENAME:
-		xx = hge(h, rpmtag, &rpmtype, (void **)&rpmvals, &rpmcnt);
-		xx = hge(h, RPMTAG_REQUIREFLAGS, NULL, (void **)&requireFlags, NULL);
+		xx = hge(h, rpmtag, &rpmtype, &rpmvals, &rpmcnt);
+		xx = hge(h, RPMTAG_REQUIREFLAGS, NULL, &requireFlags, NULL);
 		/*@switchbreak@*/ break;
 	    default:
-		xx = hge(h, rpmtag, &rpmtype, (void **)&rpmvals, &rpmcnt);
+		xx = hge(h, rpmtag, &rpmtype, &rpmvals, &rpmcnt);
 		/*@switchbreak@*/ break;
 	    }
 
@@ -3612,9 +3612,9 @@ if (key->size == 0) key->size++;	/* XXX "/" fixup. */
 	num = end - start;
 
 	/* Compute fingerprints for this installed header's matches */
-	xx = hge(h, RPMTAG_BASENAMES, &bnt, (void **) &fullBaseNames, NULL);
-	xx = hge(h, RPMTAG_DIRNAMES, &dnt, (void **) &dirNames, NULL);
-	xx = hge(h, RPMTAG_DIRINDEXES, NULL, (void **) &fullDirIndexes, NULL);
+	xx = hge(h, RPMTAG_BASENAMES, &bnt, &fullBaseNames, NULL);
+	xx = hge(h, RPMTAG_DIRNAMES, &dnt, &dirNames, NULL);
+	xx = hge(h, RPMTAG_DIRINDEXES, NULL, &fullDirIndexes, NULL);
 
 	baseNames = xcalloc(num, sizeof(*baseNames));
 	dirIndexes = xcalloc(num, sizeof(*dirIndexes));

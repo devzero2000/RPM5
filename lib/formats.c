@@ -875,10 +875,10 @@ static int instprefixTag(Header h, /*@null@*/ /*@out@*/ rpmTagType * type,
     rpmTagType ipt;
     char ** array;
 
-    if (hge(h, RPMTAG_INSTALLPREFIX, type, (void **)data, count)) {
+    if (hge(h, RPMTAG_INSTALLPREFIX, type, data, count)) {
 	if (freeData) *freeData = 0;
 	return 0;
-    } else if (hge(h, RPMTAG_INSTPREFIXES, &ipt, (void **) &array, count)) {
+    } else if (hge(h, RPMTAG_INSTPREFIXES, &ipt, &array, count)) {
 	if (type) *type = RPM_STRING_TYPE;
 /*@-boundsread@*/
 	if (data) *data = xstrdup(array[0]);
@@ -916,7 +916,7 @@ static int fssizesTag(Header h, /*@out@*/ rpmTagType * type,
     uint_64 * usages;
     int numFiles;
 
-    if (!hge(h, RPMTAG_FILESIZES, NULL, (void **) &filesizes, &numFiles)) {
+    if (!hge(h, RPMTAG_FILESIZES, NULL, &filesizes, &numFiles)) {
 	filesizes = NULL;
 	numFiles = 0;
 	filenames = NULL;
@@ -979,15 +979,15 @@ static int triggercondsTag(Header h, /*@out@*/ rpmTagType * type,
     int i, j, xx;
     char buf[5];
 
-    if (!hge(h, RPMTAG_TRIGGERNAME, &tnt, (void **) &names, &numNames)) {
+    if (!hge(h, RPMTAG_TRIGGERNAME, &tnt, &names, &numNames)) {
 	*freeData = 0;
 	return 0;
     }
 
-    xx = hge(h, RPMTAG_TRIGGERINDEX, NULL, (void **) &indices, NULL);
-    xx = hge(h, RPMTAG_TRIGGERFLAGS, NULL, (void **) &flags, NULL);
-    xx = hge(h, RPMTAG_TRIGGERVERSION, &tvt, (void **) &versions, NULL);
-    xx = hge(h, RPMTAG_TRIGGERSCRIPTS, &tst, (void **) &s, &numScripts);
+    xx = hge(h, RPMTAG_TRIGGERINDEX, NULL, &indices, NULL);
+    xx = hge(h, RPMTAG_TRIGGERFLAGS, NULL, &flags, NULL);
+    xx = hge(h, RPMTAG_TRIGGERVERSION, &tvt, &versions, NULL);
+    xx = hge(h, RPMTAG_TRIGGERSCRIPTS, &tst, &s, &numScripts);
     s = hfd(s, tst);
 
     *freeData = 1;
@@ -1053,13 +1053,13 @@ static int triggertypeTag(Header h, /*@out@*/ rpmTagType * type,
     int i, j, xx;
     int numScripts, numNames;
 
-    if (!hge(h, RPMTAG_TRIGGERINDEX, NULL, (void **) &indices, &numNames)) {
+    if (!hge(h, RPMTAG_TRIGGERINDEX, NULL, &indices, &numNames)) {
 	*freeData = 0;
 	return 1;
     }
 
-    xx = hge(h, RPMTAG_TRIGGERFLAGS, NULL, (void **) &flags, NULL);
-    xx = hge(h, RPMTAG_TRIGGERSCRIPTS, &tst, (void **) &s, &numScripts);
+    xx = hge(h, RPMTAG_TRIGGERFLAGS, NULL, &flags, NULL);
+    xx = hge(h, RPMTAG_TRIGGERSCRIPTS, &tst, &s, &numScripts);
     s = hfd(s, tst);
 
     *freeData = 1;
@@ -1372,6 +1372,7 @@ static int i18nTag(Header h, int_32 tag, /*@out@*/ rpmTagType * type,
 	    char * mk;
 	    size_t nb = sizeof("()");
 	    int xx = headerNVR(h, &n, NULL, NULL);
+	    xx = 0;	/* XXX keep gcc quiet */
 	    if (tn)	nb += strlen(tn);
 	    if (n)	nb += strlen(n);
 	    mk = alloca(nb);
@@ -1446,7 +1447,7 @@ static int localeTag(Header h, int_32 tag, /*@out@*/ rpmTagType * type,
     char **d, **d2, *dp;
     int rc, i, l;
 
-    rc = hge(h, tag, &t, (void **)&d, count);
+    rc = hge(h, tag, &t, &d, count);
     if (!rc || d == NULL || *count == 0) {
 	*freeData = 0;
 	*data = NULL;

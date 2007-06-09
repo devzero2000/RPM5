@@ -274,7 +274,7 @@ static int handleRmvdInstalledFiles(const rpmts ts, rpmfi fi,
 	return 1;
     }
 
-    xx = hge(h, RPMTAG_FILESTATES, NULL, (void **) &otherStates, NULL);
+    xx = hge(h, RPMTAG_FILESTATES, NULL, &otherStates, NULL);
 
 /*@-boundswrite@*/
     /* XXX there's an obscure segfault here w/o NULL check ... */

@@ -620,7 +620,7 @@ void fdUpdateDigests(FD_t fd, const unsigned char * buf, ssize_t buflen)
  */
 /*@unused@*/ static inline
 void fdFiniDigest(FD_t fd, pgpHashAlgo hashalgo,
-		/*@null@*/ /*@out@*/ void ** datap,
+		/*@null@*/ /*@out@*/ void * datap,
 		/*@null@*/ /*@out@*/ size_t * lenp,
 		int asAscii)
 	/*@globals internalState @*/
@@ -644,7 +644,7 @@ void fdFiniDigest(FD_t fd, pgpHashAlgo hashalgo,
     }
 /*@-boundswrite@*/
     if (i < 0) {
-	if (datap) *datap = NULL;
+	if (datap) *(void **)datap = NULL;
 	if (lenp) *lenp = 0;
     }
 /*@=boundswrite@*/

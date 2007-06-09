@@ -230,7 +230,7 @@ int dodigest(int digestalgo, const char * fn, unsigned char * digest, int asAsci
 	fsize = 0;
 	while ((rc = Fread(buf, sizeof(buf[0]), sizeof(buf), fd)) > 0)
 	    fsize += rc;
-	fdFiniDigest(fd, digestalgo, (void **)&dsum, &dlen, asAscii);
+	fdFiniDigest(fd, digestalgo, &dsum, &dlen, asAscii);
 	if (Ferror(fd))
 	    rc = 1;
 
@@ -288,14 +288,14 @@ void rpmfiBuildFNames(Header h, rpmTag tagN,
 	dirIndexesTag = RPMTAG_ORIGDIRINDEXES;
     }
 
-    if (!hge(h, tagN, &bnt, (void **) &baseNames, &count)) {
+    if (!hge(h, tagN, &bnt, &baseNames, &count)) {
 	if (fnp) *fnp = NULL;
 	if (fcp) *fcp = 0;
 	return;		/* no file list */
     }
 
-    xx = hge(h, dirNameTag, &dnt, (void **) &dirNames, NULL);
-    xx = hge(h, dirIndexesTag, NULL, (void **) &dirIndexes, &count);
+    xx = hge(h, dirNameTag, &dnt, &dirNames, NULL);
+    xx = hge(h, dirIndexesTag, NULL, &dirIndexes, &count);
 
     size = sizeof(*fileNames) * count;
     for (i = 0; i < count; i++) {

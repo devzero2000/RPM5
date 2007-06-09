@@ -686,14 +686,14 @@ typedef /*@null@*/
  *
  * @param h		header
  * @param tag		tag
- * @retval type		address of tag value data type (or NULL)
- * @retval p		address of pointer to tag value(s) (or NULL)
- * @retval c		address of number of values (or NULL)
+ * @retval *type	tag value data type (or NULL)
+ * @retval *p		tag value(s) (or NULL)
+ * @retval *c		number of values (or NULL)
  * @return		1 on success, 0 on failure
  */
 typedef int (*HGE_t) (Header h, rpmTag tag,
 			/*@null@*/ /*@out@*/ rpmTagType * type,
-			/*@null@*/ /*@out@*/ void ** p,
+			/*@null@*/ /*@out@*/ void * p,
 			/*@null@*/ /*@out@*/ int_32 * c)
 	/*@modifies *type, *p, *c @*/;
 
@@ -708,7 +708,7 @@ typedef int (*HGE_t) (Header h, rpmTag tag,
  * @param h             header
  * @param tag           tag
  * @param type          tag value data type
- * @param p             pointer to tag value(s)
+ * @param p             tag value(s)
  * @param c             number of values
  * @return              1 on success, 0 on failure
  */
@@ -723,7 +723,7 @@ typedef int (*HAE_t) (Header h, rpmTag tag, rpmTagType type,
  * @param h		header
  * @param tag		tag
  * @param type		tag value data type
- * @param p		pointer to tag value(s)
+ * @param p		tag value(s)
  * @param c		number of values
  * @return		1 on success, 0 on failure
  */
