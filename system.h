@@ -483,12 +483,14 @@ extern const char *__localedir;
 #if ENABLE_NLS && !defined(__LCLINT__)
 # include <libintl.h>
 # define _(Text) dgettext (PACKAGE, Text)
+# define D_(Text) Text
 #else
 # undef bindtextdomain
 # define bindtextdomain(Domain, Directory) /* empty */
 # undef textdomain
 # define textdomain(Domain) /* empty */
 # define _(Text) Text
+# define D_(Text) Text
 # undef dgettext
 # define dgettext(DomainName, Text) Text
 #endif

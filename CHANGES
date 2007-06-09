@@ -15,8 +15,10 @@
 	- configure: modern usage.
         - enable runtime relocation
 	- revert Filedigests -> Filemd5s index name.
+	- don't build Packagecolor index (yet).
 	- python: don't read rpmrc by default.
 	- perl: don't read rpmrc by default.
+	- add D_(...) i18n marker for debug messages, with default disable.
 	
 4.4.8 -> 4.4.9:
 	- start rpm-4.4.9 devel.

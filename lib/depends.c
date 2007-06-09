@@ -417,7 +417,7 @@ assert(lastx >= 0 && lastx < ts->orderCount);
 	xx = rpmteChain(p, q, oh, "Upgrades");
 
 /*@-nullptrarith@*/
-	rpmMessage(RPMMESS_DEBUG, _("   upgrade erases %s\n"), rpmteNEVRA(q));
+	rpmMessage(RPMMESS_DEBUG, D_("   upgrade erases %s\n"), rpmteNEVRA(q));
 /*@=nullptrarith@*/
 
     }
@@ -487,7 +487,7 @@ assert(lastx >= 0 && lastx < ts->orderCount);
 	    xx = rpmteChain(p, q, oh, "Obsoletes");
 
 /*@-nullptrarith@*/
-	    rpmMessage(RPMMESS_DEBUG, _("  Obsoletes: %s\t\terases %s\n"),
+	    rpmMessage(RPMMESS_DEBUG, D_("  Obsoletes: %s\t\terases %s\n"),
 			rpmdsDNEVR(obsoletes)+2, rpmteNEVRA(q));
 /*@=nullptrarith@*/
 	}
@@ -1902,7 +1902,7 @@ int rpmtsOrder(rpmts ts)
     pi = rpmtsiFree(pi);
 
     /* Record all relations. */
-    rpmMessage(RPMMESS_DEBUG, _("========== recording tsort relations\n"));
+    rpmMessage(RPMMESS_DEBUG, D_("========== recording tsort relations\n"));
     pi = rpmtsiInit(ts);
     while ((p = rpmtsiNext(pi, oType)) != NULL) {
 
@@ -2023,7 +2023,7 @@ int rpmtsOrder(rpmts ts)
     ts->ntrees = treex;
 
     /* T4. Scan for zeroes. */
-    rpmMessage(RPMMESS_DEBUG, _("========== tsorting packages (order, #predecessors, #succesors, tree, Ldepth, Rbreadth)\n"));
+    rpmMessage(RPMMESS_DEBUG, D_("========== tsorting packages (order, #predecessors, #succesors, tree, Ldepth, Rbreadth)\n"));
 
 rescan:
     if (pi != NULL) pi = rpmtsiFree(pi);
@@ -2114,7 +2114,7 @@ rescan:
 	    _printed++;
 	    (void) rpmtsUnorderedSuccessors(ts, orderingCount);
 	    rpmMessage(RPMMESS_DEBUG,
-		_("========== successors only (%d bytes)\n"), (int)tsbytes);
+		D_("========== successors only (%d bytes)\n"), (int)tsbytes);
 
 	    /* Relink the queue in presentation order. */
 	    tsi = rpmteTSI(q);
@@ -2218,7 +2218,7 @@ rescan:
 	/* If a relation was eliminated, then continue sorting. */
 	/* XXX TODO: add control bit. */
 	if (nzaps && nrescans-- > 0) {
-	    rpmMessage(RPMMESS_DEBUG, _("========== continuing tsort ...\n"));
+	    rpmMessage(RPMMESS_DEBUG, D_("========== continuing tsort ...\n"));
 	    goto rescan;
 	}
 

@@ -306,7 +306,7 @@ fprintf(stderr, "==> %s(%p, %s, 0x%x)\n", __FUNCTION__, db, tagName(rpmtag), fla
     default:
 	_dbapi = _dbapi_wanted;
 	if (_dbapi < 0 || _dbapi >= 5 || mydbvecs[_dbapi] == NULL) {
-            rpmMessage(RPMMESS_DEBUG, "dbiOpen: _dbiapi failed\n");
+            rpmMessage(RPMMESS_DEBUG, D_("dbiOpen: _dbiapi failed\n"));
 	    return NULL;
 	}
 	errno = 0;
@@ -728,7 +728,7 @@ int rpmdbCheckSignals(void)
 	rpmdbMatchIterator mi;
 
 /*@-abstract@*/ /* sigset_t is abstract type */
-	rpmMessage(RPMMESS_DEBUG, "Exiting on signal(0x%lx) ...\n", *((unsigned long *)&rpmsqCaught));
+	rpmMessage(RPMMESS_DEBUG, D_("Exiting on signal(0x%lx) ...\n"), *((unsigned long *)&rpmsqCaught));
 /*@=abstract@*/
 
 /*@-branchstate@*/
@@ -2977,11 +2977,11 @@ assert((dlen & 1) == 0);
 		if (!printed) {
 		    if (rpmcnt == 1 && stringvalued) {
 			rpmMessage(RPMMESS_DEBUG,
-				_("removing \"%s\" from %s index.\n"),
+				D_("removing \"%s\" from %s index.\n"),
 				(char *)key->data, tagName(dbi->dbi_rpmtag));
 		    } else {
 			rpmMessage(RPMMESS_DEBUG,
-				_("removing %d entries from %s index.\n"),
+				D_("removing %d entries from %s index.\n"),
 				rpmcnt, tagName(dbi->dbi_rpmtag));
 		    }
 		    printed++;
@@ -3449,11 +3449,11 @@ assert((dlen & 1) == 0);
 		if (!printed) {
 		    if (rpmcnt == 1 && stringvalued) {
 			rpmMessage(RPMMESS_DEBUG,
-				_("adding \"%s\" to %s index.\n"),
+				D_("adding \"%s\" to %s index.\n"),
 				(char *)key->data, tagName(dbi->dbi_rpmtag));
 		    } else {
 			rpmMessage(RPMMESS_DEBUG,
-				_("adding %d entries to %s index.\n"),
+				D_("adding %d entries to %s index.\n"),
 				rpmcnt, tagName(dbi->dbi_rpmtag));
 		    }
 		    printed++;
@@ -3870,9 +3870,9 @@ static int rpmdbMoveDatabase(const char * prefix,
     if (rc == 0 && _newdbapi == 1 && _olddbapi == 3) {
 	const char * mdb1 = rpmGetPath("%{_etcrpm}/macros.db1";
 	struct stat st;
-	if (!stat(mdb1, &st) && S_ISREG(st.st_mode) && !unlink(mdb1))
+	if (!Stat(mdb1, &st) && S_ISREG(st.st_mode) && !Unlink(mdb1))
 	    rpmMessage(RPMMESS_DEBUG,
-		_("removing %s after successful db3 rebuild.\n"), mdb1);
+		D_("removing %s after successful db3 rebuild.\n"), mdb1);
 	mdb1 = _free(mdb1);
     }
 #endif
@@ -3917,7 +3917,7 @@ int rpmdbRebuild(const char * prefix, rpmts ts,
     if (!(tfn && tfn[0] != '\0'))
 /*@=boundsread@*/
     {
-	rpmMessage(RPMMESS_DEBUG, _("no dbpath has been set"));
+	rpmMessage(RPMMESS_DEBUG, D_("no dbpath has been set"));
 	rc = 1;
 	goto exit;
     }
@@ -3949,7 +3949,7 @@ int rpmdbRebuild(const char * prefix, rpmts ts,
 	newdbpath += strlen(prefix) - 1;
     tfn = _free(tfn);
 
-    rpmMessage(RPMMESS_DEBUG, _("rebuilding database %s into %s\n"),
+    rpmMessage(RPMMESS_DEBUG, D_("rebuilding database %s into %s\n"),
 	rootdbpath, newrootdbpath);
 
     if (!Access(newrootdbpath, F_OK)) {
@@ -3959,7 +3959,7 @@ int rpmdbRebuild(const char * prefix, rpmts ts,
 	goto exit;
     }
 
-    rpmMessage(RPMMESS_DEBUG, _("creating directory %s\n"), newrootdbpath);
+    rpmMessage(RPMMESS_DEBUG, D_("creating directory %s\n"), newrootdbpath);
     if (Mkdir(newrootdbpath, 0755)) {
 	rpmError(RPMERR_MKDIR, _("creating directory %s: %s\n"),
 	      newrootdbpath, strerror(errno));
@@ -3970,7 +3970,7 @@ int rpmdbRebuild(const char * prefix, rpmts ts,
 
     _rebuildinprogress = 0;
 
-    rpmMessage(RPMMESS_DEBUG, _("opening old database with dbapi %d\n"),
+    rpmMessage(RPMMESS_DEBUG, D_("opening old database with dbapi %d\n"),
 		_dbapi);
 /*@-boundswrite@*/
     if (rpmdbOpenDatabase(prefix, dbpath, _dbapi, &olddb, O_RDONLY, 0644, 
@@ -3981,7 +3981,7 @@ int rpmdbRebuild(const char * prefix, rpmts ts,
 /*@=boundswrite@*/
     _dbapi = olddb->db_api;
     _rebuildinprogress = 1;
-    rpmMessage(RPMMESS_DEBUG, _("opening new database with dbapi %d\n"),
+    rpmMessage(RPMMESS_DEBUG, D_("opening new database with dbapi %d\n"),
 		_dbapi_rebuild);
     (void) rpmDefineMacro(NULL, "_rpmdb_rebuild %{nil}", -1);
 /*@-boundswrite@*/
@@ -4090,9 +4090,9 @@ int rpmdbRebuild(const char * prefix, rpmts ts,
 
 exit:
     if (removedir && !(rc == 0 && nocleanup)) {
-	rpmMessage(RPMMESS_DEBUG, _("removing directory %s\n"), newrootdbpath);
+	rpmMessage(RPMMESS_DEBUG, D_("removing directory %s\n"), newrootdbpath);
 	if (Rmdir(newrootdbpath))
-	    rpmMessage(RPMMESS_ERROR, _("failed to remove directory %s: %s\n"),
+	    rpmMessage(RPMMESS_ERROR, D_("failed to remove directory %s: %s\n"),
 			newrootdbpath, strerror(errno));
     }
     newrootdbpath = _free(newrootdbpath);

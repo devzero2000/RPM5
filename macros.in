@@ -627,7 +627,7 @@ print (t)\
   %{!?_rpmdb_rebuild:%{__dbi_btconfig_current}}\
 %{nil}
 
-%_dbi_tags      Packages:Name:Basenames:Group:Requirename:Providename:Conflictname:Triggername:Dirnames:Requireversion:Provideversion:Installtid:Sigmd5:Sha1header:Filemd5s:Depends:Pubkeys:Packagecolor
+%_dbi_tags      Packages:Name:Basenames:Group:Requirename:Providename:Conflictname:Triggername:Dirnames:Requireversion:Provideversion:Installtid:Sigmd5:Sha1header:Filemd5s:Depends:Pubkeys
 
 %_dbi_config_Dirnames		%{_dbi_btconfig}
 %_dbi_config_Requireversion	%{_dbi_btconfig}

@@ -3707,7 +3707,7 @@ assert((rpmdsFlags(B) & RPMSENSE_SENSEMASK) == B->ns.Flags);
 
 exit:
     if (_noisy_range_comparison_debug_message)
-    rpmMessage(RPMMESS_DEBUG, _("  %s    A %s\tB %s\n"),
+    rpmMessage(RPMMESS_DEBUG, D_("  %s    A %s\tB %s\n"),
 	(result ? _("YES") : _("NO ")), aDepend, bDepend);
     aDepend = _free(aDepend);
     bDepend = _free(bDepend);
@@ -3731,7 +3731,7 @@ void rpmdsProblem(rpmps ps, const char * pkgNEVR, const rpmds ds,
     if (DNEVR == NULL) DNEVR = "? ?N? ?OP? ?EVR?";
     /*@=branchstate@*/
 
-    rpmMessage(RPMMESS_DEBUG, _("package %s has unsatisfied %s: %s\n"),
+    rpmMessage(RPMMESS_DEBUG, D_("package %s has unsatisfied %s: %s\n"),
 	    pkgNEVR, ds->Type, DNEVR+2);
 
     switch ((unsigned)DNEVR[0]) {

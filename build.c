@@ -332,7 +332,7 @@ int build(rpmts ts, const char * arg, BTA_t ba, const char * rcfile)
 	else	/* XXX Perform clean-up after last target build. */
 	    ba->buildAmount |= cleanFlags;
 
-	rpmMessage(RPMMESS_DEBUG, _("    target platform: %s\n"), target);
+	rpmMessage(RPMMESS_DEBUG, D_("    target platform: %s\n"), target);
 
 	/* Read in configuration for target. */
 	if (t != targets) {

@@ -823,7 +823,7 @@ enterChroot(dbi);
 
 	(void) sqlite3_close(sqldb->db);
 
-	rpmMessage(RPMMESS_DEBUG, _("closed   sql db         %s\n"),
+	rpmMessage(RPMMESS_DEBUG, D_("closed   sql db         %s\n"),
 		dbi->dbi_subfile);
 
 	dbi->dbi_stats = _free(dbi->dbi_stats);
@@ -924,7 +924,7 @@ enterChroot(dbi);
        
     dbfname = rpmGenPath(dbhome, dbi->dbi_file, NULL);
 
-    rpmMessage(RPMMESS_DEBUG, _("opening  sql db         %s (%s) mode=0x%x\n"),
+    rpmMessage(RPMMESS_DEBUG, D_("opening  sql db         %s (%s) mode=0x%x\n"),
 		dbfname, dbi->dbi_subfile, dbi->dbi_mode);
 
     /* Open the Database */
@@ -943,7 +943,7 @@ enterChroot(dbi);
     dbi->dbi_db = (DB *)sqldb;
 
     if (sql_errcode != NULL) {
-      rpmMessage(RPMMESS_DEBUG, "Unable to open database: %s\n", sql_errcode);
+      rpmMessage(RPMMESS_DEBUG, D_("Unable to open database: %s\n"), sql_errcode);
       rc = EINVAL;
     }
 
@@ -1322,7 +1322,7 @@ assert(scp->av != NULL);
 
     } else {
 	if ( sql_rc ) {
-	    rpmMessage(RPMMESS_DEBUG, "db_info failed %s (%d)\n",
+	    rpmMessage(RPMMESS_DEBUG, D_("db_info failed %s (%d)\n"),
 		scp->pzErrmsg, sql_rc);
 	}
 	rpmMessage(RPMMESS_WARNING, "Unable to determine DB endian.\n");
@@ -1468,11 +1468,11 @@ enterChroot(dbi);
 assert(scp->av != NULL);
 	nkeys = strtol(scp->av[1], NULL, 10);
 
-	rpmMessage(RPMMESS_DEBUG, "  stat on %s nkeys %ld\n",
+	rpmMessage(RPMMESS_DEBUG, D_("  stat on %s nkeys %ld\n"),
 		dbi->dbi_subfile, nkeys);
     } else {
 	if ( rc ) {
-	    rpmMessage(RPMMESS_DEBUG, "stat failed %s (%d)\n",
+	    rpmMessage(RPMMESS_DEBUG, D_("stat failed %s (%d)\n"),
 		scp->pzErrmsg, rc);
 	}
     }
