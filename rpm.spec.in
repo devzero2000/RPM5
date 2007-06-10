@@ -1,10 +1,10 @@
 %define	with_python_subpackage	@WITH_PYTHON_SUBPACKAGE@%{nil}
-%define	with_python_version	@WITH_PYTHON_VERSION@%{nil}
+%define	with_python_version	2.5%{nil}
 %define	with_perl_subpackage	@WITH_PERL_SUBPACKAGE@%{nil}
 %define	with_bzip2		@WITH_BZIP2@%{nil}
 %define	with_apidocs		@WITH_APIDOCS@%{nil}
 
-%{!?_usrlibrpm:%define _usrlibrpm @USRLIBRPM@}
+%{!?_usrlibrpm:%global _usrlibrpm @USRLIBRPM@}
 
 # Autogenerate shell script dependencies.
 #%%define __executable_requires	%{_usrlibrpm}/executabledeps.sh --requires
@@ -20,7 +20,7 @@
 Summary: The RPM package management system.
 Name: rpm
 Version: @VERSION@
-Release: 0.3
+Release: 0.4
 Group: System Environment/Base
 URL: http://rpm5.org
 Source: http://rpm5.org/files/rpm/rpm-4.5/rpm-%{version}.tar.gz
@@ -140,21 +140,6 @@ programs that will manipulate RPM packages and databases.
 
 (Note: rpm-perl is forked from perl-RPM2-0.66, and will obsolete existing perl-RPM packages)
 %endif
-
-%package -n popt
-Summary: A C library for parsing command line parameters.
-Group: Development/Libraries
-Version: 1.11
-
-%description -n popt
-Popt is a C library for parsing command line parameters. Popt was
-heavily influenced by the getopt() and getopt_long() functions, but it
-improves on them by allowing more powerful argument expansion. Popt
-can parse arbitrary argv[] style arrays and automatically set
-variables based on command line arguments. Popt allows command line
-arguments to be aliased via configuration files and includes utility
-functions for parsing arbitrary strings into argv[] arrays using
-shell-like rules.
 
 %prep
 %setup -q
@@ -288,18 +273,17 @@ exit 0
 %post devel -p /sbin/ldconfig
 %postun devel -p /sbin/ldconfig
 
-%post -n popt -p /sbin/ldconfig
-%postun -n popt -p /sbin/ldconfig
 %endif
-
-%define	rpmattr		%attr(0755, @RPMUSER@, @RPMGROUP@)
 
 %files
 %doc CHANGES GROUPS doc/manual/[a-z]*
-%pubkey wdj/JBJ-GPG-KEY
-%attr(0755, @RPMUSER@, @RPMGROUP@)	/bin/rpm
+# XXX add to EXTRAS
+#%pubkey pubkeys/JBJ-GPG-KEY
 
 %ifos linux
+%define	rpmattr		%attr(0755, @RPMUSER@, @RPMGROUP@)
+%define	rpmdbattr %attr(0644, @RPMUSER@, @RPMGROUP@) %verify(not md5 size mtime) %ghost %config(missingok,noreplace)
+
 %config(noreplace,missingok)	/etc/cron.daily/rpm
 %config(noreplace,missingok)	/etc/logrotate.d/rpm
 %dir				/etc/rpm
@@ -307,15 +291,13 @@ exit 0
 %attr(0755, @RPMUSER@, @RPMGROUP@)	%dir /var/lib/rpm
 %attr(0755, @RPMUSER@, @RPMGROUP@)	%dir /var/spool/repackage
 
-%define	rpmdbattr %attr(0644, @RPMUSER@, @RPMGROUP@) %verify(not md5 size mtime) %ghost %config(missingok,noreplace)
 %rpmdbattr	/var/lib/rpm/*
 %endif
 
+%rpmattr	%{_bindir}/rpm
 %rpmattr	%{_bindir}/rpm2cpio
 %rpmattr	%{_bindir}/gendiff
 %rpmattr	%{_bindir}/rpmdb
-#%rpmattr	%{_bindir}/rpmdigest
-#%rpmattr	%{_bindir}/rpm[eiu]
 %rpmattr	%{_bindir}/rpmsign
 %rpmattr	%{_bindir}/rpmquery
 %rpmattr	%{_bindir}/rpmverify
@@ -503,46 +485,6 @@ exit 0
 %{_libdir}/librpmbuild.a
 %{_libdir}/librpmbuild.la
 %{_libdir}/librpmbuild.so
-
-%files -n popt
-%{_libdir}/libpopt.so.*
-%{_mandir}/man3/popt.3*
-%lang(cs)	%{__prefix}/*/locale/cs/LC_MESSAGES/popt.mo
-%lang(da)	%{__prefix}/*/locale/da/LC_MESSAGES/popt.mo
-%lang(de)	%{__prefix}/*/locale/de/LC_MESSAGES/popt.mo
-%lang(es)	%{__prefix}/*/locale/es/LC_MESSAGES/popt.mo
-%lang(eu_ES)	%{__prefix}/*/locale/eu_ES/LC_MESSAGES/popt.mo
-%lang(fi)	%{__prefix}/*/locale/fi/LC_MESSAGES/popt.mo
-%lang(fr)	%{__prefix}/*/locale/fr/LC_MESSAGES/popt.mo
-%lang(gl)	%{__prefix}/*/locale/gl/LC_MESSAGES/popt.mo
-%lang(hu)	%{__prefix}/*/locale/hu/LC_MESSAGES/popt.mo
-%lang(id)	%{__prefix}/*/locale/id/LC_MESSAGES/popt.mo
-%lang(is)	%{__prefix}/*/locale/is/LC_MESSAGES/popt.mo
-%lang(it)	%{__prefix}/*/locale/it/LC_MESSAGES/popt.mo
-%lang(ja)	%{__prefix}/*/locale/ja/LC_MESSAGES/popt.mo
-%lang(ko)	%{__prefix}/*/locale/ko/LC_MESSAGES/popt.mo
-%lang(no)	%{__prefix}/*/locale/no/LC_MESSAGES/popt.mo
-%lang(pl)	%{__prefix}/*/locale/pl/LC_MESSAGES/popt.mo
-%lang(pt)	%{__prefix}/*/locale/pt/LC_MESSAGES/popt.mo
-%lang(pt_BR)	%{__prefix}/*/locale/pt_BR/LC_MESSAGES/popt.mo
-%lang(ro)	%{__prefix}/*/locale/ro/LC_MESSAGES/popt.mo
-%lang(ru)	%{__prefix}/*/locale/ru/LC_MESSAGES/popt.mo
-%lang(sk)	%{__prefix}/*/locale/sk/LC_MESSAGES/popt.mo
-%lang(sl)	%{__prefix}/*/locale/sl/LC_MESSAGES/popt.mo
-%lang(sr)	%{__prefix}/*/locale/sr/LC_MESSAGES/popt.mo
-%lang(sv)	%{__prefix}/*/locale/sv/LC_MESSAGES/popt.mo
-%lang(tr)	%{__prefix}/*/locale/tr/LC_MESSAGES/popt.mo
-%lang(uk)	%{__prefix}/*/locale/uk/LC_MESSAGES/popt.mo
-%lang(wa)	%{__prefix}/*/locale/wa/LC_MESSAGES/popt.mo
-%lang(zh)	%{__prefix}/*/locale/zh/LC_MESSAGES/popt.mo
-%lang(zh_CN)	%{__prefix}/*/locale/zh_CN/LC_MESSAGES/popt.mo
-%lang(zh_TW)	%{__prefix}/*/locale/zh_TW/LC_MESSAGES/popt.mo
-
-# XXX These may end up in popt-devel but it hardly seems worth the effort.
-%{_libdir}/libpopt.a
-%{_libdir}/libpopt.la
-%{_libdir}/libpopt.so
-%{_includedir}/popt.h
 
 %changelog
 * Fri May 25 2007 Jeff Johnson <jbj@jbj.org> 4.5-0.3

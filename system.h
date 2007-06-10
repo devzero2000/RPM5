@@ -458,11 +458,6 @@ extern void muntrace (void)
 /*@unchecked@*/
 extern const char *__progname;
 
-/* Variables used to allow RPM to relocate */
-extern const char *__usrlibrpm;
-extern const char *__etcrpm;
-extern const char *__localedir;
-
 #if HAVE_NETDB_H
 #include <netdb.h>
 #endif

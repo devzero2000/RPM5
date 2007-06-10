@@ -29,9 +29,8 @@
 %_usr			@prefix@
 %_usrsrc		%{_usr}/src
 %_var			@varprefix@
-# Following two are set internally in librpm
-# %_usrlibrpm		@USRLIBRPM@
-# %_etcrpm		@SYSCONFIGDIR@
+%_usrlibrpm		@USRLIBRPM@
+%_etcrpm		@SYSCONFIGDIR@
 
 #==============================================================================
 # ---- Generally useful path macros.

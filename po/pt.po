@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm\n"
 "Report-Msgid-Bugs-To: <rpm-devel@lists.dulug.duke.edu>\n"
-"POT-Creation-Date: 2007-06-09 10:35-0400\n"
+"POT-Creation-Date: 2007-06-10 11:00-0400\n"
 "PO-Revision-Date: 2002-02-14 10:51+0000\n"
 "Last-Translator: José Nuno Coelho Sanarra Pires <jncp@rnl.ist.utl.pt>\n"
 "Language-Team: pt <morais@kde.org\n"
@@ -102,7 +102,7 @@ msgstr "Opções comuns para todos os modos do rpm:"
 msgid "%s: %s\n"
 msgstr "%s: %s\n"
 
-#: rpmqv.c:151 lib/poptALL.c:156
+#: rpmqv.c:151 lib/poptALL.c:152
 #, c-format
 msgid "RPM version %s\n"
 msgstr "RPM versão %s\n"
@@ -1262,19 +1262,19 @@ msgstr "não executar nenhuma etapa da criação"
 msgid "do not verify build dependencies"
 msgstr "não verificar as dependências de compilação"
 
-#: build/poptBT.c:204 lib/poptALL.c:378 lib/poptI.c:355 lib/poptQV.c:415
+#: build/poptBT.c:204 lib/poptALL.c:374 lib/poptI.c:355 lib/poptQV.c:415
 #: lib/poptQV.c:424 lib/poptQV.c:466
 #, fuzzy
 msgid "don't verify package digest(s)"
 msgstr "não verificar as dependências do pacote"
 
-#: build/poptBT.c:206 lib/poptALL.c:380 lib/poptI.c:357 lib/poptQV.c:418
+#: build/poptBT.c:206 lib/poptALL.c:376 lib/poptI.c:357 lib/poptQV.c:418
 #: lib/poptQV.c:426 lib/poptQV.c:469
 #, fuzzy
 msgid "don't verify database header(s) when retrieved"
 msgstr "não verifica a arquitectura do pacote"
 
-#: build/poptBT.c:208 lib/poptALL.c:386 lib/poptI.c:359 lib/poptQV.c:421
+#: build/poptBT.c:208 lib/poptALL.c:382 lib/poptI.c:359 lib/poptQV.c:421
 #: lib/poptQV.c:428 lib/poptQV.c:471
 #, fuzzy
 msgid "don't verify package signature(s)"
@@ -1304,7 +1304,7 @@ msgstr "gerar a assinatura PGP/GPG"
 msgid "override target platform"
 msgstr "ignorar a plataforma-alvo"
 
-#: build/poptBT.c:221 lib/poptALL.c:375 lib/poptQV.c:326
+#: build/poptBT.c:221 lib/poptALL.c:371 lib/poptQV.c:326
 msgid "CPU-VENDOR-OS"
 msgstr ""
 
@@ -1389,122 +1389,122 @@ msgstr "o pacote %s já está instalado"
 msgid "package %s was already added, replacing with %s\n"
 msgstr "o pacote %s já está instalado"
 
-#: lib/depends.c:593
+#: lib/depends.c:591
 msgid "(cached)"
 msgstr ""
 
-#: lib/depends.c:608
+#: lib/depends.c:606
 #, fuzzy
 msgid "(function probe)"
 msgstr "%s: %-45s SIM (oferecidos pelo rpmrc)\n"
 
-#: lib/depends.c:627
+#: lib/depends.c:625
 msgid "(user lookup)"
 msgstr ""
 
-#: lib/depends.c:644
+#: lib/depends.c:642
 msgid "(group lookup)"
 msgstr ""
 
-#: lib/depends.c:653
+#: lib/depends.c:651
 #, fuzzy
 msgid "(access probe)"
 msgstr "%s: %-45s SIM (oferecidos pelo rpmrc)\n"
 
-#: lib/depends.c:675
+#: lib/depends.c:673
 #, fuzzy
 msgid "(mtab probe)"
 msgstr "%s: %-45s SIM (oferecidos pelo rpmrc)\n"
 
-#: lib/depends.c:730
+#: lib/depends.c:728
 #, fuzzy
 msgid "(diskspace probe)"
 msgstr "%s: %-45s SIM (oferecidos pelo rpmrc)\n"
 
-#: lib/depends.c:760
+#: lib/depends.c:758
 #, fuzzy
 msgid "(digest probe)"
 msgstr "%s: %-45s SIM (oferecidos pelo rpmrc)\n"
 
-#: lib/depends.c:773
+#: lib/depends.c:771
 #, fuzzy
 msgid "(gnupg probe)"
 msgstr "%s: %-45s SIM (oferecidos pelo rpmrc)\n"
 
-#: lib/depends.c:786
+#: lib/depends.c:784
 #, fuzzy
 msgid "(macro probe)"
 msgstr "%s: %-45s SIM (oferecidos pelo rpmrc)\n"
 
-#: lib/depends.c:814
+#: lib/depends.c:812
 #, fuzzy
 msgid "(envvar probe)"
 msgstr "%s: %-45s SIM (oferecidos pelo rpmrc)\n"
 
-#: lib/depends.c:841
+#: lib/depends.c:839
 #, fuzzy
 msgid "(running probe)"
 msgstr "%s: %-45s SIM (oferecidos pelo rpmrc)\n"
 
-#: lib/depends.c:857
+#: lib/depends.c:853
 #, fuzzy
 msgid "(sysinfo provides)"
 msgstr "%s: %-45s SIM (oferecidos pela rpmlib)\n"
 
-#: lib/depends.c:877
+#: lib/depends.c:873
 #, fuzzy
 msgid "(rpmlib provides)"
 msgstr "%s: %-45s SIM (oferecidos pela rpmlib)\n"
 
-#: lib/depends.c:893
+#: lib/depends.c:889
 #, fuzzy
 msgid "(cpuinfo provides)"
 msgstr "%s: %-45s SIM (oferecidos pela rpmlib)\n"
 
-#: lib/depends.c:909
+#: lib/depends.c:905
 #, fuzzy
 msgid "(getconf provides)"
 msgstr "%s: %-45s SIM (oferecidos pela rpmlib)\n"
 
-#: lib/depends.c:925
+#: lib/depends.c:921
 #, fuzzy
 msgid "(uname provides)"
 msgstr "%s: %-45s SIM (oferecidos para adição)\n"
 
-#: lib/depends.c:957
+#: lib/depends.c:953
 #, fuzzy
 msgid "(soname provides)"
 msgstr "%s: %-45s SIM (oferecidos para adição)\n"
 
-#: lib/depends.c:984
+#: lib/depends.c:980
 #, fuzzy
 msgid "(db files)"
 msgstr "ficheiro db inválido %s\n"
 
-#: lib/depends.c:997
+#: lib/depends.c:993
 #, fuzzy
 msgid "(db provides)"
 msgstr "%s: %-45s SI (oferecidos pelo db)\n"
 
-#: lib/depends.c:1027
+#: lib/depends.c:1023
 msgid "(hint skipped)"
 msgstr ""
 
-#: lib/depends.c:1482
+#: lib/depends.c:1477
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr "ignorar relações entre o nome do pacote [%d]\t%s -> %s\n"
 
-#: lib/depends.c:1610
+#: lib/depends.c:1605
 #, fuzzy, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "a remover o %s-%s-%s \"%s\" das relações do tsort.\n"
 
-#: lib/depends.c:2190
+#: lib/depends.c:2185
 msgid "LOOP:\n"
 msgstr "CICLO:\n"
 
-#: lib/depends.c:2226
+#: lib/depends.c:2221
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""
@@ -1719,218 +1719,218 @@ msgstr ":%s: o readLead falhou\n"
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: O fread falhou: %s\n"
 
-#: lib/poptALL.c:289
+#: lib/poptALL.c:285
 msgid "FTS_COMFOLLOW: follow command line symlinks"
 msgstr ""
 
-#: lib/poptALL.c:291
+#: lib/poptALL.c:287
 msgid "FTS_LOGICAL: logical walk"
 msgstr ""
 
-#: lib/poptALL.c:293
+#: lib/poptALL.c:289
 #, fuzzy
 msgid "FTS_NOCHDIR: don't change directories"
 msgstr "a criar a directoria %s\n"
 
-#: lib/poptALL.c:295
+#: lib/poptALL.c:291
 msgid "FTS_NOSTAT: don't get stat info"
 msgstr ""
 
-#: lib/poptALL.c:297
+#: lib/poptALL.c:293
 msgid "FTS_PHYSICAL: physical walk"
 msgstr ""
 
-#: lib/poptALL.c:299
+#: lib/poptALL.c:295
 msgid "FTS_SEEDOT: return dot and dot-dot"
 msgstr ""
 
-#: lib/poptALL.c:301
+#: lib/poptALL.c:297
 msgid "FTS_XDEV: don't cross devices"
 msgstr ""
 
-#: lib/poptALL.c:303
+#: lib/poptALL.c:299
 msgid "FTS_WHITEOUT: return whiteout information"
 msgstr ""
 
-#: lib/poptALL.c:313 lib/poptI.c:221 lib/poptQV.c:296 lib/poptQV.c:343
+#: lib/poptALL.c:309 lib/poptI.c:221 lib/poptQV.c:296 lib/poptQV.c:343
 #, fuzzy
 msgid "add suggested packages to transaction"
 msgstr "pesquisar/verificar o(s) pacote(s) de transacção de instalação"
 
-#: lib/poptALL.c:316 lib/poptI.c:224
+#: lib/poptALL.c:312 lib/poptI.c:224
 msgid "use anaconda \"presentation order\""
 msgstr ""
 
-#: lib/poptALL.c:319 lib/poptI.c:227
+#: lib/poptALL.c:315 lib/poptI.c:227
 msgid "print dependency loops as warning"
 msgstr ""
 
-#: lib/poptALL.c:322 lib/poptI.c:230
+#: lib/poptALL.c:318 lib/poptI.c:230
 msgid "do not suggest missing dependency resolution(s)"
 msgstr ""
 
-#: lib/poptALL.c:325 lib/poptI.c:233
+#: lib/poptALL.c:321 lib/poptI.c:233
 #, fuzzy
 msgid "do not check added package conflicts"
 msgstr "não executa nenhuns scripts específicos do pacote"
 
-#: lib/poptALL.c:328 lib/poptI.c:236
+#: lib/poptALL.c:324 lib/poptI.c:236
 msgid "ignore added package requires on symlink targets"
 msgstr ""
 
-#: lib/poptALL.c:331 lib/poptI.c:239
+#: lib/poptALL.c:327 lib/poptI.c:239
 msgid "ignore added package obsoletes"
 msgstr ""
 
-#: lib/poptALL.c:334 lib/poptI.c:242
+#: lib/poptALL.c:330 lib/poptI.c:242
 #, fuzzy
 msgid "ignore added package requires on file parent directory"
 msgstr ""
 "gravar os ficheiros do pacote apagado mudando o nome para sub-directoria"
 
-#: lib/poptALL.c:337 lib/poptI.c:245
+#: lib/poptALL.c:333 lib/poptI.c:245
 #, fuzzy
 msgid "do not check added package requires"
 msgstr "não executar nenhuns scripts do pacote"
 
-#: lib/poptALL.c:340 lib/poptI.c:248
+#: lib/poptALL.c:336 lib/poptI.c:248
 #, fuzzy
 msgid "ignore added package upgrades"
 msgstr "nenhum pacote oferece o %s\n"
 
-#: lib/poptALL.c:363
+#: lib/poptALL.c:359
 msgid "predefine MACRO with value EXPR"
 msgstr ""
 
-#: lib/poptALL.c:364 lib/poptALL.c:367
+#: lib/poptALL.c:360 lib/poptALL.c:363
 msgid "'MACRO EXPR'"
 msgstr ""
 
-#: lib/poptALL.c:366
+#: lib/poptALL.c:362
 msgid "define MACRO with value EXPR"
 msgstr ""
 
-#: lib/poptALL.c:369
+#: lib/poptALL.c:365
 #, fuzzy
 msgid "print macro expansion of EXPR"
 msgstr "imprimir a expansão da macro <expr>+"
 
-#: lib/poptALL.c:370
+#: lib/poptALL.c:366
 msgid "'EXPR'"
 msgstr ""
 
-#: lib/poptALL.c:372 lib/poptALL.c:393 lib/poptALL.c:397
+#: lib/poptALL.c:368 lib/poptALL.c:389 lib/poptALL.c:393
 #, fuzzy
 msgid "read <FILE:...> instead of default file(s)"
 msgstr "ler o <fich:...> em vez do(s) ficheiro(s) de macros por omissão"
 
-#: lib/poptALL.c:373 lib/poptALL.c:394 lib/poptALL.c:398
+#: lib/poptALL.c:369 lib/poptALL.c:390 lib/poptALL.c:394
 msgid "<FILE:...>"
 msgstr ""
 
-#: lib/poptALL.c:375 lib/poptQV.c:326
+#: lib/poptALL.c:371 lib/poptQV.c:326
 #, fuzzy
 msgid "specify target platform"
 msgstr "ignorar a plataforma-alvo"
 
-#: lib/poptALL.c:383 lib/poptALL.c:417
+#: lib/poptALL.c:379 lib/poptALL.c:413
 msgid "disable use of libio(3) API"
 msgstr "desactivar o uso da API da libio(3)"
 
-#: lib/poptALL.c:389
+#: lib/poptALL.c:385
 #, fuzzy
 msgid "send stdout to CMD"
 msgstr "manda o stdout para <cmd>"
 
-#: lib/poptALL.c:390
+#: lib/poptALL.c:386
 msgid "CMD"
 msgstr ""
 
-#: lib/poptALL.c:401
+#: lib/poptALL.c:397
 #, fuzzy
 msgid "use ROOT as top level directory"
 msgstr "usa <dir> como a directoria de topo"
 
-#: lib/poptALL.c:402
+#: lib/poptALL.c:398
 msgid "ROOT"
 msgstr ""
 
-#: lib/poptALL.c:405
+#: lib/poptALL.c:401
 msgid "display known query tags"
 msgstr "mostrar as opções de pesquisa conhecidas"
 
-#: lib/poptALL.c:407
+#: lib/poptALL.c:403
 msgid "display final rpmrc and macro configuration"
 msgstr "mostra a configuração final do rpmrc e das macros"
 
-#: lib/poptALL.c:409
+#: lib/poptALL.c:405
 msgid "provide less detailed output"
 msgstr "devolver um resultado menos detalhado"
 
-#: lib/poptALL.c:411
+#: lib/poptALL.c:407
 msgid "provide more detailed output"
 msgstr "devolver um resultado mais detalhado"
 
-#: lib/poptALL.c:413
+#: lib/poptALL.c:409
 msgid "print the version of rpm being used"
 msgstr "imprime a versão do RPM que está a usar"
 
-#: lib/poptALL.c:424
+#: lib/poptALL.c:420
 msgid "debug cpio payloads"
 msgstr ""
 
-#: lib/poptALL.c:428
+#: lib/poptALL.c:424
 #, fuzzy
 msgid "debug payload file state machine"
 msgstr "depurar máquina de estados de ficheiros"
 
-#: lib/poptALL.c:430
+#: lib/poptALL.c:426
 #, fuzzy
 msgid "use threads for file state machine"
 msgstr "depurar máquina de estados de ficheiros"
 
-#: lib/poptALL.c:432
+#: lib/poptALL.c:428
 #, fuzzy
 msgid "debug FTP/HTTP data stream"
 msgstr "depurar a sequência de dados do protocolo"
 
-#: lib/poptALL.c:434
+#: lib/poptALL.c:430
 msgid "debug argv collections"
 msgstr ""
 
-#: lib/poptALL.c:436
+#: lib/poptALL.c:432
 #, fuzzy
 msgid "debug WebDAV data stream"
 msgstr "depurar a sequência de dados do protocolo"
 
-#: lib/poptALL.c:443
+#: lib/poptALL.c:439
 #, fuzzy
 msgid "debug option/argument processing"
 msgstr "Erro interno no processamento de argumentos (%d) :-(\n"
 
-#: lib/poptALL.c:448
+#: lib/poptALL.c:444
 #, fuzzy
 msgid "debug package state machine"
 msgstr "depurar máquina de estados de ficheiros"
 
-#: lib/poptALL.c:450
+#: lib/poptALL.c:446
 #, fuzzy
 msgid "use threads for package state machine"
 msgstr "depurar máquina de estados de ficheiros"
 
-#: lib/poptALL.c:464
+#: lib/poptALL.c:460
 msgid "debug rpmio I/O"
 msgstr "depurar a E/S da rpmio"
 
-#: lib/poptALL.c:476
+#: lib/poptALL.c:472
 msgid "debug tar payloads"
 msgstr ""
 
-#: lib/poptALL.c:480
+#: lib/poptALL.c:476
 msgid "debug URL cache handling"
 msgstr "depurar a gestão da 'cache' de URLs"
 
-#: lib/poptALL.c:601
+#: lib/poptALL.c:561
 #, c-format
 msgid "%s: option table misconfigured (%d)\n"
 msgstr ""
@@ -3126,77 +3126,77 @@ msgstr "Linha por omissão incompleta em %s:%d\n"
 msgid "Too many args in default line at %s:%d\n"
 msgstr "Demasiados argumentos na linha por omissão em %s:%d\n"
 
-#: lib/rpmrc.c:677
+#: lib/rpmrc.c:675
 #, c-format
 msgid "Failed to read %s: %s.\n"
 msgstr "Não consegui ler o %s: %s.\n"
 
-#: lib/rpmrc.c:715
+#: lib/rpmrc.c:713
 #, c-format
 msgid "missing ':' (found 0x%02x) at %s:%d\n"
 msgstr "falta um ':' (encontrado um 0x%02x) em %s:%d\n"
 
-#: lib/rpmrc.c:732 lib/rpmrc.c:795
+#: lib/rpmrc.c:730 lib/rpmrc.c:793
 #, c-format
 msgid "missing argument for %s at %s:%d\n"
 msgstr "faltam argumentos para o %s em %s:%d\n"
 
-#: lib/rpmrc.c:749 lib/rpmrc.c:771
+#: lib/rpmrc.c:747 lib/rpmrc.c:769
 #, c-format
 msgid "%s expansion failed at %s:%d \"%s\"\n"
 msgstr "a expansão do %s falhou em %s:%d \"%s\"\n"
 
-#: lib/rpmrc.c:758
+#: lib/rpmrc.c:756
 #, c-format
 msgid "cannot open %s at %s:%d: %s\n"
 msgstr "não consigo abrir o %s em %s:%d: %s\n"
 
-#: lib/rpmrc.c:787
+#: lib/rpmrc.c:785
 #, c-format
 msgid "missing architecture for %s at %s:%d\n"
 msgstr "falta a arquitectura para o %s em %s:%d\n"
 
-#: lib/rpmrc.c:854
+#: lib/rpmrc.c:852
 #, c-format
 msgid "bad option '%s' at %s:%d\n"
 msgstr "má opção '%s' em %s:%d\n"
 
-#: lib/rpmrc.c:1929
+#: lib/rpmrc.c:1922
 #, c-format
 msgid "Cannot expand %s\n"
 msgstr "Não consigo expandir o %s\n"
 
-#: lib/rpmrc.c:1934
+#: lib/rpmrc.c:1927
 #, c-format
 msgid "Cannot read %s, HOME is too large.\n"
 msgstr "Não consigo ler o %s, a HOME é demasiado grande.\n"
 
-#: lib/rpmrc.c:1951
+#: lib/rpmrc.c:1944
 #, c-format
 msgid "Unable to open %s for reading: %s.\n"
 msgstr "Não consegui abrir o %s para leitura: %s.\n"
 
-#: lib/rpmrc.c:2096
+#: lib/rpmrc.c:2089
 #, c-format
 msgid "Configured system provides (from /etc/rpm/sysinfo):\n"
 msgstr ""
 
-#: lib/rpmrc.c:2110
+#: lib/rpmrc.c:2103
 #, c-format
 msgid "Features provided by rpmlib installer:\n"
 msgstr ""
 
-#: lib/rpmrc.c:2124
+#: lib/rpmrc.c:2117
 #, c-format
 msgid "Features provided by current cpuinfo (from /proc/cpuinfo):\n"
 msgstr ""
 
-#: lib/rpmrc.c:2138
+#: lib/rpmrc.c:2131
 #, c-format
 msgid "Features provided by current getconf:\n"
 msgstr ""
 
-#: lib/rpmrc.c:2152
+#: lib/rpmrc.c:2145
 #, c-format
 msgid "Features provided by current uname:\n"
 msgstr ""
@@ -3389,36 +3389,36 @@ msgstr "Tamanho do cabeçalho demasiado grande"
 msgid "MD5 digest: "
 msgstr ""
 
-#: lib/signature.c:1142
+#: lib/signature.c:1141
 #, fuzzy
 msgid "Header SHA1 digest: "
 msgstr "não verificar o SHA1 do cabeçalho"
 
-#: lib/signature.c:1223 lib/signature.c:1413
+#: lib/signature.c:1221 lib/signature.c:1411
 msgid "Header "
 msgstr ""
 
-#: lib/signature.c:1292
+#: lib/signature.c:1290
 #, fuzzy
 msgid " signature: "
 msgstr "Sem assinatura\n"
 
-#: lib/signature.c:1419
+#: lib/signature.c:1417
 #, fuzzy
 msgid " DSA signature: "
 msgstr "Sem assinatura\n"
 
-#: lib/signature.c:1501
+#: lib/signature.c:1499
 #, c-format
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr ""
 
-#: lib/signature.c:1532
+#: lib/signature.c:1530
 #, c-format
 msgid "Broken MD5 digest: UNSUPPORTED\n"
 msgstr "'Digest' MD5 estragado: NÃO SUPORTADO\n"
 
-#: lib/signature.c:1536
+#: lib/signature.c:1534
 #, fuzzy, c-format
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr "Assinatura: tamanho(%d)+pad(%d)\n"
@@ -3494,80 +3494,80 @@ msgstr "O %s tem um valor demasiado elevado ou pequeno, foi ignorado\n"
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr "O %s tem um valor inteiro demasiado elevado ou pequeno, foi ignorado\n"
 
-#: rpmdb/header.c:2833
+#: rpmdb/header.c:2832
 msgid "missing { after %"
 msgstr "falta um { depois do %"
 
-#: rpmdb/header.c:2863
+#: rpmdb/header.c:2862
 msgid "missing } after %{"
 msgstr "falta um } depois do %{"
 
-#: rpmdb/header.c:2879
+#: rpmdb/header.c:2878
 msgid "empty tag format"
 msgstr "formato da opção em branco"
 
-#: rpmdb/header.c:2891
+#: rpmdb/header.c:2890
 msgid "empty tag name"
 msgstr "nome da opção em branco"
 
-#: rpmdb/header.c:2900
+#: rpmdb/header.c:2899
 msgid "unknown tag"
 msgstr "opção desconhecida"
 
-#: rpmdb/header.c:2927
+#: rpmdb/header.c:2926
 msgid "] expected at end of array"
 msgstr "] esperado no fim do vector"
 
-#: rpmdb/header.c:2940
+#: rpmdb/header.c:2939
 msgid "unexpected ]"
 msgstr "] inesperado"
 
-#: rpmdb/header.c:2953
+#: rpmdb/header.c:2952
 msgid "unexpected }"
 msgstr "} inesperado"
 
-#: rpmdb/header.c:3017
+#: rpmdb/header.c:3016
 msgid "? expected in expression"
 msgstr "esperado um ? na expressão"
 
-#: rpmdb/header.c:3024
+#: rpmdb/header.c:3023
 msgid "{ expected after ? in expression"
 msgstr "esperado um { a seguir ao ? na expressão"
 
-#: rpmdb/header.c:3036 rpmdb/header.c:3076
+#: rpmdb/header.c:3035 rpmdb/header.c:3075
 msgid "} expected in expression"
 msgstr "esperado um } na expressão"
 
-#: rpmdb/header.c:3044
+#: rpmdb/header.c:3043
 msgid ": expected following ? subexpression"
 msgstr "esperado um : a seguir à sub-expressão ?"
 
-#: rpmdb/header.c:3062
+#: rpmdb/header.c:3061
 msgid "{ expected after : in expression"
 msgstr "esperado um { a seguir ao : na expressão"
 
-#: rpmdb/header.c:3084
+#: rpmdb/header.c:3083
 msgid "| expected at end of expression"
 msgstr "esperado um | no fim da expressão"
 
-#: rpmdb/header.c:3187
+#: rpmdb/header.c:3186
 msgid "(index out of range)"
 msgstr ""
 
-#: rpmdb/header.c:3456
+#: rpmdb/header.c:3455
 msgid "array iterator used with different sized arrays"
 msgstr ""
 
-#: rpmdb/header.c:3770 rpmdb/header.c:3807 rpmdb/header.c:3830
+#: rpmdb/header.c:3769 rpmdb/header.c:3806 rpmdb/header.c:3829
 msgid "(not a number)"
 msgstr "(não é um número)"
 
-#: rpmdb/header.c:3869
+#: rpmdb/header.c:3868
 #, c-format
 msgid "%c"
 msgstr ""
 
-#: rpmdb/header.c:3886
+#: rpmdb/header.c:3885
 msgid "%a %b %d %Y"
 msgstr ""
 
@@ -3595,119 +3595,119 @@ msgstr "verificar ficheiros da base de dados"
 msgid "dbiTagsInit: unrecognized tag name: \"%s\" ignored\n"
 msgstr "dbiTagsInit: nome de opção não reconhecido: \"%s\" ignorado\n"
 
-#: rpmdb/rpmdb.c:319
+#: rpmdb/rpmdb.c:320
 #, c-format
 msgid "cannot open %s index using db%d - %s (%d)\n"
 msgstr "não consigo abrir o índice de %s usando o db%d - %s (%d)\n"
 
-#: rpmdb/rpmdb.c:339
+#: rpmdb/rpmdb.c:340
 #, c-format
 msgid "cannot open %s index\n"
 msgstr "não consigo abrir o índice do %s\n"
 
-#: rpmdb/rpmdb.c:809
+#: rpmdb/rpmdb.c:788
 #, fuzzy, c-format
 msgid "incorrect format: \"%s\": %s\n"
 msgstr "formato incorrecto: %s\n"
 
-#: rpmdb/rpmdb.c:1130
+#: rpmdb/rpmdb.c:1109
 msgid "no dbpath has been set\n"
 msgstr "não foi definido o dbpath\n"
 
-#: rpmdb/rpmdb.c:1444 rpmdb/rpmdb.c:1582 rpmdb/rpmdb.c:1638 rpmdb/rpmdb.c:2542
-#: rpmdb/rpmdb.c:2696 rpmdb/rpmdb.c:3477
+#: rpmdb/rpmdb.c:1423 rpmdb/rpmdb.c:1561 rpmdb/rpmdb.c:1617 rpmdb/rpmdb.c:2521
+#: rpmdb/rpmdb.c:2675 rpmdb/rpmdb.c:3456
 #, c-format
 msgid "error(%d) getting \"%s\" records from %s index\n"
 msgstr "erro(%d) ao obter os registos \"%s\" do índice %s\n"
 
-#: rpmdb/rpmdb.c:1850
+#: rpmdb/rpmdb.c:1829
 msgid "miFreeHeader: skipping"
 msgstr ""
 
-#: rpmdb/rpmdb.c:1860
+#: rpmdb/rpmdb.c:1839
 #, fuzzy, c-format
 msgid "error(%d) storing record #%d into %s\n"
 msgstr "erro(%d) ao guardar o registo %s em %s\n"
 
-#: rpmdb/rpmdb.c:2420
+#: rpmdb/rpmdb.c:2399
 msgid "rpmdbNextIterator: skipping"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2452
+#: rpmdb/rpmdb.c:2431
 #, fuzzy, c-format
 msgid "rpmdb: damaged header #%u retrieved -- skipping.\n"
 msgstr "rpmdb: recebida instância do cabeçalho #%u estragada, a ignorar.\n"
 
-#: rpmdb/rpmdb.c:2800
+#: rpmdb/rpmdb.c:2779
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: não consigo ler o cabeçalho em 0x%x\n"
 
-#: rpmdb/rpmdb.c:2869
+#: rpmdb/rpmdb.c:2848
 #, fuzzy, c-format
 msgid "error(%d) setting header #%d record for %s removal\n"
 msgstr "erro(%d) ao obter os registos \"%s\" do índice %s\n"
 
-#: rpmdb/rpmdb.c:3012
+#: rpmdb/rpmdb.c:2991
 #, fuzzy, c-format
 msgid "error(%d) setting \"%s\" records from %s index\n"
 msgstr "erro(%d) ao obter os registos \"%s\" do índice %s\n"
 
-#: rpmdb/rpmdb.c:3033
+#: rpmdb/rpmdb.c:3012
 #, fuzzy, c-format
 msgid "error(%d) storing record \"%s\" into %s\n"
 msgstr "erro(%d) ao guardar o registo %s em %s\n"
 
-#: rpmdb/rpmdb.c:3043
+#: rpmdb/rpmdb.c:3022
 #, fuzzy, c-format
 msgid "error(%d) removing record \"%s\" from %s\n"
 msgstr "erro(%d) ao remover o registo %s do %s\n"
 
-#: rpmdb/rpmdb.c:3214
+#: rpmdb/rpmdb.c:3193
 #, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr "erro(%d) ao criar uma nova instância do pacote\n"
 
-#: rpmdb/rpmdb.c:3280
+#: rpmdb/rpmdb.c:3259
 #, fuzzy
 msgid "rpmdbAdd: skipping"
 msgstr "rpmdb: recebida instância do cabeçalho #%u estragada, a ignorar.\n"
 
-#: rpmdb/rpmdb.c:3496
+#: rpmdb/rpmdb.c:3475
 #, c-format
 msgid "error(%d) storing record %s into %s\n"
 msgstr "erro(%d) ao guardar o registo %s em %s\n"
 
-#: rpmdb/rpmdb.c:3956
+#: rpmdb/rpmdb.c:3919
 #, c-format
 msgid "temporary database %s already exists\n"
 msgstr "A base de dados temporária %s já existe\n"
 
-#: rpmdb/rpmdb.c:3964
+#: rpmdb/rpmdb.c:3927
 #, c-format
 msgid "creating directory %s: %s\n"
 msgstr "a criar a directoria %s: %s\n"
 
-#: rpmdb/rpmdb.c:4015
+#: rpmdb/rpmdb.c:3978
 #, fuzzy, c-format
 msgid "header #%u in the database is bad -- skipping.\n"
 msgstr "o número do registo %u na base de dados está errado -- a ignorar.\n"
 
-#: rpmdb/rpmdb.c:4055
+#: rpmdb/rpmdb.c:4018
 #, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "não consigo adicionar o registo originalmente em %u\n"
 
-#: rpmdb/rpmdb.c:4069
+#: rpmdb/rpmdb.c:4032
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 "falhou a reconstrução da base de dados: a base de dados original mantém-se\n"
 
-#: rpmdb/rpmdb.c:4081
+#: rpmdb/rpmdb.c:4044
 msgid "failed to replace old database with new database!\n"
 msgstr "falhou a substituição da base de dados antiga pela nova!\n"
 
-#: rpmdb/rpmdb.c:4083
+#: rpmdb/rpmdb.c:4046
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "substituir os ficheiros em %s por ficheiros de %s a recuperar"

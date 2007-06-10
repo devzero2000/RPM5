@@ -13,7 +13,6 @@
 	- python: restore rpm.RPMSENSE_PREREQ for rpmlint.
 	- popt: allow tests to pass in distcheck where builddir != srcdir.
 	- configure: modern usage.
-        - enable runtime relocation
 	- revert Filedigests -> Filemd5s index name.
 	- don't build Packagecolor index (yet).
 	- python: don't read rpmrc by default.

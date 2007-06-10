@@ -30,7 +30,7 @@ const char *rpmRcfiles = RPMRCFILES;
 static const char * configTarget = NULL;
 
 /*@observer@*/ /*@unchecked@*/
-static const char * platform = "platform";
+static const char * platform = "/etc/rpm/platform";
 /*@only@*/ /*@relnull@*/ /*@unchecked@*/
 void * platpat = NULL;
 /*@unchecked@*/
@@ -577,8 +577,6 @@ static void setDefaults(void)
 	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
 	/*@modifies rpmGlobalMacroContext, internalState @*/
 {
-    addMacro(NULL, "_usrlibrpm", NULL, __usrlibrpm, RMIL_DEFAULT);
-    addMacro(NULL, "_etcrpm", NULL, __etcrpm, RMIL_DEFAULT);
 
     addMacro(NULL, "_usr", NULL, "/usr", RMIL_DEFAULT);
     addMacro(NULL, "_var", NULL, "/var", RMIL_DEFAULT);
@@ -1298,14 +1296,10 @@ static void defaultMachine(/*@out@*/ const char ** arch,
 
     while (!gotDefaults) {
 	CVOG_t cvog = NULL;
-	char * _platform;
 	rc = uname(&un);
 	if (rc < 0) return;
 
-	/* Can't usr %{_etcrpm}, it may not be set yet... */
-	_platform = rpmGetPath(__etcrpm, "/", platform, NULL);
-
-	if (!rpmPlatform(_platform)) {
+	if (!rpmPlatform(platform)) {
 	    const char * s;
 	    gotDefaults = 1;
 	    s = rpmExpand("%{?_host_cpu}", NULL);
@@ -1321,7 +1315,6 @@ static void defaultMachine(/*@out@*/ const char ** arch,
 	    }
 	    s = _free(s);
 	}
-	_platform=_free(_platform);
 
 	if (configTarget && !parseCVOG(configTarget, &cvog) && cvog != NULL) {
 	    gotDefaults = 1;

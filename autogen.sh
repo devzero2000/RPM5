@@ -61,16 +61,16 @@ fi
 #if [ -d sqlite ]; then
 #    (echo "--- sqlite"; cd sqlite; sh ./autogen.sh --disable-tcl "$@")
 #fi
-
-for d in wdj wnh yaml; do
-    [ -d $d ] && continue
-    mkdir -p $d
-    touch $d/Makefile.in
-done
+if [ -d xar ]; then
+    (echo "--- xar"; cd xar; sh ./autogen.sh "$@")
+fi
+if [ -d yaml ]; then
+    (echo "--- yaml"; cd yaml; sh ./autogen.sh "$@")
+fi
 
 echo "--- rpm"
+[ -f po/Makefile.in.in ] || gettextize --copy --force --intl
 $libtoolize --copy --force
-[ -f po/Makefile.in.in ] || gettextize --copy --force
 aclocal -I m4
 autoheader
 automake -a -c
