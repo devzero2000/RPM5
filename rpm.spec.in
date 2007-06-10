@@ -1,16 +1,10 @@
-%define	with_python_subpackage	@WITH_PYTHON_SUBPACKAGE@%{nil}
+%define	with_python_subpackage	0%{nil}
 %define	with_python_version	2.5%{nil}
 %define	with_perl_subpackage	@WITH_PERL_SUBPACKAGE@%{nil}
 %define	with_bzip2		@WITH_BZIP2@%{nil}
 %define	with_apidocs		@WITH_APIDOCS@%{nil}
 
 %{!?_usrlibrpm:%global _usrlibrpm @USRLIBRPM@}
-
-# Autogenerate shell script dependencies.
-#%%define __executable_requires	%{_usrlibrpm}/executabledeps.sh --requires
-
-# XXX legacy requires './' payload prefix to be omitted from rpm packages.
-%define	_noPayloadPrefix	1
 
 %define	__prefix	%{?_prefix}%{!?_prefix:/usr}
 %{?!_lib: %define _lib lib}
@@ -24,7 +18,6 @@ Release: 0.4
 Group: System Environment/Base
 URL: http://wraptastic.org
 Source: http://rpm5.org/files/rpm/rpm-4.5/rpm-%{version}.tar.gz
-#BuildRequires: digest(%{SOURCE0}) = %(md5sum %{SOURCE0} | %{__sed} -e 's/ .*//')
 License: LGPL
 %ifos linux
 Prereq: fileutils shadow-utils
@@ -192,13 +185,6 @@ make DESTDIR="$RPM_BUILD_ROOT" install
 
 %ifos linux
 
-# Save list of packages through cron
-mkdir -p ${RPM_BUILD_ROOT}/etc/cron.daily
-install -m 755 scripts/rpm.daily ${RPM_BUILD_ROOT}/etc/cron.daily/rpm
-
-mkdir -p ${RPM_BUILD_ROOT}/etc/logrotate.d
-install -m 644 scripts/rpm.log ${RPM_BUILD_ROOT}/etc/logrotate.d/rpm
-
 mkdir -p $RPM_BUILD_ROOT/etc/rpm
 
 mkdir -p $RPM_BUILD_ROOT/var/spool/repackage
@@ -207,13 +193,14 @@ for dbi in \
 	Basenames Conflictname Dirnames Group Installtid Name Packages \
 	Providename Provideversion Requirename Requireversion Triggername \
 	Filemd5s Pubkeys Sha1header Sigmd5 \
-	__db.001 __db.002 __db.003 __db.004 __db.005 __db.006 __db.007 \
-	__db.008 __db.009
+	__db.001 __db.002 __db.003 __db.004 __db.005
 do
     touch $RPM_BUILD_ROOT/var/lib/rpm/$dbi
 done
 
 %endif
+
+%find_lang rpm
 
 %if %{with_apidocs}
 gzip -9n apidocs/man/man*/* || :
@@ -229,7 +216,6 @@ gzip -9n apidocs/man/man*/* || :
   rm -rf .%{_mandir}/pl/man8/rpmcache.8*
   rm -rf .%{_mandir}/pl/man8/rpmgraph.8*
   rm -rf .%{_mandir}/{fr,ko}
-  rm -f .%{_bindir}/rpm{e,i,u}
 %if %{with_python_subpackage}
   rm -f .%{_libdir}/python%{with_python_version}/site-packages/*.{a,la}
   rm -f .%{_libdir}/python%{with_python_version}/site-packages/rpm/*.{a,la}
@@ -275,7 +261,7 @@ exit 0
 
 %endif
 
-%files
+%files -f rpm.lang
 %doc CHANGES GROUPS doc/manual/[a-z]*
 # XXX add to EXTRAS
 #%pubkey pubkeys/JBJ-GPG-KEY
@@ -284,8 +270,6 @@ exit 0
 %define	rpmattr		%attr(0755, @RPMUSER@, @RPMGROUP@)
 %define	rpmdbattr %attr(0644, @RPMUSER@, @RPMGROUP@) %verify(not md5 size mtime) %ghost %config(missingok,noreplace)
 
-%config(noreplace,missingok)	/etc/cron.daily/rpm
-%config(noreplace,missingok)	/etc/logrotate.d/rpm
 %dir				/etc/rpm
 #%config(noreplace,missingok)	/etc/rpm/macros.*
 %attr(0755, @RPMUSER@, @RPMGROUP@)	%dir /var/lib/rpm
@@ -297,21 +281,12 @@ exit 0
 %rpmattr	%{_bindir}/rpm
 %rpmattr	%{_bindir}/rpm2cpio
 %rpmattr	%{_bindir}/gendiff
-%rpmattr	%{_bindir}/rpmdb
-%rpmattr	%{_bindir}/rpmsign
-%rpmattr	%{_bindir}/rpmquery
-%rpmattr	%{_bindir}/rpmverify
 
 %attr(0755, @RPMUSER@, @RPMGROUP@)	%dir %{_usrlibrpm}
-%rpmattr	%{_usrlibrpm}/config.guess
-%rpmattr	%{_usrlibrpm}/config.sub
 %attr(0644, @RPMUSER@, @RPMGROUP@)	%{_usrlibrpm}/macros
-%rpmattr	%{_usrlibrpm}/mkinstalldirs
 %rpmattr	%{_usrlibrpm}/rpm.*
-%rpmattr	%{_usrlibrpm}/rpm[deiukqv]
 %rpmattr	%{_usrlibrpm}/tgpg
 %attr(0644, @RPMUSER@, @RPMGROUP@)	%{_usrlibrpm}/rpmpopt*
-%attr(0644, @RPMUSER@, @RPMGROUP@)	%{_usrlibrpm}/rpmrc
 
 %ifarch i386 i486 i586 i686 athlon pentium3 pentium4
 %attr(-, @RPMUSER@, @RPMGROUP@)		%{_usrlibrpm}/i[3456]86*
@@ -348,29 +323,6 @@ exit 0
 %attr(-, @RPMUSER@, @RPMGROUP@)		%{_usrlibrpm}/noarch*
 
 %rpmattr	%{_usrlibrpm}/rpmdb_*
-#%rpmattr	%{_usrlibrpm}/rpmfile
-
-%lang(cs)	%{__prefix}/*/locale/cs/LC_MESSAGES/rpm.mo
-%lang(da)	%{__prefix}/*/locale/da/LC_MESSAGES/rpm.mo
-%lang(de)	%{__prefix}/*/locale/de/LC_MESSAGES/rpm.mo
-%lang(fi)	%{__prefix}/*/locale/fi/LC_MESSAGES/rpm.mo
-%lang(fr)	%{__prefix}/*/locale/fr/LC_MESSAGES/rpm.mo
-%lang(gl)	%{__prefix}/*/locale/gl/LC_MESSAGES/rpm.mo
-%lang(is)	%{__prefix}/*/locale/is/LC_MESSAGES/rpm.mo
-%lang(ja)	%{__prefix}/*/locale/ja/LC_MESSAGES/rpm.mo
-%lang(ko)	%{__prefix}/*/locale/ko/LC_MESSAGES/rpm.mo
-%lang(no)	%{__prefix}/*/locale/no/LC_MESSAGES/rpm.mo
-%lang(pl)	%{__prefix}/*/locale/pl/LC_MESSAGES/rpm.mo
-%lang(pt)	%{__prefix}/*/locale/pt/LC_MESSAGES/rpm.mo
-%lang(pt_BR)	%{__prefix}/*/locale/pt_BR/LC_MESSAGES/rpm.mo
-%lang(ro)	%{__prefix}/*/locale/ro/LC_MESSAGES/rpm.mo
-%lang(ru)	%{__prefix}/*/locale/ru/LC_MESSAGES/rpm.mo
-%lang(sk)	%{__prefix}/*/locale/sk/LC_MESSAGES/rpm.mo
-%lang(sl)	%{__prefix}/*/locale/sl/LC_MESSAGES/rpm.mo
-%lang(sr)	%{__prefix}/*/locale/sr/LC_MESSAGES/rpm.mo
-%lang(sv)	%{__prefix}/*/locale/sv/LC_MESSAGES/rpm.mo
-%lang(tr)	%{__prefix}/*/locale/tr/LC_MESSAGES/rpm.mo
-%lang(uk)	%{__prefix}/*/locale/uk/LC_MESSAGES/rpm.mo
 
 %{_mandir}/man8/rpm.8*
 %{_mandir}/man8/rpm2cpio.8*
@@ -385,10 +337,10 @@ exit 0
 %lang(sk)	%{_mandir}/sk/man8/rpm.8*
 
 %files libs
-%{_libdir}/librpm-4.4.so
-%{_libdir}/librpmdb-4.4.so
-%{_libdir}/librpmio-4.4.so
-%{_libdir}/librpmbuild-4.4.so
+%{_libdir}/librpm-@LT_CURRENT@.@LT_REVISION@.so
+%{_libdir}/librpmdb-@LT_CURRENT@.@LT_REVISION@.so
+%{_libdir}/librpmio-@LT_CURRENT@.@LT_REVISION@.so
+%{_libdir}/librpmbuild-@LT_CURRENT@.@LT_REVISION@.so
 
 %files build
 %dir %{__prefix}/src/rpm
@@ -401,16 +353,13 @@ exit 0
 %rpmattr	%{_bindir}/rpmbuild
 %rpmattr	%{_usrlibrpm}/brp-*
 %rpmattr	%{_usrlibrpm}/check-files
-%rpmattr	%{_usrlibrpm}/config.site
 %rpmattr	%{_usrlibrpm}/cross-build
 %rpmattr	%{_usrlibrpm}/debugedit
 %rpmattr	%{_usrlibrpm}/find-debuginfo.sh
 %rpmattr	%{_usrlibrpm}/find-lang.sh
 %rpmattr	%{_usrlibrpm}/find-prov.pl
-%rpmattr	%{_usrlibrpm}/find-provides
 %rpmattr	%{_usrlibrpm}/find-provides.perl
 %rpmattr	%{_usrlibrpm}/find-req.pl
-%rpmattr	%{_usrlibrpm}/find-requires
 %rpmattr	%{_usrlibrpm}/find-requires.perl
 %rpmattr	%{_usrlibrpm}/getpo.sh
 %rpmattr	%{_usrlibrpm}/http.req

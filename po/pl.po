@@ -3564,33 +3564,33 @@ msgstr "Rozmiar nag³ówka+danych: "
 msgid "MD5 digest: "
 msgstr "Skrót MD5: "
 
-#: lib/signature.c:1142
+#: lib/signature.c:1141
 msgid "Header SHA1 digest: "
 msgstr "Skrót SHA1 nag³ówka: "
 
-#: lib/signature.c:1223 lib/signature.c:1413
+#: lib/signature.c:1221 lib/signature.c:1411
 msgid "Header "
 msgstr "Nag³ówek "
 
-#: lib/signature.c:1292
+#: lib/signature.c:1290
 msgid " signature: "
 msgstr " sygnatura: "
 
-#: lib/signature.c:1419
+#: lib/signature.c:1417
 msgid " DSA signature: "
 msgstr " sygnatura DSA: "
 
-#: lib/signature.c:1501
+#: lib/signature.c:1499
 #, c-format
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr "Weryfikacja sygnatury: B£ÊDNE PARAMETRY\n"
 
-#: lib/signature.c:1532
+#: lib/signature.c:1530
 #, c-format
 msgid "Broken MD5 digest: UNSUPPORTED\n"
 msgstr "Uszkodzony skrót MD5: NIE OBS£UGIWANY\n"
 
-#: lib/signature.c:1536
+#: lib/signature.c:1534
 #, c-format
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr "Sygnatura: NIEZNANA (%d)\n"
@@ -3735,80 +3735,80 @@ msgstr "%s ma zbyt du¿± lub zbyt ma³± warto¶æ long, pominiêto\n"
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr "%s ma zbyt du¿± lub zbyt ma³± warto¶æ ca³kowit±, pominiêto\n"
 
-#: rpmdb/header.c:2833
+#: rpmdb/header.c:2832
 msgid "missing { after %"
 msgstr "brak { po %"
 
-#: rpmdb/header.c:2863
+#: rpmdb/header.c:2862
 msgid "missing } after %{"
 msgstr "brak } po %{"
 
-#: rpmdb/header.c:2879
+#: rpmdb/header.c:2878
 msgid "empty tag format"
 msgstr "pusty format etykiety"
 
-#: rpmdb/header.c:2891
+#: rpmdb/header.c:2890
 msgid "empty tag name"
 msgstr "pusta nazwa etykiety"
 
-#: rpmdb/header.c:2900
+#: rpmdb/header.c:2899
 msgid "unknown tag"
 msgstr "nieznana etykieta"
 
-#: rpmdb/header.c:2927
+#: rpmdb/header.c:2926
 msgid "] expected at end of array"
 msgstr "spodziewany ] na koñcu tablicy"
 
-#: rpmdb/header.c:2940
+#: rpmdb/header.c:2939
 msgid "unexpected ]"
 msgstr "nie spodziewany ]"
 
-#: rpmdb/header.c:2953
+#: rpmdb/header.c:2952
 msgid "unexpected }"
 msgstr "nie spodziewany }"
 
-#: rpmdb/header.c:3017
+#: rpmdb/header.c:3016
 msgid "? expected in expression"
 msgstr "spodziewany ? w wyra¿eniu"
 
-#: rpmdb/header.c:3024
+#: rpmdb/header.c:3023
 msgid "{ expected after ? in expression"
 msgstr "spodziewany { po ? w wyra¿eniu"
 
-#: rpmdb/header.c:3036 rpmdb/header.c:3076
+#: rpmdb/header.c:3035 rpmdb/header.c:3075
 msgid "} expected in expression"
 msgstr "spodziewany } w wyra¿eniu"
 
-#: rpmdb/header.c:3044
+#: rpmdb/header.c:3043
 msgid ": expected following ? subexpression"
 msgstr "spodziewany : po podwyra¿eniu ?"
 
-#: rpmdb/header.c:3062
+#: rpmdb/header.c:3061
 msgid "{ expected after : in expression"
 msgstr "spodziewany { po : w wyra¿eniu"
 
-#: rpmdb/header.c:3084
+#: rpmdb/header.c:3083
 msgid "| expected at end of expression"
 msgstr "spodziewany | na koñcu wyra¿enia"
 
-#: rpmdb/header.c:3187
+#: rpmdb/header.c:3186
 msgid "(index out of range)"
 msgstr "(indeks spoza zakresu)"
 
-#: rpmdb/header.c:3456
+#: rpmdb/header.c:3455
 msgid "array iterator used with different sized arrays"
 msgstr "iterator tablicy u¿yty na tablicach o ró¿nych rozmiarach"
 
-#: rpmdb/header.c:3770 rpmdb/header.c:3807 rpmdb/header.c:3830
+#: rpmdb/header.c:3769 rpmdb/header.c:3806 rpmdb/header.c:3829
 msgid "(not a number)"
 msgstr "(nie jest liczb±)"
 
-#: rpmdb/header.c:3869
+#: rpmdb/header.c:3868
 #, c-format
 msgid "%c"
 msgstr "%c"
 
-#: rpmdb/header.c:3886
+#: rpmdb/header.c:3885
 msgid "%a %b %d %Y"
 msgstr "%a %d %b %Y"
 

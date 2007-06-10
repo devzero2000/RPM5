@@ -3639,36 +3639,36 @@ msgstr "Velikost hlavièky je pøili¹ velká"
 msgid "MD5 digest: "
 msgstr ""
 
-#: lib/signature.c:1142
+#: lib/signature.c:1141
 #, fuzzy
 msgid "Header SHA1 digest: "
 msgstr "nekontrolovat SHA1 digest v hlavièce"
 
-#: lib/signature.c:1223 lib/signature.c:1413
+#: lib/signature.c:1221 lib/signature.c:1411
 msgid "Header "
 msgstr ""
 
-#: lib/signature.c:1292
+#: lib/signature.c:1290
 #, fuzzy
 msgid " signature: "
 msgstr "generovat PGP/GPG podpis"
 
-#: lib/signature.c:1419
+#: lib/signature.c:1417
 #, fuzzy
 msgid " DSA signature: "
 msgstr "generovat PGP/GPG podpis"
 
-#: lib/signature.c:1501
+#: lib/signature.c:1499
 #, c-format
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr ""
 
-#: lib/signature.c:1532
+#: lib/signature.c:1530
 #, c-format
 msgid "Broken MD5 digest: UNSUPPORTED\n"
 msgstr ""
 
-#: lib/signature.c:1536
+#: lib/signature.c:1534
 #, c-format
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr ""
@@ -3812,80 +3812,80 @@ msgstr ""
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr ""
 
-#: rpmdb/header.c:2833
+#: rpmdb/header.c:2832
 msgid "missing { after %"
 msgstr "chybí { po %"
 
-#: rpmdb/header.c:2863
+#: rpmdb/header.c:2862
 msgid "missing } after %{"
 msgstr "po %{ chybí }"
 
-#: rpmdb/header.c:2879
+#: rpmdb/header.c:2878
 msgid "empty tag format"
 msgstr "prázdný formát znaèky"
 
-#: rpmdb/header.c:2891
+#: rpmdb/header.c:2890
 msgid "empty tag name"
 msgstr "prázdné jméno znaèky"
 
-#: rpmdb/header.c:2900
+#: rpmdb/header.c:2899
 msgid "unknown tag"
 msgstr "neznámá znaèka"
 
-#: rpmdb/header.c:2927
+#: rpmdb/header.c:2926
 msgid "] expected at end of array"
 msgstr "na konci pole oèekáváno ]"
 
-#: rpmdb/header.c:2940
+#: rpmdb/header.c:2939
 msgid "unexpected ]"
 msgstr "neoèekávaná ]"
 
-#: rpmdb/header.c:2953
+#: rpmdb/header.c:2952
 msgid "unexpected }"
 msgstr "neoèekávaná }"
 
-#: rpmdb/header.c:3017
+#: rpmdb/header.c:3016
 msgid "? expected in expression"
 msgstr "ve výrazu oèekáván ?"
 
-#: rpmdb/header.c:3024
+#: rpmdb/header.c:3023
 msgid "{ expected after ? in expression"
 msgstr "ve výrazu je po ? oèekávána {"
 
-#: rpmdb/header.c:3036 rpmdb/header.c:3076
+#: rpmdb/header.c:3035 rpmdb/header.c:3075
 msgid "} expected in expression"
 msgstr "ve výrazu je oèekávána }"
 
-#: rpmdb/header.c:3044
+#: rpmdb/header.c:3043
 msgid ": expected following ? subexpression"
 msgstr "v podvýrazu je po ? oèekávána :"
 
-#: rpmdb/header.c:3062
+#: rpmdb/header.c:3061
 msgid "{ expected after : in expression"
 msgstr "ve výrazu je po : oèekávána {"
 
-#: rpmdb/header.c:3084
+#: rpmdb/header.c:3083
 msgid "| expected at end of expression"
 msgstr "na konci výrazu je oèekáváno |"
 
-#: rpmdb/header.c:3187
+#: rpmdb/header.c:3186
 msgid "(index out of range)"
 msgstr ""
 
-#: rpmdb/header.c:3456
+#: rpmdb/header.c:3455
 msgid "array iterator used with different sized arrays"
 msgstr ""
 
-#: rpmdb/header.c:3770 rpmdb/header.c:3807 rpmdb/header.c:3830
+#: rpmdb/header.c:3769 rpmdb/header.c:3806 rpmdb/header.c:3829
 msgid "(not a number)"
 msgstr "(není èíslo)"
 
-#: rpmdb/header.c:3869
+#: rpmdb/header.c:3868
 #, c-format
 msgid "%c"
 msgstr ""
 
-#: rpmdb/header.c:3886
+#: rpmdb/header.c:3885
 msgid "%a %b %d %Y"
 msgstr ""
 
