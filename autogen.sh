@@ -68,15 +68,10 @@ if [ -d yaml ]; then
     (echo "--- yaml"; cd yaml; sh ./autogen.sh "$@")
 fi
 
-for d in wdj wnh yaml; do
-    [ -d $d ] && continue
-    mkdir -p $d
-    touch $d/Makefile.in
-done
-
 echo "--- rpm"
+[ -f po/Makefile.in.in ] || gettextize --copy --force --intl
 $libtoolize --copy --force
-aclocal
+aclocal -I m4
 autoheader
 automake -a -c
 autoconf

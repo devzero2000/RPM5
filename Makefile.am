@@ -4,7 +4,7 @@ AUTOMAKE_OPTIONS = 1.4 foreign
 
 LINT = splint
 
-EXTRA_DIST = config.rpath m4/ChangeLog  CHANGES CREDITS Doxyheader GROUPS INSTALL \
+EXTRA_DIST = m4/ChangeLog  config.rpath m4/ChangeLog  CHANGES CREDITS Doxyheader GROUPS INSTALL \
 	autodeps/none autodeps/*.prov autodeps/*.req autogen.sh \
 	config.site db db3/configure gendiff installplatform platform* \
 	perl/* \
@@ -37,7 +37,7 @@ myLDADD = \
 	@WITH_ZLIB_LIB@ \
 	@LIBMISC@
 
-rpmbindir = `echo $(bindir) | sed -e s,usr/bin,bin,`
+rpmbindir = `echo $(bindir)`
 rpmbin_PROGRAMS = rpm
 
 bin_SCRIPTS =		gendiff

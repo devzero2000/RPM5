@@ -24,7 +24,7 @@
 #include "debug.h"
 
 /*@observer@*/ /*@checked@*/
-const char *rpmRcfiles = LIBRPMRC_FILENAME ":" VENDORRPMRC_FILENAME ":/etc/rpmrc:~/.rpmrc"; 
+const char *rpmRcfiles = RPMRCFILES;
 
 /*@unchecked@*/ /*@null@*/
 static const char * configTarget = NULL;
@@ -1298,6 +1298,7 @@ static void defaultMachine(/*@out@*/ const char ** arch,
 	CVOG_t cvog = NULL;
 	rc = uname(&un);
 	if (rc < 0) return;
+
 	if (!rpmPlatform(platform)) {
 	    const char * s;
 	    gotDefaults = 1;
@@ -1314,6 +1315,7 @@ static void defaultMachine(/*@out@*/ const char ** arch,
 	    }
 	    s = _free(s);
 	}
+
 	if (configTarget && !parseCVOG(configTarget, &cvog) && cvog != NULL) {
 	    gotDefaults = 1;
 	    if (cvog->cpu && cvog->cpu[0] != '\0') {

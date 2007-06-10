@@ -3,7 +3,7 @@
 AUTOMAKE_OPTIONS = 1.4 foreign
 
 EXTRA_DIST = \
-	brp-compress brp-python-bytecompile brp-java-gcjcompile brp-redhat \
+	brp-compress brp-python-bytecompile brp-java-gcjcompile \
 	brp-strip brp-strip-comment-note brp-nobuildrootpath \
 	brp-strip-shared brp-strip-static-archive brp-sparc64-linux \
 	check-files cross-build executabledeps.sh \
@@ -29,7 +29,7 @@ bin_SCRIPTS = rpm2cpio
 
 configdir = ${prefix}/lib/rpm
 config_SCRIPTS = \
-	brp-compress brp-python-bytecompile brp-java-gcjcompile brp-redhat \
+	brp-compress brp-python-bytecompile brp-java-gcjcompile \
 	brp-strip brp-strip-comment-note brp-nobuildrootpath \
 	brp-strip-shared brp-strip-static-archive brp-sparc64-linux \
 	check-files cross-build executabledeps.sh \

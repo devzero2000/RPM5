@@ -254,6 +254,7 @@ extern struct _dbiVec db3vec;
 #endif
 
 #ifdef HAVE_SQLITE3_H
+#define	SQLITE_HACK
 /*@-exportheadervar -declundef @*/
 /*@observer@*/ /*@unchecked@*/
 extern struct _dbiVec sqlitevec;
@@ -345,28 +346,6 @@ fprintf(stderr, "==> %s(%p, %s, 0x%x)\n", __FUNCTION__, db, tagName(rpmtag), fla
 	    db->db_api = _dbapi;
     	break;
     }
-
-/* We don't ever _REQUIRE_ conversion... */
-#define	SQLITE_HACK
-#ifdef	SQLITE_HACK_XXX
-    /* Require conversion. */
-    if (rc && _dbapi_wanted >= 0 && _dbapi != _dbapi_wanted && _dbapi_wanted == _dbapi_rebuild) {
-	rc = (_rebuildinprogress ? 0 : 1);
-	goto exit;
-    }
-
-    /* Suggest possible configuration */
-    if (_dbapi_wanted >= 0 && _dbapi != _dbapi_wanted) {
-	rc = 1;
-	goto exit;
-    }
-
-    /* Suggest possible configuration */
-    if (_dbapi_wanted < 0 && _dbapi != _dbapi_rebuild) {
-	rc = (_rebuildinprogress ? 0 : 1);
-	goto exit;
-    }
-#endif
 
 exit:
     if (dbi != NULL && rc == 0) {
@@ -3859,22 +3838,6 @@ static int rpmdbMoveDatabase(const char * prefix,
     case 0:
 	break;
     }
-#ifdef	SQLITE_HACK_XXX
-    if (rc || _olddbapi == _newdbapi)
-	return rc;
-
-    rc = rpmdbRemoveDatabase(prefix, newdbpath, _newdbapi, dbiTags, dbiTagsMax);
-
-
-    /* Remove /etc/rpm/macros.db1 configuration file if db3 rebuilt. */
-    if (rc == 0 && _newdbapi == 1 && _olddbapi == 3) {
-	const char * mdb1 = "/etc/rpm/macros.db1";
-	struct stat st;
-	if (!stat(mdb1, &st) && S_ISREG(st.st_mode) && !unlink(mdb1))
-	    rpmMessage(RPMMESS_DEBUG,
-		_("removing %s after successful db3 rebuild.\n"), mdb1);
-    }
-#endif
     return rc;
 }
 

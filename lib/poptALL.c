@@ -548,7 +548,7 @@ rpmcliInit(int argc, char *const argv[], struct poptOption * optionsTable)
 /*@-nullpass -temptrans@*/
     optCon = poptGetContext(__progname, argc, (const char **)argv, optionsTable, 0);
 /*@=nullpass =temptrans@*/
-    (void) poptReadConfigFile(optCon, LIBRPMALIAS_FILENAME);
+    (void) poptReadConfigFile(optCon, RPMPOPTFILE);
     (void) poptReadDefaultConfig(optCon, 1);
     poptSetExecPath(optCon, USRLIBRPM, 1);
 

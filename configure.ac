@@ -1,5 +1,5 @@
 AC_PREREQ(2.57)
-AC_INIT(rpm, 4.4.9, rpm-devel@lists.dulug.duke.edu)
+AC_INIT(rpm, 4.5, rpm-devel@rpm5.org)
 AC_CANONICAL_TARGET
 AC_CONFIG_SRCDIR([rpmqv.c])
 AC_CONFIG_HEADERS([config.h])
@@ -18,19 +18,19 @@ AC_SUBST(LT_AGE, 8)
 dnl Set of available languages.
 ALL_LINGUAS="cs da de fi fr gl is ja ko no pl pt pt_BR ro ru sk sl sr sv tr uk"
 
+AC_AIX
+AC_MINIX
+
 dnl Checks for programs.
-AC_PROG_CXX
 AC_PROG_AWK
 AC_PROG_CC
 AC_PROG_CPP
 AC_PROG_INSTALL
 AC_PROG_LN_S
 AC_PROG_MAKE_SET
-dnl AC_PROG_RANLIB
+AC_PROG_LIBTOOL
 AC_PROG_YACC
 
-AC_AIX
-AC_MINIX
 AS=${AS-as}
 AC_SUBST(AS)
 if test "$ac_cv_c_compiler_gnu" = yes; then
@@ -721,13 +721,6 @@ dnl AmigaOS and IXEmul have a fork() dummy
 
 AC_CHECK_HEADERS(locale.h)
 AM_GNU_GETTEXT([external])
-dnl TVM:
-dnl horrible *temporary* hack to make sure that if we found gettext() in
-dnl -lintl that we add -lintl *back* to $LIBS.
-dnl
-dnl if test X$gt_cv_func_gettext_libintl = Xyes ; then
-dnl     LIBS="-lintl $LIBS"
-dnl fi
 
 dnl Checks for header files we can live without.
 AC_HEADER_STDC
@@ -1480,28 +1473,15 @@ AC_DEFINE_UNQUOTED(MACROFILES, "$MACROFILES",
 	[Colon separated paths of macro files to read.])
 AC_SUBST(MACROFILES)
 
-LIBRPMRC_FILENAME="${USRLIBRPM}/rpmrc"
-AC_DEFINE_UNQUOTED(LIBRPMRC_FILENAME, "$LIBRPMRC_FILENAME",
-	[Full path to rpmrc configuration file (usually /usr/lib/rpm/rpmrc)])
-AC_SUBST(LIBRPMRC_FILENAME)
+RPMRCFILES="${USRLIBRPM}/${RPMCANONVENDOR}/rpmrc:${USRLIBRPM}/${RPMCANONVENDOR}/rpmrc:/etc/rpmrc:~/.rpmrc"
+AC_DEFINE_UNQUOTED(RPMRCFILES, "$RPMRCFILES",
+	[Colon separated paths of rpmrc files to read.])
+AC_SUBST(RPMRCFILES)
 
-VENDORRPMRC_FILENAME="${USRLIBRPM}/${RPMCANONVENDOR}/rpmrc"
-AC_DEFINE_UNQUOTED(VENDORRPMRC_FILENAME, "$VENDORRPMRC_FILENAME",
-       [Full path to vendor rpmrc configuration file (usually /usr/lib/rpm/vendor/rpmrc)])
-AC_SUBST(VENDORRPMRC_FILENAME)
-
-LIBRPMALIAS_FILENAME="${USRLIBRPM}/rpmpopt-${VERSION}"
-AC_DEFINE_UNQUOTED(LIBRPMALIAS_FILENAME, "$LIBRPMALIAS_FILENAME",
+RPMPOPTFILE="${USRLIBRPM}/rpmpopt-${VERSION}"
+AC_DEFINE_UNQUOTED(RPMPOPTFILE, "$RPMPOPTFILE",
 	[Full path to rpmpopt configuration file (usually /usr/lib/rpm/rpmpopt)])
-AC_SUBST(LIBRPMALIAS_FILENAME)
-FINDREQUIRES="${USRLIBRPM}/find-requires"
-AC_DEFINE_UNQUOTED(FINDREQUIRES, "$FINDREQUIRES",
-	[Full path to find-requires script (usually /usr/lib/rpm/find-requires)])
-AC_SUBST(FINDREQUIRES)
-FINDPROVIDES="${USRLIBRPM}/find-provides"
-AC_DEFINE_UNQUOTED(FINDPROVIDES, "$FINDPROVIDES",
-	[Full path to find-provides script (usually /usr/lib/rpm/find-provides)])
-AC_SUBST(FINDPROVIDES)
+AC_SUBST(RPMPOPTFILE)
 
 testdir="`pwd`/tests"
 dnl AC_DEFINE_UNQUOTED(testdir, "$testdir")
@@ -1520,12 +1500,12 @@ dnl export LIBS INCPATH CONFIG_SITE
 
 AC_CONFIG_SUBDIRS(popt zlib file sqlite db3)
 
-AC_CONFIG_FILES([ Doxyfile Makefile rpmrc macros platform rpmpopt rpm.spec
+AC_CONFIG_FILES([ Doxyfile Makefile rpmrc macros platform rpmpopt rpm.spec po/Makefile.in
 	rpmio/Makefile rpmdb/Makefile lib/Makefile build/Makefile
-	scripts/Makefile scripts/brp-redhat
+	scripts/Makefile
 	scripts/macros.perl scripts/macros.php scripts/macros.python
 	tools/Makefile
-	misc/Makefile intl/Makefile po/Makefile.in
+	misc/Makefile
 	doc/Makefile
 	doc/manual/Makefile
 	doc/fr/Makefile
