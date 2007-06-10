@@ -23,12 +23,10 @@ doxygen
 find-requires
 find-provides
 install-sh
-intl
 lib-rpmrc
 libtool
 ltconfig
 ltmain.sh
-m4
 macros
 missing
 platform
