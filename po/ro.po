@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: <rpm-devel@lists.dulug.duke.edu>\n"
-"POT-Creation-Date: 2007-06-10 11:00-0400\n"
+"POT-Creation-Date: 2007-06-10 16:17-0400\n"
 "PO-Revision-Date: 1999-04-10 12:00+EST\n"
 "Last-Translator: Cristian Gafton <gafton@redhat.com>\n"
 "Language-Team: Romanian <ro@li.org>\n"
@@ -3318,20 +3318,20 @@ msgstr ""
 msgid "db%d error(%d): %s\n"
 msgstr ""
 
-#: rpmdb/db3.c:1290
+#: rpmdb/db3.c:1292
 msgid "Runnning db->verify ...\n"
 msgstr ""
 
-#: rpmdb/db3.c:1595
+#: rpmdb/db3.c:1597
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr ""
 
-#: rpmdb/db3.c:1597
+#: rpmdb/db3.c:1599
 msgid "exclusive"
 msgstr ""
 
-#: rpmdb/db3.c:1597
+#: rpmdb/db3.c:1599
 msgid "shared"
 msgstr ""
 

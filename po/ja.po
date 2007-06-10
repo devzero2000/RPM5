@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm-4.4\n"
 "Report-Msgid-Bugs-To: <rpm-devel@lists.dulug.duke.edu>\n"
-"POT-Creation-Date: 2007-06-10 11:00-0400\n"
+"POT-Creation-Date: 2007-06-10 16:17-0400\n"
 "PO-Revision-Date: 2005-04-04 22:30+1000\n"
 "Last-Translator: SEKINE Tatsuo <tsekine@sdri.co.jp>\n"
 "Language-Team: Japanese <translation-team-ja@lists.sourceforge.net>\n"
@@ -3409,20 +3409,20 @@ msgstr "db%d エラー (%d) (%s において): %s\n"
 msgid "db%d error(%d): %s\n"
 msgstr "db%d エラー (%d): %s\n"
 
-#: rpmdb/db3.c:1290
+#: rpmdb/db3.c:1292
 msgid "Runnning db->verify ...\n"
 msgstr ""
 
-#: rpmdb/db3.c:1595
+#: rpmdb/db3.c:1597
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "%sロックを獲得できません (%s/%s)\n"
 
-#: rpmdb/db3.c:1597
+#: rpmdb/db3.c:1599
 msgid "exclusive"
 msgstr "排他"
 
-#: rpmdb/db3.c:1597
+#: rpmdb/db3.c:1599
 msgid "shared"
 msgstr "共有"
 

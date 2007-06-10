@@ -43,10 +43,8 @@ rpmbin_PROGRAMS = rpm
 bin_SCRIPTS =		gendiff
 
 pkglibdir =		@USRLIBRPM@
-pkglib_PROGRAMS =	rpmb rpmd rpmi rpmk rpmq
-pkglib_DATA =		rpmrc rpmpopt-$(VERSION) macros
-pkglib_SCRIPTS =	find-provides find-requires mkinstalldirs \
-			config.guess config.sub config.site
+pkglib_PROGRAMS =	rpmb
+pkglib_DATA =		rpmpopt-$(VERSION) macros
 
 rpmpopt-$(VERSION): rpmpopt
 	cp rpmpopt $@
@@ -66,32 +64,6 @@ rpmb_LDFLAGS =		$(myLDFLAGS) $(staticLDFLAGS)
 rpmb_LDADD =		rpmb.o $(top_builddir)/build/librpmbuild.la $(myLDADD)
 rpmb.o:	$(top_srcdir)/rpmqv.c
 	$(COMPILE) -fpie -DIAM_RPMBT -o $@ -c $<
-
-rpmd_SOURCES =
-rpmd_LDFLAGS =		$(myLDFLAGS) $(staticLDFLAGS)
-rpmd_LDADD =		rpmd.o $(myLDADD)
-rpmd.o:	$(top_srcdir)/rpmqv.c
-	$(COMPILE) -fpie -DIAM_RPMDB -o $@ -c $<
-
-rpmi_SOURCES =
-rpmi_LDFLAGS =		$(myLDFLAGS) # $(staticLDFLAGS)
-rpmi_LDADD =		rpmi.o $(myLDADD)
-#rpmi_LDFLAGS =		$(myLDFLAGS)
-#rpmi_LDADD =		rpmi.o $(myLDADD)
-rpmi.o:	$(top_srcdir)/rpmqv.c
-	$(COMPILE) -fpie -DIAM_RPMEIU -o $@ -c $<
-
-rpmk_SOURCES =
-rpmk_LDFLAGS =		$(myLDFLAGS) $(staticLDFLAGS)
-rpmk_LDADD =		rpmk.o $(myLDADD)
-rpmk.o:	$(top_srcdir)/rpmqv.c
-	$(COMPILE) -fpie -DIAM_RPMK -o $@ -c $<
-
-rpmq_SOURCES =
-rpmq_LDFLAGS =		$(myLDFLAGS) # $(staticLDFLAGS)
-rpmq_LDADD =		rpmq.o $(top_builddir)/build/librpmbuild.la $(myLDADD)
-rpmq.o:	$(top_srcdir)/rpmqv.c
-	$(COMPILE) -fpie -DIAM_RPMQV -o $@ -c $<
 
 $(PROGRAMS): 		$(myLDADD) @WITH_APIDOCS_TARGET@
 
@@ -124,26 +96,8 @@ install-data-local:
 	@$(mkinstalldirs) $(DESTDIR)$(varprefix)/lib/rpm
 	@rm -f $(DESTDIR)$(pkglibdir)/rpmt
 	@@LN_S@ rpmb $(DESTDIR)$(pkglibdir)/rpmt
-	@rm -f $(DESTDIR)$(pkglibdir)/rpme
-	@@LN_S@ rpmi $(DESTDIR)$(pkglibdir)/rpme
-	@rm -f $(DESTDIR)$(pkglibdir)/rpmu
-	@@LN_S@ rpmi $(DESTDIR)$(pkglibdir)/rpmu
-	@rm -f $(DESTDIR)$(pkglibdir)/rpmv
-	@@LN_S@ rpmq $(DESTDIR)$(pkglibdir)/rpmv
 	rm -f $(DESTDIR)$(bindir)/rpmbuild
 	@LN_S@ ../lib/rpm/rpmb $(DESTDIR)$(bindir)/rpmbuild
-	rm -f $(DESTDIR)$(bindir)/rpmquery
-	@LN_S@ ../lib/rpm/rpmq $(DESTDIR)$(bindir)/rpmquery
-	rm -f $(DESTDIR)$(bindir)/rpmverify
-	@LN_S@ ../lib/rpm/rpmv $(DESTDIR)$(bindir)/rpmverify
-	rm -f $(DESTDIR)$(bindir)/rpmsign
-	@LN_S@ ../lib/rpm/rpmk $(DESTDIR)$(bindir)/rpmsign
-	rm -f $(DESTDIR)$(bindir)/rpmdb ; \
-	@LN_S@ ../lib/rpm/rpmd $(DESTDIR)$(bindir)/rpmdb ; \
-	for bf in e i u ; do \
-	    rm -f $(DESTDIR)$(bindir)/rpm$$bf ; \
-	    @LN_S@ ../lib/rpm/rpm$$bf $(DESTDIR)$(bindir)/rpm$$bf ; \
-	done
 	@for dir in BUILD RPMS SOURCES SPECS SRPMS ; do\
 	    $(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/$$dir;\
 	done

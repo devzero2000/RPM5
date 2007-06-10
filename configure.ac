@@ -12,8 +12,8 @@ AM_INIT_AUTOMAKE([foreign])
 # Interfaces removed:                           AGE=0
 #
 AC_SUBST(LT_CURRENT, 4)
-AC_SUBST(LT_REVISION, 4)
-AC_SUBST(LT_AGE, 8)
+AC_SUBST(LT_REVISION, 5)
+AC_SUBST(LT_AGE, 0)
 
 dnl Set of available languages.
 ALL_LINGUAS="cs da de fi fr gl is ja ko no pl pt pt_BR ro ru sk sl sr sv tr uk"

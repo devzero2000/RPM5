@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.4.9\n"
 "Report-Msgid-Bugs-To: <rpm-devel@lists.dulug.duke.edu>\n"
-"POT-Creation-Date: 2007-06-10 11:00-0400\n"
+"POT-Creation-Date: 2007-06-10 16:17-0400\n"
 "PO-Revision-Date: 2007-05-20 12:25+0200\n"
 "Last-Translator: Robert Scheck <rpm@robert-scheck.de>\n"
 "Language-Team: German <de@li.org>\n"
@@ -3396,20 +3396,20 @@ msgstr "db%d-Fehler (%d) von %s: %s\n"
 msgid "db%d error(%d): %s\n"
 msgstr "db%d-Fehler (%d): %s\n"
 
-#: rpmdb/db3.c:1290
+#: rpmdb/db3.c:1292
 msgid "Runnning db->verify ...\n"
 msgstr "Starte db->verify...\n"
 
-#: rpmdb/db3.c:1595
+#: rpmdb/db3.c:1597
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "Keine %s-Sperre auf %s/%s\n"
 
-#: rpmdb/db3.c:1597
+#: rpmdb/db3.c:1599
 msgid "exclusive"
 msgstr "exklusiv"
 
-#: rpmdb/db3.c:1597
+#: rpmdb/db3.c:1599
 msgid "shared"
 msgstr "verteilt"
 
