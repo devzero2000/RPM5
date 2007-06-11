@@ -8,7 +8,7 @@ EXTRA_DIST = config.rpath m4/ChangeLog  CHANGES CREDITS Doxyheader GROUPS INSTAL
 	autodeps/none autodeps/*.prov autodeps/*.req autogen.sh \
 	config.site db db3/configure gendiff installplatform platform* \
 	perl/* \
-	wdj/JBJ-GPG-KEY wdj/Makefile.in wnh/Makefile.in \
+	pubkeys/JBJ-GPG-KEY \
 	po/*.in po/*.po po/rpm.pot \
 	rpm.magic rpmpopt-$(VERSION) rpmqv.c rpm.c
 
@@ -44,20 +44,21 @@ bin_SCRIPTS =		gendiff
 
 pkglibdir =		@USRLIBRPM@
 pkglib_PROGRAMS =	rpmb
-pkglib_DATA =		rpmpopt-$(VERSION) macros
+pkglib_DATA =		rpmpopt-$(VERSION) macros-$(VERSION)
 
 rpmpopt-$(VERSION): rpmpopt
 	cp rpmpopt $@
 
+macros-$(VERSION): macros
+	cp macros $@
+
 noinst_HEADERS = build.h debug.h system.h
 
-rpm_SOURCES =
+rpm_SOURCES =		$(top_srcdir)/build.c
 rpm_LDFLAGS =		$(myLDFLAGS) $(staticLDFLAGS)
 rpm_LDADD =		rpm.o $(top_builddir)/build/.libs/librpmbuild.a $(myLDADD)
-#rpm_LDFLAGS =		$(myLDFLAGS)
-#rpm_LDADD =		rpm.o $(top_builddir)/build/.libs/librpmbuild.a $(myLDADD)
 rpm.o:	$(top_srcdir)/rpmqv.c
-	$(COMPILE) -fpie -DIAM_RPMDB -DIAM_RPMEIU -DIAM_RPMK -DIAM_RPMQV -o $@ -c $<
+	$(COMPILE) -fpie -DIAM_RPMBT -DIAM_RPMDB -DIAM_RPMEIU -DIAM_RPMK -DIAM_RPMQV -o $@ -c $<
 
 rpmb_SOURCES =		$(top_srcdir)/build.c
 rpmb_LDFLAGS =		$(myLDFLAGS) $(staticLDFLAGS)

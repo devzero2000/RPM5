@@ -4,6 +4,9 @@
 %define	with_bzip2		@WITH_BZIP2@%{nil}
 %define	with_apidocs		@WITH_APIDOCS@%{nil}
 
+# XXX ignore unpackaged files for now
+%define _unpackaged_files_terminate_build      0
+
 %{!?_usrlibrpm:%global _usrlibrpm @USRLIBRPM@}
 
 %define	__prefix	%{?_prefix}%{!?_prefix:/usr}
@@ -262,16 +265,14 @@ exit 0
 %endif
 
 %files -f rpm.lang
-%doc CHANGES GROUPS doc/manual/[a-z]*
-# XXX add to EXTRAS
-#%pubkey pubkeys/JBJ-GPG-KEY
+#XXX %doc CHANGES GROUPS doc/manual/[a-z]*
+%pubkey pubkeys/JBJ-GPG-KEY
 
 %ifos linux
 %define	rpmattr		%attr(0755, @RPMUSER@, @RPMGROUP@)
 %define	rpmdbattr %attr(0644, @RPMUSER@, @RPMGROUP@) %verify(not md5 size mtime) %ghost %config(missingok,noreplace)
 
 %dir				/etc/rpm
-#%config(noreplace,missingok)	/etc/rpm/macros.*
 %attr(0755, @RPMUSER@, @RPMGROUP@)	%dir /var/lib/rpm
 %attr(0755, @RPMUSER@, @RPMGROUP@)	%dir /var/spool/repackage
 
@@ -279,62 +280,62 @@ exit 0
 %endif
 
 %rpmattr	%{_bindir}/rpm
-%rpmattr	%{_bindir}/rpm2cpio
-%rpmattr	%{_bindir}/gendiff
+#XXX %rpmattr	%{_bindir}/rpm2cpio
+#XXX %rpmattr	%{_bindir}/gendiff
 
 %attr(0755, @RPMUSER@, @RPMGROUP@)	%dir %{_usrlibrpm}
-%attr(0644, @RPMUSER@, @RPMGROUP@)	%{_usrlibrpm}/macros
-%rpmattr	%{_usrlibrpm}/rpm.*
-%rpmattr	%{_usrlibrpm}/tgpg
-%attr(0644, @RPMUSER@, @RPMGROUP@)	%{_usrlibrpm}/rpmpopt*
+%attr(0644, @RPMUSER@, @RPMGROUP@)	%{_usrlibrpm}/macros-@VERSION@
+#XXX %rpmattr	%{_usrlibrpm}/rpm.*
+#XXX %rpmattr	%{_usrlibrpm}/tgpg
+%attr(0644, @RPMUSER@, @RPMGROUP@)	%{_usrlibrpm}/rpmpopt-@VERSION@
 
 %ifarch i386 i486 i586 i686 athlon pentium3 pentium4
-%attr(-, @RPMUSER@, @RPMGROUP@)		%{_usrlibrpm}/i[3456]86*
-%attr(-, @RPMUSER@, @RPMGROUP@)		%{_usrlibrpm}/athlon*
-%attr(-, @RPMUSER@, @RPMGROUP@)		%{_usrlibrpm}/pentium*
+#XXX %attr(-, @RPMUSER@, @RPMGROUP@)		%{_usrlibrpm}/i[3456]86*
+#XXX %attr(-, @RPMUSER@, @RPMGROUP@)		%{_usrlibrpm}/athlon*
+#XXX %attr(-, @RPMUSER@, @RPMGROUP@)		%{_usrlibrpm}/pentium*
 %endif
 %ifarch alpha alphaev5 alphaev56 alphapca56 alphaev6 alphaev67
-%attr(-, @RPMUSER@, @RPMGROUP@)		%{_usrlibrpm}/alpha*
+#XXX %attr(-, @RPMUSER@, @RPMGROUP@)		%{_usrlibrpm}/alpha*
 %endif
 %ifarch sparc sparcv8 sparcv9 sparc64
-%attr(-, @RPMUSER@, @RPMGROUP@)		%{_usrlibrpm}/sparc*
+#XXX %attr(-, @RPMUSER@, @RPMGROUP@)		%{_usrlibrpm}/sparc*
 %endif
 %ifarch ia64
-%attr(-, @RPMUSER@, @RPMGROUP@)		%{_usrlibrpm}/ia64*
+#XXX %attr(-, @RPMUSER@, @RPMGROUP@)		%{_usrlibrpm}/ia64*
 %endif
 %ifarch powerpc ppc ppciseries ppcpseries ppcmac ppc64
-%attr(-, @RPMUSER@, @RPMGROUP@)		%{_usrlibrpm}/ppc*
+#XXX %attr(-, @RPMUSER@, @RPMGROUP@)		%{_usrlibrpm}/ppc*
 %endif
 %ifarch s390 s390x
-%attr(-, @RPMUSER@, @RPMGROUP@)		%{_usrlibrpm}/s390*
+#XXX %attr(-, @RPMUSER@, @RPMGROUP@)		%{_usrlibrpm}/s390*
 %endif
 %ifarch armv3l armv4b armv4l
-%attr(-, @RPMUSER@, @RPMGROUP@)		%{_usrlibrpm}/armv[34][lb]*
+#XXX %attr(-, @RPMUSER@, @RPMGROUP@)		%{_usrlibrpm}/armv[34][lb]*
 %endif
 %ifarch armv5teb armv5tel
-%attr(-, @RPMUSER@, @RPMGROUP@)		%{_usrlibrpm}/armv[345]*
+#XXX %attr(-, @RPMUSER@, @RPMGROUP@)		%{_usrlibrpm}/armv[345]*
 %endif
 %ifarch mips mipsel
-%attr(-, @RPMUSER@, @RPMGROUP@)		%{_usrlibrpm}/mips*
+#XXX %attr(-, @RPMUSER@, @RPMGROUP@)		%{_usrlibrpm}/mips*
 %endif
 %ifarch x86_64
-%attr(-, @RPMUSER@, @RPMGROUP@)		%{_usrlibrpm}/x86_64*
+#XXX %attr(-, @RPMUSER@, @RPMGROUP@)		%{_usrlibrpm}/x86_64*
 %endif
-%attr(-, @RPMUSER@, @RPMGROUP@)		%{_usrlibrpm}/noarch*
+#XXX %attr(-, @RPMUSER@, @RPMGROUP@)		%{_usrlibrpm}/noarch*
 
-%rpmattr	%{_usrlibrpm}/rpmdb_*
+%rpmattr	%{_usrlibrpm}/db_*
 
-%{_mandir}/man8/rpm.8*
-%{_mandir}/man8/rpm2cpio.8*
-%lang(ja)	%{_mandir}/ja/man8/rpm.8*
-%lang(ja)	%{_mandir}/ja/man8/rpm2cpio.8*
-#%lang(ko)	%{_mandir}/ko/man8/rpm.8*
-#%lang(ko)	%{_mandir}/ko/man8/rpm2cpio.8*
-%lang(pl)	%{_mandir}/pl/man8/rpm.8*
-%lang(pl)	%{_mandir}/pl/man8/rpm2cpio.8*
-%lang(ru)	%{_mandir}/ru/man8/rpm.8*
-%lang(ru)	%{_mandir}/ru/man8/rpm2cpio.8*
-%lang(sk)	%{_mandir}/sk/man8/rpm.8*
+#XXX %{_mandir}/man8/rpm.8*
+#XXX %{_mandir}/man8/rpm2cpio.8*
+#XXX %lang(ja)	%{_mandir}/ja/man8/rpm.8*
+#XXX %lang(ja)	%{_mandir}/ja/man8/rpm2cpio.8*
+#XXX #%lang(ko)	%{_mandir}/ko/man8/rpm.8*
+#XXX #%lang(ko)	%{_mandir}/ko/man8/rpm2cpio.8*
+#XXX %lang(pl)	%{_mandir}/pl/man8/rpm.8*
+#XXX %lang(pl)	%{_mandir}/pl/man8/rpm2cpio.8*
+#XXX %lang(ru)	%{_mandir}/ru/man8/rpm.8*
+#XXX %lang(ru)	%{_mandir}/ru/man8/rpm2cpio.8*
+#XXX %lang(sk)	%{_mandir}/sk/man8/rpm.8*
 
 %files libs
 %{_libdir}/librpm-@LT_CURRENT@.@LT_REVISION@.so
