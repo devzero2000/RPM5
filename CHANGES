@@ -23,6 +23,7 @@
 	- install rpm into /usr/bin, not /bin.
 	- eliminate rpm executable helpers.
 	- update library version.
+	- skip packages/headers with unverifiable signatures.
 	
 4.4.8 -> 4.4.9:
 	- start rpm-4.4.9 devel.
