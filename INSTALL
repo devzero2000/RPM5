@@ -1,3 +1,10 @@
+To build RPM 5 from CVS sources
+-------------------------------
+
+./devtool checkout
+./devtool autogen
+./devtool configure [...]
+
 To build RPM you will need several other packages:
 --------------------------------------------------
 
