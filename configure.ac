@@ -35,7 +35,9 @@ AS=${AS-as}
 AC_SUBST(AS)
 if test "$ac_cv_c_compiler_gnu" = yes; then
     CFLAGS="$CFLAGS -fPIC -DPIC -D_GNU_SOURCE -D_REENTRANT -Wall -Wpointer-arith -Wstrict-prototypes -Wmissing-prototypes -Wno-char-subscripts"
-    LDFLAGS="-pie"
+    case "$target" in
+	*-*-linux* ) LDFLAGS="-pie" ;;
+    esac
 fi
 export CFLAGS LDFLAGS
 
