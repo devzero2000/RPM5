@@ -1,5 +1,6 @@
 
 4.5 -> 5.0:
+    - rse: portability: replace hard-coded -ldl (Linux) for Lua with Autoconf checks
     - rse: added devtool/devtool.conf build environment helper
     - rse: pruned tree from third-party libraries (except for zlib, db and lua)
     - goeran: updated "sv" translation.
