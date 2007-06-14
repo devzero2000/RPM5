@@ -39,8 +39,8 @@ touch $tmpfile
 ( sed <"$0" -e '1,/^##  devtool.func {/d' -e '/^##  } devtool.func/,$d'
   sed <devtool.conf -e "1,/^%common/d" -e '/^%.*/,$d'
   sed <devtool.conf -e "1,/^%$cmd/d" -e '/^%.*/,$d' ) |\
-sed -e 's;\([ 	]\)@\([a-zA-Z_][a-zA-Z0-9_]*\);\1devtool_\2;' \
-    -e 's;\([ 	]\)%\([a-zA-Z_][a-zA-Z0-9_]*\);\1devtool_devtool \2;' \
+sed -e 's;\([ 	]\)@\([a-zA-Z_][a-zA-Z0-9_-]*\);\1devtool_\2;' \
+    -e 's;\([ 	]\)%\([a-zA-Z_][a-zA-Z0-9_-]*\);\1devtool_devtool \2;' \
 >>$tmpfile
 
 #   execute run-command script
@@ -54,7 +54,7 @@ exit $rc
 ##  devtool.func { # is now embedded. This line used as cutting point. Do not remove.
 
 devtool_devtool () {
-    sh $0 "$@"
+    sh ./devtool "$@"
 }
 
 devtool_require () {
