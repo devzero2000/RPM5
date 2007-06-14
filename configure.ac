@@ -1518,7 +1518,8 @@ AC_CONFIG_FILES([ Doxyfile Makefile rpmrc macros platform rpmpopt rpm.spec po/Ma
 	python/rpm/Makefile
  	lua/Makefile
   ])
-AC_CONFIG_COMMANDS([default],[[	echo timestamp > popt/stamp-h.in
+AC_CONFIG_COMMANDS([default],[[
+	[ -d popt] && echo timestamp > popt/stamp-h.in
 	echo timestamp > stamp-h.in
 	[ -d perl ] && cd perl && perl Makefile.PL
   
