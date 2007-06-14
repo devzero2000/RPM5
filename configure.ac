@@ -1519,7 +1519,7 @@ AC_CONFIG_FILES([ Doxyfile Makefile rpmrc macros platform rpmpopt rpm.spec po/Ma
  	lua/Makefile
   ])
 AC_CONFIG_COMMANDS([default],[[
-	[ -d popt] && echo timestamp > popt/stamp-h.in
+	[ -d popt ] && echo timestamp > popt/stamp-h.in
 	echo timestamp > stamp-h.in
 	[ -d perl ] && cd perl && perl Makefile.PL
   
