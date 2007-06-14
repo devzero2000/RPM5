@@ -1,3 +1,14 @@
+
+4.5 -> 5.0:
+    - rse: added devtool/devtool.conf build environment helper
+    - rse: pruned tree from third-party libraries (except for zlib, db and lua)
+    - goeran: updated "sv" translation.
+    - rse: cleaned up the "autogen.sh" scripts.
+    - jbj: skip packages/headers with unverifiable signatures.
+    - start rpm-5.0 development.
+
+=============================================================================
+
 4.4.9 -> 4.5:
 	- start rpm-4.5 development.
 	- fix: avoid accessing freed memory.
