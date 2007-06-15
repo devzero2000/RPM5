@@ -1,5 +1,5 @@
 AC_PREREQ(2.57)
-AC_INIT(rpm, 4.5, rpm-devel@rpm5.org)
+AC_INIT(rpm, 5.0, rpm-devel@rpm5.org)
 AC_CANONICAL_TARGET
 AC_CONFIG_SRCDIR([rpmqv.c])
 AC_CONFIG_HEADERS([config.h])

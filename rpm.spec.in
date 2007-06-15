@@ -20,7 +20,7 @@ Version: @VERSION@
 Release: 0.4
 Group: System Environment/Base
 URL: http://wraptastic.org
-Source: http://rpm5.org/files/rpm/rpm-4.5/rpm-%{version}.tar.gz
+Source: http://rpm5.org/files/rpm/rpm-5.0/rpm-%{version}.tar.gz
 License: LGPL
 %ifos linux
 Prereq: fileutils shadow-utils
