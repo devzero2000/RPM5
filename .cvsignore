@@ -28,6 +28,7 @@ libtool
 ltconfig
 ltmain.sh
 macros
+macros-*
 missing
 platform
 rpm
