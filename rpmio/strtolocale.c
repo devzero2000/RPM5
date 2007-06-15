@@ -4,7 +4,9 @@
 
 #include "system.h"
 #include <langinfo.h>
+#ifdef HAVE_ICONV
 #include <iconv.h>
+#endif
 #include "debug.h"
 
 static char *locale_encoding = NULL;
@@ -12,6 +14,7 @@ static int locale_encoding_is_utf8 = 0;
 
 const char * xstrtolocale(const char *str)
 {
+#ifdef HAVE_ICONV
     iconv_t cd;
     size_t src_size, dest_size;
     char *result, *src, *dest;
@@ -62,4 +65,7 @@ const char * xstrtolocale(const char *str)
     }
     *dest = '\0';
     return result;
+#else
+    return str;
+#endif
 }
