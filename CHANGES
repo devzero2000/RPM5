@@ -1,5 +1,6 @@
 
 4.5 -> 5.0:
+    - rse: provide portability fallbacks for sighold(3), sigrelse(3) and sigpause(3)
     - rse: allow RPM to build again even if iconv(3) is not available
     - rse: provide --with-db-{largefile,rpc,mutex} options for flexibly building DB
     - rse: portability: replace hard-coded -ldl (Linux) for Lua with Autoconf checks

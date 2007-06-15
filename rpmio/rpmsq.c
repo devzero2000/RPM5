@@ -122,6 +122,48 @@ extern int pthread_cond_signal(pthread_cond_t *cond)
 #include <sys/wait.h>
 #include <search.h>
 
+/* portability fallback for sighold(3) */
+#if !defined(HAVE_SIGHOLD) && defined(HAVE_SIGPROCMASK) && defined(HAVE_SIGADDSET)
+static int __RPM_sighold(int sig)
+{
+    sigset_t set;
+    if (sigprocmask(SIG_SETMASK, NULL, &set) < 0)
+        return -1;
+    if (sigaddset(&set, sig) < 0)
+        return -1;
+    return sigprocmask(SIG_SETMASK, &set, NULL);
+}
+#define sighold(sig) __RPM_sighold(sig)
+#endif
+
+/* portability fallback for sigrelse(3) */
+#if !defined(HAVE_SIGRELSE) && defined(HAVE_SIGPROCMASK) && defined(HAVE_SIGDELSET)
+static int __RPM_sigrelse(int sig)
+{
+    sigset_t set;
+    if (sigprocmask(SIG_SETMASK, NULL, &set) < 0)
+        return -1;
+    if (sigdelset(&set, sig) < 0)
+        return -1;
+    return sigprocmask(SIG_SETMASK, &set, NULL);
+}
+#define sigrelse(sig) __RPM_sigrelse(sig)
+#endif
+
+/* portability fallback for sigpause(3) */
+#if !defined(HAVE_SIGPAUSE) && defined(HAVE_SIGEMPTYSET) && defined(HAVE_SIGADDSET) && defined(HAVE_SIGSUSPEND)
+static int __RPM_sigpause(int sig)
+{
+    sigset_t set;
+    if (sigemptyset(&set) < 0)
+        return -1;
+    if (sigaddset(&set, sig) < 0)
+        return -1;
+    return sigsuspend(&set);
+}
+#define sigpause(sig) __RPM_sigpause(sig)
+#endif
+
 #if defined(HAVE_PTHREAD_H)
 
 #include <pthread.h>
