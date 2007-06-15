@@ -8,9 +8,12 @@
 #include <iconv.h>
 #endif
 #include "debug.h"
+#include "rpmio.h"
 
+#ifdef HAVE_ICONV
 static char *locale_encoding = NULL;
 static int locale_encoding_is_utf8 = 0;
+#endif
 
 const char * xstrtolocale(const char *str)
 {
