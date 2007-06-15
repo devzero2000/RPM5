@@ -1199,7 +1199,9 @@ hexdump(buf, rc);
 
 ssize_t davWrite(void * cookie, const char * buf, size_t count)
 {
+#if !defined(NEONBLOWSCHUNKS) || defined(HAVE_NEON_NE_SEND_REQUEST_CHUNK) || defined(__LCLINT__)
     FD_t fd = cookie;
+#endif
     ssize_t rc;
     int xx;
 

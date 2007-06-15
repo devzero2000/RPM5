@@ -57,6 +57,12 @@ extern "C" {
 #endif
 
 /**
+ */
+int davFree(urlinfo u)
+	/*@globals internalState @*/
+	/*@modifies u, internalState @*/;
+
+/**
  * Close an argv directory.
  * @param dir		argv DIR
  * @return 		0 always
