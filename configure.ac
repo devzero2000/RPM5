@@ -678,6 +678,12 @@ DBLIBSRCS="db3.c"
 AC_SUBST(WITH_DB_SUBDIR)
 AC_SUBST(WITH_INTERNAL_DB)
 
+# accept and pass-through options for Berkeley-DB "configure"
+AC_ARG_WITH(db-largefile, AS_HELP_STRING([--with-db-largefile], [build Berkeley-DB with LARGEFILE support]))
+AC_ARG_WITH(db-mutex,     AS_HELP_STRING([--with-db-mutex=ARG], [build Berkeley-DB with MUTEX type ARG]))
+AC_ARG_WITH(db-rpc,       AS_HELP_STRING([--with-db-rpc],       [build Berkeley-DB with RPC support]))
+AM_CONDITIONAL(WITH_DB_RPC, test ".$with_db_rpc" = .yes)
+
 #=================
 # Check for sqlite3 library. Prefer external, then internal, otherwise none.
 WITH_SQLITE3_SUBDIR=

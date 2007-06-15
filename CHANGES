@@ -1,5 +1,6 @@
 
 4.5 -> 5.0:
+    - rse: provide --with-db-{largefile,rpc,mutex} options for flexibly building DB
     - rse: portability: replace hard-coded -ldl (Linux) for Lua with Autoconf checks
     - rse: added devtool/devtool.conf build environment helper
     - rse: pruned tree from third-party libraries (except for zlib, db and lua)
