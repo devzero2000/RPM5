@@ -7,8 +7,8 @@
 #ifdef HAVE_ICONV
 #include <iconv.h>
 #endif
-#include "debug.h"
 #include "rpmio.h"
+#include "debug.h"
 
 #ifdef HAVE_ICONV
 static char *locale_encoding = NULL;
