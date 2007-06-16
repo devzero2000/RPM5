@@ -1,11 +1,8 @@
-%define	with_python_subpackage	0%{nil}
-%define	with_python_version	2.5%{nil}
+%define	with_python_subpackage	@WITH_PYTHON_SUBPACKAGE@%{nil}
+%define	with_python_version	@WITH_PYTHON_VERSION@%{nil}
 %define	with_perl_subpackage	@WITH_PERL_SUBPACKAGE@%{nil}
 %define	with_bzip2		@WITH_BZIP2@%{nil}
 %define	with_apidocs		@WITH_APIDOCS@%{nil}
-
-# XXX ignore unpackaged files for now
-%define _unpackaged_files_terminate_build      0
 
 %{!?_usrlibrpm:%global _usrlibrpm @USRLIBRPM@}
 
@@ -265,7 +262,7 @@ exit 0
 %endif
 
 %files -f rpm.lang
-#XXX %doc CHANGES GROUPS doc/manual/[a-z]*
+%doc CHANGES GROUPS doc/manual/[a-z]*
 %pubkey pubkeys/JBJ-GPG-KEY
 
 %ifos linux
@@ -280,62 +277,63 @@ exit 0
 %endif
 
 %rpmattr	%{_bindir}/rpm
-#XXX %rpmattr	%{_bindir}/rpm2cpio
-#XXX %rpmattr	%{_bindir}/gendiff
+%rpmattr	%{_bindir}/rpm2cpio
+%rpmattr	%{_bindir}/gendiff
 
 %attr(0755, @RPMUSER@, @RPMGROUP@)	%dir %{_usrlibrpm}
 %attr(0644, @RPMUSER@, @RPMGROUP@)	%{_usrlibrpm}/macros-@VERSION@
-#XXX %rpmattr	%{_usrlibrpm}/rpm.*
-#XXX %rpmattr	%{_usrlibrpm}/tgpg
+%rpmattr	%{_usrlibrpm}/rpm.*
+%rpmattr	%{_usrlibrpm}/tgpg
 %attr(0644, @RPMUSER@, @RPMGROUP@)	%{_usrlibrpm}/rpmpopt-@VERSION@
 
 %ifarch i386 i486 i586 i686 athlon pentium3 pentium4
-#XXX %attr(-, @RPMUSER@, @RPMGROUP@)		%{_usrlibrpm}/i[3456]86*
-#XXX %attr(-, @RPMUSER@, @RPMGROUP@)		%{_usrlibrpm}/athlon*
-#XXX %attr(-, @RPMUSER@, @RPMGROUP@)		%{_usrlibrpm}/pentium*
+%attr(-, @RPMUSER@, @RPMGROUP@)		%{_usrlibrpm}/i[3456]86*
+%attr(-, @RPMUSER@, @RPMGROUP@)		%{_usrlibrpm}/athlon*
+%attr(-, @RPMUSER@, @RPMGROUP@)		%{_usrlibrpm}/pentium*
 %endif
 %ifarch alpha alphaev5 alphaev56 alphapca56 alphaev6 alphaev67
-#XXX %attr(-, @RPMUSER@, @RPMGROUP@)		%{_usrlibrpm}/alpha*
+%attr(-, @RPMUSER@, @RPMGROUP@)		%{_usrlibrpm}/alpha*
 %endif
 %ifarch sparc sparcv8 sparcv9 sparc64
-#XXX %attr(-, @RPMUSER@, @RPMGROUP@)		%{_usrlibrpm}/sparc*
+%attr(-, @RPMUSER@, @RPMGROUP@)		%{_usrlibrpm}/sparc*
 %endif
 %ifarch ia64
-#XXX %attr(-, @RPMUSER@, @RPMGROUP@)		%{_usrlibrpm}/ia64*
+%attr(-, @RPMUSER@, @RPMGROUP@)		%{_usrlibrpm}/ia64*
 %endif
 %ifarch powerpc ppc ppciseries ppcpseries ppcmac ppc64
-#XXX %attr(-, @RPMUSER@, @RPMGROUP@)		%{_usrlibrpm}/ppc*
+%attr(-, @RPMUSER@, @RPMGROUP@)		%{_usrlibrpm}/ppc*
 %endif
 %ifarch s390 s390x
-#XXX %attr(-, @RPMUSER@, @RPMGROUP@)		%{_usrlibrpm}/s390*
+%attr(-, @RPMUSER@, @RPMGROUP@)		%{_usrlibrpm}/s390*
 %endif
 %ifarch armv3l armv4b armv4l
-#XXX %attr(-, @RPMUSER@, @RPMGROUP@)		%{_usrlibrpm}/armv[34][lb]*
+%attr(-, @RPMUSER@, @RPMGROUP@)		%{_usrlibrpm}/armv[34][lb]*
 %endif
 %ifarch armv5teb armv5tel
-#XXX %attr(-, @RPMUSER@, @RPMGROUP@)		%{_usrlibrpm}/armv[345]*
+%attr(-, @RPMUSER@, @RPMGROUP@)		%{_usrlibrpm}/armv[345]*
 %endif
 %ifarch mips mipsel
-#XXX %attr(-, @RPMUSER@, @RPMGROUP@)		%{_usrlibrpm}/mips*
+%attr(-, @RPMUSER@, @RPMGROUP@)		%{_usrlibrpm}/mips*
 %endif
 %ifarch x86_64
-#XXX %attr(-, @RPMUSER@, @RPMGROUP@)		%{_usrlibrpm}/x86_64*
+%attr(-, @RPMUSER@, @RPMGROUP@)		%{_usrlibrpm}/x86_64*
 %endif
-#XXX %attr(-, @RPMUSER@, @RPMGROUP@)		%{_usrlibrpm}/noarch*
+%attr(-, @RPMUSER@, @RPMGROUP@)		%{_usrlibrpm}/noarch*
 
+%rpmattr	%{_usrlibrpm}/rpmdb_loadcvt
 %rpmattr	%{_usrlibrpm}/db_*
 
-#XXX %{_mandir}/man8/rpm.8*
-#XXX %{_mandir}/man8/rpm2cpio.8*
-#XXX %lang(ja)	%{_mandir}/ja/man8/rpm.8*
-#XXX %lang(ja)	%{_mandir}/ja/man8/rpm2cpio.8*
-#XXX #%lang(ko)	%{_mandir}/ko/man8/rpm.8*
-#XXX #%lang(ko)	%{_mandir}/ko/man8/rpm2cpio.8*
-#XXX %lang(pl)	%{_mandir}/pl/man8/rpm.8*
-#XXX %lang(pl)	%{_mandir}/pl/man8/rpm2cpio.8*
-#XXX %lang(ru)	%{_mandir}/ru/man8/rpm.8*
-#XXX %lang(ru)	%{_mandir}/ru/man8/rpm2cpio.8*
-#XXX %lang(sk)	%{_mandir}/sk/man8/rpm.8*
+%{_mandir}/man8/rpm.8*
+%{_mandir}/man8/rpm2cpio.8*
+%lang(ja)	%{_mandir}/ja/man8/rpm.8*
+%lang(ja)	%{_mandir}/ja/man8/rpm2cpio.8*
+#%lang(ko)	%{_mandir}/ko/man8/rpm.8*
+#%lang(ko)	%{_mandir}/ko/man8/rpm2cpio.8*
+%lang(pl)	%{_mandir}/pl/man8/rpm.8*
+%lang(pl)	%{_mandir}/pl/man8/rpm2cpio.8*
+%lang(ru)	%{_mandir}/ru/man8/rpm.8*
+%lang(ru)	%{_mandir}/ru/man8/rpm2cpio.8*
+%lang(sk)	%{_mandir}/sk/man8/rpm.8*
 
 %files libs
 %{_libdir}/librpm-@LT_CURRENT@.@LT_REVISION@.so
@@ -437,14 +435,22 @@ exit 0
 %{_libdir}/librpmbuild.so
 
 %changelog
-* Fri May 25 2007 Jeff Johnson <jbj@jbj.org> 4.5-0.3
-- solaris: add clearenv stub.
-- keys: add Getpass stub vector.
-- fix: swap PART_INSTALL and PART_CLEAN automagic cleanup.
+* Fri Jun 15 2007 Jeff Johnson <jbj@rpm5.org> 5.0-0.1
+- rse: provide portability fallbacks for sighold(3), sigrelse(3) and sigpause(3)
+- rse: allow RPM to build again even if iconv(3) is not available
+- rse: provide --with-db-{largefile,rpc,mutex} options for flexibly building DB
+- rse: portability: replace hard-coded -ldl (Linux) for Lua with Autoconf checks
+- rse: added devtool/devtool.conf build environment helper
+- rse: pruned tree from third-party libraries (except for zlib, db and lua)
+- goeran: updated "sv" translation.
+- rse: cleaned up the "autogen.sh" scripts.
+- jbj: skip packages/headers with unverifiable signatures.
+- update README to point to new rpm5.org home.
+- upgrade to file-4.21 (CVE-2007-2026, CVE-2007-2799).
 - build against rpm5.org cvs,
-
-* Tue May 22 2007 Jeff Johnson <jbj@jbj.org> 4.5-0.2
+- fix: swap PART_INSTALL and PART_CLEAN automagic cleanup.
+- keys: add Getpass stub vector.
+- solaris: add clearenv stub.
 - fix: avoid accessing freed memory.
+- start rpm-5.0 development.
 
-* Mon May 21 2007 Jeff Johnson <jbj@jbj.org> 4.5-0.1
-- start rpm-4.5 development.

@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: <rpm-devel@lists.dulug.duke.edu>\n"
-"POT-Creation-Date: 2007-05-25 21:25-0400\n"
+"POT-Creation-Date: 2007-06-15 20:47-0400\n"
 "PO-Revision-Date: 2004-05-17 14:17+0200\n"
 "Last-Translator: Maxim Dziumanenko <mvd@mylinux.com.ua>\n"
 "Language-Team: Ukrainian <uk@li.org>\n"
@@ -1720,67 +1720,71 @@ msgstr "неправильний заголовок DSA: не є двійков�
 msgid "hdr DSA: BAD, not binary\n"
 msgstr "неправильний заголовок DSA: не є двійковим\n"
 
-#: lib/package.c:545 lib/package.c:585 lib/package.c:929 lib/package.c:955
-#: lib/package.c:987
-#, fuzzy, c-format
-msgid "only V3 and V4 signatures can be verified, skipping V%u signature\n"
-msgstr "можна перевіряти лише підписи версії 3, підпис версії %u пропущений\n"
+#: lib/package.c:545 lib/package.c:586
+#, c-format
+msgid "skipping header with unverifiable V%u signature\n"
+msgstr ""
 
-#: lib/package.c:673
+#: lib/package.c:675
 #, c-format
 msgid "hdr size(%d): BAD, read returned %d\n"
 msgstr "неправильний розмір заголовка(%d): зчитування повернуло %d\n"
 
-#: lib/package.c:677
+#: lib/package.c:679
 #, c-format
 msgid "hdr magic: BAD\n"
 msgstr "неправильна сигнатура заголовка: помилка\n"
 
-#: lib/package.c:685
+#: lib/package.c:687
 #, c-format
 msgid "hdr tags: BAD, no. of tags(%d) out of range\n"
 msgstr "неправильні теги заголовку: кількість тегів(%d) перевищує межу\n"
 
-#: lib/package.c:694
+#: lib/package.c:696
 #, c-format
 msgid "hdr data: BAD, no. of bytes(%d) out of range\n"
 msgstr "неправильні дані заголовку: кількість байтів(%d) перевищує межу\n"
 
-#: lib/package.c:708
+#: lib/package.c:710
 #, c-format
 msgid "hdr blob(%d): BAD, read returned %d\n"
 msgstr "неправильний двійковий об'єкт(%d): зчитування повернуло %d\n"
 
-#: lib/package.c:721
+#: lib/package.c:723
 #, c-format
 msgid "hdr load: BAD\n"
 msgstr "помилка завантаження об'єкта: помилка\n"
 
-#: lib/package.c:799
+#: lib/package.c:801
 msgid "packaging version 1 is not supported by this version of RPM\n"
 msgstr "ця версія RPM не підтримує пакети версії 1\n"
 
-#: lib/package.c:808
+#: lib/package.c:810
 msgid ""
 "only packaging with major numbers <= 4 is supported by this version of RPM\n"
 msgstr "ця версія RPM підтримує лише RPM пакети зі старшою версією <= 4\n"
 
-#: lib/package.c:820 lib/rpmchecksig.c:236 lib/rpmchecksig.c:773
+#: lib/package.c:822 lib/rpmchecksig.c:236 lib/rpmchecksig.c:773
 #, c-format
 msgid "%s: rpmReadSignature failed: %s"
 msgstr "%s: помилка у rpmReadSignature: %s"
 
-#: lib/package.c:827 lib/rpmchecksig.c:243 lib/rpmchecksig.c:781
+#: lib/package.c:829 lib/rpmchecksig.c:243 lib/rpmchecksig.c:781
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: Підпис не доступний\n"
 
-#: lib/package.c:894
+#: lib/package.c:896
 #, c-format
 msgid "%s: headerRead failed: %s"
 msgstr "%s: помилка у headerRead: %s"
 
-#: lib/package.c:1002 lib/rpmchecksig.c:118 lib/rpmchecksig.c:689
+#: lib/package.c:931 lib/package.c:957 lib/package.c:989 lib/rpmchecksig.c:870
+#, c-format
+msgid "skipping package %s with unverifiable V%u signature\n"
+msgstr ""
+
+#: lib/package.c:1004 lib/rpmchecksig.c:118 lib/rpmchecksig.c:689
 #, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: помилка у Fread: %s\n"
@@ -2791,32 +2795,27 @@ msgstr "%s: помилка headerGetEntry\n"
 msgid "%s: No signature available (v1.0 RPM)\n"
 msgstr "%s: Немає підпису (v1.0 RPM)\n"
 
-#: lib/rpmchecksig.c:870
-#, fuzzy, c-format
-msgid "only V3 or V4 signatures can be verified, skipping V%u signature\n"
-msgstr "можна перевіряти лише підписи версії 3, підпис версії %u пропущений\n"
-
-#: lib/rpmchecksig.c:1036
+#: lib/rpmchecksig.c:1037
 msgid "NOT OK"
 msgstr "НЕ ГАРАЗД"
 
-#: lib/rpmchecksig.c:1037 lib/rpmchecksig.c:1051
+#: lib/rpmchecksig.c:1038 lib/rpmchecksig.c:1052
 msgid " (MISSING KEYS:"
 msgstr " (ВІДСУТНІ КЛЮЧІ:"
 
-#: lib/rpmchecksig.c:1039 lib/rpmchecksig.c:1053
+#: lib/rpmchecksig.c:1040 lib/rpmchecksig.c:1054
 msgid ") "
 msgstr ") "
 
-#: lib/rpmchecksig.c:1040 lib/rpmchecksig.c:1054
+#: lib/rpmchecksig.c:1041 lib/rpmchecksig.c:1055
 msgid " (UNTRUSTED KEYS:"
 msgstr " (НЕМАЄ ДОВІРИ КЛЮЧАМ:"
 
-#: lib/rpmchecksig.c:1042 lib/rpmchecksig.c:1056
+#: lib/rpmchecksig.c:1043 lib/rpmchecksig.c:1057
 msgid ")"
 msgstr ")"
 
-#: lib/rpmchecksig.c:1050
+#: lib/rpmchecksig.c:1051
 msgid "OK"
 msgstr "ГАРАЗД"
 
@@ -2993,31 +2992,31 @@ msgstr "Неможливо прочитати %s: %s.\n"
 msgid "%s skipped due to missingok flag\n"
 msgstr "%s пропущено через наявність ознаки missingok\n"
 
-#: lib/rpmfi.c:874
+#: lib/rpmfi.c:873
 msgid "========== relocations\n"
 msgstr "========== переміщені\n"
 
-#: lib/rpmfi.c:878
+#: lib/rpmfi.c:877
 #, c-format
 msgid "%5d exclude  %s\n"
 msgstr "%5d виключено  %s\n"
 
-#: lib/rpmfi.c:881
+#: lib/rpmfi.c:880
 #, c-format
 msgid "%5d relocate %s -> %s\n"
 msgstr "%5d перенесено %s -> %s\n"
 
-#: lib/rpmfi.c:1015
+#: lib/rpmfi.c:1014
 #, c-format
 msgid "excluding %s %s\n"
 msgstr "виключається %s %s\n"
 
-#: lib/rpmfi.c:1025
+#: lib/rpmfi.c:1024
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr "переміщується %s у %s\n"
 
-#: lib/rpmfi.c:1117
+#: lib/rpmfi.c:1116
 #, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "переміщується каталог %s у %s\n"
@@ -3318,42 +3317,42 @@ msgstr "відсутня архітектура %s у %s:%d\n"
 msgid "bad option '%s' at %s:%d\n"
 msgstr "неправильний параметр '%s' у %s:%d\n"
 
-#: lib/rpmrc.c:1920
+#: lib/rpmrc.c:1922
 #, c-format
 msgid "Cannot expand %s\n"
 msgstr "Неможливо розкрити %s\n"
 
-#: lib/rpmrc.c:1925
+#: lib/rpmrc.c:1927
 #, c-format
 msgid "Cannot read %s, HOME is too large.\n"
 msgstr "Неможливо прочитати %s, значення HOME надто довге.\n"
 
-#: lib/rpmrc.c:1942
+#: lib/rpmrc.c:1944
 #, c-format
 msgid "Unable to open %s for reading: %s.\n"
 msgstr "Неможливо відкрити %s для читання: %s.\n"
 
-#: lib/rpmrc.c:2087
+#: lib/rpmrc.c:2089
 #, c-format
 msgid "Configured system provides (from /etc/rpm/sysinfo):\n"
 msgstr ""
 
-#: lib/rpmrc.c:2101
+#: lib/rpmrc.c:2103
 #, c-format
 msgid "Features provided by rpmlib installer:\n"
 msgstr ""
 
-#: lib/rpmrc.c:2115
+#: lib/rpmrc.c:2117
 #, c-format
 msgid "Features provided by current cpuinfo (from /proc/cpuinfo):\n"
 msgstr ""
 
-#: lib/rpmrc.c:2129
+#: lib/rpmrc.c:2131
 #, c-format
 msgid "Features provided by current getconf:\n"
 msgstr ""
 
-#: lib/rpmrc.c:2143
+#: lib/rpmrc.c:2145
 #, c-format
 msgid "Features provided by current uname:\n"
 msgstr ""
@@ -3606,35 +3605,35 @@ msgstr "Розмір заголовок+вміст: "
 msgid "MD5 digest: "
 msgstr "Контрольна сума MD5: "
 
-#: lib/signature.c:1142
+#: lib/signature.c:1141
 msgid "Header SHA1 digest: "
 msgstr "SHA1 контрольна сума заголовка: "
 
-#: lib/signature.c:1223 lib/signature.c:1413
+#: lib/signature.c:1221 lib/signature.c:1411
 msgid "Header "
 msgstr "Заголовок "
 
-#: lib/signature.c:1292
+#: lib/signature.c:1290
 #, fuzzy
 msgid " signature: "
 msgstr "Підпис V3 DSA: "
 
-#: lib/signature.c:1419
+#: lib/signature.c:1417
 #, fuzzy
 msgid " DSA signature: "
 msgstr "Підпис V3 DSA: "
 
-#: lib/signature.c:1501
+#: lib/signature.c:1499
 #, c-format
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr "Перевірка підпису: НЕПРАВИЛЬНІ ПАРАМЕТРИ\n"
 
-#: lib/signature.c:1532
+#: lib/signature.c:1530
 #, c-format
 msgid "Broken MD5 digest: UNSUPPORTED\n"
 msgstr "Неправильна контрольна сума MD5: НЕ ПІДТРИМУЄТЬСЯ\n"
 
-#: lib/signature.c:1536
+#: lib/signature.c:1534
 #, c-format
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr "Підпис: НЕВІДОМИЙ (%d)\n"
@@ -3700,64 +3699,22 @@ msgstr "помилка db%d (%d) з %s: %s\n"
 msgid "db%d error(%d): %s\n"
 msgstr "помилка db%d (%d): %s\n"
 
-#: rpmdb/db3.c:191
-#, c-format
-msgid "closed   db environment %s/%s\n"
-msgstr "закрито     оточення бази даних %s/%s\n"
-
-#: rpmdb/db3.c:210
-#, c-format
-msgid "removed  db environment %s/%s\n"
-msgstr "видалено    оточення бази даних %s/%s\n"
-
-#: rpmdb/db3.c:331
-#, c-format
-msgid "opening  db environment %s/%s %s\n"
-msgstr "відкрито    оточення бази даних %s/%s %s\n"
-
-#: rpmdb/db3.c:954
-#, c-format
-msgid "closed   db index       %s/%s\n"
-msgstr "закрито     індекс бази даних   %s/%s\n"
-
-#: rpmdb/db3.c:1024
-#, c-format
-msgid "verified db index       %s/%s\n"
-msgstr "перевірено  індекс бази даних   %s/%s\n"
-
-#: rpmdb/db3.c:1168
-#, c-format
-msgid "unshared posix mutexes found(%d), adding DB_PRIVATE, using fcntl lock\n"
-msgstr ""
-"знайдено не спільні posix блокування(%d), додається DB_PRIVATE, "
-"використовується блокування fcntl\n"
-
-#: rpmdb/db3.c:1274
+#: rpmdb/db3.c:1292
 msgid "Runnning db->verify ...\n"
 msgstr ""
 
-#: rpmdb/db3.c:1338
-#, c-format
-msgid "opening  db index       %s/%s %s mode=0x%x\n"
-msgstr "відкрито    індекс бази даних  %s/%s %s режим=0x%x\n"
-
-#: rpmdb/db3.c:1579
+#: rpmdb/db3.c:1597
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "неможливо отримати %s блокування на %s/%s\n"
 
-#: rpmdb/db3.c:1581
+#: rpmdb/db3.c:1599
 msgid "exclusive"
 msgstr "ексклюзивне"
 
-#: rpmdb/db3.c:1581
+#: rpmdb/db3.c:1599
 msgid "shared"
 msgstr "спільне"
-
-#: rpmdb/db3.c:1585
-#, c-format
-msgid "locked   db index       %s/%s\n"
-msgstr "заблоковано індекс бази даних  %s/%s\n"
 
 #: rpmdb/dbconfig.c:575
 #, c-format
@@ -3780,80 +3737,80 @@ msgstr ""
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr "%s містить надто велике чи занадто мале значення цілого, пропущено\n"
 
-#: rpmdb/header.c:2833
+#: rpmdb/header.c:2832
 msgid "missing { after %"
 msgstr "відсутня \"{\" після \"%\""
 
-#: rpmdb/header.c:2863
+#: rpmdb/header.c:2862
 msgid "missing } after %{"
 msgstr "відсутня \"}\" після \"%{\""
 
-#: rpmdb/header.c:2879
+#: rpmdb/header.c:2878
 msgid "empty tag format"
 msgstr "порожній формат тегу"
 
-#: rpmdb/header.c:2891
+#: rpmdb/header.c:2890
 msgid "empty tag name"
 msgstr "порожня назва тегу"
 
-#: rpmdb/header.c:2900
+#: rpmdb/header.c:2899
 msgid "unknown tag"
 msgstr "невідомий тег"
 
-#: rpmdb/header.c:2927
+#: rpmdb/header.c:2926
 msgid "] expected at end of array"
 msgstr "наприкінці масиву очікувалась \"]\""
 
-#: rpmdb/header.c:2940
+#: rpmdb/header.c:2939
 msgid "unexpected ]"
 msgstr "неочікувана \"]\""
 
-#: rpmdb/header.c:2953
+#: rpmdb/header.c:2952
 msgid "unexpected }"
 msgstr "неочікуваний символ \"}\""
 
-#: rpmdb/header.c:3017
+#: rpmdb/header.c:3016
 msgid "? expected in expression"
 msgstr "у виразі очікувався \"?\""
 
-#: rpmdb/header.c:3024
+#: rpmdb/header.c:3023
 msgid "{ expected after ? in expression"
 msgstr "у виразі після \"?\" очікувалась \"{\""
 
-#: rpmdb/header.c:3036 rpmdb/header.c:3076
+#: rpmdb/header.c:3035 rpmdb/header.c:3075
 msgid "} expected in expression"
 msgstr "у виразі очікувалась \"{\""
 
-#: rpmdb/header.c:3044
+#: rpmdb/header.c:3043
 msgid ": expected following ? subexpression"
 msgstr "у виразі після \"{\" очікувалась \":\""
 
-#: rpmdb/header.c:3062
+#: rpmdb/header.c:3061
 msgid "{ expected after : in expression"
 msgstr "у виразі після \":\" очікувалась \"{\""
 
-#: rpmdb/header.c:3084
+#: rpmdb/header.c:3083
 msgid "| expected at end of expression"
 msgstr "наприкінці виразу очікувався символ \"|\""
 
-#: rpmdb/header.c:3187
+#: rpmdb/header.c:3186
 msgid "(index out of range)"
 msgstr "(індекси поза межами)"
 
-#: rpmdb/header.c:3456
+#: rpmdb/header.c:3455
 msgid "array iterator used with different sized arrays"
 msgstr "ітератор масиву використовується з масивом іншого розміру"
 
-#: rpmdb/header.c:3770 rpmdb/header.c:3807 rpmdb/header.c:3830
+#: rpmdb/header.c:3769 rpmdb/header.c:3806 rpmdb/header.c:3829
 msgid "(not a number)"
 msgstr "(не число)"
 
-#: rpmdb/header.c:3869
+#: rpmdb/header.c:3868
 #, c-format
 msgid "%c"
 msgstr "%c"
 
-#: rpmdb/header.c:3886
+#: rpmdb/header.c:3885
 msgid "%a %b %d %Y"
 msgstr "%a, %d %b %Y"
 
@@ -3880,176 +3837,171 @@ msgstr "перевірити файли бази даних"
 msgid "dbiTagsInit: unrecognized tag name: \"%s\" ignored\n"
 msgstr "dbiTagsInit: не розпізнана назва тегу: \"%s\" проігноровано\n"
 
-#: rpmdb/rpmdb.c:319
+#: rpmdb/rpmdb.c:320
 #, c-format
 msgid "cannot open %s index using db%d - %s (%d)\n"
 msgstr "неможливо відкрити індекс %s використовуючи db%d - %s (%d)\n"
 
-#: rpmdb/rpmdb.c:339
+#: rpmdb/rpmdb.c:340
 #, c-format
 msgid "cannot open %s index\n"
 msgstr "неможливо відкрити індекс %s\n"
 
-#: rpmdb/rpmdb.c:809
+#: rpmdb/rpmdb.c:788
 #, fuzzy, c-format
 msgid "incorrect format: \"%s\": %s\n"
 msgstr "неправильний формат: %s\n"
 
-#: rpmdb/rpmdb.c:1130
+#: rpmdb/rpmdb.c:1109
 msgid "no dbpath has been set\n"
 msgstr "не встановлено значення dbpath\n"
 
-#: rpmdb/rpmdb.c:1444 rpmdb/rpmdb.c:1582 rpmdb/rpmdb.c:1638 rpmdb/rpmdb.c:2542
-#: rpmdb/rpmdb.c:2696 rpmdb/rpmdb.c:3477
+#: rpmdb/rpmdb.c:1423 rpmdb/rpmdb.c:1561 rpmdb/rpmdb.c:1617 rpmdb/rpmdb.c:2521
+#: rpmdb/rpmdb.c:2675 rpmdb/rpmdb.c:3456
 #, c-format
 msgid "error(%d) getting \"%s\" records from %s index\n"
 msgstr "помилка(%d) при отриманні \"%s\" елементів з індексу %s index\n"
 
-#: rpmdb/rpmdb.c:1850
+#: rpmdb/rpmdb.c:1829
 msgid "miFreeHeader: skipping"
 msgstr "miFreeHeader: пропускається"
 
-#: rpmdb/rpmdb.c:1860
+#: rpmdb/rpmdb.c:1839
 #, c-format
 msgid "error(%d) storing record #%d into %s\n"
 msgstr "помилка(%d) збереження елементу #%d у %s\n"
 
-#: rpmdb/rpmdb.c:2420
+#: rpmdb/rpmdb.c:2399
 msgid "rpmdbNextIterator: skipping"
 msgstr "rpmdbNextIterator: пропускається"
 
-#: rpmdb/rpmdb.c:2452
+#: rpmdb/rpmdb.c:2431
 #, c-format
 msgid "rpmdb: damaged header #%u retrieved -- skipping.\n"
 msgstr "rpmdb: отримано пошкоджений заголовок #%u -- пропускається.\n"
 
-#: rpmdb/rpmdb.c:2800
+#: rpmdb/rpmdb.c:2779
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: неможливо прочитати заголовок у 0x%x\n"
 
-#: rpmdb/rpmdb.c:2869
+#: rpmdb/rpmdb.c:2848
 #, c-format
 msgid "error(%d) setting header #%d record for %s removal\n"
 msgstr "помилка(%d) позначення елементу заголовка #%d для %s видалення\n"
 
-#: rpmdb/rpmdb.c:2980
+#: rpmdb/rpmdb.c:2959
 #, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "видалення \"%s\" з індексу %s\n"
 
-#: rpmdb/rpmdb.c:2984
+#: rpmdb/rpmdb.c:2963
 #, c-format
 msgid "removing %d entries from %s index.\n"
 msgstr "видалення %d елементів з індексу %s\n"
 
-#: rpmdb/rpmdb.c:3012
+#: rpmdb/rpmdb.c:2991
 #, c-format
 msgid "error(%d) setting \"%s\" records from %s index\n"
 msgstr "помилка(%d) встановлення \"%s\" елементів з індексу %s\n"
 
-#: rpmdb/rpmdb.c:3033
+#: rpmdb/rpmdb.c:3012
 #, c-format
 msgid "error(%d) storing record \"%s\" into %s\n"
 msgstr "помилка(%d) збереження елементу \"%s\" у %s\n"
 
-#: rpmdb/rpmdb.c:3043
+#: rpmdb/rpmdb.c:3022
 #, c-format
 msgid "error(%d) removing record \"%s\" from %s\n"
 msgstr "помилка(%d) видалення елементу \"%s\" з %s\n"
 
-#: rpmdb/rpmdb.c:3214
+#: rpmdb/rpmdb.c:3193
 #, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr "помилка(%d) розподілу пам'яті дял нового екземпляру пакета\n"
 
-#: rpmdb/rpmdb.c:3280
+#: rpmdb/rpmdb.c:3259
 msgid "rpmdbAdd: skipping"
 msgstr "rpmdbAdd: пропускається"
 
-#: rpmdb/rpmdb.c:3452
+#: rpmdb/rpmdb.c:3431
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr "додається \"%s\" до індексу %s.\n"
 
-#: rpmdb/rpmdb.c:3456
+#: rpmdb/rpmdb.c:3435
 #, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr "додаються %d елементів до індексу %s.\n"
 
-#: rpmdb/rpmdb.c:3496
+#: rpmdb/rpmdb.c:3475
 #, c-format
 msgid "error(%d) storing record %s into %s\n"
 msgstr "помилка(%d) збереження елементу %s у %s\n"
 
-#: rpmdb/rpmdb.c:3875
-#, c-format
-msgid "removing %s after successful db3 rebuild.\n"
-msgstr "видаляється %s після успішного завершення переіндексації бази у db3.\n"
-
-#: rpmdb/rpmdb.c:3919
+#: rpmdb/rpmdb.c:3882
 msgid "no dbpath has been set"
 msgstr "параметр dbpath не встановлено"
 
-#: rpmdb/rpmdb.c:3951
+#: rpmdb/rpmdb.c:3914
 #, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "перебудовується база даних %s у %s\n"
 
-#: rpmdb/rpmdb.c:3955
+#: rpmdb/rpmdb.c:3918
 #, c-format
 msgid "temporary database %s already exists\n"
 msgstr "тимчасова база даних %s вже існує\n"
 
-#: rpmdb/rpmdb.c:3961
+#: rpmdb/rpmdb.c:3924
 #, c-format
 msgid "creating directory %s\n"
 msgstr "створюється каталог %s\n"
 
-#: rpmdb/rpmdb.c:3963
+#: rpmdb/rpmdb.c:3926
 #, c-format
 msgid "creating directory %s: %s\n"
 msgstr "створюється каталог %s: %s\n"
 
-#: rpmdb/rpmdb.c:3972
+#: rpmdb/rpmdb.c:3935
 #, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr "відкривається стара база даних через dbapi %d\n"
 
-#: rpmdb/rpmdb.c:3983
+#: rpmdb/rpmdb.c:3946
 #, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr "відкривається база даних через dbapi %d\n"
 
-#: rpmdb/rpmdb.c:4014
+#: rpmdb/rpmdb.c:3977
 #, c-format
 msgid "header #%u in the database is bad -- skipping.\n"
 msgstr "заголовок з номером %u у базі даних неправильний -- пропущено.\n"
 
-#: rpmdb/rpmdb.c:4054
+#: rpmdb/rpmdb.c:4017
 #, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "неможливо добавити елемент(спочатку у %u)\n"
 
-#: rpmdb/rpmdb.c:4068
+#: rpmdb/rpmdb.c:4031
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr "помилка перебудови бази даних: залишається початкова база даних\n"
 
-#: rpmdb/rpmdb.c:4080
+#: rpmdb/rpmdb.c:4043
 msgid "failed to replace old database with new database!\n"
 msgstr "неможливо замінити стару базу даних з новою базою даних!\n"
 
-#: rpmdb/rpmdb.c:4082
+#: rpmdb/rpmdb.c:4045
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "файли у %s замінюються файлами з %s для відновлення"
 
-#: rpmdb/rpmdb.c:4092
+#: rpmdb/rpmdb.c:4055
 #, c-format
 msgid "removing directory %s\n"
 msgstr "видаляється каталог %s\n"
 
-#: rpmdb/rpmdb.c:4094
+#: rpmdb/rpmdb.c:4057
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "помилка видалення каталогу %s: %s\n"
@@ -4423,6 +4375,47 @@ msgstr ""
 #: tools/rpmdeps.c:210
 msgid "check Requires: against Provides: for dependency closure"
 msgstr ""
+
+#, fuzzy
+#~ msgid "only V3 and V4 signatures can be verified, skipping V%u signature\n"
+#~ msgstr ""
+#~ "можна перевіряти лише підписи версії 3, підпис версії %u пропущений\n"
+
+#, fuzzy
+#~ msgid "only V3 or V4 signatures can be verified, skipping V%u signature\n"
+#~ msgstr ""
+#~ "можна перевіряти лише підписи версії 3, підпис версії %u пропущений\n"
+
+#~ msgid "closed   db environment %s/%s\n"
+#~ msgstr "закрито     оточення бази даних %s/%s\n"
+
+#~ msgid "removed  db environment %s/%s\n"
+#~ msgstr "видалено    оточення бази даних %s/%s\n"
+
+#~ msgid "opening  db environment %s/%s %s\n"
+#~ msgstr "відкрито    оточення бази даних %s/%s %s\n"
+
+#~ msgid "closed   db index       %s/%s\n"
+#~ msgstr "закрито     індекс бази даних   %s/%s\n"
+
+#~ msgid "verified db index       %s/%s\n"
+#~ msgstr "перевірено  індекс бази даних   %s/%s\n"
+
+#~ msgid ""
+#~ "unshared posix mutexes found(%d), adding DB_PRIVATE, using fcntl lock\n"
+#~ msgstr ""
+#~ "знайдено не спільні posix блокування(%d), додається DB_PRIVATE, "
+#~ "використовується блокування fcntl\n"
+
+#~ msgid "opening  db index       %s/%s %s mode=0x%x\n"
+#~ msgstr "відкрито    індекс бази даних  %s/%s %s режим=0x%x\n"
+
+#~ msgid "locked   db index       %s/%s\n"
+#~ msgstr "заблоковано індекс бази даних  %s/%s\n"
+
+#~ msgid "removing %s after successful db3 rebuild.\n"
+#~ msgstr ""
+#~ "видаляється %s після успішного завершення переіндексації бази у db3.\n"
 
 #, fuzzy
 #~ msgid "Rolling back successful transactions to %-24.24s (0x%08x).\n"

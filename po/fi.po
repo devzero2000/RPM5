@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: <rpm-devel@lists.dulug.duke.edu>\n"
-"POT-Creation-Date: 2007-05-25 21:25-0400\n"
+"POT-Creation-Date: 2007-06-15 20:47-0400\n"
 "PO-Revision-Date: 1998-05-02 21:41:47-0400\n"
 "Last-Translator: Raimo Koski <rkoski@pp.weppi.fi>\n"
 "Language-Team: Finnish <linux@sot.com>\n"
@@ -1734,71 +1734,75 @@ msgstr ""
 msgid "hdr DSA: BAD, not binary\n"
 msgstr ""
 
-#: lib/package.c:545 lib/package.c:585 lib/package.c:929 lib/package.c:955
-#: lib/package.c:987
+#: lib/package.c:545 lib/package.c:586
 #, c-format
-msgid "only V3 and V4 signatures can be verified, skipping V%u signature\n"
+msgid "skipping header with unverifiable V%u signature\n"
 msgstr ""
 
-#: lib/package.c:673
+#: lib/package.c:675
 #, c-format
 msgid "hdr size(%d): BAD, read returned %d\n"
 msgstr ""
 
-#: lib/package.c:677
+#: lib/package.c:679
 #, c-format
 msgid "hdr magic: BAD\n"
 msgstr ""
 
-#: lib/package.c:685
+#: lib/package.c:687
 #, c-format
 msgid "hdr tags: BAD, no. of tags(%d) out of range\n"
 msgstr ""
 
-#: lib/package.c:694
+#: lib/package.c:696
 #, c-format
 msgid "hdr data: BAD, no. of bytes(%d) out of range\n"
 msgstr ""
 
-#: lib/package.c:708
+#: lib/package.c:710
 #, c-format
 msgid "hdr blob(%d): BAD, read returned %d\n"
 msgstr ""
 
-#: lib/package.c:721
+#: lib/package.c:723
 #, c-format
 msgid "hdr load: BAD\n"
 msgstr ""
 
-#: lib/package.c:799
+#: lib/package.c:801
 #, fuzzy
 msgid "packaging version 1 is not supported by this version of RPM\n"
 msgstr ""
 "t‰m‰ versio RPM:st‰ tukee vain suuremmman kuin 3 versionumeron paketteja"
 
-#: lib/package.c:808
+#: lib/package.c:810
 #, fuzzy
 msgid ""
 "only packaging with major numbers <= 4 is supported by this version of RPM\n"
 msgstr ""
 "t‰m‰ versio RPM:st‰ tukee vain suuremmman kuin 3 versionumeron paketteja"
 
-#: lib/package.c:820 lib/rpmchecksig.c:236 lib/rpmchecksig.c:773
+#: lib/package.c:822 lib/rpmchecksig.c:236 lib/rpmchecksig.c:773
 #, fuzzy, c-format
 msgid "%s: rpmReadSignature failed: %s"
 msgstr "%s: rpmReadSignature ep‰onnistui\n"
 
-#: lib/package.c:827 lib/rpmchecksig.c:243 lib/rpmchecksig.c:781
+#: lib/package.c:829 lib/rpmchecksig.c:243 lib/rpmchecksig.c:781
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: Ei allekirjoitusta saatavilla\n"
 
-#: lib/package.c:894
+#: lib/package.c:896
 #, fuzzy, c-format
 msgid "%s: headerRead failed: %s"
 msgstr "%s: readLead  ep‰onnistui\n"
 
-#: lib/package.c:1002 lib/rpmchecksig.c:118 lib/rpmchecksig.c:689
+#: lib/package.c:931 lib/package.c:957 lib/package.c:989 lib/rpmchecksig.c:870
+#, c-format
+msgid "skipping package %s with unverifiable V%u signature\n"
+msgstr ""
+
+#: lib/package.c:1004 lib/rpmchecksig.c:118 lib/rpmchecksig.c:689
 #, fuzzy, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: readLead  ep‰onnistui\n"
@@ -2858,33 +2862,28 @@ msgstr "%s: readLead  ep‰onnistui\n"
 msgid "%s: No signature available (v1.0 RPM)\n"
 msgstr "%s: Ei allekirjoitusta saatavilla (v1.0 RPM)\n"
 
-#: lib/rpmchecksig.c:870
-#, c-format
-msgid "only V3 or V4 signatures can be verified, skipping V%u signature\n"
-msgstr ""
-
-#: lib/rpmchecksig.c:1036
+#: lib/rpmchecksig.c:1037
 msgid "NOT OK"
 msgstr ""
 
-#: lib/rpmchecksig.c:1037 lib/rpmchecksig.c:1051
+#: lib/rpmchecksig.c:1038 lib/rpmchecksig.c:1052
 #, fuzzy
 msgid " (MISSING KEYS:"
 msgstr "(PUUTTUVAT AVAIMET)"
 
-#: lib/rpmchecksig.c:1039 lib/rpmchecksig.c:1053
+#: lib/rpmchecksig.c:1040 lib/rpmchecksig.c:1054
 msgid ") "
 msgstr ""
 
-#: lib/rpmchecksig.c:1040 lib/rpmchecksig.c:1054
+#: lib/rpmchecksig.c:1041 lib/rpmchecksig.c:1055
 msgid " (UNTRUSTED KEYS:"
 msgstr ""
 
-#: lib/rpmchecksig.c:1042 lib/rpmchecksig.c:1056
+#: lib/rpmchecksig.c:1043 lib/rpmchecksig.c:1057
 msgid ")"
 msgstr ""
 
-#: lib/rpmchecksig.c:1050
+#: lib/rpmchecksig.c:1051
 msgid "OK"
 msgstr ""
 
@@ -3056,31 +3055,31 @@ msgstr "%s:n luonti ep‰onnistui\n"
 msgid "%s skipped due to missingok flag\n"
 msgstr ""
 
-#: lib/rpmfi.c:874
+#: lib/rpmfi.c:873
 msgid "========== relocations\n"
 msgstr ""
 
-#: lib/rpmfi.c:878
+#: lib/rpmfi.c:877
 #, fuzzy, c-format
 msgid "%5d exclude  %s\n"
 msgstr "Haen: %s\n"
 
-#: lib/rpmfi.c:881
+#: lib/rpmfi.c:880
 #, fuzzy, c-format
 msgid "%5d relocate %s -> %s\n"
 msgstr "en voinut avata tiedostoa %s: "
 
-#: lib/rpmfi.c:1015
+#: lib/rpmfi.c:1014
 #, fuzzy, c-format
 msgid "excluding %s %s\n"
 msgstr "Haen: %s\n"
 
-#: lib/rpmfi.c:1025
+#: lib/rpmfi.c:1024
 #, fuzzy, c-format
 msgid "relocating %s to %s\n"
 msgstr "virhe luotaessa hakemistoa %s: %s"
 
-#: lib/rpmfi.c:1117
+#: lib/rpmfi.c:1116
 #, fuzzy, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "virhe luotaessa hakemistoa %s: %s"
@@ -3385,42 +3384,42 @@ msgstr "%s:n puuttuva arkkitehtuuri %s:%d"
 msgid "bad option '%s' at %s:%d\n"
 msgstr "huono parametri '%s', %s:%d"
 
-#: lib/rpmrc.c:1920
+#: lib/rpmrc.c:1922
 #, fuzzy, c-format
 msgid "Cannot expand %s\n"
 msgstr "virhe: en voi avata %s\n"
 
-#: lib/rpmrc.c:1925
+#: lib/rpmrc.c:1927
 #, c-format
 msgid "Cannot read %s, HOME is too large.\n"
 msgstr ""
 
-#: lib/rpmrc.c:1942
+#: lib/rpmrc.c:1944
 #, fuzzy, c-format
 msgid "Unable to open %s for reading: %s.\n"
 msgstr "En voi avata %s luettavaksi: %s."
 
-#: lib/rpmrc.c:2087
+#: lib/rpmrc.c:2089
 #, c-format
 msgid "Configured system provides (from /etc/rpm/sysinfo):\n"
 msgstr ""
 
-#: lib/rpmrc.c:2101
+#: lib/rpmrc.c:2103
 #, c-format
 msgid "Features provided by rpmlib installer:\n"
 msgstr ""
 
-#: lib/rpmrc.c:2115
+#: lib/rpmrc.c:2117
 #, c-format
 msgid "Features provided by current cpuinfo (from /proc/cpuinfo):\n"
 msgstr ""
 
-#: lib/rpmrc.c:2129
+#: lib/rpmrc.c:2131
 #, c-format
 msgid "Features provided by current getconf:\n"
 msgstr ""
 
-#: lib/rpmrc.c:2143
+#: lib/rpmrc.c:2145
 #, c-format
 msgid "Features provided by current uname:\n"
 msgstr ""
@@ -3769,62 +3768,22 @@ msgstr ""
 msgid "db%d error(%d): %s\n"
 msgstr ""
 
-#: rpmdb/db3.c:191
-#, c-format
-msgid "closed   db environment %s/%s\n"
-msgstr ""
-
-#: rpmdb/db3.c:210
-#, c-format
-msgid "removed  db environment %s/%s\n"
-msgstr ""
-
-#: rpmdb/db3.c:331
-#, fuzzy, c-format
-msgid "opening  db environment %s/%s %s\n"
-msgstr "kokoa tietokanta uudelleen vanhasta tietokannasta"
-
-#: rpmdb/db3.c:954
-#, fuzzy, c-format
-msgid "closed   db index       %s/%s\n"
-msgstr "kokoa tietokanta uudelleen vanhasta tietokannasta"
-
-#: rpmdb/db3.c:1024
-#, fuzzy, c-format
-msgid "verified db index       %s/%s\n"
-msgstr "kokoa tietokanta uudelleen vanhasta tietokannasta"
-
-#: rpmdb/db3.c:1168
-#, c-format
-msgid "unshared posix mutexes found(%d), adding DB_PRIVATE, using fcntl lock\n"
-msgstr ""
-
-#: rpmdb/db3.c:1274
+#: rpmdb/db3.c:1292
 msgid "Runnning db->verify ...\n"
 msgstr ""
 
-#: rpmdb/db3.c:1338
-#, fuzzy, c-format
-msgid "opening  db index       %s/%s %s mode=0x%x\n"
-msgstr "kokoa tietokanta uudelleen vanhasta tietokannasta"
-
-#: rpmdb/db3.c:1579
+#: rpmdb/db3.c:1597
 #, fuzzy, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "en voi saada %s lukitusta tietokantaan"
 
-#: rpmdb/db3.c:1581
+#: rpmdb/db3.c:1599
 msgid "exclusive"
 msgstr "poissulkevaa"
 
-#: rpmdb/db3.c:1581
+#: rpmdb/db3.c:1599
 msgid "shared"
 msgstr "jaettua"
-
-#: rpmdb/db3.c:1585
-#, fuzzy, c-format
-msgid "locked   db index       %s/%s\n"
-msgstr "kokoa tietokanta uudelleen vanhasta tietokannasta"
 
 #: rpmdb/dbconfig.c:575
 #, c-format
@@ -3949,177 +3908,172 @@ msgstr "%s:n kysely ei onnistunut\n"
 msgid "dbiTagsInit: unrecognized tag name: \"%s\" ignored\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:319
+#: rpmdb/rpmdb.c:320
 #, fuzzy, c-format
 msgid "cannot open %s index using db%d - %s (%d)\n"
 msgstr "en voinut avata tiedostoa %s: "
 
-#: rpmdb/rpmdb.c:339
+#: rpmdb/rpmdb.c:340
 #, fuzzy, c-format
 msgid "cannot open %s index\n"
 msgstr "virhe: en voi avata %s\n"
 
-#: rpmdb/rpmdb.c:809
+#: rpmdb/rpmdb.c:788
 #, fuzzy, c-format
 msgid "incorrect format: \"%s\": %s\n"
 msgstr "virhe formaatissa: %s\n"
 
-#: rpmdb/rpmdb.c:1130
+#: rpmdb/rpmdb.c:1109
 #, fuzzy
 msgid "no dbpath has been set\n"
 msgstr "dbpath ei ole asetettu"
 
-#: rpmdb/rpmdb.c:1444 rpmdb/rpmdb.c:1582 rpmdb/rpmdb.c:1638 rpmdb/rpmdb.c:2542
-#: rpmdb/rpmdb.c:2696 rpmdb/rpmdb.c:3477
+#: rpmdb/rpmdb.c:1423 rpmdb/rpmdb.c:1561 rpmdb/rpmdb.c:1617 rpmdb/rpmdb.c:2521
+#: rpmdb/rpmdb.c:2675 rpmdb/rpmdb.c:3456
 #, fuzzy, c-format
 msgid "error(%d) getting \"%s\" records from %s index\n"
 msgstr "virhe luettaessa tietuetta %s %s:st‰"
 
-#: rpmdb/rpmdb.c:1850
+#: rpmdb/rpmdb.c:1829
 msgid "miFreeHeader: skipping"
 msgstr ""
 
-#: rpmdb/rpmdb.c:1860
+#: rpmdb/rpmdb.c:1839
 #, fuzzy, c-format
 msgid "error(%d) storing record #%d into %s\n"
 msgstr "virhe talletettaessa tietuetta %s %s:‰‰n"
 
-#: rpmdb/rpmdb.c:2420
+#: rpmdb/rpmdb.c:2399
 msgid "rpmdbNextIterator: skipping"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2452
+#: rpmdb/rpmdb.c:2431
 #, c-format
 msgid "rpmdb: damaged header #%u retrieved -- skipping.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2800
+#: rpmdb/rpmdb.c:2779
 #, fuzzy, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "en voi lukea headeria %d:st‰ p‰ivitt‰ess‰"
 
-#: rpmdb/rpmdb.c:2869
+#: rpmdb/rpmdb.c:2848
 #, fuzzy, c-format
 msgid "error(%d) setting header #%d record for %s removal\n"
 msgstr "virhe luettaessa tietuetta %s %s:st‰"
 
-#: rpmdb/rpmdb.c:2980
+#: rpmdb/rpmdb.c:2959
 #, fuzzy, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "virhe poistettaessa tietuetta %s %s:st‰"
 
-#: rpmdb/rpmdb.c:2984
+#: rpmdb/rpmdb.c:2963
 #, fuzzy, c-format
 msgid "removing %d entries from %s index.\n"
 msgstr "virhe poistettaessa tietuetta %s %s:st‰"
 
-#: rpmdb/rpmdb.c:3012
+#: rpmdb/rpmdb.c:2991
 #, fuzzy, c-format
 msgid "error(%d) setting \"%s\" records from %s index\n"
 msgstr "virhe luettaessa tietuetta %s %s:st‰"
 
-#: rpmdb/rpmdb.c:3033
+#: rpmdb/rpmdb.c:3012
 #, fuzzy, c-format
 msgid "error(%d) storing record \"%s\" into %s\n"
 msgstr "virhe talletettaessa tietuetta %s %s:‰‰n"
 
-#: rpmdb/rpmdb.c:3043
+#: rpmdb/rpmdb.c:3022
 #, fuzzy, c-format
 msgid "error(%d) removing record \"%s\" from %s\n"
 msgstr "virhe poistettaessa tietuetta %s %s:st‰"
 
-#: rpmdb/rpmdb.c:3214
+#: rpmdb/rpmdb.c:3193
 #, fuzzy, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr "virhe etsitt‰ess‰ pakettia %s\n"
 
-#: rpmdb/rpmdb.c:3280
+#: rpmdb/rpmdb.c:3259
 msgid "rpmdbAdd: skipping"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3452
+#: rpmdb/rpmdb.c:3431
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3456
+#: rpmdb/rpmdb.c:3435
 #, fuzzy, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr "virhe poistettaessa tietuetta %s %s:st‰"
 
-#: rpmdb/rpmdb.c:3496
+#: rpmdb/rpmdb.c:3475
 #, fuzzy, c-format
 msgid "error(%d) storing record %s into %s\n"
 msgstr "virhe talletettaessa tietuetta %s %s:‰‰n"
 
-#: rpmdb/rpmdb.c:3875
-#, c-format
-msgid "removing %s after successful db3 rebuild.\n"
-msgstr ""
-
-#: rpmdb/rpmdb.c:3919
+#: rpmdb/rpmdb.c:3882
 msgid "no dbpath has been set"
 msgstr "dbpath ei ole asetettu"
 
-#: rpmdb/rpmdb.c:3951
+#: rpmdb/rpmdb.c:3914
 #, fuzzy, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "kokoa tietokanta uudelleen vanhasta tietokannasta"
 
-#: rpmdb/rpmdb.c:3955
+#: rpmdb/rpmdb.c:3918
 #, fuzzy, c-format
 msgid "temporary database %s already exists\n"
 msgstr "v‰liaikainen tietokanta %s on jo olemassa"
 
-#: rpmdb/rpmdb.c:3961
+#: rpmdb/rpmdb.c:3924
 #, fuzzy, c-format
 msgid "creating directory %s\n"
 msgstr "virhe luotaessa hakemistoa %s: %s"
 
-#: rpmdb/rpmdb.c:3963
+#: rpmdb/rpmdb.c:3926
 #, fuzzy, c-format
 msgid "creating directory %s: %s\n"
 msgstr "virhe luotaessa hakemistoa %s: %s"
 
-#: rpmdb/rpmdb.c:3972
+#: rpmdb/rpmdb.c:3935
 #, fuzzy, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr "kokoa tietokanta uudelleen vanhasta tietokannasta"
 
-#: rpmdb/rpmdb.c:3983
+#: rpmdb/rpmdb.c:3946
 #, fuzzy, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr "kokoa tietokanta uudelleen vanhasta tietokannasta"
 
-#: rpmdb/rpmdb.c:4014
+#: rpmdb/rpmdb.c:3977
 #, fuzzy, c-format
 msgid "header #%u in the database is bad -- skipping.\n"
 msgstr "tietue numero %d tietokannassa viallinen -- ohitan sen"
 
-#: rpmdb/rpmdb.c:4054
+#: rpmdb/rpmdb.c:4017
 #, fuzzy, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "en voi lis‰t‰ tietuetta %d:st‰"
 
-#: rpmdb/rpmdb.c:4068
+#: rpmdb/rpmdb.c:4031
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:4080
+#: rpmdb/rpmdb.c:4043
 msgid "failed to replace old database with new database!\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:4082
+#: rpmdb/rpmdb.c:4045
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr ""
 
-#: rpmdb/rpmdb.c:4092
+#: rpmdb/rpmdb.c:4055
 #, fuzzy, c-format
 msgid "removing directory %s\n"
 msgstr "virhe luotaessa hakemistoa %s: %s"
 
-#: rpmdb/rpmdb.c:4094
+#: rpmdb/rpmdb.c:4057
 #, fuzzy, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "en voinut avata %s: %s"
@@ -4504,6 +4458,26 @@ msgstr ""
 #: tools/rpmdeps.c:210
 msgid "check Requires: against Provides: for dependency closure"
 msgstr ""
+
+#, fuzzy
+#~ msgid "opening  db environment %s/%s %s\n"
+#~ msgstr "kokoa tietokanta uudelleen vanhasta tietokannasta"
+
+#, fuzzy
+#~ msgid "closed   db index       %s/%s\n"
+#~ msgstr "kokoa tietokanta uudelleen vanhasta tietokannasta"
+
+#, fuzzy
+#~ msgid "verified db index       %s/%s\n"
+#~ msgstr "kokoa tietokanta uudelleen vanhasta tietokannasta"
+
+#, fuzzy
+#~ msgid "opening  db index       %s/%s %s mode=0x%x\n"
+#~ msgstr "kokoa tietokanta uudelleen vanhasta tietokannasta"
+
+#, fuzzy
+#~ msgid "locked   db index       %s/%s\n"
+#~ msgstr "kokoa tietokanta uudelleen vanhasta tietokannasta"
 
 #, fuzzy
 #~ msgid "Creating semaphore %s...\n"

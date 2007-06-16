@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RPM 4.2.1\n"
 "Report-Msgid-Bugs-To: <rpm-devel@lists.dulug.duke.edu>\n"
-"POT-Creation-Date: 2007-05-25 21:25-0400\n"
+"POT-Creation-Date: 2007-06-15 20:47-0400\n"
 "PO-Revision-Date: 2003-07-06 01:36+0200\n"
 "Last-Translator: RPM French Translation <rpm-fr@livna.org>\n"
 "Language-Team: RPM French Translation <rpm-fr@livna.org>\n"
@@ -1739,70 +1739,74 @@ msgstr "hdr SDA: MAUVAIS, non binaire\n"
 msgid "hdr DSA: BAD, not binary\n"
 msgstr "hdr SDA: MAUVAIS, non binaire\n"
 
-#: lib/package.c:545 lib/package.c:585 lib/package.c:929 lib/package.c:955
-#: lib/package.c:987
-#, fuzzy, c-format
-msgid "only V3 and V4 signatures can be verified, skipping V%u signature\n"
-msgstr "seules les signatures V3 peut être vérifiées, signature V%u ignorée\n"
+#: lib/package.c:545 lib/package.c:586
+#, c-format
+msgid "skipping header with unverifiable V%u signature\n"
+msgstr ""
 
-#: lib/package.c:673
+#: lib/package.c:675
 #, c-format
 msgid "hdr size(%d): BAD, read returned %d\n"
 msgstr "hdr taille(%d): PASBON, la lecture renvoie %d\n"
 
-#: lib/package.c:677
+#: lib/package.c:679
 #, c-format
 msgid "hdr magic: BAD\n"
 msgstr ""
 
-#: lib/package.c:685
+#: lib/package.c:687
 #, c-format
 msgid "hdr tags: BAD, no. of tags(%d) out of range\n"
 msgstr ""
 
-#: lib/package.c:694
+#: lib/package.c:696
 #, c-format
 msgid "hdr data: BAD, no. of bytes(%d) out of range\n"
 msgstr ""
 
-#: lib/package.c:708
+#: lib/package.c:710
 #, c-format
 msgid "hdr blob(%d): BAD, read returned %d\n"
 msgstr "hdr blob(%d): PASBON, la lecture renvoie %d\n"
 
-#: lib/package.c:721
+#: lib/package.c:723
 #, c-format
 msgid "hdr load: BAD\n"
 msgstr ""
 
-#: lib/package.c:799
+#: lib/package.c:801
 msgid "packaging version 1 is not supported by this version of RPM\n"
 msgstr ""
 "la version 1 de l'emballage n'est pas supportée par cette version de RPM\n"
 
-#: lib/package.c:808
+#: lib/package.c:810
 msgid ""
 "only packaging with major numbers <= 4 is supported by this version of RPM\n"
 msgstr ""
 "seuls les emaballages avec un numéro de version majeur <= 4 sont supportés "
 "par cette version de rpm\n"
 
-#: lib/package.c:820 lib/rpmchecksig.c:236 lib/rpmchecksig.c:773
+#: lib/package.c:822 lib/rpmchecksig.c:236 lib/rpmchecksig.c:773
 #, c-format
 msgid "%s: rpmReadSignature failed: %s"
 msgstr "%s: échec de rpmReadSignature: %s"
 
-#: lib/package.c:827 lib/rpmchecksig.c:243 lib/rpmchecksig.c:781
+#: lib/package.c:829 lib/rpmchecksig.c:243 lib/rpmchecksig.c:781
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: aucune signature disponible\n"
 
-#: lib/package.c:894
+#: lib/package.c:896
 #, c-format
 msgid "%s: headerRead failed: %s"
 msgstr "%s: headerRead a échoué: %s"
 
-#: lib/package.c:1002 lib/rpmchecksig.c:118 lib/rpmchecksig.c:689
+#: lib/package.c:931 lib/package.c:957 lib/package.c:989 lib/rpmchecksig.c:870
+#, c-format
+msgid "skipping package %s with unverifiable V%u signature\n"
+msgstr ""
+
+#: lib/package.c:1004 lib/rpmchecksig.c:118 lib/rpmchecksig.c:689
 #, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: Fread a échoué: %s\n"
@@ -2840,32 +2844,27 @@ msgstr "%s: échec de headerGetEntry\n"
 msgid "%s: No signature available (v1.0 RPM)\n"
 msgstr "%s: Aucune signature disponible (v1.0 RPM)\n"
 
-#: lib/rpmchecksig.c:870
-#, fuzzy, c-format
-msgid "only V3 or V4 signatures can be verified, skipping V%u signature\n"
-msgstr "seules les signatures V3 peut être vérifiées, signature V%u ignorée\n"
-
-#: lib/rpmchecksig.c:1036
+#: lib/rpmchecksig.c:1037
 msgid "NOT OK"
 msgstr "PAS OK"
 
-#: lib/rpmchecksig.c:1037 lib/rpmchecksig.c:1051
+#: lib/rpmchecksig.c:1038 lib/rpmchecksig.c:1052
 msgid " (MISSING KEYS:"
 msgstr " (CLES MANQUANTES:"
 
-#: lib/rpmchecksig.c:1039 lib/rpmchecksig.c:1053
+#: lib/rpmchecksig.c:1040 lib/rpmchecksig.c:1054
 msgid ") "
 msgstr ") "
 
-#: lib/rpmchecksig.c:1040 lib/rpmchecksig.c:1054
+#: lib/rpmchecksig.c:1041 lib/rpmchecksig.c:1055
 msgid " (UNTRUSTED KEYS:"
 msgstr " (CLES NONCREDIBLE:"
 
-#: lib/rpmchecksig.c:1042 lib/rpmchecksig.c:1056
+#: lib/rpmchecksig.c:1043 lib/rpmchecksig.c:1057
 msgid ")"
 msgstr ")"
 
-#: lib/rpmchecksig.c:1050
+#: lib/rpmchecksig.c:1051
 msgid "OK"
 msgstr "OK"
 
@@ -3051,31 +3050,31 @@ msgstr "Impossible de lire %s: %s.\n"
 msgid "%s skipped due to missingok flag\n"
 msgstr "%s ignoré à cause du drapeau missingok\n"
 
-#: lib/rpmfi.c:874
+#: lib/rpmfi.c:873
 msgid "========== relocations\n"
 msgstr "========== relogements\n"
 
-#: lib/rpmfi.c:878
+#: lib/rpmfi.c:877
 #, c-format
 msgid "%5d exclude  %s\n"
 msgstr "%5d exclus  %s\n"
 
-#: lib/rpmfi.c:881
+#: lib/rpmfi.c:880
 #, c-format
 msgid "%5d relocate %s -> %s\n"
 msgstr "%5d reloge %s -> %s\n"
 
-#: lib/rpmfi.c:1015
+#: lib/rpmfi.c:1014
 #, c-format
 msgid "excluding %s %s\n"
 msgstr "exclusion de %s %s\n"
 
-#: lib/rpmfi.c:1025
+#: lib/rpmfi.c:1024
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr "relogement de %s vers %s\n"
 
-#: lib/rpmfi.c:1117
+#: lib/rpmfi.c:1116
 #, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "relogement du répertoire %s vers %s\n"
@@ -3385,42 +3384,42 @@ msgstr "architecture manquante pour %s à %s:%d\n"
 msgid "bad option '%s' at %s:%d\n"
 msgstr "mauvaise option '%s' à %s:%d\n"
 
-#: lib/rpmrc.c:1920
+#: lib/rpmrc.c:1922
 #, c-format
 msgid "Cannot expand %s\n"
 msgstr "Impossible d'expanser %s\n"
 
-#: lib/rpmrc.c:1925
+#: lib/rpmrc.c:1927
 #, c-format
 msgid "Cannot read %s, HOME is too large.\n"
 msgstr "Impossible de lire %s, HOME trop gros.\n"
 
-#: lib/rpmrc.c:1942
+#: lib/rpmrc.c:1944
 #, c-format
 msgid "Unable to open %s for reading: %s.\n"
 msgstr "Impossible d'ouvrir %s en lecture: %s.\n"
 
-#: lib/rpmrc.c:2087
+#: lib/rpmrc.c:2089
 #, c-format
 msgid "Configured system provides (from /etc/rpm/sysinfo):\n"
 msgstr ""
 
-#: lib/rpmrc.c:2101
+#: lib/rpmrc.c:2103
 #, c-format
 msgid "Features provided by rpmlib installer:\n"
 msgstr ""
 
-#: lib/rpmrc.c:2115
+#: lib/rpmrc.c:2117
 #, c-format
 msgid "Features provided by current cpuinfo (from /proc/cpuinfo):\n"
 msgstr ""
 
-#: lib/rpmrc.c:2129
+#: lib/rpmrc.c:2131
 #, c-format
 msgid "Features provided by current getconf:\n"
 msgstr ""
 
-#: lib/rpmrc.c:2143
+#: lib/rpmrc.c:2145
 #, c-format
 msgid "Features provided by current uname:\n"
 msgstr ""
@@ -3770,64 +3769,22 @@ msgstr "erreur db%d(%d) de %s: %s\n"
 msgid "db%d error(%d): %s\n"
 msgstr "erreur db%d(%d): %s\n"
 
-#: rpmdb/db3.c:191
-#, c-format
-msgid "closed   db environment %s/%s\n"
-msgstr "fermeture  db environnement %s/%s\n"
-
-#: rpmdb/db3.c:210
-#, c-format
-msgid "removed  db environment %s/%s\n"
-msgstr "enlèvement db environnement %s/%s\n"
-
-#: rpmdb/db3.c:331
-#, c-format
-msgid "opening  db environment %s/%s %s\n"
-msgstr "ouverture  db environnement %s/%s %s\n"
-
-#: rpmdb/db3.c:954
-#, c-format
-msgid "closed   db index       %s/%s\n"
-msgstr "fermeture     index db    %s/%s\n"
-
-#: rpmdb/db3.c:1024
-#, c-format
-msgid "verified db index       %s/%s\n"
-msgstr "vérif.     db index       %s/%s\n"
-
-#: rpmdb/db3.c:1168
-#, c-format
-msgid "unshared posix mutexes found(%d), adding DB_PRIVATE, using fcntl lock\n"
-msgstr ""
-"trouvés(%d) mutex posix non-partagés, rajout de DB_PRIVATE, utilisation des "
-"verrous fcntl\n"
-
-#: rpmdb/db3.c:1274
+#: rpmdb/db3.c:1292
 msgid "Runnning db->verify ...\n"
 msgstr ""
 
-#: rpmdb/db3.c:1338
-#, c-format
-msgid "opening  db index       %s/%s %s mode=0x%x\n"
-msgstr "ouverture     index db    %s/%s %s mode=0x%x\n"
-
-#: rpmdb/db3.c:1579
+#: rpmdb/db3.c:1597
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "impossible d'avoir le verrou %s sur %s/%s\n"
 
-#: rpmdb/db3.c:1581
+#: rpmdb/db3.c:1599
 msgid "exclusive"
 msgstr "exclusif"
 
-#: rpmdb/db3.c:1581
+#: rpmdb/db3.c:1599
 msgid "shared"
 msgstr "partagé"
-
-#: rpmdb/db3.c:1585
-#, c-format
-msgid "locked   db index       %s/%s\n"
-msgstr "verrouillage  index db    %s/%s\n"
 
 #: rpmdb/dbconfig.c:575
 #, c-format
@@ -3950,181 +3907,176 @@ msgstr "vérifier les fichiers de la base de données"
 msgid "dbiTagsInit: unrecognized tag name: \"%s\" ignored\n"
 msgstr "dbiTagsInit: nom de tag non-reconnu: \"%s\" ignoré\n"
 
-#: rpmdb/rpmdb.c:319
+#: rpmdb/rpmdb.c:320
 #, c-format
 msgid "cannot open %s index using db%d - %s (%d)\n"
 msgstr "ne peut ouvrir l'index %s en utilisant db%d - %s (%d)\n"
 
-#: rpmdb/rpmdb.c:339
+#: rpmdb/rpmdb.c:340
 #, c-format
 msgid "cannot open %s index\n"
 msgstr "ne peut ouvrir l'index %s\n"
 
-#: rpmdb/rpmdb.c:809
+#: rpmdb/rpmdb.c:788
 #, fuzzy, c-format
 msgid "incorrect format: \"%s\": %s\n"
 msgstr "format incorrect: %s\n"
 
-#: rpmdb/rpmdb.c:1130
+#: rpmdb/rpmdb.c:1109
 msgid "no dbpath has been set\n"
 msgstr "aucun dbpath n'a été fourni\n"
 
-#: rpmdb/rpmdb.c:1444 rpmdb/rpmdb.c:1582 rpmdb/rpmdb.c:1638 rpmdb/rpmdb.c:2542
-#: rpmdb/rpmdb.c:2696 rpmdb/rpmdb.c:3477
+#: rpmdb/rpmdb.c:1423 rpmdb/rpmdb.c:1561 rpmdb/rpmdb.c:1617 rpmdb/rpmdb.c:2521
+#: rpmdb/rpmdb.c:2675 rpmdb/rpmdb.c:3456
 #, c-format
 msgid "error(%d) getting \"%s\" records from %s index\n"
 msgstr "erreur(%d) en attrapant les articles \"%s\" de l'index %s\n"
 
-#: rpmdb/rpmdb.c:1850
+#: rpmdb/rpmdb.c:1829
 msgid "miFreeHeader: skipping"
 msgstr "miFreeHeader: on saute"
 
-#: rpmdb/rpmdb.c:1860
+#: rpmdb/rpmdb.c:1839
 #, c-format
 msgid "error(%d) storing record #%d into %s\n"
 msgstr "erreur(%d) en stockant l'article nº%d dans %s\n"
 
-#: rpmdb/rpmdb.c:2420
+#: rpmdb/rpmdb.c:2399
 msgid "rpmdbNextIterator: skipping"
 msgstr "rpmdbNextIterator: on saute"
 
-#: rpmdb/rpmdb.c:2452
+#: rpmdb/rpmdb.c:2431
 #, c-format
 msgid "rpmdb: damaged header #%u retrieved -- skipping.\n"
 msgstr "rpmdb: l'entête nº%u endommagé a été téléchargé -- ignoré.\n"
 
-#: rpmdb/rpmdb.c:2800
+#: rpmdb/rpmdb.c:2779
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: impossible de lire l'entête à 0x%x\n"
 
-#: rpmdb/rpmdb.c:2869
+#: rpmdb/rpmdb.c:2848
 #, c-format
 msgid "error(%d) setting header #%d record for %s removal\n"
 msgstr ""
 "erreur(%d) en affectant l'article de l'entête nº%d pour l'enlèvement de %s\n"
 
-#: rpmdb/rpmdb.c:2980
+#: rpmdb/rpmdb.c:2959
 #, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "enlèvement \"%s\" à l'index %s.\n"
 
-#: rpmdb/rpmdb.c:2984
+#: rpmdb/rpmdb.c:2963
 #, c-format
 msgid "removing %d entries from %s index.\n"
 msgstr "enlèvement de %d entrées à l'index %s.\n"
 
-#: rpmdb/rpmdb.c:3012
+#: rpmdb/rpmdb.c:2991
 #, c-format
 msgid "error(%d) setting \"%s\" records from %s index\n"
 msgstr "erreur(%d) en affectant les articles \"%s\" de l'index %s\n"
 
-#: rpmdb/rpmdb.c:3033
+#: rpmdb/rpmdb.c:3012
 #, c-format
 msgid "error(%d) storing record \"%s\" into %s\n"
 msgstr "erreur(%d) en stockant l'article \"%s\" dans %s\n"
 
-#: rpmdb/rpmdb.c:3043
+#: rpmdb/rpmdb.c:3022
 #, c-format
 msgid "error(%d) removing record \"%s\" from %s\n"
 msgstr "erreur(%d) en enlevant l'article \"%s\" de %s\n"
 
-#: rpmdb/rpmdb.c:3214
+#: rpmdb/rpmdb.c:3193
 #, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr "erreur(%d) en allouant une nouvelle instance de paquetage\n"
 
-#: rpmdb/rpmdb.c:3280
+#: rpmdb/rpmdb.c:3259
 msgid "rpmdbAdd: skipping"
 msgstr "rpmdbAdd: on saute"
 
-#: rpmdb/rpmdb.c:3452
+#: rpmdb/rpmdb.c:3431
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr "rajout de \"%s\" à l'index %s.\n"
 
-#: rpmdb/rpmdb.c:3456
+#: rpmdb/rpmdb.c:3435
 #, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr "rajout de %d entrées à l'index %s.\n"
 
-#: rpmdb/rpmdb.c:3496
+#: rpmdb/rpmdb.c:3475
 #, c-format
 msgid "error(%d) storing record %s into %s\n"
 msgstr "erreur(%d) en stockant l'article %s dans %s\n"
 
-#: rpmdb/rpmdb.c:3875
-#, c-format
-msgid "removing %s after successful db3 rebuild.\n"
-msgstr "enlèvement de %s après la reconstruction réussie en db3.\n"
-
-#: rpmdb/rpmdb.c:3919
+#: rpmdb/rpmdb.c:3882
 msgid "no dbpath has been set"
 msgstr "aucun dbpath fourni"
 
-#: rpmdb/rpmdb.c:3951
+#: rpmdb/rpmdb.c:3914
 #, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "reconstruction de la base de données de %s en %s\n"
 
-#: rpmdb/rpmdb.c:3955
+#: rpmdb/rpmdb.c:3918
 #, c-format
 msgid "temporary database %s already exists\n"
 msgstr "la base de données temporarire %s existe déjà\n"
 
-#: rpmdb/rpmdb.c:3961
+#: rpmdb/rpmdb.c:3924
 #, c-format
 msgid "creating directory %s\n"
 msgstr "création du répertoire %s\n"
 
-#: rpmdb/rpmdb.c:3963
+#: rpmdb/rpmdb.c:3926
 #, c-format
 msgid "creating directory %s: %s\n"
 msgstr "création du répertoire %s: %s\n"
 
-#: rpmdb/rpmdb.c:3972
+#: rpmdb/rpmdb.c:3935
 #, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr "ouverture d'une vieille base de données avec dbapi %d\n"
 
-#: rpmdb/rpmdb.c:3983
+#: rpmdb/rpmdb.c:3946
 #, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr "ouverture d'une nouvelle base de données avec dbapi %d\n"
 
-#: rpmdb/rpmdb.c:4014
+#: rpmdb/rpmdb.c:3977
 #, c-format
 msgid "header #%u in the database is bad -- skipping.\n"
 msgstr "l'entête nº%u dans la base de données n'est pas bon -- ignoré.\n"
 
-#: rpmdb/rpmdb.c:4054
+#: rpmdb/rpmdb.c:4017
 #, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "impossible d'ajouter l'article qui était au départ à %u\n"
 
-#: rpmdb/rpmdb.c:4068
+#: rpmdb/rpmdb.c:4031
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 "Ne peut reconstruire la base de données: la base originale reste telle "
 "qu'elle est\n"
 
-#: rpmdb/rpmdb.c:4080
+#: rpmdb/rpmdb.c:4043
 msgid "failed to replace old database with new database!\n"
 msgstr "Ne peut remplacer la vieille base de données par la nouvelle!\n"
 
-#: rpmdb/rpmdb.c:4082
+#: rpmdb/rpmdb.c:4045
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr ""
 "remplacer les fichiers dans %s avec les fichiers de %s pour faire une "
 "récupération"
 
-#: rpmdb/rpmdb.c:4092
+#: rpmdb/rpmdb.c:4055
 #, c-format
 msgid "removing directory %s\n"
 msgstr "destruction du répertoire %s\n"
 
-#: rpmdb/rpmdb.c:4094
+#: rpmdb/rpmdb.c:4057
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "Ne peut détruire le répertoire %s: %s\n"
@@ -4498,6 +4450,46 @@ msgstr ""
 #: tools/rpmdeps.c:210
 msgid "check Requires: against Provides: for dependency closure"
 msgstr ""
+
+#, fuzzy
+#~ msgid "only V3 and V4 signatures can be verified, skipping V%u signature\n"
+#~ msgstr ""
+#~ "seules les signatures V3 peut être vérifiées, signature V%u ignorée\n"
+
+#, fuzzy
+#~ msgid "only V3 or V4 signatures can be verified, skipping V%u signature\n"
+#~ msgstr ""
+#~ "seules les signatures V3 peut être vérifiées, signature V%u ignorée\n"
+
+#~ msgid "closed   db environment %s/%s\n"
+#~ msgstr "fermeture  db environnement %s/%s\n"
+
+#~ msgid "removed  db environment %s/%s\n"
+#~ msgstr "enlèvement db environnement %s/%s\n"
+
+#~ msgid "opening  db environment %s/%s %s\n"
+#~ msgstr "ouverture  db environnement %s/%s %s\n"
+
+#~ msgid "closed   db index       %s/%s\n"
+#~ msgstr "fermeture     index db    %s/%s\n"
+
+#~ msgid "verified db index       %s/%s\n"
+#~ msgstr "vérif.     db index       %s/%s\n"
+
+#~ msgid ""
+#~ "unshared posix mutexes found(%d), adding DB_PRIVATE, using fcntl lock\n"
+#~ msgstr ""
+#~ "trouvés(%d) mutex posix non-partagés, rajout de DB_PRIVATE, utilisation "
+#~ "des verrous fcntl\n"
+
+#~ msgid "opening  db index       %s/%s %s mode=0x%x\n"
+#~ msgstr "ouverture     index db    %s/%s %s mode=0x%x\n"
+
+#~ msgid "locked   db index       %s/%s\n"
+#~ msgstr "verrouillage  index db    %s/%s\n"
+
+#~ msgid "removing %s after successful db3 rebuild.\n"
+#~ msgstr "enlèvement de %s après la reconstruction réussie en db3.\n"
 
 #, fuzzy
 #~ msgid "Rolling back successful transactions to %-24.24s (0x%08x).\n"

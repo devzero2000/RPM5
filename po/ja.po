@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm-4.4\n"
 "Report-Msgid-Bugs-To: <rpm-devel@lists.dulug.duke.edu>\n"
-"POT-Creation-Date: 2007-05-25 21:25-0400\n"
+"POT-Creation-Date: 2007-06-15 20:47-0400\n"
 "PO-Revision-Date: 2005-04-04 22:30+1000\n"
 "Last-Translator: SEKINE Tatsuo <tsekine@sdri.co.jp>\n"
 "Language-Team: Japanese <translation-team-ja@lists.sourceforge.net>\n"
@@ -1714,71 +1714,75 @@ msgstr "ヘッダ DSA: 異常です．バイナリではありません。\n"
 msgid "hdr DSA: BAD, not binary\n"
 msgstr "ヘッダ DSA: 異常です．バイナリではありません。\n"
 
-#: lib/package.c:545 lib/package.c:585 lib/package.c:929 lib/package.c:955
-#: lib/package.c:987
+#: lib/package.c:545 lib/package.c:586
 #, c-format
-msgid "only V3 and V4 signatures can be verified, skipping V%u signature\n"
-msgstr "V3/V4 署名のみ検証可能です、V%u 署名をスキップします\n"
+msgid "skipping header with unverifiable V%u signature\n"
+msgstr ""
 
-#: lib/package.c:673
+#: lib/package.c:675
 #, c-format
 msgid "hdr size(%d): BAD, read returned %d\n"
 msgstr "ヘッダサイズ(%d): 異常です。読み込み結果は %d です。\n"
 
-#: lib/package.c:677
+#: lib/package.c:679
 #, c-format
 msgid "hdr magic: BAD\n"
 msgstr "ヘッダマジック: 異常です。\n"
 
-#: lib/package.c:685
+#: lib/package.c:687
 #, c-format
 msgid "hdr tags: BAD, no. of tags(%d) out of range\n"
 msgstr "ヘッダタグ: 異常です。タグ(%d)の番号が範囲外です。\n"
 
-#: lib/package.c:694
+#: lib/package.c:696
 #, c-format
 msgid "hdr data: BAD, no. of bytes(%d) out of range\n"
 msgstr "ヘッダデータ: 異常です。バイト数(%d)が範囲外です。\n"
 
-#: lib/package.c:708
+#: lib/package.c:710
 #, c-format
 msgid "hdr blob(%d): BAD, read returned %d\n"
 msgstr "ヘッダ blob(%d): 異常です。読み込み結果は %d です。\n"
 
-#: lib/package.c:721
+#: lib/package.c:723
 #, c-format
 msgid "hdr load: BAD\n"
 msgstr "ヘッダロード: 異常です。\n"
 
-#: lib/package.c:799
+#: lib/package.c:801
 msgid "packaging version 1 is not supported by this version of RPM\n"
 msgstr ""
 "このバージョンの RPM ではバージョン 1 のパッケージングはサポートしていませ"
 "ん\n"
 
-#: lib/package.c:808
+#: lib/package.c:810
 msgid ""
 "only packaging with major numbers <= 4 is supported by this version of RPM\n"
 msgstr ""
 "このバージョンの RPM ではメジャー番号 <=4 のパッケージ作成のみサポートしてい"
 "ます\n"
 
-#: lib/package.c:820 lib/rpmchecksig.c:236 lib/rpmchecksig.c:773
+#: lib/package.c:822 lib/rpmchecksig.c:236 lib/rpmchecksig.c:773
 #, c-format
 msgid "%s: rpmReadSignature failed: %s"
 msgstr "%s: rpmReadSignature に失敗しました: %s"
 
-#: lib/package.c:827 lib/rpmchecksig.c:243 lib/rpmchecksig.c:781
+#: lib/package.c:829 lib/rpmchecksig.c:243 lib/rpmchecksig.c:781
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: 署名がありません。\n"
 
-#: lib/package.c:894
+#: lib/package.c:896
 #, c-format
 msgid "%s: headerRead failed: %s"
 msgstr "%s: headerRead に失敗しました: %s"
 
-#: lib/package.c:1002 lib/rpmchecksig.c:118 lib/rpmchecksig.c:689
+#: lib/package.c:931 lib/package.c:957 lib/package.c:989 lib/rpmchecksig.c:870
+#, c-format
+msgid "skipping package %s with unverifiable V%u signature\n"
+msgstr ""
+
+#: lib/package.c:1004 lib/rpmchecksig.c:118 lib/rpmchecksig.c:689
 #, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: Fread に失敗しました: %s\n"
@@ -2774,32 +2778,27 @@ msgstr "%s: headerGetEntry に失敗しました。\n"
 msgid "%s: No signature available (v1.0 RPM)\n"
 msgstr "%s: 署名がありません (v1.0 RPM)\n"
 
-#: lib/rpmchecksig.c:870
-#, c-format
-msgid "only V3 or V4 signatures can be verified, skipping V%u signature\n"
-msgstr "V3/V4 署名のみ検証可能です、V%u 署名を飛ばします\n"
-
-#: lib/rpmchecksig.c:1036
+#: lib/rpmchecksig.c:1037
 msgid "NOT OK"
 msgstr "OK ではありません。"
 
-#: lib/rpmchecksig.c:1037 lib/rpmchecksig.c:1051
+#: lib/rpmchecksig.c:1038 lib/rpmchecksig.c:1052
 msgid " (MISSING KEYS:"
 msgstr "(見つからない鍵:"
 
-#: lib/rpmchecksig.c:1039 lib/rpmchecksig.c:1053
+#: lib/rpmchecksig.c:1040 lib/rpmchecksig.c:1054
 msgid ") "
 msgstr ") "
 
-#: lib/rpmchecksig.c:1040 lib/rpmchecksig.c:1054
+#: lib/rpmchecksig.c:1041 lib/rpmchecksig.c:1055
 msgid " (UNTRUSTED KEYS:"
 msgstr "(信頼できない鍵:"
 
-#: lib/rpmchecksig.c:1042 lib/rpmchecksig.c:1056
+#: lib/rpmchecksig.c:1043 lib/rpmchecksig.c:1057
 msgid ")"
 msgstr ")"
 
-#: lib/rpmchecksig.c:1050
+#: lib/rpmchecksig.c:1051
 msgid "OK"
 msgstr "OK"
 
@@ -2977,31 +2976,31 @@ msgstr "%s の読み込みに失敗: %s。\n"
 msgid "%s skipped due to missingok flag\n"
 msgstr "%s は missingok フラグのためスキップします\n"
 
-#: lib/rpmfi.c:874
+#: lib/rpmfi.c:873
 msgid "========== relocations\n"
 msgstr "========== 再配置\n"
 
-#: lib/rpmfi.c:878
+#: lib/rpmfi.c:877
 #, c-format
 msgid "%5d exclude  %s\n"
 msgstr "%5d 除外しています   %s\n"
 
-#: lib/rpmfi.c:881
+#: lib/rpmfi.c:880
 #, c-format
 msgid "%5d relocate %s -> %s\n"
 msgstr "%5d 再配置しています %s -> %s\n"
 
-#: lib/rpmfi.c:1015
+#: lib/rpmfi.c:1014
 #, c-format
 msgid "excluding %s %s\n"
 msgstr "%s %s を除外しています。\n"
 
-#: lib/rpmfi.c:1025
+#: lib/rpmfi.c:1024
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr "%s を %s に再配置しています。\n"
 
-#: lib/rpmfi.c:1117
+#: lib/rpmfi.c:1116
 #, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "ディレクトリ %s を %s に再配置しています\n"
@@ -3311,42 +3310,42 @@ msgstr "%s 用のアーキテクチャが見つかりません (%s:%d)\n"
 msgid "bad option '%s' at %s:%d\n"
 msgstr "不正なオプションです: '%s' (%s:%d)\n"
 
-#: lib/rpmrc.c:1920
+#: lib/rpmrc.c:1922
 #, c-format
 msgid "Cannot expand %s\n"
 msgstr "%s を展開できません。\n"
 
-#: lib/rpmrc.c:1925
+#: lib/rpmrc.c:1927
 #, c-format
 msgid "Cannot read %s, HOME is too large.\n"
 msgstr "%s を読み込めません。HOME が大きすぎます。\n"
 
-#: lib/rpmrc.c:1942
+#: lib/rpmrc.c:1944
 #, c-format
 msgid "Unable to open %s for reading: %s.\n"
 msgstr "%s を読み込み用にオープンできません: %s。\n"
 
-#: lib/rpmrc.c:2087
+#: lib/rpmrc.c:2089
 #, c-format
 msgid "Configured system provides (from /etc/rpm/sysinfo):\n"
 msgstr ""
 
-#: lib/rpmrc.c:2101
+#: lib/rpmrc.c:2103
 #, c-format
 msgid "Features provided by rpmlib installer:\n"
 msgstr ""
 
-#: lib/rpmrc.c:2115
+#: lib/rpmrc.c:2117
 #, c-format
 msgid "Features provided by current cpuinfo (from /proc/cpuinfo):\n"
 msgstr ""
 
-#: lib/rpmrc.c:2129
+#: lib/rpmrc.c:2131
 #, c-format
 msgid "Features provided by current getconf:\n"
 msgstr ""
 
-#: lib/rpmrc.c:2143
+#: lib/rpmrc.c:2145
 #, c-format
 msgid "Features provided by current uname:\n"
 msgstr ""
@@ -3691,64 +3690,22 @@ msgstr "db%d エラー (%d) (%s において): %s\n"
 msgid "db%d error(%d): %s\n"
 msgstr "db%d エラー (%d): %s\n"
 
-#: rpmdb/db3.c:191
-#, c-format
-msgid "closed   db environment %s/%s\n"
-msgstr "データベース環境 %s/%s を閉じました\n"
-
-#: rpmdb/db3.c:210
-#, c-format
-msgid "removed  db environment %s/%s\n"
-msgstr "データベース環境 %s/%s を削除しました。\n"
-
-#: rpmdb/db3.c:331
-#, c-format
-msgid "opening  db environment %s/%s %s\n"
-msgstr "データベース環境 %s/%s をオープンします %s\n"
-
-#: rpmdb/db3.c:954
-#, c-format
-msgid "closed   db index       %s/%s\n"
-msgstr "データベースインデックス %s/%s を閉じました\n"
-
-#: rpmdb/db3.c:1024
-#, c-format
-msgid "verified db index       %s/%s\n"
-msgstr "データベースインデックス %s/%s を検証しました。\n"
-
-#: rpmdb/db3.c:1168
-#, c-format
-msgid "unshared posix mutexes found(%d), adding DB_PRIVATE, using fcntl lock\n"
-msgstr ""
-"共有されてない posix mutex(%d) を見つけたので、fcntl ロックを使用する "
-"DB_PRIVATE を追加しています。\n"
-
-#: rpmdb/db3.c:1274
+#: rpmdb/db3.c:1292
 msgid "Runnning db->verify ...\n"
 msgstr ""
 
-#: rpmdb/db3.c:1338
-#, c-format
-msgid "opening  db index       %s/%s %s mode=0x%x\n"
-msgstr "データベースインデックス %s/%s をオープンします %s (mode=0x%x)\n"
-
-#: rpmdb/db3.c:1579
+#: rpmdb/db3.c:1597
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "%sロックを獲得できません (%s/%s)\n"
 
-#: rpmdb/db3.c:1581
+#: rpmdb/db3.c:1599
 msgid "exclusive"
 msgstr "排他"
 
-#: rpmdb/db3.c:1581
+#: rpmdb/db3.c:1599
 msgid "shared"
 msgstr "共有"
-
-#: rpmdb/db3.c:1585
-#, c-format
-msgid "locked   db index       %s/%s\n"
-msgstr "データベースインデックス %s/%s をロックしました。\n"
 
 #: rpmdb/dbconfig.c:575
 #, c-format
@@ -3871,177 +3828,172 @@ msgstr "データベースの検証を行います。"
 msgid "dbiTagsInit: unrecognized tag name: \"%s\" ignored\n"
 msgstr "dbiTagsInit: 不明なタグ名: \"%s\" は無視します\n"
 
-#: rpmdb/rpmdb.c:319
+#: rpmdb/rpmdb.c:320
 #, c-format
 msgid "cannot open %s index using db%d - %s (%d)\n"
 msgstr "%s インデックスを db%d でオープンできません - %s (%d)\n"
 
-#: rpmdb/rpmdb.c:339
+#: rpmdb/rpmdb.c:340
 #, c-format
 msgid "cannot open %s index\n"
 msgstr "%s インデックスをオープンできません。\n"
 
-#: rpmdb/rpmdb.c:809
+#: rpmdb/rpmdb.c:788
 #, fuzzy, c-format
 msgid "incorrect format: \"%s\": %s\n"
 msgstr "不正なフォーマット: %s\n"
 
-#: rpmdb/rpmdb.c:1130
+#: rpmdb/rpmdb.c:1109
 msgid "no dbpath has been set\n"
 msgstr "dbpath が設定されていません\n"
 
-#: rpmdb/rpmdb.c:1444 rpmdb/rpmdb.c:1582 rpmdb/rpmdb.c:1638 rpmdb/rpmdb.c:2542
-#: rpmdb/rpmdb.c:2696 rpmdb/rpmdb.c:3477
+#: rpmdb/rpmdb.c:1423 rpmdb/rpmdb.c:1561 rpmdb/rpmdb.c:1617 rpmdb/rpmdb.c:2521
+#: rpmdb/rpmdb.c:2675 rpmdb/rpmdb.c:3456
 #, c-format
 msgid "error(%d) getting \"%s\" records from %s index\n"
 msgstr "エラー(%d) - レコード \"%s\" 取得時 (%s インデックスから)\n"
 
-#: rpmdb/rpmdb.c:1850
+#: rpmdb/rpmdb.c:1829
 msgid "miFreeHeader: skipping"
 msgstr "miFreeHeader: スキップします。"
 
-#: rpmdb/rpmdb.c:1860
+#: rpmdb/rpmdb.c:1839
 #, c-format
 msgid "error(%d) storing record #%d into %s\n"
 msgstr "エラー(%d) - レコード #%d を %s に格納時\n"
 
-#: rpmdb/rpmdb.c:2420
+#: rpmdb/rpmdb.c:2399
 msgid "rpmdbNextIterator: skipping"
 msgstr "rpmdbNextIterator: スキップします。"
 
-#: rpmdb/rpmdb.c:2452
+#: rpmdb/rpmdb.c:2431
 #, c-format
 msgid "rpmdb: damaged header #%u retrieved -- skipping.\n"
 msgstr ""
 "rpmdb: 破損したヘッダインスタンス #%u を取得しました。スキップします。\n"
 
-#: rpmdb/rpmdb.c:2800
+#: rpmdb/rpmdb.c:2779
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: ヘッダを読むことができません (0x%x)\n"
 
-#: rpmdb/rpmdb.c:2869
+#: rpmdb/rpmdb.c:2848
 #, c-format
 msgid "error(%d) setting header #%d record for %s removal\n"
 msgstr "エラー(%d) - ヘッダ #%d レコードに %s の削除を設定時\n"
 
-#: rpmdb/rpmdb.c:2980
+#: rpmdb/rpmdb.c:2959
 #, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "\"%s\" を %s インデックスから削除します。\n"
 
-#: rpmdb/rpmdb.c:2984
+#: rpmdb/rpmdb.c:2963
 #, c-format
 msgid "removing %d entries from %s index.\n"
 msgstr "%d エントリを %s インデックスから削除します。\n"
 
-#: rpmdb/rpmdb.c:3012
+#: rpmdb/rpmdb.c:2991
 #, c-format
 msgid "error(%d) setting \"%s\" records from %s index\n"
 msgstr "エラー(%d) - \"%s\" のレコード設定時 (%s インデックスから)\n"
 
-#: rpmdb/rpmdb.c:3033
+#: rpmdb/rpmdb.c:3012
 #, c-format
 msgid "error(%d) storing record \"%s\" into %s\n"
 msgstr "エラー(%d) - レコード \"%s\" を %s に格納時\n"
 
-#: rpmdb/rpmdb.c:3043
+#: rpmdb/rpmdb.c:3022
 #, c-format
 msgid "error(%d) removing record \"%s\" from %s\n"
 msgstr "エラー(%d) - レコード \"%s\" を %s から削除時\n"
 
-#: rpmdb/rpmdb.c:3214
+#: rpmdb/rpmdb.c:3193
 #, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr "エラー(%d) - 新しいパッケージインスタンスの割り当て時\n"
 
-#: rpmdb/rpmdb.c:3280
+#: rpmdb/rpmdb.c:3259
 msgid "rpmdbAdd: skipping"
 msgstr "rpmdbAdd: スキップします。"
 
-#: rpmdb/rpmdb.c:3452
+#: rpmdb/rpmdb.c:3431
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr "\"%s\" を %s インデックスに追加します。\n"
 
-#: rpmdb/rpmdb.c:3456
+#: rpmdb/rpmdb.c:3435
 #, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr "%d エントリを %s インデックスに追加します。\n"
 
-#: rpmdb/rpmdb.c:3496
+#: rpmdb/rpmdb.c:3475
 #, c-format
 msgid "error(%d) storing record %s into %s\n"
 msgstr "エラー(%d) - レコード %s を %s にストア時\n"
 
-#: rpmdb/rpmdb.c:3875
-#, c-format
-msgid "removing %s after successful db3 rebuild.\n"
-msgstr "db3 再構築が成功した後で %s を削除します。\n"
-
-#: rpmdb/rpmdb.c:3919
+#: rpmdb/rpmdb.c:3882
 msgid "no dbpath has been set"
 msgstr "dbpath が設定されていません。"
 
-#: rpmdb/rpmdb.c:3951
+#: rpmdb/rpmdb.c:3914
 #, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "データベース %s を %s として再構築しています。\n"
 
-#: rpmdb/rpmdb.c:3955
+#: rpmdb/rpmdb.c:3918
 #, c-format
 msgid "temporary database %s already exists\n"
 msgstr "一時的なデータベース %s は既に存在しています。\n"
 
-#: rpmdb/rpmdb.c:3961
+#: rpmdb/rpmdb.c:3924
 #, c-format
 msgid "creating directory %s\n"
 msgstr "ディレクトリの作成: %s\n"
 
-#: rpmdb/rpmdb.c:3963
+#: rpmdb/rpmdb.c:3926
 #, c-format
 msgid "creating directory %s: %s\n"
 msgstr "ディレクトリの作成: %s: %s\n"
 
-#: rpmdb/rpmdb.c:3972
+#: rpmdb/rpmdb.c:3935
 #, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr "古いデータベースを dbapi %d でオープンしています。\n"
 
-#: rpmdb/rpmdb.c:3983
+#: rpmdb/rpmdb.c:3946
 #, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr "新しいデータベースを dbapi %d でオープンしています。\n"
 
-#: rpmdb/rpmdb.c:4014
+#: rpmdb/rpmdb.c:3977
 #, c-format
 msgid "header #%u in the database is bad -- skipping.\n"
 msgstr "データベース中のヘッダ #%u は不正です -- スキップします。\n"
 
-#: rpmdb/rpmdb.c:4054
+#: rpmdb/rpmdb.c:4017
 #, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "元々 %u にあったレコードを追加できません。\n"
 
-#: rpmdb/rpmdb.c:4068
+#: rpmdb/rpmdb.c:4031
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr "データベースの再構築に失敗: オリジナルのデータベースは残っています。\n"
 
-#: rpmdb/rpmdb.c:4080
+#: rpmdb/rpmdb.c:4043
 msgid "failed to replace old database with new database!\n"
 msgstr "古いデータベースを新しいデータベースで置き換えるのに失敗!\n"
 
-#: rpmdb/rpmdb.c:4082
+#: rpmdb/rpmdb.c:4045
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "復元するには %s 内のファイルを %s 内のファイルで置き換えて下さい"
 
-#: rpmdb/rpmdb.c:4092
+#: rpmdb/rpmdb.c:4055
 #, c-format
 msgid "removing directory %s\n"
 msgstr "ディレクトリの削除: %s\n"
 
-#: rpmdb/rpmdb.c:4094
+#: rpmdb/rpmdb.c:4057
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "ディレクトリ %s の削除失敗: %s\n"
@@ -4416,6 +4368,42 @@ msgstr ""
 #: tools/rpmdeps.c:210
 msgid "check Requires: against Provides: for dependency closure"
 msgstr ""
+
+#~ msgid "only V3 and V4 signatures can be verified, skipping V%u signature\n"
+#~ msgstr "V3/V4 署名のみ検証可能です、V%u 署名をスキップします\n"
+
+#~ msgid "only V3 or V4 signatures can be verified, skipping V%u signature\n"
+#~ msgstr "V3/V4 署名のみ検証可能です、V%u 署名を飛ばします\n"
+
+#~ msgid "closed   db environment %s/%s\n"
+#~ msgstr "データベース環境 %s/%s を閉じました\n"
+
+#~ msgid "removed  db environment %s/%s\n"
+#~ msgstr "データベース環境 %s/%s を削除しました。\n"
+
+#~ msgid "opening  db environment %s/%s %s\n"
+#~ msgstr "データベース環境 %s/%s をオープンします %s\n"
+
+#~ msgid "closed   db index       %s/%s\n"
+#~ msgstr "データベースインデックス %s/%s を閉じました\n"
+
+#~ msgid "verified db index       %s/%s\n"
+#~ msgstr "データベースインデックス %s/%s を検証しました。\n"
+
+#~ msgid ""
+#~ "unshared posix mutexes found(%d), adding DB_PRIVATE, using fcntl lock\n"
+#~ msgstr ""
+#~ "共有されてない posix mutex(%d) を見つけたので、fcntl ロックを使用する "
+#~ "DB_PRIVATE を追加しています。\n"
+
+#~ msgid "opening  db index       %s/%s %s mode=0x%x\n"
+#~ msgstr "データベースインデックス %s/%s をオープンします %s (mode=0x%x)\n"
+
+#~ msgid "locked   db index       %s/%s\n"
+#~ msgstr "データベースインデックス %s/%s をロックしました。\n"
+
+#~ msgid "removing %s after successful db3 rebuild.\n"
+#~ msgstr "db3 再構築が成功した後で %s を削除します。\n"
 
 #, fuzzy
 #~ msgid "Rolling back successful transactions to %-24.24s (0x%08x).\n"
