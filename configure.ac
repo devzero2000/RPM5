@@ -35,7 +35,9 @@ AS=${AS-as}
 AC_SUBST(AS)
 if test "$ac_cv_c_compiler_gnu" = yes; then
     CFLAGS="$CFLAGS -fPIC -DPIC -D_GNU_SOURCE -D_REENTRANT -Wall -Wpointer-arith -Wstrict-prototypes -Wmissing-prototypes -Wno-char-subscripts"
-    LDFLAGS="-pie"
+    case "$target" in
+	*-*-linux* ) LDFLAGS="$LDFLAGS -pie" ;;
+    esac
 fi
 export CFLAGS LDFLAGS
 
@@ -561,6 +563,7 @@ AC_CHECK_HEADER([beecrypt/beecrypt.h], [
     AC_CHECK_HEADER([beecrypt/api.h], [
       AC_DEFINE(HAVE_BEECRYPT_API_H, 1, [Define to 1 if you have the <beecrypt/api.h> header file.])
     ])
+    WITH_BEECRYPT_INCLUDE="-I${includedir}/beecrypt"
     WITH_BEECRYPT_LIB="-lbeecrypt"
   ])
 ],[
@@ -569,7 +572,6 @@ AC_CHECK_HEADER([beecrypt/beecrypt.h], [
     WITH_BEECRYPT_SUBDIR=beecrypt
     WITH_BEECRYPT_INCLUDE="-I\${top_srcdir}/${WITH_BEECRYPT_SUBDIR}"
     WITH_BEECRYPT_LIB="\${top_builddir}/${WITH_BEECRYPT_SUBDIR}/libbeecrypt.la"
-    AC_DEFINE(USE_INTERNAL_BEECRYPT, 1, [Define to 1 when using internal beecrypt instead system one.])
   fi
 ])
 AC_SUBST(WITH_BEECRYPT_SUBDIR)
@@ -601,7 +603,6 @@ AC_CHECK_HEADER([neon/ne_session.h], [
     WITH_NEON_SUBDIR=neon
     WITH_NEON_INCLUDE="-I\${top_srcdir}/${WITH_NEON_SUBDIR}/src"
     WITH_NEON_LIB="\${top_builddir}/${WITH_NEON_SUBDIR}/src/libneon.la"
-    AC_DEFINE(USE_INTERNAL_NEON, 1, [Define to 1 when using internal neon instead system one.])
   fi
 ])
 AC_SUBST(WITH_NEON_SUBDIR)
@@ -615,12 +616,10 @@ WITH_MAGIC_INCLUDE=
 WITH_MAGIC_LIB=
 
 if test -d file ; then
-  WITH_RPMFILE=rpmfile
   WITH_MAGIC_SUBDIR=file
   WITH_MAGIC_INCLUDE="-I\${top_srcdir}/${WITH_MAGIC_SUBDIR}/src"
   WITH_MAGIC_LIB="\${top_builddir}/${WITH_MAGIC_SUBDIR}/src/libmagic.la"
 else
-  WITH_RPMFILE=
   AC_CHECK_HEADER([magic.h], [
     AC_CHECK_LIB(magic, magic_open, [
       WITH_MAGIC_SUBDIR=
@@ -630,14 +629,12 @@ else
   ])
 fi
 
-AC_SUBST(WITH_RPMFILE)
 AC_SUBST(WITH_MAGIC_SUBDIR)
 AC_SUBST(WITH_MAGIC_INCLUDE)
 AC_SUBST(WITH_MAGIC_LIB)
 
 #=================
 # Check for keyutils library. Prefer external, otherwise none.
-
 AC_CHECK_HEADERS(keyutils.h)
 WITH_KEYUTILS_LIB=
 AC_CHECK_LIB(keyutils, keyctl_read, [WITH_KEYUTILS_LIB="-lkeyutils"])
@@ -677,6 +674,12 @@ DBLIBSRCS="db3.c"
 
 AC_SUBST(WITH_DB_SUBDIR)
 AC_SUBST(WITH_INTERNAL_DB)
+
+# accept and pass-through options for Berkeley-DB "configure"
+AC_ARG_WITH(db-largefile, AS_HELP_STRING([--with-db-largefile], [build Berkeley-DB with LARGEFILE support]))
+AC_ARG_WITH(db-mutex,     AS_HELP_STRING([--with-db-mutex=ARG], [build Berkeley-DB with MUTEX type ARG]))
+AC_ARG_WITH(db-rpc,       AS_HELP_STRING([--with-db-rpc],       [build Berkeley-DB with RPC support]))
+AM_CONDITIONAL(WITH_DB_RPC, test ".$with_db_rpc" = .yes)
 
 #=================
 # Check for sqlite3 library. Prefer external, then internal, otherwise none.
@@ -936,6 +939,7 @@ AC_CHECK_FUNCS(basename getaddrinfo getcwd getnameinfo getwd inet_aton)
 AC_CHECK_FUNCS(mtrace putenv realpath setenv clearenv)
 AC_CHECK_FUNCS(stpcpy stpncpy strcspn)
 AC_CHECK_FUNCS(strdup strndup strerror strtol strtoul strspn strstr)
+AC_CHECK_FUNCS(sighold sigrelse sigpause sigprocmask sigemptyset sigaddset sigdelset sigsuspend)
 
 AC_CHECK_FUNCS(__secure_getenv)
 
@@ -1035,33 +1039,77 @@ dnl
 withval=auto
 AC_ARG_WITH(python, [  --with-python           build rpm python bindings ])
 
-python_version=$withval
+WITH_PYTHON_VERSION=$withval
 if test $withval = auto ; then
-    python_version=`python -V 2>&1 | cut -f2 -d" " | cut -f1,2 -d"."`
-fi
-dnl assume no python by default
-WITH_PYTHON_VERSION=no
-WITH_PYTHON_SUBDIR=
-WITH_PYTHON_SUBPACKAGE=0
-if test -n "$WITH_PYTHON_VERSION"; then
-    AC_MSG_CHECKING(for python ${python_version})
-    for dir in /usr/include /usr/local/include ${prefix}/include; do
-        AC_CHECK_HEADER(
-            [${dir}/python${python_version}/Python.h],
-            [ python_dir=${dir} ],
-            [ python_dir="" ]
-        )
-        if test -n "${python_dir}" ; then
-            PYTHON_INC_DIR=${python_dir}/python${python_version}
-            WITH_PYTHON_SUBDIR=python
-            WITH_PYTHON_SUBPACKAGE=1
-            WITH_PYTHON_VERSION=${python_ver}
-            break
+
+AC_MSG_CHECKING(for python 2.5)
+AC_RUN_IFELSE([AC_LANG_SOURCE([[
+#include <python2.5/Python.h>
+main() {
+  exit(strncmp("2.5", PY_VERSION, 3));
+} ]])],[withval=yes],[withval=no],[withval=yes])
+  AC_MSG_RESULT($withval)
+  if test $withval = yes ; then
+    WITH_PYTHON_VERSION="2.5"
+  else
+      
+  AC_MSG_CHECKING(for python 2.4)
+  AC_RUN_IFELSE([AC_LANG_SOURCE([[
+  #include <python2.4/Python.h>
+  main() {
+    exit(strncmp("2.4", PY_VERSION, 3));
+  } ]])],[withval=yes],[withval=no],[withval=yes])
+    AC_MSG_RESULT($withval)
+    if test $withval = yes ; then
+      WITH_PYTHON_VERSION="2.4"
+    else
+      
+    AC_MSG_CHECKING(for python 2.3)
+    AC_RUN_IFELSE([AC_LANG_SOURCE([[
+    #include <python2.3/Python.h>
+    main() {
+      exit(strncmp("2.3", PY_VERSION, 3));
+    } ]])],[withval=yes],[withval=no],[withval=yes])
+      AC_MSG_RESULT($withval)
+      if test $withval = yes ; then
+        WITH_PYTHON_VERSION="2.3"
+      else
+      
+        AC_MSG_CHECKING(for python 2.2)
+        AC_RUN_IFELSE([AC_LANG_SOURCE([[
+      #include <python2.2/Python.h>
+      main() {
+        exit(strncmp("2.2", PY_VERSION, 3));
+      } ]])],[withval=yes],[withval=no],[withval=yes])
+        AC_MSG_RESULT($withval)
+        if test $withval = yes ; then
+          WITH_PYTHON_VERSION="2.2"
+        else
+      
+          AC_MSG_CHECKING(for python 1.5.2)
+          AC_RUN_IFELSE([AC_LANG_SOURCE([[
+      #include <python1.5/Python.h>
+      main() {
+        exit(strcmp("1.5.2", PY_VERSION));
+      } ]])],[withval=yes],[withval=no],[withval=yes])
+          AC_MSG_RESULT($withval)
+          if test $withval = yes ; then
+            WITH_PYTHON_VERSION="1.5"
+          fi
         fi
-    done
+      fi
+    fi
+  fi
 fi
 
-AC_SUBST(PYTHON_INC_DIR)
+if test "$WITH_PYTHON_VERSION" != no ; then
+  WITH_PYTHON_SUBDIR=python
+  WITH_PYTHON_SUBPACKAGE=1
+else
+  WITH_PYTHON_SUBDIR=
+  WITH_PYTHON_SUBPACKAGE=0
+fi
+
 AC_SUBST(WITH_PYTHON_SUBDIR)
 AC_SUBST(WITH_PYTHON_SUBPACKAGE)
 AC_SUBST(WITH_PYTHON_VERSION)
@@ -1099,6 +1147,8 @@ AC_SUBST(WITH_SELINUX_LIB)
 WITH_LUA_LIB=
 WITH_LUA_SUBDIR=
 WITH_LUA_INCLUDE=
+WITH_LUA_SUBDIR_DEF=
+WITH_LUA_SUBDIR_LIB=
 withval=yes
 AC_ARG_WITH(lua, [  --with-lua              build with lua support ])
 if test $withval != no -a -d lua ; then
@@ -1106,10 +1156,14 @@ if test $withval != no -a -d lua ; then
   WITH_LUA_SUBDIR="lua"
   WITH_LUA_INCLUDE="-I\${top_srcdir}/${WITH_LUA_SUBDIR}/include -I\${top_srcdir}/${WITH_LUA_SUBDIR}/local"
   WITH_LUA_LIB="\$(top_builddir)/${WITH_LUA_SUBDIR}/liblua.la"
+  AC_CHECK_LIB(dl, dlopen, [ LIBS="$LIBS -ldl"; WITH_LUA_SUBDIR_LIB="-ldl" ])
+  AC_CHECK_FUNC(dlopen, [ WITH_LUA_SUBDIR_DEF="-DUSE_DLOPEN" ])
 fi
 AC_SUBST(WITH_LUA_LIB)
 AC_SUBST(WITH_LUA_SUBDIR)
 AC_SUBST(WITH_LUA_INCLUDE)
+AC_SUBST(WITH_LUA_SUBDIR_DEF)
+AC_SUBST(WITH_LUA_SUBDIR_LIB)
 
 WITH_SYCK_LIB=
 WITH_SYCK_SUBDIR=
@@ -1476,7 +1530,8 @@ AC_CONFIG_FILES([ Doxyfile Makefile rpmrc macros platform rpmpopt rpm.spec po/Ma
 	python/rpm/Makefile
  	lua/Makefile
   ])
-AC_CONFIG_COMMANDS([default],[[	echo timestamp > popt/stamp-h.in
+AC_CONFIG_COMMANDS([default],[[
+	[ -d popt ] && echo timestamp > popt/stamp-h.in
 	echo timestamp > stamp-h.in
 	[ -d perl ] && cd perl && perl Makefile.PL
   

@@ -32,7 +32,10 @@ pkgbindir = @USRLIBRPM@
 pkgbin_PROGRAMS = \
 	db_archive db_checkpoint db_deadlock db_dump \
 	db_hotbackup db_load db_printlog db_recover \
-	db_svc db_stat db_upgrade db_verify 
+	db_stat db_upgrade db_verify 
+if WITH_DB_RPC
+pkgbin_PROGRAMS += db_svc
+endif
 
 mylibs = librpmdb.la
 

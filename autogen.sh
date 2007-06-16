@@ -71,7 +71,7 @@ fi
 echo "--- rpm"
 [ -f po/Makefile.in.in ] || gettextize --copy --force --intl
 $libtoolize --copy --force
-aclocal -I m4
+aclocal
 autoheader
 automake -a -c
 autoconf
