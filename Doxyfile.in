@@ -466,7 +466,7 @@ INPUT                  = @top_srcdir@/Doxyheader \
                          @top_srcdir@/debug.h \
                          @top_srcdir@/macros \
                          @top_srcdir@/rpmqv.c \
-                         @top_srcdir@/rpmpopt-@VERSION@ \
+                         @top_srcdir@/rpmpopt \
                          @top_srcdir@/rpmrc \
                          @top_srcdir@/system.h \
                          @top_srcdir@/build/build.c \

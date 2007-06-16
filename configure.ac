@@ -1480,7 +1480,7 @@ AC_DEFINE_UNQUOTED(SYSCONFIGDIR, "$SYSCONFIGDIR",
 	[Full path to rpm system configuration directory (usually /etc/rpm)])
 AC_SUBST(SYSCONFIGDIR)
 
-MACROFILES="${USRLIBRPM}/macros-${VERSION}:${USRLIBRPM}/%{_target}/macros:${SYSCONFIGDIR}/macros.*:${SYSCONFIGDIR}/macros:${SYSCONFIGDIR}/%{_target}/macros:~/.rpmmacros"
+MACROFILES="${USRLIBRPM}/${VERSION}/macros:${USRLIBRPM}/%{_target}/macros:${SYSCONFIGDIR}/macros.*:${SYSCONFIGDIR}/macros:${SYSCONFIGDIR}/%{_target}/macros:~/.rpmmacros"
 AC_DEFINE_UNQUOTED(MACROFILES, "$MACROFILES",
 	[Colon separated paths of macro files to read.])
 AC_SUBST(MACROFILES)
@@ -1490,7 +1490,7 @@ AC_DEFINE_UNQUOTED(RPMRCFILES, "$RPMRCFILES",
 	[Colon separated paths of rpmrc files to read.])
 AC_SUBST(RPMRCFILES)
 
-RPMPOPTFILE="${USRLIBRPM}/rpmpopt-${VERSION}"
+RPMPOPTFILE="${USRLIBRPM}/${VERSION}/rpmpopt"
 AC_DEFINE_UNQUOTED(RPMPOPTFILE, "$RPMPOPTFILE",
 	[Full path to rpmpopt configuration file (usually /usr/lib/rpm/rpmpopt)])
 AC_SUBST(RPMPOPTFILE)
@@ -1506,13 +1506,9 @@ AC_SUBST(RPM)
 
 AC_SUBST(OBJDUMP)
 
-dnl XXX this causes popt to depend on zlib et al
-dnl # XXX Propagate -lucb to popt ...
-dnl export LIBS INCPATH CONFIG_SITE
-
 AC_CONFIG_SUBDIRS(popt zlib file sqlite db3)
 
-AC_CONFIG_FILES([ Doxyfile Makefile rpmrc macros platform rpmpopt rpm.spec po/Makefile.in
+AC_CONFIG_FILES([ Doxyfile Makefile rpmrc macros platform rpmpopt rpm.spec rpm5.spec po/Makefile.in
 	rpmio/Makefile rpmdb/Makefile lib/Makefile build/Makefile
 	scripts/Makefile
 	scripts/macros.perl scripts/macros.php scripts/macros.python

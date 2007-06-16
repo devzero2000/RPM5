@@ -1,4 +1,8 @@
 4.4.9 -> 4.5:
+    - jbj: populate /usr/lib/rpm/@VERSION@/ instead of foo-@VERSION@ files.
+    - jbj: move gendiff into the scripts directory.
+    - jbj: don't include perl/CVS with "make dist".
+    - jbj: remove rpmbuild and rpmb helper for now.
     - jbj: fix plain brown rpm upgrade rpm.spec.
     - jbj: rescusutate build after cvs server side tree surgery.
     - skip packages/headers with unverifiable signatures.

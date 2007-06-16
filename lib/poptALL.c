@@ -550,7 +550,7 @@ rpmcliInit(int argc, char *const argv[], struct poptOption * optionsTable)
 /*@=nullpass =temptrans@*/
     (void) poptReadConfigFile(optCon, RPMPOPTFILE);
     (void) poptReadDefaultConfig(optCon, 1);
-    poptSetExecPath(optCon, USRLIBRPM, 1);
+    poptSetExecPath(optCon, USRLIBRPM "/" VERSION, 1);
 
     /* Process all options, whine if unknown. */
     while ((rc = poptGetNextOpt(optCon)) > 0) {
