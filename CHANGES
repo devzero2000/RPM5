@@ -1,30 +1,34 @@
 4.4.9 -> 4.5:
-	- start rpm-4.5 development.
-	- fix: avoid accessing freed memory.
-	- solaris: add clearenv stub.
-	- keys: add Getpass stub vector.
-	- fix: swap PART_INSTALL and PART_CLEAN automagic cleanup.
-	- build against rpm5.org cvs,
-	- upgrade to file-4.21 (CVE-2007-2026, CVE-2007-2799).
-	- revert indices to db_hash for compatibility.
-	- python: missing ts reference while iterating(#241751).
-	- python: pathetic band-aid pythonic return fixing (#239586).
-	- python: permit hdr.name as well as hdr['name'].
-	- python: restore rpm.RPMSENSE_PREREQ for rpmlint.
-	- popt: allow tests to pass in distcheck where builddir != srcdir.
-	- configure: modern usage.
-	- revert Filedigests -> Filemd5s index name.
-	- don't build Packagecolor index (yet).
-	- python: don't read rpmrc by default.
-	- perl: don't read rpmrc by default.
-	- add D_(...) i18n marker for debug messages, with default disable.
-	- protottype headerGetEntry 4th arg as void *, not void **.
-	- build popt as separate package.
-	- install rpm into /usr/bin, not /bin.
-	- eliminate rpm executable helpers.
-	- update library version.
-	- skip packages/headers with unverifiable signatures.
-	
+    - jbj: fix plain brown rpm upgrade rpm.spec.
+    - jbj: rescusutate build after cvs server side tree surgery.
+    - skip packages/headers with unverifiable signatures.
+    - update library version.
+    - eliminate rpm executable helpers.
+    - install rpm into /usr/bin, not /bin.
+    - build popt as separate package.
+    - protottype headerGetEntry 4th arg as void *, not void **.
+    - add D_(...) i18n marker for debug messages, with default disable.
+    - perl: don't read rpmrc by default.
+    - python: don't read rpmrc by default.
+    - don't build Packagecolor index (yet).
+    - revert Filedigests -> Filemd5s index name.
+    - configure: modern usage.
+    - popt: allow tests to pass in distcheck where builddir != srcdir.
+    - python: restore rpm.RPMSENSE_PREREQ for rpmlint.
+    - python: permit hdr.name as well as hdr['name'].
+    - python: pathetic band-aid pythonic return fixing (#239586).
+    - python: missing ts reference while iterating(#241751).
+    - revert indices to db_hash for compatibility.
+    - upgrade to file-4.21 (CVE-2007-2026, CVE-2007-2799).
+    - build against rpm5.org cvs,
+    - fix: swap PART_INSTALL and PART_CLEAN automagic cleanup.
+    - keys: add Getpass stub vector.
+    - solaris: add clearenv stub.
+    - fix: avoid accessing freed memory.
+    - start rpm-4.5 development.
+
+=============================================================================
+
 4.4.8 -> 4.4.9:
 	- start rpm-4.4.9 devel.
 	- replace rpm2cpio with a shell script (#229422).

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: <rpm-devel@lists.dulug.duke.edu>\n"
-"POT-Creation-Date: 2007-06-10 16:17-0400\n"
+"POT-Creation-Date: 2007-06-16 14:24-0400\n"
 "PO-Revision-Date: 2004-02-29 07:48+0500\n"
 "Last-Translator: unknown\n"
 "Language-Team: unknown\n"
@@ -1662,69 +1662,73 @@ msgstr ""
 msgid "hdr DSA: BAD, not binary\n"
 msgstr ""
 
-#: lib/package.c:545 lib/package.c:585 lib/package.c:929 lib/package.c:955
-#: lib/package.c:987
+#: lib/package.c:545 lib/package.c:586
 #, c-format
-msgid "only V3 and V4 signatures can be verified, skipping V%u signature\n"
+msgid "skipping header with unverifiable V%u signature\n"
 msgstr ""
 
-#: lib/package.c:673
+#: lib/package.c:675
 #, c-format
 msgid "hdr size(%d): BAD, read returned %d\n"
 msgstr ""
 
-#: lib/package.c:677
+#: lib/package.c:679
 #, c-format
 msgid "hdr magic: BAD\n"
 msgstr ""
 
-#: lib/package.c:685
+#: lib/package.c:687
 #, c-format
 msgid "hdr tags: BAD, no. of tags(%d) out of range\n"
 msgstr ""
 
-#: lib/package.c:694
+#: lib/package.c:696
 #, c-format
 msgid "hdr data: BAD, no. of bytes(%d) out of range\n"
 msgstr ""
 
-#: lib/package.c:708
+#: lib/package.c:710
 #, c-format
 msgid "hdr blob(%d): BAD, read returned %d\n"
 msgstr ""
 
-#: lib/package.c:721
+#: lib/package.c:723
 #, c-format
 msgid "hdr load: BAD\n"
 msgstr ""
 
-#: lib/package.c:799
+#: lib/package.c:801
 #, fuzzy
 msgid "packaging version 1 is not supported by this version of RPM\n"
 msgstr "samo paketi sa glavnim brojevima <= 3 su podr¾ani u ovoj verziji RPM-a"
 
-#: lib/package.c:808
+#: lib/package.c:810
 #, fuzzy
 msgid ""
 "only packaging with major numbers <= 4 is supported by this version of RPM\n"
 msgstr "samo paketi sa glavnim brojevima <= 3 su podr¾ani u ovoj verziji RPM-a"
 
-#: lib/package.c:820 lib/rpmchecksig.c:236 lib/rpmchecksig.c:773
+#: lib/package.c:822 lib/rpmchecksig.c:236 lib/rpmchecksig.c:773
 #, fuzzy, c-format
 msgid "%s: rpmReadSignature failed: %s"
 msgstr "%s: Neuspelo 'rpmReadSignature'\n"
 
-#: lib/package.c:827 lib/rpmchecksig.c:243 lib/rpmchecksig.c:781
+#: lib/package.c:829 lib/rpmchecksig.c:243 lib/rpmchecksig.c:781
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: Potpis nije na raspolaganju\n"
 
-#: lib/package.c:894
+#: lib/package.c:896
 #, fuzzy, c-format
 msgid "%s: headerRead failed: %s"
 msgstr "%s: Neuspeo 'readLead'\n"
 
-#: lib/package.c:1002 lib/rpmchecksig.c:118 lib/rpmchecksig.c:689
+#: lib/package.c:931 lib/package.c:957 lib/package.c:989 lib/rpmchecksig.c:870
+#, c-format
+msgid "skipping package %s with unverifiable V%u signature\n"
+msgstr ""
+
+#: lib/package.c:1004 lib/rpmchecksig.c:118 lib/rpmchecksig.c:689
 #, fuzzy, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: Neuspeo 'readLead'\n"
@@ -2749,33 +2753,28 @@ msgstr "%s: Neuspeo 'readLead'\n"
 msgid "%s: No signature available (v1.0 RPM)\n"
 msgstr "%s: Potpis nije na raspolaganju (RPM v1.0)\n"
 
-#: lib/rpmchecksig.c:870
-#, c-format
-msgid "only V3 or V4 signatures can be verified, skipping V%u signature\n"
-msgstr ""
-
-#: lib/rpmchecksig.c:1036
+#: lib/rpmchecksig.c:1037
 msgid "NOT OK"
 msgstr ""
 
-#: lib/rpmchecksig.c:1037 lib/rpmchecksig.c:1051
+#: lib/rpmchecksig.c:1038 lib/rpmchecksig.c:1052
 #, fuzzy
 msgid " (MISSING KEYS:"
 msgstr " (NEDOSTAJUÆI KLJUÈEVI)"
 
-#: lib/rpmchecksig.c:1039 lib/rpmchecksig.c:1053
+#: lib/rpmchecksig.c:1040 lib/rpmchecksig.c:1054
 msgid ") "
 msgstr ""
 
-#: lib/rpmchecksig.c:1040 lib/rpmchecksig.c:1054
+#: lib/rpmchecksig.c:1041 lib/rpmchecksig.c:1055
 msgid " (UNTRUSTED KEYS:"
 msgstr ""
 
-#: lib/rpmchecksig.c:1042 lib/rpmchecksig.c:1056
+#: lib/rpmchecksig.c:1043 lib/rpmchecksig.c:1057
 msgid ")"
 msgstr ""
 
-#: lib/rpmchecksig.c:1050
+#: lib/rpmchecksig.c:1051
 msgid "OK"
 msgstr ""
 
