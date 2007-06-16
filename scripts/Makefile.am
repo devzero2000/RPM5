@@ -9,7 +9,7 @@ EXTRA_DIST = \
 	check-files cross-build executabledeps.sh \
 	find-debuginfo.sh find-lang.sh find-prov.pl find-req.pl \
 	cpanflute cpanflute2 Specfile.pm find-provides.perl \
-	find-requires.perl freshen.sh getpo.sh http.req \
+	find-requires.perl freshen.sh gendiff getpo.sh http.req \
 	check-java-closure.sh java.prov.sh java.req.sh \
 	javadeps.sh libtooldeps.sh pkgconfigdeps.sh \
 	perldeps.pl perl.prov perl.req pythondeps.sh \
@@ -25,17 +25,18 @@ installprefix = $(DESTDIR)
 
 all:
 
-bin_SCRIPTS = rpm2cpio
+bin_SCRIPTS = gendiff rpm2cpio
 
-configdir = ${prefix}/lib/rpm
-config_SCRIPTS = \
+pkglibdir =		@USRLIBRPM@
+versionlibdir =		$(pkglibdir)/@VERSION@
+versionlib_SCRIPTS = \
 	brp-compress brp-python-bytecompile brp-java-gcjcompile \
 	brp-strip brp-strip-comment-note brp-nobuildrootpath \
 	brp-strip-shared brp-strip-static-archive brp-sparc64-linux \
 	check-files cross-build executabledeps.sh \
 	find-debuginfo.sh find-lang.sh find-prov.pl find-req.pl \
 	find-provides.perl \
-	find-requires.perl getpo.sh http.req \
+	find-requires.perl gendiff getpo.sh http.req \
 	javadeps.sh libtooldeps.sh pkgconfigdeps.sh \
 	perldeps.pl perl.prov perl.req pythondeps.sh \
 	php.prov php.req \

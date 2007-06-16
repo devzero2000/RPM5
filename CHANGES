@@ -1,5 +1,9 @@
 
 4.5 -> 5.0:
+    - jbj: populate /usr/lib/rpm/@VERSION@/ instead of foo-@VERSION@ files.
+    - jbj: move gendiff into the scripts directory.
+    - jbj: don't include perl/CVS with "make dist".
+    - jbj: remove rpmbuild and rpmb helper for now.
     - rse: provide portability fallbacks for sighold(3), sigrelse(3) and sigpause(3)
     - rse: allow RPM to build again even if iconv(3) is not available
     - rse: provide --with-db-{largefile,rpc,mutex} options for flexibly building DB
@@ -11,18 +15,18 @@
     - jbj: skip packages/headers with unverifiable signatures.
     - start rpm-5.0 development.
 
+4.4.9 -> 4.5:
+    - update README to point to new rpm5.org home.
+    - upgrade to file-4.21 (CVE-2007-2026, CVE-2007-2799).
+    - build against rpm5.org cvs,
+    - fix: swap PART_INSTALL and PART_CLEAN automagic cleanup.
+    - keys: add Getpass stub vector.
+    - solaris: add clearenv stub.
+    - fix: avoid accessing freed memory.
+    - start rpm-4.5 development.
+
 =============================================================================
 
-4.4.9 -> 4.5:
-	- start rpm-4.5 development.
-	- fix: avoid accessing freed memory.
-	- solaris: add clearenv stub.
-	- keys: add Getpass stub vector.
-	- fix: swap PART_INSTALL and PART_CLEAN automagic cleanup.
-	- build against rpm5.org cvs,
-	- upgrade to file-4.21 (CVE-2007-2026, CVE-2007-2799).
-	- update README to point to new rpm5.org home.
-	
 4.4.8 -> 4.4.9:
 	- start rpm-4.4.9 devel.
 	- replace rpm2cpio with a shell script (#229422).

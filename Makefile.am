@@ -7,10 +7,16 @@ LINT = splint
 EXTRA_DIST = m4/ChangeLog  config.rpath m4/ChangeLog  CHANGES CREDITS Doxyheader GROUPS INSTALL \
 	autodeps/none autodeps/*.prov autodeps/*.req autogen.sh \
 	config.site db db3/configure gendiff installplatform platform* \
-	perl/* \
+	perl/Changes perl/MANIFEST perl/META.yml perl/Makefile.PL \
+	perl/Makefile.PL.in perl/Makefile.am perl/Makefile.in perl/README \
+	perl/RPM.pm perl/RPM.xs perl/foo.i386.rpm perl/hdlist-test.hdr \
+	perl/test-rpm-1.0-1.noarch.rpm \
+	perl/test-rpm-1.0-1.src.rpm \
+	perl/test.pl \
+	perl/typemap \
 	pubkeys/JBJ-GPG-KEY \
 	po/*.in po/*.po po/rpm.pot \
-	rpm.magic rpmpopt-$(VERSION) rpmqv.c rpm.c
+	rpm.magic rpmqv.c rpm.c
 
 SUBDIRS = po misc @WITH_ZLIB_SUBDIR@ @WITH_ELFUTILS_SUBDIR@ @WITH_MAGIC_SUBDIR@ @WITH_DB_SUBDIR@ @WITH_SQLITE3_SUBDIR@ @WITH_POPT_SUBDIR@ @WITH_BEECRYPT_SUBDIR@ @WITH_NEON_SUBDIR@ @WITH_SYCK_SUBDIR@ @WITH_LUA_SUBDIR@ rpmio rpmdb lib build @WITH_PYTHON_SUBDIR@ @WITH_PERL_SUBDIR@ tools scripts doc .
 
@@ -37,20 +43,11 @@ myLDADD = \
 	@WITH_ZLIB_LIB@ \
 	@LIBMISC@
 
-rpmbindir = `echo $(bindir)`
-rpmbin_PROGRAMS = rpm
-
-bin_SCRIPTS =		gendiff
+bin_PROGRAMS = 		rpm
 
 pkglibdir =		@USRLIBRPM@
-pkglib_PROGRAMS =	rpmb
-pkglib_DATA =		rpmpopt-$(VERSION) macros-$(VERSION)
-
-rpmpopt-$(VERSION): rpmpopt
-	cp rpmpopt $@
-
-macros-$(VERSION): macros
-	cp macros $@
+versionlibdir =		$(pkglibdir)/@VERSION@
+versionlib_DATA =	rpmpopt macros
 
 noinst_HEADERS = build.h debug.h system.h
 
@@ -59,12 +56,6 @@ rpm_LDFLAGS =		$(myLDFLAGS) $(staticLDFLAGS)
 rpm_LDADD =		rpm.o $(top_builddir)/build/.libs/librpmbuild.a $(myLDADD)
 rpm.o:	$(top_srcdir)/rpmqv.c
 	$(COMPILE) -fpie -DIAM_RPMBT -DIAM_RPMDB -DIAM_RPMEIU -DIAM_RPMK -DIAM_RPMQV -o $@ -c $<
-
-rpmb_SOURCES =		$(top_srcdir)/build.c
-rpmb_LDFLAGS =		$(myLDFLAGS) $(staticLDFLAGS)
-rpmb_LDADD =		rpmb.o $(top_builddir)/build/librpmbuild.la $(myLDADD)
-rpmb.o:	$(top_srcdir)/rpmqv.c
-	$(COMPILE) -fpie -DIAM_RPMBT -o $@ -c $<
 
 $(PROGRAMS): 		$(myLDADD) @WITH_APIDOCS_TARGET@
 
@@ -95,10 +86,6 @@ pkgsrcdir = $(prefix)/src/rpm
 
 install-data-local:
 	@$(mkinstalldirs) $(DESTDIR)$(varprefix)/lib/rpm
-	@rm -f $(DESTDIR)$(pkglibdir)/rpmt
-	@@LN_S@ rpmb $(DESTDIR)$(pkglibdir)/rpmt
-	rm -f $(DESTDIR)$(bindir)/rpmbuild
-	@LN_S@ ../lib/rpm/rpmb $(DESTDIR)$(bindir)/rpmbuild
 	@for dir in BUILD RPMS SOURCES SPECS SRPMS ; do\
 	    $(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/$$dir;\
 	done
@@ -145,10 +132,6 @@ install-data-local:
 
 .PHONY:	setperms
 setperms:
-	@for f in $(rpmbin_PROGRAMS) ; do\
-	    $(__CHOWN) ${RPMUSER}.${RPMGROUP} $(DESTDIR)$(rpmbindir)/$$f ;\
-	    $(__CHMOD) g+s $(DESTDIR)$(rpmbindir)/$$f ;\
-	done
 	@for f in $(bin_PROGRAMS) ; do\
 	    $(__CHOWN) ${RPMUSER}.${RPMGROUP} $(DESTDIR)$(bindir)/$$f ;\
 	done
@@ -167,9 +150,6 @@ setperms:
 
 .PHONY:	unsetgid
 unsetgid:
-	@for f in $(rpmbin_PROGRAMS) ; do\
-	    $(__CHMOD) g-s $(DESTDIR)$(rpmbindir)/$$f ;\
-	done
 	@for f in $(pkglib_PROGRAMS) ; do\
 	    $(__CHMOD) g-s $(DESTDIR)$(pkglibdir)/$$f ;\
 	done
@@ -206,7 +186,7 @@ nextsrpm: all archive
 	@sudo ./rpm -ta rpm-$(VERSION).tar.gz
 
 .PHONY:	doxygen
-doxygen @WITH_APIDOCS_TARGET@: Doxyfile rpmpopt-@VERSION@
+doxygen @WITH_APIDOCS_TARGET@: Doxyfile rpmpopt macros
 	rm -rf $@
 	mkdir -p $@
 	- [ X"@__DOXYGEN@" != Xno ] && @__DOXYGEN@
