@@ -21,8 +21,9 @@ EXTRA_PROGRAMS = debugedit convertdb1
 
 LDADD = $(top_builddir)/lib/librpm.la
 
-pkgbindir = @USRLIBRPM@
-pkgbin_PROGRAMS = rpmdeps @WITH_LIBDWARF_DEBUGEDIT@
+pkglibdir =		@USRLIBRPM@
+versionlibdir =		$(pkglibdir)/@VERSION@
+versionlib_PROGRAMS =	rpmdeps @WITH_LIBDWARF_DEBUGEDIT@
 
 convertdb1_SOURCES =	convertdb1.c
 

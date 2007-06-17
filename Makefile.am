@@ -6,7 +6,7 @@ LINT = splint
 
 EXTRA_DIST = config.rpath m4/ChangeLog  CHANGES CREDITS Doxyheader GROUPS INSTALL \
 	autodeps/none autodeps/*.prov autodeps/*.req autogen.sh \
-	config.site db db3/configure gendiff installplatform platform* \
+	config.site db db3/configure installplatform platform* \
 	perl/Changes perl/MANIFEST perl/META.yml perl/Makefile.PL \
 	perl/Makefile.PL.in perl/Makefile.am perl/Makefile.in perl/README \
 	perl/RPM.pm perl/RPM.xs perl/foo.i386.rpm perl/hdlist-test.hdr \

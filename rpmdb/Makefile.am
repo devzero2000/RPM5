@@ -28,13 +28,14 @@ pkgincdir = $(pkgincludedir)
 pkginc_HEADERS = db.h header.h hdrinline.h rpmdb.h
 noinst_HEADERS = fprint.h header_internal.h legacy.h
 
-pkgbindir = @USRLIBRPM@
-pkgbin_PROGRAMS = \
+pkglibdir =		@USRLIBRPM@
+versionlibdir = 	$(pkglibdir)/@VERSION@
+versionlib_PROGRAMS = \
 	db_archive db_checkpoint db_deadlock db_dump \
 	db_hotbackup db_load db_printlog db_recover \
 	db_stat db_upgrade db_verify 
 if WITH_DB_RPC
-pkgbin_PROGRAMS += db_svc
+versionlib_PROGRAMS += db_svc
 endif
 
 mylibs = librpmdb.la
