@@ -161,19 +161,6 @@ int _ftp_debug = 0;
 /*@unchecked@*/
 int _dav_debug = 0;
 
-/**
- * Wrapper to free(3), hides const compilation noise, permit NULL, return NULL.
- * @param p		memory to free
- * @retval		NULL always
- */
-/*@unused@*/ static inline /*@null@*/ void *
-_free(/*@only@*/ /*@null@*/ /*@out@*/ const void * p)
-	/*@modifies p@*/
-{
-    if (p != NULL)	free((void *)p);
-    return NULL;
-}
-
 /* =============================================================== */
 
 /*@-boundswrite@*/

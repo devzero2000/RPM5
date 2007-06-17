@@ -121,18 +121,6 @@ static size_t headerMaxbytes = (32*1024*1024);
 /*@observer@*/ /*@unchecked@*/
 HV_t hdrVec;	/* forward reference */
 
-/**
- * Wrapper to free(3), hides const compilation noise, permit NULL, return NULL.
- * @param p		memory to free
- * @return		NULL always
- */
-/*@unused@*/ static inline /*@null@*/ void *
-_free(/*@only@*/ /*@null@*/ /*@out@*/ const void * p) /*@modifies *p @*/
-{
-    if (p != NULL)	free((void *)p);
-    return NULL;
-}
-
 /** \ingroup header
  * Reference a header instance.
  * @param h		header

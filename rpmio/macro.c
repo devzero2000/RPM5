@@ -38,6 +38,14 @@ typedef	FILE * FD_t;
 
 #define	fdGetFILE(_fd)		(_fd)
 
+/*@unused@*/ static inline /*@null@*/ void *
+_free(/*@only@*/ /*@null@*/ const void * p)
+	/*@modifies p@*/
+{
+    if (p != NULL)	free((void *)p);
+    return NULL;
+}
+
 #else
 
 /*@observer@*/ /*@checked@*/
@@ -121,19 +129,6 @@ static int expandMacro(MacroBuf mb)
 		print_macro_trace, print_expand_trace, h_errno, fileSystem @*/
 	/*@modifies mb, rpmGlobalMacroContext,
 		print_macro_trace, print_expand_trace, fileSystem @*/;
-
-/**
- * Wrapper to free(3), hides const compilation noise, permit NULL, return NULL.
- * @param p		memory to free
- * @retval		NULL always
- */
-/*@unused@*/ static inline /*@null@*/ void *
-_free(/*@only@*/ /*@null@*/ const void * p)
-	/*@modifies p@*/
-{
-    if (p != NULL)	free((void *)p);
-    return NULL;
-}
 
 /* =============================================================== */
 
