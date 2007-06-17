@@ -1,4 +1,5 @@
 4.4.9 -> 4.5:
+    - jbj: pass -F fnum to patch (#243720).
     - jbj: refactor _free() from rpmlib.h -> rpmio.h.
     - jbj: add _rpmhome macro, revector helper paths through _rpmhome.
     - jbj: hack a version into magic install path. better needs to be done.
