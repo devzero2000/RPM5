@@ -1,9 +1,5 @@
 
 4.5 -> 5.0:
-    - jbj: populate /usr/lib/rpm/@VERSION@/ instead of foo-@VERSION@ files.
-    - jbj: move gendiff into the scripts directory.
-    - jbj: don't include perl/CVS with "make dist".
-    - jbj: remove rpmbuild and rpmb helper for now.
     - rse: provide portability fallbacks for sighold(3), sigrelse(3) and sigpause(3)
     - rse: allow RPM to build again even if iconv(3) is not available
     - rse: provide --with-db-{largefile,rpc,mutex} options for flexibly building DB
@@ -16,6 +12,13 @@
     - start rpm-5.0 development.
 
 4.4.9 -> 4.5:
+    - jbj: add _rpmhome macro, revector helper paths through _rpmhome.
+    - jbj: hack a version into magic install path. better needs to be done.
+    - jbj: start consistent versionlibdir usage in all Makefile.am files.
+    - jbj: populate /usr/lib/rpm/@VERSION@/ instead of foo-@VERSION@ files.
+    - jbj: move gendiff into the scripts directory.
+    - jbj: don't include perl/CVS with "make dist".
+    - jbj: remove rpmbuild and rpmb helper for now.
     - update README to point to new rpm5.org home.
     - upgrade to file-4.21 (CVE-2007-2026, CVE-2007-2799).
     - build against rpm5.org cvs,

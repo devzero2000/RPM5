@@ -5,6 +5,7 @@
 %define	with_apidocs		@WITH_APIDOCS@%{nil}
 
 %{!?_usrlibrpm:%global _usrlibrpm @USRLIBRPM@}
+%{!?_rpmhome:%global _rpmhome @USRLIBRPM@/@VERSION@}
 
 %define	__prefix	%{?_prefix}%{!?_prefix:/usr}
 %{?!_lib: %define _lib lib}
@@ -208,7 +209,7 @@ gzip -9n apidocs/man/man*/* || :
 
 # Get rid of unpackaged files
 { cd $RPM_BUILD_ROOT
-  rm -f .%{_usrlibrpm}/{Specfile.pm,cpanflute,cpanflute2,rpmdiff,rpmdiff.cgi,sql.prov,sql.req,tcl.req,trpm}
+  rm -f .%{_rpmhome}/{Specfile.pm,cpanflute,cpanflute2,rpmdiff,rpmdiff.cgi,sql.prov,sql.req,tcl.req,trpm}
   rm -rf .%{_mandir}/man8/rpmcache.8*
   rm -rf .%{_mandir}/man8/rpmgraph.8*
   rm -rf .%{_mandir}/ja/man8/rpmcache.8*
@@ -281,10 +282,11 @@ exit 0
 %rpmattr	%{_bindir}/gendiff
 
 %attr(0755, @RPMUSER@, @RPMGROUP@)	%dir %{_usrlibrpm}
-%attr(0644, @RPMUSER@, @RPMGROUP@)	%{_usrlibrpm}/macros-@VERSION@
-%rpmattr	%{_usrlibrpm}/rpm.*
-%rpmattr	%{_usrlibrpm}/tgpg
-%attr(0644, @RPMUSER@, @RPMGROUP@)	%{_usrlibrpm}/rpmpopt-@VERSION@
+%attr(0755, @RPMUSER@, @RPMGROUP@)	%dir %{_rpmhome}
+%attr(0644, @RPMUSER@, @RPMGROUP@)	%{_rpmhome}/macros
+%rpmattr	%{_rpmhome}/rpm.*
+%rpmattr	%{_rpmhome}/tgpg
+%attr(0644, @RPMUSER@, @RPMGROUP@)	%{_rpmhome}/rpmpopt
 
 %ifarch i386 i486 i586 i686 athlon pentium3 pentium4
 %attr(-, @RPMUSER@, @RPMGROUP@)		%{_usrlibrpm}/i[3456]86*
@@ -320,8 +322,8 @@ exit 0
 %endif
 %attr(-, @RPMUSER@, @RPMGROUP@)		%{_usrlibrpm}/noarch*
 
-%rpmattr	%{_usrlibrpm}/rpmdb_loadcvt
-%rpmattr	%{_usrlibrpm}/db_*
+%rpmattr	%{_rpmhome}/rpmdb_loadcvt
+%rpmattr	%{_rpmhome}/db_*
 
 %{_mandir}/man8/rpm.8*
 %{_mandir}/man8/rpm2cpio.8*
@@ -349,41 +351,39 @@ exit 0
 %dir %{__prefix}/src/rpm/SRPMS
 %dir %{__prefix}/src/rpm/RPMS
 %{__prefix}/src/rpm/RPMS/*
-%rpmattr	%{_bindir}/rpmbuild
-%rpmattr	%{_usrlibrpm}/brp-*
-%rpmattr	%{_usrlibrpm}/check-files
-%rpmattr	%{_usrlibrpm}/cross-build
-%rpmattr	%{_usrlibrpm}/debugedit
-%rpmattr	%{_usrlibrpm}/find-debuginfo.sh
-%rpmattr	%{_usrlibrpm}/find-lang.sh
-%rpmattr	%{_usrlibrpm}/find-prov.pl
-%rpmattr	%{_usrlibrpm}/find-provides.perl
-%rpmattr	%{_usrlibrpm}/find-req.pl
-%rpmattr	%{_usrlibrpm}/find-requires.perl
-%rpmattr	%{_usrlibrpm}/getpo.sh
-%rpmattr	%{_usrlibrpm}/http.req
-%rpmattr	%{_usrlibrpm}/javadeps.sh
-%rpmattr	%{_usrlibrpm}/magic
-%rpmattr	%{_usrlibrpm}/magic.mgc
-%rpmattr	%{_usrlibrpm}/magic.mime
-%rpmattr	%{_usrlibrpm}/magic.mime.mgc
+%rpmattr	%{_rpmhome}/brp-*
+%rpmattr	%{_rpmhome}/check-files
+%rpmattr	%{_rpmhome}/cross-build
+%rpmattr	%{_rpmhome}/debugedit
+%rpmattr	%{_rpmhome}/find-debuginfo.sh
+%rpmattr	%{_rpmhome}/find-lang.sh
+%rpmattr	%{_rpmhome}/find-prov.pl
+%rpmattr	%{_rpmhome}/find-provides.perl
+%rpmattr	%{_rpmhome}/find-req.pl
+%rpmattr	%{_rpmhome}/find-requires.perl
+%rpmattr	%{_rpmhome}/getpo.sh
+%rpmattr	%{_rpmhome}/http.req
+%rpmattr	%{_rpmhome}/javadeps.sh
+%rpmattr	%{_rpmhome}/magic
+%rpmattr	%{_rpmhome}/magic.mgc
+%rpmattr	%{_rpmhome}/magic.mime
+%rpmattr	%{_rpmhome}/magic.mime.mgc
 
-%rpmattr	%{_usrlibrpm}/executabledeps.sh
-%rpmattr	%{_usrlibrpm}/libtooldeps.sh
-%rpmattr	%{_usrlibrpm}/perldeps.pl
-%rpmattr	%{_usrlibrpm}/perl.prov
-%rpmattr	%{_usrlibrpm}/perl.req
-%rpmattr	%{_usrlibrpm}/php.prov
-%rpmattr	%{_usrlibrpm}/php.req
-%rpmattr	%{_usrlibrpm}/pkgconfigdeps.sh
-%rpmattr	%{_usrlibrpm}/pythondeps.sh
-%rpmattr	%{_usrlibrpm}/rpmdeps
+%rpmattr	%{_rpmhome}/executabledeps.sh
+%rpmattr	%{_rpmhome}/libtooldeps.sh
+%rpmattr	%{_rpmhome}/perldeps.pl
+%rpmattr	%{_rpmhome}/perl.prov
+%rpmattr	%{_rpmhome}/perl.req
+%rpmattr	%{_rpmhome}/php.prov
+%rpmattr	%{_rpmhome}/php.req
+%rpmattr	%{_rpmhome}/pkgconfigdeps.sh
+%rpmattr	%{_rpmhome}/pythondeps.sh
+%rpmattr	%{_rpmhome}/rpmdeps
 
-%rpmattr	%{_usrlibrpm}/rpm[bt]
-%rpmattr	%{_usrlibrpm}/symclash.*
-%rpmattr	%{_usrlibrpm}/u_pkg.sh
-%rpmattr	%{_usrlibrpm}/vpkg-provides.sh
-%rpmattr	%{_usrlibrpm}/vpkg-provides2.sh
+%rpmattr	%{_rpmhome}/symclash.*
+%rpmattr	%{_rpmhome}/u_pkg.sh
+%rpmattr	%{_rpmhome}/vpkg-provides.sh
+%rpmattr	%{_rpmhome}/vpkg-provides2.sh
 
 %{_mandir}/man1/gendiff.1*
 %{_mandir}/man8/rpmbuild.8*

@@ -36,7 +36,7 @@ versionlib_SCRIPTS = \
 	check-files cross-build executabledeps.sh \
 	find-debuginfo.sh find-lang.sh find-prov.pl find-req.pl \
 	find-provides.perl \
-	find-requires.perl gendiff getpo.sh http.req \
+	find-requires.perl getpo.sh http.req \
 	javadeps.sh libtooldeps.sh pkgconfigdeps.sh \
 	perldeps.pl perl.prov perl.req pythondeps.sh \
 	php.prov php.req \
