@@ -1202,7 +1202,9 @@ hexdump(buf, rc);
 
 ssize_t davWrite(void * cookie, const char * buf, size_t count)
 {
+#if !defined(NEONBLOWSCHUNKS) || defined(HAVE_NEON_NE_SEND_REQUEST_CHUNK) || defined(__LCLINT__)
     FD_t fd = cookie;
+#endif
     ssize_t rc;
     int xx;
 
@@ -1682,7 +1684,7 @@ struct dirent * davReaddir(DIR * dir)
     dp->d_reclen = 0;		/* W2DO? */
 
 #if !(defined(hpux) || defined(__hpux) || defined(sun))
-#if !defined(__APPLE__) && !defined(__FreeBSD_kernel__)
+#if !defined(__APPLE__) && !defined(__FreeBSD_kernel__) && !defined(__FreeBSD__)
     dp->d_off = 0;		/* W2DO? */
 #endif
 /*@-boundsread@*/
