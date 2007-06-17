@@ -10,18 +10,6 @@
 #include "debug.h"
 
 /*@-bounds@*/
-/**
- * Wrapper to free(3), hides const compilation noise, permit NULL, return NULL.
- * @param p		memory to free
- * @return		NULL always
- */
-/*@unused@*/ static inline /*@null@*/
-void * _free(/*@only@*/ /*@null@*/ /*@out@*/ const void * p)
-	/*@modifies p @*/
-{
-    if (p != NULL)	free((void *)p);
-    return NULL;
-}
 
 void argvPrint(const char * msg, ARGV_t argv, FILE * fp)
 {
