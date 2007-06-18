@@ -42,7 +42,7 @@ int rpmGetFilesystemList( /*@null@*/ /*@out@*/ const char *** listptr,
  * @return			0 on success, 1 on error
  */
 /*@-incondefs@*/
-int rpmGetFilesystemUsage(const char ** fileList, int_32 * fssizes,
+int rpmGetFilesystemUsage(const char ** fileList, uint_32 * fssizes,
 		int numFiles, /*@null@*/ /*@out@*/ uint_64 ** usagesPtr,
 		int flags)
 	/*@globals rpmGlobalMacroContext, h_errno,
