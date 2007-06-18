@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.4\n"
 "Report-Msgid-Bugs-To: <rpm-devel@lists.dulug.duke.edu>\n"
-"POT-Creation-Date: 2007-06-16 14:24-0400\n"
+"POT-Creation-Date: 2007-06-17 20:15-0400\n"
 "PO-Revision-Date: 2002-03-04 17:17+0900\n"
 "Last-Translator: Jong-Hoon Ryu <redhat4u@netian.com>\n"
 "Language-Team: GNU Translation project <ko@li.org>\n"
@@ -976,76 +976,81 @@ msgstr "%d 번째 행: 알 수 없는 태그입니다: %s\n"
 msgid "Bad source: %s: %s\n"
 msgstr "잘못된 소스: %s: %s\n"
 
-#: build/parsePrep.c:101
+#: build/parsePrep.c:104
 #, c-format
 msgid "No patch number %d\n"
 msgstr "패치 번호 %d가 없습니다\n"
 
-#: build/parsePrep.c:200
+#: build/parsePrep.c:203
 #, c-format
 msgid "No source number %d\n"
 msgstr "소스 번호 %d가 없습니다\n"
 
-#: build/parsePrep.c:316
+#: build/parsePrep.c:319
 #, c-format
 msgid "Error parsing %%setup: %s\n"
 msgstr "%%setup에서 오류 발생: %s\n"
 
-#: build/parsePrep.c:331
+#: build/parsePrep.c:334
 #, c-format
 msgid "line %d: Bad arg to %%setup: %s\n"
 msgstr "%d 번째 행: %%setup에 잘못된 인수가 있습니다: %s\n"
 
-#: build/parsePrep.c:349
+#: build/parsePrep.c:352
 #, c-format
 msgid "line %d: Bad %%setup option %s: %s\n"
 msgstr "%d 번째 행: %%setup에 잘못된 %s 옵션: %s\n"
 
-#: build/parsePrep.c:491
+#: build/parsePrep.c:494
 #, c-format
 msgid "line %d: Need arg to %%patch -b: %s\n"
 msgstr "%d 번째 행: %%patch -b 에 인수가 필요합니다: %s\n"
 
-#: build/parsePrep.c:500
+#: build/parsePrep.c:503
 #, c-format
 msgid "line %d: Need arg to %%patch -z: %s\n"
 msgstr "%d 번째 행: %%patch -z 에 인수가 필요합니다: %s\n"
 
-#: build/parsePrep.c:512
+#: build/parsePrep.c:514
+#, fuzzy, c-format
+msgid "line %d: Bad arg to %%patch -F: %s\n"
+msgstr "%d 번째 행: %%patch -p 에 잘못된 인수가 있습니다: %s\n"
+
+#: build/parsePrep.c:526
 #, c-format
 msgid "line %d: Need arg to %%patch -p: %s\n"
 msgstr "%d 번째 행: %%patch -p 에 인수가 필요합니다: %s\n"
 
-#: build/parsePrep.c:519
+#: build/parsePrep.c:533
 #, c-format
 msgid "line %d: Bad arg to %%patch -p: %s\n"
 msgstr "%d 번째 행: %%patch -p 에 잘못된 인수가 있습니다: %s\n"
 
-#: build/parsePrep.c:526
+#: build/parsePrep.c:540
 msgid "Too many patches!\n"
 msgstr "패치가 너무 많습니다!\n"
 
-#: build/parsePrep.c:530
+#: build/parsePrep.c:544
 #, c-format
 msgid "line %d: Bad arg to %%patch: %s\n"
 msgstr "%d 번째 행: %%patch에 잘못된 인수가 있습니다: %s\n"
 
-#: build/parsePrep.c:624
+#: build/parsePrep.c:638
 #, fuzzy, c-format
 msgid "Missing %s%d %s: %s\n"
 msgstr "%2$s %3$s에 %1$s 가 없습니다\n"
 
-#: build/parsePrep.c:632
+#: build/parsePrep.c:646
 #, fuzzy, c-format
 msgid "file %s missing: %s\n"
 msgstr "%s 파일: %s\n"
 
-#: build/parsePrep.c:640
+#: build/parsePrep.c:654
 #, fuzzy, c-format
 msgid "Fetching %s failed: %s\n"
 msgstr "%s(이)가 실패함: %s\n"
 
-#: build/parsePrep.c:662
+#: build/parsePrep.c:676
 #, c-format
 msgid "line %d: second %%prep\n"
 msgstr "%d 번째 행: 두번째 %%prep\n"
@@ -3485,80 +3490,80 @@ msgstr "%s(은)는 너무 크거나 너무 적은 정수(long) 값입니다, 생략합니다\n"
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr "%s(은)는 너무 크거나 너무 적은 정수(int) 값입니다, 생략합니다\n"
 
-#: rpmdb/header.c:2832
+#: rpmdb/header.c:2820
 msgid "missing { after %"
 msgstr "'%' 뒤에 '{' 가 없습니다"
 
-#: rpmdb/header.c:2862
+#: rpmdb/header.c:2850
 msgid "missing } after %{"
 msgstr "'%{' 뒤에 '}' 가 없습니다"
 
-#: rpmdb/header.c:2878
+#: rpmdb/header.c:2866
 msgid "empty tag format"
 msgstr "태그 형식이 비어있습니다"
 
-#: rpmdb/header.c:2890
+#: rpmdb/header.c:2878
 msgid "empty tag name"
 msgstr "태그 이름이 비어있습니다"
 
-#: rpmdb/header.c:2899
+#: rpmdb/header.c:2887
 msgid "unknown tag"
 msgstr "알 수 없는 태그 입니다"
 
-#: rpmdb/header.c:2926
+#: rpmdb/header.c:2914
 msgid "] expected at end of array"
 msgstr "배열의 끝부분에 ']' 가 와야합니다"
 
-#: rpmdb/header.c:2939
+#: rpmdb/header.c:2927
 msgid "unexpected ]"
 msgstr "불필요한 ']' 가 있습니다"
 
-#: rpmdb/header.c:2952
+#: rpmdb/header.c:2940
 msgid "unexpected }"
 msgstr "불필요한 '}' 가 있습니다"
 
-#: rpmdb/header.c:3016
+#: rpmdb/header.c:3004
 msgid "? expected in expression"
 msgstr "표현식에 '?' 가 와야합니다"
 
-#: rpmdb/header.c:3023
+#: rpmdb/header.c:3011
 msgid "{ expected after ? in expression"
 msgstr "표현식의 '?' 뒤에 '{' 가 와야합니다"
 
-#: rpmdb/header.c:3035 rpmdb/header.c:3075
+#: rpmdb/header.c:3023 rpmdb/header.c:3063
 msgid "} expected in expression"
 msgstr "표현식에 '}' 가 와야합니다"
 
-#: rpmdb/header.c:3043
+#: rpmdb/header.c:3031
 msgid ": expected following ? subexpression"
 msgstr "'?' 하부표현식(subexpression) 뒤에 ':' 이 와야합니다"
 
-#: rpmdb/header.c:3061
+#: rpmdb/header.c:3049
 msgid "{ expected after : in expression"
 msgstr "표현식의 ':' 뒤에 '{' 가 와야합니다"
 
-#: rpmdb/header.c:3083
+#: rpmdb/header.c:3071
 msgid "| expected at end of expression"
 msgstr "표현식의 끝부분에 '|' 가 와야합니다"
 
-#: rpmdb/header.c:3186
+#: rpmdb/header.c:3174
 msgid "(index out of range)"
 msgstr ""
 
-#: rpmdb/header.c:3455
+#: rpmdb/header.c:3443
 msgid "array iterator used with different sized arrays"
 msgstr ""
 
-#: rpmdb/header.c:3769 rpmdb/header.c:3806 rpmdb/header.c:3829
+#: rpmdb/header.c:3757 rpmdb/header.c:3794 rpmdb/header.c:3817
 msgid "(not a number)"
 msgstr "(숫자가 아닙니다)"
 
-#: rpmdb/header.c:3868
+#: rpmdb/header.c:3856
 #, c-format
 msgid "%c"
 msgstr ""
 
-#: rpmdb/header.c:3885
+#: rpmdb/header.c:3873
 msgid "%a %b %d %Y"
 msgstr ""
 
@@ -3713,172 +3718,172 @@ msgstr "복구하기 위해 %2$s의 파일을 %1$s의 파일로 교체합니다"
 msgid "Unable to get lock on db %s, retrying... (%d)\n"
 msgstr ""
 
-#: rpmio/macro.c:240
+#: rpmio/macro.c:235
 #, c-format
 msgid "======================== active %d empty %d\n"
 msgstr "======================== %d 활성 %d 비어있음\n"
 
-#: rpmio/macro.c:395
+#: rpmio/macro.c:390
 #, c-format
 msgid "%3d>%*s(empty)"
 msgstr "%3d>%*s(비어있음)"
 
-#: rpmio/macro.c:438
+#: rpmio/macro.c:433
 #, c-format
 msgid "%3d<%*s(empty)\n"
 msgstr "%3d<%*s(비어있음)\n"
 
-#: rpmio/macro.c:672 rpmio/macro.c:713
+#: rpmio/macro.c:667 rpmio/macro.c:708
 #, c-format
 msgid "Macro %%%s has unterminated body\n"
 msgstr "매크로 %%%s에 종료되지 않은 내용(body)이 있습니다\n"
 
-#: rpmio/macro.c:735
+#: rpmio/macro.c:730
 #, c-format
 msgid "Macro %%%s has illegal name (%%define)\n"
 msgstr "매크로 %%%s에 부적합한 이름이 있습니다 (%%define)\n"
 
-#: rpmio/macro.c:741
+#: rpmio/macro.c:736
 #, c-format
 msgid "Macro %%%s has unterminated opts\n"
 msgstr "매크로 %%%s에 종료되지 않은 옵션이 있습니다\n"
 
-#: rpmio/macro.c:746
+#: rpmio/macro.c:741
 #, c-format
 msgid "Macro %%%s has empty body\n"
 msgstr "매크로 %%%s에 비어있는 내용(body)이 있습니다\n"
 
-#: rpmio/macro.c:752
+#: rpmio/macro.c:747
 #, c-format
 msgid "Macro %%%s failed to expand\n"
 msgstr "매크로 %%%s(을)를 확장(expand)하는데 실패했습니다\n"
 
-#: rpmio/macro.c:791
+#: rpmio/macro.c:786
 #, c-format
 msgid "Macro %%%s has illegal name (%%undefine)\n"
 msgstr "매크로 %%%s에 부적합한 이름이 있습니다 (%%undefine)\n"
 
-#: rpmio/macro.c:915
+#: rpmio/macro.c:910
 #, c-format
 msgid "Macro %%%s (%s) was not used below level %d\n"
 msgstr "매크로 %%%s (%s)는 레벨 %d 이하에서는 사용할 수 없습니다\n"
 
-#: rpmio/macro.c:1042
+#: rpmio/macro.c:1037
 #, c-format
 msgid "Unknown option %c in %s(%s)\n"
 msgstr "%2$s(%3$s)에 알 수 없는 옵션 %1$c(이)가 있습니다\n"
 
-#: rpmio/macro.c:1245
+#: rpmio/macro.c:1240
 #, c-format
 msgid "Recursion depth(%d) greater than max(%d)\n"
 msgstr "반복 횟수(%d)가 최대치(%d) 보다 큽니다\n"
 
-#: rpmio/macro.c:1318 rpmio/macro.c:1335
+#: rpmio/macro.c:1313 rpmio/macro.c:1330
 #, c-format
 msgid "Unterminated %c: %s\n"
 msgstr "%c(이)가 종료되지 않음: %s\n"
 
-#: rpmio/macro.c:1376
+#: rpmio/macro.c:1371
 #, c-format
 msgid "A %% is followed by an unparseable macro\n"
 msgstr "'%%' 다음에 처리할 수 없는(unparseable) 매크로가 있습니다\n"
 
-#: rpmio/macro.c:1543
+#: rpmio/macro.c:1538
 #, c-format
 msgid "Macro %%%.*s not found, skipping\n"
 msgstr "매크로 %%%.*s를 찾을 수 없습니다, 생략합니다\n"
 
-#: rpmio/macro.c:1880
+#: rpmio/macro.c:1875
 msgid "Macro expansion too big for target buffer\n"
 msgstr ""
 
-#: rpmio/macro.c:1914
+#: rpmio/macro.c:1909
 #, c-format
 msgid "Macro '%s' is readonly and cannot be changed.\n"
 msgstr ""
 
-#: rpmio/macro.c:2113 rpmio/macro.c:2119
+#: rpmio/macro.c:2108 rpmio/macro.c:2114
 #, c-format
 msgid "File %s: %s\n"
 msgstr "%s 파일: %s\n"
 
-#: rpmio/macro.c:2122
+#: rpmio/macro.c:2117
 #, c-format
 msgid "File %s is smaller than %u bytes\n"
 msgstr "%s 파일이 %u 바이트 보다 적습니다\n"
 
-#: rpmio/rpmdav.c:678
+#: rpmio/rpmdav.c:665
 msgid "Authorization Required"
 msgstr ""
 
-#: rpmio/rpmdav.c:680
+#: rpmio/rpmdav.c:667
 msgid "Redirect"
 msgstr ""
 
-#: rpmio/rpmdav.c:682
+#: rpmio/rpmdav.c:669
 #, fuzzy
 msgid "Server Error"
 msgstr "서버 입/출력 오류입니다"
 
-#: rpmio/rpmdav.c:684
+#: rpmio/rpmdav.c:671
 #, fuzzy
 msgid "Unknown Error"
 msgstr "(오류 없음)"
 
-#: rpmio/rpmio.c:719
+#: rpmio/rpmio.c:706
 msgid "Success"
 msgstr "성공"
 
-#: rpmio/rpmio.c:742
+#: rpmio/rpmio.c:729
 msgid "Bad server response"
 msgstr "잘못된 서버 응답입니다"
 
-#: rpmio/rpmio.c:744
+#: rpmio/rpmio.c:731
 msgid "Server I/O error"
 msgstr "서버 입/출력 오류입니다"
 
-#: rpmio/rpmio.c:746
+#: rpmio/rpmio.c:733
 msgid "Server timeout"
 msgstr "서버 대기시간이 초과되었습니다"
 
-#: rpmio/rpmio.c:748
+#: rpmio/rpmio.c:735
 msgid "Unable to lookup server host address"
 msgstr "서버 호스트 주소를 검색할 수 없습니다"
 
-#: rpmio/rpmio.c:750
+#: rpmio/rpmio.c:737
 msgid "Unable to lookup server host name"
 msgstr "서버 호스트 이름을 검색할 수 없습니다"
 
-#: rpmio/rpmio.c:752
+#: rpmio/rpmio.c:739
 msgid "Failed to connect to server"
 msgstr "서버에 접속하는데 실패했습니다"
 
-#: rpmio/rpmio.c:754
+#: rpmio/rpmio.c:741
 msgid "Failed to establish data connection to server"
 msgstr "서버에 데이터 접속을 시도하는데 실패했습니다"
 
-#: rpmio/rpmio.c:756
+#: rpmio/rpmio.c:743
 msgid "I/O error to local file"
 msgstr "로컬 파일에 입/출력 오류가 발생했습니다"
 
-#: rpmio/rpmio.c:758
+#: rpmio/rpmio.c:745
 msgid "Error setting remote server to passive mode"
 msgstr ""
 "원격 서버를 수동 모드(passive mode)로 설정하는 도중 오류가 발생했습니다"
 
-#: rpmio/rpmio.c:760
+#: rpmio/rpmio.c:747
 msgid "File not found on server"
 msgstr "서버에서 파일을 찾을 수 없습니다"
 
-#: rpmio/rpmio.c:762
+#: rpmio/rpmio.c:749
 msgid "Abort in progress"
 msgstr "진행이 중단되었습니다"
 
-#: rpmio/rpmio.c:766
+#: rpmio/rpmio.c:753
 msgid "Unknown or unexpected error"
 msgstr "알 수 없는 혹은 예상치 못한 오류가 발생했습니다"
 
-#: rpmio/rpmio.c:784
+#: rpmio/rpmio.c:771
 #, fuzzy
 msgid "Malformed URL"
 msgstr "%s(이)가 잘못됨: %s\n"
@@ -3929,32 +3934,32 @@ msgstr "%s(이)가 실패함: %s\n"
 msgid "memory alloc (%u bytes) returned NULL.\n"
 msgstr "메모리 할당 값 (%u 바이트)이 NULL을 반환하였습니다.\n"
 
-#: rpmio/url.c:124
+#: rpmio/url.c:112
 #, c-format
 msgid "warning: u %p ctrl %p nrefs != 0 (%s %s)\n"
 msgstr "경고: u %p ctrl %p nrefs != 0 (%s %s)\n"
 
-#: rpmio/url.c:144
+#: rpmio/url.c:132
 #, c-format
 msgid "warning: u %p data %p nrefs != 0 (%s %s)\n"
 msgstr "경고: u %p data %p nrefs != 0 (%s %s)\n"
 
-#: rpmio/url.c:174
+#: rpmio/url.c:162
 #, c-format
 msgid "warning: _url_cache[%d] %p nrefs(%d) != 1 (%s %s)\n"
 msgstr "경고: _url_cache[%d] %p nrefs(%d) != 1 (%s %s)\n"
 
-#: rpmio/url.c:270
+#: rpmio/url.c:258
 #, c-format
 msgid "Password for %s@%s: "
 msgstr "%s@%s의 패스워드: "
 
-#: rpmio/url.c:299 rpmio/url.c:325
+#: rpmio/url.c:287 rpmio/url.c:313
 #, c-format
 msgid "error: %sport must be a number\n"
 msgstr "오류: %s 포트는 반드시 숫자이어야 합니다\n"
 
-#: rpmio/url.c:504
+#: rpmio/url.c:492
 msgid "url port must be a number\n"
 msgstr "URL 포트는 반드시 숫자이어야 합니다\n"
 

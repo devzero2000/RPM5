@@ -15,7 +15,7 @@
 Summary: The RPM package management system.
 Name: rpm
 Version: @VERSION@
-Release: 0.5
+Release: 0.4
 Group: System Environment/Base
 URL: http://rpm5.org
 Source: http://rpm5.org/files/rpm/rpm-4.5/rpm-%{version}.tar.gz
@@ -324,6 +324,10 @@ exit 0
 
 %rpmattr	%{_rpmhome}/rpmdb_loadcvt
 %rpmattr	%{_rpmhome}/db_*
+%rpmattr	%{_rpmhome}/magic
+%rpmattr	%{_rpmhome}/magic.mgc
+%rpmattr	%{_rpmhome}/magic.mime
+%rpmattr	%{_rpmhome}/magic.mime.mgc
 
 %{_mandir}/man8/rpm.8*
 %{_mandir}/man8/rpm2cpio.8*
@@ -351,6 +355,7 @@ exit 0
 %dir %{__prefix}/src/rpm/SRPMS
 %dir %{__prefix}/src/rpm/RPMS
 %{__prefix}/src/rpm/RPMS/*
+%rpmattr	%{_bindir}/rpmbuild
 %rpmattr	%{_rpmhome}/brp-*
 %rpmattr	%{_rpmhome}/check-files
 %rpmattr	%{_rpmhome}/cross-build
@@ -364,10 +369,6 @@ exit 0
 %rpmattr	%{_rpmhome}/getpo.sh
 %rpmattr	%{_rpmhome}/http.req
 %rpmattr	%{_rpmhome}/javadeps.sh
-%rpmattr	%{_rpmhome}/magic
-%rpmattr	%{_rpmhome}/magic.mgc
-%rpmattr	%{_rpmhome}/magic.mime
-%rpmattr	%{_rpmhome}/magic.mime.mgc
 
 %rpmattr	%{_rpmhome}/executabledeps.sh
 %rpmattr	%{_rpmhome}/libtooldeps.sh
@@ -435,6 +436,39 @@ exit 0
 %{_libdir}/librpmbuild.so
 
 %changelog
+* Sun Jun 17 2007 Jeff Johnson <jbj@rpm5.org> 4.5-0.4
+- jbj: re-add /usr/bin/rpmbuild for now, poptBT option wiring needs fixing.
+- jbj: pass -F fnum to patch (#243720).
+- jbj: refactor _free() from rpmlib.h -> rpmio.h.
+- jbj: add _rpmhome macro, revector helper paths through _rpmhome.
+- jbj: hack a version into magic install path. better needs to be done.
+- jbj: start consistent versionlibdir usage in all Makefile.am files.
+- jbj: populate /usr/lib/rpm/@VERSION@/ instead of foo-@VERSION@ files.
+- jbj: move gendiff into the scripts directory.
+- jbj: don't include perl/CVS with "make dist".
+- jbj: remove rpmbuild and rpmb helper for now.
+- jbj: fix plain brown rpm upgrade rpm.spec.
+- jbj: rescusutate build after cvs server side tree surgery.
+- skip packages/headers with unverifiable signatures.
+- update library version.
+- eliminate rpm executable helpers.
+- install rpm into /usr/bin, not /bin.
+- build popt as separate package.
+- protottype headerGetEntry 4th arg as void *, not void **.
+- add D_(...) i18n marker for debug messages, with default disable.
+- perl: don't read rpmrc by default.
+- python: don't read rpmrc by default.
+- don't build Packagecolor index (yet).
+- revert Filedigests -> Filemd5s index name.
+- configure: modern usage.
+- popt: allow tests to pass in distcheck where builddir != srcdir.
+- python: restore rpm.RPMSENSE_PREREQ for rpmlint.
+- python: permit hdr.name as well as hdr['name'].
+- python: pathetic band-aid pythonic return fixing (#239586).
+- python: missing ts reference while iterating(#241751).
+- revert indices to db_hash for compatibility.
+- upgrade to file-4.21 (CVE-2007-2026, CVE-2007-2799).
+
 * Fri May 25 2007 Jeff Johnson <jbj@jbj.org> 4.5-0.3
 - solaris: add clearenv stub.
 - keys: add Getpass stub vector.
