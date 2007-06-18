@@ -12,6 +12,7 @@
     - start rpm-5.0 development.
 
 4.4.9 -> 4.5:
+    - jbj: fix ptr alignment problem seen on pld/sparc64.
     - jbj: re-add /usr/bin/rpmbuild for now, poptBT option wiring needs fixing.
     - jbj: pass -F fnum to patch (#243720).
     - jbj: refactor _free() from rpmlib.h -> rpmio.h.
