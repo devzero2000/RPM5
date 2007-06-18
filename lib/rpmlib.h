@@ -14,8 +14,8 @@
 #include "header.h"
 #include "popt.h"
 
-#define RPM_FORMAT_VERSION 4
-#define RPM_MAJOR_VERSION 5
+#define RPM_FORMAT_VERSION 5
+#define RPM_MAJOR_VERSION 0
 #define RPM_MINOR_VERSION 0
 
 /**

@@ -43,7 +43,7 @@ myLDADD = \
 	@WITH_ZLIB_LIB@ \
 	@LIBMISC@
 
-bin_PROGRAMS = 		rpm
+bin_PROGRAMS = 		rpm rpmbuild
 
 pkglibdir =		@USRLIBRPM@
 versionlibdir =		$(pkglibdir)/@VERSION@
@@ -57,6 +57,12 @@ rpm_LDADD =		rpm.o $(top_builddir)/build/.libs/librpmbuild.a $(myLDADD)
 rpm.o:	$(top_srcdir)/rpmqv.c
 	$(COMPILE) -fpie -DIAM_RPMBT -DIAM_RPMDB -DIAM_RPMEIU -DIAM_RPMK -DIAM_RPMQV -o $@ -c $<
 
+rpmbuild_SOURCES =	$(top_srcdir)/build.c
+rpmbuild_LDFLAGS =	$(myLDFLAGS) $(staticLDFLAGS)
+rpmbuild_LDADD =	rpmbuild.o $(top_builddir)/build/librpmbuild.la $(myLDADD)
+rpmbuild.o: $(top_srcdir)/rpmqv.c
+	$(COMPILE) -fpie -DIAM_RPMBT -o $@ -c $<
+
 $(PROGRAMS): 		$(myLDADD) @WITH_APIDOCS_TARGET@
 
 .PHONY:	splint
@@ -67,11 +73,11 @@ splint:
 	    -load rpmdb/rpmdb.lcd \
 	    -load rpmio/rpmio.lcd \
 	    -load popt/popt.lcd \
-		$(DEFS) $(INCLUDES) rpmqv.c $(rpmb_SOURCES)
+		$(DEFS) $(INCLUDES) rpmqv.c $(rpmbuild_SOURCES)
 
 .PHONY:	lint
 lint:
-	$(LINT) -Dlint $(DEFS) $(INCLUDES) rpmqv.c $(rpmb_SOURCES) \
+	$(LINT) -Dlint $(DEFS) $(INCLUDES) rpmqv.c $(rpmbuild_SOURCES) \
 		`make -s sources -C build` \
 		`make -s sources -C lib` \
 		`make -s sources -C rpmdb` \

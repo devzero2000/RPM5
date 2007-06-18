@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.4.8\n"
 "Report-Msgid-Bugs-To: <rpm-devel@lists.dulug.duke.edu>\n"
-"POT-Creation-Date: 2007-06-15 20:47-0400\n"
+"POT-Creation-Date: 2007-06-17 19:10-0400\n"
 "PO-Revision-Date: 2006-02-28 20:20+0100\n"
 "Last-Translator: Arkadiusz Miskiewicz <arekm@pld-linux.org>\n"
 "Language-Team: Polish <translation-team-pl@lists.sourceforge.net>\n"
@@ -994,76 +994,81 @@ msgstr "linia %d: Nieznana etykieta: %s\n"
 msgid "Bad source: %s: %s\n"
 msgstr "B³êdne ¼ród³o: %s: %s\n"
 
-#: build/parsePrep.c:101
+#: build/parsePrep.c:104
 #, c-format
 msgid "No patch number %d\n"
 msgstr "Brak ³aty numer %d\n"
 
-#: build/parsePrep.c:200
+#: build/parsePrep.c:203
 #, c-format
 msgid "No source number %d\n"
 msgstr "Brak ¼ród³a numer %d\n"
 
-#: build/parsePrep.c:316
+#: build/parsePrep.c:319
 #, c-format
 msgid "Error parsing %%setup: %s\n"
 msgstr "B³±d przetwarzania %%setup: %s\n"
 
-#: build/parsePrep.c:331
+#: build/parsePrep.c:334
 #, c-format
 msgid "line %d: Bad arg to %%setup: %s\n"
 msgstr "linia %d: B³êdny argument dla %%setup: %s\n"
 
-#: build/parsePrep.c:349
+#: build/parsePrep.c:352
 #, c-format
 msgid "line %d: Bad %%setup option %s: %s\n"
 msgstr "linia %d: B³êdna opcja %%setup %s: %s\n"
 
-#: build/parsePrep.c:491
+#: build/parsePrep.c:494
 #, c-format
 msgid "line %d: Need arg to %%patch -b: %s\n"
 msgstr "linia %d: Wymagany argument dla %%patch -b: %s\n"
 
-#: build/parsePrep.c:500
+#: build/parsePrep.c:503
 #, c-format
 msgid "line %d: Need arg to %%patch -z: %s\n"
 msgstr "linia %d: Wymagany argument dla %%patch -z: %s\n"
 
-#: build/parsePrep.c:512
+#: build/parsePrep.c:514
+#, fuzzy, c-format
+msgid "line %d: Bad arg to %%patch -F: %s\n"
+msgstr "linia %d: B³êdny argument dla %%patch -p: %s\n"
+
+#: build/parsePrep.c:526
 #, c-format
 msgid "line %d: Need arg to %%patch -p: %s\n"
 msgstr "linia %d: Wymagany argument dla %%patch -p: %s\n"
 
-#: build/parsePrep.c:519
+#: build/parsePrep.c:533
 #, c-format
 msgid "line %d: Bad arg to %%patch -p: %s\n"
 msgstr "linia %d: B³êdny argument dla %%patch -p: %s\n"
 
-#: build/parsePrep.c:526
+#: build/parsePrep.c:540
 msgid "Too many patches!\n"
 msgstr "Zbyt wiele ³at!\n"
 
-#: build/parsePrep.c:530
+#: build/parsePrep.c:544
 #, c-format
 msgid "line %d: Bad arg to %%patch: %s\n"
 msgstr "linia %d: B³êdny argument dla %%patch: %s\n"
 
-#: build/parsePrep.c:624
+#: build/parsePrep.c:638
 #, fuzzy, c-format
 msgid "Missing %s%d %s: %s\n"
 msgstr "Brak %s w %s %s\n"
 
-#: build/parsePrep.c:632
+#: build/parsePrep.c:646
 #, fuzzy, c-format
 msgid "file %s missing: %s\n"
 msgstr "plik %s: %s\n"
 
-#: build/parsePrep.c:640
+#: build/parsePrep.c:654
 #, c-format
 msgid "Fetching %s failed: %s\n"
 msgstr "Pobieranie %s nie powiod³o siê: %s\n"
 
-#: build/parsePrep.c:662
+#: build/parsePrep.c:676
 #, c-format
 msgid "line %d: second %%prep\n"
 msgstr "linia %d: druga sekcja %%prep\n"
@@ -1573,7 +1578,7 @@ msgstr "mntctl() nie zwróci³o punktów montowania: %s\n"
 msgid "failed to stat %s: %s\n"
 msgstr "stat %s nie powiod³o siê: %s\n"
 
-#: lib/fs.c:160 rpmio/url.c:556
+#: lib/fs.c:160 rpmio/url.c:544
 #, c-format
 msgid "failed to open %s: %s\n"
 msgstr "nie mo¿na otworzyæ %s: %s\n"
@@ -3690,80 +3695,80 @@ msgstr "%s ma zbyt du¿± lub zbyt ma³± warto¶æ long, pominiêto\n"
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr "%s ma zbyt du¿± lub zbyt ma³± warto¶æ ca³kowit±, pominiêto\n"
 
-#: rpmdb/header.c:2832
+#: rpmdb/header.c:2820
 msgid "missing { after %"
 msgstr "brak { po %"
 
-#: rpmdb/header.c:2862
+#: rpmdb/header.c:2850
 msgid "missing } after %{"
 msgstr "brak } po %{"
 
-#: rpmdb/header.c:2878
+#: rpmdb/header.c:2866
 msgid "empty tag format"
 msgstr "pusty format etykiety"
 
-#: rpmdb/header.c:2890
+#: rpmdb/header.c:2878
 msgid "empty tag name"
 msgstr "pusta nazwa etykiety"
 
-#: rpmdb/header.c:2899
+#: rpmdb/header.c:2887
 msgid "unknown tag"
 msgstr "nieznana etykieta"
 
-#: rpmdb/header.c:2926
+#: rpmdb/header.c:2914
 msgid "] expected at end of array"
 msgstr "spodziewany ] na koñcu tablicy"
 
-#: rpmdb/header.c:2939
+#: rpmdb/header.c:2927
 msgid "unexpected ]"
 msgstr "nie spodziewany ]"
 
-#: rpmdb/header.c:2952
+#: rpmdb/header.c:2940
 msgid "unexpected }"
 msgstr "nie spodziewany }"
 
-#: rpmdb/header.c:3016
+#: rpmdb/header.c:3004
 msgid "? expected in expression"
 msgstr "spodziewany ? w wyra¿eniu"
 
-#: rpmdb/header.c:3023
+#: rpmdb/header.c:3011
 msgid "{ expected after ? in expression"
 msgstr "spodziewany { po ? w wyra¿eniu"
 
-#: rpmdb/header.c:3035 rpmdb/header.c:3075
+#: rpmdb/header.c:3023 rpmdb/header.c:3063
 msgid "} expected in expression"
 msgstr "spodziewany } w wyra¿eniu"
 
-#: rpmdb/header.c:3043
+#: rpmdb/header.c:3031
 msgid ": expected following ? subexpression"
 msgstr "spodziewany : po podwyra¿eniu ?"
 
-#: rpmdb/header.c:3061
+#: rpmdb/header.c:3049
 msgid "{ expected after : in expression"
 msgstr "spodziewany { po : w wyra¿eniu"
 
-#: rpmdb/header.c:3083
+#: rpmdb/header.c:3071
 msgid "| expected at end of expression"
 msgstr "spodziewany | na koñcu wyra¿enia"
 
-#: rpmdb/header.c:3186
+#: rpmdb/header.c:3174
 msgid "(index out of range)"
 msgstr "(indeks spoza zakresu)"
 
-#: rpmdb/header.c:3455
+#: rpmdb/header.c:3443
 msgid "array iterator used with different sized arrays"
 msgstr "iterator tablicy u¿yty na tablicach o ró¿nych rozmiarach"
 
-#: rpmdb/header.c:3769 rpmdb/header.c:3806 rpmdb/header.c:3829
+#: rpmdb/header.c:3757 rpmdb/header.c:3794 rpmdb/header.c:3817
 msgid "(not a number)"
 msgstr "(nie jest liczb±)"
 
-#: rpmdb/header.c:3868
+#: rpmdb/header.c:3856
 #, c-format
 msgid "%c"
 msgstr "%c"
 
-#: rpmdb/header.c:3885
+#: rpmdb/header.c:3873
 msgid "%a %b %d %Y"
 msgstr "%a %d %b %Y"
 
@@ -3974,173 +3979,173 @@ msgstr "zamkniêto   sql db      %s\n"
 msgid "opening  sql db         %s (%s) mode=0x%x\n"
 msgstr "otwieranie  sql db      %s (%s) w trybie 0x%x\n"
 
-#: rpmio/macro.c:240
+#: rpmio/macro.c:235
 #, c-format
 msgid "======================== active %d empty %d\n"
 msgstr "======================== aktywny %d pusty %d\n"
 
-#: rpmio/macro.c:395
+#: rpmio/macro.c:390
 #, c-format
 msgid "%3d>%*s(empty)"
 msgstr "%3d>%*s(pusty)"
 
-#: rpmio/macro.c:438
+#: rpmio/macro.c:433
 #, c-format
 msgid "%3d<%*s(empty)\n"
 msgstr "%3d<%*s(pusty)\n"
 
-#: rpmio/macro.c:672 rpmio/macro.c:713
+#: rpmio/macro.c:667 rpmio/macro.c:708
 #, c-format
 msgid "Macro %%%s has unterminated body\n"
 msgstr "Makro %%%s ma nie zakoñczone cia³o\n"
 
-#: rpmio/macro.c:735
+#: rpmio/macro.c:730
 #, c-format
 msgid "Macro %%%s has illegal name (%%define)\n"
 msgstr "Makro %%%s ma niedozwolon± nazwê (%%define)\n"
 
-#: rpmio/macro.c:741
+#: rpmio/macro.c:736
 #, c-format
 msgid "Macro %%%s has unterminated opts\n"
 msgstr "Makro %%%s ma nie zakoñczone opcje\n"
 
-#: rpmio/macro.c:746
+#: rpmio/macro.c:741
 #, c-format
 msgid "Macro %%%s has empty body\n"
 msgstr "Makro %%%s ma puste cia³o\n"
 
-#: rpmio/macro.c:752
+#: rpmio/macro.c:747
 #, c-format
 msgid "Macro %%%s failed to expand\n"
 msgstr "Rozwiniêcie makra %%%s nie powiod³o siê\n"
 
-#: rpmio/macro.c:791
+#: rpmio/macro.c:786
 #, c-format
 msgid "Macro %%%s has illegal name (%%undefine)\n"
 msgstr "Makro %%%s ma niedozwolon± nazwê (%%undefine)\n"
 
-#: rpmio/macro.c:915
+#: rpmio/macro.c:910
 #, c-format
 msgid "Macro %%%s (%s) was not used below level %d\n"
 msgstr "Makro %%%s (%s) nie by³o u¿yte poni¿ej poziomu %d\n"
 
-#: rpmio/macro.c:1042
+#: rpmio/macro.c:1037
 #, c-format
 msgid "Unknown option %c in %s(%s)\n"
 msgstr "Nieznana opcja %c w %s(%s)\n"
 
-#: rpmio/macro.c:1245
+#: rpmio/macro.c:1240
 #, c-format
 msgid "Recursion depth(%d) greater than max(%d)\n"
 msgstr "G³êboko¶æ rekursji(%d) wiêksza ni¿ maksymalna(%d)\n"
 
-#: rpmio/macro.c:1318 rpmio/macro.c:1335
+#: rpmio/macro.c:1313 rpmio/macro.c:1330
 #, c-format
 msgid "Unterminated %c: %s\n"
 msgstr "Niezakoñczone %c: %s\n"
 
-#: rpmio/macro.c:1376
+#: rpmio/macro.c:1371
 #, c-format
 msgid "A %% is followed by an unparseable macro\n"
 msgstr "Napotkano nieprzetwarzalne makro po %%\n"
 
-#: rpmio/macro.c:1543
+#: rpmio/macro.c:1538
 #, c-format
 msgid "Macro %%%.*s not found, skipping\n"
 msgstr "Nie znaleziono makra %%%.*s, makro pominiête\n"
 
-#: rpmio/macro.c:1880
+#: rpmio/macro.c:1875
 msgid "Macro expansion too big for target buffer\n"
 msgstr "Rozwiniêcie makra zbyt du¿e dla docelowego bufora\n"
 
-#: rpmio/macro.c:1914
+#: rpmio/macro.c:1909
 #, c-format
 msgid "Macro '%s' is readonly and cannot be changed.\n"
 msgstr "Makro '%s' jest makrem tylko do odczytu i nie mo¿e byæ zmienione.\n"
 
-#: rpmio/macro.c:2113 rpmio/macro.c:2119
+#: rpmio/macro.c:2108 rpmio/macro.c:2114
 #, c-format
 msgid "File %s: %s\n"
 msgstr "Plik %s: %s\n"
 
-#: rpmio/macro.c:2122
+#: rpmio/macro.c:2117
 #, c-format
 msgid "File %s is smaller than %u bytes\n"
 msgstr "Plik %s jest mniejszy ni¿ %u bajtów\n"
 
-#: rpmio/rpmdav.c:662
+#: rpmio/rpmdav.c:649
 msgid "Authorization Required"
 msgstr "Wymagana autoryzacja"
 
-#: rpmio/rpmdav.c:664
+#: rpmio/rpmdav.c:651
 msgid "Redirect"
 msgstr "Przekierowanie"
 
-#: rpmio/rpmdav.c:666
+#: rpmio/rpmdav.c:653
 msgid "Server Error"
 msgstr "B³±d serwera"
 
-#: rpmio/rpmdav.c:668
+#: rpmio/rpmdav.c:655
 msgid "Unknown Error"
 msgstr "Nieznany b³±d"
 
-#: rpmio/rpmio.c:719
+#: rpmio/rpmio.c:706
 msgid "Success"
 msgstr "Sukces"
 
-#: rpmio/rpmio.c:742
+#: rpmio/rpmio.c:729
 msgid "Bad server response"
 msgstr "B³êdna odpowied¼ serwera"
 
-#: rpmio/rpmio.c:744
+#: rpmio/rpmio.c:731
 msgid "Server I/O error"
 msgstr "B³±d we/wy serwera"
 
-#: rpmio/rpmio.c:746
+#: rpmio/rpmio.c:733
 msgid "Server timeout"
 msgstr "Przekroczony limit czasu serwera"
 
-#: rpmio/rpmio.c:748
+#: rpmio/rpmio.c:735
 msgid "Unable to lookup server host address"
 msgstr "Nie mo¿na znale¼æ adresu serwera"
 
-#: rpmio/rpmio.c:750
+#: rpmio/rpmio.c:737
 msgid "Unable to lookup server host name"
 msgstr "Nie mo¿na znale¼æ nazwy serwera"
 
-#: rpmio/rpmio.c:752
+#: rpmio/rpmio.c:739
 msgid "Failed to connect to server"
 msgstr "Po³±czenie z serwerem nie powiod³o siê"
 
-#: rpmio/rpmio.c:754
+#: rpmio/rpmio.c:741
 msgid "Failed to establish data connection to server"
 msgstr "Otwarcie transmisji danych z serwera nie powiod³o siê"
 
-#: rpmio/rpmio.c:756
+#: rpmio/rpmio.c:743
 msgid "I/O error to local file"
 msgstr "B³±d we/wy na lokalnym pliku"
 
-#: rpmio/rpmio.c:758
+#: rpmio/rpmio.c:745
 msgid "Error setting remote server to passive mode"
 msgstr "B³±d: ustawienie zdalnego serwera w tryb pasywny nie powiod³o siê"
 
-#: rpmio/rpmio.c:760
+#: rpmio/rpmio.c:747
 msgid "File not found on server"
 msgstr "Plik nie zosta³ znaleziony na serwerze"
 
-#: rpmio/rpmio.c:762
+#: rpmio/rpmio.c:749
 msgid "Abort in progress"
 msgstr "Przerywanie ..."
 
-#: rpmio/rpmio.c:766
+#: rpmio/rpmio.c:753
 msgid "Unknown or unexpected error"
 msgstr "Nieznany lub nieoczekiwany b³±d"
 
-#: rpmio/rpmio.c:784
+#: rpmio/rpmio.c:771
 msgid "Malformed URL"
 msgstr "¬le sformu³owany URL"
 
-#: rpmio/rpmio.c:1619
+#: rpmio/rpmio.c:1606
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr "logowanie do %s jako %s, has³o %s\n"
@@ -4191,36 +4196,36 @@ msgstr "wywo³anie lua nie powiod³o siê: %s\n"
 msgid "memory alloc (%u bytes) returned NULL.\n"
 msgstr "alokacja pamiêci (%u bajtów) zwróci³a NULL.\n"
 
-#: rpmio/url.c:124
+#: rpmio/url.c:112
 #, c-format
 msgid "warning: u %p ctrl %p nrefs != 0 (%s %s)\n"
 msgstr "uwaga: u %p ctrl %p nrefs != 0 (%s %s)\n"
 
-#: rpmio/url.c:144
+#: rpmio/url.c:132
 #, c-format
 msgid "warning: u %p data %p nrefs != 0 (%s %s)\n"
 msgstr "uwaga: u %p dane %p nrefs != 0 (%s %s)\n"
 
-#: rpmio/url.c:174
+#: rpmio/url.c:162
 #, c-format
 msgid "warning: _url_cache[%d] %p nrefs(%d) != 1 (%s %s)\n"
 msgstr "uwaga: _url_cache[%d] %p nrefs(%d) != 1 (%s %s)\n"
 
-#: rpmio/url.c:270
+#: rpmio/url.c:258
 #, c-format
 msgid "Password for %s@%s: "
 msgstr "Has³o dla %s@%s: "
 
-#: rpmio/url.c:299 rpmio/url.c:325
+#: rpmio/url.c:287 rpmio/url.c:313
 #, c-format
 msgid "error: %sport must be a number\n"
 msgstr "b³±d: %sport musi byæ liczb±\n"
 
-#: rpmio/url.c:504
+#: rpmio/url.c:492
 msgid "url port must be a number\n"
 msgstr "port musi byæ liczb±\n"
 
-#: rpmio/url.c:576
+#: rpmio/url.c:564
 #, c-format
 msgid "failed to create %s: %s\n"
 msgstr "utworzenie %s nie powiod³o siê: %s\n"

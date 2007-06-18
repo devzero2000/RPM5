@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: <rpm-devel@lists.dulug.duke.edu>\n"
-"POT-Creation-Date: 2007-06-15 20:47-0400\n"
+"POT-Creation-Date: 2007-06-17 19:10-0400\n"
 "PO-Revision-Date: 1999-04-08 21:37+02:00\n"
 "Last-Translator: Stanislav Meduna <stano@eunet.sk>\n"
 "Language-Team: Slovak <sk-i18n@rak.isternet.sk>\n"
@@ -1003,77 +1003,82 @@ msgstr "riadok %d: Neznámy popis: %s"
 msgid "Bad source: %s: %s\n"
 msgstr "Chybný zdroj %s: %s"
 
-#: build/parsePrep.c:101
+#: build/parsePrep.c:104
 #, fuzzy, c-format
 msgid "No patch number %d\n"
 msgstr "Neexistuje patch èíslo %d"
 
-#: build/parsePrep.c:200
+#: build/parsePrep.c:203
 #, fuzzy, c-format
 msgid "No source number %d\n"
 msgstr "Neexistuje zdroj èíslo %d"
 
-#: build/parsePrep.c:316
+#: build/parsePrep.c:319
 #, fuzzy, c-format
 msgid "Error parsing %%setup: %s\n"
 msgstr "Chyba pri analýze %%setup: %s"
 
-#: build/parsePrep.c:331
+#: build/parsePrep.c:334
 #, fuzzy, c-format
 msgid "line %d: Bad arg to %%setup: %s\n"
 msgstr "riadok %d: Chybný argument pre %%setup %c: %s"
 
-#: build/parsePrep.c:349
+#: build/parsePrep.c:352
 #, fuzzy, c-format
 msgid "line %d: Bad %%setup option %s: %s\n"
 msgstr "riadok %d: Chybná voµba pre %%setup %s: %s"
 
-#: build/parsePrep.c:491
+#: build/parsePrep.c:494
 #, fuzzy, c-format
 msgid "line %d: Need arg to %%patch -b: %s\n"
 msgstr "riadok %d: %%patch -b potrebuje argument: %s"
 
-#: build/parsePrep.c:500
+#: build/parsePrep.c:503
 #, fuzzy, c-format
 msgid "line %d: Need arg to %%patch -z: %s\n"
 msgstr "riadok %d: %%patch -z potrebuje argument: %s"
 
-#: build/parsePrep.c:512
+#: build/parsePrep.c:514
+#, fuzzy, c-format
+msgid "line %d: Bad arg to %%patch -F: %s\n"
+msgstr "riadok %d: Chybný argument pre %%patch -p: %s"
+
+#: build/parsePrep.c:526
 #, fuzzy, c-format
 msgid "line %d: Need arg to %%patch -p: %s\n"
 msgstr "riadok %d: %%patch -p potrebuje argument: %s"
 
-#: build/parsePrep.c:519
+#: build/parsePrep.c:533
 #, fuzzy, c-format
 msgid "line %d: Bad arg to %%patch -p: %s\n"
 msgstr "riadok %d: Chybný argument pre %%patch -p: %s"
 
-#: build/parsePrep.c:526
+#: build/parsePrep.c:540
 #, fuzzy
 msgid "Too many patches!\n"
 msgstr "Priveµa záplat!"
 
-#: build/parsePrep.c:530
+#: build/parsePrep.c:544
 #, fuzzy, c-format
 msgid "line %d: Bad arg to %%patch: %s\n"
 msgstr "riadok %d: Chybný argument pre %%patch: %s"
 
-#: build/parsePrep.c:624
+#: build/parsePrep.c:638
 #, fuzzy, c-format
 msgid "Missing %s%d %s: %s\n"
 msgstr "chýbajúce    %s\n"
 
-#: build/parsePrep.c:632
+#: build/parsePrep.c:646
 #, fuzzy, c-format
 msgid "file %s missing: %s\n"
 msgstr "súbor %s: %s\n"
 
-#: build/parsePrep.c:640
+#: build/parsePrep.c:654
 #, fuzzy, c-format
 msgid "Fetching %s failed: %s\n"
 msgstr "%s zlyhalo"
 
-#: build/parsePrep.c:662
+#: build/parsePrep.c:676
 #, fuzzy, c-format
 msgid "line %d: second %%prep\n"
 msgstr "riadok %d: druhý %%prep"
@@ -1610,7 +1615,7 @@ msgstr "mntctl() nevrátil veµkos» fuggeru: %s"
 msgid "failed to stat %s: %s\n"
 msgstr "nepodarilo sa zisti» stav %s: %s"
 
-#: lib/fs.c:160 rpmio/url.c:556
+#: lib/fs.c:160 rpmio/url.c:544
 #, fuzzy, c-format
 msgid "failed to open %s: %s\n"
 msgstr "nepodarilo sa otvori» %s: %s"
@@ -3813,80 +3818,80 @@ msgstr ""
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr ""
 
-#: rpmdb/header.c:2832
+#: rpmdb/header.c:2820
 msgid "missing { after %"
 msgstr "chýbajúce { po %"
 
-#: rpmdb/header.c:2862
+#: rpmdb/header.c:2850
 msgid "missing } after %{"
 msgstr "chýbajúce } po %{"
 
-#: rpmdb/header.c:2878
+#: rpmdb/header.c:2866
 msgid "empty tag format"
 msgstr "prázdny tag formát"
 
-#: rpmdb/header.c:2890
+#: rpmdb/header.c:2878
 msgid "empty tag name"
 msgstr "prázdne meno tagu"
 
-#: rpmdb/header.c:2899
+#: rpmdb/header.c:2887
 msgid "unknown tag"
 msgstr "neznámy tag"
 
-#: rpmdb/header.c:2926
+#: rpmdb/header.c:2914
 msgid "] expected at end of array"
 msgstr "] oèakávané na konci poµa"
 
-#: rpmdb/header.c:2939
+#: rpmdb/header.c:2927
 msgid "unexpected ]"
 msgstr "neoèakávané ]"
 
-#: rpmdb/header.c:2952
+#: rpmdb/header.c:2940
 msgid "unexpected }"
 msgstr "neoèakávané }"
 
-#: rpmdb/header.c:3016
+#: rpmdb/header.c:3004
 msgid "? expected in expression"
 msgstr "? oèakávané vo výraze"
 
-#: rpmdb/header.c:3023
+#: rpmdb/header.c:3011
 msgid "{ expected after ? in expression"
 msgstr "{ oèakávané po ? vo výraze"
 
-#: rpmdb/header.c:3035 rpmdb/header.c:3075
+#: rpmdb/header.c:3023 rpmdb/header.c:3063
 msgid "} expected in expression"
 msgstr "} oèakávané vo výraze"
 
-#: rpmdb/header.c:3043
+#: rpmdb/header.c:3031
 msgid ": expected following ? subexpression"
 msgstr ": oèakávané po ? podvýraze"
 
-#: rpmdb/header.c:3061
+#: rpmdb/header.c:3049
 msgid "{ expected after : in expression"
 msgstr "{ oèakávané po : vo výraze"
 
-#: rpmdb/header.c:3083
+#: rpmdb/header.c:3071
 msgid "| expected at end of expression"
 msgstr "| oèakávené na konci výrazu"
 
-#: rpmdb/header.c:3186
+#: rpmdb/header.c:3174
 msgid "(index out of range)"
 msgstr ""
 
-#: rpmdb/header.c:3455
+#: rpmdb/header.c:3443
 msgid "array iterator used with different sized arrays"
 msgstr ""
 
-#: rpmdb/header.c:3769 rpmdb/header.c:3806 rpmdb/header.c:3829
+#: rpmdb/header.c:3757 rpmdb/header.c:3794 rpmdb/header.c:3817
 msgid "(not a number)"
 msgstr "(nie je èíslo)"
 
-#: rpmdb/header.c:3868
+#: rpmdb/header.c:3856
 #, c-format
 msgid "%c"
 msgstr ""
 
-#: rpmdb/header.c:3885
+#: rpmdb/header.c:3873
 msgid "%a %b %d %Y"
 msgstr ""
 
@@ -4100,178 +4105,178 @@ msgstr "odstraòuje sa index súborov pre %s\n"
 msgid "opening  sql db         %s (%s) mode=0x%x\n"
 msgstr "otvára sa databáza s právami 0x%x v %s\n"
 
-#: rpmio/macro.c:240
+#: rpmio/macro.c:235
 #, c-format
 msgid "======================== active %d empty %d\n"
 msgstr "======================== aktívnych %d prázdnych %d\n"
 
-#: rpmio/macro.c:395
+#: rpmio/macro.c:390
 #, c-format
 msgid "%3d>%*s(empty)"
 msgstr "%3d>%*s(prázdne)"
 
-#: rpmio/macro.c:438
+#: rpmio/macro.c:433
 #, c-format
 msgid "%3d<%*s(empty)\n"
 msgstr "%3d<%*s(prázdne)\n"
 
-#: rpmio/macro.c:672 rpmio/macro.c:713
+#: rpmio/macro.c:667 rpmio/macro.c:708
 #, fuzzy, c-format
 msgid "Macro %%%s has unterminated body\n"
 msgstr "Makro %%%s obsahuje neukonèené telo"
 
-#: rpmio/macro.c:735
+#: rpmio/macro.c:730
 #, fuzzy, c-format
 msgid "Macro %%%s has illegal name (%%define)\n"
 msgstr "Makro %%%s obsahuje chybný názov (%%define)"
 
-#: rpmio/macro.c:741
+#: rpmio/macro.c:736
 #, fuzzy, c-format
 msgid "Macro %%%s has unterminated opts\n"
 msgstr "Makro %%%s obsahuje neukonèené voµby"
 
-#: rpmio/macro.c:746
+#: rpmio/macro.c:741
 #, fuzzy, c-format
 msgid "Macro %%%s has empty body\n"
 msgstr "Makro %%%s obsahuje prázdne telo"
 
-#: rpmio/macro.c:752
+#: rpmio/macro.c:747
 #, fuzzy, c-format
 msgid "Macro %%%s failed to expand\n"
 msgstr "Makro %%%s sa nepodarilo expandova»"
 
-#: rpmio/macro.c:791
+#: rpmio/macro.c:786
 #, fuzzy, c-format
 msgid "Macro %%%s has illegal name (%%undefine)\n"
 msgstr "Makro %%%s obsahuje chybný názov (%%undefine)"
 
-#: rpmio/macro.c:915
+#: rpmio/macro.c:910
 #, fuzzy, c-format
 msgid "Macro %%%s (%s) was not used below level %d\n"
 msgstr "Makro %%%s (%s) nebolo pou¾ité pod úrovòou %d "
 
-#: rpmio/macro.c:1042
+#: rpmio/macro.c:1037
 #, fuzzy, c-format
 msgid "Unknown option %c in %s(%s)\n"
 msgstr "Neznáma voµba %c v %s(%s)"
 
-#: rpmio/macro.c:1245
+#: rpmio/macro.c:1240
 #, fuzzy, c-format
 msgid "Recursion depth(%d) greater than max(%d)\n"
 msgstr "Håbka rekurzie (%d) väè¹ia ako maximálna (%d)"
 
-#: rpmio/macro.c:1318 rpmio/macro.c:1335
+#: rpmio/macro.c:1313 rpmio/macro.c:1330
 #, fuzzy, c-format
 msgid "Unterminated %c: %s\n"
 msgstr "Neukonèené %c: %s"
 
-#: rpmio/macro.c:1376
+#: rpmio/macro.c:1371
 #, c-format
 msgid "A %% is followed by an unparseable macro\n"
 msgstr ""
 
-#: rpmio/macro.c:1543
+#: rpmio/macro.c:1538
 #, fuzzy, c-format
 msgid "Macro %%%.*s not found, skipping\n"
 msgstr "balík %%%.*s nebol nájdený, vynecháva sa"
 
-#: rpmio/macro.c:1880
+#: rpmio/macro.c:1875
 msgid "Macro expansion too big for target buffer\n"
 msgstr ""
 
-#: rpmio/macro.c:1914
+#: rpmio/macro.c:1909
 #, c-format
 msgid "Macro '%s' is readonly and cannot be changed.\n"
 msgstr ""
 
-#: rpmio/macro.c:2113 rpmio/macro.c:2119
+#: rpmio/macro.c:2108 rpmio/macro.c:2114
 #, fuzzy, c-format
 msgid "File %s: %s\n"
 msgstr "Súbor %s: %s"
 
-#: rpmio/macro.c:2122
+#: rpmio/macro.c:2117
 #, fuzzy, c-format
 msgid "File %s is smaller than %u bytes\n"
 msgstr "Súbor %s je men¹í ako %d bajtov"
 
-#: rpmio/rpmdav.c:662
+#: rpmio/rpmdav.c:649
 msgid "Authorization Required"
 msgstr ""
 
-#: rpmio/rpmdav.c:664
+#: rpmio/rpmdav.c:651
 msgid "Redirect"
 msgstr ""
 
-#: rpmio/rpmdav.c:666
+#: rpmio/rpmdav.c:653
 #, fuzzy
 msgid "Server Error"
 msgstr "Chyba vstupu/výstupu servera"
 
-#: rpmio/rpmdav.c:668
+#: rpmio/rpmdav.c:655
 #, fuzzy
 msgid "Unknown Error"
 msgstr "(chyba 0x%x)"
 
-#: rpmio/rpmio.c:719
+#: rpmio/rpmio.c:706
 msgid "Success"
 msgstr "Úspech"
 
-#: rpmio/rpmio.c:742
+#: rpmio/rpmio.c:729
 msgid "Bad server response"
 msgstr "Chybná odpoveï servera"
 
-#: rpmio/rpmio.c:744
+#: rpmio/rpmio.c:731
 #, fuzzy
 msgid "Server I/O error"
 msgstr "Chyba vstupu/výstupu servera"
 
-#: rpmio/rpmio.c:746
+#: rpmio/rpmio.c:733
 msgid "Server timeout"
 msgstr "Prekroèenie èasového limitu servera"
 
-#: rpmio/rpmio.c:748
+#: rpmio/rpmio.c:735
 msgid "Unable to lookup server host address"
 msgstr "Nie je mo¾né vyhµada» adresu servera"
 
-#: rpmio/rpmio.c:750
+#: rpmio/rpmio.c:737
 msgid "Unable to lookup server host name"
 msgstr "Nie je mo¾né vyhµada» názov servera"
 
-#: rpmio/rpmio.c:752
+#: rpmio/rpmio.c:739
 msgid "Failed to connect to server"
 msgstr "Pripojenie k serveru zlyhalo"
 
-#: rpmio/rpmio.c:754
+#: rpmio/rpmio.c:741
 msgid "Failed to establish data connection to server"
 msgstr "Vytvorenie dátového spojenia k serveru zlyhalo"
 
-#: rpmio/rpmio.c:756
+#: rpmio/rpmio.c:743
 #, fuzzy
 msgid "I/O error to local file"
 msgstr "Chyba vstupu/výstupu lokálneho súboru"
 
-#: rpmio/rpmio.c:758
+#: rpmio/rpmio.c:745
 msgid "Error setting remote server to passive mode"
 msgstr "Chyba pri nastavení vzdialeného servera do pasívneho re¾imu"
 
-#: rpmio/rpmio.c:760
+#: rpmio/rpmio.c:747
 msgid "File not found on server"
 msgstr "Súbor sa na serveri nenachádza"
 
-#: rpmio/rpmio.c:762
+#: rpmio/rpmio.c:749
 msgid "Abort in progress"
 msgstr "Zru¹enie prebieha"
 
-#: rpmio/rpmio.c:766
+#: rpmio/rpmio.c:753
 msgid "Unknown or unexpected error"
 msgstr "Neznáma alebo neoèakávaná chyba"
 
-#: rpmio/rpmio.c:784
+#: rpmio/rpmio.c:771
 #, fuzzy
 msgid "Malformed URL"
 msgstr "Nie je mo¾né preèíta» %s: %s."
 
-#: rpmio/rpmio.c:1619
+#: rpmio/rpmio.c:1606
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr "prihlasuje sa na %s ako %s, heslo %s\n"
@@ -4323,36 +4328,36 @@ msgstr "%s zlyhalo"
 msgid "memory alloc (%u bytes) returned NULL.\n"
 msgstr ""
 
-#: rpmio/url.c:124
+#: rpmio/url.c:112
 #, c-format
 msgid "warning: u %p ctrl %p nrefs != 0 (%s %s)\n"
 msgstr ""
 
-#: rpmio/url.c:144
+#: rpmio/url.c:132
 #, c-format
 msgid "warning: u %p data %p nrefs != 0 (%s %s)\n"
 msgstr ""
 
-#: rpmio/url.c:174
+#: rpmio/url.c:162
 #, c-format
 msgid "warning: _url_cache[%d] %p nrefs(%d) != 1 (%s %s)\n"
 msgstr ""
 
-#: rpmio/url.c:270
+#: rpmio/url.c:258
 #, c-format
 msgid "Password for %s@%s: "
 msgstr "Heslo pre %s@%s: "
 
-#: rpmio/url.c:299 rpmio/url.c:325
+#: rpmio/url.c:287 rpmio/url.c:313
 #, c-format
 msgid "error: %sport must be a number\n"
 msgstr "chyba: %sport musí by» èíslo\n"
 
-#: rpmio/url.c:504
+#: rpmio/url.c:492
 msgid "url port must be a number\n"
 msgstr "url port musí by» èíslo\n"
 
-#: rpmio/url.c:576
+#: rpmio/url.c:564
 #, fuzzy, c-format
 msgid "failed to create %s: %s\n"
 msgstr "nepodarilo sa vytvori» %s\n"

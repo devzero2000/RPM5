@@ -1,5 +1,5 @@
-
 4.5 -> 5.0:
+    - jbj: bump library and API versions to 5.0.
     - rse: provide portability fallbacks for sighold(3), sigrelse(3) and sigpause(3)
     - rse: allow RPM to build again even if iconv(3) is not available
     - rse: provide --with-db-{largefile,rpc,mutex} options for flexibly building DB
@@ -12,6 +12,7 @@
     - start rpm-5.0 development.
 
 4.4.9 -> 4.5:
+    - jbj: re-add /usr/bin/rpmbuild for now, poptBT option wiring needs fixing.
     - jbj: pass -F fnum to patch (#243720).
     - jbj: refactor _free() from rpmlib.h -> rpmio.h.
     - jbj: add _rpmhome macro, revector helper paths through _rpmhome.

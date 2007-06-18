@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm\n"
 "Report-Msgid-Bugs-To: <rpm-devel@lists.dulug.duke.edu>\n"
-"POT-Creation-Date: 2007-06-15 20:47-0400\n"
+"POT-Creation-Date: 2007-06-17 19:10-0400\n"
 "PO-Revision-Date: 2006-10-01 22:31+0200\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <tp-sv@listor.tp-sv.se>\n"
@@ -982,76 +982,81 @@ msgstr "rad %d: Okänd tagg: %s\n"
 msgid "Bad source: %s: %s\n"
 msgstr "Dålig källa: %s: %s\n"
 
-#: build/parsePrep.c:101
+#: build/parsePrep.c:104
 #, c-format
 msgid "No patch number %d\n"
 msgstr "Inget patch-nummer %d\n"
 
-#: build/parsePrep.c:200
+#: build/parsePrep.c:203
 #, c-format
 msgid "No source number %d\n"
 msgstr "Inget källkodsnummer %d\n"
 
-#: build/parsePrep.c:316
+#: build/parsePrep.c:319
 #, c-format
 msgid "Error parsing %%setup: %s\n"
 msgstr "Fel i tolkning av %%setup: %s\n"
 
-#: build/parsePrep.c:331
+#: build/parsePrep.c:334
 #, c-format
 msgid "line %d: Bad arg to %%setup: %s\n"
 msgstr "rad %d: Felaktigt argument till %%setup: %s\n"
 
-#: build/parsePrep.c:349
+#: build/parsePrep.c:352
 #, c-format
 msgid "line %d: Bad %%setup option %s: %s\n"
 msgstr "rad %d: Felaktig %%setup-flagga %s: %s\n"
 
-#: build/parsePrep.c:491
+#: build/parsePrep.c:494
 #, c-format
 msgid "line %d: Need arg to %%patch -b: %s\n"
 msgstr "rad %d: Behöver argument till %%patch -b: %s\n"
 
-#: build/parsePrep.c:500
+#: build/parsePrep.c:503
 #, c-format
 msgid "line %d: Need arg to %%patch -z: %s\n"
 msgstr "rad %d: Behöver argument till %%patch -z: %s\n"
 
-#: build/parsePrep.c:512
+#: build/parsePrep.c:514
+#, fuzzy, c-format
+msgid "line %d: Bad arg to %%patch -F: %s\n"
+msgstr "rad %d: Felaktigt argument till %%patch -p: %s\n"
+
+#: build/parsePrep.c:526
 #, c-format
 msgid "line %d: Need arg to %%patch -p: %s\n"
 msgstr "rad %d: Behöver argument till %%patch -p: %s\n"
 
-#: build/parsePrep.c:519
+#: build/parsePrep.c:533
 #, c-format
 msgid "line %d: Bad arg to %%patch -p: %s\n"
 msgstr "rad %d: Felaktigt argument till %%patch -p: %s\n"
 
-#: build/parsePrep.c:526
+#: build/parsePrep.c:540
 msgid "Too many patches!\n"
 msgstr "För många patchar!\n"
 
-#: build/parsePrep.c:530
+#: build/parsePrep.c:544
 #, c-format
 msgid "line %d: Bad arg to %%patch: %s\n"
 msgstr "rad %d: Felaktigt argument till %%patch: %s\n"
 
-#: build/parsePrep.c:624
+#: build/parsePrep.c:638
 #, fuzzy, c-format
 msgid "Missing %s%d %s: %s\n"
 msgstr "%s saknas i %s %s\n"
 
-#: build/parsePrep.c:632
+#: build/parsePrep.c:646
 #, fuzzy, c-format
 msgid "file %s missing: %s\n"
 msgstr "fil %s: %s\n"
 
-#: build/parsePrep.c:640
+#: build/parsePrep.c:654
 #, c-format
 msgid "Fetching %s failed: %s\n"
 msgstr "Misslyckades hämta %s: %s\n"
 
-#: build/parsePrep.c:662
+#: build/parsePrep.c:676
 #, c-format
 msgid "line %d: second %%prep\n"
 msgstr "rad %d: andra %%prep\n"
@@ -1567,7 +1572,7 @@ msgstr "mntctl() kunde inte returnera monteringspunkter: %s\n"
 msgid "failed to stat %s: %s\n"
 msgstr "kunde inte ta status på %s: %s\n"
 
-#: lib/fs.c:160 rpmio/url.c:556
+#: lib/fs.c:160 rpmio/url.c:544
 #, c-format
 msgid "failed to open %s: %s\n"
 msgstr "kunde inte öppna %s: %s\n"
@@ -3688,82 +3693,82 @@ msgstr "%s har för stort eller för litet \"long\"-värde, hoppar över\n"
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr "%s har för stort eller för litet heltalsvärde, hoppar över\n"
 
-#: rpmdb/header.c:2832
+#: rpmdb/header.c:2820
 msgid "missing { after %"
 msgstr "{ saknas efter %"
 
-#: rpmdb/header.c:2862
+#: rpmdb/header.c:2850
 msgid "missing } after %{"
 msgstr "} saknas efter %{"
 
-#: rpmdb/header.c:2878
+#: rpmdb/header.c:2866
 msgid "empty tag format"
 msgstr "tomt taggformat"
 
-#: rpmdb/header.c:2890
+#: rpmdb/header.c:2878
 msgid "empty tag name"
 msgstr "tomt taggnamn"
 
-#: rpmdb/header.c:2899
+#: rpmdb/header.c:2887
 msgid "unknown tag"
 msgstr "okänd tagg"
 
-#: rpmdb/header.c:2926
+#: rpmdb/header.c:2914
 msgid "] expected at end of array"
 msgstr "] förväntades vid slutet på vektor"
 
-#: rpmdb/header.c:2939
+#: rpmdb/header.c:2927
 msgid "unexpected ]"
 msgstr "oväntad ]"
 
-#: rpmdb/header.c:2952
+#: rpmdb/header.c:2940
 msgid "unexpected }"
 msgstr "oväntad }"
 
-#: rpmdb/header.c:3016
+#: rpmdb/header.c:3004
 msgid "? expected in expression"
 msgstr "? förväntades i uttryck"
 
-#: rpmdb/header.c:3023
+#: rpmdb/header.c:3011
 msgid "{ expected after ? in expression"
 msgstr "{ förväntades efter ? i uttryck"
 
-#: rpmdb/header.c:3035 rpmdb/header.c:3075
+#: rpmdb/header.c:3023 rpmdb/header.c:3063
 msgid "} expected in expression"
 msgstr "} förväntades i uttryck"
 
-#: rpmdb/header.c:3043
+#: rpmdb/header.c:3031
 msgid ": expected following ? subexpression"
 msgstr ": förväntades efter ? i deluttryck"
 
-#: rpmdb/header.c:3061
+#: rpmdb/header.c:3049
 msgid "{ expected after : in expression"
 msgstr "{ förväntades efter : i uttryck"
 
-#: rpmdb/header.c:3083
+#: rpmdb/header.c:3071
 msgid "| expected at end of expression"
 msgstr "| förväntades vid slutet på uttryck"
 
-#: rpmdb/header.c:3186
+#: rpmdb/header.c:3174
 msgid "(index out of range)"
 msgstr "(index utanför intervall)"
 
-#: rpmdb/header.c:3455
+#: rpmdb/header.c:3443
 msgid "array iterator used with different sized arrays"
 msgstr "vektoriterator använd med vektor av annan storlek"
 
-#: rpmdb/header.c:3769 rpmdb/header.c:3806 rpmdb/header.c:3829
+#: rpmdb/header.c:3757 rpmdb/header.c:3794 rpmdb/header.c:3817
 msgid "(not a number)"
 msgstr "(inte ett tal)"
 
 # Detta är ett direktiv till strftime().  Och %c skall vara anpassat
 # till lokalen.
-#: rpmdb/header.c:3868
+#: rpmdb/header.c:3856
 #, c-format
 msgid "%c"
 msgstr "%c"
 
-#: rpmdb/header.c:3885
+#: rpmdb/header.c:3873
 msgid "%a %b %d %Y"
 msgstr "%a %d %b %Y"
 
@@ -3973,176 +3978,176 @@ msgstr "stängde     db-index %s/%s\n"
 msgid "opening  sql db         %s (%s) mode=0x%x\n"
 msgstr "öppnar      db-index %s/%s %s rättighet=0x%x\n"
 
-#: rpmio/macro.c:240
+#: rpmio/macro.c:235
 #, c-format
 msgid "======================== active %d empty %d\n"
 msgstr "======================== aktiva %d tomma %d\n"
 
-#: rpmio/macro.c:395
+#: rpmio/macro.c:390
 #, c-format
 msgid "%3d>%*s(empty)"
 msgstr "%3d>%*s(tom)"
 
-#: rpmio/macro.c:438
+#: rpmio/macro.c:433
 #, c-format
 msgid "%3d<%*s(empty)\n"
 msgstr "%3d<%*s(tom)\n"
 
-#: rpmio/macro.c:672 rpmio/macro.c:713
+#: rpmio/macro.c:667 rpmio/macro.c:708
 #, c-format
 msgid "Macro %%%s has unterminated body\n"
 msgstr "Makro %%%s har oavslutad kropp\n"
 
-#: rpmio/macro.c:735
+#: rpmio/macro.c:730
 #, c-format
 msgid "Macro %%%s has illegal name (%%define)\n"
 msgstr "Makro %%%s har otillåtet namn (%%define)\n"
 
-#: rpmio/macro.c:741
+#: rpmio/macro.c:736
 #, c-format
 msgid "Macro %%%s has unterminated opts\n"
 msgstr "Makro %%%s har oavslutade flaggor\n"
 
-#: rpmio/macro.c:746
+#: rpmio/macro.c:741
 #, c-format
 msgid "Macro %%%s has empty body\n"
 msgstr "makro %%%s har tom kropp\n"
 
-#: rpmio/macro.c:752
+#: rpmio/macro.c:747
 #, c-format
 msgid "Macro %%%s failed to expand\n"
 msgstr "Makro %%%s misslyckades att expandera\n"
 
-#: rpmio/macro.c:791
+#: rpmio/macro.c:786
 #, c-format
 msgid "Macro %%%s has illegal name (%%undefine)\n"
 msgstr "Makro %%%s har otillåtet namn (%%undefine)\n"
 
-#: rpmio/macro.c:915
+#: rpmio/macro.c:910
 #, c-format
 msgid "Macro %%%s (%s) was not used below level %d\n"
 msgstr "Makro %%%s (%s) användes inte under nivå %d\n"
 
-#: rpmio/macro.c:1042
+#: rpmio/macro.c:1037
 #, c-format
 msgid "Unknown option %c in %s(%s)\n"
 msgstr "Okänd flagga %c i %s(%s)\n"
 
-#: rpmio/macro.c:1245
+#: rpmio/macro.c:1240
 #, c-format
 msgid "Recursion depth(%d) greater than max(%d)\n"
 msgstr "Rekursionsdjup(%d) större än max(%d)\n"
 
-#: rpmio/macro.c:1318 rpmio/macro.c:1335
+#: rpmio/macro.c:1313 rpmio/macro.c:1330
 #, c-format
 msgid "Unterminated %c: %s\n"
 msgstr "Oavslutad %c: %s\n"
 
-#: rpmio/macro.c:1376
+#: rpmio/macro.c:1371
 #, c-format
 msgid "A %% is followed by an unparseable macro\n"
 msgstr "Ett %% följs av ett makro som inte kan tolkas\n"
 
-#: rpmio/macro.c:1543
+#: rpmio/macro.c:1538
 #, c-format
 msgid "Macro %%%.*s not found, skipping\n"
 msgstr "Inget makro %%%.*s hittat, hoppar över\n"
 
-#: rpmio/macro.c:1880
+#: rpmio/macro.c:1875
 msgid "Macro expansion too big for target buffer\n"
 msgstr ""
 
-#: rpmio/macro.c:1914
+#: rpmio/macro.c:1909
 #, c-format
 msgid "Macro '%s' is readonly and cannot be changed.\n"
 msgstr ""
 
-#: rpmio/macro.c:2113 rpmio/macro.c:2119
+#: rpmio/macro.c:2108 rpmio/macro.c:2114
 #, c-format
 msgid "File %s: %s\n"
 msgstr "Fil %s: %s\n"
 
-#: rpmio/macro.c:2122
+#: rpmio/macro.c:2117
 #, c-format
 msgid "File %s is smaller than %u bytes\n"
 msgstr "Filen %s är mindre än %u byte\n"
 
-#: rpmio/rpmdav.c:662
+#: rpmio/rpmdav.c:649
 msgid "Authorization Required"
 msgstr ""
 
-#: rpmio/rpmdav.c:664
+#: rpmio/rpmdav.c:651
 msgid "Redirect"
 msgstr ""
 
-#: rpmio/rpmdav.c:666
+#: rpmio/rpmdav.c:653
 #, fuzzy
 msgid "Server Error"
 msgstr "IO-fel mot server"
 
-#: rpmio/rpmdav.c:668
+#: rpmio/rpmdav.c:655
 #, fuzzy
 msgid "Unknown Error"
 msgstr "(inget fel)"
 
-#: rpmio/rpmio.c:719
+#: rpmio/rpmio.c:706
 msgid "Success"
 msgstr "Lyckades"
 
-#: rpmio/rpmio.c:742
+#: rpmio/rpmio.c:729
 msgid "Bad server response"
 msgstr "Konstigt svar från server"
 
-#: rpmio/rpmio.c:744
+#: rpmio/rpmio.c:731
 msgid "Server I/O error"
 msgstr "IO-fel mot server"
 
-#: rpmio/rpmio.c:746
+#: rpmio/rpmio.c:733
 msgid "Server timeout"
 msgstr "Förbindelsen med servern dog ut (timeout)"
 
-#: rpmio/rpmio.c:748
+#: rpmio/rpmio.c:735
 msgid "Unable to lookup server host address"
 msgstr "Kunde inte slå upp serverns adress"
 
-#: rpmio/rpmio.c:750
+#: rpmio/rpmio.c:737
 msgid "Unable to lookup server host name"
 msgstr "Kunde inte slå upp serverns namn"
 
-#: rpmio/rpmio.c:752
+#: rpmio/rpmio.c:739
 msgid "Failed to connect to server"
 msgstr "Misslyckades med att kontakta servern"
 
-#: rpmio/rpmio.c:754
+#: rpmio/rpmio.c:741
 msgid "Failed to establish data connection to server"
 msgstr "Misslyckades med att etablera en dataförbindelse till servern"
 
-#: rpmio/rpmio.c:756
+#: rpmio/rpmio.c:743
 msgid "I/O error to local file"
 msgstr "I/O-fel mot lokal fil"
 
-#: rpmio/rpmio.c:758
+#: rpmio/rpmio.c:745
 msgid "Error setting remote server to passive mode"
 msgstr "Fel när fjärrservern sattes i passivt läge"
 
-#: rpmio/rpmio.c:760
+#: rpmio/rpmio.c:747
 msgid "File not found on server"
 msgstr "Filen fanns inte på servern"
 
-#: rpmio/rpmio.c:762
+#: rpmio/rpmio.c:749
 msgid "Abort in progress"
 msgstr "Avbruten under gång"
 
-#: rpmio/rpmio.c:766
+#: rpmio/rpmio.c:753
 msgid "Unknown or unexpected error"
 msgstr "Okänt eller oväntat fel"
 
-#: rpmio/rpmio.c:784
+#: rpmio/rpmio.c:771
 #, fuzzy
 msgid "Malformed URL"
 msgstr "felformaterad %s: %s\n"
 
-#: rpmio/rpmio.c:1619
+#: rpmio/rpmio.c:1606
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr "loggar in på %s som %s, lösenord %s\n"
@@ -4193,36 +4198,36 @@ msgstr "%s misslyckades: %s\n"
 msgid "memory alloc (%u bytes) returned NULL.\n"
 msgstr "minnesallokering (%u byte) returnerade NULL.\n"
 
-#: rpmio/url.c:124
+#: rpmio/url.c:112
 #, c-format
 msgid "warning: u %p ctrl %p nrefs != 0 (%s %s)\n"
 msgstr "varning: u %p ctrl %p nrefs != 0 (%s %s)\n"
 
-#: rpmio/url.c:144
+#: rpmio/url.c:132
 #, c-format
 msgid "warning: u %p data %p nrefs != 0 (%s %s)\n"
 msgstr "varning: u %p data %p nrefs != 0 (%s %s)\n"
 
-#: rpmio/url.c:174
+#: rpmio/url.c:162
 #, c-format
 msgid "warning: _url_cache[%d] %p nrefs(%d) != 1 (%s %s)\n"
 msgstr "varning: _url_cache[%d] %p nrefs(%d) != 1 (%s %s)\n"
 
-#: rpmio/url.c:270
+#: rpmio/url.c:258
 #, c-format
 msgid "Password for %s@%s: "
 msgstr "Lösenord för %s@%s: "
 
-#: rpmio/url.c:299 rpmio/url.c:325
+#: rpmio/url.c:287 rpmio/url.c:313
 #, c-format
 msgid "error: %sport must be a number\n"
 msgstr "fel: %s-port måste vara ett tal\n"
 
-#: rpmio/url.c:504
+#: rpmio/url.c:492
 msgid "url port must be a number\n"
 msgstr "url-port måste vara ett tal\n"
 
-#: rpmio/url.c:576
+#: rpmio/url.c:564
 #, c-format
 msgid "failed to create %s: %s\n"
 msgstr "kunde inte skapa %s: %s\n"
