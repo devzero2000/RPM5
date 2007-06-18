@@ -76,12 +76,12 @@ rpmlua rpmluaNew()
 /*@=noeffectuncon@*/
 	lua_settop(L, 0);
     }
-#define	_LUADOTDIR	"%{?_usrlibrpm}%{!?_usrlibrpm:" USRLIBRPM "}"
+#define	_LUADOTDIR	"%{?_rpmhome}%{!?_rpmhome:" USRLIBRPM "/" VERSION "}"
     {	const char * _lua_path = rpmGetPath(_LUADOTDIR, "/lua/?.lua", NULL);
 	if (_lua_path != NULL) {
 	    lua_pushliteral(L, "LUA_PATH");
 	    lua_pushstring(L, _lua_path);
-	    free(_lua_path);
+	    _lua_path = _free(_lua_path);
 	}
     }
     lua_rawset(L, LUA_GLOBALSINDEX);
@@ -94,7 +94,7 @@ rpmlua rpmluaNew()
 	    struct stat st;
 	    if (Stat(_lua_init, &st) != -1)
 		(void)rpmluaRunScriptFile(lua, _lua_init);
-	    free(_lua_init);
+	    _lua_init = _free(_lua_init);
 	}
     }
 #undef	_LUADOTDIR
