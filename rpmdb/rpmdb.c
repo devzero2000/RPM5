@@ -3067,7 +3067,6 @@ DBT * data = alloca(sizeof(*data));
     HAE_t hae = (HAE_t) headerAddEntry;
     HFD_t hfd = headerFreeData;
     sigset_t signalMask;
-    uint32_t hcolor = 0;
     const char ** baseNames;
     rpmTagType bnt;
     const char ** dirNames;
@@ -3101,8 +3100,8 @@ memset(data, 0, sizeof(*data));
     }
 
     /* Add the package color if not present. */
-    if (!hge(h, RPMTAG_PACKAGECOLOR, &bnt, &hcolor, &count)) {
-	hcolor = hGetColor(h);
+    if (!headerIsEntry(h, RPMTAG_PACKAGECOLOR)) {
+	uint32_t hcolor = hGetColor(h);
 	xx = hae(h, RPMTAG_PACKAGECOLOR, RPM_INT32_TYPE, &hcolor, 1);
     }
 
