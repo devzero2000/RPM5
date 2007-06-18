@@ -10,6 +10,7 @@ config.cache
 config.log
 libtool
 config.status
+configure.lineno
 include.tcl
 berkeley_db_svc
 db_archive
