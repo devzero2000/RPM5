@@ -912,7 +912,7 @@ static int fssizesTag(Header h, /*@out@*/ rpmTagType * type,
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     const char ** filenames;
-    int_32 * filesizes;
+    uint_32 * filesizes;
     uint_64 * usages;
     int numFiles;
 
