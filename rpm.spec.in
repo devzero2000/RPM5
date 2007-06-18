@@ -87,6 +87,14 @@ to function.
 This package should be installed if you want to develop programs that
 will manipulate RPM packages and databases.
 
+%package common
+Summary: Common RPM paths, scripts, documentation and configuration.
+Group: Development/Tools
+
+%description common
+The rpm-common package contains paths, scripts, documentation
+and configuration common between RPM Package Manager.
+
 %package build
 Summary: Scripts and executable programs used to build packages.
 Group: Development/Tools
@@ -262,32 +270,41 @@ exit 0
 
 %endif
 
-%files -f rpm.lang
-%doc CHANGES GROUPS doc/manual/[a-z]*
-%pubkey pubkeys/JBJ-GPG-KEY
-
 %ifos linux
 %define	rpmattr		%attr(0755, @RPMUSER@, @RPMGROUP@)
 %define	rpmdbattr %attr(0644, @RPMUSER@, @RPMGROUP@) %verify(not md5 size mtime) %ghost %config(missingok,noreplace)
-
-%dir				/etc/rpm
-%attr(0755, @RPMUSER@, @RPMGROUP@)	%dir /var/lib/rpm
-%attr(0755, @RPMUSER@, @RPMGROUP@)	%dir /var/spool/repackage
-
-%rpmdbattr	/var/lib/rpm/*
 %endif
 
-%rpmattr	%{_bindir}/rpm
-%rpmattr	%{_bindir}/rpm2cpio
-%rpmattr	%{_bindir}/gendiff
+%files
+%pubkey pubkeys/JBJ-GPG-KEY
 
-%attr(0755, @RPMUSER@, @RPMGROUP@)	%dir %{_usrlibrpm}
+%rpmattr	%{_bindir}/rpm
+
 %attr(0755, @RPMUSER@, @RPMGROUP@)	%dir %{_rpmhome}
 %attr(0644, @RPMUSER@, @RPMGROUP@)	%{_rpmhome}/macros
 %rpmattr	%{_rpmhome}/rpm.*
 %rpmattr	%{_rpmhome}/tgpg
 %attr(0644, @RPMUSER@, @RPMGROUP@)	%{_rpmhome}/rpmpopt
 
+%rpmattr	%{_rpmhome}/rpmdb_loadcvt
+%rpmattr	%{_rpmhome}/db_*
+%rpmattr	%{_rpmhome}/magic
+%rpmattr	%{_rpmhome}/magic.mgc
+%rpmattr	%{_rpmhome}/magic.mime
+%rpmattr	%{_rpmhome}/magic.mime.mgc
+
+%files common -f rpm.lang
+%doc CHANGES GROUPS doc/manual/[a-z]*
+%rpmattr	%{_bindir}/rpm2cpio
+%rpmattr	%{_bindir}/gendiff
+%ifos linux
+%dir			/etc/rpm
+%attr(0755, @RPMUSER@, @RPMGROUP@)	%dir /var/lib/rpm
+%rpmdbattr		/var/lib/rpm/*
+%attr(0755, @RPMUSER@, @RPMGROUP@)	%dir /var/spool/repackage
+%endif
+
+%attr(0755, @RPMUSER@, @RPMGROUP@)	%dir %{_usrlibrpm}
 %ifarch i386 i486 i586 i686 athlon pentium3 pentium4
 %attr(-, @RPMUSER@, @RPMGROUP@)		%{_usrlibrpm}/i[3456]86*
 %attr(-, @RPMUSER@, @RPMGROUP@)		%{_usrlibrpm}/athlon*
@@ -322,12 +339,13 @@ exit 0
 %endif
 %attr(-, @RPMUSER@, @RPMGROUP@)		%{_usrlibrpm}/noarch*
 
-%rpmattr	%{_rpmhome}/rpmdb_loadcvt
-%rpmattr	%{_rpmhome}/db_*
-%rpmattr	%{_rpmhome}/magic
-%rpmattr	%{_rpmhome}/magic.mgc
-%rpmattr	%{_rpmhome}/magic.mime
-%rpmattr	%{_rpmhome}/magic.mime.mgc
+%dir %{__prefix}/src/rpm
+%dir %{__prefix}/src/rpm/BUILD
+%dir %{__prefix}/src/rpm/SPECS
+%dir %{__prefix}/src/rpm/SOURCES
+%dir %{__prefix}/src/rpm/SRPMS
+%dir %{__prefix}/src/rpm/RPMS
+%{__prefix}/src/rpm/RPMS/*
 
 %{_mandir}/man8/rpm.8*
 %{_mandir}/man8/rpm2cpio.8*
@@ -341,6 +359,25 @@ exit 0
 %lang(ru)	%{_mandir}/ru/man8/rpm2cpio.8*
 %lang(sk)	%{_mandir}/sk/man8/rpm.8*
 
+%{_mandir}/man1/gendiff.1*
+%{_mandir}/man8/rpmbuild.8*
+%{_mandir}/man8/rpmdeps.8*
+#%lang(ja)	%{_mandir}/ja/man1/gendiff.1*
+%lang(ja)	%{_mandir}/ja/man8/rpmbuild.8*
+#%lang(ja)	%{_mandir}/ja/man8/rpmdeps.8*
+#%lang(ko)	%{_mandir}/ko/man1/gendiff.1*
+#%lang(ko)	%{_mandir}/ko/man8/rpmbuild.8*
+#%lang(ko)	%{_mandir}/ko/man8/rpmdeps.8*
+%lang(pl)	%{_mandir}/pl/man1/gendiff.1*
+%lang(pl)	%{_mandir}/pl/man8/rpmbuild.8*
+%lang(pl)	%{_mandir}/pl/man8/rpmdeps.8*
+#%lang(ru)	%{_mandir}/ru/man1/gendiff.1*
+#%lang(ru)	%{_mandir}/ru/man8/rpmbuild.8*
+#%lang(ru)	%{_mandir}/ru/man8/rpmdeps.8*
+#%lang(sk)	%{_mandir}/sk/man1/gendiff.1*
+#%lang(sk)	%{_mandir}/sk/man8/rpmbuild.8*
+#%lang(sk)	%{_mandir}/sk/man8/rpmdeps.8*
+
 %files libs
 %{_libdir}/librpm-@LT_CURRENT@.@LT_REVISION@.so
 %{_libdir}/librpmdb-@LT_CURRENT@.@LT_REVISION@.so
@@ -348,13 +385,6 @@ exit 0
 %{_libdir}/librpmbuild-@LT_CURRENT@.@LT_REVISION@.so
 
 %files build
-%dir %{__prefix}/src/rpm
-%dir %{__prefix}/src/rpm/BUILD
-%dir %{__prefix}/src/rpm/SPECS
-%dir %{__prefix}/src/rpm/SOURCES
-%dir %{__prefix}/src/rpm/SRPMS
-%dir %{__prefix}/src/rpm/RPMS
-%{__prefix}/src/rpm/RPMS/*
 %rpmattr	%{_bindir}/rpmbuild
 %rpmattr	%{_rpmhome}/brp-*
 %rpmattr	%{_rpmhome}/check-files
@@ -385,25 +415,6 @@ exit 0
 %rpmattr	%{_rpmhome}/u_pkg.sh
 %rpmattr	%{_rpmhome}/vpkg-provides.sh
 %rpmattr	%{_rpmhome}/vpkg-provides2.sh
-
-%{_mandir}/man1/gendiff.1*
-%{_mandir}/man8/rpmbuild.8*
-%{_mandir}/man8/rpmdeps.8*
-#%lang(ja)	%{_mandir}/ja/man1/gendiff.1*
-%lang(ja)	%{_mandir}/ja/man8/rpmbuild.8*
-#%lang(ja)	%{_mandir}/ja/man8/rpmdeps.8*
-#%lang(ko)	%{_mandir}/ko/man1/gendiff.1*
-#%lang(ko)	%{_mandir}/ko/man8/rpmbuild.8*
-#%lang(ko)	%{_mandir}/ko/man8/rpmdeps.8*
-%lang(pl)	%{_mandir}/pl/man1/gendiff.1*
-%lang(pl)	%{_mandir}/pl/man8/rpmbuild.8*
-%lang(pl)	%{_mandir}/pl/man8/rpmdeps.8*
-#%lang(ru)	%{_mandir}/ru/man1/gendiff.1*
-#%lang(ru)	%{_mandir}/ru/man8/rpmbuild.8*
-#%lang(ru)	%{_mandir}/ru/man8/rpmdeps.8*
-#%lang(sk)	%{_mandir}/sk/man1/gendiff.1*
-#%lang(sk)	%{_mandir}/sk/man8/rpmbuild.8*
-#%lang(sk)	%{_mandir}/sk/man8/rpmdeps.8*
 
 %if %{with_python_subpackage}
 %files python
