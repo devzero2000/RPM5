@@ -382,7 +382,9 @@ static int verifyDependencies(/*@unused@*/ QVA_t qva, rpmts ts,
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, h, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
+#ifdef	NOTYET
     int instance = headerGetInstance(h);
+#endif
     rpmps ps;
     int numProblems;
     int rc = 0;		/* assume no problems */
