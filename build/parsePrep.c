@@ -133,6 +133,7 @@ static char *doPatch(Spec spec, int c, int strip, const char *db,
 	const char *zipper;
 
 	switch (compressed) {
+	default:
 	case COMPRESSED_NOT:	/* XXX can't happen */
 	case COMPRESSED_OTHER:
 	case COMPRESSED_ZIP:	/* XXX wrong */
@@ -463,7 +464,7 @@ static int doPatchMacro(Spec spec, char *line)
     int patch_index, x;
 
     memset(patch_nums, 0, sizeof(patch_nums));
-    opt_P = opt_p = opt_R = opt_E = 0;
+    opt_P = opt_p = opt_R = opt_E = opt_F = 0;
     opt_b = NULL;
     patch_index = 0;
 
