@@ -1422,8 +1422,6 @@ AC_SUBST(LIBMISC)
 
 AC_SUBST(RPM)
 
-AC_SUBST(OBJDUMP)
-
 AC_CONFIG_SUBDIRS(popt zlib file sqlite db3)
 
 AC_CONFIG_FILES([ Doxyfile Makefile rpmrc macros platform rpmpopt rpm.spec po/Makefile.in
