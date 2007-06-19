@@ -476,7 +476,7 @@ int rpmRollback(rpmts ts, QVA_t ia, const char ** argv)
 	globstr = _free(globstr);
     }
 
-    {	int notifyFlags, xx;
+    {	int notifyFlags;
 	notifyFlags = ia->installInterfaceFlags | (rpmIsVerbose() ? INSTALL_LABEL : 0 );
 	xx = rpmtsSetNotifyCallback(ts,
 			rpmShowProgress, (void *) ((long)notifyFlags));

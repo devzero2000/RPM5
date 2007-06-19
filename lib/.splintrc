@@ -34,7 +34,6 @@
 -nullret
 -nullstate
 -retexpose
--shadow
 -unrecog
 
 -dependenttrans
