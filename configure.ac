@@ -33,10 +33,13 @@ AC_PROG_YACC
 
 AS=${AS-as}
 AC_SUBST(AS)
+
 if test "$ac_cv_c_compiler_gnu" = yes; then
-    CFLAGS="$CFLAGS -fPIC -DPIC -D_GNU_SOURCE -D_REENTRANT -Wall -Wpointer-arith -Wstrict-prototypes -Wmissing-prototypes -Wno-char-subscripts"
+    CFLAGS="$CFLAGS -fPIC -DPIC"
+    CFLAGS="$CFLAGS -D_GNU_SOURCE -D_REENTRANT"
+    CFLAGS="$CFLAGS -Wall -Wpointer-arith -Wstrict-prototypes -Wmissing-prototypes -Wno-char-subscripts"
     case "$target" in
-	*-*-linux* ) LDFLAGS="$LDFLAGS -pie" ;;
+        *-*-linux* ) LDFLAGS="$LDFLAGS -pie" ;;
     esac
 fi
 export CFLAGS LDFLAGS
