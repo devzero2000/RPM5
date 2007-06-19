@@ -1347,7 +1347,7 @@ static void defaultMachine(/*@out@*/ const char ** arch,
 	else if(!strcmp(un.sysname, "Darwin")) { 
 #ifdef __ppc__
 	    strcpy(un.machine, "ppc");
-#else ifdef __i386__
+#else /* ifdef __i386__ */
 	    strcpy(un.machine, "i386");
 #endif 
 	}
