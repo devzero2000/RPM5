@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - rse: (temporarily) remove partial Lua/libsyck support from build environment
     - jbj: refactor fi->replaced to persistent rpmte storage.
     - jbj: bump library and API versions to 5.0.
     - rse: provide portability fallbacks for sighold(3), sigrelse(3) and sigpause(3)

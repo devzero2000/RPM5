@@ -1165,21 +1165,6 @@ AC_SUBST(WITH_LUA_INCLUDE)
 AC_SUBST(WITH_LUA_SUBDIR_DEF)
 AC_SUBST(WITH_LUA_SUBDIR_LIB)
 
-WITH_SYCK_LIB=
-WITH_SYCK_SUBDIR=
-WITH_SYCK_INCLUDE=
-withval=yes
-AC_ARG_WITH(syck, [  --with-syck             build with syck support ])
-if test $withval != no -a -d syck ; then
-  AC_DEFINE(WITH_SYCK, 1, [Build with syck support?])
-  WITH_SYCK_SUBDIR="syck"
-  WITH_SYCK_INCLUDE="-I\${top_srcdir}/${WITH_SYCK_SUBDIR}/lib"
-  WITH_SYCK_LIB="\$(top_builddir)/${WITH_SYCK_SUBDIR}/lib/libsyck.la"
-fi
-AC_SUBST(WITH_SYCK_LIB)
-AC_SUBST(WITH_SYCK_SUBDIR)
-AC_SUBST(WITH_SYCK_INCLUDE)
-
 withval=no
 AC_ARG_WITH(dmalloc, [  --with-dmalloc          build with dmalloc debugging support ])
 if test $withval = yes ; then
