@@ -507,8 +507,10 @@ static int doPatchMacro(Spec spec, char *line)
 	    }
 	} else if (!strcmp(s, "-F")) {
 	    /* fuzz factor */
-	    const char * fnum = strtok(NULL, " \t\n");
+	    const char * fnum = (!strchr(" \t\n", s[2])
+				? s+2 : strtok(NULL, " \t\n"));
 	    char * end = NULL;
+
 	    opt_F = (fnum ? strtol(fnum, &end, 10) : 0);
 	    if (! opt_F || *end) {
 		rpmError(RPMERR_BADSPEC,
