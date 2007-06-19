@@ -343,7 +343,7 @@ static int verifyHeader(QVA_t qva, const rpmts ts, rpmfi fi)
 #undef _verifylink
 #undef _verify
 
-	    sprintf(te, "%s%s%s%s%s%s%s%s %c %s",
+	    sprintf(te, "%s%s%s%s%s%s%s%s  %c %s",
 		size, mode, digest, rdev, link, user, group, mtime,
 			((fflags & RPMFILE_CONFIG)	? 'c' :
 			 (fflags & RPMFILE_DOC)	? 'd' :
