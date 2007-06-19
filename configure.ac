@@ -924,6 +924,7 @@ AC_TYPE_SIZE_T
 dnl Checks for library functions.
 AC_FUNC_ALLOCA
 AC_FUNC_VPRINTF
+AC_FUNC_MMAP
 
 AC_CHECK_FUNCS(basename getaddrinfo getcwd getnameinfo getwd inet_aton)
 AC_CHECK_FUNCS(mtrace putenv realpath setenv clearenv)
