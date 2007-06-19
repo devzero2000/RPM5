@@ -2296,7 +2296,7 @@ assert(newOrderCount == ts->orderCount);
 
 int rpmtsCheck(rpmts ts)
 {
-    const char * depName = NULL;;
+    const char * depName = NULL;
     rpmdepFlags depFlags = rpmtsDFlags(ts);
     uint_32 tscolor = rpmtsColor(ts);
     rpmdbMatchIterator mi = NULL;

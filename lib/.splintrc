@@ -18,7 +18,28 @@
 -redecl
 -bufferoverflowhigh
 
+-branchstate
+-compdef
+-evalorder
+-exportheader
+-globs
+-globstate
+-modobserver
+-moduncon
+-mustmod
+-noeffectuncon
+-nullderef
 -nullpass		# 62 rpmExpand annoyance
+-nullptrarith
+-nullret
+-nullstate
+-retexpose
+-shadow
+-unrecog
+
+-dependenttrans
+-observertrans
+-ownedtrans
 
 # --- +partial artifacts
 -declundef

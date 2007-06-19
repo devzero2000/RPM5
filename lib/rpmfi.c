@@ -1238,7 +1238,6 @@ fprintf(stderr, "*** fi %p\t%s[%d]\n", fi, fi->Type, fi->fc);
 
     fi->actions = _free(fi->actions);
     fi->replacedSizes = _free(fi->replacedSizes);
-    fi->replaced = _free(fi->replaced);
 
     fi->h = headerFree(fi->h);
 

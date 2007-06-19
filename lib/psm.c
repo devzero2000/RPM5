@@ -92,9 +92,10 @@ static rpmRC markReplacedFiles(const rpmpsm psm)
 	/*@modifies psm, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     const rpmts ts = psm->ts;
+    rpmte te = psm->te;
     rpmfi fi = psm->fi;
     HGE_t hge = (HGE_t)fi->hge;
-    sharedFileInfo replaced = fi->replaced;
+    sharedFileInfo replaced = (te ? te->replaced : NULL);
     sharedFileInfo sfi;
     rpmdbMatchIterator mi;
     Header h;
@@ -102,7 +103,7 @@ static rpmRC markReplacedFiles(const rpmpsm psm)
     unsigned int prev;
     int num, xx;
 
-    if (!(rpmfiFC(fi) > 0 && fi->replaced))
+    if (!(rpmfiFC(fi) > 0 && replaced != NULL))
 	return RPMRC_OK;
 
     num = prev = 0;
@@ -229,7 +230,7 @@ assert(fi->h != NULL);
     hge = fi->hge;
     hfd = fi->hfd;
 
-/*@i@*/ (void) headerMacrosLoad(fi->h);
+    (void) headerMacrosLoad(fi->h);
 
     psm->fi = rpmfiLink(fi, NULL);
     /*@-assignexpose -usereleased @*/

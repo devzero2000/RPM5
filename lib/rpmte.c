@@ -61,6 +61,8 @@ static void delTE(rpmte p)
     p->pkgid = _free(p->pkgid);
     p->hdrid = _free(p->hdrid);
 
+    p->replaced = _free(p->replaced);
+
     p->flink.NEVRA = argvFree(p->flink.NEVRA);
     p->flink.Pkgid = argvFree(p->flink.Pkgid);
     p->flink.Hdrid = argvFree(p->flink.Hdrid);
@@ -198,6 +200,8 @@ static void addTE(rpmts ts, rpmte p, Header h,
 
     p->key = key;
     p->fd = NULL;
+
+    p->replaced = NULL;
 
     p->pkgFileSize = 0;
 

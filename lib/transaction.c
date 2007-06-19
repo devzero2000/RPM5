@@ -97,7 +97,7 @@ static int handleInstInstalledFiles(const rpmts ts,
 		sharedFileInfo shared,
 		int sharedCount, int reportConflicts)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies ts, fi, rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@modifies ts, p, fi, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     uint_32 tscolor = rpmtsColor(ts);
     uint_32 prefcolor = rpmtsPrefColor(ts);
@@ -107,7 +107,6 @@ static int handleInstInstalledFiles(const rpmts ts,
     struct stat sb, *st = &sb;
     const char * altNEVRA = NULL;
     rpmfi otherFi = NULL;
-    int numReplaced = 0;
     rpmps ps;
     int i;
 
@@ -140,7 +139,8 @@ static int handleInstInstalledFiles(const rpmts ts,
     if (otherFi == NULL)
 	return 1;
 
-    fi->replaced = xcalloc(sharedCount, sizeof(*fi->replaced));
+    p->replaced = xcalloc(sharedCount, sizeof(*p->replaced));
+    p->nreplaced = 0;
 
     ps = rpmtsProblems(ts);
     for (i = 0; i < sharedCount; i++, shared++) {
@@ -222,9 +222,9 @@ static int handleInstInstalledFiles(const rpmts ts,
 
 	    /* Save file identifier to mark as state REPLACED. */
 	    if ( !(((FFlags | oFFlags) & RPMFILE_CONFIG) || XFA_SKIPPING(fi->actions[fileNum])) ) {
-		/*@-assignexpose@*/ /* FIX: p->replaced, not fi */
+		/*@-assignexpose@*/
 		if (!shared->isRemoved)
-		    fi->replaced[numReplaced++] = *shared;
+		    p->replaced[p->nreplaced++] = *shared;
 		/*@=assignexpose@*/
 	    }
 	}
@@ -243,9 +243,9 @@ static int handleInstInstalledFiles(const rpmts ts,
     altNEVRA = _free(altNEVRA);
     otherFi = rpmfiFree(otherFi);
 
-    fi->replaced = xrealloc(fi->replaced,	/* XXX memory leak */
-			   sizeof(*fi->replaced) * (numReplaced + 1));
-    fi->replaced[numReplaced].otherPkg = 0;
+    p->replaced = xrealloc(p->replaced,
+			   sizeof(*p->replaced) * (p->nreplaced + 1));
+    memset(p->replaced + p->nreplaced, 0, sizeof(*p->replaced));
 
     return 0;
 }
@@ -1000,7 +1000,7 @@ rpmRC rpmtsRollback(rpmts rbts, rpmprobFilterFlags ignoreSet, int running, rpmte
 	rpmte te;
 
 	/* XXX Insure an O_RDWR rpmdb. */
-	rpmtsOpenDB(rbts, O_RDWR);
+	xx = rpmtsOpenDB(rbts, O_RDWR);
 
 	tsi = rpmtsiInit(rbts);
 	while((te = rpmtsiNext(tsi, TR_REMOVED)) != NULL) {

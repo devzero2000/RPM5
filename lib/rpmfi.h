@@ -12,19 +12,6 @@ extern int _rpmfi_debug;
 /*@=exportlocal@*/
 
 #if defined(_RPMFI_INTERNAL)
-/**
- */
-typedef struct sharedFileInfo_s *		sharedFileInfo;
-
-/**
- */
-struct sharedFileInfo_s {
-    int pkgFileNum;
-    int otherFileNum;
-    int otherPkg;
-    int isRemoved;
-};
-
 /** \ingroup rpmfi
  * A package filename set.
  */
@@ -160,10 +147,10 @@ struct rpmfi_s {
     FSM_t fsm;			/*!< File state machine data. */
     int keep_header;		/*!< Keep header? */
     uint_32 color;		/*!< Color bit(s) from file color union. */
-/*@owned@*/
-    sharedFileInfo replaced;	/*!< (TR_ADDED) */
+
 /*@owned@*/
     uint_32 * replacedSizes;	/*!< (TR_ADDED) */
+
     unsigned int record;	/*!< (TR_REMOVED) */
     int magic;
 #define	RPMFIMAGIC	0x09697923

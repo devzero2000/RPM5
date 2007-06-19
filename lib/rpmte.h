@@ -68,6 +68,20 @@ struct rpmChainLink_s {
     ARGV_t NEVRA;		/*!< link element NEVRA's. */
 };
 
+/**
+ */
+typedef struct sharedFileInfo_s *		sharedFileInfo;
+
+/**
+ * Replaced file cross reference.
+ */
+struct sharedFileInfo_s {
+    int pkgFileNum;
+    int otherFileNum;
+    int otherPkg;
+    int isRemoved;
+};
+
 /** \ingroup rpmte
  * A single package instance to be installed/removed atomically.
  */
@@ -125,6 +139,10 @@ struct rpmte_s {
     int autorelocatex;		/*!< (TR_ADDED) Auto relocation entry index. */
 /*@refcounted@*/ /*@null@*/	
     FD_t fd;			/*!< (TR_ADDED) Payload file descriptor. */
+
+/*@owned@*/ /*@null@*/
+    sharedFileInfo replaced;	/*!< (TR_ADDED) Replaced file reference. */
+    int nreplaced;		/*!< (TR_ADDED) No. of replaced files. */
 
     struct rpmChainLink_s blink;/*!< Backward link info to erased element. */
     struct rpmChainLink_s flink;/*!< Forward link info to installed element. */

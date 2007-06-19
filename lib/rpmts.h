@@ -353,8 +353,8 @@ int rpmrbRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
  */
 rpmRC rpmtsRollback(rpmts rbts, rpmprobFilterFlags ignoreSet,
 		int running, rpmte rbte)
-    /*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-    /*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/;
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies rbts, rbte, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /** \ingroup rpmts
  * Unreference a transaction instance.

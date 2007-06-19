@@ -13,7 +13,7 @@
 extern int _rpmns_debug;
 /*@=exportlocal@*/
 
-/*@unchecked@*/
+/*@unchecked@*/ /*@observer@*/
 extern const char *_rpmns_N_at_A;
 
 typedef	/*@abstract@*/ struct rpmns_s * rpmns;
@@ -102,7 +102,7 @@ nsType rpmnsClassify(const char * str)
  * @return		0 always
  */
 int rpmnsParse(const char * str, rpmns ns)
-	/*@globals rpmGlobalMacroContext @*/
+	/*@globals rpmGlobalMacroContext, h_errno @*/
 	/*@modifies ns, rpmGlobalMacroContext @*/;
 
 #ifdef __cplusplus

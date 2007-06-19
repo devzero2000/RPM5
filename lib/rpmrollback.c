@@ -233,7 +233,7 @@ bottom:
  */
 static int cmpArgvStr(rpmts ts, const char *lname, const char ** AV, int AC,
 		/*@null@*/ const char * B)
-	/*@*/
+	/*@modifies ts @*/
 {
     const char * A;
     int i;
@@ -372,6 +372,8 @@ exit:
 }
 
 static int rpmrbProblems(rpmts ts, /*@null@*/ const char * msg, int rc)
+	/*@globals fileSystem @*/
+	/*@modifies ts, fileSystem @*/
 {
     rpmps ps = rpmtsProblems(ts);
 

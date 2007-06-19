@@ -823,8 +823,8 @@ void * headerFreeData( /*@only@*/ /*@null@*/ const void * data, rpmTagType type)
  * @return		0 always
  */
 int headerMacrosLoad(Header h)
-	/*@globals rpmGlobalMacroContext @*/
-	/*@modifies rpmGlobalMacroContext @*/;
+	/*@globals internalState @*/
+	/*@modifies internalState @*/;
 
 /**
  * Define per-header macros.
@@ -832,8 +832,8 @@ int headerMacrosLoad(Header h)
  * @return		0 always
  */
 int headerMacrosUnload(Header h)
-	/*@globals rpmGlobalMacroContext @*/
-	/*@modifies rpmGlobalMacroContext @*/;
+	/*@globals internalState @*/
+	/*@modifies internalState @*/;
 
 /** \ingroup header
  * Return name, version, release strings from header.
