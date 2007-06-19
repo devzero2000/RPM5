@@ -12,6 +12,7 @@
 #define __power_pc() 0
 #endif
 
+#include <rpmio_internal.h> /* for rpmioSlurp() */
 #include <rpmcli.h>
 #include <rpmmacro.h>
 #include <rpmlua.h>

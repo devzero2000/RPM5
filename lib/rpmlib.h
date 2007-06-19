@@ -586,6 +586,12 @@ void rpmGetOsInfo( /*@null@*/ /*@out@*/ const char ** name,
 int rpmMachineScore(int type, const char * name)
 	/*@*/;
 
+/**
+ *  (unused)
+ */
+void rpmGetMachine(const char ** arch, const char ** os)
+    /*@*/;
+
 /*@only@*/ /*@null@*/ /*@unchecked@*/
 extern void * platpat;
 /*@unchecked@*/
