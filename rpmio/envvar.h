@@ -33,7 +33,9 @@ static inline
 int envPut(/*@null@*/ const char *name, /*@null@*/ const char *value)
 	/*@*/
 {
-    char *t, *te;
+/*@kept@*/
+    char *t;
+    char *te;
     size_t nb = 0;
     int rc;
 

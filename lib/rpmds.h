@@ -173,6 +173,7 @@ rpmds rpmdsNew(Header h, rpmTag tagN, int flags)
  * @param ds		dependency set
  * @return		new N string (malloc'ed)
  */
+/*@dependent@*/ /*@observer@*/ /*@null@*/
 const char * rpmdsNewN(rpmds ds)
 	/*@globals rpmGlobalMacroContext, h_errno @*/
 	/*@modifies ds, rpmGlobalMacroContext @*/;

@@ -359,10 +359,8 @@ assert(scareMem == 0);		/* XXX always allocate memory */
 		    av[i] = xstrdup("");
 		else if (*N[i] == '/')
 		    av[i] = xstrdup(N[i]);
-		else if (ds->EVR && ds->Flags)
-/*@-nullderef@*/	/* XXX ds->Flags != NULL */
+		else if (ds->EVR != NULL && ds->Flags != NULL)
 		    av[i] = rpmGenPath(NULL, ds->EVR[ds->Flags[i]], N[i]);
-/*@=nullderef@*/
 		else
 		    av[i] = NULL;
 	    }
@@ -395,7 +393,6 @@ exit:
 /*@=compdef =usereleased@*/
 }
 
-/*@-mods@*/ /* FIX: correct annotations for ds->ns shadow */
 const char * rpmdsNewN(rpmds ds)
 {
     rpmns ns = &ds->ns;
@@ -405,11 +402,10 @@ const char * rpmdsNewN(rpmds ds)
     memset(ns, 0, sizeof(*ns));
     xx = rpmnsParse(Name, ns);
 
-/*@-usereleased -compdef@*/ /* FIX: correct annotations for ds->ns shadow */
+/*@-compdef -usereleased@*/ /* FIX: correct annotations for ds->ns shadow */
     return ns->N;
-/*@-usereleased -compdef@*/
+/*@=compdef =usereleased@*/
 }
-/*@=mods@*/
 
 char * rpmdsNewDNEVR(const char * dspfx, rpmds ds)
 {

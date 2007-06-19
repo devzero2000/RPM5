@@ -191,10 +191,12 @@ int rpmnsParse(const char * str, rpmns ns)
 	ns->NS = ns->str;
 	if (ns->NS[0] == '!')
 	    ns->NS++;
-	if ((t = strchr(t, '(')) != NULL)
+	if ((t = strchr(t, '(')) != NULL) {
 	    *t++ = '\0';
-	ns->N = t;
-	t[strlen(t)-1] = '\0';
+	    ns->N = t;
+	    t[strlen(t)-1] = '\0';
+	} else
+	   ns->N = NULL;
 	ns->A = NULL;
 	break;
     case RPMNS_TYPE_UNKNOWN:

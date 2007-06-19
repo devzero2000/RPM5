@@ -2338,7 +2338,8 @@ assert(psm->te != NULL);
 	if (rc != RPMRC_OK) break;
 
 	/* Forget the offset of a successfully removed header. */
-	psm->te->u.removed.dboffset = 0;
+	if (psm->te != NULL)	/* XXX can't happen */
+	    psm->te->u.removed.dboffset = 0;
 
     }	break;
 

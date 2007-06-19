@@ -55,13 +55,14 @@ typedef enum nsType_e {
  * An NS parsing container.
  */
 struct rpmns_s {
+/*@owned@*/
     const char * str;		/*!< string storage */
     nsType Type;		/*!< Type */
-/*@observer@*/ /*@null@*/
+/*@dependent@*/ /*@null@*/
     const char * NS;		/*!< Namespace */
-/*@observer@*/ /*@null@*/
+/*@dependent@*/ /*@null@*/
     const char * N;		/*!< Name */
-/*@observer@*/ /*@null@*/
+/*@dependent@*/ /*@null@*/
     const char * A;		/*!< Arch */
     evrFlags Flags;		/*!< EVR comparison flags. */
 };
