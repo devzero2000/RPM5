@@ -182,7 +182,7 @@ int dodigest(int digestalgo, const char * fn, unsigned char * digest, int asAsci
     switch(ut) {
     case URL_IS_PATH:
     case URL_IS_UNKNOWN:
-#if HAVE_MMAP
+#if defined(HAVE_MMAP)
       if (use_mmap) {
 	DIGEST_CTX ctx;
 	void * mapped = NULL;
