@@ -40,8 +40,7 @@ myLDADD = \
 	$(top_builddir)/rpmdb/librpmdb.la \
 	$(top_builddir)/rpmio/librpmio.la \
 	@WITH_POPT_LIB@ \
-	@WITH_ZLIB_LIB@ \
-	@LIBMISC@
+	@WITH_ZLIB_LIB@
 
 bin_PROGRAMS = 		rpm rpmbuild
 

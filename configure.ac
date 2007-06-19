@@ -1418,8 +1418,6 @@ testdir="`pwd`/tests"
 AC_SUBST(testdir)
 
 AC_SUBST(INCPATH)
-AC_SUBST(LIBMISC)
-
 AC_SUBST(RPM)
 
 AC_CONFIG_SUBDIRS(popt zlib file sqlite db3)
