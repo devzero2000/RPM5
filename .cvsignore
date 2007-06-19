@@ -35,6 +35,7 @@ missing
 platform
 rpm
 rpm.spec
+rpmbuild
 rpmdb
 rpm[a-z]
 rpm2cpio
