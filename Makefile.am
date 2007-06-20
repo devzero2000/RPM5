@@ -54,13 +54,13 @@ rpm_SOURCES =		$(top_srcdir)/build.c
 rpm_LDFLAGS =		$(myLDFLAGS) $(staticLDFLAGS)
 rpm_LDADD =		rpm.o $(top_builddir)/build/.libs/librpmbuild.a $(myLDADD)
 rpm.o:	$(top_srcdir)/rpmqv.c
-	$(COMPILE) -fpie -DIAM_RPMBT -DIAM_RPMDB -DIAM_RPMEIU -DIAM_RPMK -DIAM_RPMQV -o $@ -c $<
+	$(COMPILE) -DIAM_RPMBT -DIAM_RPMDB -DIAM_RPMEIU -DIAM_RPMK -DIAM_RPMQV -o $@ -c $<
 
 rpmbuild_SOURCES =	$(top_srcdir)/build.c
 rpmbuild_LDFLAGS =	$(myLDFLAGS) $(staticLDFLAGS)
 rpmbuild_LDADD =	rpmbuild.o $(top_builddir)/build/librpmbuild.la $(myLDADD)
 rpmbuild.o: $(top_srcdir)/rpmqv.c
-	$(COMPILE) -fpie -DIAM_RPMBT -o $@ -c $<
+	$(COMPILE) -DIAM_RPMBT -o $@ -c $<
 
 $(PROGRAMS): 		$(myLDADD) @WITH_APIDOCS_TARGET@
 
