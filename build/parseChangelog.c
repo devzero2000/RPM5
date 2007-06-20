@@ -34,6 +34,7 @@ static int dateToTimet(const char * datestr, /*@out@*/ time_t * secs)
 	/*@modifies *secs @*/
 {
     struct tm time;
+    time_t timezone_offset;
     char * p, * pe, * q, ** idx;
     char * date = strcpy(alloca(strlen(datestr) + 1), datestr);
 /*@observer@*/ static char * days[] =
@@ -89,8 +90,11 @@ static int dateToTimet(const char * datestr, /*@out@*/ time_t * secs)
     *secs = mktime(&time);
     if (*secs == -1) return -1;
 
-    /* adjust to GMT */
-    *secs += timezone;
+    /* determine timezone offset */
+    timezone_offset = mktime(gmtime(secs)) - *secs;
+
+    /* adjust to UTC */
+    *secs += timezone_offset;
 
     return 0;
 }
