@@ -74,7 +74,8 @@ extern int h_errno;
 #endif
 
 #if !defined(HAVE_INET_ATON)
-static int inet_aton(const char *cp, struct in_addr *inp)
+#define inet_aton(cp,inp) rpm_inet_aton(cp,inp)
+static int rpm_inet_aton(const char *cp, struct in_addr *inp)
 	/*@modifies *inp @*/
 {
     long addr;
