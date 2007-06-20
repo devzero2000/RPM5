@@ -1205,7 +1205,7 @@ int main()
 	}
 
 	exit(1);
-}]])],[ROOT_GROUP=`cat conftest_rootg`],[ROOT_GROUP="root"],[ROOT_GROUP="root"
+}]])],[ROOT_GROUP=`cat conftest_rootg`; rm -f conftest_rootg],[ROOT_GROUP="root"],[ROOT_GROUP="root"
 ])
 AC_MSG_RESULT($ROOT_GROUP)
 AC_SUBST(ROOT_GROUP)
@@ -1444,10 +1444,13 @@ AC_CONFIG_FILES([ Doxyfile Makefile rpmrc macros platform rpmpopt rpm.spec po/Ma
 	python/rpm/Makefile
  	lua/Makefile
   ])
-AC_CONFIG_COMMANDS([default],[[
-	[ -d popt ] && echo timestamp > popt/stamp-h.in
-	echo timestamp > stamp-h.in
-	[ -d perl ] && cd perl && perl Makefile.PL
-  
-]],[[]])
+AC_CONFIG_COMMANDS([default],[
+    echo timestamp >stamp-h.in
+    if test -d popt; then
+        echo timestamp >popt/stamp-h.in
+    fi
+    if test "$with_perl" = yes && test -d perl; then
+        ( cd perl && perl Makefile.PL )
+    fi
+],[])
 AC_OUTPUT
