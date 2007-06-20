@@ -524,7 +524,7 @@ AC_SUBST(WITH_LIBDWARF_DEBUGEDIT)
 
 RPM_CHECK_LIB([BeeCrypt], [beecrypt],
               [beecrypt], [mpfprintln], [beecrypt/api.h],
-              [external:internal:none], [beecrypt],
+              [external:internal:abort], [beecrypt],
               [], [ AC_ERROR([mandatory BeeCrypt library not found]) ])
 
 #=================
@@ -549,7 +549,7 @@ RPM_CHECK_LIB([Neon], [neon],
 
 RPM_CHECK_LIB([File (magic)], [file],
               [magic], [magic_open], [magic.h],
-              [external:internal:none], [file:src:src],
+              [external:internal:abort], [file:src:src],
               ], [ AC_ERROR([mandatory File (magic) library not found]) ])
 
 #=================
