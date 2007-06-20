@@ -38,7 +38,7 @@ BuildRequires: neon-devel
 BuildRequires: sqlite-devel
 
 %if %{with_bzip2}
-BuildRequires: bzip2-devel >= 0.9.0c-2
+BuildRequires: bzip2-devel >= 1.0
 %endif
 %if %{with_python_subpackage}
 BuildRequires: python-devel >= %{with_python_version}
