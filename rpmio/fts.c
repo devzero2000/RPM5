@@ -65,7 +65,7 @@ static char sccsid[] = "@(#)fts.c	8.6 (Berkeley) 8/14/94";
 #   define _STAT_VER		0
 #   define __fxstat64(_stat_ver, _fd, _sbp)	fstat((_fd), (_sbp))
 #endif
-#if defined(__FreeBSD__)
+#if defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__)
 #   define __errno_location()  (&errno)
 #   define stat64              stat
 #   define __fxstat64(_stat_ver, _fd, _sbp)    fstat((_fd), (_sbp))

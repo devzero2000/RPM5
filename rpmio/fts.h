@@ -44,8 +44,8 @@
 # define	_LARGEFILE64_SOURCE
 #endif
 
-#if defined(__FreeBSD__)
-# define _D_EXACT_NAMLEN(d) ((d)->d_namlen)
+#if defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__)
+# _D_EXACT_NAMLEN(d) ((d)->d_namlen)
 #endif
 
 #if !defined(_D_EXACT_NAMLEN) 
