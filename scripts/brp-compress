@@ -23,9 +23,9 @@ do
 	[ "`basename $f`" = "dir" ] && continue
 
 	case "$f" in
-	 *.Z) gunzip $f; b=`echo $f | sed -e 's/\.Z$//'`;;
-	 *.gz) gunzip $f; b=`echo $f | sed -e 's/\.gz$//'`;;
-	 *.bz2) bunzip2 $f; b=`echo $f | sed -e 's/\.bz2$//'`;;
+	 *.Z) gunzip -f $f; b=`echo $f | sed -e 's/\.Z$//'`;;
+	 *.gz) gunzip -f $f; b=`echo $f | sed -e 's/\.gz$//'`;;
+	 *.bz2) bunzip2 -f $f; b=`echo $f | sed -e 's/\.bz2$//'`;;
 	 *) b=$f;;
 	esac
 

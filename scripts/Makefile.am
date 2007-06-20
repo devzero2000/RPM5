@@ -6,8 +6,10 @@ EXTRA_DIST = \
 	brp-compress brp-python-bytecompile brp-java-gcjcompile \
 	brp-strip brp-strip-comment-note brp-nobuildrootpath \
 	brp-strip-shared brp-strip-static-archive brp-sparc64-linux \
+	brp-implant-ident-static brp-java-repack-jars \
 	check-files cross-build executabledeps.sh \
 	find-debuginfo.sh find-lang.sh find-prov.pl find-req.pl \
+	find-provides.ksyms find-requires.ksyms kmodtool \
 	cpanflute cpanflute2 Specfile.pm find-provides.perl \
 	find-requires.perl freshen.sh gendiff getpo.sh http.req \
 	check-java-closure.sh java.prov.sh java.req.sh \
@@ -16,6 +18,7 @@ EXTRA_DIST = \
 	php.prov php.req rpm2cpio \
 	rpmdb_loadcvt rpmdiff rpmdiff.cgi \
 	rpm.daily rpm.log rpm.xinetd \
+	rpmsort symset-table \
 	sql.prov sql.req symclash.py symclash.sh tcl.req tgpg trpm u_pkg.sh \
 	vpkg-provides.sh vpkg-provides2.sh \
 	macros.perl* macros.python* \
