@@ -45,7 +45,7 @@
 #endif
 
 #if defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__)
-# _D_EXACT_NAMLEN(d) ((d)->d_namlen)
+#define _D_EXACT_NAMLEN(d) ((d)->d_namlen)
 #endif
 
 #if !defined(_D_EXACT_NAMLEN) 
