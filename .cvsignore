@@ -49,3 +49,4 @@ rpmrc
 stamp-h*
 rpm-*.tar.gz
 ylwrap
+m4
