@@ -69,7 +69,7 @@ if [ -d yaml ]; then
 fi
 
 echo "--- rpm"
-[ -f po/Makefile.in.in ] || gettextize --copy --force --intl
+[ -f po/Makefile.in.in ] || gettextize --copy --force --intl --no-changelog
 $libtoolize --copy --force
 aclocal
 autoheader

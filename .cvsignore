@@ -2,6 +2,7 @@
 .depend
 .depend-done
 .libs
+ABOUT-NLS
 Doxyfile
 Doxytags
 Makefile
