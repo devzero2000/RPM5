@@ -659,11 +659,15 @@ print (t)\
 # The default database configuration to use
 %_dbi_config    %{_dbi_btconfig}
 
-# XXX legacy configuration.
-# Choose db interface:
-#	3	native db3 interface.
+# Database API configuration:
 #
-# There are two macros so that --rebuilddb can convert db1 -> db3.
+#   0,1: Berkeley-DB 1.x API     (no longer supported)
+#   2:   Berkeley-DB 2.x API     (no longer supported)
+#   3:   Berkeley-DB 3.x/4.x API (default)
+#   4:   SQLite 3.x API          (alternative)
+#
+# There are two macros so that --rebuilddb can convert the
+# database between formats (usually for upgrading purposes)
 #
 %_dbapi			3
 %_dbapi_rebuild		3
