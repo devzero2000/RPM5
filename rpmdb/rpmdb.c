@@ -242,7 +242,7 @@ static void dbiTagsInit(/*@null@*/int ** dbiTagsP, /*@null@*/int * dbiTagsMaxP)
 #define	DB1vec		NULL
 #define	DB2vec		NULL
 
-#ifdef HAVE_DB3_DB_H
+#ifdef HAVE_DB_H
 /*@-exportheadervar -declundef @*/
 /*@observer@*/ /*@unchecked@*/
 extern struct _dbiVec db3vec;
@@ -363,7 +363,7 @@ exit:
 	}
 /*@=sizeoftype@*/
     }
-#ifdef HAVE_DB3_DB_H
+#ifdef HAVE_DB_H
       else
 	dbi = db3Free(dbi);
 #endif

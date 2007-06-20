@@ -10,10 +10,6 @@ EXTRA_PROGRAMS = tax tdir tfts tget thkp tput tglob tinv tkey trpmio tsw dumpasn
 
 INCLUDES = -I. \
 	-I$(top_srcdir) \
-	@WITH_BEECRYPT_INCLUDE@ \
-	@WITH_NEON_INCLUDE@ \
-	@WITH_LUA_INCLUDE@ \
-	@WITH_POPT_INCLUDE@ \
 	-I$(top_srcdir)/misc \
 	@INCPATH@
 
@@ -26,8 +22,6 @@ noinst_HEADERS = \
 	md2.h md4.h rmd128.h rmd160.h rmd256.h rmd320.h sha224.h \
 	salsa10.h salsa20.h tiger.h \
 	LzmaDecode.h rpmio_internal.h rpmlua.h rpmhook.h
-
-BEECRYPTLOBJS = $(shell test X"@WITH_BEECRYPT_SUBDIR@" != X && cat $(top_builddir)/@WITH_BEECRYPT_SUBDIR@/listobjs)
 
 LDFLAGS = -L$(RPM_BUILD_ROOT)$(usrlibdir) -L$(DESTDIR)$(usrlibdir)
 
@@ -42,31 +36,11 @@ librpmio_la_SOURCES = \
 	stubs.c url.c ugid.c \
 	LzmaDecode.c
 librpmio_la_LDFLAGS = -no-undefined -release $(LT_CURRENT).$(LT_REVISION) $(LDFLAGS) \
-	@WITH_BEECRYPT_LIB@ \
-	@WITH_NEON_LIB@ \
-	@WITH_LUA_LIB@ \
-	@WITH_MAGIC_LIB@ \
-	@WITH_KEYUTILS_LIB@ \
-	@WITH_ZLIB_LIB@ \
 	@LTLIBINTL@
-librpmio_la_LIBADD = # $(BEECRYPTLOBJS)
-librpmio_la_DEPENDENCIES = # .created
 
 if HAVE_LD_VERSION_SCRIPT
 librpmio_la_LDFLAGS += -Wl,--version-script=$(srcdir)/librpmio.vers
 endif
-
-.created:
-	if test X"@WITH_BEECRYPT_SUBDIR@" != X; then \
-	${MAKE} -C $(top_builddir)/@WITH_BEECRYPT_SUBDIR@ listobjs ; \
-	for lo in $(BEECRYPTLOBJS); do \
-	  [ -f $$lo ] || $(LN_S) $(top_builddir)/@WITH_BEECRYPT_SUBDIR@/$$lo $$lo ; \
-	done \
-	fi
-	touch $@
-
-clean-local:
-	rm -f $(BEECRYPTLOBJS) *.o .created
 
 #BUILT_SOURCES = rpmio.lcd
 

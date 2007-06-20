@@ -18,29 +18,43 @@ EXTRA_DIST = m4/ChangeLog  config.rpath m4/ChangeLog  CHANGES CREDITS Doxyheader
 	po/*.in po/*.po po/rpm.pot \
 	rpm.magic rpmqv.c rpm.c
 
-SUBDIRS = po misc @WITH_ZLIB_SUBDIR@ @WITH_ELFUTILS_SUBDIR@ @WITH_MAGIC_SUBDIR@ @WITH_DB_SUBDIR@ @WITH_SQLITE3_SUBDIR@ @WITH_POPT_SUBDIR@ @WITH_BEECRYPT_SUBDIR@ @WITH_NEON_SUBDIR@ @WITH_LUA_SUBDIR@ rpmio rpmdb lib build @WITH_PYTHON_SUBDIR@ @WITH_PERL_SUBDIR@ tools scripts doc .
+SUBDIRS = \
+	po \
+	misc \
+	@WITH_DB_SUBDIR@ \
+	@WITH_ZLIB_SUBDIR@ \
+	@WITH_LUA_SUBDIR@ \
+	@WITH_FILE_SUBDIR@ \
+	@WITH_NEON_SUBDIR@ \
+	@WITH_BEECRYPT_SUBDIR@ \
+	@WITH_ELFUTILS_SUBDIR@ \
+	rpmio \
+	rpmdb \
+	lib \
+	build \
+	@WITH_PYTHON_SUBDIR@ @WITH_PERL_SUBDIR@ \
+	tools \
+	scripts \
+	doc \
+	.
 
 INCLUDES = \
 	-I$(top_srcdir)/build \
 	-I$(top_srcdir)/lib \
 	-I$(top_srcdir)/rpmdb \
 	-I$(top_srcdir)/rpmio \
-	@WITH_BEECRYPT_INCLUDE@ \
-	@WITH_POPT_INCLUDE@ \
 	-I$(top_srcdir)/misc \
 	@WITH_LIBELF_INCLUDE@ \
 	@INCPATH@
 
 staticLDFLAGS = # @LDFLAGS_STATIC@ # @LDFLAGS_NPTL@
 
-myLDFLAGS = @WITH_LIBELF_LIB@ @WITH_BEECRYPT_LIB@
+myLDFLAGS = @WITH_LIBELF_LIB@
 
 myLDADD = \
 	$(top_builddir)/lib/librpm.la \
 	$(top_builddir)/rpmdb/librpmdb.la \
-	$(top_builddir)/rpmio/librpmio.la \
-	@WITH_POPT_LIB@ \
-	@WITH_ZLIB_LIB@
+	$(top_builddir)/rpmio/librpmio.la
 
 bin_PROGRAMS = 		rpm rpmbuild
 

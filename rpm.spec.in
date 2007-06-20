@@ -37,7 +37,7 @@ Requires: beecrypt >= 4.1.2
 BuildRequires: neon-devel
 BuildRequires: sqlite-devel
 
-%if %{with_bzip2}
+%if "%{with_bzip2}" == "yes"
 BuildRequires: bzip2-devel >= 1.0
 %endif
 %if %{with_python_subpackage}

@@ -311,47 +311,16 @@ addlib() {
 }
 
 #=================
-# Check for zlib library. Prefer internal, otherwise external.
 
-WITH_ZLIB_SUBDIR=
-WITH_ZLIB_INCLUDE=
-WITH_ZLIB_LIB=
-if test -d zlib ; then
-  WITH_ZLIB_SUBDIR=zlib
-  addlib \${top_builddir}/zlib
-  WITH_ZLIB_INCLUDE="-I\${top_srcdir}/${WITH_ZLIB_SUBDIR}"
-  INCPATH="$INCPATH -I\${top_srcdir}/${WITH_ZLIB_SUBDIR}"
-  WITH_ZLIB_LIB="\${top_builddir}/${WITH_ZLIB_SUBDIR}/libz.la"
-  AC_DEFINE(HAVE_GZSEEK, 1, [Define as 1 if your zlib has gzseek()])
-fi
-AC_SUBST(WITH_ZLIB_SUBDIR)
-AC_SUBST(WITH_ZLIB_INCLUDE)
-AC_SUBST(WITH_ZLIB_LIB)
+RPM_CHECK_LIB([ZLib], [zlib],
+              [z gz], [gzread], [zlib.h],
+              [internal:external:none], [zlib],
+              [AC_CHECK_FUNC(gzseek)], [])
 
-if test -z "${WITH_ZLIB_LIB}" ; then
-  for zlib in z gz ; do
-   AC_CHECK_LIB(${zlib}, gzread, 
-	[LIBS="$LIBS -l${zlib}"; break], 
-	[if test ${zlib} = gz; then 
-	    AC_MSG_ERROR([sorry rpm requires libz.a or libgz.a (from the zlib package)]) 
-	 fi]
-	       )
-  done
-
-dnl zlib-1.0.4 has not gzseek
-  AC_CHECK_LIB(${zlib}, gzseek, [AC_DEFINE(HAVE_GZSEEK, 1, [Define as 1 if your zlib has gzseek()])])
-fi
-
-#=================
-# Check for bzip2 library. Prefer external, otherwise none.
-
-AC_CHECK_LIB(bz2, bzread, [LIBS="$LIBS -lbz2"], 
-   AC_CHECK_LIB(bz2, BZ2_bzread, [
-     WITH_BZIP2=1
-     LIBS="$LIBS -lbz2"
-     AC_DEFINE(HAVE_BZ2_1_0, 1, [Define as 1 if you bzip2 1.0]) ], 
-     WITH_BZIP2=0))
-AC_SUBST(WITH_BZIP2)
+RPM_CHECK_LIB([GNU BZip2], [bzip2],
+              [bz2], [BZ2_bzread], [bzlib.h],
+              [external:none], [],
+              [], [])
 
 #=================
 
@@ -552,127 +521,64 @@ AC_SUBST(WITH_LIBDWARF_INCLUDE)
 AC_SUBST(WITH_LIBDWARF_DEBUGEDIT)
 
 #=================
-# Check for beecrypt library. Prefer external, otherwise internal.
-WITH_BEECRYPT_SUBDIR=
-WITH_BEECRYPT_INCLUDE=
-WITH_BEECRYPT_LIB=
-AC_CHECK_HEADER([beecrypt/beecrypt.h], [
-  AC_CHECK_LIB(beecrypt, mpfprintln, [
-    AC_DEFINE(HAVE_LIBBEECRYPT, 1, [Define to 1 if you have the 'beecrypt' library (-lbeecrypt).])
-    AC_CHECK_HEADER([beecrypt/api.h], [
-      AC_DEFINE(HAVE_BEECRYPT_API_H, 1, [Define to 1 if you have the <beecrypt/api.h> header file.])
-    ])
-    WITH_BEECRYPT_INCLUDE="-I${includedir}/beecrypt"
-    WITH_BEECRYPT_LIB="-lbeecrypt"
-  ])
-],[
-  if test -d beecrypt ; then
-    AC_DEFINE(HAVE_LIBBEECRYPT, 1, [Define to 1 if you have the 'beecrypt' library (-lbeecrypt).])
-    WITH_BEECRYPT_SUBDIR=beecrypt
-    WITH_BEECRYPT_INCLUDE="-I\${top_srcdir}/${WITH_BEECRYPT_SUBDIR}"
-    WITH_BEECRYPT_LIB="\${top_builddir}/${WITH_BEECRYPT_SUBDIR}/libbeecrypt.la"
-  fi
-])
-AC_SUBST(WITH_BEECRYPT_SUBDIR)
-AC_SUBST(WITH_BEECRYPT_INCLUDE)
-AC_SUBST(WITH_BEECRYPT_LIB)
 
-#=================
-# Check for neon library. Prefer external, otherwise internal.
-WITH_NEON_SUBDIR=
-WITH_NEON_INCLUDE=
-WITH_NEON_LIB=
-AC_CHECK_HEADER([neon/ne_session.h], [
-  AC_CHECK_LIB(neon, ne_session_create, [
-    AC_DEFINE(HAVE_LIBNEON, 1, [Define to 1 if you have the 'neon' library (-lneon).])
-    AC_CHECK_LIB(neon, ne_get_response_header, [
-      AC_DEFINE(HAVE_NEON_NE_GET_RESPONSE_HEADER, 1, [Define to 1 if you have ne_get_response_header() in libneon.])
-    ])
-    AC_CHECK_LIB(neon, ne_send_request_chunk, [
-	AC_DEFINE(HAVE_NEON_NE_SEND_REQUEST_CHUNK, 1, [Define to 1 if you have ne_send_request_chunk() in libneon.])
-    ])
-    WITH_NEON_INCLUDE="-I${includedir}/neon"
-    WITH_NEON_LIB="-lneon"
-  ])
-],[
-  if test -d neon ; then
-    AC_DEFINE(HAVE_LIBNEON, 1, [Define to 1 if you have the 'neon' library (-lneon).])
-# XXX HAVE_NEON_NE_GET_RESPONSE_HEADER assumes libneon-0.25 devel internal
-    AC_DEFINE(HAVE_NEON_NE_GET_RESPONSE_HEADER, 1, [Define to 1 if you have ne_get_response_header() in libneon.])
-    WITH_NEON_SUBDIR=neon
-    WITH_NEON_INCLUDE="-I\${top_srcdir}/${WITH_NEON_SUBDIR}/src"
-    WITH_NEON_LIB="\${top_builddir}/${WITH_NEON_SUBDIR}/src/libneon.la"
-  fi
-])
-AC_SUBST(WITH_NEON_SUBDIR)
-AC_SUBST(WITH_NEON_INCLUDE)
-AC_SUBST(WITH_NEON_LIB)
-
-#=================
-# Check for magic library. Prefer internal, otherwise external.
-WITH_MAGIC_SUBDIR=
-WITH_MAGIC_INCLUDE=
-WITH_MAGIC_LIB=
-
-if test -d file ; then
-  WITH_MAGIC_SUBDIR=file
-  WITH_MAGIC_INCLUDE="-I\${top_srcdir}/${WITH_MAGIC_SUBDIR}/src"
-  WITH_MAGIC_LIB="\${top_builddir}/${WITH_MAGIC_SUBDIR}/src/libmagic.la"
-else
-  AC_CHECK_HEADER([magic.h], [
-    AC_CHECK_LIB(magic, magic_open, [
-      WITH_MAGIC_SUBDIR=
-      WITH_MAGIC_INCLUDE=
-      WITH_MAGIC_LIB="-lmagic"
-    ])
-  ])
-fi
-
-AC_SUBST(WITH_MAGIC_SUBDIR)
-AC_SUBST(WITH_MAGIC_INCLUDE)
-AC_SUBST(WITH_MAGIC_LIB)
-
-#=================
-# Check for keyutils library. Prefer external, otherwise none.
-AC_CHECK_HEADERS(keyutils.h)
-WITH_KEYUTILS_LIB=
-AC_CHECK_LIB(keyutils, keyctl_read, [WITH_KEYUTILS_LIB="-lkeyutils"])
-AC_SUBST(WITH_KEYUTILS_LIB)
-
-#=================
-# Check for popt library. Prefer internal, otherwise external.
-WITH_POPT_SUBDIR=
-WITH_POPT_INCLUDE=
-WITH_POPT_LIB=
-
-if test -d popt ; then
-  WITH_POPT_SUBDIR=popt
-  WITH_POPT_INCLUDE="-I\${top_srcdir}/${WITH_POPT_SUBDIR}"
-  WITH_POPT_LIB="\${top_builddir}/${WITH_POPT_SUBDIR}/libpopt.la"
-else
-  AC_CHECK_HEADER([popt.h], [
-    AC_CHECK_LIB(popt, poptGetContext, [
-      WITH_POPT_SUBDIR=
-      WITH_POPT_INCLUDE=
-      WITH_POPT_LIB="-lpopt"
-    ])
-  ])
-fi
-
-AC_SUBST(WITH_POPT_SUBDIR)
-AC_SUBST(WITH_POPT_INCLUDE)
-AC_SUBST(WITH_POPT_LIB)
+RPM_CHECK_LIB([BeeCrypt], [beecrypt],
+              [beecrypt], [mpfprintln], [beecrypt/api.h],
+              [external:internal:none], [beecrypt],
+              [], [ AC_ERROR([mandatory BeeCrypt library not found]) ])
 
 #=================
 
-dnl ------------------ with    internal db
-AC_DEFINE(HAVE_DB3_DB_H, 1, [Define if you have the <db3/db.h> header file])
-WITH_DB_SUBDIR=db3
-WITH_INTERNAL_DB=1
-DBLIBSRCS="db3.c"
+RPM_CHECK_LIB([Neon], [neon],
+              [neon], [ne_session_create], [ne_session.h],
+              [external:internal:abort], [neon:src:src],
+              [ if test ".$RPM_CHECK_LIB_LOCATION" = .internal; then
+                    AC_DEFINE(HAVE_NEON_NE_GET_RESPONSE_HEADER, 1,
+                              [Define to 1 if you have ne_get_response_header() in libneon.])
+                else
+                    AC_CHECK_LIB(neon, ne_get_response_header, [
+                        AC_DEFINE(HAVE_NEON_NE_GET_RESPONSE_HEADER, 1,
+                                  [Define to 1 if you have ne_get_response_header() in libneon.]) ])
+                    AC_CHECK_LIB(neon, ne_send_request_chunk, [
+                        AC_DEFINE(HAVE_NEON_NE_SEND_REQUEST_CHUNK, 1,
+                                  [Define to 1 if you have ne_send_request_chunk() in libneon.]) ])
+                fi
+              ], [ AC_ERROR([mandatory Neon library not found]) ])
 
-AC_SUBST(WITH_DB_SUBDIR)
-AC_SUBST(WITH_INTERNAL_DB)
+#=================
+
+RPM_CHECK_LIB([File (magic)], [file],
+              [magic], [magic_open], [magic.h],
+              [external:internal:none], [file:src:src],
+              ], [ AC_ERROR([mandatory File (magic) library not found]) ])
+
+#=================
+
+RPM_CHECK_LIB([Linux keyutils], [keyutils],
+              [keyutils], [keyctl_read], [keyutils.h],
+              [external:none], [],
+              [], [])
+
+#=================
+
+RPM_CHECK_LIB([POPT], [popt],
+              [popt], [poptGetContext], [popt.h],
+              [external:abort], [],
+              [], [AC_ERROR([mandatory POPT library not found])])
+
+#=================
+
+DBLIBSRCS=""
+
+RPM_CHECK_LIB([Berkeley-DB], [db],
+              [db], [db_create], [db.h],
+              [internal:external:abort], [db3],
+              [ DBLIBSRCS="$DBLIBSRCS db3.c"
+                if test ".$RPM_CHECK_LIB_LOCATION" = .internal; then
+                    AC_DEFINE(HAVE_DB_H, 1, [Have <db.h> header])
+                fi
+              ],
+              [ AC_ERROR([mandatory Berkeley-DB library not found]) ])
 
 # accept and pass-through options for Berkeley-DB "configure"
 AC_ARG_WITH(db-largefile, AS_HELP_STRING([--with-db-largefile], [build Berkeley-DB with LARGEFILE support]))
@@ -680,40 +586,18 @@ AC_ARG_WITH(db-mutex,     AS_HELP_STRING([--with-db-mutex=ARG], [build Berkeley-
 AC_ARG_WITH(db-rpc,       AS_HELP_STRING([--with-db-rpc],       [build Berkeley-DB with RPC support]))
 AM_CONDITIONAL(WITH_DB_RPC, test ".$with_db_rpc" = .yes)
 
-#=================
-# Check for sqlite3 library. Prefer external, then internal, otherwise none.
-WITH_SQLITE3_SUBDIR=
-WITH_SQLITE3_INCLUDE=
-WITH_SQLITE3_LIB=
-
-AC_CHECK_HEADER([sqlite3.h], [
-  AC_CHECK_LIB(sqlite, sqlite3_open, [
-    AC_DEFINE(HAVE_SQLITE3_H, 1, [Define if you have the <sqlite3.h> header file])
-    WITH_SQLITE3_SUBDIR=
-    WITH_SQLITE3_INCLUDE=
-    WITH_SQLITE3_LIB="-lsqlite"
-    DBLIBSRCS="$DBLIBSRCS sqlite.c"
-  ])
-],[
-  if test -d sqlite ; then
-    AC_DEFINE(HAVE_SQLITE3_H, 1, [Define if you have the <sqlite3.h> header file])
-    WITH_SQLITE3_SUBDIR=sqlite
-    WITH_SQLITE3_INCLUDE="-I\${top_srcdir}/${WITH_SQLITE3_SUBDIR} -I\${top_srcdir}/${WITH_SQLITE3_SUBDIR}/src"
-    WITH_SQLITE3_LIB="\${top_builddir}/${WITH_SQLITE3_SUBDIR}/libsqlite3.la"
-    DBLIBSRCS="$DBLIBSRCS sqlite.c"
-  fi
-])
-
-AC_SUBST(WITH_SQLITE3_SUBDIR)
-AC_SUBST(WITH_SQLITE3_INCLUDE)
-AC_SUBST(WITH_SQLITE3_LIB)
-
-#=================
+RPM_CHECK_LIB([SQLite], [sqlite],
+              [sqlite3], [sqlite3_open], [sqlite3.h],
+              [external:abort], [],
+              [ DBLIBSRCS="$DBLIBSRCS sqlite.c" ],
+              [ AC_ERROR([mandatory SQLite library not found]) ])
 
 DBLIBOBJS=`echo $DBLIBSRCS | sed -e "s/\.c/\.lo/g"`
 
 AC_SUBST(DBLIBSRCS)
 AC_SUBST(DBLIBOBJS)
+
+#=================
 
 dnl AmigaOS and IXEmul have a fork() dummy
   case "$target" in
@@ -743,7 +627,7 @@ AC_CHECK_HEADERS(netinet/in_systm.h)
 AC_CHECK_HEADERS(machine/types.h)
 AC_CHECK_HEADERS(mntent.h sys/mnttab.h sys/systemcfg.h)
 AC_CHECK_HEADERS(sys/mount.h sys/mntctl.h sys/param.h sys/vmount.h)
-AC_CHECK_HEADERS(bzlib.h libio.h zlib.h)
+AC_CHECK_HEADERS(libio.h)
 AC_CHECK_HEADERS(err.h mcheck.h)
 
 dnl Some solaris build env needs.
@@ -1083,40 +967,25 @@ if test $withval != no ; then
 fi
 AC_SUBST(WITH_SELINUX_LIB)
 
-WITH_LUA_LIB=
-WITH_LUA_SUBDIR=
-WITH_LUA_INCLUDE=
-WITH_LUA_SUBDIR_DEF=
-WITH_LUA_SUBDIR_LIB=
-withval=yes
-AC_ARG_WITH(lua, [  --with-lua              build with lua support ])
-if test $withval != no -a -d lua ; then
-  AC_DEFINE(WITH_LUA, 1, [Build with lua support?])
-  WITH_LUA_SUBDIR="lua"
-  WITH_LUA_INCLUDE="-I\${top_srcdir}/${WITH_LUA_SUBDIR}/include -I\${top_srcdir}/${WITH_LUA_SUBDIR}/local"
-  WITH_LUA_LIB="\$(top_builddir)/${WITH_LUA_SUBDIR}/liblua.la"
-  AC_CHECK_LIB(dl, dlopen, [ LIBS="$LIBS -ldl"; WITH_LUA_SUBDIR_LIB="-ldl" ])
-  AC_CHECK_FUNC(dlopen, [ WITH_LUA_SUBDIR_DEF="-DUSE_DLOPEN" ])
-fi
-AC_SUBST(WITH_LUA_LIB)
-AC_SUBST(WITH_LUA_SUBDIR)
-AC_SUBST(WITH_LUA_INCLUDE)
+WITH_LUA_SUBDIR_DEF=""
+WITH_LUA_SUBDIR_LIB=""
+RPM_CHECK_LIB([Lua], [lua],
+              [lua], [_], [_],
+              [internal:none], [lua:include,local],
+              [ AC_CHECK_LIB(dl, dlopen, [ LIBS="-ldl $LIBS"; WITH_LUA_SUBDIR_LIB="-ldl" ])
+                AC_CHECK_FUNC(dlopen, [ WITH_LUA_SUBDIR_DEF="-DUSE_DLOPEN" ]) ], [])
 AC_SUBST(WITH_LUA_SUBDIR_DEF)
 AC_SUBST(WITH_LUA_SUBDIR_LIB)
 
-withval=no
-AC_ARG_WITH(dmalloc, [  --with-dmalloc          build with dmalloc debugging support ])
-if test $withval = yes ; then
-  AC_DEFINE(DMALLOC, 1, [Build with dmalloc support?])
-  LIBS="$LIBS -ldmalloc"
-fi
+RPM_CHECK_LIB([DMalloc], [dmalloc],
+              [dmalloc], [dmalloc_malloc], [dmalloc.h],
+              [no], [],
+              [], [])
 
-withval=no
-AC_ARG_WITH(efence, [  --with-efence           build with efence debugging support ])
-if test $withval = yes ; then
-  AC_DEFINE(EFENCE, 1, [Build with libefence support?])
-  LIBS="$LIBS -lefence"
-fi
+RPM_CHECK_LIB([ElectricFence], [efence],
+              [efence], [malloc], [stdlib.h],
+              [no], [],
+              [], [])
 
 AC_CHECK_FUNCS(setlocale)
 
@@ -1424,7 +1293,7 @@ AC_SUBST(testdir)
 AC_SUBST(INCPATH)
 AC_SUBST(RPM)
 
-AC_CONFIG_SUBDIRS(popt zlib file sqlite db3)
+AC_CONFIG_SUBDIRS()
 
 AC_CONFIG_FILES([ Doxyfile Makefile rpmrc macros platform rpmpopt rpm.spec po/Makefile.in
 	rpmio/Makefile rpmdb/Makefile lib/Makefile build/Makefile

@@ -18,8 +18,6 @@ INCLUDES = -I. \
 	-I$(top_srcdir)/rpmdb \
 	-I$(top_srcdir)/rpmio \
 	@WITH_LIBELF_INCLUDE@ \
-	@WITH_BEECRYPT_INCLUDE@ \
-	@WITH_POPT_INCLUDE@ \
 	-I$(top_srcdir)/misc \
 	-I$(pyincdir) \
 	@INCPATH@
@@ -34,7 +32,6 @@ mylibs= \
 	$(top_builddir)/lib/librpm.la \
 	$(top_builddir)/rpmdb/librpmdb.la \
 	$(top_builddir)/rpmio/librpmio.la \
-	@WITH_POPT_LIB@ \
 	@WITH_LIBELF_LIB@
 
 LDADD =
@@ -43,7 +40,7 @@ rpmdir = $(pylibdir)/site-packages/rpm
 rpm_LTLIBRARIES = _rpmmodule.la
 
 _rpmmodule_la_LDFLAGS = $(mylibs) $(LIBS) -module -avoid-version
-_rpmmodule_la_LIBADD =  @WITH_BEECRYPT_LIB@
+_rpmmodule_la_LIBADD =
 
 _rpmmodule_la_SOURCES = rpmmodule.c header-py.c \
 		       rpmal-py.c rpmds-py.c rpmdb-py.c rpmfd-py.c rpmfts-py.c \

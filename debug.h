@@ -13,7 +13,7 @@
 #define	htons(_x)	(_x)
 #endif
 
-#ifdef	DMALLOC
+#ifdef	WITH_DMALLOC
 #include <dmalloc.h>
 #endif
 

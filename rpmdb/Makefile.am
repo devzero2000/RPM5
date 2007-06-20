@@ -9,10 +9,7 @@ INCLUDES = -I. \
 	-I$(top_srcdir)/build \
 	-I$(top_srcdir)/lib \
 	-I$(top_srcdir)/rpmio \
-	@WITH_BEECRYPT_INCLUDE@ \
-	@WITH_POPT_INCLUDE@ \
 	-I$(top_srcdir)/misc \
-	@WITH_SQLITE3_INCLUDE@ \
 	@WITH_LIBELF_INCLUDE@ \
 	@INCPATH@
 
@@ -46,7 +43,7 @@ LIBS =
 libdb_la = $(top_builddir)/$(WITH_DB_SUBDIR)/libdb.la
 
 # XXX grrr, RPM_BUILD_ROOT prevents build pollution if/when -lrpm different
-LDFLAGS = -L$(RPM_BUILD_ROOT)$(usrlibdir) -L$(DESTDIR)$(usrlibdir)
+LDFLAGS = @LDFLAGS@ -L$(RPM_BUILD_ROOT)$(usrlibdir) -L$(DESTDIR)$(usrlibdir)
 
 usrlibdir = $(libdir)@MARK64@
 usrlib_LTLIBRARIES = librpmdb.la
@@ -57,8 +54,6 @@ librpmdb_la_SOURCES = \
 	tagname.c tagtbl.c
 librpmdb_la_LDFLAGS = -no-undefined -release $(LT_CURRENT).$(LT_REVISION) \
 	$(top_builddir)/rpmio/librpmio.la \
-	@WITH_POPT_LIB@ \
-	@WITH_SQLITE3_LIB@ \
 	@WITH_LIBELF_LIB@
 librpmdb_la_LIBADD = $(DBLIBOBJS) $(libdb_la)
 librpmdb_la_DEPENDENCIES = $(DBLIBOBJS) $(libdb_la)
