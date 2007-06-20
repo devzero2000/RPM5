@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - rse: remove the hysterical bzip2 interface.
     - rse: add the missing Autoconf glue code for using mmap(2) in the code
     - rse: (temporarily) remove partial Lua/libsyck support from build environment
     - jbj: refactor fi->replaced to persistent rpmte storage.
