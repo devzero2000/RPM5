@@ -1,4 +1,5 @@
 Makefile
+Makefile.in
 po2tbl.sed
 charset.alias
 libintl.h
