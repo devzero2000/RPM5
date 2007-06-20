@@ -4,7 +4,7 @@ AUTOMAKE_OPTIONS = 1.4 foreign
 
 LINT = splint
 
-EXTRA_DIST = m4/ChangeLog  config.rpath m4/ChangeLog  CHANGES CREDITS Doxyheader GROUPS INSTALL \
+EXTRA_DIST = CHANGES CREDITS Doxyheader GROUPS INSTALL \
 	autodeps/none autodeps/*.prov autodeps/*.req autogen.sh \
 	config.site db db3/configure installplatform platform* \
 	perl/Changes perl/MANIFEST perl/META.yml perl/Makefile.PL \
