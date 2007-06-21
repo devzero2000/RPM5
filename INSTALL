@@ -30,11 +30,11 @@ POPT            mandatory 1.9     1.11    http://rpm5.org/files/popt/
 BeeCrypt        mandatory 4.0     4.1.2   http://www.virtualunlimited.com/products/beecrypt/
 Neon            mandatory 0.26    0.26.3  http://www.webdav.org/neon/
 File/magic      mandatory 4.0     4.21    ftp://ftp.astron.com/pub/file/
-Berkeley-DB [+] mandatory -       4.5.20  http://www.oracle.com/database/berkeley-db.html
+Berkeley-DB [1] mandatory -       4.5.20  http://www.oracle.com/database/berkeley-db.html
 SQLite          optional  3.3     3.4.0   http://www.sqlite.org/
-ZLib [*]        optional  1.2     1.2.3   http://www.zlib.net/
+ZLib [2]        optional  1.2     1.2.3   http://www.zlib.net/
 GNU bzip2       optional  1.0     1.0.4   http://www.bzip2.org/
-Lua [+]         optional  -       5.0     http://www.lua.org/
+Lua [3]         optional  -       5.0     http://www.lua.org/
 GNU gettext     optional  1.16    1.16.1  http://www.gnu.org/software/gettext/
 GNU iconv       optional  1.11    1.11    http://www.gnu.org/software/libiconv/
 DMalloc         optional  5       5.5.2   http://dmalloc.com/
@@ -43,8 +43,9 @@ Linux KeyUtils  optional  1.2     1.2     http://people.redhat.com/~dhowells/key
 Linux ELFUtils  optional  ?       0.127   ?
 --------------- --------- ------- ------- -------------------------------------
 
-[*] modified copy shipped with RPM distribution
-[+] modified copy shipped with RPM distribution, external one (still) not supported
+[1] db:   modified copy bundled with RPM, stock external one not supported
+[2] zlib: modified copy bundled with RPM, stock external one not recommended
+[3] lua:  modified copy bundled with RPM, stock external one not supported
 
 Run-Time
 --------
