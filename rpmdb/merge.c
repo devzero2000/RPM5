@@ -1,5 +1,4 @@
 /*@-bounds -mustmod -sizeoftype @*/
-#ifndef __APPLE__
 /*-
  * Copyright (c) 1992, 1993
  *	The Regents of the University of California.  All rights reserved.
@@ -205,7 +204,7 @@ setup(unsigned char *list1, /*@out@*/ unsigned char *list2,
  * Arguments are as for qsort.
  */
 int
-mergesort(void *base, size_t nmemb, size_t size,
+rpm_mergesort(void *base, size_t nmemb, size_t size,
 		int (*cmp) (const void *, const void *))
 {
 	register int i, sense;
@@ -354,7 +353,4 @@ COPY:	    			b = t;
 /*@=usereleased@*/
 	return (0);
 }
-#else
-/* mergesort is implemented in System on Mac OS X */
-#endif /* __APPLE__ */
 /*@=bounds =mustmod =sizeoftype @*/

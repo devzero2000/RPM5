@@ -1175,18 +1175,14 @@ int rpmdbRebuild(/*@null@*/ const char * prefix, /*@null@*/ rpmts ts,
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/;
 
-#ifndef __APPLE__
 /**
  * Mergesort, same arguments as qsort(2).
  */
 /*@unused@*/
-int mergesort(void *base, size_t nmemb, size_t size,
+int rpm_mergesort(void *base, size_t nmemb, size_t size,
                 int (*cmp) (const void *, const void *))
 	/*@globals errno @*/
 	/*@modifies base, errno @*/;
-#else
-/* mergesort is defined in stdlib.h on Mac OS X */
-#endif /* __APPLE__ */
 
 #ifdef __cplusplus
 }

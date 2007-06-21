@@ -2473,7 +2473,7 @@ static void rpmdbSortIterator(/*@null@*/ rpmdbMatchIterator mi)
 		sizeof(*mi->mi_set->recs), hdrNumCmp);
 /*@=boundsread@*/
 #else
-	mergesort(mi->mi_set->recs, mi->mi_set->count,
+	rpm_mergesort(mi->mi_set->recs, mi->mi_set->count,
 		sizeof(*mi->mi_set->recs), hdrNumCmp);
 #endif
 	mi->mi_sorted = 1;
