@@ -291,10 +291,6 @@ extern int _tolower(int) __THROW	/*@*/;
 #include <err.h>
 #endif
 
-#if HAVE_MALLOC_H && !defined(__LCLINT__)
-#include <malloc.h>
-#endif
-
 #if HAVE_LIBGEN_H
 #include <libgen.h>
 #endif

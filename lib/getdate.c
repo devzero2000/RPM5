@@ -194,10 +194,6 @@ struct timeb {
 #include <stdlib.h>
 #endif
 
-#if HAVE_MALLOC_H && !defined(__LCLINT__)
-#include <malloc.h>
-#endif
-
 /* NOTES on rebuilding getdate.c (particularly for inclusion in CVS
    releases):
 
