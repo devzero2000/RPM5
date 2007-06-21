@@ -3,7 +3,7 @@
  */
 #include "system.h"
 
-#if HAVE_GELF_H
+#if defined(HAVE_GELF_H) && !defined(__FreeBSD__)
 #if LIBELF_H_LFS_CONFLICT
 /* Some implementations of libelf.h/gelf.h are incompatible with
  * the Large File API.
@@ -30,7 +30,7 @@
 #endif
 #endif /* HAVE_GELF_H */
 
-#if HAVE_LIBELF && !HAVE_GELF_GETVERNAUX
+#if defined(HAVE_LIBELF) && !defined(HAVE_GELF_GETVERNAUX) && !defined(__FreeBSD__)
 /* We have gelf.h and libelf, but we don't have some of the
  * helper functions gelf_getvernaux(), gelf_getverneed(), etc.
  * Provide our own simple versions here.
@@ -2799,6 +2799,7 @@ rpmds rpmdsFromPRCO(rpmPRCO PRCO, rpmTag tagN)
  * @param s		elf string (NULL uses "")
  * @param isElf64	is this an ELF64 symbol?
  */
+#if defined(HAVE_GELF_H) && defined(HAVE_LIBELF) && !defined(__FreeBSD__)
 static char * sonameDep(/*@returned@*/ char * t, const char * s, int isElf64)
 	/*@modifies t @*/
 {
@@ -2814,11 +2815,12 @@ static char * sonameDep(/*@returned@*/ char * t, const char * s, int isElf64)
 	(void) stpcpy(t, s);
     return t;
 }
+#endif
 
 int rpmdsELF(const char * fn, int flags,
 		int (*add) (void * context, rpmds ds), void * context)
 {
-#if HAVE_GELF_H && HAVE_LIBELF
+#if defined(HAVE_GELF_H) && defined(HAVE_LIBELF) && !defined(__FreeBSD__)
     Elf * elf;
     Elf_Scn * scn;
     Elf_Data * data;
