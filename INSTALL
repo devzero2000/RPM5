@@ -17,7 +17,7 @@ GNU m4       1.4.0   1.4.9   http://www.gnu.org/software/m4/
 GNU autoconf 2.57    2.61    http://www.gnu.org/software/autoconf/
 GNU automake 1.8     1.10    http://www.gnu.org/software/automake/
 GNU libtool  1.5     1.5.22  http://www.gnu.org/software/libtool/
-GNU gettext  1.16.0  1.16.1  http://www.gnu.org/software/gettext/
+GNU gettext  1.16    1.16.1  http://www.gnu.org/software/gettext/
 ------------ ------- ------- -------------------------------------
 
 To build RPM you will need several other packages:

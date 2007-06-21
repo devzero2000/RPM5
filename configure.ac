@@ -608,6 +608,7 @@ dnl AmigaOS and IXEmul have a fork() dummy
   esac
 
 AC_CHECK_HEADERS(locale.h)
+AM_GNU_GETTEXT_VERSION(0.16)
 AM_GNU_GETTEXT([external])
 
 dnl Checks for header files we can live without.

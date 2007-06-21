@@ -102,7 +102,7 @@ fi
 
 echo "--- rpm"
 $libtoolize --copy --force
-gettextize --copy --force --no-changelog
+autopoint
 aclocal -I m4
 autoheader
 automake -a -c
