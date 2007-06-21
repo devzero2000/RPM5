@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - rse: allow leading whitespaces on %setup and %patch lines in *.spec files
     - rse: resolve portability issue related to double definition of mergesort(3)
     - rse: fix building under UnixWare (blind port)
     - rse: fix building under FreeBSD 7-CURRENT

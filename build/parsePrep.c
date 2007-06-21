@@ -674,6 +674,7 @@ int parsePrep(Spec spec, int verify)
     int nextPart, res, rc;
     StringBuf sb;
     char **lines, **saveLines;
+    char *cp;
 
     if (spec->prep != NULL) {
 	rpmError(RPMERR_BADSPEC, _("line %d: second %%prep\n"), spec->lineNum);
@@ -713,11 +714,13 @@ int parsePrep(Spec spec, int verify)
     /*@-usereleased@*/
     for (lines = saveLines; *lines; lines++) {
 	res = 0;
+	for (cp = *lines; *cp == ' ' || *cp == '\t'; cp++)
+	    ;
 /*@-boundsread@*/
-	if (! strncmp(*lines, "%setup", sizeof("%setup")-1)) {
-	    res = doSetupMacro(spec, *lines);
-	} else if (! strncmp(*lines, "%patch", sizeof("%patch")-1)) {
-	    res = doPatchMacro(spec, *lines);
+	if (! strncmp(cp, "%setup", sizeof("%setup")-1)) {
+	    res = doSetupMacro(spec, cp);
+	} else if (! strncmp(cp, "%patch", sizeof("%patch")-1)) {
+	    res = doPatchMacro(spec, cp);
 	} else {
 	    appendLineStringBuf(spec->prep, *lines);
 	}
