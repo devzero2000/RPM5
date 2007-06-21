@@ -195,7 +195,7 @@ int dodigest(int digestalgo, const char * fn, unsigned char * digest, int asAsci
 		break;
 	    }
 
-#ifdef	MADV_SEQUENTIAL
+#if defined(HAVE_MADVISE) && defined(MADV_SEQUENTIAL)
 	    xx = madvise(mapped, fsize, MADV_SEQUENTIAL);
 #endif
 	}

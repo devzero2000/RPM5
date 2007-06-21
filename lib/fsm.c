@@ -1004,7 +1004,7 @@ static int writeFile(/*@special@*/ /*@partial@*/ FSM_t fsm, int writeData)
 		rdbuf = fsm->rdbuf;
 		fsm->rdbuf = (char *) mapped;
 		fsm->rdlen = nmapped = st->st_size;
-#if defined(MADV_DONTNEED)
+#if defined(HAVE_MADVISE) && defined(MADV_DONTNEED)
 		xx = madvise(mapped, nmapped, MADV_DONTNEED);
 #endif
 	    }
@@ -1036,7 +1036,7 @@ static int writeFile(/*@special@*/ /*@partial@*/ FSM_t fsm, int writeData)
 /*@-branchstate@*/
 	if (mapped != (void *)-1) {
 	    xx = msync(mapped, nmapped, MS_ASYNC);
-#if defined(MADV_DONTNEED)
+#if defined(HAVE_MADVISE) && defined(MADV_DONTNEED)
 	    xx = madvise(mapped, nmapped, MADV_DONTNEED);
 #endif
 /*@-noeffect@*/

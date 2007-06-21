@@ -833,6 +833,7 @@ AC_CHECK_FUNCS(mtrace putenv realpath setenv clearenv)
 AC_CHECK_FUNCS(stpcpy stpncpy strcspn)
 AC_CHECK_FUNCS(strdup strndup strerror strtol strtoul strspn strstr)
 AC_CHECK_FUNCS(sighold sigrelse sigpause sigprocmask sigemptyset sigaddset sigdelset sigsuspend)
+AC_CHECK_FUNCS(madvise)
 
 AC_CHECK_FUNCS(__secure_getenv)
 
