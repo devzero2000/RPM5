@@ -203,7 +203,9 @@ AC_DEFUN([RPM_CHECK_LIB], [
                     if test ".${__rcl_found}" = .no; then
                         for __rcl_dir in ${__rcl_location}/include/$2 ${__rcl_location}/include ${__rcl_location}; do
                             if test -f "${__rcl_dir}/$5"; then
-                                CPPFLAGS="${CPPFLAGS} -I${__rcl_dir}"
+                                if test ".${__rcl_dir}" != "./usr/include"; then
+                                    CPPFLAGS="${CPPFLAGS} -I${__rcl_dir}"
+                                fi
                                 __rcl_found=yes
                                 break
                             fi
@@ -214,7 +216,9 @@ AC_DEFUN([RPM_CHECK_LIB], [
                                 m4_foreach_w([__rcl_lib], [$3], [
                                     if  test -f "${__rcl_dir}/lib[]m4_defn([__rcl_lib]).la" && \
                                         test -d "${__rcl_dir}/.libs"; then
-                                        LDFLAGS="${LDFLAGS} -L${__rcl_dir} -L${__rcl_dir}/.libs"
+                                        if test ".${__rcl_dir}" != "./usr/lib"; then
+                                            LDFLAGS="${LDFLAGS} -L${__rcl_dir} -L${__rcl_dir}/.libs"
+                                        fi
                                         __rcl_found=yes
                                         break
                                     fi
@@ -222,7 +226,9 @@ AC_DEFUN([RPM_CHECK_LIB], [
                                         test -f "${__rcl_dir}/lib[]m4_defn([__rcl_lib]).so" || \
                                         test -f "${__rcl_dir}/lib[]m4_defn([__rcl_lib]).sl" || \
                                         test -f "${__rcl_dir}/lib[]m4_defn([__rcl_lib]).dylib"; then
-                                        LDFLAGS="${LDFLAGS} -L${__rcl_dir}"
+                                        if test ".${__rcl_dir}" != "./usr/lib"; then
+                                            LDFLAGS="${LDFLAGS} -L${__rcl_dir}"
+                                        fi
                                         __rcl_found=yes
                                         break
                                     fi
@@ -238,7 +244,9 @@ AC_DEFUN([RPM_CHECK_LIB], [
                         for __rcl_file in _ `find ${__rcl_location} -name "$5" -type f -print`; do
                             test .${__rcl_file} = ._ && continue
                             __rcl_dir=`echo ${__rcl_file} | sed -e 's;[[^/]]*[$];;' -e 's;\(.\)/[$];\1;'`
-                            CPPFLAGS="${CPPFLAGS} -I${__rcl_dir}"
+                            if test ".${__rcl_dir}" != "./usr/include"; then
+                                CPPFLAGS="${CPPFLAGS} -I${__rcl_dir}"
+                            fi
                             __rcl_found=yes
                             break
                         done
@@ -249,7 +257,9 @@ AC_DEFUN([RPM_CHECK_LIB], [
                                     egrep '\.(a|so|sl|dylib)$'`; do
                                     test .${__rcl_file} = ._ && continue
                                     __rcl_dir=`echo ${__rcl_file} | sed -e 's;[[^/]]*[$];;' -e 's;\(.\)/[$];\1;'`
-                                    LDFLAGS="${LDFLAGS} -L${__rcl_dir}"
+                                    if test ".${__rcl_dir}" != "./usr/lib"; then
+                                        LDFLAGS="${LDFLAGS} -L${__rcl_dir}"
+                                    fi
                                     __rcl_found=yes
                                     break
                                 done
