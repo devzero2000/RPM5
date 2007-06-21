@@ -1,6 +1,9 @@
 
-Development-Time Requirements
-=============================
+REQUIREMENTS
+============
+
+Development-Time
+----------------
 
 --------------- --------- --------------- -------------------------------------
 Component       Component Version Version Component
@@ -14,8 +17,8 @@ GNU libtool     mandatory 1.5     1.5.22  http://www.gnu.org/software/libtool/
 GNU gettext     mandatory 1.16    1.16.1  http://www.gnu.org/software/gettext/
 --------------- --------- ------- ------- -------------------------------------
 
-Build-Time Requirements
-=======================
+Build-Time
+----------
 
 --------------- --------- --------------- -------------------------------------
 Component       Component Version Version Component
@@ -32,6 +35,8 @@ SQLite          optional  3.3     3.4.0   http://www.sqlite.org/
 ZLib [*]        optional  1.2     1.2.3   http://www.zlib.net/
 GNU bzip2       optional  1.0     1.0.4   http://www.bzip2.org/
 Lua [+]         optional  -       5.0     http://www.lua.org/
+GNU gettext     optional  1.16    1.16.1  http://www.gnu.org/software/gettext/
+GNU iconv       optional  1.11    1.11    http://www.gnu.org/software/libiconv/
 DMalloc         optional  5       5.5.2   http://dmalloc.com/
 Electric Fence  optional  2.1     2.1.13  http://perens.com/FreeSoftware/ElectricFence/
 Linux KeyUtils  optional  1.2     1.2     http://people.redhat.com/~dhowells/keyutils/
@@ -41,180 +46,52 @@ Linux ELFUtils  optional  ?       0.127   ?
 [*] modified copy shipped with RPM distribution
 [+] modified copy shipped with RPM distribution, external one (still) not supported
 
-Run-Time Requirements
-=====================
+Run-Time
+--------
 
 --------------- --------- --------------- -------------------------------------
 Component       Component Version Version Component
 Name            Type      Minimum Used    URL
 --------------- --------- ------- ------- -------------------------------------
-GNU gzip        optional  -       -       e.g. http://www.gzip.org/
-GNU bzip2       optional  -       -       e.g. http://www.bzip2.org/
-GNU tar         optional  -       -       e.g. http://www.gnu.org/software/tar/
-GNU cpio        optional  -       -       e.g. http://www.gnu.org/software/cpio/
+GNU gzip        optional  -       -       http://www.gzip.org/
+GNU bzip2       optional  -       -       http://www.bzip2.org/
+GNU tar         optional  -       -       http://www.gnu.org/software/tar/
+GNU cpio        optional  -       -       http://www.gnu.org/software/cpio/
+GnuPG           optional  -       -       http://www.gnupg.org/
+PGP2            optional  2.6.3   2.6.3   http://www.pgpi.org/
+PGP6            optional  6.5.8   6.5.8   http://www.pgpi.org/
 --------------- --------- ------- ------- -------------------------------------
 
-To build RPM 5 from CVS sources
--------------------------------
+PROCEDURE
+=========
+
+Development-Time
+----------------
 
 $ ./devtool checkout
 $ ./devtool autogen
-$ ./devtool configure [...]
+$ [make dist]
+
+Build-Time
+----------
+
+$ ./configure --prefix=<prefix> [...]
 $ make
+$ make install [DESTDIR=...]
 
-To build RPM you will need several other packages:
---------------------------------------------------
+Run-Time
+--------
 
-The zlib library for compression support. You might also need/want
-the zip executable for java jar dependency analysis. All available from
-    ftp://ftp.freesoftware.com/pub/infozip/zlib/
-
-The Berkeley db1 and db3 libraries. These are available from
-    http://www.sleepycat.com.
-
-Minimal instructions for building db3 are (see a Red Hat dbN package
-spac file for more conmplete details)
-    cd build_unix 
-    ../dist/configure --enable-compat185
-    make
-    make install
-
-It may be desired to install bzip2 and gzip so that RPM can use these
-formats.  Gzip, is necessary to build packages that contain compressed
-tar balls, these are quite common on the Internet.
-These are availible from
-    http://www.digistar.com/bzip2/index.html
-    http://sources.redhat.com/bzip2/
-
-For best results you should compile with GCC and GNU Make.  Users have
-reported difficulty with other build tools (any patches to lift these
-dependencies are welcome). Both GCC and GNU Make available from 
-    http://www.gnu.org/
-
-If National Language Support (NLS) is desired you will need gnu
-gettext (currently this is required to build rpm but we hope to 
-lift this requirement soon), available from 
-    http://www.gnu.org/
-
-If you are going to hack the sources (or compile from anonymous cvs
-retrevial) you will need most of the GNU development tools including:
-autoconf, automake, gettext, libtool, makeinfo, perl, GNU m4, GNU tar
-available from 
-    http://www.gnu.org/
-
-If you plan on using cryptographic signatures you will need a version
-of GPG.
-
-Since Red Hat 6.1 uses gnupg for signing packages, previous releases were
-signed with pgp-2.6.3. Pgp5 can be used instead of pgp-2.6.3 signatures iff
-RSA signature's are used.
-
-These can be downloaded (for US citizens) from:
-    http://web.mit.edu/network/pgp.html
-    http://www.gnu.org/
-    http://www.pgpi.com/
-
-Note: rpm-4.0 on Red Hat 7.0 is currently using
-    zlib-1.1.3
-    db1-1.85
-    db3-3.1.14
-    bzip2-1.0.1
-    gnupg-1.0.2
-You may use the tarballs within those packagese, and examine the patches and
-spec files for details about how to build the libraries needed by rpm.
-
-
-To compile RPM:
---------------
-
-RPM uses a small shell script to run: libtool, autoconf,
-automake. This step should not be necessary if you are running a
-released version of rpm, however if you have gotten the rpm sources
-using anonymous CVS or via anonymous FTP, you should probably regenerate
-intermediate files by re-running the autogen.sh script.
-
-The autogen.sh script checks that the required tools are installed.
-While other versions of the tools may be used, the script checks for
-the same version of the tools that was used at the time the tarball
-was produced. Edit the top of the script to change version numbers if you wish.
-
-The autogen.sh script also runs configure for you and passes the command line
-arguments to configure.  To run it without configure type:
-
-    ./autogen.sh --noconfigure
-
-If your libraries are not in a standard place you will need to change
-configures environment.  These options can be passed directly to
-configure or to autogen.sh which will pass them through to configure.
-
-Here is an example:
-    LIBS='-L/opt/libz/ -L/opt/BerkeleyDB/lib/' \
-    CPPFLAGS='-I/opt/libz/ -I/opt/BerkeleyDB/include' \
-    ./configure
-
-If you have build tools stored in non standard places you should check
-the resulting Makefile to be sure that the tools you wish to use have
-been correctly identified.  The configure script will modify your path
-before looking for the build tools and it may find versions of these
-tools that you do not want.  It uses the following search path
-
-    MYPATH="/bin:/usr/bin:/usr/local/bin:$PATH:/opt/gnu/bin"
-
-now build the system with:
-
-    make
-
-and then install with:
-
-    make install
-
-If you wish to make a tarfile of the binaries so that you may easily
-install on machines with OS package managers other then rpm (ed note:
-what about putting gzip and bzip2 in the tar, modifying the
-/etc/rpmrc?):
-
-    make tar
-
-when installing. If you do install from a tarball, you will need to do
-something like
-
-    mkdir /var/lib/rpm
-    rpm --initdb
-
-to initialize your rpm database.
-
-Finally, if you wish to prepare an rpm source tar ball, you should do
+$ <prefix>/bin/rpm --initdb
+$ <prefix>/bin/rpm --rebuild foo.src.rpm
+$ <prefix>/bin/rpm -Uvh /path/to/binary/package/foo.*.rpm
+$ <prefix>/bin/rpm -qa
+$ <prefix>/bin/rpm -e foo
 
     make dist
 
-To package RPM:
---------------
-
-After RPM has been installed you can run rpm to build an rpm package.
-Edit the rpm.spec file to mirror any special steps you needed to
-follow to make rpm compile and change the specfile to match your
-taste.  You will need to put the rpm source tar file into the
-rpm/SOURCES directory and we suggest putting the specfile in the
-rpm/SPECS directory, then run rpmbuild -ba rpm.spec.  You will end up
-with two rpms which can be found in rpm/RPMS and rpm/SRPMS.
-
-If you are going to install rpm on machines with OS package managers
-other then rpm, you may choose to install the base rpm package via a
-cpio instead of a tar file.  Instead of running "make tar" during the
-build process, as discribed above, use the base rpm packages to create
-a cpio.  After the rpms have been created run rpm2cpio on the base rpm
-package, this will give you a cpio package which can then use to
-install rpm on a new system.
-
-    rpm2cpio rpm-4.0-1.solaris2.6-sparc.rpm > rpm-4.0-1.solaris2.6-sparc.cpio
-
-
-Non Linux Configuration Issues:
-------------------------------
-
-
-OS dependencies:
-----------------
+OS DEPENDENCIES
+===============
 
 Under Red Hat Linux all libraries (in fact all files distributed with
 the OS) are under RPM control and this section is not an issue.
