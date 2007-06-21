@@ -1,5 +1,21 @@
 #!/bin/sh
 
+#   establish a secure temporary directory 
+{
+    tmpdir=""
+    trap 'exit_status=$?; { test -z "$tmpdir" || test ! -d "$tmpdir" || rm -rf "$tmpdir"; } && exit $exit_status' 0 1 2 13 15
+}
+{
+    tmpdir="`(umask 077 && mktemp -d './.autogenXXXXXX') 2>/dev/null`"
+    [ -n "$tmpdir" ] && [ -d "$tmpdir" ]
+} || {
+    tmpdir="./.autogen$$"
+    (umask 077 && mkdir "$tmpdir") 2>/dev/null
+} || {
+    echo "$0: cannot create a temporary directory" 1>&2
+    exit 1
+}
+
 export CFLAGS
 export LDFLAGS
 
@@ -25,6 +41,22 @@ case $libtoolize in
     *)  libtoolize=libtoolize
     esac
 esac
+
+#   run GNU gettext's gettextize(1) in batch mode
+gettextize () {
+    _gettextize="`which gettextize 2>/dev/null`"
+    case "$_gettextize" in
+        /* ) ;;
+        *  ) echo "$0: gettextize: not found" 1>&2; exit 1 ;;
+    esac
+    perl -e '
+        my $sh = join("", <STDIN>);
+        $sh =~ s|read\s+dummy\s*<\s*/dev/tty||s;
+        $sh =~ s|if\s+\$doit;\s+then\s+echo\s+"\$please"|if false; then|s;
+        print STDOUT $sh;
+    ' <$_gettextize >$tmpdir/gettextize.sh
+    sh $tmpdir/gettextize.sh ${1+"$@"}
+}
 
 [ "`$libtoolize --version | head -1`" != "$LTV" ] && echo "$USAGE" # && exit 1
 [ "`autoconf --version | head -1`" != "$ACV" ] && echo "$USAGE" # && exit 1
