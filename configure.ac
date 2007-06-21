@@ -1,27 +1,40 @@
+dnl ##
+dnl ## configure.ac -- RPM Autoconf specification
+dnl ##
+
+dnl ##
+dnl ## REQUIREMENTS & INITIALIZATION
+dnl ##
+
 AC_PREREQ(2.57)
-AC_INIT(rpm, 5.0, rpm-devel@rpm5.org)
+AC_INIT(rpm, 5.0, [rpm-devel@rpm5.org])
 AC_CANONICAL_TARGET
 AC_CONFIG_SRCDIR([rpmqv.c])
 AC_CONFIG_HEADERS([config.h])
-
 AM_INIT_AUTOMAKE([foreign])
 
-# Library code modified:                              REVISION++
-# Interfaces changed/added/removed:   CURRENT++       REVISION=0
-# Interfaces added:                             AGE++
-# Interfaces removed:                           AGE=0
-#
-AC_SUBST(LT_CURRENT, 5)
+dnl # Library code modified:                              REVISION++
+dnl # Interfaces changed/added/removed:   CURRENT++       REVISION=0
+dnl # Interfaces added:                             AGE++
+dnl # Interfaces removed:                           AGE=0
+AC_SUBST(LT_CURRENT,  5)
 AC_SUBST(LT_REVISION, 0)
-AC_SUBST(LT_AGE, 0)
+AC_SUBST(LT_AGE,      0)
 
-dnl Set of available languages.
+dnl # set of available languages.
 ALL_LINGUAS="cs da de fi fr gl is ja ko no pl pt pt_BR ro ru sk sl sr sv tr uk"
+
+dnl ##
+dnl ## PLATFORM-SPECIFIC CHECKS
+dnl ##
 
 AC_AIX
 AC_MINIX
 
-dnl Checks for programs.
+dnl ##
+dnl ## TOOL-CHAIN CHECKS
+dnl ##
+
 AC_PROG_AWK
 AC_PROG_CC
 AC_PROG_CPP
@@ -34,7 +47,8 @@ AC_PROG_YACC
 AS=${AS-as}
 AC_SUBST(AS)
 
-if test "$ac_cv_c_compiler_gnu" = yes; then
+dnl # GCC specifics
+if test ".$ac_cv_c_compiler_gnu" = .yes; then
     CFLAGS="$CFLAGS -fPIC -DPIC"
     CFLAGS="$CFLAGS -D_GNU_SOURCE -D_REENTRANT"
     CFLAGS="$CFLAGS -Wall -Wpointer-arith -Wstrict-prototypes -Wmissing-prototypes -Wno-char-subscripts"
@@ -42,9 +56,12 @@ if test "$ac_cv_c_compiler_gnu" = yes; then
         *-*-linux* ) CFLAGS="$CFLAGS -fpie"; LDFLAGS="$LDFLAGS -pie" ;;
     esac
 fi
-export CFLAGS LDFLAGS
-
 AC_PROG_GCC_TRADITIONAL
+
+dnl ##
+dnl ## API CHECKS
+dnl ##
+
 AC_SYS_LARGEFILE
 
 dnl Does this platform require array notation to assign to a va_list?
@@ -1294,34 +1311,32 @@ AC_SUBST(testdir)
 AC_SUBST(INCPATH)
 AC_SUBST(RPM)
 
+dnl ##
+dnl ## OUTPUT HANDLING
+dnl ##
+
+dnl # explicit list of sub-directories to step into for additional "configure" scripts
+dnl # (RPM_CHECK_LIB extends this implicitly, too)
 AC_CONFIG_SUBDIRS()
 
+dnl # explicit list of files to generate
 AC_CONFIG_FILES([ po/Makefile.in
-	Doxyfile Makefile rpmrc macros platform rpmpopt rpm.spec
-	rpmio/Makefile rpmdb/Makefile lib/Makefile build/Makefile
-	scripts/Makefile
-	scripts/macros.perl scripts/macros.php scripts/macros.python
-	tools/Makefile
-	misc/Makefile
-	doc/Makefile
-	doc/manual/Makefile
-	doc/fr/Makefile
-	doc/ja/Makefile
-	doc/ko/Makefile
-	doc/pl/Makefile
-	doc/ru/Makefile
-	doc/sk/Makefile
-	python/Makefile
-	python/rpm/Makefile
- 	lua/Makefile
-  ])
-AC_CONFIG_COMMANDS([default],[
-    echo timestamp >stamp-h.in
-    if test -d popt; then
-        echo timestamp >popt/stamp-h.in
-    fi
+    Doxyfile Makefile rpmrc macros platform rpmpopt rpm.spec
+    rpmio/Makefile rpmdb/Makefile lib/Makefile build/Makefile
+    scripts/Makefile scripts/macros.perl scripts/macros.php
+    scripts/macros.python tools/Makefile misc/Makefile doc/Makefile
+    doc/manual/Makefile doc/fr/Makefile doc/ja/Makefile doc/ko/Makefile
+    doc/pl/Makefile doc/ru/Makefile doc/sk/Makefile python/Makefile
+    python/rpm/Makefile lua/Makefile
+])
+
+dnl # explicit list of commands to execute
+AC_CONFIG_COMMANDS([default], [
     if test "$with_perl" = yes && test -d perl; then
         ( cd perl && perl Makefile.PL )
     fi
 ],[])
+
+dnl # final step: generate output
 AC_OUTPUT
+
