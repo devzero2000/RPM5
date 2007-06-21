@@ -81,12 +81,8 @@ static char *doPatch(Spec spec, int c, int strip, const char *db,
     const char *patch;
 
     *t = '\0';
-    if (db) {
-#if HAVE_OLDPATCH_21 == 0
-	t = stpcpy(t, "-b ");
-#endif
-	t = stpcpy( stpcpy(t, "--suffix "), db);
-    }
+    if (db)
+	t = stpcpy( stpcpy(t, "-b --suffix "), db);
     if (subdir)
 	t = stpcpy( stpcpy(t, "-d "), subdir);
     if (fuzz) {
