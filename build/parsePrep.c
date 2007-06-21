@@ -68,7 +68,7 @@ static int checkOwners(const char * urlfn)
 /*@-boundswrite@*/
 /*@observer@*/
 static char *doPatch(Spec spec, int c, int strip, const char *db,
-		     int reverse, int removeEmpties, int fuzz)
+		     int reverse, int removeEmpties, int fuzz, const char *subdir)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/
 {
@@ -78,6 +78,7 @@ static char *doPatch(Spec spec, int c, int strip, const char *db,
     struct Source *sp;
     rpmCompressedMagic compressed = COMPRESSED_NOT;
     int urltype;
+    const char *patch;
 
     *t = '\0';
     if (db) {
@@ -86,6 +87,8 @@ static char *doPatch(Spec spec, int c, int strip, const char *db,
 #endif
 	t = stpcpy( stpcpy(t, "--suffix "), db);
     }
+    if (subdir)
+	t = stpcpy( stpcpy(t, "-d "), subdir);
     if (fuzz) {
 	t = stpcpy(t, "-F ");
 	sprintf(t, "%10.10d", fuzz);
@@ -129,6 +132,10 @@ static char *doPatch(Spec spec, int c, int strip, const char *db,
 	/*@notreached@*/ break;
     }
 
+    patch = rpmGetPath("%{__patch}", NULL);
+    if (strcmp(patch, "%{__patch}") == 0)
+        patch = "patch";
+
     if (compressed) {
 	const char *zipper;
 
@@ -153,22 +160,23 @@ static char *doPatch(Spec spec, int c, int strip, const char *db,
 
 	sprintf(buf,
 		"echo \"Patch #%d (%s):\"\n"
-		"%s -d < '%s' | patch -p%d %s -s\n"
+		"%s -d < '%s' | %s -p%d %s -s\n"
 		"STATUS=$?\n"
 		"if [ $STATUS -ne 0 ]; then\n"
 		"  exit $STATUS\n"
 		"fi",
 		c, /*@-unrecog@*/ (const char *) basename(fn), /*@=unrecog@*/
 		zipper,
-		fn, strip, args);
+		fn, patch, strip, args);
 	zipper = _free(zipper);
     } else {
 	sprintf(buf,
 		"echo \"Patch #%d (%s):\"\n"
-		"patch -p%d %s -s < '%s'", c, (const char *) basename(fn),
-		strip, args, fn);
+		"%s -p%d %s -s < '%s'", c, (const char *) basename(fn),
+		patch, strip, args, fn);
     }
 
+    patch = _free(patch);
     Lurlfn = _free(Lurlfn);
     return buf;
 }
@@ -194,6 +202,7 @@ static const char *doUntar(Spec spec, int c, int quietly)
     struct Source *sp;
     rpmCompressedMagic compressed = COMPRESSED_NOT;
     int urltype;
+    const char *tar;
 
     for (sp = spec->sources; sp != NULL; sp = sp->next) {
 	if ((sp->flags & RPMFILE_SOURCE) && (sp->num == c)) {
@@ -233,6 +242,10 @@ static const char *doUntar(Spec spec, int c, int quietly)
 	/*@notreached@*/ break;
     }
 
+    tar = rpmGetPath("%{_tarbin}", NULL);
+    if (strcmp(tar, "%{_tarbin}") == 0)
+        tar = "tar";
+
     if (compressed != COMPRESSED_NOT) {
 	const char *zipper;
 	int needtar = 1;
@@ -267,8 +280,13 @@ static const char *doUntar(Spec spec, int c, int quietly)
 	*t++ = '\'';
 	t = stpcpy(t, fn);
 	*t++ = '\'';
-	if (needtar)
-	    t = stpcpy( stpcpy( stpcpy(t, " | tar "), taropts), " -");
+	if (needtar) {
+	    t = stpcpy(t, " | ");
+	    t = stpcpy(t, tar);
+	    t = stpcpy(t, " ");
+	    t = stpcpy(t, taropts);
+	    t = stpcpy(t, " -");
+        }
 	t = stpcpy(t,
 		"\n"
 		"STATUS=$?\n"
@@ -277,11 +295,14 @@ static const char *doUntar(Spec spec, int c, int quietly)
 		"fi");
     } else {
 	buf[0] = '\0';
-	t = stpcpy( stpcpy(buf, "tar "), taropts);
+	t = stpcpy(buf, tar);
+	t = stpcpy(t, " ");
+	t = stpcpy(t, taropts);
 	*t++ = ' ';
 	t = stpcpy(t, fn);
     }
 
+    tar = _free(tar);
     Lurlfn = _free(Lurlfn);
     return buf;
 }
@@ -457,6 +478,7 @@ static int doPatchMacro(Spec spec, char *line)
 		fileSystem, internalState  @*/
 {
     char *opt_b;
+    char *opt_d;
     int opt_P, opt_p, opt_R, opt_E, opt_F;
     char *s;
     char buf[BUFSIZ], *bp;
@@ -466,6 +488,7 @@ static int doPatchMacro(Spec spec, char *line)
     memset(patch_nums, 0, sizeof(patch_nums));
     opt_P = opt_p = opt_R = opt_E = opt_F = 0;
     opt_b = NULL;
+    opt_d = NULL;
     patch_index = 0;
 
     if (! strchr(" \t\n", line[6])) {
@@ -518,6 +541,15 @@ static int doPatchMacro(Spec spec, char *line)
 			spec->lineNum, spec->line);
 		return RPMERR_BADSPEC;
 	    }
+	} else if (!strcmp(s, "-d")) {
+	    /* subdirectory */
+	    opt_d = strtok(NULL, " \t\n");
+	    if (! opt_d) {
+		rpmError(RPMERR_BADSPEC,
+			_("line %d: Need arg to %%patch -d: %s\n"),
+			spec->lineNum, spec->line);
+		return RPMERR_BADSPEC;
+	    }
 	} else if (!strncmp(s, "-p", sizeof("-p")-1)) {
 	    /* unfortunately, we must support -pX */
 	    if (! strchr(" \t\n", s[2])) {
@@ -556,14 +588,14 @@ static int doPatchMacro(Spec spec, char *line)
     /* All args processed */
 
     if (! opt_P) {
-	s = doPatch(spec, 0, opt_p, opt_b, opt_R, opt_E, opt_F);
+	s = doPatch(spec, 0, opt_p, opt_b, opt_R, opt_E, opt_F, opt_d);
 	if (s == NULL)
 	    return RPMERR_BADSPEC;
 	appendLineStringBuf(spec->prep, s);
     }
 
     for (x = 0; x < patch_index; x++) {
-	s = doPatch(spec, patch_nums[x], opt_p, opt_b, opt_R, opt_E, opt_F);
+	s = doPatch(spec, patch_nums[x], opt_p, opt_b, opt_R, opt_E, opt_F, opt_d);
 	if (s == NULL)
 	    return RPMERR_BADSPEC;
 	appendLineStringBuf(spec->prep, s);

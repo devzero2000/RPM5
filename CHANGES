@@ -1,4 +1,6 @@
 4.5 -> 5.0:
+    - rse: allow actually used tar(1) and patch(1) tools to be set via %__tar and %__patch
+    - rse: add support for patch(1)'s "-d" option to internal macro %patch
     - fray: allow -bb --short-circuit
     - rse: allow leading whitespaces on %setup and %patch lines in *.spec files
     - rse: resolve portability issue related to double definition of mergesort(3)
