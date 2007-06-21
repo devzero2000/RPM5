@@ -840,7 +840,7 @@ dnl
 dnl Auto-detect whether perl bindings should be built.
 dnl
 withval=auto
-AC_ARG_WITH(perl,   [  --with-perl             build rpm perl bindings ])
+AC_ARG_WITH(perl, AS_HELP_STRING([--with-perl], [build with RPM Perl language bindings]))
 WITH_PERL_VERSION=$withval
 if test "$WITH_PERL_VERSION" != no ; then
   WITH_PERL_SUBDIR=perl
@@ -857,7 +857,7 @@ dnl
 dnl Auto-detect which python bindings should be built.
 dnl
 withval=auto
-AC_ARG_WITH(python, [  --with-python           build rpm python bindings ])
+AC_ARG_WITH(python, AS_HELP_STRING([--with-python], [build with RPM Python language bindings]))
 
 WITH_PYTHON_VERSION=$withval
 if test $withval = auto ; then
@@ -939,7 +939,7 @@ dnl
 dnl Auto-detect whether doxygen generated API docs should be included.
 dnl
 withval=auto
-AC_ARG_WITH(apidocs, [  --with-apidocs          build rpm API docs ])
+AC_ARG_WITH(apidocs, AS_HELP_STRING([--with-apidocs], [build RPM API documentation]))
 
 if test $withval = auto -a $__DOXYGEN != no ; then
   withval=yes
@@ -961,7 +961,7 @@ case "$target" in
     *-*-linux*) with_selinuxval=yes ;;
 esac
 withval=${with_selinuxval}
-AC_ARG_WITH(selinux, [  --with-selinux          build with selinux support ])
+AC_ARG_WITH(selinux, AS_HELP_STRING([--with-selinux], [build RPM with SELinux support]))
 if test $withval != no ; then
   AC_DEFINE(WITH_SELINUX, 1, [Build with selinux support?])
   WITH_SELINUX_LIB="-lselinux"
