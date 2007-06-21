@@ -35,8 +35,8 @@ dnl ##        <lib-function-name>,    -- [$4] e.g. BZ2_bzlibVersion
 dnl ##        <lib-header-filename>,  -- [$5] e.g. bzlib.h
 dnl ##        <with-arg-default>[,    -- [$6] e.g. yes,external:internal:none
 dnl ##        <internal-subdir>[,     -- [$7] e.g. lib/bzip2
-dnl ##        <success-action>[,      -- [$8] e.g. AC_DEFINE(USE_BZIP2, 1, [...])
-dnl ##        <failure-action>        -- [$9] e.g. AC_ERROR([...])
+dnl ##        <action-success>[,      -- [$8] e.g. AC_DEFINE(USE_BZIP2, 1, [...])
+dnl ##        <action-failure>        -- [$9] e.g. AC_ERROR([...])
 dnl ##    ]]])
 dnl ##
 dnl ##  - Makefile.in:
@@ -50,16 +50,21 @@ dnl ##    LDFLAGS                    = @LDFLAGS@
 dnl ##    LIBS                       = @LIBS@
 dnl ##
 dnl ##  - CLI:
-dnl ##    $ ./configure --with-<lib-tag-name>[=<arg>] [...]
-dnl ##    <arg>            ::= "no"
-dnl ##                       | "yes"
-dnl ##                       | <location-spec>
-dnl ##    <location-spec>  ::= <directory-path>
-dnl ##                       | <location-spec> ":" <location-spec>
-dnl ##                       | "external"   /* arbitrary system path */
-dnl ##                       | "internal"   /* <internal-subdir> only */
-dnl ##                       | "none"       /* no default error action if library not found */
-dnl ##    <directory-path> ::= [...]        /* valid argument for test(1) option "-d" */
+dnl ##    $ ./configure \
+dnl ##      --with-<lib-tag-name>[=<with-arg>]
+dnl ##      [...]
+dnl ##
+dnl ##  SYNTAX:
+dnl ##    <with-arg>           ::= <with-arg-mode> |   <with-arg-location>
+dnl ##    <with-arg-default>   ::= <with-arg-mode> "," <with-arg-location>
+dnl ##    <with-arg-mode>      ::= "yes" | "no"
+dnl ##    <with-arg-location>  ::= <with-arg-location> ":" <with-arg-location>
+dnl ##                           | <directory-path>
+dnl ##                           | "external"
+dnl ##                           | "internal"
+dnl ##                           | "none"
+dnl ##    <directory-path>     ::= [...] /* valid arg for test(1) option "-d" */
+dnl ##
 dnl ##
 
 AC_DEFUN([RPM_CHECK_LIB], [
@@ -335,10 +340,10 @@ AC_DEFUN([RPM_CHECK_LIB], [
     RPM_CHECK_LIB_LOCATION="${__rcl_location_last}"
     if test ".${with_$2}" = .yes; then
         AC_DEFINE([WITH_]m4_translit([$2],[a-z],[A-Z]), 1, [Define as 1 if building with $1 library])
-        dnl # support optional <success-action>
+        dnl # support optional <action-success>
         m4_if([$8],, :, [$8])
     else
-        dnl # support optional <failure-action>
+        dnl # support optional <action-failure>
         m4_if([$9],, [
             if  test ".${RPM_CHECK_LIB_LOCATION}" != . && \
                 test ".${RPM_CHECK_LIB_LOCATION}" != .none; then
