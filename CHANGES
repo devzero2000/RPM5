@@ -1,4 +1,6 @@
 4.5 -> 5.0:
+    - rse: fix building under FreeBSD 7-CURRENT
+    - rse: fix building under NetBSD 3.1
     - rse: partially cleaned up the "configure.ac" scripts.
     - rse: improve Autoconf glue to flexibly build against third-party libraries (RPM_CHECK_LIB)
     - jbj: collect CentOS5 redhat-rpm-config changes for reference composting.
