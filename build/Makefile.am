@@ -18,7 +18,7 @@ INCLUDES = -I. \
 LIBS =
 
 pkgincdir = $(pkgincludedir)
-pkginc_HEADERS = rpmbuild.h rpmfile.h rpmspec.h
+pkginc_HEADERS = rpmbuild.h rpmspec.h
 noinst_HEADERS = buildio.h
 
 LDFLAGS = -L$(RPM_BUILD_ROOT)$(usrlibdir) -L$(DESTDIR)$(usrlibdir)
@@ -40,13 +40,8 @@ if HAVE_LD_VERSION_SCRIPT
 librpmbuild_la_LDFLAGS += -Wl,--version-script=$(srcdir)/librpmbuild.vers
 endif
 
-rpmfile.h:
-	@ln -sf $(top_builddir)/file/src/file.h $@
-
-files.c rpmfc.c: rpmfile.h
-
 clean-local:
-	rm -f *.o rpmfile.h # .created $(FILELOBJS)
+	rm -f *.o # .created $(FILELOBJS)
 
 #BUILT_SOURCES = rpmbuild.lcd
 
