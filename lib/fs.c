@@ -170,7 +170,11 @@ static int getFilesystemList(void)
 	getmntinfo_r(&mounts, flags, &mntCount, &bufSize);
 #   elif HAVE_GETMNTINFO
     /* This is Mac OS X */
+#if defined(__NetBSD__)
+    struct statvfs * mounts = NULL;
+#else
     struct statfs * mounts = NULL;
+#endif
     int mntCount = 0, flags = MNT_NOWAIT;
     int nextMount = 0;
 

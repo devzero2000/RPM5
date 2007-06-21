@@ -30,7 +30,7 @@ struct __dirstream {
 typedef struct __dirstream *	AVDIR;
 typedef struct __dirstream *	DAVDIR;
 #else
-# if defined(__FreeBSD__)
+# if defined(__FreeBSD__) || defined(__NetBSD__)
 typedef struct __dirstream *	AVDIR;
 typedef struct __dirstream *	DAVDIR;
 #else	/* __FreeBSD__ */
