@@ -1295,7 +1295,8 @@ AC_SUBST(RPM)
 
 AC_CONFIG_SUBDIRS()
 
-AC_CONFIG_FILES([ Doxyfile Makefile rpmrc macros platform rpmpopt rpm.spec
+AC_CONFIG_FILES([ po/Makefile.in
+	Doxyfile Makefile rpmrc macros platform rpmpopt rpm.spec
 	rpmio/Makefile rpmdb/Makefile lib/Makefile build/Makefile
 	scripts/Makefile
 	scripts/macros.perl scripts/macros.php scripts/macros.python
