@@ -1,136 +1,55 @@
 #!/bin/sh
 
-#   establish a secure temporary directory 
-{
-    tmpdir=""
-    trap 'exit_status=$?; { test -z "$tmpdir" || test ! -d "$tmpdir" || rm -rf "$tmpdir"; } && exit $exit_status' 0 1 2 13 15
-}
-{
-    tmpdir="`(umask 077 && mktemp -d './.autogenXXXXXX') 2>/dev/null`"
-    [ -n "$tmpdir" ] && [ -d "$tmpdir" ]
-} || {
-    tmpdir="./.autogen$$"
-    (umask 077 && mkdir "$tmpdir") 2>/dev/null
-} || {
-    echo "$0: cannot create a temporary directory" 1>&2
-    exit 1
-}
-
-export CFLAGS
-export LDFLAGS
-
-LTV="libtoolize (GNU libtool) 1.5.22"
-ACV="autoconf (GNU Autoconf) 2.61"
+#   configure the requirements
 AMV="automake (GNU automake) 1.10"
+ACV="autoconf (GNU Autoconf) 2.61"
+LTV="libtoolize (GNU libtool) 1.5.22"
+GTT="gettextize (GNU gettext-tools) 0.16.1"
 USAGE="
-This script documents the versions of the tools I'm using to build rpm:
-	libtool-1.5.22
-	autoconf-2.61
-	automake-1.10
-Simply edit this script to change the libtool/autoconf/automake versions
-checked if you need to, as rpm should build (and has built) with all
-recent versions of libtool/autoconf/automake.
+To build RPM from plain CVS sources the following
+installed developer tools are mandatory:
+    GNU automake  1.10
+    GNU autoconf  2.61
+    GNU libtool   1.5.22
+    GNU gettext   0.16.1
 "
 
-libtoolize=`which glibtoolize 2>/dev/null`
-case $libtoolize in
-/*) ;;
-*)  libtoolize=`which libtoolize 2>/dev/null`
-    case $libtoolize in
-    /*) ;;
-    *)  libtoolize=libtoolize
-    esac
-esac
-
-#   run GNU gettext's gettextize(1) in batch mode
-gettextize () {
-    _gettextize="`which gettextize 2>/dev/null`"
-    case "$_gettextize" in
+#   wrapper for running GNU libtool's libtoolize(1)
+libtoolize () {
+    _libtoolize=`which glibtoolize 2>/dev/null`
+    case "$_libtoolize" in
         /* ) ;;
-        *  ) echo "$0: gettextize: not found" 1>&2; exit 1 ;;
+        *  ) _libtoolize=`which libtoolize 2>/dev/null`
+             case "$_libtoolize" in
+                 /* ) ;;
+                 *  ) _libtoolize="libtoolize" ;;
+             esac
+             ;;
     esac
-    perl -e '
-        my $sh = join("", <STDIN>);
-        $sh =~ s|read\s+dummy\s*<\s*/dev/tty||s;
-        $sh =~ s|if\s+\$doit;\s+then\s+echo\s+"\$please"|if false; then|s;
-        print STDOUT $sh;
-    ' <$_gettextize >$tmpdir/gettextize.sh
-    sh $tmpdir/gettextize.sh ${1+"$@"}
+    $_libtoolize ${1+"$@"}
 }
 
-[ "`$libtoolize --version | head -1`" != "$LTV" ] && echo "$USAGE" # && exit 1
-[ "`autoconf --version | head -1`" != "$ACV" ] && echo "$USAGE" # && exit 1
-[ "`automake --version | head -1 | sed -e 's/1\.4[a-z]/1.4/'`" != "$AMV" ] && echo "$USAGE" # && exit 1
+#   requirements sanity check
+[ "`automake   --version | head -1`" != "$AMV" ] && echo "$USAGE" # && exit 1
+[ "`autoconf   --version | head -1`" != "$ACV" ] && echo "$USAGE" # && exit 1
+[ "`libtoolize --version | head -1`" != "$LTV" ] && echo "$USAGE" # && exit 1
+[ "`gettextize --version | head -1 | sed -e 's;^.*/\\(gettextize\\);\\1;'`" != "$GTT" ] && echo "$USAGE" # && exit 1
 
-myopts=
-if [ X"$*" = X  -a "X`uname -s`" = "XDarwin" -a -d /opt/local ]; then
-    export myprefix=/opt/local
-    export myopts="--prefix=${myprefix} --disable-nls"
-    export CPPFLAGS="-I${myprefix}/include"
-fi
+echo "===> zlib"
+( cd zlib; sh ./autogen.sh --noconfigure "$@" )
+echo "<=== zlib"
 
-if [ -d popt ]; then
-    (echo "--- popt"; cd popt; sh ./autogen.sh --noconfigure "$@")
-fi
-if [ -d zlib ]; then
-    (echo "--- zlib"; cd zlib; sh ./autogen.sh --noconfigure "$@")
-fi
-if [ -d beecrypt ]; then
-    (echo "--- beecrypt"; cd beecrypt; sh ./autogen.sh --noconfigure "$@")
-fi
-if [ -d elfutils ]; then
-    (echo "--- elfutils"; cd elfutils; sh ./autogen.sh --noconfigure "$@")
-fi
-if [ -d file ]; then
-    (echo "--- file"; cd file; sh ./autogen.sh --noconfigure "$@")
-fi
-if [ -d neon ]; then
-    (echo "--- neon"; cd neon; sh ./autogen.sh "$@")
-fi
-if [ -d syck ]; then
-    (echo "--- syck"; cd syck; sh ./bootstrap "$@")
-fi
-#if [ -d sqlite ]; then
-#    (echo "--- sqlite"; cd sqlite; sh ./autogen.sh --disable-tcl "$@")
-#fi
-if [ -d xar ]; then
-    (echo "--- xar"; cd xar; sh ./autogen.sh "$@")
-fi
-if [ -d yaml ]; then
-    (echo "--- yaml"; cd yaml; sh ./autogen.sh "$@")
-fi
-
-echo "--- rpm"
-$libtoolize --copy --force
-autopoint
+echo "===> rpm"
+echo "---> generate files via GNU libtool (libtoolize)"
+libtoolize --copy --force
+echo "---> generate files via GNU gettext (autopoint)"
+autopoint --force
+echo "---> generate files via GNU autoconf (aclocal, autoheader)"
 aclocal -I m4
 autoheader
+echo "---> generate files via GNU automake (automake)"
 automake -a -c
+echo "---> generate files via GNU autoconf (autoconf)"
 autoconf
+echo "<=== rpm"
 
-if [ "$1" = "--noconfigure" ]; then 
-    exit 0;
-fi
-
-if [ X"$*" = X  -a "X`uname -s`" = "XLinux" ]; then
-    if [ -d /usr/share/man ]; then
-	mandir=/usr/share/man
-	infodir=/usr/share/info
-    else
-	mandir=/usr/man
-	infodir=/usr/info
-    fi
-#    if [ -d /usr/include/nptl ]; then
-#	enable_posixmutexes="--enable-posixmutexes"
-#    else
-#	enable_posixmutexes="--with-mutex=UNIX/fcntl"
-#    fi
-    if [ -d /usr/include/selinux ]; then
-	disable_selinux=
-    else
-	disable_selinux="--without-selinux"
-    fi
-    sh ./configure --prefix=/usr --sysconfdir=/etc --localstatedir=/var --infodir=${infodir} --mandir=${mandir} ${enable_posixmutexes} ${disable_selinux} "$@"
-else
-    ./configure ${myopts} "$@"
-fi
