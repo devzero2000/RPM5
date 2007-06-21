@@ -33,7 +33,7 @@ dnl ##        <lib-tag-name>,         -- [$2] e.g. bzip2
 dnl ##        <lib-link-name>,        -- [$3] e.g. bz2
 dnl ##        <lib-function-name>,    -- [$4] e.g. BZ2_bzlibVersion
 dnl ##        <lib-header-filename>,  -- [$5] e.g. bzlib.h
-dnl ##        <with-arg-default>[,    -- [$6] e.g. external:internal:none
+dnl ##        <with-arg-default>[,    -- [$6] e.g. yes,external:internal:none
 dnl ##        <internal-subdir>[,     -- [$7] e.g. lib/bzip2
 dnl ##        <success-action>[,      -- [$8] e.g. AC_DEFINE(USE_BZIP2, 1, [...])
 dnl ##        <failure-action>        -- [$9] e.g. AC_ERROR([...])
@@ -58,8 +58,7 @@ dnl ##    <location-spec>  ::= <directory-path>
 dnl ##                       | <location-spec> ":" <location-spec>
 dnl ##                       | "external"   /* arbitrary system path */
 dnl ##                       | "internal"   /* <internal-subdir> only */
-dnl ##                       | "abort"      /* explicit error if library not found */
-dnl ##                       | "none"       /* no error if library not found */
+dnl ##                       | "none"       /* no default error action if library not found */
 dnl ##    <directory-path> ::= [...]        /* valid argument for test(1) option "-d" */
 dnl ##
 
@@ -68,19 +67,18 @@ AC_DEFUN([RPM_CHECK_LIB], [
     dnl ## PROLOG
     dnl ##
 
+    dnl # parse <with-arg-default> into default enable mode and default locations
+    m4_define([__rcl_default_enable], [m4_substr([$6], 0, m4_index([$6], [,]))])
+    m4_define([__rcl_default_locations], [m4_substr([$6], m4_eval(m4_index([$6], [,]) + 1))])
+
+    dnl # provide defaults
     if test ".${with_$2+set}" != .set; then
-        dnl # neither "--with-foo[=<arg>]" nor "--without-foo" given
-        dnl # on command line so just assume "--with-foo=<with-arg-default>"
-        with_$2="$6"
+        dnl # initialize to default enable mode
+        with_$2="__rcl_default_enable"
     fi
     if test ".${with_$2}" = .yes; then
-        dnl # map "--with-foo=yes" onto "--with-foo=<with-arg-default>"
-        dnl # unless <with-arg-default> is a destructive "no"
-        with_$2="m4_if([$6], no, yes, [$6])"
-    fi
-    if test ".${with_$2}" = .yes; then
-        dnl # map a final "--with-foo=yes" onto a hard-coded default
-        with_$2="internal:external:abort"
+        dnl # map simple "--with-foo=yes" to an enabled default location path
+        with_$2="__rcl_default_locations"
     fi
 
     dnl ##
@@ -89,22 +87,19 @@ AC_DEFUN([RPM_CHECK_LIB], [
 
     __rcl_result_hint=""
     __rcl_location_$2=""
+    __rcl_location_last=""
     WITH_[]m4_translit([$2],[a-z],[A-Z])[]_SUBDIR=""
     AC_ARG_WITH($2,
-        AS_HELP_STRING([--with-$2=ARG], [build with $1 library [[$6]]]), [dnl
+        AS_HELP_STRING([--with-$2=ARG], [build with $1 library (__rcl_default_enable) (location path: "__rcl_default_locations")]), [dnl
         if test ".${with_$2}" != .no; then
             dnl # iterate over location path specification for searching purposes
-            __rcl_location_last=""
             __rcl_IFS="${IFS}"; IFS=":"
             for __rcl_location in ${with_$2}; do
                 IFS="${__rcl_IFS}"
                 __rcl_location_last="${__rcl_location}"
                 if test ".${__rcl_location}" = .none; then
-                    dnl # no operation in loop, ignore search failure later, too.
+                    dnl # no operation in loop, ignore failure later, too.
                     :
-                elif test ".${__rcl_location}" = .abort; then
-                    dnl # the explicit suicide case
-                    AC_ERROR([unable to find available $1 library])
                 m4_if([$7],,, [ elif test ".${__rcl_location}" = .internal; then
                     dnl # optional support for <internal-subdir> feature
                     m4_define([__rcl_subdir],
@@ -240,7 +235,6 @@ AC_DEFUN([RPM_CHECK_LIB], [
                     fi
                     dnl # in any sub-area
                     if test ".${__rcl_found}" = .no; then
-                        dnl changequote(, )dnl
                         for __rcl_file in _ `find ${__rcl_location} -name "$5" -type f -print`; do
                             test .${__rcl_file} = ._ && continue
                             __rcl_dir=`echo ${__rcl_file} | sed -e 's;[[^/]]*[$];;' -e 's;\(.\)/[$];\1;'`
@@ -261,7 +255,6 @@ AC_DEFUN([RPM_CHECK_LIB], [
                                 done
                             ])
                         fi
-                        dnl changequote([, ])dnl
                         if test ".${__rcl_found}" = .yes; then
                             __rcl_result_hint="external: tree ${__rcl_location}"
                         fi
@@ -298,9 +291,6 @@ AC_DEFUN([RPM_CHECK_LIB], [
                 test ".${__rcl_found_lib}" = .no && __rcl_found="no"
                 dnl # determine final results
                 with_$2=${__rcl_found}
-                if test ".${with_$2}" = .no && test ".${__rcl_location_last}" != .none; then
-                    AC_ERROR([unable to find usable $1 library])
-                fi
             m4_if([$7],,, [ fi ])
             if test ".${with_$2}" = .yes && test ".${__rcl_result_hint}" = .; then
                 dnl # was not found explicitly via searching above, but
@@ -339,7 +329,12 @@ AC_DEFUN([RPM_CHECK_LIB], [
         m4_if([$8],, :, [$8])
     else
         dnl # support optional <failure-action>
-        m4_if([$9],, :, [$9])
+        m4_if([$9],, [
+            if  test ".${RPM_CHECK_LIB_LOCATION}" != . && \
+                test ".${RPM_CHECK_LIB_LOCATION}" != .none; then
+                AC_ERROR([unable to find usable $1 library])
+            fi
+        ], [$9])
     fi
     ${as_unset} RPM_CHECK_LIB_LOCATION
 ])

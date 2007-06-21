@@ -314,12 +314,12 @@ addlib() {
 
 RPM_CHECK_LIB([ZLib], [zlib],
               [z gz], [gzread], [zlib.h],
-              [internal:external:none], [zlib],
+              [yes,internal:external:none], [zlib],
               [AC_CHECK_FUNC(gzseek)], [])
 
 RPM_CHECK_LIB([GNU BZip2], [bzip2],
               [bz2], [BZ2_bzread], [bzlib.h],
-              [external:none], [],
+              [no,external:none], [],
               [], [])
 
 #=================
@@ -524,14 +524,14 @@ AC_SUBST(WITH_LIBDWARF_DEBUGEDIT)
 
 RPM_CHECK_LIB([BeeCrypt], [beecrypt],
               [beecrypt], [mpfprintln], [beecrypt/api.h],
-              [external:internal:abort], [beecrypt],
+              [yes,external:internal], [beecrypt],
               [], [ AC_ERROR([mandatory BeeCrypt library not found]) ])
 
 #=================
 
 RPM_CHECK_LIB([Neon], [neon],
               [neon], [ne_session_create], [ne_session.h],
-              [external:internal:abort], [neon:src:src],
+              [yes,external:internal], [neon:src:src],
               [ if test ".$RPM_CHECK_LIB_LOCATION" = .internal; then
                     AC_DEFINE(HAVE_NEON_NE_GET_RESPONSE_HEADER, 1,
                               [Define to 1 if you have ne_get_response_header() in libneon.])
@@ -549,21 +549,21 @@ RPM_CHECK_LIB([Neon], [neon],
 
 RPM_CHECK_LIB([File (magic)], [file],
               [magic], [magic_open], [magic.h],
-              [external:internal:abort], [file:src:src],
-              ], [ AC_ERROR([mandatory File (magic) library not found]) ])
+              [yes,external:internal], [file:src:src],
+              [], [ AC_ERROR([mandatory File (magic) library not found]) ])
 
 #=================
 
 RPM_CHECK_LIB([Linux keyutils], [keyutils],
               [keyutils], [keyctl_read], [keyutils.h],
-              [external:none], [],
+              [no,external:none], [],
               [], [])
 
 #=================
 
 RPM_CHECK_LIB([POPT], [popt],
               [popt], [poptGetContext], [popt.h],
-              [external:abort], [],
+              [yes,external], [],
               [], [AC_ERROR([mandatory POPT library not found])])
 
 #=================
@@ -572,7 +572,7 @@ DBLIBSRCS=""
 
 RPM_CHECK_LIB([Berkeley-DB], [db],
               [db], [db_create], [db.h],
-              [internal:external:abort], [db3],
+              [yes,internal:external], [db3],
               [ DBLIBSRCS="$DBLIBSRCS db3.c"
                 if test ".$RPM_CHECK_LIB_LOCATION" = .internal; then
                     AC_DEFINE(HAVE_DB_H, 1, [Have <db.h> header])
@@ -588,9 +588,9 @@ AM_CONDITIONAL(WITH_DB_RPC, test ".$with_db_rpc" = .yes)
 
 RPM_CHECK_LIB([SQLite], [sqlite],
               [sqlite3], [sqlite3_open], [sqlite3.h],
-              [external:abort], [],
+              [no,external:none], [],
               [ DBLIBSRCS="$DBLIBSRCS sqlite.c" ],
-              [ AC_ERROR([mandatory SQLite library not found]) ])
+              [])
 
 DBLIBOBJS=`echo $DBLIBSRCS | sed -e "s/\.c/\.lo/g"`
 
@@ -972,7 +972,7 @@ WITH_LUA_SUBDIR_DEF=""
 WITH_LUA_SUBDIR_LIB=""
 RPM_CHECK_LIB([Lua], [lua],
               [lua], [_], [_],
-              [internal:none], [lua:include,local],
+              [no,internal:none], [lua:include,local],
               [ AC_CHECK_LIB(dl, dlopen, [ LIBS="-ldl $LIBS"; WITH_LUA_SUBDIR_LIB="-ldl" ])
                 AC_CHECK_FUNC(dlopen, [ WITH_LUA_SUBDIR_DEF="-DUSE_DLOPEN" ]) ], [])
 AC_SUBST(WITH_LUA_SUBDIR_DEF)
@@ -980,12 +980,12 @@ AC_SUBST(WITH_LUA_SUBDIR_LIB)
 
 RPM_CHECK_LIB([DMalloc], [dmalloc],
               [dmalloc], [dmalloc_malloc], [dmalloc.h],
-              [no], [],
+              [no,external:none], [],
               [], [])
 
 RPM_CHECK_LIB([ElectricFence], [efence],
               [efence], [malloc], [stdlib.h],
-              [no], [],
+              [no,external:none], [],
               [], [])
 
 AC_CHECK_FUNCS(setlocale)
