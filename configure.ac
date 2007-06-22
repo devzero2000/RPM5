@@ -320,8 +320,10 @@ addlib() {
 
 RPM_CHECK_LIB([ZLib], [zlib],
               [z gz], [gzread], [zlib.h],
-              [yes,internal:external:none], [zlib],
-              [AC_CHECK_FUNC(gzseek)], [])
+              [yes,internal], [zlib],
+              [AC_CHECK_FUNC(gzseek)
+               AC_DEFINE(HAVE_ZLIB_H, 1, [Define to 1 if you have zlib.h])
+              ], [])
 
 RPM_CHECK_LIB([GNU BZip2], [bzip2],
               [bz2], [BZ2_bzread], [bzlib.h],
@@ -530,8 +532,9 @@ AC_SUBST(WITH_LIBDWARF_DEBUGEDIT)
 
 RPM_CHECK_LIB([BeeCrypt], [beecrypt],
               [beecrypt], [mpfprintln], [beecrypt/api.h],
-              [yes,external:internal], [beecrypt],
-              [], [ AC_ERROR([mandatory BeeCrypt library not found]) ])
+              [yes,external], [beecrypt],
+              [ CPPFLAGS="${CPPFLAGS} -I${prefix}/include/beecrypt"
+              ], [ AC_ERROR([mandatory BeeCrypt library not found]) ])
 
 #=================
 

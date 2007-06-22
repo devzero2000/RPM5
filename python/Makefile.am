@@ -35,11 +35,12 @@ mylibs= \
 	@WITH_LIBELF_LIB@
 
 LDADD =
+LIBS =
 
 rpmdir = $(pylibdir)/site-packages/rpm
 rpm_LTLIBRARIES = _rpmmodule.la
 
-_rpmmodule_la_LDFLAGS = $(mylibs) $(LIBS) -module -avoid-version
+_rpmmodule_la_LDFLAGS = $(mylibs) -module -avoid-version
 _rpmmodule_la_LIBADD =
 
 _rpmmodule_la_SOURCES = rpmmodule.c header-py.c \
