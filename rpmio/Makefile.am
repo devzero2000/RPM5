@@ -6,7 +6,7 @@ LINT = splint
 
 EXTRA_DIST = tax.c tdir.c tficl.c tfts.c tget.c thkp.c tput.c tglob.c tinv.c tkey.c trpmio.c lookup3.c librpmio.vers
 
-EXTRA_PROGRAMS = tax tdir tfts tget thkp tput tglob tinv tkey trpmio tsw dumpasn1 lookup3
+EXTRA_PROGRAMS = tax tdir tfts tget thkp tmacro tput tglob tinv tkey trpmio tsw dumpasn1 lookup3
 
 INCLUDES = -I. \
 	-I$(top_srcdir) \
@@ -74,10 +74,15 @@ thkp_SOURCES = thkp.c
 thkp_LDFLAGS = @LDFLAGS_STATIC@
 thkp_LDADD = librpmio.la $(top_builddir)/popt/libpopt.la
 
+tmacro_SOURCES = 
+tmacro_LDFLAGS = # @LDFLAGS_STATIC@
+tmacro_LDADD = tmacro.o # librpmio.la $(top_builddir)/popt/libpopt.la
+tmacro.o:  macro.c
+	$(COMPILE) -DDEBUG_MACROS -DEVAL_MACROS -o $@ -c $<
+
 tput_SOURCES = tput.c
 tput_LDFLAGS = @LDFLAGS_STATIC@
 tput_LDADD = librpmio.la $(top_builddir)/popt/libpopt.la
-
 
 tglob_SOURCES = tglob.c
 tglob_LDFLAGS = @LDFLAGS_STATIC@

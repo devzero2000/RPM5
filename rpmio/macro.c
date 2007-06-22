@@ -21,13 +21,21 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 #define rpmError fprintf
+#define	rpmIsVerbose()	(0)
 #define RPMERR_BADSPEC stderr
 #undef	_
 #define	_(x)	x
 
-#define	vmefail()		(exit(1), NULL)
-#define	urlPath(_xr, _r)	*(_r) = (_xr)
+#define	vmefail(_nb)		(exit(1), NULL)
+#define	URL_IS_DASH		1
+#define	URL_IS_PATH		2
+#define	urlPath(_xr, _r)	(*(_r) = (_xr), URL_IS_PATH)
+#define	xisalnum(_c)		isalnum(_c)
+#define	xisalpha(_c)		isalpha(_c)
+#define	xisdigit(_c)		isdigit(_c)
+#
 
 typedef	FILE * FD_t;
 #define Fopen(_path, _fmode)	fopen(_path, "r");
@@ -1148,7 +1156,8 @@ doFoo(MacroBuf mb, int negate, const char * f, size_t fn,
 	else
 	    b = (rpmIsVerbose() ? buf : NULL);
     } else if (STREQ("url2path", f, fn) || STREQ("u2p", f, fn)) {
-	(void)urlPath(buf, (const char **)&b);
+	int ut = urlPath(buf, (const char **)&b);
+	ut = ut;	/* XXX quiet gcc */
 /*@-branchstate@*/
 	if (*b == '\0') b = "/";
 /*@=branchstate@*/
@@ -1577,6 +1586,7 @@ expandMacro(MacroBuf mb)
     return rc;
 }
 
+#if !defined(DEBUG_MACROS)
 /* =============================================================== */
 /* XXX dupe'd to avoid change in linkage conventions. */
 
@@ -1841,6 +1851,7 @@ exit:
 /*@=branchstate@*/
     return rc;
 }
+#endif	/* !defined(DEBUG_MACROS) */
 
 /* =============================================================== */
 
@@ -2032,9 +2043,16 @@ rpmInitMacros(MacroContext mc, const char * macrofiles)
 	/* Glob expand the macro file path element, expanding ~ to $HOME. */
 	ac = 0;
 	av = NULL;
+#if defined(DEBUG_MACROS)
+	ac = 1;
+	av = xmalloc((ac + 1) * sizeof(*av));
+	av[0] = strdup(m);
+	av[1] = NULL;
+#else
 	i = rpmGlob(m, &ac, &av);
         if (i != 0)
 	    continue;
+#endif
 
 	/* Read macros from each file. */
 
@@ -2414,7 +2432,7 @@ if (_debug) fprintf(stderr, "*** RGP result %s\n", result);
 
 #if defined(EVAL_MACROS)
 
-char *rpmMacrofiles = "/usr/lib/rpm/macros:/etc/rpm/macros:~/.rpmmacros";
+const char *rpmMacrofiles = MACROFILES;
 
 int
 main(int argc, char *argv[])
