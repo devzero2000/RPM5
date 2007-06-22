@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - jbj: add patch macro, renamed to Xpatch until fully wired.
     - jbj: remove support for patch-2.1.
     - rse: allow actually used tar(1) and patch(1) tools to be set via %__tar and %__patch
     - rse: add support for patch(1)'s "-d" option to internal macro %patch

@@ -383,6 +383,16 @@ package or when debugging this package.\
 %_package_version	30005
 
 #
+# The patch macro writes 1 line of shell code to (optionally) uncompress
+# a file and aplly using patch(1).
+#
+
+%Xpatch(b:p:P:REz:F:d:) \
+%define patch_file	%{P:%{-P:%{-P*}}%{!-P:%%PATCH0}} \
+%define patch_suffix	%{!-z:%{-b:-b --suffix %{-b*}}}%{!-b:%{-z:--suffix %{-z*}}}%{!-z:%{!-b: }}%{-z:%{-b:%{error:Can't specify both -z(%{-z*}) and -b(%{-b*})}}} \
+  %{uncompress:%patch_file} | %{__patch} %{-p:-p%{-p*}} %{-F:-F%{-F*}} %{-d:-d%{-d*}} %patch_suffix %{-R} %{-E}
+
+#
 # Script gets packaged file list on input and buildroot as first parameter.
 # Returns list of unpackaged files, i.e. files in $RPM_BUILD_ROOT not packaged.
 #

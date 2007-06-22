@@ -1170,9 +1170,7 @@ doFoo(MacroBuf mb, int negate, const char * f, size_t fn,
 	    be++;
 /*@=globs@*/
 	*be++ = '\0';
-#ifndef	DEBUG_MACROS
 	(void) isCompressed(b, &compressed);
-#endif
 	switch(compressed) {
 	default:
 	case 0:	/* COMPRESSED_NOT */
@@ -1189,6 +1187,9 @@ doFoo(MacroBuf mb, int negate, const char * f, size_t fn,
 	    break;
 	case 4:	/* COMPRESSED_LZOP */
 	    sprintf(be, "%%__lzop %s", b);
+	    break;
+	case 5:	/* COMPRESSED_LZMA */
+	    sprintf(be, "%%__lzma %s", b);
 	    break;
 	}
 	b = be;
@@ -2459,10 +2460,11 @@ main(int argc, char *argv[])
     }
 
     rpmInitMacros(NULL, rpmMacrofiles);
+    /* XXX getopt(3) also used for parametrized macros, expect scwewiness. */
     for ( ; optind < argc; optind++) {
 	const char *val;
 
-	val = rpmGetPath(argv[optind], NULL);
+	val = rpmExpand(argv[optind], NULL);
 	if (val) {
 	    fprintf(stdout, "%s:\t%s\n", argv[optind], val);
 	    val = _free(val);
@@ -2474,8 +2476,8 @@ main(int argc, char *argv[])
 
 #else	/* !EVAL_MACROS */
 
-char *rpmMacrofiles = "../macros:./testmacros";
-char *testfile = "./test";
+const char *rpmMacrofiles = "../macros:./testmacros";
+const char *testfile = "./test";
 
 int
 main(int argc, char *argv[])

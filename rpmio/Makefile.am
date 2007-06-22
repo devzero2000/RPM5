@@ -78,7 +78,7 @@ tmacro_SOURCES =
 tmacro_LDFLAGS = # @LDFLAGS_STATIC@
 tmacro_LDADD = tmacro.o # librpmio.la $(top_builddir)/popt/libpopt.la
 tmacro.o:  macro.c
-	$(COMPILE) -DDEBUG_MACROS -DEVAL_MACROS -o $@ -c $<
+	$(COMPILE) -DDEBUG_MACROS -o $@ -c $<
 
 tput_SOURCES = tput.c
 tput_LDFLAGS = @LDFLAGS_STATIC@
