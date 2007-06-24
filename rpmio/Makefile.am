@@ -10,8 +10,7 @@ EXTRA_PROGRAMS = tax tdir tfts tget thkp tmacro tput tglob tinv tkey trpmio tsw 
 
 INCLUDES = -I. \
 	-I$(top_srcdir) \
-	-I$(top_srcdir)/misc \
-	@INCPATH@
+	-I$(top_srcdir)/misc
 
 pkgincdir = $(pkgincludedir)
 pkginc_HEADERS = \

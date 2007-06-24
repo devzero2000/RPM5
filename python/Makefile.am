@@ -19,8 +19,7 @@ INCLUDES = -I. \
 	-I$(top_srcdir)/rpmio \
 	@WITH_LIBELF_INCLUDE@ \
 	-I$(top_srcdir)/misc \
-	-I$(pyincdir) \
-	@INCPATH@
+	-I$(pyincdir)
 
 noinst_HEADERS = header-py.h \
 	rpmal-py.h rpmds-py.h rpmdb-py.h rpmfd-py.h rpmfts-py.h \

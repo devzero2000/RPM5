@@ -11,7 +11,7 @@ WriteMakefile(
 	      'CCFLAGS' => '@CFLAGS@',
 	      'OPTIMIZE'=> '-g',
 	      'DEFINE'	=> '-Dbool=char -DHAS_BOOL',
-	      'INC'	=> '@INCPATH@ -I../build -I../lib -I../popt -I/usr/include/rpm',
+	      'INC'	=> '-I../build -I../lib -I../popt -I/usr/include/rpm',
 	      'depend'	=> { 'rpm.c' => 'transaction.xs header.xs db.xs' },
 );
 

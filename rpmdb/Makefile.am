@@ -10,8 +10,7 @@ INCLUDES = -I. \
 	-I$(top_srcdir)/lib \
 	-I$(top_srcdir)/rpmio \
 	-I$(top_srcdir)/misc \
-	@WITH_LIBELF_INCLUDE@ \
-	@INCPATH@
+	@WITH_LIBELF_INCLUDE@
 
 EXTRA_DIST = db3.c sqlite.c db_emu.h librpmdb.vers
 

@@ -44,8 +44,7 @@ INCLUDES = \
 	-I$(top_srcdir)/rpmdb \
 	-I$(top_srcdir)/rpmio \
 	-I$(top_srcdir)/misc \
-	@WITH_LIBELF_INCLUDE@ \
-	@INCPATH@
+	@WITH_LIBELF_INCLUDE@
 
 staticLDFLAGS = # @LDFLAGS_STATIC@ # @LDFLAGS_NPTL@
 

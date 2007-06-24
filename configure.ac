@@ -155,13 +155,39 @@ dnl
 LDFLAGS_NPTL=
 if test -f /usr/lib/nptl/libpthread.a ; then
     LDFLAGS_NPTL="-L/usr/lib/nptl"
-#    INCPATH="$INCPATH -I/usr/include/nptl"
 fi
 if test -f /usr/lib64/nptl/libpthread.a ; then
     LDFLAGS_NPTL="-L/usr/lib64/nptl"
-#    INCPATH="$INCPATH -I/usr/include/nptl"
 fi
 AC_SUBST(LDFLAGS_NPTL)
+
+dnl # old RPM 4.x style platform-specific flag extension hack
+addlib () {
+   l=$1
+   shift
+   case "$target" in 
+       *-*-solaris2.[234567]) LIBS="$LIBS -L$l -R$l $*" ;;
+       * ) LIBS="$LIBS -L$l $*";;
+   esac
+}
+if  test "$cross_compiling" != "yes" && \
+    test ".$prefix" != .NONE && \
+    test ".$prefix" != "./usr"; then
+	if test -d $dir/lib; then
+		addlib $dir/lib
+	fi
+	if test -d $dir/include; then
+		CPPFLAGS="$CPPFLAGS -I$prefix/include"
+	fi
+fi
+if test -d /usr/ucblib; then
+    case $build in
+        mips-sni-sysv4 )
+	        addlib /usr/ccs/lib -lc
+	        addlib /usr/ucblib
+	    ;;
+    esac
+fi
 
 dnl
 dnl look for POSIX chmod attributes
@@ -308,15 +334,6 @@ AC_PATH_PROG(__OBJCOPY, objcopy, %{_bindir}/objcopy, $MYPATH)
 AC_PATH_PROG(__OBJDUMP, objdump, %{_bindir}/objdump, $MYPATH)
 AC_PATH_PROG(__STRIP, strip, %{_bindir}/strip, $MYPATH)
 
-addlib() {
-  l=$1
-  shift
-  case "$target" in 
-    *-*-solaris2.[234567])	LIBS="$LIBS -L$l -R$l $*";;
-    *)		LIBS="$LIBS -L$l $*";;
-  esac
-}
-
 #=================
 
 RPM_CHECK_LIB([ZLib], [zlib],
@@ -334,58 +351,6 @@ RPM_CHECK_LIB([GNU BZip2], [bzip2],
               [], [])
 
 #=================
-
-localdone=
-
-dirs=$prefix
-if test "$cross_compiling" != "yes"; then
-  dirs="$dirs"
-for dir in $dirs
-do
-	case $dir in
-	NONE|/usr)	continue;;
-	/usr/local)
-		if test X$localdone != X ; then continue; fi
-		localdone="$dir"
-		;;
-	esac
-
-	AC_MSG_CHECKING(for $dir/lib in LIBS)
-	if test -d $dir/lib 2> /dev/null ; then
-		addlib $dir/lib
-		AC_MSG_RESULT(yes)
-	else
-		AC_MSG_RESULT(no)
-	fi
-
-	AC_MSG_CHECKING(for $dir/include in INCPATH)
-	if test -d $dir/include 2>/dev/null ; then
-		if [[ "$dir" != "/usr/local" ]] ; then
-		    INCPATH="$INCPATH -I$dir/include"
-		fi
-		AC_MSG_RESULT(yes)
-	else
-		AC_MSG_RESULT(no)
-	fi
-done
-fi
-
-AC_MSG_CHECKING(for /usr/ucblib in LIBS)
-if test -d /usr/ucblib ; then
-    case $build in
-    mips-sni-sysv4)
-	addlib /usr/ccs/lib -lc
-	addlib /usr/ucblib
-	AC_MSG_RESULT(yes)
-	;;
-    *-*-solaris2.*)
-	AC_MSG_RESULT(yes)
-	;;
-    *)
-	AC_MSG_RESULT(no)
-	;;
-    esac
-fi
 
 dnl
 dnl Check for features
@@ -1303,7 +1268,6 @@ AC_SUBST(RPMPOPTFILE)
 testdir="`pwd`/tests"
 AC_SUBST(testdir)
 
-AC_SUBST(INCPATH)
 AC_SUBST(RPM)
 
 dnl ##
