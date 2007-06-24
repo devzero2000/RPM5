@@ -24,12 +24,16 @@ AC_SUBST(LT_AGE,      0)
 dnl # set of available languages.
 ALL_LINGUAS="cs da de fi fr gl is ja ko no pl pt pt_BR ro ru sk sl sr sv tr uk"
 
-dnl ##
-dnl ## PLATFORM-SPECIFIC CHECKS
-dnl ##
-
-AC_AIX
-AC_MINIX
+dnl # RPM installation user/group and uid/gid
+: ${RPMUSER=rpm}
+: ${RPMUID=37}
+: ${RPMGROUP=rpm}
+: ${RPMGID=37}
+export RPMUSER RPMUID RPMGROUP RPMGID
+AC_SUBST(RPMUSER)
+AC_SUBST(RPMUID)
+AC_SUBST(RPMGROUP)
+AC_SUBST(RPMGID)
 
 dnl ##
 dnl ## TOOL-CHAIN CHECKS
@@ -58,77 +62,36 @@ if test ".$ac_cv_c_compiler_gnu" = .yes; then
 fi
 AC_PROG_GCC_TRADITIONAL
 
-dnl ##
-dnl ## API CHECKS
-dnl ##
-
-AC_SYS_LARGEFILE
-AC_CHECK_VA_COPY
-
-dnl # RPM installation user/group and uid/gid
-: ${RPMUSER=rpm}
-: ${RPMUID=37}
-: ${RPMGROUP=rpm}
-: ${RPMGID=37}
-export RPMUSER RPMUID RPMGROUP RPMGID
-AC_SUBST(RPMUSER)
-AC_SUBST(RPMUID)
-AC_SUBST(RPMGROUP)
-AC_SUBST(RPMGID)
-
-dnl
-dnl This now uses libtool. Put
-dnl	LDFLAGS_STATIC="-all"
-dnl to attempt static executables using libtool. Otherwise
-dnl	LDFLAGS_STATIC=""
-dnl
-AC_MSG_CHECKING(flag used by libtool to link rpm)
-if test X"$GCC" = Xyes ; then
-	case "$target" in
-		*-*-linux*)	LDFLAGS_STATIC="-all-static" ;;
-		*-*-solaris*)	LDFLAGS_STATIC="-static";;
-		*-*-hpux*)	LDFLAGS_STATIC="-static";;
-		*-*-darwin*)	LDFLAGS_STATIC="";; # Mac OS X does not do static binaries.
-		*-*-sysv5uw*)   LDFLAGS_STATUS="-static";; # Unixware has no shared libthread.
-		*-*-*)		LDFLAGS_STATIC="";;
-	esac
-elif test X"$CC" = Xcc ; then
-	case "$target" in
-		*-*-linux*)	LDFLAGS_STATIC="-all-static";;
-		*-*-freebsd*)	LDFLAGS_STATIC="-all-static";;
-		*-*-osf*)	LDFLAGS_STATIC="";; # OSF5 has no shared pthreads libs
-		*-*-aix*)	LDFLAGS_STATIC="-static";;  # -Wl,-bnso doesn't seem to work...
-		*-*-hpux*)	LDFLAGS_STATIC="-static";;
-		*-*-solaris*)	LDFLAGS_STATIC="-static";;
-		*-*-irix*)	LDFLAGS_STATIC="-static";;  #should be -non_shared, but can't
-											# link because of crt1.o then.
-		*-*-ultrix*)	LDFLAGS_STATIC="-all-static";;  #ultrix doesn't have shared libs.
-		*-*-*)		LDFLAGS_STATIC=""
-AC_MSG_WARN([
-
-Unable to guess what option to pass to $CC to generate a static
-executable.  You will need to set the LDFLAGS_STATIC macro in Makefile.inc to
-the appropriate argument(s) if you want to build a static rpm executable.
-
-])
-		;;
-	esac
-else
-	# just link it dynamically
-	LDFLAGS_STATIC=""
-fi
-LDFLAGS_STATIC="${LDFLAGS} ${LDFLAGS_STATIC}"	# libtool format
+dnl # determine whether to use partial static, full static
+dnl # standard dynamic linking via GNU libtool
+AC_MSG_CHECKING(flag used by GNU libtool to link RPM statically)
+LDFLAGS_STATIC=""
+case "$target" in
+        *-*-darwin*)    LDFLAGS_STATIC="";;             # Mac OS X does not do static binaries.
+        *-*-sysv5uw*)   LDFLAGS_STATIC="-static";;      # Unixware has no shared libthread.
+        *-*-linux*)     LDFLAGS_STATIC="-all-static";;
+        *-*-freebsd*)   LDFLAGS_STATIC="-all-static";;
+        *-*-osf*)       LDFLAGS_STATIC="";;             # OSF5 has no shared pthreads libs
+        *-*-aix*)       LDFLAGS_STATIC="-static";;      # -Wl,-bnso doesn't seem to work...
+        *-*-hpux*)      LDFLAGS_STATIC="-static";;
+        *-*-solaris*)   LDFLAGS_STATIC="-static";;
+        *-*-irix*)      LDFLAGS_STATIC="-static";;      #should be -non_shared, but can't link because of crt1.o then.
+        *-*-ultrix*)    LDFLAGS_STATIC="-all-static";;  #ultrix doesn't have shared libs.
+        *-*-*)          LDFLAGS_STATIC=""; AC_MSG_WARN([
+Unable to guess what option to pass to GNU libtool to generate a static
+executable. You will need to set the LDFLAGS_STATIC macro in Makefile.in to
+the appropriate argument(s) if you want to build a static RPM executable.
+]);;
+esac
 AC_MSG_RESULT($LDFLAGS_STATIC)
 AC_SUBST(LDFLAGS_STATIC)
 
-dnl
-dnl XXX Test for libpthread.a that is NPTL aware (static link only).
-dnl
+dnl # use libpthread.a that is NPTL aware (static link only).
 LDFLAGS_NPTL=
-if test -f /usr/lib/nptl/libpthread.a ; then
+if test -f /usr/lib/nptl/libpthread.a; then
     LDFLAGS_NPTL="-L/usr/lib/nptl"
 fi
-if test -f /usr/lib64/nptl/libpthread.a ; then
+if test -f /usr/lib64/nptl/libpthread.a; then
     LDFLAGS_NPTL="-L/usr/lib64/nptl"
 fi
 AC_SUBST(LDFLAGS_NPTL)
@@ -138,32 +101,34 @@ addlib () {
    l=$1
    shift
    case "$target" in 
-       *-*-solaris2.[234567]) LIBS="$LIBS -L$l -R$l $*" ;;
-       * ) LIBS="$LIBS -L$l $*";;
+       *-*-solaris2.[234567] ) LIBS="$LIBS -L$l -R$l $*" ;;
+       * )                     LIBS="$LIBS -L$l $*"      ;;
    esac
 }
 if  test "$cross_compiling" != "yes" && \
     test ".$prefix" != .NONE && \
     test ".$prefix" != "./usr"; then
-	if test -d $dir/lib; then
-		addlib $dir/lib
-	fi
-	if test -d $dir/include; then
-		CPPFLAGS="$CPPFLAGS -I$prefix/include"
-	fi
+    if test -d $dir/lib; then
+        addlib $dir/lib
+    fi
+    if test -d $dir/include; then
+        CPPFLAGS="$CPPFLAGS -I$prefix/include"
+    fi
 fi
 if test -d /usr/ucblib; then
     case $build in
         mips-sni-sysv4 )
-	        addlib /usr/ccs/lib -lc
-	        addlib /usr/ucblib
-	    ;;
+            addlib /usr/ccs/lib -lc
+            addlib /usr/ucblib
+        ;;
     esac
 fi
 
-dnl
-dnl look for POSIX chmod attributes
-dnl
+dnl ##
+dnl ##  PROGRAM CHECKS
+dnl ##
+
+dnl # look for POSIX chmod attributes
 AC_MSG_CHECKING(POSIX chmod)
 touch foo.chmodtest
 chmod 744 foo.chmodtest
@@ -179,23 +144,18 @@ else
 fi
 AC_SUBST(FIXPERMS)
 
-dnl
-dnl see if we have a mkdir that supports `-p'.
-dnl
+dnl # see if we have a mkdir that supports `-p'.
 AC_PATH_PROGS(MKDIR, mkdir, mkdir)
 AC_MSG_CHECKING(if $MKDIR supports -p)
 rm -rf conftest
 $MKDIR -p conftest/a 2>/dev/null
 if test $? = 0 ; then
 	rmdir conftest/a 2>/dev/null
-	if test $? = 0  ; then
-		:
-	else
+	if test $? != 0; then
 		MKDIR_P=0
 	fi
-
 	rmdir conftest 2>/dev/null
-	if test $? = 0 ; then
+	if test $? = 0; then
 		MKDIR_P="$MKDIR -p"
 	else
 		MKDIR_P=0
@@ -203,45 +163,64 @@ if test $? = 0 ; then
 else
 	MKDIR_P=0
 fi
-
-if test X"$MKDIR_P" = X0 ; then
+if test X"$MKDIR_P" = X0; then
 	AC_MSG_RESULT(no)
 	MKDIR_P="`echo ${prefix}/lib/rpm/mkinstalldirs`"
 else
 	AC_MSG_RESULT(yes)
 fi
-dnl
-dnl substitute this into config.h, so the C source picks it up.
-dnl
 AC_DEFINE_UNQUOTED(MKDIR_P, "${MKDIR_P}",
 [A full path to a program, possibly with arguments, that will create a
    directory and all necessary parent directories, ala 'mkdir -p'])
 AC_SUBST(MKDIR_P)
 
-AC_ISC_POSIX
+AC_CHECK_FUNC(lchown,
+   [__CHOWN_RHF="%{__chown} -Rhf"
+    __CHGRP_RHF="%{__chgrp} -Rhf"
+    AC_DEFINE(HAVE_LCHOWN, 1, [Define as 1 if you have lchown()])],
+   [__CHOWN_RHF="%{__chown} -Rf"
+    __CHGRP_RHF="%{__chgrp} -Rf"
+    dnl Does chown() follow symlinks? This should be a good enough test.
+    AC_MSG_CHECKING(whether chown() follows symlinks)
+    AC_ARG_ENABLE([broken-chown],
+    [  --enable-broken-chown   this system's chown follows symbolic links], 
+	    result=$enableval, result=unknown)
+    if echo "$build" | egrep "(aix)|(hpux)|(linux)" > /dev/null ; then
+	result=yes
+    elif echo "$build" | egrep "(nextstep)" > /dev/null ; then
+	result=no
+    fi
+    if test $result = unknown; then
+	if test `${__ID} | cut -f2 -d\= | cut -f1 -d\(` = 0; then
+	    rm -f foo bar
+	    touch foo
+	    ln -s foo bar
+	    ${__CHOWN} 10 bar
+	    if test `ls -l foo | awk '{print $3}'` != "root"; then
+		result=yes
+	    else
+		result=no
+	    fi
+	    ${__RM} -f foo bar
+	else
+	    AC_MSG_CHECKING((cannot check by non-root user))
+	    result=no
+	fi
+    fi
 
-dnl This test must precede tests of compiler characteristics like
-dnl that for the inline keyword, since it may change the degree to
-dnl which the compiler supports such features.
-AM_C_PROTOTYPES
+    AC_MSG_RESULT($result)
+    if test $result = yes; then
+	    AC_DEFINE(CHOWN_FOLLOWS_SYMLINK, 1, [Define as 1 if chown() follows symlinks and you don't have lchown()])
+    fi])
+AC_SUBST(__CHOWN_RHF)
+AC_SUBST(__CHGRP_RHF)
 
-dnl AM_DISABLE_SHARED
-AM_PROG_LIBTOOL
-
-AC_CHECK_TOOL(AR, ar, :)
-
-dnl
-dnl use defaults if cross-compiling, otherwise use the default path.
-dnl
+dnl # find some common programs
 if test "$cross_compiling" = "yes"; then
     MYPATH=":"
 else
     MYPATH=$PATH
 fi
-
-dnl
-dnl Find some common programs
-dnl
 AC_PATH_PROG(__BASH, bash, %{_bindir}/bash, $MYPATH)
 AC_PATH_PROG(__BZIP2, bzip2, %{_bindir}/bzip2, $MYPATH)
 AC_PATH_PROG(__CAT, cat, /bin/cat, $MYPATH)
@@ -260,18 +239,7 @@ AC_PATH_PROG(__GPG, gpg, %{_bindir}/gpg, $MYPATH)
 AC_PATH_PROG(__GREP, grep, /bin/grep, $MYPATH)
 AC_PATH_PROG(__GZIP, gzip, /bin/gzip, $MYPATH)
 AC_PATH_PROG(__HG, hg, %{_bindir}/hg, $MYPATH)
-
 AC_PATH_PROG(__ID, id, /usr/bin/id, $MYPATH)
-AC_MSG_CHECKING(checking whether id supports -u)
-    if ${__ID} -u 2>&1 > /dev/null ; then
-	__ID_U="%{__id} -u"
-	AC_MSG_RESULT(yes)
-    else
-	__ID_U="%{__id} | %{__sed} 's/[[^=]]*=\\\\([[0-9]][[0-9]]*\\\\).*$/\\\\1/'"
-	AC_MSG_RESULT(no)
-    fi
-AC_SUBST(__ID_U)
-
 AC_PATH_PROG(__INSTALL, install, /usr/bin/install, $MYPATH)
 AC_PATH_PROG(__INSTALL_INFO, install-info, /sbin/install-info, $MYPATH)
 AC_PATH_PROG(__LDCONFIG, ldconfig, /sbin/ldconfig, $MYPATH)
@@ -299,82 +267,294 @@ AC_PATH_PROG(__TCLSH, tclsh, %{_bindir}/tclsh, $MYPATH)
 AC_PATH_PROG(__UNZIP, unzip, %{_bindir}/unzip, $MYPATH)
 AC_PATH_PROG(__WGET, wget, %{_bindir}/wget, $MYPATH)
 AC_PATH_PROG(__XAR, xar, %{_bindir}/xar, $MYPATH)
-
 AC_PATH_PROG(__LD, ld, %{_bindir}/ld, $MYPATH)
 AC_PATH_PROG(__NM, nm, %{_bindir}/nm, $MYPATH)
 AC_PATH_PROG(__OBJCOPY, objcopy, %{_bindir}/objcopy, $MYPATH)
 AC_PATH_PROG(__OBJDUMP, objdump, %{_bindir}/objdump, $MYPATH)
 AC_PATH_PROG(__STRIP, strip, %{_bindir}/strip, $MYPATH)
 
-#=================
+AC_MSG_CHECKING(checking whether id supports -u)
+if ${__ID} -u 2>&1 > /dev/null; then
+    __ID_U="%{__id} -u"
+    AC_MSG_RESULT(yes)
+else
+    __ID_U="%{__id} | %{__sed} 's/[[^=]]*=\\\\([[0-9]][[0-9]]*\\\\).*$/\\\\1/'"
+    AC_MSG_RESULT(no)
+fi
+AC_SUBST(__ID_U)
 
-RPM_CHECK_LIB([ZLib], [zlib],
-              [z gz], [gzread], [zlib.h],
-              [yes,internal], [zlib],
-              [ AC_CHECK_FUNC(gzseek)
-                if test ".$RPM_CHECK_LIB_LOCATION" = .internal; then
-                    AC_DEFINE(HAVE_ZLIB_H, 1, [Define to 1 if you have <zlib.h>])
-                fi
-              ], [])
+AC_PATH_PROG(__DOXYGEN, doxygen, no, $PATH)
+dnl Auto-detect whether doxygen generated API docs should be included.
+withval=auto
+AC_ARG_WITH(apidocs, AS_HELP_STRING([--with-apidocs], [build RPM API documentation]))
+if test $withval = auto -a $__DOXYGEN != no ; then
+  withval=yes
+elif test $withval = yes -a $__DOXYGEN = no ; then
+  AC_MSG_ERROR(--> rpm API docs needs doxygen in PATH)
+fi
+if test $withval = yes; then
+  WITH_APIDOCS_TARGET=apidocs
+  WITH_APIDOCS=1
+else
+  WITH_APIDOCS=0
+fi
+AC_SUBST(WITH_APIDOCS_TARGET)
+AC_SUBST(WITH_APIDOCS)
 
-RPM_CHECK_LIB([GNU BZip2], [bzip2],
-              [bz2], [BZ2_bzread], [bzlib.h],
-              [no,external:none], [],
-              [], [])
+dnl ##
+dnl ## API CHECKS
+dnl ##
 
-#=================
+dnl # platform specific checks
+AC_AIX
+AC_MINIX
+AC_ISC_POSIX
 
-dnl
-dnl Check for features
-dnl
+dnl # standard checks
+AM_C_PROTOTYPES
+AC_C_INLINE
 
-dnl Checks for libraries.
+dnl # standard headers (specific)
+AC_HEADER_STDC
+AC_HEADER_MAJOR
+AC_HEADER_DIRENT
+AC_HEADER_TIME
 
-AC_CHECK_FUNC(setreuid, [], [
-    AC_CHECK_LIB(ucb, setreuid, [if echo $LIBS | grep -- -lucb >/dev/null ;then :; else LIBS="$LIBS -lc -lucb" USEUCB=y;fi])
+dnl # standard headers (generic)
+AC_CHECK_HEADERS([dnl
+    fcntl.h getopt.h grp.h memory.h netdb.h pwd.h utime.h dnl
+    signal.h sys/ipc.h sys/socket.h sys/select.h dnl
+    sys/types.h sys/stdtypes.h sys/mman.h sys/resource.h dnl
+    sys/utsname.h sys/wait.h netinet/in_systm.h dnl
+    machine/types.h mntent.h sys/mnttab.h sys/systemcfg.h dnl
+    sys/mount.h sys/mntctl.h sys/param.h sys/vmount.h dnl
+    libio.h err.h mcheck.h limits.h libgen.h float.h dnl
+    glob.h poll.h dnl
 ])
 
-AC_CHECK_FUNC(rand, [], [
-    AC_CHECK_LIB(rand, rand, [])
-])
+dnl # GNU gettext support
+AC_CHECK_HEADERS(locale.h)
+AM_GNU_GETTEXT_VERSION(0.16)
+AM_GNU_GETTEXT([external])
 
-AC_CHECK_FUNC(getdomainname, [], [
-    AC_CHECK_LIB(nsl, getdomainname)
-])
-AC_CHECK_FUNC(socket, [], [
-    AC_CHECK_LIB(socket, socket)
-])
+dnl # specific features
+AC_SYS_LARGEFILE
+AC_CHECK_VA_COPY
 
+dnl # specific functions (specific)
+AC_CHECK_FUNC(setreuid,      [], [ AC_CHECK_LIB(ucb, setreuid, [if echo $LIBS | grep -- -lucb >/dev/null; then :; else LIBS="$LIBS -lc -lucb" USEUCB=y; fi]) ])
+AC_CHECK_FUNC(rand,          [], [ AC_CHECK_LIB(rand, rand, []) ])
+AC_CHECK_FUNC(getdomainname, [], [ AC_CHECK_LIB(nsl, getdomainname) ])
+AC_CHECK_FUNC(socket,        [], [ AC_CHECK_LIB(socket, socket) ])
+
+dnl # specific functions (generic)
+AC_CHECK_FUNCS(vsnprintf snprintf)
+
+dnl # Error API
 AC_CHECK_HEADERS(error.h)
 AC_CHECK_FUNCS(error)
 
-AC_CHECK_HEADERS(poll.h)
-
+dnl # Pthread API
 AC_CHECK_HEADERS(thread.h pthread.h synch.h semaphore.h)
-
 AC_CHECK_LIB(pthread, pthread_mutex_trylock, [], [
-  dnl OSF 5.0 has the the symbols prefixed with __ in libpthread.
-  AC_CHECK_LIB(pthread, __pthread_mutex_trylock, [], [
-    AC_CHECK_LIB(thread, mutex_lock)
-  ])
+    AC_CHECK_LIB(pthread, __pthread_mutex_trylock, [], [
+        AC_CHECK_LIB(thread, mutex_lock)
+    ])
 ])
 
+dnl # AIO API
 AC_CHECK_HEADERS(aio.h)
 AC_SEARCH_LIBS(aio_read, [c rt aio posix4])
 
-dnl Better not use fchmod at all.
-AC_CHECK_FUNC(fchmod)
-
-AC_CHECK_FUNCS(vsnprintf snprintf)
-
-dnl Temporary hack for MiNT.  Some functions (writev, snprintf) are
-dnl not in the libc but in libport (for political reasons).  This check
-dnl can hopefully be removed soon.  Please use the default action
-dnl for this macro (not LIBS=...), otherwise the check for dbopen
-dnl will fail.
+dnl # platform-hack for MiNT
 AC_CHECK_LIB(port, writev)
 
-#=================
+dnl # AmigaOS and IXEmul have a fork() dummy
+  case "$target" in
+    m68k-*-amigaos ) 
+	echo "Building for AmigaOS: using vfork() instead of fork()"; 
+	CFLAGS="$CFLAGS -Dfork=vfork" 
+	;;
+  esac
+
+dnl # statfs portability fiddles.
+AC_MSG_CHECKING(for struct statfs)
+found_struct_statfs=no
+if test X$found_struct_statfs = Xno ; then
+dnl Solaris 2.6+ wants to use statvfs
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+#ifdef HAVE_SYS_TYPES_H
+#include <sys/types.h>
+#endif
+#include <sys/statvfs.h> ]], [[struct statvfs sfs;]])],[AC_MSG_RESULT(in sys/statvfs.h)
+	AC_DEFINE(STATFS_IN_SYS_STATVFS, 1,
+		[statfs in <sys/statvfs.h> (for solaris 2.6+ systems)])
+	found_struct_statfs=yes],[])
+fi
+if test X$found_struct_statfs = Xno ; then
+dnl first try including sys/vfs.h
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+#ifdef HAVE_SYS_TYPES_H
+#include <sys/types.h>
+#endif
+#include <sys/vfs.h> ]], [[struct statfs sfs;]])],[AC_MSG_RESULT(in sys/vfs.h)
+	AC_DEFINE(STATFS_IN_SYS_VFS, 1, [statfs in <sys/vfs.h> (for linux systems)])
+	found_struct_statfs=yes],[])
+fi
+if test X$found_struct_statfs = Xno ; then
+dnl ...next try including sys/mount.h
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+#ifdef HAVE_SYS_TYPES_H
+#include <sys/types.h>
+#endif
+#ifdef HAVE_SYS_PARAM_H
+#include <sys/param.h>
+#endif
+#include <sys/mount.h> ]], [[struct statfs sfs;]])],[AC_MSG_RESULT(in sys/mount.h)
+	AC_DEFINE(STATFS_IN_SYS_MOUNT, 1, [statfs in <sys/mount.h> (for Digital Unix 4.0D systems)])
+	found_struct_statfs=yes],[])
+fi
+if test X$found_struct_statfs = Xno ; then
+dnl ...still no joy.  Try sys/statfs.h
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+#ifdef HAVE_SYS_TYPES_H
+#include <sys/types.h>
+#endif
+#include <sys/statfs.h> ]], [[struct statfs sfs;]])],[AC_MSG_RESULT(in sys/statfs.h)
+	AC_DEFINE(STATFS_IN_SYS_STATFS, 1, [statfs in <sys/statfs.h> (for Irix 6.4 systems)])
+	found_struct_statfs=yes],[])
+fi
+if test X$found_struct_statfs = Xno ; then
+dnl ...no luck.  Warn the user of impending doom.
+AC_MSG_WARN(not found)
+fi
+dnl if we found the struct, see if it has the f_bavail member.  Some OSes
+dnl don't, including IRIX 6.5+
+if test X$found_struct_statfs = Xyes ; then
+AC_MSG_CHECKING(for f_bavail member in struct statfs)
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+#ifdef HAVE_SYS_TYPES_H
+#include <sys/types.h>
+#endif
+#if STATFS_IN_SYS_STATVFS
+# include <sys/statvfs.h>
+  typedef struct statvfs STATFS_t;
+#else
+  typedef struct statfs STATFS_t;
+# if STATFS_IN_SYS_VFS
+#  include <sys/vfs.h>
+# elif STATFS_IN_SYS_MOUNT
+#  include <sys/mouht.h>
+# elif STATFS_IN_SYS_STATFS
+#  include <sys/statfs.h>
+# endif
+#endif ]], [[STATFS_t sfs;
+	sfs.f_bavail = 0;]])],[AC_MSG_RESULT(yes)
+	AC_DEFINE(STATFS_HAS_F_BAVAIL, 1, [Define if struct statfs has the f_bavail member])],[AC_MSG_RESULT(no)
+])
+fi
+if test X$found_struct_statfs = Xyes ; then
+dnl now check to see if we have the 4-argument variant of statfs()
+dnl this pretty much requires AC_RUN_IFELSE([AC_LANG_SOURCE([[]])],[],[],[])
+AC_MSG_CHECKING([if statfs() requires 4 arguments])
+AC_RUN_IFELSE([AC_LANG_SOURCE([[
+#ifdef HAVE_SYS_TYPES_H
+#include <sys/types.h>
+#endif
+#ifdef STATFS_IN_SYS_VFS
+#include <sys/vfs.h>
+#elif STATFS_IN_SYS_MOUNT
+#include <sys/mouht.h>
+#elif STATFS_IN_SYS_STATFS
+#include <sys/statfs.h>
+#endif
+main() {
+	struct statfs sfs;
+	exit (statfs(".", &sfs, sizeof(sfs), 0));
+}
+]])],[AC_MSG_RESULT(yes)
+	AC_DEFINE(STAT_STATFS4, 1, [Define if the statfs() call takes 4 arguments])],[AC_MSG_RESULT(no)],[AC_MSG_RESULT(no)
+])
+fi
+
+dnl look for libc features
+PROVIDES_ERRNO=no
+AC_MSG_CHECKING(if <netdb.h> defines h_errno)
+AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <netdb.h>]], [[printf("%d",h_errno)]])],[PROVIDES_ERRNO=yes],[])
+AC_MSG_RESULT($PROVIDES_ERRNO)
+if test $PROVIDES_ERRNO = yes; then
+	AC_DEFINE(HAVE_HERRNO, 1, [ Define as 1 if <netdb.h> defines h_errno])
+fi
+
+dnl If a system doesn't have S_IFSOCK, define it as 0 which will
+dnl make S_ISSOCK always return false (nice, eh?)
+AC_MSG_CHECKING(if <sys/stat.h> defines S_IFSOCK)
+AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <sys/stat.h>]], [[printf("%d", S_IFSOCK)]])],[HAS_S_IFSOCK=yes],[HAS_S_IFSOCK=no])
+AC_MSG_RESULT($HAS_S_IFSOCK)
+if test $HAS_S_IFSOCK = yes; then
+	AC_DEFINE(HAVE_S_IFSOCK, 1, [Define as 1 if <sys/stat.h> defines S_IFSOCK])
+fi
+
+dnl Some Unix's are missing S_ISLNK, S_ISSOCK
+AC_MSG_CHECKING(if <sys/stat.h> defines S_ISLNK)
+AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <sys/stat.h>]], [[printf("%d", S_ISLNK(0755))]])],[HAS_S_ISLNK=yes],[HAS_S_ISLNK=no])
+AC_MSG_RESULT($HAS_S_ISLNK)
+if test $HAS_S_ISLNK = yes; then
+	AC_DEFINE(HAVE_S_ISLNK, 1, [Define as 1 if <sys/stat.h> defines S_ISLNK])
+fi
+
+AC_MSG_CHECKING(if <sys/stat.h> defines S_ISSOCK)
+AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <sys/stat.h>]], [[printf("%d", S_ISSOCK(0755))]])],[HAS_S_ISSOCK=yes],[HAS_S_ISSOCK=no])
+AC_MSG_RESULT($HAS_S_ISSOCK)
+if test $HAS_S_ISSOCK = yes; then
+	AC_DEFINE(HAVE_S_ISSOCK, 1, [Define as 1 if <sys/stat.h> defines S_ISSOCK])
+fi
+
+AC_MSG_CHECKING(if timezone is defined)
+AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <time.h>]], [[printf("%ld", timezone)]])],[HAS_TIMEZONE=yes],[HAS_TIMEZONE=no])
+AC_MSG_RESULT($HAS_TIMEZONE)
+
+dnl Check for missing typedefs
+AC_TYPE_MODE_T
+AC_TYPE_OFF_T
+AC_TYPE_PID_T
+AC_TYPE_SIZE_T
+
+dnl Checks for library functions.
+AC_FUNC_ALLOCA
+AC_FUNC_VPRINTF
+AC_FUNC_MMAP
+
+AC_CHECK_FUNCS([dnl
+    basename getaddrinfo getcwd getnameinfo getwd inet_aton dnl
+    mtrace putenv realpath setenv clearenv stpcpy stpncpy strcspn strdup dnl
+    strndup strerror strtol strtoul strspn strstr sighold sigrelse sigpause dnl
+    sigprocmask sigemptyset sigaddset sigdelset sigsuspend madvise dnl
+    __secure_getenv regcomp ftok mkstemp setlocale getpassphrase dnl
+])
+
+dnl # use local GNU glibc glob(3) copy
+AC_DEFINE(USE_GNU_GLOB, 1, [Use the included glob.c?])
+AC_LIBOBJ(glob)
+AC_LIBOBJ(fnmatch)
+
+AC_CHECK_FUNC(getmntent, AC_DEFINE(HAVE_GETMNTENT, 1, [Define if you have the getmntent() function]), [
+  AC_CHECK_FUNC(mntctl, AC_DEFINE(HAVE_MNTCTL, 1, [Define as 1 if you have mntctl() (only aix?)]),[
+    AC_CHECK_FUNC(getmntinfo, AC_DEFINE(HAVE_GETMNTINFO, 1, [Define as 1 if you have getmntinfo() (Mac OS X)]), [
+      AC_CHECK_FUNC(getmntinfo_r, AC_DEFINE(HAVE_GETMNTINFO_R, 1, [Define as 1 if you have getmntinfo_r() (only osf?)]), [
+        AC_CHECK_LIB(c_r, getmntinfo_r, [LIBS="$LIBS -lc_r"; 
+					AC_DEFINE(HAVE_GETMNTINFO_R, 1, [Define as 1 if you have getmntinfo_r() (only osf?)])], [
+		 AC_DEFINE([USE_GETMNTENT], 1, [Defined if getmntent replacement is used])
+                 AC_LIBOBJ(getmntent)])
+      ])
+    ])
+  ])
+])
+
+dnl ##
+dnl ##  THIRD-PARTY LIBRARIES (1/2)
+dnl ##
+
 # Check for libelf library. Prefer external, then internal, otherwise none.
 WITH_ELFUTILS_SUBDIR=
 WITH_LIBELF_INCLUDE=
@@ -468,326 +648,20 @@ AC_CHECK_HEADER([dwarf.h], [
 AC_SUBST(WITH_LIBDWARF_INCLUDE)
 AC_SUBST(WITH_LIBDWARF_DEBUGEDIT)
 
-#=================
-
-RPM_CHECK_LIB([BeeCrypt], [beecrypt],
-              [beecrypt], [mpfprintln], [beecrypt/api.h],
-              [yes,external], [beecrypt],
-              [], [ AC_ERROR([mandatory BeeCrypt library not found]) ])
-
-#=================
-
-RPM_CHECK_LIB([Neon], [neon],
-              [neon], [ne_session_create], [ne_session.h],
-              [yes,external:internal], [neon:src:src],
-              [ if test ".$RPM_CHECK_LIB_LOCATION" = .internal; then
-                    AC_DEFINE(HAVE_NEON_NE_GET_RESPONSE_HEADER, 1,
-                              [Define to 1 if you have ne_get_response_header() in libneon.])
-                else
-                    AC_CHECK_LIB(neon, ne_get_response_header, [
-                        AC_DEFINE(HAVE_NEON_NE_GET_RESPONSE_HEADER, 1,
-                                  [Define to 1 if you have ne_get_response_header() in libneon.]) ])
-                    AC_CHECK_LIB(neon, ne_send_request_chunk, [
-                        AC_DEFINE(HAVE_NEON_NE_SEND_REQUEST_CHUNK, 1,
-                                  [Define to 1 if you have ne_send_request_chunk() in libneon.]) ])
-                fi
-              ], [ AC_ERROR([mandatory Neon library not found]) ])
-
-#=================
-
-RPM_CHECK_LIB([File (magic)], [file],
-              [magic], [magic_open], [magic.h],
-              [yes,external:internal], [file:src:src],
-              [], [ AC_ERROR([mandatory File (magic) library not found]) ])
-
-#=================
-
-RPM_CHECK_LIB([Linux keyutils], [keyutils],
-              [keyutils], [keyctl_read], [keyutils.h],
-              [no,external:none], [],
-              [], [])
-
-#=================
-
-RPM_CHECK_LIB([POPT], [popt],
-              [popt], [poptGetContext], [popt.h],
-              [yes,external], [],
-              [], [AC_ERROR([mandatory POPT library not found])])
-
-#=================
-
-DBLIBSRCS=""
-
-RPM_CHECK_LIB([Berkeley-DB], [db],
-              [db], [db_create], [db.h],
-              [yes,internal:external], [db3],
-              [ DBLIBSRCS="$DBLIBSRCS db3.c"
-                if test ".$RPM_CHECK_LIB_LOCATION" = .internal; then
-                    AC_DEFINE(HAVE_DB_H, 1, [Have <db.h> header])
-                fi
-              ],
-              [ AC_ERROR([mandatory Berkeley-DB library not found]) ])
-
-# accept and pass-through options for Berkeley-DB "configure"
-AC_ARG_WITH(db-largefile, AS_HELP_STRING([--with-db-largefile], [build Berkeley-DB with LARGEFILE support]))
-AC_ARG_WITH(db-mutex,     AS_HELP_STRING([--with-db-mutex=ARG], [build Berkeley-DB with MUTEX type ARG]))
-AC_ARG_WITH(db-rpc,       AS_HELP_STRING([--with-db-rpc],       [build Berkeley-DB with RPC support]))
-AM_CONDITIONAL(WITH_DB_RPC, test ".$with_db_rpc" = .yes)
-
-RPM_CHECK_LIB([SQLite], [sqlite],
-              [sqlite3], [sqlite3_open], [sqlite3.h],
-              [no,external:none], [],
-              [ DBLIBSRCS="$DBLIBSRCS sqlite.c" ],
-              [])
-
-DBLIBOBJS=`echo $DBLIBSRCS | sed -e "s/\.c/\.lo/g"`
-
-AC_SUBST(DBLIBSRCS)
-AC_SUBST(DBLIBOBJS)
-
-#=================
-
-dnl AmigaOS and IXEmul have a fork() dummy
-  case "$target" in
-    m68k-*-amigaos ) 
-	echo "Building for AmigaOS: using vfork() instead of fork()"; 
-	CFLAGS="$CFLAGS -Dfork=vfork" 
-	;;
-  esac
-
-AC_CHECK_HEADERS(locale.h)
-AM_GNU_GETTEXT_VERSION(0.16)
-AM_GNU_GETTEXT([external])
-
-dnl Checks for header files we can live without.
-AC_HEADER_STDC
-AC_HEADER_MAJOR
-AC_HEADER_DIRENT
-AC_HEADER_TIME
-
-AC_CHECK_HEADERS(fcntl.h getopt.h grp.h memory.h netdb.h pwd.h utime.h)
-
-AC_CHECK_HEADERS(signal.h)
-AC_CHECK_HEADERS(sys/ipc.h sys/socket.h sys/select.h)
-AC_CHECK_HEADERS(sys/types.h sys/stdtypes.h)
-AC_CHECK_HEADERS(sys/mman.h sys/resource.h sys/utsname.h sys/wait.h)
-
-AC_CHECK_HEADERS(netinet/in_systm.h)
-AC_CHECK_HEADERS(machine/types.h)
-AC_CHECK_HEADERS(mntent.h sys/mnttab.h sys/systemcfg.h)
-AC_CHECK_HEADERS(sys/mount.h sys/mntctl.h sys/param.h sys/vmount.h)
-AC_CHECK_HEADERS(libio.h)
-AC_CHECK_HEADERS(err.h mcheck.h)
-
-dnl Some solaris build env needs.
-AC_CHECK_HEADERS(limits.h)
-
-dnl basename(), confstr() on some platforms
-AC_CHECK_HEADERS(libgen.h)
-
-dnl popt w float/double needs.
-AC_CHECK_HEADERS(float.h)
-
-AC_CHECK_HEADERS(glob.h)
-
-dnl statfs portability fiddles.
-dnl
-dnl We should really emulate/steal sections of the statfs and struct statfs
-dnl checks from GNU fileutils.
-dnl
-AC_MSG_CHECKING(for struct statfs)
-
-dnl
-dnl this is easier than nesting AC_TRY_COMPILEs...
-dnl
-found_struct_statfs=no
-
-if test X$found_struct_statfs = Xno ; then
-dnl Solaris 2.6+ wants to use statvfs
-AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
-#ifdef HAVE_SYS_TYPES_H
-#include <sys/types.h>
-#endif
-#include <sys/statvfs.h> ]], [[struct statvfs sfs;]])],[AC_MSG_RESULT(in sys/statvfs.h)
-	AC_DEFINE(STATFS_IN_SYS_STATVFS, 1,
-		[statfs in <sys/statvfs.h> (for solaris 2.6+ systems)])
-	found_struct_statfs=yes],[])
+WITH_SELINUX_LIB=
+with_selinuxval=no
+case "$target" in
+    *-*-linux*) with_selinuxval=yes ;;
+esac
+withval=${with_selinuxval}
+AC_ARG_WITH(selinux, AS_HELP_STRING([--with-selinux], [build RPM with SELinux support]))
+if test $withval != no ; then
+  AC_DEFINE(WITH_SELINUX, 1, [Build with selinux support?])
+  WITH_SELINUX_LIB="-lselinux"
 fi
+AC_SUBST(WITH_SELINUX_LIB)
 
-if test X$found_struct_statfs = Xno ; then
-dnl first try including sys/vfs.h
-AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
-#ifdef HAVE_SYS_TYPES_H
-#include <sys/types.h>
-#endif
-#include <sys/vfs.h> ]], [[struct statfs sfs;]])],[AC_MSG_RESULT(in sys/vfs.h)
-	AC_DEFINE(STATFS_IN_SYS_VFS, 1, [statfs in <sys/vfs.h> (for linux systems)])
-	found_struct_statfs=yes],[])
-fi
-
-if test X$found_struct_statfs = Xno ; then
-dnl ...next try including sys/mount.h
-AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
-#ifdef HAVE_SYS_TYPES_H
-#include <sys/types.h>
-#endif
-#ifdef HAVE_SYS_PARAM_H
-#include <sys/param.h>
-#endif
-#include <sys/mount.h> ]], [[struct statfs sfs;]])],[AC_MSG_RESULT(in sys/mount.h)
-	AC_DEFINE(STATFS_IN_SYS_MOUNT, 1, [statfs in <sys/mount.h> (for Digital Unix 4.0D systems)])
-	found_struct_statfs=yes],[])
-fi
-
-if test X$found_struct_statfs = Xno ; then
-dnl ...still no joy.  Try sys/statfs.h
-AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
-#ifdef HAVE_SYS_TYPES_H
-#include <sys/types.h>
-#endif
-#include <sys/statfs.h> ]], [[struct statfs sfs;]])],[AC_MSG_RESULT(in sys/statfs.h)
-	AC_DEFINE(STATFS_IN_SYS_STATFS, 1, [statfs in <sys/statfs.h> (for Irix 6.4 systems)])
-	found_struct_statfs=yes],[])
-fi
-
-if test X$found_struct_statfs = Xno ; then
-dnl ...no luck.  Warn the user of impending doom.
-AC_MSG_WARN(not found)
-fi
-
-dnl
-dnl if we found the struct, see if it has the f_bavail member.  Some OSes
-dnl don't, including IRIX 6.5+
-dnl
-if test X$found_struct_statfs = Xyes ; then
-AC_MSG_CHECKING(for f_bavail member in struct statfs)
-AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
-#ifdef HAVE_SYS_TYPES_H
-#include <sys/types.h>
-#endif
-#if STATFS_IN_SYS_STATVFS
-# include <sys/statvfs.h>
-  typedef struct statvfs STATFS_t;
-#else
-  typedef struct statfs STATFS_t;
-# if STATFS_IN_SYS_VFS
-#  include <sys/vfs.h>
-# elif STATFS_IN_SYS_MOUNT
-#  include <sys/mouht.h>
-# elif STATFS_IN_SYS_STATFS
-#  include <sys/statfs.h>
-# endif
-#endif ]], [[STATFS_t sfs;
-	sfs.f_bavail = 0;]])],[AC_MSG_RESULT(yes)
-	AC_DEFINE(STATFS_HAS_F_BAVAIL, 1, [Define if struct statfs has the f_bavail member])],[AC_MSG_RESULT(no)
-])
-fi
-
-if test X$found_struct_statfs = Xyes ; then
-dnl
-dnl now check to see if we have the 4-argument variant of statfs()
-dnl this pretty much requires AC_RUN_IFELSE([AC_LANG_SOURCE([[]])],[],[],[])
-dnl
-AC_MSG_CHECKING([if statfs() requires 4 arguments])
-AC_RUN_IFELSE([AC_LANG_SOURCE([[
-#ifdef HAVE_SYS_TYPES_H
-#include <sys/types.h>
-#endif
-#ifdef STATFS_IN_SYS_VFS
-#include <sys/vfs.h>
-#elif STATFS_IN_SYS_MOUNT
-#include <sys/mouht.h>
-#elif STATFS_IN_SYS_STATFS
-#include <sys/statfs.h>
-#endif
-main() {
-	struct statfs sfs;
-	exit (statfs(".", &sfs, sizeof(sfs), 0));
-}
-]])],[AC_MSG_RESULT(yes)
-	AC_DEFINE(STAT_STATFS4, 1, [Define if the statfs() call takes 4 arguments])],[AC_MSG_RESULT(no)],[AC_MSG_RESULT(no)
-])
-fi
-
-AC_C_INLINE
-
-dnl look for libc features
-PROVIDES_ERRNO=no
-AC_MSG_CHECKING(if <netdb.h> defines h_errno)
-AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <netdb.h>]], [[printf("%d",h_errno)]])],[PROVIDES_ERRNO=yes],[])
-AC_MSG_RESULT($PROVIDES_ERRNO)
-if test $PROVIDES_ERRNO = yes; then
-	AC_DEFINE(HAVE_HERRNO, 1, [ Define as 1 if <netdb.h> defines h_errno])
-fi
-
-dnl If a system doesn't have S_IFSOCK, define it as 0 which will
-dnl make S_ISSOCK always return false (nice, eh?)
-AC_MSG_CHECKING(if <sys/stat.h> defines S_IFSOCK)
-AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <sys/stat.h>]], [[printf("%d", S_IFSOCK)]])],[HAS_S_IFSOCK=yes],[HAS_S_IFSOCK=no])
-AC_MSG_RESULT($HAS_S_IFSOCK)
-if test $HAS_S_IFSOCK = yes; then
-	AC_DEFINE(HAVE_S_IFSOCK, 1, [Define as 1 if <sys/stat.h> defines S_IFSOCK])
-fi
-
-dnl Some Unix's are missing S_ISLNK, S_ISSOCK
-AC_MSG_CHECKING(if <sys/stat.h> defines S_ISLNK)
-AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <sys/stat.h>]], [[printf("%d", S_ISLNK(0755))]])],[HAS_S_ISLNK=yes],[HAS_S_ISLNK=no])
-AC_MSG_RESULT($HAS_S_ISLNK)
-if test $HAS_S_ISLNK = yes; then
-	AC_DEFINE(HAVE_S_ISLNK, 1, [Define as 1 if <sys/stat.h> defines S_ISLNK])
-fi
-
-AC_MSG_CHECKING(if <sys/stat.h> defines S_ISSOCK)
-AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <sys/stat.h>]], [[printf("%d", S_ISSOCK(0755))]])],[HAS_S_ISSOCK=yes],[HAS_S_ISSOCK=no])
-AC_MSG_RESULT($HAS_S_ISSOCK)
-if test $HAS_S_ISSOCK = yes; then
-	AC_DEFINE(HAVE_S_ISSOCK, 1, [Define as 1 if <sys/stat.h> defines S_ISSOCK])
-fi
-
-AC_MSG_CHECKING(if timezone is defined)
-AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <time.h>]], [[printf("%ld", timezone)]])],[HAS_TIMEZONE=yes],[HAS_TIMEZONE=no])
-AC_MSG_RESULT($HAS_TIMEZONE)
-
-dnl Check for missing typedefs
-AC_TYPE_MODE_T
-AC_TYPE_OFF_T
-AC_TYPE_PID_T
-AC_TYPE_SIZE_T
-
-dnl Checks for library functions.
-AC_FUNC_ALLOCA
-AC_FUNC_VPRINTF
-AC_FUNC_MMAP
-
-AC_CHECK_FUNCS(basename getaddrinfo getcwd getnameinfo getwd inet_aton)
-AC_CHECK_FUNCS(mtrace putenv realpath setenv clearenv)
-AC_CHECK_FUNCS(stpcpy stpncpy strcspn)
-AC_CHECK_FUNCS(strdup strndup strerror strtol strtoul strspn strstr)
-AC_CHECK_FUNCS(sighold sigrelse sigpause sigprocmask sigemptyset sigaddset sigdelset sigsuspend)
-AC_CHECK_FUNCS(madvise)
-
-AC_CHECK_FUNCS(__secure_getenv)
-
-AC_CHECK_FUNCS(regcomp)
-
-AC_CHECK_FUNCS(ftok)
-
-AC_CHECK_FUNCS(mkstemp)
-
-dnl XXX Glob *is* broken on linux with libc5, solaris and possibly aix when
-dnl %files gets something like
-dnl	/usr/*/locale/*/LC_MESSAGES/*.mo
-dnl (Note: more than one asterisk in glob pattern.)
-dnl
-dnl XXX Glob is "fixed" in glibc-2.3.3-61, but the cost is that
-dnl dangling symlinks are no longer globbed. Always use the internal glob.
-AC_DEFINE(USE_GNU_GLOB, 1, [Use the included glob.c?])
-AC_LIBOBJ(glob)
-AC_LIBOBJ(fnmatch)
-
-dnl
 dnl Auto-detect whether perl bindings should be built.
-dnl
 withval=auto
 AC_ARG_WITH(perl, AS_HELP_STRING([--with-perl], [build with RPM Perl language bindings]))
 WITH_PERL_VERSION=$withval
@@ -802,15 +676,11 @@ AC_SUBST(WITH_PERL_SUBDIR)
 AC_SUBST(WITH_PERL_SUBPACKAGE)
 AC_SUBST(WITH_PERL_VERSION)
 
-dnl
 dnl Auto-detect which python bindings should be built.
-dnl
 withval=auto
 AC_ARG_WITH(python, AS_HELP_STRING([--with-python], [build with RPM Python language bindings]))
-
 WITH_PYTHON_VERSION=$withval
 if test $withval = auto ; then
-
 AC_MSG_CHECKING(for python 2.5)
 AC_RUN_IFELSE([AC_LANG_SOURCE([[
 #include <python2.5/Python.h>
@@ -870,7 +740,6 @@ main() {
     fi
   fi
 fi
-
 if test "$WITH_PYTHON_VERSION" != no ; then
   WITH_PYTHON_SUBDIR=python
   WITH_PYTHON_SUBPACKAGE=1
@@ -878,45 +747,96 @@ else
   WITH_PYTHON_SUBDIR=
   WITH_PYTHON_SUBPACKAGE=0
 fi
-
 AC_SUBST(WITH_PYTHON_SUBDIR)
 AC_SUBST(WITH_PYTHON_SUBPACKAGE)
 AC_SUBST(WITH_PYTHON_VERSION)
 
-AC_PATH_PROG(__DOXYGEN, doxygen, no, $PATH)
-dnl
-dnl Auto-detect whether doxygen generated API docs should be included.
-dnl
-withval=auto
-AC_ARG_WITH(apidocs, AS_HELP_STRING([--with-apidocs], [build RPM API documentation]))
+dnl ##
+dnl ##  THIRD-PARTY LIBRARIES (2/2)
+dnl ##
 
-if test $withval = auto -a $__DOXYGEN != no ; then
-  withval=yes
-elif test $withval = yes -a $__DOXYGEN = no ; then
-  AC_MSG_ERROR(--> rpm API docs needs doxygen in PATH)
-fi
-if test $withval = yes; then
-  WITH_APIDOCS_TARGET=apidocs
-  WITH_APIDOCS=1
-else
-  WITH_APIDOCS=0
-fi
-AC_SUBST(WITH_APIDOCS_TARGET)
-AC_SUBST(WITH_APIDOCS)
+dnl # ZLib
+RPM_CHECK_LIB([ZLib], [zlib],
+              [z gz], [gzread], [zlib.h],
+              [yes,internal], [zlib],
+              [ AC_CHECK_FUNC(gzseek)
+                if test ".$RPM_CHECK_LIB_LOCATION" = .internal; then
+                    AC_DEFINE(HAVE_ZLIB_H, 1, [Define to 1 if you have <zlib.h>])
+                fi
+              ], [])
 
-WITH_SELINUX_LIB=
-with_selinuxval=no
-case "$target" in
-    *-*-linux*) with_selinuxval=yes ;;
-esac
-withval=${with_selinuxval}
-AC_ARG_WITH(selinux, AS_HELP_STRING([--with-selinux], [build RPM with SELinux support]))
-if test $withval != no ; then
-  AC_DEFINE(WITH_SELINUX, 1, [Build with selinux support?])
-  WITH_SELINUX_LIB="-lselinux"
-fi
-AC_SUBST(WITH_SELINUX_LIB)
+dnl # GNU BZip2
+RPM_CHECK_LIB([GNU BZip2], [bzip2],
+              [bz2], [BZ2_bzread], [bzlib.h],
+              [no,external:none], [],
+              [], [])
 
+dnl # BeeCrypt
+RPM_CHECK_LIB([BeeCrypt], [beecrypt],
+              [beecrypt], [mpfprintln], [beecrypt/api.h],
+              [yes,external], [beecrypt],
+              [], [ AC_ERROR([mandatory BeeCrypt library not found]) ])
+
+dnl # Neon
+RPM_CHECK_LIB([Neon], [neon],
+              [neon], [ne_session_create], [ne_session.h],
+              [yes,external:internal], [neon:src:src],
+              [ if test ".$RPM_CHECK_LIB_LOCATION" = .internal; then
+                    AC_DEFINE(HAVE_NEON_NE_GET_RESPONSE_HEADER, 1,
+                              [Define to 1 if you have ne_get_response_header() in libneon.])
+                else
+                    AC_CHECK_LIB(neon, ne_get_response_header, [
+                        AC_DEFINE(HAVE_NEON_NE_GET_RESPONSE_HEADER, 1,
+                                  [Define to 1 if you have ne_get_response_header() in libneon.]) ])
+                    AC_CHECK_LIB(neon, ne_send_request_chunk, [
+                        AC_DEFINE(HAVE_NEON_NE_SEND_REQUEST_CHUNK, 1,
+                                  [Define to 1 if you have ne_send_request_chunk() in libneon.]) ])
+                fi
+              ], [ AC_ERROR([mandatory Neon library not found]) ])
+
+dnl # File (magic)
+RPM_CHECK_LIB([File (magic)], [file],
+              [magic], [magic_open], [magic.h],
+              [yes,external:internal], [file:src:src],
+              [], [ AC_ERROR([mandatory File (magic) library not found]) ])
+
+dnl # Linux keyutils
+RPM_CHECK_LIB([Linux keyutils], [keyutils],
+              [keyutils], [keyctl_read], [keyutils.h],
+              [no,external:none], [],
+              [], [])
+
+dnl # POPT
+RPM_CHECK_LIB([POPT], [popt],
+              [popt], [poptGetContext], [popt.h],
+              [yes,external], [],
+              [], [AC_ERROR([mandatory POPT library not found])])
+
+dnl # Berkeley-DB & SQLite
+DBLIBSRCS=""
+RPM_CHECK_LIB([Berkeley-DB], [db],
+              [db], [db_create], [db.h],
+              [yes,internal:external], [db3],
+              [ DBLIBSRCS="$DBLIBSRCS db3.c"
+                if test ".$RPM_CHECK_LIB_LOCATION" = .internal; then
+                    AC_DEFINE(HAVE_DB_H, 1, [Have <db.h> header])
+                fi
+              ],
+              [ AC_ERROR([mandatory Berkeley-DB library not found]) ])
+AC_ARG_WITH(db-largefile, AS_HELP_STRING([--with-db-largefile], [build Berkeley-DB with LARGEFILE support]))
+AC_ARG_WITH(db-mutex,     AS_HELP_STRING([--with-db-mutex=ARG], [build Berkeley-DB with MUTEX type ARG]))
+AC_ARG_WITH(db-rpc,       AS_HELP_STRING([--with-db-rpc],       [build Berkeley-DB with RPC support]))
+AM_CONDITIONAL(WITH_DB_RPC, test ".$with_db_rpc" = .yes)
+RPM_CHECK_LIB([SQLite], [sqlite],
+              [sqlite3], [sqlite3_open], [sqlite3.h],
+              [no,external:none], [],
+              [ DBLIBSRCS="$DBLIBSRCS sqlite.c" ],
+              [])
+DBLIBOBJS=`echo $DBLIBSRCS | sed -e "s/\.c/\.lo/g"`
+AC_SUBST(DBLIBSRCS)
+AC_SUBST(DBLIBOBJS)
+
+dnl # Lua
 WITH_LUA_SUBDIR_DEF=""
 WITH_LUA_SUBDIR_LIB=""
 RPM_CHECK_LIB([Lua], [lua],
@@ -927,89 +847,33 @@ RPM_CHECK_LIB([Lua], [lua],
 AC_SUBST(WITH_LUA_SUBDIR_DEF)
 AC_SUBST(WITH_LUA_SUBDIR_LIB)
 
+dnl # DMalloc
 RPM_CHECK_LIB([DMalloc], [dmalloc],
               [dmalloc], [dmalloc_malloc], [dmalloc.h],
               [no,external:none], [],
               [], [])
 
-RPM_CHECK_LIB([ElectricFence], [efence],
+dnl # Electric Fence
+RPM_CHECK_LIB([Electric Fence], [efence],
               [efence], [malloc], [stdlib.h],
               [no,external:none], [],
               [], [])
 
-AC_CHECK_FUNCS(setlocale)
+dnl ##
+dnl ##  INSTALLATION PARAMETERS
+dnl ##
 
-AC_CHECK_FUNCS(getpassphrase)
-
-AC_CHECK_FUNC(getmntent, AC_DEFINE(HAVE_GETMNTENT, 1, [Define if you have the getmntent() function]), [
-  AC_CHECK_FUNC(mntctl, AC_DEFINE(HAVE_MNTCTL, 1, [Define as 1 if you have mntctl() (only aix?)]),[
-    AC_CHECK_FUNC(getmntinfo, AC_DEFINE(HAVE_GETMNTINFO, 1, [Define as 1 if you have getmntinfo() (Mac OS X)]), [
-      AC_CHECK_FUNC(getmntinfo_r, AC_DEFINE(HAVE_GETMNTINFO_R, 1, [Define as 1 if you have getmntinfo_r() (only osf?)]), [
-        AC_CHECK_LIB(c_r, getmntinfo_r, [LIBS="$LIBS -lc_r"; 
-					AC_DEFINE(HAVE_GETMNTINFO_R, 1, [Define as 1 if you have getmntinfo_r() (only osf?)])], [
-		 AC_DEFINE([USE_GETMNTENT], 1, [Defined if getmntent replacement is used])
-                 AC_LIBOBJ(getmntent)])
-      ])
-    ])
-  ])
-])
-
-AC_CHECK_FUNC(lchown,
-   [__CHOWN_RHF="%{__chown} -Rhf"
-    __CHGRP_RHF="%{__chgrp} -Rhf"
-    AC_DEFINE(HAVE_LCHOWN, 1, [Define as 1 if you have lchown()])],
-   [__CHOWN_RHF="%{__chown} -Rf"
-    __CHGRP_RHF="%{__chgrp} -Rf"
-    dnl Does chown() follow symlinks? This should be a good enough test.
-    AC_MSG_CHECKING(whether chown() follows symlinks)
-    AC_ARG_ENABLE([broken-chown],
-    [  --enable-broken-chown   this system's chown follows symbolic links], 
-	    result=$enableval, result=unknown)
-    if echo "$build" | egrep "(aix)|(hpux)|(linux)" > /dev/null ; then
-	result=yes
-    elif echo "$build" | egrep "(nextstep)" > /dev/null ; then
-	result=no
-    fi
-    if test $result = unknown; then
-	if test `${__ID} | cut -f2 -d\= | cut -f1 -d\(` = 0; then
-	    rm -f foo bar
-	    touch foo
-	    ln -s foo bar
-	    ${__CHOWN} 10 bar
-	    if test `ls -l foo | awk '{print $3}'` != "root"; then
-		result=yes
-	    else
-		result=no
-	    fi
-	    ${__RM} -f foo bar
-	else
-	    AC_MSG_CHECKING((cannot check by non-root user))
-	    result=no
-	fi
-    fi
-
-    AC_MSG_RESULT($result)
-    if test $result = yes; then
-	    AC_DEFINE(CHOWN_FOLLOWS_SYMLINK, 1, [Define as 1 if chown() follows symlinks and you don't have lchown()])
-    fi])
-AC_SUBST(__CHOWN_RHF)
-AC_SUBST(__CHGRP_RHF)
-
-dnl
-dnl figure out what root's primary group is
-dnl
+dnl dnl # figure out what root's primary group is
 AC_MSG_CHECKING(root's primary group)
 AC_RUN_IFELSE([AC_LANG_SOURCE([[#include <stdio.h>
 #include <sys/types.h>
 #include <pwd.h>
 #include <grp.h>
-
 int main()
 {
 	struct passwd *root = NULL;
 	struct group *roots_group = NULL;
 	FILE * tempfile = NULL;
-
 	root = getpwuid( (uid_t) 0 );
 	if (root != NULL) {
 		roots_group = getgrgid(root->pw_gid);
@@ -1022,7 +886,6 @@ int main()
 			}
 		}
 	}
-
 	exit(1);
 }]])],[ROOT_GROUP=`cat conftest_rootg`; rm -f conftest_rootg],[ROOT_GROUP="root"],[ROOT_GROUP="root"
 ])
@@ -1070,9 +933,7 @@ elif echo "$build_os" | grep sunos > /dev/null; then
 	AC_LIBOBJ(myrealloc)
 fi
 
-#
 # get rid of the 4-th tuple, if config.guess returned "linux-gnu" for build_os
-#
 if echo "$build_os" | grep '.*-gnulibc1' > /dev/null ; then
 	build_os=`echo "${build_os}" | sed 's/-gnulibc1$//'`
 fi
