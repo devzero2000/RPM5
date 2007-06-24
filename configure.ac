@@ -43,9 +43,7 @@ AC_PROG_LN_S
 AC_PROG_MAKE_SET
 AC_PROG_LIBTOOL
 AC_PROG_YACC
-
-AS=${AS-as}
-AC_SUBST(AS)
+AC_PATH_PROG(AS, as, as)
 
 dnl # GCC specifics
 if test ".$ac_cv_c_compiler_gnu" = .yes; then
