@@ -494,7 +494,7 @@ fprintf(stderr, "================================================== %d\n", i);
 
 fprintf(stderr, "-------------------------------------------------- %d\n", i);
 	rc = Xmpbinv_w(&q, s.size, s.data, qtemp, qwksp);
-	fprintf(stderr, "beecrypt: "); mpfprintln(stderr, qsize, qtemp);
+	fprintf(stderr, "BeeCrypt: "); mpfprintln(stderr, qsize, qtemp);
 
 fprintf(stderr, "-------------------------------------------------- %d\n", i);
 	rc = Ympbinv_w(&q, s.size, s.data, qtemp, qwksp);

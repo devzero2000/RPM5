@@ -1468,9 +1468,9 @@ char * pgpArmorWrap(int atype, const unsigned char * s, size_t ns)
     t = stpcpy(t, "-----BEGIN PGP ");
     t = stpcpy(t, pgpValStr(pgpArmorTbl, atype));
     /*@-globs@*/
-    t = stpcpy( stpcpy(t, "-----\nVersion: rpm-"), VERSION);
+    t = stpcpy( stpcpy(t, "-----\nVersion: RPM "), VERSION);
     /*@=globs@*/
-    t = stpcpy(t, " (beecrypt-4.1.2)\n\n");
+    t = stpcpy(t, " (BeeCrypt)\n\n");
 
     if ((enc = b64encode(s, ns)) != NULL) {
 	t = stpcpy(t, enc);
