@@ -300,7 +300,7 @@ AC_DEFUN([RPM_CHECK_LIB], [
             dnl # check for actual availability of library
             m4_if([$7],,, [ if test ".${__rcl_location_last}" = .internal; then
                 dnl # special case: still not existing "internal" library
-                dnl # cannot be checked (and usually has not be checked anyway)
+                dnl # cannot be checked (and usually has not to be checked anyway)
                 with_$2=yes
                 if test ".${__rcl_location_$2}" != .internal; then
                     AC_ERROR([unable to find internal $1 library])
