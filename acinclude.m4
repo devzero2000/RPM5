@@ -154,7 +154,7 @@ AC_DEFUN([RPM_CHECK_LIB], [
                     dnl # detection of library in arbitrary external location
                     __rcl_$2_version=`($2-config --version) 2>/dev/null`
                     if test ".${__rcl_$2_version}" != .; then
-                        dnl #   via config script in PATH
+                        dnl # via config script in PATH
                         __rcl_flags="`($2-config --cppflags) 2>/dev/null`"; if test ".${__rcl_flags}" != .; then CPPFLAGS="${CPPFLAGS} ${__rcl_flags}"; fi
                         __rcl_flags="`($2-config --cflags  ) 2>/dev/null`"; if test ".${__rcl_flags}" != .; then CFLAGS="${CFLAGS} ${__rcl_flags}"; fi
                         __rcl_flags="`($2-config --ldflags ) 2>/dev/null`"; if test ".${__rcl_flags}" != .; then LDFLAGS="${LDFLAGS} ${__rcl_flags}"; fi
@@ -162,7 +162,7 @@ AC_DEFUN([RPM_CHECK_LIB], [
                         __rcl_result_hint="external: via $2-config"
                         break
                     elif (pkg-config --exists $2) 2>/dev/null; then
-                        dnl #   via pkg-config(1) script in PATH
+                        dnl # via pkg-config(1) script in PATH
                         CPPFLAGS="${CPPFLAGS} `pkg-config $2 --cflags-only-I`"
                         CFLAGS="${CFLAGS} `pkg-config $2 --cflags-only-other`"
                         LDFLAGS="${LDFLAGS} `pkg-config $2 --libs-only-other`"
