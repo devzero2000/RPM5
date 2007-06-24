@@ -44,6 +44,8 @@ AC_PROG_MAKE_SET
 AC_PROG_LIBTOOL
 AC_PROG_YACC
 AC_PATH_PROG(AS, as, as)
+AC_PATH_PROG(CTAGS, ctags, /bin/true)
+AC_PATH_PROG(CSCOPE, cscope, /bin/true)
 
 dnl # GCC specifics
 if test ".$ac_cv_c_compiler_gnu" = .yes; then
@@ -99,9 +101,6 @@ AC_SUBST(RPMUSER)
 AC_SUBST(RPMUID)
 AC_SUBST(RPMGROUP)
 AC_SUBST(RPMGID)
-
-AC_PATH_PROG(CTAGS, ctags, /bin/true)
-AC_PATH_PROG(CSCOPE, cscope, /bin/true)
 
 dnl
 dnl This now uses libtool. Put
