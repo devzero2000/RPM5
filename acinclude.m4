@@ -67,6 +67,15 @@ dnl ##    <directory-path>     ::= [...] /* valid arg for test(1) option "-d" */
 dnl ##
 dnl ##
 
+dnl # internal helper macro
+m4_define([__rcl_verbose], [
+    dnl # printing of verbose message
+    if test ".$verbose" = .yes; then
+        _AS_ECHO([$1])
+    fi
+])
+
+dnl # public API macro
 AC_DEFUN([RPM_CHECK_LIB], [
     dnl ##
     dnl ## PROLOG
@@ -80,10 +89,12 @@ AC_DEFUN([RPM_CHECK_LIB], [
     if test ".${with_$2+set}" != .set; then
         dnl # initialize to default enable mode
         with_$2="__rcl_default_enable"
+        __rcl_verbose([++ assuming --with-$2=$with_$2])
     fi
     if test ".${with_$2}" = .yes; then
         dnl # map simple "--with-foo=yes" to an enabled default location path
         with_$2="__rcl_default_locations"
+        __rcl_verbose([++ mapping --with-$2=yes to --with-$2="$with_$2"])
     fi
 
     dnl ##
@@ -102,15 +113,17 @@ AC_DEFUN([RPM_CHECK_LIB], [
             for __rcl_location in ${with_$2}; do
                 IFS="${__rcl_IFS}"
                 __rcl_location_last="${__rcl_location}"
+                __rcl_verbose([++ searching location: ${__rcl_location}])
                 if test ".${__rcl_location}" = .none; then
                     dnl # no operation in loop, ignore failure later, too.
-                    :
+                    __rcl_verbose([-- no operation])
                 m4_if([$7],,, [ elif test ".${__rcl_location}" = .internal; then
                     dnl # optional support for <internal-subdir> feature
                     m4_define([__rcl_subdir],
                               [m4_if(m4_index([$7], [:]), -1, [$7],
                                      m4_substr([$7], 0, m4_index([$7], [:])))])
                     if test -d __rcl_subdir; then
+                        __rcl_verbose([-- activating local sub-directory: __rcl_subdir])
                         AC_CONFIG_SUBDIRS(__rcl_subdir)
                         WITH_]m4_translit([$2],[a-z],[A-Z])[_SUBDIR="__rcl_subdir"
                         dnl # divert deferred flags handling because in the "internal"
@@ -119,6 +132,7 @@ AC_DEFUN([RPM_CHECK_LIB], [
                         __rcl_location_$2=internal
                         AC_CONFIG_COMMANDS_PRE([
                             if test ".${__rcl_location_$2}" = .internal; then
+                                __rcl_verbose([++ post-adjustments for --with-$2 (${__rcl_location_$2})])
                                 __rcl_dirs_inc=`echo '$7' | sed -e 's/^[[^:]]*://' -e 's/:[[^:]]*[$]//'`
                                 __rcl_dirs_lib=`echo '$7' | sed -e 's/^[[^:]]*:[[^:]]*://'`
                                 __rcl_basedir="\[$](top_srcdir)/\[$](WITH_]m4_translit([$2],[a-z],[A-Z])[_SUBDIR)"
@@ -128,26 +142,33 @@ AC_DEFUN([RPM_CHECK_LIB], [
                                     for __rcl_dir in ${__rcl_dirs_inc}; do
                                         IFS="${__rcl_IFS}"
                                         test ".${__rcl_dir}" = . && continue
+                                        __rcl_verbose([-- extending CPPFLAGS: -I${__rcl_basedir}/${__rcl_dir}])
                                         CPPFLAGS="${CPPFLAGS} -I${__rcl_basedir}/${__rcl_dir}"
                                     done
                                     IFS="${__rcl_IFS}"
                                 fi
+                                __rcl_verbose([-- extending CPPFLAGS: -I${__rcl_basedir}])
                                 CPPFLAGS="${CPPFLAGS} -I${__rcl_basedir}"
                                 if test ".${__rcl_dirs_lib}" != ".$7"; then
                                     __rcl_IFS="${IFS}"; IFS=","
                                     for __rcl_dir in ${__rcl_dirs_lib}; do
                                         IFS="${__rcl_IFS}"
                                         test ".${__rcl_dir}" = . && continue
+                                        __rcl_verbose([-- extending LDFLAGS: -L${__rcl_basedir}/${__rcl_dir}])
                                         LDFLAGS="${LDFLAGS} -L${__rcl_basedir}/${__rcl_dir}"
                                     done
                                     IFS="${__rcl_IFS}"
                                 fi
+                                __rcl_verbose([-- extending LDFLAGS: -L${__rcl_basedir}])
                                 LDFLAGS="${LDFLAGS} -L${__rcl_basedir}"
+                                __rcl_verbose([-- extending LIBS: -l${__rcl_firstlib}])
                                 LIBS="${LIBS} -l${__rcl_firstlib}"
                             fi
                         ])
                         __rcl_result_hint="internal: sub-directory __rcl_subdir"
                         break
+                    else
+                        __rcl_verbose([-- skipping not existing local sub-directory: __rcl_subdir])
                     fi
                 ])
                 elif test ".${__rcl_location}" = .external; then
@@ -157,6 +178,7 @@ AC_DEFUN([RPM_CHECK_LIB], [
                         m4_define([__rcl_query_config], [
                             __rcl_flags="`($][1 --$][2) 2>/dev/null`"
                             if test ".${__rcl_flags}" != .; then
+                                __rcl_verbose([-- extending $][3: ${__rcl_flags}])
                                 $][3="${$][3} ${__rcl_flags}"
                             fi
                         ])
@@ -171,6 +193,7 @@ AC_DEFUN([RPM_CHECK_LIB], [
                         m4_define([__rcl_query_pkgconfig], [
                             __rcl_flags="`($][1 --$][2) 2>/dev/null`"
                             if test ".${__rcl_flags}" != .; then
+                                __rcl_verbose([-- extending $][3: ${__rcl_flags}])
                                 $][3="${$][3} ${__rcl_flags}"
                             fi
                         ])
@@ -235,6 +258,7 @@ AC_DEFUN([RPM_CHECK_LIB], [
                         for __rcl_dir in ${__rcl_location}/include/$2 ${__rcl_location}/include ${__rcl_location}; do
                             if test -f "${__rcl_dir}/$5"; then
                                 if test ".${__rcl_dir}" != "./usr/include"; then
+                                    __rcl_verbose([-- extending CPPFLAGS: -I${__rcl_dir}])
                                     CPPFLAGS="${CPPFLAGS} -I${__rcl_dir}"
                                 fi
                                 __rcl_found=yes
@@ -248,6 +272,8 @@ AC_DEFUN([RPM_CHECK_LIB], [
                                     if  test -f "${__rcl_dir}/lib[]m4_defn([__rcl_lib]).la" && \
                                         test -d "${__rcl_dir}/.libs"; then
                                         if test ".${__rcl_dir}" != "./usr/lib"; then
+                                            __rcl_verbose([-- extending LDFLAGS: -L${__rcl_dir}])
+                                            __rcl_verbose([-- extending LDFLAGS: -L${__rcl_dir}/.libs])
                                             LDFLAGS="${LDFLAGS} -L${__rcl_dir} -L${__rcl_dir}/.libs"
                                         fi
                                         __rcl_found=yes
@@ -258,6 +284,7 @@ AC_DEFUN([RPM_CHECK_LIB], [
                                         test -f "${__rcl_dir}/lib[]m4_defn([__rcl_lib]).sl" || \
                                         test -f "${__rcl_dir}/lib[]m4_defn([__rcl_lib]).dylib"; then
                                         if test ".${__rcl_dir}" != "./usr/lib"; then
+                                            __rcl_verbose([-- extending LDFLAGS: -L${__rcl_dir}])
                                             LDFLAGS="${LDFLAGS} -L${__rcl_dir}"
                                         fi
                                         __rcl_found=yes
@@ -276,6 +303,7 @@ AC_DEFUN([RPM_CHECK_LIB], [
                             test .${__rcl_file} = ._ && continue
                             __rcl_dir=`echo ${__rcl_file} | sed -e 's;[[^/]]*[$];;' -e 's;\(.\)/[$];\1;'`
                             if test ".${__rcl_dir}" != "./usr/include"; then
+                                __rcl_verbose([-- extending CPPFLAGS: -I${__rcl_dir}])
                                 CPPFLAGS="${CPPFLAGS} -I${__rcl_dir}"
                             fi
                             __rcl_found=yes
@@ -289,6 +317,7 @@ AC_DEFUN([RPM_CHECK_LIB], [
                                     test .${__rcl_file} = ._ && continue
                                     __rcl_dir=`echo ${__rcl_file} | sed -e 's;[[^/]]*[$];;' -e 's;\(.\)/[$];\1;'`
                                     if test ".${__rcl_dir}" != "./usr/lib"; then
+                                        __rcl_verbose([-- extending LDFLAGS: -L${__rcl_dir}])
                                         LDFLAGS="${LDFLAGS} -L${__rcl_dir}"
                                     fi
                                     __rcl_found=yes
@@ -367,9 +396,11 @@ AC_DEFUN([RPM_CHECK_LIB], [
     if test ".${with_$2}" = .yes; then
         AC_DEFINE([WITH_]m4_translit([$2],[a-z],[A-Z]), 1, [Define as 1 if building with $1 library])
         dnl # support optional <action-success>
+        __rcl_verbose([++ executing success action])
         m4_if([$8],, :, [$8])
     else
         dnl # support optional <action-failure>
+        __rcl_verbose([++ executing failure action])
         m4_if([$9],, [
             if  test ".${RPM_CHECK_LIB_LOCATION}" != . && \
                 test ".${RPM_CHECK_LIB_LOCATION}" != .none; then
