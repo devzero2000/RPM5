@@ -63,33 +63,7 @@ dnl ## API CHECKS
 dnl ##
 
 AC_SYS_LARGEFILE
-
-dnl Does this platform require array notation to assign to a va_list?
-dnl If cross-compiling, we assume va_list is "normal".  If this breaks
-dnl you, set ac_cv_valistisarray=true and maybe define HAVE_VA_LIST_AS_ARRAY
-dnl also just to be sure.
-AC_MSG_CHECKING(whether va_list assignments need array notation)
-AC_CACHE_VAL(ac_cv_valistisarray,
-	[AC_RUN_IFELSE([AC_LANG_SOURCE([[
-#include <stdlib.h>
-#include <stdarg.h>
-		     void foo(int i, ...) {
-			va_list ap1, ap2;
-			va_start(ap1, i);
-			ap2 = ap1;
-			if (va_arg(ap2, int) != 123 || va_arg(ap1, int) != 123)
-			    { exit(1); }
-			va_end(ap1); va_end(ap2);
-		     }
-		     int main() { foo(0, 123); return(0); }]])],[ac_cv_valistisarray=false],[ac_cv_valistisarray=true],[ac_cv_valistisarray=false])])
-
-if test "$ac_cv_valistisarray" = true ; then
-	AC_DEFINE(HAVE_VA_LIST_AS_ARRAY, 1,
-		[Define as 1 if your va_list type is an array])
-	AC_MSG_RESULT(yes)
-else
-       AC_MSG_RESULT(no)
-fi
+AC_CHECK_VA_COPY
 
 dnl # RPM installation user/group and uid/gid
 : ${RPMUSER=rpm}
