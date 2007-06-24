@@ -32,7 +32,8 @@ SUBDIRS = \
 	rpmdb \
 	lib \
 	build \
-	@WITH_PYTHON_SUBDIR@ @WITH_PERL_SUBDIR@ \
+	@WITH_PYTHON_SUBDIR@ \
+	@WITH_PERL_SUBDIR@ \
 	tools \
 	scripts \
 	doc \
@@ -51,6 +52,7 @@ staticLDFLAGS = # @LDFLAGS_STATIC@ # @LDFLAGS_NPTL@
 myLDFLAGS = @WITH_LIBELF_LIB@
 
 myLDADD = \
+	$(top_builddir)/build/librpmbuild.la \
 	$(top_builddir)/lib/librpm.la \
 	$(top_builddir)/rpmdb/librpmdb.la \
 	$(top_builddir)/rpmio/librpmio.la
@@ -65,13 +67,13 @@ noinst_HEADERS = build.h debug.h system.h
 
 rpm_SOURCES =		$(top_srcdir)/build.c
 rpm_LDFLAGS =		$(myLDFLAGS) $(staticLDFLAGS)
-rpm_LDADD =		rpm.o $(top_builddir)/build/.libs/librpmbuild.a $(myLDADD)
+rpm_LDADD =		rpm.o $(myLDADD)
 rpm.o:	$(top_srcdir)/rpmqv.c
 	$(COMPILE) -DIAM_RPMBT -DIAM_RPMDB -DIAM_RPMEIU -DIAM_RPMK -DIAM_RPMQV -o $@ -c $<
 
 rpmbuild_SOURCES =	$(top_srcdir)/build.c
 rpmbuild_LDFLAGS =	$(myLDFLAGS) $(staticLDFLAGS)
-rpmbuild_LDADD =	rpmbuild.o $(top_builddir)/build/librpmbuild.la $(myLDADD)
+rpmbuild_LDADD =	rpmbuild.o $(myLDADD)
 rpmbuild.o: $(top_srcdir)/rpmqv.c
 	$(COMPILE) -DIAM_RPMBT -o $@ -c $<
 
