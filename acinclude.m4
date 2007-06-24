@@ -152,21 +152,32 @@ AC_DEFUN([RPM_CHECK_LIB], [
                 ])
                 elif test ".${__rcl_location}" = .external; then
                     dnl # detection of library in arbitrary external location
-                    __rcl_$2_version=`($2-config --version) 2>/dev/null`
-                    if test ".${__rcl_$2_version}" != .; then
+                    if test ".`($2-config --version) 2>/dev/null`" != .; then
                         dnl # via config script in PATH
-                        __rcl_flags="`($2-config --cppflags) 2>/dev/null`"; if test ".${__rcl_flags}" != .; then CPPFLAGS="${CPPFLAGS} ${__rcl_flags}"; fi
-                        __rcl_flags="`($2-config --cflags  ) 2>/dev/null`"; if test ".${__rcl_flags}" != .; then CFLAGS="${CFLAGS} ${__rcl_flags}"; fi
-                        __rcl_flags="`($2-config --ldflags ) 2>/dev/null`"; if test ".${__rcl_flags}" != .; then LDFLAGS="${LDFLAGS} ${__rcl_flags}"; fi
-                        __rcl_flags="`($2-config --libs    ) 2>/dev/null`"; if test ".${__rcl_flags}" != .; then LIBS="${LIBS} ${__rcl_flags}"; fi
+                        m4_define([__rcl_query_config], [
+                            __rcl_flags="`($][1 --$][2) 2>/dev/null`"
+                            if test ".${__rcl_flags}" != .; then
+                                $][3="${$][3} ${__rcl_flags}"
+                            fi
+                        ])
+                        __rcl_query_config([$2-config], [cppflags], [CPPFLAGS])
+                        __rcl_query_config([$2-config], [cflags],   [CFLAGS])
+                        __rcl_query_config([$2-config], [ldflags],  [LDFLAGS])
+                        __rcl_query_config([$2-config], [libs],     [LIBS])
                         __rcl_result_hint="external: via $2-config"
                         break
                     elif (pkg-config --exists $2) 2>/dev/null; then
                         dnl # via pkg-config(1) script in PATH
-                        CPPFLAGS="${CPPFLAGS} `pkg-config $2 --cflags-only-I`"
-                        CFLAGS="${CFLAGS} `pkg-config $2 --cflags-only-other`"
-                        LDFLAGS="${LDFLAGS} `pkg-config $2 --libs-only-other`"
-                        LIBS="${LDFLAGS} `pkg-config $2 --libs-only-l`"
+                        m4_define([__rcl_query_pkgconfig], [
+                            __rcl_flags="`($][1 --$][2) 2>/dev/null`"
+                            if test ".${__rcl_flags}" != .; then
+                                $][3="${$][3} ${__rcl_flags}"
+                            fi
+                        ])
+                        __rcl_query_pkgconfig([pkg-config $2], [cflags-only-I],     [CPPFLAGS])
+                        __rcl_query_pkgconfig([pkg-config $2], [cflags-only-other], [CFLAGS])
+                        __rcl_query_pkgconfig([pkg-config $2], [libs-only-other],   [LDFLAGS])
+                        __rcl_query_pkgconfig([pkg-config $2], [libs-only-l],       [LIBS])
                         __rcl_result_hint="external: via pkg-config $2"
                         break
                     elif test ".${__rcl_found}" = .no; then
@@ -192,12 +203,11 @@ AC_DEFUN([RPM_CHECK_LIB], [
                     dnl # via config script
                     for __rcl_dir in ${__rcl_location}/bin ${__rcl_location}; do
                         if test -f "${__rcl_dir}/$2-config" && test ! -f "${__rcl_dir}/$2-config.in"; then
-                            __rcl_$2_version=`(${__rcl_dir}/$2-config --version) 2>/dev/null`
-                            if test ".${__rcl_$2_version}" != .; then
-                                __rcl_flags="`(${__rcl_dir}/$2-config --cppflags) 2>/dev/null`"; if test ".${__rcl_flags}" != .; then CPPFLAGS="${CPPFLAGS} ${__rcl_flags}"; fi
-                                __rcl_flags="`(${__rcl_dir}/$2-config --cflags  ) 2>/dev/null`"; if test ".${__rcl_flags}" != .; then CFLAGS="${CFLAGS} ${__rcl_flags}"; fi
-                                __rcl_flags="`(${__rcl_dir}/$2-config --ldflags ) 2>/dev/null`"; if test ".${__rcl_flags}" != .; then LDFLAGS="${LDFLAGS} ${__rcl_flags}"; fi
-                                __rcl_flags="`(${__rcl_dir}/$2-config --libs    ) 2>/dev/null`"; if test ".${__rcl_flags}" != .; then LIBS="${LIBS} ${__rcl_flags}"; fi
+                            if test ".`(${__rcl_dir}/$2-config --version) 2>/dev/null`" != .; then
+                                __rcl_query_config([${__rcl_dir}/$2-config], [cppflags], [CPPFLAGS])
+                                __rcl_query_config([${__rcl_dir}/$2-config], [cflags],   [CFLAGS])
+                                __rcl_query_config([${__rcl_dir}/$2-config], [ldflags],  [LDFLAGS])
+                                __rcl_query_config([${__rcl_dir}/$2-config], [libs],     [LIBS])
                                 __rcl_result_hint="external: via ${__rcl_dir}/$2-config"
                                 __rcl_found=yes
                                 break
@@ -209,10 +219,10 @@ AC_DEFUN([RPM_CHECK_LIB], [
                         for __rcl_dir in ${__rcl_location}/bin ${__rcl_location}; do
                             if test -f "${__rcl_dir}/pkg-config"; then
                                 if (${__rcl_dir}/pkg-config --exists $2) 2>/dev/null; then
-                                    CPPFLAGS="${CPPFLAGS} `${__rcl_dir}/pkg-config $2 --cflags-only-I`"
-                                    CFLAGS="${CFLAGS} `${__rcl_dir}/pkg-config $2 --cflags-only-other`"
-                                    LDFLAGS="${LDFLAGS} `${__rcl_dir}/pkg-config $2 --libs-only-other`"
-                                    LIBS="${LDFLAGS} `${__rcl_dir}/pkg-config $2 --libs-only-l`"
+                                    __rcl_query_pkgconfig([${__rcl_dir}/pkg-config $2], [cflags-only-I],     [CPPFLAGS])
+                                    __rcl_query_pkgconfig([${__rcl_dir}/pkg-config $2], [cflags-only-other], [CFLAGS])
+                                    __rcl_query_pkgconfig([${__rcl_dir}/pkg-config $2], [libs-only-other],   [LDFLAGS])
+                                    __rcl_query_pkgconfig([${__rcl_dir}/pkg-config $2], [libs-only-l],       [LIBS])
                                     __rcl_result_hint="external: via ${__rcl_dir}/pkg-config $2"
                                     __rcl_found=yes
                                     break
