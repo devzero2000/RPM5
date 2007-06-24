@@ -322,8 +322,10 @@ addlib() {
 RPM_CHECK_LIB([ZLib], [zlib],
               [z gz], [gzread], [zlib.h],
               [yes,internal], [zlib],
-              [AC_CHECK_FUNC(gzseek)
-               AC_DEFINE(HAVE_ZLIB_H, 1, [Define to 1 if you have zlib.h])
+              [ AC_CHECK_FUNC(gzseek)
+                if test ".$RPM_CHECK_LIB_LOCATION" = .internal; then
+                    AC_DEFINE(HAVE_ZLIB_H, 1, [Define to 1 if you have <zlib.h>])
+                fi
               ], [])
 
 RPM_CHECK_LIB([GNU BZip2], [bzip2],
