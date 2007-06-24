@@ -89,10 +89,11 @@ else
        AC_MSG_RESULT(no)
 fi
 
-RPMUSER=rpm
-RPMUID=37
-RPMGROUP=rpm
-RPMGID=37
+dnl # RPM installation user/group and uid/gid
+: ${RPMUSER=rpm}
+: ${RPMUID=37}
+: ${RPMGROUP=rpm}
+: ${RPMGID=37}
 export RPMUSER RPMUID RPMGROUP RPMGID
 AC_SUBST(RPMUSER)
 AC_SUBST(RPMUID)
