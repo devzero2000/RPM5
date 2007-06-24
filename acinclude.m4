@@ -169,6 +169,22 @@ AC_DEFUN([RPM_CHECK_LIB], [
                         LIBS="${LDFLAGS} `pkg-config $2 --libs-only-l`"
                         __rcl_result_hint="external: via pkg-config $2"
                         break
+                    elif test ".${__rcl_found}" = .no; then
+                        dnl # via implicit flags attribution of previous checks or
+                        dnl # in standard system locations (usually /usr/include and /usr/lib)
+                        __rcl_found_hdr=no
+                        __rcl_found_lib=no
+                        AC_PREPROC_IFELSE([AC_LANG_SOURCE([@%:@include <$5>])], [ __rcl_found_hdr=yes ])
+                        m4_foreach_w([__rcl_lib], [$3], [
+                            __rcl_safe_LIBS="${LIBS}"
+                            LIBS="-l[]m4_defn([__rcl_lib]) ${LIBS}"
+                            AC_LINK_IFELSE([AC_LANG_CALL([], [$4])], [ __rcl_found_lib=yes ])
+                            LIBS="${__rcl_safe_LIBS}"
+                        ])
+                        if test ".${__rcl_found_hdr}:${__rcl_found_lib}" = ".yes:yes"; then
+                            __rcl_result_hint="external: implicit or default location"
+                            break
+                        fi
                     fi
                 elif test -d "${__rcl_location}"; then
                     dnl # detection of library in particular external location
