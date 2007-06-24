@@ -70,8 +70,9 @@ dnl you, set ac_cv_valistisarray=true and maybe define HAVE_VA_LIST_AS_ARRAY
 dnl also just to be sure.
 AC_MSG_CHECKING(whether va_list assignments need array notation)
 AC_CACHE_VAL(ac_cv_valistisarray,
-	[AC_RUN_IFELSE([AC_LANG_SOURCE([[#include <stdlib.h>
-		     #include <stdarg.h>
+	[AC_RUN_IFELSE([AC_LANG_SOURCE([[
+#include <stdlib.h>
+#include <stdarg.h>
 		     void foo(int i, ...) {
 			va_list ap1, ap2;
 			va_start(ap1, i);
