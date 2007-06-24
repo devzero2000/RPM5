@@ -140,17 +140,6 @@ int doScript(Spec spec, int what, const char *name, StringBuf sb, int test)
 	goto exit;
     }
 
-#ifdef HAVE_FCHMOD
-    switch (rootut) {
-    case URL_IS_PATH:
-    case URL_IS_UNKNOWN:
-	(void)fchmod(Fileno(fd), 0600);
-	break;
-    default:
-	break;
-    }
-#endif
-
     /*@-branchstate@*/
     if (fdGetFp(fd) == NULL)
 	xfd = Fdopen(fd, "w.fpio");
