@@ -26,7 +26,7 @@
 #ifndef _SHA224_H
 #define _SHA224_H
 
-#include "beecrypt/beecrypt.h"
+#include <beecrypt/beecrypt.h>
 
 /*!\brief Holds all the parameters necessary for the SHA-224 algorithm.
  * \ingroup HASH_sha224_m

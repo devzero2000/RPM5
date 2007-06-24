@@ -49,7 +49,7 @@
 #ifndef  _RMD128_H
 #define  _RMD128_H
 
-#include "beecrypt.h"
+#include <beecrypt/beecrypt.h>
 
 /*!\brief Holds all the parameters necessary for the RIPEMD-128 algorithm.
  * \ingroup HASH_rmd128_h

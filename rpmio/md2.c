@@ -12,8 +12,8 @@
 #include "system.h"
 
 #include "md2.h"
-#include "mp.h"
-#include "endianness.h"
+#include <beecrypt/mp.h>
+#include <beecrypt/endianness.h>
 
 #include "debug.h"
 

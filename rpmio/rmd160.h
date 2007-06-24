@@ -47,7 +47,7 @@
 #ifndef  _RMD160_H
 #define  _RMD160_H
 
-#include "beecrypt.h"
+#include <beecrypt/beecrypt.h>
 
 /*!\brief Holds all the parameters necessary for the RIPEMD-160 algorithm.
  * \ingroup HASH_rmd160_h

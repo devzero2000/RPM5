@@ -6,7 +6,7 @@
 #ifndef  _TIGER_H
 #define  _TIGER_H
 
-#include "beecrypt.h"
+#include <beecrypt/beecrypt.h>
 
 /*!\brief Holds all the parameters necessary for the TIGER algorithm.
  * \ingroup HASH_tiger_h

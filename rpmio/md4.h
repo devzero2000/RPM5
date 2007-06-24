@@ -6,7 +6,7 @@
 #ifndef  _MD4_H
 #define  _MD4_H
 
-#include "beecrypt.h"
+#include <beecrypt/beecrypt.h>
 
 /*!\brief Holds all the parameters necessary for the MD4 algorithm.
  * \ingroup HASH_md4_h

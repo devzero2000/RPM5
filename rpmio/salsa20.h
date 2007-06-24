@@ -6,7 +6,7 @@
 #ifndef  _SALSA20_H
 #define  _SALSA20_H
 
-#include "beecrypt.h"
+#include <beecrypt/beecrypt.h>
 
 /*!\brief Holds all the parameters necessary for the SALSA-20 algorithm.
  * \ingroup HASH_salsa20_h

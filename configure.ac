@@ -536,8 +536,7 @@ AC_SUBST(WITH_LIBDWARF_DEBUGEDIT)
 RPM_CHECK_LIB([BeeCrypt], [beecrypt],
               [beecrypt], [mpfprintln], [beecrypt/api.h],
               [yes,external], [beecrypt],
-              [ CPPFLAGS="${CPPFLAGS} -I${prefix}/include/beecrypt"
-              ], [ AC_ERROR([mandatory BeeCrypt library not found]) ])
+              [], [ AC_ERROR([mandatory BeeCrypt library not found]) ])
 
 #=================
 

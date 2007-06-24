@@ -42,8 +42,8 @@
 #include "system.h"
 
 #include "rmd160.h"      
-#include "mp.h"
-#include "endianness.h"
+#include <beecrypt/mp.h>
+#include <beecrypt/endianness.h>
 
 #include "debug.h"
 

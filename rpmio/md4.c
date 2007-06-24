@@ -15,8 +15,8 @@
 #endif
 
 #include "md4.h"
-#include "mp.h"
-#include "endianness.h"
+#include <beecrypt/mp.h>
+#include <beecrypt/endianness.h>
 
 #include "debug.h"
 

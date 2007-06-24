@@ -5,8 +5,8 @@
 #endif
 
 #include "tiger.h"
-#include "mp.h"
-#include "endianness.h"
+#include <beecrypt/mp.h>
+#include <beecrypt/endianness.h>
 
 #include "debug.h"
 
