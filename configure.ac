@@ -90,10 +90,6 @@ AC_ARG_ENABLE(build-warnings,
     fi
 ])
 
-dnl # FIXME: partly Linux-specific only!?
-dnl # (but at least it usually doesn't harm on other platforms)
-CFLAGS="$CFLAGS -D_GNU_SOURCE -D_REENTRANT"
-
 dnl # support static linking of RPM via GNU libtool
 LDFLAGS_STATIC=""
 AC_ARG_ENABLE(build-static,
@@ -131,7 +127,11 @@ AC_ARG_ENABLE(build-static,
 ])
 AC_SUBST(LDFLAGS_STATIC)
 
-dnl # old RPM 4.x style platform-specific flag extension hack
+dnl # FIXME: partly Linux-specific only!?
+dnl # (but at least it usually doesn't harm on other platforms)
+CFLAGS="$CFLAGS -D_GNU_SOURCE -D_REENTRANT"
+
+dnl # FIXME: old RPM 4.x style platform-specific flag extension hack
 addlib () {
    l=$1
    shift
