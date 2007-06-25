@@ -8,9 +8,9 @@ dnl ##
 
 AC_PREREQ(2.57)
 AC_INIT(rpm, 5.0, [rpm-devel@rpm5.org])
-AC_CANONICAL_TARGET
 AC_CONFIG_SRCDIR([rpmqv.c])
 AC_CONFIG_HEADERS([config.h])
+AC_CANONICAL_TARGET
 AM_INIT_AUTOMAKE([foreign])
 
 dnl # Library code modified:                              REVISION++
@@ -24,20 +24,11 @@ AC_SUBST(LT_AGE,      0)
 dnl # set of available languages.
 ALL_LINGUAS="cs da de fi fr gl is ja ko no pl pt pt_BR ro ru sk sl sr sv tr uk"
 
-dnl # RPM installation user/group and uid/gid
-: ${RPMUSER=rpm}
-: ${RPMUID=37}
-: ${RPMGROUP=rpm}
-: ${RPMGID=37}
-export RPMUSER RPMUID RPMGROUP RPMGID
-AC_SUBST(RPMUSER)
-AC_SUBST(RPMUID)
-AC_SUBST(RPMGROUP)
-AC_SUBST(RPMGID)
-
 dnl ##
 dnl ## ==== TOOL-CHAIN CHECKS ====
 dnl ##
+
+AC_MSG_HEADER([TOOL-CHAIN CHECKS])
 
 AC_PROG_CC
 AC_PROG_CPP
@@ -195,6 +186,8 @@ fi
 dnl ##
 dnl ## ==== PROGRAM CHECKS ====
 dnl ##
+
+AC_MSG_HEADER([PROGRAM CHECKS])
 
 dnl # look for POSIX chmod attributes
 AC_MSG_CHECKING(POSIX chmod)
@@ -373,6 +366,8 @@ dnl ##
 dnl ## ==== API CHECKS ====
 dnl ##
 
+AC_MSG_HEADER([API CHECKS])
+
 dnl # platform specific checks
 AC_ISC_POSIX
 
@@ -531,6 +526,8 @@ AC_CHECK_FUNC(getmntent, AC_DEFINE(HAVE_GETMNTENT, 1, [Define if you have the ge
 dnl ##
 dnl ## ==== THIRD-PARTY LIBRARIES (1/2) ====
 dnl ##
+
+AC_MSG_HEADER([THIRD-PARTY LIBRARIES (1/2)])
 
 dnl # check for libelf library. Prefer external, then internal, otherwise none.
 WITH_ELFUTILS_SUBDIR=
@@ -733,6 +730,8 @@ dnl ##
 dnl ## ==== THIRD-PARTY LIBRARIES (2/2) ====
 dnl ##
 
+AC_MSG_HEADER([THIRD-PARTY LIBRARIES (2/2)])
+
 dnl # ZLib
 RPM_CHECK_LIB(
     [ZLib], [zlib],
@@ -854,8 +853,10 @@ dnl ##
 dnl ## ==== INSTALLATION PARAMETERS ====
 dnl ##
 
+AC_MSG_HEADER([INSTALLATION PARAMETERS])
+
 dnl # figure out what root's primary group is
-AC_MSG_CHECKING(root's primary group)
+AC_MSG_CHECKING([root's primary group])
 AC_RUN_IFELSE([AC_LANG_SOURCE([[#include <stdio.h>
 #include <sys/types.h>
 #include <pwd.h>
@@ -880,7 +881,7 @@ int main()
 	exit(1);
 }]])],[ROOT_GROUP=`cat conftest_rootg`; rm -f conftest_rootg],[ROOT_GROUP="root"],[ROOT_GROUP="root"
 ])
-AC_MSG_RESULT($ROOT_GROUP)
+AC_MSG_RESULT([$ROOT_GROUP])
 AC_SUBST(ROOT_GROUP)
 
 dnl # provide platform-specific "find-provides" and "find-requires" script symlinks
@@ -971,6 +972,17 @@ AC_SUBST(RPMCANONARCH)
 AC_SUBST(RPMCANONVENDOR)
 AC_SUBST(RPMCANONOS)
 
+dnl # RPM installation user/group and uid/gid
+: ${RPMUSER=rpm}
+: ${RPMUID=37}
+: ${RPMGROUP=rpm}
+: ${RPMGID=37}
+export RPMUSER RPMUID RPMGROUP RPMGID
+AC_SUBST(RPMUSER)
+AC_SUBST(RPMUID)
+AC_SUBST(RPMGROUP)
+AC_SUBST(RPMGID)
+
 if test "x$varprefix" = "x"; then
     # For /usr and /usr/local, we want the 'var' directory to go
     # in /var and /var/local respectively. For everything else, 
@@ -988,43 +1000,62 @@ if test X"$prefix" = XNONE ; then
 else
     usrprefix=$prefix
 fi
+
+AC_MSG_CHECKING([for locale installation directory])
 LOCALEDIR="`echo ${usrprefix}/share/locale`"
 AC_DEFINE_UNQUOTED(LOCALEDIR, "$LOCALEDIR",
 	[Full path to rpm locale directory (usually /usr/share/locale)])
 AC_SUBST(LOCALEDIR)
+AC_MSG_RESULT([$LOCALEDIR])
+
+AC_MSG_CHECKING([for library installation directory])
 LIBDIR="`echo $libdir | sed 's-/lib$-/%{_lib}-'`"
 AC_SUBST(LIBDIR)
+AC_MSG_RESULT([$LIBDIR])
+
+AC_MSG_CHECKING([for RPM global configuration installation directory])
 USRLIBRPM="`echo ${usrprefix}/lib/rpm`"
 AC_DEFINE_UNQUOTED(USRLIBRPM, "$USRLIBRPM",
 	[Full path to rpm global configuration directory (usually /usr/lib/rpm)])
 AC_SUBST(USRLIBRPM)
+AC_MSG_RESULT([$USRLIBRPM])
 
+AC_MSG_CHECKING([for RPM system configuration installation directory])
 SYSCONFIGDIR="`echo /etc/rpm`"
 AC_DEFINE_UNQUOTED(SYSCONFIGDIR, "$SYSCONFIGDIR",
 	[Full path to rpm system configuration directory (usually /etc/rpm)])
 AC_SUBST(SYSCONFIGDIR)
+AC_MSG_RESULT([$SYSCONFIGDIR])
 
+AC_MSG_CHECKING([for RPM macro files path])
 MACROFILES="${USRLIBRPM}/${VERSION}/macros:${USRLIBRPM}/%{_target}/macros:${SYSCONFIGDIR}/macros.*:${SYSCONFIGDIR}/macros:${SYSCONFIGDIR}/%{_target}/macros:~/.rpmmacros"
 AC_DEFINE_UNQUOTED(MACROFILES, "$MACROFILES",
 	[Colon separated paths of macro files to read.])
 AC_SUBST(MACROFILES)
+AC_MSG_RESULT([$MACROFILES])
 
+AC_MSG_CHECKING([for RPM run-command files path])
 RPMRCFILES="${USRLIBRPM}/${RPMCANONVENDOR}/rpmrc:${USRLIBRPM}/${RPMCANONVENDOR}/rpmrc:/etc/rpmrc:~/.rpmrc"
 AC_DEFINE_UNQUOTED(RPMRCFILES, "$RPMRCFILES",
 	[Colon separated paths of rpmrc files to read.])
 AC_SUBST(RPMRCFILES)
+AC_MSG_RESULT([$RPMRCFILES])
 
+AC_MSG_CHECKING([for POPT configuration file])
 RPMPOPTFILE="${USRLIBRPM}/${VERSION}/rpmpopt"
 AC_DEFINE_UNQUOTED(RPMPOPTFILE, "$RPMPOPTFILE",
 	[Full path to rpmpopt configuration file (usually /usr/lib/rpm/rpmpopt)])
 AC_SUBST(RPMPOPTFILE)
+AC_MSG_RESULT([$RPMPOPTFILE])
 
 testdir="`pwd`/tests"
 AC_SUBST(testdir)
 
 dnl ##
-dnl ## ==== OUTPUT HANDLING ====
+dnl ## ==== OUTPUT GENERATION ====
 dnl ##
+
+AC_MSG_HEADER([OUTPUT GENERATION])
 
 dnl # explicit list of sub-directories to step into for additional "configure" scripts
 dnl # (RPM_CHECK_LIB extends this implicitly, too)
