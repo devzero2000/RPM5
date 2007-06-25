@@ -1145,8 +1145,6 @@ AC_SUBST(RPMPOPTFILE)
 testdir="`pwd`/tests"
 AC_SUBST(testdir)
 
-AC_SUBST(RPM)
-
 dnl ##
 dnl ## OUTPUT HANDLING
 dnl ##
