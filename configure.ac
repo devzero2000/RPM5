@@ -134,10 +134,10 @@ case "${host}" in
     *-*-gnu*   ) have_ld_version_script=yes ;;
 esac
 AC_ARG_ENABLE(
-    [ld-version-script],
+    [build-versionscript],
     AC_HELP_STRING(
-        [--enable-ld-version-script],
-        [enable/disable use of linker version script. (default is system dependent)]),
+        [--enable-build-versionscript],
+        [enable/disable use of GNU ld(1) version script (default is system dependent)]),
     [have_ld_version_script=$enableval], [:])
 AM_CONDITIONAL(
     [HAVE_LD_VERSION_SCRIPT],
