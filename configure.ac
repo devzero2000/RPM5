@@ -771,7 +771,7 @@ main() {
       
   AC_MSG_CHECKING(for python 2.4)
   AC_RUN_IFELSE([AC_LANG_SOURCE([[
-  #include <python2.4/Python.h>
+#include <python2.4/Python.h>
   main() {
     exit(strncmp("2.4", PY_VERSION, 3));
   } ]])],[withval=yes],[withval=no],[withval=yes])
@@ -782,7 +782,7 @@ main() {
       
     AC_MSG_CHECKING(for python 2.3)
     AC_RUN_IFELSE([AC_LANG_SOURCE([[
-    #include <python2.3/Python.h>
+#include <python2.3/Python.h>
     main() {
       exit(strncmp("2.3", PY_VERSION, 3));
     } ]])],[withval=yes],[withval=no],[withval=yes])
@@ -793,7 +793,7 @@ main() {
       
         AC_MSG_CHECKING(for python 2.2)
         AC_RUN_IFELSE([AC_LANG_SOURCE([[
-      #include <python2.2/Python.h>
+#include <python2.2/Python.h>
       main() {
         exit(strncmp("2.2", PY_VERSION, 3));
       } ]])],[withval=yes],[withval=no],[withval=yes])
@@ -804,7 +804,7 @@ main() {
       
           AC_MSG_CHECKING(for python 1.5.2)
           AC_RUN_IFELSE([AC_LANG_SOURCE([[
-      #include <python1.5/Python.h>
+#include <python1.5/Python.h>
       main() {
         exit(strcmp("1.5.2", PY_VERSION));
       } ]])],[withval=yes],[withval=no],[withval=yes])
