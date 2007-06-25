@@ -528,3 +528,153 @@ AC_DEFUN([AC_CHECK_VA_COPY],[
   fi
 ])
 
+dnl ##
+dnl ##  NAME:
+dnl ##    AC_CHECK_STATFS -- Check for "struct statfs" and friends
+dnl ##
+
+AC_DEFUN([AC_CHECK_STATFS], [
+    dnl # 1. search for struct statfs
+    AC_MSG_CHECKING(for struct statfs)
+    found_struct_statfs=no
+    if test ".$found_struct_statfs" = .no; then
+        dnl # Solaris 2.6+ wants to use "statvfs"
+        AC_COMPILE_IFELSE([
+            AC_LANG_PROGRAM([[
+#ifdef HAVE_SYS_TYPES_H
+#include <sys/types.h>
+#endif
+#include <sys/statvfs.h>
+            ]], [[
+                struct statvfs sfs;
+            ]])
+        ], [
+            AC_MSG_RESULT(in <sys/statvfs.h>)
+            AC_DEFINE(STATFS_IN_SYS_STATVFS, 1, [statfs in <sys/statvfs.h> (for Solaris 2.6+ systems)])
+            found_struct_statfs=yes
+        ], [])
+    fi
+    if test ".$found_struct_statfs" = .no; then
+        dnl # Linux: first try including <sys/vfs.h>
+        AC_COMPILE_IFELSE([
+            AC_LANG_PROGRAM([[
+#ifdef HAVE_SYS_TYPES_H
+#include <sys/types.h>
+#endif
+#include <sys/vfs.h>
+            ]], [[
+                struct statfs sfs;
+            ]])
+        ],[
+            AC_MSG_RESULT(in <sys/vfs.h>)
+            AC_DEFINE(STATFS_IN_SYS_VFS, 1, [statfs in <sys/vfs.h> (for Linux systems)])
+            found_struct_statfs=yes
+        ], [])
+    fi
+    if test ".$found_struct_statfs" = .no; then
+        dnl # ...next try including <sys/mount.h>
+        AC_COMPILE_IFELSE([
+            AC_LANG_PROGRAM([[
+#ifdef HAVE_SYS_TYPES_H
+#include <sys/types.h>
+#endif
+#ifdef HAVE_SYS_PARAM_H
+#include <sys/param.h>
+#endif
+#include <sys/mount.h>
+            ]], [[
+                struct statfs sfs;
+            ]])
+        ],[
+            AC_MSG_RESULT(in <sys/mount.h>)
+            AC_DEFINE(STATFS_IN_SYS_MOUNT, 1, [statfs in <sys/mount.h> (for Digital Unix 4.0D systems)])
+            found_struct_statfs=yes
+        ], [])
+    fi
+    if test ".$found_struct_statfs" = Xno; then
+        dnl ...still no joy. Try <sys/statfs.h>
+        AC_COMPILE_IFELSE([
+            AC_LANG_PROGRAM([[
+#ifdef HAVE_SYS_TYPES_H
+#include <sys/types.h>
+#endif
+#include <sys/statfs.h>
+            ]], [[
+                struct statfs sfs;
+            ]])
+        ], [
+            AC_MSG_RESULT(in <sys/statfs.h>)
+            AC_DEFINE(STATFS_IN_SYS_STATFS, 1, [statfs in <sys/statfs.h> (for IRIX 6.4 systems)])
+            found_struct_statfs=yes
+        ], [])
+    fi
+    if test ".$found_struct_statfs" = .no; then
+        dnl # ...no luck. Warn the user of impending doom.
+        AC_MSG_RESULT([not found])
+        AC_MSG_WARN([struct statfs not found])
+    fi
+
+    dnl # 2. search for f_bavail member of struct statfs
+    if test ".$found_struct_statfs" = .yes; then
+        AC_MSG_CHECKING(for f_bavail member in struct statfs)
+        AC_COMPILE_IFELSE([
+            AC_LANG_PROGRAM([[
+#ifdef HAVE_SYS_TYPES_H
+#include <sys/types.h>
+#endif
+#if STATFS_IN_SYS_STATVFS
+#include <sys/statvfs.h>
+  typedef struct statvfs STATFS_t;
+#else
+  typedef struct statfs STATFS_t;
+#if STATFS_IN_SYS_VFS
+#include <sys/vfs.h>
+#elif STATFS_IN_SYS_MOUNT
+#include <sys/mouht.h>
+#elif STATFS_IN_SYS_STATFS
+#include <sys/statfs.h>
+#endif
+#endif 
+            ]], [[
+                STATFS_t sfs;
+                sfs.f_bavail = 0;
+            ]])
+        ],[
+            AC_MSG_RESULT(yes)
+            AC_DEFINE(STATFS_HAS_F_BAVAIL, 1, [Define if struct statfs has the f_bavail member])
+        ],[
+            AC_MSG_RESULT(no)
+        ])
+    fi
+
+    dnl # 3. check to see if we have the 4-argument variant of statfs(2)
+    if test ".$found_struct_statfs" = .yes; then
+        AC_MSG_CHECKING([if statfs(2) requires 4 arguments])
+        AC_RUN_IFELSE([
+            AC_LANG_SOURCE([[
+#ifdef HAVE_SYS_TYPES_H
+#include <sys/types.h>
+#endif
+#ifdef STATFS_IN_SYS_VFS
+#include <sys/vfs.h>
+#elif STATFS_IN_SYS_MOUNT
+#include <sys/mouht.h>
+#elif STATFS_IN_SYS_STATFS
+#include <sys/statfs.h>
+#endif
+                main() {
+                    struct statfs sfs;
+                    exit (statfs(".", &sfs, sizeof(sfs), 0));
+                }
+            ]])
+        ], [
+            AC_MSG_RESULT(yes)
+            AC_DEFINE(STAT_STATFS4, 1, [Define if statfs() takes 4 arguments])
+        ], [
+            AC_MSG_RESULT(no)
+        ], [
+            AC_MSG_RESULT(no)
+        ])
+    fi
+])
+
