@@ -39,14 +39,19 @@ dnl ##
 dnl ## TOOL-CHAIN CHECKS
 dnl ##
 
-AC_PROG_AWK
 AC_PROG_CC
 AC_PROG_CPP
+
+AC_AIX
+AC_MINIX
+
+AC_PROG_AWK
 AC_PROG_INSTALL
 AC_PROG_LN_S
 AC_PROG_MAKE_SET
 AC_PROG_LIBTOOL
 AC_PROG_YACC
+
 AC_PATH_PROG(AS, as, as)
 AC_PATH_PROG(CTAGS, ctags, /bin/true)
 AC_PATH_PROG(CSCOPE, cscope, /bin/true)
@@ -306,8 +311,6 @@ dnl ## API CHECKS
 dnl ##
 
 dnl # platform specific checks
-AC_AIX
-AC_MINIX
 AC_ISC_POSIX
 
 dnl # standard checks
