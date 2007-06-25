@@ -67,39 +67,42 @@ if test ".$ac_cv_c_compiler_gnu" = .yes; then
 fi
 AC_PROG_GCC_TRADITIONAL
 
-dnl # determine whether to use partial static, full static
-dnl # standard dynamic linking via GNU libtool
-AC_MSG_CHECKING(flag used by GNU libtool to link RPM statically)
+dnl # support static linking of RPM via GNU libtool
 LDFLAGS_STATIC=""
-case "$target" in
-        *-*-darwin*)    LDFLAGS_STATIC="";;             # Mac OS X does not do static binaries.
-        *-*-sysv5uw*)   LDFLAGS_STATIC="-static";;      # Unixware has no shared libthread.
-        *-*-linux*)     LDFLAGS_STATIC="-all-static";;
-        *-*-freebsd*)   LDFLAGS_STATIC="-all-static";;
-        *-*-osf*)       LDFLAGS_STATIC="";;             # OSF5 has no shared pthreads libs
-        *-*-aix*)       LDFLAGS_STATIC="-static";;      # -Wl,-bnso doesn't seem to work...
-        *-*-hpux*)      LDFLAGS_STATIC="-static";;
-        *-*-solaris*)   LDFLAGS_STATIC="-static";;
-        *-*-irix*)      LDFLAGS_STATIC="-static";;      #should be -non_shared, but can't link because of crt1.o then.
-        *-*-ultrix*)    LDFLAGS_STATIC="-all-static";;  #ultrix doesn't have shared libs.
-        *-*-*)          LDFLAGS_STATIC=""; AC_MSG_WARN([
-Unable to guess what option to pass to GNU libtool to generate a static
-executable. You will need to set the LDFLAGS_STATIC macro in Makefile.in to
-the appropriate argument(s) if you want to build a static RPM executable.
-]);;
-esac
-AC_MSG_RESULT($LDFLAGS_STATIC)
+AC_ARG_ENABLE(link-static,
+    AS_HELP_STRING([--enable-link-static=ARG], [link RPM statically]), [dnl
+    AC_MSG_CHECKING(whether to link RPM statically via GNU libtool)
+    if test ".$enableval" = .yes; then
+        case "$target" in
+            *-*-darwin*)    LDFLAGS_STATIC="";;             # Mac OS X does not do static binaries.
+            *-*-sysv5uw*)   LDFLAGS_STATIC="-static";;      # Unixware has no shared libthread.
+            *-*-linux*)     LDFLAGS_STATIC="-all-static";;
+            *-*-freebsd*)   LDFLAGS_STATIC="-all-static";;
+            *-*-osf*)       LDFLAGS_STATIC="";;             # OSF5 has no shared pthreads libs
+            *-*-aix*)       LDFLAGS_STATIC="-static";;      # -Wl,-bnso doesn't seem to work...
+            *-*-hpux*)      LDFLAGS_STATIC="-static";;
+            *-*-solaris*)   LDFLAGS_STATIC="-static";;
+            *-*-irix*)      LDFLAGS_STATIC="-static";;      # should be -non_shared, but can't link because of crt1.o then.
+            *-*-ultrix*)    LDFLAGS_STATIC="-all-static";;  # ultrix doesn't have shared libs.
+            *-*-*)          LDFLAGS_STATIC="-static";;      # let GNU libtool decide how to do it for the particular platform
+        esac
+        case "$target" in
+            *-*-linux*)
+                dnl # use libpthread.a that is NPTL aware
+                if test -f /usr/lib/nptl/libpthread.a; then
+                    LDFLAGS_STATIC="$LDFLAGS_STATIC -L/usr/lib/nptl"
+                fi
+                if test -f /usr/lib64/nptl/libpthread.a; then
+                    LDFLAGS_STATIC="$LDFLAGS_STATIC -L/usr/lib64/nptl"
+                fi
+                ;;
+        esac
+        AC_MSG_RESULT([yes (flag "$LDFLAGS_STATIC")])
+    else
+        AC_MSG_RESULT([no])
+    fi
+])
 AC_SUBST(LDFLAGS_STATIC)
-
-dnl # use libpthread.a that is NPTL aware (static link only).
-LDFLAGS_NPTL=
-if test -f /usr/lib/nptl/libpthread.a; then
-    LDFLAGS_NPTL="-L/usr/lib/nptl"
-fi
-if test -f /usr/lib64/nptl/libpthread.a; then
-    LDFLAGS_NPTL="-L/usr/lib64/nptl"
-fi
-AC_SUBST(LDFLAGS_NPTL)
 
 dnl # old RPM 4.x style platform-specific flag extension hack
 addlib () {
