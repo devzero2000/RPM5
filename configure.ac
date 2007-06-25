@@ -127,6 +127,35 @@ AC_ARG_ENABLE(build-static,
 ])
 AC_SUBST(LDFLAGS_STATIC)
 
+dnl # use ld_version scripts on platforms known to support it.
+have_ld_version_script=no
+case "${host}" in
+    *-*-linux* ) have_ld_version_script=yes ;;
+    *-*-gnu*   ) have_ld_version_script=yes ;;
+esac
+AC_ARG_ENABLE(
+    [ld-version-script],
+    AC_HELP_STRING(
+        [--enable-ld-version-script],
+        [enable/disable use of linker version script. (default is system dependent)]),
+    [have_ld_version_script=$enableval], [:])
+AM_CONDITIONAL(
+    [HAVE_LD_VERSION_SCRIPT],
+    [test ".$have_ld_version_script" = .yes])
+
+dnl # FIXME: Linux hack: choose /usr/lib or /usr/lib64 for library installs and linking
+MARK64=
+case "$target" in
+    *-*-linux* )
+        if ! echo "${libdir}" | grep -q '64$'; then
+            case "${target_cpu}" in
+                x86_64*|ppc64*|powerpc64*|sparc64*|s390x*) MARK64=64 ;;
+            esac
+        fi
+        ;;
+esac
+AC_SUBST(MARK64)
+
 dnl # FIXME: partly Linux-specific only!?
 dnl # (but at least it usually doesn't harm on other platforms)
 CFLAGS="$CFLAGS -D_GNU_SOURCE -D_REENTRANT"
@@ -1013,34 +1042,6 @@ else
     echo "*** no default requires information is available for ${build_os_noversion}"
     ln -s ${srcdir}/autodeps/none ./find-requires
 fi
-
-dnl XXX Choose /usr/lib or /usr/lib64 for library installs.
-MARK64=
-if ! echo "${libdir}" | grep -q '64$' ; then
-    case "${target_cpu}" in
-    x86_64*|ppc64*|powerpc64*|sparc64*|s390x*)	MARK64=64 ;;
-    esac
-fi
-AC_SUBST(MARK64)
-
-# For some systems we know that we have ld_version scripts.
-# Use it then as default.
-have_ld_version_script=no
-case "${host}" in
-    *-*-linux*)
-        have_ld_version_script=yes
-        ;;
-    *-*-gnu*)
-        have_ld_version_script=yes
-        ;;
-esac
-AC_ARG_ENABLE([ld-version-script],
-              AC_HELP_STRING([--enable-ld-version-script],
-                             [enable/disable use of linker version script.
-                              (default is system dependent)]),
-              [have_ld_version_script=$enableval],
-              [ : ] )
-AM_CONDITIONAL(HAVE_LD_VERSION_SCRIPT, test "$have_ld_version_script" = "yes")
 
 dnl Determine the canonical arch-vendor-os for the build machine
 autorelocate_path='%{nil}'
