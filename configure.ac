@@ -167,14 +167,14 @@ dnl # look for POSIX chmod attributes
 AC_MSG_CHECKING(POSIX chmod)
 touch foo.chmodtest
 chmod 744 foo.chmodtest
-chmod +X foo.chmodtest 2>/dev/null
+chmod +X foo.chmodtest 2>/dev/null || true
 a=`ls -l foo.chmodtest | awk '{print $1}'`
 rm -f foo.chmodtest
 if test "$a" = "-rwxr-xr-x"; then
     AC_MSG_RESULT(yes)
     FIXPERMS=a+rX,u+w,g-w,o-w 
 else
-    AC_MSG_RESULT(no (tell your OS vendor about GNU fileutils))
+    AC_MSG_RESULT([no (tell your OS vendor about GNU fileutils)])
     FIXPERMS=a+r,u+w,g-w,o-w 
 fi
 AC_SUBST(FIXPERMS)
@@ -204,11 +204,10 @@ if test X"$MKDIR_P" = X0; then
 else
 	AC_MSG_RESULT(yes)
 fi
-AC_DEFINE_UNQUOTED(MKDIR_P, "${MKDIR_P}",
-[A full path to a program, possibly with arguments, that will create a
-   directory and all necessary parent directories, ala 'mkdir -p'])
+AC_DEFINE_UNQUOTED(MKDIR_P, "${MKDIR_P}", [full path to a 'mkdir -p' style program])
 AC_SUBST(MKDIR_P)
 
+dnl # check for chown and symlink handling 
 AC_CHECK_FUNC(lchown,
    [__CHOWN_RHF="%{__chown} -Rhf"
     __CHGRP_RHF="%{__chgrp} -Rhf"
@@ -308,6 +307,7 @@ AC_PATH_PROG(__OBJCOPY, objcopy, %{_bindir}/objcopy, $MYPATH)
 AC_PATH_PROG(__OBJDUMP, objdump, %{_bindir}/objdump, $MYPATH)
 AC_PATH_PROG(__STRIP, strip, %{_bindir}/strip, $MYPATH)
 
+dnl # check for id -u
 AC_MSG_CHECKING(checking whether id supports -u)
 if ${__ID} -u 2>&1 > /dev/null; then
     __ID_U="%{__id} -u"
@@ -318,14 +318,14 @@ else
 fi
 AC_SUBST(__ID_U)
 
+dnl # auto-detect whether doxygen generated API docs should be included.
 AC_PATH_PROG(__DOXYGEN, doxygen, no, $PATH)
-dnl Auto-detect whether doxygen generated API docs should be included.
 withval=auto
 AC_ARG_WITH(apidocs, AS_HELP_STRING([--with-apidocs], [build RPM API documentation]))
-if test $withval = auto -a $__DOXYGEN != no ; then
+if test $withval = auto -a $__DOXYGEN != no; then
   withval=yes
-elif test $withval = yes -a $__DOXYGEN = no ; then
-  AC_MSG_ERROR(--> rpm API docs needs doxygen in PATH)
+elif test $withval = yes -a $__DOXYGEN = no; then
+  AC_MSG_ERROR([RPM API docs need doxygen in PATH])
 fi
 if test $withval = yes; then
   WITH_APIDOCS_TARGET=apidocs
@@ -403,12 +403,9 @@ dnl # platform-hack for MiNT
 AC_CHECK_LIB(port, writev)
 
 dnl # AmigaOS and IXEmul have a fork() dummy
-  case "$target" in
-    m68k-*-amigaos ) 
-	echo "Building for AmigaOS: using vfork() instead of fork()"; 
-	CFLAGS="$CFLAGS -Dfork=vfork" 
-	;;
-  esac
+case "$target" in
+    m68k-*-amigaos ) CFLAGS="$CFLAGS -Dfork=vfork" ;;
+esac
 
 dnl # statfs portability fiddles.
 AC_MSG_CHECKING(for struct statfs)
@@ -547,17 +544,18 @@ AC_MSG_CHECKING(if timezone is defined)
 AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <time.h>]], [[printf("%ld", timezone)]])],[HAS_TIMEZONE=yes],[HAS_TIMEZONE=no])
 AC_MSG_RESULT($HAS_TIMEZONE)
 
-dnl Check for missing typedefs
+dnl check for missing typedefs
 AC_TYPE_MODE_T
 AC_TYPE_OFF_T
 AC_TYPE_PID_T
 AC_TYPE_SIZE_T
 
-dnl Checks for library functions.
+dnl checks for library functions (specific)
 AC_FUNC_ALLOCA
 AC_FUNC_VPRINTF
 AC_FUNC_MMAP
 
+dnl checks for library functions (generic)
 AC_CHECK_FUNCS([dnl
     basename getaddrinfo getcwd getnameinfo getwd inet_aton dnl
     mtrace putenv realpath setenv clearenv stpcpy stpncpy strcspn strdup dnl
@@ -571,6 +569,7 @@ AC_DEFINE(USE_GNU_GLOB, 1, [Use the included glob.c?])
 AC_LIBOBJ(glob)
 AC_LIBOBJ(fnmatch)
 
+dnl # check for getmntent and alternatives
 AC_CHECK_FUNC(getmntent, AC_DEFINE(HAVE_GETMNTENT, 1, [Define if you have the getmntent() function]), [
   AC_CHECK_FUNC(mntctl, AC_DEFINE(HAVE_MNTCTL, 1, [Define as 1 if you have mntctl() (only aix?)]),[
     AC_CHECK_FUNC(getmntinfo, AC_DEFINE(HAVE_GETMNTINFO, 1, [Define as 1 if you have getmntinfo() (Mac OS X)]), [
@@ -681,6 +680,7 @@ AC_CHECK_HEADER([dwarf.h], [
 AC_SUBST(WITH_LIBDWARF_INCLUDE)
 AC_SUBST(WITH_LIBDWARF_DEBUGEDIT)
 
+dnl # optional SELinux support
 WITH_SELINUX_LIB=
 with_selinuxval=no
 case "$target" in
@@ -688,8 +688,8 @@ case "$target" in
 esac
 withval=${with_selinuxval}
 AC_ARG_WITH(selinux, AS_HELP_STRING([--with-selinux], [build RPM with SELinux support]))
-if test $withval != no ; then
-  AC_DEFINE(WITH_SELINUX, 1, [Build with selinux support?])
+if test $withval != no; then
+  AC_DEFINE(WITH_SELINUX, 1, [Build with SELinux support?])
   WITH_SELINUX_LIB="-lselinux"
 fi
 AC_SUBST(WITH_SELINUX_LIB)
