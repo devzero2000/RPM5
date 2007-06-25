@@ -3,7 +3,7 @@ dnl ## configure.ac -- RPM Autoconf specification
 dnl ##
 
 dnl ##
-dnl ## REQUIREMENTS & INITIALIZATION
+dnl ## ==== REQUIREMENTS & INITIALIZATION ====
 dnl ##
 
 AC_PREREQ(2.57)
@@ -36,7 +36,7 @@ AC_SUBST(RPMGROUP)
 AC_SUBST(RPMGID)
 
 dnl ##
-dnl ## TOOL-CHAIN CHECKS
+dnl ## ==== TOOL-CHAIN CHECKS ====
 dnl ##
 
 AC_PROG_CC
@@ -189,7 +189,7 @@ if test -d /usr/ucblib; then
 fi
 
 dnl ##
-dnl ##  PROGRAM CHECKS
+dnl ## ==== PROGRAM CHECKS ====
 dnl ##
 
 dnl # look for POSIX chmod attributes
@@ -366,7 +366,7 @@ AC_SUBST(WITH_APIDOCS_TARGET)
 AC_SUBST(WITH_APIDOCS)
 
 dnl ##
-dnl ## API CHECKS
+dnl ## ==== API CHECKS ====
 dnl ##
 
 dnl # platform specific checks
@@ -624,7 +624,7 @@ AC_CHECK_FUNC(getmntent, AC_DEFINE(HAVE_GETMNTENT, 1, [Define if you have the ge
 ])
 
 dnl ##
-dnl ##  THIRD-PARTY LIBRARIES (1/2)
+dnl ## ==== THIRD-PARTY LIBRARIES (1/2) ====
 dnl ##
 
 # Check for libelf library. Prefer external, then internal, otherwise none.
@@ -825,7 +825,7 @@ AC_SUBST(WITH_PYTHON_SUBPACKAGE)
 AC_SUBST(WITH_PYTHON_VERSION)
 
 dnl ##
-dnl ##  THIRD-PARTY LIBRARIES (2/2)
+dnl ## ==== THIRD-PARTY LIBRARIES (2/2) ====
 dnl ##
 
 dnl # ZLib
@@ -946,7 +946,7 @@ RPM_CHECK_LIB(
     [], [])
 
 dnl ##
-dnl ##  INSTALLATION PARAMETERS
+dnl ## ==== INSTALLATION PARAMETERS ====
 dnl ##
 
 dnl dnl # figure out what root's primary group is
@@ -1118,7 +1118,7 @@ testdir="`pwd`/tests"
 AC_SUBST(testdir)
 
 dnl ##
-dnl ## OUTPUT HANDLING
+dnl ## ==== OUTPUT HANDLING ====
 dnl ##
 
 dnl # explicit list of sub-directories to step into for additional "configure" scripts
