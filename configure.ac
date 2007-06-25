@@ -154,6 +154,10 @@ case "$target" in
         fi
         ;;
 esac
+AC_ARG_ENABLE(
+    [build-lib64],
+    AC_HELP_STRING([--enable-build-lib64], [enable use of /usr/lib64 (default is system dependent)]),
+    [ if test ".$enableval" = .yes; then MARK64=64; elif test ".$enableval" = .no; then MARK64=""; fi ], [:])
 AC_SUBST(MARK64)
 
 dnl # FIXME: partly Linux-specific only!?

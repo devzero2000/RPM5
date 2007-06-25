@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - rse: allow one to control/override the /usr/lib64 use via Autoconf option --enable-build-lib64
     - rse: rename Autoconf --enable-ld-version-script to --enable-build-versionscript for consistency reasons
     - rse: make PIC/PIE/warnings build flags controllable via Autoconf --enable-build-{pic,pie,warnings}
     - rse: cleanup Autoconf glue for static linking by resurrecting functionality under --enable-build-static
