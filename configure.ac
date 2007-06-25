@@ -57,21 +57,45 @@ AC_PATH_PROG(CTAGS, ctags, /bin/true)
 AC_PATH_PROG(CSCOPE, cscope, /bin/true)
 
 dnl # GCC specifics
-if test ".$ac_cv_c_compiler_gnu" = .yes; then
-    CFLAGS="$CFLAGS -fPIC -DPIC"
-    CFLAGS="$CFLAGS -D_GNU_SOURCE -D_REENTRANT"
-    CFLAGS="$CFLAGS -Wall -Wpointer-arith -Wstrict-prototypes -Wmissing-prototypes -Wno-char-subscripts"
-    case "$target" in
-        *-*-linux* ) CFLAGS="$CFLAGS -fpie"; LDFLAGS="$LDFLAGS -pie" ;;
-    esac
-fi
 AC_PROG_GCC_TRADITIONAL
+AC_ARG_ENABLE(build-pic,
+    AS_HELP_STRING([--enable-build-pic], [build RPM with Position Independent Code (PIC) (GCC only)]), [dnl
+    if test ".$enableval" = .yes; then
+        if test ".$ac_cv_c_compiler_gnu" = .yes; then
+            CFLAGS="$CFLAGS -fPIC -DPIC"
+        else
+            AC_MSG_WARN([--enable-build-pic requires GCC])
+        fi
+    fi
+])
+AC_ARG_ENABLE(build-pie,
+    AS_HELP_STRING([--enable-build-pie], [build RPM as Position Independent Executable (PIE) (GCC only)]), [dnl
+    if test ".$enableval" = .yes; then
+        if test ".$ac_cv_c_compiler_gnu" = .yes; then
+            CFLAGS="$CFLAGS -fpie"
+            LDFLAGS="$LDFLAGS -pie"
+        else
+            AC_MSG_WARN([--enable-build-pie requires GCC])
+        fi
+    fi
+])
+AC_ARG_ENABLE(build-warnings,
+    AS_HELP_STRING([--enable-build-warnings], [build RPM with extra compiler warnings turned on (GCC only)]), [dnl
+    if test ".$enableval" = .yes; then
+        if test ".$ac_cv_c_compiler_gnu" = .yes; then
+            CFLAGS="$CFLAGS -Wall -Wpointer-arith -Wstrict-prototypes -Wmissing-prototypes -Wno-char-subscripts"
+        else
+            AC_MSG_WARN([--enable-build-warnings requires GCC])
+        fi
+    fi
+])
+CFLAGS="$CFLAGS -D_GNU_SOURCE -D_REENTRANT"
 
 dnl # support static linking of RPM via GNU libtool
 LDFLAGS_STATIC=""
-AC_ARG_ENABLE(link-static,
-    AS_HELP_STRING([--enable-link-static=ARG], [link RPM statically]), [dnl
-    AC_MSG_CHECKING(whether to link RPM statically via GNU libtool)
+AC_ARG_ENABLE(build-static,
+    AS_HELP_STRING([--enable-build-static], [build RPM as a static executable]), [dnl
+    AC_MSG_CHECKING([whether to build RPM as a static executable (via GNU libtool)])
     if test ".$enableval" = .yes; then
         case "$target" in
             *-*-darwin*)    LDFLAGS_STATIC="";;             # Mac OS X does not do static binaries.

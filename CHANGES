@@ -1,5 +1,6 @@
 4.5 -> 5.0:
-    - rse: cleanup Autoconf glue for static linking by resurrecting functionality under --enable-link-static
+    - rse: make PIC/PIE/warnings build flags controllable via Autoconf --enable-build-{pic,pie,warnings}
+    - rse: cleanup Autoconf glue for static linking by resurrecting functionality under --enable-build-static
     - rse: replace too weak Autoconf glue for C99 va_copy(3) with a more sophisticated solution
     - jbj: add patch macro, renamed to Xpatch until fully wired.
     - jbj: remove support for patch-2.1.
