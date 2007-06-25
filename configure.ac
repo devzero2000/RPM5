@@ -964,19 +964,6 @@ if test "x$varprefix" = "x"; then
 fi
 AC_SUBST(varprefix)
 
-if test "x$tmpdir" = "x"; then
-    if test -d $varprefix/tmp; then
-	tmpdir=$varprefix/tmp
-    else
-	if test -d /var/tmp; then
-	    tmpdir=/var/tmp
-	else
-	    tmpdir=/tmp
-	fi
-    fi
-fi
-AC_SUBST(tmpdir)
-
 # get rid of the 4-th tuple, if config.guess returned "linux-gnu" for build_os
 if echo "$build_os" | grep '.*-gnulibc1' > /dev/null ; then
 	build_os=`echo "${build_os}" | sed 's/-gnulibc1$//'`
