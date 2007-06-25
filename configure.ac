@@ -978,21 +978,6 @@ int main()
 AC_MSG_RESULT($ROOT_GROUP)
 AC_SUBST(ROOT_GROUP)
 
-if test "x$varprefix" = "x"; then
-    # For /usr and /usr/local, we want the 'var' directory to go
-    # in /var and /var/local respectively. For everything else, 
-    # just put the 'var' directory in prefix/var.
-    case $prefix in
-	/usr | /usr/local )
-	    varprefix=`echo $prefix | sed 's/usr/var/'` ;;
-	NONE)
- 	    varprefix=`echo $ac_default_prefix | sed 's/usr/var/'` ;;
-	*) 
-	    varprefix=$prefix/var ;;
-    esac	
-fi
-AC_SUBST(varprefix)
-
 dnl # provide platform-specific "find-provides" and "find-requires" script symlinks
 if echo "$build_os" | grep '.*-gnulibc1' > /dev/null ; then
 	build_os=`echo "${build_os}" | sed 's/-gnulibc1$//'`
@@ -1080,6 +1065,18 @@ AC_SUBST(autorelocate_dcolor)
 AC_SUBST(RPMCANONARCH)
 AC_SUBST(RPMCANONVENDOR)
 AC_SUBST(RPMCANONOS)
+
+if test "x$varprefix" = "x"; then
+    # For /usr and /usr/local, we want the 'var' directory to go
+    # in /var and /var/local respectively. For everything else, 
+    # just put the 'var' directory in prefix/var.
+    case $prefix in
+	/usr | /usr/local ) varprefix=`echo $prefix | sed 's/usr/var/'` ;;
+	NONE              ) varprefix=`echo $ac_default_prefix | sed 's/usr/var/'` ;;
+	*                 ) varprefix=$prefix/var ;;
+    esac	
+fi
+AC_SUBST(varprefix)
 
 if test X"$prefix" = XNONE ; then
     usrprefix="$ac_default_prefix"
