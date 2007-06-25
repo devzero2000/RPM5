@@ -627,15 +627,15 @@ dnl ##
 dnl ## ==== THIRD-PARTY LIBRARIES (1/2) ====
 dnl ##
 
-# Check for libelf library. Prefer external, then internal, otherwise none.
+dnl # check for libelf library. Prefer external, then internal, otherwise none.
 WITH_ELFUTILS_SUBDIR=
 WITH_LIBELF_INCLUDE=
 WITH_LIBELF_LIB=
 AC_CHECK_HEADERS([libelf.h])
 
-# libelf.h on Solaris is incompatible with Largefile support.  If
-# we couldn't include libelf.h, see if we can when _FILE_ACCESS_BITS is
-# set for non-LFS.
+dnl # libelf.h on Solaris is incompatible with Largefile support.  If
+dnl # we couldn't include libelf.h, see if we can when _FILE_ACCESS_BITS is
+dnl # set for non-LFS.
 if test X"$ac_cv_header_libelf_h" = X"no" ; then
   AC_MSG_CHECKING([if libelf.h conflicts with _LARGEFILE_SOURCE])
   AC_COMPILE_IFELSE(
@@ -658,7 +658,7 @@ if test X"$ac_cv_header_libelf_h" = X"no" ; then
 fi
 
 AC_CHECK_HEADERS([gelf.h])
-# same for gelf.h, since it probably includes libelf.h
+dnl # same for gelf.h, since it probably includes libelf.h
 if test X"$ac_cv_header_gelf_h" = X"no" ; then
   AC_MSG_CHECKING([if gelf.h conflicts with _LARGEFILE_SOURCE])
   AC_COMPILE_IFELSE(
@@ -679,7 +679,7 @@ if test X"$ac_cv_header_gelf_h" = X"no" ; then
  )
 fi
 
-# if we found gelf.h, look for libelf and see if it has gelf_getvernaux
+dnl # if we found gelf.h, look for libelf and see if it has gelf_getvernaux
 if test X"$ac_cv_header_gelf_h" = X"yes" ; then
 	AC_CHECK_LIB(elf, elf_version, [
     		AC_DEFINE(HAVE_LIBELF, 1,
@@ -734,7 +734,7 @@ if test $withval != no; then
 fi
 AC_SUBST(WITH_SELINUX_LIB)
 
-dnl Auto-detect whether perl bindings should be built.
+dnl # auto-detect whether Perl bindings should be built.
 withval=auto
 AC_ARG_WITH(perl, AS_HELP_STRING([--with-perl], [build with RPM Perl language bindings]))
 WITH_PERL_VERSION=$withval
@@ -749,7 +749,7 @@ AC_SUBST(WITH_PERL_SUBDIR)
 AC_SUBST(WITH_PERL_SUBPACKAGE)
 AC_SUBST(WITH_PERL_VERSION)
 
-dnl Auto-detect which python bindings should be built.
+dnl # auto-detect which Python bindings should be built.
 withval=auto
 AC_ARG_WITH(python, AS_HELP_STRING([--with-python], [build with RPM Python language bindings]))
 WITH_PYTHON_VERSION=$withval
@@ -949,7 +949,7 @@ dnl ##
 dnl ## ==== INSTALLATION PARAMETERS ====
 dnl ##
 
-dnl dnl # figure out what root's primary group is
+dnl # figure out what root's primary group is
 AC_MSG_CHECKING(root's primary group)
 AC_RUN_IFELSE([AC_LANG_SOURCE([[#include <stdio.h>
 #include <sys/types.h>
@@ -1015,7 +1015,7 @@ else
     ln -s ${srcdir}/autodeps/none ./find-requires
 fi
 
-dnl Determine the canonical arch-vendor-os for the build machine
+dnl # determine the canonical arch-vendor-os for the build machine
 autorelocate_path='%{nil}'
 autorelocate_dcolor='0'
 case "${build_cpu}" in
