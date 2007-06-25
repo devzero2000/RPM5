@@ -993,53 +993,40 @@ if test "x$varprefix" = "x"; then
 fi
 AC_SUBST(varprefix)
 
-# get rid of the 4-th tuple, if config.guess returned "linux-gnu" for build_os
+dnl # provide platform-specific "find-provides" and "find-requires" script symlinks
 if echo "$build_os" | grep '.*-gnulibc1' > /dev/null ; then
 	build_os=`echo "${build_os}" | sed 's/-gnulibc1$//'`
 fi
 if echo "$build_os" | grep '.*-gnu' > /dev/null ; then
 	build_os=`echo "${build_os}" | sed 's/-gnu$//'`
 fi
-
 changequote(<, >)
 build_os_exact="${build_os}"
 build_os_major=`echo "${build_os}" | sed 's/\..*$//'`
 build_os_noversion=`echo "${build_os}" | sed 's/[0-9]*\..*$//'`
 changequote([, ])
-
 rm -f ./find-provides
 if test -f ${srcdir}/autodeps/${build_cpu}-${build_os_exact}.prov ; then
-	echo "using ${srcdir}/autodeps/${build_cpu}-${build_os_exact}.prov for automatic provides generation"
     ln -s ${srcdir}/autodeps/${build_cpu}-${build_os_exact}.prov ./find-provides
 elif test -f ${srcdir}/autodeps/${build_os_exact}.prov ; then
-	echo "using ${srcdir}/autodeps/${build_os_exact}.prov for automatic provides generation"
     ln -s ${srcdir}/autodeps/${build_os_exact}.prov ./find-provides
 elif test -f ${srcdir}/autodeps/${build_os_major}.prov ; then
-	echo "using ${srcdir}/autodeps/${build_os_major}.prov for automatic provides generation"
     ln -s ${srcdir}/autodeps/${build_os_major}.prov ./find-provides
 elif test -f ${srcdir}/autodeps/${build_os_noversion}.prov ; then
-	echo "using ${srcdir}/autodeps/${build_os_noversion}.prov for automatic provides generation"
     ln -s ${srcdir}/autodeps/${build_os_noversion}.prov ./find-provides
 else
-    echo "*** no default provides information is available for ${build_os_noversion}"
     ln -s ${srcdir}/autodeps/none ./find-provides
 fi
-
 rm -f ./find-requires
 if test -f ${srcdir}/autodeps/${build_cpu}-${build_os_exact}.req ; then
-	echo "using ${srcdir}/autodeps/${build_cpu}-${build_os_exact}.req for automatic requires generation"
     ln -s ${srcdir}/autodeps/${build_cpu}-${build_os_exact}.req ./find-requires
 elif test -f ${srcdir}/autodeps/${build_os_exact}.req ; then
-	echo "using ${srcdir}/autodeps/${build_os_exact}.req for automatic requires generation"
     ln -s ${srcdir}/autodeps/${build_os_exact}.req ./find-requires
 elif test -f ${srcdir}/autodeps/${build_os_major}.req ; then
-	echo "using ${srcdir}/autodeps/${build_os_major}.req for automatic requires generation"
     ln -s ${srcdir}/autodeps/${build_os_major}.req ./find-requires
 elif test -f ${srcdir}/autodeps/${build_os_noversion}.req ; then
-	echo "using ${srcdir}/autodeps/${build_os_noversion}.req for automatic requires generation"
     ln -s ${srcdir}/autodeps/${build_os_noversion}.req ./find-requires
 else
-    echo "*** no default requires information is available for ${build_os_noversion}"
     ln -s ${srcdir}/autodeps/none ./find-requires
 fi
 
