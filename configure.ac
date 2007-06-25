@@ -399,13 +399,24 @@ dnl # AIO API
 AC_CHECK_HEADERS(aio.h)
 AC_SEARCH_LIBS(aio_read, [c rt aio posix4])
 
-dnl # platform-hack for MiNT
+dnl # FIXME: platform-hack: MiNT
 AC_CHECK_LIB(port, writev)
 
-dnl # AmigaOS and IXEmul have a fork() dummy
+dnl # FIXME: platform-hack: AmigaOS and IXEmul have a fork() dummy
 case "$target" in
     m68k-*-amigaos ) CFLAGS="$CFLAGS -Dfork=vfork" ;;
 esac
+
+dnl # FIXME: platform-hack: SCO and SunOS 4.x
+if echo "$build_os" | grep sco > /dev/null; then
+	AC_DEFINE(NEED_STRINGS_H, 1, [Define as one if we need to include <strings.h> (along with <string.h>)])
+	AC_DEFINE(HAVE_STRUCT_MNTTAB, 1, [Define as 1 if you have "struct mnttab" (only sco?)])
+elif echo "$build_os" | grep sunos > /dev/null; then
+	CFLAGS="$CFLAGS -D__USE_FIXED_PROTOTYPES__"
+	AC_DEFINE(NEED_STRINGS_H, 1, [Define as one if we need to include <strings.h> (along with <string.h>)])
+	AC_DEFINE(NEED_MYREALLOC, 1, [Define as 1 if we need myrealloc])
+	AC_LIBOBJ(myrealloc)
+fi
 
 dnl # statfs portability fiddles.
 AC_MSG_CHECKING(for struct statfs)
@@ -965,19 +976,6 @@ if test "x$tmpdir" = "x"; then
     fi
 fi
 AC_SUBST(tmpdir)
-
-if echo "$build_os" | grep sco > /dev/null; then
-	echo "hacking things up for sco"
-	AC_DEFINE(NEED_STRINGS_H, 1, [Define as one if we need to include <strings.h> (along with <string.h>)])
-	AC_DEFINE(HAVE_STRUCT_MNTTAB, 1,
-	[Define as 1 if you have "struct mnttab" (only sco?)])
-elif echo "$build_os" | grep sunos > /dev/null; then
-	echo "hacking things up for sunos"
-	CFLAGS="$CFLAGS -D__USE_FIXED_PROTOTYPES__"
-	AC_DEFINE(NEED_STRINGS_H, 1, [Define as one if we need to include <strings.h> (along with <string.h>)])
-	AC_DEFINE(NEED_MYREALLOC, 1, [Define as 1 if we need myrealloc])
-	AC_LIBOBJ(myrealloc)
-fi
 
 # get rid of the 4-th tuple, if config.guess returned "linux-gnu" for build_os
 if echo "$build_os" | grep '.*-gnulibc1' > /dev/null ; then
