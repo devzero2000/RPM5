@@ -12,6 +12,7 @@ AC_CONFIG_SRCDIR([rpmqv.c])
 AC_CONFIG_HEADERS([config.h])
 AC_CANONICAL_TARGET
 AM_INIT_AUTOMAKE([foreign])
+AM_MAINTAINER_MODE
 
 dnl # Library code modified:                              REVISION++
 dnl # Interfaces changed/added/removed:   CURRENT++       REVISION=0
