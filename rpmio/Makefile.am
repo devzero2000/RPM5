@@ -8,7 +8,7 @@ EXTRA_DIST = tax.c tdir.c tficl.c tfts.c tget.c thkp.c tput.c tglob.c tinv.c tke
 
 EXTRA_PROGRAMS = tax tdir tfts tget thkp tmacro tput tglob tinv tkey trpmio tsw dumpasn1 lookup3
 
-INCLUDES = -I. \
+AM_CPPFLAGS = -I. \
 	-I$(top_srcdir) \
 	-I$(top_srcdir)/misc
 

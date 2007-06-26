@@ -11,7 +11,7 @@ SUBDIRS = rpm
 
 EXTRA_DIST = system.h rpmdebug-py.c
 
-INCLUDES = -I. \
+AM_CPPFLAGS = -I. \
 	-I$(top_srcdir) \
 	-I$(top_srcdir)/build \
 	-I$(top_srcdir)/lib \

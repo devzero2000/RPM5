@@ -6,7 +6,7 @@ LINT = splint
 
 EXTRA_DIST = librpmbuild.vers
 
-INCLUDES = -I. \
+AM_CPPFLAGS = -I. \
 	-I$(top_srcdir) \
 	-I$(top_srcdir)/lib \
 	-I$(top_srcdir)/rpmdb \

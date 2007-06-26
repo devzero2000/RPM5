@@ -39,7 +39,7 @@ SUBDIRS = \
 	doc \
 	.
 
-INCLUDES = \
+AM_CPPFLAGS = \
 	-I$(top_srcdir)/build \
 	-I$(top_srcdir)/lib \
 	-I$(top_srcdir)/rpmdb \
