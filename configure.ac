@@ -617,19 +617,16 @@ AC_ARG_WITH(selinux, AS_HELP_STRING([--with-selinux], [build RPM with SELinux su
 AC_SUBST(WITH_SELINUX_LIB)
 
 dnl # auto-detect whether Perl bindings should be built.
-withval=auto
-AC_ARG_WITH(perl, AS_HELP_STRING([--with-perl], [build with RPM Perl language bindings]))
-WITH_PERL_VERSION=$withval
-if test "$WITH_PERL_VERSION" != no ; then
-  WITH_PERL_SUBDIR=perl
-  WITH_PERL_SUBPACKAGE=1
-else
-  WITH_PERL_SUBDIR=
-  WITH_PERL_SUBPACKAGE=0
-fi
+WITH_PERL_SUBDIR=""
+WITH_PERL_SUBPACKAGE=0
+AC_ARG_WITH(perl, AS_HELP_STRING([--with-perl], [build with RPM Perl language bindings]), [
+    if test ".$withval" != .no; then
+        WITH_PERL_SUBDIR=perl
+        WITH_PERL_SUBPACKAGE=1
+    fi
+])
 AC_SUBST(WITH_PERL_SUBDIR)
 AC_SUBST(WITH_PERL_SUBPACKAGE)
-AC_SUBST(WITH_PERL_VERSION)
 
 dnl # auto-detect which Python bindings should be built.
 withval=auto
@@ -1054,7 +1051,7 @@ AC_CONFIG_FILES([ po/Makefile.in
 
 dnl # explicit list of commands to execute
 AC_CONFIG_COMMANDS([default], [
-    if test "$with_perl" = yes && test -d perl; then
+    if test "$.with_perl" = .yes && test -d perl; then
         ( cd perl && perl Makefile.PL )
     fi
 ],[])
