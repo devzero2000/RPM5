@@ -40,7 +40,7 @@ GNU iconv       optional  1.11    1.11    http://www.gnu.org/software/libiconv/
 DMalloc         optional  5       5.5.2   http://dmalloc.com/
 Electric Fence  optional  2.1     2.1.13  http://perens.com/FreeSoftware/ElectricFence/
 Linux KeyUtils  optional  1.2     1.2     http://people.redhat.com/~dhowells/keyutils/
-Linux ELFUtils  optional  ?       0.127   ?
+System libelf   optional  -       -       -
 --------------- --------- ------- ------- -------------------------------------
 
 [1] db:   modified copy bundled with RPM, stock external one not supported
