@@ -607,17 +607,13 @@ AC_ARG_WITH(libelf, AS_HELP_STRING([--with-libelf], [use libelf/gelf API]), [
 AC_SUBST(WITH_LIBELF_DEBUGEDIT)
 
 dnl # optional SELinux support
-WITH_SELINUX_LIB=
-with_selinuxval=no
-case "$target" in
-    *-*-linux*) with_selinuxval=yes ;;
-esac
-withval=${with_selinuxval}
-AC_ARG_WITH(selinux, AS_HELP_STRING([--with-selinux], [build RPM with SELinux support]))
-if test $withval != no; then
-  AC_DEFINE(WITH_SELINUX, 1, [Build with SELinux support?])
-  WITH_SELINUX_LIB="-lselinux"
-fi
+WITH_SELINUX_LIB=""
+AC_ARG_WITH(selinux, AS_HELP_STRING([--with-selinux], [build RPM with SELinux support]), [
+    if test ".$withval" = .yes; then
+        AC_DEFINE(WITH_SELINUX, 1, [Build with SELinux support?])
+        WITH_SELINUX_LIB="-lselinux"
+    fi
+])
 AC_SUBST(WITH_SELINUX_LIB)
 
 dnl # auto-detect whether Perl bindings should be built.
