@@ -616,7 +616,7 @@ AC_ARG_WITH(selinux, AS_HELP_STRING([--with-selinux], [build RPM with SELinux su
 ])
 AC_SUBST(WITH_SELINUX_LIB)
 
-dnl # auto-detect whether Perl bindings should be built.
+dnl # optional Perl language bindings
 WITH_PERL_SUBDIR=""
 WITH_PERL_SUBPACKAGE=0
 AC_ARG_WITH(perl, AS_HELP_STRING([--with-perl], [build with RPM Perl language bindings]), [
@@ -628,77 +628,52 @@ AC_ARG_WITH(perl, AS_HELP_STRING([--with-perl], [build with RPM Perl language bi
 AC_SUBST(WITH_PERL_SUBDIR)
 AC_SUBST(WITH_PERL_SUBPACKAGE)
 
-dnl # auto-detect which Python bindings should be built.
-withval=auto
-AC_ARG_WITH(python, AS_HELP_STRING([--with-python], [build with RPM Python language bindings]))
-WITH_PYTHON_VERSION=$withval
-if test $withval = auto ; then
-AC_MSG_CHECKING(for python 2.5)
-AC_RUN_IFELSE([AC_LANG_SOURCE([[
-#include <python2.5/Python.h>
-main() {
-  exit(strncmp("2.5", PY_VERSION, 3));
-} ]])],[withval=yes],[withval=no],[withval=yes])
-  AC_MSG_RESULT($withval)
-  if test $withval = yes ; then
-    WITH_PYTHON_VERSION="2.5"
-  else
-      
-  AC_MSG_CHECKING(for python 2.4)
-  AC_RUN_IFELSE([AC_LANG_SOURCE([[
-#include <python2.4/Python.h>
-  main() {
-    exit(strncmp("2.4", PY_VERSION, 3));
-  } ]])],[withval=yes],[withval=no],[withval=yes])
-    AC_MSG_RESULT($withval)
-    if test $withval = yes ; then
-      WITH_PYTHON_VERSION="2.4"
-    else
-      
-    AC_MSG_CHECKING(for python 2.3)
-    AC_RUN_IFELSE([AC_LANG_SOURCE([[
-#include <python2.3/Python.h>
-    main() {
-      exit(strncmp("2.3", PY_VERSION, 3));
-    } ]])],[withval=yes],[withval=no],[withval=yes])
-      AC_MSG_RESULT($withval)
-      if test $withval = yes ; then
-        WITH_PYTHON_VERSION="2.3"
-      else
-      
-        AC_MSG_CHECKING(for python 2.2)
-        AC_RUN_IFELSE([AC_LANG_SOURCE([[
-#include <python2.2/Python.h>
-      main() {
-        exit(strncmp("2.2", PY_VERSION, 3));
-      } ]])],[withval=yes],[withval=no],[withval=yes])
-        AC_MSG_RESULT($withval)
-        if test $withval = yes ; then
-          WITH_PYTHON_VERSION="2.2"
-        else
-      
-          AC_MSG_CHECKING(for python 1.5.2)
-          AC_RUN_IFELSE([AC_LANG_SOURCE([[
-#include <python1.5/Python.h>
-      main() {
-        exit(strcmp("1.5.2", PY_VERSION));
-      } ]])],[withval=yes],[withval=no],[withval=yes])
-          AC_MSG_RESULT($withval)
-          if test $withval = yes ; then
-            WITH_PYTHON_VERSION="1.5"
-          fi
+dnl # optional Python language bindings
+WITH_PYTHON_SUBDIR=""
+WITH_PYTHON_SUBPACKAGE=0
+WITH_PYTHON_VERSION=""
+AC_ARG_WITH(python, AS_HELP_STRING([--with-python], [build with RPM Python language bindings]), [
+    if test ".$withval" != .no; then
+        AC_MSG_CHECKING([for Python 2.5 API])
+        AC_RUN_IFELSE([AC_LANG_SOURCE(
+        [[#include <python2.5/Python.h>
+           main() { exit(strncmp("2.5", PY_VERSION, 3)); } ]])
+        ], [
+           WITH_PYTHON_VERSION="2.5"
+           AC_MSG_RESULT(yes)
+        ], [ 
+           AC_MSG_RESULT(no)
+        ])
+        if test ".$WITH_PYTHON_VERSION" = .; then
+            AC_MSG_CHECKING([for Python 2.4 API])
+            AC_RUN_IFELSE([AC_LANG_SOURCE(
+            [[#include <python2.4/Python.h>
+               main() { exit(strncmp("2.4", PY_VERSION, 3)); } ]])
+            ], [
+               WITH_PYTHON_VERSION="2.4"
+               AC_MSG_RESULT(yes)
+            ], [ 
+               AC_MSG_RESULT(no)
+            ])
+            if test ".$WITH_PYTHON_VERSION" = .; then
+                AC_MSG_CHECKING([for Python 2.x API])
+                AC_RUN_IFELSE([AC_LANG_SOURCE(
+                [[#include <python/Python.h>
+                   main() { exit(strncmp("2.", PY_VERSION, 2)); } ]])
+                ], [
+                   WITH_PYTHON_VERSION=""
+                   AC_MSG_RESULT(yes)
+                ], [ 
+                   AC_MSG_RESULT(no)
+                ])
+            fi
         fi
-      fi
+        if test ".$WITH_PYTHON_VERSION" != .; then
+            WITH_PYTHON_SUBDIR=python
+            WITH_PYTHON_SUBPACKAGE=1
+        fi
     fi
-  fi
-fi
-if test "$WITH_PYTHON_VERSION" != no ; then
-  WITH_PYTHON_SUBDIR=python
-  WITH_PYTHON_SUBPACKAGE=1
-else
-  WITH_PYTHON_SUBDIR=
-  WITH_PYTHON_SUBPACKAGE=0
-fi
+])
 AC_SUBST(WITH_PYTHON_SUBDIR)
 AC_SUBST(WITH_PYTHON_SUBPACKAGE)
 AC_SUBST(WITH_PYTHON_VERSION)

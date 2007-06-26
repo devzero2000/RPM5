@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - rse: use explicit enable/disable of Perl and Python APIs
     - rse: cleanup elf(3) API related Autoconf glue
     - rse: use --enable-maintainer-mode to enable Automake rebuilds for maintainers only
     - rse: cleanup Automake specifications replace old-style INCLUDES with AM_CPPFLAGS
