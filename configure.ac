@@ -168,10 +168,10 @@ addlib () {
 if  test "$cross_compiling" != "yes" && \
     test ".$prefix" != .NONE && \
     test ".$prefix" != "./usr"; then
-    if test -d $dir/lib; then
-        addlib $dir/lib
+    if test -d $prefix/lib; then
+        addlib $prefix/lib
     fi
-    if test -d $dir/include; then
+    if test -d $prefix/include; then
         CPPFLAGS="$CPPFLAGS -I$prefix/include"
     fi
 fi
