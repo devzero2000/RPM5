@@ -25,8 +25,6 @@ SUBDIRS = \
 	@WITH_ZLIB_SUBDIR@ \
 	@WITH_LUA_SUBDIR@ \
 	@WITH_FILE_SUBDIR@ \
-	@WITH_NEON_SUBDIR@ \
-	@WITH_BEECRYPT_SUBDIR@ \
 	rpmio \
 	rpmdb \
 	lib \

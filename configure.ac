@@ -688,7 +688,7 @@ dnl # ZLib
 RPM_CHECK_LIB(
     [ZLib], [zlib],
     [z gz], [gzread], [zlib.h],
-    [yes,internal], [zlib],
+    [yes,internal:none], [zlib],
     [ AC_CHECK_FUNC(gzseek)
       if test ".$RPM_CHECK_LIB_LOCATION" = .internal; then
           AC_DEFINE(HAVE_ZLIB_H, 1, [Define to 1 if you have <zlib.h>])
@@ -713,18 +713,13 @@ dnl # Neon
 RPM_CHECK_LIB(
     [Neon], [neon],
     [neon], [ne_session_create], [ne_session.h],
-    [yes,external:internal], [neon:src:src],
-    [ if test ".$RPM_CHECK_LIB_LOCATION" = .internal; then
+    [yes,external], [],
+    [ AC_CHECK_LIB(neon, ne_get_response_header, [
           AC_DEFINE(HAVE_NEON_NE_GET_RESPONSE_HEADER, 1,
-                    [Define to 1 if you have ne_get_response_header() in libneon.])
-      else
-          AC_CHECK_LIB(neon, ne_get_response_header, [
-              AC_DEFINE(HAVE_NEON_NE_GET_RESPONSE_HEADER, 1,
-                        [Define to 1 if you have ne_get_response_header() in libneon.]) ])
-          AC_CHECK_LIB(neon, ne_send_request_chunk, [
-              AC_DEFINE(HAVE_NEON_NE_SEND_REQUEST_CHUNK, 1,
-                        [Define to 1 if you have ne_send_request_chunk() in libneon.]) ])
-      fi
+                    [Define to 1 if you have ne_get_response_header() in libneon.]) ])
+      AC_CHECK_LIB(neon, ne_send_request_chunk, [
+          AC_DEFINE(HAVE_NEON_NE_SEND_REQUEST_CHUNK, 1,
+                    [Define to 1 if you have ne_send_request_chunk() in libneon.]) ])
     ], [ AC_ERROR([mandatory Neon library not found]) ])
 
 dnl # File (magic)
