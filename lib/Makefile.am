@@ -26,8 +26,6 @@ noinst_HEADERS = \
 mylibs = librpm.la
 LIBS =
 
-LDFLAGS = -L$(RPM_BUILD_ROOT)$(usrlibdir) -L$(DESTDIR)$(usrlibdir)
-
 usrlibdir = $(libdir)@MARK64@
 usrlib_LTLIBRARIES = librpm.la
 librpm_la_SOURCES = \

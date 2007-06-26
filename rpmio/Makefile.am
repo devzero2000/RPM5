@@ -22,8 +22,6 @@ noinst_HEADERS = \
 	salsa10.h salsa20.h tiger.h \
 	LzmaDecode.h rpmio_internal.h rpmlua.h rpmhook.h
 
-LDFLAGS = -L$(RPM_BUILD_ROOT)$(usrlibdir) -L$(DESTDIR)$(usrlibdir)
-
 usrlibdir = $(libdir)@MARK64@
 usrlib_LTLIBRARIES = librpmio.la
 librpmio_la_SOURCES = \

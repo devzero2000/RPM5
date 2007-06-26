@@ -40,9 +40,6 @@ LIBS =
 # XXX watchout, ../db3/libdb.la created by this Makefile may surprise
 libdb_la = $(top_builddir)/$(WITH_DB_SUBDIR)/libdb.la
 
-# XXX grrr, RPM_BUILD_ROOT prevents build pollution if/when -lrpm different
-LDFLAGS = @LDFLAGS@ -L$(RPM_BUILD_ROOT)$(usrlibdir) -L$(DESTDIR)$(usrlibdir)
-
 usrlibdir = $(libdir)@MARK64@
 usrlib_LTLIBRARIES = librpmdb.la
 librpmdb_la_SOURCES = \
