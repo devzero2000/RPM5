@@ -27,7 +27,6 @@ SUBDIRS = \
 	@WITH_FILE_SUBDIR@ \
 	@WITH_NEON_SUBDIR@ \
 	@WITH_BEECRYPT_SUBDIR@ \
-	@WITH_ELFUTILS_SUBDIR@ \
 	rpmio \
 	rpmdb \
 	lib \
@@ -44,12 +43,7 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/lib \
 	-I$(top_srcdir)/rpmdb \
 	-I$(top_srcdir)/rpmio \
-	-I$(top_srcdir)/misc \
-	@WITH_LIBELF_INCLUDE@
-
-staticLDFLAGS = @LDFLAGS_STATIC@
-
-myLDFLAGS = @WITH_LIBELF_LIB@
+	-I$(top_srcdir)/misc
 
 myLDADD = \
 	$(top_builddir)/build/librpmbuild.la \
@@ -66,13 +60,13 @@ versionlib_DATA =	rpmpopt macros
 noinst_HEADERS = build.h debug.h system.h
 
 rpm_SOURCES =		$(top_srcdir)/build.c
-rpm_LDFLAGS =		$(myLDFLAGS) $(staticLDFLAGS)
+rpm_LDFLAGS =		@LDFLAGS_STATIC@
 rpm_LDADD =		rpm.o $(myLDADD)
 rpm.o:	$(top_srcdir)/rpmqv.c
 	$(COMPILE) -DIAM_RPMBT -DIAM_RPMDB -DIAM_RPMEIU -DIAM_RPMK -DIAM_RPMQV -o $@ -c $<
 
 rpmbuild_SOURCES =	$(top_srcdir)/build.c
-rpmbuild_LDFLAGS =	$(myLDFLAGS) $(staticLDFLAGS)
+rpmbuild_LDFLAGS =	@LDFLAGS_STATIC@
 rpmbuild_LDADD =	rpmbuild.o $(myLDADD)
 rpmbuild.o: $(top_srcdir)/rpmqv.c
 	$(COMPILE) -DIAM_RPMBT -o $@ -c $<

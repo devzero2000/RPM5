@@ -530,19 +530,21 @@ dnl ##
 
 AC_MSG_HEADER([THIRD-PARTY LIBRARIES (1/2)])
 
-dnl # check for libelf library. Prefer external, then internal, otherwise none.
-WITH_ELFUTILS_SUBDIR=
-WITH_LIBELF_INCLUDE=
-WITH_LIBELF_LIB=
-AC_CHECK_HEADERS([libelf.h])
-
-dnl # libelf.h on Solaris is incompatible with Largefile support.  If
-dnl # we couldn't include libelf.h, see if we can when _FILE_ACCESS_BITS is
-dnl # set for non-LFS.
-if test X"$ac_cv_header_libelf_h" = X"no" ; then
-  AC_MSG_CHECKING([if libelf.h conflicts with _LARGEFILE_SOURCE])
-  AC_COMPILE_IFELSE(
-  [AC_LANG_PROGRAM([[
+dnl # optional ELF support
+WITH_LIBELF_DEBUGEDIT=""
+AC_MSG_CHECKING([whether to use libelf/gelf API])
+AC_ARG_WITH(libelf, AS_HELP_STRING([--with-libelf], [use libelf/gelf API]), [
+    if test ".$withval" = .yes; then
+        AC_MSG_RESULT(yes)
+        AC_CHECK_HEADERS([libelf.h gelf.h])
+        if test ".$ac_cv_header_libelf_h" = .no; then
+            dnl # <libelf.h> on Solaris is incompatible with LFS. If we couldn't
+            dnl # include <libelf.h>, see if we can when _FILE_OFFSET_BITS is
+            dnl # set for non-LFS. Same applies for <gelf.h>, since it probably
+            dnl # includes <libelf.h>
+            AC_MSG_CHECKING([if libelf.h conflicts with _LARGEFILE_SOURCE])
+            AC_COMPILE_IFELSE([
+                AC_LANG_PROGRAM([[
 #undef _LARGEFILE64_SOURCE
 #undef _LARGEFILE_SOURCE
 #if !defined(_LP64)
@@ -550,22 +552,22 @@ if test X"$ac_cv_header_libelf_h" = X"no" ; then
 # define _FILE_OFFSET_BITS 32
 #endif
 #include <libelf.h>
-]],[[Elf_Data foo;]])],
-  [AC_DEFINE(HAVE_LIBELF_H, 1, [Define to 1 if you have libelf.h])
-   AC_DEFINE(LIBELF_H_LFS_CONFLICT, 1,
-	[Define to 1 if libelf.h is incompatible with the Large Files API])
-   AC_MSG_RESULT(yes)
-  ],
-  [AC_MSG_RESULT(no)]
- )
-fi
-
-AC_CHECK_HEADERS([gelf.h])
-dnl # same for gelf.h, since it probably includes libelf.h
-if test X"$ac_cv_header_gelf_h" = X"no" ; then
-  AC_MSG_CHECKING([if gelf.h conflicts with _LARGEFILE_SOURCE])
-  AC_COMPILE_IFELSE(
-  [AC_LANG_PROGRAM([[
+                ]], [[
+                    Elf_Data foo;
+                ]])
+            ], [
+                AC_DEFINE(HAVE_LIBELF_H, 1, [Define to 1 if you have libelf.h])
+                ac_cv_header_libelf_h=yes
+                AC_DEFINE(LIBELF_H_LFS_CONFLICT, 1, [Define to 1 if libelf.h is incompatible with LFS API])
+                AC_MSG_RESULT(yes)
+            ], [
+                AC_MSG_RESULT(no)
+            ])
+        fi
+        if test ".$ac_cv_header_gelf_h" = .no; then
+            AC_MSG_CHECKING([if gelf.h conflicts with _LARGEFILE_SOURCE])
+            AC_COMPILE_IFELSE([
+                AC_LANG_PROGRAM([[
 #undef _LARGEFILE64_SOURCE
 #undef _LARGEFILE_SOURCE
 #if !defined(_LP64)
@@ -573,55 +575,36 @@ if test X"$ac_cv_header_gelf_h" = X"no" ; then
 # define _FILE_OFFSET_BITS 32
 #endif
 #include <gelf.h>
-]],[[Elf32_Verdef foo;]])],
-  [AC_DEFINE(HAVE_GELF_H, 1, [Define to 1 if you have gelf.h])
-   ac_cv_header_gelf_h=yes
-   AC_MSG_RESULT(yes)
-  ],
-  [AC_MSG_RESULT(no)]
- )
-fi
-
-dnl # if we found gelf.h, look for libelf and see if it has gelf_getvernaux
-if test X"$ac_cv_header_gelf_h" = X"yes" ; then
-	AC_CHECK_LIB(elf, elf_version, [
-    		AC_DEFINE(HAVE_LIBELF, 1,
-		  [Define to 1 if you have the 'elf' library (-lelf).])
-    		WITH_LIBELF_LIB="-lelf"
-		AC_CHECK_LIB(elf, gelf_getvernaux, [
-		  AC_DEFINE(HAVE_GELF_GETVERNAUX, 1,
-		  [Define to 1 if you have the gelf_getvernaux() function.])
-		])
-	])
-else
-	# allow for an internalized elfutils
-	if test -d elfutils/libelf ; then
-	    AC_DEFINE(HAVE_GELF_H, 1, [Define to 1 if you have the <gelf.h> header file.])
-	    AC_DEFINE(HAVE_LIBELF, 1, [Define to 1 if you have the 'elf' library (-lelf).])
-	    WITH_ELFUTILS_SUBDIR=elfutils
-	    WITH_LIBELF_INCLUDE="-I\${top_srcdir}/${WITH_ELFUTILS_SUBDIR}/libelf"
-	    WITH_LIBELF_LIB="\${top_builddir}/${WITH_ELFUTILS_SUBDIR}/libelf/libelf.a"
-	fi
-fi
-
-AC_SUBST(WITH_ELFUTILS_SUBDIR)
-AC_SUBST(WITH_LIBELF_INCLUDE)
-AC_SUBST(WITH_LIBELF_LIB)
-
-WITH_LIBDWARF_INCLUDE=
-WITH_LIBDWARF_DEBUGEDIT=
-AC_CHECK_HEADER([dwarf.h], [
-  AC_DEFINE(HAVE_DWARF_H, 1, [Define to 1 if you have the <dwarf.h> header file.])
-  WITH_LIBDWARF_DEBUGEDIT="debugedit"
-],[
-  if test -d elfutils/libdwarf ; then
-    AC_DEFINE(HAVE_DWARF_H, 1, [Define to 1 if you have the <dwarf.h> header file.])
-    WITH_LIBDWARF_INCLUDE="-I\${top_srcdir}/${WITH_ELFUTILS_SUBDIR}/libdwarf"
-    WITH_LIBDWARF_DEBUGEDIT="debugedit"
-  fi
+                ]], [[
+                    Elf32_Verdef foo;
+                ]])
+            ], [
+                AC_DEFINE(HAVE_GELF_H, 1, [Define to 1 if you have gelf.h])
+                ac_cv_header_gelf_h=yes
+                AC_MSG_RESULT(yes)
+            ], [
+                AC_MSG_RESULT(no)
+          ])
+        fi
+        if test ".$ac_cv_header_gelf_h" = .yes; then
+            AC_CHECK_LIB([elf], [elf_version], [
+                AC_CHECK_LIB([elf], [gelf_getvernaux], [
+                    AC_DEFINE(HAVE_GELF_GETVERNAUX, 1, [Define to 1 if you have the gelf_getvernaux() function.])
+                ])
+                AC_DEFINE(HAVE_LIBELF, 1, [Define to 1 if you have ELF library])
+                WITH_LIBELF_DEBUGEDIT="debugedit"
+                LIBS="$LIBS -lelf"
+            ])
+        else
+            AC_ERROR([libelf/gelf API requested but not found or not usable])
+        fi
+    else
+        AC_MSG_RESULT(no)
+    fi
+], [
+    AC_MSG_RESULT(no)
 ])
-AC_SUBST(WITH_LIBDWARF_INCLUDE)
-AC_SUBST(WITH_LIBDWARF_DEBUGEDIT)
+AC_SUBST(WITH_LIBELF_DEBUGEDIT)
 
 dnl # optional SELinux support
 WITH_SELINUX_LIB=

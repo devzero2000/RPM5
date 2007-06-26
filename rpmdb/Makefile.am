@@ -9,8 +9,7 @@ AM_CPPFLAGS = -I. \
 	-I$(top_srcdir)/build \
 	-I$(top_srcdir)/lib \
 	-I$(top_srcdir)/rpmio \
-	-I$(top_srcdir)/misc \
-	@WITH_LIBELF_INCLUDE@
+	-I$(top_srcdir)/misc
 
 EXTRA_DIST = db3.c sqlite.c db_emu.h librpmdb.vers
 
@@ -52,8 +51,7 @@ librpmdb_la_SOURCES = \
 	poptDB.c rpmdb.c \
 	tagname.c tagtbl.c
 librpmdb_la_LDFLAGS = -no-undefined -release $(LT_CURRENT).$(LT_REVISION) \
-	$(top_builddir)/rpmio/librpmio.la \
-	@WITH_LIBELF_LIB@
+	$(top_builddir)/rpmio/librpmio.la
 librpmdb_la_LIBADD = $(DBLIBOBJS) $(libdb_la)
 librpmdb_la_DEPENDENCIES = $(DBLIBOBJS) $(libdb_la)
 

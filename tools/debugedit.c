@@ -35,9 +35,6 @@
 
 #include <gelf.h>
 
-#if 0		/* XXX compile without dwarf.h */
-#include <dwarf.h>
-#else
 /* some defines taken from the dwarf standard */
 
 #define DW_TAG_compile_unit	0x11
@@ -67,7 +64,6 @@
 #define DW_FORM_ref8		0x14
 #define DW_FORM_ref_udata	0x15
 #define DW_FORM_indirect	0x16
-#endif
 
 #include "hashtab.h"
 

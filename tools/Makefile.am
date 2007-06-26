@@ -7,7 +7,6 @@ AM_CPPFLAGS = -I. \
 	-I$(top_srcdir)/lib \
 	-I$(top_srcdir)/rpmdb \
 	-I$(top_srcdir)/rpmio \
-	@WITH_LIBELF_INCLUDE@ \
 	-I$(top_srcdir)/misc
 
 EXTRA_DIST =	hashtab.h
@@ -18,12 +17,11 @@ LDADD = $(top_builddir)/lib/librpm.la
 
 pkglibdir =		@USRLIBRPM@
 versionlibdir =		$(pkglibdir)/@VERSION@
-versionlib_PROGRAMS =	rpmdeps @WITH_LIBDWARF_DEBUGEDIT@
+versionlib_PROGRAMS =	rpmdeps @WITH_LIBELF_DEBUGEDIT@
 
 convertdb1_SOURCES =	convertdb1.c
 
 debugedit_SOURCES =	debugedit.c hashtab.c
-debugedit_LDADD =	@WITH_LIBELF_LIB@
 
 rpmdeps_SOURCES =	rpmdeps.c
 

@@ -11,7 +11,6 @@ AM_CPPFLAGS = -I. \
 	-I$(top_srcdir)/lib \
 	-I$(top_srcdir)/rpmdb \
 	-I$(top_srcdir)/rpmio \
-	@WITH_LIBELF_INCLUDE@ \
 	-I$(top_srcdir)/misc
 
 LIBS =
@@ -32,8 +31,7 @@ librpmbuild_la_SOURCES = \
 librpmbuild_la_LDFLAGS = -no-undefined -release $(LT_CURRENT).$(LT_REVISION) $(LDFLAGS) \
 	$(top_builddir)/lib/librpm.la \
 	$(top_builddir)/rpmdb/librpmdb.la \
-	$(top_builddir)/rpmio/librpmio.la \
-	@WITH_LIBELF_LIB@
+	$(top_builddir)/rpmio/librpmio.la
 
 if HAVE_LD_VERSION_SCRIPT
 librpmbuild_la_LDFLAGS += -Wl,--version-script=$(srcdir)/librpmbuild.vers

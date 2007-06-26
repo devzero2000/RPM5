@@ -17,7 +17,6 @@ AM_CPPFLAGS = -I. \
 	-I$(top_srcdir)/lib \
 	-I$(top_srcdir)/rpmdb \
 	-I$(top_srcdir)/rpmio \
-	@WITH_LIBELF_INCLUDE@ \
 	-I$(top_srcdir)/misc \
 	-I$(pyincdir)
 
@@ -30,8 +29,7 @@ mylibs= \
 	$(top_builddir)/build/librpmbuild.la \
 	$(top_builddir)/lib/librpm.la \
 	$(top_builddir)/rpmdb/librpmdb.la \
-	$(top_builddir)/rpmio/librpmio.la \
-	@WITH_LIBELF_LIB@
+	$(top_builddir)/rpmio/librpmio.la
 
 LDADD =
 LIBS =
