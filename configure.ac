@@ -717,8 +717,8 @@ dnl # File (magic)
 RPM_CHECK_LIB(
     [File (magic)], [file],
     [magic], [magic_open], [magic.h],
-    [yes,external:internal], [file:src:src],
-    [], [ AC_ERROR([mandatory File (magic) library not found]) ])
+    [yes,external:internal:none], [file:src:src],
+    [], [])
 
 dnl # POPT
 RPM_CHECK_LIB(

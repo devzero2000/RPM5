@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - rse: implement --without-file, i.e., building RPM without File/magic support
     - rse: use regular LIBS for linking against SELinux library
     - rse: no longer re-build db_xxx utilities in rpmdb/ -- use already built db3/ versions instead
     - rse: no longer any librpm* libraries against external third-party libraries (rely on pkg-config)

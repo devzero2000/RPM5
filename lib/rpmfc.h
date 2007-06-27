@@ -1,9 +1,6 @@
 #ifndef _H_RPMFC_
 #define _H_RPMFC_
 
-#undef	FILE_RCSID
-#include "magic.h"
-
 /*@-exportlocal@*/
 /*@unchecked@*/
 extern int _rpmfc_debug;

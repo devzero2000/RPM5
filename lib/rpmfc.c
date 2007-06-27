@@ -2,6 +2,11 @@
 
 #include <signal.h>	/* getOutputFrom() */
 
+#ifdef HAVE_MAGIC_H
+#undef	FILE_RCSID
+#include "magic.h"
+#endif
+
 #define	_RPMEVR_INTERNAL
 #include <rpmbuild.h>
 #include <argv.h>
@@ -976,16 +981,20 @@ int rpmfcClassify(rpmfc fc, ARGV_t argv, int_16 * fmode)
     size_t slen;
     int fcolor;
     int xx;
+#ifdef HAVE_MAGIC_H
     const char * magicfile;
     int msflags = MAGIC_CHECK;	/* XXX MAGIC_COMPRESS flag? */
     magic_t ms = NULL;
+#endif
 
     if (fc == NULL || argv == NULL)
 	return 0;
 
+#ifdef HAVE_MAGIC_H
     magicfile = rpmExpand("%{?_rpmfc_magic_path}", NULL);
     if (magicfile == NULL || *magicfile == '\0' || *magicfile == '%')
 	goto exit;
+#endif
 
     fc->nfiles = argvCount(argv);
 
@@ -997,6 +1006,7 @@ int rpmfcClassify(rpmfc fc, ARGV_t argv, int_16 * fmode)
     xx = argvAdd(&fc->cdict, "");
     xx = argvAdd(&fc->cdict, "directory");
 
+#ifdef HAVE_MAGIC_H
     ms = magic_open(msflags);
     if (ms == NULL) {
 	xx = RPMERR_EXEC;
@@ -1012,6 +1022,7 @@ assert(ms != NULL);	/* XXX figger a proper return path. */
 		magicfile, magic_error(ms));
 assert(xx != -1);	/* XXX figger a proper return path. */
     }
+#endif
 
     for (fc->ix = 0; fc->ix < fc->nfiles; fc->ix++) {
 	const char * ftype;
@@ -1070,6 +1081,7 @@ assert(s != NULL && *s == '/');
 	    else if (slen >= fc->brlen+sizeof("/dev/") && !strncmp(s+fc->brlen, "/dev/", sizeof("/dev/")-1))
 		ftype = "";
 	    else
+#ifdef HAVE_MAGIC_H
 		ftype = magic_file(ms, s);
 
 	    if (ftype == NULL) {
@@ -1078,6 +1090,9 @@ assert(s != NULL && *s == '/');
 			s, mode, magic_error(ms));
 assert(ftype != NULL);	/* XXX figger a proper return path. */
 	    }
+#else
+		ftype = "";
+#endif
 	    /*@switchbreak@*/ break;
 	}
 /*@=branchstate@*/
@@ -1119,11 +1134,15 @@ assert(se != NULL);
 
     fcav = argvFree(fcav);
 
+#ifdef HAVE_MAGIC_H
     if (ms != NULL)
 	magic_close(ms);
+#endif
 
+#ifdef HAVE_MAGIC_H
 exit:
     magicfile = _free(magicfile);
+#endif
 
     return 0;
 }
