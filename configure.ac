@@ -1009,7 +1009,7 @@ AC_CONFIG_FILES([ po/Makefile.in
     scripts/macros.python tools/Makefile misc/Makefile doc/Makefile
     doc/manual/Makefile doc/fr/Makefile doc/ja/Makefile doc/ko/Makefile
     doc/pl/Makefile doc/ru/Makefile doc/sk/Makefile python/Makefile
-    python/rpm/Makefile lua/Makefile
+    python/rpm/Makefile lua/Makefile scripts/rpm.pc
 ])
 
 dnl # explicit list of commands to execute
