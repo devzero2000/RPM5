@@ -45,8 +45,6 @@ AC_PROG_LIBTOOL
 AC_PROG_YACC
 
 AC_PATH_PROG(AS, as, as)
-AC_PATH_PROG(CTAGS, ctags, /bin/true)
-AC_PATH_PROG(CSCOPE, cscope, /bin/true)
 
 dnl # GCC specifics
 AC_PROG_GCC_TRADITIONAL
