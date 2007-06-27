@@ -600,14 +600,12 @@ AC_ARG_WITH(libelf, AS_HELP_STRING([--with-libelf], [use libelf/gelf API]), [
 AC_SUBST(WITH_LIBELF_DEBUGEDIT)
 
 dnl # optional SELinux support
-WITH_SELINUX_LIB=""
 AC_ARG_WITH(selinux, AS_HELP_STRING([--with-selinux], [build RPM with SELinux support]), [
     if test ".$withval" = .yes; then
         AC_DEFINE(WITH_SELINUX, 1, [Build with SELinux support?])
-        WITH_SELINUX_LIB="-lselinux"
+        LIBS="$LIBS -lselinux"
     fi
 ])
-AC_SUBST(WITH_SELINUX_LIB)
 
 dnl # optional Perl language bindings
 WITH_PERL_SUBDIR=""

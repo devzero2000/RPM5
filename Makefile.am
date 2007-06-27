@@ -55,7 +55,6 @@ myLDADD = \
 	$(top_builddir)/rpmdb/librpmdb.la \
 	$(top_builddir)/rpmio/librpmio.la \
 	$(top_builddir)/misc/librpmmisc.la \
-	@WITH_SELINUX_LIB@ \
 	@LTLIBINTL@
 
 bin_PROGRAMS = 		rpm rpmbuild
