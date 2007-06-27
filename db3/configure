@@ -9,6 +9,8 @@ rm -f config.cache
 
 ARGS="`echo $* |\
        sed -e 's% [^ ]*CFLAGS=[^ ]*%%' \
+           -e 's% [^ ]*CC=[^ ]*ccache [^ ]*%%' \
+           -e 's% [^ ]*CC=[^ ]*%%' \
            -e 's% -[^-][^ ]*%%g' \
            -e 's% --param=[^ ]*%%g' \
            -e 's%--cache-file=.*$%%' \
