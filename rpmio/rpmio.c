@@ -3715,7 +3715,7 @@ int rpmioMkpath(const char * path, mode_t mode, uid_t uid, gid_t gid)
 /*@=bounds@*/
 
 
-#define	_PATH	"/usr/kerberos/sbin:/usr/kerberos/bin:/usr/lib/ccache/bin:/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:/usr/X11R6/bin:~/bin"
+#define	_PATH	"/bin:/usr/bin:/sbin:/usr/sbin"
 /*@unchecked@*/ /*@observer@*/
 static const char *_path = _PATH;
 
