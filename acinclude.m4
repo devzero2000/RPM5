@@ -148,7 +148,9 @@ AC_DEFUN([RPM_CHECK_LIB], [
                                      m4_substr([$7], 0, m4_index([$7], [:])))])
                     if test -d __rcl_subdir; then
                         AC_MSG_VERBOSE([-- activating local sub-directory: __rcl_subdir])
-                        AC_CONFIG_SUBDIRS(__rcl_subdir)
+                        if test -f __rcl_subdir/configure; then
+                            AC_CONFIG_SUBDIRS(__rcl_subdir)
+                        fi
                         dnl # NOTICE: an internal copy of the third-party library is a tricky thing
                         dnl # because for the following two major reasons we cannot just extend
                         dnl # CPPFLAGS, LDFLAGS and LIBS in this case:
