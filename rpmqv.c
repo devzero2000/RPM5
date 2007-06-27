@@ -18,8 +18,6 @@ extern const char *__progname;
 #include "rpmps.h"
 #include "rpmts.h"
 
-#include "rpmlua.h"	/* XXX for rpmluaFree() */
-
 #include "fs.h"		/* XXX for rpmFreeFilesystems() */
 
 #ifdef	IAM_RPMBT
