@@ -47,10 +47,11 @@ librpmdb_la_SOURCES = \
 	hdrNVR.c header.c header_internal.c legacy.c merge.c \
 	poptDB.c rpmdb.c \
 	tagname.c tagtbl.c
-librpmdb_la_LDFLAGS = -no-undefined -release $(LT_CURRENT).$(LT_REVISION) \
+librpmdb_la_LDFLAGS = -no-undefined -release $(LT_CURRENT).$(LT_REVISION)
+librpmdb_la_LIBADD = \
+	$(DBLIBOBJS) $(libdb_la) \
 	$(top_builddir)/rpmio/librpmio.la \
 	$(top_builddir)/misc/librpmmisc.la
-librpmdb_la_LIBADD = $(DBLIBOBJS) $(libdb_la)
 librpmdb_la_DEPENDENCIES = $(DBLIBOBJS) $(libdb_la)
 
 if HAVE_LD_VERSION_SCRIPT

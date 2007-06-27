@@ -32,7 +32,8 @@ librpmio_la_SOURCES = \
 	rpmpgp.c rpmrpc.c rpmsq.c rpmsw.c strcasecmp.c strtolocale.c \
 	url.c ugid.c \
 	LzmaDecode.c
-librpmio_la_LDFLAGS = -no-undefined -release $(LT_CURRENT).$(LT_REVISION) $(LDFLAGS) \
+librpmio_la_LDFLAGS = -no-undefined -release $(LT_CURRENT).$(LT_REVISION) $(LDFLAGS)
+librpmio_la_LIBADD = \
     $(top_builddir)/misc/librpmmisc.la \
 	@LTLIBINTL@
 
