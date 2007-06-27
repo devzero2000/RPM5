@@ -24,6 +24,9 @@ usrlib_LTLIBRARIES = librpmmisc.la
 
 librpmmisc_la_SOURCES = librpmmisc.c
 librpmmisc_la_LDFLAGS = -release $(LT_CURRENT).$(LT_REVISION)
+if HAVE_LD_VERSION_SCRIPT
+librpmmisc_la_LDFLAGS += -Wl,--version-script=$(srcdir)/librpmmisc.vers
+endif
 librpmmisc_la_LIBADD = \
 	@ALLOCA@ \
 	@WITH_DB_LDFLAGS@   @WITH_DB_LIBS@ \

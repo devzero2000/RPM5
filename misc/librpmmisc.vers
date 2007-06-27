@@ -1,0 +1,9 @@
+LIBRPMMISC_0
+{
+  global:
+    fnmatch;
+    glob;
+    globfree;
+  local:
+    *;
+};

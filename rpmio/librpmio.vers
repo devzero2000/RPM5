@@ -270,42 +270,6 @@ LIBRPMIO_0
     XurlFree;
     XurlLink;
     XurlNew;
-# XXX internal libz:
-    zlib_rsync;
-# XXX internal libmagic:
-    magic_check;
-    magic_close;
-    magic_compile;
-    magic_error;
-    magic_file;
-    magic_load;
-    magic_open;
-# XXX internal libsyck:
-    syck_add_sym;
-    syck_alloc_map;
-    syck_alloc_seq;
-    syck_free_node;
-    syck_free_parser;
-    syck_lookup_sym;
-    syck_map_add;
-    syck_map_count;
-    syck_map_read;
-    syck_new_parser;
-    syck_new_str;
-    syck_new_str2;
-    syck_parse;
-    syck_parser_bad_anchor_handler;
-    syck_parser_error_handler;
-    syck_parser_file;
-    syck_parser_handler;
-    syck_parser_implicit_typing;
-    syck_parser_taguri_expansion;
-    syck_seq_add;
-    syck_seq_count;
-    syck_seq_read;
-    syck_strndup;
-    syck_taguri;
-    syck_vmefail;
   local:
     *;
 };
