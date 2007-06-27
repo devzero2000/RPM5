@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - rse: support building without ZLib via --without-zlib
     - rse: in rpmio for LZMA use %{__lzma} macro instead of hard-coded /usr/bin/lzma when possible
     - rse: use explicit enable/disable of Perl and Python APIs
     - rse: cleanup elf(3) API related Autoconf glue
