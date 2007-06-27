@@ -29,13 +29,8 @@ CC="$CC" CFLAGS="$CFLAGS" $db_dist/configure $ARGS \
 
 mv Makefile Makefile.orig
 cat Makefile.orig | sed -e '/^install[:-]/c\
-.PHONY: listobjs\
-listobjs:\
-\	@echo $(OBJS) $(C_OBJS) \
-\
 distdir install check:\
-\
-db4_install: all install_setip' > Makefile
+' > Makefile
 
 mv db.h db.h.orig
 cat db.h.orig | sed \
@@ -48,5 +43,3 @@ cat db.h.orig | sed \
 	-e '/^int txn_commit __P((/a\
 /*@=declundef =noparams =fcnuse =fielduse =enummemuse =typeuse @*/' > db.h
 
-# Generate manifest for rpmdb.
-make -s listobjs > db3lobjs

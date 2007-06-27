@@ -4,7 +4,6 @@
 .libs
 Makefile
 Makefile.in
-db3lobjs
 db_archive
 db_checkpoint
 db_deadlock
