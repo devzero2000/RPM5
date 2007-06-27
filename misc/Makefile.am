@@ -2,7 +2,9 @@
 
 AUTOMAKE_OPTIONS = 1.4 foreign
 
-AM_CPPFLAGS = -I. -I$(top_srcdir)
+AM_CPPFLAGS = \
+	-I$(srcdir) \
+	-I$(top_srcdir)
 
 EXTRA_DIST = \
 	alloca.c	basename.c	err.c		error.c		\
@@ -21,6 +23,15 @@ usrlibdir = $(libdir)@MARK64@
 usrlib_LTLIBRARIES = librpmmisc.la
 
 librpmmisc_la_SOURCES = librpmmisc.c
-librpmmisc_la_LIBADD = @ALLOCA@
-librpmmisc_la_DEPENDENCIES = $(librpmmisc_la_LIBADD)
+librpmmisc_la_LDFLAGS = -release $(LT_CURRENT).$(LT_REVISION)
+librpmmisc_la_LIBADD = \
+	@ALLOCA@ \
+	@WITH_DB_LDFLAGS@   @WITH_DB_LIBS@ \
+	@WITH_ZLIB_LDFLAGS@ @WITH_ZLIB_LIBS@ \
+	@WITH_LUA_LDFLAGS@  @WITH_LUA_LIBS@ \
+	@WITH_FILE_LDFLAGS@ @WITH_FILE_LIBS@
+librpmmisc_la_DEPENDENCIES = \
+	@ALLOCA@
+librpmmisc.la: $(librpmmisc_la_OBJECTS) $(librpmmisc_la_DEPENDENCIES) 
+	$(librpmmisc_la_LINK) -rpath $(usrlibdir) $(librpmmisc_la_OBJECTS) $(librpmmisc_la_LIBADD)
 

@@ -89,7 +89,13 @@ $ <prefix>/bin/rpm -Uvh /path/to/binary/package/foo.*.rpm
 $ <prefix>/bin/rpm -qa
 $ <prefix>/bin/rpm -e foo
 
-    make dist
+Application Build-Time
+----------------------
+
+CPPFLAGS = `pkg-config rpm --cflags-only-I`
+CFLAGS   = `pkg-config rpm --cflags-only-other`
+LDFLAGS  = `pkg-config rpm --libs-only-other`
+LIBS     = `pkg-config rpm --libs-only-l`
 
 OS DEPENDENCIES
 ===============

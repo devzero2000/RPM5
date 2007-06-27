@@ -4,12 +4,18 @@ AUTOMAKE_OPTIONS = 1.4 foreign
 
 LINT = splint
 
-AM_CPPFLAGS = -I. \
+AM_CPPFLAGS = \
+	-I$(srcdir) \
 	-I$(top_srcdir) \
 	-I$(top_srcdir)/build \
 	-I$(top_srcdir)/lib \
+	-I$(top_srcdir)/rpmdb \
 	-I$(top_srcdir)/rpmio \
-	-I$(top_srcdir)/misc
+	-I$(top_srcdir)/misc \
+	@WITH_DB_CPPFLAGS@ \
+	@WITH_ZLIB_CPPFLAGS@ \
+	@WITH_LUA_CPPFLAGS@ \
+	@WITH_FILE_CPPFLAGS@
 
 EXTRA_DIST = db3.c sqlite.c db_emu.h librpmdb.vers
 
@@ -42,9 +48,9 @@ versionlib_PROGRAMS += \
 	db_svc
 endif
 
-mylibs = librpmdb.la
-
-LIBS =
+mylibs = \
+	$(top_builddir)/rpmdb/librpmdb.la \
+	$(top_builddir)/misc/librpmmisc.la
 
 usrlibdir = $(libdir)@MARK64@
 usrlib_LTLIBRARIES = librpmdb.la
@@ -53,17 +59,14 @@ librpmdb_la_SOURCES = \
 	hdrNVR.c header.c header_internal.c legacy.c merge.c \
 	poptDB.c rpmdb.c \
 	tagname.c tagtbl.c
-librpmdb_la_LDFLAGS = -no-undefined -release $(LT_CURRENT).$(LT_REVISION)
-librpmdb_la_LIBADD = \
-	$(DBLIBOBJS) \
-	$(top_builddir)/$(WITH_DB_SUBDIR)/libdb-4.5.la \
-	$(top_builddir)/rpmio/librpmio.la \
-	$(top_builddir)/misc/librpmmisc.la
-librpmdb_la_DEPENDENCIES = $(DBLIBOBJS)
-
+librpmdb_la_LDFLAGS = -release $(LT_CURRENT).$(LT_REVISION)
 if HAVE_LD_VERSION_SCRIPT
 librpmdb_la_LDFLAGS += -Wl,--version-script=$(srcdir)/librpmdb.vers
 endif
+librpmdb_la_LIBADD = $(DBLIBOBJS)
+librpmdb_la_DEPENDENCIES = $(DBLIBOBJS)
+librpmdb.la: $(librpmdb_la_OBJECTS) $(librpmdb_la_DEPENDENCIES) 
+	$(librpmdb_la_LINK) -rpath $(usrlibdir) $(librpmdb_la_OBJECTS) $(librpmdb_la_LIBADD)
 
 # XXX make sure that db.h symlink is generated
 dbconfig.c $(DBLIBSRCS): db.h

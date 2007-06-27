@@ -8,9 +8,18 @@ EXTRA_DIST = tax.c tdir.c tficl.c tfts.c tget.c thkp.c tput.c tglob.c tinv.c tke
 
 EXTRA_PROGRAMS = tax tdir tfts tget thkp tmacro tput tglob tinv tkey trpmio tsw dumpasn1 lookup3
 
-AM_CPPFLAGS = -I. \
+AM_CPPFLAGS = \
+	-I$(srcdir) \
 	-I$(top_srcdir) \
-	-I$(top_srcdir)/misc
+	-I$(top_srcdir)/build \
+	-I$(top_srcdir)/lib \
+	-I$(top_srcdir)/rpmdb \
+	-I$(top_srcdir)/rpmio \
+	-I$(top_srcdir)/misc \
+	@WITH_DB_CPPFLAGS@ \
+	@WITH_ZLIB_CPPFLAGS@ \
+	@WITH_LUA_CPPFLAGS@ \
+	@WITH_FILE_CPPFLAGS@
 
 pkgincdir = $(pkgincludedir)
 pkginc_HEADERS = \
@@ -32,14 +41,13 @@ librpmio_la_SOURCES = \
 	rpmpgp.c rpmrpc.c rpmsq.c rpmsw.c strcasecmp.c strtolocale.c \
 	url.c ugid.c \
 	LzmaDecode.c
-librpmio_la_LDFLAGS = -no-undefined -release $(LT_CURRENT).$(LT_REVISION) $(LDFLAGS)
-librpmio_la_LIBADD = \
-    $(top_builddir)/misc/librpmmisc.la \
-	@LTLIBINTL@
-
+librpmio_la_LDFLAGS = -release $(LT_CURRENT).$(LT_REVISION)
 if HAVE_LD_VERSION_SCRIPT
 librpmio_la_LDFLAGS += -Wl,--version-script=$(srcdir)/librpmio.vers
 endif
+librpmio_la_LIBADD =
+librpmio.la: $(librpmio_la_OBJECTS) $(librpmio_la_DEPENDENCIES) 
+	$(librpmio_la_LINK) -rpath $(usrlibdir) $(librpmio_la_OBJECTS) $(librpmio_la_LIBADD)
 
 #BUILT_SOURCES = rpmio.lcd
 

@@ -123,7 +123,12 @@ AC_DEFUN([RPM_CHECK_LIB], [
     __rcl_result_hint=""
     __rcl_location_$2=""
     __rcl_location_last=""
-    WITH_[]m4_translit([$2],[a-z],[A-Z])[]_SUBDIR=""
+    m4_if([$7],,, [
+        WITH_[]m4_translit([$2],[a-z],[A-Z])[]_SUBDIR=""
+        WITH_[]m4_translit([$2],[a-z],[A-Z])[]_CPPFLAGS=""
+        WITH_[]m4_translit([$2],[a-z],[A-Z])[]_LDFLAGS=""
+        WITH_[]m4_translit([$2],[a-z],[A-Z])[]_LIBS=""
+    ])
     AC_ARG_WITH($2,
         AS_HELP_STRING([--with-$2=ARG], [build with $1 library (__rcl_default_enable) (location path: "__rcl_default_locations")]), [dnl
         if test ".${with_$2}" != .no; then
@@ -144,46 +149,58 @@ AC_DEFUN([RPM_CHECK_LIB], [
                     if test -d __rcl_subdir; then
                         AC_MSG_VERBOSE([-- activating local sub-directory: __rcl_subdir])
                         AC_CONFIG_SUBDIRS(__rcl_subdir)
+                        dnl # NOTICE: an internal copy of the third-party library is a tricky thing
+                        dnl # because for the following two major reasons we cannot just extend
+                        dnl # CPPFLAGS, LDFLAGS and LIBS in this case:
+                        dnl # 1. at _this_ "configure" time at least the library file (libfoo.a)
+                        dnl #    is still not existing, so extending LIBS with "-lfoo" would cause
+                        dnl #    following Autoconf checks to fail.
+                        dnl # 2. even deferring the extension of LIBS doesn't work, because although
+                        dnl #    this works around the problem under (1), it will fail if more than
+                        dnl #    one internal third-party library exists: LIBS would contains "-lfoo
+                        dnl #    -lbar" and if build "foo", "bar" usually still isn't built (or vice
+                        dnl #    versa). Hence, the linking of programs (tools, tests, etc) in "foo"
+                        dnl #    would fail.
+                        dnl # 3. information in at least LDFLAGS and LIBS is usually passed-through
+                        dnl #    to applications via xxx-config(1) scripts or pkg-config(1)
+                        dnl #    specifications. As the path to the internal copy is usually just a
+                        dnl #    temporary path, this will break there, too.
+                        dnl # So, internal copies of third-party libraries inherently have to be
+                        dnl # handled explicitly by the build environment and for this we can only
+                        dnl # provide the necessary information in dedicated per-library variables.
                         WITH_]m4_translit([$2],[a-z],[A-Z])[_SUBDIR="__rcl_subdir"
-                        dnl # divert deferred flags handling because in the "internal"
-                        dnl # case the library is (usually) still not existing and hence
-                        dnl # any arbitrary following Autoconf checks would fail.
                         __rcl_location_$2=internal
-                        AC_CONFIG_COMMANDS_PRE([
-                            if test ".${__rcl_location_$2}" = .internal; then
-                                AC_MSG_VERBOSE([++ post-adjustments for --with-$2 (${__rcl_location_$2})])
-                                __rcl_dirs_inc=`echo '$7' | sed -e 's/^[[^:]]*://' -e 's/:[[^:]]*[$]//'`
-                                __rcl_dirs_lib=`echo '$7' | sed -e 's/^[[^:]]*:[[^:]]*://'`
-                                __rcl_basedir="\[$](top_srcdir)/\[$](WITH_]m4_translit([$2],[a-z],[A-Z])[_SUBDIR)"
-                                __rcl_firstlib="m4_if(m4_index([$3], [ ]), -1, [$3], m4_substr([$3], 0, m4_index([$3], [ ])))"
-                                if test ".${__rcl_dirs_inc}" != ".$7"; then
-                                    __rcl_IFS="${IFS}"; IFS=","
-                                    for __rcl_dir in ${__rcl_dirs_inc}; do
-                                        IFS="${__rcl_IFS}"
-                                        test ".${__rcl_dir}" = . && continue
-                                        AC_MSG_VERBOSE([-- extending CPPFLAGS: -I${__rcl_basedir}/${__rcl_dir}])
-                                        CPPFLAGS="${CPPFLAGS} -I${__rcl_basedir}/${__rcl_dir}"
-                                    done
-                                    IFS="${__rcl_IFS}"
-                                fi
-                                AC_MSG_VERBOSE([-- extending CPPFLAGS: -I${__rcl_basedir}])
-                                CPPFLAGS="${CPPFLAGS} -I${__rcl_basedir}"
-                                if test ".${__rcl_dirs_lib}" != ".$7"; then
-                                    __rcl_IFS="${IFS}"; IFS=","
-                                    for __rcl_dir in ${__rcl_dirs_lib}; do
-                                        IFS="${__rcl_IFS}"
-                                        test ".${__rcl_dir}" = . && continue
-                                        AC_MSG_VERBOSE([-- extending LDFLAGS: -L${__rcl_basedir}/${__rcl_dir}])
-                                        LDFLAGS="${LDFLAGS} -L${__rcl_basedir}/${__rcl_dir}"
-                                    done
-                                    IFS="${__rcl_IFS}"
-                                fi
-                                AC_MSG_VERBOSE([-- extending LDFLAGS: -L${__rcl_basedir}])
-                                LDFLAGS="${LDFLAGS} -L${__rcl_basedir}"
-                                AC_MSG_VERBOSE([-- extending LIBS: -l${__rcl_firstlib}])
-                                LIBS="${LIBS} -l${__rcl_firstlib}"
-                            fi
-                        ])
+                        AC_MSG_VERBOSE([++ post-adjustments for --with-$2 (${__rcl_location_$2})])
+                        __rcl_dirs_inc=`echo '$7' | sed -e 's/^[[^:]]*://' -e 's/:[[^:]]*[$]//'`
+                        __rcl_dirs_lib=`echo '$7' | sed -e 's/^[[^:]]*:[[^:]]*://'`
+                        __rcl_basedir="\[$](top_srcdir)/\[$](WITH_[]m4_translit([$2],[a-z],[A-Z])[]_SUBDIR)"
+                        __rcl_firstlib="m4_if(m4_index([$3], [ ]), -1, [$3], m4_substr([$3], 0, m4_index([$3], [ ])))"
+                        if test ".${__rcl_dirs_inc}" != ".$7"; then
+                            __rcl_IFS="${IFS}"; IFS=","
+                            for __rcl_dir in ${__rcl_dirs_inc}; do
+                                IFS="${__rcl_IFS}"
+                                test ".${__rcl_dir}" = . && continue
+                                AC_MSG_VERBOSE([-- extending WITH_[]m4_translit([$2],[a-z],[A-Z])[]_CPPFLAGS: -I${__rcl_basedir}/${__rcl_dir}])
+                                WITH_[]m4_translit([$2],[a-z],[A-Z])[]_CPPFLAGS="${WITH_[]m4_translit([$2],[a-z],[A-Z])[]_CPPFLAGS} -I${__rcl_basedir}/${__rcl_dir}"
+                            done
+                            IFS="${__rcl_IFS}"
+                        fi
+                        AC_MSG_VERBOSE([-- extending WITH_[]m4_translit([$2],[a-z],[A-Z])[]_CPPFLAGS: -I${__rcl_basedir}])
+                        WITH_[]m4_translit([$2],[a-z],[A-Z])[]_CPPFLAGS="${WITH_[]m4_translit([$2],[a-z],[A-Z])[]_CPPFLAGS} -I${__rcl_basedir}"
+                        if test ".${__rcl_dirs_lib}" != ".$7"; then
+                            __rcl_IFS="${IFS}"; IFS=","
+                            for __rcl_dir in ${__rcl_dirs_lib}; do
+                                IFS="${__rcl_IFS}"
+                                test ".${__rcl_dir}" = . && continue
+                                AC_MSG_VERBOSE([-- extending WITH_[]m4_translit([$2],[a-z],[A-Z])[]_LDFLAGS: -L${__rcl_basedir}/${__rcl_dir}])
+                                WITH_[]m4_translit([$2],[a-z],[A-Z])[]_LDFLAGS="${WITH_[]m4_translit([$2],[a-z],[A-Z])[]_LDFLAGS} -L${__rcl_basedir}/${__rcl_dir}"
+                            done
+                            IFS="${__rcl_IFS}"
+                        fi
+                        AC_MSG_VERBOSE([-- extending WITH_[]m4_translit([$2],[a-z],[A-Z])[]_LDFLAGS: -L${__rcl_basedir}])
+                        WITH_[]m4_translit([$2],[a-z],[A-Z])[]_LDFLAGS="${WITH_[]m4_translit([$2],[a-z],[A-Z])[]_LDFLAGS} -L${__rcl_basedir}"
+                        AC_MSG_VERBOSE([-- extending WITH_[]m4_translit([$2],[a-z],[A-Z])[]_LIBS: -l${__rcl_firstlib}])
+                        WITH_[]m4_translit([$2],[a-z],[A-Z])[]_LIBS="${WITH_[]m4_translit([$2],[a-z],[A-Z])[]_LIBS} -l${__rcl_firstlib}"
                         __rcl_result_hint="internal: sub-directory __rcl_subdir"
                         break
                     else
@@ -400,7 +417,12 @@ AC_DEFUN([RPM_CHECK_LIB], [
     fi
     [WITH_]m4_translit([$2],[a-z],[A-Z])="${with_$2}"
     AC_SUBST([WITH_]m4_translit([$2],[a-z],[A-Z]))
-    AC_SUBST([WITH_]m4_translit([$2],[a-z],[A-Z])[_SUBDIR])
+    m4_if([$7],,, [
+        AC_SUBST([WITH_]m4_translit([$2],[a-z],[A-Z])[_SUBDIR])
+        AC_SUBST([WITH_]m4_translit([$2],[a-z],[A-Z])[_CPPFLAGS])
+        AC_SUBST([WITH_]m4_translit([$2],[a-z],[A-Z])[_LDFLAGS])
+        AC_SUBST([WITH_]m4_translit([$2],[a-z],[A-Z])[_LIBS])
+    ])
 
     dnl # report results
     AC_MSG_CHECKING(whether to build with $1 library)

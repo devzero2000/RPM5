@@ -733,7 +733,7 @@ dnl # Berkeley-DB & SQLite
 DBLIBSRCS=""
 RPM_CHECK_LIB(
     [Berkeley-DB], [db],
-    [db], [db_create], [db.h],
+    [db-4.5 db], [db_create], [db.h],
     [yes,internal:external], [db3],
     [ DBLIBSRCS="$DBLIBSRCS db3.c"
       if test ".$RPM_CHECK_LIB_LOCATION" = .internal; then

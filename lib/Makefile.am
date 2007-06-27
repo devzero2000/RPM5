@@ -4,12 +4,18 @@ AUTOMAKE_OPTIONS = 1.4 foreign
 
 LINT = splint
 
-AM_CPPFLAGS = -I. \
+AM_CPPFLAGS = \
+	-I$(srcdir) \
 	-I$(top_srcdir) \
 	-I$(top_srcdir)/build \
+	-I$(top_srcdir)/lib \
 	-I$(top_srcdir)/rpmdb \
 	-I$(top_srcdir)/rpmio \
-	-I$(top_srcdir)/misc
+	-I$(top_srcdir)/misc \
+	@WITH_DB_CPPFLAGS@ \
+	@WITH_ZLIB_CPPFLAGS@ \
+	@WITH_LUA_CPPFLAGS@ \
+	@WITH_FILE_CPPFLAGS@
 
 EXTRA_DIST = getdate.y librpm.vers
 
@@ -24,7 +30,6 @@ noinst_HEADERS = \
 	cpio.h fsm.h manifest.h psm.h rpmlead.h rpmlock.h signature.h tar.h
 
 mylibs = librpm.la
-LIBS =
 
 usrlibdir = $(libdir)@MARK64@
 usrlib_LTLIBRARIES = librpm.la
@@ -37,17 +42,13 @@ librpm_la_SOURCES = \
 	rpmlead.c rpmlock.c rpmns.c rpmps.c rpmrc.c rpmsx.c rpmte.c rpmts.c \
 	signature.c stringbuf.c transaction.c \
 	verify.c tar.c
-librpm_la_LDFLAGS = -no-undefined -release $(LT_CURRENT).$(LT_REVISION) $(LDFLAGS)
-librpm_la_LIBADD = \
-	$(top_builddir)/rpmdb/librpmdb.la \
-	$(top_builddir)/rpmio/librpmio.la \
-	$(top_builddir)/misc/librpmmisc.la \
-	@WITH_SELINUX_LIB@ \
-	@LTLIBINTL@
-
+librpm_la_LDFLAGS = -release $(LT_CURRENT).$(LT_REVISION)
 if HAVE_LD_VERSION_SCRIPT
 librpm_la_LDFLAGS += -Wl,--version-script=$(srcdir)/librpm.vers
 endif
+librpm_la_LIBADD =
+librpm.la: $(librpm_la_OBJECTS) $(librpm_la_DEPENDENCIES) 
+	$(librpm_la_LINK) -rpath $(usrlibdir) $(librpm_la_OBJECTS) $(librpm_la_LIBADD)
 
 getdate.c: getdate.y
 	@echo expect 10 shift/reduce conflicts

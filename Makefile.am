@@ -37,18 +37,26 @@ SUBDIRS = \
 	.
 
 AM_CPPFLAGS = \
+	-I$(srcdir) \
+	-I$(top_srcdir) \
 	-I$(top_srcdir)/build \
 	-I$(top_srcdir)/lib \
 	-I$(top_srcdir)/rpmdb \
 	-I$(top_srcdir)/rpmio \
-	-I$(top_srcdir)/misc
+	-I$(top_srcdir)/misc \
+	@WITH_DB_CPPFLAGS@ \
+	@WITH_ZLIB_CPPFLAGS@ \
+	@WITH_LUA_CPPFLAGS@ \
+	@WITH_FILE_CPPFLAGS@
 
 myLDADD = \
 	$(top_builddir)/build/librpmbuild.la \
 	$(top_builddir)/lib/librpm.la \
 	$(top_builddir)/rpmdb/librpmdb.la \
 	$(top_builddir)/rpmio/librpmio.la \
-	$(top_builddir)/misc/librpmmisc.la
+	$(top_builddir)/misc/librpmmisc.la \
+	@WITH_SELINUX_LIB@ \
+	@LTLIBINTL@
 
 bin_PROGRAMS = 		rpm rpmbuild
 
@@ -69,8 +77,6 @@ rpmbuild_LDFLAGS =	@LDFLAGS_STATIC@
 rpmbuild_LDADD =	rpmbuild.o $(myLDADD)
 rpmbuild.o: $(top_srcdir)/rpmqv.c
 	$(COMPILE) -DIAM_RPMBT -o $@ -c $<
-
-$(PROGRAMS): 		$(myLDADD) @WITH_APIDOCS_TARGET@
 
 .PHONY:	splint
 splint:
