@@ -23,6 +23,12 @@ ARGS="`echo $* |\
            -e 's%--without-db-mutex%%' \
 `"
 
+#   NOTICE:
+#   1. "--enable-shared" is there for enforcing GNU libtool usage only
+#      as Berkeley-DB "configure" else would not use GNU libtool at all.
+#   2. "--enable-static" is there for enforcing the building of a static
+#      version of the libdb objects RPM actually is interested in.
+
 CC="$CC" CFLAGS="$CFLAGS" $db_dist/configure $ARGS \
 	--enable-shared --enable-static \
 	--with-uniquename=_rpmdb --srcdir=$db_dist
