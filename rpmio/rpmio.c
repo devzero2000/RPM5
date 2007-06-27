@@ -2821,6 +2821,7 @@ static FD_t lzdWriteOpen(int fdno, int fopen)
     int pid;
     int p[2];
     int xx;
+    const char *lzma;
 
     if (fdno < 0) return NULL;
     if (pipe(p) < 0) {
@@ -2857,8 +2858,10 @@ static FD_t lzdWriteOpen(int fdno, int fopen)
         xx = dup2(fdno, 1);
         for (i = 3; i < 1024; i++)
 	    xx = close(i);
-        if (execl("/usr/bin/lzma", "lzma", "e", "-si", "-so", NULL))
+        lzma = rpmGetPath("%{?__lzma}%{!?__lzma:/usr/bin/lzma}", NULL);
+        if (execl(lzma, "lzma", "e", "-si", "-so", NULL))
             _exit(1);
+        lzma = _free(lzma);
     }
     return NULL; /* warning */
 }
