@@ -734,8 +734,11 @@ RPM_CHECK_LIB(
     [db-4.5 db], [db_create], [db.h],
     [yes,internal:external], [db3],
     [ DBLIBSRCS="$DBLIBSRCS db3.c"
+      AM_CONDITIONAL(WITH_DB_INTERNAL, [ test ".$RPM_CHECK_LIB_LOCATION" = .internal ])
       if test ".$RPM_CHECK_LIB_LOCATION" = .internal; then
           AC_DEFINE(HAVE_DB_H, 1, [Have <db.h> header])
+      else
+          AC_MSG_WARN([using external Berkeley-DB not recommended and at least not officially supported by rpm5.org])
       fi
     ],
     [ AC_ERROR([mandatory Berkeley-DB library not found]) ])
