@@ -686,7 +686,7 @@ print (t)\
 # Export package NEVRA (stamped with install tid) info for HRMIB on this path.
 #
 # XXX	Note: escaped %% for use in headerSprintf()
-%_hrmib_path	/var/cache/hrmib/%%{NAME}-%%{VERSION}-%%{RELEASE}.%%{ARCH}
+#%_hrmib_path	/var/cache/hrmib/%%{NAME}-%%{VERSION}-%%{RELEASE}.%%{ARCH}
 
 #==============================================================================
 # ---- GPG/PGP/PGP5 signature macros.

@@ -1113,21 +1113,7 @@ fprintf(stderr, "==> %s(%s, %s, 0x%x, 0%o, 0x%x) db %p\n", __FUNCTION__, root, h
 	/*@-globstate@*/ return NULL; /*@=globstate@*/
     }
 
-    /* XXX if default "/var/lib/rpm" path, manage %{_hrmib_path} entries too. */
-    {	const char * dbpath = rpmGetPath("%{?_dbpath}", NULL);
-	const char * rootpath = NULL;
-	const char * homepath = NULL;
-
-	(void) urlPath(db->db_root, &rootpath);
-	(void) urlPath(db->db_home, &homepath);
-#define	_VARLIBRPM	"/var/lib/rpm"
-	if (!strcmp(rootpath, "/")
-	 && !strncmp(homepath, _VARLIBRPM, sizeof(_VARLIBRPM)-1))
-	    db->db_export = rpmdbExportInfo;
-	dbpath = _free(dbpath);
-#undef	_VARLIBRPM
-    }
-
+    db->db_export = rpmdbExportInfo;
     db->db_errpfx = rpmExpand( (epfx && *epfx ? epfx : _DB_ERRPFX), NULL);
     db->db_remove_env = 0;
     db->db_filter_dups = _db_filter_dups;
