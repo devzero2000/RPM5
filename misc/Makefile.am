@@ -17,9 +17,10 @@ EXTRA_DIST = \
 noinst_HEADERS = \
 	err.h		error.h		fnmatch.h	glob.h		
 
-noinst_LIBRARIES = libmisc.a
+usrlibdir = $(libdir)@MARK64@
+usrlib_LTLIBRARIES = librpmmisc.la
 
-libmisc_a_SOURCES =
+librpmmisc_la_SOURCES = librpmmisc.c
+librpmmisc_la_LIBADD = @ALLOCA@
+librpmmisc_la_DEPENDENCIES = $(librpmmisc_la_LIBADD)
 
-libmisc_a_LIBADD = @LIBOBJS@ @ALLOCA@
-libmisc_a_DEPENDENCIES = $(libmisc_a_LIBADD)

@@ -30,9 +30,10 @@ librpmio_la_SOURCES = \
 	salsa10.c salsa20.c tiger.c \
 	rpmdav.c rpmhash.c rpmhook.c rpmio.c rpmlog.c rpmlua.c rpmmalloc.c \
 	rpmpgp.c rpmrpc.c rpmsq.c rpmsw.c strcasecmp.c strtolocale.c \
-	stubs.c url.c ugid.c \
+	url.c ugid.c \
 	LzmaDecode.c
 librpmio_la_LDFLAGS = -no-undefined -release $(LT_CURRENT).$(LT_REVISION) $(LDFLAGS) \
+    $(top_builddir)/misc/librpmmisc.la \
 	@LTLIBINTL@
 
 if HAVE_LD_VERSION_SCRIPT

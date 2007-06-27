@@ -20,11 +20,11 @@ EXTRA_DIST = CHANGES CREDITS Doxyheader GROUPS INSTALL \
 
 SUBDIRS = \
 	po \
-	misc \
 	@WITH_DB_SUBDIR@ \
 	@WITH_ZLIB_SUBDIR@ \
 	@WITH_LUA_SUBDIR@ \
 	@WITH_FILE_SUBDIR@ \
+	misc \
 	rpmio \
 	rpmdb \
 	lib \
@@ -47,7 +47,8 @@ myLDADD = \
 	$(top_builddir)/build/librpmbuild.la \
 	$(top_builddir)/lib/librpm.la \
 	$(top_builddir)/rpmdb/librpmdb.la \
-	$(top_builddir)/rpmio/librpmio.la
+	$(top_builddir)/rpmio/librpmio.la \
+	$(top_builddir)/misc/librpmmisc.la
 
 bin_PROGRAMS = 		rpm rpmbuild
 

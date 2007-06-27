@@ -40,6 +40,7 @@ librpm_la_SOURCES = \
 librpm_la_LDFLAGS = -no-undefined -release $(LT_CURRENT).$(LT_REVISION) $(LDFLAGS) \
 	$(top_builddir)/rpmdb/librpmdb.la \
 	$(top_builddir)/rpmio/librpmio.la \
+	$(top_builddir)/misc/librpmmisc.la \
 	@WITH_SELINUX_LIB@ \
 	@LTLIBINTL@
 

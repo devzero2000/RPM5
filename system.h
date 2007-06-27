@@ -490,24 +490,10 @@ extern const char *__progname;
 
 /* ============== from misc/miscfn.h */
 
-#if !defined(USE_GNU_GLOB) || defined(__LCLINT__)
-#if HAVE_FNMATCH_H
-/*@-noparams@*/
-#include <fnmatch.h>
-/*@=noparams@*/
-#endif
-
-#if HAVE_GLOB_H || defined(__LCLINT__)
-/*@-noparams@*/
-#include <glob.h>
-/*@=noparams@*/
-#endif
-#else
 /*@-noparams@*/
 #include "misc/glob.h"
 #include "misc/fnmatch.h"
 /*@=noparams@*/
-#endif
 
 #if defined(__LCLINT__)
 /*@-declundef -incondefs @*/ /* LCL: missing annotation */

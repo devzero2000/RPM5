@@ -505,11 +505,6 @@ AC_CHECK_FUNCS([dnl
     __secure_getenv regcomp ftok mkstemp setlocale getpassphrase dnl
 ])
 
-dnl # use local GNU glibc glob(3) copy
-AC_DEFINE(USE_GNU_GLOB, 1, [Use the included glob.c?])
-AC_LIBOBJ(glob)
-AC_LIBOBJ(fnmatch)
-
 dnl # check for getmntent and alternatives
 AC_CHECK_FUNC(getmntent, AC_DEFINE(HAVE_GETMNTENT, 1, [Define if you have the getmntent() function]), [
   AC_CHECK_FUNC(mntctl, AC_DEFINE(HAVE_MNTCTL, 1, [Define as 1 if you have mntctl() (only aix?)]),[

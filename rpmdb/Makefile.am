@@ -48,7 +48,8 @@ librpmdb_la_SOURCES = \
 	poptDB.c rpmdb.c \
 	tagname.c tagtbl.c
 librpmdb_la_LDFLAGS = -no-undefined -release $(LT_CURRENT).$(LT_REVISION) \
-	$(top_builddir)/rpmio/librpmio.la
+	$(top_builddir)/rpmio/librpmio.la \
+	$(top_builddir)/misc/librpmmisc.la
 librpmdb_la_LIBADD = $(DBLIBOBJS) $(libdb_la)
 librpmdb_la_DEPENDENCIES = $(DBLIBOBJS) $(libdb_la)
 
