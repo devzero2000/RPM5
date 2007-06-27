@@ -37,9 +37,6 @@ mylibs = librpmdb.la
 
 LIBS =
 
-# XXX watchout, ../db3/libdb.la created by this Makefile may surprise
-libdb_la = $(top_builddir)/$(WITH_DB_SUBDIR)/libdb.la
-
 usrlibdir = $(libdir)@MARK64@
 usrlib_LTLIBRARIES = librpmdb.la
 librpmdb_la_SOURCES = \
@@ -49,10 +46,11 @@ librpmdb_la_SOURCES = \
 	tagname.c tagtbl.c
 librpmdb_la_LDFLAGS = -no-undefined -release $(LT_CURRENT).$(LT_REVISION)
 librpmdb_la_LIBADD = \
-	$(DBLIBOBJS) $(libdb_la) \
+	$(DBLIBOBJS) \
+	$(top_builddir)/$(WITH_DB_SUBDIR)/libdb-4.5.la \
 	$(top_builddir)/rpmio/librpmio.la \
 	$(top_builddir)/misc/librpmmisc.la
-librpmdb_la_DEPENDENCIES = $(DBLIBOBJS) $(libdb_la)
+librpmdb_la_DEPENDENCIES = $(DBLIBOBJS)
 
 if HAVE_LD_VERSION_SCRIPT
 librpmdb_la_LDFLAGS += -Wl,--version-script=$(srcdir)/librpmdb.vers
@@ -85,10 +83,6 @@ tagtbl.c: Makefile.am $(top_srcdir)/lib/rpmlib.h
 
 db.h:
 	@ln -sf ../$(WITH_DB_SUBDIR)/db.h $@
-
-# XXX grrr, force noinst libdb.la for db3.
-$(libdb_la):
-	sed -e"/^libdir=/s/^.*$$/libdir=''/" < $(top_builddir)/$(WITH_DB_SUBDIR)/libdb-4.5.la > $(libdb_la)
 
 db_archive_SOURCES =
 db_archive_LDADD = \
@@ -184,7 +178,7 @@ db_verify_LDADD = \
 	librpmdb.la
 
 clean-local:
-	rm -f *.o db.h $(libdb_la)
+	rm -f *.o db.h
 
 BUILT_SOURCES = tagtbl.c
 

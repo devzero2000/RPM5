@@ -30,7 +30,7 @@ CC="$CC" CFLAGS="$CFLAGS" $db_dist/configure $ARGS \
 mv Makefile Makefile.orig
 cat Makefile.orig | sed -e '/^install[:-]/c\
 distdir install check:\
-' > Makefile
+' -e 's/^\(SOFLAGS=\).*$/\1/' > Makefile
 
 mv db.h db.h.orig
 cat db.h.orig | sed \
