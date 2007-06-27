@@ -26,11 +26,20 @@ noinst_HEADERS = fprint.h header_internal.h legacy.h
 pkglibdir =		@USRLIBRPM@
 versionlibdir = 	$(pkglibdir)/@VERSION@
 versionlib_PROGRAMS = \
-	db_archive db_checkpoint db_deadlock db_dump \
-	db_hotbackup db_load db_printlog db_recover \
-	db_stat db_upgrade db_verify 
+	db_archive \
+	db_checkpoint \
+	db_deadlock \
+	db_dump \
+	db_hotbackup \
+	db_load \
+	db_printlog \
+	db_recover \
+	db_stat \
+	db_upgrade \
+	db_verify 
 if WITH_DB_RPC
-versionlib_PROGRAMS += db_svc
+versionlib_PROGRAMS += \
+	db_svc
 endif
 
 mylibs = librpmdb.la
@@ -85,97 +94,65 @@ db.h:
 	@ln -sf ../$(WITH_DB_SUBDIR)/db.h $@
 
 db_archive_SOURCES =
-db_archive_LDADD = \
-	$(top_builddir)/$(WITH_DB_SUBDIR)/db_archive.o \
-	$(top_builddir)/$(WITH_DB_SUBDIR)/util_sig.o \
-	librpmdb.la
-
+db_archive_LDADD =
+db_archive_DEPENDENCIES =
+db_archive$(EXEEXT): $(top_builddir)/$(WITH_DB_SUBDIR)/db_archive
+	$(LN_S) $< $@
 db_checkpoint_SOURCES =
-db_checkpoint_LDADD = \
-	$(top_builddir)/$(WITH_DB_SUBDIR)/db_checkpoint.o \
-	$(top_builddir)/$(WITH_DB_SUBDIR)/util_log.o \
-	$(top_builddir)/$(WITH_DB_SUBDIR)/util_sig.o \
-	librpmdb.la
-
+db_checkpoint_LDADD =
+db_checkpoint_DEPENDENCIES =
+db_checkpoint$(EXEEXT): $(top_builddir)/$(WITH_DB_SUBDIR)/db_checkpoint
+	$(LN_S) $< $@
 db_deadlock_SOURCES =
-db_deadlock_LDADD = \
-	$(top_builddir)/$(WITH_DB_SUBDIR)/db_deadlock.o \
-	$(top_builddir)/$(WITH_DB_SUBDIR)/util_log.o \
-	$(top_builddir)/$(WITH_DB_SUBDIR)/util_sig.o \
-	librpmdb.la
-
+db_deadlock_LDADD =
+db_deadlock_DEPENDENCIES =
+db_deadlock$(EXEEXT): $(top_builddir)/$(WITH_DB_SUBDIR)/db_deadlock
+	$(LN_S) $< $@
 db_dump_SOURCES =
-db_dump_LDADD = \
-	$(top_builddir)/$(WITH_DB_SUBDIR)/db_dump.o \
-	$(top_builddir)/$(WITH_DB_SUBDIR)/util_cache.o \
-	$(top_builddir)/$(WITH_DB_SUBDIR)/util_sig.o \
-	librpmdb.la
-
+db_dump_LDADD =
+db_dump_DEPENDENCIES =
+db_dump$(EXEEXT): $(top_builddir)/$(WITH_DB_SUBDIR)/db_dump
+	$(LN_S) $< $@
 db_hotbackup_SOURCES =
-db_hotbackup_LDADD = \
-	$(top_builddir)/$(WITH_DB_SUBDIR)/db_hotbackup.o \
-	$(top_builddir)/$(WITH_DB_SUBDIR)/util_sig.o \
-	librpmdb.la
-
+db_hotbackup_LDADD =
+db_hotbackup_DEPENDENCIES =
+db_hotbackup$(EXEEXT): $(top_builddir)/$(WITH_DB_SUBDIR)/db_hotbackup
+	$(LN_S) $< $@
 db_load_SOURCES =
-db_load_LDADD = \
-	$(top_builddir)/$(WITH_DB_SUBDIR)/db_load.o \
-	$(top_builddir)/$(WITH_DB_SUBDIR)/util_cache.o \
-	$(top_builddir)/$(WITH_DB_SUBDIR)/util_sig.o \
-	librpmdb.la
-
+db_load_LDADD =
+db_load_DEPENDENCIES =
+db_load$(EXEEXT): $(top_builddir)/$(WITH_DB_SUBDIR)/db_load
+	$(LN_S) $< $@
 db_printlog_SOURCES =
-db_printlog_LDADD = \
-	$(top_builddir)/$(WITH_DB_SUBDIR)/db_printlog.o \
-	$(top_builddir)/$(WITH_DB_SUBDIR)/btree_autop.o \
-	$(top_builddir)/$(WITH_DB_SUBDIR)/crdel_autop.o \
-	$(top_builddir)/$(WITH_DB_SUBDIR)/db_autop.o \
-	$(top_builddir)/$(WITH_DB_SUBDIR)/dbreg_autop.o \
-	$(top_builddir)/$(WITH_DB_SUBDIR)/fileops_autop.o \
-	$(top_builddir)/$(WITH_DB_SUBDIR)/hash_autop.o \
-	$(top_builddir)/$(WITH_DB_SUBDIR)/qam_autop.o \
-	$(top_builddir)/$(WITH_DB_SUBDIR)/rep_autop.o \
-	$(top_builddir)/$(WITH_DB_SUBDIR)/txn_autop.o \
-	$(top_builddir)/$(WITH_DB_SUBDIR)/util_sig.o \
-	librpmdb.la
-
+db_printlog_LDADD =
+db_printlog_DEPENDENCIES =
+db_printlog$(EXEEXT): $(top_builddir)/$(WITH_DB_SUBDIR)/db_printlog
+	$(LN_S) $< $@
 db_recover_SOURCES =
-db_recover_LDADD = \
-	$(top_builddir)/$(WITH_DB_SUBDIR)/db_recover.o \
-	$(top_builddir)/$(WITH_DB_SUBDIR)/util_cache.o \
-	$(top_builddir)/$(WITH_DB_SUBDIR)/util_sig.o \
-	librpmdb.la
-
+db_recover_LDADD =
+db_recover_DEPENDENCIES =
+db_recover$(EXEEXT): $(top_builddir)/$(WITH_DB_SUBDIR)/db_recover
+	$(LN_S) $< $@
 db_stat_SOURCES =
-db_stat_LDADD = \
-	$(top_builddir)/$(WITH_DB_SUBDIR)/db_stat.o \
-	$(top_builddir)/$(WITH_DB_SUBDIR)/util_cache.o \
-	$(top_builddir)/$(WITH_DB_SUBDIR)/util_sig.o \
-	librpmdb.la
-
-db_svc_SOURCES =
-db_svc_LDADD = \
-	$(top_builddir)/$(WITH_DB_SUBDIR)/db_server_proc.o \
-	$(top_builddir)/$(WITH_DB_SUBDIR)/db_server_svc.o \
-	$(top_builddir)/$(WITH_DB_SUBDIR)/db_server_util.o \
-	$(top_builddir)/$(WITH_DB_SUBDIR)/db_server_xdr.o \
-	$(top_builddir)/$(WITH_DB_SUBDIR)/gen_db_server.o \
-	$(top_builddir)/$(WITH_DB_SUBDIR)/util_log.o \
-	librpmdb.la
-
+db_stat_LDADD =
+db_stat_DEPENDENCIES =
+db_stat$(EXEEXT): $(top_builddir)/$(WITH_DB_SUBDIR)/db_stat
+	$(LN_S) $< $@
 db_upgrade_SOURCES =
-db_upgrade_LDADD = \
-	$(top_builddir)/$(WITH_DB_SUBDIR)/db_upgrade.o \
-	$(top_builddir)/$(WITH_DB_SUBDIR)/util_cache.o \
-	$(top_builddir)/$(WITH_DB_SUBDIR)/util_sig.o \
-	librpmdb.la
-
+db_upgrade_LDADD =
+db_upgrade_DEPENDENCIES =
+db_upgrade$(EXEEXT): $(top_builddir)/$(WITH_DB_SUBDIR)/db_upgrade
+	$(LN_S) $< $@
 db_verify_SOURCES =
-db_verify_LDADD = \
-	$(top_builddir)/$(WITH_DB_SUBDIR)/db_verify.o \
-	$(top_builddir)/$(WITH_DB_SUBDIR)/util_cache.o \
-	$(top_builddir)/$(WITH_DB_SUBDIR)/util_sig.o \
-	librpmdb.la
+db_verify_LDADD =
+db_verify_DEPENDENCIES =
+db_verify$(EXEEXT): $(top_builddir)/$(WITH_DB_SUBDIR)/db_verify
+	$(LN_S) $< $@
+db_svc_SOURCES =
+db_svc_LDADD =
+db_svc_DEPENDENCIES =
+db_svc$(EXEEXT): $(top_builddir)/$(WITH_DB_SUBDIR)/db_svc
+	$(LN_S) $< $@
 
 clean-local:
 	rm -f *.o db.h

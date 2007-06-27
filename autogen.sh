@@ -48,7 +48,7 @@ echo "---> generate files via GNU autoconf (aclocal, autoheader)"
 aclocal -I m4
 autoheader
 echo "---> generate files via GNU automake (automake)"
-automake -Wall -a -c
+automake -Wall -Wno-override -a -c
 echo "---> generate files via GNU autoconf (autoconf)"
 autoconf
 echo "<=== rpm"
