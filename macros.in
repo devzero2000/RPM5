@@ -645,8 +645,10 @@ print (t)\
   %{!?_rpmdb_rebuild:%{__dbi_sqlconfig_current}}\
 %{nil}
 
-# database tags
-%_dbi_tags      Packages:Name:Basenames:Group:Requirename:Providename:Conflictname:Triggername:Dirnames:Requireversion:Provideversion:Installtid:Sigmd5:Sha1header:Filemd5s:Depends:Pubkeys:Packagecolor
+# database tag configuration
+%_dbi_tags                      %{expand:%%{_dbi_tags_%{_dbapi_used}}}
+%_dbi_tags_3                    Packages:Name:Basenames:Group:Requirename:Providename:Conflictname:Triggername:Dirnames:Requireversion:Provideversion:Installtid:Sigmd5:Sha1header:Filemd5s:Pubkeys:Packagecolor:Depends
+%_dbi_tags_4                    Packages:Name:Basenames:Group:Requirename:Providename:Conflictname:Triggername:Dirnames:Requireversion:Provideversion:Installtid:Sigmd5:Sha1header:Filemd5s:Pubkeys:Packagecolor
 
 # database configuration: Berkeley-DB [dbapi 3 hooks]
 %_dbi_config_3                  %{_dbi_btconfig}
