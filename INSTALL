@@ -31,10 +31,10 @@ BeeCrypt        mandatory 4.0     4.1.2   http://www.virtualunlimited.com/produc
 Neon            mandatory 0.26    0.26.3  http://www.webdav.org/neon/
 Berkeley-DB [1] optional  -       4.5.20  http://www.oracle.com/database/berkeley-db.html
 SQLite      [1] optional  3.3     3.4.0   http://www.sqlite.org/
-File/magic      optional  4.0     4.21    ftp://ftp.astron.com/pub/file/
-ZLib [2]        optional  1.2     1.2.3   http://www.zlib.net/
+Lua         [3] optional  -       5.0     http://www.lua.org/
+ZLib        [2] optional  1.2     1.2.3   http://www.zlib.net/
 GNU bzip2       optional  1.0     1.0.4   http://www.bzip2.org/
-Lua [3]         optional  -       5.0     http://www.lua.org/
+File/magic      optional  4.0     4.21    ftp://ftp.astron.com/pub/file/
 GNU gettext     optional  1.16    1.16.1  http://www.gnu.org/software/gettext/
 GNU iconv       optional  1.11    1.11    http://www.gnu.org/software/libiconv/
 DMalloc         optional  5       5.5.2   http://dmalloc.com/
