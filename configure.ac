@@ -7,12 +7,22 @@ dnl ## ==== REQUIREMENTS & INITIALIZATION ====
 dnl ##
 
 AC_PREREQ(2.57)
-AC_INIT(rpm, 5.0, [rpm-devel@rpm5.org])
+AC_DEFUN([PACKAGE_BUGREPORT_DEFAULT], [rpm-devel@rpm5.org])
+AC_INIT(rpm, 5.0, [PACKAGE_BUGREPORT_DEFAULT])
 AC_CONFIG_SRCDIR([rpmqv.c])
 AC_CONFIG_HEADERS([config.h])
 AC_CANONICAL_TARGET
 AM_INIT_AUTOMAKE([foreign])
 AM_MAINTAINER_MODE
+
+dnl # allow packagers to override the bugreport address
+AC_ARG_WITH(bugreport,
+    AS_HELP_STRING([--with-bugreport=ADDRESS], [set packager bugreport Email address (PACKAGE_BUGREPORT_DEFAULT)]), [dnl
+    case "$withval" in
+        *@* ) PACKAGE_BUGREPORT="$withval" ;;
+        *   ) AC_ERROR([invalid bugreport Email address]) ;;
+    esac
+])
 
 dnl # Library code modified:                              REVISION++
 dnl # Interfaces changed/added/removed:   CURRENT++       REVISION=0
@@ -737,8 +747,10 @@ RPM_CHECK_LIB(
       AM_CONDITIONAL(WITH_DB_INTERNAL, [ test ".$RPM_CHECK_LIB_LOCATION" = .internal ])
       if test ".$RPM_CHECK_LIB_LOCATION" = .internal; then
           AC_DEFINE(HAVE_DB_H, 1, [Have <db.h> header])
+      elif test ".$PACKAGE_BUGREPORT" != ".]m4_defn([PACKAGE_BUGREPORT_DEFAULT])["; then
+          AC_MSG_WARN([using external Berkeley-DB not recommended -- proceeding on packagers responsibility])
       else
-          AC_MSG_WARN([using external Berkeley-DB not recommended and at least not officially supported by rpm5.org])
+          AC_MSG_ERROR([using external Berkeley-DB not supported (without packager taking responsibility first)])
       fi
     ],
     [ AC_ERROR([mandatory Berkeley-DB library not found]) ])

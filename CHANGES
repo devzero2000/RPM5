@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - rse: introduce --with-bugreport=<email-address> and require this before unsupported Autoconf operations
     - rse: simplify internal Berkeley-DB handling in rpmdb/ and allow (unsupported) --with-db=external
     - pmatilaj: remove hardcoded "libtermcap" vs. Bash kludge in lib/psm.c
     - rse: implement --without-file, i.e., building RPM without File/magic support
