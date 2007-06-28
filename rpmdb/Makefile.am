@@ -77,9 +77,12 @@ my_DB_HEADER = $(top_builddir)/$(WITH_DB_SUBDIR)/db.h
 else
 my_DB_HEADER = db_emu.h
 endif
-my_DB_TOOLS = db_archive db_checkpoint db_deadlock db_dump db_hotbackup db_load db_printlog db_recover db_stat db_upgrade db_verify 
+my_DB_TOOLS =
+if WITH_DB_INTERNAL
+my_DB_TOOLS += db_archive db_checkpoint db_deadlock db_dump db_hotbackup db_load db_printlog db_recover db_stat db_upgrade db_verify 
 if WITH_DB_RPC
 my_DB_TOOLS += db_svc
+endif
 endif
 
 install-data-local:
