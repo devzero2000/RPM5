@@ -1,4 +1,7 @@
 4.5 -> 5.0:
+    - rse: allow one to explicitly select the RPM DB API with --with-dbapi={db,sqlite}
+    - rse: provide automatically Autoconf chosen RPM DB API selection and configuration
+    - rse: allow one to build an SQLite-only RPM with "--without-db --with-sqlite=external"
     - rse: allow Berkeley-DB/SQLite-specific RPM DB per-tag parameters according to dynamically selected DB API
     - rse: introduce --with-bugreport=<email-address> and require this before unsupported Autoconf operations
     - rse: simplify internal Berkeley-DB handling in rpmdb/ and allow (unsupported) --with-db=external

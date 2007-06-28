@@ -10,7 +10,11 @@
 #include <assert.h>
 #include <rpmlib.h>
 #include <mire.h>
+#if defined(WITH_DB)
 #include "db.h"
+#else
+#include "db_emu.h"
+#endif
 
 /*@-exportlocal@*/
 /*@unchecked@*/
@@ -491,6 +495,7 @@ extern "C" {
 
 #if defined(_RPMDB_INTERNAL)
 /*@-exportlocal@*/
+#if defined(WITH_DB) || defined(WITH_SQLITE)
 /** \ingroup db3
  * Return new configured index database handle instance.
  * @param rpmdb		rpm database
@@ -522,6 +527,7 @@ dbiIndex db3Free( /*@only@*/ /*@null@*/ dbiIndex dbi)
 extern const char * prDbiOpenFlags(int dbflags, int print_dbenv_flags)
 	/*@*/;
 /*@=redecl@*/
+#endif
 
 /** \ingroup dbi
  * Return handle for an index database.

@@ -22,7 +22,7 @@ struct __db_dbt {
   u_int32_t	size;
   void		*data;
 
-  #define DB_DBT_MALLOC 0x01   /* We malloc the memory and hand off a copy. */
+#define DB_DBT_MALLOC 0x01   /* We malloc the memory and hand off a copy. */
   u_int32_t	flags;
 };
 
@@ -48,5 +48,9 @@ struct __db_h_stat {
 #define DB_SET 32
 #define DB_WRITECURSOR 39
 #define DB_NOTFOUND (-30990)
+
+#define DB_VERSION_MAJOR 3
+#define DB_VERSION_MINOR 0
+#define DB_VERSION_PATCH 0
 
 #endif

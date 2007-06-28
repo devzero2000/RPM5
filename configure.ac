@@ -744,6 +744,7 @@ RPM_CHECK_LIB(
     [db-4.5 db], [db_create], [db.h],
     [yes,internal:external], [db3],
     [ DBLIBSRCS="$DBLIBSRCS db3.c"
+      AM_CONDITIONAL(WITH_DB, [ true ])
       AM_CONDITIONAL(WITH_DB_INTERNAL, [ test ".$RPM_CHECK_LIB_LOCATION" = .internal ])
       if test ".$RPM_CHECK_LIB_LOCATION" = .internal; then
           AC_DEFINE(HAVE_DB_H, 1, [Have <db.h> header])
@@ -753,7 +754,14 @@ RPM_CHECK_LIB(
           AC_MSG_ERROR([using external Berkeley-DB not supported (without packager taking responsibility first)])
       fi
     ],
-    [ AC_MSG_ERROR([mandatory Berkeley-DB library not found]) ])
+    [ AM_CONDITIONAL(WITH_DB, [ false ])
+      AM_CONDITIONAL(WITH_DB_INTERNAL, [ false ])
+      if test ".$PACKAGE_BUGREPORT" != ".]m4_defn([PACKAGE_BUGREPORT_DEFAULT])["; then
+          AC_MSG_WARN([not using Berkeley-DB at all not recommended -- proceeding on packagers responsibility])
+      else
+          AC_MSG_ERROR([not using Berkeley-DB at all not supported (without packager taking responsibility first)])
+      fi
+    ])
 RPM_CHECK_LIB(
     [SQLite], [sqlite],
     [sqlite3], [sqlite3_open], [sqlite3.h],
@@ -767,6 +775,23 @@ AC_ARG_WITH(db-largefile, AS_HELP_STRING([--with-db-largefile], [build Berkeley-
 AC_ARG_WITH(db-mutex,     AS_HELP_STRING([--with-db-mutex=ARG], [build Berkeley-DB with MUTEX type ARG]))
 AC_ARG_WITH(db-rpc,       AS_HELP_STRING([--with-db-rpc],       [build Berkeley-DB with RPC support]))
 AM_CONDITIONAL(WITH_DB_RPC, test ".$with_db_rpc" = .yes)
+
+dnl # determine default RPM DB API and configuration
+DBAPI=0
+case ".$DBLIBSRCS" in
+    *db3.c*    ) DBAPI=3 ;;
+    *sqlite.c* ) DBAPI=4 ;;
+    *          ) AC_MSG_ERROR([either Berkeley-DB (--with-db) or SQLite (--with-sqlite) have to be used]) ;;
+esac
+AC_ARG_WITH([dbapi],
+    AS_HELP_STRING([--with-dbapi=ID], [use particular default RPM DB API ("db", "sqlite" or numeric)]), [
+    case ".$withval" in
+        db|3     ) DBAPI=3 ;;
+        sqlite|4 ) DBAPI=4 ;;
+        [0-9]    ) DBAPI=$withval ;;
+    esac
+])
+AC_SUBST(DBAPI)
 
 dnl # Lua
 WITH_LUA_SUBDIR_DEF=""
