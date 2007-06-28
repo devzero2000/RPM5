@@ -63,7 +63,7 @@ dnl ##        <lib-header-filename>,  -- [$5] e.g. bzlib.h
 dnl ##        <with-arg-default>[,    -- [$6] e.g. yes,external:internal:none
 dnl ##        <internal-subdir>[,     -- [$7] e.g. lib/bzip2
 dnl ##        <action-success>[,      -- [$8] e.g. AC_DEFINE(USE_BZIP2, 1, [...])
-dnl ##        <action-failure>        -- [$9] e.g. AC_ERROR([...])
+dnl ##        <action-failure>        -- [$9] e.g. AC_MSG_ERROR([...])
 dnl ##    ]]])
 dnl ##
 dnl ##  - Makefile.in:
@@ -380,7 +380,7 @@ AC_DEFUN([RPM_CHECK_LIB], [
                 dnl # cannot be checked (and usually has not to be checked anyway)
                 with_$2=yes
                 if test ".${__rcl_location_$2}" != .internal; then
-                    AC_ERROR([unable to find internal $1 library])
+                    AC_MSG_ERROR([unable to find internal $1 library])
                 fi
             else ])
                 dnl # regular case: use standard Autoconf facilities
@@ -447,7 +447,7 @@ AC_DEFUN([RPM_CHECK_LIB], [
         m4_if([$9],, [
             if  test ".${RPM_CHECK_LIB_LOCATION}" != . && \
                 test ".${RPM_CHECK_LIB_LOCATION}" != .none; then
-                AC_ERROR([unable to find usable $1 library])
+                AC_MSG_ERROR([unable to find usable $1 library])
             fi
         ], [$9])
     fi
@@ -546,7 +546,7 @@ AC_DEFUN([AC_CHECK_VA_COPY],[
     dnl #   8. check for memory copying approach (assuming va_list is a pointer)
     __va_copy_check(CPP, [memcpy((void *)(d), (void *)(s)), sizeof(*(s))])
     if test ".$ac_cv_va_copy" = .; then
-        AC_ERROR([no working implementation found])
+        AC_MSG_ERROR([no working implementation found])
     fi
   ])
   dnl #   optionally activate the fallback implementation

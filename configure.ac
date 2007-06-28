@@ -20,7 +20,7 @@ AC_ARG_WITH(bugreport,
     AS_HELP_STRING([--with-bugreport=ADDRESS], [set packager bugreport Email address (PACKAGE_BUGREPORT_DEFAULT)]), [dnl
     case "$withval" in
         *@* ) PACKAGE_BUGREPORT="$withval" ;;
-        *   ) AC_ERROR([invalid bugreport Email address]) ;;
+        *   ) AC_MSG_ERROR([invalid bugreport Email address]) ;;
     esac
 ])
 
@@ -599,7 +599,7 @@ AC_ARG_WITH(libelf, AS_HELP_STRING([--with-libelf], [use libelf/gelf API]), [
                 LIBS="$LIBS -lelf"
             ])
         else
-            AC_ERROR([libelf/gelf API requested but not found or not usable])
+            AC_MSG_ERROR([libelf/gelf API requested but not found or not usable])
         fi
     else
         AC_MSG_RESULT(no)
@@ -708,7 +708,7 @@ RPM_CHECK_LIB(
     [BeeCrypt], [beecrypt],
     [beecrypt], [mpfprintln], [beecrypt/api.h],
     [yes,external], [beecrypt],
-    [], [ AC_ERROR([mandatory BeeCrypt library not found]) ])
+    [], [ AC_MSG_ERROR([mandatory BeeCrypt library not found]) ])
 
 dnl # Neon
 RPM_CHECK_LIB(
@@ -721,7 +721,7 @@ RPM_CHECK_LIB(
       AC_CHECK_LIB(neon, ne_send_request_chunk, [
           AC_DEFINE(HAVE_NEON_NE_SEND_REQUEST_CHUNK, 1,
                     [Define to 1 if you have ne_send_request_chunk() in libneon.]) ])
-    ], [ AC_ERROR([mandatory Neon library not found]) ])
+    ], [ AC_MSG_ERROR([mandatory Neon library not found]) ])
 
 dnl # File (magic)
 RPM_CHECK_LIB(
@@ -735,7 +735,7 @@ RPM_CHECK_LIB(
     [POPT], [popt],
     [popt], [poptGetContext], [popt.h],
     [yes,external], [],
-    [], [AC_ERROR([mandatory POPT library not found])])
+    [], [AC_MSG_ERROR([mandatory POPT library not found])])
 
 dnl # Berkeley-DB & SQLite
 DBLIBSRCS=""
@@ -753,7 +753,7 @@ RPM_CHECK_LIB(
           AC_MSG_ERROR([using external Berkeley-DB not supported (without packager taking responsibility first)])
       fi
     ],
-    [ AC_ERROR([mandatory Berkeley-DB library not found]) ])
+    [ AC_MSG_ERROR([mandatory Berkeley-DB library not found]) ])
 RPM_CHECK_LIB(
     [SQLite], [sqlite],
     [sqlite3], [sqlite3_open], [sqlite3.h],
