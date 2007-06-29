@@ -9,6 +9,8 @@
 #include <pthread.h>
 #endif
 
+#ifdef WITH_NEON
+
 #include "ne_alloc.h"
 #include "ne_auth.h"
 #include "ne_basic.h"
@@ -34,6 +36,8 @@
 	ne_propfind_set_private(_pfh, _create_item, NULL, NULL)
 #endif
 
+#endif /* WITH_NEON */
+
 #include <rpmio_internal.h>
 
 #define _RPMDAV_INTERNAL
@@ -54,6 +58,8 @@
 #endif
 /*@unchecked@*/
 static int httpTimeoutSecs = TIMEOUT_SECS;
+
+#ifdef WITH_NEON
 
 /* =============================================================== */
 int davFree(urlinfo u)
@@ -1490,9 +1496,61 @@ fprintf(stderr, "*** davReadlink(%s) rc %d\n", path, rc);
 }
 #endif	/* NOTYET */
 
+#endif /* WITH_NEON */
+
 /* =============================================================== */
 /*@unchecked@*/
 int avmagicdir = 0x3607113;
+
+#ifndef WITH_NEON
+/*@-nullstate@*/        /* FIX: u->{ctrl,data}->url undef after XurlLink. */
+FD_t httpOpen(const char * url, /*@unused@*/ int flags,
+                /*@unused@*/ mode_t mode, /*@out@*/ urlinfo * uret)
+        /*@globals internalState @*/
+        /*@modifies *uret, internalState @*/
+{
+    urlinfo u = NULL;
+    FD_t fd = NULL;
+
+#if 0   /* XXX makeTempFile() heartburn */
+    assert(!(flags & O_RDWR));
+#endif
+    if (urlSplit(url, &u))
+        goto exit;
+
+    if (u->ctrl == NULL)
+        u->ctrl = fdNew("persist ctrl (httpOpen)");
+    if (u->ctrl->nrefs > 2 && u->data == NULL)
+        u->data = fdNew("persist data (httpOpen)");
+
+    if (u->ctrl->url == NULL)
+        fd = fdLink(u->ctrl, "grab ctrl (httpOpen persist ctrl)");
+    else if (u->data->url == NULL)
+        fd = fdLink(u->data, "grab ctrl (httpOpen persist data)");
+    else
+        fd = fdNew("grab ctrl (httpOpen)");
+
+    if (fd) {
+        fdSetIo(fd, ufdio);
+        fd->ftpFileDoneNeeded = 0;
+        fd->rd_timeoutsecs = httpTimeoutSecs;
+        fd->contentLength = fd->bytesRemain = -1;
+        fd->url = urlLink(u, "url (httpOpen)");
+        fd = fdLink(fd, "grab data (httpOpen)");
+        fd->urlType = URL_IS_HTTP;
+    }
+
+exit:
+/*@-boundswrite@*/
+    if (uret)
+        *uret = u;
+/*@=boundswrite@*/
+    /*@-refcounttrans@*/
+    return fd;
+    /*@=refcounttrans@*/
+}
+/*@=nullstate@*/
+#endif
 
 int avClosedir(/*@only@*/ DIR * dir)
 {
@@ -1613,6 +1671,8 @@ fprintf(stderr, "*** avOpendir(%s)\n", path);
 /*@=kepttrans@*/
 }
 /*@=boundswrite@*/
+
+#ifdef WITH_NEON
 
 /* =============================================================== */
 /*@unchecked@*/
@@ -1782,3 +1842,5 @@ fprintf(stderr, "*** davOpendir(%s)\n", path);
 /*@=kepttrans@*/
 }
 /*@=modfilesys@*/
+
+#endif /* WITH_NEON */

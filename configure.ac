@@ -714,14 +714,14 @@ dnl # Neon
 RPM_CHECK_LIB(
     [Neon], [neon],
     [neon], [ne_session_create], [ne_session.h],
-    [yes,external], [],
+    [yes,external:none], [],
     [ AC_CHECK_LIB(neon, ne_get_response_header, [
           AC_DEFINE(HAVE_NEON_NE_GET_RESPONSE_HEADER, 1,
                     [Define to 1 if you have ne_get_response_header() in libneon.]) ])
       AC_CHECK_LIB(neon, ne_send_request_chunk, [
           AC_DEFINE(HAVE_NEON_NE_SEND_REQUEST_CHUNK, 1,
                     [Define to 1 if you have ne_send_request_chunk() in libneon.]) ])
-    ], [ AC_MSG_ERROR([mandatory Neon library not found]) ])
+    ], [ AC_MSG_WARN([No Neon library not found, using unsupported configuration]) ])
 
 dnl # File (magic)
 RPM_CHECK_LIB(

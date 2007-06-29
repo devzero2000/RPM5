@@ -123,6 +123,12 @@ FD_t davOpen(const char * url, /*@unused@*/ int flags,
         /*@globals internalState @*/
         /*@modifies *uret, internalState @*/;
 
+/*@null@*/
+FD_t httpOpen(const char * url, /*@unused@*/ int flags,
+                /*@unused@*/ mode_t mode, /*@out@*/ urlinfo * uret)
+        /*@globals internalState @*/
+        /*@modifies *uret, internalState @*/;
+
 /**
  */
 /*@-incondefs@*/

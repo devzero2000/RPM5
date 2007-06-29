@@ -134,7 +134,9 @@ URLDBGREFS(0, (stderr, "--> url %p -- %d %s at %s:%u\n", u, u->nrefs, msg, file,
 			(u->scheme ? u->scheme : ""));
 	/*@=usereleased@*/
     }
+#ifdef WITH_NEON
     xx = davFree(u);
+#endif
     u->buf = _free(u->buf);
     u->url = _free(u->url);
     u->scheme = _free((void *)u->scheme);
