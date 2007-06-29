@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - rse: add "errno" information to be more informative in error message when lstat(2) on verification fails.
     - rse: correctly restore SIGILL signal handler in machine detection code. 
     - pmatilaj: nuke antique Red Hat Linux "reference" "baddeps" list (in lib/depends.c)
     - rse: allow one to explicitly select the RPM DB API with --with-dbapi={db,sqlite}

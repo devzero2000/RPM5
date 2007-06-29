@@ -311,6 +311,10 @@ static int verifyHeader(QVA_t qva, const rpmts ts, rpmfi fi)
 			 (fflags & RPMFILE_README)	? 'r' : ' '),
 			rpmfiFN(fi));
 		te += strlen(te);
+                if ((verifyResult & RPMVERIFY_LSTATFAIL) != 0 && errno != ENOENT) {
+                    sprintf(te, " (%s)", strerror(errno));
+                    te += strlen(te);
+                }
 		ec = rc;
 	    }
 	} else if (verifyResult || rpmIsVerbose()) {
