@@ -4,6 +4,10 @@ LIBRPMMISC_0
     fnmatch;
     glob;
     globfree;
+    rpmz_*;
+    file_*;
+    db_*;
+    lua*;
   local:
     *;
 };
