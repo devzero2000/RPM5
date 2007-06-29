@@ -146,9 +146,9 @@ AC_DEFUN([RPM_CHECK_LIB], [
                     m4_define([__rcl_subdir],
                               [m4_if(m4_index([$7], [:]), -1, [$7],
                                      m4_substr([$7], 0, m4_index([$7], [:])))])
-                    if test -d __rcl_subdir; then
+                    if test -d ${srcdir}/__rcl_subdir; then
                         AC_MSG_VERBOSE([-- activating local sub-directory: __rcl_subdir])
-                        if test -f __rcl_subdir/configure; then
+                        if test -f ${srcdir}/__rcl_subdir/configure; then
                             AC_CONFIG_SUBDIRS(__rcl_subdir)
                         fi
                         dnl # NOTICE: an internal copy of the third-party library is a tricky thing
@@ -175,32 +175,37 @@ AC_DEFUN([RPM_CHECK_LIB], [
                         AC_MSG_VERBOSE([++ post-adjustments for --with-$2 (${__rcl_location_$2})])
                         __rcl_dirs_inc=`echo '$7' | sed -e 's/^[[^:]]*://' -e 's/:[[^:]]*[$]//'`
                         __rcl_dirs_lib=`echo '$7' | sed -e 's/^[[^:]]*:[[^:]]*://'`
-                        __rcl_basedir="\[$](top_srcdir)/\[$](WITH_[]m4_translit([$2],[a-z],[A-Z])[]_SUBDIR)"
+                        __rcl_srcdir="\[$](top_srcdir)/\[$](WITH_[]m4_translit([$2],[a-z],[A-Z])[]_SUBDIR)"
+                        __rcl_builddir="\[$](top_builddir)/\[$](WITH_[]m4_translit([$2],[a-z],[A-Z])[]_SUBDIR)"
                         __rcl_firstlib="m4_if(m4_index([$3], [ ]), -1, [$3], m4_substr([$3], 0, m4_index([$3], [ ])))"
                         if test ".${__rcl_dirs_inc}" != ".$7"; then
                             __rcl_IFS="${IFS}"; IFS=","
                             for __rcl_dir in ${__rcl_dirs_inc}; do
                                 IFS="${__rcl_IFS}"
                                 test ".${__rcl_dir}" = . && continue
-                                AC_MSG_VERBOSE([-- extending WITH_[]m4_translit([$2],[a-z],[A-Z])[]_CPPFLAGS: -I${__rcl_basedir}/${__rcl_dir}])
-                                WITH_[]m4_translit([$2],[a-z],[A-Z])[]_CPPFLAGS="${WITH_[]m4_translit([$2],[a-z],[A-Z])[]_CPPFLAGS} -I${__rcl_basedir}/${__rcl_dir}"
+                                AC_MSG_VERBOSE([-- extending WITH_[]m4_translit([$2],[a-z],[A-Z])[]_CPPFLAGS: -I${__rcl_srcdir}/${__rcl_dir}])
+                                WITH_[]m4_translit([$2],[a-z],[A-Z])[]_CPPFLAGS="${WITH_[]m4_translit([$2],[a-z],[A-Z])[]_CPPFLAGS} -I${__rcl_srcdir}/${__rcl_dir}"
+                                AC_MSG_VERBOSE([-- extending WITH_[]m4_translit([$2],[a-z],[A-Z])[]_CPPFLAGS: -I${__rcl_builddir}/${__rcl_dir}])
+                                WITH_[]m4_translit([$2],[a-z],[A-Z])[]_CPPFLAGS="${WITH_[]m4_translit([$2],[a-z],[A-Z])[]_CPPFLAGS} -I${__rcl_builddir}/${__rcl_dir}"
                             done
                             IFS="${__rcl_IFS}"
                         fi
-                        AC_MSG_VERBOSE([-- extending WITH_[]m4_translit([$2],[a-z],[A-Z])[]_CPPFLAGS: -I${__rcl_basedir}])
-                        WITH_[]m4_translit([$2],[a-z],[A-Z])[]_CPPFLAGS="${WITH_[]m4_translit([$2],[a-z],[A-Z])[]_CPPFLAGS} -I${__rcl_basedir}"
+                        AC_MSG_VERBOSE([-- extending WITH_[]m4_translit([$2],[a-z],[A-Z])[]_CPPFLAGS: -I${__rcl_srcdir}])
+                        WITH_[]m4_translit([$2],[a-z],[A-Z])[]_CPPFLAGS="${WITH_[]m4_translit([$2],[a-z],[A-Z])[]_CPPFLAGS} -I${__rcl_srcdir}"
+                        AC_MSG_VERBOSE([-- extending WITH_[]m4_translit([$2],[a-z],[A-Z])[]_CPPFLAGS: -I${__rcl_builddir}])
+                        WITH_[]m4_translit([$2],[a-z],[A-Z])[]_CPPFLAGS="${WITH_[]m4_translit([$2],[a-z],[A-Z])[]_CPPFLAGS} -I${__rcl_builddir}"
                         if test ".${__rcl_dirs_lib}" != ".$7"; then
                             __rcl_IFS="${IFS}"; IFS=","
                             for __rcl_dir in ${__rcl_dirs_lib}; do
                                 IFS="${__rcl_IFS}"
                                 test ".${__rcl_dir}" = . && continue
-                                AC_MSG_VERBOSE([-- extending WITH_[]m4_translit([$2],[a-z],[A-Z])[]_LDFLAGS: -L${__rcl_basedir}/${__rcl_dir}])
-                                WITH_[]m4_translit([$2],[a-z],[A-Z])[]_LDFLAGS="${WITH_[]m4_translit([$2],[a-z],[A-Z])[]_LDFLAGS} -L${__rcl_basedir}/${__rcl_dir}"
+                                AC_MSG_VERBOSE([-- extending WITH_[]m4_translit([$2],[a-z],[A-Z])[]_LDFLAGS: -L${__rcl_builddir}/${__rcl_dir}])
+                                WITH_[]m4_translit([$2],[a-z],[A-Z])[]_LDFLAGS="${WITH_[]m4_translit([$2],[a-z],[A-Z])[]_LDFLAGS} -L${__rcl_builddir}/${__rcl_dir}"
                             done
                             IFS="${__rcl_IFS}"
                         fi
-                        AC_MSG_VERBOSE([-- extending WITH_[]m4_translit([$2],[a-z],[A-Z])[]_LDFLAGS: -L${__rcl_basedir}])
-                        WITH_[]m4_translit([$2],[a-z],[A-Z])[]_LDFLAGS="${WITH_[]m4_translit([$2],[a-z],[A-Z])[]_LDFLAGS} -L${__rcl_basedir}"
+                        AC_MSG_VERBOSE([-- extending WITH_[]m4_translit([$2],[a-z],[A-Z])[]_LDFLAGS: -L${__rcl_builddir}])
+                        WITH_[]m4_translit([$2],[a-z],[A-Z])[]_LDFLAGS="${WITH_[]m4_translit([$2],[a-z],[A-Z])[]_LDFLAGS} -L${__rcl_builddir}"
                         AC_MSG_VERBOSE([-- extending WITH_[]m4_translit([$2],[a-z],[A-Z])[]_LIBS: -l${__rcl_firstlib}])
                         WITH_[]m4_translit([$2],[a-z],[A-Z])[]_LIBS="${WITH_[]m4_translit([$2],[a-z],[A-Z])[]_LIBS} -l${__rcl_firstlib}"
                         __rcl_result_hint="internal: sub-directory __rcl_subdir"
