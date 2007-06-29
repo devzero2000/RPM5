@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - pmatilaj: nuke antique Red Hat Linux "reference" "baddeps" list (in lib/depends.c)
     - rse: allow one to explicitly select the RPM DB API with --with-dbapi={db,sqlite}
     - rse: provide automatically Autoconf chosen RPM DB API selection and configuration
     - rse: allow one to build an SQLite-only RPM with "--without-db --with-sqlite=external"
