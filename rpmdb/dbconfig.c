@@ -112,7 +112,7 @@ struct poptOption rdbOptions[] = {
  { "lockdown",	0,POPT_BIT_SET,	&db3dbi.dbi_eflags, DB_LOCKDOWN,
 	NULL, NULL },
 #endif
-#if defined(WITH_DB) && defined(DB_PRIVATE)
+#if (defined(WITH_DB) || defined(WITH_SQLITE)) && defined(DB_PRIVATE)
  { "private",	0,POPT_BIT_SET,	&db3dbi.dbi_eflags, DB_PRIVATE,
 	NULL, NULL },
 #endif
@@ -196,7 +196,7 @@ DB_SNAPSHOT	RECNO
 #endif
 
 /* DB->open */
-#if defined(WITH_DB) && defined(DB_EXCL)
+#if (defined(WITH_DB) || defined(WITH_SQLITE)) && defined(DB_EXCL)
  { "excl",	0,POPT_BIT_SET,	&db3dbi.dbi_oflags, DB_EXCL,
 	NULL, NULL },
 #endif
@@ -252,13 +252,15 @@ DB_READ_UNCOMITTED
 #if defined(WITH_DB)
  { "mode",	0,POPT_ARG_INT,		&db3dbi.dbi_mode, 0,
 	NULL, NULL },
+#endif
  { "perms",	0,POPT_ARG_INT,		&db3dbi.dbi_perms, 0,
 	NULL, NULL },
+#if defined(WITH_DB)
  { "shmkey",	0,POPT_ARG_LONG,	&db3dbi.dbi_shmkey, 0,
 	NULL, NULL },
+#endif
  { "tmpdir",	0,POPT_ARG_STRING,	&db3dbi.dbi_tmpdir, 0,
 	NULL, NULL },
-#endif
 
 #if defined(WITH_DB)
  { "host",	0,POPT_ARG_STRING,	&db3dbi.dbi_host, 0,
@@ -288,16 +290,18 @@ DB_READ_UNCOMITTED
 	NULL, NULL },
  { "lockdbfd",	0,POPT_ARG_NONE,	&db3dbi.dbi_lockdbfd, 0,
 	NULL, NULL },
+#endif
  { "temporary",	0,POPT_ARG_NONE,	&db3dbi.dbi_temporary, 0,
 	NULL, NULL },
+#if defined(WITH_DB)
  { "debug",	0,POPT_ARG_NONE,	&db3dbi.dbi_debug, 0,
 	NULL, NULL },
 #endif
 
 /* XXX set_alloc */
-#if defined(WITH_DB)
  { "cachesize",	0,POPT_ARG_INT,		&db3dbi.dbi_cachesize, 0,
 	NULL, NULL },
+#if defined(WITH_DB)
 /* XXX set_dup_compare */
 /* XXX set_encrypt */
  { "errpfx",	0,POPT_ARG_STRING,	&db3dbi.dbi_errpfx, 0,
@@ -305,9 +309,11 @@ DB_READ_UNCOMITTED
 /* XXX set_feedback */
  { "lorder",	0,POPT_ARG_INT,		&db3dbi.dbi_lorder, 0,
 	NULL, NULL },
+#endif
  { "pagesize",	0,POPT_ARG_INT,		&db3dbi.dbi_pagesize, 0,
 	NULL, NULL },
 
+#if defined(WITH_DB)
  { "region_init", 0,POPT_ARG_VAL,	&db3dbi.dbi_region_init, 1,
 	NULL, NULL },
 

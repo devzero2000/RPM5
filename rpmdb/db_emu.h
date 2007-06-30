@@ -48,6 +48,8 @@ struct __db_h_stat {
 #define DB_SET 32
 #define DB_WRITECURSOR 39
 #define DB_NOTFOUND (-30990)
+#define DB_PRIVATE 0x0200000
+#define DB_EXCL    0x0004000
 
 #define DB_VERSION_MAJOR 3
 #define DB_VERSION_MINOR 0

@@ -638,8 +638,8 @@ print (t)\
 %{nil}
 
 # database configuration: SQLite
-%__dbi_sqlconfig_current		%{nil}
-%__dbi_sqlconfig_rebuild		nofsync
+%__dbi_sqlconfig_current		perms=0644 %{?_tmppath:tmpdir=%{_tmppath}}
+%__dbi_sqlconfig_rebuild		%{__dbi_sqlconfig_current} nofsync
 %_dbi_sqlconfig \
   %{?_rpmdb_rebuild:%{__dbi_sqlconfig_rebuild}}\
   %{!?_rpmdb_rebuild:%{__dbi_sqlconfig_current}}\
@@ -648,7 +648,7 @@ print (t)\
 # database tag configuration
 %_dbi_tags                      %{expand:%%{_dbi_tags_%{_dbapi_used}}}
 %_dbi_tags_3                    Packages:Name:Basenames:Group:Requirename:Providename:Conflictname:Triggername:Dirnames:Requireversion:Provideversion:Installtid:Sigmd5:Sha1header:Filemd5s:Pubkeys:Packagecolor:Depends
-%_dbi_tags_4                    Packages:Name:Basenames:Group:Requirename:Providename:Conflictname:Triggername:Dirnames:Requireversion:Provideversion:Installtid:Sigmd5:Sha1header:Filemd5s:Pubkeys:Packagecolor
+%_dbi_tags_4                    Packages:Name:Basenames:Group:Requirename:Providename:Conflictname:Triggername:Dirnames:Requireversion:Provideversion:Installtid:Sigmd5:Sha1header:Filemd5s:Pubkeys:Packagecolor:Depends
 
 # database configuration: Berkeley-DB [dbapi 3 hooks]
 %_dbi_config_3                  %{_dbi_btconfig}
@@ -692,7 +692,7 @@ print (t)\
 %_dbi_config_4_Sigmd5           %{_dbi_sqlconfig}
 %_dbi_config_4_Triggername      %{_dbi_sqlconfig}
 %_dbi_config_4_Packages         %{_dbi_sqlconfig}
-%_dbi_config_4_Depends          %{_dbi_sqlconfig}
+%_dbi_config_4_Depends          %{_dbi_sqlconfig} temporary private
 
 # database configuration [code entry hooks]
 %_dbi_config                    %{expand:%%{_dbi_config_%{_dbapi_used}}}
