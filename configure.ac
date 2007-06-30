@@ -721,7 +721,7 @@ RPM_CHECK_LIB(
       AC_CHECK_LIB(neon, ne_send_request_chunk, [
           AC_DEFINE(HAVE_NEON_NE_SEND_REQUEST_CHUNK, 1,
                     [Define to 1 if you have ne_send_request_chunk() in libneon.]) ])
-    ], [ AC_MSG_WARN([No Neon library not found, using unsupported configuration]) ])
+    ], [ AC_MSG_WARN([No Neon library found, using unsupported configuration]) ])
 
 dnl # File (magic)
 RPM_CHECK_LIB(
