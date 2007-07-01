@@ -7,7 +7,12 @@ db_dist="${base_path}../db/dist"
 
 rm -f config.cache
 
-ARGS="`echo $* |\
+# We iterate over the argument list.  Processing the arguments using 
+# echo "$*" can fail with the sed chopping out parts of unrelated 
+# arguments
+set - "$@" eoa_marker
+while [ "$1" != "eoa_marker" ]; do
+   ARG=`echo "$1" | \
        sed -e 's% [^ ]*CFLAGS=[^ ]*%%' \
            -e 's% [^ ]*CC=[^ ]*ccache [^ ]*%%' \
            -e 's% [^ ]*CC=[^ ]*%%' \
@@ -23,7 +28,12 @@ ARGS="`echo $* |\
            -e 's%--with-db-mutex=\([^ ]*\)%--with-mutex=\1%' \
            -e 's%--with-db-mutex%%' \
            -e 's%--without-db-mutex%%' \
-`"
+`
+   shift
+   set - "$@" "$ARG"
+done
+shift
+
 
 #   NOTICE:
 #   1. "--enable-shared" is there for enforcing GNU libtool usage only

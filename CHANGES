@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - mgh: change db3 configure wrapper to process one argument at a time
     - rse: add SQLite RPM DB support for "tmpdir=<path> excl cachesize=<bytes> pagesize=<bytes> temporary private perms=<bitmask>"
     - mgh: allow rpm to be built w/o neon
     - rse: remove unused rpmio/sexp/ sub-library
