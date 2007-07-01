@@ -10,7 +10,7 @@ rm -f config.cache
 # We iterate over the argument list.  Processing the arguments using 
 # echo "$*" can fail with the sed chopping out parts of unrelated 
 # arguments
-set - "$@" eoa_marker
+set -- "$@" eoa_marker
 while [ "$1" != "eoa_marker" ]; do
    ARG=`echo "$1" | \
        sed -e 's% [^ ]*CFLAGS=[^ ]*%%' \
@@ -28,9 +28,9 @@ while [ "$1" != "eoa_marker" ]; do
            -e 's%--with-db-mutex=\([^ ]*\)%--with-mutex=\1%' \
            -e 's%--with-db-mutex%%' \
            -e 's%--without-db-mutex%%' \
-`
+   `
    shift
-   set - "$@" "$ARG"
+   set -- "$@" "$ARG"
 done
 shift
 
@@ -41,7 +41,7 @@ shift
 #   2. "--enable-static" is there for enforcing the building of a static
 #      version of the libdb objects RPM actually is interested in.
 
-CC="$CC" CFLAGS="$CFLAGS" $db_dist/configure $ARGS \
+CC="$CC" CFLAGS="$CFLAGS" $db_dist/configure "$@" \
 	--enable-shared --enable-static \
 	--with-uniquename=_rpmdb --srcdir=$db_dist
 
