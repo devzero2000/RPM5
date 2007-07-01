@@ -25,7 +25,7 @@
 
 /* Find the first occurrence of C in S or the final NUL byte.  */
 static inline char *
-__strchrnul (const char *s, int c)
+internal__strchrnul (const char *s, int c)
 {
   const unsigned char *char_ptr;
   const unsigned long int *longword_ptr;
@@ -353,7 +353,7 @@ internal_fnmatch (const char *pattern, const char *string,
 	    {
 	      const char *endp;
 
-	      endp = __strchrnul (n, (flags & FNM_FILE_NAME) ? '/' : '\0');
+	      endp = internal__strchrnul (n, (flags & FNM_FILE_NAME) ? '/' : '\0');
 
 	      if (c == '[')
 		{
