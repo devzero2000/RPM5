@@ -18,6 +18,10 @@ AM_CPPFLAGS = -I. \
 	-I$(top_srcdir)/rpmdb \
 	-I$(top_srcdir)/rpmio \
 	-I$(top_srcdir)/misc \
+	@WITH_DB_CPPFLAGS@ \
+	@WITH_ZLIB_CPPFLAGS@ \
+	@WITH_LUA_CPPFLAGS@ \
+	@WITH_FILE_CPPFLAGS@ \
 	-I$(pyincdir)
 
 noinst_HEADERS = header-py.h \
@@ -25,14 +29,16 @@ noinst_HEADERS = header-py.h \
 	rpmfi-py.h rpmmi-py.h rpmps-py.h rpmrc-py.h rpmte-py.h rpmts-py.h \
 	spec-py.h
 
-mylibs= \
+mylibs = \
 	$(top_builddir)/build/librpmbuild.la \
 	$(top_builddir)/lib/librpm.la \
 	$(top_builddir)/rpmdb/librpmdb.la \
-	$(top_builddir)/rpmio/librpmio.la
+	$(top_builddir)/rpmio/librpmio.la \
+	$(top_builddir)/misc/librpmmisc.la \
+	@LTLIBINTL@
 
-LDADD =
-LIBS =
+#LDADD =
+#LIBS =
 
 rpmdir = $(pylibdir)/site-packages/rpm
 rpm_LTLIBRARIES = _rpmmodule.la

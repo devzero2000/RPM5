@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - mgh: ensure the rpm python module is linked the same as the rest of RPM
     - rse: prune the 23MB large db/docs/ third-party subtree to no longer ship it in RPM distribution tarballs.
     - rse: allow installation paths to be overridden via "configure" options --with-path-xxx.
     - rse: re-generate lib/getdate.c with newer GNU bison 2.3
