@@ -1026,7 +1026,7 @@ SYSCONFIGDIR="/etc/rpm"
 AC_ARG_WITH(
     [path-cfg],
     AS_HELP_STRING([--with-path-cfg=ARG], [build with RPM global configuration directory path]),
-    [SYSCONFDIR="$withval"]
+    [SYSCONFIGDIR="$withval"]
 )
 AC_DEFINE_UNQUOTED(
     [SYSCONFIGDIR], ["$SYSCONFIGDIR"],
