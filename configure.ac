@@ -999,7 +999,7 @@ AC_SUBST(USRLIBRPM)
 AC_MSG_RESULT([$USRLIBRPM])
 
 AC_MSG_CHECKING([for RPM system configuration installation directory])
-SYSCONFIGDIR="`echo /etc/rpm`"
+SYSCONFIGDIR="/etc/rpm"
 AC_DEFINE_UNQUOTED(SYSCONFIGDIR, "$SYSCONFIGDIR",
 	[Full path to rpm system configuration directory (usually /etc/rpm)])
 AC_SUBST(SYSCONFIGDIR)
