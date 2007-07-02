@@ -1,9 +1,9 @@
 # Perl specific macro definitions.
 # To make use of these macros insert the following line into your spec file:
-# %include @USRLIBRPM@/macros.perl
+# %include %{_usrlibrpm}/macros.perl
 
-%define		__find_requires	@USRLIBRPM@/find-perl-requires
-%define		__find_provides	@USRLIBRPM@/find-perl-provides
+%define		__find_requires	%{_usrlibrpm}/find-perl-requires
+%define		__find_provides	%{_usrlibrpm}/find-perl-provides
 
 %define		perl_sitelib	%(eval "`perl -V:installsitelib`"; echo $installsitelib)
 %define		perl_sitearch	%(eval "`perl -V:installsitearch`"; echo $installsitearch)
