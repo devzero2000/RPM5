@@ -31,7 +31,7 @@ const char *rpmRcfiles = RPMRCFILES;
 static const char * configTarget = NULL;
 
 /*@observer@*/ /*@unchecked@*/
-static const char * platform = "/etc/rpm/platform";
+static const char * platform = SYSCONFIGDIR "/platform";
 /*@only@*/ /*@relnull@*/ /*@unchecked@*/
 void * platpat = NULL;
 /*@unchecked@*/

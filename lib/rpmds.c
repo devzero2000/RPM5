@@ -1607,7 +1607,7 @@ exit:
     return rc;
 }
 
-#define	_ETC_RPM_SYSINFO	"/etc/rpm/sysinfo"
+#define	_ETC_RPM_SYSINFO	SYSCONFIGDIR "/sysinfo"
 /*@unchecked@*/ /*@observer@*/ /*@owned@*/ /*@relnull@*/
 static const char *_sysinfo_path = NULL;
 
