@@ -1,4 +1,7 @@
 4.5 -> 5.0:
+    - rse: detect if a script cannot be run because fork(2) failed.
+    - rse: use the "ustar" format defined by POSIX 1003.1-1988 to roll the distribution tarball.
+    - mgh: resolve namespace conflict with "__stdchrnul" in fnmatch.c
     - mgh: change db3 configure wrapper to process one argument at a time
     - rse: add SQLite RPM DB support for "tmpdir=<path> excl cachesize=<bytes> pagesize=<bytes> temporary private perms=<bitmask>"
     - mgh: allow rpm to be built w/o neon
