@@ -12,7 +12,7 @@ AC_INIT(rpm, 5.0, [PACKAGE_BUGREPORT_DEFAULT])
 AC_CONFIG_SRCDIR([rpmqv.c])
 AC_CONFIG_HEADERS([config.h])
 AC_CANONICAL_TARGET
-AM_INIT_AUTOMAKE([foreign])
+AM_INIT_AUTOMAKE([foreign tar-ustar])
 AM_MAINTAINER_MODE
 
 dnl # allow packagers to override the bugreport address
