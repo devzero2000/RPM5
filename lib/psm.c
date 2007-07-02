@@ -914,6 +914,12 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
     }
     /*@=branchstate@*/
 
+    if (psm->sq.child == (pid_t)-1) {
+        rpmError(RPMERR_FORK, _("Couldn't fork %s: %s\n"), sln, strerror(errno));
+        rc = RPMRC_FAIL;
+        goto exit;
+    }
+
     (void) psmWait(psm);
 
   /* XXX filter order dependent multilib "other" arch helper error. */
@@ -938,6 +944,7 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
     }
   }
 
+exit:
     if (freePrefixes) prefixes = hfd(prefixes, ipt);
 
     xx = Fclose(out);	/* XXX dup'd STDOUT_FILENO */
