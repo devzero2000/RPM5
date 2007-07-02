@@ -10,18 +10,11 @@ rpm \- RPM Package Manager
 .SS "QUERYING AND VERIFYING PACKAGES:"
 .PP
 
-
 \fBrpm\fR {\fB-q|--query\fR} [\fBselect-options\fR] [\fBquery-options\fR]
-
-
 
 \fBrpm\fR {\fB-V|--verify\fR} [\fBselect-options\fR] [\fBverify-options\fR]
 
-
-
 \fBrpm\fR \fB--import\fR \fB\fIPUBKEY\fB\fR\fI ...\fR
-
-
 
 \fBrpm\fR {\fB-K|--checksig\fR} [\fB--nosignature\fR] [\fB--nodigest\fR]
     \fB\fIPACKAGE_FILE\fB\fR\fI ...\fR
@@ -29,18 +22,11 @@ rpm \- RPM Package Manager
 .SS "INSTALLING, UPGRADING, AND REMOVING PACKAGES:"
 .PP
 
-
 \fBrpm\fR {\fB-i|--install\fR} [\fBinstall-options\fR] \fB\fIPACKAGE_FILE\fB\fR\fI ...\fR
-
-
 
 \fBrpm\fR {\fB-U|--upgrade\fR} [\fBinstall-options\fR] \fB\fIPACKAGE_FILE\fB\fR\fI ...\fR
 
-
-
 \fBrpm\fR {\fB-F|--freshen\fR} [\fBinstall-options\fR] \fB\fIPACKAGE_FILE\fB\fR\fI ...\fR
-
-
 
 \fBrpm\fR {\fB-e|--erase\fR} [\fB--allmatches\fR] [\fB--nodeps\fR] [\fB--noscripts\fR]
     [\fB--notriggers\fR] [\fB--repackage\fR] [\fB--test\fR] \fB\fIPACKAGE_NAME\fB\fR\fI\ ...\fR
@@ -48,24 +34,16 @@ rpm \- RPM Package Manager
 .SS "MISCELLANEOUS:"
 .PP
 
-
 \fBrpm\fR {\fB--initdb|--rebuilddb\fR}
-
-
 
 \fBrpm\fR {\fB--addsign|--resign\fR} \fB\fIPACKAGE_FILE\fB\fR\fI ...\fR
 
-
-
 \fBrpm\fR {\fB--querytags|--showrc\fR}
-
-
 
 \fBrpm\fR {\fB--setperms|--setugids\fR} \fB\fIPACKAGE_NAME\fB\fR\fI ...\fR
 
 .SS "select-options"
 .PP
-
 
  [\fB\fIPACKAGE_NAME\fB\fR] [\fB-a,--all\fR] [\fB-f,--file \fIFILE\fB\fR]
  [\fB-g,--group \fIGROUP\fB\fR] {\fB-p,--package \fIPACKAGE_FILE\fB\fR]
@@ -76,7 +54,6 @@ rpm \- RPM Package Manager
 .SS "query-options"
 .PP
 
-
  [\fB--changelog\fR] [\fB-c|--configfiles\fR] [\fB-d|--docfiles\fR] [\fB--dump\fR]
  [\fB--filesbypkg\fR] [\fB-i|--info\fR] [\fB--last\fR] [\fB-l|--list\fR]
  [\fB--provides\fR] [\fB--qf,--queryformat \fIQUERYFMT\fB\fR]
@@ -86,7 +63,6 @@ rpm \- RPM Package Manager
 .SS "verify-options"
 .PP
 
-
  [\fB--nodeps\fR] [\fB--nofiles\fR] [\fB--noscripts\fR]
  [\fB--nodigest\fR] [\fB--nosignature\fR]
  [\fB--nolinkto\fR] [\fB--nomd5\fR] [\fB--nosize\fR] [\fB--nouser\fR]
@@ -94,7 +70,6 @@ rpm \- RPM Package Manager
 
 .SS "install-options"
 .PP
-
 
  [\fB--aid\fR] [\fB--allfiles\fR] [\fB--badreloc\fR] [\fB--excludepath \fIOLDPATH\fB\fR]
  [\fB--excludedocs\fR] [\fB--force\fR] [\fB-h,--hash\fR]
@@ -186,26 +161,20 @@ will be run after a chroot(2) to
 .PP
 The general form of an rpm install command is 
 .PP
-
 \fBrpm\fR {\fB-i|--install\fR} [\fBinstall-options\fR] \fB\fIPACKAGE_FILE\fB\fR\fI ...\fR
-
 .PP
 This installs a new package.
 .PP
 The general form of an rpm upgrade command is 
 .PP
-
 \fBrpm\fR {\fB-U|--upgrade\fR} [\fBinstall-options\fR] \fB\fIPACKAGE_FILE\fB\fR\fI ...\fR
-
 .PP
 This upgrades or installs the package currently installed
 to a newer version.  This is the same as install, except
 all other version(s) of the package are removed after the
 new package is installed.
 .PP
-
 \fBrpm\fR {\fB-F|--freshen\fR} [\fBinstall-options\fR] \fB\fIPACKAGE_FILE\fB\fR\fI ...\fR
-
 .PP
 This will upgrade packages, but only if an earlier version
 currently exists. The \fIPACKAGE_FILE\fR
@@ -373,9 +342,7 @@ potential conflicts.
 .PP
 The general form of an rpm erase command is 
 .PP
-
 \fBrpm\fR {\fB-e|--erase\fR} [\fB--allmatches\fR] [\fB--nodeps\fR] [\fB--noscripts\fR] [\fB--notriggers\fR] [\fB--repackage\fR] [\fB--test\fR] \fB\fIPACKAGE_NAME\fB\fR\fI ...\fR
-
 .PP
 The following options may also be used:
 .TP
@@ -437,9 +404,7 @@ for debugging.
 .PP
 The general form of an rpm query command is 
 .PP
-
 \fBrpm\fR {\fB-q|--query\fR} [\fBselect-options\fR] [\fBquery-options\fR]
-
 .PP
 You may specify the format that package information should be
 printed in. To do this, you use the
@@ -644,9 +609,7 @@ the package.
 .PP
 The general form of an rpm verify command is 
 .PP
-
 \fBrpm\fR {\fB-V|--verify\fR} [\fBselect-options\fR] [\fBverify-options\fR]
-
 .PP
 Verifying a package compares information about the installed files in
 the package with information about the files taken from the package
@@ -732,14 +695,10 @@ the corresponding \fB--verify\fR test:
 .PP
 The general forms of rpm digital signature commands are
 .PP
-
-
 \fBrpm\fR \fB--import\fR \fB\fIPUBKEY\fB\fR\fI ...\fR
-
 
 \fBrpm\fR {\fB--checksig\fR} [\fB--nosignature\fR] [\fB--nodigest\fR]
     \fB\fIPACKAGE_FILE\fB\fR\fI ...\fR
-
 .PP
 The \fB--checksig\fR option checks all the digests and signatures contained in
 \fIPACKAGE_FILE\fR to ensure
@@ -768,9 +727,7 @@ packages. Here's how to remove the Red Hat GPG/DSA key
 \fBrpm -e gpg-pubkey-db42a60e\fR
 .SS "SIGNING A PACKAGE"
 .PP
-
 \fBrpm\fR \fB--addsign|--resign\fR \fB\fIPACKAGE_FILE\fB\fR\fI ...\fR
-
 .PP
 Both of the \fB--addsign\fR and \fB--resign\fR
 options generate and insert new signatures for each package
@@ -823,9 +780,7 @@ for per-user configuration.
 .PP
 The general form of an rpm rebuild database command is 
 .PP
-
 \fBrpm\fR {\fB--initdb|--rebuilddb\fR} [\fB-v\fR] [\fB--dbpath \fIDIRECTORY\fB\fR] [\fB--root \fIDIRECTORY\fB\fR]
-
 .PP
 Use \fB--initdb\fR to create a new database, use
 \fB--rebuilddb\fR to rebuild the database indices from
@@ -977,7 +932,7 @@ rpm     exec --short-circuit    rpmb --short-circuit
 \fBrpmbuild\fR(8),
 .fi
 
-\fBhttp://wraptastic.org/ <URL:http://wraptastic.org/>
+\fBhttp://rpm5.org/ <URL:http://rpm5.org/>
 \fR
 .SH "AUTHORS"
 

@@ -9,32 +9,19 @@ rpmbuild \- Build RPM Package(s)
 .SH SYNOPSIS
 .SS "BUILDING PACKAGES:"
 .PP
-
-
 \fBrpmbuild\fR {\fB-ba|-bb|-bp|-bc|-bi|-bl|-bs\fR} [\fBrpmbuild-options\fR] \fB\fISPECFILE\fB\fR\fI ...\fR
-
-
 
 \fBrpmbuild\fR {\fB-ta|-tb|-tp|-tc|-ti|-tl|-ts\fR} [\fBrpmbuild-options\fR] \fB\fITARBALL\fB\fR\fI ...\fR
 
-
-
 \fBrpmbuild\fR {\fB--rebuild|--recompile\fR} \fB\fISOURCEPKG\fB\fR\fI ...\fR
-
 .SS "MISCELLANEOUS:"
 .PP
-
-
 \fBrpmbuild\fR \fB--showrc\fR
-
 .SS "rpmbuild-options"
 .PP
-
-
  [\fB--buildroot \fIDIRECTORY\fB\fR] [\fB--clean\fR] [\fB--nobuild\fR]
  [\fB--rmsource\fR] [\fB--rmspec\fR] [\fB--short-circuit\fR] [\fB--sign\fR]
  [\fB--target \fIPLATFORM\fB\fR]
-
 .SH "DESCRIPTION"
 .PP
 \fBrpmbuild\fR is used to build both binary and source software packages.
@@ -104,10 +91,7 @@ will be run after a chroot(2) to
 .PP
 The general form of an rpm build command is 
 .PP
-
-\fBrpmbuild\fR \fB-b\fISTAGE\fB|-t\fISTAGE\fB\fR [ \fB     rpmbuild-options
-\fR ] \fB\fIFILE\fB\fR\fI ...\fR
-
+\fBrpmbuild\fR \fB-b\fISTAGE\fB|-t\fISTAGE\fB\fR [\fBrpmbuild-options\fR] \fB\fIFILE\fB\fR\fI ...\fR
 .PP
 The argument used is \fB-b\fR if a spec file is being
 used to build the package and \fB-t\fR if \fBrpmbuild\fR
@@ -188,9 +172,7 @@ accordingly.
 .PP
 There are two other ways to invoke building with rpm:
 .PP
-
 \fBrpmbuild\fR \fB--rebuild|--recompile\fR \fB\fISOURCEPKG\fB\fR\fI ...\fR
-
 .PP
 When invoked this way, \fBrpmbuild\fR installs the named source
 package, and does a prep, compile and install.  In addition,
@@ -202,9 +184,7 @@ the package are removed.
 .PP
 The command
 .PP
-
 \fBrpmbuild\fR \fB--showrc\fR
-
 .PP
 shows the values \fBrpmbuild\fR will use for all of the
 options are currently set in
@@ -261,7 +241,7 @@ configuration file(s).
 \fBrpm\fR(8),
 .fi
 
-\fBhttp://wraptastic.org/ <URL:http://wraptastic.org/>
+\fBhttp://rpm5.org/ <URL:http://rpm5.org/>
 \fR
 .SH "AUTHORS"
 
