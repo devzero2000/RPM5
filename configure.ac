@@ -961,6 +961,7 @@ AC_SUBST(RPMUID)
 AC_SUBST(RPMGROUP)
 AC_SUBST(RPMGID)
 
+dnl # FIXME: hard-coded paths?!
 if test "x$varprefix" = "x"; then
     # For /usr and /usr/local, we want the 'var' directory to go
     # in /var and /var/local respectively. For everything else, 
@@ -972,57 +973,118 @@ if test "x$varprefix" = "x"; then
     esac	
 fi
 AC_SUBST(varprefix)
-
 if test X"$prefix" = XNONE ; then
     usrprefix="$ac_default_prefix"
 else
     usrprefix=$prefix
 fi
 
-AC_MSG_CHECKING([for locale installation directory])
-LOCALEDIR="`echo ${usrprefix}/share/locale`"
-AC_DEFINE_UNQUOTED(LOCALEDIR, "$LOCALEDIR",
-	[Full path to rpm locale directory (usually /usr/share/locale)])
+dnl # determine RPM locale directory path
+AC_MSG_CHECKING([for RPM locale directory])
+LOCALEDIR=`echo "${usrprefix}/share/locale"`
+AC_ARG_WITH(
+    [path-locale],
+    AS_HELP_STRING([--with-path-locale=ARG], [build with RPM locale directory path]),
+    [LOCALEDIR="$withval"]
+)
+AC_DEFINE_UNQUOTED(
+    [LOCALEDIR], ["$LOCALEDIR"],
+    [Full path to RPM locale directory]
+)
 AC_SUBST(LOCALEDIR)
 AC_MSG_RESULT([$LOCALEDIR])
 
-AC_MSG_CHECKING([for library installation directory])
-LIBDIR="`echo $libdir | sed 's-/lib$-/%{_lib}-'`"
+dnl # determine RPM global library directory path
+AC_MSG_CHECKING([for RPM global library directory])
+LIBDIR=`echo "$libdir" | sed 's-/lib$-/%{_lib}-'`
+AC_ARG_WITH(
+    [path-lib],
+    AS_HELP_STRING([--with-path-lib=ARG], [build with RPM global library directory path]),
+    [LIBDIR="$withval"]
+)
 AC_SUBST(LIBDIR)
 AC_MSG_RESULT([$LIBDIR])
 
-AC_MSG_CHECKING([for RPM global configuration installation directory])
-USRLIBRPM="`echo ${usrprefix}/lib/rpm`"
-AC_DEFINE_UNQUOTED(USRLIBRPM, "$USRLIBRPM",
-	[Full path to rpm global configuration directory (usually /usr/lib/rpm)])
+dnl # determine RPM system library directory path
+AC_MSG_CHECKING([for RPM system library directory])
+USRLIBRPM=`echo "${usrprefix}/lib/rpm"`
+AC_ARG_WITH(
+    [path-usrlib],
+    AS_HELP_STRING([--with-path-usrlib=ARG], [build with RPM system library directory path]),
+    [USRLIBRPM="$withval"]
+)
+AC_DEFINE_UNQUOTED(
+    [USRLIBRPM], ["$USRLIBRPM"],
+    [Full path to RPM system library directory]
+)
 AC_SUBST(USRLIBRPM)
 AC_MSG_RESULT([$USRLIBRPM])
 
-AC_MSG_CHECKING([for RPM system configuration installation directory])
+dnl # determine RPM global configuration directory path
+AC_MSG_CHECKING([for RPM global configuration directory])
 SYSCONFIGDIR="/etc/rpm"
-AC_DEFINE_UNQUOTED(SYSCONFIGDIR, "$SYSCONFIGDIR",
-	[Full path to rpm system configuration directory (usually /etc/rpm)])
+AC_ARG_WITH(
+    [path-cfg],
+    AS_HELP_STRING([--with-path-cfg=ARG], [build with RPM global configuration directory path]),
+    [SYSCONFDIR="$withval"]
+)
+AC_DEFINE_UNQUOTED(
+    [SYSCONFIGDIR], ["$SYSCONFIGDIR"],
+    [Full path to RPM global configuration directory]
+)
 AC_SUBST(SYSCONFIGDIR)
 AC_MSG_RESULT([$SYSCONFIGDIR])
 
+dnl # determine RPM macro files path
 AC_MSG_CHECKING([for RPM macro files path])
-MACROFILES="${USRLIBRPM}/${VERSION}/macros:${USRLIBRPM}/%{_target}/macros:${SYSCONFIGDIR}/macros.*:${SYSCONFIGDIR}/macros:${SYSCONFIGDIR}/%{_target}/macros:~/.rpmmacros"
-AC_DEFINE_UNQUOTED(MACROFILES, "$MACROFILES",
-	[Colon separated paths of macro files to read.])
+MACROFILES="${USRLIBRPM}/${VERSION}/macros"
+MACROFILES="${MACROFILES}:${USRLIBRPM}/%{_target}/macros"
+MACROFILES="${MACROFILES}:${SYSCONFIGDIR}/macros.*"
+MACROFILES="${MACROFILES}:${SYSCONFIGDIR}/macros"
+MACROFILES="${MACROFILES}:${SYSCONFIGDIR}/%{_target}/macros"
+MACROFILES="${MACROFILES}:~/.rpmmacros"
+AC_ARG_WITH(
+    [path-macros],
+    AS_HELP_STRING([--with-path-macros=ARG], [build with colon-separated RPM macro files path]),
+    [MACROFILES="$withval"]
+)
+AC_DEFINE_UNQUOTED(
+    [MACROFILES], ["$MACROFILES"],
+    [Colon separated RPM macro files path]
+)
 AC_SUBST(MACROFILES)
 AC_MSG_RESULT([$MACROFILES])
 
+dnl # determine RPM run-command files path
 AC_MSG_CHECKING([for RPM run-command files path])
-RPMRCFILES="${USRLIBRPM}/${RPMCANONVENDOR}/rpmrc:${USRLIBRPM}/${RPMCANONVENDOR}/rpmrc:/etc/rpmrc:~/.rpmrc"
-AC_DEFINE_UNQUOTED(RPMRCFILES, "$RPMRCFILES",
-	[Colon separated paths of rpmrc files to read.])
+RPMRCFILES="${USRLIBRPM}/${RPMCANONVENDOR}/rpmrc"
+RPMRCFILES="${RPMRCFILES}:${USRLIBRPM}/${RPMCANONVENDOR}/rpmrc"
+RPMRCFILES="${RPMRCFILES}:/etc/rpmrc"
+RPMRCFILES="${RPMRCFILES}:~/.rpmrc"
+AC_ARG_WITH(
+    [path-rpmrc],
+    AS_HELP_STRING([--with-path-rpmrc=ARG], [build with colon-separated RPM run-command files path]),
+    [RPMRCFILES="$withval"]
+)
+AC_DEFINE_UNQUOTED(
+    [RPMRCFILES], ["$RPMRCFILES"],
+    [Colon separated RPM run-command files path]
+)
 AC_SUBST(RPMRCFILES)
 AC_MSG_RESULT([$RPMRCFILES])
 
-AC_MSG_CHECKING([for POPT configuration file])
+dnl # determine POPT configuration file path
+AC_MSG_CHECKING([for POPT configuration file path])
 RPMPOPTFILE="${USRLIBRPM}/${VERSION}/rpmpopt"
-AC_DEFINE_UNQUOTED(RPMPOPTFILE, "$RPMPOPTFILE",
-	[Full path to rpmpopt configuration file (usually /usr/lib/rpm/rpmpopt)])
+AC_ARG_WITH(
+    [path-rpmpopt],
+    AS_HELP_STRING([--with-path-rpmpopt=ARG], [build with POPT configuration file path]),
+    [RPMPOPTFILE="$withval"]
+)
+AC_DEFINE_UNQUOTED(
+    [RPMPOPTFILE], ["$RPMPOPTFILE"],
+    [Full path to "rpmpopt" configuration file]
+)
 AC_SUBST(RPMPOPTFILE)
 AC_MSG_RESULT([$RPMPOPTFILE])
 

@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - rse: allow installation paths to be overridden via "configure" options --with-path-xxx.
     - rse: re-generate lib/getdate.c with newer GNU bison 2.3
     - rse: detect if a script cannot be run because fork(2) failed.
     - rse: use the "ustar" format defined by POSIX 1003.1-1988 to roll the distribution tarball.
