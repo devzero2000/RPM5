@@ -13,5 +13,6 @@ LIBRPMMISC_0
   local:
     file_*;
     db_*;
+    magic_*;
     *;
 };
