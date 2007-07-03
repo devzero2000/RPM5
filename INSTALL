@@ -56,6 +56,7 @@ System libelf   optional  -       -       e.g. http://www.mr511.de/software/engl
                Building RPM against stock external Zlib not recommended.
 
 [4] file:      Unmodified File/magic copy bundled with RPM for convenience reasons.
+               Building RPM against this internal File/magic requires also internal Zlib.
                Building RPM against stock external File/magic supported, too.
 
 Run-Time
