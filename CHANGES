@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - mgh: add lib32 as a valid directory in rpmfc
     - mgh: change uses of @USRLIBRPM@ to %{_usrlibrpm} (needed for runtime relocation)
     - mgh: ensure the rpm python module is linked the same as the rest of RPM
     - rse: prune the 23MB large db/docs/ third-party subtree to no longer ship it in RPM distribution tarballs.

@@ -894,7 +894,8 @@ int rpmfcApply(rpmfc fc)
 	{   const char *fn = strstr(fc->fn[fc->ix], "/usr/lib");
 	    if (fn) {
 		fn += sizeof("/usr/lib")-1;
-		if (fn[0] == '6' && fn[1] == '4')
+		if ((fn[0] == '3' && fn[1] == '2') || 
+			(fn[0] == '6' && fn[1] == '4'))
 		    fn += 2;
 		if (!strncmp(fn, "/python", sizeof("/python")-1))
 		    fc->fcolor->vals[fc->ix] |= RPMFC_PYTHON;
