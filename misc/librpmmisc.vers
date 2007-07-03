@@ -10,9 +10,9 @@ LIBRPMMISC_0
     db_env_set_func_fsync_rpmdb;
     db_strerror_rpmdb;
     db_create_rpmdb;
+    magic_*;
   local:
     file_*;
     db_*;
-    magic_*;
     *;
 };
