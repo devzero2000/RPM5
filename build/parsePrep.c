@@ -240,7 +240,7 @@ static const char *doUntar(Spec spec, int c, int quietly)
 
     tar = rpmGetPath("%{_tarbin}", NULL);
     if (strcmp(tar, "%{_tarbin}") == 0)
-        tar = "tar";
+        tar = xstrdup("tar");
 
     if (compressed != COMPRESSED_NOT) {
 	const char *zipper;
