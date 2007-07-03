@@ -130,7 +130,7 @@ static char *doPatch(Spec spec, int c, int strip, const char *db,
 
     patch = rpmGetPath("%{__patch}", NULL);
     if (strcmp(patch, "%{__patch}") == 0)
-        patch = "patch";
+        patch = xstrdup("patch");
 
     if (compressed) {
 	const char *zipper;
@@ -238,8 +238,8 @@ static const char *doUntar(Spec spec, int c, int quietly)
 	/*@notreached@*/ break;
     }
 
-    tar = rpmGetPath("%{_tarbin}", NULL);
-    if (strcmp(tar, "%{_tarbin}") == 0)
+    tar = rpmGetPath("%{__tar}", NULL);
+    if (strcmp(tar, "%{__tar}") == 0)
         tar = xstrdup("tar");
 
     if (compressed != COMPRESSED_NOT) {
