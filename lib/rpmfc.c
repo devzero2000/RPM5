@@ -886,6 +886,8 @@ int rpmfcApply(rpmfc fc)
     int xx;
     int skipping;
 
+/* Make sure something didn't go wrong previously! */
+assert(fc->fn != NULL);
     /* Generate package and per-file dependencies. */
     for (fc->ix = 0; fc->fn[fc->ix] != NULL; fc->ix++) {
 
@@ -994,7 +996,7 @@ int rpmfcClassify(rpmfc fc, ARGV_t argv, int_16 * fmode)
 #ifdef HAVE_MAGIC_H
     magicfile = rpmExpand("%{?_rpmfc_magic_path}", NULL);
     if (magicfile == NULL || *magicfile == '\0' || *magicfile == '%')
-	goto exit;
+	magicfile = _free(magicfile);
 #endif
 
     fc->nfiles = argvCount(argv);
@@ -1008,6 +1010,7 @@ int rpmfcClassify(rpmfc fc, ARGV_t argv, int_16 * fmode)
     xx = argvAdd(&fc->cdict, "directory");
 
 #ifdef HAVE_MAGIC_H
+  if (magicfile) {
     ms = magic_open(msflags);
     if (ms == NULL) {
 	xx = RPMERR_EXEC;
@@ -1023,6 +1026,7 @@ assert(ms != NULL);	/* XXX figger a proper return path. */
 		magicfile, magic_error(ms));
 assert(xx != -1);	/* XXX figger a proper return path. */
     }
+  }
 #endif
 
     for (fc->ix = 0; fc->ix < fc->nfiles; fc->ix++) {
@@ -1083,6 +1087,7 @@ assert(s != NULL && *s == '/');
 		ftype = "";
 	    else
 #ifdef HAVE_MAGIC_H
+  if (magicfile) {
 		ftype = magic_file(ms, s);
 
 	    if (ftype == NULL) {
@@ -1091,6 +1096,7 @@ assert(s != NULL && *s == '/');
 			s, mode, magic_error(ms));
 assert(ftype != NULL);	/* XXX figger a proper return path. */
 	    }
+  }
 #else
 		ftype = "";
 #endif
