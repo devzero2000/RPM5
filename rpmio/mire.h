@@ -111,6 +111,19 @@ int mireRegexec(miRE mire, const char * val)
 int mireRegcomp(miRE mire, const char * pattern)
 	/*@modifies mire @*/;
 
+/**
+ * Append pattern to array.
+ * @param mode      type of pattern match
+ * @param tag       identifier (like an rpmTag)
+ * @param pattern   pattern to compile
+ * @retval *mi_rep  platform pattern array
+ * @retval *mi_nrep no. of patterns in array
+ */
+int mireAppend(rpmMireMode mode, int tag, const char * pattern,
+                miRE * mi_rep, int * mi_nrep)
+	/*@modifies mire @*/;
+
+
 #ifdef __cplusplus
 }
 #endif

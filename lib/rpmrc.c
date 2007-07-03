@@ -958,7 +958,7 @@ static void * mireFreeAll(/*@only@*/ /*@null@*/ miRE mire, int nre)
  * @retval *mi_nrep	no. of patterns in array
  */
 /*@null@*/
-static int mireAppend(rpmMireMode mode, int tag, const char * pattern,
+int mireAppend(rpmMireMode mode, int tag, const char * pattern,
 		miRE * mi_rep, int * mi_nrep)
 	/*@modifies *mi_rep, *mi_nrep @*/
 {
