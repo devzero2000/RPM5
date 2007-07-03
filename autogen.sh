@@ -38,6 +38,9 @@ libtoolize () {
 echo "===> zlib"
 ( cd zlib && sh ./autogen.sh --noconfigure "$@" )
 echo "<=== zlib"
+echo "===> file"
+( cd file && sh ./autogen.sh --noconfigure "$@" )
+echo "<=== file"
 
 echo "===> rpm"
 echo "---> generate files via GNU libtool (libtoolize)"
