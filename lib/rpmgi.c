@@ -204,8 +204,11 @@ static rpmRC rpmgiLoadReadHeader(rpmgi gi)
 
 	if (rpmrc == RPMRC_OK || gi->flags & RPMGI_NOMANIFEST)
 	    break;
+#if 0
+	/* FIXME (see http://rpm5.org/community/rpm-devel/0523.html) */
 	if (errno == ENOENT)
 	    break;
+#endif
 
 	/* Not a header, so try for a manifest. */
 	gi->argv[gi->i] = NULL;		/* Mark the insertion point */
