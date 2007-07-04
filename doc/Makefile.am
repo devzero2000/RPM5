@@ -1,6 +1,9 @@
 ## Process this file with automake to produce Makefile.in
 
-SUBDIRS		= manual fr ja ko pl ru sk
+SUBDIRS		= manual
+if USE_NLS
+SUBDIRS		+= fr ja ko pl ru sk
+endif
 
 man_MANS	= gendiff.1 rpm.8 rpmbuild.8 rpmcache.8 rpmdeps.8 rpmgraph.8 rpm2cpio.8
 

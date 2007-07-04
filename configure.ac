@@ -406,9 +406,7 @@ dnl # GNU gettext support
 AC_CHECK_HEADERS(locale.h)
 AM_GNU_GETTEXT_VERSION(0.16)
 AM_GNU_GETTEXT([external])
-ENABLE_NLS_SUBDIR=""
-test ".$USE_NLS" = .yes && ENABLE_NLS_SUBDIR="po"
-AC_SUBST([ENABLE_NLS_SUBDIR])
+AM_CONDITIONAL(USE_NLS, [ test ".$USE_NLS" = .yes ])
 
 dnl # specific features
 AC_SYS_LARGEFILE
