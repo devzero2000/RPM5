@@ -19,7 +19,7 @@ EXTRA_DIST = CHANGES CREDITS Doxyheader GROUPS INSTALL \
 	rpm.magic rpmqv.c rpm.c
 
 SUBDIRS = \
-	po \
+	@ENABLE_NLS_SUBDIR@ \
 	@WITH_DB_SUBDIR@ \
 	@WITH_ZLIB_SUBDIR@ \
 	@WITH_LUA_SUBDIR@ \
