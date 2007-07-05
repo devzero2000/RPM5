@@ -666,6 +666,7 @@ AC_ARG_WITH(python, AS_HELP_STRING([--with-python], [build with RPM Python langu
                          AC_MSG_RESULT(yes)
                      else
                          AC_MSG_RESULT(no)
+                     fi
                   ])
              else
                   AC_MSG_CHECKING([for Python 2.x API])
@@ -684,12 +685,13 @@ AC_ARG_WITH(python, AS_HELP_STRING([--with-python], [build with RPM Python langu
                          AC_MSG_RESULT(yes)
                      else
                          AC_MSG_RESULT(no)
+                     fi
                   ])
              fi
-             if test ".WITH_PYTHON_VERSION" != "."; then
+             if test ".$WITH_PYTHON_VERSION" != "."; then
                   WITH_PYTHON_SUBDIR=python
                   WITH_PYTHON_SUBPACKAGE=1
-                  break;
+                  break
              fi
 	done
     fi
