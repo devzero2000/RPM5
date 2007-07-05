@@ -24,8 +24,6 @@ EXTRA_DIST = \
 	macros.perl* macros.python* \
 	macros.php* find-*.php find-php-*
 
-installprefix = $(DESTDIR)
-
 all:
 
 bin_SCRIPTS = gendiff rpm2cpio
