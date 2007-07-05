@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - mgh: Change python configuration to allow for --with-python 2.x, 2.4 or 2.5. (no value will scan as it previously did)
     - jbj: parameterize upgrade/obsoletes tag. Panu's Big Mistake imho.
     - jbj: reset errno to 0 in rpmgiOpen to eliminate false ENOENT failure.
     - rse: do not build and install NLS data under po/ at all in case of --disable-nls

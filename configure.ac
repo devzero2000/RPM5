@@ -636,44 +636,62 @@ WITH_PYTHON_SUBPACKAGE=0
 WITH_PYTHON_VERSION=""
 AC_ARG_WITH(python, AS_HELP_STRING([--with-python], [build with RPM Python language bindings]), [
     if test ".$withval" != .no; then
-        AC_MSG_CHECKING([for Python 2.5 API])
-        AC_RUN_IFELSE([AC_LANG_SOURCE(
-        [[#include <python2.5/Python.h>
-           main() { exit(strncmp("2.5", PY_VERSION, 3)); } ]])
-        ], [
-           WITH_PYTHON_VERSION="2.5"
-           AC_MSG_RESULT(yes)
-        ], [ 
-           AC_MSG_RESULT(no)
-        ])
-        if test ".$WITH_PYTHON_VERSION" = .; then
-            AC_MSG_CHECKING([for Python 2.4 API])
-            AC_RUN_IFELSE([AC_LANG_SOURCE(
-            [[#include <python2.4/Python.h>
-               main() { exit(strncmp("2.4", PY_VERSION, 3)); } ]])
-            ], [
-               WITH_PYTHON_VERSION="2.4"
-               AC_MSG_RESULT(yes)
-            ], [ 
-               AC_MSG_RESULT(no)
-            ])
-            if test ".$WITH_PYTHON_VERSION" = .; then
-                AC_MSG_CHECKING([for Python 2.x API])
-                AC_RUN_IFELSE([AC_LANG_SOURCE(
-                [[#include <python/Python.h>
-                   main() { exit(strncmp("2.", PY_VERSION, 2)); } ]])
-                ], [
-                   WITH_PYTHON_VERSION=""
-                   AC_MSG_RESULT(yes)
-                ], [ 
-                   AC_MSG_RESULT(no)
-                ])
-            fi
-        fi
-        if test ".$WITH_PYTHON_VERSION" != .; then
-            WITH_PYTHON_SUBDIR=python
-            WITH_PYTHON_SUBPACKAGE=1
-        fi
+        case "$withval" in
+             2.x|2.4|2.5)
+                  python_version=$with_val
+                  ;;
+             yes)
+                  python_version="2.5 2.4 2.x"
+                  ;;
+             *)
+                  AC_MSG_WARN([--with-python only supports values 2.x, 2.4, or 2.5, ignoring...])
+                  python_version=""
+                  ;;
+        esac
+	for python_ver in $python_version ; do
+             if test "$python_ver" != "2.x" ; then
+                  AC_MSG_CHECKING([for Python ${python_ver} API])
+                  AC_RUN_IFELSE([AC_LANG_SOURCE(
+                  [[#include <python${python_ver}/Python.h>
+                     main() { exit(strncmp("${python_ver}", PY_VERSION, 3)); } ]])
+                  ], [
+                     WITH_PYTHON_VERSION="${python_ver}"
+                     AC_MSG_RESULT(yes)
+                  ], [ 
+                     AC_MSG_RESULT(no)
+                  ], [
+                     dnl if we're cross compiling, assume the user has a clue
+                     if test "$withval" = "$python_ver"; then
+                         WITH_PYTHON_VERSION="${python_ver}"
+                         AC_MSG_RESULT(yes)
+                     else
+                         AC_MSG_RESULT(no)
+                  ])
+             else
+                  AC_MSG_CHECKING([for Python 2.x API])
+                  AC_RUN_IFELSE([AC_LANG_SOURCE(
+                  [[#include <python/Python.h>
+                     main() { exit(strncmp("2.", PY_VERSION, 2)); } ]])
+                  ], [
+                     WITH_PYTHON_VERSION=""
+                     AC_MSG_RESULT(yes)
+                  ], [ 
+                     AC_MSG_RESULT(no)
+                  ], [
+                     dnl if we're cross compiling, assume the user has a clue
+                     if test "$withval" = "$python_ver"; then
+                         WITH_PYTHON_VERSION="${python_ver}"
+                         AC_MSG_RESULT(yes)
+                     else
+                         AC_MSG_RESULT(no)
+                  ])
+             fi
+             if test ".WITH_PYTHON_VERSION" != "."; then
+                  WITH_PYTHON_SUBDIR=python
+                  WITH_PYTHON_SUBPACKAGE=1
+                  break;
+             fi
+	done
     fi
 ])
 AC_SUBST(WITH_PYTHON_SUBDIR)
