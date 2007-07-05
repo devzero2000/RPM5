@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - jbj: reset errno to 0 in rpmgiOpen to eliminate false ENOENT failure.
     - rse: do not build and install NLS data under po/ at all in case of --disable-nls
     - jbj: add new-fangled debugedit patch (#246404).
     - mgh: When the rpmfc_magic_path is not set or can't be expanded, act as if there is no magic file
