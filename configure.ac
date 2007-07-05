@@ -809,7 +809,7 @@ case ".$DBLIBSRCS" in
 esac
 AC_ARG_WITH([dbapi],
     AS_HELP_STRING([--with-dbapi=ID], [use particular default RPM DB API ("db", "sqlite" or numeric)]), [
-    case ".$withval" in
+    case "$withval" in
         db|3     ) DBAPI=3 ;;
         sqlite|4 ) DBAPI=4 ;;
         [0-9]    ) DBAPI=$withval ;;
