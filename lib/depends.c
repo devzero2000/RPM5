@@ -174,6 +174,9 @@ static int rpmHeadersIdentical(Header first, Header second)
     return rc;
 }
 
+static rpmTag _upgrade_tag;
+static rpmTag _obsolete_tag;
+
 int rpmtsAddInstallElement(rpmts ts, Header h,
 			fnpyKey key, int upgrade, rpmRelocation relocs)
 {
@@ -391,9 +394,14 @@ assert(p != NULL);
     }
 
     /* On upgrade, erase older packages of same color (if any). */
+    if (_upgrade_tag == 0) {
+	const char *t = rpmExpand("%{?_upgrade_tag}", NULL);
+	_upgrade_tag = (!strcmp(t, "name") ? RPMTAG_NAME : RPMTAG_PROVIDENAME);
+	t = _free(t);
+    }
 
   if (!(depFlags & RPMDEPS_FLAG_NOUPGRADE)) {
-    mi = rpmtsInitIterator(ts, RPMTAG_PROVIDENAME, rpmteN(p), 0);
+    mi = rpmtsInitIterator(ts, _upgrade_tag, rpmteN(p), 0);
     while((oh = rpmdbNextIterator(mi)) != NULL) {
 	int lastx;
 	rpmte q;
@@ -424,6 +432,11 @@ assert(lastx >= 0 && lastx < ts->orderCount);
     mi = rpmdbFreeIterator(mi);
   }
 
+    if (_obsolete_tag == 0) {
+	const char *t = rpmExpand("%{?_obsolete_tag}", NULL);
+	_obsolete_tag = (!strcmp(t, "name") ? RPMTAG_NAME : RPMTAG_PROVIDENAME);
+	t = _free(t);
+    }
   if (!(depFlags & RPMDEPS_FLAG_NOOBSOLETES)) {
     obsoletes = rpmdsLink(rpmteDS(p, RPMTAG_OBSOLETENAME), "Obsoletes");
     obsoletes = rpmdsInit(obsoletes);
@@ -452,7 +465,7 @@ assert(lastx >= 0 && lastx < ts->orderCount);
 	if (Name[0] == '/')
 	    mi = rpmtsInitIterator(ts, RPMTAG_BASENAMES, Name, 0);
 	else
-	    mi = rpmtsInitIterator(ts, RPMTAG_PROVIDENAME, Name, 0);
+	    mi = rpmtsInitIterator(ts, _obsolete_tag, Name, 0);
 
 	xx = rpmdbPruneIterator(mi,
 	    ts->removedPackages, ts->numRemovedPackages, 1);
