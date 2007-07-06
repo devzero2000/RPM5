@@ -1,6 +1,10 @@
 4.5 -> 5.0:
+<<<<<<< CHANGES
+    - jbj: generate per-platform macros for major CPU-linux platforms.
+=======
     - mgh: Stop the python module from using rpmrc files
     - mgh: Change python configuration to allow for --with-python 2.x, 2.4 or 2.5. (no value will scan as it previously did)
+>>>>>>> 1.1434
     - jbj: parameterize upgrade/obsoletes tag. Panu's Big Mistake imho.
     - jbj: reset errno to 0 in rpmgiOpen to eliminate false ENOENT failure.
     - rse: do not build and install NLS data under po/ at all in case of --disable-nls
