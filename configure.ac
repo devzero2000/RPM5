@@ -1109,7 +1109,7 @@ AC_CONFIG_SUBDIRS()
 
 dnl # explicit list of files to generate
 AC_CONFIG_FILES([ po/Makefile.in
-    Doxyfile Makefile rpmrc macros rpmpopt rpm.spec
+    Doxyfile Makefile macros rpmpopt rpm.spec
     rpmio/Makefile rpmdb/Makefile lib/Makefile build/Makefile
     scripts/Makefile scripts/macros.perl scripts/macros.php
     scripts/macros.python tools/Makefile misc/Makefile doc/Makefile
