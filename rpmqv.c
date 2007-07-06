@@ -618,7 +618,7 @@ int main(int argc, const char ** argv)
 	    if (ec == 0) {
 		ba->rootdir = rpmcliRootDir;
 		ba->passPhrase = passPhrase;
-		ec = build(ts, specFile, ba, rpmcliRcfile);
+		ec = build(ts, specFile, ba, NULL);
 	    }
 	    ba->cookie = _free(ba->cookie);
 	    specFile = _free(specFile);
@@ -679,7 +679,7 @@ int main(int argc, const char ** argv)
 	    ba->rootdir = rpmcliRootDir;
 	    ba->passPhrase = passPhrase;
 	    ba->cookie = NULL;
-	    ec = build(ts, pkg, ba, rpmcliRcfile);
+	    ec = build(ts, pkg, ba, NULL);
 	    if (ec)
 		/*@loopbreak@*/ break;
 	}

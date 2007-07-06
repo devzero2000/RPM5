@@ -24,9 +24,6 @@
 #include "misc.h"
 #include "debug.h"
 
-/*@observer@*/ /*@checked@*/
-const char *rpmRcfiles = RPMRCFILES;
-
 /*@unchecked@*/ /*@null@*/
 static const char * configTarget = NULL;
 
@@ -1788,16 +1785,6 @@ static void rpmRebuildTargetVars(const char ** target, const char ** canontarget
     addMacro(NULL, "_target_cpu", NULL, ca, RMIL_RPMRC);
     delMacro(NULL, "_target_os");
     addMacro(NULL, "_target_os", NULL, co, RMIL_RPMRC);
-/*
- * XXX Make sure that per-arch optflags is initialized correctly.
- */
-  if (rpmcliRcfile != NULL)
-  { const char *optflags = rpmGetVarArch(RPMVAR_OPTFLAGS, ca);
-    if (optflags != NULL) {
-	delMacro(NULL, "optflags");
-	addMacro(NULL, "optflags", NULL, optflags, RMIL_RPMRC);
-    }
-  }
 
     /*@-branchstate@*/
     if (canontarget)
@@ -1883,85 +1870,22 @@ void rpmFreeRpmrc(void)
 }
 
 /** \ingroup rpmrc
- * Read rpmrc (and macro) configuration file(s).
- * @param rcfiles	colon separated files to read (NULL uses default)
+ * Read macro configuration file(s).
  * @return		0 on succes
  */
-static int rpmReadRC(/*@null@*/ const char * rcfiles)
-	/*@globals defaultsInitialized, rpmRcfiles, rpmMacrofiles,
+static int rpmReadRC(void)
+	/*@globals defaultsInitialized, rpmMacrofiles,
 		rpmGlobalMacroContext, rpmCLIMacroContext, h_errno,
 		fileSystem, internalState @*/
 	/*@modifies defaultsInitialized, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 {
-    char *myrcfiles = NULL;
-    char *r, *re;
-    int rc;
+    int rc = 0;
 
     if (!defaultsInitialized) {
 	setDefaults();
 	defaultsInitialized = 1;
     }
-
-    /* Read each file in rcfiles. */
-    rc = 0;
-    if (rcfiles != NULL)
-    for (r = myrcfiles = xstrdup(rcfiles); r && *r != '\0'; r = re) {
-	char fn[4096];
-	FD_t fd;
-
-	/* Get pointer to rest of files */
-	for (re = r; (re = strchr(re, ':')) != NULL; re++) {
-	    if (!(re[1] == '/' && re[2] == '/'))
-		/*@innerbreak@*/ break;
-	}
-	if (re && *re == ':')
-	    *re++ = '\0';
-	else
-	    re = r + strlen(r);
-
-	/* Expand ~/ to $HOME/ */
-	fn[0] = '\0';
-	if (r[0] == '~' && r[1] == '/') {
-	    const char * home = getenv("HOME");
-	    if (home == NULL) {
-	    /* XXX Only /usr/lib/rpm/rpmrc must exist in default rcfiles list */
-		if (rcfiles == rpmRcfiles && myrcfiles != r)
-		    continue;
-		rpmError(RPMERR_RPMRC, _("Cannot expand %s\n"), r);
-		rc = 1;
-		break;
-	    }
-	    if (strlen(home) > (sizeof(fn) - strlen(r))) {
-		rpmError(RPMERR_RPMRC, _("Cannot read %s, HOME is too large.\n"),
-				r);
-		rc = 1;
-		break;
-	    }
-	    strcpy(fn, home);
-	    r++;
-	}
-	strncat(fn, r, sizeof(fn) - (strlen(fn) + 1));
-	fn[sizeof(fn)-1] = '\0';
-
-	/* Read another rcfile */
-	fd = Fopen(fn, "r.fpio");
-	if (fd == NULL || Ferror(fd)) {
-	    /* XXX Only /usr/lib/rpm/rpmrc must exist in default rcfiles list */
-	    if (rcfiles == rpmRcfiles && myrcfiles != r)
-		continue;
-	    rpmError(RPMERR_RPMRC, _("Unable to open %s for reading: %s.\n"),
-		 fn, Fstrerror(fd));
-	    rc = 1;
-	    break;
-	} else {
-	    rc = doReadRC(fd, fn);
-	}
- 	if (rc) break;
-    }
-    myrcfiles = _free(myrcfiles);
-    if (rc)
-	return rc;
 
     /* Read macro files. */
     {	const char *mfpath = rpmGetVarArch(RPMVAR_MACROFILES, NULL);
@@ -1995,7 +1919,7 @@ int rpmReadConfigFiles(const char * file, const char * target)
 
     /* Read the files */
 /*@-globs@*/
-    if (rpmReadRC(file)) return -1;
+    if (rpmReadRC()) return -1;
 /*@=globs@*/
 
     /* Reset target macros */
@@ -2022,7 +1946,6 @@ int rpmReadConfigFiles(const char * file, const char * target)
 int rpmShowRC(FILE * fp)
 {
     rpmds ds = NULL;
-    struct rpmOption *opt;
     int i;
     machEquivTable equivTable;
     int xx;
@@ -2045,11 +1968,6 @@ int rpmShowRC(FILE * fp)
 	fprintf(fp," %s", equivTable->list[i].name);
     fprintf(fp, "\n");
 
-    if (rpmcliRcfile != NULL) {
-	rpmSetTables(RPM_MACHTABLE_INSTARCH, RPM_MACHTABLE_INSTOS);
-	rpmSetMachine(NULL, NULL);	/* XXX WTFO? Why bother? */
-    }
-
     fprintf(fp, "install arch          : %s\n", current[ARCH]);
     fprintf(fp, "install os            : %s\n", current[OS]);
 
@@ -2065,21 +1983,7 @@ int rpmShowRC(FILE * fp)
 	fprintf(fp," %s", equivTable->list[i].name);
     fprintf(fp, "\n");
 
-    if (rpmcliRcfile != NULL) {
-	const char * s = rpmExpand(rpmcliRcfile, NULL);
-	fprintf(fp, "\nRPMRC VALUES:\n");
-	fprintf(fp, "%-21s : %s\n", "rcfiles", ((s && *s) ? s : "(not set)"));
-	s = _free(s);
-/*@-branchstate@*/
-	for (i = 0, opt = optionTable; i < optionTableSize; i++, opt++) {
-	    s = rpmGetVarArch(opt->var, NULL);
-	    if (s != NULL || rpmIsVerbose())
-		fprintf(fp, "%-21s : %s\n", opt->name, s ? s : "(not set)");
-	}
-/*@=branchstate@*/
-	fprintf(fp, "\nMACRO DEFINITIONS:\n");
-    } else {
-	const char * s = rpmExpand("%{?optflags}", NULL);
+    {	const char * s = rpmExpand("%{?optflags}", NULL);
 	fprintf(fp, "%-21s : %s\n", "optflags", ((s && *s) ? s : "(not set)"));
 	s = _free(s);
 /*@-globs@*/

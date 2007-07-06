@@ -758,7 +758,6 @@ int rpmspecQuery(rpmts ts, QVA_t qva, const char * arg)
     char *target;
     const char * t;
     const char * te;
-    const char * rcfile = rpmcliRcfile;
     int nqueries = 0;
 
     if (qva->qva_showPackage == NULL)
@@ -788,7 +787,7 @@ int rpmspecQuery(rpmts ts, QVA_t qva, const char * arg)
 	if (t != targets) {
 	    rpmFreeMacros(NULL);
 	    rpmFreeRpmrc();
-	    (void) rpmReadConfigFiles(rcfile, target);
+	    (void) rpmReadConfigFiles(NULL, target);
 	}
 	res = _specQuery(ts, qva, arg, target); 
 	nqueries++;
@@ -808,7 +807,7 @@ exit:
 	    te++;
 	rpmFreeMacros(NULL);
 	rpmFreeRpmrc();
-	(void) rpmReadConfigFiles(rcfile, target);
+	(void) rpmReadConfigFiles(NULL, target);
     }
     return res;
 }

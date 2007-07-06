@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - jbj: eliminate rcfile reading everywhere.
     - jbj: eliminate last known internal usage of rpmrc files.
     - jbj: generate per-platform macros for major CPU-linux platforms.
     - mgh: Stop the python module from using rpmrc files

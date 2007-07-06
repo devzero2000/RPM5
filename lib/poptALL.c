@@ -112,9 +112,6 @@ extern int noLibio;
 /*@unchecked@*/ /*@null@*/
 const char * rpmcliPipeOutput = NULL;
 
-/*@unchecked@*/ /*@null@*/
-const char * rpmcliRcfile = NULL;
-
 /*@unchecked@*/
 const char * rpmcliRootDir = "/";
 
@@ -167,7 +164,7 @@ void rpmcliConfigured(void)
 	    if ((te = strchr(t, ',')) != NULL)
 		*te = '\0';
 	}
-	rpmcliInitialized = rpmReadConfigFiles(rpmcliRcfile, t);
+	rpmcliInitialized = rpmReadConfigFiles(NULL, t);
 	t = _free(t);
     }
     if (rpmcliInitialized)
@@ -181,7 +178,7 @@ static void rpmcliAllArgCallback(poptContext con,
                 /*@unused@*/ enum poptCallbackReason reason,
                 const struct poptOption * opt, const char * arg,
                 /*@unused@*/ const void * data)
-	/*@globals rpmRcfiles, rpmcliTargets, rpmcliQueryFlags, rpmCLIMacroContext,
+	/*@globals rpmcliTargets, rpmcliQueryFlags, rpmCLIMacroContext,
 		rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies con, rpmcliTargets, rpmcliQueryFlags, rpmCLIMacroContext,
 		rpmGlobalMacroContext, fileSystem, internalState @*/
@@ -384,15 +381,6 @@ struct poptOption rpmcliAllPoptTable[] = {
  { "pipe", '\0', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN, &rpmcliPipeOutput, 0,
 	N_("send stdout to CMD"),
 	N_("CMD") },
-#if !defined(POPT_RCFILE)
- { "rcfile", '\0', POPT_ARG_STRING, &rpmcliRcfile, 0,
-	N_("read <FILE:...> instead of default file(s)"),
-	N_("<FILE:...>") },
-#else
- { "rcfile", '\0', 0, NULL, POPT_RCFILE,	
-	N_("read <FILE:...> instead of default file(s)"),
-	N_("<FILE:...>") },
-#endif
  { "root", 'r', POPT_ARG_STRING|POPT_ARGFLAG_SHOW_DEFAULT, &rpmcliRootDir, 0,
 	N_("use ROOT as top level directory"),
 	N_("ROOT") },
