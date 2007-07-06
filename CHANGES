@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - jbj: eliminate last known internal usage of rpmrc files.
     - jbj: generate per-platform macros for major CPU-linux platforms.
     - mgh: Stop the python module from using rpmrc files
     - mgh: Change python configuration to allow for --with-python 2.x, 2.4 or 2.5. (no value will scan as it previously did)

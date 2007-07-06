@@ -6,7 +6,7 @@ LINT = splint
 
 EXTRA_DIST = CHANGES CREDITS Doxyheader GROUPS INSTALL \
 	autodeps/none autodeps/*.prov autodeps/*.req autogen.sh \
-	db db3/configure installplatform platform* \
+	db db3/configure \
 	perl/Changes perl/MANIFEST perl/META.yml perl/Makefile.PL \
 	perl/Makefile.PL.in perl/Makefile.am perl/README \
 	perl/RPM.pm perl/RPM.xs perl/foo.i386.rpm perl/hdlist-test.hdr \
@@ -145,12 +145,6 @@ install-data-local:
 	*)	$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/@host_cpu@ ;;\
 	esac
 	$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/noarch
-	@case "@host_os@" in \
-	mint) $(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/m68kmint ;;\
-	solaris*|linux*|darwin*) \
-	   chmod u+x $(top_srcdir)/installplatform; DESTDIR="$(DESTDIR)" pkglibdir="$(pkglibdir)" $(top_srcdir)/installplatform rpmrc macros platform ;; \
-	esac
-	@$(mkinstalldirs) $(DESTDIR)/var/tmp
 
 .PHONY:	setperms
 setperms:
