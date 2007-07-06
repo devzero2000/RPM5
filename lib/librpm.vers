@@ -251,7 +251,6 @@ LIBRPM_0
     rpmrbCheck;
     rpmrbOrder;
     rpmrbRun;
-    rpmRcfiles;
     rpmReadConfigFiles;
     rpmReadHeader;
     rpmReadPackageFile;

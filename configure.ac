@@ -1079,24 +1079,6 @@ AC_DEFINE_UNQUOTED(
 AC_SUBST(MACROFILES)
 AC_MSG_RESULT([$MACROFILES])
 
-dnl # determine RPM run-command files path
-AC_MSG_CHECKING([for RPM run-command files path])
-RPMRCFILES="${USRLIBRPM}/${RPMCANONVENDOR}/rpmrc"
-RPMRCFILES="${RPMRCFILES}:${USRLIBRPM}/${RPMCANONVENDOR}/rpmrc"
-RPMRCFILES="${RPMRCFILES}:/etc/rpmrc"
-RPMRCFILES="${RPMRCFILES}:~/.rpmrc"
-AC_ARG_WITH(
-    [path-rpmrc],
-    AS_HELP_STRING([--with-path-rpmrc=ARG], [build with colon-separated RPM run-command files path]),
-    [RPMRCFILES="$withval"]
-)
-AC_DEFINE_UNQUOTED(
-    [RPMRCFILES], ["$RPMRCFILES"],
-    [Colon separated RPM run-command files path]
-)
-AC_SUBST(RPMRCFILES)
-AC_MSG_RESULT([$RPMRCFILES])
-
 dnl # determine POPT configuration file path
 AC_MSG_CHECKING([for POPT configuration file path])
 RPMPOPTFILE="${USRLIBRPM}/${VERSION}/rpmpopt"

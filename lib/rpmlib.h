@@ -528,22 +528,14 @@ enum rpm_machtable_e {
 #define	RPM_MACHTABLE_COUNT	4	/*!< No. of arch/os tables. */
 
 /** \ingroup rpmrc
- * The default rpmrc files to be read.
- * @deprecated The rpmrc files are no longer parsed by default.
- */
-/*@observer@*/ /*@checked@*/
-extern const char *rpmRcfiles;
-
-/** \ingroup rpmrc
  * Read macro configuration file(s) for a target.
- * @param file		colon separated files to read (NULL uses default)
+ * @param file		NULL always
  * @param target	target platform (NULL uses default)
  * @return		0 on success, -1 on error
  */
 int rpmReadConfigFiles(/*@null@*/ const char * file,
 		/*@null@*/ const char * target)
-	/*@globals rpmRcfiles,
-		rpmGlobalMacroContext, rpmCLIMacroContext, h_errno,
+	/*@globals rpmGlobalMacroContext, rpmCLIMacroContext, h_errno,
 		fileSystem, internalState @*/
 	/*@modifies rpmGlobalMacroContext, rpmCLIMacroContext,
 		fileSystem, internalState @*/;

@@ -45,9 +45,6 @@ extern struct poptOption		rpmcliDepFlagsPoptTable[];
 extern const char * rpmcliPipeOutput;
 
 /*@unchecked@*/ /*@observer@*/ /*@null@*/
-extern const char * rpmcliRcfile;
-
-/*@unchecked@*/ /*@observer@*/ /*@null@*/
 extern const char * rpmcliRootDir;
 
 /*@unchecked@*/ /*@observer@*/ /*@null@*/
@@ -64,7 +61,7 @@ extern const char * rpmcliTargets;
 /*@null@*/
 poptContext
 rpmcliInit(int argc, char *const argv[], struct poptOption * optionsTable)
-	/*@globals rpmRcfiles, rpmCLIMacroContext, rpmGlobalMacroContext, h_errno, stderr, 
+	/*@globals rpmCLIMacroContext, rpmGlobalMacroContext, h_errno, stderr, 
 		fileSystem, internalState @*/
 	/*@modifies rpmCLIMacroContext, rpmGlobalMacroContext, stderr, 
 		fileSystem, internalState @*/;
@@ -75,7 +72,7 @@ rpmcliInit(int argc, char *const argv[], struct poptOption * optionsTable)
  */
 /*@mayexit@*/
 void rpmcliConfigured(void)
-	/*@globals rpmRcfiles, rpmCLIMacroContext,
+	/*@globals rpmCLIMacroContext,
 		rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies rpmCLIMacroContext, rpmGlobalMacroContext,
 		fileSystem, internalState @*/;

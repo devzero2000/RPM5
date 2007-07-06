@@ -178,7 +178,7 @@ int main(int argc, const char ** argv, /*@unused@*/ char ** envp)
 #else
 int main(int argc, const char ** argv)
 #endif
-	/*@globals rpmRcfiles, rpmEVR, RPMVERSION,
+	/*@globals rpmEVR, RPMVERSION,
 		rpmGlobalMacroContext, rpmCLIMacroContext,
 		h_errno, fileSystem, internalState@*/
 	/*@modifies fileSystem, internalState@*/

@@ -251,7 +251,7 @@ extern "C" {
  * @return		0 on success, else no. of failures
  */
 int rpmspecQuery(rpmts ts, QVA_t qva, const char * arg)
-	/*@globals rpmRcfiles, rpmCLIMacroContext,
+	/*@globals rpmCLIMacroContext,
 		rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, qva, rpmCLIMacroContext, rpmGlobalMacroContext,
 		fileSystem, internalState @*/;
