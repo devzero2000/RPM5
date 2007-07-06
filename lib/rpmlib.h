@@ -540,50 +540,6 @@ int rpmReadConfigFiles(/*@null@*/ const char * file,
 	/*@modifies rpmGlobalMacroContext, rpmCLIMacroContext,
 		fileSystem, internalState @*/;
 
-/** \ingroup rpmrc
- * @deprecated Expand %{_host_cpu}/%{_target_cpu} for the canonical/current cpu.
- * Return current arch name and/or number.
- * @todo Generalize to extract arch component from target_platform macro.
- * @retval name		address of arch name (or NULL)
- * @retval num		address of arch number (or NULL)
- */
-void rpmGetArchInfo( /*@null@*/ /*@out@*/ const char ** name,
-		/*@null@*/ /*@out@*/ int * num)
-	/*@modifies *name, *num @*/;
-
-/** \ingroup rpmrc
- * @deprecated Expand %{_host_os}/%{_target_os} for the canonical/current os.
- * Return current os name and/or number.
- * @todo Generalize to extract os component from target_platform macro.
- * @retval name		address of os name (or NULL)
- * @retval num		address of os number (or NULL)
- */
-void rpmGetOsInfo( /*@null@*/ /*@out@*/ const char ** name,
-		/*@null@*/ /*@out@*/ int * num)
-	/*@modifies *name, *num @*/;
-
-/** \ingroup rpmrc
- * @deprecated Use rpmPlatformScore instead.
- * Return arch/os score of a name.
- * An arch/os score measures the "nearness" of a name to the currently
- * running (or defined) platform arch/os. For example, the score of arch
- * "i586" on an i686 platform is (usually) 2. The arch/os score is used
- * to select one of several otherwise identical packages using the arch/os
- * tags from the header as hints of the intended platform for the package.
- *
- * @param type		any of the RPM_MACHTABLE_* constants
- * @param name		name
- * @return		arch score (0 is no match, lower is preferred)
- */
-int rpmMachineScore(int type, const char * name)
-	/*@*/;
-
-/**
- *  (unused)
- */
-void rpmGetMachine(const char ** arch, const char ** os)
-    /*@*/;
-
 /*@only@*/ /*@null@*/ /*@unchecked@*/
 extern void * platpat;
 /*@unchecked@*/

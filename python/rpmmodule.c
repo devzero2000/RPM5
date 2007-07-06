@@ -41,23 +41,8 @@
  */
 PyObject * pyrpmError;
 
-/**
- */
-static PyObject * archScore(PyObject * self, PyObject * args, PyObject * kwds)
-{
-    char * arch;
-    int score;
-    char * kwlist[] = {"arch", NULL};
-
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "s", kwlist, &arch))
-	return NULL;
-
-    score = rpmMachineScore(RPM_MACHTABLE_INSTARCH, arch);
-
-    return Py_BuildValue("i", score);
-}
-
 extern sigset_t rpmsqCaught;
+
 /**
  */
 static PyObject * sqCaught(PyObject * self, PyObject * args)
@@ -162,9 +147,6 @@ static PyMethodDef rpmModuleMethods[] = {
     { "addMacro", (PyCFunction) rpmrc_AddMacro, METH_VARARGS|METH_KEYWORDS,
 	NULL },
     { "delMacro", (PyCFunction) rpmrc_DelMacro, METH_VARARGS|METH_KEYWORDS,
-	NULL },
-
-    { "archscore", (PyCFunction) archScore, METH_VARARGS|METH_KEYWORDS,
 	NULL },
 
     { "sqCaught", (PyCFunction) sqCaught, METH_VARARGS,

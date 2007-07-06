@@ -202,11 +202,8 @@ LIBRPM_0
     rpmFreeFilesystems;
     rpmFreeRpmrc;
     rpmFreeSignature;
-    rpmGetArchInfo;
     rpmGetFilesystemList;
     rpmGetFilesystemUsage;
-    rpmGetMachine;
-    rpmGetOsInfo;
     rpmGetPassPhrase;
     _rpmgi_debug;
     rpmgiEscapeSpaces;
@@ -224,7 +221,6 @@ LIBRPM_0
     rpmInstallSource;
     rpmInstallSourcePackage;
     rpmLookupSignatureType;
-    rpmMachineScore;
     rpmMkdirPath;
     rpmNAME;
     rpmNewSignature;

@@ -55,13 +55,6 @@ typedef struct machEquivTable_s {
     machEquivInfo list;
 } * machEquivTable;
 
-struct rpmvarValue {
-    const char * value;
-    /* eventually, this arch will be replaced with a generic condition */
-    const char * arch;
-/*@only@*/ /*@null@*/ struct rpmvarValue * next;
-};
-
 typedef struct defaultEntry_s {
 /*@owned@*/ /*@null@*/ const char * name;
 /*@owned@*/ /*@null@*/ const char * defName;
@@ -125,19 +118,6 @@ machCacheFindEntry(const machCache cache, const char * key)
 
     for (i = 0; i < cache->size; i++)
 	if (!strcmp(cache->cache[i].name, key)) return cache->cache + i;
-
-    return NULL;
-}
-
-static /*@observer@*/ /*@null@*/ machEquivInfo
-machEquivSearch(const machEquivTable table, const char * name)
-	/*@*/
-{
-    int i;
-
-    for (i = 0; i < table->count; i++)
-	if (!xstrcasecmp(table->list[i].name, name))
-	    return table->list + i;
 
     return NULL;
 }
@@ -622,23 +602,6 @@ void rpmSetTables(int archTable, int osTable)
     }
 }
 
-int rpmMachineScore(int type, const char * name)
-{
-    machEquivInfo info = machEquivSearch(&tables[type].equiv, name);
-    return (info != NULL ? info->score : 0);
-}
-
-/*@-modnomods@*/
-void rpmGetMachine(const char ** arch, const char ** os)
-{
-    if (arch)
-	*arch = current[ARCH];
-
-    if (os)
-	*os = current[OS];
-}
-/*@=modnomods@*/
-
 void rpmSetMachine(const char * arch, const char * os)
 	/*@globals current @*/
 	/*@modifies current @*/
@@ -699,16 +662,6 @@ static void getMachineInfo(int type, /*@null@*/ /*@out@*/ const char ** name,
 	if (num) *num = 255;
 	if (name) *name = current[type];
     }
-}
-
-void rpmGetArchInfo(const char ** name, int * num)
-{
-    getMachineInfo(ARCH, name, num);
-}
-
-void rpmGetOsInfo(const char ** name, int * num)
-{
-    getMachineInfo(OS, name, num);
 }
 
 static void rpmRebuildTargetVars(const char ** target, const char ** canontarget)

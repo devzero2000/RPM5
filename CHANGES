@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - jbj: revert routines that were re-added for ABI compat after rpm-4.4.7.
     - jbj: eliminate the voo-doo asm arch identification.
     - jbj: eliminate recursive parser helpers.
     - jbj: expunge every occurence of Rcfiles.
