@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - jbj: eliminate recursive parser helpers.
     - jbj: expunge every occurence of Rcfiles.
     - jbj: eliminate rcfile reading everywhere.
     - jbj: eliminate last known internal usage of rpmrc files.

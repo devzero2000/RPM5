@@ -65,16 +65,6 @@ struct rpmvarValue {
 /*@only@*/ /*@null@*/ struct rpmvarValue * next;
 };
 
-struct rpmOption {
-    const char * name;
-    int var;
-    int archSpecific;
-/*@unused@*/ int required;
-    int macroize;
-    int localize;
-/*@unused@*/ struct rpmOptionValue * value;
-};
-
 typedef struct defaultEntry_s {
 /*@owned@*/ /*@null@*/ const char * name;
 /*@owned@*/ /*@null@*/ const char * defName;
@@ -110,25 +100,7 @@ static struct tableType_s tables[RPM_MACHTABLE_COUNT] = {
     { "buildarch", 0, 1 },
     { "buildos", 0, 1 }
 };
-
-/* this *must* be kept in alphabetical order */
-/* The order of the flags is archSpecific, required, macroize, localize */
-
-#define	RPMVAR_OPTFLAGS			3
-#define	RPMVAR_INCLUDE			43
-#define	RPMVAR_MACROFILES		49
-
-#define	RPMVAR_NUM			55	/* number of RPMVAR entries */
-/*@unchecked@*/
-static struct rpmOption optionTable[] = {
-    { "include",		RPMVAR_INCLUDE,			0, 1,	0, 2 },
-    { "macrofiles",		RPMVAR_MACROFILES,		0, 0,	0, 1 },
-    { "optflags",		RPMVAR_OPTFLAGS,		1, 0,	1, 0 },
-};
 /*@=fullinitblock@*/
-
-/*@unchecked@*/
-static int optionTableSize = sizeof(optionTable) / sizeof(*optionTable);
 
 #define OS	0
 #define ARCH	1
@@ -140,9 +112,6 @@ static cptr_t current[2];
 static int currTables[2] = { RPM_MACHTABLE_INSTOS, RPM_MACHTABLE_INSTARCH };
 
 /*@unchecked@*/
-static struct rpmvarValue values[RPMVAR_NUM];
-
-/*@unchecked@*/
 static int defaultsInitialized = 0;
 
 /* prototypes */
@@ -150,13 +119,6 @@ static void rpmRebuildTargetVars(/*@null@*/ const char **target, /*@null@*/ cons
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies *canontarget, rpmGlobalMacroContext,
 		fileSystem, internalState @*/;
-
-static int optionCompare(const void * a, const void * b)
-	/*@*/
-{
-    return xstrcasecmp(((struct rpmOption *) a)->name,
-		      ((struct rpmOption *) b)->name);
-}
 
 static /*@observer@*/ /*@null@*/ machCacheEntry
 machCacheFindEntry(const machCache cache, const char * key)
@@ -168,76 +130,6 @@ machCacheFindEntry(const machCache cache, const char * key)
 	if (!strcmp(cache->cache[i].name, key)) return cache->cache + i;
 
     return NULL;
-}
-
-static int machCompatCacheAdd(char * name, const char * fn, int linenum,
-				machCache cache)
-	/*@globals internalState @*/
-	/*@modifies *name, cache->cache, cache->size, internalState @*/
-{
-    machCacheEntry entry = NULL;
-    char * chptr;
-    char * equivs;
-    int delEntry = 0;
-    int i;
-
-    while (*name && xisspace(*name)) name++;
-
-    chptr = name;
-    while (*chptr && *chptr != ':') chptr++;
-    if (!*chptr) {
-	rpmError(RPMERR_RPMRC, _("missing second ':' at %s:%d\n"), fn, linenum);
-	return 1;
-    } else if (chptr == name) {
-	rpmError(RPMERR_RPMRC, _("missing architecture name at %s:%d\n"), fn,
-			     linenum);
-	return 1;
-    }
-
-    while (*chptr == ':' || xisspace(*chptr)) chptr--;
-    *(++chptr) = '\0';
-    equivs = chptr + 1;
-    while (*equivs && xisspace(*equivs)) equivs++;
-    if (!*equivs) {
-	delEntry = 1;
-    }
-
-    if (cache->size) {
-	entry = machCacheFindEntry(cache, name);
-	if (entry) {
-	    for (i = 0; i < entry->count; i++)
-		entry->equivs[i] = _free(entry->equivs[i]);
-	    entry->equivs = _free(entry->equivs);
-	    entry->count = 0;
-	}
-    }
-
-    if (!entry) {
-	cache->cache = xrealloc(cache->cache,
-			       (cache->size + 1) * sizeof(*cache->cache));
-	entry = cache->cache + cache->size++;
-	entry->name = xstrdup(name);
-	entry->count = 0;
-	entry->visited = 0;
-    }
-
-    if (delEntry) return 0;
-
-    while ((chptr = strtok(equivs, " ")) != NULL) {
-	equivs = NULL;
-	if (chptr[0] == '\0')	/* does strtok() return "" ever?? */
-	    continue;
-	if (entry->count)
-	    entry->equivs = xrealloc(entry->equivs, sizeof(*entry->equivs)
-					* (entry->count + 1));
-	else
-	    entry->equivs = xmalloc(sizeof(*entry->equivs));
-
-	entry->equivs[entry->count] = xstrdup(chptr);
-	entry->count++;
-    }
-
-    return 0;
 }
 
 static /*@observer@*/ /*@null@*/ machEquivInfo
@@ -333,95 +225,6 @@ static void rebuildCompatTables(int type, const char * name)
     /*@=nullstate@*/
 }
 
-static int addCanon(canonEntry * table, int * tableLen, char * line,
-		    const char * fn, int lineNum)
-	/*@globals internalState @*/
-	/*@modifies *table, *tableLen, *line, internalState @*/
-{
-    canonEntry t;
-    char *s, *s1;
-    const char * tname;
-    const char * tshort_name;
-    int tnum;
-
-    (*tableLen) += 2;
-    /*@-unqualifiedtrans@*/
-    *table = xrealloc(*table, sizeof(**table) * (*tableLen));
-    /*@=unqualifiedtrans@*/
-
-    t = & ((*table)[*tableLen - 2]);
-
-    tname = strtok(line, ": \t");
-    tshort_name = strtok(NULL, " \t");
-    s = strtok(NULL, " \t");
-    if (! (tname && tshort_name && s)) {
-	rpmError(RPMERR_RPMRC, _("Incomplete data line at %s:%d\n"),
-		fn, lineNum);
-	return RPMERR_RPMRC;
-    }
-    if (strtok(NULL, " \t")) {
-	rpmError(RPMERR_RPMRC, _("Too many args in data line at %s:%d\n"),
-	      fn, lineNum);
-	return RPMERR_RPMRC;
-    }
-
-    /*@-nullpass@*/	/* LCL: s != NULL here. */
-    tnum = strtoul(s, &s1, 10);
-    if ((*s1) || (s1 == s) || (tnum == ULONG_MAX)) {
-	rpmError(RPMERR_RPMRC, _("Bad arch/os number: %s (%s:%d)\n"), s,
-	      fn, lineNum);
-	return(RPMERR_RPMRC);
-    }
-    /*@=nullpass@*/
-
-    t[0].name = xstrdup(tname);
-    t[0].short_name = (tshort_name ? xstrdup(tshort_name) : xstrdup(""));
-    t[0].num = tnum;
-
-    /* From A B C entry */
-    /* Add  B B C entry */
-    t[1].name = (tshort_name ? xstrdup(tshort_name) : xstrdup(""));
-    t[1].short_name = (tshort_name ? xstrdup(tshort_name) : xstrdup(""));
-    t[1].num = tnum;
-
-    return 0;
-}
-
-static int addDefault(defaultEntry * table, int * tableLen, char * line,
-			const char * fn, int lineNum)
-	/*@globals internalState @*/
-	/*@modifies *table, *tableLen, *line, internalState @*/
-{
-    defaultEntry t;
-
-    (*tableLen)++;
-    /*@-unqualifiedtrans@*/
-    *table = xrealloc(*table, sizeof(**table) * (*tableLen));
-    /*@=unqualifiedtrans@*/
-
-    t = & ((*table)[*tableLen - 1]);
-
-    /*@-temptrans@*/
-    t->name = strtok(line, ": \t");
-    t->defName = strtok(NULL, " \t");
-    if (! (t->name && t->defName)) {
-	rpmError(RPMERR_RPMRC, _("Incomplete default line at %s:%d\n"),
-		 fn, lineNum);
-	return RPMERR_RPMRC;
-    }
-    if (strtok(NULL, " \t")) {
-	rpmError(RPMERR_RPMRC, _("Too many args in default line at %s:%d\n"),
-	      fn, lineNum);
-	return RPMERR_RPMRC;
-    }
-
-    t->name = xstrdup(t->name);
-    t->defName = (t->defName ? xstrdup(t->defName) : NULL);
-    /*@=temptrans@*/
-
-    return 0;
-}
-
 static /*@null@*/ canonEntry lookupInCanonTable(const char * name,
 		const canonEntry table, int tableLen)
 	/*@*/
@@ -452,69 +255,11 @@ const char * lookupInDefaultTable(const char * name,
     return name;
 }
 
-static /*@observer@*/ /*@null@*/
-const char * rpmGetVarArch(int var, /*@null@*/ const char * arch)
-	/*@*/
-{
-    const struct rpmvarValue * next;
-
-    if (arch == NULL) arch = current[ARCH];
-
-    if (arch) {
-	next = &values[var];
-	while (next) {
-	    if (next->arch && !strcmp(next->arch, arch)) return next->value;
-	    next = next->next;
-	}
-    }
-
-    next = values + var;
-    while (next && next->arch) next = next->next;
-
-    return next ? next->value : NULL;
-}
-
-/* this doesn't free the passed pointer! */
-static void freeRpmVar(/*@only@*/ struct rpmvarValue * orig)
-	/*@modifies *orig @*/
-{
-    struct rpmvarValue * next, * var = orig;
-
-    while (var) {
-	next = var->next;
-	var->arch = _free(var->arch);
-	var->value = _free(var->value);
-
-	/*@-branchstate@*/
-	if (var != orig) var = _free(var);
-	/*@=branchstate@*/
-	var = next;
-    }
-}
-
-/** \ingroup rpmrc
- * Set value of an rpmrc variable.
- * @deprecated Use rpmDefineMacro() to change appropriate macro instead.
- */
-static void rpmSetVar(int var, const char * val)
-	/*@globals values @*/
-	/*@modifies values @*/
-{
-    /*@-immediatetrans@*/
-    freeRpmVar(&values[var]);
-    /*@=immediatetrans@*/
-    values[var].value = (val ? xstrdup(val) : NULL);
-}
-
 static void setVarDefault(int var, const char * macroname, const char * val,
 		/*@null@*/ const char * body)
 	/*@globals rpmGlobalMacroContext, internalState @*/
 	/*@modifies rpmGlobalMacroContext, internalState @*/
 {
-    if (var >= 0) {	/* XXX Dying ... */
-	if (rpmGetVarArch(var, NULL)) return;
-	rpmSetVar(var, val);
-    }
     if (body == NULL)
 	body = val;
     addMacro(NULL, macroname, NULL, body, RMIL_DEFAULT);
@@ -524,25 +269,6 @@ static void setPathDefault(int var, const char * macroname, const char * subdir)
 	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
 	/*@modifies rpmGlobalMacroContext, internalState @*/
 {
-
-    if (var >= 0) {	/* XXX Dying ... */
-	const char * topdir;
-	char * fn;
-
-	if (rpmGetVarArch(var, NULL)) return;
-
-	topdir = rpmGetPath("%{_topdir}", NULL);
-
-	fn = alloca(strlen(topdir) + strlen(subdir) + 2);
-	strcpy(fn, topdir);
-	if (fn[strlen(topdir) - 1] != '/')
-	    strcat(fn, "/");
-	strcat(fn, subdir);
-
-	rpmSetVar(var, fn);
-	topdir = _free(topdir);
-    }
-
     if (macroname != NULL) {
 #define	_TOPDIRMACRO	"%{_topdir}/"
 	char *body = alloca(sizeof(_TOPDIRMACRO) + strlen(subdir));
@@ -594,7 +320,7 @@ static void setDefaults(void)
     setVarDefault(-1,			"_rpmfilename",
 	"%%{ARCH}/%%{NAME}-%%{VERSION}-%%{RELEASE}.%%{ARCH}.rpm",NULL);
 
-    setVarDefault(RPMVAR_OPTFLAGS,	"optflags",
+    setVarDefault(-1,			"optflags",
 		"-O2 -g",			NULL);
     setVarDefault(-1,			"sigtype",
 		"none",			NULL);
@@ -608,255 +334,6 @@ static void setDefaults(void)
     setPathDefault(-1,			"_specdir",	"SPECS");
 
 }
-
-static void rpmSetVarArch(int var, const char * val,
-		/*@null@*/ const char * arch)
-	/*@globals values, internalState @*/
-	/*@modifies values, internalState @*/
-{
-    struct rpmvarValue * next = values + var;
-
-    if (next->value) {
-	if (arch) {
-	    while (next->next) {
-		if (next->arch && !strcmp(next->arch, arch)) break;
-		next = next->next;
-	    }
-	} else {
-	    while (next->next) {
-		if (!next->arch) break;
-		next = next->next;
-	    }
-	}
-
-	/*@-nullpass@*/	/* LCL: arch != NULL here. */
-	if (next->arch && arch && !strcmp(next->arch, arch)) {
-	/*@=nullpass@*/
-	    next->value = _free(next->value);
-	    next->arch = _free(next->arch);
-	} else if (next->arch || arch) {
-	    next->next = xmalloc(sizeof(*next->next));
-	    next = next->next;
-	    next->value = NULL;
-	    next->arch = NULL;
-	    next->next = NULL;
-	}
-    }
-
-    next->value = _free(next->value);
-    next->value = xstrdup(val);
-    next->arch = (arch ? xstrdup(arch) : NULL);
-}
-
-/*@-usedef@*/	/*@ FIX: se usage inconsistent, W2DO? */
-static int doReadRC( /*@killref@*/ FD_t fd, const char * urlfn)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies fd, rpmGlobalMacroContext, fileSystem, internalState @*/
-{
-    const char *s;
-    char *se, *next;
-    int linenum = 0;
-    struct rpmOption searchOption, * option;
-    int rc;
-
-    /* XXX really need rc = Slurp(fd, const char * filename, char ** buf) */
-  { off_t size = fdSize(fd);
-    size_t nb = (size >= 0 ? size : (8*BUFSIZ - 2));
-    if (nb == 0) {
-	(void) Fclose(fd);
-	return 0;
-    }
-    next = alloca(nb + 2);
-    next[0] = '\0';
-    rc = Fread(next, sizeof(*next), nb, fd);
-    if (Ferror(fd) || (size > 0 && rc != nb)) {	/* XXX Feof(fd) */
-	rpmError(RPMERR_RPMRC, _("Failed to read %s: %s.\n"), urlfn,
-		 Fstrerror(fd));
-	rc = 1;
-    } else
-	rc = 0;
-    (void) Fclose(fd);
-    if (rc) return rc;
-    next[nb] = '\n';
-    next[nb + 1] = '\0';
-  }
-
-    /*@-branchstate@*/
-    while (*next != '\0') {
-	linenum++;
-
-	s = se = next;
-
-	/* Find end-of-line. */
-	while (*se && *se != '\n') se++;
-	if (*se != '\0') *se++ = '\0';
-	next = se;
-
-	/* Trim leading spaces */
-	while (*s && xisspace(*s)) s++;
-
-	/* We used to allow comments to begin anywhere, but not anymore. */
-	if (*s == '#' || *s == '\0') continue;
-
-	/* Find end-of-keyword. */
-	se = (char *)s;
-	while (*se && !xisspace(*se) && *se != ':') se++;
-
-	if (xisspace(*se)) {
-	    *se++ = '\0';
-	    while (*se && xisspace(*se) && *se != ':') se++;
-	}
-
-	if (*se != ':') {
-	    rpmError(RPMERR_RPMRC, _("missing ':' (found 0x%02x) at %s:%d\n"),
-		     (unsigned)(0xff & *se), urlfn, linenum);
-	    return 1;
-	}
-	*se++ = '\0';	/* terminate keyword or option, point to value */
-	while (*se && xisspace(*se)) se++;
-
-	/* Find keyword in table */
-	searchOption.name = s;
-	option = bsearch(&searchOption, optionTable, optionTableSize,
-			 sizeof(optionTable[0]), optionCompare);
-
-	if (option) {	/* For configuration variables  ... */
-	    const char *arch, *val, *fn;
-
-	    arch = val = fn = NULL;
-	    if (*se == '\0') {
-		rpmError(RPMERR_RPMRC, _("missing argument for %s at %s:%d\n"),
-		      option->name, urlfn, linenum);
-		return 1;
-	    }
-
-	    switch (option->var) {
-	    case RPMVAR_INCLUDE:
-	      {	FD_t fdinc;
-
-		s = se;
-		while (*se && !xisspace(*se)) se++;
-		if (*se != '\0') *se++ = '\0';
-
-		rpmRebuildTargetVars(NULL, NULL);
-
-		fn = rpmGetPath(s, NULL);
-		if (fn == NULL || *fn == '\0') {
-		    rpmError(RPMERR_RPMRC, _("%s expansion failed at %s:%d \"%s\"\n"),
-			option->name, urlfn, linenum, s);
-		    fn = _free(fn);
-		    return 1;
-		    /*@notreached@*/
-		}
-
-		fdinc = Fopen(fn, "r.fpio");
-		if (fdinc == NULL || Ferror(fdinc)) {
-		    rpmError(RPMERR_RPMRC, _("cannot open %s at %s:%d: %s\n"),
-			fn, urlfn, linenum, Fstrerror(fdinc));
-		    rc = 1;
-		} else {
-		    rc = doReadRC(fdinc, fn);
-		}
-		fn = _free(fn);
-		if (rc) return rc;
-		continue;	/* XXX don't save include value as var/macro */
-	      }	/*@notreached@*/ /*@switchbreak@*/ break;
-	    case RPMVAR_MACROFILES:
-		fn = rpmGetPath(se, NULL);
-		if (fn == NULL || *fn == '\0') {
-		    rpmError(RPMERR_RPMRC, _("%s expansion failed at %s:%d \"%s\"\n"),
-			option->name, urlfn, linenum, fn);
-		    fn = _free(fn);
-		    return 1;
-		}
-		se = (char *)fn;
-		/*@switchbreak@*/ break;
-	    default:
-		/*@switchbreak@*/ break;
-	    }
-
-	    if (option->archSpecific) {
-		arch = se;
-		while (*se && !xisspace(*se)) se++;
-		if (*se == '\0') {
-		    rpmError(RPMERR_RPMRC,
-				_("missing architecture for %s at %s:%d\n"),
-			  	option->name, urlfn, linenum);
-		    return 1;
-		}
-		*se++ = '\0';
-		while (*se && xisspace(*se)) se++;
-		if (*se == '\0') {
-		    rpmError(RPMERR_RPMRC,
-				_("missing argument for %s at %s:%d\n"),
-			  	option->name, urlfn, linenum);
-		    return 1;
-		}
-	    }
-	
-	    val = se;
-
-	    /* Only add macros if appropriate for this arch */
-	    if (option->macroize &&
-	      (arch == NULL || !strcmp(arch, current[ARCH]))) {
-		char *n, *name;
-		n = name = xmalloc(strlen(option->name)+2);
-		if (option->localize)
-		    *n++ = '_';
-		strcpy(n, option->name);
-		addMacro(NULL, name, NULL, val, RMIL_RPMRC);
-		free(name);
-	    }
-	    rpmSetVarArch(option->var, val, arch);
-	    fn = _free(fn);
-
-	} else {	/* For arch/os compatibilty tables ... */
-	    int gotit;
-	    int i;
-
-	    gotit = 0;
-
-	    for (i = 0; i < RPM_MACHTABLE_COUNT; i++) {
-		if (!strncmp(tables[i].key, s, strlen(tables[i].key)))
-		    /*@innerbreak@*/ break;
-	    }
-
-	    if (i < RPM_MACHTABLE_COUNT) {
-		const char *rest = s + strlen(tables[i].key);
-		if (*rest == '_') rest++;
-
-		if (!strcmp(rest, "compat")) {
-		    if (machCompatCacheAdd(se, urlfn, linenum,
-						&tables[i].cache))
-			return 1;
-		    gotit = 1;
-		} else if (tables[i].hasTranslate &&
-			   !strcmp(rest, "translate")) {
-		    if (addDefault(&tables[i].defaults,
-				   &tables[i].defaultsLength,
-				   se, urlfn, linenum))
-			return 1;
-		    gotit = 1;
-		} else if (tables[i].hasCanon &&
-			   !strcmp(rest, "canon")) {
-		    if (addCanon(&tables[i].canons, &tables[i].canonsLength,
-				 se, urlfn, linenum))
-			return 1;
-		    gotit = 1;
-		}
-	    }
-
-	    if (!gotit) {
-		rpmError(RPMERR_RPMRC, _("bad option '%s' at %s:%d\n"),
-			    s, urlfn, linenum);
-	    }
-	}
-    }
-    /*@=branchstate@*/
-
-    return 0;
-}
-/*@=usedef@*/
 
 typedef struct cpu_vendor_os_gnu {
 /*@owned@*/
@@ -1850,17 +1327,6 @@ void rpmFreeRpmrc(void)
 	}
     }
 
-    for (i = 0; i < RPMVAR_NUM; i++) {
-	/*@only@*/ /*@null@*/ struct rpmvarValue * vp;
-	while ((vp = values[i].next) != NULL) {
-	    values[i].next = vp->next;
-	    vp->value = _free(vp->value);
-	    vp->arch = _free(vp->arch);
-	    vp = _free(vp);
-	}
-	values[i].value = _free(values[i].value);
-	values[i].arch = _free(values[i].arch);
-    }
     current[OS] = _free(current[OS]);
     current[ARCH] = _free(current[ARCH]);
     defaultsInitialized = 0;
@@ -1888,12 +1354,7 @@ static int rpmReadRC(void)
     }
 
     /* Read macro files. */
-    {	const char *mfpath = rpmGetVarArch(RPMVAR_MACROFILES, NULL);
-
-	if (mfpath == NULL)
-	    mfpath = rpmExpand(rpmMacrofiles, NULL);
-	else
-	    mfpath = xstrdup(mfpath);
+    {	const char *mfpath = rpmExpand(rpmMacrofiles, NULL);
 	    
 	/*@-branchstate@*/
 	if (mfpath != NULL) {
