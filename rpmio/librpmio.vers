@@ -79,6 +79,7 @@ LIBRPMIO_0
     Fts_set;
     Fwrite;
     Getpass;
+    _GetPass;
     gidToGname;
     Glob;
     Glob_error;

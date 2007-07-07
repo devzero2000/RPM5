@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - jbj: hardwire _GetPass() to avoid --addsign (*Getpass) segfault for now.
     - jbj: eliminate rpmrc.in file itself.
     - jbj: revert routines that were re-added for ABI compat after rpm-4.4.7.
     - jbj: eliminate the voo-doo asm arch identification.

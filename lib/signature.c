@@ -1003,7 +1003,7 @@ char * rpmGetPassPhrase(const char * prompt, const int sigTag)
     }
 
     if (aok) {
-	pass = Getpass(prompt);
+	pass = _GetPass(prompt);
 
 	if (pass != NULL && checkPassPhrase(pass, sigTag))
 	    pass = NULL;
