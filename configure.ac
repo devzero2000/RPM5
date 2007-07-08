@@ -1018,23 +1018,12 @@ AC_DEFINE_UNQUOTED(
 AC_SUBST(LOCALEDIR)
 AC_MSG_RESULT([$LOCALEDIR])
 
-dnl # determine RPM global library directory path
-AC_MSG_CHECKING([for RPM global library directory])
-LIBDIR=`echo "$libdir" | sed 's-/lib$-/%{_lib}-'`
-AC_ARG_WITH(
-    [path-lib],
-    AS_HELP_STRING([--with-path-lib=ARG], [build with RPM global library directory path]),
-    [LIBDIR="$withval"]
-)
-AC_SUBST(LIBDIR)
-AC_MSG_RESULT([$LIBDIR])
-
 dnl # determine RPM system library directory path
 AC_MSG_CHECKING([for RPM system library directory])
 USRLIBRPM=`echo "${usrprefix}/lib/rpm"`
 AC_ARG_WITH(
-    [path-usrlib],
-    AS_HELP_STRING([--with-path-usrlib=ARG], [build with RPM system library directory path]),
+    [path-lib],
+    AS_HELP_STRING([--with-path-lib=ARG], [build with RPM system library directory path]),
     [USRLIBRPM="$withval"]
 )
 AC_DEFINE_UNQUOTED(
