@@ -926,29 +926,30 @@ fi
 dnl # determine the canonical arch-vendor-os for the build machine
 autorelocate_path='%{nil}'
 autorelocate_dcolor='0'
+RPMCANONCOLOR=3
 case "${build_cpu}" in
-*86)		RPMCANONCOLOR=3; RPMCANONARCH=i386 ;;
-ia32e*)		RPMCANONCOLOR=3; RPMCANONARCH=ia32e ;;
-amd64*)		RPMCANONCOLOR=3; RPMCANONARCH=amd64 ;;
-x86_64*)	RPMCANONCOLOR=3; RPMCANONARCH=x86_64 ;;
-alpha*)		RPMCANONCOLOR=0; RPMCANONARCH=alpha ;;
-sparc64*)	RPMCANONCOLOR=3; RPMCANONARCH=sparc64 ;;
-sparc*)		RPMCANONCOLOR=3; RPMCANONARCH=sparc ;;
+*86)		RPMCANONARCH=i386 ;;
+ia32e*)		RPMCANONARCH=ia32e ;;
+amd64*)		RPMCANONARCH=amd64 ;;
+x86_64*)	RPMCANONARCH=x86_64 ;;
+alpha*)		RPMCANONARCH=alpha ;;
+sparc64*)	RPMCANONARCH=sparc64 ;;
+sparc*)		RPMCANONARCH=sparc ;;
 ia64*)		RPMCANONCOLOR=2; RPMCANONARCH=ia64;
 		autorelocate_path='/emul/%%{ARCH}-%%{OS}'
 		autorelocate_dcolor='1' ;;
-s390x*)		RPMCANONCOLOR=3; RPMCANONARCH=s390x ;;
-s390*)		RPMCANONCOLOR=0; RPMCANONARCH=s390 ;;
-powerpc64*|ppc64*)	RPMCANONCOLOR=3; RPMCANONARCH=ppc64 ;;
-powerpc*|ppc*)	RPMCANONCOLOR=0; RPMCANONARCH=ppc ;;
-armv3l*)	RPMCANONCOLOR=0; RPMCANONARCH=armv3l ;;
-armv4l*)	RPMCANONCOLOR=0; RPMCANONARCH=armv4l ;;
-armv4b*)	RPMCANONCOLOR=0; RPMCANONARCH=armv4b ;;
-arm*)		RPMCANONCOLOR=0; RPMCANONARCH="${build_cpu}" ;;
-mipsel*)	RPMCANONCOLOR=0; RPMCANONARCH=mipsel ;;
-mips*)		RPMCANONCOLOR=0; RPMCANONARCH=mips ;;
-m68k*)		RPMCANONCOLOR=0; RPMCANONARCH=m68k ;;
-*)		RPMCANONCOLOR=0; RPMCANONARCH=unknown ;;
+s390x*)		RPMCANONARCH=s390x ;;
+s390*)		RPMCANONARCH=s390 ;;
+powerpc64*|ppc64*)	RPMCANONARCH=ppc64 ;;
+powerpc*|ppc*)	RPMCANONARCH=ppc ;;
+armv3l*)	RPMCANONARCH=armv3l ;;
+armv4l*)	RPMCANONARCH=armv4l ;;
+armv4b*)	RPMCANONARCH=armv4b ;;
+arm*)		RPMCANONARCH="${build_cpu}" ;;
+mipsel*)	RPMCANONCOLOR=7; RPMCANONARCH=mipsel ;;
+mips*)		RPMCANONCOLOR=7; RPMCANONARCH=mips ;;
+m68k*)		RPMCANONARCH=m68k ;;
+*)		RPMCANONARCH=unknown ;;
 esac
 case "${build_os_noversion}" in
 mint)		RPMCANONARCH=m68kmint ;;

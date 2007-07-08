@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - jbj: default RPMCANONCOLOR to 3 everywhere but ia64 and mips*.
     - rse: remove now unused LIBDIR (--with-path-lib) from Autoconf and rename --with-path-usrlib to --with-path-lib
     - jbj: hardwire _GetPass() to avoid --addsign (*Getpass) segfault for now.
     - jbj: eliminate rpmrc.in file itself.
