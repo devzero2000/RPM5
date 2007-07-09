@@ -866,6 +866,7 @@ static int extractRegular(/*@special@*/ FSM_t fsm)
     const struct stat * st = &fsm->sb;
     int left = st->st_size;
     int rc = 0;
+    int xx;
 
     rc = fsmNext(fsm, FSM_WOPEN);
     if (rc)
@@ -891,6 +892,8 @@ static int extractRegular(/*@special@*/ FSM_t fsm)
 	if (!rc && left)
 	    (void) fsmNext(fsm, FSM_NOTIFY);
     }
+
+    xx = fsync(Fileno(fsm->wfd));
 
     if (st->st_size > 0 && (fsm->fdigest || fsm->digest)) {
 	void * digest = NULL;
