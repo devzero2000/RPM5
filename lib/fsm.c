@@ -1045,9 +1045,8 @@ static int writeFile(/*@special@*/ /*@partial@*/ FSM_t fsm, int writeData)
 	    fsm->rdbuf = rdbuf;
 	} else
 /*@=branchstate@*/
-#else
-	    xx = fsync(Fileno(fsm->rfd));
 #endif
+	    xx = fsync(Fileno(fsm->rfd));
 
     }
 
