@@ -29,8 +29,6 @@ pkginc_HEADERS = \
 noinst_HEADERS = \
 	cpio.h fsm.h manifest.h psm.h rpmlead.h rpmlock.h signature.h tar.h
 
-mylibs = librpm.la
-
 usrlibdir = $(libdir)@MARK64@
 usrlib_LTLIBRARIES = librpm.la
 librpm_la_SOURCES = \
