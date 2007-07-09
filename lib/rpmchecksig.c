@@ -702,7 +702,7 @@ assert(dig->md5ctx == NULL);
 	    /*@switchbreak@*/ break;
 	case PGPHASHALGO_SHA1:
 	case PGPHASHALGO_RIPEMD160:
-#if HAVE_BEECRYPT_API_H
+#if defined(HAVE_BEECRYPT_API_H)
 	case PGPHASHALGO_SHA256:
 	case PGPHASHALGO_SHA384:
 	case PGPHASHALGO_SHA512:

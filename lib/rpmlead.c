@@ -4,7 +4,7 @@
 
 #include "system.h"
 
-#if HAVE_MACHINE_TYPES_H
+#if defined(HAVE_MACHINE_TYPES_H)
 # include <machine/types.h>
 #endif
 

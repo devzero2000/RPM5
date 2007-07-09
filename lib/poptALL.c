@@ -371,7 +371,7 @@ struct poptOption rpmcliAllPoptTable[] = {
         N_("don't verify package digest(s)"), NULL },
  { "nohdrchk", '\0', POPT_ARGFLAG_DOC_HIDDEN, 0, RPMCLI_POPT_NOHDRCHK,
         N_("don't verify database header(s) when retrieved"), NULL },
-#if HAVE_LIBIO_H && defined(_G_IO_IO_FILE_VERSION)
+#if defined(HAVE_LIBIO_H) && defined(_G_IO_IO_FILE_VERSION)
  { "nolibio", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &noLibio, 1,
 	N_("disable use of libio(3) API"), NULL},
 #endif
@@ -396,7 +396,7 @@ struct poptOption rpmcliAllPoptTable[] = {
  { "version", '\0', 0, NULL, POPT_SHOWVERSION,
 	N_("print the version of rpm being used"), NULL },
 
-#if HAVE_LIBIO_H && defined(_G_IO_IO_FILE_VERSION)
+#if defined(HAVE_LIBIO_H) && defined(_G_IO_IO_FILE_VERSION)
  { "nolibio", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &noLibio, 1,
        N_("disable use of libio(3) API"), NULL},
 #endif
@@ -487,7 +487,7 @@ rpmcliFini(poptContext optCon)
 
     optCon = poptFreeContext(optCon);
 
-#if HAVE_MCHECK_H && HAVE_MTRACE
+#if defined(HAVE_MCHECK_H) && defined(HAVE_MTRACE)
     /*@-noeffect@*/
     muntrace();   /* Trace malloc only if MALLOC_TRACE=mtrace-output-file. */
     /*@=noeffect@*/
@@ -504,7 +504,7 @@ rpmcliInit(int argc, char *const argv[], struct poptOption * optionsTable)
     poptContext optCon;
     int rc;
 
-#if HAVE_MCHECK_H && HAVE_MTRACE
+#if defined(HAVE_MCHECK_H) && defined(HAVE_MTRACE)
     /*@-noeffect@*/
     mtrace();   /* Trace malloc only if MALLOC_TRACE=mtrace-output-file. */
     /*@=noeffect@*/

@@ -3,7 +3,7 @@
 
 #include <stdarg.h>
 
-#if HAVE_SYS_SYSTEMCFG_H
+#if defined(HAVE_SYS_SYSTEMCFG_H)
 #include <sys/systemcfg.h>
 #else
 #define __power_pc() 0

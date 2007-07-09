@@ -569,7 +569,7 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 	ctx->Digest = (void *) sum64Digest;
 /*@=type@*/
 	break;
-#if HAVE_BEECRYPT_API_H
+#if defined(HAVE_BEECRYPT_API_H)
     case PGPHASHALGO_SHA224:
 	ctx->name = "SHA-224";
 	ctx->digestsize = 224/8;

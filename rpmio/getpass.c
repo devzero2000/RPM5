@@ -3,7 +3,7 @@
  */
 
 #include "system.h"
-#if HAVE_KEYUTILS_H
+#if defined(HAVE_KEYUTILS_H)
 #include <argv.h>
 #include <keyutils.h>
 #endif
@@ -19,7 +19,7 @@ char * _GetPass(const char * prompt)
 char * _RequestPass(const char * prompt)
 {
     static char * password = NULL;
-#if HAVE_KEYUTILS_H
+#if defined(HAVE_KEYUTILS_H)
     const char * foo = "user rpm:yyyy spoon";
     ARGV_t av = NULL;
     int xx = argvSplit(&av, foo, NULL);

@@ -5,11 +5,11 @@
 #include "system.h"
 #include <stdarg.h>
 
-#if HAVE_MACHINE_TYPES_H
+#if defined(HAVE_MACHINE_TYPES_H)
 # include <machine/types.h>
 #endif
 
-#if HAVE_SYS_SOCKET_H
+#if defined(HAVE_SYS_SOCKET_H)
 # include <sys/socket.h>
 #endif
 
@@ -49,14 +49,14 @@ extern void freeaddrinfo (/*@only@*/ struct addrinfo *__ai)
 #include <netinet/in.h>
 #include <arpa/inet.h>		/* XXX for inet_aton and HP-UX */
 
-#if HAVE_NETINET_IN_SYSTM_H
+#if defined(HAVE_NETINET_IN_SYSTM_H)
 # include <sys/types.h>
 # include <netinet/in_systm.h>
 #endif
 
 #include <rpmmacro.h>		/* XXX rpmioAccess needs rpmCleanPath() */
 
-#if HAVE_LIBIO_H && defined(_G_IO_IO_FILE_VERSION)
+#if defined(HAVE_LIBIO_H) && defined(_G_IO_IO_FILE_VERSION)
 #define	_USE_LIBIO	1
 #endif
 
@@ -206,7 +206,7 @@ static /*@observer@*/ const char * fdbg(/*@null@*/ FD_t fd)
 	} else if (fps->io == gzdio) {
 	    sprintf(be, "GZD %p fdno %d", fps->fp, fps->fdno);
 #endif
-#if HAVE_BZLIB_H
+#if defined(HAVE_BZLIB_H)
 	} else if (fps->io == bzdio) {
 	    sprintf(be, "BZD %p fdno %d", fps->fp, fps->fdno);
 #endif
@@ -543,7 +543,7 @@ int fdWritable(FD_t fd, int secs)
 {
     int fdno;
     int rc;
-#if HAVE_POLL_H
+#if defined(HAVE_POLL_H)
     int msecs = (secs >= 0 ? (1000 * secs) : -1);
     struct pollfd wrfds;
 #else
@@ -560,7 +560,7 @@ int fdWritable(FD_t fd, int secs)
 	return -1;	/* XXX W2DO? */
 	
     do {
-#if HAVE_POLL_H
+#if defined(HAVE_POLL_H)
 	wrfds.fd = fdno;
 	wrfds.events = POLLOUT;
 	wrfds.revents = 0;
@@ -598,7 +598,7 @@ int fdReadable(FD_t fd, int secs)
 {
     int fdno;
     int rc;
-#if HAVE_POLL_H
+#if defined(HAVE_POLL_H)
     int msecs = (secs >= 0 ? (1000 * secs) : -1);
     struct pollfd rdfds;
 #else
@@ -615,7 +615,7 @@ int fdReadable(FD_t fd, int secs)
 	return -1;	/* XXX W2DO? */
 	
     do {
-#if HAVE_POLL_H
+#if defined(HAVE_POLL_H)
 	rdfds.fd = fdno;
 	rdfds.events = POLLIN;
 	rdfds.revents = 0;
@@ -2494,7 +2494,7 @@ static inline int gzdSeek(void * cookie, _libio_pos_t pos, int whence)
     off_t p = pos;
 #endif
     int rc;
-#if HAVE_GZSEEK
+#if defined(HAVE_GZSEEK)
     FD_t fd = c2f(cookie);
     gzFile gzfile;
 
@@ -2578,7 +2578,7 @@ FDIO_t gzdio = /*@-compmempass@*/ &gzdio_s /*@=compmempass@*/ ;
 /* =============================================================== */
 /* Support for BZIP2 library.
  */
-#if HAVE_BZLIB_H
+#if defined(HAVE_BZLIB_H)
 /*@-moduncon@*/
 
 #include <bzlib.h>
@@ -3442,14 +3442,14 @@ fprintf(stderr, "*** Fdopen(%p,%s) %s\n", fd, fmode, fdbg(fd));
     if (end && *end) {
 	if (!strcmp(end, "fdio")) {
 	    iof = fdio;
-#if HAVE_ZLIB_H
+#if defined(HAVE_ZLIB_H)
 	} else if (!strcmp(end, "gzdio")) {
 	    iof = gzdio;
 	    /*@-internalglobs@*/
 	    fd = gzdFdopen(fd, zstdio);
 	    /*@=internalglobs@*/
 #endif
-#if HAVE_BZLIB_H
+#if defined(HAVE_BZLIB_H)
 	} else if (!strcmp(end, "bzdio")) {
 	    iof = bzdio;
 	    /*@-internalglobs@*/
@@ -3484,7 +3484,7 @@ fprintf(stderr, "*** Fdopen fpio fp %p\n", (void *)fp);
 	for (end = other; *end && strchr("0123456789fh", *end); end++)
 	    {};
 	if (*end == '\0') {
-#if HAVE_ZLIB_H
+#if defined(HAVE_ZLIB_H)
 	    iof = gzdio;
 	    /*@-internalglobs@*/
 	    fd = gzdFdopen(fd, zstdio);
@@ -3611,11 +3611,11 @@ int Fflush(FD_t fd)
 	/*@=voidabstract =nullpass@*/
 
     vh = fdGetFp(fd);
-#if HAVE_ZLIB_H
+#if defined(HAVE_ZLIB_H)
     if (vh && fdGetIo(fd) == gzdio)
 	return gzdFlush(vh);
 #endif
-#if HAVE_BZLIB_H
+#if defined(HAVE_BZLIB_H)
     if (vh && fdGetIo(fd) == bzdio)
 	return bzdFlush(vh);
 #endif
@@ -3642,12 +3642,12 @@ int Ferror(FD_t fd)
 	    /*@+voidabstract -nullpass@*/
 	    ec = ferror(fdGetFILE(fd));
 	    /*@=voidabstract =nullpass@*/
-#if HAVE_ZLIB_H
+#if defined(HAVE_ZLIB_H)
 	} else if (fps->io == gzdio) {
 	    ec = (fd->syserrno || fd->errcookie != NULL) ? -1 : 0;
 	    i--;	/* XXX fdio under gzdio always has fdno == -1 */
 #endif
-#if HAVE_BZLIB_H
+#if defined(HAVE_BZLIB_H)
 	} else if (fps->io == bzdio) {
 	    ec = (fd->syserrno  || fd->errcookie != NULL) ? -1 : 0;
 	    i--;	/* XXX fdio under bzdio always has fdno == -1 */

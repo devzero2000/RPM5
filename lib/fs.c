@@ -45,7 +45,7 @@ void rpmFreeFilesystems(void)
     numFilesystems = 0;
 }
 
-#if HAVE_MNTCTL
+#if defined(HAVE_MNTCTL)
 
 /* modeled after sample code from Till Bubeck */
 

@@ -4,7 +4,7 @@
 
 #include "system.h"
 
-#if HAVE_GELF_H
+#if defined(HAVE_GELF_H)
 #if LIBELF_H_LFS_CONFLICT
 /* some gelf.h/libelf.h implementations (Solaris) are
  * incompatible with the Large File API
@@ -76,7 +76,7 @@ static int open_dso(const char * path, /*@null@*/ pid_t * pidp, /*@null@*/ size_
 	return fdno;
 /*@=boundsread@*/
 
-#if HAVE_GELF_H && HAVE_LIBELF
+#if defined(HAVE_GELF_H) && defined(HAVE_LIBELF)
  {  Elf *elf = NULL;
     Elf_Scn *scn = NULL;
     Elf_Data *data = NULL;

@@ -1356,7 +1356,7 @@ assert(prefix != NULL);
 
     (void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_SIGNATURE), 0);
 /*@-type@*/	/* XXX FIX: avoid beecrypt API incompatibility. */
-#if HAVE_BEECRYPT_API_H
+#if defined(HAVE_BEECRYPT_API_H)
     xx = rsavrfy(&dig->rsa_pk.n, &dig->rsa_pk.e, &dig->c, &dig->rsahm);
 #else
     xx = rsavrfy(&dig->rsa_pk, &dig->rsahm, &dig->c);
