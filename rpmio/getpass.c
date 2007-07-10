@@ -3,6 +3,7 @@
  */
 
 #include "system.h"
+#include "rpmio.h"
 #if defined(HAVE_KEYUTILS_H)
 #include <argv.h>
 #include <keyutils.h>

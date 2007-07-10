@@ -2488,13 +2488,13 @@ static inline int gzdSeek(void * cookie, _libio_pos_t pos, int whence)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/
 {
+    int rc;
+#if defined(HAVE_GZSEEK)
 #ifdef USE_COOKIE_SEEK_POINTER
     _IO_off64_t p = *pos;
 #else
     off_t p = pos;
 #endif
-    int rc;
-#if defined(HAVE_GZSEEK)
     FD_t fd = c2f(cookie);
     gzFile gzfile;
 
@@ -3001,14 +3001,17 @@ static ssize_t lzdRead(void * cookie, /*@out@*/ char * buf, size_t count)
     FD_t fd = c2f(cookie);
     LZFILE *lzfile;
     ssize_t rc = 0;
+    size_t out;
     int res = 0;
 
     if (fd->bytesRemain == 0) return 0;	/* XXX simulate EOF */
     lzfile = lzdFileno(fd);
     fdstat_enter(fd, FDSTAT_READ);
-    if (lzfile->g_InBuffer.File)
+    if (lzfile->g_InBuffer.File) {
 /*@-compdef@*/
-	res = LzmaDecode(&lzfile->state, &lzfile->g_InBuffer.InCallback, buf, count, &rc);
+	res = LzmaDecode(&lzfile->state, &lzfile->g_InBuffer.InCallback, (unsigned char *)buf, count, &out);
+        rc = (ssize_t)out;
+    }
 /*@=compdef@*/
     if (res) {
 	if (lzfile)
