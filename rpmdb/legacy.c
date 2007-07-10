@@ -203,7 +203,7 @@ int dodigest(int digestalgo, const char * fn, unsigned char * digest, int asAsci
 	ctx = rpmDigestInit(digestalgo, RPMDIGEST_NONE);
 	if (fsize)
 	    xx = rpmDigestUpdate(ctx, mapped, fsize);
-	xx = rpmDigestFinal(ctx, (void **)&dsum, &dlen, asAscii);
+	xx = rpmDigestFinal(ctx, &dsum, &dlen, asAscii);
 	if (fsize)
 	    xx = munmap(mapped, fsize);
 	xx = close(fdno);

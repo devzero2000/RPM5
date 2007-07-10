@@ -1034,6 +1034,7 @@ assert(xx != -1);	/* XXX figger a proper return path. */
 	int_16 mode = (fmode ? fmode[fc->ix] : 0);
 	int urltype;
 
+	ftype = "";
 	urltype = urlPath(argv[fc->ix], &s);
 assert(s != NULL && *s == '/');
 	slen = strlen(s);
@@ -1085,20 +1086,17 @@ assert(s != NULL && *s == '/');
 	    /* XXX skip all files in /dev/ which are (or should be) %dev dummies. */
 	    else if (slen >= fc->brlen+sizeof("/dev/") && !strncmp(s+fc->brlen, "/dev/", sizeof("/dev/")-1))
 		ftype = "";
-	    else
 #ifdef HAVE_MAGIC_H
-  if (magicfile) {
+	    else if (magicfile) {
 		ftype = magic_file(ms, s);
 
-	    if (ftype == NULL) {
-		xx = RPMERR_EXEC;
-		rpmError(xx, _("magic_file(ms, \"%s\") failed: mode %06o %s\n"),
+		if (ftype == NULL) {
+		    xx = RPMERR_EXEC;
+		    rpmError(xx, _("magic_file(ms, \"%s\") failed: mode %06o %s\n"),
 			s, mode, magic_error(ms));
 assert(ftype != NULL);	/* XXX figger a proper return path. */
+		}
 	    }
-  }
-#else
-		ftype = "";
 #endif
 	    /*@switchbreak@*/ break;
 	}
@@ -1147,7 +1145,6 @@ assert(se != NULL);
 #endif
 
 #ifdef HAVE_MAGIC_H
-exit:
     magicfile = _free(magicfile);
 #endif
 

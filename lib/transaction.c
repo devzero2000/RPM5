@@ -435,8 +435,7 @@ static void handleOverlappedFiles(const rpmts ts,
 	 * will be installed and removed so the records for an overlapped
 	 * files will be sorted in exactly the same order.
 	 */
-	(void) htGetEntry(ts->ht, fiFps,
-			(const void ***) &recs, &numRecs, NULL);
+	(void) htGetEntry(ts->ht, fiFps, &recs, &numRecs, NULL);
 
 	/*
 	 * If this package is being added, look only at other packages

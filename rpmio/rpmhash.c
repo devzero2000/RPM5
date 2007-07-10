@@ -207,8 +207,8 @@ int htHasEntry(hashTable ht, const void * key)
     if (!(b = findEntry(ht, key))) return 0; else return 1;
 }
 
-int htGetEntry(hashTable ht, const void * key, const void *** data,
-	       int * dataCount, const void ** tableKey)
+int htGetEntry(hashTable ht, const void * key, const void * data,
+	       int * dataCount, const void * tableKey)
 {
     hashBucket b;
 
@@ -217,11 +217,11 @@ int htGetEntry(hashTable ht, const void * key, const void *** data,
 
 /*@-boundswrite@*/
     if (data)
-	*data = (const void **) b->data;
+	*(const void ***)data = (const void **) b->data;
     if (dataCount)
 	*dataCount = b->dataCount;
     if (tableKey)
-	*tableKey = b->key;
+	*(const void **)tableKey = b->key;
 /*@=boundswrite@*/
 
     return 0;

@@ -893,7 +893,7 @@ static int sql_open(rpmdb rpmdb, rpmTag rpmtag, /*@out@*/ dbiIndex * dbip)
     const char * dbfile;  
     const char * dbfname;
     const char * sql_errcode;
-    mode_t umask_safed;
+    mode_t umask_safed = 0002;
     dbiIndex dbi;
     SQL_DB * sqldb;
     size_t len;

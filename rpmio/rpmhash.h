@@ -69,17 +69,17 @@ void htAddEntry(hashTable ht, /*@owned@*/ const void * key,
 
 /**
  * Retrieve item from hash table.
- * @param ht            pointer to hash table
- * @param key           pointer to key value
- * @retval data         address to store data value from bucket
- * @retval dataCount    address to store data value size from bucket
- * @retval tableKey     address to store key value from bucket (may be NULL)
+ * @param ht		pointer to hash table
+ * @param key		pointer to key value
+ * @retval *data	data value from bucket
+ * @retval *dataCount	data value size from bucket
+ * @retval *tableKey	key value from bucket (may be NULL)
  * @return		0 on success, 1 if the item is not found.
  */
 int htGetEntry(hashTable ht, const void * key,
-		/*@null@*/ /*@out@*/ const void *** data,
+		/*@null@*/ /*@out@*/ const void * data,
 		/*@null@*/ /*@out@*/ int * dataCount,
-		/*@null@*/ /*@out@*/ const void ** tableKey)
+		/*@null@*/ /*@out@*/ const void * tableKey)
 	/*@modifies *data, *dataCount, *tableKey @*/;
 
 /**
