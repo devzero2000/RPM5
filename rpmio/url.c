@@ -9,6 +9,9 @@
 #include <rpmmacro.h>
 #include <rpmmessages.h>
 #include <rpmio_internal.h>
+#ifdef WITH_NEON
+#include <rpmdav.h>
+#endif
 
 #include "debug.h"
 

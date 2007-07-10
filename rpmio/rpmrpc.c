@@ -675,6 +675,7 @@ vfs_parse_ls_lga (char * p, /*@out@*/ struct stat * st,
     int idx, idx2, num_cols;
     int i;
     char *p_copy;
+    long n;
 
     if (strncmp (p, "total", 5) == 0)
         return 0;
@@ -715,8 +716,9 @@ vfs_parse_ls_lga (char * p, /*@out@*/ struct stat * st,
     p_copy = g_strdup(p);
     num_cols = vfs_split_text (p);
 
-    st->st_nlink = atol (columns [0]);
-    if (st->st_nlink < 0)
+    n = atol(columns[0]);
+    st->st_nlink = n;
+    if (n < 0)
         goto error;
 
     if (!is_num (1))
@@ -1207,7 +1209,7 @@ fprintf(stderr, "*** ftpOpendir(%s)\n", path);
     /*@-abstract@*/
     dp = (struct dirent *) (avdir + 1);
     av = (const char **) (dp + 1);
-    dt = (char *) (av + (ac + 1));
+    dt = (unsigned char *) (av + (ac + 1));
     t = (char *) (dt + ac + 1);
     /*@=abstract@*/
 

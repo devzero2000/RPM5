@@ -180,10 +180,12 @@ rpmtime_t rpmswInit(void)
 		rpmsw_type @*/
 {
     struct rpmsw_s begin, end;
-    unsigned long long sum_cycles = 0;
-    rpmtime_t sum_usecs = 0;
     rpmtime_t sum_overhead = 0;
+#if defined(HP_TIMING_NOW)
     rpmtime_t cycles;
+    rpmtime_t sum_usecs = 0;
+    unsigned long long sum_cycles = 0;
+#endif
     int i;
 
     rpmsw_initialized = 1;
