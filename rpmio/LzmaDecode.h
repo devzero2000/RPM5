@@ -35,7 +35,7 @@
 /* #define _LZMA_LOC_OPT */
 /* Enable local speed optimizations inside code */
 
-/* #define _LZMA_SYSTEM_SIZE_T */
+#define _LZMA_SYSTEM_SIZE_T
 /* Use system's size_t. You can use it to enable 64-bit sizes supporting*/
 
 #ifndef UInt32
