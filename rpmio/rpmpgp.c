@@ -962,11 +962,11 @@ int pgpPubkeyFingerprint(const byte * pkt, unsigned int pktlen, byte * keyid)
 int pgpExtractPubkeyFingerprint(const char * b64pkt, byte * keyid)
 {
     const byte * pkt;
-    ssize_t pktlen;
+    size_t pktlen;
 
     if (b64decode(b64pkt, (void **)&pkt, &pktlen))
 	return -1;	/* on error */
-    (void) pgpPubkeyFingerprint(pkt, pktlen, keyid);
+    (void) pgpPubkeyFingerprint(pkt, (unsigned int)pktlen, keyid);
     pkt = _free(pkt);
     return 8;	/* no. of bytes of pubkey signid */
 }
