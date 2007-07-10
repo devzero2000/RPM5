@@ -236,17 +236,6 @@ internal__strchrnul (const char *s, int c)
     || STREQ (string, "cntrl") || STREQ (string, "blank"))
 # endif
 
-/* Avoid depending on library functions or files
-   whose names are inconsistent.  */
-
-# if !defined _LIBC && !defined getenv
-extern char *getenv ();
-# endif
-
-# ifndef errno
-extern int errno;
-# endif
-
 /* Match STRING against the filename pattern PATTERN, returning zero if
    it matches, nonzero if not.  */
 static int
