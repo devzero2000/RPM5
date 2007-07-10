@@ -753,7 +753,7 @@ exit:
 rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
 {
     pgpDig dig;
-    byte buf[8*BUFSIZ];
+    char buf[8*BUFSIZ];
     ssize_t count;
     struct rpmlead * l = alloca(sizeof(*l));
     Header sigh = NULL;
