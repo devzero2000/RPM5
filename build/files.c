@@ -1139,8 +1139,8 @@ static int checkHardLinks(FileList fl)
 static int dncmp(const void * a, const void * b)
 	/*@*/
 {
-    const char ** aurlp = a;
-    const char ** burlp = b;
+    const char ** aurlp = (const char **)a;
+    const char ** burlp = (const char **)b;
     const char * adn;
     const char * bdn;
     (void) urlPath(*aurlp, &adn);
@@ -1961,7 +1961,7 @@ static int processMetadataFile(Package pkg, FileList fl, const char * fileURL,
     const char * fn = NULL;
     const char * apkt = NULL;
     const unsigned char * pkt = NULL;
-    ssize_t pktlen = 0;
+    size_t pktlen = 0;
     int absolute = 0;
     int rc = 1;
     int xx;
