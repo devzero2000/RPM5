@@ -432,7 +432,7 @@ extern int noLang;		/* XXX FIXME: pass as arg */
 /*@-boundswrite@*/
 int parseSpec(rpmts ts, const char *specFile, const char *rootURL,
 		int recursing, const char *passPhrase,
-		char *cookie, int anyarch, int force, int verify)
+		const char *cookie, int anyarch, int force, int verify)
 {
     rpmParseState parsePart = PART_PREAMBLE;
     int initialPackage = 1;

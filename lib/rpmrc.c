@@ -440,7 +440,7 @@ static int rpmPlatform(const char * platform)
 		rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     CVOG_t cvog = NULL;
-    char * b = NULL;
+    byte * b = NULL;
     ssize_t blen = 0;
     int init_platform = 0;
     miRE mi_re = NULL;
@@ -456,7 +456,7 @@ static int rpmPlatform(const char * platform)
 	goto exit;
     }
 
-    p = b;
+    p = (char *)b;
     for (pe = p; p && *p; p = pe) {
 	pe = strchr(p, '\n');
 	if (pe)

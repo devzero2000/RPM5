@@ -3891,7 +3891,7 @@ exit:
 }
 
 /*@-boundswrite@*/
-int rpmioSlurp(const char * fn, const byte ** bp, ssize_t * blenp)
+int rpmioSlurp(const char * fn, byte ** bp, ssize_t * blenp)
 {
     static ssize_t blenmax = (32 * BUFSIZ);
     ssize_t blen = 0;
