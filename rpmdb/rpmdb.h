@@ -916,6 +916,19 @@ rpmdb XrpmdbLink (rpmdb db, const char * msg,
 /*@=exportlocal@*/
 #define	rpmdbLink(_db, _msg)	XrpmdbLink(_db, _msg, __FILE__, __LINE__)
 
+/** @todo document rpmdbNew
+ */
+rpmdb rpmdbNew(/*@kept@*/ /*@null@*/ const char * root,
+		/*@kept@*/ /*@null@*/ const char * home,
+		int mode, int perms, int flags);
+
+/** @todo document rpmdbOpenDatabase
+ */
+int rpmdbOpenDatabase(/*@null@*/ const char * prefix,
+		/*@null@*/ const char * dbpath,
+		int _dbapi, /*@null@*/ /*@out@*/ rpmdb *dbp,
+		int mode, int perms, int flags);
+
 /** \ingroup rpmdb
  * Open rpm database.
  * @param prefix	path to top of install tree
