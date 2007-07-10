@@ -145,7 +145,7 @@ int LzmaDecodeProperties(CLzmaProperties *propsRes, const unsigned char *propsDa
     */
   }
 
-  #ifdef _LZMA_OUT_READ
+#ifdef _LZMA_OUT_READ
   {
     unsigned int i;
     propsRes->DictionarySize = 0;
@@ -154,18 +154,18 @@ int LzmaDecodeProperties(CLzmaProperties *propsRes, const unsigned char *propsDa
     if (propsRes->DictionarySize == 0)
       propsRes->DictionarySize = 1;
   }
-  #endif
+#endif
   return LZMA_RESULT_OK;
 }
 
 #define kLzmaStreamWasFinishedId (-1)
 
 int LzmaDecode(CLzmaDecoderState *vs,
-    #ifdef _LZMA_IN_CB
+#ifdef _LZMA_IN_CB
     ILzmaInCallback *InCallback,
-    #else
+#else
     const unsigned char *inStream, SizeT inSize, SizeT *inSizeProcessed,
-    #endif
+#endif
     unsigned char *outStream, SizeT outSize, SizeT *outSizeProcessed)
 {
   CProb *p = vs->Probs;
@@ -175,17 +175,17 @@ int LzmaDecode(CLzmaDecoderState *vs,
   UInt32 literalPosMask = (1 << (vs->Properties.lp)) - 1;
   int lc = vs->Properties.lc;
 
-  #ifdef _LZMA_OUT_READ
+#ifdef _LZMA_OUT_READ
   
   UInt32 Range = vs->Range;
   UInt32 Code = vs->Code;
-  #ifdef _LZMA_IN_CB
+#ifdef _LZMA_IN_CB
   const Byte *Buffer = vs->Buffer;
   const Byte *BufferLim = vs->BufferLim;
-  #else
+#else
   const Byte *Buffer = inStream;
   const Byte *BufferLim = inStream + inSize;
-  #endif
+#endif
   int state = vs->State;
   UInt32 rep0 = vs->Reps[0], rep1 = vs->Reps[1], rep2 = vs->Reps[2], rep3 = vs->Reps[3];
   int len = vs->RemainLen;
@@ -198,9 +198,9 @@ int LzmaDecode(CLzmaDecoderState *vs,
 
   Byte tempDictionary[4];
 
-  #ifndef _LZMA_IN_CB
+#ifndef _LZMA_IN_CB
   *inSizeProcessed = 0;
-  #endif
+#endif
   *outSizeProcessed = 0;
   if (len == kLzmaStreamWasFinishedId)
     return LZMA_RESULT_OK;
@@ -225,11 +225,11 @@ int LzmaDecode(CLzmaDecoderState *vs,
       distanceLimit = 0;
       dictionaryPos = 0;
       dictionary[dictionarySize - 1] = 0;
-      #ifdef _LZMA_IN_CB
+#ifdef _LZMA_IN_CB
       RC_INIT;
-      #else
+#else
       RC_INIT(inStream, inSize);
-      #endif
+#endif
     }
     len = 0;
   }
@@ -248,7 +248,7 @@ int LzmaDecode(CLzmaDecoderState *vs,
   else
     previousByte = dictionary[dictionaryPos - 1];
 
-  #else /* if !_LZMA_OUT_READ */
+#else /* if !_LZMA_OUT_READ */
 
   int state = 0;
   UInt32 rep0 = 1, rep1 = 1, rep2 = 1, rep3 = 1;
@@ -258,9 +258,9 @@ int LzmaDecode(CLzmaDecoderState *vs,
   UInt32 Range;
   UInt32 Code;
 
-  #ifndef _LZMA_IN_CB
+#ifndef _LZMA_IN_CB
   *inSizeProcessed = 0;
-  #endif
+#endif
   *outSizeProcessed = 0;
 
   {
@@ -270,13 +270,13 @@ int LzmaDecode(CLzmaDecoderState *vs,
       p[i] = kBitModelTotal >> 1;
   }
   
-  #ifdef _LZMA_IN_CB
+#ifdef _LZMA_IN_CB
   RC_INIT;
-  #else
+#else
   RC_INIT(inStream, inSize);
-  #endif
+#endif
 
-  #endif /* _LZMA_OUT_READ */
+#endif /* _LZMA_OUT_READ */
 
   while(nowPos < outSize)
   {
@@ -284,9 +284,9 @@ int LzmaDecode(CLzmaDecoderState *vs,
     UInt32 bound;
     int posState = (int)(
         (nowPos 
-        #ifdef _LZMA_OUT_READ
+#ifdef _LZMA_OUT_READ
         + globalPos
-        #endif
+#endif
         )
         & posStateMask);
 
@@ -298,23 +298,23 @@ int LzmaDecode(CLzmaDecoderState *vs,
       prob = p + Literal + (LZMA_LIT_SIZE * 
         (((
         (nowPos 
-        #ifdef _LZMA_OUT_READ
+#ifdef _LZMA_OUT_READ
         + globalPos
-        #endif
+#endif
         )
         & literalPosMask) << lc) + (previousByte >> (8 - lc))));
 
       if (state >= kNumLitStates)
       {
         int matchByte;
-        #ifdef _LZMA_OUT_READ
+#ifdef _LZMA_OUT_READ
         UInt32 pos = dictionaryPos - rep0;
         if (pos >= dictionarySize)
           pos += dictionarySize;
         matchByte = dictionary[pos];
-        #else
+#else
         matchByte = outStream[nowPos - rep0];
-        #endif
+#endif
         do
         {
           int bit;
@@ -334,14 +334,14 @@ int LzmaDecode(CLzmaDecoderState *vs,
       previousByte = (Byte)symbol;
 
       outStream[nowPos++] = previousByte;
-      #ifdef _LZMA_OUT_READ
+#ifdef _LZMA_OUT_READ
       if (distanceLimit < dictionarySize)
         distanceLimit++;
 
       dictionary[dictionaryPos] = previousByte;
       if (++dictionaryPos == dictionarySize)
         dictionaryPos = 0;
-      #endif
+#endif
       if (state < 4) state = 0;
       else if (state < 10) state -= 3;
       else state -= 6;
@@ -369,20 +369,20 @@ int LzmaDecode(CLzmaDecoderState *vs,
           prob = p + IsRep0Long + (state << kNumPosBitsMax) + posState;
           IfBit0(prob)
           {
-            #ifdef _LZMA_OUT_READ
+#ifdef _LZMA_OUT_READ
             UInt32 pos;
-            #endif
+#endif
             UpdateBit0(prob);
             
-            #ifdef _LZMA_OUT_READ
+#ifdef _LZMA_OUT_READ
             if (distanceLimit == 0)
-            #else
+#else
             if (nowPos == 0)
-            #endif
+#endif
               return LZMA_RESULT_DATA_ERROR;
             
             state = state < kNumLitStates ? 9 : 11;
-            #ifdef _LZMA_OUT_READ
+#ifdef _LZMA_OUT_READ
             pos = dictionaryPos - rep0;
             if (pos >= dictionarySize)
               pos += dictionarySize;
@@ -390,14 +390,14 @@ int LzmaDecode(CLzmaDecoderState *vs,
             dictionary[dictionaryPos] = previousByte;
             if (++dictionaryPos == dictionarySize)
               dictionaryPos = 0;
-            #else
+#else
             previousByte = outStream[nowPos - rep0];
-            #endif
+#endif
             outStream[nowPos++] = previousByte;
-            #ifdef _LZMA_OUT_READ
+#ifdef _LZMA_OUT_READ
             if (distanceLimit < dictionarySize)
               distanceLimit++;
-            #endif
+#endif
 
             continue;
           }
@@ -531,23 +531,23 @@ int LzmaDecode(CLzmaDecoderState *vs,
       }
 
       len += kMatchMinLen;
-      #ifdef _LZMA_OUT_READ
+#ifdef _LZMA_OUT_READ
       if (rep0 > distanceLimit) 
-      #else
+#else
       if (rep0 > nowPos)
-      #endif
+#endif
         return LZMA_RESULT_DATA_ERROR;
 
-      #ifdef _LZMA_OUT_READ
+#ifdef _LZMA_OUT_READ
       if (dictionarySize - distanceLimit > (UInt32)len)
         distanceLimit += len;
       else
         distanceLimit = dictionarySize;
-      #endif
+#endif
 
       do
       {
-        #ifdef _LZMA_OUT_READ
+#ifdef _LZMA_OUT_READ
         UInt32 pos = dictionaryPos - rep0;
         if (pos >= dictionarySize)
           pos += dictionarySize;
@@ -555,9 +555,9 @@ int LzmaDecode(CLzmaDecoderState *vs,
         dictionary[dictionaryPos] = previousByte;
         if (++dictionaryPos == dictionarySize)
           dictionaryPos = 0;
-        #else
+#else
         previousByte = outStream[nowPos - rep0];
-        #endif
+#endif
         len--;
         outStream[nowPos++] = previousByte;
       }
@@ -566,7 +566,7 @@ int LzmaDecode(CLzmaDecoderState *vs,
   }
   RC_NORMALIZE;
 
-  #ifdef _LZMA_OUT_READ
+#ifdef _LZMA_OUT_READ
   vs->Range = Range;
   vs->Code = Code;
   vs->DictionaryPos = dictionaryPos;
@@ -579,14 +579,14 @@ int LzmaDecode(CLzmaDecoderState *vs,
   vs->State = state;
   vs->RemainLen = len;
   vs->TempDictionary[0] = tempDictionary[0];
-  #endif
+#endif
 
-  #ifdef _LZMA_IN_CB
+#ifdef _LZMA_IN_CB
   vs->Buffer = Buffer;
   vs->BufferLim = BufferLim;
-  #else
+#else
   *inSizeProcessed = (SizeT)(Buffer - inStream);
-  #endif
+#endif
   *outSizeProcessed = nowPos;
   return LZMA_RESULT_OK;
 }

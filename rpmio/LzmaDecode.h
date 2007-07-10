@@ -81,9 +81,9 @@ typedef struct _CLzmaProperties
   int lc;
   int lp;
   int pb;
-  #ifdef _LZMA_OUT_READ
+#ifdef _LZMA_OUT_READ
   UInt32 DictionarySize;
-  #endif
+#endif
 }CLzmaProperties;
 
 int LzmaDecodeProperties(CLzmaProperties *propsRes, const unsigned char *propsData, int size)
@@ -98,14 +98,14 @@ typedef struct _CLzmaDecoderState
   CLzmaProperties Properties;
   CProb *Probs;
 
-  #ifdef _LZMA_IN_CB
+#ifdef _LZMA_IN_CB
 /*@relnull@*/
   const unsigned char *Buffer;
 /*@relnull@*/
   const unsigned char *BufferLim;
-  #endif
+#endif
 
-  #ifdef _LZMA_OUT_READ
+#ifdef _LZMA_OUT_READ
   unsigned char *Dictionary;
   UInt32 Range;
   UInt32 Code;
@@ -116,7 +116,7 @@ typedef struct _CLzmaDecoderState
   int State;
   int RemainLen;
   unsigned char TempDictionary[4];
-  #endif
+#endif
 } CLzmaDecoderState;
 
 #ifdef _LZMA_OUT_READ
@@ -124,11 +124,11 @@ typedef struct _CLzmaDecoderState
 #endif
 
 int LzmaDecode(CLzmaDecoderState *vs,
-    #ifdef _LZMA_IN_CB
+#ifdef _LZMA_IN_CB
     ILzmaInCallback *inCallback,
-    #else
+#else
     const unsigned char *inStream, SizeT inSize, SizeT *inSizeProcessed,
-    #endif
+#endif
     unsigned char *outStream, SizeT outSize, SizeT *outSizeProcessed)
 	/*@modifies vs, outStream, *outSizeProcessed @*/;
 
