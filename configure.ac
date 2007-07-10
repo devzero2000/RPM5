@@ -700,6 +700,13 @@ AC_SUBST(WITH_PYTHON_SUBDIR)
 AC_SUBST(WITH_PYTHON_SUBPACKAGE)
 AC_SUBST(WITH_PYTHON_VERSION)
 
+AC_ARG_WITH(python-inc-dir, AS_HELP_STRING([--with-python-inc-dir=DIR], [directory with Python include files]),
+	[WITH_PYTHON_INCDIR="$withval"], [WITH_PYTHON_INCDIR="\$(prefix)/include/python${WITH_PYTHON_VERSION}"])
+AC_ARG_WITH(python-lib-dir, AS_HELP_STRING([--with-python-lib-dir=DIR], [directory with Python library]),
+	[WITH_PYTHON_LIBDIR="$withval"], [WITH_PYTHON_LIBDIR="\${prefix}/lib${MARK64}/python${WITH_PYTHON_VERSION}"])
+AC_SUBST(WITH_PYTHON_INCDIR)
+AC_SUBST(WITH_PYTHON_LIBDIR)
+
 dnl ##
 dnl ## ==== THIRD-PARTY LIBRARIES (2/2) ====
 dnl ##
