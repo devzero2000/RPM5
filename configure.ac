@@ -17,10 +17,10 @@ AM_MAINTAINER_MODE
 
 dnl # allow packagers to override the bugreport address
 AC_ARG_WITH(bugreport,
-    AS_HELP_STRING([--with-bugreport=ADDRESS], [set packager bugreport Email address (PACKAGE_BUGREPORT_DEFAULT)]), [dnl
+    AS_HELP_STRING([--with-bugreport=ADDRESS], [set packager bugreport Email/Web address (PACKAGE_BUGREPORT_DEFAULT)]), [dnl
     case "$withval" in
-        *@* ) PACKAGE_BUGREPORT="$withval" ;;
-        *   ) AC_MSG_ERROR([invalid bugreport Email address]) ;;
+        *@*|http*://* ) PACKAGE_BUGREPORT="$withval" ;;
+        *   ) AC_MSG_ERROR([invalid bugreport Email/Web address]) ;;
     esac
 ])
 
