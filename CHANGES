@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - jbj: set a "sane" 0002 umask always (#83006).
     - rse: remove the already obsolete rpm.c
     - rse/jbj: eliminated all major compile-time warnings
     - rse: cleanup API by changing argument 2 of rpmDigestFinal() from "void **" to "void *"
