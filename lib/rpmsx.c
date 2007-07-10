@@ -164,7 +164,7 @@ static int rpmsxAdd(rpmsx sx, const char ** bpp)
 /*@i@*/    sxs->stem = strndup(*bpp, stem_len);
 #else
     sxs->stem = xmalloc(stem_len+1);
-    strncpy(sxs->stem, *bpp, stem_len);
+    strncpy((char *)sxs->stem, *bpp, stem_len);
 #endif
     sx->nsxs++;
     *bpp += stem_len;
