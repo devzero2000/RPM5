@@ -99,7 +99,7 @@ static rpmRC markReplacedFiles(const rpmpsm psm)
     sharedFileInfo sfi;
     rpmdbMatchIterator mi;
     Header h;
-    unsigned int * offsets;
+    int * offsets;
     unsigned int prev;
     int num, xx;
 
@@ -313,7 +313,7 @@ assert(fi->h != NULL);
 			+ fi->fc * sizeof(*fi->dil)
 			+ speclen + sourcelen);
 	/*@-dependenttrans@*/
-	fi->dil = (int *)(fi->dnl + fi->dc);
+	fi->dil = (unsigned int *)(fi->dnl + fi->dc);
 	/*@=dependenttrans@*/
 	memset(fi->dil, 0, fi->fc * sizeof(*fi->dil));
 	fi->dil[i] = 1;
