@@ -55,6 +55,8 @@ static char sccsid[] = "@(#)merge.c	8.2 (Berkeley) 2/14/94";
 
 #include "system.h"
 
+#include "rpmdb.h"
+
 #define ISIZE sizeof(int)
 #define PSIZE sizeof(unsigned char *)
 #define ICOPY_LIST(src, dst, last)				\
