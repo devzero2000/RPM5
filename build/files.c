@@ -1096,7 +1096,7 @@ static int isDoc(FileList fl, const char * fileName)	/*@*/
     k = strlen(fileName);
     while (x--) {
 	l = strlen(fl->docDirs[x]);
-	if (l < k && strncmp(filename, fl->docDirs[x], l) == 0 && filename[l] == '/')
+	if (l < k && strncmp(fileName, fl->docDirs[x], l) == 0 && fileName[l] == '/')
 	    return 1;
     }
     return 0;
