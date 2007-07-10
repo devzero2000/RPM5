@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - rse: cleanup API by changing argument 2 of rpmDigestFinal() from "void **" to "void *"
     - rse: make directory checking for %docdir more strict to avoid false positives
     - jbj: perform fsync(2) before closing installed file.
     - jbj: default RPMCANONCOLOR to 3 everywhere but ia64 and mips*.

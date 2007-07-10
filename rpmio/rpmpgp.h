@@ -1472,7 +1472,7 @@ int rpmDigestUpdate(/*@null@*/ DIGEST_CTX ctx, const void * data, size_t len)
  * @return		0 on success
  */
 int rpmDigestFinal(/*@only@*/ /*@null@*/ DIGEST_CTX ctx,
-	/*@null@*/ /*@out@*/ void ** datap,
+	/*@null@*/ /*@out@*/ void * datap,
 	/*@null@*/ /*@out@*/ size_t * lenp, int asAscii)
 		/*@modifies *datap, *lenp @*/;
 

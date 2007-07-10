@@ -658,7 +658,7 @@ DPRINTF((stderr, "*** Update(%p,%p,%d) param %p \"%s\"\n", ctx, data, len, ctx->
 
 /*@-boundswrite@*/
 int
-rpmDigestFinal(DIGEST_CTX ctx, void ** datap, size_t *lenp, int asAscii)
+rpmDigestFinal(DIGEST_CTX ctx, void * datap, size_t *lenp, int asAscii)
 {
     byte * digest;
     char * t;
@@ -678,7 +678,7 @@ DPRINTF((stderr, "*** Final(%p,%p,%p,%d) param %p digest %p\n", ctx, datap, lenp
     if (!asAscii) {
 	if (lenp) *lenp = ctx->digestsize;
 	if (datap) {
-	    *datap = digest;
+	    *(byte **)datap = digest;
 	    digest = NULL;
 	}
     } else {
@@ -687,7 +687,7 @@ DPRINTF((stderr, "*** Final(%p,%p,%p,%d) param %p digest %p\n", ctx, datap, lenp
 	    const byte * s = (const byte *) digest;
 	    static const char hex[] = "0123456789abcdef";
 
-	    *datap = t = xmalloc((2*ctx->digestsize) + 1);
+	    *(char **)datap = t = xmalloc((2*ctx->digestsize) + 1);
 	    for (i = 0 ; i < ctx->digestsize; i++) {
 		*t++ = hex[ (unsigned)((*s >> 4) & 0x0f) ];
 		*t++ = hex[ (unsigned)((*s++   ) & 0x0f) ];
