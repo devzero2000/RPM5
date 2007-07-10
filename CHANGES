@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - jbj: revert the _GetPass() hack-a-round.
     - jbj: set a "sane" 0002 umask always (#83006).
     - rse: remove the already obsolete rpm.c
     - rse/jbj: eliminated all major compile-time warnings
