@@ -10,6 +10,7 @@
 
 #include "cpio.h"	/* XXX CPIO_FOO */
 #include "fsm.h"	/* XXX newFSM() */
+#include "legacy.h"	/* XXX dodigest */
 
 #include "rpmds.h"
 
@@ -662,7 +663,7 @@ fileAction rpmfiDecideFate(const rpmfi ofi, rpmfi nfi, int skipMissing)
 	odigest = rpmfiDigest(ofi, &oalgo, &olen);
 	if (diskWhat == REG) {
 	    if (!(newFlags & RPMFILE_SPARSE))
-	    if (dodigest(oalgo, fn, buffer, 0, NULL))
+	    if (dodigest(oalgo, fn, (unsigned char *)buffer, 0, NULL))
 		return FA_CREATE;	/* assume file has been removed */
 	    if (odigest && !memcmp(odigest, buffer, olen))
 		return FA_CREATE;	/* unmodified config file, replace. */
