@@ -16,7 +16,7 @@ EXTRA_DIST = CHANGES CREDITS Doxyheader GROUPS INSTALL \
 	perl/typemap \
 	pubkeys/JBJ-GPG-KEY \
 	po/*.in po/*.po po/rpm.pot \
-	rpm.magic rpmqv.c rpm.c
+	rpm.magic rpmqv.c
 
 SUBDIRS =
 if USE_NLS
