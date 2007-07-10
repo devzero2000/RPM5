@@ -1084,7 +1084,6 @@ static int compareFileListRecs(const void * ap, const void * bp)	/*@*/
 
 /**
  * Test if file is located in a %docdir.
- * @bug Use of strstr(3) might result in false positives.
  * @param fl		package file tree walk data
  * @param fileName	file path
  * @return		1 if doc file, 0 if not
@@ -1092,9 +1091,12 @@ static int compareFileListRecs(const void * ap, const void * bp)	/*@*/
 static int isDoc(FileList fl, const char * fileName)	/*@*/
 {
     int x = fl->docDirCount;
+    size_t k, l;
 
+    k = strlen(fileName);
     while (x--) {
-	if (strstr(fileName, fl->docDirs[x]) == fileName)
+	l = strlen(fl->docDirs[x]);
+	if (l < k && strncmp(filename, fl->docDirs[x], l) == 0 && filename[l] == '/')
 	    return 1;
     }
     return 0;
