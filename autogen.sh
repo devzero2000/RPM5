@@ -43,6 +43,7 @@ echo "===> file"
 echo "<=== file"
 
 echo "===> rpm"
+rm -rf autom4te.cache || true
 echo "---> generate files via GNU libtool (libtoolize)"
 libtoolize --copy --force
 echo "---> generate files via GNU gettext (autopoint)"
