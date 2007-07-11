@@ -109,6 +109,121 @@ CFLAGS   = `pkg-config rpm --cflags-only-other`
 LDFLAGS  = `pkg-config rpm --libs-only-other`
 LIBS     = `pkg-config rpm --libs-only-l`
 
+LIBRARY ISSUES
+==============
+
+RPM is a rather comphrehensive tool with both internal dependencies and
+optional external dependencies. The current internal structure is (in
+partly dependency order from top to bottom):
+
+  RPM Executables:       rpm
+  (stage 0)              rpmbuild
+
+  RPM Libraries:         librpmbuild
+  (stage 1)              librpm 
+                         librpmdb
+                         librpmio 
+                         librpmmisc
+
+  Third-Party Libraries: libpopt     (mandatory)
+  (stage 2)              libbeecrypt (mandatory)
+                         libdb       (mandatory)
+                         libsqlite3  (optional)
+                         liblua      (optional)
+                         libz        (optional)
+                         libbz2      (optional)
+                         libintl     (optional)
+                         libiconv    (optional)
+                         libdmalloc  (optional)
+                         libefence   (optional)
+                         libkeyutils (optional)
+                         libelf      (optional)
+                         libneon     (optional)
+
+  Third-Party Libraries: libxml2     (required by libneon)
+  (stage 3)              libssl      (required by libneon)
+                         libcrypto   (required by libssl)
+                      
+  System Libraries:      libc        (required by all)
+  (stage 4)              libm        (required by some)
+                         [...]
+
+The most important aspects to notice are: librpmbuild requires mainly
+librpm, librpm in turn requires both librpmdb and librpmio, and all
+librpm* require librpmmisc. Additionally, librpmmisc is a container for
+the internal local copies of third-party libraries. Finally, notice that
+the set of third-party libraries at stage 2 can be dynamically choosen
+at build-time and are not a fixed set.
+
+Unfortunately, there are many link-time approaches to handle these
+internal and external dependencies. The currently implemented approach
+is a portable compromise balancing the following particular issues:
+
+- Dynamic/Static Libraries:
+  librpmXXX can be built and installed statically (librpmXXX.a) or
+  dynamically (librpmXXX.so). This is handled by GNU libtool and
+  controlled by Autoconf options --{enable,disable}-{shared,static}.
+
+- Installed/Uninstalled Libraries:
+  libfoo can be in an installed (after "make install") or uninstalled
+  (just after "make") state. Both are supported by GNU libtool but in
+  totally different ways. GNU libtool especially treats the linking of a
+  library against an uninstalled one specially by _copying_ all objects
+  of the dependency library into the to be be built library.
+
+- Regular/Convenience Libraries:
+  GNU libtool knows a special "convenience" library. These are
+  uninstalled libfoo.la's which are linked into another (still
+  uninstalled) libbar.la.
+
+- Library Type Combinations:
+  GNU libtool knows how to handle all situations caused by _combinding_
+  the different types of libraries: installed/uninstalled,
+  static/dynamic and regular/convinience. And in RPM nearly _ALL_ of
+  those combinations actually occur under various Autoconf options.
+  Although the processing abstracted, the resulting libraries have
+  different characteristics and affects how RPM-based applications are
+  able to link about the RPM libraries.
+
+- External Dependencies:
+  librpmXXX and librpmYYY usually depend on the _same_ third-party
+  library libfoo. Although GNU libtool handles this seamlessly, one can
+  easily end up with multiple copies of a code in the same RPM-based
+  application.
+
+- Non-Fixed Third-Party Libraries:
+  RPM supports to be built against a non-fixed set of third-party
+  libraries, ranging from _none_ at all to half a dozen ones.
+  Especially, the cases of "none" and "some" have to taken into account.
+
+- Transitive Dependencies:
+  libfoo usually has dependencies to other third-party libraries and
+  those dependencies can be even just optional. For instance libneon
+  can optionally depend on OpenSSL's libssl and libcrypto and the W3C
+  libxml.
+
+- Internal Modified Local Copies:
+  because of optional but RPM-specific modifications, some third-party
+  libraries are even provided as internal copies in the RPM source
+  tree. Those libraries have to be handled specially as they are built
+  together with RPM. This means that for instance one cannot test-link
+  against them during configure-time.
+
+- Dependency Encoding:
+  there are multiple ways an inter-library dependency can be encoded:
+  directly in an ELF librpmXXX.so as DT_NEEDED (not available
+  everywhere), indirectly via "dependency_libs" in librpmXXX.la, via
+  "Libs:" in rpm.pc, or either via a _FULL INCLUDED COPY_ of all objects
+  or not at all in case of librpmXXX.a, etc.
+
+Before complaining that the currently implemented library approach
+of RPM is not "standard", doesn't "just work" as expected for your
+particular situation, etc please first make sure you understood that
+it is balanced compromise in order to portably take care of all of
+the above issues at once. So, if you want to change the current
+implementation please at least make sure that the above issues are still
+taken care of and especially test it under _different_ Unix flavors.
+
 OS DEPENDENCIES
 ===============
 
