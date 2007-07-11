@@ -851,6 +851,10 @@ int rpmReadConfigFiles(const char * file, const char * target)
 	/*@globals configTarget @*/
 	/*@modifies configTarget @*/
 {
+    mode_t mode = 0022;
+
+    /* Reset umask to its default umask(2) value. */
+    mode = umask(mode);
 
     configTarget = target;
 
