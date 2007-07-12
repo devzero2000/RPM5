@@ -1254,16 +1254,10 @@ rpmts_Run(rpmtsObject * s, PyObject * args, PyObject * kwds)
 
     /* Initialize security context patterns (if not already done). */
     if (!(s->ts->transFlags & RPMTRANS_FLAG_NOCONTEXTS)) {
-	rpmsx sx = rpmtsREContext(s->ts);
-	if (sx == NULL) {
-	    const char *fn = rpmGetPath("%{?_install_file_context_path}", NULL);
-	    if (fn != NULL && *fn != '\0') {
-		sx = rpmsxNew(fn);
-		(void) rpmtsSetREContext(s->ts, sx);
-	    }
-	    fn = _free(fn);
-	}
-	sx = rpmsxFree(sx);
+	const char *fn = rpmGetPath("%{?_install_file_context_path}", NULL);
+	if (fn != NULL && *fn != '\0')
+	    rc = matchpathcon_init(fn);
+	fn = _free(fn);
     } 
 
 if (_rpmts_debug)

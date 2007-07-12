@@ -16,8 +16,6 @@
 #define	_RPMFI_INTERNAL
 #include "rpmfi.h"
 
-#include "rpmsx.h"
-
 #define	_RPMTE_INTERNAL	/* relocations */
 #include "rpmte.h"
 #include "rpmts.h"
@@ -1749,7 +1747,6 @@ void rpmfiBuildREContexts(Header h,
 {
     int scareMem = 0;
     rpmfi fi = rpmfiNew(NULL, h, RPMTAG_BASENAMES, scareMem);
-    rpmsx sx = NULL;
     const char ** av = NULL;
     int ac;
     size_t nb;
@@ -1764,7 +1761,11 @@ void rpmfiBuildREContexts(Header h,
     }
 
     /* Read security context patterns. */
-    sx = rpmsxNew(NULL);
+    {	const char *fn = rpmGetPath("%{?__file_context_path}", NULL);
+	if (fn != NULL && *fn != '\0')
+	    matchpathcon_init(fn);
+	fn = _free(fn);
+    }
 
     /* Compute size of argv array blob, concatenating file contexts. */
     nb = ac * sizeof(*fcnb);
@@ -1775,10 +1776,10 @@ void rpmfiBuildREContexts(Header h,
     while (rpmfiNext(fi) >= 0) {
 	const char * fn = rpmfiFN(fi);
 	mode_t fmode = rpmfiFMode(fi);
-	const char * scon;
+	security_context_t scon;
 
-	scon = rpmsxFContext(sx, fn, fmode);
-	if (scon != NULL) {
+	scon = NULL;
+	if (matchpathcon(fn, fmode, &scon) == 0 && scon != NULL) {
 	    fcnb[ac] = strlen(scon) + 1;
 /*@-branchstate@*/
 	    if (fcnb[ac] > 0) {
@@ -1787,6 +1788,7 @@ void rpmfiBuildREContexts(Header h,
 		fctxtlen += fcnb[ac];
 	    }
 /*@=branchstate@*/
+	    freecon(scon);
 	}
 	ac++;
     }
@@ -1811,7 +1813,6 @@ void rpmfiBuildREContexts(Header h,
 
 exit:
     fi = rpmfiFree(fi);
-    sx = rpmsxFree(sx);
     /*@-branchstate@*/
     if (fcontextp)
 	*fcontextp = av;
