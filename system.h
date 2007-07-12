@@ -315,6 +315,9 @@ typedef	char * security_context_t;
 #define	is_selinux_enabled()	(-1)
 
 #define rpm_execcon(_v, _fn, _av, _envp)	(0)
+
+#define matchpathcon_init(_fn)	(-1)
+#define matchpathcon(_fn, _fmode, _s)	(-1)
 #endif
 
 #if defined(WITH_SELINUX) && defined(__LCLINT__)

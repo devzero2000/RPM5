@@ -310,17 +310,11 @@ int rpmInstall(rpmts ts, QVA_t ia, const char ** fileArgv)
 
     /* Initialize security context patterns (if not already done). */
     if (!(ia->transFlags & RPMTRANS_FLAG_NOCONTEXTS)) {
-	rpmsx sx = rpmtsREContext(ts);
-	if (sx == NULL) {
-	    fn = rpmGetPath("%{?_install_file_context_path}", NULL);
-	    if (fn != NULL && *fn != '\0') {
-		sx = rpmsxNew(fn);
-		(void) rpmtsSetREContext(ts, sx);
-	    }
+	const char *fn = rpmGetPath("%{?_install_file_context_path}", NULL);
+	if (fn != NULL && *fn != '\0')
+	    xx = matchpathcon_init(fn);
 	    fn = _free(fn);
 	}
-	sx = rpmsxFree(sx);
-    }
     (void) rpmtsSetFlags(ts, ia->transFlags);
     (void) rpmtsSetDFlags(ts, ia->depFlags);
 

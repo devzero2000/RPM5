@@ -23,9 +23,6 @@
 #define	_RPMFI_INTERNAL
 #include "rpmfi.h"
 
-#include "rpmsx.h"
-
-
 #define	_RPMTE_INTERNAL
 #include "rpmte.h"
 
@@ -1270,12 +1267,12 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
     int apathlen = 0;
     int dpathlen = 0;
     int skipLen = 0;
-    rpmsx sx = NULL;
+    security_context_t scon = NULL;
     const char * sxfn;
     size_t fnlen;
     FileListRec flp;
     char buf[BUFSIZ];
-    int i;
+    int i, xx;
     
     /* Sort the big list */
     qsort(fl->fileList, fl->fileListRecsUsed,
@@ -1290,7 +1287,7 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 
     sxfn = rpmGetPath("%{?_build_file_context_path}", NULL);
     if (sxfn != NULL && *sxfn != '\0')
-   	sx = rpmsxNew(sxfn);
+	xx = matchpathcon_init(sxfn);
 
     for (i = 0, flp = fl->fileList; i < fl->fileListRecsUsed; i++, flp++) {
 	const char *s;
@@ -1507,18 +1504,17 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 			       &(flp->flags), 1);
 
 	/* Add file security context to package. */
-/*@-branchstate@*/
-	if (sx != NULL) {
+	{
 	    mode_t fmode = (uint_16)flp->fl_mode;
-	    s = rpmsxFContext(sx, flp->fileURL, fmode);
-	    if (s == NULL) s = "";
+	    static const char *nocon = "";
+	    if (matchpathcon(flp->fileURL, fmode, &scon) || scon == NULL)
+		scon = nocon;
 	    (void) headerAddOrAppendEntry(h, RPMTAG_FILECONTEXTS, RPM_STRING_ARRAY_TYPE,
-			       &s, 1);
+			       &scon, 1);
+	    if (scon != nocon)
+		freecon(scon);
 	}
-/*@=branchstate@*/
-
     }
-    sx = rpmsxFree(sx);
     sxfn = _free(sxfn);
 
     (void) headerAddEntry(h, RPMTAG_SIZE, RPM_INT32_TYPE,

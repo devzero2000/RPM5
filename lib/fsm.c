@@ -666,13 +666,11 @@ static int fsmMapFContext(FSM_t fsm)
     if (ts != NULL && rpmtsSELinuxEnabled(ts) == 1 &&
 	!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOCONTEXTS))
     {
-	rpmsx sx = rpmtsREContext(ts);
+	security_context_t scon = NULL;
 
-	if (sx != NULL) {
-	    /* Get file security context from patterns. */
-	    fsm->fcontext = rpmsxFContext(sx, fsm->path, st->st_mode);
-	    sx = rpmsxFree(sx);
-	} else {
+	if (matchpathcon(fsm->path, st->st_mode, &scon) == 0 && scon != NULL)
+	    fsm->fcontext = scon;
+	else {
 	    int i = fsm->ix;
 
 	    /* Get file security context from package. */
