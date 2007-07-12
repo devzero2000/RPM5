@@ -481,6 +481,8 @@ static struct rpmfcTokens_s rpmfcTokens[] = {
 
   { "Java ",			RPMFC_JAVA|RPMFC_INCLUDE },
 
+  { "PE executable",            RPMFC_MONO|RPMFC_INCLUDE },
+
   { "current ar archive",	RPMFC_STATIC|RPMFC_LIBRARY|RPMFC_ARCHIVE|RPMFC_INCLUDE },
 
   { "Zip archive data",		RPMFC_COMPRESSED|RPMFC_ARCHIVE|RPMFC_INCLUDE },
@@ -786,8 +788,12 @@ static int rpmfcSCRIPT(rpmfc fc)
 	xx = rpmfcHelper(fc, 'P', "php");
 	if (is_executable)
 	    xx = rpmfcHelper(fc, 'R', "php");
+    } else
+    if (fc->fcolor->vals[fc->ix] & RPMFC_MONO) {
+	xx = rpmfcHelper(fc, 'P', "mono");
+	if (is_executable)
+	    xx = rpmfcHelper(fc, 'R', "mono");
     }
-
     return 0;
 }
 
@@ -863,7 +869,7 @@ typedef struct rpmfcApplyTbl_s {
 /*@unchecked@*/
 static struct rpmfcApplyTbl_s rpmfcApplyTable[] = {
     { rpmfcELF,		RPMFC_ELF },
-    { rpmfcSCRIPT,	(RPMFC_SCRIPT|RPMFC_PERL|RPMFC_PYTHON|RPMFC_LIBTOOL|RPMFC_PKGCONFIG|RPMFC_BOURNE|RPMFC_JAVA|RPMFC_PHP) },
+    { rpmfcSCRIPT,	(RPMFC_SCRIPT|RPMFC_PERL|RPMFC_PYTHON|RPMFC_LIBTOOL|RPMFC_PKGCONFIG|RPMFC_BOURNE|RPMFC_JAVA|RPMFC_PHP|RPMFC_MONO) },
     { NULL, 0 }
 };
 

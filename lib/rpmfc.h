@@ -26,16 +26,17 @@ enum FCOLOR_e {
     RPMFC_ELF64			= (1 <<  1),
     RPMFC_ELFMIPSN32		= (1 <<  2),
 #define	RPMFC_ELF	(RPMFC_ELF32|RPMFC_ELF64|RPMFC_ELFMIPSN32)
+	/* (1 << 3) leaks into package headers, reserved */
 
     RPMFC_PKGCONFIG		= (1 <<  4),
     RPMFC_LIBTOOL		= (1 <<  5),
     RPMFC_BOURNE		= (1 <<  6),
+    RPMFC_MONO			= (1 <<  7),
 
-    RPMFC_MODULE		= (1 <<  7),
-    RPMFC_EXECUTABLE		= (1 <<  8),
-    RPMFC_SCRIPT		= (1 <<  9),
-    RPMFC_TEXT			= (1 << 10),
-    RPMFC_DATA			= (1 << 11),	/* XXX unused */
+    RPMFC_MODULE		= (1 <<  8),
+    RPMFC_EXECUTABLE		= (1 <<  9),
+    RPMFC_SCRIPT		= (1 << 10),
+    RPMFC_TEXT			= (1 << 11),
     RPMFC_DOCUMENT		= (1 << 12),
     RPMFC_STATIC		= (1 << 13),
     RPMFC_NOTSTRIPPED		= (1 << 14),
