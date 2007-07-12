@@ -104,7 +104,6 @@ static int handleInstInstalledFiles(const rpmts ts,
     uint_32 otecolor, tecolor;
     uint_32 oFColor, FColor;
     uint_32 oFFlags, FFlags;
-    struct stat sb, *st = &sb;
     const char * altNEVRA = NULL;
     rpmfi otherFi = NULL;
     int numReplaced = 0;
@@ -176,24 +175,6 @@ static int handleInstInstalledFiles(const rpmts ts,
 
 	if (((FFlags | oFFlags) & RPMFILE_GHOST))
 	    continue;
-
-	/* Check for shared %config files that are installed and sparse. */
-	if ((FFlags | oFFlags) & RPMFILE_CONFIG) {
-	    if (!Lstat(rpmfiFN(fi), st)) {
-		if (FFlags & RPMFILE_CONFIG) {
-		    FFlags |= RPMFILE_EXISTS;
-		    if ((512 * st->st_blocks) < st->st_size)
-		 	FFlags |= RPMFILE_SPARSE;
-		    (void) rpmfiSetFFlags(fi, FFlags);
-		}
-		if (oFFlags & RPMFILE_CONFIG) {
-		    oFFlags |= RPMFILE_EXISTS;
-		    if ((512 * st->st_blocks) < st->st_size)
-		 	oFFlags |= RPMFILE_SPARSE;
-		    (void) rpmfiSetFFlags(otherFi, oFFlags);
-		}
-	    }
-	}
 
 	if (rpmfiCompare(otherFi, fi)) {
 	    int rConflicts;
@@ -1518,8 +1499,19 @@ rpmMessage(RPMMESS_DEBUG, D_("computing file dispositions\n"));
 
 	numShared = 0;
  	fi = rpmfiInit(fi, 0);
-	while ((i = rpmfiNext(fi)) >= 0)
+	while ((i = rpmfiNext(fi)) >= 0) {
+	    struct stat sb, *st = &sb;
+	    uint_32 FFlags = rpmfiFFlags(fi);
 	    numShared += dbiIndexSetCount(matches[i]);
+	    if (!(FFlags & RPMFILE_CONFIG))
+		continue;
+	    if (!Lstat(rpmfiFN(fi), st)) {
+		FFlags |= RPMFILE_EXISTS;
+		if ((512 * st->st_blocks) < st->st_size)
+		     FFlags |= RPMFILE_SPARSE;
+		(void) rpmfiSetFFlags(fi, FFlags);
+	    }
+	}
 
 	/* Build sorted file info list for this package. */
 	shared = sharedList = xcalloc((numShared + 1), sizeof(*sharedList));

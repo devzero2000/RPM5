@@ -1,4 +1,5 @@
 4.4.9 -> 4.5:
+    - jbj: insure that RPMFILE_EXISTS is set for %config files.
     - jbj: fix ptr alignment problem seen on pld/sparc64.
     - jbj: re-add /usr/bin/rpmbuild for now, poptBT option wiring needs fixing.
     - jbj: pass -F fnum to patch (#243720).
