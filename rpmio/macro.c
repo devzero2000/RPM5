@@ -1544,9 +1544,16 @@ expandMacro(MacroBuf mb)
 		c = '%';	/* XXX only need to save % */
 		SAVECHAR(mb, c);
 #else
-		rpmError(RPMERR_BADSPEC,
-			_("Macro %%%.*s not found, skipping\n"), fn, f);
-		s = se;
+		if (!strncmp(f, "if", fn) ||
+		    !strncmp(f, "else", fn) ||
+		    !strncmp(f, "endif", fn)) {
+			c = '%';        /* XXX only need to save % */
+			SAVECHAR(mb, c);
+		} else {
+			rpmError(RPMERR_BADSPEC,
+				_("Macro %%%.*s not found, skipping\n"), fn, f);
+			s = se;
+		}
 #endif
 		continue;
 	}
