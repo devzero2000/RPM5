@@ -1212,6 +1212,11 @@ doFoo(MacroBuf mb, int negate, const char * f, size_t fn,
     } else if (STREQ("F", f, fn)) {
 	b = buf + strlen(buf) + 1;
 	sprintf(b, "file%s.file", buf);
+    } else if (fn > 5 && STREQ("patch", f, fn >= 5 ? 5 : fn)) {
+	strncpy(buf, f, fn);
+	buf[fn]='\0';
+	b = buf + fn + 1;
+	sprintf(b, "%%patch -P %s", buf+5);
     }
 
     if (b) {
@@ -1493,6 +1498,19 @@ expandMacro(MacroBuf mb)
 	/* Expand defined macros */
 	mep = findEntry(mb->mc, f, fn);
 	me = (mep ? *mep : NULL);
+
+	/* XXX necessary but clunky
+	 * We have to do this after the findEntry because there may be a
+	 * macro such as "%patchversion", if it evaluates ignore it!
+	 */
+	if (me == NULL && 
+	     (fn > 5 && STREQ("patch", f, fn >= 5 ? 5 : fn))) {
+		/*@-internalglobs@*/ /* FIX: verbose may be set */
+		doFoo(mb, negate, f, fn, g, gn);
+		/*@=internalglobs@*/
+		s = se;
+		continue;
+	}
 
 	/* XXX Special processing for flags */
 	if (*f == '-') {
