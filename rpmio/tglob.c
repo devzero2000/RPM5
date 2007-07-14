@@ -19,12 +19,16 @@ int noNeon;
 #endif
 #define	FTPPATH		"ftp://localhost/pub/rawhide/packages/test/*.rpm"
 #define	DIRPATH		"/var/ftp/pub/rawhide/packages/test/*.rpm"
+#if 0
 static char * dirpath = DIRPATH;
 static char * ftppath = FTPPATH;
+#endif
 static char * httppath = HTTPPATH;
+#if 0
 static char * httpspath = HTTPSPATH;
+#endif
 
-static int Glob_error(const char *epath, int eerrno)
+static int my_Glob_error(const char *epath, int eerrno)
 {
 fprintf(stderr, "*** glob_error(%p,%d) path %s\n", epath, eerrno, epath);
     return 1;
@@ -40,7 +44,7 @@ fprintf(stderr, "===== %s\n", path);
     gl.gl_pathc = 0;
     gl.gl_pathv = NULL;
     gl.gl_offs = 0;
-    rc = Glob(path, 0, Glob_error, &gl);
+    rc = Glob(path, 0, my_Glob_error, &gl);
 fprintf(stderr, "*** Glob rc %d\n", rc);
     if (rc == 0)
     for (i = 0; i < gl.gl_pathc; i++)
