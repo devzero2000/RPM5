@@ -373,7 +373,7 @@ static const char *configPaths[] = {
 
 /* Return descriptive strings for universal tags */
 
-char *idstr( const int tagID )
+static char *idstr( const int tagID )
 	{
 	switch( tagID )
 		{
@@ -1371,7 +1371,7 @@ static long getValue( FILE *inFile, const long length )
 
 /* Get an ASN.1 objects tag and length */
 
-int getItem( FILE *inFile, ASN1_ITEM *item )
+static int getItem( FILE *inFile, ASN1_ITEM *item )
 	{
 	int tag, length, index = 0;
 
@@ -1470,7 +1470,7 @@ static int checkEncapsulate( FILE *inFile, const int tag, const int length )
 
 /* Check whether a zero-length item is OK */
 
-int zeroLengthOK( const ASN1_ITEM *item )
+static int zeroLengthOK( const ASN1_ITEM *item )
 	{
 	/* An implicitly-tagged NULL can have a zero length.  An occurrence of this
 	   type of item is almost always an error, however OCSP uses a weird status
@@ -1692,7 +1692,7 @@ static void printConstructed( FILE *inFile, int level, const ASN1_ITEM *item )
 
 /* Print a single ASN.1 object */
 
-void printASN1object( FILE *inFile, ASN1_ITEM *item, int level )
+static void printASN1object( FILE *inFile, ASN1_ITEM *item, int level )
 	{
 	OIDINFO *oidInfo;
 	STR_OPTION stringType;
@@ -2111,7 +2111,7 @@ int printAsn1( FILE *inFile, const int level, long length,
 
 /* Show usage and exit */
 
-void usageExit( void )
+static void usageExit( void )
 	{
 	puts( "DumpASN1 - ASN.1 object dump/syntax check program." );
 	puts( "Copyright Peter Gutmann 1997 - 2006.  Last updated " UPDATE_STRING "." );
@@ -2401,7 +2401,7 @@ int main( int argc, char *argv[] )
 		if( !feof( inFile ) )
 			{
 			fprintf( output, "Warning: Further data follows ASN.1 data at "
-					 "position %d.\n", position );
+					 "position %ld.\n", position );
 			noWarnings++;
 			}
 		}
