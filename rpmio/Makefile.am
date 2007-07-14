@@ -71,44 +71,35 @@ lint:
 	$(LINT) $(DEFS) $(INCLUDES) $(librpmio_la_SOURCES)
 
 tax_SOURCES = tax.c
-tax_LDADD = librpmio.la
+tax_LDADD = $(RPM_LDADD)
 
 tdir_SOURCES = tdir.c
-tdir_LDFLAGS = @LDFLAGS_STATIC@
 tdir_LDADD = $(RPM_LDADD)
 
 tfts_SOURCES = tfts.c
-tfts_LDFLAGS = @LDFLAGS_STATIC@
 tfts_LDADD = $(RPM_LDADD)
 
 tget_SOURCES = tget.c
-tget_LDFLAGS = @LDFLAGS_STATIC@
 tget_LDADD = $(RPM_LDADD)
 
 thkp_SOURCES = thkp.c
-thkp_LDFLAGS = @LDFLAGS_STATIC@
 thkp_LDADD = $(RPM_LDADD)
 
 tmacro_SOURCES =
-tmacro_LDFLAGS = @LDFLAGS_STATIC@
 tmacro_LDADD = tmacro.o $(RPM_LDADD)
 tmacro.o:  macro.c
 	$(COMPILE) -DDEBUG_MACROS -o $@ -c $<
 
 tput_SOURCES = tput.c
-tput_LDFLAGS = @LDFLAGS_STATIC@
 tput_LDADD = $(RPM_LDADD)
 
 tglob_SOURCES = tglob.c
-tglob_LDFLAGS = @LDFLAGS_STATIC@
 tglob_LDADD = $(RPM_LDADD)
 
 tinv_SOURCES = tinv.c
-tinv_LDFLAGS = @LDFLAGS_STATIC@
 tinv_LDADD = $(RPM_LDADD)
 
 tkey_SOURCES = tkey.c
-tkey_LDFLAGS = @LDFLAGS_STATIC@
 tkey_LDADD = $(RPM_LDADD)
 
 trpmio_SOURCES = trpmio.c
