@@ -20,10 +20,14 @@ static int _fts_debug = 0;
 #endif
 #define FTPPATH         "ftp://localhost/pub/rawhide/packages/test"
 #define DIRPATH         "/var/ftp/pub/rawhide/packages/test"
+#if 0
 static char * httpspath = HTTPSPATH;
+#endif
 static char * httppath = HTTPPATH;
+#if 0
 static char * ftppath = FTPPATH;
 static char * dirpath = DIRPATH;
+#endif
 
 static int ndirs = 0;
 static int nfiles = 0;
