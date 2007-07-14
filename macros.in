@@ -389,7 +389,7 @@ package or when debugging this package.\
 
 %patch(b:p:P:REz:F:d:) \
 %define patch_file	%{P:%{-P:%{-P*}}%{!-P:%%PATCH0}} \
-%define patch_suffix	%{!-z:%{-b:-b --suffix %{-b*}}}%{!-b:%{-z:--suffix %{-z*}}}%{!-z:%{!-b: }}%{-z:%{-b:%{error:Can't specify both -z(%{-z*}) and -b(%{-b*})}}} \
+%define patch_suffix	%{-b:-b --suffix %{-b*}}%{-z:--suffix %{-z*}}
   echo "Patch #%{-P:%{-P*}}%{!-P:0} (%{basename:%patch_file}):" \
   %{uncompress:%patch_file} | %{__patch} -s %{-p:-p%{-p*}} %{-F:-F%{-F*}} %{-d:-d%{-d*}} %patch_suffix %{-R} %{-E}
 
