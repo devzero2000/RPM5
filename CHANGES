@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - jbj: fixup %patchNN rewrite.
     - jbj: add osgi automagic dependency extractors <klee@redhat.com>.
     - jbj: debugedit warning removal <pmatlai@redhat.com>.
     - jbj: free 5 bits in FCOLOR_e for future use. 

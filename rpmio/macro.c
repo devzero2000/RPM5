@@ -14,6 +14,7 @@
 #define	STREQ(_t, _f, _fn)	((_fn) == (sizeof(_t)-1) && !strncmp((_t), (_f), (_fn)))
 
 #ifdef DEBUG_MACROS
+#undef	WITH_LUA	/* XXX fixme */
 #include <sys/types.h>
 #include <errno.h>
 #include <fcntl.h>
@@ -1133,7 +1134,11 @@ doFoo(MacroBuf mb, int negate, const char * f, size_t fn,
 	buf[gn] = '\0';
 	(void) expandU(mb, buf, sizeof(buf));
     }
-    if (STREQ("basename", f, fn)) {
+    if (fn > 5 && STREQ("patch", f, 5) && xisdigit(f[5])) {
+	b = buf;
+	be = stpncpy( stpcpy(b, "%patch -P "), f+5, fn-5);
+	*be = '\0';
+    } else if (STREQ("basename", f, fn)) {
 	if ((b = strrchr(buf, '/')) == NULL)
 	    b = buf;
 	else
@@ -1208,15 +1213,10 @@ doFoo(MacroBuf mb, int negate, const char * f, size_t fn,
 	    b++;
 	    sprintf(b, "%%PATCH%s", buf);
 	} else
-			b = buf;
+	    b = buf;
     } else if (STREQ("F", f, fn)) {
 	b = buf + strlen(buf) + 1;
 	sprintf(b, "file%s.file", buf);
-    } else if (fn > 5 && STREQ("patch", f, fn >= 5 ? 5 : fn)) {
-	strncpy(buf, f, fn);
-	buf[fn]='\0';
-	b = buf + fn + 1;
-	sprintf(b, "%%patch -P %s", buf+5);
     }
 
     if (b) {
@@ -1319,7 +1319,7 @@ expandMacro(MacroBuf mb)
 /*@-globs@*/
 		if ((c = *fe) && isblank(c))
 			if ((lastc = strchr(fe,'\n')) == NULL)
-                lastc = strchr(fe, '\0');
+				lastc = strchr(fe, '\0');
 /*@=globs@*/
 		/*@switchbreak@*/ break;
 	case '(':		/* %(...) shell escape */
@@ -1477,6 +1477,15 @@ expandMacro(MacroBuf mb)
 	}
 #endif
 
+	/* Rewrite "%patchNN ..." as "%patch -P NN ..." and expand. */
+	if (lastc != NULL && fn > 5 && STREQ("patch", f, 5) && xisdigit(f[5])) {
+		/*@-internalglobs@*/ /* FIX: verbose may be set */
+		doFoo(mb, negate, f, (lastc - f), NULL, 0);
+		/*@=internalglobs@*/
+		s = lastc;
+		continue;
+	}
+
 	/* XXX necessary but clunky */
 	if (STREQ("basename", f, fn) ||
 	    STREQ("suffix", f, fn) ||
@@ -1498,19 +1507,6 @@ expandMacro(MacroBuf mb)
 	/* Expand defined macros */
 	mep = findEntry(mb->mc, f, fn);
 	me = (mep ? *mep : NULL);
-
-	/* XXX necessary but clunky
-	 * We have to do this after the findEntry because there may be a
-	 * macro such as "%patchversion", if it evaluates ignore it!
-	 */
-	if (me == NULL && 
-	     (fn > 5 && STREQ("patch", f, fn >= 5 ? 5 : fn))) {
-		/*@-internalglobs@*/ /* FIX: verbose may be set */
-		doFoo(mb, negate, f, fn, g, gn);
-		/*@=internalglobs@*/
-		s = se;
-		continue;
-	}
 
 	/* XXX Special processing for flags */
 	if (*f == '-') {
