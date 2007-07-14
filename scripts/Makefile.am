@@ -15,7 +15,7 @@ EXTRA_DIST = \
 	check-java-closure.sh java.prov.sh java.req.sh \
 	javadeps.sh libtooldeps.sh \
 	mono-find-provides mono-find-requires \
-	pkgconfigdeps.sh \
+	osgideps.pl pkgconfigdeps.sh \
 	perldeps.pl perl.prov perl.req pythondeps.sh \
 	php.prov php.req rpm2cpio \
 	rpmdb_loadcvt rpmdiff rpmdiff.cgi \
@@ -42,7 +42,7 @@ versionlib_SCRIPTS = \
 	find-requires.perl getpo.sh http.req \
 	javadeps.sh libtooldeps.sh \
 	mono-find-provides mono-find-requires \
-	pkgconfigdeps.sh \
+	osgideps.pl pkgconfigdeps.sh \
 	perldeps.pl perl.prov perl.req pythondeps.sh \
 	php.prov php.req \
 	rpmdb_loadcvt \
