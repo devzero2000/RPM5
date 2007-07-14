@@ -81,9 +81,9 @@ thkp_SOURCES = thkp.c
 thkp_LDFLAGS = @LDFLAGS_STATIC@
 thkp_LDADD = librpmio.la $(top_builddir)/popt/libpopt.la
 
-tmacro_SOURCES = 
+tmacro_SOURCES =
 tmacro_LDFLAGS = @LDFLAGS_STATIC@
-tmacro_LDADD = tmacro.o # librpmio.la $(top_builddir)/popt/libpopt.la
+tmacro_LDADD = tmacro.o librpmio.la
 tmacro.o:  macro.c
 	$(COMPILE) -DDEBUG_MACROS -o $@ -c $<
 
