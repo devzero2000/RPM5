@@ -4,12 +4,19 @@
    Matthew Hamrick <hamrick@rsa.com>, Bruno Couillard
    <bcouillard@chrysalis-its.com>, Hallvard Furuseth
    <h.b.furuseth@usit.uio.no>, Geoff Thorpe <geoff@raas.co.nz>, David Boyce
-   <d.boyce@isode.com>, John Hughes <john.hughes@entegrity.com>, Life is
-   hard, and then you die <ronald@trustpoint.com>, and several other people
-   whose names I've misplaced.
+   <d.boyce@isode.com>, John Hughes <john.hughes@entegrity.com>, Life is hard,
+   and then you die <ronald@trustpoint.com>, Hans-Olof Hermansson
+   <hans-olof.hermansson@postnet.se>, Tor Rustad <Tor.Rustad@bbs.no>,
+   Kjetil Barvik <kjetil.barvik@bbs.no>, James Sweeny <jsweeny@us.ibm.com>,
+   Chris Ridd <chris.ridd@isode.com>, and several other people whose names
+   I've misplaced.  This code grew slowly over time without much design or
+   planning, with features being tacked on as required.  It's not
+   representative of my normal coding style.
 
    Available from http://www.cs.auckland.ac.nz/~pgut001/dumpasn1.c.
-   Last updated 21 November 2000.
+   Last updated 22 June 2006 (version 20060622, if you prefer it that
+   way).  To build under Windows, use 'cl /MD dumpasn1.c'.  To build on OS390
+   or z/OS, use '/bin/c89 -D OS390 -o dumpasn1 dumpasn1.c'.
 
    This version of dumpasn1 requires a config file dumpasn1.cfg to be present
    in the same location as the program itself or in a standard directory
@@ -20,22 +27,29 @@
 
    This code assumes that the input data is binary, having come from a MIME-
    aware mailer or been piped through a decoding utility if the original
-   format used base64 encoding.  Bruno Couillard has created a modified
-   version which will read raw base64-encoded data (ie without any MIME
-   encapsulation or other headers) directly, at the expense of being somewhat
-   non-portable.  Alternatively, you can use utilities like uudeview (which
-   will strip virtually any kind of encoding, MIME, PEM, PGP, whatever) to
-   recover the binary original.
+   format used base64 encoding.  If you need to decode it, it's recommended
+   that you use a utility like uudeview, which will strip virtually any kind
+   of encoding (MIME, PEM, PGP, whatever) to recover the binary original.
 
    You can use this code in whatever way you want, as long as you don't try
    to claim you wrote it.
 
-   Editing notes: Tabs to 4, phasers to stun */
+   Editing notes: Tabs to 4, phasers to stun (and in case anyone wants to
+   complain about that, see "Program Indentation and Comprehensiblity",
+   Richard Miara, Joyce Musselman, Juan Navarro, and Ben Shneiderman,
+   Communications of the ACM, Vol.26, No.11 (November 1983), p.861) */
 
 #include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#ifdef OS390
+  #include <unistd.h>
+#endif /* OS390 */
+
+/* The update string, printed as part of the help screen */
+
+#define UPDATE_STRING	"22 June 2006"
 
 /* Useful defines */
 
@@ -44,11 +58,21 @@
   #define TRUE	( !FALSE )
 #endif /* TRUE */
 
+/* Tandem Guardian NonStop Kernel options */
+
+#ifdef __TANDEM
+  #pragma nolist		/* Spare us the source listing, no GUI... */
+  #pragma nowarn (1506)	/* Implicit type conversion: int to char etc */
+#endif /* __TANDEM */
+
 /* SunOS 4.x doesn't define seek codes or exit codes or FILENAME_MAX (it does
    define _POSIX_MAX_PATH, but in funny locations and to different values
-   depending on which include file you use).  Some OS's also define
-   FILENAME_MAX to silly values (eg 14 bytes), so we replace it with a more
-   sensible setting if necessary */
+   depending on which include file you use).  Strictly speaking this code
+   isn't right since we need to use PATH_MAX, however not all systems define
+   this, some use _POSIX_PATH_MAX, and then there are all sorts of variations
+   and other defines that you have to check, which require about a page of
+   code to cover each OS, so we just use max( FILENAME_MAX, 512 ) which
+   should work for everything */
 
 #ifndef SEEK_SET
   #define SEEK_SET	0
@@ -67,12 +91,49 @@
   #endif /* FILENAME_MAX < 128 */
 #endif /* FILENAME_MAX */
 
-/* Under Windows we can do special-case handling for things like BMPStrings */
+/* Under Windows we can do special-case handling for paths and Unicode
+   strings (although in practice it can't really handle much except
+   latin-1) */
 
 #if ( defined( _WINDOWS ) || defined( WIN32 ) || defined( _WIN32 ) || \
 	  defined( __WIN32__ ) )
   #define __WIN32__
 #endif /* Win32 */
+
+/* Under Unix we can do special-case handling for paths and Unicode strings.
+   Detecting Unix systems is a bit tricky but the following should find most
+   versions.  This define implicitly assumes that the system has wchar_t
+   support, but this is almost always the case except for very old systems,
+   so it's best to default to allow-all rather than deny-all */
+
+#if defined( linux ) || defined( __linux__ ) || defined( sun ) || \
+	defined( __bsdi__ ) || defined( __FreeBSD__ ) || defined( __NetBSD__ ) || \
+	defined( __OpenBSD__ ) || defined( __hpux ) || defined( _M_XENIX ) || \
+	defined( __osf__ ) || defined( _AIX ) || defined( __MACH__ )
+  #define __UNIX__
+#endif /* Every commonly-used Unix */
+#if defined( linux ) || defined( __linux__ )
+  #define __USE_ISOC99
+  #include <wchar.h>
+#endif /* Linux */
+
+/* For IBM mainframe OSes we use the Posix environment, so it looks like
+   Unix */
+
+#ifdef OS390
+  #define __OS390__
+  #define __UNIX__
+#endif /* OS390 / z/OS */
+
+/* Tandem NSK: Don't tangle with Tandem OSS, which is almost UNIX */
+
+#ifdef __TANDEM
+  #ifdef _GUARDIAN_TARGET
+	#define __TANDEM_NSK__
+  #else
+	#define __UNIX__
+  #endif /* _GUARDIAN_TARGET */
+#endif /* __TANDEM */
 
 /* Some OS's don't define the min() macro */
 
@@ -148,15 +209,18 @@
 typedef enum {
 	STR_NONE,				/* No special handling */
 	STR_UTCTIME,			/* Check it's UTCTime */
+	STR_GENERALIZED,		/* Check it's GeneralizedTime */
 	STR_PRINTABLE,			/* Check it's a PrintableString */
 	STR_IA5,				/* Check it's an IA5String */
-	STR_BMP					/* Read and display string as Unicode */
+	STR_LATIN1,				/* Read and display string as latin-1 */
+	STR_BMP,				/* Read and display string as Unicode */
+	STR_BMP_REVERSED		/* STR_BMP with incorrect endianness */
 	} STR_OPTION;
 
 /* Structure to hold info on an ASN.1 item */
 
 typedef struct {
-	int id;						/* Identifier */
+	int id;						/* Tag class + primitive/constructed */
 	int tag;					/* Tag */
 	long length;				/* Data length */
 	int indefinite;				/* Item has indefinite length */
@@ -176,6 +240,25 @@ static int zeroLengthAllowed = FALSE;/* Zero-length items allowed */
 static int dumpText = FALSE;		/* Dump text alongside hex data */
 static int printAllData = FALSE;	/* Whether to print all data in long blocks */
 static int checkEncaps = TRUE;		/* Print encaps.data in BIT/OCTET STRINGs */
+static int checkCharset = TRUE;		/* Check val.of char strs.hidden in OCTET STRs */
+#ifndef __OS390__
+static int reverseBitString = TRUE;	/* Print BIT STRINGs in natural order */
+#else
+static int reverseBitString = FALSE;/* Natural order on OS390 is the same as ASN.1 */
+#endif /* __OS390__ */
+static int rawTimeString = FALSE;	/* Print raw time strings */
+static int shallowIndent = FALSE;	/* Perform shallow indenting */
+static int outputWidth = 80;		/* 80-column display */
+
+/* The indent size and fixed indent string to the left of the data */
+
+#if 0
+#define INDENT_SIZE		14
+#define INDENT_STRING	"            : "
+#else
+#define INDENT_SIZE		11
+#define INDENT_STRING	"         : "
+#endif /* 0 */
 
 /* Error and warning information */
 
@@ -206,31 +289,77 @@ static OIDINFO *oidList = NULL;
 /* If the config file isn't present in the current directory, we search the
    following paths (this is needed for Unix with dumpasn1 somewhere in the
    path, since this doesn't set up argv[0] to the full path).  Anything
-   beginning with a '$' uses the appropriate environment variable */
+   beginning with a '$' uses the appropriate environment variable.  In
+   addition under Unix we also walk down $PATH looking for it */
 
-#define CONFIG_NAME		"dumpasn1.cfg"
+#ifdef __TANDEM_NSK__
+  #define CONFIG_NAME		"asn1cfg"
+#else
+  #define CONFIG_NAME		"dumpasn1.cfg"
+#endif /* __TANDEM_NSK__ */
+
+#if defined( __TANDEM_NSK__ )
 
 static const char *configPaths[] = {
-	/* Unix absolute paths */
-	"/bin/", "/usr/bin/", "/usr/local/bin/",
+	"$system.security", "$system.system",
 
+	NULL
+	};
+
+#elif defined( __WIN32__ )
+
+static const char *configPaths[] = {
 	/* Windoze absolute paths.  Usually things are on C:, but older NT setups
 	   are easier to do on D: if the initial copy is done to C: */
 	"c:\\dos\\", "d:\\dos\\", "c:\\windows\\", "d:\\windows\\",
 	"c:\\winnt\\", "d:\\winnt\\",
 
-	/* It's my program, I'm allowed to hardcode in strange paths which noone
+	/* It's my program, I'm allowed to hardcode in strange paths that no-one
 	   else uses */
-	"$HOME/BIN/", "c:\\program files\\bin\\",
+	"c:\\program files\\bin\\",
 
-	/* Unix environment-based paths */
-	"$HOME/", "$HOME/bin/",
+	/* This one seems to be popular as well */
+	"c:\\program files\\utilities\\",
 
 	/* General environment-based paths */
 	"$DUMPASN1_PATH/",
 
 	NULL
 	};
+
+#elif defined( __OS390__ )
+
+static const char *configPaths[] = {
+	/* General environment-based paths */
+	"$DUMPASN1_PATH/",
+
+	NULL
+	};
+
+#else
+
+static const char *configPaths[] = {
+  #ifndef DEBIAN
+	/* Unix absolute paths */
+	"/usr/bin/", "/usr/local/bin/", "/etc/dumpasn1/",
+
+	/* Unix environment-based paths */
+	"$HOME/", "$HOME/bin/",
+
+	/* It's my program, I'm allowed to hardcode in strange paths that no-one
+	   else uses */
+	"$HOME/BIN/",
+  #else
+	/* Debian has specific places where you're supposed to dump things */
+	"$HOME/", "/etc/dumpasn1/",
+  #endif /* DEBIAN-specific paths */
+
+	/* General environment-based paths */
+	"$DUMPASN1_PATH/",
+
+	NULL
+	};
+#endif /* OS-specific search paths */
 
 #define isEnvTerminator( c )	\
 	( ( ( c ) == '/' ) || ( ( c ) == '.' ) || ( ( c ) == '$' ) || \
@@ -335,7 +464,10 @@ static int addAttribute( char **buffer, char *attribute )
 	return( TRUE );
 	}
 
-/* Table to identify valid string chars (taken from cryptlib) */
+/* Table to identify valid string chars (taken from cryptlib).  Note that
+   IA5String also allows control chars, but we warn about these since
+   finding them in a certificate is a sign that there's something
+   seriously wrong */
 
 #define P	1						/* PrintableString */
 #define I	2						/* IA5String */
@@ -406,7 +538,7 @@ static int readLine( FILE *file, char *buffer )
 		/* Check for an illegal char in the data.  Note that we don't just
 		   check for chars with high bits set because these are legal in
 		   non-ASCII strings */
-		if( ( ch & 0x7F ) < ' ' )
+		if( !isprint( ch ) )
 			{
 			printf( "Bad character '%c' in config file line %d.\n",
 					ch, lineNo );
@@ -422,7 +554,7 @@ static int readLine( FILE *file, char *buffer )
 			break;
 			}
 
-		/* Make sure the line is of the correct length */
+		/* Make sure that the line is of the correct length */
 		if( bufCount > MAX_LINESIZE )
 			{
 			printf( "Config file line %d too long.\n", lineNo );
@@ -504,11 +636,13 @@ static int readConfig( const char *path, const int isDefaultConfig )
 		if( isDefaultConfig )
 			{
 			puts( "Cannot open config file 'dumpasn1.cfg', which should be in the same" );
-			puts( "directory as the dumpasn1 program.  Operation will continue without" );
-			puts( "the ability to display Object Identifier information." );
+			puts( "directory as the dumpasn1 program, a standard system directory, or" );
+			puts( "in a location pointed to by the DUMPASN1_PATH environment variable." );
+			puts( "Operation will continue without the ability to display Object " );
+			puts( "Identifier information." );
 			puts( "" );
 			puts( "If the config file is located elsewhere, you can set the environment" );
-			puts( "variable DUMPASN1_CFG to the path to the file." );
+			puts( "variable DUMPASN1_PATH to the path to the file." );
 			return( TRUE );
 			}
 
@@ -536,8 +670,8 @@ static int readConfig( const char *path, const int isDefaultConfig )
 		/* Check for an attribute tag */
 		if( !strncmp( buffer, "OID = ", 6 ) )
 			{
-			/* Make sure all the required attributes for the current OID are
-			   present */
+			/* Make sure that all of the required attributes for the current
+			   OID are present */
 			if( oidPtr->description == NULL )
 				{
 				printf( "OID ending on config file line %d has no "
@@ -607,7 +741,8 @@ static int readConfig( const char *path, const int isDefaultConfig )
 	return( status );
 	}
 
-/* Check for the existence of a config file path */
+/* Check for the existence of a config file path (access() isn't available
+   on all systems) */
 
 static int testConfigPath( const char *path )
 	{
@@ -686,16 +821,49 @@ static void buildConfigPath( char *path, const char *pathTemplate )
 
 static int readGlobalConfig( const char *path )
 	{
-	char buffer[ FILENAME_MAX ], *namePos;
+	char buffer[ FILENAME_MAX ];
+	char *searchPos = ( char * ) path, *namePos, *lastPos = NULL;
+#ifdef __UNIX__
+	char *envPath;
+#endif /* __UNIX__ */
 	int i;
 
 	/* First, try and find the config file in the same directory as the
-	   executable.  This requires that argv[0] be set up properly, which
-	   isn't the case if Unix search paths are being used, and seems to be
-	   pretty broken under Windows */
-	namePos = strstr( path, "dumpasn1" );
-	if( namePos == NULL )
-		namePos = strstr( path, "DUMPASN1" );
+	   executable by walking down the path until we find the last occurrence
+	   of the program name.  This requires that argv[0] be set up properly,
+	   which isn't the case if Unix search paths are being used, and seems
+	   to be pretty broken under Windows */
+	do
+		{
+		namePos = lastPos;
+		lastPos = strstr( searchPos, "dumpasn1" );
+		if( lastPos == NULL )
+			lastPos = strstr( searchPos, "DUMPASN1" );
+		searchPos = lastPos + 1;
+		}
+	while( lastPos != NULL );
+#ifdef __UNIX__
+	if( namePos == NULL && ( namePos = strrchr( path, '/' ) ) != NULL )
+		{
+		const int endPos = ( int ) ( namePos - path ) + 1;
+
+		/* If the executable isn't called dumpasn1, we won't be able to find
+		   it with the above code, fall back to looking for directory
+		   separators.  This requires a system where the only separator is
+		   the directory separator (ie it doesn't work for Windows or most
+		   mainframe environments) */
+		if( endPos < FILENAME_MAX - 13 )
+			{
+			memcpy( buffer, path, endPos );
+			strcpy( buffer + endPos, CONFIG_NAME );
+			if( testConfigPath( buffer ) )
+				return( readConfig( buffer, TRUE ) );
+			}
+
+		/* That didn't work, try the absolute locations and $PATH */
+		namePos = NULL;
+		}
+#endif /* __UNIX__ */
 	if( strlen( path ) < FILENAME_MAX - 13 && namePos != NULL )
 		{
 		strcpy( buffer, path );
@@ -712,7 +880,24 @@ static int readGlobalConfig( const char *path )
 			return( readConfig( buffer, TRUE ) );
 		}
 
-	/* Default out to just the config name (which should fail as it was the
+#ifdef __UNIX__
+	/* On Unix systems we can also search for the config file on $PATH */
+	if( ( envPath = getenv( "PATH" ) ) != NULL )
+		{
+		char *pathPtr = strtok( envPath, ":" );
+
+		do
+			{
+			sprintf( buffer, "%s/%s", pathPtr, CONFIG_NAME );
+			if( testConfigPath( buffer ) )
+				return( readConfig( buffer, TRUE ) );
+			pathPtr = strtok( NULL, ":" );
+			}
+		while( pathPtr != NULL );
+		}
+#endif /* __UNIX__ */
+
+	/* Default to just the config name (which should fail as it was the
 	   first entry in configPaths[]).  readConfig() will display the
 	   appropriate warning */
 	return( readConfig( CONFIG_NAME, TRUE ) );
@@ -724,6 +909,19 @@ static int readGlobalConfig( const char *path )
 *																			*
 ****************************************************************************/
 
+#ifdef __OS390__
+
+static int asciiToEbcdic( const int ch )
+	{
+	char convBuffer[ 2 ];
+
+	convBuffer[ 0 ] = ch;
+	convBuffer[ 1 ] = '\0';
+	__atoe( convBuffer ); /* Convert ASCII to EBCDIC for 390 */
+	return( convBuffer[ 0 ] );
+	}
+#endif /* __OS390__ */
+
 /* Indent a string by the appropriate amount */
 
 static void doIndent( const int level )
@@ -731,7 +929,8 @@ static void doIndent( const int level )
 	int i;
 
 	for( i = 0; i < level; i++ )
-		fprintf( output, ( printDots ) ? ". " : "  " );
+		fprintf( output, printDots ? ". " : \
+						 shallowIndent ? " " : "  " );
 	}
 
 /* Complain about an error in the ASN.1 object */
@@ -739,7 +938,7 @@ static void doIndent( const int level )
 static void complain( const char *message, const int level )
 	{
 	if( !doPure )
-		fprintf( output, "            : " );
+		fprintf( output, INDENT_STRING );
 	doIndent( level + 1 );
 	fprintf( output, "Error: %s.\n", message );
 	noErrors++;
@@ -753,12 +952,19 @@ static void dumpHex( FILE *inFile, long length, int level, int isInteger )
 	char printable[ 9 ];
 	long noBytes = length;
 	int zeroPadded = FALSE, warnPadding = FALSE, warnNegative = isInteger;
+	int singleLine = FALSE;
 	int maxLevel = ( doPure ) ? 15 : 8, i;
+
+	/* Check if LHS status info + indent + "OCTET STRING" string + data will
+	   wrap */
+	if( ( ( doPure ) ? 0 : INDENT_SIZE ) + ( level * 2 ) + 12 + \
+		( length * 3 ) < outputWidth )
+		singleLine = TRUE;
 
 	if( noBytes > 128 && !printAllData )
 		noBytes = 128;	/* Only output a maximum of 128 bytes */
 	if( level > maxLevel )
-		level = maxLevel;	/* Make sure we don't go off edge of screen */
+		level = maxLevel;	/* Make sure that we don't go off edge of screen */
 	printable[ 8 ] = printable[ 0 ] = '\0';
 	for( i = 0; i < noBytes; i++ )
 		{
@@ -766,17 +972,22 @@ static void dumpHex( FILE *inFile, long length, int level, int isInteger )
 
 		if( !( i % lineLength ) )
 			{
-			if( dumpText )
+			if( singleLine )
+				putchar( ' ' );
+			else
 				{
-				/* If we're dumping text alongside the hex data, print the
-				   accumulated text string */
-				fputs( "    ", output );
-				fputs( printable, output );
+				if( dumpText )
+					{
+					/* If we're dumping text alongside the hex data, print
+					   the accumulated text string */
+					fputs( "    ", output );
+					fputs( printable, output );
+					}
+				fputc( '\n', output );
+				if( !doPure )
+					fprintf( output, INDENT_STRING );
+				doIndent( level + 1 );
 				}
-			fputc( '\n', output );
-			if( !doPure )
-				fprintf( output, "            : " );
-			doIndent( level + 1 );
 			}
 		ch = getc( inFile );
 		fprintf( output, "%s%02X", i % lineLength ? " " : "", ch );
@@ -813,9 +1024,10 @@ static void dumpHex( FILE *inFile, long length, int level, int isInteger )
 		length -= 128;
 		fputc( '\n', output );
 		if( !doPure )
-			fprintf( output, "            : " );
+			fprintf( output, INDENT_STRING );
 		doIndent( level + 5 );
 		fprintf( output, "[ Another %ld bytes skipped ]", length );
+		fPos += length;
 		if( useStdin )
 			{
 			while( length-- )
@@ -823,7 +1035,6 @@ static void dumpHex( FILE *inFile, long length, int level, int isInteger )
 			}
 		else
 			fseek( inFile, length, SEEK_CUR );
-		fPos += length;
 		}
 	fputs( "\n", output );
 
@@ -851,7 +1062,7 @@ static void dumpBitString( FILE *inFile, const int length, const int unused,
 	noBits = ( length * 8 ) - unused;
 
 	/* ASN.1 bitstrings start at bit 0, so we need to reverse the order of
-	   the bits */
+	   the bits if necessary */
 	if( length )
 		{
 		bitString = fgetc( inFile );
@@ -864,30 +1075,39 @@ static void dumpBitString( FILE *inFile, const int length, const int unused,
 		remainderMask = ( remainderMask << 8 ) | 0xFF;
 		fPos++;
 		}
-	for( i = 0, bitFlag = 1; i < noBits; i++ )
+	if( reverseBitString )
 		{
-		if( bitString & currentBitMask )
-			value |= bitFlag;
-		if( !( bitString & remainderMask ) )
-			/* The last valid bit should be a one bit */
-			errorStr = "Spurious zero bits in bitstring";
-		bitFlag <<= 1;
-		bitString <<= 1;
+		for( i = 0, bitFlag = 1; i < noBits; i++ )
+			{
+			if( bitString & currentBitMask )
+				value |= bitFlag;
+			if( !( bitString & remainderMask ) )
+				/* The last valid bit should be a one bit */
+				errorStr = "Spurious zero bits in bitstring";
+			bitFlag <<= 1;
+			bitString <<= 1;
+			}
+		if( noBits < sizeof( int ) && \
+			( ( remainderMask << noBits ) & value ) )
+			/* There shouldn't be any bits set after the last valid one.  We
+			   have to do the noBits check to avoid a fencepost error when
+			   there's exactly 32 bits */
+			errorStr = "Spurious one bits in bitstring";
 		}
-	if( ( remainderMask << noBits ) & value )
-		/* There shouldn't be any bits set after the last valid one */
-		errorStr = "Spurious one bits in bitstring";
+	else
+		value = bitString;
 
-	/* Now that it's in the right order, dump it.  If there's only one
-	   bit set (which is often the case for bit flags) we also print the
-	   bit number to save users having to count the zeroes to figure out
-	   which flag is set */
+	/* Now that it's in the right order, dump it.  If there's only one bit
+	   set (which is often the case for bit flags) we also print the bit
+	   number to save users having to count the zeroes to figure out which
+	   flag is set */
 	fputc( '\n', output );
 	if( !doPure )
-		fprintf( output, "            : " );
+		fprintf( output, INDENT_STRING );
 	doIndent( level + 1 );
 	fputc( '\'', output );
-	currentBitMask = 1 << ( noBits - 1 );
+	if( reverseBitString )
+		currentBitMask = 1 << ( noBits - 1 );
 	for( i = 0; i < noBits; i++ )
 		{
 		if( value & currentBitMask )
@@ -910,7 +1130,7 @@ static void dumpBitString( FILE *inFile, const int length, const int unused,
 
 /* Display data as a text string up to a maximum of 240 characters (8 lines
    of 48 chars to match the hex limit of 8 lines of 16 bytes) with special
-   treatement for control characters and other odd things which can turn up
+   treatement for control characters and other odd things that can turn up
    in BMPString and UniversalString types.
 
    If the string is less than 40 chars in length, we try to print it on the
@@ -920,18 +1140,29 @@ static void dumpBitString( FILE *inFile, const int length, const int unused,
 static void displayString( FILE *inFile, long length, int level,
 						   STR_OPTION strOption )
 	{
-	long noBytes = ( length > 384 ) ? 384 : length;
-	int lineLength = 48;
-	int maxLevel = ( doPure ) ? 15 : 8, firstTime = TRUE, i;
-	int warnIA5 = FALSE, warnPrintable = FALSE, warnUTC = FALSE;
-	int warnBMP = FALSE;
+	char timeStr[ 64 ];
+#ifdef __OS390__
+	char convBuffer[ 2 ];
+#endif /* __OS390__ */
+	long noBytes = length;
+	int lineLength = 48, maxLevel = ( doPure ) ? 15 : 8, i;
+	int firstTime = TRUE, doTimeStr = FALSE, warnIA5 = FALSE;
+	int warnPrintable = FALSE, warnTime = FALSE, warnBMP = FALSE;
 
-	if( strOption == STR_UTCTIME && length != 13 )
-		warnUTC = TRUE;
-	if( length <= 40 )
+	if( noBytes > 384 && !printAllData )
+		noBytes = 384;	/* Only output a maximum of 384 bytes */
+	if( strOption == STR_UTCTIME || strOption == STR_GENERALIZED )
+		{
+		if( ( strOption == STR_UTCTIME && length != 13 ) || \
+			( strOption == STR_GENERALIZED && length != 15 ) )
+			warnTime = TRUE;
+		else
+			doTimeStr = rawTimeString ? FALSE : TRUE;
+		}
+	if( !doTimeStr && length <= 40 )
 		fprintf( output, " '" );		/* Print string on same line */
 	if( level > maxLevel )
-		level = maxLevel;	/* Make sure we don't go off edge of screen */
+		level = maxLevel;	/* Make sure that we don't go off edge of screen */
 	for( i = 0; i < noBytes; i++ )
 		{
 		int ch;
@@ -944,13 +1175,13 @@ static void displayString( FILE *inFile, long length, int level,
 				fputc( '\'', output );
 			fputc( '\n', output );
 			if( !doPure )
-				fprintf( output, "            : " );
+				fprintf( output, INDENT_STRING );
 			doIndent( level + 1 );
 			fputc( '\'', output );
 			firstTime = FALSE;
 			}
 		ch = getc( inFile );
-#ifdef __WIN32__
+#if defined( __WIN32__ ) || defined( __UNIX__ ) || defined( __OS390__ )
 		if( strOption == STR_BMP )
 			{
 			if( i == noBytes - 1 && ( noBytes & 1 ) )
@@ -958,63 +1189,118 @@ static void displayString( FILE *inFile, long length, int level,
 				warnBMP = TRUE;
 			else
 				{
-				wchar_t wCh = ( ch << 8 ) | getc( inFile );
-				unsigned char outBuf[ 8 ];
+				const wchar_t wCh = ( ch << 8 ) | getc( inFile );
+				char outBuf[ 8 ];
+#ifdef __OS390__
+				char *p;
+#endif /* OS-specific charset handling */
 				int outLen;
 
 				/* Attempting to display Unicode characters is pretty hit and
 				   miss, and if it fails nothing is displayed.  To try and
 				   detect this we use wcstombs() to see if anything can be
 				   displayed, if it can't we drop back to trying to display
-				   the data as non-Unicode */
+				   the data as non-Unicode.  There's one exception to this
+				   case, which is for a wrong-endianness Unicode string, for
+				   which the first character looks like a single ASCII char */
 				outLen = wcstombs( outBuf, &wCh, 1 );
 				if( outLen < 1 )
-					{
 					/* Can't be displayed as Unicode, fall back to
 					   displaying it as normal text */
 					ungetc( wCh & 0xFF, inFile );
-					}
 				else
 					{
 					lineLength++;
 					i++;	/* We've read two characters for a wchar_t */
+#if defined( __WIN32__ ) || \
+	( defined( __UNIX__ ) && !( defined( __MACH__ ) || defined( __OpenBSD__ ) ) )
+
 					wprintf( L"%c", wCh );
+#else
+  #ifdef __OS390__
+					/* This could use some improvement */
+					for( p = outBuf; *p != '\0'; p++ )
+						*p = asciiToEbcdic( *p );
+  #endif /* IBM ASCII -> EBCDIC conversion */
+					fprintf( output, "%s", outBuf );
+#endif /* OS-specific charset handling */
 					fPos += 2;
 					continue;
 					}
 				}
 			}
-#endif /* __WIN32__ */
-		if( strOption == STR_PRINTABLE || strOption == STR_IA5 )
+#endif /* __WIN32__ || __UNIX__ || __OS390__ */
+		switch( strOption )
 			{
-			if( strOption == STR_PRINTABLE && !isPrintable( ch ) )
-				warnPrintable = TRUE;
-			if( strOption == STR_IA5 && !isIA5( ch ) )
-				warnIA5 = TRUE;
-			if( ch < ' ' || ch >= 0x7F )
-				ch = '.';		/* Convert non-ASCII to placeholders */
-			}
-		else
-			if( strOption == STR_UTCTIME )
-				{
+			case STR_PRINTABLE:
+			case STR_IA5:
+			case STR_LATIN1:
+				if( strOption == STR_PRINTABLE && !isPrintable( ch ) )
+					warnPrintable = TRUE;
+				if( strOption == STR_IA5 && !isIA5( ch ) )
+					warnIA5 = TRUE;
+				if( strOption == STR_LATIN1 )
+					{
+					if( !isprint( ch & 0x7F ) )
+						ch = '.';	/* Convert non-ASCII to placeholders */
+					}
+				else
+					if( !isprint( ch ) )
+						ch = '.';	/* Convert non-ASCII to placeholders */
+#ifdef __OS390__
+				ch = asciiToEbcdic( ch );
+#endif /* __OS390__ */
+				break;
+
+			case STR_UTCTIME:
+			case STR_GENERALIZED:
 				if( !isdigit( ch ) && ch != 'Z' )
 					{
-					warnUTC = TRUE;
-					ch = '.';	/* Convert non-numeric to placeholders */
+					warnTime = TRUE;
+					if( !isprint( ch ) )
+						ch = '.';	/* Convert non-ASCII to placeholders */
 					}
-				}
-			else
-				if( ( ch & 0x7F ) < ' ' || ch == 0xFF )
+#ifdef __OS390__
+				ch = asciiToEbcdic( ch );
+#endif /* __OS390__ */
+				break;
+
+			case STR_BMP_REVERSED:
+				if( i == noBytes - 1 && ( noBytes & 1 ) )
+					/* Odd-length BMP string, complain */
+					warnBMP = TRUE;
+
+				/* Wrong-endianness BMPStrings (Microsoft Unicode) can't be
+				   handled through the usual widechar-handling mechanism
+				   above since the first widechar looks like an ASCII char
+				   followed by a null terminator, so we just treat them as
+				   ASCII chars, skipping the following zero byte.  This is
+				   safe since the code that detects reversed BMPStrings
+				   has already checked that every second byte is zero */
+				getc( inFile );
+				i++;
+				fPos++;
+				/* Drop through */
+
+			default:
+				if( !isprint( ch ) )
 					ch = '.';	/* Convert control chars to placeholders */
-		fputc( ch, output );
+#ifdef __OS390__
+				ch = asciiToEbcdic( ch );
+#endif /* __OS390__ */
+			}
+		if( doTimeStr )
+			timeStr[ i ] = ch;
+		else
+			fputc( ch, output );
 		fPos++;
 		}
-	if( length > 384 )
+	if( length > 384 && !printAllData )
 		{
 		length -= 384;
 		fprintf( output, "'\n" );
 		if( !doPure )
-			fprintf( output, "            : " );
+			fprintf( output, INDENT_STRING );
 		doIndent( level + 5 );
 		fprintf( output, "[ Another %ld characters skipped ]", length );
 		fPos += length;
@@ -1029,7 +1315,24 @@ static void displayString( FILE *inFile, long length, int level,
 			}
 		}
 	else
-		fputc( '\'', output );
+		if( doTimeStr )
+			{
+			const char *timeStrPtr = ( strOption == STR_UTCTIME ) ? \
+									 timeStr : timeStr + 2;
+
+			fprintf( output, " %c%c/%c%c/", timeStrPtr[ 4 ], timeStrPtr[ 5 ],
+					 timeStrPtr[ 2 ], timeStrPtr[ 3 ] );
+			if( strOption == STR_UTCTIME )
+				fprintf( output, ( timeStr[ 0 ] < '5' ) ? "20" : "19" );
+			else
+				fprintf( output, "%c%c", timeStr[ 0 ], timeStr[ 1 ] );
+			fprintf( output, "%c%c %c%c:%c%c:%c%c GMT", timeStrPtr[ 0 ],
+					 timeStrPtr[ 1 ], timeStrPtr[ 6 ], timeStrPtr[ 7 ],
+					 timeStrPtr[ 8 ], timeStrPtr[ 9 ], timeStrPtr[ 10 ],
+					 timeStrPtr[ 11 ] );
+			}
+		else
+			fputc( '\'', output );
 	fputc( '\n', output );
 
 	/* Display any problems we encountered */
@@ -1037,8 +1340,8 @@ static void displayString( FILE *inFile, long length, int level,
 		complain( "PrintableString contains illegal character(s)", level );
 	if( warnIA5 )
 		complain( "IA5String contains illegal character(s)", level );
-	if( warnUTC )
-		complain( "UTCTime is encoded incorrectly", level );
+	if( warnTime )
+		complain( "Time is encoded incorrectly", level );
 	if( warnBMP )
 		complain( "BMPString has missing final byte/half character", level );
 	}
@@ -1092,7 +1395,12 @@ int getItem( FILE *inFile, ASN1_ITEM *item )
 			item->header[ index++ ] = value;
 			fPos++;
 			}
-		while( value & LEN_XTND && !feof( inFile ) );
+		while( value & LEN_XTND && index < 5 && !feof( inFile ) );
+		if( index == 5 )
+			{
+			fPos++;		/* Tag */
+			return( FALSE );
+			}
 		}
 	item->tag = tag;
 	if( feof( inFile ) )
@@ -1143,7 +1451,6 @@ static int checkEncapsulate( FILE *inFile, const int tag, const int length )
 	if( !checkEncaps )
 		return( FALSE );
 
-#if 1
 	/* Read the details of the next item in the input stream */
 	getItem( inFile, &nestedItem );
 	diffPos = fPos - currentPos;
@@ -1157,47 +1464,6 @@ static int checkEncapsulate( FILE *inFile, const int tag, const int length )
 		( nestedItem.tag > 0 && nestedItem.tag <= 0x31 ) && \
 		nestedItem.length == length - diffPos )
 		return( TRUE );
-#else
-	/* Older code which used heuristics but was actually less accurate than
-	   the above code */
-	int ch;
-
-	/* Get the first character and see if it's an INTEGER or SEQUENCE */
-	ch = getc( inFile );
-	ungetc( ch, inFile );
-	if( ch == INTEGER || ch == ( SEQUENCE | CONSTRUCTED ) )
-		return( TRUE );
-
-	/* All sorts of weird things get bundled up in octet strings in
-	   certificate extensions */
-	if( tag == OCTETSTRING && ch == BITSTRING )
-		return( TRUE );
-
-	/* If we're looking for all sorts of things which might be encapsulated,
-	   check for these as well.  At the moment we only check for a small
-	   number of possibilities, this list will probably change as more
-	   oddities are discovered, the idea is to keep the amount of burrowing
-	   we do to a minimum in order to reduce problems with false positives */
-	if( level > 1 && tag == OCTETSTRING )
-		{
-		int length;
-
-		if( ch == IA5STRING )
-			/* Verisign extensions */
-			return( TRUE );
-
-		/* For the following possibilities we have to look ahead a bit
-		   further and check the length as well */
-		getc( inFile );
-		length = getc( inFile );
-		fseek( inFile, -2, SEEK_CUR );
-		if( ( ch == OID && length < 9 ) || \
-			( ch == ENUMERATED && length == 1 ) || \
-			( ch == GENERALIZEDTIME && length == 15 ) )
-			/* CRL per-entry extensions */
-			return( TRUE );
-		}
-#endif /* 0 */
 
 	return( FALSE );
 	}
@@ -1206,6 +1472,15 @@ static int checkEncapsulate( FILE *inFile, const int tag, const int length )
 
 int zeroLengthOK( const ASN1_ITEM *item )
 	{
+	/* An implicitly-tagged NULL can have a zero length.  An occurrence of this
+	   type of item is almost always an error, however OCSP uses a weird status
+	   encoding that encodes result values in tags and then has to use a NULL
+	   value to indicate that there's nothing there except the tag that encodes
+	   the status, so we allow this as well if zero-length content is explicitly
+	   enabled */
+	if( zeroLengthAllowed && ( item->id & CLASS_MASK ) == CONTEXT )
+		return( TRUE );
+
 	/* If we can't recognise the type from the tag, reject it */
 	if( ( item->id & CLASS_MASK ) != UNIVERSAL )
 		return( FALSE );
@@ -1246,29 +1521,103 @@ int zeroLengthOK( const ASN1_ITEM *item )
 
 /* Check whether the next item looks like text */
 
-static int looksLikeText( FILE *inFile, const int length )
+static int checkForText( FILE *inFile, const int length )
 	{
 	char buffer[ 16 ];
+	int isBMP = FALSE, isUnicode = FALSE;
 	int sampleLength = min( length, 16 ), i;
 
-	/* If the sample size is too small, don't try anything */
+	/* If the sample is very short, we're more careful about what we
+	   accept */
 	if( sampleLength < 4 )
-		return( FALSE );
+		{
+		/* If the sample size is too small, don't try anything */
+		if( sampleLength <= 2 )
+			return( STR_NONE );
+
+		/* For samples of 3-4 characters we only allow ASCII text.  These
+		   short strings are used in some places (eg PKCS #12 files) as
+		   IDs */
+		sampleLength = fread( buffer, 1, sampleLength, inFile );
+		fseek( inFile, -sampleLength, SEEK_CUR );
+		for( i = 0; i < sampleLength; i++ )
+			if( !( isalpha( buffer[ i ] ) || isdigit( buffer[ i ] ) || \
+				   isspace( buffer[ i ] ) ) )
+				return( STR_NONE );
+		return( STR_IA5 );
+		}
 
 	/* Check for ASCII-looking text */
 	sampleLength = fread( buffer, 1, sampleLength, inFile );
 	fseek( inFile, -sampleLength, SEEK_CUR );
+	if( isdigit( buffer[ 0 ] ) && ( length == 13 || length == 15 ) && \
+		buffer[ length - 1 ] == 'Z' )
+		{
+		/* It looks like a time string, make sure that it really is one */
+		for( i = 0; i < length - 1; i++ )
+			if( !isdigit( buffer[ i ] ) )
+				break;
+		if( i == length - 1 )
+			return( ( length == 13 ) ? STR_UTCTIME : STR_GENERALIZED );
+		}
 	for( i = 0; i < sampleLength; i++ )
 		{
-		if( !( i & 1 ) && !buffer[ i ] )
-			/* If even bytes are zero, it could be a BMPString */
-			continue;
+		/* If even bytes are zero, it could be a BMPString.  Initially
+		   we set isBMP to FALSE, if it looks like a BMPString we set it to
+		   TRUE, if we then encounter a nonzero byte it's neither an ASCII
+		   nor a BMPString */
+		if( !( i & 1 ) )
+			{
+			if( !buffer[ i ] )
+				{
+				/* If we thought we were in a Unicode string but we've found a
+				   zero byte where it'd occur in a BMP string, it's neither a
+				   Unicode nor BMP string */
+				if( isUnicode )
+					return( STR_NONE );
+
+				/* We've collapsed the eigenstate (in an earlier incarnation
+				   isBMP could take values of -1, 0, or 1, with 0 being
+				   undecided, in which case this comment made a bit more
+				   sense) */
+				if( i < sampleLength - 2 )
+					/* If the last char(s) are zero but preceding ones
+					   weren't, don't treat it as a BMP string.  This can
+					   happen when storing a null-terminated string if the
+					   implementation gets the length wrong and stores the
+					   null as well */
+					isBMP = TRUE;
+				continue;
+				}
+			else
+				/* If we thought we were in a BMPString but we've found a
+				   nonzero byte where there should be a zero, it's neither
+				   an ASCII nor BMP string */
+				if( isBMP )
+					return( STR_NONE );
+			}
+		else
+			{
+			/* Just to make it tricky, Microsoft stuff Unicode strings into
+			   some places (to avoid having to convert them to BMPStrings,
+			   presumably) so we have to check for these as well */
+			if( !buffer[ i ] )
+				{
+				if( isBMP )
+					return( STR_NONE );
+				isUnicode = TRUE;
+				continue;
+				}
+			else
+				if( isUnicode )
+					return( STR_NONE );
+			}
 		if( buffer[ i ] < 0x20 || buffer[ i ] > 0x7E )
-			return( FALSE );
+			return( STR_NONE );
 		}
 
 	/* It looks like a text string */
-	return( TRUE);
+	return( isUnicode ? STR_BMP_REVERSED : isBMP ? STR_BMP : STR_IA5 );
 	}
 
 /* Dump the header bytes for an object, useful for vgrepping the original
@@ -1290,8 +1639,8 @@ static void dumpHeader( FILE *inFile, const ASN1_ITEM *item )
 	   data, which means it won't always work on streams */
 	if( extraLen > 0 && doDumpHeader > 1 )
 		{
-		/* Make sure we don't print too much data.  This doesn't work for
-		   indefinite-length data, we don't try and guess the length with
+		/* Make sure that we don't print too much data.  This doesn't work
+		   for indefinite-length data, we don't try and guess the length with
 		   this since it involves picking apart what we're printing */
 		if( extraLen > item->length && !item->indefinite )
 			extraLen = ( int ) item->length;
@@ -1335,7 +1684,7 @@ static void printConstructed( FILE *inFile, int level, const ASN1_ITEM *item )
 		noErrors++;
 		}
 	if( !doPure )
-		fprintf( output, "            : " );
+		fprintf( output, INDENT_STRING );
 	fprintf( output, ( printDots ) ? ". " : "  " );
 	doIndent( level );
 	fputs( "}\n", output );
@@ -1346,6 +1695,7 @@ static void printConstructed( FILE *inFile, int level, const ASN1_ITEM *item )
 void printASN1object( FILE *inFile, ASN1_ITEM *item, int level )
 	{
 	OIDINFO *oidInfo;
+	STR_OPTION stringType;
 	char buffer[ MAX_OID_SIZE ];
 	long value;
 	int x, y;
@@ -1373,7 +1723,7 @@ void printASN1object( FILE *inFile, ASN1_ITEM *item, int level )
 			exit( EXIT_FAILURE );
 			}
 
-		if( !item->length && !item->indefinite )
+		if( !item->length && !item->indefinite && !zeroLengthOK( item ) )
 			{
 			fputc( '\n', output );
 			complain( "Object has zero length", level );
@@ -1389,10 +1739,11 @@ void printASN1object( FILE *inFile, ASN1_ITEM *item, int level )
 
 		/* It's primitive, if it's a seekable stream try and determine
 		   whether it's text so we can display it as such */
-		if( !useStdin && looksLikeText( inFile, item->length ) )
+		if( !useStdin && \
+			( stringType = checkForText( inFile, item->length ) ) != STR_NONE )
 			{
 			/* It looks like a text string, dump it as text */
-			displayString( inFile, item->length, level, STR_NONE );
+			displayString( inFile, item->length, level, stringType );
 			return;
 			}
 
@@ -1457,7 +1808,9 @@ void printASN1object( FILE *inFile, ASN1_ITEM *item, int level )
 			break;
 
 		case BITSTRING:
-			fprintf( output, " %d unused bits", x = getc( inFile ) );
+			if( ( x = getc( inFile ) ) != 0 )
+				fprintf( output, " %d unused bit%s",
+						 x, ( x != 1 ) ? "s" : "" );
 			fPos++;
 			if( !--item->length && !x )
 				{
@@ -1472,21 +1825,29 @@ void printASN1object( FILE *inFile, ASN1_ITEM *item, int level )
 				dumpBitString( inFile, ( int ) item->length, x, level );
 				break;
 				}
+			/* Drop through to dump it as an octet string */
+
 		case OCTETSTRING:
 			if( checkEncapsulate( inFile, item->tag, item->length ) )
 				{
 				/* It's something encapsulated inside the string, print it as
 				   a constructed item */
 				fprintf( output, ", encapsulates" );
-				printConstructed( inFile, level + 1, item );
+				printConstructed( inFile, level, item );
 				break;
 				}
 			if( !useStdin && !dumpText && \
-				looksLikeText( inFile, item->length ) )
+				( stringType = checkForText( inFile, item->length ) ) != STR_NONE )
 				{
 				/* If we'd be doing a straight hex dump and it looks like
-				   encapsulated text, display it as such */
-				displayString( inFile, item->length, level, STR_NONE );
+				   encapsulated text, display it as such.  If the user has
+				   overridden character set type checking and it's a string
+				   type for which we normally perform type checking, we reset
+				   its type to none */
+				displayString( inFile, item->length, level, \
+					( !checkCharset && ( stringType == STR_IA5 || \
+										 stringType == STR_PRINTABLE ) ) ? \
+					STR_NONE : stringType );
 				return;
 				}
 			dumpHex( inFile, item->length, level, FALSE );
@@ -1507,15 +1868,14 @@ void printASN1object( FILE *inFile, ASN1_ITEM *item, int level )
 			fPos += item->length;
 			if( ( oidInfo = getOIDinfo( buffer, ( int ) item->length ) ) != NULL )
 				{
-				int lhsSize = ( doPure ) ? 0 : 14;
-
 				/* Check if LHS status info + indent + "OID " string + oid
 				   name will wrap */
-				if( lhsSize + ( level * 2 ) + 18 + strlen( oidInfo->description ) >= 80 )
+				if( ( ( doPure ) ? 0 : INDENT_SIZE ) + ( level * 2 ) + 18 + \
+					strlen( oidInfo->description ) >= outputWidth )
 					{
 					fputc( '\n', output );
 					if( !doPure )
-						fprintf( output, "            : " );
+						fprintf( output, INDENT_STRING );
 					doIndent( level + 1 );
 					}
 				else
@@ -1526,7 +1886,7 @@ void printASN1object( FILE *inFile, ASN1_ITEM *item, int level )
 				if( extraOIDinfo && oidInfo->comment != NULL )
 					{
 					if( !doPure )
-						fprintf( output, "            : " );
+						fprintf( output, INDENT_STRING );
 					doIndent( level + 1 );
 					fprintf( output, "(%s)\n", oidInfo->comment );
 					}
@@ -1568,13 +1928,11 @@ void printASN1object( FILE *inFile, ASN1_ITEM *item, int level )
 			break;
 
 		case OBJDESCRIPTOR:
-		case GENERALIZEDTIME:
 		case GRAPHICSTRING:
 		case VISIBLESTRING:
 		case GENERALSTRING:
 		case UNIVERSALSTRING:
 		case NUMERICSTRING:
-		case T61STRING:
 		case VIDEOTEXSTRING:
 		case UTF8STRING:
 			displayString( inFile, item->length, level, STR_NONE );
@@ -1588,14 +1946,20 @@ void printASN1object( FILE *inFile, ASN1_ITEM *item, int level )
 		case UTCTIME:
 			displayString( inFile, item->length, level, STR_UTCTIME );
 			break;
+		case GENERALIZEDTIME:
+			displayString( inFile, item->length, level, STR_GENERALIZED );
+			break;
 		case IA5STRING:
 			displayString( inFile, item->length, level, STR_IA5 );
+			break;
+		case T61STRING:
+			displayString( inFile, item->length, level, STR_LATIN1 );
 			break;
 
 		default:
 			fputc( '\n', output );
 			if( !doPure )
-				fprintf( output, "            : " );
+				fprintf( output, INDENT_STRING );
 			doIndent( level + 1 );
 			fprintf( output, "Unrecognised primitive, hex value is:");
 			dumpHex( inFile, item->length, level, FALSE );
@@ -1618,27 +1982,62 @@ int printAsn1( FILE *inFile, const int level, long length,
 
 	while( ( status = getItem( inFile, &item ) ) > 0 )
 		{
-		/* If the length isn't known and the item has a definite length, set
-		   the length to the items length */
-		if( length == LENGTH_MAGIC && !item.indefinite )
-			length = item.headerSize + item.length;
+		/* Perform various special checks the first time we're called */
+		if( length == LENGTH_MAGIC )
+			{
+			/* If the length isn't known and the item has a definite length,
+			   set the length to the item's length */
+			if( !item.indefinite )
+				length = item.headerSize + item.length;
+
+			/* If the input isn't seekable, turn off some options that
+			   require the use of fseek().  This check isn't perfect (some
+			   streams are slightly seekable due to buffering) but it's
+			   better than nothing */
+			if( fseek( inFile, -item.headerSize, SEEK_CUR ) )
+				{
+				useStdin = TRUE;
+				checkEncaps = FALSE;
+				puts( "Warning: Input is non-seekable, some functionality "
+					  "has been disabled." );
+				}
+			else
+				fseek( inFile, item.headerSize, SEEK_CUR );
+			}
 
 		/* Dump the header as hex data if requested */
 		if( doDumpHeader )
 			dumpHeader( inFile, &item );
 
 		/* Print offset into buffer, tag, and length */
+		if( item.header[ 0 ] == EOC )
+			{
+			seenEOC = TRUE;
+			if( !isIndefinite)
+				complain( "Spurious EOC in definite-length item", level );
+			}
 		if( !doPure )
+			{
+#if 0
+			/* Don't print hex tags any more to save display space */
 			if( item.indefinite )
 				fprintf( output, ( doHexValues ) ? "%04lX %02X NDEF: " :
 						 "%4ld %02X NDEF: ", lastPos, item.id | item.tag );
 			else
-				if( ( item.id | item.tag ) == EOC )
-					seenEOC = TRUE;
-				else
+				if( !seenEOC )
 					fprintf( output, ( doHexValues ) ? "%04lX %02X %4lX: " :
 							 "%4ld %02X %4ld: ", lastPos, item.id | item.tag,
 							 item.length );
+#else
+			if( item.indefinite )
+				fprintf( output, ( doHexValues ) ? "%04lX NDEF: " :
+						 "%4ld NDEF: ", lastPos );
+			else
+				if( !seenEOC )
+					fprintf( output, ( doHexValues ) ? "%04lX %4lX: " :
+							 "%4ld %4ld: ", lastPos, item.length );
+#endif
+			}
 
 		/* Print details on the item */
 		if( !seenEOC )
@@ -1689,8 +2088,13 @@ int printAsn1( FILE *inFile, const int level, long length,
 		}
 	if( status == -1 )
 		{
+		int i;
+
 		fprintf( stderr, "\nError: Invalid data encountered at position "
-				 "%d.\n", fPos );
+				 "%d:", fPos );
+		for( i = 0; i < item.headerSize; i++ )
+			fprintf( stderr, " %02X", item.header[ i ] );
+		fprintf( stderr, ".\n" );
 		exit( EXIT_FAILURE );
 		}
 
@@ -1710,28 +2114,48 @@ int printAsn1( FILE *inFile, const int level, long length,
 void usageExit( void )
 	{
 	puts( "DumpASN1 - ASN.1 object dump/syntax check program." );
-	puts( "Copyright Peter Gutmann 1997 - 2000.  Last updated 21 November 2000." );
+	puts( "Copyright Peter Gutmann 1997 - 2006.  Last updated " UPDATE_STRING "." );
 	puts( "" );
-	puts( "Usage: dumpasn1 [-acdefhlpsxz] <file>" );
+
+	puts( "Usage: dumpasn1 [-acdefhlprstuxz] <file>" );
+	puts( "  Input options:" );
 	puts( "       - = Take input from stdin (some options may not work properly)" );
 	puts( "       -<number> = Start <number> bytes into the file" );
 	puts( "       -- = End of arg list" );
-	puts( "       -a = Print all data in long data blocks, not just the first 128 bytes" );
 	puts( "       -c<file> = Read Object Identifier info from alternate config file" );
 	puts( "            (values will override equivalents in global config file)" );
-	puts( "       -d = Print dots to show column alignment" );
-	puts( "       -e = Don't print encapsulated data inside OCTET/BIT STRINGs" );
+	puts( "" );
+
+	puts( "  Output options:" );
 	puts( "       -f<file> = Dump object at offset -<number> to file (allows data to be" );
 	puts( "            extracted from encapsulating objects)" );
+	puts( "       -w<number> = Set width of output, default = 80 columns" );
+	puts( "" );
+
+	puts( "  Display options:" );
+	puts( "       -a = Print all data in long data blocks, not just the first 128 bytes" );
+	puts( "       -d = Print dots to show column alignment" );
 	puts( "       -h = Hex dump object header (tag+length) before the decoded output" );
 	puts( "       -hh = Same as -h but display more of the object as hex data" );
+	puts( "       -i = Use shallow indenting, for deeply-nested objects" );
 	puts( "       -l = Long format, display extra info about Object Identifiers" );
 	puts( "       -p = Pure ASN.1 output without encoding information" );
-	puts( "       -s = Syntax check only, don't dump ASN.1 structures" );
 	puts( "       -t = Display text values next to hex dump of data" );
+	puts( "" );
+
+	puts( "  Format options:" );
+	puts( "       -e = Don't print encapsulated data inside OCTET/BIT STRINGs" );
+	puts( "       -r = Print bits in BIT STRING as encoded in reverse order" );
+	puts( "       -u = Don't format UTCTime/GeneralizedTime string data" );
 	puts( "       -x = Display size and offset in hex not decimal" );
+	puts( "" );
+
+	puts( "  Checking options:" );
+	puts( "       -o = Don't check validity of character strings hidden in octet strings" );
+	puts( "       -s = Syntax check only, don't dump ASN.1 structures" );
 	puts( "       -z = Allow zero-length items" );
 	puts( "" );
+
 	puts( "Warnings generated by deprecated OIDs require the use of '-l' to be displayed." );
 	puts( "Program return code is the number of errors found or EXIT_SUCCESS." );
 	exit( EXIT_FAILURE );
@@ -1740,9 +2164,19 @@ void usageExit( void )
 int main( int argc, char *argv[] )
 	{
 	FILE *inFile, *outFile = NULL;
+#ifdef __OS390__
+	char pathPtr[ FILENAME_MAX ];
+#else
 	char *pathPtr = argv[ 0 ];
+#endif /* __OS390__ */
 	long offset = 0;
 	int moreArgs = TRUE, doCheckOnly = FALSE;
+
+#ifdef __OS390__
+	memset( pathPtr, '\0', sizeof( pathPtr ) );
+	getcwd( pathPtr, sizeof( pathPtr ) );
+	strcat( pathPtr, "/" );
+#endif /* __OS390__ */
 
 	/* Skip the program name */
 	argv++; argc--;
@@ -1801,6 +2235,10 @@ int main( int argc, char *argv[] )
 						argPtr++;	/* Skip rest of arg */
 					break;
 
+				case 'I':
+					shallowIndent = TRUE;
+					break;
+
 				case 'L':
 					extraOIDinfo = TRUE;
 					break;
@@ -1809,29 +2247,54 @@ int main( int argc, char *argv[] )
 					doDumpHeader++;
 					break;
 
+				case 'O':
+					checkCharset = TRUE;
+					break;
+
 				case 'P':
 					doPure = TRUE;
 					break;
 
+				case 'R':
+					reverseBitString = !reverseBitString;
+					break;
+
 				case 'S':
 					doCheckOnly = TRUE;
-#ifdef __WIN32__
+#if defined( __WIN32__ )
 					/* Under Windows we can't fclose( stdout ) because the
 					   VC++ runtime reassigns the stdout handle to the next
 					   open file (which is valid) but then scribbles stdout
 					   garbage all over it for files larger than about 16K
 					   (which isn't), so we have to make sure that the
-					   stdout is handle pointed to something somewhere */
+					   stdout handle is pointed to something somewhere */
 					freopen( "nul", "w", stdout );
+#elif defined( __UNIX__ )
+					/* Safety feature in case any Unix libc is as broken
+					   as the Win32 version */
+					freopen( "/dev/null", "w", stdout );
 #else
-					/* If we know we're running under Unix we can also
-					   freopen( "/dev/null", "w", stdout ); */
 					fclose( stdout );
-#endif /* __WIN32__ */
+#endif /* OS-specific bypassing of stdout */
 					break;
 
 				case 'T':
 					dumpText = TRUE;
+					break;
+
+				case 'U':
+					rawTimeString = TRUE;
+					break;
+
+				case 'W':
+					outputWidth = atoi( argPtr + 1 );
+					if( outputWidth < 40 )
+						{
+						puts( "Invalid output width." );
+						exit( EXIT_FAILURE );
+						}
+					while( argPtr[ 1 ] )
+						argPtr++;	/* Skip rest of arg */
 					break;
 
 				case 'X':
@@ -1852,7 +2315,7 @@ int main( int argc, char *argv[] )
 		argc--;
 		}
 
-	/* We can't use options which perform an fseek() if reading from stdin */
+	/* We can't use options that perform an fseek() if reading from stdin */
 	if( useStdin && ( doDumpHeader || outFile != NULL ) )
 		{
 		puts( "Can't use -f or -h when taking input from stdin" );
@@ -1891,8 +2354,8 @@ int main( int argc, char *argv[] )
 		long length;
 		int i, status;
 
-		/* Make sure there's something there, and that it has a definite
-		   length */
+		/* Make sure that there's something there, and that it has a
+		   definite length */
 		status = getItem( inFile, &item );
 		if( status == -1 )
 			{
@@ -1920,6 +2383,28 @@ int main( int argc, char *argv[] )
 		fseek( inFile, offset, SEEK_SET );
 		}
 	printAsn1( inFile, 0, LENGTH_MAGIC, 0 );
+	if( !useStdin && offset == 0 )
+		{
+		unsigned char buffer[ 16 ];
+		long position = ftell( inFile );
+
+		/* If we're dumping a standalone ASN.1 object and there's further
+		   data appended to it, warn the user of its existence.  This is a
+		   bit hit-and-miss since there may or may not be additional EOCs
+		   present, dumpasn1 always stops once it knows that the data should
+		   end (without trying to read any trailing EOCs) because data from
+		   some sources has the EOCs truncated, and most apps know that they
+		   have to stop at min( data_end, EOCs ).  To avoid false positives,
+		   we skip at least 4 EOCs worth of data and if there's still more
+		   present, we complain */
+		fread( buffer, 1, 8, inFile );	/* Skip 4 EOCs */
+		if( !feof( inFile ) )
+			{
+			fprintf( output, "Warning: Further data follows ASN.1 data at "
+					 "position %d.\n", position );
+			noWarnings++;
+			}
+		}
 	fclose( inFile );
 
 	/* Print a summary of warnings/errors if it's required or appropriate */
