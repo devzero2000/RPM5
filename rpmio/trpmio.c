@@ -2,6 +2,7 @@
  * \file rpmio/trpmio.c
  */
 
+#include "system.h"
 #include <stdio.h>
 #include "rpmio.h"
 #include "debug.h"
