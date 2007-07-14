@@ -15,11 +15,16 @@ int noNeon;
 #define	HTTPPATH	"http://localhost/rawhide/toad/tput.txt"
 #define	FTPPATH		"ftp://localhost/home/test/tput.txt"
 #define	DIRPATH		"file://localhost/var/ftp/tput.txt"
+#if 0
 static char * httpspath = HTTPSPATH;
+#endif
 static char * httppath = HTTPPATH;
+#if 0
 static char * ftppath = FTPPATH;
 static char * dirpath = DIRPATH;
+#endif
 
+#if 0
 static size_t readFile(const char * path)
 {
     char buf[BUFSIZ];
@@ -41,6 +46,7 @@ fprintf(stderr, "===== Fread %s\n", path);
 
     return len;
 }
+#endif
 
 static size_t writeFile(const char * path)
 {
@@ -65,11 +71,13 @@ fprintf(stderr, "===> Fclose rc %d\n", xx);
     return len;
 }
 
+#if 0
 static int unlinkFile(const char * path)
 {
 fprintf(stderr, "===== Unlink %s\n", path);
     return Unlink(path);
 }
+#endif
 
 static void doFile(const char * path)
 {
