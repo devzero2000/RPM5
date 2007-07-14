@@ -737,8 +737,9 @@ static int handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
 	break;
 
     default:
-	rpmError(RPMERR_INTERNAL, _("Internal error: Bogus tag %d\n"), tag);
-	return RPMERR_INTERNAL;
+	macro = 0;
+	(void) headerAddEntry(pkg->header, tag, RPM_STRING_TYPE, field, 1);
+	break;
     }
 
     if (macro)
@@ -747,6 +748,30 @@ static int handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
     return 0;
 }
 /*@=boundswrite@*/
+
+static rpmTag generateArbitraryTagNum(const char *s)
+{
+    const char *se;
+    rpmTag tag = 0;
+
+   for (se = s; *se && *se != ':'; se++)
+	;
+
+    if (se > s && *se == ':') {
+	DIGEST_CTX ctx = rpmDigestInit(PGPHASHALGO_SHA1, RPMDIGEST_NONE);
+	const char * digest = NULL;
+	size_t digestlen = 0;
+	rpmDigestUpdate(ctx, s, (se-s));
+	rpmDigestFinal(ctx, &digest, &digestlen, 0);
+	if (digest && digestlen > 4) {
+	    memcpy(&tag, digest + (digestlen - 4), 4);
+	    tag &= 0x3fffffff;
+	    tag |= 0x40000000;
+	}
+	digest = _free(digest);
+    }
+    return tag;
+}
 
 /* This table has to be in a peculiar order.  If one tag is the */
 /* same as another, plus a few letters, it must come first.     */
@@ -847,8 +872,13 @@ static int findPreambleTag(Spec spec, /*@out@*/rpmTag * tag,
 	}
 	break;
     }
-    if (p == NULL || p->token == NULL)
+    if (p == NULL)
 	return 1;
+    if (p->token == NULL) {
+	if (tag && (*tag = generateArbitraryTagNum(spec->line)) )
+	    return 0;
+	return 1;
+    }
 
     s = spec->line + len;
     SKIPSPACE(s);
@@ -937,7 +967,7 @@ int parsePreamble(Spec spec, int initialPackage)
 	if (rc)
 	    return rc;
 	while (! (nextPart = isPart(spec->line))) {
-	    const char * macro;
+	    const char * macro = NULL;
 	    rpmTag tag;
 
 	    /* Skip blank lines */

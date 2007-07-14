@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - jbj: add arbitrary tag strings to header metadata.
     - mgh: transform %patchNN to %patch -P NN
     - jbj: add mono automagic dependency extractors.
     - jbj: insure that RPMFILE_EXISTS is set for %config files.

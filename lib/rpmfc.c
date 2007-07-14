@@ -1001,7 +1001,7 @@ int rpmfcClassify(rpmfc fc, ARGV_t argv, int_16 * fmode)
 
 #ifdef HAVE_MAGIC_H
     magicfile = rpmExpand("%{?_rpmfc_magic_path}", NULL);
-    if (magicfile == NULL || *magicfile == '\0' || *magicfile == '%')
+    if (magicfile == NULL || *magicfile == '\0')
 	magicfile = _free(magicfile);
 #endif
 
