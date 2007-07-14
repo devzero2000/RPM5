@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - jbj: debugedit warning removal <pmatlai@redhat.com>.
     - jbj: free 5 bits in FCOLOR_e for future use. 
     - jbj: add arbitrary tag strings to header metadata.
     - mgh: transform %patchNN to %patch -P NN
