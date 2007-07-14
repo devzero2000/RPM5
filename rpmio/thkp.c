@@ -44,7 +44,7 @@ static int readKeys(const char * uri)
 {
     unsigned int * kip;
     const byte * pkt;
-    ssize_t pktlen;
+    size_t pktlen;
     byte keyid[8];
     char fn[BUFSIZ];
     pgpDig dig;
@@ -61,7 +61,7 @@ fprintf(stderr, "======================= %s\n", fn);
 	pktlen = 0;
 	pa = pgpReadPkts(fn, &pkt, &pktlen);
 	if (pa == PGPARMOR_ERROR || pa == PGPARMOR_NONE
-         || pkt == NULL || pktlen <= 0)
+         || pkt == NULL || pktlen == 0)
         {
             ec++;
             continue;
