@@ -54,6 +54,7 @@ static int checkOwners(const char * urlfn)
     return 0;
 }
 
+#ifdef	DYING
 /**
  * Expand %patchN macro into %prep scriptlet.
  * @param spec		build info
@@ -177,6 +178,7 @@ static char *doPatch(Spec spec, int c, int strip, const char *db,
     return buf;
 }
 /*@=boundswrite@*/
+#endif
 
 /**
  * Expand %setup macro into %prep scriptlet.
@@ -460,6 +462,7 @@ static int doSetupMacro(Spec spec, char *line)
     return 0;
 }
 
+#ifdef	DYING
 /**
  * Parse %patch line.
  * @param spec		build info
@@ -473,10 +476,10 @@ static int doPatchMacro(Spec spec, char *line)
 	/*@modifies spec->prep, rpmGlobalMacroContext,
 		fileSystem, internalState  @*/
 {
+    char *s;
     char *opt_b;
     char *opt_d;
     int opt_P, opt_p, opt_R, opt_E, opt_F;
-    char *s;
     char buf[BUFSIZ], *bp;
     int patch_nums[1024];  /* XXX - we can only handle 1024 patches! */
     int patch_index, x;
@@ -600,6 +603,7 @@ static int doPatchMacro(Spec spec, char *line)
     return 0;
 }
 /*@=boundswrite@*/
+#endif
 
 /**
  * Check that all sources/patches/icons exist locally, fetching if necessary.
@@ -747,8 +751,10 @@ int parsePrep(Spec spec, int verify)
 /*@-boundsread@*/
 	if (! strncmp(cp, "%setup", sizeof("%setup")-1)) {
 	    res = doSetupMacro(spec, cp);
+#ifdef	DYING
 	} else if (! strncmp(cp, "%patch", sizeof("%patch")-1)) {
 	    res = doPatchMacro(spec, cp);
+#endif
 	} else {
 	    appendLineStringBuf(spec->prep, *lines);
 	}
