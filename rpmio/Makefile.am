@@ -21,6 +21,14 @@ AM_CPPFLAGS = \
 	@WITH_LUA_CPPFLAGS@ \
 	@WITH_FILE_CPPFLAGS@
 
+RPM_LDADD = \
+	$(top_builddir)/build/librpmbuild.la \
+	$(top_builddir)/lib/librpm.la \
+	$(top_builddir)/rpmdb/librpmdb.la \
+	$(top_builddir)/rpmio/librpmio.la \
+	$(top_builddir)/misc/librpmmisc.la \
+	@LTLIBINTL@
+
 pkgincdir = $(pkgincludedir)
 pkginc_HEADERS = \
 	argv.h envvar.h fts.h mire.h rpmdav.h rpmhash.h \
@@ -67,53 +75,53 @@ tax_LDADD = librpmio.la
 
 tdir_SOURCES = tdir.c
 tdir_LDFLAGS = @LDFLAGS_STATIC@
-tdir_LDADD = librpmio.la $(top_builddir)/popt/libpopt.la
+tdir_LDADD = $(RPM_LDADD)
 
 tfts_SOURCES = tfts.c
 tfts_LDFLAGS = @LDFLAGS_STATIC@
-tfts_LDADD = librpmio.la $(top_builddir)/popt/libpopt.la
+tfts_LDADD = $(RPM_LDADD)
 
 tget_SOURCES = tget.c
 tget_LDFLAGS = @LDFLAGS_STATIC@
-tget_LDADD = librpmio.la $(top_builddir)/popt/libpopt.la
+tget_LDADD = $(RPM_LDADD)
 
 thkp_SOURCES = thkp.c
 thkp_LDFLAGS = @LDFLAGS_STATIC@
-thkp_LDADD = librpmio.la $(top_builddir)/popt/libpopt.la
+thkp_LDADD = $(RPM_LDADD)
 
 tmacro_SOURCES =
 tmacro_LDFLAGS = @LDFLAGS_STATIC@
-tmacro_LDADD = tmacro.o librpmio.la
+tmacro_LDADD = tmacro.o $(RPM_LDADD)
 tmacro.o:  macro.c
 	$(COMPILE) -DDEBUG_MACROS -o $@ -c $<
 
 tput_SOURCES = tput.c
 tput_LDFLAGS = @LDFLAGS_STATIC@
-tput_LDADD = librpmio.la $(top_builddir)/popt/libpopt.la
+tput_LDADD = $(RPM_LDADD)
 
 tglob_SOURCES = tglob.c
 tglob_LDFLAGS = @LDFLAGS_STATIC@
-tglob_LDADD = librpmio.la $(top_builddir)/popt/libpopt.la
+tglob_LDADD = $(RPM_LDADD)
 
 tinv_SOURCES = tinv.c
 tinv_LDFLAGS = @LDFLAGS_STATIC@
-tinv_LDADD = librpmio.la $(top_builddir)/popt/libpopt.la
+tinv_LDADD = $(RPM_LDADD)
 
 tkey_SOURCES = tkey.c
 tkey_LDFLAGS = @LDFLAGS_STATIC@
-tkey_LDADD = librpmio.la $(top_builddir)/popt/libpopt.la
+tkey_LDADD = $(RPM_LDADD)
 
 trpmio_SOURCES = trpmio.c
-trpmio_LDADD = librpmio.la $(top_builddir)/popt/libpopt.la
+trpmio_LDADD = $(RPM_LDADD)
 
 tsw_SOURCES = tsw.c
-tsw_LDFLAGS = librpmio.la
+tsw_LDFLAGS = $(RPM_LDADD)
 
 dumpasn1_SOURCES = dumpasn1.c
 
 lookup3_SOURCES = lookup3.c
 lookup3_CFLAGS	= $(CFLAGS) -D_JLU3_SELFTEST
-lookup3_LDADD = librpmio.la
+lookup3_LDADD = $(RPM_LDADD)
 
 tficl.o: tficl.c
 	$(COMPILE) -I/usr/include/ficl -o $@ -c tficl.c 
