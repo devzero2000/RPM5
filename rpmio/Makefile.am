@@ -114,8 +114,3 @@ lookup3_SOURCES = lookup3.c
 lookup3_CFLAGS	= $(CFLAGS) -D_JLU3_SELFTEST
 lookup3_LDADD = $(RPM_LDADD)
 
-tficl.o: tficl.c
-	$(COMPILE) -I/usr/include/ficl -o $@ -c tficl.c 
-
-tficl: tficl.o
-	$(LINK) -o $@ tficl.o -lficl -lm

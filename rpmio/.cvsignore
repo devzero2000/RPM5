@@ -10,7 +10,6 @@ Makefile.in
 tax
 tdigest
 tdir
-tficl
 tfts
 tget
 tglob
