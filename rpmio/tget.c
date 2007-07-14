@@ -29,7 +29,8 @@ fprintf(stderr, "===== %s\n", path);
     if (fd != NULL) {
 	char buf[BUFSIZ];
 	size_t len = Fread(buf, 1, sizeof(buf), fd);
-	int xx = Fclose(fd);
+	int xx;
+        xx = Fclose(fd);
 
 	if (len > 0)
 	    fwrite(buf, 1, len, stderr);
