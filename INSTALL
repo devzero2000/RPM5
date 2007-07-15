@@ -31,10 +31,10 @@ BeeCrypt        mandatory 4.0     4.1.2   http://www.virtualunlimited.com/produc
 Neon            optional  0.26    0.26.4  http://www.webdav.org/neon/
 Berkeley-DB [1] optional  -       4.5.20  http://www.oracle.com/database/berkeley-db.html
 SQLite      [1] optional  3.3     3.4.0   http://www.sqlite.org/
-Lua         [2] optional  5.1     5.1.2   http://www.lua.org/
-ZLib        [3] optional  1.2     1.2.3   http://www.zlib.net/
+Lua             optional  5.1     5.1.2   http://www.lua.org/
+ZLib        [2] optional  1.2     1.2.3   http://www.zlib.net/
 GNU bzip2       optional  1.0     1.0.4   http://www.bzip2.org/
-File/magic  [4] optional  4.0     4.21    ftp://ftp.astron.com/pub/file/
+File/magic  [3] optional  4.0     4.21    ftp://ftp.astron.com/pub/file/
 GNU gettext     optional  1.16    1.16.1  http://www.gnu.org/software/gettext/
 GNU iconv       optional  1.11    1.11    http://www.gnu.org/software/libiconv/
 DMalloc         optional  5       5.5.2   http://dmalloc.com/
@@ -49,13 +49,10 @@ System libelf   optional  -       -       e.g. http://www.mr511.de/software/engl
                Building RPM against at least one of Berkeley-DB or SQLite required.
                Use modified bundled Berkeley-DB copy, please!
 
-[2] lua:       Modified Lua copy bundled with RPM.
-               Building RPM against stock external Lua slightly reduces functionality.
-
-[3] zlib:      Modified ZLib copy bundled with RPM.
+[2] zlib:      Modified ZLib copy bundled with RPM.
                Building RPM against stock external Zlib not recommended.
 
-[4] file:      Unmodified File/magic copy bundled with RPM for convenience reasons.
+[3] file:      Unmodified File/magic copy bundled with RPM for convenience reasons.
                Building RPM against this internal File/magic requires also internal Zlib.
                Building RPM against stock external File/magic supported, too.
 
