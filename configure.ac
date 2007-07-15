@@ -832,7 +832,7 @@ RPM_CHECK_LIB(
     [lua], [_], [_],
     [no,internal:none], [lua:include,local],
     [ AC_CHECK_LIB(dl, dlopen, [ LIBS="-ldl $LIBS"; WITH_LUA_SUBDIR_LIB="-ldl" ])
-      AC_CHECK_FUNC(dlopen, [ WITH_LUA_SUBDIR_DEF="-DUSE_DLOPEN" ]) ],
+      AC_CHECK_FUNC(dlopen, [ WITH_LUA_SUBDIR_DEF="-DLUA_USE_DLOPEN" ]) ],
     [])
 AC_SUBST(WITH_LUA_SUBDIR_DEF)
 AC_SUBST(WITH_LUA_SUBDIR_LIB)

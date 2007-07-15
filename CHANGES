@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - rse: upgraded the local Lua copy from version 5.0.2 to 5.1.2
     - jbj: remove network transport from all rpm libraries.
     - jbj: don't close stdout by mistake (OpenSuSE).
     - jbj: run checkfiles even if failure is imminent (OpenSuSE).

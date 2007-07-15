@@ -11,6 +11,7 @@
 #include <lua.h>
 #include <lualib.h>
 #include <lauxlib.h>
+#include <llocal.h>
 #include <lposix.h>
 #include <lrexlib.h>
 
@@ -54,12 +55,17 @@ rpmlua rpmluaNew()
     /*@-readonlytrans@*/
     /*@observer@*/ /*@unchecked@*/
     static const luaL_reg lualibs[] = {
-	{"base", luaopen_base},
-	{"table", luaopen_table},
-	{"io", luaopen_io},
-	{"string", luaopen_string},
-	{"debug", luaopen_debug},
-	{"loadlib", luaopen_loadlib},
+	/* standard LUA libraries */
+	{"", luaopen_base},
+	{LUA_LOADLIBNAME, luaopen_package},
+	{LUA_TABLIBNAME, luaopen_table},
+	{LUA_IOLIBNAME, luaopen_io},
+	{LUA_OSLIBNAME, luaopen_os},
+	{LUA_STRLIBNAME, luaopen_string},
+	{LUA_MATHLIBNAME, luaopen_math},
+	{LUA_DBLIBNAME, luaopen_debug},
+	/* local LUA libraries (RPM only) */
+	{"local", luaopen_local},
 	{"posix", luaopen_posix},
 	{"rex", luaopen_rex},
 	{"rpm", luaopen_rpm},
@@ -72,9 +78,10 @@ rpmlua rpmluaNew()
     lua->L = L;
     for (; lib->name; lib++) {
 /*@-noeffectuncon@*/
-	(void) lib->func(L);
+	lua_pushcfunction(L, lib->func);
+	lua_pushstring(L, lib->name);
+	lua_call(L, 1, 0);
 /*@=noeffectuncon@*/
-	lua_settop(L, 0);
     }
 #define	_LUADOTDIR	"%{?_rpmhome}%{!?_rpmhome:" USRLIBRPM "/" VERSION "}"
     {	const char * _lua_path = rpmGetPath(_LUADOTDIR, "/lua/?.lua", NULL);
