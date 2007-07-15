@@ -31,7 +31,7 @@ BeeCrypt        mandatory 4.0     4.1.2   http://www.virtualunlimited.com/produc
 Neon            optional  0.26    0.26.4  http://www.webdav.org/neon/
 Berkeley-DB [1] optional  -       4.5.20  http://www.oracle.com/database/berkeley-db.html
 SQLite      [1] optional  3.3     3.4.0   http://www.sqlite.org/
-Lua         [2] optional  -       5.0     http://www.lua.org/
+Lua         [2] optional  -       5.1.2   http://www.lua.org/
 ZLib        [3] optional  1.2     1.2.3   http://www.zlib.net/
 GNU bzip2       optional  1.0     1.0.4   http://www.bzip2.org/
 File/magic  [4] optional  4.0     4.21    ftp://ftp.astron.com/pub/file/
