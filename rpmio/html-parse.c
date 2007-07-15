@@ -1079,7 +1079,7 @@ int main ()
 
 _rpmio_debug = 0;
 _dav_debug = 0;
-  fd = Fopen(htmlpath, "r.ufdio");
+  fd = Fopen(htmlpath, "r");
   while ((read_count = Fread (x + length, 1, size - length, fd)))
     {
       if (read_count <= 0)

@@ -744,7 +744,7 @@ retry:
 
     if (NSType == RPMNS_TYPE_DIGEST) {
 	const char * EVR = rpmdsEVR(dep);
-	FD_t fd = Fopen(Name, "r");
+	FD_t fd = Fopen(Name, "r.fdio");
 
 	rc = 1;		/* XXX assume failure */
 	if (fd && !Ferror(fd)) {
@@ -834,7 +834,7 @@ retry:
 	    const char * fn = rpmGetPath("%{_varrun}/", Name, ".pid", NULL);
 	    FD_t fd = NULL;
 
-	    if (fn && *fn != '%' && (fd = Fopen(fn, "r")) && !Ferror(fd)) {
+	    if (fn && *fn != '%' && (fd = Fopen(fn, "r.fdio")) && !Ferror(fd)) {
 		char buf[32];
 		size_t nb = Fread(buf, sizeof(buf[0]), sizeof(buf), fd);
 

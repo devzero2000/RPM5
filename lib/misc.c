@@ -172,7 +172,7 @@ int makeTempFile(const char * prefix, const char ** fnptr, FD_t * fdptr)
 	    /*@switchbreak@*/ break;
 	}
 
-	fd = Fopen(tempfn, "w+x");
+	fd = Fopen(tempfn, "w+x.fdio");
 	/* XXX FIXME: errno may not be correct for ufdio */
     } while ((fd == NULL || Ferror(fd)) && errno == EEXIST);
 

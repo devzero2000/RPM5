@@ -1695,7 +1695,7 @@ psm->te->h = headerLink(fi->h);
 		pkgdn = _free(pkgdn);
 		if (rc == RPMRC_FAIL)
 		    break;
-		psm->fd = Fopen(psm->pkgfn, "w");
+		psm->fd = Fopen(psm->pkgfn, "w.fdio");
 		if (psm->fd == NULL || Ferror(psm->fd)) {
 		    rc = RPMRC_FAIL;
 		    break;

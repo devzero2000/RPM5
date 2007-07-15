@@ -140,7 +140,7 @@ static /*@only@*/ /*@null@*/ StringBuf addFileToTagAux(Spec spec,
 
     fn = rpmGetPath("%{_builddir}/%{?buildsubdir:%{buildsubdir}/}", file, NULL);
 
-    fd = Fopen(fn, "r");
+    fd = Fopen(fn, "r.fdio");
     if (fn != buf) fn = _free(fn);
     if (fd == NULL || Ferror(fd)) {
 	sb = freeStringBuf(sb);
@@ -299,7 +299,7 @@ int readRPM(const char *fileName, Spec *specp, struct rpmlead *lead,
     rpmRC rc;
 
     fdi = (fileName != NULL)
-	? Fopen(fileName, "r")
+	? Fopen(fileName, "r.fdio")
 	: fdDup(STDIN_FILENO);
 
     if (fdi == NULL || Ferror(fdi)) {
@@ -703,7 +703,7 @@ int writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
     }
 
     /* Open the output file */
-    fd = Fopen(fileName, "w");
+    fd = Fopen(fileName, "w.fdio");
     if (fd == NULL || Ferror(fd)) {
 	rc = RPMERR_CREATE;
 	rpmError(RPMERR_CREATE, _("Could not open %s: %s\n"),
@@ -753,7 +753,7 @@ int writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
 	goto exit;
 
     /* Append the header and archive */
-    ifd = Fopen(sigtarget, "r");
+    ifd = Fopen(sigtarget, "r.fdio");
     if (ifd == NULL || Ferror(ifd)) {
 	rc = RPMERR_READ;
 	rpmError(RPMERR_READ, _("Unable to open sigtarget %s: %s\n"),

@@ -52,7 +52,7 @@ static int manageFile(/*@out@*/ FD_t *fdp,
 
     /* open a file and set *fdp */
     if (*fdp == NULL && fnp != NULL && *fnp != NULL) {
-	fd = Fopen(*fnp, ((flags & O_WRONLY) ? "w" : "r"));
+	fd = Fopen(*fnp, ((flags & O_WRONLY) ? "w.fdio" : "r.fdio"));
 	if (fd == NULL || Ferror(fd)) {
 	    rpmError(RPMERR_OPEN, _("%s: open failed: %s\n"), *fnp,
 		Fstrerror(fd));
@@ -1094,7 +1094,7 @@ int rpmcliSign(rpmts ts, QVA_t qva, const char ** argv)
     while ((arg = *argv++) != NULL) {
 	FD_t fd;
 
-	if ((fd = Fopen(arg, "r")) == NULL
+	if ((fd = Fopen(arg, "r.fdio")) == NULL
 	 || Ferror(fd)
 	 || rpmVerifySignatures(qva, ts, fd, arg))
 	    res++;

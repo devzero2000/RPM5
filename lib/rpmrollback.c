@@ -161,7 +161,7 @@ IDTX IDTXglob(rpmts ts, const char * globstr, rpmTag tag, uint_32 rbtid)
 	int_32 count;
 	int isSource;
 
-	fd = Fopen(av[i], "r");
+	fd = Fopen(av[i], "r.fdio");
 	if (fd == NULL || Ferror(fd)) {
 	    rpmError(RPMERR_OPEN, _("open of %s failed: %s\n"), av[i],
 	    		Fstrerror(fd));

@@ -3900,7 +3900,7 @@ int rpmioSlurp(const char * fn, byte ** bp, ssize_t * blenp)
     FD_t fd;
     int rc = 0;
 
-    fd = Fopen(fn, "r.ufdio");
+    fd = Fopen(fn, "r");
     if (fd == NULL || Ferror(fd)) {
 	rc = 2;
 	goto exit;

@@ -548,7 +548,7 @@ int rpmtsSolve(rpmts ts, rpmds ds, /*@unused@*/ const void * data)
 	FD_t fd;
 	rpmRC rpmrc;
 
-	fd = Fopen(str, "r");
+	fd = Fopen(str, "r.fdio");
 	if (fd == NULL || Ferror(fd)) {
 	    rpmError(RPMERR_OPEN, _("open of %s failed: %s\n"), str,
 			Fstrerror(fd));

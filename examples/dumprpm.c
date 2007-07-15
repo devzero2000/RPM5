@@ -45,9 +45,9 @@ int main( int argc, char **argv )
     int rc;
 
     if( argc == 1 )
-	fd = Fopen("-", "r.ufdio" );
+	fd = Fopen("-", "r" );
     else
-	fd = Fopen( argv[1], "r.ufdio" );
+	fd = Fopen( argv[1], "r" );
 
     if( fd == NULL || Ferror(fd) ) {
 	fprintf(stderr, "cannot open %s: %s\n",

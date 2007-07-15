@@ -110,7 +110,7 @@ rpmfd_Fopen(/*@unused@*/ PyObject * s, PyObject * args, PyObject * kwds)
 	/*@modifies fdhead, fdtail @*/
 {
     char * path;
-    char * mode = "r";
+    char * mode = "r.fdio";
     FDlist *node;
     char * kwlist[] = {"path", "mode", NULL};
 

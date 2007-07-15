@@ -817,7 +817,7 @@ static int rpmdbExportInfo(/*@unused@*/ rpmdb db, Header h, int adding)
 	goto exit;
 
     if (adding) {
-	FD_t fd = Fopen(fn, "w");
+	FD_t fd = Fopen(fn, "w.fdio");
 	int_32 *iidp;
 
 	if (fd != NULL) {

@@ -395,7 +395,7 @@ static int doIcon(Spec spec, Header h)
 	/*@notreached@*/ break;
     }
 
-    fd = Fopen(fn, "r");
+    fd = Fopen(fn, "r.fdio");
     if (fd == NULL || Ferror(fd)) {
 	rpmError(RPMERR_BADSPEC, _("Unable to open icon %s: %s\n"),
 		fn, Fstrerror(fd));

@@ -34,7 +34,7 @@ static size_t readFile(const char * path)
 
     buf[0] = '\0';
 fprintf(stderr, "===== Fread %s\n", path);
-    fd = Fopen(path, "r.ufdio");
+    fd = Fopen(path, "r");
     if (fd != NULL) {
 
 	len = Fread(buf, 1, sizeof(buf), fd);
@@ -57,7 +57,7 @@ static size_t writeFile(const char * path)
 
     strcpy(buf, "Hello World!\n");
 fprintf(stderr, "===== Fwrite %s\n", path);
-    fd = Fopen(path, "w.ufdio");
+    fd = Fopen(path, "w");
     if (fd != NULL) {
 	len = Fwrite(buf, 1, strlen(buf), fd);
 	xx = Fclose(fd);
