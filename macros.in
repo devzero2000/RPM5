@@ -384,14 +384,17 @@ package or when debugging this package.\
 
 #
 # The patch macro writes 1 line of shell code to (optionally) uncompress
-# a file and aplly using patch(1).
+# a file and apply using patch(1).
 #
 
-%patch(b:p:P:REz:F:d:) \
-%define patch_file	%{P:%{-P:%{-P*}}%{!-P:%%PATCH0}} \
-%define patch_suffix	%{-b:-b --suffix %{-b*}}%{-z:--suffix %{-z*}} \
-  echo "Patch #%{-P:%{-P*}}%{!-P:0} (%{basename:%patch_file}):" \
-  %{uncompress:%patch_file} | %{__patch} -s %{-p:-p%{-p*}} %{-F:-F%{-F*}} %{-d:-d%{-d*}} %patch_suffix %{-R} %{-E}
+%_patch_file    %{P:%{-P:%{-P*}}%{!-P:%%PATCH0}}  
+%_patch_suffix  %{-b:-b --suffix %{-b*}}%{-z:--suffix %{-z*}}  
+
+%__patch_display echo "Patch #%{-P:%{-P*}}%{!-P:0} (%{basename:%_patch_file}):"
+%__patch_apply   %{uncompress:%_patch_file} | %{__patch} -s %{-p:-p%{-p*}} %{-F:-F%{-F*}} %{-d:-d%{-d*}} %_patch_suffix %{-R} %{-E}
+
+%patch(b:p:P:REz:F:d:) %{__patch_display} ; %{__patch_apply} \
+%{nil}
 
 #
 # Script gets packaged file list on input and buildroot as first parameter.
