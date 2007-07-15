@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - jbj: don't close stdout by mistake (OpenSuSE).
     - jbj: run checkfiles even if failure is imminent (OpenSuSE).
     - jbj: rip compiled in %patch, breaking remote patch fetching.
     - jbj: fixup %patchNN rewrite.
