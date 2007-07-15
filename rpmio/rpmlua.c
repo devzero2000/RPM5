@@ -11,9 +11,11 @@
 #include <lua.h>
 #include <lualib.h>
 #include <lauxlib.h>
+#ifdef WITH_LUA_INTERNAL
 #include <llocal.h>
 #include <lposix.h>
 #include <lrexlib.h>
+#endif
 
 #include <unistd.h>
 #include <assert.h>
@@ -65,9 +67,11 @@ rpmlua rpmluaNew()
 	{LUA_MATHLIBNAME, luaopen_math},
 	{LUA_DBLIBNAME, luaopen_debug},
 	/* local LUA libraries (RPM only) */
+#ifdef WITH_LUA_INTERNAL
 	{"local", luaopen_local},
 	{"posix", luaopen_posix},
 	{"rex", luaopen_rex},
+#endif
 	{"rpm", luaopen_rpm},
 	{NULL, NULL},
     };

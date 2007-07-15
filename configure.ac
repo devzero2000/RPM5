@@ -829,11 +829,17 @@ WITH_LUA_SUBDIR_DEF=""
 WITH_LUA_SUBDIR_LIB=""
 RPM_CHECK_LIB(
     [Lua], [lua],
-    [lua], [_], [_],
+    [lua], [lua_newstate], [lua.h],
     [no,internal:none], [lua:local],
-    [ AC_CHECK_LIB(dl, dlopen, [ LIBS="-ldl $LIBS"; WITH_LUA_SUBDIR_LIB="-ldl" ])
-      AC_CHECK_FUNC(dlopen, [ WITH_LUA_SUBDIR_DEF="-DLUA_USE_DLOPEN" ]) ],
-    [])
+    [ if test ".$RPM_CHECK_LIB_LOCATION" = .internal; then
+          AC_CHECK_LIB(dl, dlopen, [ LIBS="-ldl $LIBS"; WITH_LUA_SUBDIR_LIB="-ldl" ])
+          AC_CHECK_FUNC(dlopen, [ WITH_LUA_SUBDIR_DEF="-DLUA_USE_DLOPEN" ])
+          AC_DEFINE(WITH_LUA_INTERNAL, 1, [Define if building with internal Lua])
+      else
+          AC_CHECK_LIB(dl, dlopen)
+          AC_CHECK_FUNC(dlopen)
+      fi
+    ], [])
 AC_SUBST(WITH_LUA_SUBDIR_DEF)
 AC_SUBST(WITH_LUA_SUBDIR_LIB)
 
