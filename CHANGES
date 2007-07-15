@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - jbj: add (preliminary) WR configuration.
     - rse: support building against external stock Lua 5.1.2, too
     - rse: upgraded the local Lua copy from version 5.0.2 to 5.1.2
     - jbj: remove network transport from all rpm libraries.
