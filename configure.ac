@@ -835,6 +835,7 @@ RPM_CHECK_LIB(
           AC_CHECK_LIB(dl, dlopen, [ LIBS="-ldl $LIBS"; WITH_LUA_SUBDIR_LIB="-ldl" ])
           AC_CHECK_FUNC(dlopen, [ WITH_LUA_SUBDIR_DEF="-DLUA_USE_DLOPEN" ])
           AC_DEFINE(WITH_LUA_INTERNAL, 1, [Define if building with internal Lua])
+          AC_CONFIG_FILES([lua/Makefile])
       else
           AC_CHECK_LIB(dl, dlopen)
           AC_CHECK_FUNC(dlopen)
@@ -1118,7 +1119,7 @@ AC_CONFIG_FILES([ po/Makefile.in
     scripts/macros.python tools/Makefile misc/Makefile doc/Makefile
     doc/manual/Makefile doc/fr/Makefile doc/ja/Makefile doc/ko/Makefile
     doc/pl/Makefile doc/ru/Makefile doc/sk/Makefile python/Makefile
-    python/rpm/Makefile lua/Makefile scripts/rpm.pc
+    python/rpm/Makefile scripts/rpm.pc
 ])
 
 dnl # explicit list of commands to execute
