@@ -1135,8 +1135,9 @@ doFoo(MacroBuf mb, int negate, const char * f, size_t fn,
 	(void) expandU(mb, buf, sizeof(buf));
     }
     if (fn > 5 && STREQ("patch", f, 5) && xisdigit(f[5])) {
+	for ( c = 5 ; c < fn && f[c] == '0'; c++ ) ; /* Skip leading zeros */
 	b = buf;
-	be = stpncpy( stpcpy(b, "%patch -P "), f+5, fn-5);
+	be = stpncpy( stpcpy(b, "%patch -P "), f+c, fn-c);
 	*be = '\0';
     } else if (STREQ("basename", f, fn)) {
 	if ((b = strrchr(buf, '/')) == NULL)
