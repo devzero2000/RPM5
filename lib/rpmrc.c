@@ -1614,8 +1614,25 @@ void rpmSetTables(int archTable, int osTable)
 
 int rpmMachineScore(int type, const char * name)
 {
-    machEquivInfo info = machEquivSearch(&tables[type].equiv, name);
-    return (info != NULL ? info->score : 0);
+    const char * fakeplatform;
+    int score = 0;
+    switch (type) {
+        case RPM_MACHTABLE_INSTARCH:
+            fakeplatform = rpmExpand(name, "%{_host_vendor}-%{_host_os}%{?_gnu}", NULL);
+            break;
+        case RPM_MACHTABLE_BUILDARCH:
+            fakeplatform = rpmExpand(name, "%{_target_vendor}-%{_target_os}%{?_gnu}", NULL);
+            break;
+        case RPM_MACHTABLE_INSTOS:
+            fakeplatform = rpmExpand("%{_host_arch}-%{_host_vendor}-", name, "%{?_gnu}", NULL);
+            break;
+        case RPM_MACHTABLE_BUILDOS:
+            fakeplatform = rpmExpand("%{_target_arch}-%{_target_vendor}-", name, "%{?_gnu}", NULL);
+            break;
+    }
+    score = rpmPlatformScore(fakeplatform, NULL, 0);
+    _free(fakeplatform);
+    return(score);
 }
 
 /*@-modnomods@*/
