@@ -106,6 +106,69 @@ CFLAGS   = `pkg-config rpm --cflags-only-other`
 LDFLAGS  = `pkg-config rpm --libs-only-other`
 LIBS     = `pkg-config rpm --libs-only-l`
 
+BUILDING RPM ON A CLUSTER OF SERVERS
+====================================
+
+Assume you have...
+
+- a cluster of time-synchronized Unix servers
+  (usually of different Unix flavors to make sense in this context),
+- each one allowing you to login under your personal account and
+  access your central home directory (usually via NFS) and
+- use the full set of development tools,
+
+...then you can build RPM in parallel on an arbitrary number of servers
+in this cluster by using the following procedure:
+
+1. Build Environment Preparation:
+
+   On a single arbitrary server of the cluster prepare the RPM source
+   tree at least once.
+
+   server1$ cd ~/work
+   server1$ cvs -d rpm-cvs@rpm5.org:/v/rpm/cvs co rpm
+   server1$ cd rpm
+   server1$ . devtool.bashrc
+
+   server1$ devtool checkout
+   server1$ devtool autogen
+
+2. Platform Preparation:
+
+   on every(!) server of the cluster prepare its platform-specific
+   environment (includes building local copies of all third-party
+   libraries).
+
+   serverN$ cd ~/work/rpm
+   serverN$ . devtool.bashrc
+
+   serverN$ devtool setup-platform
+   serverN$ devtool standalone prepare
+   serverN$ devtool standalone autogen
+   serverN$ devtool standalone configure
+
+3. Development:
+
+   now you can develop RPM on any number of servers of the cluster in
+   parallel.
+
+   serverN$ cd ~/work/rpm
+   serverN$ . devtool.bashrc
+
+   serverN$ cd {build,lib,rpmdb,rpmio,misc,...}
+   serverN$ vi *.c
+   serverN$ devtool make [-l]
+
+4. Test-Drive:
+   
+   on an arbitrary server of the cluster you can test-drive RPM via:
+
+   serverN$ cd ~/work/rpm
+   serverN$ . devtool.bashrc
+
+   serverN$ devtool make install
+   serverN$ /tmp/rpm/bin/rpm [...]
+
 LIBRARY ISSUES
 ==============
 
