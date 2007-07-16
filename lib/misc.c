@@ -115,7 +115,7 @@ int dosetenv(const char * name, const char * value, int overwrite)
     return putenv(a);
 }
 
-int makeTempFile(const char * prefix, const char ** fnptr, FD_t * fdptr)
+int makeTempFile(const char * prefix, const char ** fnptr, void * fdptr)
 {
     const char * tpmacro = "%{?_tmppath:%{_tmppath}}%{!?_tmppath:/var/tmp}";
     const char * tempfn = NULL;
@@ -210,7 +210,8 @@ int makeTempFile(const char * prefix, const char ** fnptr, FD_t * fdptr)
     else 
 	tempfn = _free(tempfn);
     /*@=branchstate@*/
-    *fdptr = fd;
+    if (fdptr)
+	*(FD_t *)fdptr = fd;
 
     return 0;
 

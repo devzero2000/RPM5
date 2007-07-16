@@ -11,6 +11,7 @@ extern const char *__progname;
 #define	IAM_RPMK
 #endif
 
+#include <rpmio.h>
 #include <rpmcli.h>
 #include <rpmbuild.h>
 

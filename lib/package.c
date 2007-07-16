@@ -646,8 +646,9 @@ verifyinfo_exit:
     return rc;
 }
 
-rpmRC rpmReadHeader(rpmts ts, FD_t fd, Header *hdrp, const char ** msg)
+rpmRC rpmReadHeader(rpmts ts, void * _fd, Header *hdrp, const char ** msg)
 {
+    FD_t fd = _fd;
     char buf[BUFSIZ];
     int_32 block[4];
     int_32 il;
@@ -750,8 +751,9 @@ exit:
 }
 
 /*@-bounds@*/	/* LCL: segfault */
-rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
+rpmRC rpmReadPackageFile(rpmts ts, void * _fd, const char * fn, Header * hdrp)
 {
+    FD_t fd = _fd;
     pgpDig dig;
     char buf[8*BUFSIZ];
     ssize_t count;

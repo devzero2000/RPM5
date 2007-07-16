@@ -1,6 +1,7 @@
 #include "system.h"
 
 #include <rpmlib.h>
+#include <rpmio.h>
 #include <rpmmacro.h>
 
 #include "rpmts.h"

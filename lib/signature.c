@@ -151,9 +151,10 @@ static unsigned char header_magic[8] = {
     0x8e, 0xad, 0xe8, 0x01, 0x00, 0x00, 0x00, 0x00
 };
 
-rpmRC rpmReadSignature(FD_t fd, Header * sighp, sigType sig_type,
+rpmRC rpmReadSignature(void * _fd, Header * sighp, sigType sig_type,
 		const char ** msg)
 {
+    FD_t fd = _fd;
     char buf[BUFSIZ];
     int_32 block[4];
     int_32 il;
@@ -350,8 +351,9 @@ exit:
     return rc;
 }
 
-int rpmWriteSignature(FD_t fd, Header sigh)
+int rpmWriteSignature(void * _fd, Header sigh)
 {
+    FD_t fd = _fd;
     static byte buf[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };
     int sigSize, pad;
     int rc;

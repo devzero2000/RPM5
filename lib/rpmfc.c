@@ -7,6 +7,7 @@
 #include "magic.h"
 #endif
 
+#include <rpmio.h>
 #define	_RPMEVR_INTERNAL
 #include <rpmbuild.h>
 #include <argv.h>

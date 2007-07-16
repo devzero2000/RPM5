@@ -1,6 +1,7 @@
 #include "system.h"
 const char *__progname;
 
+#include <rpmio.h>
 #include <rpmcli.h>
 #include <argv.h>
 #include <rpmds.h>

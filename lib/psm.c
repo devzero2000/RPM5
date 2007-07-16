@@ -163,9 +163,10 @@ static rpmRC markReplacedFiles(const rpmpsm psm)
 }
 /*@=bounds@*/
 
-rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
+rpmRC rpmInstallSourcePackage(rpmts ts, void * _fd,
 		const char ** specFilePtr, const char ** cookie)
 {
+    FD_t fd = _fd;
     int scareMem = 1;	/* XXX fi->h is needed */
     rpmfi fi = NULL;
     const char * _sourcedir = NULL;

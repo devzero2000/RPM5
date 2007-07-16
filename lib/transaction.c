@@ -3,6 +3,8 @@
  */
 
 #include "system.h"
+
+#include <rpmio.h>
 #include "rpmcli.h"	/* IDTX prototypes */
 #include <rpmlib.h>
 

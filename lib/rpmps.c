@@ -5,6 +5,7 @@
 #include "system.h"
 
 #include <rpmlib.h>
+#include <rpmio.h>
 
 #define	_RPMPS_INTERNAL
 #include "rpmps.h"

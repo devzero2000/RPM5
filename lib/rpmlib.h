@@ -8,7 +8,6 @@
  *
  */
 
-#include "rpmio.h"
 #include "rpmmessages.h"
 #include "rpmerr.h"
 #include "header.h"
@@ -809,12 +808,12 @@ rpmRC headerCheck(rpmts ts, const void * uh, size_t uc,
 /** 
  * Return checked and loaded header.
  * @param ts		transaction set
- * @param fd		file handle
+ * @param _fd		file handle
  * @retval hdrp		address of header (or NULL)
  * @retval *msg		verification error message (or NULL)
  * @return		RPMRC_OK on success
  */
-rpmRC rpmReadHeader(rpmts ts, FD_t fd, /*@out@*/ Header *hdrp,
+rpmRC rpmReadHeader(rpmts ts, void * _fd, /*@out@*/ Header *hdrp,
 		/*@out@*/ /*@null@*/ const char ** msg)
         /*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
         /*@modifies ts, *hdrp, *msg, rpmGlobalMacroContext,
@@ -823,26 +822,26 @@ rpmRC rpmReadHeader(rpmts ts, FD_t fd, /*@out@*/ Header *hdrp,
 /**
  * Return package header from file handle, verifying digests/signatures.
  * @param ts		transaction set
- * @param fd		file handle
+ * @param _fd		file handle
  * @param fn		file name
  * @retval hdrp		address of header (or NULL)
  * @return		RPMRC_OK on success
  */
-rpmRC rpmReadPackageFile(rpmts ts, FD_t fd,
+rpmRC rpmReadPackageFile(rpmts ts, void * _fd,
 		const char * fn, /*@null@*/ /*@out@*/ Header * hdrp)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies ts, fd, *hdrp, rpmGlobalMacroContext,
+	/*@modifies ts, _fd, *hdrp, rpmGlobalMacroContext,
 		fileSystem, internalState @*/;
 
 /**
  * Install source package.
  * @param ts		transaction set
- * @param fd		file handle
+ * @param _fd		file handle
  * @retval specFilePtr	address of spec file name (or NULL)
  * @retval cookie	address of cookie pointer (or NULL)
  * @return		rpmRC return code
  */
-rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
+rpmRC rpmInstallSourcePackage(rpmts ts, void * _fd,
 			/*@null@*/ /*@out@*/ const char ** specFilePtr,
 			/*@null@*/ /*@out@*/ const char ** cookie)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/

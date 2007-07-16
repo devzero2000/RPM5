@@ -11,6 +11,7 @@
 #include <netinet/in.h>
 
 #include <rpmlib.h>
+#include <rpmio.h>
 
 #include "signature.h"
 #include "rpmlead.h"

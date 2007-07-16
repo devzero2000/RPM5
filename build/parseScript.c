@@ -5,6 +5,7 @@
 
 #include "system.h"
 
+#include <rpmio.h>
 #define	_RPMEVR_INTERNAL
 #include "rpmbuild.h"
 #include "debug.h"

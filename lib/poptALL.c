@@ -6,6 +6,7 @@
 #include "system.h"
 const char *__progname;
 
+#include <rpmio.h>
 #include <rpmcli.h>
 #include <rpmlua.h>		/* XXX rpmluaFree() */
 #include <fs.h>			/* XXX rpmFreeFilesystems() */

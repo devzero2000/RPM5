@@ -13,6 +13,7 @@
 
 #include "system.h"
 
+#include <rpmio.h>
 #include <rpmbuild.h>
 #include <rpmlib.h>
 

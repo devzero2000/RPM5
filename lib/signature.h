@@ -40,26 +40,26 @@ Header rpmNewSignature(void)
 /** \ingroup signature
  * Read (and verify header+payload size) signature header.
  * If an old-style signature is found, we emulate a new style one.
- * @param fd		file handle
+ * @param _fd		file handle
  * @retval sighp	address of (signature) header (or NULL)
  * @param sig_type	type of signature header to read (from lead)
  * @retval msg		failure msg
  * @return		rpmRC return code
  */
-rpmRC rpmReadSignature(FD_t fd, /*@null@*/ /*@out@*/ Header *sighp,
+rpmRC rpmReadSignature(void * _fd, /*@null@*/ /*@out@*/ Header *sighp,
 		sigType sig_type, /*@null@*/ /*@out@*/ const char ** msg)
 	/*@globals fileSystem @*/
-	/*@modifies fd, *sighp, *msg, fileSystem @*/;
+	/*@modifies _fd, *sighp, *msg, fileSystem @*/;
 
 /** \ingroup signature
  * Write signature header.
- * @param fd		file handle
+ * @param _fd		file handle
  * @param sigh		(signature) header
  * @return		0 on success, 1 on error
  */
-int rpmWriteSignature(FD_t fd, Header sigh)
+int rpmWriteSignature(void * _fd, Header sigh)
 	/*@globals fileSystem @*/
-	/*@modifies fd, sigh, fileSystem @*/;
+	/*@modifies _fd, sigh, fileSystem @*/;
 
 /** \ingroup signature
  * Generate signature(s) from a header+payload file, save in signature header.

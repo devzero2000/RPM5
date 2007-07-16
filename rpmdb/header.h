@@ -80,7 +80,6 @@
 /* RPM - Copyright (C) 1995-2001 Red Hat Software */
 
 #include <stdio.h>
-#include "rpmio.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -460,7 +459,7 @@ typedef
  * @return		header (or NULL on error)
  */
 typedef
-/*@null@*/ Header (*HDRread) (FD_t fd, enum hMagic magicp)
+/*@null@*/ Header (*HDRread) (void * fd, enum hMagic magicp)
 	/*@modifies fd @*/;
 
 /** \ingroup header
@@ -471,7 +470,7 @@ typedef
  * @return		0 on success, 1 on error
  */
 typedef
-int (*HDRwrite) (FD_t fd, /*@null@*/ Header h, enum hMagic magicp)
+int (*HDRwrite) (void * fd, /*@null@*/ Header h, enum hMagic magicp)
 	/*@globals fileSystem @*/
 	/*@modifies fd, h, fileSystem @*/;
 

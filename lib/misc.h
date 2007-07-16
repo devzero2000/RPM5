@@ -87,13 +87,13 @@ int doputenv(const char * str)
  * The file name and the open file handle are returned.
  *
  * @param prefix	leading part of temp file path
- * @retval fnptr	temp file name (or NULL)
- * @retval fdptr	temp file handle
+ * @retval *fnptr	temp file name (or NULL)
+ * @retval *fdptr	temp file handle
  * @return		0 on success
  */
 int makeTempFile(/*@null@*/ const char * prefix,
 		/*@null@*/ /*@out@*/ const char ** fnptr,
-		/*@out@*/ FD_t * fdptr)
+		/*@out@*/ void * fdptr)
 	/*@globals rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState @*/
 	/*@modifies *fnptr, *fdptr, rpmGlobalMacroContext,
