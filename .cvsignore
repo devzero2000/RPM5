@@ -2,6 +2,7 @@
 .depend
 .depend-done
 .libs
+devtool.log.*
 ABOUT-NLS
 Doxyfile
 Doxytags
