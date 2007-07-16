@@ -1697,9 +1697,10 @@ void rpmfiBuildFSContexts(Header h,
     fi = rpmfiInit(fi, 0);
     if (fi != NULL)
     while (rpmfiNext(fi) >= 0) {
-	const char * fn = rpmfiFN(fi);
+	const char *fn;
 	security_context_t scon;
 
+	fn = rpmfiFN(fi);
 	fcnb[ac] = lgetfilecon(fn, &scon);
 /*@-branchstate@*/
 	if (fcnb[ac] > 0) {
@@ -1774,10 +1775,12 @@ void rpmfiBuildREContexts(Header h,
     fi = rpmfiInit(fi, 0);
     if (fi != NULL)
     while (rpmfiNext(fi) >= 0) {
-	const char * fn = rpmfiFN(fi);
-	mode_t fmode = rpmfiFMode(fi);
+	const char *fn;
+	mode_t fmode;
 	security_context_t scon;
 
+	fn = rpmfiFN(fi);
+	fmode = rpmfiFMode(fi);
 	scon = NULL;
 	if (matchpathcon(fn, fmode, &scon) == 0 && scon != NULL) {
 	    fcnb[ac] = strlen(scon) + 1;
