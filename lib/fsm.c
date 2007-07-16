@@ -657,7 +657,6 @@ static int fsmMapFContext(FSM_t fsm)
 {
     rpmts ts = fsmGetTs(fsm);
     rpmfi fi = fsmGetFi(fsm);
-    struct stat * st = &fsm->sb;
 
     /*
      * Find file security context (if not disabled).
@@ -668,7 +667,7 @@ static int fsmMapFContext(FSM_t fsm)
     {
 	security_context_t scon = NULL;
 
-	if (matchpathcon(fsm->path, st->st_mode, &scon) == 0 && scon != NULL)
+	if (matchpathcon(fsm->path, &fsm->sb.st_mode, &scon) == 0 && scon != NULL)
 	    fsm->fcontext = scon;
 	else {
 	    int i = fsm->ix;
