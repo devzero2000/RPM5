@@ -1570,7 +1570,7 @@ static int rpmts_init(rpmtsObject * s, PyObject *args, PyObject *kwds)
 	/*@modifies s, rpmGlobalMacroContext @*/
 {
     char * rootDir = "/";
-    int vsflags = rpmExpandNumeric("%{?_vsflags_up2date}");
+    int vsflags = rpmExpandNumeric("%{?_vsflags}");
     char * kwlist[] = {"rootdir", "vsflags", 0};
 
 if (_rpmts_debug < 0)
@@ -1709,7 +1709,7 @@ rpmts_Create(/*@unused@*/ PyObject * self, PyObject * args, PyObject * kwds)
 {
     rpmtsObject * o;
     char * rootDir = "/";
-    int vsflags = rpmExpandNumeric("%{?_vsflags_up2date}");
+    int vsflags = rpmExpandNumeric("%{?_vsflags}");
     char * kwlist[] = {"rootdir", "vsflags", NULL};
 
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "|si:Create", kwlist,
