@@ -102,7 +102,7 @@ lint:
 
 CVSTAG = r$(subst .,-,$(VERSION))
 
-pkgsrcdir = $(prefix)/src/rpm
+pkgsrcdir = @PKGSRCDIR@
 
 DBPATH = @DBPATH@
 

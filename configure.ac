@@ -1022,6 +1022,21 @@ AC_DEFINE_UNQUOTED(
 AC_SUBST(DBPATH)
 AC_MSG_RESULT([$DBPATH])
 
+dnl # determine RPM package sources directory path
+AC_MSG_CHECKING([for RPM package sources directory])
+PKGSRCDIR=`echo "${usrprefix}/src/rpm"`
+AC_ARG_WITH(
+    [path-sources],
+    AS_HELP_STRING([--with-path-sources=ARG], [build with RPM package sourcs directory path]),
+    [PKGSRCDIR="$withval"]
+)
+AC_DEFINE_UNQUOTED(
+    [PKGSRCDIR], ["$PKGSRCDIR"],
+    [Full path to RPM package sources directory]
+)
+AC_SUBST(PKGSRCDIR)
+AC_MSG_RESULT([$PKGSRCDIR])
+
 dnl # determine RPM locale directory path
 AC_MSG_CHECKING([for RPM locale directory])
 LOCALEDIR=`echo "${usrprefix}/share/locale"`
