@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - mgh: Update configure.ac to use target instead of host values for configuration
     - rse: fix build environment to correctly support building RPM from outside its source tree
     - rse: remove RH-specific "_vsflags_up2date" macro, use "_vsflags" in Python bindings instead
     - rse: make --with-path-rpmpopt a colon-separated path to allow "rpmpopt" files be similar to "macros" files

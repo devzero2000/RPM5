@@ -447,10 +447,10 @@ case "$target" in
 esac
 
 dnl # FIXME: platform-hack: SCO and SunOS 4.x
-if echo "$build_os" | grep sco > /dev/null; then
+if echo "$target_os" | grep sco > /dev/null; then
 	AC_DEFINE(NEED_STRINGS_H, 1, [Define as one if we need to include <strings.h> (along with <string.h>)])
 	AC_DEFINE(HAVE_STRUCT_MNTTAB, 1, [Define as 1 if you have "struct mnttab" (only sco?)])
-elif echo "$build_os" | grep sunos > /dev/null; then
+elif echo "$target_os" | grep sunos > /dev/null; then
 	CFLAGS="$CFLAGS -D__USE_FIXED_PROTOTYPES__"
 	AC_DEFINE(NEED_STRINGS_H, 1, [Define as one if we need to include <strings.h> (along with <string.h>)])
 	AC_DEFINE(NEED_MYREALLOC, 1, [Define as 1 if we need myrealloc])
@@ -890,38 +890,38 @@ AC_MSG_RESULT([$ROOT_GROUP])
 AC_SUBST(ROOT_GROUP)
 
 dnl # provide platform-specific "find-provides" and "find-requires" script symlinks
-if echo "$build_os" | grep '.*-gnulibc1' > /dev/null ; then
-	build_os=`echo "${build_os}" | sed 's/-gnulibc1$//'`
+if echo "$target_os" | grep '.*-gnulibc1' > /dev/null ; then
+	target_os=`echo "${target_os}" | sed 's/-gnulibc1$//'`
 fi
-if echo "$build_os" | grep '.*-gnu' > /dev/null ; then
-	build_os=`echo "${build_os}" | sed 's/-gnu$//'`
+if echo "$target_os" | grep '.*-gnu' > /dev/null ; then
+	target_os=`echo "${target_os}" | sed 's/-gnu$//'`
 fi
 changequote(<, >)
-build_os_exact="${build_os}"
-build_os_major=`echo "${build_os}" | sed 's/\..*$//'`
-build_os_noversion=`echo "${build_os}" | sed 's/[0-9]*\..*$//'`
+target_os_exact="${target_os}"
+target_os_major=`echo "${target_os}" | sed 's/\..*$//'`
+target_os_noversion=`echo "${target_os}" | sed 's/[0-9]*\..*$//'`
 changequote([, ])
 rm -f ./find-provides
-if test -f ${srcdir}/autodeps/${build_cpu}-${build_os_exact}.prov ; then
-    ln -s ${srcdir}/autodeps/${build_cpu}-${build_os_exact}.prov ./find-provides
-elif test -f ${srcdir}/autodeps/${build_os_exact}.prov ; then
-    ln -s ${srcdir}/autodeps/${build_os_exact}.prov ./find-provides
-elif test -f ${srcdir}/autodeps/${build_os_major}.prov ; then
-    ln -s ${srcdir}/autodeps/${build_os_major}.prov ./find-provides
-elif test -f ${srcdir}/autodeps/${build_os_noversion}.prov ; then
-    ln -s ${srcdir}/autodeps/${build_os_noversion}.prov ./find-provides
+if test -f ${srcdir}/autodeps/${target_cpu}-${target_os_exact}.prov ; then
+    ln -s ${srcdir}/autodeps/${target_cpu}-${target_os_exact}.prov ./find-provides
+elif test -f ${srcdir}/autodeps/${target_os_exact}.prov ; then
+    ln -s ${srcdir}/autodeps/${target_os_exact}.prov ./find-provides
+elif test -f ${srcdir}/autodeps/${target_os_major}.prov ; then
+    ln -s ${srcdir}/autodeps/${target_os_major}.prov ./find-provides
+elif test -f ${srcdir}/autodeps/${target_os_noversion}.prov ; then
+    ln -s ${srcdir}/autodeps/${target_os_noversion}.prov ./find-provides
 else
     ln -s ${srcdir}/autodeps/none ./find-provides
 fi
 rm -f ./find-requires
-if test -f ${srcdir}/autodeps/${build_cpu}-${build_os_exact}.req ; then
-    ln -s ${srcdir}/autodeps/${build_cpu}-${build_os_exact}.req ./find-requires
-elif test -f ${srcdir}/autodeps/${build_os_exact}.req ; then
-    ln -s ${srcdir}/autodeps/${build_os_exact}.req ./find-requires
-elif test -f ${srcdir}/autodeps/${build_os_major}.req ; then
-    ln -s ${srcdir}/autodeps/${build_os_major}.req ./find-requires
-elif test -f ${srcdir}/autodeps/${build_os_noversion}.req ; then
-    ln -s ${srcdir}/autodeps/${build_os_noversion}.req ./find-requires
+if test -f ${srcdir}/autodeps/${target_cpu}-${target_os_exact}.req ; then
+    ln -s ${srcdir}/autodeps/${target_cpu}-${target_os_exact}.req ./find-requires
+elif test -f ${srcdir}/autodeps/${target_os_exact}.req ; then
+    ln -s ${srcdir}/autodeps/${target_os_exact}.req ./find-requires
+elif test -f ${srcdir}/autodeps/${target_os_major}.req ; then
+    ln -s ${srcdir}/autodeps/${target_os_major}.req ./find-requires
+elif test -f ${srcdir}/autodeps/${target_os_noversion}.req ; then
+    ln -s ${srcdir}/autodeps/${target_os_noversion}.req ./find-requires
 else
     ln -s ${srcdir}/autodeps/none ./find-requires
 fi
@@ -930,7 +930,7 @@ dnl # determine the canonical arch-vendor-os for the build machine
 autorelocate_path='%{nil}'
 autorelocate_dcolor='0'
 RPMCANONCOLOR=3
-case "${build_cpu}" in
+case "${target_cpu}" in
 *86)		RPMCANONARCH=i386 ;;
 ia32e*)		RPMCANONARCH=ia32e ;;
 amd64*)		RPMCANONARCH=amd64 ;;
@@ -948,17 +948,17 @@ powerpc*|ppc*)	RPMCANONARCH=ppc ;;
 armv3l*)	RPMCANONARCH=armv3l ;;
 armv4l*)	RPMCANONARCH=armv4l ;;
 armv4b*)	RPMCANONARCH=armv4b ;;
-arm*)		RPMCANONARCH="${build_cpu}" ;;
+arm*)		RPMCANONARCH="${target_cpu}" ;;
 mipsel*)	RPMCANONCOLOR=7; RPMCANONARCH=mipsel ;;
 mips*)		RPMCANONCOLOR=7; RPMCANONARCH=mips ;;
 m68k*)		RPMCANONARCH=m68k ;;
 *)		RPMCANONARCH=unknown ;;
 esac
-case "${build_os_noversion}" in
+case "${target_os_noversion}" in
 mint)		RPMCANONARCH=m68kmint ;;
 esac
-RPMCANONVENDOR="$build_vendor"
-case "${build_vendor}" in
+RPMCANONVENDOR="$target_vendor"
+case "${target_vendor}" in
 unknown|pc|ibm|redhat|pld|mandrake|conectiva|lvr|yellowdog|caos|crux)
 	test -f /etc/redhat-release &&		RPMCANONVENDOR=redhat
 	test -f /etc/pld-release &&		RPMCANONVENDOR=pld
@@ -970,7 +970,7 @@ unknown|pc|ibm|redhat|pld|mandrake|conectiva|lvr|yellowdog|caos|crux)
 	test -f /usr/bin/crux &&		RPMCANONVENDOR=crux
 	;;
 esac
-RPMCANONOS="$build_os_noversion"
+RPMCANONOS="$target_os_noversion"
 AC_SUBST(RPMCANONCOLOR)
 AC_SUBST(autorelocate_path)
 AC_SUBST(autorelocate_dcolor)
