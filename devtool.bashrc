@@ -25,8 +25,10 @@ devtool () {
             subdir=`echo "$workdir" | sed -e "s;^$basedir/*;;"`
             (   if [ -d "${basedir}/.devtool/${platform}/${subdir}" ]; then
                     cd "${basedir}/.devtool/${platform}/${subdir}"
+                    $basedir/devtool "$@" | tee "${basedir}/.devtool/${platform}/devtool.log"
+                else
+                    $basedir/devtool "$@" | tee "${basedir}/devtool.log"
                 fi
-                $basedir/devtool "$@"
             ) || return $?
         fi
     fi
