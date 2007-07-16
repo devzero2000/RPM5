@@ -20,7 +20,7 @@ EXTRA_DIST = getdate.y librpm.vers
 
 EXTRA_PROGRAMS =
 
-pkgincdir = $(pkgincludedir)
+pkgincdir = $(pkgincludedir)$(WITH_PATH_VERSIONED_SUFFIX)
 pkginc_HEADERS = \
 	fs.h misc.h rpmcli.h rpmlib.h \
 	rpmal.h rpmdpkg.h rpmds.h rpmevr.h rpmfc.h rpmfi.h rpmgi.h \
@@ -46,6 +46,20 @@ endif
 librpm_la_LIBADD =
 librpm.la: $(librpm_la_OBJECTS) $(librpm_la_DEPENDENCIES) 
 	$(librpm_la_LINK) -rpath $(usrlibdir) $(librpm_la_OBJECTS) $(librpm_la_LIBADD)
+
+install-data-hook:
+	-for l in $(usrlib_LTLIBRARIES); do \
+	    rm -f $(DESTDIR)$(usrlibdir)/$${l}; \
+	done
+if WITH_PATH_VERSIONED
+	-for l in $(usrlib_LTLIBRARIES); do \
+	    base=`echo "$${l}" | sed -e 's;\.la$$;;'`; \
+	    if [ -f $(DESTDIR)$(usrlibdir)/$${base}.a ]; then \
+	        mv $(DESTDIR)$(usrlibdir)/$${base}.a \
+	           $(DESTDIR)$(usrlibdir)/$${base}-$(VERSION).a; \
+	    fi; \
+	done
+endif
 
 getdate.c: getdate.y
 	@echo expect 10 shift/reduce conflicts

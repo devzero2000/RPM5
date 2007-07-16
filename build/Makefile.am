@@ -18,7 +18,7 @@ AM_CPPFLAGS = \
 	@WITH_ZLIB_CPPFLAGS@ \
 	@WITH_FILE_CPPFLAGS@
 
-pkgincdir = $(pkgincludedir)
+pkgincdir = $(pkgincludedir)$(WITH_PATH_VERSIONED_SUFFIX)
 pkginc_HEADERS = rpmbuild.h rpmspec.h
 noinst_HEADERS = buildio.h
 
@@ -36,6 +36,20 @@ endif
 librpmbuild_la_LIBADD =
 librpmbuild.la: $(librpmbuild_la_OBJECTS) $(librpmbuild_la_DEPENDENCIES) 
 	$(librpmbuild_la_LINK) -rpath $(usrlibdir) $(librpmbuild_la_OBJECTS) $(librpmbuild_la_LIBADD)
+
+install-data-hook:
+	-for l in $(usrlib_LTLIBRARIES); do \
+	    rm -f $(DESTDIR)$(usrlibdir)/$${l}; \
+	done
+if WITH_PATH_VERSIONED
+	-for l in $(usrlib_LTLIBRARIES); do \
+	    base=`echo "$${l}" | sed -e 's;\.la$$;;'`; \
+	    if [ -f $(DESTDIR)$(usrlibdir)/$${base}.a ]; then \
+	        mv $(DESTDIR)$(usrlibdir)/$${base}.a \
+	           $(DESTDIR)$(usrlibdir)/$${base}-$(VERSION).a; \
+	    fi; \
+	done
+endif
 
 clean-local:
 	rm -f *.o # .created $(FILELOBJS)

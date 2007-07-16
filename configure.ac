@@ -989,6 +989,23 @@ AC_SUBST(RPMUID)
 AC_SUBST(RPMGROUP)
 AC_SUBST(RPMGID)
 
+dnl # support for versioned installation paths
+AC_ARG_WITH(
+    [path-versioned],
+    AC_HELP_STRING([--with-path-versioned], [install with versioned paths]),
+    [WITH_PATH_VERSIONED=$withval],
+    [WITH_PATH_VERSIONED=no])
+AM_CONDITIONAL(
+    [WITH_PATH_VERSIONED],
+    [ test ".$WITH_PATH_VERSIONED" = .yes ])
+if test ".$WITH_PATH_VERSIONED" = .yes; then
+    WITH_PATH_VERSIONED_SUFFIX="-${VERSION}"
+else
+    WITH_PATH_VERSIONED_SUFFIX=""
+fi
+AC_SUBST([WITH_PATH_VERSIONED_SUFFIX])
+AC_SUBST([WITH_PATH_VERSIONED])
+
 dnl # FIXME: hard-coded paths?!
 if test "x$varprefix" = "x"; then
     # For /usr and /usr/local, we want the 'var' directory to go
@@ -1010,6 +1027,9 @@ fi
 dnl # determine RPM database directory path
 AC_MSG_CHECKING([for RPM database directory])
 DBPATH=`echo "${varprefix}/lib/rpm"`
+if test ".$WITH_PATH_VERSIONED" = .yes; then
+    DBPATH="${DBPATH}-${VERSION}"
+fi
 AC_ARG_WITH(
     [path-database],
     AS_HELP_STRING([--with-path-database=ARG], [build with RPM database directory path]),
@@ -1025,6 +1045,9 @@ AC_MSG_RESULT([$DBPATH])
 dnl # determine RPM package sources directory path
 AC_MSG_CHECKING([for RPM package sources directory])
 PKGSRCDIR=`echo "${usrprefix}/src/rpm"`
+if test ".$WITH_PATH_VERSIONED" = .yes; then
+    PKGSRCDIR="${PKGSRCDIR}-${VERSION}"
+fi
 AC_ARG_WITH(
     [path-sources],
     AS_HELP_STRING([--with-path-sources=ARG], [build with RPM package sourcs directory path]),
@@ -1040,6 +1063,9 @@ AC_MSG_RESULT([$PKGSRCDIR])
 dnl # determine RPM locale directory path
 AC_MSG_CHECKING([for RPM locale directory])
 LOCALEDIR=`echo "${usrprefix}/share/locale"`
+if test ".$WITH_PATH_VERSIONED" = .yes; then
+    LOCALEDIR="$LOCALEDIR/rpm-$VERSION"
+fi
 AC_ARG_WITH(
     [path-locale],
     AS_HELP_STRING([--with-path-locale=ARG], [build with RPM locale directory path]),
@@ -1056,10 +1082,13 @@ localedir="$LOCALEDIR" # (pass-through to foreign generated po/Makefile, too)
 dnl # determine RPM system library directory path
 AC_MSG_CHECKING([for RPM system library directory])
 USRLIBRPM=`echo "${usrprefix}/lib/rpm"`
+if test ".$WITH_PATH_VERSIONED" = .yes; then
+    USRLIBRPM="${USRLIBRPM}-${VERSION}"
+fi
 AC_ARG_WITH(
     [path-lib],
     AS_HELP_STRING([--with-path-lib=ARG], [build with RPM system library directory path]),
-    [USRLIBRPM="$withval"]
+    [USRLIBRPM="$withval"], [ ac_configure_args="$ac_configure_args --with-path-lib=\"$USRLIBRPM\"" ]
 )
 AC_DEFINE_UNQUOTED(
     [USRLIBRPM], ["$USRLIBRPM"],
@@ -1071,6 +1100,9 @@ AC_MSG_RESULT([$USRLIBRPM])
 dnl # determine RPM global configuration directory path
 AC_MSG_CHECKING([for RPM global configuration directory])
 SYSCONFIGDIR="/etc/rpm"
+if test ".$WITH_PATH_VERSIONED" = .yes; then
+    SYSCONFIGDIR="$SYSCONFIGDIR/$VERSION"
+fi
 AC_ARG_WITH(
     [path-cfg],
     AS_HELP_STRING([--with-path-cfg=ARG], [build with RPM global configuration directory path]),
@@ -1085,12 +1117,16 @@ AC_MSG_RESULT([$SYSCONFIGDIR])
 
 dnl # determine RPM macro files path
 AC_MSG_CHECKING([for RPM macro files path])
-MACROFILES="${USRLIBRPM}/${VERSION}/macros"
+MACROFILES="${USRLIBRPM}/macros"
 MACROFILES="${MACROFILES}:${USRLIBRPM}/%{_target}/macros"
 MACROFILES="${MACROFILES}:${SYSCONFIGDIR}/macros.*"
 MACROFILES="${MACROFILES}:${SYSCONFIGDIR}/macros"
 MACROFILES="${MACROFILES}:${SYSCONFIGDIR}/%{_target}/macros"
-MACROFILES="${MACROFILES}:~/.rpmmacros"
+if test ".$WITH_PATH_VERSIONED" = .yes; then
+    MACROFILES="${MACROFILES}:~/.rpmmacros-${VERSION}"
+else
+    MACROFILES="${MACROFILES}:~/.rpmmacros"
+fi
 AC_ARG_WITH(
     [path-macros],
     AS_HELP_STRING([--with-path-macros=ARG], [build with colon-separated RPM macro files path]),
@@ -1105,7 +1141,7 @@ AC_MSG_RESULT([$MACROFILES])
 
 dnl # determine POPT configuration file path
 AC_MSG_CHECKING([for POPT configuration file path])
-RPMPOPTFILE="${USRLIBRPM}/${VERSION}/rpmpopt"
+RPMPOPTFILE="${USRLIBRPM}/rpmpopt"
 AC_ARG_WITH(
     [path-rpmpopt],
     AS_HELP_STRING([--with-path-rpmpopt=ARG], [build with POPT configuration file path]),

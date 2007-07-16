@@ -28,7 +28,7 @@ RPM_LDADD = \
 	$(top_builddir)/misc/librpmmisc.la \
 	@LTLIBINTL@
 
-pkgincdir = $(pkgincludedir)
+pkgincdir = $(pkgincludedir)$(WITH_PATH_VERSIONED_SUFFIX)
 pkginc_HEADERS = \
 	argv.h envvar.h fts.h mire.h rpmdav.h rpmhash.h \
 	rpmio-stub.h \
@@ -57,6 +57,20 @@ endif
 librpmio_la_LIBADD =
 librpmio.la: $(librpmio_la_OBJECTS) $(librpmio_la_DEPENDENCIES) 
 	$(librpmio_la_LINK) -rpath $(usrlibdir) $(librpmio_la_OBJECTS) $(librpmio_la_LIBADD)
+
+install-data-hook:
+	-for l in $(usrlib_LTLIBRARIES); do \
+	    rm -f $(DESTDIR)$(usrlibdir)/$${l}; \
+	done
+if WITH_PATH_VERSIONED
+	-for l in $(usrlib_LTLIBRARIES); do \
+	    base=`echo "$${l}" | sed -e 's;\.la$$;;'`; \
+	    if [ -f $(DESTDIR)$(usrlibdir)/$${base}.a ]; then \
+	        mv $(DESTDIR)$(usrlibdir)/$${base}.a \
+	           $(DESTDIR)$(usrlibdir)/$${base}-$(VERSION).a; \
+	    fi; \
+	done
+endif
 
 #BUILT_SOURCES = rpmio.lcd
 

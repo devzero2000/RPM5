@@ -2,9 +2,10 @@
 ##  rpm.pc -- RPM pkg-config(1) specification
 ##
 
+suffix=@WITH_PATH_VERSIONED_SUFFIX@
 prefix=@prefix@
 exec_prefix=@exec_prefix@
-includedir=@includedir@
+includedir=@includedir@${suffix}
 libdir=@libdir@
 
 Name: @PACKAGE_NAME@
@@ -12,6 +13,6 @@ Description: RPM Package Manager
 Version: @PACKAGE_VERSION@
 URL: http://rpm5.org/
 Cflags: -I${includedir}/rpm
-Libs: -L${libdir} -lrpmbuild -lrpm -lrpmdb -lrpmio -lrpmmisc
+Libs: -L${libdir} -lrpmbuild${suffix} -lrpm${suffix} -lrpmdb${suffix} -lrpmio${suffix} -lrpmmisc${suffix}
 Libs.private: @LDFLAGS@ @LIBS@
 

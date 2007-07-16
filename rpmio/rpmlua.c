@@ -77,7 +77,7 @@ rpmlua rpmluaNew()
 	lua_call(L, 1, 0);
 /*@=noeffectuncon@*/
     }
-#define	_LUADOTDIR	"%{?_rpmhome}%{!?_rpmhome:" USRLIBRPM "/" VERSION "}"
+#define	_LUADOTDIR	"%{?_rpmhome}%{!?_rpmhome:" USRLIBRPM "}"
     {	const char * _lua_path = rpmGetPath(_LUADOTDIR, "/lua/?.lua", NULL);
 	if (_lua_path != NULL) {
 	    lua_pushliteral(L, "LUA_PATH");

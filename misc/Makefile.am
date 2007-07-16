@@ -37,3 +37,17 @@ librpmmisc_la_DEPENDENCIES = \
 librpmmisc.la: $(librpmmisc_la_OBJECTS) $(librpmmisc_la_DEPENDENCIES) 
 	$(librpmmisc_la_LINK) -rpath $(usrlibdir) $(librpmmisc_la_OBJECTS) $(librpmmisc_la_LIBADD)
 
+install-data-hook:
+	-for l in $(usrlib_LTLIBRARIES); do \
+	    rm -f $(DESTDIR)$(usrlibdir)/$${l}; \
+	done
+if WITH_PATH_VERSIONED
+	-for l in $(usrlib_LTLIBRARIES); do \
+	    base=`echo "$${l}" | sed -e 's;\.la$$;;'`; \
+	    if [ -f $(DESTDIR)$(usrlibdir)/$${base}.a ]; then \
+	        mv $(DESTDIR)$(usrlibdir)/$${base}.a \
+	           $(DESTDIR)$(usrlibdir)/$${base}-$(VERSION).a; \
+	    fi; \
+	done
+endif
+

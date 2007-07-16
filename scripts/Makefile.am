@@ -31,8 +31,7 @@ all:
 bin_SCRIPTS = gendiff rpm2cpio
 
 pkglibdir =		@USRLIBRPM@
-versionlibdir =		$(pkglibdir)/@VERSION@
-versionlib_SCRIPTS = \
+pkglib_SCRIPTS = \
 	brp-compress brp-python-bytecompile brp-java-gcjcompile \
 	brp-strip brp-strip-comment-note brp-nobuildrootpath \
 	brp-strip-shared brp-strip-static-archive brp-sparc64-linux \
@@ -52,4 +51,19 @@ versionlib_SCRIPTS = \
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = rpm.pc
+
+install-exec-hook:
+if WITH_PATH_VERSIONED
+	-for p in $(bin_SCRIPTS); do \
+	    mv $(DESTDIR)$(bindir)/$${p}$(EXEEXT) \
+	       $(DESTDIR)$(bindir)/$${p}-$(VERSION)$(EXEEXT); \
+	done
+endif
+install-data-hook:
+if WITH_PATH_VERSIONED
+	-for p in $(pkgconfig_DATA); do \
+	    mv $(DESTDIR)$(pkgconfigdir)/$${p} \
+	       `echo "$(DESTDIR)$(pkgconfigdir)/$${p}" | sed 's/\.\([^.]*\)$$/-$(VERSION).\1/'`; \
+	done
+endif
 

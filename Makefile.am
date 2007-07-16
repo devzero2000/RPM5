@@ -61,9 +61,16 @@ myLDADD = \
 
 bin_PROGRAMS = 		rpm rpmbuild
 
+install-exec-hook:
+if WITH_PATH_VERSIONED
+	-for p in $(bin_PROGRAMS); do \
+	    mv $(DESTDIR)$(bindir)/$${p}$(EXEEXT) \
+	       $(DESTDIR)$(bindir)/$${p}-$(VERSION)$(EXEEXT); \
+	done
+endif
+
 pkglibdir =		@USRLIBRPM@
-versionlibdir =		$(pkglibdir)/@VERSION@
-versionlib_DATA =	rpmpopt macros
+pkglib_DATA =	rpmpopt macros
 
 noinst_HEADERS = build.h debug.h system.h
 

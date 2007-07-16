@@ -24,13 +24,12 @@ tjfn_SOURCES = tjfn.c
 tjfn_LDFLAGS = @LDFLAGS_STATIC@
 tjfn_LDADD = librpmdb.la
 
-pkgincdir = $(pkgincludedir)
+pkgincdir = $(pkgincludedir)$(WITH_PATH_VERSIONED_SUFFIX)
 pkginc_HEADERS = header.h hdrinline.h rpmdb.h
 noinst_HEADERS = fprint.h header_internal.h legacy.h
 
 pkglibdir =		@USRLIBRPM@
-versionlibdir = 	$(pkglibdir)/@VERSION@
-versionlib_PROGRAMS =
+pkglib_PROGRAMS =
 
 mylibs = \
 	$(top_builddir)/rpmdb/librpmdb.la \
@@ -51,6 +50,20 @@ librpmdb_la_LIBADD = $(DBLIBOBJS)
 librpmdb_la_DEPENDENCIES = $(DBLIBOBJS)
 librpmdb.la: $(librpmdb_la_OBJECTS) $(librpmdb_la_DEPENDENCIES) 
 	$(librpmdb_la_LINK) -rpath $(usrlibdir) $(librpmdb_la_OBJECTS) $(librpmdb_la_LIBADD)
+
+install-data-hook:
+	-for l in $(usrlib_LTLIBRARIES); do \
+	    rm -f $(DESTDIR)$(usrlibdir)/$${l}; \
+	done
+if WITH_PATH_VERSIONED
+	-for l in $(usrlib_LTLIBRARIES); do \
+	    base=`echo "$${l}" | sed -e 's;\.la$$;;'`; \
+	    if [ -f $(DESTDIR)$(usrlibdir)/$${base}.a ]; then \
+	        mv $(DESTDIR)$(usrlibdir)/$${base}.a \
+	           $(DESTDIR)$(usrlibdir)/$${base}-$(VERSION).a; \
+	    fi; \
+	done
+endif
 
 tagtbl.c: Makefile.am $(top_srcdir)/lib/rpmlib.h 
 	@echo '/*@-bounds@*/' > $@
@@ -86,12 +99,11 @@ endif
 
 install-data-local:
 	test -z "$(pkgincdir)" || $(MKDIR_P) $(DESTDIR)$(pkgincdir)
-	test -z "$(versionlibdir)" || $(MKDIR_P) $(DESTDIR)$(versionlibdir)
 	$(pkgincHEADERS_INSTALL) $(my_DB_HEADER) $(DESTDIR)$(pkgincdir)/db.h
 	for tool in . $(my_DB_TOOLS); do \
 		test ".$$tool" = .. && continue; \
-		$(INSTALL_PROGRAM_ENV) $(LIBTOOL) --mode=install $(versionlibPROGRAMS_INSTALL) \
-			$(top_builddir)/$(WITH_DB_SUBDIR)/$$tool $(DESTDIR)$(versionlibdir)/$$tool; \
+		$(INSTALL_PROGRAM_ENV) $(LIBTOOL) --mode=install $(pkglibPROGRAMS_INSTALL) \
+			$(top_builddir)/$(WITH_DB_SUBDIR)/$$tool $(DESTDIR)$(pkglibdir)/$$tool; \
 	done
 
 clean-local:

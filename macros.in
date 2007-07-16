@@ -33,7 +33,7 @@
 %_usrlibrpm		@USRLIBRPM@
 %_etcrpm		@SYSCONFIGDIR@
 
-%_rpmhome		%{_usrlibrpm}/%{_rpmversion}
+%_rpmhome		%{_usrlibrpm}
 
 #==============================================================================
 # ---- Generally useful path macros.

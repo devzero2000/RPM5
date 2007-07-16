@@ -5,7 +5,7 @@
 %define	with_apidocs		@WITH_APIDOCS@%{nil}
 
 %{!?_usrlibrpm:%global _usrlibrpm @USRLIBRPM@}
-%{!?_rpmhome:%global _rpmhome @USRLIBRPM@/@VERSION@}
+%{!?_rpmhome:%global _rpmhome @USRLIBRPM@}
 
 %define	__prefix	%{?_prefix}%{!?_prefix:/usr}
 %{?!_lib: %define _lib lib}

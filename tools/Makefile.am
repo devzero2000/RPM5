@@ -22,8 +22,7 @@ myLDADD = \
 	@LTLIBINTL@
 
 pkglibdir =		@USRLIBRPM@
-versionlibdir =		$(pkglibdir)/@VERSION@
-versionlib_PROGRAMS =	rpmdeps @WITH_LIBELF_DEBUGEDIT@
+pkglib_PROGRAMS =	rpmdeps @WITH_LIBELF_DEBUGEDIT@
 
 convertdb1_SOURCES =	convertdb1.c
 convertdb1_LDADD =	$(myLDADD)
