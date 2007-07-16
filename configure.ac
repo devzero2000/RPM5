@@ -825,24 +825,13 @@ AC_ARG_WITH([dbapi],
 AC_SUBST(DBAPI)
 
 dnl # Lua
-WITH_LUA_SUBDIR_DEF=""
-WITH_LUA_SUBDIR_LIB=""
 RPM_CHECK_LIB(
     [Lua], [lua],
     [lua], [lua_newstate], [lua.h],
-    [no,external:internal:none], [lua:local],
-    [ if test ".$RPM_CHECK_LIB_LOCATION" = .internal; then
-          AC_CHECK_LIB(dl, dlopen, [ LIBS="-ldl $LIBS"; WITH_LUA_SUBDIR_LIB="-ldl" ])
-          AC_CHECK_FUNC(dlopen, [ WITH_LUA_SUBDIR_DEF="-DLUA_USE_DLOPEN" ])
-          AC_DEFINE(WITH_LUA_INTERNAL, 1, [Define if building with internal Lua])
-          AC_CONFIG_FILES([lua/Makefile])
-      else
-          AC_CHECK_LIB(dl, dlopen)
-          AC_CHECK_FUNC(dlopen)
-      fi
+    [no,external:none], [],
+    [ AC_CHECK_LIB(dl, dlopen)
+      AC_CHECK_FUNC(dlopen)
     ], [])
-AC_SUBST(WITH_LUA_SUBDIR_DEF)
-AC_SUBST(WITH_LUA_SUBDIR_LIB)
 
 dnl # DMalloc
 RPM_CHECK_LIB(
