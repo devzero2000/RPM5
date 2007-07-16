@@ -286,13 +286,13 @@ static void setDefaults(void)
     addMacro(NULL, "___build_pre", NULL, ___build_pre, RMIL_DEFAULT);
 
     setVarDefault(-1,			"_topdir",
-		"/usr/src/rpm",		"%{_usr}/src/rpm");
+		"%{_usr}/src/rpm",      NULL);
     setVarDefault(-1,			"_tmppath",
-		"/var/tmp",		"%{_var}/tmp");
+		"%{_var}/tmp",          NULL);
     setVarDefault(-1,			"_dbpath",
-		"/var/lib/rpm",		"%{_var}/lib/rpm");
+		"%{_var}/lib/rpm",      NULL);
     setVarDefault(-1,			"_defaultdocdir",
-		"/usr/share/doc",	"%{_usr}/share/doc");
+		"%{_usr}/share/doc",    NULL);
 
     setVarDefault(-1,			"_rpmfilename",
 	"%%{ARCH}/%%{NAME}-%%{VERSION}-%%{RELEASE}.%%{ARCH}.rpm",NULL);
