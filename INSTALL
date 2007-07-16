@@ -156,7 +156,7 @@ in this cluster by using the following procedure:
 
    serverN$ cd {build,lib,rpmdb,rpmio,misc,...}
    serverN$ vi *.c
-   serverN$ devtool make [-l]
+   serverN$ devtool make
 
 4. Test-Drive:
    
