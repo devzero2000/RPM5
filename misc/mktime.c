@@ -101,7 +101,7 @@ static time_t __mktime_internal __P ((struct tm *,
 			       time_t *));
 
 
-#if ! HAVE_LOCALTIME_R && ! defined (localtime_r)
+#if ! defined(HAVE_LOCALTIME_R) && ! defined (localtime_r)
 #ifdef _LIBC
 #define localtime_r __localtime_r
 #else

@@ -18,11 +18,11 @@
    Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
    USA.  */
 
-#if HAVE_CONFIG_H
+#ifdef HAVE_CONFIG_H
 # include <config.h>
 #endif
 
-#if defined _LIBC || HAVE_STRING_H
+#if defined _LIBC || defined HAVE_STRING_H
 # include <string.h>
 #else
 # include <strings.h>

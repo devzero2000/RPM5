@@ -49,7 +49,7 @@
 #  include <time.h>
 # endif
 #endif
-#if HAVE_TZNAME
+#ifdef HAVE_TZNAME
 extern char *tzname[];
 #endif
 
@@ -59,10 +59,10 @@ extern char *tzname[];
    conversion specifications.  The GNU C Library uses UTF8 multibyte
    encoding, which is safe for formats, but strftime.c can be used
    with other C libraries that use unsafe encodings.  */
-#define DO_MULTIBYTE (HAVE_MBLEN && ! MULTIBYTE_IS_FORMAT_SAFE)
+#define DO_MULTIBYTE (defined(HAVE_MBLEN) && ! defined(MULTIBYTE_IS_FORMAT_SAFE))
 
 #if DO_MULTIBYTE
-# if HAVE_MBRLEN
+# ifdef HAVE_MBRLEN
 #  include <wchar.h>
 # else
    /* Simulate mbrlen with mblen as best we can.  */
@@ -73,7 +73,7 @@ extern char *tzname[];
   static const mbstate_t mbstate_zero;
 #endif
 
-#if HAVE_LIMITS_H
+#if defined(HAVE_LIMITS_H)
 # include <limits.h>
 #endif
 
@@ -136,8 +136,8 @@ extern int __tz_compute __P ((time_t timer, const struct tm *tm));
 # define tzname __tzname
 # define tzset __tzset
 #else
-# if ! HAVE_LOCALTIME_R
-#  if ! HAVE_TM_GMTOFF
+# if ! defined(HAVE_LOCALTIME_R)
+#  if ! defined(HAVE_TM_GMTOFF)
 /* Approximate gmtime_r as best we can in its absence.  */
 #  define gmtime_r my_gmtime_r
 static struct tm *gmtime_r __P ((const time_t *, struct tm *));
@@ -330,7 +330,7 @@ static char const month_name[][10] =
 #endif
 
 
-#if !defined _LIBC && HAVE_TZNAME && HAVE_TZSET
+#if !defined _LIBC && defined(HAVE_TZNAME) && defined(HAVE_TZSET)
   /* Solaris 2.5 tzset sometimes modifies the storage returned by localtime.
      Work around this bug by copying *tp before it might be munged.  */
   size_t _strftime_copytm __P ((char *, size_t, const char *,
@@ -397,7 +397,7 @@ strftime (s, maxsize, format, tp)
   const char *f;
 
   zone = NULL;
-#if !defined _LIBC && HAVE_TM_ZONE
+#if !defined _LIBC && defined(HAVE_TM_ZONE)
   /* XXX We have some problems here.  First, the string pointed to by
      tm_zone is dynamically allocated while loading the zone data.  But
      when another zone is loaded since the information in TP were
@@ -408,11 +408,11 @@ strftime (s, maxsize, format, tp)
      TP is computed with a totally different time zone.  --drepper@gnu  */
   zone = (const char *) tp->tm_zone;
 #endif
-#if HAVE_TZNAME
+#if defined(HAVE_TZNAME)
   /* POSIX.1 8.1.1 requires that whenever strftime() is called, the
      time zone names contained in the external variable `tzname' shall
      be set as if the tzset() function had been called.  */
-# if HAVE_TZSET
+# if defined(HAVE_TZSET)
   tzset ();
 # endif
 
@@ -638,7 +638,7 @@ strftime (s, maxsize, format, tp)
 	case 'C':		/* POSIX.2 extension.  */
 	  if (modifier == 'O')
 	    goto bad_format;
-#if HAVE_STRUCT_ERA_ENTRY
+#if defined(HAVE_STRUCT_ERA_ENTRY)
 	  if (modifier == 'E')
 	    {
 	      struct era_entry *era = _nl_get_era_entry (tp);
@@ -944,7 +944,7 @@ strftime (s, maxsize, format, tp)
 	  DO_NUMBER (1, tp->tm_wday);
 
 	case 'Y':
-#if HAVE_STRUCT_ERA_ENTRY
+#if defined(HAVE_STRUCT_ERA_ENTRY)
 	  if (modifier == 'E')
 	    {
 	      struct era_entry *era = _nl_get_era_entry (tp);
@@ -961,7 +961,7 @@ strftime (s, maxsize, format, tp)
 	    DO_NUMBER (1, tp->tm_year + TM_YEAR_BASE);
 
 	case 'y':
-#if HAVE_STRUCT_ERA_ENTRY
+#if defined(HAVE_STRUCT_ERA_ENTRY)
 	  if (modifier == 'E')
 	    {
 	      struct era_entry *era = _nl_get_era_entry (tp);
@@ -985,7 +985,7 @@ strftime (s, maxsize, format, tp)
 
 	  {
 	    int diff;
-#if HAVE_TM_GMTOFF
+#if defined(HAVE_TM_GMTOFF)
 	    diff = tp->tm_gmtoff;
 #else
 	    struct tm gtm;

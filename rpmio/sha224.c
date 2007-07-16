@@ -25,14 +25,14 @@
  
 #define BEECRYPT_DLL_EXPORT
 
-#if HAVE_CONFIG_H
+#ifdef HAVE_CONFIG_H
 # include "config.h"
 #endif
 
 #include "sha224.h"
 #include <beecrypt/sha256.h>
 
-#if HAVE_ENDIAN_H && HAVE_ASM_BYTEORDER_H
+#if defined(HAVE_ENDIAN_H) && defined(HAVE_ASM_BYTEORDER_H)
 # include <endian.h>
 #endif
 

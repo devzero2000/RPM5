@@ -162,14 +162,14 @@ static int getFilesystemList(void)
 		     strerror(errno));
 	    return 1;
 	}
-#   elif HAVE_GETMNTINFO_R
+#   elif defined(HAVE_GETMNTINFO_R)
     /* This is OSF */
     struct statfs * mounts = NULL;
     int mntCount = 0, bufSize = 0, flags = MNT_NOWAIT;
     int nextMount = 0;
 
 	getmntinfo_r(&mounts, flags, &mntCount, &bufSize);
-#   elif HAVE_GETMNTINFO
+#   elif defined(HAVE_GETMNTINFO)
     /* This is Mac OS X */
 #if defined(__NetBSD__)
     struct statvfs * mounts = NULL;
@@ -207,11 +207,11 @@ static int getFilesystemList(void)
 	    /* Solaris, maybe others */
 	    if (getmntent(mtab, &item)) break;
 	    mntdir = item.our_mntdir;
-#	elif HAVE_GETMNTINFO_R
+#	elif defined(HAVE_GETMNTINFO_R)
 	    /* This is OSF */
 	    if (nextMount == mntCount) break;
 	    mntdir = mounts[nextMount++].f_mntonname;
-#	elif HAVE_GETMNTINFO
+#	elif defined(HAVE_GETMNTINFO)
 	    /* This is Mac OS X */
 	    if (nextMount == mntCount) break;
 	    mntdir = mounts[nextMount++].f_mntonname;
@@ -253,7 +253,7 @@ static int getFilesystemList(void)
 
 #   if GETMNTENT_ONE || GETMNTENT_TWO
 	(void) fclose(mtab);
-#   elif HAVE_GETMNTINFO_R
+#   elif defined(HAVE_GETMNTINFO_R)
 	mounts = _free(mounts);
 #   endif
 

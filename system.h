@@ -62,7 +62,7 @@ extern char ** environ;
 # include <sys/time.h>
 # include <time.h>
 #else
-# if HAVE_SYS_TIME_H
+# ifdef HAVE_SYS_TIME_H
 #  include <sys/time.h>
 # else
 #  include <time.h>
@@ -98,7 +98,7 @@ extern time_t timezone;
 #endif
 
 #ifdef HAVE_STRING_H
-# if !STDC_HEADERS && HAVE_MEMORY_H
+# if !defined(STDC_HEADERS) && defined(HAVE_MEMORY_H)
 #  include <memory.h>
 # endif
 # include <string.h>
@@ -131,12 +131,12 @@ extern void error(int status, int errnum, const char *format, ...)
 	/*@modifies fileSystem @*/;
 /*@=declundef @*/
 #else
-#if HAVE_ERROR && HAVE_ERROR_H
+#if defined(HAVE_ERROR) && defined(HAVE_ERROR_H)
 #include <error.h>
 #endif
 #endif
 
-#if HAVE___SECURE_GETENV && !defined(__LCLINT__)
+#if defined(HAVE___SECURE_GETENV) && !defined(__LCLINT__)
 #define	getenv(_s)	__secure_getenv(_s)
 #endif
 
@@ -158,7 +158,7 @@ extern char * realpath (const char * file_name, /*@out@*/ char * resolved_name)
 #endif
 #else /* not STDC_HEADERS */
 char *getenv (const char *name);
-#if ! HAVE_REALPATH
+#if !defined(HAVE_REALPATH)
 char *realpath(const char *path, char resolved_path []);
 #endif
 #endif /* STDC_HEADERS */
@@ -256,46 +256,46 @@ extern int _tolower(int) __THROW	/*@*/;
 
 #endif
 
-#if HAVE_SYS_MMAN_H && !defined(__LCLINT__)
+#if defined(HAVE_SYS_MMAN_H) && !defined(__LCLINT__)
 #include <sys/mman.h>
 #endif
 
 /* XXX FIXME: popt on sunos4.1.3: <sys/resource.h> requires <sys/time.h> */
-#if HAVE_SYS_RESOURCE_H && HAVE_SYS_TIME_H
+#if defined(HAVE_SYS_RESOURCE_H) && defined(HAVE_SYS_TIME_H)
 #include <sys/resource.h>
 #endif
 
-#if HAVE_SYS_UTSNAME_H
+#if defined(HAVE_SYS_UTSNAME_H)
 #include <sys/utsname.h>
 #endif
 
-#if HAVE_SYS_WAIT_H
+#if defined(HAVE_SYS_WAIT_H)
 #include <sys/wait.h>
 #endif
 
-#if HAVE_GETOPT_H
+#if defined(HAVE_GETOPT_H)
 /*@-noparams@*/
 #include <getopt.h>
 /*@=noparams@*/
 #endif
 
-#if HAVE_GRP_H
+#if defined(HAVE_GRP_H)
 #include <grp.h>
 #endif
 
-#if HAVE_LIMITS_H
+#if defined(HAVE_LIMITS_H)
 #include <limits.h>
 #endif
 
-#if HAVE_ERR_H
+#if defined(HAVE_ERR_H)
 #include <err.h>
 #endif
 
-#if HAVE_LIBGEN_H
+#if defined(HAVE_LIBGEN_H)
 #include <libgen.h>
 #endif
 
-#if WITH_SELINUX
+#if defined(WITH_SELINUX)
 #include <selinux/selinux.h>
 #else
 typedef	char * security_context_t;
@@ -396,7 +396,7 @@ extern int is_selinux_enabled(void)
 /*@unused@*/ /*@exits@*/ /*@only@*/ void * vmefail(size_t size)
 	/*@*/;
 
-#if HAVE_MCHECK_H
+#if defined(HAVE_MCHECK_H)
 #include <mcheck.h>
 #if defined(__LCLINT__)
 /*@-declundef -incondefs @*/ /* LCL: missing annotations */
@@ -457,20 +457,20 @@ extern void muntrace (void)
 /*@unchecked@*/
 extern const char *__progname;
 
-#if HAVE_NETDB_H
+#if defined(HAVE_NETDB_H)
 #include <netdb.h>
 #endif
 
-#if HAVE_PWD_H
+#if defined(HAVE_PWD_H)
 #include <pwd.h>
 #endif
 
 /* Take care of NLS matters.  */
 
-#if HAVE_LOCALE_H
+#if defined(HAVE_LOCALE_H)
 # include <locale.h>
 #endif
-#if !HAVE_SETLOCALE
+#if !defined(HAVE_SETLOCALE)
 # define setlocale(Category, Locale) /* empty */
 #endif
 
@@ -601,15 +601,15 @@ extern int fnmatch (const char *__pattern, const char *__name, int __flags)
 /*@=declundef =incondefs @*/
 #endif
 
-#if ! HAVE_S_IFSOCK
+#if !defined(HAVE_S_IFSOCK)
 #define S_IFSOCK (0xc000)
 #endif
 
-#if ! HAVE_S_ISLNK
+#if !defined(HAVE_S_ISLNK)
 #define S_ISLNK(mode) ((mode & 0xf000) == S_IFLNK)
 #endif
 
-#if ! HAVE_S_ISSOCK
+#if !defined(HAVE_S_ISSOCK)
 #define S_ISSOCK(mode) ((mode & 0xf000) == S_IFSOCK)
 #endif
 
@@ -622,52 +622,52 @@ extern int fnmatch (const char *__pattern, const char *__name, int __flags)
 extern void *myrealloc(void *, size_t);
 #endif
 
-#if ! HAVE_SETENV
+#if !defined(HAVE_SETENV)
 extern int setenv(const char *name, const char *value, int replace);
 extern void unsetenv(const char *name);
 #endif
 
-#if HAVE_SYS_SOCKET_H
+#if defined(HAVE_SYS_SOCKET_H)
 #include <sys/types.h>
 #include <sys/socket.h>
 #endif
 
-#if HAVE_POLL_H
+#if defined(HAVE_POLL_H)
 #include <poll.h>
 #else
-#if HAVE_SYS_SELECT_H && !defined(__LCLINT__)
+#if defined(HAVE_SYS_SELECT_H) && !defined(__LCLINT__)
 #include <sys/select.h>
 #endif
 #endif
 
 /* Solaris <= 2.6 limits getpass return to only 8 chars */
-#if HAVE_GETPASSPHRASE
+#if defined(HAVE_GETPASSPHRASE)
 #define	getpass	getpassphrase
 #endif
 
-#if ! HAVE_LCHOWN
+#if !defined(HAVE_LCHOWN)
 #define lchown chown
 #endif
 
-#if HAVE_GETMNTINFO || HAVE_GETMNTINFO_R || HAVE_MNTCTL
+#if defined(HAVE_GETMNTINFO) || defined(HAVE_GETMNTINFO_R) || defined(HAVE_MNTCTL)
 # define GETMNTENT_ONE 0
 # define GETMNTENT_TWO 0
-# if HAVE_SYS_MNTCTL_H
+# if defined(HAVE_SYS_MNTCTL_H)
 #  include <sys/mntctl.h>
 # endif
-# if HAVE_SYS_VMOUNT_H
+# if defined(HAVE_SYS_VMOUNT_H)
 #  include <sys/vmount.h>
 # endif
-# if HAVE_SYS_MOUNT_H
+# if defined(HAVE_SYS_MOUNT_H)
 #  include <sys/mount.h>
 # endif
-#elif HAVE_MNTENT_H || !(HAVE_GETMNTENT) || HAVE_STRUCT_MNTTAB
-# if HAVE_MNTENT_H
+#elif defined(HAVE_MNTENT_H) || !defined(HAVE_GETMNTENT) || defined(HAVE_STRUCT_MNTTAB)
+# if defined(HAVE_MNTENT_H)
 #  include <stdio.h>
 #  include <mntent.h>
 #  define our_mntent struct mntent
 #  define our_mntdir mnt_dir
-# elif HAVE_STRUCT_MNTTAB
+# elif defined(HAVE_STRUCT_MNTTAB)
 #  include <stdio.h>
 #  include <mnttab.h>
    struct our_mntent {
@@ -685,7 +685,7 @@ extern void unsetenv(const char *name);
 # endif
 # define GETMNTENT_ONE 1
 # define GETMNTENT_TWO 0
-#elif HAVE_SYS_MNTTAB_H
+#elif defined(HAVE_SYS_MNTTAB_H)
 # include <stdio.h>
 # include <sys/mnttab.h>
 # define GETMNTENT_ONE 0
