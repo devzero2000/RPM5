@@ -1023,6 +1023,7 @@ if test X"$prefix" = XNONE ; then
 else
     usrprefix=$prefix
 fi
+AC_SUBST(usrprefix)
 
 dnl # determine RPM database directory path
 AC_MSG_CHECKING([for RPM database directory])
@@ -1041,6 +1042,8 @@ AC_DEFINE_UNQUOTED(
 )
 AC_SUBST(DBPATH)
 AC_MSG_RESULT([$DBPATH])
+DBPATH_MACRO=`echo "$DBPATH" | sed -e "s;^${varprefix}/;%{_var}/;" -e "s;^${usrprefix}/;%{_usr}/;"`
+AC_SUBST(DBPATH_MACRO)
 
 dnl # determine RPM package sources directory path
 AC_MSG_CHECKING([for RPM package sources directory])
@@ -1059,6 +1062,8 @@ AC_DEFINE_UNQUOTED(
 )
 AC_SUBST(PKGSRCDIR)
 AC_MSG_RESULT([$PKGSRCDIR])
+PKGSRCDIR_MACRO=`echo "$PKGSRCDIR" | sed -e "s;^${varprefix}/;%{_var}/;" -e "s;^${usrprefix}/;%{_usr}/;"`
+AC_SUBST(PKGSRCDIR_MACRO)
 
 dnl # determine RPM locale directory path
 AC_MSG_CHECKING([for RPM locale directory])

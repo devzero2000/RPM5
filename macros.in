@@ -27,7 +27,7 @@
 #==============================================================================
 # ---- filesystem macros.
 #
-%_usr			@prefix@
+%_usr			@usrprefix@
 %_usrsrc		%{_usr}/src
 %_var			@varprefix@
 %_usrlibrpm		@USRLIBRPM@
@@ -175,7 +175,7 @@
 %_buildshell		/bin/sh
 
 #	The location of the rpm database file(s).
-%_dbpath		@DBPATH@
+%_dbpath		@DBPATH_MACRO@
 
 #	The location of the rpm database file(s) after "rpm --rebuilddb".
 %_dbpath_rebuild	%{_dbpath}
@@ -238,7 +238,7 @@ package or when debugging this package.\
 %tmpdir			%{_tmppath}
 
 #	Path to top of build area.
-%_topdir		@PKGSRCDIR@
+%_topdir		@PKGSRCDIR_MACRO@
 
 #==============================================================================
 # ---- Optional rpmrc macros.
