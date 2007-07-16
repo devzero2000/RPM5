@@ -1051,6 +1051,7 @@ AC_DEFINE_UNQUOTED(
 )
 AC_SUBST(LOCALEDIR)
 AC_MSG_RESULT([$LOCALEDIR])
+localedir="$LOCALEDIR" # (pass-through to foreign generated po/Makefile, too)
 
 dnl # determine RPM system library directory path
 AC_MSG_CHECKING([for RPM system library directory])
