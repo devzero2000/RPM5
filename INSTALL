@@ -113,9 +113,9 @@ Assume you have...
 
 - a cluster of time-synchronized Unix servers
   (usually of different Unix flavors to make sense in this context),
-- each one allowing you to login under your personal account and
+- each server allowing you to login under your personal account and
   access your central home directory (usually via NFS) and
-- use the full set of development tools,
+- each server providing you the full set of development tools,
 
 ...then you can build RPM in parallel on an arbitrary number of servers
 in this cluster by using the following procedure:
@@ -144,7 +144,6 @@ in this cluster by using the following procedure:
 
    serverN$ devtool setup-platform
    serverN$ devtool standalone prepare
-   serverN$ devtool standalone autogen
    serverN$ devtool standalone configure
 
 3. Development:
