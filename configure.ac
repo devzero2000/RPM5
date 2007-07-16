@@ -1139,20 +1139,29 @@ AC_DEFINE_UNQUOTED(
 AC_SUBST(MACROFILES)
 AC_MSG_RESULT([$MACROFILES])
 
-dnl # determine POPT configuration file path
-AC_MSG_CHECKING([for POPT configuration file path])
-RPMPOPTFILE="${USRLIBRPM}/rpmpopt"
+dnl # determine POPT configuration files path
+AC_MSG_CHECKING([for RPM POPT configuration files path])
+RPMPOPTFILES="${USRLIBRPM}/rpmpopt"
+RPMPOPTFILES="${RPMPOPTFILES}:${USRLIBRPM}/%{_target}/rpmpopt"
+RPMPOPTFILES="${RPMPOPTFILES}:${SYSCONFIGDIR}/rpmpopt.*"
+RPMPOPTFILES="${RPMPOPTFILES}:${SYSCONFIGDIR}/rpmpopt"
+RPMPOPTFILES="${RPMPOPTFILES}:${SYSCONFIGDIR}/%{_target}/rpmpopt"
+if test ".$WITH_PATH_VERSIONED" = .yes; then
+    RPMPOPTFILES="${RPMPOPTFILES}:~/.rpmpopt-${VERSION}"
+else
+    RPMPOPTFILES="${RPMPOPTFILES}:~/.rpmpopt"
+fi
 AC_ARG_WITH(
     [path-rpmpopt],
-    AS_HELP_STRING([--with-path-rpmpopt=ARG], [build with POPT configuration file path]),
-    [RPMPOPTFILE="$withval"]
+    AS_HELP_STRING([--with-path-rpmpopt=ARG], [build with colon-separated RPM POPT configuration file path]),
+    [RPMPOPTFILES="$withval"]
 )
 AC_DEFINE_UNQUOTED(
-    [RPMPOPTFILE], ["$RPMPOPTFILE"],
-    [Full path to "rpmpopt" configuration file]
+    [RPMPOPTFILES], ["$RPMPOPTFILES"],
+    [Colon separated RPM POPT configuration files path]
 )
-AC_SUBST(RPMPOPTFILE)
-AC_MSG_RESULT([$RPMPOPTFILE])
+AC_SUBST(RPMPOPTFILES)
+AC_MSG_RESULT([$RPMPOPTFILES])
 
 testdir="`pwd`/tests"
 AC_SUBST(testdir)

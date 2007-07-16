@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - rse: make --with-path-rpmpopt a colon-separated path to allow "rpmpopt" files be similar to "macros" files
     - rse: allow the path to the RPM package sources be overridden via Autoconf option --with-path-sources
     - rse: allow the path to the RPM database directory be overridden via Autoconf option --with-path-database
     - rse: drop support for internal lua/ at all to make piece with Automake (as lua/ build-env was not stand-alone)

@@ -503,6 +503,7 @@ rpmcliInit(int argc, char *const argv[], struct poptOption * optionsTable)
 {
     const char * optArg;
     poptContext optCon;
+    char *path_buf, *path, *path_next;
     int rc;
 
 #if defined(HAVE_MCHECK_H) && defined(HAVE_MTRACE)
@@ -537,8 +538,38 @@ rpmcliInit(int argc, char *const argv[], struct poptOption * optionsTable)
 /*@-nullpass -temptrans@*/
     optCon = poptGetContext(__progname, argc, (const char **)argv, optionsTable, 0);
 /*@=nullpass =temptrans@*/
-    (void) poptReadConfigFile(optCon, RPMPOPTFILE);
+
+    /* read all RPM POPT configuration files */
+    path_buf = xstrdup(RPMPOPTFILES);
+    for (path = path_buf; path != NULL && *path != '\0'; path = path_next) {
+        const char **av;
+        int ac, i;
+
+        /* locate start of next path element */
+        path_next = strchr(path, ':');
+        if (path_next != NULL && *path_next == ':')
+            *path_next++ = '\0';
+        else
+            path_next = path + strlen(path);
+
+        /* glob-expand the path element */
+        ac = 0;
+        av = NULL;
+        if ((i = rpmGlob(path, &ac, &av)) != 0)
+            continue;
+
+        /* work-off each resulting file from the path element */
+        for (i = 0; i < ac; i++) {
+            (void)poptReadConfigFile(optCon, av[i]);
+            av[i] = _free(av[i]);
+        }
+        av = _free(av);
+    }
+    path_buf = _free(path_buf);
+
+    /* read standard POPT configuration files */
     (void) poptReadDefaultConfig(optCon, 1);
+
     poptSetExecPath(optCon, USRLIBRPM, 1);
 
     /* Process all options, whine if unknown. */
