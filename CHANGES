@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - jbj: patch macro seems sufficiently functional, delete the old "stuff".
     - jbj: add stub vectors for rpmio I/O API.
     - jbj: drop support for internal lua.
     - jbj: add (preliminary) WR configuration.
