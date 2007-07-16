@@ -175,7 +175,7 @@
 %_buildshell		/bin/sh
 
 #	The location of the rpm database file(s).
-%_dbpath		%{_var}/lib/rpm
+%_dbpath		@DBPATH@
 
 #	The location of the rpm database file(s) after "rpm --rebuilddb".
 %_dbpath_rebuild	%{_dbpath}

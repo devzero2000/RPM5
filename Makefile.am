@@ -104,8 +104,10 @@ CVSTAG = r$(subst .,-,$(VERSION))
 
 pkgsrcdir = $(prefix)/src/rpm
 
+DBPATH = @DBPATH@
+
 install-data-local:
-	@$(mkinstalldirs) $(DESTDIR)$(varprefix)/lib/rpm
+	@$(mkinstalldirs) $(DESTDIR)$(DBPATH)
 	@for dir in BUILD RPMS SOURCES SPECS SRPMS ; do\
 	    $(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/$$dir;\
 	done

@@ -1007,6 +1007,21 @@ else
     usrprefix=$prefix
 fi
 
+dnl # determine RPM database directory path
+AC_MSG_CHECKING([for RPM database directory])
+DBPATH=`echo "${varprefix}/lib/rpm"`
+AC_ARG_WITH(
+    [path-database],
+    AS_HELP_STRING([--with-path-database=ARG], [build with RPM database directory path]),
+    [DBPATH="$withval"]
+)
+AC_DEFINE_UNQUOTED(
+    [DBPATH], ["$DBPATH"],
+    [Full path to RPM database directory]
+)
+AC_SUBST(DBPATH)
+AC_MSG_RESULT([$DBPATH])
+
 dnl # determine RPM locale directory path
 AC_MSG_CHECKING([for RPM locale directory])
 LOCALEDIR=`echo "${usrprefix}/share/locale"`
