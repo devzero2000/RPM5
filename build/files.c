@@ -1505,8 +1505,9 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 
 	/* Add file security context to package. */
 	{
-	    mode_t fmode = (uint_16)flp->fl_mode;
+	    mode_t fmode;
 	    static char *nocon = "";
+	    fmode = (uint_16)flp->fl_mode;
 	    if (matchpathcon(flp->fileURL, fmode, &scon) || scon == NULL)
 		scon = nocon;
 	    (void) headerAddOrAppendEntry(h, RPMTAG_FILECONTEXTS, RPM_STRING_ARRAY_TYPE,
