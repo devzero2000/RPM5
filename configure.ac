@@ -1189,8 +1189,8 @@ AC_CONFIG_FILES([ po/Makefile.in
 
 dnl # explicit list of commands to execute
 AC_CONFIG_COMMANDS([default], [
-    if test "$.with_perl" = .yes && test -d perl; then
-        ( cd perl && perl Makefile.PL )
+    if test "$.with_perl" = .yes && test -d ${srcdir}/perl; then
+        ( cd ${srcdir}/perl && perl Makefile.PL )
     fi
 ],[])
 

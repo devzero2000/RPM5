@@ -87,7 +87,7 @@ tagtbl.c: Makefile.am $(top_srcdir)/lib/rpmlib.h
 if WITH_DB_INTERNAL
 my_DB_HEADER = $(top_builddir)/$(WITH_DB_SUBDIR)/db.h
 else
-my_DB_HEADER = db_emu.h
+my_DB_HEADER = $(srcdir)/db_emu.h
 endif
 my_DB_TOOLS =
 if WITH_DB_INTERNAL
