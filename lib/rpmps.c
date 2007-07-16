@@ -341,3 +341,31 @@ void rpmpsPrint(FILE *fp, rpmps ps)
 
     }
 }
+
+rpmProblem rpmpsGetProblem(rpmps ps, int num)
+{
+    if (num > ps->numProblems)
+        return(NULL);
+    else
+        return(ps->probs + num);
+}
+
+char * rpmProblemGetPkgNEVR(rpmProblem prob)
+{
+    return(prob->pkgNEVR);
+}
+
+char * rpmProblemGetAltNEVR(rpmProblem prob)
+{
+    return(prob->altNEVR);
+}
+
+rpmProblemType rpmProblemGetType(rpmProblem prob)
+{
+    return(prob->type);
+}
+
+fnpyKey rpmProblemKey(rpmProblem prob)
+{
+    return(prob->key);
+}

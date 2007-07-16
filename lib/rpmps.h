@@ -194,6 +194,52 @@ void rpmpsAppend(/*@null@*/ rpmps ps, rpmProblemType type,
 int rpmpsTrim(/*@null@*/ rpmps ps, /*@null@*/ rpmps filter)
 	/*@modifies ps @*/;
 
+/**
+ * Return a problem from problem set
+ *
+ * @param ps        problem set
+ * @param num       problem number
+ * @return          rpmProblem, or NULL if error
+ */
+rpmProblem rpmpsGetProblem(/*@null@*/ rpmps ps, int num)
+	/*@*/;
+
+/**
+ * Return the package NEVR causing the problem
+ *
+ * @param prob  rpm problem
+ * @return      NEVR string ptr
+ */
+char * rpmProblemGetPkgNEVR(rpmProblem prob)
+	/*@*/;
+
+/**
+ * Return the second package NEVR causing the problem
+ *
+ * @param prob  rpm problem
+ * @return      NEVR string ptr, or NULL if unset
+ */
+char * rpmProblemGetAltNEVR(rpmProblem prob)
+	/*@*/;
+
+/**
+ * Return the problem type
+ *
+ * @param prob  rpm problem
+ * @return      rpmProblemType
+ */
+rpmProblemType rpmProblemGetType(rpmProblem prob)
+	/*@*/;
+
+/**
+ * Return the transaction key causing the problem
+ *
+ * @param prob  rpm problem
+ * @return      fnpkey ptr if any or NULL
+ */
+fnpyKey rpmProblemKey(rpmProblem prob)
+	/*@*/;
+
 #ifdef __cplusplus
 }
 #endif
