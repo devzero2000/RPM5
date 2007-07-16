@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - rse: drop support for internal lua/ at all to make piece with Automake (as lua/ build-env was not stand-alone)
     - jbj: no longer ship an internal copy of Lua with the RPM distribution
     - jbj: refactor rpmio.h include out of header files.
     - jbj: patch macro seems sufficiently functional, delete the old "stuff".
