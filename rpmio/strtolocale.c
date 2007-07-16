@@ -20,7 +20,8 @@ const char * xstrtolocale(const char *str)
 #ifdef HAVE_ICONV
     iconv_t cd;
     size_t src_size, dest_size;
-    char *result, *src, *dest;
+    char *result, *dest;
+    const char *src;
 
     if (locale_encoding == NULL) {
 	const char *encoding = nl_langinfo(CODESET);
@@ -39,7 +40,7 @@ const char * xstrtolocale(const char *str)
     src_size = strlen(str);
     dest_size = src_size + 1;
     result = xmalloc(dest_size);
-    src = (char *)str;
+    src = str;
     dest = result;
     for(;;) {
 	size_t status = iconv(cd, &src, &src_size, &dest, &dest_size);
