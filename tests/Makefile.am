@@ -11,7 +11,7 @@ check-recursive: ./usr/ ./bin ./var
 
 ./usr ./bin ./var: ../rpm
 	${MAKE} -C .. DESTDIR=`pwd` install
-	cp rpmrc macros ./$(pkglibdir)
+	cp macros ./$(pkglibdir)
 	rm -f ./@GZIPBIN@
 	if [ ! -d ./`dirname @GZIPBIN@` ] ; then mkdir -p ./`dirname @GZIPBIN@` ; fi
 	ln -s @GZIPBIN@ ./@GZIPBIN@
