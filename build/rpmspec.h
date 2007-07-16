@@ -14,6 +14,10 @@ typedef struct Package_s * Package;
 
 /** \ingroup rpmbuild
  */
+typedef struct Source * SpecSource;
+
+/** \ingroup rpmbuild
+ */
 struct TriggerFileEntry {
     int index;
 /*@only@*/
@@ -288,6 +292,55 @@ int addSource(Spec spec, Package pkg, const char * field, int tag)
  * @param tag		tag
  */
 int parseNoSource(Spec spec, const char * field, int tag)
+	/*@modifies nothing @*/;
+
+/** \ingroup rpmbuild
+ * Return the count of source set in specfile
+ * @param spec      spec file control structure
+ * @return  the count of source
+ */
+int SpecSourceCount(Spec spec)
+	/*@modifies nothing @*/;
+
+/** \ingroup rpmbuild
+ * Return a source control structure
+ * @param spec      spec file control structure
+ * @param num       the number of the wanted source (starting from 0)
+ * @return          a SpecSource structure, NULL if not found
+ */
+SpecSource getSource(Spec spec, int num)
+	/*@modifies nothing @*/;
+
+/** \ingroup rpmbuild
+ * Return a ptr to the source file name
+ * @param source    SpecSource control structure
+ * @return          ptr to filename
+ */
+const char * specSourceName(SpecSource source)
+	/*@modifies nothing @*/;
+
+/** \ingroup rpmbuild
+ * Return a ptr to the full url of the source
+ * @param source    SpecSource control structure
+ * @return          ptr to url
+ */
+const char * specFullSourceName(SpecSource source)
+	/*@modifies nothing @*/;
+
+/** \ingroup rpmbuild
+ * Return the spec or source patch number
+ * @param source    SpecSource control structure
+ * @return          the number of the source
+ */
+int specSourceNum(SpecSource source)
+	/*@modifies nothing @*/;
+
+/** \ingroup rpmbuild
+ * Return flags set for the source
+ * @param source    SpecSource control structure
+ * @return          flags
+ */
+int specSourceFlags(SpecSource source)
 	/*@modifies nothing @*/;
 
 #ifdef __cplusplus

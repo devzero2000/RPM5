@@ -206,6 +206,55 @@ static inline /*@owned@*/ struct Source *findSource(Spec spec, int num, int flag
     return NULL;
 }
 
+/**
+ */
+int SpecSourceCount(Spec spec)
+{
+    return spec->numSources;
+}
+
+/**
+ */
+SpecSource getSource(Spec spec, int num)
+    /* @ */
+{
+    struct Source *p = spec->sources;
+    int i;
+
+    for (i = 0; i < num; i++)
+    if (!(p = p->next)) return NULL;
+
+    return p;
+}
+
+/**
+ */
+const char * specSourceName(SpecSource source)
+{
+    return(source->source);
+}
+
+/**
+ */
+const char * specFullSourceName(SpecSource source)
+{
+    return(source->fullSource);
+}
+
+/**
+ */
+int specSourceNum(SpecSource source)
+{
+    return source->num;
+}
+
+/**
+ */
+int specSourceFlags(SpecSource source)
+{
+    return source->flags;
+}
+
 /*@-boundsread@*/
 int parseNoSource(Spec spec, const char * field, int tag)
 {
