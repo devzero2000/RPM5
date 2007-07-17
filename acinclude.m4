@@ -342,7 +342,7 @@ AC_DEFUN([RPM_CHECK_LIB], [
                     fi
                     dnl # in any sub-area
                     if test ".${__rcl_found}" = .no; then
-                        for __rcl_file in _ `find ${__rcl_location} -name "$5" -type f -print`; do
+                        for __rcl_file in _ `find ${__rcl_location} -name "$5" -type f -print 2>/dev/null`; do
                             test .${__rcl_file} = ._ && continue
                             __rcl_dir=`echo ${__rcl_file} | sed -e 's;[[^/]]*[$];;' -e 's;\(.\)/[$];\1;'`
                             if test ".${__rcl_dir}" != "./usr/include"; then
@@ -355,7 +355,7 @@ AC_DEFUN([RPM_CHECK_LIB], [
                         if test ".${__rcl_found}" = .yes; then
                             __rcl_found=no
                             m4_foreach_w([__rcl_lib], [$3], [
-                                for __rcl_file in _ `find ${__rcl_location} -name "lib[]m4_defn([__rcl_lib]).*" -type f -print | \
+                                for __rcl_file in _ `find ${__rcl_location} -name "lib[]m4_defn([__rcl_lib]).*" -type f -print 2>/dev/null | \
                                     egrep '\.(a|so|sl|dylib)$'`; do
                                     test .${__rcl_file} = ._ && continue
                                     __rcl_dir=`echo ${__rcl_file} | sed -e 's;[[^/]]*[$];;' -e 's;\(.\)/[$];\1;'`
