@@ -153,6 +153,7 @@ install-data-local:
 	*)	$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/@host_cpu@ ;;\
 	esac
 	$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/noarch
+	$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/repackage
 
 .PHONY:	setperms
 setperms:

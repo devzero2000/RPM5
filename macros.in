@@ -847,7 +847,7 @@ print (t)\
 
 #	The directory in which erased packages will be saved when using
 #	the --repackage option.
-%_repackage_dir		/var/spool/repackage
+%_repackage_dir		%{_rpmdir}/repackage
 
 #	A path (i.e. URL) prefix that is pre-pended to %{_repackage_dir}.
 %_repackage_root	%{nil}

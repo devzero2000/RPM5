@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - rse: use %{_rpmdir}/repackage as the default for %{_repackage_dir} instead of a hard-coded /var/spool/repackage
     - rse: remove one more hard-coded reference to /etc/rpm/sysinfo with a macro and SYSCONFIGDIR based approach
     - rse: add (partially untested) platform support for AIX, IRIX and Tru64 based on OpenPKG patchset.
     - rse: provide an RPM_OS_XXX define for allowing us to compiler independent check for a platform in the C code
