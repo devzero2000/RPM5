@@ -54,7 +54,7 @@ static char sccsid[] = "@(#)fts.c	8.6 (Berkeley) 8/14/94";
 #   define __fxstat64(_stat_ver, _fd, _sbp)	fstat((_fd), (_sbp))
 #   define _D_EXACT_NAMLEN(d) ((d)->d_namlen)
 #endif
-#if defined(sun) || defined(RPM_PLATFORM_UNIXWARE)
+#if defined(sun) || defined(RPM_OS_UNIXWARE)
 #   define __errno_location()	(&errno)
 #   define dirfd(dirp)		-1
 #   define _STAT_VER		0
@@ -83,13 +83,13 @@ static char sccsid[] = "@(#)fts.c	8.6 (Berkeley) 8/14/94";
 #   define __fxstat64(_stat_ver, _fd, _sbp)     fstat((_fd), (_sbp))
 #   define _D_EXACT_NAMLEN(d) ((d)->d_namlen)
 #endif
-#if defined(RPM_PLATFORM_IRIX)
+#if defined(RPM_OS_IRIX)
 #   define __errno_location()   (&errno)
 #   define dirfd(dirp)          -1
 #   define __fxstat64(_stat_ver, _fd, _sbp)     fstat((_fd), (_sbp))
 #   define _D_EXACT_NAMLEN(d) ((d)->d_reclen)
 #endif
-#if defined(RPM_PLATFORM_AIX)
+#if defined(RPM_OS_AIX)
 #   define __errno_location()   (&errno)
 #   define dirfd(dirp)          ((dirp)->dd_fd)
 #   define _STAT_VER            0

@@ -96,7 +96,7 @@ dnl # RPM tries hard to use adaptive "feature tests" instead of
 dnl # problematic "platform tests". Nevertheless for some extremely
 dnl # platform specific parts of the code, we have to know for what
 dnl # particular target Unix platform we are building.
-RPM_PLATFORM_NAME=`dnl
+RPM_OS_NAME=`dnl
     [echo "$host_os" | \
     sed -e 's;^;X;' \
         -e 's;^X[^a-zA-Z]*\([a-zA-Z][a-zA-Z/-]*\).*$;\1;' \
@@ -112,10 +112,10 @@ eval `dnl
         -e 's/^X\([0-9][0-9]*\)\.\([0-9][0-9]*\).*$/v1="\1"; v2="\2"/' \
         -e 's/^X\([0-9][0-9]*\).*$/v1="\1"/' \
         -e 's/^X.*$/:/']`
-RPM_PLATFORM_VERS=`echo . |\
+RPM_OS_VERS=`echo . |\
     awk '{ printf("%02d%02d%02d", v1, v2, v3); }' \
     v1="$v1" v2="$v2" v3="$v3"`
-CPPFLAGS="$CPPFLAGS -DRPM_PLATFORM_${RPM_PLATFORM_NAME}=${RPM_PLATFORM_VERS}"
+CPPFLAGS="$CPPFLAGS -DRPM_OS_${RPM_OS_NAME}=${RPM_OS_VERS}"
 
 dnl # support static linking of RPM via GNU libtool
 LDFLAGS_STATIC=""
