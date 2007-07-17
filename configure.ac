@@ -235,7 +235,7 @@ else
 fi
 if test X"$MKDIR_P" = X0; then
 	AC_MSG_RESULT(no)
-	MKDIR_P="`echo ${prefix}/lib/rpm/mkinstalldirs`"
+	MKDIR_P="%{_rpmhome}/mkinstalldirs"
 else
 	AC_MSG_RESULT(yes)
 fi
