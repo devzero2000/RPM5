@@ -98,7 +98,7 @@ endif
 endif
 
 install-data-local:
-	test -z "$(pkgincdir)" || $(MKDIR_P) $(DESTDIR)$(pkgincdir)
+	$(mkinstalldirs) $(DESTDIR)$(pkgincdir)
 	$(pkgincHEADERS_INSTALL) $(my_DB_HEADER) $(DESTDIR)$(pkgincdir)/db.h
 	for tool in . $(my_DB_TOOLS); do \
 		test ".$$tool" = .. && continue; \
