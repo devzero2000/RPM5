@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - rse: provide an RPM_PLATFORM_XXX define for allowing us to compiler independent check for a platform in the C code
     - rse: move remaining _D_EXACT_NAMLEN fiddling from public rpmio/fts.h to private rpmio/fts.c
     - rse: allow building without POSIX pthreads (explicitly through --without-pthreads or if platform doesn't support it)
     - rse: provide "install-sh" script in %{_rpmhome} as a companion to "mkinstalldirs"
