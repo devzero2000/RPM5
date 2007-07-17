@@ -214,30 +214,26 @@ else
 fi
 AC_SUBST(FIXPERMS)
 
-dnl # see if we have a mkdir that supports `-p'.
+dnl # see if we have a mkdir(1) that supports option "-p".
 AC_PATH_PROGS(MKDIR, mkdir, mkdir)
-AC_MSG_CHECKING(if $MKDIR supports -p)
+AC_MSG_CHECKING([if $MKDIR supports -p])
 rm -rf conftest
+MKDIR_P=""
 $MKDIR -p conftest/a 2>/dev/null
-if test $? = 0 ; then
-	rmdir conftest/a 2>/dev/null
-	if test $? != 0; then
-		MKDIR_P=0
-	fi
-	rmdir conftest 2>/dev/null
-	if test $? = 0; then
-		MKDIR_P="$MKDIR -p"
-	else
-		MKDIR_P=0
-	fi
-else
-	MKDIR_P=0
+if test $? = 0; then
+    rmdir conftest/a 2>/dev/null
+    if test $? = 0; then
+        rmdir conftest 2>/dev/null
+        if test $? = 0; then
+            MKDIR_P="$MKDIR -p"
+        fi
+    fi
 fi
-if test X"$MKDIR_P" = X0; then
-	AC_MSG_RESULT(no)
-	MKDIR_P="%{_rpmhome}/mkinstalldirs"
+if test ".$MKDIR_P" = .; then
+    AC_MSG_RESULT(no)
+    MKDIR_P="%{_rpmhome}/mkinstalldirs"
 else
-	AC_MSG_RESULT(yes)
+    AC_MSG_RESULT(yes)
 fi
 AC_DEFINE_UNQUOTED(MKDIR_P, "${MKDIR_P}", [full path to a 'mkdir -p' style program])
 AC_SUBST(MKDIR_P)
