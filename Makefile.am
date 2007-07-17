@@ -4,7 +4,7 @@ AUTOMAKE_OPTIONS = 1.4 foreign
 
 LINT = splint
 
-EXTRA_DIST = CHANGES CREDITS Doxyheader GROUPS INSTALL \
+EXTRA_DIST = CHANGES CREDITS Doxyheader INSTALL \
 	autodeps/none autodeps/*.prov autodeps/*.req autogen.sh \
 	db db3/configure \
 	perl/Changes perl/MANIFEST perl/META.yml perl/Makefile.PL \

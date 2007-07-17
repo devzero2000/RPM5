@@ -294,7 +294,7 @@ exit 0
 %rpmattr	%{_rpmhome}/magic.mime.mgc
 
 %files common -f rpm.lang
-%doc CHANGES GROUPS doc/manual/[a-z]*
+%doc CHANGES doc/manual/[a-z]*
 %rpmattr	%{_bindir}/rpm2cpio
 %rpmattr	%{_bindir}/gendiff
 %ifos linux
