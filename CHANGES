@@ -1,4 +1,6 @@
 4.5 -> 5.0:
+    - rse: provide "install-sh" script in %{_rpmhome} as a companion to "mkinstalldirs"
+    - rse: fix %{__mkdir_p} macro fallback value by installing missing "mkinstalldirs" into %{_rpmhome}
     - rse: consistently use %{__mkdir_p} macro instead of its pre-defined value @MKDIR_P@ to allow overriding
     - mgh: Update configure.ac to use target instead of host values for configuration
     - rse: fix build environment to correctly support building RPM from outside its source tree

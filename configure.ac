@@ -6,13 +6,15 @@ dnl ##
 dnl ## ==== REQUIREMENTS & INITIALIZATION ====
 dnl ##
 
-AC_PREREQ(2.57)
+AC_PREREQ(2.61)
 AC_DEFUN([PACKAGE_BUGREPORT_DEFAULT], [rpm-devel@rpm5.org])
 AC_INIT(rpm, 5.0, [PACKAGE_BUGREPORT_DEFAULT])
 AC_CONFIG_SRCDIR([rpmqv.c])
 AC_CONFIG_HEADERS([config.h])
 AC_CANONICAL_TARGET
 AM_INIT_AUTOMAKE([foreign tar-ustar])
+AC_REQUIRE_AUX_FILE([install-sh])
+AC_REQUIRE_AUX_FILE([mkinstalldirs])
 AM_MAINTAINER_MODE
 
 dnl # allow packagers to override the bugreport address
