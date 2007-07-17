@@ -167,27 +167,15 @@ dnl # (but at least it usually doesn't harm on other platforms)
 CFLAGS="$CFLAGS -D_GNU_SOURCE -D_REENTRANT"
 
 dnl # FIXME: old RPM 4.x style platform-specific flag extension hack
-addlib () {
-   l=$1; shift
-   LIBS="$LIBS -L$l $*"
-}
 if  test "$cross_compiling" != "yes" && \
     test ".$prefix" != .NONE && \
     test ".$prefix" != "./usr"; then
-    if test -d $prefix/lib; then
-        addlib $prefix/lib
-    fi
     if test -d $prefix/include; then
         CPPFLAGS="$CPPFLAGS -I$prefix/include"
     fi
-fi
-if test -d /usr/ucblib; then
-    case $build in
-        mips-sni-sysv4 )
-            addlib /usr/ccs/lib -lc
-            addlib /usr/ucblib
-        ;;
-    esac
+    if test -d $prefix/lib; then
+        LDFLAGS="$LDFLAGS -L$prefix/lib"
+    fi
 fi
 
 dnl ##
