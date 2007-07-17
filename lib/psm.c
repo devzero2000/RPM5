@@ -1541,8 +1541,10 @@ static int rpmpsmNext(rpmpsm psm, pkgStage nstage)
 	/*@modifies psm, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     psm->nstage = nstage;
+#if defined(HAVE_PTHREAD_H)
     if (_psm_threads)
 	return rpmsqJoin( rpmsqThread(rpmpsmThread, psm) );
+#endif
     return rpmpsmStage(psm, psm->nstage);
 }
 

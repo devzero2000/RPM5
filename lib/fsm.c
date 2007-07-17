@@ -415,8 +415,10 @@ int fsmNext(FSM_t fsm, fileStage nstage)
 	/*@modifies fsm, fileSystem, internalState @*/
 {
     fsm->nstage = nstage;
+#if defined(HAVE_PTHREAD_H)
     if (_fsm_threads)
 	return rpmsqJoin( rpmsqThread(fsmThread, fsm) );
+#endif
     return fsmStage(fsm, fsm->nstage);
 }
 

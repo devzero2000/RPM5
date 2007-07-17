@@ -396,13 +396,19 @@ dnl # Error API
 AC_CHECK_HEADERS(error.h)
 AC_CHECK_FUNCS(error)
 
-dnl # Pthread API
-AC_CHECK_HEADERS(thread.h pthread.h synch.h semaphore.h)
-AC_CHECK_LIB(pthread, pthread_mutex_trylock, [], [
-    AC_CHECK_LIB(pthread, __pthread_mutex_trylock, [], [
-        AC_CHECK_LIB(thread, mutex_lock)
+dnl # POSIX pthreads API
+WITH_PTHREADS=no
+AC_ARG_WITH([pthreads],
+    AS_HELP_STRING([--without-pthreads], [build RPM without POSIX pthreads]),
+    [ WITH_PTHREADS="$withval" ], [ WITH_PTHREADS=yes ])
+if test ".$WITH_PTHREADS" = .yes; then
+    AC_CHECK_HEADERS(thread.h pthread.h synch.h semaphore.h)
+    AC_CHECK_LIB(pthread, pthread_mutex_trylock, [], [
+        AC_CHECK_LIB(pthread, __pthread_mutex_trylock, [], [
+            AC_CHECK_LIB(thread, mutex_lock)
+        ])
     ])
-])
+fi
 
 dnl # FIXME: platform-hack: MiNT
 AC_CHECK_LIB(port, writev)

@@ -208,13 +208,13 @@ static pthread_mutex_t rpmsigTbl_lock = PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP;
 
 #else
 
-#define	DO_LOCK()
-#define	DO_UNLOCK()
-#define	INIT_LOCK()
+#define	DO_LOCK() (0)
+#define	DO_UNLOCK() (0)
+#define	INIT_LOCK() ((void)0)
 #define	ADD_REF(__tbl)	/*@-noeffect@*/ (0) /*@=noeffect@*/
 #define	SUB_REF(__tbl)	/*@-noeffect@*/ (0) /*@=noeffect@*/
-#define	CLEANUP_HANDLER(__handler, __arg, __oldtypeptr)
-#define	CLEANUP_RESET(__execute, __oldtype)
+#define	CLEANUP_HANDLER(__handler, __arg, __oldtypeptr) ((void)0)
+#define	CLEANUP_RESET(__execute, __oldtype) ((void)0)
 
 #define	SAME_THREAD(_a, _b)	(42)
 
@@ -407,7 +407,7 @@ int rpmsqEnable(int signum, /*@null@*/ rpmsqAction_t handler)
 		sa.sa_sigaction = (void *) (handler != NULL ? handler : tbl->handler);
 #endif
 		if (sigaction(tbl->signum, &sa, &tbl->oact) < 0) {
-		    SUB_REF(tbl);
+		    (void)SUB_REF(tbl);
 		    break;
 		}
 		tbl->active = 1;		/* XXX just in case */
@@ -598,31 +598,44 @@ fprintf(stderr, "      Fini(%p): %p child %d status 0x%x\n", ME(), sq, sq->child
 
 void * rpmsqThread(void * (*start) (void * arg), void * arg)
 {
+#if defined(HAVE_PTHREAD_H)
     pthread_t pth;
     int ret;
 
     ret = pthread_create(&pth, NULL, start, arg);
     return (ret == 0 ? (void *)pth : NULL);
+#else
+    return NULL;
+#endif
 }
 
 int rpmsqJoin(void * thread)
 {
+#if defined(HAVE_PTHREAD_H)
     pthread_t pth = (pthread_t) thread;
     if (thread == NULL)
 	return EINVAL;
     return pthread_join(pth, NULL);
+#else
+    return EINVAL;
+#endif
 }
 
 int rpmsqThreadEqual(void * thread)
 {
+#if defined(HAVE_PTHREAD_H)
     pthread_t t1 = (pthread_t) thread;
     pthread_t t2 = pthread_self();
     return pthread_equal(t1, t2);
+#else
+    return 0;
+#endif
 }
 
 /**
  * SIGCHLD cancellation handler.
  */
+#if defined(HAVE_PTHREAD_H)
 static void
 sigchld_cancel (void *arg)
 	/*@globals rpmsigTbl, fileSystem, internalState @*/
@@ -644,6 +657,7 @@ sigchld_cancel (void *arg)
     }
     (void) DO_UNLOCK ();
 }
+#endif
 
 /**
  * Execute a command, returning its status.
@@ -653,7 +667,9 @@ rpmsqExecve (const char ** argv)
 	/*@globals rpmsigTbl @*/
 	/*@modifies rpmsigTbl @*/
 {
+#if defined(HAVE_PTHREAD_H)
     int oldtype;
+#endif
     int status = -1;
     pid_t pid = 0;
     pid_t result;
@@ -667,11 +683,11 @@ rpmsqExecve (const char ** argv)
     (void) DO_LOCK ();
     if (ADD_REF (rpmsigTbl_sigchld) == 0) {
 	if (rpmsqEnable(SIGINT, NULL) < 0) {
-	    SUB_REF (rpmsigTbl_sigchld);
+	    (void) SUB_REF (rpmsigTbl_sigchld);
 	    goto out;
 	}
 	if (rpmsqEnable(SIGQUIT, NULL) < 0) {
-	    SUB_REF (rpmsigTbl_sigchld);
+	    (void) SUB_REF (rpmsigTbl_sigchld);
 	    goto out_restore_sigint;
 	}
     }
