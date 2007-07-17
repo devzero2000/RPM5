@@ -1764,7 +1764,7 @@ void rpmfiBuildREContexts(Header h,
     /* Read security context patterns. */
     {	const char *fn = rpmGetPath("%{?__file_context_path}", NULL);
 	if (fn != NULL && *fn != '\0')
-	    matchpathcon_init(fn);
+	    (void)matchpathcon_init(fn);
 	fn = _free(fn);
     }
 
