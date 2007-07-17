@@ -404,10 +404,6 @@ AC_CHECK_LIB(pthread, pthread_mutex_trylock, [], [
     ])
 ])
 
-dnl # AIO API
-AC_CHECK_HEADERS(aio.h)
-AC_SEARCH_LIBS(aio_read, [c rt aio posix4])
-
 dnl # FIXME: platform-hack: MiNT
 AC_CHECK_LIB(port, writev)
 
