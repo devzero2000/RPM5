@@ -35,23 +35,11 @@
 #if defined(__GLIBC__)
 #include <features.h>
 #else
-
 #   define __THROW
-
 #if defined(hpux) || defined(__hpux)
-# define _D_EXACT_NAMLEN(d) ((d)->d_namlen)
 # define	_INCLUDE_POSIX_SOURCE
 # define	_LARGEFILE64_SOURCE
 #endif
-
-#if defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__)
-#define _D_EXACT_NAMLEN(d) ((d)->d_namlen)
-#endif
-
-#if !defined(_D_EXACT_NAMLEN) 
-# define _D_EXACT_NAMLEN(d) (strlen((d)->d_name))
-#endif
-
 #endif
 
 #include <sys/types.h>
