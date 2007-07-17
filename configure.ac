@@ -166,18 +166,6 @@ dnl # FIXME: partly Linux-specific only!?
 dnl # (but at least it usually doesn't harm on other platforms)
 CFLAGS="$CFLAGS -D_GNU_SOURCE -D_REENTRANT"
 
-dnl # FIXME: old RPM 4.x style platform-specific flag extension hack
-if  test "$cross_compiling" != "yes" && \
-    test ".$prefix" != .NONE && \
-    test ".$prefix" != "./usr"; then
-    if test -d $prefix/include; then
-        CPPFLAGS="$CPPFLAGS -I$prefix/include"
-    fi
-    if test -d $prefix/lib; then
-        LDFLAGS="$LDFLAGS -L$prefix/lib"
-    fi
-fi
-
 dnl ##
 dnl ## ==== PROGRAM CHECKS ====
 dnl ##
