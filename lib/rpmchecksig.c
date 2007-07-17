@@ -363,7 +363,11 @@ static int rpmReSign(/*@unused@*/ rpmts ts,
 	strcpy(tmprpm, rpm);
 	strcat(tmprpm, ".XXXXXX");
 /*@=boundswrite@*/
+#if defined(HAVE_MKSTEMP)
+	(void) close(mkstemp(tmprpm));
+#else
 	(void) mktemp(tmprpm);
+#endif
 	trpm = tmprpm;
 
 	if (manageFile(&ofd, &trpm, O_WRONLY|O_CREAT|O_TRUNC, 0))
