@@ -457,7 +457,11 @@ static void *fetch_destroy_list(/*@only@*/ struct fetch_resource_s *res)
 }
 #endif
 
+#if !defined(NE_FREE)
+static void *fetch_create_item(/*@unused@*/ void *userdata, /*@unused@*/ const ne_uri *uri)
+#else
 static void *fetch_create_item(/*@unused@*/ void *userdata, /*@unused@*/ const char *uri)
+#endif
         /*@*/
 {
     struct fetch_resource_s * res = ne_calloc(sizeof(*res));
@@ -590,8 +594,13 @@ static int fetch_compare(const struct fetch_resource_s *r1,
     }
 }
 
+#if !defined(NE_FREE)
+static void fetch_results(void *userdata, const ne_uri *uarg,
+		    const ne_prop_result_set *set)
+#else
 static void fetch_results(void *userdata, void *uarg,
 		    const ne_prop_result_set *set)
+#endif
 	/*@*/
 {
     struct fetch_context_s *ctx = userdata;
