@@ -285,8 +285,13 @@ static int doSetupMacro(Spec spec, char *line)
 
     /* if necessary, create and cd into the proper dir */
     if (createDir) {
-	sprintf(buf, MKDIR_P " '%s'\ncd '%s'",
-		spec->buildSubdir, spec->buildSubdir);
+	char *mkdir_p;
+	mkdir_p = rpmExpand("%{?__mkdir_p}%{!?__mkdir_p:mkdir -p}", NULL);
+	if (!mkdir_p)
+	    mkdir_p = xstrdup("mkdir -p");
+	sprintf(buf, "%s '%s'\ncd '%s'",
+		mkdir_p, spec->buildSubdir, spec->buildSubdir);
+	mkdir_p = _free(mkdir_p);
 	appendLineStringBuf(spec->prep, buf);
     }
 

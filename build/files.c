@@ -1036,13 +1036,19 @@ static int parseForSimple(/*@unused@*/Spec spec, Package pkg, char * buf,
 
 	    if (! fl->passedSpecialDoc) {
 	    	char *compress_doc;
+	    	char *mkdir_p;
 
 		pkg->specialDoc = newStringBuf();
 		appendStringBuf(pkg->specialDoc, "DOCDIR=\"$RPM_BUILD_ROOT\"");
 		appendLineStringBuf(pkg->specialDoc, buf);
 		appendLineStringBuf(pkg->specialDoc, "export DOCDIR");
 		appendLineStringBuf(pkg->specialDoc, "rm -rf \"$DOCDIR\"");
-		appendLineStringBuf(pkg->specialDoc, MKDIR_P " \"$DOCDIR\"");
+		mkdir_p = rpmExpand("%{?__mkdir_p}%{!?__mkdir_p:mkdir -p}", NULL);
+		if (!mkdir_p)
+		    mkdir_p = xstrdup("mkdir -p");
+		appendStringBuf(pkg->specialDoc, mkdir_p);
+		mkdir_p = _free(mkdir_p);
+		appendLineStringBuf(pkg->specialDoc, " \"$DOCDIR\"");
 
 		compress_doc = rpmExpand("%{__compress_doc}", NULL);
 		if (compress_doc && *compress_doc != '%')
