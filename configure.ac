@@ -392,7 +392,7 @@ AC_CHECK_HEADERS([dnl
     sys/types.h sys/stdtypes.h sys/mman.h sys/resource.h dnl
     sys/utsname.h sys/wait.h netinet/in_systm.h dnl
     machine/types.h mntent.h sys/mnttab.h sys/systemcfg.h dnl
-    sys/mount.h sys/mntctl.h sys/param.h sys/vmount.h dnl
+    sys/param.h sys/mount.h sys/mntctl.h sys/vmount.h dnl
     libio.h err.h mcheck.h limits.h libgen.h float.h dnl
     glob.h poll.h dnl
 ])
