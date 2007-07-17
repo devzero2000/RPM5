@@ -166,12 +166,8 @@ CFLAGS="$CFLAGS -D_GNU_SOURCE -D_REENTRANT"
 
 dnl # FIXME: old RPM 4.x style platform-specific flag extension hack
 addlib () {
-   l=$1
-   shift
-   case "$target" in 
-       *-*-solaris2.[234567] ) LIBS="$LIBS -L$l -R$l $*" ;;
-       * )                     LIBS="$LIBS -L$l $*"      ;;
-   esac
+   l=$1; shift
+   LIBS="$LIBS -L$l $*"
 }
 if  test "$cross_compiling" != "yes" && \
     test ".$prefix" != .NONE && \
