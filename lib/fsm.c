@@ -400,6 +400,7 @@ const char * dnlNextIterator(/*@null@*/ DNLI_t dnli)
 }
 /*@=boundsread@*/
 
+#if defined(HAVE_PTHREAD_H)
 static void * fsmThread(void * arg)
 	/*@globals h_errno, fileSystem, internalState @*/
 	/*@modifies arg, fileSystem, internalState @*/
@@ -409,6 +410,7 @@ static void * fsmThread(void * arg)
     return ((void *) ((long)fsmStage(fsm, fsm->nstage)));
 /*@=unqualifiedtrans@*/
 }
+#endif
 
 int fsmNext(FSM_t fsm, fileStage nstage)
 	/*@globals h_errno, fileSystem, internalState @*/
