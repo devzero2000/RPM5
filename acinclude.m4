@@ -4,6 +4,18 @@ dnl ##
 
 dnl ##
 dnl ##  NAME:
+dnl ##    AC_MSG_TITLE -- Display a configuration title
+dnl ##
+dnl ##  USAGE:
+dnl ##    AC_MSG_TITLE(<name>, <version>)
+dnl ##
+
+AC_DEFUN([AC_MSG_TITLE],[
+    _AS_ECHO([Configuring $1, Version $2])
+])
+
+dnl ##
+dnl ##  NAME:
 dnl ##    AC_MSG_HEADER -- Display a configuration header
 dnl ##
 dnl ##  USAGE:
