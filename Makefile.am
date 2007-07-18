@@ -16,7 +16,11 @@ EXTRA_DIST = CHANGES CREDITS Doxyheader INSTALL \
 	perl/typemap \
 	pubkeys/JBJ-GPG-KEY \
 	po/*.in po/*.po po/rpm.pot \
-	rpm.magic rpmqv.c
+	rpm.magic rpmqv.c \
+	python/mpw/Makefile.am python/mpw/test/* python/test/resources/* python/test/dscmp \
+	python/test/psTest.py python/test/testhdr python/test/testit python/test/testmi \
+	python/test/testrollback.py python/test/dsMerge.py python/rpm python/rpm/Makefile.in \
+	python/rpm/Makefile.am python/rpm/__init__.py python/[a-z]* python/Makefile.in python/Makefile.am
 
 SUBDIRS =
 if USE_NLS

@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - rse: fix distribution tarball by including the python/ subdir content as Autoconf unconditionally operates on it
     - jbj: improved brp-nobuildrootpath script (vallimar).
     - jbj: consistent usage is the start of determining the best fix.
     - rse: use %{_rpmdir}/repackage as the default for %{_repackage_dir} instead of a hard-coded /var/spool/repackage
