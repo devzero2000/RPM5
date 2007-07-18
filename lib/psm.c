@@ -1526,6 +1526,7 @@ assert(xx);
     return 0;
 }
 
+#if defined(HAVE_PTHREAD_H)
 static void * rpmpsmThread(void * arg)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies arg, rpmGlobalMacroContext, fileSystem, internalState @*/
@@ -1535,6 +1536,7 @@ static void * rpmpsmThread(void * arg)
     return ((void *) rpmpsmStage(psm, psm->nstage));
 /*@=unqualifiedtrans@*/
 }
+#endif
 
 static int rpmpsmNext(rpmpsm psm, pkgStage nstage)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
