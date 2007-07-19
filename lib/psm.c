@@ -1682,6 +1682,7 @@ psm->te->h = headerLink(fi->h);
 	    /* Open output package for writing. */
 	    {	char tiddn[32];
 		const char * bfmt;
+		const char * pkgdn_buf;
 		const char * pkgdn;
 		const char * pkgbn;
 
@@ -1695,9 +1696,10 @@ psm->te->h = headerLink(fi->h);
 					pkgbn);
 		pkgbn = _free(pkgbn);
 		(void) urlPath(psm->pkgURL, &psm->pkgfn);
-		pkgdn = dirname(xstrdup(psm->pkgfn));
+		pkgdn_buf = xstrdup(psm->pkgfn);
+		pkgdn = dirname(pkgdn_buf);
 		rc = rpmMkdirPath(pkgdn, "_repackage_dir");
-		pkgdn = _free(pkgdn);
+		pkgdn_buf = _free(pkgdn_buf);
 		if (rc == RPMRC_FAIL)
 		    break;
 		psm->fd = Fopen(psm->pkgfn, "w.fdio");
