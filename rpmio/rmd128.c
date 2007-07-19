@@ -137,12 +137,12 @@ void rmd128Process(rmd128Param* mp)
 	register uint32_t aa,bb,cc,dd;
 	register uint32_t aaa,bbb,ccc,ddd;
 	register uint32_t* X;
-	#if WORDS_BIGENDIAN
+	#ifdef WORDS_BIGENDIAN
 	register byte t;
 	#endif
 
 	X = mp->data;
-	#if WORDS_BIGENDIAN
+	#ifdef WORDS_BIGENDIAN
 	t = 16;
 	while (t--)
 	{

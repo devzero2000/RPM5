@@ -414,6 +414,7 @@ AC_ISC_POSIX
 dnl # standard checks
 AM_C_PROTOTYPES
 AC_C_INLINE
+AC_C_BIGENDIAN
 
 dnl # standard headers (specific)
 AC_HEADER_STDC

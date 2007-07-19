@@ -628,7 +628,7 @@ void  tigerProcess(tigerParam *mp)
 	uint64_t * w, x[8];
 
 	memcpy(x, mp->data, sizeof(x));
-	#if WORDS_BIGENDIAN
+	#ifdef WORDS_BIGENDIAN
 	{	register int t = 8;
 		w = x;
 		while (t--) {

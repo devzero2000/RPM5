@@ -77,12 +77,12 @@ void md4Process(md4Param *mp)
 	uint32_t a, b, c, d;
 
 	register uint32_t* w;
-	#if WORDS_BIGENDIAN
+	#ifdef WORDS_BIGENDIAN
 	register byte t;
 	#endif
 
 	w = mp->data;
-	#if WORDS_BIGENDIAN
+	#ifdef WORDS_BIGENDIAN
 	t = 16;
 	while (t--)
 	{

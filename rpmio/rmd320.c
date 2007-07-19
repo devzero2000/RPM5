@@ -157,12 +157,12 @@ void rmd320Process(rmd320Param* mp)
 	register uint32_t aaa,bbb,ccc,ddd,eee;
 	register uint32_t tmp;
 	register uint32_t* X;
-	#if WORDS_BIGENDIAN
+	#ifdef WORDS_BIGENDIAN
 	register byte t;
 	#endif
 
 	X = mp->data;
-	#if WORDS_BIGENDIAN
+	#ifdef WORDS_BIGENDIAN
 	t = 16;
 	while (t--)
 	{

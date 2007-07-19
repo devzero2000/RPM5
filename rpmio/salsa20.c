@@ -60,7 +60,7 @@ void salsa20Process(salsa20Param* mp)
 	int i;
 
 	for (i = 0; i < 16; ++i) {
-	    #if WORDS_BIGENDIAN		/* XXX untested */
+	    #ifdef WORDS_BIGENDIAN		/* XXX untested */
 	    X[i] = swapu32(mp->data[i]);
 	    #else
 	    X[i] = mp->data[i];
