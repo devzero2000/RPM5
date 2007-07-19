@@ -8,27 +8,27 @@
 #include "debug.h"
 
 const char * (*_Fstrerror) (void * fd)
-	= (void *)Fstrerror;
+	= (const char *(*)(void *))Fstrerror;
 size_t (*_Fread) (void * buf, size_t size, size_t nmemb, void * fd)
-	= (void *)Fread;
+	= (size_t (*)(void *, size_t, size_t, void *))Fread;
 size_t (*_Fwrite) (const void * buf, size_t size, size_t nmemb, void * fd)
-	= (void *)Fwrite;
+	= (size_t (*)(const void * buf, size_t size, size_t nmemb, void * fd))Fwrite;
 int (*_Fseek) (void * fd, _libio_off_t offset, int whence)
-	= (void *)Fseek;
+	= (int (*) (void *, _libio_off_t, int))Fseek;
 int (*_Fclose) (void * fd)
-	= (void *)Fclose;
+	= (int (*) (void *))Fclose;
 void * (*_Fdopen) (void * ofd, const char * fmode)
-	= (void *)Fdopen;
+	= (void * (*) (void *, const char *))Fdopen;
 void * (*_Fopen) (const char * path, const char * fmode)
-	= (void *)Fopen;
+	= (void * (*) (const char *, const char *))Fopen;
 int (*_Fflush) (void * fd)
-	= (void *)Fflush;
+	= (int (*) (void *))Fflush;
 int (*_Ferror) (void * fd)
-	= (void *)Ferror;
+	= (int (*) (void *))Ferror;
 int (*_Fileno) (void * fd)
-	= (void *)Fileno;
+	= (int (*) (void *))Fileno;
 int (*_Fcntl) (void * fd, int op, void *lip)
-	= (void *)Fcntl;
+	= (int (*) (void *, int, void *))Fcntl;
 
 int (*_Mkdir) (const char * path, mode_t mode) = Mkdir;
 int (*_Chdir) (const char * path) = Chdir;
