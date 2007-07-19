@@ -1205,7 +1205,7 @@ ssize_t davWrite(void * cookie, const char * buf, size_t count)
     FD_t fd = cookie;
 #endif
     ssize_t rc;
-    int xx;
+    int xx = -1;
 
 #if !defined(NEONBLOWSCHUNKS)
     ne_session * sess;
