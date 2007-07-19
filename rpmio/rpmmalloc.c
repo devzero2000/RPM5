@@ -5,6 +5,13 @@
 #include "system.h"
 #include "debug.h"
 
+#if defined(WITH_DMALLOC)
+#undef xmalloc
+#undef xcalloc
+#undef xrealloc
+#undef xstrdup
+#endif
+
 #if !defined(EXIT_FAILURE)
 #define	EXIT_FAILURE	1
 #endif

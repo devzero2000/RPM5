@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - rse: fix building under --with-dmalloc with DMalloc 5.5.2 where "x{malloc,calloc,realloc,free}" are also overridden
     - rse: provide convenience --enable-build-debug Autoconf option for building RPM with debugging instrumentation
     - rse: fix memory leak and segfault in lib/psm.c related to dirname(3) usage
     - rse: fix distribution tarball by including the python/ subdir content as Autoconf unconditionally operates on it
