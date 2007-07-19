@@ -1167,7 +1167,7 @@ glob_in_dir (const char *pattern, const char *directory, int flags,
 
  memory_error:
   {
-    int save = errno;
+    save = errno;
     if (flags & GLOB_ALTDIRFUNC)
       (*pglob->gl_closedir) (stream);
     else
