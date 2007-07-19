@@ -70,11 +70,11 @@ extern char ** environ;
 #endif
 
 /* Since major is a function on SVR4, we can't use `ifndef major'.  */
-#if MAJOR_IN_MKDEV
+#if defined(MAJOR_IN_MKDEV)
 #include <sys/mkdev.h>
 #define HAVE_MAJOR
 #endif
-#if MAJOR_IN_SYSMACROS
+#if defined(MAJOR_IN_SYSMACROS)
 #include <sys/sysmacros.h>
 #define HAVE_MAJOR
 #endif
