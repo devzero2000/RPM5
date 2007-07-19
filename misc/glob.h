@@ -53,8 +53,10 @@ extern "C" {
 #if !defined(__size_t) && !defined(_BSD_SIZE_T_DEFINED_)
 # if defined __GNUC__ && __GNUC__ >= 2
 typedef __SIZE_TYPE__ __size_t;
+#  if 0
 #  ifdef _XOPEN_SOURCE
 typedef __SIZE_TYPE__ size_t;
+#  endif
 #  endif
 # else
 /* This is a guess.  */
