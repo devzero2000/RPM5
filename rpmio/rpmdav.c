@@ -1396,7 +1396,7 @@ static const char * statstr(const struct stat * st,
 }
 
 /*@unchecked@*/
-static int dav_st_ino = 0xdead0000;
+static unsigned int dav_st_ino = 0xdead0000;
 
 /*@-boundswrite@*/
 int davStat(const char * path, /*@out@*/ struct stat *st)
