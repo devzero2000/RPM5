@@ -22,7 +22,7 @@
  */
 
 #if defined(__sun)
-#if ENABLE_NLS && !defined(__LCLINT__)
+#if defined(ENABLE_NLS) && !defined(__LCLINT__)
 # define _(Text) gettext (Text)
 #else
 # define _(Text) Text

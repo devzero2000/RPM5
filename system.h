@@ -470,7 +470,7 @@ extern const char *__progname;
 # define setlocale(Category, Locale) /* empty */
 #endif
 
-#if ENABLE_NLS && !defined(__LCLINT__)
+#if defined(ENABLE_NLS) && !defined(__LCLINT__)
 # include <libintl.h>
 # define _(Text) dgettext (PACKAGE, Text)
 # define D_(Text) Text
