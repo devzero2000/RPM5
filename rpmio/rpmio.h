@@ -842,6 +842,9 @@ const char * xstrtolocale(/*@only@*/ const char *str)
  * @param p		memory to free
  * @return		NULL always
  */
+#if defined(WITH_DMALLOC)
+#define _free(p) ((p) != NULL ? free((void *)(p)) : (void)0, NULL)
+#else
 /*@unused@*/ static inline /*@null@*/
 void * _free(/*@only@*/ /*@null@*/ /*@out@*/ const void * p)
 	/*@modifies p @*/
@@ -849,6 +852,7 @@ void * _free(/*@only@*/ /*@null@*/ /*@out@*/ const void * p)
     if (p != NULL)	free((void *)p);
     return NULL;
 }
+#endif
 #endif
 
 #ifdef __cplusplus
