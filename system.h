@@ -609,7 +609,7 @@ extern int fnmatch (const char *__pattern, const char *__name, int __flags)
 #define S_ISSOCK(mode) ((mode & 0xf000) == S_IFSOCK)
 #endif
 
-#if NEED_STRINGS_H
+#if defined(NEED_STRINGS_H)
 #include <strings.h>
 #endif
 
