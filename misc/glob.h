@@ -172,6 +172,7 @@ extern void globfree __P ((glob_t *__pglob)) __asm__ ("globfree64");
 # else
 #  define glob glob64
 #  define globfree globfree64
+#  define glob_t glob64_t
 # endif
 #endif
 

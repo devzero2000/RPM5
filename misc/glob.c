@@ -1066,9 +1066,15 @@ glob_in_dir (const char *pattern, const char *directory, int flags,
 		{
 		  const char *name;
 		  size_t len;
+#ifdef _LARGEFILE64_SOURCE
+		  struct dirent64 *d = ((flags & GLOB_ALTDIRFUNC)
+				      ? (*pglob->gl_readdir) (stream)
+				      : readdir64 ((DIR *) stream));
+#else
 		  struct dirent *d = ((flags & GLOB_ALTDIRFUNC)
 				      ? (*pglob->gl_readdir) (stream)
 				      : readdir ((DIR *) stream));
+#endif
 		  if (d == NULL)
 		    break;
 		  if (! REAL_DIR_ENTRY (d))
