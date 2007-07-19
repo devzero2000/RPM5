@@ -94,6 +94,15 @@ AC_ARG_ENABLE(build-warnings,
         fi
     fi
 ])
+AC_ARG_ENABLE(build-debug,
+    AS_HELP_STRING([--enable-build-debug], [build RPM instrumented for debugging]), [dnl
+    if test ".$enableval" = .yes; then
+        CFLAGS="$CFLAGS -g"
+        if test ".$ac_cv_c_compiler_gnu" = .yes; then
+            CFLAGS="$CFLAGS -O0"
+        fi
+    fi
+])
 
 dnl # RPM tries hard to use adaptive "feature tests" instead of
 dnl # problematic "platform tests". Nevertheless for some extremely

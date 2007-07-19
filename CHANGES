@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - rse: provide convenience --enable-build-debug Autoconf option for building RPM with debugging instrumentation
     - rse: fix memory leak and segfault in lib/psm.c related to dirname(3) usage
     - rse: fix distribution tarball by including the python/ subdir content as Autoconf unconditionally operates on it
     - jbj: improved brp-nobuildrootpath script (vallimar).
