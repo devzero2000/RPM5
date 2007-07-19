@@ -1,0 +1,25 @@
+##
+##  .dmallocrc -- DMalloc configuration
+##
+
+#   no debugging
+none    none
+
+#   basic debugging
+debug1  log-stats, log-non-free, check-fence
+
+#   more logging and some heap checking
+debug2  log-stats, log-non-free, check-fence, \
+        log-trans, check-heap
+
+#   good utilities
+debug3  log-stats, log-non-free, check-fence, \
+        log-trans, check-heap, \
+        log-admin, realloc-copy, free-blank
+
+#   even more good utilities
+debug4  log-stats, log-non-free, check-fence, \
+        log-trans, check-heap, \
+        log-admin, realloc-copy, free-blank, \
+        log-bad-space, log-nonfree-space
+

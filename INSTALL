@@ -300,39 +300,17 @@ Memory Allocation Debugging with DMalloc
    $ make
    $ make install
 
-3. Create a ~/.dmallocrc containing:
-
-   #   no debugging
-   none    none
-
-   #   basic debugging
-   debug1  log-stats, log-non-free, check-fence
-
-   #   more logging and some heap checking
-   debug2  log-stats, log-non-free, check-fence, \
-       log-trans, check-heap
-
-   #   good utilities
-   debug3  log-stats, log-non-free, check-fence, \
-       log-trans, check-heap, \
-       log-admin, realloc-copy, free-blank
-
-   #   even more good utilities
-   debug4  log-stats, log-non-free, check-fence, \
-       log-trans, check-heap, \
-       log-admin, realloc-copy, free-blank, \
-       log-bad-space, log-nonfree-space
-
-4. Enable dmalloc debugging with:
+3. Enable dmalloc debugging with:
    
+   $ . .dmalloc.bashrc
    $ dmalloc -l dmalloc.log
    $ dmalloc debug3
 
-5. Run RPM:
+4. Run RPM:
 
    $ /tmp/rpm/bin/rpm [...]
 
-6. Inspect the results:
+5. Inspect the results:
    (notice that some used functions like gethostbyname(3) or dirname(3)
    from the vendor libc inherently leak memory because of their API
    style and because libc isn't DMalloc instrumented you will often see
