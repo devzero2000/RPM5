@@ -613,7 +613,7 @@ extern int fnmatch (const char *__pattern, const char *__name, int __flags)
 #include <strings.h>
 #endif
 
-#if NEED_MYREALLOC
+#if defined(NEED_MYREALLOC)
 #define realloc(ptr,size) myrealloc(ptr,size)
 extern void *myrealloc(void *, size_t);
 #endif
