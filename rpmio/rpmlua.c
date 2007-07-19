@@ -114,8 +114,8 @@ void *rpmluaFree(rpmlua lua)
 /*@=branchstate@*/
     if (lua) {
 	if (lua->L) lua_close(lua->L);
-	free(lua->printbuf);
-	free(lua);
+	lua->printbuf = _free(lua->printbuf);
+	lua = _free(lua);
     }
     return NULL;
 }
@@ -160,8 +160,7 @@ void rpmluaSetPrintBuffer(rpmlua _lua, int flag)
 {
     INITSTATE(_lua, lua);
     lua->storeprint = flag;
-    free(lua->printbuf);
-    lua->printbuf = NULL;
+    lua->printbuf = _free(lua->printbuf);
     lua->printbufsize = 0;
 }
 
@@ -367,7 +366,7 @@ rpmluav rpmluavNew(void)
 
 void *rpmluavFree(rpmluav var)
 {
-    free(var);
+    var = _free(var);
     return NULL;
 }
 
@@ -785,7 +784,7 @@ static int rpm_call(lua_State *L)
 /*@-compdef -kepttrans -usereleased @*/
 	args->argt = argt;
 	rpmhookCallArgs(name, args);
-	free(argt);
+	argt = _free(argt);
 	(void) rpmhookArgsFree(args);
 /*@=compdef =kepttrans =usereleased @*/
     }
