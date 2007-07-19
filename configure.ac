@@ -122,6 +122,9 @@ RPM_OS_NAME=`dnl
         -e 's;^X.*;UNKNOWN;' | \
     sed -e 's;[/-];;' | \
     tr 'abcdefghijklmnopqrstuvwxyz' 'ABCDEFGHIJKLMNOPQRSTUVWXYZ']`
+case "$RPM_OS_NAME" in
+    LINUX* ) RPM_OS_NAME="LINUX" ;;
+esac
 v1=0; v2=0; v3=0
 eval `dnl
     [echo "$host_os" | \
