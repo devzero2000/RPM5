@@ -66,10 +66,17 @@ AC_PROG_GCC_TRADITIONAL
 AC_ARG_ENABLE(build-pic,
     AS_HELP_STRING([--enable-build-pic], [build RPM with Position Independent Code (PIC) (GCC only)]), [dnl
     if test ".$enableval" = .yes; then
-        if test ".$ac_cv_c_compiler_gnu" = .yes; then
+        if test ".`$CC --version 2>&1 | grep 'GCC'`" != .; then
+            dnl # GNU GCC (usually "gcc")
+            CFLAGS="$CFLAGS -fPIC -DPIC"
+        elif test ".`$CC -V 2>&1 | grep 'Sun C'`" != .; then
+            dnl # Sun Studio (usually "cc")
+            CFLAGS="$CFLAGS -KPIC -DPIC"
+        elif test ".`$CC -help 2>&1 | grep 'Intel Corporation'`" != .; then
+            dnl # Intel C/C++ Compiler (usually "icc")
             CFLAGS="$CFLAGS -fPIC -DPIC"
         else
-            AC_MSG_WARN([--enable-build-pic requires GCC])
+            AC_MSG_WARN([--enable-build-pic requires GCC, Sun Studio or Intel C/C++])
         fi
     fi
 ])
@@ -87,7 +94,7 @@ AC_ARG_ENABLE(build-pie,
 AC_ARG_ENABLE(build-warnings,
     AS_HELP_STRING([--enable-build-warnings], [build RPM with extra compiler warnings turned on (GCC only)]), [dnl
     if test ".$enableval" = .yes; then
-        if test ".$ac_cv_c_compiler_gnu" = .yes; then
+        if test ".`$CC --version 2>&1 | grep 'GCC'`" != .; then
             dnl # GNU GCC (usually "gcc")
             CFLAGS="$CFLAGS -Wall -Wpointer-arith -Wstrict-prototypes -Wmissing-prototypes -Wno-char-subscripts"
         elif test ".`$CC -V 2>&1 | grep 'Sun C'`" != .; then
@@ -105,7 +112,14 @@ AC_ARG_ENABLE(build-debug,
     AS_HELP_STRING([--enable-build-debug], [build RPM instrumented for debugging]), [dnl
     if test ".$enableval" = .yes; then
         CFLAGS="$CFLAGS -g"
-        if test ".$ac_cv_c_compiler_gnu" = .yes; then
+        if test ".`$CC --version 2>&1 | grep 'GCC'`" != .; then
+            dnl # GNU GCC (usually "gcc")
+            CFLAGS="$CFLAGS -O0"
+        elif test ".`$CC -V 2>&1 | grep 'Sun C'`" != .; then
+            dnl # Sun Studio (usually "cc")
+            CFLAGS="$CFLAGS -xO0"
+        elif test ".`$CC -help 2>&1 | grep 'Intel Corporation'`" != .; then
+            dnl # Intel C/C++ Compiler (usually "icc")
             CFLAGS="$CFLAGS -O0"
         fi
     fi
