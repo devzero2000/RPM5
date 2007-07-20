@@ -1359,7 +1359,8 @@ expandMacro(MacroBuf mb)
 				/*@switchbreak@*/ break;
 			}
 		}
-		for (fe = f; (c = *fe) && !strchr(" :}", c);)
+		/* Find end-of-expansion, handle %{foo:bar} expansions. */
+		for (fe = f; (c = *fe) && !strchr(":}", c);)
 			fe++;
 		switch (c) {
 		case ':':
@@ -1372,6 +1373,9 @@ expandMacro(MacroBuf mb)
 		default:
 			/*@innerbreak@*/ break;
 		}
+		/* Reset to end-of-macro-name span. */
+		for (fe = f; (c = *fe) && (xisalnum(c) || c == '_');)
+			fe++;
 		/*@switchbreak@*/ break;
 	}
 
@@ -1541,6 +1545,11 @@ expandMacro(MacroBuf mb)
 		} else
 		if (me && me->body && *me->body) { /* Expand %{?f}/%{?f*} */
 			rc = expandT(mb, me->body, strlen(me->body));
+		}
+		/* Append %{?_foo/bar}. */
+		if (!g && se[-1] == '}' && *fe == '/') {
+			while ((c = *fe++) && fe < se)
+				SAVECHAR(mb, c);
 		}
 		s = se;
 		continue;
@@ -2509,7 +2518,6 @@ main(int argc, char *argv[])
     int x;
 
     rpmInitMacros(NULL, rpmMacrofiles);
-    rpmDumpMacroTable(NULL, NULL);
 
     if ((fp = fopen(testfile, "r")) != NULL) {
 	while(rdcl(buf, sizeof(buf), fp)) {

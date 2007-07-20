@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - jbj: add %{?dir/file} as shorthand for %{?dir:%{dir}/file}.
     - jbj: fix a --import memory leak.
     - rse: unbreak big-endian handling in memory and cryptography functions by Autoconf providing WORDS_BIGENDIAN and fixing usage
     - rse: cleanup and fix the code to compile under *non*-GCC compilers (e.g. Sun Studio and Intel C/C++)

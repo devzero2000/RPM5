@@ -442,7 +442,7 @@ if (fileURL[0] == '=') {
 #else
 		(void) mktemp(tfnbuf);
 #endif
-		tfn = rpmGenPath(rootDir, "%{_tmppath}/", tfnbuf);
+		tfn = rpmGenPath(rootDir, "%{?_tmpdir/}", tfnbuf);
 	    }
 
 	    /* XXX undefined %{name}/%{version}/%{release} here */
