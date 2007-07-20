@@ -4,6 +4,7 @@
 
 #include "system.h"
 
+#include <rpmio.h>
 #include <rpmlib.h>
 
 #include "header-py.h"

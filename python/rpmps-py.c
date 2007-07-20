@@ -5,6 +5,7 @@
 
 #include "system.h"
 
+#include <rpmio.h>
 #define	_RPMPS_INTERNAL	/* XXX rpmps needs iterator */
 #include <rpmlib.h>
 

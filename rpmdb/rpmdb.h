@@ -1136,7 +1136,16 @@ Header rpmdbNextIterator(/*@null@*/ rpmdbMatchIterator mi)
 	/*@modifies mi, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /** \ingroup rpmdb
- * Check rpmdb signal handler for trapped signal exit.
+ * Check rpmdb signal handler for trapped signal, or requested exit.
+ * @param terminate	0 to only check for signals, 1 to terminate anyway
+ */
+/*@mayexit@*/
+int rpmdbCheckTerminate(int terminate)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/;
+
+/** \ingroup rpmdb
+ * Check rpmdb signal handler for trapped signal and exit.
  */
 /*@mayexit@*/
 int rpmdbCheckSignals(void)
