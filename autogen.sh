@@ -50,10 +50,10 @@ echo "---> generate files via GNU gettext (autopoint)"
 autopoint --force
 echo "---> generate files via GNU autoconf (aclocal, autoheader)"
 aclocal -I m4
-autoheader
+autoheader -I m4
 echo "---> generate files via GNU automake (automake)"
 automake -Wall -Wno-override -a -c
 echo "---> generate files via GNU autoconf (autoconf)"
-autoconf
+autoconf -I m4
 echo "<=== rpm"
 
