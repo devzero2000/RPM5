@@ -387,16 +387,16 @@ static int prepFetch(Spec spec)
     for (sp = spec->sources; sp != NULL; sp = sp->next) {
 
 	if (sp->flags & RPMFILE_SOURCE) {
-	    Rmacro = "%{_Rsourcedir}/";
-	    Lmacro = "%{_sourcedir}/";
+	    Rmacro = "%{?_Rsourcedir}/";
+	    Lmacro = "%{?_sourcedir}/";
 	} else
 	if (sp->flags & RPMFILE_PATCH) {
-	    Rmacro = "%{_Rpatchdir}/";
-	    Lmacro = "%{_patchdir}/";
+	    Rmacro = "%{?_Rpatchdir}/";
+	    Lmacro = "%{?_patchdir}/";
 	} else
 	if (sp->flags & RPMFILE_ICON) {
-	    Rmacro = "%{_Ricondir}/";
-	    Lmacro = "%{_icondir}/";
+	    Rmacro = "%{?_Ricondir}/";
+	    Lmacro = "%{?_icondir}/";
 	} else
 	    continue;
 
@@ -413,7 +413,7 @@ static int prepFetch(Spec spec)
 	}
 
 	Rurlfn = rpmGenPath(NULL, Rmacro, sp->source);
-	if (Rurlfn == NULL || (Rurlfn[0] == '/' && Rurlfn[1] == '%') || !strcmp(Lurlfn, Rurlfn)) {
+	if (Rurlfn == NULL || Rurlfn[0] == '\0' || !strcmp(Lurlfn, Rurlfn)) {
 	    rpmError(RPMERR_BADFILENAME, _("file %s missing: %s\n"),
 		Lurlfn, strerror(errno));
 	    ec++;
