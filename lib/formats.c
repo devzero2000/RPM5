@@ -161,6 +161,7 @@ static /*@only@*/ char * armorFormat(int_32 type, const void * data,
     const unsigned char * s;
     size_t ns;
     int atype;
+    char * val;
 
     switch (type) {
     case RPM_OPENPGP_TYPE:
@@ -174,6 +175,8 @@ static /*@only@*/ char * armorFormat(int_32 type, const void * data,
     case RPM_STRING_TYPE:
     case RPM_STRING_ARRAY_TYPE:
 	enc = data;
+	s = NULL;
+	ns = 0;
 	if (b64decode(enc, (void **)&s, &ns))
 	    return xstrdup(_("(not base64)"));
 	atype = PGPARMOR_PUBKEY;	/* XXX check pkt for pubkey */
@@ -191,7 +194,10 @@ static /*@only@*/ char * armorFormat(int_32 type, const void * data,
     }
 
     /* XXX this doesn't use padding directly, assumes enough slop in retval. */
-    return pgpArmorWrap(atype, s, ns);
+    val = pgpArmorWrap(atype, s, ns);
+    if (atype == PGPARMOR_PUBKEY)
+	s = _free(s);
+    return val;
 }
 
 /**
