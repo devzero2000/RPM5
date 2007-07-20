@@ -1251,9 +1251,10 @@ expandMacro(MacroBuf mb)
     MacroEntry *mep;
     MacroEntry me;
     const char *s = mb->s, *se;
+    const char *e, *ee;
     const char *f, *fe;
     const char *g, *ge;
-    size_t fn, gn;
+    size_t en, fn, gn;
     char *t = mb->t;	/* save expansion pointer for printExpand */
     int c;
     int rc = 0;
@@ -1289,6 +1290,7 @@ expandMacro(MacroBuf mb)
 	}
 
 	/* Expand next macro */
+	e = ee = NULL;
 	f = fe = NULL;
 	g = ge = NULL;
 	if (mb->depth > 1)	/* XXX full expansion for outermost level */
@@ -1384,12 +1386,13 @@ expandMacro(MacroBuf mb)
 			/*@innerbreak@*/ break;
 		}
 		/* Reset to end-of-macro-name span. */
-		for (fe = f; (c = *fe) && (xisalnum(c) || c == '_');)
-			fe++;
+		for (e = f, ee = e; (c = *ee) && (xisalnum(c) || c == '_');)
+			ee++;
 		/*@switchbreak@*/ break;
 	}
 
 	/* XXX Everything below expects fe > f */
+	en = (ee - e);
 	fn = (fe - f);
 	gn = (ge - g);
 	if ((fe - f) <= 0) {
@@ -1521,7 +1524,7 @@ expandMacro(MacroBuf mb)
 	}
 
 	/* Expand defined macros */
-	mep = findEntry(mb->mc, f, fn);
+	mep = findEntry(mb->mc, e, en);
 	me = (mep ? *mep : NULL);
 
 	/* XXX Special processing for flags */
@@ -1558,8 +1561,8 @@ expandMacro(MacroBuf mb)
 			rc = expandT(mb, me->body, strlen(me->body));
 		}
 		/* Append %{?_foo/bar}. */
-		if (!g && se[-1] == '}' && *fe == '/') {
-			while ((c = *fe++) && fe < se)
+		if (!g && se[-1] == '}' && *ee == '/') {
+			while ((c = *ee++) && ee < se)
 				SAVECHAR(mb, c);
 		}
 		s = se;
