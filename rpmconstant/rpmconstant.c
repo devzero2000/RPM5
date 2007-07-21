@@ -6,9 +6,8 @@
 #define RPMCONSTANT_INTERNAL
 #include "rpmconstant.h"
 
-#ifndef xcalloc
+#undef xcalloc
 #define xcalloc(n,s) calloc((n),(s))
-#endif
 
 rpmconst rpmconstNew()
 {
