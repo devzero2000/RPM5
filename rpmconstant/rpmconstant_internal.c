@@ -23,7 +23,7 @@ rpmconstant rpmConstantNext(rpmconstant c)
 
 /**/
 
-rpmconstantlist rpmGetConstantList()
+rpmconstantlist rpmGetConstantList(void)
 {
     return (void *) rpmconstanttype;
 }

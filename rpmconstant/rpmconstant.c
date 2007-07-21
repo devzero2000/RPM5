@@ -6,6 +6,10 @@
 #define RPMCONSTANT_INTERNAL
 #include "rpmconstant.h"
 
+#ifndef xcalloc
+#define xcalloc(n,s) calloc((n),(s))
+#endif
+
 rpmconst rpmconstNew()
 {
     rpmconst c = NULL;
@@ -64,7 +68,7 @@ const char * rpmconstPrefix(rpmconst c)
 
 const char * rpmconstName(rpmconst c, int stripprefix)
 {
-    char * name;
+    const char * name;
     int len;
     name = rpmConstantName(c->constant);
     if (stripprefix && name && rpmConstantListPrefix(c->list)) {

@@ -5,10 +5,6 @@
 #ifndef H_RPMCONSTANT
 #define H_RPMCONSTANT
 
-#ifndef xcalloc
-#define xcalloc(n,s) calloc((n),(s))
-#endif
-
 #define PREFIXED_YES 0
 #define PREFIXED_NO  1
 
@@ -22,7 +18,7 @@
  *
  */
 
-#include <stdio.h>
+#include "system.h"
 #include <header.h>
 #include <rpmio.h>
 #include <rpmdb.h>
@@ -118,7 +114,7 @@ rpmconstant rpmConstantNext(rpmconstant c)
  *
  * @return      first constantlist item
  */
-rpmconstantlist rpmGetConstantList()
+rpmconstantlist rpmGetConstantList(void)
     /*@*/;
 
 /**
@@ -170,7 +166,7 @@ const char * rpmConstantListContext (rpmconstantlist cl)
 
 #endif
 
-rpmconst rpmconstNew();
+rpmconst rpmconstNew(void);
 
 rpmconst rpmconstFree(rpmconst c);
 
