@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - nanardon: add the librpmconstant library which provides RPM API constants (usually to language bindings)
     - jbj: rescuscitate rpm-perl, include <rpmio.h> explicitly.
     - jbj: perl.prov fiddles (#249135).
     - jbj: rescuscitate rpm-python, include <rpmio.h> explicitly.
