@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - jbj: rescuscitate rpm-perl, include <rpmio.h> explicitly.
     - jbj: perl.prov fiddles (#249135).
     - jbj: rescuscitate rpm-python, include <rpmio.h> explicitly.
     - jbj: adopt rpm.org signal handling <pmatlai@redhat.com>

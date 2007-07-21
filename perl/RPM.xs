@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <utime.h>
+#include <rpmio.h>
 #include "rpmlib.h"
 #include "rpmcli.h"
 
