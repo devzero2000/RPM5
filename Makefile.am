@@ -37,6 +37,7 @@ SUBDIRS += \
 	rpmdb \
 	lib \
 	build \
+	rpmconstant \
 	@WITH_PYTHON_SUBDIR@ \
 	@WITH_PERL_SUBDIR@ \
 	tools \
