@@ -315,6 +315,13 @@ AC_CHECK_FUNC(lchown,
 AC_SUBST(__CHOWN_RHF)
 AC_SUBST(__CHGRP_RHF)
 
+dnl # find the Perl interpreter
+AC_PATH_PROG(PERL, perl perl5)
+if test ".$PERL" = .; then
+    AC_MSG_WARN([Perl required in PATH for building rpmconstant/])
+fi
+AC_SUBST(PERL)
+
 dnl # find some common programs
 if test "$cross_compiling" = "yes"; then
     MYPATH=":"
