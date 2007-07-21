@@ -316,7 +316,7 @@ AC_SUBST(__CHOWN_RHF)
 AC_SUBST(__CHGRP_RHF)
 
 dnl # find the Perl interpreter
-AC_PATH_PROG(PERL, perl perl5)
+AC_PATH_PROG(PERL, perl perl5 miniperl)
 if test ".$PERL" = .; then
     AC_MSG_ERROR([Perl required in PATH for building rpmconstant/])
 fi

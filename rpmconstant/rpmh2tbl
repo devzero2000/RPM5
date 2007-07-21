@@ -16,11 +16,6 @@
 #
 # $Id$
 
-use strict;
-use warnings;
-
-use Getopt::Long;
-
 my @availlabletables;
 
 # Binding we want
@@ -190,9 +185,6 @@ printf $ch <<EOF
  
 EOF
 , join("\n * ", @ARGV);
-
-GetOptions(
-);
 
 foreach (@ARGV) {
     parseconst($_);
