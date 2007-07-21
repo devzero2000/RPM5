@@ -14,24 +14,49 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/misc
 
 bin_PROGRAMS = rpmconstant
-lib_LTLIBRARIES     = librpmconstant.la
+usrlibdir = $(libdir)@MARK64@
+usrlib_LTLIBRARIES = librpmconstant.la
+
+pkgincdir = $(pkgincludedir)$(WITH_PATH_VERSIONED_SUFFIX)
+pkginc_HEADERS = rpmconstant.h
+
+librpmconstant_la_SOURCES = \
+	rpmconstant.c \
+	rpmconstant.h \
+	rpmconstanttbl.c \
+	rpmconstant_internal.c
 librpmconstant_la_LDFLAGS = -release $(LT_CURRENT).$(LT_REVISION)
-librpmconstant_la_SOURCES = rpmconstant.c \
-                      	    rpmconstant.h \
-						    rpmconstanttbl.c \
-							rpmconstant_internal.c \
-							rpmh2tbl
+librpmconstant_la_LIBADD =
+librpmconstant.la: $(librpmconstant_la_OBJECTS) $(librpmconstant_la_DEPENDENCIES) 
+	$(librpmconstant_la_LINK) -rpath $(usrlibdir) $(librpmconstant_la_OBJECTS) $(librpmconstant_la_LIBADD)
 
 rpmconstant_SOURCES = constant.c
 rpmconstant_LDADD   = librpmconstant.la
-pkgincdir = $(pkgincludedir)
-pkginc_HEADERS = rpmconstant.h
 
 BUILT_SOURCES = rpmconstanttbl.c
 CLEANFILES = rpmconstanttbl.c
 
-rpmconstanttbl.c: Makefile.am rpmh2tbl
-	$(srcdir)/rpmh2tbl $(top_srcdir) $(top_srcdir)/{lib,build,rpmdb,rpmio,misc}/*.h > $@
+myHEADERS = \
+	$(top_srcdir)/lib/*.h \
+	$(top_srcdir)/build/*.h \
+	$(top_srcdir)/rpmdb/*.h \
+	$(top_srcdir)/rpmio/*.h \
+	$(top_srcdir)/misc/*.h
 
-rpmh2tbl:
+rpmconstanttbl.c: $(srcdir)/rpmh2tbl
+	$(PERL) $(srcdir)/rpmh2tbl $(myHEADERS) >$@
+
+install-data-hook:
+	-for l in $(usrlib_LTLIBRARIES); do \
+	    rm -f $(DESTDIR)$(usrlibdir)/$${l}; \
+	done
+if WITH_PATH_VERSIONED
+	-for l in $(usrlib_LTLIBRARIES); do \
+	    base=`echo "$${l}" | sed -e 's;\.la$$;;'`; \
+	    if [ -f $(DESTDIR)$(usrlibdir)/$${base}.a ]; then \
+	        mv $(DESTDIR)$(usrlibdir)/$${base}.a \
+	           $(DESTDIR)$(usrlibdir)/$${base}-$(VERSION).a; \
+	    fi; \
+	done
+endif
 
