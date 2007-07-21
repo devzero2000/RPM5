@@ -16,6 +16,7 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/misc \
 	@WITH_DB_CPPFLAGS@ \
 	@WITH_ZLIB_CPPFLAGS@ \
+	@WITH_LUA_CPPFLAGS@ \
 	@WITH_FILE_CPPFLAGS@
 
 pkgincdir = $(pkgincludedir)$(WITH_PATH_VERSIONED_SUFFIX)

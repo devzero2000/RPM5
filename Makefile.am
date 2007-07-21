@@ -30,6 +30,7 @@ endif
 SUBDIRS += \
 	@WITH_DB_SUBDIR@ \
 	@WITH_ZLIB_SUBDIR@ \
+	@WITH_LUA_SUBDIR@ \
 	@WITH_FILE_SUBDIR@ \
 	misc \
 	rpmio \
@@ -53,6 +54,7 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/misc \
 	@WITH_DB_CPPFLAGS@ \
 	@WITH_ZLIB_CPPFLAGS@ \
+	@WITH_LUA_CPPFLAGS@ \
 	@WITH_FILE_CPPFLAGS@
 
 myLDADD = \
