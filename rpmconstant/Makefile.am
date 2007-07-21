@@ -2,6 +2,8 @@
 
 AUTOMAKE_OPTIONS = 1.4 foreign
 
+EXTRA_DIST = rpmh2tbl
+
 LINT = splint
 
 AM_CPPFLAGS = \
