@@ -1030,6 +1030,7 @@ static int parseForSimple(/*@unused@*/Spec spec, Package pkg, char * buf,
 		ddir = rpmGetPath("%{_docdir}/", fmt, NULL);
 		strcpy(buf, ddir);
 		ddir = _free(ddir);
+		fmt = _free(fmt);
 	    }
 
 	/* XXX FIXME: this is easy to do as macro expansion */
