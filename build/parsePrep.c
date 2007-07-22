@@ -54,7 +54,7 @@ static int checkOwners(const char * urlfn)
     return 0;
 }
 
-#ifdef	DYING
+#ifndef	DYING
 /**
  * Expand %patchN macro into %prep scriptlet.
  * @param spec		build info
@@ -467,7 +467,7 @@ static int doSetupMacro(Spec spec, char *line)
     return 0;
 }
 
-#ifdef	DYING
+#ifndef	DYING
 /**
  * Parse %patch line.
  * @param spec		build info
@@ -756,7 +756,7 @@ int parsePrep(Spec spec, int verify)
 /*@-boundsread@*/
 	if (! strncmp(cp, "%setup", sizeof("%setup")-1)) {
 	    res = doSetupMacro(spec, cp);
-#ifdef	DYING
+#ifndef	DYING
 	} else if (! strncmp(cp, "%patch", sizeof("%patch")-1)) {
 	    res = doPatchMacro(spec, cp);
 #endif

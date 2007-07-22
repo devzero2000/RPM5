@@ -1134,12 +1134,15 @@ doFoo(MacroBuf mb, int negate, const char * f, size_t fn,
 	buf[gn] = '\0';
 	(void) expandU(mb, buf, sizeof(buf));
     }
+#ifdef	NOTYET
     if (fn > 5 && STREQ("patch", f, 5) && xisdigit(f[5])) {
 	for ( c = 5 ; c < fn-1 && f[c] == '0' && xisdigit(f[c+1]) ; c++ ) ; /* Skip leading zeros */
 	b = buf;
 	be = stpncpy( stpcpy(b, "%patch -P "), f+c, fn-c);
 	*be = '\0';
-    } else if (STREQ("basename", f, fn)) {
+    } else
+#endif
+    if (STREQ("basename", f, fn)) {
 	if ((b = strrchr(buf, '/')) == NULL)
 	    b = buf;
 	else
@@ -1479,6 +1482,7 @@ expandMacro(MacroBuf mb)
 	}
 #endif
 
+#ifdef	NOTYET
 	/* Rewrite "%patchNN ..." as "%patch -P NN ..." and expand. */
 	if (lastc != NULL && fn > 5 && STREQ("patch", f, 5) && xisdigit(f[5])) {
 		/*@-internalglobs@*/ /* FIX: verbose may be set */
@@ -1487,6 +1491,7 @@ expandMacro(MacroBuf mb)
 		s = lastc;
 		continue;
 	}
+#endif
 
 	/* XXX necessary but clunky */
 	if (STREQ("basename", f, fn) ||

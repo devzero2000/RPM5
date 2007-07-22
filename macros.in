@@ -387,7 +387,7 @@ package or when debugging this package.\
 # a file and aplly using patch(1).
 #
 
-%patch(b:p:P:REz:F:d:) \
+%Xpatch(b:p:P:REz:F:d:) \
 %define patch_file	%{P:%{-P:%{-P*}}%{!-P:%%PATCH0}} \
 %define patch_suffix	%{-b:-b --suffix %{-b*}}%{-z:--suffix %{-z*}}
   echo "Patch #%{-P:%{-P*}}%{!-P:0} (%{basename:%patch_file}):" \
