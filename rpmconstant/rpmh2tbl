@@ -1,3 +1,4 @@
+#!perl
 ##- Nanar <nanardon@zarb.org>
 ##-
 ##- This program is free software; you can redistribute it and/or modify
@@ -39,8 +40,8 @@ my %file_const = (
         '^(RPMFILE_STATE_[\w_]+)' => 'rpmfileState',
         '^(RPM_MACHTABLE_[\w_]+)' => 'rpm_machtable',
         '^(RPMPROB_FILTER_[\w_]+)' => 'rpmprobFilterFlags',
-        '^(FA_[\w_]+)' => 'fileAction',
-        '^(PIPE|CDEV|XDIR|BDEV|REG|LINK|SOCK)$' => 'fileTypes',
+        '^(FA_[\w_]+)' => 'rpmfileAction',
+        '^(PIPE|CDEV|XDIR|BDEV|REG|LINK|SOCK)$' => 'rpmfileTypes',
         '^(RPMTRANS_FLAG_[\w_]+)' => 'rpmtransFlags',
         '^(INSTALL_[\w_]+)' => 'rpmInstallInterfaceFlags',
         '^(UNINSTALL_[\w_]+)' => 'rpmEraseInterfaceFlags',
@@ -57,7 +58,7 @@ my %file_const = (
         '^(RPMMIRE_[\w_]+)' => 'rpmMireMode',
     },
     'header.h' => {
-        '^(HEADER_MAGIC_[\w_]+)' => 'hMagic',
+        '^(HEADER_MAGIC_[\w_]+)' => 'rpmhMagic',
         '^(RPM_[\w]+)_TYPE$' => 'rpmTagType',
     },
     'rpmbuild.h' => {
@@ -93,7 +94,7 @@ my %tableprefix = (
     rpmParseState => 'PART_',
     rpmBuildFlags => 'RPMBUILD_',
     rpmTagType => 'RPM_',
-    hMagic => '',
+    rpmhMagic => '',
     rpmMireMode => 'RPMMIRE_',
     rpmsenseflags => 'RPMSENSE_',
     rpmtsTransFlag => 'RPMVSF_',
@@ -105,8 +106,8 @@ my %tableprefix = (
     rpmfileState => 'RPMFILE_',
     rpm_machtable => 'RPM_MACHTABLE_',
     rpmprobFilterFlags => 'RPMPROB_FILTER_',
-    fileAction => 'FA_',
-    fileTypes => '',
+    rpmfileAction => 'FA_',
+    rpmfileTypes => '',
     rpmtransFlags => 'RPMTRANS_FLAG_',
     rpmInstallInterfaceFlags => 'INSTALL_',
     rpmEraseInterfaceFlags => 'UNINSTALL_',
