@@ -36,7 +36,6 @@
 #define	xisalnum(_c)		isalnum(_c)
 #define	xisalpha(_c)		isalpha(_c)
 #define	xisdigit(_c)		isdigit(_c)
-#
 
 typedef	FILE * FD_t;
 #define Fopen(_path, _fmode)	fopen(_path, "r");
