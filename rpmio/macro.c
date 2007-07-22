@@ -1373,9 +1373,6 @@ expandMacro(MacroBuf mb)
 		default:
 			/*@innerbreak@*/ break;
 		}
-		/* Reset to end-of-macro-name span. */
-		for (fe = f; (c = *fe) && (xisalnum(c) || c == '_');)
-			fe++;
 		/*@switchbreak@*/ break;
 	}
 
@@ -1545,11 +1542,6 @@ expandMacro(MacroBuf mb)
 		} else
 		if (me && me->body && *me->body) { /* Expand %{?f}/%{?f*} */
 			rc = expandT(mb, me->body, strlen(me->body));
-		}
-		/* Append %{?_foo/bar}. */
-		if (!g && se[-1] == '}' && *fe == '/') {
-			while ((c = *fe++) && fe < se)
-				SAVECHAR(mb, c);
 		}
 		s = se;
 		continue;

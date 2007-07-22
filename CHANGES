@@ -4,7 +4,6 @@
     - jbj: perl.prov fiddles (#249135).
     - jbj: rescuscitate rpm-python, include <rpmio.h> explicitly.
     - jbj: adopt rpm.org signal handling <pmatlai@redhat.com>
-    - jbj: add %{?dir/file} as shorthand for %{?dir:%{dir}/file}.
     - jbj: fix a --import memory leak.
     - rse: unbreak big-endian handling in memory and cryptography functions by Autoconf providing WORDS_BIGENDIAN and fixing usage
     - rse: cleanup and fix the code to compile under *non*-GCC compilers (e.g. Sun Studio and Intel C/C++)
