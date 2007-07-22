@@ -861,7 +861,7 @@ enterChroot(dbi);
 	rpmMessage(RPMMESS_DEBUG, _("closed   sql db         %s\n"),
 		dbi->dbi_subfile);
 
-#if defined(MAYBE) /* XXX should sqlite and BDB have different semantics? *?
+#if defined(MAYBE) /* XXX should SQLite and BDB have different semantics? */
 	if (dbi->dbi_temporary && !(dbi->dbi_eflags & DB_PRIVATE)) {
 	    const char * dbhome = NULL;
 	    urltype ut = urlPath(dbi->dbi_home, &dbhome);
