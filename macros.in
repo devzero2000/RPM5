@@ -384,7 +384,7 @@ package or when debugging this package.\
 
 #
 # The patch macro writes 1 line of shell code to (optionally) uncompress
-# a file and aplly using patch(1).
+# a file and apply using patch(1).
 #
 
 %Xpatch(b:p:P:REz:F:d:) \
