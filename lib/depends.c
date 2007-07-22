@@ -551,7 +551,7 @@ static int unsatisfiedDepend(rpmts ts, rpmds dep, int adding)
     int rc;
     int xx;
     int retries = 10;
-    char *sysinfo_path;
+    static char *sysinfo_path = NULL;;
 
     if ((Name = rpmdsN(dep)) == NULL)
 	return 0;	/* XXX can't happen */
@@ -855,10 +855,12 @@ retry:
     }
 
     /* Search system configured provides. */
-    sysinfo_path = rpmExpand("%{?_rpmds_sysinfo_path}", NULL);
-    if (!(sysinfo_path != NULL && *sysinfo_path == '/')) {
-        sysinfo_path = _free(sysinfo_path);
-        sysinfo_path = xstrdup(SYSCONFIGDIR "/sysinfo");
+    if (sysinfo_path == NULL) {
+	sysinfo_path = rpmExpand("%{?_rpmds_sysinfo_path}", NULL);
+	if (!(sysinfo_path != NULL && *sysinfo_path == '/')) {
+	    sysinfo_path = _free(sysinfo_path);
+	    sysinfo_path = xstrdup(SYSCONFIGDIR "/sysinfo");
+	}
     }
     if (!rpmioAccess(sysinfo_path, NULL, R_OK)) {
 #ifdef	NOTYET	/* XXX just sysinfo Provides: for now. */
