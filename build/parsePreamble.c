@@ -377,7 +377,7 @@ static int doIcon(Spec spec, Header h)
 	goto exit;
     }
 
-    Lurlfn = rpmGenPath(NULL, "%{?_icondir/}", sp->source);
+    Lurlfn = rpmGenPath(NULL, "%{_icondir}/", sp->source);
 
     fn = NULL;
     urltype = urlPath(Lurlfn, &fn);
