@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - rse: provide a first cut for an librpmconstant.vers ld(1) version script
     - jbj: (re-)add %{?dir/file} as shorthand for %{?dir:%{dir}/file}.
     - jbj: reapply 2.127 with more careful rpmExpand() fix.
     - jbj: scale _macro_BUFSIZE as 2 * BUFSIZ (16384) everywhere but rpmExpand()
