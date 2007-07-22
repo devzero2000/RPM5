@@ -1145,7 +1145,6 @@ doFoo(MacroBuf mb, int negate, const char * f, size_t fn,
 	buf[gn] = '\0';
 	(void) expandU(mb, buf, bufn);
     }
-#ifdef	NOTYET
     if (fn > 5 && STREQ("patch", f, 5) && xisdigit(f[5])) {
 	/* Skip leading zeros */
 	for (c = 5; c < fn-1 && f[c] == '0' && xisdigit(f[c+1]);)
@@ -1153,9 +1152,7 @@ doFoo(MacroBuf mb, int negate, const char * f, size_t fn,
 	b = buf;
 	be = stpncpy( stpcpy(b, "%patch -P "), f+c, fn-c);
 	*be = '\0';
-    } else
-#endif
-    if (STREQ("basename", f, fn)) {
+    } else if (STREQ("basename", f, fn)) {
 	if ((b = strrchr(buf, '/')) == NULL)
 	    b = buf;
 	else
@@ -1254,10 +1251,9 @@ expandMacro(MacroBuf mb)
     MacroEntry *mep;
     MacroEntry me;
     const char *s = mb->s, *se;
-    const char *e, *ee;
     const char *f, *fe;
     const char *g, *ge;
-    size_t en, fn, gn;
+    size_t fn, gn;
     char *t = mb->t;	/* save expansion pointer for printExpand */
     int c;
     int rc = 0;
@@ -1293,7 +1289,6 @@ expandMacro(MacroBuf mb)
 	}
 
 	/* Expand next macro */
-	e = ee = NULL;
 	f = fe = NULL;
 	g = ge = NULL;
 	if (mb->depth > 1)	/* XXX full expansion for outermost level */
@@ -1388,16 +1383,10 @@ expandMacro(MacroBuf mb)
 		default:
 			/*@innerbreak@*/ break;
 		}
-		/* Reset to end-of-macro-name span. */
-		for (e = f, ee = e; (c = *ee) && (xisalnum(c) || c == '_');)
-			ee++;
 		/*@switchbreak@*/ break;
 	}
 
 	/* XXX Everything below expects fe > f */
-	if (!e) e = f;
-	if (!ee) ee = fe;
-	en = (ee - e);
 	fn = (fe - f);
 	gn = (ge - g);
 	if ((fe - f) <= 0) {
@@ -1500,7 +1489,6 @@ expandMacro(MacroBuf mb)
 	}
 #endif
 
-#ifdef	NOTYET
 	/* Rewrite "%patchNN ..." as "%patch -P NN ..." and expand. */
 	if (lastc != NULL && fn > 5 && STREQ("patch", f, 5) && xisdigit(f[5])) {
 		/*@-internalglobs@*/ /* FIX: verbose may be set */
@@ -1509,7 +1497,6 @@ expandMacro(MacroBuf mb)
 		s = lastc;
 		continue;
 	}
-#endif
 
 	/* XXX necessary but clunky */
 	if (STREQ("basename", f, fn) ||
@@ -1531,7 +1518,7 @@ expandMacro(MacroBuf mb)
 	}
 
 	/* Expand defined macros */
-	mep = findEntry(mb->mc, e, en);
+	mep = findEntry(mb->mc, f, fn);
 	me = (mep ? *mep : NULL);
 
 	/* XXX Special processing for flags */
@@ -1549,11 +1536,6 @@ expandMacro(MacroBuf mb)
 		} else
 		if (me && me->body && *me->body) {/* Expand %{-f}/%{-f*} */
 			rc = expandT(mb, me->body, strlen(me->body));
-		}
-		/* Append %{?_foo/bar}. */
-		if (!g && se[-1] == '}' && *ee == '/') {
-			while ((c = *ee++) && ee < se)
-				SAVECHAR(mb, c);
 		}
 		s = se;
 		continue;
