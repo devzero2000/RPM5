@@ -1,4 +1,8 @@
 4.5 -> 5.0:
+    - jbj: reapply 2.127 with more careful rpmExpand() fix.
+    - jbj: scale _macro_BUFSIZE as 2 * BUFSIZ (16384) everywhere but rpmExpand()
+    - jbj: use _macro_BUFSIZ, not compiled in BUFSIZ, to size expansion targets.
+    - jbj: enable %{dirname:...} macro primitive.
     - nanardon: add the librpmconstant library which provides RPM API constants (usually to language bindings)
     - jbj: rescuscitate rpm-perl, include <rpmio.h> explicitly.
     - jbj: perl.prov fiddles (#249135).
