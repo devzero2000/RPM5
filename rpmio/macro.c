@@ -1392,8 +1392,6 @@ expandMacro(MacroBuf mb)
 	}
 
 	/* XXX Everything below expects fe > f */
-	if (!e) e = f;
-	if (!ee) ee = fe;
 	en = (ee - e);
 	fn = (fe - f);
 	gn = (ge - g);
