@@ -1691,6 +1691,7 @@ static int addFile(FileList fl, const char * diskURL,
     const char *fileUname;
     const char *fileGname;
     char *lang;
+    int rc = 0;
     
     /* Path may have prepended buildRootURL, so locate the original filename. */
     /*
@@ -1745,7 +1746,8 @@ static int addFile(FileList fl, const char * diskURL,
 	    rpmError(RPMERR_BADSPEC, _("File doesn't match prefix (%s): %s\n"),
 		     fl->prefix, fileURL);
 	    fl->processingFailed = 1;
-	    return RPMERR_BADSPEC;
+	    rc = RPMERR_BADSPEC;
+	    goto exit;
 	}
     }
 
@@ -1768,13 +1770,15 @@ static int addFile(FileList fl, const char * diskURL,
 	} else if (Lstat(diskURL, statp)) {
 	    rpmError(RPMERR_BADSPEC, _("File not found: %s\n"), diskURL);
 	    fl->processingFailed = 1;
-	    return RPMERR_BADSPEC;
+	    rc = RPMERR_BADSPEC;
+	    goto exit;
 	}
     }
 
     if ((! fl->isDir) && S_ISDIR(statp->st_mode)) {
 /*@-nullstate@*/ /* FIX: fl->buildRootURL may be NULL */
-	return recurseDir(fl, diskURL);
+	rc = recurseDir(fl, diskURL);
+	goto exit;
 /*@=nullstate@*/
     }
 
@@ -1883,9 +1887,10 @@ static int addFile(FileList fl, const char * diskURL,
 
     fl->fileListRecsUsed++;
     fl->fileCount++;
-/*@i@*/ fn = _free(fn);
 
-    return 0;
+exit:
+/*@i@*/ fn = _free(fn);
+    return rc;
 }
 /*@=boundswrite@*/
 
