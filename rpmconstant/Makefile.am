@@ -2,7 +2,7 @@
 
 AUTOMAKE_OPTIONS = 1.4 foreign
 
-EXTRA_DIST = rpmh2tbl
+EXTRA_DIST = librpmbuild.vers rpmh2tbl
 
 LINT = splint
 
