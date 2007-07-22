@@ -1,6 +1,6 @@
 4.5 -> 5.0:
+    - jbj: adjust signal polling for python exit purposes <pmatlai@redhat.com>.
     - rse: provide a first cut for an librpmconstant.vers ld(1) version script
-    - jbj: (re-)add %{?dir/file} as shorthand for %{?dir:%{dir}/file}.
     - jbj: reapply 2.127 with more careful rpmExpand() fix.
     - jbj: scale _macro_BUFSIZE as 2 * BUFSIZ (16384) everywhere but rpmExpand()
     - jbj: use _macro_BUFSIZ, not compiled in BUFSIZ, to size expansion targets.
@@ -9,7 +9,7 @@
     - jbj: rescuscitate rpm-perl, include <rpmio.h> explicitly.
     - jbj: perl.prov fiddles (#249135).
     - jbj: rescuscitate rpm-python, include <rpmio.h> explicitly.
-    - jbj: adopt rpm.org signal handling <pmatlai@redhat.com>
+    - jbj: adopt rpm.org signal handling <pmatlai@redhat.com>.
     - jbj: fix a --import memory leak.
     - rse: unbreak big-endian handling in memory and cryptography functions by Autoconf providing WORDS_BIGENDIAN and fixing usage
     - rse: cleanup and fix the code to compile under *non*-GCC compilers (e.g. Sun Studio and Intel C/C++)
