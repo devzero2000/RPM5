@@ -1376,7 +1376,7 @@ expandMacro(MacroBuf mb)
 			}
 		}
 		/* Find end-of-expansion, handle %{foo:bar} expansions. */
-		for (fe = f; (c = *fe) && !strchr(":}", c);)
+		for (fe = f; (c = *fe) && !strchr(" :}", c);)
 			fe++;
 		switch (c) {
 		case ':':
