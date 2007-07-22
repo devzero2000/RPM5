@@ -940,6 +940,7 @@ int packageBinaries(Spec spec)
 	rc = writeRPM(&pkg->header, NULL, fn, RPMLEAD_BINARY,
 		    csa, spec->passPhrase, NULL);
 
+	csa->cpioList->te = _free(csa->cpioList->te);	/* XXX memory leak */
 	csa->cpioList = rpmfiFree(csa->cpioList);
 	csa->cpioFdIn = fdFree(csa->cpioFdIn, "init (packageBinaries)");
 	/*@=type@*/
@@ -986,6 +987,7 @@ int packageSources(Spec spec)
 	rc = writeRPM(&spec->sourceHeader, &spec->sourcePkgId, fn, RPMLEAD_SOURCE,
 		csa, spec->passPhrase, &(spec->cookie));
 
+	csa->cpioList->te = _free(csa->cpioList->te);	/* XXX memory leak */
 	csa->cpioList = rpmfiFree(csa->cpioList);
 	csa->cpioFdIn = fdFree(csa->cpioFdIn, "init (packageSources)");
 	/*@=type@*/

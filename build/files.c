@@ -1563,14 +1563,15 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
     a = (char *)(fi->apath + fi->fc);
     *a = '\0';
 
+    fi->actions = _free(fi->actions);			/* XXX memory leak */
     fi->actions = xcalloc(sizeof(*fi->actions), fi->fc);
     fi->fmapflags = xcalloc(sizeof(*fi->fmapflags), fi->fc);
     fi->astriplen = 0;
     if (fl->buildRootURL)
 	fi->astriplen = strlen(fl->buildRootURL);
     fi->striplen = 0;
-    fi->fuser = NULL;
-    fi->fgroup = NULL;
+    fi->fuser = headerFreeData(fi->fuser, -1);		/* XXX memory leak */
+    fi->fgroup = headerFreeData(fi->fgroup, -1);	/* XXX memory leak */
 
     /* Make the cpio list */
     if (fi->dil != NULL)	/* XXX can't happen */
