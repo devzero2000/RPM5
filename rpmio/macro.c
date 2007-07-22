@@ -133,7 +133,7 @@ int print_expand_trace = _PRINT_EXPAND_TRACE;
 #define	MACRO_CHUNK_SIZE	16
 
 /* Size of expansion buffers. */
-static size_t _macro_BUFSIZ = 2 * BUFSIZ;
+static size_t _macro_BUFSIZ = 4 * BUFSIZ;
 
 /* forward ref */
 static int expandMacro(MacroBuf mb)
