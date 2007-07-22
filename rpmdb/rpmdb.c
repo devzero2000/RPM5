@@ -848,7 +848,7 @@ exit:
 }
 
 #define	_DB_ROOT	"/"
-#define	_DB_HOME	"%{?_dbpath/}"
+#define	_DB_HOME	"%{?_dbpath}"
 #define	_DB_FLAGS	0
 #define _DB_MODE	0
 #define _DB_PERMS	0644
