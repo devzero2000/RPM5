@@ -13,6 +13,6 @@ Description: RPM Package Manager
 Version: @PACKAGE_VERSION@
 URL: http://rpm5.org/
 Cflags: -I${includedir}/rpm
-Libs: -L${libdir} -lrpmbuild${suffix} -lrpm${suffix} -lrpmdb${suffix} -lrpmio${suffix} -lrpmmisc${suffix}
+Libs: -L${libdir} -lrpmbuild${suffix} -lrpm${suffix} -lrpmdb${suffix} -lrpmio${suffix} -lrpmconstant${suffix} -lrpmmisc${suffix}
 Libs.private: @LDFLAGS@ @LIBS@
 
