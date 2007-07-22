@@ -4,9 +4,6 @@
     - jbj: perl.prov fiddles (#249135).
     - jbj: rescuscitate rpm-python, include <rpmio.h> explicitly.
     - jbj: adopt rpm.org signal handling <pmatlai@redhat.com>
-    - jbj: unbreak macros by using [e,ee) and en as count. todo: look fe usage.
-    - jbj: use _macro_BUFSIZ, not compiled in BUFSIZ, to size expansion targets.
-    - jbj: enable %{dirname:...} macro primitive.
     - jbj: add %{?dir/file} as shorthand for %{?dir:%{dir}/file}.
     - jbj: fix a --import memory leak.
     - rse: unbreak big-endian handling in memory and cryptography functions by Autoconf providing WORDS_BIGENDIAN and fixing usage

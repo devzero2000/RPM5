@@ -132,8 +132,6 @@ int print_expand_trace = _PRINT_EXPAND_TRACE;
 
 #define	MACRO_CHUNK_SIZE	16
 
-static size_t _macro_BUFSIZ = 16 * BUFSIZ;
-
 /* forward ref */
 static int expandMacro(MacroBuf mb)
 	/*@globals rpmGlobalMacroContext,
@@ -604,19 +602,18 @@ doShellEscape(MacroBuf mb, const char * cmd, size_t clen)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem @*/
 	/*@modifies mb, rpmGlobalMacroContext, fileSystem @*/
 {
-    size_t bufn = _macro_BUFSIZ;
-    char * buf = alloca(bufn);
+    char pcmd[BUFSIZ];
     FILE *shf;
     int rc;
     int c;
 
-    strncpy(buf, cmd, clen);
-    buf[clen] = '\0';
-    rc = expandU(mb, buf, bufn);
+    strncpy(pcmd, cmd, clen);
+    pcmd[clen] = '\0';
+    rc = expandU(mb, pcmd, sizeof(pcmd));
     if (rc)
 	return rc;
 
-    if ((shf = popen(buf, "r")) == NULL)
+    if ((shf = popen(pcmd, "r")) == NULL)
 	return 1;
     while(mb->nb > 0 && (c = fgetc(shf)) != EOF)
 	SAVECHAR(mb, c);
@@ -645,9 +642,7 @@ doDefine(MacroBuf mb, /*@returned@*/ const char * se, int level, int expandbody)
 	/*@modifies mb, rpmGlobalMacroContext @*/
 {
     const char *s = se;
-    size_t bufn = _macro_BUFSIZ;
-    char *buf = alloca(bufn);
-    char *n = buf, *ne;
+    char buf[BUFSIZ], *n = buf, *ne;
     char *o = NULL, *oe;
     char *b, *be;
     int c;
@@ -757,7 +752,7 @@ doDefine(MacroBuf mb, /*@returned@*/ const char * se, int level, int expandbody)
     }
 
 /*@-modfilesys@*/
-    if (expandbody && expandU(mb, b, (&buf[bufn] - b))) {
+    if (expandbody && expandU(mb, b, (&buf[sizeof(buf)] - b))) {
 	rpmError(RPMERR_BADSPEC, _("Macro %%%s failed to expand\n"), n);
 	return se;
     }
@@ -784,8 +779,7 @@ doUndefine(MacroContext mc, /*@returned@*/ const char * se)
 	/*@modifies mc, rpmGlobalMacroContext @*/
 {
     const char *s = se;
-    char *buf = alloca(_macro_BUFSIZ);
-    char *n = buf, *ne = n;
+    char buf[BUFSIZ], *n = buf, *ne = n;
     int c;
 
     COPYNAME(ne, s, c);
@@ -952,9 +946,7 @@ grabArgs(MacroBuf mb, const MacroEntry me, /*@returned@*/ const char * se,
 	/*@globals rpmGlobalMacroContext @*/
 	/*@modifies mb, rpmGlobalMacroContext @*/
 {
-    size_t bufn = _macro_BUFSIZ;
-    char *buf = alloca(bufn);
-    char *b, *be;
+    char buf[BUFSIZ], *b, *be;
     char aname[16];
     const char *opts, *o;
     int argc = 0;
@@ -1004,7 +996,7 @@ grabArgs(MacroBuf mb, const MacroEntry me, /*@returned@*/ const char * se,
 
 #ifdef NOTYET
     /* XXX if macros can be passed as args ... */
-    expandU(mb, buf, bufn);
+    expandU(mb, buf, sizeof(buf));
 #endif
 
     /* Build argv array */
@@ -1107,12 +1099,11 @@ doOutput(MacroBuf mb, int waserror, const char * msg, size_t msglen)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem @*/
 	/*@modifies mb, rpmGlobalMacroContext, fileSystem @*/
 {
-    size_t bufn = _macro_BUFSIZ + msglen;
-    char *buf = alloca(bufn);
+    char buf[BUFSIZ];
 
     strncpy(buf, msg, msglen);
     buf[msglen] = '\0';
-    (void) expandU(mb, buf, bufn);
+    (void) expandU(mb, buf, sizeof(buf));
     if (waserror)
 	rpmError(RPMERR_BADSPEC, "%s\n", buf);
     else
@@ -1134,21 +1125,17 @@ doFoo(MacroBuf mb, int negate, const char * f, size_t fn,
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies mb, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
-    size_t bufn = _macro_BUFSIZ + fn + gn;
-    char * buf = alloca(bufn);
-    char *b = NULL, *be;
+    char buf[BUFSIZ], *b = NULL, *be;
     int c;
 
     buf[0] = '\0';
     if (g != NULL) {
 	strncpy(buf, g, gn);
 	buf[gn] = '\0';
-	(void) expandU(mb, buf, bufn);
+	(void) expandU(mb, buf, sizeof(buf));
     }
     if (fn > 5 && STREQ("patch", f, 5) && xisdigit(f[5])) {
-	/* Skip leading zeros */
-	for (c = 5; c < fn-1 && f[c] == '0' && xisdigit(f[c+1]);)
-		c++;
+	for ( c = 5 ; c < fn-1 && f[c] == '0' && xisdigit(f[c+1]) ; c++ ) ; /* Skip leading zeros */
 	b = buf;
 	be = stpncpy( stpcpy(b, "%patch -P "), f+c, fn-c);
 	*be = '\0';
@@ -1157,10 +1144,13 @@ doFoo(MacroBuf mb, int negate, const char * f, size_t fn,
 	    b = buf;
 	else
 	    b++;
+#if NOTYET
+    /* XXX watchout for conflict with %dir */
     } else if (STREQ("dirname", f, fn)) {
 	if ((b = strrchr(buf, '/')) != NULL)
 	    *b = '\0';
 	b = buf;
+#endif
     } else if (STREQ("suffix", f, fn)) {
 	if ((b = strrchr(buf, '.')) != NULL)
 	    b++;
@@ -1503,7 +1493,6 @@ expandMacro(MacroBuf mb)
 
 	/* XXX necessary but clunky */
 	if (STREQ("basename", f, fn) ||
-	    STREQ("dirname", f, fn) ||
 	    STREQ("suffix", f, fn) ||
 	    STREQ("expand", f, fn) ||
 	    STREQ("verbose", f, fn) ||
@@ -2026,8 +2015,7 @@ int
 rpmLoadMacroFile(MacroContext mc, const char * fn)
 {
     FD_t fd = Fopen(fn, "r.fpio");
-    size_t bufn = _macro_BUFSIZ;
-    char *buf = alloca(bufn);
+    char buf[BUFSIZ];
     int rc = -1;
 
     if (fd == NULL || Ferror(fd)) {
@@ -2037,11 +2025,11 @@ rpmLoadMacroFile(MacroContext mc, const char * fn)
 
     /* XXX Assume new fangled macro expansion */
     /*@-mods@*/
-    max_macro_depth = _MAX_MACRO_DEPTH;
+    max_macro_depth = 16;
     /*@=mods@*/
 
     buf[0] = '\0';
-    while(rdcl(buf, bufn, fd) != NULL) {
+    while(rdcl(buf, sizeof(buf), fd) != NULL) {
 	char c, *n;
 
 	n = buf;
@@ -2221,14 +2209,14 @@ rpmExpand(const char *arg, ...)
     const char *s;
     char *t, *te;
     size_t sn, tn;
-    size_t bufn = _macro_BUFSIZ + strlen(arg) + 1;
+    size_t un = 16 * BUFSIZ;
 
     va_list ap;
 
     if (arg == NULL)
 	return xstrdup("");
 
-    t = xmalloc(bufn);
+    t = xmalloc(strlen(arg) + un + 1);
     *t = '\0';
     te = stpcpy(t, arg);
 
@@ -2237,7 +2225,7 @@ rpmExpand(const char *arg, ...)
     while ((s = va_arg(ap, const char *)) != NULL) {
 	sn = strlen(s);
 	tn = (te - t);
-	t = xrealloc(t, tn + sn + bufn + 1);
+	t = xrealloc(t, tn + sn + un + 1);
 	te = t + tn;
 	te = stpcpy(te, s);
     }
@@ -2246,8 +2234,8 @@ rpmExpand(const char *arg, ...)
 
     *te = '\0';
     tn = (te - t);
-    (void) expandMacros(NULL, NULL, t, tn + bufn + 1);
-    t[tn + bufn] = '\0';
+    (void) expandMacros(NULL, NULL, t, tn + un + 1);
+    t[tn + un] = '\0';
     t = xrealloc(t, strlen(t) + 1);
     
     return t;
@@ -2375,8 +2363,7 @@ char *rpmCleanPath(char * path)
 const char *
 rpmGetPath(const char *path, ...)
 {
-    size_t bufn = _macro_BUFSIZ;
-    char *buf = alloca(bufn);
+    char buf[BUFSIZ];
     const char * s;
     char * t, * te;
     va_list ap;
@@ -2396,7 +2383,7 @@ rpmGetPath(const char *path, ...)
     }
     va_end(ap);
 /*@-modfilesys@*/
-    (void) expandMacros(NULL, NULL, buf, bufn);
+    (void) expandMacros(NULL, NULL, buf, sizeof(buf));
 /*@=modfilesys@*/
 
     (void) rpmCleanPath(buf);
@@ -2526,26 +2513,25 @@ const char *testfile = "./test";
 int
 main(int argc, char *argv[])
 {
-    size_t bufn = _macro_BUFSIZ;
-    char *buf = alloca(bufn);
+    char buf[BUFSIZ];
     FILE *fp;
     int x;
 
     rpmInitMacros(NULL, rpmMacrofiles);
 
     if ((fp = fopen(testfile, "r")) != NULL) {
-	while(rdcl(buf, bufn, fp)) {
-	    x = expandMacros(NULL, NULL, buf, bufn);
+	while(rdcl(buf, sizeof(buf), fp)) {
+	    x = expandMacros(NULL, NULL, buf, sizeof(buf));
 	    fprintf(stderr, "%d->%s\n", x, buf);
-	    memset(buf, 0, bufn);
+	    memset(buf, 0, sizeof(buf));
 	}
 	fclose(fp);
     }
 
-    while(rdcl(buf, bufn, stdin)) {
-	x = expandMacros(NULL, NULL, buf, bufn);
+    while(rdcl(buf, sizeof(buf), stdin)) {
+	x = expandMacros(NULL, NULL, buf, sizeof(buf));
 	fprintf(stderr, "%d->%s\n <-\n", x, buf);
-	memset(buf, 0, bufn);
+	memset(buf, 0, sizeof(buf));
     }
     rpmFreeMacros(NULL);
 
