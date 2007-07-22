@@ -861,6 +861,17 @@ enterChroot(dbi);
 	rpmMessage(RPMMESS_DEBUG, _("closed   sql db         %s\n"),
 		dbi->dbi_subfile);
 
+#if defined(MAYBE) /* XXX should sqlite and BDB have different semantics? *?
+	if (dbi->dbi_temporary && !(dbi->dbi_eflags & DB_PRIVATE)) {
+	    const char * dbhome = NULL;
+	    urltype ut = urlPath(dbi->dbi_home, &dbhome);
+	    const char * dbfname = rpmGenPath(dbhome, dbi->dbi_file, NULL);
+	    int xx = (dbfname ? Unlink(dbfname) : 0);
+	    ut = ut; xx = xx;	/* XXX tell gcc to be quiet. */
+	    dbfname = _free(dbfname);
+	}
+#endif
+
 	dbi->dbi_stats = _free(dbi->dbi_stats);
 	dbi->dbi_file = _free(dbi->dbi_file);
 	dbi->dbi_db = _free(dbi->dbi_db);
