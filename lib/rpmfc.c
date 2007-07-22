@@ -1511,7 +1511,7 @@ int rpmfcGenerateDepends(void * specp, void * pkgp)
 
     {	const char * buildRootURL;
 	const char * buildRoot;
-	buildRootURL = rpmGenPath(spec->rootURL, "%{?buildroot/}", NULL);
+	buildRootURL = rpmGenPath(spec->rootURL, "%{?buildroot}", NULL);
 	(void) urlPath(buildRootURL, &buildRoot);
 	if (buildRoot && !strcmp(buildRoot, "/")) buildRoot = NULL;
 	fc->brlen = (buildRoot ? strlen(buildRoot) : 0);
