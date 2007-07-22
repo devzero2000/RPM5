@@ -275,7 +275,7 @@ assert(fi->h != NULL);
 	}
     }
 
-    _sourcedir = rpmGenPath(rpmtsRootDir(ts), "%{?_sourcedir/}", "");
+    _sourcedir = rpmGenPath(rpmtsRootDir(ts), "%{_sourcedir}", "");
     rpmrc = rpmMkdirPath(_sourcedir, "sourcedir");
     if (rpmrc) {
 	rpmrc = RPMRC_FAIL;
@@ -288,7 +288,7 @@ assert(fi->h != NULL);
 	goto exit;
     }
 
-    _specdir = rpmGenPath(rpmtsRootDir(ts), "%{?_specdir/}", "");
+    _specdir = rpmGenPath(rpmtsRootDir(ts), "%{_specdir}", "");
     rpmrc = rpmMkdirPath(_specdir, "specdir");
     if (rpmrc) {
 	rpmrc = RPMRC_FAIL;
@@ -1691,8 +1691,8 @@ psm->te->h = headerLink(fi->h);
 		pkgbn = headerSprintf(fi->h, bfmt,
 					rpmTagTable, rpmHeaderFormats, NULL);
 		bfmt = _free(bfmt);
-		psm->pkgURL = rpmGenPath("%{?_repackage_root/}",
-					 "%{?_repackage_dir/}",
+		psm->pkgURL = rpmGenPath("%{?_repackage_root}",
+					 "%{?_repackage_dir}",
 					pkgbn);
 		pkgbn = _free(pkgbn);
 		(void) urlPath(psm->pkgURL, &psm->pkgfn);
