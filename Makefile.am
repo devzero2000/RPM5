@@ -123,7 +123,7 @@ DBPATH = @DBPATH@
 
 install-data-local:
 	@$(mkinstalldirs) $(DESTDIR)$(DBPATH)
-	@for dir in BUILD RPMS SOURCES SPECS SRPMS ; do\
+	@for dir in BUILD RPMS SOURCES SPECS SRPMS TR; do\
 	    $(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/$$dir;\
 	done
 	@case "@host_cpu@" in \
@@ -160,7 +160,6 @@ install-data-local:
 	*)	$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/@host_cpu@ ;;\
 	esac
 	$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/noarch
-	$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/repackage
 
 .PHONY:	setperms
 setperms:
