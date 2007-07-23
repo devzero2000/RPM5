@@ -194,7 +194,7 @@ struct poptOption rpmBuildPoptTable[] = {
 	N_("remove build tree when done"), NULL},
  { "fsmdebug", '\0', (POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN), &_fsm_debug, -1,
 	N_("debug file state machine"), NULL},
- { "nobuild", '\0', 0, &noBuild,  POPT_NOBUILD,
+ { "nobuild", '\0', 0, NULL, POPT_NOBUILD,
 	N_("do not execute any stages of the build"), NULL },
  { "nodeps", '\0', 0, NULL, RPMCLI_POPT_NODEPS,
 	N_("do not verify build dependencies"), NULL },
