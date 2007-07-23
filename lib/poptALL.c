@@ -355,30 +355,30 @@ struct poptOption rpmcliAllPoptTable[] = {
 	&_wsegfault, 0, NULL, NULL },
 #endif
 
- { "predefine", '\0', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN, 0, POPT_PREDEFINE,
+ { "predefine", '\0', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN, NULL, POPT_PREDEFINE,
 	N_("predefine MACRO with value EXPR"),
 	N_("'MACRO EXPR'") },
- { "define", 'D', POPT_ARG_STRING, 0, 'D',
+ { "define", 'D', POPT_ARG_STRING, NULL, 'D',
 	N_("define MACRO with value EXPR"),
 	N_("'MACRO EXPR'") },
- { "eval", 'E', POPT_ARG_STRING, 0, 'E',
+ { "eval", 'E', POPT_ARG_STRING, NULL, 'E',
 	N_("print macro expansion of EXPR"),
 	N_("'EXPR'") },
  { "macros", '\0', POPT_ARG_STRING, &rpmMacrofiles, 0,
 	N_("read <FILE:...> instead of default file(s)"),
 	N_("<FILE:...>") },
- { "target", '\0', POPT_ARG_STRING, 0,  RPMCLI_POPT_TARGETPLATFORM,
+ { "target", '\0', POPT_ARG_STRING, NULL,  RPMCLI_POPT_TARGETPLATFORM,
         N_("specify target platform"), N_("CPU-VENDOR-OS") },
 
- { "nodigest", '\0', 0, 0, RPMCLI_POPT_NODIGEST,
+ { "nodigest", '\0', 0, NULL, RPMCLI_POPT_NODIGEST,
         N_("don't verify package digest(s)"), NULL },
- { "nohdrchk", '\0', POPT_ARGFLAG_DOC_HIDDEN, 0, RPMCLI_POPT_NOHDRCHK,
+ { "nohdrchk", '\0', POPT_ARGFLAG_DOC_HIDDEN, NULL, RPMCLI_POPT_NOHDRCHK,
         N_("don't verify database header(s) when retrieved"), NULL },
 #if defined(HAVE_LIBIO_H) && defined(_G_IO_IO_FILE_VERSION)
  { "nolibio", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &noLibio, 1,
 	N_("disable use of libio(3) API"), NULL},
 #endif
- { "nosignature", '\0', 0, 0, RPMCLI_POPT_NOSIGNATURE,
+ { "nosignature", '\0', 0, NULL, RPMCLI_POPT_NOSIGNATURE,
         N_("don't verify package signature(s)"), NULL },
 
  { "pipe", '\0', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN, &rpmcliPipeOutput, 0,
@@ -388,7 +388,7 @@ struct poptOption rpmcliAllPoptTable[] = {
 	N_("use ROOT as top level directory"),
 	N_("ROOT") },
 
- { "querytags", '\0', 0, 0, POPT_QUERYTAGS,
+ { "querytags", '\0', 0, NULL, POPT_QUERYTAGS,
         N_("display known query tags"), NULL },
  { "showrc", '\0', 0, NULL, POPT_SHOWRC,
 	N_("display final rpmrc and macro configuration"), NULL },
