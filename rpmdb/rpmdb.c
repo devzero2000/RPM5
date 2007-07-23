@@ -3805,6 +3805,8 @@ static int rpmdbMoveDatabase(const char * prefix,
 		if (stat(ofilename, nst) < 0)
 		    continue;
 
+	    rpmMessage(RPMMESS_DEBUG, _("moving file from \"%s\"\n"), ofilename);
+	    rpmMessage(RPMMESS_DEBUG, _("moving file to   \"%s\"\n"), nfilename);
 	    if ((xx = rename(ofilename, nfilename)) != 0) {
 		rc = 1;
 		continue;
@@ -3820,12 +3822,16 @@ static int rpmdbMoveDatabase(const char * prefix,
 	for (i = 0; i < 16; i++) {
 	    sprintf(ofilename, "%s/%s/__db.%03d", prefix, olddbpath, i);
 	    (void)rpmCleanPath(ofilename);
-	    if (rpmioFileExists(ofilename))
+	    if (rpmioFileExists(ofilename)) {
+		rpmMessage(RPMMESS_DEBUG, _("removing region file \"%s\"\n"), ofilename);
 		xx = unlink(ofilename);
+	    }
 	    sprintf(nfilename, "%s/%s/__db.%03d", prefix, newdbpath, i);
 	    (void)rpmCleanPath(nfilename);
-	    if (rpmioFileExists(nfilename))
+	    if (rpmioFileExists(nfilename)) {
+		rpmMessage(RPMMESS_DEBUG, _("removing region file \"%s\"\n"), nfilename);
 		xx = unlink(nfilename);
+	    }
 	}
 	break;
     case 2:
