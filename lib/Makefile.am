@@ -45,13 +45,21 @@ if HAVE_LD_VERSION_SCRIPT
 librpm_la_LDFLAGS += -Wl,--version-script=$(srcdir)/librpm.vers
 endif
 librpm_la_LIBADD =
+if ENABLE_BUILD_INTLIBDEP
+librpm_la_LIBADD += \
+	$(top_builddir)/rpmdb/librpmdb.la \
+	$(top_builddir)/rpmio/librpmio.la \
+	$(top_builddir)/misc/librpmmisc.la
+endif
 librpm.la: $(librpm_la_OBJECTS) $(librpm_la_DEPENDENCIES) 
 	$(librpm_la_LINK) -rpath $(usrlibdir) $(librpm_la_OBJECTS) $(librpm_la_LIBADD)
 
 install-data-hook:
+if !ENABLE_BUILD_LAFILES
 	-for l in $(usrlib_LTLIBRARIES); do \
 	    rm -f $(DESTDIR)$(usrlibdir)/$${l}; \
 	done
+endif
 if WITH_PATH_VERSIONED
 	-for l in $(usrlib_LTLIBRARIES); do \
 	    base=`echo "$${l}" | sed -e 's;\.la$$;;'`; \

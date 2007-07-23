@@ -206,6 +206,42 @@ AM_CONDITIONAL(
     [HAVE_LD_VERSION_SCRIPT],
     [test ".$have_ld_version_script" = .yes])
 
+dnl # support implicit internal library dependencies
+AC_ARG_ENABLE(
+    [build-intlibdep],
+    AC_HELP_STRING(
+        [--disable-build-intlibdep],
+        [disable use of implicit internal library dependencies]),
+    [ do_build_intlibdep=$enableval ],
+    [ do_build_intlibdep=yes ])
+AM_CONDITIONAL(
+    [ENABLE_BUILD_INTLIBDEP],
+    [test ".$do_build_intlibdep" = .yes])
+
+dnl # support implicit external library dependencies
+AC_ARG_ENABLE(
+    [build-extlibdep],
+    AC_HELP_STRING(
+        [--disable-build-extlibdep],
+        [disable use of implicit external library dependencies]),
+    [ do_build_extlibdep=$enableval ],
+    [ do_build_extlibdep=yes ])
+AM_CONDITIONAL(
+    [ENABLE_BUILD_EXTLIBDEP],
+    [test ".$do_build_extlibdep" = .yes])
+
+dnl # support removal of GNU libtool *.la files
+AC_ARG_ENABLE(
+    [build-lafiles],
+    AC_HELP_STRING(
+        [--disable-build-lafiles],
+        [disable the removal of GNU libtool *.la files on installation]),
+    [ do_build_lafiles=$enableval ],
+    [ do_build_lafiles=yes ])
+AM_CONDITIONAL(
+    [ENABLE_BUILD_LAFILES],
+    [test ".$do_build_lafiles" = .yes])
+
 dnl # FIXME: Linux hack: choose /usr/lib or /usr/lib64 for library installs and linking
 MARK64=
 case "$target" in

@@ -33,15 +33,21 @@ librpmmisc_la_LIBADD = \
 	@WITH_ZLIB_LDFLAGS@ @WITH_ZLIB_LIBS@ \
 	@WITH_LUA_LDFLAGS@  @WITH_LUA_LIBS@ \
 	@WITH_FILE_LDFLAGS@ @WITH_FILE_LIBS@
+if ENABLE_BUILD_EXTLIBDEP
+librpmmisc_la_LIBADD += \
+	$(LDFLAGS) $(LIBS)
+endif
 librpmmisc_la_DEPENDENCIES = \
 	@ALLOCA@
 librpmmisc.la: $(librpmmisc_la_OBJECTS) $(librpmmisc_la_DEPENDENCIES) 
 	$(librpmmisc_la_LINK) -rpath $(usrlibdir) $(librpmmisc_la_OBJECTS) $(librpmmisc_la_LIBADD)
 
 install-data-hook:
+if !ENABLE_BUILD_LAFILES
 	-for l in $(usrlib_LTLIBRARIES); do \
 	    rm -f $(DESTDIR)$(usrlibdir)/$${l}; \
 	done
+endif
 if WITH_PATH_VERSIONED
 	-for l in $(usrlib_LTLIBRARIES); do \
 	    base=`echo "$${l}" | sed -e 's;\.la$$;;'`; \

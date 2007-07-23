@@ -1,4 +1,7 @@
 4.5 -> 5.0:
+    - rse: use implicit internal library dependencies by default, but allow disabling via --disable-build-intlibdep
+    - rse: use implicit external library dependencies by default, but allow disabling via --disable-build-extlibdep
+    - rse: remove GNU libtool *.la files during installation only if --disable-build-lafiles is used
     - rse: on --rebuilddb remove (currently) unused database files to avoid mixed formats on backend upgrades and switches
     - jbj: adjust signal polling for python exit purposes <pmatlai@redhat.com>.
     - rse: provide a first cut for an librpmconstant.vers ld(1) version script

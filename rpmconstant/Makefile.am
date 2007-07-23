@@ -52,9 +52,11 @@ rpmconstanttbl.c: $(srcdir)/rpmh2tbl
 	$(PERL) $(srcdir)/rpmh2tbl $(myHEADERS) >$@
 
 install-data-hook:
+if !ENABLE_BUILD_LAFILES
 	-for l in $(usrlib_LTLIBRARIES); do \
 	    rm -f $(DESTDIR)$(usrlibdir)/$${l}; \
 	done
+endif
 if WITH_PATH_VERSIONED
 	-for l in $(usrlib_LTLIBRARIES); do \
 	    base=`echo "$${l}" | sed -e 's;\.la$$;;'`; \

@@ -56,13 +56,19 @@ if HAVE_LD_VERSION_SCRIPT
 librpmio_la_LDFLAGS += -Wl,--version-script=$(srcdir)/librpmio.vers
 endif
 librpmio_la_LIBADD =
+if ENABLE_BUILD_INTLIBDEP
+librpmio_la_LIBADD += \
+	$(top_builddir)/misc/librpmmisc.la
+endif
 librpmio.la: $(librpmio_la_OBJECTS) $(librpmio_la_DEPENDENCIES) 
 	$(librpmio_la_LINK) -rpath $(usrlibdir) $(librpmio_la_OBJECTS) $(librpmio_la_LIBADD)
 
 install-data-hook:
+if !ENABLE_BUILD_LAFILES
 	-for l in $(usrlib_LTLIBRARIES); do \
 	    rm -f $(DESTDIR)$(usrlibdir)/$${l}; \
 	done
+endif
 if WITH_PATH_VERSIONED
 	-for l in $(usrlib_LTLIBRARIES); do \
 	    base=`echo "$${l}" | sed -e 's;\.la$$;;'`; \
