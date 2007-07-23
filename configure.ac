@@ -793,7 +793,7 @@ AC_MSG_HEADER([THIRD-PARTY LIBRARIES (2/2)])
 dnl # ZLib
 RPM_CHECK_LIB(
     [ZLib], [zlib],
-    [z gz], [gzread], [zlib.h],
+    [rpmz z gz], [gzread], [zlib.h],
     [yes,internal:none], [zlib],
     [ AC_CHECK_FUNC(gzseek)
       if test ".$RPM_CHECK_LIB_LOCATION" = .internal; then
