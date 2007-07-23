@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - rse: on --rebuilddb remove (currently) unused database files to avoid mixed formats on backend upgrades and switches
     - jbj: adjust signal polling for python exit purposes <pmatlai@redhat.com>.
     - rse: provide a first cut for an librpmconstant.vers ld(1) version script
     - jbj: reapply 2.127 with more careful rpmExpand() fix.

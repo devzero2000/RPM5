@@ -3792,10 +3792,16 @@ static int rpmdbMoveDatabase(const char * prefix,
 	    base = tagName(rpmtag);
 	    sprintf(ofilename, "%s/%s/%s", prefix, olddbpath, base);
 	    (void)rpmCleanPath(ofilename);
-	    if (!rpmioFileExists(ofilename))
-		continue;
 	    sprintf(nfilename, "%s/%s/%s", prefix, newdbpath, base);
 	    (void)rpmCleanPath(nfilename);
+
+	    if (!rpmioFileExists(ofilename)) {
+	        if (rpmioFileExists(nfilename)) {
+		    rpmMessage(RPMMESS_DEBUG, _("removing file \"%s\"\n"), nfilename);
+		    xx = unlink(nfilename);
+                }
+		continue;
+            }
 
 	    /*
 	     * Get uid/gid/mode/mtime. If old doesn't exist, use new.
