@@ -286,8 +286,6 @@ struct poptOption rpmInstallPoptTable[] = {
  { "fileconflicts", '\0', POPT_BIT_CLR, &rpmIArgs.probFilter,
 	(RPMPROB_FILTER_REPLACEOLDFILES | RPMPROB_FILTER_REPLACENEWFILES),
 	N_("detect file conflicts between packages"), NULL},
- { "force", '\0', 0, NULL, RPMCLI_POPT_FORCE,
-	N_("short hand for --replacepkgs --replacefiles"), NULL},
 
  { "freshen", 'F', POPT_BIT_SET, &rpmIArgs.installInterfaceFlags,
 	(INSTALL_UPGRADE|INSTALL_FRESHEN|INSTALL_INSTALL),

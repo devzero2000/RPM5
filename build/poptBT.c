@@ -192,8 +192,6 @@ struct poptOption rpmBuildPoptTable[] = {
 
  { "clean", '\0', 0, 0, POPT_RMBUILD,
 	N_("remove build tree when done"), NULL},
- { "force", '\0', POPT_ARGFLAG_DOC_HIDDEN, &rpmBTArgs.force, RPMCLI_POPT_FORCE,
-        N_("ignore ExcludeArch: directives from spec file"), NULL},
  { "fsmdebug", '\0', (POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN), &_fsm_debug, -1,
 	N_("debug file state machine"), NULL},
  { "nobuild", '\0', 0, &noBuild,  POPT_NOBUILD,
