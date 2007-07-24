@@ -165,7 +165,7 @@ if [ ".$1" = ".-v" ] || [ ".$1" = ".--version" ]; then
     exit 0
 fi
 if [ ".$1" = ".-r" ] || [ ".$1" = ".--recreate" ]; then
-    shtoolize -odevtool.shtool subst platform
+    shtoolize -oshtool subst platform
     exit 0
 fi
 if [ ".$1" = ".-d" ] || [ ".$1" = ".--debug" ]; then
@@ -794,7 +794,7 @@ platform )
                            -e 's/^#.*$//'`
                     case "`util_lower ${n}`" in
                         redhat )
-                            if [ ".`grep 'Red Hat Enterprise Linux' /etc/${tagfile}`" != . ]; then
+                            if [ ".`egrep '(Red Hat Enterprise Linux|CentOS)' /etc/${tagfile}`" != . ]; then
                                 n="<R>ed <H>at <E>nterprise <L>inux"
                             else
                                 n="<R>ed <H>at <L>inux"
@@ -803,7 +803,7 @@ platform )
                         debian             ) n="Debian[ GNU/Linux]"        ;;
                         ubuntu             ) n="Ubuntu[ GNU/Linux]"        ;;
                         fedora             ) n="<Fedora> Core[ GNU/Linux]" ;;
-                        suse               ) n="SuSE[ Linux]"              ;;
+                        suse               ) n="[Novell ]SUSE[ Linux]"     ;;
                         mandrake*|mandriva ) n="Mandriva[ Linux]"          ;;
                         gentoo             ) n="Gentoo[ GNU/Linux]"        ;;
                         slackware          ) n="Slackware[ Linux]"         ;;
@@ -963,6 +963,7 @@ platform )
 
         #   IBM AIX
         *:AIX:* )
+            #   determine architecture
             cpu_arch=rs6000
             if [ -x /usr/sbin/lsdev -a -x /usr/sbin/lsattr ]; then
                 cpu_id=`/usr/sbin/lsdev -C -c processor -S available | sed 1q | awk '{ print $1 }'`
@@ -984,6 +985,7 @@ platform )
             AT="${cpu_arch}"
             AP="${AT}"
             AC="${AP}"
+            #   determine system
             ST="[IBM ]<AIX >${os_level}"
             SP="${ST}"
             case "${os_level}" in
@@ -992,20 +994,48 @@ platform )
             esac
             ;;
 
-        #   Apple MacOS X Darwin
+        #   Apple Mac OS X (Darwin)
         *:Darwin:* )
-            AT=`uname -p`
+            #   determine architecture
+            AT="`uname -p`"
             case "${AT}" in
                 powerpc ) AT="PPC" ;;
             esac
             AP="${AT}"
-            AC="${AP}"
-            case "${AC}" in
-                i?86 ) AC="iX86" ;;
+            case "${AP}" in
+                i?86 ) AP="iX86" ;;
             esac
-            ST="[Apple ]${UNAME_SYSTEM} ${UNAME_RELEASE}"
-            SP="${ST}"
-            SC="4.4BSD/Mach3"
+            AC="${AP}"
+            #   determine system
+            unset v1; unset v2; unset v3
+            eval `echo "${UNAME_RELEASE}" |\
+                  sed -e 's/^/#/' \
+                      -e 's/^#\([0-9][0-9]*\)\.\([0-9][0-9]*\)\.\([0-9][0-9]*\).*$/v1="\1"; v2="\2"; v3="\3"/' \
+                      -e 's/^#\([0-9][0-9]*\)\.\([0-9][0-9]*\).*$/v1="\1"; v2="\2"/' \
+                      -e 's/^#\([0-9][0-9]*\).*$/v1="\1"/' \
+                      -e 's/^#.*$/v1="0"/'`
+            ST="[Apple ]<${UNAME_SYSTEM} ${v1}>${v2+.$v2}${v3+[.$v3]}"
+            SP="$ST"
+            v="`(sw_vers) 2>/dev/null | grep 'ProductVersion:' | sed -e 's/^ProductVersion:[^0-9]*\([0-9][0-9.]*\).*$/\1/'`"
+            if [ ".$v" = . ]; then
+                for name in System Server; do
+                    if [ -f /System/Library/CoreServices/${name}Version.plist ]; then
+                        v=`(defaults read "/System/Library/CoreServices/${name}Version" "ProductVersion") 2>/dev/null`
+                        [ ".$v" != . ] && break
+                    fi
+                done
+            fi
+            if [ ".$v" != . ]; then
+                unset v1; unset v2; unset v3
+                eval `echo "${v}" |\
+                      sed -e 's/^/#/' \
+                          -e 's/^#\([0-9][0-9]*\)\.\([0-9][0-9]*\)\.\([0-9][0-9]*\).*$/v1="\1"; v2="\2"; v3="\3"/' \
+                          -e 's/^#\([0-9][0-9]*\)\.\([0-9][0-9]*\).*$/v1="\1"; v2="\2"/' \
+                          -e 's/^#\([0-9][0-9]*\).*$/v1="\1"/' \
+                          -e 's/^#.*$/v1="0"/'`
+                SP="[Apple ]Mac OS X ${v1}${v2+.$v2}${v3+[.$v3]}"
+            fi
+            SC="4.4BSD/Mach3.0"
             ;;
 
         #   TODO ...ADD YOUR NEW PLATFORM CHECK HERE... TODO
