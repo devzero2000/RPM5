@@ -48,6 +48,7 @@
 
 # include <assert.h>
 
+#undef __alloca
 #define	__alloca	alloca
 #define	__stat		stat
 #define	NAMLEN(_d)	NLENGTH(_d)
