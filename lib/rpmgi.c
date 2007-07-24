@@ -406,7 +406,7 @@ static rpmRC rpmgiInitFilter(rpmgi gi)
     gi->mi = rpmtsInitIterator(gi->ts, gi->tag, gi->keyp, gi->keylen);
 
 if (_rpmgi_debug < 0)
-fprintf(stderr, "*** gi %p key %p[%d]\tmi %p\n", gi, gi->keyp, gi->keylen, gi->mi);
+fprintf(stderr, "*** gi %p key %p[%d]\tmi %p\n", gi, gi->keyp, (int)gi->keylen, gi->mi);
 
     if (gi->argv != NULL)
     for (av = (const char **) gi->argv; *av != NULL; av++) {
