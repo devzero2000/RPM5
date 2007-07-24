@@ -528,6 +528,14 @@ case "$target" in
     m68k-*-amigaos ) CFLAGS="$CFLAGS -Dfork=vfork" ;;
 esac
 
+dnl # platform-hack: The Mac OS X (aka Darwin) ld(1) uses a strange
+dnl # non-standard Unix library search path order. This causes great
+dnl # problems when linking against the third-party libraries.
+dnl # Force ld(1) to stick standard Unix search path order.
+case "$host" in
+    *-*-darwin8* ) LDFLAGS="$LDFLAGS -Wl,-search_paths_first" ;;
+esac
+
 dnl # FIXME: platform-hack: SCO and SunOS 4.x
 if echo "$target_os" | grep sco > /dev/null; then
 	AC_DEFINE(NEED_STRINGS_H, 1, [Define as one if we need to include <strings.h> (along with <string.h>)])
