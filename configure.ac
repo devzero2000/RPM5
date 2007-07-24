@@ -140,9 +140,13 @@ case "$RPM_OS_NAME" in
     LINUX* ) RPM_OS_NAME="LINUX" ;;
 esac
 v1=0; v2=0; v3=0
-uname_r="`uname -r`"
+my_os="$host_os"
+case "$my_os" in
+    *[[0-9]]* ) ;;
+    * ) my_os="${my_os}`uname -r`" ;;
+esac
 eval `dnl
-    [echo "$host_os.$uname_r" | \
+    [echo "$my_os" | \
     sed -e 's/^[^0-9]*\([0-9][0-9.]*\).*$/\1/' | \
     sed -e 's/^/X/' \
         -e 's/^X\([0-9][0-9]*\)\.\([0-9][0-9]*\)\.\([0-9][0-9]*\).*$/v1="\1"; v2="\2"; v3="\3"/' \
