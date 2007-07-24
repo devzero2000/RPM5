@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - rse: re-implement --force option (on installation) with a simple POPT alias instead of twisted and spreaded code
     - rse: for libraries prefer "pkg-config foo" before "foo-config" as pkg-config(1) provides more precise CPPFLAGS/CFLAGS
     - rse: unbreak rpm(1) short-hand option "--force" on package installation
     - rse: use implicit internal library dependencies by default, but allow disabling via --disable-build-intlibdep

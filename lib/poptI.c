@@ -190,14 +190,6 @@ static void installArgCallback( /*@unused@*/ poptContext con,
 	ia->transFlags |= RPMTRANS_FLAG_NOCONTEXTS;
 	break;
 
-    case RPMCLI_POPT_FORCE:
-	ia->probFilter |=
-		( RPMPROB_FILTER_REPLACEPKG
-		| RPMPROB_FILTER_REPLACEOLDFILES
-		| RPMPROB_FILTER_REPLACENEWFILES
-		| RPMPROB_FILTER_OLDPACKAGE );
-	break;
-
     case RPMCLI_POPT_NOSCRIPTS:
 	ia->transFlags |= (_noTransScripts | _noTransTriggers);
 	break;

@@ -245,16 +245,6 @@ static void queryArgCallback(poptContext con,
 	qva->qva_flags |= VERIFY_CONTEXTS;
 	break;
 
-#ifdef	NOTYET
-    case RPMCLI_POPT_FORCE:
-	ia->probFilter |=
-		( RPMPROB_FILTER_REPLACEPKG
-		| RPMPROB_FILTER_REPLACEOLDFILES
-		| RPMPROB_FILTER_REPLACENEWFILES
-		| RPMPROB_FILTER_OLDPACKAGE );
-	break;
-#endif
-
     case RPMCLI_POPT_NOSCRIPTS:
 	qva->qva_flags |= VERIFY_SCRIPT;
 	break;

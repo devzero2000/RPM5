@@ -255,7 +255,7 @@ static int buildForTarget(rpmts ts, const char * arg, BTA_t ba)
 #define	_anyarch(_f)	\
 (((_f)&(RPMBUILD_PREP|RPMBUILD_BUILD|RPMBUILD_INSTALL|RPMBUILD_PACKAGEBINARY)) == 0)
     if (parseSpec(ts, specURL, ba->rootdir, 0, passPhrase,
-		cookie, _anyarch(buildAmount), ba->force, verify))
+		cookie, _anyarch(buildAmount), 0, verify))
     {
 	rc = 1;
 	goto exit;

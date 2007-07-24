@@ -345,8 +345,6 @@ struct poptOption rpmcliAllPoptTable[] = {
 
  { "debug", 'd', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_debug, -1,
         NULL, NULL },
- { "force", '\0', 0, NULL, RPMCLI_POPT_FORCE,
-	N_("force operation (short hand for --replacepkgs --replacefiles on installation and ignores ExcludeArch: directives on building"), NULL},
 
 #if defined(POPT_ARGFLAG_RANDOM)
  { "rsegfault", '\0', POPT_ARG_INT|POPT_ARGFLAG_RANDOM|POPT_ARGFLAG_DOC_HIDDEN,

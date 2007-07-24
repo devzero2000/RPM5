@@ -118,10 +118,6 @@ static void buildArgCallback( /*@unused@*/ poptContext con,
 	rba->noDeps = 1;
 	break;
 
-    case RPMCLI_POPT_FORCE:
-	rba->force = 1;
-	break;
-
     }
 }
 /*@=boundswrite@*/

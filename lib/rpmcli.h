@@ -92,8 +92,7 @@ rpmcliFini(/*@only@*/ /*@null@*/ poptContext optCon)
 /**
  * Common/global popt tokens used for command line option tables.
  */
-#define	RPMCLI_POPT_NODEPS		-1025
-#define	RPMCLI_POPT_FORCE		-1026
+#define	RPMCLI_POPT_NODEPS		-1026
 #define	RPMCLI_POPT_NOFDIGESTS		-1027
 #define	RPMCLI_POPT_NOSCRIPTS		-1028
 #define	RPMCLI_POPT_NOSIGNATURE		-1029
@@ -812,7 +811,6 @@ struct rpmBuildArguments_s {
     const char * passPhrase;	/*!< Pass phrase. */
 /*@only@*/ /*@null@*/
     const char * cookie;	/*!< NULL for binary, ??? for source, rpm's */
-    int force;			/*!< from --force */
     int noBuild;		/*!< from --nobuild */
     int noDeps;			/*!< from --nodeps */
     int noLang;			/*!< from --nolang */

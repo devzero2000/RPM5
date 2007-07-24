@@ -754,14 +754,13 @@ static int _specQuery(rpmts ts, QVA_t qva, const char *specName,
     char * passPhrase = "";
     int recursing = 0;
     char *cookie = NULL;
-    int force = 1;
     int verify = 0;
     int xx;
 
 /*@-branchstate@*/
     /*@-mods@*/ /* FIX: make spec abstract */
     if (parseSpec(ts, specName, "/", recursing, passPhrase,
-		cookie, anyarch, force, verify)
+		cookie, anyarch, 1, verify)
       || (spec = rpmtsSetSpec(ts, NULL)) == NULL)
     {
 	rpmError(RPMERR_QUERY,
