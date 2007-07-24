@@ -27,15 +27,20 @@ librpmmisc_la_LDFLAGS = -release $(LT_CURRENT).$(LT_REVISION)
 if HAVE_LD_VERSION_SCRIPT
 librpmmisc_la_LDFLAGS += -Wl,--version-script=$(srcdir)/librpmmisc.vers
 endif
+librpmmisc_la_LDFLAGS += \
+	@WITH_DB_LDFLAGS@ \
+	@WITH_ZLIB_LDFLAGS@ \
+	@WITH_LUA_LDFLAGS@ \
+	@WITH_FILE_LDFLAGS@
 librpmmisc_la_LIBADD = \
 	@ALLOCA@ \
-	@WITH_DB_LDFLAGS@   @WITH_DB_LIBS@ \
-	@WITH_ZLIB_LDFLAGS@ @WITH_ZLIB_LIBS@ \
-	@WITH_LUA_LDFLAGS@  @WITH_LUA_LIBS@ \
-	@WITH_FILE_LDFLAGS@ @WITH_FILE_LIBS@
+	@WITH_DB_LIBS@ \
+	@WITH_ZLIB_LIBS@ \
+	@WITH_LUA_LIBS@ \
+	@WITH_FILE_LIBS@
 if ENABLE_BUILD_EXTLIBDEP
-librpmmisc_la_LIBADD += \
-	$(LDFLAGS) $(LIBS)
+librpmmisc_la_LDFLAGS += $(LDFLAGS)
+librpmmisc_la_LIBADD  += $(LIBS)
 endif
 librpmmisc_la_DEPENDENCIES = \
 	@ALLOCA@
