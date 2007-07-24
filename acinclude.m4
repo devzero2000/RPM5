@@ -228,22 +228,7 @@ AC_DEFUN([RPM_CHECK_LIB], [
                 ])
                 elif test ".${__rcl_location}" = .external; then
                     dnl # detection of library in arbitrary external location
-                    if test ".`($2-config --version) 2>/dev/null`" != .; then
-                        dnl # via config script in PATH
-                        m4_define([__rcl_query_config], [
-                            __rcl_flags="`($][1 --$][2) 2>/dev/null`"
-                            if test ".${__rcl_flags}" != .; then
-                                AC_MSG_VERBOSE(-- extending $][3: ${__rcl_flags})
-                                $][3="${$][3} ${__rcl_flags}"
-                            fi
-                        ])
-                        __rcl_query_config([$2-config], [cppflags], [CPPFLAGS])
-                        __rcl_query_config([$2-config], [cflags],   [CFLAGS])
-                        __rcl_query_config([$2-config], [ldflags],  [LDFLAGS])
-                        __rcl_query_config([$2-config], [libs],     [LIBS])
-                        __rcl_result_hint="external: via $2-config"
-                        break
-                    elif (pkg-config --exists $2) 2>/dev/null; then
+                    if (pkg-config --exists $2) 2>/dev/null; then
                         dnl # via pkg-config(1) script in PATH
                         m4_define([__rcl_query_pkgconfig], [
                             __rcl_flags="`($][1 --$][2) 2>/dev/null`"
@@ -257,6 +242,21 @@ AC_DEFUN([RPM_CHECK_LIB], [
                         __rcl_query_pkgconfig([pkg-config $2], [libs-only-other],   [LDFLAGS])
                         __rcl_query_pkgconfig([pkg-config $2], [libs-only-l],       [LIBS])
                         __rcl_result_hint="external: via pkg-config $2"
+                        break
+                    elif test ".`($2-config --version) 2>/dev/null`" != .; then
+                        dnl # via config script in PATH
+                        m4_define([__rcl_query_config], [
+                            __rcl_flags="`($][1 --$][2) 2>/dev/null`"
+                            if test ".${__rcl_flags}" != .; then
+                                AC_MSG_VERBOSE(-- extending $][3: ${__rcl_flags})
+                                $][3="${$][3} ${__rcl_flags}"
+                            fi
+                        ])
+                        __rcl_query_config([$2-config], [cppflags], [CPPFLAGS])
+                        __rcl_query_config([$2-config], [cflags],   [CFLAGS])
+                        __rcl_query_config([$2-config], [ldflags],  [LDFLAGS])
+                        __rcl_query_config([$2-config], [libs],     [LIBS])
+                        __rcl_result_hint="external: via $2-config"
                         break
                     elif test ".${__rcl_found}" = .no; then
                         dnl # via implicit flags attribution of previous checks or
