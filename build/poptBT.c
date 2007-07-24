@@ -54,9 +54,6 @@ int noLang = 0;
 /*@=exportlocal@*/
 
 /*@unchecked@*/
-static int noBuild = 0;
-
-/*@unchecked@*/
 static int signIt = 0;
 
 /*@unchecked@*/
