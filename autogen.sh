@@ -49,6 +49,7 @@ libtoolize --copy --force
 echo "---> generate files via GNU gettext (autopoint)"
 autopoint --force
 echo "---> generate files via GNU autoconf (aclocal, autoheader)"
+rm -f aclocal.m4
 aclocal -I m4
 autoheader -I m4
 echo "---> generate files via GNU automake (automake)"
