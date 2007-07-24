@@ -7,6 +7,12 @@ LINT = splint
 EXTRA_DIST = CHANGES CREDITS Doxyheader INSTALL \
 	autodeps/none autodeps/*.prov autodeps/*.req autogen.sh \
 	db db3/configure \
+	lua/[A-Z]* lua/*.[ch] lua/local/l* \
+	file/src/[A-Z]* file/src/*.[ch] file/python file/magic file/doc file/[A-Z]* file/acinclude.m4 file/aclocal.m4 \
+	file/autogen.sh file/config* file/depcomp file/install-sh file/ltmain.sh file/missing file/mkinstalldirs \
+	zlib/[A-Z]* zlib/*.[ch] zlib/autogen.sh zlib/configure.ac zlib/config.guess zlib/config.sub \
+	zlib/ltmain.sh zlib/aclocal.m4 zlib/config.h.in zlib/missing zlib/install-sh zlib/depcomp \
+	zlib/Makefile.in zlib/configure zlib/stamp-h.in \
 	perl/Changes perl/MANIFEST perl/META.yml perl/Makefile.PL \
 	perl/Makefile.PL.in perl/Makefile.am perl/README \
 	perl/RPM.pm perl/RPM.xs perl/foo.i386.rpm perl/hdlist-test.hdr \
