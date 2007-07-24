@@ -350,8 +350,8 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 	ctx->param = xcalloc(1, ctx->paramsize);
 /*@-type@*/
 	ctx->Reset = (int (*)(void *)) md5Reset;
-	ctx->Update = (int (*)(void *, const unsigned char *, unsigned int)) md5Update;
-	ctx->Digest = (int (*)(void *, unsigned char *)) md5Digest;
+	ctx->Update = (int (*)(void *, const byte *, size_t)) md5Update;
+	ctx->Digest = (int (*)(void *, byte *)) md5Digest;
 /*@=type@*/
 	break;
     case PGPHASHALGO_SHA1:
@@ -364,8 +364,8 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 	ctx->param = xcalloc(1, ctx->paramsize);
 /*@-type@*/
 	ctx->Reset = (int (*)(void *)) sha1Reset;
-	ctx->Update = (int (*)(void *, const unsigned char *, unsigned int)) sha1Update;
-	ctx->Digest = (int (*)(void *, unsigned char *)) sha1Digest;
+	ctx->Update = (int (*)(void *, const byte *, size_t)) sha1Update;
+	ctx->Digest = (int (*)(void *, byte *)) sha1Digest;
 /*@=type@*/
 	break;
     case PGPHASHALGO_RIPEMD128:
@@ -378,8 +378,8 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 	ctx->param = xcalloc(1, ctx->paramsize);
 /*@-type@*/
 	ctx->Reset = (int (*)(void *)) rmd128Reset;
-	ctx->Update = (int (*)(void *, const unsigned char *, unsigned int)) rmd128Update;
-	ctx->Digest = (int (*)(void *, unsigned char *)) rmd128Digest;
+	ctx->Update = (int (*)(void *, const byte *, size_t)) rmd128Update;
+	ctx->Digest = (int (*)(void *, byte *)) rmd128Digest;
 /*@=type@*/
 	break;
     case PGPHASHALGO_RIPEMD160:
@@ -392,8 +392,8 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 	ctx->param = xcalloc(1, ctx->paramsize);
 /*@-type@*/
 	ctx->Reset = (int (*)(void *)) rmd160Reset;
-	ctx->Update = (int (*)(void *, const unsigned char *, unsigned int)) rmd160Update;
-	ctx->Digest = (int (*)(void *, unsigned char *)) rmd160Digest;
+	ctx->Update = (int (*)(void *, const byte *, size_t)) rmd160Update;
+	ctx->Digest = (int (*)(void *, byte *)) rmd160Digest;
 /*@=type@*/
 	break;
     case PGPHASHALGO_RIPEMD256:
@@ -406,8 +406,8 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 	ctx->param = xcalloc(1, ctx->paramsize);
 /*@-type@*/
 	ctx->Reset = (int (*)(void *)) rmd256Reset;
-	ctx->Update = (int (*)(void *, const unsigned char *, unsigned int)) rmd256Update;
-	ctx->Digest = (int (*)(void *, unsigned char *)) rmd256Digest;
+	ctx->Update = (int (*)(void *, const byte *, size_t)) rmd256Update;
+	ctx->Digest = (int (*)(void *, byte *)) rmd256Digest;
 /*@=type@*/
 	break;
     case PGPHASHALGO_RIPEMD320:
@@ -420,8 +420,8 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 	ctx->param = xcalloc(1, ctx->paramsize);
 /*@-type@*/
 	ctx->Reset = (int (*)(void *)) rmd320Reset;
-	ctx->Update = (int (*)(void *, const unsigned char *, unsigned int)) rmd320Update;
-	ctx->Digest = (int (*)(void *, unsigned char *)) rmd320Digest;
+	ctx->Update = (int (*)(void *, const byte *, size_t)) rmd320Update;
+	ctx->Digest = (int (*)(void *, byte *)) rmd320Digest;
 /*@=type@*/
 	break;
     case PGPHASHALGO_SALSA10:
@@ -434,8 +434,8 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 	ctx->param = xcalloc(1, ctx->paramsize);
 /*@-type@*/
 	ctx->Reset = (int (*)(void *)) salsa10Reset;
-	ctx->Update = (int (*)(void *, const unsigned char *, unsigned int)) salsa10Update;
-	ctx->Digest = (int (*)(void *, unsigned char *)) salsa10Digest;
+	ctx->Update = (int (*)(void *, const byte *, size_t)) salsa10Update;
+	ctx->Digest = (int (*)(void *, byte *)) salsa10Digest;
 /*@=type@*/
 	break;
     case PGPHASHALGO_SALSA20:
@@ -448,8 +448,8 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 	ctx->param = xcalloc(1, ctx->paramsize);
 /*@-type@*/
 	ctx->Reset = (int (*)(void *)) salsa20Reset;
-	ctx->Update = (int (*)(void *, const unsigned char *, unsigned int)) salsa20Update;
-	ctx->Digest = (int (*)(void *, unsigned char *)) salsa20Digest;
+	ctx->Update = (int (*)(void *, const byte *, size_t)) salsa20Update;
+	ctx->Digest = (int (*)(void *, byte *)) salsa20Digest;
 /*@=type@*/
 	break;
     case PGPHASHALGO_TIGER192:
@@ -462,8 +462,8 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 	ctx->param = xcalloc(1, ctx->paramsize);
 /*@-type@*/
 	ctx->Reset = (int (*)(void *)) tigerReset;
-	ctx->Update = (int (*)(void *, const unsigned char *, unsigned int)) tigerUpdate;
-	ctx->Digest = (int (*)(void *, unsigned char *)) tigerDigest;
+	ctx->Update = (int (*)(void *, const byte *, size_t)) tigerUpdate;
+	ctx->Digest = (int (*)(void *, byte *)) tigerDigest;
 /*@=type@*/
 	break;
     case PGPHASHALGO_MD2:
@@ -476,8 +476,8 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 	ctx->param = xcalloc(1, ctx->paramsize);
 /*@-type@*/
 	ctx->Reset = (int (*)(void *)) md2Reset;
-	ctx->Update = (int (*)(void *, const unsigned char *, unsigned int)) md2Update;
-	ctx->Digest = (int (*)(void *, unsigned char *)) md2Digest;
+	ctx->Update = (int (*)(void *, const byte *, size_t)) md2Update;
+	ctx->Digest = (int (*)(void *, byte *)) md2Digest;
 /*@=type@*/
 	break;
     case PGPHASHALGO_MD4:
@@ -490,8 +490,8 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 	ctx->param = xcalloc(1, ctx->paramsize);
 /*@-type@*/
 	ctx->Reset = (int (*)(void *)) md4Reset;
-	ctx->Update = (int (*)(void *, const unsigned char *, unsigned int)) md4Update;
-	ctx->Digest = (int (*)(void *, unsigned char *)) md4Digest;
+	ctx->Update = (int (*)(void *, const byte *, size_t)) md4Update;
+	ctx->Digest = (int (*)(void *, byte *)) md4Digest;
 /*@=type@*/
 	break;
     case PGPHASHALGO_CRC32:
@@ -500,9 +500,9 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 	ctx->datasize = 8;
 	{   sum32Param * mp = xcalloc(1, sizeof(*mp));
 /*@-type @*/
-	    mp->update = (uint32_t (*)(uint32_t, const unsigned char *, unsigned int)) crc32;
+	    mp->update = (uint32_t (*)(uint32_t, const byte *, size_t)) crc32;
 #if defined(ZLIB_H)
-	    mp->combine = (uint32_t (*)(uint32_t, uint32_t, unsigned int)) crc32_combine;
+	    mp->combine = (uint32_t (*)(uint32_t, uint32_t, size_t)) crc32_combine;
 #endif
 /*@=type @*/
 	    ctx->paramsize = sizeof(*mp);
@@ -510,8 +510,8 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 	}
 /*@-type@*/
 	ctx->Reset = (int (*)(void *)) sum32Reset;
-	ctx->Update = (int (*)(void *, const unsigned char *, unsigned int)) sum32Update;
-	ctx->Digest = (int (*)(void *, unsigned char *)) sum32Digest;
+	ctx->Update = (int (*)(void *, const byte *, size_t)) sum32Update;
+	ctx->Digest = (int (*)(void *, byte *)) sum32Digest;
 /*@=type@*/
 	break;
     case PGPHASHALGO_ADLER32:
@@ -521,8 +521,8 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 	{   sum32Param * mp = xcalloc(1, sizeof(*mp));
 /*@-type @*/
 #if defined(ZLIB_H)
-	    mp->update = (uint32_t (*)(uint32_t, const unsigned char *, unsigned int)) adler32;
-	    mp->combine = (uint32_t (*)(uint32_t, uint32_t, unsigned int)) adler32_combine;
+	    mp->update = (uint32_t (*)(uint32_t, const byte *, size_t)) adler32;
+	    mp->combine = (uint32_t (*)(uint32_t, uint32_t, size_t)) adler32_combine;
 #endif
 /*@=type @*/
 	    ctx->paramsize = sizeof(*mp);
@@ -530,8 +530,8 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 	}
 /*@-type@*/
 	ctx->Reset = (int (*)(void *)) sum32Reset;
-	ctx->Update = (int (*)(void *, const unsigned char *, unsigned int)) sum32Update;
-	ctx->Digest = (int (*)(void *, unsigned char *)) sum32Digest;
+	ctx->Update = (int (*)(void *, const byte *, size_t)) sum32Update;
+	ctx->Digest = (int (*)(void *, byte *)) sum32Digest;
 /*@=type@*/
 	break;
     case PGPHASHALGO_JLU32:
@@ -540,15 +540,15 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 	ctx->datasize = 8;
 	{   sum32Param * mp = xcalloc(1, sizeof(*mp));
 /*@-type @*/
-	    mp->update = (uint32_t (*)(uint32_t, const unsigned char *, unsigned int)) jlu32l;
+	    mp->update = (uint32_t (*)(uint32_t, const byte *, size_t)) jlu32l;
 /*@=type @*/
 	    ctx->paramsize = sizeof(*mp);
 	    ctx->param = mp;
 	}
 /*@-type@*/
 	ctx->Reset = (int (*)(void *)) sum32Reset;
-	ctx->Update = (int (*)(void *, const unsigned char *, unsigned int)) sum32Update;
-	ctx->Digest = (int (*)(void *, unsigned char *)) sum32Digest;
+	ctx->Update = (int (*)(void *, const byte *, size_t)) sum32Update;
+	ctx->Digest = (int (*)(void *, byte *)) sum32Digest;
 /*@=type@*/
 	break;
     case PGPHASHALGO_CRC64:
@@ -557,16 +557,16 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 	ctx->datasize = 8;
 	{   sum64Param * mp = xcalloc(1, sizeof(*mp));
 /*@-type@*/
-	    mp->update = (uint64_t (*)(uint64_t, const unsigned char *, unsigned int)) crc64;
-	    mp->combine = (uint64_t (*)(uint64_t, uint64_t, unsigned int)) crc64_combine;
+	    mp->update = (uint64_t (*)(uint64_t, const byte *, size_t)) crc64;
+	    mp->combine = (uint64_t (*)(uint64_t, uint64_t, size_t)) crc64_combine;
 /*@=type@*/
 	    ctx->paramsize = sizeof(*mp);
 	    ctx->param = mp;
 	}
 /*@-type@*/
 	ctx->Reset = (int (*)(void *)) sum64Reset;
-	ctx->Update = (int (*)(void *, const unsigned char *, unsigned int)) sum64Update;
-	ctx->Digest = (int (*)(void *, unsigned char *)) sum64Digest;
+	ctx->Update = (int (*)(void *, const byte *, size_t)) sum64Update;
+	ctx->Digest = (int (*)(void *, byte *)) sum64Digest;
 /*@=type@*/
 	break;
 #if defined(HAVE_BEECRYPT_API_H)
@@ -580,8 +580,8 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 	ctx->param = xcalloc(1, ctx->paramsize);
 /*@-type@*/
 	ctx->Reset = (int (*)(void *)) sha224Reset;
-	ctx->Update = (int (*)(void *, const unsigned char *, unsigned int)) sha224Update;
-	ctx->Digest = (int (*)(void *, unsigned char *)) sha224Digest;
+	ctx->Update = (int (*)(void *, const byte *, size_t)) sha224Update;
+	ctx->Digest = (int (*)(void *, byte *)) sha224Digest;
 /*@=type@*/
 	break;
     case PGPHASHALGO_SHA256:
@@ -594,8 +594,8 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 	ctx->param = xcalloc(1, ctx->paramsize);
 /*@-type@*/
 	ctx->Reset = (int (*)(void *)) sha256Reset;
-	ctx->Update = (int (*)(void *, const unsigned char *, unsigned int)) sha256Update;
-	ctx->Digest = (int (*)(void *, unsigned char *)) sha256Digest;
+	ctx->Update = (int (*)(void *, const byte *, size_t)) sha256Update;
+	ctx->Digest = (int (*)(void *, byte *)) sha256Digest;
 /*@=type@*/
 	break;
     case PGPHASHALGO_SHA384:
@@ -608,8 +608,8 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 	ctx->param = xcalloc(1, ctx->paramsize);
 /*@-type@*/
 	ctx->Reset = (int (*)(void *)) sha384Reset;
-	ctx->Update = (int (*)(void *, const unsigned char *, unsigned int)) sha384Update;
-	ctx->Digest = (int (*)(void *, unsigned char *)) sha384Digest;
+	ctx->Update = (int (*)(void *, const byte *, size_t)) sha384Update;
+	ctx->Digest = (int (*)(void *, byte *)) sha384Digest;
 /*@=type@*/
 	break;
     case PGPHASHALGO_SHA512:
@@ -622,8 +622,8 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 	ctx->param = xcalloc(1, ctx->paramsize);
 /*@-type@*/
 	ctx->Reset = (int (*)(void *)) sha512Reset;
-	ctx->Update = (int (*)(void *, const unsigned char *, unsigned int)) sha512Update;
-	ctx->Digest = (int (*)(void *, unsigned char *)) sha512Digest;
+	ctx->Update = (int (*)(void *, const byte *, size_t)) sha512Update;
+	ctx->Digest = (int (*)(void *, byte *)) sha512Digest;
 /*@=type@*/
 	break;
 #endif
