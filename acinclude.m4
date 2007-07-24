@@ -233,7 +233,7 @@ AC_DEFUN([RPM_CHECK_LIB], [
                         m4_define([__rcl_query_config], [
                             __rcl_flags="`($][1 --$][2) 2>/dev/null`"
                             if test ".${__rcl_flags}" != .; then
-                                AC_MSG_VERBOSE([-- extending $][3: ${__rcl_flags}])
+                                AC_MSG_VERBOSE(-- extending $][3: ${__rcl_flags})
                                 $][3="${$][3} ${__rcl_flags}"
                             fi
                         ])
@@ -248,7 +248,7 @@ AC_DEFUN([RPM_CHECK_LIB], [
                         m4_define([__rcl_query_pkgconfig], [
                             __rcl_flags="`($][1 --$][2) 2>/dev/null`"
                             if test ".${__rcl_flags}" != .; then
-                                AC_MSG_VERBOSE([-- extending $][3: ${__rcl_flags}])
+                                AC_MSG_VERBOSE(-- extending $][3: ${__rcl_flags})
                                 $][3="${$][3} ${__rcl_flags}"
                             fi
                         ])
