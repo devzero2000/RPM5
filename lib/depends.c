@@ -11,7 +11,11 @@
 #include <envvar.h>
 #include <ugid.h>		/* XXX user()/group() probes */
 
+/* XXX CACHE_DEPENDENCY_RESULT deprecated, functionality being reimplemented */
+#undef	CACHE_DEPENDENCY_RESULT
+#if defined(CACHE_DEPNDENCY_RESULT)
 #define	_RPMDB_INTERNAL		/* XXX response cache needs dbiOpen et al. */
+#endif
 #include "rpmdb.h"
 
 #define	_RPMEVR_INTERNAL
@@ -47,7 +51,9 @@ struct orderListIndex_s {
 };
 
 /*@unchecked@*/
-int _cacheDependsRC = 1;
+#if defined(CACHE_DEPENDENCY_RESULT)
+int _cacheDependsRC = CACHE_DEPENDENCY_RESULT;
+#endif
 
 /*@observer@*/ /*@unchecked@*/
 const char *rpmNAME = PACKAGE;
@@ -547,7 +553,9 @@ static int unsatisfiedDepend(rpmts ts, rpmds dep, int adding)
     const char * Name;
     int_32 Flags;
     Header h;
+#if defined(CACHE_DEPENDENCY_RESULT)
     int _cacheThisRC = 1;
+#endif
     int rc;
     int xx;
     int retries = 10;
@@ -558,6 +566,7 @@ static int unsatisfiedDepend(rpmts ts, rpmds dep, int adding)
     Flags = rpmdsFlags(dep);
     NSType = rpmdsNSType(dep);
 
+#if defined(CACHE_DEPENDENCY_RESULT)
     /*
      * Check if dbiOpen/dbiPut failed (e.g. permissions), we can't cache.
      */
@@ -607,6 +616,7 @@ static int unsatisfiedDepend(rpmts ts, rpmds dep, int adding)
 	    }
 	}
     }
+#endif
 
 retry:
     rc = 0;	/* assume dependency is satisfied */
@@ -978,12 +988,14 @@ retry:
 
     /* Search added packages for the dependency. */
     if (rpmalSatisfiesDepend(ts->addedPackages, dep, NULL) != NULL) {
+#if defined(CACHE_DEPENDENCY_RESULT)
 	/*
 	 * XXX Ick, context sensitive answers from dependency cache.
 	 * XXX Always resolve added dependencies within context to disambiguate.
 	 */
 	if (_rpmds_nopromote)
 	    _cacheThisRC = 0;
+#endif
 	goto exit;
     }
 
@@ -1050,6 +1062,7 @@ exit:
     /*
      * If dbiOpen/dbiPut fails (e.g. permissions), we can't cache.
      */
+#if defined(CACHE_DEPENDENCY_RESULT)
     if (_cacheDependsRC && _cacheThisRC) {
 	dbiIndex dbi;
 	dbi = dbiOpen(rpmtsGetRdb(ts), RPMDBI_DEPENDS, 0);
@@ -1082,6 +1095,7 @@ exit:
 		_cacheDependsRC = 0;
 	}
     }
+#endif
 
     return rpmdsNegateRC(dep, rc);
 }
@@ -2451,8 +2465,10 @@ exit:
     /*@-branchstate@*/
     if (closeatexit)
 	xx = rpmtsCloseDB(ts);
+#if defined(CACHE_DEPENDENCY_RESULT)
     else if (_cacheDependsRC)
 	xx = rpmdbCloseDBI(rpmtsGetRdb(ts), RPMDBI_DEPENDS);
+#endif
     /*@=branchstate@*/
 
 #ifdef	NOTYET
