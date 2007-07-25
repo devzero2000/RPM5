@@ -941,9 +941,7 @@ static int writeFile(/*@special@*/ /*@partial@*/ FSM_t fsm, int writeData)
     struct stat * st = &fsm->sb;
     struct stat * ost = &fsm->osb;
     size_t left;
-#if defined(HAVE_MMAP)
     int xx;
-#endif
     int rc;
 
     st->st_size = (writeData ? ost->st_size : 0);
