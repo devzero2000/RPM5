@@ -1,4 +1,6 @@
 4.5 -> 5.0:
+    - rse: ported to IBM AIX (5.3)
+    - rse: ported to Mac OS X (10.4), aka Darwin (8.10)
     - rse: re-implement --force option (on installation) with a simple POPT alias instead of twisted and spreaded code
     - rse: for libraries prefer "pkg-config foo" before "foo-config" as pkg-config(1) provides more precise CPPFLAGS/CFLAGS
     - rse: unbreak rpm(1) short-hand option "--force" on package installation
