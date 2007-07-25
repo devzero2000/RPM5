@@ -714,4 +714,8 @@ static inline const char *rcsid(const char *p) { \
 #endif
 #endif
 
+#if defined(HAVE_SEARCH_H)
+#include <search.h>
+#endif
+
 #endif	/* H_SYSTEM */

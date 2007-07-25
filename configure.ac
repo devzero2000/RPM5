@@ -506,6 +506,10 @@ dnl # Error API
 AC_CHECK_HEADERS(error.h)
 AC_CHECK_FUNCS(error)
 
+dnl # POSIX search(3) API
+AC_CHECK_HEADERS(search.h)
+AC_CHECK_LIB(compat, insque)
+
 dnl # POSIX pthreads API
 WITH_PTHREADS=no
 AC_ARG_WITH([pthreads],
