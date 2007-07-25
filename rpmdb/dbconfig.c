@@ -145,6 +145,10 @@ struct poptOption rdbOptions[] = {
  { "use_environ", 0,POPT_BIT_SET,	&db3dbi.dbi_eflags, DB_USE_ENVIRON,
 	NULL, NULL },
 #endif
+#if defined(WITH_DB) && defined(DB_IGNORE_LEASE)
+ { "ignore_lease", 0,POPT_BIT_SET,	&db3dbi.dbi_eflags, DB_IGNORE_LEASE,
+	NULL, NULL },
+#endif
 
 #if defined(WITH_DB) && defined(DB_TXN_SYNC)
  { "txn_sync",	0,POPT_BIT_SET,	&db3dbi.dbi_tflags, DB_TXN_SYNC,
@@ -152,6 +156,10 @@ struct poptOption rdbOptions[] = {
 #endif
 #if defined(WITH_DB) && defined(DB_TXN_NOWAIT)
  { "txn_nowait",0,POPT_BIT_SET,	&db3dbi.dbi_tflags, DB_TXN_NOWAIT,
+	NULL, NULL },
+#endif
+#if defined(WITH_DB) && defined(DB_TXN_WAIT)
+ { "txn_wait",0,POPT_BIT_SET,	&db3dbi.dbi_tflags, DB_TXN_WAIT,
 	NULL, NULL },
 #endif
 
@@ -421,6 +429,11 @@ DB_LOCK_IWR
 #endif
 
 /* XXX DB_ENV->set_timeout */
+#if defined(WITH_DB) && defined(NOTYET)
+DB_SET_LOCK_TIMEOUT
+DB_SET_TXN_NOW
+DB_SET_TXN_TIMEOUT
+#endif
 /* XXX DB_ENV->get_timeout */
 
 /* ==== Logging: */

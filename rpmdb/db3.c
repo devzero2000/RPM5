@@ -375,6 +375,14 @@ static int db_init(dbiIndex dbi, const char * dbhome,
 #endif
 	xx = dbenv->set_verbose(dbenv, DB_VERB_WAITSFOR,
 		(dbi->dbi_verbose & DB_VERB_WAITSFOR));
+#if defined(DB_VERB_FILEOPS)
+	xx = dbenv->set_verbose(dbenv, DB_VERB_FILEOPS,
+		(dbi->dbi_verbose & DB_VERB_FILEOPS));
+#endif
+#if defined(DB_VERB_FILEOPS_ALL)
+	xx = dbenv->set_verbose(dbenv, DB_VERB_FILEOPS_ALL,
+		(dbi->dbi_verbose & DB_VERB_FILEOPS_ALL));
+#endif
 
 	if (dbi->dbi_mmapsize) {
 	    xx = dbenv->set_mp_mmapsize(dbenv, dbi->dbi_mmapsize);
