@@ -1191,7 +1191,11 @@ int rpmtsInitDSI(const rpmts ts)
 /* XXX figger out how to get this info for non-statvfs systems. */
 #if STATFS_IN_SYS_STATVFS
 	dsi->f_frsize = sfb.f_frsize;
+#if defined(RPM_OS_AIX)
+	dsi->f_fsid = 0; /* sfb.f_fsid is a structure on AIX */
+#else
 	dsi->f_fsid = sfb.f_fsid;
+#endif
 	dsi->f_flag = sfb.f_flag;
 	dsi->f_favail = sfb.f_favail;
 	dsi->f_namemax = sfb.f_namemax;
