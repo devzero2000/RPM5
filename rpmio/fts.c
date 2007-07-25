@@ -72,9 +72,6 @@ static char sccsid[] = "@(#)fts.c	8.6 (Berkeley) 8/14/94";
 #   define __fxstat64(_stat_ver, _fd, _sbp)    fstat((_fd), (_sbp))
 #   define _D_EXACT_NAMLEN(d) ((d)->d_namlen)
 #endif
-#if !defined(_D_EXACT_NAMLEN)
-#   define _D_EXACT_NAMLEN(d) (strlen((d)->d_name))
-#endif
 #if defined(__osf__)
 #   define __errno_location()   (&errno)
 #   define dirfd(dirp)          -1
@@ -95,6 +92,9 @@ static char sccsid[] = "@(#)fts.c	8.6 (Berkeley) 8/14/94";
 #   define _STAT_VER            0
 #   define __fxstat64(_stat_ver, _fd, _sbp)     fstat((_fd), (_sbp))
 #   define _D_EXACT_NAMLEN(d) ((d)->d_namlen)
+#endif
+#if !defined(_D_EXACT_NAMLEN)
+#   define _D_EXACT_NAMLEN(d) (strlen((d)->d_name))
 #endif
 #include "system.h"
 #include "fts.h"
