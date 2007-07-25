@@ -7,7 +7,7 @@
 
 int main(int argc, const char *argv[]) {
     char * context =NULL;
-    char c;
+    int c;
     const char * name;
     int val = 0;
     int token;
