@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - jbj: rip deep ia64 emulated triarch multilib hacks. worth millions to vendor, not me.
     - jbj: rip Depends index and dependency result caching.
     - rse: ported to DragonFly BSD (1.8.1)
     - rse: add the necessary Autoconf glue for using the ancient (and nowadays resurrected by POSIX) insque(3)

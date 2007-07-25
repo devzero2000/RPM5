@@ -509,16 +509,7 @@ fprintf(stderr, "*** add %p[%d] 0x%x\n", al->list, pkgNum, tscolor);
 	    (void) rpmfiSetDX(fi, dx);
 
 	    /*@-assignexpose -dependenttrans -observertrans@*/
-	    {   DN = rpmfiDN(fi);
-
-#if defined(__ia64__)
-/* XXX Make sure that autorelocated file dependencies are satisfied. */
-#define	DNPREFIX	"/emul/ia32-linux"
-		if (!strncmp(DN, DNPREFIX, sizeof(DNPREFIX)-1))
-		    DN += sizeof(DNPREFIX)-1;
-#endif
-		dieNeedle->dirName = DN;
-	    }
+	    dieNeedle->dirName = rpmfiDN(fi);
 	    /*@=assignexpose =dependenttrans =observertrans@*/
 
 	    dieNeedle->dirNameLen = (dieNeedle->dirName != NULL

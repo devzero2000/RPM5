@@ -1458,20 +1458,6 @@ assert(dalgo == fi->fdigestalgos[i]);
 	newPath = headerSprintf(h, fmt, rpmTagTable, rpmHeaderFormats, &errstr);
 	fmt = _free(fmt);
 
-#if __ia64__
-	/* XXX On ia64, change leading /emul/ix86 -> /emul/ia32, ick. */
- 	if (newPath != NULL && *newPath != '\0'
-	 && strlen(newPath) >= (sizeof("/emul/i386")-1)
-	 && newPath[0] == '/' && newPath[1] == 'e' && newPath[2] == 'm'
-	 && newPath[3] == 'u' && newPath[4] == 'l' && newPath[5] == '/'
-	 && newPath[6] == 'i' && newPath[8] == '8' && newPath[9] == '6')
- 	{
-	    newPath[7] = 'a';
-	    newPath[8] = '3';
-	    newPath[9] = '2';
-	}
-#endif
- 
 	/* XXX Make sure autoreloc is not already specified. */
 	i = p->nrelocs;
 	if (newPath != NULL && *newPath != '\0' && p->relocs != NULL)
