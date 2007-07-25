@@ -2,7 +2,6 @@
  * $Id$
  */
 
-#include <string.h>
 #define RPMCONSTANT_INTERNAL
 #include "rpmconstant.h"
 

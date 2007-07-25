@@ -2,12 +2,8 @@
  * $Id$
  */
 
-#include <stdio.h>
-#include <string.h>
 #include "rpmconstant.h"
 #include <popt.h>
-
-
 
 int main(int argc, const char *argv[]) {
     char * context =NULL;
