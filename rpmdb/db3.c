@@ -587,8 +587,13 @@ static int db3cdup(dbiIndex dbi, DBC * dbcursor, DBC ** dbcp,
 /*@-boundswrite@*/
     if (dbcp) *dbcp = NULL;
 /*@=boundswrite@*/
+#if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 6)
+    rc = dbcursor->dup(dbcursor, dbcp, flags);
+    rc = cvtdberr(dbi, "dbcursor->dup", rc, _debug);
+#else
     rc = dbcursor->c_dup(dbcursor, dbcp, flags);
     rc = cvtdberr(dbi, "dbcursor->c_dup", rc, _debug);
+#endif
     /*@-nullstate @*/ /* FIX: *dbcp can be NULL */
     return rc;
     /*@=nullstate @*/
@@ -604,8 +609,13 @@ static int db3cclose(dbiIndex dbi, /*@only@*/ /*@null@*/ DBC * dbcursor,
 
     /* XXX db3copen error pathways come through here. */
     if (dbcursor != NULL) {
+#if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 6)
+	rc = dbcursor->close(dbcursor);
+	rc = cvtdberr(dbi, "dbcursor->close", rc, _debug);
+#else
 	rc = dbcursor->c_close(dbcursor);
 	rc = cvtdberr(dbi, "dbcursor->c_close", rc, _debug);
+#endif
     }
     return rc;
 }
@@ -654,8 +664,13 @@ static int db3cput(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data,
 	rc = db->put(db, dbi->dbi_txnid, key, data, 0);
 	rc = cvtdberr(dbi, "db->put", rc, _debug);
     } else {
+#if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 6)
+	rc = dbcursor->put(dbcursor, key, data, DB_KEYLAST);
+	rc = cvtdberr(dbi, "dbcursor->put", rc, _debug);
+#else
 	rc = dbcursor->c_put(dbcursor, key, data, DB_KEYLAST);
 	rc = cvtdberr(dbi, "dbcursor->c_put", rc, _debug);
+#endif
     }
 
     return rc;
@@ -678,14 +693,26 @@ static int db3cdel(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data,
 	int _printit;
 
 	/* XXX TODO: insure that cursor is positioned with duplicates */
+#if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 6)
+	rc = dbcursor->get(dbcursor, key, data, DB_SET);
+	/* XXX DB_NOTFOUND can be returned */
+	_printit = (rc == DB_NOTFOUND ? 0 : _debug);
+	rc = cvtdberr(dbi, "dbcursor->get", rc, _printit);
+#else
 	rc = dbcursor->c_get(dbcursor, key, data, DB_SET);
 	/* XXX DB_NOTFOUND can be returned */
 	_printit = (rc == DB_NOTFOUND ? 0 : _debug);
 	rc = cvtdberr(dbi, "dbcursor->c_get", rc, _printit);
+#endif
 
 	if (rc == 0) {
+#if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 6)
+	    rc = dbcursor->del(dbcursor, flags);
+	    rc = cvtdberr(dbi, "dbcursor->del", rc, _debug);
+#else
 	    rc = dbcursor->c_del(dbcursor, flags);
 	    rc = cvtdberr(dbi, "dbcursor->c_del", rc, _debug);
+#endif
 	}
     }
 
@@ -711,11 +738,19 @@ static int db3cget(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data,
 	_printit = (rc == DB_NOTFOUND ? 0 : _debug);
 	rc = cvtdberr(dbi, "db->get", rc, _printit);
     } else {
+#if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 6)
+	/* XXX db3 does DB_FIRST on uninitialized cursor */
+	rc = dbcursor->get(dbcursor, key, data, flags);
+	/* XXX DB_NOTFOUND can be returned */
+	_printit = (rc == DB_NOTFOUND ? 0 : _debug);
+	rc = cvtdberr(dbi, "dbcursor->get", rc, _printit);
+#else
 	/* XXX db3 does DB_FIRST on uninitialized cursor */
 	rc = dbcursor->c_get(dbcursor, key, data, flags);
 	/* XXX DB_NOTFOUND can be returned */
 	_printit = (rc == DB_NOTFOUND ? 0 : _debug);
 	rc = cvtdberr(dbi, "dbcursor->c_get", rc, _printit);
+#endif
     }
 
     return rc;
@@ -735,11 +770,19 @@ static int db3cpget(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * pkey,
     assert(db != NULL);
     assert(dbcursor != NULL);
 
+#if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 6)
+    /* XXX db3 does DB_FIRST on uninitialized cursor */
+    rc = dbcursor->pget(dbcursor, key, pkey, data, flags);
+    /* XXX DB_NOTFOUND can be returned */
+    _printit = (rc == DB_NOTFOUND ? 0 : _debug);
+    rc = cvtdberr(dbi, "dbcursor->pget", rc, _printit);
+#else
     /* XXX db3 does DB_FIRST on uninitialized cursor */
     rc = dbcursor->c_pget(dbcursor, key, pkey, data, flags);
     /* XXX DB_NOTFOUND can be returned */
     _printit = (rc == DB_NOTFOUND ? 0 : _debug);
     rc = cvtdberr(dbi, "dbcursor->c_pget", rc, _printit);
+#endif
 
     return rc;
 }
@@ -755,8 +798,13 @@ static int db3ccount(dbiIndex dbi, DBC * dbcursor,
     int rc = 0;
 
     flags = 0;
+#if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 6)
+    rc = dbcursor->count(dbcursor, &count, flags);
+    rc = cvtdberr(dbi, "dbcursor->count", rc, _debug);
+#else
     rc = dbcursor->c_count(dbcursor, &count, flags);
     rc = cvtdberr(dbi, "dbcursor->c_count", rc, _debug);
+#endif
     if (rc) return rc;
 /*@-boundswrite@*/
     if (countp) *countp = count;
