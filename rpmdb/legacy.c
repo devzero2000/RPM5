@@ -166,7 +166,9 @@ int dodigest(int digestalgo, const char * fn, unsigned char * digest, int asAsci
     int use_mmap;
     int rc = 0;
     int fdno;
+#if defined(HAVE_MMAP)
     int xx;
+#endif
 
 /*@-globs -internalglobs -mods @*/
     fdno = open_dso(path, &pid, &fsize);
