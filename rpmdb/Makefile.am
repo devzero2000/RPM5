@@ -36,7 +36,7 @@ mylibs = \
 	$(top_builddir)/rpmdb/librpmdb.la \
 	$(top_builddir)/misc/librpmmisc.la
 
-usrlibdir = $(libdir)@MARK64@
+usrlibdir = $(libdir)
 usrlib_LTLIBRARIES = librpmdb.la
 librpmdb_la_SOURCES = \
 	dbconfig.c fprint.c \

@@ -19,7 +19,7 @@ EXTRA_DIST = \
 noinst_HEADERS = \
 	err.h		error.h		fnmatch.h	glob.h		
 
-usrlibdir = $(libdir)@MARK64@
+usrlibdir = $(libdir)
 usrlib_LTLIBRARIES = librpmmisc.la
 
 librpmmisc_la_SOURCES = librpmmisc.c

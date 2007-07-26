@@ -29,7 +29,7 @@ pkginc_HEADERS = \
 noinst_HEADERS = \
 	cpio.h fsm.h manifest.h psm.h rpmlead.h rpmlock.h signature.h tar.h
 
-usrlibdir = $(libdir)@MARK64@
+usrlibdir = $(libdir)
 usrlib_LTLIBRARIES = librpm.la
 librpm_la_SOURCES = \
 	cpio.c depends.c formats.c fs.c fsm.c getdate.c \

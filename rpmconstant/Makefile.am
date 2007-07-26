@@ -16,7 +16,7 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/misc
 
 bin_PROGRAMS = rpmconstant
-usrlibdir = $(libdir)@MARK64@
+usrlibdir = $(libdir)
 usrlib_LTLIBRARIES = librpmconstant.la
 
 pkgincdir = $(pkgincludedir)$(WITH_PATH_VERSIONED_SUFFIX)

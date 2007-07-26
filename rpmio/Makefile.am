@@ -40,7 +40,7 @@ noinst_HEADERS = \
 	salsa10.h salsa20.h tiger.h \
 	LzmaDecode.h rpmio_internal.h rpmlua.h rpmhook.h
 
-usrlibdir = $(libdir)@MARK64@
+usrlibdir = $(libdir)
 usrlib_LTLIBRARIES = librpmio.la
 librpmio_la_SOURCES = \
 	argv.c digest.c fts.c getpass.c macro.c mire.c \

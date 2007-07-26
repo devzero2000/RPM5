@@ -23,7 +23,7 @@ pkgincdir = $(pkgincludedir)$(WITH_PATH_VERSIONED_SUFFIX)
 pkginc_HEADERS = rpmbuild.h rpmspec.h
 noinst_HEADERS = buildio.h
 
-usrlibdir = $(libdir)@MARK64@
+usrlibdir = $(libdir)
 usrlib_LTLIBRARIES = librpmbuild.la
 librpmbuild_la_SOURCES = \
 	build.c expression.c files.c misc.c names.c pack.c \

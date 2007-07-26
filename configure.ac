@@ -247,23 +247,6 @@ AM_CONDITIONAL(
     [ENABLE_BUILD_LAFILES],
     [test ".$do_build_lafiles" = .yes])
 
-dnl # FIXME: Linux hack: choose /usr/lib or /usr/lib64 for library installs and linking
-MARK64=
-case "$target" in
-    *-*-linux* )
-        if ! echo "${libdir}" | grep -q '64$'; then
-            case "${target_cpu}" in
-                x86_64*|ppc64*|powerpc64*|sparc64*|s390x*) MARK64=64 ;;
-            esac
-        fi
-        ;;
-esac
-AC_ARG_ENABLE(
-    [build-lib64],
-    AC_HELP_STRING([--disable-build-lib64], [disable automatic use of /usr/lib64 (system dependent)]),
-    [ if test ".$enableval" = .no; then MARK64=""; fi ])
-AC_SUBST(MARK64)
-
 dnl # FIXME: partly Linux-specific only!?
 dnl # (but at least it usually doesn't harm on other platforms)
 CFLAGS="$CFLAGS -D_GNU_SOURCE -D_REENTRANT"
@@ -797,7 +780,7 @@ AC_SUBST(WITH_PYTHON_VERSION)
 AC_ARG_WITH(python-inc-dir, AS_HELP_STRING([--with-python-inc-dir=DIR], [directory with Python include files]),
 	[WITH_PYTHON_INCDIR="$withval"], [WITH_PYTHON_INCDIR="\$(prefix)/include/python${WITH_PYTHON_VERSION}"])
 AC_ARG_WITH(python-lib-dir, AS_HELP_STRING([--with-python-lib-dir=DIR], [directory with Python library]),
-	[WITH_PYTHON_LIBDIR="$withval"], [WITH_PYTHON_LIBDIR="\${prefix}/lib${MARK64}/python${WITH_PYTHON_VERSION}"])
+	[WITH_PYTHON_LIBDIR="$withval"], [WITH_PYTHON_LIBDIR="\${prefix}/lib/python${WITH_PYTHON_VERSION}"])
 AC_SUBST(WITH_PYTHON_INCDIR)
 AC_SUBST(WITH_PYTHON_LIBDIR)
 
