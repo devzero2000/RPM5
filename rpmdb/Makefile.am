@@ -97,22 +97,10 @@ my_DB_HEADER = $(top_builddir)/$(WITH_DB_SUBDIR)/db.h
 else
 my_DB_HEADER = $(srcdir)/db_emu.h
 endif
-my_DB_TOOLS =
-if WITH_DB_INTERNAL
-my_DB_TOOLS += db_archive db_checkpoint db_deadlock db_dump db_hotbackup db_load db_printlog db_recover db_stat db_upgrade db_verify 
-if WITH_DB_RPC
-my_DB_TOOLS += db_svc
-endif
-endif
 
 install-data-local:
 	$(mkinstalldirs) $(DESTDIR)$(pkgincdir)
 	$(pkgincHEADERS_INSTALL) $(my_DB_HEADER) $(DESTDIR)$(pkgincdir)/db.h
-	for tool in . $(my_DB_TOOLS); do \
-		test ".$$tool" = .. && continue; \
-		$(INSTALL_PROGRAM_ENV) $(LIBTOOL) --mode=install $(pkglibPROGRAMS_INSTALL) \
-			$(top_builddir)/$(WITH_DB_SUBDIR)/$$tool $(DESTDIR)$(pkglibdir)/$$tool; \
-	done
 
 clean-local:
 	rm -f *.o
