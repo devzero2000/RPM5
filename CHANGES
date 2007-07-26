@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - jbj: add RPMTAG_DBINSTANCE header extension.
     - jbj: rip deep ia64 emulated triarch multilib hacks. worth millions to vendor, not me.
     - jbj: rip Depends index and dependency result caching.
     - rse: ported to DragonFly BSD (1.8.1)
