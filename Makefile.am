@@ -84,6 +84,7 @@ endif
 
 pkglibdir =		@USRLIBRPM@
 pkglib_DATA =	rpmpopt macros
+pkglib_SCRIPTS = install-sh mkinstalldirs
 
 noinst_HEADERS = build.h debug.h system.h
 
