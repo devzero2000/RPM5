@@ -207,6 +207,8 @@ dnl This test must precede tests of compiler characteristics like
 dnl that for the inline keyword, since it may change the degree to
 dnl which the compiler supports such features.
 AM_C_PROTOTYPES
+AC_C_INLINE
+AC_C_BIGENDIAN
 
 dnl AM_DISABLE_SHARED
 AM_PROG_LIBTOOL
@@ -877,7 +879,6 @@ main() {
 ])
 fi
 
-AC_C_INLINE
 
 dnl look for libc features
 PROVIDES_ERRNO=no
