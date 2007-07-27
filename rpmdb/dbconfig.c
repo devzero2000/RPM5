@@ -354,6 +354,14 @@ DB_READ_UNCOMITTED
  { "waitsfor",	0,POPT_BIT_SET,	&db3dbi.dbi_verbose, DB_VERB_WAITSFOR,
 	NULL, NULL },
 #endif
+#if defined(WITH_DB) && defined(DB_VERB_FILEOPS)
+ { "fileops",	0,POPT_BIT_SET,	&db3dbi.dbi_verbose, DB_VERB_FILEOPS,
+	NULL, NULL },
+#endif
+#if defined(WITH_DB) && defined(DB_VERB_FILEOPS_ALL)
+ { "fileops_all",0,POPT_BIT_SET,&db3dbi.dbi_verbose, DB_VERB_FILEOPS_ALL,
+	NULL, NULL },
+#endif
 #if defined(WITH_DB)
  { "verbose",	0,POPT_ARG_VAL,		&db3dbi.dbi_verbose, -1,
 	NULL, NULL },
