@@ -239,57 +239,6 @@ static int db3_fsync_disable(/*@unused@*/ int fd)
     return 0;
 }
 
-#if 0
-#if HAVE_LIBPTHREAD
-#if HAVE_PTHREAD_H
-#include <pthread.h>
-#endif
-
-/**
- * Check that posix mutexes are shared.
- * @return		0 == shared.
- */
-static int db3_pthread_nptl(void)
-	/*@*/
-{
-    pthread_mutex_t mutex;
-    pthread_mutexattr_t mutexattr, *mutexattrp = NULL;
-    pthread_cond_t cond;
-    pthread_condattr_t condattr, *condattrp = NULL;
-    int ret = 0;
-
-    ret = pthread_mutexattr_init(&mutexattr);
-    if (ret == 0) {
-	ret = pthread_mutexattr_setpshared(&mutexattr, PTHREAD_PROCESS_SHARED);
-	mutexattrp = &mutexattr;
-    }
-
-    if (ret == 0)
-	ret = pthread_mutex_init(&mutex, mutexattrp);
-    if (mutexattrp != NULL)
-	pthread_mutexattr_destroy(mutexattrp);
-    if (ret)
-	return ret;
-    (void) pthread_mutex_destroy(&mutex);
-
-    ret = pthread_condattr_init(&condattr);
-    if (ret == 0) {
-	ret = pthread_condattr_setpshared(&condattr, PTHREAD_PROCESS_SHARED);
-	condattrp = &condattr;
-    }
-
-    if (ret == 0)
-	ret = pthread_cond_init(&cond, condattrp);
-
-    if (condattrp != NULL)
-	(void)pthread_condattr_destroy(condattrp);
-    if (ret == 0)
-	(void) pthread_cond_destroy(&cond);
-    return ret;
-}
-#endif
-#endif
-
 #if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 5)
 /**
  * Is process/thread still alive?
@@ -374,7 +323,7 @@ static int db_init(dbiIndex dbi, const char * dbhome,
  /* 4.1: dbenv->set_data_dir(???) */
  /* 4.1: dbenv->set_encrypt(???) */
 
-    dbenv->set_errcall(dbenv, rpmdb->db_errcall);
+    dbenv->set_errcall(dbenv, (void *)rpmdb->db_errcall);
     dbenv->set_errfile(dbenv, rpmdb->db_errfile);
     dbenv->set_errpfx(dbenv, rpmdb->db_errpfx);
     /*@=noeffectuncon@*/
@@ -425,6 +374,14 @@ static int db_init(dbiIndex dbi, const char * dbhome,
 #endif
 	xx = dbenv->set_verbose(dbenv, DB_VERB_WAITSFOR,
 		(dbi->dbi_verbose & DB_VERB_WAITSFOR));
+#if defined(DB_VERB_FILEOPS)
+	xx = dbenv->set_verbose(dbenv, DB_VERB_FILEOPS,
+		(dbi->dbi_verbose & DB_VERB_FILEOPS));
+#endif
+#if defined(DB_VERB_FILEOPS_ALL)
+	xx = dbenv->set_verbose(dbenv, DB_VERB_FILEOPS_ALL,
+		(dbi->dbi_verbose & DB_VERB_FILEOPS_ALL));
+#endif
 
 	if (dbi->dbi_mmapsize) {
 	    xx = dbenv->set_mp_mmapsize(dbenv, dbi->dbi_mmapsize);
@@ -637,8 +594,13 @@ static int db3cdup(dbiIndex dbi, DBC * dbcursor, DBC ** dbcp,
 /*@-boundswrite@*/
     if (dbcp) *dbcp = NULL;
 /*@=boundswrite@*/
+#if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 6)
+    rc = dbcursor->dup(dbcursor, dbcp, flags);
+    rc = cvtdberr(dbi, "dbcursor->dup", rc, _debug);
+#else
     rc = dbcursor->c_dup(dbcursor, dbcp, flags);
     rc = cvtdberr(dbi, "dbcursor->c_dup", rc, _debug);
+#endif
     /*@-nullstate @*/ /* FIX: *dbcp can be NULL */
     return rc;
     /*@=nullstate @*/
@@ -654,8 +616,13 @@ static int db3cclose(dbiIndex dbi, /*@only@*/ /*@null@*/ DBC * dbcursor,
 
     /* XXX db3copen error pathways come through here. */
     if (dbcursor != NULL) {
+#if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 6)
+	rc = dbcursor->close(dbcursor);
+	rc = cvtdberr(dbi, "dbcursor->close", rc, _debug);
+#else
 	rc = dbcursor->c_close(dbcursor);
 	rc = cvtdberr(dbi, "dbcursor->c_close", rc, _debug);
+#endif
     }
     return rc;
 }
@@ -704,8 +671,13 @@ static int db3cput(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data,
 	rc = db->put(db, dbi->dbi_txnid, key, data, 0);
 	rc = cvtdberr(dbi, "db->put", rc, _debug);
     } else {
+#if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 6)
+	rc = dbcursor->put(dbcursor, key, data, DB_KEYLAST);
+	rc = cvtdberr(dbi, "dbcursor->put", rc, _debug);
+#else
 	rc = dbcursor->c_put(dbcursor, key, data, DB_KEYLAST);
 	rc = cvtdberr(dbi, "dbcursor->c_put", rc, _debug);
+#endif
     }
 
     return rc;
@@ -728,14 +700,26 @@ static int db3cdel(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data,
 	int _printit;
 
 	/* XXX TODO: insure that cursor is positioned with duplicates */
+#if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 6)
+	rc = dbcursor->get(dbcursor, key, data, DB_SET);
+	/* XXX DB_NOTFOUND can be returned */
+	_printit = (rc == DB_NOTFOUND ? 0 : _debug);
+	rc = cvtdberr(dbi, "dbcursor->get", rc, _printit);
+#else
 	rc = dbcursor->c_get(dbcursor, key, data, DB_SET);
 	/* XXX DB_NOTFOUND can be returned */
 	_printit = (rc == DB_NOTFOUND ? 0 : _debug);
 	rc = cvtdberr(dbi, "dbcursor->c_get", rc, _printit);
+#endif
 
 	if (rc == 0) {
+#if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 6)
+	    rc = dbcursor->del(dbcursor, flags);
+	    rc = cvtdberr(dbi, "dbcursor->del", rc, _debug);
+#else
 	    rc = dbcursor->c_del(dbcursor, flags);
 	    rc = cvtdberr(dbi, "dbcursor->c_del", rc, _debug);
+#endif
 	}
     }
 
@@ -761,11 +745,19 @@ static int db3cget(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data,
 	_printit = (rc == DB_NOTFOUND ? 0 : _debug);
 	rc = cvtdberr(dbi, "db->get", rc, _printit);
     } else {
+#if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 6)
+	/* XXX db3 does DB_FIRST on uninitialized cursor */
+	rc = dbcursor->get(dbcursor, key, data, flags);
+	/* XXX DB_NOTFOUND can be returned */
+	_printit = (rc == DB_NOTFOUND ? 0 : _debug);
+	rc = cvtdberr(dbi, "dbcursor->get", rc, _printit);
+#else
 	/* XXX db3 does DB_FIRST on uninitialized cursor */
 	rc = dbcursor->c_get(dbcursor, key, data, flags);
 	/* XXX DB_NOTFOUND can be returned */
 	_printit = (rc == DB_NOTFOUND ? 0 : _debug);
 	rc = cvtdberr(dbi, "dbcursor->c_get", rc, _printit);
+#endif
     }
 
     return rc;
@@ -785,11 +777,19 @@ static int db3cpget(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * pkey,
     assert(db != NULL);
     assert(dbcursor != NULL);
 
+#if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 6)
+    /* XXX db3 does DB_FIRST on uninitialized cursor */
+    rc = dbcursor->pget(dbcursor, key, pkey, data, flags);
+    /* XXX DB_NOTFOUND can be returned */
+    _printit = (rc == DB_NOTFOUND ? 0 : _debug);
+    rc = cvtdberr(dbi, "dbcursor->pget", rc, _printit);
+#else
     /* XXX db3 does DB_FIRST on uninitialized cursor */
     rc = dbcursor->c_pget(dbcursor, key, pkey, data, flags);
     /* XXX DB_NOTFOUND can be returned */
     _printit = (rc == DB_NOTFOUND ? 0 : _debug);
     rc = cvtdberr(dbi, "dbcursor->c_pget", rc, _printit);
+#endif
 
     return rc;
 }
@@ -805,8 +805,13 @@ static int db3ccount(dbiIndex dbi, DBC * dbcursor,
     int rc = 0;
 
     flags = 0;
+#if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 6)
+    rc = dbcursor->count(dbcursor, &count, flags);
+    rc = cvtdberr(dbi, "dbcursor->count", rc, _debug);
+#else
     rc = dbcursor->c_count(dbcursor, &count, flags);
     rc = cvtdberr(dbi, "dbcursor->c_count", rc, _debug);
+#endif
     if (rc) return rc;
 /*@-boundswrite@*/
     if (countp) *countp = count;
@@ -995,7 +1000,7 @@ static int db3close(/*@only@*/ dbiIndex dbi, /*@unused@*/ unsigned int flags)
 	if (rc || dbenv == NULL) goto exit;
 
 	/*@-noeffectuncon@*/ /* FIX: annotate db3 methods */
-	dbenv->set_errcall(dbenv, rpmdb->db_errcall);
+	dbenv->set_errcall(dbenv, (void *)rpmdb->db_errcall);
 	dbenv->set_errfile(dbenv, rpmdb->db_errfile);
 	dbenv->set_errpfx(dbenv, rpmdb->db_errpfx);
  /*	dbenv->set_paniccall(???) */
@@ -1175,19 +1180,6 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
      * Avoid incompatible DB_CREATE/DB_RDONLY flags on DBENV->open.
      */
     if (dbi->dbi_use_dbenv) {
-
-#if 0
-#if HAVE_LIBPTHREAD
-	if (rpmdb->db_dbenv == NULL) {
-	    /* Set DB_PRIVATE if posix mutexes are not shared. */
-	    xx = db3_pthread_nptl();
-	    if (xx) {
-		dbi->dbi_eflags |= DB_PRIVATE;
-		rpmMessage(RPMMESS_DEBUG, D_("unshared posix mutexes found(%d), adding DB_PRIVATE, using fcntl lock\n"), xx);
-	    }
-	}
-#endif
-#endif
 
 	if (access(dbhome, W_OK) == -1) {
 

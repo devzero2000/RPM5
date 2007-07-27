@@ -109,11 +109,19 @@ struct poptOption rdbOptions[] = {
 	NULL, NULL },
  { "use_environ", 0,POPT_BIT_SET,	&db3dbi.dbi_eflags, DB_USE_ENVIRON,
 	NULL, NULL },
+#if defined(DB_IGNORE_LEASE)
+ { "ignore_lease", 0,POPT_BIT_SET,     &db3dbi.dbi_eflags, DB_IGNORE_LEASE,
+       NULL, NULL },
+#endif
 
  { "txn_sync",	0,POPT_BIT_SET,	&db3dbi.dbi_tflags, DB_TXN_SYNC,
 	NULL, NULL },
  { "txn_nowait",0,POPT_BIT_SET,	&db3dbi.dbi_tflags, DB_TXN_NOWAIT,
 	NULL, NULL },
+#if defined(DB_TXN_WAIT)
+ { "txn_wait",0,POPT_BIT_SET,  &db3dbi.dbi_tflags, DB_TXN_WAIT,
+       NULL, NULL },
+#endif
 
 #if defined(NOTYET)
 DB_AUTO_COMMIT
@@ -274,6 +282,14 @@ DB_READ_UNCOMITTED
 #endif
  { "waitsfor",	0,POPT_BIT_SET,	&db3dbi.dbi_verbose, DB_VERB_WAITSFOR,
 	NULL, NULL },
+#if defined(DB_VERB_FILEOPS)
+ { "fileops",   0,POPT_BIT_SET, &db3dbi.dbi_verbose, DB_VERB_FILEOPS,
+        NULL, NULL },
+#endif
+#if defined(DB_VERB_FILEOPS_ALL)
+ { "fileops_all",0,POPT_BIT_SET,&db3dbi.dbi_verbose, DB_VERB_FILEOPS_ALL,
+        NULL, NULL },
+#endif
  { "verbose",	0,POPT_ARG_VAL,		&db3dbi.dbi_verbose, -1,
 	NULL, NULL },
 
@@ -335,6 +351,11 @@ DB_LOCK_IWR
 	NULL, NULL },
 
 /* XXX DB_ENV->set_timeout */
+#if defined(NOTYET)
+DB_SET_LOCK_TIMEOUT
+DB_SET_TXN_NOW
+DB_SET_TXN_TIMEOUT
+#endif
 /* XXX DB_ENV->get_timeout */
 
 /* ==== Logging: */
