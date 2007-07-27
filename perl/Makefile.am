@@ -2,15 +2,21 @@
 
 AUTOMAKE_OPTIONS = 1.4 foreign
 
-EXTRA_DIST = \
-	db.xs header.xs junk.xs rpm.xs transaction.xs
+EXTRA_DIST = 
 
-configdir = ${prefix}/lib/rpm
-config_SCRIPTS = \
-	db.xs header.xs junk.xs rpm.xs transaction.xs
+noinst_DATA = .made_mod
 
-all install clean: PMakefile
-	make -f $< $@
-	
-PMakefile: Makefile.PL
-	perl Makefile.PL
+.made_mod: Makefile.perl
+	$(MAKE) -fMakefile.perl
+	touch $@
+
+Makefile.perl: Makefile.PL
+	$(PERL) $< MAKEFILE=$@
+
+install-data-local:
+	$(MAKE) -fMakefile.perl PREFIX=$(prefix) install
+
+CLEANFILES = *~
+clean-local:
+	if test -f Makefile.perl; them $(MAKE) -fMakefile.perl realclean; fi
+	rm -f Makefile.perl Makefile.perl.old

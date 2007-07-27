@@ -3,15 +3,13 @@ use ExtUtils::MakeMaker;
 # the contents of the Makefile that is written.
 
 WriteMakefile(
-	      'NAME'	=> 'rpm',
-	      'OBJECT'	=> 'rpm.o constant.o',
-	      'VERSION_FROM' => 'rpm.pm',		# finds $VERSION
-	      'MAKEFILE'=> 'PMakefile',
+	      'NAME'	=> 'RPM',
+	      'OBJECT'	=> 'RPM.o',
+	      'VERSION_FROM' => 'RPM.pm',		# finds $VERSION
+	      'MAKEFILE'=> 'Makefile.perl',
 	      'LIBS'	=> ['@LIBS@'],			# e.g., '-lm' 
 	      'CCFLAGS' => '@CFLAGS@',
 	      'OPTIMIZE'=> '-g',
-	      'DEFINE'	=> '-Dbool=char -DHAS_BOOL',
-	      'INC'	=> '-I../build -I../lib -I../popt -I/usr/include/rpm',
-	      'depend'	=> { 'rpm.c' => 'transaction.xs header.xs db.xs' },
+	      'INC'	=> join(' ', map { '-I@top_srcdir@/'. $_ } qw(build lib popt rpmdb rpmio)),
 );
 

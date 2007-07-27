@@ -702,6 +702,8 @@ AC_ARG_WITH(perl, AS_HELP_STRING([--with-perl], [build with RPM Perl language bi
     if test ".$withval" != .no; then
         WITH_PERL_SUBDIR=perl
         WITH_PERL_SUBPACKAGE=1
+        AC_CONFIG_FILES([perl/Makefile.PL])
+        AC_CONFIG_FILES([perl/Makefile])
     fi
 ])
 AC_SUBST(WITH_PERL_SUBDIR)
@@ -1282,13 +1284,6 @@ AC_CONFIG_FILES([ po/Makefile.in
     python/rpm/Makefile scripts/rpm.pc
     rpmconstant/Makefile
 ])
-
-dnl # explicit list of commands to execute
-AC_CONFIG_COMMANDS([default], [
-    if test "$.with_perl" = .yes && test -d ${srcdir}/perl; then
-        ( cd ${srcdir}/perl && perl Makefile.PL )
-    fi
-],[])
 
 dnl # final step: generate output
 AC_OUTPUT
