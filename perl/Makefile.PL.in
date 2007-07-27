@@ -4,7 +4,7 @@ use ExtUtils::MakeMaker;
 
 WriteMakefile(
 	      'NAME'	=> 'RPM',
-	      'OBJECT'	=> 'RPM.o',
+	      'OBJECT'	=> 'RPM.o RPM_Ts.o',
 	      'VERSION_FROM' => 'RPM.pm',		# finds $VERSION
 	      'MAKEFILE'=> 'Makefile.perl',
 	      'LIBS'	=> ['@LIBS@'],			# e.g., '-lm' 
