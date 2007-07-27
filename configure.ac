@@ -941,6 +941,9 @@ AC_CHECK_FUNCS(stpcpy stpncpy strcspn)
 AC_CHECK_FUNCS(strdup strndup strerror strtol strtoul strspn strstr)
 AC_CHECK_FUNCS(sighold sigrelse sigpause sigprocmask sigemptyset sigaddset sigdelset sigsuspend)
 
+dnl lib/fsm.c rpmdb/legacy.c depends on HAVE_MMAP
+AC_CHECK_FUNCS(mmap)
+
 AC_CHECK_FUNCS(__secure_getenv)
 
 AC_CHECK_FUNCS(regcomp)
