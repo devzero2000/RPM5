@@ -13,7 +13,7 @@ EXTRA_DIST = CHANGES CREDITS Doxyheader INSTALL \
 	zlib/[A-Z]* zlib/*.[ch] zlib/autogen.sh zlib/configure.ac zlib/config.guess zlib/config.sub \
 	zlib/ltmain.sh zlib/aclocal.m4 zlib/config.h.in zlib/missing zlib/install-sh zlib/depcomp \
 	zlib/Makefile.in zlib/configure zlib/stamp-h.in \
-	perl/Changes perl/MANIFEST perl/META.yml perl/Makefile.PL \
+	perl/Changes perl/MANIFEST perl/META.yml \
 	perl/Makefile.PL.in perl/Makefile.am perl/README \
 	perl/RPM.pm perl/RPM.xs perl/foo.i386.rpm perl/hdlist-test.hdr \
 	perl/test-rpm-1.0-1.noarch.rpm \
