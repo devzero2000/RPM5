@@ -7,16 +7,17 @@ EXTRA_DIST =
 noinst_DATA = .made_mod
 
 .made_mod: Makefile.perl RPM.xs
-	$(MAKE) -fMakefile.perl
+	$(MAKE) -f Makefile.perl
 	touch $@
 
 Makefile.perl: Makefile.PL
-	$(PERL) $< MAKEFILE=$@
+	$(PERL) Makefile.PL MAKEFILE=$@
 
 install-data-local:
-	$(MAKE) -fMakefile.perl PREFIX=$(prefix) install
+	$(MAKE) -f Makefile.perl PREFIX=$(prefix) install
 
 CLEANFILES = *~
 clean-local:
-	if test -f Makefile.perl; them $(MAKE) -fMakefile.perl realclean; fi
+	if [ -f Makefile.perl ]; then $(MAKE) -f Makefile.perl realclean; fi
 	rm -f Makefile.perl Makefile.perl.old
+
