@@ -28,7 +28,7 @@
    Also, we probably want to give a nice interface such that we could allow
    users of RPM to do their own callback, but that will have to come later.
 */
-void * _null_callback(
+static void * _null_callback(
 	const void * arg, 
 	const rpmCallbackType what, 
 	const unsigned long long amount, 
@@ -37,7 +37,6 @@ void * _null_callback(
 	rpmCallbackData data)
 {
 	Header h = (Header) arg;
-	char * s;
 	int flags = (int) ((long)data);
 	void * rc = NULL;
 	const char * filename = (const char *)key;
@@ -237,8 +236,6 @@ _run(t, ok_probs, prob_filter)
 	rpmts t
 	rpmprobFilterFlags prob_filter 
     PREINIT:
-	int i;
-	rpmProblem p;
 	int ret;
     CODE:
 	/* Make sure we could run this transactions */

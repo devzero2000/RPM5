@@ -17,11 +17,14 @@
 #include "rpmts.h"
 #include "rpmte.h"
 #include "rpmmacro.h"
+#include "rpmevr.h"
 #include "header.h"
 #include "rpmdb.h"
 #include "misc.h"
 
-void
+extern void _populate_header_tags(HV *href);
+
+static void
 _populate_constant(HV *href, char *name, int val)
 {
     hv_store(href, name, strlen(name), newSViv(val), 0);
