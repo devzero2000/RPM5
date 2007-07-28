@@ -111,16 +111,17 @@ AC_ARG_ENABLE(build-warnings,
 AC_ARG_ENABLE(build-debug,
     AS_HELP_STRING([--enable-build-debug], [build RPM instrumented for debugging]), [dnl
     if test ".$enableval" = .yes; then
-        CFLAGS="$CFLAGS -g"
         if test ".`$CC --version 2>&1 | grep 'GCC'`" != .; then
             dnl # GNU GCC (usually "gcc")
-            CFLAGS="$CFLAGS -O0"
+            CFLAGS="$CFLAGS -O0 -g3"
         elif test ".`$CC -V 2>&1 | grep 'Sun C'`" != .; then
             dnl # Sun Studio (usually "cc")
-            CFLAGS="$CFLAGS -xO0"
+            CFLAGS="$CFLAGS -xO0 -g"
         elif test ".`$CC -help 2>&1 | grep 'Intel Corporation'`" != .; then
             dnl # Intel C/C++ Compiler (usually "icc")
-            CFLAGS="$CFLAGS -O0"
+            CFLAGS="$CFLAGS -O0 -g"
+        else
+            CFLAGS="$CFLAGS -g"
         fi
     fi
 ])
