@@ -10,6 +10,6 @@ WriteMakefile(
 	      'LIBS'	=> ['@LIBS@'],			# e.g., '-lm' 
 	      'CCFLAGS' => '@CFLAGS@',
 	      'OPTIMIZE'=> '-g',
-	      'INC'	=> join(' ', map { '-I@top_srcdir@/'. $_ } qw(build lib popt rpmdb rpmio)),
+	      'INC'	=> join(' ', map { '-I@top_srcdir@/'. $_ } qw(build lib popt rpmdb rpmio)) . ' @CPPFLAGS@',
 );
 
