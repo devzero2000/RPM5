@@ -7,7 +7,7 @@ WriteMakefile(
 	      'OBJECT'	=> 'RPM.o RPM_Ts.o',
 	      'VERSION_FROM' => 'RPM.pm',		# finds $VERSION
 	      'MAKEFILE'=> 'Makefile.perl',
-	      'LIBS'	=> ['@LIBS@'],			# e.g., '-lm' 
+	      'LIBS'	=> ['@LDFLAGS@ @LIBS@'],
 	      'CCFLAGS' => '@CFLAGS@',
 	      'OPTIMIZE'=> '-g',
 	      'INC'	=> join(' ', map { '-I@top_srcdir@/'. $_ } qw(build lib popt rpmdb rpmio)) . ' @CPPFLAGS@',
