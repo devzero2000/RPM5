@@ -1,7 +1,12 @@
+.made_mod
+Makefile
+Makefile.PL
+Makefile.in
+Makefile.perl
 RPM-*
 RPM.bs
 RPM.c
-pm_to_blib
-Makefile
+RPM_Ts.c
 blib
 perl
+pm_to_blib
