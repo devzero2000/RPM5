@@ -112,7 +112,6 @@ _read_package_info(fp, vsflags)
     PREINIT:
 	rpmts ts;
 	Header ret;
-	Header sigs;
 	rpmRC rc;
 	FD_t fd;
     PPCODE:
