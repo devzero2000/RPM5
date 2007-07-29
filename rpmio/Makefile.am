@@ -60,6 +60,10 @@ if ENABLE_BUILD_INTLIBDEP
 librpmio_la_LIBADD += \
 	$(top_builddir)/misc/librpmmisc.la
 endif
+if ENABLE_BUILD_MAXEXTLIBDEP
+librpmio_la_LDFLAGS += $(LDFLAGS)
+librpmio_la_LIBADD  += $(LIBS)
+endif
 librpmio.la: $(librpmio_la_OBJECTS) $(librpmio_la_DEPENDENCIES) 
 	$(librpmio_la_LINK) -rpath $(usrlibdir) $(librpmio_la_OBJECTS) $(librpmio_la_LIBADD)
 

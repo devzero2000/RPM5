@@ -53,6 +53,10 @@ librpmdb_la_LIBADD += \
 	$(top_builddir)/rpmio/librpmio.la \
 	$(top_builddir)/misc/librpmmisc.la
 endif
+if ENABLE_BUILD_MAXEXTLIBDEP
+librpmdb_la_LDFLAGS += $(LDFLAGS)
+librpmdb_la_LIBADD  += $(LIBS)
+endif
 librpmdb_la_DEPENDENCIES = $(DBLIBOBJS)
 librpmdb.la: $(librpmdb_la_OBJECTS) $(librpmdb_la_DEPENDENCIES) 
 	$(librpmdb_la_LINK) -rpath $(usrlibdir) $(librpmdb_la_OBJECTS) $(librpmdb_la_LIBADD)

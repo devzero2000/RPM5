@@ -236,6 +236,18 @@ AM_CONDITIONAL(
     [ENABLE_BUILD_EXTLIBDEP],
     [test ".$do_build_extlibdep" = .yes])
 
+dnl # support implicit maximum external library dependencies
+AC_ARG_ENABLE(
+    [build-maxextlibdep],
+    AC_HELP_STRING(
+        [--disable-build-maxextlibdep],
+        [disable use of implicit maximum external library dependencies]),
+    [ do_build_maxextlibdep=$enableval ],
+    [ do_build_maxextlibdep=yes ])
+AM_CONDITIONAL(
+    [ENABLE_BUILD_MAXEXTLIBDEP],
+    [test ".$do_build_maxextlibdep" = .yes])
+
 dnl # support removal of GNU libtool *.la files
 AC_ARG_ENABLE(
     [build-lafiles],

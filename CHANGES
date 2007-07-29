@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - rse: provide support for GNU binutils ld(1)'s --as-needed via Autoconf option --enable-build-maxextlibdep
     - jbj: rip CentOS3/x86_64 gcc-3.2.3-49.x86_64 hack-a-round. Fix gcc!
     - jbj: upgrade to db-4.6.18.
     - rse: drop MARK64 hack as it isn't RPM's business to decide for lib64 -- for this there is Autoconf option --libdir
