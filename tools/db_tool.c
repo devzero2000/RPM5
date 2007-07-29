@@ -199,10 +199,8 @@ static struct {
 /* dispatch tools */
 int main(int argc, char *argv[])
 {
-    int i;
+    int i, j, k, l;
     char *arg;
-    int l;
-    int k;
 
     /* 1. try to dispatch over program name ("db_load [...]") */
     arg = argv[0];
@@ -225,8 +223,8 @@ int main(int argc, char *argv[])
             if (   strcmp(argv[1], main_dispatch[i].name) == 0
                 || (l == k-3 && strcmp(arg, main_dispatch[i].name+3) == 0)) {
                 argv[0] = main_dispatch[i].name;
-                for (i = 3; i <= argc; i++)
-                    argv[i-2] = argv[i-1];
+                for (j = 3; j <= argc; j++)
+                    argv[j-2] = argv[j-1];
                 argc--;
                 return (*(main_dispatch[i].main))(argc, argv);
             }
