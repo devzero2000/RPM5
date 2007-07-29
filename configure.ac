@@ -504,7 +504,7 @@ AC_CHECK_FUNCS(error)
 
 dnl # POSIX search(3) API
 AC_CHECK_HEADERS(search.h)
-AC_CHECK_LIB(compat, insque)
+AC_CHECK_FUNC(insque, [], [ AC_CHECK_LIB(compat, insque) ])
 
 dnl # POSIX pthreads API
 WITH_PTHREADS=no
