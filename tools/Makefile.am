@@ -73,7 +73,7 @@ db_tool_LDADD += \
 	$(top_builddir)/db3/gen_db_server.lo
 endif
 db_tool_LDADD += \
-	$(top_builddir)/db3/libdb-4.5.la
+	$(top_builddir)/db3/libdb-4.6.la
 endif
 endif
 

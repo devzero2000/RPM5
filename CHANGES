@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - jbj: upgrade to db-4.6.18.
     - rse: drop MARK64 hack as it isn't RPM's business to decide for lib64 -- for this there is Autoconf option --libdir
     - rse: with --with-db-tools-integrated one can now build (and install) a db_tool which integrates all db_xxx BDB tools
     - jbj: add RPMTAG_DBINSTANCE header extension.
