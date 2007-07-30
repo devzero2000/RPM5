@@ -113,17 +113,16 @@ void headerUnsort(Header h)
 /** \ingroup header
  * Return size of on-disk header representation in bytes.
  * @param h		header
- * @param magicp	include size of 8 bytes for (magic, 0)?
  * @return		size of on-disk header
  */
 /*@unused@*/ static inline
-unsigned int headerSizeof(/*@null@*/ Header h, enum hMagic magicp)
+unsigned int headerSizeof(/*@null@*/ Header h)
 	/*@modifies h @*/
 {
     /*@-abstract@*/
     if (h == NULL) return 0;
     /*@=abstract@*/
-    return (h2hv(h)->hdrsizeof) (h, magicp);
+    return (h2hv(h)->hdrsizeof) (h);
 }
 
 /** \ingroup header
@@ -193,31 +192,29 @@ unsigned int headerSizeof(/*@null@*/ Header h, enum hMagic magicp)
 /** \ingroup header
  * Read (and load) header from file handle.
  * @param _fd		file handle
- * @param magicp	read (and verify) 8 bytes of (magic, 0)?
  * @return		header (or NULL on error)
  */
 /*@unused@*/ static inline
-/*@null@*/ Header headerRead(void * _fd, enum hMagic magicp)
+/*@null@*/ Header headerRead(void * _fd)
 	/*@modifies _fd @*/
 {
-    return hdrVec->hdrread(_fd, magicp);
+    return hdrVec->hdrread(_fd);
 }
 
 /** \ingroup header
  * Write (with unload) header to file handle.
  * @param _fd		file handle
  * @param h		header
- * @param magicp	prefix write with 8 bytes of (magic, 0)?
  * @return		0 on success, 1 on error
  */
 /*@unused@*/ static inline
-int headerWrite(void * _fd, /*@null@*/ Header h, enum hMagic magicp)
+int headerWrite(void * _fd, /*@null@*/ Header h)
 	/*@modifies _fd, h @*/
 {
     /*@-abstract@*/
     if (h == NULL) return 0;
     /*@=abstract@*/
-    return (h2hv(h)->hdrwrite) (_fd, h, magicp);
+    return (h2hv(h)->hdrwrite) (_fd, h);
 }
 
 /** \ingroup header

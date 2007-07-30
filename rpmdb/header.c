@@ -296,11 +296,10 @@ void headerUnsort(Header h)
 /** \ingroup header
  * Return size of on-disk header representation in bytes.
  * @param h		header
- * @param magicp	include size of 8 bytes for (magic, 0)?
  * @return		size of on-disk header
  */
 static
-unsigned int headerSizeof(/*@null@*/ Header h, enum hMagic magicp)
+unsigned int headerSizeof(/*@null@*/ Header h)
 	/*@modifies h @*/
 {
     indexEntry entry;
@@ -313,13 +312,7 @@ unsigned int headerSizeof(/*@null@*/ Header h, enum hMagic magicp)
 
     headerSort(h);
 
-    switch (magicp) {
-    case HEADER_MAGIC_YES:
-	size += sizeof(header_magic);
-	break;
-    case HEADER_MAGIC_NO:
-	break;
-    }
+    size += sizeof(header_magic);	/* XXX HEADER_MAGIC_YES */
 
     /*@-sizeoftype@*/
     size += 2 * sizeof(int_32);	/* count of index entries */
@@ -1336,11 +1329,10 @@ Header headerCopyLoad(const void * uh)
 /** \ingroup header
  * Read (and load) header from file handle.
  * @param _fd		file handle
- * @param magicp	read (and verify) 8 bytes of (magic, 0)?
  * @return		header (or NULL on error)
  */
 static /*@null@*/
-Header headerRead(void * _fd, enum hMagic magicp)
+Header headerRead(void * _fd)
 	/*@modifies fd @*/
 {
     FD_t fd = _fd;
@@ -1356,8 +1348,7 @@ Header headerRead(void * _fd, enum hMagic magicp)
 
     memset(block, 0, sizeof(block));
     i = 2;
-    if (magicp == HEADER_MAGIC_YES)
-	i += 2;
+    i += 2;	/* XXX HEADER_MAGIC_YES */
 
     /*@-type@*/ /* FIX: cast? */
     if (timedRead(fd, (char *)block, i*sizeof(*block)) != (i * sizeof(*block)))
@@ -1367,7 +1358,7 @@ Header headerRead(void * _fd, enum hMagic magicp)
     i = 0;
 
 /*@-boundsread@*/
-    if (magicp == HEADER_MAGIC_YES) {
+    {	/* XXX HEADER_MAGIC_YES */
 	magic = block[i++];
 	if (memcmp(&magic, header_magic, sizeof(magic)))
 	    goto exit;
@@ -1423,11 +1414,10 @@ exit:
  * Write (with unload) header to file handle.
  * @param _fd		file handle
  * @param h		header
- * @param magicp	prefix write with 8 bytes of (magic, 0)?
  * @return		0 on success, 1 on error
  */
 static
-int headerWrite(void * _fd, /*@null@*/ Header h, enum hMagic magicp)
+int headerWrite(void * _fd, /*@null@*/ Header h)
 	/*@globals fileSystem @*/
 	/*@modifies fd, h, fileSystem @*/
 {
@@ -1443,8 +1433,7 @@ int headerWrite(void * _fd, /*@null@*/ Header h, enum hMagic magicp)
 /*@=boundswrite@*/
     if (uh == NULL)
 	return 1;
-    switch (magicp) {
-    case HEADER_MAGIC_YES:
+    {	/* XXX HEADER_MAGIC_YES */
 /*@-boundsread@*/
 	/*@-sizeoftype@*/
 	nb = Fwrite(header_magic, sizeof(char), sizeof(header_magic), fd);
@@ -1452,9 +1441,6 @@ int headerWrite(void * _fd, /*@null@*/ Header h, enum hMagic magicp)
 /*@=boundsread@*/
 	if (nb != sizeof(header_magic))
 	    goto exit;
-	break;
-    case HEADER_MAGIC_NO:
-	break;
     }
 
     /*@-sizeoftype@*/

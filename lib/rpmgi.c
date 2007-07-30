@@ -670,7 +670,7 @@ nextkey:
 	    path = _free(path);
 	}
 	if (gi->fd != NULL) {
-	    Header h = headerRead(gi->fd, HEADER_MAGIC_YES);
+	    Header h = headerRead(gi->fd);
 	    if (h != NULL) {
 		if (!(gi->flags & RPMGI_NOHEADER))
 		    gi->h = headerLink(h);

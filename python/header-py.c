@@ -462,7 +462,8 @@ static PyObject * hdrUnload(hdrObject * s, PyObject * args, PyObject *keywords)
 	h = headerCopy(s->h);	/* XXX strip region tags, etc */
 	headerFree(s->h);
     }
-    len = headerSizeof(h, 0);
+    len = headerSizeof(h);
+    len -= 8;	/* XXX HEADER_MAGIC_NO */
     buf = headerUnload(h);
     h = headerFree(h);
 
@@ -1051,7 +1052,7 @@ PyObject * rpmReadHeaders (FD_t fd)
 
     list = PyList_New(0);
     Py_BEGIN_ALLOW_THREADS
-    h = headerRead(fd, HEADER_MAGIC_YES);
+    h = headerRead(fd);
     Py_END_ALLOW_THREADS
 
     while (h) {
@@ -1068,7 +1069,7 @@ PyObject * rpmReadHeaders (FD_t fd)
 	h = headerFree(h);	/* XXX ref held by hdr */
 
 	Py_BEGIN_ALLOW_THREADS
-	h = headerRead(fd, HEADER_MAGIC_YES);
+	h = headerRead(fd);
 	Py_END_ALLOW_THREADS
     }
 
@@ -1136,7 +1137,7 @@ int rpmMergeHeaders(PyObject * list, FD_t fd, int matchTag)
     void * p;
 
     Py_BEGIN_ALLOW_THREADS
-    h = headerRead(fd, HEADER_MAGIC_YES);
+    h = headerRead(fd);
     Py_END_ALLOW_THREADS
 
     while (h) {
@@ -1175,7 +1176,7 @@ int rpmMergeHeaders(PyObject * list, FD_t fd, int matchTag)
 	h = headerFree(h);
 
 	Py_BEGIN_ALLOW_THREADS
-	h = headerRead(fd, HEADER_MAGIC_YES);
+	h = headerRead(fd);
 	Py_END_ALLOW_THREADS
     }
 
@@ -1239,7 +1240,7 @@ rpmSingleHeaderFromFD(PyObject * self, PyObject * args, PyObject * kwds)
     }
 
     Py_BEGIN_ALLOW_THREADS
-    h = headerRead(fd, HEADER_MAGIC_YES);
+    h = headerRead(fd);
     Py_END_ALLOW_THREADS
 
     Fclose(fd);

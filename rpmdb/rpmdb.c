@@ -1812,7 +1812,7 @@ static int miFreeHeader(rpmdbMatchIterator mi, dbiIndex dbi)
 /*@i@*/	key->data = (void *) &mi->mi_prevoffset;
 	key->size = sizeof(mi->mi_prevoffset);
 	data->data = headerUnload(mi->mi_h);
-	data->size = headerSizeof(mi->mi_h, HEADER_MAGIC_YES);
+	data->size = headerSizeof(mi->mi_h);
 	data->size -= 8;	/* XXX HEADER_MAGIC_NO */
 
 	/* Check header digest/signature on blob export (if requested). */
@@ -3127,7 +3127,7 @@ memset(data, 0, sizeof(*data));
 
 	/* XXX db0: hack to pass sizeof header to fadAlloc */
 	datap = h;
-	datalen = headerSizeof(h, HEADER_MAGIC_YES);
+	datalen = headerSizeof(h);
 	datalen -= 8;	/* XXX HEADER_MAGIC_NO */
 
 	xx = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, DB_WRITECURSOR);
@@ -3243,7 +3243,7 @@ key->data = (void *) &mi_offset;
 /*@=immediatetrans@*/
 key->size = sizeof(mi_offset.ui);
 data->data = headerUnload(h);
-data->size = headerSizeof(h, HEADER_MAGIC_YES);
+data->size = headerSizeof(h);
 data->size -= 8;	/* XXX HEADER_MAGIC_NO */
 
 		/* Check header digest/signature on blob export. */

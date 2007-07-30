@@ -611,7 +611,7 @@ int writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
     }
 
     fdInitDigest(fd, PGPHASHALGO_SHA1, 0);
-    if (headerWrite(fd, h, HEADER_MAGIC_YES)) {
+    if (headerWrite(fd, h)) {
 	rc = RPMERR_NOSPACE;
 	rpmError(RPMERR_NOSPACE, _("Unable to write temp header\n"));
     } else { /* Write the archive and get the size */
@@ -658,7 +658,7 @@ int writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
     }
 
     fdInitDigest(fd, PGPHASHALGO_SHA1, 0);
-    if (headerWrite(fd, h, HEADER_MAGIC_YES)) {
+    if (headerWrite(fd, h)) {
 	rc = RPMERR_NOSPACE;
 	rpmError(RPMERR_NOSPACE, _("Unable to write final header\n"));
     }
@@ -763,7 +763,7 @@ int writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
 
     /* Add signatures to header, and write header into the package. */
     /* XXX header+payload digests/signatures might be checked again here. */
-    {	Header nh = headerRead(ifd, HEADER_MAGIC_YES);
+    {	Header nh = headerRead(ifd);
 
 	if (nh == NULL) {
 	    rc = RPMERR_READ;
@@ -776,7 +776,7 @@ int writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
 	(void) headerMergeLegacySigs(nh, sig);
 #endif
 
-	rc = headerWrite(fd, nh, HEADER_MAGIC_YES);
+	rc = headerWrite(fd, nh);
 	nh = headerFree(nh);
 
 	if (rc) {

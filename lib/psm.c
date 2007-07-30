@@ -1858,7 +1858,7 @@ assert(psm->te != NULL);
 	    }
 
 	    /* Write the metadata section into the package. */
-	    rc = headerWrite(psm->fd, psm->oh, HEADER_MAGIC_YES);
+	    rc = headerWrite(psm->fd, psm->oh);
 	    if (rc) break;
 	}
 	break;

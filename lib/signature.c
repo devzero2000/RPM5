@@ -315,7 +315,7 @@ rpmRC rpmReadSignature(void * _fd, Header * sighp, sigType sig_type,
     }
     sigh->flags |= HEADERFLAG_ALLOCATED;
 
-    {	int sigSize = headerSizeof(sigh, HEADER_MAGIC_YES);
+    {	int sigSize = headerSizeof(sigh);
 	int pad = (8 - (sigSize % 8)) % 8; /* 8-byte pad */
 	int_32 * archSize = NULL;
 
@@ -358,11 +358,11 @@ int rpmWriteSignature(void * _fd, Header sigh)
     int sigSize, pad;
     int rc;
 
-    rc = headerWrite(fd, sigh, HEADER_MAGIC_YES);
+    rc = headerWrite(fd, sigh);
     if (rc)
 	return rc;
 
-    sigSize = headerSizeof(sigh, HEADER_MAGIC_YES);
+    sigSize = headerSizeof(sigh);
     pad = (8 - (sigSize % 8)) % 8;
     if (pad) {
 /*@-boundswrite@*/
@@ -720,7 +720,7 @@ static int makeHDRSignature(Header sigh, const char * file, int_32 sigTag,
 	fd = Fopen(file, "r.fdio");
 	if (fd == NULL || Ferror(fd))
 	    goto exit;
-	h = headerRead(fd, HEADER_MAGIC_YES);
+	h = headerRead(fd);
 	if (h == NULL)
 	    goto exit;
 	(void) Fclose(fd);	fd = NULL;
@@ -754,13 +754,13 @@ static int makeHDRSignature(Header sigh, const char * file, int_32 sigTag,
 	fd = Fopen(file, "r.fdio");
 	if (fd == NULL || Ferror(fd))
 	    goto exit;
-	h = headerRead(fd, HEADER_MAGIC_YES);
+	h = headerRead(fd);
 	if (h == NULL)
 	    goto exit;
 	(void) Fclose(fd);	fd = NULL;
 	if (makeTempFile(NULL, &fn, &fd))
 	    goto exit;
-	if (headerWrite(fd, h, HEADER_MAGIC_YES))
+	if (headerWrite(fd, h))
 	    goto exit;
 	(void) Fclose(fd);	fd = NULL;
 	if (makeGPGSignature(fn, &sigTag, &pkt, &pktlen, passPhrase)
@@ -772,13 +772,13 @@ static int makeHDRSignature(Header sigh, const char * file, int_32 sigTag,
 	fd = Fopen(file, "r.fdio");
 	if (fd == NULL || Ferror(fd))
 	    goto exit;
-	h = headerRead(fd, HEADER_MAGIC_YES);
+	h = headerRead(fd);
 	if (h == NULL)
 	    goto exit;
 	(void) Fclose(fd);	fd = NULL;
 	if (makeTempFile(NULL, &fn, &fd))
 	    goto exit;
-	if (headerWrite(fd, h, HEADER_MAGIC_YES))
+	if (headerWrite(fd, h))
 	    goto exit;
 	(void) Fclose(fd);	fd = NULL;
 	if (makePGPSignature(fn, &sigTag, &pkt, &pktlen, passPhrase)

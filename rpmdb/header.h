@@ -230,14 +230,6 @@ extern const struct headerSprintfExtension_s headerDefaultFormats[];
 /*@=redecl@*/
 
 /** \ingroup header
- * Include calculation for 8 bytes of (magic, 0)?
- */
-enum hMagic {
-    HEADER_MAGIC_NO		= 0,
-    HEADER_MAGIC_YES		= 1
-};
-
-/** \ingroup header
  * The basic types of data in tags from headers.
  */
 typedef enum rpmTagType_e {
@@ -398,11 +390,10 @@ void (*HDRunsort) (Header h)
 /** \ingroup header
  * Return size of on-disk header representation in bytes.
  * @param h		header
- * @param magicp	include size of 8 bytes for (magic, 0)?
  * @return		size of on-disk header
  */
 typedef
-unsigned int (*HDRsizeof) (/*@null@*/ Header h, enum hMagic magicp)
+unsigned int (*HDRsizeof) (/*@null@*/ Header h)
         /*@modifies h @*/;
 
 /** \ingroup header
@@ -455,22 +446,20 @@ typedef
 /** \ingroup header
  * Read (and load) header from file handle.
  * @param fd		file handle
- * @param magicp	read (and verify) 8 bytes of (magic, 0)?
  * @return		header (or NULL on error)
  */
 typedef
-/*@null@*/ Header (*HDRread) (void * fd, enum hMagic magicp)
+/*@null@*/ Header (*HDRread) (void * fd)
 	/*@modifies fd @*/;
 
 /** \ingroup header
  * Write (with unload) header to file handle.
  * @param fd		file handle
  * @param h		header
- * @param magicp	prefix write with 8 bytes of (magic, 0)?
  * @return		0 on success, 1 on error
  */
 typedef
-int (*HDRwrite) (void * fd, /*@null@*/ Header h, enum hMagic magicp)
+int (*HDRwrite) (void * fd, /*@null@*/ Header h)
 	/*@globals fileSystem @*/
 	/*@modifies fd, h, fileSystem @*/;
 

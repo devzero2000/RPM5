@@ -656,13 +656,13 @@ static int readFile(FD_t fd, const char * fn, pgpDig dig)
     dig->nbytes = 0;
 
     /* Read the header from the package. */
-    {	Header h = headerRead(fd, HEADER_MAGIC_YES);
+    {	Header h = headerRead(fd);
 	if (h == NULL) {
 	    rpmError(RPMERR_FREAD, _("%s: headerRead failed\n"), fn);
 	    goto exit;
 	}
 
-	dig->nbytes += headerSizeof(h, HEADER_MAGIC_YES);
+	dig->nbytes += headerSizeof(h);
 
 	if (headerIsEntry(h, RPMTAG_HEADERIMMUTABLE)) {
 	    void * uh;
