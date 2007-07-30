@@ -4,8 +4,9 @@
 %define	with_bzip2		@WITH_BZIP2@%{nil}
 %define	with_apidocs		@WITH_APIDOCS@%{nil}
 
-%{!?_usrlibrpm:%global _usrlibrpm @USRLIBRPM@}
-%{!?_rpmhome:%global _rpmhome @USRLIBRPM@/@VERSION@}
+# XXX these must be set explicitly in rpm.spec
+%global _usrlibrpm @USRLIBRPM@
+%global _rpmhome @USRLIBRPM@/@VERSION@
 
 %define	__prefix	%{?_prefix}%{!?_prefix:/usr}
 %{?!_lib: %define _lib lib}
@@ -15,7 +16,7 @@
 Summary: The RPM package management system.
 Name: rpm
 Version: @VERSION@
-Release: 0.4
+Release: 0.5
 Group: System Environment/Base
 URL: http://rpm5.org
 Source: http://rpm5.org/files/rpm/rpm-4.5/rpm-%{version}.tar.gz
@@ -55,6 +56,14 @@ package management system capable of installing, uninstalling,
 verifying, querying, and updating software packages. Each software
 package consists of an archive of files along with information about
 the package like its version, a description, etc.
+
+%package common
+Summary: Scripts and executable programs used to build packages.
+Group: System Environment/Base
+
+%description common
+This package contains common per-platform configuration and documentation
+that can be shared amongst multiple versions of RPM.
 
 %package libs
 Summary:  Libraries for manipulating RPM packages.
@@ -184,8 +193,6 @@ mkdir -p $RPM_BUILD_ROOT$installarchlib
 
 make DESTDIR="$RPM_BUILD_ROOT" install
 
-%ifos linux
-
 mkdir -p $RPM_BUILD_ROOT/etc/rpm
 
 mkdir -p $RPM_BUILD_ROOT/var/spool/repackage
@@ -198,8 +205,6 @@ for dbi in \
 do
     touch $RPM_BUILD_ROOT/var/lib/rpm/$dbi
 done
-
-%endif
 
 %find_lang rpm
 
@@ -262,31 +267,38 @@ exit 0
 
 %endif
 
-%files -f rpm.lang
-%doc CHANGES GROUPS doc/manual/[a-z]*
-%pubkey pubkeys/JBJ-GPG-KEY
-
-%ifos linux
 %define	rpmattr		%attr(0755, @RPMUSER@, @RPMGROUP@)
 %define	rpmdbattr %attr(0644, @RPMUSER@, @RPMGROUP@) %verify(not md5 size mtime) %ghost %config(missingok,noreplace)
 
-%dir				/etc/rpm
-%attr(0755, @RPMUSER@, @RPMGROUP@)	%dir /var/lib/rpm
-%attr(0755, @RPMUSER@, @RPMGROUP@)	%dir /var/spool/repackage
-
-%rpmdbattr	/var/lib/rpm/*
-%endif
+%files
 
 %rpmattr	%{_bindir}/rpm
-%rpmattr	%{_bindir}/rpm2cpio
-%rpmattr	%{_bindir}/gendiff
 
-%attr(0755, @RPMUSER@, @RPMGROUP@)	%dir %{_usrlibrpm}
 %attr(0755, @RPMUSER@, @RPMGROUP@)	%dir %{_rpmhome}
 %attr(0644, @RPMUSER@, @RPMGROUP@)	%{_rpmhome}/macros
 %rpmattr	%{_rpmhome}/rpm.*
 %rpmattr	%{_rpmhome}/tgpg
 %attr(0644, @RPMUSER@, @RPMGROUP@)	%{_rpmhome}/rpmpopt
+
+%rpmattr	%{_rpmhome}/rpmdb_loadcvt
+%rpmattr	%{_rpmhome}/db_*
+%rpmattr	%{_rpmhome}/magic
+%rpmattr	%{_rpmhome}/magic.mgc
+%rpmattr	%{_rpmhome}/magic.mime
+%rpmattr	%{_rpmhome}/magic.mime.mgc
+
+%files common -f rpm.lang
+%doc CHANGES GROUPS doc/manual/[a-z]*
+%dir				/etc/rpm
+%attr(0755, @RPMUSER@, @RPMGROUP@)	%dir /var/lib/rpm
+%attr(0755, @RPMUSER@, @RPMGROUP@)	%dir /var/spool/repackage
+
+%rpmdbattr	/var/lib/rpm/*
+
+%attr(0755, @RPMUSER@, @RPMGROUP@)	%dir %{_usrlibrpm}
+
+%rpmattr	%{_bindir}/rpm2cpio
+%rpmattr	%{_bindir}/gendiff
 
 %ifarch i386 i486 i586 i686 athlon pentium3 pentium4
 %attr(-, @RPMUSER@, @RPMGROUP@)		%{_usrlibrpm}/i[3456]86*
@@ -322,12 +334,13 @@ exit 0
 %endif
 %attr(-, @RPMUSER@, @RPMGROUP@)		%{_usrlibrpm}/noarch*
 
-%rpmattr	%{_rpmhome}/rpmdb_loadcvt
-%rpmattr	%{_rpmhome}/db_*
-%rpmattr	%{_rpmhome}/magic
-%rpmattr	%{_rpmhome}/magic.mgc
-%rpmattr	%{_rpmhome}/magic.mime
-%rpmattr	%{_rpmhome}/magic.mime.mgc
+%dir %{__prefix}/src/rpm
+%dir %{__prefix}/src/rpm/BUILD
+%dir %{__prefix}/src/rpm/SPECS
+%dir %{__prefix}/src/rpm/SOURCES
+%dir %{__prefix}/src/rpm/SRPMS
+%dir %{__prefix}/src/rpm/RPMS
+%{__prefix}/src/rpm/RPMS/*
 
 %{_mandir}/man8/rpm.8*
 %{_mandir}/man8/rpm2cpio.8*
@@ -341,6 +354,25 @@ exit 0
 %lang(ru)	%{_mandir}/ru/man8/rpm2cpio.8*
 %lang(sk)	%{_mandir}/sk/man8/rpm.8*
 
+%{_mandir}/man1/gendiff.1*
+%{_mandir}/man8/rpmbuild.8*
+%{_mandir}/man8/rpmdeps.8*
+#%lang(ja)	%{_mandir}/ja/man1/gendiff.1*
+%lang(ja)	%{_mandir}/ja/man8/rpmbuild.8*
+#%lang(ja)	%{_mandir}/ja/man8/rpmdeps.8*
+#%lang(ko)	%{_mandir}/ko/man1/gendiff.1*
+#%lang(ko)	%{_mandir}/ko/man8/rpmbuild.8*
+#%lang(ko)	%{_mandir}/ko/man8/rpmdeps.8*
+%lang(pl)	%{_mandir}/pl/man1/gendiff.1*
+%lang(pl)	%{_mandir}/pl/man8/rpmbuild.8*
+%lang(pl)	%{_mandir}/pl/man8/rpmdeps.8*
+#%lang(ru)	%{_mandir}/ru/man1/gendiff.1*
+#%lang(ru)	%{_mandir}/ru/man8/rpmbuild.8*
+#%lang(ru)	%{_mandir}/ru/man8/rpmdeps.8*
+#%lang(sk)	%{_mandir}/sk/man1/gendiff.1*
+#%lang(sk)	%{_mandir}/sk/man8/rpmbuild.8*
+#%lang(sk)	%{_mandir}/sk/man8/rpmdeps.8*
+
 %files libs
 %{_libdir}/librpm-@LT_CURRENT@.@LT_REVISION@.so
 %{_libdir}/librpmdb-@LT_CURRENT@.@LT_REVISION@.so
@@ -348,13 +380,6 @@ exit 0
 %{_libdir}/librpmbuild-@LT_CURRENT@.@LT_REVISION@.so
 
 %files build
-%dir %{__prefix}/src/rpm
-%dir %{__prefix}/src/rpm/BUILD
-%dir %{__prefix}/src/rpm/SPECS
-%dir %{__prefix}/src/rpm/SOURCES
-%dir %{__prefix}/src/rpm/SRPMS
-%dir %{__prefix}/src/rpm/RPMS
-%{__prefix}/src/rpm/RPMS/*
 %rpmattr	%{_bindir}/rpmbuild
 %rpmattr	%{_rpmhome}/brp-*
 %rpmattr	%{_rpmhome}/check-files
@@ -385,25 +410,6 @@ exit 0
 %rpmattr	%{_rpmhome}/u_pkg.sh
 %rpmattr	%{_rpmhome}/vpkg-provides.sh
 %rpmattr	%{_rpmhome}/vpkg-provides2.sh
-
-%{_mandir}/man1/gendiff.1*
-%{_mandir}/man8/rpmbuild.8*
-%{_mandir}/man8/rpmdeps.8*
-#%lang(ja)	%{_mandir}/ja/man1/gendiff.1*
-%lang(ja)	%{_mandir}/ja/man8/rpmbuild.8*
-#%lang(ja)	%{_mandir}/ja/man8/rpmdeps.8*
-#%lang(ko)	%{_mandir}/ko/man1/gendiff.1*
-#%lang(ko)	%{_mandir}/ko/man8/rpmbuild.8*
-#%lang(ko)	%{_mandir}/ko/man8/rpmdeps.8*
-%lang(pl)	%{_mandir}/pl/man1/gendiff.1*
-%lang(pl)	%{_mandir}/pl/man8/rpmbuild.8*
-%lang(pl)	%{_mandir}/pl/man8/rpmdeps.8*
-#%lang(ru)	%{_mandir}/ru/man1/gendiff.1*
-#%lang(ru)	%{_mandir}/ru/man8/rpmbuild.8*
-#%lang(ru)	%{_mandir}/ru/man8/rpmdeps.8*
-#%lang(sk)	%{_mandir}/sk/man1/gendiff.1*
-#%lang(sk)	%{_mandir}/sk/man8/rpmbuild.8*
-#%lang(sk)	%{_mandir}/sk/man8/rpmdeps.8*
 
 %if %{with_python_subpackage}
 %files python
