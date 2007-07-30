@@ -13,7 +13,7 @@
 
 /* XXX CACHE_DEPENDENCY_RESULT deprecated, functionality being reimplemented */
 #define CACHE_DEPENDENCY_RESULT	1
-#if defined(CACHE_DEPNDENCY_RESULT) 
+#if defined(CACHE_DEPENDENCY_RESULT) 
 #define	_RPMDB_INTERNAL		/* XXX response cache needs dbiOpen et al. */
 #endif
 #include "rpmdb.h"
@@ -51,7 +51,7 @@ struct orderListIndex_s {
 };
 
 /*@unchecked@*/
-#if defined(CACHE_DEPNDENCY_RESULT) 
+#if defined(CACHE_DEPENDENCY_RESULT) 
 int _cacheDependsRC = CACHE_DEPENDENCY_RESULT;
 #endif
 
@@ -554,7 +554,7 @@ static int unsatisfiedDepend(rpmts ts, rpmds dep, int adding)
     const char * Name;
     int_32 Flags;
     Header h;
-#if defined(CACHE_DEPNDENCY_RESULT) 
+#if defined(CACHE_DEPENDENCY_RESULT) 
     int _cacheThisRC = 1;
 #endif
     int rc;
@@ -569,7 +569,7 @@ static int unsatisfiedDepend(rpmts ts, rpmds dep, int adding)
     /*
      * Check if dbiOpen/dbiPut failed (e.g. permissions), we can't cache.
      */
-#if defined(CACHE_DEPNDENCY_RESULT) 
+#if defined(CACHE_DEPENDENCY_RESULT) 
     if (_cacheDependsRC) {
 	dbiIndex dbi;
 	dbi = dbiOpen(rpmtsGetRdb(ts), RPMDBI_DEPENDS, 0);
@@ -982,7 +982,7 @@ retry:
 
     /* Search added packages for the dependency. */
     if (rpmalSatisfiesDepend(ts->addedPackages, dep, NULL) != NULL) {
-#if defined(CACHE_DEPNDENCY_RESULT) 
+#if defined(CACHE_DEPENDENCY_RESULT) 
 	/*
 	 * XXX Ick, context sensitive answers from dependency cache.
 	 * XXX Always resolve added dependencies within context to disambiguate.
@@ -1056,7 +1056,7 @@ exit:
     /*
      * If dbiOpen/dbiPut fails (e.g. permissions), we can't cache.
      */
-#if defined(CACHE_DEPNDENCY_RESULT) 
+#if defined(CACHE_DEPENDENCY_RESULT) 
     if (_cacheDependsRC && _cacheThisRC) {
 	dbiIndex dbi;
 	dbi = dbiOpen(rpmtsGetRdb(ts), RPMDBI_DEPENDS, 0);
@@ -2481,7 +2481,7 @@ exit:
     /*@-branchstate@*/
     if (closeatexit)
 	xx = rpmtsCloseDB(ts);
-#if defined(CACHE_DEPNDENCY_RESULT) 
+#if defined(CACHE_DEPENDENCY_RESULT) 
     else if (_cacheDependsRC)
 	xx = rpmdbCloseDBI(rpmtsGetRdb(ts), RPMDBI_DEPENDS);
 #endif
