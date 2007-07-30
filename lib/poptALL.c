@@ -26,6 +26,9 @@ const char *__progname;
 /*@access headerTagIndices @*/		/* XXX rpmcliFini */
 /*@access headerTagTableEntry @*/	/* XXX rpmcliFini */
 
+int _nolead = 0;
+int _nosigh = 0;
+
 /*@unchecked@*/
 static int _debug = 0;
 
@@ -463,6 +466,11 @@ struct poptOption rpmcliAllPoptTable[] = {
 	NULL, NULL},
  { "urldebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_url_debug, -1,
 	N_("debug URL cache handling"), NULL},
+
+ { "nolead", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_nolead, -1,
+	N_("disable rpm lead"), NULL},
+ { "nosigh", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_nosigh, -1,
+	N_("disable rpm signature header"), NULL},
 
    POPT_TABLEEND
 };

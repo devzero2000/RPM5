@@ -47,6 +47,8 @@ LIBRPM_0
     makeTempFile;
     newFSM;
     newStringBuf;
+    _nolead;
+    _nosigh;
     nplatpat;
     platpat;
     _print_pkts;
