@@ -2560,16 +2560,6 @@ FDIO_t gzdio = /*@-compmempass@*/ &gzdio_s /*@=compmempass@*/ ;
 
 #include <bzlib.h>
 
-#ifdef HAVE_BZ2_1_0
-# define bzopen  BZ2_bzopen
-# define bzclose BZ2_bzclose
-# define bzdopen BZ2_bzdopen
-# define bzerror BZ2_bzerror
-# define bzflush BZ2_bzflush
-# define bzread  BZ2_bzread
-# define bzwrite BZ2_bzwrite
-#endif /* HAVE_BZ2_1_0 */
-
 static inline /*@dependent@*/ void * bzdFileno(FD_t fd)
 	/*@*/
 {
@@ -2597,7 +2587,7 @@ static /*@null@*/ FD_t bzdOpen(const char * path, const char * mode)
 {
     FD_t fd;
     BZFILE *bzfile;;
-    if ((bzfile = bzopen(path, mode)) == NULL)
+    if ((bzfile = BZ2_bzopen(path, mode)) == NULL)
 	return NULL;
     fd = fdNew("open (bzdOpen)");
     fdPop(fd); fdPush(fd, bzdio, bzfile, -1);
@@ -2632,7 +2622,7 @@ static int bzdFlush(FD_t fd)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
 {
-    return bzflush(bzdFileno(fd));
+    return BZ2_bzflush(bzdFileno(fd));
 }
 /*@=globuse@*/
 
@@ -2652,12 +2642,12 @@ static ssize_t bzdRead(void * cookie, /*@out@*/ char * buf, size_t count)
     fdstat_enter(fd, FDSTAT_READ);
     if (bzfile)
 	/*@-compdef@*/
-	rc = bzread(bzfile, buf, count);
+	rc = BZ2_bzread(bzfile, buf, count);
 	/*@=compdef@*/
     if (rc == -1) {
 	int zerror = 0;
 	if (bzfile)
-	    fd->errcookie = bzerror(bzfile, &zerror);
+	    fd->errcookie = BZ2_bzerror(bzfile, &zerror);
     } else if (rc >= 0) {
 	fdstat_exit(fd, FDSTAT_READ, rc);
 	/*@-compdef@*/
@@ -2684,10 +2674,10 @@ static ssize_t bzdWrite(void * cookie, const char * buf, size_t count)
 
     bzfile = bzdFileno(fd);
     fdstat_enter(fd, FDSTAT_WRITE);
-    rc = bzwrite(bzfile, (void *)buf, count);
+    rc = BZ2_bzwrite(bzfile, (void *)buf, count);
     if (rc == -1) {
 	int zerror = 0;
-	fd->errcookie = bzerror(bzfile, &zerror);
+	fd->errcookie = BZ2_bzerror(bzfile, &zerror);
     } else if (rc > 0) {
 	fdstat_exit(fd, FDSTAT_WRITE, rc);
     }
@@ -2718,7 +2708,7 @@ static int bzdClose( /*@only@*/ void * cookie)
     if (bzfile == NULL) return -2;
     fdstat_enter(fd, FDSTAT_CLOSE);
     /*@-noeffectuncon@*/ /* FIX: check rc */
-    bzclose(bzfile);
+    BZ2_bzclose(bzfile);
     /*@=noeffectuncon@*/
     rc = 0;	/* XXX FIXME */
 
@@ -2727,7 +2717,7 @@ static int bzdClose( /*@only@*/ void * cookie)
     if (fd) {
 	if (rc == -1) {
 	    int zerror = 0;
-	    fd->errcookie = bzerror(bzfile, &zerror);
+	    fd->errcookie = BZ2_bzerror(bzfile, &zerror);
 	} else if (rc >= 0) {
 	    fdstat_exit(fd, FDSTAT_CLOSE, rc);
 	}

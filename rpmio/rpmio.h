@@ -664,7 +664,7 @@ int rpmioAccess(const char *FN, /*@null@*/ const char * path, int mode)
  * @param prompt	prompt string
  * @return		password
  */
-char * (*Getpass) (const char * prompt)
+extern char * (*Getpass) (const char * prompt)
 	/*@*/;
 char * _GetPass (const char * prompt)
 	/*@*/;
