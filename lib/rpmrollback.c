@@ -341,7 +341,7 @@ static int findErases(rpmts ts, /*@null@*/ rpmte p, unsigned thistid,
 	}
 
 erase:
-	rpmMessage(RPMMESS_DEBUG, "\t--- erase h#%u\n", ip->instance);
+	rpmMessage(RPMMESS_DEBUG, D_("\t--- erase h#%u\n"), ip->instance);
 
 	rc = rpmtsAddEraseElement(ts, ip->h, ip->instance);
 	if (rc != 0)
@@ -557,7 +557,7 @@ int rpmRollback(rpmts ts, QVA_t ia, const char ** argv)
 	 */
 	while (rp != NULL && rp->val.u32 == thistid) {
 	    if (!rp->done) {
-		rpmMessage(RPMMESS_DEBUG, "\t+++ install %s\n",
+		rpmMessage(RPMMESS_DEBUG, D_("\t+++ install %s\n"),
 			(rp->key ? rp->key : "???"));
 
 /*@-abstract@*/

@@ -705,7 +705,7 @@ assert(fn != NULL);
 	    rpmError(RPMERR_QUERYINFO, _("invalid package number: %s\n"), arg);
 	    return 1;
 	}
-	rpmMessage(RPMMESS_DEBUG, _("package record number: %u\n"), recOffset);
+	rpmMessage(RPMMESS_DEBUG, D_("package record number: %u\n"), recOffset);
 	qva->qva_mi = rpmtsInitIterator(ts, RPMDBI_PACKAGES, &recOffset, sizeof(recOffset));
 	if (qva->qva_mi == NULL) {
 	    rpmError(RPMERR_QUERYINFO,

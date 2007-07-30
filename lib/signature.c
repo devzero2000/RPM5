@@ -136,12 +136,12 @@ static inline rpmRC printSize(FD_t fd, int siglen, int pad, size_t datalen)
     expected = sizeof(struct rpmlead) + siglen + pad;
     expected += datalen,
     rpmMessage(RPMMESS_DEBUG,
-	_("Expected size: %12lu = lead(%d)+sigs(%d)+pad(%d)+data(%lu)\n"),
+	D_("Expected size: %12lu = lead(%d)+sigs(%d)+pad(%d)+data(%lu)\n"),
 		(unsigned long)expected,
 		(int)sizeof(struct rpmlead), siglen, pad, (unsigned long)datalen);
 /*@=sizeoftype@*/
     rpmMessage(RPMMESS_DEBUG,
-	_("  Actual size: %12lu\n"), (unsigned long)st.st_size);
+	D_("  Actual size: %12lu\n"), (unsigned long)st.st_size);
 
     return RPMRC_OK;
 }
@@ -370,7 +370,7 @@ int rpmWriteSignature(void * _fd, Header sigh)
 	    rc = 1;
 /*@=boundswrite@*/
     }
-    rpmMessage(RPMMESS_DEBUG, _("Signature: size(%d)+pad(%d)\n"), sigSize, pad);
+    rpmMessage(RPMMESS_DEBUG, D_("Signature: size(%d)+pad(%d)\n"), sigSize, pad);
     return rc;
 }
 
@@ -496,7 +496,7 @@ static int makePGPSignature(const char * file, /*@unused@*/ int_32 * sigTagp,
 
 /*@-boundswrite@*/
     *pktlenp = st.st_size;
-    rpmMessage(RPMMESS_DEBUG, _("PGP sig size: %d\n"), *pktlenp);
+    rpmMessage(RPMMESS_DEBUG, D_("PGP sig size: %d\n"), *pktlenp);
     *pktp = xmalloc(*pktlenp);
 /*@=boundswrite@*/
 
@@ -519,7 +519,7 @@ static int makePGPSignature(const char * file, /*@unused@*/ int_32 * sigTagp,
 	}
     }
 
-    rpmMessage(RPMMESS_DEBUG, _("Got %d bytes of PGP sig\n"), *pktlenp);
+    rpmMessage(RPMMESS_DEBUG, D_("Got %d bytes of PGP sig\n"), *pktlenp);
 /*@=boundsread@*/
 
 #ifdef	NOTYET
@@ -624,7 +624,7 @@ static int makeGPGSignature(const char * file, int_32 * sigTagp,
 
 /*@-boundswrite@*/
     *pktlenp = st.st_size;
-    rpmMessage(RPMMESS_DEBUG, _("GPG sig size: %d\n"), *pktlenp);
+    rpmMessage(RPMMESS_DEBUG, D_("GPG sig size: %d\n"), *pktlenp);
     *pktp = xmalloc(*pktlenp);
 /*@=boundswrite@*/
 
@@ -647,7 +647,7 @@ static int makeGPGSignature(const char * file, int_32 * sigTagp,
 	}
     }
 
-    rpmMessage(RPMMESS_DEBUG, _("Got %d bytes of GPG sig\n"), *pktlenp);
+    rpmMessage(RPMMESS_DEBUG, D_("Got %d bytes of GPG sig\n"), *pktlenp);
 /*@=boundsread@*/
 
     /* Parse the signature, change signature tag as appropriate. */

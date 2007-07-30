@@ -869,7 +869,7 @@ static void skipFiles(const rpmts ts, rpmfi fi)
 		/*@innercontinue@*/ continue;
 	    if (strncmp(fbn, bn, bnlen))
 		/*@innercontinue@*/ continue;
-	    rpmMessage(RPMMESS_DEBUG, _("excluding directory %s\n"), dn);
+	    rpmMessage(RPMMESS_DEBUG, D_("excluding directory %s\n"), dn);
 	    fi->actions[i] = FA_SKIPNSTATE;
 	    /*@innerbreak@*/ break;
 	}
@@ -1230,7 +1230,7 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
      * - count files.
      */
 
-rpmMessage(RPMMESS_DEBUG, _("sanity checking %d elements\n"), rpmtsNElements(ts));
+rpmMessage(RPMMESS_DEBUG, D_("sanity checking %d elements\n"), rpmtsNElements(ts));
     ps = rpmtsProblems(ts);
     /* The ordering doesn't matter here */
     pi = rpmtsiInit(ts);
@@ -1303,7 +1303,7 @@ rpmMessage(RPMMESS_DEBUG, _("sanity checking %d elements\n"), rpmtsNElements(ts)
      	  || (rpmpsNumProblems(ts->probs) &&
 		(okProbs == NULL || rpmpsTrim(ts->probs, okProbs)))))
     {
-	rpmMessage(RPMMESS_DEBUG, _("running pre-transaction scripts\n"));
+	rpmMessage(RPMMESS_DEBUG, D_("running pre-transaction scripts\n"));
 	pi = rpmtsiInit(ts);
 	while ((p = rpmtsiNext(pi, TR_ADDED)) != NULL) {
 	    if ((fi = rpmtsiFi(pi)) == NULL)
@@ -1378,7 +1378,7 @@ assert(psm != NULL);
      * calling fpLookupList only once. I'm not sure that the speedup is
      * worth the trouble though.
      */
-rpmMessage(RPMMESS_DEBUG, _("computing %d file fingerprints\n"), totalFileCount);
+rpmMessage(RPMMESS_DEBUG, D_("computing %d file fingerprints\n"), totalFileCount);
 
     numAdded = numRemoved = 0;
     pi = rpmtsiInit(ts);
@@ -1467,7 +1467,7 @@ rpmMessage(RPMMESS_DEBUG, _("computing %d file fingerprints\n"), totalFileCount)
     /* ===============================================
      * Compute file disposition for each package in transaction set.
      */
-rpmMessage(RPMMESS_DEBUG, _("computing file dispositions\n"));
+rpmMessage(RPMMESS_DEBUG, D_("computing file dispositions\n"));
     ps = rpmtsProblems(ts);
     pi = rpmtsiInit(ts);
 /*@-nullpass@*/
@@ -1880,7 +1880,7 @@ assert(psm != NULL);
     pi = rpmtsiFree(pi);
 
     if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)) {
-	rpmMessage(RPMMESS_DEBUG, _("running post-transaction scripts\n"));
+	rpmMessage(RPMMESS_DEBUG, D_("running post-transaction scripts\n"));
 	pi = rpmtsiInit(ts);
 	while ((p = rpmtsiNext(pi, TR_ADDED)) != NULL) {
 	    int haspostscript;

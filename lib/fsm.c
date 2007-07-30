@@ -355,10 +355,10 @@ void * dnlInitIterator(/*@special@*/ const FSM_t fsm,
 		if (j == 0) {
 		    j = 1;
 		    rpmMessage(RPMMESS_DEBUG,
-	_("========== Directories not explicitly included in package:\n"));
+	D_("========== Directories not explicitly included in package:\n"));
 		}
 		(void) urlPath(fi->dnl[i], &dnl);
-		rpmMessage(RPMMESS_DEBUG, _("%10d %s\n"), i, dnl);
+		rpmMessage(RPMMESS_DEBUG, "%10d %s\n", i, dnl);
 	    }
 	    if (j)
 		rpmMessage(RPMMESS_DEBUG, "==========\n");
@@ -1418,11 +1418,11 @@ static int fsmMkdirs(/*@special@*/ /*@partial@*/ FSM_t fsm)
 		    }
 		    if (fsm->fcontext == NULL)
 			rpmMessage(RPMMESS_DEBUG,
-			    _("%s directory created with perms %04o, no context.\n"),
+			    D_("%s directory created with perms %04o, no context.\n"),
 			    fsm->path, (unsigned)(st->st_mode & 07777));
 		    else
 			rpmMessage(RPMMESS_DEBUG,
-			    _("%s directory created with perms %04o, context %s.\n"),
+			    D_("%s directory created with perms %04o, context %s.\n"),
 			    fsm->path, (unsigned)(st->st_mode & 07777),
 			    fsm->fcontext);
 		    fsm->fcontext = NULL;

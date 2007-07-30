@@ -3729,7 +3729,7 @@ void rpmdsProblem(rpmps ps, const char * pkgNEVR, const rpmds ds,
     if (DNEVR == NULL) DNEVR = "? ?N? ?OP? ?EVR?";
     /*@=branchstate@*/
 
-    rpmMessage(RPMMESS_DEBUG, _("package %s has unsatisfied %s: %s\n"),
+    rpmMessage(RPMMESS_DEBUG, D_("package %s has unsatisfied %s: %s\n"),
 	    pkgNEVR, ds->Type, DNEVR+2);
 
     switch ((unsigned)DNEVR[0]) {

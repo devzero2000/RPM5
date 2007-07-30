@@ -570,7 +570,7 @@ int rpmtsSolve(rpmts ts, rpmds ds, /*@unused@*/ const void * data)
 	    if (h != NULL &&
 	        !rpmtsAddInstallElement(ts, h, (fnpyKey)str, 1, NULL))
 	    {
-		rpmMessage(RPMMESS_DEBUG, _("Adding: %s\n"), str);
+		rpmMessage(RPMMESS_DEBUG, D_("Adding: %s\n"), str);
 		rc = -1;	/* XXX restart unsatisfiedDepends() */
 		break;
 	    }
@@ -581,7 +581,7 @@ int rpmtsSolve(rpmts ts, rpmds ds, /*@unused@*/ const void * data)
 	goto exit;
     }
 
-    rpmMessage(RPMMESS_DEBUG, _("Suggesting: %s\n"), str);
+    rpmMessage(RPMMESS_DEBUG, D_("Suggesting: %s\n"), str);
     /* If suggestion is already present, don't bother. */
     if (ts->suggests != NULL && ts->nsuggests > 0) {
 	if (bsearch(&str, ts->suggests, ts->nsuggests,
@@ -1146,9 +1146,9 @@ int rpmtsInitDSI(const rpmts ts)
     if (ts->filesystems != NULL)
 	return 0;
 
-    rpmMessage(RPMMESS_DEBUG, _("mounted filesystems:\n"));
+    rpmMessage(RPMMESS_DEBUG, D_("mounted filesystems:\n"));
     rpmMessage(RPMMESS_DEBUG,
-	_("    i        dev    bsize       bavail       iavail mount point\n"));
+	D_("    i        dev    bsize       bavail       iavail mount point\n"));
 
     rc = rpmGetFilesystemList(&ts->filesystems, &ts->filesystemCount);
     if (rc || ts->filesystems == NULL || ts->filesystemCount <= 0)
@@ -1233,7 +1233,7 @@ int rpmtsInitDSI(const rpmts ts)
 #if !defined(ST_RDONLY)
 #define	ST_RDONLY	1
 #endif
-	rpmMessage(RPMMESS_DEBUG, _("%5d 0x%08x %8u %12ld %12ld %s %s\n"),
+	rpmMessage(RPMMESS_DEBUG, "%5d 0x%08x %8u %12ld %12ld %s %s\n",
 		i, (unsigned) dsi->dev, (unsigned) dsi->f_bsize,
 		(signed long) dsi->f_bavail, (signed long) dsi->f_favail,
 		((dsi->f_flag & ST_RDONLY) ? "ro" : "rw"),

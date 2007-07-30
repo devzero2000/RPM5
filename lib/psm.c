@@ -444,7 +444,7 @@ static pid_t psmWait(rpmpsm psm)
     (void) rpmswAdd(rpmtsOp(ts, RPMTS_OP_SCRIPTLETS), &psm->sq.op);
 
     rpmMessage(RPMMESS_DEBUG,
-	_("%s: waitpid(%d) rc %d status %x secs %u.%03u\n"),
+	D_("%s: waitpid(%d) rc %d status %x secs %u.%03u\n"),
 	psm->stepName, (unsigned)psm->sq.child,
 	(unsigned)psm->sq.reaped, psm->sq.status,
 	(unsigned)msecs/1000, (unsigned)msecs%1000);
@@ -636,7 +636,7 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
     if (progArgv && strcmp(progArgv[0], "<lua>") == 0) {
 #ifdef WITH_LUA
 	rpmMessage(RPMMESS_DEBUG,
-		_("%s: %s(%s-%s-%s.%s) running <lua> scriptlet.\n"),
+		D_("%s: %s(%s-%s-%s.%s) running <lua> scriptlet.\n"),
 		psm->stepName, tag2sln(psm->scriptTag), n, v, r, a);
 	return runLuaScript(psm, h, sln, progArgc, progArgv,
 			    script, arg1, arg2);
@@ -653,7 +653,7 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
     if (ldconfig_path && progArgv != NULL && psm->unorderedSuccessor) {
  	if (ldconfig_done && !strcmp(progArgv[0], ldconfig_path)) {
 	    rpmMessage(RPMMESS_DEBUG,
-		_("%s: %s(%s-%s-%s.%s) skipping redundant \"%s\".\n"),
+		D_("%s: %s(%s-%s-%s.%s) skipping redundant \"%s\".\n"),
 		psm->stepName, tag2sln(psm->scriptTag), n, v, r, a,
 		progArgv[0]);
 	    return rc;
@@ -661,7 +661,7 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
     }
 
     rpmMessage(RPMMESS_DEBUG,
-		_("%s: %s(%s-%s-%s.%s) %ssynchronous scriptlet start\n"),
+		D_("%s: %s(%s-%s-%s.%s) %ssynchronous scriptlet start\n"),
 		psm->stepName, tag2sln(psm->scriptTag), n, v, r, a,
 		(psm->unorderedSuccessor ? "a" : ""));
 
@@ -835,7 +835,7 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
 		/*@=superuser =noeffect @*/
 	    }
 	    xx = Chdir("/");
-	    rpmMessage(RPMMESS_DEBUG, _("%s: %s(%s-%s-%s.%s)\texecv(%s) pid %d\n"),
+	    rpmMessage(RPMMESS_DEBUG, D_("%s: %s(%s-%s-%s.%s)\texecv(%s) pid %d\n"),
 			psm->stepName, sln, n, v, r, a,
 			argv[0], (unsigned)getpid());
 
@@ -1539,7 +1539,7 @@ rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
     case PSM_UNKNOWN:
 	break;
     case PSM_INIT:
-	rpmMessage(RPMMESS_DEBUG, _("%s: %s has %d files, test = %d\n"),
+	rpmMessage(RPMMESS_DEBUG, D_("%s: %s has %d files, test = %d\n"),
 		psm->stepName, rpmteNEVR(psm->te),
 		rpmfiFC(fi), (rpmtsFlags(ts) & RPMTRANS_FLAG_TEST));
 

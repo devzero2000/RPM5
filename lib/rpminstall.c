@@ -323,7 +323,7 @@ int rpmInstall(rpmts ts, QVA_t ia, const char ** fileArgv)
     if (rpmExpandNumeric("%{?_rollback_transaction_on_failure}")) {
 	if (ia->arbtid) {
 	    time_t ttid = (time_t)ia->arbtid;
-	    rpmMessage(RPMMESS_DEBUG, _("Autorollback Goal: %-24.24s (0x%08x)\n"), 
+	    rpmMessage(RPMMESS_DEBUG, D_("Autorollback Goal: %-24.24s (0x%08x)\n"), 
 		ctime(&ttid), ia->arbtid);
 	    rpmtsSetARBGoal(ts, ia->arbtid);
 	}	
@@ -414,7 +414,7 @@ if (fileURL[0] == '=') {
 	    ts->suggests[ts->nsuggests] = _free(ts->suggests[ts->nsuggests]);
 	}
 	ts->suggests = _free(ts->suggests);
-	rpmMessage(RPMMESS_DEBUG, _("Adding goal: %s\n"), fileURL);
+	rpmMessage(RPMMESS_DEBUG, D_("Adding goal: %s\n"), fileURL);
 	eiu->pkgURL[eiu->pkgx] = fileURL;
 	fileURL = NULL;
 	eiu->pkgx++;
@@ -447,7 +447,7 @@ if (fileURL[0] == '=') {
 
 	    /* XXX undefined %{name}/%{version}/%{release} here */
 	    /* XXX %{_tmpdir} does not exist */
-	    rpmMessage(RPMMESS_DEBUG, _(" ... as %s\n"), tfn);
+	    rpmMessage(RPMMESS_DEBUG, D_(" ... as %s\n"), tfn);
 	    rc = urlGetFile(fileURL, tfn);
 	    if (rc < 0) {
 		rpmMessage(RPMMESS_ERROR,
@@ -525,7 +525,7 @@ if (fileURL[0] == '=') {
 	eiu->isSource = (headerIsEntry(eiu->h, RPMTAG_SOURCERPM) == 0);
 
 	if (eiu->isSource) {
-	    rpmMessage(RPMMESS_DEBUG, _("\tadded source package [%d]\n"),
+	    rpmMessage(RPMMESS_DEBUG, D_("\tadded source package [%d]\n"),
 		eiu->numSRPMS);
 	    eiu->sourceURL = xrealloc(eiu->sourceURL,
 				(eiu->numSRPMS + 2) * sizeof(*eiu->sourceURL));
@@ -595,7 +595,7 @@ if (fileURL[0] == '=') {
 
 	switch(rc) {
 	case 0:
-	    rpmMessage(RPMMESS_DEBUG, _("\tadded binary package [%d]\n"),
+	    rpmMessage(RPMMESS_DEBUG, D_("\tadded binary package [%d]\n"),
 			eiu->numRPMS);
 	    eiu->numRPMS++;
 	    /*@switchbreak@*/ break;
@@ -648,7 +648,7 @@ maybe_manifest:
 	break;
     }
 
-    rpmMessage(RPMMESS_DEBUG, _("found %d source and %d binary packages\n"),
+    rpmMessage(RPMMESS_DEBUG, D_("found %d source and %d binary packages\n"),
 		eiu->numSRPMS, eiu->numRPMS);
 
     if (eiu->numFailed) goto exit;
@@ -699,7 +699,7 @@ maybe_manifest:
 
 	rpmcliPackagesTotal += eiu->numSRPMS;
 
-	rpmMessage(RPMMESS_DEBUG, _("installing binary packages\n"));
+	rpmMessage(RPMMESS_DEBUG, D_("installing binary packages\n"));
 
 	/* Drop added/available package indices and dependency sets. */
 	rpmtsClean(ts);
@@ -791,7 +791,7 @@ int rpmErase(rpmts ts, QVA_t ia, const char ** argv)
     if (rpmExpandNumeric("%{?_rollback_transaction_on_failure}")) {
 	if (ia->arbtid) {
 	    time_t ttid = (time_t)ia->arbtid;
-	    rpmMessage(RPMMESS_DEBUG, _("Autorollback Goal: %-24.24s (0x%08x)\n"), 
+	    rpmMessage(RPMMESS_DEBUG, D_("Autorollback Goal: %-24.24s (0x%08x)\n"), 
 		ctime(&ttid), ia->arbtid);
 	    rpmtsSetARBGoal(ts, ia->arbtid);
 	}	
