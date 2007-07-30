@@ -8,6 +8,8 @@
 
 #include <rpmhook.h>
 
+#include "debug.h"
+
 #define RPMHOOK_TABLE_INITSIZE  256
 #define RPMHOOK_BUCKET_INITSIZE 5
 
