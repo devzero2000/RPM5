@@ -150,7 +150,7 @@ fprintf(stderr, "=============================== GPG Signature of \"abc\"\n");
 	
 	rpmDigestUpdate(ctx, txt, strlen(txt));
 	rpmDigestUpdate(ctx, dsig->hash, dsig->hashlen);
-	rpmDigestFinal(ctx, (void **)&digest, &digestlen, 1);
+	rpmDigestFinal(ctx, &digest, &digestlen, 1);
 
 	mpnzero(&dig->hm); mpnsethex(&dig->hm, digest);
 

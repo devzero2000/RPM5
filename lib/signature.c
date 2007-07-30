@@ -1313,7 +1313,7 @@ assert(md5ctx != NULL);	/* XXX can't happen. */
 	}
 #endif
 
-	xx = rpmDigestFinal(ctx, (void **)&dig->md5, &dig->md5len, 1);
+	xx = rpmDigestFinal(ctx, &dig->md5, &dig->md5len, 1);
 	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_DIGEST), sigp->hashlen);
 	rpmtsOp(ts, RPMTS_OP_DIGEST)->count--;	/* XXX one too many */
 
@@ -1446,7 +1446,7 @@ assert(sigp != NULL);
 	    memcpy(trailer+2, &nb, sizeof(nb));
 	    xx = rpmDigestUpdate(ctx, trailer, sizeof(trailer));
 	}
-	xx = rpmDigestFinal(ctx, (void **)&dig->sha1, &dig->sha1len, 1);
+	xx = rpmDigestFinal(ctx, &dig->sha1, &dig->sha1len, 1);
 	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_DIGEST), sigp->hashlen);
 	rpmtsOp(ts, RPMTS_OP_DIGEST)->count--;	/* XXX one too many */
 
