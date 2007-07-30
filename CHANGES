@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - jbj: get rid of convertdb1.
     - jbj: HEADER_MAGIC_YES always: remove the enum and arguments everywhere.
     - jbj: HEADER_MAGIC_YES always: eliminate HEADER_MAGIC_NO usages.
     - rse: provide support for GNU binutils ld(1)'s --as-needed via Autoconf option --enable-build-maxextlibdep
