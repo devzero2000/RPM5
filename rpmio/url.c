@@ -546,7 +546,7 @@ int urlGetFile(const char * url, const char * dest)
 	
     sfd = Fopen(url, "r");
     if (sfd == NULL || Ferror(sfd)) {
-	rpmMessage(RPMMESS_DEBUG, _("failed to open %s: %s\n"), url, Fstrerror(sfd));
+	rpmMessage(RPMMESS_DEBUG, D_("failed to open %s: %s\n"), url, Fstrerror(sfd));
 	rc = FTPERR_UNKNOWN;
 	goto exit;
     }
@@ -566,7 +566,7 @@ int urlGetFile(const char * url, const char * dest)
 if (_url_debug)
 fprintf(stderr, "*** urlGetFile sfd %p %s tfd %p %s\n", sfd, url, (tfd ? tfd : NULL), dest);
     if (tfd == NULL || Ferror(tfd)) {
-	rpmMessage(RPMMESS_DEBUG, _("failed to create %s: %s\n"), dest, Fstrerror(tfd));
+	rpmMessage(RPMMESS_DEBUG, D_("failed to create %s: %s\n"), dest, Fstrerror(tfd));
 	rc = FTPERR_UNKNOWN;
 	goto exit;
     }
