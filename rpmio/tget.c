@@ -25,7 +25,7 @@ static void readFile(const char * path)
     FD_t fd;
 
 fprintf(stderr, "===== %s\n", path);
-    fd = Fopen(path, "r.ufdio");
+    fd = Fopen(path, "r");
     if (fd != NULL) {
 	char buf[BUFSIZ];
 	size_t len = Fread(buf, 1, sizeof(buf), fd);
