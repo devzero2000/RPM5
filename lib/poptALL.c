@@ -28,6 +28,7 @@ const char *__progname;
 
 int _nolead = 0;
 int _nosigh = 0;
+extern int _newmagic;
 
 /*@unchecked@*/
 static int _debug = 0;
@@ -471,6 +472,8 @@ struct poptOption rpmcliAllPoptTable[] = {
 	N_("disable rpm lead"), NULL},
  { "nosigh", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_nosigh, -1,
 	N_("disable rpm signature header"), NULL},
+ { "newmagic", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_newmagic, -1,
+	N_("dupe region tag into lsb of magic"), NULL},
 
    POPT_TABLEEND
 };

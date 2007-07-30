@@ -37,6 +37,7 @@ LIBRPMDB_0
     hGetNEVRA;
     _init;
     rpm_mergesort;
+    _newmagic;
     prDbiOpenFlags;
     rdbOptions;
     rpmDatabasePoptTable;

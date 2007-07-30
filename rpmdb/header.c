@@ -20,6 +20,8 @@
 /*@unchecked@*/
 int _hdr_debug = 0;
 
+int _newmagic = 0;
+
 /*@access entryInfo @*/
 /*@access indexEntry @*/
 
@@ -37,6 +39,16 @@ int _hdr_debug = 0;
 /*@observer@*/ /*@unchecked@*/
 static unsigned char header_magic[8] = {
 	0x8e, 0xad, 0xe8, 0x01, 0x00, 0x00, 0x00, 0x00
+};
+
+/*@observer@*/ /*@unchecked@*/
+static unsigned char sigh_magic[8] = {
+	0x8e, 0xad, 0xe8, 0x3e, 0x00, 0x00, 0x00, 0x00
+};
+
+/*@observer@*/ /*@unchecked@*/
+static unsigned char meta_magic[8] = {
+	0x8e, 0xad, 0xe8, 0x3c, 0x00, 0x00, 0x00, 0x00
 };
 
 /** \ingroup header
@@ -1360,7 +1372,10 @@ Header headerRead(void * _fd)
 /*@-boundsread@*/
     {	/* XXX HEADER_MAGIC_YES */
 	magic = block[i++];
-	if (memcmp(&magic, header_magic, sizeof(magic)))
+	if (!(	!memcmp(&magic, header_magic, sizeof(magic))
+	 ||	!memcmp(&magic, sigh_magic, sizeof(magic))
+	 ||	!memcmp(&magic, meta_magic, sizeof(magic))
+	))
 	    goto exit;
 	reserved = block[i++];
     }
@@ -1434,9 +1449,15 @@ int headerWrite(void * _fd, /*@null@*/ Header h)
     if (uh == NULL)
 	return 1;
     {	/* XXX HEADER_MAGIC_YES */
+	unsigned char mymagic[sizeof(header_magic)];
+
+	/* XXX create new magic from region marker. */
+	memcpy(mymagic, header_magic, sizeof(header_magic));
+	if (_newmagic && length > 16+3)
+	    mymagic[3] = ((unsigned char *)uh)[16+3];
 /*@-boundsread@*/
 	/*@-sizeoftype@*/
-	nb = Fwrite(header_magic, sizeof(char), sizeof(header_magic), fd);
+	nb = Fwrite(mymagic, sizeof(char), sizeof(mymagic), fd);
 	/*@=sizeoftype@*/
 /*@=boundsread@*/
 	if (nb != sizeof(header_magic))
