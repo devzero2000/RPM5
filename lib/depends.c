@@ -11,7 +11,11 @@
 #include <envvar.h>
 #include <ugid.h>		/* XXX user()/group() probes */
 
+/* XXX CACHE_DEPENDENCY_RESULT deprecated, functionality being reimplemented */
+#define CACHE_DEPENDENCY_RESULT	1
+#if defined(CACHE_DEPNDENCY_RESULT) 
 #define	_RPMDB_INTERNAL		/* XXX response cache needs dbiOpen et al. */
+#endif
 #include "rpmdb.h"
 
 #define	_RPMEVR_INTERNAL
@@ -47,7 +51,9 @@ struct orderListIndex_s {
 };
 
 /*@unchecked@*/
-int _cacheDependsRC = 1;
+#if defined(CACHE_DEPNDENCY_RESULT) 
+int _cacheDependsRC = CACHE_DEPENDENCY_RESULT;
+#endif
 
 /*@observer@*/ /*@unchecked@*/
 const char *rpmNAME = PACKAGE;
@@ -173,6 +179,9 @@ static int rpmHeadersIdentical(Header first, Header second)
     B = rpmdsFree(B);
     return rc;
 }
+
+static rpmTag _upgrade_tag;
+static rpmTag _obsolete_tag;
 
 int rpmtsAddInstallElement(rpmts ts, Header h,
 			fnpyKey key, int upgrade, rpmRelocation relocs)
@@ -391,9 +400,14 @@ assert(p != NULL);
     }
 
     /* On upgrade, erase older packages of same color (if any). */
+    if (_upgrade_tag == 0) {
+	const char *t = rpmExpand("%{?_upgrade_tag}", NULL);
+	_upgrade_tag = (!strcmp(t, "name") ? RPMTAG_NAME : RPMTAG_PROVIDENAME);
+	t = _free(t);
+    }
 
   if (!(depFlags & RPMDEPS_FLAG_NOUPGRADE)) {
-    mi = rpmtsInitIterator(ts, RPMTAG_PROVIDENAME, rpmteN(p), 0);
+    mi = rpmtsInitIterator(ts, _upgrade_tag, rpmteN(p), 0);
     while((oh = rpmdbNextIterator(mi)) != NULL) {
 	int lastx;
 	rpmte q;
@@ -424,6 +438,12 @@ assert(lastx >= 0 && lastx < ts->orderCount);
     mi = rpmdbFreeIterator(mi);
   }
 
+    if (_obsolete_tag == 0) {
+	const char *t = rpmExpand("%{?_obsolete_tag}", NULL);
+	_obsolete_tag = (!strcmp(t, "name") ? RPMTAG_NAME : RPMTAG_PROVIDENAME);
+	t = _free(t);
+    }
+
   if (!(depFlags & RPMDEPS_FLAG_NOOBSOLETES)) {
     obsoletes = rpmdsLink(rpmteDS(p, RPMTAG_OBSOLETENAME), "Obsoletes");
     obsoletes = rpmdsInit(obsoletes);
@@ -452,7 +472,7 @@ assert(lastx >= 0 && lastx < ts->orderCount);
 	if (Name[0] == '/')
 	    mi = rpmtsInitIterator(ts, RPMTAG_BASENAMES, Name, 0);
 	else
-	    mi = rpmtsInitIterator(ts, RPMTAG_PROVIDENAME, Name, 0);
+	    mi = rpmtsInitIterator(ts, _obsolete_tag, Name, 0);
 
 	xx = rpmdbPruneIterator(mi,
 	    ts->removedPackages, ts->numRemovedPackages, 1);
@@ -534,7 +554,9 @@ static int unsatisfiedDepend(rpmts ts, rpmds dep, int adding)
     const char * Name;
     int_32 Flags;
     Header h;
+#if defined(CACHE_DEPNDENCY_RESULT) 
     int _cacheThisRC = 1;
+#endif
     int rc;
     int xx;
     int retries = 10;
@@ -547,6 +569,7 @@ static int unsatisfiedDepend(rpmts ts, rpmds dep, int adding)
     /*
      * Check if dbiOpen/dbiPut failed (e.g. permissions), we can't cache.
      */
+#if defined(CACHE_DEPNDENCY_RESULT) 
     if (_cacheDependsRC) {
 	dbiIndex dbi;
 	dbi = dbiOpen(rpmtsGetRdb(ts), RPMDBI_DEPENDS, 0);
@@ -593,6 +616,7 @@ static int unsatisfiedDepend(rpmts ts, rpmds dep, int adding)
 	    }
 	}
     }
+#endif
 
 retry:
     rc = 0;	/* assume dependency is satisfied */
@@ -958,12 +982,14 @@ retry:
 
     /* Search added packages for the dependency. */
     if (rpmalSatisfiesDepend(ts->addedPackages, dep, NULL) != NULL) {
+#if defined(CACHE_DEPNDENCY_RESULT) 
 	/*
 	 * XXX Ick, context sensitive answers from dependency cache.
 	 * XXX Always resolve added dependencies within context to disambiguate.
 	 */
 	if (_rpmds_nopromote)
 	    _cacheThisRC = 0;
+#endif
 	goto exit;
     }
 
@@ -1030,6 +1056,7 @@ exit:
     /*
      * If dbiOpen/dbiPut fails (e.g. permissions), we can't cache.
      */
+#if defined(CACHE_DEPNDENCY_RESULT) 
     if (_cacheDependsRC && _cacheThisRC) {
 	dbiIndex dbi;
 	dbi = dbiOpen(rpmtsGetRdb(ts), RPMDBI_DEPENDS, 0);
@@ -1062,6 +1089,7 @@ exit:
 		_cacheDependsRC = 0;
 	}
     }
+#endif
 
     return rpmdsNegateRC(dep, rc);
 }
@@ -2453,8 +2481,10 @@ exit:
     /*@-branchstate@*/
     if (closeatexit)
 	xx = rpmtsCloseDB(ts);
+#if defined(CACHE_DEPNDENCY_RESULT) 
     else if (_cacheDependsRC)
 	xx = rpmdbCloseDBI(rpmtsGetRdb(ts), RPMDBI_DEPENDS);
+#endif
     /*@=branchstate@*/
 
 #ifdef	NOTYET
