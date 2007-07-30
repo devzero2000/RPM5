@@ -11,7 +11,7 @@ AM_CPPFLAGS = -I. \
 
 EXTRA_DIST =	hashtab.h
 
-EXTRA_PROGRAMS = debugedit convertdb1
+EXTRA_PROGRAMS = debugedit
 
 myLDADD = \
 	$(top_builddir)/build/librpmbuild.la \
@@ -23,9 +23,6 @@ myLDADD = \
 
 pkglibdir =		@USRLIBRPM@
 pkglib_PROGRAMS =	rpmdeps @WITH_LIBELF_DEBUGEDIT@
-
-convertdb1_SOURCES =	convertdb1.c
-convertdb1_LDADD =	$(myLDADD)
 
 debugedit_SOURCES =	debugedit.c hashtab.c
 debugedit_LDADD =	$(myLDADD)
