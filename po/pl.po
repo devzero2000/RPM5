@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.4.8\n"
 "Report-Msgid-Bugs-To: <rpm-devel@lists.dulug.duke.edu>\n"
-"POT-Creation-Date: 2007-06-17 20:15-0400\n"
+"POT-Creation-Date: 2007-07-29 14:10-0400\n"
 "PO-Revision-Date: 2006-02-28 20:20+0100\n"
 "Last-Translator: Arkadiusz Miskiewicz <arekm@pld-linux.org>\n"
 "Language-Team: Polish <translation-team-pl@lists.sourceforge.net>\n"
@@ -417,172 +417,172 @@ msgstr "&& i || nie s± obs³ugiwane dla ³añcuchów znakowych\n"
 msgid "syntax error in expression\n"
 msgstr "b³±d sk³adni w wyra¿eniu\n"
 
-#: build/files.c:290
+#: build/files.c:287
 #, c-format
 msgid "TIMECHECK failure: %s\n"
 msgstr "TIMECHECK nie powiod³o siê: %s\n"
 
-#: build/files.c:355 build/files.c:555 build/files.c:751
+#: build/files.c:352 build/files.c:552 build/files.c:748
 #, c-format
 msgid "Missing '(' in %s %s\n"
 msgstr "Brak '(' w %s %s\n"
 
-#: build/files.c:366 build/files.c:685 build/files.c:762
+#: build/files.c:363 build/files.c:682 build/files.c:759
 #, c-format
 msgid "Missing ')' in %s(%s\n"
 msgstr "Brak ')' w %s(%s\n"
 
-#: build/files.c:404 build/files.c:710
+#: build/files.c:401 build/files.c:707
 #, c-format
 msgid "Invalid %s token: %s\n"
 msgstr "B³êdny znak %s: %s\n"
 
-#: build/files.c:514
+#: build/files.c:511
 #, c-format
 msgid "Missing %s in %s %s\n"
 msgstr "Brak %s w %s %s\n"
 
-#: build/files.c:571
+#: build/files.c:568
 #, c-format
 msgid "Non-white space follows %s(): %s\n"
 msgstr "Brak bia³ego znaku po %s(): %s\n"
 
-#: build/files.c:609
+#: build/files.c:606
 #, c-format
 msgid "Bad syntax: %s(%s)\n"
 msgstr "B³êdna sk³adnia: %s(%s)\n"
 
-#: build/files.c:619
+#: build/files.c:616
 #, c-format
 msgid "Bad mode spec: %s(%s)\n"
 msgstr "B³êdne okre¶lenie uprawnieñ: %s(%s)\n"
 
-#: build/files.c:631
+#: build/files.c:628
 #, c-format
 msgid "Bad dirmode spec: %s(%s)\n"
 msgstr "B³êdne okre¶lenie uprawnieñ katalogu: %s(%s)\n"
 
-#: build/files.c:789
+#: build/files.c:786
 #, c-format
 msgid "Unusual locale length: \"%.*s\" in %%lang(%s)\n"
 msgstr "Niespotykana d³ugo¶æ okre¶lenia lokalizacji \"%.*s\" w %%lang(%s)\n"
 
-#: build/files.c:800
+#: build/files.c:797
 #, c-format
 msgid "Duplicate locale %.*s in %%lang(%s)\n"
 msgstr "Powtórzone okre¶lenie lokalizacji %.*s w %%lang(%s)\n"
 
-#: build/files.c:930
+#: build/files.c:927
 #, c-format
 msgid "Hit limit for %%docdir\n"
 msgstr "Limit trafieñ dla %%docdir\n"
 
-#: build/files.c:938
+#: build/files.c:935
 #, c-format
 msgid "Only one arg for %%docdir\n"
 msgstr "Tylko jeden argument dla %%docdir\n"
 
-#: build/files.c:972
+#: build/files.c:969
 #, c-format
 msgid "Two files on one line: %s\n"
 msgstr "Dwa pliki w jednej linii: %s\n"
 
-#: build/files.c:994
+#: build/files.c:991
 #, c-format
 msgid "File must begin with \"/\": %s\n"
 msgstr "Plik musi siê zaczynaæ od \"/\": %s\n"
 
-#: build/files.c:1012
+#: build/files.c:1009
 #, c-format
 msgid "Can't mix special %%doc with other forms: %s\n"
 msgstr "Nie mo¿na mieszaæ specjalnego %%doc z innymi formami: %s\n"
 
-#: build/files.c:1029
+#: build/files.c:1026
 #, c-format
 msgid "illegal _docdir_fmt: %s\n"
 msgstr ""
 
-#: build/files.c:1307
+#: build/files.c:1304
 #, c-format
 msgid "File listed twice: %s\n"
 msgstr "Plik podany dwukrotnie: %s\n"
 
-#: build/files.c:1481
+#: build/files.c:1478
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr "Dowi±zanie symboliczne wskazuje na BuildRoot: %s -> %s\n"
 
-#: build/files.c:1738
+#: build/files.c:1734
 #, c-format
 msgid "File doesn't match prefix (%s): %s\n"
 msgstr "Plik nie zgadza siê z prefiksem (%s): %s\n"
 
-#: build/files.c:1762
+#: build/files.c:1758
 #, c-format
 msgid "File not found: %s\n"
 msgstr "Nie znaleziono pliku: %s\n"
 
-#: build/files.c:1977
+#: build/files.c:1973
 #, c-format
 msgid "%s: can't load unknown tag (%d).\n"
 msgstr "%s: nie mo¿na za³adowaæ nieznanego tagu (%d).\n"
 
-#: build/files.c:1983
+#: build/files.c:1979
 #, c-format
 msgid "%s: public key read failed.\n"
 msgstr "%s: odczyt klucza publicznego nie powiód³ siê.\n"
 
-#: build/files.c:1987 lib/rpmchecksig.c:614
+#: build/files.c:1983 lib/rpmchecksig.c:614
 #, c-format
 msgid "%s: not an armored public key.\n"
 msgstr "%s: nie jest opakowanym kluczem publicznym.\n"
 
-#: build/files.c:1994
+#: build/files.c:1990
 #, c-format
 msgid "%s: *.te policy read failed.\n"
 msgstr "%s: odczyt polityki *.te nie powiód³ siê.\n"
 
-#: build/files.c:2047
+#: build/files.c:2043
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "Plik musi siê zaczynaæ od \"/\": %s\n"
 
-#: build/files.c:2071
+#: build/files.c:2067
 #, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "Glob niedozwolony: %s\n"
 
-#: build/files.c:2088 lib/rpminstall.c:375
+#: build/files.c:2084 lib/rpminstall.c:369
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Nie znaleziono pliku poprzez glob: %s\n"
 
-#: build/files.c:2148
+#: build/files.c:2144
 #, c-format
 msgid "Could not open %%files file %s: %s\n"
 msgstr "Nie mo¿na otworzyæ pliku %s dla %%files: %s\n"
 
-#: build/files.c:2159 build/pack.c:155
+#: build/files.c:2155 build/pack.c:155
 #, c-format
 msgid "line: %s\n"
 msgstr "linia: %s\n"
 
-#: build/files.c:2544
+#: build/files.c:2540
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "B³êdny plik: %s: %s\n"
 
-#: build/files.c:2556 build/parsePrep.c:50
+#: build/files.c:2552 build/parsePrep.c:50
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "B³êdny u¿ytkownik/grupa: %s\n"
 
-#: build/files.c:2601
+#: build/files.c:2597
 #, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "Szukanie niespakietowanych plików: %s\n"
 
-#: build/files.c:2618
+#: build/files.c:2614
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
@@ -591,7 +591,7 @@ msgstr ""
 "Znaleziono zainstalowane (ale niespakietowane) pliki:\n"
 "%s"
 
-#: build/files.c:2648
+#: build/files.c:2644
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "Przetwarzanie plików: %s-%s-%s\n"
@@ -994,76 +994,76 @@ msgstr "B³êdne ¼ród³o: %s: %s\n"
 msgid "No patch number %d\n"
 msgstr "Brak ³aty numer %d\n"
 
-#: build/parsePrep.c:203
+#: build/parsePrep.c:204
 #, c-format
 msgid "No source number %d\n"
 msgstr "Brak ¼ród³a numer %d\n"
 
-#: build/parsePrep.c:319
+#: build/parsePrep.c:320
 #, c-format
 msgid "Error parsing %%setup: %s\n"
 msgstr "B³±d przetwarzania %%setup: %s\n"
 
-#: build/parsePrep.c:334
+#: build/parsePrep.c:335
 #, c-format
 msgid "line %d: Bad arg to %%setup: %s\n"
 msgstr "linia %d: B³êdny argument dla %%setup: %s\n"
 
-#: build/parsePrep.c:352
+#: build/parsePrep.c:353
 #, c-format
 msgid "line %d: Bad %%setup option %s: %s\n"
 msgstr "linia %d: B³êdna opcja %%setup %s: %s\n"
 
-#: build/parsePrep.c:494
+#: build/parsePrep.c:495
 #, c-format
 msgid "line %d: Need arg to %%patch -b: %s\n"
 msgstr "linia %d: Wymagany argument dla %%patch -b: %s\n"
 
-#: build/parsePrep.c:503
+#: build/parsePrep.c:504
 #, c-format
 msgid "line %d: Need arg to %%patch -z: %s\n"
 msgstr "linia %d: Wymagany argument dla %%patch -z: %s\n"
 
-#: build/parsePrep.c:514
+#: build/parsePrep.c:517
 #, fuzzy, c-format
 msgid "line %d: Bad arg to %%patch -F: %s\n"
 msgstr "linia %d: B³êdny argument dla %%patch -p: %s\n"
 
-#: build/parsePrep.c:526
+#: build/parsePrep.c:529
 #, c-format
 msgid "line %d: Need arg to %%patch -p: %s\n"
 msgstr "linia %d: Wymagany argument dla %%patch -p: %s\n"
 
-#: build/parsePrep.c:533
+#: build/parsePrep.c:536
 #, c-format
 msgid "line %d: Bad arg to %%patch -p: %s\n"
 msgstr "linia %d: B³êdny argument dla %%patch -p: %s\n"
 
-#: build/parsePrep.c:540
+#: build/parsePrep.c:543
 msgid "Too many patches!\n"
 msgstr "Zbyt wiele ³at!\n"
 
-#: build/parsePrep.c:544
+#: build/parsePrep.c:547
 #, c-format
 msgid "line %d: Bad arg to %%patch: %s\n"
 msgstr "linia %d: B³êdny argument dla %%patch: %s\n"
 
-#: build/parsePrep.c:638
+#: build/parsePrep.c:641
 #, fuzzy, c-format
 msgid "Missing %s%d %s: %s\n"
 msgstr "Brak %s w %s %s\n"
 
-#: build/parsePrep.c:646
+#: build/parsePrep.c:649
 #, fuzzy, c-format
 msgid "file %s missing: %s\n"
 msgstr "plik %s: %s\n"
 
-#: build/parsePrep.c:654
+#: build/parsePrep.c:657
 #, c-format
 msgid "Fetching %s failed: %s\n"
 msgstr "Pobieranie %s nie powiod³o siê: %s\n"
 
-#: build/parsePrep.c:676
+#: build/parsePrep.c:679
 #, c-format
 msgid "line %d: second %%prep\n"
 msgstr "linia %d: druga sekcja %%prep\n"
@@ -1547,42 +1547,42 @@ msgstr "nie mo¿na otworzyæ %s: %s\n"
 msgid "file %s is on an unknown device\n"
 msgstr "plik %s jest na nieznanym urz±dzeniu\n"
 
-#: lib/fsm.c:805
+#: lib/fsm.c:803
 #, c-format
 msgid "user %s does not exist - using root\n"
 msgstr "u¿ytkownik %s nie istnieje - u¿yto konta root\n"
 
-#: lib/fsm.c:813
+#: lib/fsm.c:811
 #, c-format
 msgid "group %s does not exist - using root\n"
 msgstr "grupa %s nie istnieje - u¿yto grupy root\n"
 
-#: lib/fsm.c:1729
+#: lib/fsm.c:1727
 #, c-format
 msgid "archive file %s was not found in header file list\n"
 msgstr "plik archiwum %s nie znaleziony na li¶cie plików w nag³ówku\n"
 
-#: lib/fsm.c:1879 lib/fsm.c:2003
+#: lib/fsm.c:1877 lib/fsm.c:2001
 #, c-format
 msgid "%s saved as %s\n"
 msgstr "%s zapisano jako %s\n"
 
-#: lib/fsm.c:2030
+#: lib/fsm.c:2028
 #, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "%s rmdir %s nie powiod³o siê: katalog nie jest pusty\n"
 
-#: lib/fsm.c:2036
+#: lib/fsm.c:2034
 #, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "%s rmdir %s nie powiod³o siê: %s\n"
 
-#: lib/fsm.c:2051
+#: lib/fsm.c:2049
 #, c-format
 msgid " %s: unlink of %s failed: %s\n"
 msgstr " %s: unlink %s nie powiod³o siê: %s\n"
 
-#: lib/fsm.c:2076
+#: lib/fsm.c:2074
 #, c-format
 msgid "%s created as %s\n"
 msgstr "%s utworzony jako %s\n"
@@ -2564,7 +2564,7 @@ msgstr "b³êdny numer pakietu: %s\n"
 msgid "record %u could not be read\n"
 msgstr "nie mo¿na odczytaæ rekordu %u\n"
 
-#: lib/query.c:721 lib/query.c:727 lib/rpminstall.c:817
+#: lib/query.c:721 lib/query.c:727 lib/rpminstall.c:811
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "pakiet %s nie jest zainstalowany\n"
@@ -2824,8 +2824,8 @@ msgstr "Plik %s: %s\n"
 msgid "Failed to find %s:\n"
 msgstr "Odczytanie %s nie powiod³o siê: %s.\n"
 
-#: lib/rpmgi.c:91 lib/rpminstall.c:125 lib/rpminstall.c:493
-#: lib/rpminstall.c:622 lib/rpmrollback.c:166 lib/rpmts.c:553
+#: lib/rpmgi.c:91 lib/rpminstall.c:125 lib/rpminstall.c:487
+#: lib/rpminstall.c:616 lib/rpmrollback.c:166 lib/rpmts.c:553
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "otwarcie %s nie powiod³o siê: %s\n"
@@ -2835,11 +2835,11 @@ msgstr "otwarcie %s nie powiod³o siê: %s\n"
 msgid "unknown tag: \"%s\"\n"
 msgstr "nieznana etykieta: \"%s\"\n"
 
-#: lib/rpmgi.c:764 lib/rpminstall.c:666 lib/rpminstall.c:851
+#: lib/rpmgi.c:764 lib/rpminstall.c:660 lib/rpminstall.c:845
 msgid "Failed dependencies:\n"
 msgstr "Niespe³nione zale¿no¶ci:\n"
 
-#: lib/rpmgi.c:770 lib/rpminstall.c:673
+#: lib/rpmgi.c:770 lib/rpminstall.c:667
 msgid "    Suggested resolutions:\n"
 msgstr "    Sugerowane sposoby spe³nienia:\n"
 
@@ -2867,57 +2867,57 @@ msgstr "Uaktualnianie..."
 msgid "Upgrading packages..."
 msgstr "Uaktualnianie pakietów..."
 
-#: lib/rpminstall.c:438
+#: lib/rpminstall.c:432
 #, c-format
 msgid "Retrieving %s\n"
 msgstr "¦ci±ganie %s\n"
 
-#: lib/rpminstall.c:455
+#: lib/rpminstall.c:449
 #, c-format
 msgid "skipping %s - transfer failed - %s\n"
 msgstr "%s pomijany - transmisja %s nie powiod³a siê\n"
 
-#: lib/rpminstall.c:512 lib/rpminstall.c:911
+#: lib/rpminstall.c:506 lib/rpminstall.c:905
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s nie mo¿e byæ zainstalowany\n"
 
-#: lib/rpminstall.c:554
+#: lib/rpminstall.c:548
 #, c-format
 msgid "package %s is not relocatable\n"
 msgstr "pakiet %s nie jest przesuwalny\n"
 
-#: lib/rpminstall.c:605
+#: lib/rpminstall.c:599
 #, fuzzy, c-format
 msgid "package file %s was skipped\n"
 msgstr "pakiet %s ma niespe³nione %s: %s\n"
 
-#: lib/rpminstall.c:609
+#: lib/rpminstall.c:603
 #, c-format
 msgid "file %s requires a newer version of RPM\n"
 msgstr "plik %s wymaga nowszej wersji RPM-a\n"
 
-#: lib/rpminstall.c:637
+#: lib/rpminstall.c:631
 #, c-format
 msgid "%s: not an rpm package (or package manifest): %s\n"
 msgstr "%s: nie jest pakietem rpm (ani \"manifestem\" pakietu): %s\n"
 
-#: lib/rpminstall.c:727
+#: lib/rpminstall.c:721
 #, c-format
 msgid "cannot open file %s: %s\n"
 msgstr "nie mo¿na otworzyæ pliku %s: %s\n"
 
-#: lib/rpminstall.c:826
+#: lib/rpminstall.c:820
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" okre¶la wiele pakietów\n"
 
-#: lib/rpminstall.c:895
+#: lib/rpminstall.c:889
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "nie mo¿na otworzyæ %s: %s\n"
 
-#: lib/rpminstall.c:901
+#: lib/rpminstall.c:895
 #, c-format
 msgid "Installing %s\n"
 msgstr "Instalacja %s\n"
@@ -3086,42 +3086,42 @@ msgstr "brak architektury dla %s w %s:%d\n"
 msgid "bad option '%s' at %s:%d\n"
 msgstr "b³êdna opcja '%s' w %s:%d\n"
 
-#: lib/rpmrc.c:1922
+#: lib/rpmrc.c:1939
 #, c-format
 msgid "Cannot expand %s\n"
 msgstr "Nie mo¿na rozwin±æ %s\n"
 
-#: lib/rpmrc.c:1927
+#: lib/rpmrc.c:1944
 #, c-format
 msgid "Cannot read %s, HOME is too large.\n"
 msgstr "Nie mo¿na odczytaæ %s, HOME jest zbyt du¿e.\n"
 
-#: lib/rpmrc.c:1944
+#: lib/rpmrc.c:1961
 #, c-format
 msgid "Unable to open %s for reading: %s.\n"
 msgstr "Nie mo¿na otworzyæ %s do odczytu: %s.\n"
 
-#: lib/rpmrc.c:2089
+#: lib/rpmrc.c:2106
 #, c-format
 msgid "Configured system provides (from /etc/rpm/sysinfo):\n"
 msgstr "Skonfigurowane zasoby systemu (z /etc/rpm/sysinfo):\n"
 
-#: lib/rpmrc.c:2103
+#: lib/rpmrc.c:2120
 #, c-format
 msgid "Features provided by rpmlib installer:\n"
 msgstr "Cechy dostarczane przez instalator rpmlib:\n"
 
-#: lib/rpmrc.c:2117
+#: lib/rpmrc.c:2134
 #, c-format
 msgid "Features provided by current cpuinfo (from /proc/cpuinfo):\n"
 msgstr "Cechy dostarczane przez bie¿±ce cpuinfo (z /proc/cpuinfo):\n"
 
-#: lib/rpmrc.c:2131
+#: lib/rpmrc.c:2148
 #, c-format
 msgid "Features provided by current getconf:\n"
 msgstr "Cechy dostarczane przez bie¿±cy getconf:\n"
 
-#: lib/rpmrc.c:2145
+#: lib/rpmrc.c:2162
 #, c-format
 msgid "Features provided by current uname:\n"
 msgstr "Cechy dostarczane przez bie¿±ce uname:\n"
@@ -3346,17 +3346,17 @@ msgstr "Uszkodzony skrót MD5: NIE OBS£UGIWANY\n"
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr "Sygnatura: NIEZNANA (%d)\n"
 
-#: lib/transaction.c:1013
+#: lib/transaction.c:994
 #, fuzzy, c-format
 msgid "rpmdb erase failed. NEVRA: %s\n"
 msgstr "%s rmdir %s nie powiod³o siê: %s\n"
 
-#: lib/transaction.c:1031
+#: lib/transaction.c:1012
 #, fuzzy, c-format
 msgid "Rollback to %-24.24s (0x%08x)\n"
 msgstr "Cel wycofania:  %-24.24s (0x%08x)\n"
 
-#: lib/transaction.c:1178
+#: lib/transaction.c:1159
 msgid "Invalid number of transaction elements.\n"
 msgstr "B³êdna liczba elementów transakcji.\n"
 
@@ -3365,7 +3365,7 @@ msgstr "B³êdna liczba elementów transakcji.\n"
 msgid "missing   %c %s"
 msgstr "brak      %c %s"
 
-#: lib/verify.c:424
+#: lib/verify.c:426
 #, c-format
 msgid "Unsatisfied dependencies for %s:\n"
 msgstr "Niespe³nione zale¿no¶ci dla %s:\n"
@@ -3380,39 +3380,39 @@ msgstr "b³±d db%d(%d) z %s: %s\n"
 msgid "db%d error(%d): %s\n"
 msgstr "b³±d db%d(%d): %s\n"
 
-#: rpmdb/db3.c:1292
+#: rpmdb/db3.c:1284
 msgid "Runnning db->verify ...\n"
 msgstr "Uruchamianie db->verify...\n"
 
-#: rpmdb/db3.c:1597
+#: rpmdb/db3.c:1589
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "nie mo¿na uzyskaæ %s blokady na %s/%s\n"
 
-#: rpmdb/db3.c:1599
+#: rpmdb/db3.c:1591
 msgid "exclusive"
 msgstr "wy³±cznej"
 
-#: rpmdb/db3.c:1599
+#: rpmdb/db3.c:1591
 msgid "shared"
 msgstr "dzielonej"
 
-#: rpmdb/dbconfig.c:575
+#: rpmdb/dbconfig.c:596
 #, c-format
 msgid "unrecognized db option: \"%s\" ignored.\n"
 msgstr "nierozpoznana opcja db: \"%s\" zignorowana.\n"
 
-#: rpmdb/dbconfig.c:615
+#: rpmdb/dbconfig.c:636
 #, c-format
 msgid "%s has invalid numeric value, skipped\n"
 msgstr "%s ma b³êdn± warto¶æ liczbow±, pominiêto\n"
 
-#: rpmdb/dbconfig.c:624
+#: rpmdb/dbconfig.c:645
 #, c-format
 msgid "%s has too large or too small long value, skipped\n"
 msgstr "%s ma zbyt du¿± lub zbyt ma³± warto¶æ long, pominiêto\n"
 
-#: rpmdb/dbconfig.c:633
+#: rpmdb/dbconfig.c:654
 #, c-format
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr "%s ma zbyt du¿± lub zbyt ma³± warto¶æ ca³kowit±, pominiêto\n"
@@ -3537,7 +3537,7 @@ msgid "no dbpath has been set\n"
 msgstr "¶cie¿ka bazy danych nie zosta³a podana\n"
 
 #: rpmdb/rpmdb.c:1423 rpmdb/rpmdb.c:1561 rpmdb/rpmdb.c:1617 rpmdb/rpmdb.c:2521
-#: rpmdb/rpmdb.c:2675 rpmdb/rpmdb.c:3456
+#: rpmdb/rpmdb.c:2675 rpmdb/rpmdb.c:3455
 #, c-format
 msgid "error(%d) getting \"%s\" records from %s index\n"
 msgstr "b³±d(%d) pobierania rekordów \"%s\" z indeksu %s\n"
@@ -3585,49 +3585,49 @@ msgstr "b³±d(%d) zapisywania rekordu \"%s\" do %s\n"
 msgid "error(%d) removing record \"%s\" from %s\n"
 msgstr "b³±d(%d) usuwania rekordu \"%s\" z %s\n"
 
-#: rpmdb/rpmdb.c:3193
+#: rpmdb/rpmdb.c:3192
 #, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr "b³±d(%d) alokowania nowej instancji pakietu\n"
 
-#: rpmdb/rpmdb.c:3259
+#: rpmdb/rpmdb.c:3258
 msgid "rpmdbAdd: skipping"
 msgstr "rpmdbAdd: pomijanie"
 
-#: rpmdb/rpmdb.c:3475
+#: rpmdb/rpmdb.c:3474
 #, c-format
 msgid "error(%d) storing record %s into %s\n"
 msgstr "b³±d(%d) zapisywania rekordu %s do %s\n"
 
-#: rpmdb/rpmdb.c:3919
+#: rpmdb/rpmdb.c:3918
 #, c-format
 msgid "temporary database %s already exists\n"
 msgstr "tymczasowa baza danych %s ju¿ istnieje\n"
 
-#: rpmdb/rpmdb.c:3927
+#: rpmdb/rpmdb.c:3926
 #, c-format
 msgid "creating directory %s: %s\n"
 msgstr "tworzenie katalogu %s: %s\n"
 
-#: rpmdb/rpmdb.c:3978
+#: rpmdb/rpmdb.c:3977
 #, c-format
 msgid "header #%u in the database is bad -- skipping.\n"
 msgstr "nag³ówek #%u w bazie danych jest b³êdny -- pominiêto.\n"
 
-#: rpmdb/rpmdb.c:4018
+#: rpmdb/rpmdb.c:4017
 #, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "nie mo¿na dodaæ rekordu bêd±cego oryginalnie przy %u\n"
 
-#: rpmdb/rpmdb.c:4032
+#: rpmdb/rpmdb.c:4031
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr "przebudowanie bazy nie powiod³o siê; stara pozosta³a na miejscu\n"
 
-#: rpmdb/rpmdb.c:4044
+#: rpmdb/rpmdb.c:4043
 msgid "failed to replace old database with new database!\n"
 msgstr "zamiana starej bazy na now± nie powiod³a siê!\n"
 
-#: rpmdb/rpmdb.c:4046
+#: rpmdb/rpmdb.c:4045
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "aby odzyskaæ, nale¿y zast±piæ pliki w %s plikami z %s"
