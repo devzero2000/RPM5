@@ -85,7 +85,11 @@ static FD_t rpmgiOpen(const char * path, const char * fmode)
 	/*@modifies rpmGlobalMacroContext, h_errno, internalState @*/
 {
     const char * fn = rpmExpand(path, NULL);
-    FD_t fd = Fopen(fn, fmode);
+    FD_t fd;
+
+    /* FIXME (see http://rpm5.org/community/rpm-devel/0523.html) */
+    errno = 0;
+    fd = Fopen(fn, fmode);
 
     if (fd == NULL || Ferror(fd)) {
 	rpmError(RPMERR_OPEN, _("open of %s failed: %s\n"), fn, Fstrerror(fd));
@@ -401,7 +405,7 @@ static rpmRC rpmgiInitFilter(rpmgi gi)
     gi->mi = rpmtsInitIterator(gi->ts, gi->tag, gi->keyp, gi->keylen);
 
 if (_rpmgi_debug < 0)
-fprintf(stderr, "*** gi %p key %p[%d]\tmi %p\n", gi, gi->keyp, gi->keylen, gi->mi);
+fprintf(stderr, "*** gi %p key %p[%d]\tmi %p\n", gi, gi->keyp, (int)gi->keylen, gi->mi);
 
     if (gi->argv != NULL)
     for (av = (const char **) gi->argv; *av != NULL; av++) {

@@ -161,6 +161,7 @@ static /*@only@*/ char * armorFormat(int_32 type, const void * data,
     const unsigned char * s;
     size_t ns;
     int atype;
+    char * val;
 
     switch (type) {
     case RPM_OPENPGP_TYPE:
@@ -174,6 +175,8 @@ static /*@only@*/ char * armorFormat(int_32 type, const void * data,
     case RPM_STRING_TYPE:
     case RPM_STRING_ARRAY_TYPE:
 	enc = data;
+	s = NULL;
+	ns = 0;
 	if (b64decode(enc, (void **)&s, &ns))
 	    return xstrdup(_("(not base64)"));
 	atype = PGPARMOR_PUBKEY;	/* XXX check pkt for pubkey */
@@ -191,7 +194,10 @@ static /*@only@*/ char * armorFormat(int_32 type, const void * data,
     }
 
     /* XXX this doesn't use padding directly, assumes enough slop in retval. */
-    return pgpArmorWrap(atype, s, ns);
+    val = pgpArmorWrap(atype, s, ns);
+    if (atype == PGPARMOR_PUBKEY)
+	s = _free(s);
+    return val;
 }
 
 /**
@@ -1565,6 +1571,37 @@ static int groupTag(Header h, /*@out@*/ rpmTagType * type,
     return i18nTag(h, RPMTAG_GROUP, type, data, count, freeData);
 }
 
+/**
+ * Retrieve db instance from header.
+ * @param h		header
+ * @retval *type	tag type
+ * @retval *data	tag value
+ * @retval *count	no. of data items
+ * @retval *freeData	data-was-malloc'ed indicator
+ * @return		0 on success
+ */
+static int dbinstanceTag(Header h, /*@out@*/ rpmTagType * type,
+		/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
+		/*@out@*/ int * freeData)
+	/*@globals rpmGlobalMacroContext, h_errno,
+		fileSystem, internalState @*/
+	/*@modifies *type, *data, *count, *freeData, rpmGlobalMacroContext,
+		fileSystem, internalState @*/
+	/*@requires maxSet(type) >= 0 /\ maxSet(data) >= 0
+		/\ maxSet(count) >= 0 /\ maxSet(freeData) >= 0 @*/
+{
+    int_32 * valuep = xcalloc(1, sizeof(*valuep));
+
+    *valuep = headerGetInstance(h);
+
+    *type = RPM_INT32_TYPE;
+    *data = valuep;
+    *count = 1;
+    *freeData = 1;
+
+    return 0;
+}
+
 /*@-type@*/ /* FIX: cast? */
 const struct headerSprintfExtension_s rpmHeaderFormats[] = {
     { HEADER_EXT_TAG, "RPMTAG_CHANGELOGNAME",	{ changelognameTag } },
@@ -1586,6 +1623,7 @@ const struct headerSprintfExtension_s rpmHeaderFormats[] = {
     { HEADER_EXT_TAG, "RPMTAG_SUMMARY",		{ summaryTag } },
     { HEADER_EXT_TAG, "RPMTAG_TRIGGERCONDS",	{ triggercondsTag } },
     { HEADER_EXT_TAG, "RPMTAG_TRIGGERTYPE",	{ triggertypeTag } },
+    { HEADER_EXT_TAG, "RPMTAG_DBINSTANCE",	{ dbinstanceTag } },
     { HEADER_EXT_FORMAT, "armor",		{ armorFormat } },
     { HEADER_EXT_FORMAT, "base64",		{ base64Format } },
     { HEADER_EXT_FORMAT, "depflags",		{ depflagsFormat } },

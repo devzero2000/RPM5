@@ -6,6 +6,10 @@
  * Structure(s) and routine(s) used for EVR parsing and comparison.
  */
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  */
 /*@-exportlocal@*/
@@ -116,10 +120,6 @@ struct EVR_s {
 #define	isInstallPreReq(_x)	((_x) & _INSTALL_ONLY_MASK)
 #define	isErasePreReq(_x)	((_x) & _ERASE_ONLY_MASK)
 #endif	/* _RPMEVR_INTERNAL */
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 /** \ingroup rpmds
  * Segmented string compare.

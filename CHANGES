@@ -1,4 +1,7 @@
 4.4.9 -> 4.5:
+    - jbj: add RPMTAG_DBINSTANCE header extension.
+    - jbj: parameterize Depends index and dependency result caching.
+    - jbj: fix a --import memory leak.
     - jbj: selinux: use matchpthcon() instead or rpmsx.
     - jbj: insure that RPMFILE_EXISTS is set for %config files.
     - jbj: fix ptr alignment problem seen on pld/sparc64.
