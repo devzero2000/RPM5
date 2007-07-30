@@ -1,4 +1,5 @@
 4.4.9 -> 4.5:
+    - jbj: eliminate --initdb.
     - jbj: eliminate --rsegfault/--wsegfault.
     - jbj: add RPMTAG_DBINSTANCE header extension.
     - jbj: parameterize Depends index and dependency result caching.

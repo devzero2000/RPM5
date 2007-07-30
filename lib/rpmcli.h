@@ -775,7 +775,6 @@ struct rpmQVKArguments_s {
     rpmRelocation relocations;
 
     /* database mode arguments */
-    int init;			/*!< from --initdb */
     int rebuild;		/*!< from --rebuilddb */
     int verify;			/*!< from --verifydb */
 

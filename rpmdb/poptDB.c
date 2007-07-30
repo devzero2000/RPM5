@@ -14,8 +14,6 @@ struct rpmQVKArguments_s rpmDBArgs;
 /**
  */
 struct poptOption rpmDatabasePoptTable[] = {
- { "initdb", '\0', POPT_ARG_VAL, &rpmDBArgs.init, 1,
-	N_("initialize database"), NULL},
  { "rebuilddb", '\0', POPT_ARG_VAL, &rpmDBArgs.rebuild, 1,
 	N_("rebuild database inverted lists from installed package headers"),
 	NULL},

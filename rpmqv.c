@@ -290,12 +290,6 @@ int main(int argc, const char ** argv)
     
 #ifdef	IAM_RPMDB
   if (bigMode == MODE_UNKNOWN || (bigMode & MODES_DB)) {
-    if (da->init) {
-	if (bigMode != MODE_UNKNOWN) 
-	    argerror(_("only one major mode may be specified"));
-	else
-	    bigMode = MODE_INITDB;
-    } else
     if (da->rebuild) {
 	if (bigMode != MODE_UNKNOWN) 
 	    argerror(_("only one major mode may be specified"));
