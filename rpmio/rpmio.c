@@ -2608,7 +2608,7 @@ static /*@null@*/ FD_t bzdFdopen(void * cookie, const char * fmode)
     fdno = fdFileno(fd);
     fdSetFdno(fd, -1);		/* XXX skip the fdio close */
     if (fdno < 0) return NULL;
-    bzfile = bzdopen(fdno, fmode);
+    bzfile = BZ2_bzdopen(fdno, fmode);
     if (bzfile == NULL) return NULL;
 
     fdPush(fd, bzdio, bzfile, fdno);		/* Push bzdio onto stack */
