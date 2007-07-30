@@ -1335,14 +1335,15 @@ Header headerCopyLoad(const void * uh)
 
 /** \ingroup header
  * Read (and load) header from file handle.
- * @param fd		file handle
+ * @param _fd		file handle
  * @param magicp	read (and verify) 8 bytes of (magic, 0)?
  * @return		header (or NULL on error)
  */
 static /*@null@*/
-Header headerRead(FD_t fd, enum hMagic magicp)
-	/*@modifies fd @*/
+Header headerRead(void * _fd, enum hMagic magicp)
+	/*@modifies _fd @*/
 {
+    FD_t fd = _fd;
     int_32 block[4];
     int_32 reserved;
     int_32 * ei = NULL;
@@ -1420,16 +1421,17 @@ exit:
 
 /** \ingroup header
  * Write (with unload) header to file handle.
- * @param fd		file handle
+ * @param _fd		file handle
  * @param h		header
  * @param magicp	prefix write with 8 bytes of (magic, 0)?
  * @return		0 on success, 1 on error
  */
 static
-int headerWrite(FD_t fd, /*@null@*/ Header h, enum hMagic magicp)
+int headerWrite(void * _fd, /*@null@*/ Header h, enum hMagic magicp)
 	/*@globals fileSystem @*/
 	/*@modifies fd, h, fileSystem @*/
 {
+    FD_t fd = _fd;
     ssize_t nb;
     int length;
     const void * uh;

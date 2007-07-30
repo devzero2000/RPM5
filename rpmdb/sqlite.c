@@ -38,6 +38,7 @@
 #include "system.h"
 
 #include <rpmlib.h>
+#include <rpmio.h>
 #include <rpmmacro.h>
 #include <rpmurl.h>     /* XXX urlPath proto */
 
@@ -453,7 +454,7 @@ assert(swapped == 0); /* Byte swap?! */
 		    }
 		} else
 		if (!strcmp(vtype, "text")) {
-		    const char * v = sqlite3_column_text(scp->pStmt, i);
+		    const char * v = (const char *)sqlite3_column_text(scp->pStmt, i);
 		    nb = strlen(v) + 1;
 if (_debug)
 fprintf(stderr, "\t%d %s %s \"%s\"\n", i, cname, vtype, v);
@@ -686,6 +687,38 @@ static int sql_initDB(dbiIndex dbi)
     char cmd[BUFSIZ];
     int rc = 0;
 
+    if (dbi->dbi_tmpdir) {
+        const char *root;
+        const char *tmpdir;
+        root = (dbi->dbi_root ? dbi->dbi_root : dbi->dbi_rpmdb->db_root);
+        /*@-boundsread@*/
+        if ((root[0] == '/' && root[1] == '\0') || dbi->dbi_rpmdb->db_chrootDone)
+            root = NULL;
+        /*@=boundsread@*/
+        /*@-mods@*/
+        tmpdir = rpmGenPath(root, dbi->dbi_tmpdir, NULL);
+        /*@=mods@*/
+        int xx;
+        sprintf(cmd, "PRAGMA temp_store_directory = '%s';", tmpdir);
+        xx = sqlite3_exec(sqldb->db, cmd, NULL, NULL, (char **)&scp->pzErrmsg);
+        tmpdir = _free(tmpdir);
+    }
+    if (dbi->dbi_eflags & DB_EXCL) {
+        int xx;
+        sprintf(cmd, "PRAGMA locking_mode = EXCLUSIVE;");
+        xx = sqlite3_exec(sqldb->db, cmd, NULL, NULL, (char **)&scp->pzErrmsg);
+    }
+    if (dbi->dbi_pagesize > 0) {
+        int xx;
+        sprintf(cmd, "PRAGMA cache_size = %d;", dbi->dbi_cachesize);
+        xx = sqlite3_exec(sqldb->db, cmd, NULL, NULL, (char **)&scp->pzErrmsg);
+    }
+    if (dbi->dbi_cachesize > 0) {
+        int xx;
+        sprintf(cmd, "PRAGMA page_size = %d;", dbi->dbi_pagesize);
+        xx = sqlite3_exec(sqldb->db, cmd, NULL, NULL, (char **)&scp->pzErrmsg);
+    }
+
     /* Check if the table exists... */
     sprintf(cmd,
 	"SELECT name FROM 'sqlite_master' WHERE type='table' and name='%s';",
@@ -729,13 +762,15 @@ static int sql_initDB(dbiIndex dbi)
 	}
 if (_debug)
 fprintf(stderr, "\t%s(%d) type(%d) keytype %s\n", tagName(dbi->dbi_rpmtag), dbi->dbi_rpmtag, (tagType(dbi->dbi_rpmtag) & RPM_MASK_TYPE), keytype);
-	sprintf(cmd, "CREATE TABLE '%s' (key %s, value %s)",
+	sprintf(cmd, "CREATE %sTABLE '%s' (key %s, value %s)",
+			dbi->dbi_temporary ? "TEMPORARY " : "",
 			dbi->dbi_subfile, keytype, valtype);
 	rc = sqlite3_exec(sqldb->db, cmd, NULL, NULL, (char **)&scp->pzErrmsg);
 	if (rc)
 	    goto exit;
 
-	sprintf(cmd, "CREATE TABLE 'db_info' (endian TEXT)");
+	sprintf(cmd, "CREATE %sTABLE 'db_info' (endian TEXT)",
+			dbi->dbi_temporary ? "TEMPORARY " : "");
 	rc = sqlite3_exec(sqldb->db, cmd, NULL, NULL, (char **)&scp->pzErrmsg);
 	if (rc)
 	    goto exit;
@@ -826,6 +861,17 @@ enterChroot(dbi);
 	rpmMessage(RPMMESS_DEBUG, D_("closed   sql db         %s\n"),
 		dbi->dbi_subfile);
 
+#if defined(MAYBE) /* XXX should SQLite and BDB have different semantics? */
+	if (dbi->dbi_temporary && !(dbi->dbi_eflags & DB_PRIVATE)) {
+	    const char * dbhome = NULL;
+	    urltype ut = urlPath(dbi->dbi_home, &dbhome);
+	    const char * dbfname = rpmGenPath(dbhome, dbi->dbi_file, NULL);
+	    int xx = (dbfname ? Unlink(dbfname) : 0);
+	    ut = ut; xx = xx;	/* XXX tell gcc to be quiet. */
+	    dbfname = _free(dbfname);
+	}
+#endif
+
 	dbi->dbi_stats = _free(dbi->dbi_stats);
 	dbi->dbi_file = _free(dbi->dbi_file);
 	dbi->dbi_db = _free(dbi->dbi_db);
@@ -859,6 +905,7 @@ static int sql_open(rpmdb rpmdb, rpmTag rpmtag, /*@out@*/ dbiIndex * dbip)
     const char * dbfile;  
     const char * dbfname;
     const char * sql_errcode;
+    mode_t umask_safed = 0002;
     dbiIndex dbi;
     SQL_DB * sqldb;
     size_t len;
@@ -922,7 +969,10 @@ enterChroot(dbi);
      */
     (void) rpmioMkpath(dbhome, 0755, getuid(), getgid());
        
-    dbfname = rpmGenPath(dbhome, dbi->dbi_file, NULL);
+    if (dbi->dbi_eflags & DB_PRIVATE)
+        dbfname = strdup(":memory:");
+    else
+        dbfname = rpmGenPath(dbhome, dbi->dbi_file, NULL);
 
     rpmMessage(RPMMESS_DEBUG, D_("opening  sql db         %s (%s) mode=0x%x\n"),
 		dbfname, dbi->dbi_subfile, dbi->dbi_mode);
@@ -931,7 +981,17 @@ enterChroot(dbi);
     sqldb = xcalloc(1, sizeof(*sqldb));
        
     sql_errcode = NULL;
+    if (dbi->dbi_perms)
+        /* mask-out permission bits which are not requested (security) */
+        umask_safed = umask(~((mode_t)(dbi->dbi_perms)));
     xx = sqlite3_open(dbfname, &sqldb->db);
+    if (dbi->dbi_perms) {
+        if ((0644 /* = SQLite hard-coded default */ & dbi->dbi_perms) != dbi->dbi_perms) {
+            /* add requested permission bits which are still missing (semantic) */
+            chmod(dbfname, dbi->dbi_perms);
+        }
+        umask(umask_safed);
+    }
     if (xx != SQLITE_OK)
 	sql_errcode = sqlite3_errmsg(sqldb->db);
 

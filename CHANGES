@@ -3,6 +3,10 @@
     - jbj: eliminate --rsegfault/--wsegfault.
     - jbj: add RPMTAG_DBINSTANCE header extension.
     - jbj: parameterize Depends index and dependency result caching.
+    - jbj: adjust signal polling for python exit purposes <pmatlai@redhat.com>.
+    - jbj: use _macro_BUFSIZ, not compiled in BUFSIZ, to size expansion targets.
+    - jbj: enable %{dirname:...} macro primitive.
+    - jbj: adopt rpm.org signal handling <pmatlai@redhat.com>.
     - jbj: fix a --import memory leak.
     - jbj: selinux: use matchpthcon() instead or rpmsx.
     - jbj: insure that RPMFILE_EXISTS is set for %config files.

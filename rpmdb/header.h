@@ -455,25 +455,25 @@ typedef
 
 /** \ingroup header
  * Read (and load) header from file handle.
- * @param fd		file handle
+ * @param _fd		file handle
  * @param magicp	read (and verify) 8 bytes of (magic, 0)?
  * @return		header (or NULL on error)
  */
 typedef
-/*@null@*/ Header (*HDRread) (FD_t fd, enum hMagic magicp)
-	/*@modifies fd @*/;
+/*@null@*/ Header (*HDRread) (void * _fd, enum hMagic magicp)
+	/*@modifies _fd @*/;
 
 /** \ingroup header
  * Write (with unload) header to file handle.
- * @param fd		file handle
+ * @param _fd		file handle
  * @param h		header
  * @param magicp	prefix write with 8 bytes of (magic, 0)?
  * @return		0 on success, 1 on error
  */
 typedef
-int (*HDRwrite) (FD_t fd, /*@null@*/ Header h, enum hMagic magicp)
+int (*HDRwrite) (void * _fd, /*@null@*/ Header h, enum hMagic magicp)
 	/*@globals fileSystem @*/
-	/*@modifies fd, h, fileSystem @*/;
+	/*@modifies _fd, h, fileSystem @*/;
 
 /** \ingroup header
  * Check if tag is in header.

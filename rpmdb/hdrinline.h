@@ -192,32 +192,32 @@ unsigned int headerSizeof(/*@null@*/ Header h, enum hMagic magicp)
 
 /** \ingroup header
  * Read (and load) header from file handle.
- * @param fd		file handle
+ * @param _fd		file handle
  * @param magicp	read (and verify) 8 bytes of (magic, 0)?
  * @return		header (or NULL on error)
  */
 /*@unused@*/ static inline
-/*@null@*/ Header headerRead(FD_t fd, enum hMagic magicp)
-	/*@modifies fd @*/
+/*@null@*/ Header headerRead(void * _fd, enum hMagic magicp)
+	/*@modifies _fd @*/
 {
-    return hdrVec->hdrread(fd, magicp);
+    return hdrVec->hdrread(_fd, magicp);
 }
 
 /** \ingroup header
  * Write (with unload) header to file handle.
- * @param fd		file handle
+ * @param _fd		file handle
  * @param h		header
  * @param magicp	prefix write with 8 bytes of (magic, 0)?
  * @return		0 on success, 1 on error
  */
 /*@unused@*/ static inline
-int headerWrite(FD_t fd, /*@null@*/ Header h, enum hMagic magicp)
-	/*@modifies fd, h @*/
+int headerWrite(void * _fd, /*@null@*/ Header h, enum hMagic magicp)
+	/*@modifies _fd, h @*/
 {
     /*@-abstract@*/
     if (h == NULL) return 0;
     /*@=abstract@*/
-    return (h2hv(h)->hdrwrite) (fd, h, magicp);
+    return (h2hv(h)->hdrwrite) (_fd, h, magicp);
 }
 
 /** \ingroup header
