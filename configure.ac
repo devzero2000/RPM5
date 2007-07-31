@@ -730,7 +730,7 @@ AC_ARG_WITH(python, AS_HELP_STRING([--with-python], [build with RPM Python langu
     if test ".$withval" != .no; then
         case "$withval" in
              2.x|2.4|2.5)
-                  python_version=$with_val
+                  python_version=$withval
                   ;;
              yes)
                   python_version="2.5 2.4 2.x"
