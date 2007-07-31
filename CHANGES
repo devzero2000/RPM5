@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - jbj: query of packages w/o lead/sigh (using --nolead --nosigh).
     - jbj: query of packages w/o lead (using --nolead).
     - jbj: --newmagic enabler to add new signature/metadata magic to headers.
     - jbj: nobrainer --nolead & --nosigh disablers.

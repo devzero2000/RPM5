@@ -40,6 +40,7 @@ static unsigned int nextkeyid  = 0;
 static unsigned int * keyids;
 
 extern int _nolead;
+extern int _nosigh;
 
 /*@unchecked@*/
 static unsigned char header_magic[8] = {
@@ -104,6 +105,9 @@ void headerMergeLegacySigs(Header h, const Header sigh)
     int_32 tag, type, count;
     const void * ptr;
     int xx;
+
+    if (h == NULL || sigh == NULL)
+	return;
 
     for (hi = headerInitIterator(sigh);
         headerNextIterator(hi, &tag, &type, &ptr, &count);
@@ -821,6 +825,7 @@ if (!_nolead) {
     }
 }
 
+if (!_nosigh) {
     /* Read the signature header. */
     msg = NULL;
     rc = rpmReadSignature(fd, &sigh, l->signature_type, &msg);
@@ -840,6 +845,7 @@ if (!_nolead) {
 	break;
     }
     msg = _free(msg);
+}
 
 #define	_chk(_mask)	(sigtag == 0 && !(vsflags & (_mask)))
 
