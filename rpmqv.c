@@ -150,20 +150,11 @@ static void printVersion(FILE * fp)
     fprintf(fp, _("RPM version %s\n"), rpmEVR);
 }
 
-static void printBanner(FILE * fp)
-	/*@globals fileSystem @*/
-	/*@modifies *fp, fileSystem @*/
-{
-    fprintf(fp, _("Copyright (C) 1998-2002 - Red Hat, Inc.\n"));
-    fprintf(fp, _("This program may be freely redistributed under the terms of the GNU LGPL\n"));
-}
-
 static void printUsage(poptContext con, FILE * fp, int flags)
 	/*@globals rpmEVR, fileSystem, internalState @*/
 	/*@modifies *fp, fileSystem, internalState @*/
 {
     printVersion(fp);
-    printBanner(fp);
     fprintf(fp, "\n");
 
     if (rpmIsVerbose())
