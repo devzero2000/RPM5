@@ -1,6 +1,8 @@
 #include "system.h"
 extern const char *__progname;
 
+/* Copyright (C) 1998-2002 - Red Hat, Inc. */
+
 #define	_AUTOHELP
 
 #if defined(IAM_RPM) || defined(__LCLINT__)
