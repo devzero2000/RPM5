@@ -39,6 +39,8 @@ static unsigned int nextkeyid  = 0;
 /*@unchecked@*/ /*@only@*/ /*@null@*/
 static unsigned int * keyids;
 
+extern int _nolead;
+
 /*@unchecked@*/
 static unsigned char header_magic[8] = {
         0x8e, 0xad, 0xe8, 0x01, 0x00, 0x00, 0x00, 0x00
@@ -793,6 +795,8 @@ rpmRC rpmReadPackageFile(rpmts ts, void * _fd, const char * fn, Header * hdrp)
     (void) rpmswAdd(opsave, fdstat_op(fd, FDSTAT_READ));
 
     memset(l, 0, sizeof(*l));
+    l->signature_type = RPMSIGTYPE_HEADERSIG;
+if (!_nolead) {
     rc = readLead(fd, l);
     if (rc != RPMRC_OK)
 	goto exit;
@@ -815,6 +819,7 @@ rpmRC rpmReadPackageFile(rpmts ts, void * _fd, const char * fn, Header * hdrp)
 	goto exit;
 	/*@notreached@*/ break;
     }
+}
 
     /* Read the signature header. */
     msg = NULL;
