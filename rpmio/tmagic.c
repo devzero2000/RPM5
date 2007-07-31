@@ -11,8 +11,25 @@
 
 static int _debug = 0;
 
-#define	FNPATH		"tmagic.test"
+#define	FNPATH		"tmagic"
 static char * fnpath = FNPATH;
+
+static const char * Fmagic(const char * buffer, size_t length)
+{
+    int msflags = MAGIC_CHECK;
+    const char * magicfile = NULL;
+    magic_t ms = magic_open(msflags);
+    const char * t = NULL;
+
+    if (ms) {
+	(void) magic_load(ms, magicfile);
+	t = magic_buffer(ms, buffer, length);
+	t = xstrdup((t ? t : ""));
+	magic_close(ms);
+    }
+
+    return t;
+}
 
 static void readFile(const char * path)
 {
@@ -23,11 +40,12 @@ fprintf(stderr, "===== %s\n", path);
     if (fd != NULL) {
 	char buf[BUFSIZ];
 	size_t len = Fread(buf, 1, sizeof(buf), fd);
-	int xx;
-        xx = Fclose(fd);
+	(void) Fclose(fd);
 
-	if (len > 0)
-	    fwrite(buf, 1, len, stderr);
+	if (len > 0) {
+	    const char * magic = Fmagic(buf, len);
+	    fprintf(stderr, "==> magic \"%s\"\n", magic);
+	}
     }
 }
 
@@ -48,11 +66,7 @@ int
 main(int argc, const char *argv[])
 {
     poptContext optCon = poptGetContext(argv[0], argc, argv, optionsTable, 0);
-    int msflags = MAGIC_CHECK;
-    magic_t ms = NULL;
-    const char * magicfile = NULL;
     int rc;
-    int xx;
 
     while ((rc = poptGetNextOpt(optCon)) > 0) {
 	switch (rc) {
@@ -64,9 +78,6 @@ main(int argc, const char *argv[])
 	}
     }
 
-    ms = magic_open(msflags);
-assert(ms);
-    xx = magic_load(ms, magicfile);
 
     if (_debug) {
 	rpmIncreaseVerbosity();
@@ -75,8 +86,6 @@ assert(ms);
 
     readFile(fnpath);
 
-    if (ms)
-	magic_close(ms);
 /*@i@*/ urlFreeCache();
 
     return 0;
