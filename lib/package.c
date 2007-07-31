@@ -41,10 +41,21 @@ static unsigned int * keyids;
 
 extern int _nolead;
 extern int _nosigh;
+extern int _newmagic;
 
 /*@unchecked@*/
 static unsigned char header_magic[8] = {
         0x8e, 0xad, 0xe8, 0x01, 0x00, 0x00, 0x00, 0x00
+};
+
+/*@observer@*/ /*@unchecked@*/
+static unsigned char sigh_magic[8] = {
+	0x8e, 0xad, 0xe8, 0x3e, 0x00, 0x00, 0x00, 0x00
+};
+
+/*@observer@*/ /*@unchecked@*/
+static unsigned char meta_magic[8] = {
+	0x8e, 0xad, 0xe8, 0x3f, 0x00, 0x00, 0x00, 0x00
 };
 
 /**
@@ -682,10 +693,21 @@ rpmRC rpmReadHeader(rpmts ts, void * _fd, Header *hdrp, const char ** msg)
 		_("hdr size(%d): BAD, read returned %d\n"), (int)sizeof(block), xx);
 	goto exit;
     }
+
+if (_newmagic) {
+    if (!(	!memcmp(block, header_magic, sizeof(header_magic))
+     ||		!memcmp(block, meta_magic, sizeof(meta_magic))
+    )) {
+	(void) snprintf(buf, sizeof(buf), _("hdr magic: BAD\n"));
+	goto exit;
+    }
+} else {
     if (memcmp(block, header_magic, sizeof(header_magic))) {
 	(void) snprintf(buf, sizeof(buf), _("hdr magic: BAD\n"));
 	goto exit;
     }
+}
+
 /*@-boundsread@*/
     il = ntohl(block[2]);
 /*@=boundsread@*/
