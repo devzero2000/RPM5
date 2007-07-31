@@ -6,7 +6,7 @@ LINT = splint
 
 EXTRA_DIST = tax.c tdir.c tfts.c tget.c thkp.c tput.c tglob.c tinv.c tkey.c trpmio.c lookup3.c librpmio.vers
 
-EXTRA_PROGRAMS = tax tdir tfts tget thkp tmacro tput tglob tinv tkey trpmio tsw dumpasn1 lookup3
+EXTRA_PROGRAMS = tax tdir tfts tget thkp tmacro tput tglob tinv tkey tmagic trpmio tsw dumpasn1 lookup3
 
 AM_CPPFLAGS = \
 	-I$(srcdir) \
@@ -115,6 +115,9 @@ tmacro_SOURCES =
 tmacro_LDADD = tmacro.o $(RPM_LDADD)
 tmacro.o:  macro.c
 	$(COMPILE) -DDEBUG_MACROS -o $@ -c $<
+
+tmagic_SOURCES = tmagic.c
+tmagic_LDADD = $(RPM_LDADD)
 
 tput_SOURCES = tput.c
 tput_LDADD = $(RPM_LDADD)
