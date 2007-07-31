@@ -155,7 +155,7 @@ static void printBanner(FILE * fp)
 	/*@modifies *fp, fileSystem @*/
 {
     fprintf(fp, _("Copyright (C) 1998-2002 - Red Hat, Inc.\n"));
-    fprintf(fp, _("This program may be freely redistributed under the terms of the GNU GPL\n"));
+    fprintf(fp, _("This program may be freely redistributed under the terms of the GNU LGPL\n"));
 }
 
 static void printUsage(poptContext con, FILE * fp, int flags)
