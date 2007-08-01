@@ -2,15 +2,11 @@
 
 #include <signal.h>	/* getOutputFrom() */
 
-#ifdef HAVE_MAGIC_H
-#undef	FILE_RCSID
-#include "magic.h"
-#endif
-
 #include <rpmio.h>
 #define	_RPMEVR_INTERNAL
 #include <rpmbuild.h>
 #include <argv.h>
+#include <rpmmg.h>
 
 #define	_RPMFC_INTERNAL
 #include <rpmfc.h>
@@ -987,24 +983,20 @@ int rpmfcClassify(rpmfc fc, ARGV_t argv, int_16 * fmode)
 {
     ARGV_t fcav = NULL;
     ARGV_t dav;
+    rpmmg mg = NULL;
     const char * s, * se;
     size_t slen;
     int fcolor;
     int xx;
-#ifdef HAVE_MAGIC_H
-    const char * magicfile;
-    int msflags = MAGIC_CHECK;	/* XXX MAGIC_COMPRESS flag? */
-    magic_t ms = NULL;
-#endif
+    const char * magicfile = NULL;
 
     if (fc == NULL || argv == NULL)
 	return 0;
 
-#ifdef HAVE_MAGIC_H
     magicfile = rpmExpand("%{?_rpmfc_magic_path}", NULL);
     if (magicfile == NULL || *magicfile == '\0')
 	magicfile = _free(magicfile);
-#endif
+    mg = rpmmgNew(magicfile, 0);
 
     fc->nfiles = argvCount(argv);
 
@@ -1016,32 +1008,16 @@ int rpmfcClassify(rpmfc fc, ARGV_t argv, int_16 * fmode)
     xx = argvAdd(&fc->cdict, "");
     xx = argvAdd(&fc->cdict, "directory");
 
-#ifdef HAVE_MAGIC_H
-  if (magicfile) {
-    ms = magic_open(msflags);
-    if (ms == NULL) {
-	xx = RPMERR_EXEC;
-	rpmError(xx, _("magic_open(0x%x) failed: %s\n"),
-		msflags, strerror(errno));
-assert(ms != NULL);	/* XXX figger a proper return path. */
-    }
-
-    xx = magic_load(ms, magicfile);
-    if (xx == -1) {
-	xx = RPMERR_EXEC;
-	rpmError(xx, _("magic_load(ms, \"%s\") failed: %s\n"),
-		magicfile, magic_error(ms));
-assert(xx != -1);	/* XXX figger a proper return path. */
-    }
-  }
-#endif
+    mg = rpmmgNew(magicfile, 0);
+assert(mg);	/* XXX figger a proper return path. */
 
     for (fc->ix = 0; fc->ix < fc->nfiles; fc->ix++) {
 	const char * ftype;
+	int freeftype;
 	int_16 mode = (fmode ? fmode[fc->ix] : 0);
 	int urltype;
 
-	ftype = "";
+	ftype = "";	freeftype = 0;
 	urltype = urlPath(argv[fc->ix], &s);
 assert(s != NULL && *s == '/');
 	slen = strlen(s);
@@ -1093,18 +1069,11 @@ assert(s != NULL && *s == '/');
 	    /* XXX skip all files in /dev/ which are (or should be) %dev dummies. */
 	    else if (slen >= fc->brlen+sizeof("/dev/") && !strncmp(s+fc->brlen, "/dev/", sizeof("/dev/")-1))
 		ftype = "";
-#ifdef HAVE_MAGIC_H
 	    else if (magicfile) {
-		ftype = magic_file(ms, s);
-
-		if (ftype == NULL) {
-		    xx = RPMERR_EXEC;
-		    rpmError(xx, _("magic_file(ms, \"%s\") failed: mode %06o %s\n"),
-			s, mode, magic_error(ms));
-assert(ftype != NULL);	/* XXX figger a proper return path. */
-		}
+		ftype = rpmmgFile(mg, s);
+assert(ftype);	/* XXX never happens, rpmmgFile() returns "" */
+		freeftype = 1;
 	    }
-#endif
 	    /*@switchbreak@*/ break;
 	}
 /*@=branchstate@*/
@@ -1126,6 +1095,9 @@ assert(ftype != NULL);	/* XXX figger a proper return path. */
 	if (fcolor != RPMFC_WHITE && (fcolor & RPMFC_INCLUDE))
 	    xx = rpmfcSaveArg(&fc->cdict, se);
 /*@=boundswrite@*/
+
+	if (freeftype)
+	    ftype = _free(ftype);
     }
 
     /* Build per-file class index array. */
@@ -1146,14 +1118,8 @@ assert(se != NULL);
 
     fcav = argvFree(fcav);
 
-#ifdef HAVE_MAGIC_H
-    if (ms != NULL)
-	magic_close(ms);
-#endif
-
-#ifdef HAVE_MAGIC_H
+    mg = rpmmgFree(mg);
     magicfile = _free(magicfile);
-#endif
 
     return 0;
 }

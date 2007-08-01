@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - jbj: use rpmmg magic wrapper.
     - jbj: add rpmmg magic wrapper.
     - jbj: unsnarl __FUNCTION__ from system.h AutoFu.
     - rse: make sure RPM is also linked against libm if external Lua is used (as liblua required libm)

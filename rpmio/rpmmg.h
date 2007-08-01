@@ -16,13 +16,12 @@ extern int _rpmmg_debug;
 typedef struct rpmmg_s * rpmmg;
 
 #if defined(_RPMMG_INTERNAL)
-#include "magic.h"
 /** \ingroup rpmio
  */
 struct rpmmg_s {
     const char * fn;
     int flags;
-    magic_t ms;
+    void * ms;
 };
 #endif	/* _RPMMG_INTERNAL */
 

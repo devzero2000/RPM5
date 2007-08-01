@@ -4,7 +4,9 @@
 
 #include "system.h"
 
+#if defined(HAVE_MAGIC_H)
 #include "magic.h"
+#endif
 
 #include <rpmio.h>
 #include <rpmerr.h>
@@ -21,10 +23,12 @@ rpmmg rpmmgFree(rpmmg mg)
 if (_rpmmg_debug)
 fprintf(stderr, "--> rpmmgFree(%p)\n", mg);
     if (mg) {
+#if defined(HAVE_MAGIC_H)
 	if (mg->ms) {
 	    magic_close(mg->ms);
 	    mg->ms = NULL;
 	}
+#endif
 	mg->fn = _free(mg->fn);
 	mg = _free(mg);
     }
@@ -38,7 +42,8 @@ rpmmg rpmmgNew(const char * fn, int flags)
 
     if (fn)
 	mg->fn = xstrdup(fn);
-    mg->flags = (flags ? flags : MAGIC_CHECK);
+#if defined(HAVE_MAGIC_H)
+    mg->flags = (flags ? flags : MAGIC_CHECK);/* XXX MAGIC_COMPRESS flag? */
     mg->ms = magic_open(flags);
     if (mg->ms == NULL) {
 	rpmError(RPMERR_EXEC, _("magic_open(0x%x) failed: %s\n"),
@@ -51,6 +56,7 @@ rpmmg rpmmgNew(const char * fn, int flags)
                 fn, magic_error(mg->ms));
 	return rpmmgFree(mg);
     }
+#endif
 
 if (_rpmmg_debug)
 fprintf(stderr, "--> rpmmgNew(%s, 0x%x) mg %p\n", fn, flags, mg);
@@ -61,8 +67,15 @@ const char * rpmmgFile(rpmmg mg, const char *fn)
 {
     const char * t = NULL;
 
-    if (mg->ms)
+#if defined(HAVE_MAGIC_H)
+    if (mg->ms) {
 	t = magic_file(mg->ms, fn);
+	if (t == NULL)
+	    rpmError(RPMERR_EXEC, _("magic_file(ms, \"%s\") failed: %s\n"),
+		fn, magic_error(mg->ms));
+    }
+#endif
+
     t = xstrdup((t ? t : ""));
 
 if (_rpmmg_debug)
@@ -74,8 +87,11 @@ const char * rpmmgBuffer(rpmmg mg, const char * b, size_t nb)
 {
     const char * t = NULL;
 
+#if defined(HAVE_MAGIC_H)
     if (mg->ms)
 	t = magic_buffer(mg->ms, b, nb);
+#endif
+
     t = xstrdup((t ? t : ""));
 
 if (_rpmmg_debug)
