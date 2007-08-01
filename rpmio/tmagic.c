@@ -99,7 +99,7 @@ void readFile(rpmmg mg, const char * path)
 {
     FD_t fd;
 
-fprintf(stderr, "===== %s(%p, %s)\n", __FUNCTION__, mg, path);
+fprintf(stderr, "===== readFile(%p, %s)\n", mg, path);
     fd = Fopen(path, "r");
     if (fd != NULL) {
 	char buf[BUFSIZ];
