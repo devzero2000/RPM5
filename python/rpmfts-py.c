@@ -109,7 +109,7 @@ rpmfts_state(rpmftsObject * s, int nactive)
 {
     int rc = 0;
 
-rpmfts_debug(__FUNCTION__, s);
+rpmfts_debug("rpmfts_state", s);
     switch (nactive) {
     case RPMFTS_CLOSE:
 	if (s->ftsp != NULL) {
@@ -141,7 +141,7 @@ rpmfts_step(rpmftsObject * s)
     PyObject * result = NULL;
     int xx;
 
-rpmfts_debug(__FUNCTION__, s);
+rpmfts_debug("rpmfts_step", s);
     if (s->ftsp == NULL)
 	return NULL;
 
@@ -203,7 +203,7 @@ rpmfts_Open(rpmftsObject * s, PyObject * args, PyObject * kwds)
     /* XXX: there's bound to be a better name than "ignore" */
     char * kwlist[] = {"root", "options", "ignore", NULL};
 
-rpmfts_debug(__FUNCTION__, s);
+rpmfts_debug("rpmfts_Open", s);
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "|sii:Open", kwlist,
 	    &root, &options, &ignore))
 	return NULL;
@@ -222,7 +222,7 @@ rpmfts_Read(rpmftsObject * s)
 {
     PyObject * result;
 
-rpmfts_debug(__FUNCTION__, s);
+rpmfts_debug("rpmfts_Read", s);
 
     result = rpmfts_step(s);
 
@@ -243,7 +243,7 @@ rpmfts_Children(rpmftsObject * s, PyObject * args, PyObject * kwds)
     int instr;
     char * kwlist[] = {"instructions", NULL};
 
-rpmfts_debug(__FUNCTION__, s);
+rpmfts_debug("rpmfts_Children", s);
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "i:Children", kwlist, &instr))
 	return NULL;
 
@@ -264,7 +264,7 @@ rpmfts_Close(rpmftsObject * s)
 	/*@modifies s @*/
 {
 
-rpmfts_debug(__FUNCTION__, s);
+rpmfts_debug("rpmfts_Close", s);
 
     return Py_BuildValue("i", rpmfts_state(s, RPMFTS_CLOSE));
 }
@@ -278,7 +278,7 @@ rpmfts_Set(rpmftsObject * s, PyObject * args, PyObject * kwds)
     int rc = 0;
     char * kwlist[] = {"instructions", NULL};
 
-rpmfts_debug(__FUNCTION__, s);
+rpmfts_debug("rpmfts_Set", s);
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "i:Set", kwlist, &instr))
 	return NULL;
 
@@ -327,14 +327,14 @@ static PyMemberDef rpmfts_members[] = {
 static PyObject * rpmfts_getattro(PyObject * o, PyObject * n)
 	/*@*/
 {
-rpmfts_debug(__FUNCTION__, (rpmftsObject *)o);
+rpmfts_debug("rpmfts_getattro", (rpmftsObject *)o);
     return PyObject_GenericGetAttr(o, n);
 }
 
 static int rpmfts_setattro(PyObject * o, PyObject * n, PyObject * v)
 	/*@*/
 {
-rpmfts_debug(__FUNCTION__, (rpmftsObject *)o);
+rpmfts_debug("rpmfts_setattro", (rpmftsObject *)o);
     return PyObject_GenericSetAttr(o, n, v);
 }
 
@@ -380,7 +380,7 @@ static void rpmfts_dealloc(/*@only@*/ rpmftsObject * s)
 {
     int xx;
 
-rpmfts_debug(__FUNCTION__, s);
+rpmfts_debug("rpmfts_dealloc", s);
     xx = rpmfts_state(s, RPMFTS_CLOSE);
 
     s->roots = _free(s->roots);
@@ -405,7 +405,7 @@ static int rpmfts_init(rpmftsObject * s, PyObject *args, PyObject *kwds)
     int ignore = -1;
     char * kwlist[] = {"root", "options", "ignore", NULL};
 
-rpmfts_debug(__FUNCTION__, s);
+rpmfts_debug("rpmfts_init", s);
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "|sii:rpmfts_init", kwlist,
 	    &root, &options, &ignore))
 	return -1;
@@ -428,7 +428,7 @@ static PyObject * rpmfts_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 
     if ((s = PyObject_GC_New(rpmftsObject, type)) == NULL)
 	return NULL;
-rpmfts_debug(__FUNCTION__, s);
+rpmfts_debug("rpmfts_new", s);
 
     s->md_dict = PyDict_New();
     if (s->md_dict == NULL)

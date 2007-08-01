@@ -401,7 +401,7 @@ static int davInit(const char * url, urlinfo * uret)
 exit:
 /*@-boundswrite@*/
     if (uret != NULL)
-	*uret = urlLink(u, __FUNCTION__);
+	*uret = urlLink(u, "davInit");
 /*@=boundswrite@*/
     u = urlFree(u, "urlSplit (davInit)");
 
@@ -498,7 +498,7 @@ static void *fetch_destroy_context(/*@only@*/ /*@null@*/ struct fetch_context_s 
     ctx->modes = _free(ctx->modes);
     ctx->sizes = _free(ctx->sizes);
     ctx->mtimes = _free(ctx->mtimes);
-    ctx->u = urlFree(ctx->u, __FUNCTION__);
+    ctx->u = urlFree(ctx->u, "fetch_destroy_context");
     ctx->uri = _free(ctx->uri);
 /*@-boundswrite@*/
     memset(ctx, 0, sizeof(*ctx));
@@ -522,7 +522,7 @@ static void *fetch_create_context(const char *uri, /*@null@*/ struct stat *st)
 
     ctx = ne_calloc(sizeof(*ctx));
     ctx->uri = xstrdup(uri);
-    ctx->u = urlLink(u, __FUNCTION__);
+    ctx->u = urlLink(u, "fetch_create_context");
     if ((ctx->st = st) != NULL)
 	memset(ctx->st, 0, sizeof(*ctx->st));
     return ctx;
@@ -1410,7 +1410,7 @@ int davStat(const char * path, /*@out@*/ struct stat *st)
 /* HACK: neon really wants collections with trailing '/' */
     ctx = fetch_create_context(path, st);
     if (ctx == NULL) {
-fprintf(stderr, "==> %s fetch_create_context ctx %p\n", __FUNCTION__, ctx);
+fprintf(stderr, "==> %s fetch_create_context ctx %p\n", "davStat", ctx);
 /* HACK: errno = ??? */
 	goto exit;
     }

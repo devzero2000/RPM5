@@ -568,7 +568,7 @@ int fsmSetup(FSM_t fsm, fileStage goal, const char * afmt,
 
 /*@+voidabstract -nullpass@*/
 if (_fsm_debug < 0)
-fprintf(stderr, "--> %s(%p, 0x%x, \"%s\", %p, %p, %p, %p, %p)\n", __FUNCTION__, fsm, goal, afmt, (void *)ts, fi, cfd, archiveSize, failedFile);
+fprintf(stderr, "--> fsmSetup(%p, 0x%x, \"%s\", %p, %p, %p, %p, %p)\n", fsm, goal, afmt, (void *)ts, fi, cfd, archiveSize, failedFile);
 /*@=voidabstract =nullpass@*/
 
     if (fsm->headerRead == NULL) {
@@ -643,7 +643,7 @@ int fsmTeardown(FSM_t fsm)
     int rc = fsm->rc;
 
 if (_fsm_debug < 0)
-fprintf(stderr, "--> %s(%p)\n", __FUNCTION__, fsm);
+fprintf(stderr, "--> fsmTeardown(%p)\n", fsm);
     if (!rc)
 	rc = fsmUNSAFE(fsm, FSM_DESTROY);
 

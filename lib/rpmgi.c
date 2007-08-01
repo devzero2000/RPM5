@@ -479,9 +479,9 @@ rpmgi rpmgiFree(rpmgi gi)
 	return NULL;
 
     if (gi->nrefs > 1)
-	return rpmgiUnlink(gi, __FUNCTION__);
+	return rpmgiUnlink(gi, "rpmgiFree");
 
-    (void) rpmgiUnlink(gi, __FUNCTION__);
+    (void) rpmgiUnlink(gi, "rpmgiFree");
 
 /*@-usereleased@*/
 
@@ -519,7 +519,7 @@ rpmgi rpmgiNew(rpmts ts, int tag, const void * keyp, size_t keylen)
     if (gi == NULL)
 	return NULL;
 
-    gi->ts = rpmtsLink(ts, __FUNCTION__);
+    gi->ts = rpmtsLink(ts, "rpmgiNew");
     gi->tsOrder = rpmtsOrder;
     gi->tag = tag;
 /*@-assignexpose@*/
@@ -543,7 +543,7 @@ rpmgi rpmgiNew(rpmts ts, int tag, const void * keyp, size_t keylen)
     gi->fts = NULL;
     gi->walkPathFilter = NULL;
 
-    gi = rpmgiLink(gi, __FUNCTION__);
+    gi = rpmgiLink(gi, "rpmgiNew");
 
     return gi;
 }
@@ -561,7 +561,7 @@ rpmRC rpmgiNext(/*@null@*/ rpmgi gi)
 	return rpmrc;
 
 if (_rpmgi_debug)
-fprintf(stderr, "*** %s(%p) tag %s\n", __FUNCTION__, gi, tagName(gi->tag));
+fprintf(stderr, "*** rpmgiNext(%p) tag %s\n", gi, tagName(gi->tag));
 
     /* Free header from previous iteration. */
     gi->h = headerFree(gi->h);

@@ -30,7 +30,7 @@ int mireClean(miRE mire)
 {
 /*@-modfilesys@*/
 if (_mire_debug)
-fprintf(stderr, "--> %s(%p)\n", __FUNCTION__, mire);
+fprintf(stderr, "--> mireClean(%p)\n", mire);
 /*@=modfilesys@*/
     mire->pattern = _free(mire->pattern);
     if (mire->preg != NULL) {
@@ -47,7 +47,7 @@ miRE mireFree(miRE mire)
 {
 /*@-modfilesys@*/
 if (_mire_debug)
-fprintf(stderr, "--> %s(%p)\n", __FUNCTION__, mire);
+fprintf(stderr, "--> mireFree(%p)\n", mire);
 /*@=modfilesys@*/
     (void) mireClean(mire);
     mire = _free(mire);
@@ -61,7 +61,7 @@ miRE mireNew(rpmMireMode mode, int tag)
     mire->tag = tag;
 /*@-modfilesys@*/
 if (_mire_debug)
-fprintf(stderr, "--> %s(%d, %d) mire %p\n", __FUNCTION__, mode, tag, mire);
+fprintf(stderr, "--> mireNew(%d, %d) mire %p\n", mode, tag, mire);
 /*@=modfilesys@*/
     return mire;
 }
@@ -101,7 +101,7 @@ int mireRegexec(miRE mire, const char * val)
 
 /*@-modfilesys@*/
 if (_mire_debug)
-fprintf(stderr, "--> %s(%p, \"%s\") rc %d\n", __FUNCTION__, mire, val, rc);
+fprintf(stderr, "--> mireRegexec(%p, \"%s\") rc %d\n", mire, val, rc);
 /*@=modfilesys@*/
     return rc;
 }
@@ -147,7 +147,7 @@ int mireRegcomp(miRE mire, const char * pattern)
 
 /*@-modfilesys@*/
 if (_mire_debug)
-fprintf(stderr, "--> %s(%p, \"%s\") rc %d\n", __FUNCTION__, mire, pattern, rc);
+fprintf(stderr, "--> mireRegcomp(%p, \"%s\") rc %d\n", mire, pattern, rc);
 /*@=modfilesys@*/
     return rc;
 }

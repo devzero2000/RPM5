@@ -101,7 +101,7 @@ int cpioHeaderWrite(FSM_t fsm, struct stat * st)
     int rc = 0;
 
 if (_cpio_debug)
-fprintf(stderr, "    %s(%p, %p)\n", __FUNCTION__, fsm, st);
+fprintf(stderr, "    cpioHeaderWrite(%p, %p)\n", fsm, st);
 
     memcpy(hdr->magic, CPIO_NEWC_MAGIC, sizeof(hdr->magic));
     SET_NUM_FIELD(hdr->inode, st->st_ino, field);
@@ -155,7 +155,7 @@ int cpioHeaderRead(FSM_t fsm, struct stat * st)
     int rc = 0;
 
 if (_cpio_debug)
-fprintf(stderr, "    %s(%p, %p)\n", __FUNCTION__, fsm, st);
+fprintf(stderr, "    cpioHeaderRead(%p, %p)\n", fsm, st);
 
     fsm->wrlen = PHYS_HDR_SIZE;
     rc = fsmNext(fsm, FSM_DREAD);

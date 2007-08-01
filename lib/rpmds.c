@@ -2690,7 +2690,7 @@ int rpmdsMergePRCO(void * context, rpmds ds)
 
 /*@-modfilesys@*/
 if (_rpmds_debug < 0)
-fprintf(stderr, "*** %s(%p, %p) %s\n", __FUNCTION__, context, ds, tagName(rpmdsTagN(ds)));
+fprintf(stderr, "*** rpmdsMergePRCO(%p, %p) %s\n", context, ds, tagName(rpmdsTagN(ds)));
 /*@=modfilesys@*/
     switch(rpmdsTagN(ds)) {
     default:
@@ -2854,7 +2854,7 @@ int rpmdsELF(const char * fn, int flags,
 
 /*@-castfcnptr@*/
 if (_rpmds_debug < 0)
-fprintf(stderr, "*** %s(%s, %d, %p, %p)\n", __FUNCTION__, fn, flags, (void *)add, context);
+fprintf(stderr, "*** rpmdsELF(%s, %d, %p, %p)\n", fn, flags, (void *)add, context);
 /*@=castfcnptr@*/
     if (oneshot == 0) {
 	oneshot = 1;
@@ -3151,7 +3151,7 @@ int rpmdsLdconfig(rpmPRCO PRCO, const char * fn)
 /*@=branchstate@*/
 
 if (_rpmds_debug < 0)
-fprintf(stderr, "*** %s(%p, %s) P %p R %p C %p O %p T %p D %p L %p\n", __FUNCTION__, PRCO, fn, PRCO->Pdsp, PRCO->Rdsp, PRCO->Cdsp, PRCO->Odsp, PRCO->Tdsp, PRCO->Ddsp, PRCO->Ldsp);
+fprintf(stderr, "*** rpmdsLdconfig(%p, %s) P %p R %p C %p O %p T %p D %p L %p\n", PRCO, fn, PRCO->Pdsp, PRCO->Rdsp, PRCO->Cdsp, PRCO->Odsp, PRCO->Tdsp, PRCO->Ddsp, PRCO->Ldsp);
 
     fp = popen(_ldconfig_cmd, "r");
     if (fp == NULL)
@@ -3275,7 +3275,7 @@ int rpmdsRldpath(rpmPRCO PRCO, const char * rldp)
 /*@=branchstate@*/
 
 if (_rpmds_debug > 0)
-fprintf(stderr, "*** %s(%p, %s) P %p R %p C %p O %p\n", __FUNCTION__, PRCO, rldp, PRCO->Pdsp, PRCO->Rdsp, PRCO->Cdsp, PRCO->Odsp);
+fprintf(stderr, "*** rpmdsRldpath(%p, %s) P %p R %p C %p O %p\n", PRCO, rldp, PRCO->Pdsp, PRCO->Rdsp, PRCO->Cdsp, PRCO->Odsp);
 
     f = rldp;
     /* move through the path, splitting on : */
@@ -3303,14 +3303,14 @@ fprintf(stderr, "*** %s(%p, %s) P %p R %p C %p O %p\n", __FUNCTION__, PRCO, rldp
 	strcat(buf, "/*.so.*");
 
 if (_rpmds_debug > 0)
-fprintf(stderr, "*** %s(%p, %s) globbing %s\n", __FUNCTION__, PRCO, rldp, buf);
+fprintf(stderr, "*** rpmdsRldpath(%p, %s) globbing %s\n", PRCO, rldp, buf);
 
 	xx = glob(buf, 0, NULL, &gl);
 	if (xx)		/* glob error, probably GLOB_NOMATCH */
 	    continue;
 
 if (_rpmds_debug > 0)
-fprintf(stderr, "*** %s(%p, %s) glob matched %d files\n", __FUNCTION__, PRCO, rldp, gl.gl_pathc);
+fprintf(stderr, "*** rpmdsRldpath(%p, %s) glob matched %d files\n", PRCO, rldp, gl.gl_pathc);
 
 	gp = gl.gl_pathv;
 	/* examine each match */

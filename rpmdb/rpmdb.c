@@ -281,7 +281,7 @@ dbiIndex dbiOpen(rpmdb db, rpmTag rpmtag, /*@unused@*/ unsigned int flags)
 
 /*@-modfilesys@*/
 if (_rpmdb_debug)
-fprintf(stderr, "==> %s(%p, %s, 0x%x)\n", __FUNCTION__, db, tagName(rpmtag), flags);
+fprintf(stderr, "==> dbiOpen(%p, %s, 0x%x)\n", db, tagName(rpmtag), flags);
 /*@=modfilesys@*/
 
     if (db == NULL)
@@ -1090,7 +1090,7 @@ rpmdb rpmdbNew(/*@kept@*/ /*@null@*/ const char * root,
 
 /*@-modfilesys@*/ /*@-nullpass@*/
 if (_rpmdb_debug)
-fprintf(stderr, "==> %s(%s, %s, 0x%x, 0%o, 0x%x) db %p\n", __FUNCTION__, root, home, mode, perms, flags, db);
+fprintf(stderr, "==> rpmdbNew(%s, %s, 0x%x, 0%o, 0x%x) db %p\n", root, home, mode, perms, flags, db);
 /*@=modfilesys@*/ /*@=nullpass@*/
 
     if (!oneshot) {

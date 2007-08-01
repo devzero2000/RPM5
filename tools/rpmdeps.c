@@ -215,9 +215,11 @@ static struct poptOption optionsTable[] = {
    POPT_TABLEEND
 };
 
+
 int
 main(int argc, char *const argv[])
 {
+static const char rpmdeps_string[] = "rpmdeps";
     poptContext optCon;
     ARGV_t av = NULL;
     rpmfc fc = NULL;
@@ -288,8 +290,8 @@ rpmfcPrint(buf, fc, NULL);
 	break;
     case RPMDEP_RPMDSSYSINFO:
 	xx = rpmdsSysinfo(PRCO, NULL);
-	P = rpmdsLink(rpmdsFromPRCO(PRCO, RPMTAG_PROVIDENAME), __FUNCTION__);
-	R = rpmdsLink(rpmdsFromPRCO(PRCO, RPMTAG_REQUIRENAME), __FUNCTION__);
+	P = rpmdsLink(rpmdsFromPRCO(PRCO, RPMTAG_PROVIDENAME), rpmdeps_string);
+	R = rpmdsLink(rpmdsFromPRCO(PRCO, RPMTAG_REQUIRENAME), rpmdeps_string);
 	break;
     case RPMDEP_RPMDSGETCONF:
 	closure_name = "getconf(...)";
@@ -299,14 +301,14 @@ rpmfcPrint(buf, fc, NULL);
 	closure_name = "soname(...)";
 	for (i = 0; i < ac; i++)
 	    xx = rpmdsELF(av[i], flags, rpmdsMergePRCO, PRCO);
-	P = rpmdsLink(rpmdsFromPRCO(PRCO, RPMTAG_PROVIDENAME), __FUNCTION__);
-	R = rpmdsLink(rpmdsFromPRCO(PRCO, RPMTAG_REQUIRENAME), __FUNCTION__);
+	P = rpmdsLink(rpmdsFromPRCO(PRCO, RPMTAG_PROVIDENAME), rpmdeps_string);
+	R = rpmdsLink(rpmdsFromPRCO(PRCO, RPMTAG_REQUIRENAME), rpmdeps_string);
 	break;
     case RPMDEP_RPMDSLDCONFIG:
 	closure_name = "soname(...)";
 	xx = rpmdsLdconfig(PRCO, NULL);
-	P = rpmdsLink(rpmdsFromPRCO(PRCO, RPMTAG_PROVIDENAME), __FUNCTION__);
-	R = rpmdsLink(rpmdsFromPRCO(PRCO, RPMTAG_REQUIRENAME), __FUNCTION__);
+	P = rpmdsLink(rpmdsFromPRCO(PRCO, RPMTAG_PROVIDENAME), rpmdeps_string);
+	R = rpmdsLink(rpmdsFromPRCO(PRCO, RPMTAG_REQUIRENAME), rpmdeps_string);
 	break;
     case RPMDEP_RPMDSUNAME:
 	closure_name = "uname(...)";
@@ -363,7 +365,7 @@ fprintf(stderr, "\n*** Gathering rpmdb file Requires: using\n\t%s\n", _rpmdb_fil
     case RPMDEP_RPMDSSONAME:
 	closure_name = "soname(...)";
 	xx = rpmdsLdconfig(PRCO, NULL);
-	P = rpmdsLink(rpmdsFromPRCO(PRCO, RPMTAG_PROVIDENAME), __FUNCTION__);
+	P = rpmdsLink(rpmdsFromPRCO(PRCO, RPMTAG_PROVIDENAME), rpmdeps_string);
 if (print_closure || rpmIsVerbose()) {
 fprintf(stderr, "\n*** Gathering rpmdb soname Requires: using\n\t%s\n", _rpmdb_soname_requires);
 	xx = rpmdsPipe(&R, RPMTAG_REQUIRENAME, _rpmdb_soname_requires);

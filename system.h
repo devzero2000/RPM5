@@ -705,15 +705,6 @@ static inline const char *rcsid(const char *p) { \
 }
 #endif
 
-/* provide fallback definition for GCC function name symbol */
-#if !(defined(__GNUC__) && __GNUC__ >= 2)
-#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L
-#define __FUNCTION__ __func__
-#else
-#define __FUNCTION__ "<unknown>"
-#endif
-#endif
-
 #if defined(HAVE_SEARCH_H)
 #include <search.h>
 #endif

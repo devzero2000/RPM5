@@ -433,7 +433,7 @@ rpmds_Sysinfo(rpmdsObject * s)
 
     /* XXX check return code, permit arg (NULL uses system default). */
     xx = rpmdsSysinfo(PRCO, NULL);
-    P = rpmdsLink(rpmdsFromPRCO(PRCO, RPMTAG_PROVIDENAME), __FUNCTION__);
+    P = rpmdsLink(rpmdsFromPRCO(PRCO, RPMTAG_PROVIDENAME), "rpmds_Sysinfo");
     PRCO = rpmdsFreePRCO(PRCO);
 
     return (PyObject *) rpmds_Wrap( P );
@@ -463,7 +463,7 @@ rpmds_Ldconfig(rpmdsObject * s)
     /* XXX check return code, permit arg (NULL uses system default). */
     xx = rpmdsLdconfig(PRCO, NULL);
 
-    P = rpmdsLink(rpmdsFromPRCO(PRCO, RPMTAG_PROVIDENAME), __FUNCTION__);
+    P = rpmdsLink(rpmdsFromPRCO(PRCO, RPMTAG_PROVIDENAME), "rpmds_Ldconfig");
     PRCO = rpmdsFreePRCO(PRCO);
     return (PyObject *) rpmds_Wrap( P );
 }

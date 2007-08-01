@@ -103,7 +103,7 @@ int tarHeaderRead(FSM_t fsm, struct stat * st)
     int zblk = 0;
 
 if (_tar_debug)
-fprintf(stderr, "    %s(%p, %p)\n", __FUNCTION__, fsm, st);
+fprintf(stderr, "    tarHeaderRead(%p, %p)\n", fsm, st);
 
 top:
     do {
@@ -277,7 +277,7 @@ static int tarHeaderWriteName(FSM_t fsm, const char * path)
     int rc = 0;
 
 if (_tar_debug)
-fprintf(stderr, "\t%s(%p, %s) nb %d\n", __FUNCTION__, fsm, path, nb);
+fprintf(stderr, "\ttarHeaderWriteName(%p, %s) nb %d\n", fsm, path, nb);
 
     while (nb > 0) {
 	memset(fsm->rdbuf, 0, TAR_BLOCK_SIZE);
@@ -314,7 +314,7 @@ static int tarHeaderWriteBlock(FSM_t fsm, struct stat * st, tarHeader hdr)
     int rc;
 
 if (_tar_debug)
-fprintf(stderr, "\t%s(%p, %p) type %c\n", __FUNCTION__, fsm, hdr, hdr->typeflag);
+fprintf(stderr, "\ttarHeaderWriteBlock(%p, %p) type %c\n", fsm, hdr, hdr->typeflag);
 if (_tar_debug)
 fprintf(stderr, "\t     %06o%3d (%4d,%4d)%10d %s\n",
                 (unsigned)st->st_mode, (int)st->st_nlink,
@@ -357,7 +357,7 @@ int tarHeaderWrite(FSM_t fsm, struct stat * st)
     int len;
 
 if (_tar_debug)
-fprintf(stderr, "    %s(%p, %p)\n", __FUNCTION__, fsm, st);
+fprintf(stderr, "    tarHeaderWrite(%p, %p)\n", fsm, st);
 
     len = strlen(fsm->path);
     if (len > sizeof(hdr->name)) {
@@ -457,7 +457,7 @@ int tarTrailerWrite(FSM_t fsm)
     int rc = 0;
 
 if (_tar_debug)
-fprintf(stderr, "    %s(%p)\n", __FUNCTION__, fsm);
+fprintf(stderr, "    tarTrailerWrite(%p)\n", fsm);
 
     /* Pad up to 20 blocks (10Kb) of zeroes. */
     fsm->blksize *= 20;

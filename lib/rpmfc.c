@@ -814,7 +814,7 @@ static int rpmfcMergePR(void * context, rpmds ds)
 
 /*@-modfilesys@*/
 if (_rpmfc_debug < 0)
-fprintf(stderr, "*** %s(%p, %p) %s\n", __FUNCTION__, context, ds, tagName(rpmdsTagN(ds)));
+fprintf(stderr, "*** rpmfcMergePR(%p, %p) %s\n", context, ds, tagName(rpmdsTagN(ds)));
 /*@=modfilesys@*/
     switch(rpmdsTagN(ds)) {
     default:

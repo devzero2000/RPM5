@@ -219,7 +219,7 @@ static SCP_t scpResetKeys(/*@only@*/ SCP_t scp)
     int ix;
 
 if (_debug)
-fprintf(stderr, "*** %s(%p)\n", __FUNCTION__, scp);
+fprintf(stderr, "*** scpResetKeys(%p)\n", scp);
 dbg_scp(scp);
 
     for ( ix =0 ; ix < scp->nkeys ; ix++ ) {
@@ -241,7 +241,7 @@ static SCP_t scpResetAv(/*@only@*/ SCP_t scp)
     int xx;
 
 if (_debug)
-fprintf(stderr, "*** %s(%p)\n", __FUNCTION__, scp);
+fprintf(stderr, "*** scpResetAv(%p)\n", scp);
 dbg_scp(scp);
 
     if (scp->av != NULL) {
@@ -280,7 +280,7 @@ static SCP_t scpReset(/*@only@*/ SCP_t scp)
     int xx;
 
 if (_debug)
-fprintf(stderr, "*** %s(%p)\n", __FUNCTION__, scp);
+fprintf(stderr, "*** scpReset(%p)\n", scp);
 dbg_scp(scp);
 
     if (scp->cmd) {
@@ -311,7 +311,7 @@ static SCP_t scpFree(/*@only@*/ SCP_t scp)
     scp->avlen = _free(scp->avlen);
 
 if (_debug)
-fprintf(stderr, "*** %s(%p)\n", __FUNCTION__, scp);
+fprintf(stderr, "*** scpFree(%p)\n", scp);
     scp = _free(scp);
     return NULL;
 }
@@ -330,7 +330,7 @@ static SCP_t scpNew(DB * dbp)
     scp->ldata = NULL;
 
 if (_debug)
-fprintf(stderr, "*** %s(%p)\n", __FUNCTION__, scp);
+fprintf(stderr, "*** scpNew(%p)\n", scp);
     return scp;
 }
 
@@ -813,7 +813,7 @@ static int sql_cclose (dbiIndex dbi, /*@only@*/ DBC * dbcursor,
     int rc;
 
 if (_debug)
-fprintf(stderr, "==> %s(%p)\n", __FUNCTION__, scp);
+fprintf(stderr, "==> sql_cclose(%p)\n", scp);
 
     if (scp->lkey)
 	scp->lkey = _free(scp->lkey);
@@ -1065,7 +1065,7 @@ static int sql_copen (dbiIndex dbi, /*@null@*/ DB_TXN * txnid,
     int rc = 0;
 
 if (_debug)
-fprintf(stderr, "==> %s(%s) tag %d type %d scp %p\n", __FUNCTION__, tagName(dbi->dbi_rpmtag), dbi->dbi_rpmtag, (tagType(dbi->dbi_rpmtag) & RPM_MASK_TYPE), scp);
+fprintf(stderr, "==> sql_copen(%s) tag %d type %d scp %p\n", tagName(dbi->dbi_rpmtag), dbi->dbi_rpmtag, (tagType(dbi->dbi_rpmtag) & RPM_MASK_TYPE), scp);
 
 enterChroot(dbi);
 
@@ -1101,7 +1101,7 @@ static int sql_cdel (dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key,
     SCP_t scp = scpNew(dbi->dbi_db);
     int rc = 0;
 
-dbg_keyval(__FUNCTION__, dbi, dbcursor, key, data, flags);
+dbg_keyval("sql_cdel", dbi, dbcursor, key, data, flags);
 enterChroot(dbi);
 
     scp->cmd = sqlite3_mprintf("DELETE FROM '%q' WHERE key=? AND value=?;",
@@ -1144,7 +1144,7 @@ static int sql_cget (dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key,
     int ix;
 
 assert(dbcursor != NULL);
-dbg_keyval(__FUNCTION__, dbi, dbcursor, key, data, flags);
+dbg_keyval("sql_cget", dbi, dbcursor, key, data, flags);
 
 enterChroot(dbi);
 
@@ -1322,7 +1322,7 @@ static int sql_cput (dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key,
     SCP_t scp = scpNew(dbi->dbi_db);
     int rc = 0;
 
-dbg_keyval(__FUNCTION__, dbi, dbcursor, key, data, flags);
+dbg_keyval("sql_cput", dbi, dbcursor, key, data, flags);
 
 enterChroot(dbi);
 
@@ -1416,7 +1416,7 @@ static int sql_associate (dbiIndex dbi, dbiIndex dbisecondary,
 	/*@*/
 {
 if (_debug)
-fprintf(stderr, "*** %s:\n", __FUNCTION__);
+fprintf(stderr, "*** sql_associate:\n");
     return EINVAL;
 }
 
@@ -1434,7 +1434,7 @@ static int sql_join (dbiIndex dbi, DBC ** curslist, /*@out@*/ DBC ** dbcp,
 	/*@modifies dbi, *dbcp, fileSystem @*/
 {
 if (_debug)
-fprintf(stderr, "*** %s:\n", __FUNCTION__);
+fprintf(stderr, "*** sql_join:\n");
     return EINVAL;
 }
 
@@ -1452,7 +1452,7 @@ static int sql_cdup (dbiIndex dbi, DBC * dbcursor, /*@out@*/ DBC ** dbcp,
 	/*@modifies dbi, *dbcp, fileSystem @*/
 {
 if (_debug)
-fprintf(stderr, "*** %s:\n", __FUNCTION__);
+fprintf(stderr, "*** sql_cdup:\n");
     return EINVAL;
 }
 
@@ -1472,7 +1472,7 @@ static int sql_cpget (dbiIndex dbi, /*@null@*/ DBC * dbcursor,
 	/*@modifies *dbcursor, *key, *pkey, *data, fileSystem @*/
 {
 if (_debug)
-fprintf(stderr, "*** %s:\n", __FUNCTION__);
+fprintf(stderr, "*** sql_cpget:\n");
     return EINVAL;
 }
 
@@ -1491,7 +1491,7 @@ static int sql_ccount (dbiIndex dbi, /*@unused@*/ DBC * dbcursor,
 	/*@modifies *dbcursor, fileSystem @*/
 {
 if (_debug)
-fprintf(stderr, "*** %s:\n", __FUNCTION__);
+fprintf(stderr, "*** sql_ccount:\n");
     return EINVAL;
 }
 
