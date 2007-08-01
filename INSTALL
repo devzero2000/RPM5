@@ -39,6 +39,7 @@ GNU bzip2       optional  1.0     1.0.4   http://www.bzip2.org/
 File/magic  [4] optional  4.0     4.21    ftp://ftp.astron.com/pub/file/
 GNU gettext     optional  1.16    1.16.1  http://www.gnu.org/software/gettext/
 GNU iconv       optional  1.11    1.11    http://www.gnu.org/software/libiconv/
+PCRE            optional  7.0     7.2     http://www.pcre.corg/
 DMalloc         optional  5       5.5.2   http://dmalloc.com/
 Electric Fence  optional  2.1     2.1.13  http://perens.com/FreeSoftware/ElectricFence/
 Linux KeyUtils  optional  1.2     1.2     http://people.redhat.com/~dhowells/keyutils/

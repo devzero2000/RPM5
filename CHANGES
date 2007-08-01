@@ -1,4 +1,7 @@
 4.5 -> 5.0:
+    - rse: make sure RPM is also linked against libm if external Lua is used (as liblua required libm)
+    - rse: support building against PCRE for its regcomp(3) emulation API pcreposix(3) -- used by RPM internally
+    - rse: support building against PCRE for its native API pcre(3) -- used by the Lua "rex" extension library
     - jbj: query w/o lead/sigh w newmagic (using --nolead --nosigh --newmagic).
     - jbj: query of packages w/o lead/sigh (using --nolead --nosigh).
     - jbj: query of packages w/o lead (using --nolead).

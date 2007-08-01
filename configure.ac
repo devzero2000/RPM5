@@ -926,17 +926,31 @@ RPM_CHECK_LIB(
     [lua], [lua_newstate], [lua.h],
     [no,internal:external:none], [lua:local],
     [ if test ".$RPM_CHECK_LIB_LOCATION" = .internal; then
-          AC_CHECK_LIB(dl, dlopen, [ LIBS="-ldl $LIBS"; WITH_LUA_SUBDIR_LIB="-ldl" ])
-          AC_CHECK_FUNC(dlopen, [ WITH_LUA_SUBDIR_DEF="-DLUA_USE_DLOPEN" ])
+          AC_CHECK_LIB(m, fabs)
+          AC_CHECK_LIB(dl, dlopen)
+          AC_CHECK_FUNC(dlopen, [ WITH_LUA_SUBDIR_DEF="$WITH_LUA_SUBDIR_DEF -DLUA_USE_DLOPEN" ])
+          AC_CHECK_FUNC(regcomp, [ WITH_LUA_SUBDIR_DEF="$WITH_LUA_SUBDIR_DEF -DLUA_USE_POSIX" ])
           AC_DEFINE(WITH_LUA_INTERNAL, 1, [Define if building with internal Lua])
           AC_CONFIG_FILES([lua/Makefile])
       else
+          AC_CHECK_LIB(m, fabs)
           AC_CHECK_LIB(dl, dlopen)
           AC_CHECK_FUNC(dlopen)
       fi
     ], [])
 AC_SUBST(WITH_LUA_SUBDIR_DEF)
 AC_SUBST(WITH_LUA_SUBDIR_LIB)
+
+dnl # PCRE
+RPM_CHECK_LIB(
+    [PCRE], [pcre],
+    [pcre], [pcre_compile], [pcre.h],
+    [no,external:none], [],
+    [ AC_CHECK_HEADERS(pcreposix.h)
+      if test ".$WITH_LUA" = .yes; then
+          WITH_LUA_SUBDIR_DEF="$WITH_LUA_SUBDIR_DEF -DLUA_USE_PCRE"
+      fi
+    ], [])
 
 dnl # DMalloc
 RPM_CHECK_LIB(
