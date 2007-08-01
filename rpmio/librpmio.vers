@@ -255,6 +255,11 @@ LIBRPMIO_0
     rpmluavSetValueNum;
     rpmluavValueIsNum;
     rpmMacrofiles;
+    _rpmmg_debug;
+    rpmmgFree;
+    rpmmgNew;
+    rpmmgFile;
+    rpmmgBuffer;
     rpmsqAction;
     rpmsqCaught;
     _rpmsq_debug;

@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - jbj: add rpmmg magic wrapper.
     - jbj: unsnarl __FUNCTION__ from system.h AutoFu.
     - rse: make sure RPM is also linked against libm if external Lua is used (as liblua required libm)
     - rse: support building against PCRE for its regcomp(3) emulation API pcreposix(3) -- used by RPM internally
