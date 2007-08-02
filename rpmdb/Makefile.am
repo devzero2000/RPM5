@@ -40,7 +40,7 @@ usrlibdir = $(libdir)
 usrlib_LTLIBRARIES = librpmdb.la
 librpmdb_la_SOURCES = \
 	dbconfig.c fprint.c \
-	hdrNVR.c header.c header_internal.c legacy.c merge.c \
+	hdrfmt.c hdrNVR.c header.c header_internal.c legacy.c merge.c \
 	poptDB.c rpmdb.c \
 	tagname.c tagtbl.c
 librpmdb_la_LDFLAGS = -release $(LT_CURRENT).$(LT_REVISION)

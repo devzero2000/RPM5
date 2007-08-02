@@ -230,6 +230,14 @@ extern const struct headerSprintfExtension_s headerDefaultFormats[];
 /*@=redecl@*/
 
 /** \ingroup header
+ * Supported default header extension/tag output formats.
+ */
+/*@-redecl@*/
+/*@observer@*/
+extern const struct headerSprintfExtension_s headerCompoundFormats[];
+/*@=redecl@*/
+
+/** \ingroup header
  * The basic types of data in tags from headers.
  */
 typedef enum rpmTagType_e {
