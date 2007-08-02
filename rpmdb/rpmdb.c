@@ -2852,12 +2852,19 @@ if (dbiByteSwapped(dbi) == 1)
 		    xx = dbiSync(dbi, 0);
 		continue;
 		/*@notreached@*/ /*@switchbreak@*/ break;
+	    case RPMTAG_NVRA:	/* XXX compound header extension. */
+		rpmtype = RPM_STRING_TYPE;
+		rpmvals = hGetNEVRA(h, NULL);
+		rpmcnt = 1;
+		/*@switchbreak@*/ break;
+	    default:
+		if (!hge(h, rpmtag, &rpmtype, &rpmvals, &rpmcnt))
+		    continue;
+		/*@switchbreak@*/ break;
+
 	    }
 	    /*@=branchstate@*/
 	
-	    if (!hge(h, rpmtag, &rpmtype, &rpmvals, &rpmcnt))
-		continue;
-
 	  dbi = dbiOpen(db, rpmtag, 0);
 	  if (dbi != NULL) {
 	    int printed;
@@ -3033,6 +3040,9 @@ if (key->size == 0) key->size++;	/* XXX "/" fixup. */
 		xx = dbiSync(dbi, 0);
 	  }
 
+	    if (rpmtag == RPMTAG_NVRA)	/* XXX compound header extension. */
+		av[0] = _free(av[0]);
+	    else
 	    if (rpmtype != RPM_BIN_TYPE)	/* XXX WTFO? HACK ALERT */
 		rpmvals = hfd(rpmvals, rpmtype);
 	    rpmtype = 0;
@@ -3282,6 +3292,11 @@ data->size = 0;
 		xx = hge(h, rpmtag, &rpmtype, &rpmvals, &rpmcnt);
 		xx = hge(h, RPMTAG_REQUIREFLAGS, NULL, &requireFlags, NULL);
 		/*@switchbreak@*/ break;
+	    case RPMTAG_NVRA:	/* XXX compound header extension. */
+		rpmtype = RPM_STRING_TYPE;
+		rpmvals = hGetNEVRA(h, NULL);
+		rpmcnt = 1;
+		/*@switchbreak@*/ break;
 	    default:
 		xx = hge(h, rpmtag, &rpmtype, &rpmvals, &rpmcnt);
 		/*@switchbreak@*/ break;
@@ -3489,6 +3504,9 @@ if (key->size == 0) key->size++;	/* XXX "/" fixup. */
 		xx = dbiSync(dbi, 0);
 	  }
 
+	    if (rpmtag == RPMTAG_NVRA)	/* XXX compound header extension. */
+		av[0] = _free(av[0]);
+	    else
 	/*@-observertrans@*/
 	    if (rpmtype != RPM_BIN_TYPE)	/* XXX WTFO? HACK ALERT */
 		rpmvals = hfd(rpmvals, rpmtype);
