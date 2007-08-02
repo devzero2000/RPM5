@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - rse: upgrade lua/local/lrexlib.c from version 1.x (nov00-06oct03) to latest version 1.19 (may04-18dec04)
     - jbj: teach headerGetExtension() to lookup extensions.
     - jbj: chain through new headerCompundFormats.
     - jbj: refactor most header extensions from -lrpm to -lrpmdb. heh, no filenames, very sick and sad.
