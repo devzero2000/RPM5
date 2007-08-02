@@ -87,6 +87,7 @@ rpmio/rpmio.c
 rpmio/rpmlog.c
 rpmio/rpmlua.c
 rpmio/rpmmalloc.c
+rpmio/rpmmg.c
 rpmio/rpmpgp.c
 rpmio/rpmrpc.c
 rpmio/rpmsq.c

@@ -656,6 +656,8 @@ INPUT                  = @top_srcdir@/Doxyheader \
                          @top_srcdir@/rpmio/rpmmacro.h \
                          @top_srcdir@/rpmio/rpmmalloc.c \
                          @top_srcdir@/rpmio/rpmmessages.h \
+                         @top_srcdir@/rpmio/rpmmg.c \
+                         @top_srcdir@/rpmio/rpmmg.h \
                          @top_srcdir@/rpmio/rpmpgp.c \
                          @top_srcdir@/rpmio/rpmpgp.h \
                          @top_srcdir@/rpmio/rpmrpc.c \
