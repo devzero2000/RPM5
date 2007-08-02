@@ -300,6 +300,8 @@ DB_READ_UNCOMITTED
  { "lockdbfd",	0,POPT_ARG_NONE,	&db3dbi.dbi_lockdbfd, 0,
 	NULL, NULL },
 #endif
+ { "noload",	0,POPT_ARG_NONE,	&db3dbi.dbi_noload, 0,
+	NULL, NULL },
  { "temporary",	0,POPT_ARG_NONE,	&db3dbi.dbi_temporary, 0,
 	NULL, NULL },
 #if defined(WITH_DB)

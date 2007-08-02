@@ -672,7 +672,7 @@ print (t)\
 %_dbi_config_3_Triggername      %{_dbi_btconfig}
 %_dbi_config_3_Packages         %{_dbi_btconfig} lockdbfd
 %_dbi_config_3_Depends          %{_dbi_btconfig} temporary private
-%_dbi_config_3_Nvra		%{_dbi_btconfig}
+%_dbi_config_3_Nvra		%{_dbi_btconfig} noload
 
 # database configuration: SQLite [dbapi 4 hooks]
 %_dbi_config_4                  %{_dbi_sqlconfig}
@@ -695,7 +695,7 @@ print (t)\
 %_dbi_config_4_Triggername      %{_dbi_sqlconfig}
 %_dbi_config_4_Packages         %{_dbi_sqlconfig}
 %_dbi_config_4_Depends          %{_dbi_sqlconfig} temporary private
-%_dbi_config_4_Nvra		%{_dbi_btconfig}
+%_dbi_config_4_Nvra		%{_dbi_btconfig} noload
 
 # database configuration [code entry hooks]
 %_dbi_config                    %{expand:%%{_dbi_config_%{_dbapi_used}}}

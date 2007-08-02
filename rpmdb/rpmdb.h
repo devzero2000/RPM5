@@ -308,7 +308,8 @@ struct _dbiIndex {
     int	dbi_no_fsync;		/*!< no-op fsync for db */
     int	dbi_no_dbsync;		/*!< don't call dbiSync */
     int	dbi_lockdbfd;		/*!< do fcntl lock on db fd */
-    int	dbi_temporary;		/*!< non-persistent */
+    int	dbi_temporary;		/*!< non-persistent index/table */
+    int dbi_noload;		/*!< standalone index/table */
     int	dbi_debug;
     int	dbi_byteswapped;
 
