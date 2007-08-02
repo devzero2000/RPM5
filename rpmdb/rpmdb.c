@@ -2135,6 +2135,11 @@ static int mireSkip (const rpmdbMatchIterator mi)
     for (i = 0; i < mi->mi_nre; i++, mire++) {
 	int anymatch;
 
+	if (mire->tag == RPMTAG_NVRA) {
+	    t = RPM_STRING_TYPE;
+	    u.str = hGetNEVRA(mi->mi_h, NULL);
+	    c = 1;
+	} else
 	if (!hge(mi->mi_h, mire->tag, &t, (void **)&u, &c)) {
 	    if (mire->tag != RPMTAG_EPOCH)
 		continue;
@@ -2196,7 +2201,10 @@ static int mireSkip (const rpmdbMatchIterator mi)
 	}
 /*@=boundsread@*/
 
-	u.ptr = hfd(u.ptr, t);
+	if (mire->tag == RPMTAG_NVRA)
+	    u.str = _free(u.str);
+	else
+	    u.ptr = hfd(u.ptr, t);
 
 	ntags++;
 	if (anymatch)
@@ -2854,7 +2862,7 @@ if (dbiByteSwapped(dbi) == 1)
 		/*@notreached@*/ /*@switchbreak@*/ break;
 	    case RPMTAG_NVRA:	/* XXX compound header extension. */
 		rpmtype = RPM_STRING_TYPE;
-		rpmvals = hGetNEVRA(h, NULL);
+		rpmvals = (const char **) hGetNEVRA(h, NULL);
 		rpmcnt = 1;
 		/*@switchbreak@*/ break;
 	    default:
@@ -3294,7 +3302,7 @@ data->size = 0;
 		/*@switchbreak@*/ break;
 	    case RPMTAG_NVRA:	/* XXX compound header extension. */
 		rpmtype = RPM_STRING_TYPE;
-		rpmvals = hGetNEVRA(h, NULL);
+		rpmvals = (const char **) hGetNEVRA(h, NULL);
 		rpmcnt = 1;
 		/*@switchbreak@*/ break;
 	    default:

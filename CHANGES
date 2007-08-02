@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - jbj: another header-extension-less hack-a-round.
     - jbj: hack up a NVRA retrival w/o extensions, sigh.
     - jbj: add RPMTAG_NVRA header extension.
     - jbj: python ds.Uname getter for uname(...) dependencies.
