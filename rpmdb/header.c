@@ -1826,6 +1826,25 @@ static /*@null@*/ void * headerFreeTag(/*@unused@*/ Header h,
     return NULL;
 }
 
+/*@unchecked@*/
+extern headerTagIndices rpmTags;
+
+/**
+ * Return tag name from value.
+ * @param tag		tag value
+ * @return		tag name, "(unknown)" on not found
+ */
+/*@-redecl@*/
+/*@unused@*/ static inline /*@observer@*/
+const char * tagName(int tag)
+	/*@*/
+{
+/*@-type@*/
+    return ((*rpmTags->tagName)(tag));
+/*@=type@*/
+}
+
+/*@=redecl@*/
 /** \ingroup header
  * Retrieve extension or tag value.
  *
@@ -1844,7 +1863,25 @@ int headerGetExtension(Header h, int_32 tag,
 	/*@modifies *type, *p, *c @*/
 	/*@requires maxSet(type) >= 0 /\ maxSet(p) >= 0 /\ maxSet(c) >= 0 @*/
 {
-    return intGetEntry(h, tag, type, (hPTR_t *)p, c, 1);
+    const struct headerSprintfExtension_s * e = headerCompoundFormats;
+    const struct headerSprintfExtension_s * ext = NULL;
+    const char * str = tagName(tag);
+
+    while (e->name) {
+	if (e->type == HEADER_EXT_TAG && !xstrcasecmp(e->name + 7, str)) {
+	    ext = e;
+	    break;
+	}
+	e++;
+	if (e->type == HEADER_EXT_MORE)
+	    e = e->u.more;
+    }
+
+    if (ext) {
+	int freeData = 0;	/* XXX lots of memory leaks. */
+	return ext->u.tagFunction(h, type, p, c, &freeData);
+    } else
+	return intGetEntry(h, tag, type, (hPTR_t *)p, c, 1);
 }
 
 /** \ingroup header
