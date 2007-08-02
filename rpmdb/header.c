@@ -1827,6 +1827,27 @@ static /*@null@*/ void * headerFreeTag(/*@unused@*/ Header h,
 }
 
 /** \ingroup header
+ * Retrieve extension or tag value.
+ *
+ * @param h		header
+ * @param tag		tag
+ * @retval *type	tag value data type (or NULL)
+ * @retval *p		tag value(s) (or NULL)
+ * @retval *c		number of values (or NULL)
+ * @return		1 on success, 0 on failure
+ */
+static
+int headerGetExtension(Header h, int_32 tag,
+			/*@null@*/ /*@out@*/ hTYP_t type,
+			/*@null@*/ /*@out@*/ void * p,
+			/*@null@*/ /*@out@*/ hCNT_t c)
+	/*@modifies *type, *p, *c @*/
+	/*@requires maxSet(type) >= 0 /\ maxSet(p) >= 0 /\ maxSet(c) >= 0 @*/
+{
+    return intGetEntry(h, tag, type, (hPTR_t *)p, c, 1);
+}
+
+/** \ingroup header
  * Retrieve tag value.
  * Will never return RPM_I18NSTRING_TYPE! RPM_STRING_TYPE elements with
  * RPM_I18NSTRING_TYPE equivalent entries are translated (if HEADER_I18NTABLE
@@ -4003,6 +4024,7 @@ static struct HV_s hdrVec1 = {
     headerWrite,
     headerIsEntry,
     headerFreeTag,
+    headerGetExtension,
     headerGetEntry,
     headerGetEntryMinMemory,
     headerAddEntry,

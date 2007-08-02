@@ -249,6 +249,27 @@ int headerIsEntry(/*@null@*/ Header h, int_32 tag)
     return (h2hv(h)->hdrfreetag) (h, data, type);
 }
 
+/*
+ * Retrieve extension or tag value.
+ *
+ * @param h		header
+ * @param tag		tag
+ * @retval *type	tag value data type (or NULL)
+ * @retval *p		tag value(s) (or NULL)
+ * @retval *c		number of values (or NULL)
+ * @return		1 on success, 0 on failure
+ */
+/*@unused@*/ static inline
+int headerGetExtension(Header h, int_32 tag,
+			/*@null@*/ /*@out@*/ hTYP_t type,
+			/*@null@*/ /*@out@*/ void * p,
+			/*@null@*/ /*@out@*/ hCNT_t c)
+	/*@modifies *type, *p, *c @*/
+{
+    if (h == NULL) return 0;
+    return (h2hv(h)->hdrext) (h, tag, type, p, c);
+}
+
 /** \ingroup header
  * Retrieve tag value.
  * Will never return RPM_I18NSTRING_TYPE! RPM_STRING_TYPE elements with

@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - jbj: add headerGetExtension(), mapped to gud old stuff for now.
     - jbj: skeletal configgery for standalone index tables.
     - jbj: another header-extension-less hack-a-round.
     - jbj: hack up a NVRA retrival w/o extensions, sigh.
