@@ -1881,7 +1881,7 @@ int headerGetExtension(Header h, int_32 tag,
 	int freeData = 0;	/* XXX lots of memory leaks. */
 	return ext->u.tagFunction(h, type, p, c, &freeData);
     } else
-	return intGetEntry(h, tag, type, (hPTR_t *)p, c, 1);
+	return intGetEntry(h, tag, type, (hPTR_t *)p, c, 0);
 }
 
 /** \ingroup header

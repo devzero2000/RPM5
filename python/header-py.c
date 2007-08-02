@@ -750,6 +750,8 @@ static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
 		ext = extensions;
 	    }
 	    extensions++;
+	    if (extensions->type == HEADER_EXT_MORE)
+		extensions = extensions->u.more;
 	}
     }
 
