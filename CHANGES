@@ -1,5 +1,9 @@
 4.5 -> 5.0:
+<<<<<<< CHANGES
+    - jbj: add RPMTAG_NVRA header extension.
+=======
     - jbj: python ds.Uname getter for uname(...) dependencies.
+>>>>>>> 1.1541
     - jbj: use rpmmg magic wrapper.
     - jbj: add rpmmg magic wrapper.
     - jbj: unsnarl __FUNCTION__ from system.h AutoFu.

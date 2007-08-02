@@ -1602,6 +1602,33 @@ static int dbinstanceTag(Header h, /*@out@*/ rpmTagType * type,
     return 0;
 }
 
+/**
+ * Retrieve N-V-R.A compound string from header.
+ * @param h		header
+ * @retval *type	tag type
+ * @retval *data	tag value
+ * @retval *count	no. of data items
+ * @retval *freeData	data-was-malloc'ed indicator
+ * @return		0 on success
+ */
+static int nvraTag(Header h, /*@out@*/ rpmTagType * type,
+		/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
+		/*@out@*/ int * freeData)
+	/*@globals rpmGlobalMacroContext, h_errno,
+		fileSystem, internalState @*/
+	/*@modifies *type, *data, *count, *freeData, rpmGlobalMacroContext,
+		fileSystem, internalState @*/
+	/*@requires maxSet(type) >= 0 /\ maxSet(data) >= 0
+		/\ maxSet(count) >= 0 /\ maxSet(freeData) >= 0 @*/
+{
+    *type = RPM_STRING_TYPE;
+    *data = hGetNEVRA(h, NULL);
+    *count = 1;
+    *freeData = 1;
+
+    return 0;
+}
+
 /*@-type@*/ /* FIX: cast? */
 const struct headerSprintfExtension_s rpmHeaderFormats[] = {
     { HEADER_EXT_TAG, "RPMTAG_CHANGELOGNAME",	{ changelognameTag } },
@@ -1624,6 +1651,7 @@ const struct headerSprintfExtension_s rpmHeaderFormats[] = {
     { HEADER_EXT_TAG, "RPMTAG_TRIGGERCONDS",	{ triggercondsTag } },
     { HEADER_EXT_TAG, "RPMTAG_TRIGGERTYPE",	{ triggertypeTag } },
     { HEADER_EXT_TAG, "RPMTAG_DBINSTANCE",	{ dbinstanceTag } },
+    { HEADER_EXT_TAG, "RPMTAG_NVRA",		{ nvraTag } },
     { HEADER_EXT_FORMAT, "armor",		{ armorFormat } },
     { HEADER_EXT_FORMAT, "base64",		{ base64Format } },
     { HEADER_EXT_FORMAT, "depflags",		{ depflagsFormat } },
