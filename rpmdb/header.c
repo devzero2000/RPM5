@@ -1863,25 +1863,31 @@ int headerGetExtension(Header h, int_32 tag,
 	/*@modifies *type, *p, *c @*/
 	/*@requires maxSet(type) >= 0 /\ maxSet(p) >= 0 /\ maxSet(c) >= 0 @*/
 {
-    const struct headerSprintfExtension_s * e = headerCompoundFormats;
-    const struct headerSprintfExtension_s * ext = NULL;
-    const char * str = tagName(tag);
+    const char * name = tagName(tag);
+    headerSprintfExtension exts = (headerSprintfExtension)headerCompoundFormats;
+    headerSprintfExtension ext;
+    int extNum;
+    int rc;
 
-    while (e->name) {
-	if (e->type == HEADER_EXT_TAG && !xstrcasecmp(e->name + 7, str)) {
-	    ext = e;
+    /* Search extensions for specific tag override. */
+    for (ext = exts, extNum = 0; ext != NULL && ext->type != HEADER_EXT_LAST;
+	ext = (ext->type == HEADER_EXT_MORE ? ext->u.more : ext+1), extNum++)
+    {
+	if (ext->name == NULL || ext->type != HEADER_EXT_TAG)
+	    continue;
+	if (!xstrcasecmp(ext->name + (sizeof("RPMTAG_")-1), name))
 	    break;
-	}
-	e++;
-	if (e->type == HEADER_EXT_MORE)
-	    e = e->u.more;
     }
 
-    if (ext) {
+    if (ext && ext->name != NULL && ext->type == HEADER_EXT_TAG) {
 	int freeData = 0;	/* XXX lots of memory leaks. */
-	return ext->u.tagFunction(h, type, p, c, &freeData);
+	rc = ext->u.tagFunction(h, type, p, c, &freeData);
     } else
-	return intGetEntry(h, tag, type, (hPTR_t *)p, c, 0);
+	rc = intGetEntry(h, tag, type, (hPTR_t *)p, c, 0);
+
+    /* XXX Returned data is always allocated. */
+
+    return rc;
 }
 
 /** \ingroup header
@@ -2721,9 +2727,11 @@ static int myTagValue(headerTagTableEntry tbl, const char * name)
 static int findTag(headerSprintfArgs hsa, sprintfToken token, const char * name)
 	/*@modifies token @*/
 {
+    headerSprintfExtension exts = hsa->exts;
     headerSprintfExtension ext;
     sprintfTag stag = (token->type == PTOK_COND
 	? &token->u.cond.tag : &token->u.tag);
+    int extNum;
 
     stag->fmt = NULL;
     stag->ext = NULL;
@@ -2746,14 +2754,14 @@ static int findTag(headerSprintfArgs hsa, sprintfToken token, const char * name)
 /*@=branchstate@*/
 
     /* Search extensions for specific tag override. */
-    for (ext = hsa->exts; ext != NULL && ext->type != HEADER_EXT_LAST;
-	ext = (ext->type == HEADER_EXT_MORE ? ext->u.more : ext+1))
+    for (ext = exts, extNum = 0; ext != NULL && ext->type != HEADER_EXT_LAST;
+	ext = (ext->type == HEADER_EXT_MORE ? ext->u.more : ext+1), extNum++)
     {
 	if (ext->name == NULL || ext->type != HEADER_EXT_TAG)
 	    continue;
 	if (!xstrcasecmp(ext->name, name)) {
 	    stag->ext = ext->u.tagFunction;
-	    stag->extNum = ext - hsa->exts;
+	    stag->extNum = extNum;
 	    goto bingo;
 	}
     }
@@ -2768,7 +2776,7 @@ static int findTag(headerSprintfArgs hsa, sprintfToken token, const char * name)
 bingo:
     /* Search extensions for specific format. */
     if (stag->type != NULL)
-    for (ext = hsa->exts; ext != NULL && ext->type != HEADER_EXT_LAST;
+    for (ext = exts; ext != NULL && ext->type != HEADER_EXT_LAST;
 	    ext = (ext->type == HEADER_EXT_MORE ? ext->u.more : ext+1))
     {
 	if (ext->name == NULL || ext->type != HEADER_EXT_FORMAT)
@@ -3639,15 +3647,13 @@ rpmecNew(const headerSprintfExtension exts)
 {
     headerSprintfExtension ext;
     rpmec ec;
-    int i = 0;
+    int extNum;
 
-    for (ext = exts; ext != NULL && ext->type != HEADER_EXT_LAST;
-	ext = (ext->type == HEADER_EXT_MORE ? ext->u.more : ext+1))
-    {
-	i++;
-    }
+    for (ext = exts, extNum = 0; ext != NULL && ext->type != HEADER_EXT_LAST;
+	ext = (ext->type == HEADER_EXT_MORE ? ext->u.more : ext+1), extNum++)
+	;
 
-    ec = xcalloc(i, sizeof(*ec));
+    ec = xcalloc(extNum, sizeof(*ec));
     return ec;
 }
 
@@ -3662,15 +3668,14 @@ rpmecFree(const headerSprintfExtension exts, /*@only@*/ rpmec ec)
 	/*@modifies ec @*/
 {
     headerSprintfExtension ext;
-    int i = 0;
+    int extNum;
 
-    for (ext = exts; ext != NULL && ext->type != HEADER_EXT_LAST;
-	ext = (ext->type == HEADER_EXT_MORE ? ext->u.more : ext+1))
+    for (ext = exts, extNum = 0; ext != NULL && ext->type != HEADER_EXT_LAST;
+	ext = (ext->type == HEADER_EXT_MORE ? ext->u.more : ext+1), extNum++)
     {
 /*@-boundswrite@*/
-	if (ec[i].freeit) ec[i].data = _free(ec[i].data);
+	if (ec[extNum].freeit) ec[extNum].data = _free(ec[extNum].data);
 /*@=boundswrite@*/
-	i++;
     }
 
     ec = _free(ec);

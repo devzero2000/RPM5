@@ -2101,7 +2101,7 @@ exit:
 static int mireSkip (const rpmdbMatchIterator mi)
 	/*@modifies mi->mi_re @*/
 {
-    HGE_t hge = (HGE_t) headerGetEntryMinMemory;
+    HGE_t hge = (HGE_t) headerGetExtension;
     HFD_t hfd = (HFD_t) headerFreeData;
     union {
 	void * ptr;
@@ -2135,11 +2135,6 @@ static int mireSkip (const rpmdbMatchIterator mi)
     for (i = 0; i < mi->mi_nre; i++, mire++) {
 	int anymatch;
 
-	if (mire->tag == RPMTAG_NVRA) {
-	    t = RPM_STRING_TYPE;
-	    u.str = hGetNEVRA(mi->mi_h, NULL);
-	    c = 1;
-	} else
 	if (!hge(mi->mi_h, mire->tag, &t, (void **)&u, &c)) {
 	    if (mire->tag != RPMTAG_EPOCH)
 		continue;
