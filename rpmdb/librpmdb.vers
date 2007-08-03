@@ -46,6 +46,7 @@ LIBRPMDB_0
     rpmdbAppendIterator;
     rpmDBArgs;
     rpmdbCheckSignals;
+    rpmdbCheckTerminate;
     rpmdbClose;
     rpmdbBlockDBI;
     rpmdbCloseDBI;

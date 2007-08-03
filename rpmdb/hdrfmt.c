@@ -1376,10 +1376,10 @@ static int nvraTag(Header h, /*@out@*/ rpmTagType * type,
 	/*@requires maxSet(type) >= 0 /\ maxSet(data) >= 0
 		/\ maxSet(count) >= 0 /\ maxSet(freeData) >= 0 @*/
 {
-    *type = RPM_STRING_TYPE;
-    *data = hGetNVRA(h);
-    *count = 1;
-    *freeData = 1;
+    if (type) *type = RPM_STRING_TYPE;
+    if (data) *data = hGetNVRA(h);
+    if (count) *count = 1;
+    if (freeData) *freeData = 1;
 
     return 0;
 }
@@ -1482,30 +1482,30 @@ static int _fnTag(Header h, rpmTag tag, /*@out@*/ rpmTagType * type,
 	/*@requires maxSet(type) >= 0 /\ maxSet(data) >= 0
 		/\ maxSet(count) >= 0 /\ maxSet(freeData) >= 0 @*/
 {
-    *type = RPM_STRING_ARRAY_TYPE;
+    if (type) *type = RPM_STRING_ARRAY_TYPE;
     rpmfiBuildFNames(h, tag, (const char ***) data, count);
-    *freeData = 1;
+    if (freeData) *freeData = 1;
     return 0;
 }
 
-static int filenamesTag(Header h, /*@out@*/ rpmTagType * type,
+static int filepathsTag(Header h, /*@out@*/ rpmTagType * type,
 		/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
 		/*@out@*/ int * freeData)
 	/*@modifies *type, *data, *count, *freeData @*/
 	/*@requires maxSet(type) >= 0 /\ maxSet(data) >= 0
 		/\ maxSet(count) >= 0 /\ maxSet(freeData) >= 0 @*/
 {
-    return _fnTag(h, RPMTAG_BASENAMES, type, data, count, freedata);
+    return _fnTag(h, RPMTAG_BASENAMES, type, data, count, freeData);
 }
 
-static int origfilenamesTag(Header h, /*@out@*/ rpmTagType * type,
+static int origpathsTag(Header h, /*@out@*/ rpmTagType * type,
 		/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
 		/*@out@*/ int * freeData)
 	/*@modifies *type, *data, *count, *freeData @*/
 	/*@requires maxSet(type) >= 0 /\ maxSet(data) >= 0
 		/\ maxSet(count) >= 0 /\ maxSet(freeData) >= 0 @*/
 {
-    return _fnTag(h, RPMTAG_ORIGBASENAMES, type, data, count, freedata);
+    return _fnTag(h, RPMTAG_ORIGBASENAMES, type, data, count, freeData);
 }
 
 /*@-type@*/ /* FIX: cast? */
@@ -1520,8 +1520,8 @@ const struct headerSprintfExtension_s headerCompoundFormats[] = {
     { HEADER_EXT_TAG, "RPMTAG_TRIGGERTYPE",	{ triggertypeTag } },
     { HEADER_EXT_TAG, "RPMTAG_DBINSTANCE",	{ dbinstanceTag } },
     { HEADER_EXT_TAG, "RPMTAG_NVRA",		{ nvraTag } },
-    { HEADER_EXT_TAG, "RPMTAG_FILENAMES",	{ filenamesTag } },
-    { HEADER_EXT_TAG, "RPMTAG_ORIGFILENAMES",	{ filenamesTag } },
+    { HEADER_EXT_TAG, "RPMTAG_FILEPATHS",	{ filepathsTag } },
+    { HEADER_EXT_TAG, "RPMTAG_ORIGPATHS",	{ origpathsTag } },
     { HEADER_EXT_FORMAT, "armor",		{ armorFormat } },
     { HEADER_EXT_FORMAT, "base64",		{ base64Format } },
     { HEADER_EXT_FORMAT, "depflags",		{ depflagsFormat } },

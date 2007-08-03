@@ -179,7 +179,7 @@ static void expandFilelist(Header h)
 
     /*@-branchstate@*/
     if (!headerIsEntry(h, RPMTAG_OLDFILENAMES)) {
-	headerGetExtension(h, RPMTAG_FILENAMES, NULL, &fileNames, &count);
+	headerGetExtension(h, RPMTAG_FILEPATHS, NULL, &fileNames, &count);
 	if (fileNames == NULL || count <= 0)
 	    return;
 	xx = hae(h, RPMTAG_OLDFILENAMES, RPM_STRING_ARRAY_TYPE,
@@ -304,7 +304,7 @@ static void mungeFilelist(Header h)
 	|| !headerIsEntry (h, RPMTAG_DIRINDEXES))
 	compressFilelist(h);
 
-    headerGetExtension(h, RPMTAG_FILENAMES, NULL, &fileNames, &count);
+    headerGetExtension(h, RPMTAG_FILEPATHS, NULL, &fileNames, &count);
 
     if (fileNames == NULL || count <= 0)
 	return;
@@ -680,7 +680,7 @@ static int rpmHeaderGetEntry(Header h, int_32 tag, /*@out@*/ int_32 *type,
     case RPMTAG_OLDFILENAMES:
     {	const char ** fl = NULL;
 	int count;
-	headerGetExtension(h, RPMTAG_FILENAMES, NULL, &fl, &count);
+	headerGetExtension(h, RPMTAG_FILEPATHS, NULL, &fl, &count);
 	if (count > 0) {
 	    *p = fl;
 	    if (c)	*c = count;
@@ -783,6 +783,8 @@ static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
     }
 
     switch (tag) {
+    case RPMTAG_FILEPATHS:
+    case RPMTAG_ORIGPATHS:
     case RPMTAG_OLDFILENAMES:
     case RPMTAG_FILESIZES:
     case RPMTAG_FILESTATES:

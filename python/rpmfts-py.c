@@ -15,7 +15,7 @@
 
 #include "rpmfts-py.h"
 
-#include <rpmlib.h>	/* XXX _free */
+#include <rpmio.h>	/* XXX _free */
 
 #include "debug.h"
 

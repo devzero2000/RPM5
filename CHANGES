@@ -1,4 +1,7 @@
 4.5 -> 5.0:
+    - jbj: extension tags in hdrfmt.c now can be passed NULL. Start the fixing.
+    - jbj: rpmtfs-py.c needs _free from rpmio.h, not rpmlib.h
+    - jbj: add RPMTAG_{FILE,ORIG}PATHS to not revisit old expectations.
     - jbj: _FINALLY_ get rpmfiBuildFNames() out of rpm libraries. w00t!
     - jbj: add headerGetExtension(RPMTAG_FILENAMES), and rpmdb/hdrfmt.c orphan.
     - jbj: use headerGetExtension(RPMTAG_NVRA) most everywhere.
