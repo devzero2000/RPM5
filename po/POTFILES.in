@@ -62,6 +62,7 @@ rpmdb/db3.c
 rpmdb/dbconfig.c
 rpmdb/fprint.c
 rpmdb/hdrNVR.c
+rpmdb/hdrfmt.c
 rpmdb/header.c
 rpmdb/header_internal.c
 rpmdb/legacy.c

@@ -114,28 +114,6 @@ static int fssizesTag(Header h, /*@out@*/ rpmTagType * type,
 }
 
 /**
- * Retrieve file paths.
- * @param h		header
- * @retval *type	tag type
- * @retval *data	tag value
- * @retval *count	no. of data items
- * @retval *freeData	data-was-malloc'ed indicator
- * @return		0 on success
- */
-static int filenamesTag(Header h, /*@out@*/ rpmTagType * type,
-		/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
-		/*@out@*/ int * freeData)
-	/*@modifies *type, *data, *count, *freeData @*/
-	/*@requires maxSet(type) >= 0 /\ maxSet(data) >= 0
-		/\ maxSet(count) >= 0 /\ maxSet(freeData) >= 0 @*/
-{
-    *type = RPM_STRING_ARRAY_TYPE;
-    rpmfiBuildFNames(h, RPMTAG_BASENAMES, (const char ***) data, count);
-    *freeData = 1;
-    return 0;
-}
-
-/**
  * Retrieve file classes.
  * @param h		header
  * @retval *type	tag type
@@ -348,7 +326,6 @@ const struct headerSprintfExtension_s rpmHeaderFormats[] = {
     { HEADER_EXT_TAG, "RPMTAG_ENHANCES",	{ missingokTag } },
     { HEADER_EXT_TAG, "RPMTAG_FILECLASS",	{ fileclassTag } },
     { HEADER_EXT_TAG, "RPMTAG_FILECONTEXTS",	{ filecontextsTag } },
-    { HEADER_EXT_TAG, "RPMTAG_FILENAMES",	{ filenamesTag } },
     { HEADER_EXT_TAG, "RPMTAG_FILEPROVIDE",	{ fileprovideTag } },
     { HEADER_EXT_TAG, "RPMTAG_FILEREQUIRE",	{ filerequireTag } },
     { HEADER_EXT_TAG, "RPMTAG_FSCONTEXTS",	{ fscontextsTag } },
