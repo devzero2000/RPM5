@@ -6,7 +6,7 @@ EXTRA_DIST =
 
 noinst_DATA = .made_mod
 
-.made_mod: Makefile.perl RPM.xs
+.made_mod: Makefile.perl RPM.xs RPM_Header.xs RPM_Ts.xs
 	$(MAKE) -f Makefile.perl
 	touch $@
 
