@@ -179,7 +179,7 @@ static void expandFilelist(Header h)
 
     /*@-branchstate@*/
     if (!headerIsEntry(h, RPMTAG_OLDFILENAMES)) {
-	rpmfiBuildFNames(h, RPMTAG_BASENAMES, &fileNames, &count);
+	headerGetExtension(h, RPMTAG_FILENAMES, NULL, &fileNames, &count);
 	if (fileNames == NULL || count <= 0)
 	    return;
 	xx = hae(h, RPMTAG_OLDFILENAMES, RPM_STRING_ARRAY_TYPE,
@@ -304,7 +304,7 @@ static void mungeFilelist(Header h)
 	|| !headerIsEntry (h, RPMTAG_DIRINDEXES))
 	compressFilelist(h);
 
-    rpmfiBuildFNames(h, RPMTAG_BASENAMES, &fileNames, &count);
+    headerGetExtension(h, RPMTAG_FILENAMES, NULL, &fileNames, &count);
 
     if (fileNames == NULL || count <= 0)
 	return;
@@ -680,7 +680,7 @@ static int rpmHeaderGetEntry(Header h, int_32 tag, /*@out@*/ int_32 *type,
     case RPMTAG_OLDFILENAMES:
     {	const char ** fl = NULL;
 	int count;
-	rpmfiBuildFNames(h, RPMTAG_BASENAMES, &fl, &count);
+	headerGetExtension(h, RPMTAG_FILENAMES, NULL, &fl, &count);
 	if (count > 0) {
 	    *p = fl;
 	    if (c)	*c = count;

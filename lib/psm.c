@@ -29,7 +29,6 @@
 
 #include "rpmlead.h"		/* writeLead proto */
 #include "signature.h"		/* signature constants */
-#include "legacy.h"		/* XXX rpmfiBuildFNames() */
 #include "misc.h"		/* XXX stripTrailingChar() */
 #include "rpmdb.h"		/* XXX for db_chrootDone */
 #include "debug.h"
@@ -259,7 +258,7 @@ assert(fi->h != NULL);
     i = fi->fc;
 
     if (fi->h != NULL) {	/* XXX can't happen */
-	rpmfiBuildFNames(fi->h, RPMTAG_BASENAMES, &fi->apath, NULL);
+	headerGetExtension(fi->h, RPMTAG_FILENAMES, NULL, &fi->apath, NULL);
 
 	if (headerIsEntry(fi->h, RPMTAG_COOKIE))
 	    for (i = 0; i < fi->fc; i++)
@@ -1624,9 +1623,9 @@ assert(psm->mi == NULL);
 		CPIO_MAP_PATH | CPIO_MAP_MODE | CPIO_MAP_UID | CPIO_MAP_GID | (fi->mapflags & CPIO_SBIT_CHECK);
 	
 	    if (headerIsEntry(fi->h, RPMTAG_ORIGBASENAMES))
-		rpmfiBuildFNames(fi->h, RPMTAG_ORIGBASENAMES, &fi->apath, NULL);
+		headerGetExtension(fi->h, RPMTAG_ORIGFILENAMES, NULL, &fi->apath, NULL);
 	    else
-		rpmfiBuildFNames(fi->h, RPMTAG_BASENAMES, &fi->apath, NULL);
+		headerGetExtension(fi->h, RPMTAG_FILENAMES, NULL, &fi->apath, NULL);
 	
 	    if (fi->fuser == NULL)
 		xx = hge(fi->h, RPMTAG_FILEUSERNAME, NULL,

@@ -83,7 +83,7 @@ static int fssizesTag(Header h, /*@out@*/ rpmTagType * type,
 	numFiles = 0;
 	filenames = NULL;
     } else {
-	rpmfiBuildFNames(h, RPMTAG_BASENAMES, &filenames, &numFiles);
+	headerGetExtension(h, RPMTAG_FILENAMES, NULL, &filenames, &numFiles);
     }
 
 /*@-boundswrite@*/

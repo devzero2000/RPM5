@@ -72,7 +72,6 @@ LIBRPMDB_0
     rpmdbSync;
     rpmdbVerify;
     rpmdbVerifyAllDBI;
-    rpmfiBuildFNames;
     rpmTagTable;
     rpmTagTableSize;
     rpmTags;

@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - jbj: _FINALLY_ get rpmfiBuildFNames() out of rpm libraries. w00t!
     - jbj: add headerGetExtension(RPMTAG_FILENAMES), and rpmdb/hdrfmt.c orphan.
     - jbj: use headerGetExtension(RPMTAG_NVRA) most everywhere.
     - jbj: use headerGetExtension() for mire matching. memleaks next.

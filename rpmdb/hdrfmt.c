@@ -1385,6 +1385,88 @@ static int nvraTag(Header h, /*@out@*/ rpmTagType * type,
 }
 
 /**
+ * Retrieve file names from header.
+ *
+ * The representation of file names in package headers changed in rpm-4.0.
+ * Originally, file names were stored as an array of absolute paths.
+ * In rpm-4.0, file names are stored as separate arrays of dirname's and
+ * basename's, * with a dirname index to associate the correct dirname
+ * with each basname.
+ *
+ * This function is used to retrieve file names independent of how the
+ * file names are represented in the package header.
+ * 
+ * @param h		header
+ * @param tagN		RPMTAG_BASENAMES | PMTAG_ORIGBASENAMES
+ * @retval *fnp		array of file names
+ * @retval *fcp		number of files
+ */
+static void rpmfiBuildFNames(Header h, rpmTag tagN,
+		/*@out@*/ const char *** fnp, /*@out@*/ int * fcp)
+	/*@modifies *fnp, *fcp @*/
+{
+    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
+    HFD_t hfd = headerFreeData;
+    const char ** baseNames;
+    const char ** dirNames;
+    int * dirIndexes;
+    int count;
+    const char ** fileNames;
+    int size;
+    rpmTag dirNameTag = 0;
+    rpmTag dirIndexesTag = 0;
+    rpmTagType bnt, dnt;
+    char * t;
+    int i, xx;
+
+    if (tagN == RPMTAG_BASENAMES) {
+	dirNameTag = RPMTAG_DIRNAMES;
+	dirIndexesTag = RPMTAG_DIRINDEXES;
+    } else if (tagN == RPMTAG_ORIGBASENAMES) {
+	dirNameTag = RPMTAG_ORIGDIRNAMES;
+	dirIndexesTag = RPMTAG_ORIGDIRINDEXES;
+    }
+
+    if (!hge(h, tagN, &bnt, &baseNames, &count)) {
+	if (fnp) *fnp = NULL;
+	if (fcp) *fcp = 0;
+	return;		/* no file list */
+    }
+
+    xx = hge(h, dirNameTag, &dnt, &dirNames, NULL);
+    xx = hge(h, dirIndexesTag, NULL, &dirIndexes, &count);
+
+    size = sizeof(*fileNames) * count;
+    for (i = 0; i < count; i++) {
+	const char * dn = NULL;
+	(void) urlPath(dirNames[dirIndexes[i]], &dn);
+	size += strlen(baseNames[i]) + strlen(dn) + 1;
+    }
+
+    fileNames = xmalloc(size);
+    t = ((char *) fileNames) + (sizeof(*fileNames) * count);
+    /*@-branchstate@*/
+    for (i = 0; i < count; i++) {
+	const char * dn = NULL;
+	fileNames[i] = t;
+	(void) urlPath(dirNames[dirIndexes[i]], &dn);
+	t = stpcpy( stpcpy(t, dn), baseNames[i]);
+	*t++ = '\0';
+    }
+    /*@=branchstate@*/
+    baseNames = hfd(baseNames, bnt);
+    dirNames = hfd(dirNames, dnt);
+
+    /*@-branchstate@*/
+    if (fnp)
+	*fnp = fileNames;
+    else
+	fileNames = _free(fileNames);
+    /*@=branchstate@*/
+    if (fcp) *fcp = count;
+}
+
+/**
  * Retrieve file paths.
  * @param h		header
  * @retval *type	tag type
@@ -1393,7 +1475,7 @@ static int nvraTag(Header h, /*@out@*/ rpmTagType * type,
  * @retval *freeData	data-was-malloc'ed indicator
  * @return		0 on success
  */
-static int filenamesTag(Header h, /*@out@*/ rpmTagType * type,
+static int _fnTag(Header h, rpmTag tag, /*@out@*/ rpmTagType * type,
 		/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
 		/*@out@*/ int * freeData)
 	/*@modifies *type, *data, *count, *freeData @*/
@@ -1401,9 +1483,29 @@ static int filenamesTag(Header h, /*@out@*/ rpmTagType * type,
 		/\ maxSet(count) >= 0 /\ maxSet(freeData) >= 0 @*/
 {
     *type = RPM_STRING_ARRAY_TYPE;
-    rpmfiBuildFNames(h, RPMTAG_BASENAMES, (const char ***) data, count);
+    rpmfiBuildFNames(h, tag, (const char ***) data, count);
     *freeData = 1;
     return 0;
+}
+
+static int filenamesTag(Header h, /*@out@*/ rpmTagType * type,
+		/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
+		/*@out@*/ int * freeData)
+	/*@modifies *type, *data, *count, *freeData @*/
+	/*@requires maxSet(type) >= 0 /\ maxSet(data) >= 0
+		/\ maxSet(count) >= 0 /\ maxSet(freeData) >= 0 @*/
+{
+    return _fnTag(h, RPMTAG_BASENAMES, type, data, count, freedata);
+}
+
+static int origfilenamesTag(Header h, /*@out@*/ rpmTagType * type,
+		/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
+		/*@out@*/ int * freeData)
+	/*@modifies *type, *data, *count, *freeData @*/
+	/*@requires maxSet(type) >= 0 /\ maxSet(data) >= 0
+		/\ maxSet(count) >= 0 /\ maxSet(freeData) >= 0 @*/
+{
+    return _fnTag(h, RPMTAG_ORIGBASENAMES, type, data, count, freedata);
 }
 
 /*@-type@*/ /* FIX: cast? */
@@ -1419,6 +1521,7 @@ const struct headerSprintfExtension_s headerCompoundFormats[] = {
     { HEADER_EXT_TAG, "RPMTAG_DBINSTANCE",	{ dbinstanceTag } },
     { HEADER_EXT_TAG, "RPMTAG_NVRA",		{ nvraTag } },
     { HEADER_EXT_TAG, "RPMTAG_FILENAMES",	{ filenamesTag } },
+    { HEADER_EXT_TAG, "RPMTAG_ORIGFILENAMES",	{ filenamesTag } },
     { HEADER_EXT_FORMAT, "armor",		{ armorFormat } },
     { HEADER_EXT_FORMAT, "base64",		{ base64Format } },
     { HEADER_EXT_FORMAT, "depflags",		{ depflagsFormat } },
