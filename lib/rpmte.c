@@ -107,7 +107,9 @@ static void addTE(rpmts ts, rpmte p, Header h,
     size_t nb;
     int xx;
 
-    p->NEVR = hGetNEVR(h, NULL);
+    p->NEVR = NULL;
+    xx = headerGetExtension(h, RPMTAG_NVRA, NULL, &p->NEVR, NULL);
+assert(p->NEVR);
     p->name = xstrdup(p->NEVR);
     if ((p->release = strrchr(p->name, '-')) != NULL)
 	*p->release++ = '\0';
@@ -632,7 +634,8 @@ int rpmteChain(rpmte p, rpmte q, Header oh, const char * msg)
     if (msg == NULL)
 	msg = "";
 /*@=branchstate@*/
-    blinkNEVRA = hGetNEVRA(oh, NULL);
+    xx = headerGetExtension(oh, RPMTAG_NVRA, NULL, &blinkNEVRA, NULL);
+assert(blinkNEVRA);
 
     /*
      * Convert binary pkgid to a string.

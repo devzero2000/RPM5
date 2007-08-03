@@ -137,27 +137,7 @@ int headerMacrosUnload(Header h)
 
 int headerNVR(Header h, const char **np, const char **vp, const char **rp)
 {
-    int type;
-    int count;
-
-/*@-boundswrite@*/
-    if (np) {
-	if (!(headerGetEntry(h, RPMTAG_NAME, &type, (void **) np, &count)
-	    && type == RPM_STRING_TYPE && count == 1))
-		*np = NULL;
-    }
-    if (vp) {
-	if (!(headerGetEntry(h, RPMTAG_VERSION, &type, (void **) vp, &count)
-	    && type == RPM_STRING_TYPE && count == 1))
-		*vp = NULL;
-    }
-    if (rp) {
-	if (!(headerGetEntry(h, RPMTAG_RELEASE, &type, (void **) rp, &count)
-	    && type == RPM_STRING_TYPE && count == 1))
-		*rp = NULL;
-    }
-/*@=boundswrite@*/
-    return 0;
+    return headerNEVRA(h, np, NULL, vp, rp, NULL);
 }
 
 int headerNEVRA(Header h, const char **np,
@@ -169,73 +149,27 @@ int headerNEVRA(Header h, const char **np,
 
 /*@-boundswrite@*/
     if (np) {
-	if (!(headerGetEntry(h, RPMTAG_NAME, &type, (void **) np, &count)
+	if (!(headerGetEntry(h, RPMTAG_NAME, &type, np, &count)
 	    && type == RPM_STRING_TYPE && count == 1))
 		*np = NULL;
     }
     if (vp) {
-	if (!(headerGetEntry(h, RPMTAG_VERSION, &type, (void **) vp, &count)
+	if (!(headerGetEntry(h, RPMTAG_VERSION, &type, vp, &count)
 	    && type == RPM_STRING_TYPE && count == 1))
 		*vp = NULL;
     }
     if (rp) {
-	if (!(headerGetEntry(h, RPMTAG_RELEASE, &type, (void **) rp, &count)
+	if (!(headerGetEntry(h, RPMTAG_RELEASE, &type, rp, &count)
 	    && type == RPM_STRING_TYPE && count == 1))
 		*rp = NULL;
     }
     if (ap) {
-	if (!(headerGetEntry(h, RPMTAG_ARCH, &type, (void **) ap, &count)
+	if (!(headerGetEntry(h, RPMTAG_ARCH, &type, ap, &count)
 	    && type == RPM_STRING_TYPE && count == 1))
 		*ap = NULL;
     }
 /*@=boundswrite@*/
     return 0;
-}
-
-char * hGetNEVR(Header h, const char ** np)
-{
-    const char * n, * v, * r;
-    char * NVR, * t;
-
-    (void) headerNVR(h, &n, &v, &r);
-    NVR = t = xcalloc(1, strlen(n) + strlen(v) + strlen(r) + sizeof("--"));
-/*@-boundswrite@*/
-    t = stpcpy(t, n);
-    t = stpcpy(t, "-");
-    t = stpcpy(t, v);
-    t = stpcpy(t, "-");
-    t = stpcpy(t, r);
-    if (np)
-	*np = n;
-/*@=boundswrite@*/
-    return NVR;
-}
-
-char * hGetNEVRA(Header h, const char ** np)
-{
-    const char * n, * v, * r, * a;
-    char * NVRA, * t;
-
-    (void) headerNVR(h, &n, &v, &r);
-    /* XXX pubkeys have no arch. */
-/*@-branchstate@*/
-    a = NULL;
-    if (!headerGetEntry(h, RPMTAG_ARCH, NULL, &a, NULL) || a == NULL)
-	a = "pubkey";
-/*@=branchstate@*/
-    NVRA = t = xcalloc(1, strlen(n) + strlen(v) + strlen(r) + strlen(a) + sizeof("--."));
-/*@-boundswrite@*/
-    t = stpcpy(t, n);
-    t = stpcpy(t, "-");
-    t = stpcpy(t, v);
-    t = stpcpy(t, "-");
-    t = stpcpy(t, r);
-    t = stpcpy(t, ".");
-    t = stpcpy(t, a);
-    if (np)
-	*np = n;
-/*@=boundswrite@*/
-    return NVRA;
 }
 
 uint_32 hGetColor(Header h)

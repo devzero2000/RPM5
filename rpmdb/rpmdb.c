@@ -2856,9 +2856,8 @@ if (dbiByteSwapped(dbi) == 1)
 		continue;
 		/*@notreached@*/ /*@switchbreak@*/ break;
 	    case RPMTAG_NVRA:	/* XXX compound header extension. */
-		rpmtype = RPM_STRING_TYPE;
-		rpmvals = (const char **) hGetNEVRA(h, NULL);
-		rpmcnt = 1;
+		if (!headerGetExtension(h, rpmtag, (hTYP_t)&rpmtype, &rpmvals, &rpmcnt))
+		    continue;
 		/*@switchbreak@*/ break;
 	    default:
 		if (!hge(h, rpmtag, &rpmtype, &rpmvals, &rpmcnt))
@@ -3296,9 +3295,7 @@ data->size = 0;
 		xx = hge(h, RPMTAG_REQUIREFLAGS, NULL, &requireFlags, NULL);
 		/*@switchbreak@*/ break;
 	    case RPMTAG_NVRA:	/* XXX compound header extension. */
-		rpmtype = RPM_STRING_TYPE;
-		rpmvals = (const char **) hGetNEVRA(h, NULL);
-		rpmcnt = 1;
+		xx = headerGetExtension(h, rpmtag, (hTYP_t)&rpmtype, &rpmvals, &rpmcnt);
 		/*@switchbreak@*/ break;
 	    default:
 		xx = hge(h, rpmtag, &rpmtype, &rpmvals, &rpmcnt);
