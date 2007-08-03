@@ -177,7 +177,7 @@ PREINIT:
 	Header h;
 PPCODE:
 	fd = fdDup(fileno(fp));
-	h = headerRead(fd, HEADER_MAGIC_YES);
+	h = headerRead(fd);
 
 	if (h) {
 	    EXTEND(SP, 1);
