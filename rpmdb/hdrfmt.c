@@ -1520,6 +1520,7 @@ const struct headerSprintfExtension_s headerCompoundFormats[] = {
     { HEADER_EXT_TAG, "RPMTAG_TRIGGERTYPE",	{ triggertypeTag } },
     { HEADER_EXT_TAG, "RPMTAG_DBINSTANCE",	{ dbinstanceTag } },
     { HEADER_EXT_TAG, "RPMTAG_NVRA",		{ nvraTag } },
+    { HEADER_EXT_TAG, "RPMTAG_FILENAMES",	{ filepathsTag } },
     { HEADER_EXT_TAG, "RPMTAG_FILEPATHS",	{ filepathsTag } },
     { HEADER_EXT_TAG, "RPMTAG_ORIGPATHS",	{ origpathsTag } },
     { HEADER_EXT_FORMAT, "armor",		{ armorFormat } },
