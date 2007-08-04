@@ -18,7 +18,6 @@
  *
  */
 
-#include "system.h"
 #include <header.h>
 #include <rpmio.h>
 #include <rpmdb.h>
