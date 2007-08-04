@@ -119,13 +119,25 @@ dump_macros(fp = stdout)
     rpmDumpMacroTable(NULL, fp);
 
 #
-# #
+# Scoring functions
 #
 
 int
 rpmvercmp(one, two)
 	char* one
 	char* two
+
+int
+platformscore(platform)
+    const char * platform
+    CODE:
+    RETVAL=rpmPlatformScore(platform, NULL, 0);
+    OUTPUT:
+    RETVAL
+
+#
+# #
+#
 
 void
 _read_package_info(fp, vsflags)
