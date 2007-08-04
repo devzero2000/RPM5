@@ -36,10 +36,12 @@ MODULE = RPM		PACKAGE = RPM
 
 PROTOTYPES: ENABLE
 BOOT:
+#if DYING
     {
-	HV *header_tags, *constants;
+	HV *header_tags, *constants; */
+#endif
 	rpmReadConfigFiles(NULL, NULL);
-
+#if DYING
 	header_tags = perl_get_hv("RPM::header_tag_map", TRUE);
 	_populate_header_tags(header_tags);
 
@@ -64,41 +66,61 @@ BOOT:
 	REGISTER_CONSTANT(TR_ADDED);
 	REGISTER_CONSTANT(TR_REMOVED);
     }
+#endif
 
-double
-rpm_api_version(pkg)
-	char * pkg
-    CODE:
-	RETVAL = (double)5.0; /* TODO: kill this */
-    OUTPUT:
-	RETVAL
-
+#
+# Macro functions
+#
 
 void
-add_macro(pkg, name, val)
-	char * pkg
-	char * name
-	char * val
-    CODE:
-	addMacro(NULL, name, NULL, val, RMIL_DEFAULT);
+rpmversion()
+    PPCODE:
+    XPUSHs(sv_2mortal(newSVpv(RPMVERSION, 0)));
 
 void
-delete_macro(pkg, name)
-	char * pkg
+add_macro(macro)
+	char * macro
+    CODE:
+    rpmDefineMacro(NULL, macro, 0);
+
+void
+delete_macro(name)
 	char * name
     CODE:
 	delMacro(NULL, name);
 
 void
-expand_macro(pkg, str)
-	char * pkg
-	char * str
+expand_macro(string)
+	char * string
     PREINIT:
-	char *ret;
+	char *ret = NULL;
     PPCODE:
-	ret = rpmExpand(str, NULL);
-	PUSHs(sv_2mortal(newSVpv(ret, 0)));
+	ret = rpmExpand(string, NULL);
+	XPUSHs(sv_2mortal(newSVpv(ret, 0)));
 	free(ret);
+
+int
+load_macro_file(filename)
+    char * filename
+    CODE:
+    RETVAL= ! rpmLoadMacroFile(NULL, filename); /* return False on error */
+    OUTPUT:
+    RETVAL
+
+void
+reset_macros()
+    PPCODE:
+    rpmFreeMacros(NULL);
+
+void
+dump_macros(fp = stdout)
+    FILE *fp
+    CODE:
+    rpmDumpMacroTable(NULL, fp);
+
+#
+# #
+#
 
 int
 rpmvercmp(one, two)

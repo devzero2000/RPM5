@@ -4,8 +4,8 @@ use ExtUtils::MakeMaker;
 
 WriteMakefile(
 	      'NAME'	=> 'RPM',
-	      'OBJECT'	=> 'RPM.o RPM_Ts.o',
-	      'VERSION_FROM' => 'RPM.pm',		# finds $VERSION
+	      'OBJECT'	=> 'RPM.o RPM_Ts.o RPM_Header.o',
+	      'VERSION' => '@VERSION@',
 	      'MAKEFILE'=> 'Makefile.perl',
 	      'LIBS'	=> ['@LDFLAGS@ @LIBS@'],
 	      'CCFLAGS' => '@CFLAGS@',
