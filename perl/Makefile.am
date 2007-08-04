@@ -5,18 +5,17 @@ AUTOMAKE_OPTIONS = 1.4 foreign
 EXTRA_DIST = \
 	MANIFEST \
 	Makefile.PL.in \
-	RPM.xs RPM_Header.xs RPM_Ts.xs \
-	RPM.pm \
-	t/01.rpm.t
+	RPM.xs RPM.pm t/01.rpm.t\
+	RPM_Header.xs RPM_Ts.xs \
+	RPM/Constant.pm RPM_Constant.xs t/02.rpmconstant.t
 
 noinst_DATA = .made_mod
 
 .made_mod: Makefile.perl $(EXTRA_DIST)
-	$(MAKE) -f Makefile.perl
-	touch $@
+	$(MAKE) -f Makefile.perl || $(MAKE) -f Makefile.perl
 
 test:
-	$(MAKE) -f Makefile.perl test
+	$(MAKE) -f Makefile.perl test || $(MAKE) -f Makefile.perl test
 
 MANIFEST: Makefile
 	echo -n > MANIFEST
@@ -28,6 +27,7 @@ Makefile.perl: Makefile.PL
 	$(PERL) Makefile.PL MAKEFILE=$@
 
 install-data-local:
+	$(MAKE) -f Makefile.perl PREFIX=$(prefix) install || \
 	$(MAKE) -f Makefile.perl PREFIX=$(prefix) install
 
 CLEANFILES = *~

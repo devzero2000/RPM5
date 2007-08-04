@@ -2,19 +2,19 @@ use ExtUtils::MakeMaker;
 # See lib/ExtUtils/MakeMaker.pm for details of how to influence
 # the contents of the Makefile that is written.
 
-my @libdir = qw(build lib popt rpmdb rpmio);
+my @libdir = qw(. build lib popt rpmdb rpmio rpmconstant);
 
 my @ldaddp = map { '-L@top_srcdir@/' . $_ . '/.libs' } @libdir;
-my @ldadd = map { '-l' . $_ } qw(rpmio rpmbuild rpm popt rpmdb);
+my @ldadd = map { '-l' . $_ } qw(rpmio rpmbuild rpm popt rpmdb rpmconstant);
 
 WriteMakefile(
 	      'NAME'	=> 'RPM',
-	      'OBJECT'	=> 'RPM.o RPM_Ts.o RPM_Header.o',
+	      'OBJECT'	=> 'RPM.o RPM_Ts.o RPM_Header.o RPM_Constant.o',
 	      'VERSION' => '@VERSION@',
 	      'MAKEFILE'=> 'Makefile.perl',
-	      'LIBS'	=> [join(' ', @ldaddp) . join(' ', @ldadd) . ' @LDFLAGS@ @LIBS@'],
+	      'LIBS'	=> [join(' ', @ldaddp) . ' ' . join(' ', @ldadd) . ' @LDFLAGS@ @LIBS@'],
 	      'CCFLAGS' => '@CFLAGS@',
 	      'OPTIMIZE'=> '-g',
-	      'INC'	=> join(' ', map { '-I@top_srcdir@/'. $_ } qw(build lib popt rpmdb rpmio)) . ' @CPPFLAGS@',
+	      'INC'	=> join(' ', map { '-I@top_srcdir@/'. $_ } @libdir) . ' @CPPFLAGS@',
 );
 

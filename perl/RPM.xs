@@ -35,7 +35,17 @@ _populate_constant(HV *href, char *name, int val)
 MODULE = RPM		PACKAGE = RPM
 
 PROTOTYPES: ENABLE
+
+#define crutch_stack_wrap(directive) do { \
+  PUSHMARK(SP); \
+  PUTBACK; \
+  directive; \
+  SPAGAIN; \
+  PUTBACK; \
+} while(0)
+
 BOOT:
+    crutch_stack_wrap(boot_RPM__Constant(aTHX_ cv));
 #if DYING
     {
 	HV *header_tags, *constants; */
