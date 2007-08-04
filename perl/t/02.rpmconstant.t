@@ -4,7 +4,6 @@ use strict;
 use Test::More tests => 5;
 
 use_ok('RPM::Constant');
-use RPM::Constant;
 can_ok('RPM::Constant', qw(listallcontext listcontext getvalue));
 my ($context) = listallcontext();
 ok($context, "Can get context list");
