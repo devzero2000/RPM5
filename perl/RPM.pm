@@ -7,12 +7,10 @@ use Cwd qw/realpath/;
 use File::Basename qw/basename dirname/;
 use File::Spec ();
 
-use vars qw/$VERSION/;
-$VERSION = '0.66';
 use vars qw/@ISA/;
 @ISA = qw/DynaLoader/;
 
-bootstrap RPM $VERSION;
+bootstrap RPM;
 
 foreach my $tag (keys %RPM::constants) {
   my $sub = q {
