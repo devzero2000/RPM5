@@ -87,9 +87,9 @@ int rpmconstInitToContext(rpmconst c, const char * context)
     char * lccontext = strdup(context);
     char * ptr;
     int rc = 0;
+    if (!context) return 0; /* programmer error */
     for (ptr = lccontext; *ptr != 0; ptr++)
         *ptr = tolower(*ptr);
-    if (!context) return 0; /* programmer error */
     rpmconstInitL(c);
     while (rpmconstNextL(c)) {
         if (!strcmp(lccontext, rpmconstContext(c))) {
