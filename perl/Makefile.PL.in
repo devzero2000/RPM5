@@ -9,7 +9,7 @@ my @ldadd = map { '-l' . $_ } qw(rpmio rpmbuild rpm popt rpmdb rpmconstant);
 
 WriteMakefile(
 	      'NAME'	=> 'RPM',
-	      'OBJECT'	=> 'RPM.o RPM_Ts.o RPM_Header.o RPM_Constant.o',
+	      'OBJECT'	=> 'rpmxs.o RPM.o RPM_Ts.o RPM_Header.o RPM_Constant.o',
 	      'VERSION' => '@VERSION@',
 	      'MAKEFILE'=> 'Makefile.perl',
 	      'LIBS'	=> [join(' ', @ldaddp) . ' ' . join(' ', @ldadd) . ' @LDFLAGS@ @LIBS@'],

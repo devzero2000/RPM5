@@ -6,11 +6,9 @@
 #undef Mkdir
 #undef Stat
 
-#if #DYING
 #include <stdio.h>
 #include <string.h>
 #include <utime.h>
-#endif
 #include "rpmlib.h"
 #include <rpmio.h>
 #include "rpmcli.h"
@@ -22,6 +20,7 @@
 #include "rpmdb.h"
 #include "misc.h"
 
+#include "rpmxs.h"
 
 void
 _populate_header_tags(HV *href)
@@ -33,9 +32,55 @@ _populate_header_tags(HV *href)
     }
 }
 
-MODULE = RPM_Header		PACKAGE = RPM::Header
+MODULE = RPM::Header		PACKAGE = RPM::Header
 
 PROTOTYPES: ENABLE
+
+void
+stream2header(fp, callback = NULL)
+    FILE *fp
+    SV * callback
+    PREINIT:
+    FD_t fd = NULL;
+    Header header;
+    PPCODE:
+    if (fp && (fd = fdDup(fileno(fp)))) {
+        while ((header = headerRead(fd))) {
+            if (callback != NULL && SvROK(callback)) {
+                ENTER;
+                SAVETMPS;
+                PUSHMARK(SP);
+                XPUSHs(sv_2mortal(sv_setref_pv(newSVpv("", 0), "RPM::Header", (void *)header)));
+                PUTBACK;
+                call_sv(callback, G_DISCARD | G_SCALAR);
+                SPAGAIN;
+                FREETMPS;
+                LEAVE;
+            } else {
+                XPUSHs(sv_2mortal(sv_setref_pv(newSVpv("", 0), "RPM::Header", (void *)header)));
+            }
+        }
+        Fclose(fd);
+    }
+
+# Read a rpm and return a Header
+# Return undef if failed
+void
+rpm2header(filename, sv_vsflags = NULL)
+    char * filename
+    SV * sv_vsflags
+    PREINIT:
+    rpmts ts = rpmtsCreate();
+    rpmVSFlags vsflags = RPMVSF_DEFAULT; 
+    PPCODE:
+    if (sv_vsflags == NULL) /* Nothing has been passed, default is no signature */
+        vsflags |= _RPMVSF_NOSIGNATURES;
+    else
+        vsflags = sv2constant(sv_vsflags, "rpmvsflags");
+    rpmtsSetVSFlags(ts, vsflags);
+    _rpm2header(ts, filename, 0);
+    SPAGAIN;
+    ts = rpmtsFree(ts);
 
 void
 DESTROY(h)

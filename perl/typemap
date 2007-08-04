@@ -45,6 +45,6 @@ O_OBJECT_rpmdb
 O_OBJECT_rpmmi
         sv_setref_pv( $arg, "RPM::C::PackageIterator", (void*)$var );
 O_OBJECT_header
-        sv_setref_pv( $arg, "RPM::C::Header", (void*)$var );
+        sv_setref_pv( $arg, "RPM::Header", (void*)$var );
 O_OBJECT_rpmts
         sv_setref_pv( $arg, "RPM::C::Transaction", (void*)$var );

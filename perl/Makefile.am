@@ -4,10 +4,14 @@ AUTOMAKE_OPTIONS = 1.4 foreign
 
 EXTRA_DIST = \
 	MANIFEST \
+	typemap \
 	Makefile.PL.in \
-	RPM.xs RPM.pm t/01.rpm.t\
-	RPM_Header.xs RPM_Ts.xs \
-	RPM/Constant.pm RPM_Constant.xs t/02.rpmconstant.t
+	rpmxs.c rpmxs.h \
+	RPM.xs RPM.pm t/01.rpm.t \
+	RPM/Constant.pm RPM_Constant.xs t/02.rpmconstant.t \
+	RPM_Header.xs RPM/Header.pm t/03.header.t \
+	RPM_Ts.xs \
+	hdlist-test.hdr
 
 noinst_DATA = .made_mod
 
