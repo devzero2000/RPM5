@@ -323,7 +323,7 @@ int rpmrbOrder(rpmts ts)
  * Process all package elements in a transaction set.  Before calling
  * rpmtsRun be sure to have:
  *
- *    - setup the rpm root dir via rpmtsSetRoot().
+ *    - setup the rpm root dir via rpmtsSetRootDir().
  *    - setup the rpm notify callback via rpmtsSetNotifyCallback().
  *    - setup the rpm transaction flags via rpmtsSetFlags().
  * 
