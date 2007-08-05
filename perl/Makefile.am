@@ -18,8 +18,8 @@ noinst_DATA = .made_mod
 .made_mod: Makefile.perl $(EXTRA_DIST)
 	$(MAKE) -f Makefile.perl || $(MAKE) -f Makefile.perl
 
-test:
-	$(MAKE) -f Makefile.perl test || $(MAKE) -f Makefile.perl test
+test: .made_mod
+	$(MAKE) -f Makefile.perl test
 
 MANIFEST: Makefile
 	echo -n > MANIFEST
