@@ -105,7 +105,7 @@ sub create_transaction
   return $t;	
 }
 
-package RPM::DB;
+package RPM::DB::OLD;
 
 sub find_all_iter {
   my $self = shift;
@@ -173,7 +173,7 @@ sub find_by_file {
   return $self->find_by_file_iter($name)->expand_iter;
 }
 
-package RPM::Header;
+package RPM::Header::OLD;
 
 use overload '<=>'  => \&op_spaceship,
              'cmp'  => \&op_spaceship,
@@ -333,7 +333,7 @@ sub changelog {
   return @{$self->{changelog}};
 }
 
-package RPM::PackageIterator;
+package RPM::PackageIterator::OLD;
 
 sub new_iterator {
   my $class = shift;
@@ -379,7 +379,7 @@ sub DESTROY {
   delete $self->{c_iter};
 }
 
-package RPM::Transaction;
+package RPM::Transaction::OLD;
 
 sub _new_raw {
   my $class         = shift;

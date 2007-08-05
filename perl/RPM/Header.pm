@@ -3,6 +3,11 @@ package RPM::Header;
 use strict;
 use Exporter;
 use RPM;
+use vars qw($AUTOLOAD);
+
+use overload '<=>'  => \&op_spaceship,
+             'cmp'  => \&op_spaceship,
+             'bool' => \&op_bool;
 
 our @ISA = qw(Exporter);
 
@@ -30,8 +35,6 @@ The header is a set of data containing information about a rpm archive.
     # output "any" + carriage return
 
 =cut
-
-# Everythings is in the XS at time
 
 =head1 FUNCTIONS
 
@@ -64,6 +67,41 @@ with 'RPM::Header' passed as argument.
 
 =cut
 
+=head1 RPM::Header FUNCTIONS
+
+In addition to the following methods, all tags have simple accessors;
+$hdr->epoch() is equivalent to $hdr->tag('epoch').
+
+The <=> and cmp operators can be used to compare versions of two packages.
+
+=cut
+
+# proxify calls to $header->tag()
+sub AUTOLOAD {
+    my ($header) = @_;
+
+    my $tag = $AUTOLOAD;
+    $tag =~ s/.*:://;
+    return $header->tag($tag);
+}
+
+sub op_bool {
+    my ($self) = @_;
+    return (defined($self) && ref($self) eq 'RPM::Header');
+}
+
+=head2 $hdr->is_source_package()
+
+Returns a true value if the package is a source package, false otherwise.
+
+=cut
+
 1;
 
 __END__
+
+=head1 AUTHOR
+
+Olivier Thauvin <nanardon@nanardon.zarb.org>
+
+=cut

@@ -11,7 +11,7 @@ EXTRA_DIST = \
 	RPM/Constant.pm RPM_Constant.xs t/02.rpmconstant.t \
 	RPM_Header.xs RPM/Header.pm t/03.header.t \
 	RPM_Ts.xs \
-	hdlist-test.hdr
+	hdlist-test.hdr test-rpm-1.0-1.noarch.rpm test-rpm-1.0-1.src.rpm
 
 noinst_DATA = .made_mod
 
