@@ -7,9 +7,18 @@ my @libdir = qw(. build lib popt rpmdb rpmio rpmconstant);
 my @ldaddp = map { '-L@top_srcdir@/' . $_ . '/.libs' } @libdir;
 my @ldadd = map { '-l' . $_ } qw(rpmio rpmbuild rpm popt rpmdb rpmconstant);
 
+my @objects = qw(
+    rpmxs.o 
+    RPM.o 
+    RPM_Constant.o
+    RPM_Header.o
+    RPM_Transaction.o
+    RPM_PackageIterator.o
+);
+
 WriteMakefile(
 	      'NAME'	=> 'RPM',
-	      'OBJECT'	=> 'rpmxs.o RPM.o RPM_Ts.o RPM_Header.o RPM_Constant.o',
+	      'OBJECT'	=> join(' ', @objects),
 	      'VERSION' => '@VERSION@',
 	      'MAKEFILE'=> 'Makefile.perl',
 	      'LIBS'	=> [join(' ', @ldaddp) . ' ' . join(' ', @ldadd) . ' @LDFLAGS@ @LIBS@'],

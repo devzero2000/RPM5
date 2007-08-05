@@ -43,7 +43,7 @@ OUTPUT
 O_OBJECT_rpmdb
         sv_setref_pv( $arg, "RPM::C::DB", (void*)$var );
 O_OBJECT_rpmmi
-        sv_setref_pv( $arg, "RPM::C::PackageIterator", (void*)$var );
+        sv_setref_pv( $arg, "RPM::PackageIterator", (void*)$var );
 O_OBJECT_header
         sv_setref_pv( $arg, "RPM::Header", (void*)$var );
 O_OBJECT_rpmts

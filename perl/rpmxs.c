@@ -56,6 +56,13 @@ int sv2constant(SV * svconstant, const char * context) {
     return val;
 }
 
+rpmTag sv2dbquerytag(SV * sv_tag) {
+    int val = 0;
+    if (!scalar2constant(sv_tag, "rpmdbi", &val) && !scalar2constant(sv_tag, "rpmtag", &val))
+        croak("unknown tag value '%s'", SvPV_nolen(sv_tag));
+    return val;
+}
+
 void _rpm2header(rpmts ts, char * filename, int checkmode) {
     FD_t fd;
     Header ret = NULL;
@@ -82,3 +89,31 @@ void _rpm2header(rpmts ts, char * filename, int checkmode) {
     return;
 }
 
+void _newiterator(rpmts ts, SV * sv_tagname, SV * sv_tagvalue, int keylen) {
+    rpmdbMatchIterator mi;
+    int tag = RPMDBI_PACKAGES;
+    void * value = NULL;
+    int i = 0;
+    dSP;
+        if (sv_tagname == NULL || !SvOK(sv_tagname)) {
+        tag = RPMDBI_PACKAGES; /* Assume search into installed packages */
+    } else {
+        tag = sv2dbquerytag(sv_tagname);
+    }
+    if (sv_tagvalue != NULL && SvOK(sv_tagvalue)) {
+        switch (tag) {
+            case RPMDBI_PACKAGES:
+                i = SvIV(sv_tagvalue);
+                value = &i;
+                keylen = sizeof(i);
+            break;
+            default:
+                value = (void *) SvPV_nolen(sv_tagvalue);
+            break;
+        }
+    }
+    mi = rpmtsInitIterator(ts, tag, value, keylen);
+    XPUSHs(sv_2mortal(sv_setref_pv(newSVpv("", 0), "RPM::PackageIterator", mi)));
+    PUTBACK;
+    return;
+}
