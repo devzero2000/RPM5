@@ -47,6 +47,7 @@ PROTOTYPES: ENABLE
 BOOT:
     crutch_stack_wrap(boot_RPM__Constant(aTHX_ cv));
     crutch_stack_wrap(boot_RPM__Header(aTHX_ cv));
+    crutch_stack_wrap(boot_RPM__Transaction(aTHX_ cv));
 #if DYING
     {
 	HV *header_tags, *constants; */

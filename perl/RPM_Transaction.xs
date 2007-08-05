@@ -126,13 +126,92 @@ static void * _null_callback(
 	return rc;	
 }
 
-MODULE = RPM_Ts		PACKAGE = RPM::Transaction
+MODULE = RPM::Transaction		PACKAGE = RPM::Transaction
+
+rpmts
+new(class, ...)
+    char * class
+    CODE:
+    RETVAL = rpmtsCreate();
+    OUTPUT:
+    RETVAL
 
 void
 DESTROY(t)
 	rpmts t
     CODE:
 	t = rpmtsFree(t);
+
+void
+setrootdir(ts, root)
+    rpmts ts
+    char *root
+    PPCODE:
+    rpmtsSetRootDir(ts, root);
+
+int
+vsflags(ts, sv_vsflags = NULL)
+    rpmts ts
+    SV * sv_vsflags
+    PREINIT:
+    rpmVSFlags vsflags; 
+    CODE:
+    if (sv_vsflags != NULL) {
+        vsflags = sv2constant(sv_vsflags, "rpmvsflags");
+        RETVAL = rpmtsSetVSFlags(ts, vsflags);
+    } else {
+        RETVAL = rpmtsVSFlags(ts);
+    }
+    OUTPUT:
+    RETVAL
+
+int
+transflags(ts, sv_transflag = NULL)
+    rpmts ts
+    SV * sv_transflag
+    PREINIT:
+    rpmtransFlags transflags;
+    CODE:
+    if (sv_transflag != NULL) {
+        transflags = sv2constant(sv_transflag, "rpmtransflags");
+        /* Take care to rpm config (userland) */
+        if (rpmExpandNumeric("%{?_repackage_all_erasures}"))
+            transflags |= RPMTRANS_FLAG_REPACKAGE;
+        RETVAL = rpmtsSetFlags(ts, transflags);
+    } else {
+        RETVAL = rpmtsFlags(ts);
+    }
+    OUTPUT:
+    RETVAL
+
+int
+dbadd(ts, header)
+    rpmts ts
+    Header header
+    PREINIT:
+    rpmdb db;
+    CODE:
+    db = rpmtsGetRdb(ts);
+    RETVAL = !rpmdbAdd(db, 0, header, ts, NULL);
+    OUTPUT:
+    RETVAL
+
+int
+dbremove(ts, sv_offset)
+    rpmts ts
+    SV * sv_offset
+    PREINIT:
+    rpmdb db;
+    unsigned int offset = 0;
+    CODE:
+    offset = SvUV(sv_offset);
+    db = rpmtsGetRdb(ts);
+    if (offset)
+        RETVAL = !rpmdbRemove(db, 0, offset, ts, NULL);
+    else
+        RETVAL = 0;
+    OUTPUT:
+    RETVAL
 
 # XXX:  Add relocations some day. 
 int
