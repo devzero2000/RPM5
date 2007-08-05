@@ -5,9 +5,9 @@ use Exporter;
 use RPM;
 use vars qw($AUTOLOAD);
 
-use overload '<=>'  => \&op_spaceship,
-             'cmp'  => \&op_spaceship,
-             'bool' => \&op_bool;
+use overload '<=>'  => \&_op_spaceship,
+             'cmp'  => \&_op_spaceship,
+             'bool' => \&_op_bool;
 
 our @ISA = qw(Exporter);
 
@@ -85,14 +85,69 @@ sub AUTOLOAD {
     return $header->tag($tag);
 }
 
-sub op_bool {
+sub _op_bool {
     my ($self) = @_;
     return (defined($self) && ref($self) eq 'RPM::Header');
 }
 
+=head2 $hdr->listtag
+
+Return an array listing all tag set into the header.
+
+=head2 $hdr->hastag($tag)
+
+Return True is B<$tag> is set into the header.
+
+B<$tag> can be either the tagname, either the internal numeric value.
+
+=head2 $hdr->tagformat($format)
+
+Return a format string from header like rpm --qf.
+
+=head2 $hdr->tag($tag)
+
+Return tag content from the header, undef if tag is not set.
+
+B<$tag> can be either the tagname, either the internal numeric value.
+
+=head2 $hdr->tagtype($tag)
+
+Return the tag type from the header, undef if tag is not set.
+
+B<$tag> can be either the tagname, either the internal numeric value.
+
+=head2 $hdr->removetag($tag)
+
+Remove the tag from header.
+
+=head2 $hdr->addtag($tag, $tagtype, @value)
+
+Add a tag to the header.
+
+=head2 $hdr->compare($header)
+
+Compare two header.
+
 =head2 $hdr->is_source_package()
 
 Returns a true value if the package is a source package, false otherwise.
+
+=head2 $hdr->copy
+
+Return a B<RPM::Header> copy of the header.
+
+=head2 $hdr->hsize
+
+Return the size in byte of the header in it on disk rpresentation.
+
+=head2 $hdr->string
+
+Return a in memory string representation of $hdr
+
+=head2 $hdr->write($handle)
+
+Dump header into open file handle B<$handle>.
+
 
 =cut
 
