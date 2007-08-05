@@ -1,8 +1,8 @@
 TYPEMAP
-rpmdb			O_OBJECT_rpmdb
+rpmdb			    O_OBJECT_rpmdb
 rpmdbMatchIterator	O_OBJECT_rpmmi
-Header                  O_OBJECT_header
-rpmts			O_OBJECT_rpmts
+Header              O_OBJECT_header
+rpmts	    		O_OBJECT_rpmts
 rpmprobFilterFlags	T_IV
 rpmElementType		T_IV
 
@@ -47,4 +47,4 @@ O_OBJECT_rpmmi
 O_OBJECT_header
         sv_setref_pv( $arg, "RPM::Header", (void*)$var );
 O_OBJECT_rpmts
-        sv_setref_pv( $arg, "RPM::C::Transaction", (void*)$var );
+        sv_setref_pv( $arg, "RPM::Transaction", (void*)$var );

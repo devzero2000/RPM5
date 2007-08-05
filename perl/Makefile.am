@@ -10,7 +10,7 @@ EXTRA_DIST = \
 	RPM.xs RPM.pm t/01.rpm.t \
 	RPM/Constant.pm RPM_Constant.xs t/02.rpmconstant.t \
 	RPM_Header.xs RPM/Header.pm t/03.header.t \
-	RPM_Ts.xs \
+	RPM_Transaction.xs RPM/Transaction.pm t/04.transaction.t \
 	t/00.pod.coverage.t t/00.pod.t \
 	hdlist-test.hdr test-rpm-1.0-1.noarch.rpm test-rpm-1.0-1.src.rpm
 
