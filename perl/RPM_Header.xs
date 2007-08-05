@@ -107,7 +107,7 @@ compare(h1, h2)
 
 
 int
-op_spaceship(h1, h2, ...)
+_op_spaceship(h1, h2, ...)
 	Header h1
 	Header h2
     CODE:
@@ -138,7 +138,7 @@ tagformat(h, format)
 # fedora use HEADER_MAGIC_NO, too bad, set no_header_magic make the function
 # compatible
 int
-Header_write(h, fp, no_header_magic = 0)
+write(h, fp, no_header_magic = 0)
     Header h
     FILE * fp
     int no_header_magic
