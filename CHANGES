@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - rse: use __MKDIR_P instead of MKDIR_P for RPM's own specially determined "mkdir -p" to not conflict with Automake MKDIR_P
     - rse: various cleanups and fixes to the test programs
     - jbj: oops, "RPMTAG_FILENAMES" still needed.
     - jbj: extension tags in hdrfmt.c now can be passed NULL. Start the fixing.

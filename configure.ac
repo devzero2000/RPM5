@@ -290,25 +290,25 @@ dnl # see if we have a mkdir(1) that supports option "-p".
 AC_PATH_PROGS(MKDIR, mkdir, mkdir)
 AC_MSG_CHECKING([if $MKDIR supports -p])
 rm -rf conftest
-MKDIR_P=""
+__MKDIR_P=""
 $MKDIR -p conftest/a 2>/dev/null
 if test $? = 0; then
     rmdir conftest/a 2>/dev/null
     if test $? = 0; then
         rmdir conftest 2>/dev/null
         if test $? = 0; then
-            MKDIR_P="$MKDIR -p"
+            __MKDIR_P="$MKDIR -p"
         fi
     fi
 fi
-if test ".$MKDIR_P" = .; then
+if test ".$__MKDIR_P" = .; then
     AC_MSG_RESULT(no)
-    MKDIR_P="%{_rpmhome}/mkinstalldirs"
+    __MKDIR_P="%{_rpmhome}/mkinstalldirs"
 else
     AC_MSG_RESULT(yes)
 fi
-AC_DEFINE_UNQUOTED(MKDIR_P, "${MKDIR_P}", [full path to a 'mkdir -p' style program])
-AC_SUBST(MKDIR_P)
+AC_DEFINE_UNQUOTED(__MKDIR_P, "${__MKDIR_P}", [full path to a 'mkdir -p' style program])
+AC_SUBST(__MKDIR_P)
 
 dnl # check for chown and symlink handling 
 AC_CHECK_FUNC(lchown,

@@ -69,7 +69,7 @@
 %__make			@__MAKE@
 %make			%{__make}
 %__mkdir		@__MKDIR@
-%__mkdir_p		@MKDIR_P@
+%__mkdir_p		@__MKDIR_P@
 %__mv			@__MV@
 %__patch		@__PATCH@
 %__pax			@__PAX@
