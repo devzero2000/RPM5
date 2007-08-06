@@ -29,7 +29,12 @@ fprintf(stderr, "===== %s\n", path);
     while ((dp = Readdir(dir)) != NULL) {
 fprintf(stderr, "%5d (%x,%x) %x %x %s\n", i++,
 (unsigned) dp->d_ino,
+#if !(defined(hpux) || defined(__hpux) || defined(sun) || defined(RPM_OS_AIX)) && \
+    !defined(__APPLE__) && !defined(__FreeBSD_kernel__) && !defined(__FreeBSD__) && !defined(__NetBSD__) && !defined(__DragonFly__)
 (unsigned) dp->d_off,
+#else
+(unsigned)0,
+#endif
 (unsigned) dp->d_reclen,
 (unsigned) dp->d_type,
 dp->d_name);

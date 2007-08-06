@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - rse: various cleanups and fixes to the test programs
     - jbj: oops, "RPMTAG_FILENAMES" still needed.
     - jbj: extension tags in hdrfmt.c now can be passed NULL. Start the fixing.
     - jbj: rpmtfs-py.c needs _free from rpmio.h, not rpmlib.h

@@ -17,6 +17,7 @@ db_svc
 db_upgrade
 db_verify
 tagtbl.c
+tjfn
 *.la
 *.lcd
 *.lo
