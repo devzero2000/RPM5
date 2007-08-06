@@ -3,7 +3,6 @@
 AUTOMAKE_OPTIONS = 1.4 foreign
 
 EXTRA_DIST = \
-	MANIFEST \
 	typemap \
 	Makefile.PL.in \
 	rpmxs.c rpmxs.h \
@@ -18,7 +17,7 @@ EXTRA_DIST = \
 
 noinst_DATA = .made_mod
 
-.made_mod: Makefile.perl $(EXTRA_DIST)
+.made_mod: Makefile.perl $(EXTRA_DIST) MANIFEST
 	$(MAKE) -f Makefile.perl || $(MAKE) -f Makefile.perl
 
 test: .made_mod

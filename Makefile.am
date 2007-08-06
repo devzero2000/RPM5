@@ -13,13 +13,19 @@ EXTRA_DIST = CHANGES CREDITS Doxyheader INSTALL \
 	zlib/[A-Z]* zlib/*.[ch] zlib/autogen.sh zlib/configure.ac zlib/config.guess zlib/config.sub \
 	zlib/ltmain.sh zlib/aclocal.m4 zlib/config.h.in zlib/missing zlib/install-sh zlib/depcomp \
 	zlib/Makefile.in zlib/configure zlib/stamp-h.in \
+    perl/typemap \
+	perl/Makefile.PL.in \
+	perl/00.pot.t perl/00.pod.coverage.t \
+	perl/rpmxs.c perl/rpmxs.h \
+	perl/RPM.xs perl/RPM.pm perl/t/01.rpm.t \
+	perl/RPM/Constant.pm perl/RPM_Constant.xs perl/t/02.rpmconstant.t \
+	perl/RPM_Header.xs perl/RPM/Header.pm perl/t/03.header.t \
+	perl/RPM_Transaction.xs perl/RPM/Transaction.pm perl/t/04.transaction.t \
+	perl/RPM_PackageIterator.xs perl/RPM/PackageIterator.pm perl/t/05.packageiterator.t \
+	perl/RPM_Problems.xs perl/RPM/Problems.pm perl/t/06.problems.t \
+	perl/hdlist-test.hdr perl/test-rpm-1.0-1.noarch.rpm perl/test-rpm-1.0-1.src.rpm \
 	perl/META.yml perl/Makefile.PL.in perl/Makefile.am perl/Makefile.in \
-	perl/README perl/RPM.pm perl/RPM.xs perl/RPM/Constant.pm perl/RPM/Header.pm \
-	perl/RPM/PackageIterator.pm perl/RPM/Transaction.pm perl/RPM_Constant.xs perl/RPM_Header.xs \
-	perl/RPM_PackageIterator.xs perl/RPM_Transaction.xs perl/foo.i386.rpm perl/hdlist-test.hdr \
-	perl/rpmxs.c perl/rpmxs.h perl/t/00.pod.coverage.t perl/t/00.pod.t perl/t/01.rpm.t \
-	perl/t/02.rpmconstant.t perl/t/03.header.t perl/t/04.transaction.t perl/t/05.packageiterator.t \
-	perl/test-rpm-1.0-1.noarch.rpm perl/test-rpm-1.0-1.src.rpm perl/test.pl perl/typemap \
+	perl/README \
 	pubkeys/JBJ-GPG-KEY \
 	po/*.in po/*.po po/rpm.pot \
 	rpm.magic rpmqv.c \
