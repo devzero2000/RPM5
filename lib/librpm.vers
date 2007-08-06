@@ -242,6 +242,11 @@ LIBRPM_0
     rpmpsNumProblems;
     rpmpsPrint;
     rpmpsTrim;
+    rpmProblemGetAltNEVR;
+    rpmProblemGetType;
+    rpmProblemKey;
+    rpmProblemGetPkgNEVR;
+    rpmpsGetProblem;
     rpmQueryPoptTable;
     rpmQueryVerify;
     rpmQVKArgs;
