@@ -34,8 +34,6 @@ LIBRPMDB_0
     headerNEVRA;
     headerNVR;
     hGetColor;
-    hGetNEVR;
-    hGetNEVRA;
     _init;
     rpm_mergesort;
     _newmagic;
