@@ -126,6 +126,106 @@ static void * _null_callback(
 	return rc;	
 }
 
+rpmCallbackFunction
+    transCallback(const void *h,
+       const rpmCallbackType what,
+       const unsigned long long amount,
+       const unsigned long long total,
+       const void * pkgKey,
+       void * data) {
+    
+    /* The call back is used to open/close file, so we fix value, run the perl callback
+ *      * and let rpmShowProgress from rpm rpmlib doing its job.
+ *           * This unsure we'll not have to follow rpm code at each change. */
+    const char * filename = (const char *)pkgKey;
+    const char * s_what = NULL;
+    dSP;
+
+    PUSHMARK(SP);
+    
+    switch (what) {
+        case RPMCALLBACK_UNKNOWN:
+            s_what = "UNKNOWN";
+        break;
+        case RPMCALLBACK_INST_OPEN_FILE:
+            if (filename != NULL && filename[0] != '\0') {
+                XPUSHs(sv_2mortal(newSVpv("filename", 0)));
+                XPUSHs(sv_2mortal(newSVpv(filename, 0)));
+            }
+            s_what = "INST_OPEN_FILE";
+        break;
+        case RPMCALLBACK_INST_CLOSE_FILE:
+            s_what = "INST_CLOSE_FILE";
+        break;
+        case RPMCALLBACK_INST_PROGRESS:
+            s_what = "INST_PROGRESS";
+        break;
+        case RPMCALLBACK_INST_START:
+            s_what = "INST_START";
+            if (h) {
+                XPUSHs(sv_2mortal(newSVpv("header", 0)));
+                XPUSHs(sv_2mortal(sv_setref_pv(newSVpv("", 0), "RPM::Header", &h)));
+#ifdef HDRPMMEM
+                PRINTF_NEW(bless_header, &h, -1);
+#endif
+            }
+        break;
+        case RPMCALLBACK_TRANS_PROGRESS:
+            s_what = "TRANS_PROGRESS";
+        break;
+        case RPMCALLBACK_TRANS_START:
+            s_what = "TRANS_START";
+        break;
+        case RPMCALLBACK_TRANS_STOP:
+            s_what = "TRANS_STOP";
+        break;
+        case RPMCALLBACK_UNINST_PROGRESS:
+            s_what = "UNINST_PROGRESS";
+        break;
+        case RPMCALLBACK_UNINST_START:
+            s_what = "UNINST_START";
+        break;
+        case RPMCALLBACK_UNINST_STOP:
+            s_what = "UNINST_STOP";
+        break;
+        case RPMCALLBACK_REPACKAGE_PROGRESS:
+            s_what = "REPACKAGE_PROGRESS";
+        break;
+        case RPMCALLBACK_REPACKAGE_START:
+            s_what = "REPACKAGE_START";
+        break;
+        case RPMCALLBACK_REPACKAGE_STOP:
+            s_what = "REPACKAGE_STOP";
+        break;
+        case RPMCALLBACK_UNPACK_ERROR:
+            s_what = "UNPACKAGE_ERROR";
+        break;
+        case RPMCALLBACK_CPIO_ERROR:
+            s_what = "CPIO_ERROR";
+        break;
+    }
+   
+    XPUSHs(sv_2mortal(newSVpv("what", 0)));
+    XPUSHs(sv_2mortal(newSVpv(s_what, 0)));
+    XPUSHs(sv_2mortal(newSVpv("amount", 0)));
+    XPUSHs(sv_2mortal(newSViv(amount)));
+    XPUSHs(sv_2mortal(newSVpv("total", 0)));
+    XPUSHs(sv_2mortal(newSViv(total)));
+    PUTBACK;
+    call_sv((SV *) data, G_DISCARD | G_SCALAR);
+    SPAGAIN;
+  
+    /* Running rpmlib callback, returning its value */
+    return rpmShowProgress(h,
+            what, 
+            amount, 
+            total, 
+            pkgKey, 
+            (long *) INSTALL_NONE /* shut up */);
+}
+
+
+
 MODULE = RPM::Transaction		PACKAGE = RPM::Transaction
 
 rpmts
@@ -308,30 +408,52 @@ PPCODE:
 		i = rpmtsiFree(i);
 	}
 
-int
-_run(t, ok_probs, prob_filter)
-	rpmts t
-	rpmprobFilterFlags prob_filter 
+# get from transaction a problem set
+void
+problems(ts)
+    rpmts ts
     PREINIT:
-	int ret;
+    rpmps ps;
+    PPCODE:
+    ps = rpmtsProblems(ts);
+    if (ps && rpmpsNumProblems(ps)) /* if no problem, return undef */
+        XPUSHs(sv_2mortal(sv_setref_pv(newSVpv("", 0), "RPM::Problem", ps)));
+
+int
+run(ts, callback, ...)
+    rpmts ts
+    SV * callback
+    PREINIT:
+    int i;
+    rpmprobFilterFlags probFilter = RPMPROB_FILTER_NONE;
+    rpmInstallInterfaceFlags install_flags = INSTALL_NONE;
+    rpmps ps;
     CODE:
-	/* Make sure we could run this transactions */
-	ret = rpmtsCheck(t);
-	if (ret != 0) {
-		RETVAL = 0;
-		return;
-	}
-	ret = rpmtsOrder(t);
-	if (ret != 0) {
-		RETVAL = 0;
-		return;
-	}
+    ts = rpmtsLink(ts, "RPM4 Db::transrun()");
+    if (!SvOK(callback)) { /* undef value */
+        rpmtsSetNotifyCallback(ts,
+                rpmShowProgress,
+                (void *) ((long) INSTALL_LABEL | INSTALL_HASH | INSTALL_UPGRADE));
+    } else if (SvTYPE(SvRV(callback)) == SVt_PVCV) { /* ref sub */
+        rpmtsSetNotifyCallback(ts,
+               transCallback,
+               (void *) callback);
+    } else if (SvTYPE(SvRV(callback)) == SVt_PVAV) { /* array ref */
+        install_flags = sv2constant(callback, "rpminstallinterfaceflags");
+        rpmtsSetNotifyCallback(ts,
+                rpmShowProgress,
+                (void *) ((long) install_flags));
+    } else {
+        croak("Wrong parameter given");
+    }
 
-	/* XXX:  Should support callbacks eventually */
-	(void) rpmtsSetNotifyCallback(t, _null_callback, (void *) ((long)0));
-	ret    = rpmtsRun(t, NULL, prob_filter);
-	RETVAL = (ret == 0) ? 1 : 0;
+    for (i = 2; i < items; i++)
+        probFilter |= sv2constant(ST(i), "rpmprobfilterflags");
+
+    ps = rpmtsProblems(ts);
+    RETVAL = rpmtsRun(ts, ps, probFilter);
+    ps = rpmpsFree(ps);
+    ts = rpmtsFree(ts);
     OUTPUT:
-	RETVAL
-
+    RETVAL
 

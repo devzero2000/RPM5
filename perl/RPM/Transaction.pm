@@ -95,6 +95,10 @@ Return the count of element in transaction.
 
 Check the transaction as no problem, return True on success.
 
+=head2 $ts->problems()
+
+Return a L<RPM::Problems> object if any.
+
 =head2 $ts->order()
 
 Order the transaction, return True on success.
@@ -106,6 +110,10 @@ Return as second value the count of unordered element:
 or
 
     my ($result, $unordered) = $ts->order();
+
+=head2 $ts->run()
+
+Run the transaction, aka install/uninstall pkg.
 
 =head2 $ts->dbadd($header)
 
