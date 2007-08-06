@@ -184,6 +184,16 @@ transflags(ts, sv_transflag = NULL)
     OUTPUT:
     RETVAL
 
+void
+packageiterator(ts, sv_tagname = NULL, sv_tagvalue = NULL, keylen = 0)
+    rpmts ts
+    SV * sv_tagname
+    SV * sv_tagvalue
+    int keylen
+    CODE:
+    _newiterator(ts, sv_tagname, sv_tagvalue, keylen);
+    SPAGAIN;
+
 int
 dbadd(ts, header)
     rpmts ts
@@ -215,79 +225,67 @@ dbremove(ts, sv_offset)
 
 # XXX:  Add relocations some day. 
 int
-_add_install(t, h, fn, upgrade)
-	rpmts  t
+add_install(ts, h, fn, upgrade = 1)
+	rpmts  ts
 	Header h
 	char * fn
 	int    upgrade
     PREINIT:
 	rpmRC rc = 0;
     CODE:
-	rc = rpmtsAddInstallElement(t, h, (fnpyKey) fn, upgrade, NULL);
+	rc = rpmtsAddInstallElement(ts, h, (fnpyKey) fn, upgrade, NULL);
 	RETVAL = (rc == RPMRC_OK) ? 1 : 0;
     OUTPUT:
 	RETVAL	
 
 int
-_add_delete(t, h, offset)
-	rpmts        t
+add_delete(ts, h, offset)
+	rpmts        ts
 	Header       h
 	unsigned int offset
     PREINIT:
 	rpmRC rc = 0;
     CODE:
-	rc = rpmtsAddEraseElement(t, h, offset);
+	rc = rpmtsAddEraseElement(ts, h, offset);
 	RETVAL = (rc == RPMRC_OK) ? 1 : 0;
     OUTPUT:
 	RETVAL	
 
 int
-_element_count(t)
-	rpmts t
-PREINIT:
-	int ret;
-CODE:
-	ret    = rpmtsNElements(t);
-	RETVAL = ret;
-OUTPUT:
+element_count(ts)
+	rpmts ts
+    CODE:
+	RETVAL    = rpmtsNElements(ts);
+    OUTPUT:
 	RETVAL
 
 int
-_close_db(t)
-	rpmts t
+check(ts)
+	rpmts ts
 PREINIT:
 	int ret;
 CODE:
-	ret    = rpmtsCloseDB(t);
+	ret    = rpmtsCheck(ts);
 	RETVAL = (ret == 0) ? 1 : 0;
 OUTPUT:
 	RETVAL
 
-int
-_check(t)
-	rpmts t
-PREINIT:
+void
+order(ts)
+	rpmts ts
+    PREINIT:
 	int ret;
-CODE:
-	ret    = rpmtsCheck(t);
-	RETVAL = (ret == 0) ? 1 : 0;
-OUTPUT:
-	RETVAL
-
-int
-_order(t)
-	rpmts t
-PREINIT:
-	int ret;
-CODE:
-	ret    = rpmtsOrder(t);
+    I32 gimme = GIMME_V;
+    PPCODE:
+	ret    = rpmtsOrder(ts);
 	/* XXX:  May want to do something different here.  It actually
 	         returns the number of non-ordered elements...maybe we
 	         want this?
 	*/
-	RETVAL = (ret == 0) ? 1 : 0;
-OUTPUT:
-	RETVAL
+    XPUSHs(sv_2mortal(newSViv(ret == 0 ? 1 : 0)));
+    if (gimme != G_SCALAR) {
+        XPUSHs(sv_2mortal(newSViv(ret)));
+    }
 
 void
 _elements(t, type)
