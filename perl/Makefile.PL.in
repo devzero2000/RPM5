@@ -14,6 +14,7 @@ my @objects = qw(
     RPM_Header.o
     RPM_Transaction.o
     RPM_PackageIterator.o
+    RPM_Problems.o
 );
 
 WriteMakefile(

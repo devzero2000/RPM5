@@ -49,6 +49,7 @@ BOOT:
     crutch_stack_wrap(boot_RPM__Header(aTHX_ cv));
     crutch_stack_wrap(boot_RPM__Transaction(aTHX_ cv));
     crutch_stack_wrap(boot_RPM__PackageIterator(aTHX_ cv));
+    crutch_stack_wrap(boot_RPM__Problems(aTHX_ cv));
 #if DYING
     {
 	HV *header_tags, *constants; */
