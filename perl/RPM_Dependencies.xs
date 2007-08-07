@@ -13,12 +13,6 @@
 
 #include "rpmxs.h"
 
-#define sv2sens(sv) sv2senseflags(sv)
-
-#define sv2senseflags(sv) sv2constant((sv), "rpmsenseflags")
-
-#define sv2deptag(sv) sv2constant((sv), "rpmtag")
-
 void _newdep(SV * sv_deptag, char * name, SV * sv_sense, SV * sv_evr) {
     rpmTag deptag = 0;
     rpmsenseFlags sense = RPMSENSE_ANY;
@@ -27,9 +21,9 @@ void _newdep(SV * sv_deptag, char * name, SV * sv_sense, SV * sv_evr) {
     dSP;
 
     if (sv_deptag && SvOK(sv_deptag))
-        deptag = sv2deptag(sv_deptag);
+        deptag = sv2constant(sv_deptag, "rpmtag");
     if (sv_sense && SvOK(sv_sense))
-        sense = sv2sens(sv_sense);
+        sense = sv2constant(sv_sense, "rpmsenseflags");
     if (sv_evr && SvOK(sv_evr))
         evr = SvPV_nolen(sv_evr);
     Dep = rpmdsSingle(deptag, 
@@ -44,6 +38,20 @@ void _newdep(SV * sv_deptag, char * name, SV * sv_sense, SV * sv_evr) {
 MODULE = RPM::Dependencies		PACKAGE = RPM::Dependencies
 
 PROTOTYPES: ENABLE
+
+rpmds
+new(class, header, sv_tag)
+    const char * class
+    Header header
+    SV * sv_tag
+    PREINIT:
+    rpmTag tag = 0;
+    CODE:
+    tag = sv2constant(sv_tag, "rpmtag");
+    RETVAL = rpmdsNew(header, tag, 0);
+    if (RETVAL) RETVAL = rpmdsInit(RETVAL);
+    OUTPUT:
+    RETVAL
 
 void
 newsingle(perlclass, sv_tag, name, sv_sense = NULL, sv_evr = NULL)
@@ -250,7 +258,7 @@ add(Dep, name,  sv_sense = NULL, sv_evr = NULL)
     CODE:
     RETVAL = 0;
     if (sv_sense && SvOK(sv_sense))
-        sense = sv2sens(sv_sense);
+        sense = sv2constant(sv_sense, "rpmsenseflags");
     if (sv_evr && SvOK(sv_evr))
         evr = SvPV_nolen(sv_evr);
     Deptoadd = rpmdsSingle(rpmdsTagN(Dep), name,

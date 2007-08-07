@@ -148,6 +148,16 @@ Return a in memory string representation of $hdr
 
 Dump header into open file handle B<$handle>.
 
+=head2 $hdr->dependencies($tag)
+
+Create a new L<RPM::Dependencies> object from RPM::Header B<$hdr>.
+
+B<$tag> is either PROVIDENAME, REQUIRENAME, CONFLICTNAME, OBSOLETENAME
+or TRIGGERNAME.
+
+=head2 $hdr->files()
+
+Return a L<RPM::Files> object from B<RPM::Header> $hdr.
 
 =cut
 

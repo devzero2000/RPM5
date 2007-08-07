@@ -381,4 +381,33 @@ tagtype(h, sv_tag)
     OUTPUT:
     RETVAL
     
+rpmds
+dependencies(header, sv_tag)
+    Header header
+    SV * sv_tag
+    PREINIT:
+    rpmTag tag;
+    CODE:
+    tag = sv2constant(sv_tag, "rpmtag");
+    RETVAL = rpmdsNew(header, tag, 0);
+    if (RETVAL) RETVAL = rpmdsInit(RETVAL);
+    OUTPUT:
+    RETVAL
 
+rpmfi
+files(header, ts = NULL)
+    Header header
+    rpmts ts
+    PREINIT:
+    rpmfi fi;
+    CODE:
+    if (ts)
+        ts = rpmtsLink(ts, "RPM::Header::files");
+    else
+        ts = rpmtsCreate();
+    RETVAL = rpmfiNew(ts, header, RPMTAG_BASENAMES, 0);
+    if (RETVAL != NULL) RETVAL = rpmfiInit(RETVAL, 0);
+    ts = rpmtsFree(ts);
+    OUTPUT:
+    RETVAL
+ 
