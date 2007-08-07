@@ -12,6 +12,9 @@ EXTRA_DIST = \
 	RPM_Transaction.xs RPM/Transaction.pm t/04.transaction.t \
 	RPM_PackageIterator.xs RPM/PackageIterator.pm t/05.packageiterator.t \
 	RPM_Problems.xs RPM/Problems.pm t/06.problems.t \
+	RPM_Files.xs RPM/Files.pm t/07.files.t \
+	RPM_Dependencies.xs RPM/Dependencies.pm t/08.dependencies.t \
+	RPM_Spec.xs RPM/Spec.pm t/09.spec.t \
 	t/00.pod.coverage.t t/00.pod.t \
 	hdlist-test.hdr test-rpm-1.0-1.noarch.rpm test-rpm-1.0-1.src.rpm
 

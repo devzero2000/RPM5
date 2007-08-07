@@ -50,6 +50,9 @@ BOOT:
     crutch_stack_wrap(boot_RPM__Transaction(aTHX_ cv));
     crutch_stack_wrap(boot_RPM__PackageIterator(aTHX_ cv));
     crutch_stack_wrap(boot_RPM__Problems(aTHX_ cv));
+    crutch_stack_wrap(boot_RPM__Files(aTHX_ cv));
+    crutch_stack_wrap(boot_RPM__Dependencies(aTHX_ cv)); 
+    crutch_stack_wrap(boot_RPM__Spec(aTHX_ cv));
 #if DYING
     {
 	HV *header_tags, *constants; */

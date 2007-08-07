@@ -17,6 +17,8 @@
 #include "rpmio.h"
 #include "rpmconstant.h"
 
+#include "rpmxs.h"
+
 static int scalar2constant(SV * svconstant, const char * context, int * val) {
     int rc = 0;
     if (!svconstant || !SvOK(svconstant)) {
@@ -117,3 +119,96 @@ void _newiterator(rpmts ts, SV * sv_tagname, SV * sv_tagvalue, int keylen) {
     PUTBACK;
     return;
 }
+
+int _headername_vs_dep(Header h, rpmds dep, int nopromote) {
+    char *name; int type;
+    int rc = 0;
+    CHECK_RPMDS_IX(dep);
+    headerGetEntry(h, RPMTAG_NAME, &type, (void **) &name, NULL);
+    if (strcmp(name, rpmdsN(dep)) != 0)
+        rc = 0;
+    else
+        rc = rpmdsNVRMatchesDep(h, dep, nopromote);
+    headerFreeData(name, type);
+    return rc;
+    /* return 1 if match */
+}
+
+int _header_vs_dep(Header h, rpmds dep, int nopromote) {
+    CHECK_RPMDS_IX(dep);
+    return rpmdsAnyMatchesDep(h, dep, nopromote);
+    /* return 1 if match */
+}
+
+/* Get a new specfile */
+void _newspec(rpmts ts, char * filename, SV * svpassphrase, SV * svrootdir, SV * svcookies, SV * svanyarch, SV * svforce, SV * svverify) {
+    Spec spec = NULL;
+    char * passphrase = NULL;
+    char * rootdir = NULL;
+    char * cookies = NULL;
+    int anyarch = 0;
+    int force = 0;
+    int verify = 0;
+    dSP;
+
+    if (svpassphrase && SvOK(svpassphrase))
+        passphrase = SvPV_nolen(svpassphrase);
+    
+    if (svrootdir && SvOK(svrootdir))
+	rootdir = SvPV_nolen(svrootdir);
+    else
+	rootdir = "/";
+    
+    if (svcookies && SvOK(svcookies))
+	cookies = SvPV_nolen(svcookies);
+
+    if (svanyarch && SvOK(svanyarch))
+	anyarch = SvIV(svanyarch);
+    
+    if (svforce && SvOK(svforce))
+	force = SvIV(svforce);
+    
+    if (svverify && SvOK(svverify))
+	verify = SvIV(svverify);
+    
+    if (filename) {
+        if (!parseSpec(ts, filename, rootdir, 0, passphrase, cookies, anyarch, force, verify))
+            spec = rpmtsSetSpec(ts, NULL);
+#ifdef HHACK
+    } else {
+        spec = newSpec();
+#endif
+    }
+    if (spec) {
+        XPUSHs(sv_2mortal(sv_setref_pv(newSVpv("", 0), "RPM::Spec", (void *)spec)));
+    } else
+        XPUSHs(sv_2mortal(&PL_sv_undef));
+    PUTBACK;
+    return;
+}
+
+/* Building a spec file */
+int _specbuild(rpmts ts, Spec spec, SV * sv_buildflags) {
+    rpmBuildFlags buildflags = sv2constant(sv_buildflags, "rpmbuildflags");
+    if (buildflags == RPMBUILD_NONE) croak("No action given for build");
+    return buildSpec(ts, spec, buildflags, 0);
+}
+
+void _installsrpms(rpmts ts, char * filename) {
+    const char * specfile = NULL;
+    const char * cookies = NULL;
+    dSP;
+    I32 gimme = GIMME_V;
+    if (rpmInstallSource(
+                ts,
+                filename,
+                &specfile,
+                &cookies) == 0) { 
+        XPUSHs(sv_2mortal(newSVpv(specfile, 0)));
+        if (gimme == G_ARRAY)
+        XPUSHs(sv_2mortal(newSVpv(cookies, 0)));
+    }
+    PUTBACK;
+}
+
+

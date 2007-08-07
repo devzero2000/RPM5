@@ -15,7 +15,7 @@ EXTRA_DIST = CHANGES CREDITS Doxyheader INSTALL \
 	zlib/Makefile.in zlib/configure zlib/stamp-h.in \
     perl/typemap \
 	perl/Makefile.PL.in \
-	perl/00.pot.t perl/00.pod.coverage.t \
+	perl/t/00.pod.t perl/t/00.pod.coverage.t \
 	perl/rpmxs.c perl/rpmxs.h \
 	perl/RPM.xs perl/RPM.pm perl/t/01.rpm.t \
 	perl/RPM/Constant.pm perl/RPM_Constant.xs perl/t/02.rpmconstant.t \
@@ -23,6 +23,9 @@ EXTRA_DIST = CHANGES CREDITS Doxyheader INSTALL \
 	perl/RPM_Transaction.xs perl/RPM/Transaction.pm perl/t/04.transaction.t \
 	perl/RPM_PackageIterator.xs perl/RPM/PackageIterator.pm perl/t/05.packageiterator.t \
 	perl/RPM_Problems.xs perl/RPM/Problems.pm perl/t/06.problems.t \
+	perl/RPM_Files.xs perl/RPM/Files.pm perl/t/07.files.t \
+	perl/RPM_Dependencies.xs perl/RPM/Dependencies.pm perl/t/08.dependencies.t \
+	perl/RPM_Spec.xs perl/RPM/Spec.pm perl/t/09.spec.t \
 	perl/hdlist-test.hdr perl/test-rpm-1.0-1.noarch.rpm perl/test-rpm-1.0-1.src.rpm \
 	perl/META.yml perl/Makefile.PL.in perl/Makefile.am perl/Makefile.in \
 	perl/README \
