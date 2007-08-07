@@ -69,9 +69,6 @@ void
 DESTROY(Dep)
     rpmds Dep
     CODE:
-#ifdef HDRPMMEM
-    PRINTF_FREE(bless_rpmds, Dep, Dep->nrefs);
-#endif
     Dep = rpmdsFree(Dep);
 
 int 
@@ -83,14 +80,19 @@ count(Dep)
     RETVAL
 
 int
-move(Dep, index = 0)
+index(Dep)
+    rpmds Dep
+    CODE:
+    RETVAL = rpmdsIx(Dep);
+    OUTPUT:
+    RETVAL
+
+int
+set_index(Dep, index = 0)
     rpmds Dep
     int index
     CODE:
-    if (index == -1) /* -1 do nothing and give actual index */
-        RETVAL = rpmdsIx(Dep);
-    else
-        RETVAL = rpmdsSetIx(Dep, index);
+    RETVAL = rpmdsSetIx(Dep, index);
     OUTPUT:
     RETVAL
 
@@ -98,30 +100,46 @@ void
 init(Dep)
     rpmds Dep
     CODE:
-#ifdef HDLISTDEBUG
-    PRINTF_CALL;
-#endif
     rpmdsInit(Dep);
         
-int
+char *
 next(Dep)
     rpmds Dep
+    PREINIT:
+    char val[16];
+    int idx = 0;
     CODE:
-#ifdef HDLISTDEBUG
-    PRINTF_CALL;
-#endif
-	RETVAL = rpmdsNext(Dep);
+	idx = rpmdsNext(Dep);
+    if ((idx = rpmdsNext(Dep)) ==  -1)
+        RETVAL = NULL;
+    else  {
+        snprintf(val, 12, idx == 0 ? "%dE0" : "%d", idx);
+        RETVAL = val;
+    }
     OUTPUT:
     RETVAL
 
-int
-hasnext(Dep)
+void
+name(Dep)
     rpmds Dep
-    CODE:
-    RETVAL = rpmdsNext(Dep) > -1;
-    OUTPUT:
-    RETVAL
-        
+    PPCODE:
+    CHECK_RPMDS_IX(Dep);
+    XPUSHs(sv_2mortal(newSVpv(rpmdsN(Dep), 0)));
+
+void
+flags(Dep)
+    rpmds Dep
+    PPCODE:
+    CHECK_RPMDS_IX(Dep);
+    XPUSHs(sv_2mortal(newSViv(rpmdsFlags(Dep))));
+
+void
+evr(Dep)
+    rpmds Dep
+    PPCODE:
+    CHECK_RPMDS_IX(Dep);
+    XPUSHs(sv_2mortal(newSVpv(rpmdsEVR(Dep), 0)));
+
 int
 color(Dep)
     rpmds Dep
@@ -207,30 +225,6 @@ tag(Dep)
     PPCODE:
     XPUSHs(sv_2mortal(newSViv(rpmdsTagN(Dep))));
     
-void
-name(Dep)
-    rpmds Dep
-    PPCODE:
-#ifdef HDLISTDEBUG
-    PRINTF_CALL;
-#endif
-    CHECK_RPMDS_IX(Dep);
-    XPUSHs(sv_2mortal(newSVpv(rpmdsN(Dep), 0)));
-
-void
-flags(Dep)
-    rpmds Dep
-    PPCODE:
-    CHECK_RPMDS_IX(Dep);
-    XPUSHs(sv_2mortal(newSViv(rpmdsFlags(Dep))));
-
-void
-evr(Dep)
-    rpmds Dep
-    PPCODE:
-    CHECK_RPMDS_IX(Dep);
-    XPUSHs(sv_2mortal(newSVpv(rpmdsEVR(Dep), 0)));
-
 int
 nopromote(Dep, sv_nopromote = NULL)
     rpmds Dep
