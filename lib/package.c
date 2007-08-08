@@ -129,6 +129,7 @@ void headerMergeLegacySigs(Header h, const Header sigh)
 	case RPMSIGTAG_SIZE:
 	    tag = RPMTAG_SIGSIZE;
 	    /*@switchbreak@*/ break;
+#if defined(SUPPORT_RPMV3_SIGNATURES)
 	case RPMSIGTAG_LEMD5_1:
 	    tag = RPMTAG_SIGLEMD5_1;
 	    /*@switchbreak@*/ break;
@@ -138,15 +139,18 @@ void headerMergeLegacySigs(Header h, const Header sigh)
 	case RPMSIGTAG_LEMD5_2:
 	    tag = RPMTAG_SIGLEMD5_2;
 	    /*@switchbreak@*/ break;
+#endif
 	case RPMSIGTAG_MD5:
 	    tag = RPMTAG_SIGMD5;
 	    /*@switchbreak@*/ break;
+#if defined(SUPPORT_RPMV3_SIGNATURES)
 	case RPMSIGTAG_GPG:
 	    tag = RPMTAG_SIGGPG;
 	    /*@switchbreak@*/ break;
 	case RPMSIGTAG_PGP5:
 	    tag = RPMTAG_SIGPGP5;
 	    /*@switchbreak@*/ break;
+#endif
 	case RPMSIGTAG_PAYLOADSIZE:
 	    tag = RPMTAG_ARCHIVESIZE;
 	    /*@switchbreak@*/ break;
@@ -209,6 +213,7 @@ Header headerRegenSigHeader(const Header h, int noArchiveSize)
 	case RPMTAG_SIGSIZE:
 	    stag = RPMSIGTAG_SIZE;
 	    /*@switchbreak@*/ break;
+#if defined(SUPPORT_RPMV3_SIGNATURES)
 	case RPMTAG_SIGLEMD5_1:
 	    stag = RPMSIGTAG_LEMD5_1;
 	    /*@switchbreak@*/ break;
@@ -218,15 +223,18 @@ Header headerRegenSigHeader(const Header h, int noArchiveSize)
 	case RPMTAG_SIGLEMD5_2:
 	    stag = RPMSIGTAG_LEMD5_2;
 	    /*@switchbreak@*/ break;
+#endif
 	case RPMTAG_SIGMD5:
 	    stag = RPMSIGTAG_MD5;
 	    /*@switchbreak@*/ break;
+#if defined(SUPPORT_RPMV3_SIGNATURES)
 	case RPMTAG_SIGGPG:
 	    stag = RPMSIGTAG_GPG;
 	    /*@switchbreak@*/ break;
 	case RPMTAG_SIGPGP5:
 	    stag = RPMSIGTAG_PGP5;
 	    /*@switchbreak@*/ break;
+#endif
 	case RPMTAG_ARCHIVESIZE:
 	    /* XXX rpm-4.1 and later has archive size in signature header. */
 	    if (noArchiveSize)
@@ -886,6 +894,7 @@ if (!_nosigh) {
     if (_chk(RPMVSF_NORSAHEADER) && headerIsEntry(sigh, RPMSIGTAG_RSA)) {
 	sigtag = RPMSIGTAG_RSA;
     } else
+#if defined(SUPPORT_RPMV3_SIGNATURES)
     if (_chk(RPMVSF_NODSA|RPMVSF_NEEDPAYLOAD) &&
 	headerIsEntry(sigh, RPMSIGTAG_GPG))
     {
@@ -900,6 +909,7 @@ if (!_nosigh) {
 	fdInitDigest(fd, PGPHASHALGO_MD5, 0);
 	opx = RPMTS_OP_SIGNATURE;
     } else
+#endif
     if (_chk(RPMVSF_NOSHA1HEADER) && headerIsEntry(sigh, RPMSIGTAG_SHA1)) {
 	sigtag = RPMSIGTAG_SHA1;
     } else
@@ -1013,6 +1023,7 @@ if (!_nosigh) {
 	    rpmtsOp(ts, RPMTS_OP_DIGEST)->count--;	/* XXX one too many */
 	uh = headerFreeData(uh, uht);
     }	break;
+#if defined(SUPPORT_RPMV3_SIGNATURES)
     case RPMSIGTAG_GPG:
     case RPMSIGTAG_PGP5:	/* XXX legacy */
     case RPMSIGTAG_PGP:
@@ -1027,6 +1038,7 @@ if (!_nosigh) {
 	    goto exit;
 	}
 	/*@fallthrough@*/
+#endif
     case RPMSIGTAG_MD5:
 	/* Legacy signatures need the compressed payload in the digest too. */
 	(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_DIGEST), 0);
