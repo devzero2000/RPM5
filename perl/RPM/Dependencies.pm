@@ -40,6 +40,17 @@ Return the current internal index pointer
 
 Set the internal index pointer to $idx
 
+=cut
+
+sub set_index() {
+    my ($self, $index) = @_;
+    $self->init;
+    foreach (0 .. $index) {
+        $self->next or return;
+    }
+    1;
+}
+
 =head2 $ds->init
 
 Initialize the structure for next() call

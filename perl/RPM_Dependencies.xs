@@ -87,15 +87,6 @@ index(Dep)
     OUTPUT:
     RETVAL
 
-int
-set_index(Dep, index)
-    rpmds Dep
-    int index
-    CODE:
-    RETVAL = rpmdsSetIx(Dep, index);
-    OUTPUT:
-    RETVAL
-
 void
 init(Dep)
     rpmds Dep
@@ -109,7 +100,6 @@ next(Dep)
     char val[16];
     int idx = 0;
     CODE:
-	idx = rpmdsNext(Dep);
     if ((idx = rpmdsNext(Dep)) ==  -1)
         RETVAL = NULL;
     else  {

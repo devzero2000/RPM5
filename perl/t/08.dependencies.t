@@ -28,11 +28,9 @@ SKIP: {
 ok(defined($deps->flags), "can get flags");
 ok($deps->tag, "can get tag");
 ok($deps->overlap($deps), "overlap find matching deps");
-SKIP: {
-    skip "obscur assert is trigered", 1;
 my $deps2 = RPM::Dependencies->new($header, "PROVIDENAME");
+$deps2->set_index(0); 
 ok(!$deps2->overlap($deps), "overlap find non matching deps");
-}
 
 my $dsc = RPM::Dependencies->create('PROVIDENAME', 'foo', 8, '1-1');
 isa_ok($dsc, 'RPM::Dependencies');
