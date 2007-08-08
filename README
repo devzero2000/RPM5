@@ -17,6 +17,6 @@ The RPM Package Manager was originally written in 1997 by:
 See the CREDITS file for a list of folks who have helped out
 tremendously.
 
-RPM may be distributed under the terms of the LGPL license (see the
-file COPYING for details).
+RPM may be distributed under the terms of the LGPL 2.1 license (see the
+file COPYING.LIB for details).
 
