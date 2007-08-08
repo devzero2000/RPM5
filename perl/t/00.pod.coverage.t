@@ -20,10 +20,10 @@ SKIP: {
 pod_coverage_ok( "RPM::PackageIterator", "RPM::PackageIterator is covered" );
 }
 pod_coverage_ok( "RPM::Problems", "RPM::Problems is covered" );
-SKIP: {
-        skip "File Dependencies and Spec under works", 3;
-pod_coverage_ok( "RPM::Files", "RPM::Files is covered" );
 pod_coverage_ok( "RPM::Dependencies", "RPM::Dependencies is covered" );
+SKIP: {
+        skip "File Dependencies and Spec under works", 2;
+pod_coverage_ok( "RPM::Files", "RPM::Files is covered" );
 pod_coverage_ok( "RPM::Spec", "RPM::Spec is covered" );
 }
 

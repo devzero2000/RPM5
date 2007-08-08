@@ -54,7 +54,7 @@ new(class, header, sv_tag)
     RETVAL
 
 void
-newsingle(perlclass, sv_tag, name, sv_sense = NULL, sv_evr = NULL)
+create(perlclass, sv_tag, name, sv_sense = NULL, sv_evr = NULL)
     char * perlclass
     SV * sv_tag
     char * name
@@ -88,7 +88,7 @@ index(Dep)
     RETVAL
 
 int
-set_index(Dep, index = 0)
+set_index(Dep, index)
     rpmds Dep
     int index
     CODE:
@@ -149,7 +149,7 @@ color(Dep)
     RETVAL
         
 int
-find(Dep, depb)
+__find(Dep, depb)
     rpmds Dep
     rpmds depb
     CODE:
@@ -158,7 +158,7 @@ find(Dep, depb)
     RETVAL
 
 int
-merge(Dep, depb)
+__merge(Dep, depb)
     rpmds Dep
     rpmds depb
     CODE:
@@ -178,15 +178,12 @@ overlap(Dep1, Dep2)
     RETVAL
 
 void
-info(Dep)
+__info(Dep)
     rpmds Dep
     PREINIT:
     rpmsenseFlags flag;
     I32 gimme = GIMME_V;
     PPCODE:
-#ifdef HDLISTDEBUG
-    PRINTF_CALL;
-#endif
     CHECK_RPMDS_IX(Dep);
     if (gimme == G_SCALAR) {
         XPUSHs(sv_2mortal(newSVpv(rpmdsDNEVR(Dep), 0)));
@@ -226,7 +223,7 @@ tag(Dep)
     XPUSHs(sv_2mortal(newSViv(rpmdsTagN(Dep))));
     
 int
-nopromote(Dep, sv_nopromote = NULL)
+__nopromote(Dep, sv_nopromote = NULL)
     rpmds Dep
     SV * sv_nopromote
     CODE:
@@ -266,7 +263,7 @@ add(Dep, name,  sv_sense = NULL, sv_evr = NULL)
     RETVAL
         
 int
-matchheader(Dep, header, sv_nopromote = NULL)
+__matchheader(Dep, header, sv_nopromote = NULL)
     Header header
     SV * sv_nopromote
     rpmds Dep
@@ -280,7 +277,7 @@ matchheader(Dep, header, sv_nopromote = NULL)
     RETVAL
 
 int
-matchheadername(Dep, header, sv_nopromote = NULL)
+__matchheadername(Dep, header, sv_nopromote = NULL)
     rpmds Dep
     Header header
     SV * sv_nopromote
