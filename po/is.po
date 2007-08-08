@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: <rpm-devel@lists.dulug.duke.edu>\n"
-"POT-Creation-Date: 2007-07-29 14:10-0400\n"
+"POT-Creation-Date: 2007-08-08 11:30-0400\n"
 "PO-Revision-Date: 2001-07-12 13:25+0000\n"
 "Last-Translator: Richard Allen <ra@hp.is>\n"
 "Language-Team: is <kde-isl@mmedia.is>\n"
@@ -100,7 +100,7 @@ msgstr ""
 msgid "%s: %s\n"
 msgstr "%s: %s\n"
 
-#: rpmqv.c:151 lib/poptALL.c:152
+#: rpmqv.c:151 lib/poptALL.c:146
 #, c-format
 msgid "RPM version %s\n"
 msgstr "RPM útgáfa %s\n"
@@ -116,205 +116,205 @@ msgid ""
 "This program may be freely redistributed under the terms of the GNU GPL\n"
 msgstr "Þessu má dreifa frjálst samkvæmt skilmálum GNU GPL"
 
-#: rpmqv.c:295 rpmqv.c:301 rpmqv.c:307 rpmqv.c:344
+#: rpmqv.c:295 rpmqv.c:301 rpmqv.c:338
 msgid "only one major mode may be specified"
 msgstr ""
 
-#: rpmqv.c:323
+#: rpmqv.c:317
 msgid "one type of query/verify may be performed at a time"
 msgstr ""
 
-#: rpmqv.c:327
+#: rpmqv.c:321
 msgid "unexpected query flags"
 msgstr ""
 
-#: rpmqv.c:330
+#: rpmqv.c:324
 msgid "unexpected query format"
 msgstr ""
 
-#: rpmqv.c:333
+#: rpmqv.c:327
 msgid "unexpected query source"
 msgstr ""
 
-#: rpmqv.c:376
+#: rpmqv.c:370
 msgid "only installation, upgrading, rmsource and rmspec may be forced"
 msgstr ""
 
-#: rpmqv.c:378
+#: rpmqv.c:372
 msgid "files may only be relocated during package installation"
 msgstr ""
 
-#: rpmqv.c:381
+#: rpmqv.c:375
 msgid "cannot use --prefix with --relocate or --excludepath"
 msgstr ""
 
-#: rpmqv.c:384
+#: rpmqv.c:378
 msgid ""
 "--relocate and --excludepath may only be used when installing new packages"
 msgstr ""
 
-#: rpmqv.c:387
+#: rpmqv.c:381
 msgid "--prefix may only be used when installing new packages"
 msgstr ""
 
-#: rpmqv.c:390
+#: rpmqv.c:384
 msgid "arguments to --prefix must begin with a /"
 msgstr ""
 
-#: rpmqv.c:393
+#: rpmqv.c:387
 msgid "--hash (-h) may only be specified during package installation"
 msgstr ""
 
-#: rpmqv.c:397
+#: rpmqv.c:391
 msgid "--percent may only be specified during package installation"
 msgstr ""
 
-#: rpmqv.c:401
+#: rpmqv.c:395
 msgid "--replacepkgs may only be specified during package installation"
 msgstr ""
 
-#: rpmqv.c:405
+#: rpmqv.c:399
 msgid "--excludedocs may only be specified during package installation"
 msgstr ""
 
-#: rpmqv.c:409
+#: rpmqv.c:403
 msgid "--includedocs may only be specified during package installation"
 msgstr ""
 
-#: rpmqv.c:413
+#: rpmqv.c:407
 msgid "only one of --excludedocs and --includedocs may be specified"
 msgstr ""
 
-#: rpmqv.c:417
+#: rpmqv.c:411
 msgid "--ignorearch may only be specified during package installation"
 msgstr ""
 
-#: rpmqv.c:421
+#: rpmqv.c:415
 msgid "--ignoreos may only be specified during package installation"
 msgstr ""
 
-#: rpmqv.c:426
+#: rpmqv.c:420
 msgid "--ignoresize may only be specified during package installation"
 msgstr ""
 
-#: rpmqv.c:430
+#: rpmqv.c:424
 msgid "--allmatches may only be specified during package erasure"
 msgstr ""
 
-#: rpmqv.c:434
+#: rpmqv.c:428
 msgid "--allfiles may only be specified during package installation"
 msgstr ""
 
-#: rpmqv.c:439
+#: rpmqv.c:433
 msgid "--justdb may only be specified during package installation and erasure"
 msgstr ""
 
-#: rpmqv.c:444
+#: rpmqv.c:438
 msgid ""
 "script disabling options may only be specified during package installation "
 "and erasure"
 msgstr ""
 
-#: rpmqv.c:449
+#: rpmqv.c:443
 msgid ""
 "trigger disabling options may only be specified during package installation "
 "and erasure"
 msgstr ""
 
-#: rpmqv.c:453
+#: rpmqv.c:447
 msgid ""
 "--nodeps may only be specified during package building, rebuilding, "
 "recompilation, installation,erasure, and verification"
 msgstr ""
 
-#: rpmqv.c:458
+#: rpmqv.c:452
 msgid ""
 "--test may only be specified during package installation, erasure, and "
 "building"
 msgstr ""
 
-#: rpmqv.c:463
+#: rpmqv.c:457
 msgid ""
 "--root (-r) may only be specified during installation, erasure, querying, "
 "and database rebuilds"
 msgstr ""
 
-#: rpmqv.c:475
+#: rpmqv.c:469
 msgid "arguments to --root (-r) must begin with a /"
 msgstr ""
 
-#: rpmqv.c:499
+#: rpmqv.c:493
 #, c-format
 msgid "no files to sign\n"
 msgstr ""
 
-#: rpmqv.c:504
+#: rpmqv.c:498
 #, c-format
 msgid "cannot access file %s\n"
 msgstr ""
 
-#: rpmqv.c:524
+#: rpmqv.c:518
 #, c-format
 msgid "pgp not found: "
 msgstr ""
 
-#: rpmqv.c:532
+#: rpmqv.c:526
 msgid "Enter pass phrase: "
 msgstr ""
 
-#: rpmqv.c:534
+#: rpmqv.c:528
 #, c-format
 msgid "Pass phrase check failed\n"
 msgstr ""
 
-#: rpmqv.c:538
+#: rpmqv.c:532
 #, c-format
 msgid "Pass phrase is good.\n"
 msgstr ""
 
-#: rpmqv.c:543
+#: rpmqv.c:537
 #, c-format
 msgid "Invalid %%_signature spec in macro file.\n"
 msgstr ""
 
-#: rpmqv.c:550
+#: rpmqv.c:544
 msgid "--sign may only be used during package building"
 msgstr ""
 
-#: rpmqv.c:567
+#: rpmqv.c:561
 #, c-format
 msgid "exec failed\n"
 msgstr ""
 
-#: rpmqv.c:603
+#: rpmqv.c:597
 msgid "no packages files given for rebuild"
 msgstr ""
 
-#: rpmqv.c:675
+#: rpmqv.c:669
 msgid "no spec files given for build"
 msgstr ""
 
-#: rpmqv.c:677
+#: rpmqv.c:671
 msgid "no tar files given for build"
 msgstr ""
 
-#: rpmqv.c:698
+#: rpmqv.c:692
 msgid "no packages given for erase"
 msgstr ""
 
-#: rpmqv.c:742
+#: rpmqv.c:736
 msgid "no packages given for install"
 msgstr ""
 
-#: rpmqv.c:762
+#: rpmqv.c:756
 msgid "no arguments given for query"
 msgstr ""
 
-#: rpmqv.c:779
+#: rpmqv.c:773
 msgid "no arguments given for verify"
 msgstr ""
 
-#: rpmqv.c:794
+#: rpmqv.c:788
 msgid "no arguments given"
 msgstr ""
 
@@ -1240,19 +1240,19 @@ msgstr ""
 msgid "do not verify build dependencies"
 msgstr "ekki skoða pakkaskilyrðin"
 
-#: build/poptBT.c:204 lib/poptALL.c:374 lib/poptI.c:355 lib/poptQV.c:415
+#: build/poptBT.c:204 lib/poptALL.c:361 lib/poptI.c:355 lib/poptQV.c:415
 #: lib/poptQV.c:424 lib/poptQV.c:466
 #, fuzzy
 msgid "don't verify package digest(s)"
 msgstr "ekki skoða pakkaskilyrðin"
 
-#: build/poptBT.c:206 lib/poptALL.c:376 lib/poptI.c:357 lib/poptQV.c:418
+#: build/poptBT.c:206 lib/poptALL.c:363 lib/poptI.c:357 lib/poptQV.c:418
 #: lib/poptQV.c:426 lib/poptQV.c:469
 #, fuzzy
 msgid "don't verify database header(s) when retrieved"
 msgstr "ekki skoða pakkaskilyrðin"
 
-#: build/poptBT.c:208 lib/poptALL.c:382 lib/poptI.c:359 lib/poptQV.c:421
+#: build/poptBT.c:208 lib/poptALL.c:369 lib/poptI.c:359 lib/poptQV.c:421
 #: lib/poptQV.c:428 lib/poptQV.c:471
 #, fuzzy
 msgid "don't verify package signature(s)"
@@ -1282,7 +1282,7 @@ msgstr ""
 msgid "override target platform"
 msgstr ""
 
-#: build/poptBT.c:221 lib/poptALL.c:371 lib/poptQV.c:326
+#: build/poptBT.c:221 lib/poptALL.c:358 lib/poptQV.c:326
 msgid "CPU-VENDOR-OS"
 msgstr ""
 
@@ -1356,141 +1356,141 @@ msgstr ""
 msgid " failed - "
 msgstr ""
 
-#: lib/depends.c:299
+#: lib/depends.c:308
 #, fuzzy, c-format
 msgid "package %s was already added, skipping %s\n"
 msgstr "get ekki opnað pakka gagnagrunn í\n"
 
-#: lib/depends.c:313
+#: lib/depends.c:322
 #, c-format
 msgid "package %s was already added, replacing with %s\n"
 msgstr ""
 
-#: lib/depends.c:591
+#: lib/depends.c:614
 msgid "(cached)"
 msgstr ""
 
-#: lib/depends.c:606
+#: lib/depends.c:630
 msgid "(function probe)"
 msgstr ""
 
-#: lib/depends.c:625
+#: lib/depends.c:649
 msgid "(user lookup)"
 msgstr ""
 
-#: lib/depends.c:642
+#: lib/depends.c:666
 msgid "(group lookup)"
 msgstr ""
 
-#: lib/depends.c:651
+#: lib/depends.c:675
 msgid "(access probe)"
 msgstr ""
 
-#: lib/depends.c:673
+#: lib/depends.c:697
 msgid "(mtab probe)"
 msgstr ""
 
-#: lib/depends.c:728
+#: lib/depends.c:752
 msgid "(diskspace probe)"
 msgstr ""
 
-#: lib/depends.c:758
+#: lib/depends.c:782
 msgid "(digest probe)"
 msgstr ""
 
-#: lib/depends.c:771
+#: lib/depends.c:795
 msgid "(gnupg probe)"
 msgstr ""
 
-#: lib/depends.c:784
+#: lib/depends.c:808
 msgid "(macro probe)"
 msgstr ""
 
-#: lib/depends.c:812
+#: lib/depends.c:836
 msgid "(envvar probe)"
 msgstr ""
 
-#: lib/depends.c:839
+#: lib/depends.c:863
 msgid "(running probe)"
 msgstr ""
 
-#: lib/depends.c:853
+#: lib/depends.c:877
 msgid "(sysinfo provides)"
 msgstr ""
 
-#: lib/depends.c:873
+#: lib/depends.c:897
 msgid "(rpmlib provides)"
 msgstr ""
 
-#: lib/depends.c:889
+#: lib/depends.c:913
 msgid "(cpuinfo provides)"
 msgstr ""
 
-#: lib/depends.c:905
+#: lib/depends.c:929
 msgid "(getconf provides)"
 msgstr ""
 
-#: lib/depends.c:921
+#: lib/depends.c:945
 msgid "(uname provides)"
 msgstr ""
 
-#: lib/depends.c:953
+#: lib/depends.c:977
 msgid "(soname provides)"
 msgstr ""
 
-#: lib/depends.c:980
+#: lib/depends.c:1006
 msgid "(db files)"
 msgstr ""
 
-#: lib/depends.c:993
+#: lib/depends.c:1019
 msgid "(db provides)"
 msgstr ""
 
-#: lib/depends.c:1023
+#: lib/depends.c:1049
 msgid "(hint skipped)"
 msgstr ""
 
-#: lib/depends.c:1477
+#: lib/depends.c:1505
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr ""
 
-#: lib/depends.c:1605
+#: lib/depends.c:1633
 #, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr ""
 
-#: lib/depends.c:2185
+#: lib/depends.c:2213
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:2221
+#: lib/depends.c:2249
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""
 
-#: lib/formats.c:44 lib/formats.c:76 lib/formats.c:111 lib/formats.c:189
-#: lib/formats.c:780
+#: lib/formats.c:44 lib/formats.c:76 lib/formats.c:111 lib/formats.c:192
+#: lib/formats.c:786
 msgid "(invalid type)"
 msgstr ""
 
-#: lib/formats.c:178
+#: lib/formats.c:181
 msgid "(not base64)"
 msgstr ""
 
-#: lib/formats.c:214 lib/formats.c:668
+#: lib/formats.c:220 lib/formats.c:674
 msgid "(not a blob)"
 msgstr ""
 
-#: lib/formats.c:370
+#: lib/formats.c:376
 msgid "(invalid xml type)"
 msgstr ""
 
-#: lib/formats.c:584
+#: lib/formats.c:590
 msgid "(invalid yaml type)"
 msgstr ""
 
-#: lib/formats.c:693
+#: lib/formats.c:699
 #, fuzzy
 msgid "(not an OpenPGP signature)"
 msgstr "búa til undirskrift"
@@ -1679,203 +1679,203 @@ msgstr ""
 msgid "%s: Fread failed: %s\n"
 msgstr ""
 
-#: lib/poptALL.c:285
+#: lib/poptALL.c:279
 msgid "FTS_COMFOLLOW: follow command line symlinks"
 msgstr ""
 
-#: lib/poptALL.c:287
+#: lib/poptALL.c:281
 msgid "FTS_LOGICAL: logical walk"
 msgstr ""
 
-#: lib/poptALL.c:289
+#: lib/poptALL.c:283
 msgid "FTS_NOCHDIR: don't change directories"
 msgstr ""
 
-#: lib/poptALL.c:291
+#: lib/poptALL.c:285
 msgid "FTS_NOSTAT: don't get stat info"
 msgstr ""
 
-#: lib/poptALL.c:293
+#: lib/poptALL.c:287
 msgid "FTS_PHYSICAL: physical walk"
 msgstr ""
 
-#: lib/poptALL.c:295
+#: lib/poptALL.c:289
 msgid "FTS_SEEDOT: return dot and dot-dot"
 msgstr ""
 
-#: lib/poptALL.c:297
+#: lib/poptALL.c:291
 msgid "FTS_XDEV: don't cross devices"
 msgstr ""
 
-#: lib/poptALL.c:299
+#: lib/poptALL.c:293
 msgid "FTS_WHITEOUT: return whiteout information"
 msgstr ""
 
-#: lib/poptALL.c:309 lib/poptI.c:221 lib/poptQV.c:296 lib/poptQV.c:343
+#: lib/poptALL.c:303 lib/poptI.c:221 lib/poptQV.c:296 lib/poptQV.c:343
 #, fuzzy
 msgid "add suggested packages to transaction"
 msgstr "fyrirspurn/yfirferð á pakkann sam á skrá"
 
-#: lib/poptALL.c:312 lib/poptI.c:224
+#: lib/poptALL.c:306 lib/poptI.c:224
 msgid "use anaconda \"presentation order\""
 msgstr ""
 
-#: lib/poptALL.c:315 lib/poptI.c:227
+#: lib/poptALL.c:309 lib/poptI.c:227
 msgid "print dependency loops as warning"
 msgstr ""
 
-#: lib/poptALL.c:318 lib/poptI.c:230
+#: lib/poptALL.c:312 lib/poptI.c:230
 msgid "do not suggest missing dependency resolution(s)"
 msgstr ""
 
-#: lib/poptALL.c:321 lib/poptI.c:233
+#: lib/poptALL.c:315 lib/poptI.c:233
 msgid "do not check added package conflicts"
 msgstr ""
 
-#: lib/poptALL.c:324 lib/poptI.c:236
+#: lib/poptALL.c:318 lib/poptI.c:236
 msgid "ignore added package requires on symlink targets"
 msgstr ""
 
-#: lib/poptALL.c:327 lib/poptI.c:239
+#: lib/poptALL.c:321 lib/poptI.c:239
 msgid "ignore added package obsoletes"
 msgstr ""
 
-#: lib/poptALL.c:330 lib/poptI.c:242
+#: lib/poptALL.c:324 lib/poptI.c:242
 msgid "ignore added package requires on file parent directory"
 msgstr ""
 
-#: lib/poptALL.c:333 lib/poptI.c:245
+#: lib/poptALL.c:327 lib/poptI.c:245
 msgid "do not check added package requires"
 msgstr ""
 
-#: lib/poptALL.c:336 lib/poptI.c:248
+#: lib/poptALL.c:330 lib/poptI.c:248
 msgid "ignore added package upgrades"
 msgstr ""
 
-#: lib/poptALL.c:359
+#: lib/poptALL.c:346
 msgid "predefine MACRO with value EXPR"
 msgstr ""
 
-#: lib/poptALL.c:360 lib/poptALL.c:363
+#: lib/poptALL.c:347 lib/poptALL.c:350
 msgid "'MACRO EXPR'"
 msgstr ""
 
-#: lib/poptALL.c:362
+#: lib/poptALL.c:349
 msgid "define MACRO with value EXPR"
 msgstr ""
 
-#: lib/poptALL.c:365
+#: lib/poptALL.c:352
 #, fuzzy
 msgid "print macro expansion of EXPR"
 msgstr "prenta útvíkkun fjölva <expr>+"
 
-#: lib/poptALL.c:366
+#: lib/poptALL.c:353
 msgid "'EXPR'"
 msgstr ""
 
-#: lib/poptALL.c:368 lib/poptALL.c:389 lib/poptALL.c:393
+#: lib/poptALL.c:355 lib/poptALL.c:376 lib/poptALL.c:380
 msgid "read <FILE:...> instead of default file(s)"
 msgstr ""
 
-#: lib/poptALL.c:369 lib/poptALL.c:390 lib/poptALL.c:394
+#: lib/poptALL.c:356 lib/poptALL.c:377 lib/poptALL.c:381
 msgid "<FILE:...>"
 msgstr ""
 
-#: lib/poptALL.c:371 lib/poptQV.c:326
+#: lib/poptALL.c:358 lib/poptQV.c:326
 #, fuzzy
 msgid "specify target platform"
 msgstr "Þýði fyrir markkerfi: %s\n"
 
-#: lib/poptALL.c:379 lib/poptALL.c:413
+#: lib/poptALL.c:366 lib/poptALL.c:400
 msgid "disable use of libio(3) API"
 msgstr ""
 
-#: lib/poptALL.c:385
+#: lib/poptALL.c:372
 #, fuzzy
 msgid "send stdout to CMD"
 msgstr "senda frálag í <skipun>"
 
-#: lib/poptALL.c:386
+#: lib/poptALL.c:373
 msgid "CMD"
 msgstr ""
 
-#: lib/poptALL.c:397
+#: lib/poptALL.c:384
 msgid "use ROOT as top level directory"
 msgstr ""
 
-#: lib/poptALL.c:398
+#: lib/poptALL.c:385
 msgid "ROOT"
 msgstr ""
 
-#: lib/poptALL.c:401
+#: lib/poptALL.c:388
 msgid "display known query tags"
 msgstr ""
 
-#: lib/poptALL.c:403
+#: lib/poptALL.c:390
 msgid "display final rpmrc and macro configuration"
 msgstr "sýna endanlega rpmrc og stillingar fjölva"
 
-#: lib/poptALL.c:405
+#: lib/poptALL.c:392
 msgid "provide less detailed output"
 msgstr ""
 
-#: lib/poptALL.c:407
+#: lib/poptALL.c:394
 msgid "provide more detailed output"
 msgstr ""
 
-#: lib/poptALL.c:409
+#: lib/poptALL.c:396
 msgid "print the version of rpm being used"
 msgstr "prenta útgáfunúmer rpm sem verið er að nota"
 
-#: lib/poptALL.c:420
+#: lib/poptALL.c:407
 msgid "debug cpio payloads"
 msgstr ""
 
-#: lib/poptALL.c:424
+#: lib/poptALL.c:411
 msgid "debug payload file state machine"
 msgstr ""
 
-#: lib/poptALL.c:426
+#: lib/poptALL.c:413
 msgid "use threads for file state machine"
 msgstr ""
 
-#: lib/poptALL.c:428
+#: lib/poptALL.c:415
 msgid "debug FTP/HTTP data stream"
 msgstr ""
 
-#: lib/poptALL.c:430
+#: lib/poptALL.c:417
 msgid "debug argv collections"
 msgstr ""
 
-#: lib/poptALL.c:432
+#: lib/poptALL.c:419
 msgid "debug WebDAV data stream"
 msgstr ""
 
-#: lib/poptALL.c:439
+#: lib/poptALL.c:426
 msgid "debug option/argument processing"
 msgstr ""
 
-#: lib/poptALL.c:444
+#: lib/poptALL.c:431
 msgid "debug package state machine"
 msgstr ""
 
-#: lib/poptALL.c:446
+#: lib/poptALL.c:433
 msgid "use threads for package state machine"
 msgstr ""
 
-#: lib/poptALL.c:460
+#: lib/poptALL.c:447
 msgid "debug rpmio I/O"
 msgstr ""
 
-#: lib/poptALL.c:472
+#: lib/poptALL.c:459
 msgid "debug tar payloads"
 msgstr ""
 
-#: lib/poptALL.c:476
+#: lib/poptALL.c:463
 msgid "debug URL cache handling"
 msgstr ""
 
-#: lib/poptALL.c:561
+#: lib/poptALL.c:548
 #, c-format
 msgid "%s: option table misconfigured (%d)\n"
 msgstr ""
@@ -2501,57 +2501,57 @@ msgstr ""
 msgid "package has neither file owner or id lists\n"
 msgstr ""
 
-#: lib/query.c:515
+#: lib/query.c:514
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr ""
 
-#: lib/query.c:524
+#: lib/query.c:523
 #, c-format
 msgid "no package triggers %s\n"
 msgstr ""
 
-#: lib/query.c:537 lib/query.c:558 lib/query.c:580 lib/query.c:615
+#: lib/query.c:536 lib/query.c:557 lib/query.c:579 lib/query.c:614
 #, fuzzy, c-format
 msgid "malformed %s: %s\n"
 msgstr "Get ekki lesið %s: %s.\n"
 
-#: lib/query.c:547 lib/query.c:564 lib/query.c:591 lib/query.c:620
+#: lib/query.c:546 lib/query.c:563 lib/query.c:590 lib/query.c:619
 #, fuzzy, c-format
 msgid "no package matches %s: %s\n"
 msgstr "get ekki opnað pakka gagnagrunn í\n"
 
-#: lib/query.c:631
+#: lib/query.c:630
 #, c-format
 msgid "no package requires %s\n"
 msgstr ""
 
-#: lib/query.c:642
+#: lib/query.c:641
 #, c-format
 msgid "no package provides %s\n"
 msgstr ""
 
-#: lib/query.c:676
+#: lib/query.c:675
 #, c-format
 msgid "file %s: %s\n"
 msgstr ""
 
-#: lib/query.c:679
+#: lib/query.c:678
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr ""
 
-#: lib/query.c:704
+#: lib/query.c:703
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr ""
 
-#: lib/query.c:711
+#: lib/query.c:710
 #, c-format
 msgid "record %u could not be read\n"
 msgstr ""
 
-#: lib/query.c:721 lib/query.c:727 lib/rpminstall.c:811
+#: lib/query.c:720 lib/query.c:726 lib/rpminstall.c:811
 #, c-format
 msgid "package %s is not installed\n"
 msgstr ""
@@ -2805,23 +2805,23 @@ msgstr "Skrá %s: %s\n"
 msgid "Failed to find %s:\n"
 msgstr "gat ekki fundið %s:\n"
 
-#: lib/rpmgi.c:91 lib/rpminstall.c:125 lib/rpminstall.c:487
+#: lib/rpmgi.c:95 lib/rpminstall.c:125 lib/rpminstall.c:487
 #: lib/rpminstall.c:616 lib/rpmrollback.c:166 lib/rpmts.c:553
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr ""
 
-#: lib/rpmgi.c:423
+#: lib/rpmgi.c:427
 #, fuzzy, c-format
 msgid "unknown tag: \"%s\"\n"
 msgstr "Óþekkt tegund táknmyndar: %s\n"
 
-#: lib/rpmgi.c:764 lib/rpminstall.c:660 lib/rpminstall.c:845
+#: lib/rpmgi.c:768 lib/rpminstall.c:660 lib/rpminstall.c:845
 #, fuzzy
 msgid "Failed dependencies:\n"
 msgstr "gat ekki útbúið pakkaskilyrði:\n"
 
-#: lib/rpmgi.c:770 lib/rpminstall.c:667
+#: lib/rpmgi.c:774 lib/rpminstall.c:667
 msgid "    Suggested resolutions:\n"
 msgstr ""
 
@@ -3399,80 +3399,80 @@ msgstr ""
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr ""
 
-#: rpmdb/header.c:2820
+#: rpmdb/header.c:2822
 msgid "missing { after %"
 msgstr ""
 
-#: rpmdb/header.c:2850
+#: rpmdb/header.c:2852
 msgid "missing } after %{"
 msgstr ""
 
-#: rpmdb/header.c:2866
+#: rpmdb/header.c:2868
 msgid "empty tag format"
 msgstr ""
 
-#: rpmdb/header.c:2878
+#: rpmdb/header.c:2880
 msgid "empty tag name"
 msgstr ""
 
-#: rpmdb/header.c:2887
+#: rpmdb/header.c:2889
 msgid "unknown tag"
 msgstr ""
 
-#: rpmdb/header.c:2914
+#: rpmdb/header.c:2916
 msgid "] expected at end of array"
 msgstr ""
 
-#: rpmdb/header.c:2927
+#: rpmdb/header.c:2929
 msgid "unexpected ]"
 msgstr ""
 
-#: rpmdb/header.c:2940
+#: rpmdb/header.c:2942
 msgid "unexpected }"
 msgstr ""
 
-#: rpmdb/header.c:3004
+#: rpmdb/header.c:3006
 msgid "? expected in expression"
 msgstr ""
 
-#: rpmdb/header.c:3011
+#: rpmdb/header.c:3013
 msgid "{ expected after ? in expression"
 msgstr ""
 
-#: rpmdb/header.c:3023 rpmdb/header.c:3063
+#: rpmdb/header.c:3025 rpmdb/header.c:3065
 msgid "} expected in expression"
 msgstr ""
 
-#: rpmdb/header.c:3031
+#: rpmdb/header.c:3033
 msgid ": expected following ? subexpression"
 msgstr ""
 
-#: rpmdb/header.c:3049
+#: rpmdb/header.c:3051
 msgid "{ expected after : in expression"
 msgstr ""
 
-#: rpmdb/header.c:3071
+#: rpmdb/header.c:3073
 msgid "| expected at end of expression"
 msgstr ""
 
-#: rpmdb/header.c:3174
+#: rpmdb/header.c:3176
 msgid "(index out of range)"
 msgstr ""
 
-#: rpmdb/header.c:3443
+#: rpmdb/header.c:3445
 msgid "array iterator used with different sized arrays"
 msgstr ""
 
-#: rpmdb/header.c:3757 rpmdb/header.c:3794 rpmdb/header.c:3817
+#: rpmdb/header.c:3759 rpmdb/header.c:3796 rpmdb/header.c:3819
 msgid "(not a number)"
 msgstr ""
 
-#: rpmdb/header.c:3856
+#: rpmdb/header.c:3858
 #, c-format
 msgid "%c"
 msgstr ""
 
-#: rpmdb/header.c:3873
+#: rpmdb/header.c:3875
 msgid "%a %b %d %Y"
 msgstr ""
 
@@ -3482,232 +3482,228 @@ msgid "Data type %d not supported\n"
 msgstr ""
 
 #: rpmdb/poptDB.c:18
-msgid "initialize database"
-msgstr ""
-
-#: rpmdb/poptDB.c:20
 msgid "rebuild database inverted lists from installed package headers"
 msgstr ""
 
-#: rpmdb/poptDB.c:23
+#: rpmdb/poptDB.c:21
 msgid "verify database files"
 msgstr ""
 
-#: rpmdb/rpmdb.c:208
+#: rpmdb/rpmdb.c:202
 #, c-format
 msgid "dbiTagsInit: unrecognized tag name: \"%s\" ignored\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:320
+#: rpmdb/rpmdb.c:314
 #, c-format
 msgid "cannot open %s index using db%d - %s (%d)\n"
 msgstr "get ekki opnað %s index með db%d - %s (%d)\n"
 
-#: rpmdb/rpmdb.c:340
+#: rpmdb/rpmdb.c:334
 #, c-format
 msgid "cannot open %s index\n"
 msgstr "get ekki opnað %s index\n"
 
-#: rpmdb/rpmdb.c:788
+#: rpmdb/rpmdb.c:794
 #, c-format
 msgid "incorrect format: \"%s\": %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:1109
+#: rpmdb/rpmdb.c:1115
 msgid "no dbpath has been set\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:1423 rpmdb/rpmdb.c:1561 rpmdb/rpmdb.c:1617 rpmdb/rpmdb.c:2521
-#: rpmdb/rpmdb.c:2675 rpmdb/rpmdb.c:3455
+#: rpmdb/rpmdb.c:1429 rpmdb/rpmdb.c:1567 rpmdb/rpmdb.c:1623 rpmdb/rpmdb.c:2528
+#: rpmdb/rpmdb.c:2682 rpmdb/rpmdb.c:3464
 #, c-format
 msgid "error(%d) getting \"%s\" records from %s index\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:1829
+#: rpmdb/rpmdb.c:1836
 msgid "miFreeHeader: skipping"
 msgstr ""
 
-#: rpmdb/rpmdb.c:1839
+#: rpmdb/rpmdb.c:1846
 #, c-format
 msgid "error(%d) storing record #%d into %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2399
+#: rpmdb/rpmdb.c:2406
 msgid "rpmdbNextIterator: skipping"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2431
+#: rpmdb/rpmdb.c:2438
 #, c-format
 msgid "rpmdb: damaged header #%u retrieved -- skipping.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2779
+#: rpmdb/rpmdb.c:2786
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2848
+#: rpmdb/rpmdb.c:2855
 #, c-format
 msgid "error(%d) setting header #%d record for %s removal\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2991
+#: rpmdb/rpmdb.c:2998
 #, c-format
 msgid "error(%d) setting \"%s\" records from %s index\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3012
+#: rpmdb/rpmdb.c:3019
 #, c-format
 msgid "error(%d) storing record \"%s\" into %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3022
+#: rpmdb/rpmdb.c:3029
 #, c-format
 msgid "error(%d) removing record \"%s\" from %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3192
+#: rpmdb/rpmdb.c:3200
 #, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3258
+#: rpmdb/rpmdb.c:3267
 msgid "rpmdbAdd: skipping"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3474
+#: rpmdb/rpmdb.c:3483
 #, c-format
 msgid "error(%d) storing record %s into %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3918
+#: rpmdb/rpmdb.c:3927
 #, c-format
 msgid "temporary database %s already exists\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3926
+#: rpmdb/rpmdb.c:3935
 #, c-format
 msgid "creating directory %s: %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3977
+#: rpmdb/rpmdb.c:3986
 #, c-format
 msgid "header #%u in the database is bad -- skipping.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:4017
+#: rpmdb/rpmdb.c:4026
 #, c-format
 msgid "cannot add record originally at %u\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:4031
+#: rpmdb/rpmdb.c:4040
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:4043
+#: rpmdb/rpmdb.c:4052
 msgid "failed to replace old database with new database!\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:4045
+#: rpmdb/rpmdb.c:4054
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr ""
 
-#: rpmdb/sqlite.c:666
+#: rpmdb/sqlite.c:667
 #, c-format
 msgid "Unable to get lock on db %s, retrying... (%d)\n"
 msgstr ""
 
-#: rpmio/macro.c:235
+#: rpmio/macro.c:246
 #, c-format
 msgid "======================== active %d empty %d\n"
 msgstr "======================== virkt %d tómt %d\n"
 
-#: rpmio/macro.c:390
+#: rpmio/macro.c:401
 #, c-format
 msgid "%3d>%*s(empty)"
 msgstr "%3d>%*s(tómt)"
 
-#: rpmio/macro.c:433
+#: rpmio/macro.c:444
 #, c-format
 msgid "%3d<%*s(empty)\n"
 msgstr "%3d<%*s(tómt)\n"
 
-#: rpmio/macro.c:667 rpmio/macro.c:708
+#: rpmio/macro.c:681 rpmio/macro.c:722
 #, c-format
 msgid "Macro %%%s has unterminated body\n"
 msgstr ""
 
-#: rpmio/macro.c:730
+#: rpmio/macro.c:744
 #, c-format
 msgid "Macro %%%s has illegal name (%%define)\n"
 msgstr ""
 
-#: rpmio/macro.c:736
+#: rpmio/macro.c:750
 #, c-format
 msgid "Macro %%%s has unterminated opts\n"
 msgstr ""
 
-#: rpmio/macro.c:741
+#: rpmio/macro.c:755
 #, c-format
 msgid "Macro %%%s has empty body\n"
 msgstr ""
 
-#: rpmio/macro.c:747
+#: rpmio/macro.c:761
 #, c-format
 msgid "Macro %%%s failed to expand\n"
 msgstr ""
 
-#: rpmio/macro.c:786
+#: rpmio/macro.c:801
 #, c-format
 msgid "Macro %%%s has illegal name (%%undefine)\n"
 msgstr ""
 
-#: rpmio/macro.c:910
+#: rpmio/macro.c:925
 #, c-format
 msgid "Macro %%%s (%s) was not used below level %d\n"
 msgstr ""
 
-#: rpmio/macro.c:1037
+#: rpmio/macro.c:1054
 #, c-format
 msgid "Unknown option %c in %s(%s)\n"
 msgstr "Óþekkt viðfang %c í %s(%s)\n"
 
-#: rpmio/macro.c:1240
+#: rpmio/macro.c:1269
 #, c-format
 msgid "Recursion depth(%d) greater than max(%d)\n"
 msgstr ""
 
-#: rpmio/macro.c:1313 rpmio/macro.c:1330
+#: rpmio/macro.c:1342 rpmio/macro.c:1359
 #, c-format
 msgid "Unterminated %c: %s\n"
 msgstr ""
 
-#: rpmio/macro.c:1371
+#: rpmio/macro.c:1401
 #, c-format
 msgid "A %% is followed by an unparseable macro\n"
 msgstr ""
 
-#: rpmio/macro.c:1538
+#: rpmio/macro.c:1586
 #, c-format
 msgid "Macro %%%.*s not found, skipping\n"
 msgstr "Fjölvi %%%.*s fannst ekki. Sleppi\n"
 
-#: rpmio/macro.c:1875
+#: rpmio/macro.c:1926
 msgid "Macro expansion too big for target buffer\n"
 msgstr ""
 
-#: rpmio/macro.c:1909
+#: rpmio/macro.c:1960
 #, c-format
 msgid "Macro '%s' is readonly and cannot be changed.\n"
 msgstr ""
 
-#: rpmio/macro.c:2108 rpmio/macro.c:2114
+#: rpmio/macro.c:2167 rpmio/macro.c:2173
 #, c-format
 msgid "File %s: %s\n"
 msgstr "Skrá %s: %s\n"
 
-#: rpmio/macro.c:2117
+#: rpmio/macro.c:2176
 #, c-format
 msgid "File %s is smaller than %u bytes\n"
 msgstr "Skráin %s er minni en %u bæti\n"
