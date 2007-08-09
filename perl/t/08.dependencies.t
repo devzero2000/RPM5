@@ -19,11 +19,10 @@ ok(eq_set(\@depsname, [qw(CompressedFileNames PayloadFilesHavePrefix)]), "can ge
 $deps->set_index(1);
 is($deps->index, 1, "can set and get index");
 ok($deps->name, "can get name");
-SKIP: {
-    skip "rpmdsSetIx does not works at time", 1;
+{
     my $n1 = $deps->name;
     $deps->set_index(0);
-    ok($n1 != $deps->name, "set_index really go next dep");
+    ok($n1 ne $deps->name, "set_index really go next dep");
 }
 ok(defined($deps->flags), "can get flags");
 ok($deps->tag, "can get tag");
