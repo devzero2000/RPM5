@@ -671,7 +671,7 @@ static int fsmMapFContext(FSM_t fsm)
     {
 	security_context_t scon = NULL;
 
-	if (matchpathcon(fsm->path, &fsm->sb.st_mode, &scon) == 0 && scon != NULL)
+	if (matchpathcon(fsm->path, fsm->sb.st_mode, &scon) == 0 && scon != NULL)
 	    fsm->fcontext = scon;
 	else {
 	    int i = fsm->ix;
