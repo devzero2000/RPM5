@@ -709,4 +709,7 @@ static inline const char *rcsid(const char *p) { \
 #include <search.h>
 #endif
 
+#define	SUPPORT_RPMV3_SIGNATURES	1
+#define	SUPPORT_PGP_SIGNING		1
+
 #endif	/* H_SYSTEM */
