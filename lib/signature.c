@@ -93,9 +93,9 @@ const char * rpmDetectPGPVersion(pgpVersion * pgpVer)
 	(void)stpcpy(stpcpy(pgpvbin, pgpbin), "v");
 /*@=boundswrite@*/
 
-	if (stat(pgpvbin, &st) == 0)
+	if (Stat(pgpvbin, &st) == 0)
 	    saved_pgp_version = PGP_5;
-	else if (stat(pgpbin, &st) == 0)
+	else if (Stat(pgpbin, &st) == 0)
 	    saved_pgp_version = PGP_2;
 	else
 	    saved_pgp_version = PGP_NOTDETECTED;
@@ -489,9 +489,9 @@ static int makePGPSignature(const char * file, /*@unused@*/ int_32 * sigTagp,
 	return 1;
     }
 
-    if (stat(sigfile, &st)) {
+    if (Stat(sigfile, &st)) {
 	/* PGP failed to write signature */
-	if (sigfile) (void) unlink(sigfile);  /* Just in case */
+	if (sigfile) (void) Unlink(sigfile);  /* Just in case */
 	rpmError(RPMERR_SIGGEN, _("pgp failed to write signature\n"));
 	return 1;
     }
@@ -509,7 +509,7 @@ static int makePGPSignature(const char * file, /*@unused@*/ int_32 * sigTagp,
 	fd = Fopen(sigfile, "r.fdio");
 	if (fd != NULL && !Ferror(fd)) {
 	    rc = timedRead(fd, (void *)*pktp, *pktlenp);
-	    if (sigfile) (void) unlink(sigfile);
+	    if (sigfile) (void) Unlink(sigfile);
 	    (void) Fclose(fd);
 	}
 	if (rc != *pktlenp) {
@@ -617,9 +617,9 @@ static int makeGPGSignature(const char * file, int_32 * sigTagp,
 	return 1;
     }
 
-    if (stat(sigfile, &st)) {
+    if (Stat(sigfile, &st)) {
 	/* GPG failed to write signature */
-	if (sigfile) (void) unlink(sigfile);  /* Just in case */
+	if (sigfile) (void) Unlink(sigfile);  /* Just in case */
 	rpmError(RPMERR_SIGGEN, _("gpg failed to write signature\n"));
 	return 1;
     }
@@ -637,7 +637,7 @@ static int makeGPGSignature(const char * file, int_32 * sigTagp,
 	fd = Fopen(sigfile, "r.fdio");
 	if (fd != NULL && !Ferror(fd)) {
 	    rc = timedRead(fd, (void *)*pktp, *pktlenp);
-	    if (sigfile) (void) unlink(sigfile);
+	    if (sigfile) (void) Unlink(sigfile);
 	    (void) Fclose(fd);
 	}
 	if (rc != *pktlenp) {
@@ -796,7 +796,7 @@ static int makeHDRSignature(Header sigh, const char * file, int_32 sigTag,
 
 exit:
     if (fn) {
-	(void) unlink(fn);
+	(void) Unlink(fn);
 	fn = _free(fn);
     }
     SHA1 = _free(SHA1);
@@ -815,7 +815,7 @@ int rpmAddSignature(Header sigh, const char * file, int_32 sigTag,
 
     switch (sigTag) {
     case RPMSIGTAG_SIZE:
-	if (stat(file, &st) != 0)
+	if (Stat(file, &st) != 0)
 	    break;
 	pktlen = st.st_size;
 	if (!headerAddEntry(sigh, sigTag, RPM_INT32_TYPE, &pktlen, 1))

@@ -612,7 +612,7 @@ fileAction rpmfiDecideFate(const rpmfi ofi, rpmfi nfi, int skipMissing)
     struct stat sb;
     int save = (newFlags & RPMFILE_NOREPLACE) ? FA_ALTNAME : FA_SAVE;
 
-    if (lstat(fn, &sb)) {
+    if (Lstat(fn, &sb)) {
 	/*
 	 * The file doesn't exist on the disk. Create it unless the new
 	 * package has marked it as missingok, or allfiles is requested.

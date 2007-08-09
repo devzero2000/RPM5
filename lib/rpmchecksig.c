@@ -352,7 +352,7 @@ static int rpmReSign(/*@unused@*/ rpmts ts,
 			rpm, pgpHexStr(newsignid+4, sizeof(newsignid)-4));
 
 		    /* Clean up intermediate target */
-		    xx = unlink(sigtarget);
+		    xx = Unlink(sigtarget);
 		    sigtarget = _free(sigtarget);
 		    continue;
 		}
@@ -401,12 +401,12 @@ static int rpmReSign(/*@unused@*/ rpmts ts,
 	/* ASSERT: fd == NULL && ofd == NULL */
 
 	/* Move final target into place. */
-	xx = unlink(rpm);
-	xx = rename(trpm, rpm);
+	xx = Unlink(rpm);
+	xx = Rename(trpm, rpm);
 	tmprpm[0] = '\0';
 
 	/* Clean up intermediate target */
-	xx = unlink(sigtarget);
+	xx = Unlink(sigtarget);
 	sigtarget = _free(sigtarget);
     }
     /*@=branchstate@*/
@@ -420,11 +420,11 @@ exit:
     sigh = rpmFreeSignature(sigh);
 
     if (sigtarget) {
-	xx = unlink(sigtarget);
+	xx = Unlink(sigtarget);
 	sigtarget = _free(sigtarget);
     }
     if (tmprpm[0] != '\0') {
-	xx = unlink(tmprpm);
+	xx = Unlink(tmprpm);
 	tmprpm[0] = '\0';
     }
 

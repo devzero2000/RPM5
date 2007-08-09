@@ -2224,7 +2224,7 @@ if (!(fsmGetFi(fsm)->mapflags & CPIO_PAYLOAD_EXTRACT)) {
 	    struct stat stb;
 	    if (Lstat(fsm->path, &stb) == 0 && S_ISREG(stb.st_mode) && (stb.st_mode & 06000) != 0) {
 		/* XXX rc = fsmNext(fsm, FSM_CHMOD); instead */
-		(void)chmod(fsm->path, stb.st_mode & 0777);
+		(void)Chmod(fsm->path, stb.st_mode & 0777);
 	    }
 	}
 	rc = Unlink(fsm->path);
@@ -2240,7 +2240,7 @@ if (!(fsmGetFi(fsm)->mapflags & CPIO_PAYLOAD_EXTRACT)) {
 	    struct stat stb;
 	    if (Lstat(fsm->path, &stb) == 0 && S_ISREG(stb.st_mode) && (stb.st_mode & 06000) != 0) {
 		/* XXX rc = fsmNext(fsm, FSM_CHMOD); instead */
-		(void)chmod(fsm->path, stb.st_mode & 0777);
+		(void)Chmod(fsm->path, stb.st_mode & 0777);
 	    }
 	}
 	rc = Rename(fsm->opath, fsm->path);

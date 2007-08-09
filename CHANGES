@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - jbj: start using syscall wrappers everywhere.
     - jbj: pass mode_t, not ptr, to matchpathcon.
     - jbj: mark header+payload signature/digest code for destruction.
     - rse: use Autoconf newer $(MKDIR_P) instead of older $(mkinstalldirs) in Makefile.am

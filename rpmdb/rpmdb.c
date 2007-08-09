@@ -3728,14 +3728,14 @@ static int rpmdbRemoveDatabase(const char * prefix,
 	    (void)rpmCleanPath(filename);
 	    if (!rpmioFileExists(filename))
 		continue;
-	    xx = unlink(filename);
+	    xx = Unlink(filename);
 	}
 	for (i = 0; i < 16; i++) {
 	    sprintf(filename, "%s/%s/__db.%03d", prefix, dbpath, i);
 	    (void)rpmCleanPath(filename);
 	    if (!rpmioFileExists(filename))
 		continue;
-	    xx = unlink(filename);
+	    xx = Unlink(filename);
 	}
 	break;
     case 2:
@@ -3746,7 +3746,7 @@ static int rpmdbRemoveDatabase(const char * prefix,
 
     sprintf(filename, "%s/%s", prefix, dbpath);
     (void)rpmCleanPath(filename);
-    xx = rmdir(filename);
+    xx = Rmdir(filename);
 
     return 0;
 }
@@ -3819,7 +3819,7 @@ static int rpmdbMoveDatabase(const char * prefix,
 	    if (!rpmioFileExists(ofilename)) {
 	        if (rpmioFileExists(nfilename)) {
 		    rpmMessage(RPMMESS_DEBUG, D_("removing file \"%s\"\n"), nfilename);
-		    xx = unlink(nfilename);
+		    xx = Unlink(nfilename);
                 }
 		continue;
             }
@@ -3828,22 +3828,22 @@ static int rpmdbMoveDatabase(const char * prefix,
 	     * Get uid/gid/mode/mtime. If old doesn't exist, use new.
 	     * XXX Yes, the variable names are backwards.
 	     */
-	    if (stat(nfilename, nst) < 0)
-		if (stat(ofilename, nst) < 0)
+	    if (Stat(nfilename, nst) < 0)
+		if (Stat(ofilename, nst) < 0)
 		    continue;
 
 	    rpmMessage(RPMMESS_DEBUG, D_("moving file from \"%s\"\n"), ofilename);
 	    rpmMessage(RPMMESS_DEBUG, D_("moving file to   \"%s\"\n"), nfilename);
-	    if ((xx = rename(ofilename, nfilename)) != 0) {
+	    if ((xx = Rename(ofilename, nfilename)) != 0) {
 		rc = 1;
 		continue;
 	    }
-	    xx = chown(nfilename, nst->st_uid, nst->st_gid);
-	    xx = chmod(nfilename, (nst->st_mode & 07777));
+	    xx = Chown(nfilename, nst->st_uid, nst->st_gid);
+	    xx = Chmod(nfilename, (nst->st_mode & 07777));
 	    {	struct utimbuf stamp;
 		stamp.actime = nst->st_atime;
 		stamp.modtime = nst->st_mtime;
-		xx = utime(nfilename, &stamp);
+		xx = Utime(nfilename, &stamp);
 	    }
 	}
 	for (i = 0; i < 16; i++) {
@@ -3851,13 +3851,13 @@ static int rpmdbMoveDatabase(const char * prefix,
 	    (void)rpmCleanPath(ofilename);
 	    if (rpmioFileExists(ofilename)) {
 		rpmMessage(RPMMESS_DEBUG, D_("removing region file \"%s\"\n"), ofilename);
-		xx = unlink(ofilename);
+		xx = Unlink(ofilename);
 	    }
 	    sprintf(nfilename, "%s/%s/__db.%03d", prefix, newdbpath, i);
 	    (void)rpmCleanPath(nfilename);
 	    if (rpmioFileExists(nfilename)) {
 		rpmMessage(RPMMESS_DEBUG, D_("removing region file \"%s\"\n"), nfilename);
-		xx = unlink(nfilename);
+		xx = Unlink(nfilename);
 	    }
 	}
 	break;
