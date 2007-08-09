@@ -308,15 +308,19 @@ static int rpmReSign(/*@unused@*/ rpmts ts,
 #endif
 	    xx = headerRemoveEntry(sigh, RPMSIGTAG_DSA);
 	    xx = headerRemoveEntry(sigh, RPMSIGTAG_RSA);
-	} else		/* If gpg/pgp is configured, replace the signature. */
-	if ((sigtag = rpmLookupSignatureType(RPMLOOKUPSIG_QUERY)) > 0) {
+	} else {		/* If gpg/pgp is configured, replace the signature. */
+#if defined(SUPPORT_PGP_SIGNING)
+	  sigtag = rpmLookupSignatureType(RPMLOOKUPSIG_QUERY);
+#else
+	  sigtag = RPMSIGTAG_GPG;
+#endif
+	  if (sigtag > 0) {
 	    unsigned char oldsignid[8], newsignid[8];
 
 	    /* Grab the old signature fingerprint (if any) */
 	    memset(oldsignid, 0, sizeof(oldsignid));
 	    xx = getSignid(sigh, sigtag, oldsignid);
 
-#if defined(SUPPORT_RPMV3_SIGNATURES)
 	    switch (sigtag) {
 	    case RPMSIGTAG_DSA:
 		xx = headerRemoveEntry(sigh, RPMSIGTAG_GPG);
@@ -332,7 +336,6 @@ static int rpmReSign(/*@unused@*/ rpmts ts,
 		xx = headerRemoveEntry(sigh, RPMSIGTAG_RSA);
 		/*@switchbreak@*/ break;
 	    }
-#endif
 
 	    xx = headerRemoveEntry(sigh, sigtag);
 	    xx = rpmAddSignature(sigh, sigtarget, sigtag, qva->passPhrase);
@@ -357,6 +360,7 @@ static int rpmReSign(/*@unused@*/ rpmts ts,
 		    continue;
 		}
 	    }
+	  }
 	}
 
 	/* Reallocate the signature into one contiguous region. */

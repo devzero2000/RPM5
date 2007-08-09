@@ -709,7 +709,16 @@ static inline const char *rcsid(const char *p) { \
 #include <search.h>
 #endif
 
+/**
+ * Phase out RPMv3 header+payload signatures.
+ */
 #define	SUPPORT_RPMV3_SIGNATURES	1
+
+/**
+ * Turn off pgp/pgp5 signing (hasn't been looked at seriously for years).
+ */
+#if 0
 #define	SUPPORT_PGP_SIGNING		1
+#endif
 
 #endif	/* H_SYSTEM */

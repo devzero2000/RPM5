@@ -648,7 +648,13 @@ int writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
     (void) rpmAddSignature(sig, sigtarget, RPMSIGTAG_SIZE, passPhrase);
     (void) rpmAddSignature(sig, sigtarget, RPMSIGTAG_MD5, passPhrase);
 
-    if ((sigtag = rpmLookupSignatureType(RPMLOOKUPSIG_QUERY)) > 0) {
+#if defined(SUPPORT_PGP_SIGNING)
+    sigtag = rpmLookupSignatureType(RPMLOOKUPSIG_QUERY);
+#else
+    sigtag = RPMSIGTAG_GPG;
+#endif
+
+    if (sigtag > 0) {
 	rpmMessage(RPMMESS_NORMAL, _("Generating signature: %d\n"), sigtag);
 	(void) rpmAddSignature(sig, sigtarget, sigtag, passPhrase);
     }

@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - jbj: disable PGP signing to untwist program flow from signature ident.
     - jbj: unbreak signatures.
     - jbj: start using syscall wrappers everywhere.
     - jbj: pass mode_t, not ptr, to matchpathcon.

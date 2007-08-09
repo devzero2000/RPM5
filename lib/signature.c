@@ -26,6 +26,7 @@
 /*@access pgpDig@*/
 /*@access pgpDigParams@*/
 
+#if defined(SUPPORT_PGP_SIGNING)
 int rpmLookupSignatureType(int action)
 {
     /*@unchecked@*/
@@ -107,6 +108,7 @@ const char * rpmDetectPGPVersion(pgpVersion * pgpVer)
 /*@=boundswrite@*/
     return pgpbin;
 }
+#endif	/* SUPPORT_PGP_SIGNING */
 
 /**
  * Print package size.
@@ -387,6 +389,7 @@ Header rpmFreeSignature(Header sigh)
     return headerFree(sigh);
 }
 
+#if defined(SUPPORT_PGP_SIGNING)
 /**
  * Generate PGP signature(s) for a header+payload file.
  * @param file		header+payload file name
@@ -536,6 +539,7 @@ static int makePGPSignature(const char * file, /*@unused@*/ int_32 * sigTagp,
 
     return 0;
 }
+#endif	/* SUPPORT_PGP_SIGNING */
 
 /**
  * Generate GPG signature(s) for a header+payload file.
@@ -774,6 +778,7 @@ static int makeHDRSignature(Header sigh, const char * file, int_32 sigTag,
 	    goto exit;
 	ret = 0;
 	break;
+#if defined(SUPPORT_PGP_SIGNING)
     case RPMSIGTAG_RSA:
 	fd = Fopen(file, "r.fdio");
 	if (fd == NULL || Ferror(fd))
@@ -792,6 +797,7 @@ static int makeHDRSignature(Header sigh, const char * file, int_32 sigTag,
 	    goto exit;
 	ret = 0;
 	break;
+#endif	/* SUPPORT_PGP_SIGNING */
     }
 
 exit:
@@ -830,7 +836,7 @@ int rpmAddSignature(Header sigh, const char * file, int_32 sigTag,
 	    break;
 	ret = 0;
 	break;
-#if defined(SUPPORT_RPMV3_SIGNATURES)
+#if defined(SUPPORT_PGP_SIGNING)
     case RPMSIGTAG_PGP5:	/* XXX legacy */
     case RPMSIGTAG_PGP:
 	if (makePGPSignature(file, &sigTag, &pkt, &pktlen, passPhrase)
@@ -842,6 +848,8 @@ int rpmAddSignature(Header sigh, const char * file, int_32 sigTag,
 #endif
 	ret = 0;
 	break;
+#endif	/* SUPPORT_PGP_SIGNING */
+#if defined(SUPPORT_RPMV3_SIGNATURES)
     case RPMSIGTAG_GPG:
 	if (makeGPGSignature(file, &sigTag, &pkt, &pktlen, passPhrase)
 	 || !headerAddEntry(sigh, sigTag, RPM_BIN_TYPE, pkt, pktlen))
@@ -916,11 +924,10 @@ static int checkPassPhrase(const char * passPhrase, const int sigTag)
 	    rpmError(RPMERR_EXEC, _("Could not exec %s: %s\n"), "gpg",
 			strerror(errno));
 	}   /*@notreached@*/ break;
+#if defined(SUPPORT_PGP_SIGNING)
 	case RPMSIGTAG_RSA:
-#if defined(SUPPORT_RPMV3_SIGNATURES)
 	case RPMSIGTAG_PGP5:	/* XXX legacy */
 	case RPMSIGTAG_PGP:
-#endif
 	{   const char *pgp_path = rpmExpand("%{?_pgp_path}", NULL);
 	    const char *path;
 	    pgpVersion pgpVer;
@@ -958,6 +965,7 @@ static int checkPassPhrase(const char * passPhrase, const int sigTag)
 			strerror(errno));
 	    _exit(RPMERR_EXEC);
 	}   /*@notreached@*/ break;
+#endif	/* SUPPORT_PGP_SIGNING */
 	default: /* This case should have been screened out long ago. */
 	    rpmError(RPMERR_SIGGEN, _("Invalid %%_signature spec in macro file\n"));
 	    _exit(RPMERR_SIGGEN);

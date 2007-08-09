@@ -505,7 +505,12 @@ int main(int argc, const char ** argv)
 	    }
 
             if (poptPeekArg(optCon)) {
-		int sigTag = rpmLookupSignatureType(RPMLOOKUPSIG_QUERY);
+		int sigTag;
+#if defined(SUPPORT_PGP_SIGNING)
+		sigTag = rpmLookupSignatureType(RPMLOOKUPSIG_QUERY);
+#else
+		sigTag = RPMSIGTAG_GPG;
+#endif
 		switch (sigTag) {
 		  case 0:
 		    break;
@@ -541,10 +546,13 @@ int main(int argc, const char ** argv)
 	} else {
 	    argerror(_("--sign may only be used during package building"));
 	}
-    } else {
+    }
+#if defined(SUPPORT_PGP_SIGNING)
+    else {
     	/* Make rpmLookupSignatureType() return 0 ("none") from now on */
         (void) rpmLookupSignatureType(RPMLOOKUPSIG_DISABLE);
     }
+#endif
     /*@=branchstate@*/
 #endif	/* IAM_RPMBT || IAM_RPMK */
 
