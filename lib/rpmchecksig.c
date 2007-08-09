@@ -935,7 +935,9 @@ assert(dig != NULL);
 		    b = stpcpy(b, result);
 		    res2 = 1;
 		} else {
+#if defined(SUPPORT_RPMV3_SIGNATURES)
 		    char *tempKey;
+#endif
 		    switch (sigtag) {
 		    case RPMSIGTAG_SIZE:
 			b = stpcpy(b, "SIZE ");

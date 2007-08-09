@@ -849,7 +849,7 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
 		if (ssp != NULL)
 		    *ssp |= RPMSCRIPT_STATE_SELINUX;
 /*@-moduncon@*/
-		xx = rpm_execcon(0, argv[0], argv, environ);
+		xx = rpm_execcon(0, argv[0], (char *const *)argv, environ);
 /*@=moduncon@*/
 		if (xx != 0)
 		    break;
@@ -1648,9 +1648,9 @@ psm->te->h = headerLink(fi->h);
 	    /* Open output package for writing. */
 	    {	char tiddn[32];
 		const char * bfmt;
-		const char * pkgdn_buf;
 		const char * pkgdn;
 		const char * pkgbn;
+		char * pkgdn_buf;
 
 		xx = snprintf(tiddn, sizeof(tiddn), "%d", rpmtsGetTid(ts));
 		bfmt = rpmGetPath(tiddn, "/", "%{_repackage_name_fmt}", NULL);
