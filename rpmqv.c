@@ -492,7 +492,7 @@ int main(int argc, const char ** argv)
 		errors++;
 	    } else
 	    while (*av) {
-		if (stat(*av, &sb)) {
+		if (Stat(*av, &sb)) {
 		    fprintf(stderr, _("cannot access file %s\n"), *av);
 		    errors++;
 		}
@@ -505,54 +505,18 @@ int main(int argc, const char ** argv)
 	    }
 
             if (poptPeekArg(optCon)) {
-		int sigTag;
-#if defined(SUPPORT_PGP_SIGNING)
-		sigTag = rpmLookupSignatureType(RPMLOOKUPSIG_QUERY);
-#else
-		sigTag = RPMSIGTAG_GPG;
-#endif
-		switch (sigTag) {
-		  case 0:
-		    break;
-		  case RPMSIGTAG_PGP:
-#ifdef	DYING	/* XXX gpg can now be used for RSA signatures. */
-		    if ((sigTag == RPMSIGTAG_PGP || sigTag == RPMSIGTAG_PGP5) &&
-		        !rpmDetectPGPVersion(NULL)) {
-		        fprintf(stderr, _("pgp not found: "));
-			ec = EXIT_FAILURE;
-			goto exit;
-		    }	/*@fallthrough@*/
-#endif
-		  case RPMSIGTAG_GPG:
-		  case RPMSIGTAG_DSA:
-		  case RPMSIGTAG_RSA:
-		    passPhrase = rpmGetPassPhrase(_("Enter pass phrase: "), sigTag);
-		    if (passPhrase == NULL) {
-			fprintf(stderr, _("Pass phrase check failed\n"));
-			ec = EXIT_FAILURE;
-			goto exit;
-		    }
-		    fprintf(stderr, _("Pass phrase is good.\n"));
-		    passPhrase = xstrdup(passPhrase);
-		    break;
-		  default:
-		    fprintf(stderr,
-		            _("Invalid %%_signature spec in macro file.\n"));
+		passPhrase = Getpass(_("Enter pass phrase: "));
+		if (rpmCheckPassPhrase(passPhrase)) {
+		    fprintf(stderr, _("Pass phrase check failed\n"));
 		    ec = EXIT_FAILURE;
 		    goto exit;
-		    /*@notreached@*/ break;
 		}
+		fprintf(stderr, _("Pass phrase is good.\n"));
+		/* XXX Getpass() should realloc instead. */
+		passPhrase = xstrdup(passPhrase);
 	    }
-	} else {
-	    argerror(_("--sign may only be used during package building"));
 	}
     }
-#if defined(SUPPORT_PGP_SIGNING)
-    else {
-    	/* Make rpmLookupSignatureType() return 0 ("none") from now on */
-        (void) rpmLookupSignatureType(RPMLOOKUPSIG_DISABLE);
-    }
-#endif
     /*@=branchstate@*/
 #endif	/* IAM_RPMBT || IAM_RPMK */
 

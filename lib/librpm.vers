@@ -66,6 +66,7 @@ LIBRPM_0
     rpmalFree;
     rpmalMakeIndex;
     rpmalSatisfiesDepend;
+    rpmCheckPassPhrase;
     rpmcliAllPoptTable;
     rpmcliArgIter;
     rpmcliConfigured;
@@ -88,7 +89,6 @@ LIBRPM_0
     rpmcliSign;
     rpmcliTargets;
     rpmcliVerify;
-    rpmDetectPGPVersion;
     rpmDisplayQueryTags;
     rpmdsAnyMatchesDep;
     rpmdsBT;
@@ -222,7 +222,6 @@ LIBRPM_0
     rpmInstallPoptTable;
     rpmInstallSource;
     rpmInstallSourcePackage;
-    rpmLookupSignatureType;
     rpmMkdirPath;
     rpmNAME;
     rpmNewSignature;

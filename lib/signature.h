@@ -74,47 +74,14 @@ int rpmAddSignature(Header sigh, const char * file,
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies sigh, sigTag, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
-/******************************************************************/
-
 /**
- *  Possible actions for rpmLookupSignatureType()
+ * Check for valid pass phrase by invoking a helper.
+ * @param passPhrase	pass phrase
+ * @return		0 on valid, 1 on invalid
  */
-#define RPMLOOKUPSIG_QUERY	0	/* Lookup type in effect          */
-#define RPMLOOKUPSIG_DISABLE	1	/* Disable (--sign was not given) */
-#define RPMLOOKUPSIG_ENABLE	2	/* Re-enable %_signature          */
-
-/** \ingroup signature
- * Return type of signature needed for signing/building.
- * @param action	enable/disable/query action
- * @return		sigTag to use, 0 if none, -1 on error
- */
-int rpmLookupSignatureType(int action)
-	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
-	/*@modifies rpmGlobalMacroContext, internalState @*/;
-
-/** \ingroup signature
- * Read a pass phrase using getpass(3), confirm with gpg/pgp helper binaries.
- * @param prompt	user prompt
- * @param sigTag	signature type/tag
- * @return		pass phrase
- */
-/*@dependent@*/ /*@null@*/
-char * rpmGetPassPhrase(/*@null@*/ const char * prompt,
-		const int sigTag)
+int rpmCheckPassPhrase(const char * passPhrase)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/;
-
-/** \ingroup signature
- * Return path to pgp executable of given type, or NULL when not found.
- * @retval pgpVer	pgp version
- * @return		path to pgp executable
- */
-/*@-exportlocal -redecl@*/
-/*@null@*/ const char * rpmDetectPGPVersion(
-			/*@null@*/ /*@out@*/ pgpVersion * pgpVer)
-	/*@globals rpmGlobalMacroContext, h_errno @*/
-	/*@modifies *pgpVer, rpmGlobalMacroContext @*/;
-/*@=exportlocal =redecl@*/
 
 #ifdef __cplusplus
 }
