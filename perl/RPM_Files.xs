@@ -15,6 +15,16 @@ MODULE = RPM::Files		PACKAGE = RPM::Files
 
 PROTOTYPES: ENABLE
 
+rpmfi
+new(class, header, ts = NULL)
+    char * class
+    Header header
+    rpmts ts
+    CODE:
+    RETVAL = rpmfiNew(ts, header, RPMTAG_BASENAMES, 0);
+    OUTPUT:
+    RETVAL
+
 void
 DESTROY(Files)
     rpmfi Files
@@ -22,7 +32,15 @@ DESTROY(Files)
     Files = rpmfiFree(Files);
 
 int
-compare(Files, Fb)
+count(Files)
+    rpmfi Files
+    CODE:
+    RETVAL = rpmfiFC(Files);
+    OUTPUT:
+    RETVAL
+
+int
+_compare(Files, Fb)
     rpmfi Files
     rpmfi Fb
     CODE:
@@ -31,7 +49,7 @@ compare(Files, Fb)
     RETVAL
 
 int
-move(Files, index = 0)
+_move(Files, index = 0)
     rpmfi Files;
     int index
     PREINIT:
@@ -48,16 +66,9 @@ move(Files, index = 0)
     OUTPUT:
     RETVAL
 
-int
-count(Files)
-    rpmfi Files
-    CODE:
-    RETVAL = rpmfiFC(Files);
-    OUTPUT:
-    RETVAL
 
 int
-countdir(Files)
+_countdir(Files)
     rpmfi Files
     CODE:
     RETVAL = rpmfiDC(Files);
@@ -65,19 +76,19 @@ countdir(Files)
     RETVAL
 
 void
-init(Files)
+_init(Files)
     rpmfi Files
     CODE:
     rpmfiInit(Files, 0);
         
 void
-initdir(Files)
+_initdir(Files)
     rpmfi Files
     CODE:
     rpmfiInitD(Files, 0);
 
 int
-next(Files)
+_next(Files)
     rpmfi Files
     CODE:
     RETVAL = rpmfiNext(Files);
@@ -85,7 +96,7 @@ next(Files)
     RETVAL
 
 int
-hasnext(Files)
+_hasnext(Files)
     rpmfi Files
     CODE:
     RETVAL = rpmfiNext(Files) > -1;
@@ -93,7 +104,7 @@ hasnext(Files)
     RETVAL
         
 int
-nextdir(Files)
+_nextdir(Files)
     rpmfi Files
     CODE:
     RETVAL = rpmfiNextD(Files);
@@ -101,37 +112,37 @@ nextdir(Files)
     RETVAL
 
 void
-filename(Files)
+_filename(Files)
     rpmfi Files
     PPCODE:
     XPUSHs(sv_2mortal(newSVpv(rpmfiFN(Files), 0)));
 
 void
-dirname(Files)
+_dirname(Files)
     rpmfi Files
     PPCODE:
     XPUSHs(sv_2mortal(newSVpv(rpmfiDN(Files), 0)));
 
 void
-basename(Files)
+_basename(Files)
     rpmfi Files
     PPCODE:
     XPUSHs(sv_2mortal(newSVpv(rpmfiBN(Files), 0)));
 
 void
-fflags(Files)
+_fflags(Files)
     rpmfi Files
     PPCODE:
     XPUSHs(sv_2mortal(newSViv(rpmfiFFlags(Files))));
 
 void
-mode(Files)
+_mode(Files)
     rpmfi Files
     PPCODE:
     XPUSHs(sv_2mortal(newSVuv(rpmfiFMode(Files))));
 
 void
-md5(Files)
+_md5(Files)
     rpmfi Files
     PREINIT:
     const byte * md5;
@@ -145,7 +156,7 @@ md5(Files)
     _free(fmd5);
 
 void
-link(Files)
+_link(Files)
     rpmfi Files
     PREINIT:
     const char * link;
@@ -155,43 +166,43 @@ link(Files)
     }
 
 void
-user(Files)
+_user(Files)
     rpmfi Files
     PPCODE:
     XPUSHs(sv_2mortal(newSVpv(rpmfiFUser(Files), 0)));
 
 void
-group(Files)
+_group(Files)
     rpmfi Files
     PPCODE:
     XPUSHs(sv_2mortal(newSVpv(rpmfiFGroup(Files), 0)));
 
 void
-inode(Files)
+_inode(Files)
     rpmfi Files
     PPCODE:
     XPUSHs(sv_2mortal(newSViv(rpmfiFInode(Files))));
     
 void
-size(Files)
+_size(Files)
     rpmfi Files
     PPCODE:
     XPUSHs(sv_2mortal(newSViv(rpmfiFSize(Files))));
 
 void
-dev(Files)
+_dev(Files)
     rpmfi Files
     PPCODE:
     XPUSHs(sv_2mortal(newSViv(rpmfiFRdev(Files))));
 
 void
-color(Files)
+_color(Files)
     rpmfi Files
     PPCODE:
     XPUSHs(sv_2mortal(newSViv(rpmfiFColor(Files))));
 
 void
-class(Files)
+_class(Files)
     rpmfi Files
     PREINIT:
     const char * class;
@@ -200,13 +211,13 @@ class(Files)
         XPUSHs(sv_2mortal(newSVpv(rpmfiFClass(Files), 0)));
 
 void
-mtime(Files)
+_mtime(Files)
     rpmfi Files
     PPCODE:
     XPUSHs(sv_2mortal(newSViv(rpmfiFMtime(Files))));
 
 void
-nlink(Files)
+_nlink(Files)
     rpmfi Files
     PPCODE:
     XPUSHs(sv_2mortal(newSViv(rpmfiFNlink(Files))));
