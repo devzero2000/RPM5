@@ -6,6 +6,11 @@
 #undef Mkdir
 #undef Stat
 
+#include "../config.h"
+#ifdef HAVE_BEECRYPT_API_H
+#include <beecrypt/api.h>
+#endif
+
 #include "rpmlib.h"
 #include "rpmfi.h"
 #include "rpmio_internal.h"
