@@ -729,14 +729,14 @@ WITH_PYTHON_VERSION=""
 AC_ARG_WITH(python, AS_HELP_STRING([--with-python], [build with RPM Python language bindings]), [
     if test ".$withval" != .no; then
         case "$withval" in
-             2.x|2.4|2.5)
+             2.x|2.3|2.4|2.5)
                   python_version=$withval
                   ;;
              yes)
-                  python_version="2.5 2.4 2.x"
+                  python_version="2.5 2.4 2.3 2.x"
                   ;;
              *)
-                  AC_MSG_WARN([--with-python only supports values 2.x, 2.4, or 2.5, ignoring...])
+                  AC_MSG_WARN([--with-python only supports values 2.x, 2.3, 2.4, or 2.5, ignoring...])
                   python_version=""
                   ;;
         esac
