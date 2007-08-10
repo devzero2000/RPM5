@@ -30,6 +30,8 @@
  * SUCH DAMAGE.
  */
 
+#include "system.h"
+
 #if defined(LIBC_SCCS) && !defined(lint)
 static char sccsid[] = "@(#)fts.c	8.6 (Berkeley) 8/14/94";
 #endif /* LIBC_SCCS and not lint */
@@ -96,7 +98,6 @@ static char sccsid[] = "@(#)fts.c	8.6 (Berkeley) 8/14/94";
 #if !defined(_D_EXACT_NAMLEN)
 #   define _D_EXACT_NAMLEN(d) (strlen((d)->d_name))
 #endif
-#include "system.h"
 #include "fts.h"
 #include "rpmio.h"
 #include "rpmurl.h"
