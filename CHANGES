@@ -1,5 +1,6 @@
 4.5 -> 5.0:
-    - afb: always include system.h first (Leopard fix?).
+    - afb: extract provides from .jnilib's (Fink).
+    - afb: always include system.h first (Leopard fix? Fink).
     - afb: include "byte" typedef from beecrypt.
     - afb: preserve passed CFLAGS for zlib.
     - afb: support python 2.3 on Mac OS X.
