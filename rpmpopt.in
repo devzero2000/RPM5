@@ -168,6 +168,10 @@ rpm alias --buildpolicy --define '__os_install_post %{_usrlibrpm}/brp-!#:+' \
 	--POPTdesc=$"set buildroot <policy> (e.g. compress man pages)" \
 	--POPTargs=$"<policy>"
 
+# Short-hand option
+rpm alias --force --replacepkgs --replacefiles --oldpackage \
+	--POPTdesc=$"force operation (short hand for --replacepkgs --replacefiles --oldpackage on installation)"
+
 # Choose db interface:
 #	0	same as 1
 #	1	native db1 interface (e.g. linux glibc libdb1 routines).
