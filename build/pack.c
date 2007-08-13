@@ -651,7 +651,7 @@ int writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
 #if defined(SUPPORT_PGP_SIGNING)
     sigtag = rpmLookupSignatureType(RPMLOOKUPSIG_QUERY);
 #else
-    sigtag = RPMSIGTAG_GPG;
+    sigtag = 0;
 #endif
 
     if (sigtag > 0) {
