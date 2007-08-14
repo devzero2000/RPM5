@@ -129,6 +129,9 @@ Open the rpmdatabase attached to the transaction, if $write is true, in write mo
 
 Normally this is not need, rpmdb is automatically open when need.
 
+Be careful: If an rpmdb is open'ed manually, that disables lazy opens, so you'll to close
+it manually.
+
 =head2 $ts->closedb
 
 Close the rpmdb attached to transaction.
