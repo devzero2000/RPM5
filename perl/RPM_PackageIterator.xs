@@ -34,7 +34,8 @@ new(class, sv_tagname = NULL, sv_tagvalue = NULL, keylen = 0)
     int keylen
     PREINIT:
     rpmts ts = rpmtsCreate();
-    CODE:
+    PPCODE:
+    PUTBACK;
     _newiterator(ts, sv_tagname, sv_tagvalue, keylen);
     SPAGAIN;
     ts = rpmtsFree(ts);

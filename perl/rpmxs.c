@@ -97,7 +97,7 @@ void _newiterator(rpmts ts, SV * sv_tagname, SV * sv_tagvalue, int keylen) {
     void * value = NULL;
     int i = 0;
     dSP;
-        if (sv_tagname == NULL || !SvOK(sv_tagname)) {
+    if (sv_tagname == NULL || !SvOK(sv_tagname)) {
         tag = RPMDBI_PACKAGES; /* Assume search into installed packages */
     } else {
         tag = sv2dbquerytag(sv_tagname);
