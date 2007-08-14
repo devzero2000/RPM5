@@ -147,6 +147,10 @@ Verify the rpmdb.
 
 Rebuild the rpmdb.
 
+=head2 $ts->readheader
+
+Read a rpm and return a L<RPM::Header> object
+
 =cut
 
 1;

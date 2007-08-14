@@ -290,7 +290,8 @@ packageiterator(ts, sv_tagname = NULL, sv_tagvalue = NULL, keylen = 0)
     SV * sv_tagname
     SV * sv_tagvalue
     int keylen
-    CODE:
+    PPCODE:
+    PUTBACK;
     _newiterator(ts, sv_tagname, sv_tagvalue, keylen);
     SPAGAIN;
 
@@ -499,3 +500,11 @@ verifydb(ts)
     OUTPUT:
     RETVAL
 
+void
+readheader(ts, filename)
+    rpmts ts
+    const char * filename
+    PPCODE:
+    PUTBACK;
+    _rpm2header(ts, filename, 0);
+    SPAGAIN;
