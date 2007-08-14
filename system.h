@@ -712,9 +712,11 @@ static inline const char *rcsid(const char *p) { \
 /**
  * Phase out RPMv3 header+payload signatures.
  */
+#if 0
 #define	SUPPORT_RPMV3_BROKEN	1
 #define SUPPORT_RPMV3_SIGN_RSA	1
 #define SUPPORT_RPMV3_SIGN_DSA	1
+#endif
 #define SUPPORT_RPMV3_VERIFY_RSA	1
 #define SUPPORT_RPMV3_VERIFY_DSA	1
 
