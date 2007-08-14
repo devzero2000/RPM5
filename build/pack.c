@@ -513,7 +513,8 @@ int writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
     char *s;
     char buf[BUFSIZ];
     Header h;
-    Header sig = NULL;
+    Header sigh = NULL;
+    int addsig = 0;
     int rc = 0;
 
     /* Transfer header reference form *hdrp to h. */
@@ -644,34 +645,36 @@ int writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
 
     /* Generate the signature */
     (void) fflush(stdout);
-    sig = rpmNewSignature();
-    (void) rpmAddSignature(sig, sigtarget, RPMSIGTAG_SIZE, passPhrase);
-    (void) rpmAddSignature(sig, sigtarget, RPMSIGTAG_MD5, passPhrase);
+    sigh = rpmNewSignature();
+    (void) rpmAddSignature(sigh, sigtarget, RPMSIGTAG_SIZE, passPhrase);
+    (void) rpmAddSignature(sigh, sigtarget, RPMSIGTAG_MD5, passPhrase);
 
 #if defined(SUPPORT_PGP_SIGNING)
     sigtag = rpmLookupSignatureType(RPMLOOKUPSIG_QUERY);
+    addsig = (sigtag > 0);
 #else
-    sigtag = 0;
+    sigtag = RPMSIGTAG_GPG;
+    addsig = 0;	/* XXX breaks --sign */
 #endif
 
-    if (sigtag > 0) {
+    if (addsig) {
 	rpmMessage(RPMMESS_NORMAL, _("Generating signature: %d\n"), sigtag);
-	(void) rpmAddSignature(sig, sigtarget, sigtag, passPhrase);
+	(void) rpmAddSignature(sigh, sigtarget, sigtag, passPhrase);
     }
     
     if (SHA1) {
-	(void) headerAddEntry(sig, RPMSIGTAG_SHA1, RPM_STRING_TYPE, SHA1, 1);
+	(void) headerAddEntry(sigh, RPMSIGTAG_SHA1, RPM_STRING_TYPE, SHA1, 1);
 	SHA1 = _free(SHA1);
     }
 
     {	int_32 payloadSize = csa->cpioArchiveSize;
-	(void) headerAddEntry(sig, RPMSIGTAG_PAYLOADSIZE, RPM_INT32_TYPE,
+	(void) headerAddEntry(sigh, RPMSIGTAG_PAYLOADSIZE, RPM_INT32_TYPE,
 			&payloadSize, 1);
     }
 
     /* Reallocate the signature into one contiguous region. */
-    sig = headerReload(sig, RPMTAG_HEADERSIGNATURES);
-    if (sig == NULL) {	/* XXX can't happen */
+    sigh = headerReload(sigh, RPMTAG_HEADERSIGNATURES);
+    if (sigh == NULL) {	/* XXX can't happen */
 	rc = RPMERR_RELOAD;
 	rpmError(RPMERR_RELOAD, _("Unable to reload signature header.\n"));
 	goto exit;
@@ -726,7 +729,7 @@ if (!_nolead)
     /* Write the signature section into the package. */
 if (!_nosigh)
     {
-	rc = rpmWriteSignature(fd, sig);
+	rc = rpmWriteSignature(fd, sigh);
 	if (rc)
 	    goto exit;
     }
@@ -752,7 +755,7 @@ if (!_nosigh)
 	}
 
 #ifdef	NOTYET
-	(void) headerMergeLegacySigs(nh, sig);
+	(void) headerMergeLegacySigs(nh, sigh);
 #endif
 
 	rc = headerWrite(fd, nh);
@@ -788,17 +791,17 @@ exit:
     h = headerFree(h);
 
     /* XXX Fish the pkgid out of the signature header. */
-    if (sig != NULL && pkgidp != NULL) {
+    if (sigh != NULL && pkgidp != NULL) {
 	int_32 tagType;
 	unsigned char * MD5 = NULL;
 	int_32 c;
 	int xx;
-	xx = headerGetEntry(sig, RPMSIGTAG_MD5, &tagType, &MD5, &c);
+	xx = headerGetEntry(sigh, RPMSIGTAG_MD5, &tagType, &MD5, &c);
 	if (tagType == RPM_BIN_TYPE && MD5 != NULL && c == 16)
 	    *pkgidp = MD5;
     }
 
-    sig = rpmFreeSignature(sig);
+    sigh = rpmFreeSignature(sigh);
     if (ifd) {
 	(void) Fclose(ifd);
 	ifd = NULL;

@@ -712,7 +712,11 @@ static inline const char *rcsid(const char *p) { \
 /**
  * Phase out RPMv3 header+payload signatures.
  */
-#define	SUPPORT_RPMV3_SIGNATURES	1
+#define	SUPPORT_RPMV3_BROKEN	1
+#define SUPPORT_RPMV3_SIGN_RSA	1
+#define SUPPORT_RPMV3_SIGN_DSA	1
+#define SUPPORT_RPMV3_VERIFY_RSA	1
+#define SUPPORT_RPMV3_VERIFY_DSA	1
 
 /**
  * Turn off pgp/pgp5 signing (hasn't been looked at seriously for years).

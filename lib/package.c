@@ -111,7 +111,6 @@ static int typeAlign[16] =  {
 void headerMergeLegacySigs(Header h, const Header sigh)
 {
     HFD_t hfd = (HFD_t) headerFreeData;
-    HAE_t hae = (HAE_t) headerAddEntry;
     HeaderIterator hi;
     int_32 tag, type, count;
     const void * ptr;
@@ -129,26 +128,28 @@ void headerMergeLegacySigs(Header h, const Header sigh)
 	case RPMSIGTAG_SIZE:
 	    tag = RPMTAG_SIGSIZE;
 	    /*@switchbreak@*/ break;
-#if defined(SUPPORT_RPMV3_SIGNATURES)
+#if defined(SUPPORT_RPMV3_BROKEN)
 	case RPMSIGTAG_LEMD5_1:
 	    tag = RPMTAG_SIGLEMD5_1;
-	    /*@switchbreak@*/ break;
-	case RPMSIGTAG_PGP:
-	    tag = RPMTAG_SIGPGP;
 	    /*@switchbreak@*/ break;
 	case RPMSIGTAG_LEMD5_2:
 	    tag = RPMTAG_SIGLEMD5_2;
 	    /*@switchbreak@*/ break;
 #endif
-	case RPMSIGTAG_MD5:
-	    tag = RPMTAG_SIGMD5;
-	    /*@switchbreak@*/ break;
-#if defined(SUPPORT_RPMV3_SIGNATURES)
-	case RPMSIGTAG_GPG:
-	    tag = RPMTAG_SIGGPG;
+#if defined(SUPPORT_RPMV3_VERIFY_RSA)
+	case RPMSIGTAG_PGP:
+	    tag = RPMTAG_SIGPGP;
 	    /*@switchbreak@*/ break;
 	case RPMSIGTAG_PGP5:
 	    tag = RPMTAG_SIGPGP5;
+	    /*@switchbreak@*/ break;
+#endif
+	case RPMSIGTAG_MD5:
+	    tag = RPMTAG_SIGMD5;
+	    /*@switchbreak@*/ break;
+#if defined(SUPPORT_RPMV3_VERIFY_DSA)
+	case RPMSIGTAG_GPG:
+	    tag = RPMTAG_SIGGPG;
 	    /*@switchbreak@*/ break;
 #endif
 	case RPMSIGTAG_PAYLOADSIZE:
@@ -189,7 +190,7 @@ void headerMergeLegacySigs(Header h, const Header sigh)
 		continue;
 		/*@notreached@*/ /*@switchbreak@*/ break;
 	    }
- 	    xx = hae(h, tag, type, ptr, count);
+ 	    xx = headerAddEntry(h, tag, type, ptr, count);
 	}
     }
     hi = headerFreeIterator(hi);
@@ -213,26 +214,28 @@ Header headerRegenSigHeader(const Header h, int noArchiveSize)
 	case RPMTAG_SIGSIZE:
 	    stag = RPMSIGTAG_SIZE;
 	    /*@switchbreak@*/ break;
-#if defined(SUPPORT_RPMV3_SIGNATURES)
+#if defined(SUPPORT_RPMV3_BROKEN)
 	case RPMTAG_SIGLEMD5_1:
 	    stag = RPMSIGTAG_LEMD5_1;
-	    /*@switchbreak@*/ break;
-	case RPMTAG_SIGPGP:
-	    stag = RPMSIGTAG_PGP;
 	    /*@switchbreak@*/ break;
 	case RPMTAG_SIGLEMD5_2:
 	    stag = RPMSIGTAG_LEMD5_2;
 	    /*@switchbreak@*/ break;
 #endif
-	case RPMTAG_SIGMD5:
-	    stag = RPMSIGTAG_MD5;
-	    /*@switchbreak@*/ break;
-#if defined(SUPPORT_RPMV3_SIGNATURES)
-	case RPMTAG_SIGGPG:
-	    stag = RPMSIGTAG_GPG;
+#if defined(SUPPORT_RPMV3_VERIFY_RSA)
+	case RPMTAG_SIGPGP:
+	    stag = RPMSIGTAG_PGP;
 	    /*@switchbreak@*/ break;
 	case RPMTAG_SIGPGP5:
 	    stag = RPMSIGTAG_PGP5;
+	    /*@switchbreak@*/ break;
+#endif
+	case RPMTAG_SIGMD5:
+	    stag = RPMSIGTAG_MD5;
+	    /*@switchbreak@*/ break;
+#if defined(SUPPORT_RPMV3_VERIFY_DSA)
+	case RPMTAG_SIGGPG:
+	    stag = RPMSIGTAG_GPG;
 	    /*@switchbreak@*/ break;
 #endif
 	case RPMTAG_ARCHIVESIZE:
@@ -894,7 +897,7 @@ if (!_nosigh) {
     if (_chk(RPMVSF_NORSAHEADER) && headerIsEntry(sigh, RPMSIGTAG_RSA)) {
 	sigtag = RPMSIGTAG_RSA;
     } else
-#if defined(SUPPORT_RPMV3_SIGNATURES)
+#if defined(SUPPORT_RPMV3_VERIFY_DSA)
     if (_chk(RPMVSF_NODSA|RPMVSF_NEEDPAYLOAD) &&
 	headerIsEntry(sigh, RPMSIGTAG_GPG))
     {
@@ -902,6 +905,8 @@ if (!_nosigh) {
 	fdInitDigest(fd, PGPHASHALGO_SHA1, 0);
 	opx = RPMTS_OP_SIGNATURE;
     } else
+#endif
+#if defined(SUPPORT_RPMV3_VERIFY_RSA)
     if (_chk(RPMVSF_NORSA|RPMVSF_NEEDPAYLOAD) &&
 	headerIsEntry(sigh, RPMSIGTAG_PGP))
     {
@@ -1023,10 +1028,14 @@ if (!_nosigh) {
 	    rpmtsOp(ts, RPMTS_OP_DIGEST)->count--;	/* XXX one too many */
 	uh = headerFreeData(uh, uht);
     }	break;
-#if defined(SUPPORT_RPMV3_SIGNATURES)
+#if defined(SUPPORT_RPMV3_VERIFY_DSA) || defined(SUPPORT_RPMV3_VERIFY_RSA)
+#if defined(SUPPORT_RPMV3_VERIFY_DSA)
     case RPMSIGTAG_GPG:
+#endif
+#if defined(SUPPORT_RPMV3_VERIFY_RSA)
     case RPMSIGTAG_PGP5:	/* XXX legacy */
     case RPMSIGTAG_PGP:
+#endif
 	/* Parse the parameters from the OpenPGP packets that will be needed. */
 	xx = pgpPrtPkts(sig, siglen, dig, (_print_pkts & rpmIsDebug()));
 

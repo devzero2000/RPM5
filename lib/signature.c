@@ -48,14 +48,12 @@ int rpmLookupSignatureType(int action)
 	    rc = 0;
 	else if (!xstrcasecmp(name, "none"))
 	    rc = 0;
-#if defined(SUPPORT_RPMV3_SIGNATURES)
 	else if (!xstrcasecmp(name, "pgp"))
 	    rc = RPMSIGTAG_PGP;
 	else if (!xstrcasecmp(name, "pgp5"))	/* XXX legacy */
 	    rc = RPMSIGTAG_PGP;
 	else if (!xstrcasecmp(name, "gpg"))
 	    rc = RPMSIGTAG_GPG;
-#endif
 	else
 	    rc = -1;	/* Invalid %_signature spec in macro file */
 	name = _free(name);
@@ -606,17 +604,20 @@ static int makeGPGSignature(const char * file, int_32 * sigTagp,
     (void) pgpPrtPkts(*pktp, *pktlenp, dig, 0);
     sigp = &dig->signature;
 
+    /* Identify the type of signature being returned. */
     switch (*sigTagp) {
     case RPMSIGTAG_SIZE:
     case RPMSIGTAG_MD5:
     case RPMSIGTAG_SHA1:
 	break;
-#if defined(SUPPORT_RPMV3_SIGNATURES)
+#if defined(SUPPORT_RPMV3_SIGN_DSA) || defined(SUPPORT_RPMV3_SIGN_RSA)
     case RPMSIGTAG_GPG:
-	/* XXX check MD5 hash too? */
+	/* XXX check hash algorithm too? */
 	if (sigp->pubkey_algo == PGPPUBKEYALGO_RSA)
 	    *sigTagp = RPMSIGTAG_PGP;
 	break;
+#endif
+#if defined(SUPPORT_RPMV3_SIGN_DSA) || defined(SUPPORT_RPMV3_SIGN_RSA)
     case RPMSIGTAG_PGP5:	/* XXX legacy */
     case RPMSIGTAG_PGP:
 	if (sigp->pubkey_algo == PGPPUBKEYALGO_DSA)
@@ -624,7 +625,7 @@ static int makeGPGSignature(const char * file, int_32 * sigTagp,
 	break;
 #endif
     case RPMSIGTAG_DSA:
-	/* XXX check MD5 hash too? */
+	/* XXX check hash algorithm too? */
 	if (sigp->pubkey_algo == PGPPUBKEYALGO_RSA)
 	    *sigTagp = RPMSIGTAG_RSA;
 	break;
@@ -663,11 +664,9 @@ static int makeHDRSignature(Header sigh, const char * file, int_32 sigTag,
     switch (sigTag) {
     case RPMSIGTAG_SIZE:
     case RPMSIGTAG_MD5:
-#if defined(SUPPORT_RPMV3_SIGNATURES)
     case RPMSIGTAG_PGP5:	/* XXX legacy */
     case RPMSIGTAG_PGP:
     case RPMSIGTAG_GPG:
-#endif
 	goto exit;
 	/*@notreached@*/ break;
     case RPMSIGTAG_SHA1:
@@ -783,25 +782,27 @@ int rpmAddSignature(Header sigh, const char * file, int_32 sigTag,
 #if defined(SUPPORT_PGP_SIGNING)
     case RPMSIGTAG_PGP5:	/* XXX legacy */
     case RPMSIGTAG_PGP:
+#if defined(SUPPORT_RPMV3_SIGN_RSA)
 	if (makePGPSignature(file, &sigTag, &pkt, &pktlen, passPhrase)
 	 || !headerAddEntry(sigh, sigTag, RPM_BIN_TYPE, pkt, pktlen))
 	    break;
-#ifdef	NOTYET	/* XXX needs hdrmd5ctx, like hdrsha1ctx. */
 	/* XXX Piggyback a header-only RSA signature as well. */
+#endif
+#ifdef	NOTYET	/* XXX needs hdrmd5ctx, like hdrsha1ctx. */
 	ret = makeHDRSignature(sigh, file, RPMSIGTAG_RSA, passPhrase);
 #endif
 	ret = 0;
 	break;
 #endif	/* SUPPORT_PGP_SIGNING */
-#if defined(SUPPORT_RPMV3_SIGNATURES)
     case RPMSIGTAG_GPG:
+#if defined(SUPPORT_RPMV3_SIGN_DSA)
 	if (makeGPGSignature(file, &sigTag, &pkt, &pktlen, passPhrase)
 	 || !headerAddEntry(sigh, sigTag, RPM_BIN_TYPE, pkt, pktlen))
 	    break;
 	/* XXX Piggyback a header-only DSA signature as well. */
+#endif
 	ret = makeHDRSignature(sigh, file, RPMSIGTAG_DSA, passPhrase);
 	break;
-#endif
     case RPMSIGTAG_RSA:
     case RPMSIGTAG_DSA:
     case RPMSIGTAG_SHA1:
@@ -1116,7 +1117,7 @@ assert(sigp != NULL);
     switch (sigp->pubkey_algo) {
     case PGPPUBKEYALGO_RSA:
 	if (sigtag == RPMSIGTAG_RSA
-#if defined(SUPPORT_RPMV3_SIGNATURES)
+#if defined(SUPPORT_RPMV3_VERIFY_RSA)
 	 || sigtag == RPMSIGTAG_PGP
 	 || sigtag == RPMSIGTAG_PGP5
 #endif
@@ -1309,7 +1310,7 @@ assert(sigp != NULL);
 
     /* XXX sanity check on sigtag and signature agreement. */
     if (!(
-#if defined(SUPPORT_RPMV3_SIGNATURES)
+#if defined(SUPPORT_RPMV3_VERIFY_DSA)
 	(sigtag == RPMSIGTAG_GPG || sigtag == RPMSIGTAG_DSA)
 #else
 	(sigtag == RPMSIGTAG_DSA)
@@ -1403,7 +1404,7 @@ rpmVerifySignature(const rpmts ts, char * result)
     case RPMSIGTAG_RSA:
 	res = verifyRSASignature(ts, result, dig->hdrmd5ctx);
 	break;
-#if defined(SUPPORT_RPMV3_SIGNATURES)
+#if defined(SUPPORT_RPMV3_VERIFY_RSA)
     case RPMSIGTAG_PGP5:	/* XXX legacy */
     case RPMSIGTAG_PGP:
 	res = verifyRSASignature(ts, result,
@@ -1414,10 +1415,12 @@ rpmVerifySignature(const rpmts ts, char * result)
     case RPMSIGTAG_DSA:
 	res = verifyDSASignature(ts, result, dig->hdrsha1ctx);
 	break;
-#if defined(SUPPORT_RPMV3_SIGNATURES)
+#if defined(SUPPORT_RPMV3_VERIFY_DSA)
     case RPMSIGTAG_GPG:
 	res = verifyDSASignature(ts, result, dig->sha1ctx);
 	break;
+#endif
+#if defined(SUPPORT_RPMV3_BROKEN)
     case RPMSIGTAG_LEMD5_1:
     case RPMSIGTAG_LEMD5_2:
 	sprintf(result, _("Broken MD5 digest: UNSUPPORTED\n"));
