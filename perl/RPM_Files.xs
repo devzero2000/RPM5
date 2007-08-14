@@ -6,9 +6,11 @@
 #undef Mkdir
 #undef Stat
 
+#if 0
 #include "../config.h"
 #ifdef HAVE_BEECRYPT_API_H
 #include <beecrypt/api.h>
+#endif
 #endif
 
 #include "rpmlib.h"
@@ -44,6 +46,59 @@ count(Files)
     OUTPUT:
     RETVAL
 
+void
+init(Files)
+    rpmfi Files
+    CODE:
+    rpmfiInit(Files, 0);
+
+char *
+next(Files)
+    rpmfi Files
+    PREINIT:
+    char val[16];
+    int idx = 0;
+    CODE:
+    if ((idx = rpmfiNext(Files)) == -1) {
+        RETVAL = NULL;
+    } else {
+        snprintf(val, 12, idx == 0 ? "%dE0" : "%d", idx);
+        RETVAL = val;
+    }
+    OUTPUT:
+    RETVAL
+
+int
+count_dir(Files)
+    rpmfi Files
+    CODE:
+    RETVAL = rpmfiDC(Files);
+    OUTPUT:
+    RETVAL
+
+
+void
+init_dir(Files)
+    rpmfi Files
+    CODE:
+    rpmfiInitD(Files, 0);
+
+char *
+next_dir(Files)
+    rpmfi Files
+    PREINIT:
+    char val[16];
+    int idx = 0;
+    CODE:
+    if ((idx = rpmfiNextD(Files)) == -1) {
+        RETVAL = NULL;
+    } else {
+        snprintf(val, 12, idx == 0 ? "%dE0" : "%d", idx);
+        RETVAL = val;
+    }
+    OUTPUT:
+    RETVAL
+
 int
 _compare(Files, Fb)
     rpmfi Files
@@ -52,178 +107,140 @@ _compare(Files, Fb)
     RETVAL = rpmfiCompare(Files, Fb);
     OUTPUT:
     RETVAL
-
-int
-_move(Files, index = 0)
-    rpmfi Files;
-    int index
-    PREINIT:
-    int i;
-    CODE:
-    index ++; /* keeping same behaviour than Header::Dep */
-    rpmfiInit(Files, 0);
-    RETVAL = 0;
-    for (i=-1; i < index && (RETVAL = rpmfiNext(Files)) >= 0; i++) {}
-    if (RETVAL == -1) {
-        rpmfiInit(Files, 0);
-        rpmfiNext(Files);
-    }
-    OUTPUT:
-    RETVAL
-
-
-int
-_countdir(Files)
-    rpmfi Files
-    CODE:
-    RETVAL = rpmfiDC(Files);
-    OUTPUT:
-    RETVAL
-
-void
-_init(Files)
-    rpmfi Files
-    CODE:
-    rpmfiInit(Files, 0);
         
-void
-_initdir(Files)
+const char *
+filename(Files)
     rpmfi Files
     CODE:
-    rpmfiInitD(Files, 0);
-
-int
-_next(Files)
-    rpmfi Files
-    CODE:
-    RETVAL = rpmfiNext(Files);
+    RETVAL = rpmfiFN(Files);
     OUTPUT:
     RETVAL
 
-int
-_hasnext(Files)
+const char *
+dirname(Files)
     rpmfi Files
     CODE:
-    RETVAL = rpmfiNext(Files) > -1;
-    OUTPUT:
-    RETVAL
-        
-int
-_nextdir(Files)
-    rpmfi Files
-    CODE:
-    RETVAL = rpmfiNextD(Files);
+    RETVAL = rpmfiDN(Files);
     OUTPUT:
     RETVAL
 
-void
-_filename(Files)
+const char *
+basename(Files)
     rpmfi Files
-    PPCODE:
-    XPUSHs(sv_2mortal(newSVpv(rpmfiFN(Files), 0)));
+    CODE:
+    RETVAL = rpmfiBN(Files);
+    OUTPUT:
+    RETVAL
+
+unsigned int
+fflags(Files)
+    rpmfi Files
+    CODE:
+    RETVAL = rpmfiFFlags(Files);
+    OUTPUT:
+    RETVAL
+
+unsigned int
+mode(Files)
+    rpmfi Files
+    CODE:
+    RETVAL = rpmfiFMode(Files);
+    OUTPUT:
+    RETVAL
 
 void
-_dirname(Files)
-    rpmfi Files
-    PPCODE:
-    XPUSHs(sv_2mortal(newSVpv(rpmfiDN(Files), 0)));
-
-void
-_basename(Files)
-    rpmfi Files
-    PPCODE:
-    XPUSHs(sv_2mortal(newSVpv(rpmfiBN(Files), 0)));
-
-void
-_fflags(Files)
-    rpmfi Files
-    PPCODE:
-    XPUSHs(sv_2mortal(newSViv(rpmfiFFlags(Files))));
-
-void
-_mode(Files)
-    rpmfi Files
-    PPCODE:
-    XPUSHs(sv_2mortal(newSVuv(rpmfiFMode(Files))));
-
-void
-_md5(Files)
+digest(Files)
     rpmfi Files
     PREINIT:
-    const byte * md5;
-    char * fmd5 = malloc((char) 33);
+    const unsigned char * digest;
+    int algop = 0;
+    size_t lenp = 0;
     PPCODE:
-    if ((md5 = rpmfiDigest(Files, NULL, NULL)) != NULL && 
-        *md5 != 0 /* return undef if empty */) {
-        (void) pgpHexCvt(fmd5, md5, 16);
-        XPUSHs(sv_2mortal(newSVpv(fmd5, 0)));
-    }
-    _free(fmd5);
-
-void
-_link(Files)
-    rpmfi Files
-    PREINIT:
-    const char * link;
-    PPCODE:
-    if ((link = rpmfiFLink(Files)) != NULL && *link != 0 /* return undef if empty */) {
-        XPUSHs(sv_2mortal(newSVpv(link, 0)));
+    if ((digest = rpmfiDigest(Files, &algop, &lenp)) != NULL
+        /* return undef if empty */) {
+        if (lenp) {
+        XPUSHs(sv_2mortal(newSVpv(digest, lenp)));
+        XPUSHs(sv_2mortal(newSViv(algop)));
+        }
     }
 
-void
-_user(Files)
+const char *
+link(Files)
     rpmfi Files
-    PPCODE:
-    XPUSHs(sv_2mortal(newSVpv(rpmfiFUser(Files), 0)));
+    CODE:
+    RETVAL = rpmfiFLink(Files);
+    OUTPUT:
+    RETVAL
 
-void
-_group(Files)
+const char *
+user(Files)
     rpmfi Files
-    PPCODE:
-    XPUSHs(sv_2mortal(newSVpv(rpmfiFGroup(Files), 0)));
+    CODE:
+    RETVAL = rpmfiFUser(Files);
+    OUTPUT:
+    RETVAL
 
-void
-_inode(Files)
+const char *
+group(Files)
     rpmfi Files
-    PPCODE:
-    XPUSHs(sv_2mortal(newSViv(rpmfiFInode(Files))));
+    CODE:
+    RETVAL = rpmfiFGroup(Files);
+    OUTPUT:
+    RETVAL
+
+int
+inode(Files)
+    rpmfi Files
+    CODE:
+    RETVAL = rpmfiFInode(Files);
+    OUTPUT:
+    RETVAL
     
-void
-_size(Files)
+int
+size(Files)
     rpmfi Files
-    PPCODE:
-    XPUSHs(sv_2mortal(newSViv(rpmfiFSize(Files))));
+    CODE:
+    RETVAL = rpmfiFSize(Files);
+    OUTPUT:
+    RETVAL
 
-void
-_dev(Files)
+int
+dev(Files)
     rpmfi Files
-    PPCODE:
-    XPUSHs(sv_2mortal(newSViv(rpmfiFRdev(Files))));
+    CODE:
+    RETVAL = rpmfiFRdev(Files);
+    OUTPUT:
+    RETVAL
 
-void
-_color(Files)
+int
+color(Files)
     rpmfi Files
-    PPCODE:
-    XPUSHs(sv_2mortal(newSViv(rpmfiFColor(Files))));
+    CODE:
+    RETVAL = rpmfiFColor(Files);
+    OUTPUT:
+    RETVAL
 
-void
-_class(Files)
+const char *
+class(Files)
     rpmfi Files
-    PREINIT:
-    const char * class;
-    PPCODE:
-    if ((class = rpmfiFClass(Files)) != NULL)
-        XPUSHs(sv_2mortal(newSVpv(rpmfiFClass(Files), 0)));
+    CODE:
+    RETVAL = rpmfiFClass(Files);
+    OUTPUT:
+    RETVAL
 
-void
-_mtime(Files)
+int
+mtime(Files)
     rpmfi Files
-    PPCODE:
-    XPUSHs(sv_2mortal(newSViv(rpmfiFMtime(Files))));
+    CODE:
+    RETVAL = rpmfiFMtime(Files);
+    OUTPUT:
+    RETVAL
 
-void
+int
 _nlink(Files)
     rpmfi Files
-    PPCODE:
-    XPUSHs(sv_2mortal(newSViv(rpmfiFNlink(Files))));
+    CODE:
+    RETVAL = rpmfiFNlink(Files);
+    OUTPUT:
+    RETVAL
 
