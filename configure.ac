@@ -1136,12 +1136,20 @@ if test "x$varprefix" = "x"; then
 	*                 ) varprefix=$prefix/var ;;
     esac	
 fi
+AC_DEFINE_UNQUOTED(
+    [VARPREFIX], ["$varprefix"],
+    [Path to /var]
+)
 AC_SUBST(varprefix)
 if test X"$prefix" = XNONE ; then
     usrprefix="$ac_default_prefix"
 else
     usrprefix=$prefix
 fi
+AC_DEFINE_UNQUOTED(
+    [USRPREFIX], ["$usrprefix"],
+    [Path to /usr]
+)
 AC_SUBST(usrprefix)
 
 dnl # determine RPM database directory path

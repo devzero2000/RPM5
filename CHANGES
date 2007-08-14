@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - jbj: snarf /usr and /var values from auto fu to predefine macro values.
     - jbj: disable rpmbuild --sign for now.
     - afb: extract provides from .jnilib's (Fink).
     - afb: always include system.h first (Leopard fix? Fink).

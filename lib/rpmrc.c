@@ -279,8 +279,8 @@ static void setDefaults(void)
 	/*@modifies rpmGlobalMacroContext, internalState @*/
 {
 
-    addMacro(NULL, "_usr", NULL, "/usr", RMIL_DEFAULT);
-    addMacro(NULL, "_var", NULL, "/var", RMIL_DEFAULT);
+    addMacro(NULL, "_usr", NULL, USRPREFIX, RMIL_DEFAULT);
+    addMacro(NULL, "_var", NULL, VARPREFIX, RMIL_DEFAULT);
     addMacro(NULL, "_prefix", NULL, "%{_usr}", RMIL_DEFAULT);
 
     addMacro(NULL, "___build_pre", NULL, ___build_pre, RMIL_DEFAULT);
