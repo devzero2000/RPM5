@@ -123,6 +123,30 @@ Inject a L<RPM::Header> into the rpmdb.
 
 Remove the header at B<$offset> from the rpmdb.
 
+=head2 $ts->opendb($write)
+
+Open the rpmdatabase attached to the transaction, if $write is true, in write mode
+
+Normally this is not need, rpmdb is automatically open when need.
+
+=head2 $ts->closedb
+
+Close the rpmdb attached to transaction.
+
+Normally this is not need, rpmdb is automatically closed after each operation.
+
+=head2 $ts->initdb($write)
+
+Create and open the rpmdb attaced to transaction, see L<opendb>.
+
+=head2 $ts->verifydb
+
+Verify the rpmdb.
+
+=head2 $ts->rebuilddb
+
+Rebuild the rpmdb.
+
 =cut
 
 1;

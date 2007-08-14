@@ -457,3 +457,45 @@ run(ts, callback, ...)
     OUTPUT:
     RETVAL
 
+int
+closedb(ts)
+    rpmts ts
+    CODE:
+    RETVAL = !rpmtsCloseDB(ts);
+    OUTPUT:
+    RETVAL
+
+int
+opendb(ts, write = 0)
+    rpmts ts
+    int write
+    CODE:
+    RETVAL = !rpmtsOpenDB(ts, write ? O_RDWR : O_RDONLY);
+    OUTPUT:
+    RETVAL
+
+int
+initdb(ts, write = 0)
+    rpmts ts
+    int write
+    CODE:
+    RETVAL = !rpmtsInitDB(ts, write ? O_RDWR : O_RDONLY);
+    OUTPUT:
+    RETVAL
+
+int
+rebuilddb(ts)
+    rpmts ts
+    CODE:
+    RETVAL = !rpmtsRebuildDB(ts);
+    OUTPUT:
+    RETVAL
+
+int
+verifydb(ts)
+    rpmts ts
+    CODE:
+    RETVAL = !rpmtsVerifyDB(ts);
+    OUTPUT:
+    RETVAL
+
