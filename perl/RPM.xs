@@ -152,6 +152,49 @@ platformscore(platform)
     OUTPUT:
     RETVAL
 
+
+#
+# Verbosity & log functions
+#
+
+void
+setverbosity(svlevel)
+    SV * svlevel
+    CODE:
+    rpmSetVerbosity(sv2constant(svlevel, "rpmlog"));
+
+void
+lastlogmsg()
+    PPCODE:
+    XPUSHs(sv_2mortal(newSViv(rpmlogCode())));
+    XPUSHs(sv_2mortal(newSVpv(rpmlogMessage(), 0)));
+
+int
+setlogfile(filename)
+    char * filename
+    PREINIT:
+    FILE * ofp = NULL;
+    FILE * fp = NULL;
+    CODE:
+    if (filename && *filename != 0) {
+        if ((fp = fopen(filename, "a+")) == NULL) {
+            XSprePUSH; PUSHi((IV)0);
+            XSRETURN(1);
+        }
+    }
+    if((ofp = rpmlogSetFile(fp)) != NULL)
+        fclose(ofp);
+    RETVAL=1;
+    OUTPUT:
+    RETVAL
+
+void
+rpmlog(svcode, msg)
+    SV * svcode
+    char * msg
+    CODE:
+    rpmlog(sv2constant(svcode, "rpmlog"), "%s", msg);
+
 #
 # #
 #
