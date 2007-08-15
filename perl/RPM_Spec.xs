@@ -59,7 +59,7 @@ new(perlclass, specfile = NULL, ...)
             i++;
             rootdir = ST(i);
         } else {
-            warn("Unknown value in " "RPM::Spec" "->new, ignored");
+            warn("Unknown options in RPM::Spec->new, ignored");
             i++;
         }
     }
@@ -74,10 +74,7 @@ void
 DESTROY(spec)
     Spec spec
     CODE:
-#ifdef HDRPMMEM
-    PRINTF_FREE("RPM::Spec", spec, -1);
-#endif
-    freeSpec(spec);
+    spec = freeSpec(spec);
 
 void
 srcheader(spec)
