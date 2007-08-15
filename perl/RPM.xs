@@ -150,6 +150,7 @@ setverbosity(svlevel)
 void
 lastlogmsg()
     PPCODE:
+    if (GIMME_V == G_ARRAY)
     XPUSHs(sv_2mortal(newSViv(rpmlogCode())));
     XPUSHs(sv_2mortal(newSVpv(rpmlogMessage(), 0)));
 
@@ -199,4 +200,3 @@ rpmlog(svcode, msg)
     char * msg
     CODE:
     rpmlog(sv2constant(svcode, "rpmlog"), "%s", msg);
-
