@@ -22,15 +22,29 @@
 #include "rpmdb.h"
 #include "misc.h"
 
-extern void _populate_header_tags(HV *href);
+/* The perl callback placeholder for output err messages */
+SV * log_callback_function = NULL;
 
-static void
-_populate_constant(HV *href, char *name, int val)
-{
-    hv_store(href, name, strlen(name), newSViv(val), 0);
+/* This function is called by rpm if a callback
+ * is set for for the logging system.
+ * If the callback is set, rpm does not print any message,
+ * and let the callback to do it */
+void logcallback(void) {
+    dSP;
+    if (log_callback_function) {
+        int logcode = rpmlogCode();
+        PUSHMARK(SP);
+        XPUSHs(sv_2mortal(newSVpv("logcode", 0)));
+        XPUSHs(sv_2mortal(newSViv(logcode)));
+        XPUSHs(sv_2mortal(newSVpv("msg", 0)));
+        XPUSHs(sv_2mortal(newSVpv(rpmlogMessage(), 0)));
+        XPUSHs(sv_2mortal(newSVpv("priority", 0)));
+        XPUSHs(sv_2mortal(newSViv(RPMLOG_PRI(logcode))));
+        PUTBACK;
+        call_sv(log_callback_function, G_DISCARD | G_SCALAR);
+        SPAGAIN;
+    }
 }
-
-#define REGISTER_CONSTANT(name) _populate_constant(constants, #name, name)
 
 MODULE = RPM		PACKAGE = RPM
 
@@ -53,37 +67,7 @@ BOOT:
     crutch_stack_wrap(boot_RPM__Files(aTHX_ cv));
     crutch_stack_wrap(boot_RPM__Dependencies(aTHX_ cv)); 
     crutch_stack_wrap(boot_RPM__Spec(aTHX_ cv));
-#if DYING
-    {
-	HV *header_tags, *constants; */
-#endif
 	rpmReadConfigFiles(NULL, NULL);
-#if DYING
-	header_tags = perl_get_hv("RPM::header_tag_map", TRUE);
-	_populate_header_tags(header_tags);
-
-	constants = perl_get_hv("RPM::constants", TRUE);
-
-	/* not the 'standard' way of doing perl constants, but a lot easier to maintain */
-	REGISTER_CONSTANT(RPMVSF_DEFAULT);
-	REGISTER_CONSTANT(RPMVSF_NOHDRCHK);
-	REGISTER_CONSTANT(RPMVSF_NEEDPAYLOAD);
-	REGISTER_CONSTANT(RPMVSF_NOSHA1HEADER);
-	REGISTER_CONSTANT(RPMVSF_NOMD5HEADER);
-	REGISTER_CONSTANT(RPMVSF_NODSAHEADER);
-	REGISTER_CONSTANT(RPMVSF_NORSAHEADER);
-	REGISTER_CONSTANT(RPMVSF_NOSHA1);
-	REGISTER_CONSTANT(RPMVSF_NOMD5);
-	REGISTER_CONSTANT(RPMVSF_NODSA);
-	REGISTER_CONSTANT(RPMVSF_NORSA);
-	REGISTER_CONSTANT(_RPMVSF_NODIGESTS);
-	REGISTER_CONSTANT(_RPMVSF_NOSIGNATURES);
-	REGISTER_CONSTANT(_RPMVSF_NOHEADER);
-	REGISTER_CONSTANT(_RPMVSF_NOPAYLOAD);
-	REGISTER_CONSTANT(TR_ADDED);
-	REGISTER_CONSTANT(TR_REMOVED);
-    }
-#endif
 
 #
 # Macro functions
@@ -189,112 +173,30 @@ setlogfile(filename)
     RETVAL
 
 void
+setlogcallback(function = NULL)
+    SV * function
+    CODE:
+    if (function == NULL || !SvOK(function)) {
+        if (log_callback_function) {
+            SvREFCNT_dec(log_callback_function);
+            log_callback_function = NULL;
+        }
+        rpmlogSetCallback(NULL);
+    } else if (SvTYPE(SvRV(function)) == SVt_PVCV) {
+        if (log_callback_function) {
+            SvREFCNT_dec(log_callback_function);
+            log_callback_function = NULL;
+        }
+        SvREFCNT_inc(function);
+        log_callback_function = newSVsv(function);
+        rpmlogSetCallback(logcallback);
+    } else
+        croak("First arg is not a code reference");
+
+void
 rpmlog(svcode, msg)
     SV * svcode
     char * msg
     CODE:
     rpmlog(sv2constant(svcode, "rpmlog"), "%s", msg);
-
-#
-# #
-#
-
-void
-_read_package_info(fp, vsflags)
-	FILE *fp
-	int vsflags
-    PREINIT:
-	rpmts ts;
-	Header ret;
-	rpmRC rc;
-	FD_t fd;
-    PPCODE:
-	ts = rpmtsCreate();
-
-        /* XXX Determine type of signature verification when reading
-	vsflags |= _RPMTS_VSF_NOLEGACY;
-	vsflags |= _RPMTS_VSF_NODIGESTS;
-	vsflags |= _RPMTS_VSF_NOSIGNATURES;
-	xx = rpmtsSetVerifySigFlags(ts, vsflags);
-        */ 
-
-	fd = fdDup(fileno(fp));
-	rpmtsSetVSFlags(ts, vsflags);
-	rc = rpmReadPackageFile(ts, fd, "filename or other identifier", &ret);
-
-	Fclose(fd);
-
-	if (rc == RPMRC_OK) {
-	    SV *h_sv;
-
-	    EXTEND(SP, 1);
-
-	    h_sv = sv_newmortal();
-            sv_setref_pv(h_sv, "RPM::C::Header", (void *)ret);
-
-	    PUSHs(h_sv);
-	}
-	else {
-	    croak("error reading package");
-	}
-	ts = rpmtsFree(ts);
-
-void
-_create_transaction(vsflags)
-	int vsflags
-    PREINIT:
-	rpmts ret;
-	SV *h_sv;
-    PPCODE:
-	/* Looking at librpm, it does not look like this ever
-	   returns error (though maybe it should).
-	*/
-	ret = rpmtsCreate();
-
-	/* Should I save the old vsflags aside? */
-	rpmtsSetVSFlags(ret, vsflags);
-
-	/* Convert and throw the results on the stack */	
-	EXTEND(SP, 1);
-
-	h_sv = sv_newmortal();
-	sv_setref_pv(h_sv, "RPM::C::Transaction", (void *)ret);
-
-	PUSHs(h_sv);
-
-void
-_read_from_file(fp)
-	FILE *fp
-PREINIT:
-	SV *h_sv;
-	FD_t fd;
-	Header h;
-PPCODE:
-	fd = fdDup(fileno(fp));
-	h = headerRead(fd);
-
-	if (h) {
-	    EXTEND(SP, 1);
-
-	    h_sv = sv_newmortal();
-	    sv_setref_pv(h_sv, "RPM::C::Header", (void *)h);
-
-	    PUSHs(h_sv);
-	}
-	Fclose(fd);
-
-
-rpmdb
-_open_rpm_db(for_write)
-	int   for_write
-    PREINIT:
-	 rpmdb db;
-    CODE:
-	if (rpmdbOpen(NULL, &db, for_write ? O_RDWR | O_CREAT : O_RDONLY, 0644)) {
-		croak("rpmdbOpen failed");
-		RETVAL = NULL;
-	}
-	RETVAL = db;		
-    OUTPUT:
-	RETVAL
 

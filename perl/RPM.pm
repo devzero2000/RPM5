@@ -3,14 +3,23 @@ package RPM;
 use 5.00503;
 use strict;
 use DynaLoader;
+use Exporter;
 use Cwd qw/realpath/;
 use File::Basename qw/basename dirname/;
 use File::Spec ();
 
-use vars qw/@ISA/;
-@ISA = qw/DynaLoader/;
+use vars qw/@ISA @EXPORT/;
+@ISA = qw/DynaLoader Exporter/;
 
 bootstrap RPM;
+
+@EXPORT = qw(
+    rpmlog
+    setlogcallback
+    setlogfile
+    lastlogmsg
+    setverbosity
+);
 
 sub open_rpm_db {
   my $class = shift;
