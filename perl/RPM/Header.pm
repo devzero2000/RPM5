@@ -148,6 +148,63 @@ Return a in memory string representation of $hdr
 
 Dump header into open file handle B<$handle>.
 
+=cut
+
+=head2 $hdr->changelog
+
+Returns a list of hash refs containing the change log data of the package.
+The hash keys represent individual change log entries, and their keys are:
+C<time> (the time of the changelog entry), C<name> (the "name", ie. often
+the email address of the author of the entry), and C<text> (the text of the
+entry).
+
+=cut
+
+sub changelog {
+  my $self = shift;
+
+  if (not exists $self->{changelog}) {
+    my @cltimes = $self->tag('CHANGELOGTIME');
+    my @clnames = $self->tag('CHANGELOGNAME');
+    my @cltexts = $self->tag('CHANGELOGTEXT');
+
+    my @changelog;
+    foreach (0 .. $#cltimes) {
+      push(@changelog,
+           { time => $cltimes[$_],
+             name => $clnames[$_],
+             text => $cltexts[$_],
+           });
+    }
+
+    $self->{changelog} = \@changelog;
+  }
+
+  return @{$self->{changelog}};
+}
+
+=head2 $hdr->as_nvre
+
+Returns a string formatted like:
+
+   epoch:name-version-release
+
+If epoch is undefined for this package, it and the leading colon are omitted.
+
+=cut
+
+sub as_nvre {
+  my ($self) = @_;
+  my $epoch = $self->tag('epoch');
+  my $epoch_str = '';
+
+  $epoch_str = "$epoch:" if defined $epoch;
+
+  my $ret = $epoch_str . join("-", map { $self->tag($_) } qw/name version release/);
+
+  return $ret;
+}
+
 =head2 $hdr->dependencies($tag)
 
 Create a new L<RPM::Dependencies> object from RPM::Header B<$hdr>.
