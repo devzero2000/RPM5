@@ -26,6 +26,10 @@
 /*@unchecked@*/
 int _print_pkts = 0;
 
+extern int _nolead;
+extern int _nosigh;
+extern int _newmagic;
+
 /**
  */
 /*@-boundsread@*/
@@ -211,6 +215,9 @@ static int rpmReSign(/*@unused@*/ rpmts ts,
 /*@-boundswrite@*/
 	memset(l, 0, sizeof(*l));
 /*@=boundswrite@*/
+	l->signature_type = RPMSIGTYPE_HEADERSIG;
+
+if (!_nolead) {
 	rc = readLead(fd, l);
 	if (rc != RPMRC_OK) {
 	    rpmError(RPMERR_READLEAD, _("%s: not an rpm package\n"), rpm);
@@ -228,7 +235,9 @@ static int rpmReSign(/*@unused@*/ rpmts ts,
 	default:
 	    /*@switchbreak@*/ break;
 	}
+}
 
+if (!_nosigh) {
 	msg = NULL;
 	rc = rpmReadSignature(fd, &sigh, l->signature_type, &msg);
 	switch (rc) {
@@ -246,6 +255,7 @@ static int rpmReSign(/*@unused@*/ rpmts ts,
 	    /*@switchbreak@*/ break;
 	}
 	msg = _free(msg);
+}
 
 	/* Write the header and archive to a temp file */
 	/* ASSERT: ofd == NULL && sigtarget == NULL */
@@ -382,6 +392,7 @@ static int rpmReSign(/*@unused@*/ rpmts ts,
 	if (manageFile(&ofd, &trpm, O_WRONLY|O_CREAT|O_TRUNC, 0))
 	    goto exit;
 
+if (!_nolead) {
 	l->signature_type = RPMSIGTYPE_HEADERSIG;
 	rc = writeLead(ofd, l);
 	if (rc != RPMRC_OK) {
@@ -389,12 +400,15 @@ static int rpmReSign(/*@unused@*/ rpmts ts,
 		Fstrerror(ofd));
 	    goto exit;
 	}
+}
 
+if (!_nosigh) {
 	if (rpmWriteSignature(ofd, sigh)) {
 	    rpmError(RPMERR_SIGGEN, _("%s: rpmWriteSignature failed: %s\n"), trpm,
 		Fstrerror(ofd));
 	    goto exit;
 	}
+}
 
 	/* Append the header and archive from the temp file */
 	/* ASSERT: fd == NULL && ofd != NULL */
@@ -650,6 +664,18 @@ static unsigned char header_magic[8] = {
         0x8e, 0xad, 0xe8, 0x01, 0x00, 0x00, 0x00, 0x00
 };
 
+#ifdef	NOTYET
+/*@observer@*/ /*@unchecked@*/
+static unsigned char sigh_magic[8] = {
+	0x8e, 0xad, 0xe8, 0x3e, 0x00, 0x00, 0x00, 0x00
+};
+#endif
+
+/*@observer@*/ /*@unchecked@*/
+static unsigned char meta_magic[8] = {
+	0x8e, 0xad, 0xe8, 0x3f, 0x00, 0x00, 0x00, 0x00
+};
+
 /**
  * @todo If the GPG key was known available, the md5 digest could be skipped.
  */
@@ -674,6 +700,7 @@ static int readFile(FD_t fd, const char * fn, pgpDig dig)
 	dig->nbytes += headerSizeof(h);
 
 	if (headerIsEntry(h, RPMTAG_HEADERIMMUTABLE)) {
+	    unsigned char * hmagic = (_newmagic ? meta_magic : header_magic);
 	    void * uh;
 	    int_32 uht, uhc;
 	
@@ -685,10 +712,10 @@ static int readFile(FD_t fd, const char * fn, pgpDig dig)
 		goto exit;
 	    }
 	    dig->hdrsha1ctx = rpmDigestInit(PGPHASHALGO_SHA1, RPMDIGEST_NONE);
-	    (void) rpmDigestUpdate(dig->hdrsha1ctx, header_magic, sizeof(header_magic));
+	    (void) rpmDigestUpdate(dig->hdrsha1ctx, hmagic, sizeof(header_magic));
 	    (void) rpmDigestUpdate(dig->hdrsha1ctx, uh, uhc);
 	    dig->hdrmd5ctx = rpmDigestInit(dig->signature.hash_algo, RPMDIGEST_NONE);
-	    (void) rpmDigestUpdate(dig->hdrmd5ctx, header_magic, sizeof(header_magic));
+	    (void) rpmDigestUpdate(dig->hdrmd5ctx, hmagic, sizeof(header_magic));
 	    (void) rpmDigestUpdate(dig->hdrmd5ctx, uh, uhc);
 	    uh = headerFreeData(uh, uht);
 	}
@@ -763,6 +790,9 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 /*@-boundswrite@*/
 	memset(l, 0, sizeof(*l));
 /*@=boundswrite@*/
+	l->signature_type = RPMSIGTYPE_HEADERSIG;
+
+if (!_nolead) {
 	rc = readLead(fd, l);
 	if (rc != RPMRC_OK) {
 	    rpmError(RPMERR_READLEAD, _("%s: not an rpm package\n"), fn);
@@ -778,7 +808,9 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 	default:
 	    /*@switchbreak@*/ break;
 	}
+}
 
+if (!_nosigh) {
 	msg = NULL;
 	rc = rpmReadSignature(fd, &sigh, l->signature_type, &msg);
 	switch (rc) {
@@ -798,6 +830,7 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 	    /*@switchbreak@*/ break;
 	}
 	msg = _free(msg);
+}
 
 	/* Grab a hint of what needs doing to avoid duplication. */
 	sigtag = 0;

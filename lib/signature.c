@@ -141,9 +141,24 @@ static inline rpmRC printSize(FD_t fd, int siglen, int pad, size_t datalen)
 }
 
 /*@unchecked@*/
+extern int _newmagic;
+
+/*@unchecked@*/
 static unsigned char header_magic[8] = {
     0x8e, 0xad, 0xe8, 0x01, 0x00, 0x00, 0x00, 0x00
 };
+
+/*@observer@*/ /*@unchecked@*/
+static unsigned char sigh_magic[8] = {
+	0x8e, 0xad, 0xe8, 0x3e, 0x00, 0x00, 0x00, 0x00
+};
+
+#ifdef	NOTYET
+/*@observer@*/ /*@unchecked@*/
+static unsigned char meta_magic[8] = {
+	0x8e, 0xad, 0xe8, 0x3f, 0x00, 0x00, 0x00, 0x00
+};
+#endif
 
 rpmRC rpmReadSignature(void * _fd, Header * sighp, sigType sig_type,
 		const char ** msg)
@@ -171,8 +186,11 @@ rpmRC rpmReadSignature(void * _fd, Header * sighp, sigType sig_type,
 
     buf[0] = '\0';
 
-    if (sig_type != RPMSIGTYPE_HEADERSIG)
+    if (sig_type != RPMSIGTYPE_HEADERSIG) {
+	(void) snprintf(buf, sizeof(buf),
+		_("sigh type(%d): BAD\n"), sig_type);
 	goto exit;
+    }
 
     memset(block, 0, sizeof(block));
     if ((xx = timedRead(fd, (void *)block, sizeof(block))) != sizeof(block)) {
@@ -180,10 +198,13 @@ rpmRC rpmReadSignature(void * _fd, Header * sighp, sigType sig_type,
 		_("sigh size(%d): BAD, read returned %d\n"), (int)sizeof(block), xx);
 	goto exit;
     }
-    if (memcmp(block, header_magic, sizeof(header_magic))) {
-	(void) snprintf(buf, sizeof(buf),
+    {   unsigned char * hmagic = (_newmagic ? sigh_magic : header_magic);
+
+	if (memcmp(block, hmagic, sizeof(header_magic))) {
+	    (void) snprintf(buf, sizeof(buf),
 		_("sigh magic: BAD\n"));
-	goto exit;
+	    goto exit;
+	}
     }
     il = ntohl(block[2]);
     if (il < 0 || il > 32) {
