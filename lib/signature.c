@@ -153,12 +153,10 @@ static unsigned char sigh_magic[8] = {
 	0x8e, 0xad, 0xe8, 0x3e, 0x00, 0x00, 0x00, 0x00
 };
 
-#ifdef	NOTYET
 /*@observer@*/ /*@unchecked@*/
 static unsigned char meta_magic[8] = {
 	0x8e, 0xad, 0xe8, 0x3f, 0x00, 0x00, 0x00, 0x00
 };
-#endif
 
 rpmRC rpmReadSignature(void * _fd, Header * sighp, sigType sig_type,
 		const char ** msg)
@@ -700,6 +698,7 @@ static int makeHDRSignature(Header sigh, const char * file, int_32 sigTag,
 	(void) Fclose(fd);	fd = NULL;
 
 	if (headerIsEntry(h, RPMTAG_HEADERIMMUTABLE)) {
+	    unsigned char * hmagic = (_newmagic ? meta_magic : header_magic);
 	    DIGEST_CTX ctx;
 	    void * uh;
 	    int_32 uht, uhc;
@@ -711,7 +710,7 @@ static int makeHDRSignature(Header sigh, const char * file, int_32 sigTag,
 		goto exit;
 	    }
 	    ctx = rpmDigestInit(PGPHASHALGO_SHA1, RPMDIGEST_NONE);
-	    (void) rpmDigestUpdate(ctx, header_magic, sizeof(header_magic));
+	    (void) rpmDigestUpdate(ctx, hmagic, sizeof(header_magic));
 	    (void) rpmDigestUpdate(ctx, uh, uhc);
 	    (void) rpmDigestFinal(ctx, &SHA1, NULL, 1);
 	    uh = headerFreeData(uh, uht);

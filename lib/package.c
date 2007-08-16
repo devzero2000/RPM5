@@ -584,7 +584,7 @@ verifyinfo_exit:
 	(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_DIGEST), 0);
 	dig->hdrmd5ctx = rpmDigestInit(dig->signature.hash_algo, RPMDIGEST_NONE);
 
-	b = (unsigned char *) header_magic;
+	b = (unsigned char *) (_newmagic ? meta_magic : header_magic);
 	nb = sizeof(header_magic);
         (void) rpmDigestUpdate(dig->hdrmd5ctx, b, nb);
         dig->nbytes += nb;
@@ -628,7 +628,7 @@ verifyinfo_exit:
 	(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_DIGEST), 0);
 	dig->hdrsha1ctx = rpmDigestInit(PGPHASHALGO_SHA1, RPMDIGEST_NONE);
 
-	b = (unsigned char *) header_magic;
+	b = (unsigned char *) (_newmagic ? meta_magic : header_magic);
 	nb = sizeof(header_magic);
         (void) rpmDigestUpdate(dig->hdrsha1ctx, b, nb);
         dig->nbytes += nb;
@@ -986,12 +986,13 @@ if (!_nosigh) {
     {	void * uh = NULL;
 	int_32 uht;
 	int_32 uhc;
+	unsigned char * hmagic = (_newmagic ? meta_magic : header_magic);
 
 	if (!headerGetEntry(h, RPMTAG_HEADERIMMUTABLE, &uht, &uh, &uhc))
 	    break;
 	(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_DIGEST), 0);
 	dig->hdrmd5ctx = rpmDigestInit(dig->signature.hash_algo, RPMDIGEST_NONE);
-	(void) rpmDigestUpdate(dig->hdrmd5ctx, header_magic, sizeof(header_magic));
+	(void) rpmDigestUpdate(dig->hdrmd5ctx, hmagic, sizeof(header_magic));
 	dig->nbytes += sizeof(header_magic);
 	(void) rpmDigestUpdate(dig->hdrmd5ctx, uh, uhc);
 	dig->nbytes += uhc;
@@ -1014,12 +1015,13 @@ if (!_nosigh) {
     {	void * uh = NULL;
 	int_32 uht;
 	int_32 uhc;
+	unsigned char * hmagic = (_newmagic ? meta_magic : header_magic);
 
 	if (!headerGetEntry(h, RPMTAG_HEADERIMMUTABLE, &uht, &uh, &uhc))
 	    break;
 	(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_DIGEST), 0);
 	dig->hdrsha1ctx = rpmDigestInit(PGPHASHALGO_SHA1, RPMDIGEST_NONE);
-	(void) rpmDigestUpdate(dig->hdrsha1ctx, header_magic, sizeof(header_magic));
+	(void) rpmDigestUpdate(dig->hdrsha1ctx, hmagic, sizeof(header_magic));
 	dig->nbytes += sizeof(header_magic);
 	(void) rpmDigestUpdate(dig->hdrsha1ctx, uh, uhc);
 	dig->nbytes += uhc;
