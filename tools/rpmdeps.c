@@ -152,7 +152,7 @@ static int rpmdepPrint(const char * msg, rpmds ds, FILE * fp)
 static struct poptOption optionsTable[] = {
 
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmcliAllPoptTable, 0,
-	N_("Common options for all rpm modes and executables:"),
+	N_("Common options:"),
 	NULL }, 
 
  { "cpuinfo",	0, POPT_ARG_VAL, &rpmdeps_mode, RPMDEP_RPMDSCPUINFO,
