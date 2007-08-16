@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - jbj: no-operation code paths for --nolead --nosigh packages.
     - jbj: functional sign/verify on --nolead packages.
     - jbj: add rpmkey, a keyctl(1) clone.
     - jbj: disable RPMv3 RSA/DSA signing.

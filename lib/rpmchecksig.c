@@ -294,6 +294,7 @@ if (!_nosigh) {
 	    nh = headerFree(nh);
 	}
 
+if (sigh != NULL) {
 	/* Eliminate broken digest values. */
 	xx = headerRemoveEntry(sigh, RPMSIGTAG_LEMD5_1);
 	xx = headerRemoveEntry(sigh, RPMSIGTAG_LEMD5_2);
@@ -376,6 +377,7 @@ if (!_nosigh) {
 	sigh = headerReload(sigh, RPMTAG_HEADERSIGNATURES);
 	if (sigh == NULL)	/* XXX can't happen */
 	    goto exit;
+}
 
 	/* Write the lead/signature of the output rpm */
 /*@-boundswrite@*/
@@ -778,7 +780,7 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
     pgpDigParams sigp;
     int_32 siglen;
     Header sigh = NULL;
-    HeaderIterator hi;
+    HeaderIterator hi = NULL;
     const char * msg;
     int res = 0;
     int xx;
@@ -830,6 +832,9 @@ if (!_nosigh) {
 	    /*@switchbreak@*/ break;
 	}
 	msg = _free(msg);
+} else {
+nosignatures = 1;
+nodigests = 1;
 }
 
 	/* Grab a hint of what needs doing to avoid duplication. */
@@ -903,6 +908,7 @@ assert(dig != NULL);
 	sprintf(b, "%s:%c", fn, (rpmIsVerbose() ? '\n' : ' ') );
 	b += strlen(b);
 
+	if (sigh)
 	for (hi = headerInitIterator(sigh);
 	    headerNextIterator(hi, &sigtag, &sigtype, &sig, &siglen) != 0;
 	    (void) rpmtsSetSig(ts, sigtag, sigtype, NULL, siglen))
@@ -1109,7 +1115,8 @@ assert(dig != NULL);
 	    }
 /*@=bounds@*/
 	}
-	hi = headerFreeIterator(hi);
+	if (hi)
+	    hi = headerFreeIterator(hi);
 
 	res += res2;
 
