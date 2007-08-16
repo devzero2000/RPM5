@@ -7,6 +7,7 @@
 #include <rpmio_internal.h>
 #include <rpmcli.h>	/* XXX for rpmCheckSig */
 #include <rpmdb.h>
+#include <rpmsq.h>
 
 #include "legacy.h"
 #include "misc.h"
@@ -41,30 +42,43 @@
  */
 PyObject * pyrpmError;
 
-/**
- */
-static PyObject * archScore(PyObject * self, PyObject * args, PyObject * kwds)
-{
-    char * arch;
-    int score;
-    char * kwlist[] = {"arch", NULL};
-
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "s", kwlist, &arch))
-	return NULL;
-
-    score = rpmMachineScore(RPM_MACHTABLE_INSTARCH, arch);
-
-    return Py_BuildValue("i", score);
-}
-
 extern sigset_t rpmsqCaught;
+
+#if PY_VERSION_HEX < 0x02050000
+typedef int Py_ssize_t;
+#endif
+
 /**
  */
-static PyObject * sqCaught(PyObject * self, PyObject * args)
+static PyObject * signalsCaught(PyObject * self, PyObject * check)
 {
-    if (!PyArg_ParseTuple(args, ":sqCaught")) return NULL;
+    PyObject *caught, *o;
+    Py_ssize_t llen;
+    int signum, i;
+    sigset_t newMask, oldMask;
 
-    return Py_BuildValue("i", rpmsqCaught);
+    if (!PyList_Check(check)) {
+	PyErr_SetString(PyExc_TypeError, "list expected");
+	return NULL;
+    }
+
+    llen = PyList_Size(check);
+    caught = PyList_New(0);
+
+    /* block signals while checking for them */
+    (void) sigfillset(&newMask);
+    (void) sigprocmask(SIG_BLOCK, &newMask, &oldMask);
+
+    for (i = 0; i < llen; i++) {
+	o = PyList_GetItem(check, i);
+	signum = PyInt_AsLong(o);
+	if (sigismember(&rpmsqCaught, signum)) {
+	    PyList_Append(caught, o);
+	}
+    }
+    (void) sigprocmask(SIG_SETMASK, &oldMask, NULL);
+
+    return caught;
 }
 
 /**
@@ -164,10 +178,7 @@ static PyMethodDef rpmModuleMethods[] = {
     { "delMacro", (PyCFunction) rpmrc_DelMacro, METH_VARARGS|METH_KEYWORDS,
 	NULL },
 
-    { "archscore", (PyCFunction) archScore, METH_VARARGS|METH_KEYWORDS,
-	NULL },
-
-    { "sqCaught", (PyCFunction) sqCaught, METH_VARARGS,
+    { "signalsCaught", (PyCFunction) signalsCaught, METH_O,
 	NULL },
     { "checkSignals", (PyCFunction) checkSignals, METH_VARARGS,
 	NULL },
@@ -202,6 +213,14 @@ static PyMethodDef rpmModuleMethods[] = {
 - Create a single element dependency set.\n" },
     { NULL }
 } ;
+
+/*
+ * Force clean up of open iterators and dbs on exit.
+ */
+static void rpm_exithook(void)
+{
+   rpmdbCheckTerminate(1);
+}
 
 /**
  */
@@ -239,6 +258,13 @@ void init_rpm(void)
 
     m = Py_InitModule3("_rpm", rpmModuleMethods, rpm__doc__);
     if (m == NULL)
+	return;
+
+    /* 
+     * treat error to register rpm cleanup hook as fatal, tracebacks
+     * can and will leave stale locks around if we can't clean up
+     */
+    if (Py_AtExit(rpm_exithook) == -1)
 	return;
 
     rpmReadConfigFiles(NULL, NULL);

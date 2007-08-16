@@ -1,4 +1,5 @@
 4.4.9 -> 4.5:
+    - jbj: python: backport signalsCaught, remove archscore.
     - jbj: re-add --force popt alias.
     - jbj: eliminate --initdb.
     - jbj: eliminate --rsegfault/--wsegfault.
