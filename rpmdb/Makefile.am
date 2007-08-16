@@ -97,7 +97,7 @@ db.h:
 
 # XXX grrr, force noinst libdb.la for db3.
 $(libdb_la):
-	sed -e"/^libdir=/s/^.*$$/libdir=''/" < $(top_builddir)/$(WITH_DB_SUBDIR)/libdb-4.5.la > $(libdb_la)
+	sed -e"/^libdir=/s/^.*$$/libdir=''/" < $(top_builddir)/$(WITH_DB_SUBDIR)/libdb-4.6.la > $(libdb_la)
 
 db_archive_SOURCES =
 db_archive_LDADD = \
