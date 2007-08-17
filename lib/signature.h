@@ -3,7 +3,7 @@
 
 /** \ingroup signature
  * \file lib/signature.h
- * Generate and verify signatures.
+ * Generate and verify rpm package signatures.
  */
 
 #include <header.h>
@@ -31,7 +31,7 @@ extern "C" {
 #endif
 
 /** \ingroup signature
- * Return new, empty (signature) header instance.
+ * Return new, empty signature header instance.
  * @return		signature header
  */
 Header rpmNewSignature(void)
@@ -39,22 +39,21 @@ Header rpmNewSignature(void)
 
 /** \ingroup signature
  * Read (and verify header+payload size) signature header.
- * If an old-style signature is found, we emulate a new style one.
+ * @param ts		transaction set
  * @param _fd		file handle
- * @retval sighp	address of (signature) header (or NULL)
- * @param sig_type	type of signature header to read (from lead)
- * @retval msg		failure msg
+ * @retval *sighp	signature header (or NULL)
+ * @retval *msg		failure msg
  * @return		rpmRC return code
  */
-rpmRC rpmReadSignature(void * _fd, /*@null@*/ /*@out@*/ Header *sighp,
-		sigType sig_type, /*@null@*/ /*@out@*/ const char ** msg)
+rpmRC rpmReadSignature(rpmts ts, void * _fd, /*@null@*/ /*@out@*/ Header *sighp,
+		/*@null@*/ /*@out@*/ const char ** msg)
 	/*@globals fileSystem @*/
 	/*@modifies _fd, *sighp, *msg, fileSystem @*/;
 
 /** \ingroup signature
  * Write signature header.
  * @param _fd		file handle
- * @param sigh		(signature) header
+ * @param sigh		signature header
  * @return		0 on success, 1 on error
  */
 int rpmWriteSignature(void * _fd, Header sigh)

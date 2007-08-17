@@ -788,7 +788,7 @@ rpmRC rpmReadPackageFile(rpmts ts, void * _fd, const char * fn, Header * hdrp)
     rpmtsOpX opx;
     size_t nb;
     Header h = NULL;
-    const char * msg;
+    const char * msg = NULL;
     rpmVSFlags vsflags;
     rpmRC rc = RPMRC_FAIL;	/* assume failure */
     rpmop opsave = memset(alloca(sizeof(*opsave)), 0, sizeof(*opsave));
@@ -815,36 +815,27 @@ rpmRC rpmReadPackageFile(rpmts ts, void * _fd, const char * fn, Header * hdrp)
     (void) rpmswAdd(opsave, fdstat_op(fd, FDSTAT_READ));
 
     memset(l, 0, sizeof(*l));
-    l->signature_type = RPMSIGTYPE_HEADERSIG;
-if (!_nolead) {
-    rc = readLead(fd, l);
-    if (rc != RPMRC_OK)
-	goto exit;
 
-    switch (l->major) {
-    case 1:
-	rpmError(RPMERR_NEWPACKAGE,
-	    _("packaging version 1 is not supported by this version of RPM\n"));
-	rc = RPMRC_NOTFOUND;
-	goto exit;
-	/*@notreached@*/ break;
-    case 2:
-    case 3:
-    case 4:
-	break;
+if (!_nolead) {
+    rc = readLead(fd, l, &msg);
+    switch (rc) {
     default:
-	rpmError(RPMERR_NEWPACKAGE, _("only packaging with major numbers <= 4 "
-		"is supported by this version of RPM\n"));
-	rc = RPMRC_NOTFOUND;
+	rpmError(RPMERR_READLEAD, "%s: %s\n", fn, msg);
+	/*@fallthrough@*/
+    case RPMRC_NOTFOUND:
+	msg = _free(msg);
 	goto exit;
 	/*@notreached@*/ break;
+    case RPMRC_OK:
+	break;
     }
+    msg = _free(msg);
 }
 
 if (!_nosigh) {
     /* Read the signature header. */
     msg = NULL;
-    rc = rpmReadSignature(fd, &sigh, l->signature_type, &msg);
+    rc = rpmReadSignature(ts, fd, &sigh, &msg);
     switch (rc) {
     default:
 	rpmError(RPMERR_SIGGEN, _("%s: rpmReadSignature failed: %s"), fn,

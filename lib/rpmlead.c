@@ -46,30 +46,68 @@ rpmRC writeLead(FD_t fd, const struct rpmlead *lead)
     return RPMRC_OK;
 }
 
-rpmRC readLead(FD_t fd, struct rpmlead *lead)
+rpmRC readLead(FD_t fd, struct rpmlead *lead, const char **msg)
 {
+    char buf[BUFSIZ];
+    rpmRC rc = RPMRC_FAIL;		/* assume failure */
+    int xx;
+
+    buf[0] = '\0';
+
 /*@-boundswrite@*/
     memset(lead, 0, sizeof(*lead));
 /*@=boundswrite@*/
     /*@-type@*/ /* FIX: remove timed read */
-    if (timedRead(fd, (char *)lead, sizeof(*lead)) != sizeof(*lead)) {
+    if ((xx = timedRead(fd, (char *)lead, sizeof(*lead))) != sizeof(*lead)) {
 	if (Ferror(fd)) {
-	    rpmError(RPMERR_READ, _("read failed: %s (%d)\n"),
-			Fstrerror(fd), errno);
-	    return RPMRC_FAIL;
+	    (void) snprintf(buf, sizeof(buf),
+		_("lead size(%u): BAD, read(%d), %s(%d)\n"),
+		(unsigned)sizeof(*lead), xx, Fstrerror(fd), errno);
+	    rc = RPMRC_FAIL;
+	} else {
+	    (void) snprintf(buf, sizeof(buf),
+		_("lead size(%u): BAD, read(%d)\n"),
+		(unsigned)sizeof(*lead), xx);
+	    rc = RPMRC_NOTFOUND;
 	}
-	return RPMRC_NOTFOUND;
+	goto exit;
     }
     /*@=type@*/
 
-    if (memcmp(lead->magic, lead_magic, sizeof(lead_magic)))
-	return RPMRC_NOTFOUND;
+    if (memcmp(lead->magic, lead_magic, sizeof(lead_magic))) {
+	(void) snprintf(buf, sizeof(buf), _("lead magic: BAD\n"));
+	rc = RPMRC_NOTFOUND;
+	goto exit;
+    }
     lead->type = ntohs(lead->type);
     lead->archnum = ntohs(lead->archnum);
     lead->osnum = ntohs(lead->osnum);
     lead->signature_type = ntohs(lead->signature_type);
-    if (lead->signature_type != RPMSIGTYPE_HEADERSIG)
-	return RPMRC_NOTFOUND;
 
-    return RPMRC_OK;
+    switch (lead->major) {
+    default:
+	(void) snprintf(buf, sizeof(buf),
+		_("lead version(%d): UNSUPPORTED\n"), lead->major);
+	rc = RPMRC_NOTFOUND;
+	break;
+    case 3:
+    case 4:
+	break;
+    }
+
+    if (lead->signature_type != RPMSIGTYPE_HEADERSIG) {
+	(void) snprintf(buf, sizeof(buf),
+		_("sigh type(%d): UNSUPPORTED\n"), lead->signature_type);
+	rc = RPMRC_NOTFOUND;
+	goto exit;
+    }
+
+    rc = RPMRC_OK;
+
+exit:
+    if (msg != NULL) {
+	buf[sizeof(buf)-1] = '\0';
+	*msg = xstrdup(buf);
+    }
+    return rc;
 }

@@ -23,10 +23,11 @@ rpmRC writeLead(FD_t fd, const struct rpmlead *lead)
  * Read lead from file handle.
  * @param fd		file handle
  * @retval lead		package lead
- * @return		RPMRC_OK on success, RPMRC_FAIL/RPMRC_NOTFOUND on error
+ * @retval *msg		failure msg
+ * @return		rpmRC return code
  */
-rpmRC readLead(FD_t fd, /*@out@*/ struct rpmlead *lead)
-	/*@modifies fd, *lead @*/;
+rpmRC readLead(FD_t fd, /*@out@*/ struct rpmlead *lead, const char ** msg)
+	/*@modifies fd, *lead, *msg @*/;
 
 #ifdef __cplusplus
 }

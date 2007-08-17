@@ -186,11 +186,11 @@ static int rpmReSign(/*@unused@*/ rpmts ts,
     FD_t ofd = NULL;
     struct rpmlead lead, *l = &lead;
     int_32 sigtag;
-    const char *rpm, *trpm;
+    const char *fn, *tfn;
     const char *sigtarget = NULL;
     char tmprpm[1024+1];
     Header sigh = NULL;
-    const char * msg;
+    const char * msg = NULL;
     void * uh = NULL;
     int_32 uht, uhc;
     int res = EXIT_FAILURE;
@@ -199,56 +199,43 @@ static int rpmReSign(/*@unused@*/ rpmts ts,
     int xx;
     
     tmprpm[0] = '\0';
+
     /*@-branchstate@*/
-/*@-boundsread@*/
     if (argv)
-    while ((rpm = *argv++) != NULL)
-/*@=boundsread@*/
-    {
+    while ((fn = *argv++) != NULL) {
 
-	fprintf(stdout, "%s:\n", rpm);
+	fprintf(stdout, "%s:\n", fn);
 
-	if (manageFile(&fd, &rpm, O_RDONLY, 0))
+	if (manageFile(&fd, &fn, O_RDONLY, 0))
 	    goto exit;
 
 /*@-boundswrite@*/
 	memset(l, 0, sizeof(*l));
 /*@=boundswrite@*/
-	l->signature_type = RPMSIGTYPE_HEADERSIG;
 
 if (!_nolead) {
-	rc = readLead(fd, l);
+	rc = readLead(fd, l, &msg);
 	if (rc != RPMRC_OK) {
-	    rpmError(RPMERR_READLEAD, _("%s: not an rpm package\n"), rpm);
+	    rpmError(RPMERR_READLEAD, "%s: %s\n", fn, msg);
+	    msg = _free(msg);
 	    goto exit;
 	}
-	switch (l->major) {
-	case 1:
-	    rpmError(RPMERR_BADSIGTYPE, _("%s: Can't sign v1 packaging\n"), rpm);
-	    goto exit;
-	    /*@notreached@*/ /*@switchbreak@*/ break;
-	case 2:
-	    rpmError(RPMERR_BADSIGTYPE, _("%s: Can't re-sign v2 packaging\n"), rpm);
-	    goto exit;
-	    /*@notreached@*/ /*@switchbreak@*/ break;
-	default:
-	    /*@switchbreak@*/ break;
-	}
+	msg = _free(msg);
 }
 
 if (!_nosigh) {
 	msg = NULL;
-	rc = rpmReadSignature(fd, &sigh, l->signature_type, &msg);
+	rc = rpmReadSignature(ts, fd, &sigh, &msg);
 	switch (rc) {
 	default:
-	    rpmError(RPMERR_SIGGEN, _("%s: rpmReadSignature failed: %s"), rpm,
+	    rpmError(RPMERR_SIGGEN, _("%s: rpmReadSignature failed: %s"), fn,
 			(msg && *msg ? msg : "\n"));
 	    msg = _free(msg);
 	    goto exit;
 	    /*@notreached@*/ /*@switchbreak@*/ break;
 	case RPMRC_OK:
 	    if (sigh == NULL) {
-		rpmError(RPMERR_SIGGEN, _("%s: No signature available\n"), rpm);
+		rpmError(RPMERR_SIGGEN, _("%s: No signature available\n"), fn);
 		goto exit;
 	    }
 	    /*@switchbreak@*/ break;
@@ -258,7 +245,7 @@ if (!_nosigh) {
 
 	/* Write the header and archive to a temp file */
 	/* ASSERT: ofd == NULL && sigtarget == NULL */
-	if (copyFile(&fd, &rpm, &ofd, &sigtarget))
+	if (copyFile(&fd, &fn, &ofd, &sigtarget))
 	    goto exit;
 	/* Both fd and ofd are now closed. sigtarget contains tempfile name. */
 	/* ASSERT: fd == NULL && ofd == NULL */
@@ -361,7 +348,7 @@ if (sigh != NULL) {
 
 		    rpmMessage(RPMMESS_WARNING,
 			_("%s: was already signed by key ID %s, skipping\n"),
-			rpm, pgpHexStr(newsignid+4, sizeof(newsignid)-4));
+			fn, pgpHexStr(newsignid+4, sizeof(newsignid)-4));
 
 		    /* Clean up intermediate target */
 		    xx = Unlink(sigtarget);
@@ -379,25 +366,23 @@ if (sigh != NULL) {
 }
 
 	/* Write the lead/signature of the output rpm */
-/*@-boundswrite@*/
-	strcpy(tmprpm, rpm);
-	strcat(tmprpm, ".XXXXXX");
-/*@=boundswrite@*/
+	(void) stpcpy( stpcpy(tmprpm, fn), ".XXXXXX");
+
 #if defined(HAVE_MKSTEMP)
 	(void) close(mkstemp(tmprpm));
 #else
 	(void) mktemp(tmprpm);
 #endif
-	trpm = tmprpm;
+	tfn = tmprpm;
 
-	if (manageFile(&ofd, &trpm, O_WRONLY|O_CREAT|O_TRUNC, 0))
+	if (manageFile(&ofd, &tfn, O_WRONLY|O_CREAT|O_TRUNC, 0))
 	    goto exit;
 
 if (!_nolead) {
 	l->signature_type = RPMSIGTYPE_HEADERSIG;
 	rc = writeLead(ofd, l);
 	if (rc != RPMRC_OK) {
-	    rpmError(RPMERR_WRITELEAD, _("%s: writeLead failed: %s\n"), trpm,
+	    rpmError(RPMERR_WRITELEAD, _("%s: writeLead failed: %s\n"), tfn,
 		Fstrerror(ofd));
 	    goto exit;
 	}
@@ -405,7 +390,7 @@ if (!_nolead) {
 
 if (!_nosigh) {
 	if (rpmWriteSignature(ofd, sigh)) {
-	    rpmError(RPMERR_SIGGEN, _("%s: rpmWriteSignature failed: %s\n"), trpm,
+	    rpmError(RPMERR_SIGGEN, _("%s: rpmWriteSignature failed: %s\n"), tfn,
 		Fstrerror(ofd));
 	    goto exit;
 	}
@@ -413,14 +398,14 @@ if (!_nosigh) {
 
 	/* Append the header and archive from the temp file */
 	/* ASSERT: fd == NULL && ofd != NULL */
-	if (copyFile(&fd, &sigtarget, &ofd, &trpm))
+	if (copyFile(&fd, &sigtarget, &ofd, &tfn))
 	    goto exit;
 	/* Both fd and ofd are now closed. */
 	/* ASSERT: fd == NULL && ofd == NULL */
 
 	/* Move final target into place. */
-	xx = Unlink(rpm);
-	xx = Rename(trpm, rpm);
+	xx = Unlink(fn);
+	xx = Rename(tfn, fn);
 	tmprpm[0] = '\0';
 
 	/* Clean up intermediate target */
@@ -767,7 +752,7 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
     int_32 siglen;
     Header sigh = NULL;
     HeaderIterator hi = NULL;
-    const char * msg;
+    const char * msg = NULL;
     int res = 0;
     int xx;
     rpmRC rc;
@@ -781,26 +766,18 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 	l->signature_type = RPMSIGTYPE_HEADERSIG;
 
 if (!_nolead) {
-	rc = readLead(fd, l);
+	rc = readLead(fd, l, &msg);
 	if (rc != RPMRC_OK) {
-	    rpmError(RPMERR_READLEAD, _("%s: not an rpm package\n"), fn);
+	    rpmError(RPMERR_READLEAD, "%s: %s\n", fn, msg);
+	    msg = _free(msg);
 	    res++;
 	    goto exit;
-	}
-	switch (l->major) {
-	case 1:
-	    rpmError(RPMERR_BADSIGTYPE, _("%s: No signature available (v1.0 RPM)\n"), fn);
-	    res++;
-	    goto exit;
-	    /*@notreached@*/ /*@switchbreak@*/ break;
-	default:
-	    /*@switchbreak@*/ break;
 	}
 }
 
 if (!_nosigh) {
 	msg = NULL;
-	rc = rpmReadSignature(fd, &sigh, l->signature_type, &msg);
+	rc = rpmReadSignature(ts, fd, &sigh, &msg);
 	switch (rc) {
 	default:
 	    rpmError(RPMERR_SIGGEN, _("%s: rpmReadSignature failed: %s"), fn,

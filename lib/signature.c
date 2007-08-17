@@ -148,8 +148,7 @@ static unsigned char sigh_magic[8] = {
 	0x8e, 0xad, 0xe8, 0x3e, 0x00, 0x00, 0x00, 0x00
 };
 
-rpmRC rpmReadSignature(void * _fd, Header * sighp, sigType sig_type,
-		const char ** msg)
+rpmRC rpmReadSignature(rpmts ts, void * _fd, Header * sighp, const char ** msg)
 {
     FD_t fd = _fd;
     char buf[BUFSIZ];
@@ -173,12 +172,6 @@ rpmRC rpmReadSignature(void * _fd, Header * sighp, sigType sig_type,
 	*sighp = NULL;
 
     buf[0] = '\0';
-
-    if (sig_type != RPMSIGTYPE_HEADERSIG) {
-	(void) snprintf(buf, sizeof(buf),
-		_("sigh type(%d): BAD\n"), sig_type);
-	goto exit;
-    }
 
     memset(block, 0, sizeof(block));
     if ((xx = timedRead(fd, (void *)block, sizeof(block))) != sizeof(block)) {
