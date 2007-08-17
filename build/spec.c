@@ -319,25 +319,24 @@ int addSource(Spec spec, Package pkg, const char *field, int tag)
     case RPMTAG_SOURCE:
 	flag = RPMFILE_SOURCE;
 	name = "source";
-	mdir = "%{_sourcedir}/";
 	fieldp = spec->line + (sizeof("Source")-1);
 	break;
     case RPMTAG_PATCH:
 	flag = RPMFILE_PATCH;
 	name = "patch";
-	mdir = "%{_patchdir}/";
 	fieldp = spec->line + (sizeof("Patch")-1);
 	break;
     case RPMTAG_ICON:
 	flag = RPMFILE_ICON;
 	name = "icon";
-	mdir = "%{_icondir}/";
 	fieldp = NULL;
 	break;
     default:
 assert(0);
 	/*@notreached@*/ break;
     }
+    mdir = getSourceDir(flag);
+assert(mdir != NULL);
     /*@=branchstate@*/
 
     /* Get the number */

@@ -13,6 +13,23 @@
 /*@unchecked@*/
 static int _build_debug = 0;
 
+/**
+ */
+const char * getSourceDir(rpmfileAttrs attr)
+    /*@globals rpmGlobalMacroContext @*/
+{
+    const char * dir = NULL;
+
+    if (attr & RPMFILE_SOURCE)
+        dir = "%{_sourcedir}/";
+    else if (attr & RPMFILE_PATCH)
+        dir = "%{_patchdir}/";
+    else if (attr & RPMFILE_ICON)
+        dir = "%{_icondir}/";
+
+    return dir;
+}
+
 /*@access StringBuf @*/
 /*@access urlinfo @*/		/* XXX compared with NULL */
 /*@access FD_t @*/
@@ -32,16 +49,10 @@ static void doRmSource(Spec spec)
 
     for (sp = spec->sources; sp != NULL; sp = sp->next) {
 	const char *dn, *fn;
-	if (sp->flags & RPMFILE_GHOST)
-	    continue;
-	if (sp->flags & RPMFILE_SOURCE)
-	    dn = "%{_sourcedir}/";
-	else if (sp->flags & RPMFILE_PATCH)
-	    dn = "%{_patchdir}/";
-	else if (sp->flags & RPMFILE_ICON)
-	    dn = "%{_icondir}/";
-	else
-	    continue;
+    if (sp->flags & RPMFILE_GHOST)
+        continue;
+    if (! (dn = getSourceDir(sp->flags)))
+        continue;
 	fn = rpmGenPath(NULL, dn, sp->source);
 	rc = Unlink(fn);
 	fn = _free(fn);

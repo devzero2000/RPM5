@@ -2463,7 +2463,7 @@ int initSourceHeader(Spec spec, StringBuf *sfp)
     for (srcPtr = spec->sources; srcPtr != NULL; srcPtr = srcPtr->next) {
       {	const char * sfn;
 	sfn = rpmGetPath( ((srcPtr->flags & RPMFILE_GHOST) ? "!" : ""),
-		"%{_sourcedir}/", srcPtr->source, NULL);
+		getSourceDir(srcPtr->flags), srcPtr->source, NULL);
 	appendLineStringBuf(sourceFiles, sfn);
 	sfn = _free(sfn);
       }

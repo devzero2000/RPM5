@@ -343,6 +343,14 @@ int specSourceNum(SpecSource source)
 int specSourceFlags(SpecSource source)
 	/*@modifies nothing @*/;
 
+/** \ingroup rpmbuild
+ * Return the macro directory location from source file flags
+ * @param attr      rpmfileAttrs from source
+ * @return          string containings macros about location, NULL on failure
+ */
+const char * getSourceDir(rpmfileAttrs attr)
+    /*@modifies nothing @*/;
+
 #ifdef __cplusplus
 }
 #endif

@@ -216,7 +216,7 @@ static const char *doUntar(Spec spec, int c, int quietly)
     taropts = ((rpmIsVerbose() && !quietly) ? "-xvvf" : "-xf");
     /*@=internalglobs@*/
 
-    Lurlfn = rpmGenPath(NULL, "%{_sourcedir}/", sp->source);
+    Lurlfn = rpmGenPath(NULL, getSourceDir(sp->flags), sp->source);
 
     /* XXX On non-build parse's, file cannot be stat'd or read */
     if (!spec->force && (isCompressed(Lurlfn, &compressed) || checkOwners(Lurlfn))) {
@@ -654,18 +654,17 @@ static int prepFetch(Spec spec)
 /*@-branchstate@*/
     ec = 0;
     for (sp = spec->sources; sp != NULL; sp = sp->next) {
-
+    
+    if (! (Lmacro = getSourceDir(sp->flags)))
+        continue;
 	if (sp->flags & RPMFILE_SOURCE) {
 	    Rmacro = "%{?_Rsourcedir}/";
-	    Lmacro = "%{?_sourcedir}/";
 	} else
 	if (sp->flags & RPMFILE_PATCH) {
 	    Rmacro = "%{?_Rpatchdir}/";
-	    Lmacro = "%{?_patchdir}/";
 	} else
 	if (sp->flags & RPMFILE_ICON) {
 	    Rmacro = "%{?_Ricondir}/";
-	    Lmacro = "%{?_icondir}/";
 	} else
 	    continue;
 
