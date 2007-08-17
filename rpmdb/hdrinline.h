@@ -523,6 +523,34 @@ int headerNextIterator(HeaderIterator hi,
 }
 
 /** \ingroup header
+ * Return header magic.
+ * @param h		header
+ * @param *magicp	magic array
+ * @param *nmagicp	no. bytes of magic
+ * @return		0 always
+ */
+/*@unused@*/ static inline
+int headerGetMagic(/*@null@*/ Header h, unsigned char **magicp, size_t *nmagicp)
+	/*@*/
+{
+    return hdrVec->hdrgetmagic(h, magicp, nmagicp);
+}
+
+/** \ingroup header
+ * Store header magic.
+ * @param h		header
+ * @param magic		magic array
+ * @param nmagic	no. bytes of magic
+ * @return		0 always
+ */
+/*@unused@*/ static inline
+int headerSetMagic(/*@null@*/ Header h, unsigned char * magic, size_t nmagic)
+	/*@modifies h @*/
+{
+    return hdrVec->hdrsetmagic(h, magic, nmagic);
+}
+
+/** \ingroup header
  * Return header origin (e.g path or URL).
  * @param h		header
  * @return		header origin

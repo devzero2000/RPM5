@@ -143,19 +143,9 @@ static inline rpmRC printSize(FD_t fd, int siglen, int pad, size_t datalen)
 /*@unchecked@*/
 extern int _newmagic;
 
-/*@unchecked@*/
-static unsigned char header_magic[8] = {
-    0x8e, 0xad, 0xe8, 0x01, 0x00, 0x00, 0x00, 0x00
-};
-
 /*@observer@*/ /*@unchecked@*/
 static unsigned char sigh_magic[8] = {
 	0x8e, 0xad, 0xe8, 0x3e, 0x00, 0x00, 0x00, 0x00
-};
-
-/*@observer@*/ /*@unchecked@*/
-static unsigned char meta_magic[8] = {
-	0x8e, 0xad, 0xe8, 0x3f, 0x00, 0x00, 0x00, 0x00
 };
 
 rpmRC rpmReadSignature(void * _fd, Header * sighp, sigType sig_type,
@@ -196,9 +186,14 @@ rpmRC rpmReadSignature(void * _fd, Header * sighp, sigType sig_type,
 		_("sigh size(%d): BAD, read returned %d\n"), (int)sizeof(block), xx);
 	goto exit;
     }
-    {   unsigned char * hmagic = (_newmagic ? sigh_magic : header_magic);
+    {   unsigned char * hmagic = NULL;
+	size_t nmagic = 0;
 
-	if (memcmp(block, hmagic, sizeof(header_magic))) {
+	(void) headerGetMagic(NULL, &hmagic, &nmagic);
+	if (_newmagic)	/* XXX FIXME: sigh needs its own magic. */
+	    hmagic = sigh_magic;
+
+	if (memcmp(block, hmagic, nmagic)) {
 	    (void) snprintf(buf, sizeof(buf),
 		_("sigh magic: BAD\n"));
 	    goto exit;
@@ -313,6 +308,8 @@ rpmRC rpmReadSignature(void * _fd, Header * sighp, sigType sig_type,
 	goto exit;
     }
     sigh->flags |= HEADERFLAG_ALLOCATED;
+    if (_newmagic)	/* XXX FIXME: sigh needs its own magic. */
+	(void) headerSetMagic(sigh, sigh_magic, sizeof(sigh_magic));
 
     {	int sigSize = headerSizeof(sigh);
 	int pad = (8 - (sigSize % 8)) % 8; /* 8-byte pad */
@@ -698,7 +695,8 @@ static int makeHDRSignature(Header sigh, const char * file, int_32 sigTag,
 	(void) Fclose(fd);	fd = NULL;
 
 	if (headerIsEntry(h, RPMTAG_HEADERIMMUTABLE)) {
-	    unsigned char * hmagic = (_newmagic ? meta_magic : header_magic);
+	    unsigned char * hmagic = NULL;
+	    size_t nmagic = 0;
 	    DIGEST_CTX ctx;
 	    void * uh;
 	    int_32 uht, uhc;
@@ -709,8 +707,10 @@ static int makeHDRSignature(Header sigh, const char * file, int_32 sigTag,
 		h = headerFree(h);
 		goto exit;
 	    }
+	    (void) headerGetMagic(NULL, &hmagic, &nmagic);
 	    ctx = rpmDigestInit(PGPHASHALGO_SHA1, RPMDIGEST_NONE);
-	    (void) rpmDigestUpdate(ctx, hmagic, sizeof(header_magic));
+	    if (hmagic && nmagic > 0)
+		(void) rpmDigestUpdate(ctx, hmagic, nmagic);
 	    (void) rpmDigestUpdate(ctx, uh, uhc);
 	    (void) rpmDigestFinal(ctx, &SHA1, NULL, 1);
 	    uh = headerFreeData(uh, uht);

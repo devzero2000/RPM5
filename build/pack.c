@@ -384,13 +384,6 @@ int readRPM(const char *fileName, Spec *specp, struct rpmlead *lead,
 }
 /*@=boundswrite@*/
 
-#ifdef	DYING
-/*@unchecked@*/
-static unsigned char header_magic[8] = {
-        0x8e, 0xad, 0xe8, 0x01, 0x00, 0x00, 0x00, 0x00
-};
-#endif
-
 #define	RPMPKGVERSION_MIN	30004
 #define	RPMPKGVERSION_MAX	40003
 /*@unchecked@*/

@@ -1807,13 +1807,15 @@ static int miFreeHeader(rpmdbMatchIterator mi, dbiIndex dbi)
 	DBT * data = &mi->mi_data;
 	sigset_t signalMask;
 	rpmRC rpmrc = RPMRC_NOTFOUND;
+	size_t nb = 0;
 	int xx;
 
+	(void) headerGetMagic(mi->mi_h, NULL, &nb);
 /*@i@*/	key->data = (void *) &mi->mi_prevoffset;
 	key->size = sizeof(mi->mi_prevoffset);
 	data->data = headerUnload(mi->mi_h);
 	data->size = headerSizeof(mi->mi_h);
-	data->size -= 8;	/* XXX HEADER_MAGIC_NO */
+	data->size -= nb;	/* XXX HEADER_MAGIC_NO */
 
 	/* Check header digest/signature on blob export (if requested). */
 	if (mi->mi_hdrchk && mi->mi_ts) {
@@ -3086,6 +3088,7 @@ DBT * data = alloca(sizeof(*data));
     int dbix;
     union _dbswap mi_offset;
     unsigned int hdrNum = 0;
+    size_t nb;
     int ret = 0;
     int rc;
     int xx;
@@ -3137,10 +3140,12 @@ memset(data, 0, sizeof(*data));
       /*@-branchstate@*/
       if (dbi != NULL) {
 
+	nb = 0;
+	(void) headerGetMagic(h, NULL, &nb);
 	/* XXX db0: hack to pass sizeof header to fadAlloc */
 	datap = h;
 	datalen = headerSizeof(h);
-	datalen -= 8;	/* XXX HEADER_MAGIC_NO */
+	datalen -= nb;	/* XXX HEADER_MAGIC_NO */
 
 	xx = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, DB_WRITECURSOR);
 
@@ -3254,9 +3259,11 @@ if (dbiByteSwapped(dbi) == 1)
 key->data = (void *) &mi_offset;
 /*@=immediatetrans@*/
 key->size = sizeof(mi_offset.ui);
+nb = 0;
+(void) headerGetMagic(h, NULL, &nb);
 data->data = headerUnload(h);
 data->size = headerSizeof(h);
-data->size -= 8;	/* XXX HEADER_MAGIC_NO */
+data->size -= nb;	/* XXX HEADER_MAGIC_NO */
 
 		/* Check header digest/signature on blob export. */
 		if (hdrchk && ts) {

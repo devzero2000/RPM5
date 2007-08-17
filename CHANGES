@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - jbj: add getter/setter for header magic to hide _newmagic construction.
     - jbj: functional sign/verify on --nolead --newmagic packages.
     - jbj: no-operation code paths for --nolead --nosigh packages.
     - jbj: functional sign/verify on --nolead packages.

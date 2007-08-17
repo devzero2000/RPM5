@@ -224,11 +224,10 @@ Header headerNew(void)
 {
     Header h = xcalloc(1, sizeof(*h));
 
-/*@-boundsread@*/
+    (void) memcpy(h->magic, header_magic, sizeof(h->magic));
     /*@-assignexpose@*/
     h->hv = *hdrVec;		/* structure assignment */
     /*@=assignexpose@*/
-/*@=boundsread@*/
     h->blob = NULL;
     h->origin = NULL;
     h->instance = 0;
@@ -1045,6 +1044,9 @@ Header headerLoad(/*@kept@*/ void * uh)
     dataEnd = dataStart + dl;
 
     h = xcalloc(1, sizeof(*h));
+    {	unsigned char * hmagic = (_newmagic ? meta_magic : header_magic);
+	(void) memcpy(h->magic, hmagic, sizeof(h->magic));
+    }
     /*@-assignexpose@*/
     h->hv = *hdrVec;		/* structure assignment */
     /*@=assignexpose@*/
@@ -1194,6 +1196,46 @@ errxit:
     /*@-refcounttrans -globstate@*/
     return h;
     /*@=refcounttrans =globstate@*/
+}
+
+/** \ingroup header
+ * Return header magic.
+ * @param h		header
+ * @param *magicp	magic array
+ * @param *nmagicp	no. bytes of magic
+ * @return		0 always
+ */
+static
+int headerGetMagic(/*@null@*/ Header h, unsigned char **magicp, size_t *nmagicp)
+	/*@*/
+{
+    unsigned char * hmagic = (_newmagic ? meta_magic : header_magic);
+    if (magicp)
+	*magicp = (h ? h->magic : hmagic);
+    if (nmagicp)
+	*nmagicp = (h ? sizeof(h->magic) : sizeof(header_magic));
+    return 0;
+}
+
+/** \ingroup header
+ * Store header magic.
+ * @param h		header
+ * @param magic		magic array
+ * @param nmagic	no. bytes of magic
+ * @return		0 always
+ */
+static
+int headerSetMagic(/*@null@*/ Header h, unsigned char * magic, size_t nmagic)
+	/*@modifies h @*/
+{
+    if (nmagic > sizeof(h->magic))
+	nmagic = sizeof(h->magic);
+    if (h) {
+	memset(h->magic, 0, sizeof(h->magic));
+	if (nmagic > 0)
+	    memcpy(h->magic, magic, nmagic);
+    }
+    return 0;
 }
 
 /** \ingroup header
@@ -4080,6 +4122,8 @@ static struct HV_s hdrVec1 = {
     headerFreeIterator,
     headerInitIterator,
     headerNextIterator,
+    headerGetMagic,
+    headerSetMagic,
     headerGetOrigin,
     headerSetOrigin,
     headerGetInstance,

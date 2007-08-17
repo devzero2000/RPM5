@@ -28,7 +28,6 @@ int _print_pkts = 0;
 
 extern int _nolead;
 extern int _nosigh;
-extern int _newmagic;
 
 /**
  */
@@ -661,23 +660,6 @@ rpmtsClean(ts);
     return res;
 }
 
-/*@unchecked@*/
-static unsigned char header_magic[8] = {
-        0x8e, 0xad, 0xe8, 0x01, 0x00, 0x00, 0x00, 0x00
-};
-
-#ifdef	NOTYET
-/*@observer@*/ /*@unchecked@*/
-static unsigned char sigh_magic[8] = {
-	0x8e, 0xad, 0xe8, 0x3e, 0x00, 0x00, 0x00, 0x00
-};
-#endif
-
-/*@observer@*/ /*@unchecked@*/
-static unsigned char meta_magic[8] = {
-	0x8e, 0xad, 0xe8, 0x3f, 0x00, 0x00, 0x00, 0x00
-};
-
 /**
  * @todo If the GPG key was known available, the md5 digest could be skipped.
  */
@@ -702,7 +684,8 @@ static int readFile(FD_t fd, const char * fn, pgpDig dig)
 	dig->nbytes += headerSizeof(h);
 
 	if (headerIsEntry(h, RPMTAG_HEADERIMMUTABLE)) {
-	    unsigned char * hmagic = (_newmagic ? meta_magic : header_magic);
+	    unsigned char * hmagic = NULL;
+	    size_t nmagic = 0;
 	    void * uh;
 	    int_32 uht, uhc;
 	
@@ -713,11 +696,14 @@ static int readFile(FD_t fd, const char * fn, pgpDig dig)
 		rpmError(RPMERR_FREAD, _("%s: headerGetEntry failed\n"), fn);
 		goto exit;
 	    }
+	    (void) headerGetMagic(NULL, &hmagic, &nmagic);
 	    dig->hdrsha1ctx = rpmDigestInit(PGPHASHALGO_SHA1, RPMDIGEST_NONE);
-	    (void) rpmDigestUpdate(dig->hdrsha1ctx, hmagic, sizeof(header_magic));
+	    if (hmagic && nmagic > 0)
+		(void) rpmDigestUpdate(dig->hdrsha1ctx, hmagic, nmagic);
 	    (void) rpmDigestUpdate(dig->hdrsha1ctx, uh, uhc);
 	    dig->hdrmd5ctx = rpmDigestInit(dig->signature.hash_algo, RPMDIGEST_NONE);
-	    (void) rpmDigestUpdate(dig->hdrmd5ctx, hmagic, sizeof(header_magic));
+	    if (hmagic && nmagic > 0)
+		(void) rpmDigestUpdate(dig->hdrmd5ctx, hmagic, nmagic);
 	    (void) rpmDigestUpdate(dig->hdrmd5ctx, uh, uhc);
 	    uh = headerFreeData(uh, uht);
 	}

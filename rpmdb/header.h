@@ -715,6 +715,28 @@ int (*HDRnextiter) (HeaderIterator hi,
 	/*@modifies hi, *tag, *type, *p, *c @*/;
 
 /** \ingroup header
+ * Return header magic.
+ * @param h		header
+ * @param *magicp	magic array
+ * @param *nmagicp	no. bytes of magic
+ * @return		0 always
+ */
+typedef
+int (*HDRgetmagic)(/*@null@*/ Header h, unsigned char **magicp, size_t *nmagicp)
+	/*@*/;
+
+/** \ingroup header
+ * Store header magic.
+ * @param h		header
+ * @param magic		magic array
+ * @param nmagic	no. bytes of magic
+ * @return		0 always
+ */
+typedef
+int (*HDRsetmagic)(/*@null@*/ Header h, unsigned char * magic, size_t nmagic)
+	/*@modifies h @*/;
+
+/** \ingroup header
  * Return header origin (e.g path or URL).
  * @param h		header
  * @return		header origin
@@ -788,6 +810,8 @@ struct HV_s {
     HDRfreeiter	hdrfreeiter;
     HDRinititer	hdrinititer;
     HDRnextiter	hdrnextiter;
+    HDRgetmagic hdrgetmagic;
+    HDRsetmagic hdrsetmagic;
     HDRgetorigin hdrgetorigin;
     HDRsetorigin hdrsetorigin;
     HDRgetinstance hdrgetinstance;
