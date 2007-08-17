@@ -720,6 +720,8 @@ static inline const char *rcsid(const char *p) { \
 #define SUPPORT_RPMV3_VERIFY_RSA	1
 #define SUPPORT_RPMV3_VERIFY_DSA	1
 
+#define	SUPPORT_RPMLEAD		0	/* XXX default is add lead. */
+
 /**
  * Turn off pgp/pgp5 signing (hasn't been looked at seriously for years).
  */

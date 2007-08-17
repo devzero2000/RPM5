@@ -14,8 +14,12 @@
 #include <rpmio.h>
 
 #include "signature.h"
+#define	_RPMLEAD_INTERNAL
 #include "rpmlead.h"
 #include "debug.h"
+
+/*@unchecked@*/
+int _nolead = SUPPORT_RPMLEAD;
 
 /*@unchecked@*/ /*@observer@*/
 static unsigned char lead_magic[] = {
@@ -46,17 +50,16 @@ rpmRC writeLead(FD_t fd, const struct rpmlead *lead)
     return RPMRC_OK;
 }
 
-rpmRC readLead(FD_t fd, struct rpmlead *lead, const char **msg)
+rpmRC readLead(FD_t fd, struct rpmlead ** leadp, const char ** msg)
 {
+    struct rpmlead * lead = xcalloc(1, sizeof(*lead));
     char buf[BUFSIZ];
     rpmRC rc = RPMRC_FAIL;		/* assume failure */
     int xx;
 
     buf[0] = '\0';
+    if (leadp != NULL) *leadp = NULL;
 
-/*@-boundswrite@*/
-    memset(lead, 0, sizeof(*lead));
-/*@=boundswrite@*/
     /*@-type@*/ /* FIX: remove timed read */
     if ((xx = timedRead(fd, (char *)lead, sizeof(*lead))) != sizeof(*lead)) {
 	if (Ferror(fd)) {
@@ -105,6 +108,11 @@ rpmRC readLead(FD_t fd, struct rpmlead *lead, const char **msg)
     rc = RPMRC_OK;
 
 exit:
+    if (rc == RPMRC_OK && leadp != NULL)
+	*leadp = lead;
+    else
+	lead = _free(lead);
+	
     if (msg != NULL) {
 	buf[sizeof(buf)-1] = '\0';
 	*msg = xstrdup(buf);

@@ -22,6 +22,7 @@
 #include "buildio.h"
 
 #include "signature.h"
+#define	_RPMLEAD_INTERNAL
 #include "rpmlead.h"
 #include "debug.h"
 

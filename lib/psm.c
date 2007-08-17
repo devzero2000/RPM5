@@ -27,6 +27,7 @@
 #define	_RPMTS_INTERNAL		/* XXX ts->notify */
 #include "rpmts.h"
 
+#define	_RPMLEAD_INTERNAL
 #include "rpmlead.h"		/* writeLead proto */
 #include "signature.h"		/* signature constants */
 #include "misc.h"		/* XXX stripTrailingChar() */

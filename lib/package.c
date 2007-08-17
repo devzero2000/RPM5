@@ -779,7 +779,6 @@ rpmRC rpmReadPackageFile(rpmts ts, void * _fd, const char * fn, Header * hdrp)
     pgpDig dig;
     char buf[8*BUFSIZ];
     ssize_t count;
-    struct rpmlead * l = alloca(sizeof(*l));
     Header sigh = NULL;
     int_32 sigtag;
     int_32 sigtype;
@@ -814,10 +813,8 @@ rpmRC rpmReadPackageFile(rpmts ts, void * _fd, const char * fn, Header * hdrp)
     /* Snapshot current I/O counters (cached persistent I/O reuses counters) */
     (void) rpmswAdd(opsave, fdstat_op(fd, FDSTAT_READ));
 
-    memset(l, 0, sizeof(*l));
-
 if (!_nolead) {
-    rc = readLead(fd, l, &msg);
+    rc = readLead(fd, NULL, &msg);
     switch (rc) {
     default:
 	rpmError(RPMERR_READLEAD, "%s: %s\n", fn, msg);

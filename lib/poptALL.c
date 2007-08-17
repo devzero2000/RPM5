@@ -26,18 +26,26 @@ const char *__progname;
 /*@access headerTagIndices @*/		/* XXX rpmcliFini */
 /*@access headerTagTableEntry @*/	/* XXX rpmcliFini */
 
-int _nolead = 0;
+/*@unchecked@*/
+extern int _nolead;
+
+/*@unchecked@*/
 int _nosigh = 0;
+
+/*@unchecked@*/
 extern int _newmagic;
 
 /*@unchecked@*/
 static int _debug = 0;
 
+#if defined(POPT_ARGFLAG_RANDOM)
+/** @todo Eliminate. */
 /*@unchecked@*/
 extern int _rsegfault;
 
 /*@unchecked@*/
 extern int _wsegfault;
+#endif
 
 /*@-exportheadervar@*/
 /*@unchecked@*/

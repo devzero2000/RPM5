@@ -14,6 +14,7 @@
 
 #include "rpmts.h"
 
+#define	_RPMLEAD_INTERNAL
 #include "rpmlead.h"
 #include "signature.h"
 #include "misc.h"	/* XXX for makeTempFile() */
@@ -184,7 +185,7 @@ static int rpmReSign(/*@unused@*/ rpmts ts,
 {
     FD_t fd = NULL;
     FD_t ofd = NULL;
-    struct rpmlead lead, *l = &lead;
+    struct rpmlead *lead = NULL;
     int_32 sigtag;
     const char *fn, *tfn;
     const char *sigtarget = NULL;
@@ -209,12 +210,8 @@ static int rpmReSign(/*@unused@*/ rpmts ts,
 	if (manageFile(&fd, &fn, O_RDONLY, 0))
 	    goto exit;
 
-/*@-boundswrite@*/
-	memset(l, 0, sizeof(*l));
-/*@=boundswrite@*/
-
 if (!_nolead) {
-	rc = readLead(fd, l, &msg);
+	rc = readLead(fd, &lead, &msg);
 	if (rc != RPMRC_OK) {
 	    rpmError(RPMERR_READLEAD, "%s: %s\n", fn, msg);
 	    msg = _free(msg);
@@ -379,8 +376,8 @@ if (sigh != NULL) {
 	    goto exit;
 
 if (!_nolead) {
-	l->signature_type = RPMSIGTYPE_HEADERSIG;
-	rc = writeLead(ofd, l);
+	lead->signature_type = RPMSIGTYPE_HEADERSIG;
+	rc = writeLead(ofd, lead);
 	if (rc != RPMRC_OK) {
 	    rpmError(RPMERR_WRITELEAD, _("%s: writeLead failed: %s\n"), tfn,
 		Fstrerror(ofd));
@@ -420,6 +417,7 @@ exit:
     if (fd)	(void) manageFile(&fd, NULL, 0, res);
     if (ofd)	(void) manageFile(&ofd, NULL, 0, res);
 
+    lead = _free(lead);
     sigh = rpmFreeSignature(sigh);
 
     if (sigtarget) {
@@ -739,7 +737,6 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 		const char * fn)
 {
     int res2, res3;
-    struct rpmlead lead, *l = &lead;
     char result[1024];
     char buf[8192], * b;
     char missingKeys[7164], * m;
@@ -760,13 +757,9 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
     int nosignatures = !(qva->qva_flags & VERIFY_SIGNATURE);
 
     {
-/*@-boundswrite@*/
-	memset(l, 0, sizeof(*l));
-/*@=boundswrite@*/
-	l->signature_type = RPMSIGTYPE_HEADERSIG;
 
 if (!_nolead) {
-	rc = readLead(fd, l, &msg);
+	rc = readLead(fd, NULL, &msg);
 	if (rc != RPMRC_OK) {
 	    rpmError(RPMERR_READLEAD, "%s: %s\n", fn, msg);
 	    msg = _free(msg);
