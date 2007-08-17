@@ -157,8 +157,10 @@ assert(p->NEVR);
 	nb += sizeof("pubkey");
     else if (p->isSource)
 	nb += sizeof("src");
+#ifdef	DYING	/* p->NEVRA includes arch now. */
     else
 	nb += strlen(p->arch) + 1;
+#endif
     t = xmalloc(nb);
     p->NEVRA = t;
     *t = '\0';
@@ -167,8 +169,10 @@ assert(p->NEVR);
 	t = stpcpy( t, ".pubkey");
     else if (p->isSource)
 	t = stpcpy( t, ".src");
+#ifdef	DYING	/* p->NEVRA includes arch now. */
     else
 	t = stpcpy( stpcpy( t, "."), p->arch);
+#endif
 
     ep = NULL;
     xx = hge(h, RPMTAG_EPOCH, NULL, &ep, NULL);
