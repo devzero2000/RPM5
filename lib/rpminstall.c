@@ -18,7 +18,7 @@
 
 #include "manifest.h"
 #include "misc.h"		/* XXX rpmGlob() */
-#include "rpmgi.h"		/* XXX rpmgiEscapeSpaces */
+#include "rpmgi.h"
 #include "debug.h"
 
 /*@access rpmts @*/	/* XXX ts->goal */

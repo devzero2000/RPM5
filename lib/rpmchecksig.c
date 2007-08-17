@@ -11,7 +11,7 @@
 #include <rpmevr.h>
 
 #include "rpmdb.h"
-
+#include "rpmgi.h"
 #include "rpmts.h"
 
 #define	_RPMLEAD_INTERNAL
@@ -183,6 +183,7 @@ static int rpmReSign(/*@unused@*/ rpmts ts,
         /*@modifies rpmGlobalMacroContext,
                 fileSystem, internalState @*/
 {
+    rpmgi gi = NULL;
     FD_t fd = NULL;
     FD_t ofd = NULL;
     struct rpmlead *lead = NULL;
@@ -203,7 +204,15 @@ static int rpmReSign(/*@unused@*/ rpmts ts,
 
     /*@-branchstate@*/
     if (argv)
-    while ((fn = *argv++) != NULL) {
+{       /* start-of-arg-iteration */
+
+    rpmgi gi = rpmgiNew(ts, RPMDBI_ARGLIST, NULL, 0);
+    int _ftsOpts = 0;
+    rpmgiFlags _giFlags = RPMGI_NONE;
+
+    rc = rpmgiSetArgs(gi, argv, _ftsOpts, (_giFlags|RPMGI_NOHEADER));
+    while (rpmgiNext(gi) == RPMRC_OK) {
+	const char * fn = rpmgiHdrPath(gi);
 
 	fprintf(stdout, "%s:\n", fn);
 
@@ -411,6 +420,8 @@ if (!_nosigh) {
     }
     /*@=branchstate@*/
 
+}	/* end-of-arg-iteration */
+
     res = 0;
 
 exit:
@@ -419,6 +430,8 @@ exit:
 
     lead = _free(lead);
     sigh = rpmFreeSignature(sigh);
+
+    gi = rpmgiFree(gi);
 
     if (sigtarget) {
 	xx = Unlink(sigtarget);
@@ -1115,9 +1128,7 @@ exit:
 
 int rpmcliSign(rpmts ts, QVA_t qva, const char ** argv)
 {
-    const char * arg;
     int res = 0;
-    int xx;
 
     if (argv == NULL) return res;
 
@@ -1138,16 +1149,30 @@ int rpmcliSign(rpmts ts, QVA_t qva, const char ** argv)
 	/*@notreached@*/ break;
     }
 
-    while ((arg = *argv++) != NULL) {
-	FD_t fd;
+{       /* start-of-arg-iteration */
 
-	if ((fd = Fopen(arg, "r.fdio")) == NULL
+    rpmgi gi = rpmgiNew(ts, RPMDBI_ARGLIST, NULL, 0);
+    int _ftsOpts = 0;
+    rpmgiFlags _giFlags = RPMGI_NONE;
+    rpmRC rc;
+
+    rc = rpmgiSetArgs(gi, argv, _ftsOpts, (_giFlags|RPMGI_NOHEADER));
+    while (rpmgiNext(gi) == RPMRC_OK) {
+	const char * fn = rpmgiHdrPath(gi);
+	FD_t fd;
+	int xx;
+
+	if ((fd = Fopen(fn, "r.fdio")) == NULL
 	 || Ferror(fd)
-	 || rpmVerifySignatures(qva, ts, fd, arg))
+	 || rpmVerifySignatures(qva, ts, fd, fn))
 	    res++;
 
 	if (fd != NULL) xx = Fclose(fd);
     }
+
+    gi = rpmgiFree(gi);
+
+}	/* end-of-arg-iteration */
 
     return res;
 }
