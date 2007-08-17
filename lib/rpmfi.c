@@ -1801,6 +1801,7 @@ void rpmfiBuildREContexts(Header h,
     av[ac] = NULL;	/* XXX tag arrays are not NULL terminated. */
 
 exit:
+    matchpathcon_fini();
     fi = rpmfiFree(fi);
     /*@-branchstate@*/
     if (fcontextp)

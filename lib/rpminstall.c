@@ -543,6 +543,15 @@ if (fileURL[0] == '=') {
     }
 
 exit:
+    if (sourceURL != NULL)
+    for (i = 0; i < numSRPMS; i++)
+        sourceURL[i] = _free(sourceURL[i]);
+    sourceURL = _free(sourceURL);
+
+    if (!(ia->transFlags & RPMTRANS_FLAG_NOCONTEXTS)) {
+	matchpathcon_fini();
+    }
+
     rpmtsEmpty(ts);
 
     return numFailed;
