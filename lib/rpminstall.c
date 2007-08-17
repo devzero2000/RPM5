@@ -354,6 +354,7 @@ if (fileURL[0] == '=') {
 #endif
 
 {	/* start-of-transaction-build */
+
     rpmgi gi = rpmgiNew(ts, RPMDBI_ARGLIST, NULL, 0);
     int _ftsOpts = 0;
     rpmgiFlags _giFlags = RPMGI_NONE;
@@ -443,7 +444,6 @@ if (fileURL[0] == '=') {
     }
 
     gi = rpmgiFree(gi);
-    numFailed++;	/* XXX force a failure. */
 
 }	/* end-of-transaction-build */
 

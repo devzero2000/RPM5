@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - jbj: unbreak --install/--upgrade/--freshen, memleaks checked.
     - jbj: use rpmgi for --install/--upgrade/--freshen. non-functional atm.
     - jbj: add getter/setter for header magic to hide _newmagic construction.
     - jbj: functional sign/verify on --nolead --newmagic packages.
