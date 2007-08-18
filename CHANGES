@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - jbj: prepare for open as a macro in bleeding edge glibc-2.6.90+.
     - jbj: permit mixed binary/source installation transactions.
     - jbj: re-add rpmcache/rpmcmp/rpmdigest tools.
     - jbj: more rpmInstall refactoring.
