@@ -77,6 +77,11 @@ LIBRPM_0
     rpmcliHashesTotal;
     rpmcliImportPubkey;
     rpmcliInit;
+    rpmcliInstall;
+    rpmcliInstallCheck;
+    rpmcliInstallOrder;
+    rpmcliInstallProblems;
+    rpmcliInstallSuggests;
     rpmcliPackagesTotal;
     rpmcliPipeOutput;
     rpmcliProgressCurrent;
@@ -218,7 +223,6 @@ LIBRPM_0
     rpmgiTs;
     rpmHeaderFormats;
     rpmIArgs;
-    rpmInstall;
     rpmInstallPoptTable;
     rpmInstallSource;
     rpmInstallSourcePackage;

@@ -433,7 +433,7 @@ int rpmcliVerify(rpmts ts, QVA_t qva, /*@null@*/ const char ** argv)
 /* --- install/upgrade/erase modes */
 
 /** \ingroup rpmcli
- * Bit(s) to control rpmInstall() and rpmErase() operation.
+ * Bit(s) to control rpmcliInstall() and rpmErase() operation.
  */
 typedef enum rpmInstallInterfaceFlags_e {
     INSTALL_NONE	= 0,
@@ -507,14 +507,63 @@ int rpmInstallSource(rpmts ts, const char * arg,
 		fileSystem, internalState @*/;
 
 /** \ingroup rpmcli
+ * Report package problems (if any).
+ * @param ts		transaction set
+ * @param msg		problem context string to display
+ * @param rc		result of a tranbsaction operation
+ * @return		no. of (added) packages
+ */
+int rpmcliInstallProblems(rpmts ts, /*@null@*/ const char * msg, int rc)
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/;
+
+/** \ingroup rpmcli
+ * Report packages(if any) that satisfy unresolved dependencies.
+ * @param ts		transaction set
+ * @return		0 always
+ */
+int rpmcliInstallSuggests(rpmts ts)
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/;
+
+/** \ingroup rpmcli
+ * Check package element dependencies in a transaction set, reporting problems.
+ * @param ts		transaction set
+ * @return		no. of (added) packages
+ */
+int rpmcliInstallCheck(rpmts ts)
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/;
+
+/** \ingroup rpmcli
+ * Order package elements in a transaction set, reporting problems.
+ * @param ts		transaction set
+ * @return		no. of (added) packages
+ */
+int rpmcliInstallOrder(rpmts ts)
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/;
+
+/** \ingroup rpmcli
+ * Install/erase package elements in a transaction set, reporting problems.
+ * @param ts		transaction set
+ * @param okProbs	previously known problems (or NULL)
+ * @param ignoreSet	bits to filter problem types
+ * @return		0 on success, -1 on error, >0 no, of failed elements
+ */
+int rpmcliInstallRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/;
+
+/** \ingroup rpmcli
  * Install/upgrade/freshen binary rpm package.
  * @todo Use rpmdsCompare rather than rpmVersionCompare.
  * @param ts		transaction set
  * @param ia		mode flags and parameters
- * @param fileArgv	array of package file names (NULL terminated)
+ * @param argv		array of package file names (NULL terminated)
  * @return		0 on success
  */
-int rpmInstall(rpmts ts, QVA_t ia, /*@null@*/ const char ** fileArgv)
+int rpmcliInstall(rpmts ts, QVA_t ia, /*@null@*/ const char ** argv)
 	/*@globals rpmcliPackagesTotal, rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState@*/
 	/*@modifies ts, ia, rpmcliPackagesTotal, rpmGlobalMacroContext,
@@ -524,7 +573,7 @@ int rpmInstall(rpmts ts, QVA_t ia, /*@null@*/ const char ** fileArgv)
  * Erase binary rpm package.
  * @param ts		transaction set
  * @param ia		control args/bits
- * @param argv		array of package file names (NULL terminated)
+ * @param argv		array of package names (NULL terminated)
  * @return		0 on success
  */
 int rpmErase(rpmts ts, QVA_t ia, /*@null@*/ const char ** argv)

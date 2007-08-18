@@ -397,6 +397,7 @@ int rpmrbOrder(rpmts ts)
     return rpmrbProblems(ts, N_("Ordering problems"), rpmtsOrder(ts));
 }
 
+/** @todo Use rpmInstallRun instead. */
 int rpmrbRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 {
     return rpmrbProblems(ts, N_("Rollback problems"),

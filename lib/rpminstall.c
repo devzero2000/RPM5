@@ -255,28 +255,70 @@ void * rpmShowProgress(/*@null@*/ const void * arg,
     return rc;
 }	
 
-typedef /*@only@*/ /*@null@*/ const char * str_t;
+int rpmcliInstallProblems(rpmts ts, const char * msg, int rc)
+	/*@globals fileSystem @*/
+	/*@modifies ts, fileSystem @*/
+{
+    rpmps ps = rpmtsProblems(ts);
+
+    if (rc && rpmpsNumProblems(ps) > 0) {
+	if (msg)
+	    rpmMessage(RPMMESS_ERROR, "%s:\n", msg);
+	rpmpsPrint(NULL, ps);
+    }
+    ps = rpmpsFree(ps);
+    return rc;
+}
+
+int rpmcliInstallSuggests(rpmts ts)
+{
+    if (ts->suggests != NULL && ts->nsuggests > 0) {
+	const char * s;
+	int i;
+
+	rpmMessage(RPMMESS_NORMAL, _("    Suggested resolutions:\n"));
+	for (i = 0; i < ts->nsuggests && (s = ts->suggests[i]) != NULL;
+	    ts->suggests[i++] = s = _free(s))
+	{
+	    rpmMessage(RPMMESS_NORMAL, "\t%s\n", s);
+	}
+	ts->suggests = _free(ts->suggests);
+    }
+    return 0;
+}
+
+int rpmcliInstallCheck(rpmts ts)
+{
+    return rpmcliInstallProblems(ts, _("Failed dependencies"), rpmtsCheck(ts));
+}
+
+int rpmcliInstallOrder(rpmts ts)
+{
+    return rpmcliInstallProblems(ts, _("Ordering problems"), rpmtsOrder(ts));
+}
+
+int rpmcliInstallRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
+{
+    return rpmcliInstallProblems(ts, _("Install/Erase problems"),
+			rpmtsRun(ts, okProbs, ignoreSet));
+}
+
 
 /** @todo Generalize --freshen policies. */
 /*@-bounds@*/
-int rpmInstall(rpmts ts, QVA_t ia, const char ** fileArgv)
+int rpmcliInstall(rpmts ts, QVA_t ia, const char ** argv)
 {
     int numFailed = 0;
-    int numPkgs = 0;
     int numRPMS = 0;
-    int numSRPMS = 0;
-    str_t * sourceURL = NULL;
+    ARGV_t sourceURL = NULL;
     rpmRelocation relocations = NULL;
     rpmRC rpmrc = RPMRC_OK;
-
-    rpmps ps;
-    int stopInstall = 0;
     rpmVSFlags vsflags, ovsflags;
     int rc;
     int xx;
     int i;
 
-    if (fileArgv == NULL) goto exit;
+    if (argv == NULL) goto exit;
 
     ts->goal = TSM_INSTALL;
     rpmcliPackagesTotal = 0;
@@ -359,28 +401,24 @@ if (fileURL[0] == '=') {
     int _ftsOpts = 0;
     rpmgiFlags _giFlags = RPMGI_NONE;
 
-    rc = rpmgiSetArgs(gi, fileArgv, _ftsOpts, _giFlags);
+    rc = rpmgiSetArgs(gi, argv, _ftsOpts, _giFlags);
     while (rpmgiNext(gi) == RPMRC_OK) {
 	Header h = rpmgiHeader(gi);
-	const char * fileName;
+	const char * fn;
 	int isSource;
 
 	if (h == NULL) {
 	    numFailed++;
 	    continue;
 	}
-	fileName = rpmgiHdrPath(gi);
+	fn = rpmgiHdrPath(gi);
 
 	/* === Check for source package, saving for delayed installs. */
 	isSource = (headerIsEntry(h, RPMTAG_SOURCERPM) == 0);
 	if (isSource) {
 	    rpmMessage(RPMMESS_DEBUG, D_("\tadded source package [%d]: %s\n"),
-		numSRPMS, fileName);
-	    sourceURL = xrealloc(sourceURL,
-				(numSRPMS + 2) * sizeof(*sourceURL));
-	    sourceURL[numSRPMS] = xstrdup(fileName);;
-	    numSRPMS++;
-	    sourceURL[numSRPMS] = NULL;
+		argvCount(sourceURL), fn);
+	    argvAdd(&sourceURL, fn);
 	    continue;
 	}
 
@@ -406,7 +444,7 @@ if (fileURL[0] == '=') {
 	    }
 	}
 
-	/* === On --freshen, verify package is installed and newer */
+	/* === On --freshen, verify package is installed and newer. */
 	if (ia->installInterfaceFlags & INSTALL_FRESHEN) {
 	    rpmdbMatchIterator mi;
 	    const char * name;
@@ -430,7 +468,7 @@ if (fileURL[0] == '=') {
 	}
 
 	/* === Add binary package to transaction set. */
-	rc = rpmtsAddInstallElement(ts, h, (fnpyKey)fileName,
+	rc = rpmtsAddInstallElement(ts, h, (fnpyKey)fn,
 			(ia->installInterfaceFlags & INSTALL_UPGRADE) != 0,
 			ia->relocations);
 
@@ -438,7 +476,7 @@ if (fileURL[0] == '=') {
 	    relocations->oldPath = _free(relocations->oldPath);
 
 	rpmMessage(RPMMESS_DEBUG, D_("\tadded binary package [%d]: %s\n"),
-			numRPMS, fileName);
+			numRPMS, fn);
 
 	numRPMS++;
     }
@@ -448,78 +486,38 @@ if (fileURL[0] == '=') {
 }	/* end-of-transaction-build */
 
     rpmMessage(RPMMESS_DEBUG, D_("found %d source and %d binary packages\n"),
-		numSRPMS, numRPMS);
+		argvCount(sourceURL), numRPMS);
 
     if (numFailed) goto exit;
 
-    if (numRPMS && !(ia->installInterfaceFlags & INSTALL_NODEPS)) {
+    rpmcliPackagesTotal += argvCount(sourceURL);
 
-	if (rpmtsCheck(ts)) {
-	    numFailed = numPkgs;
-	    stopInstall = 1;
+    if (numRPMS) {
+	if (!(ia->installInterfaceFlags & INSTALL_NODEPS)
+	 && (rc = rpmcliInstallCheck(ts)) != 0) {
+	    numFailed = (numRPMS + argvCount(sourceURL));
+	    (void) rpmcliInstallSuggests(ts);
 	}
 
-	ps = rpmtsProblems(ts);
-	if (!stopInstall && rpmpsNumProblems(ps) > 0) {
-	    rpmMessage(RPMMESS_ERROR, _("Failed dependencies:\n"));
-	    rpmpsPrint(NULL, ps);
-	    numFailed = numPkgs;
-	    stopInstall = 1;
-
-	    /*@-branchstate@*/
-	    if (ts->suggests != NULL && ts->nsuggests > 0) {
-		rpmMessage(RPMMESS_NORMAL, _("    Suggested resolutions:\n"));
-		for (i = 0; i < ts->nsuggests; i++) {
-		    const char * str = ts->suggests[i];
-
-		    if (str == NULL)
-			break;
-
-		    rpmMessage(RPMMESS_NORMAL, "\t%s\n", str);
-		
-		    ts->suggests[i] = NULL;
-		    str = _free(str);
-		}
-		ts->suggests = _free(ts->suggests);
-	    }
-	    /*@=branchstate@*/
-	}
-	ps = rpmpsFree(ps);
-    }
-
-    if (numRPMS && !(ia->installInterfaceFlags & INSTALL_NOORDER)) {
-	if (rpmtsOrder(ts)) {
-	    numFailed = numPkgs;
-	    stopInstall = 1;
-	}
-    }
-
-    if (numRPMS && !stopInstall) {
-
-	rpmcliPackagesTotal += numSRPMS;
-
-	rpmMessage(RPMMESS_DEBUG, D_("installing binary packages\n"));
+	if (!(ia->installInterfaceFlags & INSTALL_NOORDER)
+	 && (rc = rpmcliInstallOrder(ts)) != 0)
+	    numFailed = (numRPMS + argvCount(sourceURL));
 
 	/* Drop added/available package indices and dependency sets. */
 	rpmtsClean(ts);
 
-	rc = rpmtsRun(ts, NULL, ia->probFilter);
-	ps = rpmtsProblems(ts);
-
-	if (rc < 0) {
-	    numFailed += numRPMS;
-	} else if (rc > 0) {
-	    numFailed += rc;
-	    if (rpmpsNumProblems(ps) > 0)
-		rpmpsPrint(stderr, ps);
-	}
-	ps = rpmpsFree(ps);
+	if (numFailed == 0
+	 && (rc = rpmcliInstallRun(ts, NULL, ia->probFilter)) != 0)
+	    numFailed += (rc < 0 ? numRPMS : rc) + argvCount(sourceURL);
     }
 
-    if (numSRPMS && !stopInstall) {
-	if (sourceURL != NULL)
+    if (numFailed) goto exit;
+
+    if (sourceURL) {
+	int numSRPMS = argvCount(sourceURL);
+	FD_t fd;
+
 	for (i = 0; i < numSRPMS; i++) {
-	    FD_t fd;
 	    if (sourceURL[i] == NULL) continue;
 	    fd = Fopen(sourceURL[i], "r.fdio");
 	    if (fd == NULL || Ferror(fd)) {
@@ -543,14 +541,10 @@ if (fileURL[0] == '=') {
     }
 
 exit:
-    if (sourceURL != NULL)
-    for (i = 0; i < numSRPMS; i++)
-        sourceURL[i] = _free(sourceURL[i]);
-    sourceURL = _free(sourceURL);
+    sourceURL = argvFree(sourceURL);
 
-    if (!(ia->transFlags & RPMTRANS_FLAG_NOCONTEXTS)) {
+    if (!(ia->transFlags & RPMTRANS_FLAG_NOCONTEXTS))
 	matchpathcon_fini();
-    }
 
     rpmtsEmpty(ts);
 

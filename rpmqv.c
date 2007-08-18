@@ -712,7 +712,7 @@ ia->rbRun = rpmrbRun;
 /*@i@*/	    ec += rpmRollback(ts, ia, NULL);
 	} else {
 	    /*@-compdef -compmempass@*/ /* FIX: ia->relocations[0].newPath undefined */
-	    ec += rpmInstall(ts, ia, (const char **)poptGetArgs(optCon));
+	    ec += rpmcliInstall(ts, ia, (const char **)poptGetArgs(optCon));
 	    /*@=compdef =compmempass@*/
 	}
 	break;
