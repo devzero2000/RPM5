@@ -164,6 +164,12 @@ int headerNEVRA(Header h, const char **np,
 		*rp = NULL;
     }
     if (ap) {
+	if (!headerIsEntry(h, RPMTAG_ARCH))
+	    *ap = "pubkey";
+	else
+	if (!headerIsEntry(h, RPMTAG_SOURCERPM))
+	    *ap = "src";
+	else
 	if (!(headerGetEntry(h, RPMTAG_ARCH, &type, ap, &count)
 	    && type == RPM_STRING_TYPE && count == 1))
 		*ap = NULL;

@@ -130,7 +130,7 @@ struct rpmfi_s {
 
 /*@only@*/ /*@null@*/
     char * fn;			/*!< File name buffer. */
-    int fnlen;			/*!< FIle name buffer length. */
+    int fnlen;			/*!< File name buffer length. */
 
     int astriplen;
     int striplen;
@@ -147,6 +147,8 @@ struct rpmfi_s {
     FSM_t fsm;			/*!< File state machine data. */
     int keep_header;		/*!< Keep header? */
     uint_32 color;		/*!< Color bit(s) from file color union. */
+
+    int isSource;		/*!< Is this a SRPM? */
 
 /*@owned@*/
     uint_32 * replacedSizes;	/*!< (TR_ADDED) */
@@ -268,6 +270,14 @@ int rpmfiDX(/*@null@*/ rpmfi fi)
  */
 int rpmfiSetDX(/*@null@*/ rpmfi fi, int dx)
 	/*@modifies fi @*/;
+
+/**
+ * Return source rpm marker from file info set.
+ * @param fi		file info set
+ * @return		source rpm?
+ */
+int rpmfiIsSource(/*@null@*/ rpmfi fi)
+	/*@*/;
 
 /**
  * Return current base name from file info set.

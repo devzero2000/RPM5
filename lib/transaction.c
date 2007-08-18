@@ -990,6 +990,7 @@ rpmRC rpmtsRollback(rpmts rbts, rpmprobFilterFlags ignoreSet, int running, rpmte
 
 	tsi = rpmtsiInit(rbts);
 	while((te = rpmtsiNext(tsi, TR_REMOVED)) != NULL) {
+	    if (te->isSource) continue;
 	    if(!te->u.removed.dboffset)
 		continue;
 	    rc = rpmdbRemove(rpmtsGetRdb(rbts),
@@ -1243,6 +1244,7 @@ rpmMessage(RPMMESS_DEBUG, D_("sanity checking %d elements\n"), rpmtsNElements(ts
 	rpmdbMatchIterator mi;
 	int fc;
 
+	if (p->isSource) continue;
 	if ((fi = rpmtsiFi(pi)) == NULL)
 	    continue;	/* XXX can't happen */
 	fc = rpmfiFC(fi);
@@ -1292,6 +1294,7 @@ rpmMessage(RPMMESS_DEBUG, D_("sanity checking %d elements\n"), rpmtsNElements(ts
     while ((p = rpmtsiNext(pi, TR_REMOVED)) != NULL) {
 	int fc;
 
+	if (p->isSource) continue;
 	if ((fi = rpmtsiFi(pi)) == NULL)
 	    continue;	/* XXX can't happen */
 	fc = rpmfiFC(fi);
@@ -1310,6 +1313,7 @@ rpmMessage(RPMMESS_DEBUG, D_("sanity checking %d elements\n"), rpmtsNElements(ts
 	rpmMessage(RPMMESS_DEBUG, D_("running pre-transaction scripts\n"));
 	pi = rpmtsiInit(ts);
 	while ((p = rpmtsiNext(pi, TR_ADDED)) != NULL) {
+	    if (p->isSource) continue;
 	    if ((fi = rpmtsiFi(pi)) == NULL)
 		continue;	/* XXX can't happen */
 
@@ -1389,6 +1393,7 @@ rpmMessage(RPMMESS_DEBUG, D_("computing %d file fingerprints\n"), totalFileCount
     while ((p = rpmtsiNext(pi, 0)) != NULL) {
 	int fc;
 
+	if (p->isSource) continue;
 	if ((fi = rpmtsiFi(pi)) == NULL)
 	    continue;	/* XXX can't happen */
 	fc = rpmfiFC(fi);
@@ -1443,6 +1448,7 @@ rpmMessage(RPMMESS_DEBUG, D_("computing %d file fingerprints\n"), totalFileCount
 
 	(void) rpmdbCheckSignals();
 
+	if (p->isSource) continue;
 	if ((fi = rpmtsiFi(pi)) == NULL)
 	    continue;	/* XXX can't happen */
 	fc = rpmfiFC(fi);
@@ -1483,6 +1489,7 @@ rpmMessage(RPMMESS_DEBUG, D_("computing file dispositions\n"));
 
 	(void) rpmdbCheckSignals();
 
+	if (p->isSource) continue;
 	if ((fi = rpmtsiFi(pi)) == NULL)
 	    continue;	/* XXX can't happen */
 	fc = rpmfiFC(fi);
@@ -1635,6 +1642,7 @@ rpmMessage(RPMMESS_DEBUG, D_("computing file dispositions\n"));
      */
     pi = rpmtsiInit(ts);
     while ((p = rpmtsiNext(pi, 0)) != NULL) {
+	if (p->isSource) continue;
 	if ((fi = rpmtsiFi(pi)) == NULL)
 	    continue;	/* XXX can't happen */
 	if (rpmfiFC(fi) == 0)
@@ -1670,6 +1678,7 @@ rpmMessage(RPMMESS_DEBUG, D_("computing file dispositions\n"));
 
 	    (void) rpmdbCheckSignals();
 
+	    if (p->isSource) continue;
 	    if ((fi = rpmtsiFi(pi)) == NULL)
 		continue;	/* XXX can't happen */
 	    switch (rpmteType(p)) {

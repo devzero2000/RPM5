@@ -310,7 +310,6 @@ int rpmcliInstall(rpmts ts, QVA_t ia, const char ** argv)
 {
     int numFailed = 0;
     int numRPMS = 0;
-    ARGV_t sourceURL = NULL;
     rpmRelocation relocations = NULL;
     rpmRC rpmrc = RPMRC_OK;
     rpmVSFlags vsflags, ovsflags;
@@ -405,22 +404,12 @@ if (fileURL[0] == '=') {
     while (rpmgiNext(gi) == RPMRC_OK) {
 	Header h = rpmgiHeader(gi);
 	const char * fn;
-	int isSource;
 
 	if (h == NULL) {
 	    numFailed++;
 	    continue;
 	}
 	fn = rpmgiHdrPath(gi);
-
-	/* === Check for source package, saving for delayed installs. */
-	isSource = (headerIsEntry(h, RPMTAG_SOURCERPM) == 0);
-	if (isSource) {
-	    rpmMessage(RPMMESS_DEBUG, D_("\tadded source package [%d]: %s\n"),
-		argvCount(sourceURL), fn);
-	    argvAdd(&sourceURL, fn);
-	    continue;
-	}
 
 	/* === Check for relocatable package. */
 	if (relocations) {
@@ -468,15 +457,12 @@ if (fileURL[0] == '=') {
 	}
 
 	/* === Add binary package to transaction set. */
-	rc = rpmtsAddInstallElement(ts, h, (fnpyKey)fn,
+	rc = rpmtsAddInstallElement(ts, h, (fnpyKey)xstrdup(fn),
 			(ia->installInterfaceFlags & INSTALL_UPGRADE) != 0,
 			ia->relocations);
 
 	if (relocations)
 	    relocations->oldPath = _free(relocations->oldPath);
-
-	rpmMessage(RPMMESS_DEBUG, D_("\tadded binary package [%d]: %s\n"),
-			numRPMS, fn);
 
 	numRPMS++;
     }
@@ -485,66 +471,35 @@ if (fileURL[0] == '=') {
 
 }	/* end-of-transaction-build */
 
-    rpmMessage(RPMMESS_DEBUG, D_("found %d source and %d binary packages\n"),
-		argvCount(sourceURL), numRPMS);
-
     if (numFailed) goto exit;
-
-    rpmcliPackagesTotal += argvCount(sourceURL);
 
     if (numRPMS) {
 	if (!(ia->installInterfaceFlags & INSTALL_NODEPS)
 	 && (rc = rpmcliInstallCheck(ts)) != 0) {
-	    numFailed = (numRPMS + argvCount(sourceURL));
+	    numFailed = numRPMS;
 	    (void) rpmcliInstallSuggests(ts);
 	}
 
 	if (!(ia->installInterfaceFlags & INSTALL_NOORDER)
 	 && (rc = rpmcliInstallOrder(ts)) != 0)
-	    numFailed = (numRPMS + argvCount(sourceURL));
+	    numFailed = numRPMS;
 
 	/* Drop added/available package indices and dependency sets. */
 	rpmtsClean(ts);
 
 	if (numFailed == 0
 	 && (rc = rpmcliInstallRun(ts, NULL, ia->probFilter)) != 0)
-	    numFailed += (rc < 0 ? numRPMS : rc) + argvCount(sourceURL);
+	    numFailed += (rc < 0 ? numRPMS : rc);
     }
 
     if (numFailed) goto exit;
 
-    if (sourceURL) {
-	int numSRPMS = argvCount(sourceURL);
-	FD_t fd;
-
-	for (i = 0; i < numSRPMS; i++) {
-	    if (sourceURL[i] == NULL) continue;
-	    fd = Fopen(sourceURL[i], "r.fdio");
-	    if (fd == NULL || Ferror(fd)) {
-		rpmMessage(RPMMESS_ERROR, _("cannot open file %s: %s\n"),
-			   sourceURL[i], Fstrerror(fd));
-		if (fd != NULL) {
-		    xx = Fclose(fd);
-		    fd = NULL;
-		}
-		continue;
-	    }
-
-	    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)) {
-		rpmrc = rpmInstallSourcePackage(ts, fd, NULL, NULL);
-		if (rpmrc != RPMRC_OK) numFailed++;
-	    }
-
-	    xx = Fclose(fd);
-	    fd = NULL;
-	}
-    }
-
 exit:
-    sourceURL = argvFree(sourceURL);
 
+#ifdef	NOTYET	/* XXX grrr, segfault in selabel_close */
     if (!(ia->transFlags & RPMTRANS_FLAG_NOCONTEXTS))
 	matchpathcon_fini();
+#endif
 
     rpmtsEmpty(ts);
 

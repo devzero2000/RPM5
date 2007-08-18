@@ -105,6 +105,11 @@ int rpmfiSetDX(rpmfi fi, int dx)
     return j;
 }
 
+int rpmfiIsSource(rpmfi fi)
+{
+    return (fi != NULL ? fi->isSource : 0);
+}
+
 const char * rpmfiBN(rpmfi fi)
 {
     const char * BN = NULL;
@@ -1219,7 +1224,8 @@ fprintf(stderr, "*** fi %p\t%s[%d]\n", fi, fi->Type, fi->fc);
 	    fi->fddictx = _free(fi->fddictx);
 	    fi->fddictn = _free(fi->fddictn);
 
-	}
+	} else if (fi->isSource)	/* XXX SRPM's always re-alloc fi->dil */
+	    fi->dil = _free(fi->dil);
 	/*@=evalorder@*/
     }
     /*@=branchstate@*/
@@ -1318,6 +1324,7 @@ assert(scareMem == 0);		/* XXX always allocate memory */
     fi->hfd = headerFreeData;
 
     fi->h = (h != NULL && scareMem ? headerLink(h) : NULL);
+    fi->isSource = (headerIsEntry(h, RPMTAG_SOURCERPM) == 0);
 
     if (fi->fsm == NULL)
 	fi->fsm = newFSM();
@@ -1518,6 +1525,54 @@ if (fi->actions == NULL)
 	_fdupe(fi, fddictn);
 
 	fi->h = headerFree(fi->h);
+    } else if (fi->isSource)	/* XXX SRPM's always re-alloc fi->dil */
+	_fdupe(fi, dil);
+
+    if (fi->isSource && fi->dc == 1 && *fi->dnl[0] == '\0') {
+	const char ** av = xcalloc(4+1, sizeof(*av));
+	char * te;
+	size_t nb;
+
+	av[0] = rpmGenPath(rpmtsRootDir(ts), "%{_sourcedir}", "");
+	av[1] = rpmGenPath(rpmtsRootDir(ts), "%{_specdir}", "");
+	av[2] = rpmGenPath(rpmtsRootDir(ts), "%{_patchdir}", "");
+	av[3] = rpmGenPath(rpmtsRootDir(ts), "%{_icondir}", "");
+	av[4] = NULL;
+
+	/* Hack up a header RPM_STRING_ARRAY_TYPE array. */
+	fi->dnl = hfd(fi->dnl, -1);
+	fi->dc = 4;
+	nb = fi->dc * sizeof(*av);
+	for (i = 0; i < fi->dc; i++)
+	    nb += strlen(av[i]) + sizeof("/");
+
+	fi->dnl = xmalloc(nb);
+	te = (char *) (&fi->dnl[fi->dc]);
+	*te = '\0';
+	for (i = 0; i < fi->dc; i++) {
+	    fi->dnl[i] = te;
+	    te = stpcpy( stpcpy(te, av[i]), "/");
+	    *te++ = '\0';
+	}
+	av = argvFree(av);
+
+	/* Map basenames to appropriate directories. */
+	for (i = 0; i < fi->fc; i++) {
+	    if (fi->fflags[i] & RPMFILE_SOURCE)
+		fi->dil[i] = 0;
+	    else if (fi->fflags[i] & RPMFILE_SPECFILE)
+		fi->dil[i] = 1;
+	    else if (fi->fflags[i] & RPMFILE_PATCH)
+		fi->dil[i] = 2;
+	    else if (fi->fflags[i] & RPMFILE_ICON)
+		fi->dil[i] = 3;
+	    else {
+		const char * b = fi->bnl[i];
+		const char * be = b + strlen(b) - sizeof(".spec") - 1;
+
+		fi->dil[i] = (be > b && !strcmp(be, ".spec") ? 1 : 0);
+	    }
+	}
     }
 
     dnlmax = -1;

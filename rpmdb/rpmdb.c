@@ -4013,6 +4013,14 @@ int rpmdbRebuild(const char * prefix, rpmts ts,
 			_RECNUM);
 		continue;
 	    }
+	    if (!headerIsEntry(h, RPMTAG_SOURCERPM)
+	     &&  headerIsEntry(h, RPMTAG_ARCH))
+	    {
+		rpmError(RPMERR_INTERNAL,
+			_("header #%u in the database is SRPM -- skipping.\n"),
+			_RECNUM);
+		continue;
+	    }
 
 	    /* Filter duplicate entries ? (bug in pre rpm-3.0.4) */
 	    if (_db_filter_dups || newdb->db_filter_dups) {

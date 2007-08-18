@@ -1523,7 +1523,8 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 		freecon(scon);
 	}
     }
-    matchpathcon_fini();
+    if (sxfn != NULL && *sxfn != '\0')
+	matchpathcon_fini();
     sxfn = _free(sxfn);
 
     (void) headerAddEntry(h, RPMTAG_SIZE, RPM_INT32_TYPE,

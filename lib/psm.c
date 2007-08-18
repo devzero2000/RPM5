@@ -2273,6 +2273,7 @@ assert(psm->mi == NULL);
 	break;
     case PSM_RPMDB_ADD:
 	if (rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)	break;
+	if (fi->isSource)	break;	/* XXX never add SRPM's */
 	if (fi->h == NULL)	break;	/* XXX can't happen */
 
 	/* Add header to db, doing header check if requested */

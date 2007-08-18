@@ -391,7 +391,6 @@ assert(p != NULL);
     if (!(upgrade & 0x1))
 	goto exit;
 
-    /* XXX binary rpms always have RPMTAG_SOURCERPM, source rpms do not */
     if (isSource)
 	goto exit;
 
@@ -2351,10 +2350,16 @@ int rpmtsCheck(rpmts ts)
 	    ? rpmteDS(p, RPMTAG_REQUIRENAME) : NULL);
 	conflicts = (!(depFlags & RPMDEPS_FLAG_NOCONFLICTS)
 	    ? rpmteDS(p, RPMTAG_CONFLICTNAME) : NULL);
-	dirnames = (!(depFlags & RPMDEPS_FLAG_NOPARENTDIRS)
-	    ? rpmteDS(p, RPMTAG_DIRNAMES) : NULL);
-	linktos = (!(depFlags & RPMDEPS_FLAG_NOLINKTOS)
-	    ? rpmteDS(p, RPMTAG_FILELINKTOS) : NULL);
+	/* XXX srpm's don't have directory paths. */
+	if (p->isSource) {
+	    dirnames = NULL;
+	    linktos = NULL;
+	} else {
+	    dirnames = (!(depFlags & RPMDEPS_FLAG_NOPARENTDIRS)
+		? rpmteDS(p, RPMTAG_DIRNAMES) : NULL);
+	    linktos = (!(depFlags & RPMDEPS_FLAG_NOLINKTOS)
+		? rpmteDS(p, RPMTAG_FILELINKTOS) : NULL);
+	}
 
 	rc = checkPackageDeps(ts, rpmteNEVRA(p),
 			requires, conflicts, dirnames, linktos,
