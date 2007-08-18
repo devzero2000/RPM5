@@ -22,13 +22,22 @@ myLDADD = \
 	@LTLIBINTL@
 
 pkglibdir =		@USRLIBRPM@
-pkglib_PROGRAMS =	rpmdeps @WITH_LIBELF_DEBUGEDIT@
+pkglib_PROGRAMS =	rpmcache rpmcmp rpmdeps rpmdigest @WITH_LIBELF_DEBUGEDIT@
 
 debugedit_SOURCES =	debugedit.c hashtab.c
 debugedit_LDADD =	$(myLDADD)
 
+rpmcache_SOURCES =	rpmcache.c
+rpmcache_LDADD =	$(myLDADD)
+
+rpmcmp_SOURCES =	rpmcmp.c
+rpmcmp_LDADD =		$(myLDADD)
+
 rpmdeps_SOURCES =	rpmdeps.c
 rpmdeps_LDADD =		$(myLDADD)
+
+rpmdigest_SOURCES =	rpmdigest.c
+rpmdigest_LDADD =	$(myLDADD)
 
 ##
 ##  keyctl(1) clone

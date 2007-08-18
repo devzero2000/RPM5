@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - jbj: re-add rpmcache/rpmcmp/rpmdigest tools.
     - jbj: more rpmInstall refactoring.
     - jbj: use rpmgi for --addsign/--checksig arg iteration.
     - jbj: repair a minor rpmInstall and major matchpathcon_init() memleaks.
