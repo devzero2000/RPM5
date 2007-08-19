@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - jbj: insure srpm file dispositions are FA_CREATE.
     - jbj: enable Header performance metrics, tied to --stats.
     - jbj: add Header performance metrics, disabled for now.
     - jbj: eliminate headerNVR, use headerNEVRA instead.

@@ -1498,7 +1498,6 @@ rpmMessage(RPMMESS_DEBUG, D_("computing file dispositions\n"));
 
 	(void) rpmdbCheckSignals();
 
-	if (p->isSource) continue;
 	if ((fi = rpmtsiFi(pi)) == NULL)
 	    continue;	/* XXX can't happen */
 	fc = rpmfiFC(fi);
@@ -1507,6 +1506,14 @@ rpmMessage(RPMMESS_DEBUG, D_("computing file dispositions\n"));
 			ts->orderCount, NULL, ts->notifyData));
 
 	if (fc == 0) continue;
+
+	/* All source files get installed. */
+	if (p->isSource) {
+ 	    fi = rpmfiInit(fi, 0);
+	    while ((i = rpmfiNext(fi)) >= 0)
+		fi->actions[i] = FA_CREATE;
+	    continue;
+	}
 
 	(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_FINGERPRINT), 0);
 	/* Extract file info for all files in this package from the database. */
