@@ -137,7 +137,15 @@ HV_t hdrVec;	/* forward reference */
  * Global header stats enabler.
  */
 /*@unchecked@*/
-int _hdr_stats;
+int _hdr_stats = 0;
+/*@unchecked@*/
+static struct rpmop_s hdr_loadops;
+/*@unchecked@*/
+rpmop _hdr_loadops = &hdr_loadops;
+/*@unchecked@*/
+static struct rpmop_s hdr_getops;
+/*@unchecked@*/
+rpmop _hdr_getops = &hdr_getops;
 
 /** \ingroup header
  * Return header stats accumulator structure.
@@ -152,8 +160,8 @@ void * headerGetStats(/*@null@*/ Header h, int opx)
     rpmop op = NULL;
     if (_hdr_stats)
     switch (opx) {
-    case 18:	op = &h->hops_load;	break;	/* RPMTS_OP_HDRLOAD */
-    case 19:	op = &h->hops_get;	break;	/* RPMTS_OP_HDRGET */
+    case 18:	op = &h->h_loadops;	break;	/* RPMTS_OP_HDRLOAD */
+    case 19:	op = &h->h_getops;	break;	/* RPMTS_OP_HDRGET */
     }
     return op;
 }
@@ -233,6 +241,13 @@ Header headerFree(/*@killref@*/ /*@null@*/ Header h)
 	h->index = _free(h->index);
     }
     h->origin = _free(h->origin);
+
+    if (_hdr_stats) {
+	if (_hdr_loadops)	/* RPMTS_OP_HDRLOAD */
+	    (void) rpmswAdd(_hdr_loadops, headerGetStats(h, 18));
+	if (_hdr_getops)	/* RPMTS_OP_HDRGET */
+	    (void) rpmswAdd(_hdr_getops, headerGetStats(h, 19));
+    }
 
     /*@-refcounttrans@*/ h = _free(h); /*@=refcounttrans@*/
     return h;
@@ -646,6 +661,7 @@ static /*@only@*/ /*@null@*/ void * doHeaderUnload(Header h,
 	/*@requires maxSet(lengthPtr) >= 0 @*/
 	/*@ensures maxRead(result) == (*lengthPtr) @*/
 {
+    void * sw;
     int_32 * ei = NULL;
     entryInfo pe;
     char * dataStart;
@@ -660,6 +676,9 @@ static /*@only@*/ /*@null@*/ void * doHeaderUnload(Header h,
     int drlen, ndribbles;
     int driplen, ndrips;
     int legacy = 0;
+
+    if ((sw = headerGetStats(h, 18)) != NULL)	/* RPMTS_OP_HDRLOAD */
+	(void) rpmswEnter(sw, 0);
 
     /* Sort entries by (offset,tag). */
     headerUnsort(h);
@@ -909,9 +928,12 @@ static /*@only@*/ /*@null@*/ void * doHeaderUnload(Header h,
     h->flags &= ~HEADERFLAG_SORTED;
     headerSort(h);
 
+    if (sw != NULL)	(void) rpmswExit(sw, len);
+
     return (void *) ei;
 
 errxit:
+    if (sw != NULL)	(void) rpmswExit(sw, len);
     /*@-usereleased@*/
     ei = _free(ei);
     /*@=usereleased@*/
@@ -1041,6 +1063,7 @@ static /*@null@*/
 Header headerLoad(/*@kept@*/ void * uh)
 	/*@modifies uh @*/
 {
+    void * sw;
     int_32 * ei = (int_32 *) uh;
     int_32 il = ntohl(ei[0]);		/* index length */
     int_32 dl = ntohl(ei[1]);		/* data length */
@@ -1069,6 +1092,8 @@ Header headerLoad(/*@kept@*/ void * uh)
     dataEnd = dataStart + dl;
 
     h = xcalloc(1, sizeof(*h));
+    if ((sw = headerGetStats(h, 18)) != NULL)	/* RPMTS_OP_HDRLOAD */
+	(void) rpmswEnter(sw, 0);
     {	unsigned char * hmagic = (_newmagic ? meta_magic : header_magic);
 	(void) memcpy(h->magic, hmagic, sizeof(h->magic));
     }
@@ -1204,6 +1229,9 @@ Header headerLoad(/*@kept@*/ void * uh)
 
     h->flags &= ~HEADERFLAG_SORTED;
     headerSort(h);
+
+    if (sw != NULL)
+	(void) rpmswExit(sw, pvlen);
 
     /*@-globstate -observertrans @*/
     return h;
@@ -1930,11 +1958,15 @@ int headerGetExtension(Header h, int_32 tag,
 	/*@modifies *type, *p, *c @*/
 	/*@requires maxSet(type) >= 0 /\ maxSet(p) >= 0 /\ maxSet(c) >= 0 @*/
 {
+    void * sw;
     const char * name = tagName(tag);
     headerSprintfExtension exts = (headerSprintfExtension)headerCompoundFormats;
     headerSprintfExtension ext;
     int extNum;
     int rc;
+
+    if ((sw = headerGetStats(h, 19)) != NULL)	/* RPMTS_OP_HDRGET */
+	(void) rpmswEnter(sw, 0);
 
     /* Search extensions for specific tag override. */
     for (ext = exts, extNum = 0; ext != NULL && ext->type != HEADER_EXT_LAST;
@@ -1953,6 +1985,8 @@ int headerGetExtension(Header h, int_32 tag,
 	rc = intGetEntry(h, tag, type, (hPTR_t *)p, c, 0);
 
     /* XXX Returned data is always allocated. */
+
+    if (sw != NULL)	(void) rpmswExit(sw, 0);
 
     return rc;
 }
@@ -1978,7 +2012,14 @@ int headerGetEntry(Header h, int_32 tag,
 	/*@modifies *type, *p, *c @*/
 	/*@requires maxSet(type) >= 0 /\ maxSet(p) >= 0 /\ maxSet(c) >= 0 @*/
 {
-    return intGetEntry(h, tag, type, (hPTR_t *)p, c, 0);
+    void * sw;
+    int rc;
+
+    if ((sw = headerGetStats(h, 19)) != NULL)	/* RPMTS_OP_HDRGET */
+	(void) rpmswEnter(sw, 0);
+    rc = intGetEntry(h, tag, type, (hPTR_t *)p, c, 0);
+    if (sw != NULL)	(void) rpmswExit(sw, 0);
+    return rc;
 }
 
 /** \ingroup header
@@ -2001,7 +2042,14 @@ int headerGetEntryMinMemory(Header h, int_32 tag,
 	/*@modifies *type, *p, *c @*/
 	/*@requires maxSet(type) >= 0 /\ maxSet(p) >= 0 /\ maxSet(c) >= 0 @*/
 {
-    return intGetEntry(h, tag, type, p, c, 1);
+    void * sw;
+    int rc;
+
+    if ((sw = headerGetStats(h, 19)) != NULL)	/* RPMTS_OP_HDRGET */
+	(void) rpmswEnter(sw, 0);
+    rc = intGetEntry(h, tag, type, p, c, 1);
+    if (sw != NULL)	(void) rpmswExit(sw, 0);
+    return rc;
 }
 
 int headerGetRawEntry(Header h, int_32 tag, int_32 * type, void * p, int_32 * c)

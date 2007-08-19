@@ -61,8 +61,8 @@ struct headerToken_s {
 /*@only@*/ /*@null@*/
     const char * origin;	/*!< Header origin (e.g. path or URL). */
     int_32 instance;		/*!< Header instance (if from rpmdb). */
-    struct rpmop_s hops_load;
-    struct rpmop_s hops_get;
+    struct rpmop_s h_loadops;
+    struct rpmop_s h_getops;
 /*@owned@*/
     indexEntry index;		/*!< Array of tags. */
     int indexUsed;		/*!< Current size of tag array. */

@@ -60,7 +60,7 @@ typedef /*@abstract@*/ struct _dbiIndexSet * dbiIndexSet;
 typedef /*@abstract@*/ struct _dbiIndex * dbiIndex;
 
 #if defined(_RPMDB_INTERNAL)
-#include "rpmsw.h"
+#include <rpmsw.h>
 #if !defined(SWIG)	/* XXX inline dbiFoo() need */
 /** \ingroup dbi
  * A single item from an index database (i.e. the "data returned").

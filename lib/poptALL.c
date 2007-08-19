@@ -119,6 +119,9 @@ extern int _rpmts_debug;
 extern int _rpmts_stats;
 
 /*@unchecked@*/
+extern int _hdr_stats;
+
+/*@unchecked@*/
 extern int _tar_debug;
 
 /*@unchecked@*/
@@ -627,6 +630,9 @@ rpmcliInit(int argc, char *const argv[], struct poptOption * optionsTable)
 	rpmIncreaseVerbosity();
 	rpmIncreaseVerbosity();
     }
+
+    /* Initialize header stat collection. */
+    _hdr_stats = _rpmts_stats;
 
     return optCon;
 }

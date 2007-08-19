@@ -740,7 +740,15 @@ static void rpmtsPrintStats(rpmts ts)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/
 {
+    extern rpmop _hdr_loadops;
+    extern rpmop _hdr_getops;
+
     (void) rpmswExit(rpmtsOp(ts, RPMTS_OP_TOTAL), 0);
+
+    if (_hdr_loadops)
+	rpmswAdd(rpmtsOp(ts, RPMTS_OP_HDRLOAD), _hdr_loadops);
+    if (_hdr_getops)
+	rpmswAdd(rpmtsOp(ts, RPMTS_OP_HDRGET), _hdr_getops);
 
     rpmtsPrintStat("total:       ", rpmtsOp(ts, RPMTS_OP_TOTAL));
     rpmtsPrintStat("check:       ", rpmtsOp(ts, RPMTS_OP_CHECK));
@@ -760,6 +768,8 @@ static void rpmtsPrintStats(rpmts ts)
     rpmtsPrintStat("dbput:       ", rpmtsOp(ts, RPMTS_OP_DBPUT));
     rpmtsPrintStat("dbdel:       ", rpmtsOp(ts, RPMTS_OP_DBDEL));
     rpmtsPrintStat("readhdr:     ", rpmtsOp(ts, RPMTS_OP_READHDR));
+    rpmtsPrintStat("hdrload:     ", rpmtsOp(ts, RPMTS_OP_HDRLOAD));
+    rpmtsPrintStat("hdrget:      ", rpmtsOp(ts, RPMTS_OP_HDRGET));
 }
 
 rpmts rpmtsFree(rpmts ts)

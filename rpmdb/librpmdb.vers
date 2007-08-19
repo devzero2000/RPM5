@@ -23,6 +23,8 @@ LIBRPMDB_0
     fpLookup;
     fpLookupList;
     _hdr_debug;
+    _hdr_getops;
+    _hdr_loadops;
     _hdr_stats;
     hdrVec;
     headerCompoundFormats;
@@ -35,7 +37,6 @@ LIBRPMDB_0
     headerNEVRA;
     hGetColor;
     _init;
-    rpm_mergesort;
     _newmagic;
     prDbiOpenFlags;
     rdbOptions;
@@ -71,6 +72,7 @@ LIBRPMDB_0
     rpmdbSync;
     rpmdbVerify;
     rpmdbVerifyAllDBI;
+    rpm_mergesort;
     rpmTagTable;
     rpmTagTableSize;
     rpmTags;
