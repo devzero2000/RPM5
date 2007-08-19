@@ -133,6 +133,31 @@ static size_t headerMaxbytes = (32*1024*1024);
 /*@observer@*/ /*@unchecked@*/
 HV_t hdrVec;	/* forward reference */
 
+/**
+ * Global header stats enabler.
+ */
+/*@unchecked@*/
+int _hdr_stats;
+
+/** \ingroup header
+ * Return header stats accumulator structure.
+ * @param h		header
+ * @param opx		per-header accumulator index (aka rpmtsOpX)
+ * @return		per-header accumulator pointer
+ */
+static /*@null@*/
+void * headerGetStats(/*@null@*/ Header h, int opx)
+        /*@*/
+{
+    rpmop op = NULL;
+    if (_hdr_stats)
+    switch (opx) {
+    case 18:	op = &h->hops_load;	break;	/* RPMTS_OP_HDRLOAD */
+    case 19:	op = &h->hops_get;	break;	/* RPMTS_OP_HDRGET */
+    }
+    return op;
+}
+
 /** \ingroup header
  * Reference a header instance.
  * @param h		header
@@ -4128,6 +4153,7 @@ static struct HV_s hdrVec1 = {
     headerSetOrigin,
     headerGetInstance,
     headerSetInstance,
+    headerGetStats,
     NULL, NULL,
     1
 };

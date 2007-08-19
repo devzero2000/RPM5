@@ -94,7 +94,10 @@ typedef	enum rpmtsOpX_e {
     RPMTS_OP_DBPUT		= 15,
     RPMTS_OP_DBDEL		= 16,
     RPMTS_OP_READHDR		= 17,
-    RPMTS_OP_MAX		= 18
+    RPMTS_OP_HDRLOAD		= 18,
+    RPMTS_OP_HDRGET		= 19,
+    RPMTS_OP_DEBUG		= 20,
+    RPMTS_OP_MAX		= 20
 } rpmtsOpX;
 
 #if defined(_RPMTS_INTERNAL)

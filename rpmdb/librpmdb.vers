@@ -23,6 +23,7 @@ LIBRPMDB_0
     fpLookup;
     fpLookupList;
     _hdr_debug;
+    _hdr_stats;
     hdrVec;
     headerCompoundFormats;
     headerDefaultFormats;

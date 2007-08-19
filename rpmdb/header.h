@@ -80,6 +80,7 @@
 /* RPM - Copyright (C) 1995-2001 Red Hat Software */
 
 #include <stdio.h>
+#include <rpmsw.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -774,6 +775,16 @@ typedef
 int (*HDRsetinstance) (/*@null@*/ Header h, int instance)
 	/*@modifies h @*/;
 
+/**
+ * Return header stats accumulator structure.
+ * @param h		header
+ * @param opx		per-header accumulator index (aka rpmtsOpX)
+ * @return		per-header accumulator pointer
+ */
+typedef
+void * (*HDRgetstats) (/*@null@*/ Header h, int opx)
+        /*@*/;
+
 /** \ingroup header
  * Header method vectors.
  */
@@ -816,6 +827,7 @@ struct HV_s {
     HDRsetorigin hdrsetorigin;
     HDRgetinstance hdrgetinstance;
     HDRsetinstance hdrsetinstance;
+    HDRgetstats hdrgetstats;
 /*@null@*/
     void *	hdrvecs;
 /*@null@*/
@@ -872,20 +884,6 @@ int headerMacrosLoad(Header h)
 int headerMacrosUnload(Header h)
 	/*@globals internalState @*/
 	/*@modifies internalState @*/;
-
-/** \ingroup header
- * Return name, version, release strings from header.
- * @param h		header
- * @retval *np		name pointer (or NULL)
- * @retval *vp		version pointer (or NULL)
- * @retval *rp		release pointer (or NULL)
- * @return		0 always
- */
-int headerNVR(Header h,
-		/*@null@*/ /*@out@*/ const char ** np,
-		/*@null@*/ /*@out@*/ const char ** vp,
-		/*@null@*/ /*@out@*/ const char ** rp)
-	/*@modifies *np, *vp, *rp @*/;
 
 /** \ingroup header
  * Return name, epoch, version, release, arch strings from header.
