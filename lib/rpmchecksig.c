@@ -188,7 +188,6 @@ static int rpmReSign(/*@unused@*/ rpmts ts,
     FD_t ofd = NULL;
     struct rpmlead *lead = NULL;
     int_32 sigtag;
-    const char *fn, *tfn;
     const char *sigtarget = NULL;
     char tmprpm[1024+1];
     Header sigh = NULL;
@@ -213,6 +212,7 @@ static int rpmReSign(/*@unused@*/ rpmts ts,
     rc = rpmgiSetArgs(gi, argv, _ftsOpts, (_giFlags|RPMGI_NOHEADER));
     while (rpmgiNext(gi) == RPMRC_OK) {
 	const char * fn = rpmgiHdrPath(gi);
+	const char * tfn;
 
 	fprintf(stdout, "%s:\n", fn);
 
