@@ -153,11 +153,11 @@ assert(p->NEVR);
     p->isSource = (headerIsEntry(h, RPMTAG_SOURCERPM) == 0);
 
     nb = strlen(p->NEVR) + 1;
+#ifdef	DYING	/* p->NEVR includes arch now. */
     if (p->arch == NULL)
 	nb += sizeof("pubkey");
     else if (p->isSource)
 	nb += sizeof("src");
-#ifdef	DYING	/* p->NEVRA includes arch now. */
     else
 	nb += strlen(p->arch) + 1;
 #endif
@@ -165,11 +165,11 @@ assert(p->NEVR);
     p->NEVRA = t;
     *t = '\0';
     t = stpcpy(t, p->NEVR);
+#ifdef	DYING	/* p->NEVR includes arch now. */
     if (p->arch == NULL)
 	t = stpcpy( t, ".pubkey");
     else if (p->isSource)
 	t = stpcpy( t, ".src");
-#ifdef	DYING	/* p->NEVRA includes arch now. */
     else
 	t = stpcpy( stpcpy( t, "."), p->arch);
 #endif

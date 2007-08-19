@@ -635,7 +635,6 @@ int rpmInstallSource(rpmts ts, const char * arg,
     FD_t fd;
     int rc;
 
-
     fd = Fopen(arg, "r.fdio");
     if (fd == NULL || Ferror(fd)) {
 	rpmMessage(RPMMESS_ERROR, _("cannot open %s: %s\n"), arg, Fstrerror(fd));

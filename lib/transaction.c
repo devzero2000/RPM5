@@ -1201,8 +1201,17 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
     ts->probs = rpmpsCreate();
 
     /* XXX Make sure the database is open RDWR for package install/erase. */
-    {	int dbmode = (rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)
-		? O_RDONLY : (O_RDWR|O_CREAT);
+    {	int dbmode = O_RDONLY;
+
+	if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)) {
+	    pi = rpmtsiInit(ts);
+	    while ((p = rpmtsiNext(pi, 0)) != NULL) {
+		if (p->isSource) continue;
+		dbmode = (O_RDWR|O_CREAT);
+		break;
+	    }
+	    pi = rpmtsiFree(pi);
+	}
 
 	/* Open database RDWR for installing packages. */
 	if (rpmtsOpenDB(ts, dbmode)) {
