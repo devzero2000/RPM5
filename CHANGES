@@ -1,4 +1,6 @@
 4.5 -> 5.0:
+    - jbj: permit --ftswalk on sign/verify paths. not yet install ...
+    - jbj: use ftsOpts from CLI where rpmgi is used.
     - jbj: insure srpm file dispositions are FA_CREATE.
     - jbj: enable Header performance metrics, tied to --stats.
     - jbj: add Header performance metrics, disabled for now.

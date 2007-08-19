@@ -393,12 +393,14 @@ if (fileURL[0] == '=') {
 #endif
 
 {	/* start-of-transaction-build */
-
-    rpmgi gi = rpmgiNew(ts, RPMDBI_ARGLIST, NULL, 0);
-    int _ftsOpts = 0;
+    int tag = (ia->qva_source == RPMQV_FTSWALK)
+	? RPMDBI_FTSWALK : RPMDBI_ARGLIST;
+    rpmgi gi = rpmgiNew(ts, tag, NULL, 0);
     rpmgiFlags _giFlags = RPMGI_NONE;
 
-    rc = rpmgiSetArgs(gi, argv, _ftsOpts, _giFlags);
+    if (ftsOpts == 0)
+	ftsOpts = (FTS_COMFOLLOW | FTS_LOGICAL | FTS_NOSTAT);
+    rc = rpmgiSetArgs(gi, argv, ftsOpts, _giFlags);
     while (rpmgiNext(gi) == RPMRC_OK) {
 	Header h = rpmgiHeader(gi);
 	const char * fn;

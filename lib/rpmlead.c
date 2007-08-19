@@ -64,13 +64,13 @@ rpmRC readLead(FD_t fd, struct rpmlead ** leadp, const char ** msg)
     if ((xx = timedRead(fd, (char *)lead, sizeof(*lead))) != sizeof(*lead)) {
 	if (Ferror(fd)) {
 	    (void) snprintf(buf, sizeof(buf),
-		_("lead size(%u): BAD, read(%d), %s(%d)\n"),
+		_("lead size(%u): BAD, read(%d), %s(%d)"),
 		(unsigned)sizeof(*lead), xx, Fstrerror(fd), errno);
 	    rc = RPMRC_FAIL;
 	} else {
 	    (void) snprintf(buf, sizeof(buf),
-		_("lead size(%u): BAD, read(%d)\n"),
-		(unsigned)sizeof(*lead), xx);
+		_("lead size(%u): BAD, read(%d), %s(%d)"),
+		(unsigned)sizeof(*lead), xx, strerror(errno), errno);
 	    rc = RPMRC_NOTFOUND;
 	}
 	goto exit;
@@ -78,7 +78,7 @@ rpmRC readLead(FD_t fd, struct rpmlead ** leadp, const char ** msg)
     /*@=type@*/
 
     if (memcmp(lead->magic, lead_magic, sizeof(lead_magic))) {
-	(void) snprintf(buf, sizeof(buf), _("lead magic: BAD\n"));
+	(void) snprintf(buf, sizeof(buf), _("lead magic: BAD"));
 	rc = RPMRC_NOTFOUND;
 	goto exit;
     }
@@ -90,7 +90,7 @@ rpmRC readLead(FD_t fd, struct rpmlead ** leadp, const char ** msg)
     switch (lead->major) {
     default:
 	(void) snprintf(buf, sizeof(buf),
-		_("lead version(%d): UNSUPPORTED\n"), lead->major);
+		_("lead version(%d): UNSUPPORTED"), lead->major);
 	rc = RPMRC_NOTFOUND;
 	break;
     case 3:
@@ -100,7 +100,7 @@ rpmRC readLead(FD_t fd, struct rpmlead ** leadp, const char ** msg)
 
     if (lead->signature_type != RPMSIGTYPE_HEADERSIG) {
 	(void) snprintf(buf, sizeof(buf),
-		_("sigh type(%d): UNSUPPORTED\n"), lead->signature_type);
+		_("sigh type(%d): UNSUPPORTED"), lead->signature_type);
 	rc = RPMRC_NOTFOUND;
 	goto exit;
     }

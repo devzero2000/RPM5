@@ -204,12 +204,15 @@ static int rpmReSign(/*@unused@*/ rpmts ts,
     /*@-branchstate@*/
     if (argv)
 {       /* start-of-arg-iteration */
-
-    rpmgi gi = rpmgiNew(ts, RPMDBI_ARGLIST, NULL, 0);
-    int _ftsOpts = 0;
+    int tag = (qva->qva_source == RPMQV_FTSWALK)
+	? RPMDBI_FTSWALK : RPMDBI_ARGLIST;
+    rpmgi gi = rpmgiNew(ts, tag, NULL, 0);
     rpmgiFlags _giFlags = RPMGI_NONE;
 
-    rc = rpmgiSetArgs(gi, argv, _ftsOpts, (_giFlags|RPMGI_NOHEADER));
+    if (ftsOpts == 0)
+	ftsOpts = (FTS_COMFOLLOW | FTS_LOGICAL | FTS_NOSTAT);
+    rc = rpmgiSetArgs(gi, argv, ftsOpts, (_giFlags|RPMGI_NOHEADER));
+
     while (rpmgiNext(gi) == RPMRC_OK) {
 	const char * fn = rpmgiHdrPath(gi);
 	const char * tfn;
@@ -1151,12 +1154,15 @@ int rpmcliSign(rpmts ts, QVA_t qva, const char ** argv)
 
 {       /* start-of-arg-iteration */
 
-    rpmgi gi = rpmgiNew(ts, RPMDBI_ARGLIST, NULL, 0);
-    int _ftsOpts = 0;
+    int tag = (qva->qva_source == RPMQV_FTSWALK)
+	? RPMDBI_FTSWALK : RPMDBI_ARGLIST;
+    rpmgi gi = rpmgiNew(ts, tag, NULL, 0);
     rpmgiFlags _giFlags = RPMGI_NONE;
     rpmRC rc;
 
-    rc = rpmgiSetArgs(gi, argv, _ftsOpts, (_giFlags|RPMGI_NOHEADER));
+    if (ftsOpts == 0)
+	ftsOpts = (FTS_COMFOLLOW | FTS_LOGICAL | FTS_NOSTAT);
+    rc = rpmgiSetArgs(gi, argv, ftsOpts, (_giFlags|RPMGI_NOHEADER));
     while (rpmgiNext(gi) == RPMRC_OK) {
 	const char * fn = rpmgiHdrPath(gi);
 	FD_t fd;
