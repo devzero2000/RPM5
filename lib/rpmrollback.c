@@ -372,38 +372,6 @@ exit:
     return rc;
 }
 
-static int rpmrbProblems(rpmts ts, /*@null@*/ const char * msg, int rc)
-	/*@globals fileSystem @*/
-	/*@modifies ts, fileSystem @*/
-{
-    rpmps ps = rpmtsProblems(ts);
-
-    if (rc != 0 && rpmpsNumProblems(ps) > 0) {
-	if (msg)
-	    rpmMessage(RPMMESS_ERROR, "%s:\n", msg);
-	rpmpsPrint(NULL, ps);
-    }
-    ps = rpmpsFree(ps);
-    return rc;
-}
-
-int rpmrbCheck(rpmts ts)
-{
-    return rpmrbProblems(ts, N_("Failed dependencies"), rpmtsCheck(ts));
-}
-
-int rpmrbOrder(rpmts ts)
-{
-    return rpmrbProblems(ts, N_("Ordering problems"), rpmtsOrder(ts));
-}
-
-/** @todo Use rpmInstallRun instead. */
-int rpmrbRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
-{
-    return rpmrbProblems(ts, N_("Rollback problems"),
-			rpmtsRun(ts, okProbs, ignoreSet));
-}
-
 /** @todo Transaction handling, more, needs work. */
 int rpmRollback(rpmts ts, QVA_t ia, const char ** argv)
 {
@@ -621,7 +589,7 @@ assert(ip->done || ia->no_rollback_links);
 	}
 
 	/* Print any rollback transaction problems */
-	(void) rpmrbProblems(ts, N_("Missing re-packaged package(s)"), 1);
+	xx = rpmcliInstallProblems(ts, _("Missing re-packaged package(s)"), 1);
 
 	/* Anything to do? */
 	if (rpmcliPackagesTotal <= 0)

@@ -81,6 +81,7 @@ LIBRPM_0
     rpmcliInstallCheck;
     rpmcliInstallOrder;
     rpmcliInstallProblems;
+    rpmcliInstallRun;
     rpmcliInstallSuggests;
     rpmcliPackagesTotal;
     rpmcliPipeOutput;
@@ -254,9 +255,6 @@ LIBRPM_0
     rpmQueryVerify;
     rpmQVKArgs;
     rpmQVSourcePoptTable;
-    rpmrbCheck;
-    rpmrbOrder;
-    rpmrbRun;
     rpmReadConfigFiles;
     rpmReadHeader;
     rpmReadPackageFile;
