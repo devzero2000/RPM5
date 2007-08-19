@@ -1524,7 +1524,6 @@ if (fi->actions == NULL)
 	_fdupe(fi, fddictx);
 	_fdupe(fi, fddictn);
 
-	fi->h = headerFree(fi->h);
     } else if (fi->isSource)	/* XXX SRPM's always re-alloc fi->dil */
 	_fdupe(fi, dil);
 
@@ -1533,11 +1532,13 @@ if (fi->actions == NULL)
 	char * te;
 	size_t nb;
 
+	headerMacrosLoad(fi->h);
 	av[0] = rpmGenPath(rpmtsRootDir(ts), "%{_sourcedir}", "");
 	av[1] = rpmGenPath(rpmtsRootDir(ts), "%{_specdir}", "");
 	av[2] = rpmGenPath(rpmtsRootDir(ts), "%{_patchdir}", "");
 	av[3] = rpmGenPath(rpmtsRootDir(ts), "%{_icondir}", "");
 	av[4] = NULL;
+	headerMacrosUnload(fi->h);
 
 	/* Hack up a header RPM_STRING_ARRAY_TYPE array. */
 	fi->dnl = hfd(fi->dnl, -1);
@@ -1574,6 +1575,9 @@ if (fi->actions == NULL)
 	    }
 	}
     }
+
+    if (!scareMem)
+	fi->h = headerFree(fi->h);
 
     dnlmax = -1;
     for (i = 0; i < fi->dc; i++) {
