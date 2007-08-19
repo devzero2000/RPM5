@@ -471,7 +471,7 @@ static rpmRC runLuaScript(rpmpsm psm, Header h, const char *sln,
 {
     const rpmts ts = psm->ts;
     int rootFdno = -1;
-    const char *n, *v, *r;
+    const char * NVRA = NULL;
     rpmRC rc = RPMRC_OK;
     int i;
     int xx;
@@ -484,7 +484,8 @@ static rpmRC runLuaScript(rpmpsm psm, Header h, const char *sln,
     if (ssp != NULL)
 	*ssp |= (RPMSCRIPT_STATE_LUA|RPMSCRIPT_STATE_EXEC);
 
-    xx = headerNVR(h, &n, &v, &r);
+    xx = headerGetExtension(h, RPMTAG_NVRA, NULL, &NVRA, NULL);
+assert(NVRA);
 
     /* Save the current working directory. */
 /*@-nullpass@*/
@@ -532,7 +533,7 @@ static rpmRC runLuaScript(rpmpsm psm, Header h, const char *sln,
 
     {
 	char buf[BUFSIZ];
-	xx = snprintf(buf, BUFSIZ, "%s(%s-%s-%s)", sln, n, v, r);
+	xx = snprintf(buf, BUFSIZ, "%s(%s)", sln, NVRA);
 	xx = rpmluaRunScript(lua, script, buf);
 	if (xx == -1)
 	    rc = RPMRC_FAIL;
@@ -559,6 +560,7 @@ static rpmRC runLuaScript(rpmpsm psm, Header h, const char *sln,
 	xx = fchdir(rootFdno);
 
     xx = close(rootFdno);
+    NVRA = _free(NVRA);
 
     return rc;
 }
@@ -617,8 +619,8 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
     int freePrefixes = 0;
     FD_t scriptFd;
     FD_t out;
-    rpmRC rc = RPMRC_OK;
-    const char *n, *v, *r, *a;
+    rpmRC rc = RPMRC_FAIL;	/* assume failure */
+    const char * NVRA = NULL;
     int * ssp = NULL;
 
     if (psm->sstates != NULL)
@@ -627,22 +629,20 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
 	*ssp = RPMSCRIPT_STATE_UNKNOWN;
 
     if (progArgv == NULL && script == NULL)
-	return rc;
+	return RPMRC_OK;
 
-    /* XXX FIXME: except for %verifyscript, rpmteNEVR can be used. */
-    xx = headerNVR(h, &n, &v, &r);
-    xx = hge(h, RPMTAG_ARCH, NULL, &a, NULL);
+    xx = headerGetExtension(h, RPMTAG_NVRA, NULL, &NVRA, NULL);
+assert(NVRA);
 
     if (progArgv && strcmp(progArgv[0], "<lua>") == 0) {
 #ifdef WITH_LUA
 	rpmMessage(RPMMESS_DEBUG,
-		D_("%s: %s(%s-%s-%s.%s) running <lua> scriptlet.\n"),
-		psm->stepName, tag2sln(psm->scriptTag), n, v, r, a);
-	return runLuaScript(psm, h, sln, progArgc, progArgv,
+		D_("%s: %s(%s) running <lua> scriptlet.\n"),
+		psm->stepName, tag2sln(psm->scriptTag), NVRA);
+	rc = runLuaScript(psm, h, sln, progArgc, progArgv,
 			    script, arg1, arg2);
-#else
-	return RPMRC_FAIL;
 #endif
+	goto exit;
     }
 
     psm->sq.reaper = 1;
@@ -653,16 +653,17 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
     if (ldconfig_path && progArgv != NULL && psm->unorderedSuccessor) {
  	if (ldconfig_done && !strcmp(progArgv[0], ldconfig_path)) {
 	    rpmMessage(RPMMESS_DEBUG,
-		D_("%s: %s(%s-%s-%s.%s) skipping redundant \"%s\".\n"),
-		psm->stepName, tag2sln(psm->scriptTag), n, v, r, a,
+		D_("%s: %s(%s) skipping redundant \"%s\".\n"),
+		psm->stepName, tag2sln(psm->scriptTag), NVRA,
 		progArgv[0]);
-	    return rc;
+	    rc = RPMRC_OK;
+	    goto exit;
 	}
     }
 
     rpmMessage(RPMMESS_DEBUG,
-		D_("%s: %s(%s-%s-%s.%s) %ssynchronous scriptlet start\n"),
-		psm->stepName, tag2sln(psm->scriptTag), n, v, r, a,
+		D_("%s: %s(%s) %ssynchronous scriptlet start\n"),
+		psm->stepName, tag2sln(psm->scriptTag), NVRA,
 		(psm->unorderedSuccessor ? "a" : ""));
 
     if (!progArgv) {
@@ -700,10 +701,8 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
 	FD_t fd;
 
 	/*@-branchstate@*/
-	if (makeTempFile((!rpmtsChrootDone(ts) ? rootDir : "/"), &fn, &fd)) {
-	    if (prefixes != NULL && freePrefixes) free(prefixes);
-	    return RPMRC_FAIL;
-	}
+	if (makeTempFile((!rpmtsChrootDone(ts) ? rootDir : "/"), &fn, &fd))
+	    goto exit;
 	/*@=branchstate@*/
 
 	if (rpmIsDebug() &&
@@ -755,18 +754,18 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
     } else {
 	out = fdDup(STDOUT_FILENO);
     }
-    if (out == NULL) return RPMRC_FAIL;	/* XXX can't happen */
+    if (out == NULL)	/* XXX can't happen */
+	goto exit;
 
     /*@-branchstate@*/
     xx = rpmsqFork(&psm->sq);
     if (psm->sq.child == 0) {
-	const char * rootDir;
 	int pipes[2];
 	int flag;
 	int fdno;
 
 	pipes[0] = pipes[1] = 0;
-	/* make stdin inaccessible */
+	/* Make stdin inaccessible */
 	xx = pipe(pipes);
 	xx = close(pipes[1]);
 	xx = dup2(pipes[0], STDIN_FILENO);
@@ -777,6 +776,10 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
 	    flag = fcntl(fdno, F_GETFD);
 	    if (flag == -1 || (flag & FD_CLOEXEC))
 		continue;
+	    rpmMessage(RPMMESS_DEBUG,
+			D_("%s: %s(%s)\tfdno(%d) missing FD_CLOEXEC\n"),
+			psm->stepName, sln, NVRA,
+			fdno);
 	    xx = fcntl(fdno, F_SETFD, FD_CLOEXEC);
 	    /* XXX W2DO? debug msg for inheirited fdno w/o FD_CLOEXEC */
 	}
@@ -819,14 +822,7 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
 	    }
 	}
 
-	rootDir = ts->rootDir;	/* HACK: rootDir = rpmtsRootDir(ts); instead */
-	if (rootDir  != NULL)	/* XXX can't happen */
-	switch(urlIsURL(rootDir)) {
-	case URL_IS_PATH:
-	    rootDir += sizeof("file://") - 1;
-	    rootDir = strchr(rootDir, '/');
-	    /*@fallthrough@*/
-	case URL_IS_UNKNOWN:
+	{   const char * rootDir = rpmtsRootDir(ts);
 	    if (!rpmtsChrootDone(ts) &&
 		!(rootDir[0] == '/' && rootDir[1] == '\0'))
 	    {
@@ -835,8 +831,8 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
 		/*@=superuser =noeffect @*/
 	    }
 	    xx = Chdir("/");
-	    rpmMessage(RPMMESS_DEBUG, D_("%s: %s(%s-%s-%s.%s)\texecv(%s) pid %d\n"),
-			psm->stepName, sln, n, v, r, a,
+	    rpmMessage(RPMMESS_DEBUG, D_("%s: %s(%s)\texecv(%s) pid %d\n"),
+			psm->stepName, sln, NVRA,
 			argv[0], (unsigned)getpid());
 
 	    /* XXX Don't mtrace into children. */
@@ -852,21 +848,11 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
 /*@-moduncon@*/
 		xx = rpm_execcon(0, argv[0], (char *const *)argv, environ);
 /*@=moduncon@*/
-		if (xx != 0)
-		    break;
-	    }
-
+	    } else {
 /*@-nullstate@*/
-	    xx = execv(argv[0], (char *const *)argv);
+		xx = execv(argv[0], (char *const *)argv);
 /*@=nullstate@*/
-	    break;
-	case URL_IS_HTTPS:
-	case URL_IS_HTTP:
-	case URL_IS_FTP:
-	case URL_IS_DASH:
-	case URL_IS_HKP:
-	default:
-	    break;
+	    }
 	}
 
 	if (ssp != NULL)
@@ -879,7 +865,6 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
 
     if (psm->sq.child == (pid_t)-1) {
         rpmError(RPMERR_FORK, _("Couldn't fork %s: %s\n"), sln, strerror(errno));
-        rc = RPMRC_FAIL;
         goto exit;
     }
 
@@ -889,36 +874,41 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
   if (!(psm->sq.reaped >= 0 && !strcmp(argv[0], "/usr/sbin/glibc_post_upgrade") && WEXITSTATUS(psm->sq.status) == 110)) {
     if (psm->sq.reaped < 0) {
 	rpmError(RPMERR_SCRIPT,
-		_("%s(%s-%s-%s.%s) scriptlet failed, waitpid(%d) rc %d: %s\n"),
-		 sln, n, v, r, a, psm->sq.child, psm->sq.reaped, strerror(errno));
-	rc = RPMRC_FAIL;
+		_("%s(%s) scriptlet failed, waitpid(%d) rc %d: %s\n"),
+		 sln, NVRA, psm->sq.child, psm->sq.reaped, strerror(errno));
+	goto exit;
     } else
     if (!WIFEXITED(psm->sq.status) || WEXITSTATUS(psm->sq.status)) {
-      if (WIFSIGNALED(psm->sq.status)) {
-        rpmError(RPMERR_SCRIPT,
-                 _("%s(%s-%s-%s.%s) scriptlet failed, signal %d\n"),
-                 sln, n, v, r, a, WTERMSIG(psm->sq.status));
-      } else {
-	rpmError(RPMERR_SCRIPT,
-		_("%s(%s-%s-%s.%s) scriptlet failed, exit status %d\n"),
-		sln, n, v, r, a, WEXITSTATUS(psm->sq.status));
-      }
-	rc = RPMRC_FAIL;
+	if (WIFSIGNALED(psm->sq.status)) {
+	    rpmError(RPMERR_SCRIPT,
+                 _("%s(%s) scriptlet failed, signal %d\n"),
+                 sln, NVRA, WTERMSIG(psm->sq.status));
+	} else {
+	    rpmError(RPMERR_SCRIPT,
+		_("%s(%s) scriptlet failed, exit status %d\n"),
+		sln, NVRA, WEXITSTATUS(psm->sq.status));
+	}
+	goto exit;
     }
   }
+
+    rc = RPMRC_OK;
 
 exit:
     if (freePrefixes) prefixes = hfd(prefixes, ipt);
 
-    xx = Fclose(out);	/* XXX dup'd STDOUT_FILENO */
+    if (out)
+	xx = Fclose(out);	/* XXX dup'd STDOUT_FILENO */
 
     /*@-branchstate@*/
     if (script) {
 	if (!rpmIsDebug())
-	    xx = unlink(fn);
+	    xx = Unlink(fn);
 	fn = _free(fn);
     }
     /*@=branchstate@*/
+
+    NVRA = _free(NVRA);
 
     return rc;
 }
@@ -1005,8 +995,8 @@ static rpmRC handleOneTrigger(const rpmpsm psm,
     int xx;
     int i;
 
-    xx = headerNVR(sourceH, &sourceName, NULL, NULL);
-    xx = headerNVR(triggeredH, &triggerName, NULL, NULL);
+    xx = hge(sourceH, RPMTAG_NAME, NULL, &sourceName, NULL);
+    xx = hge(triggeredH, RPMTAG_NAME, NULL, &triggerName, NULL);
 
     trigger = rpmdsInit(rpmdsNew(triggeredH, RPMTAG_TRIGGERNAME, scareMem));
     if (trigger == NULL)

@@ -236,7 +236,7 @@ rpmtsCallback(/*@unused@*/ const void * hd, const rpmCallbackType what,
     if (pkgObj == NULL) {
 	if (h) {
 	    const char * n = NULL;
-	    (void) headerNVR(h, &n, NULL, NULL);
+	    (void) headerGetEntry(h, RPMTAG_NAME, NULL, &n, NULL);
 	    pkgObj = Py_BuildValue("s", n);
 	} else {
 	    pkgObj = Py_None;

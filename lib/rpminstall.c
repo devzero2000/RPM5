@@ -311,11 +311,9 @@ int rpmcliInstall(rpmts ts, QVA_t ia, const char ** argv)
     int numFailed = 0;
     int numRPMS = 0;
     rpmRelocation relocations = NULL;
-    rpmRC rpmrc = RPMRC_OK;
     rpmVSFlags vsflags, ovsflags;
     int rc;
     int xx;
-    int i;
 
     if (argv == NULL) goto exit;
 
@@ -423,10 +421,11 @@ if (fileURL[0] == '=') {
 		relocations->oldPath = xstrdup(paths[0]);
 		paths = headerFreeData(paths, pft);
 	    } else {
-		const char * name;
-		xx = headerNVR(h, &name, NULL, NULL);
+		const char * NVRA = NULL;
+		xx = headerGetExtension(h, RPMTAG_NVRA, NULL, &NVRA, NULL);
 		rpmMessage(RPMMESS_ERROR,
-			       _("package %s is not relocatable\n"), name);
+			       _("package %s is not relocatable\n"), NVRA);
+		NVRA = _free(NVRA);
 		numFailed++;
 		goto exit;
 		/*@notreached@*/
@@ -436,11 +435,11 @@ if (fileURL[0] == '=') {
 	/* === On --freshen, verify package is installed and newer. */
 	if (ia->installInterfaceFlags & INSTALL_FRESHEN) {
 	    rpmdbMatchIterator mi;
-	    const char * name;
+	    const char * name = NULL;
 	    Header oldH;
 	    int count;
 
-	    xx = headerNVR(h, &name, NULL, NULL);
+	    xx = headerGetEntry(h, RPMTAG_NAME, NULL, &name, NULL);
 	    mi = rpmtsInitIterator(ts, RPMTAG_NAME, name, 0);
 	    count = rpmdbGetIteratorCount(mi);
 	    while ((oldH = rpmdbNextIterator(mi)) != NULL) {

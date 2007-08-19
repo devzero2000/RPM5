@@ -2650,7 +2650,7 @@ int processBinaryFiles(Spec spec, int installSpecialDoc, int test)
     check_fileList = newStringBuf();
     
     for (pkg = spec->packages; pkg != NULL; pkg = pkg->next) {
-	const char *n, *v, *r;
+	const char *NVRA = NULL;
 	int rc;
 
 	if (pkg->fileList == NULL)
@@ -2658,8 +2658,9 @@ int processBinaryFiles(Spec spec, int installSpecialDoc, int test)
 
 	(void) headerMacrosLoad(pkg->header);
 
-	(void) headerNVR(pkg->header, &n, &v, &r);
-	rpmMessage(RPMMESS_NORMAL, _("Processing files: %s-%s-%s\n"), n, v, r);
+	(void) headerGetExtension(pkg->header, RPMTAG_NVRA, NULL, &NVRA, NULL);
+	rpmMessage(RPMMESS_NORMAL, _("Processing files: %s\n"), NVRA);
+	NVRA = _free(NVRA);
 		   
 	if ((rc = processPackageFiles(spec, pkg, installSpecialDoc, test)))
 	    res = rc;

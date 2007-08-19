@@ -600,10 +600,12 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootURL,
 
     for (pkg = spec->packages; pkg != NULL; pkg = pkg->next) {
 	if (!headerIsEntry(pkg->header, RPMTAG_DESCRIPTION)) {
-	    const char * name;
-	    (void) headerNVR(pkg->header, &name, NULL, NULL);
+	    const char * NVRA = NULL;
+	    (void) headerGetExtension(pkg->header, RPMTAG_NVRA,
+			NULL, &NVRA, NULL);
 	    rpmError(RPMERR_BADSPEC, _("Package has no %%description: %s\n"),
-			name);
+			NVRA);
+	    NVRA = _free(NVRA);
 	    spec = freeSpec(spec);
 	    return RPMERR_BADSPEC;
 	}

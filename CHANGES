@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - jbj: eliminate headerNVR, use headerNEVRA instead.
     - jbj: eliminate the rpmrbFoo, use rpmcliInstallFoo instead.
     - jbj: load/unload header macros for %{_sourcedir} et al expansions.
     - jbj: don't open rpmdb O_RDWR iff srpm to permit non-root installs.

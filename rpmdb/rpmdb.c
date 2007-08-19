@@ -2791,9 +2791,10 @@ memset(data, 0, sizeof(*data));
     }
 #endif
 
-    {	const char *n, *v, *r;
-	(void) headerNVR(h, &n, &v, &r);
-	rpmMessage(RPMMESS_DEBUG, "  --- h#%8u %s-%s-%s\n", hdrNum, n, v, r);
+    {	const char * NVRA = NULL;
+	(void) headerGetExtension(h, RPMTAG_NVRA, NULL, &NVRA, NULL);
+	rpmMessage(RPMMESS_DEBUG, "  --- h#%8u %s\n", hdrNum, NVRA);
+	NVRA = _free(NVRA);
     }
 
     (void) blockSignals(db, &signalMask);
@@ -4027,7 +4028,7 @@ int rpmdbRebuild(const char * prefix, rpmts ts,
 		const char * name, * version, * release;
 		int skip = 0;
 
-		(void) headerNVR(h, &name, &version, &release);
+		(void) headerNEVRA(h, &name, NULL, &version, &release, NULL);
 
 		/*@-shadow@*/
 		{   rpmdbMatchIterator mi;

@@ -339,7 +339,7 @@ static void providePackageNVR(Header h)
     int bingo = 1;
 
     /* Generate provides for this package name-version-release. */
-    xx = headerNVR(h, &name, &version, &release);
+    xx = headerNEVRA(h, &name, NULL, &version, &release, NULL);
     if (!(name && version && release))
 	return;
     pEVR = p = alloca(21 + strlen(version) + 1 + strlen(release) + 1);

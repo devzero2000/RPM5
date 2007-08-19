@@ -384,7 +384,7 @@ static int doSetupMacro(Spec spec, char *line)
 	spec->buildSubdir = xstrdup(dirName);
     } else {
 	const char *name, *version;
-	(void) headerNVR(spec->packages->header, &name, &version, NULL);
+	(void) headerNEVRA(spec->packages->header, &name, NULL, &version, NULL, NULL);
 	sprintf(buf, "%s-%s", name, version);
 	spec->buildSubdir = xstrdup(buf);
     }

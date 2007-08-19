@@ -32,7 +32,6 @@ LIBRPMDB_0
     headerMacrosLoad;
     headerMacrosUnload;
     headerNEVRA;
-    headerNVR;
     hGetColor;
     _init;
     rpm_mergesort;

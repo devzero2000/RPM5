@@ -954,7 +954,8 @@ int parsePreamble(Spec spec, int initialPackage)
 	/* Construct the package */
 	if (flag == PART_SUBNAME) {
 	    const char * mainName;
-	    xx = headerNVR(spec->packages->header, &mainName, NULL, NULL);
+	    xx = headerGetEntry(spec->packages->header, RPMTAG_NAME,
+			NULL, &mainName, NULL);
 	    sprintf(NVR, "%s-%s", mainName, name);
 	} else
 	    strcpy(NVR, name);

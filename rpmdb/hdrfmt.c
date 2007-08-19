@@ -1101,7 +1101,7 @@ static int i18nTag(Header h, int_32 tag, /*@out@*/ rpmTagType * type,
 	    const char * n = NULL;
 	    char * mk;
 	    size_t nb = sizeof("()");
-	    int xx = headerNVR(h, &n, NULL, NULL);
+	    int xx = headerGetEntry(h, RPMTAG_NAME, NULL, &n, NULL);
 	    xx = 0;	/* XXX keep gcc quiet */
 	    if (tn)	nb += strlen(tn);
 	    if (n)	nb += strlen(n);
@@ -1343,11 +1343,13 @@ static char * hGetNVRA(Header h)
     char * NVRA, * t;
 
     (void) headerNEVRA(h, &N, NULL, &V, &R, &A);
-    if (N)	nb += strlen(N) + 1;
+    if (N)	nb += strlen(N);
     if (V)	nb += strlen(V) + 1;
     if (R)	nb += strlen(R) + 1;
     if (A)	nb += strlen(A) + 1;
-    NVRA = t = xcalloc(1, nb);
+    nb++;
+    NVRA = t = xmalloc(nb);
+    *t = '\0';
 /*@-boundswrite@*/
     if (N)	t = stpcpy(t, N);
     if (V)	t = stpcpy( stpcpy(t, "-"), V);

@@ -45,7 +45,7 @@ static inline int genSourceRpmName(Spec spec)
 	const char *name, *version, *release;
 	char fileName[BUFSIZ];
 
-	(void) headerNVR(spec->packages->header, &name, &version, &release);
+	(void) headerNEVRA(spec->packages->header, &name, NULL, &version, &release, NULL);
 	sprintf(fileName, "%s-%s-%s.%ssrc.rpm", name, version, release,
 	    spec->noSource ? "no" : "");
 	spec->sourceRpmName = xstrdup(fileName);
@@ -430,7 +430,7 @@ void providePackageNVR(Header h)
     int bingo = 1;
 
     /* Generate provides for this package name-version-release. */
-    xx = headerNVR(h, &name, &version, &release);
+    xx = headerNEVRA(h, &name, NULL, &version, &release, NULL);
     if (!(name && version && release))
 	return;
     pEVR = p = alloca(21 + strlen(version) + 1 + strlen(release) + 1);
@@ -707,7 +707,7 @@ if (!_nolead)
 	lead.signature_type = RPMSIGTYPE_HEADERSIG;
 
 	{   const char *name, *version, *release;
-	    (void) headerNVR(h, &name, &version, &release);
+	    (void) headerNEVRA(h, &name, NULL, &version, &release, NULL);
 	    sprintf(buf, "%s-%s-%s", name, version, release);
 	    strncpy(lead.name, buf, sizeof(lead.name));
 	}
@@ -876,10 +876,12 @@ int packageBinaries(Spec spec)
 			       rpmHeaderFormats, &errorString);
 	    binFormat = _free(binFormat);
 	    if (binRpm == NULL) {
-		const char *name;
-		(void) headerNVR(pkg->header, &name, NULL, NULL);
+		const char *NVRA = NULL;
+		(void) headerGetExtension(pkg->header, RPMTAG_NVRA,
+			NULL, &NVRA, NULL);
 		rpmError(RPMERR_BADFILENAME, _("Could not generate output "
-		     "filename for package %s: %s\n"), name, errorString);
+		     "filename for package %s: %s\n"), NVRA, errorString);
+		NVRA = _free(NVRA);
 		return RPMERR_BADFILENAME;
 	    }
 	    fn = rpmGetPath("%{_rpmdir}/", binRpm, NULL);

@@ -135,11 +135,6 @@ int headerMacrosUnload(Header h)
     return 0;
 }
 
-int headerNVR(Header h, const char **np, const char **vp, const char **rp)
-{
-    return headerNEVRA(h, np, NULL, vp, rp, NULL);
-}
-
 int headerNEVRA(Header h, const char **np,
 		/*@unused@*/ const char **ep, const char **vp, const char **rp,
 		const char **ap)

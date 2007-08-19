@@ -524,7 +524,7 @@ rpmds rpmdsThis(Header h, rpmTag tagN, int_32 Flags)
     } else
 	goto exit;
 
-    xx = headerNVR(h, &n, &v, &r);
+    xx = headerNEVRA(h, &n, NULL, &v, &r, NULL);
     ep = NULL;
     xx = hge(h, RPMTAG_EPOCH, NULL, &ep, NULL);
 
@@ -3820,7 +3820,7 @@ assert((rpmdsFlags(req) & RPMSENSE_SENSEMASK) == req->ns.Flags);
 /*@=boundsread@*/
 
     /* Get package information from header */
-    (void) headerNVR(h, &pkgN, &V, &R);
+    (void) headerNEVRA(h, &pkgN, NULL, &V, &R, NULL);
 
     nb = 21 + 1 + 1;
     if (V) nb += strlen(V);
