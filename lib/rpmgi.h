@@ -162,6 +162,14 @@ rpmRC rpmgiNext(/*@null@*/ rpmgi gi)
         /*@modifies gi, rpmGlobalMacroContext, h_errno, internalState @*/;
 
 /**
+ * Return current iteration flags.
+ * @param gi		generalized iterator
+ * @returns		flags
+ */
+rpmgiFlags rpmgiGetFlags(/*@null@*/ rpmgi gi)
+        /*@*/;
+
+/**
  * Return current header path.
  * @param gi		generalized iterator
  * @returns		header path

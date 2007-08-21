@@ -811,6 +811,11 @@ enditer:
     return rpmrc;
 }
 
+rpmgiFlags rpmgiGetFlags(rpmgi gi)
+{
+    return (gi != NULL ? gi->flags : RPMGI_NONE);
+}
+
 const char * rpmgiHdrPath(rpmgi gi)
 {
     return (gi != NULL ? gi->hdrPath : NULL);

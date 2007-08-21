@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - jbj: add rpmgiGetFlags() for opaque rpmgi queries.
     - jbj: permit --ftswalk on sign/verify paths. not yet install ...
     - jbj: use ftsOpts from CLI where rpmgi is used.
     - jbj: insure srpm file dispositions are FA_CREATE.
