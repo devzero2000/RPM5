@@ -13,7 +13,7 @@
 #endif
 
 #include "rpmte.h"		/* XXX rpmtsPrint() */
-#define	_RPMTS_INTERNAL		/* XXX ts->goal, ts->suggests */
+#define	_RPMTS_INTERNAL		/* XXX ts->suggests */
 #include "rpmts.h"
 
 #include "manifest.h"
@@ -21,7 +21,7 @@
 #include "rpmgi.h"
 #include "debug.h"
 
-/*@access rpmts @*/	/* XXX ts->goal */
+/*@access rpmts @*/	/* XXX ts->suggests */
 
 /*@unchecked@*/
 int rpmcliPackagesTotal = 0;
@@ -317,7 +317,7 @@ int rpmcliInstall(rpmts ts, QVA_t ia, const char ** argv)
 
     if (argv == NULL) goto exit;
 
-    ts->goal = TSM_INSTALL;
+    (void) rpmtsSetGoal(ts, TSM_INSTALL);
     rpmcliPackagesTotal = 0;
 
     if (rpmExpandNumeric("%{?_repackage_all_erasures}"))
@@ -553,7 +553,7 @@ int rpmErase(rpmts ts, QVA_t ia, const char ** argv)
     }
 #endif
 
-    ts->goal = TSM_ERASE;
+    rpmtsSetGoal(ts, TSM_ERASE);
 
     for (arg = argv; *arg; arg++) {
 	rpmdbMatchIterator mi;

@@ -723,6 +723,8 @@ static inline const char *rcsid(const char *p) { \
 
 #define	SUPPORT_RPMLEAD		0	/* XXX default is add lead. */
 
+#define	SUPPORT_AVAILABLE_PACKAGES	1
+
 /**
  * Turn off pgp/pgp5 signing (hasn't been looked at seriously for years).
  */

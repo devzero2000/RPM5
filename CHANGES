@@ -1,4 +1,7 @@
 4.5 -> 5.0:
+    - jbj: start marking availablePackages for destruction.
+    - jbj: make a pass checking rpmts opaqueness.
+    - jbj: rpmtsGoal() and rpmtsSetGoal() added.
     - jbj: add rpmgiGetFlags() for opaque rpmgi queries.
     - jbj: permit --ftswalk on sign/verify paths. not yet install ...
     - jbj: use ftsOpts from CLI where rpmgi is used.

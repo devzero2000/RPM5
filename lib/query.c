@@ -25,8 +25,6 @@
 
 #include "debug.h"
 
-/*@access rpmgi @*/
-
 /**
  */
 static void printFileInfo(char * te, const char * name,

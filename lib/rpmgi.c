@@ -745,21 +745,21 @@ enditer:
 
 	/* Block access to indices used for depsolving. */
 	if (!(gi->flags & RPMGI_ERASING)) {
-	    ts->goal = TSM_INSTALL;
-	    xx = rpmdbBlockDBI(ts->rdb, -RPMDBI_DEPENDS);
-	    xx = rpmdbBlockDBI(ts->rdb, -RPMTAG_BASENAMES);
-	    xx = rpmdbBlockDBI(ts->rdb, -RPMTAG_PROVIDENAME);
+	    rpmtsSetGoal(ts, TSM_INSTALL);
+	    xx = rpmdbBlockDBI(rpmtsGetRdb(ts), -RPMDBI_DEPENDS);
+	    xx = rpmdbBlockDBI(rpmtsGetRdb(ts), -RPMTAG_BASENAMES);
+	    xx = rpmdbBlockDBI(rpmtsGetRdb(ts), -RPMTAG_PROVIDENAME);
 	} else {
-	    ts->goal = TSM_ERASE;
+	    rpmtsSetGoal(ts, TSM_ERASE);
 	}
 
 	xx = rpmtsCheck(ts);
 
 	/* Permit access to indices used for depsolving. */
 	if (!(gi->flags & RPMGI_ERASING)) {
-	    xx = rpmdbBlockDBI(ts->rdb, +RPMTAG_PROVIDENAME);
-	    xx = rpmdbBlockDBI(ts->rdb, +RPMTAG_BASENAMES);
-	    xx = rpmdbBlockDBI(ts->rdb, +RPMDBI_DEPENDS);
+	    xx = rpmdbBlockDBI(rpmtsGetRdb(ts), +RPMTAG_PROVIDENAME);
+	    xx = rpmdbBlockDBI(rpmtsGetRdb(ts), +RPMTAG_BASENAMES);
+	    xx = rpmdbBlockDBI(rpmtsGetRdb(ts), +RPMDBI_DEPENDS);
 	}
 
 	/* XXX query/verify will need the glop added to a buffer instead. */

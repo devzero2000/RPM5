@@ -19,7 +19,7 @@ extern int _rpmts_stats;
 extern int _fps_debug;
 /*@=exportlocal@*/
 
-/**
+/** \ingroup rpmts
  * Bit(s) to control digest and signature verification.
  */
 typedef enum rpmVSFlags_e {
@@ -39,7 +39,7 @@ typedef enum rpmVSFlags_e {
     /* bit(s) 20-31 unused */
 } rpmVSFlags;
 
-/**
+/** \ingroup rpmts
  * Transaction Types
  */
 typedef enum rpmTSType_e {
@@ -72,7 +72,7 @@ typedef enum rpmTSType_e {
     RPMVSF_NODSA |		\
     RPMVSF_NORSA )
 
-/**
+/** \ingroup rpmts
  * Indices for timestamps.
  */
 typedef	enum rpmtsOpX_e {
@@ -99,6 +99,14 @@ typedef	enum rpmtsOpX_e {
     RPMTS_OP_DEBUG		= 20,
     RPMTS_OP_MAX		= 20
 } rpmtsOpX;
+
+/** \ingroup rpmts
+ */
+typedef enum tsStage_e {
+    TSM_UNKNOWN		=  0,
+    TSM_INSTALL		=  7,
+    TSM_ERASE		=  8,
+} tsmStage;
 
 #if defined(_RPMTS_INTERNAL)
 
@@ -141,14 +149,6 @@ struct diskspaceInfo_s {
 #define	adj_fs_blocks(_nb)	(((_nb) * 21) / 20)
 
 #define BLOCK_ROUND(size, block) (((size) + (block) - 1) / (block))
-
-/** \ingroup rpmts
- */
-typedef enum tsStage_e {
-    TSM_UNKNOWN		=  0,
-    TSM_INSTALL		=  7,
-    TSM_ERASE		=  8,
-} tsmStage;
 
 /** \ingroup rpmts
  * The set of packages to be installed/removed atomically.
@@ -972,6 +972,23 @@ rpmte rpmtsRelocateElement(rpmts ts)
  */
 /*@null@*/
 rpmte rpmtsSetRelocateElement(rpmts ts, /*@null@*/ rpmte relocateElement)
+	/*@modifies ts @*/;
+
+/**
+ * Retrieve goal of transaction set.
+ * @param ts		transaction set
+ * @return		color bits
+ */
+tsmStage rpmtsGoal(rpmts ts)
+	/*@*/;
+
+/**
+ * Set goal of transaction set.
+ * @param ts		transaction set
+ * @param goal		new goal
+ * @return		previous goal
+ */
+tsmStage rpmtsSetGoal(rpmts ts, tsmStage goal)
 	/*@modifies ts @*/;
 
 /**

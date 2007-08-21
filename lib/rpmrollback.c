@@ -12,7 +12,7 @@
 
 #define	_RPMTE_INTERNAL		/* XXX findErases needs rpmte internals. */
 #include "rpmte.h"		/* XXX: rpmteChain */
-#define	_RPMTS_INTERNAL		/* ts->goal, ts->dbmode, ts->suggests */
+#define	_RPMTS_INTERNAL		/* XXX ts->teErase, ts->probs */
 #include "rpmts.h"
 
 #include "manifest.h"
@@ -20,7 +20,6 @@
 #include "rpmgi.h"		/* XXX rpmgiEscapeSpaces */
 #include "debug.h"
 
-/*@access rpmts @*/	/* XXX ts->goal, ts->dbmode */
 /*@access rpmte @*/	/* XXX p->hdrid, p->pkgid, p->NEVRA */
 /*@access IDTX @*/
 /*@access IDT @*/

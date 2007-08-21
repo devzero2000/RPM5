@@ -1449,6 +1449,21 @@ rpmte rpmtsSetRelocateElement(rpmts ts, rpmte relocateElement)
     return orelocateElement;
 }
 
+tsmStage rpmtsGoal(rpmts ts)
+{
+    return (ts != NULL ? ts->goal : TSM_UNKNOWN);
+}
+
+tsmStage rpmtsSetGoal(rpmts ts, tsmStage goal)
+{
+    tsmStage ogoal = TSM_UNKNOWN;
+    if (ts != NULL) {
+	ogoal = ts->goal;
+	ts->goal = goal;
+    }
+    return ogoal;
+}
+
 uint_32 rpmtsColor(rpmts ts)
 {
     return (ts != NULL ? ts->color : 0);

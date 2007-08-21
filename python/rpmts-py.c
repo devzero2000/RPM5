@@ -20,7 +20,9 @@
 #include "rpmte-py.h"
 #include "spec-py.h"
 
-#define	_RPMTS_INTERNAL	/* XXX for ts->rdb, ts->availablePackage */
+#if defined(SUPPORT_AVAILABLE_PACKAGES)
+#define	_RPMTS_INTERNAL	/* XXX for ts->availablePackage */
+#endif
 #include "rpmts-py.h"
 
 #include "debug.h"
@@ -302,6 +304,7 @@ fprintf(stderr, "\t%lu:%lu key %p\n", oamount, ototal, pkgKey);
     return NULL;
 }
 
+#if defined(SUPPORT_AVAILABLE_PACKAGES)
 /**
  * Add package to universe of possible packages to install in transaction set.
  * @param ts		transaction set
@@ -327,6 +330,7 @@ if (_rpmts_debug < 0)
 fprintf(stderr, "\tAddAvailable(%p) list %p\n", ts, ts->availablePackages);
 
 }
+#endif
 
 #if Py_TPFLAGS_HAVE_ITER
 /**
@@ -438,9 +442,11 @@ fprintf(stderr, "*** rpmts_AddInstall(%p,%p,%p,%s) ts %p\n", s, h, key, how, s->
     } else if (how && !strcmp(how, "u"))
     	isUpgrade = 1;
 
+#if defined(SUPPORT_AVAILABLE_PACKAGES)
     if (how && !strcmp(how, "a"))
 	rpmtsAddAvailableElement(s->ts, hdrGetHeader(h), key);
     else
+#endif
 	rpmtsAddInstallElement(s->ts, hdrGetHeader(h), key, isUpgrade, NULL);
 
     /* This should increment the usage count for me */
@@ -1402,9 +1408,9 @@ fprintf(stderr, "*** rpmts_Match(%p) ts %p\n", s, s->ts);
 
     /* XXX If not already opened, open the database O_RDONLY now. */
     /* XXX FIXME: lazy default rdonly open also done by rpmtsInitIterator(). */
-    if (s->ts->rdb == NULL) {
+    if (rpmtsGetRdb(s->ts) == NULL) {
 	int rc = rpmtsOpenDB(s->ts, O_RDONLY);
-	if (rc || s->ts->rdb == NULL) {
+	if (rc || rpmtsGetRdb(s->ts) == NULL) {
 	    PyErr_SetString(PyExc_TypeError, "rpmdb open failed");
 	    return NULL;
 	}
@@ -1521,7 +1527,7 @@ static void rpmts_dealloc(/*@only@*/ rpmtsObject * s)
 {
 
 if (_rpmts_debug)
-fprintf(stderr, "%p -- ts %p db %p\n", s, s->ts, s->ts->rdb);
+fprintf(stderr, "%p -- ts %p db %p\n", s, s->ts, rpmtsGetRdb(s->ts));
     s->ts = rpmtsFree(s->ts);
 
     if (s->scriptFd) Fclose(s->scriptFd);
@@ -1600,7 +1606,7 @@ static void rpmts_free(/*@only@*/ rpmtsObject * s)
 	/*@modifies s @*/
 {
 if (_rpmts_debug)
-fprintf(stderr, "%p -- ts %p db %p\n", s, s->ts, s->ts->rdb);
+fprintf(stderr, "%p -- ts %p db %p\n", s, s->ts, rpmtsGetRdb(s->ts));
     s->ts = rpmtsFree(s->ts);
 
     if (s->scriptFd)
@@ -1640,7 +1646,7 @@ static PyObject * rpmts_new(PyTypeObject * subtype, PyObject *args, PyObject *kw
     }
 
 if (_rpmts_debug)
-fprintf(stderr, "%p ++ ts %p db %p\n", s, s->ts, s->ts->rdb);
+fprintf(stderr, "%p ++ ts %p db %p\n", s, s->ts, rpmtsGetRdb(s->ts));
 
     return (PyObject *)s;
 }
@@ -1731,6 +1737,6 @@ rpmts_Create(/*@unused@*/ PyObject * self, PyObject * args, PyObject * kwds)
     o->tsiFilter = 0;
 
 if (_rpmts_debug)
-fprintf(stderr, "%p ++ ts %p db %p\n", o, o->ts, o->ts->rdb);
+fprintf(stderr, "%p ++ ts %p db %p\n", o, o->ts, rpmtsGetRdb(o->ts));
     return o;
 }
