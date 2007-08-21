@@ -20,9 +20,6 @@
 #include "rpmte-py.h"
 #include "spec-py.h"
 
-#if defined(SUPPORT_AVAILABLE_PACKAGES)
-#define	_RPMTS_INTERNAL	/* XXX for ts->availablePackage */
-#endif
 #include "rpmts-py.h"
 
 #include "debug.h"
@@ -304,34 +301,6 @@ fprintf(stderr, "\t%lu:%lu key %p\n", oamount, ototal, pkgKey);
     return NULL;
 }
 
-#if defined(SUPPORT_AVAILABLE_PACKAGES)
-/**
- * Add package to universe of possible packages to install in transaction set.
- * @param ts		transaction set
- * @param h		header
- * @param key		package private data
- */
-static void rpmtsAddAvailableElement(rpmts ts, Header h,
-		/*@exposed@*/ /*@null@*/ fnpyKey key)
-	/*@globals rpmGlobalMacroContext @*/
-	/*@modifies h, ts, rpmGlobalMacroContext @*/
-{
-    int scareMem = 0;
-    rpmds provides = rpmdsNew(h, RPMTAG_PROVIDENAME, scareMem);
-    rpmfi fi = rpmfiNew(ts, h, RPMTAG_BASENAMES, scareMem);
-
-    /* XXX FIXME: return code RPMAL_NOMATCH is error */
-    (void) rpmalAdd(&ts->availablePackages, RPMAL_NOMATCH, key,
-		provides, fi, rpmtsColor(ts));
-    fi = rpmfiFree(fi);
-    provides = rpmdsFree(provides);
-
-if (_rpmts_debug < 0)
-fprintf(stderr, "\tAddAvailable(%p) list %p\n", ts, ts->availablePackages);
-
-}
-#endif
-
 #if Py_TPFLAGS_HAVE_ITER
 /**
  */
@@ -442,11 +411,6 @@ fprintf(stderr, "*** rpmts_AddInstall(%p,%p,%p,%s) ts %p\n", s, h, key, how, s->
     } else if (how && !strcmp(how, "u"))
     	isUpgrade = 1;
 
-#if defined(SUPPORT_AVAILABLE_PACKAGES)
-    if (how && !strcmp(how, "a"))
-	rpmtsAddAvailableElement(s->ts, hdrGetHeader(h), key);
-    else
-#endif
 	rpmtsAddInstallElement(s->ts, hdrGetHeader(h), key, isUpgrade, NULL);
 
     /* This should increment the usage count for me */
@@ -556,9 +520,6 @@ fprintf(stderr, "*** rpmts_Check(%p) ts %p cb %p\n", s, s->ts, cbInfo.cb);
     cbInfo.dso = NULL;		/* XXX perhaps persistent? */
     cbInfo.pythonError = 0;
     cbInfo._save = PyEval_SaveThread();
-
-    /* XXX resurrect availablePackages one more time ... */
-    rpmalMakeIndex(s->ts->availablePackages);
 
     xx = rpmtsCheck(s->ts);
     ps = rpmtsProblems(s->ts);
@@ -833,10 +794,10 @@ rpmts_OpenDB(rpmtsObject * s)
 if (_rpmts_debug)
 fprintf(stderr, "*** rpmts_OpenDB(%p) ts %p\n", s, s->ts);
 
-    if (s->ts->dbmode == -1)
-	s->ts->dbmode = O_RDONLY;
+    if (rpmtsDbmode(s->ts) == -1)
+	(void) rpmtsSetDbmode(s->ts, O_RDONLY);
 
-    return Py_BuildValue("i", rpmtsOpenDB(s->ts, s->ts->dbmode));
+    return Py_BuildValue("i", rpmtsOpenDB(s->ts, rpmtsDbmode(s->ts)));
 }
 
 /**
@@ -852,7 +813,7 @@ if (_rpmts_debug)
 fprintf(stderr, "*** rpmts_CloseDB(%p) ts %p\n", s, s->ts);
 
     rc = rpmtsCloseDB(s->ts);
-    s->ts->dbmode = -1;		/* XXX disable lazy opens */
+    (void) rpmtsSetDbmode(s->ts, -1);		/* XXX disable lazy opens */
 
     return Py_BuildValue("i", rc);
 }
@@ -1259,7 +1220,7 @@ rpmts_Run(rpmtsObject * s, PyObject * args, PyObject * kwds)
     }
 
     /* Initialize security context patterns (if not already done). */
-    if (!(s->ts->transFlags & RPMTRANS_FLAG_NOCONTEXTS)) {
+    if (!(rpmtsFlags(s->ts) & RPMTRANS_FLAG_NOCONTEXTS)) {
 	    const char *fn = rpmGetPath("%{?_install_file_context_path}", NULL);
 	if (fn != NULL && *fn != '\0')
 	    rc = matchpathcon_init(fn);

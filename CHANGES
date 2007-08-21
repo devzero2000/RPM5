@@ -1,4 +1,6 @@
 4.5 -> 5.0:
+    - jbj: start ripping availablePackages.
+    - jbj: rpmtsDbmode() and rpmtsSetDbmode() added for rpmts-py.c opaqueness.
     - jbj: start marking availablePackages for destruction.
     - jbj: make a pass checking rpmts opaqueness.
     - jbj: rpmtsGoal() and rpmtsSetGoal() added.

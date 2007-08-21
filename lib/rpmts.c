@@ -1464,6 +1464,21 @@ tsmStage rpmtsSetGoal(rpmts ts, tsmStage goal)
     return ogoal;
 }
 
+int rpmtsDbmode(rpmts ts)
+{
+    return (ts != NULL ? ts->dbmode : 0);
+}
+
+int rpmtsSetDbmode(rpmts ts, int dbmode)
+{
+    int odbmode = 0;
+    if (ts != NULL) {
+	odbmode = ts->dbmode;
+	ts->dbmode = dbmode;
+    }
+    return odbmode;
+}
+
 uint_32 rpmtsColor(rpmts ts)
 {
     return (ts != NULL ? ts->color : 0);

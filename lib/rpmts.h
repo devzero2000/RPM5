@@ -977,7 +977,7 @@ rpmte rpmtsSetRelocateElement(rpmts ts, /*@null@*/ rpmte relocateElement)
 /**
  * Retrieve goal of transaction set.
  * @param ts		transaction set
- * @return		color bits
+ * @return		goal
  */
 tsmStage rpmtsGoal(rpmts ts)
 	/*@*/;
@@ -989,6 +989,23 @@ tsmStage rpmtsGoal(rpmts ts)
  * @return		previous goal
  */
 tsmStage rpmtsSetGoal(rpmts ts, tsmStage goal)
+	/*@modifies ts @*/;
+
+/**
+ * Retrieve dbmode of transaction set.
+ * @param ts		transaction set
+ * @return		dbmode
+ */
+int rpmtsDbmode(rpmts ts)
+	/*@*/;
+
+/**
+ * Set dbmode of transaction set.
+ * @param ts		transaction set
+ * @param dbmode	new dbmode
+ * @return		previous dbmode
+ */
+int rpmtsSetDbmode(rpmts ts, int dbmode)
 	/*@modifies ts @*/;
 
 /**

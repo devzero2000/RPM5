@@ -346,6 +346,7 @@ LIBRPM_0
     rpmtsCreate;
     rpmtsCurrDir;
     _rpmts_debug;
+    rpmtsDbmode;
     rpmtsDFlags;
     rpmtsDig;
     rpmtsDoARBGoal;
@@ -359,6 +360,7 @@ LIBRPM_0
     rpmtsGetRdb;
     rpmtsGetTid;
     rpmtsGetType;
+    rpmtsGoal;
     rpmtsiNext;
     rpmtsInitDB;
     rpmtsInitDSI;
@@ -383,8 +385,10 @@ LIBRPM_0
     rpmtsSetChrootDone;
     rpmtsSetColor;
     rpmtsSetCurrDir;
+    rpmtsSetDbmode;
     rpmtsSetDFlags;
     rpmtsSetFlags;
+    rpmtsSetGoal;
     rpmtsSetNotifyCallback;
     rpmtsSetREContext;
     rpmtsSetRelocateElement;
