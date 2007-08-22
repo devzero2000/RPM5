@@ -4,9 +4,9 @@ AUTOMAKE_OPTIONS = 1.4 foreign
 
 LINT = splint
 
-EXTRA_DIST = tax.c tdir.c tfts.c tget.c thkp.c tput.c tglob.c tinv.c tkey.c trpmio.c lookup3.c librpmio.vers
+EXTRA_DIST = tax.c tdir.c tfts.c tget.c thkp.c tput.c tglob.c tinv.c tkey.c trpmio.c lookup3.c tpw.c librpmio.vers
 
-EXTRA_PROGRAMS = tax tdir tfts tget thkp tmacro tput tglob tinv tkey tmagic trpmio tsw dumpasn1 lookup3
+EXTRA_PROGRAMS = tax tdir tfts tget thkp tmacro tput tglob tinv tkey tmagic trpmio tsw dumpasn1 lookup3 tpw
 
 AM_CPPFLAGS = \
 	-I$(srcdir) \
@@ -133,6 +133,9 @@ tkey_LDADD = $(RPM_LDADD)
 
 trpmio_SOURCES = trpmio.c
 trpmio_LDADD = $(RPM_LDADD)
+
+tpw_SOURCES = tpw.c
+tpw_LDFLAGS = $(RPM_LDADD)
 
 tsw_SOURCES = tsw.c
 tsw_LDFLAGS = $(RPM_LDADD)
