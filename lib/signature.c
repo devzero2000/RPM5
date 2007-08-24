@@ -570,15 +570,16 @@ static int makeGPGSignature(const char * file, int_32 * sigTagp,
     delMacro(NULL, "__plaintext_filename");
     delMacro(NULL, "__signature_filename");
 
-#if defined(XXX_HAVE_KEYUTILS_H)
+#if defined(HAVE_KEYUTILS_H)
     if (!strcmp(passPhrase, "@u user rpm:passwd")) {
-	key_serial_t key, keyring = KEY_SPEC_USER_KEYRING;
+	key_serial_t keyring = KEY_SPEC_PROCESS_KEYRING;
+	long key;
 	int xx;
 
-	if ((key = keyctl_search(keyring, "user", "rpm:passwd", 0) != 0)
-	 && (xx = keyctl_read_alloc(key, (void **)&pw)) < 0) {
-	    rpmError(RPMERR_SIGGEN, _("Failed %s(%d): %s\n"),
-			"keyctl_read_alloc", xx, strerror(errno));
+	key = keyctl_search(keyring, "user", "rpm:passwd", 0);
+	if ((xx = keyctl_read_alloc(key, (void **)&pw)) < 0) {
+	    rpmError(RPMERR_SIGGEN, _("Failed %s(%d) key(0x%lx): %s\n"),
+			"keyctl_read_alloc of key", xx, key, strerror(errno));
 	    return 1;
 	}
     } else
@@ -931,15 +932,16 @@ int rpmCheckPassPhrase(const char * passPhrase)
 	}
     }
 
-#if defined(XXX_HAVE_KEYUTILS_H)
+#if defined(HAVE_KEYUTILS_H)
     if (!strcmp(passPhrase, "@u user rpm:passwd")) {
-	key_serial_t key, keyring = KEY_SPEC_USER_KEYRING;
+	long key;
+	key_serial_t keyring = KEY_SPEC_PROCESS_KEYRING;
 	int xx;
 
-	if ((key = keyctl_search(keyring, "user", "rpm:passwd", 0) != 0)
-	 && (xx = keyctl_read_alloc(key, (void **)&pw)) < 0) {
-	    rpmError(RPMERR_SIGGEN, _("Failed %s(%d): %s\n"),
-			"keyctl_read_alloc", xx, strerror(errno));
+	key = keyctl_search(keyring, "user", "rpm:passwd", 0);
+	if ((xx = keyctl_read_alloc(key, (void **)&pw)) < 0) {
+	    rpmError(RPMERR_SIGGEN, _("Failed %s(%d) key(0x%lx): %s\n"),
+			"keyctl_read_alloc of key", xx, key, strerror(errno));
 	    return 1;
 	}
     } else

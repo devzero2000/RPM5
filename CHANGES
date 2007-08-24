@@ -1,5 +1,5 @@
 4.5 -> 5.0:
-    - jbj: use keyutils to get password out of rpm's address space. disabled.
+    - jbj: use keyutils to get password out of rpm's address space.
     - jbj: start ripping availablePackages.
     - jbj: rpmtsDbmode() and rpmtsSetDbmode() added for rpmts-py.c opaqueness.
     - jbj: start marking availablePackages for destruction.

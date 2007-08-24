@@ -18,10 +18,10 @@ char * _GetPass(const char * prompt)
     pw = getpass( prompt ? prompt : "" );
 /*@=unrecog@*/
 
-#if defined(XXX_HAVE_KEYUTILS_H)
+#if defined(HAVE_KEYUTILS_H)
     if (pw && *pw) {
 	size_t npw = strlen(pw);
-	int keyring = KEY_SPEC_USER_KEYRING;
+	key_serial_t keyring = KEY_SPEC_PROCESS_KEYRING;
 	(void) add_key("user", "rpm:passwd", pw, npw, keyring);
 	(void) memset(pw, 0, npw);	/* burn the password */
 	pw = "@u user rpm:passwd";
