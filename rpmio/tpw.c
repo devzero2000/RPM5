@@ -14,7 +14,7 @@ static struct poptOption optionsTable[] = {
 	NULL, NULL },
 
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmcliAllPoptTable, 0,
-	N_("Common options for all rpm modes and executables:"),
+	N_("Common options:"),
 	NULL },
 
     POPT_AUTOALIAS

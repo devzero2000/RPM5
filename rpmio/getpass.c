@@ -12,9 +12,23 @@
 
 char * _GetPass(const char * prompt)
 {
+    char * pw;
+
 /*@-unrecog@*/
-    return getpass( prompt ? prompt : "" );
+    pw = getpass( prompt ? prompt : "" );
 /*@=unrecog@*/
+
+#if defined(XXX_HAVE_KEYUTILS_H)
+    if (pw && *pw) {
+	size_t npw = strlen(pw);
+	int keyring = KEY_SPEC_USER_KEYRING;
+	(void) add_key("user", "rpm:passwd", pw, npw, keyring);
+	(void) memset(pw, 0, npw);	/* burn the password */
+	pw = "@u user rpm:passwd";
+    }
+#endif
+
+    return pw;
 }
 
 char * _RequestPass(const char * prompt)

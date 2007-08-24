@@ -3,6 +3,9 @@
  */
 
 #include "system.h"
+#if defined(HAVE_KEYUTILS_H)
+#include <keyutils.h>
+#endif
 
 #include "rpmio_internal.h"
 #include <rpmlib.h>
@@ -533,6 +536,7 @@ static int makeGPGSignature(const char * file, int_32 * sigTagp,
     char *const *av;
     pgpDig dig = NULL;
     pgpDigParams sigp = NULL;
+    const char * pw = NULL;
     int rc;
 
     (void) stpcpy( stpcpy(sigfile, file), ".sig");
@@ -566,11 +570,30 @@ static int makeGPGSignature(const char * file, int_32 * sigTagp,
     delMacro(NULL, "__plaintext_filename");
     delMacro(NULL, "__signature_filename");
 
+#if defined(XXX_HAVE_KEYUTILS_H)
+    if (!strcmp(passPhrase, "@u user rpm:passwd")) {
+	key_serial_t key, keyring = KEY_SPEC_USER_KEYRING;
+	int xx;
+
+	if ((key = keyctl_search(keyring, "user", "rpm:passwd", 0) != 0)
+	 && (xx = keyctl_read_alloc(key, (void **)&pw)) < 0) {
+	    rpmError(RPMERR_SIGGEN, _("Failed %s(%d): %s\n"),
+			"keyctl_read_alloc", xx, strerror(errno));
+	    return 1;
+	}
+    } else
+#endif
+	pw = passPhrase;
+
     fpipe = fdopen(inpipe[1], "w");
     (void) close(inpipe[0]);
     if (fpipe) {
-	fprintf(fpipe, "%s\n", (passPhrase ? passPhrase : ""));
+	fprintf(fpipe, "%s\n", (pw ? pw : ""));
 	(void) fclose(fpipe);
+    }
+    if (pw && pw != passPhrase) {
+	(void) memset((void *)pw, 0, strlen(pw));
+	pw = _free(pw);
     }
 
     (void) waitpid(pid, &status, 0);
@@ -829,6 +852,7 @@ int rpmAddSignature(Header sigh, const char * file, int_32 sigTag,
 
 int rpmCheckPassPhrase(const char * passPhrase)
 {
+    const char *pw;
     int p[2];
     int pid, status;
     int rc;
@@ -907,10 +931,30 @@ int rpmCheckPassPhrase(const char * passPhrase)
 	}
     }
 
+#if defined(XXX_HAVE_KEYUTILS_H)
+    if (!strcmp(passPhrase, "@u user rpm:passwd")) {
+	key_serial_t key, keyring = KEY_SPEC_USER_KEYRING;
+	int xx;
+
+	if ((key = keyctl_search(keyring, "user", "rpm:passwd", 0) != 0)
+	 && (xx = keyctl_read_alloc(key, (void **)&pw)) < 0) {
+	    rpmError(RPMERR_SIGGEN, _("Failed %s(%d): %s\n"),
+			"keyctl_read_alloc", xx, strerror(errno));
+	    return 1;
+	}
+    } else
+#endif
+	pw = passPhrase;
+
     xx = close(p[0]);
-    xx = write(p[1], passPhrase, strlen(passPhrase));
+    xx = write(p[1], pw, strlen(pw));
     xx = write(p[1], "\n", 1);
     xx = close(p[1]);
+
+    if (pw && pw != passPhrase) {
+	(void) memset((void *)pw, 0, strlen(pw));
+	pw = _free(pw);
+    }
 
     (void) waitpid(pid, &status, 0);
 
