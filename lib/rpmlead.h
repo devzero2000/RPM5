@@ -6,6 +6,10 @@
  * Routines to read and write an rpm lead structure for a a package.
  */
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #if defined(_RPMLEAD_INTERNAL)
 
 #define	RPMLEAD_BINARY 0
@@ -35,10 +39,8 @@ struct rpmlead {
     short signature_type;	/*!< Signature header type (RPMSIG_HEADERSIG) */
 /*@unused@*/ char reserved[16];	/*!< Pad to 96 bytes -- 8 byte aligned! */
 } ;
-#endif
-
-#ifdef __cplusplus
-extern "C" {
+#else
+struct rpmlead;
 #endif
 
 /*@unchecked@*/
