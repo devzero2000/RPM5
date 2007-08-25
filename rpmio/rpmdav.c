@@ -28,9 +28,19 @@
 #include "ne_socket.h"
 #include "ne_string.h"
 #include "ne_utils.h"
+#include "ne_md5.h" /* for version detection only */
 
-/* XXX API changes for neon-0.26.0 */
-#if !defined(NE_FREE)
+/* poor-man's NEON version determination */
+#if defined(NE_MD5_H)
+#define WITH_NEON_MIN_VERSION 0x002700
+#elif defined(NE_FEATURE_I18N)
+#define WITH_NEON_MIN_VERSION 0x002600
+#else
+#define WITH_NEON_MIN_VERSION 0x002500
+#endif
+
+/* XXX API changes for NEON 0.26 */
+#if WITH_NEON_MIN_VERSION >= 0x002600
 #define	ne_set_persist(_sess, _flag)
 #define	ne_propfind_set_private(_pfh, _create_item, NULL) \
 	ne_propfind_set_private(_pfh, _create_item, NULL, NULL)
@@ -106,8 +116,13 @@ if (_dav_debug < 0)
 fprintf(stderr, "*** davProgress(%p,0x%x:0x%x) sess %p u %p\n", userdata, (unsigned int)current, (unsigned int)total, sess, u);
 }
 
+#if WITH_NEON_MIN_VERSION >= 0x002700
+static void davNotify(void * userdata,
+		ne_session_status connstatus, const ne_session_status_info *info)
+#else
 static void davNotify(void * userdata,
 		ne_conn_status connstatus, const char * info)
+#endif
 	/*@*/
 {
     urlinfo u = userdata;
@@ -135,7 +150,9 @@ typedef enum {
 } ne_conn_status;
 #endif
 
+#if WITH_NEON_MIN_VERSION < 0x002700
     u->connstatus = connstatus;
+#endif
 
 /*@-boundsread@*/
 if (_dav_debug < 0)
@@ -372,7 +389,11 @@ static int davInit(const char * url, urlinfo * uret)
 #endif
 
 	ne_set_progress(u->sess, davProgress, u);
+#if WITH_NEON_MIN_VERSION >= 0x002700
+	ne_set_notifier(u->sess, davNotify, u);
+#else
 	ne_set_status(u->sess, davNotify, u);
+#endif
 
 	ne_set_persist(u->sess, 1);
 	ne_set_read_timeout(u->sess, httpTimeoutSecs);
@@ -457,7 +478,7 @@ static void *fetch_destroy_list(/*@only@*/ struct fetch_resource_s *res)
 }
 #endif
 
-#if !defined(NE_FREE)
+#if WITH_NEON_MIN_VERSION >= 0x002600
 static void *fetch_create_item(/*@unused@*/ void *userdata, /*@unused@*/ const ne_uri *uri)
 #else
 static void *fetch_create_item(/*@unused@*/ void *userdata, /*@unused@*/ const char *uri)
@@ -594,7 +615,7 @@ static int fetch_compare(const struct fetch_resource_s *r1,
     }
 }
 
-#if !defined(NE_FREE)
+#if WITH_NEON_MIN_VERSION >= 0x002600
 static void fetch_results(void *userdata, const ne_uri *uarg,
 		    const ne_prop_result_set *set)
 #else
@@ -610,7 +631,7 @@ static void fetch_results(void *userdata, void *uarg,
     const ne_status *status = NULL;
     const char * path = NULL;
 
-#if !defined(NE_FREE)
+#if WITH_NEON_MIN_VERSION >= 0x002600
     const ne_uri * uri = uarg;
     (void) urlPath(uri->path, &path);
 #else
