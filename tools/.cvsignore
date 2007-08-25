@@ -5,5 +5,8 @@ Makefile
 Makefile.in
 convertdb1
 debugedit
+rpmcache
+rpmcmp
 rpmdeps
+rpmdigest
 db_tool
