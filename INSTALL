@@ -30,7 +30,7 @@ POSIX make      mandatory -       -       e.g. http://www.gnu.org/software/make/
 Perl            mandatory 5.8.0   5.8.8   http://www.perl.com/
 POPT            mandatory 1.9     1.11    http://rpm5.org/files/popt/
 BeeCrypt        mandatory 4.0     4.1.2   http://www.virtualunlimited.com/products/beecrypt/
-Neon            optional  0.26    0.26.4  http://www.webdav.org/neon/
+Neon            optional  0.26.0  0.27.0  http://www.webdav.org/neon/
 Berkeley-DB [1] optional  -       4.6.18  http://www.oracle.com/database/berkeley-db.html
 SQLite      [1] optional  3.3     3.4.0   http://www.sqlite.org/
 Lua         [2] optional  5.1     5.1.2   http://www.lua.org/
