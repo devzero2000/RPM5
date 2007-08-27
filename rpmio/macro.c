@@ -604,7 +604,7 @@ doShellEscape(MacroBuf mb, const char * cmd, size_t clen)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem @*/
 	/*@modifies mb, rpmGlobalMacroContext, fileSystem @*/
 {
-    size_t bufn = _macro_BUFSIZ;
+    size_t bufn = _macro_BUFSIZ + clen;
     char * buf = alloca(bufn);
     FILE *shf;
     int rc;
