@@ -83,7 +83,7 @@ AC_ARG_ENABLE(build-pic,
 AC_ARG_ENABLE(build-pie,
     AS_HELP_STRING([--enable-build-pie], [build RPM as Position Independent Executable (PIE) (GCC only)]), [dnl
     if test ".$enableval" = .yes; then
-        if test ".$ac_cv_c_compiler_gnu" = .yes; then
+        if test ".$GCC" = .yes; then
             CFLAGS="$CFLAGS -fpie"
             LDFLAGS="$LDFLAGS -pie"
         else
