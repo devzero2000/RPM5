@@ -96,7 +96,7 @@ int lookupPackage(Spec spec, const char *name, int flag, /*@out@*/Package *pkg)
 
     /* Locate package with fullName */
     for (p = spec->packages; p != NULL; p = p->next) {
-	(void) headerGetEntry(spec->packages->header, RPMTAG_NAME,
+	(void) headerGetEntry(p->header, RPMTAG_NAME,
 		NULL, &pname, NULL);
 	if (pname && (! strcmp(fullName, pname))) {
 	    break;
