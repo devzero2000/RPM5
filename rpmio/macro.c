@@ -261,7 +261,6 @@ findEntry(MacroContext mc, const char * name, size_t namelen)
 	/*@*/
 {
     MacroEntry key, *ret;
-    char namebuf[1024];
 
 /*@-globs@*/
     if (mc == NULL) mc = rpmGlobalMacroContext;
@@ -271,9 +270,9 @@ findEntry(MacroContext mc, const char * name, size_t namelen)
 
 /*@-branchstate@*/
     if (namelen > 0) {
-	strncpy(namebuf, name, namelen);
-	namebuf[namelen] = '\0';
-	name = namebuf;
+	char * t = strncpy(alloca(namelen + 1), name, namelen);
+	t[namelen] = '\0';
+	name = t;
     }
 /*@=branchstate@*/
     
