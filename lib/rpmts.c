@@ -3,6 +3,9 @@
  * Routine(s) to handle a "rpmts" transaction sets.
  */
 #include "system.h"
+#if defined(HAVE_KEYUTILS_H)
+#include <keyutils.h>
+#endif
 
 #include "rpmio_internal.h"	/* XXX for pgp and beecrypt */
 #include <rpmlib.h>
@@ -266,6 +269,36 @@ fprintf(stderr, "*** free pkt %p[%d] id %08x %08x\n", ts->pkpkt, ts->pkpktlen, p
 	memset(ts->pksignid, 0, sizeof(ts->pksignid));
     }
 
+#if defined(HAVE_KEYUTILS_H)
+	/* Try keyutils keyring lookup. */
+    if (ts->pkpkt == NULL) {
+	key_serial_t keyring = KEY_SPEC_PROCESS_KEYRING;
+	const char * krprefix = "rpm:gpg:pubkey:";
+	char krfp[32];
+	char * krn = alloca(strlen(krprefix) + sizeof("12345678"));
+	long key;
+
+	snprintf(krfp, sizeof(krfp), "%08X", pgpGrab(sigp->signid+4, 4));
+	krfp[sizeof(krfp)-1] = '\0';
+	*krn = '\0';
+	(void) stpcpy( stpcpy(krn, krprefix), krfp);
+
+	key = keyctl_search(keyring, "user", krn, 0);
+	xx = keyctl_read(key, NULL, 0);
+	if (xx > 0) {
+	    ts->pkpktlen = xx;
+	    ts->pkpkt = NULL;
+	    xx = keyctl_read_alloc(key, (void **)&ts->pkpkt);
+	    if (xx > 0) {
+		pubkeysource = xstrdup(krn);
+	    } else {
+		ts->pkpkt = _free(ts->pkpkt);
+		ts->pkpktlen = 0;
+	    }
+        }
+    }
+#endif
+
     /* Try rpmdb keyring lookup. */
     if (ts->pkpkt == NULL) {
 	int hx = -1;
@@ -360,6 +393,21 @@ fprintf(stderr, "*** free pkt %p[%d] id %08x %08x\n", ts->pkpkt, ts->pkpktlen, p
     {
 
 	/* XXX Verify any pubkey signatures. */
+
+#if defined(HAVE_KEYUTILS_H)
+	/* Save the pubkey in the keyutils keyring. */
+	{   key_serial_t keyring = KEY_SPEC_PROCESS_KEYRING;
+	    const char * krprefix = "rpm:gpg:pubkey:";
+	    char krfp[32];
+	    char * krn = alloca(strlen(krprefix) + sizeof("12345678"));
+
+	    snprintf(krfp, sizeof(krfp), "%08X", pgpGrab(sigp->signid+4, 4));
+	    krfp[sizeof(krfp)-1] = '\0';
+	    *krn = '\0';
+	    (void) stpcpy( stpcpy(krn, krprefix), krfp);
+	    (void) add_key("user", krn, ts->pkpkt, ts->pkpktlen, keyring);
+	}
+#endif
 
 	/* Pubkey packet looks good, save the signer id. */
 /*@-boundsread@*/

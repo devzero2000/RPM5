@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - jbj: use keyutils for pubkey cache.
     - jbj: update id.po (Translation Project).
     - jbj: teach --querytags to chain through headerCompoundFormats.
     - rse: apply upstream vendor Lua 5.1.2 patches 1-7
