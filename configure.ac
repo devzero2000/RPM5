@@ -16,7 +16,7 @@ AC_SUBST(LT_REVISION, 5)
 AC_SUBST(LT_AGE, 0)
 
 dnl Set of available languages.
-ALL_LINGUAS="cs da de fi fr gl is ja ko no pl pt pt_BR ro ru sk sl sr sv tr uk"
+ALL_LINGUAS="cs da de fi fr gl id is ja ko no pl pt pt_BR ro ru sk sl sr sv tr uk"
 
 AC_AIX
 AC_MINIX
