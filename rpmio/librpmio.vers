@@ -138,6 +138,7 @@ LIBRPMIO_0
     _Mkfifo;
     Mknod;
     _Mknod;
+    Mount;
     noLibio;
     Opendir;
     _Opendir;
@@ -290,6 +291,8 @@ LIBRPMIO_0
     ufdGetUrlinfo;
     ufdio;
     uidToUname;
+    Umount;
+    Umount2;
     unameToUid;
     Unlink;
     _Unlink;

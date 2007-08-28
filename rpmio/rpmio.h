@@ -470,6 +470,29 @@ int Access(const char * path, int amode)
 	/*@modifies errno, fileSystem @*/;
 
 /**
+ * mount(2) clone.
+ */
+int Mount(const char *source, const char *target,
+		const char *filesystemtype, unsigned long mountflags,
+		const void *data)
+	/*@globals errno, fileSystem @*/
+	/*@modifies errno, fileSystem @*/;
+
+/**
+ * umount(2) clone.
+ */
+int Umount(const char *target)
+	/*@globals errno, fileSystem @*/
+	/*@modifies errno, fileSystem @*/;
+
+/**
+ * umount2(2) clone.
+ */
+int Umount2(const char *target, int flags)
+	/*@globals errno, fileSystem @*/
+	/*@modifies errno, fileSystem @*/;
+
+/**
  * glob_pattern_p(3) clone.
  */
 int Glob_pattern_p (const char *pattern, int quote)

@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - jbj: add rpmio Mount/Umount/Umount2 stubs.
     - jbj: permit keyutils caching disable, don't re-add if already cached.
     - jbj: use keyutils for pubkey cache.
     - jbj: update id.po (Translation Project).
