@@ -1,4 +1,5 @@
 4.4.9 -> 4.5:
+    - jbj: update debugedit to include buildid changes.
     - jbj: update id.po (Translation Project).
     - jbj: prepare for open as a macro in bleeding edge glibc-2.6.90+.
     - jbj: python: backport signalsCaught, remove archscore.

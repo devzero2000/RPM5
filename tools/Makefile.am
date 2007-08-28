@@ -28,7 +28,10 @@ versionlib_PROGRAMS =	rpmdeps @WITH_LIBDWARF_DEBUGEDIT@
 convertdb1_SOURCES =	convertdb1.c
 
 debugedit_SOURCES =	debugedit.c hashtab.c
-debugedit_LDADD =	@WITH_LIBELF_LIB@ @WITH_POPT_LIB@
+debugedit_LDADD =	\
+	@WITH_LIBELF_LIB@\
+	@WITH_BEECRYPT_LIB@\
+	@WITH_POPT_LIB@
 
 rpmdeps_SOURCES =	rpmdeps.c
 
