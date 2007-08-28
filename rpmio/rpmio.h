@@ -469,6 +469,7 @@ int Access(const char * path, int amode)
 	/*@globals errno, fileSystem @*/
 	/*@modifies errno, fileSystem @*/;
 
+#if defined(__linux__)
 /**
  * mount(2) clone.
  */
@@ -491,6 +492,7 @@ int Umount(const char *target)
 int Umount2(const char *target, int flags)
 	/*@globals errno, fileSystem @*/
 	/*@modifies errno, fileSystem @*/;
+#endif
 
 /**
  * glob_pattern_p(3) clone.

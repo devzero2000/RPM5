@@ -3,6 +3,7 @@
  * \file rpmio/mount.c
  */
 
+#if defined(__linux__)
 #include "system.h"
 #include <sys/mount.h>
 #include "rpmio.h"
@@ -24,3 +25,4 @@ int Umount2(const char *target, int flags)
 {
     return umount2(target, flags);
 }
+#endif
