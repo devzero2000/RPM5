@@ -374,7 +374,7 @@ void rpmDisplayQueryTags(FILE * fp)
 {
     const struct headerTagTableEntry_s * t;
     int i, ttype;
-    headerSprintfExtension exts = rpmHeaderFormats;
+    headerSprintfExtension exts = (headerSprintfExtension) rpmHeaderFormats;
     headerSprintfExtension ext;
     int extNum;
 
