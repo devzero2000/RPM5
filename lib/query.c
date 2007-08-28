@@ -373,8 +373,10 @@ exit:
 void rpmDisplayQueryTags(FILE * fp)
 {
     const struct headerTagTableEntry_s * t;
-    int i;
-    const struct headerSprintfExtension_s * ext = rpmHeaderFormats;
+    int i, ttype;
+    headerSprintfExtension exts = rpmHeaderFormats;
+    headerSprintfExtension ext;
+    int extNum;
 
     for (i = 0, t = rpmTagTable; i < rpmTagTableSize; i++, t++) {
 	if (t->name == NULL)
@@ -387,27 +389,23 @@ void rpmDisplayQueryTags(FILE * fp)
 		"string", "blob", "argv", "i18nstring", "asn1", "openpgp"
 	    };
 	    fprintf(fp, " %6d", t->val);
-	    if (t->type > RPM_NULL_TYPE && t->type <= RPM_MAX_TYPE)
-		fprintf(fp, " %s", tagtypes[t->type]);
+	    ttype = t->type & RPM_MASK_TYPE;
+	    if (ttype > RPM_NULL_TYPE && ttype <= RPM_MAX_TYPE)
+		fprintf(fp, " %s", tagtypes[ttype]);
 	}
 	fprintf(fp, "\n");
     }
 
-    while (ext->name != NULL) {
-	if (ext->type == HEADER_EXT_MORE) {
-	    ext = ext->u.more;
+    for (ext = exts, extNum = 0; ext != NULL && ext->type != HEADER_EXT_LAST;
+	ext = (ext->type == HEADER_EXT_MORE ? ext->u.more : ext+1), extNum++)
+    {
+	if (ext->name == NULL || ext->type != HEADER_EXT_TAG)
 	    continue;
-	}
-	/* XXX don't print query tags twice. */
-	for (i = 0, t = rpmTagTable; i < rpmTagTableSize; i++, t++) {
-	    if (t->name == NULL)	/* XXX programmer error. */
-		/*@innercontinue@*/ continue;
-	    if (!strcmp(t->name, ext->name))
-	    	/*@innerbreak@*/ break;
-	}
-	if (i >= rpmTagTableSize && ext->type == HEADER_EXT_TAG)
-	    fprintf(fp, "%s\n", ext->name + 7);
-	ext++;
+
+	/* XXX don't print header tags twice. */
+	if (tagValue(ext->name) >= 0)
+	    continue;
+	fprintf(fp, "%s\n", ext->name + 7);
     }
 }
 

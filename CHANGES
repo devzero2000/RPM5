@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - jbj: teach --querytags to chain through headerCompoundFormats.
     - rse: apply upstream vendor Lua 5.1.2 patches 1-7
     - rse: add support for building against NEON >= 0.27.0
     - jbj: use keyutils to get password out of rpm's address space.

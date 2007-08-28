@@ -179,13 +179,13 @@ extern const struct headerSprintfExtension_s rpmHeaderFormats[];
 /** @todo: Somehow supply type **/
 typedef enum rpmTag_e {
 
-    RPMTAG_HEADERIMAGE		= HEADER_IMAGE,		/*!< Current image. */
-    RPMTAG_HEADERSIGNATURES	= HEADER_SIGNATURES,	/*!< Signatures. */
-    RPMTAG_HEADERIMMUTABLE	= HEADER_IMMUTABLE,	/*!< Original image. */
+    RPMTAG_HEADERIMAGE		= HEADER_IMAGE,		/*!< internal Current image. */
+    RPMTAG_HEADERSIGNATURES	= HEADER_SIGNATURES,	/*!< internal Signatures. */
+    RPMTAG_HEADERIMMUTABLE	= HEADER_IMMUTABLE,	/*!< x Original image. */
 /*@-enummemuse@*/
-    RPMTAG_HEADERREGIONS	= HEADER_REGIONS,	/*!< Regions. */
+    RPMTAG_HEADERREGIONS	= HEADER_REGIONS,	/*!< internal Regions. */
 
-    RPMTAG_HEADERI18NTABLE	= HEADER_I18NTABLE, /*!< I18N string locales. */
+    RPMTAG_HEADERI18NTABLE	= HEADER_I18NTABLE, /*!< s[] I18N string locales. */
 /*@=enummemuse@*/
 
 /* Retrofit (and uniqify) signature tags for use by tagName() and rpmQuery. */
