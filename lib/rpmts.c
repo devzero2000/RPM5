@@ -248,6 +248,7 @@ rpmRC rpmtsFindPubkey(rpmts ts)
     pgpDigParams pubp = rpmtsPubkey(ts);
     rpmRC res = RPMRC_NOKEY;
     const char * pubkeysource = NULL;
+    int krcache = 1;	/* XXX assume pubkeys are cacved in keyutils keyring. */
     int xx;
 
     if (sig == NULL || dig == NULL || sigp == NULL || pubp == NULL)
@@ -271,7 +272,7 @@ fprintf(stderr, "*** free pkt %p[%d] id %08x %08x\n", ts->pkpkt, ts->pkpktlen, p
 
 #if defined(HAVE_KEYUTILS_H)
 	/* Try keyutils keyring lookup. */
-    if (ts->pkpkt == NULL) {
+    if (krcache && ts->pkpkt == NULL) {
 	key_serial_t keyring = KEY_SPEC_PROCESS_KEYRING;
 	const char * krprefix = "rpm:gpg:pubkey:";
 	char krfp[32];
@@ -291,6 +292,7 @@ fprintf(stderr, "*** free pkt %p[%d] id %08x %08x\n", ts->pkpkt, ts->pkpktlen, p
 	    xx = keyctl_read_alloc(key, (void **)&ts->pkpkt);
 	    if (xx > 0) {
 		pubkeysource = xstrdup(krn);
+		krcache = 0;	/* XXX don't bother caching. */
 	    } else {
 		ts->pkpkt = _free(ts->pkpkt);
 		ts->pkpktlen = 0;
@@ -396,7 +398,8 @@ fprintf(stderr, "*** free pkt %p[%d] id %08x %08x\n", ts->pkpkt, ts->pkpktlen, p
 
 #if defined(HAVE_KEYUTILS_H)
 	/* Save the pubkey in the keyutils keyring. */
-	{   key_serial_t keyring = KEY_SPEC_PROCESS_KEYRING;
+	if (krcache) {
+	    key_serial_t keyring = KEY_SPEC_PROCESS_KEYRING;
 	    const char * krprefix = "rpm:gpg:pubkey:";
 	    char krfp[32];
 	    char * krn = alloca(strlen(krprefix) + sizeof("12345678"));
