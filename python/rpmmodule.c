@@ -48,6 +48,19 @@ extern sigset_t rpmsqCaught;
 typedef int Py_ssize_t;
 #endif
 
+
+/**
+ */
+static PyObject * expandMacro(PyObject * self, PyObject * args, PyObject * kwds)
+{
+    char * macro;
+
+    if (!PyArg_ParseTuple(args, "s", &macro))
+	return NULL;
+
+    return Py_BuildValue("s", rpmExpand(macro, NULL));
+}
+
 /**
  */
 static PyObject * signalsCaught(PyObject * self, PyObject * check)
@@ -176,6 +189,8 @@ static PyMethodDef rpmModuleMethods[] = {
     { "addMacro", (PyCFunction) rpmrc_AddMacro, METH_VARARGS|METH_KEYWORDS,
 	NULL },
     { "delMacro", (PyCFunction) rpmrc_DelMacro, METH_VARARGS|METH_KEYWORDS,
+	NULL },
+    { "expandMacro", (PyCFunction) expandMacro, METH_VARARGS|METH_KEYWORDS,
 	NULL },
 
     { "signalsCaught", (PyCFunction) signalsCaught, METH_O,

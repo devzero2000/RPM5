@@ -1,5 +1,6 @@
 4.4.9 -> 4.5:
-    - rpm.org: avoid truncating /var/log/rpmpkgs in case of errors (rhbz#232830)
+    - rpm.org: python: add method for expanding macros.
+    - rpm.org: avoid truncating /var/log/rpmpkgs in case of errors (#232830).
     - jbj: update debugedit to include buildid changes.
     - jbj: update id.po (Translation Project).
     - jbj: prepare for open as a macro in bleeding edge glibc-2.6.90+.
