@@ -35,7 +35,7 @@ Berkeley-DB [1] optional  -       4.6.19  http://www.oracle.com/database/berkele
 SQLite      [1] optional  3.3     3.4.2   http://www.sqlite.org/
 Lua         [2] optional  5.1     5.1.2   http://www.lua.org/
 ZLib        [3] optional  1.2     1.2.3   http://www.zlib.net/
-GNU bzip2       optional  1.0     1.0.4   http://www.bzip2.org/
+Bzip2           optional  1.0     1.0.4   http://www.bzip.org/
 File/magic  [4] optional  4.0     4.21    ftp://ftp.astron.com/pub/file/
 GNU gettext     optional  1.16    1.16.1  http://www.gnu.org/software/gettext/
 GNU iconv       optional  1.11    1.11    http://www.gnu.org/software/libiconv/
@@ -70,8 +70,8 @@ Run-Time
 Component       Component Version Version Component
 Name            Type      Minimum Used    URL
 --------------- --------- ------- ------- -------------------------------------
-GNU gzip        optional  -       -       http://www.gzip.org/
-GNU bzip2       optional  -       -       http://www.bzip2.org/
+GNU zip         optional  -       -       http://www.gzip.org/
+Bzip2           optional  -       -       http://www.bzip.org/
 GNU tar         optional  -       -       http://www.gnu.org/software/tar/
 GNU cpio        optional  -       -       http://www.gnu.org/software/cpio/
 GnuPG           optional  -       -       http://www.gnupg.org/
