@@ -74,6 +74,7 @@ GNU zip         optional  -       -       http://www.gzip.org/
 Bzip2           optional  -       -       http://www.bzip.org/
 GNU tar         optional  -       -       http://www.gnu.org/software/tar/
 GNU cpio        optional  -       -       http://www.gnu.org/software/cpio/
+UnZip           optional  -       -       http://www.info-zip.org/UnZip.html
 GnuPG           optional  -       -       http://www.gnupg.org/
 PGP2            optional  2.6.3   2.6.3   http://www.pgpi.org/
 PGP6            optional  6.5.8   6.5.8   http://www.pgpi.org/
