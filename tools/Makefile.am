@@ -11,7 +11,7 @@ AM_CPPFLAGS = -I. \
 
 EXTRA_DIST =	hashtab.h
 
-EXTRA_PROGRAMS = debugedit rpmkey
+EXTRA_PROGRAMS = debugedit rpmkey txar
 
 myLDADD = \
 	$(top_builddir)/build/librpmbuild.la \
@@ -44,6 +44,9 @@ rpmdigest_LDADD =	$(myLDADD)
 ##
 rpmkey_SOURCES =        rpmkey.c
 rpmkey_LDADD =          $(myLDADD) -lkeyutils
+
+txar_SOURCES =		txar.c
+txar_LDADD =		$(myLDADD) -lxar
 
 ##
 ##  provide Berkeley-DB tools
