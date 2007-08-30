@@ -8,8 +8,6 @@
 #include "debug.h"
 
 static int _debug = 0;
-static int _display = 0;
-static int _explode = 0;
 
 typedef struct rpmmap_s {
     const char * fn;
@@ -108,22 +106,6 @@ static rpmmap rdXAR(const char * xarfn)
 	 map->f != NULL;
 	 map->f = xar_file_next(map->i))
     {
-	if (_display) {
-	    const char * key;
-	    xar_iter_t p;
-
-	    p = xar_iter_new();
-	    for (key = xar_prop_first(map->f, p);
-		 key != NULL;
-		 key = xar_prop_next(p))
-	    {
-		const char * val = NULL;
-		xar_prop_get(map->f, key, &val);
-		fprintf(stderr, "key: %s, value: %s\n", key, val);
-	    }
-	    xar_iter_free(p);
-      }
-      {
 	const char * type;
 	const char * name;
 	char * b;
@@ -171,7 +153,6 @@ fprintf(stderr, "*** %s %p[%lu]\n", name, b, (unsigned long)nb);
 	    map->np = nb;
 	} else
 	    continue;
-      }
     }
     if (map->i) {
 	xar_iter_free(map->i);
@@ -187,69 +168,9 @@ fprintf(stderr, "*** %s %p[%lu]\n", name, b, (unsigned long)nb);
 static int wrXARbuffer(rpmmap map, const char * fn, char * b, size_t nb)
 {
     if (b && nb > 0) {
-	struct stat sb, *st = &sb;
-	time_t now = time(NULL);
-
-	if (_explode) {
-	    FD_t fd = Fopen(fn, "w");
-
-	    if (fd) {
-		(void) Fwrite(b, 1, nb, fd);
-		(void) Fclose(fd);
-	    }
-	}
-
-	memset(st, 0, sizeof(*st));
-	st->st_dev = 0;
-	st->st_ino = 0;
-	st->st_mode = S_IFREG | 0644;
-	st->st_nlink = 1;
-	st->st_uid = 0;
-	st->st_gid = 0;
-	st->st_rdev = 0;
-	st->st_size = nb;
-	st->st_blksize = 0;
-	st->st_blocks = 0;
-	st->st_atime = now;
-	st->st_mtime = now;
-	st->st_ctime = now;
-
-#ifdef	NOTYET	/* xar-1.5.1 patching needed. */
-	xar_set_stat(map->x, st);
-#endif
-
 	map->f = xar_add_frombuffer(map->x, NULL, fn, b, nb);
 	if (map->f == NULL)
 	    return 1;
-
-#ifdef	NOTYET
-	xar_prop_set(map->f, "mode", "00644");
-	xar_prop_set(map->f, "uid", "0");
-	xar_prop_set(map->f, "user", "root");
-	xar_prop_set(map->f, "gid", "0");
-	xar_prop_set(map->f, "group", "root");
-
-	x_addtime(map->f, "atime", &now);
-	x_addtime(map->f, "mtime", &now);
-	x_addtime(map->f, "ctime", &now);
-
-#if 0
-	xar_prop_set(map->f, "data", NULL);
-	xar_prop_set(map->f, "data/extracted-checksum", NULL);
-	xar_prop_set(map->f, "data/archived-checksum", NULL);
-	xar_prop_set(map->f, "data/encoding", NULL);
-#endif
-
-	{   char val[32];
-	    snprintf(val, sizeof(val), "%llu", (unsigned long long)nb);
-	    xar_prop_set(map->f, "data/size", val);
-	}
-
-#if 0
-	xar_prop_set(map->f, "data/offset", NULL);
-	xar_prop_set(map->f, "data/length", NULL);
-#endif
-#endif
     }
     return 0;
 }
@@ -320,10 +241,6 @@ exit:
 static struct poptOption optionsTable[] = {
  { "debug", 'd', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,		&_debug, 1,
 	NULL, NULL },
- { "display", 'd', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	&_display, 1,
-	NULL, NULL },
- { "explode", 'd', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	&_explode, 1,
-	NULL, NULL },
 
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmcliAllPoptTable, 0,
 	N_("Common options:"),
@@ -338,25 +255,47 @@ int
 main(int argc, char *const argv[])
 {
     poptContext optCon = rpmcliInit(argc, argv, optionsTable);
-    int ret = 0;
-    rpmmap map;
-    const char * rpmfn = "time-1.7-29.i386.rpm";
-    const char * xarfn = "time.xar";
+    const char ** args;
+    const char * sfn;
+    int ec = 0;
 
     if (optCon == NULL)
         exit(EXIT_FAILURE);
 
-#if defined(RPM2XAR)
-    map = rdRPM(rpmfn);
-    ret = wrXAR(xarfn, map);
-#else
-    map = rdXAR(xarfn);
-    ret = wrRPM("time.rpm", map);
-#endif
+    if ((args = poptGetArgs(optCon)) != NULL)
+    while ((sfn = *args++) != NULL) {
+	rpmmap map;
+	char * tfn;
+	size_t nb = strlen(sfn);
+	int x = nb - (sizeof(".rpm") - 1);
+	int rc;
 
-    map = rpmmapFree(map);
+	if (x <= 0)
+	    rc = 1;
+	else
+	if (!strcmp(&sfn[x], ".rpm")) {
+	    tfn = xstrdup(sfn);
+	    strcpy(&tfn[x], ".xar");
+	    map = rdRPM(sfn);
+	    rc = wrXAR(tfn, map);
+	    map = rpmmapFree(map);
+	    tfn = _free(tfn);
+	} else
+	if (!strcmp(&sfn[x], ".xar")) {
+	    tfn = xstrdup(sfn);
+	    strcpy(&tfn[x], ".rpm");
+	    map = rdXAR(sfn);
+	    rc = wrRPM(tfn, map);
+	    map = rpmmapFree(map);
+	    tfn = _free(tfn);
+	    continue;
+	} else
+	    rc = 1;
+	if (rc)
+	    ec++;
+    }
 
     optCon = rpmcliFini(optCon);
 
-    return ret;
+    return ec;
 }
