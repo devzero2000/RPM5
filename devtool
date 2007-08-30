@@ -62,9 +62,11 @@ devtool_execute () {
 }
 
 devtool_source () {
-    _tmpfile="${TMPDIR-/tmp}/devtool.$$.tmp.source"
+    _tmpfile="${TMPDIR-/tmp}/devtool.$$.tmp.$2"
     rm -f $_tmpfile
-    sed <${DEVTOOL_SRCDIR}/devtool.conf -e "1,/^%$2/d" -e '/^%.*/,$d' >$_tmpfile
+    sed <${DEVTOOL_SRCDIR}/devtool.conf -e "1,/^%$2/d" -e '/^%.*/,$d' |\
+    sed -e 's;\([ 	]\)@\([a-zA-Z_][a-zA-Z0-9_-]*\);\1devtool_\2;' \
+        -e 's;\([ 	]\)%\([a-zA-Z_][a-zA-Z0-9_-]*\);\1devtool_execute \2;' >$_tmpfile
     . $_tmpfile
     rm -f $_tmpfile
 }
