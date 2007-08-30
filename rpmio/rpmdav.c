@@ -35,16 +35,27 @@
 #include "ne_socket.h"
 #include "ne_string.h"
 #include "ne_utils.h"
+#include "ne_md5.h" /* for version detection only */
 #else
 #include "neon/ne_props.h"
 #include "neon/ne_request.h"
 #include "neon/ne_socket.h"
 #include "neon/ne_string.h"
 #include "neon/ne_utils.h"
+#include "neon/ne_md5.h" /* for version detection only */
 #endif
 
-/* XXX API changes for neon-0.26.0 */
-#if !defined(NE_FREE)
+/* poor-man's NEON version determination */
+#if defined(NE_MD5_H)
+#define WITH_NEON_MIN_VERSION 0x002700
+#elif defined(NE_FEATURE_I18N)
+#define WITH_NEON_MIN_VERSION 0x002600
+#else
+#define WITH_NEON_MIN_VERSION 0x002500
+#endif
+
+/* XXX API changes for NEON 0.26 */
+#if WITH_NEON_MIN_VERSION >= 0x002600
 #define	ne_set_persist(_sess, _flag)
 #define	ne_propfind_set_private(_pfh, _create_item, NULL) \
 	ne_propfind_set_private(_pfh, _create_item, NULL, NULL)
@@ -116,8 +127,13 @@ if (_dav_debug < 0)
 fprintf(stderr, "*** davProgress(%p,0x%x:0x%x) sess %p u %p\n", userdata, (unsigned int)current, (unsigned int)total, sess, u);
 }
 
+#if WITH_NEON_MIN_VERSION >= 0x002700
+static void davNotify(void * userdata,
+		ne_session_status connstatus, const ne_session_status_info *info)
+#else
 static void davNotify(void * userdata,
 		ne_conn_status connstatus, const char * info)
+#endif
 	/*@*/
 {
     urlinfo u = userdata;
@@ -145,7 +161,9 @@ typedef enum {
 } ne_conn_status;
 #endif
 
+#if WITH_NEON_MIN_VERSION < 0x002700
     u->connstatus = connstatus;
+#endif
 
 /*@-boundsread@*/
 if (_dav_debug < 0)
@@ -382,7 +400,11 @@ static int davInit(const char * url, urlinfo * uret)
 #endif
 
 	ne_set_progress(u->sess, davProgress, u);
+#if WITH_NEON_MIN_VERSION >= 0x002700
+	ne_set_notifier(u->sess, davNotify, u);
+#else
 	ne_set_status(u->sess, davNotify, u);
+#endif
 
 	ne_set_persist(u->sess, 1);
 	ne_set_read_timeout(u->sess, httpTimeoutSecs);
@@ -411,7 +433,7 @@ static int davInit(const char * url, urlinfo * uret)
 exit:
 /*@-boundswrite@*/
     if (uret != NULL)
-	*uret = urlLink(u, __FUNCTION__);
+	*uret = urlLink(u, "davInit");
 /*@=boundswrite@*/
     u = urlFree(u, "urlSplit (davInit)");
 
@@ -467,7 +489,11 @@ static void *fetch_destroy_list(/*@only@*/ struct fetch_resource_s *res)
 }
 #endif
 
+#if WITH_NEON_MIN_VERSION >= 0x002600
+static void *fetch_create_item(/*@unused@*/ void *userdata, /*@unused@*/ const ne_uri *uri)
+#else
 static void *fetch_create_item(/*@unused@*/ void *userdata, /*@unused@*/ const char *uri)
+#endif
         /*@*/
 {
     struct fetch_resource_s * res = ne_calloc(sizeof(*res));
@@ -504,7 +530,7 @@ static void *fetch_destroy_context(/*@only@*/ /*@null@*/ struct fetch_context_s 
     ctx->modes = _free(ctx->modes);
     ctx->sizes = _free(ctx->sizes);
     ctx->mtimes = _free(ctx->mtimes);
-    ctx->u = urlFree(ctx->u, __FUNCTION__);
+    ctx->u = urlFree(ctx->u, "fetch_destroy_context");
     ctx->uri = _free(ctx->uri);
 /*@-boundswrite@*/
     memset(ctx, 0, sizeof(*ctx));
@@ -528,7 +554,7 @@ static void *fetch_create_context(const char *uri, /*@null@*/ struct stat *st)
 
     ctx = ne_calloc(sizeof(*ctx));
     ctx->uri = xstrdup(uri);
-    ctx->u = urlLink(u, __FUNCTION__);
+    ctx->u = urlLink(u, "fetch_create_context");
     if ((ctx->st = st) != NULL)
 	memset(ctx->st, 0, sizeof(*ctx->st));
     return ctx;
@@ -600,8 +626,13 @@ static int fetch_compare(const struct fetch_resource_s *r1,
     }
 }
 
+#if WITH_NEON_MIN_VERSION >= 0x002600
+static void fetch_results(void *userdata, const ne_uri *uarg,
+		    const ne_prop_result_set *set)
+#else
 static void fetch_results(void *userdata, void *uarg,
 		    const ne_prop_result_set *set)
+#endif
 	/*@*/
 {
     struct fetch_context_s *ctx = userdata;
@@ -611,7 +642,7 @@ static void fetch_results(void *userdata, void *uarg,
     const ne_status *status = NULL;
     const char * path = NULL;
 
-#if !defined(NE_FREE)
+#if WITH_NEON_MIN_VERSION >= 0x002600
     const ne_uri * uri = uarg;
     (void) urlPath(uri->path, &path);
 #else
@@ -1206,7 +1237,7 @@ ssize_t davWrite(void * cookie, const char * buf, size_t count)
     FD_t fd = cookie;
 #endif
     ssize_t rc;
-    int xx;
+    int xx = -1;
 
 #if !defined(NEONBLOWSCHUNKS)
     ne_session * sess;
@@ -1397,7 +1428,7 @@ static const char * statstr(const struct stat * st,
 }
 
 /*@unchecked@*/
-static int dav_st_ino = 0xdead0000;
+static unsigned int dav_st_ino = 0xdead0000;
 
 /*@-boundswrite@*/
 int davStat(const char * path, /*@out@*/ struct stat *st)
@@ -1411,7 +1442,7 @@ int davStat(const char * path, /*@out@*/ struct stat *st)
 /* HACK: neon really wants collections with trailing '/' */
     ctx = fetch_create_context(path, st);
     if (ctx == NULL) {
-fprintf(stderr, "==> %s fetch_create_context ctx %p\n", __FUNCTION__, ctx);
+fprintf(stderr, "==> %s fetch_create_context ctx %p\n", "davStat", ctx);
 /* HACK: errno = ??? */
 	goto exit;
     }
@@ -1544,7 +1575,7 @@ struct dirent * avReaddir(DIR * dir)
     dp = (struct dirent *) avdir->data;
     av = (const char **) (dp + 1);
     ac = avdir->size;
-    dt = (char *) (av + (ac + 1));
+    dt = (unsigned char *) (av + (ac + 1));
     i = avdir->offset + 1;
 
 /*@-boundsread@*/
@@ -1597,7 +1628,7 @@ fprintf(stderr, "*** avOpendir(%s)\n", path);
 /*@-abstract@*/
     dp = (struct dirent *) (avdir + 1);
     av = (const char **) (dp + 1);
-    dt = (char *) (av + (ac + 1));
+    dt = (unsigned char *) (av + (ac + 1));
     t = (char *) (dt + ac + 1);
 /*@=abstract@*/
 
@@ -1668,7 +1699,7 @@ struct dirent * davReaddir(DIR * dir)
     dp = (struct dirent *) avdir->data;
     av = (const char **) (dp + 1);
     ac = avdir->size;
-    dt = (char *) (av + (ac + 1));
+    dt = (unsigned char *) (av + (ac + 1));
     i = avdir->offset + 1;
 
 /*@-boundsread@*/
@@ -1753,7 +1784,7 @@ fprintf(stderr, "*** davOpendir(%s)\n", path);
     /*@-abstract@*/
     dp = (struct dirent *) (avdir + 1);
     nav = (const char **) (dp + 1);
-    dt = (char *) (nav + (ac + 1));
+    dt = (unsigned char *) (nav + (ac + 1));
     t = (char *) (dt + ac + 1);
     /*@=abstract@*/
 
