@@ -616,6 +616,9 @@ static long hdr_hash(PyObject * h)
     return (long) h;
 }
 
+/* forward declaration */
+static PyObject * hdr_subscript(hdrObject * s, PyObject * item);
+
 static PyObject * hdr_getattro(PyObject * o, PyObject * n)
 	/*@*/
 {
