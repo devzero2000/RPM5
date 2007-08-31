@@ -1260,6 +1260,9 @@ int rpmtsInitDSI(const rpmts ts)
 	dsi->f_flag = sfb.f_flag;
 	dsi->f_favail = sfb.f_favail;
 	dsi->f_namemax = sfb.f_namemax;
+#elif defined(__APPLE__) && defined(__MACH__) && !defined(_SYS_STATVFS_H_)
+	dsi->f_fsid = 0; /* "Not meaningful in this implementation." */
+	dsi->f_namemax = pathconf(ts->filesystems[i], _PC_NAME_MAX);
 #else
 	dsi->f_fsid = sfb.f_fsid;
 	dsi->f_namemax = sfb.f_namelen;
