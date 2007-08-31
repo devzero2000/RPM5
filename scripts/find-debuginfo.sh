@@ -30,7 +30,7 @@ do
 	[ -f "${debugfn}" ] && continue
 
 	echo extracting debug info from $f
-	/usr/lib/rpm/debugedit -b "$RPM_BUILD_DIR" -d /usr/src/debug -l "$SOURCEFILE" "$f"
+	/usr/lib/rpm/4.5/debugedit -b "$RPM_BUILD_DIR" -d /usr/src/debug -l "$SOURCEFILE" "$f"
 
 	# A binary already copied into /usr/lib/debug doesn't get stripped,
 	# just has its file names collected and adjusted.
