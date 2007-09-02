@@ -2,16 +2,20 @@ use ExtUtils::MakeMaker;
 # See lib/ExtUtils/MakeMaker.pm for details of how to influence
 # the contents of the Makefile that is written.
 
-WriteMakefile(
-	      'NAME'	=> 'rpm',
-	      'OBJECT'	=> 'rpm.o constant.o',
-	      'VERSION_FROM' => 'rpm.pm',		# finds $VERSION
-	      'MAKEFILE'=> 'PMakefile',
-	      'LIBS'	=> ['@LIBS@'],			# e.g., '-lm' 
-	      'CCFLAGS' => '@CFLAGS@',
-	      'OPTIMIZE'=> '-g',
-	      'DEFINE'	=> '-Dbool=char -DHAS_BOOL',
-	      'INC'	=> '@INCPATH@ -I../build -I../lib -I../popt -I/usr/include/rpm',
-	      'depend'	=> { 'rpm.c' => 'transaction.xs header.xs db.xs' },
-);
+my @libdir = qw(. build lib popt rpmdb rpmio);
 
+my @ldaddp = map { '-L../' . $_ . '/.libs' } @libdir;
+my @ldadd = map { '-l' . $_ } qw(rpmio rpmbuild rpm popt rpmdb);
+
+
+WriteMakefile(
+    'NAME'		=> 'RPM',
+    'VERSION_FROM'	=> 'RPM.pm', # finds $VERSION
+    'PREREQ_PM'		=> {}, # e.g., Module::Name => 1.1
+    'LIBS'		=> [join(' ', @ldaddp) . ' ' . join(' ', @ldadd) . '    -lpopt -lneon -lbeecrypt -lpthread  -lneon  '],
+    'DEFINE'		=> join(" ", @defines), # e.g., '-DHAVE_SOMETHING'
+    'INC' => join(' ', map { '-I@top_srcdir@/'. $_ } @libdir) . ' @CPPFLAGS@',
+    'TYPEMAPS'          => [ 'typemap' ],
+    'OPTIMIZE'          => $optimize,
+    'MAKEFILE'=> 'PMakefile',
+);

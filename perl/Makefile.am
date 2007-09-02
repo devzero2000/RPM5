@@ -3,13 +3,12 @@
 AUTOMAKE_OPTIONS = 1.4 foreign
 
 EXTRA_DIST = \
-	db.xs header.xs junk.xs rpm.xs transaction.xs
+	RPM.xs
 
 installprefix = $(DESTDIR)
 
 configdir = ${prefix}/lib/rpm
-config_SCRIPTS = \
-	db.xs header.xs junk.xs rpm.xs transaction.xs
+config_SCRIPTS = 
 
 all install clean: PMakefile
 	make -f $< $@

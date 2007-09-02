@@ -4,10 +4,8 @@
 #include "rpmlib.h"
 #include "rpmcli.h"
 
-#ifdef RPM_RPM41
 #include "rpmts.h"
 #include "rpmte.h"
-#endif
 
 #include "header.h"
 #include "rpmdb.h"
@@ -16,10 +14,6 @@
 #include "EXTERN.h"
 #include "perl.h"
 #include "XSUB.h"
-
-#if !defined(RPM_RPM41) && !defined(RPM_RPM40)
-#error Must define one of RPM_RPM41 or RPM_RPM40; perhaps Makefile.PL could not guess your RPM API version?
-#endif
 
 /* Chip, this is somewhat stripped down from the default callback used by
    the rpmcli.  It has to be here to insure that we open the pkg again. 
@@ -160,7 +154,6 @@ BOOT:
 	constants = perl_get_hv("RPM::constants", TRUE);
 
 	/* not the 'standard' way of doing perl constants, but a lot easier to maintain */
-#ifdef RPM_RPM41
 	REGISTER_CONSTANT(RPMVSF_DEFAULT);
 	REGISTER_CONSTANT(RPMVSF_NOHDRCHK);
 	REGISTER_CONSTANT(RPMVSF_NEEDPAYLOAD);
@@ -178,19 +171,13 @@ BOOT:
 	REGISTER_CONSTANT(_RPMVSF_NOPAYLOAD);
 	REGISTER_CONSTANT(TR_ADDED);
 	REGISTER_CONSTANT(TR_REMOVED);
-#endif
     }
 
 double
 rpm_api_version(pkg)
 	char * pkg
     CODE:
-#if defined(RPM_RPM41) && ! defined(RPM_RPM40)
-	RETVAL = (double)4.1;
-#endif
-#if ! defined(RPM_RPM41) && defined(RPM_RPM40)
-	RETVAL = (double)4.0;
-#endif
+	RETVAL = (double)4.5;
     OUTPUT:
 	RETVAL
 
@@ -231,17 +218,13 @@ _read_package_info(fp, vsflags)
 	FILE *fp
 	int vsflags
     PREINIT:
-#ifdef RPM_RPM41
 	rpmts ts;
-#endif
 	Header ret;
 	Header sigs;
 	rpmRC rc;
 	FD_t fd;
     PPCODE:
-#ifdef RPM_RPM41
 	ts = rpmtsCreate();
-#endif
 
         /* XXX Determine type of signature verification when reading
 	vsflags |= _RPMTS_VSF_NOLEGACY;
@@ -251,12 +234,8 @@ _read_package_info(fp, vsflags)
         */ 
 
 	fd = fdDup(fileno(fp));
-#ifdef RPM_RPM41
 	rpmtsSetVSFlags(ts, vsflags);
 	rc = rpmReadPackageFile(ts, fd, "filename or other identifier", &ret);
-#else
-	rc = rpmReadPackageInfo(fd, NULL, &ret);
-#endif
 
 	Fclose(fd);
 
@@ -273,9 +252,7 @@ _read_package_info(fp, vsflags)
 	else {
 	    croak("error reading package");
 	}
-#ifdef RPM_RPM41
 	ts = rpmtsFree(ts);
-#endif
 
 void
 _create_transaction(vsflags)
