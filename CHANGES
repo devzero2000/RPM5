@@ -1,4 +1,5 @@
 4.4.9 -> 4.5:
+    - jbj: preserve "Filemd5s" as the legacy rpmdb table name.
     - jbj: add --parentdirs & --linktos to change to opt-in behavior.
     - robert: backport minimum neon >= 0.27.0 support from HEAD.
     - jbj: backport macros.c from HEAD.

@@ -182,10 +182,8 @@ static const char * mapTagName(int value)
     const char * s = tagName(value);
     if (s == NULL)
 	s = "";
-#ifdef	NOTYET
     else if (!strcmp(s, "Filedigests"))
 	s = "Filemd5s";
-#endif
     return s;
 }
 
