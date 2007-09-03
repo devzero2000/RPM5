@@ -295,7 +295,7 @@ struct poptOption rpmcliFtsPoptTable[] = {
 };
 
 /*@unchecked@*/
-int global_depFlags;
+int global_depFlags = (RPMDEPS_FLAG_NOLINKTOS|RPMDEPS_FLAG_NOPARENTDIRS);
 
 /*@unchecked@*/
 struct poptOption rpmcliDepFlagsPoptTable[] = {
@@ -313,12 +313,18 @@ struct poptOption rpmcliDepFlagsPoptTable[] = {
  { "noconflicts", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
 	&global_depFlags, RPMDEPS_FLAG_NOCONFLICTS,
 	N_("do not check added package conflicts"), NULL},
+ { "linktos", '\0', POPT_BIT_CLR|POPT_ARGFLAG_DOC_HIDDEN,
+	&global_depFlags, RPMDEPS_FLAG_NOLINKTOS,
+	N_("ignore added package requires on symlink targets"), NULL},
  { "nolinktos", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
 	&global_depFlags, RPMDEPS_FLAG_NOLINKTOS,
 	N_("ignore added package requires on symlink targets"), NULL},
  { "noobsoletes", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
 	&global_depFlags, RPMDEPS_FLAG_NOOBSOLETES,
 	N_("ignore added package obsoletes"), NULL},
+ { "parentdirs", '\0', POPT_BIT_CLR|POPT_ARGFLAG_DOC_HIDDEN,
+	&global_depFlags, RPMDEPS_FLAG_NOPARENTDIRS,
+	N_("ignore added package requires on file parent directory"), NULL},
  { "noparentdirs", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
 	&global_depFlags, RPMDEPS_FLAG_NOPARENTDIRS,
 	N_("ignore added package requires on file parent directory"), NULL},

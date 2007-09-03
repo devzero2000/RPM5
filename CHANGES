@@ -1,4 +1,5 @@
 4.4.9 -> 4.5:
+    - jbj: add --parentdirs & --linktos to change to opt-in behavior.
     - robert: backport minimum neon >= 0.27.0 support from HEAD.
     - jbj: backport macros.c from HEAD.
     - rpm.org: python: add method for expanding macros.
