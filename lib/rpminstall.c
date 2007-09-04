@@ -17,7 +17,6 @@
 #include "rpmts.h"
 
 #include "manifest.h"
-#include "misc.h"		/* XXX rpmGlob() */
 #include "rpmgi.h"
 #include "debug.h"
 
