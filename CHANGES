@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - rpm.org: fix for debugedit -l.
     - afb: handle Mac OS X 10.3.9 statvfs deviance.
     - rse: make devtool %standalone fully modular for allowing its modules to be reused in other devtool targets
     - jbj: assume that mount(2) et al are linux-peculier for the moment.
