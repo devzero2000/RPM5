@@ -1168,10 +1168,14 @@ int rpmcliSign(rpmts ts, QVA_t qva, const char ** argv)
 	FD_t fd;
 	int xx;
 
-	if ((fd = Fopen(fn, "r.fdio")) == NULL
-	 || Ferror(fd)
-	 || rpmVerifySignatures(qva, ts, fd, fn))
+	fd = Fopen(arg, "r.fdio");
+	if (fd == NULL || Ferror(fd)) {
+	    rpmError(RPMERR_OPEN, _("%s: open failed: %s\n"), 
+		     arg, Fstrerror(fd));
 	    res++;
+	} else if (rpmVerifySignatures(qva, ts, fd, arg)) {
+	    res++;
+	}
 
 	if (fd != NULL) xx = Fclose(fd);
     }
