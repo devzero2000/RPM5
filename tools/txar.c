@@ -9,7 +9,7 @@
 
 static int _debug = 0;
 
-typedef struct rpmmap_s {
+typedef struct rpmwf_s {
     const char * fn;
     FD_t fd;
     void * b;
@@ -25,44 +25,95 @@ typedef struct rpmmap_s {
     xar_t x;
     xar_file_t f;
     xar_iter_t i;
-} * rpmmap;
+    int first;
+} * rpmwf;
 
-static rpmmap rpmmapFree(rpmmap map)
+static rpmRC rpmwfFiniXAR(rpmwf wf)
 {
-    if (map) {
-	int xx;
-
-	if (map->b) {
-	    xx = munmap(map->b, map->nb);
-	    map->b = NULL;
-	    map->nb = 0;
-	} else {
-	    map->l = _free(map->l);
-	    map->s = _free(map->s);
-	    map->h = _free(map->h);
-	    map->p = _free(map->p);
-	}
-	if (map->fd) {
-	    (void) Fclose(map->fd);
-	    map->fd = NULL;
-	}
-	map->fn = _free(map->fn);
-	map = _free(map);
+    if (wf->i) {
+	xar_iter_free(wf->i);
+	wf->i = NULL;
     }
-    return NULL;
+    if (wf->x) {
+	xar_close(wf->x);
+	wf->x = NULL;
+    }
+    return RPMRC_OK;
 }
 
-static rpmmap rpmmapNew(const char * fn)
+static rpmRC rpmwfInitXAR(rpmwf wf, const char * fn, const char * fmode)
 {
-    rpmmap map = xcalloc(1, sizeof(*map));
-    struct stat sb, *st = &sb;
+    int flags = ((fmode && *fmode == 'w') ? WRITE : READ);
+
+    if (fn == NULL)
+	fn = wf->fn;
+assert(fn);
+    
+    wf->x = xar_open(fn, flags);
+    if (flags == READ) {
+	wf->i = xar_iter_new();
+	wf->first = 1;
+    }
+    return RPMRC_OK;
+}
+
+static rpmRC rpmwfPullXAR(rpmwf wf)
+{
+    if (wf->first) {
+	wf->f = xar_file_first(wf->x, wf->i);
+	wf->first = 0;
+    } else
+	wf->f = xar_file_next(wf->i);
+
+    if (wf->f == NULL)
+	return RPMRC_NOTFOUND;
+
+    return RPMRC_OK;
+}
+
+static rpmRC rpmwfPushXAR(rpmwf wf, const char * fn)
+{
+    char * b = NULL;
+    size_t nb = 0;
+
+    if (!strcmp(fn, "Lead")) {
+	b = wf->l;
+	nb = wf->nl;
+    } else
+    if (!strcmp(fn, "Signature")) {
+	b = wf->s;
+	nb = wf->ns;
+    } else
+    if (!strcmp(fn, "Header")) {
+	b = wf->h;
+	nb = wf->nh;
+    } else
+    if (!strcmp(fn, "Payload")) {
+	b = wf->p;
+	nb = wf->np;
+    }
+
+    if (wf->x && b && nb > 0) {
+	wf->f = xar_add_frombuffer(wf->x, NULL, fn, b, nb);
+	if (wf->f == NULL)
+	    return RPMRC_FAIL;
+    }
+    return RPMRC_OK;
+}
+
+static rpmRC rpmwfFiniRPM(rpmwf wf)
+{
     int xx;
 
-    map->fn = xstrdup(fn);
-    xx = Stat(map->fn, st);
-    map->nb = st->st_size;
-
-    return map;
+    if (wf->b && wf->b != (void *)-1) {
+	xx = munmap(wf->b, wf->nb);
+	wf->b = NULL;
+    }
+    if (wf->fd) {
+	(void) Fclose(wf->fd);
+	wf->fd = NULL;
+    }
+    return RPMRC_OK;
 }
 
 static size_t hSize(uint_32 *p)
@@ -70,42 +121,137 @@ static size_t hSize(uint_32 *p)
     return (8 + 8 + 16 * ntohl(p[2]) + ntohl(p[3]));
 }
 
-static rpmmap rdRPM(const char * rpmfn)
+static rpmRC rpmwfInitRPM(rpmwf wf, const char * fn, const char * fmode)
 {
-    rpmmap map = rpmmapNew(rpmfn);
+    if (fn == NULL)
+	fn = wf->fn;
+assert(fn);
 
-    map->fd = Fopen(map->fn, "r");
+    wf->fd = Fopen(fn, fmode);
+    if (wf->fd == NULL || Ferror(wf->fd)) {
+	(void) rpmwfFiniRPM(wf);
+	return RPMRC_NOTFOUND;
+    }
 
-    map->b = mmap(NULL, map->nb, PROT_READ, MAP_SHARED, Fileno(map->fd), 0);
+    if (fmode && *fmode == 'r') {
+	wf->b = mmap(NULL, wf->nb, PROT_READ, MAP_SHARED, Fileno(wf->fd), 0L);
 
-    map->l = map->b;
-    map->nl = 96;
+	if (wf->b == (void *)-1) {
+	    wf->b = NULL;
+	    (void) rpmwfFiniRPM(wf);
+	    return RPMRC_NOTFOUND;
+	}
 
-    map->s = map->l + map->nl;
-    map->ns = hSize((void *)map->s);
-    map->ns += (8 - (map->ns % 8));	/* padding */
+	wf->l = wf->b;
+	wf->nl = 96;
 
-    map->h = map->s + map->ns;
-    map->nh = hSize((void *)map->h);
+	wf->s = wf->l + wf->nl;
+	wf->ns = hSize((void *)wf->s);
+	wf->ns += (8 - (wf->ns % 8));	/* padding */
 
-    map->p = map->h + map->nh;
-    map->np = map->nb;
-    map->np -= map->nl + map->ns + map->nh;
+	wf->h = wf->s + wf->ns;
+	wf->nh = hSize((void *)wf->h);
 
-    return map;
+	wf->p = wf->h + wf->nh;
+	wf->np = wf->nb;
+	wf->np -= wf->nl + wf->ns + wf->nh;
+    }
+
+    return RPMRC_OK;
 }
 
-static rpmmap rdXAR(const char * xarfn)
+static rpmRC rpmwfPushRPM(rpmwf wf, const char * fn)
 {
-    rpmmap map = rpmmapNew(xarfn);
+    char * b = NULL;
+    size_t nb = 0;
 
-    map->x = xar_open(map->fn, READ);
+    if (!strcmp(fn, "Lead")) {
+	b = wf->l;
+	nb = wf->nl;
+    } else
+    if (!strcmp(fn, "Signature")) {
+	b = wf->s;
+	nb = wf->ns;
+    } else
+    if (!strcmp(fn, "Header")) {
+	b = wf->h;
+	nb = wf->nh;
+    } else
+    if (!strcmp(fn, "Payload")) {
+	b = wf->p;
+	nb = wf->np;
+    }
 
-    map->i = xar_iter_new();
-    for (map->f = xar_file_first(map->x, map->i);
-	 map->f != NULL;
-	 map->f = xar_file_next(map->i))
-    {
+    if (!(b && nb > 0))
+	return RPMRC_NOTFOUND;
+
+    if (Fwrite(b, 1, nb, wf->fd) != nb)
+	return RPMRC_FAIL;
+
+    return RPMRC_OK;
+}
+
+static rpmwf rpmwfFree(rpmwf wf)
+{
+    if (wf) {
+
+	if (wf->b == NULL) {
+	    wf->l = _free(wf->l);
+	    wf->s = _free(wf->s);
+	    wf->h = _free(wf->h);
+	    wf->p = _free(wf->p);
+	}
+
+	(void) rpmwfFiniXAR(wf);
+	(void) rpmwfFiniRPM(wf);
+
+	wf->fn = _free(wf->fn);
+	wf = _free(wf);
+    }
+    return NULL;
+}
+
+static rpmwf rpmwfNew(const char * fn)
+{
+    struct stat sb, *st = &sb;
+    rpmwf wf;
+    int xx;
+
+    if ((xx = Stat(fn, st)) < 0)
+	return NULL;
+    wf = xcalloc(1, sizeof(*wf));
+    wf->fn = xstrdup(fn);
+    wf->nb = st->st_size;
+
+    return wf;
+}
+
+static rpmwf rdRPM(const char * rpmfn)
+{
+    rpmwf wf;
+    rpmRC rc;
+
+    if ((wf = rpmwfNew(rpmfn)) != NULL)
+    if ((rc = rpmwfInitRPM(wf, NULL, "r")) != RPMRC_OK)
+	wf = rpmwfFree(wf);
+
+
+    return wf;
+}
+
+static rpmwf rdXAR(const char * xarfn)
+{
+    rpmwf wf = rpmwfNew(xarfn);
+    rpmRC rc;
+
+    if ((rc = rpmwfInitXAR(wf, NULL, "r")) != RPMRC_OK) {
+	wf = rpmwfFree(wf);
+	return NULL;
+    }
+    if (wf == NULL)
+	return wf;
+
+    while ((rc = rpmwfPullXAR(wf)) == RPMRC_OK) {
 	const char * type;
 	const char * name;
 	char * b;
@@ -114,126 +260,82 @@ static rpmmap rdXAR(const char * xarfn)
 
 	b = NULL;
 	nb = 0;
-	xx = xar_extract_tobuffersz(map->x, map->f, &b, &nb);
-if (_debug)
-fprintf(stderr, "*** xx %d %p[%lu]\n", xx, b, (unsigned long)nb);
+	xx = xar_extract_tobuffersz(wf->x, wf->f, &b, &nb);
 	if (xx || b == NULL || nb == 0)
 	    continue;
 
 	type = NULL;
-	xx = xar_prop_get(map->f, "type", &type);
-if (_debug)
-fprintf(stderr, "*** xx %d type %s\n", xx, type);
+	xx = xar_prop_get(wf->f, "type", &type);
 	if (xx || type == NULL || strcmp(type, "file"))
 	    continue;
 
 	name = NULL;
-	xx = xar_prop_get(map->f, "name", &name);
-if (_debug)
-fprintf(stderr, "*** xx %d name %s\n", xx, name);
+	xx = xar_prop_get(wf->f, "name", &name);
 	if (xx || name == NULL)
 	    continue;
 
-if (_debug)
-fprintf(stderr, "*** %s %p[%lu]\n", name, b, (unsigned long)nb);
 	if (!strcmp(name, "Lead")) {
-	    map->l = b;
-	    map->nl = nb;
+	    wf->l = b;
+	    wf->nl = nb;
 	} else
 	if (!strcmp(name, "Signature")) {
-	    map->s = b;
-	    map->ns = nb;
+	    wf->s = b;
+	    wf->ns = nb;
 	} else
 	if (!strcmp(name, "Header")) {
-	    map->h = b;
-	    map->nh = nb;
+	    wf->h = b;
+	    wf->nh = nb;
 	} else
 	if (!strcmp(name, "Payload")) {
-	    map->p = b;
-	    map->np = nb;
+	    wf->p = b;
+	    wf->np = nb;
 	} else
 	    continue;
     }
-    if (map->i) {
-	xar_iter_free(map->i);
-	map->i = NULL;
-    }
-    if (map->x) {
-	xar_close(map->x);
-	map->x = NULL;
-    }
-    return map;
+    (void) rpmwfFiniXAR(wf);
+    return wf;
 }
 
-static int wrXARbuffer(rpmmap map, const char * fn, char * b, size_t nb)
+static rpmRC wrXAR(const char * xarfn, rpmwf wf)
 {
-    if (b && nb > 0) {
-	map->f = xar_add_frombuffer(map->x, NULL, fn, b, nb);
-	if (map->f == NULL)
-	    return 1;
-    }
-    return 0;
-}
+    rpmRC rc;
 
-static int wrXAR(const char * xarfn, rpmmap map)
-{
-    int rc = 1;	/* assume error */
-
-    map->x = xar_open(xarfn, WRITE);
-    if (map->x == NULL)
+    if ((rc = rpmwfInitXAR(wf, xarfn, "w")) != RPMRC_OK)
 	goto exit;
 
-    if ((rc = wrXARbuffer(map, "Lead", map->l, map->nl)) != 0)
+    if ((rc = rpmwfPushXAR(wf, "Lead")) != RPMRC_OK)
 	goto exit;
-    if ((rc = wrXARbuffer(map, "Signature", map->s, map->ns)) != 0)
+    if ((rc = rpmwfPushXAR(wf, "Signature")) != RPMRC_OK)
 	goto exit;
-    if ((rc = wrXARbuffer(map, "Header", map->h, map->nh)) != 0)
+    if ((rc = rpmwfPushXAR(wf, "Header")) != RPMRC_OK)
 	goto exit;
-    if ((rc = wrXARbuffer(map, "Payload", map->p, map->np)) != 0)
+    if ((rc = rpmwfPushXAR(wf, "Payload")) != RPMRC_OK)
 	goto exit;
-    rc = 0;
 
 exit:
-    if (map->x) {
-	xar_close(map->x);
-	map->x = NULL;
-    }
+    (void) rpmwfFiniXAR(wf);
 
     return rc;
 }
 
-static int wrRPMbuffer(rpmmap map, const char * fn, char * b, size_t nb)
+static rpmRC wrRPM(const char * rpmfn, rpmwf wf)
 {
-    if (b && nb > 0) {
-	if (Fwrite(b, 1, nb, map->fd) != nb)
-	    return 1;
-    }
-    return 0;
-}
+    rpmRC rc;
 
-static int wrRPM(const char * rpmfn, rpmmap map)
-{
-    int rc = 1;	/* assume error */
-
-    map->fd = Fopen(rpmfn, "w");
-    if (map->fd == NULL)
+    if ((rc = rpmwfInitRPM(wf, rpmfn, "w")) != RPMRC_OK)
 	goto exit;
 
-    if ((rc = wrRPMbuffer(map, "Lead", map->l, map->nl)) != 0)
+    if ((rc = rpmwfPushRPM(wf, "Lead")) != RPMRC_OK)
 	goto exit;
-    if ((rc = wrRPMbuffer(map, "Signature", map->s, map->ns)) != 0)
+    if ((rc = rpmwfPushRPM(wf, "Signature")) != RPMRC_OK)
 	goto exit;
-    if ((rc = wrRPMbuffer(map, "Header", map->h, map->nh)) != 0)
+    if ((rc = rpmwfPushRPM(wf, "Header")) != RPMRC_OK)
 	goto exit;
-    if ((rc = wrRPMbuffer(map, "Payload", map->p, map->np)) != 0)
+    if ((rc = rpmwfPushRPM(wf, "Payload")) != RPMRC_OK)
 	goto exit;
-    rc = 0;
 
 exit:
-    if (map->fd) {
-	(void) Fclose(map->fd);
-	map->fd = NULL;
-    }
+    (void) rpmwfFiniRPM(wf);
 
     return rc;
 }
@@ -264,34 +366,37 @@ main(int argc, char *const argv[])
 
     if ((args = poptGetArgs(optCon)) != NULL)
     while ((sfn = *args++) != NULL) {
-	rpmmap map;
+	rpmwf wf;
 	char * tfn;
 	size_t nb = strlen(sfn);
 	int x = nb - (sizeof(".rpm") - 1);
-	int rc;
+	rpmRC rc;
 
 	if (x <= 0)
-	    rc = 1;
+	    rc = RPMRC_FAIL;
 	else
 	if (!strcmp(&sfn[x], ".rpm")) {
 	    tfn = xstrdup(sfn);
 	    strcpy(&tfn[x], ".xar");
-	    map = rdRPM(sfn);
-	    rc = wrXAR(tfn, map);
-	    map = rpmmapFree(map);
+	    if ((wf = rdRPM(sfn)) != NULL) {
+		rc = wrXAR(tfn, wf);
+		wf = rpmwfFree(wf);
+	    } else
+		rc = RPMRC_FAIL;
 	    tfn = _free(tfn);
 	} else
 	if (!strcmp(&sfn[x], ".xar")) {
 	    tfn = xstrdup(sfn);
 	    strcpy(&tfn[x], ".rpm");
-	    map = rdXAR(sfn);
-	    rc = wrRPM(tfn, map);
-	    map = rpmmapFree(map);
+	    if ((wf = rdXAR(sfn)) != NULL) {
+		rc = wrRPM(tfn, wf);
+		wf = rpmwfFree(wf);
+	    } else
+		rc = RPMRC_FAIL;
 	    tfn = _free(tfn);
-	    continue;
 	} else
-	    rc = 1;
-	if (rc)
+	    rc = RPMRC_FAIL;
+	if (rc != RPMRC_OK)
 	    ec++;
     }
 
