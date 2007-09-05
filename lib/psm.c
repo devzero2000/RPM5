@@ -199,7 +199,9 @@ rpmRC rpmInstallSourcePackage(rpmts ts, void * _fd,
 
     rpmrc = RPMRC_OK;
 
-    isSource = (headerIsEntry(h, RPMTAG_SOURCERPM) == 0);
+    isSource =
+	(headerIsEntry(h, RPMTAG_SOURCERPM) == 0 &&
+	 headerIsEntry(h, RPMTAG_ARCH) != 0);
 
     if (!isSource) {
 	rpmError(RPMERR_NOTSRPM, _("source package expected, binary found\n"));

@@ -178,7 +178,9 @@ IDTX IDTXglob(rpmts ts, const char * globstr, rpmTag tag, uint_32 rbtid)
 	case RPMRC_NOTTRUSTED:
 	case RPMRC_NOKEY:
 	case RPMRC_OK:
-	    isSource = (headerIsEntry(h, RPMTAG_SOURCERPM) == 0);
+	    isSource =
+		(headerIsEntry(h, RPMTAG_SOURCERPM) == 0 &&
+		 headerIsEntry(h, RPMTAG_ARCH) != 0);
 	    if (isSource)
 		goto bottom;
 	    /*@switchbreak@*/ break;

@@ -150,7 +150,9 @@ assert(p->NEVR);
     xx = hge(h, RPMTAG_OS, NULL, &os, NULL);
     p->os = (os != NULL ? xstrdup(os) : NULL);
 
-    p->isSource = (headerIsEntry(h, RPMTAG_SOURCERPM) == 0);
+    p->isSource =
+	(headerIsEntry(h, RPMTAG_SOURCERPM) == 0 &&
+	 headerIsEntry(h, RPMTAG_ARCH) != 0);
 
     nb = strlen(p->NEVR) + 1;
 #ifdef	DYING	/* p->NEVR includes arch now. */

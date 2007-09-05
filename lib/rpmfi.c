@@ -1324,7 +1324,9 @@ assert(scareMem == 0);		/* XXX always allocate memory */
     fi->hfd = headerFreeData;
 
     fi->h = (h != NULL && scareMem ? headerLink(h) : NULL);
-    fi->isSource = (headerIsEntry(h, RPMTAG_SOURCERPM) == 0);
+    fi->isSource =
+	(headerIsEntry(h, RPMTAG_SOURCERPM) == 0 &&
+	 headerIsEntry(h, RPMTAG_ARCH) != 0);
 
     if (fi->fsm == NULL)
 	fi->fsm = newFSM();
