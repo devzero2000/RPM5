@@ -6,6 +6,14 @@ Makefile.perl
 RPM-*
 RPM.bs
 RPM.c
+RPM_Constant.c
+RPM_Dependencies.c
+RPM_Files.c
+RPM_Header.c
+RPM_PackageIterator.c
+RPM_Problems.c
+RPM_Spec.c
+RPM_Transaction.c
 RPM_Ts.c
 blib
 perl
