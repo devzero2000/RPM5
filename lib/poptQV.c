@@ -35,6 +35,7 @@ int specedit = 0;
 #define	POPT_TRUST		-1037
 #define	POPT_WHATNEEDS		-1038
 #define	POPT_SPECSRPM		-1039
+#define POPT_QUERYBYSOURCEPKGID	-1040
 
 /* ========== Query/Verify/Signature source args */
 static void rpmQVSourceArgCallback( /*@unused@*/ poptContext con,
@@ -71,6 +72,8 @@ static void rpmQVSourceArgCallback( /*@unused@*/ poptContext con,
     case POPT_WHATREQUIRES: qva->qva_source |= RPMQV_WHATREQUIRES; 
 				qva->qva_sourceCount++; break;
     case POPT_TRIGGEREDBY: qva->qva_source |= RPMQV_TRIGGEREDBY;
+				qva->qva_sourceCount++; break;
+    case POPT_QUERYBYSOURCEPKGID: qva->qva_source |= RPMQV_SOURCEPKGID;
 				qva->qva_sourceCount++; break;
     case POPT_QUERYBYPKGID: qva->qva_source |= RPMQV_PKGID;
 				qva->qva_sourceCount++; break;
@@ -127,6 +130,8 @@ struct poptOption rpmQVSourcePoptTable[] = {
  { "hdlist", 'H', POPT_ARGFLAG_DOC_HIDDEN, 0, POPT_HDLIST,
 	N_("query/verify package(s) from system HDLIST"), "HDLIST" },
 
+ { "sourcepkgid", '\0', 0, NULL, POPT_QUERYBYSOURCEPKGID,
+	N_("query/verify package(s) with source package identifier"), "MD5" },
  { "pkgid", '\0', 0, NULL, POPT_QUERYBYPKGID,
 	N_("query/verify package(s) with package identifier"), "MD5" },
  { "hdrid", '\0', 0, NULL, POPT_QUERYBYHDRID,

@@ -523,9 +523,11 @@ int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
 	    res = rpmcliShowMatches(qva, ts);
 	break;
 
+    case RPMQV_SOURCEPKGID:
     case RPMQV_PKGID:
     {	unsigned char MD5[16];
 	unsigned char * t;
+	int_32 tag;
 
 	for (i = 0, s = arg; *s && isxdigit(*s); s++, i++)
 	    {};
@@ -538,7 +540,9 @@ int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
         for (i = 0, t = MD5, s = arg; i < 16; i++, t++, s += 2)
             *t = (nibble(s[0]) << 4) | nibble(s[1]);
 	
-	qva->qva_mi = rpmtsInitIterator(ts, RPMTAG_SIGMD5, MD5, sizeof(MD5));
+	tag = (qva->qva_source == RPMQV_PKGID
+		? RPMTAG_SOURCEPKGID : RPMTAG_PKGID);
+	qva->qva_mi = rpmtsInitIterator(ts, tag, MD5, sizeof(MD5));
 	if (qva->qva_mi == NULL) {
 	    rpmError(RPMERR_QUERYINFO, _("no package matches %s: %s\n"),
 			"pkgid", arg);

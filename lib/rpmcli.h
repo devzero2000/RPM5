@@ -127,7 +127,8 @@ typedef enum rpmQVSources_e {
     RPMQV_HDLIST,	/*!< ... from system hdlist. */
     RPMQV_FTSWALK,	/*!< ... from fts(3) walk. */
     RPMQV_WHATNEEDS,	/*!< ... from requires using contained provides. */
-    RPMQV_SPECSRPM	/*!< ... srpm from spec file parse (query only). */
+    RPMQV_SPECSRPM,	/*!< ... srpm from spec file parse (query only). */
+    RPMQV_SOURCEPKGID	/*!< ... from source package id (header+payload MD5). */
 } rpmQVSources;
 
 /** \ingroup rpmcli
