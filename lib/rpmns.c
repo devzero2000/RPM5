@@ -22,10 +22,12 @@ const char *_rpmns_N_at_A = ".";
 /*@-nullassign@*/
 /*@unchecked@*/ /*@observer@*/
 static const char *rpmnsArches[] = {
-    "i386", "i486", "i586", "i686", "athlon", "pentium3", "pentium4", "x86_64", "amd64", "ia32e",
+    "i386", "i486", "i586", "i686", "athlon", "pentium3", "pentium4",
+    "x86_64", "amd64", "ia32e",
     "alpha", "alphaev5", "alphaev56", "alphapca56", "alphaev6", "alphaev67",
-    "sparc", "sun4", "sun4m", "sun4c", "sun4d", "sparcv8", "sparcv9",
-    "sparc64", "sun4u",
+    "sparc", "sun4", "sun4m", "sun4c", "sun4d", "sparcv8",
+    "sparcv9", "sparcv9v",
+    "sparc64", "sun4u", "sparc64v",
     "mips", "mipsel", "IP",
     "ppc", "ppciseries", "ppcpseries",
     "ppc64", "ppc64iseries", "ppc64pseries",
@@ -33,7 +35,8 @@ static const char *rpmnsArches[] = {
     "rs6000",
     "ia64",
     "armv3l", "armv4b", "armv4l",
-    "armv5teb", "armv5tel",
+    "armv5teb", "armv5tel", "armv5tejl",
+    "armv6l",
     "s390", "i370", "s390x",
     "sh", "xtensa",
     "noarch", "fat",
