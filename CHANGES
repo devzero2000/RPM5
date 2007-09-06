@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - rpm.org: new debuginfo script.
     - jbj: update known arch's.
     - jbj: use rpmGetPath() to simplify generating filenames, nuke alloca.
     - jbj: pubkey headers were misidentified as source, not binary, headers.
