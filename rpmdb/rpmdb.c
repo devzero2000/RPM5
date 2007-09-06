@@ -123,6 +123,29 @@ static inline unsigned char nibble(char c)
     return 0;
 }
 
+/**
+ * Convert binary blob to printable hex string.
+ * @param data		binary data
+ * @param size		size of data in bytes
+ * @return		malloc'd hex string
+ */
+static char * bin2hex(const void *data, size_t size)
+{
+    static char hex[] = "0123456789abcdef";
+    const char * s = data;
+    char * t, * val;
+    val = t = xmalloc(size * 2 + 1);
+    while (size-- > 0) {
+	unsigned int i;
+	i = *s++;
+	*t++ = hex[ (i >> 4) & 0xf ];
+	*t++ = hex[ (i     ) & 0xf ];
+    }
+    *t = '\0';
+
+    return val;
+}
+
 #ifdef	DYING
 /**
  * Check key for printable characters.
@@ -2138,8 +2161,10 @@ static int mireSkip (const rpmdbMatchIterator mi)
 	int anymatch;
 
 	if (!hge(mi->mi_h, mire->tag, &t, (void **)&u, &c)) {
-	    if (mire->tag != RPMTAG_EPOCH)
+	    if (mire->tag != RPMTAG_EPOCH) {
+		ntags++;
 		continue;
+	    }
 	    t = RPM_INT32_TYPE;
 /*@-immediatetrans@*/
 	    u.i32p = &zero;
@@ -2184,8 +2209,14 @@ static int mireSkip (const rpmdbMatchIterator mi)
 		    }
 		}
 		/*@switchbreak@*/ break;
-	    case RPM_NULL_TYPE:
 	    case RPM_BIN_TYPE:
+	    {   const char * s = bin2hex(u.ptr, c);
+		rc = mireRegexec(mire, s);
+		if ((!rc && !mire->notmatch) || (rc && mire->notmatch))
+		    anymatch++;
+		s = _free(s);
+	    }   /*@switchbreak@*/ break;
+	    case RPM_NULL_TYPE:
 	    default:
 		/*@switchbreak@*/ break;
 	    }
@@ -2203,9 +2234,9 @@ static int mireSkip (const rpmdbMatchIterator mi)
 	else
 	    u.ptr = hfd(u.ptr, t);
 
-	ntags++;
 	if (anymatch)
 	    nmatches++;
+	ntags++;
     }
 
     return (ntags > 0 && ntags == nmatches ? 0 : 1);
