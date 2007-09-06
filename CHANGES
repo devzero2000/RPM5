@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - jbj: remove ancient %verifyscript tag != 1079 retrofit.
     - rpm.org: fix whitespace-in-files issues in find-debuginfo.sh.
     - rpm.org: new debuginfo script.
     - jbj: update known arch's.
