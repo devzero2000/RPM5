@@ -57,7 +57,7 @@ assert(fn);
     return RPMRC_OK;
 }
 
-static rpmRC rpmwfPullXAR(rpmwf wf)
+static rpmRC rpmwfNextXAR(rpmwf wf)
 {
     if (wf->first) {
 	wf->f = xar_file_first(wf->x, wf->i);
@@ -99,6 +99,44 @@ static rpmRC rpmwfPushXAR(rpmwf wf, const char * fn)
 	    return RPMRC_FAIL;
     }
     return RPMRC_OK;
+}
+
+static rpmRC rpmwfPullXAR(rpmwf wf, const char * fn)
+{
+    const char * path = xar_get_path(wf->f);
+    char * b = NULL;
+    size_t nb = 0;
+    rpmRC rc = RPMRC_OK;
+    int xx;
+
+    if (fn == NULL)
+	fn = path;
+    else
+	assert(!strcmp(fn, path));
+
+    xx = xar_extract_tobuffersz(wf->x, wf->f, &b, &nb);
+    if (xx || b == NULL || nb == 0)
+	return RPMRC_NOTFOUND;
+
+    if (!strcmp(fn, "Lead")) {
+	wf->l = b;
+	wf->nl = nb;
+    } else
+    if (!strcmp(fn, "Signature")) {
+	wf->s = b;
+	wf->ns = nb;
+    } else
+    if (!strcmp(fn, "Header")) {
+	wf->h = b;
+	wf->nh = nb;
+    } else
+    if (!strcmp(fn, "Payload")) {
+	wf->p = b;
+	wf->np = nb;
+    } else
+	rc = RPMRC_NOTFOUND;
+
+    return rc;
 }
 
 static rpmRC rpmwfFiniRPM(rpmwf wf)
@@ -231,9 +269,13 @@ static rpmwf rdRPM(const char * rpmfn)
     rpmwf wf;
     rpmRC rc;
 
-    if ((wf = rpmwfNew(rpmfn)) != NULL)
-    if ((rc = rpmwfInitRPM(wf, NULL, "r")) != RPMRC_OK)
+    if ((wf = rpmwfNew(rpmfn)) == NULL)
+	return wf;
+
+    if ((rc = rpmwfInitRPM(wf, NULL, "r")) != RPMRC_OK) {
 	wf = rpmwfFree(wf);
+	return NULL;
+    }
 
 
     return wf;
@@ -241,57 +283,21 @@ static rpmwf rdRPM(const char * rpmfn)
 
 static rpmwf rdXAR(const char * xarfn)
 {
-    rpmwf wf = rpmwfNew(xarfn);
+    rpmwf wf;
     rpmRC rc;
+
+    if ((wf = rpmwfNew(xarfn)) == NULL)
+	return wf;
 
     if ((rc = rpmwfInitXAR(wf, NULL, "r")) != RPMRC_OK) {
 	wf = rpmwfFree(wf);
 	return NULL;
     }
-    if (wf == NULL)
-	return wf;
 
-    while ((rc = rpmwfPullXAR(wf)) == RPMRC_OK) {
-	const char * type;
-	const char * name;
-	char * b;
-	size_t nb;
-	int xx;
-
-	b = NULL;
-	nb = 0;
-	xx = xar_extract_tobuffersz(wf->x, wf->f, &b, &nb);
-	if (xx || b == NULL || nb == 0)
-	    continue;
-
-	type = NULL;
-	xx = xar_prop_get(wf->f, "type", &type);
-	if (xx || type == NULL || strcmp(type, "file"))
-	    continue;
-
-	name = NULL;
-	xx = xar_prop_get(wf->f, "name", &name);
-	if (xx || name == NULL)
-	    continue;
-
-	if (!strcmp(name, "Lead")) {
-	    wf->l = b;
-	    wf->nl = nb;
-	} else
-	if (!strcmp(name, "Signature")) {
-	    wf->s = b;
-	    wf->ns = nb;
-	} else
-	if (!strcmp(name, "Header")) {
-	    wf->h = b;
-	    wf->nh = nb;
-	} else
-	if (!strcmp(name, "Payload")) {
-	    wf->p = b;
-	    wf->np = nb;
-	} else
-	    continue;
+    while ((rc = rpmwfNextXAR(wf)) == RPMRC_OK) {
+	rc = rpmwfPullXAR(wf, NULL);
     }
+
     (void) rpmwfFiniXAR(wf);
     return wf;
 }
