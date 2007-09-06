@@ -3671,7 +3671,6 @@ static int rpmioFileExists(const char * urlfn)
 {
     const char *fn;
     int urltype = urlPath(urlfn, &fn);
-    struct stat buf;
 
     /*@-branchstate@*/
     if (*fn == '\0') fn = "/";
@@ -3683,14 +3682,15 @@ static int rpmioFileExists(const char * urlfn)
     case URL_IS_HKP:	/* XXX WRONG WRONG WRONG */
     case URL_IS_PATH:
     case URL_IS_UNKNOWN:
-	if (Stat(fn, &buf)) {
+    {	struct stat sb;
+	if (Stat(fn, &sb) < 0) {
 	    switch(errno) {
 	    case ENOENT:
 	    case EINVAL:
 		return 0;
 	    }
 	}
-	break;
+    }	break;
     case URL_IS_DASH:
     default:
 	return 0;
@@ -3706,55 +3706,44 @@ static int rpmdbRemoveDatabase(const char * prefix,
 	/*@globals h_errno, fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/
 { 
-    int i;
-    char * filename;
+    const char * fn;
     int xx;
 
-    i = strlen(dbpath);
-    /*@-bounds -branchstate@*/
-    if (dbpath[i - 1] != '/') {
-	filename = alloca(i);
-	strcpy(filename, dbpath);
-	filename[i] = '/';
-	filename[i + 1] = '\0';
-	dbpath = filename;
-    }
-    /*@=bounds =branchstate@*/
-    
-    filename = alloca(strlen(prefix) + strlen(dbpath) + 40);
-
     switch (_dbapi) {
+    default:
     case 4:
 	/*@fallthrough@*/
     case 3:
+    {	char * suffix;
+	int i;
+
 	if (dbiTags != NULL)
 	for (i = 0; i < dbiTagsMax; i++) {
-/*@-boundsread@*/
-	    const char * base = tagName(dbiTags[i]);
-/*@=boundsread@*/
-	    sprintf(filename, "%s/%s/%s", prefix, dbpath, base);
-	    (void)rpmCleanPath(filename);
-	    if (!rpmioFileExists(filename))
-		continue;
-	    xx = Unlink(filename);
+	    fn = rpmGetPath(prefix, dbpath, "/", tagName(dbiTags[i]), NULL);
+	    if (rpmioFileExists(fn))
+		xx = Unlink(fn);
+	    fn = _free(fn);
 	}
+
+	fn = rpmGetPath(prefix, dbpath, "/", "__db.000", NULL);
+	suffix = (char *)(fn + strlen(fn) - (sizeof("000") - 1));
 	for (i = 0; i < 16; i++) {
-	    sprintf(filename, "%s/%s/__db.%03d", prefix, dbpath, i);
-	    (void)rpmCleanPath(filename);
-	    if (!rpmioFileExists(filename))
-		continue;
-	    xx = Unlink(filename);
+	    snprintf(suffix, sizeof("000"), "%03d", i);
+	    if (rpmioFileExists(fn))
+		xx = Unlink(fn);
 	}
-	break;
+	fn = _free(fn);
+
+    }	break;
     case 2:
     case 1:
     case 0:
 	break;
     }
 
-    sprintf(filename, "%s/%s", prefix, dbpath);
-    (void)rpmCleanPath(filename);
-    xx = Rmdir(filename);
+    fn = rpmGetPath(prefix, dbpath, NULL);
+    xx = Rmdir(fn);
+    fn = _free(fn);
 
     return 0;
 }
@@ -3766,44 +3755,20 @@ static int rpmdbMoveDatabase(const char * prefix,
 	/*@globals h_errno, fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/
 {
-    int i;
-    char * ofilename, * nfilename;
-    struct stat * nst = alloca(sizeof(*nst));
+    struct stat nsb, * nst = &nsb;
+    const char * ofn, * nfn;
     int rc = 0;
     int xx;
  
-    i = strlen(olddbpath);
-    /*@-branchstate@*/
-    if (olddbpath[i - 1] != '/') {
-	ofilename = alloca(i + 2);
-	strcpy(ofilename, olddbpath);
-	ofilename[i] = '/';
-	ofilename[i + 1] = '\0';
-	olddbpath = ofilename;
-    }
-    /*@=branchstate@*/
-    
-    i = strlen(newdbpath);
-    /*@-branchstate@*/
-    if (newdbpath[i - 1] != '/') {
-	nfilename = alloca(i + 2);
-	strcpy(nfilename, newdbpath);
-	nfilename[i] = '/';
-	nfilename[i + 1] = '\0';
-	newdbpath = nfilename;
-    }
-    /*@=branchstate@*/
-    
-    ofilename = alloca(strlen(prefix) + strlen(olddbpath) + 40);
-    nfilename = alloca(strlen(prefix) + strlen(newdbpath) + 40);
-
     switch (_olddbapi) {
+    default:
     case 4:
         /* Fall through */
     case 3:
+    {	char *osuffix, *nsuffix;
+	int i;
 	if (dbiTags != NULL)
 	for (i = 0; i < dbiTagsMax; i++) {
-	    const char * base;
 	    int rpmtag;
 
 	    /* Filter out temporary databases */
@@ -3818,57 +3783,62 @@ static int rpmdbMoveDatabase(const char * prefix,
 		/*@switchbreak@*/ break;
 	    }
 
-	    base = tagName(rpmtag);
-	    sprintf(ofilename, "%s/%s/%s", prefix, olddbpath, base);
-	    (void)rpmCleanPath(ofilename);
-	    sprintf(nfilename, "%s/%s/%s", prefix, newdbpath, base);
-	    (void)rpmCleanPath(nfilename);
+	    ofn = rpmGetPath(prefix, olddbpath, "/", tagName(rpmtag), NULL);
+	    nfn = rpmGetPath(prefix, newdbpath, "/", tagName(rpmtag), NULL);
 
-	    if (!rpmioFileExists(ofilename)) {
-	        if (rpmioFileExists(nfilename)) {
-		    rpmMessage(RPMMESS_DEBUG, D_("removing file \"%s\"\n"), nfilename);
-		    xx = Unlink(nfilename);
+	    if (!rpmioFileExists(ofn)) {
+	        if (rpmioFileExists(nfn)) {
+		    rpmMessage(RPMMESS_DEBUG, D_("removing file \"%s\"\n"), nfn);
+		    xx = Unlink(nfn);
                 }
-		continue;
+		goto bottom;
             }
 
 	    /*
 	     * Get uid/gid/mode/mtime. If old doesn't exist, use new.
 	     * XXX Yes, the variable names are backwards.
 	     */
-	    if (Stat(nfilename, nst) < 0)
-		if (Stat(ofilename, nst) < 0)
-		    continue;
+	    if (Stat(nfn, nst) < 0 && Stat(ofn, nst) < 0)
+		goto bottom;
 
-	    rpmMessage(RPMMESS_DEBUG, D_("moving file from \"%s\"\n"), ofilename);
-	    rpmMessage(RPMMESS_DEBUG, D_("moving file to   \"%s\"\n"), nfilename);
-	    if ((xx = Rename(ofilename, nfilename)) != 0) {
+	    rpmMessage(RPMMESS_DEBUG, D_("moving file from \"%s\"\n"), ofn);
+	    rpmMessage(RPMMESS_DEBUG, D_("moving file to   \"%s\"\n"), nfn);
+	    if ((xx = Rename(ofn, nfn)) != 0) {
 		rc = 1;
-		continue;
+		goto bottom;
 	    }
-	    xx = Chown(nfilename, nst->st_uid, nst->st_gid);
-	    xx = Chmod(nfilename, (nst->st_mode & 07777));
+	    xx = Chown(nfn, nst->st_uid, nst->st_gid);
+	    xx = Chmod(nfn, (nst->st_mode & 07777));
 	    {	struct utimbuf stamp;
 		stamp.actime = nst->st_atime;
 		stamp.modtime = nst->st_mtime;
-		xx = Utime(nfilename, &stamp);
+		xx = Utime(nfn, &stamp);
 	    }
+bottom:
+	    ofn = _free(ofn);
+	    nfn = _free(ofn);
 	}
+
+	ofn = rpmGetPath(prefix, olddbpath, "/", "__db.000", NULL);
+	osuffix = (char *)(ofn + strlen(ofn) - (sizeof("000") - 1));
+	nfn = rpmGetPath(prefix, newdbpath, "/", "__db.000", NULL);
+	nsuffix = (char *)(nfn + strlen(nfn) - (sizeof("000") - 1));
+
 	for (i = 0; i < 16; i++) {
-	    sprintf(ofilename, "%s/%s/__db.%03d", prefix, olddbpath, i);
-	    (void)rpmCleanPath(ofilename);
-	    if (rpmioFileExists(ofilename)) {
-		rpmMessage(RPMMESS_DEBUG, D_("removing region file \"%s\"\n"), ofilename);
-		xx = Unlink(ofilename);
+	    snprintf(osuffix, sizeof("000"), "%03d", i);
+	    if (rpmioFileExists(ofn)) {
+		rpmMessage(RPMMESS_DEBUG, D_("removing region file \"%s\"\n"), ofn);
+		xx = Unlink(ofn);
 	    }
-	    sprintf(nfilename, "%s/%s/__db.%03d", prefix, newdbpath, i);
-	    (void)rpmCleanPath(nfilename);
-	    if (rpmioFileExists(nfilename)) {
-		rpmMessage(RPMMESS_DEBUG, D_("removing region file \"%s\"\n"), nfilename);
-		xx = Unlink(nfilename);
+	    snprintf(nsuffix, sizeof("000"), "%03d", i);
+	    if (rpmioFileExists(nfn)) {
+		rpmMessage(RPMMESS_DEBUG, D_("removing region file \"%s\"\n"), nfn);
+		xx = Unlink(nfn);
 	    }
 	}
-	break;
+	ofn = _free(ofn);
+	nfn = _free(ofn);
+    }	break;
     case 2:
     case 1:
     case 0:
