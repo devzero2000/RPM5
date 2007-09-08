@@ -10,12 +10,14 @@
 #define	_RPMEVR_INTERNAL	/* XXX RPMSENSE_KEYRING */
 #include <rpmevr.h>
 
+#include <rpmte.h>		/* XXX rpmtsi */
+#define	_RPMTS_INTERNAL		/* XXX rpmtsCleanDig */
+#include <rpmts.h>
+
 #include "rpmdb.h"
 #include "rpmgi.h"
-#include "rpmts.h"
 
-#define	_RPMLEAD_INTERNAL
-#include <pkgio.h>		/* XXX readLead/writeLead */
+#include <pkgio.h>
 #include "signature.h"
 #include "misc.h"	/* XXX for makeTempFile() */
 #include "debug.h"
@@ -1129,8 +1131,9 @@ assert(dig != NULL);
     }
 
 exit:
+    ts->sig = headerFreeData(ts->sig, ts->sigtype);
+    ts->dig = pgpFreeDig(ts->dig);
     sigh = rpmFreeSignature(sigh);
-    rpmtsCleanDig(ts);
     return res;
 }
 

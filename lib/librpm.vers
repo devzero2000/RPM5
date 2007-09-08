@@ -336,7 +336,6 @@ LIBRPM_0
     rpmtsCheckDSIProblems;
     rpmtsChrootDone;
     rpmtsClean;
-    rpmtsCleanDig;
     rpmtsCloseDB;
     rpmtsCloseSDB;
     rpmtsColor;

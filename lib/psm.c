@@ -27,8 +27,7 @@
 #define	_RPMTS_INTERNAL		/* XXX ts->notify */
 #include "rpmts.h"
 
-#define	_RPMLEAD_INTERNAL
-#include <pkgio.h>		/* writeLead proto, RPMLEAD_BINARY */
+#include <pkgio.h>
 #include "signature.h"		/* signature constants */
 #include "misc.h"		/* XXX stripTrailingChar() */
 #include "rpmdb.h"		/* XXX for db_chrootDone */

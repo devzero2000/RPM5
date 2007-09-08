@@ -9,10 +9,12 @@
 #include <rpmio_internal.h>
 #include <rpmlib.h>
 
+#include <rpmte.h>		/* XXX rpmtsi */
+#define	_RPMTS_INTERNAL		/* XXX rpmtsCleanDig() */
 #include "rpmts.h"
 
 #include "misc.h"		/* XXX stripTrailingChar() */
-#include <pkgio.h>		/* XXX readLead */
+#include <pkgio.h>
 
 #include "header_internal.h"	/* XXX headerCheck */
 #include "signature.h"
@@ -506,7 +508,8 @@ verifyinfo_exit:
 	    rpmMessage(RPMMESS_ERROR,
 		_("skipping header with unverifiable V%u signature\n"),
 		dig->signature.version);
-	    rpmtsCleanDig(ts);
+	    ts->sig = headerFreeData(ts->sig, ts->sigtype);
+	    ts->dig = pgpFreeDig(ts->dig);
 	    rc = RPMRC_FAIL;
 	    goto exit;
 	}
@@ -549,7 +552,8 @@ verifyinfo_exit:
 	    rpmMessage(RPMMESS_ERROR,
 		_("skipping header with unverifiable V%u signature\n"),
 		dig->signature.version);
-	    rpmtsCleanDig(ts);
+	    ts->sig = headerFreeData(ts->sig, ts->sigtype);
+	    ts->dig = pgpFreeDig(ts->dig);
 	    rc = RPMRC_FAIL;
 	    goto exit;
 	}
@@ -604,8 +608,10 @@ verifyinfo_exit:
 /*@=boundswrite@*/
 
     /* XXX headerCheck can recurse, free info only at top level. */
-    if (hclvl == 1)
-	rpmtsCleanDig(ts);
+    if (hclvl == 1) {
+	ts->sig = headerFreeData(ts->sig, ts->sigtype);
+	ts->dig = pgpFreeDig(ts->dig);
+    }
     if (info->tag == RPMTAG_SHA1HEADER)
 	sig = _free(sig);
     hclvl--;
@@ -1065,7 +1071,8 @@ exit:
     (void) rpmswSub(rpmtsOp(ts, RPMTS_OP_READHDR),
 		opsave);
 
-    rpmtsCleanDig(ts);
+    ts->sig = headerFreeData(ts->sig, ts->sigtype);
+    ts->dig = pgpFreeDig(ts->dig);
     sigh = rpmFreeSignature(sigh);
     return rc;
 }

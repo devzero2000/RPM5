@@ -16,7 +16,6 @@
 
 #include "misc.h"	/* XXX for dosetenv() and makeTempFile() */
 #include "legacy.h"	/* XXX for mdbinfile() */
-#define	_RPMLEAD_INTERNAL
 #include <pkgio.h>		/* XXX sizeof(struct rpmlead) */
 #include "signature.h"
 #include "header_internal.h"

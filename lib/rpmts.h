@@ -566,13 +566,6 @@ rpmps rpmtsProblems(rpmts ts)
 	/*@modifies ts @*/;
 
 /** \ingroup rpmts
- * Free signature verification data.
- * @param ts		transaction set
- */
-void rpmtsCleanDig(rpmts ts)
-	/*@modifies ts @*/;
-
-/** \ingroup rpmts
  * Free memory needed only for dependency checks and ordering.
  * @param ts		transaction set
  */

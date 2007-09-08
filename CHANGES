@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - jbj: rip rpmtsCleanDig() inlining the code.
     - jbj: refactor headerVerifyInfo().
     - jbj: pour the amber over the corpse of the rpmlead. Ptooey! R.I.P.
     - jbj: stub in rpmpkgFoo() i/o methods.
