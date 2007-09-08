@@ -1,5 +1,6 @@
+
 /** \ingroup lead
- * \file lib/rpmlead.c
+ * \file rpmdb/pkgio.c
  */
 
 #include "system.h"
@@ -13,9 +14,9 @@
 #include <rpmlib.h>
 #include <rpmio.h>
 
-#include "signature.h"
+#include "signature.h"		/* XXX RPMSIGTYPE_HEADERSIG */
 #define	_RPMLEAD_INTERNAL
-#include "rpmlead.h"
+#include <pkgio.h>
 #include "debug.h"
 
 /*@unchecked@*/

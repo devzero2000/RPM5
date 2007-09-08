@@ -28,7 +28,7 @@
 #include "rpmts.h"
 
 #define	_RPMLEAD_INTERNAL
-#include "rpmlead.h"		/* writeLead proto */
+#include <pkgio.h>		/* writeLead proto, RPMLEAD_BINARY */
 #include "signature.h"		/* signature constants */
 #include "misc.h"		/* XXX stripTrailingChar() */
 #include "rpmdb.h"		/* XXX for db_chrootDone */

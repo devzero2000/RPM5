@@ -37,9 +37,11 @@ LIBRPMDB_0
     headerNEVRA;
     hGetColor;
     _init;
+    _nolead;
     _newmagic;
     prDbiOpenFlags;
     rdbOptions;
+    readLead;
     rpmDatabasePoptTable;
     rpmdbAdd;
     rpmdbAppendIterator;
@@ -77,6 +79,7 @@ LIBRPMDB_0
     rpmTagTableSize;
     rpmTags;
     sqlitevec;
+    writeLead;
     XrpmdbLink;
     XrpmdbUnlink;
   local:

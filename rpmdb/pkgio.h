@@ -1,8 +1,8 @@
-#ifndef _H_RPMLEAD
-#define _H_RPMLEAD
+#ifndef _H_PKGIO
+#define _H_PKGIO
 
 /** \ingroup lead
- * \file lib/rpmlead.h
+ * \file rpmdb/pkgio.h
  * Routines to read and write an rpm lead structure for a a package.
  */
 
@@ -71,4 +71,4 @@ rpmRC readLead(FD_t fd, /*@null@*/ /*@out@*/ struct rpmlead ** leadp,
 }
 #endif
 
-#endif	/* _H_RPMLEAD */
+#endif	/* _H_PKGIO */

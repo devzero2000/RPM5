@@ -11,8 +11,8 @@
 
 #include "rpmts.h"
 
-#include "misc.h"	/* XXX stripTrailingChar() */
-#include "rpmlead.h"
+#include "misc.h"		/* XXX stripTrailingChar() */
+#include <pkgio.h>		/* XXX readLead */
 
 #include "header_internal.h"	/* XXX headerCheck */
 #include "signature.h"

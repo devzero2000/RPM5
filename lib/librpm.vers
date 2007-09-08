@@ -47,14 +47,12 @@ LIBRPM_0
     makeTempFile;
     newFSM;
     newStringBuf;
-    _nolead;
     _nosigh;
     nplatpat;
     platpat;
     _print_pkts;
     _psm_debug;
     _psm_threads;
-    readLead;
     rpmAddSignature;
     rpmalAdd;
     rpmalAddProvides;
@@ -429,7 +427,6 @@ LIBRPM_0
     stripTrailingBlanksStringBuf;
     truncStringBuf;
     whatis;
-    writeLead;
     XrpmdsLink;
     XrpmdsUnlink;
     XrpmfiLink;

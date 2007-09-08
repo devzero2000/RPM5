@@ -15,7 +15,7 @@
 #include "rpmts.h"
 
 #define	_RPMLEAD_INTERNAL
-#include "rpmlead.h"
+#include <pkgio.h>		/* XXX readLead/writeLead */
 #include "signature.h"
 #include "misc.h"	/* XXX for makeTempFile() */
 #include "debug.h"

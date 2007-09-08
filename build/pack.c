@@ -23,7 +23,7 @@
 
 #include "signature.h"
 #define	_RPMLEAD_INTERNAL
-#include "rpmlead.h"
+#include <pkgio.h>
 #include "debug.h"
 
 /*@access rpmts @*/
