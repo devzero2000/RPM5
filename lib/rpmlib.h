@@ -778,18 +778,6 @@ typedef /*@abstract@*/ struct fsm_s * FSM_t;
  */
 typedef /*@abstract@*/ /*@refcounted@*/ struct rpmpsm_s * rpmpsm;
 
-/**
- * Perform simple sanity and range checks on header tag(s).
- * @param il		no. of tags in header
- * @param dl		no. of bytes in header data.
- * @param pev		1st element in tag array, big-endian
- * @param iv		failing (or last) tag element, host-endian
- * @param negate	negative offset expected?
- * @return		-1 on success, otherwise failing tag element index
- */
-int headerVerifyInfo(int il, int dl, const void * pev, void * iv, int negate)
-	/*@modifies *iv @*/;
-
 /** 
  * Check header consistency, performing headerGetEntry() the hard way.
  *  
