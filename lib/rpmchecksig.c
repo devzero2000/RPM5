@@ -794,7 +794,7 @@ if (!_nolead) {
 }
 
 if (!_nosigh) {
-	const char item[] = "Signture";
+	const char item[] = "Signature";
 	msg = NULL;
 	rc = rpmpkgRead(item, fd, &sigh, &msg);
 	switch (rc) {
