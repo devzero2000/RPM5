@@ -408,11 +408,12 @@ unsigned int (*HDRsizeof) (/*@null@*/ Header h)
 /** \ingroup header
  * Convert header to on-disk representation.
  * @param h		header (with pointers)
+ * @retval *lenp	length of header in bytes (or NULL);
  * @return		on-disk header blob (i.e. with offsets)
  */
 typedef
-/*@only@*/ /*@null@*/ void * (*HDRunload) (Header h)
-        /*@modifies h @*/;
+/*@only@*/ /*@null@*/ void * (*HDRunload) (Header h, size_t * lenp)
+        /*@modifies h, *lenp @*/;
 
 /** \ingroup header
  * Convert header to on-disk representation, and then reload.

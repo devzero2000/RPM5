@@ -1862,9 +1862,11 @@ static int miFreeHeader(rpmdbMatchIterator mi, dbiIndex dbi)
 	(void) headerGetMagic(mi->mi_h, NULL, &nb);
 /*@i@*/	key->data = (void *) &mi->mi_prevoffset;
 	key->size = sizeof(mi->mi_prevoffset);
-	data->data = headerUnload(mi->mi_h);
-	data->size = headerSizeof(mi->mi_h);
-	data->size -= nb;	/* XXX HEADER_MAGIC_NO */
+	{   size_t len;
+	    data->data = headerUnload(mi->mi_h, &len);
+	    data->size = len;	/* XXX data->size is uint32_t */
+	    data->size -= nb;	/* XXX HEADER_MAGIC_NO */
+	}
 
 	/* Check header digest/signature on blob export (if requested). */
 	if (mi->mi_hdrchk && mi->mi_ts) {
@@ -3317,11 +3319,13 @@ if (dbiByteSwapped(dbi) == 1)
 key->data = (void *) &mi_offset;
 /*@=immediatetrans@*/
 key->size = sizeof(mi_offset.ui);
-nb = 0;
-(void) headerGetMagic(h, NULL, &nb);
-data->data = headerUnload(h);
-data->size = headerSizeof(h);
-data->size -= nb;	/* XXX HEADER_MAGIC_NO */
+{   size_t len;
+    nb = 0;
+    (void) headerGetMagic(h, NULL, &nb);
+    data->data = headerUnload(h, &len);
+    data->size = len;	/* XXX data->size is uint32_t */
+    data->size -= nb;	/* XXX HEADER_MAGIC_NO */
+}
 
 		/* Check header digest/signature on blob export. */
 		if (hdrchk && ts) {

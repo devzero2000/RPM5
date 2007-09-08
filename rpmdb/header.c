@@ -602,14 +602,14 @@ static int regionSwab(/*@null@*/ indexEntry entry, int il, int dl,
 
 /** \ingroup header
  * @param h		header
- * @retval *lengthPtr	no. bytes in unloaded header blob
+ * @retval *lenp	no. bytes in unloaded header blob
  * @return		unloaded header blob (NULL on error)
  */
-static /*@only@*/ /*@null@*/ void * doHeaderUnload(Header h,
-		/*@out@*/ int * lengthPtr)
-	/*@modifies h, *lengthPtr @*/
-	/*@requires maxSet(lengthPtr) >= 0 @*/
-	/*@ensures maxRead(result) == (*lengthPtr) @*/
+static /*@only@*/ /*@null@*/
+void * headerUnload(Header h, /*@out@*/ /*@null@*/ size_t * lenp)
+	/*@modifies h, *lenp @*/
+	/*@requires maxSet(lenp) >= 0 @*/
+	/*@ensures maxRead(result) == (*lenp) @*/
 {
     void * sw;
     int_32 * ei = NULL;
@@ -872,8 +872,8 @@ static /*@only@*/ /*@null@*/ void * doHeaderUnload(Header h,
     if ((((char *)ei)+len) != te)
 	goto errxit;
 
-    if (lengthPtr)
-	*lengthPtr = len;
+    if (lenp)
+	*lenp = len;
 
     h->flags &= ~HEADERFLAG_SORTED;
     headerSort(h);
@@ -888,22 +888,6 @@ errxit:
     ei = _free(ei);
     /*@=usereleased@*/
     return (void *) ei;
-}
-
-/** \ingroup header
- * Convert header to on-disk representation.
- * @param h		header (with pointers)
- * @return		on-disk header blob (i.e. with offsets)
- */
-static /*@only@*/ /*@null@*/
-void * headerUnload(Header h)
-	/*@modifies h @*/
-{
-    int length;
-/*@-boundswrite@*/
-    void * uh = doHeaderUnload(h, &length);
-/*@=boundswrite@*/
-    return uh;
 }
 
 /**
@@ -1298,10 +1282,9 @@ Header headerReload(/*@only@*/ Header h, int tag)
 	/*@modifies h @*/
 {
     Header nh;
-    int length;
     /*@-onlytrans@*/
 /*@-boundswrite@*/
-    void * uh = doHeaderUnload(h, &length);
+    void * uh = headerUnload(h, NULL);
 /*@=boundswrite@*/
     const char * origin;
     int_32 instance = h->instance;
@@ -1472,13 +1455,13 @@ int headerWrite(void * _fd, /*@null@*/ Header h)
 {
     FD_t fd = _fd;
     ssize_t nb;
-    int length;
+    size_t length;
     const void * uh;
 
     if (h == NULL)
 	return 1;
 /*@-boundswrite@*/
-    uh = doHeaderUnload(h, &length);
+    uh = headerUnload(h, &length);
 /*@=boundswrite@*/
     if (uh == NULL)
 	return 1;
@@ -2051,14 +2034,14 @@ static void copyData(int_32 type, /*@out@*/ void * dstPtr, const void * srcPtr,
  * @param type		entry data type
  * @param p		entry data
  * @param c		entry item count
- * @retval lengthPtr	no. bytes in returned data
+ * @retval *lenp	no. bytes in returned data
  * @return 		(malloc'ed) copy of entry data, NULL on error
  */
 /*@null@*/
 static void *
-grabData(int_32 type, hPTR_t p, int_32 c, /*@out@*/ int * lengthPtr)
-	/*@modifies *lengthPtr @*/
-	/*@requires maxSet(lengthPtr) >= 0 @*/
+grabData(int_32 type, hPTR_t p, int_32 c, /*@out@*/ int * lenp)
+	/*@modifies *lenp @*/
+	/*@requires maxSet(lenp) >= 0 @*/
 {
     void * data = NULL;
     int length;
@@ -2071,8 +2054,8 @@ grabData(int_32 type, hPTR_t p, int_32 c, /*@out@*/ int * lengthPtr)
     }
 /*@=branchstate@*/
 
-    if (lengthPtr)
-	*lengthPtr = length;
+    if (lenp)
+	*lenp = length;
     return data;
 }
 

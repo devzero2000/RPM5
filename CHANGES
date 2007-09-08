@@ -1,4 +1,6 @@
 4.5 -> 5.0:
+    - jbj: add size_t *lenp to headerUnload().
+    - jbj: consistent naming in rpmdb/pkgio.c
     - jbj: eliminate rpmNewSignature() and rpmFreeSignature().
     - jbj: bury rpmReadSignature/rpmWriteSignature.
     - jbj: rip rpmtsCleanDig() inlining the code.

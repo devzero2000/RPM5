@@ -20,8 +20,8 @@
 #include "debug.h"
 
 
-/*@access entryInfo @*/		/* XXX rpmReadSignature */
-/*@access indexEntry @*/	/* XXX rpmReadSignature */
+/*@access entryInfo @*/		/* XXX rdSignature */
+/*@access indexEntry @*/	/* XXX rdSignature */
 
 /**
  * Signature types stored in rpm lead.
@@ -75,7 +75,7 @@ static unsigned char lead_magic[] = {
  * @param *msg		name to include in lead
  * @return		RPMRC_OK on success, RPMRC_FAIL on error
  */
-static rpmRC writeLead(FD_t fd, void * ptr, const char ** msg)
+static rpmRC wrLead(FD_t fd, void * ptr, const char ** msg)
 	/*@globals fileSystem @*/
 	/*@modifies fd, fileSystem @*/
 {
@@ -116,7 +116,7 @@ static rpmRC writeLead(FD_t fd, void * ptr, const char ** msg)
  * @retval *msg		failure msg
  * @return		rpmRC return code
  */
-static rpmRC readLead(FD_t fd, void * ptr, const char ** msg)
+static rpmRC rdLead(FD_t fd, void * ptr, const char ** msg)
 	/*@modifies fd, *lead, *msg @*/
 {
     struct rpmlead ** leadp = ptr;
@@ -204,7 +204,7 @@ static unsigned char sigh_magic[8] = {
  * @retval *msg		failure msg
  * @return		rpmRC return code
  */
-static rpmRC rpmWriteSignature(void * _fd, void * ptr, const char ** msg)
+static rpmRC wrSignature(void * _fd, void * ptr, const char ** msg)
 	/*@globals fileSystem @*/
 	/*@modifies _fd, sigh, fileSystem @*/
 {
@@ -277,7 +277,7 @@ static inline rpmRC printSize(FD_t fd, int siglen, int pad, size_t datalen)
  * @retval *msg		failure msg
  * @return		rpmRC return code
  */
-static rpmRC rpmReadSignature(void * _fd, void * ptr, const char ** msg)
+static rpmRC rdSignature(void * _fd, void * ptr, const char ** msg)
 	/*@globals fileSystem @*/
 	/*@modifies _fd, *ptr, *msg, fileSystem @*/
 {
@@ -483,9 +483,13 @@ rpmRC rpmpkgRead(const char * fn, FD_t fd, void * ptr, const char ** msg)
     rpmRC rc = RPMRC_FAIL;
 
     if (!strcmp(fn, "Lead"))
-	return readLead(fd, ptr, msg);
+	return rdLead(fd, ptr, msg);
     if (!strcmp(fn, "Signature"))
-	return rpmReadSignature(fd, ptr, msg);
+	return rdSignature(fd, ptr, msg);
+#ifdef	NOTYET
+    if (!strcmp(fn, "Header"))
+	return rdHeader(fd, ptr, msg);
+#endif
     return rc;
 }
 
@@ -494,9 +498,13 @@ rpmRC rpmpkgWrite(const char * fn, FD_t fd, void * ptr, const char ** msg)
     rpmRC rc = RPMRC_FAIL;
 
     if (!strcmp(fn, "Lead"))
-	return writeLead(fd, ptr, msg);
+	return wrLead(fd, ptr, msg);
     if (!strcmp(fn, "Signature"))
-	return rpmWriteSignature(fd, ptr, msg);
+	return wrSignature(fd, ptr, msg);
+#ifdef	NOTYET
+    if (!strcmp(fn, "Header"))
+	return wrHeader(fd, ptr, msg);
+#endif
     return rc;
 }
 

@@ -11,7 +11,7 @@
 
 #include "legacy.h"
 #include "misc.h"
-#include "header_internal.h"
+#include "header.h"
 
 #include "header-py.h"
 #include "rpmal-py.h"

@@ -128,13 +128,15 @@ unsigned int headerSizeof(/*@null@*/ Header h)
 /** \ingroup header
  * Convert header to on-disk representation.
  * @param h		header (with pointers)
+ * @retval *lenp	length of header in bytes (or NULL);
  * @return		on-disk header blob (i.e. with offsets)
  */
 /*@unused@*/ static inline
-/*@only@*/ /*@null@*/ void * headerUnload(Header h)
+/*@only@*/ /*@null@*/
+void * headerUnload(Header h, size_t * lenp)
 	/*@modifies h @*/
 {
-    return (h2hv(h)->hdrunload) (h);
+    return (h2hv(h)->hdrunload) (h, lenp);
 }
 
 /** \ingroup header

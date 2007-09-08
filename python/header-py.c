@@ -9,7 +9,7 @@
 
 #include "legacy.h"
 #include "misc.h"
-#include "header_internal.h"
+#include "header_internal.h"	/* XXX HEADERFLAG_ALLOCATED */
 
 #include "rpmts.h"	/* XXX rpmtsCreate/rpmtsFree */
 #define	_RPMEVR_INTERNAL
@@ -449,7 +449,8 @@ static PyObject * hdrUnload(hdrObject * s, PyObject * args, PyObject *keywords)
 {
     char * buf;
     PyObject * rc;
-    int len, legacy = 0;
+    int legacy = 0;
+    int nb;
     Header h;
     static char *kwlist[] = { "legacyHeader", NULL};
 
@@ -462,17 +463,19 @@ static PyObject * hdrUnload(hdrObject * s, PyObject * args, PyObject *keywords)
 	h = headerCopy(s->h);	/* XXX strip region tags, etc */
 	headerFree(s->h);
     }
-    len = headerSizeof(h);
-    len -= 8;	/* XXX HEADER_MAGIC_NO */
-    buf = headerUnload(h);
+    {	size_t len;
+	buf = headerUnload(h, &len);
+	nb = len;
+	nb -= 8;	/* XXX HEADER_MAGIC_NO */
+    }
     h = headerFree(h);
 
-    if (buf == NULL || len == 0) {
+    if (buf == NULL || nb == 0) {
 	PyErr_SetString(pyrpmError, "can't unload bad header\n");
 	return NULL;
     }
 
-    rc = PyString_FromStringAndSize(buf, len);
+    rc = PyString_FromStringAndSize(buf, nb);
     buf = _free(buf);
 
     return rc;
