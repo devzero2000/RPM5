@@ -9,13 +9,6 @@
 #include <header.h>
 
 /** \ingroup signature
- * Signature types stored in rpm lead.
- */
-typedef	enum sigType_e {
-    RPMSIGTYPE_HEADERSIG= 5	/*!< Header style signature */
-} sigType;
-
-/** \ingroup signature
  * Identify PGP versions.
  * @note Greater than 0 is a valid PGP version.
  */
@@ -36,29 +29,6 @@ extern "C" {
  */
 Header rpmNewSignature(void)
 	/*@*/;
-
-/** \ingroup signature
- * Read (and verify header+payload size) signature header.
- * @param ts		transaction set
- * @param _fd		file handle
- * @retval *sighp	signature header (or NULL)
- * @retval *msg		failure msg
- * @return		rpmRC return code
- */
-rpmRC rpmReadSignature(rpmts ts, void * _fd, /*@null@*/ /*@out@*/ Header *sighp,
-		/*@null@*/ /*@out@*/ const char ** msg)
-	/*@globals fileSystem @*/
-	/*@modifies _fd, *sighp, *msg, fileSystem @*/;
-
-/** \ingroup signature
- * Write signature header.
- * @param _fd		file handle
- * @param sigh		signature header
- * @return		0 on success, 1 on error
- */
-int rpmWriteSignature(void * _fd, Header sigh)
-	/*@globals fileSystem @*/
-	/*@modifies _fd, sigh, fileSystem @*/;
 
 /** \ingroup signature
  * Generate signature(s) from a header+payload file, save in signature header.

@@ -771,10 +771,11 @@ rpmRC rpmReadPackageFile(rpmts ts, void * _fd, const char * fn, Header * hdrp)
 
 if (!_nolead) {
     const char item[] = "Lead";
+    msg = NULL;
     rc = rpmpkgRead(item, fd, NULL, &msg);
     switch (rc) {
     default:
-	rpmError(RPMERR_READLEAD, "%s: %s\n", fn, msg);
+	rpmError(RPMERR_READLEAD, "%s: %s: %s\n", fn, item, msg);
 	/*@fallthrough@*/
     case RPMRC_NOTFOUND:
 	msg = _free(msg);
@@ -787,12 +788,12 @@ if (!_nolead) {
 }
 
 if (!_nosigh) {
-    /* Read the signature header. */
+    const char item[] = "Signature";
     msg = NULL;
-    rc = rpmReadSignature(ts, fd, &sigh, &msg);
+    rc = rpmpkgRead(item, fd, &sigh, &msg);
     switch (rc) {
     default:
-	rpmError(RPMERR_SIGGEN, _("%s: rpmReadSignature failed: %s"), fn,
+	rpmError(RPMERR_SIGGEN, "%s: %s: %s", fn, item,
 		(msg && *msg ? msg : "\n"));
 	msg = _free(msg);
 	goto exit;

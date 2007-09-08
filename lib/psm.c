@@ -39,6 +39,9 @@ int _psm_debug = _PSM_DEBUG;
 /*@unchecked@*/
 int _psm_threads = 0;
 
+extern int _nolead;
+extern int _nosigh;
+
 /*@access FD_t @*/		/* XXX void ptr args */
 /*@access rpmpsm @*/
 
@@ -1788,7 +1791,8 @@ psm->te->h = headerLink(fi->h);
 	    /*@=nullstate@*/
 
 	    /* Write the lead section into the package. */
-	    {	static const char item[] = "Lead";
+	    if (!_nolead) {
+		static const char item[] = "Lead";
 		const char * NEVR = rpmteNEVR(psm->te);
 		size_t nb = rpmpkgSizeof(item);
 	
@@ -1799,16 +1803,18 @@ psm->te->h = headerLink(fi->h);
 		    memset(l, 0, nb);
 		    rc = rpmpkgWrite(item, psm->fd, l, &NEVR);
 		}
-	    }
-	    if (rc != RPMRC_OK) {
-		rpmError(RPMERR_NOSPACE, _("Unable to write package: %s\n"),
+		if (rc != RPMRC_OK) {
+		    rpmError(RPMERR_NOSPACE, _("Unable to write package: %s\n"),
 				Fstrerror(psm->fd));
-		break;
+		    break;
+		}
 	    }
 
 	    /* Write the signature section into the package. */
 	    /* XXX rpm-4.1 and later has archive size in signature header. */
-	    {	Header sigh = headerRegenSigHeader(fi->h, noArchiveSize);
+	    if (!_nosigh) {
+		static const char item[] = "Signature";
+		Header sigh = headerRegenSigHeader(fi->h, noArchiveSize);
 		/* Reallocate the signature into one contiguous region. */
 		sigh = headerReload(sigh, RPMTAG_HEADERSIGNATURES);
 		if (sigh == NULL) {
@@ -1816,9 +1822,11 @@ psm->te->h = headerLink(fi->h);
 		    rc = RPMRC_FAIL;
 		    break;
 		}
-		rc = rpmWriteSignature(psm->fd, sigh);
+		rc = rpmpkgWrite(item, psm->fd, sigh, NULL);
 		sigh = rpmFreeSignature(sigh);
-		if (rc) break;
+		if (rc != RPMRC_OK) {
+		    break;
+		}
 	    }
 
 	    /* Add remove transaction id to header. */

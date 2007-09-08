@@ -726,9 +726,14 @@ int writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
 
     /* Write the signature section into the package. */
     if (!_nosigh) {
-	rc = rpmWriteSignature(fd, sigh);
-	if (rc)
+	const char item[] = "Signature";
+	rpmRC _rc;
+
+	_rc = rpmpkgWrite(item, fd, sigh, NULL);
+	if (_rc != RPMRC_OK) {
+	    rc = RPMERR_NOSPACE;
 	    goto exit;
+	}
     }
 
     /* Append the header and archive */

@@ -256,7 +256,6 @@ LIBRPM_0
     rpmReadHeader;
     rpmReadPackageFile;
     rpmReadPackageManifest;
-    rpmReadSignature;
     rpmRollback;
     rpmSetMachine;
     rpmSetTables;
@@ -416,7 +415,6 @@ LIBRPM_0
     rpmVerifySignatures;
     RPMVERSION;
     rpmVersionCompare;
-    rpmWriteSignature;
     showQueryPackage;
     showVerifyPackage;
     specedit;

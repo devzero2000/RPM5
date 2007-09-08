@@ -225,11 +225,11 @@ static int rpmReSign(/*@unused@*/ rpmts ts,
 	    goto exit;
 
 if (!_nolead) {
-	{   const char item[] = "Lead";
-	    rc = rpmpkgRead(item, fd, &lead, &msg);
-	}
+	const char item[] = "Lead";
+	msg = NULL;
+	rc = rpmpkgRead(item, fd, &lead, &msg);
 	if (rc != RPMRC_OK) {
-	    rpmError(RPMERR_READLEAD, "%s: %s\n", fn, msg);
+	    rpmError(RPMERR_READLEAD, "%s: %s: %s\n", fn, item, msg);
 	    msg = _free(msg);
 	    goto exit;
 	}
@@ -237,11 +237,12 @@ if (!_nolead) {
 }
 
 if (!_nosigh) {
+	const char item[] = "Signature";
 	msg = NULL;
-	rc = rpmReadSignature(ts, fd, &sigh, &msg);
+	rc = rpmpkgRead(item, fd, &sigh, &msg);
 	switch (rc) {
 	default:
-	    rpmError(RPMERR_SIGGEN, _("%s: rpmReadSignature failed: %s"), fn,
+	    rpmError(RPMERR_SIGGEN, "%s: %s: %s", fn, item,
 			(msg && *msg ? msg : "\n"));
 	    msg = _free(msg);
 	    goto exit;
@@ -392,19 +393,20 @@ if (sigh != NULL) {
 	    goto exit;
 
 if (!_nolead) {
-	{   const char item[] = "Lead";
-	    rc = rpmpkgWrite(item, fd, lead, NULL);
-	}
+	const char item[] = "Lead";
+	rc = rpmpkgWrite(item, ofd, lead, NULL);
 	if (rc != RPMRC_OK) {
-	    rpmError(RPMERR_WRITELEAD, _("%s: writeLead failed: %s\n"), tfn,
+	    rpmError(RPMERR_WRITELEAD, "%s: %s: %s\n", tfn, item,
 		Fstrerror(ofd));
 	    goto exit;
 	}
 }
 
 if (!_nosigh) {
-	if (rpmWriteSignature(ofd, sigh)) {
-	    rpmError(RPMERR_SIGGEN, _("%s: rpmWriteSignature failed: %s\n"), tfn,
+	const char item[] = "Signature";
+	rc = rpmpkgWrite(item, ofd, sigh, NULL);
+	if (rc != RPMRC_OK) {
+	    rpmError(RPMERR_SIGGEN, "%s: %s: %s\n", tfn, item,
 		Fstrerror(ofd));
 	    goto exit;
 	}
@@ -780,11 +782,11 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
     {
 
 if (!_nolead) {
-	{   const char item[] = "Lead";
-	    rc = rpmpkgRead(item, fd, NULL, &msg);
-	}
+	const char item[] = "Lead";
+	msg = NULL;
+	rc = rpmpkgRead(item, fd, NULL, &msg);
 	if (rc != RPMRC_OK) {
-	    rpmError(RPMERR_READLEAD, "%s: %s\n", fn, msg);
+	    rpmError(RPMERR_READLEAD, "%s: %s: %s\n", fn, item, msg);
 	    msg = _free(msg);
 	    res++;
 	    goto exit;
@@ -792,11 +794,12 @@ if (!_nolead) {
 }
 
 if (!_nosigh) {
+	const char item[] = "Signture";
 	msg = NULL;
-	rc = rpmReadSignature(ts, fd, &sigh, &msg);
+	rc = rpmpkgRead(item, fd, &sigh, &msg);
 	switch (rc) {
 	default:
-	    rpmError(RPMERR_SIGGEN, _("%s: rpmReadSignature failed: %s"), fn,
+	    rpmError(RPMERR_SIGGEN, "%s: %s: %s", fn, item,
 			(msg && *msg ? msg : "\n"));
 	    msg = _free(msg);
 	    res++;
