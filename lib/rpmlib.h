@@ -1012,14 +1012,6 @@ rpmRC rpmVerifySignature(const rpmts ts,
 	/*@modifies ts, *result, rpmGlobalMacroContext,
 		fileSystem, internalState @*/;
 
-/** \ingroup signature
- * Destroy signature header from package.
- * @param sigh		signature header
- * @return		NULL always
- */
-/*@null@*/ Header rpmFreeSignature(/*@null@*/ /*@killref@*/ Header sigh)
-	/*@modifies sigh @*/;
-
 /*@}*/
 
 #ifdef __cplusplus

@@ -1823,7 +1823,7 @@ psm->te->h = headerLink(fi->h);
 		    break;
 		}
 		rc = rpmpkgWrite(item, psm->fd, sigh, NULL);
-		sigh = rpmFreeSignature(sigh);
+		sigh = headerFree(sigh);
 		if (rc != RPMRC_OK) {
 		    break;
 		}

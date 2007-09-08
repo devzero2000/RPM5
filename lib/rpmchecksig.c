@@ -439,7 +439,7 @@ exit:
     if (ofd)	(void) manageFile(&ofd, NULL, 0, res);
 
     lead = _free(lead);
-    sigh = rpmFreeSignature(sigh);
+    sigh = headerFree(sigh);
 
     gi = rpmgiFree(gi);
 
@@ -1136,7 +1136,7 @@ assert(dig != NULL);
 exit:
     ts->sig = headerFreeData(ts->sig, ts->sigtype);
     ts->dig = pgpFreeDig(ts->dig);
-    sigh = rpmFreeSignature(sigh);
+    sigh = headerFree(sigh);
     return res;
 }
 

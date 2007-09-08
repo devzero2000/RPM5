@@ -100,17 +100,6 @@ const char * rpmDetectPGPVersion(pgpVersion * pgpVer)
 }
 #endif	/* SUPPORT_PGP_SIGNING */
 
-Header rpmNewSignature(void)
-{
-    Header sigh = headerNew();
-    return sigh;
-}
-
-Header rpmFreeSignature(Header sigh)
-{
-    return headerFree(sigh);
-}
-
 #if defined(SUPPORT_PGP_SIGNING)
 /**
  * Generate PGP signature(s) for a header+payload file.

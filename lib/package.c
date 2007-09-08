@@ -135,7 +135,7 @@ void headerMergeLegacySigs(Header h, const Header sigh)
 Header headerRegenSigHeader(const Header h, int noArchiveSize)
 {
     HFD_t hfd = (HFD_t) headerFreeData;
-    Header sigh = rpmNewSignature();
+    Header sigh = headerNew();
     HeaderIterator hi;
     int_32 tag, stag, type, count;
     const void * ptr;
@@ -1074,7 +1074,7 @@ exit:
 
     ts->sig = headerFreeData(ts->sig, ts->sigtype);
     ts->dig = pgpFreeDig(ts->dig);
-    sigh = rpmFreeSignature(sigh);
+    sigh = headerFree(sigh);
     return rc;
 }
 /*@=bounds@*/

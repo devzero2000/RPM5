@@ -206,7 +206,6 @@ LIBRPM_0
     rpmFLAGS;
     rpmFreeFilesystems;
     rpmFreeRpmrc;
-    rpmFreeSignature;
     rpmGetFilesystemList;
     rpmGetFilesystemUsage;
     rpmGetPassPhrase;
@@ -226,7 +225,6 @@ LIBRPM_0
     rpmInstallSourcePackage;
     rpmMkdirPath;
     rpmNAME;
-    rpmNewSignature;
     _rpmns_debug;
     rpmnsClassify;
     rpmnsParse;

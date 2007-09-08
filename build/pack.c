@@ -655,7 +655,7 @@ int writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
 
     /* Generate the signature */
     (void) fflush(stdout);
-    sigh = rpmNewSignature();
+    sigh = headerNew();
     (void) rpmAddSignature(sigh, sigtarget, RPMSIGTAG_SIZE, passPhrase);
     (void) rpmAddSignature(sigh, sigtarget, RPMSIGTAG_MD5, passPhrase);
 
@@ -803,7 +803,7 @@ exit:
 	    *pkgidp = MD5;
     }
 
-    sigh = rpmFreeSignature(sigh);
+    sigh = headerFree(sigh);
     if (ifd) {
 	(void) Fclose(ifd);
 	ifd = NULL;

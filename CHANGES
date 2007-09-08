@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - jbj: eliminate rpmNewSignature() and rpmFreeSignature().
     - jbj: bury rpmReadSignature/rpmWriteSignature.
     - jbj: rip rpmtsCleanDig() inlining the code.
     - jbj: refactor headerVerifyInfo().

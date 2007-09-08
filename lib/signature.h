@@ -24,13 +24,6 @@ extern "C" {
 #endif
 
 /** \ingroup signature
- * Return new, empty signature header instance.
- * @return		signature header
- */
-Header rpmNewSignature(void)
-	/*@*/;
-
-/** \ingroup signature
  * Generate signature(s) from a header+payload file, save in signature header.
  * @param sigh		signature header
  * @param file		header+payload file name
