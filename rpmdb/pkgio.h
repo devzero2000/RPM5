@@ -3,69 +3,60 @@
 
 /** \ingroup lead
  * \file rpmdb/pkgio.h
- * Routines to read and write an rpm lead structure for a a package.
+ * Methods to handle package elements.
  */
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#if defined(_RPMLEAD_INTERNAL)
-
-#define	RPMLEAD_BINARY 0
-#define	RPMLEAD_SOURCE 1
-
-#define	RPMLEAD_MAGIC0 0xed
-#define	RPMLEAD_MAGIC1 0xab
-#define	RPMLEAD_MAGIC2 0xee
-#define	RPMLEAD_MAGIC3 0xdb
-
-#define	RPMLEAD_SIZE 96		/*!< Don't rely on sizeof(struct) */
-
-/** \ingroup lead
- * The lead data structure.
- * The lead needs to be 8 byte aligned.
- * @deprecated The lead (except for signature_type) is legacy.
- * @todo Don't use any information from lead.
- */
-struct rpmlead {
-    unsigned char magic[4];
-    unsigned char major;
-    unsigned char minor;
-    short type;
-    short archnum;
-    char name[66];
-    short osnum;
-    short signature_type;	/*!< Signature header type (RPMSIG_HEADERSIG) */
-/*@unused@*/ char reserved[16];	/*!< Pad to 96 bytes -- 8 byte aligned! */
-} ;
-#else
-struct rpmlead;
-#endif
-
 /*@unchecked@*/
 extern int _nolead;
 
-/** \ingroup lead
- * Write lead to file handle.
- * @param fd		file handle
- * @param lead		package lead
- * @return		RPMRC_OK on success, RPMRC_FAIL on error
+/**
+ * Return size of item in bytes.
+ * @param fn		item name
+ * @return		size of item in bytes.
  */
-rpmRC writeLead(FD_t fd, const struct rpmlead *lead)
+size_t rpmpkgSizeof(const char * fn)
+	/*@*/;
+
+/**
+ * Write item onto file descriptor.
+ * @param fn		item name
+ * @param fd		file handle
+ * @retval *ptr		item buffer
+ * @retval *msg		item check failure message
+ * @return		RPMRC_OK on success
+ */
+rpmRC rpmpkgWrite(const char * fn, FD_t fd, void * ptr, const char ** msg)
 	/*@globals fileSystem @*/
 	/*@modifies fd, fileSystem @*/;
 
-/** \ingroup lead
- * Read lead from file handle.
+/**
+ * Read item from file descriptor.
+ * @param fn		item name
  * @param fd		file handle
- * @retval *leadp	package lead
- * @retval *msg		failure msg
- * @return		rpmRC return code
+ * @retval *ptr		item buffer
+ * @retval *msg		item check failure message
+ * @return		RPMRC_OK on success
  */
-rpmRC readLead(FD_t fd, /*@null@*/ /*@out@*/ struct rpmlead ** leadp,
+rpmRC rpmpkgRead(const char * fn, FD_t fd, /*@null@*/ /*@out@*/void * ptr,
 		const char ** msg)
-	/*@modifies fd, *lead, *msg @*/;
+	/*@modifies fd, *ptr, *msg @*/;
+
+#ifdef	NOTYET
+/**
+ * Verify item integrity.
+ * @param fn		item name
+ * @param fd		file handle
+ * @retval *ptr		item buffer
+ * @retval *msg		item check failure message
+ * @return		RPMRC_OK on success
+ */
+rpmRC rpmpkgCheck(const char * fn, FD_t fd, const void * ptr, const char ** msg)
+	/*@modifies fd, *msg @*/;
+#endif
 
 #ifdef __cplusplus
 }

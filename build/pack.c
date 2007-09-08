@@ -22,7 +22,6 @@
 #include "buildio.h"
 
 #include "signature.h"
-#define	_RPMLEAD_INTERNAL
 #include <pkgio.h>
 #include "debug.h"
 
@@ -294,10 +293,12 @@ int processScriptFiles(Spec spec, Package pkg)
     return 0;
 }
 
+#if defined(DEAD)
 /*@-boundswrite@*/
-int readRPM(const char *fileName, Spec *specp, struct rpmlead *lead,
+int readRPM(const char *fileName, Spec *specp, void * l,
 		Header *sigs, CSA_t csa)
 {
+    const char * msg = "";
     FD_t fdi;
     Spec spec;
     rpmRC rc;
@@ -314,12 +315,24 @@ int readRPM(const char *fileName, Spec *specp, struct rpmlead *lead,
 	return RPMERR_BADMAGIC;
     }
 
-    /* Get copy of lead */
-    /*@-sizeoftype@*/
-    if ((rc = Fread(lead, sizeof(char), sizeof(*lead), fdi)) != sizeof(*lead)) {
+    {	const char item[] = "Lead";
+	size_t nl = rpmpkgSizeof(item);
+
+	if (nl == 0) {
+	    rc = RPMRC_FAIL;
+	    msg = "item size is zero";
+	} else {
+	    l = xcalloc(1, nl);		/* XXX memory leak */
+	    msg = NULL;
+	    rc = rpmpkgRead(item, fdi, l, &msg);
+	    if (rc != RPMRC_OK && msg == NULL)
+		msg = Fstrerror(fdi);
+	}
+    }
+
+    if (rc != RPMRC_OK) {
 	rpmError(RPMERR_BADMAGIC, _("readRPM: read %s: %s\n"),
-		(fileName ? fileName : "<stdin>"),
-		Fstrerror(fdi));
+		(fileName ? fileName : "<stdin>"), msg);
 	return RPMERR_BADMAGIC;
     }
     /*@=sizeoftype@*/
@@ -384,7 +397,9 @@ int readRPM(const char *fileName, Spec *specp, struct rpmlead *lead,
     return 0;
 }
 /*@=boundswrite@*/
+#endif
 
+#if defined(DEAD)
 #define	RPMPKGVERSION_MIN	30004
 #define	RPMPKGVERSION_MAX	40003
 /*@unchecked@*/
@@ -411,6 +426,7 @@ static int rpmLeadVersion(void)
 	rpmlead_version = 3;
     return rpmlead_version;
 }
+#endif
 
 void providePackageNVR(Header h)
 {
@@ -495,7 +511,7 @@ exit:
 
 /*@-boundswrite@*/
 int writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
-		int type, CSA_t csa, char *passPhrase, const char **cookie)
+		CSA_t csa, char *passPhrase, const char **cookie)
 {
     FD_t fd = NULL;
     FD_t ifd = NULL;
@@ -509,6 +525,7 @@ int writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
     Header h;
     Header sigh = NULL;
     int addsig = 0;
+    int isSource;
     int rc = 0;
 
     /* Transfer header reference form *hdrp to h. */
@@ -528,18 +545,17 @@ int writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
 #endif
 
     /* Save payload information */
-    /*@-branchstate@*/
-    switch(type) {
-    case RPMLEAD_SOURCE:
+    isSource =
+	(headerIsEntry(h, RPMTAG_SOURCERPM) == 0 &&
+	 headerIsEntry(h, RPMTAG_ARCH) != 0);
+    if (isSource) {
 	payload_format = rpmExpand("%{?_source_payload_format}", NULL);
 	rpmio_flags = rpmExpand("%{?_source_payload}", NULL);
-	break;
-    case RPMLEAD_BINARY:
+    } else {
 	payload_format = rpmExpand("%{?_binary_payload_format}", NULL);
 	rpmio_flags = rpmExpand("%{?_binary_payload}", NULL);
-	break;
     }
-    /*@=branchstate@*/
+
     if (!(payload_format && *payload_format)) {
 	payload_format = _free(payload_format);
 	payload_format = xstrdup("cpio");
@@ -684,35 +700,23 @@ int writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
     }
 
     /* Write the lead section into the package. */
-if (!_nolead)
-    {	int archnum = -1;
-	int osnum = -1;
-	struct rpmlead lead;
+    if (!_nolead) {
+	const char item[] = "Lead";
+	size_t nl = rpmpkgSizeof(item);
+	rpmRC _rc;
 
-	if (Fileno(csa->cpioFdIn) < 0) {
-	    /* XXX DIEDIEDIE: legacy values were not 0. */
-	    archnum = 0;
-	    osnum = 0;
-	} else if (csa->lead != NULL) {
-	    archnum = csa->lead->archnum;
-	    osnum = csa->lead->osnum;
+	if (nl == 0)
+	    _rc = RPMRC_FAIL;
+	else {
+	    void * l = memset(alloca(nl), 0, nl);
+	    const char * msg = buf;
+	    const char *N, *V, *R;
+	    (void) headerNEVRA(h, &N, NULL, &V, &R, NULL);
+	    sprintf(buf, "%s-%s-%s", N, V, R);
+	    _rc = rpmpkgWrite(item, fd, l, &msg);
 	}
 
-	memset(&lead, 0, sizeof(lead));
-	lead.major = rpmLeadVersion();
-	lead.minor = 0;
-	lead.type = type;
-	lead.archnum = archnum;
-	lead.osnum = osnum;
-	lead.signature_type = RPMSIGTYPE_HEADERSIG;
-
-	{   const char *name, *version, *release;
-	    (void) headerNEVRA(h, &name, NULL, &version, &release, NULL);
-	    sprintf(buf, "%s-%s-%s", name, version, release);
-	    strncpy(lead.name, buf, sizeof(lead.name));
-	}
-
-	if (writeLead(fd, &lead) != RPMRC_OK) {
+	if (_rc != RPMRC_OK) {
 	    rc = RPMERR_NOSPACE;
 	    rpmError(RPMERR_NOSPACE, _("Unable to write package: %s\n"),
 		 Fstrerror(fd));
@@ -721,8 +725,7 @@ if (!_nolead)
     }
 
     /* Write the signature section into the package. */
-if (!_nosigh)
-    {
+    if (!_nosigh) {
 	rc = rpmWriteSignature(fd, sigh);
 	if (rc)
 	    goto exit;
@@ -915,7 +918,7 @@ int packageBinaries(Spec spec)
 	csa->cpioList = rpmfiLink(pkg->cpioList, "packageBinaries");
 	/*@=assignexpose =newreftrans@*/
 
-	rc = writeRPM(&pkg->header, NULL, fn, RPMLEAD_BINARY,
+	rc = writeRPM(&pkg->header, NULL, fn,
 		    csa, spec->passPhrase, NULL);
 
 	csa->cpioList->te = _free(csa->cpioList->te);	/* XXX memory leak */
@@ -962,7 +965,7 @@ int packageSources(Spec spec)
 	/*@=assignexpose =newreftrans@*/
 
 	spec->sourcePkgId = NULL;
-	rc = writeRPM(&spec->sourceHeader, &spec->sourcePkgId, fn, RPMLEAD_SOURCE,
+	rc = writeRPM(&spec->sourceHeader, &spec->sourcePkgId, fn,
 		csa, spec->passPhrase, &(spec->cookie));
 
 	csa->cpioList->te = _free(csa->cpioList->te);	/* XXX memory leak */

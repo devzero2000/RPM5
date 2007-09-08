@@ -120,23 +120,24 @@ static inline rpmRC printSize(FD_t fd, int siglen, int pad, size_t datalen)
     int fdno = Fileno(fd);
     struct stat st;
     size_t expected;
+    size_t nl = rpmpkgSizeof("Lead");
 
     /* HACK: workaround for davRead wiring. */
     if (fdno == 123456789) {
 	st.st_size = 0;
 /*@-sizeoftype@*/
-	st.st_size -= sizeof(struct rpmlead)+siglen+pad+datalen;
+	st.st_size -= nl+siglen+pad+datalen;
 /*@=sizeoftype@*/
     } else if (fstat(fdno, &st) < 0)
 	return RPMRC_FAIL;
 
 /*@-sizeoftype@*/
-    expected = sizeof(struct rpmlead) + siglen + pad;
+    expected = nl + siglen + pad;
     expected += datalen,
     rpmMessage(RPMMESS_DEBUG,
-	D_("Expected size: %12lu = lead(%d)+sigs(%d)+pad(%d)+data(%lu)\n"),
+	D_("Expected size: %12lu = lead(%u)+sigs(%d)+pad(%d)+data(%lu)\n"),
 		(unsigned long)expected,
-		(int)sizeof(struct rpmlead), siglen, pad, (unsigned long)datalen);
+		(unsigned)nl, siglen, pad, (unsigned long)datalen);
 /*@=sizeoftype@*/
     rpmMessage(RPMMESS_DEBUG,
 	D_("  Actual size: %12lu\n"), (unsigned long)st.st_size);

@@ -25,6 +25,7 @@ typedef /*@abstract@*/ struct cpioSourceArchive_s {
 extern "C" {
 #endif
 
+#if defined(DEAD)
 /**
  * Read rpm package components from file.
  * @param fileName	file name of package (or NULL to use stdin)
@@ -36,13 +37,14 @@ extern "C" {
  */
 /*@unused@*/ int readRPM(/*@null@*/ const char * fileName,
 		/*@out@*/ Spec * specp,
-		/*@out@*/ struct rpmlead * lead,
+		/*@out@*/ void * l,
 		/*@out@*/ Header * sigs,
 		CSA_t csa)
 	/*@globals rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState @*/
 	/*@modifies *specp, *lead, *sigs, csa, csa->cpioFdIn,
 		rpmGlobalMacroContext, fileSystem, internalState @*/;
+#endif
 
 /**
  * Write rpm package to file.
@@ -53,7 +55,6 @@ extern "C" {
  * @retval *hdrp	header to write (final header is returned).
  * @retval *pkgidp	header+payload MD5 of package (NULL to disable).
  * @param fileName	file name of package
- * @param type		RPMLEAD_SOURCE/RPMLEAD_BINARY
  * @param csa
  * @param passPhrase
  * @retval cookie	generated cookie (i.e build host/time)
@@ -61,7 +62,6 @@ extern "C" {
  */
 int writeRPM(Header * hdrp, /*@null@*/ unsigned char ** pkgidp,
 		const char * fileName,
-		int type,
 		CSA_t csa,
 		/*@null@*/ char * passPhrase,
 		/*@out@*/ const char ** cookie)

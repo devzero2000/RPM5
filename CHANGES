@@ -1,4 +1,6 @@
 4.5 -> 5.0:
+    - jbj: pour the amber over the corpse of the rpmlead. Ptooey! R.I.P.
+    - jbj: stub in rpmpkgFoo() i/o methods.
     - jbj: refactor rpmlead I/O routines into rpmdb/pkgio.c.
     - jbj: protect rpmdb contents from cluelesser morons.
     - jbj: add sourcepkgid index and permit queries of the (non-existent) tag.

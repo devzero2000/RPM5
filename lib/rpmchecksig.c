@@ -223,7 +223,9 @@ static int rpmReSign(/*@unused@*/ rpmts ts,
 	    goto exit;
 
 if (!_nolead) {
-	rc = readLead(fd, &lead, &msg);
+	{   const char item[] = "Lead";
+	    rc = rpmpkgRead(item, fd, &lead, &msg);
+	}
 	if (rc != RPMRC_OK) {
 	    rpmError(RPMERR_READLEAD, "%s: %s\n", fn, msg);
 	    msg = _free(msg);
@@ -388,8 +390,9 @@ if (sigh != NULL) {
 	    goto exit;
 
 if (!_nolead) {
-	lead->signature_type = RPMSIGTYPE_HEADERSIG;
-	rc = writeLead(ofd, lead);
+	{   const char item[] = "Lead";
+	    rc = rpmpkgWrite(item, fd, lead, NULL);
+	}
 	if (rc != RPMRC_OK) {
 	    rpmError(RPMERR_WRITELEAD, _("%s: writeLead failed: %s\n"), tfn,
 		Fstrerror(ofd));
@@ -775,7 +778,9 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
     {
 
 if (!_nolead) {
-	rc = readLead(fd, NULL, &msg);
+	{   const char item[] = "Lead";
+	    rc = rpmpkgRead(item, fd, NULL, &msg);
+	}
 	if (rc != RPMRC_OK) {
 	    rpmError(RPMERR_READLEAD, "%s: %s\n", fn, msg);
 	    msg = _free(msg);

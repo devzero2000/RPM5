@@ -814,7 +814,8 @@ rpmRC rpmReadPackageFile(rpmts ts, void * _fd, const char * fn, Header * hdrp)
     (void) rpmswAdd(opsave, fdstat_op(fd, FDSTAT_READ));
 
 if (!_nolead) {
-    rc = readLead(fd, NULL, &msg);
+    const char item[] = "Lead";
+    rc = rpmpkgRead(item, fd, NULL, &msg);
     switch (rc) {
     default:
 	rpmError(RPMERR_READLEAD, "%s: %s\n", fn, msg);

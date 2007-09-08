@@ -1789,27 +1789,22 @@ psm->te->h = headerLink(fi->h);
 	    /*@=nullstate@*/
 
 	    /* Write the lead section into the package. */
-	    {	struct rpmlead lead;
-
-		memset(&lead, 0, sizeof(lead));
-		/* XXX Set package version conditioned on noDirTokens. */
-		lead.major = 3;
-		lead.minor = 0;
-		lead.type = RPMLEAD_BINARY;
-
-		/* XXX DIEDIEDIE: legacy values were not 0. */
-		lead.archnum = 0;
-		lead.osnum = 0;
-		lead.signature_type = RPMSIGTYPE_HEADERSIG;
-
-		strncpy(lead.name, rpmteNEVR(psm->te), sizeof(lead.name));
-
-		rc = writeLead(psm->fd, &lead);
-		if (rc != RPMRC_OK) {
-		    rpmError(RPMERR_NOSPACE, _("Unable to write package: %s\n"),
-			 Fstrerror(psm->fd));
-		    break;
+	    {	static const char item[] = "Lead";
+		const char * NEVR = rpmteNEVR(psm->te);
+		size_t nb = rpmpkgSizeof(item);
+	
+		if (nb == 0)
+		    rc = RPMRC_FAIL;
+		else {
+		    void * l = alloca(nb);
+		    memset(l, 0, nb);
+		    rc = rpmpkgWrite(item, psm->fd, l, &NEVR);
 		}
+	    }
+	    if (rc != RPMRC_OK) {
+		rpmError(RPMERR_NOSPACE, _("Unable to write package: %s\n"),
+				Fstrerror(psm->fd));
+		break;
 	    }
 
 	    /* Write the signature section into the package. */
