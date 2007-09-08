@@ -524,6 +524,16 @@ rpmcliFini(poptContext optCon)
     return NULL;
 }
 
+static inline int checkfd(const char * devnull, int fdno, int flags)
+{
+    struct stat sb;
+    int ret = 0;
+
+    if (fstat(fdno, &sb) == -1 && errno == EBADF)
+	ret = (open(devnull, flags) == fdno) ? 1 : 2;
+    return ret;
+}
+
 /*@-globstate@*/
 poptContext
 rpmcliInit(int argc, char *const argv[], struct poptOption * optionsTable)
@@ -547,6 +557,19 @@ rpmcliInit(int argc, char *const argv[], struct poptOption * optionsTable)
 	else __progname = argv[0];
     }
 /*@=globs =mods@*/
+
+    /* Insure that stdin/stdout/stderr are open, lest stderr end up in rpmdb. */
+   {	static const char _devnull[] = "/dev/null";
+#if defined(STDIN_FILENO)
+	(void) checkfd(_devnull, STDIN_FILENO, O_RDONLY);
+#endif
+#if defined(STDOUT_FILENO)
+	(void) checkfd(_devnull, STDOUT_FILENO, O_WRONLY);
+#endif
+#if defined(STDERR_FILENO)
+	(void) checkfd(_devnull, STDERR_FILENO, O_WRONLY);
+#endif
+   }
 
 #if defined(ENABLE_NLS) && !defined(__LCLINT__)
     (void) setlocale(LC_ALL, "" );

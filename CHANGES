@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - jbj: protect rpmdb contents from cluelesser morons.
     - jbj: add sourcepkgid index and permit queries of the (non-existent) tag.
     - rpm.org: permit mire RE's against binary data. Useless ... (#277161).
     - rpm.org: mire RE against missing data now mis-matches rather than matches.
