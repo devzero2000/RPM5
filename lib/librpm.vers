@@ -36,7 +36,6 @@ LIBRPM_0
     headerCheck;
     headerMergeLegacySigs;
     headerRegenSigHeader;
-    headerVerifyInfo;
     IDTXfree;
     IDTXglob;
     IDTXgrow;

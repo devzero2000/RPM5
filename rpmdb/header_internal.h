@@ -11,6 +11,56 @@
 #include <netinet/in.h>
 #endif  /* __LCLINT__ */
 
+/**
+ * Alignment needs (and sizeof scalars types) for internal rpm data types.
+ */
+/*@observer@*/ /*@unchecked@*/
+static int typeAlign[16] =  {
+    1,	/*!< RPM_NULL_TYPE */
+    1,	/*!< RPM_CHAR_TYPE */
+    1,	/*!< RPM_INT8_TYPE */
+    2,	/*!< RPM_INT16_TYPE */
+    4,	/*!< RPM_INT32_TYPE */
+    8,	/*!< RPM_INT64_TYPE */
+    1,	/*!< RPM_STRING_TYPE */
+    1,	/*!< RPM_BIN_TYPE */
+    1,	/*!< RPM_STRING_ARRAY_TYPE */
+    1,	/*!< RPM_I18NSTRING_TYPE */
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+};
+
+/**
+ * Sanity check on no. of tags.
+ * This check imposes a limit of 65K tags, more than enough.
+ */
+#define hdrchkTags(_ntags)      ((_ntags) & 0xffff0000)
+
+/**
+ * Sanity check on type values.
+ */
+#define hdrchkType(_type) ((_type) < RPM_MIN_TYPE || (_type) > RPM_MAX_TYPE)
+
+/**
+ * Sanity check on data size and/or offset and/or count.
+ * This check imposes a limit of 16 MB, more than enough.
+ */
+#define hdrchkData(_nbytes) ((_nbytes) & 0xff000000)
+
+/**
+ * Sanity check on data alignment for data type.
+ */
+#define hdrchkAlign(_type, _off)	((_off) & (typeAlign[_type]-1))
+
+/**
+ * Sanity check on range of data offset.
+ */
+#define hdrchkRange(_dl, _off)		((_off) < 0 || (_off) > (_dl))
+
 #define	INDEX_MALLOC_SIZE	8
 
 /*
@@ -149,6 +199,18 @@ struct sprintfToken_s {
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+/**
+ * Perform simple sanity and range checks on header tag(s).
+ * @param il		no. of tags in header
+ * @param dl		no. of bytes in header data.
+ * @param pev		1st element in tag array, big-endian
+ * @param iv		failing (or last) tag element, host-endian
+ * @param negate	negative offset expected?
+ * @return		-1 on success, otherwise failing tag element index
+ */
+int headerVerifyInfo(int il, int dl, const void * pev, void * iv, int negate)
+	/*@modifies *iv @*/;
 
 /** \ingroup header
  * Return array of locales found in header.

@@ -52,29 +52,6 @@ static unsigned char meta_magic[8] = {
 };
 
 /** \ingroup header
- * Alignment needed for header data types.
- */
-/*@observer@*/ /*@unchecked@*/
-static int typeAlign[16] =  {
-    1,	/*!< RPM_NULL_TYPE */
-    1,	/*!< RPM_CHAR_TYPE */
-    1,	/*!< RPM_INT8_TYPE */
-    2,	/*!< RPM_INT16_TYPE */
-    4,	/*!< RPM_INT32_TYPE */
-    8,	/*!< RPM_INT64_TYPE */
-    1,	/*!< RPM_STRING_TYPE */
-    1,	/*!< RPM_BIN_TYPE */
-    1,	/*!< RPM_STRING_ARRAY_TYPE */
-    1,	/*!< RPM_I18NSTRING_TYPE */
-    1,  /*!< RPM_ASN1_TYPE */
-    1,  /*!< RPM_OPENPGP_TYPE */
-    0,
-    0,
-    0,
-    0
-};
-
-/** \ingroup header
  * Size of header data types.
  */
 /*@observer@*/ /*@unchecked@*/
@@ -102,33 +79,6 @@ static int typeSizes[16] =  {
  */
 /*@unchecked@*/
 static size_t headerMaxbytes = (32*1024*1024);
-
-/**
- * Sanity check on no. of tags.
- * This check imposes a limit of 65K tags, more than enough.
- */ 
-#define hdrchkTags(_ntags)	((_ntags) & 0xffff0000)
-
-/**
- * Sanity check on type values.
- */
-#define hdrchkType(_type) ((_type) < RPM_MIN_TYPE || (_type) > RPM_MAX_TYPE)
-
-/**
- * Sanity check on data size and/or offset and/or count.
- * This check imposes a limit of 16Mb, more than enough.
- */ 
-#define hdrchkData(_nbytes)	((_nbytes) & 0xff000000)
-
-/**
- * Sanity check on alignment for data type.
- */
-#define hdrchkAlign(_type, _off)	((_off) & (typeAlign[_type]-1))
-
-/**
- * Sanity check on range of data offset.
- */
-#define hdrchkRange(_dl, _off)		((_off) < 0 || (_off) > (_dl))
 
 /*@observer@*/ /*@unchecked@*/
 HV_t hdrVec;	/* forward reference */

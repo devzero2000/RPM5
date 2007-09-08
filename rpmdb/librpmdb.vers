@@ -35,6 +35,7 @@ LIBRPMDB_0
     headerMacrosLoad;
     headerMacrosUnload;
     headerNEVRA;
+    headerVerifyInfo;
     hGetColor;
     _init;
     _nolead;
