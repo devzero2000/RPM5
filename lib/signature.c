@@ -227,7 +227,7 @@ static int makePGPSignature(const char * file, /*@unused@*/ int_32 * sigTagp,
     dig = pgpNewDig();
 
     (void) pgpPrtPkts(*pktp, *pktlenp, dig, 0);
-    sigp = &dig->signature;
+    sigp = pgpGetSignature(dig);
 
     dig = pgpFreeDig(dig);
 #endif
@@ -362,7 +362,7 @@ static int makeGPGSignature(const char * file, int_32 * sigTagp,
     dig = pgpNewDig();
 
     (void) pgpPrtPkts(*pktp, *pktlenp, dig, 0);
-    sigp = &dig->signature;
+    sigp = pgpGetSignature(dig);
 
     /* Identify the type of signature being returned. */
     switch (*sigTagp) {
@@ -761,10 +761,12 @@ verifyMD5Signature(const rpmts ts, /*@out@*/ char * t,
 	goto exit;
     }
 
-    (void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_DIGEST), 0);
-    (void) rpmDigestFinal(rpmDigestDup(md5ctx), &md5sum, &md5len, 0);
-    (void) rpmswExit(rpmtsOp(ts, RPMTS_OP_DIGEST), 0);
-    rpmtsOp(ts, RPMTS_OP_DIGEST)->count--;	/* XXX one too many */
+    {	rpmop op = pgpStatsAccumulator(dig, 10);	/* RPMTS_OP_DIGEST */
+	(void) rpmswEnter(op, 0);
+	(void) rpmDigestFinal(rpmDigestDup(md5ctx), &md5sum, &md5len, 0);
+	(void) rpmswExit(op, 0);
+	op->count--;	/* XXX one too many */
+    }
 
     if (md5len != siglen || memcmp(md5sum, sig, md5len)) {
 	res = RPMRC_FAIL;
@@ -818,9 +820,11 @@ verifySHA1Signature(const rpmts ts, /*@out@*/ char * t,
 	goto exit;
     }
 
-    (void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_DIGEST), 0);
-    (void) rpmDigestFinal(rpmDigestDup(sha1ctx), &SHA1, NULL, 1);
-    (void) rpmswExit(rpmtsOp(ts, RPMTS_OP_DIGEST), 0);
+    {	rpmop op = pgpStatsAccumulator(dig, 10);	/* RPMTS_OP_DIGEST */
+	(void) rpmswEnter(op, 0);
+	(void) rpmDigestFinal(rpmDigestDup(sha1ctx), &SHA1, NULL, 1);
+	(void) rpmswExit(op, 0);
+    }
 
     if (SHA1 == NULL || strlen(SHA1) != strlen(sig) || strcmp(SHA1, sig)) {
 	res = RPMRC_FAIL;
@@ -968,11 +972,13 @@ assert(sigp != NULL);
     }
 
 assert(md5ctx != NULL);	/* XXX can't happen. */
-    (void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_DIGEST), 0);
-    {	DIGEST_CTX ctx = rpmDigestDup(md5ctx);
+    {	rpmop op = pgpStatsAccumulator(dig, 10);	/* RPMTS_OP_DIGEST */
+	DIGEST_CTX ctx;
 	byte signhash16[2];
 	const char * s;
 
+	(void) rpmswEnter(op, 0);
+	ctx = rpmDigestDup(md5ctx);
 	if (sigp->hash != NULL)
 	    xx = rpmDigestUpdate(ctx, sigp->hash, sigp->hashlen);
 
@@ -989,8 +995,8 @@ assert(md5ctx != NULL);	/* XXX can't happen. */
 #endif
 
 	xx = rpmDigestFinal(ctx, (void **)&dig->md5, &dig->md5len, 1);
-	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_DIGEST), sigp->hashlen);
-	rpmtsOp(ts, RPMTS_OP_DIGEST)->count--;	/* XXX one too many */
+	(void) rpmswExit(op, sigp->hashlen);
+	op->count--;	/* XXX one too many */
 
 	/* Compare leading 16 bits of digest for quick check. */
 	s = dig->md5;
@@ -1029,19 +1035,18 @@ assert(prefix != NULL);
     if (res != RPMRC_OK)
 	goto exit;
 
-    (void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_SIGNATURE), 0);
+    {	rpmop op = pgpStatsAccumulator(dig, 11);	/* RPMTS_OP_SIGNATURE */
+	(void) rpmswEnter(op, 0);
 /*@-type@*/	/* XXX FIX: avoid beecrypt API incompatibility. */
 #if defined(HAVE_BEECRYPT_API_H)
-    xx = rsavrfy(&dig->rsa_pk.n, &dig->rsa_pk.e, &dig->c, &dig->rsahm);
+	xx = rsavrfy(&dig->rsa_pk.n, &dig->rsa_pk.e, &dig->c, &dig->rsahm);
 #else
-    xx = rsavrfy(&dig->rsa_pk, &dig->rsahm, &dig->c);
+	xx = rsavrfy(&dig->rsa_pk, &dig->rsahm, &dig->c);
 #endif
 /*@=type@*/
-    if (xx)
-	res = RPMRC_OK;
-    else
-	res = RPMRC_FAIL;
-    (void) rpmswExit(rpmtsOp(ts, RPMTS_OP_SIGNATURE), 0);
+	(void) rpmswExit(op, 0);
+	res = (xx ? RPMRC_OK : RPMRC_FAIL);
+    }
 
 exit:
     t = stpcpy(t, rpmSigString(res));
@@ -1108,10 +1113,12 @@ assert(sigp != NULL);
 	goto exit;
     }
 
-    (void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_DIGEST), 0);
-    {	DIGEST_CTX ctx = rpmDigestDup(sha1ctx);
+    {	rpmop op = pgpStatsAccumulator(dig, 10);	/* RPMTS_OP_DIGEST */
+	DIGEST_CTX ctx;
 	byte signhash16[2];
 
+	(void) rpmswEnter(op, 0);
+	ctx = rpmDigestDup(sha1ctx);
 	if (sigp->hash != NULL)
 	    xx = rpmDigestUpdate(ctx, sigp->hash, sigp->hashlen);
 
@@ -1125,8 +1132,8 @@ assert(sigp != NULL);
 	    xx = rpmDigestUpdate(ctx, trailer, sizeof(trailer));
 	}
 	xx = rpmDigestFinal(ctx, (void **)&dig->sha1, &dig->sha1len, 1);
-	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_DIGEST), sigp->hashlen);
-	rpmtsOp(ts, RPMTS_OP_DIGEST)->count--;	/* XXX one too many */
+	(void) rpmswExit(op, sigp->hashlen);
+	op->count--;	/* XXX one too many */
 
 	mpnzero(&dig->hm);	(void) mpnsethex(&dig->hm, dig->sha1);
 
@@ -1144,13 +1151,15 @@ assert(sigp != NULL);
     if (res != RPMRC_OK)
 	goto exit;
 
-    (void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_SIGNATURE), 0);
-    if (dsavrfy(&dig->p, &dig->q, &dig->g,
+    {	rpmop op = pgpStatsAccumulator(dig, 11);	/* RPMTS_OP_SIGNATURE */
+	(void) rpmswEnter(op, 0);
+	if (dsavrfy(&dig->p, &dig->q, &dig->g,
 		&dig->hm, &dig->y, &dig->r, &dig->s))
-	res = RPMRC_OK;
-    else
-	res = RPMRC_FAIL;
-    (void) rpmswExit(rpmtsOp(ts, RPMTS_OP_SIGNATURE), 0);
+	    res = RPMRC_OK;
+	else
+	    res = RPMRC_FAIL;
+	(void) rpmswExit(op, 0);
+    }
 
 exit:
     t = stpcpy(t, rpmSigString(res));

@@ -9,6 +9,7 @@
 #include "rpmps.h"
 #include "rpmsw.h"
 #include "rpmsx.h"
+#include <rpmpgp.h>		/* XXX pgpVSFlags */
 
 /*@-exportlocal@*/
 /*@unchecked@*/
@@ -22,55 +23,7 @@ extern int _fps_debug;
 /** \ingroup rpmts
  * Bit(s) to control digest and signature verification.
  */
-typedef enum rpmVSFlags_e {
-    RPMVSF_DEFAULT	= 0,
-    RPMVSF_NOHDRCHK	= (1 <<  0),
-    RPMVSF_NEEDPAYLOAD	= (1 <<  1),
-    /* bit(s) 2-7 unused */
-    RPMVSF_NOSHA1HEADER	= (1 <<  8),
-    RPMVSF_NOMD5HEADER	= (1 <<  9),	/* unimplemented */
-    RPMVSF_NODSAHEADER	= (1 << 10),
-    RPMVSF_NORSAHEADER	= (1 << 11),
-    /* bit(s) 12-15 unused */
-    RPMVSF_NOSHA1	= (1 << 16),	/* unimplemented */
-    RPMVSF_NOMD5	= (1 << 17),
-    RPMVSF_NODSA	= (1 << 18),
-    RPMVSF_NORSA	= (1 << 19)
-    /* bit(s) 20-31 unused */
-} rpmVSFlags;
-
-/** \ingroup rpmts
- * Transaction Types
- */
-typedef enum rpmTSType_e {
-	RPMTRANS_TYPE_NORMAL       = 0,
-	RPMTRANS_TYPE_ROLLBACK     = (1 << 0),
-	RPMTRANS_TYPE_AUTOROLLBACK = (1 << 1)
-} rpmTSType;
-
-#define	_RPMVSF_NODIGESTS	\
-  ( RPMVSF_NOSHA1HEADER |	\
-    RPMVSF_NOMD5HEADER |	\
-    RPMVSF_NOSHA1 |		\
-    RPMVSF_NOMD5 )
-
-#define	_RPMVSF_NOSIGNATURES	\
-  ( RPMVSF_NODSAHEADER |	\
-    RPMVSF_NORSAHEADER |	\
-    RPMVSF_NODSA |		\
-    RPMVSF_NORSA )
-
-#define	_RPMVSF_NOHEADER	\
-  ( RPMVSF_NOSHA1HEADER |	\
-    RPMVSF_NOMD5HEADER |	\
-    RPMVSF_NODSAHEADER |	\
-    RPMVSF_NORSAHEADER )
-
-#define	_RPMVSF_NOPAYLOAD	\
-  ( RPMVSF_NOSHA1 |		\
-    RPMVSF_NOMD5 |		\
-    RPMVSF_NODSA |		\
-    RPMVSF_NORSA )
+typedef pgpVSFlags rpmVSFlags;
 
 /** \ingroup rpmts
  * Indices for timestamps.
@@ -99,6 +52,15 @@ typedef	enum rpmtsOpX_e {
     RPMTS_OP_DEBUG		= 20,
     RPMTS_OP_MAX		= 20
 } rpmtsOpX;
+
+/** \ingroup rpmts
+ * Transaction Types
+ */
+typedef enum rpmTSType_e {
+	RPMTRANS_TYPE_NORMAL       = 0,
+	RPMTRANS_TYPE_ROLLBACK     = (1 << 0),
+	RPMTRANS_TYPE_AUTOROLLBACK = (1 << 1)
+} rpmTSType;
 
 /** \ingroup rpmts
  */
@@ -558,6 +520,13 @@ void rpmtsSetARBGoal(rpmts ts, uint_32 goal)
  */
 /*@null@*/
 rpmps rpmtsProblems(rpmts ts)
+	/*@modifies ts @*/;
+
+/** \ingroup rpmts
+ * Free signature verification data.
+ * @param ts		transaction set
+ */
+void rpmtsCleanDig(rpmts ts)
 	/*@modifies ts @*/;
 
 /** \ingroup rpmts

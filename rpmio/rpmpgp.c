@@ -1176,6 +1176,20 @@ int pgpSetSig(pgpDig dig,
     return 0;
 }
 
+void * pgpStatsAccumulator(pgpDig dig, int opx)
+{
+    void * sw = NULL;
+    switch (opx) {
+    case 10:	/* RPMTS_OP_DIGEST */
+	sw = &dig->dops;
+	break;
+    case 11:	/* RPMTS_OP_SIGNATURE */
+	sw = &dig->sops;
+	break;
+    }
+    return sw;
+}
+
 static int pgpGrabPkts(const byte * pkts, unsigned int pktlen,
 		/*@out@*/ byte *** pppkts, /*@out@*/ int * pnpkts)
 	/*@modifies *pppkts, *pnpkts @*/

@@ -10,8 +10,6 @@
 #define	_RPMEVR_INTERNAL	/* XXX RPMSENSE_KEYRING */
 #include <rpmevr.h>
 
-#include <rpmte.h>		/* XXX rpmtsi */
-#define	_RPMTS_INTERNAL		/* XXX rpmtsCleanDig */
 #include <rpmts.h>
 
 #include "rpmdb.h"
@@ -1134,8 +1132,7 @@ assert(dig != NULL);
     }
 
 exit:
-    (void) rpmtsSetSig(ts, 0, 0, NULL, 0);	/* XXX headerFreeData */
-    ts->dig = pgpFreeDig(ts->dig);
+    rpmtsCleanDig(ts);
     sigh = headerFree(sigh);
     return res;
 }

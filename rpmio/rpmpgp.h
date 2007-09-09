@@ -1408,6 +1408,59 @@ int pgpSetSig(pgpDig dig,
 	/*@modifies dig @*/;
 
 /**
+ * Return pgpDig container accumulator structure.
+ * @param dig		container
+ * @param opx		per-container accumulator index (aka rpmtsOpX)
+ * @return		per-container accumulator pointer
+ */
+void * pgpStatsAccumulator(pgpDig dig, int opx)
+        /*@*/;
+
+/** \ingroup rpmts
+ * Bit(s) to control digest and signature verification.
+ */
+typedef enum pgpVSFlags_e {
+    RPMVSF_DEFAULT	= 0,
+    RPMVSF_NOHDRCHK	= (1 <<  0),
+    RPMVSF_NEEDPAYLOAD	= (1 <<  1),
+    /* bit(s) 2-7 unused */
+    RPMVSF_NOSHA1HEADER	= (1 <<  8),
+    RPMVSF_NOMD5HEADER	= (1 <<  9),	/* unimplemented */
+    RPMVSF_NODSAHEADER	= (1 << 10),
+    RPMVSF_NORSAHEADER	= (1 << 11),
+    /* bit(s) 12-15 unused */
+    RPMVSF_NOSHA1	= (1 << 16),	/* unimplemented */
+    RPMVSF_NOMD5	= (1 << 17),
+    RPMVSF_NODSA	= (1 << 18),
+    RPMVSF_NORSA	= (1 << 19)
+    /* bit(s) 20-31 unused */
+} pgpVSFlags;
+
+#define	_RPMVSF_NODIGESTS	\
+  ( RPMVSF_NOSHA1HEADER |	\
+    RPMVSF_NOMD5HEADER |	\
+    RPMVSF_NOSHA1 |		\
+    RPMVSF_NOMD5 )
+
+#define	_RPMVSF_NOSIGNATURES	\
+  ( RPMVSF_NODSAHEADER |	\
+    RPMVSF_NORSAHEADER |	\
+    RPMVSF_NODSA |		\
+    RPMVSF_NORSA )
+
+#define	_RPMVSF_NOHEADER	\
+  ( RPMVSF_NOSHA1HEADER |	\
+    RPMVSF_NOMD5HEADER |	\
+    RPMVSF_NODSAHEADER |	\
+    RPMVSF_NORSAHEADER )
+
+#define	_RPMVSF_NOPAYLOAD	\
+  ( RPMVSF_NOSHA1 |		\
+    RPMVSF_NOMD5 |		\
+    RPMVSF_NODSA |		\
+    RPMVSF_NORSA )
+
+/**
  * Is buffer at beginning of an OpenPGP packet?
  * @param p		buffer
  * @return		1 if an OpenPGP packet, 0 otherwise

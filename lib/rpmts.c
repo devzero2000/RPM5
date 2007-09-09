@@ -713,6 +713,12 @@ rpmps rpmtsProblems(rpmts ts)
     return ps;
 }
 
+void rpmtsCleanDig(rpmts ts)
+{
+    (void) rpmtsSetSig(ts, 0, 0, NULL, 0);	/* XXX headerFreeData */
+    ts->dig = pgpFreeDig(ts->dig);
+}
+
 void rpmtsClean(rpmts ts)
 {
     rpmtsi pi; rpmte p;
@@ -737,8 +743,7 @@ void rpmtsClean(rpmts ts)
 
     ts->probs = rpmpsFree(ts->probs);
 
-    (void) rpmtsSetSig(ts, 0, 0, NULL, 0);	/* XXX headerFreeData */
-    ts->dig = pgpFreeDig(ts->dig);
+    rpmtsCleanDig(ts);
 }
 
 void rpmtsEmpty(rpmts ts)

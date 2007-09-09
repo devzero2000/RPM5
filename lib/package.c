@@ -9,8 +9,6 @@
 #include <rpmio_internal.h>
 #include <rpmlib.h>
 
-#include <rpmte.h>		/* XXX rpmtsi */
-#define	_RPMTS_INTERNAL		/* XXX rpmtsCleanDig() */
 #include "rpmts.h"
 
 #include "misc.h"		/* XXX stripTrailingChar() */
@@ -274,6 +272,7 @@ rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, const char ** msg)
     const void * sig = NULL;
     unsigned char * b;
     rpmVSFlags vsflags = rpmtsVSFlags(ts);
+    rpmop op;
     int siglen = 0;
     int blen;
     size_t nb;
@@ -477,8 +476,7 @@ verifyinfo_exit:
 	    rpmMessage(RPMMESS_ERROR,
 		_("skipping header with unverifiable V%u signature\n"),
 		dig->signature.version);
-	    (void) rpmtsSetSig(ts, 0, 0, NULL, 0);	/* XXX headerFreeData */
-	    ts->dig = pgpFreeDig(ts->dig);
+	    rpmtsCleanDig(ts);
 	    rc = RPMRC_FAIL;
 	    goto exit;
 	}
@@ -487,7 +485,8 @@ verifyinfo_exit:
 	ildl[1] = (regionEnd - dataStart);
 	ildl[1] = htonl(ildl[1]);
 
-	(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_DIGEST), 0);
+	op = pgpStatsAccumulator(dig, 10);	/* RPMTS_OP_DIGEST */
+	(void) rpmswEnter(op, 0);
 	dig->hdrmd5ctx = rpmDigestInit(dig->signature.hash_algo, RPMDIGEST_NONE);
 
 	b = NULL; nb = 0;
@@ -511,7 +510,7 @@ verifyinfo_exit:
 	nb = htonl(ildl[1]);
         (void) rpmDigestUpdate(dig->hdrmd5ctx, b, nb);
         dig->nbytes += nb;
-	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_DIGEST), dig->nbytes);
+	(void) rpmswExit(op, dig->nbytes);
 
 	break;
     case RPMTAG_DSAHEADER:
@@ -521,8 +520,7 @@ verifyinfo_exit:
 	    rpmMessage(RPMMESS_ERROR,
 		_("skipping header with unverifiable V%u signature\n"),
 		dig->signature.version);
-	    (void) rpmtsSetSig(ts, 0, 0, NULL, 0);	/* XXX headerFreeData */
-	    ts->dig = pgpFreeDig(ts->dig);
+	    rpmtsCleanDig(ts);
 	    rc = RPMRC_FAIL;
 	    goto exit;
 	}
@@ -534,7 +532,8 @@ verifyinfo_exit:
 	ildl[1] = htonl(ildl[1]);
 /*@=boundswrite@*/
 
-	(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_DIGEST), 0);
+	op = pgpStatsAccumulator(dig, 10);	/* RPMTS_OP_DIGEST */
+	(void) rpmswEnter(op, 0);
 	dig->hdrsha1ctx = rpmDigestInit(PGPHASHALGO_SHA1, RPMDIGEST_NONE);
 
 	b = NULL; nb = 0;
@@ -558,7 +557,7 @@ verifyinfo_exit:
 	nb = htonl(ildl[1]);
         (void) rpmDigestUpdate(dig->hdrsha1ctx, b, nb);
         dig->nbytes += nb;
-	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_DIGEST), dig->nbytes);
+	(void) rpmswExit(op, dig->nbytes);
 
 	break;
     default:
@@ -577,10 +576,8 @@ verifyinfo_exit:
 /*@=boundswrite@*/
 
     /* XXX headerCheck can recurse, free info only at top level. */
-    if (hclvl == 1) {
-	(void) rpmtsSetSig(ts, 0, 0, NULL, 0);	/* XXX headerFreeData */
-	ts->dig = pgpFreeDig(ts->dig);
-    }
+    if (hclvl == 1)
+	rpmtsCleanDig(ts);
     if (info->tag == RPMTAG_SHA1HEADER)
 	sig = _free(sig);
     hclvl--;
@@ -710,6 +707,7 @@ rpmRC rpmReadPackageFile(rpmts ts, void * _fd, const char * fn, Header * hdrp)
     const void * sig;
     int_32 siglen;
     rpmtsOpX opx;
+    rpmop op = NULL;
     size_t nb;
     Header h = NULL;
     const char * msg = NULL;
@@ -830,15 +828,19 @@ if (!_nosigh) {
 
     /* XXX stats will include header i/o and setup overhead. */
     /* XXX repackaged packages have appended tags, legacy dig/sig check fails */
-    if (opx > 0)
-	(void) rpmswEnter(rpmtsOp(ts, opx), 0);
+    if (opx > 0) {
+	op = pgpStatsAccumulator(dig, opx);
+	(void) rpmswEnter(op, 0);
+    }
 /*@-type@*/	/* XXX arrow access of non-pointer (FDSTAT_t) */
     nb = -fd->stats->ops[FDSTAT_READ].bytes;
     rc = rpmReadHeader(ts, fd, &h, &msg);
     nb += fd->stats->ops[FDSTAT_READ].bytes;
 /*@=type@*/
-    if (opx > 0)
-	(void) rpmswExit(rpmtsOp(ts, opx), nb);
+    if (opx > 0 && op != NULL) {
+	(void) rpmswExit(op, nb);
+	op = NULL;
+    }
 
     if (rc != RPMRC_OK || h == NULL) {
 	rpmError(RPMERR_FREAD, _("%s: headerRead failed: %s"), fn,
@@ -890,7 +892,8 @@ if (!_nosigh) {
 	if (!headerGetEntry(h, RPMTAG_HEADERIMMUTABLE, &uht, &uh, &uhc))
 	    break;
 	(void) headerGetMagic(NULL, &hmagic, &nmagic);
-	(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_DIGEST), 0);
+	op = pgpStatsAccumulator(dig, 10);	/* RPMTS_OP_DIGEST */
+	(void) rpmswEnter(op, 0);
 	dig->hdrmd5ctx = rpmDigestInit(dig->signature.hash_algo, RPMDIGEST_NONE);
 	if (hmagic && nmagic > 0) {
 	    (void) rpmDigestUpdate(dig->hdrmd5ctx, hmagic, nmagic);
@@ -898,8 +901,8 @@ if (!_nosigh) {
 	}
 	(void) rpmDigestUpdate(dig->hdrmd5ctx, uh, uhc);
 	dig->nbytes += uhc;
-	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_DIGEST), dig->nbytes);
-	rpmtsOp(ts, RPMTS_OP_DIGEST)->count--;	/* XXX one too many */
+	(void) rpmswExit(op, dig->nbytes);
+	op->count--;	/* XXX one too many */
 	uh = headerFreeData(uh, uht);
     }	break;
     case RPMSIGTAG_DSA:
@@ -923,7 +926,8 @@ if (!_nosigh) {
 	if (!headerGetEntry(h, RPMTAG_HEADERIMMUTABLE, &uht, &uh, &uhc))
 	    break;
 	(void) headerGetMagic(NULL, &hmagic, &nmagic);
-	(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_DIGEST), 0);
+	op = pgpStatsAccumulator(dig, 10);	/* RPMTS_OP_DIGEST */
+	(void) rpmswEnter(op, 0);
 	dig->hdrsha1ctx = rpmDigestInit(PGPHASHALGO_SHA1, RPMDIGEST_NONE);
 	if (hmagic && nmagic > 0) {
 	    (void) rpmDigestUpdate(dig->hdrsha1ctx, hmagic, nmagic);
@@ -931,9 +935,9 @@ if (!_nosigh) {
 	}
 	(void) rpmDigestUpdate(dig->hdrsha1ctx, uh, uhc);
 	dig->nbytes += uhc;
-	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_DIGEST), dig->nbytes);
+	(void) rpmswExit(op, dig->nbytes);
 	if (sigtag == RPMSIGTAG_SHA1)
-	    rpmtsOp(ts, RPMTS_OP_DIGEST)->count--;	/* XXX one too many */
+	    op->count--;	/* XXX one too many */
 	uh = headerFreeData(uh, uht);
     }	break;
 #if defined(SUPPORT_RPMV3_VERIFY_DSA) || defined(SUPPORT_RPMV3_VERIFY_RSA)
@@ -958,11 +962,12 @@ if (!_nosigh) {
 #endif
     case RPMSIGTAG_MD5:
 	/* Legacy signatures need the compressed payload in the digest too. */
-	(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_DIGEST), 0);
+	op = pgpStatsAccumulator(dig, 10);	/* RPMTS_OP_DIGEST */
+	(void) rpmswEnter(op, 0);
 	while ((count = Fread(buf, sizeof(buf[0]), sizeof(buf), fd)) > 0)
 	    dig->nbytes += count;
-	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_DIGEST), dig->nbytes);
-	rpmtsOp(ts, RPMTS_OP_DIGEST)->count--;	/* XXX one too many */
+	(void) rpmswExit(op, dig->nbytes);
+	op->count--;	/* XXX one too many */
 	dig->nbytes += nb;	/* XXX include size of header blob. */
 	if (count < 0) {
 	    rpmError(RPMERR_FREAD, _("%s: Fread failed: %s\n"),
@@ -1041,8 +1046,7 @@ exit:
     (void) rpmswSub(rpmtsOp(ts, RPMTS_OP_READHDR),
 		opsave);
 
-    (void) rpmtsSetSig(ts, 0, 0, NULL, 0);	/* XXX headerFreeData */
-    ts->dig = pgpFreeDig(ts->dig);
+    rpmtsCleanDig(ts);
     sigh = headerFree(sigh);
     return rc;
 }

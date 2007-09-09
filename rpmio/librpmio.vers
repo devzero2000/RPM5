@@ -172,6 +172,7 @@ LIBRPMIO_0
     pgpReadPkts;
     pgpSetSig;
     pgpSigTypeTbl;
+    pgpStatsAccumulator;
     pgpSubTypeTbl;
     pgpSymkeyTbl;
     pgpTagTbl;
