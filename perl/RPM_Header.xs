@@ -186,7 +186,7 @@ string(h, no_header_magic = 0)
     int hsize = 0;
     PPCODE:
     hsize = headerSizeof(h);
-    string = headerUnload(h);
+    string = headerUnload(h, NULL);
     if (! no_header_magic) {
         ptr = malloc(hsize);
         memcpy(ptr, header_magic, 8);
