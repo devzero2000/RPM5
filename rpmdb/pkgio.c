@@ -15,30 +15,12 @@
 #include <rpmlib.h>
 
 #include "header_internal.h"
-#include "signature.h"		/* XXX RPMSIGTYPE_HEADERSIG */
 #include <pkgio.h>
 #include "debug.h"
 
 
 /*@access entryInfo @*/		/* XXX rdSignature */
 /*@access indexEntry @*/	/* XXX rdSignature */
-
-/**
- * Signature types stored in rpm lead.
- */
-typedef	enum sigType_e {
-    RPMSIGTYPE_HEADERSIG= 5	/*!< Header style signature */
-} sigType;
-
-#define	RPMLEAD_BINARY 0
-#define	RPMLEAD_SOURCE 1
-
-#define	RPMLEAD_MAGIC0 0xed
-#define	RPMLEAD_MAGIC1 0xab
-#define	RPMLEAD_MAGIC2 0xee
-#define	RPMLEAD_MAGIC3 0xdb
-
-#define	RPMLEAD_SIZE 96		/*!< Don't rely on sizeof(struct) */
 
 /**
  * The lead data structure.
@@ -55,7 +37,8 @@ struct rpmlead {
     char name[66];
     short osnum;
     short signature_type;	/*!< Signature header type (RPMSIG_HEADERSIG) */
-/*@unused@*/ char reserved[16];	/*!< Pad to 96 bytes -- 8 byte aligned! */
+/*@unused@*/
+    char reserved[16];		/*!< Pad to 96 bytes -- 8 byte aligned! */
 } ;
 
 /*@unchecked@*/
@@ -63,7 +46,7 @@ int _nolead = SUPPORT_RPMLEAD;
 
 /*@unchecked@*/ /*@observer@*/
 static unsigned char lead_magic[] = {
-    RPMLEAD_MAGIC0, RPMLEAD_MAGIC1, RPMLEAD_MAGIC2, RPMLEAD_MAGIC3
+    0xed, 0xab, 0xee, 0xdb, 0x00, 0x00, 0x00, 0x00
 };
 
 /* The lead needs to be 8 byte aligned */
@@ -72,39 +55,33 @@ static unsigned char lead_magic[] = {
  * Write lead to file handle.
  * @param fd		file handle
  * @param ptr		package lead
- * @param *msg		name to include in lead
+ * @param *msg		name to include in lead (or NULL)
  * @return		RPMRC_OK on success, RPMRC_FAIL on error
  */
-static rpmRC wrLead(FD_t fd, void * ptr, const char ** msg)
+static rpmRC wrLead(FD_t fd, const void * ptr, const char ** msg)
 	/*@globals fileSystem @*/
 	/*@modifies fd, fileSystem @*/
 {
     struct rpmlead l;
 
-/*@-boundswrite@*/
     memcpy(&l, ptr, sizeof(l));
 
     /* Set some sane defaults */
     if (l.major == 0)
 	l.major = 3;
-    if (l.type == 0)
-	l.type = RPMLEAD_BINARY;
     if (l.signature_type == 0)
-	l.signature_type = RPMSIGTYPE_HEADERSIG;
+	l.signature_type = 5;		/* RPMSIGTYPE_HEADERSIG */
     if (msg && *msg)
 	(void) strncpy(l.name, *msg, sizeof(l.name));
     
     memcpy(&l.magic, lead_magic, sizeof(l.magic));
-/*@=boundswrite@*/
     l.type = htons(l.type);
     l.archnum = htons(l.archnum);
     l.osnum = htons(l.osnum);
     l.signature_type = htons(l.signature_type);
 	
-/*@-boundswrite@*/
     if (Fwrite(&l, 1, sizeof(l), fd) != sizeof(l))
 	return RPMRC_FAIL;
-/*@=boundswrite@*/
 
     return RPMRC_OK;
 }
@@ -120,7 +97,7 @@ static rpmRC rdLead(FD_t fd, void * ptr, const char ** msg)
 	/*@modifies fd, *lead, *msg @*/
 {
     struct rpmlead ** leadp = ptr;
-    struct rpmlead * lead = xcalloc(1, sizeof(*lead));
+    struct rpmlead * l = xcalloc(1, sizeof(*l));
     char buf[BUFSIZ];
     rpmRC rc = RPMRC_FAIL;		/* assume failure */
     int xx;
@@ -128,47 +105,48 @@ static rpmRC rdLead(FD_t fd, void * ptr, const char ** msg)
     buf[0] = '\0';
     if (leadp != NULL) *leadp = NULL;
 
-    /*@-type@*/ /* FIX: remove timed read */
-    if ((xx = timedRead(fd, (char *)lead, sizeof(*lead))) != sizeof(*lead)) {
+/*@-type@*/ /* FIX: remove timed read */
+    if ((xx = timedRead(fd, (char *)l, sizeof(*l))) != sizeof(*l)) {
 	if (Ferror(fd)) {
 	    (void) snprintf(buf, sizeof(buf),
 		_("lead size(%u): BAD, read(%d), %s(%d)"),
-		(unsigned)sizeof(*lead), xx, Fstrerror(fd), errno);
+		(unsigned)sizeof(*l), xx, Fstrerror(fd), errno);
 	    rc = RPMRC_FAIL;
 	} else {
 	    (void) snprintf(buf, sizeof(buf),
 		_("lead size(%u): BAD, read(%d), %s(%d)"),
-		(unsigned)sizeof(*lead), xx, strerror(errno), errno);
+		(unsigned)sizeof(*l), xx, strerror(errno), errno);
 	    rc = RPMRC_NOTFOUND;
 	}
 	goto exit;
     }
-    /*@=type@*/
+/*@=type@*/
+    l->type = ntohs(l->type);
+    l->archnum = ntohs(l->archnum);
+    l->osnum = ntohs(l->osnum);
+    l->signature_type = ntohs(l->signature_type);
 
-    if (memcmp(lead->magic, lead_magic, sizeof(lead_magic))) {
+    if (memcmp(l->magic, lead_magic, sizeof(l->magic))) {
 	(void) snprintf(buf, sizeof(buf), _("lead magic: BAD"));
 	rc = RPMRC_NOTFOUND;
 	goto exit;
     }
-    lead->type = ntohs(lead->type);
-    lead->archnum = ntohs(lead->archnum);
-    lead->osnum = ntohs(lead->osnum);
-    lead->signature_type = ntohs(lead->signature_type);
 
-    switch (lead->major) {
+    switch (l->major) {
     default:
 	(void) snprintf(buf, sizeof(buf),
-		_("lead version(%d): UNSUPPORTED"), lead->major);
+		_("lead version(%d): UNSUPPORTED"), l->major);
 	rc = RPMRC_NOTFOUND;
-	break;
+	goto exit;
+	/*@notreached@*/ break;
     case 3:
     case 4:
 	break;
     }
 
-    if (lead->signature_type != RPMSIGTYPE_HEADERSIG) {
+    if (l->signature_type != 5) {	/* RPMSIGTYPE_HEADERSIG */
 	(void) snprintf(buf, sizeof(buf),
-		_("sigh type(%d): UNSUPPORTED"), lead->signature_type);
+		_("sigh type(%d): UNSUPPORTED"), l->signature_type);
 	rc = RPMRC_NOTFOUND;
 	goto exit;
     }
@@ -177,9 +155,9 @@ static rpmRC rdLead(FD_t fd, void * ptr, const char ** msg)
 
 exit:
     if (rc == RPMRC_OK && leadp != NULL)
-	*leadp = lead;
+	*leadp = l;
     else
-	lead = _free(lead);
+	l = _free(l);
 	
     if (msg != NULL) {
 	buf[sizeof(buf)-1] = '\0';
@@ -199,18 +177,17 @@ static unsigned char sigh_magic[8] = {
 
 /**
  * Write signature header.
- * @param _fd		file handle
+ * @param fd		file handle
  * @param ptr		signature header
  * @retval *msg		failure msg
  * @return		rpmRC return code
  */
-static rpmRC wrSignature(void * _fd, void * ptr, const char ** msg)
+static rpmRC wrSignature(FD_t fd, void * ptr, const char ** msg)
 	/*@globals fileSystem @*/
-	/*@modifies _fd, sigh, fileSystem @*/
+	/*@modifies fd, sigh, fileSystem @*/
 {
-    FD_t fd = _fd;
     Header sigh = ptr;
-    static unsigned char buf[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };
+    static unsigned char zero[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };
     int sigSize, pad;
     rpmRC rc = RPMRC_OK;
     int xx;
@@ -222,7 +199,7 @@ static rpmRC wrSignature(void * _fd, void * ptr, const char ** msg)
     sigSize = headerSizeof(sigh);
     pad = (8 - (sigSize % 8)) % 8;
     if (pad) {
-	if (Fwrite(buf, sizeof(buf[0]), pad, fd) != pad)
+	if (Fwrite(zero, sizeof(zero[0]), pad, fd) != pad)
 	    rc = RPMRC_FAIL;
     }
     rpmMessage(RPMMESS_DEBUG, D_("Signature: size(%d)+pad(%d)\n"), sigSize, pad);
@@ -243,45 +220,40 @@ static inline rpmRC printSize(FD_t fd, int siglen, int pad, size_t datalen)
 	/*@modifies fileSystem @*/
 {
     int fdno = Fileno(fd);
-    struct stat st;
+    struct stat sb, * st = &sb;
     size_t expected;
     size_t nl = rpmpkgSizeof("Lead");
 
     /* HACK: workaround for davRead wiring. */
     if (fdno == 123456789) {
-	st.st_size = 0;
-/*@-sizeoftype@*/
-	st.st_size -= nl+siglen+pad+datalen;
-/*@=sizeoftype@*/
-    } else if (fstat(fdno, &st) < 0)
+	st->st_size = 0;
+	st->st_size -= nl + siglen + pad + datalen;
+    } else
+    if (fstat(fdno, st) < 0)
 	return RPMRC_FAIL;
 
-/*@-sizeoftype@*/
-    expected = nl + siglen + pad;
-    expected += datalen,
+    expected = nl + siglen + pad + datalen;
     rpmMessage(RPMMESS_DEBUG,
 	D_("Expected size: %12lu = lead(%u)+sigs(%d)+pad(%d)+data(%lu)\n"),
 		(unsigned long)expected,
 		(unsigned)nl, siglen, pad, (unsigned long)datalen);
-/*@=sizeoftype@*/
     rpmMessage(RPMMESS_DEBUG,
-	D_("  Actual size: %12lu\n"), (unsigned long)st.st_size);
+	D_("  Actual size: %12lu\n"), (unsigned long)st->st_size);
 
     return RPMRC_OK;
 }
 
 /**
  * Read (and verify header+payload size) signature header.
- * @param _fd		file handle
+ * @param fd		file handle
  * @retval *ptr		signature header (or NULL)
  * @retval *msg		failure msg
  * @return		rpmRC return code
  */
-static rpmRC rdSignature(void * _fd, void * ptr, const char ** msg)
+static rpmRC rdSignature(FD_t fd, void * ptr, const char ** msg)
 	/*@globals fileSystem @*/
-	/*@modifies _fd, *ptr, *msg, fileSystem @*/
+	/*@modifies fd, *ptr, *msg, fileSystem @*/
 {
-    FD_t fd = _fd;
     Header * sighp = ptr;
     char buf[BUFSIZ];
     int_32 block[4];
@@ -300,10 +272,9 @@ static rpmRC rdSignature(void * _fd, void * ptr, const char ** msg)
     int xx;
     int i;
 
+    buf[0] = '\0';
     if (sighp)
 	*sighp = NULL;
-
-    buf[0] = '\0';
 
     memset(block, 0, sizeof(block));
     if ((xx = timedRead(fd, (void *)block, sizeof(block))) != sizeof(block)) {
@@ -333,7 +304,7 @@ static rpmRC rdSignature(void * _fd, void * ptr, const char ** msg)
     dl = ntohl(block[3]);
     if (dl < 0 || dl > 8192) {
 	(void) snprintf(buf, sizeof(buf),
-		_("sigh data: BAD, no. of  bytes(%d) out of range\n"), dl);
+		_("sigh data: BAD, no. of bytes(%d) out of range\n"), dl);
 	goto exit;
     }
 
@@ -474,7 +445,7 @@ size_t rpmpkgSizeof(const char * fn)
 {
     size_t len = 0;
     if (!strcmp(fn, "Lead"));
-	return sizeof(struct rpmlead);
+	return 96;	/* RPMLEAD_SIZE */
     return len;
 }
 
@@ -514,7 +485,7 @@ rpmRC rpmpkgCheck(const char * fn, FD_t fd, void * ptr, const char ** msg)
     rpmRC rc = RPMRC_FAIL;
 
     if (!strcmp(fn, "Lead"))
-	return checkLead(fd, ptr, msg);
+	return ckLead(fd, ptr, msg);
     return rc;
 }
 #endif
