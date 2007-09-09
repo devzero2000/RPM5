@@ -1478,6 +1478,25 @@ pgpVSFlags pgpSetVSFlags(pgpDig dig, pgpVSFlags vsflags)
 	/*@modifies dig @*/;
 
 /**
+ * Set find pubkey vector.
+ * @param dig		container
+ * @param findPubkey	routine to find a pubkey.
+ * @param ts		argument to routine
+ * @return		0 always
+ */
+int pgpSetFindPubkey(pgpDig dig,
+		int (*findPubkey) (void *ts, void *dig), void * _ts)
+	/*@modifies dig @*/;
+
+/**
+ * Call find pubkey vector.
+ * @param dig		container
+ * @return		rpmRC return code
+ */
+int pgpFindPubkey(pgpDig dig)
+	/*@modifies dig @*/;
+
+/**
  * Is buffer at beginning of an OpenPGP packet?
  * @param p		buffer
  * @return		1 if an OpenPGP packet, 0 otherwise

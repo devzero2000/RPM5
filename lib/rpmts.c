@@ -240,12 +240,12 @@ rpmdbMatchIterator rpmtsInitIterator(const rpmts ts, rpmTag rpmtag,
 }
 /*@=compdef@*/
 
-rpmRC rpmtsFindPubkey(rpmts ts)
+rpmRC rpmtsFindPubkey(rpmts ts, void * _dig)
 {
-    const void * sig = rpmtsSig(ts);
-    pgpDig dig = rpmtsDig(ts);
-    pgpDigParams sigp = rpmtsSignature(ts);
-    pgpDigParams pubp = rpmtsPubkey(ts);
+    pgpDig dig = (_dig ? _dig : rpmtsDig(ts));
+    const void * sig = pgpGetSig(dig);
+    pgpDigParams sigp = pgpGetSignature(dig);
+    pgpDigParams pubp = pgpGetPubkey(dig);
     rpmRC res = RPMRC_NOKEY;
     const char * pubkeysource = NULL;
     int krcache = 1;	/* XXX assume pubkeys are cached in keyutils keyring. */
@@ -1146,8 +1146,10 @@ int rpmtsSetSig(rpmts ts,
 pgpDig rpmtsDig(rpmts ts)
 {
 /*@-mods@*/ /* FIX: hide lazy malloc for now */
-    if (ts->dig == NULL)
+    if (ts->dig == NULL) {
 	ts->dig = pgpNewDig(ts->vsflags);
+	(void) pgpSetFindPubkey(ts->dig, (int (*)(void *, void *))rpmtsFindPubkey, ts);
+    }
 /*@=mods@*/
     if (ts->dig == NULL)
 	return NULL;

@@ -996,20 +996,13 @@ enum rpmtagSignature {
 /** \ingroup signature
  * Verify a signature from a package.
  *
- * This needs the following variables from the transaction set:
- *	- ts->sigtag	type of signature
- *	- ts->sig	signature itself (from signature header)
- *	- ts->siglen	no. of bytes in signature
- *	- ts->dig	signature/pubkey parameters (malloc'd workspace)
- *
- * @param ts		transaction set
+ * @param _dig		container
  * @retval result	detailed text result of signature verification
  * @return		result of signature verification
  */
-rpmRC rpmVerifySignature(const rpmts ts,
-		/*@out@*/ char * result)
+rpmRC rpmVerifySignature(void * _dig, /*@out@*/ char * result)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies ts, *result, rpmGlobalMacroContext,
+	/*@modifies _dig, *result, rpmGlobalMacroContext,
 		fileSystem, internalState @*/;
 
 /*@}*/

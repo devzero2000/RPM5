@@ -1,4 +1,6 @@
 4.5 -> 5.0:
+    - jbj: uncouple signature verification from transaction sets.
+    - jbj: add (*findPubkey) (_ts, _dig) callback in pgpDig.
     - jbj: fix: headerUnload() size implies HEADER_MAGIC_NO, no hackery needed.
     - jbj: sum per-dig digest/signature stats into ts stats in rpmtsCleanDig.
     - jbj: initialize pgpVSFlags with pgpNewDig(vsflags).

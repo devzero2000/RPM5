@@ -408,12 +408,13 @@ rpmdbMatchIterator rpmtsInitIterator(const rpmts ts, rpmTag rpmtag,
 /**
  * Retrieve pubkey from rpm database.
  * @param ts		rpm transaction
+ * @param _dig		container (NULL uses rpmtsDig(ts) instead).
  * @return		RPMRC_OK on success, RPMRC_NOKEY if not found
  */
 /*@-exportlocal@*/
-rpmRC rpmtsFindPubkey(rpmts ts)
+rpmRC rpmtsFindPubkey(rpmts ts, /*@null@*/ void * _dig)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState */;
+	/*@modifies ts, _dig, rpmGlobalMacroContext, fileSystem, internalState */;
 /*@=exportlocal@*/
 
 /** \ingroup rpmts

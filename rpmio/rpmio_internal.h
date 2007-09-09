@@ -72,6 +72,11 @@ struct pgpDig_s {
     struct rpmop_s dops;	/*!< Digest operation statistics. */
     struct rpmop_s sops;	/*!< Signature operation statistics. */
 
+    int (*findPubkey) (void * _ts, /*@null@*/ void * _dig)
+	/*@modifies *_ts, *_dig @*/;/*!< Find pubkey, i.e. rpmtsFindPubkey(). */
+/*@null@*/
+    void * _ts;			/*!< Find pubkey argument, i.e. rpmts. */
+
     byte ** ppkts;
     int npkts;
     size_t nbytes;		/*!< No. bytes of plain text. */

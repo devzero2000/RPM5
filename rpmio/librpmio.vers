@@ -147,6 +147,7 @@ LIBRPMIO_0
     pgpArmorWrap;
     pgpCleanDig;
     pgpCompressionTbl;
+    pgpFindPubkey;
     pgpFreeDig;
     pgpGetPubkey;
     pgpGetSignature;
@@ -171,6 +172,7 @@ LIBRPMIO_0
     pgpPktLen;
     pgpPubkeyTbl;
     pgpReadPkts;
+    pgpSetFindPubkey;
     pgpSetSig;
     pgpSetVSFlags;
     pgpSigTypeTbl;

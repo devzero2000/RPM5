@@ -568,7 +568,7 @@ verifyinfo_exit:
 /*@-boundswrite@*/
     buf[0] = '\0';
 /*@=boundswrite@*/
-    rc = rpmVerifySignature(ts, buf);
+    rc = rpmVerifySignature(dig, buf);
 
 /*@-boundswrite@*/
     buf[sizeof(buf)-1] = '\0';
@@ -1007,7 +1007,7 @@ if (!_nosigh) {
 /*@-boundswrite@*/
     buf[0] = '\0';
 /*@=boundswrite@*/
-    rc = rpmVerifySignature(ts, buf);
+    rc = rpmVerifySignature(dig, buf);
     switch (rc) {
     case RPMRC_OK:		/* Signature is OK. */
 	rpmMessage(RPMMESS_DEBUG, "%s: %s", fn, buf);

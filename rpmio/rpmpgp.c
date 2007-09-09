@@ -1211,6 +1211,24 @@ pgpVSFlags pgpSetVSFlags(pgpDig dig, pgpVSFlags vsflags)
     return ovsflags;
 }
 
+int pgpSetFindPubkey(pgpDig dig,
+		int (*findPubkey) (void *ts, void *dig), void * _ts)
+{
+    if (dig) {
+	dig->findPubkey = findPubkey;
+	dig->_ts = _ts;
+    }
+    return 0;
+}
+
+int pgpFindPubkey(pgpDig dig)
+{
+    int rc = 1;	/* XXX RPMRC_NOTFOUND */
+    if (dig && dig->findPubkey && dig->_ts)
+	rc = (*dig->findPubkey) (dig->_ts, dig);
+    return rc;
+}
+
 static int pgpGrabPkts(const byte * pkts, unsigned int pktlen,
 		/*@out@*/ byte *** pppkts, /*@out@*/ int * pnpkts)
 	/*@modifies *pppkts, *pnpkts @*/

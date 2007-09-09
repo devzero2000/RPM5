@@ -953,7 +953,7 @@ assert(dig != NULL);
 		/*@notreached@*/ /*@switchbreak@*/ break;
 	    }
 
-	    res3 = rpmVerifySignature(ts, result);
+	    res3 = rpmVerifySignature(dig, result);
 
 /*@-bounds@*/
 	    if (res3) {

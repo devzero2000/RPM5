@@ -12,8 +12,6 @@
 #include <rpmmacro.h>	/* XXX for rpmGetPath() */
 #include "rpmdb.h"
 
-#include "rpmts.h"
-
 #include "misc.h"	/* XXX for dosetenv() and makeTempFile() */
 #include "legacy.h"	/* XXX for mdbinfile() */
 #include <pkgio.h>
@@ -705,10 +703,9 @@ static /*@observer@*/ const char * rpmSigString(rpmRC res)
 }
 
 static rpmRC
-verifySizeSignature(const rpmts ts, /*@out@*/ char * t)
+verifySizeSignature(const pgpDig dig, /*@out@*/ char * t)
 	/*@modifies *t @*/
 {
-    pgpDig dig = rpmtsDig(ts);
     const void * sig = pgpGetSig(dig);
     rpmRC res;
     int_32 size = 0x7fffffff;
@@ -740,12 +737,11 @@ exit:
 }
 
 static rpmRC
-verifyMD5Signature(const rpmts ts, /*@out@*/ char * t,
+verifyMD5Signature(const pgpDig dig, /*@out@*/ char * t,
 		/*@null@*/ DIGEST_CTX md5ctx)
 	/*@globals internalState @*/
 	/*@modifies *t, internalState @*/
 {
-    pgpDig dig = rpmtsDig(ts);
     const void * sig = pgpGetSig(dig);
     int_32 siglen = pgpGetSiglen(dig);
     rpmRC res;
@@ -792,18 +788,17 @@ exit:
 
 /**
  * Verify header immutable region SHA1 digest.
- * @param ts		transaction set
+ * @param dig		container
  * @retval t		verbose success/failure text
  * @param sha1ctx
  * @return 		RPMRC_OK on success
  */
 static rpmRC
-verifySHA1Signature(const rpmts ts, /*@out@*/ char * t,
+verifySHA1Signature(const pgpDig dig, /*@out@*/ char * t,
 		/*@null@*/ DIGEST_CTX sha1ctx)
 	/*@globals internalState @*/
 	/*@modifies *t, internalState @*/
 {
-    pgpDig dig = rpmtsDig(ts);
     const void * sig = pgpGetSig(dig);
 #ifdef	NOTYET
     int_32 siglen = pgpGetSiglen(dig);
@@ -866,18 +861,17 @@ static inline unsigned char nibble(char c)
 
 /**
  * Verify RSA signature.
- * @param ts		transaction set
+ * @param dig		container
  * @retval t		verbose success/failure text
  * @param md5ctx
  * @return 		RPMRC_OK on success
  */
 static rpmRC
-verifyRSASignature(rpmts ts, /*@out@*/ char * t,
+verifyRSASignature(pgpDig dig, /*@out@*/ char * t,
 		/*@null@*/ DIGEST_CTX md5ctx)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, *t, rpmGlobalMacroContext, fileSystem, internalState */
 {
-    pgpDig dig = rpmtsDig(ts);
     const void * sig = pgpGetSig(dig);
 #ifdef	NOTYET
     int_32 siglen = pgpGetSiglen(dig);
@@ -1031,7 +1025,7 @@ assert(prefix != NULL);
     }
 
     /* Retrieve the matching public key. */
-    res = rpmtsFindPubkey(ts);
+    res = pgpFindPubkey(dig);
     if (res != RPMRC_OK)
 	goto exit;
 
@@ -1061,18 +1055,17 @@ exit:
 
 /**
  * Verify DSA signature.
- * @param ts		transaction set
+ * @param dig		container
  * @retval t		verbose success/failure text
  * @param sha1ctx
  * @return 		RPMRC_OK on success
  */
 static rpmRC
-verifyDSASignature(rpmts ts, /*@out@*/ char * t,
+verifyDSASignature(pgpDig dig, /*@out@*/ char * t,
 		/*@null@*/ DIGEST_CTX sha1ctx)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, *t, rpmGlobalMacroContext, fileSystem, internalState */
 {
-    pgpDig dig = rpmtsDig(ts);
     const void * sig = pgpGetSig(dig);
 #ifdef	NOTYET
     int_32 siglen = pgpGetSiglen(dig);
@@ -1147,7 +1140,7 @@ assert(sigp != NULL);
     }
 
     /* Retrieve the matching public key. */
-    res = rpmtsFindPubkey(ts);
+    res = pgpFindPubkey(dig);
     if (res != RPMRC_OK)
 	goto exit;
 
@@ -1173,9 +1166,9 @@ exit:
 }
 
 rpmRC
-rpmVerifySignature(const rpmts ts, char * result)
+rpmVerifySignature(void * _dig, char * result)
 {
-    pgpDig dig = rpmtsDig(ts);
+    pgpDig dig = _dig;
     const void * sig = pgpGetSig(dig);
     int_32 siglen = pgpGetSiglen(dig);
     int_32 sigtag = pgpGetSigtag(dig);
@@ -1188,31 +1181,31 @@ rpmVerifySignature(const rpmts ts, char * result)
 
     switch (sigtag) {
     case RPMSIGTAG_SIZE:
-	res = verifySizeSignature(ts, result);
+	res = verifySizeSignature(dig, result);
 	break;
     case RPMSIGTAG_MD5:
-	res = verifyMD5Signature(ts, result, dig->md5ctx);
+	res = verifyMD5Signature(dig, result, dig->md5ctx);
 	break;
     case RPMSIGTAG_SHA1:
-	res = verifySHA1Signature(ts, result, dig->hdrsha1ctx);
+	res = verifySHA1Signature(dig, result, dig->hdrsha1ctx);
 	break;
     case RPMSIGTAG_RSA:
-	res = verifyRSASignature(ts, result, dig->hdrmd5ctx);
+	res = verifyRSASignature(dig, result, dig->hdrmd5ctx);
 	break;
 #if defined(SUPPORT_RPMV3_VERIFY_RSA)
     case RPMSIGTAG_PGP5:	/* XXX legacy */
     case RPMSIGTAG_PGP:
-	res = verifyRSASignature(ts, result,
+	res = verifyRSASignature(dig, result,
 		((dig->signature.hash_algo == PGPHASHALGO_MD5)
 			? dig->md5ctx : dig->sha1ctx));
 	break;
 #endif
     case RPMSIGTAG_DSA:
-	res = verifyDSASignature(ts, result, dig->hdrsha1ctx);
+	res = verifyDSASignature(dig, result, dig->hdrsha1ctx);
 	break;
 #if defined(SUPPORT_RPMV3_VERIFY_DSA)
     case RPMSIGTAG_GPG:
-	res = verifyDSASignature(ts, result, dig->sha1ctx);
+	res = verifyDSASignature(dig, result, dig->sha1ctx);
 	break;
 #endif
 #if defined(SUPPORT_RPMV3_BROKEN)
