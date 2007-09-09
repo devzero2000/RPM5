@@ -737,7 +737,7 @@ void rpmtsClean(rpmts ts)
 
     ts->probs = rpmpsFree(ts->probs);
 
-    ts->sig = headerFreeData(ts->sig, ts->sigtype);
+    (void) rpmtsSetSig(ts, 0, 0, NULL, 0);	/* XXX headerFreeData */
     ts->dig = pgpFreeDig(ts->dig);
 }
 
@@ -1097,50 +1097,36 @@ int_32 rpmtsSetTid(rpmts ts, int_32 tid)
 
 int_32 rpmtsSigtag(const rpmts ts)
 {
-    int_32 sigtag = 0;
-    if (ts != NULL)
-	sigtag = ts->sigtag;
-    return sigtag;
+    return pgpGetSigtag(rpmtsDig(ts));
 }
 
 int_32 rpmtsSigtype(const rpmts ts)
 {
-    int_32 sigtype = 0;
-    if (ts != NULL)
-	sigtype = ts->sigtype;
-    return sigtype;
+    return pgpGetSigtype(rpmtsDig(ts));
 }
 
 const void * rpmtsSig(const rpmts ts)
 {
-    const void * sig = NULL;
-    if (ts != NULL)
-	sig = ts->sig;
-    return sig;
+    return pgpGetSig(rpmtsDig(ts));
 }
 
 int_32 rpmtsSiglen(const rpmts ts)
 {
-    int_32 siglen = 0;
-    if (ts != NULL)
-	siglen = ts->siglen;
-    return siglen;
+    return pgpGetSiglen(rpmtsDig(ts));
 }
 
 int rpmtsSetSig(rpmts ts,
 		int_32 sigtag, int_32 sigtype, const void * sig, int_32 siglen)
 {
+    int ret = 0;
     if (ts != NULL) {
-	if (ts->sig && ts->sigtype)
-	    ts->sig = headerFreeData(ts->sig, ts->sigtype);
-	ts->sigtag = sigtag;
-	ts->sigtype = (sig ? sigtype : 0);
-/*@-assignexpose -kepttrans@*/
-	ts->sig = sig;
-/*@=assignexpose =kepttrans@*/
-	ts->siglen = siglen;
+	const void * osig = pgpGetSig(rpmtsDig(ts));
+	int_32 osigtype = pgpGetSiglen(rpmtsDig(ts));
+	if (osig && osigtype)
+	    osig = headerFreeData(osig, osigtype);
+	ret = pgpSetSig(rpmtsDig(ts), sigtag, sigtype, sig, siglen);
     }
-    return 0;
+    return ret;
 }
 
 pgpDig rpmtsDig(rpmts ts)
@@ -1156,20 +1142,12 @@ pgpDig rpmtsDig(rpmts ts)
 
 pgpDigParams rpmtsSignature(const rpmts ts)
 {
-    pgpDig dig = rpmtsDig(ts);
-    if (dig == NULL) return NULL;
-/*@-immediatetrans@*/
-    return &dig->signature;
-/*@=immediatetrans@*/
+    return pgpGetSignature(rpmtsDig(ts));
 }
 
 pgpDigParams rpmtsPubkey(const rpmts ts)
 {
-    pgpDig dig = rpmtsDig(ts);
-    if (dig == NULL) return NULL;
-/*@-immediatetrans@*/
-    return &dig->pubkey;
-/*@=immediatetrans@*/
+    return pgpGetPubkey(rpmtsDig(ts));
 }
 
 rpmdb rpmtsGetRdb(rpmts ts)
@@ -1637,7 +1615,6 @@ rpmts rpmtsCreate(void)
 
     ts->probs = NULL;
 
-    ts->sig = NULL;
     ts->pkpkt = NULL;
     ts->pkpktlen = 0;
     memset(ts->pksignid, 0, sizeof(ts->pksignid));

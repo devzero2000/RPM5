@@ -148,6 +148,12 @@ LIBRPMIO_0
     pgpCleanDig;
     pgpCompressionTbl;
     pgpFreeDig;
+    pgpGetPubkey;
+    pgpGetSignature;
+    pgpGetSigtag;
+    pgpGetSigtype;
+    pgpGetSig;
+    pgpGetSiglen;
     pgpHashTbl;
     pgpKeyServerPrefsTbl;
     pgpNewDig;
@@ -164,6 +170,7 @@ LIBRPMIO_0
     pgpPktLen;
     pgpPubkeyTbl;
     pgpReadPkts;
+    pgpSetSig;
     pgpSigTypeTbl;
     pgpSubTypeTbl;
     pgpSymkeyTbl;

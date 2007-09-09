@@ -708,8 +708,8 @@ static rpmRC
 verifySizeSignature(const rpmts ts, /*@out@*/ char * t)
 	/*@modifies *t @*/
 {
-    const void * sig = rpmtsSig(ts);
     pgpDig dig = rpmtsDig(ts);
+    const void * sig = pgpGetSig(dig);
     rpmRC res;
     int_32 size = 0x7fffffff;
 
@@ -745,9 +745,9 @@ verifyMD5Signature(const rpmts ts, /*@out@*/ char * t,
 	/*@globals internalState @*/
 	/*@modifies *t, internalState @*/
 {
-    const void * sig = rpmtsSig(ts);
-    int_32 siglen = rpmtsSiglen(ts);
     pgpDig dig = rpmtsDig(ts);
+    const void * sig = pgpGetSig(dig);
+    int_32 siglen = pgpGetSiglen(dig);
     rpmRC res;
     byte * md5sum = NULL;
     size_t md5len = 0;
@@ -801,11 +801,11 @@ verifySHA1Signature(const rpmts ts, /*@out@*/ char * t,
 	/*@globals internalState @*/
 	/*@modifies *t, internalState @*/
 {
-    const void * sig = rpmtsSig(ts);
-#ifdef	NOTYET
-    int_32 siglen = rpmtsSiglen(ts);
-#endif
     pgpDig dig = rpmtsDig(ts);
+    const void * sig = pgpGetSig(dig);
+#ifdef	NOTYET
+    int_32 siglen = pgpGetSiglen(dig);
+#endif
     rpmRC res;
     const char * SHA1 = NULL;
 
@@ -873,13 +873,13 @@ verifyRSASignature(rpmts ts, /*@out@*/ char * t,
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, *t, rpmGlobalMacroContext, fileSystem, internalState */
 {
-    const void * sig = rpmtsSig(ts);
-#ifdef	NOTYET
-    int_32 siglen = rpmtsSiglen(ts);
-#endif
-    int_32 sigtag = rpmtsSigtag(ts);
     pgpDig dig = rpmtsDig(ts);
-    pgpDigParams sigp = rpmtsSignature(ts);
+    const void * sig = pgpGetSig(dig);
+#ifdef	NOTYET
+    int_32 siglen = pgpGetSiglen(dig);
+#endif
+    int_32 sigtag = pgpGetSigtag(dig);
+    pgpDigParams sigp = pgpGetSignature(dig);
     const char * prefix = NULL;
     rpmRC res = RPMRC_OK;
     int xx;
@@ -1067,13 +1067,13 @@ verifyDSASignature(rpmts ts, /*@out@*/ char * t,
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, *t, rpmGlobalMacroContext, fileSystem, internalState */
 {
-    const void * sig = rpmtsSig(ts);
-#ifdef	NOTYET
-    int_32 siglen = rpmtsSiglen(ts);
-#endif
-    int_32 sigtag = rpmtsSigtag(ts);
     pgpDig dig = rpmtsDig(ts);
-    pgpDigParams sigp = rpmtsSignature(ts);
+    const void * sig = pgpGetSig(dig);
+#ifdef	NOTYET
+    int_32 siglen = pgpGetSiglen(dig);
+#endif
+    int_32 sigtag = pgpGetSigtag(dig);
+    pgpDigParams sigp = pgpGetSignature(dig);
     rpmRC res;
     int xx;
 
@@ -1166,13 +1166,13 @@ exit:
 rpmRC
 rpmVerifySignature(const rpmts ts, char * result)
 {
-    const void * sig = rpmtsSig(ts);
-    int_32 siglen = rpmtsSiglen(ts);
-    int_32 sigtag = rpmtsSigtag(ts);
     pgpDig dig = rpmtsDig(ts);
+    const void * sig = pgpGetSig(dig);
+    int_32 siglen = pgpGetSiglen(dig);
+    int_32 sigtag = pgpGetSigtag(dig);
     rpmRC res;
 
-    if (sig == NULL || siglen <= 0 || dig == NULL) {
+    if (dig == NULL || sig == NULL || siglen <= 0) {
 	sprintf(result, _("Verify signature: BAD PARAMETERS\n"));
 	return RPMRC_NOTFOUND;
     }

@@ -1344,6 +1344,70 @@ pgpDig pgpFreeDig(/*@only@*/ /*@null@*/ pgpDig dig)
 	/*@modifies dig @*/;
 
 /**
+ * Return OpenPGP pubkey parameters.
+ * @param dig		container
+ * @return		pubkey parameters
+ */
+pgpDigParams pgpGetPubkey(const pgpDig dig)
+	/*@*/;
+
+/**
+ * Return OpenPGP signature parameters.
+ * @param dig		container
+ * @return		signature parameters
+ */
+pgpDigParams pgpGetSignature(const pgpDig dig)
+	/*@*/;
+
+/**
+ * Get signature tag.
+ * @param dig		container
+ * @return		signature tag
+ */
+int32_t pgpGetSigtag(const pgpDig dig)
+	/*@*/;
+
+/** \ingroup rpmts
+ * Get signature tag type.
+ * @param dig		container
+ * @param ts		transaction set
+ * @return		signature tag type
+ */
+int32_t pgpGetSigtype(const pgpDig dig)
+	/*@*/;
+
+/**
+ * Get signature tag data, i.e. from header.
+ * @param dig		container
+ * @return		signature tag data
+ */
+/*@observer@*/ /*@null@*/
+extern const void * pgpGetSig(const pgpDig dig)
+	/*@*/;
+
+/**
+ * Get signature tag data length, i.e. no. of bytes of data.
+ * @param dig		container
+ * @return		signature tag data length
+ */
+int32_t pgpGetSiglen(const pgpDig dig)
+	/*@*/;
+
+/**
+ * Set signature tag info, i.e. from header.
+ * @param dig		container
+ * @param sigtag	signature tag
+ * @param sigtype	signature tag type
+ * @param sig		signature tag data
+ * @param siglen	signature tag data length
+ * @return		0 always
+ */
+int pgpSetSig(pgpDig dig,
+		int32_t sigtag, int32_t sigtype,
+		/*@kept@*/ /*@null@*/ const void * sig, int32_t siglen)
+	/*@modifies dig @*/;
+
+/**
  * Is buffer at beginning of an OpenPGP packet?
  * @param p		buffer
  * @return		1 if an OpenPGP packet, 0 otherwise

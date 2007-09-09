@@ -1131,6 +1131,51 @@ pgpDig pgpFreeDig(/*@only@*/ /*@null@*/ pgpDig dig)
     return dig;
 }
 
+pgpDigParams pgpGetSignature(pgpDig dig)
+{
+    return (dig ? &dig->signature : NULL);
+}
+
+pgpDigParams pgpGetPubkey(pgpDig dig)
+{
+    return (dig ? &dig->pubkey : NULL);
+}
+
+int32_t pgpGetSigtag(pgpDig dig)
+{
+    return (dig ? dig->sigtag : 0);
+}
+
+int32_t pgpGetSigtype(pgpDig dig)
+{
+    return (dig ? dig->sigtype : 0);
+}
+
+const void * pgpGetSig(pgpDig dig)
+{
+    return (dig ? dig->sig : NULL);
+}
+
+int32_t pgpGetSiglen(pgpDig dig)
+{
+    return (dig ? dig->siglen : 0);
+}
+
+int pgpSetSig(pgpDig dig,
+	int32_t sigtag, int32_t sigtype, const void * sig, int32_t siglen)
+{
+    if (dig != NULL) {
+	/* XXX lazy free? */
+	dig->sigtag = sigtag;
+	dig->sigtype = (sig ? sigtype : 0);
+/*@-assignexpose -kepttrans@*/
+	dig->sig = sig;
+/*@=assignexpose =kepttrans@*/
+	dig->siglen = siglen;
+    }
+    return 0;
+}
+
 static int pgpGrabPkts(const byte * pkts, unsigned int pktlen,
 		/*@out@*/ byte *** pppkts, /*@out@*/ int * pnpkts)
 	/*@modifies *pppkts, *pnpkts @*/

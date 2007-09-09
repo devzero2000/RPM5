@@ -208,7 +208,7 @@ static int rpmtsStashKeyid(rpmts ts)
 {
     const void * sig = rpmtsSig(ts);
     pgpDig dig = rpmtsDig(ts);
-    pgpDigParams sigp = rpmtsSignature(ts);
+    pgpDigParams sigp = pgpGetSignature(dig);
     unsigned int keyid;
     int i;
 
@@ -477,7 +477,7 @@ verifyinfo_exit:
 	    rpmMessage(RPMMESS_ERROR,
 		_("skipping header with unverifiable V%u signature\n"),
 		dig->signature.version);
-	    ts->sig = headerFreeData(ts->sig, ts->sigtype);
+	    (void) rpmtsSetSig(ts, 0, 0, NULL, 0);	/* XXX headerFreeData */
 	    ts->dig = pgpFreeDig(ts->dig);
 	    rc = RPMRC_FAIL;
 	    goto exit;
@@ -521,7 +521,7 @@ verifyinfo_exit:
 	    rpmMessage(RPMMESS_ERROR,
 		_("skipping header with unverifiable V%u signature\n"),
 		dig->signature.version);
-	    ts->sig = headerFreeData(ts->sig, ts->sigtype);
+	    (void) rpmtsSetSig(ts, 0, 0, NULL, 0);	/* XXX headerFreeData */
 	    ts->dig = pgpFreeDig(ts->dig);
 	    rc = RPMRC_FAIL;
 	    goto exit;
@@ -578,7 +578,7 @@ verifyinfo_exit:
 
     /* XXX headerCheck can recurse, free info only at top level. */
     if (hclvl == 1) {
-	ts->sig = headerFreeData(ts->sig, ts->sigtype);
+	(void) rpmtsSetSig(ts, 0, 0, NULL, 0);	/* XXX headerFreeData */
 	ts->dig = pgpFreeDig(ts->dig);
     }
     if (info->tag == RPMTAG_SHA1HEADER)
@@ -1041,7 +1041,7 @@ exit:
     (void) rpmswSub(rpmtsOp(ts, RPMTS_OP_READHDR),
 		opsave);
 
-    ts->sig = headerFreeData(ts->sig, ts->sigtype);
+    (void) rpmtsSetSig(ts, 0, 0, NULL, 0);	/* XXX headerFreeData */
     ts->dig = pgpFreeDig(ts->dig);
     sigh = headerFree(sigh);
     return rc;

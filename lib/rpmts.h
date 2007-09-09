@@ -252,11 +252,6 @@ struct rpmts_s {
 
 /*@observer@*/ /*@dependent@*/ /*@null@*/
     const char * fn;		/*!< Current package fn. */
-    int_32  sigtag;		/*!< Current package signature tag. */
-    int_32  sigtype;		/*!< Current package signature data type. */
-/*@null@*/
-    const void * sig;		/*!< Current package signature. */
-    int_32 siglen;		/*!< Current package signature length. */
 
 /*@only@*/ /*@null@*/
     const unsigned char * pkpkt;/*!< Current pubkey packet. */
@@ -785,7 +780,7 @@ pgpDig rpmtsDig(rpmts ts)
 	/*@*/;
 
 /** \ingroup rpmts
- * Get OpenPGP signature constants.
+ * Return OpenPGP signature constants.
  * @param ts		transaction set
  * @return		signature constants.
  */
@@ -794,7 +789,7 @@ pgpDigParams rpmtsSignature(const rpmts ts)
 	/*@*/;
 
 /** \ingroup rpmts
- * Get OpenPGP pubkey constants.
+ * Return OpenPGP pubkey constants.
  * @param ts		transaction set
  * @return		pubkey constants.
  */

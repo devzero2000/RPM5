@@ -844,7 +844,7 @@ nodigests = 1;
 
 	dig = rpmtsDig(ts);
 assert(dig != NULL);
-	sigp = rpmtsSignature(ts);
+	sigp = pgpGetSignature(dig);
 
 	/* XXX RSA needs the hash_algo, so decode early. */
 	if (sigtag == RPMSIGTAG_RSA
@@ -1134,7 +1134,7 @@ assert(dig != NULL);
     }
 
 exit:
-    ts->sig = headerFreeData(ts->sig, ts->sigtype);
+    (void) rpmtsSetSig(ts, 0, 0, NULL, 0);	/* XXX headerFreeData */
     ts->dig = pgpFreeDig(ts->dig);
     sigh = headerFree(sigh);
     return res;

@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - jbj: refactor signature components from ts into dig container.
     - jbj: add size_t *lenp to headerUnload().
     - jbj: consistent naming in rpmdb/pkgio.c
     - jbj: eliminate rpmNewSignature() and rpmFreeSignature().
