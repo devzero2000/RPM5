@@ -715,8 +715,15 @@ rpmps rpmtsProblems(rpmts ts)
 
 void rpmtsCleanDig(rpmts ts)
 {
-    (void) rpmtsSetSig(ts, 0, 0, NULL, 0);	/* XXX headerFreeData */
-    ts->dig = pgpFreeDig(ts->dig);
+    if (ts && ts->dig) {
+	int opx;
+	opx = RPMTS_OP_DIGEST;
+        (void) rpmswAdd(rpmtsOp(ts, opx), pgpStatsAccumulator(ts->dig, opx));
+	opx = RPMTS_OP_SIGNATURE;
+        (void) rpmswAdd(rpmtsOp(ts, opx), pgpStatsAccumulator(ts->dig, opx));
+	(void) rpmtsSetSig(ts, 0, 0, NULL, 0);	/* XXX headerFreeData */
+	ts->dig = pgpFreeDig(ts->dig);
+    }
 }
 
 void rpmtsClean(rpmts ts)
@@ -893,6 +900,8 @@ rpmVSFlags rpmtsSetVSFlags(rpmts ts, rpmVSFlags vsflags)
     if (ts != NULL) {
 	ovsflags = ts->vsflags;
 	ts->vsflags = vsflags;
+	if (ts->dig)	/* XXX W2DO? */
+	    (void) pgpSetVSFlags(ts->dig, vsflags);
     }
     return ovsflags;
 }
@@ -1138,7 +1147,7 @@ pgpDig rpmtsDig(rpmts ts)
 {
 /*@-mods@*/ /* FIX: hide lazy malloc for now */
     if (ts->dig == NULL)
-	ts->dig = pgpNewDig();
+	ts->dig = pgpNewDig(ts->vsflags);
 /*@=mods@*/
     if (ts->dig == NULL)
 	return NULL;

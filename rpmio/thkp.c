@@ -51,7 +51,7 @@ static int readKeys(const char * uri)
     int rc;
     int ec = 0;
 
-    dig = pgpNewDig();
+    dig = pgpNewDig(0);
     for (kip = keyids; *kip; kip += 2) {
 	pgpArmor pa;
 

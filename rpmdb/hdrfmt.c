@@ -744,8 +744,8 @@ static /*@only@*/ char * pgpsigFormat(int_32 type, const void * data,
 	if (pktlen == 0 || tag != PGPTAG_SIGNATURE) {
 	    val = xstrdup(_("(not an OpenPGP signature)"));
 	} else {
-	    pgpDig dig = pgpNewDig();
-	    pgpDigParams sigp = &dig->signature;
+	    pgpDig dig = pgpNewDig(0);
+	    pgpDigParams sigp = pgpGetSignature(dig);
 	    size_t nb = 0;
 	    const char *tempstr;
 

@@ -154,7 +154,7 @@ static int getSignid(Header sig, int sigtag, unsigned char * signid)
     int rc = 1;
 
     if (headerGetEntry(sig, sigtag, &pkttyp, &pkt, &pktlen) && pkt != NULL) {
-	pgpDig dig = pgpNewDig();
+	pgpDig dig = pgpNewDig(0);
 
 	if (!pgpPrtPkts(pkt, pktlen, dig, 0)) {
 /*@-bounds@*/
@@ -485,11 +485,11 @@ rpmRC rpmcliImportPubkey(const rpmts ts, const unsigned char * pkt, ssize_t pktl
     if ((enc = b64encode(pkt, pktlen)) == NULL)
 	goto exit;
 
-    dig = pgpNewDig();
+    dig = pgpNewDig(0);
 
     /* Build header elements. */
     (void) pgpPrtPkts(pkt, pktlen, dig, 0);
-    pubp = &dig->pubkey;
+    pubp = pgpGetPubkey(dig);
 
     if (!memcmp(pubp->signid, zeros, sizeof(pubp->signid))
      || !memcmp(pubp->time, zeros, sizeof(pubp->time))

@@ -1034,9 +1034,10 @@ int pgpPrtPkt(const byte *pkt, unsigned int pleft)
     return (rc ? -1 : pp->pktlen);
 }
 
-pgpDig pgpNewDig(void)
+pgpDig pgpNewDig(pgpVSFlags vsflags)
 {
     pgpDig dig = xcalloc(1, sizeof(*dig));
+    dig->vsflags = vsflags;
     return dig;
 }
 
@@ -1047,6 +1048,8 @@ void pgpCleanDig(pgpDig dig)
 	int i;
 	dig->signature.userid = _free(dig->signature.userid);
 	dig->pubkey.userid = _free(dig->pubkey.userid);
+	memset(&dig->dops, 0, sizeof(dig->dops));
+	memset(&dig->sops, 0, sizeof(dig->sops));
 	dig->ppkts = _free(dig->ppkts);
 	dig->npkts = 0;
 	dig->signature.hash = _free(dig->signature.hash);
@@ -1188,6 +1191,24 @@ void * pgpStatsAccumulator(pgpDig dig, int opx)
 	break;
     }
     return sw;
+}
+
+pgpVSFlags pgpGetVSFlags(pgpDig dig)
+{
+    pgpVSFlags vsflags = 0;
+    if (dig != NULL)
+	vsflags = dig->vsflags;
+    return vsflags;
+}
+
+pgpVSFlags pgpSetVSFlags(pgpDig dig, pgpVSFlags vsflags)
+{
+    pgpVSFlags ovsflags = 0;
+    if (dig != NULL) {
+	ovsflags = dig->vsflags;
+	dig->vsflags = vsflags;
+    }
+    return ovsflags;
 }
 
 static int pgpGrabPkts(const byte * pkts, unsigned int pktlen,

@@ -106,7 +106,7 @@ main (int argc, char *argv[])
     int printing = 1;
     int rc;
 
-    dig = pgpNewDig();
+    dig = pgpNewDig(0);
 
     mpbzero(&dig->p);	mpbsethex(&dig->p, fips_p);
     mpbzero(&dig->q);	mpbsethex(&dig->q, fips_q);

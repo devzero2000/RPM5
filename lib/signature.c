@@ -224,7 +224,7 @@ static int makePGPSignature(const char * file, /*@unused@*/ int_32 * sigTagp,
 
 #ifdef	NOTYET
     /* Parse the signature, change signature tag as appropriate. */
-    dig = pgpNewDig();
+    dig = pgpNewDig(0);
 
     (void) pgpPrtPkts(*pktp, *pktlenp, dig, 0);
     sigp = pgpGetSignature(dig);
@@ -359,7 +359,7 @@ static int makeGPGSignature(const char * file, int_32 * sigTagp,
     rpmMessage(RPMMESS_DEBUG, D_("Got %d bytes of GPG sig\n"), *pktlenp);
 
     /* Parse the signature, change signature tag as appropriate. */
-    dig = pgpNewDig();
+    dig = pgpNewDig(0);
 
     (void) pgpPrtPkts(*pktp, *pktlenp, dig, 0);
     sigp = pgpGetSignature(dig);

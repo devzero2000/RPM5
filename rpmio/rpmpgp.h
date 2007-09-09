@@ -1320,11 +1320,55 @@ char * pgpArmorWrap(int atype, const unsigned char * s, size_t ns)
 	/*@*/;
 
 /**
+ * Bit(s) to control digest and signature verification.
+ */
+typedef enum pgpVSFlags_e {
+    RPMVSF_DEFAULT	= 0,
+    RPMVSF_NOHDRCHK	= (1 <<  0),
+    RPMVSF_NEEDPAYLOAD	= (1 <<  1),
+    /* bit(s) 2-7 unused */
+    RPMVSF_NOSHA1HEADER	= (1 <<  8),
+    RPMVSF_NOMD5HEADER	= (1 <<  9),	/* unimplemented */
+    RPMVSF_NODSAHEADER	= (1 << 10),
+    RPMVSF_NORSAHEADER	= (1 << 11),
+    /* bit(s) 12-15 unused */
+    RPMVSF_NOSHA1	= (1 << 16),	/* unimplemented */
+    RPMVSF_NOMD5	= (1 << 17),
+    RPMVSF_NODSA	= (1 << 18),
+    RPMVSF_NORSA	= (1 << 19)
+    /* bit(s) 20-31 unused */
+} pgpVSFlags;
+
+#define	_RPMVSF_NODIGESTS	\
+  ( RPMVSF_NOSHA1HEADER |	\
+    RPMVSF_NOMD5HEADER |	\
+    RPMVSF_NOSHA1 |		\
+    RPMVSF_NOMD5 )
+
+#define	_RPMVSF_NOSIGNATURES	\
+  ( RPMVSF_NODSAHEADER |	\
+    RPMVSF_NORSAHEADER |	\
+    RPMVSF_NODSA |		\
+    RPMVSF_NORSA )
+
+#define	_RPMVSF_NOHEADER	\
+  ( RPMVSF_NOSHA1HEADER |	\
+    RPMVSF_NOMD5HEADER |	\
+    RPMVSF_NODSAHEADER |	\
+    RPMVSF_NORSAHEADER )
+
+#define	_RPMVSF_NOPAYLOAD	\
+  ( RPMVSF_NOSHA1 |		\
+    RPMVSF_NOMD5 |		\
+    RPMVSF_NODSA |		\
+    RPMVSF_NORSA )
+
+/**
  * Create a container for parsed OpenPGP packates.
  * @return		container
  */
 /*@only@*/
-pgpDig pgpNewDig(void)
+pgpDig pgpNewDig(pgpVSFlags vsflags)
 	/*@*/;
 
 /**
@@ -1416,49 +1460,22 @@ int pgpSetSig(pgpDig dig,
 void * pgpStatsAccumulator(pgpDig dig, int opx)
         /*@*/;
 
-/** \ingroup rpmts
- * Bit(s) to control digest and signature verification.
+/**
+ * Get verify signatures flag(s).
+ * @param dig		container
+ * @return		verify signatures flags
  */
-typedef enum pgpVSFlags_e {
-    RPMVSF_DEFAULT	= 0,
-    RPMVSF_NOHDRCHK	= (1 <<  0),
-    RPMVSF_NEEDPAYLOAD	= (1 <<  1),
-    /* bit(s) 2-7 unused */
-    RPMVSF_NOSHA1HEADER	= (1 <<  8),
-    RPMVSF_NOMD5HEADER	= (1 <<  9),	/* unimplemented */
-    RPMVSF_NODSAHEADER	= (1 << 10),
-    RPMVSF_NORSAHEADER	= (1 << 11),
-    /* bit(s) 12-15 unused */
-    RPMVSF_NOSHA1	= (1 << 16),	/* unimplemented */
-    RPMVSF_NOMD5	= (1 << 17),
-    RPMVSF_NODSA	= (1 << 18),
-    RPMVSF_NORSA	= (1 << 19)
-    /* bit(s) 20-31 unused */
-} pgpVSFlags;
+pgpVSFlags pgpGetVSFlags(pgpDig dig)
+	/*@*/;
 
-#define	_RPMVSF_NODIGESTS	\
-  ( RPMVSF_NOSHA1HEADER |	\
-    RPMVSF_NOMD5HEADER |	\
-    RPMVSF_NOSHA1 |		\
-    RPMVSF_NOMD5 )
-
-#define	_RPMVSF_NOSIGNATURES	\
-  ( RPMVSF_NODSAHEADER |	\
-    RPMVSF_NORSAHEADER |	\
-    RPMVSF_NODSA |		\
-    RPMVSF_NORSA )
-
-#define	_RPMVSF_NOHEADER	\
-  ( RPMVSF_NOSHA1HEADER |	\
-    RPMVSF_NOMD5HEADER |	\
-    RPMVSF_NODSAHEADER |	\
-    RPMVSF_NORSAHEADER )
-
-#define	_RPMVSF_NOPAYLOAD	\
-  ( RPMVSF_NOSHA1 |		\
-    RPMVSF_NOMD5 |		\
-    RPMVSF_NODSA |		\
-    RPMVSF_NORSA )
+/**
+ * Set verify signatures flag(s).
+ * @param dig		container
+ * @param vsflags	new verify signatures flags
+ * @return		previous value
+ */
+pgpVSFlags pgpSetVSFlags(pgpDig dig, pgpVSFlags vsflags)
+	/*@modifies dig @*/;
 
 /**
  * Is buffer at beginning of an OpenPGP packet?

@@ -1,4 +1,7 @@
 4.5 -> 5.0:
+    - jbj: fix: headerUnload() size implies HEADER_MAGIC_NO, no hackery needed.
+    - jbj: sum per-dig digest/signature stats into ts stats in rpmtsCleanDig.
+    - jbj: initialize pgpVSFlags with pgpNewDig(vsflags).
     - jbj: add pgpVSFlags for pgpDig control disablers. ugh.
     - jbj: re-add rpmtsCleanDig() to preserve opaque rpmts.
     - jbj: add pgpStatsAccumulator, not fully wired yet.

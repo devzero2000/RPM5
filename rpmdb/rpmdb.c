@@ -1865,7 +1865,9 @@ static int miFreeHeader(rpmdbMatchIterator mi, dbiIndex dbi)
 	{   size_t len;
 	    data->data = headerUnload(mi->mi_h, &len);
 	    data->size = len;	/* XXX data->size is uint32_t */
+#ifdef	DYING	/* XXX this is needed iff headerSizeof() is used instead. */
 	    data->size -= nb;	/* XXX HEADER_MAGIC_NO */
+#endif
 	}
 
 	/* Check header digest/signature on blob export (if requested). */
@@ -3324,7 +3326,9 @@ key->size = sizeof(mi_offset.ui);
     (void) headerGetMagic(h, NULL, &nb);
     data->data = headerUnload(h, &len);
     data->size = len;	/* XXX data->size is uint32_t */
+#ifdef	DYING	/* XXX this is needed iff headerSizeof() is used instead. */
     data->size -= nb;	/* XXX HEADER_MAGIC_NO */
+#endif
 }
 
 		/* Check header digest/signature on blob export. */
