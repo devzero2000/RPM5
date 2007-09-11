@@ -248,7 +248,9 @@ rpmRC rpmtsFindPubkey(rpmts ts, void * _dig)
     pgpDigParams pubp = pgpGetPubkey(dig);
     rpmRC res = RPMRC_NOKEY;
     const char * pubkeysource = NULL;
+#if defined(HAVE_KEYUTILS_H)
     int krcache = 1;	/* XXX assume pubkeys are cached in keyutils keyring. */
+#endif
     int xx;
 
     if (sig == NULL || dig == NULL || sigp == NULL || pubp == NULL)
