@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - rse: include <netinet/in.h> and/or <arpa/inet.h> for htonl(3)
     - jbj: uncouple signature verification from transaction sets.
     - jbj: add (*findPubkey) (_ts, _dig) callback in pgpDig.
     - jbj: fix: headerUnload() size implies HEADER_MAGIC_NO, no hackery needed.
