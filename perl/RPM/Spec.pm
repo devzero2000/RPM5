@@ -15,7 +15,7 @@ An object to handle operation around specs file
 
 =head1 FUNCTIONS
 
-=new($specfile, %options)
+E<61>new($specfile, %options)
 
 Create a new B<RPM::Spec> object over $specfile spec file.
 
