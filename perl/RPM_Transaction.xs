@@ -126,7 +126,7 @@ static void * _null_callback(
 	return rc;	
 }
 
-rpmCallbackFunction
+void *
     transCallback(const void *h,
        const rpmCallbackType what,
        const unsigned long long amount,
@@ -227,6 +227,8 @@ rpmCallbackFunction
 
 
 MODULE = RPM::Transaction		PACKAGE = RPM::Transaction
+
+PROTOTYPES: ENABLE
 
 rpmts
 new(class, ...)

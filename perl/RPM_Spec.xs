@@ -116,7 +116,7 @@ binrpm(spec)
     Package pkg;
     const char * binFormat;
     char * binRpm;
-    char * path;
+    const char * path;
     PPCODE:
     for(pkg = spec->packages; pkg != NULL; pkg = pkg->next) {
         if (pkg->fileList == NULL)

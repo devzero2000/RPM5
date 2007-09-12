@@ -157,7 +157,7 @@ digest(Files)
     if ((digest = rpmfiDigest(Files, &algop, &lenp)) != NULL
         /* return undef if empty */) {
         if (lenp) {
-        XPUSHs(sv_2mortal(newSVpv(digest, lenp)));
+        XPUSHs(sv_2mortal(newSVpv((const char*)digest, lenp)));
         XPUSHs(sv_2mortal(newSViv(algop)));
         }
     }

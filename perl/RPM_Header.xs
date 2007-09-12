@@ -16,6 +16,9 @@
 #include "rpmts.h"
 #include "rpmte.h"
 
+#include "rpmds.h"
+#include "rpmfi.h"
+
 #include "header.h"
 #include "rpmdb.h"
 #include "misc.h"
