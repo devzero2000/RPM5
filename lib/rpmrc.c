@@ -817,7 +817,7 @@ void rpmFreeRpmrc(void)
 
 /** \ingroup rpmrc
  * Read macro configuration file(s).
- * @return		0 on succes
+ * @return		0 on success
  */
 static int rpmReadRC(void)
 	/*@globals defaultsInitialized, rpmMacrofiles,
