@@ -100,7 +100,7 @@ static const char * abcSignatureDSA =
 ;
 
 int
-main (int argc, char *argv[])
+main(int argc, char *argv[])
 {
     pgpDig dig;
     int printing = 1;

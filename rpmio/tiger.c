@@ -847,7 +847,7 @@ Hash of "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+-ABCDEFG
         00B83EB4E53440C5 76AC6AAEE0A74858 25FD15E70A59FFE4
 */
 
-int main() {
+int main(int argc, char *argv[]) {
     int rc = tiger_test();
     switch(rc) {
     case 0:	printf("OK\n");		break;

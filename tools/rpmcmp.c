@@ -41,7 +41,7 @@ static struct poptOption optionsTable[] = {
 };
 
 int
-main(int argc, const char *argv[])
+main(int argc, char *argv[])
 {
     poptContext optCon;
     ARGV_t av;

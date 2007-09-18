@@ -7,7 +7,7 @@
 #include <popt.h>
 #include "debug.h"
 
-int main(int argc, const char *argv[]) {
+int main(int argc, char *argv[]) {
     char * context =NULL;
     int c;
     const char * name;

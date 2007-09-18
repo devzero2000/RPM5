@@ -217,7 +217,7 @@ static struct poptOption optionsTable[] = {
 
 
 int
-main(int argc, char *const argv[])
+main(int argc, char *argv[])
 {
 static const char rpmdeps_string[] = "rpmdeps";
     poptContext optCon;

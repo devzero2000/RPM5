@@ -7,7 +7,7 @@
 #include "rpmio.h"
 #include "debug.h"
 
-int main (void)
+int main(int argc, char *argv[])
 {
     FD_t f1, f2, f3, f4, f5;
  

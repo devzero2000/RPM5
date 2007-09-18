@@ -48,7 +48,7 @@ static struct poptOption optionsTable[] = {
 };
 
 int
-main(int argc, const char *argv[])
+main(int argc, char *argv[])
 {
     poptContext optCon = poptGetContext(argv[0], argc, argv, optionsTable, 0);
     rpmmg mg;

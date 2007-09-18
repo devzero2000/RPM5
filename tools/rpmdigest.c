@@ -12,7 +12,7 @@ static struct poptOption optionsTable[] = {
 };
 
 int
-main(int argc, const char *argv[])
+main(int argc, char *argv[])
 {
     poptContext optCon;
     const char ** args;
@@ -26,7 +26,7 @@ main(int argc, const char *argv[])
     int asAscii = 1;
     int rc = 0;
 
-    optCon = poptGetContext(argv[0], argc, argv, optionsTable, 0);
+    optCon = poptGetContext(argv[0], argc, (const char **)argv, optionsTable, 0);
     while ((rc = poptGetNextOpt(optCon)) > 0)
 	;
 
