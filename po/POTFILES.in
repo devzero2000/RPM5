@@ -44,7 +44,6 @@ lib/rpmfc.c
 lib/rpmfi.c
 lib/rpmgi.c
 lib/rpminstall.c
-lib/rpmlead.c
 lib/rpmlock.c
 lib/rpmns.c
 lib/rpmps.c
@@ -68,6 +67,7 @@ rpmdb/header_internal.c
 rpmdb/legacy.c
 rpmdb/merge.c
 rpmdb/poptDB.c
+rpmdb/pkgio.c
 rpmdb/rpmdb.c
 rpmdb/sqlite.c
 rpmdb/tagname.c

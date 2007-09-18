@@ -11,7 +11,7 @@ AM_CPPFLAGS = -I. \
 
 EXTRA_DIST =	hashtab.h
 
-EXTRA_PROGRAMS = debugedit rpmkey twf txar
+EXTRA_PROGRAMS = debugedit rpmkey txar
 
 myLDADD = \
 	$(top_builddir)/build/librpmbuild.la \
@@ -48,9 +48,6 @@ rpmkey_LDADD =          $(myLDADD) -lkeyutils
 ##
 ## XAR package format work-in-progress.
 ##
-twf =			twf.c
-twf_LDADD =		$(myLDADD) -lxar
-
 txar_SOURCES =		txar.c
 txar_LDADD =		$(myLDADD) -lxar
 
