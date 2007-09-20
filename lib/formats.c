@@ -15,7 +15,6 @@
 #include "legacy.h"
 #include "manifest.h"
 #include "argv.h"
-#include "misc.h"
 #include "fs.h"
 
 #include "debug.h"
