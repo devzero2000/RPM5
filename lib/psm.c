@@ -1933,20 +1933,21 @@ assert(psm->te != NULL);
 
 	    if (rpmtsFlags(ts) & RPMTRANS_FLAG_JUSTDB)	break;
 	    if (rpmtsFlags(ts) & RPMTRANS_FLAG_APPLYONLY)	break;
-	    if (fc <= 0)				break;
 
 	    psm->what = RPMCALLBACK_UNINST_START;
 	    psm->amount = fc;		/* XXX W2DO? looks wrong. */
 	    psm->total = fc;
 	    xx = rpmpsmNext(psm, PSM_NOTIFY);
 
-	    rc = fsmSetup(fi->fsm, FSM_PKGERASE, psm->payload_format, ts, fi,
+	    if (fc > 0) {
+		rc = fsmSetup(fi->fsm, FSM_PKGERASE, psm->payload_format, ts, fi,
 			NULL, NULL, &psm->failedFile);
-	    xx = fsmTeardown(fi->fsm);
+		xx = fsmTeardown(fi->fsm);
+	    }
 
 	    psm->what = RPMCALLBACK_UNINST_STOP;
 	    psm->amount = 0;		/* XXX W2DO? looks wrong. */
-	    psm->total = fc;
+	    psm->total = (fc ? fc : 100);
 	    xx = rpmpsmNext(psm, PSM_NOTIFY);
 
 	}
