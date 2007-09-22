@@ -1184,6 +1184,7 @@ doFoo(MacroBuf mb, int negate, const char * f, size_t fn,
 /*@-globs@*/
 	for (b = buf; (c = *b) && isblank(c);)
 	    b++;
+	/* XXX FIXME: file paths with embedded white space needs rework. */
 	for (be = b; (c = *be) && !isblank(c);)
 	    be++;
 /*@=globs@*/
@@ -1195,19 +1196,19 @@ doFoo(MacroBuf mb, int negate, const char * f, size_t fn,
 	    sprintf(be, "%%__cat %s", b);
 	    break;
 	case 1:	/* COMPRESSED_OTHER */
-	    sprintf(be, "%%__gzip -dc %s", b);
+	    sprintf(be, "%%__gzip -dc '%s'", b);
 	    break;
 	case 2:	/* COMPRESSED_BZIP2 */
-	    sprintf(be, "%%__bzip2 -dc %s", b);
+	    sprintf(be, "%%__bzip2 -dc '%s'", b);
 	    break;
 	case 3:	/* COMPRESSED_ZIP */
-	    sprintf(be, "%%__unzip -qq %s", b);
+	    sprintf(be, "%%__unzip -qq '%s'", b);
 	    break;
 	case 4:	/* COMPRESSED_LZOP */
-	    sprintf(be, "%%__lzop %s", b);
+	    sprintf(be, "%%__lzop '%s'", b);
 	    break;
 	case 5:	/* COMPRESSED_LZMA */
-	    sprintf(be, "%%__lzma %s", b);
+	    sprintf(be, "%%__lzma '%s'", b);
 	    break;
 	}
 	b = be;
@@ -1215,6 +1216,7 @@ doFoo(MacroBuf mb, int negate, const char * f, size_t fn,
 /*@-globs@*/
 	for (b = buf; (c = *b) && isblank(c);)
 	    b++;
+	/* XXX FIXME: file paths with embedded white space needs rework. */
 	for (be = b; (c = *be) && !isblank(c);)
 	    be++;
 /*@=globs@*/

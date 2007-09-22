@@ -1,4 +1,6 @@
 4.5 -> 5.0:
+    - jbj: handle more white space in paths.
+    - jbj: make the rpm hacker's entrance exam buggery harder (#281391).
     - jbj: don't punish monkeys who insist on "My Widdle .spec" naming.
     - jbj: permit -ta spec file extraction from zip/lzo/lzma compressed balls.
     - jbj: add %{?__tar_wildcards} to pass Fedora automated regression tests.

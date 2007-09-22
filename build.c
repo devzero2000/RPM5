@@ -106,10 +106,13 @@ static int buildForTarget(rpmts ts, const char * arg, BTA_t ba)
     const char * passPhrase = ba->passPhrase;
     const char * cookie = ba->cookie;
     int buildAmount = ba->buildAmount;
-    const char * specFile;
-    const char * specURL;
+    const char * specFile = NULL;
+    const char * specURL = NULL;
     int specut;
-    char buf[BUFSIZ];
+    const char * s;
+    char * se;
+    size_t nb = strlen(arg) + BUFSIZ;
+    char * buf = alloca(nb);
     Spec spec = NULL;
     int verify = 1;
     int xx;
@@ -119,120 +122,90 @@ static int buildForTarget(rpmts ts, const char * arg, BTA_t ba)
     rpmSetTables(RPM_MACHTABLE_BUILDARCH, RPM_MACHTABLE_BUILDOS);
 #endif
 
-    /*@-compmempass@*/ /* FIX: static zcmds heartburn */
     if (ba->buildMode == 't') {
+	static const char * sfpats[] = { "Specfile", "\\*.spec", NULL };
 	static const char _specfn[] = "%{mkstemp:%{_specdir}/rpm-spec.XXXXXX}";
+	char * tmpSpecFile = (char *) rpmGetPath(_specfn, NULL);
 	FILE *fp;
-	const char * specDir;
-	char * tmpSpecFile;
-	char * cmd, * s;
-	int xx;
+	int bingo = 0;
+	int i;
 
-	specDir = rpmGetPath("%{_specdir}", NULL);
-
-	tmpSpecFile = (char *) rpmGetPath(_specfn, NULL);
-
-	cmd = rpmExpand("%{uncompress:", arg, "} | %{__tar} -xOvf - %{?__tar_wildcards} ", "Specfile", " 2>&1 > '", tmpSpecFile, "'", NULL);
-
-	if ((fp = popen(cmd, "r")) == NULL) {
-	    rpmError(RPMERR_POPEN, _("Failed to open tar pipe: %m\n"));
-	    cmd = _free(cmd);
-	    tmpSpecFile = _free(tmpSpecFile);
-	    specDir = _free(specDir);
-	    return 1;
+	for (i = 0; sfpats[i]; i++) {
+	    se = rpmExpand("%{uncompress: %{u2p:", arg, "}}",
+		" | %{__tar} -xOvf - %{?__tar_wildcards} ", sfpats[i],
+		" 2>&1 > '", tmpSpecFile, "'", NULL);
+	    fp = popen(se, "r");
+	    se = _free(se);
+	    if (fp== NULL)
+		continue;
+	    s = fgets(buf, nb - 1, fp);
+	    xx = pclose(fp);
+	    if (!s || !*s || strstr(s, ": Not found in archive"))
+		continue;
+	    bingo = 1;
+	    break;
 	}
-	s = fgets(buf, sizeof(buf) - 1, fp);
-	if (!s || !*s || strstr(s, ": Not found in archive")) {
-	    /* Try again */
-	    (void) pclose(fp);
-	    cmd = _free(cmd);
-
-	    cmd = rpmExpand("%{uncompress:", arg, "} | %{__tar} -xOvf - %{?__tar_wildcards} ", "\\*.spec", " 2>&1 > '", tmpSpecFile, "'", NULL);
-	    if (!(fp = popen(cmd, "r"))) {
-		rpmError(RPMERR_POPEN, _("Failed to open tar pipe: %m\n"));
-		cmd = _free(cmd);
-		tmpSpecFile = _free(tmpSpecFile);
-		specDir = _free(specDir);
-		return 1;
-	    }
-	    s = fgets(buf, sizeof(buf) - 1, fp);
-	    if (!s || !*s || strstr(s, ": Not found in archive")) {
-		/* Give up */
-		rpmError(RPMERR_READ, _("Failed to read spec file from %s\n"),
-			arg);
-		xx = unlink(tmpSpecFile);
-		cmd = _free(cmd);
-		tmpSpecFile = _free(tmpSpecFile);
-		specDir = _free(specDir);
-	    	return 1;
-	    }
-	}
-	(void) pclose(fp);
-	cmd = _free(cmd);
-
-	cmd = s = buf;
-	while (*cmd != '\0') {
-	    if (*cmd == '/') s = cmd + 1;
-	    cmd++;
-	}
-
-	cmd = s;
-
-	/* remove trailing \n */
-	s = cmd + strlen(cmd) - 1;
-	*s = '\0';
-
-	specURL = s = alloca(strlen(specDir) + strlen(cmd) + 5);
-	sprintf(s, "%s/%s", specDir, cmd);
-	xx = Rename(tmpSpecFile, s);
-	specDir = _free(specDir);
-	
-	if (xx) {
-	    rpmError(RPMERR_RENAME, _("Failed to rename %s to %s: %m\n"),
-			tmpSpecFile, s);
+	if (!bingo) {
+	    rpmError(RPMERR_READ, _("Failed to read spec file from %s\n"), arg);
 	    xx = Unlink(tmpSpecFile);
 	    tmpSpecFile = _free(tmpSpecFile);
 	    return 1;
 	}
+
+	s = se = basename(buf);
+	se += strlen(se);
+	while (--se > s && strchr("\r\n", *se) != NULL)
+	    *se = '\0';
+	specURL = rpmGetPath("%{_specdir}/", s, NULL);
+	specut = urlPath(specURL, &specFile);
+	xx = Rename(tmpSpecFile, specFile);
+	if (xx) {
+	    rpmError(RPMERR_RENAME, _("Failed to rename %s to %s: %m\n"),
+			tmpSpecFile, s);
+	    (void) Unlink(tmpSpecFile);
+	}
 	tmpSpecFile = _free(tmpSpecFile);
+	if (xx)
+	    return 1;
 
-	/* Make the directory which contains the tarball the source 
-	   directory for this run */
-
-	if (*arg != '/') {
-	    if (getcwd(buf, BUFSIZ) == NULL) strcpy(buf, ".");
-	    strcat(buf, "/");
-	    strcat(buf, arg);
-	} else 
-	    strcpy(buf, arg);
-
-	cmd = buf + strlen(buf) - 1;
-	while (*cmd != '/') cmd--;
-	*cmd = '\0';
-
-	addMacro(NULL, "_sourcedir", NULL, buf, RMIL_TARBALL);
+	se = buf; *se = '\0';
+	se = stpcpy(se, "_sourcedir ");
+	(void) urlPath(arg, &s);
+	if (*s != '/') {
+	    if (getcwd(se, nb - sizeof("_sourcedir ")) > 0)
+		se += strlen(se);
+	    else
+		se = stpcpy(se, ".");
+	} else
+	    se = stpcpy(se, dirname(strcpy(se, s)));
+	while (se > buf && se[-1] == '/')
+	    *se-- = '0';
+	rpmCleanPath(buf + sizeof("_sourcedir ") - 1);
+	rpmDefineMacro(NULL, buf, RMIL_TARBALL);
     } else {
-	specURL = arg;
-    }
-    /*@=compmempass@*/
-
-    specut = urlPath(specURL, &specFile);
-    if (*specFile != '/') {
-	char *s = alloca(BUFSIZ);
-	if (getcwd(s, BUFSIZ) == NULL) strcpy(s, ".");
-	strcat(s, "/");
-	strcat(s, arg);
-	specURL = s;
+	specut = urlPath(arg, &s);
+	se = buf; *se = '\0';
+	if (*s != '/') {
+	    if (getcwd(se, nb - sizeof("_sourcedir ")) > 0)
+		se += strlen(se);
+	    else
+		se = stpcpy(se, ".");
+	} else
+	    se = stpcpy(se, s);
+	*se++ = '/';
+	se += strlen(basename(strcpy(se, s)));
+	specURL = rpmGetPath(buf, NULL);
+	specut = urlPath(specURL, &specFile);
     }
 
     if (specut != URL_IS_DASH) {
-	struct stat st;
-	if (Stat(specURL, &st) < 0) {
+	struct stat sb;
+	if (Stat(specURL, &sb) < 0) {
 	    rpmError(RPMERR_STAT, _("failed to stat %s: %m\n"), specURL);
 	    rc = 1;
 	    goto exit;
 	}
-	if (! S_ISREG(st.st_mode)) {
+	if (! S_ISREG(sb.st_mode)) {
 	    rpmError(RPMERR_NOTREG, _("File %s is not a regular file.\n"),
 		specURL);
 	    rc = 1;
@@ -283,6 +256,7 @@ static int buildForTarget(rpmts ts, const char * arg, BTA_t ba)
 
 exit:
     spec = freeSpec(spec);
+    specURL = _free(specURL);
     return rc;
 }
 /*@=boundswrite@*/
