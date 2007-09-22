@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - jbj: add %{mkstemp: ... } macro primitive.
     - rse: fix po/POTFILES.in and tools/Makefile.am to reflect recent changes (fixes "make dist", too)
     - rpm.org: cleanup main() definitions in tests and tools
     - rse: include <netinet/in.h> and/or <arpa/inet.h> for htonl(3)

@@ -1133,9 +1133,9 @@ doFoo(MacroBuf mb, int negate, const char * f, size_t fn,
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies mb, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
-     size_t bufn = _macro_BUFSIZ + fn + gn;
-     char * buf = alloca(bufn);
-     char *b = NULL, *be;
+    size_t bufn = _macro_BUFSIZ + fn + gn;
+    char * buf = alloca(bufn);
+    char *b = NULL, *be;
     int c;
 
     buf[0] = '\0';
@@ -1211,6 +1211,18 @@ doFoo(MacroBuf mb, int negate, const char * f, size_t fn,
 	    break;
 	}
 	b = be;
+    } else if (STREQ("mkstemp", f, fn)) {
+/*@-globs@*/
+	for (b = buf; (c = *b) && isblank(c);)
+	    b++;
+	for (be = b; (c = *be) && !isblank(c);)
+	    be++;
+/*@=globs@*/
+#if defined(HAVE_MKSTEMP)
+        (void) close(mkstemp(b));
+#else
+        (void) mktemp(b);
+#endif
     } else if (STREQ("S", f, fn)) {
 	for (b = buf; (c = *b) && xisdigit(c);)
 	    b++;
@@ -1509,6 +1521,7 @@ expandMacro(MacroBuf mb)
 	    STREQ("expand", f, fn) ||
 	    STREQ("verbose", f, fn) ||
 	    STREQ("uncompress", f, fn) ||
+	    STREQ("mkstemp", f, fn) ||
 	    STREQ("url2path", f, fn) ||
 	    STREQ("u2p", f, fn) ||
 	    STREQ("S", f, fn) ||
