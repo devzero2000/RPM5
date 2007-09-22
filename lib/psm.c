@@ -1935,8 +1935,8 @@ assert(psm->te != NULL);
 	    if (rpmtsFlags(ts) & RPMTRANS_FLAG_APPLYONLY)	break;
 
 	    psm->what = RPMCALLBACK_UNINST_START;
-	    psm->amount = fc;		/* XXX W2DO? looks wrong. */
-	    psm->total = fc;
+	    psm->amount = fc;
+	    psm->total = (fc ? fc : 100);
 	    xx = rpmpsmNext(psm, PSM_NOTIFY);
 
 	    if (fc > 0) {
@@ -1946,7 +1946,7 @@ assert(psm->te != NULL);
 	    }
 
 	    psm->what = RPMCALLBACK_UNINST_STOP;
-	    psm->amount = 0;		/* XXX W2DO? looks wrong. */
+	    psm->amount = (fc ? fc : 100);
 	    psm->total = (fc ? fc : 100);
 	    xx = rpmpsmNext(psm, PSM_NOTIFY);
 
