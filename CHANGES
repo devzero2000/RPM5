@@ -1,4 +1,8 @@
 4.5 -> 5.0:
+    - jbj: don't punish monkeys who insist on "My Widdle .spec" naming.
+    - jbj: permit -ta spec file extraction from zip/lzo/lzma compressed balls.
+    - jbj: add %{?__tar_wildcards} to pass Fedora automated regression tests.
+    - jbj: use %{__tar} with -ta builds to assist morons who cannot set PATH.
     - jbj: add %{mkstemp: ... } macro primitive.
     - rse: fix po/POTFILES.in and tools/Makefile.am to reflect recent changes (fixes "make dist", too)
     - rpm.org: cleanup main() definitions in tests and tools

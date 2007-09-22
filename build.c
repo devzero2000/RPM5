@@ -126,48 +126,49 @@ static int buildForTarget(rpmts ts, const char * arg, BTA_t ba)
 	const char * specDir;
 	char * tmpSpecFile;
 	char * cmd, * s;
-	rpmCompressedMagic res = COMPRESSED_OTHER;
-	/*@observer@*/ static const char *zcmds[] =
-		{ "cat", "gunzip", "bunzip2", "cat" };
+	int xx;
 
 	specDir = rpmGetPath("%{_specdir}", NULL);
 
 	tmpSpecFile = (char *) rpmGetPath(_specfn, NULL);
 
-	(void) isCompressed(arg, &res);
+	cmd = rpmExpand("%{uncompress:", arg, "} | %{__tar} -xOvf - %{?__tar_wildcards} ", "Specfile", " 2>&1 > '", tmpSpecFile, "'", NULL);
 
-	cmd = alloca(strlen(arg) + 50 + strlen(tmpSpecFile));
-	sprintf(cmd, "%s < %s | tar xOvf - Specfile 2>&1 > %s",
-			zcmds[res & 0x3], arg, tmpSpecFile);
-	if (!(fp = popen(cmd, "r"))) {
+	if ((fp = popen(cmd, "r")) == NULL) {
 	    rpmError(RPMERR_POPEN, _("Failed to open tar pipe: %m\n"));
-	    specDir = _free(specDir);
+	    cmd = _free(cmd);
 	    tmpSpecFile = _free(tmpSpecFile);
+	    specDir = _free(specDir);
 	    return 1;
 	}
-	if ((!fgets(buf, sizeof(buf) - 1, fp)) || !strchr(buf, '/')) {
+	s = fgets(buf, sizeof(buf) - 1, fp);
+	if (!s || !*s || strstr(s, ": Not found in archive")) {
 	    /* Try again */
 	    (void) pclose(fp);
+	    cmd = _free(cmd);
 
-	    sprintf(cmd, "%s < %s | tar xOvf - \\*.spec 2>&1 > %s",
-		    zcmds[res & 0x3], arg, tmpSpecFile);
+	    cmd = rpmExpand("%{uncompress:", arg, "} | %{__tar} -xOvf - %{?__tar_wildcards} ", "\\*.spec", " 2>&1 > '", tmpSpecFile, "'", NULL);
 	    if (!(fp = popen(cmd, "r"))) {
 		rpmError(RPMERR_POPEN, _("Failed to open tar pipe: %m\n"));
-		specDir = _free(specDir);
+		cmd = _free(cmd);
 		tmpSpecFile = _free(tmpSpecFile);
+		specDir = _free(specDir);
 		return 1;
 	    }
-	    if (!fgets(buf, sizeof(buf) - 1, fp)) {
+	    s = fgets(buf, sizeof(buf) - 1, fp);
+	    if (!s || !*s || strstr(s, ": Not found in archive")) {
 		/* Give up */
 		rpmError(RPMERR_READ, _("Failed to read spec file from %s\n"),
 			arg);
-		(void) unlink(tmpSpecFile);
-		specDir = _free(specDir);
+		xx = unlink(tmpSpecFile);
+		cmd = _free(cmd);
 		tmpSpecFile = _free(tmpSpecFile);
+		specDir = _free(specDir);
 	    	return 1;
 	    }
 	}
 	(void) pclose(fp);
+	cmd = _free(cmd);
 
 	cmd = s = buf;
 	while (*cmd != '\0') {
@@ -183,13 +184,13 @@ static int buildForTarget(rpmts ts, const char * arg, BTA_t ba)
 
 	specURL = s = alloca(strlen(specDir) + strlen(cmd) + 5);
 	sprintf(s, "%s/%s", specDir, cmd);
-	res = rename(tmpSpecFile, s);
+	xx = Rename(tmpSpecFile, s);
 	specDir = _free(specDir);
 	
-	if (res) {
+	if (xx) {
 	    rpmError(RPMERR_RENAME, _("Failed to rename %s to %s: %m\n"),
 			tmpSpecFile, s);
-	    (void) unlink(tmpSpecFile);
+	    xx = Unlink(tmpSpecFile);
 	    tmpSpecFile = _free(tmpSpecFile);
 	    return 1;
 	}
