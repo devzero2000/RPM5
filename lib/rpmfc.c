@@ -997,6 +997,7 @@ int rpmfcClassify(rpmfc fc, ARGV_t argv, int_16 * fmode)
     if (magicfile == NULL || *magicfile == '\0')
 	magicfile = _free(magicfile);
     mg = rpmmgNew(magicfile, 0);
+assert(mg);	/* XXX figger a proper return path. */
 
     fc->nfiles = argvCount(argv);
 
@@ -1007,9 +1008,6 @@ int rpmfcClassify(rpmfc fc, ARGV_t argv, int_16 * fmode)
     /* Build (sorted) file class dictionary. */
     xx = argvAdd(&fc->cdict, "");
     xx = argvAdd(&fc->cdict, "directory");
-
-    mg = rpmmgNew(magicfile, 0);
-assert(mg);	/* XXX figger a proper return path. */
 
     for (fc->ix = 0; fc->ix < fc->nfiles; fc->ix++) {
 	const char * ftype;
