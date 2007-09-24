@@ -1069,7 +1069,7 @@ print (t)\
   \
   %{verbose:set -x}%{!verbose:exec > /dev/null}\
   umask 022\
-  cd '%{u2p:%{_builddir}}'\
+  cd "%{u2p:%{_builddir}}"\
 
 
 #%___build_body		%{nil}
@@ -1322,7 +1322,7 @@ print (t)\
 %GNUconfigure(MCs:)      \
   CFLAGS="${CFLAGS:-%optflags}" ; export CFLAGS; \
   LDFLAGS="${LDFLAGS:-%{-s:-s}}"  ; export LDFLAGS; \
-  %{-C:_mydir="`pwd`"; %{-M: %{__mkdir} -p %{-C*};} cd %{-C*}} \
+  %{-C:_mydir="`pwd`"; %{-M: %{__mkdir} -p "%{-C*}";} cd "%{-C*}"} \
   dirs="`find ${_mydir} -name 'configure.[ai][cn]' -print`"; export dirs; \
     for coin in `echo ${dirs}` \
 do \
@@ -1331,7 +1331,7 @@ if test -f ${dr}/NO-AUTO-GEN; then \
  : \
 else \
      macrodirs=`sed -n -e 's,AM_ACLOCAL_INCLUDE(\(.*\)),\1,gp' < ${coin}`; \
-    ( cd ${dr}; \
+    ( cd "${dr}"; \
       aclocalinclude="${ACLOCAL_FLAGS}"; \
       for k in ${macrodirs}; do \
         if test -d ${k}; then \
@@ -1363,7 +1363,7 @@ else \
   fi \
 done \
   %{-C:${_mydir}}%{!-C:.}/configure %{_target_platform} --prefix=%{_prefix} --exec-prefix=%{_exec_prefix} --bindir=%{_bindir} --sbindir=%{_sbindir} --sysconfdir=%{_sysconfdir} --datadir=%{_datadir} --includedir=%{_includedir} --libdir=%{_libdir} --libexecdir=%{_libexecdir} --localstatedir=%{_localstatedir} --sharedstatedir=%{_sharedstatedir} --mandir=%{_mandir} --infodir=%{_infodir} %* ; \
-  %{-C:cd ${_mydir}; unset _mydir}
+  %{-C:cd "${_mydir}"; unset _mydir}
 
 #------------------------------------------------------------------------------
 # arch macro for all Intel i?86 compatibile processors
