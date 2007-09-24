@@ -160,6 +160,9 @@ int Rmdir (const char * path)
     return rmdir(path);
 }
 
+/*@unchecked@*/
+const char * _chroot_prefix = NULL;
+
 int Chroot(const char * path)
 {
     const char * lpath;
@@ -183,9 +186,54 @@ fprintf(stderr, "*** Chroot(%s)\n", path);
 	return -2;
 	/*@notreached@*/ break;
     }
+
+    _chroot_prefix = _free(_chroot_prefix);
+    if (strcmp(path, "."))
+	_chroot_prefix = rpmGetPath(path, NULL);
+
 /*@-superuser@*/
     return chroot(path);
 /*@=superuser@*/
+}
+
+int Open(const char * path, int flags, mode_t mode)
+{
+    const char * lpath;
+    int ut = urlPath(path, &lpath);
+
+if (_rpmio_debug)
+fprintf(stderr, "*** Open(%s, 0x%x, 0%o)\n", path, flags, mode);
+    switch (ut) {
+    case URL_IS_PATH:
+	path = lpath;
+	/*@fallthrough@*/
+    case URL_IS_UNKNOWN:
+	break;
+    case URL_IS_DASH:
+    case URL_IS_HKP:
+    case URL_IS_FTP:		/* XXX TODO: implement. */
+    case URL_IS_HTTPS:		/* XXX TODO: implement. */
+    case URL_IS_HTTP:		/* XXX TODO: implement. */
+    default:
+	errno = EINVAL;		/* XXX W2DO? */
+	return -2;
+	/*@notreached@*/ break;
+    }
+
+    if (_chroot_prefix && _chroot_prefix[0] == '/' && _chroot_prefix[1] != '\0')
+    {
+	size_t nb = strlen(_chroot_prefix);
+	size_t ob = strlen(path);
+	while (nb > 0 && _chroot_prefix[nb-1] == '/')
+	    nb--;
+	if (ob > nb && !strncmp(path, _chroot_prefix, nb) && path[nb] == '/')
+	    path += nb;
+    }
+#ifdef	NOTYET	/* XXX likely sane default. */
+    if (mode == 0)
+	mode = 0644;
+#endif
+    return open(path, flags, mode);
 }
 
 /* XXX rpmdb.c: analogue to rename(2). */

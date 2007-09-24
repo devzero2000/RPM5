@@ -140,6 +140,8 @@ LIBRPMIO_0
     _Mknod;
     Mount;
     noLibio;
+    Open;
+    _Open;
     Opendir;
     _Opendir;
     pgpArmorKeyTbl;

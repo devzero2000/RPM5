@@ -275,11 +275,20 @@ static int db_init(dbiIndex dbi, const char * dbhome,
 		fileSystem @*/
 	/*@modifies dbi, *dbenvp, fileSystem @*/
 {
+    static int oneshot = 0;
     rpmdb rpmdb = dbi->dbi_rpmdb;
     DB_ENV *dbenv = NULL;
     int eflags;
     int rc;
     int xx;
+
+    if (!oneshot) {
+#if (DB_VERSION_MAJOR == 3 && DB_VERSION_MINOR != 0) || (DB_VERSION_MAJOR == 4)
+	xx = db_env_set_func_open(Open);
+	xx = cvtdberr(dbi, "db_env_set_func_open", xx, _debug);
+#endif
+	oneshot++;
+    }
 
     if (dbenvp == NULL)
 	return 1;

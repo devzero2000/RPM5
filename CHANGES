@@ -1,4 +1,6 @@
 4.5 -> 5.0:
+    - jbj: ensure that PLD setup & FHS packages install correctly.
+    - jbj: wrapper for open(2).
     - rpm.org: ensure that yum's broken transaction checks "work" (#259961).
     - jbj: handle more white space in paths.
     - jbj: make the rpm hacker's entrance exam buggery harder (#281391).

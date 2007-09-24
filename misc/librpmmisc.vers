@@ -7,6 +7,7 @@ LIBRPMMISC_0
     rpmz_*;
     lua*;
     db_env_create_rpmdb;
+    db_env_set_func_open_rpmdb;
     db_env_set_func_fsync_rpmdb;
     db_strerror_rpmdb;
     db_create_rpmdb;

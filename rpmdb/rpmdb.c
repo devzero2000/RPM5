@@ -3618,8 +3618,9 @@ DBT * data;
     if (db == NULL) return 0;
 
     mi = rpmdbInitIterator(db, RPMTAG_BASENAMES, NULL, 0);
-    if (mi == NULL)	/* XXX should  never happen */
-	return 0;
+assert(mi);	/* XXX will never happen. */
+    if (mi == NULL)
+	return 2;
 
 key = &mi->mi_key;
 data = &mi->mi_data;

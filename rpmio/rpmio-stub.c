@@ -34,6 +34,7 @@ int (*_Mkdir) (const char * path, mode_t mode) = Mkdir;
 int (*_Chdir) (const char * path) = Chdir;
 int (*_Rmdir) (const char * path) = Rmdir;
 int (*_Chroot) (const char * path) = Chroot;
+int (*_Open) (const char * path, int flags, mode_t mode) = Open;
 int (*_Rename) (const char * oldpath, const char * newpath) = Rename;
 int (*_Link) (const char * oldpath, const char * newpath) = Link;
 int (*_Unlink) (const char * path) = Unlink;

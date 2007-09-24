@@ -25,6 +25,7 @@ extern int (*_Mkdir) (const char * path, mode_t mode);
 extern int (*_Chdir) (const char * path);
 extern int (*_Rmdir) (const char * path);
 extern int (*_Chroot) (const char * path);
+extern int (*_Open) (const char * path, int flags, mode_t mode);
 extern int (*_Rename) (const char * oldpath, const char * newpath);
 extern int (*_Link) (const char * oldpath, const char * newpath);
 extern int (*_Unlink) (const char * path);
