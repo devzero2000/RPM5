@@ -1414,8 +1414,8 @@ static struct rpmlibProvides_s rpmlibProvides[] = {
 #if defined(HAVE_BZLIB_H)
     { "rpmlib(PayloadIsBzip2)",		"3.0.5-1",
 	(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
-#endif
     N_("package payload can be compressed using bzip2.") },
+#endif
     { "rpmlib(PayloadFilesHavePrefix)",	"4.0-1",
 	(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
     N_("package payload file(s) have \"./\" prefix.") },
