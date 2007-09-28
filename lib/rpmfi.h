@@ -11,6 +11,23 @@
 extern int _rpmfi_debug;
 /*@=exportlocal@*/
 
+/** \rpmfi
+ * File types.
+ * These are the file types used internally by rpm. The file
+ * type is determined by applying stat(2) macros like S_ISDIR to
+ * the file mode tag from a header. The values are arbitrary,
+ * but are identical to the linux stat(2) file types.
+ */
+typedef enum fileTypes_e {
+    PIPE	=  1,	/*!< pipe/fifo */
+    CDEV	=  2,	/*!< character device */
+    XDIR	=  4,	/*!< directory */
+    BDEV	=  6,	/*!< block device */
+    REG		=  8,	/*!< regular file */
+    LINK	= 10,	/*!< hard link */
+    SOCK	= 12	/*!< socket */
+} fileTypes;
+
 #if defined(_RPMFI_INTERNAL)
 /** \ingroup rpmfi
  * A package filename set.
@@ -624,14 +641,6 @@ void rpmfiBuildFDeps(Header h, rpmTag tagN,
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies h, *fdepsp, *fcp,
 		rpmGlobalMacroContext, fileSystem, internalState @*/;
-
-/**
- * Return file type from mode_t.
- * @param mode		file mode bits (from header)
- * @return		file type
- */
-fileTypes whatis(uint_16 mode)
-	/*@*/;
 
 /**
  * Return file info comparison.

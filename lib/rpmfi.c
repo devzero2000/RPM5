@@ -558,7 +558,13 @@ const char * ftstring (fileTypes ft)
     /*@notreached@*/
 }
 
-fileTypes whatis(uint_16 mode)
+/**
+ * Return file type from mode_t.
+ * @param mode		file mode bits (from header)
+ * @return		file type
+ */
+static fileTypes whatis(uint_16 mode)
+	/*@*/
 {
     if (S_ISDIR(mode))	return XDIR;
     if (S_ISCHR(mode))	return CDEV;

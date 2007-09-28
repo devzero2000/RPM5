@@ -746,23 +746,6 @@ typedef enum fileAction_e {
 #define XFA_SKIPPING(_a)	\
     ((_a) == FA_SKIP || (_a) == FA_SKIPNSTATE || (_a) == FA_SKIPNETSHARED || (_a) == FA_SKIPCOLOR)
 
-/**
- * File types.
- * These are the file types used internally by rpm. The file
- * type is determined by applying stat(2) macros like S_ISDIR to
- * the file mode tag from a header. The values are arbitrary,
- * but are identical to the linux stat(2) file types.
- */
-typedef enum fileTypes_e {
-    PIPE	=  1,	/*!< pipe/fifo */
-    CDEV	=  2,	/*!< character device */
-    XDIR	=  4,	/*!< directory */
-    BDEV	=  6,	/*!< block device */
-    REG		=  8,	/*!< regular file */
-    LINK	= 10,	/*!< hard link */
-    SOCK	= 12	/*!< socket */
-} fileTypes;
-
 /** \ingroup payload
  * Iterator across package file info, forward on install, backward on erase.
  */

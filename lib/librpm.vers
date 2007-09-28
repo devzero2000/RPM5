@@ -421,7 +421,6 @@ LIBRPM_0
     strict_erasures;
     stripTrailingBlanksStringBuf;
     truncStringBuf;
-    whatis;
     XrpmdsLink;
     XrpmdsUnlink;
     XrpmfiLink;
