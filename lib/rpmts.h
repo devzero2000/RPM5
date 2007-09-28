@@ -210,8 +210,6 @@ struct rpmts_s {
     uint_32 color;		/*!< Transaction color bits. */
     uint_32 prefcolor;		/*!< Preferred file color. */
 
-    rpmVSFlags vsflags;		/*!< Signature/digest verification flags. */
-
 /*@observer@*/ /*@dependent@*/ /*@null@*/
     const char * fn;		/*!< Current package fn. */
 
@@ -227,11 +225,6 @@ struct rpmts_s {
 
 /*@null@*/
     Spec spec;			/*!< Spec file control structure. */
-
-#ifdef	DYING
-/*@kept@*/ /*@null@*/
-    rpmtsScore score;		/*!< Transaction score (autorollback). */
-#endif
 
     uint_32 arbgoal;		/*!< Autorollback goal */
 

@@ -144,7 +144,7 @@ int rpmtsRebuildDB(rpmts ts)
 {
     void *lock = rpmtsAcquireLock(ts);
     int rc;
-    if (!(ts->vsflags & RPMVSF_NOHDRCHK))
+    if (!(rpmtsVSFlags(ts) & RPMVSF_NOHDRCHK))
 	rc = rpmdbRebuild(ts->rootDir, ts, headerCheck);
     else
 	rc = rpmdbRebuild(ts->rootDir, NULL, NULL);
@@ -230,7 +230,7 @@ rpmdbMatchIterator rpmtsInitIterator(const rpmts ts, rpmTag rpmtag,
     mi = rpmdbInitIterator(ts->rdb, rpmtag, keyp, keylen);
 
     /* Verify header signature/digest during retrieve (if not disabled). */
-    if (mi && !(ts->vsflags & RPMVSF_NOHDRCHK))
+    if (mi && !(rpmtsVSFlags(ts) & RPMVSF_NOHDRCHK))
 	(void) rpmdbSetHdrChk(mi, ts, headerCheck);
 
     /* Select specified arch only. */
@@ -890,22 +890,12 @@ rpmts rpmtsFree(rpmts ts)
 
 rpmVSFlags rpmtsVSFlags(rpmts ts)
 {
-    rpmVSFlags vsflags = 0;
-    if (ts != NULL)
-	vsflags = ts->vsflags;
-    return vsflags;
+    return pgpGetVSFlags(rpmtsDig(ts));
 }
 
 rpmVSFlags rpmtsSetVSFlags(rpmts ts, rpmVSFlags vsflags)
 {
-    rpmVSFlags ovsflags = 0;
-    if (ts != NULL) {
-	ovsflags = ts->vsflags;
-	ts->vsflags = vsflags;
-	if (ts->dig)	/* XXX W2DO? */
-	    (void) pgpSetVSFlags(ts->dig, vsflags);
-    }
-    return ovsflags;
+    return pgpSetVSFlags(rpmtsDig(ts), vsflags);
 }
 
 /*
@@ -1149,12 +1139,10 @@ pgpDig rpmtsDig(rpmts ts)
 {
 /*@-mods@*/ /* FIX: hide lazy malloc for now */
     if (ts->dig == NULL) {
-	ts->dig = pgpNewDig(ts->vsflags);
+	ts->dig = pgpNewDig(0);
 	(void) pgpSetFindPubkey(ts->dig, (int (*)(void *, void *))rpmtsFindPubkey, ts);
     }
 /*@=mods@*/
-    if (ts->dig == NULL)
-	return NULL;
     return ts->dig;
 }
 
