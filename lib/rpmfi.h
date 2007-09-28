@@ -18,7 +18,7 @@ extern int _rpmfi_debug;
  * the file mode tag from a header. The values are arbitrary,
  * but are identical to the linux stat(2) file types.
  */
-typedef enum fileTypes_e {
+typedef enum rpmFileTypes_e {
     PIPE	=  1,	/*!< pipe/fifo */
     CDEV	=  2,	/*!< character device */
     XDIR	=  4,	/*!< directory */
@@ -26,7 +26,7 @@ typedef enum fileTypes_e {
     REG		=  8,	/*!< regular file */
     LINK	= 10,	/*!< hard link */
     SOCK	= 12	/*!< socket */
-} fileTypes;
+} rpmFileTypes;
 
 #if defined(_RPMFI_INTERNAL)
 /** \ingroup rpmfi

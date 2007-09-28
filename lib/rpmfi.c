@@ -542,7 +542,7 @@ rpmfi rpmfiInitD(rpmfi fi, int dx)
  * @return		string to identify a file type
  */
 static /*@observer@*/
-const char * ftstring (fileTypes ft)
+const char * rpmfiFtstring (rpmFileTypes ft)
 	/*@*/
 {
     switch (ft) {
@@ -563,7 +563,7 @@ const char * ftstring (fileTypes ft)
  * @param mode		file mode bits (from header)
  * @return		file type
  */
-static fileTypes whatis(uint_16 mode)
+static rpmFileTypes rpmfiWhatis(uint_16 mode)
 	/*@*/
 {
     if (S_ISDIR(mode))	return XDIR;
@@ -581,8 +581,8 @@ static fileTypes whatis(uint_16 mode)
 int rpmfiCompare(const rpmfi afi, const rpmfi bfi)
 	/*@*/
 {
-    fileTypes awhat = whatis(rpmfiFMode(afi));
-    fileTypes bwhat = whatis(rpmfiFMode(bfi));
+    rpmFileTypes awhat = rpmfiWhatis(rpmfiFMode(afi));
+    rpmFileTypes bwhat = rpmfiWhatis(rpmfiFMode(bfi));
 
     if (awhat != bwhat) return 1;
 
@@ -619,7 +619,7 @@ fileAction rpmfiDecideFate(const rpmfi ofi, rpmfi nfi, int skipMissing)
     const char * fn = rpmfiFN(nfi);
     int newFlags = rpmfiFFlags(nfi);
     char buffer[1024+1];
-    fileTypes dbWhat, newWhat, diskWhat;
+    rpmFileTypes dbWhat, newWhat, diskWhat;
     struct stat sb;
     int save = (newFlags & RPMFILE_NOREPLACE) ? FA_ALTNAME : FA_SAVE;
 
@@ -637,9 +637,9 @@ fileAction rpmfiDecideFate(const rpmfi ofi, rpmfi nfi, int skipMissing)
 	}
     }
 
-    diskWhat = whatis((int_16)sb.st_mode);
-    dbWhat = whatis(rpmfiFMode(ofi));
-    newWhat = whatis(rpmfiFMode(nfi));
+    diskWhat = rpmfiWhatis((int_16)sb.st_mode);
+    dbWhat = rpmfiWhatis(rpmfiFMode(ofi));
+    newWhat = rpmfiWhatis(rpmfiFMode(nfi));
 
     /*
      * RPM >= 2.3.10 shouldn't create config directories -- we'll ignore
@@ -948,7 +948,7 @@ assert(p != NULL);
     /* Relocate individual paths. */
 
     for (i = fileCount - 1; i >= 0; i--) {
-	fileTypes ft;
+	rpmFileTypes ft;
 	int fnlen;
 
 	len = reldel +
@@ -1002,7 +1002,7 @@ dColors[j] |= fColors[i];
 	if (j < 0) continue;
 
 /*@-nullderef@*/ /* FIX: fModes may be NULL */
-	ft = whatis(fModes[i]);
+	ft = rpmfiWhatis(fModes[i]);
 /*@=nullderef@*/
 
 	/* On install, a relocate to NULL means skip the path. */
@@ -1022,7 +1022,7 @@ dColors[j] |= fColors[i];
 	    if (actions) {
 		actions[i] = FA_SKIPNSTATE;
 		rpmMessage(RPMMESS_DEBUG, D_("excluding %s %s\n"),
-			ftstring(ft), fn);
+			rpmfiFtstring(ft), fn);
 	    }
 	    continue;
 	}
