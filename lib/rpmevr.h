@@ -27,8 +27,8 @@ typedef	enum evrFlags_e evrFlags;
 
 /*@-matchfields@*/
 enum evrFlags_e {
-#if defined(_RPMEVR_INTERNAL)
     RPMSENSE_ANY	= 0,
+#if defined(_RPMEVR_INTERNAL)
 /*@-enummemuse@*/
     RPMSENSE_SERIAL	= (1 << 0),	/*!< (obsolete). */
 /*@=enummemuse@*/
