@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"Report-Msgid-Bugs-To: <rpm-devel@lists.dulug.duke.edu>\n"
+"Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
 "POT-Creation-Date: 2007-08-08 11:26-0400\n"
 "PO-Revision-Date: 2002-08-27 13:36-0400\n"
 "Last-Translator: Eugene Kanter, <eugene@blackcatlinux.com>\n"
