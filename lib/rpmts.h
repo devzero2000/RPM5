@@ -687,39 +687,6 @@ int_32 rpmtsSetTid(rpmts ts, int_32 tid)
 	/*@modifies ts @*/;
 
 /** \ingroup rpmts
- * Get signature tag.
- * @param ts		transaction set
- * @return		signature tag
- */
-int_32 rpmtsSigtag(const rpmts ts)
-	/*@*/;
-
-/** \ingroup rpmts
- * Get signature tag type.
- * @param ts		transaction set
- * @return		signature tag type
- */
-int_32 rpmtsSigtype(const rpmts ts)
-	/*@*/;
-
-/** \ingroup rpmts
- * Get signature tag data, i.e. from header.
- * @param ts		transaction set
- * @return		signature tag data
- */
-/*@observer@*/ /*@null@*/
-extern const void * rpmtsSig(const rpmts ts)
-	/*@*/;
-
-/** \ingroup rpmts
- * Get signature tag data length, i.e. no. of bytes of data.
- * @param ts		transaction set
- * @return		signature tag data length
- */
-int_32 rpmtsSiglen(const rpmts ts)
-	/*@*/;
-
-/** \ingroup rpmts
  * Set signature tag info, i.e. from header.
  * @param ts		transaction set
  * @param sigtag	signature tag
@@ -740,15 +707,6 @@ int rpmtsSetSig(rpmts ts,
  */
 /*@exposed@*/ /*@null@*/
 pgpDig rpmtsDig(rpmts ts)
-	/*@*/;
-
-/** \ingroup rpmts
- * Return OpenPGP signature constants.
- * @param ts		transaction set
- * @return		signature constants.
- */
-/*@exposed@*/ /*@null@*/
-pgpDigParams rpmtsSignature(const rpmts ts)
 	/*@*/;
 
 /** \ingroup rpmts

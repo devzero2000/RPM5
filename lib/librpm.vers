@@ -394,11 +394,6 @@ LIBRPM_0
     rpmtsSetTid;
     rpmtsSetType;
     rpmtsSetVSFlags;
-    rpmtsSig;
-    rpmtsSiglen;
-    rpmtsSignature;
-    rpmtsSigtag;
-    rpmtsSigtype;
     rpmtsSolve;
     rpmtsSpec;
     _rpmts_stats;

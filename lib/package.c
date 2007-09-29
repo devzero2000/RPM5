@@ -197,16 +197,15 @@ Header headerRegenSigHeader(const Header h, int noArchiveSize)
 
 /**
  * Remember current key id.
- * @param ts		transaction set
+ * @param dig		container
  * @return		0 if new keyid, otherwise 1
  */
-static int rpmtsStashKeyid(rpmts ts)
+static int pgpStashKeyid(pgpDig dig)
 	/*@globals nextkeyid, nkeyids, keyids @*/
 	/*@modifies nextkeyid, nkeyids, keyids @*/
 {
-    const void * sig = rpmtsSig(ts);
-    pgpDig dig = rpmtsDig(ts);
     pgpDigParams sigp = pgpGetSignature(dig);
+    const void * sig = pgpGetSig(dig);
     unsigned int keyid;
     int i;
 
@@ -254,7 +253,7 @@ static int rpmtsStashKeyid(rpmts ts)
  */
 rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, const char ** msg)
 {
-    pgpDig dig;
+    pgpDig dig = rpmtsDig(ts);
     char buf[8*BUFSIZ];
     int_32 * ei = (int_32 *) uh;
 /*@-boundsread@*/
@@ -271,7 +270,7 @@ rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, const char ** msg)
     entryInfo info = memset(alloca(sizeof(*info)), 0, sizeof(*info));
     const void * sig = NULL;
     unsigned char * b;
-    rpmVSFlags vsflags = rpmtsVSFlags(ts);
+    rpmVSFlags vsflags = pgpGetVSFlags(dig);
     rpmop op;
     int siglen = 0;
     int blen;
@@ -458,9 +457,7 @@ verifyinfo_exit:
     }
 
     /* Verify header-only digest/signature. */
-    dig = rpmtsDig(ts);
-    if (dig == NULL)
-	goto verifyinfo_exit;
+assert(dig);
     dig->nbytes = 0;
 
 /*@-boundsread@*/
@@ -698,7 +695,7 @@ exit:
 rpmRC rpmReadPackageFile(rpmts ts, void * _fd, const char * fn, Header * hdrp)
 {
     FD_t fd = _fd;
-    pgpDig dig;
+    pgpDig dig = rpmtsDig(ts);
     char buf[8*BUFSIZ];
     ssize_t count;
     Header sigh = NULL;
@@ -786,7 +783,7 @@ if (!_nosigh) {
      */
     sigtag = 0;
     opx = 0;
-    vsflags = rpmtsVSFlags(ts);
+    vsflags = pgpGetVSFlags(dig);
     if (_chk(RPMVSF_NODSAHEADER) && headerIsEntry(sigh, RPMSIGTAG_DSA)) {
 	sigtag = RPMSIGTAG_DSA;
     } else
@@ -856,11 +853,7 @@ if (!_nosigh) {
 	goto exit;
     }
 
-    dig = rpmtsDig(ts);
-    if (dig == NULL) {
-	rc = RPMRC_FAIL;
-	goto exit;
-    }
+assert(dig);
     dig->nbytes = 0;
 
     /* Retrieve the tag parameters from the signature header. */
@@ -1015,7 +1008,7 @@ if (!_nosigh) {
     case RPMRC_NOTTRUSTED:	/* Signature is OK, but key is not trusted. */
     case RPMRC_NOKEY:		/* Public key is unavailable. */
 	/* XXX Print NOKEY/NOTTRUSTED warning only once. */
-    {	int lvl = (rpmtsStashKeyid(ts) ? RPMMESS_DEBUG : RPMMESS_WARNING);
+    {	int lvl = (pgpStashKeyid(dig) ? RPMMESS_DEBUG : RPMMESS_WARNING);
 	rpmMessage(lvl, "%s: %s", fn, buf);
     }	break;
     case RPMRC_NOTFOUND:	/* Signature is unknown type. */

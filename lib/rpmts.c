@@ -1101,33 +1101,13 @@ int_32 rpmtsSetTid(rpmts ts, int_32 tid)
     return otid;
 }
 
-int_32 rpmtsSigtag(const rpmts ts)
-{
-    return pgpGetSigtag(rpmtsDig(ts));
-}
-
-int_32 rpmtsSigtype(const rpmts ts)
-{
-    return pgpGetSigtype(rpmtsDig(ts));
-}
-
-const void * rpmtsSig(const rpmts ts)
-{
-    return pgpGetSig(rpmtsDig(ts));
-}
-
-int_32 rpmtsSiglen(const rpmts ts)
-{
-    return pgpGetSiglen(rpmtsDig(ts));
-}
-
 int rpmtsSetSig(rpmts ts,
 		int_32 sigtag, int_32 sigtype, const void * sig, int_32 siglen)
 {
     int ret = 0;
     if (ts != NULL) {
 	const void * osig = pgpGetSig(rpmtsDig(ts));
-	int_32 osigtype = pgpGetSiglen(rpmtsDig(ts));
+	int_32 osigtype = pgpGetSigtype(rpmtsDig(ts));
 	if (osig && osigtype)
 	    osig = headerFreeData(osig, osigtype);
 	ret = pgpSetSig(rpmtsDig(ts), sigtag, sigtype, sig, siglen);
@@ -1144,11 +1124,6 @@ pgpDig rpmtsDig(rpmts ts)
     }
 /*@=mods@*/
     return ts->dig;
-}
-
-pgpDigParams rpmtsSignature(const rpmts ts)
-{
-    return pgpGetSignature(rpmtsDig(ts));
 }
 
 pgpDigParams rpmtsPubkey(const rpmts ts)

@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - jbj: eliminate rpmtsSigFoo() getters.
     - jbj: finish refactoring vsflags out of rpmts.
     - rpm.org: rename fileTypes_e and whatis() (for name spacing).
     - jbj: move (largely unused) fileTypes into rpmfi.h.
