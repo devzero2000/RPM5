@@ -142,9 +142,9 @@ int rpmtsRebuildDB(rpmts ts)
     void *lock = rpmtsAcquireLock(ts);
     int rc;
     if (!(rpmtsVSFlags(ts) & RPMVSF_NOHDRCHK))
-	rc = rpmdbRebuild(ts->rootDir, ts, headerCheck);
+	rc = rpmdbRebuild(ts->rootDir, ts);
     else
-	rc = rpmdbRebuild(ts->rootDir, NULL, NULL);
+	rc = rpmdbRebuild(ts->rootDir, NULL);
     lock = rpmtsFreeLock(lock);
     return rc;
 }
@@ -228,7 +228,7 @@ rpmdbMatchIterator rpmtsInitIterator(const rpmts ts, rpmTag rpmtag,
 
     /* Verify header signature/digest during retrieve (if not disabled). */
     if (mi && !(rpmtsVSFlags(ts) & RPMVSF_NOHDRCHK))
-	(void) rpmdbSetHdrChk(mi, ts, headerCheck);
+	(void) rpmdbSetHdrChk(mi, ts);
 
     /* Select specified arch only. */
     if (arch != NULL)

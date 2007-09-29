@@ -1107,11 +1107,9 @@ int rpmdbSetIteratorModified(/*@null@*/ rpmdbMatchIterator mi, int modified)
  * Modify iterator to verify retrieved header blobs.
  * @param mi		rpm database iterator
  * @param ts		transaction set
- * @param (*hdrchk)	headerCheck() vector
  * @return		0 always
  */
-int rpmdbSetHdrChk(/*@null@*/ rpmdbMatchIterator mi, /*@null@*/ rpmts ts,
-		/*@null@*/ rpmRC (*hdrchk) (rpmts ts, const void * uh, size_t uc, const char ** msg))
+int rpmdbSetHdrChk(/*@null@*/ rpmdbMatchIterator mi, /*@null@*/ rpmts ts)
 	/*@modifies mi @*/;
 
 /** \ingroup rpmdb
@@ -1176,11 +1174,9 @@ rpmdbMatchIterator rpmdbFreeIterator(/*@only@*/ /*@null@*/rpmdbMatchIterator mi)
  * @param iid		install transaction id (iid = 0 or -1 to skip)
  * @param h		header
  * @param ts		(unused) transaction set (or NULL)
- * @param (*hdrchk)	(unused) headerCheck() vector (or NULL)
  * @return		0 on success
  */
-int rpmdbAdd(/*@null@*/ rpmdb db, int iid, Header h, /*@null@*/ rpmts ts,
-		/*@null@*/ rpmRC (*hdrchk) (rpmts ts, const void *uh, size_t uc, const char ** msg))
+int rpmdbAdd(/*@null@*/ rpmdb db, int iid, Header h, /*@null@*/ rpmts ts)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies db, h, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
@@ -1190,12 +1186,10 @@ int rpmdbAdd(/*@null@*/ rpmdb db, int iid, Header h, /*@null@*/ rpmts ts,
  * @param rid		(unused) remove transaction id (rid = 0 or -1 to skip)
  * @param hdrNum	package instance number in database
  * @param ts		(unused) transaction set (or NULL)
- * @param (*hdrchk)	(unused) headerCheck() vector (or NULL)
  * @return		0 on success
  */
 int rpmdbRemove(/*@null@*/ rpmdb db, /*@unused@*/ int rid, unsigned int hdrNum,
-		/*@null@*/ rpmts ts,
-		/*@null@*/ rpmRC (*hdrchk) (rpmts ts, const void *uh, size_t uc, const char ** msg))
+		/*@null@*/ rpmts ts)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies db, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
@@ -1203,11 +1197,9 @@ int rpmdbRemove(/*@null@*/ rpmdb db, /*@unused@*/ int rid, unsigned int hdrNum,
  * Rebuild database indices from package headers.
  * @param prefix	path to top of install tree
  * @param ts		transaction set (or NULL)
- * @param (*hdrchk)	headerCheck() vector (or NULL)
  * @return		0 on success
  */
-int rpmdbRebuild(/*@null@*/ const char * prefix, /*@null@*/ rpmts ts,
-		/*@null@*/ rpmRC (*hdrchk) (rpmts ts, const void *uh, size_t uc, const char ** msg))
+int rpmdbRebuild(/*@null@*/ const char * prefix, /*@null@*/ rpmts ts)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/;
 

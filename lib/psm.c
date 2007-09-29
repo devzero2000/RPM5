@@ -2277,9 +2277,9 @@ assert(psm->mi == NULL);
 		? hLoadTID(fi->h, RPMTAG_INSTALLTID) : rpmtsGetTid(ts));
 	    (void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_DBADD), 0);
 	    if (!(rpmtsVSFlags(ts) & RPMVSF_NOHDRCHK))
-		rc = rpmdbAdd(rpmtsGetRdb(ts), tid, fi->h, ts, headerCheck);
+		rc = rpmdbAdd(rpmtsGetRdb(ts), tid, fi->h, ts);
 	    else
-		rc = rpmdbAdd(rpmtsGetRdb(ts), tid, fi->h, NULL, NULL);
+		rc = rpmdbAdd(rpmtsGetRdb(ts), tid, fi->h, NULL);
 	    (void) rpmswExit(rpmtsOp(ts, RPMTS_OP_DBADD), 0);
 	}
 
@@ -2299,8 +2299,7 @@ assert(psm->te != NULL);
 	if (rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)	break;
 
 	(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_DBREMOVE), 0);
-	rc = rpmdbRemove(rpmtsGetRdb(ts), rpmtsGetTid(ts), fi->record,
-				NULL, NULL);
+	rc = rpmdbRemove(rpmtsGetRdb(ts), rpmtsGetTid(ts), fi->record, NULL);
 	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_DBREMOVE), 0);
 
 	if (rc != RPMRC_OK) break;

@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - jbj: eliminate (*hdrchk) vector everywhere, use headerCheck() instead.
     - jbj: add metadata header stubs to pkgio.c.
     - jbj: move rpmtsFindPubkey() and rpmtsOp() to rpmdb for forward linkage.
     - jbj: add _RPMTS_PRINT to keep rpmrollback.c happy.

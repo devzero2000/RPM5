@@ -568,7 +568,7 @@ rpmRC rpmcliImportPubkey(const rpmts ts, const unsigned char * pkt, ssize_t pktl
 #endif
 
     /* Add header to database. */
-    xx = rpmdbAdd(rpmtsGetRdb(ts), rpmtsGetTid(ts), h, NULL, NULL);
+    xx = rpmdbAdd(rpmtsGetRdb(ts), rpmtsGetTid(ts), h, NULL);
     if (xx != 0)
 	goto exit;
     rc = RPMRC_OK;

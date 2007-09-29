@@ -720,9 +720,6 @@ struct _rpmdbMatchIterator {
     miRE		mi_re;
 /*@null@*/
     rpmts		mi_ts;
-/*@null@*/
-    rpmRC (*mi_hdrchk) (rpmts ts, const void * uh, size_t uc, const char ** msg)
-	/*@modifies ts, *msg @*/;
 
 };
 
@@ -1871,11 +1868,11 @@ static int miFreeHeader(rpmdbMatchIterator mi, dbiIndex dbi)
 	}
 
 	/* Check header digest/signature on blob export (if requested). */
-	if (mi->mi_hdrchk && mi->mi_ts) {
+	if (mi->mi_ts) {
 	    const char * msg = NULL;
 	    int lvl;
 
-	    rpmrc = (*mi->mi_hdrchk) (mi->mi_ts, data->data, data->size, &msg);
+	    rpmrc = headerCheck(mi->mi_ts, data->data, data->size, &msg);
 	    lvl = (rpmrc == RPMRC_FAIL ? RPMMESS_ERROR : RPMMESS_DEBUG);
 	    rpmMessage(lvl, "%s h#%8u %s",
 		(rpmrc == RPMRC_FAIL ? _("miFreeHeader: skipping") : "write"),
@@ -2295,15 +2292,13 @@ int rpmdbSetIteratorModified(rpmdbMatchIterator mi, int modified)
     return rc;
 }
 
-int rpmdbSetHdrChk(rpmdbMatchIterator mi, rpmts ts,
-	rpmRC (*hdrchk) (rpmts ts, const void *uh, size_t uc, const char ** msg))
+int rpmdbSetHdrChk(rpmdbMatchIterator mi, rpmts ts)
 {
     int rc = 0;
     if (mi == NULL)
 	return 0;
 /*@-assignexpose -newreftrans @*/ /* XXX forward linkage prevents rpmtsLink */
 /*@i@*/ mi->mi_ts = ts;
-    mi->mi_hdrchk = hdrchk;
 /*@=assignexpose =newreftrans @*/
     return rc;
 }
@@ -2438,7 +2433,7 @@ if (dbiByteSwapped(dbi) == 1)
 
     /* Check header digest/signature once (if requested). */
 /*@-boundsread -branchstate -sizeoftype @*/
-    if (mi->mi_hdrchk && mi->mi_ts) {
+    if (mi->mi_ts) {
 	rpmRC rpmrc = RPMRC_NOTFOUND;
 
 	/* Don't bother re-checking a previously read header. */
@@ -2456,7 +2451,7 @@ if (dbiByteSwapped(dbi) == 1)
 	    const char * msg = NULL;
 	    int lvl;
 
-	    rpmrc = (*mi->mi_hdrchk) (mi->mi_ts, uh, uhlen, &msg);
+	    rpmrc = headerCheck(mi->mi_ts, uh, uhlen, &msg);
 	    lvl = (rpmrc == RPMRC_FAIL ? RPMMESS_ERROR : RPMMESS_DEBUG);
 	    rpmMessage(lvl, "%s h#%8u %s",
 		(rpmrc == RPMRC_FAIL ? _("rpmdbNextIterator: skipping") : " read"),
@@ -2803,15 +2798,13 @@ assert(keylen == sizeof(k->ui));		/* xxx programmer error */
     mi->mi_re = NULL;
 
     mi->mi_ts = NULL;
-    mi->mi_hdrchk = NULL;
 
 /*@i@*/ return mi;
 }
 
 /* XXX psm.c */
 int rpmdbRemove(rpmdb db, /*@unused@*/ int rid, unsigned int hdrNum,
-		/*@unused@*/ rpmts ts,
-		/*@unused@*/ rpmRC (*hdrchk) (rpmts ts, const void *uh, size_t uc, const char ** msg))
+		/*@unused@*/ rpmts ts)
 {
 DBC * dbcursor = NULL;
 DBT * key = alloca(sizeof(*key));
@@ -3129,9 +3122,7 @@ if (key->size == 0) key->size++;	/* XXX "/" fixup. */
 }
 
 /* XXX install.c */
-int rpmdbAdd(rpmdb db, int iid, Header h,
-		/*@unused@*/ rpmts ts,
-		/*@unused@*/ rpmRC (*hdrchk) (rpmts ts, const void *uh, size_t uc, const char ** msg))
+int rpmdbAdd(rpmdb db, int iid, Header h, /*@unused@*/ rpmts ts)
 {
 DBC * dbcursor = NULL;
 DBT * key = alloca(sizeof(*key));
@@ -3332,11 +3323,11 @@ key->size = sizeof(mi_offset.ui);
 }
 
 		/* Check header digest/signature on blob export. */
-		if (hdrchk && ts) {
+		if (ts) {
 		    const char * msg = NULL;
 		    int lvl;
 
-		    rpmrc = (*hdrchk) (ts, data->data, data->size, &msg);
+		    rpmrc = headerCheck(ts, data->data, data->size, &msg);
 		    lvl = (rpmrc == RPMRC_FAIL ? RPMMESS_ERROR : RPMMESS_DEBUG);
 		    rpmMessage(lvl, "%s h#%8u %s",
 			(rpmrc == RPMRC_FAIL ? _("rpmdbAdd: skipping") : "  +++"),
@@ -3913,8 +3904,7 @@ bottom:
     return rc;
 }
 
-int rpmdbRebuild(const char * prefix, rpmts ts,
-		rpmRC (*hdrchk) (rpmts ts, const void *uh, size_t uc, const char ** msg))
+int rpmdbRebuild(const char * prefix, rpmts ts)
 	/*@globals _rebuildinprogress @*/
 	/*@modifies _rebuildinprogress @*/
 {
@@ -4034,8 +4024,8 @@ int rpmdbRebuild(const char * prefix, rpmts ts,
 #define	_RECNUM	rpmdbGetIteratorOffset(mi)
 
 	mi = rpmdbInitIterator(olddb, RPMDBI_PACKAGES, NULL, 0);
-	if (ts && hdrchk)
-	    (void) rpmdbSetHdrChk(mi, ts, hdrchk);
+	if (ts)
+	    (void) rpmdbSetHdrChk(mi, ts);
 
 	while ((h = rpmdbNextIterator(mi)) != NULL) {
 
@@ -4088,7 +4078,7 @@ int rpmdbRebuild(const char * prefix, rpmts ts,
 	    /* Deleted entries are eliminated in legacy headers by copy. */
 	    {	Header nh = (headerIsEntry(h, RPMTAG_HEADERIMAGE)
 				? headerCopy(h) : NULL);
-		rc = rpmdbAdd(newdb, -1, (nh ? nh : h), ts, hdrchk);
+		rc = rpmdbAdd(newdb, -1, (nh ? nh : h), ts);
 		nh = headerFree(nh);
 	    }
 

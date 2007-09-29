@@ -995,7 +995,7 @@ rpmRC rpmtsRollback(rpmts rbts, rpmprobFilterFlags ignoreSet, int running, rpmte
 		continue;
 	    rc = rpmdbRemove(rpmtsGetRdb(rbts),
 			rpmtsGetTid(rbts),
-			te->u.removed.dboffset, NULL, NULL);
+			te->u.removed.dboffset, NULL);
 	    if (rc != RPMRC_OK) {
 		rpmMessage(RPMMESS_ERROR, _("rpmdb erase failed. NEVRA: %s\n"),
 			rpmteNEVRA(te));
