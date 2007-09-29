@@ -988,7 +988,7 @@ enterChroot(dbi);
     if (dbi->dbi_perms) {
         if ((0644 /* = SQLite hard-coded default */ & dbi->dbi_perms) != dbi->dbi_perms) {
             /* add requested permission bits which are still missing (semantic) */
-            chmod(dbfname, dbi->dbi_perms);
+            Chmod(dbfname, dbi->dbi_perms);
         }
         umask(umask_safed);
     }

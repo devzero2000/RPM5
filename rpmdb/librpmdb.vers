@@ -87,6 +87,8 @@ LIBRPMDB_0
     rpmTags;
     rpmtsCleanDig;
     rpmtsDig;
+    rpmtsFindPubkey;
+    rpmtsOp;
     rpmtsPubkey;
     rpmtsSetSig;
     sqlitevec;

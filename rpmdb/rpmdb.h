@@ -839,11 +839,6 @@ DB_TXN * dbiTxnid(dbiIndex dbi)
 
 /*@=exportlocal@*/
 
-/** \ingroup rpmdb
- */
-unsigned int rpmdbGetIteratorFileNum(rpmdbMatchIterator mi)
-	/*@*/;
-
 /** \ingroup dbi
  * Destroy set of index database items.
  * @param set	set of index database items
@@ -1030,11 +1025,18 @@ int rpmdbCountPackages(/*@null@*/ rpmdb db, const char * name)
 	/*@modifies db, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /** \ingroup rpmdb
- * Return header join key for current position of rpm database iterator.
+ * Return header instance join key for current position of rpmdb iterator.
  * @param mi		rpm database iterator
  * @return		current header join key
  */
 unsigned int rpmdbGetIteratorOffset(/*@null@*/ rpmdbMatchIterator mi)
+	/*@*/;
+
+/** \ingroup rpmdb
+ * Return header tag index join key for current position of rpmdb iterator.
+ * @param mi		rpm database iterator
+ */
+unsigned int rpmdbGetIteratorFileNum(rpmdbMatchIterator mi)
 	/*@*/;
 
 /** \ingroup rpmdb

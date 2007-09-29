@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - jbj: move rpmtsFindPubkey() and rpmtsOp() to rpmdb for forward linkage.
     - jbj: add _RPMTS_PRINT to keep rpmrollback.c happy.
     - jbj: rearrange package.c internals to new locations.
     - jbj: start eliminating rpmtsSetSig by inlining.
