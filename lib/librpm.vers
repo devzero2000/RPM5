@@ -33,9 +33,6 @@ LIBRPM_0
     getStringBuf;
     giFlags;
     global_depFlags;
-    headerCheck;
-    headerMergeLegacySigs;
-    headerRegenSigHeader;
     IDTXfree;
     IDTXglob;
     IDTXgrow;
@@ -333,7 +330,6 @@ LIBRPM_0
     rpmtsCheckDSIProblems;
     rpmtsChrootDone;
     rpmtsClean;
-    rpmtsCleanDig;
     rpmtsCloseDB;
     rpmtsCloseSDB;
     rpmtsColor;
@@ -342,7 +338,6 @@ LIBRPM_0
     _rpmts_debug;
     rpmtsDbmode;
     rpmtsDFlags;
-    rpmtsDig;
     rpmtsDoARBGoal;
     rpmtsElement;
     rpmtsEmpty;
@@ -368,7 +363,6 @@ LIBRPM_0
     rpmtsOrder;
     rpmtsPRCO;
     rpmtsProblems;
-    rpmtsPubkey;
     rpmtsRebuildDB;
     rpmtsREContext;
     rpmtsRelocateElement;

@@ -6,6 +6,9 @@
 #include <rpmlib.h>
 #include <rpmio.h>
 #include <rpmmacro.h>
+
+#include "header_internal.h"		/* XXX hdrchkType(), hdrchkData() */
+
 #include "debug.h"
 
 /**
@@ -194,4 +197,157 @@ uint_32 hGetColor(Header h)
     hcolor &= 0x0f;
 
     return hcolor;
+}
+
+void headerMergeLegacySigs(Header h, const Header sigh)
+{
+    HFD_t hfd = (HFD_t) headerFreeData;
+    HeaderIterator hi;
+    int_32 tag, type, count;
+    const void * ptr;
+    int xx;
+
+    if (h == NULL || sigh == NULL)
+	return;
+
+    for (hi = headerInitIterator(sigh);
+        headerNextIterator(hi, &tag, &type, &ptr, &count);
+        ptr = hfd(ptr, type))
+    {
+	switch (tag) {
+	/* XXX Translate legacy signature tag values. */
+	case RPMSIGTAG_SIZE:
+	    tag = RPMTAG_SIGSIZE;
+	    /*@switchbreak@*/ break;
+#if defined(SUPPORT_RPMV3_BROKEN)
+	case RPMSIGTAG_LEMD5_1:
+	    tag = RPMTAG_SIGLEMD5_1;
+	    /*@switchbreak@*/ break;
+	case RPMSIGTAG_LEMD5_2:
+	    tag = RPMTAG_SIGLEMD5_2;
+	    /*@switchbreak@*/ break;
+#endif
+#if defined(SUPPORT_RPMV3_VERIFY_RSA)
+	case RPMSIGTAG_PGP:
+	    tag = RPMTAG_SIGPGP;
+	    /*@switchbreak@*/ break;
+	case RPMSIGTAG_PGP5:
+	    tag = RPMTAG_SIGPGP5;
+	    /*@switchbreak@*/ break;
+#endif
+	case RPMSIGTAG_MD5:
+	    tag = RPMTAG_SIGMD5;
+	    /*@switchbreak@*/ break;
+#if defined(SUPPORT_RPMV3_VERIFY_DSA)
+	case RPMSIGTAG_GPG:
+	    tag = RPMTAG_SIGGPG;
+	    /*@switchbreak@*/ break;
+#endif
+	case RPMSIGTAG_PAYLOADSIZE:
+	    tag = RPMTAG_ARCHIVESIZE;
+	    /*@switchbreak@*/ break;
+	case RPMSIGTAG_SHA1:
+	case RPMSIGTAG_DSA:
+	case RPMSIGTAG_RSA:
+	default:
+	    if (!(tag >= HEADER_SIGBASE && tag < HEADER_TAGBASE))
+		continue;
+	    /*@switchbreak@*/ break;
+	}
+	if (ptr == NULL) continue;	/* XXX can't happen */
+	if (!headerIsEntry(h, tag)) {
+	    if (hdrchkType(type))
+		continue;
+	    if (count < 0 || hdrchkData(count))
+		continue;
+	    switch(type) {
+	    case RPM_NULL_TYPE:
+		continue;
+		/*@notreached@*/ /*@switchbreak@*/ break;
+	    case RPM_CHAR_TYPE:
+	    case RPM_INT8_TYPE:
+	    case RPM_INT16_TYPE:
+	    case RPM_INT32_TYPE:
+		if (count != 1)
+		    continue;
+		/*@switchbreak@*/ break;
+	    case RPM_STRING_TYPE:
+	    case RPM_BIN_TYPE:
+		if (count >= 16*1024)
+		    continue;
+		/*@switchbreak@*/ break;
+	    case RPM_STRING_ARRAY_TYPE:
+	    case RPM_I18NSTRING_TYPE:
+		continue;
+		/*@notreached@*/ /*@switchbreak@*/ break;
+	    }
+ 	    xx = headerAddEntry(h, tag, type, ptr, count);
+	}
+    }
+    hi = headerFreeIterator(hi);
+}
+
+Header headerRegenSigHeader(const Header h, int noArchiveSize)
+{
+    HFD_t hfd = (HFD_t) headerFreeData;
+    Header sigh = headerNew();
+    HeaderIterator hi;
+    int_32 tag, stag, type, count;
+    const void * ptr;
+    int xx;
+
+    for (hi = headerInitIterator(h);
+        headerNextIterator(hi, &tag, &type, &ptr, &count);
+        ptr = hfd(ptr, type))
+    {
+	switch (tag) {
+	/* XXX Translate legacy signature tag values. */
+	case RPMTAG_SIGSIZE:
+	    stag = RPMSIGTAG_SIZE;
+	    /*@switchbreak@*/ break;
+#if defined(SUPPORT_RPMV3_BROKEN)
+	case RPMTAG_SIGLEMD5_1:
+	    stag = RPMSIGTAG_LEMD5_1;
+	    /*@switchbreak@*/ break;
+	case RPMTAG_SIGLEMD5_2:
+	    stag = RPMSIGTAG_LEMD5_2;
+	    /*@switchbreak@*/ break;
+#endif
+#if defined(SUPPORT_RPMV3_VERIFY_RSA)
+	case RPMTAG_SIGPGP:
+	    stag = RPMSIGTAG_PGP;
+	    /*@switchbreak@*/ break;
+	case RPMTAG_SIGPGP5:
+	    stag = RPMSIGTAG_PGP5;
+	    /*@switchbreak@*/ break;
+#endif
+	case RPMTAG_SIGMD5:
+	    stag = RPMSIGTAG_MD5;
+	    /*@switchbreak@*/ break;
+#if defined(SUPPORT_RPMV3_VERIFY_DSA)
+	case RPMTAG_SIGGPG:
+	    stag = RPMSIGTAG_GPG;
+	    /*@switchbreak@*/ break;
+#endif
+	case RPMTAG_ARCHIVESIZE:
+	    /* XXX rpm-4.1 and later has archive size in signature header. */
+	    if (noArchiveSize)
+		continue;
+	    stag = RPMSIGTAG_PAYLOADSIZE;
+	    /*@switchbreak@*/ break;
+	case RPMTAG_SHA1HEADER:
+	case RPMTAG_DSAHEADER:
+	case RPMTAG_RSAHEADER:
+	default:
+	    if (!(tag >= HEADER_SIGBASE && tag < HEADER_TAGBASE))
+		continue;
+	    stag = tag;
+	    /*@switchbreak@*/ break;
+	}
+	if (ptr == NULL) continue;	/* XXX can't happen */
+	if (!headerIsEntry(sigh, stag))
+	    xx = headerAddEntry(sigh, stag, type, ptr, count);
+    }
+    hi = headerFreeIterator(hi);
+    return sigh;
 }

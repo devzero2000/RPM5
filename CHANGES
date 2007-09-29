@@ -1,4 +1,6 @@
 4.5 -> 5.0:
+    - jbj: add _RPMTS_PRINT to keep rpmrollback.c happy.
+    - jbj: rearrange package.c internals to new locations.
     - jbj: start eliminating rpmtsSetSig by inlining.
     - jbj: eliminate rpmtsSigFoo() getters.
     - jbj: finish refactoring vsflags out of rpmts.

@@ -13,6 +13,7 @@
 #define	_RPMTE_INTERNAL		/* XXX findErases needs rpmte internals. */
 #include "rpmte.h"		/* XXX: rpmteChain */
 #define	_RPMTS_INTERNAL		/* XXX ts->teErase, ts->probs */
+#define _RPMTS_PRINT
 #include "rpmts.h"
 
 #include "manifest.h"

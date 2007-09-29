@@ -715,6 +715,7 @@ rpmps rpmtsProblems(rpmts ts)
     return ps;
 }
 
+#ifdef	DYING
 void rpmtsCleanDig(rpmts ts)
 {
     if (ts && ts->dig) {
@@ -727,6 +728,7 @@ void rpmtsCleanDig(rpmts ts)
 	ts->dig = pgpFreeDig(ts->dig);
     }
 }
+#endif
 
 void rpmtsClean(rpmts ts)
 {
@@ -1101,6 +1103,7 @@ int_32 rpmtsSetTid(rpmts ts, int_32 tid)
     return otid;
 }
 
+#ifdef	DYING
 int rpmtsSetSig(rpmts ts,
 		int_32 sigtag, int_32 sigtype, const void * sig, int_32 siglen)
 {
@@ -1130,6 +1133,7 @@ pgpDigParams rpmtsPubkey(const rpmts ts)
 {
     return pgpGetPubkey(rpmtsDig(ts));
 }
+#endif
 
 rpmdb rpmtsGetRdb(rpmts ts)
 {

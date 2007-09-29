@@ -11,16 +11,68 @@
 
 #include <netinet/in.h>
 
-#include <rpmio.h>
+#include <rpmio_internal.h>
 #include <rpmlib.h>
+
+#define	_RPMTS_INTERNAL
+#include "rpmts.h"
 
 #include "header_internal.h"
 #include <pkgio.h>
 #include "debug.h"
 
-
 /*@access entryInfo @*/		/* XXX rdSignature */
 /*@access indexEntry @*/	/* XXX rdSignature */
+
+/*@unchecked@*/
+static int _print_pkts = 0;
+
+/*===============================================*/
+
+void rpmtsCleanDig(rpmts ts)
+{
+    if (ts && ts->dig) {
+	int opx;
+	opx = RPMTS_OP_DIGEST;
+        (void) rpmswAdd(rpmtsOp(ts, opx), pgpStatsAccumulator(ts->dig, opx));
+	opx = RPMTS_OP_SIGNATURE;
+        (void) rpmswAdd(rpmtsOp(ts, opx), pgpStatsAccumulator(ts->dig, opx));
+	(void) rpmtsSetSig(ts, 0, 0, NULL, 0);	/* XXX headerFreeData */
+	ts->dig = pgpFreeDig(ts->dig);
+    }
+}
+
+int rpmtsSetSig(rpmts ts,
+		int_32 sigtag, int_32 sigtype, const void * sig, int_32 siglen)
+{
+    int ret = 0;
+    if (ts != NULL) {
+	const void * osig = pgpGetSig(rpmtsDig(ts));
+	int_32 osigtype = pgpGetSigtype(rpmtsDig(ts));
+	if (osig && osigtype)
+	    osig = headerFreeData(osig, osigtype);
+	ret = pgpSetSig(rpmtsDig(ts), sigtag, sigtype, sig, siglen);
+    }
+    return ret;
+}
+
+pgpDig rpmtsDig(rpmts ts)
+{
+/*@-mods@*/ /* FIX: hide lazy malloc for now */
+    if (ts->dig == NULL) {
+        ts->dig = pgpNewDig(0);
+        (void) pgpSetFindPubkey(ts->dig, (int (*)(void *, void *))rpmtsFindPubkey, ts);
+    }
+/*@=mods@*/
+    return ts->dig;
+}
+
+pgpDigParams rpmtsPubkey(const rpmts ts)
+{
+    return pgpGetPubkey(rpmtsDig(ts));
+}
+
+/*===============================================*/
 
 /**
  * The lead data structure.
@@ -166,6 +218,7 @@ exit:
     return rc;
 }
 
+/*===============================================*/
 
 /*@unchecked@*/
 extern int _newmagic;
@@ -440,6 +493,358 @@ exit:
 
     return rc;
 }
+
+/*===============================================*/
+
+/**
+ * Check header consistency, performing headerGetEntry() the hard way.
+ *
+ * Sanity checks on the header are performed while looking for a
+ * header-only digest or signature to verify the blob. If found,
+ * the digest or signature is verified.
+ *
+ * @param ts		transaction set
+ * @param uh		unloaded header blob
+ * @param uc		no. of bytes in blob (or 0 to disable)
+ * @retval *msg		signature verification msg
+ * @return		RPMRC_OK/RPMRC_NOTFOUND/RPMRC_FAIL
+ */
+rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, const char ** msg)
+{
+    pgpDig dig = rpmtsDig(ts);
+    char buf[8*BUFSIZ];
+    int_32 * ei = (int_32 *) uh;
+/*@-boundsread@*/
+    int_32 il = ntohl(ei[0]);
+    int_32 dl = ntohl(ei[1]);
+/*@-castexpose@*/
+    entryInfo pe = (entryInfo) &ei[2];
+/*@=castexpose@*/
+/*@=boundsread@*/
+    int_32 ildl[2];
+    int_32 pvlen = sizeof(ildl) + (il * sizeof(*pe)) + dl;
+    unsigned char * dataStart = (unsigned char *) (pe + il);
+    indexEntry entry = memset(alloca(sizeof(*entry)), 0, sizeof(*entry));
+    entryInfo info = memset(alloca(sizeof(*info)), 0, sizeof(*info));
+    const void * sig = NULL;
+    unsigned char * b;
+    rpmVSFlags vsflags = pgpGetVSFlags(dig);
+    rpmop op;
+    int siglen = 0;
+    int blen;
+    size_t nb;
+    int_32 ril = 0;
+    unsigned char * regionEnd = NULL;
+    rpmRC rc = RPMRC_FAIL;	/* assume failure */
+    int xx;
+    int i;
+    static int hclvl;
+
+    hclvl++;
+/*@-boundswrite@*/
+    buf[0] = '\0';
+/*@=boundswrite@*/
+
+    /* Is the blob the right size? */
+    if (uc > 0 && pvlen != uc) {
+	(void) snprintf(buf, sizeof(buf),
+		_("blob size(%d): BAD, 8 + 16 * il(%d) + dl(%d)\n"),
+		(int)uc, (int)il, (int)dl);
+	goto exit;
+    }
+
+    /* Check (and convert) the 1st tag element. */
+    xx = headerVerifyInfo(1, dl, pe, &entry->info, 0);
+    if (xx != -1) {
+	(void) snprintf(buf, sizeof(buf),
+		_("tag[%d]: BAD, tag %d type %d offset %d count %d\n"),
+		0, entry->info.tag, entry->info.type,
+		entry->info.offset, entry->info.count);
+	goto exit;
+    }
+
+    /* Is there an immutable header region tag? */
+/*@-sizeoftype@*/
+    if (!(entry->info.tag == RPMTAG_HEADERIMMUTABLE
+       && entry->info.type == RPM_BIN_TYPE
+       && entry->info.count == REGION_TAG_COUNT))
+    {
+	rc = RPMRC_NOTFOUND;
+	goto exit;
+    }
+/*@=sizeoftype@*/
+
+    /* Is the offset within the data area? */
+    if (entry->info.offset >= dl) {
+	(void) snprintf(buf, sizeof(buf),
+		_("region offset: BAD, tag %d type %d offset %d count %d\n"),
+		entry->info.tag, entry->info.type,
+		entry->info.offset, entry->info.count);
+	goto exit;
+    }
+
+    /* Is there an immutable header region tag trailer? */
+    regionEnd = dataStart + entry->info.offset;
+/*@-sizeoftype@*/
+/*@-bounds@*/
+    (void) memcpy(info, regionEnd, REGION_TAG_COUNT);
+/*@=bounds@*/
+    regionEnd += REGION_TAG_COUNT;
+
+    xx = headerVerifyInfo(1, dl, info, &entry->info, 1);
+    if (xx != -1 ||
+	!(entry->info.tag == RPMTAG_HEADERIMMUTABLE
+       && entry->info.type == RPM_BIN_TYPE
+       && entry->info.count == REGION_TAG_COUNT))
+    {
+	(void) snprintf(buf, sizeof(buf),
+		_("region trailer: BAD, tag %d type %d offset %d count %d\n"),
+		entry->info.tag, entry->info.type,
+		entry->info.offset, entry->info.count);
+	goto exit;
+    }
+/*@=sizeoftype@*/
+/*@-boundswrite@*/
+    memset(info, 0, sizeof(*info));
+/*@=boundswrite@*/
+
+    /* Is the no. of tags in the region less than the total no. of tags? */
+    ril = entry->info.offset/sizeof(*pe);
+    if ((entry->info.offset % sizeof(*pe)) || ril > il) {
+	(void) snprintf(buf, sizeof(buf),
+		_("region size: BAD, ril(%d) > il(%d)\n"), ril, il);
+	goto exit;
+    }
+
+    /* Find a header-only digest/signature tag. */
+    for (i = ril; i < il; i++) {
+	xx = headerVerifyInfo(1, dl, pe+i, &entry->info, 0);
+	if (xx != -1) {
+	    (void) snprintf(buf, sizeof(buf),
+		_("tag[%d]: BAD, tag %d type %d offset %d count %d\n"),
+		i, entry->info.tag, entry->info.type,
+		entry->info.offset, entry->info.count);
+	    goto exit;
+	}
+
+	switch (entry->info.tag) {
+	case RPMTAG_SHA1HEADER:
+	    if (vsflags & RPMVSF_NOSHA1HEADER)
+		/*@switchbreak@*/ break;
+	    blen = 0;
+/*@-boundsread@*/
+	    for (b = dataStart + entry->info.offset; *b != '\0'; b++) {
+		if (strchr("0123456789abcdefABCDEF", *b) == NULL)
+		    /*@innerbreak@*/ break;
+		blen++;
+	    }
+	    if (entry->info.type != RPM_STRING_TYPE || *b != '\0' || blen != 40)
+	    {
+		(void) snprintf(buf, sizeof(buf), _("hdr SHA1: BAD, not hex\n"));
+		goto exit;
+	    }
+/*@=boundsread@*/
+	    if (info->tag == 0) {
+/*@-boundswrite@*/
+		*info = entry->info;	/* structure assignment */
+/*@=boundswrite@*/
+		siglen = blen + 1;
+	    }
+	    /*@switchbreak@*/ break;
+	case RPMTAG_RSAHEADER:
+	    if (vsflags & RPMVSF_NORSAHEADER)
+		/*@switchbreak@*/ break;
+	    if (entry->info.type != RPM_BIN_TYPE) {
+		(void) snprintf(buf, sizeof(buf), _("hdr RSA: BAD, not binary\n"));
+		goto exit;
+	    }
+/*@-boundswrite@*/
+	    *info = entry->info;	/* structure assignment */
+/*@=boundswrite@*/
+	    siglen = info->count;
+	    /*@switchbreak@*/ break;
+	case RPMTAG_DSAHEADER:
+	    if (vsflags & RPMVSF_NODSAHEADER)
+		/*@switchbreak@*/ break;
+	    if (entry->info.type != RPM_BIN_TYPE) {
+		(void) snprintf(buf, sizeof(buf), _("hdr DSA: BAD, not binary\n"));
+		goto exit;
+	    }
+/*@-boundswrite@*/
+	    *info = entry->info;	/* structure assignment */
+/*@=boundswrite@*/
+	    siglen = info->count;
+	    /*@switchbreak@*/ break;
+	default:
+	    /*@switchbreak@*/ break;
+	}
+    }
+    rc = RPMRC_NOTFOUND;
+
+exit:
+    /* Return determined RPMRC_OK/RPMRC_FAIL conditions. */
+    if (rc != RPMRC_NOTFOUND) {
+/*@-boundswrite@*/
+	buf[sizeof(buf)-1] = '\0';
+	if (msg) *msg = xstrdup(buf);
+/*@=boundswrite@*/
+	hclvl--;
+	return rc;
+    }
+
+    /* If no header-only digest/signature, then do simple sanity check. */
+    if (info->tag == 0) {
+	xx = headerVerifyInfo(ril-1, dl, pe+1, &entry->info, 0);
+	if (xx != -1) {
+	    (void) snprintf(buf, sizeof(buf),
+		_("tag[%d]: BAD, tag %d type %d offset %d count %d\n"),
+		xx+1, entry->info.tag, entry->info.type,
+		entry->info.offset, entry->info.count);
+	    rc = RPMRC_FAIL;
+	} else {
+	    (void) snprintf(buf, sizeof(buf), "Header sanity check: OK\n");
+	    rc = RPMRC_OK;
+	}
+/*@-boundswrite@*/
+	buf[sizeof(buf)-1] = '\0';
+	if (msg) *msg = xstrdup(buf);
+/*@=boundswrite@*/
+	hclvl--;
+	return rc;
+    }
+
+    /* Verify header-only digest/signature. */
+assert(dig);
+    dig->nbytes = 0;
+
+/*@-boundsread@*/
+    sig = memcpy(xmalloc(siglen), dataStart + info->offset, siglen);
+/*@=boundsread@*/
+    {
+	const void * osig = pgpGetSig(dig);
+	int_32 osigtype = pgpGetSigtype(dig);
+	if (osig && osigtype)
+	    osig = headerFreeData(osig, osigtype);
+	(void) pgpSetSig(dig, info->tag, info->type, sig, info->count);
+    }
+
+    switch (info->tag) {
+    case RPMTAG_RSAHEADER:
+	/* Parse the parameters from the OpenPGP packets that will be needed. */
+	xx = pgpPrtPkts(sig, info->count, dig, (_print_pkts & rpmIsDebug()));
+	if (dig->signature.version != 3 && dig->signature.version != 4) {
+	    rpmMessage(RPMMESS_ERROR,
+		_("skipping header with unverifiable V%u signature\n"),
+		dig->signature.version);
+	    rpmtsCleanDig(ts);
+	    rc = RPMRC_FAIL;
+	    goto exit;
+	}
+
+	ildl[0] = htonl(ril);
+	ildl[1] = (regionEnd - dataStart);
+	ildl[1] = htonl(ildl[1]);
+
+	op = pgpStatsAccumulator(dig, 10);	/* RPMTS_OP_DIGEST */
+	(void) rpmswEnter(op, 0);
+	dig->hdrmd5ctx = rpmDigestInit(dig->signature.hash_algo, RPMDIGEST_NONE);
+
+	b = NULL; nb = 0;
+	(void) headerGetMagic(NULL, &b, &nb);
+	if (b && nb > 0) {
+	    (void) rpmDigestUpdate(dig->hdrmd5ctx, b, nb);
+	    dig->nbytes += nb;
+	}
+
+	b = (unsigned char *) ildl;
+	nb = sizeof(ildl);
+        (void) rpmDigestUpdate(dig->hdrmd5ctx, b, nb);
+        dig->nbytes += nb;
+
+	b = (unsigned char *) pe;
+	nb = (htonl(ildl[0]) * sizeof(*pe));
+        (void) rpmDigestUpdate(dig->hdrmd5ctx, b, nb);
+        dig->nbytes += nb;
+
+	b = (unsigned char *) dataStart;
+	nb = htonl(ildl[1]);
+        (void) rpmDigestUpdate(dig->hdrmd5ctx, b, nb);
+        dig->nbytes += nb;
+	(void) rpmswExit(op, dig->nbytes);
+
+	break;
+    case RPMTAG_DSAHEADER:
+	/* Parse the parameters from the OpenPGP packets that will be needed. */
+	xx = pgpPrtPkts(sig, info->count, dig, (_print_pkts & rpmIsDebug()));
+	if (dig->signature.version != 3 && dig->signature.version != 4) {
+	    rpmMessage(RPMMESS_ERROR,
+		_("skipping header with unverifiable V%u signature\n"),
+		dig->signature.version);
+	    rpmtsCleanDig(ts);
+	    rc = RPMRC_FAIL;
+	    goto exit;
+	}
+	/*@fallthrough@*/
+    case RPMTAG_SHA1HEADER:
+/*@-boundswrite@*/
+	ildl[0] = htonl(ril);
+	ildl[1] = (regionEnd - dataStart);
+	ildl[1] = htonl(ildl[1]);
+/*@=boundswrite@*/
+
+	op = pgpStatsAccumulator(dig, 10);	/* RPMTS_OP_DIGEST */
+	(void) rpmswEnter(op, 0);
+	dig->hdrsha1ctx = rpmDigestInit(PGPHASHALGO_SHA1, RPMDIGEST_NONE);
+
+	b = NULL; nb = 0;
+	(void) headerGetMagic(NULL, &b, &nb);
+	if (b && nb > 0) {
+	    (void) rpmDigestUpdate(dig->hdrsha1ctx, b, nb);
+	    dig->nbytes += nb;
+	}
+
+	b = (unsigned char *) ildl;
+	nb = sizeof(ildl);
+        (void) rpmDigestUpdate(dig->hdrsha1ctx, b, nb);
+        dig->nbytes += nb;
+
+	b = (unsigned char *) pe;
+	nb = (htonl(ildl[0]) * sizeof(*pe));
+        (void) rpmDigestUpdate(dig->hdrsha1ctx, b, nb);
+        dig->nbytes += nb;
+
+	b = (unsigned char *) dataStart;
+	nb = htonl(ildl[1]);
+        (void) rpmDigestUpdate(dig->hdrsha1ctx, b, nb);
+        dig->nbytes += nb;
+	(void) rpmswExit(op, dig->nbytes);
+
+	break;
+    default:
+	sig = _free(sig);
+	break;
+    }
+
+/*@-boundswrite@*/
+    buf[0] = '\0';
+/*@=boundswrite@*/
+    rc = rpmVerifySignature(dig, buf);
+
+/*@-boundswrite@*/
+    buf[sizeof(buf)-1] = '\0';
+    if (msg) *msg = xstrdup(buf);
+/*@=boundswrite@*/
+
+    /* XXX headerCheck can recurse, free info only at top level. */
+    if (hclvl == 1)
+	rpmtsCleanDig(ts);
+    if (info->tag == RPMTAG_SHA1HEADER)
+	sig = _free(sig);
+    hclvl--;
+    return rc;
+}
+
+/*===============================================*/
 
 size_t rpmpkgSizeof(const char * fn)
 {

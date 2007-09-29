@@ -1010,7 +1010,7 @@ int rpmtsAddEraseElement(rpmts ts, Header h, int dboffset)
 	/*@modifies ts, h, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 #if !defined(SWIG)
-#if defined(_RPMTS_INTERNAL)
+#if defined(_RPMTS_PRINT)
 /**
  * Print current transaction set contents.
  * @param ts		transaction set
@@ -1038,7 +1038,7 @@ int rpmtsPrint(/*@null@*/ rpmts ts, /*@null@*/ FILE * fp)
     tsi = rpmtsiFree(tsi);
     return 0;
 }
-#endif	/* defined(_RPMTS_INTERNAL) */
+#endif	/* defined(_RPMTS_PRINT) */
 #endif	/* !defined(SWIG) */
 
 #ifdef __cplusplus

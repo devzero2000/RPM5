@@ -27,6 +27,7 @@ LIBRPMDB_0
     _hdr_loadops;
     _hdr_stats;
     hdrVec;
+    headerCheck;
     headerCompoundFormats;
     headerDefaultFormats;
     headerDump;
@@ -34,7 +35,9 @@ LIBRPMDB_0
     headerGetRawEntry;
     headerMacrosLoad;
     headerMacrosUnload;
+    headerMergeLegacySigs;
     headerNEVRA;
+    headerRegenSigHeader;
     headerVerifyInfo;
     hGetColor;
     _init;
@@ -82,6 +85,10 @@ LIBRPMDB_0
     rpmTagTable;
     rpmTagTableSize;
     rpmTags;
+    rpmtsCleanDig;
+    rpmtsDig;
+    rpmtsPubkey;
+    rpmtsSetSig;
     sqlitevec;
     XrpmdbLink;
     XrpmdbUnlink;

@@ -112,25 +112,6 @@ typedef /*@abstract@*/ struct _rpmdbMatchIterator * rpmdbMatchIterator;
  */
 typedef /*@abstract@*/ /*@refcounted@*/ struct rpmgi_s * rpmgi;
 
-/** \ingroup header
- * Translate and merge legacy signature tags into header.
- * @todo Remove headerSort() through headerInitIterator() modifies sig.
- * @param h		header
- * @param sigh		signature header
- */
-void headerMergeLegacySigs(Header h, const Header sigh)
-	/*@modifies h, sigh @*/;
-
-/** \ingroup header
- * Regenerate signature header.
- * @todo Remove headerSort() through headerInitIterator() modifies h.
- * @param h		header
- * @param noArchiveSize	don't copy archive size tag (pre rpm-4.1)
- * @return		regenerated signature header
- */
-Header headerRegenSigHeader(const Header h, int noArchiveSize)
-	/*@modifies h @*/;
-
 /**
  * Automatically generated table of tag name/value pairs.
  */
