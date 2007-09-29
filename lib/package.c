@@ -436,7 +436,6 @@ exit:
 
     /* If no header-only digest/signature, then do simple sanity check. */
     if (info->tag == 0) {
-verifyinfo_exit:
 	xx = headerVerifyInfo(ril-1, dl, pe+1, &entry->info, 0);
 	if (xx != -1) {
 	    (void) snprintf(buf, sizeof(buf),
@@ -463,7 +462,13 @@ assert(dig);
 /*@-boundsread@*/
     sig = memcpy(xmalloc(siglen), dataStart + info->offset, siglen);
 /*@=boundsread@*/
-    (void) rpmtsSetSig(ts, info->tag, info->type, sig, info->count);
+    {
+	const void * osig = pgpGetSig(dig);
+	int_32 osigtype = pgpGetSigtype(dig);
+	if (osig && osigtype)
+	    osig = headerFreeData(osig, osigtype);
+	(void) pgpSetSig(dig, info->tag, info->type, sig, info->count);
+    }
 
     switch (info->tag) {
     case RPMTAG_RSAHEADER:
@@ -583,6 +588,7 @@ assert(dig);
 
 rpmRC rpmReadHeader(rpmts ts, void * _fd, Header *hdrp, const char ** msg)
 {
+    pgpDig dig = rpmtsDig(ts);
     FD_t fd = _fd;
     char buf[BUFSIZ];
     int_32 block[4];
@@ -694,8 +700,8 @@ exit:
 /*@-bounds@*/	/* LCL: segfault */
 rpmRC rpmReadPackageFile(rpmts ts, void * _fd, const char * fn, Header * hdrp)
 {
-    FD_t fd = _fd;
     pgpDig dig = rpmtsDig(ts);
+    FD_t fd = _fd;
     char buf[8*BUFSIZ];
     ssize_t count;
     Header sigh = NULL;
@@ -863,7 +869,14 @@ assert(dig);
 	rc = RPMRC_FAIL;
 	goto exit;
     }
-    (void) rpmtsSetSig(ts, sigtag, sigtype, sig, siglen);
+
+    {
+	const void * osig = pgpGetSig(dig);
+	int_32 osigtype = pgpGetSigtype(dig);
+	if (osig && osigtype)
+	    osig = headerFreeData(osig, osigtype);
+	(void) pgpSetSig(dig, sigtag, sigtype, sig, siglen);
+    }
 
     switch (sigtag) {
     case RPMSIGTAG_RSA:

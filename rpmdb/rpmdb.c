@@ -3727,7 +3727,7 @@ if (key->size == 0) key->size++;	/* XXX "/" fixup. */
 /*@=compmempass@*/
 
 /**
- * Check if file esists using stat(2).
+ * Check if file exists using stat(2).
  * @param urlfn		file name (may be URL)
  * @return		1 if file exists, 0 if not
  */
