@@ -16,16 +16,17 @@ extern int _nolead;
 /**
  * Return size of item in bytes.
  * @param fn		item name
+ * @param ptr		item buffer
  * @return		size of item in bytes.
  */
-size_t rpmpkgSizeof(const char * fn)
+size_t rpmpkgSizeof(const char * fn, /*@null@*/ const void * ptr)
 	/*@*/;
 
 /**
  * Write item onto file descriptor.
  * @param fn		item name
  * @param fd		file handle
- * @retval *ptr		item buffer
+ * @param ptr		item buffer
  * @retval *msg		item check failure message
  * @return		RPMRC_OK on success
  */
@@ -41,22 +42,20 @@ rpmRC rpmpkgWrite(const char * fn, FD_t fd, void * ptr, const char ** msg)
  * @retval *msg		item check failure message
  * @return		RPMRC_OK on success
  */
-rpmRC rpmpkgRead(const char * fn, FD_t fd, /*@null@*/ /*@out@*/void * ptr,
+rpmRC rpmpkgRead(const char * fn, FD_t fd, /*@null@*/ /*@out@*/ void * ptr,
 		const char ** msg)
 	/*@modifies fd, *ptr, *msg @*/;
 
-#ifdef	NOTYET
 /**
  * Verify item integrity.
  * @param fn		item name
  * @param fd		file handle
- * @retval *ptr		item buffer
+ * @param ptr		item buffer
  * @retval *msg		item check failure message
  * @return		RPMRC_OK on success
  */
 rpmRC rpmpkgCheck(const char * fn, FD_t fd, const void * ptr, const char ** msg)
 	/*@modifies fd, *msg @*/;
-#endif
 
 #ifdef __cplusplus
 }

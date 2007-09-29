@@ -316,7 +316,7 @@ int readRPM(const char *fileName, Spec *specp, void * l,
     }
 
     {	const char item[] = "Lead";
-	size_t nl = rpmpkgSizeof(item);
+	size_t nl = rpmpkgSizeof(item, NULL);
 
 	if (nl == 0) {
 	    rc = RPMRC_FAIL;
@@ -702,7 +702,7 @@ int writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
     /* Write the lead section into the package. */
     if (!_nolead) {
 	const char item[] = "Lead";
-	size_t nl = rpmpkgSizeof(item);
+	size_t nl = rpmpkgSizeof(item, NULL);
 	rpmRC _rc;
 
 	if (nl == 0)

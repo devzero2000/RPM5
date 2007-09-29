@@ -1794,7 +1794,7 @@ psm->te->h = headerLink(fi->h);
 	    if (!_nolead) {
 		static const char item[] = "Lead";
 		const char * NEVR = rpmteNEVR(psm->te);
-		size_t nb = rpmpkgSizeof(item);
+		size_t nb = rpmpkgSizeof(item, NULL);
 	
 		if (nb == 0)
 		    rc = RPMRC_FAIL;

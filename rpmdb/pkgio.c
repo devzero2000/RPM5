@@ -453,7 +453,7 @@ static unsigned char sigh_magic[8] = {
  */
 static rpmRC wrSignature(FD_t fd, void * ptr, const char ** msg)
 	/*@globals fileSystem @*/
-	/*@modifies fd, sigh, fileSystem @*/
+	/*@modifies fd, ptr, fileSystem @*/
 {
     Header sigh = ptr;
     static unsigned char zero[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };
@@ -491,7 +491,7 @@ static inline rpmRC printSize(FD_t fd, int siglen, int pad, size_t datalen)
     int fdno = Fileno(fd);
     struct stat sb, * st = &sb;
     size_t expected;
-    size_t nl = rpmpkgSizeof("Lead");
+    size_t nl = rpmpkgSizeof("Lead", NULL);
 
     /* HACK: workaround for davRead wiring. */
     if (fdno == 123456789) {
@@ -1060,14 +1060,106 @@ assert(dig);
     return rc;
 }
 
+/**
+ * Return size of Header.
+ * @param ptr		metadata header (at least 32 bytes)
+ * @return		size of header
+ */
+static size_t szHeader(const void * ptr)
+{
+    uint32_t p[4];
+    memcpy(p, ptr, sizeof(p));
+    return (8 + 8 + 16 * ntohl(p[2]) + ntohl(p[3]));
+}
+
+/**
+ * Check metadata header.
+ * @param fd		file handle
+ * @param ptr		metadata header
+ * @retval *msg		failure msg
+ * @return		rpmRC return code
+ */
+static rpmRC ckHeader(FD_t fd, const void * ptr, const char ** msg)
+	/*@globals fileSystem @*/
+	/*@modifies fd, ptr, fileSystem @*/
+{
+    rpmRC rc = RPMRC_OK;
+
+    return rc;
+}
+
+/**
+ * Read metadata header.
+ * @param fd		file handle
+ * @retval *ptr		metadata header (or NULL)
+ * @retval *msg		failure msg
+ * @return		rpmRC return code
+ */
+static rpmRC rdHeader(FD_t fd, void * ptr, const char ** msg)
+	/*@globals fileSystem @*/
+	/*@modifies fd, *ptr, *msg, fileSystem @*/
+{
+    Header * hdrp = ptr;
+    Header h = NULL;
+    rpmRC rc = RPMRC_OK;
+
+    h = headerRead(fd);
+    if (h == NULL)
+	rc = RPMRC_FAIL;
+    else if (hdrp) {
+	*hdrp = headerLink(h);
+	h = headerFree(h);
+    }
+
+    return rc;
+}
+
+/**
+ * Write metadata header.
+ * @param fd		file handle
+ * @param ptr		metadata header
+ * @retval *msg		failure msg
+ * @return		rpmRC return code
+ */
+static rpmRC wrHeader(FD_t fd, void * ptr, const char ** msg)
+	/*@globals fileSystem @*/
+	/*@modifies fd, ptr, fileSystem @*/
+{
+    Header h = ptr;
+    rpmRC rc = RPMRC_OK;
+    int xx;
+
+    xx = headerWrite(fd, h);
+    if (xx)
+	rc = RPMRC_FAIL;
+
+    return rc;
+}
+
 /*===============================================*/
 
-size_t rpmpkgSizeof(const char * fn)
+size_t rpmpkgSizeof(const char * fn, const void * ptr)
 {
     size_t len = 0;
-    if (!strcmp(fn, "Lead"));
+    if (!strcmp(fn, "Lead"))
 	return 96;	/* RPMLEAD_SIZE */
+    if (!strcmp(fn, "Signature")) {
+	size_t nb = szHeader(ptr);
+	nb += (8 - (nb % 8));   /* padding */
+	return nb;
+    }
+    if (!strcmp(fn, "Header"))
+	return szHeader(ptr);
     return len;
+}
+
+rpmRC rpmpkgCheck(const char * fn, FD_t fd, const void * ptr, const char ** msg)
+{
+    rpmRC rc = RPMRC_FAIL;
+
+    if (!strcmp(fn, "Header"))
+	return ckHeader(fd, ptr, msg);
+    return rc;
 }
 
 rpmRC rpmpkgRead(const char * fn, FD_t fd, void * ptr, const char ** msg)
@@ -1078,10 +1170,8 @@ rpmRC rpmpkgRead(const char * fn, FD_t fd, void * ptr, const char ** msg)
 	return rdLead(fd, ptr, msg);
     if (!strcmp(fn, "Signature"))
 	return rdSignature(fd, ptr, msg);
-#ifdef	NOTYET
     if (!strcmp(fn, "Header"))
 	return rdHeader(fd, ptr, msg);
-#endif
     return rc;
 }
 
@@ -1093,20 +1183,7 @@ rpmRC rpmpkgWrite(const char * fn, FD_t fd, void * ptr, const char ** msg)
 	return wrLead(fd, ptr, msg);
     if (!strcmp(fn, "Signature"))
 	return wrSignature(fd, ptr, msg);
-#ifdef	NOTYET
     if (!strcmp(fn, "Header"))
 	return wrHeader(fd, ptr, msg);
-#endif
     return rc;
 }
-
-#ifdef	NOTYET
-rpmRC rpmpkgCheck(const char * fn, FD_t fd, void * ptr, const char ** msg)
-{
-    rpmRC rc = RPMRC_FAIL;
-
-    if (!strcmp(fn, "Lead"))
-	return ckLead(fd, ptr, msg);
-    return rc;
-}
-#endif
