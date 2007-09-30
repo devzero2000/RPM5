@@ -213,14 +213,14 @@ struct rpmts_s {
 /*@observer@*/ /*@dependent@*/ /*@null@*/
     const char * fn;		/*!< Current package fn. */
 
-/*@only@*/ /*@null@*/
+/*@only@*/ /*@relnull@*/
     const unsigned char * pkpkt;/*!< Current pubkey packet. */
     size_t pkpktlen;		/*!< Current pubkey packet length. */
     unsigned char pksignid[8];	/*!< Current pubkey fingerprint. */
 
     struct rpmop_s ops[RPMTS_OP_MAX];
 
-/*@null@*/
+/*@relnull@*/
     pgpDig dig;			/*!< Current signature/pubkey parameters. */
 
 /*@null@*/
@@ -705,7 +705,7 @@ int rpmtsSetSig(rpmts ts,
  * @param ts		transaction set
  * @return		signature/pubkey constants.
  */
-/*@exposed@*/ /*@null@*/
+/*@exposed@*/
 pgpDig rpmtsDig(rpmts ts)
 	/*@*/;
 

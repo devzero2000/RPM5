@@ -12,7 +12,6 @@
 +strict			# lclint level
 
 # --- in progress
-#+bounds
 +slovak-fcns
 -bufferoverflowhigh
 
@@ -27,7 +26,14 @@
 -varuse
 
 # --- not-yet at strict level
+-internalglobs	# 16
+-paramuse	# 6
+-mustmod	# 8
+-type		# 4
+-unrecog	# 2
+
 -bitwisesigned		# 160
+-branchstate		# 65
 -elseifcomplete		# 9
 -exportconst		# 687
 -exportfcn		# 464

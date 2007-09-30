@@ -13,6 +13,25 @@ extern "C" {
 /*@unchecked@*/
 extern int _nolead;
 
+/** 
+ * Check header consistency, performing headerGetEntry() the hard way.
+ *  
+ * Sanity checks on the header are performed while looking for a
+ * header-only digest or signature to verify the blob. If found,
+ * the digest or signature is verified.
+ *
+ * @param ts		transaction set
+ * @param uh		unloaded header blob
+ * @param uc		no. of bytes in blob (or 0 to disable)
+ * @retval *msg		verification error message (or NULL)
+ * @return		RPMRC_OK on success
+ */
+rpmRC headerCheck(rpmts ts, const void * uh, size_t uc,
+		/*@out@*/ /*@null@*/ const char ** msg)
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies ts, *msg, rpmGlobalMacroContext,
+		fileSystem, internalState @*/;
+
 /**
  * Return size of item in bytes.
  * @param fn		item name
@@ -32,7 +51,7 @@ size_t rpmpkgSizeof(const char * fn, /*@null@*/ const void * ptr)
  */
 rpmRC rpmpkgWrite(const char * fn, FD_t fd, void * ptr, const char ** msg)
 	/*@globals fileSystem @*/
-	/*@modifies fd, fileSystem @*/;
+	/*@modifies fd, ptr, fileSystem @*/;
 
 /**
  * Read item from file descriptor.
@@ -44,7 +63,8 @@ rpmRC rpmpkgWrite(const char * fn, FD_t fd, void * ptr, const char ** msg)
  */
 rpmRC rpmpkgRead(const char * fn, FD_t fd, /*@null@*/ /*@out@*/ void * ptr,
 		const char ** msg)
-	/*@modifies fd, *ptr, *msg @*/;
+	/*@globals fileSystem @*/
+	/*@modifies fd, *ptr, *msg, fileSystem @*/;
 
 /**
  * Verify item integrity.
@@ -55,7 +75,8 @@ rpmRC rpmpkgRead(const char * fn, FD_t fd, /*@null@*/ /*@out@*/ void * ptr,
  * @return		RPMRC_OK on success
  */
 rpmRC rpmpkgCheck(const char * fn, FD_t fd, const void * ptr, const char ** msg)
-	/*@modifies fd, *msg @*/;
+	/*@globals fileSystem @*/
+	/*@modifies fd, ptr, *msg, fileSystem @*/;
 
 #ifdef __cplusplus
 }

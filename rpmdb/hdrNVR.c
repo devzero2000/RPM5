@@ -30,7 +30,10 @@ static struct tagMacro {
     { NULL, 0 }
 };
 
+/*@-globs -mods -incondefs@*/
 int headerMacrosLoad(Header h)
+	/*@globals rpmGlobalMacroContext @*/
+	/*@modifies rpmGlobalMacroContext @*/
 {
     struct tagMacro * tagm;
     union {
@@ -62,9 +65,7 @@ int headerMacrosLoad(Header h)
 	    continue;
 	switch (type) {
 	case RPM_INT32_TYPE:
-/*@-boundsread@*/
 	    sprintf(numbuf, "%d", *body.i32p);
-/*@=boundsread@*/
 	    addMacro(NULL, tagm->macroname, NULL, numbuf, -1);
 	    /*@switchbreak@*/ break;
 	case RPM_STRING_TYPE:
@@ -85,7 +86,12 @@ int headerMacrosLoad(Header h)
     }
     return 0;
 }
+/*@=globs =mods =incondefs@*/
+
+/*@-globs -mods -incondefs@*/
 int headerMacrosUnload(Header h)
+	/*@globals rpmGlobalMacroContext @*/
+	/*@modifies rpmGlobalMacroContext @*/
 {
     struct tagMacro * tagm;
     union {
@@ -137,6 +143,7 @@ int headerMacrosUnload(Header h)
 
     return 0;
 }
+/*@=globs =mods =incondefs@*/
 
 int headerNEVRA(Header h, const char **np,
 		/*@unused@*/ const char **ep, const char **vp, const char **rp,
@@ -145,7 +152,6 @@ int headerNEVRA(Header h, const char **np,
     int type;
     int count;
 
-/*@-boundswrite@*/
     if (np) {
 	if (!(headerGetEntry(h, RPMTAG_NAME, &type, np, &count)
 	    && type == RPM_STRING_TYPE && count == 1))
@@ -162,17 +168,18 @@ int headerNEVRA(Header h, const char **np,
 		*rp = NULL;
     }
     if (ap) {
+/*@-observertrans -readonlytrans@*/
 	if (!headerIsEntry(h, RPMTAG_ARCH))
 	    *ap = "pubkey";
 	else
 	if (!headerIsEntry(h, RPMTAG_SOURCERPM))
 	    *ap = "src";
+/*@=observertrans =readonlytrans@*/
 	else
 	if (!(headerGetEntry(h, RPMTAG_ARCH, &type, ap, &count)
 	    && type == RPM_STRING_TYPE && count == 1))
 		*ap = NULL;
     }
-/*@=boundswrite@*/
     return 0;
 }
 
@@ -189,10 +196,8 @@ uint_32 hGetColor(Header h)
     if (hge(h, RPMTAG_FILECOLORS, NULL, &fcolors, &ncolors)
      && fcolors != NULL && ncolors > 0)
     {
-/*@-boundsread@*/
 	for (i = 0; i < ncolors; i++)
 	    hcolor |= fcolors[i];
-/*@=boundsread@*/
     }
     hcolor &= 0x0f;
 

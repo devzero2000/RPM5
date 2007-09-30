@@ -533,7 +533,7 @@ int headerNextIterator(HeaderIterator hi,
  */
 /*@unused@*/ static inline
 int headerGetMagic(/*@null@*/ Header h, unsigned char **magicp, size_t *nmagicp)
-	/*@*/
+	/*@modifies *magicp, *nmagicp @*/
 {
     return hdrVec->hdrgetmagic(h, magicp, nmagicp);
 }

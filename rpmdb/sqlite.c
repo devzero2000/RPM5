@@ -1,4 +1,3 @@
-/*@-bounds@*/
 /*@-mustmod@*/
 /*@-paramuse@*/
 /*@-globuse@*/
@@ -6,7 +5,6 @@
 /*@-noeffectuncon@*/
 /*@-compdef@*/
 /*@-compmempass@*/
-/*@-branchstate@*/
 /*@-modfilesystem@*/
 /*@-evalorderuncon@*/
 
@@ -99,7 +97,7 @@ struct _sql_dbcursor_s {
 };
 
 union _dbswap {
-    unsigned int ui;
+    uint32_t ui;
     unsigned char uc[4];
 };
 
@@ -145,7 +143,9 @@ fprintf(stderr, "sql:chroot(%s)\n", dbi->dbi_root);
 /*@-globs@*/
     xx = Chdir("/");
 /*@=globs@*/
+/*@-modobserver@*/
     xx = Chroot(dbi->dbi_root);
+/*@=modobserver@*/
 assert(xx == 0);
     sqlInRoot=1;
 }
@@ -163,9 +163,9 @@ static void leaveChroot(dbiIndex dbi)
 if (_debug)
 fprintf(stderr, "sql:chroot(.)\n");
 
-/*@-superuser@*/
+/*@-modobserver@*/
     xx = Chroot(".");
-/*@=superuser@*/
+/*@=modobserver@*/
 assert(xx == 0);
     if (sqlCwd != NULL) {
 /*@-globs@*/
@@ -680,7 +680,7 @@ static int sql_busy_handler(void * dbi_void, int time)
  * Create the table.. create the db_info
  */
 static int sql_initDB(dbiIndex dbi)
-	/*@*/
+	/*@globals rpmGlobalMacroContext, h_errno @*/
 {
     SQL_DB * sqldb = (SQL_DB *) dbi->dbi_db;
     SCP_t scp = scpNew(dbi->dbi_db);
@@ -690,15 +690,13 @@ static int sql_initDB(dbiIndex dbi)
     if (dbi->dbi_tmpdir) {
         const char *root;
         const char *tmpdir;
+        int xx;
         root = (dbi->dbi_root ? dbi->dbi_root : dbi->dbi_rpmdb->db_root);
-        /*@-boundsread@*/
         if ((root[0] == '/' && root[1] == '\0') || dbi->dbi_rpmdb->db_chrootDone)
             root = NULL;
-        /*@=boundsread@*/
         /*@-mods@*/
         tmpdir = rpmGenPath(root, dbi->dbi_tmpdir, NULL);
         /*@=mods@*/
-        int xx;
         sprintf(cmd, "PRAGMA temp_store_directory = '%s';", tmpdir);
         xx = sqlite3_exec(sqldb->db, cmd, NULL, NULL, (char **)&scp->pzErrmsg);
         tmpdir = _free(tmpdir);
@@ -970,7 +968,7 @@ enterChroot(dbi);
     (void) rpmioMkpath(dbhome, 0755, getuid(), getgid());
        
     if (dbi->dbi_eflags & DB_PRIVATE)
-        dbfname = strdup(":memory:");
+        dbfname = xstrdup(":memory:");
     else
         dbfname = rpmGenPath(dbhome, dbi->dbi_file, NULL);
 
@@ -988,9 +986,9 @@ enterChroot(dbi);
     if (dbi->dbi_perms) {
         if ((0644 /* = SQLite hard-coded default */ & dbi->dbi_perms) != dbi->dbi_perms) {
             /* add requested permission bits which are still missing (semantic) */
-            Chmod(dbfname, dbi->dbi_perms);
+            (void) Chmod(dbfname, dbi->dbi_perms);
         }
-        umask(umask_safed);
+        (void) umask(umask_safed);
     }
     if (xx != SQLITE_OK)
 	sql_errcode = sqlite3_errmsg(sqldb->db);
@@ -1576,7 +1574,6 @@ struct _dbiVec sqlitevec = {
 
 /*@=evalorderuncon@*/
 /*@=modfilesystem@*/
-/*@=branchstate@*/
 /*@=compmempass@*/
 /*@=compdef@*/
 /*@=moduncon@*/
@@ -1584,4 +1581,3 @@ struct _dbiVec sqlitevec = {
 /*@=globuse@*/
 /*@=paramuse@*/
 /*@=mustmod@*/
-/*@=bounds@*/

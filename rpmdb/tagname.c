@@ -144,7 +144,6 @@ static const char * _tagName(int tag)
 	strcpy(nameBuf, "(unknown)");
 	if (_rpmTags.byValue == NULL)
 	    break;
-/*@-boundswrite@*/
 	l = 0;
 	u = _rpmTags.byValueSize;
 	while (l < u) {
@@ -201,7 +200,6 @@ static int _tagType(int tag)
     default:
 	if (_rpmTags.byValue == NULL)
 	    break;
-/*@-boundswrite@*/
 	l = 0;
 	u = _rpmTags.byValueSize;
 	while (l < u) {

@@ -17,7 +17,6 @@ int headerVerifyInfo(int il, int dl, const void * pev, void * iv, int negate)
     entryInfo info = iv;
     int i;
 
-/*@-boundsread@*/
     for (i = 0; i < il; i++) {
 	info->tag = ntohl(pe[i].tag);
 	info->type = ntohl(pe[i].type);
@@ -36,11 +35,9 @@ int headerVerifyInfo(int il, int dl, const void * pev, void * iv, int negate)
 	    return i;
 
     }
-/*@=boundsread@*/
     return -1;
 }
 
-/*@-boundswrite@*/
 char ** headerGetLangs(Header h)
 {
     char **s, *e, **table;
@@ -59,9 +56,7 @@ char ** headerGetLangs(Header h)
 
     /*@-nullret@*/ return table; /*@=nullret@*/	/* LCL: double indirection? */
 }
-/*@=boundswrite@*/
 
-/*@-boundsread@*/
 /*@-type@*/ /* FIX: shrug */
 void headerDump(Header h, FILE *f, int flags,
 	const struct headerTagTableEntry_s * tags)
@@ -202,4 +197,3 @@ void headerDump(Header h, FILE *f, int flags,
 }
 /*@=type@*/
 /*@=sizeoftype@*/
-/*@=boundsread@*/

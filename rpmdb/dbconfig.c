@@ -648,7 +648,6 @@ dbiIndex db3Free(dbiIndex dbi)
 static const char *db3_config_default =
     "hash tmpdir=/var/tmp create cdb mpool mp_mmapsize=16Mb mp_size=1Mb perms=0644";
 
-/*@-bounds@*/
 dbiIndex db3New(rpmdb rpmdb, rpmTag rpmtag)
 {
     dbiIndex dbi = xcalloc(1, sizeof(*dbi));
@@ -666,7 +665,6 @@ dbiIndex db3New(rpmdb rpmdb, rpmTag rpmtag)
     }
 
     /* Parse the options for the database element(s). */
-    /*@-branchstate@*/
     if (dbOpts && *dbOpts && *dbOpts != '%') {
 	char *o, *oe;
 	char *p, *pe;
@@ -782,7 +780,6 @@ dbiIndex db3New(rpmdb rpmdb, rpmTag rpmtag)
 	}
 /*=========*/
     }
-    /*@=branchstate@*/
 
     dbOpts = _free(dbOpts);
 
@@ -832,9 +829,7 @@ dbiIndex db3New(rpmdb rpmdb, rpmTag rpmtag)
     return dbi;
     /*@=globstate@*/
 }
-/*@=bounds@*/
 
-/*@-boundswrite@*/
 const char * prDbiOpenFlags(int dbflags, int print_dbenv_flags)
 {
     static char buf[256];
@@ -869,6 +864,5 @@ const char * prDbiOpenFlags(int dbflags, int print_dbenv_flags)
     }
     return buf;
 }
-/*@=boundswrite@*/
 
 #endif

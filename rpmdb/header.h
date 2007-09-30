@@ -902,7 +902,7 @@ int headerNEVRA(Header h,
 		/*@null@*/ /*@out@*/ const char ** vp,
 		/*@null@*/ /*@out@*/ const char ** rp,
 		/*@null@*/ /*@out@*/ const char ** ap)
-	/*@modifies *np, *vp, *rp, *ap @*/;
+	/*@modifies h, *np, *vp, *rp, *ap @*/;
 
 /**
  * Return header color.

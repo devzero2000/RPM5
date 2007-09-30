@@ -1,4 +1,4 @@
-/*@-bounds -mustmod -sizeoftype @*/
+/*@-mustmod -sizeoftype @*/
 /*-
  * Copyright (c) 1992, 1993
  *	The Regents of the University of California.  All rights reserved.
@@ -245,7 +245,6 @@ rpm_mergesort(void *base, size_t nmemb, size_t size,
 	setup(list1, list2, nmemb, size, cmp);
 	last = list2 + nmemb * size;
 	i = big = 0;
-/*@-branchstate@*/
 	while (*EVAL(list2) != last) {
 	    l2 = list1;
 	    p1 = EVAL(list1);
@@ -347,7 +346,6 @@ COPY:	    			b = t;
 /*@=dependenttrans@*/
 	    last = list2 + nmemb*size;
 	}
-/*@=branchstate@*/
 	if (base == list2) {
 		memmove(list2, list1, nmemb*size);
 		list2 = list1;
@@ -357,4 +355,4 @@ COPY:	    			b = t;
 /*@=usereleased@*/
 	return (0);
 }
-/*@=bounds =mustmod =sizeoftype @*/
+/*@=mustmod =sizeoftype @*/

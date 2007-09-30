@@ -78,8 +78,7 @@ if WITH_PATH_VERSIONED
 endif
 
 tagtbl.c: Makefile.am $(top_srcdir)/lib/rpmlib.h 
-	@echo '/*@-bounds@*/' > $@
-	@echo '#include "system.h"' >> $@
+	@echo '#include "system.h"' > $@
 	@echo '#include <rpmlib.h>' >> $@
 	@echo '#include "debug.h"' >> $@
 	@echo '' >> $@
@@ -94,7 +93,6 @@ tagtbl.c: Makefile.am $(top_srcdir)/lib/rpmlib.h
 	@echo '' >> $@
 	@echo '/*@unchecked@*/' >> $@
 	@echo 'const int rpmTagTableSize = sizeof(rpmTagTbl) / sizeof(rpmTagTbl[0]) - 1;' >> $@
-	@echo '/*@=bounds@*/' >> $@
 
 if WITH_DB_INTERNAL
 my_DB_HEADER = $(top_builddir)/$(WITH_DB_SUBDIR)/db.h

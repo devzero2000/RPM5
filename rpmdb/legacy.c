@@ -41,6 +41,7 @@
  * @retval fsizep	file size
  * @return		-1 on error, otherwise, an open file descriptor
  */ 
+/*@-compdef -moduncon -noeffectuncon @*/
 static int open_dso(const char * path, /*@null@*/ pid_t * pidp, /*@null@*/ size_t *fsizep)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies *pidp, *fsizep, rpmGlobalMacroContext,
@@ -56,7 +57,6 @@ static int open_dso(const char * path, /*@null@*/ pid_t * pidp, /*@null@*/ size_
 	initted++;
     }
 
-/*@-boundswrite@*/
     if (pidp) *pidp = 0;
 
     if (fsizep) {
@@ -65,16 +65,13 @@ static int open_dso(const char * path, /*@null@*/ pid_t * pidp, /*@null@*/ size_
 	    return -1;
 	*fsizep = st->st_size;
     }
-/*@=boundswrite@*/
 
     fdno = open(path, O_RDONLY);
     if (fdno < 0)
 	return fdno;
 
-/*@-boundsread@*/
     if (!(cmd && *cmd))
 	return fdno;
-/*@=boundsread@*/
 
 #if defined(HAVE_GELF_H) && defined(HAVE_LIBELF)
  {  Elf *elf = NULL;
@@ -96,7 +93,6 @@ static int open_dso(const char * path, /*@null@*/ pid_t * pidp, /*@null@*/ size_
 /*@=evalorder@*/
 
     bingo = 0;
-    /*@-branchstate -uniondef @*/
     while (!bingo && (scn = elf_nextscn(elf, scn)) != NULL) {
 	(void) gelf_getshdr(scn, &shdr);
 	if (shdr.sh_type != SHT_DYNAMIC)
@@ -106,7 +102,9 @@ static int open_dso(const char * path, /*@null@*/ pid_t * pidp, /*@null@*/ size_
 	    int ndx;
 
             for (ndx = 0; ndx < maxndx; ++ndx) {
+/*@-uniondef@*/
 		(void) gelf_getdyn (data, ndx, &dyn);
+/*@=uniondef@*/
 		if (!(dyn.d_tag == DT_GNU_PRELINKED || dyn.d_tag == DT_GNU_LIBLIST))
 		    /*@innercontinue@*/ continue;
 		bingo = 1;
@@ -114,9 +112,7 @@ static int open_dso(const char * path, /*@null@*/ pid_t * pidp, /*@null@*/ size_
 	    }
 	}
     }
-    /*@=branchstate =uniondef @*/
 
-/*@-boundswrite@*/
     if (pidp != NULL && bingo) {
 	int pipes[2];
 	pid_t pid;
@@ -143,7 +139,6 @@ static int open_dso(const char * path, /*@null@*/ pid_t * pidp, /*@null@*/ size_
 	fdno = pipes[0];
 	xx = close(pipes[1]);
     }
-/*@=boundswrite@*/
 
 exit:
     if (elf) (void) elf_end(elf);
@@ -152,6 +147,7 @@ exit:
 
     return fdno;
 }
+/*@=compdef =moduncon =noeffectuncon @*/
 
 int dodigest(int digestalgo, const char * fn, unsigned char * digest, int asAscii, size_t *fsizep)
 {
@@ -249,12 +245,10 @@ int dodigest(int digestalgo, const char * fn, unsigned char * digest, int asAsci
     }
 
 exit:
-/*@-boundswrite@*/
     if (fsizep)
 	*fsizep = fsize;
     if (!rc)
 	memcpy(digest, dsum, dlen);
-/*@=boundswrite@*/
     dsum = _free(dsum);
 
     return rc;

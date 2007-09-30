@@ -126,10 +126,10 @@ extern const struct headerTagTableEntry_s * rpmTagTable;
 /*@-redecl@*/
 /*@unchecked@*/
 extern const int rpmTagTableSize;
-/*@=redecl@*/
 
 /*@unchecked@*/
 extern headerTagIndices rpmTags;
+/*@=redecl@*/
 
 /**
  * Table of query format extensions.
@@ -743,25 +743,6 @@ typedef /*@abstract@*/ struct fsm_s * FSM_t;
 typedef /*@abstract@*/ /*@refcounted@*/ struct rpmpsm_s * rpmpsm;
 
 /** 
- * Check header consistency, performing headerGetEntry() the hard way.
- *  
- * Sanity checks on the header are performed while looking for a
- * header-only digest or signature to verify the blob. If found,
- * the digest or signature is verified.
- *
- * @param ts		transaction set
- * @param uh		unloaded header blob
- * @param uc		no. of bytes in blob (or 0 to disable)
- * @retval *msg		verification error message (or NULL)
- * @return		RPMRC_OK on success
- */
-rpmRC headerCheck(rpmts ts, const void * uh, size_t uc,
-		/*@out@*/ /*@null@*/ const char ** msg)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies ts, *msg, rpmGlobalMacroContext,
-		fileSystem, internalState @*/;
-
-/** 
  * Return checked and loaded header.
  * @param ts		transaction set
  * @param _fd		file handle
@@ -801,7 +782,7 @@ rpmRC rpmInstallSourcePackage(rpmts ts, void * _fd,
 			/*@null@*/ /*@out@*/ const char ** specFilePtr,
 			/*@null@*/ /*@out@*/ const char ** cookie)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies ts, fd, *specFilePtr, *cookie, rpmGlobalMacroContext,
+	/*@modifies ts, _fd, *specFilePtr, *cookie, rpmGlobalMacroContext,
 		fileSystem, internalState @*/;
 
 /** \ingroup rpmts

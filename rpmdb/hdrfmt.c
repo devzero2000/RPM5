@@ -20,9 +20,9 @@
 /*@access pgpDig @*/
 /*@access pgpDigParams @*/
 
-/*@-boundswrite@*/
 /* XXX FIXME: static for now, refactor from manifest.c later. */
 static char * rpmPermsString(int mode)
+	/*@*/
 {
     char *perms = xstrdup("----------");
    
@@ -68,7 +68,6 @@ static char * rpmPermsString(int mode)
 
     return perms;
 }
-/*@=boundswrite@*/
 /**
  * Identify type of trigger.
  * @param type		tag type
@@ -122,9 +121,7 @@ static /*@only@*/ char * permsFormat(int_32 type, const void * data,
 	val = xstrdup(_("(invalid type)"));
     } else {
 	val = xmalloc(15 + padding);
-/*@-boundswrite@*/
 	strcat(formatPrefix, "s");
-/*@=boundswrite@*/
 	buf = rpmPermsString(*((int_32 *) data));
 	/*@-formatconst@*/
 	sprintf(val, formatPrefix, buf);
@@ -157,7 +154,6 @@ static /*@only@*/ char * fflagsFormat(int_32 type, const void * data,
 	val = xstrdup(_("(invalid type)"));
     } else {
 	buf[0] = '\0';
-/*@-boundswrite@*/
 	if (anint & RPMFILE_DOC)
 	    strcat(buf, "d");
 	if (anint & RPMFILE_CONFIG)
@@ -174,12 +170,9 @@ static /*@only@*/ char * fflagsFormat(int_32 type, const void * data,
 	    strcat(buf, "l");
 	if (anint & RPMFILE_README)
 	    strcat(buf, "r");
-/*@=boundswrite@*/
 
 	val = xmalloc(5 + padding);
-/*@-boundswrite@*/
 	strcat(formatPrefix, "s");
-/*@=boundswrite@*/
 	/*@-formatconst@*/
 	sprintf(val, formatPrefix, buf);
 	/*@=formatconst@*/
@@ -223,8 +216,10 @@ static /*@only@*/ char * armorFormat(int_32 type, const void * data,
 	enc = data;
 	s = NULL;
 	ns = 0;
+/*@-moduncon@*/
 	if (b64decode(enc, (void **)&s, &ns))
 	    return xstrdup(_("(not base64)"));
+/*@=moduncon@*/
 	atype = PGPARMOR_PUBKEY;	/* XXX check pkt for pubkey */
 	break;
     case RPM_NULL_TYPE:
@@ -272,7 +267,6 @@ static /*@only@*/ char * base64Format(int_32 type, const void * data,
 	size_t ns = element;
 	size_t nt = ((ns + 2) / 3) * 4;
 
-/*@-boundswrite@*/
 	/*@-globs@*/
 	/* Add additional bytes necessary for eol string(s). */
 	if (b64encode_chars_per_line > 0 && b64encode_eolstr != NULL) {
@@ -289,16 +283,19 @@ static /*@only@*/ char * base64Format(int_32 type, const void * data,
     /* XXX b64encode accesses uninitialized memory. */
     { 	unsigned char * _data = xcalloc(1, ns+1);
 	memcpy(_data, data, ns);
+/*@-moduncon@*/
 	if ((enc = b64encode(_data, ns)) != NULL) {
 	    t = stpcpy(t, enc);
 	    enc = _free(enc);
 	}
+/*@=moduncon@*/
 	_data = _free(_data);
     }
-/*@=boundswrite@*/
     }
 
+/*@-globstate@*/
     return val;
+/*@=globstate@*/
 }
 
 /**
@@ -312,9 +309,7 @@ static size_t xmlstrlen(const char * s)
     size_t len = 0;
     int c;
 
-/*@-boundsread@*/
     while ((c = *s++) != '\0')
-/*@=boundsread@*/
     {
 	switch (c) {
 	case '<':
@@ -338,7 +333,6 @@ static char * xmlstrcpy(/*@returned@*/ char * t, const char * s)
     char * te = t;
     int c;
 
-/*@-bounds@*/
     while ((c = *s++) != '\0') {
 	switch (c) {
 	case '<':	te = stpcpy(te, "&lt;");	/*@switchbreak@*/ break;
@@ -348,7 +342,6 @@ static char * xmlstrcpy(/*@returned@*/ char * t, const char * s)
 	}
     }
     *te = '\0';
-/*@=bounds@*/
     return t;
 }
 
@@ -361,7 +354,6 @@ static char * xmlstrcpy(/*@returned@*/ char * t, const char * s)
  * @param element	(unused)
  * @return		formatted string
  */
-/*@-bounds@*/
 static /*@only@*/ char * xmlFormat(int_32 type, const void * data,
 		char * formatPrefix, int padding,
 		/*@unused@*/ int element)
@@ -376,7 +368,6 @@ static /*@only@*/ char * xmlFormat(int_32 type, const void * data,
     int freeit = 0;
     int xx;
 
-/*@-branchstate@*/
     switch (type) {
     case RPM_I18NSTRING_TYPE:
     case RPM_STRING_TYPE:
@@ -390,19 +381,17 @@ static /*@only@*/ char * xmlFormat(int_32 type, const void * data,
     case RPM_OPENPGP_TYPE:
     case RPM_ASN1_TYPE:
     case RPM_BIN_TYPE:
+/*@-globs -mods@*/
     {	int cpl = b64encode_chars_per_line;
-/*@-mods@*/
 	b64encode_chars_per_line = 0;
-/*@=mods@*/
 /*@-formatconst@*/
 	s = base64Format(type, data, formatPrefix, padding, element);
 /*@=formatconst@*/
-/*@-mods@*/
 	b64encode_chars_per_line = cpl;
-/*@=mods@*/
 	xtag = "base64";
 	freeit = 1;
     }	break;
+/*@=globs =mods@*/
     case RPM_CHAR_TYPE:
     case RPM_INT8_TYPE:
 	anint = *((uint_8 *) data);
@@ -422,9 +411,7 @@ static /*@only@*/ char * xmlFormat(int_32 type, const void * data,
 	return xstrdup(_("(invalid xml type)"));
 	/*@notreached@*/ break;
     }
-/*@=branchstate@*/
 
-/*@-branchstate@*/
     if (s == NULL) {
 	int tlen = 64;
 	t = memset(alloca(tlen+1), 0, tlen+1);
@@ -435,7 +422,6 @@ static /*@only@*/ char * xmlFormat(int_32 type, const void * data,
 	s = t;
 	xtag = "integer";
     }
-/*@=branchstate@*/
 
     nb = xmlstrlen(s);
     if (nb == 0) {
@@ -451,16 +437,12 @@ static /*@only@*/ char * xmlFormat(int_32 type, const void * data,
 	te = stpcpy( stpcpy( stpcpy(te, "</"), xtag), ">");
     }
 
-/*@-branchstate@*/
     if (freeit)
 	s = _free(s);
-/*@=branchstate@*/
 
     nb += padding;
     val = xmalloc(nb+1);
-/*@-boundswrite@*/
     strcat(formatPrefix, "s");
-/*@=boundswrite@*/
 /*@-formatconst@*/
     xx = snprintf(val, nb, formatPrefix, t);
 /*@=formatconst@*/
@@ -468,7 +450,6 @@ static /*@only@*/ char * xmlFormat(int_32 type, const void * data,
 
     return val;
 }
-/*@=bounds@*/
 
 /**
  * Return length of string represented with yaml indentation.
@@ -483,9 +464,7 @@ static size_t yamlstrlen(const char * s, int lvl)
     int indent = (lvl > 0);
     int c;
 
-/*@-boundsread@*/
     while ((c = *s++) != '\0')
-/*@=boundsread@*/
     {
 	if (indent) {
 	    len += 2 * lvl;
@@ -512,7 +491,6 @@ static char * yamlstrcpy(/*@out@*/ /*@returned@*/ char * t, const char * s, int 
     int indent = (lvl > 0);
     int c;
 
-/*@-bounds@*/
     while ((c = *s++) != '\0') {
 	if (indent) {
 	    int i;
@@ -527,7 +505,6 @@ static char * yamlstrcpy(/*@out@*/ /*@returned@*/ char * t, const char * s, int 
 	*te++ = c;
     }
     *te = '\0';
-/*@=bounds@*/
     return t;
 }
 
@@ -540,7 +517,6 @@ static char * yamlstrcpy(/*@out@*/ /*@returned@*/ char * t, const char * s, int 
  * @param element	element index (or -1 for non-array).
  * @return		formatted string
  */
-/*@-bounds@*/
 static /*@only@*/ char * yamlFormat(int_32 type, const void * data,
 		char * formatPrefix, int padding,
 		int element)
@@ -558,7 +534,6 @@ static /*@only@*/ char * yamlFormat(int_32 type, const void * data,
     int xx;
     int c;
 
-/*@-branchstate@*/
     switch (type) {
     case RPM_I18NSTRING_TYPE:
     case RPM_STRING_TYPE:
@@ -603,20 +578,18 @@ static /*@only@*/ char * yamlFormat(int_32 type, const void * data,
     case RPM_OPENPGP_TYPE:
     case RPM_ASN1_TYPE:
     case RPM_BIN_TYPE:
+/*@-globs -mods@*/
     {	int cpl = b64encode_chars_per_line;
-/*@-mods@*/
 	b64encode_chars_per_line = 0;
-/*@=mods@*/
 /*@-formatconst@*/
 	s = base64Format(type, data, formatPrefix, padding, element);
 	element = -element;	/* XXX skip "    " indent. */
 /*@=formatconst@*/
-/*@-mods@*/
 	b64encode_chars_per_line = cpl;
-/*@=mods@*/
 	xtag = "!!binary ";
 	freeit = 1;
     }	break;
+/*@=globs =mods@*/
     case RPM_CHAR_TYPE:
     case RPM_INT8_TYPE:
 	anint = *((uint_8 *) data);
@@ -636,9 +609,7 @@ static /*@only@*/ char * yamlFormat(int_32 type, const void * data,
 	return xstrdup(_("(invalid yaml type)"));
 	/*@notreached@*/ break;
     }
-/*@=branchstate@*/
 
-/*@-branchstate@*/
     if (s == NULL) {
 	int tlen = 64;
 	t = memset(alloca(tlen+1), 0, tlen+1);
@@ -648,7 +619,6 @@ static /*@only@*/ char * yamlFormat(int_32 type, const void * data,
 	s = t;
 	xtag = (element >= 0 ? "- " : NULL);
     }
-/*@=branchstate@*/
 
     nb = yamlstrlen(s, lvl);
     if (nb == 0) {
@@ -680,16 +650,12 @@ static /*@only@*/ char * yamlFormat(int_32 type, const void * data,
     }
 
     /* XXX s was malloc'd */
-/*@-branchstate@*/
     if (freeit)
 	s = _free(s);
-/*@=branchstate@*/
 
     nb += padding;
     val = xmalloc(nb+1);
-/*@-boundswrite@*/
     strcat(formatPrefix, "s");
-/*@=boundswrite@*/
 /*@-formatconst@*/
     xx = snprintf(val, nb, formatPrefix, t);
 /*@=formatconst@*/
@@ -697,7 +663,6 @@ static /*@only@*/ char * yamlFormat(int_32 type, const void * data,
 
     return val;
 }
-/*@=bounds@*/
 
 /**
  * Display signature fingerprint and time.
@@ -721,9 +686,7 @@ static /*@only@*/ char * pgpsigFormat(int_32 type, const void * data,
     } else {
 	unsigned char * pkt = (byte *) data;
 	unsigned int pktlen = 0;
-/*@-boundsread@*/
 	unsigned int v = *pkt;
-/*@=boundsread@*/
 	pgpTag tag = 0;
 	unsigned int plen;
 	unsigned int hlen = 0;
@@ -756,7 +719,6 @@ static /*@only@*/ char * pgpsigFormat(int_32 type, const void * data,
 	    nb += 100;
 	    val = t = xrealloc(val, nb + 1);
 
-/*@-boundswrite@*/
 	    switch (sigp->pubkey_algo) {
 	    case PGPPUBKEYALGO_DSA:
 		t = stpcpy(t, "DSA");
@@ -803,7 +765,6 @@ static /*@only@*/ char * pgpsigFormat(int_32 type, const void * data,
 	    if (t + strlen (tempstr) > val + nb)
 		goto again;
 	    t = stpcpy(t, tempstr);
-/*@=boundswrite@*/
 
 	    dig = pgpFreeDig(dig);
 	}
@@ -837,7 +798,6 @@ static /*@only@*/ char * depflagsFormat(int_32 type, const void * data,
 	t = buf = alloca(32);
 	*t = '\0';
 
-/*@-boundswrite@*/
 #ifdef	NOTYET	/* XXX appending markers breaks :depflags format. */
 	if (anint & RPMSENSE_SCRIPT_PRE)
 	    t = stpcpy(t, "(pre)");
@@ -859,12 +819,9 @@ static /*@only@*/ char * depflagsFormat(int_32 type, const void * data,
 	if (anint & RPMSENSE_SENSEMASK)
 	    *t++ = ' ';
 	*t = '\0';
-/*@=boundswrite@*/
 
 	val = xmalloc(5 + padding);
-/*@-boundswrite@*/
 	strcat(formatPrefix, "s");
-/*@=boundswrite@*/
 	/*@-formatconst@*/
 	sprintf(val, formatPrefix, buf);
 	/*@=formatconst@*/
@@ -900,9 +857,7 @@ static int instprefixTag(Header h, /*@null@*/ /*@out@*/ rpmTagType * type,
 	return 0;
     } else if (hge(h, RPMTAG_INSTPREFIXES, &ipt, &array, count)) {
 	if (type) *type = RPM_STRING_TYPE;
-/*@-boundsread@*/
 	if (data) *data = xstrdup(array[0]);
-/*@=boundsread@*/
 	if (freeData) *freeData = 1;
 	array = hfd(array, ipt);
 	return 0;
@@ -954,7 +909,6 @@ static int triggercondsTag(Header h, /*@out@*/ rpmTagType * type,
     *data = conds = xmalloc(sizeof(*conds) * numScripts);
     *count = numScripts;
     *type = RPM_STRING_ARRAY_TYPE;
-/*@-bounds@*/
     for (i = 0; i < numScripts; i++) {
 	chptr = xstrdup("");
 
@@ -980,7 +934,6 @@ static int triggercondsTag(Header h, /*@out@*/ rpmTagType * type,
 
 	conds[i] = chptr;
     }
-/*@=bounds@*/
 
     names = hfd(names, tnt);
     versions = hfd(versions, tvt);
@@ -1026,7 +979,6 @@ static int triggertypeTag(Header h, /*@out@*/ rpmTagType * type,
     *data = conds = xmalloc(sizeof(*conds) * numScripts);
     *count = numScripts;
     *type = RPM_STRING_ARRAY_TYPE;
-/*@-bounds@*/
     for (i = 0; i < numScripts; i++) {
 	for (j = 0; j < numNames; j++) {
 	    if (indices[j] != i)
@@ -1045,7 +997,6 @@ static int triggertypeTag(Header h, /*@out@*/ rpmTagType * type,
 	    /*@innerbreak@*/ break;
 	}
     }
-/*@=bounds@*/
 
     return 0;
 }
@@ -1118,14 +1069,12 @@ static int i18nTag(Header h, int_32 tag, /*@out@*/ rpmTagType * type,
 #endif
 
 	msgid = NULL;
-	/*@-branchstate@*/
 	for (domain = dstring; domain != NULL; domain = de) {
 	    de = strchr(domain, ':');
 	    if (de) *de++ = '\0';
 	    msgid = /*@-unrecog@*/ dgettext(domain, msgkey) /*@=unrecog@*/;
 	    if (msgid != msgkey) break;
 	}
-	/*@=branchstate@*/
 
 	/* restore previous environment for msgid -> msgstr resolution */
 	if (langval)
@@ -1304,6 +1253,7 @@ static int groupTag(Header h, /*@out@*/ rpmTagType * type,
  * @retval *freeData	data-was-malloc'ed indicator
  * @return		0 on success
  */
+/*@-globuse@*/
 static int dbinstanceTag(Header h, /*@out@*/ rpmTagType * type,
 		/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
 		/*@out@*/ int * freeData)
@@ -1325,6 +1275,7 @@ static int dbinstanceTag(Header h, /*@out@*/ rpmTagType * type,
 
     return 0;
 }
+/*@=globuse@*/
 
 /**
  * Return (malloc'd) header name-version-release.arch string.
@@ -1333,7 +1284,7 @@ static int dbinstanceTag(Header h, /*@out@*/ rpmTagType * type,
  */
 /*@only@*/
 static char * hGetNVRA(Header h)
-	/*@modifies *np @*/
+	/*@modifies h @*/
 {
     const char * N = NULL;
     const char * V = NULL;
@@ -1350,12 +1301,10 @@ static char * hGetNVRA(Header h)
     nb++;
     NVRA = t = xmalloc(nb);
     *t = '\0';
-/*@-boundswrite@*/
     if (N)	t = stpcpy(t, N);
     if (V)	t = stpcpy( stpcpy(t, "-"), V);
     if (R)	t = stpcpy( stpcpy(t, "-"), R);
     if (A)	t = stpcpy( stpcpy(t, "."), A);
-/*@=boundswrite@*/
     return NVRA;
 }
 
@@ -1368,12 +1317,13 @@ static char * hGetNVRA(Header h)
  * @retval *freeData	data-was-malloc'ed indicator
  * @return		0 on success
  */
+/*@-globuse@*/
 static int nvraTag(Header h, /*@out@*/ rpmTagType * type,
 		/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
 		/*@out@*/ int * freeData)
 	/*@globals rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState @*/
-	/*@modifies *type, *data, *count, *freeData, rpmGlobalMacroContext,
+	/*@modifies h, *type, *data, *count, *freeData, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 	/*@requires maxSet(type) >= 0 /\ maxSet(data) >= 0
 		/\ maxSet(count) >= 0 /\ maxSet(freeData) >= 0 @*/
@@ -1385,6 +1335,7 @@ static int nvraTag(Header h, /*@out@*/ rpmTagType * type,
 
     return 0;
 }
+/*@=globuse@*/
 
 /**
  * Retrieve file names from header.
@@ -1447,7 +1398,6 @@ static void rpmfiBuildFNames(Header h, rpmTag tagN,
 
     fileNames = xmalloc(size);
     t = ((char *) fileNames) + (sizeof(*fileNames) * count);
-    /*@-branchstate@*/
     for (i = 0; i < count; i++) {
 	const char * dn = NULL;
 	fileNames[i] = t;
@@ -1455,16 +1405,13 @@ static void rpmfiBuildFNames(Header h, rpmTag tagN,
 	t = stpcpy( stpcpy(t, dn), baseNames[i]);
 	*t++ = '\0';
     }
-    /*@=branchstate@*/
     baseNames = hfd(baseNames, bnt);
     dirNames = hfd(dirNames, dnt);
 
-    /*@-branchstate@*/
     if (fnp)
 	*fnp = fileNames;
     else
 	fileNames = _free(fileNames);
-    /*@=branchstate@*/
     if (fcp) *fcp = count;
 }
 

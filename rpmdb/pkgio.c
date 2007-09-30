@@ -28,8 +28,13 @@
 #include <pkgio.h>
 #include "debug.h"
 
+/*@access rpmts @*/
+/*@access pgpDig @*/
+/*@access pgpDigParams @*/
+/*@access Header @*/            /* XXX compared with NULL */
 /*@access entryInfo @*/		/* XXX rdSignature */
 /*@access indexEntry @*/	/* XXX rdSignature */
+/*@access FD_t @*/              /* XXX stealing digests */
 
 /*@unchecked@*/
 static int _print_pkts = 0;
@@ -49,7 +54,9 @@ rpmop rpmtsOp(rpmts ts, rpmtsOpX opx)
 
 pgpDigParams rpmtsPubkey(const rpmts ts)
 {
+/*@-onlytrans@*/
     return pgpGetPubkey(rpmtsDig(ts));
+/*@=onlytrans@*/
 }
 
 rpmRC rpmtsFindPubkey(rpmts ts, void * _dig)
@@ -93,11 +100,12 @@ fprintf(stderr, "*** free pkt %p[%d] id %08x %08x\n", ts->pkpkt, ts->pkpktlen, p
 	char * krn = alloca(strlen(krprefix) + sizeof("12345678"));
 	long key;
 
-	snprintf(krfp, sizeof(krfp), "%08X", pgpGrab(sigp->signid+4, 4));
+	(void) snprintf(krfp, sizeof(krfp), "%08X", pgpGrab(sigp->signid+4, 4));
 	krfp[sizeof(krfp)-1] = '\0';
 	*krn = '\0';
 	(void) stpcpy( stpcpy(krn, krprefix), krfp);
 
+/*@-moduncon@*/
 	key = keyctl_search(keyring, "user", krn, 0);
 	xx = keyctl_read(key, NULL, 0);
 	if (xx > 0) {
@@ -112,6 +120,7 @@ fprintf(stderr, "*** free pkt %p[%d] id %08x %08x\n", ts->pkpkt, ts->pkpktlen, p
 		ts->pkpktlen = 0;
 	    }
         }
+/*@=moduncon@*/
     }
 #endif
 
@@ -132,17 +141,16 @@ fprintf(stderr, "*** free pkt %p[%d] id %08x %08x\n", ts->pkpkt, ts->pkpktlen, p
 		continue;
 	    hx = rpmdbGetIteratorOffset(mi);
 	    ix = rpmdbGetIteratorFileNum(mi);
-/*@-boundsread@*/
+/*@-moduncon -nullstate @*/
 	    if (ix >= pc
 	     || b64decode(pubkeys[ix], (void **) &ts->pkpkt, &ts->pkpktlen))
 		ix = -1;
-/*@=boundsread@*/
+/*@=moduncon =nullstate @*/
 	    pubkeys = headerFreeData(pubkeys, pt);
 	    break;
 	}
 	mi = rpmdbFreeIterator(mi);
 
-/*@-branchstate@*/
 	if (ix >= 0) {
 	    char hnum[32];
 	    sprintf(hnum, "h#%d", hx);
@@ -151,7 +159,6 @@ fprintf(stderr, "*** free pkt %p[%d] id %08x %08x\n", ts->pkpkt, ts->pkpktlen, p
 	    ts->pkpkt = _free(ts->pkpkt);
 	    ts->pkpktlen = 0;
 	}
-/*@=branchstate@*/
     }
 
     /* Try keyserver lookup. */
@@ -164,7 +171,6 @@ fprintf(stderr, "*** free pkt %p[%d] id %08x %08x\n", ts->pkpkt, ts->pkpktlen, p
 	    xx = (pgpReadPkts(fn,&ts->pkpkt,&ts->pkpktlen) != PGPARMOR_PUBKEY);
 	}
 	fn = _free(fn);
-/*@-branchstate@*/
 	if (xx) {
 	    ts->pkpkt = _free(ts->pkpkt);
 	    ts->pkpktlen = 0;
@@ -172,7 +178,6 @@ fprintf(stderr, "*** free pkt %p[%d] id %08x %08x\n", ts->pkpkt, ts->pkpktlen, p
 	    /* Save new pubkey in local ts keyring for delayed import. */
 	    pubkeysource = xstrdup("keyserver");
 	}
-/*@=branchstate@*/
     }
 
 #ifdef	NOTNOW
@@ -218,18 +223,18 @@ fprintf(stderr, "*** free pkt %p[%d] id %08x %08x\n", ts->pkpkt, ts->pkpktlen, p
 	    char krfp[32];
 	    char * krn = alloca(strlen(krprefix) + sizeof("12345678"));
 
-	    snprintf(krfp, sizeof(krfp), "%08X", pgpGrab(sigp->signid+4, 4));
+	    (void) snprintf(krfp, sizeof(krfp), "%08X", pgpGrab(sigp->signid+4, 4));
 	    krfp[sizeof(krfp)-1] = '\0';
 	    *krn = '\0';
 	    (void) stpcpy( stpcpy(krn, krprefix), krfp);
+/*@-moduncon -noeffectuncon @*/
 	    (void) add_key("user", krn, ts->pkpkt, ts->pkpktlen, keyring);
+/*@=moduncon =noeffectuncon @*/
 	}
 #endif
 
 	/* Pubkey packet looks good, save the signer id. */
-/*@-boundsread@*/
 	memcpy(ts->pksignid, pubp->signid, sizeof(ts->pksignid));
-/*@=boundsread@*/
 
 	if (pubkeysource)
 	    rpmMessage(RPMMESS_DEBUG, "========== %s pubkey id %08x %08x (%s)\n",
@@ -268,8 +273,10 @@ int rpmtsSetSig(rpmts ts,
     if (ts != NULL) {
 	const void * osig = pgpGetSig(rpmtsDig(ts));
 	int_32 osigtype = pgpGetSigtype(rpmtsDig(ts));
+/*@-modobserver -observertrans -dependenttrans @*/	/* FIX: pgpSetSig() lazy free. */
 	if (osig && osigtype)
 	    osig = headerFreeData(osig, osigtype);
+/*@=modobserver =observertrans =dependenttrans @*/
 	ret = pgpSetSig(rpmtsDig(ts), sigtag, sigtype, sig, siglen);
     }
     return ret;
@@ -361,8 +368,9 @@ static rpmRC wrLead(FD_t fd, const void * ptr, const char ** msg)
  * @retval *msg		failure msg
  * @return		rpmRC return code
  */
-static rpmRC rdLead(FD_t fd, void * ptr, const char ** msg)
-	/*@modifies fd, *lead, *msg @*/
+static rpmRC rdLead(FD_t fd, /*@out@*/ /*@null@*/ void * ptr,
+		const char ** msg)
+	/*@modifies fd, *ptr, *msg @*/
 {
     struct rpmlead ** leadp = ptr;
     struct rpmlead * l = xcalloc(1, sizeof(*l));
@@ -436,8 +444,10 @@ exit:
 
 /*===============================================*/
 
+/*@-redecl@*/
 /*@unchecked@*/
 extern int _newmagic;
+/*@=redecl@*/
 
 /*@observer@*/ /*@unchecked@*/
 static unsigned char sigh_magic[8] = {
@@ -519,7 +529,8 @@ static inline rpmRC printSize(FD_t fd, int siglen, int pad, size_t datalen)
  * @retval *msg		failure msg
  * @return		rpmRC return code
  */
-static rpmRC rdSignature(FD_t fd, void * ptr, const char ** msg)
+static rpmRC rdSignature(FD_t fd, /*@out@*/ /*@null@*/ void * ptr,
+		const char ** msg)
 	/*@globals fileSystem @*/
 	/*@modifies fd, *ptr, *msg, fileSystem @*/
 {
@@ -730,13 +741,11 @@ rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, const char ** msg)
     pgpDig dig = rpmtsDig(ts);
     char buf[8*BUFSIZ];
     int_32 * ei = (int_32 *) uh;
-/*@-boundsread@*/
     int_32 il = ntohl(ei[0]);
     int_32 dl = ntohl(ei[1]);
 /*@-castexpose@*/
     entryInfo pe = (entryInfo) &ei[2];
 /*@=castexpose@*/
-/*@=boundsread@*/
     int_32 ildl[2];
     int_32 pvlen = sizeof(ildl) + (il * sizeof(*pe)) + dl;
     unsigned char * dataStart = (unsigned char *) (pe + il);
@@ -757,9 +766,7 @@ rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, const char ** msg)
     static int hclvl;
 
     hclvl++;
-/*@-boundswrite@*/
     buf[0] = '\0';
-/*@=boundswrite@*/
 
     /* Is the blob the right size? */
     if (uc > 0 && pvlen != uc) {
@@ -802,9 +809,7 @@ rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, const char ** msg)
     /* Is there an immutable header region tag trailer? */
     regionEnd = dataStart + entry->info.offset;
 /*@-sizeoftype@*/
-/*@-bounds@*/
     (void) memcpy(info, regionEnd, REGION_TAG_COUNT);
-/*@=bounds@*/
     regionEnd += REGION_TAG_COUNT;
 
     xx = headerVerifyInfo(1, dl, info, &entry->info, 1);
@@ -820,9 +825,7 @@ rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, const char ** msg)
 	goto exit;
     }
 /*@=sizeoftype@*/
-/*@-boundswrite@*/
     memset(info, 0, sizeof(*info));
-/*@=boundswrite@*/
 
     /* Is the no. of tags in the region less than the total no. of tags? */
     ril = entry->info.offset/sizeof(*pe);
@@ -848,7 +851,6 @@ rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, const char ** msg)
 	    if (vsflags & RPMVSF_NOSHA1HEADER)
 		/*@switchbreak@*/ break;
 	    blen = 0;
-/*@-boundsread@*/
 	    for (b = dataStart + entry->info.offset; *b != '\0'; b++) {
 		if (strchr("0123456789abcdefABCDEF", *b) == NULL)
 		    /*@innerbreak@*/ break;
@@ -859,11 +861,8 @@ rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, const char ** msg)
 		(void) snprintf(buf, sizeof(buf), _("hdr SHA1: BAD, not hex\n"));
 		goto exit;
 	    }
-/*@=boundsread@*/
 	    if (info->tag == 0) {
-/*@-boundswrite@*/
 		*info = entry->info;	/* structure assignment */
-/*@=boundswrite@*/
 		siglen = blen + 1;
 	    }
 	    /*@switchbreak@*/ break;
@@ -874,9 +873,7 @@ rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, const char ** msg)
 		(void) snprintf(buf, sizeof(buf), _("hdr RSA: BAD, not binary\n"));
 		goto exit;
 	    }
-/*@-boundswrite@*/
 	    *info = entry->info;	/* structure assignment */
-/*@=boundswrite@*/
 	    siglen = info->count;
 	    /*@switchbreak@*/ break;
 	case RPMTAG_DSAHEADER:
@@ -886,9 +883,7 @@ rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, const char ** msg)
 		(void) snprintf(buf, sizeof(buf), _("hdr DSA: BAD, not binary\n"));
 		goto exit;
 	    }
-/*@-boundswrite@*/
 	    *info = entry->info;	/* structure assignment */
-/*@=boundswrite@*/
 	    siglen = info->count;
 	    /*@switchbreak@*/ break;
 	default:
@@ -900,10 +895,8 @@ rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, const char ** msg)
 exit:
     /* Return determined RPMRC_OK/RPMRC_FAIL conditions. */
     if (rc != RPMRC_NOTFOUND) {
-/*@-boundswrite@*/
 	buf[sizeof(buf)-1] = '\0';
 	if (msg) *msg = xstrdup(buf);
-/*@=boundswrite@*/
 	hclvl--;
 	return rc;
     }
@@ -921,26 +914,24 @@ exit:
 	    (void) snprintf(buf, sizeof(buf), "Header sanity check: OK\n");
 	    rc = RPMRC_OK;
 	}
-/*@-boundswrite@*/
 	buf[sizeof(buf)-1] = '\0';
 	if (msg) *msg = xstrdup(buf);
-/*@=boundswrite@*/
 	hclvl--;
 	return rc;
     }
 
     /* Verify header-only digest/signature. */
-assert(dig);
+assert(dig != NULL);
     dig->nbytes = 0;
 
-/*@-boundsread@*/
     sig = memcpy(xmalloc(siglen), dataStart + info->offset, siglen);
-/*@=boundsread@*/
     {
 	const void * osig = pgpGetSig(dig);
 	int_32 osigtype = pgpGetSigtype(dig);
+/*@-modobserver -observertrans -dependenttrans @*/	/* FIX: pgpSetSig() lazy free. */
 	if (osig && osigtype)
 	    osig = headerFreeData(osig, osigtype);
+/*@=modobserver =observertrans =dependenttrans @*/
 	(void) pgpSetSig(dig, info->tag, info->type, sig, info->count);
     }
 
@@ -1002,11 +993,9 @@ assert(dig);
 	}
 	/*@fallthrough@*/
     case RPMTAG_SHA1HEADER:
-/*@-boundswrite@*/
 	ildl[0] = htonl(ril);
 	ildl[1] = (regionEnd - dataStart);
 	ildl[1] = htonl(ildl[1]);
-/*@=boundswrite@*/
 
 	op = pgpStatsAccumulator(dig, 10);	/* RPMTS_OP_DIGEST */
 	(void) rpmswEnter(op, 0);
@@ -1041,15 +1030,11 @@ assert(dig);
 	break;
     }
 
-/*@-boundswrite@*/
     buf[0] = '\0';
-/*@=boundswrite@*/
     rc = rpmVerifySignature(dig, buf);
 
-/*@-boundswrite@*/
     buf[sizeof(buf)-1] = '\0';
     if (msg) *msg = xstrdup(buf);
-/*@=boundswrite@*/
 
     /* XXX headerCheck can recurse, free info only at top level. */
     if (hclvl == 1)
@@ -1065,13 +1050,16 @@ assert(dig);
  * @param ptr		metadata header (at least 32 bytes)
  * @return		size of header
  */
-static size_t szHeader(const void * ptr)
+static size_t szHeader(/*@null@*/ const void * ptr)
+	/*@*/
 {
     uint32_t p[4];
+assert(ptr != NULL);
     memcpy(p, ptr, sizeof(p));
     return (8 + 8 + 16 * ntohl(p[2]) + ntohl(p[3]));
 }
 
+/*@-globuse@*/
 /**
  * Check metadata header.
  * @param fd		file handle
@@ -1095,7 +1083,8 @@ static rpmRC ckHeader(FD_t fd, const void * ptr, const char ** msg)
  * @retval *msg		failure msg
  * @return		rpmRC return code
  */
-static rpmRC rdHeader(FD_t fd, void * ptr, const char ** msg)
+static rpmRC rdHeader(FD_t fd, /*@out@*/ /*@null@*/ void * ptr,
+		const char ** msg)
 	/*@globals fileSystem @*/
 	/*@modifies fd, *ptr, *msg, fileSystem @*/
 {
@@ -1135,6 +1124,7 @@ static rpmRC wrHeader(FD_t fd, void * ptr, const char ** msg)
 
     return rc;
 }
+/*@=globuse@*/
 
 /*===============================================*/
 

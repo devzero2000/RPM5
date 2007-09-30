@@ -600,8 +600,10 @@ extern int glob_pattern_p (const char *__pattern, int __quote)
 /*@=constuse@*/
 #endif
 
+/*@-redecl@*/
 extern int fnmatch (const char *__pattern, const char *__name, int __flags)
 	/*@*/;
+/*@=redecl@*/
 /*@=declundef =incondefs @*/
 #endif
 

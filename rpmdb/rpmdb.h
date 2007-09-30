@@ -914,6 +914,7 @@ rpmdb XrpmdbLink (rpmdb db, const char * msg,
 
 /** @todo document rpmdbNew
  */
+/*@only@*/ /*@null@*/
 rpmdb rpmdbNew(/*@kept@*/ /*@null@*/ const char * root,
 		/*@kept@*/ /*@null@*/ const char * home,
 		int mode, int perms, int flags);
@@ -923,7 +924,11 @@ rpmdb rpmdbNew(/*@kept@*/ /*@null@*/ const char * root,
 int rpmdbOpenDatabase(/*@null@*/ const char * prefix,
 		/*@null@*/ const char * dbpath,
 		int _dbapi, /*@null@*/ /*@out@*/ rpmdb *dbp,
-		int mode, int perms, int flags);
+		int mode, int perms, int flags)
+	/*@globals rpmGlobalMacroContext, h_errno,
+		fileSystem, internalState @*/
+	/*@modifies *dbp, rpmGlobalMacroContext,
+		fileSystem, internalState @*/;
 
 /** \ingroup rpmdb
  * Open rpm database.
@@ -1178,7 +1183,8 @@ rpmdbMatchIterator rpmdbFreeIterator(/*@only@*/ /*@null@*/rpmdbMatchIterator mi)
  */
 int rpmdbAdd(/*@null@*/ rpmdb db, int iid, Header h, /*@null@*/ rpmts ts)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies db, h, rpmGlobalMacroContext, fileSystem, internalState @*/;
+	/*@modifies db, h, ts,
+		rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /** \ingroup rpmdb
  * Remove package header from rpm database and indices.
@@ -1191,7 +1197,8 @@ int rpmdbAdd(/*@null@*/ rpmdb db, int iid, Header h, /*@null@*/ rpmts ts)
 int rpmdbRemove(/*@null@*/ rpmdb db, /*@unused@*/ int rid, unsigned int hdrNum,
 		/*@null@*/ rpmts ts)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies db, rpmGlobalMacroContext, fileSystem, internalState @*/;
+	/*@modifies db, ts,
+		rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /** \ingroup rpmdb
  * Rebuild database indices from package headers.
@@ -1201,7 +1208,7 @@ int rpmdbRemove(/*@null@*/ rpmdb db, /*@unused@*/ int rid, unsigned int hdrNum,
  */
 int rpmdbRebuild(/*@null@*/ const char * prefix, /*@null@*/ rpmts ts)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/;
+	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /**
  * Mergesort, same arguments as qsort(2).

@@ -177,6 +177,7 @@ static int cvtdberr(/*@unused@*/ dbiIndex dbi, const char * msg, int error, int 
  * @param value		tag value
  * @return		tag string
  */
+/*@observer@*/
 static const char * mapTagName(int value)
 	/*@*/
 {
@@ -333,7 +334,9 @@ static int db_init(dbiIndex dbi, const char * dbhome,
  /* 4.1: dbenv->set_data_dir(???) */
  /* 4.1: dbenv->set_encrypt(???) */
 
+/*@-castfcnptr@*/
     dbenv->set_errcall(dbenv, (void *)rpmdb->db_errcall);
+/*@=castfcnptr@*/
     dbenv->set_errfile(dbenv, rpmdb->db_errfile);
     dbenv->set_errpfx(dbenv, rpmdb->db_errpfx);
     /*@=noeffectuncon@*/
@@ -402,10 +405,8 @@ static int db_init(dbiIndex dbi, const char * dbhome,
 	    const char * tmpdir;
 
 	    root = (dbi->dbi_root ? dbi->dbi_root : rpmdb->db_root);
-/*@-boundsread@*/
 	    if ((root[0] == '/' && root[1] == '\0') || rpmdb->db_chrootDone)
 		root = NULL;
-/*@=boundsread@*/
 /*@-mods@*/
 	    tmpdir = rpmGenPath(root, dbi->dbi_tmpdir, NULL);
 /*@=mods@*/
@@ -559,9 +560,7 @@ static int db_init(dbiIndex dbi, const char * dbhome,
     }
 #endif
 
-/*@-boundswrite@*/
     *dbenvp = dbenv;
-/*@=boundswrite@*/
 
     return 0;
 
@@ -601,9 +600,7 @@ static int db3cdup(dbiIndex dbi, DBC * dbcursor, DBC ** dbcp,
 {
     int rc;
 
-/*@-boundswrite@*/
     if (dbcp) *dbcp = NULL;
-/*@=boundswrite@*/
 #if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 6)
     rc = dbcursor->dup(dbcursor, dbcp, flags);
     rc = cvtdberr(dbi, "dbcursor->dup", rc, _debug);
@@ -661,7 +658,7 @@ static int db3copen(dbiIndex dbi, DB_TXN * txnid,
     rc = cvtdberr(dbi, "db->cursor", rc, _debug);
 
     if (dbcp)
-	/*@-boundswrite -onlytrans@*/ *dbcp = dbcursor; /*@=boundswrite =onlytrans@*/
+	*dbcp = dbcursor;
     else
 	(void) db3cclose(dbi, dbcursor, 0);
 
@@ -823,9 +820,7 @@ static int db3ccount(dbiIndex dbi, DBC * dbcursor,
     rc = cvtdberr(dbi, "dbcursor->c_count", rc, _debug);
 #endif
     if (rc) return rc;
-/*@-boundswrite@*/
     if (countp) *countp = count;
-/*@=boundswrite@*/
 
     return rc;
 }
@@ -950,10 +945,8 @@ static int db3close(/*@only@*/ dbiIndex dbi, /*@unused@*/ unsigned int flags)
      * Get the prefix/root component and directory path.
      */
     root = (dbi->dbi_root ? dbi->dbi_root : rpmdb->db_root);
-/*@-boundsread@*/
     if ((root[0] == '/' && root[1] == '\0') || rpmdb->db_chrootDone)
 	root = NULL;
-/*@=boundsread@*/
     home = (dbi->dbi_home ? dbi->dbi_home : rpmdb->db_home);
 
     /*
@@ -1010,7 +1003,9 @@ static int db3close(/*@only@*/ dbiIndex dbi, /*@unused@*/ unsigned int flags)
 	if (rc || dbenv == NULL) goto exit;
 
 	/*@-noeffectuncon@*/ /* FIX: annotate db3 methods */
+/*@-castfcnptr@*/
 	dbenv->set_errcall(dbenv, (void *)rpmdb->db_errcall);
+/*@=castfcnptr@*/
 	dbenv->set_errfile(dbenv, rpmdb->db_errfile);
 	dbenv->set_errpfx(dbenv, rpmdb->db_errpfx);
  /*	dbenv->set_paniccall(???) */
@@ -1108,10 +1103,8 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
     u_int32_t oflags;
     int _printit;
 
-/*@-boundswrite@*/
     if (dbip)
 	*dbip = NULL;
-/*@=boundswrite@*/
 
     /*
      * Parse db configuration parameters.
@@ -1128,10 +1121,8 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
      * Get the prefix/root component and directory path.
      */
     root = (dbi->dbi_root ? dbi->dbi_root : rpmdb->db_root);
-/*@-boundsread@*/
     if ((root[0] == '/' && root[1] == '\0') || rpmdb->db_chrootDone)
 	root = NULL;
-/*@=boundsread@*/
     home = (dbi->dbi_home ? dbi->dbi_home : rpmdb->db_home);
 
     /*
@@ -1281,7 +1272,6 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
     if (oflags & DB_RDONLY)
 	dbi->dbi_verify_on_close = 0;
 
-/*@-branchstate@*/
     if (dbi->dbi_use_dbenv) {
 	/*@-mods@*/
 	if (rpmdb->db_dbenv == NULL) {
@@ -1353,7 +1343,6 @@ assert(rpmdb && rpmdb->db_dbenv);
 	}
 	/*@=mods@*/
     }
-/*@=branchstate@*/
 
     rpmMessage(RPMMESS_DEBUG, D_("opening  db index       %s/%s %s mode=0x%x\n"),
 		dbhome, (dbfile ? dbfile : mapTagName(dbi->dbi_rpmtag)),
@@ -1511,11 +1500,9 @@ assert(rpmdb && rpmdb->db_dbenv);
 		if (dbfile)	nb += 1 + strlen(dbfile);
 		dbfullpath = t = alloca(nb + 1);
 
-/*@-boundswrite@*/
 		t = stpcpy(t, dbhome);
 		if (dbfile)
 		    t = stpcpy( stpcpy( t, "/"), dbfile);
-/*@=boundswrite@*/
 #ifdef	HACK	/* XXX necessary to support dbsubfile */
 		dbpath = (!dbi->dbi_use_dbenv && !dbi->dbi_temporary)
 			? dbfullpath : dbfile;
@@ -1578,9 +1565,7 @@ assert(rpmdb && rpmdb->db_dbenv);
 		    rc = 1;
 		} else {
 		    struct flock l;
-/*@-boundswrite@*/
 		    memset(&l, 0, sizeof(l));
-/*@=boundswrite@*/
 		    l.l_whence = 0;
 		    l.l_start = 0;
 		    l.l_len = 0;
@@ -1614,9 +1599,7 @@ assert(rpmdb && rpmdb->db_dbenv);
 
     if (rc == 0 && dbi->dbi_db != NULL && dbip != NULL) {
 	dbi->dbi_vec = &db3vec;
-/*@-boundswrite@*/
 	*dbip = dbi;
-/*@=boundswrite@*/
     } else {
 	dbi->dbi_verify_on_close = 0;
 	(void) db3close(dbi, 0);
