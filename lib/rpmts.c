@@ -881,17 +881,6 @@ int_32 rpmtsSetTid(rpmts ts, int_32 tid)
     return otid;
 }
 
-rpmdb rpmtsGetRdb(rpmts ts)
-{
-    rpmdb rdb = NULL;
-    if (ts != NULL) {
-	rdb = ts->rdb;
-    }
-/*@-compdef -refcounttrans -usereleased @*/
-    return rdb;
-/*@=compdef =refcounttrans =usereleased @*/
-}
-
 rpmPRCO rpmtsPRCO(rpmts ts)
 {
 /*@-compdef -retexpose -usereleased @*/

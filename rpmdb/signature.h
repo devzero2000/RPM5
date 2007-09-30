@@ -23,6 +23,27 @@ typedef enum pgpVersion_e {
 extern "C" {
 #endif
 
+/**
+ * Return file handle for a temporaray file.
+ * A unique temporaray file path will be generated using
+ *	rpmGenPath(prefix, "%{_tmppath}/", "rpm-tmp.XXXXX")
+ * where "XXXXXX" is filled in using rand(3). The file is opened, and
+ * the link count and (dev,ino) location are verified after opening.
+ * The file name and the open file handle are returned.
+ *
+ * @param prefix	leading part of temp file path
+ * @retval *fnptr	temp file name (or NULL)
+ * @retval *fdptr	temp file handle
+ * @return		0 on success
+ */
+int rpmTempFile(/*@null@*/ const char * prefix,
+		/*@null@*/ /*@out@*/ const char ** fnptr,
+		/*@out@*/ void * fdptr)
+	/*@globals rpmGlobalMacroContext, h_errno,
+		fileSystem, internalState @*/
+	/*@modifies *fnptr, *fdptr, rpmGlobalMacroContext,
+		fileSystem, internalState @*/;
+
 /** \ingroup signature
  * Generate signature(s) from a header+payload file, save in signature header.
  * @param sigh		signature header
@@ -44,6 +65,18 @@ int rpmAddSignature(Header sigh, const char * file,
 int rpmCheckPassPhrase(const char * passPhrase)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/;
+
+/** \ingroup signature
+ * Verify a signature from a package.
+ *
+ * @param _dig		container
+ * @retval result	detailed text result of signature verification
+ * @return		result of signature verification
+ */
+rpmRC rpmVerifySignature(void * _dig, /*@out@*/ char * result)
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies _dig, *result, rpmGlobalMacroContext,
+		fileSystem, internalState @*/;
 
 #ifdef __cplusplus
 }

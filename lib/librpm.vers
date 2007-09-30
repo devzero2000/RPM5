@@ -49,7 +49,6 @@ LIBRPM_0
     _print_pkts;
     _psm_debug;
     _psm_threads;
-    rpmAddSignature;
     rpmalAdd;
     rpmalAddProvides;
     rpmalAllFileSatisfiesDepend;
@@ -60,7 +59,6 @@ LIBRPM_0
     rpmalFree;
     rpmalMakeIndex;
     rpmalSatisfiesDepend;
-    rpmCheckPassPhrase;
     rpmcliAllPoptTable;
     rpmcliArgIter;
     rpmcliConfigured;
@@ -346,7 +344,6 @@ LIBRPM_0
     rpmtsFlags;
     rpmtsFree;
     rpmtsFreeLock;
-    rpmtsGetRdb;
     rpmtsGetTid;
     rpmtsGetType;
     rpmtsGoal;
@@ -399,7 +396,6 @@ LIBRPM_0
     rpmvercmp;
     rpmVerifyFile;
     rpmVerifyPoptTable;
-    rpmVerifySignature;
     rpmVerifySignatures;
     RPMVERSION;
     rpmVersionCompare;

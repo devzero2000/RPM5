@@ -17,7 +17,6 @@
 
 #include <pkgio.h>
 #include "signature.h"
-#include "misc.h"	/* XXX for makeTempFile() */
 #include "debug.h"
 
 /*@access FD_t @*/		/* XXX stealing digests */
@@ -68,8 +67,8 @@ static int manageFile(/*@out@*/ FD_t *fdp,
     /* open a temp file */
     if (*fdp == NULL && (fnp == NULL || *fnp == NULL)) {
 	fn = NULL;
-	if (makeTempFile(NULL, (fnp ? &fn : NULL), &fd)) {
-	    rpmError(RPMERR_MAKETEMP, _("makeTempFile failed\n"));
+	if (rpmTempFile(NULL, (fnp ? &fn : NULL), &fd)) {
+	    rpmError(RPMERR_MAKETEMP, _("rpmTempFile failed\n"));
 	    return 1;
 	}
 	if (fnp != NULL)

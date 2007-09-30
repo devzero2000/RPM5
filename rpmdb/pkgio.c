@@ -26,6 +26,7 @@
 
 #include "header_internal.h"
 #include <pkgio.h>
+#include "signature.h"
 #include "debug.h"
 
 /*@access rpmts @*/
@@ -59,6 +60,17 @@ pgpDigParams rpmtsPubkey(const rpmts ts)
 /*@=onlytrans@*/
 }
 
+rpmdb rpmtsGetRdb(rpmts ts)
+{
+    rpmdb rdb = NULL;
+    if (ts != NULL) {
+	rdb = ts->rdb;
+    }
+/*@-compdef -refcounttrans -usereleased @*/
+    return rdb;
+/*@=compdef =refcounttrans =usereleased @*/
+}
+
 rpmRC rpmtsFindPubkey(rpmts ts, void * _dig)
 {
     pgpDig dig = (_dig ? _dig : rpmtsDig(ts));
@@ -72,8 +84,16 @@ rpmRC rpmtsFindPubkey(rpmts ts, void * _dig)
 #endif
     int xx;
 
+#ifdef	DYING
     if (sig == NULL || dig == NULL || sigp == NULL || pubp == NULL)
 	goto exit;
+#else
+assert(sig != NULL);
+assert(dig != NULL);
+assert(sigp != NULL);
+assert(pubp != NULL);
+assert(rpmtsDig(ts) == dig);
+#endif
 
 #if 0
 fprintf(stderr, "==> find sig id %08x %08x ts pubkey id %08x %08x\n",
@@ -119,7 +139,7 @@ fprintf(stderr, "*** free pkt %p[%d] id %08x %08x\n", ts->pkpkt, ts->pkpktlen, p
 		ts->pkpkt = _free(ts->pkpkt);
 		ts->pkpktlen = 0;
 	    }
-        }
+	}
 /*@=moduncon@*/
     }
 #endif
@@ -132,7 +152,7 @@ fprintf(stderr, "*** free pkt %p[%d] id %08x %08x\n", ts->pkpkt, ts->pkpktlen, p
 	Header h;
 
 	/* Retrieve the pubkey that matches the signature. */
-	mi = rpmtsInitIterator(ts, RPMTAG_PUBKEYS, sigp->signid, sizeof(sigp->signid));
+	mi = rpmdbInitIterator(rpmtsGetRdb(ts), RPMTAG_PUBKEYS, sigp->signid, sizeof(sigp->signid));
 	while ((h = rpmdbNextIterator(mi)) != NULL) {
 	    const char ** pubkeys;
 	    int_32 pt, pc;
@@ -259,8 +279,8 @@ pgpDig rpmtsDig(rpmts ts)
 {
 /*@-mods@*/ /* FIX: hide lazy malloc for now */
     if (ts->dig == NULL) {
-        ts->dig = pgpNewDig(0);
-        (void) pgpSetFindPubkey(ts->dig, (int (*)(void *, void *))rpmtsFindPubkey, ts);
+	ts->dig = pgpNewDig(0);
+	(void) pgpSetFindPubkey(ts->dig, (int (*)(void *, void *))rpmtsFindPubkey, ts);
     }
 /*@=mods@*/
     return ts->dig;
@@ -287,9 +307,9 @@ void rpmtsCleanDig(rpmts ts)
     if (ts && ts->dig) {
 	int opx;
 	opx = RPMTS_OP_DIGEST;
-        (void) rpmswAdd(rpmtsOp(ts, opx), pgpStatsAccumulator(ts->dig, opx));
+	(void) rpmswAdd(rpmtsOp(ts, opx), pgpStatsAccumulator(ts->dig, opx));
 	opx = RPMTS_OP_SIGNATURE;
-        (void) rpmswAdd(rpmtsOp(ts, opx), pgpStatsAccumulator(ts->dig, opx));
+	(void) rpmswAdd(rpmtsOp(ts, opx), pgpStatsAccumulator(ts->dig, opx));
 	(void) rpmtsSetSig(ts, 0, 0, NULL, 0);	/* XXX headerFreeData */
 	ts->dig = pgpFreeDig(ts->dig);
     }
@@ -965,18 +985,18 @@ assert(dig != NULL);
 
 	b = (unsigned char *) ildl;
 	nb = sizeof(ildl);
-        (void) rpmDigestUpdate(dig->hdrmd5ctx, b, nb);
-        dig->nbytes += nb;
+	(void) rpmDigestUpdate(dig->hdrmd5ctx, b, nb);
+	dig->nbytes += nb;
 
 	b = (unsigned char *) pe;
 	nb = (htonl(ildl[0]) * sizeof(*pe));
-        (void) rpmDigestUpdate(dig->hdrmd5ctx, b, nb);
-        dig->nbytes += nb;
+	(void) rpmDigestUpdate(dig->hdrmd5ctx, b, nb);
+	dig->nbytes += nb;
 
 	b = (unsigned char *) dataStart;
 	nb = htonl(ildl[1]);
-        (void) rpmDigestUpdate(dig->hdrmd5ctx, b, nb);
-        dig->nbytes += nb;
+	(void) rpmDigestUpdate(dig->hdrmd5ctx, b, nb);
+	dig->nbytes += nb;
 	(void) rpmswExit(op, dig->nbytes);
 
 	break;
@@ -1010,18 +1030,18 @@ assert(dig != NULL);
 
 	b = (unsigned char *) ildl;
 	nb = sizeof(ildl);
-        (void) rpmDigestUpdate(dig->hdrsha1ctx, b, nb);
-        dig->nbytes += nb;
+	(void) rpmDigestUpdate(dig->hdrsha1ctx, b, nb);
+	dig->nbytes += nb;
 
 	b = (unsigned char *) pe;
 	nb = (htonl(ildl[0]) * sizeof(*pe));
-        (void) rpmDigestUpdate(dig->hdrsha1ctx, b, nb);
-        dig->nbytes += nb;
+	(void) rpmDigestUpdate(dig->hdrsha1ctx, b, nb);
+	dig->nbytes += nb;
 
 	b = (unsigned char *) dataStart;
 	nb = htonl(ildl[1]);
-        (void) rpmDigestUpdate(dig->hdrsha1ctx, b, nb);
-        dig->nbytes += nb;
+	(void) rpmDigestUpdate(dig->hdrsha1ctx, b, nb);
+	dig->nbytes += nb;
 	(void) rpmswExit(op, dig->nbytes);
 
 	break;

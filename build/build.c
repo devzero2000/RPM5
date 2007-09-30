@@ -7,6 +7,7 @@
 
 #include <rpmio_internal.h>
 #include <rpmbuild.h>
+#include "signature.h"		/* XXX rpmTempFile */
 
 #include "debug.h"
 
@@ -145,7 +146,7 @@ int doScript(Spec spec, int what, const char *name, StringBuf sb, int test)
 	goto exit;
     }
     
-    if (makeTempFile(rootURL, &scriptName, &fd) || fd == NULL || Ferror(fd)) {
+    if (rpmTempFile(rootURL, &scriptName, &fd) || fd == NULL || Ferror(fd)) {
 	rpmError(RPMERR_SCRIPT, _("Unable to open temp file.\n"));
 	rc = RPMERR_SCRIPT;
 	goto exit;

@@ -28,9 +28,9 @@
 #include "rpmts.h"
 
 #include <pkgio.h>
-#include "signature.h"		/* signature constants */
-#include "misc.h"		/* XXX stripTrailingChar() */
+#include "misc.h"		/* XXX rpmMkdirPath */
 #include "rpmdb.h"		/* XXX for db_chrootDone */
+#include "signature.h"		/* signature constants */
 #include "debug.h"
 
 #define	_PSM_DEBUG	0
@@ -701,7 +701,7 @@ assert(NVRA != NULL);
 	const char * rootDir = rpmtsRootDir(ts);
 	FD_t fd;
 
-	if (makeTempFile((!rpmtsChrootDone(ts) ? rootDir : "/"), &fn, &fd))
+	if (rpmTempFile((!rpmtsChrootDone(ts) ? rootDir : "/"), &fn, &fd))
 	    goto exit;
 
 	if (rpmIsDebug() &&

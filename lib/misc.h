@@ -79,27 +79,6 @@ int doputenv(const char * str)
 	/*@modifies *environ @*/;
 
 /**
- * Return file handle for a temporaray file.
- * A unique temporaray file path will be generated using
- *	rpmGenPath(prefix, "%{_tmppath}/", "rpm-tmp.XXXXX")
- * where "XXXXXX" is filled in using rand(3). The file is opened, and
- * the link count and (dev,ino) location are verified after opening.
- * The file name and the open file handle are returned.
- *
- * @param prefix	leading part of temp file path
- * @retval *fnptr	temp file name (or NULL)
- * @retval *fdptr	temp file handle
- * @return		0 on success
- */
-int makeTempFile(/*@null@*/ const char * prefix,
-		/*@null@*/ /*@out@*/ const char ** fnptr,
-		/*@out@*/ void * fdptr)
-	/*@globals rpmGlobalMacroContext, h_errno,
-		fileSystem, internalState @*/
-	/*@modifies *fnptr, *fdptr, rpmGlobalMacroContext,
-		fileSystem, internalState @*/;
-
-/**
  * Return (malloc'd) current working directory.
  * @return		current working directory (malloc'ed)
  */

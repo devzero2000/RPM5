@@ -10,6 +10,7 @@
 #include <rpmcli.h>
 #include <rpmpgp.h>
 #include <rpmdb.h>
+#include <pkgio.h>		/* XXX headerCheck() */
 #include <rpmbuild.h>
 
 #include "header-py.h"

@@ -8,6 +8,7 @@
 #include <rpmio_internal.h>
 #define	_RPMEVR_INTERNAL	/* XXX RPMSENSE_ANY */
 #include <rpmbuild.h>
+#include "signature.h"		/* XXX rpmTempFile */
 
 #include "rpmps.h"
 
@@ -618,7 +619,7 @@ int writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
      * archive (after compression) can be added to the header.
      */
     sigtarget = NULL;
-    if (makeTempFile(NULL, &sigtarget, &fd)) {
+    if (rpmTempFile(NULL, &sigtarget, &fd)) {
 	rc = RPMERR_CREATE;
 	rpmError(RPMERR_CREATE, _("Unable to open temp file.\n"));
 	goto exit;

@@ -938,18 +938,6 @@ enum rpmtagSignature {
     RPMSIGTAG_RSA	= RPMTAG_RSAHEADER	/*!< internal RSA header signature. */
 };
 
-/** \ingroup signature
- * Verify a signature from a package.
- *
- * @param _dig		container
- * @retval result	detailed text result of signature verification
- * @return		result of signature verification
- */
-rpmRC rpmVerifySignature(void * _dig, /*@out@*/ char * result)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies _dig, *result, rpmGlobalMacroContext,
-		fileSystem, internalState @*/;
-
 /*@}*/
 
 #ifdef __cplusplus

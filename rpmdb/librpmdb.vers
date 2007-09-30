@@ -45,6 +45,8 @@ LIBRPMDB_0
     _newmagic;
     prDbiOpenFlags;
     rdbOptions;
+    rpmAddSignature;
+    rpmCheckPassPhrase;
     rpmDatabasePoptTable;
     rpmdbAdd;
     rpmdbAppendIterator;
@@ -85,12 +87,15 @@ LIBRPMDB_0
     rpmTagTable;
     rpmTagTableSize;
     rpmTags;
+    rpmTempFile;
     rpmtsCleanDig;
     rpmtsDig;
     rpmtsFindPubkey;
+    rpmtsGetRdb;
     rpmtsOp;
     rpmtsPubkey;
     rpmtsSetSig;
+    rpmVerifySignature;
     sqlitevec;
     XrpmdbLink;
     XrpmdbUnlink;

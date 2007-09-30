@@ -17,12 +17,22 @@
 #define	_RPMEVR_INTERNAL	/* XXX isInstallPrereq */
 #include <rpmevr.h>
 
+#ifdef	NOTYET
+/*@exposed@*/
+extern pgpDig rpmtsDig(void * ts)
+        /*@*/;
+extern void rpmtsCleanDig(void * ts)
+        /*@modifies ts @*/;
+#endif
+
 #define	_RPMDB_INTERNAL
 #define	_MIRE_INTERNAL
 #include "rpmdb.h"
+#include "pkgio.h"
 #include "fprint.h"
 #include "legacy.h"
 #include "header_internal.h"	/* XXX for HEADERFLAG_ALLOCATED */
+
 #include "debug.h"
 
 /*@access dbiIndexSet@*/
