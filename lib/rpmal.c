@@ -338,10 +338,8 @@ fprintf(stderr, "*** del %p[%d]\n", al->list, pkgNum);
 	    /*@=assignexpose =dependenttrans =observertrans@*/
 	    dieNeedle->dirNameLen = (dieNeedle->dirName != NULL
 			? strlen(dieNeedle->dirName) : 0);
-/*@-boundswrite@*/
 	    die = bsearch(dieNeedle, al->dirs, al->numDirs,
 			       sizeof(*dieNeedle), dieCompare);
-/*@=boundswrite@*/
 	    if (die == NULL)
 		continue;
 
@@ -363,9 +361,7 @@ if (_rpmal_debug)
 fprintf(stderr, "\t%p[%3d] memmove(%p:%p,%p:%p,0x%x) %s <- %s\n", die->files, die->numFiles, fie, fie->baseName, fie+1, (fie+1)->baseName, (unsigned) ((die->numFiles - i) * sizeof(*fie)), fie->baseName, (fie+1)->baseName);
 /*@=modfilesys@*/
 
-/*@-bounds@*/
 		    memmove(fie, fie+1, (die->numFiles - i) * sizeof(*fie));
-/*@=bounds@*/
 		}
 /*@-modfilesys@*/
 if (_rpmal_debug)
@@ -389,9 +385,7 @@ if (_rpmal_debug)
 fprintf(stderr, "    die[%5d] memmove(%p,%p,0x%x)\n", (int)(die - al->dirs), die, die+1, (unsigned)((al->numDirs - (die - al->dirs)) * sizeof(*die)));
 /*@=modfilesys@*/
 
-/*@-bounds@*/
 		memmove(die, die+1, (al->numDirs - (die - al->dirs)) * sizeof(*die));
-/*@=bounds@*/
 	    }
 
 /*@-modfilesys@*/
@@ -412,13 +406,10 @@ fprintf(stderr, "    die[%5d] memset(%p,0,0x%x)\n", al->numDirs, al->dirs + al->
     alp->provides = rpmdsFree(alp->provides);
     alp->fi = rpmfiFree(alp->fi);
 
-/*@-boundswrite@*/
     memset(alp, 0, sizeof(*alp));	/* XXX trash and burn */
-/*@=boundswrite@*/
     return;
 }
 
-/*@-bounds@*/
 alKey rpmalAdd(rpmal * alistp, alKey pkgKey, fnpyKey key,
 		rpmds provides, rpmfi fi, uint_32 tscolor)
 {
@@ -592,7 +583,6 @@ fprintf(stderr, "\t%p[%3d] %p:%p[%2d] %s\n", die->files, die->numFiles, fie, fie
 assert(((alNum)(alp - al->list)) == pkgNum);
     return ((alKey)(alp - al->list));
 }
-/*@=bounds@*/
 
 /**
  * Compare two available index entries by name (qsort/bsearch).
@@ -738,7 +728,6 @@ rpmalAllFileSatisfiesDepend(const rpmal al, const rpmds ds, alKey * keyp)
 	goto exit;
     baseName++;
 
-    /*@-branchstate@*/ /* FIX: ret is a problem */
     for (found = 0, ret = NULL;
 	 die < al->dirs + al->numDirs && dieCompare(die, dieNeedle) == 0;
 	 die++)
@@ -780,7 +769,6 @@ fprintf(stderr, "==> fie %p %s\n", fie, (fie->baseName ? fie->baseName : "(nil)"
 	    *keyp = alNum2Key(al, fie->pkgNum);
 	found++;
     }
-    /*@=branchstate@*/
 
 exit:
     dirName = _free(dirName);
@@ -855,7 +843,6 @@ rpmalAllSatisfiesDepend(const rpmal al, const rpmds ds, alKey * keyp)
 	    /*@switchbreak@*/ break;
 	}
 
-	/*@-branchstate@*/
 	if (rc) {
 	    ret = xrealloc(ret, (found + 2) * sizeof(*ret));
 	    if (ret)	/* can't happen */
@@ -866,7 +853,6 @@ rpmalAllSatisfiesDepend(const rpmal al, const rpmds ds, alKey * keyp)
 /*@=dependenttrans@*/
 	    found++;
 	}
-	/*@=branchstate@*/
     }
 
     if (ret)

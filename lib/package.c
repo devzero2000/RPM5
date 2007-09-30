@@ -39,7 +39,9 @@ static unsigned int nextkeyid  = 0;
 /*@unchecked@*/ /*@only@*/ /*@null@*/
 static unsigned int * keyids;
 
+/*@unchecked@*/
 extern int _nolead;
+/*@unchecked@*/
 extern int _nosigh;
 
 /**
@@ -65,20 +67,16 @@ static int pgpStashKeyid(pgpDig dig)
 
     if (keyids != NULL)
     for (i = 0; i < nkeyids; i++) {
-/*@-boundsread@*/
 	if (keyid == keyids[i])
 	    return 1;
-/*@=boundsread@*/
     }
 
     if (nkeyids < nkeyids_max) {
 	nkeyids++;
 	keyids = xrealloc(keyids, nkeyids * sizeof(*keyids));
     }
-/*@-boundswrite@*/
     if (keyids)		/* XXX can't happen */
 	keyids[nextkeyid] = keyid;
-/*@=boundswrite@*/
     nextkeyid++;
     nextkeyid %= nkeyids_max;
 
@@ -102,14 +100,12 @@ rpmRC rpmReadHeader(rpmts ts, void * _fd, Header *hdrp, const char ** msg)
     rpmRC rc = RPMRC_FAIL;		/* assume failure */
     int xx;
 
-/*@-boundswrite@*/
     buf[0] = '\0';
 
     if (hdrp)
 	*hdrp = NULL;
     if (msg)
 	*msg = NULL;
-/*@=boundswrite@*/
 
     memset(block, 0, sizeof(block));
     if ((xx = timedRead(fd, (char *)block, sizeof(block))) != sizeof(block)) {
@@ -126,18 +122,14 @@ rpmRC rpmReadHeader(rpmts ts, void * _fd, Header *hdrp, const char ** msg)
 	goto exit;
     }
 
-/*@-boundsread@*/
     il = ntohl(block[2]);
-/*@=boundsread@*/
     if (hdrchkTags(il)) {
 	(void) snprintf(buf, sizeof(buf),
 		_("hdr tags: BAD, no. of tags(%d) out of range\n"), il);
 
 	goto exit;
     }
-/*@-boundsread@*/
     dl = ntohl(block[3]);
-/*@=boundsread@*/
     if (hdrchkData(dl)) {
 	(void) snprintf(buf, sizeof(buf),
 		_("hdr data: BAD, no. of bytes(%d) out of range\n"), dl);
@@ -149,7 +141,6 @@ rpmRC rpmReadHeader(rpmts ts, void * _fd, Header *hdrp, const char ** msg)
 /*@=sizeoftype@*/
     uc = sizeof(il) + sizeof(dl) + nb;
     ei = xmalloc(uc);
-/*@-bounds@*/
     ei[0] = block[2];
     ei[1] = block[3];
     if ((xx = timedRead(fd, (char *)&ei[2], nb)) != nb) {
@@ -157,7 +148,6 @@ rpmRC rpmReadHeader(rpmts ts, void * _fd, Header *hdrp, const char ** msg)
 		_("hdr blob(%u): BAD, read returned %d\n"), (unsigned)nb, xx);
 	goto exit;
     }
-/*@=bounds@*/
 
     /* Sanity check header tags */
     rc = headerCheck(ts, ei, uc, msg);
@@ -179,24 +169,20 @@ rpmRC rpmReadHeader(rpmts ts, void * _fd, Header *hdrp, const char ** msg)
 	(void) headerSetOrigin(h, origin);
     
 exit:
-/*@-boundswrite@*/
     if (hdrp && h && rc == RPMRC_OK)
 	*hdrp = headerLink(h);
-/*@=boundswrite@*/
     ei = _free(ei);
     h = headerFree(h);
 
-/*@-boundswrite@*/
     if (msg != NULL && *msg == NULL && buf[0] != '\0') {
 	buf[sizeof(buf)-1] = '\0';
 	*msg = xstrdup(buf);
     }
-/*@=boundswrite@*/
 
     return rc;
 }
 
-/*@-bounds@*/	/* LCL: segfault */
+/*@-mods@*/
 rpmRC rpmReadPackageFile(rpmts ts, void * _fd, const char * fn, Header * hdrp)
 {
     pgpDig dig = rpmtsDig(ts);
@@ -223,9 +209,7 @@ rpmRC rpmReadPackageFile(rpmts ts, void * _fd, const char * fn, Header * hdrp)
 
 #ifdef	DYING
     {	struct stat st;
-/*@-boundswrite@*/
 	memset(&st, 0, sizeof(st));
-/*@=boundswrite@*/
 	(void) fstat(Fileno(fd), &st);
 	/* if fd points to a socket, pipe, etc, st.st_size is *always* zero */
 	if (S_ISREG(st.st_mode) && st.st_size < sizeof(*l)) {
@@ -358,7 +342,7 @@ if (!_nosigh) {
 	goto exit;
     }
 
-assert(dig);
+assert(dig != NULL);
     dig->nbytes = 0;
 
     /* Retrieve the tag parameters from the signature header. */
@@ -369,13 +353,7 @@ assert(dig);
 	goto exit;
     }
 
-    {
-	const void * osig = pgpGetSig(dig);
-	int_32 osigtype = pgpGetSigtype(dig);
-	if (osig && osigtype)
-	    osig = headerFreeData(osig, osigtype);
-	(void) pgpSetSig(dig, sigtag, sigtype, sig, siglen);
-    }
+    rpmtsCleanDig(ts);
 
     switch (sigtag) {
     case RPMSIGTAG_RSA:
@@ -509,9 +487,7 @@ assert(dig);
 
 /** @todo Implement disable/enable/warn/error/anal policy. */
 
-/*@-boundswrite@*/
     buf[0] = '\0';
-/*@=boundswrite@*/
     rc = rpmVerifySignature(dig, buf);
     switch (rc) {
     case RPMRC_OK:		/* Signature is OK. */
@@ -539,9 +515,7 @@ exit:
 	headerMergeLegacySigs(h, sigh);
 
 	/* Bump reference count for return. */
-/*@-boundswrite@*/
 	*hdrp = headerLink(h);
-/*@=boundswrite@*/
     }
     h = headerFree(h);
 
@@ -555,4 +529,4 @@ exit:
     sigh = headerFree(sigh);
     return rc;
 }
-/*@=bounds@*/
+/*@=mods@*/

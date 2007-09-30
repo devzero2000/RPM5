@@ -192,7 +192,6 @@ void rpmcliConfigured(void)
 
 /**
  */
-/*@-bounds@*/
 static void rpmcliAllArgCallback(poptContext con,
                 /*@unused@*/ enum poptCallbackReason reason,
                 const struct poptOption * opt, const char * arg,
@@ -204,7 +203,6 @@ static void rpmcliAllArgCallback(poptContext con,
 {
 
     /* XXX avoid accidental collisions with POPT_BIT_SET for flags */
-    /*@-branchstate@*/
     if (opt->arg == NULL)
     switch (opt->val) {
     case 'q':
@@ -289,7 +287,6 @@ static void rpmcliAllArgCallback(poptContext con,
 	}
 	break;
     }
-    /*@=branchstate@*/
 }
 
 /*@unchecked@*/
@@ -655,7 +652,9 @@ rpmcliInit(int argc, char *const argv[], struct poptOption * optionsTable)
     }
 
     /* Initialize header stat collection. */
+/*@-mods@*/
     _hdr_stats = _rpmts_stats;
+/*@=mods@*/
 
     return optCon;
 }

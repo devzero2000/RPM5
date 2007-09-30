@@ -201,6 +201,7 @@ int rpmpsTrim(/*@null@*/ rpmps ps, /*@null@*/ rpmps filter)
  * @param num       problem number
  * @return          rpmProblem, or NULL if error
  */
+/*@exposed@*/
 rpmProblem rpmpsGetProblem(/*@null@*/ rpmps ps, int num)
 	/*@*/;
 
@@ -210,6 +211,7 @@ rpmProblem rpmpsGetProblem(/*@null@*/ rpmps ps, int num)
  * @param prob  rpm problem
  * @return      NEVR string ptr
  */
+/*@null@*/ /*@exposed@*/
 char * rpmProblemGetPkgNEVR(rpmProblem prob)
 	/*@*/;
 
@@ -219,6 +221,7 @@ char * rpmProblemGetPkgNEVR(rpmProblem prob)
  * @param prob  rpm problem
  * @return      NEVR string ptr, or NULL if unset
  */
+/*@null@*/ /*@exposed@*/
 char * rpmProblemGetAltNEVR(rpmProblem prob)
 	/*@*/;
 
@@ -237,6 +240,7 @@ rpmProblemType rpmProblemGetType(rpmProblem prob)
  * @param prob  rpm problem
  * @return      fnpkey ptr if any or NULL
  */
+/*@null@*/ /*@exposed@*/
 fnpyKey rpmProblemKey(rpmProblem prob)
 	/*@*/;
 

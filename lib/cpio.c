@@ -43,26 +43,20 @@ static int strntoul(const char *str, /*@out@*/char **endptr, int base, int num)
     buf[num] = '\0';
 
     ret = strtoul(buf, &end, base);
-/*@-boundsread@*/ /* LCL: strtoul annotations */
     if (*end != '\0')
 	*endptr = ((char *)str) + (end - buf);	/* XXX discards const */
     else
 	*endptr = ((char *)str) + strlen(buf);
-/*@=boundsread@*/
 
     return ret;
 }
 
 #define GET_NUM_FIELD(phys, log) \
-	/*@-boundswrite@*/ \
 	log = strntoul(phys, &end, 16, sizeof(phys)); \
-	/*@=boundswrite@*/ \
 	if ( (end - phys) != sizeof(phys) ) return CPIOERR_BAD_HEADER;
 #define SET_NUM_FIELD(phys, val, space) \
 	sprintf(space, "%8.8lx", (unsigned long) (val)); \
-	/*@-boundsread@*/ \
-	memcpy(phys, space, 8) \
-	/*@=boundsread@*/
+	memcpy(phys, space, 8)
 
 int cpioTrailerWrite(FSM_t fsm)
 {
@@ -70,13 +64,11 @@ int cpioTrailerWrite(FSM_t fsm)
 	(struct cpioCrcPhysicalHeader *)fsm->rdbuf;
     int rc;
 
-/*@-boundswrite@*/
     memset(hdr, '0', PHYS_HDR_SIZE);
     memcpy(hdr->magic, CPIO_NEWC_MAGIC, sizeof(hdr->magic));
     memcpy(hdr->nlink, "00000001", 8);
     memcpy(hdr->namesize, "0000000b", 8);
     memcpy(fsm->rdbuf + PHYS_HDR_SIZE, CPIO_TRAILER, sizeof(CPIO_TRAILER));
-/*@=boundswrite@*/
 
     /* XXX DWRITE uses rdnb for I/O length. */
     fsm->rdnb = PHYS_HDR_SIZE + sizeof(CPIO_TRAILER);
@@ -119,9 +111,7 @@ fprintf(stderr, "    cpioHeaderWrite(%p, %p)\n", fsm, st);
 
     len = strlen(fsm->path) + 1; SET_NUM_FIELD(hdr->namesize, len, field);
     memcpy(hdr->checksum, "00000000", 8);
-/*@-boundswrite@*/
     memcpy(fsm->rdbuf + PHYS_HDR_SIZE, fsm->path, len);
-/*@=boundswrite@*/
 
     /* XXX DWRITE uses rdnb for I/O length. */
     fsm->rdnb = PHYS_HDR_SIZE + len;
@@ -162,9 +152,7 @@ fprintf(stderr, "    cpioHeaderRead(%p, %p)\n", fsm, st);
     if (!rc && fsm->rdnb != fsm->wrlen)
 	rc = CPIOERR_READ_FAILED;
     if (rc) return rc;
-/*@-boundswrite@*/
     memcpy(&hdr, fsm->wrbuf, fsm->rdnb);
-/*@=boundswrite@*/
 
     if (strncmp(CPIO_CRC_MAGIC, hdr.magic, sizeof(CPIO_CRC_MAGIC)-1) &&
 	strncmp(CPIO_NEWC_MAGIC, hdr.magic, sizeof(CPIO_NEWC_MAGIC)-1))
@@ -204,10 +192,8 @@ fprintf(stderr, "    cpioHeaderRead(%p, %p)\n", fsm, st);
 	    fsm->path = NULL;
 	    return rc;
 	}
-/*@-boundswrite@*/
 	memcpy(t, fsm->wrbuf, fsm->rdnb);
 	t[nameSize] = '\0';
-/*@=boundswrite@*/
 	fsm->path = t;
     }
 
@@ -219,9 +205,7 @@ fprintf(stderr, "    cpioHeaderRead(%p, %p)\n", fsm, st);
 	if (!rc && fsm->rdnb != fsm->wrlen)
 	    rc = CPIOERR_READ_FAILED;
 	if (rc) return rc;
-/*@-boundswrite@*/
 	fsm->wrbuf[st->st_size] = '\0';
-/*@=boundswrite@*/
 	fsm->lpath = xstrdup(fsm->wrbuf);
     }
 
@@ -241,7 +225,6 @@ const char * cpioStrerror(int rc)
     int l, myerrno = errno;
 
     strcpy(msg, "cpio: ");
-    /*@-branchstate@*/
     switch (rc) {
     default:
 	s = msg + strlen(msg);
@@ -280,20 +263,17 @@ const char * cpioStrerror(int rc)
     case CPIOERR_ENOENT:	s = strerror(ENOENT); break;
     case CPIOERR_ENOTEMPTY:	s = strerror(ENOTEMPTY); break;
     }
-    /*@=branchstate@*/
 
     l = sizeof(msg) - strlen(msg) - 1;
     if (s != NULL) {
 	if (l > 0) strncat(msg, s, l);
 	l -= strlen(s);
     }
-    /*@-branchstate@*/
     if ((rc & CPIOERR_CHECK_ERRNO) && myerrno) {
 	s = _(" failed - ");
 	if (l > 0) strncat(msg, s, l);
 	l -= strlen(s);
 	if (l > 0) strncat(msg, strerror(myerrno), l);
     }
-    /*@=branchstate@*/
     return msg;
 }

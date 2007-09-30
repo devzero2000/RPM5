@@ -18,6 +18,7 @@
 
 #include "debug.h"
 
+/*@access FD_t @*/		/* XXX void * arg */
 /*@access fnpyKey @*/
 /*@access rpmdbMatchIterator @*/
 /*@access rpmts @*/
@@ -82,8 +83,8 @@ static const char * ftsInfoStr(int fts_info)
  */
 /*@null@*/
 static FD_t rpmgiOpen(const char * path, const char * fmode)
-	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
-	/*@modifies rpmGlobalMacroContext, h_errno, internalState @*/
+	/*@globals rpmGlobalMacroContext, h_errno, errno, internalState @*/
+	/*@modifies rpmGlobalMacroContext, h_errno, errno, internalState @*/
 {
     const char * fn = rpmExpand(path, NULL);
     FD_t fd;
@@ -419,7 +420,6 @@ fprintf(stderr, "*** gi %p key %p[%d]\tmi %p\n", gi, gi->keyp, (int)gi->keylen, 
 	    tag = RPMTAG_NAME;
 
 	    /* Parse for "tag=pattern" args. */
-/*@-branchstate@*/
 	    if ((ae = strchr(a, '=')) != NULL) {
 		*ae++ = '\0';
 		if (*a != '\0') {	/* XXX HACK: permit '=foo' */
@@ -431,7 +431,6 @@ fprintf(stderr, "*** gi %p key %p[%d]\tmi %p\n", gi, gi->keyp, (int)gi->keylen, 
 		}
 		pat = ae;
 	    }
-/*@=branchstate@*/
 	    if (!res) {
 if (_rpmgi_debug  < 0)
 fprintf(stderr, "\tav %p[%d]: \"%s\" -> %s ~= \"%s\"\n", gi->argv, (int)(av - gi->argv), *av, tagName(tag), pat);
@@ -568,7 +567,6 @@ fprintf(stderr, "*** rpmgiNext(%p) tag %s\n", gi, tagName(gi->tag));
     gi->hdrPath = _free(gi->hdrPath);
     hnum[0] = '\0';
 
-/*@-branchstate@*/
     if (++gi->i >= 0)
     switch (gi->tag) {
     default:
@@ -721,7 +719,6 @@ fprintf(stderr, "*** gi %p\t%p[%d]: %s\n", gi, gi->argv, gi->i, gi->argv[gi->i])
 	    gi->hdrPath = xstrdup(gi->fts->fts_path);
 	break;
     }
-/*@=branchstate@*/
 
     if ((gi->flags & RPMGI_TSADD) && gi->h != NULL) {
 	/* XXX rpmgi hack: Save header in transaction element. */
@@ -745,12 +742,12 @@ enditer:
 
 	/* Block access to indices used for depsolving. */
 	if (!(gi->flags & RPMGI_ERASING)) {
-	    rpmtsSetGoal(ts, TSM_INSTALL);
+	    (void) rpmtsSetGoal(ts, TSM_INSTALL);
 	    xx = rpmdbBlockDBI(rpmtsGetRdb(ts), -RPMDBI_DEPENDS);
 	    xx = rpmdbBlockDBI(rpmtsGetRdb(ts), -RPMTAG_BASENAMES);
 	    xx = rpmdbBlockDBI(rpmtsGetRdb(ts), -RPMTAG_PROVIDENAME);
 	} else {
-	    rpmtsSetGoal(ts, TSM_ERASE);
+	    (void) rpmtsSetGoal(ts, TSM_ERASE);
 	}
 
 	xx = rpmtsCheck(ts);
@@ -770,7 +767,6 @@ enditer:
 	    if (rpmIsVerbose())
 		rpmpsPrint(NULL, ps);
 
-/*@-branchstate@*/
 	    if (ts->suggests != NULL && ts->nsuggests > 0) {
 		rpmMessage(RPMMESS_VERBOSE, _("    Suggested resolutions:\n"));
 		for (i = 0; i < ts->nsuggests; i++) {
@@ -786,7 +782,6 @@ enditer:
 		}
 		ts->suggests = _free(ts->suggests);
 	    }
-/*@=branchstate@*/
 
 	}
 	ps = rpmpsFree(ps);

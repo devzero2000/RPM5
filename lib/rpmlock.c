@@ -67,12 +67,10 @@ static int rpmlock_new(/*@unused@*/ const char *rootdir, /*@null@*/ rpmlock *loc
 	    lock->omode = RPMLOCK_WRITE | RPMLOCK_READ;
 	rc = 0;
     }
-/*@-branchstate@*/
     if (rc == 0 && lockp != NULL)
 	*lockp = lock;
     else
 	lock = _free(lock);
-/*@=branchstate@*/
 /*@-compdef@*/ /*@-nullstate@*/ /*@-globstate@*/
     return rc;
 /*@=compdef@*/ /*@=nullstate@*/ /*@=globstate@*/
@@ -140,7 +138,6 @@ void *rpmtsAcquireLock(rpmts ts)
     rpmlock lock = NULL;
     int rc;
 
-/*@-branchstate@*/
     if (rootDir == NULL || rpmtsChrootDone(ts))
 	rootDir = "/";
     rc = rpmlock_new(rootDir, &lock);
@@ -161,7 +158,6 @@ void *rpmtsAcquireLock(rpmts ts)
 	    }
 	}
     }
-/*@=branchstate@*/
 /*@-globstate@*/	/* rpmlock_path may be NULL. */
     return lock;
 /*@=globstate@*/

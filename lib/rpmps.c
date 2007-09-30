@@ -101,9 +101,7 @@ void rpmpsAppend(rpmps ps, rpmProblemType type,
 
     p = ps->probs + ps->numProblems;
     ps->numProblems++;
-/*@-boundswrite@*/
     memset(p, 0, sizeof(*p));
-/*@=boundswrite@*/
 
     p->type = type;
     p->key = key;
@@ -115,13 +113,11 @@ void rpmpsAppend(rpmps ps, rpmProblemType type,
 
     p->str1 = NULL;
     if (dn != NULL || bn != NULL) {
-/*@-boundswrite@*/
 	t = xcalloc(1,	(dn != NULL ? strlen(dn) : 0) +
 			(bn != NULL ? strlen(bn) : 0) + 1);
 	p->str1 = t;
 	if (dn != NULL) t = stpcpy(t, dn);
 	if (bn != NULL) t = stpcpy(t, bn);
-/*@=boundswrite@*/
     }
 }
 
@@ -344,10 +340,9 @@ void rpmpsPrint(FILE *fp, rpmps ps)
 
 rpmProblem rpmpsGetProblem(rpmps ps, int num)
 {
-    if (num > ps->numProblems)
+    if (ps == NULL || num > ps->numProblems)
         return(NULL);
-    else
-        return(ps->probs + num);
+    return(ps->probs + num);
 }
 
 char * rpmProblemGetPkgNEVR(rpmProblem prob)

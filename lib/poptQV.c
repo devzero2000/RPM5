@@ -200,18 +200,14 @@ static void queryArgCallback(poptContext con,
     case POPT_QUERYFORMAT:
 	if (arg) {
 	    char * qf = (char *)qva->qva_queryFormat;
-	    /*@-branchstate@*/
 	    if (qf) {
 		int len = strlen(qf) + strlen(arg) + 1;
 		qf = xrealloc(qf, len);
-/*@-boundswrite@*/
 		strcat(qf, arg);
-/*@=boundswrite@*/
 	    } else {
 		qf = xmalloc(strlen(arg) + 1);
 		strcpy(qf, arg);
 	    }
-	    /*@=branchstate@*/
 	    qva->qva_queryFormat = qf;
 	}
 	break;

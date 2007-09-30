@@ -93,7 +93,6 @@ static int sharedCmp(const void * one, const void * two)
  *
  * XXX only ts->{probs,rpmdb} modified
  */
-/*@-bounds@*/
 static int handleInstInstalledFiles(const rpmts ts,
 		rpmte p, rpmfi fi,
 		sharedFileInfo shared,
@@ -120,7 +119,7 @@ static int handleInstInstalledFiles(const rpmts ts,
 			&shared->otherPkg, sizeof(shared->otherPkg));
 	while ((h = rpmdbNextIterator(mi)) != NULL) {
 	    xx = headerGetExtension(h, RPMTAG_NVRA, NULL, &altNEVRA, NULL);
-assert(altNEVRA);
+assert(altNEVRA != NULL);
 	    otherFi = rpmfiNew(ts, h, RPMTAG_BASENAMES, scareMem);
 	    break;
 	}
@@ -234,7 +233,6 @@ assert(altNEVRA);
 
     return 0;
 }
-/*@=bounds@*/
 
 /**
  */
@@ -261,7 +259,6 @@ static int handleRmvdInstalledFiles(const rpmts ts, rpmfi fi,
 
     xx = hge(h, RPMTAG_FILESTATES, NULL, &otherStates, NULL);
 
-/*@-boundswrite@*/
     /* XXX there's an obscure segfault here w/o NULL check ... */
     if (otherStates != NULL)
     for (i = 0; i < sharedCount; i++, shared++) {
@@ -274,7 +271,6 @@ static int handleRmvdInstalledFiles(const rpmts ts, rpmfi fi,
 
 	fi->actions[fileNum] = FA_SKIP;
     }
-/*@=boundswrite@*/
 
     mi = rpmdbFreeIterator(mi);
 
@@ -303,7 +299,6 @@ static int fpsCompare (const void * one, const void * two)
     if (adnlen == 1 && asnlen != 0) adnlen = 0;
     if (bdnlen == 1 && bsnlen != 0) bdnlen = 0;
 
-/*@-boundswrite@*/
     afn = t = alloca(adnlen+asnlen+abnlen+2);
     if (adnlen) t = stpcpy(t, a->entry->dirName);
     *t++ = '/';
@@ -317,7 +312,6 @@ static int fpsCompare (const void * one, const void * two)
     if (b->subDir && bsnlen) t = stpcpy(t, b->subDir);
     if (bbnlen) t = stpcpy(t, b->baseName);
     if (bfn[0] == '/' && bfn[1] == '/') bfn++;
-/*@=boundswrite@*/
 
     rc = strcmp(afn, bfn);
 
@@ -356,9 +350,7 @@ linear:
 
     const struct fingerPrint_s * bingoFps;
 
-/*@-boundswrite@*/
     bingoFps = bsearch(fiFps, otherFps, otherFc, sizeof(*otherFps), fpsCompare);
-/*@=boundswrite@*/
     if (bingoFps == NULL)
 	goto linear;
 
@@ -474,7 +466,6 @@ static void handleOverlappedFiles(const rpmts ts,
 	oFColor = rpmfiFColor(otherFi);
 	oFColor &= tscolor;
 
-/*@-boundswrite@*/
 	switch (rpmteType(p)) {
 	case TR_ADDED:
 	  { int reportConflicts =
@@ -591,7 +582,6 @@ assert(digest != NULL);
 	    }
 	    /*@switchbreak@*/ break;
 	}
-/*@=boundswrite@*/
 
 	/* Update disk space info for a file. */
 	rpmtsUpdateDSI(ts, fiFps->entry->dev, rpmfiFSize(fi),
@@ -623,7 +613,6 @@ static int ensureOlder(rpmts ts,
     if (p == NULL || h == NULL)
 	return 1;
 
-/*@-boundswrite@*/
     nb = strlen(rpmteNEVR(p)) + (rpmteE(p) != NULL ? strlen(rpmteE(p)) : 0) + 1;
     t = alloca(nb);
     *t = '\0';
@@ -632,7 +621,6 @@ static int ensureOlder(rpmts ts,
     if (rpmteV(p) != NULL)	t = stpcpy(t, rpmteV(p));
     *t++ = '-';
     if (rpmteR(p) != NULL)	t = stpcpy(t, rpmteR(p));
-/*@=boundswrite@*/
 
     req = rpmdsSingle(RPMTAG_REQUIRENAME, rpmteN(p), reqEVR, reqFlags);
     rc = rpmdsNVRMatchesDep(h, req, _rpmds_nopromote);
@@ -642,7 +630,7 @@ static int ensureOlder(rpmts ts,
 	rpmps ps = rpmtsProblems(ts);
 	const char * altNVRA = NULL;
 	rc = headerGetExtension(h, RPMTAG_NVRA, NULL, &altNVRA, NULL);
-assert(altNVRA);
+assert(altNVRA != NULL);
 	rpmpsAppend(ps, RPMPROB_OLDPACKAGE,
 		rpmteNEVR(p), rpmteKey(p),
 		NULL, NULL,
@@ -664,7 +652,6 @@ assert(altNVRA);
  * @param fi		file info set
  */
 /*@-mustmod@*/ /* FIX: fi->actions is modified. */
-/*@-bounds@*/
 /*@-nullpass@*/
 static void skipFiles(const rpmts ts, rpmfi fi)
 	/*@globals rpmGlobalMacroContext, h_errno @*/
@@ -688,15 +675,12 @@ static void skipFiles(const rpmts ts, rpmfi fi)
 	noDocs = rpmExpandNumeric("%{_excludedocs}");
 
     {	const char *tmpPath = rpmExpand("%{_netsharedpath}", NULL);
-	/*@-branchstate@*/
 	if (tmpPath && *tmpPath != '%')
 	    netsharedPaths = splitString(tmpPath, strlen(tmpPath), ':');
-	/*@=branchstate@*/
 	tmpPath = _free(tmpPath);
     }
 
     s = rpmExpand("%{_install_langs}", NULL);
-    /*@-branchstate@*/
     if (!(s && *s != '%'))
 	s = _free(s);
     if (s) {
@@ -704,7 +688,6 @@ static void skipFiles(const rpmts ts, rpmfi fi)
 	s = _free(s);
     } else
 	languages = NULL;
-    /*@=branchstate@*/
 
     /* Compute directory refcount, skip directory if now empty. */
     dc = rpmfiDC(fi);
@@ -888,7 +871,6 @@ static void skipFiles(const rpmts ts, rpmfi fi)
 /*@=dependenttrans@*/
 }
 /*@=nullpass@*/
-/*@=bounds@*/
 /*@=mustmod@*/
 
 /**
@@ -1180,11 +1162,9 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
     /* If we are in test mode, there is no need to rollback on
      * failure, nor acquire the transaction lock.
      */
-/*@-branchstate@*/
     /* Don't acquire the transaction lock if testing. */
     if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_TEST))
 	lock = rpmtsAcquireLock(ts);
-/*@=branchstate@*/
 
     /* --noscripts implies no scripts or triggers, duh. */
     if (rpmtsFlags(ts) & RPMTRANS_FLAG_NOSCRIPTS)
@@ -1357,7 +1337,6 @@ rpmMessage(RPMMESS_DEBUG, D_("sanity checking %d elements\n"), rpmtsNElements(ts
 		}
 	    }
 
-/*@-branchstate@*/
 	    if (rpmteFd(p) != NULL) {
 		fi = rpmfiNew(ts, p->h, RPMTAG_BASENAMES, 1);
 		if (fi != NULL) {	/* XXX can't happen */
@@ -1381,7 +1360,6 @@ assert(psm != NULL);
 		p->fd = NULL;
 		p->h = headerFree(p->h);
 	    }
-/*@=branchstate@*/
 	}
 	pi = rpmtsiFree(pi);
     }
@@ -1407,7 +1385,6 @@ rpmMessage(RPMMESS_DEBUG, D_("computing %d file fingerprints\n"), totalFileCount
 	    continue;	/* XXX can't happen */
 	fc = rpmfiFC(fi);
 
-	/*@-branchstate@*/
 	switch (rpmteType(p)) {
 	case TR_ADDED:
 	    numAdded++;
@@ -1421,7 +1398,6 @@ rpmMessage(RPMMESS_DEBUG, D_("computing %d file fingerprints\n"), totalFileCount
 	    fi->record = rpmteDBOffset(p);
 	    /*@switchbreak@*/ break;
 	}
-	/*@=branchstate@*/
 
 	fi->fps = (fc > 0 ? xmalloc(fc * sizeof(*fi->fps)) : NULL);
     }
@@ -1435,13 +1411,13 @@ rpmMessage(RPMMESS_DEBUG, D_("computing %d file fingerprints\n"), totalFileCount
 	    openall_before_chroot = rpmExpandNumeric("%{?_openall_before_chroot}");
 
 	xx = Chdir("/");
-	/*@-superuser -noeffect @*/
+	/*@-modobserver@*/
 	if (rootDir != NULL && strcmp(rootDir, "/") && *rootDir == '/') {
 	    if (openall_before_chroot)
 		xx = rpmdbOpenAll(rpmtsGetRdb(ts));
 	    xx = Chroot(rootDir);
 	}
-	/*@=superuser =noeffect @*/
+	/*@=modobserver@*/
 	(void) rpmtsSetChrootDone(ts, 1);
     }
 
@@ -1464,7 +1440,6 @@ rpmMessage(RPMMESS_DEBUG, D_("computing %d file fingerprints\n"), totalFileCount
 
 	(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_FINGERPRINT), 0);
 	fpLookupList(fpc, fi->dnl, fi->bnl, fi->dil, fc, fi->fps);
-	/*@-branchstate@*/
  	fi = rpmfiInit(fi, 0);
  	if (fi != NULL)		/* XXX lclint */
 	while ((i = rpmfiNext(fi)) >= 0) {
@@ -1474,7 +1449,6 @@ rpmMessage(RPMMESS_DEBUG, D_("computing %d file fingerprints\n"), totalFileCount
 	    htAddEntry(ts->ht, fi->fps + i, (void *) fi);
 	    /*@=dependenttrans@*/
 	}
-	/*@=branchstate@*/
 	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_FINGERPRINT), fc);
 
     }
@@ -1510,6 +1484,7 @@ rpmMessage(RPMMESS_DEBUG, D_("computing file dispositions\n"));
 	/* All source files get installed. */
 	if (p->isSource) {
  	    fi = rpmfiInit(fi, 0);
+	    if (fi != NULL)
 	    while ((i = rpmfiNext(fi)) >= 0)
 		fi->actions[i] = FA_CREATE;
 	    continue;
@@ -1532,7 +1507,7 @@ rpmMessage(RPMMESS_DEBUG, D_("computing file dispositions\n"));
 	    uint_32 FFlags = rpmfiFFlags(fi);
 	    numShared += dbiIndexSetCount(matches[i]);
 	    if (!(FFlags & RPMFILE_CONFIG))
-		continue;
+		/*@innercontinue@*/ continue;
 	    if (!Lstat(rpmfiFN(fi), st)) {
 		FFlags |= RPMFILE_EXISTS;
 		if ((512 * st->st_blocks) < st->st_size)
@@ -1580,7 +1555,6 @@ rpmMessage(RPMMESS_DEBUG, D_("computing file dispositions\n"));
 
 	/* For all files from this package that are in the database ... */
 /*@-nullpass@*/
-	/*@-branchstate@*/
 	for (i = 0; i < numShared; i = nexti) {
 	    int beingRemoved;
 
@@ -1614,7 +1588,6 @@ rpmMessage(RPMMESS_DEBUG, D_("computing file dispositions\n"));
 		/*@switchbreak@*/ break;
 	    }
 	}
-	/*@=branchstate@*/
 /*@=nullpass@*/
 
 	free(sharedList);
@@ -1641,10 +1614,10 @@ rpmMessage(RPMMESS_DEBUG, D_("computing file dispositions\n"));
     if (rpmtsChrootDone(ts)) {
 	const char * rootDir = rpmtsRootDir(ts);
 	const char * currDir = rpmtsCurrDir(ts);
-	/*@-superuser -noeffect @*/
+	/*@-modobserver@*/
 	if (rootDir != NULL && strcmp(rootDir, "/") && *rootDir == '/')
 	    xx = Chroot(".");
-	/*@=superuser =noeffect @*/
+	/*@=modobserver@*/
 	(void) rpmtsSetChrootDone(ts, 0);
 	if (currDir != NULL)
 	    xx = Chdir(currDir);
@@ -1742,7 +1715,6 @@ assert(psm != NULL);
      */
 /*@-nullpass@*/
     pi = rpmtsiInit(ts);
-    /*@-branchstate@*/ /* FIX: fi reload needs work */
     while ((p = rpmtsiNext(pi, 0)) != NULL) {
 	alKey pkgKey;
 	int gotfd;
@@ -1905,7 +1877,6 @@ assert(psm != NULL);
 	}
     }
 /*@=nullpass@*/
-    /*@=branchstate@*/
     pi = rpmtsiFree(pi);
 
     if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)) {

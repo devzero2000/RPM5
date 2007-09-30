@@ -181,7 +181,6 @@ fprintf(stderr, "*** ds %p\t%s[%d]\n", ds, ds->Type, ds->Count);
     } else
 	return NULL;
 
-    /*@-branchstate@*/
     if (ds->Count > 0) {
 	ds->N = hfd(ds->N, ds->Nt);
 	ds->EVR = hfd(ds->EVR, ds->EVRt);
@@ -190,7 +189,6 @@ fprintf(stderr, "*** ds %p\t%s[%d]\n", ds, ds->Type, ds->Count);
 	/*@=evalorder@*/
 	ds->h = headerFree(ds->h);
     }
-    /*@=branchstate@*/
 
     ds->DNEVR = _free(ds->DNEVR);
     ds->ns.str = _free(ds->ns.str);
@@ -202,15 +200,12 @@ fprintf(stderr, "*** ds %p\t%s[%d]\n", ds, ds->Type, ds->Count);
 
     (void) rpmdsUnlink(ds, ds->Type);
     /*@-refcounttrans -usereleased@*/
-/*@-boundswrite@*/
     memset(ds, 0, sizeof(*ds));		/* XXX trash and burn */
-/*@=boundswrite@*/
     ds = _free(ds);
     /*@=refcounttrans =usereleased@*/
     return NULL;
 }
 
-/*@-bounds@*/
 static /*@null@*/
 const char ** rpmdsDupArgv(/*@null@*/ const char ** argv, int argc)
 	/*@*/
@@ -239,7 +234,6 @@ assert(argv[ac] != NULL);
     return av;
 /*@=nullret@*/
 }
-/*@=bounds@*/
 
 rpmds rpmdsNew(Header h, rpmTag tagN, int flags)
 {
@@ -292,7 +286,6 @@ assert(scareMem == 0);		/* XXX always allocate memory */
     } else
 	goto exit;
 
-    /*@-branchstate@*/
     if (hge(h, tagN, &Nt, &N, &Count)
      && N != NULL && Count > 0)
     {
@@ -313,7 +306,6 @@ assert(scareMem == 0);		/* XXX always allocate memory */
 	    xx = hge(h, tagEVR, &ds->EVRt, &ds->EVR, NULL);
 	if (tagF > 0)
 	    xx = hge(h, tagF, &ds->Ft, &ds->Flags, NULL);
-/*@-boundsread@*/
 	if (!scareMem && ds->Flags != NULL)
 	    ds->Flags = memcpy(xmalloc(ds->Count * sizeof(*ds->Flags)),
                                 ds->Flags, ds->Count * sizeof(*ds->Flags));
@@ -331,7 +323,6 @@ assert(scareMem == 0);		/* XXX always allocate memory */
 		xx = hge(h, tagBT, &BTt, &BTp, NULL);
 	    ds->BT = (xx && BTp != NULL && BTt == RPM_INT32_TYPE ? *BTp : 0);
 	}
-/*@=boundsread@*/
 
 	if (tagN == RPMTAG_DIRNAMES) {
 	    char * t;
@@ -381,7 +372,6 @@ fprintf(stderr, "*** ds %p\t%s[%d]\n", ds, ds->Type, ds->Count);
 /*@=modfilesys@*/
 
     }
-    /*@=branchstate@*/
 
 exit:
 /*@-compdef -usereleased@*/	/* FIX: ds->Flags may be NULL */
@@ -417,7 +407,6 @@ char * rpmdsNewDNEVR(const char * dspfx, rpmds ds)
     size_t nb = 0;
 
     if (dspfx)	nb += strlen(dspfx) + 1;
-/*@-boundsread@*/
     if (ds->ns.str[0] == '!')	nb++;
     if (NS)	nb += strlen(NS) + sizeof("()") - 1;
     if (N)	nb += strlen(N);
@@ -447,9 +436,7 @@ char * rpmdsNewDNEVR(const char * dspfx, rpmds ds)
 	if (nb)	nb++;
 	nb += strlen(ds->EVR[ds->i]);
     }
-/*@=boundsread@*/
 
-/*@-boundswrite@*/
     t = tbuf = xmalloc(nb + 1);
     if (dspfx) {
 	t = stpcpy(t, dspfx);
@@ -486,7 +473,6 @@ char * rpmdsNewDNEVR(const char * dspfx, rpmds ds)
 	t = stpcpy(t, ds->EVR[ds->i]);
     }
     *t = '\0';
-/*@=boundswrite@*/
     return tbuf;
 }
 
@@ -524,12 +510,13 @@ rpmds rpmdsThis(Header h, rpmTag tagN, int_32 Flags)
     } else
 	goto exit;
 
+/*@-mods@*/
     xx = headerNEVRA(h, &n, NULL, &v, &r, NULL);
+/*@=mods@*/
     ep = NULL;
     xx = hge(h, RPMTAG_EPOCH, NULL, &ep, NULL);
 
     t = xmalloc(sizeof(*N) + strlen(n) + 1);
-/*@-boundswrite@*/
     N = (const char **) t;
     t += sizeof(*N);
     *t = '\0';
@@ -547,7 +534,6 @@ rpmds rpmdsThis(Header h, rpmTag tagN, int_32 Flags)
 	t += strlen(t);
     }
     t = stpcpy( stpcpy( stpcpy( t, v), "-"), r);
-/*@=boundswrite@*/
 
     ds = xcalloc(1, sizeof(*ds));
     ds->Type = Type;
@@ -557,9 +543,7 @@ rpmds rpmdsThis(Header h, rpmTag tagN, int_32 Flags)
     ds->Nt = -1;	/* XXX to insure that hfd will free */
     ds->EVR = EVR;
     ds->EVRt = -1;	/* XXX to insure that hfd will free */
-/*@-boundswrite@*/
     ds->Flags = xmalloc(sizeof(*ds->Flags));	ds->Flags[0] = Flags;
-/*@=boundswrite@*/
 	{   rpmTag tagA = RPMTAG_ARCH;
 	    rpmTagType At;
 	    const char * A = NULL;
@@ -575,9 +559,7 @@ rpmds rpmdsThis(Header h, rpmTag tagN, int_32 Flags)
 	    ds->BT = (xx && BTp != NULL && BTt == RPM_INT32_TYPE ? *BTp : 0);
 	}
     {	char pre[2];
-/*@-boundsread@*/
 	pre[0] = ds->Type[0];
-/*@=boundsread@*/
 	pre[1] = '\0';
 	/*@-nullstate@*/ /* LCL: ds->Type may be NULL ??? */
 /*@i@*/	ds->DNEVR = rpmdsNewDNEVR(pre, ds);
@@ -625,18 +607,14 @@ rpmds rpmdsSingle(rpmTag tagN, const char * N, const char * EVR, int_32 Flags)
     }
     ds->Count = 1;
     /*@-assignexpose@*/
-/*@-boundswrite@*/
     ds->N = xmalloc(sizeof(*ds->N));		ds->N[0] = N;
     ds->Nt = -1;	/* XXX to insure that hfd will free */
     ds->EVR = xmalloc(sizeof(*ds->EVR));	ds->EVR[0] = EVR;
     ds->EVRt = -1;	/* XXX to insure that hfd will free */
     /*@=assignexpose@*/
     ds->Flags = xmalloc(sizeof(*ds->Flags));	ds->Flags[0] = Flags;
-/*@=boundswrite@*/
     {	char t[2];
-/*@-boundsread@*/
 	t[0] = ds->Type[0];
-/*@=boundsread@*/
 	t[1] = '\0';
 /*@i@*/	ds->DNEVR = rpmdsNewDNEVR(t, ds);
     }
@@ -671,10 +649,8 @@ const char * rpmdsDNEVR(const rpmds ds)
     const char * DNEVR = NULL;
 
     if (ds != NULL && ds->i >= 0 && ds->i < ds->Count) {
-/*@-boundsread@*/
 	if (ds->DNEVR != NULL)
 	    DNEVR = ds->DNEVR;
-/*@=boundsread@*/
     }
     return DNEVR;
 }
@@ -684,9 +660,9 @@ const char * rpmdsN(const rpmds ds)
     const char * N = NULL;
 
     if (ds != NULL && ds->i >= 0 && ds->i < ds->Count) {
-/*@-boundsread -globs -mods @*/	/* FIX: correct annotations for ds->ns shadow */
+/*@-globs -mods @*/	/* FIX: correct annotations for ds->ns shadow */
 	N = (ds->ns.N ? ds->ns.N : rpmdsNewN(ds));
-/*@=boundsread =globs =mods @*/
+/*@=globs =mods @*/
     }
     return N;
 }
@@ -696,10 +672,8 @@ const char * rpmdsEVR(const rpmds ds)
     const char * EVR = NULL;
 
     if (ds != NULL && ds->i >= 0 && ds->i < ds->Count) {
-/*@-boundsread@*/
 	if (ds->EVR != NULL)
 	    EVR = ds->EVR[ds->i];
-/*@=boundsread@*/
     }
     return EVR;
 }
@@ -709,10 +683,8 @@ int_32 rpmdsFlags(const rpmds ds)
     int_32 Flags = 0;
 
     if (ds != NULL && ds->i >= 0 && ds->i < ds->Count) {
-/*@-boundsread@*/
 	if (ds->Flags != NULL)
 	    Flags = ds->Flags[ds->i];
-/*@=boundsread@*/
     }
     return Flags;
 }
@@ -809,10 +781,8 @@ uint_32 rpmdsColor(const rpmds ds)
     uint_32 Color = 0;
 
     if (ds != NULL && ds->i >= 0 && ds->i < ds->Count) {
-/*@-boundsread@*/
 	if (ds->Color != NULL)
 	    Color = ds->Color[ds->i];
-/*@=boundsread@*/
     }
     return Color;
 }
@@ -828,12 +798,10 @@ uint_32 rpmdsSetColor(const rpmds ds, uint_32 color)
 	ds->Color = xcalloc(ds->Count, sizeof(*ds->Color));
 
     if (ds->i >= 0 && ds->i < ds->Count) {
-/*@-bounds@*/
 	if (ds->Color != NULL) {
 	    ocolor = ds->Color[ds->i];
 	    ds->Color[ds->i] = color;
 	}
-/*@=bounds@*/
     }
     return ocolor;
 }
@@ -843,10 +811,8 @@ int_32 rpmdsRefs(const rpmds ds)
     int_32 Refs = 0;
 
     if (ds != NULL && ds->i >= 0 && ds->i < ds->Count) {
-/*@-boundsread@*/
 	if (ds->Refs != NULL)
 	    Refs = ds->Refs[ds->i];
-/*@=boundsread@*/
     }
     return Refs;
 }
@@ -862,12 +828,10 @@ int_32 rpmdsSetRefs(const rpmds ds, int_32 refs)
 	ds->Refs = xcalloc(ds->Count, sizeof(*ds->Refs));
 
     if (ds->i >= 0 && ds->i < ds->Count) {
-/*@-bounds@*/
 	if (ds->Refs != NULL) {
 	    orefs = ds->Refs[ds->i];
 	    ds->Refs[ds->i] = refs;
 	}
-/*@=bounds@*/
     }
     return orefs;
 }
@@ -877,10 +841,8 @@ int_32 rpmdsResult(const rpmds ds)
     int_32 result = 0;
 
     if (ds != NULL && ds->i >= 0 && ds->i < ds->Count) {
-/*@-boundsread@*/
 	if (ds->Result != NULL)
 	    result = ds->Result[ds->i];
-/*@=boundsread@*/
     }
     return result;
 }
@@ -896,12 +858,10 @@ int_32 rpmdsSetResult(const rpmds ds, int_32 result)
 	ds->Result = xcalloc(ds->Count, sizeof(*ds->Result));
 
     if (ds->i >= 0 && ds->i < ds->Count) {
-/*@-bounds@*/
 	if (ds->Result != NULL) {
 	    oresult = ds->Result[ds->i];
 	    ds->Result[ds->i] = result;
 	}
-/*@=bounds@*/
     }
     return oresult;
 }
@@ -1054,14 +1014,12 @@ int save;
 	return -1;
 
     /* If not initialized yet, dup the 1st entry. */
-/*@-branchstate@*/
     if (*dsp == NULL) {
 	save = ods->Count;
 	ods->Count = 1;
 	*dsp = rpmdsDup(ods);
 	ods->Count = save;
     }
-/*@=branchstate@*/
     ds = *dsp;
     if (ds == NULL)
 	return -1;
@@ -1297,10 +1255,8 @@ int rpmdsCpuinfo(rpmds *dsp, const char * fn)
     }
 /*@=modobserver@*/
 
-/*@-branchstate@*/
     if (fn == NULL)
 	fn = _cpuinfo_path;
-/*@=branchstate@*/
 
     /* Reset done variables. */
     for (ct = ctags; ct->name != NULL; ct++)
@@ -1387,9 +1343,7 @@ int rpmdsCpuinfo(rpmds *dsp, const char * fn)
     }
 
 exit:
-/*@-branchstate@*/
     if (fd != NULL) (void) Fclose(fd);
-/*@=branchstate@*/
     return rc;
 }
 
@@ -1558,7 +1512,6 @@ assert(fn != NULL);
 	Flags = 0;
 
 	/* parse for non-path, versioned dependency. */
-/*@-branchstate@*/
 	if (*f != '/' && *fe != '\0') {
 	    /* parse comparison operator */
 	    g = fe;
@@ -1593,7 +1546,6 @@ assert(fn != NULL);
 	if (EVR == NULL)
 	    EVR = "";
 	Flags |= RPMSENSE_PROBE;
-/*@=branchstate@*/
 	ds = rpmdsSingle(tagN, N, EVR , Flags);
 	if (ds) {	/* XXX can't happen */
 	    xx = rpmdsMergePRCO(PRCO, ds);
@@ -1603,9 +1555,7 @@ assert(fn != NULL);
     rc = 0;
 
 exit:
-/*@-branchstate@*/
     if (fd != NULL) (void) Fclose(fd);
-/*@=branchstate@*/
     return rc;
 }
 
@@ -1645,10 +1595,8 @@ int rpmdsSysinfo(rpmPRCO PRCO, const char * fn)
     }
 /*@=modobserver@*/
 
-/*@-branchstate@*/
     if (fn == NULL)
 	fn = _sysinfo_path;
-/*@=branchstate@*/
 
     if (fn == NULL)
 	goto exit;
@@ -1662,7 +1610,6 @@ int rpmdsSysinfo(rpmPRCO PRCO, const char * fn)
 	const char **av;
 	int tagN;
 	rc = 0;		/* assume success */
-/*@-branchstate@*/
 	for (av = _sysinfo_tags; av && *av; av++) {
 	    tagN = tagValue(*av);
 	    if (tagN < 0)
@@ -1676,7 +1623,6 @@ int rpmdsSysinfo(rpmPRCO PRCO, const char * fn)
 	    if (rc)
 		break;
 	}
-/*@=branchstate@*/
     } else
     /* XXX for now, collect Dirnames/Filelinktos in Providename */
     if (S_ISREG(st->st_mode))
@@ -2613,7 +2559,6 @@ rpmdsGetconf(rpmds * dsp, const char *path)
     }
 /*@=modobserver@*/
 
-/*@-branchstate@*/
     if (path == NULL)
 	path = _getconf_path;
 
@@ -2681,7 +2626,6 @@ rpmdsGetconf(rpmds * dsp, const char *path)
 	rpmdsNSAdd(dsp, NS, N, EVR, Flags);
 	EVR = _free(EVR);
     }
-/*@=branchstate@*/
     return 0;
 }
 
@@ -2819,6 +2763,7 @@ static char * sonameDep(/*@returned@*/ char * t, const char * s, int isElf64)
 }
 #endif
 
+/*@-moduncon -noeffectuncon @*/
 int rpmdsELF(const char * fn, int flags,
 		int (*add) (void * context, rpmds ds), void * context)
 {
@@ -2888,7 +2833,7 @@ fprintf(stderr, "*** rpmdsELF(%s, %d, %p, %p)\n", fn, flags, (void *)add, contex
     isElf64 = ehdr->e_ident[EI_CLASS] == ELFCLASS64;
     isDSO = ehdr->e_type == ET_DYN;
 
-    /*@-branchstate -uniondef @*/
+    /*@-uniondef @*/
     scn = NULL;
     while ((scn = elf_nextscn(elf, scn)) != NULL) {
 	shdr = gelf_getshdr(scn, &shdr_mem);
@@ -3004,7 +2949,6 @@ fprintf(stderr, "*** rpmdsELF(%s, %d, %p, %p)\n", fn, flags, (void *)add, contex
 	case SHT_DYNAMIC:
 	    data = NULL;
 	    while ((data = elf_getdata (scn, data)) != NULL) {
-/*@-boundswrite@*/
 		for (cnt = 0; cnt < (shdr->sh_size / shdr->sh_entsize); ++cnt) {
 		    dyn = gelf_getdyn (data, cnt, &dyn_mem);
 		    if (dyn == NULL)
@@ -3053,12 +2997,11 @@ assert(s != NULL);
 			/*@switchbreak@*/ break;
 		    }
 		}
-/*@=boundswrite@*/
 	    }
 	    /*@switchbreak@*/ break;
 	}
     }
-    /*@=branchstate =uniondef @*/
+    /*@=uniondef @*/
 
     /* For DSOs which use the .gnu_hash section and don't have a .hash
      * section, we need to ensure that we have a new enough glibc. */
@@ -3096,6 +3039,7 @@ exit:
     return -1;
 #endif
 }
+/*@=moduncon =noeffectuncon @*/
 
 #define	_SBIN_LDCONFIG_P	"/sbin/ldconfig -p"
 /*@unchecked@*/ /*@observer@*/ /*@owned@*/ /*@relnull@*/
@@ -3147,10 +3091,8 @@ int rpmdsLdconfig(rpmPRCO PRCO, const char * fn)
     }
 /*@=modobserver@*/
 
-/*@-branchstate@*/
     if (fn == NULL)
 	fn = _ldconfig_cache;
-/*@=branchstate@*/
 
 if (_rpmds_debug < 0)
 fprintf(stderr, "*** rpmdsLdconfig(%p, %s) P %p R %p C %p O %p T %p D %p L %p\n", PRCO, fn, PRCO->Pdsp, PRCO->Rdsp, PRCO->Cdsp, PRCO->Odsp, PRCO->Tdsp, PRCO->Ddsp, PRCO->Ldsp);
@@ -3215,10 +3157,8 @@ fprintf(stderr, "*** rpmdsLdconfig(%p, %s) P %p R %p C %p O %p T %p D %p L %p\n"
 	/* ", OS ABI: %s %d.%d.%d" */
 
 	N = f;
-/*@-branchstate@*/
 	if (EVR == NULL)
 	    EVR = "";
-/*@=branchstate@*/
 	Flags |= RPMSENSE_PROBE;
 	ds = rpmdsSingle(RPMTAG_PROVIDENAME, N, EVR, Flags);
 	xx = rpmdsMerge(PRCO->Pdsp, ds);
@@ -3271,10 +3211,8 @@ int rpmdsRldpath(rpmPRCO PRCO, const char * rldp)
     }
 /*@=modobserver@*/
 
-/*@-branchstate@*/
     if (rldp == NULL)
 	rldp = _rld_search_path;
-/*@=branchstate@*/
 
 if (_rpmds_debug > 0)
 fprintf(stderr, "*** rpmdsRldpath(%p, %s) P %p R %p C %p O %p\n", PRCO, rldp, PRCO->Pdsp, PRCO->Rdsp, PRCO->Cdsp, PRCO->Odsp);
@@ -3316,7 +3254,6 @@ fprintf(stderr, "*** rpmdsRldpath(%p, %s) glob matched %d files\n", PRCO, rldp, 
 
 	gp = gl.gl_pathv;
 	/* examine each match */
-/*@-branchstate@*/
 	while (gp && *gp) {
 	    const char *DSOfn;
 	    /* XXX: should probably verify that we matched a file */
@@ -3337,7 +3274,6 @@ fprintf(stderr, "*** rpmdsRldpath(%p, %s) glob matched %d files\n", PRCO, rldp, 
 
 	    xx = rpmdsELF(DSOfn, 0, rpmdsMergePRCO, PRCO);
 	}
-/*@=branchstate@*/
 /*@-immediatetrans@*/
 	globfree(&gl);
 /*@=immediatetrans@*/
@@ -3491,10 +3427,8 @@ int rpmdsPipe(rpmds * dsp, int_32 tagN, const char * cmd)
 
     if (tagN <= 0)
 	tagN = RPMTAG_PROVIDENAME;
-/*@-branchstate@*/
     if (cmd == NULL)
 	cmd = _perldeps_cmd;
-/*@=branchstate@*/
 
     fp = popen(cmd, "r");
     if (fp == NULL)
@@ -3542,7 +3476,6 @@ int rpmdsPipe(rpmds * dsp, int_32 tagN, const char * cmd)
 	Flags = 0;
 
 	/* parse for non-path, versioned dependency. */
-/*@-branchstate@*/
 	if (*f != '/' && *fe != '\0') {
 	    /* parse comparison operator */
 	    g = fe;
@@ -3583,7 +3516,6 @@ int rpmdsPipe(rpmds * dsp, int_32 tagN, const char * cmd)
 	if (EVR == NULL)
 	    EVR = "";
 	Flags |= RPMSENSE_PROBE;
-/*@=branchstate@*/
 	ds = rpmdsSingle(tagN, N, EVR, Flags);
 	xx = rpmdsMerge(dsp, ds);
 	ds = rpmdsFree(ds);
@@ -3635,7 +3567,6 @@ int rpmdsCompare(const rpmds A, const rpmds B)
 
 assert((rpmdsFlags(A) & RPMSENSE_SENSEMASK) == A->ns.Flags);
 assert((rpmdsFlags(B) & RPMSENSE_SENSEMASK) == B->ns.Flags);
-/*@-boundsread@*/
     /* Different names (and/or name.arch's) don't overlap. */
     if (rpmdsNAcmp(A, B)) {
 	result = 0;
@@ -3656,10 +3587,8 @@ assert((rpmdsFlags(B) & RPMSENSE_SENSEMASK) == B->ns.Flags);
 	goto exit;
 
     /* Both AEVR and BEVR exist. */
-/*@-boundswrite@*/
     xx = (A->EVRparse ? A->EVRparse : rpmEVRparse) (A->EVR[A->i], a);
     xx = (B->EVRparse ? B->EVRparse : rpmEVRparse) (B->EVR[B->i], b);
-/*@=boundswrite@*/
 
     /* If EVRcmp is identical, use that, otherwise use default. */
     EVRcmp = (A->EVRcmp && B->EVRcmp && A->EVRcmp == B->EVRcmp)
@@ -3685,7 +3614,6 @@ assert((rpmdsFlags(B) & RPMSENSE_SENSEMASK) == B->ns.Flags);
 	if (sense == 0 && a->R && *a->R && b->R && *b->R)
 /*@i@*/	    sense = EVRcmp(a->R, b->R);
     }
-/*@=boundsread@*/
     a->str = _free(a->str);
     b->str = _free(b->str);
 
@@ -3725,11 +3653,9 @@ void rpmdsProblem(rpmps ps, const char * pkgNEVR, const rpmds ds,
 
     if (ps == NULL) return;
 
-    /*@-branchstate@*/
     if (Name == NULL) Name = "?N?";
     if (EVR == NULL) EVR = "?EVR?";
     if (DNEVR == NULL) DNEVR = "? ?N? ?OP? ?EVR?";
-    /*@=branchstate@*/
 
     rpmMessage(RPMMESS_DEBUG, D_("package %s has unsatisfied %s: %s\n"),
 	    pkgNEVR, ds->Type, DNEVR+2);
@@ -3758,11 +3684,9 @@ assert((rpmdsFlags(req) & RPMSENSE_SENSEMASK) == req->ns.Flags);
 
     switch(req->ns.Type) {
     default:
-/*@-boundsread@*/
 	/* Primary key retrieve satisfes an existence compare. */
 	if (!reqFlags || !req->EVR[req->i] || *req->EVR[req->i] == '\0')
 	    goto exit;
-/*@=boundsread@*/
 	/*@fallthrough@*/
     case RPMNS_TYPE_ARCH:
 	break;
@@ -3816,18 +3740,17 @@ assert((rpmdsFlags(req) & RPMSENSE_SENSEMASK) == req->ns.Flags);
     if (req->EVR == NULL || req->Flags == NULL)
 	goto exit;
 
-/*@-boundsread@*/
     if (!(reqFlags && req->EVR[req->i] && *req->EVR[req->i]))
 	goto exit;
-/*@=boundsread@*/
 
     /* Get package information from header */
+/*@-mods@*/
     (void) headerNEVRA(h, &pkgN, NULL, &V, &R, NULL);
+/*@=mods@*/
 
     nb = 21 + 1 + 1;
     if (V) nb += strlen(V);
     if (R) nb += strlen(R);
-/*@-boundswrite@*/
     pkgEVR = t = alloca(nb);
     *t = '\0';
     if (hge(h, RPMTAG_EPOCH, NULL, &epoch, NULL)) {
@@ -3835,7 +3758,6 @@ assert((rpmdsFlags(req) & RPMSENSE_SENSEMASK) == req->ns.Flags);
 	t += strlen(t);
     }
     (void) stpcpy( stpcpy( stpcpy(t, V) , "-") , R);
-/*@=boundswrite@*/
 
     if ((pkg = rpmdsSingle(RPMTAG_PROVIDENAME, pkgN, pkgEVR, pkgFlags)) != NULL) {
 	if (nopromote)

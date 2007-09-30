@@ -1,4 +1,3 @@
-/*@-bounds@*/
 #include "system.h"
 
 #include <stdarg.h>
@@ -232,8 +231,8 @@ const char * lookupInDefaultTable(const char * name,
     return name;
 }
 
-static void setVarDefault(int var, const char * macroname, const char * val,
-		/*@null@*/ const char * body)
+static void setVarDefault(/*@unused@*/ int var, const char * macroname,
+		const char * val, /*@null@*/ const char * body)
 	/*@globals rpmGlobalMacroContext, internalState @*/
 	/*@modifies rpmGlobalMacroContext, internalState @*/
 {
@@ -242,7 +241,8 @@ static void setVarDefault(int var, const char * macroname, const char * val,
     addMacro(NULL, macroname, NULL, body, RMIL_DEFAULT);
 }
 
-static void setPathDefault(int var, const char * macroname, const char * subdir)
+static void setPathDefault(/*@unused@*/ int var, const char * macroname,
+		const char * subdir)
 	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
 	/*@modifies rpmGlobalMacroContext, internalState @*/
 {
@@ -327,7 +327,6 @@ typedef struct cpu_vendor_os_gnu {
 
 /**
  */
-/*@-bounds@*/
 static int parseCVOG(const char * str, CVOG_t *cvogp)
 	/*@modifies *cvogp @*/
 {
@@ -350,7 +349,6 @@ static int parseCVOG(const char * str, CVOG_t *cvogp)
     cvog->vendor = p;
     while (*p && !(*p == '-' || isspace(*p)))
 	p++;
-/*@-branchstate@*/
     if (*p != '-') {
 	if (*p != '\0') *p++ = '\0';
 	cvog->os = cvog->vendor;
@@ -377,10 +375,8 @@ static int parseCVOG(const char * str, CVOG_t *cvogp)
 	cvog->str = _free(cvog->str);
 	cvog = _free(cvog);
     }
-/*@=branchstate@*/
     return 0;
 }
-/*@=bounds@*/
 
 /**
  * Destroy platform patterns.
@@ -432,7 +428,6 @@ static int mireAppend(rpmMireMode mode, int tag, const char * pattern,
  * @param platform	path to platform patterns
  * @return		0 on success
  */
-/*@-bounds@*/
 static int rpmPlatform(const char * platform)
 	/*@globals nplatpat, platpat,
 		rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
@@ -507,7 +502,6 @@ exit:
     }
     return rc;
 }
-/*@=bounds@*/
 
 int rpmPlatformScore(const char * platform, void * mi_re, int mi_nre)
 {
@@ -676,7 +670,6 @@ static void rpmRebuildTargetVars(const char ** target, const char ** canontarget
     rpmSetTables(RPM_MACHTABLE_INSTARCH, RPM_MACHTABLE_INSTOS);
     rpmSetTables(RPM_MACHTABLE_BUILDARCH, RPM_MACHTABLE_BUILDOS);
 
-    /*@-branchstate@*/
     if (target && *target) {
 	char *c;
 	/* Set arch and os from specified build target */
@@ -705,7 +698,6 @@ static void rpmRebuildTargetVars(const char ** target, const char ** canontarget
 	getMachineInfo(OS, &o, NULL);
 	co = (o) ? xstrdup(o) : NULL;
     }
-    /*@=branchstate@*/
 
     /* If still not set, Set target arch/os from default uname(2) values */
     if (ca == NULL) {
@@ -743,12 +735,10 @@ static void rpmRebuildTargetVars(const char ** target, const char ** canontarget
     delMacro(NULL, "_target_os");
     addMacro(NULL, "_target_os", NULL, co, RMIL_RPMRC);
 
-    /*@-branchstate@*/
     if (canontarget)
 	*canontarget = ct;
     else
 	ct = _free(ct);
-    /*@=branchstate@*/
     ca = _free(ca);
     /*@-usereleased@*/
     co = _free(co);
@@ -756,8 +746,8 @@ static void rpmRebuildTargetVars(const char ** target, const char ** canontarget
 }
 
 void rpmFreeRpmrc(void)
-	/*@globals current, tables, values, defaultsInitialized @*/
-	/*@modifies current, tables, values, defaultsInitialized @*/
+	/*@globals current, tables, defaultsInitialized @*/
+	/*@modifies current, tables, defaultsInitialized @*/
 {
     int i, j, k;
 
@@ -836,18 +826,16 @@ static int rpmReadRC(void)
     /* Read macro files. */
     {	const char *mfpath = rpmExpand(rpmMacrofiles, NULL);
 	    
-	/*@-branchstate@*/
 	if (mfpath != NULL) {
 	    rpmInitMacros(NULL, mfpath);
 	    mfpath = _free(mfpath);
 	}
-	/*@=branchstate@*/
     }
 
     return rc;
 }
 
-int rpmReadConfigFiles(const char * file, const char * target)
+int rpmReadConfigFiles(/*@unused@*/ const char * file, const char * target)
 	/*@globals configTarget @*/
 	/*@modifies configTarget @*/
 {
@@ -1016,4 +1004,3 @@ int rpmShowRC(FILE * fp)
 
     return 0;
 }
-/*@=bounds@*/

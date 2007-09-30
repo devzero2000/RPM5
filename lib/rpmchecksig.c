@@ -21,6 +21,7 @@
 #include "debug.h"
 
 /*@access FD_t @*/		/* XXX stealing digests */
+/*@access Header @*/		/* XXX void * arg */
 /*@access pgpDig @*/
 /*@access pgpDigParams @*/
 
@@ -32,7 +33,6 @@ extern int _nosigh;
 
 /**
  */
-/*@-boundsread@*/
 static int manageFile(/*@out@*/ FD_t *fdp,
 		/*@null@*/ /*@out@*/ const char **fnp,
 		int flags, /*@unused@*/ int rc)
@@ -46,7 +46,6 @@ static int manageFile(/*@out@*/ FD_t *fdp,
     if (fdp == NULL)	/* programmer error */
 	return 1;
 
-/*@-boundswrite@*/
     /* close and reset *fdp to NULL */
     if (*fdp && (fnp == NULL || *fnp == NULL)) {
 	(void) Fclose(*fdp);
@@ -79,7 +78,6 @@ static int manageFile(/*@out@*/ FD_t *fdp,
 	fd = fdFree(fd, "manageFile return");
 	return 0;
     }
-/*@=boundswrite@*/
 
     /* no operation */
     if (*fdp != NULL && fnp != NULL && *fnp != NULL)
@@ -88,12 +86,10 @@ static int manageFile(/*@out@*/ FD_t *fdp,
     /* XXX never reached */
     return 1;
 }
-/*@=boundsread@*/
 
 /**
  * Copy header+payload, calculating digest(s) on the fly.
  */
-/*@-boundsread@*/
 static int copyFile(FD_t *sfdp, const char **sfnp,
 		FD_t *tfdp, const char **tfnp)
 	/*@globals rpmGlobalMacroContext, h_errno,
@@ -135,7 +131,6 @@ exit:
     if (*tfdp)	(void) manageFile(tfdp, NULL, 0, rc);
     return rc;
 }
-/*@=boundsread@*/
 
 /**
  * Retrieve signer fingerprint from an OpenPGP signature tag.
@@ -157,9 +152,7 @@ static int getSignid(Header sig, int sigtag, unsigned char * signid)
 	pgpDig dig = pgpNewDig(0);
 
 	if (!pgpPrtPkts(pkt, pktlen, dig, 0)) {
-/*@-bounds@*/
 	    memcpy(signid, dig->signature.signid, sizeof(dig->signature.signid));
-/*@=bounds@*/
 	    rc = 0;
 	}
      
@@ -180,7 +173,7 @@ static int rpmReSign(/*@unused@*/ rpmts ts,
 		QVA_t qva, const char ** argv)
         /*@globals rpmGlobalMacroContext, h_errno,
                 fileSystem, internalState @*/
-        /*@modifies rpmGlobalMacroContext,
+        /*@modifies ts, rpmGlobalMacroContext,
                 fileSystem, internalState @*/
 {
     rpmgi gi = NULL;
@@ -201,16 +194,17 @@ static int rpmReSign(/*@unused@*/ rpmts ts,
     
     tmprpm[0] = '\0';
 
-    /*@-branchstate@*/
     if (argv)
 {       /* start-of-arg-iteration */
     int tag = (qva->qva_source == RPMQV_FTSWALK)
 	? RPMDBI_FTSWALK : RPMDBI_ARGLIST;
-    rpmgi gi = rpmgiNew(ts, tag, NULL, 0);
     rpmgiFlags _giFlags = RPMGI_NONE;
 
+    gi = rpmgiNew(ts, tag, NULL, 0);
+/*@-mods@*/
     if (ftsOpts == 0)
 	ftsOpts = (FTS_COMFOLLOW | FTS_LOGICAL | FTS_NOSTAT);
+/*@=mods@*/
     rc = rpmgiSetArgs(gi, argv, ftsOpts, (_giFlags|RPMGI_NOHEADER));
 
     while (rpmgiNext(gi) == RPMRC_OK) {
@@ -219,8 +213,10 @@ static int rpmReSign(/*@unused@*/ rpmts ts,
 
 	fprintf(stdout, "%s:\n", fn);
 
+/*@-modobserver@*/	/* XXX rpmgiHdrPath should not be observer */
 	if (manageFile(&fd, &fn, O_RDONLY, 0))
 	    goto exit;
+/*@=modobserver@*/
 
 if (!_nolead) {
 	const char item[] = "Lead";
@@ -257,15 +253,17 @@ if (!_nosigh) {
 
 	/* Write the header and archive to a temp file */
 	/* ASSERT: ofd == NULL && sigtarget == NULL */
+/*@-modobserver@*/	/* XXX rpmgiHdrPath should not be observer */
 	if (copyFile(&fd, &fn, &ofd, &sigtarget))
 	    goto exit;
+/*@=modobserver@*/
 	/* Both fd and ofd are now closed. sigtarget contains tempfile name. */
 	/* ASSERT: fd == NULL && ofd == NULL */
 
 	/* Dump the immutable region (if present). */
 	if (headerGetEntry(sigh, RPMTAG_HEADERSIGNATURES, &uht, &uh, &uhc)) {
 	    HeaderIterator hi;
-	    int_32 tag, type, count;
+	    int_32 htag, type, count;
 	    hPTR_t ptr;
 	    Header oh;
 	    Header nh;
@@ -278,11 +276,11 @@ if (!_nosigh) {
 
 	    oh = headerCopyLoad(uh);
 	    for (hi = headerInitIterator(oh);
-		headerNextIterator(hi, &tag, &type, &ptr, &count);
+		headerNextIterator(hi, &htag, &type, &ptr, &count);
 		ptr = headerFreeData(ptr, type))
 	    {
 		if (ptr)
-		    xx = headerAddEntry(nh, tag, type, ptr, count);
+		    xx = headerAddEntry(nh, htag, type, ptr, count);
 	    }
 	    hi = headerFreeIterator(hi);
 	    oh = headerFree(oh);
@@ -426,7 +424,6 @@ if (!_nosigh) {
 	xx = Unlink(sigtarget);
 	sigtarget = _free(sigtarget);
     }
-    /*@=branchstate@*/
 
 }	/* end-of-arg-iteration */
 
@@ -482,8 +479,10 @@ rpmRC rpmcliImportPubkey(const rpmts ts, const unsigned char * pkt, ssize_t pktl
     if (rpmtsOpenDB(ts, (O_RDWR|O_CREAT)))
 	return RPMRC_FAIL;
 
+/*@-moduncon@*/
     if ((enc = b64encode(pkt, pktlen)) == NULL)
 	goto exit;
+/*@=moduncon@*/
 
     dig = pgpNewDig(0);
 
@@ -496,7 +495,6 @@ rpmRC rpmcliImportPubkey(const rpmts ts, const unsigned char * pkt, ssize_t pktl
      || pubp->userid == NULL)
 	goto exit;
 
-/*@-boundswrite@*/
     v = t = xmalloc(16+1);
     t = stpcpy(t, pgpHexStr(pubp->signid, sizeof(pubp->signid)));
 
@@ -514,7 +512,6 @@ rpmRC rpmcliImportPubkey(const rpmts ts, const unsigned char * pkt, ssize_t pktl
     evr = t = xmalloc(sizeof("4X:-")+strlen(v)+strlen(r));
     t = stpcpy(t, (pubp->version == 4 ? "4:" : "3:"));
     t = stpcpy( stpcpy( stpcpy(t, v), "-"), r);
-/*@=boundswrite@*/
 
     /* Check for pre-existing header. */
 
@@ -614,10 +611,7 @@ static int rpmcliImportPubkeys(const rpmts ts,
 
     if (argv == NULL) return res;
 
-    /*@-branchstate@*/
-/*@-boundsread@*/
     while ((fn = *argv++) != NULL) {
-/*@=boundsread@*/
 
 	rpmtsClean(ts);
 	pkt = _free(pkt);
@@ -656,7 +650,6 @@ static int rpmcliImportPubkeys(const rpmts ts,
 	}
 
     }
-    /*@=branchstate@*/
     
 rpmtsClean(ts);
     pkt = _free(pkt);
@@ -888,7 +881,7 @@ assert(dig != NULL);
 	sprintf(b, "%s:%c", fn, (rpmIsVerbose() ? '\n' : ' ') );
 	b += strlen(b);
 
-	if (sigh)
+	if (sigh != NULL)
 	for (hi = headerInitIterator(sigh);
 	    headerNextIterator(hi, &sigtag, &sigtype, &sig, &siglen) != 0;
 	    (void) rpmtsSetSig(ts, sigtag, sigtype, NULL, siglen))
@@ -955,7 +948,6 @@ assert(dig != NULL);
 
 	    res3 = rpmVerifySignature(dig, result);
 
-/*@-bounds@*/
 	    if (res3) {
 		if (rpmIsVerbose()) {
 		    b = stpcpy(b, "    ");
@@ -1093,9 +1085,8 @@ assert(dig != NULL);
 		    }
 		}
 	    }
-/*@=bounds@*/
 	}
-	if (hi)
+	if (hi != NULL)
 	    hi = headerFreeIterator(hi);
 
 	res += res2;
@@ -1168,8 +1159,10 @@ int rpmcliSign(rpmts ts, QVA_t qva, const char ** argv)
     rpmgiFlags _giFlags = RPMGI_NONE;
     rpmRC rc;
 
+/*@-mods@*/
     if (ftsOpts == 0)
 	ftsOpts = (FTS_COMFOLLOW | FTS_LOGICAL | FTS_NOSTAT);
+/*@=mods@*/
     rc = rpmgiSetArgs(gi, argv, ftsOpts, (_giFlags|RPMGI_NOHEADER));
     while (rpmgiNext(gi) == RPMRC_OK) {
 	const char * fn = rpmgiHdrPath(gi);

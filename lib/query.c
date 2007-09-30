@@ -25,6 +25,8 @@
 
 #include "debug.h"
 
+/*@access headerSprintfExtension@*/	/* XXX cast, increment */
+
 /**
  */
 static void printFileInfo(char * te, const char * name,
@@ -49,9 +51,7 @@ static void printFileInfo(char * te, const char * name,
     if (now == 0) {
 	now = time(NULL);
 	tm = localtime(&now);
-/*@-boundsread@*/
 	if (tm) nowtm = *tm;	/* structure assignment */
-/*@=boundsread@*/
     }
 
     strncpy(ownerfield, owner, sizeof(ownerfield));
@@ -156,13 +156,10 @@ int showQueryPackage(QVA_t qva, rpmts ts, Header h)
     int i;
 
     te = t = xmalloc(tb);
-/*@-boundswrite@*/
     *te = '\0';
-/*@=boundswrite@*/
 
     if (qva->qva_queryFormat != NULL) {
 	const char * str = queryHeader(h, qva->qva_queryFormat);
-	/*@-branchstate@*/
 	if (str) {
 	    size_t tx = (te - t);
 
@@ -172,15 +169,12 @@ int showQueryPackage(QVA_t qva, rpmts ts, Header h)
 		t = xrealloc(t, tb);
 		te = t + tx;
 	    }
-/*@-boundswrite@*/
 	    /*@-usereleased@*/
 	    te = stpcpy(te, str);
 	    /*@=usereleased@*/
-/*@=boundswrite@*/
 	    str = _free(str);
 	    flushBuffer(&t, &te, 1);
 	}
-	/*@=branchstate@*/
     }
 
     if (!(qva->qva_flags & QUERY_FOR_LIST))
@@ -188,9 +182,7 @@ int showQueryPackage(QVA_t qva, rpmts ts, Header h)
 
     fi = rpmfiNew(ts, h, RPMTAG_BASENAMES, scareMem);
     if (rpmfiFC(fi) <= 0) {
-/*@-boundswrite@*/
 	te = stpcpy(te, _("(contains no files)"));
-/*@=boundswrite@*/
 	goto exit;
     }
 
@@ -217,7 +209,6 @@ int showQueryPackage(QVA_t qva, rpmts ts, Header h)
 	fstate = rpmfiFState(fi);
 	fsize = rpmfiFSize(fi);
 	fn = rpmfiFN(fi);
-/*@-bounds@*/
 	{   static char hex[] = "0123456789abcdef";
 	    int dalgo = 0;
 	    size_t dlen = 0;
@@ -232,7 +223,6 @@ int showQueryPackage(QVA_t qva, rpmts ts, Header h)
 	    }
 	    *p = '\0';
 	}
-/*@=bounds@*/
 	fuser = rpmfiFUser(fi);
 	fgroup = rpmfiFGroup(fi);
 	flink = rpmfiFLink(fi);
@@ -267,16 +257,13 @@ assert(fdigest != NULL);
 	if (fuser)	sb += strlen(fuser);
 	if (fgroup)	sb += strlen(fgroup);
 	if (flink)	sb += strlen(flink);
-/*@-branchstate@*/
 	if ((sb + BUFSIZ) > tb) {
 	    size_t tx = (te - t);
 	    tb += sb + BUFSIZ;
 	    t = xrealloc(t, tb);
 	    te = t + tx;
 	}
-/*@=branchstate@*/
 
-/*@-boundswrite@*/
 	if (!rpmIsVerbose() && prefix)
 	    te = stpcpy(te, prefix);
 
@@ -306,7 +293,6 @@ assert(fdigest != NULL);
 		/*@switchbreak@*/ break;
 	    }
 	}
-/*@=boundswrite@*/
 
 	if (qva->qva_flags & QUERY_FOR_DUMPFILES) {
 	    sprintf(te, "%s %d %d %s 0%o ",
@@ -333,9 +319,7 @@ assert(fdigest != NULL);
 	    te += strlen(te);
 	} else
 	if (!rpmIsVerbose()) {
-/*@-boundswrite@*/
 	    te = stpcpy(te, fn);
-/*@=boundswrite@*/
 	}
 	else {
 
@@ -480,7 +464,6 @@ int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
     if (qva->qva_showPackage == NULL)
 	return 1;
 
-    /*@-branchstate@*/
     switch (qva->qva_source) {
     case RPMQV_RPM:
 	res = rpmgiShowMatches(qva, ts);
@@ -730,7 +713,6 @@ assert(fn != NULL);
 	}
 	break;
     }
-    /*@=branchstate@*/
    
     return res;
 }

@@ -567,8 +567,8 @@ rpmfi rpmfiFree(/*@killref@*/ /*@only@*/ /*@null@*/ rpmfi fi)
  */
 /*@null@*/
 rpmfi rpmfiNew(/*@null@*/ const rpmts ts, Header h, rpmTag tagN, int flags)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem @*/
-	/*@modifies ts, h, rpmGlobalMacroContext, fileSystem @*/;
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies ts, h, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /**
  * Retrieve file classes from header.
@@ -581,8 +581,9 @@ rpmfi rpmfiNew(/*@null@*/ const rpmts ts, Header h, rpmTag tagN, int flags)
  */
 void rpmfiBuildFClasses(Header h,
 		/*@out@*/ const char *** fclassp, /*@out@*/ int * fcp)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem @*/
-	/*@modifies h, *fclassp, *fcp, rpmGlobalMacroContext, fileSystem @*/;
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies h, *fclassp, *fcp, rpmGlobalMacroContext,
+		fileSystem, internalState @*/;
 
 /**
  * Retrieve file security contexts from header.
@@ -595,8 +596,9 @@ void rpmfiBuildFClasses(Header h,
  */
 void rpmfiBuildFContexts(Header h,
 		/*@out@*/ const char *** fcontextp, /*@out@*/ int * fcp)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem @*/
-	/*@modifies h, *fcontextp, *fcp, rpmGlobalMacroContext, fileSystem @*/;
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies h, *fcontextp, *fcp, rpmGlobalMacroContext,
+		fileSystem, internalState @*/;
 
 /**
  * Retrieve file security contexts from file system.
@@ -609,8 +611,9 @@ void rpmfiBuildFContexts(Header h,
  */
 void rpmfiBuildFSContexts(Header h,
 		/*@out@*/ const char *** fcontextp, /*@out@*/ int * fcp)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem @*/
-	/*@modifies h, *fcontextp, *fcp, rpmGlobalMacroContext, fileSystem @*/;
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies h, *fcontextp, *fcp, rpmGlobalMacroContext,
+		fileSystem, internalState @*/;
 
 /**
  * Retrieve file security contexts from policy RE's.
@@ -623,8 +626,9 @@ void rpmfiBuildFSContexts(Header h,
  */
 void rpmfiBuildREContexts(Header h,
 		/*@out@*/ const char *** fcontextp, /*@out@*/ int * fcp)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem @*/
-	/*@modifies h, *fcontextp, *fcp, rpmGlobalMacroContext, fileSystem @*/;
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies h, *fcontextp, *fcp, rpmGlobalMacroContext,
+		fileSystem, internalState @*/;
 
 /**
  * Retrieve per-file dependencies from header.

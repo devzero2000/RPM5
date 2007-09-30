@@ -73,9 +73,7 @@ static void delTE(rpmte p)
 
     p->h = headerFree(p->h);
 
-/*@-boundswrite@*/
     memset(p, 0, sizeof(*p));	/* XXX trash and burn */
-/*@=boundswrite@*/
     /*@-nullstate@*/ /* FIX: p->{NEVR,name} annotations */
     return;
     /*@=nullstate@*/
@@ -89,7 +87,6 @@ static void delTE(rpmte p)
  * @param key		(TR_ADDED) package retrieval key (e.g. file name)
  * @param relocs	(TR_ADDED) package file relocations
  */
-/*@-bounds@*/
 static void addTE(rpmts ts, rpmte p, Header h,
 		/*@dependent@*/ /*@null@*/ fnpyKey key,
 		/*@null@*/ rpmRelocation relocs)
@@ -109,7 +106,7 @@ static void addTE(rpmts ts, rpmte p, Header h,
 
     p->NEVR = NULL;
     xx = headerGetExtension(h, RPMTAG_NVRA, NULL, &p->NEVR, NULL);
-assert(p->NEVR);
+assert(p->NEVR != NULL);
     p->name = xstrdup(p->NEVR);
     if ((p->release = strrchr(p->name, '-')) != NULL)
 	*p->release++ = '\0';
@@ -178,13 +175,11 @@ assert(p->NEVR);
 
     ep = NULL;
     xx = hge(h, RPMTAG_EPOCH, NULL, &ep, NULL);
-/*@-branchstate@*/
     if (ep) {
 	p->epoch = xmalloc(20);
 	sprintf(p->epoch, "%d", *ep);
     } else
 	p->epoch = NULL;
-/*@=branchstate@*/
 
     p->installed = 0;
 
@@ -226,7 +221,6 @@ assert(p->NEVR);
     return;
 /*@=compdef@*/
 }
-/*@=bounds@*/
 
 rpmte rpmteFree(rpmte te)
 {
@@ -425,14 +419,12 @@ rpmte rpmteParent(rpmte te)
 rpmte rpmteSetParent(rpmte te, rpmte pte)
 {
     rpmte opte = NULL;
-/*@-branchstate@*/
     if (te != NULL) {
 	opte = te->parent;
 	/*@-assignexpose -temptrans@*/
 	te->parent = pte;
 	/*@=assignexpose =temptrans@*/
     }
-/*@=branchstate@*/
     return opte;
 }
 
@@ -636,12 +628,10 @@ int rpmteChain(rpmte p, rpmte q, Header oh, const char * msg)
     int_32 pkgidcnt;
     int xx;
 
-/*@-branchstate@*/
     if (msg == NULL)
 	msg = "";
-/*@=branchstate@*/
     xx = headerGetExtension(oh, RPMTAG_NVRA, NULL, &blinkNEVRA, NULL);
-assert(blinkNEVRA);
+assert(blinkNEVRA != NULL);
 
     /*
      * Convert binary pkgid to a string.
@@ -763,10 +753,8 @@ rpmte rpmtsiNextElement(rpmtsi tsi)
     	if (tsi->oc < rpmtsNElements(tsi->ts))	oc = tsi->oc++;
     }
     tsi->ocsave = oc;
-/*@-branchstate@*/
     if (oc != -1)
 	te = rpmtsElement(tsi->ts, oc);
-/*@=branchstate@*/
     return te;
 }
 

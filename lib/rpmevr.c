@@ -106,9 +106,7 @@ int rpmEVRparse(const char * evrstr, EVR_t evr)
 	evr->E = s;
 	*se++ = '\0';
 	evr->V = se;
-/*@-branchstate@*/
 	if (*evr->E == '\0') evr->E = "0";
-/*@=branchstate@*/
 	evr->Elong = strtoul(evr->E, NULL, 10);
     } else {
 	evr->E = NULL;	/* XXX disable epoch compare if missing */

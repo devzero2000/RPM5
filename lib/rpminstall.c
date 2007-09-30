@@ -20,7 +20,9 @@
 #include "rpmgi.h"
 #include "debug.h"
 
+/*@access FD_t @*/	/* XXX void * arg */
 /*@access rpmts @*/	/* XXX ts->suggests */
+/*@access fnpyKey @*/	/* XXX cast */
 
 /*@unchecked@*/
 int rpmcliPackagesTotal = 0;
@@ -115,10 +117,8 @@ void * rpmShowProgress(/*@null@*/ const void * arg,
 
     switch (what) {
     case RPMCALLBACK_INST_OPEN_FILE:
-/*@-boundsread@*/
 	if (filename == NULL || filename[0] == '\0')
 	    return NULL;
-/*@=boundsread@*/
 	fd = Fopen(filename, "r.fdio");
 	/*@-type@*/ /* FIX: still necessary? */
 	if (fd == NULL || Ferror(fd)) {
@@ -304,7 +304,6 @@ int rpmcliInstallRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 
 
 /** @todo Generalize --freshen policies. */
-/*@-bounds@*/
 int rpmcliInstall(rpmts ts, QVA_t ia, const char ** argv)
 {
     int numFailed = 0;
@@ -325,10 +324,12 @@ int rpmcliInstall(rpmts ts, QVA_t ia, const char ** argv)
     /* Initialize security context patterns (if not already done). */
     if (!(ia->transFlags & RPMTRANS_FLAG_NOCONTEXTS)) {
 	const char *fn = rpmGetPath("%{?_install_file_context_path}", NULL);
+/*@-moduncon@*/
 	if (fn != NULL && *fn != '\0')
 	    xx = matchpathcon_init(fn);
-	    fn = _free(fn);
-	}
+/*@=moduncon@*/
+	fn = _free(fn);
+    }
     (void) rpmtsSetFlags(ts, ia->transFlags);
     (void) rpmtsSetDFlags(ts, ia->depFlags);
 
@@ -397,8 +398,10 @@ if (fileURL[0] == '=') {
     rpmgi gi = rpmgiNew(ts, tag, NULL, 0);
     rpmgiFlags _giFlags = RPMGI_NONE;
 
+/*@-mods@*/
     if (ftsOpts == 0)
 	ftsOpts = (FTS_COMFOLLOW | FTS_LOGICAL | FTS_NOSTAT);
+/*@=mods@*/
     rc = rpmgiSetArgs(gi, argv, ftsOpts, _giFlags);
     while (rpmgiNext(gi) == RPMRC_OK) {
 	Header h = rpmgiHeader(gi);
@@ -505,7 +508,6 @@ exit:
 
     return numFailed;
 }
-/*@=bounds@*/
 
 int rpmErase(rpmts ts, QVA_t ia, const char ** argv)
 {
@@ -552,7 +554,7 @@ int rpmErase(rpmts ts, QVA_t ia, const char ** argv)
     }
 #endif
 
-    rpmtsSetGoal(ts, TSM_ERASE);
+    (void) rpmtsSetGoal(ts, TSM_ERASE);
 
     for (arg = argv; *arg; arg++) {
 	rpmdbMatchIterator mi;

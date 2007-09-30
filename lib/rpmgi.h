@@ -62,7 +62,7 @@ struct rpmgi_s {
 /*@null@*/
     rpmdbMatchIterator mi;
 
-/*@refcounted@*/
+/*@refcounted@*/ /*@relnull@*/
     FD_t fd;
 
     ARGV_t argv;

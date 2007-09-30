@@ -42,7 +42,9 @@ int _psm_threads = 0;
 extern int _nolead;
 extern int _nosigh;
 
-/*@access FD_t @*/		/* XXX void ptr args */
+/*@access FD_t @*/		/* XXX void * arg */
+/*@access Header @*/		/* XXX void * arg */
+
 /*@access rpmpsm @*/
 
 /*@access rpmfi @*/
@@ -63,12 +65,10 @@ int rpmVersionCompare(Header first, Header second)
     if (!headerGetEntry(second, RPMTAG_EPOCH, NULL, &epochTwo, NULL))
 	epochTwo = &zero;
 
-/*@-boundsread@*/
     if (*epochOne < *epochTwo)
 	return -1;
     else if (*epochOne > *epochTwo)
 	return 1;
-/*@=boundsread@*/
 
     rc = headerGetEntry(first, RPMTAG_VERSION, NULL, &one, NULL);
     rc = headerGetEntry(second, RPMTAG_VERSION, NULL, &two, NULL);
@@ -88,7 +88,6 @@ int rpmVersionCompare(Header first, Header second)
  * @param psm		package state machine data
  * @return		0 always
  */
-/*@-bounds@*/
 static rpmRC markReplacedFiles(const rpmpsm psm)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies psm, rpmGlobalMacroContext, fileSystem, internalState @*/
@@ -163,7 +162,6 @@ static rpmRC markReplacedFiles(const rpmpsm psm)
 
     return RPMRC_OK;
 }
-/*@=bounds@*/
 
 rpmRC rpmInstallSourcePackage(rpmts ts, void * _fd,
 		const char ** specFilePtr, const char ** cookie)
@@ -181,6 +179,7 @@ rpmRC rpmInstallSourcePackage(rpmts ts, void * _fd,
     rpmpsm psm = &psmbuf;
     int isSource;
     rpmRC rpmrc;
+    int xx;
     int i;
 
     memset(psm, 0, sizeof(*psm));
@@ -263,7 +262,7 @@ assert(fi->h != NULL);
     i = fi->fc;
 
     if (fi->h != NULL) {	/* XXX can't happen */
-	headerGetExtension(fi->h, RPMTAG_FILEPATHS, NULL, &fi->apath, NULL);
+	xx = headerGetExtension(fi->h, RPMTAG_FILEPATHS, NULL, &fi->apath, NULL);
 
 	if (headerIsEntry(fi->h, RPMTAG_COOKIE))
 	    for (i = 0; i < fi->fc; i++)
@@ -361,7 +360,6 @@ exit:
 
     if (h != NULL) h = headerFree(h);
 
-    /*@-branchstate@*/
     if (fi != NULL) {
 	fi->te->h = headerFree(fi->te->h);
 	if (fi->te->fd != NULL)
@@ -370,7 +368,6 @@ exit:
 	fi->te = NULL;
 	fi = rpmfiFree(fi);
     }
-    /*@=branchstate@*/
 
     /* XXX nuke the added package(s). */
     rpmtsClean(ts);
@@ -489,7 +486,7 @@ static rpmRC runLuaScript(rpmpsm psm, Header h, const char *sln,
 	*ssp |= (RPMSCRIPT_STATE_LUA|RPMSCRIPT_STATE_EXEC);
 
     xx = headerGetExtension(h, RPMTAG_NVRA, NULL, &NVRA, NULL);
-assert(NVRA);
+assert(NVRA != NULL);
 
     /* Save the current working directory. */
 /*@-nullpass@*/
@@ -499,10 +496,10 @@ assert(NVRA);
     /* Get into the chroot. */
     if (!rpmtsChrootDone(ts)) {
 	const char *rootDir = rpmtsRootDir(ts);
-	/*@-superuser -noeffect @*/
+	/*@-modobserver @*/
 	if (rootDir != NULL && strcmp(rootDir, "/") && *rootDir == '/') {
 	    xx = Chroot(rootDir);
-	/*@=superuser =noeffect @*/
+	/*@=modobserver @*/
 	    xx = rpmtsSetChrootDone(ts, 1);
 	}
     }
@@ -554,10 +551,10 @@ assert(NVRA);
     if (rpmtsChrootDone(ts)) {
 	const char *rootDir = rpmtsRootDir(ts);
 	xx = fchdir(rootFdno);
-	/*@-superuser -noeffect @*/
+	/*@-modobserver@*/
 	if (rootDir != NULL && strcmp(rootDir, "/") && *rootDir == '/') {
 	    xx = Chroot(".");
-	/*@=superuser =noeffect @*/
+	/*@=modobserver@*/
 	    xx = rpmtsSetChrootDone(ts, 0);
 	}
     } else
@@ -636,7 +633,7 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
 	return RPMRC_OK;
 
     xx = headerGetExtension(h, RPMTAG_NVRA, NULL, &NVRA, NULL);
-assert(NVRA);
+assert(NVRA != NULL);
 
     if (progArgv && strcmp(progArgv[0], "<lua>") == 0) {
 #ifdef WITH_LUA
@@ -704,10 +701,8 @@ assert(NVRA);
 	const char * rootDir = rpmtsRootDir(ts);
 	FD_t fd;
 
-	/*@-branchstate@*/
 	if (makeTempFile((!rpmtsChrootDone(ts) ? rootDir : "/"), &fn, &fd))
 	    goto exit;
-	/*@=branchstate@*/
 
 	if (rpmIsDebug() &&
 	    (!strcmp(argv[0], "/bin/sh") || !strcmp(argv[0], "/bin/bash")))
@@ -761,7 +756,6 @@ assert(NVRA);
     if (out == NULL)	/* XXX can't happen */
 	goto exit;
 
-    /*@-branchstate@*/
     xx = rpmsqFork(&psm->sq);
     if (psm->sq.child == 0) {
 	int pipes[2];
@@ -827,12 +821,12 @@ assert(NVRA);
 	}
 
 	{   const char * rootDir = rpmtsRootDir(ts);
-	    if (!rpmtsChrootDone(ts) &&
+	    if (!rpmtsChrootDone(ts) && rootDir != NULL &&
 		!(rootDir[0] == '/' && rootDir[1] == '\0'))
 	    {
-		/*@-superuser -noeffect @*/
+		/*@-modobserver@*/
 		xx = Chroot(rootDir);
-		/*@=superuser =noeffect @*/
+		/*@=modobserver@*/
 	    }
 	    xx = Chdir("/");
 	    rpmMessage(RPMMESS_DEBUG, D_("%s: %s(%s)\texecv(%s) pid %d\n"),
@@ -865,7 +859,6 @@ assert(NVRA);
  	_exit(-1);
 	/*@notreached@*/
     }
-    /*@=branchstate@*/
 
     if (psm->sq.child == (pid_t)-1) {
         rpmError(RPMERR_FORK, _("Couldn't fork %s: %s\n"), sln, strerror(errno));
@@ -904,13 +897,11 @@ exit:
     if (out)
 	xx = Fclose(out);	/* XXX dup'd STDOUT_FILENO */
 
-    /*@-branchstate@*/
     if (script) {
 	if (!rpmIsDebug())
 	    xx = Unlink(fn);
 	fn = _free(fn);
     }
-    /*@=branchstate@*/
 
     NVRA = _free(NVRA);
 
@@ -944,14 +935,12 @@ assert(fi->h != NULL);
     if (progArgv == NULL && script == NULL)
 	goto exit;
 
-    /*@-branchstate@*/
     if (progArgv && ptt == RPM_STRING_TYPE) {
 	argv = alloca(sizeof(*argv));
 	*argv = (const char *) progArgv;
     } else {
 	argv = (const char **) progArgv;
     }
-    /*@=branchstate@*/
 
     if (argv[0][0] == '%')
 	argv[0] = argv0 = rpmExpand(argv[0], NULL);
@@ -1266,9 +1255,7 @@ rpmpsm rpmpsmFree(rpmpsm psm)
     (void) rpmpsmUnlink(psm, msg);
 
     /*@-refcounttrans -usereleased@*/
-/*@-boundswrite@*/
     memset(psm, 0, sizeof(*psm));		/* XXX trash and burn */
-/*@=boundswrite@*/
     psm = _free(psm);
     /*@=refcounttrans =usereleased@*/
 
@@ -1515,7 +1502,7 @@ static int rpmpsmNext(rpmpsm psm, pkgStage nstage)
  * @todo Packages w/o files never get a callback, hence don't get displayed
  * on install with -v.
  */
-/*@-bounds -nullpass@*/ /* FIX: testing null annotation for fi->h */
+/*@-nullpass@*/ /* FIX: testing null annotation for fi->h */
 rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 {
     const rpmts ts = psm->ts;
@@ -1528,7 +1515,6 @@ rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
     int saveerrno;
     int xx;
 
-/*@-branchstate@*/
     switch (stage) {
     case PSM_UNKNOWN:
 	break;
@@ -1618,9 +1604,9 @@ assert(psm->mi == NULL);
 		CPIO_MAP_PATH | CPIO_MAP_MODE | CPIO_MAP_UID | CPIO_MAP_GID | (fi->mapflags & CPIO_SBIT_CHECK);
 	
 	    if (headerIsEntry(fi->h, RPMTAG_ORIGBASENAMES))
-		headerGetExtension(fi->h, RPMTAG_ORIGPATHS, NULL, &fi->apath, NULL);
+		xx = headerGetExtension(fi->h, RPMTAG_ORIGPATHS, NULL, &fi->apath, NULL);
 	    else
-		headerGetExtension(fi->h, RPMTAG_FILEPATHS, NULL, &fi->apath, NULL);
+		xx = headerGetExtension(fi->h, RPMTAG_FILEPATHS, NULL, &fi->apath, NULL);
 	
 	    if (fi->fuser == NULL)
 		xx = hge(fi->h, RPMTAG_FILEUSERNAME, NULL,
@@ -1658,7 +1644,9 @@ psm->te->h = headerLink(fi->h);
 		pkgbn = _free(pkgbn);
 		(void) urlPath(psm->pkgURL, &psm->pkgfn);
 		pkgdn_buf = xstrdup(psm->pkgfn);
+/*@-moduncon@*/
 		pkgdn = dirname(pkgdn_buf);
+/*@=moduncon@*/
 		rc = rpmMkdirPath(pkgdn, "_repackage_dir");
 		pkgdn_buf = _free(pkgdn_buf);
 		if (rc == RPMRC_FAIL)
@@ -1767,7 +1755,6 @@ psm->te->h = headerLink(fi->h);
 		    /* XXX this is headerCopy w/o headerReload() */
 		    psm->oh = headerNew();
 
-		    /*@-branchstate@*/
 		    for (hi = headerInitIterator(oh);
 		        headerNextIterator(hi, &tag, &type, &ptr, &count);
 		        ptr = headerFreeData((void *)ptr, type))
@@ -1777,7 +1764,6 @@ psm->te->h = headerLink(fi->h);
 		        if (ptr) xx = hae(psm->oh, tag, type, ptr, count);
 		    }
 		    hi = headerFreeIterator(hi);
-		    /*@=branchstate@*/
 
 		    oh = headerFree(oh);
 		    uh = hfd(uh, uht);
@@ -2107,7 +2093,6 @@ assert(psm->te != NULL);
 	    /*@=nullstate@*/
 	}
 
-/*@-branchstate@*/
 	if (psm->goal == PSM_PKGERASE || psm->goal == PSM_PKGSAVE) {
 if (psm->te != NULL)
 if (psm->te->h != NULL)
@@ -2115,7 +2100,6 @@ psm->te->h = headerFree(psm->te->h);
 	    if (fi->h != NULL)
 		fi->h = headerFree(fi->h);
  	}
-/*@=branchstate@*/
 	psm->oh = headerFree(psm->oh);
 	psm->pkgURL = _free(psm->pkgURL);
 	psm->rpmio_flags = _free(psm->rpmio_flags);
@@ -2184,10 +2168,10 @@ psm->te->h = headerFree(psm->te->h);
 	    }
 
 	    xx = Chdir("/");
-	    /*@-superuser@*/
+	    /*@-modobserver@*/
 	    if (rootDir != NULL && strcmp(rootDir, "/") && *rootDir == '/')
 		rc = Chroot(rootDir);
-	    /*@=superuser@*/
+	    /*@=modobserver@*/
 	    psm->chrootDone = 1;
 	    (void) rpmtsSetChrootDone(ts, 1);
 	}
@@ -2197,10 +2181,10 @@ psm->te->h = headerFree(psm->te->h);
 	if (psm->chrootDone) {
 	    const char * rootDir = rpmtsRootDir(ts);
 	    const char * currDir = rpmtsCurrDir(ts);
-	    /*@-superuser@*/
+	    /*@-modobserver@*/
 	    if (rootDir != NULL && strcmp(rootDir, "/") && *rootDir == '/')
 		rc = Chroot(".");
-	    /*@=superuser@*/
+	    /*@=modobserver@*/
 	    psm->chrootDone = 0;
 	    (void) rpmtsSetChrootDone(ts, 0);
 	    if (currDir != NULL)	/* XXX can't happen */
@@ -2226,11 +2210,9 @@ psm->te->h = headerFree(psm->te->h);
 	const char * payload_format = NULL;
 	char * t;
 
-	/*@-branchstate@*/
 	if (!hge(fi->h, RPMTAG_PAYLOADCOMPRESSOR, NULL,
 			    &payload_compressor, NULL))
 	    payload_compressor = "gzip";
-	/*@=branchstate@*/
 	psm->rpmio_flags = t = xmalloc(sizeof("w9.gzdio"));
 	*t = '\0';
 	t = stpcpy(t, ((psm->goal == PSM_PKGSAVE) ? "w9" : "r"));
@@ -2241,12 +2223,10 @@ psm->te->h = headerFree(psm->te->h);
 	if (!strcmp(payload_compressor, "lzma"))
 	    t = stpcpy(t, ".lzdio");
 
-	/*@-branchstate@*/
 	if (!hge(fi->h, RPMTAG_PAYLOADFORMAT, NULL,
 			    &payload_format, NULL)
 	 || !(!strcmp(payload_format, "tar") || !strcmp(payload_format, "ustar")))
 	    payload_format = "cpio";
-	/*@=branchstate@*/
 	psm->payload_format = xstrdup(payload_format);
 	rc = RPMRC_OK;
     }	break;
@@ -2313,10 +2293,9 @@ assert(psm->te != NULL);
     default:
 	break;
 /*@i@*/    }
-/*@=branchstate@*/
 
 /*@-nullstate@*/	/* FIX: psm->oh and psm->fi->h may be NULL. */
     return rc;
 /*@=nullstate@*/
 }
-/*@=bounds =nullpass@*/
+/*@=nullpass@*/

@@ -34,9 +34,7 @@ static int rpmfcExpandAppend(/*@out@*/ ARGV_t * argvp, const ARGV_t av)
     int ac = argvCount(av);
     int i;
 
-/*@-bounds@*/	/* LCL: internal error */
     argv = xrealloc(argv, (argc + ac + 1) * sizeof(*argv));
-/*@=bounds@*/
     for (i = 0; i < ac; i++)
 	argv[argc + i] = rpmExpand(av[i], NULL);
     argv[argc + ac] = NULL;
@@ -163,14 +161,12 @@ top:
 	}
 	
 	/* Read any data from prog */
-/*@-boundswrite@*/
 	{   char buf[BUFSIZ+1];
 	    while ((nbr = read(fromProg[0], buf, sizeof(buf)-1)) > 0) {
 		buf[nbr] = '\0';
 		appendStringBuf(readBuff, buf);
 	    }
 	}
-/*@=boundswrite@*/
 
 	/* terminate on (non-blocking) EOF or error */
 	done = (nbr == 0 || (nbr < 0 && errno != EAGAIN));
@@ -237,11 +233,9 @@ int rpmfcExec(ARGV_t av, StringBuf sb_stdin, StringBuf * sb_stdoutp,
 
     /* Build argv, appending args to the executable args. */
     xav = NULL;
-/*@-boundswrite@*/
     xx = argvAppend(&xav, pav);
     if (av[1])
 	xx = rpmfcExpandAppend(&xav, av + 1);
-/*@=boundswrite@*/
 
     if (sb_stdin != NULL) {
 	buf_stdin = getStringBuf(sb_stdin);
@@ -251,12 +245,10 @@ int rpmfcExec(ARGV_t av, StringBuf sb_stdin, StringBuf * sb_stdoutp,
     /* Read output from exec'd helper. */
     sb = getOutputFrom(NULL, xav, buf_stdin, buf_stdin_len, failnonzero);
 
-/*@-branchstate@*/
     if (sb_stdoutp != NULL) {
 	*sb_stdoutp = sb;
 	sb = NULL;	/* XXX don't free */
     }
-/*@=branchstate@*/
 
     ec = 0;
 
@@ -365,9 +357,7 @@ static int rpmfcHelper(rpmfc fc, unsigned char deptype, const char * nsdep)
     sb_stdin = newStringBuf();
     appendLineStringBuf(sb_stdin, fn);
     sb_stdout = NULL;
-/*@-boundswrite@*/
     xx = rpmfcExec(av, sb_stdin, &sb_stdout, 0);
-/*@=boundswrite@*/
     sb_stdin = freeStringBuf(sb_stdin);
 
     if (xx == 0 && sb_stdout != NULL) {
@@ -379,7 +369,6 @@ static int rpmfcHelper(rpmfc fc, unsigned char deptype, const char * nsdep)
 	    N = pav[i];
 	    EVR = "";
 	    Flags = dsContext;
-/*@-branchstate@*/
 	    if (pav[i+1] && strchr("=<>", *pav[i+1])) {
 		i++;
 		for (s = pav[i]; *s; s++) {
@@ -402,7 +391,6 @@ assert(*s != '\0');
 		EVR = pav[i];
 assert(EVR != NULL);
 	    }
-/*@=branchstate@*/
 
 
 	    /* Add tracking dependency for versioned Provides: */
@@ -421,9 +409,7 @@ assert(EVR != NULL);
 	    xx = rpmdsMerge(depsp, ds);
 
 	    /* Add to file dependencies. */
-/*@-boundswrite@*/
 	    xx = rpmfcSaveArg(&fc->ddict, rpmfcFileDep(buf, fc->ix, ds));
-/*@=boundswrite@*/
 
 	    ds = rpmdsFree(ds);
 	}
@@ -693,7 +679,6 @@ static int rpmfcSCRIPT(rpmfc fc)
     }
 
     /* Look for #! interpreter in first 10 lines. */
-/*@-boundswrite@*/
     for (i = 0; i < 10; i++) {
 
 	s = fgets(buf, sizeof(buf) - 1, fp);
@@ -731,7 +716,9 @@ static int rpmfcSCRIPT(rpmfc fc)
 
 	/* Set color based on interpreter name. */
 	/* XXX magic token should have already done this?!? */
+/*@-moduncon@*/
 	bn = basename(s);
+/*@=moduncon@*/
 	if (!strcmp(bn, "perl"))
 	    fc->fcolor->vals[fc->ix] |= RPMFC_PERL;
 	else if (!strncmp(bn, "python", sizeof("python")-1))
@@ -741,7 +728,6 @@ static int rpmfcSCRIPT(rpmfc fc)
 
 	break;
     }
-/*@=boundswrite@*/
 
     (void) fclose(fp);
 
@@ -915,7 +901,6 @@ assert(fc->fn != NULL);
 	}
     }
 
-/*@-boundswrite@*/
     /* Generate per-file indices into package dependencies. */
     nddict = argvCount(fc->ddict);
     previx = -1;
@@ -974,7 +959,6 @@ assert(dix >= 0);
 	if (fc->fddictn && fc->fddictn->vals && !skipping)
 	    fc->fddictn->vals[ix]++;
     }
-/*@=boundswrite@*/
 
     return 0;
 }
@@ -997,7 +981,7 @@ int rpmfcClassify(rpmfc fc, ARGV_t argv, int_16 * fmode)
     if (magicfile == NULL || *magicfile == '\0')
 	magicfile = _free(magicfile);
     mg = rpmmgNew(magicfile, 0);
-assert(mg);	/* XXX figger a proper return path. */
+assert(mg != NULL);	/* XXX figger a proper return path. */
 
     fc->nfiles = argvCount(argv);
 
@@ -1020,7 +1004,6 @@ assert(mg);	/* XXX figger a proper return path. */
 assert(s != NULL && *s == '/');
 	slen = strlen(s);
 
-/*@-branchstate@*/
 	switch (mode & S_IFMT) {
 	case S_IFCHR:	ftype = "character special";	/*@switchbreak@*/ break;
 	case S_IFBLK:	ftype = "block special";	/*@switchbreak@*/ break;
@@ -1069,12 +1052,11 @@ assert(s != NULL && *s == '/');
 		ftype = "";
 	    else if (magicfile) {
 		ftype = rpmmgFile(mg, s);
-assert(ftype);	/* XXX never happens, rpmmgFile() returns "" */
+assert(ftype != NULL);	/* XXX never happens, rpmmgFile() returns "" */
 		freeftype = 1;
 	    }
 	    /*@switchbreak@*/ break;
 	}
-/*@=branchstate@*/
 
 	se = ftype;
         rpmMessage(RPMMESS_DEBUG, "%s: %s\n", s, se);
@@ -1089,13 +1071,13 @@ assert(ftype);	/* XXX never happens, rpmmgFile() returns "" */
 	fcolor = rpmfcColoring(se);
 	xx = argiAdd(&fc->fcolor, fc->ix, fcolor);
 
-/*@-boundswrite@*/
 	if (fcolor != RPMFC_WHITE && (fcolor & RPMFC_INCLUDE))
 	    xx = rpmfcSaveArg(&fc->cdict, se);
-/*@=boundswrite@*/
 
+/*@-modobserver -observertrans @*/	/* XXX mixed types in variable */
 	if (freeftype)
 	    ftype = _free(ftype);
+/*@=modobserver =observertrans @*/
     }
 
     /* Build per-file class index array. */
@@ -1279,9 +1261,7 @@ static int rpmfcGenerateDependsHelper(const Spec spec, Package pkg, rpmfi fi)
 	    /*@notreached@*/ /*@switchbreak@*/ break;
 	}
 
-/*@-boundswrite@*/
 	xx = rpmfcExec(dm->argv, sb_stdin, &sb_stdout, failnonzero);
-/*@=boundswrite@*/
 	if (xx == -1)
 	    continue;
 
@@ -1348,7 +1328,6 @@ static int rpmfcGenerateScriptletDeps(const Spec spec, Package pkg)
     int failnonzero = 0;
     int rc = 0;
 
-/*@-branchstate@*/
     for (dm = ScriptMsgs; dm->msg != NULL; dm++) {
 	int tag, tagflags;
 	char * s;
@@ -1372,9 +1351,7 @@ static int rpmfcGenerateScriptletDeps(const Spec spec, Package pkg)
 	appendLineStringBuf(sb_stdin, s);
 	stripTrailingBlanksStringBuf(sb_stdin);
 
-/*@-boundswrite@*/
 	xx = rpmfcExec(dm->argv, sb_stdin, &sb_stdout, failnonzero);
-/*@=boundswrite@*/
 	if (xx == -1)
 	    continue;
 
@@ -1399,7 +1376,6 @@ static int rpmfcGenerateScriptletDeps(const Spec spec, Package pkg)
 	sb_stdout = freeStringBuf(sb_stdout);
 
     }
-/*@=branchstate@*/
 
     sb_stdin = freeStringBuf(sb_stdin);
 
@@ -1451,7 +1427,6 @@ int rpmfcGenerateDepends(void * specp, void * pkgp)
     av = xcalloc(ac+1, sizeof(*av));
     fmode = xcalloc(ac+1, sizeof(*fmode));
 
-/*@-boundswrite@*/
     genConfigDeps = 0;
     fi = rpmfiInit(fi, 0);
     if (fi != NULL)
@@ -1466,7 +1441,6 @@ int rpmfcGenerateDepends(void * specp, void * pkgp)
 	fmode[c] = rpmfiFMode(fi);
     }
     av[ac] = NULL;
-/*@=boundswrite@*/
 
     fc = rpmfcNew();
     fc->skipProv = !pkg->autoProv;
@@ -1564,7 +1538,6 @@ assert(ac == c);
 			p, c);
 
     /* Add Provides: */
-/*@-branchstate@*/
     if (fc->provides != NULL && (c = rpmdsCount(fc->provides)) > 0 && !fc->skipProv) {
 	p = (const void **) fc->provides->N;
 	xx = headerAddEntry(pkg->header, RPMTAG_PROVIDENAME, RPM_STRING_ARRAY_TYPE,
@@ -1581,10 +1554,8 @@ assert(p != NULL);
 			p, c);
 /*@=nullpass@*/
     }
-/*@=branchstate@*/
 
     /* Add Requires: */
-/*@-branchstate@*/
     if (fc->requires != NULL && (c = rpmdsCount(fc->requires)) > 0 && !fc->skipReq) {
 	p = (const void **) fc->requires->N;
 	xx = headerAddEntry(pkg->header, RPMTAG_REQUIRENAME, RPM_STRING_ARRAY_TYPE,
@@ -1601,7 +1572,6 @@ assert(p != NULL);
 			p, c);
 /*@=nullpass@*/
     }
-/*@=branchstate@*/
 
     /* Add dependency dictionary(#dependencies) */
     p = (const void **) argiData(fc->ddictx);

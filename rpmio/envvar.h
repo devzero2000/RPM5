@@ -9,13 +9,17 @@
 extern "C" {
 #endif
 
-#ifndef HAVE_CLEARENV
+#if !defined(HAVE_CLEARENV) || defined(__LCLINT__)
+/*@-globstate@*/	/*@ XXX annotate environ. @*/
 static inline
 int clearenv(void)
+	/*@globals environ @*/
+	/*@modifies environ @*/
 {
     environ = NULL;
     return 0;
 }
+/*@=globstate@*/
 #endif
 
 /*@unused@*/

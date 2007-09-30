@@ -13,7 +13,7 @@
 extern int _rpmns_debug;
 /*@=exportlocal@*/
 
-/*@unchecked@*/ /*@observer@*/
+/*@unchecked@*/ /*@observer@*/ /*@relnull@*/
 extern const char *_rpmns_N_at_A;
 
 typedef	/*@abstract@*/ struct rpmns_s * rpmns;
@@ -60,7 +60,7 @@ struct rpmns_s {
     nsType Type;		/*!< Type */
 /*@dependent@*/ /*@null@*/
     const char * NS;		/*!< Namespace */
-/*@dependent@*/ /*@null@*/
+/*@dependent@*/ /*@relnull@*/
     const char * N;		/*!< Name */
 /*@dependent@*/ /*@null@*/
     const char * A;		/*!< Arch */

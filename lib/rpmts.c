@@ -55,6 +55,7 @@ extern int statvfs (const char * file, /*@out@*/ struct statvfs * buf)
 
 #include "debug.h"
 
+/*@access FD_t @*/		/* XXX void * arg */
 /*@access rpmdb @*/		/* XXX db->db_chrootDone, NULL */
 
 /*@access rpmps @*/
@@ -166,7 +167,6 @@ rpmdbMatchIterator rpmtsInitIterator(const rpmts ts, rpmTag rpmtag,
 	return NULL;
 
     /* Parse out "N(EVR).A" tokens from a label key. */
-/*@-bounds -branchstate@*/
     if (rpmtag == RPMDBI_LABEL && keyp != NULL) {
 	const char * s = keyp;
 	const char *se;
@@ -222,7 +222,6 @@ rpmdbMatchIterator rpmtsInitIterator(const rpmts ts, rpmTag rpmtag,
 	   arch = t;
 	}
     }
-/*@=bounds =branchstate@*/
 
     mi = rpmdbInitIterator(ts->rdb, rpmtag, keyp, keylen);
 
@@ -292,14 +291,11 @@ int rpmtsOpenSDB(rpmts ts, int dbmode)
 static int sugcmp(const void * a, const void * b)
 	/*@*/
 {
-/*@-boundsread@*/
     const char * astr = *(const char **)a;
     const char * bstr = *(const char **)b;
-/*@=boundsread@*/
     return strcmp(astr, bstr);
 }
 
-/*@-bounds@*/
 int rpmtsSolve(rpmts ts, rpmds ds, /*@unused@*/ const void * data)
 {
     const char * errstr;
@@ -459,7 +455,6 @@ exit:
     return rc;
 /*@=nullstate@*/
 }
-/*@=bounds@*/
 
 int rpmtsAvailable(rpmts ts, const rpmds ds)
 {
@@ -493,14 +488,12 @@ int rpmtsSetSolveCallback(rpmts ts,
 {
     int rc = 0;
 
-/*@-branchstate@*/
     if (ts) {
 /*@-assignexpose -temptrans @*/
 	ts->solve = solve;
 	ts->solveData = solveData;
 /*@=assignexpose =temptrans @*/
     }
-/*@=branchstate@*/
     return rc;
 }
 
@@ -582,19 +575,21 @@ static void rpmtsPrintStat(const char * name, /*@null@*/ struct rpmop_s * op)
 		op->usecs/scale, op->usecs%scale);
 }
 
+/*@unchecked@*/ /*@relnull@*/
+extern rpmop _hdr_loadops;
+/*@unchecked@*/ /*@relnull@*/
+extern rpmop _hdr_getops;
+
 static void rpmtsPrintStats(rpmts ts)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/
 {
-    extern rpmop _hdr_loadops;
-    extern rpmop _hdr_getops;
-
     (void) rpmswExit(rpmtsOp(ts, RPMTS_OP_TOTAL), 0);
 
     if (_hdr_loadops)
-	rpmswAdd(rpmtsOp(ts, RPMTS_OP_HDRLOAD), _hdr_loadops);
+	(void) rpmswAdd(rpmtsOp(ts, RPMTS_OP_HDRLOAD), _hdr_loadops);
     if (_hdr_getops)
-	rpmswAdd(rpmtsOp(ts, RPMTS_OP_HDRGET), _hdr_getops);
+	(void) rpmswAdd(rpmtsOp(ts, RPMTS_OP_HDRGET), _hdr_getops);
 
     rpmtsPrintStat("total:       ", rpmtsOp(ts, RPMTS_OP_TOTAL));
     rpmtsPrintStat("check:       ", rpmtsOp(ts, RPMTS_OP_CHECK));
@@ -616,6 +611,9 @@ static void rpmtsPrintStats(rpmts ts)
     rpmtsPrintStat("readhdr:     ", rpmtsOp(ts, RPMTS_OP_READHDR));
     rpmtsPrintStat("hdrload:     ", rpmtsOp(ts, RPMTS_OP_HDRLOAD));
     rpmtsPrintStat("hdrget:      ", rpmtsOp(ts, RPMTS_OP_HDRGET));
+/*@-globstate@*/
+    return;
+/*@=globstate@*/
 }
 
 rpmts rpmtsFree(rpmts ts)
@@ -736,7 +734,6 @@ const char * rpmtsRootDir(rpmts ts)
 {
     const char * rootDir = NULL;
 
-/*@-branchstate@*/
     if (ts != NULL && ts->rootDir != NULL) {
 	urltype ut = urlPath(ts->rootDir, &rootDir);
 	switch (ut) {
@@ -753,7 +750,6 @@ const char * rpmtsRootDir(rpmts ts)
 	    break;
 	}
     }
-/*@=branchstate@*/
     return rootDir;
 }
 
@@ -772,7 +768,6 @@ void rpmtsSetRootDir(rpmts ts, const char * rootDir)
 	}
 	rootLen = strlen(rootDir);
 
-/*@-branchstate@*/
 	/* Make sure that rootDir has trailing / */
 	if (!(rootLen && rootDir[rootLen - 1] == '/')) {
 	    char * t = alloca(rootLen + 2);
@@ -780,7 +775,6 @@ void rpmtsSetRootDir(rpmts ts, const char * rootDir)
 	    (void) stpcpy( stpcpy(t, rootDir), "/");
 	    rootDir = t;
 	}
-/*@=branchstate@*/
 	ts->rootDir = xstrdup(rootDir);
     }
 }

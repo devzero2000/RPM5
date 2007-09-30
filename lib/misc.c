@@ -45,7 +45,6 @@ rpmRC rpmMkdirPath (const char * dpath, const char * dname)
     return RPMRC_OK;
 }
 
-/*@-bounds@*/
 char ** splitString(const char * str, int length, char sep)
 {
     const char * source;
@@ -83,7 +82,6 @@ char ** splitString(const char * str, int length, char sep)
     return list;
 /*@=nullret@*/
 }
-/*@=bounds@*/
 
 void freeSplitString(char ** list)
 {
@@ -125,19 +123,15 @@ int makeTempFile(const char * prefix, const char ** fnptr, void * fdptr)
     FD_t fd = NULL;
     int ran;
 
-    /*@-branchstate@*/
     if (!prefix) prefix = "";
-    /*@=branchstate@*/
 
     /* Create the temp directory if it doesn't already exist. */
-    /*@-branchstate@*/
     if (!_initialized) {
 	_initialized = 1;
 	tempfn = rpmGenPath(prefix, tpmacro, NULL);
 	if (rpmioMkpath(tempfn, 0755, (uid_t) -1, (gid_t) -1))
 	    goto errxit;
     }
-    /*@=branchstate@*/
 
     /* XXX should probably use mkstemp here */
     srand(time(NULL));
@@ -204,12 +198,10 @@ int makeTempFile(const char * prefix, const char ** fnptr, void * fdptr)
 	break;
     }
 
-    /*@-branchstate@*/
     if (fnptr)
 	*fnptr = tempfn;
     else 
 	tempfn = _free(tempfn);
-    /*@=branchstate@*/
     if (fdptr)
 	*(FD_t *)fdptr = fd;
 

@@ -21,6 +21,8 @@
 #include "rpmgi.h"		/* XXX rpmgiEscapeSpaces */
 #include "debug.h"
 
+/*@access FD_t @*/	/* XXX void * arg */
+/*@access rpmts @*/
 /*@access rpmte @*/	/* XXX p->hdrid, p->pkgid, p->NEVRA */
 /*@access IDTX @*/
 /*@access IDT @*/
@@ -93,7 +95,6 @@ IDTX IDTXload(rpmts ts, rpmTag tag, uint_32 rbtid)
     HGE_t hge = (HGE_t) headerGetEntry;
     Header h;
 
-    /*@-branchstate@*/
     mi = rpmtsInitIterator(ts, tag, NULL, 0);
 #ifdef	NOTYET
     (void) rpmdbSetIteratorRE(mi, RPMTAG_NAME, RPMMIRE_DEFAULT, '!gpg-pubkey');
@@ -131,7 +132,6 @@ IDTX IDTXload(rpmts ts, rpmTag tag, uint_32 rbtid)
 	idtx->nidt++;
     }
     mi = rpmdbFreeIterator(mi);
-    /*@=branchstate@*/
 
     return IDTXsort(idtx);
 }
@@ -155,7 +155,6 @@ IDTX IDTXglob(rpmts ts, const char * globstr, rpmTag tag, uint_32 rbtid)
     xx = rpmGlob(fn, &ac, &av);
     fn = _free(fn);
 
-/*@-branchstate@*/
     if (xx == 0)
     for (i = 0; i < ac; i++) {
 	rpmTagType type;
@@ -216,7 +215,6 @@ assert(!strcmp(av[i], origin));
 bottom:
 	h = headerFree(h);
     }
-/*@=branchstate@*/
 
     for (i = 0; i < ac; i++)
 	av[i] = _free(av[i]);
@@ -327,8 +325,10 @@ static int findErases(rpmts ts, /*@null@*/ rpmte p, unsigned thistid,
 		bingo = cmpArgvStr(ts, "NEVRA", flinkNEVRA, nn, (p ? p->NEVRA : NULL));
 	    if (!bingo)
 		bingo = cmpArgvStr(ts, "Hdrid", flinkHdrid, hn, (p ? p->hdrid : NULL));
+/*@-nullstate@*/
 	    if (!bingo)
 		bingo = cmpArgvStr(ts, "Pkgid", flinkPkgid, pn, (p ? p->pkgid : NULL));
+/*@=nullstate@*/
 	    flinkPkgid = headerFreeData(flinkPkgid, pt);
 	    flinkHdrid = headerFreeData(flinkHdrid, ht);
 	    flinkNEVRA = headerFreeData(flinkNEVRA, nt);

@@ -13,25 +13,21 @@
 +strict			# lclint level
 
 # --- in progress
-#+bounds
 +slovak-fcns
--redecl
 -bufferoverflowhigh
 
+-globuse
+-redecl		# 38
++voidabstract
+-warnlintcomments
+
 -branchstate
--compdef		# 9
+-compdef
 -evalorder
 -exportheader
 -globs
--globstate
--moduncon
 -mustmod
--noeffectuncon
--nullderef		# 2
--nullpass		# 62 rpmExpand annoyance
--nullptrarith
--nullstate		# 2
--unrecog
+-nullpass	# 31
 
 # --- +partial artifacts
 -declundef

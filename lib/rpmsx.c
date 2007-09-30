@@ -239,7 +239,6 @@ if (_rpmsx_debug < 0)
 fprintf(stderr, "*** sx %p\t%s[%d]\n", sx, __func__, sx->Count);
 /*@=modfilesys@*/
 
-    /*@-branchstate@*/
     if (sx->Count > 0)
     for (i = 0; i < sx->Count; i++) {
 	rpmsxp sxp = sx->sxp + i;
@@ -257,13 +256,10 @@ fprintf(stderr, "*** sx %p\t%s[%d]\n", sx, __func__, sx->Count);
 	sxs->stem = _free(sxs->stem);
     }
     sx->sxs = _free(sx->sxs);
-    /*@=branchstate@*/
 
     (void) rpmsxUnlink(sx, __func__);
     /*@-refcounttrans -usereleased@*/
-/*@-boundswrite@*/
     memset(sx, 0, sizeof(*sx));		/* XXX trash and burn */
-/*@=boundswrite@*/
     sx = _free(sx);
     /*@=refcounttrans =usereleased@*/
     return NULL;
@@ -335,10 +331,8 @@ int rpmsxParse(rpmsx sx, const char * fn)
     
 #define	inc_err()	nerr++
 
-/*@-branchstate@*/
     if (fn == NULL)
 	fn = "%{?__file_context_path}";
-/*@=branchstate@*/
 
     {	const char * myfn = rpmGetPath(fn, NULL);
 
@@ -359,7 +353,6 @@ int rpmsxParse(rpmsx sx, const char * fn)
      * The second pass performs detailed validation of the input
      * and fills in the spec array.
      */
-/*@-branchstate@*/
     for (pass = 0; pass < 2; pass++) {
 	rpmsxp sxp;
 
@@ -502,7 +495,6 @@ int rpmsxParse(rpmsx sx, const char * fn)
 	    rewind(fp);
 	}
     }
-/*@=branchstate@*/
     (void) fclose(fp);
 
    /* Stable sort for policy specifications, patterns before paths. */

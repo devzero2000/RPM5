@@ -48,7 +48,6 @@ static void argerror(const char * desc)
 
 /**
  */
-/*@-bounds@*/
 static void installArgCallback( /*@unused@*/ poptContext con,
 		/*@unused@*/ enum poptCallbackReason reason,
 		const struct poptOption * opt, const char * arg,
@@ -59,7 +58,6 @@ static void installArgCallback( /*@unused@*/ poptContext con,
     QVA_t ia = &rpmIArgs;
 
     /* XXX avoid accidental collisions with POPT_BIT_SET for flags */
-    /*@-branchstate@*/
     if (opt->arg == NULL)
     switch (opt->val) {
 
@@ -195,9 +193,7 @@ static void installArgCallback( /*@unused@*/ poptContext con,
 	break;
 
     }
-    /*@=branchstate@*/
 }
-/*@=bounds@*/
 
 /**
  */

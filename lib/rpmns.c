@@ -16,7 +16,7 @@
 /*@unchecked@*/
 int _rpmns_debug = 0;
 
-/*@unchecked@*/ /*@observer@*/
+/*@unchecked@*/ /*@observer@*/ /*@relnull@*/
 const char *_rpmns_N_at_A = ".";
 
 /*@-nullassign@*/
@@ -126,7 +126,6 @@ nsType rpmnsProbe(const char * str)
     return RPMNS_TYPE_UNKNOWN;
 }
 
-/*@=boundsread@*/
 nsType rpmnsClassify(const char * str)
 {
     const char * s;
@@ -155,10 +154,12 @@ nsType rpmnsClassify(const char * str)
 	    if (s[0] == _rpmns_N_at_A[0] && rpmnsArch(s+1))
 		return RPMNS_TYPE_ARCH;
 	}
+/*@-globstate@*/
 	if (s[0] == '.')
 	    return RPMNS_TYPE_COMPOUND;
     }
     return RPMNS_TYPE_STRING;
+/*@=globstate@*/
 }
 
 int rpmnsParse(const char * str, rpmns ns)

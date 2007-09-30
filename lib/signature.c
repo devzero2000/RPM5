@@ -300,12 +300,14 @@ static int makeGPGSignature(const char * file, int_32 * sigTagp,
 	long key;
 	int xx;
 
+/*@-moduncon@*/
 	key = keyctl_search(keyring, "user", "rpm:passwd", 0);
 	if ((xx = keyctl_read_alloc(key, (void **)&pw)) < 0) {
 	    rpmError(RPMERR_SIGGEN, _("Failed %s(%d) key(0x%lx): %s\n"),
 			"keyctl_read_alloc of key", xx, key, strerror(errno));
 	    return 1;
 	}
+/*@=moduncon@*/
     } else
 #endif
 	pw = passPhrase;
@@ -316,10 +318,14 @@ static int makeGPGSignature(const char * file, int_32 * sigTagp,
 	fprintf(fpipe, "%s\n", (pw ? pw : ""));
 	(void) fclose(fpipe);
     }
+/*@-mods@*/
     if (pw && pw != passPhrase) {
 	(void) memset((void *)pw, 0, strlen(pw));
+/*@-temptrans@*/	/* XXX mixed use in variable */
 	pw = _free(pw);
+/*@=temptrans@*/
     }
+/*@=mods@*/
 
     (void) waitpid(pid, &status, 0);
     if (!WIFEXITED(status) || WEXITSTATUS(status)) {
@@ -660,14 +666,15 @@ int rpmCheckPassPhrase(const char * passPhrase)
     if (!strcmp(passPhrase, "@u user rpm:passwd")) {
 	long key;
 	key_serial_t keyring = KEY_SPEC_PROCESS_KEYRING;
-	int xx;
 
+/*@-moduncon@*/
 	key = keyctl_search(keyring, "user", "rpm:passwd", 0);
 	if ((xx = keyctl_read_alloc(key, (void **)&pw)) < 0) {
 	    rpmError(RPMERR_SIGGEN, _("Failed %s(%d) key(0x%lx): %s\n"),
 			"keyctl_read_alloc of key", xx, key, strerror(errno));
 	    return 1;
 	}
+/*@=moduncon@*/
     } else
 #endif
 	pw = passPhrase;
@@ -677,10 +684,14 @@ int rpmCheckPassPhrase(const char * passPhrase)
     xx = write(p[1], "\n", 1);
     xx = close(p[1]);
 
+/*@-mods@*/
     if (pw && pw != passPhrase) {
 	(void) memset((void *)pw, 0, strlen(pw));
+/*@-temptrans@*/	/* XXX mixed use in variable */
 	pw = _free(pw);
+/*@=temptrans@*/
     }
+/*@=mods@*/
 
     (void) waitpid(pid, &status, 0);
 
@@ -870,7 +881,7 @@ static rpmRC
 verifyRSASignature(pgpDig dig, /*@out@*/ char * t,
 		/*@null@*/ DIGEST_CTX md5ctx)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies ts, *t, rpmGlobalMacroContext, fileSystem, internalState */
+	/*@modifies dig, *t, rpmGlobalMacroContext, fileSystem, internalState */
 {
     const void * sig = pgpGetSig(dig);
 #ifdef	NOTYET
@@ -915,7 +926,6 @@ assert(sigp != NULL);
 
     /* Verify the desired hash match. */
     /* XXX Values from PKCS#1 v2.1 (aka RFC-3447) */
-/*@-branchstate@*/
     switch (sigp->hash_algo) {
     case PGPHASHALGO_MD5:
 	t = stpcpy(t, " RSA/MD5");
@@ -958,7 +968,6 @@ assert(sigp != NULL);
 	prefix = NULL;
 	break;
     }
-/*@=branchstate@*/
 
     t = stpcpy(t, _(" signature: "));
     if (res != RPMRC_OK) {
@@ -1018,7 +1027,9 @@ assert(prefix != NULL);
 	tt = stpcpy(tt, prefix);
 	tt = stpcpy(tt, dig->md5);
 
+/*@-moduncon -noeffectuncon @*/
 	mpnzero(&dig->rsahm);	(void) mpnsethex(&dig->rsahm, hexstr);
+/*@=moduncon =noeffectuncon @*/
 
 	hexstr = _free(hexstr);
 
@@ -1031,13 +1042,13 @@ assert(prefix != NULL);
 
     {	rpmop op = pgpStatsAccumulator(dig, 11);	/* RPMTS_OP_SIGNATURE */
 	(void) rpmswEnter(op, 0);
-/*@-type@*/	/* XXX FIX: avoid beecrypt API incompatibility. */
+/*@-moduncon@*/
 #if defined(HAVE_BEECRYPT_API_H)
 	xx = rsavrfy(&dig->rsa_pk.n, &dig->rsa_pk.e, &dig->c, &dig->rsahm);
 #else
 	xx = rsavrfy(&dig->rsa_pk, &dig->rsahm, &dig->c);
 #endif
-/*@=type@*/
+/*@=moduncon@*/
 	(void) rpmswExit(op, 0);
 	res = (xx ? RPMRC_OK : RPMRC_FAIL);
     }
@@ -1064,7 +1075,7 @@ static rpmRC
 verifyDSASignature(pgpDig dig, /*@out@*/ char * t,
 		/*@null@*/ DIGEST_CTX sha1ctx)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies ts, *t, rpmGlobalMacroContext, fileSystem, internalState */
+	/*@modifies dig, *t, rpmGlobalMacroContext, fileSystem, internalState */
 {
     const void * sig = pgpGetSig(dig);
 #ifdef	NOTYET
@@ -1128,7 +1139,9 @@ assert(sigp != NULL);
 	(void) rpmswExit(op, sigp->hashlen);
 	op->count--;	/* XXX one too many */
 
+/*@-moduncon -noeffectuncon @*/
 	mpnzero(&dig->hm);	(void) mpnsethex(&dig->hm, dig->sha1);
+/*@=moduncon =noeffectuncon @*/
 
 	/* Compare leading 16 bits of digest for quick check. */
 	signhash16[0] = (*dig->hm.data >> 24) & 0xff;
@@ -1146,11 +1159,13 @@ assert(sigp != NULL);
 
     {	rpmop op = pgpStatsAccumulator(dig, 11);	/* RPMTS_OP_SIGNATURE */
 	(void) rpmswEnter(op, 0);
+/*@-moduncon@*/
 	if (dsavrfy(&dig->p, &dig->q, &dig->g,
 		&dig->hm, &dig->y, &dig->r, &dig->s))
 	    res = RPMRC_OK;
 	else
 	    res = RPMRC_FAIL;
+/*@=moduncon@*/
 	(void) rpmswExit(op, 0);
     }
 

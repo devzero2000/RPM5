@@ -753,7 +753,7 @@ typedef /*@abstract@*/ /*@refcounted@*/ struct rpmpsm_s * rpmpsm;
 rpmRC rpmReadHeader(rpmts ts, void * _fd, /*@out@*/ Header *hdrp,
 		/*@out@*/ /*@null@*/ const char ** msg)
         /*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-        /*@modifies ts, *hdrp, *msg, rpmGlobalMacroContext,
+        /*@modifies ts, *_fd, *hdrp, *msg, rpmGlobalMacroContext,
                 fileSystem, internalState @*/;
 
 /**
@@ -767,7 +767,7 @@ rpmRC rpmReadHeader(rpmts ts, void * _fd, /*@out@*/ Header *hdrp,
 rpmRC rpmReadPackageFile(rpmts ts, void * _fd,
 		const char * fn, /*@null@*/ /*@out@*/ Header * hdrp)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies ts, _fd, *hdrp, rpmGlobalMacroContext,
+	/*@modifies ts, *_fd, *hdrp, rpmGlobalMacroContext,
 		fileSystem, internalState @*/;
 
 /**

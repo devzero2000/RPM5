@@ -43,14 +43,12 @@ static int strntoul(const char *str, /*@out@*/char **endptr, int base, int num)
     buf[num] = '\0';
 
     ret = strtoul(buf, &end, base);
-/*@-boundsread@*/ /* LCL: strtoul annotations */
     if (endptr != NULL) {
 	if (*end != '\0')
 	    *endptr = ((char *)str) + (end - buf);	/* XXX discards const */
 	else
 	    *endptr = ((char *)str) + strlen(buf);
     }
-/*@=boundsread@*/
 
     return ret;
 }
@@ -235,10 +233,8 @@ fprintf(stderr, "\tmemcmp(\"%s\", \"%s\", %u)\n", hdrchecksum, checksum, (unsign
     if (fsm->path == NULL && hdr->name[0] != '\0') {
 	nb = strlen(hdr->name);
 	t = xmalloc(nb + 1);
-/*@-boundswrite@*/
 	memcpy(t, hdr->name, nb);
 	t[nb] = '\0';
-/*@=boundswrite@*/
 	fsm->path = t;
     }
 
@@ -246,10 +242,8 @@ fprintf(stderr, "\tmemcmp(\"%s\", \"%s\", %u)\n", hdrchecksum, checksum, (unsign
     if (fsm->lpath == NULL && hdr->linkname[0] != '\0') {
 	nb = strlen(hdr->linkname);
 	t = xmalloc(nb + 1);
-/*@-boundswrite@*/
 	memcpy(t, hdr->linkname, nb);
 	t[nb] = '\0';
-/*@=boundswrite@*/
 	fsm->lpath = t;
     }
 

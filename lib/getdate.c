@@ -2,7 +2,7 @@
 /*@-retvalint -usedef -varuse -nullderef -nullassign @*/
 /*@-readonlytrans -modunconnomods -compdef -noeffectuncon @*/
 /*@-globs -evalorderuncon -modobserveruncon -modnomods @*/
-/*@-noeffect -branchstate -sizeoftype -usereleased @*/
+/*@-noeffect -sizeoftype -usereleased @*/
 /*@unused@*/
 /* A Bison parser, made by GNU Bison 2.3.  */
 
@@ -2778,7 +2778,7 @@ main(ac, av)
 }
 #endif	/* defined(TEST) */
 
-/*@=noeffect =branchstate =sizeoftype =usereleased @*/
+/*@=noeffect =sizeoftype =usereleased @*/
 /*@=globs =evalorderuncon =modobserveruncon =modnomods @*/
 /*@=readonlytrans =modunconnomods =compdef =noeffectuncon @*/
 /*@=retvalint =usedef =varuse =nullderef =nullassign @*/

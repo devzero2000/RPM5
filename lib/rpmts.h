@@ -149,7 +149,7 @@ struct rpmts_s {
     int filesystemCount;	/*!< No. of mounted filesystems. */
 /*@dependent@*/ /*@null@*/
     const char ** filesystems;	/*!< Mounted filesystem names. */
-/*@only@*/ /*@null@*/
+/*@only@*/ /*@relnull@*/
     rpmDiskSpaceInfo dsi;	/*!< Per filesystem disk/inode usage. */
 
 /*@refcounted@*/ /*@null@*/

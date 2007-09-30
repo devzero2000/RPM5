@@ -39,7 +39,6 @@ int rpmVerifyFile(const rpmts ts, const rpmfi fi,
     int rc;
 
     /* Prepend the path to root (if specified). */
-/*@-bounds@*/
     if (rootDir && *rootDir != '\0'
      && !(rootDir[0] == '/' && rootDir[1] == '\0'))
     {
@@ -57,7 +56,6 @@ int rpmVerifyFile(const rpmts ts, const rpmfi fi,
 	t = stpcpy(t, fn);
 	fn = tb;
     }
-/*@=bounds@*/
 
     *res = RPMVERIFY_NONE;
 
@@ -117,7 +115,6 @@ int rpmVerifyFile(const rpmts ts, const rpmfi fi,
      */
     flags &= ~(omitMask | RPMVERIFY_FAILURES);
 
-/*@=branchstate@*/
 
     if (flags & RPMVERIFY_FDIGEST) {
 	int dalgo = 0;
@@ -298,9 +295,7 @@ static int verifyHeader(QVA_t qva, const rpmts ts, rpmfi fi)
 	if (!(qva->qva_fflags & RPMFILE_GHOST) && (fflags & RPMFILE_GHOST))
 	    continue;
 
-/*@-boundswrite@*/
 	rc = rpmVerifyFile(ts, fi, &verifyResult, omitMask);
-/*@=boundswrite@*/
 	if (rc) {
 	    if (!(fflags & (RPMFILE_MISSINGOK|RPMFILE_GHOST)) || rpmIsVerbose()) {
 		sprintf(te, _("missing   %c %s"),
@@ -360,7 +355,6 @@ static int verifyHeader(QVA_t qva, const rpmts ts, rpmfi fi)
 	    te += strlen(te);
 	}
 
-/*@-boundswrite@*/
 	if (te > t) {
 	    *te++ = '\n';
 	    *te = '\0';
@@ -368,7 +362,6 @@ static int verifyHeader(QVA_t qva, const rpmts ts, rpmfi fi)
 	    te = t = buf;
 	    *t = '\0';
 	}
-/*@=boundswrite@*/
     }
     fi = rpmfiUnlink(fi, "verifyHeader");
 	
@@ -408,7 +401,6 @@ static int verifyDependencies(/*@unused@*/ QVA_t qva, rpmts ts,
     ps = rpmtsProblems(ts);
 
     numProblems = rpmpsNumProblems(ps);
-    /*@-branchstate@*/
     if (ps != NULL && numProblems > 0) {
 	const char * pkgNEVR, * altNEVR;
 	rpmProblem p;
@@ -425,7 +417,6 @@ static int verifyDependencies(/*@unused@*/ QVA_t qva, rpmts ts,
 	    nb += strlen(altNEVR+2) + sizeof("\n") - 1;
 	}
 	te = t = alloca(nb);
-/*@-boundswrite@*/
 	*te = '\0';
 	pkgNEVR = (ps->probs->pkgNEVR ? ps->probs->pkgNEVR : "?pkgNEVR?");
 	sprintf(te, _("Unsatisfied dependencies for %s:\n"), pkgNEVR);
@@ -447,10 +438,8 @@ static int verifyDependencies(/*@unused@*/ QVA_t qva, rpmts ts,
 	    te = t;
 	    *t = '\0';
 	}
-/*@=boundswrite@*/
 	rc = 1;
     }
-    /*@=branchstate@*/
 
     ps = rpmpsFree(ps);
 

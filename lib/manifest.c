@@ -15,7 +15,6 @@
 
 /*@access StringBuf @*/
 
-/*@-boundswrite@*/
 char * rpmPermsString(int mode)
 {
     char *perms = xstrdup("----------");
@@ -62,10 +61,8 @@ char * rpmPermsString(int mode)
 
     return perms;
 }
-/*@=boundswrite@*/
 
 /**@todo Infinite loops through manifest files exist, operator error for now. */
-/*@-boundsread@*/
 rpmRC rpmReadPackageManifest(FD_t fd, int * argcPtr, const char *** argvPtr)
 {
     StringBuf sb = newStringBuf();
@@ -80,13 +77,10 @@ rpmRC rpmReadPackageManifest(FD_t fd, int * argcPtr, const char *** argvPtr)
     rpmRC rpmrc = RPMRC_OK;
     int i, j, next, npre;
 
-/*@-boundswrite@*/
-/*@-branchstate@*/
     if (fdGetFp(fd) == NULL)
 	xfd = Fdopen(fd, "r.fpio");
     else
 	xfd = fd;
-/*@=branchstate@*/
 
 /*@+voidabstract@*/
     if ((f = (FILE *) fdGetFp(xfd)) == NULL) {
@@ -135,10 +129,8 @@ rpmRC rpmReadPackageManifest(FD_t fd, int * argcPtr, const char *** argvPtr)
 	appendStringBuf(sb, s);
     }
 
-    /*@-branchstate@*/
     if (s == NULL)		/* XXX always true */
 	s = getStringBuf(sb);
-    /*@=branchstate@*/
 
     if (!(s && *s)) {
 	rpmrc = RPMRC_NOTFOUND;
@@ -192,22 +184,16 @@ rpmRC rpmReadPackageManifest(FD_t fd, int * argcPtr, const char *** argvPtr)
     }
     if (argcPtr)
 	*argcPtr = ac;
-/*@=boundswrite@*/
 
 exit:
-    /*@-branchstate@*/
     if (argvPtr == NULL || (rpmrc != RPMRC_OK && av)) {
 	if (av)
-/*@-boundswrite@*/
 	for (i = 0; i < ac; i++)
 	    /*@-unqualifiedtrans@*/av[i] = _free(av[i]); /*@=unqualifiedtrans@*/
-/*@=boundswrite@*/
 	/*@-dependenttrans@*/ av = _free(av); /*@=dependenttrans@*/
     }
-    /*@=branchstate@*/
     sb = freeStringBuf(sb);
     /*@-nullstate@*/ /* FIX: *argvPtr may be NULL. */
     return rpmrc;
     /*@=nullstate@*/
 }
-/*@=boundsread@*/

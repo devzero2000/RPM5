@@ -40,10 +40,8 @@ static int fsnamesTag( /*@unused@*/ Header h, /*@out@*/ int_32 * type,
 {
     const char ** list;
 
-/*@-boundswrite@*/
     if (rpmGetFilesystemList(&list, count))
 	return 1;
-/*@=boundswrite@*/
 
     if (type) *type = RPM_STRING_ARRAY_TYPE;
     if (data) *((const char ***) data) = list;
@@ -76,19 +74,18 @@ static int fssizesTag(Header h, /*@out@*/ rpmTagType * type,
     uint_32 * filesizes;
     uint_64 * usages;
     int numFiles;
+    int xx;
 
     if (!hge(h, RPMTAG_FILESIZES, NULL, &filesizes, &numFiles)) {
 	filesizes = NULL;
 	numFiles = 0;
 	filenames = NULL;
     } else {
-	headerGetExtension(h, RPMTAG_FILEPATHS, NULL, &filenames, &numFiles);
+	xx = headerGetExtension(h, RPMTAG_FILEPATHS, NULL, &filenames, &numFiles);
     }
 
-/*@-boundswrite@*/
     if (rpmGetFilesystemList(NULL, count))
 	return 1;
-/*@=boundswrite@*/
 
     *type = RPM_INT64_TYPE;
     *freeData = 1;
@@ -100,10 +97,8 @@ static int fssizesTag(Header h, /*@out@*/ rpmTagType * type,
 	return 0;
     }
 
-/*@-boundswrite@*/
     if (rpmGetFilesystemUsage(filenames, filesizes, numFiles, &usages, 0))	
 	return 1;
-/*@=boundswrite@*/
 
     *data = usages;
 
@@ -124,9 +119,9 @@ static int fssizesTag(Header h, /*@out@*/ rpmTagType * type,
 static int fileclassTag(Header h, /*@out@*/ rpmTagType * type,
 		/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
 		/*@out@*/ int * freeData)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies h, *type, *data, *count, *freeData,
-		rpmGlobalMacroContext, fileSystem @*/
+		rpmGlobalMacroContext, fileSystem, internalState @*/
 	/*@requires maxSet(type) >= 0 /\ maxSet(data) >= 0
 		/\ maxSet(count) >= 0 /\ maxSet(freeData) >= 0 @*/
 {
@@ -148,9 +143,9 @@ static int fileclassTag(Header h, /*@out@*/ rpmTagType * type,
 static int filecontextsTag(Header h, /*@out@*/ rpmTagType * type,
 		/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
 		/*@out@*/ int * freeData)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies h, *type, *data, *count, *freeData,
-		rpmGlobalMacroContext, fileSystem @*/
+		rpmGlobalMacroContext, fileSystem, internalState @*/
 	/*@requires maxSet(type) >= 0 /\ maxSet(data) >= 0
 		/\ maxSet(count) >= 0 /\ maxSet(freeData) >= 0 @*/
 {
@@ -172,9 +167,9 @@ static int filecontextsTag(Header h, /*@out@*/ rpmTagType * type,
 static int fscontextsTag(Header h, /*@out@*/ rpmTagType * type,
 		/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
 		/*@out@*/ int * freeData)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies h, *type, *data, *count, *freeData,
-		rpmGlobalMacroContext, fileSystem @*/
+		rpmGlobalMacroContext, fileSystem, internalState @*/
 	/*@requires maxSet(type) >= 0 /\ maxSet(data) >= 0
 		/\ maxSet(count) >= 0 /\ maxSet(freeData) >= 0 @*/
 {
@@ -196,9 +191,9 @@ static int fscontextsTag(Header h, /*@out@*/ rpmTagType * type,
 static int recontextsTag(Header h, /*@out@*/ rpmTagType * type,
 		/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
 		/*@out@*/ int * freeData)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies h, *type, *data, *count, *freeData,
-		rpmGlobalMacroContext, fileSystem @*/
+		rpmGlobalMacroContext, fileSystem, internalState @*/
 	/*@requires maxSet(type) >= 0 /\ maxSet(data) >= 0
 		/\ maxSet(count) >= 0 /\ maxSet(freeData) >= 0 @*/
 {

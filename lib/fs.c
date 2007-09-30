@@ -35,11 +35,9 @@ void rpmFreeFilesystems(void)
 {
     int i;
 
-/*@-boundswrite@*/
     if (filesystems)
     for (i = 0; i < numFilesystems; i++)
 	filesystems[i].mntPoint = _free(filesystems[i].mntPoint);
-/*@=boundswrite@*/
 
     filesystems = _free(filesystems);
     fsnames = _free(fsnames);
@@ -192,9 +190,7 @@ static int getFilesystemList(void)
 	    /*@-modunconnomods -moduncon @*/
 	    our_mntent * itemptr = getmntent(mtab);
 	    if (!itemptr) break;
-/*@-boundsread@*/
 	    item = *itemptr;	/* structure assignment */
-/*@=boundsread@*/
 	    mntdir = item.our_mntdir;
 #if defined(MNTOPT_RO)
 	    /*@-compdef@*/
@@ -261,12 +257,10 @@ static int getFilesystemList(void)
     filesystems[numFilesystems].mntPoint = NULL;
     filesystems[numFilesystems].rdonly = 0;
 
-/*@-boundswrite@*/
     fsnames = xcalloc((numFilesystems + 1), sizeof(*fsnames));
     for (i = 0; i < numFilesystems; i++)
 	fsnames[i] = filesystems[i].mntPoint;
     fsnames[numFilesystems] = NULL;
-/*@=boundswrite@*/
 
 /*@-nullstate@*/ /* FIX: fsnames[] may be NULL */
     return 0; 
@@ -280,10 +274,8 @@ int rpmGetFilesystemList(const char *** listptr, int * num)
 	if (getFilesystemList())
 	    return 1;
 
-/*@-boundswrite@*/
     if (listptr) *listptr = fsnames;
     if (num) *num = numFilesystems;
-/*@=boundswrite@*/
 
     return 0;
 }
@@ -311,14 +303,11 @@ int rpmGetFilesystemUsage(const char ** fileList, uint_32 * fssizes, int numFile
     sourceDir = rpmGetPath("%{_sourcedir}", NULL);
 
     maxLen = strlen(sourceDir);
-/*@-boundsread@*/
     for (i = 0; i < numFiles; i++) {
 	len = strlen(fileList[i]);
 	if (maxLen < len) maxLen = len;
     }
-/*@=boundsread@*/
     
-/*@-boundswrite@*/
     buf = alloca(maxLen + 1);
     lastDir = alloca(maxLen + 1);
     dirName = alloca(maxLen + 1);
@@ -381,18 +370,13 @@ int rpmGetFilesystemUsage(const char ** fileList, uint_32 * fssizes, int numFile
 	strcpy(lastDir, buf);
 	usages[lastfs] += fssizes[i];
     }
-/*@=boundswrite@*/
 
     sourceDir = _free(sourceDir);
 
-/*@-boundswrite@*/
-    /*@-branchstate@*/
     if (usagesPtr)
 	*usagesPtr = usages;
     else
 	usages = _free(usages);
-    /*@=branchstate@*/
-/*@=boundswrite@*/
 
     return 0;
 }
