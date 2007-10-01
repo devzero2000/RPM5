@@ -305,7 +305,7 @@ dbadd(ts, header)
     rpmdb db;
     CODE:
     db = rpmtsGetRdb(ts);
-    RETVAL = !rpmdbAdd(db, 0, header, ts, NULL);
+    RETVAL = !rpmdbAdd(db, 0, header, ts);
     OUTPUT:
     RETVAL
 
@@ -320,7 +320,7 @@ dbremove(ts, sv_offset)
     offset = SvUV(sv_offset);
     db = rpmtsGetRdb(ts);
     if (offset)
-        RETVAL = !rpmdbRemove(db, 0, offset, ts, NULL);
+        RETVAL = !rpmdbRemove(db, 0, offset, ts);
     else
         RETVAL = 0;
     OUTPUT:
