@@ -726,6 +726,7 @@ dnl # optional Python language bindings
 WITH_PYTHON_SUBDIR=""
 WITH_PYTHON_SUBPACKAGE=0
 WITH_PYTHON_VERSION=""
+WITH_PYTHON_PREFIX="\${prefix}"
 AC_ARG_WITH(python, AS_HELP_STRING([--with-python], [build with RPM Python language bindings]), [
     if test ".$withval" != .no; then
         case "$withval" in
@@ -743,23 +744,49 @@ AC_ARG_WITH(python, AS_HELP_STRING([--with-python], [build with RPM Python langu
 	for python_ver in $python_version ; do
              if test "$python_ver" != "2.x" ; then
                   AC_MSG_CHECKING([for Python ${python_ver} API])
+                  OLD_CFLAGS="${CFLAGS}"
+                  for i in "$prefix" "/usr/local" "/usr"; do
+                  CFLAGS="${OLD_CFLAGS} -I$i/include/python${python_ver}"
                   AC_RUN_IFELSE([AC_LANG_SOURCE(
-                  [[#include <python${python_ver}/Python.h>
+                  [[#include "Python.h"
                      main() { exit(strncmp("${python_ver}", PY_VERSION, 3)); } ]])
                   ], [
                      WITH_PYTHON_VERSION="${python_ver}"
                      AC_MSG_RESULT(yes)
+                     WITH_PYTHON_PREFIX="${i}"
+                     break
                   ], [ 
-                     AC_MSG_RESULT(no)
                   ], [
                      dnl if we're cross compiling, assume the user has a clue
                      if test "$withval" = "$python_ver"; then
                          WITH_PYTHON_VERSION="${python_ver}"
                          AC_MSG_RESULT(yes)
-                     else
-                         AC_MSG_RESULT(no)
+                         break
                      fi
                   ])
+                  done
+                  CFLAGS="${OLD_CFLAGS}"
+                  if test ".$WITH_PYTHON_VERSION" == "."; then
+                     dnl check Mac OS X framework
+                     OLD_CFLAGS="${CFLAGS}"
+                     for f in "~" "" "/System" "/Network"; do
+                     CFLAGS="${OLD_CFLAGS} -I$f/Library/Frameworks/Python.framework/Versions/${python_ver}/include/python${python_ver}"
+                     AC_RUN_IFELSE([AC_LANG_SOURCE(
+                     [[#include "Python.h"
+                        main() { exit(strncmp("${python_ver}", PY_VERSION, 3)); } ]])
+                     ], [
+                        WITH_PYTHON_VERSION="${python_ver}"
+                        AC_MSG_RESULT([yes (using Python.framework)])
+                        WITH_PYTHON_PREFIX="$f/Library/Frameworks/Python.framework/Versions/${python_ver}"
+                        break
+                     ], [
+                     ])
+                     done
+                     CFLAGS="${OLD_CFLAGS}"
+                  fi
+                  if test ".$WITH_PYTHON_VERSION" == "."; then
+                     AC_MSG_RESULT(no)
+                  fi
              else
                   AC_MSG_CHECKING([for Python 2.x API])
                   AC_RUN_IFELSE([AC_LANG_SOURCE(
@@ -793,9 +820,9 @@ AC_SUBST(WITH_PYTHON_SUBPACKAGE)
 AC_SUBST(WITH_PYTHON_VERSION)
 
 AC_ARG_WITH(python-inc-dir, AS_HELP_STRING([--with-python-inc-dir=DIR], [directory with Python include files]),
-	[WITH_PYTHON_INCDIR="$withval"], [WITH_PYTHON_INCDIR="\$(prefix)/include/python${WITH_PYTHON_VERSION}"])
+	[WITH_PYTHON_INCDIR="$withval"], [WITH_PYTHON_INCDIR="${WITH_PYTHON_PREFIX}/include/python${WITH_PYTHON_VERSION}"])
 AC_ARG_WITH(python-lib-dir, AS_HELP_STRING([--with-python-lib-dir=DIR], [directory with Python library]),
-	[WITH_PYTHON_LIBDIR="$withval"], [WITH_PYTHON_LIBDIR="\${prefix}/lib/python${WITH_PYTHON_VERSION}"])
+	[WITH_PYTHON_LIBDIR="$withval"], [WITH_PYTHON_LIBDIR="${WITH_PYTHON_PREFIX}/lib/python${WITH_PYTHON_VERSION}"])
 AC_SUBST(WITH_PYTHON_INCDIR)
 AC_SUBST(WITH_PYTHON_LIBDIR)
 
