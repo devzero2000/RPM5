@@ -674,6 +674,8 @@ INPUT                  = @top_srcdir@/Doxyheader \
                          @top_srcdir@/rpmio/url.c \
                          @top_srcdir@/python/header-py.c \
                          @top_srcdir@/python/header-py.h \
+                         @top_srcdir@/python/spec-py.c \
+                         @top_srcdir@/python/spec-py.h \
                          @top_srcdir@/python/rpmal-py.c \
                          @top_srcdir@/python/rpmal-py.h \
                          @top_srcdir@/python/rpmdb-py.c \
