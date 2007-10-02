@@ -9,9 +9,9 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: RPM 4.2.1\n"
+"Project-Id-Version: RPM 4.5\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2007-08-08 11:30-0400\n"
+"POT-Creation-Date: 2007-10-02 10:41-0400\n"
 "PO-Revision-Date: 2003-07-06 01:36+0200\n"
 "Last-Translator: RPM French Translation <rpm-fr@livna.org>\n"
 "Language-Team: RPM French Translation <rpm-fr@livna.org>\n"
@@ -1286,17 +1286,17 @@ msgstr "n'exécuter aucune étape de la construction"
 msgid "do not verify build dependencies"
 msgstr "ne pas vérifier les dépendances de construction"
 
-#: build/poptBT.c:204 lib/poptALL.c:361 lib/poptI.c:355 lib/poptQV.c:415
+#: build/poptBT.c:204 lib/poptALL.c:367 lib/poptI.c:323 lib/poptQV.c:415
 #: lib/poptQV.c:424 lib/poptQV.c:466
 msgid "don't verify package digest(s)"
 msgstr "ne pas vérifier les sommes de hachage du paquetage"
 
-#: build/poptBT.c:206 lib/poptALL.c:363 lib/poptI.c:357 lib/poptQV.c:418
+#: build/poptBT.c:206 lib/poptALL.c:369 lib/poptI.c:325 lib/poptQV.c:418
 #: lib/poptQV.c:426 lib/poptQV.c:469
 msgid "don't verify database header(s) when retrieved"
 msgstr "ne pas vérifier l'entête de la base de données à la récupération"
 
-#: build/poptBT.c:208 lib/poptALL.c:369 lib/poptI.c:359 lib/poptQV.c:421
+#: build/poptBT.c:208 lib/poptALL.c:375 lib/poptI.c:327 lib/poptQV.c:421
 #: lib/poptQV.c:428 lib/poptQV.c:471
 msgid "don't verify package signature(s)"
 msgstr "ne pas vérifier la(les) signature(s) du paquetage"
@@ -1325,7 +1325,7 @@ msgstr "générer une signature PGP/GPG"
 msgid "override target platform"
 msgstr "surcharger la plate-forme cible"
 
-#: build/poptBT.c:221 lib/poptALL.c:358 lib/poptQV.c:326
+#: build/poptBT.c:221 lib/poptALL.c:364 lib/poptQV.c:326
 msgid "CPU-VENDOR-OS"
 msgstr ""
 
@@ -1784,178 +1784,178 @@ msgstr "ne mélanger pas les périphériques"
 msgid "FTS_WHITEOUT: return whiteout information"
 msgstr "ne pas renvoyer d'information"
 
-#: lib/poptALL.c:303 lib/poptI.c:221 lib/poptQV.c:296 lib/poptQV.c:343
+#: lib/poptALL.c:303 lib/poptQV.c:296 lib/poptQV.c:343
 msgid "add suggested packages to transaction"
 msgstr "rajouter à la transaction les paquetages suggérés"
 
-#: lib/poptALL.c:306 lib/poptI.c:224
+#: lib/poptALL.c:306
 msgid "use anaconda \"presentation order\""
 msgstr "utiliser la \"présentation\" d'anaconda"
 
-#: lib/poptALL.c:309 lib/poptI.c:227
+#: lib/poptALL.c:309
 msgid "print dependency loops as warning"
 msgstr ""
 
-#: lib/poptALL.c:312 lib/poptI.c:230
+#: lib/poptALL.c:312
 msgid "do not suggest missing dependency resolution(s)"
 msgstr "ne pas suggérer de résolution pour les dépendances manquantes"
 
-#: lib/poptALL.c:315 lib/poptI.c:233
+#: lib/poptALL.c:315
 #, fuzzy
 msgid "do not check added package conflicts"
 msgstr "ne pas exécuter le(s) scriptlet(s) du paquetages"
 
-#: lib/poptALL.c:318 lib/poptI.c:236
+#: lib/poptALL.c:318 lib/poptALL.c:321
 msgid "ignore added package requires on symlink targets"
 msgstr ""
 
-#: lib/poptALL.c:321 lib/poptI.c:239
+#: lib/poptALL.c:324
 msgid "ignore added package obsoletes"
 msgstr ""
 
-#: lib/poptALL.c:324 lib/poptI.c:242
+#: lib/poptALL.c:327 lib/poptALL.c:330
 #, fuzzy
 msgid "ignore added package requires on file parent directory"
 msgstr ""
 "sauver les fichiers du paquetage désinstallé en les renommant dans un sous-"
 "répertoire"
 
-#: lib/poptALL.c:327 lib/poptI.c:245
+#: lib/poptALL.c:333
 #, fuzzy
 msgid "do not check added package requires"
 msgstr "ne pas exécuter le(s) scriptlet(s) du paquetages"
 
-#: lib/poptALL.c:330 lib/poptI.c:248
+#: lib/poptALL.c:336
 #, fuzzy
 msgid "ignore added package upgrades"
 msgstr "aucun paquetage ne fournit %s\n"
 
-#: lib/poptALL.c:346
+#: lib/poptALL.c:352
 msgid "predefine MACRO with value EXPR"
 msgstr "prédéfinir la MACRO avec l'EXPRression"
 
-#: lib/poptALL.c:347 lib/poptALL.c:350
+#: lib/poptALL.c:353 lib/poptALL.c:356
 msgid "'MACRO EXPR'"
 msgstr "'MACRO EXPR'"
 
-#: lib/poptALL.c:349
+#: lib/poptALL.c:355
 msgid "define MACRO with value EXPR"
 msgstr "definit MACRO ayant pour valeur EXPR"
 
-#: lib/poptALL.c:352
+#: lib/poptALL.c:358
 msgid "print macro expansion of EXPR"
 msgstr "affiche la macro-expansion d'EXPR"
 
-#: lib/poptALL.c:353
+#: lib/poptALL.c:359
 msgid "'EXPR'"
 msgstr "'EXPR'"
 
-#: lib/poptALL.c:355 lib/poptALL.c:376 lib/poptALL.c:380
+#: lib/poptALL.c:361 lib/poptALL.c:382 lib/poptALL.c:386
 msgid "read <FILE:...> instead of default file(s)"
 msgstr "Lire <FICHIER:...> au lieu du(des) fichier(s) par défaut"
 
-#: lib/poptALL.c:356 lib/poptALL.c:377 lib/poptALL.c:381
+#: lib/poptALL.c:362 lib/poptALL.c:383 lib/poptALL.c:387
 msgid "<FILE:...>"
 msgstr "<FICHIER:...>"
 
-#: lib/poptALL.c:358 lib/poptQV.c:326
+#: lib/poptALL.c:364 lib/poptQV.c:326
 #, fuzzy
 msgid "specify target platform"
 msgstr "surcharger la plate-forme cible"
 
-#: lib/poptALL.c:366 lib/poptALL.c:400
+#: lib/poptALL.c:372 lib/poptALL.c:406
 msgid "disable use of libio(3) API"
 msgstr "utilisation de l'API libio(3) désactivée"
 
-#: lib/poptALL.c:372
+#: lib/poptALL.c:378
 msgid "send stdout to CMD"
 msgstr "envoyer la sortie standard à CMD"
 
-#: lib/poptALL.c:373
+#: lib/poptALL.c:379
 msgid "CMD"
 msgstr "CMD"
 
-#: lib/poptALL.c:384
+#: lib/poptALL.c:390
 msgid "use ROOT as top level directory"
 msgstr "utiliser RACINE comme répertoire racine"
 
-#: lib/poptALL.c:385
+#: lib/poptALL.c:391
 msgid "ROOT"
 msgstr "RACINE"
 
-#: lib/poptALL.c:388
+#: lib/poptALL.c:394
 msgid "display known query tags"
 msgstr "afficher les tags de requête connus"
 
-#: lib/poptALL.c:390
+#: lib/poptALL.c:396
 msgid "display final rpmrc and macro configuration"
 msgstr "afficher la configuration finale des macros et rpmrc"
 
-#: lib/poptALL.c:392
+#: lib/poptALL.c:398
 msgid "provide less detailed output"
 msgstr "afficher moins de détails"
 
-#: lib/poptALL.c:394
+#: lib/poptALL.c:400
 msgid "provide more detailed output"
 msgstr "afficher plus de détails"
 
-#: lib/poptALL.c:396
+#: lib/poptALL.c:402
 msgid "print the version of rpm being used"
 msgstr "afficher la version de rpm utilisé"
 
-#: lib/poptALL.c:407
+#: lib/poptALL.c:413
 msgid "debug cpio payloads"
 msgstr ""
 
-#: lib/poptALL.c:411
+#: lib/poptALL.c:417
 msgid "debug payload file state machine"
 msgstr "déboguer la machine à états du fichier de la charge utile"
 
-#: lib/poptALL.c:413
+#: lib/poptALL.c:419
 #, fuzzy
 msgid "use threads for file state machine"
 msgstr "déboguer la machine à états du fichier de la charge utile"
 
-#: lib/poptALL.c:415
+#: lib/poptALL.c:421
 #, fuzzy
 msgid "debug FTP/HTTP data stream"
 msgstr "déboguer le flux de données du protocole"
 
-#: lib/poptALL.c:417
+#: lib/poptALL.c:423
 msgid "debug argv collections"
 msgstr ""
 
-#: lib/poptALL.c:419
+#: lib/poptALL.c:425
 #, fuzzy
 msgid "debug WebDAV data stream"
 msgstr "déboguer le flux de données du protocole"
 
-#: lib/poptALL.c:426
+#: lib/poptALL.c:432
 msgid "debug option/argument processing"
 msgstr "déboguer le traitement des options/arguments"
 
-#: lib/poptALL.c:431
+#: lib/poptALL.c:437
 msgid "debug package state machine"
 msgstr "déboguer la machine à état du paquetage"
 
-#: lib/poptALL.c:433
+#: lib/poptALL.c:439
 #, fuzzy
 msgid "use threads for package state machine"
 msgstr "déboguer la machine à état du paquetage"
 
-#: lib/poptALL.c:447
+#: lib/poptALL.c:453
 msgid "debug rpmio I/O"
 msgstr "déboguer les E/S de rpmio"
 
-#: lib/poptALL.c:459
+#: lib/poptALL.c:465
 msgid "debug tar payloads"
 msgstr ""
 
-#: lib/poptALL.c:463
+#: lib/poptALL.c:469
 msgid "debug URL cache handling"
 msgstr "déboguer la manipulation de cache d'URL"
 
-#: lib/poptALL.c:548
+#: lib/poptALL.c:554
 #, c-format
 msgid "%s: option table misconfigured (%d)\n"
 msgstr "%s: table d'option mal configurée (%d)\n"
@@ -2010,12 +2010,12 @@ msgstr "le roulement arrière prend comme argument une date"
 msgid "malformed arbgoal time/date stamp argument"
 msgstr "argument date du roulement arrière malformé"
 
-#: lib/poptI.c:253
+#: lib/poptI.c:221
 msgid "install all files, even configurations which might otherwise be skipped"
 msgstr ""
 "installer tous les fichiers, meme si les configurations disent le contraire"
 
-#: lib/poptI.c:257
+#: lib/poptI.c:225
 msgid ""
 "remove all packages which match <package> (normally an error is generated if "
 "<package> specified multiple packages)"
@@ -2023,159 +2023,159 @@ msgstr ""
 "retirer tous les paquetages qui correspondent à <paquetage> (normalement on "
 "retourne une erreur si le <paquetage> correspond à plusieurs paquetages"
 
-#: lib/poptI.c:263 lib/poptI.c:339
+#: lib/poptI.c:231 lib/poptI.c:307
 msgid "do not execute package scriptlet(s)"
 msgstr "ne pas exécuter le(s) scriptlet(s) du paquetages"
 
-#: lib/poptI.c:267
+#: lib/poptI.c:235
 #, fuzzy
 msgid "relocate files in non-relocatable package"
 msgstr "reloger des fichiers d'un paquetage non relogeable"
 
-#: lib/poptI.c:271
+#: lib/poptI.c:239
 msgid "save erased package files by renaming into sub-directory"
 msgstr ""
 "sauver les fichiers du paquetage désinstallé en les renommant dans un sous-"
 "répertoire"
 
-#: lib/poptI.c:274
+#: lib/poptI.c:242
 msgid "erase (uninstall) package"
 msgstr "désinstaller un paquetage"
 
-#: lib/poptI.c:274
+#: lib/poptI.c:242
 msgid "<package>+"
 msgstr "<paquetage>+"
 
-#: lib/poptI.c:277 lib/poptI.c:319
+#: lib/poptI.c:245 lib/poptI.c:287
 msgid "do not install configuration files"
 msgstr "ne pas installer les fichiers de configuration"
 
-#: lib/poptI.c:280 lib/poptI.c:324
+#: lib/poptI.c:248 lib/poptI.c:292
 msgid "do not install documentation"
 msgstr "ne pas installer la documentation"
 
-#: lib/poptI.c:282
+#: lib/poptI.c:250
 msgid "skip files with leading component <path> "
 msgstr "sauter les fichiers commence par le <chemin> indiqué"
 
-#: lib/poptI.c:283
+#: lib/poptI.c:251
 msgid "<path>"
 msgstr "<chemin>"
 
-#: lib/poptI.c:287
+#: lib/poptI.c:255
 #, fuzzy
 msgid "detect file conflicts between packages"
 msgstr "reloger des fichiers d'un paquetage non relogeable"
 
-#: lib/poptI.c:289
+#: lib/poptI.c:257
 msgid "short hand for --replacepkgs --replacefiles"
 msgstr "raccourci pour --replacepkgs --replacefiles"
 
-#: lib/poptI.c:293
+#: lib/poptI.c:261
 msgid "upgrade package(s) if already installed"
 msgstr "met à jour le(s) paquetage(s) déjà installé(s)"
 
-#: lib/poptI.c:294 lib/poptI.c:312 lib/poptI.c:412
+#: lib/poptI.c:262 lib/poptI.c:280 lib/poptI.c:380
 msgid "<packagefile>+"
 msgstr "<paquetage>+"
 
-#: lib/poptI.c:296
+#: lib/poptI.c:264
 msgid "print hash marks as package installs (good with -v)"
 msgstr ""
 "afficher des marqueurs au fur et à mesure que le paquetage s'installe (avec -"
 "v c'est bien(tm))"
 
-#: lib/poptI.c:300
+#: lib/poptI.c:268
 msgid "don't verify package architecture"
 msgstr "ne pas vérifier l'architecture du paquetage"
 
-#: lib/poptI.c:303
+#: lib/poptI.c:271
 msgid "don't verify package operating system"
 msgstr "ne pas vérifier le système d'exploitation du paquetage"
 
-#: lib/poptI.c:307
+#: lib/poptI.c:275
 msgid "don't check disk space before installing"
 msgstr "ne pas vérifier l'espace disque avant l'installation"
 
-#: lib/poptI.c:309
+#: lib/poptI.c:277
 msgid "install documentation"
 msgstr "installer la documentation"
 
-#: lib/poptI.c:312
+#: lib/poptI.c:280
 msgid "install package(s)"
 msgstr "installer le(s) paquetage(s)"
 
-#: lib/poptI.c:315
+#: lib/poptI.c:283
 msgid "update the database, but do not modify the filesystem"
 msgstr ""
 "mettre à jour la base données, mais ne pas modifier le système de fichiers"
 
-#: lib/poptI.c:321
+#: lib/poptI.c:289
 msgid "do not verify package dependencies"
 msgstr "ne pas vérifier les dépendances du paquetage"
 
-#: lib/poptI.c:327 lib/poptI.c:329 lib/poptQV.c:357 lib/poptQV.c:360
+#: lib/poptI.c:295 lib/poptI.c:297 lib/poptQV.c:357 lib/poptQV.c:360
 #: lib/poptQV.c:362
 #, fuzzy
 msgid "don't verify file digests"
 msgstr "ne pas vérifier les sommes de hachage du paquetage"
 
-#: lib/poptI.c:331
+#: lib/poptI.c:299
 #, fuzzy
 msgid "don't install file security contexts"
 msgstr "ne pas installer les fichiers de configuration"
 
-#: lib/poptI.c:335
+#: lib/poptI.c:303
 msgid "do not reorder package installation to satisfy dependencies"
 msgstr ""
 "ne pas ré-arranger l'ordre d'installation des paquetages pour satisfaire les "
 "dépendances"
 
-#: lib/poptI.c:343
+#: lib/poptI.c:311
 #, c-format
 msgid "do not execute %%pre scriptlet (if any)"
 msgstr "ne pas exécuter le scriptlet %%pre (s'il existe)"
 
-#: lib/poptI.c:346
+#: lib/poptI.c:314
 #, c-format
 msgid "do not execute %%post scriptlet (if any)"
 msgstr "ne pas exécuter le scriptlet %%post (s'il existe)"
 
-#: lib/poptI.c:349
+#: lib/poptI.c:317
 #, c-format
 msgid "do not execute %%preun scriptlet (if any)"
 msgstr "ne pas exécuter le scriptlet %%preun (s'il existe)"
 
-#: lib/poptI.c:352
+#: lib/poptI.c:320
 #, c-format
 msgid "do not execute %%postun scriptlet (if any)"
 msgstr "ne pas exécuter le scriptlet %%postun (s'il existe)"
 
-#: lib/poptI.c:362
+#: lib/poptI.c:330
 msgid "do not execute any scriptlet(s) triggered by this package"
 msgstr "n'exécuter aucun scriptlet trigger activé par ce paquetage"
 
-#: lib/poptI.c:365
+#: lib/poptI.c:333
 #, c-format
 msgid "do not execute any %%triggerprein scriptlet(s)"
 msgstr "n'exécuter aucun scriplet %%triggerprein"
 
-#: lib/poptI.c:368
+#: lib/poptI.c:336
 #, c-format
 msgid "do not execute any %%triggerin scriptlet(s)"
 msgstr "n'exécuter aucun scriplet %%triggerin"
 
-#: lib/poptI.c:371
+#: lib/poptI.c:339
 #, c-format
 msgid "do not execute any %%triggerun scriptlet(s)"
 msgstr "n'exécuter aucun scriptlet %%triggerun"
 
-#: lib/poptI.c:374
+#: lib/poptI.c:342
 #, c-format
 msgid "do not execute any %%triggerpostun scriptlet(s)"
 msgstr "n'exécuter aucun scriptlet %%triggerpostun"
 
-#: lib/poptI.c:378
+#: lib/poptI.c:346
 msgid ""
 "upgrade to an old version of the package (--force on upgrades does this "
 "automatically)"
@@ -2183,67 +2183,67 @@ msgstr ""
 "mettre à jour avec un paquetage plus ancien (une m-à-j avec --force fait ça "
 "automatiquement"
 
-#: lib/poptI.c:382
+#: lib/poptI.c:350
 msgid "print percentages as package installs"
 msgstr "afficher le pourcentage d'installation du paquetage"
 
-#: lib/poptI.c:384
+#: lib/poptI.c:352
 msgid "relocate the package to <dir>, if relocatable"
 msgstr "reloge le paquetage vers <rep>, si relogeable"
 
-#: lib/poptI.c:385
+#: lib/poptI.c:353
 msgid "<dir>"
 msgstr "<rep>"
 
-#: lib/poptI.c:387
+#: lib/poptI.c:355
 msgid "relocate files from path <old> to <new>"
 msgstr "reloge les fichiers du <vieux> chemin vers <nouveau>"
 
-#: lib/poptI.c:388
+#: lib/poptI.c:356
 msgid "<old>=<new>"
 msgstr "<vieux>=<nouveau>"
 
-#: lib/poptI.c:391
+#: lib/poptI.c:359
 msgid "save erased package files by repackaging"
 msgstr ""
 "sauvegarder les fichiers du paquetage désinstallé en les ré-empaquetant"
 
-#: lib/poptI.c:394
+#: lib/poptI.c:362
 msgid "ignore file conflicts between packages"
 msgstr ""
 
-#: lib/poptI.c:397
+#: lib/poptI.c:365
 msgid "reinstall if the package is already present"
 msgstr "réinstalle si le paquetage est déjà installé"
 
-#: lib/poptI.c:399
+#: lib/poptI.c:367
 msgid "deinstall new, reinstall old, package(s), back to <date>"
 msgstr ""
 "désinstaller le(s) nouveau(x), ré-installer le(s) vieux paquetages, comme "
 "c'était le cas pour cette <date>"
 
-#: lib/poptI.c:400 lib/poptI.c:403
+#: lib/poptI.c:368 lib/poptI.c:371
 msgid "<date>"
 msgstr "<date>"
 
-#: lib/poptI.c:402
+#: lib/poptI.c:370
 msgid "If transaction fails rollback to <date>"
 msgstr ""
 
-#: lib/poptI.c:405
+#: lib/poptI.c:373
 msgid "Exclude Transaction I.D. from rollback"
 msgstr ""
 
-#: lib/poptI.c:406
+#: lib/poptI.c:374
 #, fuzzy
 msgid "<tid>"
 msgstr "<option>"
 
-#: lib/poptI.c:408
+#: lib/poptI.c:376
 msgid "don't install, but tell if it would work or not"
 msgstr "n'installe pas, mais dit si ça marcherait ou pas"
 
-#: lib/poptI.c:411
+#: lib/poptI.c:379
 msgid "upgrade package(s)"
 msgstr "mises à jour des paquetages"
 
@@ -3493,20 +3493,20 @@ msgstr "erreur db%d(%d) de %s: %s\n"
 msgid "db%d error(%d): %s\n"
 msgstr "erreur db%d(%d): %s\n"
 
-#: rpmdb/db3.c:1284
+#: rpmdb/db3.c:1282
 msgid "Runnning db->verify ...\n"
 msgstr ""
 
-#: rpmdb/db3.c:1589
+#: rpmdb/db3.c:1587
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "impossible d'avoir le verrou %s sur %s/%s\n"
 
-#: rpmdb/db3.c:1591
+#: rpmdb/db3.c:1589
 msgid "exclusive"
 msgstr "exclusif"
 
-#: rpmdb/db3.c:1591
+#: rpmdb/db3.c:1589
 msgid "shared"
 msgstr "partagé"
 
@@ -3627,120 +3627,120 @@ msgstr "vérifier les fichiers de la base de données"
 msgid "dbiTagsInit: unrecognized tag name: \"%s\" ignored\n"
 msgstr "dbiTagsInit: nom de tag non-reconnu: \"%s\" ignoré\n"
 
-#: rpmdb/rpmdb.c:314
+#: rpmdb/rpmdb.c:331
 #, c-format
 msgid "cannot open %s index using db%d - %s (%d)\n"
 msgstr "ne peut ouvrir l'index %s en utilisant db%d - %s (%d)\n"
 
-#: rpmdb/rpmdb.c:334
+#: rpmdb/rpmdb.c:351
 #, c-format
 msgid "cannot open %s index\n"
 msgstr "ne peut ouvrir l'index %s\n"
 
-#: rpmdb/rpmdb.c:794
+#: rpmdb/rpmdb.c:811
 #, fuzzy, c-format
 msgid "incorrect format: \"%s\": %s\n"
 msgstr "format incorrect: %s\n"
 
-#: rpmdb/rpmdb.c:1115
+#: rpmdb/rpmdb.c:1132
 msgid "no dbpath has been set\n"
 msgstr "aucun dbpath n'a été fourni\n"
 
-#: rpmdb/rpmdb.c:1429 rpmdb/rpmdb.c:1567 rpmdb/rpmdb.c:1623 rpmdb/rpmdb.c:2528
-#: rpmdb/rpmdb.c:2682 rpmdb/rpmdb.c:3464
+#: rpmdb/rpmdb.c:1446 rpmdb/rpmdb.c:1584 rpmdb/rpmdb.c:1640 rpmdb/rpmdb.c:2544
+#: rpmdb/rpmdb.c:2698 rpmdb/rpmdb.c:3478
 #, c-format
 msgid "error(%d) getting \"%s\" records from %s index\n"
 msgstr "erreur(%d) en attrapant les articles \"%s\" de l'index %s\n"
 
-#: rpmdb/rpmdb.c:1836
+#: rpmdb/rpmdb.c:1852
 msgid "miFreeHeader: skipping"
 msgstr "miFreeHeader: on saute"
 
-#: rpmdb/rpmdb.c:1846
+#: rpmdb/rpmdb.c:1862
 #, c-format
 msgid "error(%d) storing record #%d into %s\n"
 msgstr "erreur(%d) en stockant l'article nº%d dans %s\n"
 
-#: rpmdb/rpmdb.c:2406
+#: rpmdb/rpmdb.c:2422
 msgid "rpmdbNextIterator: skipping"
 msgstr "rpmdbNextIterator: on saute"
 
-#: rpmdb/rpmdb.c:2438
+#: rpmdb/rpmdb.c:2454
 #, c-format
 msgid "rpmdb: damaged header #%u retrieved -- skipping.\n"
 msgstr "rpmdb: l'entête nº%u endommagé a été téléchargé -- ignoré.\n"
 
-#: rpmdb/rpmdb.c:2786
+#: rpmdb/rpmdb.c:2802
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: impossible de lire l'entête à 0x%x\n"
 
-#: rpmdb/rpmdb.c:2855
+#: rpmdb/rpmdb.c:2871
 #, c-format
 msgid "error(%d) setting header #%d record for %s removal\n"
 msgstr ""
 "erreur(%d) en affectant l'article de l'entête nº%d pour l'enlèvement de %s\n"
 
-#: rpmdb/rpmdb.c:2998
+#: rpmdb/rpmdb.c:3014
 #, c-format
 msgid "error(%d) setting \"%s\" records from %s index\n"
 msgstr "erreur(%d) en affectant les articles \"%s\" de l'index %s\n"
 
-#: rpmdb/rpmdb.c:3019
+#: rpmdb/rpmdb.c:3035
 #, c-format
 msgid "error(%d) storing record \"%s\" into %s\n"
 msgstr "erreur(%d) en stockant l'article \"%s\" dans %s\n"
 
-#: rpmdb/rpmdb.c:3029
+#: rpmdb/rpmdb.c:3045
 #, c-format
 msgid "error(%d) removing record \"%s\" from %s\n"
 msgstr "erreur(%d) en enlevant l'article \"%s\" de %s\n"
 
-#: rpmdb/rpmdb.c:3200
+#: rpmdb/rpmdb.c:3215
 #, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr "erreur(%d) en allouant une nouvelle instance de paquetage\n"
 
-#: rpmdb/rpmdb.c:3267
+#: rpmdb/rpmdb.c:3281
 msgid "rpmdbAdd: skipping"
 msgstr "rpmdbAdd: on saute"
 
-#: rpmdb/rpmdb.c:3483
+#: rpmdb/rpmdb.c:3497
 #, c-format
 msgid "error(%d) storing record %s into %s\n"
 msgstr "erreur(%d) en stockant l'article %s dans %s\n"
 
-#: rpmdb/rpmdb.c:3927
+#: rpmdb/rpmdb.c:3943
 #, c-format
 msgid "temporary database %s already exists\n"
 msgstr "la base de données temporarire %s existe déjà\n"
 
-#: rpmdb/rpmdb.c:3935
+#: rpmdb/rpmdb.c:3951
 #, c-format
 msgid "creating directory %s: %s\n"
 msgstr "création du répertoire %s: %s\n"
 
-#: rpmdb/rpmdb.c:3986
+#: rpmdb/rpmdb.c:4002
 #, c-format
 msgid "header #%u in the database is bad -- skipping.\n"
 msgstr "l'entête nº%u dans la base de données n'est pas bon -- ignoré.\n"
 
-#: rpmdb/rpmdb.c:4026
+#: rpmdb/rpmdb.c:4042
 #, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "impossible d'ajouter l'article qui était au départ à %u\n"
 
-#: rpmdb/rpmdb.c:4040
+#: rpmdb/rpmdb.c:4056
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 "Ne peut reconstruire la base de données: la base originale reste telle "
 "qu'elle est\n"
 
-#: rpmdb/rpmdb.c:4052
+#: rpmdb/rpmdb.c:4068
 msgid "failed to replace old database with new database!\n"
 msgstr "Ne peut remplacer la vieille base de données par la nouvelle!\n"
 
-#: rpmdb/rpmdb.c:4054
+#: rpmdb/rpmdb.c:4070
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr ""
@@ -3757,109 +3757,109 @@ msgstr ""
 msgid "======================== active %d empty %d\n"
 msgstr "======================== %d actif(s) %d vide(s)\n"
 
-#: rpmio/macro.c:401
+#: rpmio/macro.c:400
 #, c-format
 msgid "%3d>%*s(empty)"
 msgstr "%3d>%*s(vide)"
 
-#: rpmio/macro.c:444
+#: rpmio/macro.c:443
 #, c-format
 msgid "%3d<%*s(empty)\n"
 msgstr "%3d<%*s(vide)\n"
 
-#: rpmio/macro.c:681 rpmio/macro.c:722
+#: rpmio/macro.c:680 rpmio/macro.c:721
 #, c-format
 msgid "Macro %%%s has unterminated body\n"
 msgstr "La macro %%%s a un corps sans fin\n"
 
-#: rpmio/macro.c:744
+#: rpmio/macro.c:743
 #, c-format
 msgid "Macro %%%s has illegal name (%%define)\n"
 msgstr "La macro %%%s a un nom illégal (%%define)\n"
 
-#: rpmio/macro.c:750
+#: rpmio/macro.c:749
 #, c-format
 msgid "Macro %%%s has unterminated opts\n"
 msgstr "La macro %%%s a des options non-terminées\n"
 
-#: rpmio/macro.c:755
+#: rpmio/macro.c:754
 #, c-format
 msgid "Macro %%%s has empty body\n"
 msgstr "La macro %%%s a un corps vide\n"
 
-#: rpmio/macro.c:761
+#: rpmio/macro.c:760
 #, c-format
 msgid "Macro %%%s failed to expand\n"
 msgstr "La macro %%%s ne peut être expansée\n"
 
-#: rpmio/macro.c:801
+#: rpmio/macro.c:800
 #, c-format
 msgid "Macro %%%s has illegal name (%%undefine)\n"
 msgstr "La macro %%%s a un nom illégal (%%undefine)\n"
 
-#: rpmio/macro.c:925
+#: rpmio/macro.c:924
 #, c-format
 msgid "Macro %%%s (%s) was not used below level %d\n"
 msgstr "La macro %%%s (%s) n'est plus utilisée en dessous du niveau %d\n"
 
-#: rpmio/macro.c:1054
+#: rpmio/macro.c:1053
 #, c-format
 msgid "Unknown option %c in %s(%s)\n"
 msgstr "Option inconnue %c dans %s(%s)\n"
 
-#: rpmio/macro.c:1269
+#: rpmio/macro.c:1268
 #, c-format
 msgid "Recursion depth(%d) greater than max(%d)\n"
 msgstr "Profondeur de récursion(%d) plus grande que le max(%d)\n"
 
-#: rpmio/macro.c:1342 rpmio/macro.c:1359
+#: rpmio/macro.c:1341 rpmio/macro.c:1358
 #, c-format
 msgid "Unterminated %c: %s\n"
 msgstr "%c non terminé: %s\n"
 
-#: rpmio/macro.c:1401
+#: rpmio/macro.c:1400
 #, c-format
 msgid "A %% is followed by an unparseable macro\n"
 msgstr "Un %% est suivi d'une macro in-analysable\n"
 
-#: rpmio/macro.c:1586
+#: rpmio/macro.c:1585
 #, c-format
 msgid "Macro %%%.*s not found, skipping\n"
 msgstr "Macro %%%.*s non trouvé, ignoré\n"
 
-#: rpmio/macro.c:1926
+#: rpmio/macro.c:1925
 msgid "Macro expansion too big for target buffer\n"
 msgstr ""
 
-#: rpmio/macro.c:1960
+#: rpmio/macro.c:1959
 #, c-format
 msgid "Macro '%s' is readonly and cannot be changed.\n"
 msgstr ""
 
-#: rpmio/macro.c:2167 rpmio/macro.c:2173
+#: rpmio/macro.c:2166 rpmio/macro.c:2172
 #, c-format
 msgid "File %s: %s\n"
 msgstr "Fichier %s: %s\n"
 
-#: rpmio/macro.c:2176
+#: rpmio/macro.c:2175
 #, c-format
 msgid "File %s is smaller than %u bytes\n"
 msgstr "Le fichier %s est plus petit que %u octets\n"
 
-#: rpmio/rpmdav.c:665
+#: rpmio/rpmdav.c:696
 msgid "Authorization Required"
 msgstr ""
 
-#: rpmio/rpmdav.c:667
+#: rpmio/rpmdav.c:698
 msgid "Redirect"
 msgstr ""
 
-#: rpmio/rpmdav.c:669
+#: rpmio/rpmdav.c:700
 #, fuzzy
 msgid "Server Error"
 msgstr "Erreur d'E/S avec le serveur"
 
-#: rpmio/rpmdav.c:671
+#: rpmio/rpmdav.c:702
 #, fuzzy
 msgid "Unknown Error"
 msgstr "(pas d'erreur)"
