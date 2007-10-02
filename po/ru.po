@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: rpm 4.0.3\n"
+"Project-Id-Version: rpm 5.0\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
 "POT-Creation-Date: 2007-10-02 11:15-0400\n"
 "PO-Revision-Date: 2002-08-27 13:36-0400\n"
