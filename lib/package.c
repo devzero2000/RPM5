@@ -352,8 +352,7 @@ assert(dig != NULL);
 	rc = RPMRC_FAIL;
 	goto exit;
     }
-
-    rpmtsCleanDig(ts);
+    (void) rpmtsSetSig(ts, sigtag, sigtype, sig, siglen);
 
     switch (sigtag) {
     case RPMSIGTAG_RSA:
