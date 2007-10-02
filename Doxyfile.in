@@ -572,8 +572,6 @@ INPUT                  = @top_srcdir@/Doxyheader \
                          @top_srcdir@/lib/rpmte.h \
                          @top_srcdir@/lib/rpmts.c \
                          @top_srcdir@/lib/rpmts.h \
-                         @top_srcdir@/lib/signature.c \
-                         @top_srcdir@/lib/signature.h \
                          @top_srcdir@/lib/stringbuf.c \
                          @top_srcdir@/lib/stringbuf.h \
                          @top_srcdir@/lib/transaction.c \
@@ -633,9 +631,13 @@ INPUT                  = @top_srcdir@/Doxyheader \
                          @top_srcdir@/rpmdb/legacy.c \
                          @top_srcdir@/rpmdb/legacy.h \
                          @top_srcdir@/rpmdb/merge.c \
+                         @top_srcdir@/rpmdb/pkgio.c \
+                         @top_srcdir@/rpmdb/pkgio.h \
                          @top_srcdir@/rpmdb/poptDB.c \
                          @top_srcdir@/rpmdb/rpmdb.c \
                          @top_srcdir@/rpmdb/rpmdb.h \
+                         @top_srcdir@/rpmdb/signature.c \
+                         @top_srcdir@/rpmdb/signature.h \
                          @top_srcdir@/rpmdb/tagname.c \
                          @top_srcdir@/rpmdb/tagtbl.c \
                          @top_srcdir@/rpmio/argv.c \

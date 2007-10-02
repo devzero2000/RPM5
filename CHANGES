@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - jbj: update sv.po (Translation Project).
     - jbj: insure rpmlib -> rpmdb forward linkage only.
     - jbj: eliminate (*hdrchk) vector everywhere, use headerCheck() instead.
     - jbj: add metadata header stubs to pkgio.c.

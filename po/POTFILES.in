@@ -52,7 +52,6 @@ lib/rpmrollback.c
 lib/rpmsx.c
 lib/rpmte.c
 lib/rpmts.c
-lib/signature.c
 lib/stringbuf.c
 lib/tar.c
 lib/transaction.c
@@ -69,6 +68,7 @@ rpmdb/merge.c
 rpmdb/poptDB.c
 rpmdb/pkgio.c
 rpmdb/rpmdb.c
+rpmdb/signature.c
 rpmdb/sqlite.c
 rpmdb/tagname.c
 rpmio/argv.c
