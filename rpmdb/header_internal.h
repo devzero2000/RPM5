@@ -12,29 +12,6 @@
 #endif  /* __LCLINT__ */
 
 /**
- * Alignment needs (and sizeof scalars types) for internal rpm data types.
- */
-/*@observer@*/ /*@unchecked@*/
-static int typeAlign[16] =  {
-    1,	/*!< RPM_NULL_TYPE */
-    1,	/*!< RPM_CHAR_TYPE */
-    1,	/*!< RPM_INT8_TYPE */
-    2,	/*!< RPM_INT16_TYPE */
-    4,	/*!< RPM_INT32_TYPE */
-    8,	/*!< RPM_INT64_TYPE */
-    1,	/*!< RPM_STRING_TYPE */
-    1,	/*!< RPM_BIN_TYPE */
-    1,	/*!< RPM_STRING_ARRAY_TYPE */
-    1,	/*!< RPM_I18NSTRING_TYPE */
-    0,
-    0,
-    0,
-    0,
-    0,
-    0
-};
-
-/**
  * Sanity check on no. of tags.
  * This check imposes a limit of 65K tags, more than enough.
  */
@@ -54,7 +31,8 @@ static int typeAlign[16] =  {
 /**
  * Sanity check on data alignment for data type.
  */
-#define hdrchkAlign(_type, _off)	((_off) & (typeAlign[_type]-1))
+extern int rpm_typeAlign[16];
+#define hdrchkAlign(_type, _off)	((_off) & (rpm_typeAlign[_type]-1))
 
 /**
  * Sanity check on range of data offset.

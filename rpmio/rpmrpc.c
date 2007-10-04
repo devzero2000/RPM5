@@ -8,10 +8,11 @@
 #include <pthread.h>
 #endif
 
-#include <rpmio_internal.h>
+#include "rpmio_internal.h"
+#include "rpmmacro.h"
 
 #define	_RPMDAV_INTERNAL
-#include <rpmdav.h>
+#include "rpmdav.h"
 
 #include "ugid.h"
 #include "debug.h"

@@ -85,7 +85,6 @@ static int pgpStashKeyid(pgpDig dig)
 
 rpmRC rpmReadHeader(rpmts ts, void * _fd, Header *hdrp, const char ** msg)
 {
-    pgpDig dig = rpmtsDig(ts);
     FD_t fd = _fd;
     char buf[BUFSIZ];
     int_32 block[4];

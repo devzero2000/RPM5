@@ -56,7 +56,7 @@ main(int argc, char *argv[])
     else
 	progname = argv[0];
 
-    optCon = poptGetContext(argv[0], argc, argv, optionsTable, 0);
+    optCon = poptGetContext(argv[0], argc, (const char **)argv, optionsTable, 0);
     while ((rc = poptGetNextOpt(optCon)) > 0)
 	;
 

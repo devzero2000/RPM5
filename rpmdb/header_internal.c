@@ -9,6 +9,29 @@
 
 #include "debug.h"
 
+/**
+ * Alignment needs (and sizeof scalars types) for internal rpm data types.
+ */
+/*@observer@*/ /*@unchecked@*/
+int rpm_typeAlign[16] =  {
+    1,	/*!< RPM_NULL_TYPE */
+    1,	/*!< RPM_CHAR_TYPE */
+    1,	/*!< RPM_INT8_TYPE */
+    2,	/*!< RPM_INT16_TYPE */
+    4,	/*!< RPM_INT32_TYPE */
+    8,	/*!< RPM_INT64_TYPE */
+    1,	/*!< RPM_STRING_TYPE */
+    1,	/*!< RPM_BIN_TYPE */
+    1,	/*!< RPM_STRING_ARRAY_TYPE */
+    1,	/*!< RPM_I18NSTRING_TYPE */
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+};
+
 int headerVerifyInfo(int il, int dl, const void * pev, void * iv, int negate)
 {
 /*@-castexpose@*/

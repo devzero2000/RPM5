@@ -33,7 +33,7 @@ int main(int argc, char *argv[]) {
         POPT_TABLEEND
     };
 
-    optcon = poptGetContext(NULL, argc, argv, optionstable, 0);
+    optcon = poptGetContext(NULL, argc, (const char **)argv, optionstable, 0);
     
     while ((c = poptGetNextOpt(optcon)) >= 0) {}
 

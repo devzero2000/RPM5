@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - rse: remove all compile-time warnings caused by recent changes
     - jbj: fix: add, not delete, the just read signature data.
     - jbj: update sv.po (Translation Project).
     - jbj: insure rpmlib -> rpmdb forward linkage only.
