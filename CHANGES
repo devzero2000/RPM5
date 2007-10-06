@@ -1,4 +1,5 @@
 4.4.9 -> 4.5:
+    - jbj: convert rel to abs linkto dependency iff directory is known.
     - jbj: update sv.po (Translation Project).
     - mej: remove -pie flags passed from rpm.spec when configuring zlib build.
     - jbj: update known arch's.

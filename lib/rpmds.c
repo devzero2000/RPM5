@@ -364,7 +364,7 @@ assert(scareMem == 0);		/* XXX always allocate memory */
 		    av[i] = rpmGenPath(NULL, ds->EVR[ds->Flags[i]], N[i]);
 /*@=nullderef@*/
 		else
-		    av[i] = NULL;
+		    av[i] = xstrdup("");
 	    }
 	    av[Count] = NULL;
 
