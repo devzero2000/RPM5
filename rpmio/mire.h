@@ -38,7 +38,7 @@ extern int _mire_debug;
 
 /**
  */
-typedef struct miRE_s * miRE;
+typedef /*@abstract@*/ /*@refcounted@*/ struct miRE_s * miRE;
 
 /**
  * Tag value pattern match mode.
@@ -64,6 +64,7 @@ struct miRE_s {
     int	eflags;		/*!< regexec(3) flags */
     int notmatch;		/*!< non-zero: negative match, like "grep -v" */
     int tag;			/*!< sort identifier (e.g. an rpmTag) */
+    int nrefs;			/*!< Reference count. */
 };
 #endif	/* defined(_MIRE_INTERNAL) */
 
@@ -79,19 +80,44 @@ extern "C" {
 int mireClean(miRE mire)
 	/*@modifies mire @*/;
 
+/*@-exportlocal@*/
+/*@null@*/
+miRE XmireUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ miRE mire,
+		/*@null@*/ const char * msg, const char * fn, unsigned ln)
+	/*@modifies mire @*/;
+/*@=exportlocal@*/
+#define	mireUnlink(_mire, _msg)	XmireUnlink(_mire, _msg, __FILE__, __LINE__)
+
+/**
+ * Reference a pattern container instance.
+ * @param mire		pattern container
+ * @param msg
+ * @return		new pattern container reference
+ */
+/*@unused@*/ /*@newref@*/ /*@null@*/
+miRE mireLink (/*@null@*/ miRE mire, /*@null@*/ const char * msg)
+	/*@modifies mire @*/;
+
+/** @todo Remove debugging entry from the ABI. */
+/*@newref@*/ /*@null@*/
+miRE XmireLink (/*@null@*/ miRE mire, /*@null@*/ const char * msg,
+		const char * fn, unsigned ln)
+        /*@modifies mire @*/;
+#define	mireLink(_mire, _msg)	XmireLink(_mire, _msg, __FILE__, __LINE__)
+
 /**
  * Free pattern container.
  * @param mire		pattern container
  * @return		NULL always
  */
 /*@null@*/
-miRE mireFree(/*@only@*/ miRE mire)
+miRE mireFree(/*@killref@*/ /*@only@*/ /*@null@*/ miRE mire)
 	/*@modifies mire @*/;
 
 /**
  * Create pattern container.
  * @param mode		type of pattern match
- * @param tag		identifier (like an rpmTag)
+ * @param tag		identifier (e.g. an rpmTag)
  * @return		NULL always
  */
 miRE mireNew(rpmMireMode mode, int tag)

@@ -1,4 +1,4 @@
--I. -I.. -I../neon/src -I../lua/include -I../lua/include/local -I../beecrypt -I../popt -I../zlib -DHAVE_CONFIG_H -D_GNU_SOURCE -DHAVE_NEON_NE_GET_RESPONSE_HEADER -D__STDC__=1 -DHAVE_NEON_NE_GET_RESPONSE_HEADER
+-I. -I.. -I../file/src -I/usr/include/neon -I../lua -I../lua/local -I/usr/include/beecrypt -I../zlib -DHAVE_CONFIG_H -D_GNU_SOURCE -D__STDC__=1 -DHAVE_NEON_NE_GET_RESPONSE_HEADER
 
 +partial
 +forcehints
@@ -16,6 +16,46 @@
 -bufferoverflowhigh
 -shiftimplementation
 -shiftnegative
+
+-assignexpose
+-branchstate
+-compdef
+-compmempass
+-evalorderuncon
+-globs
+-globstate
+-globuse
+-internalglobs
+-modfilesys
+-modobserver
+-mods
+-moduncon
+-modunconnomods
+-mustmod
+-noeffect
+-noeffectuncon
+-nullderef
+-nullpass
+-nullret
+-nullstate
+-paramuse
+-protoparammatch
+-redecl
+-refcounttrans
+-retalias
+-retexpose
+-sefuncon
+-sizeoftype
+-sysunrecog
+-unreachable
+-unrecog
+
+-dependenttrans
+-immediatetrans
+-observertrans
+-readonlytrans
+-temptrans
+-type
 
 -forempty
 -looploopbreak

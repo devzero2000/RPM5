@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - jbj: start making miRE abstract and refcounted.
     - jbj: convert rel to abs linkto depedency iff directory is known.
     - rpm.org: correct typo in comment.
     - rse: remove all compile-time warnings caused by recent changes

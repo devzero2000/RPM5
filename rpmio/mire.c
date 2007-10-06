@@ -43,6 +43,30 @@ fprintf(stderr, "--> mireClean(%p)\n", mire);
     return 0;
 }
 
+miRE XmireUnlink(miRE mire, const char * msg, const char * fn, unsigned ln)
+{
+    if (mire == NULL) return NULL;
+/*@-modfilesys@*/
+if (_mire_debug && msg != NULL)
+fprintf(stderr, "--> mire %p -- %d %s at %s:%u\n", mire, mire->nrefs, msg, fn, ln);
+/*@=modfilesys@*/
+    mire->nrefs--;
+    return NULL;
+}
+
+miRE XmireLink(miRE mire, const char * msg, const char * fn, unsigned ln)
+{
+    if (mire == NULL) return NULL;
+    mire->nrefs++;
+
+/*@-modfilesys@*/
+if (_mire_debug && msg != NULL)
+fprintf(stderr, "--> mire %p ++ %d %s at %s:%u\n", mire, mire->nrefs, msg, fn, ln);
+/*@=modfilesys@*/
+
+    /*@-refcounttrans@*/ return mire; /*@=refcounttrans@*/
+}
+
 miRE mireFree(miRE mire)
 {
 /*@-modfilesys@*/
