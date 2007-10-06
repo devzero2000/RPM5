@@ -3332,7 +3332,7 @@ DBGIO(fd, (stderr, "==> Fclose(%p) %s\n", (fd ? fd : NULL), fdbg(fd)));
  *
  * - glibc:	m use mmap'd input
  * - glibc:	c no cancel
- * - gzopen:	[0-9] is compession level
+ * - gzopen:	[0-9] is compression level
  * - gzopen:	'f' is filtered (Z_FILTERED)
  * - gzopen:	'h' is Huffman encoding (Z_HUFFMAN_ONLY)
  * - bzopen:	[1-9] is block size (modulo 100K)

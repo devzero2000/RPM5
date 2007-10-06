@@ -353,7 +353,7 @@ assert(scareMem == 0);		/* XXX always allocate memory */
 		else if (ds->EVR != NULL && ds->Flags != NULL)
 		    av[i] = rpmGenPath(NULL, ds->EVR[ds->Flags[i]], N[i]);
 		else
-		    av[i] = NULL;
+		    av[i] = xstrdup("");
 	    }
 	    av[Count] = NULL;
 

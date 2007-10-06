@@ -1,4 +1,6 @@
 4.5 -> 5.0:
+    - jbj: convert rel to abs linkto depedency iff directory is known.
+    - rpm.org: correct typo in comment.
     - rse: remove all compile-time warnings caused by recent changes
     - jbj: fix: add, not delete, the just read signature data.
     - jbj: update sv.po (Translation Project).
