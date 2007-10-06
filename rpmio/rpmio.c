@@ -164,7 +164,6 @@ int _dav_debug = 0;
 
 /* =============================================================== */
 
-/*@-boundswrite@*/
 static /*@observer@*/ const char * fdbg(/*@null@*/ FD_t fd)
 	/*@*/
 {
@@ -227,7 +226,6 @@ static /*@observer@*/ const char * fdbg(/*@null@*/ FD_t fd)
     }
     return buf;
 }
-/*@=boundswrite@*/
 
 /* =============================================================== */
 off_t fdSize(FD_t fd)
@@ -398,7 +396,6 @@ static ssize_t fdRead(void * cookie, /*@out@*/ char * buf, size_t count)
     if (fd->bytesRemain == 0) return 0;	/* XXX simulate EOF */
 
     fdstat_enter(fd, FDSTAT_READ);
-/*@-boundswrite@*/
     /* HACK: flimsy wiring for davRead */
     if (fd->req != NULL) {
 #ifdef WITH_NEON
@@ -411,7 +408,6 @@ static ssize_t fdRead(void * cookie, /*@out@*/ char * buf, size_t count)
 	    fd->bytesRemain = 0;
     } else
 	rc = read(fdFileno(fd), buf, (count > fd->bytesRemain ? fd->bytesRemain : count));
-/*@=boundswrite@*/
     fdstat_exit(fd, FDSTAT_READ, rc);
 
     if (fd->ndigests && rc > 0) fdUpdateDigests(fd, (void *)buf, rc);
@@ -436,7 +432,6 @@ static ssize_t fdWrite(void * cookie, const char * buf, size_t count)
     if (count == 0) return 0;
 
     fdstat_enter(fd, FDSTAT_WRITE);
-/*@-boundsread@*/
     /* HACK: flimsy wiring for davWrite */
     if (fd->req != NULL)
 #ifdef WITH_NEON
@@ -446,7 +441,6 @@ static ssize_t fdWrite(void * cookie, const char * buf, size_t count)
 #endif
     else
 	rc = write(fdno, buf, (count > fd->bytesRemain ? fd->bytesRemain : count));
-/*@=boundsread@*/
     fdstat_exit(fd, FDSTAT_WRITE, rc);
 
 DBGIO(fd, (stderr, "==>\tfdWrite(%p,%p,%ld) rc %ld %s\n", cookie, buf, (long)count, (long)rc, fdbg(fd)));
@@ -492,7 +486,6 @@ static int fdClose( /*@only@*/ void * cookie)
 
     fdstat_enter(fd, FDSTAT_CLOSE);
     /* HACK: flimsy wiring for davClose */
-/*@-branchstate@*/
     if (fd->req != NULL)
 #ifdef WITH_NEON
 	rc = davClose(fd);
@@ -501,7 +494,6 @@ static int fdClose( /*@only@*/ void * cookie)
 #endif
     else
 	rc = ((fdno >= 0) ? close(fdno) : -2);
-/*@=branchstate@*/
     fdstat_exit(fd, FDSTAT_CLOSE, rc);
 
 DBGIO(fd, (stderr, "==>\tfdClose(%p) rc %lx %s\n", (fd ? fd : NULL), (unsigned long)rc, fdbg(fd)));
@@ -646,7 +638,6 @@ int fdReadable(FD_t fd, int secs)
     /*@notreached@*/
 }
 
-/*@-boundswrite@*/
 int fdFgets(FD_t fd, char * buf, size_t len)
 {
     int fdno;
@@ -709,7 +700,6 @@ fprintf(stderr, "*** read: fd %p rc %d EOF errno %d %s \"%s\"\n", fd, rc, errno,
 
     return (ec >= 0 ? nb : ec);
 }
-/*@=boundswrite@*/
 
 /* =============================================================== */
 /* Support for FTP/HTTP I/O.
@@ -772,7 +762,6 @@ const char * ftpStrerror(int errorNumber)
 const char *urlStrerror(const char *url)
 {
     const char *retstr;
-    /*@-branchstate@*/
     switch (urlIsURL(url)) {
     case URL_IS_HTTPS:
     case URL_IS_HTTP:
@@ -789,7 +778,6 @@ const char *urlStrerror(const char *url)
 	retstr = strerror(errno);
 	break;
     }
-    /*@=branchstate@*/
     return retstr;
 }
 
@@ -807,14 +795,11 @@ static int mygethostbyname(const char * host,
     /*@=multithreaded @*/
     if (!hostinfo) return 1;
 
-/*@-boundswrite@*/
     memcpy(address, hostinfo->h_addr_list[0], sizeof(*address));
-/*@=boundswrite@*/
     return 0;
 }
 #endif
 
-/*@-boundsread@*/
 /*@-compdef@*/	/* FIX: address->s_addr undefined. */
 static int getHostAddress(const char * host, /*@out@*/ struct in_addr * address)
 	/*@globals errno, h_errno @*/
@@ -843,7 +828,6 @@ static int getHostAddress(const char * host, /*@out@*/ struct in_addr * address)
     return 0;
 }
 /*@=compdef@*/
-/*@=boundsread@*/
 #endif	/* HAVE_GETADDRINFO */
 
 static int tcpConnect(FD_t ctrl, const char * host, int port)
@@ -892,9 +876,7 @@ static int tcpConnect(FD_t ctrl, const char * host, int port)
 #else	/* HAVE_GETADDRINFO */
     struct sockaddr_in sin;
 
-/*@-boundswrite@*/
     memset(&sin, 0, sizeof(sin));
-/*@=boundswrite@*/
     sin.sin_family = AF_INET;
     sin.sin_port = htons(port);
     sin.sin_addr.s_addr = INADDR_ANY;
@@ -939,7 +921,6 @@ errxit:
     return rc;
 }
 
-/*@-boundswrite@*/
 static int checkResponse(void * uu, FD_t ctrl,
 		/*@out@*/ int *ecp, /*@out@*/ char ** str)
 	/*@globals fileSystem @*/
@@ -1102,7 +1083,6 @@ fprintf(stderr, "<- %s\n", s);
 
     return ec;
 }
-/*@=boundswrite@*/
 
 static int ftpCheckResponse(urlinfo u, /*@out@*/ char ** str)
 	/*@globals fileSystem @*/
@@ -1149,7 +1129,6 @@ static int ftpCommand(urlinfo u, char ** str, ...)
     len += sizeof("\r\n")-1;
     va_end(ap);
 
-/*@-boundswrite@*/
     t = te = alloca(len + 1);
 
     va_start(ap, str);
@@ -1159,7 +1138,6 @@ static int ftpCommand(urlinfo u, char ** str, ...)
     }
     te = stpcpy(te, "\r\n");
     va_end(ap);
-/*@=boundswrite@*/
 
 if (_ftp_debug)
 fprintf(stderr, "-> %s", t);
@@ -1190,32 +1168,24 @@ static int ftpLogin(urlinfo u)
 
     if ((port = (u->proxyp > 0 ? u->proxyp : u->port)) < 0) port = IPPORT_FTP;
 
-    /*@-branchstate@*/
     if ((user = (u->proxyu ? u->proxyu : u->user)) == NULL)
 	user = "anonymous";
-    /*@=branchstate@*/
 
-    /*@-branchstate@*/
     if ((password = u->password) == NULL) {
  	uid_t uid = getuid();
 	struct passwd * pw;
 	if (uid && (pw = getpwuid(uid)) != NULL) {
-/*@-boundswrite@*/
 	    char *myp = alloca(strlen(pw->pw_name) + sizeof("@"));
 	    strcpy(myp, pw->pw_name);
 	    strcat(myp, "@");
-/*@=boundswrite@*/
 	    password = myp;
 	} else {
 	    password = "root@";
 	}
     }
-    /*@=branchstate@*/
 
-    /*@-branchstate@*/
     if (fdFileno(u->ctrl) >= 0 && fdWritable(u->ctrl, 0) < 1)
 	/*@-refcounttrans@*/ (void) fdClose(u->ctrl); /*@=refcounttrans@*/
-    /*@=branchstate@*/
 
 /*@-usereleased@*/
     if (fdFileno(u->ctrl) < 0) {
@@ -1245,10 +1215,8 @@ errxit:
     fdSetSyserrno(u->ctrl, errno, ftpStrerror(rc));
     /*@=observertrans@*/
 errxit2:
-    /*@-branchstate@*/
     if (fdFileno(u->ctrl) >= 0)
 	/*@-refcounttrans@*/ (void) fdClose(u->ctrl); /*@=refcounttrans@*/
-    /*@=branchstate@*/
     /*@-compdef@*/
     return rc;
     /*@=compdef@*/
@@ -1271,7 +1239,6 @@ int ftpReq(FD_t data, const char * ftpCmd, const char * ftpArg)
     int port;
 
     remoteIP[0] = '\0';
-/*@-boundswrite@*/
     URLSANE(u);
     if (ftpCmd == NULL)
 	return FTPERR_UNKNOWN;	/* XXX W2DO? */
@@ -1380,7 +1347,6 @@ int ftpReq(FD_t data, const char * ftpCmd, const char * ftpArg)
     while (*chptr++ != '\0') {
 	if (*chptr == ',') *chptr = '.';
     }
-/*@=boundswrite@*/
     sprintf(remoteIP, "%s", passReply);
   } /* if (epsv) */
 
@@ -1506,10 +1472,8 @@ errxit:
     /*@-observertrans@*/
     fdSetSyserrno(u->ctrl, errno, ftpStrerror(rc));
     /*@=observertrans@*/
-    /*@-branchstate@*/
     if (fdFileno(data) >= 0)
 	/*@-refcounttrans@*/ (void) fdClose(data); /*@=refcounttrans@*/
-    /*@=branchstate@*/
     return rc;
 }
 
@@ -1537,12 +1501,10 @@ int ufdCopy(FD_t sfd, FD_t tfd)
     int notifier = -1;
 
     if (urlNotify) {
-/*@-boundsread@*/
 	/*@-noeffectuncon @*/ /* FIX: check rc */
 	(void)(*urlNotify) (NULL, RPMCALLBACK_INST_OPEN_FILE,
 		0, 0, NULL, urlNotifyData);
 	/*@=noeffectuncon @*/
-/*@=boundsread@*/
     }
 
     while (1) {
@@ -1566,12 +1528,10 @@ int ufdCopy(FD_t sfd, FD_t tfd)
 	if (urlNotify && urlNotifyCount > 0) {
 	    int n = itemsCopied/urlNotifyCount;
 	    if (n != notifier) {
-/*@-boundsread@*/
 		/*@-noeffectuncon @*/ /* FIX: check rc */
 		(void)(*urlNotify) (NULL, RPMCALLBACK_INST_PROGRESS,
 			itemsCopied, 0, NULL, urlNotifyData);
 		/*@=noeffectuncon @*/
-/*@=boundsread@*/
 		notifier = n;
 	    }
 	}
@@ -1581,12 +1541,10 @@ int ufdCopy(FD_t sfd, FD_t tfd)
 	ftpStrerror(rc)));
 
     if (urlNotify) {
-/*@-boundsread@*/
 	/*@-noeffectuncon @*/ /* FIX: check rc */
 	(void)(*urlNotify) (NULL, RPMCALLBACK_INST_OPEN_FILE,
 		itemsCopied, itemsCopied, NULL, urlNotifyData);
 	/*@=noeffectuncon @*/
-/*@=boundsread@*/
     }
 
     return rc;
@@ -1630,10 +1588,8 @@ static int urlConnect(const char * url, /*@out@*/ urlinfo * uret)
 	}
     }
 
-/*@-boundswrite@*/
     if (uret != NULL)
 	*uret = urlLink(u, "urlConnect");
-/*@=boundswrite@*/
     u = urlFree(u, "urlSplit (urlConnect)");	
 
     return rc;
@@ -1720,10 +1676,8 @@ static int ftpAbort(urlinfo u, FD_t data)
 	tosecs = data->rd_timeoutsecs;
 	data->rd_timeoutsecs = 10;
 	if (fdReadable(data, data->rd_timeoutsecs) > 0) {
-/*@-boundswrite@*/
 	    while (timedRead(data, u->buf, u->bufAlloced) > 0)
 		u->buf[0] = '\0';
-/*@=boundswrite@*/
 	}
 	data->rd_timeoutsecs = tosecs;
 	/* XXX ftp abort needs to close the data channel to receive status */
@@ -1820,16 +1774,12 @@ assert(ctrl != NULL);
 
     if ((port = (u->proxyp > 0 ? u->proxyp : u->port)) < 0) port = 80;
     path = (u->proxyh || u->proxyp > 0) ? u->url : httpArg;
-    /*@-branchstate@*/
     if (path == NULL) path = "";
-    /*@=branchstate@*/
 
 reopen:
-    /*@-branchstate@*/
     if (fdFileno(ctrl) >= 0 && (rc = fdWritable(ctrl, 0)) < 1) {
 	/*@-refcounttrans@*/ (void) fdClose(ctrl); /*@=refcounttrans@*/
     }
-    /*@=branchstate@*/
 
 /*@-usereleased@*/
     if (fdFileno(ctrl) < 0) {
@@ -1848,7 +1798,6 @@ Transfer-Encoding: chunked\r\n\
 \r\n\
 ") + strlen(httpCmd) + strlen(path) + sizeof(VERSION) + strlen(hthost) + 20;
 
-/*@-boundswrite@*/
     req = alloca(len);
     *req = '\0';
 
@@ -1870,7 +1819,6 @@ Accept: text/plain\r\n\
 \r\n\
 ",	httpCmd, path, (u->httpVersion ? 1 : 0), VERSION, hthost, port);
 }
-/*@=boundswrite@*/
 
 if (_ftp_debug)
 fprintf(stderr, "-> %s", req);
@@ -1881,7 +1829,6 @@ fprintf(stderr, "-> %s", req);
 	goto errxit;
     }
 
-    /*@-branchstate@*/
     if (!strcmp(httpCmd, "PUT")) {
 	ctrl->wr_chunked = 1;
     } else {
@@ -1897,7 +1844,6 @@ fprintf(stderr, "-> %s", req);
 	    goto errxit;
 	}
     }
-    /*@=branchstate@*/
 
     ctrl = fdLink(ctrl, "open data (httpReq)");
     return 0;
@@ -1907,10 +1853,8 @@ errxit:
     fdSetSyserrno(ctrl, errno, ftpStrerror(rc));
     /*@=observertrans@*/
 errxit2:
-    /*@-branchstate@*/
     if (fdFileno(ctrl) >= 0)
 	/*@-refcounttrans@*/ (void) fdClose(ctrl); /*@=refcounttrans@*/
-    /*@=branchstate@*/
     return rc;
 /*@=usereleased@*/
 }
@@ -1967,9 +1911,7 @@ static ssize_t ufdRead(void * cookie, /*@out@*/ char * buf, size_t count)
 	    /*@switchbreak@*/ break;
 	}
 
-/*@-boundswrite@*/
 	rc = fdRead(fd, buf + total, count - total);
-/*@=boundswrite@*/
 
 	if (rc < 0) {
 	    switch (errno) {
@@ -2080,7 +2022,6 @@ static inline int ufdSeek(void * cookie, _libio_pos_t pos, int whence)
     return fdSeek(cookie, pos, whence);
 }
 
-/*@-branchstate@*/
 /*@-usereleased@*/	/* LCL: fd handling is tricky here. */
 int ufdClose( /*@only@*/ void * cookie)
 {
@@ -2088,7 +2029,6 @@ int ufdClose( /*@only@*/ void * cookie)
 
     UFDONLY(fd);
 
-    /*@-branchstate@*/
     if (fd->url) {
 	urlinfo u = fd->url;
 
@@ -2193,7 +2133,6 @@ int ufdClose( /*@only@*/ void * cookie)
     return fdClose(fd);
 }
 /*@=usereleased@*/
-/*@=branchstate@*/
 
 /*@-nullstate@*/	/* FIX: u->{ctrl,data}->url undef after XurlLink. */
 /*@null@*/ FD_t ftpOpen(const char *url, /*@unused@*/ int flags,
@@ -2228,10 +2167,8 @@ int ufdClose( /*@only@*/ void * cookie)
     }
 
 exit:
-/*@-boundswrite@*/
     if (uret)
 	*uret = u;
-/*@=boundswrite@*/
     /*@-refcounttrans@*/
     return fd;
     /*@=refcounttrans@*/
@@ -2251,7 +2188,6 @@ static /*@null@*/ FD_t ufdOpen(const char * url, int flags, mode_t mode)
 if (_rpmio_debug)
 fprintf(stderr, "*** ufdOpen(%s,0x%x,0%o)\n", url, (unsigned)flags, (unsigned)mode);
 
-    /*@-branchstate@*/
     switch (urlType) {
     case URL_IS_FTP:
 	fd = ftpOpen(url, flags, mode, &u);
@@ -2325,7 +2261,6 @@ fprintf(stderr, "*** ufdOpen(%s,0x%x,0%o)\n", url, (unsigned)flags, (unsigned)mo
 	}
 	break;
     }
-    /*@=branchstate@*/
 
     if (fd == NULL) return NULL;
     fd->urlType = urlType;
@@ -2363,9 +2298,7 @@ static inline /*@dependent@*/ /*@null@*/ void * gzdFileno(FD_t fd)
 
     FDSANE(fd);
     for (i = fd->nfps; i >= 0; i--) {
-/*@-boundsread@*/
 	FDSTACK_t * fps = &fd->fps[i];
-/*@=boundsread@*/
 	if (fps->io != gzdio)
 	    continue;
 	rc = fps->fp;
@@ -2557,10 +2490,8 @@ DBGIO(fd, (stderr, "==>\tgzdClose(%p) zerror %d %s\n", cookie, rc, fdbg(fd)));
 DBGIO(fd, (stderr, "==>\tgzdClose(%p) rc %lx %s\n", cookie, (unsigned long)rc, fdbg(fd)));
 
     if (_rpmio_debug || rpmIsDebug()) fdstat_print(fd, "GZDIO", stderr);
-    /*@-branchstate@*/
     if (rc == 0)
 	fd = fdFree(fd, "open (gzdClose)");
-    /*@=branchstate@*/
     return rc;
 }
 
@@ -2591,9 +2522,7 @@ static inline /*@dependent@*/ void * bzdFileno(FD_t fd)
 
     FDSANE(fd);
     for (i = fd->nfps; i >= 0; i--) {
-/*@-boundsread@*/
 	FDSTACK_t * fps = &fd->fps[i];
-/*@=boundsread@*/
 	if (fps->io != bzdio)
 	    continue;
 	rc = fps->fp;
@@ -2749,10 +2678,8 @@ static int bzdClose( /*@only@*/ void * cookie)
 DBGIO(fd, (stderr, "==>\tbzdClose(%p) rc %lx %s\n", cookie, (unsigned long)rc, fdbg(fd)));
 
     if (_rpmio_debug || rpmIsDebug()) fdstat_print(fd, "BZDIO", stderr);
-    /*@-branchstate@*/
     if (rc == 0)
 	fd = fdFree(fd, "open (bzdClose)");
-    /*@=branchstate@*/
     return rc;
 }
 
@@ -2824,9 +2751,7 @@ static inline /*@dependent@*/ void * lzdFileno(FD_t fd)
 
     FDSANE(fd);
     for (i = fd->nfps; i >= 0; i--) {
-/*@-boundsread@*/
 	    FDSTACK_t * fps = &fd->fps[i];
-/*@=boundsread@*/
 	    if (fps->io != lzdio)
 	        continue;
 	    rc = fps->fp;
@@ -2836,6 +2761,7 @@ static inline /*@dependent@*/ void * lzdFileno(FD_t fd)
     return rc;
 }
 
+/*@-mods@*/	/* XXX hide rpmGlobalMacroContext mods for now. */
 static FD_t lzdWriteOpen(int fdno, int fopen)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/
@@ -2887,6 +2813,7 @@ static FD_t lzdWriteOpen(int fdno, int fopen)
     }
     return NULL; /* warning */
 }
+/*@=mods@*/
 
 static FD_t lzdReadOpen(int fdno, int fopen)
 	/*@globals fileSystem @*/
@@ -3090,6 +3017,7 @@ static int lzdClose( /*@only@*/ void * cookie)
 
     if (fd) {
 	if (rc == -1) {
+assert(lzfile != NULL);	/* XXX FIXME, lzfile is always NULL here. */
 	    fd->errcookie = strerror(ferror(lzfile->g_InBuffer.File));
 	} else if (rc >= 0) {
 	    fdstat_exit(fd, FDSTAT_CLOSE, rc);
@@ -3099,10 +3027,8 @@ static int lzdClose( /*@only@*/ void * cookie)
 DBGIO(fd, (stderr, "==>\tlzdClose(%p) rc %lx %s\n", cookie, (unsigned long)rc, fdbg(fd)));
 
     if (_rpmio_debug || rpmIsDebug()) fdstat_print(fd, "LZDIO", stderr);
-    /*@-branchstate@*/
     if (rc == 0)
 	fd = fdFree(fd, "open (lzdClose)");
-    /*@=branchstate@*/
     return rc;
 }
 
@@ -3186,11 +3112,9 @@ size_t Fwrite(const void *buf, size_t size, size_t nmemb, FD_t fd)
 DBGIO(fd, (stderr, "==> Fwrite(%p,%u,%u,%p) %s\n", buf, (unsigned)size, (unsigned)nmemb, (fd ? fd : NULL), fdbg(fd)));
 
     if (fdGetIo(fd) == fpio) {
-/*@-boundsread@*/
 	/*@+voidabstract -nullpass@*/
 	rc = fwrite(buf, size, nmemb, fdGetFILE(fd));
 	/*@=voidabstract =nullpass@*/
-/*@=boundsread@*/
 	return rc;
     }
 
@@ -3242,11 +3166,8 @@ int Fclose(FD_t fd)
 DBGIO(fd, (stderr, "==> Fclose(%p) %s\n", (fd ? fd : NULL), fdbg(fd)));
 
     fd = fdLink(fd, "Fclose");
-    /*@-branchstate@*/
     while (fd->nfps >= 0) {
-/*@-boundsread@*/
 	FDSTACK_t * fps = &fd->fps[fd->nfps];
-/*@=boundsread@*/
 	
 	if (fps->io == fpio) {
 	    FILE *fp;
@@ -3318,7 +3239,6 @@ DBGIO(fd, (stderr, "==> Fclose(%p) %s\n", (fd ? fd : NULL), fdbg(fd)));
 	    ec = rc;
 	fdPop(fd);
     }
-    /*@=branchstate@*/
     fd = fdFree(fd, "Fclose");
     return ec;
 /*@=usereleased@*/
@@ -3339,7 +3259,6 @@ DBGIO(fd, (stderr, "==> Fclose(%p) %s\n", (fd ? fd : NULL), fdbg(fd)));
  * - bzopen:	's' is smallmode
  * - HACK:	'.' terminates, rest is type of I/O
  */
-/*@-boundswrite@*/
 static inline void cvtfmode (const char *m,
 				/*@out@*/ char *stdio, size_t nstdio,
 				/*@out@*/ char *other, size_t nother,
@@ -3407,7 +3326,6 @@ static inline void cvtfmode (const char *m,
     if (f != NULL)
 	*f = flags;
 }
-/*@=boundswrite@*/
 
 #if _USE_LIBIO
 #if defined(__GLIBC__) && __GLIBC__ == 2 && __GLIBC_MINOR__ == 0
@@ -3416,7 +3334,6 @@ typedef _IO_cookie_io_functions_t cookie_io_functions_t;
 #endif
 #endif
 
-/*@-boundswrite@*/
 FD_t Fdopen(FD_t ofd, const char *fmode)
 {
     char stdio[20], other[20], zstdio[20];
@@ -3441,7 +3358,6 @@ fprintf(stderr, "*** Fdopen(%p,%s) %s\n", fd, fmode, fdbg(fd));
     if (end == NULL && other[0] == '\0')
 	/*@-refcounttrans -retalias@*/ return fd; /*@=refcounttrans =retalias@*/
 
-    /*@-branchstate@*/
     if (end && *end) {
 	if (!strcmp(end, "fdio")) {
 	    iof = fdio;
@@ -3495,7 +3411,6 @@ fprintf(stderr, "*** Fdopen fpio fp %p\n", (void *)fp);
 #endif
 	}
     }
-    /*@=branchstate@*/
     if (iof == NULL)
 	/*@-refcounttrans -retalias@*/ return fd; /*@=refcounttrans =retalias@*/
 
@@ -3513,7 +3428,6 @@ DBGIO(fd, (stderr, "==> fopencookie(%p,\"%s\",*%p) returns fp %p\n", fd, stdio, 
 	}
 #endif
 
-	/*@-branchstate@*/
 	if (fp) {
 	    /* XXX gzdio/bzdio use fp for private data */
 	    /*@+voidabstract -nullpass@*/
@@ -3523,13 +3437,11 @@ DBGIO(fd, (stderr, "==> fopencookie(%p,\"%s\",*%p) returns fp %p\n", fd, stdio, 
 	    /*@=voidabstract =nullpass@*/
 	    fd = fdLink(fd, "fopencookie");
 	}
-	/*@=branchstate@*/
     }
 
 DBGIO(fd, (stderr, "==> Fdopen(%p,\"%s\") returns fd %p %s\n", ofd, fmode, (fd ? fd : NULL), fdbg(fd)));
     /*@-refcounttrans -retalias@*/ return fd; /*@=refcounttrans =retalias@*/
 }
-/*@=boundswrite@*/
 
 FD_t Fopen(const char *path, const char *fmode)
 {
@@ -3547,7 +3459,6 @@ FD_t Fopen(const char *path, const char *fmode)
     if (stdio[0] == '\0')
 	return NULL;
 
-    /*@-branchstate@*/
     if (end == NULL || !strcmp(end, "fdio")) {
 if (_rpmio_debug)
 fprintf(stderr, "*** Fopen fdio path %s fmode %s\n", path, fmode);
@@ -3595,12 +3506,9 @@ fprintf(stderr, "*** Fopen WTFO path %s fmode %s\n", path, fmode);
 	    return fd;
 	}
     }
-    /*@=branchstate@*/
 
-    /*@-branchstate@*/
     if (fd)
 	fd = Fdopen(fd, fmode);
-    /*@=branchstate@*/
     return fd;
 }
 
@@ -3636,9 +3544,7 @@ int Ferror(FD_t fd)
 	rc = (fd->syserrno  || fd->errcookie != NULL) ? -1 : 0;
     } else
     for (i = fd->nfps; rc == 0 && i >= 0; i--) {
-/*@-boundsread@*/
 	FDSTACK_t * fps = &fd->fps[i];
-/*@=boundsread@*/
 	int ec;
 	
 	if (fps->io == fpio) {
@@ -3680,9 +3586,7 @@ int Fileno(FD_t fd)
 	rc = 123456789;	/* HACK: https has no steenkin fileno. */
     else
     for (i = fd->nfps ; rc == -1 && i >= 0; i--) {
-/*@-boundsread@*/
 	rc = fd->fps[i].fdno;
-/*@=boundsread@*/
     }
 
 DBGIO(fd, (stderr, "==> Fileno(%p) rc %d %s\n", (fd ? fd : NULL), rc, fdbg(fd)));
@@ -3698,7 +3602,6 @@ int Fcntl(FD_t fd, int op, void *lip)
 /* =============================================================== */
 /* Helper routines that may be generally useful.
  */
-/*@-bounds@*/
 int rpmioMkpath(const char * path, mode_t mode, uid_t uid, gid_t gid)
 {
     char * d, * de;
@@ -3747,8 +3650,6 @@ int rpmioMkpath(const char * path, mode_t mode, uid_t uid, gid_t gid)
 			path, mode);
     return rc;
 }
-/*@=bounds@*/
-
 
 #define	_PATH	"/bin:/usr/bin:/sbin:/usr/sbin"
 /*@unchecked@*/ /*@observer@*/
@@ -3839,7 +3740,6 @@ fprintf(stderr, "*** rpmioAccess(\"%s\", 0x%x) rc %d\n", bn, mode, rc);
     }
 
     /* Look for relative basename on PATH. */
-/*@-branchstate@*/
     for (r = alloca_strdup(path); r != NULL && *r != '\0'; r = re) {
 
 	/* Find next element, terminate current element. */
@@ -3880,7 +3780,6 @@ fprintf(stderr, "*** rpmioAccess(\"%s\", 0x%x) rc %d\n", t, mode, rc);
 	if (rc == 0)
 	    goto exit;
     }
-/*@=branchstate@*/
 
     rc = 1;
 
@@ -3890,7 +3789,6 @@ exit:
     return rc;
 }
 
-/*@-boundswrite@*/
 int rpmioSlurp(const char * fn, byte ** bp, ssize_t * blenp)
 {
     static ssize_t blenmax = (32 * BUFSIZ);
@@ -3908,7 +3806,6 @@ int rpmioSlurp(const char * fn, byte ** bp, ssize_t * blenp)
 
     size = fdSize(fd);
     blen = (size >= 0 ? size : blenmax);
-    /*@-branchstate@*/
     if (blen) {
 	int nb;
 	b = xmalloc(blen+1);
@@ -3924,7 +3821,6 @@ int rpmioSlurp(const char * fn, byte ** bp, ssize_t * blenp)
 	}
 	b[blen] = '\0';
     }
-    /*@=branchstate@*/
 
 exit:
     if (fd) (void) Fclose(fd);
@@ -3942,7 +3838,6 @@ exit:
 
     return rc;
 }
-/*@=boundswrite@*/
 
 /*@-type@*/ /* LCL: function typedefs */
 static struct FDIO_s fpio_s = {

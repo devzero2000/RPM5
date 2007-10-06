@@ -168,7 +168,8 @@ char * argvJoin(ARGV_t argv)
  * @return		0 on success
  */
 int argvFgets(ARGV_t * argvp, void * fd)
-	/*@modifies *argvp, fd @*/;
+	/*@globals fileSystem@*/
+	/*@modifies *argvp, fd, fileSystem @*/;
 
 #ifdef __cplusplus
 }

@@ -12,50 +12,33 @@
 +strict			# lclint level
 
 # --- in progress
-#+bounds
+-branchstate
 -bufferoverflowhigh
 -shiftimplementation
 -shiftnegative
 
--assignexpose
--branchstate
 -compdef
 -compmempass
 -evalorderuncon
 -globs
 -globstate
 -globuse
--internalglobs
--modfilesys
--modobserver
--mods
 -moduncon
 -modunconnomods
--mustmod
+-mustmod		# 17
 -noeffect
 -noeffectuncon
--nullderef
--nullpass
--nullret
--nullstate
 -paramuse
 -protoparammatch
--redecl
--refcounttrans
--retalias
--retexpose
+#-refcounttrans
 -sefuncon
 -sizeoftype
--sysunrecog
--unreachable
--unrecog
 
 -dependenttrans
 -immediatetrans
 -observertrans
 -readonlytrans
 -temptrans
--type
 
 -forempty
 -looploopbreak

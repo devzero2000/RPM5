@@ -9,7 +9,7 @@
 
 #include "debug.h"
 
-/*@-bounds@*/
+/*@access FD_t @*/		/* XXX fdGetFILE() */
 
 void argvPrint(const char * msg, ARGV_t argv, FILE * fp)
 {
@@ -40,11 +40,9 @@ ARGV_t argvFree(/*@only@*/ /*@null@*/ ARGV_t argv)
 {
     ARGV_t av;
     
-/*@-branchstate@*/
     if (argv)
     for (av = argv; *av; av++)
 	*av = _free(*av);
-/*@=branchstate@*/
     argv = _free(argv);
     return NULL;
 }
@@ -83,10 +81,8 @@ ARGV_t argvData(ARGV_t argv)
 
 int argvCmp(const void * a, const void * b)
 {
-/*@-boundsread@*/
     ARGstr_t astr = *(ARGV_t)a;
     ARGstr_t bstr = *(ARGV_t)b;
-/*@=boundsread@*/
     return strcmp(astr, bstr);
 }
 
@@ -249,7 +245,7 @@ int argvFgets(ARGV_t * argvp, void * fd)
     else
 	av = argvFree(av);
     
+/*@-nullstate@*/	/* XXX *argvp may be NULL. */
     return rc;
+/*@=nullstate@*/
 }
-
-/*@=bounds@*/

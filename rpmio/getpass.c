@@ -28,11 +28,15 @@ char * _GetPass(const char * prompt)
     }
 #endif
 
+assert(pw != NULL);
+/*@-statictrans@*/
     return pw;
+/*@=statictrans@*/
 }
 
 char * _RequestPass(const char * prompt)
 {
+/*@relnull@*/
     static char * password = NULL;
 #if defined(HAVE_KEYUTILS_H)
     const char * foo = "user rpm:yyyy spoon";
@@ -45,12 +49,23 @@ char * _RequestPass(const char * prompt)
 	free(password);
 	password = NULL;
     }
+assert(av != NULL);
+assert(av[0] != NULL);
+assert(av[1] != NULL);
+assert(av[2] != NULL);
     key = request_key(av[0], av[1], av[2], dest);
 
+/*@-nullstate@*/	/* XXX *password may be null. */
     xx = keyctl_read_alloc(key, (void *)&password);
+/*@=nullstate@*/
+assert(password != NULL);
 #endif
 
+/*@-statictrans@*/
     return password;
+/*@=statictrans@*/
 }
 
+/*@-redecl@*/
 char * (*Getpass) (const char * prompt) = _GetPass;
+/*@=redecl@*/

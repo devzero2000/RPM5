@@ -28,6 +28,7 @@ _free(/*@only@*/ /*@null@*/ const void * p) /*@modifies p@*/
 
 int mireClean(miRE mire)
 {
+    if (mire == NULL) return 0;
 /*@-modfilesys@*/
 if (_mire_debug)
 fprintf(stderr, "--> mireClean(%p)\n", mire);
@@ -101,9 +102,9 @@ int mireRegexec(miRE mire, const char * val)
 	break;
     case RPMMIRE_DEFAULT:
     case RPMMIRE_REGEX:
-/*@-boundswrite@*/
+/*@-nullpass@*/
 	rc = regexec(mire->preg, val, 0, NULL, mire->eflags);
-/*@=boundswrite@*/
+/*@=nullpass@*/
 	if (rc && rc != REG_NOMATCH) {
 	    char msg[256];
 	    (void) regerror(rc, mire->preg, msg, sizeof(msg)-1);
@@ -134,11 +135,8 @@ int mireRegcomp(miRE mire, const char * pattern)
 {
     int rc = 0;
 
-/*@-boundswrite@*/
     mire->pattern = xstrdup(pattern);
-/*@=boundswrite@*/
 
-/*@-branchstate@*/
     switch (mire->mode) {
     case RPMMIRE_DEFAULT:
     case RPMMIRE_STRCMP:
@@ -164,7 +162,6 @@ int mireRegcomp(miRE mire, const char * pattern)
 	rc = -1;
 	break;
     }
-/*@=branchstate@*/
 
     if (rc)
 	(void) mireClean(mire);

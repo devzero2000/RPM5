@@ -77,7 +77,7 @@ extern "C" {
  * @param mire		pattern container
  * @return		0 on success
  */
-int mireClean(miRE mire)
+int mireClean(/*@null@*/ miRE mire)
 	/*@modifies mire @*/;
 
 /*@-exportlocal@*/

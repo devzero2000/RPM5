@@ -1,4 +1,3 @@
-/*@-boundsread@*/
 /** \ingroup rpmio
  * \file rpmio/rpmlog.c
  */
@@ -167,14 +166,13 @@ static void vrpmlog (unsigned code, const char *fmt, va_list ap)
     if ((mask & rpmlogMask) == 0)
 	return;
 
-/*@-boundswrite@*/
     msgbuf = xmalloc(msgnb);
     *msgbuf = '\0';
 
     /* Allocate a sufficently large buffer for output. */
     while (1) {
 	va_list apc;
-	/*@-sysunrecog -usedef@*/ va_copy(apc, ap); /*@=sysunrecog =usedef@*/
+	/*@-unrecog -usedef@*/ va_copy(apc, ap); /*@=unrecog =usedef@*/
 	nb = vsnprintf(msgbuf, msgnb, fmt, apc);
 	if (nb > -1 && nb < msgnb)
 	    break;
@@ -191,7 +189,6 @@ static void vrpmlog (unsigned code, const char *fmt, va_list ap)
     msg = msgbuf;
 
     /* Save copy of all messages at warning (or below == "more important"). */
-    /*@-branchstate@*/
     if (pri <= RPMLOG_WARNING) {
 
 	if (recs == NULL)
@@ -212,8 +209,6 @@ static void vrpmlog (unsigned code, const char *fmt, va_list ap)
 	    return;	/* XXX Preserve legacy rpmError behavior. */
 	}
     }
-    /*@=branchstate@*/
-/*@=boundswrite@*/
 
     /* rpmMessage behavior */
 
@@ -269,4 +264,3 @@ rpmlogCallback rpmErrorSetCallback(rpmlogCallback cb)
 {
     return rpmlogSetCallback(cb);
 }
-/*@=boundsread@*/

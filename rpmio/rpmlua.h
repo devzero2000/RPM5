@@ -18,6 +18,7 @@ struct rpmlua_s {
     int storeprint;
     int printbufsize;
     int printbufused;
+/*@relnull@*/
     char *printbuf;
 };
 
@@ -45,8 +46,8 @@ typedef /*@abstract@*/ struct rpmluav_s * rpmluav;
 /*@-exportlocal@*/
 /*@only@*/
 rpmlua rpmluaNew(void)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/;
 /*@=exportlocal@*/
 void *rpmluaFree(/*@only@*/ rpmlua lua)
 	/*@globals internalState @*/
@@ -54,56 +55,56 @@ void *rpmluaFree(/*@only@*/ rpmlua lua)
 
 int rpmluaCheckScript(/*@null@*/ rpmlua lua, const char *script,
 		      /*@null@*/ const char *name)
-	/*@globals fileSystem @*/
-	/*@modifies lua, fileSystem @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies lua, fileSystem, internalState @*/;
 int rpmluaRunScript(/*@null@*/ rpmlua lua, const char *script,
 		    /*@null@*/ const char *name)
-	/*@globals fileSystem @*/
-	/*@modifies lua, fileSystem @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies lua, fileSystem, internalState @*/;
 /*@-exportlocal@*/
 int rpmluaRunScriptFile(/*@null@*/ rpmlua lua, const char *filename)
-	/*@globals fileSystem @*/
-	/*@modifies lua, fileSystem @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies lua, fileSystem, internalState @*/;
 /*@=exportlocal@*/
 void rpmluaInteractive(/*@null@*/ rpmlua lua)
-	/*@globals fileSystem @*/
-	/*@modifies lua, fileSystem @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies lua, fileSystem, internalState @*/;
 
 void *rpmluaGetData(/*@null@*/ rpmlua lua, const char *key)
-	/*@globals fileSystem @*/
-	/*@modifies lua, fileSystem @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies lua, fileSystem, internalState @*/;
 /*@-exportlocal@*/
 void rpmluaSetData(/*@null@*/ rpmlua lua, const char *key, const void *data)
-	/*@globals fileSystem @*/
-	/*@modifies lua, fileSystem @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies lua, fileSystem, internalState @*/;
 /*@=exportlocal@*/
 
 /*@exposed@*/
 const char *rpmluaGetPrintBuffer(/*@null@*/ rpmlua lua)
-	/*@globals fileSystem @*/
-	/*@modifies lua, fileSystem @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies lua, fileSystem, internalState @*/;
 void rpmluaSetPrintBuffer(/*@null@*/ rpmlua lua, int flag)
-	/*@globals fileSystem @*/
-	/*@modifies lua, fileSystem @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies lua, fileSystem, internalState @*/;
 
 void rpmluaGetVar(/*@null@*/ rpmlua lua, rpmluav var)
-	/*@globals fileSystem @*/
-	/*@modifies lua, var, fileSystem @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies lua, var, fileSystem, internalState @*/;
 void rpmluaSetVar(/*@null@*/ rpmlua lua, rpmluav var)
-	/*@globals fileSystem @*/
-	/*@modifies lua, var, fileSystem @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies lua, var, fileSystem, internalState @*/;
 void rpmluaDelVar(/*@null@*/ rpmlua lua, const char *key, ...)
-	/*@globals fileSystem @*/
-	/*@modifies lua, fileSystem @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies lua, fileSystem, internalState @*/;
 int rpmluaVarExists(/*@null@*/ rpmlua lua, const char *key, ...)
-	/*@globals fileSystem @*/
-	/*@modifies lua, fileSystem @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies lua, fileSystem, internalState @*/;
 void rpmluaPushTable(/*@null@*/ rpmlua lua, const char *key, ...)
-	/*@globals fileSystem @*/
-	/*@modifies lua, fileSystem @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies lua, fileSystem, internalState @*/;
 void rpmluaPop(/*@null@*/ rpmlua lua)
-	/*@globals fileSystem @*/
-	/*@modifies lua, fileSystem @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies lua, fileSystem, internalState @*/;
 
 /*@only@*/
 rpmluav rpmluavNew(void)

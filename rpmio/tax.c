@@ -45,7 +45,6 @@ char * pgpHexCvt(/*@returned@*/ char *t, const byte *s, int nbytes)
 	/*@modifies *t @*/
 {
     static char hex[] = "0123456789abcdef";
-/*@-boundswrite@*/
     while (nbytes-- > 0) {
 	unsigned int i;
 	i = *s++;
@@ -53,7 +52,6 @@ char * pgpHexCvt(/*@returned@*/ char *t, const byte *s, int nbytes)
 	*t++ = hex[ (i     ) & 0xf ];
     }
     *t = '\0';
-/*@=boundswrite@*/
     return t;
 }
 

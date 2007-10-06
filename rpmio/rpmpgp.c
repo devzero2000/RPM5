@@ -1,4 +1,3 @@
-/*@-boundsread@*/
 /** \ingroup rpmio signature
  * \file rpmio/rpmpgp.c
  * Routines to handle RFC-2440 detached signatures.
@@ -251,7 +250,6 @@ const char * pgpMpiHex(const byte *p)
     return prbuf;
 }
 
-/*@-boundswrite@*/
 /**
  * @return		0 on success
  */
@@ -286,7 +284,6 @@ if (_debug && _print)
 fprintf(stderr, "\t %s ", pre), mpfprintln(stderr, mpn->size, mpn->data);
     return 0;
 }
-/*@=boundswrite@*/
 
 int pgpPrtSubType(const byte *h, unsigned int hlen, pgpSigType sigtype)
 {
@@ -824,7 +821,6 @@ int pgpPrtKey(const pgpPkt pp)
     return rc;
 }
 
-/*@-boundswrite@*/
 int pgpPrtUserID(const pgpPkt pp)
 	/*@globals _digp @*/
 	/*@modifies *_digp @*/
@@ -841,7 +837,6 @@ int pgpPrtUserID(const pgpPkt pp)
     }
     return 0;
 }
-/*@=boundswrite@*/
 
 int pgpPrtComment(const pgpPkt pp)
 {
@@ -949,9 +944,7 @@ int pgpPubkeyFingerprint(const byte * pkt, unsigned int pktlen, byte * keyid)
 	    (void) rpmDigestFinal(ctx, &d, &dlen, 0);
 	}
 
-/*@-boundswrite@*/
 	memmove(keyid, (d + (dlen-8)), 8);
-/*@=boundswrite@*/
 	d = _free(d);
       } break;
     }
@@ -1041,7 +1034,6 @@ pgpDig pgpNewDig(pgpVSFlags vsflags)
     return dig;
 }
 
-/*@-boundswrite@*/
 void pgpCleanDig(pgpDig dig)
 {
     if (dig != NULL) {
@@ -1079,7 +1071,6 @@ void pgpCleanDig(pgpDig dig)
     return;
 /*@=nullstate@*/
 }
-/*@=boundswrite@*/
 
 pgpDig pgpFreeDig(/*@only@*/ /*@null@*/ pgpDig dig)
 	/*@modifies dig @*/
@@ -1089,16 +1080,12 @@ pgpDig pgpFreeDig(/*@only@*/ /*@null@*/ pgpDig dig)
 	/* DUmp the signature/pubkey data. */
 	pgpCleanDig(dig);
 
-	/*@-branchstate@*/
 	if (dig->hdrsha1ctx != NULL)
 	    (void) rpmDigestFinal(dig->hdrsha1ctx, NULL, NULL, 0);
-	/*@=branchstate@*/
 	dig->hdrsha1ctx = NULL;
 
-	/*@-branchstate@*/
 	if (dig->sha1ctx != NULL)
 	    (void) rpmDigestFinal(dig->sha1ctx, NULL, NULL, 0);
-	/*@=branchstate@*/
 	dig->sha1ctx = NULL;
 
 	mpbfree(&dig->p);
@@ -1110,17 +1097,13 @@ pgpDig pgpFreeDig(/*@only@*/ /*@null@*/ pgpDig dig)
 	mpnfree(&dig->s);
 
 #ifdef	NOTYET
-	/*@-branchstate@*/
 	if (dig->hdrmd5ctx != NULL)
 	    (void) rpmDigestFinal(dig->hdrmd5ctx, NULL, NULL, 0);
-	/*@=branchstate@*/
 	dig->hdrmd5ctx = NULL;
 #endif
 
-	/*@-branchstate@*/
 	if (dig->md5ctx != NULL)
 	    (void) rpmDigestFinal(dig->md5ctx, NULL, NULL, 0);
-	/*@=branchstate@*/
 	dig->md5ctx = NULL;
 
 	mpbfree(&dig->rsa_pk.n);
@@ -1212,10 +1195,12 @@ pgpVSFlags pgpSetVSFlags(pgpDig dig, pgpVSFlags vsflags)
 }
 
 int pgpSetFindPubkey(pgpDig dig,
-		int (*findPubkey) (void *ts, void *dig), void * _ts)
+		int (*findPubkey) (void *ts, /*@null@*/ void *dig), void * _ts)
 {
     if (dig) {
+/*@-assignexpose@*/
 	dig->findPubkey = findPubkey;
+/*@=assignexpose@*/
 	dig->_ts = _ts;
     }
     return 0;
@@ -1260,12 +1245,10 @@ static int pgpGrabPkts(const byte * pkts, unsigned int pktlen,
 	ppkts[npkts++] = (byte *) p;
     }
 
-/*@-branchstate@*/
     if (pppkts != NULL)
 	*pppkts = ppkts;
    else
 	ppkts = _free(ppkts);
-/*@=branchstate@*/
 
     if (pnpkts != NULL)
 	*pnpkts = npkts;
@@ -1303,19 +1286,16 @@ int pgpPrtPkts(const byte * pkts, unsigned int pktlen, pgpDig dig, int printing)
 	len = pgpPrtPkt(ppkts[i], pp->pktlen);
     }
 
-/*@-branchstate@*/
     if (dig != NULL) {
 	dig->ppkts = _free(dig->ppkts);		/* XXX memory leak plugged. */
 	dig->ppkts = ppkts;
 	dig->npkts = npkts;
     } else
 	ppkts = _free(ppkts);
-/*@=branchstate@*/
 
     return 0;
 }
 
-/*@-boundswrite@*/
 pgpArmor pgpReadPkts(const char * fn, const byte ** pkt, size_t * pktlen)
 {
     byte * b = NULL;
@@ -1466,7 +1446,6 @@ exit:
 	*pktlen = blen;
     return ec;
 }
-/*@=boundswrite@*/
 
 char * pgpArmorWrap(int atype, const unsigned char * s, size_t ns)
 {
@@ -1489,7 +1468,6 @@ char * pgpArmorWrap(int atype, const unsigned char * s, size_t ns)
 
     nt += 512;	/* XXX slop for armor and crc */
 
-/*@-boundswrite@*/
     val = t = xmalloc(nt + 1);
     *t = '\0';
     t = stpcpy(t, "-----BEGIN PGP ");
@@ -1512,9 +1490,6 @@ char * pgpArmorWrap(int atype, const unsigned char * s, size_t ns)
     t = stpcpy(t, "-----END PGP ");
     t = stpcpy(t, pgpValStr(pgpArmorTbl, atype));
     t = stpcpy(t, "-----\n");
-/*@=boundswrite@*/
 
     return val;
 }
-
-/*@=boundsread@*/

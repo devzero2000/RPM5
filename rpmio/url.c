@@ -98,13 +98,11 @@ URLDBGREFS(0, (stderr, "--> url %p -- %d %s at %s:%u\n", u, u->nrefs, msg, file,
     if (u->ctrl) {
 #ifndef	NOTYET
 	void * fp = fdGetFp(u->ctrl);
-	/*@-branchstate@*/
 	if (fp) {
 	    fdPush(u->ctrl, fpio, fp, -1);   /* Push fpio onto stack */
 	    (void) Fclose(u->ctrl);
 	} else if (fdio->_fileno(u->ctrl) >= 0)
 	    xx = fdio->close(u->ctrl);
-	/*@=branchstate@*/
 #else
 	(void) Fclose(u->ctrl);
 #endif
@@ -154,7 +152,6 @@ URLDBGREFS(0, (stderr, "--> url %p -- %d %s at %s:%u\n", u, u->nrefs, msg, file,
     return NULL;
 }
 
-/*@-boundswrite@*/
 void urlFreeCache(void)
 {
     if (_url_cache) {
@@ -173,7 +170,6 @@ void urlFreeCache(void)
     _url_cache = _free(_url_cache);
     _url_count = 0;
 }
-/*@=boundswrite@*/
 
 static int urlStrcmp(/*@null@*/ const char * str1, /*@null@*/ const char * str2)
 	/*@*/
@@ -186,7 +182,6 @@ static int urlStrcmp(/*@null@*/ const char * str1, /*@null@*/ const char * str2)
     return 0;
 }
 
-/*@-boundswrite@*/
 /*@-mods@*/
 static void urlFind(/*@null@*/ /*@in@*/ /*@out@*/ urlinfo * uret, int mustAsk)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
@@ -329,7 +324,6 @@ static void urlFind(/*@null@*/ /*@in@*/ /*@out@*/ urlinfo * uret, int mustAsk)
     return;
 }
 /*@=mods@*/
-/*@=boundswrite@*/
 
 /**
  */
@@ -352,7 +346,6 @@ urltype urlIsURL(const char * url)
 {
     struct urlstring *us;
 
-/*@-boundsread@*/
     if (url && *url) {
 	for (us = urlstrings; us->leadin != NULL; us++) {
 	    if (strncmp(url, us->leadin, strlen(us->leadin)))
@@ -360,12 +353,10 @@ urltype urlIsURL(const char * url)
 	    return us->ret;
 	}
     }
-/*@=boundsread@*/
 
     return URL_IS_UNKNOWN;
 }
 
-/*@-boundswrite@*/
 /* Return path portion of url (or pointer to NUL if url == NULL) */
 urltype urlPath(const char * url, const char ** pathp)
 {
@@ -374,7 +365,6 @@ urltype urlPath(const char * url, const char ** pathp)
 
     path = url;
     urltype = urlIsURL(url);
-    /*@-branchstate@*/
     switch (urltype) {
     case URL_IS_FTP:
 	url += sizeof("ftp://") - 1;
@@ -408,14 +398,12 @@ urltype urlPath(const char * url, const char ** pathp)
 	path = "";
 	break;
     }
-    /*@=branchstate@*/
     if (pathp)
 	/*@-observertrans@*/
 	*pathp = path;
 	/*@=observertrans@*/
     return urltype;
 }
-/*@=boundswrite@*/
 
 /*
  * Split URL into components. The URL can look like
@@ -423,7 +411,6 @@ urltype urlPath(const char * url, const char ** pathp)
   * or as in RFC2732 for IPv6 address
   *    service://user:password@[ip:v6:ad:dr:es:s]:port/path
  */
-/*@-bounds@*/
 /*@-modfilesys@*/
 int urlSplit(const char * url, urlinfo *uret)
 {
@@ -464,7 +451,6 @@ int urlSplit(const char * url, urlinfo *uret)
     /* Look for ...@host... */
     fe = f = s;
     while (*fe && *fe != '@') fe++;
-    /*@-branchstate@*/
     if (*fe == '@') {
 	s = fe + 1;
 	*fe = '\0';
@@ -476,7 +462,6 @@ int urlSplit(const char * url, urlinfo *uret)
 	}
 	u->user = xstrdup(f);
     }
-    /*@=branchstate@*/
 
     /* Look for ...host:port or [v6addr]:port*/
     fe = f = s;
@@ -531,7 +516,6 @@ int urlSplit(const char * url, urlinfo *uret)
     return 0;
 }
 /*@=modfilesys@*/
-/*@=bounds@*/
 
 int urlGetFile(const char * url, const char * dest)
 {

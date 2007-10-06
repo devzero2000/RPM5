@@ -164,6 +164,7 @@ int Rmdir (const char * path)
 /*@unchecked@*/
 const char * _chroot_prefix = NULL;
 
+/*@-mods@*/	/* XXX hide rpmGlobalMacroContext mods for now. */
 int Chroot(const char * path)
 {
     const char * lpath;
@@ -188,7 +189,9 @@ fprintf(stderr, "*** Chroot(%s)\n", path);
 	/*@notreached@*/ break;
     }
 
+/*@-modobserver@*/
     _chroot_prefix = _free(_chroot_prefix);
+/*@=modobserver@*/
     if (strcmp(path, "."))
 	_chroot_prefix = rpmGetPath(path, NULL);
 
@@ -196,6 +199,7 @@ fprintf(stderr, "*** Chroot(%s)\n", path);
     return chroot(path);
 /*@=superuser@*/
 }
+/*@=mods@*/
 
 int Open(const char * path, int flags, mode_t mode)
 {
@@ -393,7 +397,6 @@ static char *columns [MAXCOLS];	/* Points to the string in column n */
 /*@unchecked@*/
 static int   column_ptr [MAXCOLS]; /* Index from 0 to the starting positions of the columns */
 
-/*@-boundswrite@*/
 static int
 vfs_split_text (char *p)
 	/*@globals columns, column_ptr @*/
@@ -415,9 +418,7 @@ vfs_split_text (char *p)
     }
     return numcols;
 }
-/*@=boundswrite@*/
 
-/*@-boundsread@*/
 static int
 is_num (int idx)
 	/*@*/
@@ -426,9 +427,7 @@ is_num (int idx)
 	return 0;
     return 1;
 }
-/*@=boundsread@*/
 
-/*@-boundsread@*/
 static int
 is_dos_date(/*@null@*/ const char *str)
 	/*@*/
@@ -438,7 +437,6 @@ is_dos_date(/*@null@*/ const char *str)
 	return 1;
     return 0;
 }
-/*@=boundsread@*/
 
 static int
 is_week (/*@null@*/ const char * str, /*@out@*/ struct tm * tim)
@@ -604,7 +602,6 @@ static int vfs_parse_filemode (const char *p)
     return res;
 }
 
-/*@-boundswrite@*/
 static int vfs_parse_filedate(int idx, /*@out@*/ time_t *t)
 	/*@modifies *t @*/
 {	/* This thing parses from idx in columns[] array */
@@ -712,9 +709,7 @@ static int vfs_parse_filedate(int idx, /*@out@*/ time_t *t)
         *t = 0;
     return idx;
 }
-/*@=boundswrite@*/
 
-/*@-boundswrite@*/
 static int
 vfs_parse_ls_lga (char * p, /*@out@*/ struct stat * st,
 		/*@out@*/ const char ** filename,
@@ -920,7 +915,6 @@ error:
 	g_free (p_copy);
     return 0;
 }
-/*@=boundswrite@*/
 
 typedef enum {
 	DO_FTP_STAT	= 1,
@@ -942,7 +936,6 @@ static /*@only@*/ char * ftpBuf = NULL;
 	
 #define alloca_strdup(_s)       strcpy(alloca(strlen(_s)+1), (_s))
 
-/*@-boundswrite@*/
 static int ftpNLST(const char * url, ftpSysCall_t ftpSysCall,
 		/*@out@*/ /*@null@*/ struct stat * st,
 		/*@out@*/ /*@null@*/ char * rlbuf, size_t rlbufsiz)
@@ -978,14 +971,12 @@ static int ftpNLST(const char * url, ftpSysCall_t ftpSysCall,
 	break;
     default:
 	urldn = alloca_strdup(url);
-	/*@-branchstate@*/
 	if ((bn = strrchr(urldn, '/')) == NULL)
 	    return -2;
 	else if (bn == path)
 	    bn = ".";
 	else
 	    *bn++ = '\0';
-	/*@=branchstate@*/
 	nbn = strlen(bn);
 
 	rc = ftpChdir(urldn);		/* XXX don't care about CWD */
@@ -1134,7 +1125,6 @@ exit:
     (void) ufdClose(fd);
     return rc;
 }
-/*@=boundswrite@*/
 
 static const char * statstr(const struct stat * st,
 		/*@returned@*/ /*@out@*/ char * buf)
@@ -1199,7 +1189,6 @@ fprintf(stderr, "*** ftpReadlink(%s) rc %d\n", path, rc);
     return rc;
 }
 
-/*@-boundswrite@*/
 /*@null@*/
 static DIR * ftpOpendir(const char * path)
 	/*@globals h_errno, fileSystem, internalState @*/
@@ -1343,7 +1332,6 @@ fprintf(stderr, "*** ftpOpendir(%s)\n", path);
     return (DIR *) avdir;
 /*@=kepttrans@*/
 }
-/*@=boundswrite@*/
 
 int Stat(const char * path, struct stat * st)
 {

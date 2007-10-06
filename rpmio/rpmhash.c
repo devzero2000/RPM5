@@ -58,9 +58,7 @@ hashBucket findEntry(hashTable ht, const void * key)
 
     /*@-modunconnomods@*/
     hash = ht->fn(hash, key, 0) % ht->numBuckets;
-/*@-boundsread@*/
     b = ht->buckets[hash];
-/*@=boundsread@*/
 
     while (b && b->key && ht->eq(b->key, key))
 	b = b->next;
@@ -86,12 +84,10 @@ static uint32_t hashFunctionString(uint32_t h, const void * data, size_t size)
 
     if (size == 0)
 	size = strlen(chp);
-/*@-boundsread@*/
     for (i = 0; i < size; i++, chp++) {
 	xor ^= *chp;
 	sum += *chp;
     }
-/*@=boundsread@*/
 
     h += ((size << 16) + (sum << 8) + xor);
 
@@ -130,7 +126,6 @@ hashTable htCreate(int numBuckets, int keySize, int freeData,
     return ht;
 }
 
-/*@-boundswrite@*/
 void htAddEntry(hashTable ht, const void * key, const void * data)
 {
     uint32_t hash = 0;
@@ -142,7 +137,6 @@ void htAddEntry(hashTable ht, const void * key, const void * data)
     while (b && b->key && ht->eq(b->key, key))
 	b = b->next;
 
-    /*@-branchstate@*/
     if (b == NULL) {
 	b = xmalloc(sizeof(*b));
 	if (ht->keySize) {
@@ -157,12 +151,10 @@ void htAddEntry(hashTable ht, const void * key, const void * data)
 	b->data = NULL;
 	ht->buckets[hash] = b;
     }
-    /*@=branchstate@*/
 
     b->data = xrealloc(b->data, sizeof(*b->data) * (b->dataCount + 1));
     b->data[b->dataCount++] = data;
 }
-/*@=boundswrite@*/
 
 hashTable htFree(hashTable ht)
 {
@@ -170,27 +162,19 @@ hashTable htFree(hashTable ht)
     int i;
 
     for (i = 0; i < ht->numBuckets; i++) {
-/*@-boundsread@*/
 	b = ht->buckets[i];
-/*@=boundsread@*/
 	if (b == NULL)
 	    continue;
-/*@-boundswrite@*/
 	ht->buckets[i] = NULL;
-/*@=boundswrite@*/
 	if (ht->keySize > 0)
 	    b->key = _free(b->key);
 	do {
 	    n = b->next;
-	    /*@-branchstate@*/
 	    if (b->data) {
-/*@-boundswrite@*/
 		if (ht->freeData)
 		    *b->data = _free(*b->data);
-/*@=boundswrite@*/
 		b->data = _free(b->data);
 	    }
-	    /*@=branchstate@*/
 	    b = _free(b);
 	} while ((b = n) != NULL);
     }
@@ -215,14 +199,12 @@ int htGetEntry(hashTable ht, const void * key, const void * data,
     if ((b = findEntry(ht, key)) == NULL)
 	return 1;
 
-/*@-boundswrite@*/
     if (data)
 	*(const void ***)data = (const void **) b->data;
     if (dataCount)
 	*dataCount = b->dataCount;
     if (tableKey)
 	*(const void **)tableKey = b->key;
-/*@=boundswrite@*/
 
     return 0;
 }

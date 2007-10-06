@@ -52,14 +52,14 @@ rpmmg rpmmgNew(const char * fn, int flags)
     }
     xx = magic_load(mg->ms, mg->fn);
     if (xx == -1) {
-        rpmError(RPMERR_EXEC, _("magic_load(ms, \"%s\") failed: %s\n"),
-                fn, magic_error(mg->ms));
+        rpmError(RPMERR_EXEC, _("magic_load(ms, %s) failed: %s\n"),
+                (fn ? fn : "(nil)"), magic_error(mg->ms));
 	return rpmmgFree(mg);
     }
 #endif
 
 if (_rpmmg_debug)
-fprintf(stderr, "--> rpmmgNew(%s, 0x%x) mg %p\n", fn, flags, mg);
+fprintf(stderr, "--> rpmmgNew(%s, 0x%x) mg %p\n", (fn ? fn : "(nil)"), flags, mg);
     return mg;
 }
 
@@ -70,16 +70,18 @@ const char * rpmmgFile(rpmmg mg, const char *fn)
 #if defined(HAVE_MAGIC_H)
     if (mg->ms) {
 	t = magic_file(mg->ms, fn);
-	if (t == NULL)
-	    rpmError(RPMERR_EXEC, _("magic_file(ms, \"%s\") failed: %s\n"),
-		fn, magic_error(mg->ms));
+	if (t == NULL) {
+	    rpmError(RPMERR_EXEC, _("magic_file(ms, %s) failed: %s\n"),
+		(fn ? fn : "(nil)"), magic_error(mg->ms));
+	}
     }
 #endif
 
-    t = xstrdup((t ? t : ""));
+    if (t == NULL) t = "";
+    t = xstrdup(t);
 
 if (_rpmmg_debug)
-fprintf(stderr, "--> rpmmgFile(%p, %s) %s\n", mg, fn, t);
+fprintf(stderr, "--> rpmmgFile(%p, %s) %s\n", mg, (fn ? fn : "(nil)"), t);
     return t;
 }
 
@@ -88,11 +90,17 @@ const char * rpmmgBuffer(rpmmg mg, const char * b, size_t nb)
     const char * t = NULL;
 
 #if defined(HAVE_MAGIC_H)
-    if (mg->ms)
+    if (mg->ms) {
 	t = magic_buffer(mg->ms, b, nb);
+	if (t == NULL) {
+	    rpmError(RPMERR_EXEC, _("magic_buffer(ms, %p[%u]) failed: %s\n"),
+		b, (unsigned)nb, magic_error(mg->ms));
+	}
+    }
 #endif
 
-    t = xstrdup((t ? t : ""));
+    if (t == NULL) t = "";
+    t = xstrdup(t);
 
 if (_rpmmg_debug)
 fprintf(stderr, "--> rpmmgBuffer(%p, %p[%d]) %s\n", mg, b, nb, t);

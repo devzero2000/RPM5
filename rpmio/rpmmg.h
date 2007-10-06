@@ -21,6 +21,7 @@ typedef struct rpmmg_s * rpmmg;
 struct rpmmg_s {
     const char * fn;
     int flags;
+/*@relnull@*/
     void * ms;
 };
 #endif	/* _RPMMG_INTERNAL */
@@ -35,7 +36,8 @@ extern "C" {
  * @return		NULL always
  */
 rpmmg rpmmgFree(/*@only@*/ /*@null@*/rpmmg mg)
-	/*@modifies mg @*/;
+	/*@globals fileSystem @*/
+	/*@modifies mg, fileSystem @*/;
 
 /**
  * Create and load a magic wrapper.
@@ -45,7 +47,8 @@ rpmmg rpmmgFree(/*@only@*/ /*@null@*/rpmmg mg)
  */
 /*@only@*/ /*@null@*/
 rpmmg rpmmgNew(const char * fn, int flags)
-	/*@*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/;
 
 /**
  * Return magic string for a file.
@@ -55,7 +58,8 @@ rpmmg rpmmgNew(const char * fn, int flags)
  */
 /*@only@*/
 const char * rpmmgFile(rpmmg mg, const char *fn)
-	/*@*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies mg, fileSystem, internalState @*/;
 
 /**
  * Return magic string for a buffer.
@@ -66,7 +70,8 @@ const char * rpmmgFile(rpmmg mg, const char *fn)
  */
 /*@only@*/
 const char * rpmmgBuffer(rpmmg mg, const char * b, size_t nb)
-	/*@*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies mg, fileSystem, internalState @*/;
 
 #ifdef __cplusplus
 }

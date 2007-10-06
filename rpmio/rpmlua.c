@@ -1,4 +1,4 @@
-/*@-bounds -realcompare -sizeoftype -protoparammatch @*/
+/*@-realcompare -sizeoftype -protoparammatch @*/
 #include "system.h"
 
 #ifdef	WITH_LUA
@@ -50,6 +50,7 @@ static int rpm_print(lua_State *L)
 	/*@globals fileSystem @*/
 	/*@modifies L, fileSystem @*/;
 
+/*@-mods@*/	/* XXX hide rpmGlobalMacroContext mods for now. */
 rpmlua rpmluaNew()
 {
     rpmlua lua = (rpmlua) xcalloc(1, sizeof(*lua));
@@ -111,17 +112,16 @@ rpmlua rpmluaNew()
 #undef	_LUADOTDIR
     return lua;
 }
+/*@=mods@*/
 
 void *rpmluaFree(rpmlua lua)
 	/*@globals globalLuaState @*/
 	/*@modifies globalLuaState @*/
 {
-/*@-branchstate@*/
     if (lua == NULL) {
 	lua = globalLuaState;
 	globalLuaState = NULL;
     }
-/*@=branchstate@*/
     if (lua) {
 	if (lua->L) lua_close(lua->L);
 	lua->printbuf = _free(lua->printbuf);
@@ -152,10 +152,8 @@ static void *getdata(lua_State *L, const char *key)
     lua_pushstring(L, key);
     lua_concat(L, 2);
     lua_rawget(L, LUA_REGISTRYINDEX);
-/*@-branchstate@*/
     if (lua_islightuserdata(L, -1))
 	ret = lua_touserdata(L, -1);
-/*@=branchstate@*/
     lua_pop(L, 1);
     return ret;
 }
@@ -389,7 +387,7 @@ void rpmluavSetListMode(rpmluav var, int flag)
 void rpmluavSetKey(rpmluav var, rpmluavType type, const void *value)
 {
     var->keyType = type;
-/*@-assignexpose -branchstate -temptrans @*/
+/*@-assignexpose -temptrans @*/
     switch (type) {
 	case RPMLUAV_NUMBER:
 	    var->key.num = *((double *)value);
@@ -400,13 +398,13 @@ void rpmluavSetKey(rpmluav var, rpmluavType type, const void *value)
 	default:
 	    break;
     }
-/*@=assignexpose =branchstate =temptrans @*/
+/*@=assignexpose =temptrans @*/
 }
 
 void rpmluavSetValue(rpmluav var, rpmluavType type, const void *value)
 {
     var->valueType = type;
-/*@-assignexpose -branchstate -temptrans @*/
+/*@-assignexpose -temptrans @*/
     switch (type) {
 	case RPMLUAV_NUMBER:
 	    var->value.num = *((const double *)value);
@@ -417,7 +415,7 @@ void rpmluavSetValue(rpmluav var, rpmluavType type, const void *value)
 	default:
 	    break;
     }
-/*@=assignexpose =branchstate =temptrans @*/
+/*@=assignexpose =temptrans @*/
 }
 
 void rpmluavGetKey(rpmluav var, rpmluavType *type, void **value)
@@ -499,10 +497,8 @@ int rpmluaCheckScript(rpmlua _lua, const char *script, const char *name)
     INITSTATE(_lua, lua);
     lua_State *L = lua->L;
     int ret = 0;
-/*@-branchstate@*/
     if (name == NULL)
 	name = "<lua>";
-/*@=branchstate@*/
     if (luaL_loadbuffer(L, script, strlen(script), name) != 0) {
 	rpmError(RPMERR_SCRIPT,
 		_("invalid syntax in lua scriptlet: %s\n"),
@@ -518,10 +514,8 @@ int rpmluaRunScript(rpmlua _lua, const char *script, const char *name)
     INITSTATE(_lua, lua);
     lua_State *L = lua->L;
     int ret = 0;
-/*@-branchstate@*/
     if (name == NULL)
 	name = "<lua>";
-/*@=branchstate@*/
     if (luaL_loadbuffer(L, script, strlen(script), name) != 0) {
 	rpmError(RPMERR_SCRIPT, _("invalid syntax in lua script: %s\n"),
 		 lua_tostring(L, -1));
@@ -629,8 +623,8 @@ void rpmluaInteractive(rpmlua _lua)
 /* Lua API */
 
 static int rpm_expand(lua_State *L)
-	/*@globals rpmGlobalMacroContext, h_errno @*/
-	/*@modifies L, rpmGlobalMacroContext @*/
+	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
+	/*@modifies L, rpmGlobalMacroContext, internalState @*/
 {
     const char *str = luaL_checkstring(L, 1);
     lua_pushstring(L, rpmExpand(str, NULL));
@@ -638,8 +632,8 @@ static int rpm_expand(lua_State *L)
 }
 
 static int rpm_define(lua_State *L)
-	/*@globals rpmGlobalMacroContext, h_errno @*/
-	/*@modifies L, rpmGlobalMacroContext @*/
+	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
+	/*@modifies L, rpmGlobalMacroContext, internalState @*/
 {
     const char *str = luaL_checkstring(L, 1);
     (void) rpmDefineMacro(NULL, str, 0);
@@ -872,4 +866,4 @@ static int luaopen_rpm(lua_State *L)
 }
 #endif	/* WITH_LUA */
 
-/*@=bounds =realcompare =sizeoftype =protoparammatch @*/
+/*@=realcompare =sizeoftype =protoparammatch @*/

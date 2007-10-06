@@ -94,8 +94,9 @@ int rpmsqRemove(/*@null@*/ void * elem)
  */
 /*@-exportlocal@*/
 void rpmsqAction(int signum, void * info, void * context)
-	/*@globals rpmsqCaught, rpmsqQueue, errno, fileSystem @*/
-	/*@modifies rpmsqCaught, rpmsqQueue, errno, fileSystem @*/;
+	/*@globals rpmsqCaught, rpmsqQueue, errno, fileSystem, internalState @*/
+	/*@modifies rpmsqCaught, rpmsqQueue, errno,
+		fileSystem, internalState @*/;
 /*@=exportlocal@*/
 
 /**

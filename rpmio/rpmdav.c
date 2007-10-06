@@ -154,10 +154,8 @@ typedef enum {
     u->connstatus = connstatus;
 #endif
 
-/*@-boundsread@*/
 if (_dav_debug < 0)
 fprintf(stderr, "*** davNotify(%p,%d,%p) sess %p u %p %s\n", userdata, connstatus, info, sess, u, connstates[ (connstatus < 4 ? connstatus : 4)]);
-/*@=boundsread@*/
 
 }
 
@@ -287,8 +285,8 @@ fprintf(stderr, "*** davVerifyCert(%p,%d,%p) %s\n", userdata, failures, cert, ho
 }
 
 static int davConnect(urlinfo u)
-	/*@globals internalState @*/
-	/*@modifies u, internalState @*/
+	/*@globals errno, internalState @*/
+	/*@modifies u, errno, internalState @*/
 {
     const char * path = NULL;
     int rc;
@@ -420,10 +418,8 @@ static int davInit(const char * url, urlinfo * uret)
     }
 
 exit:
-/*@-boundswrite@*/
     if (uret != NULL)
 	*uret = urlLink(u, "davInit");
-/*@=boundswrite@*/
     u = urlFree(u, "urlSplit (davInit)");
 
     return rc;
@@ -468,12 +464,10 @@ static void *fetch_destroy_list(/*@only@*/ struct fetch_resource_s *res)
 	/*@modifies res @*/
 {
     struct fetch_resource_s *next;
-/*@-branchstate@*/
     for (; res != NULL; res = next) {
 	next = res->next;
 	res = fetch_destroy_item(res);
     }
-/*@=branchstate@*/
     return NULL;
 }
 #endif
@@ -521,9 +515,7 @@ static void *fetch_destroy_context(/*@only@*/ /*@null@*/ struct fetch_context_s 
     ctx->mtimes = _free(ctx->mtimes);
     ctx->u = urlFree(ctx->u, "fetch_destroy_context");
     ctx->uri = _free(ctx->uri);
-/*@-boundswrite@*/
     memset(ctx, 0, sizeof(*ctx));
-/*@=boundswrite@*/
     ctx = _free(ctx);
     return NULL;
 }
@@ -531,7 +523,7 @@ static void *fetch_destroy_context(/*@only@*/ /*@null@*/ struct fetch_context_s 
 /*@null@*/
 static void *fetch_create_context(const char *uri, /*@null@*/ struct stat *st)
 	/*@globals internalState @*/
-	/*@modifies internalState @*/
+	/*@modifies *st, internalState @*/
 {
     struct fetch_context_s * ctx;
     urlinfo u;
@@ -659,20 +651,16 @@ fprintf(stderr, "==> %s skipping target resource.\n", path);
 
     newres->uri = ne_strdup(path);
 
-/*@-boundsread@*/
     clength = ne_propset_value(set, &fetch_props[0]);
     modtime = ne_propset_value(set, &fetch_props[1]);
     isexec = ne_propset_value(set, &fetch_props[2]);
     checkin = ne_propset_value(set, &fetch_props[4]);
     checkout = ne_propset_value(set, &fetch_props[5]);
-/*@=boundsread@*/
 
-/*@-branchstate@*/
     if (clength == NULL)
 	status = ne_propset_status(set, &fetch_props[0]);
     if (modtime == NULL)
 	status = ne_propset_status(set, &fetch_props[1]);
-/*@=branchstate@*/
 
     if (newres->type == resr_normal && status != NULL) {
 	/* It's an error! */
@@ -728,9 +716,9 @@ fprintf(stderr, "==> %s skipping target resource.\n", path);
     if (previous) {
 	previous->next = newres;
     } else {
-/*@-boundswrite -dependenttrans @*/
+/*@-dependenttrans @*/
 	*ctx->resrock = newres;
-/*@=boundswrite =dependenttrans @*/
+/*@=dependenttrans @*/
     }
     newres->next = current;
 }
@@ -823,11 +811,9 @@ fprintf(stderr, "*** argvAdd(%p,\"%s\")\n", &ctx->av, val);
 	    st_mode = 0;
 	    /*@switchbreak@*/ break;
 	}
-/*@-boundswrite@*/
 	ctx->modes[ctx->ac] = st_mode;
 	ctx->sizes[ctx->ac] = current->size;
 	ctx->mtimes[ctx->ac] = current->modtime;
-/*@=boundswrite@*/
 	ctx->ac++;
 
 	current = fetch_destroy_item(current);
@@ -860,7 +846,7 @@ static int davHEAD(urlinfo u, struct stat *st)
     switch (rc) {
     default:
 	goto exit;
-	/*@notreached@*/
+	/*@notreached@*/ break;
     case NE_OK:
 	if (ne_get_status(req)->klass != 2) {
 	    rc = NE_ERROR;
@@ -882,7 +868,9 @@ static int davHEAD(urlinfo u, struct stat *st)
     value = ne_get_response_header(req, htag); 
 #endif
     if (value) {
+/*@-unrecog@*/	/* XXX LCLINT needs stdlib.h update. */
 	st->st_size = strtoll(value, NULL, 10);
+/*@=unrecog@*/
 	st->st_blocks = (st->st_size + 511)/512;
     }
 
@@ -915,8 +903,11 @@ static int davNLST(struct fetch_context_s * ctx)
 /* HACK do PROPFIND through davFetch iff enabled, otherwise HEAD Content-length/ETag/Last-Modified */
     if (u->allow & RPMURL_SERVER_HASDAV)
 	   rc = davFetch(u, ctx);	/* use PROPFIND to get contentLength */
-    else
+    else {
+/*@-nullpass@*/	/* XXX annotate ctx->st correctly */
 	   rc = davHEAD(u, ctx->st);	/* use HEAD to get contentLength */
+/*@=nullpass@*/
+    }
 
     switch (rc) {
     case NE_OK:
@@ -1191,10 +1182,8 @@ assert(urlType == URL_IS_HTTPS || urlType == URL_IS_HTTP || urlType == URL_IS_HK
     }
 
 exit:
-/*@-boundswrite@*/
     if (uret)
 	*uret = u;
-/*@=boundswrite@*/
     /*@-refcounttrans@*/
     return fd;
     /*@=refcounttrans@*/
@@ -1240,7 +1229,9 @@ assert(sess != NULL);
 #else
 #if defined(HAVE_NEON_NE_SEND_REQUEST_CHUNK) || defined(__LCLINT__)
 assert(fd->req != NULL);
+/*@-unrecog@*/
     xx = ne_send_request_chunk(fd->req, buf, count);
+/*@=unrecog@*/
 #else
     errno = EIO;       /* HACK */
     return -1;
@@ -1419,7 +1410,6 @@ static const char * statstr(const struct stat * st,
 /*@unchecked@*/
 static unsigned int dav_st_ino = 0xdead0000;
 
-/*@-boundswrite@*/
 int davStat(const char * path, /*@out@*/ struct stat *st)
 	/*@globals dav_st_ino, fileSystem, internalState @*/
 	/*@modifies *st, dav_st_ino, fileSystem, internalState @*/
@@ -1465,9 +1455,7 @@ fprintf(stderr, "*** davStat(%s) rc %d\n%s", path, rc, statstr(st, buf));
     ctx = fetch_destroy_context(ctx);
     return rc;
 }
-/*@=boundswrite@*/
 
-/*@-boundswrite@*/
 int davLstat(const char * path, /*@out@*/ struct stat *st)
 	/*@globals dav_st_ino, fileSystem, internalState @*/
 	/*@modifies *st, dav_st_ino, fileSystem, internalState @*/
@@ -1511,7 +1499,6 @@ exit:
     ctx = fetch_destroy_context(ctx);
     return rc;
 }
-/*@=boundswrite@*/
 
 #ifdef	NOTYET
 static int davReadlink(const char * path, /*@out@*/ char * buf, size_t bufsiz)
@@ -1571,10 +1558,8 @@ FD_t httpOpen(const char * url, /*@unused@*/ int flags,
     }
 
 exit:
-/*@-boundswrite@*/
     if (uret)
         *uret = u;
-/*@=boundswrite@*/
     /*@-refcounttrans@*/
     return fd;
     /*@=refcounttrans@*/
@@ -1619,10 +1604,8 @@ struct dirent * avReaddir(DIR * dir)
     dt = (unsigned char *) (av + (ac + 1));
     i = avdir->offset + 1;
 
-/*@-boundsread@*/
     if (i < 0 || i >= ac || av[i] == NULL)
 	return NULL;
-/*@=boundsread@*/
 
     avdir->offset = i;
 
@@ -1637,9 +1620,7 @@ struct dirent * avReaddir(DIR * dir)
 #if !defined(__APPLE__) && !defined(__FreeBSD_kernel__) && !defined(__FreeBSD__) && !defined(__NetBSD__) && !defined(__DragonFly__)
     dp->d_off = 0;		/* W2DO? */
 #endif
-/*@-boundsread@*/
     dp->d_type = dt[i];
-/*@=boundsread@*/
 #endif
 /*@=type@*/
 
@@ -1650,7 +1631,6 @@ fprintf(stderr, "*** avReaddir(%p) %p \"%s\"\n", (void *)avdir, dp, dp->d_name);
     return dp;
 }
 
-/*@-boundswrite@*/
 DIR * avOpendir(const char * path)
 {
     AVDIR avdir;
@@ -1702,7 +1682,6 @@ fprintf(stderr, "*** avOpendir(%s)\n", path);
     return (DIR *) avdir;
 /*@=kepttrans@*/
 }
-/*@=boundswrite@*/
 
 #ifdef WITH_NEON
 
@@ -1747,10 +1726,8 @@ struct dirent * davReaddir(DIR * dir)
     dt = (unsigned char *) (av + (ac + 1));
     i = avdir->offset + 1;
 
-/*@-boundsread@*/
     if (i < 0 || i >= ac || av[i] == NULL)
 	return NULL;
-/*@=boundsread@*/
 
     avdir->offset = i;
 
@@ -1763,9 +1740,7 @@ struct dirent * davReaddir(DIR * dir)
 #if !defined(__APPLE__) && !defined(__FreeBSD_kernel__) && !defined(__FreeBSD__) && !defined(__NetBSD__) && !defined(__DragonFly__)
     dp->d_off = 0;		/* W2DO? */
 #endif
-/*@-boundsread@*/
     dp->d_type = dt[i];
-/*@=boundsread@*/
 #endif
 /*@=type@*/
 
@@ -1776,7 +1751,6 @@ fprintf(stderr, "*** davReaddir(%p) %p \"%s\"\n", (void *)avdir, dp, dp->d_name)
     return dp;
 }
 
-/*@-boundswrite@*/
 DIR * davOpendir(const char * path)
 {
     struct fetch_context_s * ctx;
@@ -1791,14 +1765,12 @@ DIR * davOpendir(const char * path)
 
     /* HACK: glob does not pass dirs with trailing '/' */
     nb = strlen(path)+1;
-/*@-branchstate@*/
     if (path[nb-1] != '/') {
 	char * npath = alloca(nb+1);
 	*npath = '\0';
 	(void) stpcpy( stpcpy(npath, path), "/");
 	path = npath;
     }
-/*@=branchstate@*/
 
 if (_dav_debug < 0)
 fprintf(stderr, "*** davOpendir(%s)\n", path);

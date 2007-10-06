@@ -65,6 +65,7 @@ struct pgpDig_s {
 
     int32_t sigtag;		/*!< Package signature tag. */
     int32_t sigtype;		/*!< Package signature data type. */
+/*@relnull@*/
     const void * sig;		/*!< Package signature. */
     int32_t siglen;		/*!< Package signature length. */
 
@@ -318,9 +319,7 @@ mode_t fdGetOMode(FD_t fd)
 	/*@*/
 {
     FDSANE(fd);
-/*@-boundsread@*/
     return fd->fps[fd->nfps].io;
-/*@=boundsread@*/
 }
 
 /** \ingroup rpmio
@@ -331,11 +330,9 @@ void fdSetIo(FD_t fd, /*@kept@*/ /*@null@*/ FDIO_t io)
 	/*@modifies fd @*/
 {
     FDSANE(fd);
-/*@-boundswrite@*/
     /*@-assignexpose@*/
     fd->fps[fd->nfps].io = io;
     /*@=assignexpose@*/
-/*@=boundswrite@*/
 }
 /*@=nullstate@*/
 
@@ -346,11 +343,9 @@ void fdSetIo(FD_t fd, /*@kept@*/ /*@null@*/ FDIO_t io)
 	/*@*/
 {
     FDSANE(fd);
-/*@-boundsread@*/
     /*@+voidabstract@*/
     return ((FILE *)fd->fps[fd->nfps].fp);
     /*@=voidabstract@*/
-/*@=boundsread@*/
 }
 
 /** \ingroup rpmio
@@ -360,9 +355,7 @@ void fdSetIo(FD_t fd, /*@kept@*/ /*@null@*/ FDIO_t io)
 	/*@*/
 {
     FDSANE(fd);
-/*@-boundsread@*/
     return fd->fps[fd->nfps].fp;
-/*@=boundsread@*/
 }
 
 /** \ingroup rpmio
@@ -373,11 +366,9 @@ void fdSetFp(FD_t fd, /*@kept@*/ /*@null@*/ void * fp)
 	/*@modifies fd @*/
 {
     FDSANE(fd);
-/*@-boundswrite@*/
     /*@-assignexpose@*/
     fd->fps[fd->nfps].fp = fp;
     /*@=assignexpose@*/
-/*@=boundswrite@*/
 }
 /*@=nullstate@*/
 
@@ -388,9 +379,7 @@ int fdGetFdno(FD_t fd)
 	/*@*/
 {
     FDSANE(fd);
-/*@-boundsread@*/
     return fd->fps[fd->nfps].fdno;
-/*@=boundsread@*/
 }
 
 /** \ingroup rpmio
@@ -400,9 +389,7 @@ void fdSetFdno(FD_t fd, int fdno)
 	/*@modifies fd @*/
 {
     FDSANE(fd);
-/*@-boundswrite@*/
     fd->fps[fd->nfps].fdno = fdno;
-/*@=boundswrite@*/
 }
 
 /** \ingroup rpmio
@@ -452,10 +439,8 @@ rpmop fdstat_op(/*@null@*/ FD_t fd, fdOpX opx)
 {
     rpmop op = NULL;
 
-/*@-boundsread@*/
     if (fd != NULL && fd->stats != NULL && opx >= 0 && opx < FDSTAT_MAX)
         op = fd->stats->ops + opx;
-/*@=boundsread@*/
     return op;
 }
 
@@ -496,7 +481,6 @@ void fdstat_exit(/*@null@*/ FD_t fd, int opx, ssize_t rc)
 
 /** \ingroup rpmio
  */
-/*@-boundsread@*/
 /*@unused@*/ static inline
 void fdstat_print(/*@null@*/ FD_t fd, const char * msg, FILE * fp)
 	/*@globals fileSystem @*/
@@ -529,7 +513,6 @@ void fdstat_print(/*@null@*/ FD_t fd, const char * msg, FILE * fp)
 	}
     }
 }
-/*@=boundsread@*/
 
 /** \ingroup rpmio
  */
@@ -652,12 +635,10 @@ void fdFiniDigest(FD_t fd, pgpHashAlgo hashalgo,
 	fddig->hashctx = NULL;
 	break;
     }
-/*@-boundswrite@*/
     if (i < 0) {
 	if (datap) *(void **)datap = NULL;
 	if (lenp) *lenp = 0;
     }
-/*@=boundswrite@*/
 
     fd->ndigests = imax;
     if (i < imax)
@@ -674,9 +655,7 @@ int fdFileno(/*@null@*/ void * cookie)
     FD_t fd;
     if (cookie == NULL) return -2;
     fd = c2f(cookie);
-/*@-boundsread@*/
     return fd->fps[0].fdno;
-/*@=boundsread@*/
 }
 /*@=shadow@*/
 

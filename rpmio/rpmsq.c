@@ -255,9 +255,7 @@ fprintf(stderr, "    Insert(%p): %p\n", ME(), sq);
 	    sq->status = 0;
 	   /* ==> Set to 1 to catch SIGCHLD, set to 0 to use waitpid(2).  */
 	    sq->reaper = 1;
-/*@-bounds@*/
 	    sq->pipes[0] = sq->pipes[1] = -1;
-/*@=bounds@*/
 
 	    sq->id = ME();
 	    insque(elem, (prev != NULL ? prev : rpmsqQueue));
@@ -282,11 +280,9 @@ fprintf(stderr, "    Remove(%p): %p\n", ME(), sq);
 	if (ret == 0) {
 	    remque(elem);
 	    sq->id = NULL;
-/*@-bounds@*/
 	    if (sq->pipes[1] > 0)	ret = close(sq->pipes[1]);
 	    if (sq->pipes[0] > 0)	ret = close(sq->pipes[0]);
 	    sq->pipes[0] = sq->pipes[1] = -1;
-/*@=bounds@*/
 #ifdef	NOTYET	/* rpmpsmWait debugging message needs */
 	    sq->status = 0;
 	    sq->reaped = 0;
@@ -450,23 +446,19 @@ fprintf(stderr, "    Enable(%p): %p\n", ME(), sq);
     pid = fork();
     if (pid < (pid_t) 0) {		/* fork failed.  */
 	sq->child = (pid_t)-1;
-/*@-bounds@*/
 	xx = close(sq->pipes[0]);
 	xx = close(sq->pipes[1]);
 	sq->pipes[0] = sq->pipes[1] = -1;
-/*@=bounds@*/
 	goto out;
     } else if (pid == (pid_t) 0) {	/* Child. */
 	int yy;
 
 	/* Block to permit parent time to wait. */
-/*@-bounds@*/
 	xx = close(sq->pipes[1]);
 	if (sq->reaper)
 	    xx = read(sq->pipes[0], &yy, sizeof(yy));
 	xx = close(sq->pipes[0]);
 	sq->pipes[0] = sq->pipes[1] = -1;
-/*@=bounds@*/
 
 #ifdef _RPMSQ_DEBUG
 if (_rpmsq_debug)
@@ -508,12 +500,10 @@ assert(sq->reaper);
     ret = sighold(SIGCHLD);
 
     /* Start the child, linux often runs child before parent. */
-/*@-bounds@*/
     if (sq->pipes[0] >= 0)
 	xx = close(sq->pipes[0]);
     if (sq->pipes[1] >= 0)
 	xx = close(sq->pipes[1]);
-/*@=bounds@*/
 
     /* Re-initialize the pipe to receive SIGCHLD receipt confirmation. */
     xx = pipe(sq->pipes);
@@ -702,7 +692,9 @@ rpmsqExecve (const char ** argv)
 	goto out;
     }
 
+/*@-sysunrecog@*/
     CLEANUP_HANDLER(sigchld_cancel, &pid, &oldtype);
+/*@=sysunrecog@*/
 
     pid = fork ();
     if (pid < (pid_t) 0) {		/* fork failed.  */

@@ -7,6 +7,7 @@
 #include "rpmio-stub.h"
 #include "debug.h"
 
+/*@-redecl@*/
 const char * (*_Fstrerror) (void * fd)
 	= (const char *(*)(void *))Fstrerror;
 size_t (*_Fread) (void * buf, size_t size, size_t nmemb, void * fd)
@@ -38,8 +39,10 @@ int (*_Open) (const char * path, int flags, mode_t mode) = Open;
 int (*_Rename) (const char * oldpath, const char * newpath) = Rename;
 int (*_Link) (const char * oldpath, const char * newpath) = Link;
 int (*_Unlink) (const char * path) = Unlink;
+/*@-type@*/
 int (*_Stat) (const char * path, struct stat * st) = Stat;
 int (*_Lstat) (const char * path, struct stat * st) = Lstat;
+/*@=type@*/
 int (*_Chown) (const char * path, uid_t owner, gid_t group) = Chown;
 int (*_Lchown) (const char * path, uid_t owner, gid_t group) = Lchown;
 int (*_Chmod) (const char * path, mode_t mode) = Chmod;
@@ -48,15 +51,22 @@ int (*_Mknod) (const char * path, mode_t mode, dev_t dev) = Mknod;
 int (*_Utime) (const char * path, const struct utimbuf * buf) = Utime;
 int (*_Utimes) (const char * path, const struct timeval * times) = Utimes;
 int (*_Symlink) (const char * oldpath, const char * newpath) = Symlink;
+/*@-type@*/
 int (*_Readlink) (const char * path, char * buf, size_t bufsiz) = Readlink;
+/*@=type@*/
 int (*_Access) (const char * path, int amode) = Access;
 int (*_Glob_pattern_p) (const char *pattern, int quote) = Glob_pattern_p;
 int (*_Glob_error) (const char * epath, int eerrno) = Glob_error;
+/*@-type@*/
 int (*_Glob) (const char * pattern, int flags,
 		int errfunc(const char * epath, int eerrno),
 		glob_t * pglob) = Glob;
 void (*_Globfree) (glob_t * pglob) = Globfree;
+/*@=type@*/
 DIR * (*_Opendir) (const char * path) = Opendir;
 struct dirent * (*_Readdir) (DIR * dir) = Readdir;
+/*@-type@*/
 int (*_Closedir) (DIR * dir) = Closedir;
+/*@=type@*/
 off_t (*_Lseek) (int fdno, off_t offset, int whence) = Lseek;
+/*@=redecl@*/

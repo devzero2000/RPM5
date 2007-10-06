@@ -1019,10 +1019,8 @@ unsigned int pgpGrab(const byte *s, int nbytes)
 {
     unsigned int i = 0;
     int nb = (nbytes <= sizeof(i) ? nbytes : sizeof(i));
-/*@-boundsread@*/
     while (nb--)
 	i = (i << 8) | *s++;
-/*@=boundsread@*/
     return i;
 }
 
@@ -1036,7 +1034,6 @@ unsigned int pgpGrab(const byte *s, int nbytes)
 int pgpLen(const byte *s, /*@out@*/ unsigned int *lenp)
 	/*@modifies *lenp @*/
 {
-/*@-boundswrite@*/
     if (*s < 192) {
 	(*lenp) = *s++;
 	return 1;
@@ -1047,7 +1044,6 @@ int pgpLen(const byte *s, /*@out@*/ unsigned int *lenp)
 	(*lenp) = pgpGrab(s+1, 4);
 	return 5;
     }
-/*@=boundswrite@*/
 }
 
 /**
@@ -1088,7 +1084,6 @@ char * pgpHexCvt(/*@returned@*/ char *t, const byte *s, int nbytes)
 	/*@modifies *t @*/
 {
     static char hex[] = "0123456789abcdef";
-/*@-boundswrite@*/
     while (nbytes-- > 0) {
 	unsigned int i;
 	i = *s++;
@@ -1096,7 +1091,6 @@ char * pgpHexCvt(/*@returned@*/ char *t, const byte *s, int nbytes)
 	*t++ = hex[ (i     ) & 0xf ];
     }
     *t = '\0';
-/*@=boundswrite@*/
     return t;
 }
 
@@ -1392,6 +1386,7 @@ pgpDig pgpFreeDig(/*@only@*/ /*@null@*/ pgpDig dig)
  * @param dig		container
  * @return		pubkey parameters
  */
+/*@exposed@*/
 pgpDigParams pgpGetPubkey(const pgpDig dig)
 	/*@*/;
 
@@ -1400,6 +1395,7 @@ pgpDigParams pgpGetPubkey(const pgpDig dig)
  * @param dig		container
  * @return		signature parameters
  */
+/*@exposed@*/
 pgpDigParams pgpGetSignature(const pgpDig dig)
 	/*@*/;
 
@@ -1481,11 +1477,12 @@ pgpVSFlags pgpSetVSFlags(pgpDig dig, pgpVSFlags vsflags)
  * Set find pubkey vector.
  * @param dig		container
  * @param findPubkey	routine to find a pubkey.
- * @param ts		argument to routine
+ * @param ts		argument to (*findPubkey) (ts)
  * @return		0 always
  */
 int pgpSetFindPubkey(pgpDig dig,
-		int (*findPubkey) (void *ts, void *dig), void * _ts)
+		/*@null@*/ int (*findPubkey) (void *ts, /*@null@*/ void *dig),
+		/*@exposed@*/ /*@null@*/ void * _ts)
 	/*@modifies dig @*/;
 
 /**
@@ -1505,9 +1502,7 @@ int pgpFindPubkey(pgpDig dig)
 int pgpIsPkt(const byte * p)
 	/*@*/
 {
-/*@-boundsread@*/
     unsigned int val = *p++;
-/*@=boundsread@*/
     pgpTag tag;
     int rc;
 
@@ -1571,9 +1566,7 @@ unsigned int pgpCRC(const byte *octets, size_t len)
     int i;
 
     while (len--) {
-/*@-boundsread@*/
 	crc ^= (*octets++) << 16;
-/*@=boundsread@*/
 	for (i = 0; i < 8; i++) {
 	    crc <<= 1;
 	    if (crc & 0x1000000)

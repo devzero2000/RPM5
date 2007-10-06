@@ -1,4 +1,3 @@
-/*@-bounds@*/
 #include "system.h"
 
 #include <stdlib.h>
@@ -122,7 +121,6 @@ static void rpmhookTableRehash(rpmhookTable *table)
     rpmhookTable newtable = rpmhookTableNew((*table)->size*2);
     int n, i = 0;
 
-/*@-branchstate@*/
     for (; i != (*table)->size; i++) {
 	if ((*table)->bucket[i].name == NULL)
 	    continue;
@@ -130,7 +128,6 @@ static void rpmhookTableRehash(rpmhookTable *table)
 	newtable->bucket[n].name = (*table)->bucket[i].name;
 	newtable->bucket[n].item = (*table)->bucket[i].item;
     }
-/*@=branchstate@*/
     newtable->used = (*table)->used;
 /*@-unqualifiedtrans@*/
     free(*table);
@@ -169,7 +166,6 @@ static void rpmhookTableDelItem(rpmhookTable *table, const char *name,
     rpmhookItem nextItem;
     while (item) {
 	nextItem = item->next;
-/*@-branchstate@*/
 	if ((!matchfunc || item->func == func) &&
 	    (!matchdata || item->data == data)) {
 	    free(item);
@@ -180,7 +176,6 @@ static void rpmhookTableDelItem(rpmhookTable *table, const char *name,
 	} else {
 	    lastItem = item;
 	}
-/*@=branchstate@*/
 /*@-usereleased@*/
 	item = nextItem;
     }
@@ -291,4 +286,3 @@ void rpmhookCallArgs(const char *name, rpmhookArgs args)
 	rpmhookTableCallArgs(&globalTable, name, args);
 /*@=noeffect@*/
 }
-/*@=bounds@*/

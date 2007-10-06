@@ -90,8 +90,8 @@ int rpmGlob(const char * patterns, /*@out@*/ int * argcPtr,
  */
 int expandMacros(/*@null@*/ void * spec, /*@null@*/ MacroContext mc,
 		/*@in@*/ /*@out@*/ char * sbuf, size_t slen)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem @*/
-	/*@modifies *sbuf, rpmGlobalMacroContext, fileSystem @*/;
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies *sbuf, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /**
  * Add macro to context.
@@ -104,8 +104,8 @@ int expandMacros(/*@null@*/ void * spec, /*@null@*/ MacroContext mc,
  */
 void addMacro(/*@null@*/ MacroContext mc, const char * n,
 		/*@null@*/ const char * o, /*@null@*/ const char * b, int level)
-	/*@globals rpmGlobalMacroContext @*/
-	/*@modifies mc, rpmGlobalMacroContext @*/;
+	/*@globals rpmGlobalMacroContext, internalState @*/
+	/*@modifies mc, rpmGlobalMacroContext, internalState @*/;
 
 /**
  * Delete macro from context.
@@ -124,8 +124,8 @@ void delMacro(/*@null@*/ MacroContext mc, const char * n)
  * @return		@todo Document.
  */
 int rpmDefineMacro(/*@null@*/ MacroContext mc, const char * macro, int level)
-	/*@globals rpmGlobalMacroContext, h_errno @*/
-	/*@modifies mc, rpmGlobalMacroContext @*/;
+	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
+	/*@modifies mc, rpmGlobalMacroContext, internalState @*/;
 
 /**
  * Load macros from specific context into global context.
@@ -133,8 +133,8 @@ int rpmDefineMacro(/*@null@*/ MacroContext mc, const char * macro, int level)
  * @param level		macro recursion level (0 is entry API)
  */
 void rpmLoadMacros(/*@null@*/ MacroContext mc, int level)
-	/*@globals rpmGlobalMacroContext @*/
-	/*@modifies rpmGlobalMacroContext @*/;
+	/*@globals rpmGlobalMacroContext, internalState @*/
+	/*@modifies rpmGlobalMacroContext, internalState @*/;
 
 /**
  * Load macro context from a macro file.
@@ -189,8 +189,8 @@ int isCompressed(const char * file, /*@out@*/ rpmCompressedMagic * compressed)
  * @return		macro expansion (malloc'ed)
  */
 char * rpmExpand(/*@null@*/ const char * arg, ...)
-	/*@globals rpmGlobalMacroContext, h_errno @*/
-	/*@modifies rpmGlobalMacroContext @*/;
+	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
+	/*@modifies rpmGlobalMacroContext, internalState @*/;
 
 /**
  * Canonicalize file path.
@@ -208,8 +208,8 @@ char * rpmCleanPath(/*@returned@*/ /*@null@*/ char * path)
  */
 /*@-redecl@*/ /* LCL: shrug */
 const char * rpmGetPath(/*@null@*/ const char * path, ...)
-	/*@globals rpmGlobalMacroContext, h_errno @*/
-	/*@modifies rpmGlobalMacroContext @*/;
+	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
+	/*@modifies rpmGlobalMacroContext, internalState @*/;
 /*@=redecl@*/
 
 /**
@@ -226,8 +226,8 @@ const char * rpmGetPath(/*@null@*/ const char * path, ...)
 const char * rpmGenPath(/*@null@*/ const char * urlroot,
 			/*@null@*/ const char * urlmdir,
 			/*@null@*/ const char * urlfile)
-	/*@globals rpmGlobalMacroContext, h_errno @*/
-	/*@modifies rpmGlobalMacroContext @*/;
+	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
+	/*@modifies rpmGlobalMacroContext, internalState @*/;
 /*@=redecl@*/
 
 /**
@@ -238,8 +238,8 @@ const char * rpmGenPath(/*@null@*/ const char * urlroot,
  * @return		numeric value
  */
 int rpmExpandNumeric (const char * arg)
-	/*@globals rpmGlobalMacroContext, h_errno @*/
-	/*@modifies rpmGlobalMacroContext @*/;
+	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
+	/*@modifies rpmGlobalMacroContext, internalState @*/;
 
 #ifdef __cplusplus
 }

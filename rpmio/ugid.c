@@ -26,9 +26,7 @@ int unameToUid(const char * thisUname, uid_t * uid)
 	lastUnameLen = 0;
 	return -1;
     } else if (strcmp(thisUname, "root") == 0) {
-/*@-boundswrite@*/
 	*uid = 0;
-/*@=boundswrite@*/
 	return 0;
     }
 
@@ -40,9 +38,7 @@ int unameToUid(const char * thisUname, uid_t * uid)
 	    lastUnameAlloced = thisUnameLen + 10;
 	    lastUname = xrealloc(lastUname, lastUnameAlloced);	/* XXX memory leak */
 	}
-/*@-boundswrite@*/
 	strcpy(lastUname, thisUname);
-/*@=boundswrite@*/
 
 	pwent = getpwnam(thisUname);
 	if (pwent == NULL) {
@@ -56,9 +52,7 @@ int unameToUid(const char * thisUname, uid_t * uid)
 	lastUid = pwent->pw_uid;
     }
 
-/*@-boundswrite@*/
     *uid = lastUid;
-/*@=boundswrite@*/
 
     return 0;
 }
@@ -76,9 +70,7 @@ int gnameToGid(const char * thisGname, gid_t * gid)
 	lastGnameLen = 0;
 	return -1;
     } else if (strcmp(thisGname, "root") == 0) {
-/*@-boundswrite@*/
 	*gid = 0;
-/*@=boundswrite@*/
 	return 0;
     }
 
@@ -90,9 +82,7 @@ int gnameToGid(const char * thisGname, gid_t * gid)
 	    lastGnameAlloced = thisGnameLen + 10;
 	    lastGname = xrealloc(lastGname, lastGnameAlloced);	/* XXX memory leak */
 	}
-/*@-boundswrite@*/
 	strcpy(lastGname, thisGname);
-/*@=boundswrite@*/
 
 	grent = getgrnam(thisGname);
 	if (grent == NULL) {
@@ -103,15 +93,11 @@ int gnameToGid(const char * thisGname, gid_t * gid)
 	    if (grent == NULL) {
 		/* XXX The filesystem package needs group/lock w/o getgrnam. */
 		if (strcmp(thisGname, "lock") == 0) {
-/*@-boundswrite@*/
 		    *gid = lastGid = 54;
-/*@=boundswrite@*/
 		    return 0;
 		} else
 		if (strcmp(thisGname, "mail") == 0) {
-/*@-boundswrite@*/
 		    *gid = lastGid = 12;
-/*@=boundswrite@*/
 		    return 0;
 		} else
 		return -1;
@@ -120,9 +106,7 @@ int gnameToGid(const char * thisGname, gid_t * gid)
 	lastGid = grent->gr_gid;
     }
 
-/*@-boundswrite@*/
     *gid = lastGid;
-/*@=boundswrite@*/
 
     return 0;
 }
@@ -152,9 +136,7 @@ char * uidToUname(uid_t uid)
 	    lastUnameLen = len + 20;
 	    lastUname = xrealloc(lastUname, lastUnameLen);
 	}
-/*@-boundswrite@*/
 	strcpy(lastUname, pwent->pw_name);
-/*@=boundswrite@*/
 
 	return lastUname;
     }
@@ -185,9 +167,7 @@ char * gidToGname(gid_t gid)
 	    lastGnameLen = len + 20;
 	    lastGname = xrealloc(lastGname, lastGnameLen);
 	}
-/*@-boundswrite@*/
 	strcpy(lastGname, grent->gr_name);
-/*@=boundswrite@*/
 
 	return lastGname;
     }
