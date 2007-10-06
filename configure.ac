@@ -38,7 +38,7 @@ AC_SUBST(LT_REVISION, 0)
 AC_SUBST(LT_AGE,      0)
 
 dnl # set of available languages.
-ALL_LINGUAS="cs da de fi fr gl id is ja ko nb pl pt pt_BR ro ru sk sl sr sv tr uk"
+ALL_LINGUAS="cs da de fi fr gl id is ja ko nb pl pt pt_BR ro ru sk sl sr@Latn sv tr uk"
 
 dnl ##
 dnl ## ==== TOOL-CHAIN CHECKS ====
