@@ -258,7 +258,9 @@ fprintf(stderr, "    Insert(%p): %p\n", ME(), sq);
 	    sq->pipes[0] = sq->pipes[1] = -1;
 
 	    sq->id = ME();
+/*@-noeffect@*/
 	    insque(elem, (prev != NULL ? prev : rpmsqQueue));
+/*@=noeffect@*/
 	    ret = sigrelse(SIGCHLD);
 	}
     }
@@ -278,7 +280,9 @@ fprintf(stderr, "    Remove(%p): %p\n", ME(), sq);
 #endif
 	ret = sighold (SIGCHLD);
 	if (ret == 0) {
+/*@-noeffect@*/
 	    remque(elem);
+/*@=noeffect@*/
 	    sq->id = NULL;
 	    if (sq->pipes[1] > 0)	ret = close(sq->pipes[1]);
 	    if (sq->pipes[0] > 0)	ret = close(sq->pipes[0]);

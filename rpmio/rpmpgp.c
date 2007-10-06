@@ -890,9 +890,9 @@ int pgpPktLen(const byte *pkt, unsigned int pleft, pgpPkt pp)
     if (pleft > 0 && pp->pktlen > pleft)
 	return -1;
 
-/*@-assignexpose@*/
+/*@-assignexpose -temptrans @*/
     pp->h = pkt + 1 + plen;
-/*@=assignexpose@*/
+/*@=assignexpose =temptrans @*/
 
     return pp->pktlen;
 }
@@ -1201,7 +1201,9 @@ int pgpSetFindPubkey(pgpDig dig,
 /*@-assignexpose@*/
 	dig->findPubkey = findPubkey;
 /*@=assignexpose@*/
+/*@-dependenttrans@*/
 	dig->_ts = _ts;
+/*@=dependenttrans@*/
     }
     return 0;
 }
@@ -1491,5 +1493,7 @@ char * pgpArmorWrap(int atype, const unsigned char * s, size_t ns)
     t = stpcpy(t, pgpValStr(pgpArmorTbl, atype));
     t = stpcpy(t, "-----\n");
 
+/*@-globstate@*/	/* XXX b64encode_eolstr needs annotation. */
     return val;
+/*@=globstate@*/
 }

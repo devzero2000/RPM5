@@ -107,7 +107,9 @@ static void davProgress(void * userdata, off_t current, off_t total)
 assert(u != NULL);
     sess = u->sess;
 assert(sess != NULL);
+/*@-sefuncon@*/
 assert(u == ne_get_session_private(sess, "urlinfo"));
+/*@=sefuncon@*/
 
     u->current = current;
     u->total = total;
@@ -139,7 +141,9 @@ static void davNotify(void * userdata,
 assert(u != NULL);
     sess = u->sess;
 assert(sess != NULL);
+/*@-sefuncon@*/
 assert(u == ne_get_session_private(sess, "urlinfo"));
+/*@=sefuncon@*/
 
 #ifdef	REFERENCE
 typedef enum {
@@ -173,7 +177,9 @@ assert(u->sess != NULL);
 assert(req != NULL);
     sess = ne_get_session(req);
 assert(sess == u->sess);
+/*@-sefuncon@*/
 assert(u == ne_get_session_private(sess, "urlinfo"));
+/*@=sefuncon@*/
 
 assert(sess != NULL);
     private = ne_get_session_private(sess, id);
@@ -190,14 +196,18 @@ static void davPreSend(ne_request * req, void * userdata, ne_buffer * buf)
     const char * id = "fd";
     FD_t fd = NULL;
 
+/*@-modunconnomods@*/
 assert(u != NULL);
 assert(u->sess != NULL);
 assert(req != NULL);
     sess = ne_get_session(req);
 assert(sess == u->sess);
+/*@-sefuncon@*/
 assert(u == ne_get_session_private(sess, "urlinfo"));
+/*@=sefuncon@*/
 
     fd = ne_get_request_private(req, id);
+/*@=modunconnomods@*/
 
 if (_dav_debug < 0)
 fprintf(stderr, "*** davPreSend(%p,%p,%p) sess %p %s %p\n", req, userdata, buf, sess, id, fd);
@@ -219,7 +229,9 @@ assert(u->sess != NULL);
 assert(req != NULL);
     sess = ne_get_session(req);
 assert(sess == u->sess);
+/*@-sefuncon@*/
 assert(u == ne_get_session_private(sess, "urlinfo"));
+/*@=sefuncon@*/
 
     fd = ne_get_request_private(req, id);
 
@@ -243,7 +255,9 @@ assert(u->sess != NULL);
 assert(req != NULL);
     sess = ne_get_session(req);
 assert(sess == u->sess);
+/*@-sefuncon@*/
 assert(u == ne_get_session_private(sess, "urlinfo"));
+/*@=sefuncon@*/
 
     fd = ne_get_request_private(req, id);
 
@@ -262,7 +276,9 @@ static void davDestroySession(void * userdata)
 assert(u != NULL);
 assert(u->sess != NULL);
     sess = u->sess;
+/*@-sefuncon@*/
 assert(u == ne_get_session_private(sess, "urlinfo"));
+/*@=sefuncon@*/
 
 assert(sess != NULL);
     private = ne_get_session_private(sess, id);
@@ -328,9 +344,11 @@ static int davConnect(urlinfo u)
     case NE_CONNECT:		/* HACK: errno set already? */
     default:
 bottom:
+/*@-evalorderuncon@*/
 if (_dav_debug)
 fprintf(stderr, "*** Connect to %s:%d failed(%d):\n\t%s\n",
 		   u->host, u->port, rc, ne_get_error(u->sess));
+/*@=evalorderuncon@*/
 	break;
     }
 
@@ -536,11 +554,14 @@ static void *fetch_create_context(const char *uri, /*@null@*/ struct stat *st)
     ctx = ne_calloc(sizeof(*ctx));
     ctx->uri = xstrdup(uri);
     ctx->u = urlLink(u, "fetch_create_context");
+/*@-temptrans@*/	/* XXX note the assignment */
     if ((ctx->st = st) != NULL)
 	memset(ctx->st, 0, sizeof(*ctx->st));
+/*@=temptrans@*/
     return ctx;
 }
 
+/*@-readonlytrans@*/
 /*@unchecked@*/ /*@observer@*/
 static const ne_propname fetch_props[] = {
     { "DAV:", "getcontentlength" },
@@ -551,15 +572,18 @@ static const ne_propname fetch_props[] = {
     { "DAV:", "checked-out" },
     { NULL, NULL }
 };
+/*@=readonlytrans@*/
 
 #define ELM_resourcetype (NE_PROPS_STATE_TOP + 1)
 #define ELM_collection (NE_PROPS_STATE_TOP + 2)
 
+/*@-readonlytrans@*/
 /*@unchecked@*/ /*@observer@*/
 static const struct ne_xml_idmap fetch_idmap[] = {
     { "DAV:", "resourcetype", ELM_resourcetype },
     { "DAV:", "collection", ELM_collection }
 };
+/*@=readonlytrans@*/
 
 static int fetch_startelm(void *userdata, int parent,
 		const char *nspace, const char *name,
@@ -568,8 +592,10 @@ static int fetch_startelm(void *userdata, int parent,
 {
     ne_propfind_handler *pfh = userdata;
     struct fetch_resource_s *r = ne_propfind_current_private(pfh);
+/*@-sizeoftype@*/
     int state = ne_xml_mapid(fetch_idmap, NE_XML_MAPLEN(fetch_idmap),
                              nspace, name);
+/*@=sizeoftype@*/
 
     if (r == NULL ||
         !((parent == NE_207_STATE_PROP && state == ELM_resourcetype) ||
@@ -921,9 +947,11 @@ static int davNLST(struct fetch_context_s * ctx)
 	    break;
 	/*@fallthrough@*/
     default:
+/*@-evalorderuncon@*/
 if (_dav_debug)
 fprintf(stderr, "*** Fetch from %s:%d failed:\n\t%s\n",
 		   u->host, u->port, ne_get_error(u->sess));
+/*@=evalorderuncon@*/
         break;
     }
 

@@ -37,9 +37,10 @@ extern void rpmtsCleanDig(void * ts)
 
 /*@access dbiIndexSet@*/
 /*@access dbiIndexItem@*/
-/*@access rpmts@*/		/* XXX compared with NULL */
+/*@access miRE@*/
 /*@access Header@*/		/* XXX compared with NULL */
 /*@access rpmdbMatchIterator@*/
+/*@access rpmts@*/		/* XXX compared with NULL */
 
 /*@unchecked@*/
 int _rpmdb_debug = 0;
@@ -1945,8 +1946,10 @@ int rpmdbGetIteratorCount(rpmdbMatchIterator mi) {
  */
 static int mireCmp(const void * a, const void * b)
 {
+/*@-castexpose @*/
     const miRE mireA = (const miRE) a;
     const miRE mireB = (const miRE) b;
+/*@=castexpose @*/
     return (mireA->tag - mireB->tag);
 }
 
@@ -2083,6 +2086,7 @@ int rpmdbSetIteratorRE(rpmdbMatchIterator mi, rpmTag tag,
     }
 
     nmire = mireNew(mode, tag);
+assert(nmire != NULL);
     allpat = mireDup(nmire->tag, &nmire->mode, pattern);
 
     if (nmire->mode == RPMMIRE_DEFAULT)
@@ -2119,6 +2123,7 @@ exit:
  * @param mi		rpm database iterator
  * @return		1 if header should be skipped
  */
+/*@-onlytrans@*/	/* XXX miRE array, not refcounted. */
 static int mireSkip (const rpmdbMatchIterator mi)
 	/*@modifies mi->mi_re @*/
 {
@@ -2235,6 +2240,7 @@ static int mireSkip (const rpmdbMatchIterator mi)
 
     return (ntags > 0 && ntags == nmatches ? 0 : 1);
 }
+/*@=onlytrans@*/
 
 int rpmdbSetIteratorRewrite(rpmdbMatchIterator mi, int rewrite)
 {

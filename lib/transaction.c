@@ -654,8 +654,8 @@ assert(altNVRA != NULL);
 /*@-mustmod@*/ /* FIX: fi->actions is modified. */
 /*@-nullpass@*/
 static void skipFiles(const rpmts ts, rpmfi fi)
-	/*@globals rpmGlobalMacroContext, h_errno @*/
-	/*@modifies fi, rpmGlobalMacroContext @*/
+	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
+	/*@modifies fi, rpmGlobalMacroContext, internalState @*/
 {
     uint_32 tscolor = rpmtsColor(ts);
     uint_32 FColor;

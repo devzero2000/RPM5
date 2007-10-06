@@ -1435,9 +1435,9 @@ static void freeBadDeps(void)
  */
 static int ignoreDep(const rpmts ts, const rpmte p, const rpmte q)
 	/*@globals badDeps, badDepsInitialized,
-		rpmGlobalMacroContext, h_errno @*/
+		rpmGlobalMacroContext, h_errno, internalState @*/
 	/*@modifies badDeps, badDepsInitialized,
-		rpmGlobalMacroContext @*/
+		rpmGlobalMacroContext, internalState @*/
 {
     struct badDeps_s * bdp;
 
@@ -1555,8 +1555,8 @@ static inline /*@observer@*/ const char * identifyDepend(int_32 f)
 static /*@owned@*/ /*@null@*/ const char *
 zapRelation(rpmte q, rpmte p,
 		int zap, /*@in@*/ /*@out@*/ int * nzaps, int msglvl)
-	/*@globals rpmGlobalMacroContext, h_errno @*/
-	/*@modifies q, p, *nzaps, rpmGlobalMacroContext @*/
+	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
+	/*@modifies q, p, *nzaps, rpmGlobalMacroContext, internalState @*/
 {
     rpmds requires;
     tsortInfo tsi_prev;

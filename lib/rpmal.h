@@ -101,8 +101,8 @@ void rpmalMakeIndex(/*@null@*/ rpmal al)
 /*@only@*/ /*@null@*/
 fnpyKey * rpmalAllFileSatisfiesDepend(/*@null@*/ const rpmal al,
 		/*@null@*/ const rpmds ds, /*@null@*/ alKey * keyp)
-	/*@globals fileSystem @*/
-	/*@modifies al, *keyp, fileSystem @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies al, *keyp, fileSystem, internalState @*/;
 /*@=exportlocal@*/
 
 /**
@@ -115,8 +115,8 @@ fnpyKey * rpmalAllFileSatisfiesDepend(/*@null@*/ const rpmal al,
 /*@only@*/ /*@null@*/
 fnpyKey * rpmalAllSatisfiesDepend(const rpmal al, const rpmds ds,
 		/*@null@*/ alKey * keyp)
-	/*@globals fileSystem @*/
-	/*@modifies al, *keyp, fileSystem @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies al, *keyp, fileSystem, internalState @*/;
 
 /**
  * Check added package file lists for first package that has a provide.
@@ -129,8 +129,8 @@ fnpyKey * rpmalAllSatisfiesDepend(const rpmal al, const rpmds ds,
 /*@null@*/
 fnpyKey rpmalSatisfiesDepend(const rpmal al, const rpmds ds,
 		/*@null@*/ alKey * keyp)
-	/*@globals fileSystem @*/
-	/*@modifies al, *keyp, fileSystem @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies al, *keyp, fileSystem, internalState @*/;
 
 #ifdef __cplusplus
 }

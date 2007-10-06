@@ -603,7 +603,9 @@ static void _rpmluaInteractive(lua_State *L)
       if (rc == 0)
 	 rc = lua_pcall(L, 0, 0, 0);
       if (rc != 0) {
+/*@-evalorderuncon@*/
 	 fprintf(stderr, "%s\n", lua_tostring(L, -1));
+/*@=evalorderuncon@*/
 	 lua_pop(L, 1);
       }
       lua_pop(L, 1); /* Remove line */

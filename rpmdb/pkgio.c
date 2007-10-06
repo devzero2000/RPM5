@@ -280,7 +280,9 @@ pgpDig rpmtsDig(rpmts ts)
 /*@-mods@*/ /* FIX: hide lazy malloc for now */
     if (ts->dig == NULL) {
 	ts->dig = pgpNewDig(0);
+/*@-refcounttrans@*/
 	(void) pgpSetFindPubkey(ts->dig, (int (*)(void *, void *))rpmtsFindPubkey, ts);
+/*@=refcounttrans@*/
     }
 /*@=mods@*/
     return ts->dig;

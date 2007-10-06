@@ -679,8 +679,10 @@ const char * rpmfiTypeString(rpmfi fi)
 static
 Header relocateFileList(const rpmts ts, rpmfi fi,
 		Header origH, fileAction * actions)
-	/*@globals h_errno, rpmGlobalMacroContext @*/
-	/*@modifies ts, fi, origH, actions, rpmGlobalMacroContext @*/
+	/*@globals rpmGlobalMacroContext, h_errno,
+		internalState @*/
+	/*@modifies ts, fi, origH, actions, rpmGlobalMacroContext,
+		internalState @*/
 {
     rpmte p = rpmtsRelocateElement(ts);
     HGE_t hge = fi->hge;

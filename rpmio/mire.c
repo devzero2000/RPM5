@@ -70,12 +70,18 @@ fprintf(stderr, "--> mire %p ++ %d %s at %s:%u\n", mire, mire->nrefs, msg, fn, l
 
 miRE mireFree(miRE mire)
 {
-/*@-modfilesys@*/
-if (_mire_debug)
-fprintf(stderr, "--> mireFree(%p)\n", mire);
-/*@=modfilesys@*/
+    if (mire == NULL)
+	return NULL;
+
+    if (mire->nrefs > 1)
+	return mireUnlink(mire, "mireFree");
+
     (void) mireClean(mire);
+    (void) mireUnlink(mire, "mireFree");
+/*@-refcounttrans -usereleased @*/
+    memset(mire, 0, sizeof(*mire));
     mire = _free(mire);
+/*@=refcounttrans =usereleased @*/
     return NULL;
 }
 
@@ -84,11 +90,7 @@ miRE mireNew(rpmMireMode mode, int tag)
     miRE mire = xcalloc(1, sizeof(*mire));
     mire->mode = mode;
     mire->tag = tag;
-/*@-modfilesys@*/
-if (_mire_debug)
-fprintf(stderr, "--> mireNew(%d, %d) mire %p\n", mode, tag, mire);
-/*@=modfilesys@*/
-    return mire;
+    return mireLink(mire,"mireNew");
 }
 
 int mireRegexec(miRE mire, const char * val)

@@ -400,13 +400,14 @@ static int makeGPGSignature(const char * file, int_32 * sigTagp,
     delMacro(NULL, "__signature_filename");
 
 #if defined(HAVE_KEYUTILS_H)
-    if (!strcmp(passPhrase, "@u user rpm:passwd")) {
+    if (passPhrase && !strcmp(passPhrase, "@u user rpm:passwd")) {
 	key_serial_t keyring = KEY_SPEC_PROCESS_KEYRING;
 	long key;
 	int xx;
 
 /*@-moduncon@*/
 	key = keyctl_search(keyring, "user", "rpm:passwd", 0);
+	pw = NULL;
 	if ((xx = keyctl_read_alloc(key, (void **)&pw)) < 0) {
 	    rpmError(RPMERR_SIGGEN, _("Failed %s(%d) key(0x%lx): %s\n"),
 			"keyctl_read_alloc of key", xx, key, strerror(errno));
@@ -774,6 +775,7 @@ int rpmCheckPassPhrase(const char * passPhrase)
 
 /*@-moduncon@*/
 	key = keyctl_search(keyring, "user", "rpm:passwd", 0);
+	pw = NULL;
 	if ((xx = keyctl_read_alloc(key, (void **)&pw)) < 0) {
 	    rpmError(RPMERR_SIGGEN, _("Failed %s(%d) key(0x%lx): %s\n"),
 			"keyctl_read_alloc of key", xx, key, strerror(errno));

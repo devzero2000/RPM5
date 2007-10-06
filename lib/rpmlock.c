@@ -27,8 +27,10 @@ typedef struct {
 
 /*@null@*/
 static int rpmlock_new(/*@unused@*/ const char *rootdir, /*@null@*/ rpmlock *lockp)
-    /*@globals rpmlock_path, h_errno, rpmGlobalMacroContext, fileSystem @*/
-    /*@modifies *lockp, rpmlock_path, h_errno, rpmGlobalMacroContext, fileSystem @*/
+	/*@globals rpmlock_path, rpmGlobalMacroContext, h_errno,
+		fileSystem, internalState @*/
+	/*@modifies *lockp, rpmlock_path, rpmGlobalMacroContext, h_errno,
+		fileSystem, internalState @*/
 {
     static int oneshot = 0;
     rpmlock lock = xmalloc(sizeof(*lock));

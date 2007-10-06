@@ -189,9 +189,9 @@ fprintf(stderr, "*** Chroot(%s)\n", path);
 	/*@notreached@*/ break;
     }
 
-/*@-modobserver@*/
+/*@-dependenttrans -modobserver -observertrans @*/
     _chroot_prefix = _free(_chroot_prefix);
-/*@=modobserver@*/
+/*@=dependenttrans =modobserver =observertrans @*/
     if (strcmp(path, "."))
 	_chroot_prefix = rpmGetPath(path, NULL);
 

@@ -17,32 +17,19 @@
 -shiftimplementation
 -shiftnegative
 
--compdef
--compmempass
--evalorderuncon
--globs
--globstate
--globuse
--moduncon
--modunconnomods
+-compdef		# 16
+-compmempass		# 2
+-globs			# 18
+-moduncon		# 323
 -mustmod		# 17
--noeffect
--noeffectuncon
--paramuse
--protoparammatch
-#-refcounttrans
--sefuncon
--sizeoftype
+-noeffectuncon		# 183
+-protoparammatch	# 1
 
--dependenttrans
--immediatetrans
--observertrans
--readonlytrans
--temptrans
+-readonlytrans		# 10
 
 -forempty
--looploopbreak
--nullptrarith
+-looploopbreak		# 2 LZMA
+-nullptrarith		# 16 LZMA
 -shadow
 
 # --- +partial artifacts

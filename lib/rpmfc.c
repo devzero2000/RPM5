@@ -25,8 +25,8 @@
 /**
  */
 static int rpmfcExpandAppend(/*@out@*/ ARGV_t * argvp, const ARGV_t av)
-	/*@globals rpmGlobalMacroContext, h_errno @*/
-	/*@modifies *argvp, rpmGlobalMacroContext @*/
+	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
+	/*@modifies *argvp, rpmGlobalMacroContext, internalState @*/
 	/*@requires maxRead(argvp) >= 0 @*/
 {
     ARGV_t argv = *argvp;
@@ -279,7 +279,8 @@ static int rpmfcSaveArg(/*@out@*/ ARGV_t * argvp, const char * key)
  */
 static char * rpmfcFileDep(/*@returned@*/ char * buf, int ix,
 		/*@null@*/ rpmds ds)
-	/*@modifies buf @*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies buf, fileSystem, internalState @*/
 	/*@requires maxSet(buf) >= 0 @*/
 	/*@ensures maxRead(buf) == 0 @*/
 {
@@ -788,16 +789,15 @@ static int rpmfcSCRIPT(rpmfc fc)
  * @return		0 on success
  */
 static int rpmfcMergePR(void * context, rpmds ds)
-	/*@modifies ds @*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies ds, fileSystem, internalState @*/
 {
     rpmfc fc = context;
     char buf[BUFSIZ];
     int rc = -1;
 
-/*@-modfilesys@*/
 if (_rpmfc_debug < 0)
 fprintf(stderr, "*** rpmfcMergePR(%p, %p) %s\n", context, ds, tagName(rpmdsTagN(ds)));
-/*@=modfilesys@*/
     switch(rpmdsTagN(ds)) {
     default:
 	break;

@@ -20,6 +20,8 @@
 #include "misc.h"
 #include "debug.h"
 
+/*@access miRE@*/
+
 /*@unchecked@*/ /*@null@*/
 static const char * configTarget = NULL;
 
@@ -384,6 +386,7 @@ static int parseCVOG(const char * str, CVOG_t *cvogp)
  * @param nre		no of patterns in array
  * @return		NULL always 
  */
+/*@-onlytrans@*/	/* XXX miRE array, not refcounted. */
 /*@null@*/
 static void * mireFreeAll(/*@only@*/ /*@null@*/ miRE mire, int nre)
 	/*@modifies mire@*/
@@ -396,6 +399,7 @@ static void * mireFreeAll(/*@only@*/ /*@null@*/ miRE mire, int nre)
     }
     return NULL;
 }
+/*@=onlytrans@*/
 
 /**
  * Append pattern to array.
@@ -405,6 +409,7 @@ static void * mireFreeAll(/*@only@*/ /*@null@*/ miRE mire, int nre)
  * @retval *mi_rep	platform pattern array
  * @retval *mi_nrep	no. of patterns in array
  */
+/*@-onlytrans@*/	/* XXX miRE array, not refcounted. */
 /*@null@*/
 static int mireAppend(rpmMireMode mode, int tag, const char * pattern,
 		miRE * mi_rep, int * mi_nrep)
@@ -413,7 +418,9 @@ static int mireAppend(rpmMireMode mode, int tag, const char * pattern,
     miRE mire;
 
     mire = (*mi_rep);
+/*@-refcounttrans@*/
     mire = xrealloc(mire, ((*mi_nrep) + 1) * sizeof(*mire));
+/*@=refcounttrans@*/
     (*mi_rep) = mire;
     mire += (*mi_nrep);
     (*mi_nrep)++;
@@ -422,12 +429,14 @@ static int mireAppend(rpmMireMode mode, int tag, const char * pattern,
     mire->tag = tag;
     return mireRegcomp(mire, pattern);
 }
+/*@=onlytrans@*/
 
 /**
  * Read and configure /etc/rpm/platform patterns.
  * @param platform	path to platform patterns
  * @return		0 on success
  */
+/*@-onlytrans@*/	/* XXX miRE array, not refcounted. */
 static int rpmPlatform(const char * platform)
 	/*@globals nplatpat, platpat,
 		rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
@@ -502,7 +511,9 @@ exit:
     }
     return rc;
 }
+/*@=onlytrans@*/
 
+/*@-onlytrans@*/	/* XXX miRE array, not refcounted. */
 int rpmPlatformScore(const char * platform, void * mi_re, int mi_nre)
 {
     miRE mire;
@@ -520,6 +531,7 @@ int rpmPlatformScore(const char * platform, void * mi_re, int mi_nre)
     }
     return 0;
 }
+/*@=onlytrans@*/
 
 /**
  */

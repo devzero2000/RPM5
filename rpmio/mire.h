@@ -64,6 +64,7 @@ struct miRE_s {
     int	eflags;		/*!< regexec(3) flags */
     int notmatch;		/*!< non-zero: negative match, like "grep -v" */
     int tag;			/*!< sort identifier (e.g. an rpmTag) */
+/*@refs@*/
     int nrefs;			/*!< Reference count. */
 };
 #endif	/* defined(_MIRE_INTERNAL) */
@@ -120,6 +121,7 @@ miRE mireFree(/*@killref@*/ /*@only@*/ /*@null@*/ miRE mire)
  * @param tag		identifier (e.g. an rpmTag)
  * @return		NULL always
  */
+/*@null@*/
 miRE mireNew(rpmMireMode mode, int tag)
 	/*@*/;
 

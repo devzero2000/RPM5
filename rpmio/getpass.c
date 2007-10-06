@@ -29,12 +29,12 @@ char * _GetPass(const char * prompt)
 #endif
 
 assert(pw != NULL);
-/*@-statictrans@*/
+/*@-observertrans -statictrans@*/
     return pw;
-/*@=statictrans@*/
+/*@=observertrans =statictrans@*/
 }
 
-char * _RequestPass(const char * prompt)
+char * _RequestPass(/*@unused@*/ const char * prompt)
 {
 /*@relnull@*/
     static char * password = NULL;

@@ -175,8 +175,8 @@ rpmds rpmdsNew(Header h, rpmTag tagN, int flags)
  */
 /*@dependent@*/ /*@observer@*/ /*@null@*/
 const char * rpmdsNewN(rpmds ds)
-	/*@globals rpmGlobalMacroContext, h_errno @*/
-	/*@modifies ds, rpmGlobalMacroContext @*/;
+	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
+	/*@modifies ds, rpmGlobalMacroContext, internalState @*/;
 
 /**
  * Return new formatted dependency string.
@@ -185,8 +185,8 @@ const char * rpmdsNewN(rpmds ds)
  * @return		new formatted dependency (malloc'ed)
  */
 char * rpmdsNewDNEVR(const char * dspfx, rpmds ds)
-	/*@globals rpmGlobalMacroContext, h_errno @*/
-	/*@modifies ds, rpmGlobalMacroContext @*/;
+	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
+	/*@modifies ds, rpmGlobalMacroContext, internalState @*/;
 
 /**
  * Create, load and initialize a dependency for this header. 
@@ -252,7 +252,8 @@ extern const char * rpmdsDNEVR(/*@null@*/ const rpmds ds)
  */
 /*@observer@*/ /*@null@*/
 extern const char * rpmdsN(/*@null@*/ rpmds ds)
-	/*@*/;
+	/*@globals internalState @*/
+	/*@modifies internalState @*/;
 
 /**
  * Return current dependency epoch-version-release.
@@ -642,7 +643,8 @@ int rpmdsCompare(const rpmds A, const rpmds B)
 void rpmdsProblem(/*@null@*/ rpmps ps, const char * pkgNEVR, const rpmds ds,
 		/*@only@*/ /*@null@*/ const fnpyKey * suggestedKeys,
 		int adding)
-	/*@modifies ps @*/;
+	/*@globals internalState @*/
+	/*@modifies ps, internalState @*/;
 
 /**
  * Compare package provides dependencies from header with a single dependency.

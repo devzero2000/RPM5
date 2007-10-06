@@ -26,6 +26,9 @@
 -varuse
 
 # --- not-yet at strict level
+-globs
+-globuse
+-incondefs
 -internalglobs	# 16
 -paramuse	# 6
 -mustmod	# 8

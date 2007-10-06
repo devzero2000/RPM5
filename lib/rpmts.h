@@ -455,8 +455,8 @@ int rpmtsSolve(rpmts ts, rpmds ds, const void * data)
  */
 /*@unused@*/
 int rpmtsAvailable(rpmts ts, const rpmds ds)
-	/*@globals fileSystem @*/
-	/*@modifies ts, fileSystem @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies ts, fileSystem, internalState @*/;
 
 /**
  * Set dependency solver callback.
