@@ -74,14 +74,14 @@ static const char * _java_requires = _JAVA_REQUIRES;
 /*@unchecked@*/ /*@observer@*/
 static const char * _libtool_provides = _LIBTOOL_PROVIDES;
 
-#define _LIBTOOL_REQUIRES  "/bin/rpm -qal | grep '\\.la$' | /usr/lib/rpm/libtooldeps.sh -R /"
+#define _LIBTOOL_REQUIRES  "rpm -qal | grep '\\.la$' | /usr/lib/rpm/libtooldeps.sh -R /"
 /*@unchecked@*/ /*@observer@*/
 static const char * _libtool_requires = _LIBTOOL_REQUIRES;
 
 #define _PKGCONFIG_PROVIDES  "/usr/bin/find /usr/lib -name '*.pc' | /usr/lib/rpm/pkgconfigdeps.sh -P"
 static const char * _pkgconfig_provides = _PKGCONFIG_PROVIDES;
 
-#define _PKGCONFIG_REQUIRES  "/bin/rpm -qal | grep '\\.pc$' | /usr/lib/rpm/pkgconfigdeps.sh -R"
+#define _PKGCONFIG_REQUIRES  "rpm -qal | grep '\\.pc$' | /usr/lib/rpm/pkgconfigdeps.sh -R"
 static const char * _pkgconfig_requires = _PKGCONFIG_REQUIRES;
 
 #define _DPKG_PROVIDES  "egrep '^(Package|Status|Version|Provides):' /var/lib/dpkg/status | sed -e '\n\
@@ -119,16 +119,16 @@ static const char * _dpkg_provides = _DPKG_PROVIDES;
 }' | sed -f /usr/lib/rpm/dpkg2fc.sed | sed -e 's/ |.*$//' | sort -u | tee /tmp/dpkg"
 static const char * _dpkg_requires = _DPKG_REQUIRES;
 
-#define _RPMDB_PACKAGE_PROVIDES  "/bin/rpm -qa --qf '%{name} = %|epoch?{%{epoch}:}|%{version}-%{release}\n' | sort -u"
+#define _RPMDB_PACKAGE_PROVIDES  "rpm -qa --qf '%{name} = %|epoch?{%{epoch}:}|%{version}-%{release}\n' | sort -u"
 static const char * _rpmdb_package_provides = _RPMDB_PACKAGE_PROVIDES;
 
-#define _RPMDB_PACKAGE_REQUIRES  "/bin/rpm -qa --requires | sort -u | sed -e '/^\\//d' -e '/.*\\.so.*/d' -e '/^%/d' -e '/^.*(.*)/d'"
+#define _RPMDB_PACKAGE_REQUIRES  "rpm -qa --requires | sort -u | sed -e '/^\\//d' -e '/.*\\.so.*/d' -e '/^%/d' -e '/^.*(.*)/d'"
 static const char * _rpmdb_package_requires = _RPMDB_PACKAGE_REQUIRES;
 
-#define _RPMDB_SONAME_REQUIRES  "/bin/rpm -qa --requires | grep -v '^/' | grep '.*\\.so.*' | sort -u"
+#define _RPMDB_SONAME_REQUIRES  "rpm -qa --requires | grep -v '^/' | grep '.*\\.so.*' | sort -u"
 static const char * _rpmdb_soname_requires = _RPMDB_SONAME_REQUIRES;
 
-#define _RPMDB_FILE_REQUIRES  "/bin/rpm -qa --requires | grep '^/' | sort -u"
+#define _RPMDB_FILE_REQUIRES  "rpm -qa --requires | grep '^/' | sort -u"
 static const char * _rpmdb_file_requires = _RPMDB_FILE_REQUIRES;
 
 static int rpmdepPrint(const char * msg, rpmds ds, FILE * fp)
@@ -172,27 +172,27 @@ static struct poptOption optionsTable[] = {
  { "pipe",	0, POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &rpmdeps_mode, RPMDEP_RPMDSPIPE,
 	N_("print dependency set from a command pipe"), NULL },
 
- { "perl",	0, POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &rpmdeps_mode, RPMDEP_RPMDSPERL,
+ { "perl",	0, POPT_ARG_VAL, &rpmdeps_mode, RPMDEP_RPMDSPERL,
 	N_("print perl(...) dependency set"), NULL },
  { "python",	0, POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &rpmdeps_mode, RPMDEP_RPMDSPYTHON,
 	N_("print python(...) dependency set"), NULL },
- { "libtool",	0, POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &rpmdeps_mode, RPMDEP_RPMDSLIBTOOL,
+ { "libtool",	0, POPT_ARG_VAL, &rpmdeps_mode, RPMDEP_RPMDSLIBTOOL,
 	N_("print libtool(...) dependency set"), NULL },
- { "pkgconfig",	0, POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &rpmdeps_mode, RPMDEP_RPMDSPKGCONFIG,
+ { "pkgconfig",	0, POPT_ARG_VAL, &rpmdeps_mode, RPMDEP_RPMDSPKGCONFIG,
 	N_("print pkgconfig(...) dependency set"), NULL },
 
  { "pubkey",	0, POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &rpmdeps_mode, RPMDEP_RPMDSPUBKEY,
 	N_("print pubkey(...) dependency set"), NULL },
  { "arch",	0, POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &rpmdeps_mode, RPMDEP_RPMDSARCH,
 	N_("print arch(...) dependency set"), NULL },
- { "file",	0, POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &rpmdeps_mode, RPMDEP_RPMDSFILE,
+ { "file",	0, POPT_ARG_VAL, &rpmdeps_mode, RPMDEP_RPMDSFILE,
 	N_("print file(...) dependency set"), NULL },
- { "soname",	0, POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &rpmdeps_mode, RPMDEP_RPMDSSONAME,
+ { "soname",	0, POPT_ARG_VAL, &rpmdeps_mode, RPMDEP_RPMDSSONAME,
 	N_("print soname(...) dependency set"), NULL },
  { "package",	0, POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &rpmdeps_mode, RPMDEP_RPMDSPACKAGE,
 	N_("print package(...) dependency set"), NULL },
 
- { "java",	0, POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &rpmdeps_mode, RPMDEP_RPMDSJAVA,
+ { "java",	0, POPT_ARG_VAL, &rpmdeps_mode, RPMDEP_RPMDSJAVA,
 	N_("print java(...) dependency set"), NULL },
  { "php",	0, POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &rpmdeps_mode, RPMDEP_RPMDSPHP,
 	N_("print php(...) dependency set"), NULL },

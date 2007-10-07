@@ -1,5 +1,7 @@
 4.5 -> 5.0:
-    - jbj: fix: RPMRC_FAIL, not non-exitent RPMRC_BAD, return.
+    - jbj: rpmdeps: unhide various CLI options.
+    - jbj: rpmdeps: invoke rpm, not /bin/rpm.
+    - bero: fix: RPMRC_FAIL, not non-existent RPMRC_BAD, return.
     - jbj: teach headerGetExtension() to allocate all returned data.
     - jbj: attempt using a pedantically correct union for header data.
     - jbj: mark --initdb and --verifydb code paths for destruction.
