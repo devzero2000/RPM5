@@ -15,6 +15,9 @@
 +slovak-fcns
 -bufferoverflowhigh
 
+-internalglobs	# 35
+-unrecog	# 2 rpmcliPackagesTotal misplaced
+
 # --- +partial artifacts
 -declundef
 -exportheadervar
@@ -26,15 +29,6 @@
 -varuse
 
 # --- not-yet at strict level
--globs
--globuse
--incondefs
--internalglobs	# 16
--paramuse	# 6
--mustmod	# 8
--type		# 4
--unrecog	# 2
-
 -bitwisesigned		# 160
 -branchstate		# 65
 -elseifcomplete		# 9

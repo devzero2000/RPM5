@@ -31,6 +31,7 @@
 /**
  * Sanity check on data alignment for data type.
  */
+/*@unchecked@*/ /*@observer@*/
 extern int rpm_typeAlign[16];
 #define hdrchkAlign(_type, _off)	((_off) & (rpm_typeAlign[_type]-1))
 

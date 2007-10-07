@@ -736,7 +736,13 @@ static inline const char *rcsid(const char *p) { \
  * Turn off pgp/pgp5 signing (hasn't been looked at seriously for years).
  */
 #if 0
-#define	SUPPORT_PGP_SIGNING		1
+#define	SUPPORT_PGP_SIGNING	1
 #endif
+
+/**
+ * Mark --initdb and --verifydb for destruction.
+ */
+#define	SUPPORT_INITDB		1
+#define	SUPPORT_VERIFYDB	1
 
 #endif	/* H_SYSTEM */

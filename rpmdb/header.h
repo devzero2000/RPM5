@@ -408,11 +408,11 @@ unsigned int (*HDRsizeof) (/*@null@*/ Header h)
 /** \ingroup header
  * Convert header to on-disk representation.
  * @param h		header (with pointers)
- * @retval *lenp	length of header in bytes (or NULL);
+ * @retval *lenp	length of header in bytes (or NULL)
  * @return		on-disk header blob (i.e. with offsets)
  */
 typedef
-/*@only@*/ /*@null@*/ void * (*HDRunload) (Header h, size_t * lenp)
+/*@only@*/ /*@null@*/ void * (*HDRunload) (Header h, /*@out@*/ /*@null@*/ size_t * lenp)
         /*@modifies h, *lenp @*/;
 
 /** \ingroup header
@@ -783,7 +783,7 @@ int (*HDRsetinstance) (/*@null@*/ Header h, int instance)
  * @return		per-header accumulator pointer
  */
 typedef
-void * (*HDRgetstats) (/*@null@*/ Header h, int opx)
+/*@null@*/ void * (*HDRgetstats) (Header h, int opx)
         /*@*/;
 
 /** \ingroup header

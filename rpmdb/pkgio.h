@@ -28,9 +28,8 @@ extern int _nolead;
  */
 rpmRC headerCheck(rpmts ts, const void * uh, size_t uc,
 		/*@out@*/ /*@null@*/ const char ** msg)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies ts, *msg, rpmGlobalMacroContext,
-		fileSystem, internalState @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies ts, *msg, fileSystem, internalState @*/;
 
 /**
  * Return size of item in bytes.
@@ -76,7 +75,7 @@ rpmRC rpmpkgRead(const char * fn, FD_t fd, /*@null@*/ /*@out@*/ void * ptr,
  */
 rpmRC rpmpkgCheck(const char * fn, FD_t fd, const void * ptr, const char ** msg)
 	/*@globals fileSystem @*/
-	/*@modifies fd, ptr, *msg, fileSystem @*/;
+	/*@modifies ptr, *msg, fileSystem @*/;
 
 #ifdef __cplusplus
 }

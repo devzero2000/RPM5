@@ -74,9 +74,8 @@ int rpmCheckPassPhrase(const char * passPhrase)
  * @return		result of signature verification
  */
 rpmRC rpmVerifySignature(void * _dig, /*@out@*/ char * result)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies _dig, *result, rpmGlobalMacroContext,
-		fileSystem, internalState @*/;
+	/*@globals internalState @*/
+	/*@modifies _dig, *result, internalState @*/;
 
 #ifdef __cplusplus
 }

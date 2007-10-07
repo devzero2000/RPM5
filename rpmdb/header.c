@@ -30,6 +30,7 @@ int _newmagic = 0;
 /*@access sprintfTag @*/
 /*@access sprintfToken @*/
 /*@access HV_t @*/
+/*@access FD_t @*/		/* XXX void * arg headerRead/headerWrite */
 
 #define PARSER_BEGIN 	0
 #define PARSER_IN_ARRAY 1
@@ -448,6 +449,7 @@ static int dataLength(int_32 type, hPTR_t p, int_32 count, int onDisk,
  * @param regionid	region offset
  * @return		no. bytes of data in region, -1 on error
  */
+/*@-globs@*/	/* XXX rpm_typeAlign usage */
 static int regionSwab(/*@null@*/ indexEntry entry, int il, int dl,
 		entryInfo pe,
 		unsigned char * dataStart,
@@ -581,6 +583,7 @@ static int regionSwab(/*@null@*/ indexEntry entry, int il, int dl,
 
     return dl;
 }
+/*@=globs@*/
 
 /** \ingroup header
  * @param h		header

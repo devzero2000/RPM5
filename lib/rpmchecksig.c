@@ -883,13 +883,15 @@ assert(dig != NULL);
 	if (sigh != NULL)
 	for (hi = headerInitIterator(sigh);
 	    headerNextIterator(hi, &sigtag, &sigtype, &sig, &siglen) != 0;
-	    (void) rpmtsSetSig(ts, sigtag, sigtype, NULL, siglen))
+	    /*@-noeffect@*/(void) rpmtsSetSig(ts, sigtag, sigtype, NULL, siglen)/*@=noeffect@*/)
 	{
 
 	    if (sig == NULL) /* XXX can't happen */
 		continue;
 
+/*@-noeffect@*/
 	    (void) rpmtsSetSig(ts, sigtag, sigtype, sig, siglen);
+/*@=noeffect@*/
 
 	    /* Clean up parameters from previous sigtag. */
 	    pgpCleanDig(dig);

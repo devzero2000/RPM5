@@ -312,7 +312,9 @@ void rpmtsCleanDig(rpmts ts)
 	(void) rpmswAdd(rpmtsOp(ts, opx), pgpStatsAccumulator(ts->dig, opx));
 	opx = RPMTS_OP_SIGNATURE;
 	(void) rpmswAdd(rpmtsOp(ts, opx), pgpStatsAccumulator(ts->dig, opx));
+/*@-noeffect@*/
 	(void) rpmtsSetSig(ts, 0, 0, NULL, 0);	/* XXX headerFreeData */
+/*@=noeffect@*/
 	ts->dig = pgpFreeDig(ts->dig);
     }
 }
@@ -392,7 +394,7 @@ static rpmRC wrLead(FD_t fd, const void * ptr, const char ** msg)
  */
 static rpmRC rdLead(FD_t fd, /*@out@*/ /*@null@*/ void * ptr,
 		const char ** msg)
-	/*@modifies fd, *ptr, *msg @*/
+	/*@modifies *ptr, *msg @*/
 {
     struct rpmlead ** leadp = ptr;
     struct rpmlead * l = xcalloc(1, sizeof(*l));
@@ -403,7 +405,6 @@ static rpmRC rdLead(FD_t fd, /*@out@*/ /*@null@*/ void * ptr,
     buf[0] = '\0';
     if (leadp != NULL) *leadp = NULL;
 
-/*@-type@*/ /* FIX: remove timed read */
     if ((xx = timedRead(fd, (char *)l, sizeof(*l))) != sizeof(*l)) {
 	if (Ferror(fd)) {
 	    (void) snprintf(buf, sizeof(buf),
@@ -418,7 +419,7 @@ static rpmRC rdLead(FD_t fd, /*@out@*/ /*@null@*/ void * ptr,
 	}
 	goto exit;
     }
-/*@=type@*/
+
     l->type = ntohs(l->type);
     l->archnum = ntohs(l->archnum);
     l->osnum = ntohs(l->osnum);
@@ -483,7 +484,7 @@ static unsigned char sigh_magic[8] = {
  * @retval *msg		failure msg
  * @return		rpmRC return code
  */
-static rpmRC wrSignature(FD_t fd, void * ptr, const char ** msg)
+static rpmRC wrSignature(FD_t fd, void * ptr, /*@unused@*/ const char ** msg)
 	/*@globals fileSystem @*/
 	/*@modifies fd, ptr, fileSystem @*/
 {
@@ -554,7 +555,7 @@ static inline rpmRC printSize(FD_t fd, int siglen, int pad, size_t datalen)
 static rpmRC rdSignature(FD_t fd, /*@out@*/ /*@null@*/ void * ptr,
 		const char ** msg)
 	/*@globals fileSystem @*/
-	/*@modifies fd, *ptr, *msg, fileSystem @*/
+	/*@modifies *ptr, *msg, fileSystem @*/
 {
     Header * sighp = ptr;
     char buf[BUFSIZ];
@@ -1089,11 +1090,20 @@ assert(ptr != NULL);
  * @retval *msg		failure msg
  * @return		rpmRC return code
  */
-static rpmRC ckHeader(FD_t fd, const void * ptr, const char ** msg)
+static rpmRC ckHeader(/*@unused@*/ FD_t fd, const void * ptr, const char ** msg)
 	/*@globals fileSystem @*/
-	/*@modifies fd, ptr, fileSystem @*/
+	/*@modifies ptr, *msg, fileSystem @*/
 {
     rpmRC rc = RPMRC_OK;
+    Header h;
+
+    if (msg)
+	*msg = NULL;
+
+    h = headerLoad(ptr);
+    if (h == NULL)
+	rc = RPMRC_BAD;
+    h = headerFree(h);
 
     return rc;
 }
@@ -1114,6 +1124,9 @@ static rpmRC rdHeader(FD_t fd, /*@out@*/ /*@null@*/ void * ptr,
     Header h = NULL;
     rpmRC rc = RPMRC_OK;
 
+    if (msg)
+	*msg = NULL;
+
     h = headerRead(fd);
     if (h == NULL)
 	rc = RPMRC_FAIL;
@@ -1132,7 +1145,7 @@ static rpmRC rdHeader(FD_t fd, /*@out@*/ /*@null@*/ void * ptr,
  * @retval *msg		failure msg
  * @return		rpmRC return code
  */
-static rpmRC wrHeader(FD_t fd, void * ptr, const char ** msg)
+static rpmRC wrHeader(FD_t fd, void * ptr, /*@unused@*/ const char ** msg)
 	/*@globals fileSystem @*/
 	/*@modifies fd, ptr, fileSystem @*/
 {

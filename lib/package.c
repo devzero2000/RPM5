@@ -351,7 +351,9 @@ assert(dig != NULL);
 	rc = RPMRC_FAIL;
 	goto exit;
     }
+/*@-noeffect@*/
     (void) rpmtsSetSig(ts, sigtag, sigtype, sig, siglen);
+/*@=noeffect@*/
 
     switch (sigtag) {
     case RPMSIGTAG_RSA:

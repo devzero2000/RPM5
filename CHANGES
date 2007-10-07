@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - jbj: mark --initdb and --verifydb code paths for destruction.
     - jbj: start making miRE abstract and refcounted.
     - jbj: convert rel to abs linkto depedency iff directory is known.
     - rpm.org: correct typo in comment.

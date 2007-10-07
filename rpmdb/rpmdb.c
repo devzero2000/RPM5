@@ -1304,9 +1304,10 @@ int rpmdbOpen (const char * prefix, rpmdb *dbp, int mode, int perms)
 
 int rpmdbInit (const char * prefix, int perms)
 {
+    int rc = -1;	/* RPMRC_NOTFOUND somewhen */
+#ifdef	SUPPORT_INITDB
     rpmdb db = NULL;
     int _dbapi = rpmExpandNumeric("%{_dbapi}");
-    int rc;
 
     rc = rpmdbOpenDatabase(prefix, NULL, _dbapi, &db, (O_CREAT | O_RDWR),
 		perms, RPMDB_FLAG_JUSTCHECK);
@@ -1318,13 +1319,15 @@ int rpmdbInit (const char * prefix, int perms)
 	if (xx && rc == 0) rc = xx;
 	db = NULL;
     }
+#endif
     return rc;
 }
 
 int rpmdbVerifyAllDBI(rpmdb db)
 {
-    int rc = 0;
+    int rc = -1;	/* RPMRC_NOTFOUND somewhen */
 
+#if defined(SUPPORT_VERIFYDB)
     if (db != NULL) {
 	int dbix;
 	int xx;
@@ -1347,17 +1350,21 @@ int rpmdbVerifyAllDBI(rpmdb db)
 	if (xx && rc == 0) rc = xx;
 	db = NULL;
     }
+#endif
     return rc;
 }
 
 int rpmdbVerify(const char * prefix)
 {
+    int rc = -1;	/* RPMRC_NOTFOUND somewhen */
+#if defined(SUPPORT_VERIFYDB)
     rpmdb db = NULL;
     int _dbapi = rpmExpandNumeric("%{_dbapi}");
-    int rc = rpmdbOpenDatabase(prefix, NULL, _dbapi, &db, O_RDONLY, 0644, 0);
 
+    rc = rpmdbOpenDatabase(prefix, NULL, _dbapi, &db, O_RDONLY, 0644, 0);
     if (!rc && db != NULL)
 	rc = rpmdbVerifyAllDBI(db);
+#endif
     return rc;
 }
 
@@ -1815,9 +1822,8 @@ void * dbiStatsAccumulator(dbiIndex dbi, int opx)
  * @return 		0 on success
  */
 static int miFreeHeader(rpmdbMatchIterator mi, dbiIndex dbi)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies mi, dbi,
-		rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies mi, dbi, fileSystem, internalState @*/
 {
     int rc = 0;
 

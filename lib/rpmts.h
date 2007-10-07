@@ -695,10 +695,9 @@ int_32 rpmtsSetTid(rpmts ts, int_32 tid)
  * @param siglen	signature tag data length
  * @return		0 always
  */
-int rpmtsSetSig(rpmts ts,
-		int_32 sigtag, int_32 sigtype,
+int rpmtsSetSig(rpmts ts, int_32 sigtag, int_32 sigtype,
 		/*@kept@*/ /*@null@*/ const void * sig, int_32 siglen)
-	/*@modifies ts @*/;
+	/*@*/;
 
 /** \ingroup rpmts
  * Get OpenPGP packet parameters, i.e. signature/pubkey constants.

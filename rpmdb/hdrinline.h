@@ -133,7 +133,7 @@ unsigned int headerSizeof(/*@null@*/ Header h)
  */
 /*@unused@*/ static inline
 /*@only@*/ /*@null@*/
-void * headerUnload(Header h, size_t * lenp)
+void * headerUnload(Header h, /*@out@*/ /*@null@*/ size_t * lenp)
 	/*@modifies h @*/
 {
     return (h2hv(h)->hdrunload) (h, lenp);

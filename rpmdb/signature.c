@@ -987,8 +987,8 @@ static inline unsigned char nibble(char c)
 static rpmRC
 verifyRSASignature(pgpDig dig, /*@out@*/ char * t,
 		/*@null@*/ DIGEST_CTX md5ctx)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies dig, *t, rpmGlobalMacroContext, fileSystem, internalState */
+	/*@globals internalState @*/
+	/*@modifies dig, *t, internalState */
 {
     const void * sig = pgpGetSig(dig);
 #ifdef	NOTYET
@@ -1181,8 +1181,8 @@ exit:
 static rpmRC
 verifyDSASignature(pgpDig dig, /*@out@*/ char * t,
 		/*@null@*/ DIGEST_CTX sha1ctx)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies dig, *t, rpmGlobalMacroContext, fileSystem, internalState */
+	/*@globals internalState @*/
+	/*@modifies dig, *t, internalState */
 {
     const void * sig = pgpGetSig(dig);
 #ifdef	NOTYET

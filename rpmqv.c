@@ -541,7 +541,11 @@ int main(int argc, const char ** argv)
     switch (bigMode) {
 #ifdef	IAM_RPMDB
     case MODE_INITDB:
+#if defined(SUPPORT_INITDB)
 	ec = rpmtsInitDB(ts, 0644);
+#else
+	ec = -1;
+#endif
 	break;
 
     case MODE_REBUILDDB:
@@ -551,7 +555,11 @@ int main(int argc, const char ** argv)
 	vsflags = rpmtsSetVSFlags(ts, ovsflags);
     }	break;
     case MODE_VERIFYDB:
+#if defined(SUPPORT_VERIFYDB)
 	ec = rpmtsVerifyDB(ts);
+#else
+	ec = -1;
+#endif
 	break;
 #endif	/* IAM_RPMDB */
 
