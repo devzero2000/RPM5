@@ -1820,11 +1820,23 @@ int headerGetExtension(Header h, int_32 tag,
     const char * name = tagName(tag);
     headerSprintfExtension exts = (headerSprintfExtension)headerCompoundFormats;
     headerSprintfExtension ext;
+    int_32 he_t = 0;
+    hRET_t he_p;
+    int_32 he_c = 0;
+    HE_t he = alloca(sizeof(*he));
+    size_t nb = 0;
     int extNum;
     int rc;
 
     if ((sw = headerGetStats(h, 19)) != NULL)	/* RPMTS_OP_HDRGET */
 	(void) rpmswEnter(sw, 0);
+
+    memset(&he_p, 0, sizeof(he_p));
+    memset(he, 0, sizeof(*he));
+    he->tag = tag;
+    he->t = &he_t;
+    he->p.ret = (p ? &he_p : NULL);
+    he->c = &he_c;
 
     /* Search extensions for specific tag override. */
     for (ext = exts, extNum = 0; ext != NULL && ext->type != HEADER_EXT_LAST;
@@ -1836,13 +1848,49 @@ int headerGetExtension(Header h, int_32 tag,
 	    break;
     }
 
-    if (ext && ext->name != NULL && ext->type == HEADER_EXT_TAG) {
-	int freeData = 0;	/* XXX lots of memory leaks. */
-	rc = ext->u.tagFunction(h, type, p, c, &freeData);
-    } else
-	rc = intGetEntry(h, tag, type, (hPTR_t *)p, c, 0);
+    if (ext && ext->name != NULL && ext->type == HEADER_EXT_TAG)
+	rc = ext->u.tagFunction(h, he->t, he->p.ptr, he->c, &he->freeData);
+    else
+	rc = intGetEntry(h, he->tag, he->t, he->p.ptr, he->c, 0);
 
-    /* XXX Returned data is always allocated. */
+    if (he->p.ret)
+    switch (*he->t) {
+    case RPM_NULL_TYPE:
+    case RPM_OPENPGP_TYPE:	/* XXX W2DO? */
+    case RPM_ASN1_TYPE:		/* XXX W2DO? */
+    case RPM_BIN_TYPE:
+    default:
+assert(0);	/* XXX stop unimplemented oversights. */
+	break;
+    case RPM_CHAR_TYPE:
+    case RPM_INT8_TYPE:
+	nb = he_c * sizeof(*he_p->i8p);
+	break;
+    case RPM_INT16_TYPE:
+	nb = he_c * sizeof(*he_p->i16p);
+	break;
+    case RPM_INT32_TYPE:
+	nb = he_c * sizeof(*he_p->i32p);
+	break;
+    case RPM_INT64_TYPE:
+	nb = he_c * sizeof(*he_p->i64p);
+	break;
+    case RPM_I18NSTRING_TYPE:
+    case RPM_STRING_TYPE:
+	nb = he_c * sizeof(*he_p->str);
+	break;
+    case RPM_STRING_ARRAY_TYPE:
+	break;
+    }
+
+    if (p)
+	*(void **)p = ((nb > 0 && !he->freeData)
+		? memcpy(xmalloc(nb), he_p->ptr, nb) : he_p->ptr);
+
+    if (type)
+	*type = *he->t;
+    if (c)
+	*c = *he->c;
 
     if (sw != NULL)	(void) rpmswExit(sw, 0);
 

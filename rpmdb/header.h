@@ -310,11 +310,13 @@ typedef enum rpmTagReturnType_e {
 typedef union hRET_s * hRET_t;
 #if !defined(SWIG)
 union hRET_s {
-    const void * ptr;
+    void * ptr;
     const char ** argv;
     const char * str;
+    uint_64 * ui64p;
     uint_32 * ui32p;
     uint_16 * ui16p;
+    int_64 * i64p;
     int_32 * i32p;
     int_16 * i16p;
     int_8 * i8p;
@@ -330,15 +332,16 @@ typedef struct HE_s * HE_t;
 struct HE_s {
     int_32 tag;
 /*@null@*/
-    hTYP_t typ;
+    hTYP_t t;
     union {
 /*@null@*/
 	hPTR_t * ptr;
 /*@null@*/
 	hRET_t * ret;
-    } u;
+    } p;
 /*@null@*/
-    hCNT_t cnt;
+    hCNT_t c;
+    int freeData;
 };
 #endif
 /*@=typeuse =fielduse@*/

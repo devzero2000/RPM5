@@ -1100,9 +1100,9 @@ static rpmRC ckHeader(/*@unused@*/ FD_t fd, const void * ptr, const char ** msg)
     if (msg)
 	*msg = NULL;
 
-    h = headerLoad(ptr);
+    h = headerLoad((void *)ptr);
     if (h == NULL)
-	rc = RPMRC_BAD;
+	rc = RPMRC_FAIL;
     h = headerFree(h);
 
     return rc;
