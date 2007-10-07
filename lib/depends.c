@@ -232,14 +232,14 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
 
 	rc = rpmPlatformScore(platform, platpat, nplatpat);
 	if (rc <= 0) {
-	    const char * pkgNVRA = NULL;
+	    hRET_t pkgNVRA;
 	    rpmps ps = rpmtsProblems(ts);
 	    xx = headerGetExtension(h, RPMTAG_NVRA, NULL, &pkgNVRA, NULL);
-assert(pkgNVRA != NULL);
-	    rpmpsAppend(ps, RPMPROB_BADPLATFORM, pkgNVRA, key,
+assert(pkgNVRA.str != NULL);
+	    rpmpsAppend(ps, RPMPROB_BADPLATFORM, pkgNVRA.str, key,
                         platform, NULL, NULL, 0);
 	    ps = rpmpsFree(ps);
-	    pkgNVRA = _free(pkgNVRA);
+	    pkgNVRA.str = _free(pkgNVRA.str);
 	    ec = 1;
 	}
 	platform = _free(platform);
@@ -1300,7 +1300,7 @@ static int checkPackageSet(rpmts ts, const char * depName,
     (void) rpmdbPruneIterator(mi,
 		ts->removedPackages, ts->numRemovedPackages, 1);
     while ((h = rpmdbNextIterator(mi)) != NULL) {
-	const char * pkgNVRA = NULL;
+	hRET_t pkgNVRA;
 	rpmds requires = NULL;
 	rpmds conflicts = NULL;
 	rpmds dirnames = NULL;
@@ -1308,7 +1308,7 @@ static int checkPackageSet(rpmts ts, const char * depName,
 	int rc;
 
 	rc = headerGetExtension(h, RPMTAG_NVRA, NULL, &pkgNVRA, NULL);
-assert(pkgNVRA != NULL);
+assert(pkgNVRA.str != NULL);
 	if (!(depFlags & RPMDEPS_FLAG_NOREQUIRES))
 	    requires = rpmdsNew(h, RPMTAG_REQUIRENAME, scareMem);
 	if (!(depFlags & RPMDEPS_FLAG_NOCONFLICTS))
@@ -1323,7 +1323,7 @@ assert(pkgNVRA != NULL);
 	(void) rpmdsSetNoPromote(dirnames, _rpmds_nopromote);
 	(void) rpmdsSetNoPromote(linktos, _rpmds_nopromote);
 
-	rc = checkPackageDeps(ts, pkgNVRA,
+	rc = checkPackageDeps(ts, pkgNVRA.str,
 		requires, conflicts, dirnames, linktos,
 		depName, tscolor, adding);
 
@@ -1331,7 +1331,7 @@ assert(pkgNVRA != NULL);
 	dirnames = rpmdsFree(dirnames);
 	conflicts = rpmdsFree(conflicts);
 	requires = rpmdsFree(requires);
-	pkgNVRA = _free(pkgNVRA);
+	pkgNVRA.str = _free(pkgNVRA.str);
 
 	if (rc) {
 	    ec = 1;

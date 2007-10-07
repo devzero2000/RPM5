@@ -2134,15 +2134,10 @@ static int mireSkip (const rpmdbMatchIterator mi)
 	/*@modifies mi->mi_re @*/
 {
     HGE_t hge = (HGE_t) headerGetExtension;
+#ifdef	DYING
     HFD_t hfd = (HFD_t) headerFreeData;
-    union {
-	void * ptr;
-	const char ** argv;
-	const char * str;
-	int_32 * i32p;
-	int_16 * i16p;
-	int_8 * i8p;
-    } u;
+#endif
+    hRET_t u;
     char numbuf[32];
     rpmTagType t;
     int_32 c;
@@ -2166,7 +2161,7 @@ static int mireSkip (const rpmdbMatchIterator mi)
     for (i = 0; i < mi->mi_nre; i++, mire++) {
 	int anymatch;
 
-	if (!hge(mi->mi_h, mire->tag, &t, (void **)&u, &c)) {
+	if (!hge(mi->mi_h, mire->tag, &t, (void *)&u, &c)) {
 	    if (mire->tag != RPMTAG_EPOCH) {
 		ntags++;
 		continue;
@@ -2234,10 +2229,14 @@ static int mireSkip (const rpmdbMatchIterator mi)
 	    /*@innerbreak@*/ break;
 	}
 
+#ifdef	DYING
 	if (mire->tag == RPMTAG_NVRA)
 	    u.str = _free(u.str);
 	else
 	    u.ptr = hfd(u.ptr, t);
+#else
+	u.ptr = _free(u.ptr);
+#endif
 
 	if (anymatch)
 	    nmatches++;
@@ -2809,10 +2808,10 @@ memset(data, 0, sizeof(*data));
     }
 #endif
 
-    {	const char * NVRA = NULL;
+    {	hRET_t NVRA;
 	(void) headerGetExtension(h, RPMTAG_NVRA, NULL, &NVRA, NULL);
-	rpmMessage(RPMMESS_DEBUG, "  --- h#%8u %s\n", hdrNum, NVRA);
-	NVRA = _free(NVRA);
+	rpmMessage(RPMMESS_DEBUG, "  --- h#%8u %s\n", hdrNum, NVRA.str);
+	NVRA.str = _free(NVRA.str);
     }
 
     (void) blockSignals(db, &signalMask);
