@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - jbj: unbork/simplify hRET_t indirections, too much acid in the Kool-Aid.
     - jbj: rpmdeps: unhide various CLI options.
     - jbj: rpmdeps: invoke rpm, not /bin/rpm.
     - bero: fix: RPMRC_FAIL, not non-existent RPMRC_BAD, return.

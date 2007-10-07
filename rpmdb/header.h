@@ -307,7 +307,7 @@ typedef enum rpmTagReturnType_e {
 /**
  */
 /*@-typeuse -fielduse@*/
-typedef union hRET_s * hRET_t;
+typedef union hRET_s hRET_t;
 #if !defined(SWIG)
 union hRET_s {
     void * ptr;
@@ -333,12 +333,8 @@ struct HE_s {
     int_32 tag;
 /*@null@*/
     hTYP_t t;
-    union {
 /*@null@*/
-	hPTR_t * ptr;
-/*@null@*/
-	hRET_t * ret;
-    } p;
+    hRET_t * p;
 /*@null@*/
     hCNT_t c;
     int freeData;

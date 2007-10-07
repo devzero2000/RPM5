@@ -1810,7 +1810,7 @@ const char * tagName(int tag)
 static
 int headerGetExtension(Header h, int_32 tag,
 			/*@null@*/ /*@out@*/ hTYP_t type,
-			/*@null@*/ /*@out@*/ void * p,
+			/*@null@*/ /*@out@*/ hRET_t * p,
 			/*@null@*/ /*@out@*/ hCNT_t c)
 	/*@globals headerCompoundFormats @*/
 	/*@modifies *type, *p, *c @*/
@@ -1835,7 +1835,7 @@ int headerGetExtension(Header h, int_32 tag,
     memset(he, 0, sizeof(*he));
     he->tag = tag;
     he->t = &he_t;
-    he->p.ret = (p ? &he_p : NULL);
+    he->p = (p ? &he_p : NULL);
     he->c = &he_c;
 
     /* Search extensions for specific tag override. */
@@ -1849,11 +1849,11 @@ int headerGetExtension(Header h, int_32 tag,
     }
 
     if (ext && ext->name != NULL && ext->type == HEADER_EXT_TAG)
-	rc = ext->u.tagFunction(h, he->t, he->p.ptr, he->c, &he->freeData);
+	rc = ext->u.tagFunction(h, he->t, (hPTR_t *)he->p, he->c, &he->freeData);
     else
-	rc = intGetEntry(h, he->tag, he->t, he->p.ptr, he->c, 0);
+	rc = intGetEntry(h, he->tag, he->t, (hPTR_t *)he->p, he->c, 0);
 
-    if (he->p.ret)
+    if (he->p && !he->freeData)
     switch (*he->t) {
     case RPM_NULL_TYPE:
     case RPM_OPENPGP_TYPE:	/* XXX W2DO? */
@@ -1864,28 +1864,32 @@ assert(0);	/* XXX stop unimplemented oversights. */
 	break;
     case RPM_CHAR_TYPE:
     case RPM_INT8_TYPE:
-	nb = he_c * sizeof(*he_p->i8p);
+assert(0);	/* XXX stop unimplemented oversights. */
+	nb = he_c * sizeof(*he_p.i8p);
 	break;
     case RPM_INT16_TYPE:
-	nb = he_c * sizeof(*he_p->i16p);
+assert(0);	/* XXX stop unimplemented oversights. */
+	nb = he_c * sizeof(*he_p.i16p);
 	break;
     case RPM_INT32_TYPE:
-	nb = he_c * sizeof(*he_p->i32p);
+assert(0);	/* XXX stop unimplemented oversights. */
+	nb = he_c * sizeof(*he_p.i32p);
 	break;
     case RPM_INT64_TYPE:
-	nb = he_c * sizeof(*he_p->i64p);
+assert(0);	/* XXX stop unimplemented oversights. */
+	nb = he_c * sizeof(*he_p.i64p);
 	break;
     case RPM_I18NSTRING_TYPE:
     case RPM_STRING_TYPE:
-	nb = he_c * sizeof(*he_p->str);
+	nb = strlen(he_p.str);
 	break;
     case RPM_STRING_ARRAY_TYPE:
 	break;
     }
 
     if (p)
-	*(void **)p = ((nb > 0 && !he->freeData)
-		? memcpy(xmalloc(nb), he_p->ptr, nb) : he_p->ptr);
+	p->ptr = ((nb > 0)
+		? memcpy(xmalloc(nb), he_p.ptr, nb) : he_p.ptr);
 
     if (type)
 	*type = *he->t;
