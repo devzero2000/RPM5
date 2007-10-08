@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - jbj: start converting rpmdb.c to use headerGetExtension instead.
     - jbj: expose hRET_t through headerGetExtension prototypes.
     - jbj: unbork/simplify hRET_t indirections, too much acid in the Kool-Aid.
     - jbj: rpmdeps: unhide various CLI options.

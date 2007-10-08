@@ -3217,8 +3217,16 @@ memset(data, 0, sizeof(*data));
     /* Now update the indexes */
 
     if (hdrNum)
-    {	
-	dbiIndexItem rec = dbiIndexNewItem(hdrNum, 0);
+    {	dbiIndexItem rec = dbiIndexNewItem(hdrNum, 0);
+	HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+	int_32 he_t;
+	hRET_t he_p;
+	int_32 he_c;
+
+	memset(&he_p, 0, sizeof(he_p));
+	he->t = &he_t;
+	he->p = &he_p;
+	he->c = &he_c;
 
 	/* Save the header instance. */
 	(void) headerSetInstance(h, hdrNum);
@@ -3226,11 +3234,7 @@ memset(data, 0, sizeof(*data));
 	if (db->db_tagn != NULL)
 	for (dbix = 0; dbix < db->db_ndbi; dbix++) {
 	    const char *av[1];
-	    const char **rpmvals = NULL;
 	    byte * bin = NULL;
-	    rpmTagType rpmtype = 0;
-	    int rpmcnt = 0;
-	    int rpmtag;
 	    int_32 * requireFlags;
 	    rpmRC rpmrc;
 	    int i, j;
@@ -3238,9 +3242,12 @@ memset(data, 0, sizeof(*data));
 	    rpmrc = RPMRC_NOTFOUND;
 	    dbi = NULL;
 	    requireFlags = NULL;
-	    rpmtag = db->db_tagn[dbix];
+	    he->tag = db->db_tagn[dbix];
+	    he_t = 0;
+	    he_p.ptr = NULL;
+	    he_c = 0;
 
-	    switch (rpmtag) {
+	    switch (he->tag) {
 	    /* Filter out temporary databases */
 	    case RPMDBI_AVAILABLE:
 	    case RPMDBI_ADDED:
@@ -3251,7 +3258,7 @@ memset(data, 0, sizeof(*data));
 	    case RPMDBI_PACKAGES:
 		if (db->db_export != NULL)
 		    xx = db->db_export(db, h, 1);
-		dbi = dbiOpen(db, rpmtag, 0);
+		dbi = dbiOpen(db, he->tag, 0);
 		if (dbi == NULL)	/* XXX shouldn't happen */
 		    continue;
 		xx = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, DB_WRITECURSOR);
@@ -3263,7 +3270,7 @@ if (dbiByteSwapped(dbi) == 1)
 key->data = (void *) &mi_offset;
 /*@=immediatetrans@*/
 key->size = sizeof(mi_offset.ui);
-{   size_t len;
+ {  size_t len;
     nb = 0;
     (void) headerGetMagic(h, NULL, &nb);
     len = 0;
@@ -3272,7 +3279,7 @@ key->size = sizeof(mi_offset.ui);
 #ifdef	DYING	/* XXX this is needed iff headerSizeof() is used instead. */
     data->size -= nb;	/* XXX HEADER_MAGIC_NO */
 #endif
-}
+ }
 
 		/* Check header digest/signature on blob export. */
 		if (ts) {
@@ -3303,49 +3310,49 @@ data->size = 0;
 		continue;
 		/*@notreached@*/ /*@switchbreak@*/ break;
 	    case RPMTAG_BASENAMES:	/* XXX preserve legacy behavior */
-		rpmtype = bnt;
-		rpmvals = baseNames;
-		rpmcnt = count;
+		he_t = bnt;
+		he_p.argv = baseNames;
+		he_c = count;
 		/*@switchbreak@*/ break;
 	    case RPMTAG_REQUIRENAME:
-		xx = hge(h, rpmtag, &rpmtype, &rpmvals, &rpmcnt);
+		xx = hge(h, he->tag, he->t, he->p, he->c);
 		xx = hge(h, RPMTAG_REQUIREFLAGS, NULL, &requireFlags, NULL);
 		/*@switchbreak@*/ break;
 	    case RPMTAG_NVRA:	/* XXX compound header extension. */
-		xx = headerGetExtension(h, rpmtag, (hTYP_t)&rpmtype, &rpmvals, &rpmcnt);
+		xx = headerGetExtension(h, he->tag, he->t, he->p, he->c);
 		/*@switchbreak@*/ break;
 	    default:
-		xx = hge(h, rpmtag, &rpmtype, &rpmvals, &rpmcnt);
+		xx = hge(h, he->tag, he->t, he->p, he->c);
 		/*@switchbreak@*/ break;
 	    }
 
-	    if (rpmcnt <= 0) {
-		if (rpmtag != RPMTAG_GROUP)
+	    if (he_c <= 0) {
+		if (he->tag != RPMTAG_GROUP)
 		    continue;
 
 		/* XXX preserve legacy behavior */
-		rpmtype = RPM_STRING_TYPE;
-		rpmvals = (const char **) "Unknown";
-		rpmcnt = 1;
+		he_t = RPM_STRING_TYPE;
+		he_p.str = "Unknown";
+		he_c = 1;
 	    }
 
-	  dbi = dbiOpen(db, rpmtag, 0);
+	  dbi = dbiOpen(db, he->tag, 0);
 	  if (dbi != NULL) {
 	    int printed;
 
-	    if (rpmtype == RPM_STRING_TYPE) {
+	    if (he_t == RPM_STRING_TYPE) {
 		/* XXX force uniform headerGetEntry return */
-		/*@-observertrans@*/
-		av[0] = (const char *) rpmvals;
-		/*@=observertrans@*/
-		rpmvals = av;
-		rpmcnt = 1;
+/*@-observertrans@*/
+		av[0] = he_p.str;
+/*@=observertrans@*/
+		he_p.argv = av;
+		he_c = 1;
 	    }
 
 	    printed = 0;
 	    xx = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, DB_WRITECURSOR);
 
-	    for (i = 0; i < rpmcnt; i++) {
+	    for (i = 0; i < he_c; i++) {
 		dbiIndexSet set;
 		int stringvalued;
 
@@ -3365,7 +3372,7 @@ data->size = 0;
 		    /*@switchbreak@*/ break;
 		case RPMTAG_FILEMD5S:
 		    /* Filter out empty MD5 strings. */
-		    if (!(rpmvals[i] && *rpmvals[i] != '\0'))
+		    if (!(he_p.argv[i] && *he_p.argv[i] != '\0'))
 			/*@innercontinue@*/ continue;
 		    /*@switchbreak@*/ break;
 		case RPMTAG_REQUIRENAME:
@@ -3376,7 +3383,7 @@ data->size = 0;
 		case RPMTAG_TRIGGERNAME:
 		    if (i) {	/* don't add duplicates */
 			for (j = 0; j < i; j++) {
-			    if (!strcmp(rpmvals[i], rpmvals[j]))
+			    if (!strcmp(he_p.argv[i], he_p.argv[j]))
 				/*@innerbreak@*/ break;
 			}
 			if (j < i)
@@ -3389,35 +3396,35 @@ data->size = 0;
 
 		/* Identify value pointer and length. */
 		stringvalued = 0;
-		switch (rpmtype) {
+		switch (he_t) {
 /*@-sizeoftype@*/
 		case RPM_CHAR_TYPE:
 		case RPM_INT8_TYPE:
-		    key->size = sizeof(int_8);
-/*@i@*/		    key->data = rpmvals + i;
+		    key->size = sizeof(*he_p.i8p);
+/*@i@*/		    key->data = he_p.i8p + i;
 		    /*@switchbreak@*/ break;
 		case RPM_INT16_TYPE:
-		    key->size = sizeof(int_16);
-/*@i@*/		    key->data = rpmvals + i;
+		    key->size = sizeof(*he_p.i16p);
+/*@i@*/		    key->data = he_p.i16p + i;
 		    /*@switchbreak@*/ break;
 		case RPM_INT32_TYPE:
-		    key->size = sizeof(int_32);
-/*@i@*/		    key->data = rpmvals + i;
+		    key->size = sizeof(*he_p.i32p);
+/*@i@*/		    key->data = he_p.i32p + i;
 		    /*@switchbreak@*/ break;
 /*@=sizeoftype@*/
 		case RPM_BIN_TYPE:
-		    key->size = rpmcnt;
-/*@i@*/		    key->data = rpmvals;
-		    rpmcnt = 1;		/* XXX break out of loop. */
+		    key->size = he_c;
+/*@i@*/		    key->data = he_p.ptr;
+		    he_c = 1;		/* XXX break out of loop. */
 		    /*@switchbreak@*/ break;
 		case RPM_STRING_TYPE:
 		case RPM_I18NSTRING_TYPE:
-		    rpmcnt = 1;		/* XXX break out of loop. */
+		    he_c = 1;		/* XXX break out of loop. */
 		    /*@fallthrough@*/
 		case RPM_STRING_ARRAY_TYPE:
 		    /* Convert from hex to binary. */
 		    if (dbi->dbi_rpmtag == RPMTAG_FILEDIGESTS) {
-			const char * s = rpmvals[i];
+			const char * s = he_p.argv[i];
 			size_t dlen = strlen(s);
 			byte * t;
 assert((dlen & 1) == 0);
@@ -3433,7 +3440,7 @@ assert((dlen & 1) == 0);
 		    if (dbi->dbi_rpmtag == RPMTAG_PUBKEYS) {
 			int nbin;
 			bin = xcalloc(1, 32);
-			nbin = pgpExtractPubkeyFingerprint(rpmvals[i], bin);
+			nbin = pgpExtractPubkeyFingerprint(he_p.argv[i], bin);
 			if (nbin <= 0)
 			    /*@innercontinue@*/ continue;
 			key->data = bin;
@@ -3442,21 +3449,21 @@ assert((dlen & 1) == 0);
 		    }
 		    /*@fallthrough@*/
 		default:
-/*@i@*/		    key->data = (void *) rpmvals[i];
-		    key->size = strlen(rpmvals[i]);
+/*@i@*/		    key->data = (void *) he_p.argv[i];
+		    key->size = strlen(he_p.argv[i]);
 		    stringvalued = 1;
 		    /*@switchbreak@*/ break;
 		}
 
 		if (!printed) {
-		    if (rpmcnt == 1 && stringvalued) {
+		    if (he_c == 1 && stringvalued) {
 			rpmMessage(RPMMESS_DEBUG,
 				D_("adding \"%s\" to %s index.\n"),
 				(char *)key->data, tagName(dbi->dbi_rpmtag));
 		    } else {
 			rpmMessage(RPMMESS_DEBUG,
 				D_("adding %d entries to %s index.\n"),
-				rpmcnt, tagName(dbi->dbi_rpmtag));
+				he_c, tagName(dbi->dbi_rpmtag));
 		    }
 		    printed++;
 		}
@@ -3514,17 +3521,17 @@ if (key->size == 0) key->size++;	/* XXX "/" fixup. */
 	  }
 
 /*@-modobserver -unqualifiedtrans@*/
-	    if (rpmtag == RPMTAG_NVRA)	/* XXX compound header extension. */
+	    if (he->tag == RPMTAG_NVRA)	/* XXX compound header extension. */
 		av[0] = _free(av[0]);
 /*@=modobserver =unqualifiedtrans@*/
 	    else
-	    if (rpmtype != RPM_BIN_TYPE)	/* XXX WTFO? HACK ALERT */
-		rpmvals = hfd(rpmvals, rpmtype);
-	    rpmtype = 0;
-	    rpmcnt = 0;
+	    if (he_t != RPM_BIN_TYPE)	/* XXX WTFO? HACK ALERT */
+		he_p.ptr = hfd(he_p.ptr, he_t);
+	    he->tag = 0;
+	    he_t = 0;
+	    he_c = 0;
 	    bin = _free(bin);
 	}
-	/*@=nullpass =nullptrarith =nullderef @*/
 
 	rec = _free(rec);
     }
