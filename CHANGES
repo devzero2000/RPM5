@@ -1,4 +1,6 @@
 4.5 -> 5.0:
+    - jbj: headerGetExtension: handle lookup failure cases too.
+    - jbj: headerGetExtension: include \0 when dup'ing string.
     - jbj: start converting rpmdb.c to use headerGetExtension instead.
     - jbj: expose hRET_t through headerGetExtension prototypes.
     - jbj: unbork/simplify hRET_t indirections, too much acid in the Kool-Aid.

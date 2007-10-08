@@ -1853,7 +1853,7 @@ int headerGetExtension(Header h, int_32 tag,
     else
 	rc = intGetEntry(h, he->tag, he->t, (hPTR_t *)he->p, he->c, 0);
 
-    if (he->p && !he->freeData)
+    if (rc && he->p && !he->freeData)
     switch (*he->t) {
     case RPM_NULL_TYPE:
     case RPM_OPENPGP_TYPE:	/* XXX W2DO? */
@@ -1864,7 +1864,6 @@ assert(0);	/* XXX stop unimplemented oversights. */
 	break;
     case RPM_CHAR_TYPE:
     case RPM_INT8_TYPE:
-assert(0);	/* XXX stop unimplemented oversights. */
 	nb = he_c * sizeof(*he_p.i8p);
 	break;
     case RPM_INT16_TYPE:
@@ -1881,13 +1880,13 @@ assert(0);	/* XXX stop unimplemented oversights. */
 	break;
     case RPM_I18NSTRING_TYPE:
     case RPM_STRING_TYPE:
-	nb = strlen(he_p.str);
+	nb = strlen(he_p.str) + 1;
 	break;
     case RPM_STRING_ARRAY_TYPE:
 	break;
     }
 
-    if (p)
+    if (rc && p)
 	p->ptr = ((nb > 0)
 		? memcpy(xmalloc(nb), he_p.ptr, nb) : he_p.ptr);
 
