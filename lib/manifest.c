@@ -119,7 +119,7 @@ rpmRC rpmReadPackageManifest(FD_t fd, int * argcPtr, const char *** argvPtr)
 
 	/* Insure that file contains only ASCII */
 	if (*s < 32) {
-	    rpmrc = RPMRC_NOTFOUND;
+	    rpmrc = RPMRC_FAIL;	/* XXX reject non-printable manifests. */
 	    goto exit;
 	}
 
@@ -133,7 +133,7 @@ rpmRC rpmReadPackageManifest(FD_t fd, int * argcPtr, const char *** argvPtr)
 	s = getStringBuf(sb);
 
     if (!(s && *s)) {
-	rpmrc = RPMRC_NOTFOUND;
+	rpmrc = RPMRC_FAIL;	/* XXX force manifests to have content. */
 	goto exit;
     }
 

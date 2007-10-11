@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - jbj: fail empty and non-printable manifests.
     - jbj: headerGetExtension: handle lookup failure cases too.
     - jbj: headerGetExtension: include \0 when dup'ing string.
     - jbj: start converting rpmdb.c to use headerGetExtension instead.

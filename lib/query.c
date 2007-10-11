@@ -398,9 +398,10 @@ static int rpmgiShowMatches(QVA_t qva, rpmts ts)
         /*@modifies qva, rpmGlobalMacroContext, h_errno, internalState @*/
 {
     rpmgi gi = qva->qva_gi;
+    rpmRC rpmrc = RPMRC_NOTFOUND;
     int ec = 0;
 
-    while (rpmgiNext(gi) == RPMRC_OK) {
+    while ((rpmrc = rpmgiNext(gi)) == RPMRC_OK) {
 	Header h;
 	int rc;
 
@@ -413,6 +414,8 @@ RSEGFAULT;
 	if (qva->qva_source == RPMQV_DBOFFSET)
 	    break;
     }
+    if (ec == 0 && rpmrc == RPMRC_FAIL)
+	ec++;
     return ec;
 }
 
@@ -804,7 +807,7 @@ int rpmcliArgIter(rpmts ts, QVA_t qva, ARGV_t argv)
 	qva->qva_gi = rpmgiNew(ts, RPMDBI_ARGLIST, NULL, 0);
 	qva->qva_rc = rpmgiSetArgs(qva->qva_gi, argv, ftsOpts,
 		(giFlags | (RPMGI_NOGLOB|RPMGI_NOHEADER)));
-	while (rpmgiNext(qva->qva_gi) == RPMRC_OK) {
+	while ((rpmrc = rpmgiNext(qva->qva_gi)) == RPMRC_OK) {
 	    const char * path;
 	    path = rpmgiHdrPath(qva->qva_gi);
 assert(path != NULL);
