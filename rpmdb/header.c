@@ -1858,12 +1858,12 @@ int headerGetExtension(Header h, int_32 tag,
 
     switch (*he->t) {
     case RPM_NULL_TYPE:
-    case RPM_OPENPGP_TYPE:	/* XXX W2DO? */
-    case RPM_ASN1_TYPE:		/* XXX W2DO? */
-    case RPM_BIN_TYPE:
     default:
 assert(0);	/* XXX stop unimplemented oversights. */
 	break;
+    case RPM_OPENPGP_TYPE:
+    case RPM_ASN1_TYPE:
+    case RPM_BIN_TYPE:
     case RPM_CHAR_TYPE:
     case RPM_INT8_TYPE:
 	nb = he_c * sizeof(*he_p.i8p);
@@ -1873,7 +1873,6 @@ assert(0);	/* XXX stop unimplemented oversights. */
 	nb = he_c * sizeof(*he_p.i16p);
 	break;
     case RPM_INT32_TYPE:
-assert(0);	/* XXX stop unimplemented oversights. */
 	nb = he_c * sizeof(*he_p.i32p);
 	break;
     case RPM_INT64_TYPE:

@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - jbj: switch rpmdbAdd to use headerGetExtension. ~1Mb leaks w --rebuilddb.
     - jbj: fix: headerGetExtension failed to return p.str correctly.
     - jbj: start eliminating rpmError.
     - jbj: fail empty and non-printable manifests.

@@ -3090,7 +3090,7 @@ int rpmdbAdd(rpmdb db, int iid, Header h, /*@unused@*/ rpmts ts)
 DBC * dbcursor = NULL;
 DBT * key = alloca(sizeof(*key));
 DBT * data = alloca(sizeof(*data));
-    HGE_t hge = (HGE_t) headerGetEntryMinMemory;
+    HGE_t hge = (HGE_t) headerGetExtension;
     HAE_t hae = (HAE_t) headerAddEntry;
     HFD_t hfd = headerFreeData;
     sigset_t signalMask;
@@ -3239,7 +3239,6 @@ memset(data, 0, sizeof(*data));
 	
 	if (db->db_tagn != NULL)
 	for (dbix = 0; dbix < db->db_ndbi; dbix++) {
-	    const char *av[1];
 	    byte * bin = NULL;
 	    int_32 * requireFlags;
 	    rpmRC rpmrc;
@@ -3324,9 +3323,11 @@ data->size = 0;
 		xx = hge(h, he->tag, he->t, he->p, he->c);
 		xx = hge(h, RPMTAG_REQUIREFLAGS, NULL, &requireFlags, NULL);
 		/*@switchbreak@*/ break;
+#ifdef	DYING
 	    case RPMTAG_NVRA:	/* XXX compound header extension. */
 		xx = headerGetExtension(h, he->tag, he->t, he->p, he->c);
 		/*@switchbreak@*/ break;
+#endif
 	    default:
 		xx = hge(h, he->tag, he->t, he->p, he->c);
 		/*@switchbreak@*/ break;
@@ -3338,7 +3339,7 @@ data->size = 0;
 
 		/* XXX preserve legacy behavior */
 		he_t = RPM_STRING_TYPE;
-		he_p.str = "Unknown";
+		he_p.str = xstrdup("Unknown");
 		he_c = 1;
 	    }
 
@@ -3346,12 +3347,14 @@ data->size = 0;
 	  if (dbi != NULL) {
 	    int printed;
 
+	    /* XXX Coerce strings into header argv return. */
 	    if (he_t == RPM_STRING_TYPE) {
-		/* XXX force uniform headerGetEntry return */
-/*@-observertrans@*/
-		av[0] = he_p.str;
-/*@=observertrans@*/
-		he_p.argv = av;
+		const char * s = he_p.str;
+		char * t;
+		he_p.argv = xcalloc(1, sizeof(*he_p.argv)+strlen(s)+1);
+		he_p.argv[0] = t = (char *) &he_p.argv[1];
+		(void) strcpy(t, s);
+		s = _free(s);
 		he_c = 1;
 	    }
 
@@ -3526,15 +3529,9 @@ if (key->size == 0) key->size++;	/* XXX "/" fixup. */
 		xx = dbiSync(dbi, 0);
 	  }
 
-/*@-modobserver -unqualifiedtrans@*/
-	    if (he->tag == RPMTAG_NVRA)	/* XXX compound header extension. */
-		av[0] = _free(av[0]);
-/*@=modobserver =unqualifiedtrans@*/
-	    else
-	    if (he_t != RPM_BIN_TYPE)	/* XXX WTFO? HACK ALERT */
-		he_p.ptr = hfd(he_p.ptr, he_t);
 	    he->tag = 0;
 	    he_t = 0;
+	    he_p.ptr = _free(he_p.ptr);
 	    he_c = 0;
 	    bin = _free(bin);
 	}
