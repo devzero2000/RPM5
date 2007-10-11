@@ -118,7 +118,7 @@ static inline /*@null@*/ const char * queryHeader(Header h, const char * qfmt)
     str = headerSprintf(h, qfmt, rpmTagTable, rpmHeaderFormats, &errstr);
 /*@=modobserver@*/
     if (str == NULL)
-	rpmError(RPMERR_QFMT, _("incorrect format: %s\n"), errstr);
+	rpmlog(RPMLOG_ERR, _("incorrect format: %s\n"), errstr);
     return str;
 }
 
@@ -305,8 +305,7 @@ assert(fdigest != NULL);
 /*@=nullpass@*/
 		te += strlen(te);
 	    } else {
-		rpmError(RPMERR_INTERNAL,
-			_("package has not file owner/group lists\n"));
+		rpmlog(RPMLOG_CRIT, _("package without owner/group tags\n"));
 	    }
 
 	    sprintf(te, " %s %s %u ", 
@@ -336,8 +335,7 @@ assert(fdigest != NULL);
 /*@=nullpass@*/
 		te += strlen(te);
 	    } else {
-		rpmError(RPMERR_INTERNAL,
-			_("package has neither file owner or id lists\n"));
+		rpmlog(RPMLOG_CRIT, _("package without owner/group tags\n"));
 	    }
 	}
 	flushBuffer(&t, &te, 0);
@@ -493,7 +491,7 @@ int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
     case RPMQV_GROUP:
 	qva->qva_mi = rpmtsInitIterator(ts, RPMTAG_GROUP, arg, 0);
 	if (qva->qva_mi == NULL) {
-	    rpmError(RPMERR_QUERYINFO,
+	    rpmlog(RPMLOG_ERR,
 		_("group %s does not contain any packages\n"), arg);
 	    res = 1;
 	} else
@@ -503,7 +501,7 @@ int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
     case RPMQV_TRIGGEREDBY:
 	qva->qva_mi = rpmtsInitIterator(ts, RPMTAG_TRIGGERNAME, arg, 0);
 	if (qva->qva_mi == NULL) {
-	    rpmError(RPMERR_QUERYINFO, _("no package triggers %s\n"), arg);
+	    rpmlog(RPMLOG_ERR, _("no package triggers %s\n"), arg);
 	    res = 1;
 	} else
 	    res = rpmcliShowMatches(qva, ts);
@@ -518,7 +516,7 @@ int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
 	for (i = 0, s = arg; *s && isxdigit(*s); s++, i++)
 	    {};
 	if (i != 32) {
-	    rpmError(RPMERR_QUERYINFO, _("malformed %s: %s\n"), "pkgid", arg);
+	    rpmlog(RPMLOG_ERR, _("malformed %s: %s\n"), "pkgid", arg);
 	    return 1;
 	}
 
@@ -530,7 +528,7 @@ int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
 		? RPMTAG_SOURCEPKGID : RPMTAG_PKGID);
 	qva->qva_mi = rpmtsInitIterator(ts, tag, MD5, sizeof(MD5));
 	if (qva->qva_mi == NULL) {
-	    rpmError(RPMERR_QUERYINFO, _("no package matches %s: %s\n"),
+	    rpmlog(RPMLOG_ERR, _("no package matches %s: %s\n"),
 			"pkgid", arg);
 	    res = 1;
 	} else
@@ -541,13 +539,13 @@ int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
 	for (i = 0, s = arg; *s && isxdigit(*s); s++, i++)
 	    {};
 	if (i != 40) {
-	    rpmError(RPMERR_QUERYINFO, _("malformed %s: %s\n"), "hdrid", arg);
+	    rpmlog(RPMLOG_ERR, _("malformed %s: %s\n"), "hdrid", arg);
 	    return 1;
 	}
 
 	qva->qva_mi = rpmtsInitIterator(ts, RPMTAG_SHA1HEADER, arg, 0);
 	if (qva->qva_mi == NULL) {
-	    rpmError(RPMERR_QUERYINFO, _("no package matches %s: %s\n"),
+	    rpmlog(RPMLOG_ERR, _("no package matches %s: %s\n"),
 			"hdrid", arg);
 	    res = 1;
 	} else
@@ -563,7 +561,7 @@ int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
 	for (dlen = 0, s = arg; *s && isxdigit(*s); s++, dlen++)
 	    {};
 	if ((dlen & 1) || dlen < 8) {
-	    rpmError(RPMERR_QUERY, _("malformed %s: %s\n"), "fileid", arg);
+	    rpmlog(RPMLOG_ERR, _("malformed %s: %s\n"), "fileid", arg);
 	    return 1;
 	}
 
@@ -574,7 +572,7 @@ int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
 
 	qva->qva_mi = rpmtsInitIterator(ts, RPMTAG_FILEDIGESTS, digest, dlen);
 	if (qva->qva_mi == NULL) {
-	    rpmError(RPMERR_QUERYINFO, _("no package matches %s: %s\n"),
+	    rpmlog(RPMLOG_ERR, _("no package matches %s: %s\n"),
 			"fileid", arg);
 	    res = 1;
 	} else
@@ -598,12 +596,12 @@ int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
 	}
 	iid = (unsigned) strtoul(myarg, &end, mybase);
 	if ((*end) || (end == arg) || (iid == UINT_MAX)) {
-	    rpmError(RPMERR_QUERY, _("malformed %s: %s\n"), "tid", arg);
+	    rpmlog(RPMLOG_ERR, _("malformed %s: %s\n"), "tid", arg);
 	    return 1;
 	}
 	qva->qva_mi = rpmtsInitIterator(ts, RPMTAG_INSTALLTID, &iid, sizeof(iid));
 	if (qva->qva_mi == NULL) {
-	    rpmError(RPMERR_QUERYINFO, _("no package matches %s: %s\n"),
+	    rpmlog(RPMLOG_ERR, _("no package matches %s: %s\n"),
 			"tid", arg);
 	    res = 1;
 	} else
@@ -614,7 +612,7 @@ int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
     case RPMQV_WHATREQUIRES:
 	qva->qva_mi = rpmtsInitIterator(ts, RPMTAG_REQUIRENAME, arg, 0);
 	if (qva->qva_mi == NULL) {
-	    rpmError(RPMERR_QUERYINFO, _("no package requires %s\n"), arg);
+	    rpmlog(RPMLOG_ERR, _("no package requires %s\n"), arg);
 	    res = 1;
 	} else
 	    res = rpmcliShowMatches(qva, ts);
@@ -625,7 +623,7 @@ int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
 	    provides_checked = 1;
 	    qva->qva_mi = rpmtsInitIterator(ts, RPMTAG_PROVIDENAME, arg, 0);
 	    if (qva->qva_mi == NULL) {
-		rpmError(RPMERR_QUERYINFO, _("no package provides %s\n"), arg);
+		rpmlog(RPMLOG_ERR, _("no package provides %s\n"), arg);
 		res = 1;
 	    } else
 		res = rpmcliShowMatches(qva, ts);
@@ -659,9 +657,9 @@ assert(fn != NULL);
 	if (qva->qva_mi == NULL) {
 	    struct stat sb;
 	    if (Lstat(fn, &sb) != 0)
-		rpmError(RPMERR_QUERY, _("file %s: %s\n"), fn, strerror(errno));
+		rpmlog(RPMLOG_ERR, _("file %s: %s\n"), fn, strerror(errno));
 	    else
-		rpmError(RPMERR_QUERYINFO,
+		rpmlog(RPMLOG_ERR,
 			_("file %s is not owned by any package\n"), fn);
 	    res = 1;
 	} else
@@ -687,13 +685,13 @@ assert(fn != NULL);
 	}
 	recOffset = (unsigned) strtoul(myarg, &end, mybase);
 	if ((*end) || (end == arg) || (recOffset == UINT_MAX)) {
-	    rpmError(RPMERR_QUERYINFO, _("invalid package number: %s\n"), arg);
+	    rpmlog(RPMLOG_ERR, _("invalid package number: %s\n"), arg);
 	    return 1;
 	}
 	rpmMessage(RPMMESS_DEBUG, D_("package record number: %u\n"), recOffset);
 	qva->qva_mi = rpmtsInitIterator(ts, RPMDBI_PACKAGES, &recOffset, sizeof(recOffset));
 	if (qva->qva_mi == NULL) {
-	    rpmError(RPMERR_QUERYINFO,
+	    rpmlog(RPMLOG_ERR,
 		_("record %u could not be read\n"), recOffset);
 	    res = 1;
 	} else
@@ -704,13 +702,13 @@ assert(fn != NULL);
 	/* XXX HACK to get rpmdbFindByLabel out of the API */
 	qva->qva_mi = rpmtsInitIterator(ts, RPMDBI_LABEL, arg, 0);
 	if (qva->qva_mi == NULL) {
-	    rpmError(RPMERR_QUERYINFO, _("package %s is not installed\n"), arg);
+	    rpmlog(RPMLOG_ERR, _("package %s is not installed\n"), arg);
 	    res = 1;
 	} else {
 	    res = rpmcliShowMatches(qva, ts);
 	    /* detect foo.bogusarch empty iterations. */
 	    if (qva->qva_showOK == 0 && qva->qva_showFAIL == 0) {
-		rpmError(RPMERR_QUERYINFO, _("package %s is not installed\n"), arg);
+		rpmlog(RPMLOG_ERR, _("package %s is not installed\n"), arg);
 		res = 1;
 	    }
 	}

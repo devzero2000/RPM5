@@ -76,7 +76,7 @@ static int getFilesystemList(void)
 
     num = mntctl(MCTL_QUERY, sizeof(size), (char *) &size);
     if (num < 0) {
-	rpmError(RPMERR_MTAB, _("mntctl() failed to return size: %s\n"), 
+	rpmlog(RPMLOG_ERR, _("mntctl() failed to return size: %s\n"), 
 		 strerror(errno));
 	return 1;
     }
@@ -91,7 +91,7 @@ static int getFilesystemList(void)
     buf = alloca(size);
     num = mntctl(MCTL_QUERY, size, buf);
     if ( num <= 0 ) {
-        rpmError(RPMERR_MTAB, _("mntctl() failed to return mount points: %s\n"), 
+        rpmlog(RPMLOG_ERR, _("mntctl() failed to return mount points: %s\n"), 
 		 strerror(errno));
 	return 1;
     }
@@ -111,7 +111,7 @@ static int getFilesystemList(void)
 	filesystems[i].mntPoint = fsnames[i] = fsn;
 	
 	if (stat(filesystems[i].mntPoint, &sb)) {
-	    rpmError(RPMERR_STAT, _("failed to stat %s: %s\n"), fsnames[i],
+	    rpmlog(RPMLOG_ERR, _("failed to stat %s: %s\n"), fsnames[i],
 			strerror(errno));
 
 	    rpmFreeFilesystems();
@@ -156,7 +156,7 @@ static int getFilesystemList(void)
 
 	mtab = fopen(MOUNTED, "r");
 	if (!mtab) {
-	    rpmError(RPMERR_MTAB, _("failed to open %s: %s\n"), MOUNTED, 
+	    rpmlog(RPMLOG_ERR, _("failed to open %s: %s\n"), MOUNTED, 
 		     strerror(errno));
 	    return 1;
 	}
@@ -216,7 +216,7 @@ static int getFilesystemList(void)
 	if (stat(mntdir, &sb)) {
 	    switch(errno) {
 	    default:
-		rpmError(RPMERR_STAT, _("failed to stat %s: %s\n"), mntdir,
+		rpmlog(RPMLOG_ERR, _("failed to stat %s: %s\n"), mntdir,
 			strerror(errno));
 		rpmFreeFilesystems();
 		return 1;
@@ -333,7 +333,7 @@ int rpmGetFilesystemUsage(const char ** fileList, uint_32 * fssizes, int numFile
 	    chptr = dirName + strlen(dirName) - 1;
 	    while (stat(dirName, &sb)) {
 		if (errno != ENOENT) {
-		    rpmError(RPMERR_STAT, _("failed to stat %s: %s\n"), buf,
+		    rpmlog(RPMLOG_ERR, _("failed to stat %s: %s\n"), buf,
 				strerror(errno));
 		    sourceDir = _free(sourceDir);
 		    usages = _free(usages);

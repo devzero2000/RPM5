@@ -89,18 +89,18 @@ int rpmTempFile(const char * prefix, const char ** fnptr, void * fdptr)
     case URL_IS_UNKNOWN:
       {	struct stat sb, sb2;
 	if (!stat(tfn, &sb) && S_ISLNK(sb.st_mode)) {
-	    rpmError(RPMERR_SCRIPT, _("error creating temporary file %s\n"), tfn);
+	    rpmlog(RPMLOG_ERR, _("error creating temporary file %s\n"), tfn);
 	    goto errxit;
 	}
 
 	if (sb.st_nlink != 1) {
-	    rpmError(RPMERR_SCRIPT, _("error creating temporary file %s\n"), tfn);
+	    rpmlog(RPMLOG_ERR, _("error creating temporary file %s\n"), tfn);
 	    goto errxit;
 	}
 
 	if (fstat(Fileno(fd), &sb2) == 0) {
 	    if (sb2.st_ino != sb.st_ino || sb2.st_dev != sb.st_dev) {
-		rpmError(RPMERR_SCRIPT, _("error creating temporary file %s\n"), tfn);
+		rpmlog(RPMLOG_ERR, _("error creating temporary file %s\n"), tfn);
 		goto errxit;
 	    }
 	}
@@ -292,14 +292,14 @@ static int makePGPSignature(const char * file, /*@unused@*/ int_32 * sigTagp,
 
     (void)waitpid(pid, &status, 0);
     if (!WIFEXITED(status) || WEXITSTATUS(status)) {
-	rpmError(RPMERR_SIGGEN, _("pgp failed\n"));
+	rpmlog(RPMLOG_ERR, _("pgp failed\n"));
 	return 1;
     }
 
     if (Stat(sigfile, &st)) {
 	/* PGP failed to write signature */
 	if (sigfile) (void) Unlink(sigfile);  /* Just in case */
-	rpmError(RPMERR_SIGGEN, _("pgp failed to write signature\n"));
+	rpmlog(RPMLOG_ERR, _("pgp failed to write signature\n"));
 	return 1;
     }
 
@@ -318,7 +318,7 @@ static int makePGPSignature(const char * file, /*@unused@*/ int_32 * sigTagp,
 	}
 	if (rc != *pktlenp) {
 	    *pktp = _free(*pktp);
-	    rpmError(RPMERR_SIGGEN, _("unable to read the signature\n"));
+	    rpmlog(RPMLOG_ERR, _("unable to read the signature\n"));
 	    return 1;
 	}
     }
@@ -409,7 +409,7 @@ static int makeGPGSignature(const char * file, int_32 * sigTagp,
 	key = keyctl_search(keyring, "user", "rpm:passwd", 0);
 	pw = NULL;
 	if ((xx = keyctl_read_alloc(key, (void **)&pw)) < 0) {
-	    rpmError(RPMERR_SIGGEN, _("Failed %s(%d) key(0x%lx): %s\n"),
+	    rpmlog(RPMLOG_ERR, _("Failed %s(%d) key(0x%lx): %s\n"),
 			"keyctl_read_alloc of key", xx, key, strerror(errno));
 	    return 1;
 	}
@@ -435,14 +435,14 @@ static int makeGPGSignature(const char * file, int_32 * sigTagp,
 
     (void) waitpid(pid, &status, 0);
     if (!WIFEXITED(status) || WEXITSTATUS(status)) {
-	rpmError(RPMERR_SIGGEN, _("gpg exec failed (%d)\n"), WEXITSTATUS(status));
+	rpmlog(RPMLOG_ERR, _("gpg exec failed (%d)\n"), WEXITSTATUS(status));
 	return 1;
     }
 
     if (Stat(sigfile, &st)) {
 	/* GPG failed to write signature */
 	if (sigfile) (void) Unlink(sigfile);  /* Just in case */
-	rpmError(RPMERR_SIGGEN, _("gpg failed to write signature\n"));
+	rpmlog(RPMLOG_ERR, _("gpg failed to write signature\n"));
 	return 1;
     }
 
@@ -461,7 +461,7 @@ static int makeGPGSignature(const char * file, int_32 * sigTagp,
 	}
 	if (rc != *pktlenp) {
 	    *pktp = _free(*pktp);
-	    rpmError(RPMERR_SIGGEN, _("unable to read the signature\n"));
+	    rpmlog(RPMLOG_ERR, _("unable to read the signature\n"));
 	    return 1;
 	}
     }
@@ -777,7 +777,7 @@ int rpmCheckPassPhrase(const char * passPhrase)
 	key = keyctl_search(keyring, "user", "rpm:passwd", 0);
 	pw = NULL;
 	if ((xx = keyctl_read_alloc(key, (void **)&pw)) < 0) {
-	    rpmError(RPMERR_SIGGEN, _("Failed %s(%d) key(0x%lx): %s\n"),
+	    rpmlog(RPMLOG_ERR, _("Failed %s(%d) key(0x%lx): %s\n"),
 			"keyctl_read_alloc of key", xx, key, strerror(errno));
 	    return 1;
 	}

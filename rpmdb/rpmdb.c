@@ -842,7 +842,7 @@ static inline /*@null@*/ const char * queryHeader(Header h, const char * qfmt)
     str = headerSprintf(h, qfmt, rpmTagTable, hdrfmts, &errstr);
 /*@=modobserver@*/
     if (str == NULL)
-	rpmError(RPMERR_QFMT, _("incorrect format: \"%s\": %s\n"), qfmt, errstr);
+	rpmlog(RPMLOG_ERR, _("incorrect format: \"%s\": %s\n"), qfmt, errstr);
     return str;
 }
 
@@ -3905,7 +3905,7 @@ int rpmdbRebuild(const char * prefix, rpmts ts)
 	rootdbpath, newrootdbpath);
 
     if (!Access(newrootdbpath, F_OK)) {
-	rpmError(RPMERR_MKDIR, _("temporary database %s already exists\n"),
+	rpmlog(RPMLOG_ERR, _("temporary database %s already exists\n"),
 	      newrootdbpath);
 	rc = 1;
 	goto exit;
@@ -3913,7 +3913,7 @@ int rpmdbRebuild(const char * prefix, rpmts ts)
 
     rpmMessage(RPMMESS_DEBUG, D_("creating directory %s\n"), newrootdbpath);
     if (Mkdir(newrootdbpath, 0755)) {
-	rpmError(RPMERR_MKDIR, _("creating directory %s: %s\n"),
+	rpmlog(RPMLOG_ERR, _("creating directory %s: %s\n"),
 	      newrootdbpath, strerror(errno));
 	rc = 1;
 	goto exit;
@@ -3959,7 +3959,7 @@ int rpmdbRebuild(const char * prefix, rpmts ts)
 		headerIsEntry(h, RPMTAG_RELEASE) &&
 		headerIsEntry(h, RPMTAG_BUILDTIME)))
 	    {
-		rpmError(RPMERR_INTERNAL,
+		rpmlog(RPMLOG_WARNING,
 			_("header #%u in the database is bad -- skipping.\n"),
 			_RECNUM);
 		continue;
@@ -3967,7 +3967,7 @@ int rpmdbRebuild(const char * prefix, rpmts ts)
 	    if (!headerIsEntry(h, RPMTAG_SOURCERPM)
 	     &&  headerIsEntry(h, RPMTAG_ARCH))
 	    {
-		rpmError(RPMERR_INTERNAL,
+		rpmlog(RPMLOG_WARNING,
 			_("header #%u in the database is SRPM -- skipping.\n"),
 			_RECNUM);
 		continue;
@@ -4007,7 +4007,7 @@ int rpmdbRebuild(const char * prefix, rpmts ts)
 	    }
 
 	    if (rc) {
-		rpmError(RPMERR_INTERNAL,
+		rpmlog(RPMLOG_ERR,
 			_("cannot add record originally at %u\n"), _RECNUM);
 		failed = 1;
 		break;

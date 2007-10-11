@@ -56,7 +56,7 @@ static int manageFile(/*@out@*/ FD_t *fdp,
     if (*fdp == NULL && fnp != NULL && *fnp != NULL) {
 	fd = Fopen(*fnp, ((flags & O_WRONLY) ? "w.fdio" : "r.fdio"));
 	if (fd == NULL || Ferror(fd)) {
-	    rpmError(RPMERR_OPEN, _("%s: open failed: %s\n"), *fnp,
+	    rpmlog(RPMLOG_ERR, _("%s: open failed: %s\n"), *fnp,
 		Fstrerror(fd));
 	    return 1;
 	}
@@ -68,7 +68,7 @@ static int manageFile(/*@out@*/ FD_t *fdp,
     if (*fdp == NULL && (fnp == NULL || *fnp == NULL)) {
 	fn = NULL;
 	if (rpmTempFile(NULL, (fnp ? &fn : NULL), &fd)) {
-	    rpmError(RPMERR_MAKETEMP, _("rpmTempFile failed\n"));
+	    rpmlog(RPMLOG_ERR, _("rpmTempFile failed\n"));
 	    return 1;
 	}
 	if (fnp != NULL)
@@ -222,7 +222,7 @@ if (!_nolead) {
 	msg = NULL;
 	rc = rpmpkgRead(item, fd, &lead, &msg);
 	if (rc != RPMRC_OK) {
-	    rpmError(RPMERR_READLEAD, "%s: %s: %s\n", fn, item, msg);
+	    rpmlog(RPMLOG_ERR, "%s: %s: %s\n", fn, item, msg);
 	    msg = _free(msg);
 	    goto exit;
 	}
@@ -235,14 +235,14 @@ if (!_nosigh) {
 	rc = rpmpkgRead(item, fd, &sigh, &msg);
 	switch (rc) {
 	default:
-	    rpmError(RPMERR_SIGGEN, "%s: %s: %s", fn, item,
+	    rpmlog(RPMLOG_ERR, "%s: %s: %s", fn, item,
 			(msg && *msg ? msg : "\n"));
 	    msg = _free(msg);
 	    goto exit;
 	    /*@notreached@*/ /*@switchbreak@*/ break;
 	case RPMRC_OK:
 	    if (sigh == NULL) {
-		rpmError(RPMERR_SIGGEN, _("%s: No signature available\n"), fn);
+		rpmlog(RPMLOG_ERR, _("%s: No signature available\n"), fn);
 		goto exit;
 	    }
 	    /*@switchbreak@*/ break;
@@ -391,8 +391,7 @@ if (!_nolead) {
 	const char item[] = "Lead";
 	rc = rpmpkgWrite(item, ofd, lead, NULL);
 	if (rc != RPMRC_OK) {
-	    rpmError(RPMERR_WRITELEAD, "%s: %s: %s\n", tfn, item,
-		Fstrerror(ofd));
+	    rpmlog(RPMLOG_ERR, "%s: %s: %s\n", tfn, item, Fstrerror(ofd));
 	    goto exit;
 	}
 }
@@ -401,7 +400,7 @@ if (!_nosigh) {
 	const char item[] = "Signature";
 	rc = rpmpkgWrite(item, ofd, sigh, NULL);
 	if (rc != RPMRC_OK) {
-	    rpmError(RPMERR_SIGGEN, "%s: %s: %s\n", tfn, item,
+	    rpmlog(RPMLOG_ERR, "%s: %s: %s\n", tfn, item,
 		Fstrerror(ofd));
 	    goto exit;
 	}
@@ -776,7 +775,7 @@ if (!_nolead) {
 	msg = NULL;
 	rc = rpmpkgRead(item, fd, NULL, &msg);
 	if (rc != RPMRC_OK) {
-	    rpmError(RPMERR_READLEAD, "%s: %s: %s\n", fn, item, msg);
+	    rpmlog(RPMLOG_ERR, "%s: %s: %s\n", fn, item, msg);
 	    msg = _free(msg);
 	    res++;
 	    goto exit;
@@ -789,7 +788,7 @@ if (!_nosigh) {
 	rc = rpmpkgRead(item, fd, &sigh, &msg);
 	switch (rc) {
 	default:
-	    rpmError(RPMERR_SIGGEN, "%s: %s: %s", fn, item,
+	    rpmlog(RPMLOG_ERR, "%s: %s: %s", fn, item,
 			(msg && *msg ? msg : "\n"));
 	    msg = _free(msg);
 	    res++;
@@ -797,7 +796,7 @@ if (!_nosigh) {
 	    /*@notreached@*/ /*@switchbreak@*/ break;
 	case RPMRC_OK:
 	    if (sigh == NULL) {
-		rpmError(RPMERR_SIGGEN, _("%s: No signature available\n"), fn);
+		rpmlog(RPMLOG_ERR, _("%s: No signature available\n"), fn);
 		res++;
 		goto exit;
 	    }
@@ -912,7 +911,7 @@ assert(dig != NULL);
 			(_print_pkts & rpmIsDebug()));
 
 		if (sigp->version != 3 && sigp->version != 4) {
-		    rpmError(RPMERR_SIGVFY,
+		    rpmlog(RPMLOG_ERR,
 		_("skipping package %s with unverifiable V%u signature\n"),
 			fn, sigp->version);
 		    res++;
@@ -1094,9 +1093,9 @@ assert(dig != NULL);
 
 	if (res2) {
 	    if (rpmIsVerbose()) {
-		rpmError(RPMERR_SIGVFY, "%s", buf);
+		rpmlog(RPMLOG_ERR, "%s", buf);
 	    } else {
-		rpmError(RPMERR_SIGVFY, "%s%s%s%s%s%s%s%s\n", buf,
+		rpmlog(RPMLOG_ERR, "%s%s%s%s%s%s%s%s\n", buf,
 			_("NOT OK"),
 			(missingKeys[0] != '\0') ? _(" (MISSING KEYS:") : "",
 			missingKeys,
@@ -1108,9 +1107,9 @@ assert(dig != NULL);
 	    }
 	} else {
 	    if (rpmIsVerbose()) {
-		rpmError(RPMERR_SIGVFY, "%s", buf);
+		rpmlog(RPMLOG_ERR, "%s", buf);
 	    } else {
-		rpmError(RPMERR_SIGVFY, "%s%s%s%s%s%s%s%s\n", buf,
+		rpmlog(RPMLOG_ERR, "%s%s%s%s%s%s%s%s\n", buf,
 			_("OK"),
 			(missingKeys[0] != '\0') ? _(" (MISSING KEYS:") : "",
 			missingKeys,
@@ -1172,7 +1171,7 @@ int rpmcliSign(rpmts ts, QVA_t qva, const char ** argv)
 
 	fd = Fopen(fn, "r.fdio");
 	if (fd == NULL || Ferror(fd)) {
-	    rpmError(RPMERR_OPEN, _("%s: open failed: %s\n"), 
+	    rpmlog(RPMLOG_ERR, _("%s: open failed: %s\n"), 
 		     fn, Fstrerror(fd));
 	    res++;
 	} else if (rpmVerifySignatures(qva, ts, fd, fn)) {

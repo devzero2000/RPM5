@@ -227,7 +227,7 @@ if (!_nolead) {
     rc = rpmpkgRead(item, fd, NULL, &msg);
     switch (rc) {
     default:
-	rpmError(RPMERR_READLEAD, "%s: %s: %s\n", fn, item, msg);
+	rpmlog(RPMLOG_ERR, "%s: %s: %s\n", fn, item, msg);
 	/*@fallthrough@*/
     case RPMRC_NOTFOUND:
 	msg = _free(msg);
@@ -245,14 +245,14 @@ if (!_nosigh) {
     rc = rpmpkgRead(item, fd, &sigh, &msg);
     switch (rc) {
     default:
-	rpmError(RPMERR_SIGGEN, "%s: %s: %s", fn, item,
+	rpmlog(RPMLOG_ERR, "%s: %s: %s", fn, item,
 		(msg && *msg ? msg : "\n"));
 	msg = _free(msg);
 	goto exit;
 	/*@notreached@*/ break;
     case RPMRC_OK:
 	if (sigh == NULL) {
-	    rpmError(RPMERR_SIGGEN, _("%s: No signature available\n"), fn);
+	    rpmlog(RPMLOG_ERR, _("%s: No signature available\n"), fn);
 	    rc = RPMRC_FAIL;
 	    goto exit;
 	}

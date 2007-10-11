@@ -205,7 +205,7 @@ rpmRC rpmInstallSourcePackage(rpmts ts, void * _fd,
 	 headerIsEntry(h, RPMTAG_ARCH) != 0);
 
     if (!isSource) {
-	rpmError(RPMERR_NOTSRPM, _("source package expected, binary found\n"));
+	rpmlog(RPMLOG_ERR, _("source package expected, binary found\n"));
 	rpmrc = RPMRC_FAIL;
 	goto exit;
     }
@@ -331,7 +331,7 @@ assert(fi->h != NULL);
 	(void) stpcpy( stpcpy( stpcpy(t, _specdir), "/"), fi->bnl[i]);
 	specFile = t;
     } else {
-	rpmError(RPMERR_NOSPEC, _("source package contains no .spec file\n"));
+	rpmlog(RPMLOG_ERR, _("source package contains no .spec file\n"));
 	rpmrc = RPMRC_FAIL;
 	goto exit;
     }
@@ -870,18 +870,18 @@ assert(NVRA != NULL);
   /* XXX filter order dependent multilib "other" arch helper error. */
   if (!(psm->sq.reaped >= 0 && !strcmp(argv[0], "/usr/sbin/glibc_post_upgrade") && WEXITSTATUS(psm->sq.status) == 110)) {
     if (psm->sq.reaped < 0) {
-	rpmError(RPMERR_SCRIPT,
+	rpmlog(RPMLOG_ERR,
 		_("%s(%s) scriptlet failed, waitpid(%d) rc %d: %s\n"),
 		 sln, NVRA, psm->sq.child, psm->sq.reaped, strerror(errno));
 	goto exit;
     } else
     if (!WIFEXITED(psm->sq.status) || WEXITSTATUS(psm->sq.status)) {
 	if (WIFSIGNALED(psm->sq.status)) {
-	    rpmError(RPMERR_SCRIPT,
+	    rpmlog(RPMLOG_ERR,
                  _("%s(%s) scriptlet failed, signal %d\n"),
                  sln, NVRA, WTERMSIG(psm->sq.status));
 	} else {
-	    rpmError(RPMERR_SCRIPT,
+	    rpmlog(RPMLOG_ERR,
 		_("%s(%s) scriptlet failed, exit status %d\n"),
 		sln, NVRA, WEXITSTATUS(psm->sq.status));
 	}
@@ -1696,7 +1696,7 @@ psm->te->h = headerLink(fi->h);
 	    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOPRE)) {
 		rc = rpmpsmNext(psm, PSM_SCRIPT);
 		if (rc != RPMRC_OK) {
-		    rpmError(RPMERR_SCRIPT,
+		    rpmlog(RPMLOG_ERR,
 			_("%s: %s scriptlet failed (%d), skipping %s\n"),
 			psm->stepName, tag2sln(psm->scriptTag), rc,
 			rpmteNEVR(psm->te));
@@ -1790,7 +1790,7 @@ psm->te->h = headerLink(fi->h);
 		    rc = rpmpkgWrite(item, psm->fd, l, &NEVR);
 		}
 		if (rc != RPMRC_OK) {
-		    rpmError(RPMERR_NOSPACE, _("Unable to write package: %s\n"),
+		    rpmlog(RPMLOG_ERR, _("Unable to write package: %s\n"),
 				Fstrerror(psm->fd));
 		    break;
 		}
@@ -1804,7 +1804,7 @@ psm->te->h = headerLink(fi->h);
 		/* Reallocate the signature into one contiguous region. */
 		sigh = headerReload(sigh, RPMTAG_HEADERSIGNATURES);
 		if (sigh == NULL) {
-		    rpmError(RPMERR_NOSPACE, _("Unable to reload signature header\n"));
+		    rpmlog(RPMLOG_ERR, _("Unable to reload signature header\n"));
 		    rc = RPMRC_FAIL;
 		    break;
 		}

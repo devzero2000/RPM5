@@ -122,7 +122,7 @@ void * rpmShowProgress(/*@null@*/ const void * arg,
 	fd = Fopen(filename, "r.fdio");
 	/*@-type@*/ /* FIX: still necessary? */
 	if (fd == NULL || Ferror(fd)) {
-	    rpmError(RPMERR_OPEN, _("open of %s failed: %s\n"), filename,
+	    rpmlog(RPMLOG_ERR, _("open of %s failed: %s\n"), filename,
 			Fstrerror(fd));
 	    if (fd != NULL) {
 		xx = Fclose(fd);

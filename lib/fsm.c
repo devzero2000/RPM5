@@ -1956,14 +1956,14 @@ assert(fsm->lpath != NULL);
 			    /*@innerbreak@*/ break;
 
 			/* XXX common error message. */
-			rpmError(
-			    (strict_erasures ? RPMERR_RMDIR : RPMDEBUG_RMDIR),
+			rpmlog(
+			    (strict_erasures ? RPMLOG_ERR : RPMLOG_DEBUG),
 			    _("%s rmdir of %s failed: Directory not empty\n"), 
 				rpmfiTypeString(fi), fsm->path);
 			/*@innerbreak@*/ break;
 		    default:
-			rpmError(
-			    (strict_erasures ? RPMERR_RMDIR : RPMDEBUG_RMDIR),
+			rpmlog(
+			    (strict_erasures ? RPMLOG_ERR : RPMLOG_DEBUG),
 				_("%s rmdir of %s failed: %s\n"),
 				rpmfiTypeString(fi), fsm->path, strerror(errno));
 			/*@innerbreak@*/ break;
@@ -1977,8 +1977,8 @@ assert(fsm->lpath != NULL);
 			    /*@innerbreak@*/ break;
 			/*@fallthrough@*/
 		    default:
-			rpmError(
-			    (strict_erasures ? RPMERR_UNLINK : RPMDEBUG_UNLINK),
+			rpmlog(
+			    (strict_erasures ? RPMLOG_ERR : RPMLOG_DEBUG),
 				_(" %s: unlink of %s failed: %s\n"),
 				rpmfiTypeString(fi), fsm->path, strerror(errno));
 			/*@innerbreak@*/ break;

@@ -190,7 +190,7 @@ static int copyNextLine(Spec spec, OFI_t *ofi, int strip)
 /*@-observertrans -readonlytrans@*/
 	    spec->nextline = "";
 /*@=observertrans =readonlytrans@*/
-	    return RPMERR_UNMATCHEDIF;
+	    return RPMRC_FAIL;
 	}
 /*@-mods@*/
 	spec->lbufPtr = spec->lbuf;
@@ -267,8 +267,8 @@ retry:
 	if (f == NULL || !fgets(ofi->readBuf, BUFSIZ, f)) {
 	    /* EOF */
 	    if (spec->readStack->next) {
-		rpmError(RPMERR_UNMATCHEDIF, _("Unclosed %%if\n"));
-	        return RPMERR_UNMATCHEDIF;
+		rpmlog(RPMLOG_ERR, _("Unclosed %%if\n"));
+	        return RPMRC_FAIL;
 	    }
 
 	    /* remove this file from the stack */
@@ -301,7 +301,7 @@ retry:
     
     /* Copy next file line into the spec line buffer */
     if ((rc = copyNextLine(spec, ofi, strip)) != 0) {
-	if (rc == RPMERR_UNMATCHEDIF)
+	if (rc == RPMRC_FAIL)
 	    goto retry;
 	return rc;
     }
@@ -336,7 +336,7 @@ retry:
 	s += 3;
         match = parseExpressionBoolean(spec, s);
 	if (match < 0) {
-	    rpmError(RPMERR_UNMATCHEDIF,
+	    rpmlog(RPMLOG_ERR,
 			_("%s:%d: parseExpressionBoolean returns %d\n"),
 			ofi->fileName, ofi->lineNum, match);
 	    return RPMRC_FAIL;
@@ -345,10 +345,10 @@ retry:
 	s += 5;
 	if (! spec->readStack->next) {
 	    /* Got an else with no %if ! */
-	    rpmError(RPMERR_UNMATCHEDIF,
+	    rpmlog(RPMLOG_ERR,
 			_("%s:%d: Got a %%else with no %%if\n"),
 			ofi->fileName, ofi->lineNum);
-	    return RPMERR_UNMATCHEDIF;
+	    return RPMRC_FAIL;
 	}
 	spec->readStack->reading =
 	    spec->readStack->next->reading && ! spec->readStack->reading;
@@ -357,10 +357,10 @@ retry:
 	s += 6;
 	if (! spec->readStack->next) {
 	    /* Got an end with no %if ! */
-	    rpmError(RPMERR_UNMATCHEDIF,
+	    rpmlog(RPMLOG_ERR,
 			_("%s:%d: Got a %%endif with no %%if\n"),
 			ofi->fileName, ofi->lineNum);
-	    return RPMERR_UNMATCHEDIF;
+	    return RPMRC_FAIL;
 	}
 	rl = spec->readStack;
 	spec->readStack = spec->readStack->next;

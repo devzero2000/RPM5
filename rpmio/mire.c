@@ -111,7 +111,7 @@ int mireRegexec(miRE mire, const char * val)
 	    char msg[256];
 	    (void) regerror(rc, mire->preg, msg, sizeof(msg)-1);
 	    msg[sizeof(msg)-1] = '\0';
-	    rpmError(RPMERR_REGEXEC, "%s: regexec failed: %s\n",
+	    rpmlog(RPMLOG_ERR, _("%s: regexec failed: %s\n"),
 			mire->pattern, msg);
 	    rc = -1;
 	}
@@ -152,7 +152,7 @@ int mireRegcomp(miRE mire, const char * pattern)
 	    char msg[256];
 	    (void) regerror(rc, mire->preg, msg, sizeof(msg)-1);
 	    msg[sizeof(msg)-1] = '\0';
-	    rpmError(RPMERR_REGCOMP, "%s: regcomp failed: %s\n",
+	    rpmlog(RPMLOG_ERR, _("%s: regcomp failed: %s\n"),
 			mire->pattern, msg);
 	}
 	break;

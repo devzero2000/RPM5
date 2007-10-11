@@ -190,7 +190,7 @@ rpmdbMatchIterator rpmtsInitIterator(const rpmts ts, rpmTag rpmtag,
 	    case '(':
 		/* XXX Fail if nested parens. */
 		if (level++ != 0) {
-		    rpmError(RPMERR_QFMT, _("extra '(' in package label: %s\n"), keyp);
+		    rpmlog(RPMLOG_ERR, _("extra '(' in package label: %s\n"), keyp);
 		    return NULL;
 		}
 		/* Parse explicit epoch. */
@@ -208,7 +208,7 @@ rpmdbMatchIterator rpmtsInitIterator(const rpmts ts, rpmTag rpmtag,
 	    case ')':
 		/* XXX Fail if nested parens. */
 		if (--level != 0) {
-		    rpmError(RPMERR_QFMT, _("missing '(' in package label: %s\n"), keyp);
+		    rpmlog(RPMLOG_ERR, _("missing '(' in package label: %s\n"), keyp);
 		    return NULL;
 		}
 		/* Don't copy trailing ')' */
@@ -216,7 +216,7 @@ rpmdbMatchIterator rpmtsInitIterator(const rpmts ts, rpmTag rpmtag,
 	    }
 	}
 	if (level) {
-	    rpmError(RPMERR_QFMT, _("missing ')' in package label: %s\n"), keyp);
+	    rpmlog(RPMLOG_ERR, _("missing ')' in package label: %s\n"), keyp);
 	    return NULL;
 	}
 	*t = '\0';
@@ -394,7 +394,7 @@ int rpmtsSolve(rpmts ts, rpmds ds, /*@unused@*/ const void * data)
     bh = headerFree(bh);
     qfmt = _free(qfmt);
     if (str == NULL) {
-	rpmError(RPMERR_QFMT, _("incorrect solve path format: %s\n"), errstr);
+	rpmlog(RPMLOG_ERR, _("incorrect solve path format: %s\n"), errstr);
 	goto exit;
     }
 
@@ -404,7 +404,7 @@ int rpmtsSolve(rpmts ts, rpmds ds, /*@unused@*/ const void * data)
 
 	fd = Fopen(str, "r.fdio");
 	if (fd == NULL || Ferror(fd)) {
-	    rpmError(RPMERR_OPEN, _("open of %s failed: %s\n"), str,
+	    rpmlog(RPMLOG_ERR, _("open of %s failed: %s\n"), str,
 			Fstrerror(fd));
             if (fd != NULL) {
                 xx = Fclose(fd);

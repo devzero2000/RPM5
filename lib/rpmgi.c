@@ -94,7 +94,7 @@ static FD_t rpmgiOpen(const char * path, const char * fmode)
     fd = Fopen(fn, fmode);
 
     if (fd == NULL || Ferror(fd)) {
-	rpmError(RPMERR_OPEN, _("open of %s failed: %s\n"), fn, Fstrerror(fd));
+	rpmlog(RPMLOG_ERR, _("open of %s failed: %s\n"), fn, Fstrerror(fd));
 	if (fd != NULL) (void) Fclose(fd);
 	fd = NULL;
     }
@@ -425,7 +425,7 @@ fprintf(stderr, "*** gi %p key %p[%d]\tmi %p\n", gi, gi->keyp, (int)gi->keylen, 
 		if (*a != '\0') {	/* XXX HACK: permit '=foo' */
 		    tag = tagValue(a);
 		    if (tag < 0) {
-			rpmError(RPMERR_QUERYINFO, _("unknown tag: \"%s\"\n"), a);
+			rpmlog(RPMLOG_ERR, _("unknown tag: \"%s\"\n"), a);
 			res = 1;
 		    }
 		}

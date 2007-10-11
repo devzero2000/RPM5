@@ -1271,8 +1271,8 @@ static int rpmfcGenerateDependsHelper(const Spec spec, Package pkg, rpmfi fi)
 	s = _free(s);
 
 	if (sb_stdout == NULL) {
-	    rc = RPMERR_EXEC;
-	    rpmError(rc, _("Failed to find %s:\n"), dm->msg);
+	    rpmlog(RPMLOG_ERR, _("Failed to find %s:\n"), dm->msg);
+	    rc = RPMRC_FAIL;
 	    break;
 	}
 
@@ -1283,7 +1283,7 @@ static int rpmfcGenerateDependsHelper(const Spec spec, Package pkg, rpmfi fi)
 	sb_stdout = freeStringBuf(sb_stdout);
 
 	if (rc) {
-	    rpmError(rc, _("Failed to find %s:\n"), dm->msg);
+	    rpmlog(RPMLOG_ERR, _("Failed to find %s:\n"), dm->msg);
 	    break;
 	}
     }

@@ -69,7 +69,7 @@ static int isSpecFile(const char * specfile)
 
     fd = Fopen(specfile, "r");
     if (fd == NULL || Ferror(fd)) {
-	rpmError(RPMERR_OPEN, _("Unable to open spec file %s: %s\n"),
+	rpmlog(RPMLOG_ERR, _("Unable to open spec file %s: %s\n"),
 		specfile, Fstrerror(fd));
 	return 0;
     }
@@ -146,7 +146,7 @@ static int buildForTarget(rpmts ts, const char * arg, BTA_t ba)
 	    break;
 	}
 	if (!bingo) {
-	    rpmError(RPMERR_READ, _("Failed to read spec file from %s\n"), arg);
+	    rpmlog(RPMLOG_ERR, _("Failed to read spec file from %s\n"), arg);
 	    xx = Unlink(tmpSpecFile);
 	    tmpSpecFile = _free(tmpSpecFile);
 	    return 1;
@@ -160,7 +160,7 @@ static int buildForTarget(rpmts ts, const char * arg, BTA_t ba)
 	specut = urlPath(specURL, &specFile);
 	xx = Rename(tmpSpecFile, specFile);
 	if (xx) {
-	    rpmError(RPMERR_RENAME, _("Failed to rename %s to %s: %m\n"),
+	    rpmlog(RPMLOG_ERR, _("Failed to rename %s to %s: %m\n"),
 			tmpSpecFile, s);
 	    (void) Unlink(tmpSpecFile);
 	}
@@ -201,12 +201,12 @@ static int buildForTarget(rpmts ts, const char * arg, BTA_t ba)
     if (specut != URL_IS_DASH) {
 	struct stat sb;
 	if (Stat(specURL, &sb) < 0) {
-	    rpmError(RPMERR_STAT, _("failed to stat %s: %m\n"), specURL);
+	    rpmlog(RPMLOG_ERR, _("failed to stat %s: %m\n"), specURL);
 	    rc = 1;
 	    goto exit;
 	}
 	if (! S_ISREG(sb.st_mode)) {
-	    rpmError(RPMERR_NOTREG, _("File %s is not a regular file.\n"),
+	    rpmlog(RPMLOG_ERR, _("File %s is not a regular file.\n"),
 		specURL);
 	    rc = 1;
 	    goto exit;
@@ -214,7 +214,7 @@ static int buildForTarget(rpmts ts, const char * arg, BTA_t ba)
 
 	/* Try to verify that the file is actually a specfile */
 	if (!isSpecFile(specURL)) {
-	    rpmError(RPMERR_BADSPEC,
+	    rpmlog(RPMLOG_ERR,
 		_("File %s does not appear to be a specfile.\n"), specURL);
 	    rc = 1;
 	    goto exit;

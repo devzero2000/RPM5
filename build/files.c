@@ -924,7 +924,7 @@ static int parseForSimple(/*@unused@*/Spec spec, Package pkg, char * buf,
 	if (!strcmp(s, "%docdir")) {
 	    s = strtokWithQuotes(NULL, " \t\n");
 	    if (fl->docDirCount == MAXDOCDIR) {
-		rpmError(RPMERR_INTERNAL, _("Hit limit for %%docdir\n"));
+		rpmlog(RPMLOG_CRIT, _("Hit limit for %%docdir\n"));
 		fl->processingFailed = 1;
 		res = 1;
 	    }
@@ -932,7 +932,7 @@ static int parseForSimple(/*@unused@*/Spec spec, Package pkg, char * buf,
 	    if (s != NULL)
 		fl->docDirs[fl->docDirCount++] = xstrdup(s);
 	    if (s == NULL || strtokWithQuotes(NULL, " \t\n")) {
-		rpmError(RPMERR_INTERNAL, _("Only one arg for %%docdir\n"));
+		rpmlog(RPMLOG_CRIT, _("Only one arg for %%docdir\n"));
 		fl->processingFailed = 1;
 		res = 1;
 	    }

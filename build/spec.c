@@ -682,7 +682,7 @@ printNewSpecfile(Spec spec)
 	/* XXX this should use queryHeader(), but prints out tn as well. */
 	msgstr = headerSprintf(h, fmt, rpmTagTable, rpmHeaderFormats, &errstr);
 	if (msgstr == NULL) {
-	    rpmError(RPMERR_QFMT, _("can't query %s: %s\n"), tn, errstr);
+	    rpmlog(RPMLOG_ERR, _("can't query %s: %s\n"), tn, errstr);
 	    return;
 	}
 
@@ -764,7 +764,7 @@ static int _specQuery(rpmts ts, QVA_t qva, const char *specName,
 		cookie, anyarch, 1, verify)
       || (spec = rpmtsSetSpec(ts, NULL)) == NULL)
     {
-	rpmError(RPMERR_QUERY,
+	rpmlog(RPMLOG_ERR,
 	    _("query of specfile %s failed, can't parse\n"), 
 	    specName);
 	goto exit;

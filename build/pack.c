@@ -607,8 +607,8 @@ int writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
     /* Reallocate the header into one contiguous region. */
     h = headerReload(h, RPMTAG_HEADERIMMUTABLE);
     if (h == NULL) {	/* XXX can't happen */
-	rc = RPMERR_RELOAD;
-	rpmError(RPMERR_RELOAD, _("Unable to create immutable header region.\n"));
+	rpmlog(RPMLOG_ERR, _("Unable to create immutable header region.\n"));
+	rc = RPMRC_FAIL;
 	goto exit;
     }
     /* Re-reference reallocated header. */
@@ -620,15 +620,15 @@ int writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
      */
     sigtarget = NULL;
     if (rpmTempFile(NULL, &sigtarget, &fd)) {
-	rc = RPMRC_FAIL;
 	rpmlog(RPMLOG_ERR, _("Unable to open temp file.\n"));
+	rc = RPMRC_FAIL;
 	goto exit;
     }
 
     fdInitDigest(fd, PGPHASHALGO_SHA1, 0);
     if (headerWrite(fd, h)) {
-	rc = RPMERR_NOSPACE;
-	rpmError(RPMERR_NOSPACE, _("Unable to write temp header\n"));
+	rc = RPMRC_FAIL;
+	rpmlog(RPMLOG_ERR, _("Unable to write temp header\n"));
     } else { /* Write the archive and get the size */
 	(void) Fflush(fd);
 	fdFiniDigest(fd, PGPHASHALGO_SHA1, &SHA1, NULL, 1);
@@ -685,17 +685,17 @@ assert(0);
     /* Reallocate the signature into one contiguous region. */
     sigh = headerReload(sigh, RPMTAG_HEADERSIGNATURES);
     if (sigh == NULL) {	/* XXX can't happen */
-	rc = RPMERR_RELOAD;
-	rpmError(RPMERR_RELOAD, _("Unable to reload signature header.\n"));
+	rpmlog(RPMLOG_ERR, _("Unable to reload signature header.\n"));
+	rc = RPMRC_FAIL;
 	goto exit;
     }
 
     /* Open the output file */
     fd = Fopen(fileName, "w.fdio");
     if (fd == NULL || Ferror(fd)) {
-	rc = RPMRC_FAIL;
 	rpmlog(RPMLOG_ERR, _("Could not open %s: %s\n"),
 		fileName, Fstrerror(fd));
+	rc = RPMRC_FAIL;
 	goto exit;
     }
 
@@ -717,8 +717,8 @@ assert(0);
 	}
 
 	if (_rc != RPMRC_OK) {
-	    rc = RPMERR_NOSPACE;
-	    rpmError(RPMERR_NOSPACE, _("Unable to write package: %s\n"),
+	    rc = RPMRC_FAIL;
+	    rpmlog(RPMLOG_ERR, _("Unable to write package: %s\n"),
 		 Fstrerror(fd));
 	    goto exit;
 	}
@@ -731,7 +731,7 @@ assert(0);
 
 	_rc = rpmpkgWrite(item, fd, sigh, NULL);
 	if (_rc != RPMRC_OK) {
-	    rc = RPMERR_NOSPACE;
+	    rc = RPMRC_FAIL;
 	    goto exit;
 	}
     }
@@ -740,7 +740,7 @@ assert(0);
     ifd = Fopen(sigtarget, "r.fdio");
     if (ifd == NULL || Ferror(ifd)) {
 	rc = RPMERR_READ;
-	rpmError(RPMERR_READ, _("Unable to open sigtarget %s: %s\n"),
+	rpmlog(RPMLOG_ERR, _("Unable to open sigtarget %s: %s\n"),
 		sigtarget, Fstrerror(ifd));
 	goto exit;
     }
@@ -751,7 +751,7 @@ assert(0);
 
 	if (nh == NULL) {
 	    rc = RPMERR_READ;
-	    rpmError(RPMERR_READ, _("Unable to read header from %s: %s\n"),
+	    rpmlog(RPMLOG_ERR, _("Unable to read header from %s: %s\n"),
 			sigtarget, Fstrerror(ifd));
 	    goto exit;
 	}
@@ -764,8 +764,8 @@ assert(0);
 	nh = headerFree(nh);
 
 	if (rc) {
-	    rc = RPMERR_NOSPACE;
-	    rpmError(RPMERR_NOSPACE, _("Unable to write header to %s: %s\n"),
+	    rc = RPMRC_FAIL;
+	    rpmlog(RPMLOG_ERR, _("Unable to write header to %s: %s\n"),
 			fileName, Fstrerror(fd));
 	    goto exit;
 	}
@@ -774,15 +774,15 @@ assert(0);
     /* Write the payload into the package. */
     while ((count = Fread(buf, sizeof(buf[0]), sizeof(buf), ifd)) > 0) {
 	if (count == -1) {
-	    rc = RPMERR_READ;
-	    rpmError(RPMERR_READ, _("Unable to read payload from %s: %s\n"),
+	    rpmlog(RPMLOG_ERR, _("Unable to read payload from %s: %s\n"),
 		     sigtarget, Fstrerror(ifd));
+	    rc = RPMRC_FAIL;
 	    goto exit;
 	}
 	if (Fwrite(buf, sizeof(buf[0]), count, fd) != count) {
-	    rc = RPMERR_NOSPACE;
-	    rpmError(RPMERR_NOSPACE, _("Unable to write payload to %s: %s\n"),
+	    rpmlog(RPMLOG_ERR, _("Unable to write payload to %s: %s\n"),
 		     fileName, Fstrerror(fd));
+	    rc = RPMRC_FAIL;
 	    goto exit;
 	}
     }
