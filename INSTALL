@@ -31,7 +31,7 @@ Perl            mandatory 5.8.0   5.8.8   http://www.perl.com/
 POPT            mandatory 1.9     1.11    http://rpm5.org/files/popt/
 BeeCrypt        mandatory 4.0     4.1.2   http://www.virtualunlimited.com/products/beecrypt/
 Neon            optional  0.26.0  0.27.2  http://www.webdav.org/neon/
-Berkeley-DB [1] optional  -       4.6.19  http://www.oracle.com/database/berkeley-db.html
+Berkeley-DB [1] optional  4.5     4.6.21  http://www.oracle.com/database/berkeley-db.html
 SQLite      [1] optional  3.3     3.5.1   http://www.sqlite.org/
 Lua         [2] optional  5.1     5.1.2   http://www.lua.org/
 ZLib        [3] optional  1.2     1.2.3   http://www.zlib.net/
