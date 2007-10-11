@@ -152,17 +152,17 @@ static int addChangelog(Header h, StringBuf sb)
 
     while (*s != '\0') {
 	if (*s != '*') {
-	    rpmError(RPMERR_BADSPEC,
+	    rpmlog(RPMLOG_ERR,
 			_("%%changelog entries must start with *\n"));
-	    return RPMERR_BADSPEC;
+	    return RPMRC_FAIL;
 	}
 
 	/* find end of line */
 	date = s;
 	while(*s && *s != '\n') s++;
 	if (! *s) {
-	    rpmError(RPMERR_BADSPEC, _("incomplete %%changelog entry\n"));
-	    return RPMERR_BADSPEC;
+	    rpmlog(RPMLOG_ERR, _("incomplete %%changelog entry\n"));
+	    return RPMRC_FAIL;
 	}
 /*@-modobserver@*/
 	*s = '\0';
@@ -178,21 +178,21 @@ static int addChangelog(Header h, StringBuf sb)
 	}
 	mySKIPSPACE(date);
 	if (dateToTimet(date, &time)) {
-	    rpmError(RPMERR_BADSPEC, _("bad date in %%changelog: %s\n"), date);
-	    return RPMERR_BADSPEC;
+	    rpmlog(RPMLOG_ERR, _("bad date in %%changelog: %s\n"), date);
+	    return RPMRC_FAIL;
 	}
 	if (lastTime && lastTime < time) {
-	    rpmError(RPMERR_BADSPEC,
+	    rpmlog(RPMLOG_ERR,
 		     _("%%changelog not in descending chronological order\n"));
-	    return RPMERR_BADSPEC;
+	    return RPMRC_FAIL;
 	}
 	lastTime = time;
 
 	/* skip space to the name */
 	mySKIPSPACE(s);
 	if (! *s) {
-	    rpmError(RPMERR_BADSPEC, _("missing name in %%changelog\n"));
-	    return RPMERR_BADSPEC;
+	    rpmlog(RPMLOG_ERR, _("missing name in %%changelog\n"));
+	    return RPMRC_FAIL;
 	}
 
 	/* name */
@@ -202,15 +202,15 @@ static int addChangelog(Header h, StringBuf sb)
 	    *s-- = '\0';
 
 	if (s == name) {
-	    rpmError(RPMERR_BADSPEC, _("missing name in %%changelog\n"));
-	    return RPMERR_BADSPEC;
+	    rpmlog(RPMLOG_ERR, _("missing name in %%changelog\n"));
+	    return RPMRC_FAIL;
 	}
 
 	/* text */
 	mySKIPSPACE(text);
 	if (! *text) {
-	    rpmError(RPMERR_BADSPEC, _("no description in %%changelog\n"));
-	    return RPMERR_BADSPEC;
+	    rpmlog(RPMLOG_ERR, _("no description in %%changelog\n"));
+	    return RPMRC_FAIL;
 	}
 	    
 	/* find the next leading '*' (or eos) */

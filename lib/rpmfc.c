@@ -96,12 +96,12 @@ static StringBuf getOutputFrom(/*@null@*/ const char * dir, ARGV_t argv,
 	unsetenv("MALLOC_CHECK_");
 	(void) execvp(argv[0], (char *const *)argv);
 	/* XXX this error message is probably not seen. */
-	rpmError(RPMERR_EXEC, _("Couldn't exec %s: %s\n"),
+	rpmlog(RPMLOG_ERR, _("Couldn't exec %s: %s\n"),
 		argv[0], strerror(errno));
 	_exit(RPMERR_EXEC);
     }
     if (child < 0) {
-	rpmError(RPMERR_FORK, _("Couldn't fork %s: %s\n"),
+	rpmlog(RPMLOG_ERR, _("Couldn't fork %s: %s\n"),
 		argv[0], strerror(errno));
 	return NULL;
     }
@@ -191,12 +191,12 @@ top:
 	const char *cmd = argvJoin(argv);
 	int rc = (WIFEXITED(status) ? WEXITSTATUS(status) : -1);
 
-	rpmError(RPMERR_EXEC, _("Command \"%s\" failed, exit(%d)\n"), cmd, rc);
+	rpmlog(RPMLOG_ERR, _("Command \"%s\" failed, exit(%d)\n"), cmd, rc);
 	cmd = _free(cmd);
 	return NULL;
     }
     if (writeBytesLeft) {
-	rpmError(RPMERR_EXEC, _("failed to write all data to %s\n"), argv[0]);
+	rpmlog(RPMLOG_ERR, _("failed to write all data to %s\n"), argv[0]);
 	return NULL;
     }
     return readBuff;

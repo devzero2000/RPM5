@@ -46,13 +46,13 @@ rpmmg rpmmgNew(const char * fn, int flags)
     mg->flags = (flags ? flags : MAGIC_CHECK);/* XXX MAGIC_COMPRESS flag? */
     mg->ms = magic_open(flags);
     if (mg->ms == NULL) {
-	rpmError(RPMERR_EXEC, _("magic_open(0x%x) failed: %s\n"),
+	rpmlog(RPMLOG_ERR, _("magic_open(0x%x) failed: %s\n"),
 		flags, strerror(errno));
 	return rpmmgFree(mg);
     }
     xx = magic_load(mg->ms, mg->fn);
     if (xx == -1) {
-        rpmError(RPMERR_EXEC, _("magic_load(ms, %s) failed: %s\n"),
+        rpmlog(RPMLOG_ERR, _("magic_load(ms, %s) failed: %s\n"),
                 (fn ? fn : "(nil)"), magic_error(mg->ms));
 	return rpmmgFree(mg);
     }
@@ -71,7 +71,7 @@ const char * rpmmgFile(rpmmg mg, const char *fn)
     if (mg->ms) {
 	t = magic_file(mg->ms, fn);
 	if (t == NULL) {
-	    rpmError(RPMERR_EXEC, _("magic_file(ms, %s) failed: %s\n"),
+	    rpmlog(RPMLOG_ERR, _("magic_file(ms, %s) failed: %s\n"),
 		(fn ? fn : "(nil)"), magic_error(mg->ms));
 	}
     }
@@ -93,7 +93,7 @@ const char * rpmmgBuffer(rpmmg mg, const char * b, size_t nb)
     if (mg->ms) {
 	t = magic_buffer(mg->ms, b, nb);
 	if (t == NULL) {
-	    rpmError(RPMERR_EXEC, _("magic_buffer(ms, %p[%u]) failed: %s\n"),
+	    rpmlog(RPMLOG_ERR, _("magic_buffer(ms, %p[%u]) failed: %s\n"),
 		b, (unsigned)nb, magic_error(mg->ms));
 	}
     }

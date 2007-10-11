@@ -91,10 +91,10 @@ static int cpio_doio(FD_t fdo, /*@unused@*/ Header h, CSA_t csa,
 
     if (rc) {
 	if (failedFile)
-	    rpmError(RPMERR_CPIO, _("create archive failed on file %s: %s\n"),
+	    rpmlog(RPMLOG_ERR, _("create archive failed on file %s: %s\n"),
 		failedFile, cpioStrerror(rc));
 	else
-	    rpmError(RPMERR_CPIO, _("create archive failed: %s\n"),
+	    rpmlog(RPMLOG_ERR, _("create archive failed: %s\n"),
 		cpioStrerror(rc));
       rc = 1;
     }
@@ -116,14 +116,14 @@ static int cpio_copy(FD_t fdo, CSA_t csa)
 
     while((nb = Fread(buf, sizeof(buf[0]), sizeof(buf), csa->cpioFdIn)) > 0) {
 	if (Fwrite(buf, sizeof(buf[0]), nb, fdo) != nb) {
-	    rpmError(RPMERR_CPIO, _("cpio_copy write failed: %s\n"),
+	    rpmlog(RPMLOG_ERR, _("cpio_copy write failed: %s\n"),
 			Fstrerror(fdo));
 	    return 1;
 	}
 	csa->cpioArchiveSize += nb;
     }
     if (Ferror(csa->cpioFdIn)) {
-	rpmError(RPMERR_CPIO, _("cpio_copy read failed: %s\n"),
+	rpmlog(RPMLOG_ERR, _("cpio_copy read failed: %s\n"),
 		Fstrerror(csa->cpioFdIn));
 	return 1;
     }
@@ -156,7 +156,7 @@ static /*@only@*/ /*@null@*/ StringBuf addFileToTagAux(Spec spec,
     while (fgets(buf, sizeof(buf), f)) {
 	/* XXX display fn in error msg */
 	if (expandMacros(spec, spec->macros, buf, sizeof(buf))) {
-	    rpmError(RPMERR_BADSPEC, _("line: %s\n"), buf);
+	    rpmlog(RPMLOG_ERR, _("line: %s\n"), buf);
 	    sb = freeStringBuf(sb);
 	    break;
 	}
@@ -219,52 +219,52 @@ int processScriptFiles(Spec spec, Package pkg)
     
     if (pkg->preInFile) {
 	if (addFileToTag(spec, pkg->preInFile, pkg->header, RPMTAG_PREIN)) {
-	    rpmError(RPMERR_BADFILENAME,
+	    rpmlog(RPMLOG_ERR,
 		     _("Could not open PreIn file: %s\n"), pkg->preInFile);
-	    return RPMERR_BADFILENAME;
+	    return RPMRC_FAIL;
 	}
     }
     if (pkg->preUnFile) {
 	if (addFileToTag(spec, pkg->preUnFile, pkg->header, RPMTAG_PREUN)) {
-	    rpmError(RPMERR_BADFILENAME,
+	    rpmlog(RPMLOG_ERR,
 		     _("Could not open PreUn file: %s\n"), pkg->preUnFile);
-	    return RPMERR_BADFILENAME;
+	    return RPMRC_FAIL;
 	}
     }
     if (pkg->preTransFile) {
 	if (addFileToTag(spec, pkg->preTransFile, pkg->header, RPMTAG_PRETRANS)) {
-	    rpmError(RPMERR_BADFILENAME,
+	    rpmlog(RPMLOG_ERR,
 		     _("Could not open PreIn file: %s\n"), pkg->preTransFile);
-	    return RPMERR_BADFILENAME;
+	    return RPMRC_FAIL;
 	}
     }
     if (pkg->postInFile) {
 	if (addFileToTag(spec, pkg->postInFile, pkg->header, RPMTAG_POSTIN)) {
-	    rpmError(RPMERR_BADFILENAME,
+	    rpmlog(RPMLOG_ERR,
 		     _("Could not open PostIn file: %s\n"), pkg->postInFile);
-	    return RPMERR_BADFILENAME;
+	    return RPMRC_FAIL;
 	}
     }
     if (pkg->postUnFile) {
 	if (addFileToTag(spec, pkg->postUnFile, pkg->header, RPMTAG_POSTUN)) {
-	    rpmError(RPMERR_BADFILENAME,
+	    rpmlog(RPMLOG_ERR,
 		     _("Could not open PostUn file: %s\n"), pkg->postUnFile);
-	    return RPMERR_BADFILENAME;
+	    return RPMRC_FAIL;
 	}
     }
     if (pkg->postTransFile) {
 	if (addFileToTag(spec, pkg->postTransFile, pkg->header, RPMTAG_POSTTRANS)) {
-	    rpmError(RPMERR_BADFILENAME,
+	    rpmlog(RPMLOG_ERR,
 		     _("Could not open PostUn file: %s\n"), pkg->postTransFile);
-	    return RPMERR_BADFILENAME;
+	    return RPMRC_FAIL;
 	}
     }
     if (pkg->verifyFile) {
 	if (addFileToTag(spec, pkg->verifyFile, pkg->header,
 			 RPMTAG_VERIFYSCRIPT)) {
-	    rpmError(RPMERR_BADFILENAME,
+	    rpmlog(RPMLOG_ERR,
 		     _("Could not open VerifyScript file: %s\n"), pkg->verifyFile);
-	    return RPMERR_BADFILENAME;
+	    return RPMRC_FAIL;
 	}
     }
 
@@ -277,10 +277,10 @@ int processScriptFiles(Spec spec, Package pkg)
 	} else if (p->fileName) {
 	    if (addFileToArrayTag(spec, p->fileName, pkg->header,
 				  RPMTAG_TRIGGERSCRIPTS)) {
-		rpmError(RPMERR_BADFILENAME,
+		rpmlog(RPMLOG_ERR,
 			 _("Could not open Trigger script file: %s\n"),
 			 p->fileName);
-		return RPMERR_BADFILENAME;
+		return RPMRC_FAIL;
 	    }
 	} else {
 	    /* This is dumb.  When the header supports NULL string */
@@ -309,11 +309,11 @@ int readRPM(const char *fileName, Spec *specp, void * l,
 	: fdDup(STDIN_FILENO);
 
     if (fdi == NULL || Ferror(fdi)) {
-	rpmError(RPMERR_BADMAGIC, _("readRPM: open %s: %s\n"),
+	rpmlog(RPMLOG_ERR, _("readRPM: open %s: %s\n"),
 		(fileName ? fileName : "<stdin>"),
 		Fstrerror(fdi));
 	if (fdi) (void) Fclose(fdi);
-	return RPMERR_BADMAGIC;
+	return RPMRC_FAIL;
     }
 
     {	const char item[] = "Lead";
@@ -332,17 +332,17 @@ int readRPM(const char *fileName, Spec *specp, void * l,
     }
 
     if (rc != RPMRC_OK) {
-	rpmError(RPMERR_BADMAGIC, _("readRPM: read %s: %s\n"),
+	rpmlog(RPMLOG_ERR, _("readRPM: read %s: %s\n"),
 		(fileName ? fileName : "<stdin>"), msg);
-	return RPMERR_BADMAGIC;
+	return RPMRC_FAIL;
     }
     /*@=sizeoftype@*/
 
     /* XXX FIXME: EPIPE on <stdin> */
     if (Fseek(fdi, 0, SEEK_SET) == -1) {
-	rpmError(RPMERR_FSEEK, _("%s: Fseek failed: %s\n"),
+	rpmlog(RPMLOG_ERR, _("%s: Fseek failed: %s\n"),
 			(fileName ? fileName : "<stdin>"), Fstrerror(fdi));
-	return RPMERR_FSEEK;
+	return RPMRC_FAIL;
     }
 
     /* Reallocate build data structures */
@@ -372,14 +372,14 @@ int readRPM(const char *fileName, Spec *specp, void * l,
     case RPMRC_NOTTRUSTED:
 	break;
     case RPMRC_NOTFOUND:
-	rpmError(RPMERR_BADMAGIC, _("readRPM: %s is not an RPM package\n"),
+	rpmlog(RPMLOG_ERR, _("readRPM: %s is not an RPM package\n"),
 		(fileName ? fileName : "<stdin>"));
-	return RPMERR_BADMAGIC;
+	return RPMRC_FAIL;
     case RPMRC_FAIL:
     default:
-	rpmError(RPMERR_BADMAGIC, _("readRPM: reading header from %s\n"),
+	rpmlog(RPMLOG_ERR, _("readRPM: reading header from %s\n"),
 		(fileName ? fileName : "<stdin>"));
-	return RPMERR_BADMAGIC;
+	return RPMRC_FAIL;
 	/*@notreached@*/ break;
     }
 
@@ -620,8 +620,8 @@ int writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
      */
     sigtarget = NULL;
     if (rpmTempFile(NULL, &sigtarget, &fd)) {
-	rc = RPMERR_CREATE;
-	rpmError(RPMERR_CREATE, _("Unable to open temp file.\n"));
+	rc = RPMRC_FAIL;
+	rpmlog(RPMLOG_ERR, _("Unable to open temp file.\n"));
 	goto exit;
     }
 
@@ -637,8 +637,7 @@ int writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
 	} else if (Fileno(csa->cpioFdIn) >= 0) {
 	    rc = cpio_copy(fd, csa);
 	} else {
-	    rc = RPMERR_BADARG;
-	    rpmError(RPMERR_BADARG, _("Bad CSA data\n"));
+assert(0);
 	}
     }
     rpmio_flags = _free(rpmio_flags);
@@ -694,8 +693,8 @@ int writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
     /* Open the output file */
     fd = Fopen(fileName, "w.fdio");
     if (fd == NULL || Ferror(fd)) {
-	rc = RPMERR_CREATE;
-	rpmError(RPMERR_CREATE, _("Could not open %s: %s\n"),
+	rc = RPMRC_FAIL;
+	rpmlog(RPMLOG_ERR, _("Could not open %s: %s\n"),
 		fileName, Fstrerror(fd));
 	goto exit;
     }
@@ -888,10 +887,10 @@ int packageBinaries(Spec spec)
 		const char *NVRA = NULL;
 		(void) headerGetExtension(pkg->header, RPMTAG_NVRA,
 			NULL, &NVRA, NULL);
-		rpmError(RPMERR_BADFILENAME, _("Could not generate output "
+		rpmlog(RPMLOG_ERR, _("Could not generate output "
 		     "filename for package %s: %s\n"), NVRA, errorString);
 		NVRA = _free(NVRA);
-		return RPMERR_BADFILENAME;
+		return RPMRC_FAIL;
 	    }
 	    fn = rpmGetPath("%{_rpmdir}/", binRpm, NULL);
 	    if ((binDir = strchr(binRpm, '/')) != NULL) {
@@ -906,7 +905,7 @@ int packageBinaries(Spec spec)
 			    /*@switchbreak@*/ break;
 			/*@fallthrough@*/
 		    default:
-			rpmError(RPMERR_BADFILENAME,_("cannot create %s: %s\n"),
+			rpmlog(RPMLOG_ERR,_("cannot create %s: %s\n"),
 			    dn, strerror(errno));
 			/*@switchbreak@*/ break;
 		    }

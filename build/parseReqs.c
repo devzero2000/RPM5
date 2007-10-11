@@ -98,10 +98,10 @@ int parseRCPOT(Spec spec, Package pkg, const char *field, rpmTag tagN,
 	 || (nr > 2 && r[0] == '!')
 	 || (nr > 3 && r[0] == '%' && r[1] == '{' && r[nr-1] == '}')))
 	{
-	    rpmError(RPMERR_BADSPEC,
+	    rpmlog(RPMLOG_ERR,
 		     _("line %d: Dependency \"%s\" must begin with alpha-numeric, '_' or '/': %s\n"),
 		     spec->lineNum, spec->line, r);
-	    return RPMERR_BADSPEC;
+	    return RPMRC_FAIL;
 	}
 
 	re = r;
@@ -122,10 +122,10 @@ int parseRCPOT(Spec spec, Package pkg, const char *field, rpmTag tagN,
 	if (ve > v) {
 	    rpmsenseFlags F = rpmEVRflags(v, &ve);
 	    if (F && r[0] == '/') {
-		rpmError(RPMERR_BADSPEC,
+		rpmlog(RPMLOG_ERR,
 			 _("line %d: Versioned file name not permitted: %s\n"),
 			 spec->lineNum, spec->line);
-		return RPMERR_BADSPEC;
+		return RPMRC_FAIL;
 	    }
 	    if (F) {
 		/* now parse EVR */
@@ -141,9 +141,9 @@ int parseRCPOT(Spec spec, Package pkg, const char *field, rpmTag tagN,
 	/*@-branchstate@*/
  	if (Flags & RPMSENSE_SENSEMASK) {
 	    if (*v == '\0' || ve == v) {
-		rpmError(RPMERR_BADSPEC, _("line %d: Version required: %s\n"),
+		rpmlog(RPMLOG_ERR, _("line %d: Version required: %s\n"),
 			spec->lineNum, spec->line);
-		return RPMERR_BADSPEC;
+		return RPMRC_FAIL;
 	    }
 	    EVR = xmalloc((ve-v) + 1);
 	    strncpy(EVR, v, (ve-v));

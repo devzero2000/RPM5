@@ -328,7 +328,7 @@ if (!_nosigh) {
     }
 
     if (rc != RPMRC_OK || h == NULL) {
-	rpmError(RPMERR_FREAD, _("%s: headerRead failed: %s"), fn,
+	rpmlog(RPMLOG_ERR, _("%s: headerRead failed: %s"), fn,
 		(msg && *msg ? msg : "\n"));
 	msg = _free(msg);
 	goto exit;
@@ -453,7 +453,7 @@ assert(dig != NULL);
 	op->count--;	/* XXX one too many */
 	dig->nbytes += nb;	/* XXX include size of header blob. */
 	if (count < 0) {
-	    rpmError(RPMERR_FREAD, _("%s: Fread failed: %s\n"),
+	    rpmlog(RPMLOG_ERR, _("%s: Fread failed: %s\n"),
 					fn, Fstrerror(fd));
 	    rc = RPMRC_FAIL;
 	    goto exit;

@@ -108,17 +108,17 @@ static int copyFile(FD_t *sfdp, const char **sfnp,
     while ((count = Fread(buf, sizeof(buf[0]), sizeof(buf), *sfdp)) > 0)
     {
 	if (Fwrite(buf, sizeof(buf[0]), count, *tfdp) != count) {
-	    rpmError(RPMERR_FWRITE, _("%s: Fwrite failed: %s\n"), *tfnp,
+	    rpmlog(RPMLOG_ERR, _("%s: Fwrite failed: %s\n"), *tfnp,
 		Fstrerror(*tfdp));
 	    goto exit;
 	}
     }
     if (count < 0) {
-	rpmError(RPMERR_FREAD, _("%s: Fread failed: %s\n"), *sfnp, Fstrerror(*sfdp));
+	rpmlog(RPMLOG_ERR, _("%s: Fread failed: %s\n"), *sfnp, Fstrerror(*sfdp));
 	goto exit;
     }
     if (Fflush(*tfdp) != 0) {
-	rpmError(RPMERR_FWRITE, _("%s: Fflush failed: %s\n"), *tfnp,
+	rpmlog(RPMLOG_ERR, _("%s: Fflush failed: %s\n"), *tfnp,
 	    Fstrerror(*tfdp));
 	goto exit;
     }
@@ -631,19 +631,19 @@ static int rpmcliImportPubkeys(const rpmts ts,
 
 	/* Read pgp packet. */
 	if ((rc = pgpReadPkts(fn, &pkt, &pktlen)) <= 0) {
-	    rpmError(RPMERR_IMPORT, _("%s: import read failed(%d).\n"), fn, rc);
+	    rpmlog(RPMLOG_ERR, _("%s: import read failed(%d).\n"), fn, rc);
 	    res++;
 	    continue;
 	}
 	if (rc != PGPARMOR_PUBKEY) {
-	    rpmError(RPMERR_IMPORT, _("%s: not an armored public key.\n"), fn);
+	    rpmlog(RPMLOG_ERR, _("%s: not an armored public key.\n"), fn);
 	    res++;
 	    continue;
 	}
 
 	/* Import pubkey packet(s). */
 	if ((rpmrc = rpmcliImportPubkey(ts, pkt, pktlen)) != RPMRC_OK) {
-	    rpmError(RPMERR_IMPORT, _("%s: import failed.\n"), fn);
+	    rpmlog(RPMLOG_ERR, _("%s: import failed.\n"), fn);
 	    res++;
 	    continue;
 	}
@@ -673,7 +673,7 @@ static int readFile(FD_t fd, const char * fn, pgpDig dig)
     /* Read the header from the package. */
     {	Header h = headerRead(fd);
 	if (h == NULL) {
-	    rpmError(RPMERR_FREAD, _("%s: headerRead failed\n"), fn);
+	    rpmlog(RPMLOG_ERR, _("%s: headerRead failed\n"), fn);
 	    goto exit;
 	}
 
@@ -689,7 +689,7 @@ static int readFile(FD_t fd, const char * fn, pgpDig dig)
 	    ||   uh == NULL)
 	    {
 		h = headerFree(h);
-		rpmError(RPMERR_FREAD, _("%s: headerGetEntry failed\n"), fn);
+		rpmlog(RPMLOG_ERR, _("%s: headerGetEntry failed\n"), fn);
 		goto exit;
 	    }
 	    (void) headerGetMagic(NULL, &hmagic, &nmagic);
@@ -710,7 +710,7 @@ static int readFile(FD_t fd, const char * fn, pgpDig dig)
     while ((count = Fread(buf, sizeof(buf[0]), sizeof(buf), fd)) > 0)
 	dig->nbytes += count;
     if (count < 0) {
-	rpmError(RPMERR_FREAD, _("%s: Fread failed: %s\n"), fn, Fstrerror(fd));
+	rpmlog(RPMLOG_ERR, _("%s: Fread failed: %s\n"), fn, Fstrerror(fd));
 	goto exit;
     }
 

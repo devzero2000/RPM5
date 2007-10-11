@@ -355,7 +355,7 @@ int rpmGetFilesystemUsage(const char ** fileList, uint_32 * fssizes, int numFile
 			/*@innerbreak@*/ break;
 
 		if (j == numFilesystems) {
-		    rpmError(RPMERR_BADDEV, 
+		    rpmlog(RPMLOG_ERR, 
 				_("file %s is on an unknown device\n"), buf);
 		    sourceDir = _free(sourceDir);
 		    usages = _free(usages);

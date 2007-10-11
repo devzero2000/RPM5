@@ -284,15 +284,15 @@ int parseNoSource(Spec spec, const char * field, int tag)
 	if (*fe != '\0') fe++;
 
 	if (parseNum(f, &num)) {
-	    rpmError(RPMERR_BADSPEC, _("line %d: Bad number: %s\n"),
+	    rpmlog(RPMLOG_ERR, _("line %d: Bad number: %s\n"),
 		     spec->lineNum, f);
-	    return RPMERR_BADSPEC;
+	    return RPMRC_FAIL;
 	}
 
 	if (! (p = findSource(spec, num, flag))) {
-	    rpmError(RPMERR_BADSPEC, _("line %d: Bad no%s number: %d\n"),
+	    rpmlog(RPMLOG_ERR, _("line %d: Bad no%s number: %d\n"),
 		     spec->lineNum, name, num);
-	    return RPMERR_BADSPEC;
+	    return RPMRC_FAIL;
 	}
 
 	p->flags |= RPMFILE_GHOST;
@@ -358,9 +358,9 @@ assert(mdir != NULL);
 	if (nump == NULL || *nump == '\0')
 	    num = 0;
 	else if (parseNum(buf, &num)) {
-	    rpmError(RPMERR_BADSPEC, _("line %d: Bad %s number: %s\n"),
+	    rpmlog(RPMLOG_ERR, _("line %d: Bad %s number: %s\n"),
 			 spec->lineNum, name, spec->line);
-	    return RPMERR_BADSPEC;
+	    return RPMRC_FAIL;
 	}
     }
 

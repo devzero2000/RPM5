@@ -34,9 +34,9 @@ int parseBuildInstallClean(Spec spec, rpmParseState parsePart)
     /*@=branchstate@*/
     
     if (*sbp != NULL) {
-	rpmError(RPMERR_BADSPEC, _("line %d: second %s\n"),
+	rpmlog(RPMLOG_ERR, _("line %d: second %s\n"),
 		spec->lineNum, name);
-	return RPMERR_BADSPEC;
+	return RPMRC_FAIL;
     }
     
     *sbp = newStringBuf();

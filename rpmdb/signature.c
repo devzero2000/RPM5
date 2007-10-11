@@ -276,7 +276,7 @@ static int makePGPSignature(const char * file, /*@unused@*/ int_32 * sigTagp,
 		break;
 	    }
 	}
-	rpmError(RPMERR_EXEC, _("Could not exec %s: %s\n"), "pgp",
+	rpmlog(RPMLOG_ERR, _("Could not exec %s: %s\n"), "pgp",
 			strerror(errno));
 	_exit(RPMERR_EXEC);
     }
@@ -391,7 +391,7 @@ static int makeGPGSignature(const char * file, int_32 * sigTagp,
 	if (!rc)
 	    rc = execve(av[0], av+1, environ);
 
-	rpmError(RPMERR_EXEC, _("Could not exec %s: %s\n"), "gpg",
+	rpmlog(RPMLOG_ERR, _("Could not exec %s: %s\n"), "gpg",
 			strerror(errno));
 	_exit(RPMERR_EXEC);
     }
@@ -748,7 +748,7 @@ int rpmCheckPassPhrase(const char * passPhrase)
 		    /*@innerbreak@*/ break;
 		}
 	    }
-	    rpmError(RPMERR_EXEC, _("Could not exec %s: %s\n"), "pgp",
+	    rpmlog(RPMLOG_ERR, _("Could not exec %s: %s\n"), "pgp",
 			strerror(errno));
 	    _exit(RPMERR_EXEC);
         } else
@@ -763,7 +763,7 @@ int rpmCheckPassPhrase(const char * passPhrase)
 	    if (!rc)
 		rc = execve(av[0], av+1, environ);
 
-	    rpmError(RPMERR_EXEC, _("Could not exec %s: %s\n"), "gpg",
+	    rpmlog(RPMLOG_ERR, _("Could not exec %s: %s\n"), "gpg",
 			strerror(errno));
 	}
     }

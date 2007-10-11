@@ -285,7 +285,7 @@ assert(fi->h != NULL);
 	goto exit;
     }
     if (Access(_sourcedir, W_OK)) {
-	rpmError(RPMERR_CREATE, _("cannot write to %%%s %s\n"),
+	rpmlog(RPMLOG_ERR, _("cannot write to %%%s %s\n"),
 		"_sourcedir", _sourcedir);
 	rpmrc = RPMRC_FAIL;
 	goto exit;
@@ -298,7 +298,7 @@ assert(fi->h != NULL);
 	goto exit;
     }
     if (Access(_specdir, W_OK)) {
-	rpmError(RPMERR_CREATE, _("cannot write to %%%s %s\n"),
+	rpmlog(RPMLOG_ERR, _("cannot write to %%%s %s\n"),
 		"_specdir", _specdir);
 	rpmrc = RPMRC_FAIL;
 	goto exit;
@@ -861,7 +861,7 @@ assert(NVRA != NULL);
     }
 
     if (psm->sq.child == (pid_t)-1) {
-        rpmError(RPMERR_FORK, _("Couldn't fork %s: %s\n"), sln, strerror(errno));
+        rpmlog(RPMLOG_ERR, _("Couldn't fork %s: %s\n"), sln, strerror(errno));
         goto exit;
     }
 
@@ -1898,7 +1898,7 @@ assert(psm->te != NULL);
 	    xx = rpmpsmNext(psm, PSM_NOTIFY);
 
 	    if (rc) {
-		rpmError(RPMERR_CPIO,
+		rpmlog(RPMLOG_ERR,
 			_("unpacking of archive failed%s%s: %s\n"),
 			(psm->failedFile != NULL ? _(" on file ") : ""),
 			(psm->failedFile != NULL ? psm->failedFile : ""),
@@ -2077,11 +2077,11 @@ assert(psm->te != NULL);
 
 	if (rc) {
 	    if (psm->failedFile)
-		rpmError(RPMERR_CPIO,
+		rpmlog(RPMLOG_ERR,
 			_("%s failed on file %s: %s\n"),
 			psm->stepName, psm->failedFile, cpioStrerror(rc));
 	    else
-		rpmError(RPMERR_CPIO, _("%s failed: %s\n"),
+		rpmlog(RPMLOG_ERR, _("%s failed: %s\n"),
 			psm->stepName, cpioStrerror(rc));
 
 	    /* XXX notify callback on error. */

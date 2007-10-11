@@ -22,9 +22,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#define rpmError fprintf
+#define rpmlog fprintf
 #define	rpmIsVerbose()	(0)
-#define RPMERR_BADSPEC stderr
+#define RPMLOG_ERR stderr
 #undef	_
 #define	_(x)	x
 
@@ -661,7 +661,7 @@ doDefine(MacroBuf mb, /*@returned@*/ const char * se, int level, int expandbody)
     SKIPBLANK(s, c);
     if (c == '{') {	/* XXX permit silent {...} grouping */
 	if ((se = matchchar(s, c, '}')) == NULL) {
-	    rpmError(RPMERR_BADSPEC,
+	    rpmlog(RPMLOG_ERR,
 		_("Macro %%%s has unterminated body\n"), n);
 	    se = s;	/* XXX W2DO? */
 	    return se;
@@ -699,7 +699,7 @@ doDefine(MacroBuf mb, /*@returned@*/ const char * se, int level, int expandbody)
 	*be = '\0';
 
 	if (bc || pc) {
-	    rpmError(RPMERR_BADSPEC,
+	    rpmlog(RPMLOG_ERR,
 		_("Macro %%%s has unterminated body\n"), n);
 	    se = s;	/* XXX W2DO? */
 	    return se;
@@ -720,25 +720,25 @@ doDefine(MacroBuf mb, /*@returned@*/ const char * se, int level, int expandbody)
 
     /* Names must start with alphabetic or _ and be at least 3 chars */
     if (!((c = *n) && (xisalpha(c) || c == '_') && (ne - n) > 2)) {
-	rpmError(RPMERR_BADSPEC,
+	rpmlog(RPMLOG_ERR,
 		_("Macro %%%s has illegal name (%%define)\n"), n);
 	return se;
     }
 
     /* Options must be terminated with ')' */
     if (o && oc != ')') {
-	rpmError(RPMERR_BADSPEC, _("Macro %%%s has unterminated opts\n"), n);
+	rpmlog(RPMLOG_ERR, _("Macro %%%s has unterminated opts\n"), n);
 	return se;
     }
 
     if ((be - b) < 1) {
-	rpmError(RPMERR_BADSPEC, _("Macro %%%s has empty body\n"), n);
+	rpmlog(RPMLOG_ERR, _("Macro %%%s has empty body\n"), n);
 	return se;
     }
 
 /*@-modfilesys@*/
     if (expandbody && expandU(mb, b, (&buf[bufn] - b))) {
-	rpmError(RPMERR_BADSPEC, _("Macro %%%s failed to expand\n"), n);
+	rpmlog(RPMLOG_ERR, _("Macro %%%s failed to expand\n"), n);
 	return se;
     }
 /*@=modfilesys@*/
@@ -777,7 +777,7 @@ doUndefine(MacroContext mc, /*@returned@*/ const char * se)
 
     /* Names must start with alphabetic or _ and be at least 3 chars */
     if (!((c = *n) && (xisalpha(c) || c == '_') && (ne - n) > 2)) {
-	rpmError(RPMERR_BADSPEC,
+	rpmlog(RPMLOG_ERR,
 		_("Macro %%%s has illegal name (%%undefine)\n"), n);
 	return se;
     }
@@ -893,7 +893,7 @@ freeArgs(MacroBuf mb)
 		skiptest = 1; /* XXX skip test for %# %* %0 */
 	} else if (!skiptest && me->used <= 0) {
 #if NOTYET
-	    rpmError(RPMERR_BADSPEC,
+	    rpmlog(RPMLOG_ERR,
 			_("Macro %%%s (%s) was not used below level %d\n"),
 			me->name, me->body, me->level);
 #endif
@@ -1022,7 +1022,7 @@ grabArgs(MacroBuf mb, const MacroEntry me, /*@returned@*/ const char * se,
 /*@=nullstate@*/
     {
 	if (c == '?' || (o = strchr(opts, c)) == NULL) {
-	    rpmError(RPMERR_BADSPEC, _("Unknown option %c in %s(%s)\n"),
+	    rpmlog(RPMLOG_ERR, _("Unknown option %c in %s(%s)\n"),
 			(char)c, me->name, opts);
 	    return se;
 	}
@@ -1084,7 +1084,7 @@ doOutput(MacroBuf mb, int waserror, const char * msg, size_t msglen)
     buf[msglen] = '\0';
     (void) expandU(mb, buf, bufn);
     if (waserror)
-	rpmError(RPMERR_BADSPEC, "%s\n", buf);
+	rpmlog(RPMLOG_ERR, "%s\n", buf);
     else
 	fprintf(stderr, "%s", buf);
 }
@@ -1249,7 +1249,7 @@ expandMacro(MacroBuf mb)
     int chkexist;
 
     if (++mb->depth > max_macro_depth) {
-	rpmError(RPMERR_BADSPEC,
+	rpmlog(RPMLOG_ERR,
 		_("Recursion depth(%d) greater than max(%d)\n"),
 		mb->depth, max_macro_depth);
 	mb->depth--;
@@ -1321,7 +1321,7 @@ expandMacro(MacroBuf mb)
 		/*@switchbreak@*/ break;
 	case '(':		/* %(...) shell escape */
 		if ((se = matchchar(s, c, ')')) == NULL) {
-			rpmError(RPMERR_BADSPEC,
+			rpmlog(RPMLOG_ERR,
 				_("Unterminated %c: %s\n"), (char)c, s);
 			rc = 1;
 			continue;
@@ -1338,7 +1338,7 @@ expandMacro(MacroBuf mb)
 		/*@notreached@*/ /*@switchbreak@*/ break;
 	case '{':		/* %{...}/%{...:...} substitution */
 		if ((se = matchchar(s, c, '}')) == NULL) {
-			rpmError(RPMERR_BADSPEC,
+			rpmlog(RPMLOG_ERR,
 				_("Unterminated %c: %s\n"), (char)c, s);
 			rc = 1;
 			continue;
@@ -1380,7 +1380,7 @@ expandMacro(MacroBuf mb)
 		c = '%';	/* XXX only need to save % */
 		SAVECHAR(mb, c);
 #if 0
-		rpmError(RPMERR_BADSPEC,
+		rpmlog(RPMLOG_ERR,
 			_("A %% is followed by an unparseable macro\n"));
 #endif
 		s = se;
@@ -1566,7 +1566,7 @@ expandMacro(MacroBuf mb)
 			c = '%';        /* XXX only need to save % */
 			SAVECHAR(mb, c);
 		} else {
-			rpmError(RPMERR_BADSPEC,
+			rpmlog(RPMLOG_ERR,
 				_("Macro %%%.*s not found, skipping\n"), fn, f);
 			s = se;
 		}
@@ -1895,7 +1895,7 @@ expandMacros(void * spec, MacroContext mc, char * sbuf, size_t slen)
 
     tbuf[slen] = '\0';
     if (mb->nb == 0)
-	rpmError(RPMERR_BADSPEC, _("Macro expansion too big for target buffer\n"));
+	rpmlog(RPMLOG_ERR, _("Macro expansion too big for target buffer\n"));
     else
 	strncpy(sbuf, tbuf, (slen - mb->nb + 1));
 
@@ -1929,7 +1929,7 @@ addMacro(MacroContext mc,
 	if (*mep && (*mep)->flags && !(n[0] == '.' && n[1] == '.')) {
 	    /* XXX avoid error message for %buildroot */
 	    if (strcmp((*mep)->name, "buildroot"))
-		rpmError(RPMERR_BADSPEC, _("Macro '%s' is readonly and cannot be changed.\n"), n);
+		rpmlog(RPMLOG_ERR, _("Macro '%s' is readonly and cannot be changed.\n"), n);
 	    return;
 	}
 	/* Push macro over previous definition */
@@ -2136,16 +2136,16 @@ int isCompressed(const char * file, rpmCompressedMagic * compressed)
     fd = Fopen(file, "r");
     if (fd == NULL || Ferror(fd)) {
 	/* XXX Fstrerror */
-	rpmError(RPMERR_BADSPEC, _("File %s: %s\n"), file, Fstrerror(fd));
+	rpmlog(RPMLOG_ERR, _("File %s: %s\n"), file, Fstrerror(fd));
 	if (fd) (void) Fclose(fd);
 	return 1;
     }
     nb = Fread(magic, sizeof(magic[0]), sizeof(magic), fd);
     if (nb < 0) {
-	rpmError(RPMERR_BADSPEC, _("File %s: %s\n"), file, Fstrerror(fd));
+	rpmlog(RPMLOG_ERR, _("File %s: %s\n"), file, Fstrerror(fd));
 	rc = 1;
     } else if (nb < sizeof(magic)) {
-	rpmError(RPMERR_BADSPEC, _("File %s is smaller than %u bytes\n"),
+	rpmlog(RPMLOG_ERR, _("File %s is smaller than %u bytes\n"),
 		file, (unsigned)sizeof(magic));
 	rc = 0;
     }

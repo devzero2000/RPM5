@@ -186,7 +186,7 @@ static int parseBits(const char * s, const tokenBits tokbits,
 	}
     }
     if (c == 0 && bp) *bp = bits;
-    return (c ? RPMERR_BADSPEC : 0);
+    return (c ? RPMRC_FAIL : RPMRC_OK);
 }
 /*@=boundswrite@*/
 
@@ -237,22 +237,22 @@ static int checkForValidArchitectures(Spec spec)
 {
     const char *arch = rpmExpand("%{_target_cpu}", NULL);
     const char *os = rpmExpand("%{_target_os}", NULL);
-    int rc = RPMERR_BADSPEC;	/* assume failure. */
+    int rc = RPMRC_FAIL;	/* assume failure. */
     
     if (isMemberInEntry(spec->sourceHeader, arch, RPMTAG_EXCLUDEARCH) == 1) {
-	rpmError(RPMERR_BADSPEC, _("Architecture is excluded: %s\n"), arch);
+	rpmlog(RPMLOG_ERR, _("Architecture is excluded: %s\n"), arch);
 	goto exit;
     }
     if (isMemberInEntry(spec->sourceHeader, arch, RPMTAG_EXCLUSIVEARCH) == 0) {
-	rpmError(RPMERR_BADSPEC, _("Architecture is not included: %s\n"), arch);
+	rpmlog(RPMLOG_ERR, _("Architecture is not included: %s\n"), arch);
 	goto exit;
     }
     if (isMemberInEntry(spec->sourceHeader, os, RPMTAG_EXCLUDEOS) == 1) {
-	rpmError(RPMERR_BADSPEC, _("OS is excluded: %s\n"), os);
+	rpmlog(RPMLOG_ERR, _("OS is excluded: %s\n"), os);
 	goto exit;
     }
     if (isMemberInEntry(spec->sourceHeader, os, RPMTAG_EXCLUSIVEOS) == 0) {
-	rpmError(RPMERR_BADSPEC, _("OS is not included: %s\n"), os);
+	rpmlog(RPMLOG_ERR, _("OS is not included: %s\n"), os);
 	goto exit;
     }
     rc = 0;
@@ -277,7 +277,7 @@ static int checkForRequired(Header h, const char * NVR)
 /*@-boundsread@*/
     for (p = requiredTags; *p != 0; p++) {
 	if (!headerIsEntry(h, *p)) {
-	    rpmError(RPMERR_BADSPEC,
+	    rpmlog(RPMLOG_ERR,
 			_("%s field must be present in package: %s\n"),
 			tagName(*p), NVR);
 	    res = 1;
@@ -307,7 +307,7 @@ static int checkForDuplicates(Header h, const char * NVR)
     {
 	if (tag != lastTag)
 	    continue;
-	rpmError(RPMERR_BADSPEC, _("Duplicate %s entries in package: %s\n"),
+	rpmlog(RPMLOG_ERR, _("Duplicate %s entries in package: %s\n"),
 		     tagName(tag), NVR);
 	res = 1;
     }
@@ -364,7 +364,7 @@ static int doIcon(Spec spec, Header h)
     size_t nb;
     char *icon = alloca(iconsize+1);
     FD_t fd = NULL;
-    int rc = RPMERR_BADSPEC;	/* assume error */
+    int rc = RPMRC_FAIL;	/* assume error */
     int urltype;
     int xx;
 
@@ -373,7 +373,7 @@ static int doIcon(Spec spec, Header h)
 	    break;
     }
     if (sp == NULL) {
-	rpmError(RPMERR_BADSPEC, _("No icon file in sources\n"));
+	rpmlog(RPMLOG_ERR, _("No icon file in sources\n"));
 	goto exit;
     }
 
@@ -390,28 +390,28 @@ static int doIcon(Spec spec, Header h)
 	break;
     case URL_IS_DASH:
     case URL_IS_HKP:
-	rpmError(RPMERR_BADSPEC, _("Invalid icon URL: %s\n"), Lurlfn);
+	rpmlog(RPMLOG_ERR, _("Invalid icon URL: %s\n"), Lurlfn);
 	goto exit;
 	/*@notreached@*/ break;
     }
 
     fd = Fopen(fn, "r.fdio");
     if (fd == NULL || Ferror(fd)) {
-	rpmError(RPMERR_BADSPEC, _("Unable to open icon %s: %s\n"),
+	rpmlog(RPMLOG_ERR, _("Unable to open icon %s: %s\n"),
 		fn, Fstrerror(fd));
-	rc = RPMERR_BADSPEC;
+	rc = RPMRC_FAIL;
 	goto exit;
     }
 
     *icon = '\0';
     nb = Fread(icon, sizeof(icon[0]), iconsize, fd);
     if (Ferror(fd) || nb == 0) {
-	rpmError(RPMERR_BADSPEC, _("Unable to read icon %s: %s\n"),
+	rpmlog(RPMLOG_ERR, _("Unable to read icon %s: %s\n"),
 		fn, Fstrerror(fd));
 	goto exit;
     }
     if (nb >= iconsize) {
-	rpmError(RPMERR_BADSPEC, _("Icon %s is too big (max. %d bytes)\n"),
+	rpmlog(RPMLOG_ERR, _("Icon %s is too big (max. %d bytes)\n"),
 		fn, iconsize);
 	goto exit;
     }
@@ -421,7 +421,7 @@ static int doIcon(Spec spec, Header h)
     else if (!strncmp(icon, "/* XPM", sizeof("/* XPM")-1))
 	xx = headerAddEntry(h, RPMTAG_XPM, RPM_BIN_TYPE, icon, nb);
     else {
-	rpmError(RPMERR_BADSPEC, _("Unknown icon type: %s\n"), fn);
+	rpmlog(RPMLOG_ERR, _("Unknown icon type: %s\n"), fn);
 	goto exit;
     }
     rc = 0;
@@ -469,9 +469,9 @@ spectag stashSt(Spec spec, Header h, int tag, const char * lang)
 
 #define SINGLE_TOKEN_ONLY \
 if (multiToken) { \
-    rpmError(RPMERR_BADSPEC, _("line %d: Tag takes single token only: %s\n"), \
+    rpmlog(RPMLOG_ERR, _("line %d: Tag takes single token only: %s\n"), \
 	     spec->lineNum, spec->line); \
-    return RPMERR_BADSPEC; \
+    return RPMRC_FAIL; \
 }
 
 /*@-redecl@*/
@@ -504,22 +504,22 @@ static int handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
     int rc;
     int xx;
     
-    if (field == NULL) return RPMERR_BADSPEC;	/* XXX can't happen */
+    if (field == NULL) return RPMRC_FAIL;	/* XXX can't happen */
     /* Find the start of the "field" and strip trailing space */
     while ((*field) && (*field != ':'))
 	field++;
     if (*field != ':') {
-	rpmError(RPMERR_BADSPEC, _("line %d: Malformed tag: %s\n"),
+	rpmlog(RPMLOG_ERR, _("line %d: Malformed tag: %s\n"),
 		 spec->lineNum, spec->line);
-	return RPMERR_BADSPEC;
+	return RPMRC_FAIL;
     }
     field++;
     SKIPSPACE(field);
     if (!*field) {
 	/* Empty field */
-	rpmError(RPMERR_BADSPEC, _("line %d: Empty tag: %s\n"),
+	rpmlog(RPMLOG_ERR, _("line %d: Empty tag: %s\n"),
 		 spec->lineNum, spec->line);
-	return RPMERR_BADSPEC;
+	return RPMRC_FAIL;
     }
     end = findLastChar(field);
 
@@ -541,16 +541,16 @@ static int handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
 	/* These macros are for backward compatibility */
 	if (tag == RPMTAG_VERSION) {
 	    if (strchr(field, '-') != NULL) {
-		rpmError(RPMERR_BADSPEC, _("line %d: Illegal char '-' in %s: %s\n"),
+		rpmlog(RPMLOG_ERR, _("line %d: Illegal char '-' in %s: %s\n"),
 		    spec->lineNum, "version", spec->line);
-		return RPMERR_BADSPEC;
+		return RPMRC_FAIL;
 	    }
 	    addMacro(spec->macros, "PACKAGE_VERSION", NULL, field, RMIL_OLDSPEC);
 	} else if (tag == RPMTAG_RELEASE) {
 	    if (strchr(field, '-') != NULL) {
-		rpmError(RPMERR_BADSPEC, _("line %d: Illegal char '-' in %s: %s\n"),
+		rpmlog(RPMLOG_ERR, _("line %d: Illegal char '-' in %s: %s\n"),
 		    spec->lineNum, "release", spec->line);
-		return RPMERR_BADSPEC;
+		return RPMRC_FAIL;
 	    }
 	    addMacro(spec->macros, "PACKAGE_RELEASE", NULL, field, RMIL_OLDSPEC-1);
 	}
@@ -580,10 +580,10 @@ static int handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
 	if (*buildRoot == '\0') buildRoot = "/";
 	/*@=branchstate@*/
 	if (!strcmp(buildRoot, "/")) {
-	    rpmError(RPMERR_BADSPEC,
+	    rpmlog(RPMLOG_ERR,
 		     _("BuildRoot can not be \"/\": %s\n"), spec->buildRootURL);
 	    buildRootURL = _free(buildRootURL);
-	    return RPMERR_BADSPEC;
+	    return RPMRC_FAIL;
 	}
 	buildRootURL = _free(buildRootURL);
 #endif
@@ -596,19 +596,19 @@ static int handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
 	if (tag == RPMTAG_PREFIXES)
 	while (num--) {
 	    if (array[num][0] != '/') {
-		rpmError(RPMERR_BADSPEC,
+		rpmlog(RPMLOG_ERR,
 			 _("line %d: Prefixes must begin with \"/\": %s\n"),
 			 spec->lineNum, spec->line);
 		array = hfd(array, type);
-		return RPMERR_BADSPEC;
+		return RPMRC_FAIL;
 	    }
 	    len = strlen(array[num]);
 	    if (array[num][len - 1] == '/' && len > 1) {
-		rpmError(RPMERR_BADSPEC,
+		rpmlog(RPMLOG_ERR,
 			 _("line %d: Prefixes must not end with \"/\": %s\n"),
 			 spec->lineNum, spec->line);
 		array = hfd(array, type);
-		return RPMERR_BADSPEC;
+		return RPMRC_FAIL;
 	    }
 	}
 	array = hfd(array, type);
@@ -616,10 +616,10 @@ static int handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
     case RPMTAG_DOCDIR:
 	SINGLE_TOKEN_ONLY;
 	if (field[0] != '/') {
-	    rpmError(RPMERR_BADSPEC,
+	    rpmlog(RPMLOG_ERR,
 		     _("line %d: Docdir must begin with '/': %s\n"),
 		     spec->lineNum, spec->line);
-	    return RPMERR_BADSPEC;
+	    return RPMRC_FAIL;
 	}
 	macro = NULL;
 	delMacro(NULL, "_docdir");
@@ -630,10 +630,10 @@ static int handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
     case RPMTAG_EPOCH:
 	SINGLE_TOKEN_ONLY;
 	if (parseNum(field, &num)) {
-	    rpmError(RPMERR_BADSPEC,
+	    rpmlog(RPMLOG_ERR,
 		     _("line %d: %s takes an integer value: %s\n"),
 		     spec->lineNum, tagName(tag), spec->line);
-	    return RPMERR_BADSPEC;
+	    return RPMRC_FAIL;
 	}
 	xx = headerAddEntry(pkg->header, tag, RPM_INT32_TYPE, &num, 1);
 	break;
@@ -672,7 +672,7 @@ static int handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
     case RPMTAG_BUILDPREREQ:
     case RPMTAG_BUILDREQUIRES:
 	if ((rc = parseBits(lang, buildScriptBits, &tagflags))) {
-	    rpmError(RPMERR_BADSPEC,
+	    rpmlog(RPMLOG_ERR,
 		     _("line %d: Bad %s: qualifiers: %s\n"),
 		     spec->lineNum, tagName(tag), spec->line);
 	    return rc;
@@ -683,7 +683,7 @@ static int handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
     case RPMTAG_PREREQ:
     case RPMTAG_REQUIREFLAGS:
 	if ((rc = parseBits(lang, installScriptBits, &tagflags))) {
-	    rpmError(RPMERR_BADSPEC,
+	    rpmlog(RPMLOG_ERR,
 		     _("line %d: Bad %s: qualifiers: %s\n"),
 		     spec->lineNum, tagName(tag), spec->line);
 	    return rc;
@@ -727,10 +727,10 @@ static int handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
 	if ((rc = poptParseArgvString(field,
 				      &(spec->BACount),
 				      &(spec->BANames)))) {
-	    rpmError(RPMERR_BADSPEC,
+	    rpmlog(RPMLOG_ERR,
 		     _("line %d: Bad BuildArchitecture format: %s\n"),
 		     spec->lineNum, spec->line);
-	    return RPMERR_BADSPEC;
+	    return RPMRC_FAIL;
 	}
 	if (!spec->BACount)
 	    spec->BANames = _free(spec->BANames);
@@ -866,7 +866,7 @@ static int findPreambleTag(Spec spec, /*@out@*/rpmTag * tag,
 	if (!(p->token && !xstrncasecmp(spec->line, p->token, len)))
 	    continue;
 	if (p->obsolete) {
-	    rpmError(RPMERR_BADSPEC, _("Legacy syntax is unsupported: %s\n"),
+	    rpmlog(RPMLOG_ERR, _("Legacy syntax is unsupported: %s\n"),
 			p->token);
 	    p = NULL;
 	}
@@ -921,7 +921,7 @@ static int findPreambleTag(Spec spec, /*@out@*/rpmTag * tag,
 /*@=boundswrite@*/
 
 /*@-boundswrite@*/
-/* XXX should return rpmParseState, but RPMERR_BADSPEC forces int return. */
+/* XXX should return rpmParseState, but RPMRC_FAIL forces int return. */
 int parsePreamble(Spec spec, int initialPackage)
 {
     rpmParseState nextPart;
@@ -940,15 +940,15 @@ int parsePreamble(Spec spec, int initialPackage)
 	/* There is one option to %package: <pkg> or -n <pkg> */
 	flag = PART_NONE;
 	if (parseSimplePart(spec->line, &name, &flag)) {
-	    rpmError(RPMERR_BADSPEC, _("Bad package specification: %s\n"),
+	    rpmlog(RPMLOG_ERR, _("Bad package specification: %s\n"),
 			spec->line);
-	    return RPMERR_BADSPEC;
+	    return RPMRC_FAIL;
 	}
 	
 	if (!lookupPackage(spec, name, flag, NULL)) {
-	    rpmError(RPMERR_BADSPEC, _("Package already exists: %s\n"),
+	    rpmlog(RPMLOG_ERR, _("Package already exists: %s\n"),
 			spec->line);
-	    return RPMERR_BADSPEC;
+	    return RPMRC_FAIL;
 	}
 	
 	/* Construct the package */
@@ -976,12 +976,12 @@ int parsePreamble(Spec spec, int initialPackage)
 	    SKIPSPACE(linep);
 	    if (*linep != '\0') {
 		if (findPreambleTag(spec, &tag, &macro, lang)) {
-		    rpmError(RPMERR_BADSPEC, _("line %d: Unknown tag: %s\n"),
+		    rpmlog(RPMLOG_ERR, _("line %d: Unknown tag: %s\n"),
 				spec->lineNum, spec->line);
-		    return RPMERR_BADSPEC;
+		    return RPMRC_FAIL;
 		}
 		if (handlePreambleTag(spec, pkg, tag, macro, lang))
-		    return RPMERR_BADSPEC;
+		    return RPMRC_FAIL;
 		if (spec->BANames && !spec->recursing)
 		    return PART_BUILDARCHITECTURES;
 	    }
@@ -999,20 +999,20 @@ int parsePreamble(Spec spec, int initialPackage)
     
     /* XXX Skip valid arch check if not building binary package */
     if (!spec->anyarch && checkForValidArchitectures(spec))
-	return RPMERR_BADSPEC;
+	return RPMRC_FAIL;
 
     if (pkg == spec->packages)
 	fillOutMainPackage(pkg->header);
 
     if (checkForDuplicates(pkg->header, NVR))
-	return RPMERR_BADSPEC;
+	return RPMRC_FAIL;
 
     if (pkg != spec->packages)
 	headerCopyTags(spec->packages->header, pkg->header,
 			(int_32 *)copyTagsDuringParse);
 
     if (checkForRequired(pkg->header, NVR))
-	return RPMERR_BADSPEC;
+	return RPMRC_FAIL;
 
     return nextPart;
 }

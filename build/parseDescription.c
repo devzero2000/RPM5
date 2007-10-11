@@ -31,7 +31,7 @@ int parseDescription(Spec spec)
 	/*@globals name, lang @*/
 	/*@modifies name, lang @*/
 {
-    int nextPart = RPMERR_BADSPEC;	/* assume error */
+    int nextPart = RPMRC_FAIL;	/* assume error */
     StringBuf sb;
     int flag = PART_SUBNAME;
     Package pkg;
@@ -45,9 +45,9 @@ int parseDescription(Spec spec)
     lang = RPMBUILD_DEFAULT_LANG;
 
     if ((rc = poptParseArgvString(spec->line, &argc, &argv))) {
-	rpmError(RPMERR_BADSPEC, _("line %d: Error parsing %%description: %s\n"),
+	rpmlog(RPMLOG_ERR, _("line %d: Error parsing %%description: %s\n"),
 		 spec->lineNum, poptStrerror(rc));
-	return RPMERR_BADSPEC;
+	return RPMRC_FAIL;
     }
 
     optCon = poptGetContext(NULL, argc, argv, optionsTable, 0);
@@ -58,7 +58,7 @@ int parseDescription(Spec spec)
     }
 
     if (arg < -1) {
-	rpmError(RPMERR_BADSPEC, _("line %d: Bad option %s: %s\n"),
+	rpmlog(RPMLOG_ERR, _("line %d: Bad option %s: %s\n"),
 		 spec->lineNum,
 		 poptBadOption(optCon, POPT_BADOPTION_NOALIAS), 
 		 spec->line);
@@ -69,7 +69,7 @@ int parseDescription(Spec spec)
 	if (name == NULL)
 	    name = poptGetArg(optCon);
 	if (poptPeekArg(optCon)) {
-	    rpmError(RPMERR_BADSPEC, _("line %d: Too many names: %s\n"),
+	    rpmlog(RPMLOG_ERR, _("line %d: Too many names: %s\n"),
 		     spec->lineNum,
 		     spec->line);
 	    goto exit;
@@ -77,7 +77,7 @@ int parseDescription(Spec spec)
     }
 
     if (lookupPackage(spec, name, flag, &pkg)) {
-	rpmError(RPMERR_BADSPEC, _("line %d: Package does not exist: %s\n"),
+	rpmlog(RPMLOG_ERR, _("line %d: Package does not exist: %s\n"),
 		 spec->lineNum, spec->line);
 	goto exit;
     }
@@ -87,7 +87,7 @@ int parseDescription(Spec spec)
 
 #if 0    
     if (headerIsEntry(pkg->header, RPMTAG_DESCRIPTION)) {
-	rpmError(RPMERR_BADSPEC, _("line %d: Second description\n"),
+	rpmlog(RPMLOG_ERR, _("line %d: Second description\n"),
 		spec->lineNum);
 	goto exit;
     }
@@ -101,7 +101,7 @@ int parseDescription(Spec spec)
 	nextPart = PART_NONE;
     } else {
 	if (rc) {
-	    nextPart = RPMERR_BADSPEC;
+	    nextPart = RPMRC_FAIL;
 	    goto exit;
 	}
 	while (! (nextPart = isPart(spec->line))) {
@@ -113,7 +113,7 @@ int parseDescription(Spec spec)
 		break;
 	    }
 	    if (rc) {
-		nextPart = RPMERR_BADSPEC;
+		nextPart = RPMRC_FAIL;
 		goto exit;
 	    }
 	}

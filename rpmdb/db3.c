@@ -160,10 +160,10 @@ static int cvtdberr(/*@unused@*/ dbiIndex dbi, const char * msg, int error, int 
     if (printit && rc) {
 	/*@-moduncon@*/ /* FIX: annotate db3 methods */
 	if (msg)
-	    rpmError(RPMERR_DBERR, _("db%d error(%d) from %s: %s\n"),
+	    rpmlog(RPMLOG_ERR, _("db%d error(%d) from %s: %s\n"),
 		DB_VERSION_MAJOR, rc, msg, db_strerror(error));
 	else
-	    rpmError(RPMERR_DBERR, _("db%d error(%d): %s\n"),
+	    rpmlog(RPMLOG_ERR, _("db%d error(%d): %s\n"),
 		DB_VERSION_MAJOR, rc, db_strerror(error));
 	/*@=moduncon@*/
     }
@@ -1281,7 +1281,7 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 		break;
 
 	    case DB_RUNRECOVERY:
-		rpmError(RPMERR_DBERR, _("Runnning db->verify ...\n"));
+		rpmlog(RPMLOG_ERR, _("Runnning db->verify ...\n"));
 		rpmdb = rpmdbLink(rpmdb, "DB_RUNRECOVERY");
 		rpmdb->db_remove_env = 1;
 		rpmdb->db_verifying = 1;
@@ -1580,7 +1580,7 @@ assert(rpmdb && rpmdb->db_dbenv);
 				(dbi->dbi_eflags & DB_INIT_CDB) &&
 				!(dbi->dbi_eflags & DB_PRIVATE))
 			    ? 0 : 1);
-			rpmError( (rc ? RPMERR_FLOCK : RPMWARN_FLOCK),
+			rpmlog( (rc ? RPMLOG_ERR : RPMLOG_WARNING),
 				_("cannot get %s lock on %s/%s\n"),
 				((dbi->dbi_mode & (O_RDWR|O_WRONLY))
 					? _("exclusive") : _("shared")),

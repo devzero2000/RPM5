@@ -38,7 +38,7 @@ rpmRC rpmMkdirPath (const char * dpath, const char * dname)
 	    break;
 	}
 	if (rc < 0) {
-	    rpmError(RPMERR_CREATE, _("cannot create %%%s %s\n"), dname, dpath);
+	    rpmlog(RPMLOG_ERR, _("cannot create %%%s %s\n"), dname, dpath);
 	    return RPMRC_FAIL;
 	}
     }
