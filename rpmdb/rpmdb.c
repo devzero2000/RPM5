@@ -3314,11 +3314,6 @@ data->size = 0;
 		xx = hge(h, he->tag, he->t, he->p, he->c);
 		xx = hge(h, RPMTAG_REQUIREFLAGS, NULL, &requireFlags, NULL);
 		/*@switchbreak@*/ break;
-#ifdef	DYING
-	    case RPMTAG_NVRA:	/* XXX compound header extension. */
-		xx = headerGetExtension(h, he->tag, he->t, he->p, he->c);
-		/*@switchbreak@*/ break;
-#endif
 	    default:
 		xx = hge(h, he->tag, he->t, he->p, he->c);
 		/*@switchbreak@*/ break;
@@ -3525,6 +3520,7 @@ if (key->size == 0) key->size++;	/* XXX "/" fixup. */
 	    he_p.ptr = _free(he_p.ptr);
 	    he_c = 0;
 	    bin = _free(bin);
+	    requireFlags = _free(requireFlags);
 	}
 
 	rec = _free(rec);
@@ -3809,7 +3805,7 @@ static int rpmdbMoveDatabase(const char * prefix,
 	    }
 bottom:
 	    ofn = _free(ofn);
-	    nfn = _free(ofn);
+	    nfn = _free(nfn);
 	}
 
 	ofn = rpmGetPath(prefix, olddbpath, "/", "__db.000", NULL);

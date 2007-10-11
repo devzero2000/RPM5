@@ -460,6 +460,7 @@ if (fileURL[0] == '=') {
 	}
 
 	/* === Add binary package to transaction set. */
+	/* XXX xstrdup has memory leak. */
 	rc = rpmtsAddInstallElement(ts, h, (fnpyKey)xstrdup(fn),
 			(ia->installInterfaceFlags & INSTALL_UPGRADE) != 0,
 			ia->relocations);

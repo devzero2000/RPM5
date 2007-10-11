@@ -1864,6 +1864,8 @@ assert(0);	/* XXX stop unimplemented oversights. */
     case RPM_OPENPGP_TYPE:
     case RPM_ASN1_TYPE:
     case RPM_BIN_TYPE:
+	he->freeData = 1;	/* XXX RPM_BIN_TYPE is malloc'd */
+	/*@fallthrough@*/
     case RPM_CHAR_TYPE:
     case RPM_INT8_TYPE:
 	nb = he_c * sizeof(*he_p.i8p);
