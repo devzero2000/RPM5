@@ -479,7 +479,7 @@ int urlSplit(const char * url, urlinfo *uret)
 	    char *end;
 	    u->port = strtol(u->portstr, &end, 0);
 	    if (!(end && *end == '\0')) {
-		rpmMessage(RPMMESS_ERROR, _("url port must be a number\n"));
+		rpmlog(RPMLOG_ERR, _("url port must be a number\n"));
 		myurl = _free(myurl);
 		u = urlFree(u, "urlSplit (error #3)");
 		return -1;
@@ -530,7 +530,7 @@ int urlGetFile(const char * url, const char * dest)
 	
     sfd = Fopen(url, "r");
     if (sfd == NULL || Ferror(sfd)) {
-	rpmMessage(RPMMESS_DEBUG, D_("failed to open %s: %s\n"), url, Fstrerror(sfd));
+	rpmlog(RPMLOG_DEBUG, D_("failed to open %s: %s\n"), url, Fstrerror(sfd));
 	rc = FTPERR_UNKNOWN;
 	goto exit;
     }
@@ -550,7 +550,7 @@ int urlGetFile(const char * url, const char * dest)
 if (_url_debug)
 fprintf(stderr, "*** urlGetFile sfd %p %s tfd %p %s\n", sfd, url, (tfd ? tfd : NULL), dest);
     if (tfd == NULL || Ferror(tfd)) {
-	rpmMessage(RPMMESS_DEBUG, D_("failed to create %s: %s\n"), dest, Fstrerror(tfd));
+	rpmlog(RPMLOG_DEBUG, D_("failed to create %s: %s\n"), dest, Fstrerror(tfd));
 	rc = FTPERR_UNKNOWN;
 	goto exit;
     }

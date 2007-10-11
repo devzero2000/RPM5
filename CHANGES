@@ -1,5 +1,6 @@
 4.5 -> 5.0:
-    - jbj: finish eliminating rpmError.
+    - jbj: eliminate rpmMessage, rpmlog instead.
+    - jbj: finish eliminating rpmError, rpmlog instead.
     - jbj: switch rpmdbRemove to use headerGetExtension.
     - jbj: switch rpmdbAdd to use headerGetExtension. ~1Mb leaks w --rebuilddb.
     - jbj: fix: headerGetExtension failed to return p.str correctly.

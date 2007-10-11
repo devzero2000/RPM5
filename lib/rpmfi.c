@@ -574,7 +574,7 @@ fileAction rpmfiDecideFate(const rpmfi ofi, rpmfi nfi, int skipMissing)
 	 * package has marked it as missingok, or allfiles is requested.
 	 */
 	if (skipMissing && (newFlags & RPMFILE_MISSINGOK)) {
-	    rpmMessage(RPMMESS_DEBUG, D_("%s skipped due to missingok flag\n"),
+	    rpmlog(RPMLOG_DEBUG, D_("%s skipped due to missingok flag\n"),
 			fn);
 	    return FA_SKIP;
 	} else {
@@ -821,14 +821,14 @@ assert(p != NULL);
 
     if (!_printed) {
 	_printed = 1;
-	rpmMessage(RPMMESS_DEBUG, D_("========== relocations\n"));
+	rpmlog(RPMLOG_DEBUG, D_("========== relocations\n"));
 	for (i = 0; i < numRelocations; i++) {
 	    if (relocations[i].oldPath == NULL) continue; /* XXX can't happen */
 	    if (relocations[i].newPath == NULL)
-		rpmMessage(RPMMESS_DEBUG, D_("%5d exclude  %s\n"),
+		rpmlog(RPMLOG_DEBUG, D_("%5d exclude  %s\n"),
 			i, relocations[i].oldPath);
 	    else
-		rpmMessage(RPMMESS_DEBUG, D_("%5d relocate %s -> %s\n"),
+		rpmlog(RPMLOG_DEBUG, D_("%5d relocate %s -> %s\n"),
 			i, relocations[i].oldPath, relocations[i].newPath);
 	}
     }
@@ -960,7 +960,7 @@ dColors[j] |= fColors[i];
 	    }
 	    if (actions) {
 		actions[i] = FA_SKIPNSTATE;
-		rpmMessage(RPMMESS_DEBUG, D_("excluding %s %s\n"),
+		rpmlog(RPMLOG_DEBUG, D_("excluding %s %s\n"),
 			rpmfiFtstring(ft), fn);
 	    }
 	    continue;
@@ -970,7 +970,7 @@ dColors[j] |= fColors[i];
 	if (fnlen != len) continue;
 
 	if (actions)
-	    rpmMessage(RPMMESS_DEBUG, D_("relocating %s to %s\n"),
+	    rpmlog(RPMLOG_DEBUG, D_("relocating %s to %s\n"),
 		    fn, relocations[j].newPath);
 	nrelocated++;
 
@@ -1061,7 +1061,7 @@ dColors[j] |= fColors[i];
 		t[slen+1] = '\0';
 
 		if (actions)
-		    rpmMessage(RPMMESS_DEBUG,
+		    rpmlog(RPMLOG_DEBUG,
 			D_("relocating directory %s to %s\n"), dirNames[i], t);
 		dirNames[i] = t;
 		nrelocated++;

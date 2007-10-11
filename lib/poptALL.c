@@ -206,7 +206,7 @@ static void rpmcliAllArgCallback(poptContext con,
     if (opt->arg == NULL)
     switch (opt->val) {
     case 'q':
-	rpmSetVerbosity(RPMMESS_QUIET);
+	rpmSetVerbosity(RPMLOG_WARNING);
 	break;
     case 'v':
 	rpmIncreaseVerbosity();
@@ -574,7 +574,7 @@ rpmcliInit(int argc, char *const argv[], struct poptOption * optionsTable)
     (void) textdomain(PACKAGE);
 #endif
 
-    rpmSetVerbosity(RPMMESS_NORMAL);
+    rpmSetVerbosity(RPMLOG_NOTICE);
 
     if (optionsTable == NULL) {
 	/* Read rpm configuration (if not already read). */

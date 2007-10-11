@@ -141,7 +141,7 @@ rpmRC rpmReadPackageManifest(FD_t fd, int * argcPtr, const char *** argvPtr)
     rpmrc = rpmGlob(s, &ac, &av);
     if (rpmrc != RPMRC_OK) goto exit;
 
-    rpmMessage(RPMMESS_DEBUG, D_("adding %d args from manifest.\n"), ac);
+    rpmlog(RPMLOG_DEBUG, D_("adding %d args from manifest.\n"), ac);
 
     /* Count non-NULL args, keeping track of 1st arg after last NULL. */
     npre = 0;

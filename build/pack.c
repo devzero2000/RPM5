@@ -668,7 +668,7 @@ assert(0);
 #endif
 
     if (addsig) {
-	rpmMessage(RPMMESS_NORMAL, _("Generating signature: %d\n"), sigtag);
+	rpmlog(RPMLOG_NOTICE, _("Generating signature: %d\n"), sigtag);
 	(void) rpmAddSignature(sigh, sigtarget, sigtag, passPhrase);
     }
     
@@ -818,7 +818,7 @@ exit:
     }
 
     if (rc == 0)
-	rpmMessage(RPMMESS_NORMAL, _("Wrote: %s\n"), fileName);
+	rpmlog(RPMLOG_NOTICE, _("Wrote: %s\n"), fileName);
     else
 	(void) Unlink(fileName);
 

@@ -262,7 +262,7 @@ int rpmcliInstallProblems(rpmts ts, const char * msg, int rc)
 
     if (rc && rpmpsNumProblems(ps) > 0) {
 	if (msg)
-	    rpmMessage(RPMMESS_ERROR, "%s:\n", msg);
+	    rpmlog(RPMLOG_ERR, "%s:\n", msg);
 	rpmpsPrint(NULL, ps);
     }
     ps = rpmpsFree(ps);
@@ -275,11 +275,11 @@ int rpmcliInstallSuggests(rpmts ts)
 	const char * s;
 	int i;
 
-	rpmMessage(RPMMESS_NORMAL, _("    Suggested resolutions:\n"));
+	rpmlog(RPMLOG_NOTICE, _("    Suggested resolutions:\n"));
 	for (i = 0; i < ts->nsuggests && (s = ts->suggests[i]) != NULL;
 	    ts->suggests[i++] = s = _free(s))
 	{
-	    rpmMessage(RPMMESS_NORMAL, "\t%s\n", s);
+	    rpmlog(RPMLOG_NOTICE, "\t%s\n", s);
 	}
 	ts->suggests = _free(ts->suggests);
     }
@@ -337,7 +337,7 @@ int rpmcliInstall(rpmts ts, QVA_t ia, const char ** argv)
     if (rpmExpandNumeric("%{?_rollback_transaction_on_failure}")) {
 	if (ia->arbtid) {
 	    time_t ttid = (time_t)ia->arbtid;
-	    rpmMessage(RPMMESS_DEBUG, D_("Autorollback Goal: %-24.24s (0x%08x)\n"), 
+	    rpmlog(RPMLOG_DEBUG, D_("Autorollback Goal: %-24.24s (0x%08x)\n"), 
 		ctime(&ttid), ia->arbtid);
 	    rpmtsSetARBGoal(ts, ia->arbtid);
 	}	
@@ -383,7 +383,7 @@ if (fileURL[0] == '=') {
 	    ts->suggests[ts->nsuggests] = _free(ts->suggests[ts->nsuggests]);
 	}
 	ts->suggests = _free(ts->suggests);
-	rpmMessage(RPMMESS_DEBUG, D_("Adding goal: %s\n"), fileURL);
+	rpmlog(RPMLOG_DEBUG, D_("Adding goal: %s\n"), fileURL);
 	pkgURL[pkgx] = fileURL;
 	fileURL = NULL;
 	pkgx++;
@@ -427,7 +427,7 @@ if (fileURL[0] == '=') {
 	    } else {
 		const char * NVRA = NULL;
 		xx = headerGetExtension(h, RPMTAG_NVRA, NULL, &NVRA, NULL);
-		rpmMessage(RPMMESS_ERROR,
+		rpmlog(RPMLOG_ERR,
 			       _("package %s is not relocatable\n"), NVRA);
 		NVRA = _free(NVRA);
 		numFailed++;
@@ -540,7 +540,7 @@ int rpmErase(rpmts ts, QVA_t ia, const char ** argv)
     if (rpmExpandNumeric("%{?_rollback_transaction_on_failure}")) {
 	if (ia->arbtid) {
 	    time_t ttid = (time_t)ia->arbtid;
-	    rpmMessage(RPMMESS_DEBUG, D_("Autorollback Goal: %-24.24s (0x%08x)\n"), 
+	    rpmlog(RPMLOG_DEBUG, D_("Autorollback Goal: %-24.24s (0x%08x)\n"), 
 		ctime(&ttid), ia->arbtid);
 	    rpmtsSetARBGoal(ts, ia->arbtid);
 	}	
@@ -562,7 +562,7 @@ int rpmErase(rpmts ts, QVA_t ia, const char ** argv)
 	/* XXX HACK to get rpmdbFindByLabel out of the API */
 	mi = rpmtsInitIterator(ts, RPMDBI_LABEL, *arg, 0);
 	if (mi == NULL) {
-	    rpmMessage(RPMMESS_ERROR, _("package %s is not installed\n"), *arg);
+	    rpmlog(RPMLOG_ERR, _("package %s is not installed\n"), *arg);
 	    numFailed++;
 	} else {
 	    Header h;	/* XXX iterator owns the reference */
@@ -571,7 +571,7 @@ int rpmErase(rpmts ts, QVA_t ia, const char ** argv)
 		unsigned int recOffset = rpmdbGetIteratorOffset(mi);
 
 		if (!(count++ == 0 || (ia->installInterfaceFlags & INSTALL_ALLMATCHES))) {
-		    rpmMessage(RPMMESS_ERROR, _("\"%s\" specifies multiple packages\n"),
+		    rpmlog(RPMLOG_ERR, _("\"%s\" specifies multiple packages\n"),
 			*arg);
 		    numFailed++;
 		    /*@innerbreak@*/ break;
@@ -596,7 +596,7 @@ int rpmErase(rpmts ts, QVA_t ia, const char ** argv)
 
 	ps = rpmtsProblems(ts);
 	if (!stopUninstall && rpmpsNumProblems(ps) > 0) {
-	    rpmMessage(RPMMESS_ERROR, _("Failed dependencies:\n"));
+	    rpmlog(RPMLOG_ERR, _("Failed dependencies:\n"));
 	    rpmpsPrint(NULL, ps);
 	    numFailed += numPackages;
 	    stopUninstall = 1;
@@ -639,7 +639,7 @@ int rpmInstallSource(rpmts ts, const char * arg,
 
     fd = Fopen(arg, "r.fdio");
     if (fd == NULL || Ferror(fd)) {
-	rpmMessage(RPMMESS_ERROR, _("cannot open %s: %s\n"), arg, Fstrerror(fd));
+	rpmlog(RPMLOG_ERR, _("cannot open %s: %s\n"), arg, Fstrerror(fd));
 	if (fd != NULL) (void) Fclose(fd);
 	return 1;
     }
@@ -655,7 +655,7 @@ int rpmInstallSource(rpmts ts, const char * arg,
 	ovsflags = rpmtsSetVSFlags(ts, ovsflags);
     }
     if (rc != 0) {
-	rpmMessage(RPMMESS_ERROR, _("%s cannot be installed\n"), arg);
+	rpmlog(RPMLOG_ERR, _("%s cannot be installed\n"), arg);
 	/*@-unqualifiedtrans@*/
 	if (specFilePtr && *specFilePtr)
 	    *specFilePtr = _free(*specFilePtr);

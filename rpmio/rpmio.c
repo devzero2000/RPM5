@@ -1576,7 +1576,7 @@ static int urlConnect(const char * url, /*@out@*/ urlinfo * uret)
 	fd = fdLink(fd, "grab ctrl (urlConnect FTP)");
 
 	if (fdFileno(u->ctrl) < 0) {
-	    rpmMessage(RPMMESS_DEBUG, D_("logging into %s as %s, pw %s\n"),
+	    rpmlog(RPMLOG_DEBUG, D_("logging into %s as %s, pw %s\n"),
 			u->host ? u->host : "???",
 			u->user ? u->user : "ftp",
 			u->password ? u->password : "(username)");
@@ -3647,7 +3647,7 @@ int rpmioMkpath(const char * path, mode_t mode, uid_t uid, gid_t gid)
     }
     rc = 0;
     if (created)
-	rpmMessage(RPMMESS_DEBUG, D_("created directory(s) %s mode 0%o\n"),
+	rpmlog(RPMLOG_DEBUG, D_("created directory(s) %s mode 0%o\n"),
 			path, mode);
     return rc;
 }

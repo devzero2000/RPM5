@@ -284,7 +284,7 @@ static void timeCheck(int tc, Header h)
 /*@-boundsread@*/
     for (x = 0; x < count; x++) {
 	if ((currentTime - mtime[x]) > tc)
-	    rpmMessage(RPMMESS_WARNING, _("TIMECHECK failure: %s\n"), files[x]);
+	    rpmlog(RPMLOG_WARNING, _("TIMECHECK failure: %s\n"), files[x]);
     }
     files = hfd(files, fnt);
 /*@=boundsread@*/
@@ -1310,7 +1310,7 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 	    flp[1].flags |= flp->flags;	
 
 	    if (!(flp[1].flags & RPMFILE_EXCLUDE))
-		rpmMessage(RPMMESS_WARNING, _("File listed twice: %s\n"),
+		rpmlog(RPMLOG_WARNING, _("File listed twice: %s\n"),
 			flp->fileURL);
    
 	    /* file mode */
@@ -2612,7 +2612,7 @@ static int checkFiles(StringBuf fileList)
     }
     rc = 0;
 
-    rpmMessage(RPMMESS_NORMAL, _("Checking for unpackaged file(s): %s\n"), s);
+    rpmlog(RPMLOG_NOTICE, _("Checking for unpackaged file(s): %s\n"), s);
 
 /*@-boundswrite@*/
     rc = rpmfcExec(av_ckfile, fileList, &sb_stdout, 0);
@@ -2628,7 +2628,7 @@ static int checkFiles(StringBuf fileList)
 	t = getStringBuf(sb_stdout);
 	if ((*t != '\0') && (*t != '\n')) {
 	    rc = (_unpackaged_files_terminate_build) ? 1 : 0;
-	    rpmMessage((rc ? RPMMESS_ERROR : RPMMESS_WARNING),
+	    rpmlog((rc ? RPMLOG_ERR : RPMLOG_WARNING),
 		_("Installed (but unpackaged) file(s) found:\n%s"), t);
 	}
     }
@@ -2659,7 +2659,7 @@ int processBinaryFiles(Spec spec, int installSpecialDoc, int test)
 	(void) headerMacrosLoad(pkg->header);
 
 	(void) headerGetExtension(pkg->header, RPMTAG_NVRA, NULL, &NVRA, NULL);
-	rpmMessage(RPMMESS_NORMAL, _("Processing files: %s\n"), NVRA);
+	rpmlog(RPMLOG_NOTICE, _("Processing files: %s\n"), NVRA);
 	NVRA = _free(NVRA);
 		   
 	if ((rc = processPackageFiles(spec, pkg, installSpecialDoc, test)))

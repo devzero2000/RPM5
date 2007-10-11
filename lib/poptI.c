@@ -32,7 +32,7 @@ struct rpmQVKArguments_s rpmIArgs = {
 
 /**
  * Print a message and exit.
- * @todo (CLI embedding) Use rpmMessage/rpmlog instead of fprintf, remove exit.
+ * @todo (CLI embedding) Use rpmlog/rpmlog instead of fprintf, remove exit.
  * @param desc		message	
  */
 /*@exits@*/
@@ -142,7 +142,7 @@ static void installArgCallback( /*@unused@*/ poptContext con,
 
 	/*@-moduncon@*/
 	tid = get_date(arg, NULL);
-	rpmMessage(RPMMESS_VERBOSE, _("Rollback goal:  %-24.24s (0x%08x)\n"), ctime(&tid), (int)tid);
+	rpmlog(RPMLOG_INFO, _("Rollback goal:  %-24.24s (0x%08x)\n"), ctime(&tid), (int)tid);
 	/*@=moduncon@*/
 
 	if (tid == (time_t)-1 || tid == (time_t)0)

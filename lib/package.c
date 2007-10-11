@@ -360,7 +360,7 @@ assert(dig != NULL);
 	/* Parse the parameters from the OpenPGP packets that will be needed. */
 	xx = pgpPrtPkts(sig, siglen, dig, (_print_pkts & rpmIsDebug()));
 	if (dig->signature.version != 3 && dig->signature.version != 4) {
-	    rpmMessage(RPMMESS_ERROR,
+	    rpmlog(RPMLOG_ERR,
 		_("skipping package %s with unverifiable V%u signature\n"),
 		fn, dig->signature.version);
 	    rc = RPMRC_FAIL;
@@ -392,7 +392,7 @@ assert(dig != NULL);
 	/* Parse the parameters from the OpenPGP packets that will be needed. */
 	xx = pgpPrtPkts(sig, siglen, dig, (_print_pkts & rpmIsDebug()));
 	if (dig->signature.version != 3 && dig->signature.version != 4) {
-	    rpmMessage(RPMMESS_ERROR,
+	    rpmlog(RPMLOG_ERR,
 		_("skipping package %s with unverifiable V%u signature\n"), 
 		fn, dig->signature.version);
 	    rc = RPMRC_FAIL;
@@ -435,7 +435,7 @@ assert(dig != NULL);
 	xx = pgpPrtPkts(sig, siglen, dig, (_print_pkts & rpmIsDebug()));
 
 	if (dig->signature.version != 3 && dig->signature.version != 4) {
-	    rpmMessage(RPMMESS_ERROR,
+	    rpmlog(RPMLOG_ERR,
 		_("skipping package %s with unverifiable V%u signature\n"),
 		fn, dig->signature.version);
 	    rc = RPMRC_FAIL;
@@ -491,20 +491,20 @@ assert(dig != NULL);
     rc = rpmVerifySignature(dig, buf);
     switch (rc) {
     case RPMRC_OK:		/* Signature is OK. */
-	rpmMessage(RPMMESS_DEBUG, "%s: %s", fn, buf);
+	rpmlog(RPMLOG_DEBUG, "%s: %s", fn, buf);
 	break;
     case RPMRC_NOTTRUSTED:	/* Signature is OK, but key is not trusted. */
     case RPMRC_NOKEY:		/* Public key is unavailable. */
 	/* XXX Print NOKEY/NOTTRUSTED warning only once. */
-    {	int lvl = (pgpStashKeyid(dig) ? RPMMESS_DEBUG : RPMMESS_WARNING);
-	rpmMessage(lvl, "%s: %s", fn, buf);
+    {	int lvl = (pgpStashKeyid(dig) ? RPMLOG_DEBUG : RPMLOG_WARNING);
+	rpmlog(lvl, "%s: %s", fn, buf);
     }	break;
     case RPMRC_NOTFOUND:	/* Signature is unknown type. */
-	rpmMessage(RPMMESS_WARNING, "%s: %s", fn, buf);
+	rpmlog(RPMLOG_WARNING, "%s: %s", fn, buf);
 	break;
     default:
     case RPMRC_FAIL:		/* Signature does not verify. */
-	rpmMessage(RPMMESS_ERROR, "%s: %s", fn, buf);
+	rpmlog(RPMLOG_ERR, "%s: %s", fn, buf);
 	break;
     }
 

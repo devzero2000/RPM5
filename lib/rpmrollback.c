@@ -343,7 +343,7 @@ static int findErases(rpmts ts, /*@null@*/ rpmte p, unsigned thistid,
 	}
 
 erase:
-	rpmMessage(RPMMESS_DEBUG, D_("\t--- erase h#%u\n"), ip->instance);
+	rpmlog(RPMLOG_DEBUG, D_("\t--- erase h#%u\n"), ip->instance);
 
 	rc = rpmtsAddEraseElement(ts, ip->h, ip->instance);
 	if (rc != 0)
@@ -488,7 +488,7 @@ int rpmRollback(rpmts ts, QVA_t ia, const char ** argv)
 		excludedTID++) {
 		if (thistid == *excludedTID) {
 		    time_t ttid = (time_t)thistid;
-		    rpmMessage(RPMMESS_NORMAL,
+		    rpmlog(RPMLOG_NOTICE,
 			_("Excluding TID from rollback: %-24.24s (0x%08x)\n"),
 				ctime(&ttid), thistid);
 		    excluded = 1;
@@ -528,7 +528,7 @@ int rpmRollback(rpmts ts, QVA_t ia, const char ** argv)
 	 */
 	while (rp != NULL && rp->val.u32 == thistid) {
 	    if (!rp->done) {
-		rpmMessage(RPMMESS_DEBUG, D_("\t+++ install %s\n"),
+		rpmlog(RPMLOG_DEBUG, D_("\t+++ install %s\n"),
 			(rp->key ? rp->key : "???"));
 
 /*@-abstract@*/
@@ -598,7 +598,7 @@ assert(ip->done || ia->no_rollback_links);
 	    break;
 
 	tid = (time_t)thistid;
-	rpmMessage(RPMMESS_NORMAL,
+	rpmlog(RPMLOG_NOTICE,
 		_("Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"),
 			numAdded, numRemoved, ctime(&tid), thistid);
 
@@ -625,14 +625,14 @@ assert(ip->done || ia->no_rollback_links);
 	/* Remove repackaged packages after successful reinstall. */
 	if (rtids && !rpmIsDebug()) {
 	    int i;
-	    rpmMessage(RPMMESS_NORMAL, _("Cleaning up repackaged packages:\n"));
+	    rpmlog(RPMLOG_NOTICE, _("Cleaning up repackaged packages:\n"));
 	    if (rtids->idt)
 	    for (i = 0; i < rtids->nidt; i++) {
 		IDT rrp = rtids->idt + i;
 		if (rrp->val.u32 != thistid)
 		    /*@innercontinue@*/ continue;
 		if (rrp->key) {	/* XXX can't happen */
-		    rpmMessage(RPMMESS_NORMAL, _("\tRemoving %s:\n"), rrp->key);
+		    rpmlog(RPMLOG_NOTICE, _("\tRemoving %s:\n"), rrp->key);
 		    (void) unlink(rrp->key);	/* XXX: Should check rc??? */
 		}
 	    }

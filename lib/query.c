@@ -136,7 +136,7 @@ static void flushBuffer(char ** tp, char ** tep, int nonewline)
 	    *te++ = '\n';
 	    *te = '\0';
 	}
-	rpmMessage(RPMMESS_NORMAL, "%s", t);
+	rpmlog(RPMLOG_NOTICE, "%s", t);
 	te = t;
 	*t = '\0';
     }
@@ -688,7 +688,7 @@ assert(fn != NULL);
 	    rpmlog(RPMLOG_ERR, _("invalid package number: %s\n"), arg);
 	    return 1;
 	}
-	rpmMessage(RPMMESS_DEBUG, D_("package record number: %u\n"), recOffset);
+	rpmlog(RPMLOG_DEBUG, D_("package record number: %u\n"), recOffset);
 	qva->qva_mi = rpmtsInitIterator(ts, RPMDBI_PACKAGES, &recOffset, sizeof(recOffset));
 	if (qva->qva_mi == NULL) {
 	    rpmlog(RPMLOG_ERR,

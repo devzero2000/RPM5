@@ -245,7 +245,7 @@ static rpmRC rpmgiWalkPathFilter(rpmgi gi)
     const char * s;
 
 if (_rpmgi_debug < 0)
-rpmMessage(RPMMESS_DEBUG, "FTS_%s\t%*s %s%s\n", ftsInfoStr(fts->fts_info),
+rpmlog(RPMLOG_DEBUG, "FTS_%s\t%*s %s%s\n", ftsInfoStr(fts->fts_info),
 		indent * (fts->fts_level < 0 ? 0 : fts->fts_level), "",
 		fts->fts_name,
 	((fts->fts_info == FTS_D || fts->fts_info == FTS_DP) ? "/" : ""));
@@ -762,20 +762,20 @@ enditer:
 	/* XXX query/verify will need the glop added to a buffer instead. */
 	ps = rpmtsProblems(ts);
 	if (rpmpsNumProblems(ps) > 0) {
-	    /* XXX rpminstall will need RPMMESS_ERROR */
-	    rpmMessage(RPMMESS_VERBOSE, _("Failed dependencies:\n"));
+	    /* XXX rpminstall will need RPMLOG_ERR */
+	    rpmlog(RPMLOG_INFO, _("Failed dependencies:\n"));
 	    if (rpmIsVerbose())
 		rpmpsPrint(NULL, ps);
 
 	    if (ts->suggests != NULL && ts->nsuggests > 0) {
-		rpmMessage(RPMMESS_VERBOSE, _("    Suggested resolutions:\n"));
+		rpmlog(RPMLOG_INFO, _("    Suggested resolutions:\n"));
 		for (i = 0; i < ts->nsuggests; i++) {
 		    const char * str = ts->suggests[i];
 
 		    if (str == NULL)
 			break;
 
-		    rpmMessage(RPMMESS_VERBOSE, "\t%s\n", str);
+		    rpmlog(RPMLOG_INFO, "\t%s\n", str);
 		
 		    ts->suggests[i] = NULL;
 		    str = _free(str);

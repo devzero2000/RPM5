@@ -819,7 +819,7 @@ int rpmspecQuery(rpmts ts, QVA_t qva, const char * arg)
 	goto exit;
     }
 
-    rpmMessage(RPMMESS_DEBUG, 
+    rpmlog(RPMLOG_DEBUG, 
 	_("Query specfile for platform(s): %s\n"), targets);
     for (t = targets; *t != '\0'; t = te) {
 	/* Parse out next target platform. */ 
@@ -832,7 +832,7 @@ int rpmspecQuery(rpmts ts, QVA_t qva, const char * arg)
 	    te++;
 
 	/* Query spec for this target platform. */
-	rpmMessage(RPMMESS_DEBUG, _("    target platform: %s\n"), target);
+	rpmlog(RPMLOG_DEBUG, _("    target platform: %s\n"), target);
 	/* Read in configuration for target. */
 	if (t != targets) {
 	    rpmFreeMacros(NULL);

@@ -302,7 +302,7 @@ assert(pkgNVRA.str != NULL);
 	    const char * pkgNEVR = rpmdsDNEVR(this);
 	    const char * addNEVR = rpmdsDNEVR(oldChk);
 	    if (rpmIsVerbose())
-		rpmMessage(RPMMESS_WARNING,
+		rpmlog(RPMLOG_WARNING,
 		    _("package %s was already added, skipping %s\n"),
 		    (pkgNEVR ? pkgNEVR + 2 : "?pkgNEVR?"),
 		    (addNEVR ? addNEVR + 2 : "?addNEVR?"));
@@ -316,7 +316,7 @@ assert(pkgNVRA.str != NULL);
 	    const char * pkgNEVR = rpmdsDNEVR(this);
 	    const char * addNEVR = rpmdsDNEVR(newChk);
 	    if (rpmIsVerbose())
-		rpmMessage(RPMMESS_WARNING,
+		rpmlog(RPMLOG_WARNING,
 		    _("package %s was already added, replacing with %s\n"),
 		    (pkgNEVR ? pkgNEVR + 2 : "?pkgNEVR?"),
 		    (addNEVR ? addNEVR + 2 : "?addNEVR?"));
@@ -424,7 +424,7 @@ assert(lastx >= 0 && lastx < ts->orderCount);
 	xx = rpmteChain(p, q, oh, "Upgrades");
 
 /*@-nullptrarith@*/
-	rpmMessage(RPMMESS_DEBUG, D_("   upgrade erases %s\n"), rpmteNEVRA(q));
+	rpmlog(RPMLOG_DEBUG, D_("   upgrade erases %s\n"), rpmteNEVRA(q));
 /*@=nullptrarith@*/
 
     }
@@ -501,7 +501,7 @@ assert(lastx >= 0 && lastx < ts->orderCount);
 	    xx = rpmteChain(p, q, oh, "Obsoletes");
 
 /*@-nullptrarith@*/
-	    rpmMessage(RPMMESS_DEBUG, D_("  Obsoletes: %s\t\terases %s\n"),
+	    rpmlog(RPMLOG_DEBUG, D_("  Obsoletes: %s\t\terases %s\n"),
 			rpmdsDNEVR(obsoletes)+2, rpmteNEVRA(q));
 /*@=nullptrarith@*/
 	}
@@ -1446,7 +1446,7 @@ static int ignoreDep(const rpmts ts, const rpmte p, const rpmte q)
 	const char ** av = NULL;
 	int anaconda = rpmtsDFlags(ts) & RPMDEPS_FLAG_ANACONDA;
 	int msglvl = (anaconda || (rpmtsDFlags(ts) & RPMDEPS_FLAG_DEPLOOPS))
-			? RPMMESS_WARNING : RPMMESS_DEBUG;
+			? RPMLOG_WARNING : RPMLOG_DEBUG;
 	int ac = 0;
 	int i;
 
@@ -1467,7 +1467,7 @@ static int ignoreDep(const rpmts ts, const rpmte p, const rpmte q)
 		/*@-usereleased@*/
 		bdp->qname = qname;
 		/*@=usereleased@*/
-		rpmMessage(msglvl,
+		rpmlog(msglvl,
 			_("ignore package name relation(s) [%d]\t%s -> %s\n"),
 			i, bdp->pname, (bdp->qname ? bdp->qname : "???"));
 	    }
@@ -1590,7 +1590,7 @@ zapRelation(rpmte q, rpmte p,
 	 * Attempt to unravel a dependency loop by eliminating Requires's.
 	 */
 	if (zap) {
-	    rpmMessage(msglvl,
+	    rpmlog(msglvl,
 			_("removing %s \"%s\" from tsort relations.\n"),
 			(rpmteNEVRA(p) ?  rpmteNEVRA(p) : "???"), dp);
 	    rpmteTSI(p)->tsi_count--;
@@ -1877,7 +1877,7 @@ int rpmtsOrder(rpmts ts)
     pi = rpmtsiFree(pi);
 
     /* Record all relations. */
-    rpmMessage(RPMMESS_DEBUG, D_("========== recording tsort relations\n"));
+    rpmlog(RPMLOG_DEBUG, D_("========== recording tsort relations\n"));
     pi = rpmtsiInit(ts);
     while ((p = rpmtsiNext(pi, oType)) != NULL) {
 
@@ -1998,7 +1998,7 @@ int rpmtsOrder(rpmts ts)
     ts->ntrees = treex;
 
     /* T4. Scan for zeroes. */
-    rpmMessage(RPMMESS_DEBUG, D_("========== tsorting packages (order, #predecessors, #succesors, tree, Ldepth, Rbreadth)\n"));
+    rpmlog(RPMLOG_DEBUG, D_("========== tsorting packages (order, #predecessors, #succesors, tree, Ldepth, Rbreadth)\n"));
 
 rescan:
     if (pi != NULL) pi = rpmtsiFree(pi);
@@ -2046,7 +2046,7 @@ rescan:
 	breadth = ((depth < npeer) ? peer[depth]++ : 0);
 	(void) rpmteSetBreadth(q, breadth);
 
-	rpmMessage(RPMMESS_DEBUG, "%5d%5d%5d%5d%5d%5d %*s%c%s\n",
+	rpmlog(RPMLOG_DEBUG, "%5d%5d%5d%5d%5d%5d %*s%c%s\n",
 			orderingCount, rpmteNpreds(q),
 			rpmteTSI(q)->tsi_qcnt,
 			treex, depth, breadth,
@@ -2088,7 +2088,7 @@ rescan:
 	if (!_printed && loopcheck == qlen && rpmteTSI(q)->tsi_suc != NULL) {
 	    _printed++;
 	    (void) rpmtsUnorderedSuccessors(ts, orderingCount);
-	    rpmMessage(RPMMESS_DEBUG,
+	    rpmlog(RPMLOG_DEBUG,
 		D_("========== successors only (%d bytes)\n"), (int)tsbytes);
 
 	    /* Relink the queue in presentation order. */
@@ -2155,14 +2155,14 @@ rescan:
 		const char * dp;
 		char buf[4096];
 		int msglvl = (anaconda || (rpmtsDFlags(ts) & RPMDEPS_FLAG_DEPLOOPS))
-			? RPMMESS_WARNING : RPMMESS_DEBUG;
+			? RPMLOG_WARNING : RPMLOG_DEBUG;
 ;
 
 		/* Unchain predecessor loop. */
 		rpmteTSI(p)->tsi_chain = NULL;
 
 		if (!printed) {
-		    rpmMessage(msglvl, _("LOOP:\n"));
+		    rpmlog(msglvl, _("LOOP:\n"));
 		    printed = 1;
 		}
 
@@ -2173,7 +2173,7 @@ rescan:
 		buf[0] = '\0';
 		if (rpmteNEVRA(p) != NULL)
 		    (void) stpcpy(buf, rpmteNEVRA(p));
-		rpmMessage(msglvl, "    %-40s %s\n", buf,
+		rpmlog(msglvl, "    %-40s %s\n", buf,
 			(dp ? dp : "not found!?!"));
 
 		dp = _free(dp);
@@ -2193,12 +2193,12 @@ rescan:
 	/* If a relation was eliminated, then continue sorting. */
 	/* XXX TODO: add control bit. */
 	if (nzaps && nrescans-- > 0) {
-	    rpmMessage(RPMMESS_DEBUG, D_("========== continuing tsort ...\n"));
+	    rpmlog(RPMLOG_DEBUG, D_("========== continuing tsort ...\n"));
 	    goto rescan;
 	}
 
 	/* Return no. of packages that could not be ordered. */
-	rpmMessage(RPMMESS_ERROR, _("rpmtsOrder failed, %d elements remain\n"),
+	rpmlog(RPMLOG_ERR, _("rpmtsOrder failed, %d elements remain\n"),
 			loopcheck);
 
 #ifdef	NOTYET
@@ -2306,7 +2306,7 @@ int rpmtsCheck(rpmts ts)
 	rpmds provides, requires, conflicts, dirnames, linktos;
 
 /*@-nullpass@*/	/* FIX: rpmts{A,O} can return null. */
-	rpmMessage(RPMMESS_DEBUG, "========== +++ %s %s/%s 0x%x\n",
+	rpmlog(RPMLOG_DEBUG, "========== +++ %s %s/%s 0x%x\n",
 		rpmteNEVR(p), rpmteA(p), rpmteO(p), rpmteColor(p));
 /*@=nullpass@*/
 	requires = (!(depFlags & RPMDEPS_FLAG_NOREQUIRES)
@@ -2370,7 +2370,7 @@ int rpmtsCheck(rpmts ts)
 	rpmfi fi;
 
 /*@-nullpass@*/	/* FIX: rpmts{A,O} can return null. */
-	rpmMessage(RPMMESS_DEBUG, "========== --- %s %s/%s 0x%x\n",
+	rpmlog(RPMLOG_DEBUG, "========== --- %s %s/%s 0x%x\n",
 		rpmteNEVR(p), rpmteA(p), rpmteO(p), rpmteColor(p));
 /*@=nullpass@*/
 

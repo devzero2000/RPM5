@@ -210,7 +210,7 @@ static void vrpmlog (unsigned code, const char *fmt, va_list ap)
 	}
     }
 
-    /* rpmMessage behavior */
+    /* rpmlog behavior */
 
     switch (pri) {
     case RPMLOG_INFO:

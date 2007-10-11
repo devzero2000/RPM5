@@ -444,7 +444,7 @@ static pid_t psmWait(rpmpsm psm)
     msecs = psm->sq.op.usecs/1000;
     (void) rpmswAdd(rpmtsOp(ts, RPMTS_OP_SCRIPTLETS), &psm->sq.op);
 
-    rpmMessage(RPMMESS_DEBUG,
+    rpmlog(RPMLOG_DEBUG,
 	D_("%s: waitpid(%d) rc %d status %x secs %u.%03u\n"),
 	psm->stepName, (unsigned)psm->sq.child,
 	(unsigned)psm->sq.reaped, psm->sq.status,
@@ -637,7 +637,7 @@ assert(NVRA != NULL);
 
     if (progArgv && strcmp(progArgv[0], "<lua>") == 0) {
 #ifdef WITH_LUA
-	rpmMessage(RPMMESS_DEBUG,
+	rpmlog(RPMLOG_DEBUG,
 		D_("%s: %s(%s) running <lua> scriptlet.\n"),
 		psm->stepName, tag2sln(psm->scriptTag), NVRA);
 	rc = runLuaScript(psm, h, sln, progArgc, progArgv,
@@ -653,7 +653,7 @@ assert(NVRA != NULL);
      */
     if (ldconfig_path && progArgv != NULL && psm->unorderedSuccessor) {
  	if (ldconfig_done && !strcmp(progArgv[0], ldconfig_path)) {
-	    rpmMessage(RPMMESS_DEBUG,
+	    rpmlog(RPMLOG_DEBUG,
 		D_("%s: %s(%s) skipping redundant \"%s\".\n"),
 		psm->stepName, tag2sln(psm->scriptTag), NVRA,
 		progArgv[0]);
@@ -662,7 +662,7 @@ assert(NVRA != NULL);
 	}
     }
 
-    rpmMessage(RPMMESS_DEBUG,
+    rpmlog(RPMLOG_DEBUG,
 		D_("%s: %s(%s) %ssynchronous scriptlet start\n"),
 		psm->stepName, tag2sln(psm->scriptTag), NVRA,
 		(psm->unorderedSuccessor ? "a" : ""));
@@ -774,7 +774,7 @@ assert(NVRA != NULL);
 	    flag = fcntl(fdno, F_GETFD);
 	    if (flag == -1 || (flag & FD_CLOEXEC))
 		continue;
-	    rpmMessage(RPMMESS_DEBUG,
+	    rpmlog(RPMLOG_DEBUG,
 			D_("%s: %s(%s)\tfdno(%d) missing FD_CLOEXEC\n"),
 			psm->stepName, sln, NVRA,
 			fdno);
@@ -829,7 +829,7 @@ assert(NVRA != NULL);
 		/*@=modobserver@*/
 	    }
 	    xx = Chdir("/");
-	    rpmMessage(RPMMESS_DEBUG, D_("%s: %s(%s)\texecv(%s) pid %d\n"),
+	    rpmlog(RPMLOG_DEBUG, D_("%s: %s(%s)\texecv(%s) pid %d\n"),
 			psm->stepName, sln, NVRA,
 			argv[0], (unsigned)getpid());
 
@@ -1519,7 +1519,7 @@ rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
     case PSM_UNKNOWN:
 	break;
     case PSM_INIT:
-	rpmMessage(RPMMESS_DEBUG, D_("%s: %s has %d files, test = %d\n"),
+	rpmlog(RPMLOG_DEBUG, D_("%s: %s has %d files, test = %d\n"),
 		psm->stepName, rpmteNEVR(psm->te),
 		rpmfiFC(fi), (rpmtsFlags(ts) & RPMTRANS_FLAG_TEST));
 
@@ -2070,7 +2070,7 @@ assert(psm->te != NULL);
 
 	if (psm->goal == PSM_PKGSAVE) {
 	    if (!rc && ts && ts->notify == NULL) {
-		rpmMessage(RPMMESS_VERBOSE, _("Wrote: %s\n"),
+		rpmlog(RPMLOG_INFO, _("Wrote: %s\n"),
 			(psm->pkgURL ? psm->pkgURL : "???"));
 	    }
 	}

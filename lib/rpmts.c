@@ -123,7 +123,7 @@ int rpmtsOpenDB(rpmts ts, int dbmode)
     if (rc) {
 	const char * dn;
 	dn = rpmGetPath(ts->rootDir, "%{_dbpath}", NULL);
-	rpmMessage(RPMMESS_ERROR,
+	rpmlog(RPMLOG_ERR,
 			_("cannot open Packages database in %s\n"), dn);
 	dn = _free(dn);
     }
@@ -277,7 +277,7 @@ int rpmtsOpenSDB(rpmts ts, int dbmode)
     if (rc) {
 	const char * dn;
 	dn = rpmGetPath(ts->rootDir, "%{_dbpath}", NULL);
-	rpmMessage(RPMMESS_WARNING,
+	rpmlog(RPMLOG_WARNING,
 			_("cannot open Solve database in %s\n"), dn);
 	dn = _free(dn);
 	/* XXX only try to open the solvedb once. */
@@ -424,7 +424,7 @@ int rpmtsSolve(rpmts ts, rpmds ds, /*@unused@*/ const void * data)
 	    if (h != NULL &&
 	        !rpmtsAddInstallElement(ts, h, (fnpyKey)str, 1, NULL))
 	    {
-		rpmMessage(RPMMESS_DEBUG, D_("Adding: %s\n"), str);
+		rpmlog(RPMLOG_DEBUG, D_("Adding: %s\n"), str);
 		rc = -1;	/* XXX restart unsatisfiedDepends() */
 		break;
 	    }
@@ -435,7 +435,7 @@ int rpmtsSolve(rpmts ts, rpmds ds, /*@unused@*/ const void * data)
 	goto exit;
     }
 
-    rpmMessage(RPMMESS_DEBUG, D_("Suggesting: %s\n"), str);
+    rpmlog(RPMLOG_DEBUG, D_("Suggesting: %s\n"), str);
     /* If suggestion is already present, don't bother. */
     if (ts->suggests != NULL && ts->nsuggests > 0) {
 	if (bsearch(&str, ts->suggests, ts->nsuggests,
@@ -906,8 +906,8 @@ int rpmtsInitDSI(const rpmts ts)
     if (ts->filesystems != NULL)
 	return 0;
 
-    rpmMessage(RPMMESS_DEBUG, D_("mounted filesystems:\n"));
-    rpmMessage(RPMMESS_DEBUG,
+    rpmlog(RPMLOG_DEBUG, D_("mounted filesystems:\n"));
+    rpmlog(RPMLOG_DEBUG,
 	D_("    i        dev    bsize       bavail       iavail mount point\n"));
 
     rc = rpmGetFilesystemList(&ts->filesystems, &ts->filesystemCount);
@@ -996,7 +996,7 @@ int rpmtsInitDSI(const rpmts ts)
 #if !defined(ST_RDONLY)
 #define	ST_RDONLY	1
 #endif
-	rpmMessage(RPMMESS_DEBUG, "%5d 0x%08x %8u %12ld %12ld %s %s\n",
+	rpmlog(RPMLOG_DEBUG, "%5d 0x%08x %8u %12ld %12ld %s %s\n",
 		i, (unsigned) dsi->dev, (unsigned) dsi->f_bsize,
 		(signed long) dsi->f_bavail, (signed long) dsi->f_favail,
 		((dsi->f_flag & ST_RDONLY) ? "ro" : "rw"),

@@ -856,7 +856,7 @@ static void skipFiles(const rpmts ts, rpmfi fi)
 		/*@innercontinue@*/ continue;
 	    if (strncmp(fbn, bn, bnlen))
 		/*@innercontinue@*/ continue;
-	    rpmMessage(RPMMESS_DEBUG, D_("excluding directory %s\n"), dn);
+	    rpmlog(RPMLOG_DEBUG, D_("excluding directory %s\n"), dn);
 	    fi->actions[i] = FA_SKIPNSTATE;
 	    /*@innerbreak@*/ break;
 	}
@@ -979,7 +979,7 @@ rpmRC rpmtsRollback(rpmts rbts, rpmprobFilterFlags ignoreSet, int running, rpmte
 			rpmtsGetTid(rbts),
 			te->u.removed.dboffset, NULL);
 	    if (rc != RPMRC_OK) {
-		rpmMessage(RPMMESS_ERROR, _("rpmdb erase failed. NEVRA: %s\n"),
+		rpmlog(RPMLOG_ERR, _("rpmdb erase failed. NEVRA: %s\n"),
 			rpmteNEVRA(te));
 		break;
 	    }
@@ -997,7 +997,7 @@ rpmRC rpmtsRollback(rpmts rbts, rpmprobFilterFlags ignoreSet, int running, rpmte
     rpmtsEmpty(rbts);
 
     ttid = (time_t)arbgoal;
-    rpmMessage(RPMMESS_NORMAL, _("Rollback to %-24.24s (0x%08x)\n"),
+    rpmlog(RPMLOG_NOTICE, _("Rollback to %-24.24s (0x%08x)\n"),
 	ctime(&ttid), arbgoal);
 
     /* Set the verify signature flags:
@@ -1143,7 +1143,7 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 
     /* XXX programmer error segfault avoidance. */
     if (rpmtsNElements(ts) <= 0) {
-	rpmMessage(RPMMESS_ERROR,
+	rpmlog(RPMLOG_ERR,
 	    _("Invalid number of transaction elements.\n"));
 	return -1;
     }
@@ -1224,7 +1224,7 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
      * - count files.
      */
 
-rpmMessage(RPMMESS_DEBUG, D_("sanity checking %d elements\n"), rpmtsNElements(ts));
+rpmlog(RPMLOG_DEBUG, D_("sanity checking %d elements\n"), rpmtsNElements(ts));
     ps = rpmtsProblems(ts);
     /* The ordering doesn't matter here */
     pi = rpmtsiInit(ts);
@@ -1299,7 +1299,7 @@ rpmMessage(RPMMESS_DEBUG, D_("sanity checking %d elements\n"), rpmtsNElements(ts
      	  || (rpmpsNumProblems(ts->probs) &&
 		(okProbs == NULL || rpmpsTrim(ts->probs, okProbs)))))
     {
-	rpmMessage(RPMMESS_DEBUG, D_("running pre-transaction scripts\n"));
+	rpmlog(RPMLOG_DEBUG, D_("running pre-transaction scripts\n"));
 	pi = rpmtsiInit(ts);
 	while ((p = rpmtsiNext(pi, TR_ADDED)) != NULL) {
 	    if (p->isSource) continue;
@@ -1373,7 +1373,7 @@ assert(psm != NULL);
      * calling fpLookupList only once. I'm not sure that the speedup is
      * worth the trouble though.
      */
-rpmMessage(RPMMESS_DEBUG, D_("computing %d file fingerprints\n"), totalFileCount);
+rpmlog(RPMLOG_DEBUG, D_("computing %d file fingerprints\n"), totalFileCount);
 
     numAdded = numRemoved = 0;
     pi = rpmtsiInit(ts);
@@ -1460,7 +1460,7 @@ rpmMessage(RPMMESS_DEBUG, D_("computing %d file fingerprints\n"), totalFileCount
     /* ===============================================
      * Compute file disposition for each package in transaction set.
      */
-rpmMessage(RPMMESS_DEBUG, D_("computing file dispositions\n"));
+rpmlog(RPMLOG_DEBUG, D_("computing file dispositions\n"));
     ps = rpmtsProblems(ts);
     pi = rpmtsiInit(ts);
 /*@-nullpass@*/
@@ -1736,7 +1736,7 @@ assert(psm != NULL);
 
 	    pkgKey = rpmteAddedKey(p);
 
-	    rpmMessage(RPMMESS_DEBUG, "========== +++ %s %s-%s 0x%x\n",
+	    rpmlog(RPMLOG_DEBUG, "========== +++ %s %s-%s 0x%x\n",
 		rpmteNEVR(p), rpmteA(p), rpmteO(p), rpmteColor(p));
 
 	    p->h = NULL;
@@ -1839,7 +1839,7 @@ assert(psm != NULL);
 	case TR_REMOVED:
 	    (void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_ERASE), 0);
 
-	    rpmMessage(RPMMESS_DEBUG, "========== --- %s %s-%s 0x%x\n",
+	    rpmlog(RPMLOG_DEBUG, "========== --- %s %s-%s 0x%x\n",
 		rpmteNEVR(p), rpmteA(p), rpmteO(p), rpmteColor(p));
 
 	    /* If linked element install failed, then don't erase. */
@@ -1880,7 +1880,7 @@ assert(psm != NULL);
     pi = rpmtsiFree(pi);
 
     if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)) {
-	rpmMessage(RPMMESS_DEBUG, D_("running post-transaction scripts\n"));
+	rpmlog(RPMLOG_DEBUG, D_("running post-transaction scripts\n"));
 	pi = rpmtsiInit(ts);
 	while ((p = rpmtsiNext(pi, TR_ADDED)) != NULL) {
 	    int haspostscript;

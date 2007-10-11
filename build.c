@@ -38,7 +38,7 @@ static int checkSpec(rpmts ts, Header h)
 
     ps = rpmtsProblems(ts);
     if (rc == 0 && rpmpsNumProblems(ps) > 0) {
-	rpmMessage(RPMMESS_ERROR, _("Failed build dependencies:\n"));
+	rpmlog(RPMLOG_ERR, _("Failed build dependencies:\n"));
 	rpmpsPrint(NULL, ps);
 	rc = 1;
     }
@@ -304,7 +304,7 @@ int build(rpmts ts, const char * arg, BTA_t ba, const char * rcfile)
 	else	/* XXX Perform clean-up after last target build. */
 	    ba->buildAmount |= cleanFlags;
 
-	rpmMessage(RPMMESS_DEBUG, _("    target platform: %s\n"), target);
+	rpmlog(RPMLOG_DEBUG, _("    target platform: %s\n"), target);
 
 	/* Read in configuration for target. */
 	if (t != targets) {

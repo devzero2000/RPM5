@@ -257,7 +257,7 @@ fprintf(stderr, "*** free pkt %p[%d] id %08x %08x\n", ts->pkpkt, ts->pkpktlen, p
 	memcpy(ts->pksignid, pubp->signid, sizeof(ts->pksignid));
 
 	if (pubkeysource)
-	    rpmMessage(RPMMESS_DEBUG, "========== %s pubkey id %08x %08x (%s)\n",
+	    rpmlog(RPMLOG_DEBUG, "========== %s pubkey id %08x %08x (%s)\n",
 		(sigp->pubkey_algo == PGPPUBKEYALGO_DSA ? "DSA" :
 		(sigp->pubkey_algo == PGPPUBKEYALGO_RSA ? "RSA" : "???")),
 		pgpGrab(sigp->signid, 4), pgpGrab(sigp->signid+4, 4),
@@ -504,7 +504,7 @@ static rpmRC wrSignature(FD_t fd, void * ptr, /*@unused@*/ const char ** msg)
 	if (Fwrite(zero, sizeof(zero[0]), pad, fd) != pad)
 	    rc = RPMRC_FAIL;
     }
-    rpmMessage(RPMMESS_DEBUG, D_("Signature: size(%d)+pad(%d)\n"), sigSize, pad);
+    rpmlog(RPMLOG_DEBUG, D_("Signature: size(%d)+pad(%d)\n"), sigSize, pad);
     return rc;
 }
 
@@ -535,11 +535,11 @@ static inline rpmRC printSize(FD_t fd, int siglen, int pad, size_t datalen)
 	return RPMRC_FAIL;
 
     expected = nl + siglen + pad + datalen;
-    rpmMessage(RPMMESS_DEBUG,
+    rpmlog(RPMLOG_DEBUG,
 	D_("Expected size: %12lu = lead(%u)+sigs(%d)+pad(%d)+data(%lu)\n"),
 		(unsigned long)expected,
 		(unsigned)nl, siglen, pad, (unsigned long)datalen);
-    rpmMessage(RPMMESS_DEBUG,
+    rpmlog(RPMLOG_DEBUG,
 	D_("  Actual size: %12lu\n"), (unsigned long)st->st_size);
 
     return RPMRC_OK;
@@ -963,7 +963,7 @@ assert(dig != NULL);
 	/* Parse the parameters from the OpenPGP packets that will be needed. */
 	xx = pgpPrtPkts(sig, info->count, dig, (_print_pkts & rpmIsDebug()));
 	if (dig->signature.version != 3 && dig->signature.version != 4) {
-	    rpmMessage(RPMMESS_ERROR,
+	    rpmlog(RPMLOG_ERR,
 		_("skipping header with unverifiable V%u signature\n"),
 		dig->signature.version);
 	    rpmtsCleanDig(ts);
@@ -1007,7 +1007,7 @@ assert(dig != NULL);
 	/* Parse the parameters from the OpenPGP packets that will be needed. */
 	xx = pgpPrtPkts(sig, info->count, dig, (_print_pkts & rpmIsDebug()));
 	if (dig->signature.version != 3 && dig->signature.version != 4) {
-	    rpmMessage(RPMMESS_ERROR,
+	    rpmlog(RPMLOG_ERR,
 		_("skipping header with unverifiable V%u signature\n"),
 		dig->signature.version);
 	    rpmtsCleanDig(ts);

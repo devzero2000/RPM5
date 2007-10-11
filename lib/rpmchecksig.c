@@ -355,7 +355,7 @@ if (sigh != NULL) {
 		/* If same signer, skip resigning the package. */
 		if (!memcmp(oldsignid, newsignid, sizeof(oldsignid))) {
 
-		    rpmMessage(RPMMESS_WARNING,
+		    rpmlog(RPMLOG_WARNING,
 			_("%s: was already signed by key ID %s, skipping\n"),
 			fn, pgpHexStr(newsignid+4, sizeof(newsignid)-4));
 

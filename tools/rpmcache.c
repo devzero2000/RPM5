@@ -177,7 +177,7 @@ static rpmRC cacheStashLatest(rpmgi gi, Header h)
     int ec = -1;	/* assume not found */
     int i = 0;
 
-    rpmMessage(RPMMESS_DEBUG, "============== %s\n", fts->fts_accpath);
+    rpmlog(RPMLOG_DEBUG, "============== %s\n", fts->fts_accpath);
 
     /* XXX DIEDIEDIE: check platform compatibility. */
 
@@ -467,7 +467,7 @@ static void initGlobs(/*@unused@*/ rpmts ts, const char ** argv)
 	bhglobs[i].patterns[0] = pattern;
 	bhglobs[i].fnflags = (FNM_PATHNAME | FNM_PERIOD | FNM_EXTMATCH);
 	if (bhglobs[i].patterns[0] != NULL)
-	    rpmMessage(RPMMESS_DEBUG, "\t%d \"%s\"\n",
+	    rpmlog(RPMLOG_DEBUG, "\t%d \"%s\"\n",
 		i, bhglobs[i].patterns[0]);
     }
 }

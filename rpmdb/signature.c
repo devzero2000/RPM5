@@ -304,7 +304,7 @@ static int makePGPSignature(const char * file, /*@unused@*/ int_32 * sigTagp,
     }
 
     *pktlenp = st.st_size;
-    rpmMessage(RPMMESS_DEBUG, D_("PGP sig size: %d\n"), *pktlenp);
+    rpmlog(RPMLOG_DEBUG, D_("PGP sig size: %d\n"), *pktlenp);
     *pktp = xmalloc(*pktlenp);
 
     {	FD_t fd;
@@ -323,7 +323,7 @@ static int makePGPSignature(const char * file, /*@unused@*/ int_32 * sigTagp,
 	}
     }
 
-    rpmMessage(RPMMESS_DEBUG, D_("Got %d bytes of PGP sig\n"), *pktlenp);
+    rpmlog(RPMLOG_DEBUG, D_("Got %d bytes of PGP sig\n"), *pktlenp);
 
 #ifdef	NOTYET
     /* Parse the signature, change signature tag as appropriate. */
@@ -447,7 +447,7 @@ static int makeGPGSignature(const char * file, int_32 * sigTagp,
     }
 
     *pktlenp = st.st_size;
-    rpmMessage(RPMMESS_DEBUG, D_("GPG sig size: %d\n"), *pktlenp);
+    rpmlog(RPMLOG_DEBUG, D_("GPG sig size: %d\n"), *pktlenp);
     *pktp = xmalloc(*pktlenp);
 
     {	FD_t fd;
@@ -466,7 +466,7 @@ static int makeGPGSignature(const char * file, int_32 * sigTagp,
 	}
     }
 
-    rpmMessage(RPMMESS_DEBUG, D_("Got %d bytes of GPG sig\n"), *pktlenp);
+    rpmlog(RPMLOG_DEBUG, D_("Got %d bytes of GPG sig\n"), *pktlenp);
 
     /* Parse the signature, change signature tag as appropriate. */
     dig = pgpNewDig(0);
