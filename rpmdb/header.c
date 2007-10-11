@@ -1853,7 +1853,9 @@ int headerGetExtension(Header h, int_32 tag,
     else
 	rc = intGetEntry(h, he->tag, he->t, (hPTR_t *)he->p, he->c, 0);
 
-    if (rc && he->p && !he->freeData)
+    if (!rc)
+	goto exit;
+
     switch (*he->t) {
     case RPM_NULL_TYPE:
     case RPM_OPENPGP_TYPE:	/* XXX W2DO? */
@@ -1886,12 +1888,17 @@ assert(0);	/* XXX stop unimplemented oversights. */
 	break;
     }
 
-    if (rc && p)
-	p->ptr = ((nb > 0)
-		? memcpy(xmalloc(nb), he_p.ptr, nb) : he_p.ptr);
+    /* Allocate all returned storage (if not already). */
+    if (p && nb && !he->freeData) {
+	void * ptr = memcpy(xmalloc(nb), he_p.ptr, nb);
+	he_p.ptr = ptr;
+    }
 
+exit:
     if (type)
 	*type = *he->t;
+    if (p)
+	p->ptr = he_p.ptr;
     if (c)
 	*c = *he->c;
 
