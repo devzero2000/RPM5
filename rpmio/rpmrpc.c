@@ -205,6 +205,7 @@ int Open(const char * path, int flags, mode_t mode)
 {
     const char * lpath;
     int ut = urlPath(path, &lpath);
+    int fdno;
 
 if (_rpmio_debug)
 fprintf(stderr, "*** Open(%s, 0x%x, 0%o)\n", path, flags, mode);
@@ -238,7 +239,14 @@ fprintf(stderr, "*** Open(%s, 0x%x, 0%o)\n", path, flags, mode);
     if (mode == 0)
 	mode = 0644;
 #endif
-    return open(path, flags, mode);
+    fdno = open(path, flags, mode);
+    if (fdno >= 0) {
+	if (fcntl(fdno, F_SETFD, FD_CLOEXEC) < 0) {
+	    (void) close(fdno);
+	    fdno = -1;
+	}
+    }
+    return fdno;
 }
 
 /* XXX rpmdb.c: analogue to rename(2). */

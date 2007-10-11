@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - jbj: fix: set FD_CLOEXEC in Open() and fdDup().
     - jbj: eliminate rpmMessage, rpmlog instead.
     - jbj: finish eliminating rpmError, rpmlog instead.
     - jbj: switch rpmdbRemove to use headerGetExtension.

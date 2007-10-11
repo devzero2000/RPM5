@@ -262,6 +262,10 @@ FD_t fdDup(int fdno)
 
     if ((nfdno = dup(fdno)) < 0)
 	return NULL;
+    if (fcntl(nfdno, F_SETFD, FD_CLOEXEC)) {
+	(void) close(nfdno);
+	return NULL;
+    }
     fd = fdNew("open (fdDup)");
     fdSetOpen(fd, "fdDup", nfdno, 0);	/* XXX bogus */
     fdSetFdno(fd, nfdno);
