@@ -2772,8 +2772,7 @@ DBC * dbcursor = NULL;
 DBT * key = alloca(sizeof(*key));
 DBT * data = alloca(sizeof(*data));
 union _dbswap mi_offset;
-    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
-    HFD_t hfd = headerFreeData;
+    HGE_t hge = (HGE_t)headerGetExtension;
     Header h;
     sigset_t signalMask;
     int ret = 0;
@@ -2831,7 +2830,6 @@ memset(data, 0, sizeof(*data));
 	if (db->db_tagn != NULL)
 	for (dbix = 0; dbix < db->db_ndbi; dbix++) {
 	    dbiIndex dbi;
-	    const char *av[1];
 	    byte * bin = NULL;
 	    int xx;
 	    int i, j;
@@ -2879,10 +2877,6 @@ if (dbiByteSwapped(dbi) == 1)
 		    xx = dbiSync(dbi, 0);
 		continue;
 		/*@notreached@*/ /*@switchbreak@*/ break;
-	    case RPMTAG_NVRA:	/* XXX compound header extension. */
-		if (!headerGetExtension(h, he->tag, he->t, he->p, he->c))
-		    continue;
-		/*@switchbreak@*/ break;
 	    default:
 		if (!hge(h, he->tag, he->t, he->p, he->c))
 		    continue;
@@ -2894,10 +2888,14 @@ if (dbiByteSwapped(dbi) == 1)
 	  if (dbi != NULL) {
 	    int printed;
 
+	    /* XXX Coerce strings into header argv return. */
 	    if (he_t == RPM_STRING_TYPE) {
-		/* XXX Force uniform headerGetEntry return */
-		av[0] = he_p.str;
-		he_p.argv = av;
+		const char * s = he_p.str;
+		char * t;
+		he_p.argv = xcalloc(1, sizeof(*he_p.argv)+strlen(s)+1);
+		he_p.argv[0] = t = (char *) &he_p.argv[1];
+		(void) strcpy(t, s);
+		s = _free(s);
 		he_c = 1;
 	    }
 
@@ -3059,15 +3057,9 @@ if (key->size == 0) key->size++;	/* XXX "/" fixup. */
 		xx = dbiSync(dbi, 0);
 	  }
 
-/*@-unqualifiedtrans@*/
-	    if (he->tag == RPMTAG_NVRA)	/* XXX compound header extension. */
-		av[0] = _free(av[0]);
-/*@=unqualifiedtrans@*/
-	    else
-	    if (he_t != RPM_BIN_TYPE)	/* XXX WTFO? HACK ALERT */
-		he_p.ptr = hfd(he_p.ptr, he_t);
 	    he->tag = 0;
 	    he_t = 0;
+	    he_p.ptr = _free(he_p.ptr);
 	    he_c = 0;
 	    bin = _free(bin);
 	}
@@ -3092,7 +3084,6 @@ DBT * key = alloca(sizeof(*key));
 DBT * data = alloca(sizeof(*data));
     HGE_t hge = (HGE_t) headerGetExtension;
     HAE_t hae = (HAE_t) headerAddEntry;
-    HFD_t hfd = headerFreeData;
     sigset_t signalMask;
     const char ** baseNames;
     rpmTagType bnt;
@@ -3541,8 +3532,8 @@ if (key->size == 0) key->size++;	/* XXX "/" fixup. */
 
 exit:
     (void) unblockSignals(db, &signalMask);
-    dirIndexes = hfd(dirIndexes, dit);
-    dirNames = hfd(dirNames, dnt);
+    dirIndexes = _free(dirIndexes);
+    dirNames = _free(dirNames);
 
     return ret;
 }
