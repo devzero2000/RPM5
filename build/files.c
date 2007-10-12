@@ -2142,40 +2142,48 @@ static int processPackageFiles(Spec spec, Package pkg,
     pkg->cpioList = NULL;
 
     if (pkg->fileFile) {
-	const char *ffn;
-	FILE * f;
-	FD_t fd;
+	char *saveptr;
+	char *filesFiles=strdup(pkg->fileFile);
+	char *token=strtok_r(filesFiles, ",", &saveptr);
+	do {
+	    const char *ffn;
+	    FILE * f;
+	    FD_t fd;
 
-	/* XXX W2DO? urlPath might be useful here. */
-	if (*pkg->fileFile == '/') {
-	    ffn = rpmGetPath(pkg->fileFile, NULL);
-	} else {
-	    /* XXX FIXME: add %{buildsubdir} */
-	    ffn = rpmGetPath("%{_builddir}/",
-		(spec->buildSubdir ? spec->buildSubdir : "") ,
-		"/", pkg->fileFile, NULL);
-	}
-	fd = Fopen(ffn, "r.fpio");
-
-	if (fd == NULL || Ferror(fd)) {
-	    rpmlog(RPMLOG_ERR,
-		_("Could not open %%files file %s: %s\n"),
-		ffn, Fstrerror(fd));
-	    return RPMRC_FAIL;
-	}
-	ffn = _free(ffn);
-
-	/*@+voidabstract@*/ f = fdGetFp(fd); /*@=voidabstract@*/
-	if (f != NULL)
-	while (fgets(buf, sizeof(buf), f)) {
-	    handleComments(buf);
-	    if (expandMacros(spec, spec->macros, buf, sizeof(buf))) {
-		rpmlog(RPMLOG_ERR, _("line: %s\n"), buf);
-		return RPMRC_FAIL;
+	    /* XXX W2DO? urlPath might be useful here. */
+	    if (*token == '/') {
+		ffn = rpmGetPath(token, NULL);
+	    } else {
+		/* XXX FIXME: add %{buildsubdir} */
+		ffn = rpmGetPath("%{_builddir}/",
+		    (spec->buildSubdir ? spec->buildSubdir : "") ,
+		    "/", token, NULL);
 	    }
-	    appendStringBuf(pkg->fileList, buf);
-	}
-	(void) Fclose(fd);
+
+	    fd = Fopen(ffn, "r.fpio");
+
+	    if (fd == NULL || Ferror(fd)) {
+		rpmlog(RPMLOG_ERR,
+		    _("Could not open %%files file %s: %s\n"),
+		    ffn, Fstrerror(fd));
+	        return RPMRC_FAIL;
+	    }
+	    ffn = _free(ffn);
+
+	    /*@+voidabstract@*/ f = fdGetFp(fd); /*@=voidabstract@*/
+	    if (f != NULL) {
+		while (fgets(buf, sizeof(buf), f)) {
+		    handleComments(buf);
+		    if (expandMacros(spec, spec->macros, buf, sizeof(buf))) {
+			rpmlog(RPMLOG_ERR, _("line: %s\n"), buf);
+			return RPMRC_FAIL;
+	    	    }
+	    	    appendStringBuf(token, buf);
+		}
+	    }
+	    (void) Fclose(fd);
+	} while(token=strtok_r(NULL, ",", &saveptr));
+	free(filesFiles);
     }
     
     /* Init the file list structure */

@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - bero: Support multiple %files files per package (%files -f f1,f2,...)
     - bero: Detect Ark Linux as RPMCANONVENDOR
     - rpm.org: have selinux disabled imply RPMTRANS_FLAG_NOCONTEXTS.
     - jbj: plug --rebuilddb memory leaks. headerGetExtension() est arrive!
