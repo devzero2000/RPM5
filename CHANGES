@@ -1,4 +1,6 @@
 4.5 -> 5.0:
+    - bero: Add %optional flag on files (packages a file if it is there,
+      but doesn't error out if it isn't there)
     - bero: Support multiple %files files per package (%files -f f1,f2,...)
     - bero: Detect Ark Linux as RPMCANONVENDOR
     - rpm.org: have selinux disabled imply RPMTRANS_FLAG_NOCONTEXTS.

@@ -489,7 +489,8 @@ typedef	enum rpmfileAttrs_e {
     RPMFILE_SPARSE	= (1 << 14),	/*!< was ((512*st->st_blocks) < st->st_size) ? */
     RPMFILE_TYPED	= (1 << 15),	/*!< (unimplemented) from %%spook */
     RPMFILE_SOURCE	= (1 << 16),	/*!< from SourceN: (srpm only). */
-    RPMFILE_PATCH	= (1 << 17)	/*!< from PatchN: (srpm only). */
+    RPMFILE_PATCH	= (1 << 17),	/*!< from PatchN: (srpm only). */
+    RPMFILE_OPTIONAL	= (1 << 18)	/*!< from %%optional. */
 } rpmfileAttrs;
 
 #define	RPMFILE_SPOOK	(RPMFILE_GHOST|RPMFILE_TYPED)

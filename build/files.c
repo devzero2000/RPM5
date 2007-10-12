@@ -878,6 +878,7 @@ VFA_t virtualFileAttributes[] = {
 	{ "%license",	0,	RPMFILE_LICENSE },
 	{ "%pubkey",	0,	RPMFILE_PUBKEY },
 	{ "%policy",	0,	RPMFILE_POLICY },
+	{ "%optional",	0,	RPMFILE_OPTIONAL },
 
 #if WHY_NOT
 	{ "%icon",	0,	RPMFILE_ICON },
@@ -1770,9 +1771,14 @@ static int addFile(FileList fl, const char * diskURL,
 	    statp->st_mtime = now;
 	    statp->st_ctime = now;
 	} else if (Lstat(diskURL, statp)) {
-	    rpmlog(RPMLOG_ERR, _("File not found: %s\n"), diskURL);
-	    fl->processingFailed = 1;
-	    rc = RPMRC_FAIL;
+	    if (fl->currentFlags & RPMFILE_OPTIONAL) {
+		rpmlog(RPMLOG_WARNING, _("Optional file not found: %s\n"), diskURL);
+		rc = 0;
+	    } else {
+		rpmlog(RPMLOG_ERR, _("File not found: %s\n"), diskURL);
+		fl->processingFailed = 1;
+		rc = RPMRC_FAIL;
+	    }
 	    goto exit;
 	}
     }
@@ -2099,9 +2105,15 @@ static int processBinaryFile(/*@unused@*/ Package pkg, FileList fl,
 	    }
 	    argv = _free(argv);
 	} else {
-	    rpmlog(RPMLOG_ERR, _("File not found by glob: %s\n"),
-			diskURL);
-	    rc = 1;
+	    if (fl->currentFlags & RPMFILE_OPTIONAL) {
+		rpmlog(RPMLOG_WARNING, _("Optional file not found by glob: %s\n"),
+			    diskURL);
+		rc = 0;
+	    } else {
+		rpmlog(RPMLOG_ERR, _("File not found by glob: %s\n"),
+			    diskURL);
+		rc = 1;
+	    }
 	    goto exit;
 	}
 	/*@=branchstate@*/
