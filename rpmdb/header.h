@@ -316,6 +316,7 @@ union hRET_s {
     uint_64 * ui64p;
     uint_32 * ui32p;
     uint_16 * ui16p;
+    uint_8 * ui8p;
     int_64 * i64p;
     int_32 * i32p;
     int_16 * i16p;
@@ -327,9 +328,8 @@ union hRET_s {
 /**
  */
 /*@-typeuse -fielduse@*/
-typedef struct HE_s * HE_t;
 #if !defined(SWIG)
-struct HE_s {
+struct _HE_s {
     int_32 tag;
 /*@null@*/
     hTYP_t t;
@@ -339,7 +339,9 @@ struct HE_s {
     hCNT_t c;
     int freeData;
 };
+typedef struct _HE_s HE_s;
 #endif
+typedef HE_s * HE_t;
 /*@=typeuse =fielduse@*/
 
 /** \ingroup header

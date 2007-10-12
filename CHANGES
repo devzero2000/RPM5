@@ -1,4 +1,6 @@
 4.5 -> 5.0:
+    - jbj: addTE: use headerGetExtension.
+    - jbj: add HE_s typedef to get rid of alloca baggage.
     - bero: Make rpm2cpio work for packages with payloads other than gzip
     - jbj: change to hRET_t for existing headerGetExtension uses.
     - bero: Add %optional flag on files (packages a file if it is there,

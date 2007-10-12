@@ -95,19 +95,18 @@ static void addTE(rpmts ts, rpmte p, Header h,
 		rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     int scareMem = 0;
-    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
-    rpmte savep;
-    int_32 * ep, pkgidcnt;
-    const char * hdrid, * arch, * os;
-    const unsigned char * pkgid;
-    char * t;
-    size_t nb;
-    hRET_t NVRA = { .ptr = NULL };
+    HGE_t hge = (HGE_t)headerGetExtension;
+    int_32 he_t = 0;
+    hRET_t he_p = { .ptr = NULL };
+    int_32 he_c = 0;
+    HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
+    HE_t he = &he_s;
     int xx;
 
-    xx = headerGetExtension(h, RPMTAG_NVRA, NULL, &NVRA, NULL);
-assert(NVRA.str != NULL);
-    p->NEVR = NVRA.str;
+    he->tag = RPMTAG_NVRA;
+    xx = hge(h, he->tag, he->t, he->p, he->c);
+assert(he_p.str != NULL);
+    p->NEVR = he_p.str;
     p->name = xstrdup(p->NEVR);
     if ((p->release = strrchr(p->name, '-')) != NULL)
 	*p->release++ = '\0';
@@ -116,69 +115,47 @@ assert(NVRA.str != NULL);
 
     p->db_instance = 0;
 
-    hdrid = NULL;
-    xx = hge(h, RPMTAG_HDRID, NULL, &hdrid, NULL);
-    if (hdrid != NULL)
-	p->hdrid = xstrdup(hdrid);
-    else
-	p->hdrid = NULL;
+    he->tag = RPMTAG_HDRID;
+    xx = hge(h, he->tag, he->t, he->p, he->c);
+    p->hdrid = he_p.str;
 
-    pkgid = NULL;
-    xx = hge(h, RPMTAG_PKGID, NULL, &pkgid, &pkgidcnt);
-    if (pkgid != NULL) {
+    he->tag = RPMTAG_PKGID;
+    xx = hge(h, he->tag, he->t, he->p, he->c);
+    if (he_p.ui8p != NULL) {
 	static const char hex[] = "0123456789abcdef";
+	char * t;
 	int i;
 
-	p->pkgid = t = xmalloc((2*pkgidcnt) + 1);
-	for (i = 0 ; i < pkgidcnt; i++) {
-	    *t++ = hex[ (unsigned)((pkgid[i] >> 4) & 0x0f) ];
-	    *t++ = hex[ (unsigned)((pkgid[i]   ) & 0x0f) ];
+	p->pkgid = t = xmalloc((2*he_c) + 1);
+	for (i = 0 ; i < he_c; i++) {
+	    *t++ = hex[ (unsigned)((he_p.ui8p[i] >> 4) & 0x0f) ];
+	    *t++ = hex[ (unsigned)((he_p.ui8p[i]     ) & 0x0f) ];
 	}
 	*t = '\0';
-#ifdef NOTYET	/* XXX MinMemory. */
-	pkgid = headerFreeData(pkgid, RPM_BIN_TYPE);
-#endif
+	he_p.ptr = _free(he_p.ptr);
     } else
 	p->pkgid = NULL;
 
-    arch = NULL;
-    xx = hge(h, RPMTAG_ARCH, NULL, &arch, NULL);
-    p->arch = (arch != NULL ? xstrdup(arch) : NULL);
-    os = NULL;
-    xx = hge(h, RPMTAG_OS, NULL, &os, NULL);
-    p->os = (os != NULL ? xstrdup(os) : NULL);
+    he->tag = RPMTAG_ARCH;
+    xx = hge(h, he->tag, he->t, he->p, he->c);
+    p->arch = he_p.str;
+
+    he->tag = RPMTAG_OS;
+    xx = hge(h, he->tag, he->t, he->p, he->c);
+    p->os = he_p.str;
 
     p->isSource =
 	(headerIsEntry(h, RPMTAG_SOURCERPM) == 0 &&
 	 headerIsEntry(h, RPMTAG_ARCH) != 0);
 
-    nb = strlen(p->NEVR) + 1;
-#ifdef	DYING	/* p->NEVR includes arch now. */
-    if (p->arch == NULL)
-	nb += sizeof("pubkey");
-    else if (p->isSource)
-	nb += sizeof("src");
-    else
-	nb += strlen(p->arch) + 1;
-#endif
-    t = xmalloc(nb);
-    p->NEVRA = t;
-    *t = '\0';
-    t = stpcpy(t, p->NEVR);
-#ifdef	DYING	/* p->NEVR includes arch now. */
-    if (p->arch == NULL)
-	t = stpcpy( t, ".pubkey");
-    else if (p->isSource)
-	t = stpcpy( t, ".src");
-    else
-	t = stpcpy( stpcpy( t, "."), p->arch);
-#endif
+    p->NEVRA = xstrdup(p->NEVR);
 
-    ep = NULL;
-    xx = hge(h, RPMTAG_EPOCH, NULL, &ep, NULL);
-    if (ep) {
+    he->tag = RPMTAG_EPOCH;
+    xx = hge(h, he->tag, he->t, he->p, he->c);
+    if (he_p.i32p != NULL) {
 	p->epoch = xmalloc(20);
-	sprintf(p->epoch, "%d", *ep);
+	sprintf(p->epoch, "%d", *he_p.i32p);
+	he_p.ptr = _free(he_p.ptr);
     } else
 	p->epoch = NULL;
 
@@ -212,9 +189,10 @@ assert(NVRA.str != NULL);
 
     p->PRCO = rpmdsNewPRCO(h);
 
-    savep = rpmtsSetRelocateElement(ts, p);
-    p->fi = rpmfiNew(ts, h, RPMTAG_BASENAMES, scareMem);
-    (void) rpmtsSetRelocateElement(ts, savep);
+    {	rpmte savep = rpmtsSetRelocateElement(ts, p);
+	p->fi = rpmfiNew(ts, h, RPMTAG_BASENAMES, scareMem);
+	(void) rpmtsSetRelocateElement(ts, savep);
+    }
 
     rpmteColorDS(p, RPMTAG_PROVIDENAME);
     rpmteColorDS(p, RPMTAG_REQUIRENAME);
