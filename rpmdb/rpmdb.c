@@ -3325,20 +3325,8 @@ data->size = 0;
 	    }
 
 	    /* Anything to do? */
-#ifdef	DEAD
-	    if (he_c <= 0) {
-		if (he->tag != RPMTAG_GROUP)
-		    continue;
-
-		/* XXX preserve legacy behavior */
-		he_t = RPM_STRING_TYPE;
-		he_p.str = xstrdup("Unknown");
-		he_c = 1;
-	    }
-#else
 	    if (he_c <= 0)
 		continue;
-#endif
 
 	  dbi = dbiOpen(db, he->tag, 0);
 	  if (dbi != NULL) {
