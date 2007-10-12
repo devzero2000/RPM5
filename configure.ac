@@ -1105,7 +1105,7 @@ mint)		RPMCANONARCH=m68kmint ;;
 esac
 RPMCANONVENDOR="$target_vendor"
 case "${target_vendor}" in
-unknown|pc|ibm|redhat|pld|mandrake|conectiva|lvr|yellowdog|caos|crux)
+unknown|pc|ibm|redhat|pld|mandrake|conectiva|lvr|yellowdog|caos|crux|ark)
 	test -f /etc/redhat-release &&		RPMCANONVENDOR=redhat
 	test -f /etc/pld-release &&		RPMCANONVENDOR=pld
 	test -f /etc/mandrake-release &&	RPMCANONVENDOR=mandrake
@@ -1114,6 +1114,7 @@ unknown|pc|ibm|redhat|pld|mandrake|conectiva|lvr|yellowdog|caos|crux)
 	test -f /etc/yellowdog-release &&	RPMCANONVENDOR=yellowdog
 	test -f /etc/caos-release &&		RPMCANONVENDOR=caos
 	test -f /usr/bin/crux &&		RPMCANONVENDOR=crux
+	test -f /etc/ark-release &&		RPMCANONVENDOR=ark
 	;;
 esac
 RPMCANONOS="$target_os_noversion"
