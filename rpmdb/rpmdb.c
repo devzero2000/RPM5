@@ -2134,13 +2134,11 @@ static int mireSkip (const rpmdbMatchIterator mi)
 	/*@modifies mi->mi_re @*/
 {
     HGE_t hge = (HGE_t) headerGetExtension;
-#ifdef	DYING
-    HFD_t hfd = (HFD_t) headerFreeData;
-#endif
-    HE_t he;
-    int_32 he_t;
+    int_32 he_t = 0;
     hRET_t he_p = { .ptr = NULL };
-    int_32 he_c;
+    int_32 he_c = 0;
+    HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
+    HE_t he = &he_s;
     char numbuf[32];
     miRE mire;
     int ntags = 0;
@@ -2157,12 +2155,6 @@ static int mireSkip (const rpmdbMatchIterator mi)
      */
     if ((mire = mi->mi_re) == NULL)
 	return 0;
-
-    he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
-    memset(&he_p, 0, sizeof(he_p));
-    he->t = &he_t;
-    he->p = &he_p;
-    he->c = &he_c;
 
     for (i = 0; i < mi->mi_nre; i++, mire++) {
 	int anymatch;
@@ -2817,15 +2809,11 @@ memset(data, 0, sizeof(*data));
 /*@-nullpass -nullptrarith -nullderef @*/ /* FIX: rpmvals heartburn */
     {	dbiIndexItem rec = dbiIndexNewItem(hdrNum, 0);
 	int dbix;
-	HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
-	int_32 he_t;
+	int_32 he_t = 0;
 	hRET_t he_p = { .ptr = NULL };
-	int_32 he_c;
-
-	memset(&he_p, 0, sizeof(he_p));
-	he->t = &he_t;
-	he->p = &he_p;
-	he->c = &he_c;
+	int_32 he_c = 0;
+	HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
+	HE_t he = &he_s;
 
 	if (db->db_tagn != NULL)
 	for (dbix = 0; dbix < db->db_ndbi; dbix++) {
@@ -3215,15 +3203,11 @@ memset(data, 0, sizeof(*data));
 
     if (hdrNum)
     {	dbiIndexItem rec = dbiIndexNewItem(hdrNum, 0);
-	HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
 	int_32 he_t;
 	hRET_t he_p = { .ptr = NULL };
 	int_32 he_c;
-
-	memset(&he_p, 0, sizeof(he_p));
-	he->t = &he_t;
-	he->p = &he_p;
-	he->c = &he_c;
+	HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
+	HE_t he = &he_s;
 
 	/* Save the header instance. */
 	(void) headerSetInstance(h, hdrNum);
