@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - rse: fix va_copy fallback macros.
     - jbj: rpmdb.c: retrofit HE_s.
     - jbj: rpmte.c: use headerGetExtension.
     - jbj: add HE_s typedef to get rid of alloca baggage.
