@@ -1821,7 +1821,7 @@ int headerGetExtension(Header h, int_32 tag,
     headerSprintfExtension exts = (headerSprintfExtension)headerCompoundFormats;
     headerSprintfExtension ext;
     int_32 he_t = 0;
-    hRET_t he_p;
+    hRET_t he_p = { .ptr = NULL };
     int_32 he_c = 0;
     HE_t he = alloca(sizeof(*he));
     size_t nb = 0;

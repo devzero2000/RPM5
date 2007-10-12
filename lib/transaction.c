@@ -105,7 +105,7 @@ static int handleInstInstalledFiles(const rpmts ts,
     uint_32 otecolor, tecolor;
     uint_32 oFColor, FColor;
     uint_32 oFFlags, FFlags;
-    const char * altNEVRA = NULL;
+    hRET_t altNVRA = { .ptr = NULL };
     rpmfi otherFi = NULL;
     rpmps ps;
     int xx;
@@ -118,8 +118,8 @@ static int handleInstInstalledFiles(const rpmts ts,
 	mi = rpmtsInitIterator(ts, RPMDBI_PACKAGES,
 			&shared->otherPkg, sizeof(shared->otherPkg));
 	while ((h = rpmdbNextIterator(mi)) != NULL) {
-	    xx = headerGetExtension(h, RPMTAG_NVRA, NULL, &altNEVRA, NULL);
-assert(altNEVRA != NULL);
+	    xx = headerGetExtension(h, RPMTAG_NVRA, NULL, &altNVRA, NULL);
+assert(altNVRA.str != NULL);
 	    otherFi = rpmfiNew(ts, h, RPMTAG_BASENAMES, scareMem);
 	    break;
 	}
@@ -200,7 +200,7 @@ assert(altNEVRA != NULL);
 		rpmpsAppend(ps, RPMPROB_FILE_CONFLICT,
 			rpmteNEVRA(p), rpmteKey(p),
 			rpmfiDN(fi), rpmfiBN(fi),
-			altNEVRA,
+			altNVRA.str,
 			0);
 	    }
 
@@ -224,7 +224,7 @@ assert(altNEVRA != NULL);
     }
     ps = rpmpsFree(ps);
 
-    altNEVRA = _free(altNEVRA);
+    altNVRA.ptr = _free(altNVRA.ptr);
     otherFi = rpmfiFree(otherFi);
 
     p->replaced = xrealloc(p->replaced,
@@ -628,15 +628,15 @@ static int ensureOlder(rpmts ts,
 
     if (rc == 0) {
 	rpmps ps = rpmtsProblems(ts);
-	const char * altNVRA = NULL;
+	hRET_t altNVRA = { .ptr = NULL };
 	rc = headerGetExtension(h, RPMTAG_NVRA, NULL, &altNVRA, NULL);
-assert(altNVRA != NULL);
+assert(altNVRA.str != NULL);
 	rpmpsAppend(ps, RPMPROB_OLDPACKAGE,
 		rpmteNEVR(p), rpmteKey(p),
 		NULL, NULL,
-		altNVRA,
+		altNVRA.str,
 		0);
-	altNVRA = _free(altNVRA);
+	altNVRA.ptr = _free(altNVRA.ptr);
 	ps = rpmpsFree(ps);
 	rc = 1;
     } else

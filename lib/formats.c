@@ -69,42 +69,41 @@ static int fssizesTag(Header h, /*@out@*/ rpmTagType * type,
 	/*@requires maxSet(type) >= 0 /\ maxSet(data) >= 0
 		/\ maxSet(count) >= 0 /\ maxSet(freeData) >= 0 @*/
 {
-    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
-    const char ** filenames;
-    uint_32 * filesizes;
+    HGE_t hge = (HGE_t)headerGetExtension;
+    hRET_t fnames = { .ptr = NULL };
+    hRET_t fsizes = { .ptr = NULL };
     uint_64 * usages;
     int numFiles;
-    int xx;
+    int rc = 1;		/* assume error */
 
-    if (!hge(h, RPMTAG_FILESIZES, NULL, &filesizes, &numFiles)) {
-	filesizes = NULL;
+    if (!hge(h, RPMTAG_FILESIZES, NULL, &fsizes, NULL)
+     ||	!hge(h, RPMTAG_FILEPATHS, NULL, &fnames, &numFiles))
+    {
 	numFiles = 0;
-	filenames = NULL;
-    } else {
-	xx = headerGetExtension(h, RPMTAG_FILEPATHS, NULL, &filenames, &numFiles);
+	fsizes.ui32p = _free(fsizes.ui32p);
+	fnames.argv = _free(fnames.argv);
     }
 
     if (rpmGetFilesystemList(NULL, count))
-	return 1;
+	goto exit;
 
     *type = RPM_INT64_TYPE;
     *freeData = 1;
 
-    if (filenames == NULL) {
+    if (fnames.ptr == NULL)
 	usages = xcalloc((*count), sizeof(*usages));
-	*data = usages;
-
-	return 0;
-    }
-
-    if (rpmGetFilesystemUsage(filenames, filesizes, numFiles, &usages, 0))	
-	return 1;
+    else
+    if (rpmGetFilesystemUsage(fnames.argv, fsizes.ui32p, numFiles, &usages, 0))	
+	goto exit;
 
     *data = usages;
+    rc = 0;
 
-    filenames = _free(filenames);
+exit:
+    fnames.ptr = _free(fnames.ptr);
+    fsizes.ptr = _free(fsizes.ptr);
 
-    return 0;
+    return rc;
 }
 
 /**

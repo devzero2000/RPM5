@@ -173,18 +173,18 @@ static void expandFilelist(Header h)
 {
     HAE_t hae = (HAE_t)headerAddEntry;
     HRE_t hre = (HRE_t)headerRemoveEntry;
-    const char ** fileNames = NULL;
+    hRET_t fileNames = { .ptr = NULL };
     int count = 0;
     int xx;
 
     /*@-branchstate@*/
     if (!headerIsEntry(h, RPMTAG_OLDFILENAMES)) {
 	headerGetExtension(h, RPMTAG_FILEPATHS, NULL, &fileNames, &count);
-	if (fileNames == NULL || count <= 0)
+	if (fileNames.ptr == NULL || count <= 0)
 	    return;
 	xx = hae(h, RPMTAG_OLDFILENAMES, RPM_STRING_ARRAY_TYPE,
-			fileNames, count);
-	fileNames = _free(fileNames);
+			fileNames.ptr, count);
+	fileNames.ptr = _free(fileNames.ptr);
     }
     /*@=branchstate@*/
 
@@ -296,7 +296,7 @@ exit:
 static void mungeFilelist(Header h)
 	/*@*/
 {
-    const char ** fileNames = NULL;
+    hRET_t fileNames = { .ptr = NULL };
     int count = 0;
 
     if (!headerIsEntry (h, RPMTAG_BASENAMES)
@@ -306,14 +306,14 @@ static void mungeFilelist(Header h)
 
     headerGetExtension(h, RPMTAG_FILEPATHS, NULL, &fileNames, &count);
 
-    if (fileNames == NULL || count <= 0)
+    if (fileNames.ptr == NULL || count <= 0)
 	return;
 
     /* XXX Legacy tag needs to go away. */
     headerAddEntry(h, RPMTAG_OLDFILENAMES, RPM_STRING_ARRAY_TYPE,
-			fileNames, count);
+			fileNames.ptr, count);
 
-    fileNames = _free(fileNames);
+    fileNames.ptr = _free(fileNames.ptr);
 }
 
 /**
@@ -665,11 +665,12 @@ static int rpmHeaderGetEntry(Header h, int_32 tag, /*@out@*/ int_32 *type,
 {
     switch (tag) {
     case RPMTAG_OLDFILENAMES:
-    {	const char ** fl = NULL;
+    {	hRET_t fl = { .ptr = NULL };
 	int count;
-	headerGetExtension(h, RPMTAG_FILEPATHS, NULL, &fl, &count);
+	int xx;
+	xx = headerGetExtension(h, RPMTAG_FILEPATHS, NULL, &fl, &count);
 	if (count > 0) {
-	    *p = fl;
+	    *p = fl.ptr;
 	    if (c)	*c = count;
 	    if (type)	*type = RPM_STRING_ARRAY_TYPE;
 	    return 1;

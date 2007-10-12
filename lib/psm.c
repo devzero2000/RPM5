@@ -262,7 +262,9 @@ assert(fi->h != NULL);
     i = fi->fc;
 
     if (fi->h != NULL) {	/* XXX can't happen */
-	xx = headerGetExtension(fi->h, RPMTAG_FILEPATHS, NULL, &fi->apath, NULL);
+	hRET_t apath = { .ptr = NULL };
+	xx = headerGetExtension(fi->h, RPMTAG_FILEPATHS, NULL, &apath, NULL);
+	fi->apath = apath.argv;
 
 	if (headerIsEntry(fi->h, RPMTAG_COOKIE))
 	    for (i = 0; i < fi->fc; i++)
@@ -472,7 +474,7 @@ static rpmRC runLuaScript(rpmpsm psm, Header h, const char *sln,
 {
     const rpmts ts = psm->ts;
     int rootFdno = -1;
-    const char * NVRA = NULL;
+    hRET_t NVRA = { .ptr = NULL };
     rpmRC rc = RPMRC_OK;
     int i;
     int xx;
@@ -486,7 +488,7 @@ static rpmRC runLuaScript(rpmpsm psm, Header h, const char *sln,
 	*ssp |= (RPMSCRIPT_STATE_LUA|RPMSCRIPT_STATE_EXEC);
 
     xx = headerGetExtension(h, RPMTAG_NVRA, NULL, &NVRA, NULL);
-assert(NVRA != NULL);
+assert(NVRA.str != NULL);
 
     /* Save the current working directory. */
 /*@-nullpass@*/
@@ -534,7 +536,7 @@ assert(NVRA != NULL);
 
     {
 	char buf[BUFSIZ];
-	xx = snprintf(buf, BUFSIZ, "%s(%s)", sln, NVRA);
+	xx = snprintf(buf, BUFSIZ, "%s(%s)", sln, NVRA.str);
 	xx = rpmluaRunScript(lua, script, buf);
 	if (xx == -1)
 	    rc = RPMRC_FAIL;
@@ -561,7 +563,7 @@ assert(NVRA != NULL);
 	xx = fchdir(rootFdno);
 
     xx = close(rootFdno);
-    NVRA = _free(NVRA);
+    NVRA.ptr = _free(NVRA.ptr);
 
     return rc;
 }
@@ -621,7 +623,7 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
     FD_t scriptFd;
     FD_t out;
     rpmRC rc = RPMRC_FAIL;	/* assume failure */
-    const char * NVRA = NULL;
+    hRET_t NVRA = { .ptr = NULL };
     int * ssp = NULL;
 
     if (psm->sstates != NULL)
@@ -633,13 +635,13 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
 	return RPMRC_OK;
 
     xx = headerGetExtension(h, RPMTAG_NVRA, NULL, &NVRA, NULL);
-assert(NVRA != NULL);
+assert(NVRA.str != NULL);
 
     if (progArgv && strcmp(progArgv[0], "<lua>") == 0) {
 #ifdef WITH_LUA
 	rpmlog(RPMLOG_DEBUG,
 		D_("%s: %s(%s) running <lua> scriptlet.\n"),
-		psm->stepName, tag2sln(psm->scriptTag), NVRA);
+		psm->stepName, tag2sln(psm->scriptTag), NVRA.str);
 	rc = runLuaScript(psm, h, sln, progArgc, progArgv,
 			    script, arg1, arg2);
 #endif
@@ -655,7 +657,7 @@ assert(NVRA != NULL);
  	if (ldconfig_done && !strcmp(progArgv[0], ldconfig_path)) {
 	    rpmlog(RPMLOG_DEBUG,
 		D_("%s: %s(%s) skipping redundant \"%s\".\n"),
-		psm->stepName, tag2sln(psm->scriptTag), NVRA,
+		psm->stepName, tag2sln(psm->scriptTag), NVRA.str,
 		progArgv[0]);
 	    rc = RPMRC_OK;
 	    goto exit;
@@ -664,7 +666,7 @@ assert(NVRA != NULL);
 
     rpmlog(RPMLOG_DEBUG,
 		D_("%s: %s(%s) %ssynchronous scriptlet start\n"),
-		psm->stepName, tag2sln(psm->scriptTag), NVRA,
+		psm->stepName, tag2sln(psm->scriptTag), NVRA.str,
 		(psm->unorderedSuccessor ? "a" : ""));
 
     if (!progArgv) {
@@ -776,7 +778,7 @@ assert(NVRA != NULL);
 		continue;
 	    rpmlog(RPMLOG_DEBUG,
 			D_("%s: %s(%s)\tfdno(%d) missing FD_CLOEXEC\n"),
-			psm->stepName, sln, NVRA,
+			psm->stepName, sln, NVRA.str,
 			fdno);
 	    xx = fcntl(fdno, F_SETFD, FD_CLOEXEC);
 	    /* XXX W2DO? debug msg for inheirited fdno w/o FD_CLOEXEC */
@@ -830,7 +832,7 @@ assert(NVRA != NULL);
 	    }
 	    xx = Chdir("/");
 	    rpmlog(RPMLOG_DEBUG, D_("%s: %s(%s)\texecv(%s) pid %d\n"),
-			psm->stepName, sln, NVRA,
+			psm->stepName, sln, NVRA.str,
 			argv[0], (unsigned)getpid());
 
 	    /* XXX Don't mtrace into children. */
@@ -872,18 +874,18 @@ assert(NVRA != NULL);
     if (psm->sq.reaped < 0) {
 	rpmlog(RPMLOG_ERR,
 		_("%s(%s) scriptlet failed, waitpid(%d) rc %d: %s\n"),
-		 sln, NVRA, psm->sq.child, psm->sq.reaped, strerror(errno));
+		 sln, NVRA.str, psm->sq.child, psm->sq.reaped, strerror(errno));
 	goto exit;
     } else
     if (!WIFEXITED(psm->sq.status) || WEXITSTATUS(psm->sq.status)) {
 	if (WIFSIGNALED(psm->sq.status)) {
 	    rpmlog(RPMLOG_ERR,
                  _("%s(%s) scriptlet failed, signal %d\n"),
-                 sln, NVRA, WTERMSIG(psm->sq.status));
+                 sln, NVRA.str, WTERMSIG(psm->sq.status));
 	} else {
 	    rpmlog(RPMLOG_ERR,
 		_("%s(%s) scriptlet failed, exit status %d\n"),
-		sln, NVRA, WEXITSTATUS(psm->sq.status));
+		sln, NVRA.str, WEXITSTATUS(psm->sq.status));
 	}
 	goto exit;
     }
@@ -903,7 +905,7 @@ exit:
 	fn = _free(fn);
     }
 
-    NVRA = _free(NVRA);
+    NVRA.ptr = _free(NVRA.ptr);
 
     return rc;
 }
@@ -1545,6 +1547,7 @@ assert(psm->te != NULL);
 
 	if (psm->goal == PSM_PKGINSTALL) {
 	    int fc = rpmfiFC(fi);
+	    hRET_t apath = { .ptr = NULL };
 	    const char * hdrid;
 
 	    /* Add per-transaction data to install header. */
@@ -1604,9 +1607,11 @@ assert(psm->mi == NULL);
 		CPIO_MAP_PATH | CPIO_MAP_MODE | CPIO_MAP_UID | CPIO_MAP_GID | (fi->mapflags & CPIO_SBIT_CHECK);
 	
 	    if (headerIsEntry(fi->h, RPMTAG_ORIGBASENAMES))
-		xx = headerGetExtension(fi->h, RPMTAG_ORIGPATHS, NULL, &fi->apath, NULL);
+		xx = headerGetExtension(fi->h, RPMTAG_ORIGPATHS, NULL, &apath, NULL);
 	    else
-		xx = headerGetExtension(fi->h, RPMTAG_FILEPATHS, NULL, &fi->apath, NULL);
+		xx = headerGetExtension(fi->h, RPMTAG_FILEPATHS, NULL, &apath, NULL);
+assert(apath.argv != NULL);
+	    fi->apath = apath.argv;
 	
 	    if (fi->fuser == NULL)
 		xx = hge(fi->h, RPMTAG_FILEUSERNAME, NULL,

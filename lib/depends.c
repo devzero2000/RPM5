@@ -232,7 +232,7 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
 
 	rc = rpmPlatformScore(platform, platpat, nplatpat);
 	if (rc <= 0) {
-	    hRET_t pkgNVRA;
+	    hRET_t pkgNVRA = { .ptr = NULL };
 	    rpmps ps = rpmtsProblems(ts);
 	    xx = headerGetExtension(h, RPMTAG_NVRA, NULL, &pkgNVRA, NULL);
 assert(pkgNVRA.str != NULL);
@@ -1300,7 +1300,7 @@ static int checkPackageSet(rpmts ts, const char * depName,
     (void) rpmdbPruneIterator(mi,
 		ts->removedPackages, ts->numRemovedPackages, 1);
     while ((h = rpmdbNextIterator(mi)) != NULL) {
-	hRET_t pkgNVRA;
+	hRET_t pkgNVRA = { .ptr = NULL };
 	rpmds requires = NULL;
 	rpmds conflicts = NULL;
 	rpmds dirnames = NULL;

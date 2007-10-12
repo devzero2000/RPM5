@@ -102,11 +102,12 @@ static void addTE(rpmts ts, rpmte p, Header h,
     const unsigned char * pkgid;
     char * t;
     size_t nb;
+    hRET_t NVRA = { .ptr = NULL };
     int xx;
 
-    p->NEVR = NULL;
-    xx = headerGetExtension(h, RPMTAG_NVRA, NULL, &p->NEVR, NULL);
-assert(p->NEVR != NULL);
+    xx = headerGetExtension(h, RPMTAG_NVRA, NULL, &NVRA, NULL);
+assert(NVRA.str != NULL);
+    p->NEVR = NVRA.str;
     p->name = xstrdup(p->NEVR);
     if ((p->release = strrchr(p->name, '-')) != NULL)
 	*p->release++ = '\0';
@@ -626,12 +627,14 @@ int rpmteChain(rpmte p, rpmte q, Header oh, const char * msg)
     const char * blinkHdrid = NULL;
     const unsigned char * pkgid;
     int_32 pkgidcnt;
+    hRET_t NVRA = { .ptr = NULL };
     int xx;
 
     if (msg == NULL)
 	msg = "";
-    xx = headerGetExtension(oh, RPMTAG_NVRA, NULL, &blinkNEVRA, NULL);
-assert(blinkNEVRA != NULL);
+    xx = headerGetExtension(oh, RPMTAG_NVRA, NULL, &NVRA, NULL);
+assert(NVRA.str != NULL);
+    blinkNEVRA = NVRA.str;
 
     /*
      * Convert binary pkgid to a string.

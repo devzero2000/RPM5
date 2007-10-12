@@ -426,11 +426,11 @@ if (fileURL[0] == '=') {
 		relocations->oldPath = xstrdup(paths[0]);
 		paths = headerFreeData(paths, pft);
 	    } else {
-		const char * NVRA = NULL;
+		hRET_t NVRA = { .ptr = NULL };
 		xx = headerGetExtension(h, RPMTAG_NVRA, NULL, &NVRA, NULL);
 		rpmlog(RPMLOG_ERR,
-			       _("package %s is not relocatable\n"), NVRA);
-		NVRA = _free(NVRA);
+			       _("package %s is not relocatable\n"), NVRA.str);
+		NVRA.ptr = _free(NVRA.ptr);
 		numFailed++;
 		goto exit;
 		/*@notreached@*/

@@ -2139,7 +2139,7 @@ static int mireSkip (const rpmdbMatchIterator mi)
 #endif
     HE_t he;
     int_32 he_t;
-    hRET_t he_p;
+    hRET_t he_p = { .ptr = NULL };
     int_32 he_c;
     char numbuf[32];
     miRE mire;
@@ -2806,7 +2806,7 @@ memset(data, 0, sizeof(*data));
     }
 #endif
 
-    {	hRET_t NVRA;
+    {	hRET_t NVRA = { .ptr = NULL };
 	(void) headerGetExtension(h, RPMTAG_NVRA, NULL, &NVRA, NULL);
 	rpmlog(RPMLOG_DEBUG, "  --- h#%8u %s\n", hdrNum, NVRA.str);
 	NVRA.str = _free(NVRA.str);
@@ -2819,7 +2819,7 @@ memset(data, 0, sizeof(*data));
 	int dbix;
 	HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
 	int_32 he_t;
-	hRET_t he_p;
+	hRET_t he_p = { .ptr = NULL };
 	int_32 he_c;
 
 	memset(&he_p, 0, sizeof(he_p));
@@ -3217,7 +3217,7 @@ memset(data, 0, sizeof(*data));
     {	dbiIndexItem rec = dbiIndexNewItem(hdrNum, 0);
 	HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
 	int_32 he_t;
-	hRET_t he_p;
+	hRET_t he_p = { .ptr = NULL };
 	int_32 he_c;
 
 	memset(&he_p, 0, sizeof(he_p));
