@@ -23,4 +23,17 @@ dl=`expr 256 \* \( 256 \* \( 256 \* $6 + $7 \) + $8 \) + $9`
 hdrsize=`expr 8 + 16 \* $il + $dl`
 o=`expr $o + $hdrsize`
 
-dd if=$pkg ibs=$o skip=1 2>/dev/null | gunzip
+COMPRESSION=`(dd if=$pkg ibs=$o skip=1 |file -) 2>/dev/null`
+if echo $COMPRESSION |grep -q gzip; then
+	DECOMPRESSOR=gunzip
+elif echo $COMPRESSION |grep -q bzip2; then
+	DECOMPRESSOR=bunzip2
+elif echo $COMPRESSION |grep -q cpio; then
+	DECOMPRESSOR=cat
+else
+	# Most versions of file don't support LZMA, therefore we assume
+	# anything not detected is LZMA
+	DECOMPRESSOR="lzmash -d -c"
+fi
+
+dd if=$pkg ibs=$o skip=1 2>/dev/null | $DECOMPRESSOR
