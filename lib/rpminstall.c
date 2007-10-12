@@ -322,7 +322,8 @@ int rpmcliInstall(rpmts ts, QVA_t ia, const char ** argv)
 	ia->transFlags |= RPMTRANS_FLAG_REPACKAGE;
 
     /* Initialize security context patterns (if not already done). */
-    if (!(ia->transFlags & RPMTRANS_FLAG_NOCONTEXTS)) {
+    if (rpmtsSELinuxEnabled(ts) && !(ia->transFlags & RPMTRANS_FLAG_NOCONTEXTS))
+    {
 	const char *fn = rpmGetPath("%{?_install_file_context_path}", NULL);
 /*@-moduncon@*/
 	if (fn != NULL && *fn != '\0')

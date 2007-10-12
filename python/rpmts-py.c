@@ -1221,12 +1221,14 @@ rpmts_Run(rpmtsObject * s, PyObject * args, PyObject * kwds)
     }
 
     /* Initialize security context patterns (if not already done). */
-    if (!(rpmtsFlags(s->ts) & RPMTRANS_FLAG_NOCONTEXTS)) {
-	    const char *fn = rpmGetPath("%{?_install_file_context_path}", NULL);
+    if (rpmtsSELinuxEnabled(s->ts)
+     && !(rpmtsFlags(s->ts) & RPMTRANS_FLAG_NOCONTEXTS))
+    {
+	const char *fn = rpmGetPath("%{?_install_file_context_path}", NULL);
 	if (fn != NULL && *fn != '\0')
 	    rc = matchpathcon_init(fn);
 	    fn = _free(fn);
-	}
+    }
 
 if (_rpmts_debug)
 fprintf(stderr, "*** rpmts_Run(%p) ts %p ignore %x\n", s, s->ts, s->ignoreSet);

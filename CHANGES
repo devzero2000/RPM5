@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - rpm.org: have selinux disabled imply RPMTRANS_FLAG_NOCONTEXTS.
     - jbj: plug --rebuilddb memory leaks. headerGetExtension() est arrive!
     - jbj: fix: set FD_CLOEXEC in Open() and fdDup().
     - jbj: eliminate rpmMessage, rpmlog instead.
