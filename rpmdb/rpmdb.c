@@ -859,6 +859,12 @@ static int rpmdbExportInfo(/*@unused@*/ rpmdb db, Header h, int adding)
 	/*@modifies rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 {
+    HGE_t hge = (HGE_t)headerGetExtension;
+    int_32 he_t = 0;
+    hRET_t he_p = { .ptr = NULL };
+    int_32 he_c = 0;
+    HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
+    HE_t he = &he_s;
     const char * fn = NULL;
     int xx;
 
@@ -873,18 +879,19 @@ static int rpmdbExportInfo(/*@unused@*/ rpmdb db, Header h, int adding)
 
     if (adding) {
 	FD_t fd = Fopen(fn, "w.fdio");
-	int_32 *iidp;
 
 	if (fd != NULL) {
 	    xx = Fclose(fd);
 	    fd = NULL;
-	    if (headerGetEntry(h, RPMTAG_INSTALLTID, NULL, &iidp, NULL)) {
+	    he->tag = RPMTAG_INSTALLTID;
+	    if (hge(h, he->tag, he->t, he->p, he->c)) {
 		struct utimbuf stamp;
-		stamp.actime = *iidp;
-		stamp.modtime = *iidp;
+		stamp.actime = *he_p.i32p;
+		stamp.modtime = *he_p.i32p;
 		if (!Utime(fn, &stamp))
 		    rpmlog(RPMLOG_DEBUG, "  +++ %s\n", fn);
 	    }
+	    he_p.ptr = _free(he_p.ptr);
 	}
     } else {
 	if (!Unlink(fn))
@@ -1402,11 +1409,14 @@ static int rpmdbFindByFile(rpmdb db, /*@null@*/ const char * filespec,
 		fileSystem, internalState @*/
 	/*@requires maxSet(matches) >= 0 @*/
 {
-    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
-    HFD_t hfd = headerFreeData;
+    HGE_t hge = (HGE_t)headerGetExtension;
+    int_32 he_t = 0;
+    hRET_t he_p = { .ptr = NULL };
+    int_32 he_c = 0;
+    HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
+    HE_t he = &he_s;
     const char * dirName;
     const char * baseName;
-    rpmTagType bnt, dnt;
     fingerPrintCache fpc;
     fingerPrint fp1;
     dbiIndex dbi = NULL;
@@ -1483,8 +1493,9 @@ if (rc == 0)
     i = 0;
     if (allMatches != NULL)
     while (i < allMatches->count) {
-	const char ** baseNames, ** dirNames;
-	int_32 * dirIndexes;
+	const char ** baseNames;
+	const char ** dirNames;
+	uint_32 * dirIndexes;
 	unsigned int offset = dbiIndexRecordOffset(allMatches, i);
 	unsigned int prevoff;
 	Header h;
@@ -1502,9 +1513,15 @@ if (rc == 0)
 	    continue;
 	}
 
-	xx = hge(h, RPMTAG_BASENAMES, &bnt, &baseNames, NULL);
-	xx = hge(h, RPMTAG_DIRNAMES, &dnt, &dirNames, NULL);
-	xx = hge(h, RPMTAG_DIRINDEXES, NULL, &dirIndexes, NULL);
+	he->tag = RPMTAG_BASENAMES;
+	xx = hge(h, he->tag, he->t, he->p, he->c);
+	baseNames = he_p.argv;
+	he->tag = RPMTAG_DIRNAMES;
+	xx = hge(h, he->tag, he->t, he->p, he->c);
+	dirNames = he_p.argv;
+	he->tag = RPMTAG_DIRINDEXES;
+	xx = hge(h, he->tag, he->t, he->p, he->c);
+	dirIndexes = he_p.ui32p;
 
 	do {
 	    fingerPrint fp2;
@@ -1525,8 +1542,9 @@ if (rc == 0)
 		offset = dbiIndexRecordOffset(allMatches, i);
 	} while (i < allMatches->count && offset == prevoff);
 
-	baseNames = hfd(baseNames, bnt);
-	dirNames = hfd(dirNames, dnt);
+	baseNames = _free(baseNames);
+	dirNames = _free(dirNames);
+	dirIndexes = _free(dirIndexes);
 	h = headerFree(h);
     }
 
@@ -2765,10 +2783,16 @@ DBT * key = alloca(sizeof(*key));
 DBT * data = alloca(sizeof(*data));
 union _dbswap mi_offset;
     HGE_t hge = (HGE_t)headerGetExtension;
+    int_32 he_t = 0;
+    hRET_t he_p = { .ptr = NULL };
+    int_32 he_c = 0;
+    HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
+    HE_t he = &he_s;
     Header h;
     sigset_t signalMask;
     int ret = 0;
     int rc = 0;
+    int xx;
 
     if (db == NULL)
 	return 0;
@@ -2794,32 +2818,25 @@ memset(data, 0, sizeof(*data));
     /* Add remove transaction id to header. */
     if (rid != 0 && rid != -1) {
 	int_32 tid = rid;
-	(void) headerAddEntry(h, RPMTAG_REMOVETID, RPM_INT32_TYPE, &tid, 1);
+	xx = headerAddEntry(h, RPMTAG_REMOVETID, RPM_INT32_TYPE, &tid, 1);
     }
 #endif
 
-    {	hRET_t NVRA = { .ptr = NULL };
-	(void) headerGetExtension(h, RPMTAG_NVRA, NULL, &NVRA, NULL);
-	rpmlog(RPMLOG_DEBUG, "  --- h#%8u %s\n", hdrNum, NVRA.str);
-	NVRA.str = _free(NVRA.str);
-    }
+    he->tag = RPMTAG_NVRA;
+    xx = hge(h, he->tag, he->t, he->p, he->c);
+    rpmlog(RPMLOG_DEBUG, "  --- h#%8u %s\n", hdrNum, he_p.str);
+    he_p.ptr = _free(he_p.ptr);
 
     (void) blockSignals(db, &signalMask);
 
 /*@-nullpass -nullptrarith -nullderef @*/ /* FIX: rpmvals heartburn */
     {	dbiIndexItem rec = dbiIndexNewItem(hdrNum, 0);
 	int dbix;
-	int_32 he_t = 0;
-	hRET_t he_p = { .ptr = NULL };
-	int_32 he_c = 0;
-	HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
-	HE_t he = &he_s;
 
 	if (db->db_tagn != NULL)
 	for (dbix = 0; dbix < db->db_ndbi; dbix++) {
 	    dbiIndex dbi;
 	    byte * bin = NULL;
-	    int xx;
 	    int i, j;
 
 	    dbi = NULL;
@@ -3072,12 +3089,15 @@ DBT * key = alloca(sizeof(*key));
 DBT * data = alloca(sizeof(*data));
     HGE_t hge = (HGE_t) headerGetExtension;
     HAE_t hae = (HAE_t) headerAddEntry;
+    int_32 he_t;
+    hRET_t he_p = { .ptr = NULL };
+    int_32 he_c;
+    HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
+    HE_t he = &he_s;
     sigset_t signalMask;
     const char ** baseNames;
-    rpmTagType bnt;
     const char ** dirNames;
-    int_32 * dirIndexes;
-    rpmTagType dit, dnt;
+    uint_32 * dirIndexes;
     int count = 0;
     dbiIndex dbi;
     int dbix;
@@ -3118,9 +3138,15 @@ memset(data, 0, sizeof(*data));
      * being written to the package header database.
      */
 
-    xx = hge(h, RPMTAG_BASENAMES, &bnt, &baseNames, &count);
-    xx = hge(h, RPMTAG_DIRINDEXES, &dit, &dirIndexes, NULL);
-    xx = hge(h, RPMTAG_DIRNAMES, &dnt, &dirNames, NULL);
+    he->tag = RPMTAG_BASENAMES;
+    xx = hge(h, he->tag, he->t, he->p, he->c);
+    baseNames = he_p.argv;
+    he->tag = RPMTAG_DIRNAMES;
+    xx = hge(h, he->tag, he->t, he->p, he->c);
+    dirNames = he_p.argv;
+    he->tag = RPMTAG_DIRINDEXES;
+    xx = hge(h, he->tag, he->t, he->p, he->c);
+    dirIndexes = he_p.ui32p;
 
     (void) blockSignals(db, &signalMask);
 
@@ -3203,11 +3229,6 @@ memset(data, 0, sizeof(*data));
 
     if (hdrNum)
     {	dbiIndexItem rec = dbiIndexNewItem(hdrNum, 0);
-	int_32 he_t;
-	hRET_t he_p = { .ptr = NULL };
-	int_32 he_c;
-	HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
-	HE_t he = &he_s;
 
 	/* Save the header instance. */
 	(void) headerSetInstance(h, hdrNum);
@@ -3290,19 +3311,21 @@ data->size = 0;
 		continue;
 		/*@notreached@*/ /*@switchbreak@*/ break;
 	    case RPMTAG_BASENAMES:	/* XXX preserve legacy behavior */
-		he_t = bnt;
+		he_t = RPM_STRING_ARRAY_TYPE;
 		he_p.argv = baseNames;
 		he_c = count;
 		/*@switchbreak@*/ break;
 	    case RPMTAG_REQUIRENAME:
-		xx = hge(h, he->tag, he->t, he->p, he->c);
 		xx = hge(h, RPMTAG_REQUIREFLAGS, NULL, &requireFlags, NULL);
+		xx = hge(h, he->tag, he->t, he->p, he->c);
 		/*@switchbreak@*/ break;
 	    default:
 		xx = hge(h, he->tag, he->t, he->p, he->c);
 		/*@switchbreak@*/ break;
 	    }
 
+	    /* Anything to do? */
+#ifdef	DEAD
 	    if (he_c <= 0) {
 		if (he->tag != RPMTAG_GROUP)
 		    continue;
@@ -3312,6 +3335,10 @@ data->size = 0;
 		he_p.str = xstrdup("Unknown");
 		he_c = 1;
 	    }
+#else
+	    if (he_c <= 0)
+		continue;
+#endif
 
 	  dbi = dbiOpen(db, he->tag, 0);
 	  if (dbi != NULL) {
@@ -3526,7 +3553,11 @@ int rpmdbFindFpList(rpmdb db, fingerPrint * fpList, dbiIndexSet * matchList,
 DBT * key;
 DBT * data;
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
-    HFD_t hfd = headerFreeData;
+    int_32 he_t = 0;
+    hRET_t he_p = { .ptr = NULL };
+    int_32 he_c = 0;
+    HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
+    HE_t he = &he_s;
     rpmdbMatchIterator mi;
     fingerPrintCache fpc;
     Header h;
@@ -3544,7 +3575,7 @@ data = &mi->mi_data;
 
     /* Gather all installed headers with matching basename's. */
     for (i = 0; i < numItems; i++) {
-	   unsigned int tag;
+	unsigned int tag;
 
 	matchList[i] = xcalloc(1, sizeof(*(matchList[i])));
 
@@ -3574,7 +3605,6 @@ if (key->size == 0) key->size++;	/* XXX "/" fixup. */
 	const char ** dirNames;
 	const char ** baseNames;
 	const char ** fullBaseNames;
-	rpmTagType bnt, dnt;
 	uint_32 * dirIndexes;
 	uint_32 * fullDirIndexes;
 	fingerPrint * fps;
@@ -3594,9 +3624,15 @@ if (key->size == 0) key->size++;	/* XXX "/" fixup. */
 	num = end - start;
 
 	/* Compute fingerprints for this installed header's matches */
-	xx = hge(h, RPMTAG_BASENAMES, &bnt, &fullBaseNames, NULL);
-	xx = hge(h, RPMTAG_DIRNAMES, &dnt, &dirNames, NULL);
-	xx = hge(h, RPMTAG_DIRINDEXES, NULL, &fullDirIndexes, NULL);
+	he->tag = RPMTAG_BASENAMES;
+	xx = hge(h, he->tag, he->t, he->p, he->c);
+	fullBaseNames = he_p.argv;
+	he->tag = RPMTAG_DIRNAMES;
+	xx = hge(h, he->tag, he->t, he->p, he->c);
+	dirNames = he_p.argv;
+	he->tag = RPMTAG_DIRINDEXES;
+	xx = hge(h, he->tag, he->t, he->p, he->c);
+	fullDirIndexes = he_p.ui32p;
 
 	baseNames = xcalloc(num, sizeof(*baseNames));
 	dirIndexes = xcalloc(num, sizeof(*dirIndexes));
@@ -3618,8 +3654,9 @@ if (key->size == 0) key->size++;	/* XXX "/" fixup. */
 	}
 
 	fps = _free(fps);
-	dirNames = hfd(dirNames, dnt);
-	fullBaseNames = hfd(fullBaseNames, bnt);
+	fullBaseNames = _free(fullBaseNames);
+	dirNames = _free(dirNames);
+	fullDirIndexes = _free(fullDirIndexes);
 	baseNames = _free(baseNames);
 	dirIndexes = _free(dirIndexes);
 

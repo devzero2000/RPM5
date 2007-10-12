@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - jbj: rpmdb.c: use headerGetExtension everywhere.
     - rse: fix va_copy fallback macros.
     - jbj: rpmdb.c: retrofit HE_s.
     - jbj: rpmte.c: use headerGetExtension.
