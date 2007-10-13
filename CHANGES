@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - jbj: scareMem = 0 everywhere FINALLY! Yippie!
     - jbj: rpmds.c: use headerGetExtension everywhere.
     - jbj: eliminate rpmtsSetSig(), use pgpSetSig() instead.
     - jbj: fix: trade a double free for a ~100b/header memleak.

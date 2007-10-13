@@ -167,7 +167,7 @@ rpmRC rpmInstallSourcePackage(rpmts ts, void * _fd,
 		const char ** specFilePtr, const char ** cookie)
 {
     FD_t fd = _fd;
-    int scareMem = 1;	/* XXX fi->h is needed */
+    int scareMem = 0;
     rpmfi fi = NULL;
     const char * _sourcedir = NULL;
     const char * _specdir = NULL;
@@ -213,6 +213,7 @@ rpmRC rpmInstallSourcePackage(rpmts ts, void * _fd,
     (void) rpmtsAddInstallElement(ts, h, NULL, 0, NULL);
 
     fi = rpmfiNew(ts, h, RPMTAG_BASENAMES, scareMem);
+    fi->h = headerLink(h);
     h = headerFree(h);
 
     if (fi == NULL) {	/* XXX can't happen */
@@ -1516,6 +1517,10 @@ rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
     rpmRC rc = psm->rc;
     int saveerrno;
     int xx;
+
+/* XXX hackery to assert(!scaremem) in rpmfiNew. */
+assert(fi->te);
+if (fi->h == NULL && fi->te->h != NULL) fi->h = headerLink(fi->te->h);
 
     switch (stage) {
     case PSM_UNKNOWN:

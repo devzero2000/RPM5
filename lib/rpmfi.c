@@ -1240,9 +1240,7 @@ rpmfi rpmfiNew(const rpmts ts, Header h, rpmTag tagN, int flags)
     int xx;
     int i;
 
-#ifdef	NOTYET			/* XXX transaction.c still needs scareMem 1 */
 assert(scareMem == 0);		/* XXX always allocate memory */
-#endif
     if (tagN == RPMTAG_BASENAMES) {
 	Type = "Files";
     } else {

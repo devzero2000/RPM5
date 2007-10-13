@@ -450,7 +450,7 @@ static int verifyDependencies(/*@unused@*/ QVA_t qva, rpmts ts,
 
 int showVerifyPackage(QVA_t qva, rpmts ts, Header h)
 {
-    int scareMem = 1;	/* XXX rpmpsmStage needs fi->h */
+    int scareMem = 0;
     rpmfi fi = NULL;
     int ec = 0;
     int rc;
