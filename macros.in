@@ -1373,6 +1373,9 @@ done \
 #
 %ix86   i386 i486 i586 i686 pentium3 pentium4 athlon
 
+# same thing for arm
+%arm    arm armv3 armv3l armv3b armv4 armv4l armv4b armv5 armv5l armv5b armv5te armv5tel armv5teb xscale armv6 armv6l
+
 #------------------------------------------------------------------------
 # Use in %install to generate locale specific file lists. For example,
 #
