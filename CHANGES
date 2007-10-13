@@ -1,4 +1,7 @@
 4.5 -> 5.0:
+    - jbj: rpminstall.c: use headerGetExtension everywhere.
+    - jbj: rpmfc.c: use headerGetExtension everywhere.
+    - jbj: rpmte.c: use headerGetExtension everywhere.
     - jbj: depends.c: use headerGetExtension everywhere.
     - jbj: rpmts.c: use headerGetExtension everywhere.
     - jbj: nuke fi->keep_header.

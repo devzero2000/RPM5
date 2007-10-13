@@ -1321,35 +1321,45 @@ static int rpmfcGenerateScriptletDeps(const Spec spec, Package pkg)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
         /*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/
 {
-    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
+    HGE_t hge = (HGE_t)headerGetExtension;
+    int_32 he_t = 0;
+    hRET_t he_p = { .ptr = NULL };
+    int_32 he_c = 0;
+    HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
+    HE_t he = &he_s;
     StringBuf sb_stdin = newStringBuf();
     StringBuf sb_stdout = NULL;
     DepMsg_t dm;
     int failnonzero = 0;
     int rc = 0;
+    int xx;
 
     for (dm = ScriptMsgs; dm->msg != NULL; dm++) {
 	int tag, tagflags;
 	char * s;
-	int xx;
 
 	tag = dm->ftag;
 	tagflags = RPMSENSE_FIND_REQUIRES | dm->mask;
 
 	/* Retrieve scriptlet interpreter. */
-	s = NULL;
-	if (!hge(pkg->header, dm->ntag, NULL, &s, NULL) || s == NULL)
+	he->tag = dm->ntag;
+	xx = hge(pkg->header, he->tag, he->t, he->p, he->c);
+	if (!xx || he_p.str == NULL)
 	    continue;
-	if (strcmp(s, "/bin/sh") && strcmp(s, "/bin/bash"))
+	xx = strcmp(he_p.str, "/bin/sh") && strcmp(he_p.str, "/bin/bash");
+	he_p.ptr = _free(he_p.ptr);
+	if (xx)
 	    continue;
 
 	/* Retrieve scriptlet body. */
-	s = NULL;
-	if (!hge(pkg->header, dm->vtag, NULL, &s, NULL) || s == NULL)
+	he->tag = dm->vtag;
+	xx = hge(pkg->header, he->tag, he->t, he->p, he->c);
+	if (!xx || he_p.str == NULL)
 	    continue;
 	truncStringBuf(sb_stdin);
-	appendLineStringBuf(sb_stdin, s);
+	appendLineStringBuf(sb_stdin, he_p.str);
 	stripTrailingBlanksStringBuf(sb_stdin);
+	he_p.ptr = _free(he_p.ptr);
 
 	xx = rpmfcExec(dm->argv, sb_stdin, &sb_stdout, failnonzero);
 	if (xx == -1)

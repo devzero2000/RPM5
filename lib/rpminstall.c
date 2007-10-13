@@ -306,6 +306,12 @@ int rpmcliInstallRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 /** @todo Generalize --freshen policies. */
 int rpmcliInstall(rpmts ts, QVA_t ia, const char ** argv)
 {
+    HGE_t hge = (HGE_t)headerGetExtension;
+    int_32 he_t = 0;
+    hRET_t he_p = { .ptr = NULL };
+    int_32 he_c = 0;
+    HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
+    HE_t he = &he_s;
     int numFailed = 0;
     int numRPMS = 0;
     rpmRelocation relocations = NULL;
@@ -393,7 +399,7 @@ if (fileURL[0] == '=') {
 } else
 #endif
 
-{	/* start-of-transaction-build */
+ {	/* start-of-transaction-build */
     int tag = (ia->qva_source == RPMQV_FTSWALK)
 	? RPMDBI_FTSWALK : RPMDBI_ARGLIST;
     rpmgi gi = rpmgiNew(ts, tag, NULL, 0);
@@ -416,21 +422,18 @@ if (fileURL[0] == '=') {
 
 	/* === Check for relocatable package. */
 	if (relocations) {
-	    const char ** paths;
-	    int pft;
-	    int c;
-
-	    if (headerGetEntry(h, RPMTAG_PREFIXES, &pft, &paths, &c)
-	     && c == 1)
-	    {
-		relocations->oldPath = xstrdup(paths[0]);
-		paths = headerFreeData(paths, pft);
+	    he->tag = RPMTAG_PREFIXES;
+	    xx = hge(h, he->tag, he->t, he->p, he->c);
+	    if (xx && he_c == 1) {
+		relocations->oldPath = xstrdup(he_p.argv[0]);
+		he_p.ptr = _free(he_p.ptr);
 	    } else {
-		hRET_t NVRA = { .ptr = NULL };
-		xx = headerGetExtension(h, RPMTAG_NVRA, NULL, &NVRA, NULL);
+		he_p.ptr = _free(he_p.ptr);
+		he->tag = RPMTAG_NVRA;
+		xx = hge(h, he->tag, he->t, he->p, he->c);
 		rpmlog(RPMLOG_ERR,
-			       _("package %s is not relocatable\n"), NVRA.str);
-		NVRA.ptr = _free(NVRA.ptr);
+			       _("package %s is not relocatable\n"), he_p.str);
+		he_p.ptr = _free(he_p.ptr);
 		numFailed++;
 		goto exit;
 		/*@notreached@*/
@@ -440,12 +443,14 @@ if (fileURL[0] == '=') {
 	/* === On --freshen, verify package is installed and newer. */
 	if (ia->installInterfaceFlags & INSTALL_FRESHEN) {
 	    rpmdbMatchIterator mi;
-	    const char * name = NULL;
 	    Header oldH;
 	    int count;
 
-	    xx = headerGetEntry(h, RPMTAG_NAME, NULL, &name, NULL);
-	    mi = rpmtsInitIterator(ts, RPMTAG_NAME, name, 0);
+	    he->tag = RPMTAG_NAME;
+	    xx = hge(h, he->tag, he->t, he->p, he->c);
+assert(xx != 0 && he_p.str != NULL);
+	    mi = rpmtsInitIterator(ts, RPMTAG_NAME, he_p.str, 0);
+	    he_p.ptr = _free(he_p.ptr);
 	    count = rpmdbGetIteratorCount(mi);
 	    while ((oldH = rpmdbNextIterator(mi)) != NULL) {
 		if (rpmVersionCompare(oldH, h) < 0)
@@ -474,7 +479,7 @@ if (fileURL[0] == '=') {
 
     gi = rpmgiFree(gi);
 
-}	/* end-of-transaction-build */
+ }	/* end-of-transaction-build */
 
     if (numFailed) goto exit;
 

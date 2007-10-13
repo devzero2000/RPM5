@@ -218,6 +218,12 @@ rpmte rpmteNew(const rpmts ts, Header h,
 		int dboffset,
 		alKey pkgKey)
 {
+    HGE_t hge = (HGE_t)headerGetExtension;
+    int_32 he_t = 0;
+    hRET_t he_p = { .ptr = NULL };
+    int_32 he_c = 0;
+    HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
+    HE_t he = &he_s;
     rpmte p = xcalloc(1, sizeof(*p));
     int_32 * ep;
     int xx;
@@ -228,11 +234,12 @@ rpmte rpmteNew(const rpmts ts, Header h,
     switch (type) {
     case TR_ADDED:
 	p->u.addedKey = pkgKey;
-	ep = NULL;
-	xx = headerGetEntry(h, RPMTAG_SIGSIZE, NULL, &ep, NULL);
 	/* XXX 256 is only an estimate of signature header. */
-	if (ep != NULL)
-	    p->pkgFileSize += 96 + 256 + *ep;
+	p->pkgFileSize = 96 + 256;
+	he->tag = RPMTAG_SIGSIZE;
+	xx = hge(h, he->tag, he->t, he->p, he->c);
+	if (xx && he_p.ui32p)
+	    p->pkgFileSize += *he_p.ui32p;
 	break;
     case TR_REMOVED:
 	p->u.addedKey = pkgKey;
@@ -599,48 +606,49 @@ static int __mydebug = 0;
 
 int rpmteChain(rpmte p, rpmte q, Header oh, const char * msg)
 {
-    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
+    HGE_t hge = (HGE_t)headerGetExtension;
+    int_32 he_t = 0;
+    hRET_t he_p = { .ptr = NULL };
+    int_32 he_c = 0;
+    HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
+    HE_t he = &he_s;
     const char * blinkNEVRA = NULL;
     const char * blinkPkgid = NULL;
     const char * blinkHdrid = NULL;
-    const unsigned char * pkgid;
-    int_32 pkgidcnt;
-    hRET_t NVRA = { .ptr = NULL };
     int xx;
 
     if (msg == NULL)
 	msg = "";
-    xx = headerGetExtension(oh, RPMTAG_NVRA, NULL, &NVRA, NULL);
-assert(NVRA.str != NULL);
-    blinkNEVRA = NVRA.str;
+    he->tag = RPMTAG_NVRA;
+    xx = hge(oh, he->tag, he->t, he->p, he->c);
+assert(he_p.str != NULL);
+    blinkNEVRA = he_p.str;
 
     /*
      * Convert binary pkgid to a string.
      * XXX Yum's borken conception of a "header" doesn't have signature
      * tags appended.
      */
-    pkgid = NULL;
-    pkgidcnt = 0;
-    xx = hge(oh, RPMTAG_PKGID, NULL, &pkgid, &pkgidcnt);
-    if (pkgid != NULL) {
+    he->tag = RPMTAG_PKGID;
+    xx = hge(oh, he->tag, he->t, he->p, he->c);
+    if (xx && he_p.ui8p != NULL) {
 	static const char hex[] = "0123456789abcdef";
 	char * t;
 	int i;
 
-	blinkPkgid = t = xmalloc((2*pkgidcnt) + 1);
-	for (i = 0 ; i < pkgidcnt; i++) {
-	    *t++ = hex[ ((pkgid[i] >> 4) & 0x0f) ];
-	    *t++ = hex[ ((pkgid[i]     ) & 0x0f) ];
+	blinkPkgid = t = xmalloc((2*he_c) + 1);
+	for (i = 0 ; i < he_c; i++) {
+	    *t++ = hex[ ((he_p.ui8p[i] >> 4) & 0x0f) ];
+	    *t++ = hex[ ((he_p.ui8p[i]     ) & 0x0f) ];
 	}
 	*t = '\0';
-#if NOTYET	/* XXX MinMemory. */
-	pkgid = headerFreeData(pkgid, RPM_BIN_TYPE);
-#endif
+	he_p.ptr = _free(he_p.ptr);
     } else
 	blinkPkgid = NULL;
 
-    blinkHdrid = NULL;
-    xx = hge(oh, RPMTAG_HDRID, NULL, &blinkHdrid, NULL);
+    he->tag = RPMTAG_HDRID;
+    xx = hge(oh, he->tag, he->t, he->p, he->c);
+    blinkHdrid = he_p.str;
 
 /*@-modfilesys@*/
 if (__mydebug)
@@ -669,9 +677,7 @@ fprintf(stderr, "%s argvAdd(&p->blink.Hdrid, \"%s\")\n", msg, blinkHdrid);
 
     blinkNEVRA = _free(blinkNEVRA);
     blinkPkgid = _free(blinkPkgid);
-#ifdef	NOTYET	/* XXX MinMemory. */
     blinkHdrid = _free(blinkHdrid);
-#endif
 
     return 0;
 }
