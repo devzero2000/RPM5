@@ -35,16 +35,14 @@ int headerMacrosLoad(Header h)
 	/*@globals rpmGlobalMacroContext @*/
 	/*@modifies rpmGlobalMacroContext @*/
 {
+    HGE_t hge = (HGE_t)headerGetExtension;
+    int_32 he_t = 0;
+    hRET_t he_p = { .ptr = NULL };
+    int_32 he_c = 0;
+    HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
+    HE_t he = &he_s;
     struct tagMacro * tagm;
-    union {
-	const void * ptr;
-/*@unused@*/
-	const char ** argv;
-	const char * str;
-	int_32 * i32p;
-    } body;
     char numbuf[32];
-    int_32 type;
     int xx;
 
     /* XXX pre-expand %{buildroot} (if any) */
@@ -60,22 +58,21 @@ int headerMacrosLoad(Header h)
     }
 
     for (tagm = tagMacros; tagm->macroname != NULL; tagm++) {
-	xx = headerGetEntryMinMemory(h, tagm->tag, &type, (hPTR_t *) &body.ptr, NULL);
+	he->tag = tagm->tag;
+	xx = hge(h, he->tag, he->t, he->p, he->c);
 	if (!xx)
 	    continue;
-	switch (type) {
+	switch (he_t) {
 	case RPM_INT32_TYPE:
-	    sprintf(numbuf, "%d", *body.i32p);
+	    sprintf(numbuf, "%d", *he_p.i32p);
 	    addMacro(NULL, tagm->macroname, NULL, numbuf, -1);
 	    /*@switchbreak@*/ break;
 	case RPM_STRING_TYPE:
-	    addMacro(NULL, tagm->macroname, NULL, body.str, -1);
+	    addMacro(NULL, tagm->macroname, NULL, he_p.str, -1);
 	    /*@switchbreak@*/ break;
 	case RPM_STRING_ARRAY_TYPE:
 	case RPM_I18NSTRING_TYPE:
 	case RPM_BIN_TYPE:
-	    body.ptr = headerFreeData(body.ptr, type);
-	    /*@fallthrough@*/
 	case RPM_NULL_TYPE:
 	case RPM_CHAR_TYPE:
 	case RPM_INT8_TYPE:
@@ -83,6 +80,7 @@ int headerMacrosLoad(Header h)
 	default:
 	    /*@switchbreak@*/ break;
 	}
+	he_p.ptr = _free(he_p.ptr);
     }
     return 0;
 }
@@ -93,22 +91,21 @@ int headerMacrosUnload(Header h)
 	/*@globals rpmGlobalMacroContext @*/
 	/*@modifies rpmGlobalMacroContext @*/
 {
+    HGE_t hge = (HGE_t)headerGetExtension;
+    int_32 he_t = 0;
+    hRET_t he_p = { .ptr = NULL };
+    int_32 he_c = 0;
+    HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
+    HE_t he = &he_s;
     struct tagMacro * tagm;
-    union {
-	const void * ptr;
-/*@unused@*/
-	const char ** argv;
-	const char * str;
-	int_32 * i32p;
-    } body;
-    int_32 type;
     int xx;
 
     for (tagm = tagMacros; tagm->macroname != NULL; tagm++) {
-	xx = headerGetEntryMinMemory(h, tagm->tag, &type, (hPTR_t *) &body.ptr, NULL);
+	he->tag = tagm->tag;
+	xx = hge(h, he->tag, he->t, he->p, he->c);
 	if (!xx)
 	    continue;
-	switch (type) {
+	switch (he_t) {
 	case RPM_INT32_TYPE:
 	    delMacro(NULL, tagm->macroname);
 	    /*@switchbreak@*/ break;
@@ -118,8 +115,6 @@ int headerMacrosUnload(Header h)
 	case RPM_STRING_ARRAY_TYPE:
 	case RPM_I18NSTRING_TYPE:
 	case RPM_BIN_TYPE:
-	    body.ptr = headerFreeData(body.ptr, type);
-	    /*@fallthrough@*/
 	case RPM_NULL_TYPE:
 	case RPM_CHAR_TYPE:
 	case RPM_INT8_TYPE:
@@ -127,6 +122,7 @@ int headerMacrosUnload(Header h)
 	default:
 	    /*@switchbreak@*/ break;
 	}
+	he_p.ptr = _free(he_p.ptr);
     }
 
     /* XXX restore previous %{buildroot} (if any) */

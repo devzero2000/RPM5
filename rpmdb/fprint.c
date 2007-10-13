@@ -248,21 +248,36 @@ static
 void fpLookupHeader(fingerPrintCache cache, Header h, fingerPrint * fpList)
 	/*@modifies h, cache, *fpList @*/;
 {
-    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
-    HFD_t hfd = headerFreeData;
-    const char ** baseNames, ** dirNames;
-    rpmTagType bnt, dnt;
-    int_32 * dirIndexes;
+    HGE_t hge = (HGE_t)headerGetExtension;
+    int_32 he_t = 0;
+    hRET_t he_p = { .ptr = NULL };
+    int_32 he_c = 0;
+    HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
+    HE_t he = &he_s;
+    const char ** baseNames;
+    const char ** dirNames;
+    uint_32 * dirIndexes;
     int fileCount;
     int xx;
 
-    if (!hge(h, RPMTAG_BASENAMES, &bnt, (void **) &baseNames, &fileCount))
+    he->tag = RPMTAG_BASENAMES;
+    xx = hge(h, he->tag, he->t, he->p, he->c);)
+    baseNames = he_p.argv;
+    fileCount = he_c;
+    if (!xx)
 	return;
 
-    xx = hge(h, RPMTAG_DIRNAMES, &dnt, (void **) &dirNames, NULL);
-    xx = hge(h, RPMTAG_DIRINDEXES, NULL, (void **) &dirIndexes, NULL);
+    he->tag = RPMTAG_DIRNAMES;
+    xx = hge(h, he->tag, he->t, he->p, he->c);)
+    dirNames = he_p.argv;
+    he->tag = RPMTAG_DIRINDEXES;
+    xx = hge(h, he->tag, he->t, he->p, he->c);)
+    dirIndexes = he_p.ui32p;
+
     fpLookupList(cache, dirNames, baseNames, dirIndexes, fileCount, fpList);
-    dirNames = hfd(dirNames, dnt);
-    baseNames = hfd(baseNames, bnt);
+
+    dirIndexes = _free(dirIndexes);
+    dirNames = _free(dirNames);
+    baseNames = _free(baseNames);
 }
 #endif

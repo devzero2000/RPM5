@@ -73,6 +73,12 @@ rpmdb rpmtsGetRdb(rpmts ts)
 
 rpmRC rpmtsFindPubkey(rpmts ts, void * _dig)
 {
+    HGE_t hge = (HGE_t)headerGetExtension;
+    int_32 he_t = 0;
+    hRET_t he_p = { .ptr = NULL };
+    int_32 he_c = 0;
+    HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
+    HE_t he = &he_s;
     pgpDig dig = (_dig ? _dig : rpmtsDig(ts));
     const void * sig = pgpGetSig(dig);
     pgpDigParams sigp = pgpGetSignature(dig);
@@ -84,16 +90,11 @@ rpmRC rpmtsFindPubkey(rpmts ts, void * _dig)
 #endif
     int xx;
 
-#ifdef	DYING
-    if (sig == NULL || dig == NULL || sigp == NULL || pubp == NULL)
-	goto exit;
-#else
 assert(sig != NULL);
 assert(dig != NULL);
 assert(sigp != NULL);
 assert(pubp != NULL);
 assert(rpmtsDig(ts) == dig);
-#endif
 
 #if 0
 fprintf(stderr, "==> find sig id %08x %08x ts pubkey id %08x %08x\n",
@@ -152,21 +153,19 @@ fprintf(stderr, "*** free pkt %p[%d] id %08x %08x\n", ts->pkpkt, ts->pkpktlen, p
 	Header h;
 
 	/* Retrieve the pubkey that matches the signature. */
+	he->tag = RPMTAG_PUBKEYS;
 	mi = rpmdbInitIterator(rpmtsGetRdb(ts), RPMTAG_PUBKEYS, sigp->signid, sizeof(sigp->signid));
 	while ((h = rpmdbNextIterator(mi)) != NULL) {
-	    const char ** pubkeys;
-	    int_32 pt, pc;
-
-	    if (!headerGetEntry(h, RPMTAG_PUBKEYS, &pt, &pubkeys, &pc))
+	    if (!hge(h, he->tag, he->t, he->p, he->c))
 		continue;
 	    hx = rpmdbGetIteratorOffset(mi);
 	    ix = rpmdbGetIteratorFileNum(mi);
 /*@-moduncon -nullstate @*/
-	    if (ix >= pc
-	     || b64decode(pubkeys[ix], (void **) &ts->pkpkt, &ts->pkpktlen))
+	    if (ix >= he_c
+	     || b64decode(he_p.argv[ix], (void **) &ts->pkpkt, &ts->pkpktlen))
 		ix = -1;
 /*@=moduncon =nullstate @*/
-	    pubkeys = headerFreeData(pubkeys, pt);
+	    he_p.ptr = _free(he_p.ptr);
 	    break;
 	}
 	mi = rpmdbFreeIterator(mi);
@@ -294,10 +293,8 @@ int rpmtsSetSig(rpmts ts,
     int ret = 0;
     if (ts != NULL) {
 	const void * osig = pgpGetSig(rpmtsDig(ts));
-	int_32 osigtype = pgpGetSigtype(rpmtsDig(ts));
 /*@-modobserver -observertrans -dependenttrans @*/	/* FIX: pgpSetSig() lazy free. */
-	if (osig && osigtype)
-	    osig = headerFreeData(osig, osigtype);
+	osig = _free(osig);
 /*@=modobserver =observertrans =dependenttrans @*/
 	ret = pgpSetSig(rpmtsDig(ts), sigtag, sigtype, sig, siglen);
     }
@@ -557,6 +554,12 @@ static rpmRC rdSignature(FD_t fd, /*@out@*/ /*@null@*/ void * ptr,
 	/*@globals fileSystem @*/
 	/*@modifies *ptr, *msg, fileSystem @*/
 {
+    HGE_t hge = (HGE_t)headerGetExtension;
+    int_32 he_t = 0;
+    hRET_t he_p = { .ptr = NULL };
+    int_32 he_c = 0;
+    HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
+    HE_t he = &he_s;
     Header * sighp = ptr;
     char buf[BUFSIZ];
     int_32 block[4];
@@ -712,7 +715,6 @@ static rpmRC rdSignature(FD_t fd, /*@out@*/ /*@null@*/ void * ptr,
 
     {	int sigSize = headerSizeof(sigh);
 	int pad = (8 - (sigSize % 8)) % 8; /* 8-byte pad */
-	int_32 * archSize = NULL;
 
 	/* Position at beginning of header. */
 	if (pad && (xx = timedRead(fd, (void *)block, pad)) != pad) {
@@ -722,13 +724,17 @@ static rpmRC rdSignature(FD_t fd, /*@out@*/ /*@null@*/ void * ptr,
 	}
 
 	/* Print package component sizes. */
-	if (headerGetEntry(sigh, RPMSIGTAG_SIZE, NULL, &archSize, NULL)) {
-	    size_t datasize = *(uint_32 *)archSize;
+
+	he->tag = RPMSIGTAG_SIZE;
+	xx = hge(sigh, he->tag, he->t, he->p, he->c);
+	if (xx) {
+	    size_t datasize = *he_p.ui32p;
 	    rc = printSize(fd, sigSize, pad, datasize);
 	    if (rc != RPMRC_OK)
 		(void) snprintf(buf, sizeof(buf),
 			_("sigh sigSize(%d): BAD, fstat(2) failed\n"), sigSize);
 	}
+	he_p.ptr = _free(he_p.ptr);
     }
 
 exit:
@@ -950,10 +956,8 @@ assert(dig != NULL);
     sig = memcpy(xmalloc(siglen), dataStart + info->offset, siglen);
     {
 	const void * osig = pgpGetSig(dig);
-	int_32 osigtype = pgpGetSigtype(dig);
 /*@-modobserver -observertrans -dependenttrans @*/	/* FIX: pgpSetSig() lazy free. */
-	if (osig && osigtype)
-	    osig = headerFreeData(osig, osigtype);
+	osig = _free(osig);
 /*@=modobserver =observertrans =dependenttrans @*/
 	(void) pgpSetSig(dig, info->tag, info->type, sig, info->count);
     }

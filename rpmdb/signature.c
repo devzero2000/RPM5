@@ -523,6 +523,12 @@ static int makeHDRSignature(Header sigh, const char * file, int_32 sigTag,
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies sigh, sigTag, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
+    HGE_t hge = (HGE_t)headerGetExtension;
+    int_32 he_t = 0;
+    hRET_t he_p = { .ptr = NULL };
+    int_32 he_c = 0;
+    HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
+    HE_t he = &he_s;
     Header h = NULL;
     FD_t fd = NULL;
     byte * pkt;
@@ -552,11 +558,10 @@ static int makeHDRSignature(Header sigh, const char * file, int_32 sigTag,
 	    unsigned char * hmagic = NULL;
 	    size_t nmagic = 0;
 	    DIGEST_CTX ctx;
-	    void * uh;
-	    int_32 uht, uhc;
 	
-	    if (!headerGetEntry(h, RPMTAG_HEADERIMMUTABLE, &uht, &uh, &uhc)
-	     ||  uh == NULL)
+	    he->tag = RPMTAG_HEADERIMMUTABLE;
+	    if (!hge(h, he->tag, he->t, he->p, he->c)
+	     ||  he_p.ptr == NULL)
 	    {
 		h = headerFree(h);
 		goto exit;
@@ -565,9 +570,9 @@ static int makeHDRSignature(Header sigh, const char * file, int_32 sigTag,
 	    ctx = rpmDigestInit(PGPHASHALGO_SHA1, RPMDIGEST_NONE);
 	    if (hmagic && nmagic > 0)
 		(void) rpmDigestUpdate(ctx, hmagic, nmagic);
-	    (void) rpmDigestUpdate(ctx, uh, uhc);
+	    (void) rpmDigestUpdate(ctx, he_p.ptr, he_c);
 	    (void) rpmDigestFinal(ctx, &SHA1, NULL, 1);
-	    uh = headerFreeData(uh, uht);
+	    he_p.ptr = _free(he_p.ptr);
 	}
 	h = headerFree(h);
 
