@@ -1,4 +1,8 @@
 4.5 -> 5.0:
+    - jbj: fprint.c: use headerGetExtension everywhere.
+    - jbj: hdrNVR.c: use headerGetExtension everywhere.
+    - jbj: pkgio.c: use headerGetExtension everywhere.
+    - jbj: signature.c: use headerGetExtension everywhere.
     - jbj: rpmdb.c: use headerGetExtension everywhere.
     - rse: fix va_copy fallback macros.
     - jbj: rpmdb.c: retrofit HE_s.
