@@ -3540,7 +3540,7 @@ int rpmdbFindFpList(rpmdb db, fingerPrint * fpList, dbiIndexSet * matchList,
 {
 DBT * key;
 DBT * data;
-    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
+    HGE_t hge = (HGE_t)headerGetExtension;
     int_32 he_t = 0;
     hRET_t he_p = { .ptr = NULL };
     int_32 he_c = 0;

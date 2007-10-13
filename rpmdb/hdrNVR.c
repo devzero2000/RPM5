@@ -145,21 +145,22 @@ int headerNEVRA(Header h, const char **np,
 		/*@unused@*/ const char **ep, const char **vp, const char **rp,
 		const char **ap)
 {
+    HGE_t hge = (HGE_t)headerGetEntry;
     int type;
     int count;
 
     if (np) {
-	if (!(headerGetEntry(h, RPMTAG_NAME, &type, np, &count)
+	if (!(hge(h, RPMTAG_NAME, &type, np, &count)
 	    && type == RPM_STRING_TYPE && count == 1))
 		*np = NULL;
     }
     if (vp) {
-	if (!(headerGetEntry(h, RPMTAG_VERSION, &type, vp, &count)
+	if (!(hge(h, RPMTAG_VERSION, &type, vp, &count)
 	    && type == RPM_STRING_TYPE && count == 1))
 		*vp = NULL;
     }
     if (rp) {
-	if (!(headerGetEntry(h, RPMTAG_RELEASE, &type, rp, &count)
+	if (!(hge(h, RPMTAG_RELEASE, &type, rp, &count)
 	    && type == RPM_STRING_TYPE && count == 1))
 		*rp = NULL;
     }
@@ -172,7 +173,7 @@ int headerNEVRA(Header h, const char **np,
 	    *ap = "src";
 /*@=observertrans =readonlytrans@*/
 	else
-	if (!(headerGetEntry(h, RPMTAG_ARCH, &type, ap, &count)
+	if (!(hge(h, RPMTAG_ARCH, &type, ap, &count)
 	    && type == RPM_STRING_TYPE && count == 1))
 		*ap = NULL;
     }
@@ -181,20 +182,23 @@ int headerNEVRA(Header h, const char **np,
 
 uint_32 hGetColor(Header h)
 {
-    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
+    HGE_t hge = (HGE_t)headerGetExtension;
+    int_32 he_t = 0;
+    hRET_t he_p = { .ptr = NULL };
+    int_32 he_c = 0;
+    HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
+    HE_t he = &he_s;
     uint_32 hcolor = 0;
-    uint_32 * fcolors;
-    int_32 ncolors;
-    int i;
+    int xx;
 
-    fcolors = NULL;
-    ncolors = 0;
-    if (hge(h, RPMTAG_FILECOLORS, NULL, &fcolors, &ncolors)
-     && fcolors != NULL && ncolors > 0)
-    {
-	for (i = 0; i < ncolors; i++)
-	    hcolor |= fcolors[i];
+    he->tag = RPMTAG_FILECOLORS;
+    xx = hge(h, he->tag, he->t, he->p, he->c);
+    if (xx && he_p.ptr != NULL && he_c > 0) {
+	int i;
+	for (i = 0; i < he_c; i++)
+	    hcolor |= he_p.ui32p[i];
     }
+    he_p.ptr = _free(he_p.ptr);
     hcolor &= 0x0f;
 
     return hcolor;
