@@ -150,36 +150,56 @@ static int removePackage(rpmts ts, Header h, int dboffset,
 static int rpmHeadersIdentical(Header first, Header second)
 	/*@*/
 {
+    HGE_t hge = (HGE_t)headerGetExtension;
+    int_32 he_t = 0;
+    hRET_t he_p = { .ptr = NULL };
+    int_32 he_c = 0;
+    HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
+    HE_t he = &he_s;
     const char * one, * two;
-    rpmds A, B;
-    int rc;
+    int rc = 0;
+    int xx;
 
-    if (!headerGetEntry(first, RPMTAG_HDRID, NULL, &one, NULL))
-	one = NULL;
-    if (!headerGetEntry(second, RPMTAG_HDRID, NULL, &two, NULL))
-	two = NULL;
+    he->tag = RPMTAG_HDRID;
+    xx = hge(first, he->tag, he->t, he->p, he->c);
+    one = he_p.str;
+    he->tag = RPMTAG_HDRID;
+    xx = hge(second, he->tag, he->t, he->p, he->c);
+    two = he_p.str;
 
     if (one && two)
-	return ((strcmp(one, two) == 0) ? 1 : 0);
-    if (one && !two)
-	return 0;
-    if (!one && two)
-	return 0;
-    /* XXX Headers w/o digests case devolves to NEVR comparison. */
-    A = rpmdsThis(first, RPMTAG_REQUIRENAME, RPMSENSE_EQUAL);
-    B = rpmdsThis(second, RPMTAG_REQUIRENAME, RPMSENSE_EQUAL);
-    rc = rpmdsCompare(A, B);
-    A = rpmdsFree(A);
-    B = rpmdsFree(B);
+	rc = ((strcmp(one, two) == 0) ? 1 : 0);
+    else if (one && !two)
+	rc = 0;
+    else if (!one && two)
+	rc = 0;
+    else {
+	/* XXX Headers w/o digests case devolves to NEVR comparison. */
+	rpmds A = rpmdsThis(first, RPMTAG_REQUIRENAME, RPMSENSE_EQUAL);
+	rpmds B = rpmdsThis(second, RPMTAG_REQUIRENAME, RPMSENSE_EQUAL);
+	rc = rpmdsCompare(A, B);
+	A = rpmdsFree(A);
+	B = rpmdsFree(B);
+    }
+    one = _free(one);
+    two = _free(two);
     return rc;
 }
 
+/*@unchecked@*/
 static rpmTag _upgrade_tag;
+/*@unchecked@*/
 static rpmTag _obsolete_tag;
 
 int rpmtsAddInstallElement(rpmts ts, Header h,
 			fnpyKey key, int upgrade, rpmRelocation relocs)
 {
+    HGE_t hge = (HGE_t)headerGetExtension;
+    int_32 he_t = 0;
+    hRET_t he_p = { .ptr = NULL };
+    int_32 he_c = 0;
+    HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
+    HE_t he = &he_s;
     rpmdepFlags depFlags = rpmtsDFlags(ts);
     uint_32 tscolor = rpmtsColor(ts);
     uint_32 dscolor;
@@ -190,7 +210,6 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
     int isSource;
     int duplicate = 0;
     rpmtsi pi = NULL; rpmte p;
-    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     const char * arch;
     const char * os;
     rpmds oldChk, newChk;
@@ -218,28 +237,31 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
     /*
      * Check platform affinity of binary packages.
      */
-    arch = NULL;
-    xx = hge(h, RPMTAG_ARCH, NULL, &arch, NULL);
-    os = NULL;
-    xx = hge(h, RPMTAG_OS, NULL, &os, NULL);
+    he->tag = RPMTAG_ARCH;
+    xx = hge(h, he->tag, he->t, he->p, he->c);
+    arch = he_p.str;
+    he->tag = RPMTAG_OS;
+    xx = hge(h, he->tag, he->t, he->p, he->c);
+    os = he_p.str;
     if (nplatpat > 1) {
 	const char * platform = NULL;
 
-	if (hge(h, RPMTAG_PLATFORM, NULL, &platform, NULL))
-	    platform = xstrdup(platform);
-	else
+	he->tag = RPMTAG_PLATFORM;
+	xx = hge(h, he->tag, he->t, he->p, he->c);
+	platform = he_p.str;
+	if (!xx || platform == NULL)
 	    platform = rpmExpand(arch, "-unknown-", os, NULL);
 
 	rc = rpmPlatformScore(platform, platpat, nplatpat);
 	if (rc <= 0) {
-	    hRET_t pkgNVRA = { .ptr = NULL };
 	    rpmps ps = rpmtsProblems(ts);
-	    xx = headerGetExtension(h, RPMTAG_NVRA, NULL, &pkgNVRA, NULL);
-assert(pkgNVRA.str != NULL);
-	    rpmpsAppend(ps, RPMPROB_BADPLATFORM, pkgNVRA.str, key,
+	    he->tag = RPMTAG_NVRA;
+	    xx = hge(h, he->tag, he->t, he->p, he->c);
+assert(he_p.str != NULL);
+	    rpmpsAppend(ps, RPMPROB_BADPLATFORM, he_p.str, key,
                         platform, NULL, NULL, 0);
 	    ps = rpmpsFree(ps);
-	    pkgNVRA.str = _free(pkgNVRA.str);
+	    he_p.ptr = _free(he_p.ptr);
 	    ec = 1;
 	}
 	platform = _free(platform);
@@ -513,6 +535,8 @@ assert(lastx >= 0 && lastx < ts->orderCount);
     ec = 0;
 
 exit:
+    arch = _free(arch);
+    os = _free(os);
     pi = rpmtsiFree(pi);
     return ec;
 }
@@ -1291,6 +1315,12 @@ static int checkPackageSet(rpmts ts, const char * depName,
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, mi, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
+    HGE_t hge = (HGE_t)headerGetExtension;
+    int_32 he_t = 0;
+    hRET_t he_p = { .ptr = NULL };
+    int_32 he_c = 0;
+    HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
+    HE_t he = &he_s;
     rpmdepFlags depFlags = rpmtsDFlags(ts);
     uint_32 tscolor = rpmtsColor(ts);
     int scareMem = 0;
@@ -1300,15 +1330,15 @@ static int checkPackageSet(rpmts ts, const char * depName,
     (void) rpmdbPruneIterator(mi,
 		ts->removedPackages, ts->numRemovedPackages, 1);
     while ((h = rpmdbNextIterator(mi)) != NULL) {
-	hRET_t pkgNVRA = { .ptr = NULL };
 	rpmds requires = NULL;
 	rpmds conflicts = NULL;
 	rpmds dirnames = NULL;
 	rpmds linktos = NULL;
 	int rc;
 
-	rc = headerGetExtension(h, RPMTAG_NVRA, NULL, &pkgNVRA, NULL);
-assert(pkgNVRA.str != NULL);
+	he->tag = RPMTAG_NVRA;
+	rc = hge(h, he->tag, he->t, he->p, he->c);
+assert(rc && he_p.str != NULL);
 	if (!(depFlags & RPMDEPS_FLAG_NOREQUIRES))
 	    requires = rpmdsNew(h, RPMTAG_REQUIRENAME, scareMem);
 	if (!(depFlags & RPMDEPS_FLAG_NOCONFLICTS))
@@ -1323,7 +1353,7 @@ assert(pkgNVRA.str != NULL);
 	(void) rpmdsSetNoPromote(dirnames, _rpmds_nopromote);
 	(void) rpmdsSetNoPromote(linktos, _rpmds_nopromote);
 
-	rc = checkPackageDeps(ts, pkgNVRA.str,
+	rc = checkPackageDeps(ts, he_p.str,
 		requires, conflicts, dirnames, linktos,
 		depName, tscolor, adding);
 
@@ -1331,7 +1361,7 @@ assert(pkgNVRA.str != NULL);
 	dirnames = rpmdsFree(dirnames);
 	conflicts = rpmdsFree(conflicts);
 	requires = rpmdsFree(requires);
-	pkgNVRA.str = _free(pkgNVRA.str);
+	he_p.str = _free(he_p.str);
 
 	if (rc) {
 	    ec = 1;

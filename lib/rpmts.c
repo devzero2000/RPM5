@@ -304,6 +304,12 @@ static int sugcmp(const void * a, const void * b)
 
 int rpmtsSolve(rpmts ts, rpmds ds, /*@unused@*/ const void * data)
 {
+    HGE_t hge = (HGE_t)headerGetExtension;
+    int_32 he_t = 0;
+    hRET_t he_p = { .ptr = NULL };
+    int_32 he_c = 0;
+    HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
+    HE_t he = &he_s;
     const char * errstr;
     const char * str = NULL;
     const char * qfmt;
@@ -346,30 +352,26 @@ int rpmtsSolve(rpmts ts, rpmds ds, /*@unused@*/ const void * data)
     rpmtag = (*keyp == '/' ? RPMTAG_BASENAMES : RPMTAG_PROVIDENAME);
     mi = rpmdbInitIterator(ts->sdb, rpmtag, keyp, keylen);
     while ((h = rpmdbNextIterator(mi)) != NULL) {
-	const char * hname;
 	size_t hnamelen;
 	time_t htime;
-	int_32 * ip;
 
 	if (rpmtag == RPMTAG_PROVIDENAME && !rpmdsAnyMatchesDep(h, ds, 1))
 	    continue;
 
-	hname = NULL;
-	hnamelen = 0;
-	if (headerGetEntry(h, RPMTAG_NAME, NULL, &hname, NULL)) {
-	    if (hname)
-		hnamelen = strlen(hname);
-	}
+	he->tag = RPMTAG_NAME;
+	xx = hge(h, he->tag, he->t, he->p, he->c);
+	hnamelen = ((xx && he_p.str) ? strlen(he_p.str) : 0);
+	he_p.ptr = _free(he_p.ptr);
 
 	/* XXX Prefer the shortest pkg N for basenames/provides resp. */
-	if (bhnamelen > 0)
-	    if (hnamelen > bhnamelen)
-		continue;
+	if (bhnamelen > 0 && hnamelen > bhnamelen)
+	    continue;
 
 	/* XXX Prefer the newest build if given alternatives. */
-	htime = 0;
-	if (headerGetEntry(h, RPMTAG_BUILDTIME, NULL, &ip, NULL))
-	    htime = (time_t)*ip;
+	he->tag = RPMTAG_BUILDTIME;
+	xx = hge(h, he->tag, he->t, he->p, he->c);
+	htime = (xx && he_p.i32p ? *he_p.i32p : 0);
+	he_p.ptr = _free(he_p.ptr);
 
 	if (htime <= bhtime)
 	    continue;
