@@ -240,6 +240,7 @@ rpmte rpmteNew(const rpmts ts, Header h,
 	xx = hge(h, he->tag, he->t, he->p, he->c);
 	if (xx && he_p.ui32p)
 	    p->pkgFileSize += *he_p.ui32p;
+	he_p.ptr = _free(he_p.ptr);
 	break;
     case TR_REMOVED:
 	p->u.addedKey = pkgKey;
