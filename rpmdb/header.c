@@ -1871,14 +1871,12 @@ assert(0);	/* XXX stop unimplemented oversights. */
 	nb = he_c * sizeof(*he_p.i8p);
 	break;
     case RPM_INT16_TYPE:
-assert(0);	/* XXX stop unimplemented oversights. */
 	nb = he_c * sizeof(*he_p.i16p);
 	break;
     case RPM_INT32_TYPE:
 	nb = he_c * sizeof(*he_p.i32p);
 	break;
     case RPM_INT64_TYPE:
-assert(0);	/* XXX stop unimplemented oversights. */
 	nb = he_c * sizeof(*he_p.i64p);
 	break;
     case RPM_I18NSTRING_TYPE:

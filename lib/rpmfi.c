@@ -685,10 +685,14 @@ Header relocateFileList(const rpmts ts, rpmfi fi,
 		internalState @*/
 {
     rpmte p = rpmtsRelocateElement(ts);
-    HGE_t hge = fi->hge;
+    HGE_t hge = (HGE_t)headerGetExtension;
+    int_32 he_t = 0;
+    hRET_t he_p = { .ptr = NULL };
+    int_32 he_c = 0;
+    HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
+    HE_t he = &he_s;
     HAE_t hae = fi->hae;
     HME_t hme = fi->hme;
-    HFD_t hfd = (fi->hfd ? fi->hfd : headerFreeData);
     static int _printed = 0;
     int allowBadRelocate = (rpmtsFilterFlags(ts) & RPMPROB_FILTER_FORCERELOCATE);
     rpmRelocation relocations = NULL;
@@ -714,9 +718,15 @@ Header relocateFileList(const rpmts ts, rpmfi fi,
     int haveRelocatedFile = 0;
     int reldel = 0;
     int len;
-    int i, j, xx;
+    int i, j;
+    int xx;
 
-    if (!hge(origH, RPMTAG_PREFIXES, &validType, &validRelocations, &numValid))
+    he->tag = RPMTAG_PREFIXES;
+    xx = hge(origH, he->tag, he->t, he->p, he->c);
+    validType = he_t;
+    validRelocations = he_p.argv;
+    numValid = he_c;
+    if (!xx)
 	numValid = 0;
 
 assert(p != NULL);
@@ -737,7 +747,7 @@ assert(p != NULL);
 	    if (!headerIsEntry(origH, RPMTAG_INSTPREFIXES))
 		xx = hae(origH, RPMTAG_INSTPREFIXES,
 			validType, validRelocations, numValid);
-	    validRelocations = hfd(validRelocations, validType);
+	    validRelocations = _free(validRelocations);
 	}
 	/* XXX FIXME multilib file actions need to be checked. */
 	return headerLink(origH);
@@ -863,15 +873,29 @@ assert(p != NULL);
 		       (void **) actualRelocations, numActual);
 
 	actualRelocations = _free(actualRelocations);
-	validRelocations = hfd(validRelocations, validType);
+	validRelocations = _free(validRelocations);
     }
 
-    xx = hge(h, RPMTAG_BASENAMES, NULL, &baseNames, &fileCount);
-    xx = hge(h, RPMTAG_DIRINDEXES, NULL, &dirIndexes, NULL);
-    xx = hge(h, RPMTAG_DIRNAMES, NULL, &dirNames, &dirCount);
-    xx = hge(h, RPMTAG_FILEFLAGS, NULL, &fFlags, NULL);
-    xx = hge(h, RPMTAG_FILECOLORS, NULL, &fColors, NULL);
-    xx = hge(h, RPMTAG_FILEMODES, NULL, &fModes, NULL);
+    he->tag = RPMTAG_BASENAMES;
+    xx = hge(h, he->tag, he->t, he->p, he->c);
+    baseNames = he_p.argv;
+    fileCount = he_c;
+    he->tag = RPMTAG_DIRINDEXES;
+    xx = hge(h, he->tag, he->t, he->p, he->c);
+    dirIndexes = he_p.i32p;
+    he->tag = RPMTAG_DIRNAMES;
+    xx = hge(h, he->tag, he->t, he->p, he->c);
+    dirNames = he_p.argv;
+    dirCount = he_c;
+    he->tag = RPMTAG_FILEFLAGS;
+    xx = hge(h, he->tag, he->t, he->p, he->c);
+    fFlags = he_p.ui32p;
+    he->tag = RPMTAG_FILECOLORS;
+    xx = hge(h, he->tag, he->t, he->p, he->c);
+    fColors = he_p.ui32p;
+    he->tag = RPMTAG_FILEMODES;
+    xx = hge(h, he->tag, he->t, he->p, he->c);
+    fModes = he_p.ui16p;
 
     dColors = alloca(dirCount * sizeof(*dColors));
     memset(dColors, 0, dirCount * sizeof(*dColors));
@@ -1010,7 +1034,7 @@ dColors[j] |= fColors[i];
 	    newDirList = xmalloc((dirCount + 1) * sizeof(*newDirList));
 	    for (j = 0; j < dirCount; j++)
 		newDirList[j] = alloca_strdup(dirNames[j]);
-	    dirNames = hfd(dirNames, RPM_STRING_ARRAY_TYPE);
+	    dirNames = _free(dirNames);
 	    dirNames = newDirList;
 	} else {
 	    dirNames = xrealloc(dirNames, 
@@ -1071,42 +1095,52 @@ dColors[j] |= fColors[i];
 
     /* Save original filenames in header and replace (relocated) filenames. */
     if (nrelocated) {
-	int c;
-	void * d;
-	rpmTagType t;
+	he->tag = RPMTAG_BASENAMES;
+	xx = hge(h, he->tag, he->t, he->p, he->c);
+	xx = hae(h, RPMTAG_ORIGBASENAMES, he_t, he_p.ptr, he_c);
+	he_p.ptr = _free(he_p.ptr);
 
-	d = NULL;
-	xx = hge(h, RPMTAG_BASENAMES, &t, &d, &c);
-	xx = hae(h, RPMTAG_ORIGBASENAMES, t, d, c);
-	d = hfd(d, t);
+	he->tag = RPMTAG_DIRNAMES;
+	xx = hge(h, he->tag, he->t, he->p, he->c);
+	xx = hae(h, RPMTAG_ORIGDIRNAMES, he_t, he_p.ptr, he_c);
+	he_p.ptr = _free(he_p.ptr);
 
-	d = NULL;
-	xx = hge(h, RPMTAG_DIRNAMES, &t, &d, &c);
-	xx = hae(h, RPMTAG_ORIGDIRNAMES, t, d, c);
-	d = hfd(d, t);
-
-	d = NULL;
-	xx = hge(h, RPMTAG_DIRINDEXES, &t, &d, &c);
-	xx = hae(h, RPMTAG_ORIGDIRINDEXES, t, d, c);
-	d = hfd(d, t);
+	he->tag = RPMTAG_DIRINDEXES;
+	xx = hge(h, he->tag, he->t, he->p, he->c);
+	xx = hae(h, RPMTAG_ORIGDIRINDEXES, he_t, he_p.ptr, he_c);
+	he_p.ptr = _free(he_p.ptr);
 
 	xx = hme(h, RPMTAG_BASENAMES, RPM_STRING_ARRAY_TYPE,
 			  baseNames, fileCount);
-	fi->bnl = hfd(fi->bnl, RPM_STRING_ARRAY_TYPE);
-	xx = hge(h, RPMTAG_BASENAMES, NULL, &fi->bnl, &fi->fc);
+	fi->bnl = _free(fi->bnl);
+	he->tag = RPMTAG_BASENAMES;
+	xx = hge(h, he->tag, he->t, he->p, he->c);
+	fi->bnl = he_p.argv;
+	fi->fc = he_c;
 
 	xx = hme(h, RPMTAG_DIRNAMES, RPM_STRING_ARRAY_TYPE,
 			  dirNames, dirCount);
-	fi->dnl = hfd(fi->dnl, RPM_STRING_ARRAY_TYPE);
-	xx = hge(h, RPMTAG_DIRNAMES, NULL, &fi->dnl, &fi->dc);
+	fi->dnl = _free(fi->dnl);
+	he->tag = RPMTAG_DIRNAMES;
+	xx = hge(h, he->tag, he->t, he->p, he->c);
+	fi->dnl = he_p.argv;
+	fi->dc = he_c;
 
 	xx = hme(h, RPMTAG_DIRINDEXES, RPM_INT32_TYPE,
 			  dirIndexes, fileCount);
-	xx = hge(h, RPMTAG_DIRINDEXES, NULL, &fi->dil, NULL);
+	fi->dil = _free(fi->dil);
+	he->tag = RPMTAG_DIRINDEXES;
+	xx = hge(h, he->tag, he->t, he->p, he->c);
+	fi->dil = he_p.ui32p;
     }
 
-    baseNames = hfd(baseNames, RPM_STRING_ARRAY_TYPE);
-    dirNames = hfd(dirNames, RPM_STRING_ARRAY_TYPE);
+    baseNames = _free(baseNames);
+    dirIndexes = _free(dirIndexes);
+    dirNames = _free(dirNames);
+    fFlags = _free(fFlags);
+    fColors = _free(fColors);
+    fModes = _free(fModes);
+
 /*@-dependenttrans@*/
     fn = _free(fn);
 /*@=dependenttrans@*/
@@ -1116,8 +1150,6 @@ dColors[j] |= fColors[i];
 
 rpmfi rpmfiFree(rpmfi fi)
 {
-    HFD_t hfd = headerFreeData;
-
     if (fi == NULL) return NULL;
 
     if (fi->nrefs > 1)
@@ -1135,41 +1167,35 @@ fprintf(stderr, "*** fi %p\t%s[%d]\n", fi, fi->Type, fi->fc);
     fi->posttransprog = _free(fi->posttransprog);
 
     if (fi->fc > 0) {
-	fi->bnl = hfd(fi->bnl, -1);
-	fi->dnl = hfd(fi->dnl, -1);
+	fi->bnl = _free(fi->bnl);
+	fi->dnl = _free(fi->dnl);
 
-	fi->flinks = hfd(fi->flinks, -1);
-	fi->flangs = hfd(fi->flangs, -1);
-	fi->fdigests = hfd(fi->fdigests, -1);
+	fi->flinks = _free(fi->flinks);
+	fi->flangs = _free(fi->flangs);
+	fi->fdigests = _free(fi->fdigests);
 	fi->digests = _free(fi->digests);
 
-	fi->cdict = hfd(fi->cdict, -1);
+	fi->cdict = _free(fi->cdict);
 
-	fi->fuser = hfd(fi->fuser, -1);
-	fi->fgroup = hfd(fi->fgroup, -1);
+	fi->fuser = _free(fi->fuser);
+	fi->fgroup = _free(fi->fgroup);
 
 	fi->fstates = _free(fi->fstates);
 
-	/*@-evalorder@*/
-	if (!fi->keep_header && fi->h == NULL) {
-	    fi->fmtimes = _free(fi->fmtimes);
-	    fi->fmodes = _free(fi->fmodes);
-	    fi->fflags = _free(fi->fflags);
-	    fi->vflags = _free(fi->vflags);
-	    fi->fsizes = _free(fi->fsizes);
-	    fi->frdevs = _free(fi->frdevs);
-	    fi->finodes = _free(fi->finodes);
-	    fi->dil = _free(fi->dil);
+	fi->fmtimes = _free(fi->fmtimes);
+	fi->fmodes = _free(fi->fmodes);
+	fi->fflags = _free(fi->fflags);
+	fi->vflags = _free(fi->vflags);
+	fi->fsizes = _free(fi->fsizes);
+	fi->frdevs = _free(fi->frdevs);
+	fi->finodes = _free(fi->finodes);
+	fi->dil = _free(fi->dil);
 
-	    fi->fcolors = _free(fi->fcolors);
-	    fi->fcdictx = _free(fi->fcdictx);
-	    fi->ddict = _free(fi->ddict);
-	    fi->fddictx = _free(fi->fddictx);
-	    fi->fddictn = _free(fi->fddictn);
-
-	} else if (fi->isSource)	/* XXX SRPM's always re-alloc fi->dil */
-	    fi->dil = _free(fi->dil);
-	/*@=evalorder@*/
+	fi->fcolors = _free(fi->fcolors);
+	fi->fcdictx = _free(fi->fcdictx);
+	fi->ddict = _free(fi->ddict);
+	fi->fddictx = _free(fi->fddictx);
+	fi->fddictn = _free(fi->fddictn);
     }
 
     fi->fsm = freeFSM(fi->fsm);
@@ -1178,10 +1204,10 @@ fprintf(stderr, "*** fi %p\t%s[%d]\n", fi, fi->Type, fi->fc);
     fi->apath = _free(fi->apath);
     fi->fmapflags = _free(fi->fmapflags);
 
-    fi->obnl = hfd(fi->obnl, -1);
-    fi->odnl = hfd(fi->odnl, -1);
+    fi->obnl = _free(fi->obnl);
+    fi->odnl = _free(fi->odnl);
 
-    fi->fcontexts = hfd(fi->fcontexts, -1);
+    fi->fcontexts = _free(fi->fcontexts);
 
     fi->actions = _free(fi->actions);
     fi->replacedSizes = _free(fi->replacedSizes);
@@ -1219,21 +1245,28 @@ static inline unsigned char nibble(char c)
 	(_fi)->_data = memcpy(xmalloc((_fi)->fc * sizeof(*(_fi)->_data)), \
 			(_fi)->_data, (_fi)->fc * sizeof(*(_fi)->_data))
 
-/* XXX Ick, not SEF. */
 #define _fdupestring(_h, _tag, _data) \
-    if (hge((_h), (_tag), NULL, &(_data), NULL)) \
-	_data = xstrdup(_data)
+    he->tag = _tag; \
+    xx = hge((_h), he->tag, he->t, he->p, he->c); \
+    _data = he_p.str;
+
+#define _fdupedata(_h, _tag, _data) \
+    he->tag = _tag; \
+    xx = hge((_h), he->tag, he->t, he->p, he->c); \
+    _data = he_p.ptr;
 
 rpmfi rpmfiNew(const rpmts ts, Header h, rpmTag tagN, int flags)
 {
-    HFD_t hfd = headerFreeData;
     int scareMem = (flags & 0x1);
-    HGE_t hge =
-	(scareMem ? (HGE_t) headerGetEntryMinMemory : (HGE_t) headerGetEntry);
+    HGE_t hge = (HGE_t)headerGetExtension;
+    int_32 he_t = 0;
+    hRET_t he_p = { .ptr = NULL };
+    int_32 he_c = 0;
+    HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
+    HE_t he = &he_s;
     rpmte p;
     rpmfi fi = NULL;
     const char * Type;
-    uint_32 * uip;
     int dnlmax, bnlmax;
     unsigned char * t;
     int len;
@@ -1257,13 +1290,13 @@ assert(scareMem == 0);		/* XXX always allocate memory */
     fi->i = -1;
     fi->tagN = tagN;
 
-    fi->hge = hge;
+    fi->hge = (HGE_t) headerGetEntry;
     fi->hae = (HAE_t) headerAddEntry;
     fi->hme = (HME_t) headerModifyEntry;
     fi->hre = (HRE_t) headerRemoveEntry;
     fi->hfd = headerFreeData;
 
-    fi->h = (h != NULL && scareMem ? headerLink(h) : NULL);
+    fi->h = NULL;
     fi->isSource =
 	(headerIsEntry(h, RPMTAG_SOURCERPM) == 0 &&
 	 headerIsEntry(h, RPMTAG_ARCH) != 0);
@@ -1274,9 +1307,11 @@ assert(scareMem == 0);		/* XXX always allocate memory */
     fi->fsm->repackaged = (headerIsEntry(h, RPMTAG_REMOVETID) ? 1 : 0);
 
     /* 0 means unknown */
-    xx = hge(h, RPMTAG_ARCHIVESIZE, NULL, &uip, NULL);
+    he->tag = RPMTAG_ARCHIVESIZE;
+    xx = hge(h, he->tag, he->t, he->p, he->c);
     fi->archivePos = 0;
-    fi->archiveSize = (xx ? *uip : 0);
+    fi->archiveSize = (xx && he_p.ui32p ? *he_p.ui32p : 0);
+    he_p.ptr = _free(he_p.ptr);
 
     /* Extract pre- and post-transaction script and interpreter strings. */
     _fdupestring(h, RPMTAG_PRETRANS, fi->pretrans);
@@ -1284,35 +1319,40 @@ assert(scareMem == 0);		/* XXX always allocate memory */
     _fdupestring(h, RPMTAG_POSTTRANS, fi->posttrans);
     _fdupestring(h, RPMTAG_POSTTRANSPROG, fi->posttransprog);
 
-    if (!hge(h, RPMTAG_BASENAMES, NULL, &fi->bnl, &fi->fc)) {
+    he->tag = RPMTAG_BASENAMES;
+    xx = hge(h, he->tag, he->t, he->p, he->c);
+    fi->bnl = he_p.argv;
+    fi->fc = he_c;
+    if (!xx) {
 	fi->fc = 0;
 	fi->dc = 0;
 	goto exit;
     }
-    xx = hge(h, RPMTAG_DIRNAMES, NULL, &fi->dnl, &fi->dc);
-    xx = hge(h, RPMTAG_DIRINDEXES, NULL, &fi->dil, NULL);
-    xx = hge(h, RPMTAG_FILEMODES, NULL, &fi->fmodes, NULL);
-    xx = hge(h, RPMTAG_FILEFLAGS, NULL, &fi->fflags, NULL);
-    xx = hge(h, RPMTAG_FILEVERIFYFLAGS, NULL, &fi->vflags, NULL);
-    xx = hge(h, RPMTAG_FILESIZES, NULL, &fi->fsizes, NULL);
+    _fdupedata(h, RPMTAG_DIRNAMES, fi->dnl);
+    fi->dc = he_c;
+    _fdupedata(h, RPMTAG_DIRINDEXES, fi->dil);
+    _fdupedata(h, RPMTAG_FILEMODES, fi->fmodes);
+    _fdupedata(h, RPMTAG_FILEFLAGS, fi->fflags);
+    _fdupedata(h, RPMTAG_FILEVERIFYFLAGS, fi->vflags);
+    _fdupedata(h, RPMTAG_FILESIZES, fi->fsizes);
 
-    xx = hge(h, RPMTAG_FILECOLORS, NULL, &fi->fcolors, NULL);
+    _fdupedata(h, RPMTAG_FILECOLORS, fi->fcolors);
     fi->color = 0;
     if (fi->fcolors != NULL)
     for (i = 0; i < fi->fc; i++)
 	fi->color |= fi->fcolors[i];
-    xx = hge(h, RPMTAG_CLASSDICT, NULL, &fi->cdict, &fi->ncdict);
-    xx = hge(h, RPMTAG_FILECLASS, NULL, &fi->fcdictx, NULL);
+    _fdupedata(h, RPMTAG_CLASSDICT, fi->cdict);
+    fi->ncdict = he_c;
+    _fdupedata(h, RPMTAG_FILECLASS, fi->fcdictx);
 
-    xx = hge(h, RPMTAG_DEPENDSDICT, NULL, &fi->ddict, &fi->nddict);
-    xx = hge(h, RPMTAG_FILEDEPENDSX, NULL, &fi->fddictx, NULL);
-    xx = hge(h, RPMTAG_FILEDEPENDSN, NULL, &fi->fddictn, NULL);
+    _fdupedata(h, RPMTAG_DEPENDSDICT, fi->ddict);
+    fi->nddict = he_c;
+    _fdupedata(h, RPMTAG_FILEDEPENDSX, fi->fddictx);
+    _fdupedata(h, RPMTAG_FILEDEPENDSN, fi->fddictn);
 
-    xx = hge(h, RPMTAG_FILESTATES, NULL, &fi->fstates, NULL);
+    _fdupedata(h, RPMTAG_FILESTATES, fi->fstates);
     if (xx == 0 || fi->fstates == NULL)
 	fi->fstates = xcalloc(fi->fc, sizeof(*fi->fstates));
-    else
-	_fdupe(fi, fstates);
 
     fi->action = FA_UNKNOWN;
     fi->flags = 0;
@@ -1320,19 +1360,19 @@ assert(scareMem == 0);		/* XXX always allocate memory */
 if (fi->actions == NULL)
 	fi->actions = xcalloc(fi->fc, sizeof(*fi->actions));
 
-    fi->keep_header = (scareMem ? 1 : 0);
+    fi->keep_header = 0;
 
     /* XXX TR_REMOVED needs CPIO_MAP_{ABSOLUTE,ADDDOT} CPIO_ALL_HARDLINKS */
     fi->mapflags =
 		CPIO_MAP_PATH | CPIO_MAP_MODE | CPIO_MAP_UID | CPIO_MAP_GID;
 
-    xx = hge(h, RPMTAG_FILELINKTOS, NULL, &fi->flinks, NULL);
-    xx = hge(h, RPMTAG_FILELANGS, NULL, &fi->flangs, NULL);
+    _fdupedata(h, RPMTAG_FILELINKTOS, fi->flinks);
+    _fdupedata(h, RPMTAG_FILELANGS, fi->flangs);
 
     fi->digestalgo = PGPHASHALGO_MD5;
     fi->digestlen = 16;
     fi->fdigestalgos = NULL;
-    xx = hge(h, RPMTAG_FILEDIGESTALGOS, NULL, &fi->fdigestalgos, NULL);
+    _fdupedata(h, RPMTAG_FILEDIGESTALGOS, fi->fdigestalgos);
     if (fi->fdigestalgos) {
 	int dalgo = 0;
 	/* XXX Insure that all algorithms are either 0 or constant. */
@@ -1358,9 +1398,7 @@ assert(dalgo == fi->fdigestalgos[i]);
 	fi->fdigestalgos = NULL;
     }
 
-    fi->fdigests = NULL;
-    xx = hge(h, RPMTAG_FILEDIGESTS, NULL, &fi->fdigests, NULL);
-
+    _fdupedata(h, RPMTAG_FILEDIGESTS, fi->fdigests);
     fi->digests = NULL;
     if (fi->fdigests) {
 	t = xmalloc(fi->fc * fi->digestlen);
@@ -1378,19 +1416,19 @@ assert(dalgo == fi->fdigestalgos[i]);
 	    for (j = 0; j < fi->digestlen; j++, t++, fdigests += 2)
 		*t = (nibble(fdigests[0]) << 4) | nibble(fdigests[1]);
 	}
-	fi->fdigests = hfd(fi->fdigests, -1);
+	fi->fdigests = _free(fi->fdigests);
     }
 
     /* XXX TR_REMOVED doesn;t need fmtimes, frdevs, finodes, or fcontexts */
-    xx = hge(h, RPMTAG_FILEMTIMES, NULL, &fi->fmtimes, NULL);
-    xx = hge(h, RPMTAG_FILERDEVS, NULL, &fi->frdevs, NULL);
-    xx = hge(h, RPMTAG_FILEINODES, NULL, &fi->finodes, NULL);
-    xx = hge(h, RPMTAG_FILECONTEXTS, NULL, &fi->fcontexts, NULL);
+    _fdupedata(h, RPMTAG_FILEMTIMES, fi->fmtimes);
+    _fdupedata(h, RPMTAG_FILERDEVS, fi->frdevs);
+    _fdupedata(h, RPMTAG_FILEINODES, fi->finodes);
+    _fdupedata(h, RPMTAG_FILECONTEXTS, fi->fcontexts);
 
     fi->replacedSizes = xcalloc(fi->fc, sizeof(*fi->replacedSizes));
 
-    xx = hge(h, RPMTAG_FILEUSERNAME, NULL, &fi->fuser, NULL);
-    xx = hge(h, RPMTAG_FILEGROUPNAME, NULL, &fi->fgroup, NULL);
+    _fdupedata(h, RPMTAG_FILEUSERNAME, fi->fuser);
+    _fdupedata(h, RPMTAG_FILEGROUPNAME, fi->fgroup);
 
     if (ts != NULL)
     if (fi != NULL)
@@ -1446,29 +1484,6 @@ if (fi->actions == NULL)
 	foo = headerFree(foo);
     }
 
-    if (!scareMem) {
-	_fdupe(fi, fmtimes);
-	_fdupe(fi, frdevs);
-	_fdupe(fi, finodes);
-	_fdupe(fi, fsizes);
-	_fdupe(fi, fflags);
-	_fdupe(fi, vflags);
-	_fdupe(fi, fmodes);
-	_fdupe(fi, dil);
-
-	_fdupe(fi, fcolors);
-	_fdupe(fi, fcdictx);
-
-	if (fi->ddict != NULL)
-	    fi->ddict = memcpy(xmalloc(fi->nddict * sizeof(*fi->ddict)),
-			fi->ddict, fi->nddict * sizeof(*fi->ddict));
-
-	_fdupe(fi, fddictx);
-	_fdupe(fi, fddictn);
-
-    } else if (fi->isSource)	/* XXX SRPM's always re-alloc fi->dil */
-	_fdupe(fi, dil);
-
     if (fi->isSource && fi->dc == 1 && *fi->dnl[0] == '\0') {
 	const char ** av = xcalloc(4+1, sizeof(*av));
 	char * te;
@@ -1483,7 +1498,7 @@ if (fi->actions == NULL)
 	xx = headerMacrosUnload(fi->h);
 
 	/* Hack up a header RPM_STRING_ARRAY_TYPE array. */
-	fi->dnl = hfd(fi->dnl, -1);
+	fi->dnl = _free(fi->dnl);
 	fi->dc = 4;
 	nb = fi->dc * sizeof(*av);
 	for (i = 0; i < fi->dc; i++)
