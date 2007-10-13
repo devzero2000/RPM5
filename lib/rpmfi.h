@@ -162,7 +162,6 @@ struct rpmfi_s {
     int * fmapflags;
 /*@owned@*/
     FSM_t fsm;			/*!< File state machine data. */
-    int keep_header;		/*!< Keep header? */
     uint_32 color;		/*!< Color bit(s) from file color union. */
 
     int isSource;		/*!< Is this a SRPM? */
