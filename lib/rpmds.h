@@ -56,7 +56,6 @@ struct rpmds_s {
     const char * A;		/*!< Arch (from containing package). */
     int_32 BT;			/*!< Package build time tie breaker. */
     rpmTag tagN;		/*!< Header tag. */
-    rpmTagType Nt, EVRt, Ft;	/*!< Tag data types. */
     int_32 Count;		/*!< No. of elements */
     int i;			/*!< Element index. */
     unsigned l;			/*!< Low element (bsearch). */

@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - jbj: rpmds.c: use headerGetExtension everywhere.
     - jbj: eliminate rpmtsSetSig(), use pgpSetSig() instead.
     - jbj: fix: trade a double free for a ~100b/header memleak.
     - jbj: fprint.c: use headerGetExtension everywhere.
