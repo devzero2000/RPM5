@@ -882,18 +882,18 @@ assert(dig != NULL);
 	if (sigh != NULL)
 	for (hi = headerInitIterator(sigh);
 	    headerNextIterator(hi, &sigtag, &sigtype, &sig, &siglen) != 0;
-	    /*@-noeffect@*/(void) rpmtsSetSig(ts, sigtag, sigtype, NULL, siglen)/*@=noeffect@*/)
+	    /*@-noeffect@*/ xx = pgpSetSig(rpmtsDig(ts), 0, 0, NULL, 0) /*@=noeffect@*/)
 	{
 
 	    if (sig == NULL) /* XXX can't happen */
 		continue;
 
-/*@-noeffect@*/
-	    (void) rpmtsSetSig(ts, sigtag, sigtype, sig, siglen);
-/*@=noeffect@*/
-
 	    /* Clean up parameters from previous sigtag. */
 	    pgpCleanDig(dig);
+
+/*@-noeffect@*/
+	    xx = pgpSetSig(rpmtsDig(ts), sigtag, sigtype, sig, siglen);
+/*@=noeffect@*/
 
 	    switch (sigtag) {
 	    case RPMSIGTAG_RSA:

@@ -94,7 +94,6 @@ LIBRPMDB_0
     rpmtsGetRdb;
     rpmtsOp;
     rpmtsPubkey;
-    rpmtsSetSig;
     rpmVerifySignature;
     sqlitevec;
     XrpmdbLink;

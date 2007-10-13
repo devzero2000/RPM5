@@ -1,4 +1,6 @@
 4.5 -> 5.0:
+    - jbj: eliminate rpmtsSetSig(), use pgpSetSig() instead.
+    - jbj: fix: trade a double free for a ~100b/header memleak.
     - jbj: fprint.c: use headerGetExtension everywhere.
     - jbj: hdrNVR.c: use headerGetExtension everywhere.
     - jbj: pkgio.c: use headerGetExtension everywhere.

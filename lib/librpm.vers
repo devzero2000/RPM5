@@ -379,7 +379,6 @@ LIBRPM_0
     rpmtsSetRelocateElement;
     rpmtsSetRootDir;
     rpmtsSetScriptFd;
-    rpmtsSetSig;
     rpmtsSetSolveCallback;
     rpmtsSetSpec;
     rpmtsSetTid;

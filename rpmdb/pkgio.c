@@ -287,20 +287,6 @@ pgpDig rpmtsDig(rpmts ts)
     return ts->dig;
 }
 
-int rpmtsSetSig(rpmts ts,
-		int_32 sigtag, int_32 sigtype, const void * sig, int_32 siglen)
-{
-    int ret = 0;
-    if (ts != NULL) {
-	const void * osig = pgpGetSig(rpmtsDig(ts));
-/*@-modobserver -observertrans -dependenttrans @*/	/* FIX: pgpSetSig() lazy free. */
-	osig = _free(osig);
-/*@=modobserver =observertrans =dependenttrans @*/
-	ret = pgpSetSig(rpmtsDig(ts), sigtag, sigtype, sig, siglen);
-    }
-    return ret;
-}
-
 void rpmtsCleanDig(rpmts ts)
 {
     if (ts && ts->dig) {
@@ -310,7 +296,7 @@ void rpmtsCleanDig(rpmts ts)
 	opx = RPMTS_OP_SIGNATURE;
 	(void) rpmswAdd(rpmtsOp(ts, opx), pgpStatsAccumulator(ts->dig, opx));
 /*@-noeffect@*/
-	(void) rpmtsSetSig(ts, 0, 0, NULL, 0);	/* XXX headerFreeData */
+	(void) pgpSetSig(ts->dig, 0, 0, NULL, 0); /* move to pgpFreeDig? */
 /*@=noeffect@*/
 	ts->dig = pgpFreeDig(ts->dig);
     }
@@ -1066,8 +1052,10 @@ assert(dig != NULL);
     /* XXX headerCheck can recurse, free info only at top level. */
     if (hclvl == 1)
 	rpmtsCleanDig(ts);
+#ifdef	DYING
     if (info->tag == RPMTAG_SHA1HEADER)
 	sig = _free(sig);
+#endif
     hclvl--;
     return rc;
 }

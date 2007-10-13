@@ -352,7 +352,7 @@ assert(dig != NULL);
 	goto exit;
     }
 /*@-noeffect@*/
-    (void) rpmtsSetSig(ts, sigtag, sigtype, sig, siglen);
+    xx = pgpSetSig(rpmtsDig(ts), sigtag, sigtype, sig, siglen);
 /*@=noeffect@*/
 
     switch (sigtag) {
