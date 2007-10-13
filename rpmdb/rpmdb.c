@@ -3364,7 +3364,7 @@ data->size = 0;
 		    /*@switchbreak@*/ break;
 		case RPMTAG_PUBKEYS:
 		    /*@switchbreak@*/ break;
-		case RPMTAG_FILEMD5S:
+		case RPMTAG_FILEDIGESTS:
 		    /* Filter out empty MD5 strings. */
 		    if (!(he_p.argv[i] && *he_p.argv[i] != '\0'))
 			/*@innercontinue@*/ continue;
