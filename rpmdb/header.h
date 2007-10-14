@@ -238,6 +238,10 @@ extern const struct headerSprintfExtension_s headerDefaultFormats[];
 extern const struct headerSprintfExtension_s headerCompoundFormats[];
 /*@=redecl@*/
 
+/**
+ */
+typedef enum rpmTag_e rpmTag;
+
 /** \ingroup header
  * The basic types of data in tags from headers.
  */
@@ -343,6 +347,84 @@ typedef struct _HE_s HE_s;
 #endif
 typedef HE_s * HE_t;
 /*@=typeuse =fielduse@*/
+
+/**
+ * Prototype for headerFreeData() vector.
+ *
+ * @param data		address of data (or NULL)
+ * @param type		type of data (or -1 to force free)
+ * @return		NULL always
+ */
+typedef /*@null@*/
+    void * (*HFD_t) (/*@only@*/ /*@null@*/ const void * data, rpmTagType type)
+	/*@modifies data @*/;
+
+/**
+ * Prototype for headerGetEntry() vector.
+ *
+ * Will never return RPM_I18NSTRING_TYPE! RPM_STRING_TYPE elements with
+ * RPM_I18NSTRING_TYPE equivalent entries are translated (if HEADER_I18NTABLE
+ * entry is present).
+ *
+ * @param h		header
+ * @param tag		tag
+ * @retval *type	tag value data type (or NULL)
+ * @retval *p		tag value(s) (or NULL)
+ * @retval *c		number of values (or NULL)
+ * @return		1 on success, 0 on failure
+ */
+typedef int (*HGE_t) (Header h, rpmTag tag,
+			/*@null@*/ /*@out@*/ hTYP_t t,
+			/*@null@*/ /*@out@*/ hRET_t * p,
+			/*@null@*/ /*@out@*/ hCNT_t c)
+	/*@modifies *t, *p, *c @*/;
+
+/**
+ * Prototype for headerAddEntry() vector.
+ *
+ * Duplicate tags are okay, but only defined for iteration (with the
+ * exceptions noted below). While you are allowed to add i18n string
+ * arrays through this function, you probably don't mean to. See
+ * headerAddI18NString() instead.
+ *
+ * @param h             header
+ * @param tag           tag
+ * @param type          tag value data type
+ * @param p             tag value(s)
+ * @param c             number of values
+ * @return              1 on success, 0 on failure
+ */
+typedef int (*HAE_t) (Header h, rpmTag tag, rpmTagType type,
+			const void * p, int_32 c)
+	/*@modifies h @*/;
+
+/**
+ * Prototype for headerModifyEntry() vector.
+ * If there are multiple entries with this tag, the first one gets replaced.
+ *
+ * @param h		header
+ * @param tag		tag
+ * @param type		tag value data type
+ * @param p		tag value(s)
+ * @param c		number of values
+ * @return		1 on success, 0 on failure
+ */
+typedef int (*HME_t) (Header h, rpmTag tag, rpmTagType type,
+			const void * p, int_32 c)
+	/*@modifies h @*/;
+
+/**
+ * Prototype for headerRemoveEntry() vector.
+ * Delete tag in header.
+ * Removes all entries of type tag from the header, returns 1 if none were
+ * found.
+ *
+ * @param h		header
+ * @param tag		tag
+ * @return		0 on success, 1 on failure (INCONSISTENT)
+ */
+typedef int (*HRE_t) (Header h, int_32 tag)
+	/*@modifies h @*/;
 
 /** \ingroup header
  * Create new (empty) header instance.
