@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - jbj: reqprov.c: use headerGetExtension everywhere.
     - jbj: parsePreamble.c: use headerGetExtension everywhere.
     - jbj: pack.c: use headerGetExtension everywhere.
     - jbj: files.c: fix: append to pkg->fileList.

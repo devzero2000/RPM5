@@ -14,10 +14,13 @@ int addReqProv(/*@unused@*/ Spec spec, Header h, /*@unused@*/ rpmTag tagN,
 		const char * N, const char * EVR, rpmsenseFlags Flags,
 		int index)
 {
-    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
-    HFD_t hfd = headerFreeData;
+    HGE_t hge = (HGE_t)headerGetExtension;
+    int_32 he_t = 0;
+    hRET_t he_p = { .ptr = NULL };
+    int_32 he_c = 0;
+    HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
+    HE_t he = &he_s;
     const char ** names;
-    rpmTagType dnt;
     rpmTag nametag = 0;
     rpmTag versiontag = 0;
     rpmTag flagtag = 0;
@@ -60,19 +63,29 @@ int addReqProv(/*@unused@*/ Spec spec, Header h, /*@unused@*/ rpmTag tagN,
     /*@=branchstate@*/
     
     /* Check for duplicate dependencies. */
-    if (hge(h, nametag, &dnt, &names, &len)) {
+    he->tag = nametag;
+    xx = hge(h, he->tag, he->t, he->p, he->c);
+    names = he_p.argv;
+    len = he_c;
+    if (xx) {
 	const char ** versions = NULL;
-	rpmTagType dvt = RPM_STRING_ARRAY_TYPE;
-	int *flags = NULL;
-	int *indexes = NULL;
+	int_32 *flags = NULL;
+	int_32 *indexes = NULL;
 	int duplicate = 0;
 
 	if (flagtag) {
-	    xx = hge(h, versiontag, &dvt, &versions, NULL);
-	    xx = hge(h, flagtag, NULL, &flags, NULL);
+	    he->tag = versiontag;
+	    xx = hge(h, he->tag, he->t, he->p, he->c);
+	    versions = he_p.argv;
+	    he->tag = flagtag;
+	    xx = hge(h, he->tag, he->t, he->p, he->c);
+	    flags = he_p.i32p;
 	}
-	if (indextag)
-	    xx = hge(h, indextag, NULL, &indexes, NULL);
+	if (indextag) {
+	    he->tag = indextag;
+	    xx = hge(h, he->tag, he->t, he->p, he->c);
+	    indexes = he_p.i32p;
+	}
 
 /*@-boundsread@*/
 	while (len > 0) {
@@ -91,8 +104,10 @@ int addReqProv(/*@unused@*/ Spec spec, Header h, /*@unused@*/ rpmTag tagN,
 	    break;
 	}
 /*@=boundsread@*/
-	names = hfd(names, dnt);
-	versions = hfd(versions, dvt);
+	names = _free(names);
+	versions = _free(versions);
+	flags = _free(flags);
+	indexes = _free(indexes);
 	if (duplicate)
 	    return 0;
     }
