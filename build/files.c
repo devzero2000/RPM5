@@ -270,24 +270,31 @@ static void timeCheck(int tc, Header h)
 	/*@globals internalState @*/
 	/*@modifies internalState @*/
 {
-    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
-    HFD_t hfd = headerFreeData;
-    int * mtime;
-    const char ** files;
-    rpmTagType fnt;
-    int count, x;
-    time_t currentTime = time(NULL);
+    HGE_t hge = (HGE_t)headerGetExtension;
+    int_32 he_t = 0;
+    hRET_t he_p = { .ptr = NULL };
+    int_32 he_c = 0;
+    HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
+    HE_t he = &he_s;
+    int_32 currentTime = time(NULL);
+    int_32 * mtime;
+    int xx;
+    int i;
 
-    x = hge(h, RPMTAG_OLDFILENAMES, &fnt, &files, &count);
-    x = hge(h, RPMTAG_FILEMTIMES, NULL, &mtime, NULL);
+    he->tag = RPMTAG_FILEMTIMES;
+    xx = hge(h, he->tag, he->t, he->p, he->c);
+    mtime = he_p.i32p;
+    he->tag = RPMTAG_OLDFILENAMES;
+    xx = hge(h, he->tag, he->t, he->p, he->c);
     
-/*@-boundsread@*/
-    for (x = 0; x < count; x++) {
-	if ((currentTime - mtime[x]) > tc)
-	    rpmlog(RPMLOG_WARNING, _("TIMECHECK failure: %s\n"), files[x]);
+    for (i = 0; i < he_c; i++) {
+	xx = currentTime - mtime[i];
+	if (xx < 0) xx = -xx;
+	if (xx > tc)
+	    rpmlog(RPMLOG_WARNING, _("TIMECHECK failure: %s\n"), he_p.argv[i]);
     }
-    files = hfd(files, fnt);
-/*@=boundsread@*/
+    he_p.ptr = _free(he_p.ptr);
+    mtime = _free(mtime);
 }
 
 /**
@@ -1162,19 +1169,23 @@ static int dncmp(const void * a, const void * b)
 static void compressFilelist(Header h)
 	/*@modifies h @*/
 {
-    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
+    HGE_t hge = (HGE_t)headerGetExtension;
+    int_32 he_t = 0;
+    hRET_t he_p = { .ptr = NULL };
+    int_32 he_c = 0;
+    HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
+    HE_t he = &he_s;
     HAE_t hae = (HAE_t)headerAddEntry;
     HRE_t hre = (HRE_t)headerRemoveEntry;
-    HFD_t hfd = headerFreeData;
-    char ** fileNames;
+    const char ** fileNames;
     const char * fn;
     const char ** dirNames;
     const char ** baseNames;
     int_32 * dirIndexes;
-    rpmTagType fnt;
     int count;
-    int i, xx;
     int dirIndex = -1;
+    int xx;
+    int i;
 
     /*
      * This assumes the file list is already sorted, and begins with a
@@ -1187,10 +1198,12 @@ static void compressFilelist(Header h)
 	return;		/* Already converted. */
     }
 
-    if (!hge(h, RPMTAG_OLDFILENAMES, &fnt, &fileNames, &count))
+    he->tag = RPMTAG_OLDFILENAMES;
+    xx = hge(h, he->tag, he->t, he->p, he->c);
+    fileNames = he_p.argv;
+    count = he_c;
+    if (!xx || fileNames == NULL || count <= 0)
 	return;		/* no file list */
-    if (fileNames == NULL || count <= 0)
-	return;
 
     dirNames = alloca(sizeof(*dirNames) * count);	/* worst case */
     baseNames = alloca(sizeof(*dirNames) * count);
@@ -1248,7 +1261,7 @@ exit:
 			dirNames, dirIndex + 1);
     }
 
-    fileNames = hfd(fileNames, fnt);
+    fileNames = _free(fileNames);
 
     xx = hre(h, RPMTAG_OLDFILENAMES);
 }
@@ -2141,7 +2154,12 @@ static int processPackageFiles(Spec spec, Package pkg,
 		pkg->cpioList, pkg->fileList, pkg->specialDoc, pkg->header,
 		rpmGlobalMacroContext, fileSystem, internalState @*/
 {
-    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
+    HGE_t hge = (HGE_t)headerGetExtension;
+    int_32 he_t = 0;
+    hRET_t he_p = { .ptr = NULL };
+    int_32 he_c = 0;
+    HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
+    HE_t he = &he_s;
     struct FileList_s fl;
     char *s, **files, **fp;
     const char *fileName;
@@ -2149,14 +2167,15 @@ static int processPackageFiles(Spec spec, Package pkg,
     struct AttrRec_s arbuf;
     AttrRec specialDocAttrRec = &arbuf;
     char *specialDoc = NULL;
+    int xx;
 
     nullAttrRec(specialDocAttrRec);
     pkg->cpioList = NULL;
 
     if (pkg->fileFile) {
 	char *saveptr;
-	char *filesFiles=strdup(pkg->fileFile);
-	char *token=strtok_r(filesFiles, ",", &saveptr);
+	char *filesFiles = xstrdup(pkg->fileFile);
+	char *token = strtok_r(filesFiles, ",", &saveptr);
 	do {
 	    const char *ffn;
 	    FILE * f;
@@ -2190,12 +2209,12 @@ static int processPackageFiles(Spec spec, Package pkg,
 			rpmlog(RPMLOG_ERR, _("line: %s\n"), buf);
 			return RPMRC_FAIL;
 	    	    }
-	    	    appendStringBuf(token, buf);
+	    	    appendStringBuf(pkg->fileList, buf);
 		}
 	    }
 	    (void) Fclose(fd);
 	} while((token = strtok_r(NULL, ",", &saveptr)) != NULL);
-	free(filesFiles);
+	filesFiles = _free(filesFiles);
     }
     
     /* Init the file list structure */
@@ -2203,10 +2222,9 @@ static int processPackageFiles(Spec spec, Package pkg,
 
     fl.buildRootURL = rpmGenPath(spec->rootURL, "%{?buildroot}", NULL);
 
-    if (hge(pkg->header, RPMTAG_DEFAULTPREFIX, NULL, &fl.prefix, NULL))
-	fl.prefix = xstrdup(fl.prefix);
-    else
-	fl.prefix = NULL;
+    he->tag = RPMTAG_DEFAULTPREFIX;
+    xx = hge(pkg->header, he->tag, he->t, he->p, he->c);
+    fl.prefix = he_p.str;
 
     fl.fileCount = 0;
     fl.totalFileSize = 0;

@@ -1,4 +1,6 @@
 4.5 -> 5.0:
+    - jbj: files.c: fix: append to pkg->fileList.
+    - jbj: files.c: use headerGetExtension everywhere.
     - jbj: transaction.c: eliminate hge warning.
     - jbj: rpmds.c: eliminate hge warning.
     - jbj: psm.c: eliminate a warning, simplify hge usage.
