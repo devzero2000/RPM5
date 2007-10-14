@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - jbj: transaction.c: eliminate hge warning.
     - jbj: rpmds.c: eliminate hge warning.
     - jbj: psm.c: eliminate a warning, simplify hge usage.
     - jbj: package.c: use headerGetExtension everywhere (fix double free).

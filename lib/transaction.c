@@ -250,9 +250,14 @@ static int handleRmvdInstalledFiles(const rpmts ts, rpmfi fi,
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, fi, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
-    HGE_t hge = fi->hge;
+    HGE_t hge = (HGE_t)headerGetExtension;
+    int_32 he_t = 0;
+    hRET_t he_p = { .ptr = NULL };
+    int_32 he_c = 0;
+    HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
+    HE_t he = &he_s;
     Header h;
-    const char * otherStates;
+    const unsigned char * otherStates;
     int i, xx;
 
     rpmdbMatchIterator mi;
@@ -265,7 +270,9 @@ static int handleRmvdInstalledFiles(const rpmts ts, rpmfi fi,
 	return 1;
     }
 
-    xx = hge(h, RPMTAG_FILESTATES, NULL, &otherStates, NULL);
+    he->tag = RPMTAG_FILESTATES;
+    xx = hge(h, he->tag, he->t, he->p, he->c);
+    otherStates = he_p.ptr;
 
     /* XXX there's an obscure segfault here w/o NULL check ... */
     if (otherStates != NULL)
@@ -279,7 +286,7 @@ static int handleRmvdInstalledFiles(const rpmts ts, rpmfi fi,
 
 	fi->actions[fileNum] = FA_SKIP;
     }
-
+    he_p.ptr = _free(he_p.ptr);
     mi = rpmdbFreeIterator(mi);
 
     return 0;
