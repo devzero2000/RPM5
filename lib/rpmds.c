@@ -3716,9 +3716,15 @@ exit:
 
 int rpmdsNVRMatchesDep(const Header h, const rpmds req, int nopromote)
 {
-    HGE_t hge = (HGE_t)headerGetEntry;
+    HGE_t hge = (HGE_t)headerGetExtension;
+    int_32 he_t = 0;
+    hRET_t he_p = { .ptr = NULL };
+    int_32 he_c = 0;
+    HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
+    HE_t he = &he_s;
     const char * pkgN, * V, * R;
-    int_32 * epoch;
+    int_32 E;
+    int gotE = 0;
     const char * pkgEVR;
     char * t;
     int_32 reqFlags = req->ns.Flags;
@@ -3739,14 +3745,18 @@ assert((rpmdsFlags(req) & RPMSENSE_SENSEMASK) == req->ns.Flags);
 /*@-mods@*/
     (void) headerNEVRA(h, &pkgN, NULL, &V, &R, NULL);
 /*@=mods@*/
+    he->tag = RPMTAG_EPOCH;
+    gotE = hge(h, he->tag, he->t, he->p, he->c);
+    E = (he_p.i32p ? *he_p.i32p : 0);
+    he_p.ptr = _free(he_p.ptr);
 
     nb = 21 + 1 + 1;
     if (V) nb += strlen(V);
     if (R) nb += strlen(R);
     pkgEVR = t = alloca(nb);
     *t = '\0';
-    if (hge(h, RPMTAG_EPOCH, NULL, &epoch, NULL)) {
-	sprintf(t, "%d:", *epoch);
+    if (gotE) {
+	sprintf(t, "%d:", E);
 	t += strlen(t);
     }
     (void) stpcpy( stpcpy( stpcpy(t, V) , "-") , R);
