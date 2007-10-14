@@ -973,10 +973,7 @@ static rpmRC runInstScript(rpmpsm psm)
     HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
     HE_t he = &he_s;
     rpmfi fi = psm->fi;
-    void ** progArgv = NULL;
-    int progArgc;
     const char * argv0 = NULL;
-    const char ** argv;
     const char * script;
     rpmRC rc = RPMRC_OK;
     int xx;
@@ -985,30 +982,34 @@ assert(fi->h != NULL);
     he->tag = psm->scriptTag;
     xx = hge(fi->h, he->tag, he->t, he->p, he->c);
     script = he_p.str;
+    if (script == NULL)
+	goto exit;
     he->tag = psm->progTag;
     xx = hge(fi->h, he->tag, he->t, he->p, he->c);
-    progArgv = he_p.argv;
-    progArgc = he_c;
-    if (progArgv == NULL && script == NULL)
+    if (he_p.ptr == NULL)
 	goto exit;
 
-    if (progArgv && he_t == RPM_STRING_TYPE) {
-	argv = alloca(sizeof(*argv));
-	*argv = (const char *) progArgv;
-    } else {
-	argv = (const char **) progArgv;
+    /* Coerce strings into header argv return. */
+    if (he_t == RPM_STRING_TYPE) {
+	const char * s = he_p.str;
+	char * t;
+	he_p.argv = xmalloc(sizeof(*he_p.argv)+strlen(s)+1);
+	he_p.argv[0] = t = (char *) &he_p.argv[1];
+	t = stpcpy(t, s);
+	*t = '\0';
+	s = _free(s);
     }
 
-    if (argv[0][0] == '%')
-	argv[0] = argv0 = rpmExpand(argv[0], NULL);
+    /* Expand "%script -p %%{interpreter}" macros. */
+    if (he_p.argv[0][0] == '%')
+	he_p.argv[0] = argv0 = rpmExpand(he_p.argv[0], NULL);
 
-    if (fi->h != NULL)	/* XXX can't happen */
-    rc = runScript(psm, fi->h, tag2sln(psm->scriptTag), progArgc, argv,
+    rc = runScript(psm, fi->h, tag2sln(psm->scriptTag), he_c, he_p.argv,
 		script, psm->scriptArg, -1);
 
 exit:
     argv0 = _free(argv0);
-    progArgv = _free(progArgv);
+    he_p.ptr = _free(he_p.ptr);
     script = _free(script);
     return rc;
 }
