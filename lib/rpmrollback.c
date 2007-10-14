@@ -90,29 +90,35 @@ IDTX IDTXsort(IDTX idtx)
 
 IDTX IDTXload(rpmts ts, rpmTag tag, uint_32 rbtid)
 {
+    HGE_t hge = (HGE_t)headerGetExtension;
+    int_32 he_t = 0;
+    hRET_t he_p = { .ptr = NULL };
+    int_32 he_c = 0;
+    HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
+    HE_t he = &he_s;
     IDTX idtx = NULL;
     rpmdbMatchIterator mi;
-    HGE_t hge = (HGE_t) headerGetEntry;
     Header h;
+    int_32 tid;
+    int xx;
 
     mi = rpmtsInitIterator(ts, tag, NULL, 0);
 #ifdef	NOTYET
     (void) rpmdbSetIteratorRE(mi, RPMTAG_NAME, RPMMIRE_DEFAULT, '!gpg-pubkey');
 #endif
     while ((h = rpmdbNextIterator(mi)) != NULL) {
-	rpmTagType type = RPM_NULL_TYPE;
-	int_32 count = 0;
-	int_32 * tidp;
-
-	tidp = NULL;
-	if (!hge(h, tag, &type, &tidp, &count) || tidp == NULL)
+	he->tag = tag;
+	xx = hge(h, he->tag, he->t, he->p, he->c);
+	if (!xx || he_p.i32p == NULL)
 	    continue;
+	tid = (he_p.i32p ? *he_p.i32p : 0);
+	he_p.ptr = _free(he_p.ptr);
 
-	if (type == RPM_INT32_TYPE && (*tidp == 0 || *tidp == -1))
+	if (tid == 0 || tid == -1)
 	    continue;
 
 	/* Don't bother with headers installed prior to the rollback goal. */
-	if (*tidp < rbtid)
+	if (tid < rbtid)
 	    continue;
 
 	idtx = IDTXgrow(idtx, 1);
@@ -127,7 +133,7 @@ IDTX IDTXload(rpmts ts, rpmTag tag, uint_32 rbtid)
 	    idt->h = headerLink(h);
 	    idt->key = NULL;
 	    idt->instance = rpmdbGetIteratorOffset(mi);
-	    idt->val.u32 = *tidp;
+	    idt->val.u32 = tid;
 	}
 	idtx->nidt++;
     }
@@ -138,10 +144,15 @@ IDTX IDTXload(rpmts ts, rpmTag tag, uint_32 rbtid)
 
 IDTX IDTXglob(rpmts ts, const char * globstr, rpmTag tag, uint_32 rbtid)
 {
-    HGE_t hge = (HGE_t) headerGetEntry;		/* XXX MinMem? <shrug> */
+    HGE_t hge = (HGE_t)headerGetExtension;
+    int_32 he_t = 0;
+    hRET_t he_p = { .ptr = NULL };
+    int_32 he_c = 0;
+    HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
+    HE_t he = &he_s;
     IDTX idtx = NULL;
     Header h;
-    int_32 * tidp;
+    int_32 tid;
     FD_t fd;
     const char ** av = NULL;
     const char * fn;
@@ -157,8 +168,6 @@ IDTX IDTXglob(rpmts ts, const char * globstr, rpmTag tag, uint_32 rbtid)
 
     if (xx == 0)
     for (i = 0; i < ac; i++) {
-	rpmTagType type;
-	int_32 count;
 	int isSource;
 
 	fd = Fopen(av[i], "r.fdio");
@@ -190,12 +199,15 @@ IDTX IDTXglob(rpmts ts, const char * globstr, rpmTag tag, uint_32 rbtid)
 assert(origin != NULL);
 assert(!strcmp(av[i], origin));
 }
-	tidp = NULL;
-	if (!hge(h, tag, &type, &tidp, &count) || tidp == NULL)
+	he->tag = tag;
+	xx = hge(h, he->tag, he->t, he->p, he->c);
+	if (!xx || he_p.i32p == NULL)
 	    goto bottom;
+	tid = (he_p.i32p ? *he_p.i32p : 0);
+	he_p.ptr = _free(he_p.ptr);
 
 	/* Don't bother with headers installed prior to the rollback goal. */
-	if (*tidp < rbtid)
+	if (tid < rbtid)
 	    goto bottom;
 
 	idtx = IDTXgrow(idtx, 1);
@@ -209,7 +221,7 @@ assert(!strcmp(av[i], origin));
 	    idt->key = av[i];
 	    av[i] = NULL;
 	    idt->instance = 0;
-	    idt->val.u32 = *tidp;
+	    idt->val.u32 = tid;
 	}
 	idtx->nidt++;
 bottom:
@@ -282,6 +294,12 @@ static int findErases(rpmts ts, /*@null@*/ rpmte p, unsigned thistid,
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, p, ip, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
+    HGE_t hge = (HGE_t)headerGetExtension;
+    int_32 he_t = 0;
+    hRET_t he_p = { .ptr = NULL };
+    int_32 he_c = 0;
+    HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
+    HE_t he = &he_s;
     int rc = 0;
     int xx;
 
@@ -294,24 +312,31 @@ static int findErases(rpmts ts, /*@null@*/ rpmte p, unsigned thistid,
 	    goto bottom;
 
 	{
-	    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
 	    const char ** flinkPkgid = NULL;
 	    const char ** flinkHdrid = NULL;
 	    const char ** flinkNEVRA = NULL;
-	    rpmTagType pt, ht, nt;
 	    int_32 pn, hn, nn;
 	    int bingo;
 
-	    xx = hge(ip->h, RPMTAG_BLINKPKGID, &pt, &flinkPkgid, &pn);
+	    he->tag = RPMTAG_BLINKPKGID;
+	    xx = hge(ip->h, he->tag, he->t, he->p, he->c);
+	    flinkPkgid = he_p.argv;
+	    pn = he_c;
 
 	    /* XXX Always erase packages at beginning of upgrade chain. */
 	    if (pn == 1 && flinkPkgid[0] != NULL && !strcmp(flinkPkgid[0], RPMTE_CHAIN_END)) {
-		flinkPkgid = headerFreeData(flinkPkgid, pt);
+		flinkPkgid = _free(flinkPkgid);
 		goto erase;
 	    }
 
-	    xx = hge(ip->h, RPMTAG_BLINKHDRID, &ht, &flinkHdrid, &hn);
-	    xx = hge(ip->h, RPMTAG_BLINKNEVRA, &nt, &flinkNEVRA, &nn);
+	    he->tag = RPMTAG_BLINKHDRID;
+	    xx = hge(ip->h, he->tag, he->t, he->p, he->c);
+	    flinkHdrid = he_p.argv;
+	    hn = he_c;
+	    he->tag = RPMTAG_BLINKNEVRA;
+	    xx = hge(ip->h, he->tag, he->t, he->p, he->c);
+	    flinkNEVRA = he_p.argv;
+	    nn = he_c;
 
 	    /*
 	     * Link data may be missing and can have multiple entries.
@@ -329,9 +354,9 @@ static int findErases(rpmts ts, /*@null@*/ rpmte p, unsigned thistid,
 	    if (!bingo)
 		bingo = cmpArgvStr(ts, "Pkgid", flinkPkgid, pn, (p ? p->pkgid : NULL));
 /*@=nullstate@*/
-	    flinkPkgid = headerFreeData(flinkPkgid, pt);
-	    flinkHdrid = headerFreeData(flinkHdrid, ht);
-	    flinkNEVRA = headerFreeData(flinkNEVRA, nt);
+	    flinkPkgid = _free(flinkPkgid);
+	    flinkHdrid = _free(flinkHdrid);
+	    flinkNEVRA = _free(flinkNEVRA);
 
 	    if (bingo < 0) {
 		rc = -1;

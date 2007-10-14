@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - jbj: rpmrollback.c: use headerGetExtension everywhere.
     - jbj: use (*hge), not headerGetExtension, everywhere.
     - jbj: psm.c: use headerGetExtension everywhere.
     - jbj: rpminstall.c: use headerGetExtension everywhere.
