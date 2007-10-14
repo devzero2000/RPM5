@@ -171,6 +171,12 @@ static int dncmp(const void * a, const void * b)
 static void expandFilelist(Header h)
         /*@modifies h @*/
 {
+    HGE_t hge = (HGE_t)headerGetExtension;
+    int_32 he_t = 0;
+    hRET_t he_p = { .ptr = NULL };
+    int_32 he_c = 0;
+    HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
+    HE_t he = &he_s;
     HAE_t hae = (HAE_t)headerAddEntry;
     HRE_t hre = (HRE_t)headerRemoveEntry;
     hRET_t fileNames = { .ptr = NULL };
@@ -179,12 +185,12 @@ static void expandFilelist(Header h)
 
     /*@-branchstate@*/
     if (!headerIsEntry(h, RPMTAG_OLDFILENAMES)) {
-	headerGetExtension(h, RPMTAG_FILEPATHS, NULL, &fileNames, &count);
-	if (fileNames.ptr == NULL || count <= 0)
+	he->tag = RPMTAG_FILEPATHS;
+	xx = hge(h, he->tag, he->t, he->p, he->c);
+	if (he_p.ptr == NULL || he_c <= 0)
 	    return;
-	xx = hae(h, RPMTAG_OLDFILENAMES, RPM_STRING_ARRAY_TYPE,
-			fileNames.ptr, count);
-	fileNames.ptr = _free(fileNames.ptr);
+	xx = hae(h, RPMTAG_OLDFILENAMES, he_t, he_p.ptr, he_c);
+	he_p.ptr = _free(he_p.ptr);
     }
     /*@=branchstate@*/
 
@@ -296,24 +302,30 @@ exit:
 static void mungeFilelist(Header h)
 	/*@*/
 {
-    hRET_t fileNames = { .ptr = NULL };
+    HGE_t hge = (HGE_t)headerGetExtension;
+    int_32 he_t = 0;
+    hRET_t he_p = { .ptr = NULL };
+    int_32 he_c = 0;
+    HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
+    HE_t he = &he_s;
     int count = 0;
+    int xx;
 
     if (!headerIsEntry (h, RPMTAG_BASENAMES)
 	|| !headerIsEntry (h, RPMTAG_DIRNAMES)
 	|| !headerIsEntry (h, RPMTAG_DIRINDEXES))
 	compressFilelist(h);
 
-    headerGetExtension(h, RPMTAG_FILEPATHS, NULL, &fileNames, &count);
+    he->tag = RPMTAG_FILEPATHS;
+    xx = hge(h, he->tag, he->t, he->p, he->c);
 
-    if (fileNames.ptr == NULL || count <= 0)
+    if (he_p.ptr == NULL || he_c <= 0)
 	return;
 
     /* XXX Legacy tag needs to go away. */
-    headerAddEntry(h, RPMTAG_OLDFILENAMES, RPM_STRING_ARRAY_TYPE,
-			fileNames.ptr, count);
+    headerAddEntry(h, RPMTAG_OLDFILENAMES, he_t, he_p.ptr, he_c);
 
-    fileNames.ptr = _free(fileNames.ptr);
+    he_p.ptr = _free(he_p.ptr);
 }
 
 /**
@@ -663,20 +675,26 @@ static int rpmHeaderGetEntry(Header h, int_32 tag, /*@out@*/ int_32 *type,
 		/*@out@*/ void **p, /*@out@*/ int_32 *c)
 	/*@modifies *type, *p, *c @*/
 {
+    HGE_t hge = (HGE_t)headerGetExtension;
+    int_32 he_t = 0;
+    hRET_t he_p = { .ptr = NULL };
+    int_32 he_c = 0;
+    HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
+    HE_t he = &he_s;
+    int xx;
+
     switch (tag) {
     case RPMTAG_OLDFILENAMES:
-    {	hRET_t fl = { .ptr = NULL };
-	int count;
-	int xx;
-	xx = headerGetExtension(h, RPMTAG_FILEPATHS, NULL, &fl, &count);
-	if (count > 0) {
-	    *p = fl.ptr;
-	    if (c)	*c = count;
-	    if (type)	*type = RPM_STRING_ARRAY_TYPE;
-	    return 1;
-	}
-	if (c)	*c = 0;
-	return 0;
+    {	
+	he->tag = RPMTAG_FILEPATHS;
+	xx = hge(h, he->tag, he->t, he->p, he->c);
+	if (p)
+	    *p = he_p.ptr;
+	else
+	    he_p.ptr = _free(he_p.ptr);
+	if (c)	*c = he_c;
+	if (type)	*type = he_t;
+	return (he_c > 0 ? 1 : 0);
     }	/*@notreached@*/ break;
 
     case RPMTAG_GROUP:

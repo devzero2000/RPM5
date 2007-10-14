@@ -2664,13 +2664,19 @@ int processBinaryFiles(Spec spec, int installSpecialDoc, int test)
 	/*@globals check_fileList @*/
 	/*@modifies check_fileList @*/
 {
+    HGE_t hge = (HGE_t)headerGetExtension;
+    int_32 he_t = 0;
+    hRET_t he_p = { .ptr = NULL };
+    int_32 he_c = 0;
+    HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
+    HE_t he = &he_s;
     Package pkg;
     int res = 0;
+    int xx;
     
     check_fileList = newStringBuf();
     
     for (pkg = spec->packages; pkg != NULL; pkg = pkg->next) {
-	const char *NVRA = NULL;
 	int rc;
 
 	if (pkg->fileList == NULL)
@@ -2678,9 +2684,10 @@ int processBinaryFiles(Spec spec, int installSpecialDoc, int test)
 
 	(void) headerMacrosLoad(pkg->header);
 
-	(void) headerGetExtension(pkg->header, RPMTAG_NVRA, NULL, &NVRA, NULL);
-	rpmlog(RPMLOG_NOTICE, _("Processing files: %s\n"), NVRA);
-	NVRA = _free(NVRA);
+	he->tag = RPMTAG_NVRA;
+	xx = hge(pkg->header, he->tag, he->t, he->p, he->c);
+	rpmlog(RPMLOG_NOTICE, _("Processing files: %s\n"), he_p.str);
+	he_p.ptr = _free(he_p.ptr);
 		   
 	if ((rc = processPackageFiles(spec, pkg, installSpecialDoc, test)))
 	    res = rc;

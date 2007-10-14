@@ -434,10 +434,17 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootURL,
 		int recursing, const char *passPhrase,
 		const char *cookie, int anyarch, int force, int verify)
 {
+    HGE_t hge = (HGE_t)headerGetExtension;
+    int_32 he_t = 0;
+    hRET_t he_p = { .ptr = NULL };
+    int_32 he_c = 0;
+    HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
+    HE_t he = &he_s;
     rpmParseState parsePart = PART_PREAMBLE;
     int initialPackage = 1;
     Package pkg;
     Spec spec;
+    int xx;
     
     /* Set up a new Spec structure with no packages. */
     spec = newSpec();
@@ -600,12 +607,11 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootURL,
 
     for (pkg = spec->packages; pkg != NULL; pkg = pkg->next) {
 	if (!headerIsEntry(pkg->header, RPMTAG_DESCRIPTION)) {
-	    const char * NVRA = NULL;
-	    (void) headerGetExtension(pkg->header, RPMTAG_NVRA,
-			NULL, &NVRA, NULL);
+	    he->tag = RPMTAG_NVRA;
+	    xx = hge(pkg->header, he->tag, he->t, he->p, he->c);
 	    rpmlog(RPMLOG_ERR, _("Package has no %%description: %s\n"),
-			NVRA);
-	    NVRA = _free(NVRA);
+			he_p.str);
+	    he_p.ptr = _free(he_p.ptr);
 	    spec = freeSpec(spec);
 	    return RPMRC_FAIL;
 	}

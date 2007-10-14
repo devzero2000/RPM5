@@ -837,11 +837,18 @@ static int_32 copyTags[] = {
 /*@-boundswrite@*/
 int packageBinaries(Spec spec)
 {
+    HGE_t hge = (HGE_t)headerGetExtension;
+    int_32 he_t = 0;
+    hRET_t he_p = { .ptr = NULL };
+    int_32 he_c = 0;
+    HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
+    HE_t he = &he_s;
     struct cpioSourceArchive_s csabuf;
     CSA_t csa = &csabuf;
     int rc;
     const char *errorString;
     Package pkg;
+    int xx;
 
     for (pkg = spec->packages; pkg != NULL; pkg = pkg->next) {
 	const char *fn;
@@ -884,12 +891,11 @@ int packageBinaries(Spec spec)
 			       rpmHeaderFormats, &errorString);
 	    binFormat = _free(binFormat);
 	    if (binRpm == NULL) {
-		const char *NVRA = NULL;
-		(void) headerGetExtension(pkg->header, RPMTAG_NVRA,
-			NULL, &NVRA, NULL);
+		he->tag = RPMTAG_NVRA;
+		xx = hge(pkg->header, he->tag, he->t, he->p, he->c);
 		rpmlog(RPMLOG_ERR, _("Could not generate output "
-		     "filename for package %s: %s\n"), NVRA, errorString);
-		NVRA = _free(NVRA);
+		     "filename for package %s: %s\n"), he_p.str, errorString);
+		he_p.ptr = _free(he_p.ptr);
 		return RPMRC_FAIL;
 	    }
 	    fn = rpmGetPath("%{_rpmdir}/", binRpm, NULL);
