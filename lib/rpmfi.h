@@ -110,11 +110,6 @@ struct rpmfi_s {
 /*@dependent@*/ /*@relnull@*/
     rpmte te;
 
-    HGE_t hge;			/*!< Vector to headerGetEntry() */
-    HAE_t hae;			/*!< Vector to headerAddEntry() */
-    HME_t hme;			/*!< Vector to headerModifyEntry() */
-    HRE_t hre;			/*!< Vector to headerRemoveEntry() */
-    HFD_t hfd;			/*!< Vector to headerFreeData() */
 /*-----------------------------*/
     uid_t uid;			/*!< File uid (default). */
     gid_t gid;			/*!< File gid (default). */

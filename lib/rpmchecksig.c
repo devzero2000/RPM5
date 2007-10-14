@@ -765,6 +765,12 @@ exit:
 int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 		const char * fn)
 {
+    HGE_t hge = (HGE_t)headerGetExtension;
+    int_32 he_t = 0;
+    hRET_t he_p = { .ptr = NULL };
+    int_32 he_c = 0;
+    HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
+    HE_t he = &he_s;
     int res2, res3;
     char result[1024];
     char buf[8192], * b;
@@ -859,9 +865,10 @@ assert(dig != NULL);
 	 || sigtag == RPMSIGTAG_PGP5
 #endif
 	) {
-	    xx = headerGetEntry(sigh, sigtag, &sigtype, (void **)&sig, &siglen);
-	    xx = pgpPrtPkts(sig, siglen, dig, 0);
-	    sig = headerFreeData(sig, sigtype);
+	    he->tag = sigtag;
+	    xx = hge(sigh, he->tag, he->t, he->p, he->c);
+	    xx = pgpPrtPkts(he_p.ptr, he_c, dig, 0);
+	    he_p.ptr = _free(he_p.ptr);
 #if defined(SUPPORT_RPMV3_VERIFY_RSA)
 	    /* XXX assume same hash_algo in header-only and header+payload */
 	    if ((headerIsEntry(sigh, RPMSIGTAG_PGP)

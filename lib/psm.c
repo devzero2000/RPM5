@@ -1604,7 +1604,7 @@ rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
     const rpmts ts = psm->ts;
     uint_32 tscolor = rpmtsColor(ts);
     rpmfi fi = psm->fi;
-    HAE_t hae = fi->hae;
+    HAE_t hae = (HAE_t) headerAddEntry;
     rpmRC rc = psm->rc;
     int saveerrno;
     int xx;

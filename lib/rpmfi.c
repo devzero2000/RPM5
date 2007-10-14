@@ -691,8 +691,8 @@ Header relocateFileList(const rpmts ts, rpmfi fi,
     int_32 he_c = 0;
     HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
     HE_t he = &he_s;
-    HAE_t hae = fi->hae;
-    HME_t hme = fi->hme;
+    HAE_t hae = (HAE_t) headerAddEntry;
+    HME_t hme = (HME_t) headerModifyEntry;
     static int _printed = 0;
     int allowBadRelocate = (rpmtsFilterFlags(ts) & RPMPROB_FILTER_FORCERELOCATE);
     rpmRelocation relocations = NULL;
@@ -1289,12 +1289,6 @@ assert(scareMem == 0);		/* XXX always allocate memory */
     fi->Type = Type;
     fi->i = -1;
     fi->tagN = tagN;
-
-    fi->hge = (HGE_t) headerGetEntry;
-    fi->hae = (HAE_t) headerAddEntry;
-    fi->hme = (HME_t) headerModifyEntry;
-    fi->hre = (HRE_t) headerRemoveEntry;
-    fi->hfd = headerFreeData;
 
     fi->h = NULL;
     fi->isSource =

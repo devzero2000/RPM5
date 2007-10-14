@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - jbj: lose the rpmfi hge/hae/hme/hre/hfd vectors.
     - jbj: yet more hge fixups.
     - jbj: reqprov.c: use headerGetExtension everywhere.
     - jbj: parsePreamble.c: use headerGetExtension everywhere.
