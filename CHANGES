@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - jbj: ditto for python/* too.
     - jbj: for now, revert to headerGetEntry where needed, avoid recursions.
     - jbj: drill HE_t down through the header extension tags.
     - jbj: drill rpmTagType everywhere.

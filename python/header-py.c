@@ -172,7 +172,7 @@ static void expandFilelist(Header h)
         /*@modifies h @*/
 {
     HGE_t hge = (HGE_t)headerGetExtension;
-    int_32 he_t = 0;
+    rpmTagType he_t = 0;
     hRET_t he_p = { .ptr = NULL };
     int_32 he_c = 0;
     HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
@@ -206,7 +206,7 @@ static void compressFilelist(Header h)
 	/*@modifies h @*/
 {
     HGE_t hge = (HGE_t)headerGetExtension;
-    int_32 he_t = 0;
+    rpmTagType he_t = 0;
     hRET_t he_p = { .ptr = NULL };
     int_32 he_c = 0;
     HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
@@ -308,7 +308,7 @@ static void mungeFilelist(Header h)
 	/*@*/
 {
     HGE_t hge = (HGE_t)headerGetExtension;
-    int_32 he_t = 0;
+    rpmTagType he_t = 0;
     hRET_t he_p = { .ptr = NULL };
     int_32 he_c = 0;
     HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
@@ -340,7 +340,7 @@ static void mungeFilelist(Header h)
 static void providePackageNVR(Header h)
 {
     HGE_t hge = (HGE_t)headerGetExtension;
-    int_32 he_t = 0;
+    rpmTagType he_t = 0;
     hRET_t he_p = { .ptr = NULL };
     int_32 he_c = 0;
     HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
@@ -447,7 +447,8 @@ static PyObject * hdrKeyList(hdrObject * s)
 {
     PyObject * list, *o;
     HeaderIterator hi;
-    int tag, type;
+    int_32 tag;
+    rpmTagType type;
 
     list = PyList_New(0);
 
@@ -697,7 +698,7 @@ static int rpmHeaderGetEntry(Header h, int_32 tag, /*@out@*/ int_32 *type,
 	/*@modifies *type, *p, *c @*/
 {
     HGE_t hge = (HGE_t)headerGetExtension;
-    int_32 he_t = 0;
+    rpmTagType he_t = 0;
     hRET_t he_p = { .ptr = NULL };
     int_32 he_c = 0;
     HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
@@ -753,8 +754,14 @@ static int rpmHeaderGetEntry(Header h, int_32 tag, /*@out@*/ int_32 *type,
 static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
 	/*@*/
 {
-    int type, count, i, tag = -1;
+    rpmTagType he_t = 0;
+    hRET_t he_p = { .ptr = NULL };
+    int_32 he_c = 0;
+    HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
+    HE_t he = &he_s;
+    int_32 tag = -1;
     void * data;
+    int i;
     PyObject * o, * metao;
     char ** stringArray;
     int forceArray = 0;
@@ -784,14 +791,16 @@ static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
 
     /* Retrieve data from extension or header. */
     if (ext) {
-        ext->u.tagFunction(s->h, &type, (const void **) &data, &count, &freeData);
+	he->p = (hRET_t *)&data;
+        ext->u.tagFunction(s->h, he);
+	freeData = he->freeData;
     } else {
         if (tag == -1) {
             PyErr_SetString(PyExc_KeyError, "unknown header tag");
             return NULL;
         }
         
-	if (!rpmHeaderGetEntry(s->h, tag, &type, &data, &count)) {
+	if (!rpmHeaderGetEntry(s->h, tag, &he_t, &data, &he_c)) {
 	    switch (tag) {
 	    case RPMTAG_EPOCH:
 	    case RPMTAG_NAME:
@@ -851,17 +860,17 @@ static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
         break;
     }
 
-    switch (type) {
+    switch (he_t) {
     case RPM_OPENPGP_TYPE:
     case RPM_ASN1_TYPE:
     case RPM_BIN_TYPE:
-	o = PyString_FromStringAndSize(data, count);
+	o = PyString_FromStringAndSize(data, he_c);
 	break;
 
     case RPM_INT64_TYPE:
-	if (count != 1 || forceArray) {
+	if (he_c != 1 || forceArray) {
 	    metao = PyList_New(0);
-	    for (i = 0; i < count; i++) {
+	    for (i = 0; i < he_c; i++) {
 		o = PyInt_FromLong(((long long *) data)[i]);
 		PyList_Append(metao, o);
 		Py_DECREF(o);
@@ -872,9 +881,9 @@ static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
 	}
 	break;
     case RPM_INT32_TYPE:
-	if (count != 1 || forceArray) {
+	if (he_c != 1 || forceArray) {
 	    metao = PyList_New(0);
-	    for (i = 0; i < count; i++) {
+	    for (i = 0; i < he_c; i++) {
 		o = PyInt_FromLong(((int *) data)[i]);
 		PyList_Append(metao, o);
 		Py_DECREF(o);
@@ -887,9 +896,9 @@ static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
 
     case RPM_CHAR_TYPE:
     case RPM_INT8_TYPE:
-	if (count != 1 || forceArray) {
+	if (he_c != 1 || forceArray) {
 	    metao = PyList_New(0);
-	    for (i = 0; i < count; i++) {
+	    for (i = 0; i < he_c; i++) {
 		o = PyInt_FromLong(((char *) data)[i]);
 		PyList_Append(metao, o);
 		Py_DECREF(o);
@@ -901,9 +910,9 @@ static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
 	break;
 
     case RPM_INT16_TYPE:
-	if (count != 1 || forceArray) {
+	if (he_c != 1 || forceArray) {
 	    metao = PyList_New(0);
-	    for (i = 0; i < count; i++) {
+	    for (i = 0; i < he_c; i++) {
 		o = PyInt_FromLong(((short *) data)[i]);
 		PyList_Append(metao, o);
 		Py_DECREF(o);
@@ -918,7 +927,7 @@ static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
 	stringArray = data;
 
 	metao = PyList_New(0);
-	for (i = 0; i < count; i++) {
+	for (i = 0; i < he_c; i++) {
 	    o = PyString_FromString(stringArray[i]);
 	    PyList_Append(metao, o);
 	    Py_DECREF(o);
@@ -928,11 +937,11 @@ static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
 	break;
 
     case RPM_STRING_TYPE:
-	if (count != 1 || forceArray) {
+	if (he_c != 1 || forceArray) {
 	    stringArray = data;
 
 	    metao = PyList_New(0);
-	    for (i=0; i < count; i++) {
+	    for (i=0; i < he_c; i++) {
 		o = PyString_FromString(stringArray[i]);
 		PyList_Append(metao, o);
 		Py_DECREF(o);
@@ -1180,7 +1189,9 @@ int rpmMergeHeaders(PyObject * list, FD_t fd, int matchTag)
     int_32 * oldMatch;
     hdrObject * hdr;
     int count = 0;
-    int type, c, tag;
+    int_32 tag;
+    rpmTagType type;
+    int_32 c;
     void * p;
 
     Py_BEGIN_ALLOW_THREADS
