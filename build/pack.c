@@ -173,14 +173,22 @@ static int addFileToTag(Spec spec, const char * file, Header h, int tag)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies h, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
-    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
+    HGE_t hge = (HGE_t)headerGetExtension;
+    int_32 he_t = 0;
+    hRET_t he_p = { .ptr = NULL };
+    int_32 he_c = 0;
+    HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
+    HE_t he = &he_s;
     StringBuf sb = newStringBuf();
-    char *s;
+    int xx;
 
-    if (hge(h, tag, NULL, &s, NULL)) {
-	appendLineStringBuf(sb, s);
+    he->tag = tag;
+    xx = hge(h, he->tag, he->t, he->p, he->c);
+    if (xx) {
+	appendLineStringBuf(sb, he_p.str);
 	(void) headerRemoveEntry(h, tag);
     }
+    he_p.ptr = _free(he_p.ptr);
 
     if ((sb = addFileToTagAux(spec, file, sb)) == NULL)
 	return 1;
@@ -431,45 +439,59 @@ static int rpmLeadVersion(void)
 
 void providePackageNVR(Header h)
 {
-    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
-    HFD_t hfd = headerFreeData;
-    const char *name, *version, *release;
-    int_32 * epoch;
+    HGE_t hge = (HGE_t)headerGetExtension;
+    int_32 he_t = 0;
+    hRET_t he_p = { .ptr = NULL };
+    int_32 he_c = 0;
+    HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
+    HE_t he = &he_s;
+    const char *N, *V, *R;
+    int_32 E;
+    int gotE;
     const char *pEVR;
     char *p;
     int_32 pFlags = RPMSENSE_EQUAL;
     const char ** provides = NULL;
     const char ** providesEVR = NULL;
-    rpmTagType pnt, pvt;
     int_32 * provideFlags = NULL;
     int providesCount;
     int i, xx;
     int bingo = 1;
 
-    /* Generate provides for this package name-version-release. */
-    xx = headerNEVRA(h, &name, NULL, &version, &release, NULL);
-    if (!(name && version && release))
+    /* Generate provides for this package N-V-R. */
+    xx = headerNEVRA(h, &N, NULL, &V, &R, NULL);
+    if (!(N && V && R))
 	return;
-    pEVR = p = alloca(21 + strlen(version) + 1 + strlen(release) + 1);
+    pEVR = p = alloca(21 + strlen(V) + 1 + strlen(R) + 1);
     *p = '\0';
-    if (hge(h, RPMTAG_EPOCH, NULL, &epoch, NULL)) {
-	sprintf(p, "%d:", *epoch);
-	while (*p != '\0')
-	    p++;
+    he->tag = RPMTAG_EPOCH;
+    gotE = hge(h, he->tag, he->t, he->p, he->c);
+    E = (he_p.i32p ? *he_p.i32p : 0);
+    he_p.ptr = _free(he_p.ptr);
+    if (gotE) {
+	sprintf(p, "%d:", E);
+	p += strlen(p);
     }
-    (void) stpcpy( stpcpy( stpcpy(p, version) , "-") , release);
+    (void) stpcpy( stpcpy( stpcpy(p, V) , "-") , R);
 
     /*
      * Rpm prior to 3.0.3 does not have versioned provides.
      * If no provides at all are available, we can just add.
      */
-    if (!hge(h, RPMTAG_PROVIDENAME, &pnt, &provides, &providesCount))
+    he->tag = RPMTAG_PROVIDENAME;
+    xx = hge(h, he->tag, he->t, he->p, he->c);
+    provides = he_p.argv;
+    providesCount = he_c;
+    if (!xx)
 	goto exit;
 
     /*
      * Otherwise, fill in entries on legacy packages.
      */
-    if (!hge(h, RPMTAG_PROVIDEVERSION, &pvt, &providesEVR, NULL)) {
+    he->tag = RPMTAG_PROVIDEVERSION;
+    xx = hge(h, he->tag, he->t, he->p, he->c);
+    providesEVR = he_p.argv;
+    if (!xx) {
 	for (i = 0; i < providesCount; i++) {
 	    char * vdummy = "";
 	    int_32 fdummy = RPMSENSE_ANY;
@@ -481,7 +503,9 @@ void providePackageNVR(Header h)
 	goto exit;
     }
 
-    xx = hge(h, RPMTAG_PROVIDEFLAGS, NULL, &provideFlags, NULL);
+    he->tag = RPMTAG_PROVIDEFLAGS;
+    xx = hge(h, he->tag, he->t, he->p, he->c);
+    provideFlags = he_p.i32p;
 
     /*@-nullderef@*/	/* LCL: providesEVR is not NULL */
     if (provides && providesEVR && provideFlags)
@@ -489,7 +513,7 @@ void providePackageNVR(Header h)
         if (!(provides[i] && providesEVR[i]))
             continue;
 	if (!(provideFlags[i] == RPMSENSE_EQUAL &&
-	    !strcmp(name, provides[i]) && !strcmp(pEVR, providesEVR[i])))
+	    !strcmp(N, provides[i]) && !strcmp(pEVR, providesEVR[i])))
 	    continue;
 	bingo = 0;
 	break;
@@ -497,12 +521,13 @@ void providePackageNVR(Header h)
     /*@=nullderef@*/
 
 exit:
-    provides = hfd(provides, pnt);
-    providesEVR = hfd(providesEVR, pvt);
+    provides = _free(provides);
+    providesEVR = _free(providesEVR);
+    provideFlags = _free(provideFlags);
 
     if (bingo) {
 	xx = headerAddOrAppendEntry(h, RPMTAG_PROVIDENAME, RPM_STRING_ARRAY_TYPE,
-		&name, 1);
+		&N, 1);
 	xx = headerAddOrAppendEntry(h, RPMTAG_PROVIDEFLAGS, RPM_INT32_TYPE,
 		&pFlags, 1);
 	xx = headerAddOrAppendEntry(h, RPMTAG_PROVIDEVERSION, RPM_STRING_ARRAY_TYPE,
