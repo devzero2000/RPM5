@@ -129,7 +129,7 @@ struct sprintfTag_s {
  */
 typedef /*@abstract@*/ struct rpmec_s * rpmec;
 struct rpmec_s {
-    int_32 type;
+    rpmTagType type;
     int_32 count;
     int avail;
     int freeit;

@@ -64,7 +64,8 @@ int headerVerifyInfo(int il, int dl, const void * pev, void * iv, int negate)
 char ** headerGetLangs(Header h)
 {
     char **s, *e, **table;
-    int i, type, count;
+    rpmTagType type;
+    int i, count;
 
     if (!headerGetRawEntry(h, HEADER_I18NTABLE, &type, &s, &count))
 	return NULL;

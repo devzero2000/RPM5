@@ -56,7 +56,7 @@ extern int _nosigh;
 int rpmVersionCompare(Header first, Header second)
 {
     HGE_t hge = (HGE_t)headerGetExtension;
-    int_32 he_t = 0;
+    rpmTagType he_t = 0;
     hRET_t he_p = { .ptr = NULL };
     int_32 he_c = 0;
     HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
@@ -189,7 +189,7 @@ rpmRC rpmInstallSourcePackage(rpmts ts, void * _fd,
 		const char ** specFilePtr, const char ** cookie)
 {
     HGE_t hge = (HGE_t)headerGetExtension;
-    int_32 he_t = 0;
+    rpmTagType he_t = 0;
     hRET_t he_p = { .ptr = NULL };
     int_32 he_c = 0;
     HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
@@ -499,7 +499,7 @@ static rpmRC runLuaScript(rpmpsm psm, Header h, const char *sln,
 	/*@modifies psm, fileSystem, internalState @*/
 {
     HGE_t hge = (HGE_t)headerGetExtension;
-    int_32 he_t = 0;
+    rpmTagType he_t = 0;
     hRET_t he_p = { .ptr = NULL };
     int_32 he_c = 0;
     HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
@@ -636,7 +636,7 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
 		fileSystem, internalState @*/
 {
     HGE_t hge = (HGE_t)headerGetExtension;
-    int_32 he_t = 0;
+    rpmTagType he_t = 0;
     hRET_t he_p = { .ptr = NULL };
     int_32 he_c = 0;
     HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
@@ -967,7 +967,7 @@ static rpmRC runInstScript(rpmpsm psm)
 	/*@modifies psm, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     HGE_t hge = (HGE_t)headerGetExtension;
-    int_32 he_t = 0;
+    rpmTagType he_t = 0;
     hRET_t he_p = { .ptr = NULL };
     int_32 he_c = 0;
     HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
@@ -1033,7 +1033,7 @@ static rpmRC handleOneTrigger(const rpmpsm psm,
 {
     int scareMem = 0;
     HGE_t hge = (HGE_t)headerGetExtension;
-    int_32 he_t = 0;
+    rpmTagType he_t = 0;
     hRET_t he_p = { .ptr = NULL };
     int_32 he_c = 0;
     HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
@@ -1187,7 +1187,7 @@ static rpmRC runImmedTriggers(rpmpsm psm)
 		fileSystem, internalState @*/
 {
     HGE_t hge = (HGE_t)headerGetExtension;
-    int_32 he_t = 0;
+    rpmTagType he_t = 0;
     hRET_t he_p = { .ptr = NULL };
     int_32 he_c = 0;
     HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
@@ -1375,7 +1375,7 @@ static uint_32 hLoadTID(Header h, int_32 tag)
 	/*@*/
 {
     HGE_t hge = (HGE_t)headerGetExtension;
-    int_32 he_t = 0;
+    rpmTagType he_t = 0;
     hRET_t he_p = { .ptr = NULL };
     int_32 he_c = 0;
     HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
@@ -1401,7 +1401,7 @@ static int hCopyTag(Header sh, Header th, int_32 tag)
 	/*@modifies th @*/
 {
     HGE_t hge = (HGE_t)headerGetExtension;
-    int_32 he_t = 0;
+    rpmTagType he_t = 0;
     hRET_t he_p = { .ptr = NULL };
     int_32 he_c = 0;
     HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
@@ -1596,7 +1596,7 @@ static int rpmpsmNext(rpmpsm psm, pkgStage nstage)
 rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 {
     HGE_t hge = (HGE_t)headerGetExtension;
-    int_32 he_t = 0;
+    rpmTagType he_t = 0;
     hRET_t he_p = { .ptr = NULL };
     int_32 he_c = 0;
     HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
@@ -1854,7 +1854,9 @@ psm->te->h = headerLink(fi->h);
 		    uh = he_p.ptr;
 		    if (xx && uh != NULL) {
 			HeaderIterator hi;
-			int_32 tag, type, count;
+			int_32 tag;
+			rpmTagType type;
+			int_32 count;
 			hPTR_t ptr;
 			Header oh;
 

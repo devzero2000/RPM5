@@ -1714,7 +1714,7 @@ headerFindI18NString(Header h, indexEntry entry)
  * @return		1 on success, 0 on not found
  */
 static int intGetEntry(Header h, int_32 tag,
-		/*@null@*/ /*@out@*/ hTAG_t type,
+		/*@null@*/ /*@out@*/ hTYP_t type,
 		/*@null@*/ /*@out@*/ hPTR_t * p,
 		/*@null@*/ /*@out@*/ hCNT_t c,
 		int minMem)
@@ -1820,7 +1820,7 @@ int headerGetExtension(Header h, int_32 tag,
     const char * name = tagName(tag);
     headerSprintfExtension exts = (headerSprintfExtension)headerCompoundFormats;
     headerSprintfExtension ext;
-    int_32 he_t = 0;
+    rpmTagType he_t = 0;
     hRET_t he_p = { .ptr = NULL };
     int_32 he_c = 0;
     HE_t he = alloca(sizeof(*he));
@@ -1849,7 +1849,7 @@ int headerGetExtension(Header h, int_32 tag,
     }
 
     if (ext && ext->name != NULL && ext->type == HEADER_EXT_TAG)
-	rc = ext->u.tagFunction(h, he->t, (hPTR_t *)he->p, he->c, &he->freeData);
+	rc = ext->u.tagFunction(h, he);
     else
 	rc = intGetEntry(h, he->tag, he->t, (hPTR_t *)he->p, he->c, 0);
 
@@ -1967,7 +1967,7 @@ int headerGetEntryMinMemory(Header h, int_32 tag,
     return rc;
 }
 
-int headerGetRawEntry(Header h, int_32 tag, int_32 * type, void * p, int_32 * c)
+int headerGetRawEntry(Header h, int_32 tag, rpmTagType * type, void * p, int_32 * c)
 {
     indexEntry entry;
     int rc;
@@ -2537,7 +2537,9 @@ Header headerCopy(Header h)
 {
     Header nh = headerNew();
     HeaderIterator hi;
-    int_32 tag, type, count;
+    int_32 tag;
+    rpmTagType type;
+    int_32 count;
     hPTR_t ptr;
    
     for (hi = headerInitIterator(h);
@@ -2622,7 +2624,7 @@ static sprintfToken hsaNext(/*@returned@*/ headerSprintfArgs hsa)
 	    hsa->i++;
 	} else {
 	    int_32 tagno;
-	    int_32 type;
+	    rpmTagType type;
 	    int_32 count;
 
 	    if (!headerNextIterator(hsa->hi, &tagno, &type, NULL, &count))
@@ -3160,8 +3162,16 @@ static int getExtension(headerSprintfArgs hsa, headerTagTagFunction fn,
 		/\ maxSet(countptr) >= 0 @*/
 {
     if (!ec->avail) {
-	if (fn(hsa->h, &ec->type, &ec->data, &ec->count, &ec->freeit))
+	HE_s he_s;
+	HE_t he = &he_s;
+	he->tag = 0;
+	he->t = &ec->type;
+	(*he->p).ptr = &ec->data;
+	he->c = &ec->count;
+	he->freeData = 0;
+	if (fn(hsa->h, he))
 	    return 1;
+	ec->freeit = he->freeData;
 	ec->avail = 1;
     }
 
@@ -3187,8 +3197,9 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
     size_t need = 0;
     char * t, * te;
     char buf[20];
-    int_32 count, type;
+    rpmTagType type;
     hPTR_t data;
+    int_32 count;
     unsigned int intVal;
     uint_64 llVal;
     const char ** strarray;
@@ -3398,7 +3409,7 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
     char * t, * te;
     int i, j;
     int numElements;
-    int_32 type;
+    rpmTagType type;
     int_32 count;
     sprintfToken spft;
     int condNumFormats;
@@ -3953,7 +3964,7 @@ void headerCopyTags(Header headerFrom, Header headerTo, hTAG_t tagstocopy)
 
     for (p = tagstocopy; *p != 0; p++) {
 	char *s;
-	int_32 type;
+	rpmTagType type;
 	int_32 count;
 	if (headerIsEntry(headerTo, *p))
 	    continue;

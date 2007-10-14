@@ -143,7 +143,7 @@ static int getSignid(Header sigh, int sigtag, unsigned char * signid)
 	/*@modifies *signid, fileSystem, internalState @*/
 {
     HGE_t hge = (HGE_t)headerGetExtension;
-    int_32 he_t = 0;
+    rpmTagType he_t = 0;
     hRET_t he_p = { .ptr = NULL };
     int_32 he_c = 0;
     HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
@@ -182,7 +182,7 @@ static int rpmReSign(/*@unused@*/ rpmts ts,
                 fileSystem, internalState @*/
 {
     HGE_t hge = (HGE_t)headerGetExtension;
-    int_32 he_t = 0;
+    rpmTagType he_t = 0;
     hRET_t he_p = { .ptr = NULL };
     int_32 he_c = 0;
     HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
@@ -274,7 +274,9 @@ if (!_nosigh) {
 	xx = hge(sigh, he->tag, he->t, he->p, he->c);
 	if (xx) {
 	    HeaderIterator hi;
-	    int_32 htag, type, count;
+	    int_32 htag;
+	    rpmTagType type;
+	    int_32 count;
 	    hPTR_t ptr;
 	    Header oh;
 	    Header nh;
@@ -675,7 +677,7 @@ static int readFile(FD_t fd, const char * fn, pgpDig dig)
 	/*@modifies fd, *dig, fileSystem, internalState @*/
 {
     HGE_t hge = (HGE_t)headerGetExtension;
-    int_32 he_t = 0;
+    rpmTagType he_t = 0;
     hRET_t he_p = { .ptr = NULL };
     int_32 he_c = 0;
     HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
@@ -766,7 +768,7 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 		const char * fn)
 {
     HGE_t hge = (HGE_t)headerGetExtension;
-    int_32 he_t = 0;
+    rpmTagType he_t = 0;
     hRET_t he_p = { .ptr = NULL };
     int_32 he_c = 0;
     HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
@@ -777,7 +779,7 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
     char missingKeys[7164], * m;
     char untrustedKeys[7164], * u;
     int_32 sigtag;
-    int_32 sigtype;
+    rpmTagType sigtype;
     const void * sig;
     pgpDig dig;
     pgpDigParams sigp;

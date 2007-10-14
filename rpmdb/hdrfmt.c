@@ -833,58 +833,40 @@ static /*@only@*/ char * depflagsFormat(int_32 type, const void * data,
 /**
  * Retrieve install prefixes.
  * @param h		header
- * @retval *type	tag type
- * @retval *data	tag value
- * @retval *count	no. of data items
- * @retval *freeData	data-was-malloc'ed indicator
+ * @retval *he		tag container
  * @return		0 on success
  */
-static int instprefixTag(Header h, /*@null@*/ /*@out@*/ rpmTagType * type,
-		/*@null@*/ /*@out@*/ const void ** data,
-		/*@null@*/ /*@out@*/ int_32 * count,
-		/*@null@*/ /*@out@*/ int * freeData)
-	/*@modifies *type, *data, *freeData @*/
-	/*@requires maxSet(type) >= 0 /\ maxSet(data) >= 0
-		/\ maxSet(count) >= 0 /\ maxSet(freeData) >= 0 @*/
+static int instprefixTag(Header h, HE_t he)
+	/*@modifies he @*/
 {
-    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
-    HFD_t hfd = headerFreeData;
     rpmTagType ipt;
     char ** array;
 
-    if (hge(h, RPMTAG_INSTALLPREFIX, type, data, count)) {
-	if (freeData) *freeData = 0;
-	return 0;
-    } else if (hge(h, RPMTAG_INSTPREFIXES, &ipt, &array, count)) {
-	if (type) *type = RPM_STRING_TYPE;
-	if (data) *data = xstrdup(array[0]);
-	if (freeData) *freeData = 1;
-	array = hfd(array, ipt);
+    he->tag = RPMTAG_INSTALLPREFIX;
+    if (headerGetEntry(h, RPMTAG_INSTALLPREFIX, he->t, he->p, he->c)) {
+	he->freeData = 0;
 	return 0;
     }
-
+    he->tag = RPMTAG_INSTPREFIXES;
+    if (headerGetEntry(h, he->tag, &ipt, &array, he->c)) {
+	if (he->t) *he->t = RPM_STRING_TYPE;
+	if (he->p) (*he->p).str = xstrdup(array[0]);
+	he->freeData = 1;
+	array = headerFreeData(array, ipt);
+	return 0;
+    }
     return 1;
 }
 
 /**
  * Retrieve trigger info.
  * @param h		header
- * @retval *type	tag type
- * @retval *data	tag value
- * @retval *count	no. of data items
- * @retval *freeData	data-was-malloc'ed indicator
+ * @retval *he		tag container
  * @return		0 on success
  */
-static int triggercondsTag(Header h, /*@out@*/ rpmTagType * type,
-		/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
-		/*@out@*/ int * freeData)
-	/*@modifies *type, *data, *count, *freeData @*/
-	/*@requires maxSet(type) >= 0 /\ maxSet(data) >= 0
-		/\ maxSet(count) >= 0 /\ maxSet(freeData) >= 0 @*/
+static int triggercondsTag(Header h, HE_t he)
+	/*@modifies he @*/
 {
-    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
-    HFD_t hfd = headerFreeData;
-    rpmTagType tnt, tvt, tst;
     int_32 * indices, * flags;
     char ** names, ** versions;
     int numNames, numScripts;
@@ -894,21 +876,21 @@ static int triggercondsTag(Header h, /*@out@*/ rpmTagType * type,
     int i, j, xx;
     char buf[5];
 
-    if (!hge(h, RPMTAG_TRIGGERNAME, &tnt, &names, &numNames)) {
-	*freeData = 0;
+    he->freeData = 0;
+    xx = headerGetEntry(h, RPMTAG_TRIGGERNAME, NULL, &names, &numNames);
+    if (!xx)
 	return 0;
-    }
 
-    xx = hge(h, RPMTAG_TRIGGERINDEX, NULL, &indices, NULL);
-    xx = hge(h, RPMTAG_TRIGGERFLAGS, NULL, &flags, NULL);
-    xx = hge(h, RPMTAG_TRIGGERVERSION, &tvt, &versions, NULL);
-    xx = hge(h, RPMTAG_TRIGGERSCRIPTS, &tst, &s, &numScripts);
-    s = hfd(s, tst);
+    xx = headerGetEntry(h, RPMTAG_TRIGGERINDEX, NULL, &indices, NULL);
+    xx = headerGetEntry(h, RPMTAG_TRIGGERFLAGS, NULL, &flags, NULL);
+    xx = headerGetEntry(h, RPMTAG_TRIGGERVERSION, NULL, &versions, NULL);
+    xx = headerGetEntry(h, RPMTAG_TRIGGERSCRIPTS, NULL, &s, &numScripts);
+    s = headerFreeData(s, -1);
 
-    *freeData = 1;
-    *data = conds = xmalloc(sizeof(*conds) * numScripts);
-    *count = numScripts;
-    *type = RPM_STRING_ARRAY_TYPE;
+    he->freeData = 1;
+    (*he->p).ptr = conds = xmalloc(sizeof(*conds) * numScripts);
+    *he->c = numScripts;
+    *he->t = RPM_STRING_ARRAY_TYPE;
     for (i = 0; i < numScripts; i++) {
 	chptr = xstrdup("");
 
@@ -935,8 +917,8 @@ static int triggercondsTag(Header h, /*@out@*/ rpmTagType * type,
 	conds[i] = chptr;
     }
 
-    names = hfd(names, tnt);
-    versions = hfd(versions, tvt);
+    names = headerFreeData(names, -1);
+    versions = headerFreeData(versions, -1);
 
     return 0;
 }
@@ -944,41 +926,30 @@ static int triggercondsTag(Header h, /*@out@*/ rpmTagType * type,
 /**
  * Retrieve trigger type info.
  * @param h		header
- * @retval *type	tag type
- * @retval *data	tag value
- * @retval *count	no. of data items
- * @retval *freeData	data-was-malloc'ed indicator
+ * @retval *he		tag container
  * @return		0 on success
  */
-static int triggertypeTag(Header h, /*@out@*/ rpmTagType * type,
-		/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
-		/*@out@*/ int * freeData)
-	/*@modifies *type, *data, *count, *freeData @*/
-	/*@requires maxSet(type) >= 0 /\ maxSet(data) >= 0
-		/\ maxSet(count) >= 0 /\ maxSet(freeData) >= 0 @*/
+static int triggertypeTag(Header h, HE_t he)
+	/*@modifies he @*/
 {
-    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
-    HFD_t hfd = headerFreeData;
-    rpmTagType tst;
     int_32 * indices, * flags;
     const char ** conds;
     const char ** s;
     int i, j, xx;
     int numScripts, numNames;
 
-    if (!hge(h, RPMTAG_TRIGGERINDEX, NULL, &indices, &numNames)) {
-	*freeData = 0;
+    he->freeData = 0;
+    if (!headerGetEntry(h, RPMTAG_TRIGGERINDEX, NULL, &indices, &numNames))
 	return 1;
-    }
 
-    xx = hge(h, RPMTAG_TRIGGERFLAGS, NULL, &flags, NULL);
-    xx = hge(h, RPMTAG_TRIGGERSCRIPTS, &tst, &s, &numScripts);
-    s = hfd(s, tst);
+    xx = headerGetEntry(h, RPMTAG_TRIGGERFLAGS, NULL, &flags, NULL);
+    xx = headerGetEntry(h, RPMTAG_TRIGGERSCRIPTS, NULL, &s, &numScripts);
+    s = headerFreeData(s, -1);
 
-    *freeData = 1;
-    *data = conds = xmalloc(sizeof(*conds) * numScripts);
-    *count = numScripts;
-    *type = RPM_STRING_ARRAY_TYPE;
+    he->freeData = 1;
+    *he->t = RPM_STRING_ARRAY_TYPE;
+    (*he->p).ptr = conds = xmalloc(sizeof(*conds) * numScripts);
+    *he->c = numScripts;
     for (i = 0; i < numScripts; i++) {
 	for (j = 0; j < numNames; j++) {
 	    if (indices[j] != i)
@@ -1018,29 +989,20 @@ static const char * _macro_i18ndomains = "%{?_i18ndomains}";
 /**
  * Retrieve i18n text.
  * @param h		header
- * @param tag		tag
- * @retval *type	tag type
- * @retval *data	tag value
- * @retval *count	no. of data items
- * @retval *freeData	data-was-malloc'ed indicator
+ * @retval *he		tag container
  * @return		0 on success
  */
-static int i18nTag(Header h, int_32 tag, /*@out@*/ rpmTagType * type,
-		/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
-		/*@out@*/ int * freeData)
+static int i18nTag(Header h, HE_t he)
 	/*@globals rpmGlobalMacroContext, h_errno @*/
-	/*@modifies *type, *data, *count, *freeData, rpmGlobalMacroContext @*/
-	/*@requires maxSet(type) >= 0 /\ maxSet(data) >= 0
-		/\ maxSet(count) >= 0 /\ maxSet(freeData) >= 0 @*/
+	/*@modifies he, rpmGlobalMacroContext @*/
 {
-    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     char * dstring = rpmExpand(_macro_i18ndomains, NULL);
     int rc;
 
-    *type = RPM_STRING_TYPE;
-    *data = NULL;
-    *count = 0;
-    *freeData = 0;
+    *he->t = RPM_STRING_TYPE;
+    (*he->p).ptr = NULL;
+    *he->c = 0;
+    he->freeData = 0;
 
     if (dstring && *dstring) {
 	char *domain, *de;
@@ -1048,7 +1010,7 @@ static int i18nTag(Header h, int_32 tag, /*@out@*/ rpmTagType * type,
 	const char * msgkey;
 	const char * msgid;
 
-	{   const char * tn = tagName(tag);
+	{   const char * tn = tagName(he->tag);
 	    const char * n = NULL;
 	    char * mk;
 	    size_t nb = sizeof("()");
@@ -1086,70 +1048,67 @@ static int i18nTag(Header h, int_32 tag, /*@out@*/ rpmTagType * type,
 #endif
 
 	if (domain && msgid) {
-	    *data = /*@-unrecog@*/ dgettext(domain, msgid) /*@=unrecog@*/;
-	    *data = xstrdup(*data);	/* XXX xstrdup has side effects. */
-	    *count = 1;
-	    *freeData = 1;
+	    const char * s = /*@-unrecog@*/ dgettext(domain, msgid) /*@=unrecog@*/;
+	    (*he->p).str = xstrdup(s);	/* XXX xstrdup has side effects. */
+	    *he->c = 1;
+	    he->freeData = 1;
 	}
 	dstring = _free(dstring);
-	if (*data)
+	if ((*he->p).str)
 	    return 0;
     }
 
     dstring = _free(dstring);
 
-    rc = hge(h, tag, type, (void **)data, count);
+    rc = headerGetEntry(h, he->tag, he->t, (*he->p).ptr, he->c);
 
-    if (rc && (*data) != NULL) {
-	*data = xstrdup(*data);
-	*data = xstrtolocale(*data);
-	*freeData = 1;
+    if (rc && (*he->p).ptr != NULL) {
+	(*he->p).str = xstrdup((*he->p).str);
+	(*he->p).str = xstrtolocale((*he->p).str);
+	he->freeData = 1;
 	return 0;
     }
 
-    *freeData = 0;
-    *data = NULL;
-    *count = 0;
+    he->freeData = 0;
+    (*he->p).ptr = NULL;
+    *he->c = 0;
     return 1;
 }
 
 /**
  * Retrieve text and convert to locale.
  */
-static int localeTag(Header h, int_32 tag, /*@out@*/ rpmTagType * type,
-		/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
-		/*@out@*/ int * freeData)
-	/*@modifies *type, *data, *count, *freeData @*/
+static int localeTag(Header h, HE_t he)
+	/*@modifies he @*/
 {
-    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     rpmTagType t;
     char **d, **d2, *dp;
     int rc, i, l;
 
-    rc = hge(h, tag, &t, &d, count);
-    if (!rc || d == NULL || *count == 0) {
-	*freeData = 0;
-	*data = NULL;
-	*count = 0;
+    rc = headerGetEntry(h, he->tag, &t, &d, he->c);
+    if (!rc || d == NULL || *he->c == 0) {
+	he->freeData = 0;
+	(*he->p).ptr = NULL;
+	*he->c = 0;
 	return 1;
     }
-    if (type)
-	*type = t;
+    if (he->t)
+	*he->t = t;
     if (t == RPM_STRING_TYPE) {
 	d = (char **)xstrdup((char *)d);
 	d = (char **)xstrtolocale((char *)d);
-	*freeData = 1;
+	he->freeData = 1;
     } else if (t == RPM_STRING_ARRAY_TYPE) {
 	l = 0;
-	for (i = 0; i < *count; i++) {
+	for (i = 0; i < *he->c; i++) {
 	    d[i] = xstrdup(d[i]);
 	    d[i] = (char *)xstrtolocale(d[i]);
 assert(d[i] != NULL);
 	    l += strlen(d[i]) + 1;
 	}
-	d2 = xmalloc(*count * sizeof(*d2) + l);
-	dp = (char *)(d2 + *count);
-	for (i = 0; i < *count; i++) {
+	d2 = xmalloc(*he->c * sizeof(*d2) + l);
+	dp = (char *)(d2 + *he->c);
+	for (i = 0; i < *he->c; i++) {
 	    d2[i] = dp;
 	    strcpy(dp, d[i]);
 	    dp += strlen(dp) + 1;
@@ -1157,121 +1116,90 @@ assert(d[i] != NULL);
 	}
 	d = _free(d);
 	d = d2;
-	*freeData = 1;
+	he->freeData = 1;
     } else
-	*freeData = 0;
-    *data = (void **)d;
+	he->freeData = 0;
+    (*he->p).ptr = (void **)d;
     return 0;
 }
 
 /**
  * Retrieve summary text.
  * @param h		header
- * @retval *type	tag type
- * @retval *data	tag value
- * @retval *count	no. of data items
- * @retval *freeData	data-was-malloc'ed indicator
+ * @retval *he		tag container
  * @return		0 on success
  */
-static int summaryTag(Header h, /*@out@*/ rpmTagType * type,
-		/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
-		/*@out@*/ int * freeData)
+static int summaryTag(Header h, HE_t he)
 	/*@globals rpmGlobalMacroContext, h_errno @*/
-	/*@modifies *type, *data, *count, *freeData, rpmGlobalMacroContext @*/
-	/*@requires maxSet(type) >= 0 /\ maxSet(data) >= 0
-		/\ maxSet(count) >= 0 /\ maxSet(freeData) >= 0 @*/
+	/*@modifies he, rpmGlobalMacroContext @*/
 {
-    return i18nTag(h, RPMTAG_SUMMARY, type, data, count, freeData);
+    he->tag = RPMTAG_SUMMARY;
+    return i18nTag(h, he);
 }
 
 /**
  * Retrieve description text.
  * @param h		header
- * @retval *type	tag type
- * @retval *data	tag value
- * @retval *count	no. of data items
- * @retval *freeData	data-was-malloc'ed indicator
+ * @retval *he		tag container
  * @return		0 on success
  */
-static int descriptionTag(Header h, /*@out@*/ rpmTagType * type,
-		/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
-		/*@out@*/ int * freeData)
+static int descriptionTag(Header h, HE_t he)
 	/*@globals rpmGlobalMacroContext, h_errno @*/
-	/*@modifies *type, *data, *count, *freeData, rpmGlobalMacroContext @*/
-	/*@requires maxSet(type) >= 0 /\ maxSet(data) >= 0
-		/\ maxSet(count) >= 0 /\ maxSet(freeData) >= 0 @*/
+	/*@modifies he, rpmGlobalMacroContext @*/
 {
-    return i18nTag(h, RPMTAG_DESCRIPTION, type, data, count, freeData);
+    he->tag = RPMTAG_DESCRIPTION;
+    return i18nTag(h, he);
 }
 
-static int changelognameTag(Header h, /*@out@*/ rpmTagType * type,
-		/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
-		/*@out@*/ int * freeData)
-	/*@modifies *type, *data, *count, *freeData @*/
-	/*@requires maxSet(type) >= 0 /\ maxSet(data) >= 0
-		/\ maxSet(count) >= 0 /\ maxSet(freeData) >= 0 @*/
+static int changelognameTag(Header h, HE_t he)
+	/*@modifies he @*/
 {
-    return localeTag(h, RPMTAG_CHANGELOGNAME, type, data, count, freeData);
+    he->tag = RPMTAG_CHANGELOGNAME;
+    return localeTag(h, he);
 }
 
-static int changelogtextTag(Header h, /*@out@*/ rpmTagType * type,
-		/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
-		/*@out@*/ int * freeData)
-	/*@modifies *type, *data, *count, *freeData @*/
-	/*@requires maxSet(type) >= 0 /\ maxSet(data) >= 0
-		/\ maxSet(count) >= 0 /\ maxSet(freeData) >= 0 @*/
+static int changelogtextTag(Header h, HE_t he)
+	/*@modifies he @*/
 {
-    return localeTag(h, RPMTAG_CHANGELOGTEXT, type, data, count, freeData);
+    he->tag = RPMTAG_CHANGELOGTEXT;
+    return localeTag(h, he);
 }
 
 /**
  * Retrieve group text.
  * @param h		header
- * @retval *type	tag type
- * @retval *data	tag value
- * @retval *count	no. of data items
- * @retval *freeData	data-was-malloc'ed indicator
+ * @retval *he		tag container
  * @return		0 on success
  */
-static int groupTag(Header h, /*@out@*/ rpmTagType * type,
-		/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
-		/*@out@*/ int * freeData)
+static int groupTag(Header h, HE_t he)
 	/*@globals rpmGlobalMacroContext, h_errno @*/
-	/*@modifies *type, *data, *count, *freeData, rpmGlobalMacroContext @*/
-	/*@requires maxSet(type) >= 0 /\ maxSet(data) >= 0
-		/\ maxSet(count) >= 0 /\ maxSet(freeData) >= 0 @*/
+	/*@modifies he, rpmGlobalMacroContext @*/
 {
-    return i18nTag(h, RPMTAG_GROUP, type, data, count, freeData);
+    he->tag = RPMTAG_GROUP;
+    return i18nTag(h, he);
 }
 
 /**
  * Retrieve db instance from header.
  * @param h		header
- * @retval *type	tag type
- * @retval *data	tag value
- * @retval *count	no. of data items
- * @retval *freeData	data-was-malloc'ed indicator
+ * @retval *he		tag container
  * @return		0 on success
  */
 /*@-globuse@*/
-static int dbinstanceTag(Header h, /*@out@*/ rpmTagType * type,
-		/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
-		/*@out@*/ int * freeData)
+static int dbinstanceTag(Header h, HE_t he)
 	/*@globals rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState @*/
-	/*@modifies *type, *data, *count, *freeData, rpmGlobalMacroContext,
+	/*@modifies he, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
-	/*@requires maxSet(type) >= 0 /\ maxSet(data) >= 0
-		/\ maxSet(count) >= 0 /\ maxSet(freeData) >= 0 @*/
 {
     int_32 * valuep = xcalloc(1, sizeof(*valuep));
 
     *valuep = headerGetInstance(h);
 
-    *type = RPM_INT32_TYPE;
-    *data = valuep;
-    *count = 1;
-    *freeData = 1;
+    *he->t = RPM_INT32_TYPE;
+    (*he->p).ptr = valuep;
+    *he->c = 1;
+    he->freeData = 1;
 
     return 0;
 }
@@ -1311,28 +1239,20 @@ static char * hGetNVRA(Header h)
 /**
  * Retrieve N-V-R.A compound string from header.
  * @param h		header
- * @retval *type	tag type
- * @retval *data	tag value
- * @retval *count	no. of data items
- * @retval *freeData	data-was-malloc'ed indicator
+ * @retval *he		tag container
  * @return		0 on success
  */
 /*@-globuse@*/
-static int nvraTag(Header h, /*@out@*/ rpmTagType * type,
-		/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
-		/*@out@*/ int * freeData)
+static int nvraTag(Header h, HE_t he)
 	/*@globals rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState @*/
-	/*@modifies h, *type, *data, *count, *freeData, rpmGlobalMacroContext,
+	/*@modifies h, he, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
-	/*@requires maxSet(type) >= 0 /\ maxSet(data) >= 0
-		/\ maxSet(count) >= 0 /\ maxSet(freeData) >= 0 @*/
 {
-    if (type) *type = RPM_STRING_TYPE;
-    if (data) *data = hGetNVRA(h);
-    if (count) *count = 1;
-    if (freeData) *freeData = 1;
-
+    if (he->t) *he->t = RPM_STRING_TYPE;
+    if (he->p) (*he->p).str = hGetNVRA(h);
+    if (he->c) *he->c = 1;
+    he->freeData = 1;
     return 0;
 }
 /*@=globuse@*/
@@ -1358,8 +1278,6 @@ static void rpmfiBuildFNames(Header h, rpmTag tagN,
 		/*@out@*/ const char *** fnp, /*@out@*/ int * fcp)
 	/*@modifies *fnp, *fcp @*/
 {
-    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
-    HFD_t hfd = headerFreeData;
     const char ** baseNames;
     const char ** dirNames;
     int * dirIndexes;
@@ -1380,14 +1298,14 @@ static void rpmfiBuildFNames(Header h, rpmTag tagN,
 	dirIndexesTag = RPMTAG_ORIGDIRINDEXES;
     }
 
-    if (!hge(h, tagN, &bnt, &baseNames, &count)) {
+    if (!headerGetEntry(h, tagN, &bnt, &baseNames, &count)) {
 	if (fnp) *fnp = NULL;
 	if (fcp) *fcp = 0;
 	return;		/* no file list */
     }
 
-    xx = hge(h, dirNameTag, &dnt, &dirNames, NULL);
-    xx = hge(h, dirIndexesTag, NULL, &dirIndexes, &count);
+    xx = headerGetEntry(h, dirNameTag, &dnt, &dirNames, NULL);
+    xx = headerGetEntry(h, dirIndexesTag, NULL, &dirIndexes, &count);
 
     size = sizeof(*fileNames) * count;
     for (i = 0; i < count; i++) {
@@ -1405,8 +1323,8 @@ static void rpmfiBuildFNames(Header h, rpmTag tagN,
 	t = stpcpy( stpcpy(t, dn), baseNames[i]);
 	*t++ = '\0';
     }
-    baseNames = hfd(baseNames, bnt);
-    dirNames = hfd(dirNames, dnt);
+    baseNames = headerFreeData(baseNames, bnt);
+    dirNames = headerFreeData(dirNames, dnt);
 
     if (fnp)
 	*fnp = fileNames;
@@ -1418,60 +1336,60 @@ static void rpmfiBuildFNames(Header h, rpmTag tagN,
 /**
  * Retrieve file paths.
  * @param h		header
- * @retval *type	tag type
- * @retval *data	tag value
- * @retval *count	no. of data items
- * @retval *freeData	data-was-malloc'ed indicator
+ * @retval *he		tag container
  * @return		0 on success
  */
-static int _fnTag(Header h, rpmTag tag, /*@out@*/ rpmTagType * type,
-		/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
-		/*@out@*/ int * freeData)
-	/*@modifies *type, *data, *count, *freeData @*/
-	/*@requires maxSet(type) >= 0 /\ maxSet(data) >= 0
-		/\ maxSet(count) >= 0 /\ maxSet(freeData) >= 0 @*/
+static int _fnTag(Header h, HE_t he)
+	/*@modifies he @*/
 {
-    if (type) *type = RPM_STRING_ARRAY_TYPE;
-    rpmfiBuildFNames(h, tag, (const char ***) data, count);
-    if (freeData) *freeData = 1;
+    if (he->t) *he->t = RPM_STRING_ARRAY_TYPE;
+    rpmfiBuildFNames(h, he->tag, (const char ***) he->p, he->c);
+    he->freeData = 1;
     return 0;
 }
 
-static int filepathsTag(Header h, /*@out@*/ rpmTagType * type,
-		/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
-		/*@out@*/ int * freeData)
-	/*@modifies *type, *data, *count, *freeData @*/
-	/*@requires maxSet(type) >= 0 /\ maxSet(data) >= 0
-		/\ maxSet(count) >= 0 /\ maxSet(freeData) >= 0 @*/
+static int filepathsTag(Header h, HE_t he)
+	/*@modifies he @*/
 {
-    return _fnTag(h, RPMTAG_BASENAMES, type, data, count, freeData);
+    he->tag = RPMTAG_BASENAMES;
+    return _fnTag(h, he);
 }
 
-static int origpathsTag(Header h, /*@out@*/ rpmTagType * type,
-		/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
-		/*@out@*/ int * freeData)
-	/*@modifies *type, *data, *count, *freeData @*/
-	/*@requires maxSet(type) >= 0 /\ maxSet(data) >= 0
-		/\ maxSet(count) >= 0 /\ maxSet(freeData) >= 0 @*/
+static int origpathsTag(Header h, HE_t he)
+	/*@modifies he @*/
 {
-    return _fnTag(h, RPMTAG_ORIGBASENAMES, type, data, count, freeData);
+    he->tag = RPMTAG_ORIGBASENAMES;
+    return _fnTag(h, he);
 }
 
 /*@-type@*/ /* FIX: cast? */
 const struct headerSprintfExtension_s headerCompoundFormats[] = {
-    { HEADER_EXT_TAG, "RPMTAG_CHANGELOGNAME",	{ changelognameTag } },
-    { HEADER_EXT_TAG, "RPMTAG_CHANGELOGTEXT",	{ changelogtextTag } },
-    { HEADER_EXT_TAG, "RPMTAG_DESCRIPTION",	{ descriptionTag } },
-    { HEADER_EXT_TAG, "RPMTAG_GROUP",		{ groupTag } },
-    { HEADER_EXT_TAG, "RPMTAG_INSTALLPREFIX",	{ instprefixTag } },
-    { HEADER_EXT_TAG, "RPMTAG_SUMMARY",		{ summaryTag } },
-    { HEADER_EXT_TAG, "RPMTAG_TRIGGERCONDS",	{ triggercondsTag } },
-    { HEADER_EXT_TAG, "RPMTAG_TRIGGERTYPE",	{ triggertypeTag } },
-    { HEADER_EXT_TAG, "RPMTAG_DBINSTANCE",	{ dbinstanceTag } },
-    { HEADER_EXT_TAG, "RPMTAG_NVRA",		{ nvraTag } },
-    { HEADER_EXT_TAG, "RPMTAG_FILENAMES",	{ filepathsTag } },
-    { HEADER_EXT_TAG, "RPMTAG_FILEPATHS",	{ filepathsTag } },
-    { HEADER_EXT_TAG, "RPMTAG_ORIGPATHS",	{ origpathsTag } },
+    { HEADER_EXT_TAG, "RPMTAG_CHANGELOGNAME",
+	{ .tagFunction = changelognameTag } },
+    { HEADER_EXT_TAG, "RPMTAG_CHANGELOGTEXT",
+	{ .tagFunction = changelogtextTag } },
+    { HEADER_EXT_TAG, "RPMTAG_DESCRIPTION",
+	{ .tagFunction = descriptionTag } },
+    { HEADER_EXT_TAG, "RPMTAG_GROUP",
+	{ .tagFunction = groupTag } },
+    { HEADER_EXT_TAG, "RPMTAG_INSTALLPREFIX",
+	{ .tagFunction = instprefixTag } },
+    { HEADER_EXT_TAG, "RPMTAG_SUMMARY",
+	{ .tagFunction = summaryTag } },
+    { HEADER_EXT_TAG, "RPMTAG_TRIGGERCONDS",
+	{ .tagFunction = triggercondsTag } },
+    { HEADER_EXT_TAG, "RPMTAG_TRIGGERTYPE",
+	{ .tagFunction = triggertypeTag } },
+    { HEADER_EXT_TAG, "RPMTAG_DBINSTANCE",
+	{ .tagFunction = dbinstanceTag } },
+    { HEADER_EXT_TAG, "RPMTAG_NVRA",
+	{ .tagFunction = nvraTag } },
+    { HEADER_EXT_TAG, "RPMTAG_FILENAMES",
+	{ .tagFunction = filepathsTag } },
+    { HEADER_EXT_TAG, "RPMTAG_FILEPATHS",
+	{ .tagFunction = filepathsTag } },
+    { HEADER_EXT_TAG, "RPMTAG_ORIGPATHS",
+	{ .tagFunction = origpathsTag } },
     { HEADER_EXT_FORMAT, "armor",		{ armorFormat } },
     { HEADER_EXT_FORMAT, "base64",		{ base64Format } },
     { HEADER_EXT_FORMAT, "depflags",		{ depflagsFormat } },

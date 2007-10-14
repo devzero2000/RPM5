@@ -236,7 +236,7 @@ rpmds rpmdsNew(Header h, rpmTag tagN, int flags)
 {
     int scareMem = (flags & 0x1);
     HGE_t hge = (HGE_t)headerGetExtension;
-    int_32 he_t = 0;
+    rpmTagType he_t = 0;
     hRET_t he_p = { .ptr = NULL };
     int_32 he_c = 0;
     HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
@@ -477,7 +477,7 @@ char * rpmdsNewDNEVR(const char * dspfx, rpmds ds)
 rpmds rpmdsThis(Header h, rpmTag tagN, int_32 Flags)
 {
     HGE_t hge = (HGE_t)headerGetExtension;
-    int_32 he_t = 0;
+    rpmTagType he_t = 0;
     hRET_t he_p = { .ptr = NULL };
     int_32 he_c = 0;
     HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
@@ -3717,7 +3717,7 @@ exit:
 int rpmdsNVRMatchesDep(const Header h, const rpmds req, int nopromote)
 {
     HGE_t hge = (HGE_t)headerGetExtension;
-    int_32 he_t = 0;
+    rpmTagType he_t = 0;
     hRET_t he_p = { .ptr = NULL };
     int_32 he_c = 0;
     HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };

@@ -98,21 +98,68 @@ typedef unsigned int uint_32;
 typedef unsigned short uint_16;
 typedef unsigned char uint_8;
 
-/*@-redef@*/	/* LCL: no clue */
 /** \ingroup header
  */
 typedef const char *	errmsg_t;
 
 /** \ingroup header
  */
+typedef enum rpmTag_e rpmTag;
+
+/** \ingroup header
+ */
+typedef enum rpmTagType_e rpmTagType;
+
+/** \ingroup header
+ */
 typedef int_32 *	hTAG_t;
-typedef int_32 *	hTYP_t;
+typedef rpmTagType *	hTYP_t;
 typedef const void *	hPTR_t;
 typedef int_32 *	hCNT_t;
 
 /** \ingroup header
  */
 typedef /*@abstract@*/ /*@refcounted@*/ struct headerToken_s * Header;
+
+/** \ingroup header
+ */
+/*@-typeuse -fielduse@*/
+typedef union hRET_s hRET_t;
+#if !defined(SWIG)
+union hRET_s {
+    void * ptr;
+    const char ** argv;
+    const char * str;
+    uint_64 * ui64p;
+    uint_32 * ui32p;
+    uint_16 * ui16p;
+    uint_8 * ui8p;
+    int_64 * i64p;
+    int_32 * i32p;
+    int_16 * i16p;
+    int_8 * i8p;
+};
+#endif
+/*@=typeuse =fielduse@*/
+
+/** \ingroup header
+ */
+/*@-typeuse -fielduse@*/
+#if !defined(SWIG)
+struct _HE_s {
+    int_32 tag;
+/*@null@*/
+    hTYP_t t;
+/*@null@*/
+    hRET_t * p;
+/*@null@*/
+    hCNT_t c;
+    int freeData;
+};
+typedef struct _HE_s HE_s;
+#endif
+typedef HE_s * HE_t;
+/*@=typeuse =fielduse@*/
 
 /** \ingroup header
  */
@@ -195,13 +242,8 @@ typedef /*only@*/ char * (*headerTagFormatFunction)(int_32 type,
  * @retval *freedata	data-was-malloc'ed indicator
  * @return		0 on success
  */
-typedef int (*headerTagTagFunction) (Header h,
-		/*@null@*/ /*@out@*/ hTYP_t type,
-		/*@null@*/ /*@out@*/ hPTR_t * data,
-		/*@null@*/ /*@out@*/ hCNT_t count,
-		/*@null@*/ /*@out@*/ int * freeData)
-	/*@requires maxSet(type) >= 0 /\ maxSet(data) >= 0
-		/\ maxSet(count) >= 0 /\ maxSet(freeData) >= 0 @*/;
+typedef int (*headerTagTagFunction) (Header h, HE_t he)
+	/*@modifies he */;
 
 /** \ingroup header
  * Define header tag output formats.
@@ -238,14 +280,10 @@ extern const struct headerSprintfExtension_s headerDefaultFormats[];
 extern const struct headerSprintfExtension_s headerCompoundFormats[];
 /*@=redecl@*/
 
-/**
- */
-typedef enum rpmTag_e rpmTag;
-
 /** \ingroup header
  * The basic types of data in tags from headers.
  */
-typedef enum rpmTagType_e {
+enum rpmTagType_e {
     RPM_NULL_TYPE		=  0,
     RPM_CHAR_TYPE		=  1,
     RPM_INT8_TYPE		=  2,
@@ -259,7 +297,7 @@ typedef enum rpmTagType_e {
     RPM_ASN1_TYPE		= 10,
     RPM_OPENPGP_TYPE		= 11,
     RPM_MASK_TYPE		= 0x0000ffff
-} rpmTagType;
+};
 #define	RPM_MIN_TYPE		0
 #define	RPM_MAX_TYPE		11
 
@@ -307,46 +345,6 @@ typedef enum rpmTagReturnType_e {
 #define HEADER_I18NTABLE	100
 #define	HEADER_SIGBASE		256
 #define	HEADER_TAGBASE		1000
-
-/**
- */
-/*@-typeuse -fielduse@*/
-typedef union hRET_s hRET_t;
-#if !defined(SWIG)
-union hRET_s {
-    void * ptr;
-    const char ** argv;
-    const char * str;
-    uint_64 * ui64p;
-    uint_32 * ui32p;
-    uint_16 * ui16p;
-    uint_8 * ui8p;
-    int_64 * i64p;
-    int_32 * i32p;
-    int_16 * i16p;
-    int_8 * i8p;
-};
-#endif
-/*@=typeuse =fielduse@*/
-
-/**
- */
-/*@-typeuse -fielduse@*/
-#if !defined(SWIG)
-struct _HE_s {
-    int_32 tag;
-/*@null@*/
-    hTYP_t t;
-/*@null@*/
-    hRET_t * p;
-/*@null@*/
-    hCNT_t c;
-    int freeData;
-};
-typedef struct _HE_s HE_s;
-#endif
-typedef HE_s * HE_t;
-/*@=typeuse =fielduse@*/
 
 /**
  * Prototype for headerFreeData() vector.

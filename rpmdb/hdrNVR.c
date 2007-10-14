@@ -36,7 +36,7 @@ int headerMacrosLoad(Header h)
 	/*@modifies rpmGlobalMacroContext @*/
 {
     HGE_t hge = (HGE_t)headerGetExtension;
-    int_32 he_t = 0;
+    rpmTagType he_t = 0;
     hRET_t he_p = { .ptr = NULL };
     int_32 he_c = 0;
     HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
@@ -92,7 +92,7 @@ int headerMacrosUnload(Header h)
 	/*@modifies rpmGlobalMacroContext @*/
 {
     HGE_t hge = (HGE_t)headerGetExtension;
-    int_32 he_t = 0;
+    rpmTagType he_t = 0;
     hRET_t he_p = { .ptr = NULL };
     int_32 he_c = 0;
     HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
@@ -145,22 +145,21 @@ int headerNEVRA(Header h, const char **np,
 		/*@unused@*/ const char **ep, const char **vp, const char **rp,
 		const char **ap)
 {
-    HGE_t hge = (HGE_t)headerGetEntry;
-    int type;
+    rpmTagType type;
     int count;
 
     if (np) {
-	if (!(hge(h, RPMTAG_NAME, &type, np, &count)
+	if (!(headerGetEntry(h, RPMTAG_NAME, &type, np, &count)
 	    && type == RPM_STRING_TYPE && count == 1))
 		*np = NULL;
     }
     if (vp) {
-	if (!(hge(h, RPMTAG_VERSION, &type, vp, &count)
+	if (!(headerGetEntry(h, RPMTAG_VERSION, &type, vp, &count)
 	    && type == RPM_STRING_TYPE && count == 1))
 		*vp = NULL;
     }
     if (rp) {
-	if (!(hge(h, RPMTAG_RELEASE, &type, rp, &count)
+	if (!(headerGetEntry(h, RPMTAG_RELEASE, &type, rp, &count)
 	    && type == RPM_STRING_TYPE && count == 1))
 		*rp = NULL;
     }
@@ -173,7 +172,7 @@ int headerNEVRA(Header h, const char **np,
 	    *ap = "src";
 /*@=observertrans =readonlytrans@*/
 	else
-	if (!(hge(h, RPMTAG_ARCH, &type, ap, &count)
+	if (!(headerGetEntry(h, RPMTAG_ARCH, &type, ap, &count)
 	    && type == RPM_STRING_TYPE && count == 1))
 		*ap = NULL;
     }
@@ -183,7 +182,7 @@ int headerNEVRA(Header h, const char **np,
 uint_32 hGetColor(Header h)
 {
     HGE_t hge = (HGE_t)headerGetExtension;
-    int_32 he_t = 0;
+    rpmTagType he_t = 0;
     hRET_t he_p = { .ptr = NULL };
     int_32 he_c = 0;
     HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
@@ -208,7 +207,9 @@ void headerMergeLegacySigs(Header h, const Header sigh)
 {
     HFD_t hfd = (HFD_t) headerFreeData;
     HeaderIterator hi;
-    int_32 tag, type, count;
+    int_32 tag;
+    rpmTagType type;
+    int_32 count;
     const void * ptr;
     int xx;
 
@@ -266,6 +267,9 @@ void headerMergeLegacySigs(Header h, const Header sigh)
 	    if (count < 0 || hdrchkData(count))
 		continue;
 	    switch(type) {
+	    case RPM_MASK_TYPE:
+	    case RPM_OPENPGP_TYPE:
+	    case RPM_ASN1_TYPE:
 	    case RPM_NULL_TYPE:
 		continue;
 		/*@notreached@*/ /*@switchbreak@*/ break;
@@ -273,6 +277,7 @@ void headerMergeLegacySigs(Header h, const Header sigh)
 	    case RPM_INT8_TYPE:
 	    case RPM_INT16_TYPE:
 	    case RPM_INT32_TYPE:
+	    case RPM_INT64_TYPE:
 		if (count != 1)
 		    continue;
 		/*@switchbreak@*/ break;
@@ -297,7 +302,10 @@ Header headerRegenSigHeader(const Header h, int noArchiveSize)
     HFD_t hfd = (HFD_t) headerFreeData;
     Header sigh = headerNew();
     HeaderIterator hi;
-    int_32 tag, stag, type, count;
+    int_32 stag;
+    int_32 tag;
+    rpmTagType type;
+    int_32 count;
     const void * ptr;
     int xx;
 

@@ -174,7 +174,7 @@ static int addFileToTag(Spec spec, const char * file, Header h, int tag)
 	/*@modifies h, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     HGE_t hge = (HGE_t)headerGetExtension;
-    int_32 he_t = 0;
+    rpmTagType he_t = 0;
     hRET_t he_p = { .ptr = NULL };
     int_32 he_c = 0;
     HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
@@ -440,7 +440,7 @@ static int rpmLeadVersion(void)
 void providePackageNVR(Header h)
 {
     HGE_t hge = (HGE_t)headerGetExtension;
-    int_32 he_t = 0;
+    rpmTagType he_t = 0;
     hRET_t he_p = { .ptr = NULL };
     int_32 he_c = 0;
     HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
@@ -819,7 +819,7 @@ exit:
 
     /* XXX Fish the pkgid out of the signature header. */
     if (sigh != NULL && pkgidp != NULL) {
-	int_32 tagType;
+	rpmTagType tagType;
 	unsigned char * MD5 = NULL;
 	int_32 c;
 	int xx;
@@ -863,7 +863,7 @@ static int_32 copyTags[] = {
 int packageBinaries(Spec spec)
 {
     HGE_t hge = (HGE_t)headerGetExtension;
-    int_32 he_t = 0;
+    rpmTagType he_t = 0;
     hRET_t he_p = { .ptr = NULL };
     int_32 he_c = 0;
     HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };

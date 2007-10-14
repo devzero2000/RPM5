@@ -1,4 +1,7 @@
 4.5 -> 5.0:
+    - jbj: for now, revert to headerGetEntry where needed, avoid recursions.
+    - jbj: drill HE_t down through the header extension tags.
+    - jbj: drill rpmTagType everywhere.
     - jbj: move rpmTag typedef and HGE_t et al protos to header.h.
     - jbj: lose the rpmfi hge/hae/hme/hre/hfd vectors.
     - jbj: yet more hge fixups.

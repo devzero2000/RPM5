@@ -860,7 +860,7 @@ static int rpmdbExportInfo(/*@unused@*/ rpmdb db, Header h, int adding)
 		fileSystem, internalState @*/
 {
     HGE_t hge = (HGE_t)headerGetExtension;
-    int_32 he_t = 0;
+    rpmTagType he_t = 0;
     hRET_t he_p = { .ptr = NULL };
     int_32 he_c = 0;
     HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
@@ -1410,7 +1410,7 @@ static int rpmdbFindByFile(rpmdb db, /*@null@*/ const char * filespec,
 	/*@requires maxSet(matches) >= 0 @*/
 {
     HGE_t hge = (HGE_t)headerGetExtension;
-    int_32 he_t = 0;
+    rpmTagType he_t = 0;
     hRET_t he_p = { .ptr = NULL };
     int_32 he_c = 0;
     HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
@@ -2152,7 +2152,7 @@ static int mireSkip (const rpmdbMatchIterator mi)
 	/*@modifies mi->mi_re @*/
 {
     HGE_t hge = (HGE_t) headerGetExtension;
-    int_32 he_t = 0;
+    rpmTagType he_t = 0;
     hRET_t he_p = { .ptr = NULL };
     int_32 he_c = 0;
     HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
@@ -2783,7 +2783,7 @@ DBT * key = alloca(sizeof(*key));
 DBT * data = alloca(sizeof(*data));
 union _dbswap mi_offset;
     HGE_t hge = (HGE_t)headerGetExtension;
-    int_32 he_t = 0;
+    rpmTagType he_t = 0;
     hRET_t he_p = { .ptr = NULL };
     int_32 he_c = 0;
     HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
@@ -3089,7 +3089,7 @@ DBT * key = alloca(sizeof(*key));
 DBT * data = alloca(sizeof(*data));
     HGE_t hge = (HGE_t) headerGetExtension;
     HAE_t hae = (HAE_t) headerAddEntry;
-    int_32 he_t;
+    rpmTagType he_t;
     hRET_t he_p = { .ptr = NULL };
     int_32 he_c;
     HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
@@ -3541,7 +3541,7 @@ int rpmdbFindFpList(rpmdb db, fingerPrint * fpList, dbiIndexSet * matchList,
 DBT * key;
 DBT * data;
     HGE_t hge = (HGE_t)headerGetExtension;
-    int_32 he_t = 0;
+    rpmTagType he_t = 0;
     hRET_t he_p = { .ptr = NULL };
     int_32 he_c = 0;
     HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
