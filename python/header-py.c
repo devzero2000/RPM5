@@ -179,8 +179,6 @@ static void expandFilelist(Header h)
     HE_t he = &he_s;
     HAE_t hae = (HAE_t)headerAddEntry;
     HRE_t hre = (HRE_t)headerRemoveEntry;
-    hRET_t fileNames = { .ptr = NULL };
-    int count = 0;
     int xx;
 
     /*@-branchstate@*/
@@ -308,7 +306,6 @@ static void mungeFilelist(Header h)
     int_32 he_c = 0;
     HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
     HE_t he = &he_s;
-    int count = 0;
     int xx;
 
     if (!headerIsEntry (h, RPMTAG_BASENAMES)

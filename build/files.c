@@ -2194,7 +2194,7 @@ static int processPackageFiles(Spec spec, Package pkg,
 		}
 	    }
 	    (void) Fclose(fd);
-	} while(token=strtok_r(NULL, ",", &saveptr));
+	} while((token = strtok_r(NULL, ",", &saveptr)) != NULL);
 	free(filesFiles);
     }
     

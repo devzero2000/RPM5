@@ -1,4 +1,6 @@
 4.5 -> 5.0:
+    - jbj: clean up some warnings.
+    - jbj: change HGE_t prototype to see what remains to be fixed.
     - jbj: rpmsignature.c: use headerGetExtension everywhere.
     - jbj: rpmrollback.c: use headerGetExtension everywhere.
     - jbj: use (*hge), not headerGetExtension, everywhere.

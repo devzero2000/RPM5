@@ -616,10 +616,10 @@ typedef /*@null@*/
  * @return		1 on success, 0 on failure
  */
 typedef int (*HGE_t) (Header h, rpmTag tag,
-			/*@null@*/ /*@out@*/ rpmTagType * type,
-			/*@null@*/ /*@out@*/ void * p,
-			/*@null@*/ /*@out@*/ int_32 * c)
-	/*@modifies *type, *p, *c @*/;
+			/*@null@*/ /*@out@*/ hTYP_t t,
+			/*@null@*/ /*@out@*/ hRET_t * p,
+			/*@null@*/ /*@out@*/ hCNT_t c)
+	/*@modifies *t, *p, *c @*/;
 
 /**
  * Prototype for headerAddEntry() vector.

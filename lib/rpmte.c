@@ -225,7 +225,6 @@ rpmte rpmteNew(const rpmts ts, Header h,
     HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
     HE_t he = &he_s;
     rpmte p = xcalloc(1, sizeof(*p));
-    int_32 * ep;
     int xx;
 
     p->type = type;
