@@ -211,22 +211,26 @@ static inline char * findLastChar(char * s)
 static int isMemberInEntry(Header h, const char *name, rpmTag tag)
 	/*@*/
 {
-    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
-    HFD_t hfd = headerFreeData;
-    const char ** names;
-    rpmTagType type;
-    int count;
+    HGE_t hge = (HGE_t)headerGetExtension;
+    int_32 he_t = 0;
+    hRET_t he_p = { .ptr = NULL };
+    int_32 he_c = 0;
+    HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
+    HE_t he = &he_s;
+    int xx;
 
-    if (!hge(h, tag, &type, &names, &count))
+    he->tag = tag;
+    xx = hge(h, he->tag, he->t, he->p, he->c);
+    if (!xx)
 	return -1;
 /*@-boundsread@*/
-    while (count--) {
-	if (!xstrcasecmp(names[count], name))
+    while (he_c--) {
+	if (!xstrcasecmp(he_p.argv[he_c], name))
 	    break;
     }
-    names = hfd(names, type);
+    he_p.ptr = _free(he_p.ptr);
 /*@=boundsread@*/
-    return (count >= 0 ? 1 : 0);
+    return (he_c >= 0 ? 1 : 0);
 }
 
 /**
@@ -438,8 +442,14 @@ exit:
 
 spectag stashSt(Spec spec, Header h, int tag, const char * lang)
 {
-    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
+    HGE_t hge = (HGE_t)headerGetExtension;
+    int_32 he_t = 0;
+    hRET_t he_p = { .ptr = NULL };
+    int_32 he_c = 0;
+    HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
+    HE_t he = &he_s;
     spectag t = NULL;
+    int xx;
 
     if (spec->st) {
 	spectags st = spec->st;
@@ -454,12 +464,14 @@ spectag stashSt(Spec spec, Header h, int tag, const char * lang)
 	t->t_lang = xstrdup(lang);
 	t->t_msgid = NULL;
 	if (!(t->t_lang && strcmp(t->t_lang, RPMBUILD_DEFAULT_LANG))) {
-	    char *n;
-	    if (hge(h, RPMTAG_NAME, NULL, &n, NULL)) {
+	    he->tag = RPMTAG_NAME;
+	    xx = hge(h, he->tag, he->t, he->p, he->c);
+	    if (xx) {
 		char buf[1024];
-		sprintf(buf, "%s(%s)", n, tagName(tag));
+		sprintf(buf, "%s(%s)", he_p.str, tagName(tag));
 		t->t_msgid = xstrdup(buf);
 	    }
+	    he_p.ptr = _free(he_p.ptr);
 	}
     }
     /*@-usereleased -compdef@*/
@@ -491,14 +503,16 @@ static int handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
 		pkg->header, pkg->autoProv, pkg->autoReq, pkg->icon,
 		rpmGlobalMacroContext, fileSystem, internalState @*/
 {
-    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
-    HFD_t hfd = headerFreeData;
+    HGE_t hge = (HGE_t)headerGetExtension;
+    int_32 he_t = 0;
+    hRET_t he_p = { .ptr = NULL };
+    int_32 he_c = 0;
+    HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
+    HE_t he = &he_s;
     char * field = spec->line;
     char * end;
-    char ** array;
     int multiToken = 0;
     rpmsenseFlags tagflags;
-    rpmTagType type;
     int len;
     int num;
     int rc;
@@ -592,26 +606,27 @@ static int handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
     case RPMTAG_VARIANTS:
     case RPMTAG_PREFIXES:
 	addOrAppendListEntry(pkg->header, tag, field);
-	xx = hge(pkg->header, tag, &type, &array, &num);
+	he->tag = tag;
+	xx = hge(pkg->header, he->tag, he->t, he->p, he->c);
 	if (tag == RPMTAG_PREFIXES)
-	while (num--) {
-	    if (array[num][0] != '/') {
+	while (he_c--) {
+	    if (he_p.argv[he_c][0] != '/') {
 		rpmlog(RPMLOG_ERR,
 			 _("line %d: Prefixes must begin with \"/\": %s\n"),
 			 spec->lineNum, spec->line);
-		array = hfd(array, type);
+		he_p.ptr = _free(he_p.ptr);
 		return RPMRC_FAIL;
 	    }
-	    len = strlen(array[num]);
-	    if (array[num][len - 1] == '/' && len > 1) {
+	    len = strlen(he_p.argv[he_c]);
+	    if (he_p.argv[he_c][len - 1] == '/' && len > 1) {
 		rpmlog(RPMLOG_ERR,
 			 _("line %d: Prefixes must not end with \"/\": %s\n"),
 			 spec->lineNum, spec->line);
-		array = hfd(array, type);
+		he_p.ptr = _free(he_p.ptr);
 		return RPMRC_FAIL;
 	    }
 	}
-	array = hfd(array, type);
+	he_p.ptr = _free(he_p.ptr);
 	break;
     case RPMTAG_DOCDIR:
 	SINGLE_TOKEN_ONLY;
