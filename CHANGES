@@ -1,5 +1,6 @@
 4.5 -> 5.0:
-    - jbj: fx: grr, headerGetEntry return code is backwards.
+    - jbj: package.c: use headerGetExtension everywhere (fix double free).
+    - jbj: fix: grr, headerGetEntry return code is backwards.
     - jbj: clean up some warnings.
     - jbj: change HGE_t prototype to see what remains to be fixed.
     - jbj: rpmsignature.c: use headerGetExtension everywhere.

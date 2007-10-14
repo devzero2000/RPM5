@@ -184,6 +184,12 @@ exit:
 /*@-mods@*/
 rpmRC rpmReadPackageFile(rpmts ts, void * _fd, const char * fn, Header * hdrp)
 {
+    HGE_t hge = (HGE_t)headerGetExtension;
+    int_32 he_t = 0;
+    hRET_t he_p = { .ptr = NULL };
+    int_32 he_c = 0;
+    HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
+    HE_t he = &he_s;
     pgpDig dig = rpmtsDig(ts);
     FD_t fd = _fd;
     char buf[8*BUFSIZ];
@@ -346,7 +352,11 @@ assert(dig != NULL);
 
     /* Retrieve the tag parameters from the signature header. */
     sig = NULL;
-    xx = headerGetEntry(sigh, sigtag, &sigtype, (void **) &sig, &siglen);
+    he->tag = sigtag;
+    xx = hge(sigh, he->tag, he->t, he->p, he->c);
+    sigtype = he_t;
+    sig = he_p.ptr;
+    siglen = he_c;
     if (sig == NULL) {
 	rc = RPMRC_FAIL;
 	goto exit;
@@ -372,7 +382,12 @@ assert(dig != NULL);
 	unsigned char * hmagic = NULL;
 	size_t nmagic = 0;
 
-	if (!headerGetEntry(h, RPMTAG_HEADERIMMUTABLE, &uht, &uh, &uhc))
+	he->tag = RPMTAG_HEADERIMMUTABLE;
+	xx = hge(h, he->tag, he->t, he->p, he->c);
+	uht = he_t;
+	uh = he_p.ptr;
+	uhc = he_c;
+	if (!xx)
 	    break;
 	(void) headerGetMagic(NULL, &hmagic, &nmagic);
 	op = pgpStatsAccumulator(dig, 10);	/* RPMTS_OP_DIGEST */
@@ -386,7 +401,7 @@ assert(dig != NULL);
 	dig->nbytes += uhc;
 	(void) rpmswExit(op, dig->nbytes);
 	op->count--;	/* XXX one too many */
-	uh = headerFreeData(uh, uht);
+	uh = _free(uh);
     }	break;
     case RPMSIGTAG_DSA:
 	/* Parse the parameters from the OpenPGP packets that will be needed. */
@@ -406,7 +421,12 @@ assert(dig != NULL);
 	unsigned char * hmagic = NULL;
 	size_t nmagic = 0;
 
-	if (!headerGetEntry(h, RPMTAG_HEADERIMMUTABLE, &uht, &uh, &uhc))
+	he->tag = RPMTAG_HEADERIMMUTABLE;
+	xx = hge(h, he->tag, he->t, he->p, he->c);
+	uht = he_t;
+	uh = he_p.ptr;
+	uhc = he_c;
+	if (!xx)
 	    break;
 	(void) headerGetMagic(NULL, &hmagic, &nmagic);
 	op = pgpStatsAccumulator(dig, 10);	/* RPMTS_OP_DIGEST */
@@ -421,7 +441,7 @@ assert(dig != NULL);
 	(void) rpmswExit(op, dig->nbytes);
 	if (sigtag == RPMSIGTAG_SHA1)
 	    op->count--;	/* XXX one too many */
-	uh = headerFreeData(uh, uht);
+	uh = _free(uh);
     }	break;
 #if defined(SUPPORT_RPMV3_VERIFY_DSA) || defined(SUPPORT_RPMV3_VERIFY_RSA)
 #if defined(SUPPORT_RPMV3_VERIFY_DSA)
