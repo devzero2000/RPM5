@@ -1338,7 +1338,7 @@ static int checkPackageSet(rpmts ts, const char * depName,
 
 	he->tag = RPMTAG_NVRA;
 	rc = hge(h, he->tag, he->t, he->p, he->c);
-assert(rc && he_p.str != NULL);
+assert(he_p.str != NULL);
 	if (!(depFlags & RPMDEPS_FLAG_NOREQUIRES))
 	    requires = rpmdsNew(h, RPMTAG_REQUIRENAME, scareMem);
 	if (!(depFlags & RPMDEPS_FLAG_NOCONFLICTS))
