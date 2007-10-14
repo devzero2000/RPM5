@@ -133,31 +133,37 @@ exit:
 
 /**
  * Retrieve signer fingerprint from an OpenPGP signature tag.
- * @param sig		signature header
+ * @param sigh		signature header
  * @param sigtag	signature tag
  * @retval signid	signer fingerprint
  * @return		0 on success
  */
-static int getSignid(Header sig, int sigtag, unsigned char * signid)
+static int getSignid(Header sigh, int sigtag, unsigned char * signid)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies *signid, fileSystem, internalState @*/
 {
-    void * pkt = NULL;
-    int_32 pkttyp = 0;
-    int_32 pktlen = 0;
+    HGE_t hge = (HGE_t)headerGetExtension;
+    int_32 he_t = 0;
+    hRET_t he_p = { .ptr = NULL };
+    int_32 he_c = 0;
+    HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
+    HE_t he = &he_s;
     int rc = 1;
+    int xx;
 
-    if (headerGetEntry(sig, sigtag, &pkttyp, &pkt, &pktlen) && pkt != NULL) {
+    he->tag = sigtag;
+    xx = hge(sigh, he->tag, he->t, he->p, he->c);
+    if (xx && he_p.ptr != NULL) {
 	pgpDig dig = pgpNewDig(0);
 
-	if (!pgpPrtPkts(pkt, pktlen, dig, 0)) {
+	if (!pgpPrtPkts(he_p.ptr, he_c, dig, 0)) {
 	    memcpy(signid, dig->signature.signid, sizeof(dig->signature.signid));
 	    rc = 0;
 	}
      
+	he_p.ptr = _free(he_p.ptr);
 	dig = pgpFreeDig(dig);
     }
-    pkt = headerFreeData(pkt, pkttyp);
     return rc;
 }
 
@@ -175,6 +181,12 @@ static int rpmReSign(/*@unused@*/ rpmts ts,
         /*@modifies ts, rpmGlobalMacroContext,
                 fileSystem, internalState @*/
 {
+    HGE_t hge = (HGE_t)headerGetExtension;
+    int_32 he_t = 0;
+    hRET_t he_p = { .ptr = NULL };
+    int_32 he_c = 0;
+    HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
+    HE_t he = &he_s;
     rpmgi gi = NULL;
     FD_t fd = NULL;
     FD_t ofd = NULL;
@@ -184,8 +196,6 @@ static int rpmReSign(/*@unused@*/ rpmts ts,
     char tmprpm[1024+1];
     Header sigh = NULL;
     const char * msg = NULL;
-    void * uh = NULL;
-    int_32 uht, uhc;
     int res = EXIT_FAILURE;
     int deleting = (qva->qva_mode == RPMSIGN_DEL_SIGNATURE);
     rpmRC rc;
@@ -194,7 +204,7 @@ static int rpmReSign(/*@unused@*/ rpmts ts,
     tmprpm[0] = '\0';
 
     if (argv)
-{       /* start-of-arg-iteration */
+ {       /* start-of-arg-iteration */
     int tag = (qva->qva_source == RPMQV_FTSWALK)
 	? RPMDBI_FTSWALK : RPMDBI_ARGLIST;
     rpmgiFlags _giFlags = RPMGI_NONE;
@@ -260,7 +270,9 @@ if (!_nosigh) {
 	/* ASSERT: fd == NULL && ofd == NULL */
 
 	/* Dump the immutable region (if present). */
-	if (headerGetEntry(sigh, RPMTAG_HEADERSIGNATURES, &uht, &uh, &uhc)) {
+	he->tag = RPMTAG_HEADERSIGNATURES;
+	xx = hge(sigh, he->tag, he->t, he->p, he->c);
+	if (xx) {
 	    HeaderIterator hi;
 	    int_32 htag, type, count;
 	    hPTR_t ptr;
@@ -269,11 +281,11 @@ if (!_nosigh) {
 
 	    nh = headerNew();
 	    if (nh == NULL) {
-		uh = headerFreeData(uh, uht);
+		he_p.ptr = _free(he_p.ptr);
 		goto exit;
 	    }
 
-	    oh = headerCopyLoad(uh);
+	    oh = headerCopyLoad(he_p.ptr);
 	    for (hi = headerInitIterator(oh);
 		headerNextIterator(hi, &htag, &type, &ptr, &count);
 		ptr = headerFreeData(ptr, type))
@@ -423,7 +435,7 @@ if (!_nosigh) {
 	sigtarget = _free(sigtarget);
     }
 
-}	/* end-of-arg-iteration */
+ }	/* end-of-arg-iteration */
 
     res = 0;
 
@@ -662,9 +674,16 @@ static int readFile(FD_t fd, const char * fn, pgpDig dig)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fd, *dig, fileSystem, internalState @*/
 {
+    HGE_t hge = (HGE_t)headerGetExtension;
+    int_32 he_t = 0;
+    hRET_t he_p = { .ptr = NULL };
+    int_32 he_c = 0;
+    HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
+    HE_t he = &he_s;
     unsigned char buf[4*BUFSIZ];
     ssize_t count;
     int rc = 1;
+    int xx;
     int i;
 
     dig->nbytes = 0;
@@ -681,12 +700,10 @@ static int readFile(FD_t fd, const char * fn, pgpDig dig)
 	if (headerIsEntry(h, RPMTAG_HEADERIMMUTABLE)) {
 	    unsigned char * hmagic = NULL;
 	    size_t nmagic = 0;
-	    void * uh;
-	    int_32 uht, uhc;
 	
-	    if (!headerGetEntry(h, RPMTAG_HEADERIMMUTABLE, &uht, &uh, &uhc)
-	    ||   uh == NULL)
-	    {
+	    he->tag = RPMTAG_HEADERIMMUTABLE;
+	    xx = hge(h, he->tag, he->t, he->p, he->c);
+	    if (!xx || he_p.ptr == NULL) {
 		h = headerFree(h);
 		rpmlog(RPMLOG_ERR, _("%s: headerGetEntry failed\n"), fn);
 		goto exit;
@@ -695,12 +712,12 @@ static int readFile(FD_t fd, const char * fn, pgpDig dig)
 	    dig->hdrsha1ctx = rpmDigestInit(PGPHASHALGO_SHA1, RPMDIGEST_NONE);
 	    if (hmagic && nmagic > 0)
 		(void) rpmDigestUpdate(dig->hdrsha1ctx, hmagic, nmagic);
-	    (void) rpmDigestUpdate(dig->hdrsha1ctx, uh, uhc);
+	    (void) rpmDigestUpdate(dig->hdrsha1ctx, he_p.ptr, he_c);
 	    dig->hdrmd5ctx = rpmDigestInit(dig->signature.hash_algo, RPMDIGEST_NONE);
 	    if (hmagic && nmagic > 0)
 		(void) rpmDigestUpdate(dig->hdrmd5ctx, hmagic, nmagic);
-	    (void) rpmDigestUpdate(dig->hdrmd5ctx, uh, uhc);
-	    uh = headerFreeData(uh, uht);
+	    (void) rpmDigestUpdate(dig->hdrmd5ctx, he_p.ptr, he_c);
+	    he_p.ptr = _free(he_p.ptr);
 	}
 	h = headerFree(h);
     }
