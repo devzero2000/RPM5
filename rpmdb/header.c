@@ -1881,7 +1881,10 @@ assert(0);	/* XXX stop unimplemented oversights. */
 	break;
     case RPM_I18NSTRING_TYPE:
     case RPM_STRING_TYPE:
-	nb = strlen(he_p.str) + 1;
+	if (he_p.str)
+	    nb = strlen(he_p.str) + 1;
+	else
+	    rc = 0;
 	break;
     case RPM_STRING_ARRAY_TYPE:
 	break;

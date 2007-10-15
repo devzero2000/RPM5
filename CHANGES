@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - jbj: bandaid for a --import hge recursion problem. real fix soon.
     - jbj: fix: missed a level of indirection.
     - bero: Initialize arch and os in rpmtsAddInstallElement, fixing crash when
       installing a src.rpm
