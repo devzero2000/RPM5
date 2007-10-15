@@ -210,8 +210,8 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
     int isSource;
     int duplicate = 0;
     rpmtsi pi = NULL; rpmte p;
-    const char * arch;
-    const char * os;
+    const char * arch = NULL;
+    const char * os = NULL;
     rpmds oldChk, newChk;
     rpmds obsoletes;
     alKey pkgKey;	/* addedPackages key */
