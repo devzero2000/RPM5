@@ -3166,7 +3166,7 @@ static int getExtension(headerSprintfArgs hsa, headerTagTagFunction fn,
 	HE_t he = &he_s;
 	he->tag = 0;
 	he->t = &ec->type;
-	(*he->p).ptr = &ec->data;
+	he->p = &ec->data;
 	he->c = &ec->count;
 	he->freeData = 0;
 	if (fn(hsa->h, he))
