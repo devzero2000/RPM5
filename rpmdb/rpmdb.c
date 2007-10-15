@@ -2924,6 +2924,9 @@ if (dbiByteSwapped(dbi) == 1)
 		/* Identify value pointer and length. */
 		stringvalued = 0;
 		switch (he_t) {
+		case RPM_NULL_TYPE:		/* XXX never occurs. */
+assert(0);
+		    break;
 		case RPM_CHAR_TYPE:
 		case RPM_INT8_TYPE:
 		    key->size = sizeof(*he_p.i8p);
@@ -2934,16 +2937,22 @@ if (dbiByteSwapped(dbi) == 1)
 		    key->data = he_p.i16p + i;
 		    /*@switchbreak@*/ break;
 		case RPM_INT32_TYPE:
-		    key->size = sizeof(he_p.i32p);
+		    key->size = sizeof(*he_p.i32p);
 		    key->data = he_p.i32p + i;
 		    /*@switchbreak@*/ break;
+		case RPM_INT64_TYPE:
+		    key->size = sizeof(*he_p.i64p);
+		    key->data = he_p.i64p + i;
+		    /*@switchbreak@*/ break;
+		case RPM_OPENPGP_TYPE:
+		case RPM_ASN1_TYPE:
 		case RPM_BIN_TYPE:
 		    key->size = he_c;
 		    key->data = he_p.ptr;
 		    he_c = 1;		/* XXX break out of loop. */
 		    /*@switchbreak@*/ break;
+		case RPM_I18NSTRING_TYPE:	/* XXX never occurs. */
 		case RPM_STRING_TYPE:
-		case RPM_I18NSTRING_TYPE:
 		    he_c = 1;		/* XXX break out of loop. */
 		    /*@fallthrough@*/
 		case RPM_STRING_ARRAY_TYPE:
@@ -3097,10 +3106,10 @@ DBT * data = alloca(sizeof(*data));
     sigset_t signalMask;
 #if defined(SUPPORT_RPMV3_BASENAMES_HACKS)
     const char ** baseNames;
+    int count = 0;
 #endif
     const char ** dirNames;
     uint_32 * dirIndexes;
-    int count = 0;
     dbiIndex dbi;
     int dbix;
     union _dbswap mi_offset;
@@ -3144,6 +3153,7 @@ memset(data, 0, sizeof(*data));
     he->tag = RPMTAG_BASENAMES;
     xx = hge(h, he->tag, he->t, he->p, he->c);
     baseNames = he_p.argv;
+    count = he_c;
 #endif
     he->tag = RPMTAG_DIRNAMES;
     xx = hge(h, he->tag, he->t, he->p, he->c);
@@ -3397,7 +3407,9 @@ data->size = 0;
 		/* Identify value pointer and length. */
 		stringvalued = 0;
 		switch (he_t) {
-/*@-sizeoftype@*/
+		case RPM_NULL_TYPE:		/* XXX never occurs. */
+assert(0);
+		    break;
 		case RPM_CHAR_TYPE:
 		case RPM_INT8_TYPE:
 		    key->size = sizeof(*he_p.i8p);
@@ -3411,14 +3423,19 @@ data->size = 0;
 		    key->size = sizeof(*he_p.i32p);
 /*@i@*/		    key->data = he_p.i32p + i;
 		    /*@switchbreak@*/ break;
-/*@=sizeoftype@*/
+		case RPM_INT64_TYPE:
+		    key->size = sizeof(*he_p.i64p);
+/*@i@*/		    key->data = he_p.i64p + i;
+		    /*@switchbreak@*/ break;
+		case RPM_OPENPGP_TYPE:
+		case RPM_ASN1_TYPE:
 		case RPM_BIN_TYPE:
 		    key->size = he_c;
 /*@i@*/		    key->data = he_p.ptr;
 		    he_c = 1;		/* XXX break out of loop. */
 		    /*@switchbreak@*/ break;
+		case RPM_I18NSTRING_TYPE:	/* XXX never occurs */
 		case RPM_STRING_TYPE:
-		case RPM_I18NSTRING_TYPE:
 		    he_c = 1;		/* XXX break out of loop. */
 		    /*@fallthrough@*/
 		case RPM_STRING_ARRAY_TYPE:

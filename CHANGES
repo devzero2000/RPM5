@@ -1,4 +1,7 @@
 4.5 -> 5.0:
+    - jbj: fix: typo broke i32p indices when sizeof(void *) != sizeof(int_32).
+    - jbj: add RPM_INT64_TYPE rpmdb indices (untested).
+    - jbj: ah, there's the rpmdb basenames memory leak (but leave disabled).
     - jbj: mark (and disable) rpmv3 Provides: N = E:V-R retrofit.
     - jbj: mark (and disable) rpmv3 basenames hacks (likely fixing rpmdb leak).
     - jbj: ditto for python/* too.
