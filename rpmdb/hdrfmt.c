@@ -1019,7 +1019,7 @@ static int i18nTag(Header h, HE_t he)
 	    if (tn)	nb += strlen(tn);
 	    if (n)	nb += strlen(n);
 	    mk = alloca(nb);
-	    sprintf(mk, "%s(%s)", (n?n:""), (tn?tn:""));
+	    sprintf(mk, "%s(%s)", (n ? n : ""), (tn ? tn : ""));
 	    msgkey = mk;
 	}
 
@@ -1060,7 +1060,7 @@ static int i18nTag(Header h, HE_t he)
 
     dstring = _free(dstring);
 
-    rc = headerGetEntry(h, he->tag, he->t, (*he->p).ptr, he->c);
+    rc = headerGetEntry(h, he->tag, he->t, he->p, he->c);
 
     if (rc && (*he->p).ptr != NULL) {
 	(*he->p).str = xstrdup((*he->p).str);
