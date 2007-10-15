@@ -154,6 +154,7 @@ struct hdrObject_s {
     return 0;
 }
 
+#if defined(SUPPORT_RPMV3_BASENAMES_HACKS)
 /*@-boundsread@*/
 static int dncmp(const void * a, const void * b)
 	/*@*/
@@ -331,7 +332,9 @@ static void mungeFilelist(Header h)
 
     he_p.ptr = _free(he_p.ptr);
 }
+#endif	/* SUPPORT_RPMV3_BASENAMES_HACKS */
 
+#if defined(SUPPORT_RPMV3_PROVIDE_SELF)
 /**
  * Retrofit an explicit Provides: N = E:V-R dependency into package headers.
  * Up to rpm 3.0.4, packages implicitly provided their own name-version-release.
@@ -434,6 +437,7 @@ exit:
 		&pEVR, 1);
     }
 }
+#endif	/* SUPPORT_RPMV3_PROVIDE_SELF */
 
 /** \ingroup python
  * \name Class: Rpmhdr
@@ -457,6 +461,11 @@ static PyObject * hdrKeyList(hdrObject * s)
         if (tag == HEADER_I18NTABLE) continue;
 
 	switch (type) {
+	case RPM_NULL_TYPE:
+	case RPM_I18NSTRING_TYPE:
+	case RPM_MASK_TYPE:
+	    continue;
+	    /*@notreached@*/ break;
 	case RPM_OPENPGP_TYPE:
 	case RPM_ASN1_TYPE:
 	case RPM_BIN_TYPE:
@@ -469,6 +478,7 @@ static PyObject * hdrKeyList(hdrObject * s)
 	case RPM_STRING_TYPE:
 	    PyList_Append(list, o=PyInt_FromLong(tag));
 	    Py_DECREF(o);
+	    break;
 	}
     }
     headerFreeIterator(hi);
@@ -515,6 +525,7 @@ static PyObject * hdrUnload(hdrObject * s, PyObject * args, PyObject *keywords)
     return rc;
 }
 
+#if defined(SUPPORT_RPMV3_BASENAMES_HACKS)
 /**
  */
 static PyObject * hdrExpandFilelist(hdrObject * s)
@@ -536,6 +547,18 @@ static PyObject * hdrCompressFilelist(hdrObject * s)
     Py_INCREF(Py_None);
     return Py_None;
 }
+
+/**
+ */
+static PyObject * hdrFullFilelist(hdrObject * s)
+	/*@*/
+{
+    mungeFilelist (s->h);
+
+    Py_INCREF(Py_None);
+    return Py_None;
+}
+#endif	/* SUPPORT_RPMV3_BASENAMES_HACKS */
 
 /**
  */
@@ -565,17 +588,6 @@ static PyObject * hdrSetOrigin(hdrObject * s, PyObject * args, PyObject * kwds)
 
     if (s->h != NULL && origin != NULL)
 	headerSetOrigin(s->h, origin);
-
-    Py_INCREF(Py_None);
-    return Py_None;
-}
-
-/**
- */
-static PyObject * hdrFullFilelist(hdrObject * s)
-	/*@*/
-{
-    mungeFilelist (s->h);
 
     Py_INCREF(Py_None);
     return Py_None;
@@ -617,12 +629,14 @@ static struct PyMethodDef hdr_methods[] = {
 	NULL },
     {"unload",		(PyCFunction) hdrUnload,	METH_VARARGS|METH_KEYWORDS,
 	NULL },
+#if defined(SUPPORT_RPMV3_BASENAMES_HACKS)
     {"expandFilelist",	(PyCFunction) hdrExpandFilelist,METH_NOARGS,
 	NULL },
     {"compressFilelist",(PyCFunction) hdrCompressFilelist,METH_NOARGS,
 	NULL },
     {"fullFilelist",	(PyCFunction) hdrFullFilelist,	METH_NOARGS,
 	NULL },
+#endif	/* SUPPORT_RPMV3_BASENAMES_HACKS */
     {"getorigin",	(PyCFunction) hdrGetOrigin,	METH_NOARGS,
 	NULL },
     {"setorigin",	(PyCFunction) hdrSetOrigin,	METH_NOARGS,
@@ -1084,8 +1098,12 @@ PyObject * hdrLoad(PyObject * self, PyObject * args, PyObject * kwds)
 	return NULL;
     }
     headerAllocated(h);
+#if defined(SUPPORT_RPMV3_BASENAMES_HACKS)
     compressFilelist (h);
+#endif	/* SUPPORT_RPMV3_BASENAMES_HACKS */
+#if defined(SUPPORT_RPMV3_PROVIDE_SELF)
     providePackageNVR (h);
+#endif	/* SUPPORT_RPMV3_PROVIDE_SELF */
 
     hdr = hdr_Wrap(h);
     h = headerFree(h);	/* XXX ref held by hdr */
@@ -1112,8 +1130,12 @@ PyObject * rpmReadHeaders (FD_t fd)
     Py_END_ALLOW_THREADS
 
     while (h) {
+#if defined(SUPPORT_RPMV3_BASENAMES_HACKS)
 	compressFilelist(h);
+#endif	/* SUPPORT_RPMV3_BASENAMES_HACKS */
+#if defined(SUPPORT_RPMV3_PROVIDE_SELF)
 	providePackageNVR(h);
+#endif	/* SUPPORT_RPMV3_PROVIDE_SELF */
 	hdr = hdr_Wrap(h);
 	if (PyList_Append(list, (PyObject *) hdr)) {
 	    Py_DECREF(list);
