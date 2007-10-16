@@ -10,6 +10,7 @@
 #include <rpmcli.h>
 
 #include "psm.h"
+#define	_RPMFI_INTERNAL
 #include "rpmfi.h"
 
 #include "rpmts.h"
@@ -475,10 +476,14 @@ int showVerifyPackage(QVA_t qva, rpmts ts, Header h)
 	 && headerIsEntry(h, RPMTAG_VERIFYSCRIPT))
 	{
 	    FD_t fdo = fdDup(STDOUT_FILENO);
+
+/* XXX hackery to assert(!scaremem) in rpmfiNew. */
+if (fi->h == NULL) fi->h = headerLink(h);
 	    if ((rc = rpmVerifyScript(qva, ts, fi, fdo)) != 0)
 		ec = rc;
 	    if (fdo != NULL)
 		rc = Fclose(fdo);
+fi->h = headerFree(fi->h);
 	}
 
 	fi = rpmfiFree(fi);

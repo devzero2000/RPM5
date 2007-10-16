@@ -1610,8 +1610,8 @@ rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
     int xx;
 
 /* XXX hackery to assert(!scaremem) in rpmfiNew. */
-assert(fi->te);
-if (fi->h == NULL && fi->te->h != NULL) fi->h = headerLink(fi->te->h);
+if (fi->h == NULL && fi->te && fi->te->h != NULL) fi->h = headerLink(fi->te->h);
+assert(fi->h != NULL);
 
     switch (stage) {
     case PSM_UNKNOWN:
