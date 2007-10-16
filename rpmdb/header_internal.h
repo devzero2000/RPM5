@@ -134,7 +134,7 @@ struct rpmec_s {
     int avail;
     int freeit;
 /*@owned@*/
-    const void * data;
+    hRET_t data;
 };
 
 /** \ingroup header

@@ -3160,12 +3160,10 @@ static int parseExpression(headerSprintfArgs hsa, sprintfToken token,
  */
 static int getExtension(headerSprintfArgs hsa, headerTagTagFunction fn,
 		/*@out@*/ hTYP_t typeptr,
-		/*@out@*/ hPTR_t * data,
+		/*@out@*/ hRET_t * data,
 		/*@out@*/ hCNT_t countptr,
 		rpmec ec)
 	/*@modifies *typeptr, *data, *countptr, ec @*/
-	/*@requires maxSet(typeptr) >= 0 /\ maxSet(data) >= 0
-		/\ maxSet(countptr) >= 0 @*/
 {
     if (!ec->avail) {
 	HE_s he_s;
@@ -3186,7 +3184,7 @@ static int getExtension(headerSprintfArgs hsa, headerTagTagFunction fn,
     }
 
     if (typeptr) *typeptr = ec->type;
-    if (data) *data = ec->data;
+    if (data) (*data).ptr = ec->data.ptr;
     if (countptr) *countptr = ec->count;
 
     return 0;
@@ -3212,26 +3210,24 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
     size_t need = 0;
     char * t, * te;
     char buf[20];
-    hPTR_t data;
     unsigned int intVal;
     uint_64 llVal;
     const char ** strarray;
-    int datafree = 0;
-    int countBuf;
+    int_32 countBuf;
 
     memset(buf, 0, sizeof(buf));
     if (tag->ext) {
-	if (getExtension(hsa, tag->ext, he->t, &data, he->c, hsa->ec + tag->extNum))
+	if (getExtension(hsa, tag->ext, he->t, he->p, he->c, hsa->ec + tag->extNum))
 	{
 	    he_c = 1;
 	    he_t = RPM_STRING_TYPE;	
-	    data = "(none)";
+	    he_p.str = "(none)";
 	}
     } else {
-	if (!headerGetEntry(hsa->h, tag->tag, he->t, &data, he->c)) {
+	if (!headerGetEntry(hsa->h, tag->tag, he->t, he->p, he->c)) {
 	    he_c = 1;
 	    he_t = RPM_STRING_TYPE;	
-	    data = "(none)";
+	    he_p.str = "(none)";
 	}
 
 	/* XXX this test is unnecessary, array sizes are checked */
@@ -3239,7 +3235,7 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
 	default:
 	    if (element >= he_c) {
 		/*@-modobserver -observertrans@*/
-		data = headerFreeData(data, he_t);
+		he_p.ptr = headerFreeData(he_p.ptr, he_t);
 		/*@=modobserver =observertrans@*/
 
 		hsa->errmsg = _("(index out of range)");
@@ -3252,27 +3248,29 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
 	case RPM_STRING_TYPE:
 	    break;
 	}
-	datafree = 1;
+	he->freeData = 1;
     }
 
     if (tag->arrayCount) {
 /*@-modobserver -observertrans@*/
-	if (datafree)
-	    data = headerFreeData(data, he_t);
+	if (he->freeData) {
+	    he_p.ptr = headerFreeData(he_p.ptr, he_t);
+	    he->freeData = 0;
+	}
 /*@=modobserver =observertrans@*/
 
 	countBuf = he_c;
-	data = &countBuf;
+	he_p.i32p = &countBuf;
 	he_c = 1;
 	he_t = RPM_INT32_TYPE;
     }
 
     (void) stpcpy( stpcpy(buf, "%"), tag->format);
 
-    if (data)
+    if (he_p.ptr)
     switch (he_t) {
     case RPM_STRING_ARRAY_TYPE:
-	strarray = (const char **)data;
+	strarray = he_p.argv;
 
 	if (tag->fmt)
 	    val = tag->fmt(RPM_STRING_TYPE, strarray[element], buf, tag->pad, (he_c > 1 ? element : -1));
@@ -3292,22 +3290,22 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
 
     case RPM_STRING_TYPE:
 	if (tag->fmt)
-	    val = tag->fmt(RPM_STRING_TYPE, data, buf, tag->pad,  -1);
+	    val = tag->fmt(RPM_STRING_TYPE, he_p.ptr, buf, tag->pad,  -1);
 
 	if (val) {
 	    need = strlen(val);
 	} else {
-	    need = strlen(data) + tag->pad + 20;
+	    need = strlen(he_p.str) + tag->pad + 20;
 	    val = xmalloc(need+1);
 	    strcat(buf, "s");
 	    /*@-formatconst@*/
-	    sprintf(val, buf, data);
+	    sprintf(val, buf, he_p.str);
 	    /*@=formatconst@*/
 	}
 	break;
 
     case RPM_INT64_TYPE:
-	llVal = *(((int_64 *) data) + element);
+	llVal = he_p.i64p[element];
 	if (tag->fmt)
 	    val = tag->fmt(RPM_INT64_TYPE, &llVal, buf, tag->pad, (he_c > 1 ? element : -1));
 	if (val) {
@@ -3329,14 +3327,14 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
 	switch (he_t) {
 	case RPM_CHAR_TYPE:	
 	case RPM_INT8_TYPE:
-	    intVal = *(((int_8 *) data) + element);
+	    intVal = he_p.i8p[element];
 	    /*@innerbreak@*/ break;
 	case RPM_INT16_TYPE:
-	    intVal = *(((uint_16 *) data) + element);
+	    intVal = he_p.ui16p[element];
 	    /*@innerbreak@*/ break;
 	default:		/* keep -Wall quiet */
 	case RPM_INT32_TYPE:
-	    intVal = *(((int_32 *) data) + element);
+	    intVal = he_p.i32p[element];
 	    /*@innerbreak@*/ break;
 	}
 
@@ -3360,17 +3358,17 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
     case RPM_BIN_TYPE:
 	/* XXX HACK ALERT: element field abused as no. bytes of binary data. */
 	if (tag->fmt)
-	    val = tag->fmt(RPM_BIN_TYPE, data, buf, tag->pad, he_c);
+	    val = tag->fmt(RPM_BIN_TYPE, he_p.ptr, buf, tag->pad, he_c);
 
 	if (val) {
 	    need = strlen(val);
 	} else {
 #ifdef	NOTYET
-	    val = memcpy(xmalloc(he_c), data, he_c);
+	    val = memcpy(xmalloc(he_c), he_p.ptr, he_c);
 #else
 	    /* XXX format string not used */
 	    static char hex[] = "0123456789abcdef";
-	    const char * s = data;
+	    const char * s = he_p.str;
 
 	    need = 2*he_c + tag->pad;
 	    val = t = xmalloc(need+1);
@@ -3392,8 +3390,10 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
     }
 
 /*@-modobserver -observertrans@*/
-    if (datafree)
-	data = headerFreeData(data, he_t);
+    if (he->freeData) {
+	he_p.ptr = headerFreeData(he_p.ptr, he_t);
+	he->freeData = 0;
+    }
 /*@=modobserver =observertrans@*/
 
     if (val && need > 0) {
@@ -3648,7 +3648,7 @@ rpmecFree(const headerSprintfExtension exts, /*@only@*/ rpmec ec)
     for (ext = exts, extNum = 0; ext != NULL && ext->type != HEADER_EXT_LAST;
 	ext = (ext->type == HEADER_EXT_MORE ? ext->u.more : ext+1), extNum++)
     {
-	if (ec[extNum].freeit) ec[extNum].data = _free(ec[extNum].data);
+	if (ec[extNum].freeit) ec[extNum].data.ptr = _free(ec[extNum].data.ptr);
     }
 
     ec = _free(ec);
@@ -3675,7 +3675,6 @@ char * headerSprintf(Header h, const char * fmt,
 	/*@requires maxSet(errmsg) >= 0 @*/
 {
     headerSprintfArgs hsa = memset(alloca(sizeof(*hsa)), 0, sizeof(*hsa));
-    HGE_t hge = (HGE_t)headerGetExtension;
     rpmTagType he_t = 0;
     hRET_t he_p = { .ptr = NULL };
     int_32 he_c = 0;
