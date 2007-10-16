@@ -96,10 +96,12 @@ struct _sql_dbcursor_s {
     int used;
 };
 
+/*@-redef@*/
 union _dbswap {
     uint32_t ui;
     unsigned char uc[4];
 };
+/*@=redef@*/
 
 #define _DBSWAP(_a) \
   { unsigned char _b, *_c = (_a).uc; \

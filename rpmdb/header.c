@@ -1835,7 +1835,9 @@ int headerGetExtension(Header h, int_32 tag,
     memset(he, 0, sizeof(*he));
     he->tag = tag;
     he->t = &he_t;
+/*@-immediatetrans@*/
     he->p = (p ? &he_p : NULL);
+/*@=immediatetrans@*/
     he->c = &he_c;
 
     /* Search extensions for specific tag override. */
@@ -3168,9 +3170,13 @@ static int getExtension(headerSprintfArgs hsa, headerTagTagFunction fn,
 	HE_s he_s;
 	HE_t he = &he_s;
 	he->tag = 0;
+/*@-immediatetrans@*/
 	he->t = &ec->type;
+/*@-type@*/
 	he->p = &ec->data;
+/*@=type@*/
 	he->c = &ec->count;
+/*@=immediatetrans@*/
 	he->freeData = 0;
 	if (fn(hsa->h, he))
 	    return 1;
@@ -3941,11 +3947,16 @@ static char * shescapeFormat(int_32 type, hPTR_t data,
 
 /*@-type@*/ /* FIX: cast? */
 const struct headerSprintfExtension_s headerDefaultFormats[] = {
-    { HEADER_EXT_FORMAT, "octal", { octalFormat } },
-    { HEADER_EXT_FORMAT, "hex", { hexFormat } },
-    { HEADER_EXT_FORMAT, "date", { dateFormat } },
-    { HEADER_EXT_FORMAT, "day", { dayFormat } },
-    { HEADER_EXT_FORMAT, "shescape", { shescapeFormat } },
+    { HEADER_EXT_FORMAT, "octal",
+	{ .formatFunction = octalFormat } },
+    { HEADER_EXT_FORMAT, "hex",
+	{ .formatFunction = hexFormat } },
+    { HEADER_EXT_FORMAT, "date",
+	{ .formatFunction = dateFormat } },
+    { HEADER_EXT_FORMAT, "day",
+	{ .formatFunction = dayFormat } },
+    { HEADER_EXT_FORMAT, "shescape",
+	{ .formatFunction = shescapeFormat } },
     { HEADER_EXT_LAST, NULL, { NULL } }
 };
 /*@=type@*/

@@ -1543,7 +1543,9 @@ if (rc == 0)
 	} while (i < allMatches->count && offset == prevoff);
 
 	baseNames = _free(baseNames);
+/*@-usereleased@*/
 	dirNames = _free(dirNames);
+/*@=usereleased@*/
 	dirIndexes = _free(dirIndexes);
 	h = headerFree(h);
     }
@@ -2926,29 +2928,29 @@ if (dbiByteSwapped(dbi) == 1)
 		switch (he_t) {
 		case RPM_NULL_TYPE:		/* XXX never occurs. */
 assert(0);
-		    break;
+		    /*@switchbreak@*/ break;
 		case RPM_CHAR_TYPE:
 		case RPM_INT8_TYPE:
 		    key->size = sizeof(*he_p.i8p);
-		    key->data = he_p.i8p + i;
+/*@i@*/		    key->data = he_p.i8p + i;
 		    /*@switchbreak@*/ break;
 		case RPM_INT16_TYPE:
 		    key->size = sizeof(*he_p.i16p);
-		    key->data = he_p.i16p + i;
+/*@i@*/		    key->data = he_p.i16p + i;
 		    /*@switchbreak@*/ break;
 		case RPM_INT32_TYPE:
 		    key->size = sizeof(*he_p.i32p);
-		    key->data = he_p.i32p + i;
+/*@i@*/		    key->data = he_p.i32p + i;
 		    /*@switchbreak@*/ break;
 		case RPM_INT64_TYPE:
 		    key->size = sizeof(*he_p.i64p);
-		    key->data = he_p.i64p + i;
+/*@i@*/		    key->data = he_p.i64p + i;
 		    /*@switchbreak@*/ break;
 		case RPM_OPENPGP_TYPE:
 		case RPM_ASN1_TYPE:
 		case RPM_BIN_TYPE:
 		    key->size = he_c;
-		    key->data = he_p.ptr;
+/*@i@*/		    key->data = he_p.ptr;
 		    he_c = 1;		/* XXX break out of loop. */
 		    /*@switchbreak@*/ break;
 		case RPM_I18NSTRING_TYPE:	/* XXX never occurs. */
@@ -3250,12 +3252,12 @@ memset(data, 0, sizeof(*data));
 	if (db->db_tagn != NULL)
 	for (dbix = 0; dbix < db->db_ndbi; dbix++) {
 	    byte * bin = NULL;
-	    int_32 * requireFlags;
+	    hRET_t requireFlags;
 	    rpmRC rpmrc;
 	    int i, j;
 
 	    rpmrc = RPMRC_NOTFOUND;
-	    requireFlags = NULL;
+	    requireFlags.ptr = NULL;
 	    dbi = NULL;
 	    he->tag = db->db_tagn[dbix];
 	    he_t = 0;
@@ -3387,7 +3389,8 @@ data->size = 0;
 		    /*@switchbreak@*/ break;
 		case RPMTAG_REQUIRENAME:
 		    /* Filter out install prerequisites. */
-		    if (requireFlags && isInstallPreReq(requireFlags[i]))
+		    if (requireFlags.i32p
+		     && isInstallPreReq(requireFlags.i32p[i]))
 			/*@innercontinue@*/ continue;
 		    /*@switchbreak@*/ break;
 		case RPMTAG_TRIGGERNAME:
@@ -3409,7 +3412,7 @@ data->size = 0;
 		switch (he_t) {
 		case RPM_NULL_TYPE:		/* XXX never occurs. */
 assert(0);
-		    break;
+		    /*@switchbreak@*/ break;
 		case RPM_CHAR_TYPE:
 		case RPM_INT8_TYPE:
 		    key->size = sizeof(*he_p.i8p);
@@ -3542,7 +3545,7 @@ if (key->size == 0) key->size++;	/* XXX "/" fixup. */
 	    he_p.ptr = _free(he_p.ptr);
 	    he_c = 0;
 	    bin = _free(bin);
-	    requireFlags = _free(requireFlags);
+	    requireFlags.ptr = _free(requireFlags.ptr);
 	}
 
 	rec = _free(rec);
@@ -3669,7 +3672,9 @@ if (key->size == 0) key->size++;	/* XXX "/" fixup. */
 
 	fps = _free(fps);
 	fullBaseNames = _free(fullBaseNames);
+/*@-usereleased@*/
 	dirNames = _free(dirNames);
+/*@=usereleased@*/
 	fullDirIndexes = _free(fullDirIndexes);
 	baseNames = _free(baseNames);
 	dirIndexes = _free(dirIndexes);

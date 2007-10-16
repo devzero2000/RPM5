@@ -885,12 +885,16 @@ static int triggercondsTag(Header h, HE_t he)
     xx = headerGetEntry(h, RPMTAG_TRIGGERFLAGS, NULL, &flags, NULL);
     xx = headerGetEntry(h, RPMTAG_TRIGGERVERSION, NULL, &versions, NULL);
     xx = headerGetEntry(h, RPMTAG_TRIGGERSCRIPTS, NULL, &s, &numScripts);
-    s = headerFreeData(s, -1);
+
+    if (he->t)
+	*he->t = RPM_STRING_ARRAY_TYPE;
+    if (he->c)
+	*he->c = numScripts;
+    if (he->p == NULL)
+	goto exit;
 
     he->freeData = 1;
-    (*he->p).ptr = conds = xmalloc(sizeof(*conds) * numScripts);
-    *he->c = numScripts;
-    *he->t = RPM_STRING_ARRAY_TYPE;
+    (*he->p).argv = conds = xmalloc(sizeof(*conds) * numScripts);
     for (i = 0; i < numScripts; i++) {
 	chptr = xstrdup("");
 
@@ -904,9 +908,8 @@ static int triggercondsTag(Header h, HE_t he)
 		flagsStr = depflagsFormat(RPM_INT32_TYPE, flags, buf, 0, j);
 		sprintf(item, "%s %s %s", names[j], flagsStr, versions[j]);
 		flagsStr = _free(flagsStr);
-	    } else {
+	    } else
 		strcpy(item, names[j]);
-	    }
 
 	    chptr = xrealloc(chptr, strlen(chptr) + strlen(item) + 5);
 	    if (*chptr != '\0') strcat(chptr, ", ");
@@ -917,8 +920,10 @@ static int triggercondsTag(Header h, HE_t he)
 	conds[i] = chptr;
     }
 
+exit:
     names = headerFreeData(names, -1);
     versions = headerFreeData(versions, -1);
+    s = headerFreeData(s, -1);
 
     return 0;
 }
@@ -944,12 +949,16 @@ static int triggertypeTag(Header h, HE_t he)
 
     xx = headerGetEntry(h, RPMTAG_TRIGGERFLAGS, NULL, &flags, NULL);
     xx = headerGetEntry(h, RPMTAG_TRIGGERSCRIPTS, NULL, &s, &numScripts);
-    s = headerFreeData(s, -1);
+
+    if (he->t)
+	*he->t = RPM_STRING_ARRAY_TYPE;
+    if (he->c)
+	*he->c = numScripts;
+    if (he->p == NULL)
+	goto exit;
 
     he->freeData = 1;
-    *he->t = RPM_STRING_ARRAY_TYPE;
-    (*he->p).ptr = conds = xmalloc(sizeof(*conds) * numScripts);
-    *he->c = numScripts;
+    (*he->p).argv = conds = xmalloc(sizeof(*conds) * numScripts);
     for (i = 0; i < numScripts; i++) {
 	for (j = 0; j < numNames; j++) {
 	    if (indices[j] != i)
@@ -969,6 +978,8 @@ static int triggertypeTag(Header h, HE_t he)
 	}
     }
 
+exit:
+    s = headerFreeData(s, -1);
     return 0;
 }
 
@@ -997,11 +1008,14 @@ static int i18nTag(Header h, HE_t he)
 	/*@modifies he, rpmGlobalMacroContext @*/
 {
     char * dstring = rpmExpand(_macro_i18ndomains, NULL);
-    int rc;
+    int rc = 1;		/* assume failure */
 
-    *he->t = RPM_STRING_TYPE;
-    (*he->p).ptr = NULL;
-    *he->c = 0;
+    if (he->t)
+	*he->t = RPM_STRING_TYPE;
+    if (he->p)
+	(*he->p).ptr = NULL;
+    if (he->c)
+	*he->c = 0;
     he->freeData = 0;
 
     if (dstring && *dstring) {
@@ -1049,29 +1063,46 @@ static int i18nTag(Header h, HE_t he)
 
 	if (domain && msgid) {
 	    const char * s = /*@-unrecog@*/ dgettext(domain, msgid) /*@=unrecog@*/;
-	    (*he->p).str = xstrdup(s);	/* XXX xstrdup has side effects. */
-	    *he->c = 1;
-	    he->freeData = 1;
+	    if (s) {
+		rc = 0;
+		if (he->p) {
+		    (*he->p).str = xstrdup(s);
+		    he->freeData = 1;
+		} else
+		    he->freeData = 0;
+		if (he->c)
+		    *he->c = 1;
+	    }
 	}
-	dstring = _free(dstring);
-	if ((*he->p).str)
-	    return 0;
     }
 
+/*@-dependenttrans@*/
     dstring = _free(dstring);
+/*@=dependenttrans@*/
+    if (!rc)
+	return rc;
 
     rc = headerGetEntry(h, he->tag, he->t, he->p, he->c);
-
-    if (rc && (*he->p).ptr != NULL) {
-	(*he->p).str = xstrdup((*he->p).str);
-	(*he->p).str = xstrtolocale((*he->p).str);
-	he->freeData = 1;
-	return 0;
+    if (rc) {
+	rc = 0;
+	if (he->p) {
+	    (*he->p).str = xstrdup((*he->p).str);
+	    (*he->p).str = xstrtolocale((*he->p).str);
+	    he->freeData = 1;
+	}
+/*@-nullstate@*/
+	return rc;
+/*@=nullstate@*/
     }
 
-    he->freeData = 0;
-    (*he->p).ptr = NULL;
-    *he->c = 0;
+    if (he->t)
+	*he->t = RPM_STRING_TYPE;
+    if (he->p) {
+	(*he->p).ptr = NULL;
+	he->freeData = 0;
+    }
+    if (he->c)
+	*he->c = 0;
     return 1;
 }
 
@@ -1083,32 +1114,34 @@ static int localeTag(Header h, HE_t he)
 {
     rpmTagType t;
     char **d, **d2, *dp;
-    int rc, i, l;
+    int_32 c;
+    int rc;
 
-    rc = headerGetEntry(h, he->tag, &t, &d, he->c);
-    if (!rc || d == NULL || *he->c == 0) {
+    rc = headerGetEntry(h, he->tag, &t, &d, &c);
+    if (!rc || d == NULL || c == 0) {
+	if (he->p)
+	    (*he->p).ptr = NULL;
+	if (he->c)
+	    *he->c = 0;
 	he->freeData = 0;
-	(*he->p).ptr = NULL;
-	*he->c = 0;
 	return 1;
     }
-    if (he->t)
-	*he->t = t;
+
     if (t == RPM_STRING_TYPE) {
 	d = (char **)xstrdup((char *)d);
 	d = (char **)xstrtolocale((char *)d);
 	he->freeData = 1;
     } else if (t == RPM_STRING_ARRAY_TYPE) {
-	l = 0;
-	for (i = 0; i < *he->c; i++) {
+	int i, l = 0;
+	for (i = 0; i < c; i++) {
 	    d[i] = xstrdup(d[i]);
 	    d[i] = (char *)xstrtolocale(d[i]);
 assert(d[i] != NULL);
 	    l += strlen(d[i]) + 1;
 	}
-	d2 = xmalloc(*he->c * sizeof(*d2) + l);
-	dp = (char *)(d2 + *he->c);
-	for (i = 0; i < *he->c; i++) {
+	d2 = xmalloc(c * sizeof(*d2) + l);
+	dp = (char *)(d2 + c);
+	for (i = 0; i < c; i++) {
 	    d2[i] = dp;
 	    strcpy(dp, d[i]);
 	    dp += strlen(dp) + 1;
@@ -1119,7 +1152,13 @@ assert(d[i] != NULL);
 	he->freeData = 1;
     } else
 	he->freeData = 0;
-    (*he->p).ptr = (void **)d;
+
+    if (he->t)
+	*he->t = t;
+    if (he->p)
+	(*he->p).ptr = (void **)d;
+    if (he->c)
+	*he->c = c;
     return 0;
 }
 
@@ -1192,14 +1231,17 @@ static int dbinstanceTag(Header h, HE_t he)
 	/*@modifies he, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 {
-    int_32 * valuep = xcalloc(1, sizeof(*valuep));
-
-    *valuep = headerGetInstance(h);
-
-    *he->t = RPM_INT32_TYPE;
-    (*he->p).ptr = valuep;
-    *he->c = 1;
-    he->freeData = 1;
+    he->tag = RPMTAG_DBINSTANCE;
+    if (he->t)
+	*he->t = RPM_INT32_TYPE;
+    if (he->p) {
+	(*he->p).i32p = xcalloc(1, sizeof(*(*he->p).i32p));
+	(*he->p).i32p[0] = headerGetInstance(h);
+	he->freeData = 1;
+    } else
+	he->freeData = 0;
+    if (he->c)
+	*he->c = 1;
 
     return 0;
 }
@@ -1275,7 +1317,8 @@ static int nvraTag(Header h, HE_t he)
  * @retval *fcp		number of files
  */
 static void rpmfiBuildFNames(Header h, rpmTag tagN,
-		/*@out@*/ const char *** fnp, /*@out@*/ int * fcp)
+		/*@null@*/ /*@out@*/ const char *** fnp,
+		/*@null@*/ /*@out@*/ int * fcp)
 	/*@modifies *fnp, *fcp @*/
 {
     const char ** baseNames;
@@ -1343,7 +1386,7 @@ static int _fnTag(Header h, HE_t he)
 	/*@modifies he @*/
 {
     if (he->t) *he->t = RPM_STRING_ARRAY_TYPE;
-    rpmfiBuildFNames(h, he->tag, (const char ***) he->p, he->c);
+    rpmfiBuildFNames(h, he->tag, (he->p ? &(*he->p).argv : NULL), he->c);
     he->freeData = 1;
     return 0;
 }
@@ -1390,16 +1433,26 @@ const struct headerSprintfExtension_s headerCompoundFormats[] = {
 	{ .tagFunction = filepathsTag } },
     { HEADER_EXT_TAG, "RPMTAG_ORIGPATHS",
 	{ .tagFunction = origpathsTag } },
-    { HEADER_EXT_FORMAT, "armor",		{ armorFormat } },
-    { HEADER_EXT_FORMAT, "base64",		{ base64Format } },
-    { HEADER_EXT_FORMAT, "depflags",		{ depflagsFormat } },
-    { HEADER_EXT_FORMAT, "fflags",		{ fflagsFormat } },
-    { HEADER_EXT_FORMAT, "perms",		{ permsFormat } },
-    { HEADER_EXT_FORMAT, "permissions",		{ permsFormat } },
-    { HEADER_EXT_FORMAT, "pgpsig",		{ pgpsigFormat } },
-    { HEADER_EXT_FORMAT, "triggertype",		{ triggertypeFormat } },
-    { HEADER_EXT_FORMAT, "xml",			{ xmlFormat } },
-    { HEADER_EXT_FORMAT, "yaml",		{ yamlFormat } },
+    { HEADER_EXT_FORMAT, "armor",
+	{ .formatFunction = armorFormat } },
+    { HEADER_EXT_FORMAT, "base64",
+	{ .formatFunction = base64Format } },
+    { HEADER_EXT_FORMAT, "depflags",
+	{ .formatFunction = depflagsFormat } },
+    { HEADER_EXT_FORMAT, "fflags",
+	{ .formatFunction = fflagsFormat } },
+    { HEADER_EXT_FORMAT, "perms",
+	{ .formatFunction = permsFormat } },
+    { HEADER_EXT_FORMAT, "permissions",	
+	{ .formatFunction = permsFormat } },
+    { HEADER_EXT_FORMAT, "pgpsig",
+	{ .formatFunction = pgpsigFormat } },
+    { HEADER_EXT_FORMAT, "triggertype",	
+	{ .formatFunction = triggertypeFormat } },
+    { HEADER_EXT_FORMAT, "xml",
+	{ .formatFunction = xmlFormat } },
+    { HEADER_EXT_FORMAT, "yaml",
+	{ .formatFunction = yamlFormat } },
     { HEADER_EXT_MORE, NULL,		{ (void *) headerDefaultFormats } }
 } ;
 /*@=type@*/
