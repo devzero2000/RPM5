@@ -139,6 +139,10 @@ struct rpmfi_s {
     const char * posttrans;
 /*@only@*/ /*@relnull@*/
     const char * posttransprog;
+/*@only@*/ /*@relnull@*/
+    const char * verifyscript;
+/*@only@*/ /*@relnull@*/
+    const char * verifyscriptprog;
 
 /*@only@*/ /*@null@*/
     char * fn;			/*!< File name buffer. */

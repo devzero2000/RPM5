@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - jbj: extract verifyscript when available. more to do ...
     - jbj: fix: %verifyscript broken by scaremem elimination.
     - jbj: another missed level of indirection. leave the bandaid, won't hurt.
     - jbj: bandaid for a --import hge recursion problem. real fix soon.

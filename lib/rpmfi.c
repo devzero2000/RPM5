@@ -1165,6 +1165,8 @@ fprintf(stderr, "*** fi %p\t%s[%d]\n", fi, fi->Type, fi->fc);
     fi->pretransprog = _free(fi->pretransprog);
     fi->posttrans = _free(fi->posttrans);
     fi->posttransprog = _free(fi->posttransprog);
+    fi->verifyscript = _free(fi->verifyscript);
+    fi->verifyscriptprog = _free(fi->verifyscriptprog);
 
     if (fi->fc > 0) {
 	fi->bnl = _free(fi->bnl);
@@ -1312,6 +1314,8 @@ assert(scareMem == 0);		/* XXX always allocate memory */
     _fdupestring(h, RPMTAG_PRETRANSPROG, fi->pretransprog);
     _fdupestring(h, RPMTAG_POSTTRANS, fi->posttrans);
     _fdupestring(h, RPMTAG_POSTTRANSPROG, fi->posttransprog);
+    _fdupestring(h, RPMTAG_VERIFYSCRIPT, fi->verifyscript);
+    _fdupestring(h, RPMTAG_VERIFYSCRIPTPROG, fi->verifyscriptprog);
 
     he->tag = RPMTAG_BASENAMES;
     xx = hge(h, he->tag, he->t, he->p, he->c);
