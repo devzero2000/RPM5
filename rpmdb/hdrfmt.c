@@ -77,12 +77,12 @@ static char * rpmPermsString(int mode)
  * @param element	(unused)
  * @return		formatted string
  */
-static /*@only@*/ char * triggertypeFormat(rpmTagType type, const void * data,
+static /*@only@*/ char * triggertypeFormat(rpmTagType type, hPTR_t data,
 		/*@unused@*/ char * formatPrefix, /*@unused@*/ int padding,
 		/*@unused@*/ int element)
 	/*@requires maxRead(data) >= 0 @*/
 {
-    const int_32 * item = data;
+    const int_32 * item = (const int_32 *) data;	/* NOCAST */
     char * val;
 
     if (type != RPM_INT32_TYPE)
@@ -109,7 +109,7 @@ static /*@only@*/ char * triggertypeFormat(rpmTagType type, const void * data,
  * @param element	(unused)
  * @return		formatted string
  */
-static /*@only@*/ char * permsFormat(rpmTagType type, const void * data,
+static /*@only@*/ char * permsFormat(rpmTagType type, hPTR_t data,
 		char * formatPrefix, int padding, /*@unused@*/ int element)
 	/*@modifies formatPrefix @*/
 	/*@requires maxRead(data) >= 0 @*/
@@ -141,7 +141,7 @@ static /*@only@*/ char * permsFormat(rpmTagType type, const void * data,
  * @param element	(unused)
  * @return		formatted string
  */
-static /*@only@*/ char * fflagsFormat(rpmTagType type, const void * data,
+static /*@only@*/ char * fflagsFormat(rpmTagType type, hPTR_t data,
 		char * formatPrefix, int padding, /*@unused@*/ int element)
 	/*@modifies formatPrefix @*/
 	/*@requires maxRead(data) >= 0 @*/
@@ -191,7 +191,7 @@ static /*@only@*/ char * fflagsFormat(rpmTagType type, const void * data,
  * @param element	no. bytes of binary data
  * @return		formatted string
  */
-static /*@only@*/ char * armorFormat(rpmTagType type, const void * data,
+static /*@only@*/ char * armorFormat(rpmTagType type, hPTR_t data,
 		/*@unused@*/ char * formatPrefix, /*@unused@*/ int padding,
 		int element)
 	/*@*/
@@ -206,14 +206,14 @@ static /*@only@*/ char * armorFormat(rpmTagType type, const void * data,
     case RPM_OPENPGP_TYPE:
     case RPM_ASN1_TYPE:		/* XXX WRONG */
     case RPM_BIN_TYPE:
-	s = data;
+	s = (const unsigned char *) data;	/* NOCAST */
 	/* XXX HACK ALERT: element field abused as no. bytes of binary data. */
 	ns = element;
 	atype = PGPARMOR_SIGNATURE;	/* XXX check pkt for signature */
 	break;
     case RPM_STRING_TYPE:
     case RPM_STRING_ARRAY_TYPE:
-	enc = data;
+	enc = (const char *) data;	/* NOCAST */
 	s = NULL;
 	ns = 0;
 /*@-moduncon@*/
@@ -251,7 +251,7 @@ static /*@only@*/ char * armorFormat(rpmTagType type, const void * data,
  * @param element
  * @return		formatted string
  */
-static /*@only@*/ char * base64Format(rpmTagType type, const void * data,
+static /*@only@*/ char * base64Format(rpmTagType type, hPTR_t data,
 		/*@unused@*/ char * formatPrefix, int padding, int element)
 	/*@*/
 {
@@ -354,7 +354,7 @@ static char * xmlstrcpy(/*@returned@*/ char * t, const char * s)
  * @param element	(unused)
  * @return		formatted string
  */
-static /*@only@*/ char * xmlFormat(rpmTagType type, const void * data,
+static /*@only@*/ char * xmlFormat(rpmTagType type, hPTR_t data,
 		char * formatPrefix, int padding,
 		/*@unused@*/ int element)
 	/*@modifies formatPrefix @*/
@@ -371,7 +371,7 @@ static /*@only@*/ char * xmlFormat(rpmTagType type, const void * data,
     switch (type) {
     case RPM_I18NSTRING_TYPE:
     case RPM_STRING_TYPE:
-	s = data;
+	s = (const char *) data;	/* NOCAST */
 	xtag = "string";
 	/* XXX Force utf8 strings. */
 	s = xstrdup(s);
@@ -517,7 +517,7 @@ static char * yamlstrcpy(/*@out@*/ /*@returned@*/ char * t, const char * s, int 
  * @param element	element index (or -1 for non-array).
  * @return		formatted string
  */
-static /*@only@*/ char * yamlFormat(rpmTagType type, const void * data,
+static /*@only@*/ char * yamlFormat(rpmTagType type, hPTR_t data,
 		char * formatPrefix, int padding,
 		int element)
 	/*@modifies formatPrefix @*/
@@ -538,7 +538,7 @@ static /*@only@*/ char * yamlFormat(rpmTagType type, const void * data,
     case RPM_I18NSTRING_TYPE:
     case RPM_STRING_TYPE:
 	xx = 0;
-	s = data;
+	s = (const char *) data;	/* NOCAST */
 	if (strchr("[", s[0]))	/* leading [ */
 	    xx = 1;
 	if (xx == 0)
@@ -571,7 +571,7 @@ static /*@only@*/ char * yamlFormat(rpmTagType type, const void * data,
 	}
 
 	/* XXX Force utf8 strings. */
-	s = xstrdup(data);
+	s = xstrdup((const char *)data);	/* NOCAST */
 	s = xstrtolocale(s);
 	freeit = 1;
 	break;
@@ -673,7 +673,7 @@ static /*@only@*/ char * yamlFormat(rpmTagType type, const void * data,
  * @param element	(unused)
  * @return		formatted string
  */
-static /*@only@*/ char * pgpsigFormat(rpmTagType type, const void * data,
+static /*@only@*/ char * pgpsigFormat(rpmTagType type, hPTR_t data,
 		/*@unused@*/ char * formatPrefix, /*@unused@*/ int padding,
 		/*@unused@*/ int element)
 	/*@globals fileSystem, internalState @*/
@@ -782,7 +782,7 @@ static /*@only@*/ char * pgpsigFormat(rpmTagType type, const void * data,
  * @param element	(unused)
  * @return		formatted string
  */
-static /*@only@*/ char * depflagsFormat(rpmTagType type, const void * data,
+static /*@only@*/ char * depflagsFormat(rpmTagType type, hPTR_t data,
 		char * formatPrefix, int padding, /*@unused@*/ int element)
 	/*@modifies formatPrefix @*/
 	/*@requires maxRead(data) >= 0 @*/
@@ -906,7 +906,7 @@ static int triggercondsTag(Header h, HE_t he)
 	    item = xmalloc(strlen(names[j]) + strlen(versions[j]) + 20);
 	    if (flags[j] & RPMSENSE_SENSEMASK) {
 		buf[0] = '%', buf[1] = '\0';
-		flagsStr = depflagsFormat(RPM_INT32_TYPE, flags, buf, 0, j);
+		flagsStr = depflagsFormat(RPM_INT32_TYPE, (hPTR_t) flags, buf, 0, j);	/* NOCAST */
 		sprintf(item, "%s %s %s", names[j], flagsStr, versions[j]);
 		flagsStr = _free(flagsStr);
 	    } else

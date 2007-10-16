@@ -578,7 +578,7 @@ static int makeHDRSignature(Header sigh, const char * file, int_32 sigTag,
 
 	if (SHA1 == NULL)
 	    goto exit;
-	if (!headerAddEntry(sigh, RPMSIGTAG_SHA1, RPM_STRING_TYPE, SHA1, 1))
+	if (!headerAddEntry(sigh, RPMSIGTAG_SHA1, RPM_STRING_TYPE, (hPTR_t) SHA1, 1)) /* NOCAST */
 	    goto exit;
 	ret = 0;
 	break;
@@ -596,7 +596,7 @@ static int makeHDRSignature(Header sigh, const char * file, int_32 sigTag,
 	    goto exit;
 	(void) Fclose(fd);	fd = NULL;
 	if (makeGPGSignature(fn, &sigTag, &pkt, &pktlen, passPhrase)
-	 || !headerAddEntry(sigh, sigTag, RPM_BIN_TYPE, pkt, pktlen))
+	 || !headerAddEntry(sigh, sigTag, RPM_BIN_TYPE, (hPTR_t) pkt, pktlen)) /* NOCAST */
 	    goto exit;
 	ret = 0;
 	break;
@@ -646,7 +646,7 @@ int rpmAddSignature(Header sigh, const char * file, int_32 sigTag,
 	if (Stat(file, &st) != 0)
 	    break;
 	pktlen = st.st_size;
-	if (!headerAddEntry(sigh, sigTag, RPM_INT32_TYPE, &pktlen, 1))
+	if (!headerAddEntry(sigh, sigTag, RPM_INT32_TYPE, (hPTR_t) &pktlen, 1))	/* NOCAST */
 	    break;
 	ret = 0;
 	break;
@@ -654,7 +654,7 @@ int rpmAddSignature(Header sigh, const char * file, int_32 sigTag,
 	pktlen = 16;
 	pkt = memset(alloca(pktlen), 0, pktlen);
 	if (dodigest(PGPHASHALGO_MD5, file, pkt, 0, NULL)
-	 || !headerAddEntry(sigh, sigTag, RPM_BIN_TYPE, pkt, pktlen))
+	 || !headerAddEntry(sigh, sigTag, RPM_BIN_TYPE, (hPTR_t) pkt, pktlen))	/* NOCAST */
 	    break;
 	ret = 0;
 	break;

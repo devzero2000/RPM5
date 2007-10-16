@@ -1,4 +1,6 @@
 4.5 -> 5.0:
+    - jbj: drill hPTR_t through prototypes. hRET_t * refactor next.
+    - jbj: drill rpmTagCount through rpmdb/* files.
     - jbj: preliminaries to encapsulate headerSprintf goop.
     - rpm.org: Fix broken doxygen comment.
     - rpm.org: Don't unnecessarily include stdio.h
