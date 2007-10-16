@@ -2562,6 +2562,7 @@ Header headerCopy(Header h)
  */
 typedef struct headerSprintfArgs_s {
     Header h;
+    HE_t he;
     char * fmt;
 /*@temp@*/
     headerTagTableEntry tags;
@@ -3202,13 +3203,16 @@ static int getExtension(headerSprintfArgs hsa, headerTagTagFunction fn,
 static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
 	/*@modifies hsa @*/
 {
+    rpmTagType he_t = 0;
+    hRET_t he_p = { .ptr = NULL };
+    int_32 he_c = 0;
+    HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
+    HE_t he = &he_s;
     char * val = NULL;
     size_t need = 0;
     char * t, * te;
     char buf[20];
-    rpmTagType type;
     hPTR_t data;
-    int_32 count;
     unsigned int intVal;
     uint_64 llVal;
     const char ** strarray;
@@ -3217,25 +3221,25 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
 
     memset(buf, 0, sizeof(buf));
     if (tag->ext) {
-	if (getExtension(hsa, tag->ext, &type, &data, &count, hsa->ec + tag->extNum))
+	if (getExtension(hsa, tag->ext, he->t, &data, he->c, hsa->ec + tag->extNum))
 	{
-	    count = 1;
-	    type = RPM_STRING_TYPE;	
+	    he_c = 1;
+	    he_t = RPM_STRING_TYPE;	
 	    data = "(none)";
 	}
     } else {
-	if (!headerGetEntry(hsa->h, tag->tag, &type, &data, &count)) {
-	    count = 1;
-	    type = RPM_STRING_TYPE;	
+	if (!headerGetEntry(hsa->h, tag->tag, he->t, &data, he->c)) {
+	    he_c = 1;
+	    he_t = RPM_STRING_TYPE;	
 	    data = "(none)";
 	}
 
 	/* XXX this test is unnecessary, array sizes are checked */
-	switch (type) {
+	switch (he_t) {
 	default:
-	    if (element >= count) {
+	    if (element >= he_c) {
 		/*@-modobserver -observertrans@*/
-		data = headerFreeData(data, type);
+		data = headerFreeData(data, he_t);
 		/*@=modobserver =observertrans@*/
 
 		hsa->errmsg = _("(index out of range)");
@@ -3254,24 +3258,24 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
     if (tag->arrayCount) {
 /*@-modobserver -observertrans@*/
 	if (datafree)
-	    data = headerFreeData(data, type);
+	    data = headerFreeData(data, he_t);
 /*@=modobserver =observertrans@*/
 
-	countBuf = count;
+	countBuf = he_c;
 	data = &countBuf;
-	count = 1;
-	type = RPM_INT32_TYPE;
+	he_c = 1;
+	he_t = RPM_INT32_TYPE;
     }
 
     (void) stpcpy( stpcpy(buf, "%"), tag->format);
 
     if (data)
-    switch (type) {
+    switch (he_t) {
     case RPM_STRING_ARRAY_TYPE:
 	strarray = (const char **)data;
 
 	if (tag->fmt)
-	    val = tag->fmt(RPM_STRING_TYPE, strarray[element], buf, tag->pad, (count > 1 ? element : -1));
+	    val = tag->fmt(RPM_STRING_TYPE, strarray[element], buf, tag->pad, (he_c > 1 ? element : -1));
 
 	if (val) {
 	    need = strlen(val);
@@ -3305,7 +3309,7 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
     case RPM_INT64_TYPE:
 	llVal = *(((int_64 *) data) + element);
 	if (tag->fmt)
-	    val = tag->fmt(RPM_INT64_TYPE, &llVal, buf, tag->pad, (count > 1 ? element : -1));
+	    val = tag->fmt(RPM_INT64_TYPE, &llVal, buf, tag->pad, (he_c > 1 ? element : -1));
 	if (val) {
 	    need = strlen(val);
 	} else {
@@ -3322,7 +3326,7 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
     case RPM_INT8_TYPE:
     case RPM_INT16_TYPE:
     case RPM_INT32_TYPE:
-	switch (type) {
+	switch (he_t) {
 	case RPM_CHAR_TYPE:	
 	case RPM_INT8_TYPE:
 	    intVal = *(((int_8 *) data) + element);
@@ -3337,7 +3341,7 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
 	}
 
 	if (tag->fmt)
-	    val = tag->fmt(RPM_INT32_TYPE, &intVal, buf, tag->pad, (count > 1 ? element : -1));
+	    val = tag->fmt(RPM_INT32_TYPE, &intVal, buf, tag->pad, (he_c > 1 ? element : -1));
 
 	if (val) {
 	    need = strlen(val);
@@ -3356,21 +3360,21 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
     case RPM_BIN_TYPE:
 	/* XXX HACK ALERT: element field abused as no. bytes of binary data. */
 	if (tag->fmt)
-	    val = tag->fmt(RPM_BIN_TYPE, data, buf, tag->pad, count);
+	    val = tag->fmt(RPM_BIN_TYPE, data, buf, tag->pad, he_c);
 
 	if (val) {
 	    need = strlen(val);
 	} else {
 #ifdef	NOTYET
-	    val = memcpy(xmalloc(count), data, count);
+	    val = memcpy(xmalloc(he_c), data, he_c);
 #else
 	    /* XXX format string not used */
 	    static char hex[] = "0123456789abcdef";
 	    const char * s = data;
 
-	    need = 2*count + tag->pad;
+	    need = 2*he_c + tag->pad;
 	    val = t = xmalloc(need+1);
-	    while (count-- > 0) {
+	    while (he_c-- > 0) {
 		unsigned int i;
 		i = *s++;
 		*t++ = hex[ (i >> 4) & 0xf ];
@@ -3389,7 +3393,7 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
 
 /*@-modobserver -observertrans@*/
     if (datafree)
-	data = headerFreeData(data, type);
+	data = headerFreeData(data, he_t);
 /*@=modobserver =observertrans@*/
 
     if (val && need > 0) {
@@ -3414,12 +3418,15 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 		int element)
 	/*@modifies hsa @*/
 {
+    rpmTagType he_t = 0;
+    hRET_t he_p = { .ptr = NULL };
+    int_32 he_c = 0;
+    HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
+    HE_t he = &he_s;
     char numbuf[64];	/* XXX big enuf for "Tag_0x01234567" */
     char * t, * te;
     int i, j;
     int numElements;
-    rpmTagType type;
-    int_32 count;
     sprintfToken spft;
     int condNumFormats;
     size_t need;
@@ -3476,19 +3483,19 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 		spft->u.tag.justOne) continue;
 
 	    if (spft->u.tag.ext) {
-		if (getExtension(hsa, spft->u.tag.ext, &type, NULL, &count, 
+		if (getExtension(hsa, spft->u.tag.ext, he->t, NULL, he->c, 
 				 hsa->ec + spft->u.tag.extNum))
 		     continue;
 	    } else {
-		if (!headerGetEntry(hsa->h, spft->u.tag.tag, &type, NULL, &count))
+		if (!headerGetEntry(hsa->h, spft->u.tag.tag, he->t, NULL, he->c))
 		    continue;
 	    } 
 
-	    if (type == RPM_BIN_TYPE || type == RPM_ASN1_TYPE || type == RPM_OPENPGP_TYPE)
-		count = 1;	/* XXX count abused as no. of bytes. */
+	    if (he_t == RPM_BIN_TYPE || he_t == RPM_ASN1_TYPE || he_t == RPM_OPENPGP_TYPE)
+		he_c = 1;	/* XXX count abused as no. of bytes. */
 
-	    if (numElements > 1 && count != numElements)
-	    switch (type) {
+	    if (numElements > 1 && he_c != numElements)
+	    switch (he_t) {
 	    default:
 		hsa->errmsg =
 			_("array iterator used with different sized arrays");
@@ -3500,8 +3507,8 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 	    case RPM_STRING_TYPE:
 		/*@switchbreak@*/ break;
 	    }
-	    if (count > numElements)
-		numElements = count;
+	    if (he_c > numElements)
+		numElements = he_c;
 	}
 
 	if (numElements == -1) {
@@ -3668,6 +3675,12 @@ char * headerSprintf(Header h, const char * fmt,
 	/*@requires maxSet(errmsg) >= 0 @*/
 {
     headerSprintfArgs hsa = memset(alloca(sizeof(*hsa)), 0, sizeof(*hsa));
+    HGE_t hge = (HGE_t)headerGetExtension;
+    rpmTagType he_t = 0;
+    hRET_t he_p = { .ptr = NULL };
+    int_32 he_c = 0;
+    HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
+    HE_t he = &he_s;
     sprintfToken nextfmt;
     sprintfTag tag;
     char * t, * te;
@@ -3676,6 +3689,7 @@ char * headerSprintf(Header h, const char * fmt,
     int need;
  
     hsa->h = headerLink(h);
+    hsa->he = he;
     hsa->fmt = xstrdup(fmt);
 /*@-castexpose@*/	/* FIX: legacy API shouldn't change. */
     hsa->exts = (headerSprintfExtension) extensions;
