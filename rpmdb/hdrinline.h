@@ -335,7 +335,7 @@ int headerGetEntryMinMemory(Header h, int_32 tag,
  */
 /*@mayexit@*/
 /*@unused@*/ static inline
-int headerAddEntry(Header h, int_32 tag, int_32 type, const void * p, int_32 c)
+int headerAddEntry(Header h, int_32 tag, rpmTagType type, const void * p, int_32 c)
 	/*@modifies h @*/
 {
     return (h2hv(h)->hdradd) (h, tag, type, p, c);
@@ -356,7 +356,7 @@ int headerAddEntry(Header h, int_32 tag, int_32 type, const void * p, int_32 c)
  * @return		1 on success, 0 on failure
  */
 /*@unused@*/ static inline
-int headerAppendEntry(Header h, int_32 tag, int_32 type,
+int headerAppendEntry(Header h, int_32 tag, rpmTagType type,
 		const void * p, int_32 c)
 	/*@modifies h @*/
 {
@@ -374,7 +374,7 @@ int headerAppendEntry(Header h, int_32 tag, int_32 type,
  * @return		1 on success, 0 on failure
  */
 /*@unused@*/ static inline
-int headerAddOrAppendEntry(Header h, int_32 tag, int_32 type,
+int headerAddOrAppendEntry(Header h, int_32 tag, rpmTagType type,
 		const void * p, int_32 c)
 	/*@modifies h @*/
 {
@@ -420,7 +420,7 @@ int headerAddI18NString(Header h, int_32 tag, const char * string,
  * @return		1 on success, 0 on failure
  */
 /*@unused@*/ static inline
-int headerModifyEntry(Header h, int_32 tag, int_32 type,
+int headerModifyEntry(Header h, int_32 tag, rpmTagType type,
 			const void * p, int_32 c)
 	/*@modifies h @*/
 {

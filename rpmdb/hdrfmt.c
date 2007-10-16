@@ -77,7 +77,7 @@ static char * rpmPermsString(int mode)
  * @param element	(unused)
  * @return		formatted string
  */
-static /*@only@*/ char * triggertypeFormat(int_32 type, const void * data,
+static /*@only@*/ char * triggertypeFormat(rpmTagType type, const void * data,
 		/*@unused@*/ char * formatPrefix, /*@unused@*/ int padding,
 		/*@unused@*/ int element)
 	/*@requires maxRead(data) >= 0 @*/
@@ -109,7 +109,7 @@ static /*@only@*/ char * triggertypeFormat(int_32 type, const void * data,
  * @param element	(unused)
  * @return		formatted string
  */
-static /*@only@*/ char * permsFormat(int_32 type, const void * data,
+static /*@only@*/ char * permsFormat(rpmTagType type, const void * data,
 		char * formatPrefix, int padding, /*@unused@*/ int element)
 	/*@modifies formatPrefix @*/
 	/*@requires maxRead(data) >= 0 @*/
@@ -141,7 +141,7 @@ static /*@only@*/ char * permsFormat(int_32 type, const void * data,
  * @param element	(unused)
  * @return		formatted string
  */
-static /*@only@*/ char * fflagsFormat(int_32 type, const void * data,
+static /*@only@*/ char * fflagsFormat(rpmTagType type, const void * data,
 		char * formatPrefix, int padding, /*@unused@*/ int element)
 	/*@modifies formatPrefix @*/
 	/*@requires maxRead(data) >= 0 @*/
@@ -191,7 +191,7 @@ static /*@only@*/ char * fflagsFormat(int_32 type, const void * data,
  * @param element	no. bytes of binary data
  * @return		formatted string
  */
-static /*@only@*/ char * armorFormat(int_32 type, const void * data,
+static /*@only@*/ char * armorFormat(rpmTagType type, const void * data,
 		/*@unused@*/ char * formatPrefix, /*@unused@*/ int padding,
 		int element)
 	/*@*/
@@ -251,7 +251,7 @@ static /*@only@*/ char * armorFormat(int_32 type, const void * data,
  * @param element
  * @return		formatted string
  */
-static /*@only@*/ char * base64Format(int_32 type, const void * data,
+static /*@only@*/ char * base64Format(rpmTagType type, const void * data,
 		/*@unused@*/ char * formatPrefix, int padding, int element)
 	/*@*/
 {
@@ -354,7 +354,7 @@ static char * xmlstrcpy(/*@returned@*/ char * t, const char * s)
  * @param element	(unused)
  * @return		formatted string
  */
-static /*@only@*/ char * xmlFormat(int_32 type, const void * data,
+static /*@only@*/ char * xmlFormat(rpmTagType type, const void * data,
 		char * formatPrefix, int padding,
 		/*@unused@*/ int element)
 	/*@modifies formatPrefix @*/
@@ -517,7 +517,7 @@ static char * yamlstrcpy(/*@out@*/ /*@returned@*/ char * t, const char * s, int 
  * @param element	element index (or -1 for non-array).
  * @return		formatted string
  */
-static /*@only@*/ char * yamlFormat(int_32 type, const void * data,
+static /*@only@*/ char * yamlFormat(rpmTagType type, const void * data,
 		char * formatPrefix, int padding,
 		int element)
 	/*@modifies formatPrefix @*/
@@ -673,7 +673,7 @@ static /*@only@*/ char * yamlFormat(int_32 type, const void * data,
  * @param element	(unused)
  * @return		formatted string
  */
-static /*@only@*/ char * pgpsigFormat(int_32 type, const void * data,
+static /*@only@*/ char * pgpsigFormat(rpmTagType type, const void * data,
 		/*@unused@*/ char * formatPrefix, /*@unused@*/ int padding,
 		/*@unused@*/ int element)
 	/*@globals fileSystem, internalState @*/
@@ -782,7 +782,7 @@ static /*@only@*/ char * pgpsigFormat(int_32 type, const void * data,
  * @param element	(unused)
  * @return		formatted string
  */
-static /*@only@*/ char * depflagsFormat(int_32 type, const void * data,
+static /*@only@*/ char * depflagsFormat(rpmTagType type, const void * data,
 		char * formatPrefix, int padding, /*@unused@*/ int element)
 	/*@modifies formatPrefix @*/
 	/*@requires maxRead(data) >= 0 @*/
@@ -870,7 +870,8 @@ static int triggercondsTag(Header h, HE_t he)
     int_32 * indices, * flags;
     char ** names, ** versions;
     int numNames, numScripts;
-    char ** conds, ** s;
+    const char ** conds;
+    char ** s;
     char * item, * flagsStr;
     char * chptr;
     int i, j, xx;

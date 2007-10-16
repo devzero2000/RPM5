@@ -225,7 +225,7 @@ enum headerSprintfExtensionType {
  * @param element	RPM_BIN_TYPE: no. bytes of data
  * @return		formatted string
  */
-typedef /*only@*/ char * (*headerTagFormatFunction)(int_32 type,
+typedef /*only@*/ char * (*headerTagFormatFunction)(rpmTagType type,
 				const void * data, char * formatPrefix,
 				int padding, int element)
 	/*@requires maxSet(data) >= 0 @*/;
@@ -646,7 +646,7 @@ int (*HDRgetmin) (Header h, int_32 tag,
  * @return		1 on success, 0 on failure
  */
 typedef
-int (*HDRadd) (Header h, int_32 tag, int_32 type, const void * p, int_32 c)
+int (*HDRadd) (Header h, int_32 tag, rpmTagType type, const void * p, int_32 c)
         /*@modifies h @*/;
 
 /** \ingroup header
@@ -664,7 +664,7 @@ int (*HDRadd) (Header h, int_32 tag, int_32 type, const void * p, int_32 c)
  * @return		1 on success, 0 on failure
  */
 typedef
-int (*HDRappend) (Header h, int_32 tag, int_32 type, const void * p, int_32 c)
+int (*HDRappend) (Header h, int_32 tag, rpmTagType type, const void * p, int_32 c)
         /*@modifies h @*/;
 
 /** \ingroup header
@@ -678,7 +678,7 @@ int (*HDRappend) (Header h, int_32 tag, int_32 type, const void * p, int_32 c)
  * @return		1 on success, 0 on failure
  */
 typedef
-int (*HDRaddorappend) (Header h, int_32 tag, int_32 type, const void * p, int_32 c)
+int (*HDRaddorappend) (Header h, int_32 tag, rpmTagType type, const void * p, int_32 c)
         /*@modifies h @*/;
 
 /** \ingroup header
@@ -717,7 +717,7 @@ int (*HDRaddi18n) (Header h, int_32 tag, const char * string,
  * @return		1 on success, 0 on failure
  */
 typedef
-int (*HDRmodify) (Header h, int_32 tag, int_32 type, const void * p, int_32 c)
+int (*HDRmodify) (Header h, int_32 tag, rpmTagType type, const void * p, int_32 c)
         /*@modifies h @*/;
 
 /** \ingroup header
