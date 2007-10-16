@@ -2099,7 +2099,7 @@ int headerAddEntry(Header h, int_32 tag, rpmTagType type, hPTR_t p, rpmTagCount 
     entry->info.type = type;
     entry->info.count = c;
     entry->info.offset = 0;
-    entry->data = data;
+    entry->data = (void *) (*data).ptr;	/* NOCAST */
     entry->length = length;
 
     if (h->indexUsed > 0 && tag < h->index[h->indexUsed-1].info.tag)
@@ -2374,7 +2374,7 @@ int headerModifyEntry(Header h, int_32 tag, rpmTagType type,
 
     entry->info.count = c;
     entry->info.type = type;
-    entry->data = data;
+    entry->data = (void *) (*data).ptr;	/* NOCAST */
     entry->length = length;
 
     if (ENTRY_IN_REGION(entry)) {
@@ -3212,7 +3212,7 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
     char buf[20];
     unsigned int intVal;
     uint_64 llVal;
-    const char ** strarray;
+    hRET_t strarray;
     rpmTagCount countBuf;
 
     memset(buf, 0, sizeof(buf));
@@ -3270,19 +3270,19 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
     if (he_p.ptr)
     switch (he_t) {
     case RPM_STRING_ARRAY_TYPE:
-	strarray = he_p.argv;
+	strarray.argv = he_p.argv;
 
 	if (tag->fmt)
-	    val = tag->fmt(RPM_STRING_TYPE, (hPTR_t) strarray[element], buf, tag->pad, (he_c > 1 ? element : -1));	/* NOCAST */
+	    val = tag->fmt(RPM_STRING_TYPE, (hPTR_t) strarray.argv[element], buf, tag->pad, (he_c > 1 ? element : -1));	/* NOCAST */
 
 	if (val) {
 	    need = strlen(val);
 	} else {
-	    need = strlen(strarray[element]) + tag->pad + 20;
+	    need = strlen(strarray.argv[element]) + tag->pad + 20;
 	    val = xmalloc(need+1);
 	    strcat(buf, "s");
 	    /*@-formatconst@*/
-	    sprintf(val, buf, strarray[element]);
+	    sprintf(val, buf, strarray.argv[element]);
 	    /*@=formatconst@*/
 	}
 
@@ -3932,7 +3932,7 @@ static char * shescapeFormat(rpmTagType type, hPTR_t data,
 	sprintf(result, formatPrefix, *((int_64 *) data));
 	/*@=formatconst@*/
     } else {
-	buf = alloca(strlen((const char *)data) + padding + 2);	/* NOCAST */
+	buf = alloca(strlen((*data).str) + padding + 2);
 	strcat(formatPrefix, "s");
 	/*@-formatconst@*/
 	sprintf(buf, formatPrefix, data);

@@ -3135,14 +3135,22 @@ memset(data, 0, sizeof(*data));
 #endif
     if (iid != 0 && iid != -1) {
 	int_32 tid = iid;
-	if (!headerIsEntry(h, RPMTAG_INSTALLTID))
-	   xx = hae(h, RPMTAG_INSTALLTID, RPM_INT32_TYPE, (hPTR_t)&tid, 1);	/* NOCAST */
+	he->tag = RPMTAG_INSTALLTID;
+	he_t = RPM_INT32_TYPE;
+	he_p.i32p = &tid;
+	he_c = 1;
+	if (!headerIsEntry(h, he->tag))
+	   xx = hae(h, he->tag, he_t, he_p, he_c);
     }
 
     /* Add the package color if not present. */
     if (!headerIsEntry(h, RPMTAG_PACKAGECOLOR)) {
 	uint32_t hcolor = hGetColor(h);
-	xx = hae(h, RPMTAG_PACKAGECOLOR, RPM_INT32_TYPE, (hPTR_t) &hcolor, 1);	/* NOCAST */
+	he->tag = RPMTAG_PACKAGECOLOR;
+	he_t = RPM_INT32_TYPE;
+	he_p.ui32p = &hcolor;
+	he_c = 1;
+	xx = hae(h, he->tag, he_t, he_p, he_c);
     }
 
 #if defined(SUPPORT_RPMV3_BASENAMES_HACKS)

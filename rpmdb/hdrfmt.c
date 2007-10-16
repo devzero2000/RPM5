@@ -82,7 +82,7 @@ static /*@only@*/ char * triggertypeFormat(rpmTagType type, hPTR_t data,
 		/*@unused@*/ int element)
 	/*@requires maxRead(data) >= 0 @*/
 {
-    const int_32 * item = (const int_32 *) data;	/* NOCAST */
+    const int_32 * item = (*data).i32p;
     char * val;
 
     if (type != RPM_INT32_TYPE)
@@ -206,14 +206,14 @@ static /*@only@*/ char * armorFormat(rpmTagType type, hPTR_t data,
     case RPM_OPENPGP_TYPE:
     case RPM_ASN1_TYPE:		/* XXX WRONG */
     case RPM_BIN_TYPE:
-	s = (const unsigned char *) data;	/* NOCAST */
+	s = (*data).ui8p;
 	/* XXX HACK ALERT: element field abused as no. bytes of binary data. */
 	ns = element;
 	atype = PGPARMOR_SIGNATURE;	/* XXX check pkt for signature */
 	break;
     case RPM_STRING_TYPE:
     case RPM_STRING_ARRAY_TYPE:
-	enc = (const char *) data;	/* NOCAST */
+	enc = (*data).str;
 	s = NULL;
 	ns = 0;
 /*@-moduncon@*/
@@ -371,7 +371,7 @@ static /*@only@*/ char * xmlFormat(rpmTagType type, hPTR_t data,
     switch (type) {
     case RPM_I18NSTRING_TYPE:
     case RPM_STRING_TYPE:
-	s = (const char *) data;	/* NOCAST */
+	s = (*data).str;
 	xtag = "string";
 	/* XXX Force utf8 strings. */
 	s = xstrdup(s);
@@ -538,7 +538,7 @@ static /*@only@*/ char * yamlFormat(rpmTagType type, hPTR_t data,
     case RPM_I18NSTRING_TYPE:
     case RPM_STRING_TYPE:
 	xx = 0;
-	s = (const char *) data;	/* NOCAST */
+	s = (*data).str;
 	if (strchr("[", s[0]))	/* leading [ */
 	    xx = 1;
 	if (xx == 0)
@@ -571,7 +571,7 @@ static /*@only@*/ char * yamlFormat(rpmTagType type, hPTR_t data,
 	}
 
 	/* XXX Force utf8 strings. */
-	s = xstrdup((const char *)data);	/* NOCAST */
+	s = xstrdup((*data).str);
 	s = xstrtolocale(s);
 	freeit = 1;
 	break;
@@ -867,7 +867,8 @@ static int instprefixTag(Header h, HE_t he)
 static int triggercondsTag(Header h, HE_t he)
 	/*@modifies he @*/
 {
-    int_32 * indices, * flags;
+    hRET_t flags;
+    int_32 * indices;
     char ** names, ** versions;
     int numNames, numScripts;
     const char ** conds;
@@ -904,9 +905,9 @@ static int triggercondsTag(Header h, HE_t he)
 		/*@innercontinue@*/ continue;
 
 	    item = xmalloc(strlen(names[j]) + strlen(versions[j]) + 20);
-	    if (flags[j] & RPMSENSE_SENSEMASK) {
+	    if (flags.i32p[j] & RPMSENSE_SENSEMASK) {
 		buf[0] = '%', buf[1] = '\0';
-		flagsStr = depflagsFormat(RPM_INT32_TYPE, (hPTR_t) flags, buf, 0, j);	/* NOCAST */
+		flagsStr = depflagsFormat(RPM_INT32_TYPE, &flags, buf, 0, j);
 		sprintf(item, "%s %s %s", names[j], flagsStr, versions[j]);
 		flagsStr = _free(flagsStr);
 	    } else
