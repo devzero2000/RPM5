@@ -1,4 +1,6 @@
 4.5 -> 5.0:
+    - rpm.org: Fix broken doxygen comment.
+    - rpm.org: Don't unnecessarily include stdio.h
     - jbj: extract verifyscript when available. more to do ...
     - jbj: fix: %verifyscript broken by scaremem elimination.
     - jbj: another missed level of indirection. leave the bandaid, won't hurt.

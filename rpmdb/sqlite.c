@@ -1049,11 +1049,11 @@ leaveChroot(dbi);
 
 /**
  * Open database cursor.
- * @param dbi           index database handle
- * @param txnid         database transaction handle
- * @retval dbcp         address of new database cursor
- * @param dbiflags      DB_WRITECURSOR or 0
- * @return              0 on success
+ * @param dbi		index database handle
+ * @param txnid		database transaction handle
+ * @retval dbcp		address of new database cursor
+ * @param flags		DB_WRITECURSOR or 0
+ * @return		0 on success
  */
 static int sql_copen (dbiIndex dbi, /*@null@*/ DB_TXN * txnid,
 		/*@out@*/ DBC ** dbcp, unsigned int flags)
