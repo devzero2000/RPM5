@@ -91,10 +91,8 @@ IDTX IDTXsort(IDTX idtx)
 IDTX IDTXload(rpmts ts, rpmTag tag, uint_32 rbtid)
 {
     HGE_t hge = (HGE_t)headerGetExtension;
-    rpmTagType he_t = 0;
     rpmTagData he_p = { .ptr = NULL };
-    rpmTagCount he_c = 0;
-    HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
+    HE_s he_s = { .tag = 0, .t = 0, .p = &he_p, .c = 0, .freeData = 0 };
     HE_t he = &he_s;
     IDTX idtx = NULL;
     rpmdbMatchIterator mi;
@@ -108,7 +106,7 @@ IDTX IDTXload(rpmts ts, rpmTag tag, uint_32 rbtid)
 #endif
     while ((h = rpmdbNextIterator(mi)) != NULL) {
 	he->tag = tag;
-	xx = hge(h, he->tag, he->t, he->p, he->c);
+	xx = hge(h, he->tag, &he->t, he->p, &he->c);
 	if (!xx || he_p.i32p == NULL)
 	    continue;
 	tid = (he_p.i32p ? *he_p.i32p : 0);
@@ -145,10 +143,8 @@ IDTX IDTXload(rpmts ts, rpmTag tag, uint_32 rbtid)
 IDTX IDTXglob(rpmts ts, const char * globstr, rpmTag tag, uint_32 rbtid)
 {
     HGE_t hge = (HGE_t)headerGetExtension;
-    rpmTagType he_t = 0;
     rpmTagData he_p = { .ptr = NULL };
-    rpmTagCount he_c = 0;
-    HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
+    HE_s he_s = { .tag = 0, .t = 0, .p = &he_p, .c = 0, .freeData = 0 };
     HE_t he = &he_s;
     IDTX idtx = NULL;
     Header h;
@@ -200,7 +196,7 @@ assert(origin != NULL);
 assert(!strcmp(av[i], origin));
 }
 	he->tag = tag;
-	xx = hge(h, he->tag, he->t, he->p, he->c);
+	xx = hge(h, he->tag, &he->t, he->p, &he->c);
 	if (!xx || he_p.i32p == NULL)
 	    goto bottom;
 	tid = (he_p.i32p ? *he_p.i32p : 0);
@@ -295,10 +291,8 @@ static int findErases(rpmts ts, /*@null@*/ rpmte p, unsigned thistid,
 	/*@modifies ts, p, ip, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     HGE_t hge = (HGE_t)headerGetExtension;
-    rpmTagType he_t = 0;
     rpmTagData he_p = { .ptr = NULL };
-    rpmTagCount he_c = 0;
-    HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
+    HE_s he_s = { .tag = 0, .t = 0, .p = &he_p, .c = 0, .freeData = 0 };
     HE_t he = &he_s;
     int rc = 0;
     int xx;
@@ -319,9 +313,9 @@ static int findErases(rpmts ts, /*@null@*/ rpmte p, unsigned thistid,
 	    int bingo;
 
 	    he->tag = RPMTAG_BLINKPKGID;
-	    xx = hge(ip->h, he->tag, he->t, he->p, he->c);
+	    xx = hge(ip->h, he->tag, &he->t, he->p, &he->c);
 	    flinkPkgid = he_p.argv;
-	    pn = he_c;
+	    pn = he->c;
 
 	    /* XXX Always erase packages at beginning of upgrade chain. */
 	    if (pn == 1 && flinkPkgid[0] != NULL && !strcmp(flinkPkgid[0], RPMTE_CHAIN_END)) {
@@ -330,13 +324,13 @@ static int findErases(rpmts ts, /*@null@*/ rpmte p, unsigned thistid,
 	    }
 
 	    he->tag = RPMTAG_BLINKHDRID;
-	    xx = hge(ip->h, he->tag, he->t, he->p, he->c);
+	    xx = hge(ip->h, he->tag, &he->t, he->p, &he->c);
 	    flinkHdrid = he_p.argv;
-	    hn = he_c;
+	    hn = he->c;
 	    he->tag = RPMTAG_BLINKNEVRA;
-	    xx = hge(ip->h, he->tag, he->t, he->p, he->c);
+	    xx = hge(ip->h, he->tag, &he->t, he->p, &he->c);
 	    flinkNEVRA = he_p.argv;
-	    nn = he_c;
+	    nn = he->c;
 
 	    /*
 	     * Link data may be missing and can have multiple entries.

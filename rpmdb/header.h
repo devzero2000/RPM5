@@ -131,6 +131,27 @@ union hRET_s {
 typedef enum rpmTag_e rpmTag;
 
 /** \ingroup header
+ * The basic types of data in tags from headers.
+ */
+enum rpmTagType_e {
+    RPM_NULL_TYPE		=  0,
+    RPM_CHAR_TYPE		=  1,
+    RPM_INT8_TYPE		=  2,
+    RPM_INT16_TYPE		=  3,
+    RPM_INT32_TYPE		=  4,
+    RPM_INT64_TYPE		=  5,
+    RPM_STRING_TYPE		=  6,
+    RPM_BIN_TYPE		=  7,
+    RPM_STRING_ARRAY_TYPE	=  8,
+    RPM_I18NSTRING_TYPE		=  9,
+    RPM_ASN1_TYPE		= 10,
+    RPM_OPENPGP_TYPE		= 11,
+    RPM_MASK_TYPE		= 0x0000ffff
+};
+#define	RPM_MIN_TYPE		0
+#define	RPM_MAX_TYPE		11
+
+/** \ingroup header
  */
 typedef enum rpmTagType_e rpmTagType;
 
@@ -156,11 +177,11 @@ typedef rpmTagCount *	hCNT_t;
 struct _HE_s {
     int_32 tag;
 /*@null@*/
-    hTYP_t t;
+    rpmTagType t;
 /*@null@*/
     hRET_t * p;
 /*@null@*/
-    hCNT_t c;
+    rpmTagCount c;
     int freeData;
 };
 typedef struct _HE_s HE_s;
@@ -286,27 +307,6 @@ extern const struct headerSprintfExtension_s headerDefaultFormats[];
 /*@observer@*/
 extern const struct headerSprintfExtension_s headerCompoundFormats[];
 /*@=redecl@*/
-
-/** \ingroup header
- * The basic types of data in tags from headers.
- */
-enum rpmTagType_e {
-    RPM_NULL_TYPE		=  0,
-    RPM_CHAR_TYPE		=  1,
-    RPM_INT8_TYPE		=  2,
-    RPM_INT16_TYPE		=  3,
-    RPM_INT32_TYPE		=  4,
-    RPM_INT64_TYPE		=  5,
-    RPM_STRING_TYPE		=  6,
-    RPM_BIN_TYPE		=  7,
-    RPM_STRING_ARRAY_TYPE	=  8,
-    RPM_I18NSTRING_TYPE		=  9,
-    RPM_ASN1_TYPE		= 10,
-    RPM_OPENPGP_TYPE		= 11,
-    RPM_MASK_TYPE		= 0x0000ffff
-};
-#define	RPM_MIN_TYPE		0
-#define	RPM_MAX_TYPE		11
 
 /** \ingroup header
  * New rpm data types under consideration/development.

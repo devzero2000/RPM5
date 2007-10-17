@@ -143,20 +143,18 @@ static int getSignid(Header sigh, int sigtag, unsigned char * signid)
 	/*@modifies *signid, fileSystem, internalState @*/
 {
     HGE_t hge = (HGE_t)headerGetExtension;
-    rpmTagType he_t = 0;
     rpmTagData he_p = { .ptr = NULL };
-    rpmTagCount he_c = 0;
-    HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
+    HE_s he_s = { .tag = 0, .t = 0, .p = &he_p, .c = 0, .freeData = 0 };
     HE_t he = &he_s;
     int rc = 1;
     int xx;
 
     he->tag = sigtag;
-    xx = hge(sigh, he->tag, he->t, he->p, he->c);
+    xx = hge(sigh, he->tag, &he->t, he->p, &he->c);
     if (xx && he_p.ptr != NULL) {
 	pgpDig dig = pgpNewDig(0);
 
-	if (!pgpPrtPkts(he_p.ptr, he_c, dig, 0)) {
+	if (!pgpPrtPkts(he_p.ptr, he->c, dig, 0)) {
 	    memcpy(signid, dig->signature.signid, sizeof(dig->signature.signid));
 	    rc = 0;
 	}
@@ -182,10 +180,8 @@ static int rpmReSign(/*@unused@*/ rpmts ts,
                 fileSystem, internalState @*/
 {
     HGE_t hge = (HGE_t)headerGetExtension;
-    rpmTagType he_t = 0;
     rpmTagData he_p = { .ptr = NULL };
-    rpmTagCount he_c = 0;
-    HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
+    HE_s he_s = { .tag = 0, .t = 0, .p = &he_p, .c = 0, .freeData = 0 };
     HE_t he = &he_s;
     rpmgi gi = NULL;
     FD_t fd = NULL;
@@ -271,7 +267,7 @@ if (!_nosigh) {
 
 	/* Dump the immutable region (if present). */
 	he->tag = RPMTAG_HEADERSIGNATURES;
-	xx = hge(sigh, he->tag, he->t, he->p, he->c);
+	xx = hge(sigh, he->tag, &he->t, he->p, &he->c);
 	if (xx) {
 	    HeaderIterator hi;
 	    int_32 htag;
@@ -677,10 +673,8 @@ static int readFile(FD_t fd, const char * fn, pgpDig dig)
 	/*@modifies fd, *dig, fileSystem, internalState @*/
 {
     HGE_t hge = (HGE_t)headerGetExtension;
-    rpmTagType he_t = 0;
     rpmTagData he_p = { .ptr = NULL };
-    rpmTagCount he_c = 0;
-    HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
+    HE_s he_s = { .tag = 0, .t = 0, .p = &he_p, .c = 0, .freeData = 0 };
     HE_t he = &he_s;
     unsigned char buf[4*BUFSIZ];
     ssize_t count;
@@ -704,7 +698,7 @@ static int readFile(FD_t fd, const char * fn, pgpDig dig)
 	    size_t nmagic = 0;
 	
 	    he->tag = RPMTAG_HEADERIMMUTABLE;
-	    xx = hge(h, he->tag, he->t, he->p, he->c);
+	    xx = hge(h, he->tag, &he->t, he->p, &he->c);
 	    if (!xx || he_p.ptr == NULL) {
 		h = headerFree(h);
 		rpmlog(RPMLOG_ERR, _("%s: headerGetEntry failed\n"), fn);
@@ -714,11 +708,11 @@ static int readFile(FD_t fd, const char * fn, pgpDig dig)
 	    dig->hdrsha1ctx = rpmDigestInit(PGPHASHALGO_SHA1, RPMDIGEST_NONE);
 	    if (hmagic && nmagic > 0)
 		(void) rpmDigestUpdate(dig->hdrsha1ctx, hmagic, nmagic);
-	    (void) rpmDigestUpdate(dig->hdrsha1ctx, he_p.ptr, he_c);
+	    (void) rpmDigestUpdate(dig->hdrsha1ctx, he_p.ptr, he->c);
 	    dig->hdrmd5ctx = rpmDigestInit(dig->signature.hash_algo, RPMDIGEST_NONE);
 	    if (hmagic && nmagic > 0)
 		(void) rpmDigestUpdate(dig->hdrmd5ctx, hmagic, nmagic);
-	    (void) rpmDigestUpdate(dig->hdrmd5ctx, he_p.ptr, he_c);
+	    (void) rpmDigestUpdate(dig->hdrmd5ctx, he_p.ptr, he->c);
 	    he_p.ptr = _free(he_p.ptr);
 	}
 	h = headerFree(h);
@@ -768,10 +762,8 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 		const char * fn)
 {
     HGE_t hge = (HGE_t)headerGetExtension;
-    rpmTagType he_t = 0;
     rpmTagData he_p = { .ptr = NULL };
-    rpmTagCount he_c = 0;
-    HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
+    HE_s he_s = { .tag = 0, .t = 0, .p = &he_p, .c = 0, .freeData = 0 };
     HE_t he = &he_s;
     int res2, res3;
     char result[1024];
@@ -868,8 +860,8 @@ assert(dig != NULL);
 #endif
 	) {
 	    he->tag = sigtag;
-	    xx = hge(sigh, he->tag, he->t, he->p, he->c);
-	    xx = pgpPrtPkts(he_p.ptr, he_c, dig, 0);
+	    xx = hge(sigh, he->tag, &he->t, he->p, &he->c);
+	    xx = pgpPrtPkts(he_p.ptr, he->c, dig, 0);
 	    he_p.ptr = _free(he_p.ptr);
 #if defined(SUPPORT_RPMV3_VERIFY_RSA)
 	    /* XXX assume same hash_algo in header-only and header+payload */

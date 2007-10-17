@@ -305,10 +305,8 @@ static int sugcmp(const void * a, const void * b)
 int rpmtsSolve(rpmts ts, rpmds ds, /*@unused@*/ const void * data)
 {
     HGE_t hge = (HGE_t)headerGetExtension;
-    rpmTagType he_t = 0;
     rpmTagData he_p = { .ptr = NULL };
-    rpmTagCount he_c = 0;
-    HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
+    HE_s he_s = { .tag = 0, .t = 0, .p = &he_p, .c = 0, .freeData = 0 };
     HE_t he = &he_s;
     const char * errstr;
     const char * str = NULL;
@@ -359,7 +357,7 @@ int rpmtsSolve(rpmts ts, rpmds ds, /*@unused@*/ const void * data)
 	    continue;
 
 	he->tag = RPMTAG_NAME;
-	xx = hge(h, he->tag, he->t, he->p, he->c);
+	xx = hge(h, he->tag, &he->t, he->p, &he->c);
 	hnamelen = ((xx && he_p.str) ? strlen(he_p.str) : 0);
 	he_p.ptr = _free(he_p.ptr);
 
@@ -369,7 +367,7 @@ int rpmtsSolve(rpmts ts, rpmds ds, /*@unused@*/ const void * data)
 
 	/* XXX Prefer the newest build if given alternatives. */
 	he->tag = RPMTAG_BUILDTIME;
-	xx = hge(h, he->tag, he->t, he->p, he->c);
+	xx = hge(h, he->tag, &he->t, he->p, &he->c);
 	htime = (xx && he_p.i32p ? *he_p.i32p : 0);
 	he_p.ptr = _free(he_p.ptr);
 

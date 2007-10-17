@@ -307,10 +307,8 @@ int rpmcliInstallRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 int rpmcliInstall(rpmts ts, QVA_t ia, const char ** argv)
 {
     HGE_t hge = (HGE_t)headerGetExtension;
-    rpmTagType he_t = 0;
     rpmTagData he_p = { .ptr = NULL };
-    rpmTagCount he_c = 0;
-    HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
+    HE_s he_s = { .tag = 0, .t = 0, .p = &he_p, .c = 0, .freeData = 0 };
     HE_t he = &he_s;
     int numFailed = 0;
     int numRPMS = 0;
@@ -423,14 +421,14 @@ if (fileURL[0] == '=') {
 	/* === Check for relocatable package. */
 	if (relocations) {
 	    he->tag = RPMTAG_PREFIXES;
-	    xx = hge(h, he->tag, he->t, he->p, he->c);
-	    if (xx && he_c == 1) {
+	    xx = hge(h, he->tag, &he->t, he->p, &he->c);
+	    if (xx && he->c == 1) {
 		relocations->oldPath = xstrdup(he_p.argv[0]);
 		he_p.ptr = _free(he_p.ptr);
 	    } else {
 		he_p.ptr = _free(he_p.ptr);
 		he->tag = RPMTAG_NVRA;
-		xx = hge(h, he->tag, he->t, he->p, he->c);
+		xx = hge(h, he->tag, &he->t, he->p, &he->c);
 		rpmlog(RPMLOG_ERR,
 			       _("package %s is not relocatable\n"), he_p.str);
 		he_p.ptr = _free(he_p.ptr);
@@ -447,7 +445,7 @@ if (fileURL[0] == '=') {
 	    int count;
 
 	    he->tag = RPMTAG_NAME;
-	    xx = hge(h, he->tag, he->t, he->p, he->c);
+	    xx = hge(h, he->tag, &he->t, he->p, &he->c);
 assert(xx != 0 && he_p.str != NULL);
 	    mi = rpmtsInitIterator(ts, RPMTAG_NAME, he_p.str, 0);
 	    he_p.ptr = _free(he_p.ptr);

@@ -96,15 +96,13 @@ static void addTE(rpmts ts, rpmte p, Header h,
 {
     int scareMem = 0;
     HGE_t hge = (HGE_t)headerGetExtension;
-    rpmTagType he_t = 0;
     rpmTagData he_p = { .ptr = NULL };
-    rpmTagCount he_c = 0;
-    HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
+    HE_s he_s = { .tag = 0, .t = 0, .p = &he_p, .c = 0, .freeData = 0 };
     HE_t he = &he_s;
     int xx;
 
     he->tag = RPMTAG_NVRA;
-    xx = hge(h, he->tag, he->t, he->p, he->c);
+    xx = hge(h, he->tag, &he->t, he->p, &he->c);
 assert(he_p.str != NULL);
     p->NEVR = he_p.str;
     p->name = xstrdup(p->NEVR);
@@ -116,18 +114,18 @@ assert(he_p.str != NULL);
     p->db_instance = 0;
 
     he->tag = RPMTAG_HDRID;
-    xx = hge(h, he->tag, he->t, he->p, he->c);
+    xx = hge(h, he->tag, &he->t, he->p, &he->c);
     p->hdrid = he_p.str;
 
     he->tag = RPMTAG_PKGID;
-    xx = hge(h, he->tag, he->t, he->p, he->c);
+    xx = hge(h, he->tag, &he->t, he->p, &he->c);
     if (he_p.ui8p != NULL) {
 	static const char hex[] = "0123456789abcdef";
 	char * t;
 	int i;
 
-	p->pkgid = t = xmalloc((2*he_c) + 1);
-	for (i = 0 ; i < he_c; i++) {
+	p->pkgid = t = xmalloc((2*he->c) + 1);
+	for (i = 0 ; i < he->c; i++) {
 	    *t++ = hex[ (unsigned)((he_p.ui8p[i] >> 4) & 0x0f) ];
 	    *t++ = hex[ (unsigned)((he_p.ui8p[i]     ) & 0x0f) ];
 	}
@@ -137,11 +135,11 @@ assert(he_p.str != NULL);
 	p->pkgid = NULL;
 
     he->tag = RPMTAG_ARCH;
-    xx = hge(h, he->tag, he->t, he->p, he->c);
+    xx = hge(h, he->tag, &he->t, he->p, &he->c);
     p->arch = he_p.str;
 
     he->tag = RPMTAG_OS;
-    xx = hge(h, he->tag, he->t, he->p, he->c);
+    xx = hge(h, he->tag, &he->t, he->p, &he->c);
     p->os = he_p.str;
 
     p->isSource =
@@ -151,7 +149,7 @@ assert(he_p.str != NULL);
     p->NEVRA = xstrdup(p->NEVR);
 
     he->tag = RPMTAG_EPOCH;
-    xx = hge(h, he->tag, he->t, he->p, he->c);
+    xx = hge(h, he->tag, &he->t, he->p, &he->c);
     if (he_p.i32p != NULL) {
 	p->epoch = xmalloc(20);
 	sprintf(p->epoch, "%d", *he_p.i32p);
@@ -219,10 +217,8 @@ rpmte rpmteNew(const rpmts ts, Header h,
 		alKey pkgKey)
 {
     HGE_t hge = (HGE_t)headerGetExtension;
-    rpmTagType he_t = 0;
     rpmTagData he_p = { .ptr = NULL };
-    rpmTagCount he_c = 0;
-    HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
+    HE_s he_s = { .tag = 0, .t = 0, .p = &he_p, .c = 0, .freeData = 0 };
     HE_t he = &he_s;
     rpmte p = xcalloc(1, sizeof(*p));
     int xx;
@@ -236,7 +232,7 @@ rpmte rpmteNew(const rpmts ts, Header h,
 	/* XXX 256 is only an estimate of signature header. */
 	p->pkgFileSize = 96 + 256;
 	he->tag = RPMTAG_SIGSIZE;
-	xx = hge(h, he->tag, he->t, he->p, he->c);
+	xx = hge(h, he->tag, &he->t, he->p, &he->c);
 	if (xx && he_p.ui32p)
 	    p->pkgFileSize += *he_p.ui32p;
 	he_p.ptr = _free(he_p.ptr);
@@ -607,10 +603,8 @@ static int __mydebug = 0;
 int rpmteChain(rpmte p, rpmte q, Header oh, const char * msg)
 {
     HGE_t hge = (HGE_t)headerGetExtension;
-    rpmTagType he_t = 0;
     rpmTagData he_p = { .ptr = NULL };
-    rpmTagCount he_c = 0;
-    HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
+    HE_s he_s = { .tag = 0, .t = 0, .p = &he_p, .c = 0, .freeData = 0 };
     HE_t he = &he_s;
     const char * blinkNEVRA = NULL;
     const char * blinkPkgid = NULL;
@@ -620,7 +614,7 @@ int rpmteChain(rpmte p, rpmte q, Header oh, const char * msg)
     if (msg == NULL)
 	msg = "";
     he->tag = RPMTAG_NVRA;
-    xx = hge(oh, he->tag, he->t, he->p, he->c);
+    xx = hge(oh, he->tag, &he->t, he->p, &he->c);
 assert(he_p.str != NULL);
     blinkNEVRA = he_p.str;
 
@@ -630,14 +624,14 @@ assert(he_p.str != NULL);
      * tags appended.
      */
     he->tag = RPMTAG_PKGID;
-    xx = hge(oh, he->tag, he->t, he->p, he->c);
+    xx = hge(oh, he->tag, &he->t, he->p, &he->c);
     if (xx && he_p.ui8p != NULL) {
 	static const char hex[] = "0123456789abcdef";
 	char * t;
 	int i;
 
-	blinkPkgid = t = xmalloc((2*he_c) + 1);
-	for (i = 0 ; i < he_c; i++) {
+	blinkPkgid = t = xmalloc((2*he->c) + 1);
+	for (i = 0 ; i < he->c; i++) {
 	    *t++ = hex[ ((he_p.ui8p[i] >> 4) & 0x0f) ];
 	    *t++ = hex[ ((he_p.ui8p[i]     ) & 0x0f) ];
 	}
@@ -647,7 +641,7 @@ assert(he_p.str != NULL);
 	blinkPkgid = NULL;
 
     he->tag = RPMTAG_HDRID;
-    xx = hge(oh, he->tag, he->t, he->p, he->c);
+    xx = hge(oh, he->tag, &he->t, he->p, &he->c);
     blinkHdrid = he_p.str;
 
 /*@-modfilesys@*/

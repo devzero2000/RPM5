@@ -843,13 +843,14 @@ static int instprefixTag(Header h, HE_t he)
     char ** array;
 
     he->tag = RPMTAG_INSTALLPREFIX;
-    if (headerGetEntry(h, RPMTAG_INSTALLPREFIX, he->t, he->p, he->c)) {
+    if (headerGetEntry(h, RPMTAG_INSTALLPREFIX, &he->t, he->p, &he->c)) {
 	he->freeData = 0;
 	return 0;
     }
     he->tag = RPMTAG_INSTPREFIXES;
-    if (headerGetEntry(h, he->tag, &ipt, &array, he->c)) {
-	if (he->t) *he->t = RPM_STRING_TYPE;
+    if (headerGetEntry(h, he->tag, &ipt, &array, &he->c)) {
+	he->t = RPM_STRING_TYPE;
+	he->c = 1;
 	if (he->p) (*he->p).str = xstrdup(array[0]);
 	he->freeData = 1;
 	array = headerFreeData(array, ipt);
@@ -889,10 +890,8 @@ static int triggercondsTag(Header h, HE_t he)
     xx = headerGetEntry(h, RPMTAG_TRIGGERVERSION, NULL, &versions, NULL);
     xx = headerGetEntry(h, RPMTAG_TRIGGERSCRIPTS, NULL, &s, &numScripts);
 
-    if (he->t)
-	*he->t = RPM_STRING_ARRAY_TYPE;
-    if (he->c)
-	*he->c = numScripts;
+    he->t = RPM_STRING_ARRAY_TYPE;
+    he->c = numScripts;
     if (he->p == NULL)
 	goto exit;
 
@@ -953,10 +952,8 @@ static int triggertypeTag(Header h, HE_t he)
     xx = headerGetEntry(h, RPMTAG_TRIGGERFLAGS, NULL, &flags, NULL);
     xx = headerGetEntry(h, RPMTAG_TRIGGERSCRIPTS, NULL, &s, &numScripts);
 
-    if (he->t)
-	*he->t = RPM_STRING_ARRAY_TYPE;
-    if (he->c)
-	*he->c = numScripts;
+    he->t = RPM_STRING_ARRAY_TYPE;
+    he->c = numScripts;
     if (he->p == NULL)
 	goto exit;
 
@@ -1013,12 +1010,10 @@ static int i18nTag(Header h, HE_t he)
     char * dstring = rpmExpand(_macro_i18ndomains, NULL);
     int rc = 1;		/* assume failure */
 
-    if (he->t)
-	*he->t = RPM_STRING_TYPE;
+    he->t = RPM_STRING_TYPE;
     if (he->p)
 	(*he->p).ptr = NULL;
-    if (he->c)
-	*he->c = 0;
+    he->c = 0;
     he->freeData = 0;
 
     if (dstring && *dstring) {
@@ -1073,8 +1068,7 @@ static int i18nTag(Header h, HE_t he)
 		    he->freeData = 1;
 		} else
 		    he->freeData = 0;
-		if (he->c)
-		    *he->c = 1;
+		he->c = 1;
 	    }
 	}
     }
@@ -1085,7 +1079,7 @@ static int i18nTag(Header h, HE_t he)
     if (!rc)
 	return rc;
 
-    rc = headerGetEntry(h, he->tag, he->t, he->p, he->c);
+    rc = headerGetEntry(h, he->tag, &he->t, he->p, &he->c);
     if (rc) {
 	rc = 0;
 	if (he->p) {
@@ -1098,14 +1092,12 @@ static int i18nTag(Header h, HE_t he)
 /*@=nullstate@*/
     }
 
-    if (he->t)
-	*he->t = RPM_STRING_TYPE;
+    he->t = RPM_STRING_TYPE;
+    he->c = 0;
     if (he->p) {
 	(*he->p).ptr = NULL;
 	he->freeData = 0;
     }
-    if (he->c)
-	*he->c = 0;
     return 1;
 }
 
@@ -1124,8 +1116,7 @@ static int localeTag(Header h, HE_t he)
     if (!rc || d == NULL || c == 0) {
 	if (he->p)
 	    (*he->p).ptr = NULL;
-	if (he->c)
-	    *he->c = 0;
+	he->c = 0;
 	he->freeData = 0;
 	return 1;
     }
@@ -1156,12 +1147,10 @@ assert(d[i] != NULL);
     } else
 	he->freeData = 0;
 
-    if (he->t)
-	*he->t = t;
+    he->t = t;
     if (he->p)
 	(*he->p).ptr = (void **)d;
-    if (he->c)
-	*he->c = c;
+    he->c = c;
     return 0;
 }
 
@@ -1235,16 +1224,14 @@ static int dbinstanceTag(Header h, HE_t he)
 		fileSystem, internalState @*/
 {
     he->tag = RPMTAG_DBINSTANCE;
-    if (he->t)
-	*he->t = RPM_INT32_TYPE;
+    he->t = RPM_INT32_TYPE;
     if (he->p) {
 	(*he->p).i32p = xcalloc(1, sizeof(*(*he->p).i32p));
 	(*he->p).i32p[0] = headerGetInstance(h);
 	he->freeData = 1;
     } else
 	he->freeData = 0;
-    if (he->c)
-	*he->c = 1;
+    he->c = 1;
 
     return 0;
 }
@@ -1294,9 +1281,9 @@ static int nvraTag(Header h, HE_t he)
 	/*@modifies h, he, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 {
-    if (he->t) *he->t = RPM_STRING_TYPE;
+    he->t = RPM_STRING_TYPE;
     if (he->p) (*he->p).str = hGetNVRA(h);
-    if (he->c) *he->c = 1;
+    he->c = 1;
     he->freeData = 1;
     return 0;
 }
@@ -1388,8 +1375,8 @@ static void rpmfiBuildFNames(Header h, rpmTag tagN,
 static int _fnTag(Header h, HE_t he)
 	/*@modifies he @*/
 {
-    if (he->t) *he->t = RPM_STRING_ARRAY_TYPE;
-    rpmfiBuildFNames(h, he->tag, (he->p ? &(*he->p).argv : NULL), he->c);
+    he->t = RPM_STRING_ARRAY_TYPE;
+    rpmfiBuildFNames(h, he->tag, (he->p ? &(*he->p).argv : NULL), &he->c);
     he->freeData = 1;
     return 0;
 }

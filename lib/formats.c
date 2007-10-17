@@ -32,10 +32,10 @@ static int fsnamesTag( /*@unused@*/ Header h, HE_t he)
 {
     const char ** list;
 
-    if (rpmGetFilesystemList(&list, he->c))
+    if (rpmGetFilesystemList(&list, &he->c))
 	return 1;
 
-    if (he->t) *he->t = RPM_STRING_ARRAY_TYPE;
+    he->t = RPM_STRING_ARRAY_TYPE;
     if (he->p) (*he->p).argv = list;
     he->freeData = 0;
 
@@ -69,14 +69,14 @@ static int fssizesTag(Header h, HE_t he)
 	fnames.argv = _free(fnames.argv);
     }
 
-    if (rpmGetFilesystemList(NULL, he->c))
+    if (rpmGetFilesystemList(NULL, &he->c))
 	goto exit;
 
-    *he->t = RPM_INT64_TYPE;
+    he->t = RPM_INT64_TYPE;
     he->freeData = 1;
 
     if (fnames.ptr == NULL)
-	usages = xcalloc((*he->c), sizeof(*usages));
+	usages = xcalloc(he->c, sizeof(*usages));
     else
     if (rpmGetFilesystemUsage(fnames.argv, fsizes.ui32p, numFiles, &usages, 0))	
 	goto exit;
@@ -102,8 +102,8 @@ static int fileclassTag(Header h, HE_t he)
 	/*@modifies h, he,
 		rpmGlobalMacroContext, fileSystem, internalState @*/
 {
-    *he->t = RPM_STRING_ARRAY_TYPE;
-    rpmfiBuildFClasses(h, &(*he->p).argv, he->c);
+    he->t = RPM_STRING_ARRAY_TYPE;
+    rpmfiBuildFClasses(h, &(*he->p).argv, &he->c);
     he->freeData = 1;
     return 0;
 }
@@ -119,8 +119,8 @@ static int filecontextsTag(Header h, HE_t he)
 	/*@modifies h, he,
 		rpmGlobalMacroContext, fileSystem, internalState @*/
 {
-    *he->t = RPM_STRING_ARRAY_TYPE;
-    rpmfiBuildFContexts(h, &(*he->p).argv, he->c);
+    he->t = RPM_STRING_ARRAY_TYPE;
+    rpmfiBuildFContexts(h, &(*he->p).argv, &he->c);
     he->freeData = 1;
     return 0;
 }
@@ -136,8 +136,8 @@ static int fscontextsTag(Header h, HE_t he)
 	/*@modifies h, he,
 		rpmGlobalMacroContext, fileSystem, internalState @*/
 {
-    *he->t = RPM_STRING_ARRAY_TYPE;
-    rpmfiBuildFSContexts(h, &(*he->p).argv, he->c);
+    he->t = RPM_STRING_ARRAY_TYPE;
+    rpmfiBuildFSContexts(h, &(*he->p).argv, &he->c);
     he->freeData = 1;
     return 0;
 }
@@ -153,8 +153,8 @@ static int recontextsTag(Header h, HE_t he)
 	/*@modifies h, he,
 		rpmGlobalMacroContext, fileSystem, internalState @*/
 {
-    *he->t = RPM_STRING_ARRAY_TYPE;
-    rpmfiBuildREContexts(h, &(*he->p).argv, he->c);
+    he->t = RPM_STRING_ARRAY_TYPE;
+    rpmfiBuildREContexts(h, &(*he->p).argv, &he->c);
     he->freeData = 1;
     return 0;
 }
@@ -170,8 +170,8 @@ static int fileprovideTag(Header h, HE_t he)
 	/*@modifies h, he,
 		rpmGlobalMacroContext, fileSystem, internalState @*/
 {
-    *he->t = RPM_STRING_ARRAY_TYPE;
-    rpmfiBuildFDeps(h, RPMTAG_PROVIDENAME, &(*he->p).argv, he->c);
+    he->t = RPM_STRING_ARRAY_TYPE;
+    rpmfiBuildFDeps(h, RPMTAG_PROVIDENAME, &(*he->p).argv, &he->c);
     he->freeData = 1;
     return 0;
 }
@@ -187,8 +187,8 @@ static int filerequireTag(Header h, HE_t he)
 	/*@modifies h, he,
 		rpmGlobalMacroContext, fileSystem, internalState @*/
 {
-    *he->t = RPM_STRING_ARRAY_TYPE;
-    rpmfiBuildFDeps(h, RPMTAG_REQUIRENAME, &(*he->p).argv, he->c);
+    he->t = RPM_STRING_ARRAY_TYPE;
+    rpmfiBuildFDeps(h, RPMTAG_REQUIRENAME, &(*he->p).argv, &he->c);
     he->freeData = 1;
     return 0;
 }
@@ -243,9 +243,9 @@ assert(ds != NULL);
 
     /* XXX perhaps return "(none)" inband if no suggests/enhances <shrug>. */
 
-    *he->t = RPM_STRING_ARRAY_TYPE;
+    he->t = RPM_STRING_ARRAY_TYPE;
     (*he->p).argv = argv;
-    *he->c = argc;
+    he->c = argc;
     he->freeData = 1;
     return 0;
 }

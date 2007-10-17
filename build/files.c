@@ -271,10 +271,8 @@ static void timeCheck(int tc, Header h)
 	/*@modifies internalState @*/
 {
     HGE_t hge = (HGE_t)headerGetExtension;
-    rpmTagType he_t = 0;
     rpmTagData he_p = { .ptr = NULL };
-    rpmTagCount he_c = 0;
-    HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
+    HE_s he_s = { .tag = 0, .t = 0, .p = &he_p, .c = 0, .freeData = 0 };
     HE_t he = &he_s;
     int_32 currentTime = time(NULL);
     int_32 * mtime;
@@ -282,12 +280,12 @@ static void timeCheck(int tc, Header h)
     int i;
 
     he->tag = RPMTAG_FILEMTIMES;
-    xx = hge(h, he->tag, he->t, he->p, he->c);
+    xx = hge(h, he->tag, &he->t, he->p, &he->c);
     mtime = he_p.i32p;
     he->tag = RPMTAG_OLDFILENAMES;
-    xx = hge(h, he->tag, he->t, he->p, he->c);
+    xx = hge(h, he->tag, &he->t, he->p, &he->c);
     
-    for (i = 0; i < he_c; i++) {
+    for (i = 0; i < he->c; i++) {
 	xx = currentTime - mtime[i];
 	if (xx < 0) xx = -xx;
 	if (xx > tc)
@@ -1170,10 +1168,8 @@ static void compressFilelist(Header h)
 	/*@modifies h @*/
 {
     HGE_t hge = (HGE_t)headerGetExtension;
-    rpmTagType he_t = 0;
     rpmTagData he_p = { .ptr = NULL };
-    rpmTagCount he_c = 0;
-    HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
+    HE_s he_s = { .tag = 0, .t = 0, .p = &he_p, .c = 0, .freeData = 0 };
     HE_t he = &he_s;
     HAE_t hae = (HAE_t)headerAddEntry;
     HRE_t hre = (HRE_t)headerRemoveEntry;
@@ -1199,9 +1195,9 @@ static void compressFilelist(Header h)
     }
 
     he->tag = RPMTAG_OLDFILENAMES;
-    xx = hge(h, he->tag, he->t, he->p, he->c);
+    xx = hge(h, he->tag, &he->t, he->p, &he->c);
     fileNames = he_p.argv;
-    count = he_c;
+    count = he->c;
     if (!xx || fileNames == NULL || count <= 0)
 	return;		/* no file list */
 
@@ -1255,20 +1251,20 @@ static void compressFilelist(Header h)
 exit:
     if (count > 0) {
 	he->tag = RPMTAG_DIRINDEXES;
-	he_t = RPM_INT32_TYPE;
+	he->t = RPM_INT32_TYPE;
 	he_p.i32p = dirIndexes;
-	he_c = count;
-	xx = hae(h, he->tag, he_t, he_p, he_c);
+	he->c = count;
+	xx = hae(h, he->tag, he->t, he_p, he->c);
 	he->tag = RPMTAG_BASENAMES;
-	he_t = RPM_STRING_ARRAY_TYPE;
+	he->t = RPM_STRING_ARRAY_TYPE;
 	he_p.argv = baseNames;
-	he_c = count;
-	xx = hae(h, he->tag, he_t, he_p, he_c);
+	he->c = count;
+	xx = hae(h, he->tag, he->t, he_p, he->c);
 	he->tag = RPMTAG_DIRNAMES;
-	he_t = RPM_STRING_ARRAY_TYPE;
+	he->t = RPM_STRING_ARRAY_TYPE;
 	he_p.argv = dirNames;
-	he_c = dirIndex + 1;
-	xx = hae(h, he->tag, he_t, he_p, he_c);
+	he->c = dirIndex + 1;
+	xx = hae(h, he->tag, he->t, he_p, he->c);
     }
 
     fileNames = _free(fileNames);
@@ -2165,10 +2161,8 @@ static int processPackageFiles(Spec spec, Package pkg,
 		rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     HGE_t hge = (HGE_t)headerGetExtension;
-    rpmTagType he_t = 0;
     rpmTagData he_p = { .ptr = NULL };
-    rpmTagCount he_c = 0;
-    HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
+    HE_s he_s = { .tag = 0, .t = 0, .p = &he_p, .c = 0, .freeData = 0 };
     HE_t he = &he_s;
     struct FileList_s fl;
     char *s, **files, **fp;
@@ -2233,7 +2227,7 @@ static int processPackageFiles(Spec spec, Package pkg,
     fl.buildRootURL = rpmGenPath(spec->rootURL, "%{?buildroot}", NULL);
 
     he->tag = RPMTAG_DEFAULTPREFIX;
-    xx = hge(pkg->header, he->tag, he->t, he->p, he->c);
+    xx = hge(pkg->header, he->tag, &he->t, he->p, &he->c);
     fl.prefix = he_p.str;
 
     fl.fileCount = 0;
@@ -2695,10 +2689,8 @@ int processBinaryFiles(Spec spec, int installSpecialDoc, int test)
 	/*@modifies check_fileList @*/
 {
     HGE_t hge = (HGE_t)headerGetExtension;
-    rpmTagType he_t = 0;
     rpmTagData he_p = { .ptr = NULL };
-    rpmTagCount he_c = 0;
-    HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
+    HE_s he_s = { .tag = 0, .t = 0, .p = &he_p, .c = 0, .freeData = 0 };
     HE_t he = &he_s;
     Package pkg;
     int res = 0;
@@ -2715,7 +2707,7 @@ int processBinaryFiles(Spec spec, int installSpecialDoc, int test)
 	(void) headerMacrosLoad(pkg->header);
 
 	he->tag = RPMTAG_NVRA;
-	xx = hge(pkg->header, he->tag, he->t, he->p, he->c);
+	xx = hge(pkg->header, he->tag, &he->t, he->p, &he->c);
 	rpmlog(RPMLOG_NOTICE, _("Processing files: %s\n"), he_p.str);
 	he_p.ptr = _free(he_p.ptr);
 		   

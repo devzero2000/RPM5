@@ -236,10 +236,8 @@ rpmds rpmdsNew(Header h, rpmTag tagN, int flags)
 {
     int scareMem = (flags & 0x1);
     HGE_t hge = (HGE_t)headerGetExtension;
-    rpmTagType he_t = 0;
     rpmTagData he_p = { .ptr = NULL };
-    rpmTagCount he_c = 0;
-    HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
+    HE_s he_s = { .tag = 0, .t = 0, .p = &he_p, .c = 0, .freeData = 0 };
     HE_t he = &he_s;
 
     rpmTag tagEVR, tagF;
@@ -288,9 +286,9 @@ assert(scareMem == 0);		/* XXX always allocate memory */
 	goto exit;
 
     he->tag = tagN;
-    xx = hge(h, he->tag, he->t, he->p, he->c);
+    xx = hge(h, he->tag, &he->t, he->p, &he->c);
     N = he_p.argv;
-    Count = he_c;
+    Count = he->c;
     if (xx && N != NULL && Count > 0) {
 	ds = xcalloc(1, sizeof(*ds));
 	ds->Type = Type;
@@ -304,22 +302,22 @@ assert(scareMem == 0);		/* XXX always allocate memory */
 
 	if (tagEVR > 0) {
 	    he->tag = tagEVR;
-	    xx = hge(h, he->tag, he->t, he->p, he->c);
+	    xx = hge(h, he->tag, &he->t, he->p, &he->c);
 	    ds->EVR = he_p.argv;
 	}
 	if (tagF > 0) {
 	    he->tag = tagF;
-	    xx = hge(h, he->tag, he->t, he->p, he->c);
+	    xx = hge(h, he->tag, &he->t, he->p, &he->c);
 	    ds->Flags = he_p.i32p;
 	}
 	{
 	    he->tag = RPMTAG_ARCH;
-	    xx = hge(h, he->tag, he->t, he->p, he->c);
+	    xx = hge(h, he->tag, &he->t, he->p, &he->c);
 	    ds->A = he_p.str;
 	}
 	{
 	    he->tag = RPMTAG_BUILDTIME;
-	    xx = hge(h, he->tag, he->t, he->p, he->c);
+	    xx = hge(h, he->tag, &he->t, he->p, &he->c);
 	    ds->BT = (he_p.ui32p ? *he_p.ui32p : 0);
 	    he_p.ptr = _free(he_p.ptr);
 	}
@@ -477,10 +475,8 @@ char * rpmdsNewDNEVR(const char * dspfx, rpmds ds)
 rpmds rpmdsThis(Header h, rpmTag tagN, int_32 Flags)
 {
     HGE_t hge = (HGE_t)headerGetExtension;
-    rpmTagType he_t = 0;
     rpmTagData he_p = { .ptr = NULL };
-    rpmTagCount he_c = 0;
-    HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
+    HE_s he_s = { .tag = 0, .t = 0, .p = &he_p, .c = 0, .freeData = 0 };
     HE_t he = &he_s;
     rpmds ds = NULL;
     const char * Type;
@@ -514,7 +510,7 @@ rpmds rpmdsThis(Header h, rpmTag tagN, int_32 Flags)
 	goto exit;
 
     he->tag = RPMTAG_EPOCH;
-    xx = hge(h, he->tag, he->t, he->p, he->c);
+    xx = hge(h, he->tag, &he->t, he->p, &he->c);
     E = (he_p.i32p ? *he_p.i32p : 0);
     he_p.ptr = _free(he_p.ptr);
 
@@ -547,11 +543,11 @@ rpmds rpmdsThis(Header h, rpmTag tagN, int_32 Flags)
     ds->Flags = xmalloc(sizeof(*ds->Flags));	ds->Flags[0] = Flags;
 
     he->tag = RPMTAG_ARCH;
-    xx = hge(h, he->tag, he->t, he->p, he->c);
+    xx = hge(h, he->tag, &he->t, he->p, &he->c);
     ds->A = he_p.str;
 
     he->tag = RPMTAG_BUILDTIME;
-    xx = hge(h, he->tag, he->t, he->p, he->c);
+    xx = hge(h, he->tag, &he->t, he->p, &he->c);
     ds->BT = (he_p.ui32p ? *he_p.ui32p : 0);
     he_p.ptr = _free(he_p.ptr);
 
@@ -3717,10 +3713,8 @@ exit:
 int rpmdsNVRMatchesDep(const Header h, const rpmds req, int nopromote)
 {
     HGE_t hge = (HGE_t)headerGetExtension;
-    rpmTagType he_t = 0;
     rpmTagData he_p = { .ptr = NULL };
-    rpmTagCount he_c = 0;
-    HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
+    HE_s he_s = { .tag = 0, .t = 0, .p = &he_p, .c = 0, .freeData = 0 };
     HE_t he = &he_s;
     const char * pkgN, * V, * R;
     int_32 E;
@@ -3746,7 +3740,7 @@ assert((rpmdsFlags(req) & RPMSENSE_SENSEMASK) == req->ns.Flags);
     (void) headerNEVRA(h, &pkgN, NULL, &V, &R, NULL);
 /*@=mods@*/
     he->tag = RPMTAG_EPOCH;
-    gotE = hge(h, he->tag, he->t, he->p, he->c);
+    gotE = hge(h, he->tag, &he->t, he->p, &he->c);
     E = (he_p.i32p ? *he_p.i32p : 0);
     he_p.ptr = _free(he_p.ptr);
 

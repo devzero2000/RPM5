@@ -151,20 +151,18 @@ static int rpmHeadersIdentical(Header first, Header second)
 	/*@*/
 {
     HGE_t hge = (HGE_t)headerGetExtension;
-    rpmTagType he_t = 0;
     rpmTagData he_p = { .ptr = NULL };
-    rpmTagCount he_c = 0;
-    HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
+    HE_s he_s = { .tag = 0, .t = 0, .p = &he_p, .c = 0, .freeData = 0 };
     HE_t he = &he_s;
     const char * one, * two;
     int rc = 0;
     int xx;
 
     he->tag = RPMTAG_HDRID;
-    xx = hge(first, he->tag, he->t, he->p, he->c);
+    xx = hge(first, he->tag, &he->t, he->p, &he->c);
     one = he_p.str;
     he->tag = RPMTAG_HDRID;
-    xx = hge(second, he->tag, he->t, he->p, he->c);
+    xx = hge(second, he->tag, &he->t, he->p, &he->c);
     two = he_p.str;
 
     if (one && two)
@@ -195,10 +193,8 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
 			fnpyKey key, int upgrade, rpmRelocation relocs)
 {
     HGE_t hge = (HGE_t)headerGetExtension;
-    rpmTagType he_t = 0;
     rpmTagData he_p = { .ptr = NULL };
-    rpmTagCount he_c = 0;
-    HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
+    HE_s he_s = { .tag = 0, .t = 0, .p = &he_p, .c = 0, .freeData = 0 };
     HE_t he = &he_s;
     rpmdepFlags depFlags = rpmtsDFlags(ts);
     uint_32 tscolor = rpmtsColor(ts);
@@ -238,16 +234,16 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
      * Check platform affinity of binary packages.
      */
     he->tag = RPMTAG_ARCH;
-    xx = hge(h, he->tag, he->t, he->p, he->c);
+    xx = hge(h, he->tag, &he->t, he->p, &he->c);
     arch = he_p.str;
     he->tag = RPMTAG_OS;
-    xx = hge(h, he->tag, he->t, he->p, he->c);
+    xx = hge(h, he->tag, &he->t, he->p, &he->c);
     os = he_p.str;
     if (nplatpat > 1) {
 	const char * platform = NULL;
 
 	he->tag = RPMTAG_PLATFORM;
-	xx = hge(h, he->tag, he->t, he->p, he->c);
+	xx = hge(h, he->tag, &he->t, he->p, &he->c);
 	platform = he_p.str;
 	if (!xx || platform == NULL)
 	    platform = rpmExpand(arch, "-unknown-", os, NULL);
@@ -256,7 +252,7 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
 	if (rc <= 0) {
 	    rpmps ps = rpmtsProblems(ts);
 	    he->tag = RPMTAG_NVRA;
-	    xx = hge(h, he->tag, he->t, he->p, he->c);
+	    xx = hge(h, he->tag, &he->t, he->p, &he->c);
 assert(he_p.str != NULL);
 	    rpmpsAppend(ps, RPMPROB_BADPLATFORM, he_p.str, key,
                         platform, NULL, NULL, 0);
@@ -1316,10 +1312,8 @@ static int checkPackageSet(rpmts ts, const char * depName,
 	/*@modifies ts, mi, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     HGE_t hge = (HGE_t)headerGetExtension;
-    rpmTagType he_t = 0;
     rpmTagData he_p = { .ptr = NULL };
-    rpmTagCount he_c = 0;
-    HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
+    HE_s he_s = { .tag = 0, .t = 0, .p = &he_p, .c = 0, .freeData = 0 };
     HE_t he = &he_s;
     rpmdepFlags depFlags = rpmtsDFlags(ts);
     uint_32 tscolor = rpmtsColor(ts);
@@ -1337,7 +1331,7 @@ static int checkPackageSet(rpmts ts, const char * depName,
 	int rc;
 
 	he->tag = RPMTAG_NVRA;
-	rc = hge(h, he->tag, he->t, he->p, he->c);
+	rc = hge(h, he->tag, &he->t, he->p, &he->c);
 assert(he_p.str != NULL);
 	if (!(depFlags & RPMDEPS_FLAG_NOREQUIRES))
 	    requires = rpmdsNew(h, RPMTAG_REQUIRENAME, scareMem);

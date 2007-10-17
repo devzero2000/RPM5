@@ -185,10 +185,8 @@ exit:
 rpmRC rpmReadPackageFile(rpmts ts, void * _fd, const char * fn, Header * hdrp)
 {
     HGE_t hge = (HGE_t)headerGetExtension;
-    rpmTagType he_t = 0;
     rpmTagData he_p = { .ptr = NULL };
-    rpmTagCount he_c = 0;
-    HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
+    HE_s he_s = { .tag = 0, .t = 0, .p = &he_p, .c = 0, .freeData = 0 };
     HE_t he = &he_s;
     pgpDig dig = rpmtsDig(ts);
     FD_t fd = _fd;
@@ -353,10 +351,10 @@ assert(dig != NULL);
     /* Retrieve the tag parameters from the signature header. */
     sig = NULL;
     he->tag = sigtag;
-    xx = hge(sigh, he->tag, he->t, he->p, he->c);
-    sigtype = he_t;
+    xx = hge(sigh, he->tag, &he->t, he->p, &he->c);
+    sigtype = he->t;
     sig = he_p.ptr;
-    siglen = he_c;
+    siglen = he->c;
     if (sig == NULL) {
 	rc = RPMRC_FAIL;
 	goto exit;
@@ -383,10 +381,10 @@ assert(dig != NULL);
 	size_t nmagic = 0;
 
 	he->tag = RPMTAG_HEADERIMMUTABLE;
-	xx = hge(h, he->tag, he->t, he->p, he->c);
-	uht = he_t;
+	xx = hge(h, he->tag, &he->t, he->p, &he->c);
+	uht = he->t;
 	uh = he_p.ptr;
-	uhc = he_c;
+	uhc = he->c;
 	if (!xx)
 	    break;
 	(void) headerGetMagic(NULL, &hmagic, &nmagic);
@@ -422,10 +420,10 @@ assert(dig != NULL);
 	size_t nmagic = 0;
 
 	he->tag = RPMTAG_HEADERIMMUTABLE;
-	xx = hge(h, he->tag, he->t, he->p, he->c);
-	uht = he_t;
+	xx = hge(h, he->tag, &he->t, he->p, &he->c);
+	uht = he->t;
 	uh = he_p.ptr;
-	uhc = he_c;
+	uhc = he->c;
 	if (!xx)
 	    break;
 	(void) headerGetMagic(NULL, &hmagic, &nmagic);

@@ -1322,10 +1322,8 @@ static int rpmfcGenerateScriptletDeps(const Spec spec, Package pkg)
         /*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     HGE_t hge = (HGE_t)headerGetExtension;
-    rpmTagType he_t = 0;
     rpmTagData he_p = { .ptr = NULL };
-    rpmTagCount he_c = 0;
-    HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
+    HE_s he_s = { .tag = 0, .t = 0, .p = &he_p, .c = 0, .freeData = 0 };
     HE_t he = &he_s;
     StringBuf sb_stdin = newStringBuf();
     StringBuf sb_stdout = NULL;
@@ -1343,7 +1341,7 @@ static int rpmfcGenerateScriptletDeps(const Spec spec, Package pkg)
 
 	/* Retrieve scriptlet interpreter. */
 	he->tag = dm->ntag;
-	xx = hge(pkg->header, he->tag, he->t, he->p, he->c);
+	xx = hge(pkg->header, he->tag, &he->t, he->p, &he->c);
 	if (!xx || he_p.str == NULL)
 	    continue;
 	xx = strcmp(he_p.str, "/bin/sh") && strcmp(he_p.str, "/bin/bash");
@@ -1353,7 +1351,7 @@ static int rpmfcGenerateScriptletDeps(const Spec spec, Package pkg)
 
 	/* Retrieve scriptlet body. */
 	he->tag = dm->vtag;
-	xx = hge(pkg->header, he->tag, he->t, he->p, he->c);
+	xx = hge(pkg->header, he->tag, &he->t, he->p, &he->c);
 	if (!xx || he_p.str == NULL)
 	    continue;
 	truncStringBuf(sb_stdin);
