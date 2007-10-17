@@ -198,7 +198,7 @@ int headerVerifyInfo(int il, int dl, const void * pev, void * iv, int negate)
  * @return		array of locales (or NULL on error)
  */
 /*@unused@*/
-/*@only@*/ /*@null@*/ char ** headerGetLangs(Header h)
+/*@only@*/ /*@null@*/ const char ** headerGetLangs(Header h)
 	/*@*/;
 
 /** \ingroup header
@@ -217,7 +217,7 @@ int headerVerifyInfo(int il, int dl, const void * pev, void * iv, int negate)
 /*@-incondefs@*/
 int headerGetRawEntry(Header h, int_32 tag,
 			/*@null@*/ /*@out@*/ hTYP_t type,
-			/*@null@*/ /*@out@*/ void * p, 
+			/*@null@*/ /*@out@*/ hRET_t * p, 
 			/*@null@*/ /*@out@*/ hCNT_t c)
 	/*@modifies *type, *p, *c @*/
 	/*@requires maxSet(type) >= 0 /\ maxSet(p) >= 0 /\ maxSet(c) >= 0 @*/;

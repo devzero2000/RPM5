@@ -335,10 +335,12 @@ int headerGetEntryMinMemory(Header h, int_32 tag,
  */
 /*@mayexit@*/
 /*@unused@*/ static inline
-int headerAddEntry(Header h, int_32 tag, rpmTagType type, hPTR_t p, rpmTagCount c)
+int headerAddEntry(Header h, int_32 tag, rpmTagType type,
+		const void * p, rpmTagCount c)
 	/*@modifies h @*/
 {
-    return (h2hv(h)->hdradd) (h, tag, type, p, c);
+    hRET_t *q = (void *)&p;
+    return (h2hv(h)->hdradd) (h, tag, type, *q, c);
 }
 
 /** \ingroup header
@@ -357,10 +359,11 @@ int headerAddEntry(Header h, int_32 tag, rpmTagType type, hPTR_t p, rpmTagCount 
  */
 /*@unused@*/ static inline
 int headerAppendEntry(Header h, int_32 tag, rpmTagType type,
-		hPTR_t p, rpmTagCount c)
+		const void * p, rpmTagCount c)
 	/*@modifies h @*/
 {
-    return (h2hv(h)->hdrappend) (h, tag, type, p, c);
+    hRET_t *q = (void *)&p;
+    return (h2hv(h)->hdrappend) (h, tag, type, *q, c);
 }
 
 /** \ingroup header
@@ -375,10 +378,11 @@ int headerAppendEntry(Header h, int_32 tag, rpmTagType type,
  */
 /*@unused@*/ static inline
 int headerAddOrAppendEntry(Header h, int_32 tag, rpmTagType type,
-		hPTR_t p, rpmTagCount c)
+		const void * p, rpmTagCount c)
 	/*@modifies h @*/
 {
-    return (h2hv(h)->hdraddorappend) (h, tag, type, p, c);
+    hRET_t *q = (void *)&p;
+    return (h2hv(h)->hdraddorappend) (h, tag, type, *q, c);
 }
 
 /** \ingroup header
@@ -421,10 +425,11 @@ int headerAddI18NString(Header h, int_32 tag, const char * string,
  */
 /*@unused@*/ static inline
 int headerModifyEntry(Header h, int_32 tag, rpmTagType type,
-			hPTR_t p, rpmTagCount c)
+			const void * p, rpmTagCount c)
 	/*@modifies h @*/
 {
-    return (h2hv(h)->hdrmodify) (h, tag, type, p, c);
+    hRET_t *q = (void *)&p;
+    return (h2hv(h)->hdrmodify) (h, tag, type, *q, c);
 }
 
 /** \ingroup header
@@ -517,11 +522,12 @@ HeaderIterator headerInitIterator(Header h)
 int headerNextIterator(HeaderIterator hi,
 		/*@null@*/ /*@out@*/ hTAG_t tag,
 		/*@null@*/ /*@out@*/ hTYP_t type,
-		/*@null@*/ /*@out@*/ hPTR_t * p,
+		/*@null@*/ /*@out@*/ const void * p,
 		/*@null@*/ /*@out@*/ hCNT_t c)
 	/*@modifies hi, *tag, *type, *p, *c @*/
 {
-    return hdrVec->hdrnextiter(hi, tag, type, p, c);
+    hRET_t **q = (void *)&p;
+    return hdrVec->hdrnextiter(hi, tag, type, *q, c);
 }
 
 /** \ingroup header

@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - jbj: change hPTR_t to hRET_t in ABI, revert to const void * in API.
     - jbj: drill hPTR_t through prototypes. hRET_t * refactor next.
     - jbj: drill rpmTagCount through rpmdb/* files.
     - jbj: preliminaries to encapsulate headerSprintf goop.

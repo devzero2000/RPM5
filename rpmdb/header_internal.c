@@ -61,20 +61,20 @@ int headerVerifyInfo(int il, int dl, const void * pev, void * iv, int negate)
     return -1;
 }
 
-char ** headerGetLangs(Header h)
+const char ** headerGetLangs(Header h)
 {
-    char **s, *e, **table;
+    const char ** table;
+    const char *e;
     rpmTagType type;
-    int i, count;
+    hRET_t s;
+    rpmTagCount count;
+    int i;
 
     if (!headerGetRawEntry(h, HEADER_I18NTABLE, &type, &s, &count))
 	return NULL;
 
-    /* XXX xcalloc never returns NULL. */
-    if ((table = (char **)xcalloc((count+1), sizeof(char *))) == NULL)
-	return NULL;
-
-    for (i = 0, e = *s; i < count; i++, e += strlen(e)+1)
+    table = xcalloc(count+1, sizeof(*table));
+    for (i = 0, e = *s.argv; i < count; i++, e += strlen(e)+1)
 	table[i] = e;
     table[count] = NULL;
 

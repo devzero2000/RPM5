@@ -209,8 +209,8 @@ void headerMergeLegacySigs(Header h, const Header sigh)
     HeaderIterator hi;
     int_32 tag;
     rpmTagType type;
+    const void * ptr;
     rpmTagCount count;
-    hPTR_t ptr;
     int xx;
 
     if (h == NULL || sigh == NULL)
@@ -305,8 +305,8 @@ Header headerRegenSigHeader(const Header h, int noArchiveSize)
     int_32 stag;
     int_32 tag;
     rpmTagType type;
+    const void * ptr;
     rpmTagCount count;
-    hPTR_t ptr;
     int xx;
 
     for (hi = headerInitIterator(h);

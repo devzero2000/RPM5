@@ -654,7 +654,7 @@ int (*HDRgetmin) (Header h, int_32 tag,
  * @return		1 on success, 0 on failure
  */
 typedef
-int (*HDRadd) (Header h, int_32 tag, rpmTagType type, hPTR_t p, rpmTagCount c)
+int (*HDRadd) (Header h, int_32 tag, rpmTagType type, hRET_t p, rpmTagCount c)
         /*@modifies h @*/;
 
 /** \ingroup header
@@ -672,7 +672,7 @@ int (*HDRadd) (Header h, int_32 tag, rpmTagType type, hPTR_t p, rpmTagCount c)
  * @return		1 on success, 0 on failure
  */
 typedef
-int (*HDRappend) (Header h, int_32 tag, rpmTagType type, hPTR_t p, rpmTagCount c)
+int (*HDRappend) (Header h, int_32 tag, rpmTagType type, hRET_t p, rpmTagCount c)
         /*@modifies h @*/;
 
 /** \ingroup header
@@ -686,7 +686,7 @@ int (*HDRappend) (Header h, int_32 tag, rpmTagType type, hPTR_t p, rpmTagCount c
  * @return		1 on success, 0 on failure
  */
 typedef
-int (*HDRaddorappend) (Header h, int_32 tag, rpmTagType type, hPTR_t p, rpmTagCount c)
+int (*HDRaddorappend) (Header h, int_32 tag, rpmTagType type, hRET_t p, rpmTagCount c)
         /*@modifies h @*/;
 
 /** \ingroup header
@@ -725,7 +725,7 @@ int (*HDRaddi18n) (Header h, int_32 tag, const char * string,
  * @return		1 on success, 0 on failure
  */
 typedef
-int (*HDRmodify) (Header h, int_32 tag, rpmTagType type, hPTR_t p, rpmTagCount c)
+int (*HDRmodify) (Header h, int_32 tag, rpmTagType type, hRET_t p, rpmTagCount c)
         /*@modifies h @*/;
 
 /** \ingroup header
@@ -800,7 +800,7 @@ typedef
 int (*HDRnextiter) (HeaderIterator hi,
 		/*@null@*/ /*@out@*/ hTAG_t tag,
 		/*@null@*/ /*@out@*/ hTYP_t type,
-		/*@null@*/ /*@out@*/ hPTR_t * p,
+		/*@null@*/ /*@out@*/ hRET_t * p,
 		/*@null@*/ /*@out@*/ hCNT_t c)
 	/*@modifies hi, *tag, *type, *p, *c @*/;
 
