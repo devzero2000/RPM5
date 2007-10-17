@@ -214,7 +214,7 @@ static int isMemberInEntry(Header h, const char *name, rpmTag tag)
     HGE_t hge = (HGE_t)headerGetExtension;
     rpmTagType he_t = 0;
     hRET_t he_p = { .ptr = NULL };
-    int_32 he_c = 0;
+    rpmTagCount he_c = 0;
     HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
     HE_t he = &he_s;
     int xx;
@@ -445,7 +445,7 @@ spectag stashSt(Spec spec, Header h, int tag, const char * lang)
     HGE_t hge = (HGE_t)headerGetExtension;
     rpmTagType he_t = 0;
     hRET_t he_p = { .ptr = NULL };
-    int_32 he_c = 0;
+    rpmTagCount he_c = 0;
     HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
     HE_t he = &he_s;
     spectag t = NULL;
@@ -506,7 +506,7 @@ static int handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
     HGE_t hge = (HGE_t)headerGetExtension;
     rpmTagType he_t = 0;
     hRET_t he_p = { .ptr = NULL };
-    int_32 he_c = 0;
+    rpmTagCount he_c = 0;
     HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
     HE_t he = &he_s;
     char * field = spec->line;

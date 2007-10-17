@@ -58,7 +58,7 @@ int rpmVersionCompare(Header first, Header second)
     HGE_t hge = (HGE_t)headerGetExtension;
     rpmTagType he_t = 0;
     hRET_t he_p = { .ptr = NULL };
-    int_32 he_c = 0;
+    rpmTagCount he_c = 0;
     HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
     HE_t he = &he_s;
     const char * one, * two;
@@ -191,7 +191,7 @@ rpmRC rpmInstallSourcePackage(rpmts ts, void * _fd,
     HGE_t hge = (HGE_t)headerGetExtension;
     rpmTagType he_t = 0;
     hRET_t he_p = { .ptr = NULL };
-    int_32 he_c = 0;
+    rpmTagCount he_c = 0;
     HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
     HE_t he = &he_s;
     FD_t fd = _fd;
@@ -501,7 +501,7 @@ static rpmRC runLuaScript(rpmpsm psm, Header h, const char *sln,
     HGE_t hge = (HGE_t)headerGetExtension;
     rpmTagType he_t = 0;
     hRET_t he_p = { .ptr = NULL };
-    int_32 he_c = 0;
+    rpmTagCount he_c = 0;
     HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
     HE_t he = &he_s;
     const rpmts ts = psm->ts;
@@ -638,7 +638,7 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
     HGE_t hge = (HGE_t)headerGetExtension;
     rpmTagType he_t = 0;
     hRET_t he_p = { .ptr = NULL };
-    int_32 he_c = 0;
+    rpmTagCount he_c = 0;
     HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
     HE_t he = &he_s;
     const rpmts ts = psm->ts;
@@ -969,7 +969,7 @@ static rpmRC runInstScript(rpmpsm psm)
     HGE_t hge = (HGE_t)headerGetExtension;
     rpmTagType he_t = 0;
     hRET_t he_p = { .ptr = NULL };
-    int_32 he_c = 0;
+    rpmTagCount he_c = 0;
     HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
     HE_t he = &he_s;
     rpmfi fi = psm->fi;
@@ -1035,7 +1035,7 @@ static rpmRC handleOneTrigger(const rpmpsm psm,
     HGE_t hge = (HGE_t)headerGetExtension;
     rpmTagType he_t = 0;
     hRET_t he_p = { .ptr = NULL };
-    int_32 he_c = 0;
+    rpmTagCount he_c = 0;
     HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
     HE_t he = &he_s;
     const rpmts ts = psm->ts;
@@ -1189,7 +1189,7 @@ static rpmRC runImmedTriggers(rpmpsm psm)
     HGE_t hge = (HGE_t)headerGetExtension;
     rpmTagType he_t = 0;
     hRET_t he_p = { .ptr = NULL };
-    int_32 he_c = 0;
+    rpmTagCount he_c = 0;
     HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
     HE_t he = &he_s;
     const rpmts ts = psm->ts;
@@ -1371,13 +1371,13 @@ rpmpsm rpmpsmNew(rpmts ts, rpmte te, rpmfi fi)
  * @param tag		tag to load
  * @return		tag value (0 on failure)
  */
-static uint_32 hLoadTID(Header h, int_32 tag)
+static uint_32 hLoadTID(Header h, rpmTag tag)
 	/*@*/
 {
     HGE_t hge = (HGE_t)headerGetExtension;
     rpmTagType he_t = 0;
     hRET_t he_p = { .ptr = NULL };
-    int_32 he_c = 0;
+    rpmTagCount he_c = 0;
     HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
     HE_t he = &he_s;
     uint_32 val;
@@ -1397,13 +1397,13 @@ static uint_32 hLoadTID(Header h, int_32 tag)
  * @param tag		tag to copy
  * @return		0 always
  */
-static int hCopyTag(Header sh, Header th, int_32 tag)
+static int hCopyTag(Header sh, Header th, rpmTag tag)
 	/*@modifies th @*/
 {
     HGE_t hge = (HGE_t)headerGetExtension;
     rpmTagType he_t = 0;
     hRET_t he_p = { .ptr = NULL };
-    int_32 he_c = 0;
+    rpmTagCount he_c = 0;
     HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
     HE_t he = &he_s;
     int xx = 1;
@@ -1598,7 +1598,7 @@ rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
     HGE_t hge = (HGE_t)headerGetExtension;
     rpmTagType he_t = 0;
     hRET_t he_p = { .ptr = NULL };
-    int_32 he_c = 0;
+    rpmTagCount he_c = 0;
     HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
     HE_t he = &he_s;
     const rpmts ts = psm->ts;
@@ -1856,8 +1856,8 @@ psm->te->h = headerLink(fi->h);
 			HeaderIterator hi;
 			int_32 tag;
 			rpmTagType type;
-			int_32 count;
-			hPTR_t ptr;
+			const void * ptr;
+			rpmTagCount count;
 			Header oh;
 
 			/* Load the original header from the blob. */
@@ -1868,11 +1868,17 @@ psm->te->h = headerLink(fi->h);
 
 			for (hi = headerInitIterator(oh);
 			     headerNextIterator(hi, &tag, &type, &ptr, &count);
-			     ptr = headerFreeData((void *)ptr, type))
+			     ptr = headerFreeData(ptr, type))
 			{
 			    if (tag == RPMTAG_ARCHIVESIZE)
 				noArchiveSize = 1;
-			    if (ptr) xx = hae(psm->oh, tag, type, ptr, count);
+			    if (ptr) {
+				he->tag = tag;
+				he_t = type;
+				he_p.ptr = (void *) ptr;	/* NOCAST */
+				he_c = count;
+				xx = hae(psm->oh, he->tag, he_t, he_p, he_c);
+			    }
 			}
 			hi = headerFreeIterator(hi);
 
@@ -1931,13 +1937,19 @@ psm->te->h = headerLink(fi->h);
 	    if (psm->oh != NULL)
 	    {	int_32 tid = rpmtsGetTid(ts);
 
-		xx = hae(psm->oh, RPMTAG_REMOVETID, RPM_INT32_TYPE,
-				&tid, 1);
+		he->tag = RPMTAG_REMOVETID;
+		he_t = RPM_INT32_TYPE;
+		he_p.i32p = &tid;
+		he_c = 1;
+		xx = hae(psm->oh, he->tag, he_t, he_p, he_c);
 
 		/* Add original header's origin (i.e. URL) */
 		if (origin != NULL) {
-		    xx = hae(psm->oh, RPMTAG_PACKAGEORIGIN, RPM_STRING_TYPE,
-				origin, 1);
+		    he->tag = RPMTAG_PACKAGEORIGIN;
+		    he_t = RPM_STRING_TYPE;
+		    he_p.str = origin;
+		    he_c = 1;
+		    xx = hae(psm->oh, he->tag, he_t, he_p, he_c);
 		    origin = _free(origin);
 		}
 

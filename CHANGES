@@ -1,4 +1,6 @@
 4.5 -> 5.0:
+    - jbj: start regularizing hae/hme calls.
+    - jbj: drill rpmTagCount everywhere.
     - jbj: change hPTR_t to hRET_t in ABI, revert to const void * in API.
     - jbj: drill hPTR_t through prototypes. hRET_t * refactor next.
     - jbj: drill rpmTagCount through rpmdb/* files.

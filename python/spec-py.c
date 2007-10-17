@@ -133,7 +133,7 @@ spec_get_sources(specObject *s)
     struct Source * source;
     PyObject *sourceList, *srcUrl;
     Spec spec;
-    char * fullSource;
+    const char * fullSource;
 
     sourceList = PyList_New(0);
     spec = specFromSpec(s);
@@ -144,7 +144,7 @@ spec_get_sources(specObject *s)
             fullSource = source->fullSource;
             srcUrl = Py_BuildValue("(sii)", fullSource, source->num, source->flags);
             PyList_Append(sourceList, srcUrl);
-            source=source->next;
+            source = source->next;
         } 
 
         return PyList_AsTuple(sourceList);

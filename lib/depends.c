@@ -153,7 +153,7 @@ static int rpmHeadersIdentical(Header first, Header second)
     HGE_t hge = (HGE_t)headerGetExtension;
     rpmTagType he_t = 0;
     hRET_t he_p = { .ptr = NULL };
-    int_32 he_c = 0;
+    rpmTagCount he_c = 0;
     HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
     HE_t he = &he_s;
     const char * one, * two;
@@ -197,7 +197,7 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
     HGE_t hge = (HGE_t)headerGetExtension;
     rpmTagType he_t = 0;
     hRET_t he_p = { .ptr = NULL };
-    int_32 he_c = 0;
+    rpmTagCount he_c = 0;
     HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
     HE_t he = &he_s;
     rpmdepFlags depFlags = rpmtsDFlags(ts);
@@ -1318,7 +1318,7 @@ static int checkPackageSet(rpmts ts, const char * depName,
     HGE_t hge = (HGE_t)headerGetExtension;
     rpmTagType he_t = 0;
     hRET_t he_p = { .ptr = NULL };
-    int_32 he_c = 0;
+    rpmTagCount he_c = 0;
     HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
     HE_t he = &he_s;
     rpmdepFlags depFlags = rpmtsDFlags(ts);

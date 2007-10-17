@@ -175,7 +175,7 @@ static void expandFilelist(Header h)
     HGE_t hge = (HGE_t)headerGetExtension;
     rpmTagType he_t = 0;
     hRET_t he_p = { .ptr = NULL };
-    int_32 he_c = 0;
+    rpmTagCount he_c = 0;
     HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
     HE_t he = &he_s;
     HAE_t hae = (HAE_t)headerAddEntry;
@@ -209,7 +209,7 @@ static void compressFilelist(Header h)
     HGE_t hge = (HGE_t)headerGetExtension;
     rpmTagType he_t = 0;
     hRET_t he_p = { .ptr = NULL };
-    int_32 he_c = 0;
+    rpmTagCount he_c = 0;
     HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
     HE_t he = &he_s;
     HAE_t hae = (HAE_t)headerAddEntry;
@@ -311,7 +311,7 @@ static void mungeFilelist(Header h)
     HGE_t hge = (HGE_t)headerGetExtension;
     rpmTagType he_t = 0;
     hRET_t he_p = { .ptr = NULL };
-    int_32 he_c = 0;
+    rpmTagCount he_c = 0;
     HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
     HE_t he = &he_s;
     int xx;
@@ -345,7 +345,7 @@ static void providePackageNVR(Header h)
     HGE_t hge = (HGE_t)headerGetExtension;
     rpmTagType he_t = 0;
     hRET_t he_p = { .ptr = NULL };
-    int_32 he_c = 0;
+    rpmTagCount he_c = 0;
     HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
     HE_t he = &he_s;
     const char *N, *V, *R;
@@ -707,14 +707,14 @@ long tagNumFromPyObject (PyObject *item)
  * @retval c		address of number of values
  * @return		0 on success, 1 on bad magic, 2 on error
  */
-static int rpmHeaderGetEntry(Header h, int_32 tag, /*@out@*/ int_32 *type,
-		/*@out@*/ void **p, /*@out@*/ int_32 *c)
+static int rpmHeaderGetEntry(Header h, rpmTag tag, /*@out@*/ rpmTagType *type,
+		/*@out@*/ void **p, /*@out@*/ rpmTagCount *c)
 	/*@modifies *type, *p, *c @*/
 {
     HGE_t hge = (HGE_t)headerGetExtension;
     rpmTagType he_t = 0;
     hRET_t he_p = { .ptr = NULL };
-    int_32 he_c = 0;
+    rpmTagCount he_c = 0;
     HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
     HE_t he = &he_s;
     int xx;
@@ -770,7 +770,7 @@ static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
 {
     rpmTagType he_t = 0;
     hRET_t he_p = { .ptr = NULL };
-    int_32 he_c = 0;
+    rpmTagCount he_c = 0;
     HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
     HE_t he = &he_s;
     int_32 tag = -1;

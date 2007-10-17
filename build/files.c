@@ -273,7 +273,7 @@ static void timeCheck(int tc, Header h)
     HGE_t hge = (HGE_t)headerGetExtension;
     rpmTagType he_t = 0;
     hRET_t he_p = { .ptr = NULL };
-    int_32 he_c = 0;
+    rpmTagCount he_c = 0;
     HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
     HE_t he = &he_s;
     int_32 currentTime = time(NULL);
@@ -1172,7 +1172,7 @@ static void compressFilelist(Header h)
     HGE_t hge = (HGE_t)headerGetExtension;
     rpmTagType he_t = 0;
     hRET_t he_p = { .ptr = NULL };
-    int_32 he_c = 0;
+    rpmTagCount he_c = 0;
     HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
     HE_t he = &he_s;
     HAE_t hae = (HAE_t)headerAddEntry;
@@ -1254,11 +1254,21 @@ static void compressFilelist(Header h)
 
 exit:
     if (count > 0) {
-	xx = hae(h, RPMTAG_DIRINDEXES, RPM_INT32_TYPE, dirIndexes, count);
-	xx = hae(h, RPMTAG_BASENAMES, RPM_STRING_ARRAY_TYPE,
-			baseNames, count);
-	xx = hae(h, RPMTAG_DIRNAMES, RPM_STRING_ARRAY_TYPE,
-			dirNames, dirIndex + 1);
+	he->tag = RPMTAG_DIRINDEXES;
+	he_t = RPM_INT32_TYPE;
+	he_p.i32p = dirIndexes;
+	he_c = count;
+	xx = hae(h, he->tag, he_t, he_p, he_c);
+	he->tag = RPMTAG_BASENAMES;
+	he_t = RPM_STRING_ARRAY_TYPE;
+	he_p.argv = baseNames;
+	he_c = count;
+	xx = hae(h, he->tag, he_t, he_p, he_c);
+	he->tag = RPMTAG_DIRNAMES;
+	he_t = RPM_STRING_ARRAY_TYPE;
+	he_p.argv = dirNames;
+	he_c = dirIndex + 1;
+	xx = hae(h, he->tag, he_t, he_p, he_c);
     }
 
     fileNames = _free(fileNames);
@@ -2157,7 +2167,7 @@ static int processPackageFiles(Spec spec, Package pkg,
     HGE_t hge = (HGE_t)headerGetExtension;
     rpmTagType he_t = 0;
     hRET_t he_p = { .ptr = NULL };
-    int_32 he_c = 0;
+    rpmTagCount he_c = 0;
     HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
     HE_t he = &he_s;
     struct FileList_s fl;
@@ -2687,7 +2697,7 @@ int processBinaryFiles(Spec spec, int installSpecialDoc, int test)
     HGE_t hge = (HGE_t)headerGetExtension;
     rpmTagType he_t = 0;
     hRET_t he_p = { .ptr = NULL };
-    int_32 he_c = 0;
+    rpmTagCount he_c = 0;
     HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
     HE_t he = &he_s;
     Package pkg;

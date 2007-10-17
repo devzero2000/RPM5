@@ -234,7 +234,7 @@ enum headerSprintfExtensionType {
  * @return		formatted string
  */
 typedef /*only@*/ char * (*headerTagFormatFunction)(rpmTagType type,
-				hPTR_t data, char * formatPrefix,
+				rpmTagData *  data, char * formatPrefix,
 				int padding, int element)
 	/*@requires maxSet(data) >= 0 @*/;
 
@@ -400,7 +400,7 @@ typedef int (*HGE_t) (Header h, rpmTag tag,
  * @return              1 on success, 0 on failure
  */
 typedef int (*HAE_t) (Header h, rpmTag tag, rpmTagType type,
-			hPTR_t p, rpmTagCount c)
+			rpmTagData p, rpmTagCount c)
 	/*@modifies h @*/;
 
 /**
@@ -415,7 +415,7 @@ typedef int (*HAE_t) (Header h, rpmTag tag, rpmTagType type,
  * @return		1 on success, 0 on failure
  */
 typedef int (*HME_t) (Header h, rpmTag tag, rpmTagType type,
-			hPTR_t p, rpmTagCount c)
+			rpmTagData p, rpmTagCount c)
 	/*@modifies h @*/;
 
 /**

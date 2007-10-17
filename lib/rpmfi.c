@@ -688,7 +688,7 @@ Header relocateFileList(const rpmts ts, rpmfi fi,
     HGE_t hge = (HGE_t)headerGetExtension;
     rpmTagType he_t = 0;
     hRET_t he_p = { .ptr = NULL };
-    int_32 he_c = 0;
+    rpmTagCount he_c = 0;
     HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
     HE_t he = &he_s;
     HAE_t hae = (HAE_t) headerAddEntry;
@@ -744,9 +744,13 @@ assert(p != NULL);
      */
     if (p->relocs == NULL || numRelocations == 0) {
 	if (numValid) {
-	    if (!headerIsEntry(origH, RPMTAG_INSTPREFIXES))
-		xx = hae(origH, RPMTAG_INSTPREFIXES,
-			validType, validRelocations, numValid);
+	    if (!headerIsEntry(origH, RPMTAG_INSTPREFIXES)) {
+		he->tag = RPMTAG_INSTPREFIXES;
+		he_t = validType;
+		he_p.argv = validRelocations;
+		he_c = numValid;
+		xx = hae(origH, he->tag, he_t, he_p, he_c);
+	    }
 	    validRelocations = _free(validRelocations);
 	}
 	/* XXX FIXME multilib file actions need to be checked. */
@@ -868,9 +872,13 @@ assert(p != NULL);
 	    }
 	}
 
-	if (numActual)
-	    xx = hae(h, RPMTAG_INSTPREFIXES, RPM_STRING_ARRAY_TYPE,
-		       (void **) actualRelocations, numActual);
+	if (numActual) {
+	    he->tag = RPMTAG_INSTPREFIXES;
+	    he_t = RPM_STRING_ARRAY_TYPE;
+	    he_p.argv = actualRelocations;
+	    he_c = numActual;
+	    xx = hae(h, he->tag, he_t, he_p, he_c);
+	}
 
 	actualRelocations = _free(actualRelocations);
 	validRelocations = _free(validRelocations);
@@ -1097,39 +1105,48 @@ dColors[j] |= fColors[i];
     if (nrelocated) {
 	he->tag = RPMTAG_BASENAMES;
 	xx = hge(h, he->tag, he->t, he->p, he->c);
-	xx = hae(h, RPMTAG_ORIGBASENAMES, he_t, he_p.ptr, he_c);
+	he->tag = RPMTAG_ORIGBASENAMES;
+	xx = hae(h, he->tag, he_t, he_p, he_c);
 	he_p.ptr = _free(he_p.ptr);
 
 	he->tag = RPMTAG_DIRNAMES;
 	xx = hge(h, he->tag, he->t, he->p, he->c);
-	xx = hae(h, RPMTAG_ORIGDIRNAMES, he_t, he_p.ptr, he_c);
+	he->tag = RPMTAG_ORIGDIRNAMES;
+	xx = hae(h, he->tag, he_t, he_p, he_c);
 	he_p.ptr = _free(he_p.ptr);
 
 	he->tag = RPMTAG_DIRINDEXES;
 	xx = hge(h, he->tag, he->t, he->p, he->c);
-	xx = hae(h, RPMTAG_ORIGDIRINDEXES, he_t, he_p.ptr, he_c);
+	he->tag = RPMTAG_ORIGDIRINDEXES;
+	xx = hae(h, he->tag, he_t, he_p, he_c);
 	he_p.ptr = _free(he_p.ptr);
 
-	xx = hme(h, RPMTAG_BASENAMES, RPM_STRING_ARRAY_TYPE,
-			  baseNames, fileCount);
-	fi->bnl = _free(fi->bnl);
 	he->tag = RPMTAG_BASENAMES;
+	he_t = RPM_STRING_ARRAY_TYPE;
+	he_p.argv = baseNames;
+	he_c = fileCount;
+	xx = hme(h, he->tag, he_t, he_p, he_c);
+	fi->bnl = _free(fi->bnl);
 	xx = hge(h, he->tag, he->t, he->p, he->c);
 	fi->bnl = he_p.argv;
 	fi->fc = he_c;
 
-	xx = hme(h, RPMTAG_DIRNAMES, RPM_STRING_ARRAY_TYPE,
-			  dirNames, dirCount);
-	fi->dnl = _free(fi->dnl);
 	he->tag = RPMTAG_DIRNAMES;
+	he_t = RPM_STRING_ARRAY_TYPE;
+	he_p.argv = dirNames;
+	he_c = dirCount;
+	xx = hme(h, he->tag, he_t, he_p, he_c);
+	fi->dnl = _free(fi->dnl);
 	xx = hge(h, he->tag, he->t, he->p, he->c);
 	fi->dnl = he_p.argv;
 	fi->dc = he_c;
 
-	xx = hme(h, RPMTAG_DIRINDEXES, RPM_INT32_TYPE,
-			  dirIndexes, fileCount);
-	fi->dil = _free(fi->dil);
 	he->tag = RPMTAG_DIRINDEXES;
+	he_t = RPM_INT32_TYPE;
+	he_p.i32p = dirIndexes;
+	he_c = fileCount;
+	xx = hme(h, he->tag, he_t, he_p, he_c);
+	fi->dil = _free(fi->dil);
 	xx = hge(h, he->tag, he->t, he->p, he->c);
 	fi->dil = he_p.ui32p;
     }
@@ -1263,7 +1280,7 @@ rpmfi rpmfiNew(const rpmts ts, Header h, rpmTag tagN, int flags)
     HGE_t hge = (HGE_t)headerGetExtension;
     rpmTagType he_t = 0;
     hRET_t he_p = { .ptr = NULL };
-    int_32 he_c = 0;
+    rpmTagCount he_c = 0;
     HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
     HE_t he = &he_s;
     rpmte p;
