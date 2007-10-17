@@ -174,7 +174,7 @@ static void expandFilelist(Header h)
 {
     HGE_t hge = (HGE_t)headerGetExtension;
     rpmTagType he_t = 0;
-    hRET_t he_p = { .ptr = NULL };
+    rpmTagData he_p = { .ptr = NULL };
     rpmTagCount he_c = 0;
     HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
     HE_t he = &he_s;
@@ -208,7 +208,7 @@ static void compressFilelist(Header h)
 {
     HGE_t hge = (HGE_t)headerGetExtension;
     rpmTagType he_t = 0;
-    hRET_t he_p = { .ptr = NULL };
+    rpmTagData he_p = { .ptr = NULL };
     rpmTagCount he_c = 0;
     HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
     HE_t he = &he_s;
@@ -310,7 +310,7 @@ static void mungeFilelist(Header h)
 {
     HGE_t hge = (HGE_t)headerGetExtension;
     rpmTagType he_t = 0;
-    hRET_t he_p = { .ptr = NULL };
+    rpmTagData he_p = { .ptr = NULL };
     rpmTagCount he_c = 0;
     HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
     HE_t he = &he_s;
@@ -344,7 +344,7 @@ static void providePackageNVR(Header h)
 {
     HGE_t hge = (HGE_t)headerGetExtension;
     rpmTagType he_t = 0;
-    hRET_t he_p = { .ptr = NULL };
+    rpmTagData he_p = { .ptr = NULL };
     rpmTagCount he_c = 0;
     HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
     HE_t he = &he_s;
@@ -713,7 +713,7 @@ static int rpmHeaderGetEntry(Header h, rpmTag tag, /*@out@*/ rpmTagType *type,
 {
     HGE_t hge = (HGE_t)headerGetExtension;
     rpmTagType he_t = 0;
-    hRET_t he_p = { .ptr = NULL };
+    rpmTagData he_p = { .ptr = NULL };
     rpmTagCount he_c = 0;
     HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
     HE_t he = &he_s;
@@ -769,7 +769,7 @@ static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
 	/*@*/
 {
     rpmTagType he_t = 0;
-    hRET_t he_p = { .ptr = NULL };
+    rpmTagData he_p = { .ptr = NULL };
     rpmTagCount he_c = 0;
     HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
     HE_t he = &he_s;
@@ -805,7 +805,7 @@ static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
 
     /* Retrieve data from extension or header. */
     if (ext) {
-	he->p = (hRET_t *)&data;
+	he->p = (hRET_t *)&data;	/* NOCAST */
         ext->u.tagFunction(s->h, he);
 	freeData = he->freeData;
     } else {

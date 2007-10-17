@@ -861,8 +861,8 @@ static int rpmdbExportInfo(/*@unused@*/ rpmdb db, Header h, int adding)
 {
     HGE_t hge = (HGE_t)headerGetExtension;
     rpmTagType he_t = 0;
-    hRET_t he_p = { .ptr = NULL };
-    int_32 he_c = 0;
+    rpmTagData he_p = { .ptr = NULL };
+    rpmTagCount he_c = 0;
     HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
     HE_t he = &he_s;
     const char * fn = NULL;
@@ -1411,8 +1411,8 @@ static int rpmdbFindByFile(rpmdb db, /*@null@*/ const char * filespec,
 {
     HGE_t hge = (HGE_t)headerGetExtension;
     rpmTagType he_t = 0;
-    hRET_t he_p = { .ptr = NULL };
-    int_32 he_c = 0;
+    rpmTagData he_p = { .ptr = NULL };
+    rpmTagCount he_c = 0;
     HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
     HE_t he = &he_s;
     const char * dirName;
@@ -2155,8 +2155,8 @@ static int mireSkip (const rpmdbMatchIterator mi)
 {
     HGE_t hge = (HGE_t) headerGetExtension;
     rpmTagType he_t = 0;
-    hRET_t he_p = { .ptr = NULL };
-    int_32 he_c = 0;
+    rpmTagData he_p = { .ptr = NULL };
+    rpmTagCount he_c = 0;
     HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
     HE_t he = &he_s;
     char numbuf[32];
@@ -2786,8 +2786,8 @@ DBT * data = alloca(sizeof(*data));
 union _dbswap mi_offset;
     HGE_t hge = (HGE_t)headerGetExtension;
     rpmTagType he_t = 0;
-    hRET_t he_p = { .ptr = NULL };
-    int_32 he_c = 0;
+    rpmTagData he_p = { .ptr = NULL };
+    rpmTagCount he_c = 0;
     HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
     HE_t he = &he_s;
     Header h;
@@ -3101,8 +3101,8 @@ DBT * data = alloca(sizeof(*data));
     HGE_t hge = (HGE_t) headerGetExtension;
     HAE_t hae = (HAE_t) headerAddEntry;
     rpmTagType he_t;
-    hRET_t he_p = { .ptr = NULL };
-    int_32 he_c;
+    rpmTagData he_p = { .ptr = NULL };
+    rpmTagCount he_c;
     HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
     HE_t he = &he_s;
     sigset_t signalMask;
@@ -3260,7 +3260,7 @@ memset(data, 0, sizeof(*data));
 	if (db->db_tagn != NULL)
 	for (dbix = 0; dbix < db->db_ndbi; dbix++) {
 	    byte * bin = NULL;
-	    hRET_t requireFlags;
+	    rpmTagData requireFlags;
 	    rpmRC rpmrc;
 	    int i, j;
 
@@ -3579,8 +3579,8 @@ DBT * key;
 DBT * data;
     HGE_t hge = (HGE_t)headerGetExtension;
     rpmTagType he_t = 0;
-    hRET_t he_p = { .ptr = NULL };
-    int_32 he_c = 0;
+    rpmTagData he_p = { .ptr = NULL };
+    rpmTagCount he_c = 0;
     HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
     HE_t he = &he_s;
     rpmdbMatchIterator mi;

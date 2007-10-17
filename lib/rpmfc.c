@@ -1323,7 +1323,7 @@ static int rpmfcGenerateScriptletDeps(const Spec spec, Package pkg)
 {
     HGE_t hge = (HGE_t)headerGetExtension;
     rpmTagType he_t = 0;
-    hRET_t he_p = { .ptr = NULL };
+    rpmTagData he_p = { .ptr = NULL };
     rpmTagCount he_c = 0;
     HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
     HE_t he = &he_s;

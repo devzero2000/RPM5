@@ -867,12 +867,13 @@ static int instprefixTag(Header h, HE_t he)
 static int triggercondsTag(Header h, HE_t he)
 	/*@modifies he @*/
 {
-    hRET_t flags;
-    int_32 * indices;
-    char ** names, ** versions;
+    rpmTagData flags;
+    rpmTagData indices;
+    rpmTagData names;
+    rpmTagData versions;
     int numNames, numScripts;
     const char ** conds;
-    char ** s;
+    rpmTagData s;
     char * item, * flagsStr;
     char * chptr;
     int i, j, xx;
@@ -901,17 +902,17 @@ static int triggercondsTag(Header h, HE_t he)
 	chptr = xstrdup("");
 
 	for (j = 0; j < numNames; j++) {
-	    if (indices[j] != i)
+	    if (indices.i32p[j] != i)
 		/*@innercontinue@*/ continue;
 
-	    item = xmalloc(strlen(names[j]) + strlen(versions[j]) + 20);
+	    item = xmalloc(strlen(names.argv[j]) + strlen(versions.argv[j]) + 20);
 	    if (flags.i32p[j] & RPMSENSE_SENSEMASK) {
 		buf[0] = '%', buf[1] = '\0';
 		flagsStr = depflagsFormat(RPM_INT32_TYPE, &flags, buf, 0, j);
-		sprintf(item, "%s %s %s", names[j], flagsStr, versions[j]);
+		sprintf(item, "%s %s %s", names.argv[j], flagsStr, versions.argv[j]);
 		flagsStr = _free(flagsStr);
 	    } else
-		strcpy(item, names[j]);
+		strcpy(item, names.argv[j]);
 
 	    chptr = xrealloc(chptr, strlen(chptr) + strlen(item) + 5);
 	    if (*chptr != '\0') strcat(chptr, ", ");
@@ -923,9 +924,9 @@ static int triggercondsTag(Header h, HE_t he)
     }
 
 exit:
-    names = headerFreeData(names, -1);
-    versions = headerFreeData(versions, -1);
-    s = headerFreeData(s, -1);
+    names.ptr = headerFreeData(names.ptr, -1);
+    versions.ptr = headerFreeData(versions.ptr, -1);
+    s.ptr = headerFreeData(s.ptr, -1);
 
     return 0;
 }

@@ -92,7 +92,7 @@ IDTX IDTXload(rpmts ts, rpmTag tag, uint_32 rbtid)
 {
     HGE_t hge = (HGE_t)headerGetExtension;
     rpmTagType he_t = 0;
-    hRET_t he_p = { .ptr = NULL };
+    rpmTagData he_p = { .ptr = NULL };
     rpmTagCount he_c = 0;
     HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
     HE_t he = &he_s;
@@ -146,7 +146,7 @@ IDTX IDTXglob(rpmts ts, const char * globstr, rpmTag tag, uint_32 rbtid)
 {
     HGE_t hge = (HGE_t)headerGetExtension;
     rpmTagType he_t = 0;
-    hRET_t he_p = { .ptr = NULL };
+    rpmTagData he_p = { .ptr = NULL };
     rpmTagCount he_c = 0;
     HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
     HE_t he = &he_s;
@@ -296,7 +296,7 @@ static int findErases(rpmts ts, /*@null@*/ rpmte p, unsigned thistid,
 {
     HGE_t hge = (HGE_t)headerGetExtension;
     rpmTagType he_t = 0;
-    hRET_t he_p = { .ptr = NULL };
+    rpmTagData he_p = { .ptr = NULL };
     rpmTagCount he_c = 0;
     HE_s he_s = { .tag = 0, .t = &he_t, .p = &he_p, .c = &he_c, .freeData = 0 };
     HE_t he = &he_s;

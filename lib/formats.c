@@ -55,8 +55,8 @@ static int fssizesTag(Header h, HE_t he)
 		fileSystem, internalState @*/
 {
     HGE_t hge = (HGE_t)headerGetExtension;
-    hRET_t fnames = { .ptr = NULL };
-    hRET_t fsizes = { .ptr = NULL };
+    rpmTagData fnames = { .ptr = NULL };
+    rpmTagData fsizes = { .ptr = NULL };
     uint_64 * usages;
     int numFiles;
     int rc = 1;		/* assume error */

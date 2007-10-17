@@ -136,7 +136,7 @@ typedef enum rpmTagType_e rpmTagType;
 
 /** \ingroup header
  */
-typedef const hRET_t rpmTagData;
+typedef hRET_t rpmTagData;
 
 /** \ingroup header
  */
