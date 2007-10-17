@@ -133,7 +133,7 @@ static int ftsCacheUpdate(rpmts ts)
 
 	/* --- Check that identical package is not already cached. */
 	he->tag = RPMTAG_SIGMD5;
-	xx = hge(ip->h, he->tag, &he->t, he->p, &he->c);
+	xx = hge(ip->h, he, 0);
 	md5 = he_p.ui8p;
  	if (!xx || md5 == NULL) {
 	    md5 = _free(md5);

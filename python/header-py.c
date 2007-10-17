@@ -183,7 +183,7 @@ static void expandFilelist(Header h)
     /*@-branchstate@*/
     if (!headerIsEntry(h, RPMTAG_OLDFILENAMES)) {
 	he->tag = RPMTAG_FILEPATHS;
-	xx = hge(h, he->tag, &he->t, he->p, &he->c);
+	xx = hge(h, he, 0);
 	if (he_p.ptr == NULL || he->c <= 0)
 	    return;
 	xx = hae(h, RPMTAG_OLDFILENAMES, he->t, he_p.ptr, he->c);
@@ -231,7 +231,7 @@ static void compressFilelist(Header h)
     }
 
     he->tag = RPMTAG_OLDFILENAMES;
-    xx = hge(h, he->tag, &he->t, he->p, &he->c);
+    xx = hge(h, he, 0);
     fileNames = he_p.argv;
     count = he->c;
     if (!xx || fileNames == NULL || count <= 0)
@@ -316,7 +316,7 @@ static void mungeFilelist(Header h)
 	compressFilelist(h);
 
     he->tag = RPMTAG_FILEPATHS;
-    xx = hge(h, he->tag, &he->t, he->p, &he->c);
+    xx = hge(h, he, 0);
 
     if (he_p.ptr == NULL || he->c <= 0)
 	return;
@@ -360,7 +360,7 @@ static void providePackageNVR(Header h)
     pEVR = p = alloca(21 + strlen(V) + 1 + strlen(R) + 1);
     *p = '\0';
     he->tag = RPMTAG_EPOCH;
-    gotE = hge(h, he->tag, &he->t, he->p, &he->c);
+    gotE = hge(h, he, 0);
     E = (he_p.i32p ? *he_p.i32p : 0);
     he_p.ptr = _free(he_p.ptr);
     if (gotE) {
@@ -374,7 +374,7 @@ static void providePackageNVR(Header h)
      * If no provides at all are available, we can just add.
      */
     he->tag = RPMTAG_PROVIDENAME;
-    xx = hge(h, he->tag, &he->t, he->p, &he->c);
+    xx = hge(h, he, 0);
     provides = he_p.argv;
     providesCount = he->c;
     if (!xx)
@@ -384,7 +384,7 @@ static void providePackageNVR(Header h)
      * Otherwise, fill in entries on legacy packages.
      */
     he->tag = RPMTAG_PROVIDEVERSION;
-    xx = hge(h, he->tag, &he->t, he->p, &he->c);
+    xx = hge(h, he, 0);
     providesEVR = he_p.argv;
     if (!xx) {
 	for (i = 0; i < providesCount; i++) {
@@ -399,7 +399,7 @@ static void providePackageNVR(Header h)
     }
 
     he->tag = RPMTAG_PROVIDEFLAGS;
-    xx = hge(h, he->tag, &he->t, he->p, &he->c);
+    xx = hge(h, he, 0);
     provideFlags = he_p.i32p;
 
     /*@-nullderef@*/	/* LCL: providesEVR is not NULL */
@@ -713,7 +713,7 @@ static int rpmHeaderGetEntry(Header h, rpmTag tag, /*@out@*/ rpmTagType *type,
     case RPMTAG_OLDFILENAMES:
     {	
 	he->tag = RPMTAG_FILEPATHS;
-	xx = hge(h, he->tag, &he->t, he->p, &he->c);
+	xx = hge(h, he, 0);
 	if (p)
 	    *p = he_p.ptr;
 	else

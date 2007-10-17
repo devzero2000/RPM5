@@ -150,7 +150,7 @@ static int getSignid(Header sigh, int sigtag, unsigned char * signid)
     int xx;
 
     he->tag = sigtag;
-    xx = hge(sigh, he->tag, &he->t, he->p, &he->c);
+    xx = hge(sigh, he, 0);
     if (xx && he_p.ptr != NULL) {
 	pgpDig dig = pgpNewDig(0);
 
@@ -267,7 +267,7 @@ if (!_nosigh) {
 
 	/* Dump the immutable region (if present). */
 	he->tag = RPMTAG_HEADERSIGNATURES;
-	xx = hge(sigh, he->tag, &he->t, he->p, &he->c);
+	xx = hge(sigh, he, 0);
 	if (xx) {
 	    HeaderIterator hi;
 	    int_32 htag;
@@ -698,7 +698,7 @@ static int readFile(FD_t fd, const char * fn, pgpDig dig)
 	    size_t nmagic = 0;
 	
 	    he->tag = RPMTAG_HEADERIMMUTABLE;
-	    xx = hge(h, he->tag, &he->t, he->p, &he->c);
+	    xx = hge(h, he, 0);
 	    if (!xx || he_p.ptr == NULL) {
 		h = headerFree(h);
 		rpmlog(RPMLOG_ERR, _("%s: headerGetEntry failed\n"), fn);
@@ -860,7 +860,7 @@ assert(dig != NULL);
 #endif
 	) {
 	    he->tag = sigtag;
-	    xx = hge(sigh, he->tag, &he->t, he->p, &he->c);
+	    xx = hge(sigh, he, 0);
 	    xx = pgpPrtPkts(he_p.ptr, he->c, dig, 0);
 	    he_p.ptr = _free(he_p.ptr);
 #if defined(SUPPORT_RPMV3_VERIFY_RSA)

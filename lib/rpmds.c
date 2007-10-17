@@ -286,7 +286,7 @@ assert(scareMem == 0);		/* XXX always allocate memory */
 	goto exit;
 
     he->tag = tagN;
-    xx = hge(h, he->tag, &he->t, he->p, &he->c);
+    xx = hge(h, he, 0);
     N = he_p.argv;
     Count = he->c;
     if (xx && N != NULL && Count > 0) {
@@ -302,22 +302,22 @@ assert(scareMem == 0);		/* XXX always allocate memory */
 
 	if (tagEVR > 0) {
 	    he->tag = tagEVR;
-	    xx = hge(h, he->tag, &he->t, he->p, &he->c);
+	    xx = hge(h, he, 0);
 	    ds->EVR = he_p.argv;
 	}
 	if (tagF > 0) {
 	    he->tag = tagF;
-	    xx = hge(h, he->tag, &he->t, he->p, &he->c);
+	    xx = hge(h, he, 0);
 	    ds->Flags = he_p.i32p;
 	}
 	{
 	    he->tag = RPMTAG_ARCH;
-	    xx = hge(h, he->tag, &he->t, he->p, &he->c);
+	    xx = hge(h, he, 0);
 	    ds->A = he_p.str;
 	}
 	{
 	    he->tag = RPMTAG_BUILDTIME;
-	    xx = hge(h, he->tag, &he->t, he->p, &he->c);
+	    xx = hge(h, he, 0);
 	    ds->BT = (he_p.ui32p ? *he_p.ui32p : 0);
 	    he_p.ptr = _free(he_p.ptr);
 	}
@@ -510,7 +510,7 @@ rpmds rpmdsThis(Header h, rpmTag tagN, int_32 Flags)
 	goto exit;
 
     he->tag = RPMTAG_EPOCH;
-    xx = hge(h, he->tag, &he->t, he->p, &he->c);
+    xx = hge(h, he, 0);
     E = (he_p.i32p ? *he_p.i32p : 0);
     he_p.ptr = _free(he_p.ptr);
 
@@ -543,11 +543,11 @@ rpmds rpmdsThis(Header h, rpmTag tagN, int_32 Flags)
     ds->Flags = xmalloc(sizeof(*ds->Flags));	ds->Flags[0] = Flags;
 
     he->tag = RPMTAG_ARCH;
-    xx = hge(h, he->tag, &he->t, he->p, &he->c);
+    xx = hge(h, he, 0);
     ds->A = he_p.str;
 
     he->tag = RPMTAG_BUILDTIME;
-    xx = hge(h, he->tag, &he->t, he->p, &he->c);
+    xx = hge(h, he, 0);
     ds->BT = (he_p.ui32p ? *he_p.ui32p : 0);
     he_p.ptr = _free(he_p.ptr);
 
@@ -3740,7 +3740,7 @@ assert((rpmdsFlags(req) & RPMSENSE_SENSEMASK) == req->ns.Flags);
     (void) headerNEVRA(h, &pkgN, NULL, &V, &R, NULL);
 /*@=mods@*/
     he->tag = RPMTAG_EPOCH;
-    gotE = hge(h, he->tag, &he->t, he->p, &he->c);
+    gotE = hge(h, he, 0);
     E = (he_p.i32p ? *he_p.i32p : 0);
     he_p.ptr = _free(he_p.ptr);
 

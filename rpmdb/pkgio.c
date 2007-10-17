@@ -154,7 +154,7 @@ fprintf(stderr, "*** free pkt %p[%d] id %08x %08x\n", ts->pkpkt, ts->pkpktlen, p
 	he->tag = RPMTAG_PUBKEYS;
 	mi = rpmdbInitIterator(rpmtsGetRdb(ts), RPMTAG_PUBKEYS, sigp->signid, sizeof(sigp->signid));
 	while ((h = rpmdbNextIterator(mi)) != NULL) {
-	    if (!hge(h, he->tag, &he->t, he->p, &he->c))
+	    if (!hge(h, he, 0))
 		continue;
 	    hx = rpmdbGetIteratorOffset(mi);
 	    ix = rpmdbGetIteratorFileNum(mi);
@@ -708,7 +708,7 @@ static rpmRC rdSignature(FD_t fd, /*@out@*/ /*@null@*/ void * ptr,
 	/* Print package component sizes. */
 
 	he->tag = RPMSIGTAG_SIZE;
-	xx = hge(sigh, he->tag, &he->t, he->p, &he->c);
+	xx = hge(sigh, he, 0);
 	if (xx) {
 	    size_t datasize = *he_p.ui32p;
 	    rc = printSize(fd, sigSize, pad, datasize);

@@ -102,7 +102,7 @@ static void addTE(rpmts ts, rpmte p, Header h,
     int xx;
 
     he->tag = RPMTAG_NVRA;
-    xx = hge(h, he->tag, &he->t, he->p, &he->c);
+    xx = hge(h, he, 0);
 assert(he_p.str != NULL);
     p->NEVR = he_p.str;
     p->name = xstrdup(p->NEVR);
@@ -114,11 +114,11 @@ assert(he_p.str != NULL);
     p->db_instance = 0;
 
     he->tag = RPMTAG_HDRID;
-    xx = hge(h, he->tag, &he->t, he->p, &he->c);
+    xx = hge(h, he, 0);
     p->hdrid = he_p.str;
 
     he->tag = RPMTAG_PKGID;
-    xx = hge(h, he->tag, &he->t, he->p, &he->c);
+    xx = hge(h, he, 0);
     if (he_p.ui8p != NULL) {
 	static const char hex[] = "0123456789abcdef";
 	char * t;
@@ -135,11 +135,11 @@ assert(he_p.str != NULL);
 	p->pkgid = NULL;
 
     he->tag = RPMTAG_ARCH;
-    xx = hge(h, he->tag, &he->t, he->p, &he->c);
+    xx = hge(h, he, 0);
     p->arch = he_p.str;
 
     he->tag = RPMTAG_OS;
-    xx = hge(h, he->tag, &he->t, he->p, &he->c);
+    xx = hge(h, he, 0);
     p->os = he_p.str;
 
     p->isSource =
@@ -149,7 +149,7 @@ assert(he_p.str != NULL);
     p->NEVRA = xstrdup(p->NEVR);
 
     he->tag = RPMTAG_EPOCH;
-    xx = hge(h, he->tag, &he->t, he->p, &he->c);
+    xx = hge(h, he, 0);
     if (he_p.i32p != NULL) {
 	p->epoch = xmalloc(20);
 	sprintf(p->epoch, "%d", *he_p.i32p);
@@ -232,7 +232,7 @@ rpmte rpmteNew(const rpmts ts, Header h,
 	/* XXX 256 is only an estimate of signature header. */
 	p->pkgFileSize = 96 + 256;
 	he->tag = RPMTAG_SIGSIZE;
-	xx = hge(h, he->tag, &he->t, he->p, &he->c);
+	xx = hge(h, he, 0);
 	if (xx && he_p.ui32p)
 	    p->pkgFileSize += *he_p.ui32p;
 	he_p.ptr = _free(he_p.ptr);
@@ -614,7 +614,7 @@ int rpmteChain(rpmte p, rpmte q, Header oh, const char * msg)
     if (msg == NULL)
 	msg = "";
     he->tag = RPMTAG_NVRA;
-    xx = hge(oh, he->tag, &he->t, he->p, &he->c);
+    xx = hge(oh, he, 0);
 assert(he_p.str != NULL);
     blinkNEVRA = he_p.str;
 
@@ -624,7 +624,7 @@ assert(he_p.str != NULL);
      * tags appended.
      */
     he->tag = RPMTAG_PKGID;
-    xx = hge(oh, he->tag, &he->t, he->p, &he->c);
+    xx = hge(oh, he, 0);
     if (xx && he_p.ui8p != NULL) {
 	static const char hex[] = "0123456789abcdef";
 	char * t;
@@ -641,7 +641,7 @@ assert(he_p.str != NULL);
 	blinkPkgid = NULL;
 
     he->tag = RPMTAG_HDRID;
-    xx = hge(oh, he->tag, &he->t, he->p, &he->c);
+    xx = hge(oh, he, 0);
     blinkHdrid = he_p.str;
 
 /*@-modfilesys@*/

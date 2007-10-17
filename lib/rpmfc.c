@@ -1341,7 +1341,7 @@ static int rpmfcGenerateScriptletDeps(const Spec spec, Package pkg)
 
 	/* Retrieve scriptlet interpreter. */
 	he->tag = dm->ntag;
-	xx = hge(pkg->header, he->tag, &he->t, he->p, &he->c);
+	xx = hge(pkg->header, he, 0);
 	if (!xx || he_p.str == NULL)
 	    continue;
 	xx = strcmp(he_p.str, "/bin/sh") && strcmp(he_p.str, "/bin/bash");
@@ -1351,7 +1351,7 @@ static int rpmfcGenerateScriptletDeps(const Spec spec, Package pkg)
 
 	/* Retrieve scriptlet body. */
 	he->tag = dm->vtag;
-	xx = hge(pkg->header, he->tag, &he->t, he->p, &he->c);
+	xx = hge(pkg->header, he, 0);
 	if (!xx || he_p.str == NULL)
 	    continue;
 	truncStringBuf(sb_stdin);

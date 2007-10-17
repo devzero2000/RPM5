@@ -159,10 +159,10 @@ static int rpmHeadersIdentical(Header first, Header second)
     int xx;
 
     he->tag = RPMTAG_HDRID;
-    xx = hge(first, he->tag, &he->t, he->p, &he->c);
+    xx = hge(first, he, 0);
     one = he_p.str;
     he->tag = RPMTAG_HDRID;
-    xx = hge(second, he->tag, &he->t, he->p, &he->c);
+    xx = hge(second, he, 0);
     two = he_p.str;
 
     if (one && two)
@@ -234,16 +234,16 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
      * Check platform affinity of binary packages.
      */
     he->tag = RPMTAG_ARCH;
-    xx = hge(h, he->tag, &he->t, he->p, &he->c);
+    xx = hge(h, he, 0);
     arch = he_p.str;
     he->tag = RPMTAG_OS;
-    xx = hge(h, he->tag, &he->t, he->p, &he->c);
+    xx = hge(h, he, 0);
     os = he_p.str;
     if (nplatpat > 1) {
 	const char * platform = NULL;
 
 	he->tag = RPMTAG_PLATFORM;
-	xx = hge(h, he->tag, &he->t, he->p, &he->c);
+	xx = hge(h, he, 0);
 	platform = he_p.str;
 	if (!xx || platform == NULL)
 	    platform = rpmExpand(arch, "-unknown-", os, NULL);
@@ -252,7 +252,7 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
 	if (rc <= 0) {
 	    rpmps ps = rpmtsProblems(ts);
 	    he->tag = RPMTAG_NVRA;
-	    xx = hge(h, he->tag, &he->t, he->p, &he->c);
+	    xx = hge(h, he, 0);
 assert(he_p.str != NULL);
 	    rpmpsAppend(ps, RPMPROB_BADPLATFORM, he_p.str, key,
                         platform, NULL, NULL, 0);
@@ -1331,7 +1331,7 @@ static int checkPackageSet(rpmts ts, const char * depName,
 	int rc;
 
 	he->tag = RPMTAG_NVRA;
-	rc = hge(h, he->tag, &he->t, he->p, &he->c);
+	rc = hge(h, he, 0);
 assert(he_p.str != NULL);
 	if (!(depFlags & RPMDEPS_FLAG_NOREQUIRES))
 	    requires = rpmdsNew(h, RPMTAG_REQUIRENAME, scareMem);

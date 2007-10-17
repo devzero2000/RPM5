@@ -106,7 +106,7 @@ IDTX IDTXload(rpmts ts, rpmTag tag, uint_32 rbtid)
 #endif
     while ((h = rpmdbNextIterator(mi)) != NULL) {
 	he->tag = tag;
-	xx = hge(h, he->tag, &he->t, he->p, &he->c);
+	xx = hge(h, he, 0);
 	if (!xx || he_p.i32p == NULL)
 	    continue;
 	tid = (he_p.i32p ? *he_p.i32p : 0);
@@ -196,7 +196,7 @@ assert(origin != NULL);
 assert(!strcmp(av[i], origin));
 }
 	he->tag = tag;
-	xx = hge(h, he->tag, &he->t, he->p, &he->c);
+	xx = hge(h, he, 0);
 	if (!xx || he_p.i32p == NULL)
 	    goto bottom;
 	tid = (he_p.i32p ? *he_p.i32p : 0);
@@ -313,7 +313,7 @@ static int findErases(rpmts ts, /*@null@*/ rpmte p, unsigned thistid,
 	    int bingo;
 
 	    he->tag = RPMTAG_BLINKPKGID;
-	    xx = hge(ip->h, he->tag, &he->t, he->p, &he->c);
+	    xx = hge(ip->h, he, 0);
 	    flinkPkgid = he_p.argv;
 	    pn = he->c;
 
@@ -324,11 +324,11 @@ static int findErases(rpmts ts, /*@null@*/ rpmte p, unsigned thistid,
 	    }
 
 	    he->tag = RPMTAG_BLINKHDRID;
-	    xx = hge(ip->h, he->tag, &he->t, he->p, &he->c);
+	    xx = hge(ip->h, he, 0);
 	    flinkHdrid = he_p.argv;
 	    hn = he->c;
 	    he->tag = RPMTAG_BLINKNEVRA;
-	    xx = hge(ip->h, he->tag, &he->t, he->p, &he->c);
+	    xx = hge(ip->h, he, 0);
 	    flinkNEVRA = he_p.argv;
 	    nn = he->c;
 

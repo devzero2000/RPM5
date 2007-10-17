@@ -558,8 +558,7 @@ static int makeHDRSignature(Header sigh, const char * file, int_32 sigTag,
 	    DIGEST_CTX ctx;
 	
 	    he->tag = RPMTAG_HEADERIMMUTABLE;
-	    if (!hge(h, he->tag, &he->t, he->p, &he->c)
-	     ||  he_p.ptr == NULL)
+	    if (!hge(h, he, 0) || he_p.ptr == NULL)
 	    {
 		h = headerFree(h);
 		goto exit;

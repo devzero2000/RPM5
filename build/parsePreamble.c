@@ -218,7 +218,7 @@ static int isMemberInEntry(Header h, const char *name, rpmTag tag)
     int xx;
 
     he->tag = tag;
-    xx = hge(h, he->tag, &he->t, he->p, &he->c);
+    xx = hge(h, he, 0);
     if (!xx)
 	return -1;
 /*@-boundsread@*/
@@ -461,7 +461,7 @@ spectag stashSt(Spec spec, Header h, int tag, const char * lang)
 	t->t_msgid = NULL;
 	if (!(t->t_lang && strcmp(t->t_lang, RPMBUILD_DEFAULT_LANG))) {
 	    he->tag = RPMTAG_NAME;
-	    xx = hge(h, he->tag, &he->t, he->p, &he->c);
+	    xx = hge(h, he, 0);
 	    if (xx) {
 		char buf[1024];
 		sprintf(buf, "%s(%s)", he_p.str, tagName(tag));
@@ -601,7 +601,7 @@ static int handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
     case RPMTAG_PREFIXES:
 	addOrAppendListEntry(pkg->header, tag, field);
 	he->tag = tag;
-	xx = hge(pkg->header, he->tag, &he->t, he->p, &he->c);
+	xx = hge(pkg->header, he, 0);
 	if (tag == RPMTAG_PREFIXES)
 	while (he->c--) {
 	    if (he_p.argv[he->c][0] != '/') {

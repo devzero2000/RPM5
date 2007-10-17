@@ -181,7 +181,7 @@ static int addFileToTag(Spec spec, const char * file, Header h, int tag)
     int xx;
 
     he->tag = tag;
-    xx = hge(h, he->tag, &he->t, he->p, &he->c);
+    xx = hge(h, he, 0);
     if (xx) {
 	appendLineStringBuf(sb, he_p.str);
 	(void) headerRemoveEntry(h, tag);
@@ -461,7 +461,7 @@ void providePackageNVR(Header h)
     pEVR = p = alloca(21 + strlen(V) + 1 + strlen(R) + 1);
     *p = '\0';
     he->tag = RPMTAG_EPOCH;
-    gotE = hge(h, he->tag, &he->t, he->p, &he->c);
+    gotE = hge(h, he, 0);
     E = (he_p.i32p ? *he_p.i32p : 0);
     he_p.ptr = _free(he_p.ptr);
     if (gotE) {
@@ -475,7 +475,7 @@ void providePackageNVR(Header h)
      * If no provides at all are available, we can just add.
      */
     he->tag = RPMTAG_PROVIDENAME;
-    xx = hge(h, he->tag, &he->t, he->p, &he->c);
+    xx = hge(h, he, 0);
     provides = he_p.argv;
     providesCount = he->c;
     if (!xx)
@@ -485,7 +485,7 @@ void providePackageNVR(Header h)
      * Otherwise, fill in entries on legacy packages.
      */
     he->tag = RPMTAG_PROVIDEVERSION;
-    xx = hge(h, he->tag, &he->t, he->p, &he->c);
+    xx = hge(h, he, 0);
     providesEVR = he_p.argv;
     if (!xx) {
 	for (i = 0; i < providesCount; i++) {
@@ -500,7 +500,7 @@ void providePackageNVR(Header h)
     }
 
     he->tag = RPMTAG_PROVIDEFLAGS;
-    xx = hge(h, he->tag, &he->t, he->p, &he->c);
+    xx = hge(h, he, 0);
     provideFlags = he_p.i32p;
 
     /*@-nullderef@*/	/* LCL: providesEVR is not NULL */
@@ -911,7 +911,7 @@ int packageBinaries(Spec spec)
 	    binFormat = _free(binFormat);
 	    if (binRpm == NULL) {
 		he->tag = RPMTAG_NVRA;
-		xx = hge(pkg->header, he->tag, &he->t, he->p, &he->c);
+		xx = hge(pkg->header, he, 0);
 		rpmlog(RPMLOG_ERR, _("Could not generate output "
 		     "filename for package %s: %s\n"), he_p.str, errorString);
 		he_p.ptr = _free(he_p.ptr);

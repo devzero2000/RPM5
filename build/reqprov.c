@@ -62,7 +62,7 @@ int addReqProv(/*@unused@*/ Spec spec, Header h, /*@unused@*/ rpmTag tagN,
     
     /* Check for duplicate dependencies. */
     he->tag = nametag;
-    xx = hge(h, he->tag, &he->t, he->p, &he->c);
+    xx = hge(h, he, 0);
     names = he_p.argv;
     len = he->c;
     if (xx) {
@@ -73,15 +73,15 @@ int addReqProv(/*@unused@*/ Spec spec, Header h, /*@unused@*/ rpmTag tagN,
 
 	if (flagtag) {
 	    he->tag = versiontag;
-	    xx = hge(h, he->tag, &he->t, he->p, &he->c);
+	    xx = hge(h, he, 0);
 	    versions = he_p.argv;
 	    he->tag = flagtag;
-	    xx = hge(h, he->tag, &he->t, he->p, &he->c);
+	    xx = hge(h, he, 0);
 	    flags = he_p.i32p;
 	}
 	if (indextag) {
 	    he->tag = indextag;
-	    xx = hge(h, he->tag, &he->t, he->p, &he->c);
+	    xx = hge(h, he, 0);
 	    indexes = he_p.i32p;
 	}
 

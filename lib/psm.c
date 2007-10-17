@@ -65,11 +65,11 @@ int rpmVersionCompare(Header first, Header second)
     int xx;
 
     he->tag = RPMTAG_EPOCH;
-    xx = hge(first, he->tag, &he->t, he->p, &he->c);
+    xx = hge(first, he, 0);
     Eone = (xx && he_p.i32p ? *he_p.i32p : 0);
     he_p.ptr = _free(he_p.ptr);
     he->tag = RPMTAG_EPOCH;
-    xx = hge(second, he->tag, &he->t, he->p, &he->c);
+    xx = hge(second, he, 0);
     Etwo = (xx && he_p.i32p ? *he_p.i32p : 0);
     he_p.ptr = _free(he_p.ptr);
 
@@ -79,10 +79,10 @@ int rpmVersionCompare(Header first, Header second)
 	return 1;
 
     he->tag = RPMTAG_VERSION;
-    xx = hge(first, he->tag, &he->t, he->p, &he->c);
+    xx = hge(first, he, 0);
     one = he_p.str;
     he->tag = RPMTAG_VERSION;
-    xx = hge(second, he->tag, &he->t, he->p, &he->c);
+    xx = hge(second, he, 0);
     two = he_p.str;
     rc = rpmvercmp(one, two);
     one = _free(one);
@@ -91,10 +91,10 @@ int rpmVersionCompare(Header first, Header second)
 	return rc;
 
     he->tag = RPMTAG_RELEASE;
-    xx = hge(first, he->tag, &he->t, he->p, &he->c);
+    xx = hge(first, he, 0);
     one = he_p.str;
     he->tag = RPMTAG_RELEASE;
-    xx = hge(second, he->tag, &he->t, he->p, &he->c);
+    xx = hge(second, he, 0);
     two = he_p.str;
     rc = rpmvercmp(one, two);
     one = _free(one);
@@ -265,7 +265,7 @@ assert(fi->h != NULL);
     if (cookie) {
 	*cookie = NULL;
 	he->tag = RPMTAG_COOKIE;
-	xx = hge(fi->h, he->tag, &he->t, he->p, &he->c);
+	xx = hge(fi->h, he, 0);
 	*cookie = he_p.str;
     }
 
@@ -285,7 +285,7 @@ assert(fi->h != NULL);
 
     if (fi->h != NULL) {	/* XXX can't happen */
 	he->tag = RPMTAG_FILEPATHS;
-	xx = hge(fi->h, he->tag, &he->t, he->p, &he->c);
+	xx = hge(fi->h, he, 0);
 	fi->apath = he_p.argv;
 
 	if (headerIsEntry(fi->h, RPMTAG_COOKIE))
@@ -513,7 +513,7 @@ static rpmRC runLuaScript(rpmpsm psm, Header h, const char *sln,
 	*ssp |= (RPMSCRIPT_STATE_LUA|RPMSCRIPT_STATE_EXEC);
 
     he->tag = RPMTAG_NVRA;
-    xx = hge(h, he->tag, &he->t, he->p, &he->c);
+    xx = hge(h, he, 0);
 assert(xx && he_p.str != NULL);
 
     /* Save the current working directory. */
@@ -659,7 +659,7 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
 	return RPMRC_OK;
 
     he->tag = RPMTAG_NVRA;
-    xx = hge(h, he->tag, &he->t, he->p, &he->c);
+    xx = hge(h, he, 0);
 assert(he_p.str != NULL);
     NVRA = he_p.str;
 
@@ -709,13 +709,13 @@ assert(he_p.str != NULL);
     }
 
     he->tag = RPMTAG_INSTPREFIXES;
-    xx = hge(h, he->tag, &he->t, he->p, &he->c);
+    xx = hge(h, he, 0);
     prefixes = he_p.argv;
     numPrefixes = he->c;
     if (!xx) {
 	he_p.ptr = _free(he_p.ptr);
 	he->tag = RPMTAG_INSTALLPREFIX;
-	xx = hge(h, he->tag, &he->t, he->p, &he->c);
+	xx = hge(h, he, 0);
 	if (xx) {
 	    char * t;
 	    prefixes = xmalloc(sizeof(*prefixes) + strlen(he_p.argv[0]) + 1);
@@ -970,12 +970,12 @@ static rpmRC runInstScript(rpmpsm psm)
 
 assert(fi->h != NULL);
     he->tag = psm->scriptTag;
-    xx = hge(fi->h, he->tag, &he->t, he->p, &he->c);
+    xx = hge(fi->h, he, 0);
     script = he_p.str;
     if (script == NULL)
 	goto exit;
     he->tag = psm->progTag;
-    xx = hge(fi->h, he->tag, &he->t, he->p, &he->c);
+    xx = hge(fi->h, he, 0);
     if (he_p.ptr == NULL)
 	goto exit;
 
@@ -1038,10 +1038,10 @@ static rpmRC handleOneTrigger(const rpmpsm psm,
     int i;
 
     he->tag = RPMTAG_NAME;
-    xx = hge(sourceH, he->tag, &he->t, he->p, &he->c);
+    xx = hge(sourceH, he, 0);
     sourceName = he_p.str;
     he->tag = RPMTAG_NAME;
-    xx = hge(triggeredH, he->tag, &he->t, he->p, &he->c);
+    xx = hge(triggeredH, he, 0);
     triggerName = he_p.str;
 
     trigger = rpmdsInit(rpmdsNew(triggeredH, RPMTAG_TRIGGERNAME, scareMem));
@@ -1069,13 +1069,13 @@ static rpmRC handleOneTrigger(const rpmpsm psm,
 	    continue;
 
 	he->tag = RPMTAG_TRIGGERINDEX;
-	xx = hge(triggeredH, he->tag, &he->t, he->p, &he->c);
+	xx = hge(triggeredH, he, 0);
 	triggerIndices = he_p.i32p;
 	he->tag = RPMTAG_TRIGGERSCRIPTS;
-	xx = hge(triggeredH, he->tag, &he->t, he->p, &he->c);
+	xx = hge(triggeredH, he, 0);
 	triggerScripts = he_p.argv;
 	he->tag = RPMTAG_TRIGGERSCRIPTPROG;
-	xx = hge(triggeredH, he->tag, &he->t, he->p, &he->c);
+	xx = hge(triggeredH, he, 0);
 	triggerProgs = he_p.argv;
 
 	if (triggerIndices && triggerScripts && triggerProgs) {
@@ -1193,11 +1193,11 @@ assert(fi->h != NULL);
     if (fi->h == NULL)	return rc;	/* XXX can't happen */
 
     he->tag = RPMTAG_TRIGGERNAME;
-    xx = hge(fi->h, he->tag, &he->t, he->p, &he->c);
+    xx = hge(fi->h, he, 0);
     triggerNames = he_p.argv;
     numTriggers = he->c;
     he->tag = RPMTAG_TRIGGERINDEX;
-    xx = hge(fi->h, he->tag, &he->t, he->p, &he->c);
+    xx = hge(fi->h, he, 0);
     triggerIndices = he_p.i32p;
     numTriggerIndices = he->c;
 
@@ -1368,7 +1368,7 @@ static uint_32 hLoadTID(Header h, rpmTag tag)
     int xx;
 
     he->tag = tag;
-    xx = hge(h, he->tag, &he->t, he->p, &he->c);
+    xx = hge(h, he, 0);
     val = (xx && he_p.ui32p ? *he_p.ui32p : 0);
     he_p.ptr = _free(he_p.ptr);
     return val;
@@ -1391,7 +1391,7 @@ static int hCopyTag(Header sh, Header th, rpmTag tag)
     int xx = 1;
 
     he->tag = tag;
-    if (hge(sh, he->tag, &he->t, he->p, &he->c) && he->c > 0)
+    if (hge(sh, he, 0) && he->c > 0)
 	xx = headerAddEntry(th, he->tag, he->t, he_p.ptr, he->c);
 assert(xx);
     he_p.ptr = _free(he_p.ptr);
@@ -1675,7 +1675,7 @@ assert(psm->mi == NULL);
 	     * need the leading / stripped.
 	     */
 	    he->tag = RPMTAG_DEFAULTPREFIX;
-	    xx = hge(fi->h, he->tag, &he->t, he->p, &he->c);
+	    xx = hge(fi->h, he, 0);
 	    fi->striplen = (xx && he_p.str ? strlen(he_p.str) + 1 : 1);
 	    he_p.ptr = _free(he_p.ptr);
 	    fi->mapflags =
@@ -1685,18 +1685,18 @@ assert(psm->mi == NULL);
 		he->tag = RPMTAG_ORIGPATHS;
 	    else
 		he->tag = RPMTAG_FILEPATHS;
-	    xx = hge(fi->h, he->tag, &he->t, he->p, &he->c);
+	    xx = hge(fi->h, he, 0);
 assert(he_p.argv != NULL);
 	    fi->apath = he_p.argv;
 	
 	    if (fi->fuser == NULL) {
 		he->tag = RPMTAG_FILEUSERNAME;
-		xx = hge(fi->h, he->tag, &he->t, he->p, &he->c);
+		xx = hge(fi->h, he, 0);
 		fi->fuser = he_p.argv;
 	    }
 	    if (fi->fgroup == NULL) {
 		he->tag = RPMTAG_FILEGROUPNAME;
-		xx = hge(fi->h, he->tag, &he->t, he->p, &he->c);
+		xx = hge(fi->h, he, 0);
 		fi->fgroup = he_p.argv;
 	    }
 	    rc = RPMRC_OK;
@@ -1818,19 +1818,19 @@ psm->te->h = headerLink(fi->h);
 
 		/* Save originnal header's origin (i.e. URL) */
 		he->tag = RPMTAG_PACKAGEORIGIN;
-		xx = hge(fi->h, he->tag, &he->t, he->p, &he->c);
+		xx = hge(fi->h, he, 0);
 		origin = he_p.str;
 
 		/* Retrieve original header blob. */
 		he->tag = RPMTAG_HEADERIMMUTABLE;
-		xx = hge(fi->h, he->tag, &he->t, he->p, &he->c);
+		xx = hge(fi->h, he, 0);
 		uh = he_p.ptr;
 		if (xx && uh != NULL) {
 		    psm->oh = headerCopyLoad(uh);
 		    uh = _free(uh);
 		} else {
 		    he->tag = RPMTAG_HEADERIMAGE;
-		    xx = hge(fi->h, he->tag, &he->t, he->p, &he->c);
+		    xx = hge(fi->h, he, 0);
 		    uh = he_p.ptr;
 		    if (xx && uh != NULL) {
 			HeaderIterator hi;
@@ -2317,7 +2317,7 @@ psm->te->h = headerFree(psm->te->h);
 	char * t;
 
 	he->tag = RPMTAG_PAYLOADCOMPRESSOR;
-	xx = hge(fi->h, he->tag, &he->t, he->p, &he->c);
+	xx = hge(fi->h, he, 0);
 	payload_compressor = he_p.str;
 	if (payload_compressor == NULL)
 	    payload_compressor = xstrdup("gzip");
@@ -2334,7 +2334,7 @@ psm->te->h = headerFree(psm->te->h);
 	payload_compressor = _free(payload_compressor);
 
 	he->tag = RPMTAG_PAYLOADFORMAT;
-	xx = hge(fi->h, he->tag, &he->t, he->p, &he->c);
+	xx = hge(fi->h, he, 0);
 	payload_format = he_p.str;
 	if (!xx || payload_format == NULL
 	 || !(!strcmp(payload_format, "tar") || !strcmp(payload_format, "ustar"))) {

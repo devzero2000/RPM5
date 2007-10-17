@@ -606,7 +606,7 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootURL,
     for (pkg = spec->packages; pkg != NULL; pkg = pkg->next) {
 	if (!headerIsEntry(pkg->header, RPMTAG_DESCRIPTION)) {
 	    he->tag = RPMTAG_NVRA;
-	    xx = hge(pkg->header, he->tag, &he->t, he->p, &he->c);
+	    xx = hge(pkg->header, he, 0);
 	    rpmlog(RPMLOG_ERR, _("Package has no %%description: %s\n"),
 			he_p.str);
 	    he_p.ptr = _free(he_p.ptr);

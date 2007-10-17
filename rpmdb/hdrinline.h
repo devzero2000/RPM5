@@ -255,21 +255,16 @@ int headerIsEntry(/*@null@*/ Header h, int_32 tag)
  * Retrieve extension or tag value.
  *
  * @param h		header
- * @param tag		tag
- * @retval *type	tag value data type (or NULL)
- * @retval *p		tag value(s) (or NULL)
- * @retval *c		number of values (or NULL)
+ * @param he		tag container
+ * @param flags		(unused)
  * @return		1 on success, 0 on failure
  */
 /*@unused@*/ static inline
-int headerGetExtension(Header h, int_32 tag,
-			/*@null@*/ /*@out@*/ hTYP_t type,
-			/*@null@*/ /*@out@*/ hRET_t * p,
-			/*@null@*/ /*@out@*/ hCNT_t c)
-	/*@modifies *type, *p, *c @*/
+int headerGetExtension(Header h, HE_t he, /*@unused@*/ unsigned int flags)
+	/*@modifies *he @*/
 {
     if (h == NULL) return 0;
-    return (h2hv(h)->hdrext) (h, tag, type, p, c);
+    return (h2hv(h)->hdrext) (h, he->tag, &he->t, he->p, &he->c);
 }
 
 /** \ingroup header

@@ -123,7 +123,7 @@ static int handleInstInstalledFiles(const rpmts ts,
 			&shared->otherPkg, sizeof(shared->otherPkg));
 	while ((h = rpmdbNextIterator(mi)) != NULL) {
 	    he->tag = RPMTAG_NVRA;
-	    xx = hge(h, he->tag, &he->t, he->p, &he->c);
+	    xx = hge(h, he, 0);
 assert(he_p.str != NULL);
 	    altNVRA = he_p.str;
 	    otherFi = rpmfiNew(ts, h, RPMTAG_BASENAMES, scareMem);
@@ -267,7 +267,7 @@ static int handleRmvdInstalledFiles(const rpmts ts, rpmfi fi,
     }
 
     he->tag = RPMTAG_FILESTATES;
-    xx = hge(h, he->tag, &he->t, he->p, &he->c);
+    xx = hge(h, he, 0);
     otherStates = he_p.ptr;
 
     /* XXX there's an obscure segfault here w/o NULL check ... */
@@ -644,7 +644,7 @@ static int ensureOlder(rpmts ts,
     if (rc == 0) {
 	rpmps ps = rpmtsProblems(ts);
 	he->tag = RPMTAG_NVRA;
-	rc = hge(h, he->tag, &he->t, he->p, &he->c);
+	rc = hge(h, he, 0);
 assert(he_p.str != NULL);
 	rpmpsAppend(ps, RPMPROB_OLDPACKAGE,
 		rpmteNEVR(p), rpmteKey(p),

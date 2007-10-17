@@ -57,7 +57,7 @@ int headerMacrosLoad(Header h)
 
     for (tagm = tagMacros; tagm->macroname != NULL; tagm++) {
 	he->tag = tagm->tag;
-	xx = hge(h, he->tag, &he->t, he->p, &he->c);
+	xx = hge(h, he, 0);
 	if (!xx)
 	    continue;
 	switch (he->t) {
@@ -98,7 +98,7 @@ int headerMacrosUnload(Header h)
 
     for (tagm = tagMacros; tagm->macroname != NULL; tagm++) {
 	he->tag = tagm->tag;
-	xx = hge(h, he->tag, &he->t, he->p, &he->c);
+	xx = hge(h, he, 0);
 	if (!xx)
 	    continue;
 	switch (he->t) {
@@ -185,7 +185,7 @@ uint_32 hGetColor(Header h)
     int xx;
 
     he->tag = RPMTAG_FILECOLORS;
-    xx = hge(h, he->tag, &he->t, he->p, &he->c);
+    xx = hge(h, he, 0);
     if (xx && he_p.ptr != NULL && he->c > 0) {
 	int i;
 	for (i = 0; i < he->c; i++)

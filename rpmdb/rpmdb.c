@@ -882,7 +882,7 @@ static int rpmdbExportInfo(/*@unused@*/ rpmdb db, Header h, int adding)
 	    xx = Fclose(fd);
 	    fd = NULL;
 	    he->tag = RPMTAG_INSTALLTID;
-	    if (hge(h, he->tag, &he->t, he->p, &he->c)) {
+	    if (hge(h, he, 0)) {
 		struct utimbuf stamp;
 		stamp.actime = *he_p.i32p;
 		stamp.modtime = *he_p.i32p;
@@ -1510,13 +1510,13 @@ if (rc == 0)
 	}
 
 	he->tag = RPMTAG_BASENAMES;
-	xx = hge(h, he->tag, &he->t, he->p, &he->c);
+	xx = hge(h, he, 0);
 	baseNames = he_p.argv;
 	he->tag = RPMTAG_DIRNAMES;
-	xx = hge(h, he->tag, &he->t, he->p, &he->c);
+	xx = hge(h, he, 0);
 	dirNames = he_p.argv;
 	he->tag = RPMTAG_DIRINDEXES;
-	xx = hge(h, he->tag, &he->t, he->p, &he->c);
+	xx = hge(h, he, 0);
 	dirIndexes = he_p.ui32p;
 
 	do {
@@ -2175,7 +2175,7 @@ static int mireSkip (const rpmdbMatchIterator mi)
 
 	he->tag = mire->tag;
 
-	if (!hge(mi->mi_h, he->tag, &he->t, he->p, &he->c)) {
+	if (!hge(mi->mi_h, he, 0)) {
 	    if (he->tag != RPMTAG_EPOCH) {
 		ntags++;
 		continue;
@@ -2817,7 +2817,7 @@ memset(data, 0, sizeof(*data));
 #endif
 
     he->tag = RPMTAG_NVRA;
-    xx = hge(h, he->tag, &he->t, he->p, &he->c);
+    xx = hge(h, he, 0);
     rpmlog(RPMLOG_DEBUG, "  --- h#%8u %s\n", hdrNum, he_p.str);
     he_p.ptr = _free(he_p.ptr);
 
@@ -2877,7 +2877,7 @@ if (dbiByteSwapped(dbi) == 1)
 		continue;
 		/*@notreached@*/ /*@switchbreak@*/ break;
 	    default:
-		if (!hge(h, he->tag, &he->t, he->p, &he->c))
+		if (!hge(h, he, 0))
 		    continue;
 		/*@switchbreak@*/ break;
 
@@ -3151,15 +3151,15 @@ memset(data, 0, sizeof(*data));
      */
 
     he->tag = RPMTAG_BASENAMES;
-    xx = hge(h, he->tag, &he->t, he->p, &he->c);
+    xx = hge(h, he, 0);
     baseNames = he_p.argv;
     count = he->c;
 #endif
     he->tag = RPMTAG_DIRNAMES;
-    xx = hge(h, he->tag, &he->t, he->p, &he->c);
+    xx = hge(h, he, 0);
     dirNames = he_p.argv;
     he->tag = RPMTAG_DIRINDEXES;
-    xx = hge(h, he->tag, &he->t, he->p, &he->c);
+    xx = hge(h, he, 0);
     dirIndexes = he_p.ui32p;
 
     (void) blockSignals(db, &signalMask);
@@ -3332,11 +3332,15 @@ data->size = 0;
 		/*@switchbreak@*/ break;
 #endif
 	    case RPMTAG_REQUIRENAME:
-		xx = hge(h, RPMTAG_REQUIREFLAGS, NULL, &requireFlags, NULL);
-		xx = hge(h, he->tag, &he->t, he->p, &he->c);
+		he->tag = RPMTAG_REQUIREFLAGS;
+		he->p = &requireFlags;
+		xx = hge(h, he, 0);
+		he->tag = RPMTAG_REQUIRENAME;
+		he->p = &he_p;
+		xx = hge(h, he, 0);
 		/*@switchbreak@*/ break;
 	    default:
-		xx = hge(h, he->tag, &he->t, he->p, &he->c);
+		xx = hge(h, he, 0);
 		/*@switchbreak@*/ break;
 	    }
 
@@ -3638,13 +3642,13 @@ if (key->size == 0) key->size++;	/* XXX "/" fixup. */
 
 	/* Compute fingerprints for this installed header's matches */
 	he->tag = RPMTAG_BASENAMES;
-	xx = hge(h, he->tag, &he->t, he->p, &he->c);
+	xx = hge(h, he, 0);
 	fullBaseNames = he_p.argv;
 	he->tag = RPMTAG_DIRNAMES;
-	xx = hge(h, he->tag, &he->t, he->p, &he->c);
+	xx = hge(h, he, 0);
 	dirNames = he_p.argv;
 	he->tag = RPMTAG_DIRINDEXES;
-	xx = hge(h, he->tag, &he->t, he->p, &he->c);
+	xx = hge(h, he, 0);
 	fullDirIndexes = he_p.ui32p;
 
 	baseNames = xcalloc(num, sizeof(*baseNames));

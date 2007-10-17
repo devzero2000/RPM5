@@ -351,7 +351,7 @@ assert(dig != NULL);
     /* Retrieve the tag parameters from the signature header. */
     sig = NULL;
     he->tag = sigtag;
-    xx = hge(sigh, he->tag, &he->t, he->p, &he->c);
+    xx = hge(sigh, he, 0);
     sigtype = he->t;
     sig = he_p.ptr;
     siglen = he->c;
@@ -381,7 +381,7 @@ assert(dig != NULL);
 	size_t nmagic = 0;
 
 	he->tag = RPMTAG_HEADERIMMUTABLE;
-	xx = hge(h, he->tag, &he->t, he->p, &he->c);
+	xx = hge(h, he, 0);
 	uht = he->t;
 	uh = he_p.ptr;
 	uhc = he->c;
@@ -420,7 +420,7 @@ assert(dig != NULL);
 	size_t nmagic = 0;
 
 	he->tag = RPMTAG_HEADERIMMUTABLE;
-	xx = hge(h, he->tag, &he->t, he->p, &he->c);
+	xx = hge(h, he, 0);
 	uht = he->t;
 	uh = he_p.ptr;
 	uhc = he->c;

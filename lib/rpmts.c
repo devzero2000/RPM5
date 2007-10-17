@@ -357,7 +357,7 @@ int rpmtsSolve(rpmts ts, rpmds ds, /*@unused@*/ const void * data)
 	    continue;
 
 	he->tag = RPMTAG_NAME;
-	xx = hge(h, he->tag, &he->t, he->p, &he->c);
+	xx = hge(h, he, 0);
 	hnamelen = ((xx && he_p.str) ? strlen(he_p.str) : 0);
 	he_p.ptr = _free(he_p.ptr);
 
@@ -367,7 +367,7 @@ int rpmtsSolve(rpmts ts, rpmds ds, /*@unused@*/ const void * data)
 
 	/* XXX Prefer the newest build if given alternatives. */
 	he->tag = RPMTAG_BUILDTIME;
-	xx = hge(h, he->tag, &he->t, he->p, &he->c);
+	xx = hge(h, he, 0);
 	htime = (xx && he_p.i32p ? *he_p.i32p : 0);
 	he_p.ptr = _free(he_p.ptr);
 

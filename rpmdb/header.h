@@ -364,25 +364,16 @@ typedef /*@null@*/
     void * (*HFD_t) (/*@only@*/ /*@null@*/ const void * data, rpmTagType type)
 	/*@modifies data @*/;
 
-/**
- * Prototype for headerGetEntry() vector.
- *
- * Will never return RPM_I18NSTRING_TYPE! RPM_STRING_TYPE elements with
- * RPM_I18NSTRING_TYPE equivalent entries are translated (if HEADER_I18NTABLE
- * entry is present).
+/*
+ * Retrieve extension or tag value.
  *
  * @param h		header
- * @param tag		tag
- * @retval *type	tag value data type (or NULL)
- * @retval *p		tag value(s) (or NULL)
- * @retval *c		number of values (or NULL)
+ * @param he		tag container
+ * @param flags		(unused)
  * @return		1 on success, 0 on failure
  */
-typedef int (*HGE_t) (Header h, rpmTag tag,
-			/*@null@*/ /*@out@*/ hTYP_t t,
-			/*@null@*/ /*@out@*/ hRET_t * p,
-			/*@null@*/ /*@out@*/ hCNT_t c)
-	/*@modifies *t, *p, *c @*/;
+typedef int (*HGE_t) (Header h, HE_t he, unsigned int flags)
+	/*@modifies *he @*/;
 
 /**
  * Prototype for headerAddEntry() vector.

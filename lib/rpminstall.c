@@ -421,14 +421,14 @@ if (fileURL[0] == '=') {
 	/* === Check for relocatable package. */
 	if (relocations) {
 	    he->tag = RPMTAG_PREFIXES;
-	    xx = hge(h, he->tag, &he->t, he->p, &he->c);
+	    xx = hge(h, he, 0);
 	    if (xx && he->c == 1) {
 		relocations->oldPath = xstrdup(he_p.argv[0]);
 		he_p.ptr = _free(he_p.ptr);
 	    } else {
 		he_p.ptr = _free(he_p.ptr);
 		he->tag = RPMTAG_NVRA;
-		xx = hge(h, he->tag, &he->t, he->p, &he->c);
+		xx = hge(h, he, 0);
 		rpmlog(RPMLOG_ERR,
 			       _("package %s is not relocatable\n"), he_p.str);
 		he_p.ptr = _free(he_p.ptr);
@@ -445,7 +445,7 @@ if (fileURL[0] == '=') {
 	    int count;
 
 	    he->tag = RPMTAG_NAME;
-	    xx = hge(h, he->tag, &he->t, he->p, &he->c);
+	    xx = hge(h, he, 0);
 assert(xx != 0 && he_p.str != NULL);
 	    mi = rpmtsInitIterator(ts, RPMTAG_NAME, he_p.str, 0);
 	    he_p.ptr = _free(he_p.ptr);

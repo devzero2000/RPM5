@@ -57,13 +57,22 @@ static int fssizesTag(Header h, HE_t he)
     HGE_t hge = (HGE_t)headerGetExtension;
     rpmTagData fnames = { .ptr = NULL };
     rpmTagData fsizes = { .ptr = NULL };
+    rpmTagData * p;
     uint_64 * usages;
     int numFiles;
     int rc = 1;		/* assume error */
+    int xx, yy;
 
-    if (!hge(h, RPMTAG_FILESIZES, NULL, &fsizes, NULL)
-     ||	!hge(h, RPMTAG_FILEPATHS, NULL, &fnames, &numFiles))
-    {
+    p = he->p;
+    he->tag = RPMTAG_FILESIZES;
+    he->p = &fsizes;
+    xx = hge(h, he, 0);
+    he->tag = RPMTAG_FILEPATHS;
+    he->p = &fnames;
+    yy = hge(h, he, 0);
+    numFiles = he->c;
+    he->p = p;
+    if (!xx || !yy) {
 	numFiles = 0;
 	fsizes.ui32p = _free(fsizes.ui32p);
 	fnames.argv = _free(fnames.argv);

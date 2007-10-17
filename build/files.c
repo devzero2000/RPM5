@@ -280,10 +280,10 @@ static void timeCheck(int tc, Header h)
     int i;
 
     he->tag = RPMTAG_FILEMTIMES;
-    xx = hge(h, he->tag, &he->t, he->p, &he->c);
+    xx = hge(h, he, 0);
     mtime = he_p.i32p;
     he->tag = RPMTAG_OLDFILENAMES;
-    xx = hge(h, he->tag, &he->t, he->p, &he->c);
+    xx = hge(h, he, 0);
     
     for (i = 0; i < he->c; i++) {
 	xx = currentTime - mtime[i];
@@ -1195,7 +1195,7 @@ static void compressFilelist(Header h)
     }
 
     he->tag = RPMTAG_OLDFILENAMES;
-    xx = hge(h, he->tag, &he->t, he->p, &he->c);
+    xx = hge(h, he, 0);
     fileNames = he_p.argv;
     count = he->c;
     if (!xx || fileNames == NULL || count <= 0)
@@ -2227,7 +2227,7 @@ static int processPackageFiles(Spec spec, Package pkg,
     fl.buildRootURL = rpmGenPath(spec->rootURL, "%{?buildroot}", NULL);
 
     he->tag = RPMTAG_DEFAULTPREFIX;
-    xx = hge(pkg->header, he->tag, &he->t, he->p, &he->c);
+    xx = hge(pkg->header, he, 0);
     fl.prefix = he_p.str;
 
     fl.fileCount = 0;
@@ -2707,7 +2707,7 @@ int processBinaryFiles(Spec spec, int installSpecialDoc, int test)
 	(void) headerMacrosLoad(pkg->header);
 
 	he->tag = RPMTAG_NVRA;
-	xx = hge(pkg->header, he->tag, &he->t, he->p, &he->c);
+	xx = hge(pkg->header, he, 0);
 	rpmlog(RPMLOG_NOTICE, _("Processing files: %s\n"), he_p.str);
 	he_p.ptr = _free(he_p.ptr);
 		   
