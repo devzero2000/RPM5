@@ -248,14 +248,13 @@ enum headerSprintfExtensionType {
  * help keep things simple.
  *
  * @param he		tag container
- * @param type		tag type
  * @param data		tag value
  * @param formatPrefix
  * @param padding
  * @param element	RPM_BIN_TYPE: no. bytes of data
  * @return		formatted string
  */
-typedef /*only@*/ char * (*headerTagFormatFunction)(HE_t he, rpmTagType type,
+typedef /*only@*/ char * (*headerTagFormatFunction)(HE_t he,
 				rpmTagData *  data, char * formatPrefix,
 				int padding, int element)
 	/*@requires maxSet(data) >= 0 @*/;

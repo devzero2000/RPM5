@@ -71,14 +71,13 @@ static char * rpmPermsString(int mode)
 /**
  * Identify type of trigger.
  * @param he		tag container
- * @param type		tag type
  * @param data		tag value
  * @param formatPrefix	(unused)
  * @param padding	(unused)
  * @param element	(unused)
  * @return		formatted string
  */
-static /*@only@*/ char * triggertypeFormat(HE_t he, rpmTagType type, hPTR_t data,
+static /*@only@*/ char * triggertypeFormat(HE_t he, hPTR_t data,
 		/*@unused@*/ char * formatPrefix, /*@unused@*/ int padding,
 		/*@unused@*/ int element)
 	/*@requires maxRead(data) >= 0 @*/
@@ -86,7 +85,7 @@ static /*@only@*/ char * triggertypeFormat(HE_t he, rpmTagType type, hPTR_t data
     const int_32 * item = (*data).i32p;
     char * val;
 
-    if (type != RPM_INT32_TYPE)
+    if (he->t != RPM_INT32_TYPE)
 	val = xstrdup(_("(invalid type)"));
     else if (*item & RPMSENSE_TRIGGERPREIN)
 	val = xstrdup("prein");
@@ -104,14 +103,13 @@ static /*@only@*/ char * triggertypeFormat(HE_t he, rpmTagType type, hPTR_t data
 /**
  * Format file permissions for display.
  * @param he		tag container
- * @param type		tag type
  * @param data		tag value
  * @param formatPrefix
  * @param padding
  * @param element	(unused)
  * @return		formatted string
  */
-static /*@only@*/ char * permsFormat(HE_t he, rpmTagType type, hPTR_t data,
+static /*@only@*/ char * permsFormat(HE_t he, hPTR_t data,
 		char * formatPrefix, int padding, /*@unused@*/ int element)
 	/*@modifies formatPrefix @*/
 	/*@requires maxRead(data) >= 0 @*/
@@ -119,12 +117,12 @@ static /*@only@*/ char * permsFormat(HE_t he, rpmTagType type, hPTR_t data,
     char * val;
     char * buf;
 
-    if (type != RPM_INT32_TYPE) {
+    if (he->t != RPM_INT32_TYPE) {
 	val = xstrdup(_("(invalid type)"));
     } else {
 	val = xmalloc(15 + padding);
 	strcat(formatPrefix, "s");
-	buf = rpmPermsString(*((int_32 *) data));
+	buf = rpmPermsString((*data).i32p[0]);
 	/*@-formatconst@*/
 	sprintf(val, formatPrefix, buf);
 	/*@=formatconst@*/
@@ -137,14 +135,13 @@ static /*@only@*/ char * permsFormat(HE_t he, rpmTagType type, hPTR_t data,
 /**
  * Format file flags for display.
  * @param he		tag container
- * @param type		tag type
  * @param data		tag value
  * @param formatPrefix
  * @param padding
  * @param element	(unused)
  * @return		formatted string
  */
-static /*@only@*/ char * fflagsFormat(HE_t he, rpmTagType type, hPTR_t data,
+static /*@only@*/ char * fflagsFormat(HE_t he, hPTR_t data,
 		char * formatPrefix, int padding, /*@unused@*/ int element)
 	/*@modifies formatPrefix @*/
 	/*@requires maxRead(data) >= 0 @*/
@@ -153,7 +150,7 @@ static /*@only@*/ char * fflagsFormat(HE_t he, rpmTagType type, hPTR_t data,
     char buf[15];
     int anint = *((int_32 *) data);
 
-    if (type != RPM_INT32_TYPE) {
+    if (he->t != RPM_INT32_TYPE) {
 	val = xstrdup(_("(invalid type)"));
     } else {
 	buf[0] = '\0';
@@ -188,14 +185,13 @@ static /*@only@*/ char * fflagsFormat(HE_t he, rpmTagType type, hPTR_t data,
  * Wrap a pubkey in ascii armor for display.
  * @todo Permit selectable display formats (i.e. binary).
  * @param he		tag container
- * @param type		tag type
  * @param data		tag value
  * @param formatPrefix	(unused)
  * @param padding	(unused)
  * @param element	no. bytes of binary data
  * @return		formatted string
  */
-static /*@only@*/ char * armorFormat(HE_t he, rpmTagType type, hPTR_t data,
+static /*@only@*/ char * armorFormat(HE_t he, hPTR_t data,
 		/*@unused@*/ char * formatPrefix, /*@unused@*/ int padding,
 		int element)
 	/*@*/
@@ -206,7 +202,7 @@ static /*@only@*/ char * armorFormat(HE_t he, rpmTagType type, hPTR_t data,
     int atype;
     char * val;
 
-    switch (type) {
+    switch (he->t) {
     case RPM_OPENPGP_TYPE:
     case RPM_ASN1_TYPE:		/* XXX WRONG */
     case RPM_BIN_TYPE:
@@ -249,20 +245,19 @@ static /*@only@*/ char * armorFormat(HE_t he, rpmTagType type, hPTR_t data,
  * Encode binary data in base64 for display.
  * @todo Permit selectable display formats (i.e. binary).
  * @param he		tag container
- * @param type		tag type
  * @param data		tag value
  * @param formatPrefix	(unused)
  * @param padding
  * @param element
  * @return		formatted string
  */
-static /*@only@*/ char * base64Format(HE_t he, rpmTagType type, hPTR_t data,
+static /*@only@*/ char * base64Format(HE_t he, hPTR_t data,
 		/*@unused@*/ char * formatPrefix, int padding, int element)
 	/*@*/
 {
     char * val;
 
-    if (!(type == RPM_BIN_TYPE || type == RPM_ASN1_TYPE || type == RPM_OPENPGP_TYPE)) {
+    if (!(he->t == RPM_BIN_TYPE || he->t == RPM_ASN1_TYPE || he->t == RPM_OPENPGP_TYPE)) {
 	val = xstrdup(_("(not a blob)"));
     } else {
 	const char * enc;
@@ -353,14 +348,13 @@ static char * xmlstrcpy(/*@returned@*/ char * t, const char * s)
 /**
  * Wrap tag data in simple header xml markup.
  * @param he		tag container
- * @param type		tag type
  * @param data		tag value
  * @param formatPrefix
  * @param padding
  * @param element	(unused)
  * @return		formatted string
  */
-static /*@only@*/ char * xmlFormat(HE_t he, rpmTagType type, hPTR_t data,
+static /*@only@*/ char * xmlFormat(HE_t he, hPTR_t data,
 		char * formatPrefix, int padding,
 		/*@unused@*/ int element)
 	/*@modifies formatPrefix @*/
@@ -374,7 +368,7 @@ static /*@only@*/ char * xmlFormat(HE_t he, rpmTagType type, hPTR_t data,
     int freeit = 0;
     int xx;
 
-    switch (type) {
+    switch (he->t) {
     case RPM_I18NSTRING_TYPE:
     case RPM_STRING_TYPE:
 	s = (*data).str;
@@ -391,7 +385,7 @@ static /*@only@*/ char * xmlFormat(HE_t he, rpmTagType type, hPTR_t data,
     {	int cpl = b64encode_chars_per_line;
 	b64encode_chars_per_line = 0;
 /*@-formatconst@*/
-	s = base64Format(he, type, data, formatPrefix, padding, element);
+	s = base64Format(he, data, formatPrefix, padding, element);
 /*@=formatconst@*/
 	b64encode_chars_per_line = cpl;
 	xtag = "base64";
@@ -517,14 +511,13 @@ static char * yamlstrcpy(/*@out@*/ /*@returned@*/ char * t, const char * s, int 
 /**
  * Wrap tag data in simple header yaml markup.
  * @param he		tag container
- * @param type		tag type
  * @param data		tag value
  * @param formatPrefix
  * @param padding
  * @param element	element index (or -1 for non-array).
  * @return		formatted string
  */
-static /*@only@*/ char * yamlFormat(HE_t he, rpmTagType type, hPTR_t data,
+static /*@only@*/ char * yamlFormat(HE_t he, hPTR_t data,
 		char * formatPrefix, int padding,
 		int element)
 	/*@modifies formatPrefix @*/
@@ -541,7 +534,7 @@ static /*@only@*/ char * yamlFormat(HE_t he, rpmTagType type, hPTR_t data,
     int xx;
     int c;
 
-    switch (type) {
+    switch (he->t) {
     case RPM_I18NSTRING_TYPE:
     case RPM_STRING_TYPE:
 	xx = 0;
@@ -589,7 +582,7 @@ static /*@only@*/ char * yamlFormat(HE_t he, rpmTagType type, hPTR_t data,
     {	int cpl = b64encode_chars_per_line;
 	b64encode_chars_per_line = 0;
 /*@-formatconst@*/
-	s = base64Format(he, type, data, formatPrefix, padding, element);
+	s = base64Format(he, data, formatPrefix, padding, element);
 	element = -element;	/* XXX skip "    " indent. */
 /*@=formatconst@*/
 	b64encode_chars_per_line = cpl;
@@ -674,14 +667,13 @@ static /*@only@*/ char * yamlFormat(HE_t he, rpmTagType type, hPTR_t data,
 /**
  * Display signature fingerprint and time.
  * @param he		tag container
- * @param type		tag type
  * @param data		tag value
  * @param formatPrefix	(unused)
  * @param padding
  * @param element	(unused)
  * @return		formatted string
  */
-static /*@only@*/ char * pgpsigFormat(HE_t he, rpmTagType type, hPTR_t data,
+static /*@only@*/ char * pgpsigFormat(HE_t he, hPTR_t data,
 		/*@unused@*/ char * formatPrefix, /*@unused@*/ int padding,
 		/*@unused@*/ int element)
 	/*@globals fileSystem, internalState @*/
@@ -689,7 +681,7 @@ static /*@only@*/ char * pgpsigFormat(HE_t he, rpmTagType type, hPTR_t data,
 {
     char * val, * t;
 
-    if (!(type == RPM_BIN_TYPE || type == RPM_ASN1_TYPE || type == RPM_OPENPGP_TYPE)) {
+    if (!(he->t == RPM_BIN_TYPE || he->t == RPM_ASN1_TYPE || he->t == RPM_OPENPGP_TYPE)) {
 	val = xstrdup(_("(not a blob)"));
     } else {
 	unsigned char * pkt = (byte *) data;
@@ -784,21 +776,20 @@ static /*@only@*/ char * pgpsigFormat(HE_t he, rpmTagType type, hPTR_t data,
 /**
  * Format dependency flags for display.
  * @param he		tag container
- * @param type		tag type
  * @param data		tag value
  * @param formatPrefix
  * @param padding
  * @param element	(unused)
  * @return		formatted string
  */
-static /*@only@*/ char * depflagsFormat(HE_t he, rpmTagType type, hPTR_t data,
+static /*@only@*/ char * depflagsFormat(HE_t he, hPTR_t data,
 		char * formatPrefix, int padding, /*@unused@*/ int element)
 	/*@modifies formatPrefix @*/
 	/*@requires maxRead(data) >= 0 @*/
 {
     char * val;
 
-    if (type != RPM_INT32_TYPE) {
+    if (he->t != RPM_INT32_TYPE) {
 	val = xstrdup(_("(invalid type)"));
     } else {
 	int anint = *((int_32 *) data);
@@ -915,8 +906,14 @@ static int triggercondsTag(Header h, HE_t he)
 
 	    item = xmalloc(strlen(names.argv[j]) + strlen(versions.argv[j]) + 20);
 	    if (flags.i32p[j] & RPMSENSE_SENSEMASK) {
+		HE_s _he_s = { .tag = 0, .t = 0, .p = NULL, .c = 0, .freeData = 0 };
+		HE_t _he = &_he_s;
 		buf[0] = '%', buf[1] = '\0';
-		flagsStr = depflagsFormat(he, RPM_INT32_TYPE, &flags, buf, 0, j);
+		_he->tag = he->tag;
+		_he->t = RPM_INT32_TYPE;
+		_he->p = &flags;
+		_he->c = 1;
+		flagsStr = depflagsFormat(_he, he->p, buf, 0, j);
 		sprintf(item, "%s %s %s", names.argv[j], flagsStr, versions.argv[j]);
 		flagsStr = _free(flagsStr);
 	    } else
