@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - jbj: debugedit segfault (#336951,#337011) see #337051 too.
     - jbj: commit to hge(h, he, ...) extraction in API. ABI not yet.
     - jbj: remove the pointless ;-) indirection in *(HE_t) for type/count.
     - jbj: drill rpmTagData everywhere.
