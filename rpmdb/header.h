@@ -247,6 +247,7 @@ enum headerSprintfExtensionType {
  * This will only ever be passed RPM_INT32_TYPE or RPM_STRING_TYPE to
  * help keep things simple.
  *
+ * @param he		tag container
  * @param type		tag type
  * @param data		tag value
  * @param formatPrefix
@@ -254,7 +255,7 @@ enum headerSprintfExtensionType {
  * @param element	RPM_BIN_TYPE: no. bytes of data
  * @return		formatted string
  */
-typedef /*only@*/ char * (*headerTagFormatFunction)(rpmTagType type,
+typedef /*only@*/ char * (*headerTagFormatFunction)(HE_t he, rpmTagType type,
 				rpmTagData *  data, char * formatPrefix,
 				int padding, int element)
 	/*@requires maxSet(data) >= 0 @*/;
