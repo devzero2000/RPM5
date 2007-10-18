@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - jbj: start simplifying the world's most complicated sprintf.
     - jbj: fix: trigger conditions not displayed correctly.
     - jbj: trade-in element overload hack for another, less egregious, hack.
     - jbj: eliminate element arg in (*headerTagFormatFunction).
