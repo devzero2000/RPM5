@@ -74,13 +74,10 @@ static char * rpmPermsString(int mode)
  * @param data		tag value
  * @param formatPrefix	(unused)
  * @param padding	(unused)
- * @param element	(unused)
  * @return		formatted string
  */
 static /*@only@*/ char * triggertypeFormat(HE_t he, hPTR_t data,
-		/*@unused@*/ char * formatPrefix, /*@unused@*/ int padding,
-		/*@unused@*/ int element)
-	/*@requires maxRead(data) >= 0 @*/
+		/*@unused@*/ char * formatPrefix, /*@unused@*/ int padding)
 {
     const int_32 * item = (*data).i32p;
     char * val;
@@ -106,11 +103,10 @@ static /*@only@*/ char * triggertypeFormat(HE_t he, hPTR_t data,
  * @param data		tag value
  * @param formatPrefix
  * @param padding
- * @param element	(unused)
  * @return		formatted string
  */
 static /*@only@*/ char * permsFormat(HE_t he, hPTR_t data,
-		char * formatPrefix, int padding, /*@unused@*/ int element)
+		char * formatPrefix, int padding)
 	/*@modifies formatPrefix @*/
 	/*@requires maxRead(data) >= 0 @*/
 {
@@ -138,11 +134,10 @@ static /*@only@*/ char * permsFormat(HE_t he, hPTR_t data,
  * @param data		tag value
  * @param formatPrefix
  * @param padding
- * @param element	(unused)
  * @return		formatted string
  */
 static /*@only@*/ char * fflagsFormat(HE_t he, hPTR_t data,
-		char * formatPrefix, int padding, /*@unused@*/ int element)
+		char * formatPrefix, int padding)
 	/*@modifies formatPrefix @*/
 	/*@requires maxRead(data) >= 0 @*/
 {
@@ -188,12 +183,10 @@ static /*@only@*/ char * fflagsFormat(HE_t he, hPTR_t data,
  * @param data		tag value
  * @param formatPrefix	(unused)
  * @param padding	(unused)
- * @param element	no. bytes of binary data
  * @return		formatted string
  */
 static /*@only@*/ char * armorFormat(HE_t he, hPTR_t data,
-		/*@unused@*/ char * formatPrefix, /*@unused@*/ int padding,
-		int element)
+		/*@unused@*/ char * formatPrefix, /*@unused@*/ int padding)
 	/*@*/
 {
     const char * enc;
@@ -207,8 +200,7 @@ static /*@only@*/ char * armorFormat(HE_t he, hPTR_t data,
     case RPM_ASN1_TYPE:		/* XXX WRONG */
     case RPM_BIN_TYPE:
 	s = (*data).ui8p;
-	/* XXX HACK ALERT: element field abused as no. bytes of binary data. */
-	ns = element;
+	ns = he->c;
 	atype = PGPARMOR_SIGNATURE;	/* XXX check pkt for signature */
 	break;
     case RPM_STRING_TYPE:
@@ -248,11 +240,10 @@ static /*@only@*/ char * armorFormat(HE_t he, hPTR_t data,
  * @param data		tag value
  * @param formatPrefix	(unused)
  * @param padding
- * @param element
  * @return		formatted string
  */
 static /*@only@*/ char * base64Format(HE_t he, hPTR_t data,
-		/*@unused@*/ char * formatPrefix, int padding, int element)
+		/*@unused@*/ char * formatPrefix, int padding)
 	/*@*/
 {
     char * val;
@@ -263,8 +254,7 @@ static /*@only@*/ char * base64Format(HE_t he, hPTR_t data,
 	const char * enc;
 	char * t;
 	int lc;
-	/* XXX HACK ALERT: element field abused as no. bytes of binary data. */
-	size_t ns = element;
+	size_t ns = he->c;
 	size_t nt = ((ns + 2) / 3) * 4;
 
 	/*@-globs@*/
@@ -351,12 +341,10 @@ static char * xmlstrcpy(/*@returned@*/ char * t, const char * s)
  * @param data		tag value
  * @param formatPrefix
  * @param padding
- * @param element	(unused)
  * @return		formatted string
  */
 static /*@only@*/ char * xmlFormat(HE_t he, hPTR_t data,
-		char * formatPrefix, int padding,
-		/*@unused@*/ int element)
+		char * formatPrefix, int padding)
 	/*@modifies formatPrefix @*/
 {
     const char * xtag = NULL;
@@ -385,7 +373,7 @@ static /*@only@*/ char * xmlFormat(HE_t he, hPTR_t data,
     {	int cpl = b64encode_chars_per_line;
 	b64encode_chars_per_line = 0;
 /*@-formatconst@*/
-	s = base64Format(he, data, formatPrefix, padding, element);
+	s = base64Format(he, data, formatPrefix, padding);
 /*@=formatconst@*/
 	b64encode_chars_per_line = cpl;
 	xtag = "base64";
@@ -514,14 +502,13 @@ static char * yamlstrcpy(/*@out@*/ /*@returned@*/ char * t, const char * s, int 
  * @param data		tag value
  * @param formatPrefix
  * @param padding
- * @param element	element index (or -1 for non-array).
  * @return		formatted string
  */
 static /*@only@*/ char * yamlFormat(HE_t he, hPTR_t data,
-		char * formatPrefix, int padding,
-		int element)
+		char * formatPrefix, int padding)
 	/*@modifies formatPrefix @*/
 {
+    int element = he->freeData;	/* XXX HACK: he->freeData for element index. */
     const char * xtag = NULL;
     const char * ytag = NULL;
     size_t nb;
@@ -582,7 +569,7 @@ static /*@only@*/ char * yamlFormat(HE_t he, hPTR_t data,
     {	int cpl = b64encode_chars_per_line;
 	b64encode_chars_per_line = 0;
 /*@-formatconst@*/
-	s = base64Format(he, data, formatPrefix, padding, element);
+	s = base64Format(he, data, formatPrefix, padding);
 	element = -element;	/* XXX skip "    " indent. */
 /*@=formatconst@*/
 	b64encode_chars_per_line = cpl;
@@ -670,12 +657,10 @@ static /*@only@*/ char * yamlFormat(HE_t he, hPTR_t data,
  * @param data		tag value
  * @param formatPrefix	(unused)
  * @param padding
- * @param element	(unused)
  * @return		formatted string
  */
 static /*@only@*/ char * pgpsigFormat(HE_t he, hPTR_t data,
-		/*@unused@*/ char * formatPrefix, /*@unused@*/ int padding,
-		/*@unused@*/ int element)
+		/*@unused@*/ char * formatPrefix, /*@unused@*/ int padding)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/
 {
@@ -779,11 +764,10 @@ static /*@only@*/ char * pgpsigFormat(HE_t he, hPTR_t data,
  * @param data		tag value
  * @param formatPrefix
  * @param padding
- * @param element	(unused)
  * @return		formatted string
  */
 static /*@only@*/ char * depflagsFormat(HE_t he, hPTR_t data,
-		char * formatPrefix, int padding, /*@unused@*/ int element)
+		char * formatPrefix, int padding)
 	/*@modifies formatPrefix @*/
 	/*@requires maxRead(data) >= 0 @*/
 {
@@ -792,7 +776,9 @@ static /*@only@*/ char * depflagsFormat(HE_t he, hPTR_t data,
     if (he->t != RPM_INT32_TYPE) {
 	val = xstrdup(_("(invalid type)"));
     } else {
-	int anint = *((int_32 *) data);
+	/* XXX HACK: he->freeData for element index. */
+	int element = he->freeData;
+	int anint = (*data).i32p[element];
 	char *t, *buf;
 
 	t = buf = alloca(32);
@@ -913,7 +899,8 @@ static int triggercondsTag(Header h, HE_t he)
 		_he->t = RPM_INT32_TYPE;
 		_he->p = &flags;
 		_he->c = 1;
-		flagsStr = depflagsFormat(_he, he->p, buf, 0, j);
+		he->freeData = j;/* XXX HACK: he->freeData for element index. */
+		flagsStr = depflagsFormat(_he, he->p, buf, 0);
 		sprintf(item, "%s %s %s", names.argv[j], flagsStr, versions.argv[j]);
 		flagsStr = _free(flagsStr);
 	    } else

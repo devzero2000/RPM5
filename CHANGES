@@ -1,4 +1,7 @@
 4.5 -> 5.0:
+    - jbj: fix: trigger conditions not displayed correctly.
+    - jbj: trade-in element overload hack for another, less egregious, hack.
+    - jbj: eliminate element arg in (*headerTagFormatFunction).
     - jbj: eliminate type arg in (*headerTagFormatFunction), use he->t instead.
     - jbj: drill HE_t through (*headerTagFormatFunction).
     - jbj: debugedit segfault (#336951,#337011) see #337051 too.
