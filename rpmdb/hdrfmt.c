@@ -71,15 +71,15 @@ static char * rpmPermsString(int mode)
 /**
  * Identify type of trigger.
  * @param he		tag container
- * @param data		tag value
  * @param formatPrefix	(unused)
  * @param padding	(unused)
  * @return		formatted string
  */
-static /*@only@*/ char * triggertypeFormat(HE_t he, hPTR_t data,
+static /*@only@*/ char * triggertypeFormat(HE_t he,
 		/*@unused@*/ char * formatPrefix, /*@unused@*/ int padding)
 {
-    const int_32 * item = (*data).i32p;
+    rpmTagData data = { .ptr = (*he->p).ptr };
+    const int_32 * item = data.i32p;
     char * val;
 
     if (he->t != RPM_INT32_TYPE)
@@ -100,16 +100,16 @@ static /*@only@*/ char * triggertypeFormat(HE_t he, hPTR_t data,
 /**
  * Format file permissions for display.
  * @param he		tag container
- * @param data		tag value
  * @param formatPrefix
  * @param padding
  * @return		formatted string
  */
-static /*@only@*/ char * permsFormat(HE_t he, hPTR_t data,
+static /*@only@*/ char * permsFormat(HE_t he,
 		char * formatPrefix, int padding)
 	/*@modifies formatPrefix @*/
 	/*@requires maxRead(data) >= 0 @*/
 {
+    rpmTagData data = { .ptr = (*he->p).ptr };
     char * val;
     char * buf;
 
@@ -118,7 +118,7 @@ static /*@only@*/ char * permsFormat(HE_t he, hPTR_t data,
     } else {
 	val = xmalloc(15 + padding);
 	strcat(formatPrefix, "s");
-	buf = rpmPermsString((*data).i32p[0]);
+	buf = rpmPermsString(data.i32p[0]);
 	/*@-formatconst@*/
 	sprintf(val, formatPrefix, buf);
 	/*@=formatconst@*/
@@ -131,20 +131,24 @@ static /*@only@*/ char * permsFormat(HE_t he, hPTR_t data,
 /**
  * Format file flags for display.
  * @param he		tag container
- * @param data		tag value
  * @param formatPrefix
  * @param padding
  * @return		formatted string
  */
-static /*@only@*/ char * fflagsFormat(HE_t he, hPTR_t data,
+static /*@only@*/ char * fflagsFormat(HE_t he,
 		char * formatPrefix, int padding)
 	/*@modifies formatPrefix @*/
 	/*@requires maxRead(data) >= 0 @*/
 {
+    rpmTagData data = { .ptr = (*he->p).ptr };
+    /* XXX HACK: he->freeData for element index. */
+    int element = he->freeData;
     char * val;
     char buf[15];
-    int anint = *((int_32 *) data);
+    int anint;
 
+assert(element >= 0);
+    anint = data.i32p[element];
     if (he->t != RPM_INT32_TYPE) {
 	val = xstrdup(_("(invalid type)"));
     } else {
@@ -180,15 +184,15 @@ static /*@only@*/ char * fflagsFormat(HE_t he, hPTR_t data,
  * Wrap a pubkey in ascii armor for display.
  * @todo Permit selectable display formats (i.e. binary).
  * @param he		tag container
- * @param data		tag value
  * @param formatPrefix	(unused)
  * @param padding	(unused)
  * @return		formatted string
  */
-static /*@only@*/ char * armorFormat(HE_t he, hPTR_t data,
+static /*@only@*/ char * armorFormat(HE_t he,
 		/*@unused@*/ char * formatPrefix, /*@unused@*/ int padding)
 	/*@*/
 {
+    rpmTagData data = { .ptr = (*he->p).ptr };
     const char * enc;
     const unsigned char * s;
     size_t ns;
@@ -199,13 +203,13 @@ static /*@only@*/ char * armorFormat(HE_t he, hPTR_t data,
     case RPM_OPENPGP_TYPE:
     case RPM_ASN1_TYPE:		/* XXX WRONG */
     case RPM_BIN_TYPE:
-	s = (*data).ui8p;
+	s = data.ui8p;
 	ns = he->c;
 	atype = PGPARMOR_SIGNATURE;	/* XXX check pkt for signature */
 	break;
     case RPM_STRING_TYPE:
     case RPM_STRING_ARRAY_TYPE:
-	enc = (*data).str;
+	enc = data.str;
 	s = NULL;
 	ns = 0;
 /*@-moduncon@*/
@@ -237,15 +241,15 @@ static /*@only@*/ char * armorFormat(HE_t he, hPTR_t data,
  * Encode binary data in base64 for display.
  * @todo Permit selectable display formats (i.e. binary).
  * @param he		tag container
- * @param data		tag value
  * @param formatPrefix	(unused)
  * @param padding
  * @return		formatted string
  */
-static /*@only@*/ char * base64Format(HE_t he, hPTR_t data,
+static /*@only@*/ char * base64Format(HE_t he,
 		/*@unused@*/ char * formatPrefix, int padding)
 	/*@*/
 {
+    rpmTagData data = { .ptr = (*he->p).ptr };
     char * val;
 
     if (!(he->t == RPM_BIN_TYPE || he->t == RPM_ASN1_TYPE || he->t == RPM_OPENPGP_TYPE)) {
@@ -272,7 +276,7 @@ static /*@only@*/ char * base64Format(HE_t he, hPTR_t data,
 
     /* XXX b64encode accesses uninitialized memory. */
     { 	unsigned char * _data = xcalloc(1, ns+1);
-	memcpy(_data, data, ns);
+	memcpy(_data, data.ptr, ns);
 /*@-moduncon@*/
 	if ((enc = b64encode(_data, ns)) != NULL) {
 	    t = stpcpy(t, enc);
@@ -338,15 +342,15 @@ static char * xmlstrcpy(/*@returned@*/ char * t, const char * s)
 /**
  * Wrap tag data in simple header xml markup.
  * @param he		tag container
- * @param data		tag value
  * @param formatPrefix
  * @param padding
  * @return		formatted string
  */
-static /*@only@*/ char * xmlFormat(HE_t he, hPTR_t data,
+static /*@only@*/ char * xmlFormat(HE_t he,
 		char * formatPrefix, int padding)
 	/*@modifies formatPrefix @*/
 {
+    rpmTagData data = { .ptr = (*he->p).ptr };
     const char * xtag = NULL;
     size_t nb;
     char * val;
@@ -359,7 +363,7 @@ static /*@only@*/ char * xmlFormat(HE_t he, hPTR_t data,
     switch (he->t) {
     case RPM_I18NSTRING_TYPE:
     case RPM_STRING_TYPE:
-	s = (*data).str;
+	s = data.str;
 	xtag = "string";
 	/* XXX Force utf8 strings. */
 	s = xstrdup(s);
@@ -373,7 +377,7 @@ static /*@only@*/ char * xmlFormat(HE_t he, hPTR_t data,
     {	int cpl = b64encode_chars_per_line;
 	b64encode_chars_per_line = 0;
 /*@-formatconst@*/
-	s = base64Format(he, data, formatPrefix, padding);
+	s = base64Format(he, formatPrefix, padding);
 /*@=formatconst@*/
 	b64encode_chars_per_line = cpl;
 	xtag = "base64";
@@ -382,16 +386,16 @@ static /*@only@*/ char * xmlFormat(HE_t he, hPTR_t data,
 /*@=globs =mods@*/
     case RPM_CHAR_TYPE:
     case RPM_INT8_TYPE:
-	anint = *((uint_8 *) data);
+	anint = data.i8p[0];
 	break;
     case RPM_INT16_TYPE:
-	anint = *((uint_16 *) data);
+	anint = data.ui16p[0];	/* XXX note unsigned */
 	break;
     case RPM_INT32_TYPE:
-	anint = *((uint_32 *) data);
+	anint = data.i32p[0];
 	break;
     case RPM_INT64_TYPE:
-	anint = *((uint_64 *) data);
+	anint = data.i64p[0];
 	break;
     case RPM_NULL_TYPE:
     case RPM_STRING_ARRAY_TYPE:
@@ -499,15 +503,15 @@ static char * yamlstrcpy(/*@out@*/ /*@returned@*/ char * t, const char * s, int 
 /**
  * Wrap tag data in simple header yaml markup.
  * @param he		tag container
- * @param data		tag value
  * @param formatPrefix
  * @param padding
  * @return		formatted string
  */
-static /*@only@*/ char * yamlFormat(HE_t he, hPTR_t data,
+static /*@only@*/ char * yamlFormat(HE_t he,
 		char * formatPrefix, int padding)
 	/*@modifies formatPrefix @*/
 {
+    rpmTagData data = { .ptr = (*he->p).ptr };
     int element = he->freeData;	/* XXX HACK: he->freeData for element index. */
     const char * xtag = NULL;
     const char * ytag = NULL;
@@ -525,7 +529,7 @@ static /*@only@*/ char * yamlFormat(HE_t he, hPTR_t data,
     case RPM_I18NSTRING_TYPE:
     case RPM_STRING_TYPE:
 	xx = 0;
-	s = (*data).str;
+	s = data.str;
 	if (strchr("[", s[0]))	/* leading [ */
 	    xx = 1;
 	if (xx == 0)
@@ -558,7 +562,7 @@ static /*@only@*/ char * yamlFormat(HE_t he, hPTR_t data,
 	}
 
 	/* XXX Force utf8 strings. */
-	s = xstrdup((*data).str);
+	s = xstrdup(data.str);
 	s = xstrtolocale(s);
 	freeit = 1;
 	break;
@@ -569,7 +573,7 @@ static /*@only@*/ char * yamlFormat(HE_t he, hPTR_t data,
     {	int cpl = b64encode_chars_per_line;
 	b64encode_chars_per_line = 0;
 /*@-formatconst@*/
-	s = base64Format(he, data, formatPrefix, padding);
+	s = base64Format(he, formatPrefix, padding);
 	element = -element;	/* XXX skip "    " indent. */
 /*@=formatconst@*/
 	b64encode_chars_per_line = cpl;
@@ -579,16 +583,16 @@ static /*@only@*/ char * yamlFormat(HE_t he, hPTR_t data,
 /*@=globs =mods@*/
     case RPM_CHAR_TYPE:
     case RPM_INT8_TYPE:
-	anint = *((uint_8 *) data);
+	anint = data.i8p[0];
 	break;
     case RPM_INT16_TYPE:
-	anint = *((uint_16 *) data);
+	anint = data.ui16p[0];	/* XXX note unsigned */
 	break;
     case RPM_INT32_TYPE:
-	anint = *((uint_32 *) data);
+	anint = data.i32p[0];
 	break;
     case RPM_INT64_TYPE:
-	anint = *((uint_64 *) data);
+	anint = data.i64p[0];
 	break;
     case RPM_NULL_TYPE:
     case RPM_STRING_ARRAY_TYPE:
@@ -654,22 +658,22 @@ static /*@only@*/ char * yamlFormat(HE_t he, hPTR_t data,
 /**
  * Display signature fingerprint and time.
  * @param he		tag container
- * @param data		tag value
  * @param formatPrefix	(unused)
  * @param padding
  * @return		formatted string
  */
-static /*@only@*/ char * pgpsigFormat(HE_t he, hPTR_t data,
+static /*@only@*/ char * pgpsigFormat(HE_t he,
 		/*@unused@*/ char * formatPrefix, /*@unused@*/ int padding)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/
 {
+    rpmTagData data = { .ptr = (*he->p).ptr };
     char * val, * t;
 
     if (!(he->t == RPM_BIN_TYPE || he->t == RPM_ASN1_TYPE || he->t == RPM_OPENPGP_TYPE)) {
 	val = xstrdup(_("(not a blob)"));
     } else {
-	unsigned char * pkt = (byte *) data;
+	unsigned char * pkt = (byte *) data.ptr;
 	unsigned int pktlen = 0;
 	unsigned int v = *pkt;
 	pgpTag tag = 0;
@@ -761,16 +765,16 @@ static /*@only@*/ char * pgpsigFormat(HE_t he, hPTR_t data,
 /**
  * Format dependency flags for display.
  * @param he		tag container
- * @param data		tag value
  * @param formatPrefix
  * @param padding
  * @return		formatted string
  */
-static /*@only@*/ char * depflagsFormat(HE_t he, hPTR_t data,
+static /*@only@*/ char * depflagsFormat(HE_t he,
 		char * formatPrefix, int padding)
 	/*@modifies formatPrefix @*/
 	/*@requires maxRead(data) >= 0 @*/
 {
+    rpmTagData data = { .ptr = (*he->p).ptr };
     char * val;
 
     if (he->t != RPM_INT32_TYPE) {
@@ -778,7 +782,7 @@ static /*@only@*/ char * depflagsFormat(HE_t he, hPTR_t data,
     } else {
 	/* XXX HACK: he->freeData for element index. */
 	int element = he->freeData;
-	int anint = (*data).i32p[element];
+	int anint = data.i32p[element];
 	char *t, *buf;
 
 	t = buf = alloca(32);
@@ -900,7 +904,7 @@ static int triggercondsTag(Header h, HE_t he)
 		_he->p = &flags;
 		_he->c = 1;
 		he->freeData = j;/* XXX HACK: he->freeData for element index. */
-		flagsStr = depflagsFormat(_he, he->p, buf, 0);
+		flagsStr = depflagsFormat(_he, buf, 0);
 		sprintf(item, "%s %s %s", names.argv[j], flagsStr, versions.argv[j]);
 		flagsStr = _free(flagsStr);
 	    } else

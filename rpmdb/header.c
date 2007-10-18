@@ -2797,13 +2797,12 @@ bingo:
 /**
  * Convert tag data representation.
  * @param he		tag container
- * @param data		tag value
  * @param formatPrefix	sprintf format string
  * @param padding	no. additional bytes needed by format string
  * @param fmt		output radix (NULL or "" assumes %d)
  * @return		formatted string
  */
-static char * intFormat(HE_t he, hPTR_t data,
+static char * intFormat(HE_t he,
 		char * formatPrefix, int padding, const char *fmt)
 {
     /* XXX HACK: he->freeData for element index. */
@@ -2814,7 +2813,6 @@ static char * intFormat(HE_t he, hPTR_t data,
     if (fmt == NULL || *fmt == '\0')
 	fmt = "d";
 
-assert(he->p == data);
     switch (he->t) {
     default:
 	str = xstrdup(_("(not a number)"));
@@ -2850,63 +2848,60 @@ assert(he->p == data);
 /**
  * Return octal formatted data.
  * @param he		tag container
- * @param data		tag value
  * @param formatPrefix	sprintf format string
  * @param padding	no. additional bytes needed by format string
  * @return		formatted string
  */
-static char * octFormat(HE_t he, hPTR_t data,
+static char * octFormat(HE_t he,
 		char * formatPrefix, int padding)
 	/*@modifies formatPrefix @*/
 {
-    return intFormat(he, data, formatPrefix, padding, "o");
+    return intFormat(he, formatPrefix, padding, "o");
 }
 
 /**
  * Return hex formatted data.
  * @param he		tag container
- * @param data		tag value
  * @param formatPrefix	sprintf format string
  * @param padding	no. additional bytes needed by format string
  * @return		formatted string
  */
-static char * hexFormat(HE_t he, hPTR_t data, 
+static char * hexFormat(HE_t he,
 		char * formatPrefix, int padding)
 	/*@modifies formatPrefix @*/
 {
-    return intFormat(he, data, formatPrefix, padding, "x");
+    return intFormat(he, formatPrefix, padding, "x");
 }
 
 /**
  * Return decimal formatted data.
  * @param he		tag container
- * @param data		tag value
  * @param formatPrefix	sprintf format string
  * @param padding	no. additional bytes needed by format string
  * @return		formatted string
  */
-static char * decFormat(HE_t he, hPTR_t data, 
+static char * decFormat(HE_t he,
 		char * formatPrefix, int padding)
 	/*@modifies formatPrefix @*/
 {
-    return intFormat(he, data, formatPrefix, padding, "d");
+    return intFormat(he, formatPrefix, padding, "d");
 }
 
 /**
  * Return strftime formatted data.
  * @param he		tag container
- * @param data		tag value
  * @param formatPrefix	sprintf format string
  * @param padding	no. additional bytes needed by format string
  * @param strftimeFormat strftime(3) format
  * @return		formatted string
  */
-static char * realDateFormat(HE_t he, hPTR_t data, 
+static char * realDateFormat(HE_t he,
 		char * formatPrefix, int padding,
 		const char * strftimeFormat)
 	/*@modifies formatPrefix @*/
 {
     char * val;
+    rpmTagData data = { .ptr = (*he->p).ptr };
 
     if (he->t != RPM_INT32_TYPE) {
 	val = xstrdup(_("(not a number)"));
@@ -2918,7 +2913,7 @@ static char * realDateFormat(HE_t he, hPTR_t data,
 	strcat(formatPrefix, "s");
 
 	/* this is important if sizeof(int_32) ! sizeof(time_t) */
-	{   time_t dateint = *((int_32 *) data);
+	{   time_t dateint = data.ui32p[0];
 	    tstruct = localtime(&dateint);
 	}
 	buf[0] = '\0';
@@ -2935,63 +2930,59 @@ static char * realDateFormat(HE_t he, hPTR_t data,
 /**
  * Return date formatted data.
  * @param he		tag container
- * @param data		tag value
  * @param formatPrefix	sprintf format string
  * @param padding	no. additional bytes needed by format string
  * @return		formatted string
  */
-static char * dateFormat(HE_t he, hPTR_t data, 
+static char * dateFormat(HE_t he,
 		         char * formatPrefix, int padding)
 	/*@modifies formatPrefix @*/
 {
-    return realDateFormat(he, data, formatPrefix, padding,
-			_("%c"));
+    return realDateFormat(he, formatPrefix, padding, _("%c"));
 }
 
 /**
  * Return day formatted data.
  * @param he		tag container
- * @param data		tag value
  * @param formatPrefix	sprintf format string
  * @param padding	no. additional bytes needed by format string
  * @return		formatted string
  */
-static char * dayFormat(HE_t he, hPTR_t data, 
+static char * dayFormat(HE_t he,
 		         char * formatPrefix, int padding)
 	/*@modifies formatPrefix @*/
 {
-    return realDateFormat(he, data, formatPrefix, padding, 
-			  _("%a %b %d %Y"));
+    return realDateFormat(he, formatPrefix, padding, _("%a %b %d %Y"));
 }
 
 /**
  * Return shell escape formatted data.
  * @param he		tag container
- * @param data		tag value
  * @param formatPrefix	sprintf format string
  * @param padding	no. additional bytes needed by format string
  * @return		formatted string
  */
-static char * shescapeFormat(HE_t he, hPTR_t data, 
+static char * shescapeFormat(HE_t he,
 		char * formatPrefix, int padding)
 	/*@modifies formatPrefix @*/
 {
     char * result, * dst, * src, * buf;
+    rpmTagData data = { .ptr = (*he->p).ptr };
 
     if (he->t == RPM_INT32_TYPE) {
 	result = xmalloc(padding + 20);
 	strcat(formatPrefix, "d");
 	/*@-formatconst@*/
-	sprintf(result, formatPrefix, (*data).i32p[0]);
+	sprintf(result, formatPrefix, data.i32p[0]);
 	/*@=formatconst@*/
     } else if (he->t == RPM_INT64_TYPE) {
 	result = xmalloc(padding + 40);
 	strcat(formatPrefix, "lld");
 	/*@-formatconst@*/
-	sprintf(result, formatPrefix, (*data).i64p[0]);
+	sprintf(result, formatPrefix, data.i64p[0]);
 	/*@=formatconst@*/
     } else {
-	buf = alloca(strlen((*data).str) + padding + 2);
+	buf = alloca(strlen(data.str) + padding + 2);
 	strcat(formatPrefix, "s");
 	/*@-formatconst@*/
 	sprintf(buf, formatPrefix, data);
@@ -3453,7 +3444,6 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
     size_t need = 0;
     char * t, * te;
     char buf[20];
-    hRET_t strarray;
     rpmTagCount countBuf;
 
     memset(buf, 0, sizeof(buf));
@@ -3511,42 +3501,46 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
     if (he_p.ptr)
     switch (he->t) {
     case RPM_STRING_ARRAY_TYPE:
-	strarray.argv = he_p.argv;
+    {	hRET_t _he_p = { .ptr = NULL };
+	HE_s _he_s = { .tag = 0, .t = 0, .p = &_he_p, .c = 0, .freeData = 0 };
+	HE_t _he = &_he_s;
+	_he->tag = he->tag;
+	_he->t = RPM_STRING_TYPE;
+	(*_he->p).str = (*he->p).argv[element];
+	_he->c = 1;
+	_he->freeData = -1;
 
-	if (tag->fmt) {
-	    /* XXX HACK: he->freeData for element index. */
-	    he->freeData = (he->c > 1 ? element : -1);
-	    val = tag->fmt(he, (hPTR_t) strarray.argv[element], buf, tag->pad);	/* NOCAST */
-	}
+	if (tag->fmt)
+	    val = tag->fmt(_he, buf, tag->pad);
 
 	if (val) {
 	    need = strlen(val);
 	} else {
-	    need = strlen(strarray.argv[element]) + tag->pad + 20;
+	    need = strlen((*_he->p).str) + tag->pad + 20;
 	    val = xmalloc(need+1);
 	    strcat(buf, "s");
 	    /*@-formatconst@*/
-	    sprintf(val, buf, strarray.argv[element]);
+	    sprintf(val, buf, (*_he->p).str);
 	    /*@=formatconst@*/
 	}
 
-	break;
+    }	break;
 
     case RPM_STRING_TYPE:
 	if (tag->fmt) {
 	    /* XXX HACK: he->freeData for element index. */
 	    he->freeData = -1;
-	    val = tag->fmt(he, he_p.ptr, buf, tag->pad);
+	    val = tag->fmt(he, buf, tag->pad);
 	}
 
 	if (val) {
 	    need = strlen(val);
 	} else {
-	    need = strlen(he_p.str) + tag->pad + 20;
+	    need = strlen((*he->p).str) + tag->pad + 20;
 	    val = xmalloc(need+1);
 	    strcat(buf, "s");
 	    /*@-formatconst@*/
-	    sprintf(val, buf, he_p.str);
+	    sprintf(val, buf, (*he->p).str);
 	    /*@=formatconst@*/
 	}
 	break;
@@ -3559,9 +3553,9 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
 	/* XXX HACK: he->freeData for element index. */
 	he->freeData = (he->c > 1 ? element : -1);
 	if (tag->fmt)
-	    val = tag->fmt(he, he->p, buf, tag->pad);
+	    val = tag->fmt(he, buf, tag->pad);
 	else
-	    val = decFormat(he, he->p, buf, tag->pad);
+	    val = decFormat(he, buf, tag->pad);
 assert(val);
 	if (val)
 	    need = strlen(val);
@@ -3573,7 +3567,7 @@ assert(val);
 	if (tag->fmt) {
 	    /* XXX HACK: he->freeData for element index. */
 	    he->freeData = -1;
-	    val = tag->fmt(he, he_p.ptr, buf, tag->pad);
+	    val = tag->fmt(he, buf, tag->pad);
 	}
 
 	if (val) {

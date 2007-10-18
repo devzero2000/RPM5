@@ -1,4 +1,6 @@
 4.5 -> 5.0:
+    - jbj: fix several indirection problems.
+    - jbj: eliminate data arg in (*headerTagFormatFunction).
     - jbj: start simplifying the world's most complicated sprintf.
     - jbj: fix: trigger conditions not displayed correctly.
     - jbj: trade-in element overload hack for another, less egregious, hack.
