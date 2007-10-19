@@ -79,21 +79,25 @@ static /*@only@*/ char * triggertypeFormat(HE_t he,
 		/*@unused@*/ char * formatPrefix, /*@unused@*/ int padding)
 {
     rpmTagData data = { .ptr = he->p.ptr };
-    const int_32 * item = data.i32p;
+    int ix = (he->ix > 0 ? he->ix : 0);
     char * val;
 
-    if (he->t != RPM_INT32_TYPE)
+assert(ix == 0);
+    if (he->t != RPM_INT64_TYPE)
 	val = xstrdup(_("(invalid type)"));
-    else if (*item & RPMSENSE_TRIGGERPREIN)
-	val = xstrdup("prein");
-    else if (*item & RPMSENSE_TRIGGERIN)
-	val = xstrdup("in");
-    else if (*item & RPMSENSE_TRIGGERUN)
-	val = xstrdup("un");
-    else if (*item & RPMSENSE_TRIGGERPOSTUN)
-	val = xstrdup("postun");
-    else
-	val = xstrdup("");
+    else {
+	int anint = data.i64p[ix];
+	if (anint & RPMSENSE_TRIGGERPREIN)
+	    val = xstrdup("prein");
+	else if (anint & RPMSENSE_TRIGGERIN)
+	    val = xstrdup("in");
+	else if (anint & RPMSENSE_TRIGGERUN)
+	    val = xstrdup("un");
+	else if (anint & RPMSENSE_TRIGGERPOSTUN)
+	    val = xstrdup("postun");
+	else
+	    val = xstrdup("");
+    }
     return val;
 }
 
@@ -109,16 +113,18 @@ static /*@only@*/ char * permsFormat(HE_t he,
 	/*@modifies formatPrefix @*/
 	/*@requires maxRead(data) >= 0 @*/
 {
-    rpmTagData data = { .ptr = he->p.ptr };
+    int ix = (he->ix > 0 ? he->ix : 0);
     char * val;
     char * buf;
 
-    if (he->t != RPM_INT32_TYPE) {
+assert(ix == 0);
+    if (he->t != RPM_INT64_TYPE) {
 	val = xstrdup(_("(invalid type)"));
     } else {
+	int_32 anint = he->p.i64p[0];
 	val = xmalloc(15 + padding);
 	strcat(formatPrefix, "s");
-	buf = rpmPermsString(data.i32p[0]);
+	buf = rpmPermsString(anint);
 	/*@-formatconst@*/
 	sprintf(val, formatPrefix, buf);
 	/*@=formatconst@*/
@@ -141,17 +147,15 @@ static /*@only@*/ char * fflagsFormat(HE_t he,
 	/*@requires maxRead(data) >= 0 @*/
 {
     rpmTagData data = { .ptr = he->p.ptr };
-    /* XXX HACK: he->freeData for element index. */
-    int element = he->freeData;
+    int ix = (he->ix >= 0 ? he->ix : 0);
     char * val;
     char buf[15];
-    int anint;
 
-assert(element >= 0);
-    anint = data.i32p[element];
-    if (he->t != RPM_INT32_TYPE) {
+assert(ix == 0);
+    if (he->t != RPM_INT64_TYPE) {
 	val = xstrdup(_("(invalid type)"));
     } else {
+	unsigned anint = data.i64p[ix];
 	buf[0] = '\0';
 	if (anint & RPMFILE_DOC)
 	    strcat(buf, "d");
@@ -193,12 +197,14 @@ static /*@only@*/ char * armorFormat(HE_t he,
 	/*@*/
 {
     rpmTagData data = { .ptr = he->p.ptr };
+    int ix = (he->ix > 0 ? he->ix : 0);
     const char * enc;
     const unsigned char * s;
     size_t ns;
     int atype;
     char * val;
 
+assert(ix == 0);
     switch (he->t) {
     case RPM_OPENPGP_TYPE:
     case RPM_ASN1_TYPE:		/* XXX WRONG */
@@ -250,8 +256,10 @@ static /*@only@*/ char * base64Format(HE_t he,
 	/*@*/
 {
     rpmTagData data = { .ptr = he->p.ptr };
+    int ix = (he->ix > 0 ? he->ix : 0);
     char * val;
 
+assert(ix == 0);
     if (!(he->t == RPM_BIN_TYPE || he->t == RPM_ASN1_TYPE || he->t == RPM_OPENPGP_TYPE)) {
 	val = xstrdup(_("(not a blob)"));
     } else {
@@ -351,6 +359,7 @@ static /*@only@*/ char * xmlFormat(HE_t he,
 	/*@modifies formatPrefix @*/
 {
     rpmTagData data = { .ptr = he->p.ptr };
+    int ix = (he->ix > 0 ? he->ix : 0);
     const char * xtag = NULL;
     size_t nb;
     char * val;
@@ -360,7 +369,17 @@ static /*@only@*/ char * xmlFormat(HE_t he,
     int freeit = 0;
     int xx;
 
+assert(ix == 0);
+assert(he->t == RPM_STRING_TYPE || he->t == RPM_INT64_TYPE || he->t == RPM_BIN_TYPE);
     switch (he->t) {
+    case RPM_STRING_ARRAY_TYPE:
+	s = data.argv[ix];
+	xtag = "string";
+	/* XXX Force utf8 strings. */
+	s = xstrdup(s);
+	s = xstrtolocale(s);
+	freeit = 1;
+	break;
     case RPM_I18NSTRING_TYPE:
     case RPM_STRING_TYPE:
 	s = data.str;
@@ -386,19 +405,18 @@ static /*@only@*/ char * xmlFormat(HE_t he,
 /*@=globs =mods@*/
     case RPM_CHAR_TYPE:
     case RPM_INT8_TYPE:
-	anint = data.i8p[0];
+	anint = data.i8p[ix];
 	break;
     case RPM_INT16_TYPE:
-	anint = data.ui16p[0];	/* XXX note unsigned */
+	anint = data.ui16p[ix];	/* XXX note unsigned */
 	break;
     case RPM_INT32_TYPE:
-	anint = data.i32p[0];
+	anint = data.i32p[ix];
 	break;
     case RPM_INT64_TYPE:
-	anint = data.i64p[0];
+	anint = data.i64p[ix];
 	break;
     case RPM_NULL_TYPE:
-    case RPM_STRING_ARRAY_TYPE:
     default:
 	return xstrdup(_("(invalid xml type)"));
 	/*@notreached@*/ break;
@@ -512,7 +530,8 @@ static /*@only@*/ char * yamlFormat(HE_t he,
 	/*@modifies formatPrefix @*/
 {
     rpmTagData data = { .ptr = he->p.ptr };
-    int element = he->freeData;	/* XXX HACK: he->freeData for element index. */
+    int element = he->ix;
+    int ix = (he->ix > 0 ? he->ix : 0);
     const char * xtag = NULL;
     const char * ytag = NULL;
     size_t nb;
@@ -525,11 +544,14 @@ static /*@only@*/ char * yamlFormat(HE_t he,
     int xx;
     int c;
 
+assert(ix == 0);
+assert(he->t == RPM_STRING_TYPE || he->t == RPM_INT64_TYPE || he->t == RPM_BIN_TYPE);
     switch (he->t) {
+    case RPM_STRING_ARRAY_TYPE:
     case RPM_I18NSTRING_TYPE:
     case RPM_STRING_TYPE:
 	xx = 0;
-	s = data.str;
+	s = (he->t == RPM_STRING_ARRAY_TYPE ? data.argv[ix] : data.str);
 	if (strchr("[", s[0]))	/* leading [ */
 	    xx = 1;
 	if (xx == 0)
@@ -574,7 +596,7 @@ static /*@only@*/ char * yamlFormat(HE_t he,
 	b64encode_chars_per_line = 0;
 /*@-formatconst@*/
 	s = base64Format(he, formatPrefix, padding);
-	element = -element;	/* XXX skip "    " indent. */
+	element = -element; 	/* XXX skip "    " indent. */
 /*@=formatconst@*/
 	b64encode_chars_per_line = cpl;
 	xtag = "!!binary ";
@@ -583,19 +605,18 @@ static /*@only@*/ char * yamlFormat(HE_t he,
 /*@=globs =mods@*/
     case RPM_CHAR_TYPE:
     case RPM_INT8_TYPE:
-	anint = data.i8p[0];
+	anint = data.i8p[ix];
 	break;
     case RPM_INT16_TYPE:
-	anint = data.ui16p[0];	/* XXX note unsigned */
+	anint = data.ui16p[ix];	/* XXX note unsigned */
 	break;
     case RPM_INT32_TYPE:
-	anint = data.i32p[0];
+	anint = data.i32p[ix];
 	break;
     case RPM_INT64_TYPE:
-	anint = data.i64p[0];
+	anint = data.i64p[ix];
 	break;
     case RPM_NULL_TYPE:
-    case RPM_STRING_ARRAY_TYPE:
     default:
 	return xstrdup(_("(invalid yaml type)"));
 	/*@notreached@*/ break;
@@ -668,8 +689,10 @@ static /*@only@*/ char * pgpsigFormat(HE_t he,
 	/*@modifies fileSystem, internalState @*/
 {
     rpmTagData data = { .ptr = he->p.ptr };
+    int ix = (he->ix > 0 ? he->ix : 0);
     char * val, * t;
 
+assert(ix == 0);
     if (!(he->t == RPM_BIN_TYPE || he->t == RPM_ASN1_TYPE || he->t == RPM_OPENPGP_TYPE)) {
 	val = xstrdup(_("(not a blob)"));
     } else {
@@ -775,14 +798,14 @@ static /*@only@*/ char * depflagsFormat(HE_t he,
 	/*@requires maxRead(data) >= 0 @*/
 {
     rpmTagData data = { .ptr = he->p.ptr };
+    int ix = (he->ix > 0 ? he->ix : 0);;
     char * val;
 
-    if (he->t != RPM_INT32_TYPE) {
+assert(ix == 0);
+    if (he->t != RPM_INT64_TYPE) {
 	val = xstrdup(_("(invalid type)"));
     } else {
-	/* XXX HACK: he->freeData for element index. */
-	int element = he->freeData;
-	int anint = data.i32p[element];
+	int anint = data.i64p[ix];
 	char *t, *buf;
 
 	t = buf = alloca(32);

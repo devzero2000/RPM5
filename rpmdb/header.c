@@ -2551,7 +2551,7 @@ Header headerCopy(Header h)
  */
 typedef struct headerSprintfArgs_s {
     Header h;
-    HE_t he;
+    HE_s he;
     char * fmt;
 /*@temp@*/
     headerTagTableEntry tags;
@@ -2799,17 +2799,18 @@ bingo:
 static char * intFormat(HE_t he,
 		char * formatPrefix, int padding, const char *fmt)
 {
-    /* XXX HACK: he->freeData for element index. */
-    int ix = (he->freeData >= 0 ? he->freeData : 0);
+    int ix = (he->ix > 0 ? he->ix : 0);;
     int_64 ival = 0;
-    char * str = NULL;
+    const char * istr = NULL;
+    char * b;
+    size_t nb = 0;
 
     if (fmt == NULL || *fmt == '\0')
 	fmt = "d";
 
     switch (he->t) {
     default:
-	str = xstrdup(_("(not a number)"));
+	return xstrdup(_("(not a number)"));
 	break;
     case RPM_CHAR_TYPE:	
     case RPM_INT8_TYPE:
@@ -2824,19 +2825,35 @@ static char * intFormat(HE_t he,
     case RPM_INT64_TYPE:
 	ival = he->p.i64p[ix];
 	break;
+    case RPM_STRING_TYPE:
+	istr = he->p.str;
+	break;
+    case RPM_STRING_ARRAY_TYPE:
+	istr = he->p.argv[ix];
+	break;
+    case RPM_OPENPGP_TYPE:	/* XXX W2DO? */
+    case RPM_ASN1_TYPE:		/* XXX W2DO? */
+    case RPM_BIN_TYPE:
+	break;
     }
 
-    if (str == NULL) {
-	char b[1024];
-	size_t nb = sizeof(b);
+    if (istr) {		/* string */
+	nb = strlen(istr) + 1;
+	strcat(formatPrefix, "s");
+	b = alloca(nb);
+	snprintf(b, nb, formatPrefix, istr);
+	b[nb-1] = '\0';
+    } else
+    if (nb == 0) {	/* number */
+	nb = 64;
 	strcat(formatPrefix, "ll");
 	strcat(formatPrefix, fmt);
+	b = alloca(nb);
 	snprintf(b, nb, formatPrefix, ival);
 	b[nb-1] = '\0';
-	str = xstrdup(b);
     }
 
-    return str;
+    return xstrdup(b);
 }
 
 /**
@@ -3429,6 +3446,9 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
     char buf[20];
     rpmTagCount countBuf;
 
+    HE_t vhe = memset(alloca(sizeof(*vhe)), 0, sizeof(*vhe));
+    int_64 ival = 0;
+
     memset(buf, 0, sizeof(buf));
     if (tag->ext) {
 	if (getExtension(hsa, tag->ext, &he->t, &he->p, &he->c, hsa->ec + tag->extNum))
@@ -3483,49 +3503,35 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
 
     if (he->p.ptr)
     switch (he->t) {
+    default:
+	val = xstrdup("(unknown type)");
+	need = tag->pad + strlen(val) + 1;
+	break;
     case RPM_STRING_ARRAY_TYPE:
-    {	HE_t _he = memset(alloca(sizeof(*_he)), 0, sizeof(*_he));
-	_he->tag = he->tag;
-	_he->t = RPM_STRING_TYPE;
-	_he->p.str = he->p.argv[element];
-	_he->c = 1;
-
-	if (tag->fmt) {
-	    /* XXX HACK: he->freeData for element index. */
-	    _he->freeData = -1;
-	    val = tag->fmt(_he, buf, tag->pad);
-	}
-
-	if (val) {
-	    need = strlen(val);
-	} else {
-	    need = strlen(_he->p.str) + tag->pad + 20;
-	    val = xmalloc(need+1);
-	    strcat(buf, "s");
-	    /*@-formatconst@*/
-	    sprintf(val, buf, _he->p.str);
-	    /*@=formatconst@*/
-	}
-
-    }	break;
-
+	vhe->p.str = he->p.argv[element];
+	vhe->t = RPM_STRING_TYPE;
+	vhe->c = he->c;
+	vhe->ix = -1;
+	if (tag->fmt)
+	    val = tag->fmt(vhe, buf, tag->pad);
+	else
+	    val = intFormat(vhe, buf, tag->pad, "s");
+assert(val);
+	if (val)
+	    need = tag->pad + strlen(val) + 1;
+	break;
     case RPM_STRING_TYPE:
-	if (tag->fmt) {
-	    /* XXX HACK: he->freeData for element index. */
-	    he->freeData = -1;
-	    val = tag->fmt(he, buf, tag->pad);
-	}
-
-	if (val) {
-	    need = strlen(val);
-	} else {
-	    need = strlen(he->p.str) + tag->pad + 20;
-	    val = xmalloc(need+1);
-	    strcat(buf, "s");
-	    /*@-formatconst@*/
-	    sprintf(val, buf, he->p.str);
-	    /*@=formatconst@*/
-	}
+	vhe->p.str = he->p.str;
+	vhe->t = RPM_STRING_TYPE;
+	vhe->c = he->c;
+	vhe->ix = -1;
+	if (tag->fmt)
+	    val = tag->fmt(vhe, buf, tag->pad);
+	else
+	    val = intFormat(vhe, buf, tag->pad, "s");
+assert(val);
+	if (val)
+	    need = tag->pad + strlen(val) + 1;
 	break;
 
     case RPM_CHAR_TYPE:
@@ -3533,28 +3539,50 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
     case RPM_INT16_TYPE:
     case RPM_INT32_TYPE:
     case RPM_INT64_TYPE:
-	/* XXX HACK: he->freeData for element index. */
-	he->freeData = (he->c > 1 ? element : -1);
+	switch (he->t) {
+	default:
+assert(0);
+	    break;
+	case RPM_CHAR_TYPE:	
+	case RPM_INT8_TYPE:
+	    ival = he->p.i8p[element];
+	    break;
+	case RPM_INT16_TYPE:
+	    ival = he->p.ui16p[element];	/* XXX note unsigned. */
+	    break;
+	case RPM_INT32_TYPE:
+	    ival = he->p.i32p[element];
+	    break;
+	case RPM_INT64_TYPE:
+	    ival = he->p.i64p[element];
+	    break;
+	}
+	vhe->t = RPM_INT64_TYPE;
+	vhe->p.i64p = &ival;
+	vhe->c = he->c;
+	vhe->ix = (he->c > 1 ? 0 : -1);
+
 	if (tag->fmt)
-	    val = tag->fmt(he, buf, tag->pad);
+	    val = tag->fmt(vhe, buf, tag->pad);
 	else
-	    val = decFormat(he, buf, tag->pad);
+	    val = intFormat(vhe, buf, tag->pad, "d");
 assert(val);
 	if (val)
-	    need = strlen(val);
+	    need = tag->pad + strlen(val) + 1;
 	break;
 
     case RPM_OPENPGP_TYPE:	/* XXX W2DO? */
     case RPM_ASN1_TYPE:		/* XXX W2DO? */
     case RPM_BIN_TYPE:
-	if (tag->fmt) {
-	    /* XXX HACK: he->freeData for element index. */
-	    he->freeData = -1;
+	vhe->t = RPM_BIN_TYPE;
+	vhe->p.ptr = he->p.ptr;
+	vhe->c = he->c;
+	vhe->ix = -1;
+	if (tag->fmt)
 	    val = tag->fmt(he, buf, tag->pad);
-	}
 
 	if (val) {
-	    need = strlen(val);
+	    need = tag->pad + strlen(val) + 1;
 	} else {
 #ifdef	NOTYET
 	    val = memcpy(xmalloc(he->c), he->p.ptr, he->c);
@@ -3576,10 +3604,6 @@ assert(val);
 	}
 	break;
 
-    default:
-	need = sizeof("(unknown type)") - 1;
-	val = xstrdup("(unknown type)");
-	break;
     }
 
 /*@-modobserver -observertrans@*/
@@ -3864,7 +3888,6 @@ char * headerSprintf(Header h, const char * fmt,
 	/*@requires maxSet(errmsg) >= 0 @*/
 {
     headerSprintfArgs hsa = memset(alloca(sizeof(*hsa)), 0, sizeof(*hsa));
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     sprintfToken nextfmt;
     sprintfTag tag;
     char * t, * te;
@@ -3873,7 +3896,6 @@ char * headerSprintf(Header h, const char * fmt,
     int need;
  
     hsa->h = headerLink(h);
-    hsa->he = he;
     hsa->fmt = xstrdup(fmt);
 /*@-castexpose@*/	/* FIX: legacy API shouldn't change. */
     hsa->exts = (headerSprintfExtension) extensions;

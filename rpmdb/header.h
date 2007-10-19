@@ -181,6 +181,7 @@ struct _HE_s {
     rpmTagData p;
     rpmTagCount c;
     int freeData;
+    int ix;
 };
 typedef struct _HE_s HE_s;
 #endif

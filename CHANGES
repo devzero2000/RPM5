@@ -1,4 +1,10 @@
 4.5 -> 5.0:
+    - jbj: hmmm, --yaml is b0rken atm, todo++;
+    - jbj: add assert's to control tag container values.
+    - jbj: teach formatValue() to create an element tag container.
+    - jbj: change the common integer format from int_32 to int_64 everywhere.
+    - jbj: teach intFormat() to handle strings.
+    - jbj: add he->ix, eliminate the less egregious he->freeData overload hack.
     - jbj: remove useless HE_t indirection with (*he->p).ptr, he->p.ptr instead.
     - jbj: fix several indirection problems.
     - jbj: eliminate data arg in (*headerTagFormatFunction).
