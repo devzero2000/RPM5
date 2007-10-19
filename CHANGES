@@ -1,4 +1,6 @@
 4.5 -> 5.0:
+    - jbj: eliminate padding & formatPrefix, strings is strings now.
+    - jbj: bury hex dump in intFormat defaults, refactor common code.
     - jbj: hmmm, --yaml is b0rken atm, todo++;
     - jbj: add assert's to control tag container values.
     - jbj: teach formatValue() to create an element tag container.

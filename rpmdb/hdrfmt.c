@@ -71,12 +71,9 @@ static char * rpmPermsString(int mode)
 /**
  * Identify type of trigger.
  * @param he		tag container
- * @param formatPrefix	(unused)
- * @param padding	(unused)
  * @return		formatted string
  */
-static /*@only@*/ char * triggertypeFormat(HE_t he,
-		/*@unused@*/ char * formatPrefix, /*@unused@*/ int padding)
+static /*@only@*/ char * triggertypeFormat(HE_t he)
 {
     rpmTagData data = { .ptr = he->p.ptr };
     int ix = (he->ix > 0 ? he->ix : 0);
@@ -104,31 +101,19 @@ assert(ix == 0);
 /**
  * Format file permissions for display.
  * @param he		tag container
- * @param formatPrefix
- * @param padding
  * @return		formatted string
  */
-static /*@only@*/ char * permsFormat(HE_t he,
-		char * formatPrefix, int padding)
-	/*@modifies formatPrefix @*/
-	/*@requires maxRead(data) >= 0 @*/
+static /*@only@*/ char * permsFormat(HE_t he)
 {
     int ix = (he->ix > 0 ? he->ix : 0);
     char * val;
-    char * buf;
 
 assert(ix == 0);
     if (he->t != RPM_INT64_TYPE) {
 	val = xstrdup(_("(invalid type)"));
     } else {
 	int_32 anint = he->p.i64p[0];
-	val = xmalloc(15 + padding);
-	strcat(formatPrefix, "s");
-	buf = rpmPermsString(anint);
-	/*@-formatconst@*/
-	sprintf(val, formatPrefix, buf);
-	/*@=formatconst@*/
-	buf = _free(buf);
+	val = rpmPermsString(anint);
     }
 
     return val;
@@ -137,24 +122,19 @@ assert(ix == 0);
 /**
  * Format file flags for display.
  * @param he		tag container
- * @param formatPrefix
- * @param padding
  * @return		formatted string
  */
-static /*@only@*/ char * fflagsFormat(HE_t he,
-		char * formatPrefix, int padding)
-	/*@modifies formatPrefix @*/
-	/*@requires maxRead(data) >= 0 @*/
+static /*@only@*/ char * fflagsFormat(HE_t he)
 {
     rpmTagData data = { .ptr = he->p.ptr };
     int ix = (he->ix >= 0 ? he->ix : 0);
     char * val;
-    char buf[15];
 
 assert(ix == 0);
     if (he->t != RPM_INT64_TYPE) {
 	val = xstrdup(_("(invalid type)"));
     } else {
+	char buf[15];
 	unsigned anint = data.i64p[ix];
 	buf[0] = '\0';
 	if (anint & RPMFILE_DOC)
@@ -173,12 +153,7 @@ assert(ix == 0);
 	    strcat(buf, "l");
 	if (anint & RPMFILE_README)
 	    strcat(buf, "r");
-
-	val = xmalloc(5 + padding);
-	strcat(formatPrefix, "s");
-	/*@-formatconst@*/
-	sprintf(val, formatPrefix, buf);
-	/*@=formatconst@*/
+	val = xstrdup(buf);
     }
 
     return val;
@@ -188,12 +163,9 @@ assert(ix == 0);
  * Wrap a pubkey in ascii armor for display.
  * @todo Permit selectable display formats (i.e. binary).
  * @param he		tag container
- * @param formatPrefix	(unused)
- * @param padding	(unused)
  * @return		formatted string
  */
-static /*@only@*/ char * armorFormat(HE_t he,
-		/*@unused@*/ char * formatPrefix, /*@unused@*/ int padding)
+static /*@only@*/ char * armorFormat(HE_t he)
 	/*@*/
 {
     rpmTagData data = { .ptr = he->p.ptr };
@@ -236,7 +208,6 @@ assert(ix == 0);
 	/*@notreached@*/ break;
     }
 
-    /* XXX this doesn't use padding directly, assumes enough slop in retval. */
     val = pgpArmorWrap(atype, s, ns);
     if (atype == PGPARMOR_PUBKEY)
 	s = _free(s);
@@ -247,12 +218,9 @@ assert(ix == 0);
  * Encode binary data in base64 for display.
  * @todo Permit selectable display formats (i.e. binary).
  * @param he		tag container
- * @param formatPrefix	(unused)
- * @param padding
  * @return		formatted string
  */
-static /*@only@*/ char * base64Format(HE_t he,
-		/*@unused@*/ char * formatPrefix, int padding)
+static /*@only@*/ char * base64Format(HE_t he)
 	/*@*/
 {
     rpmTagData data = { .ptr = he->p.ptr };
@@ -279,7 +247,7 @@ assert(ix == 0);
 	}
 	/*@=globs@*/
 
-	val = t = xcalloc(1, nt + padding + 1);
+	val = t = xcalloc(1, nt + 1);
 	*t = '\0';
 
     /* XXX b64encode accesses uninitialized memory. */
@@ -350,13 +318,10 @@ static char * xmlstrcpy(/*@returned@*/ char * t, const char * s)
 /**
  * Wrap tag data in simple header xml markup.
  * @param he		tag container
- * @param formatPrefix
- * @param padding
  * @return		formatted string
  */
-static /*@only@*/ char * xmlFormat(HE_t he,
-		char * formatPrefix, int padding)
-	/*@modifies formatPrefix @*/
+static /*@only@*/ char * xmlFormat(HE_t he)
+	/*@*/
 {
     rpmTagData data = { .ptr = he->p.ptr };
     int ix = (he->ix > 0 ? he->ix : 0);
@@ -396,7 +361,7 @@ assert(he->t == RPM_STRING_TYPE || he->t == RPM_INT64_TYPE || he->t == RPM_BIN_T
     {	int cpl = b64encode_chars_per_line;
 	b64encode_chars_per_line = 0;
 /*@-formatconst@*/
-	s = base64Format(he, formatPrefix, padding);
+	s = base64Format(he);
 /*@=formatconst@*/
 	b64encode_chars_per_line = cpl;
 	xtag = "base64";
@@ -450,13 +415,7 @@ assert(he->t == RPM_STRING_TYPE || he->t == RPM_INT64_TYPE || he->t == RPM_BIN_T
     if (freeit)
 	s = _free(s);
 
-    nb += padding;
-    val = xmalloc(nb+1);
-    strcat(formatPrefix, "s");
-/*@-formatconst@*/
-    xx = snprintf(val, nb, formatPrefix, t);
-/*@=formatconst@*/
-    val[nb] = '\0';
+    val = xstrdup(t);
 
     return val;
 }
@@ -521,13 +480,10 @@ static char * yamlstrcpy(/*@out@*/ /*@returned@*/ char * t, const char * s, int 
 /**
  * Wrap tag data in simple header yaml markup.
  * @param he		tag container
- * @param formatPrefix
- * @param padding
  * @return		formatted string
  */
-static /*@only@*/ char * yamlFormat(HE_t he,
-		char * formatPrefix, int padding)
-	/*@modifies formatPrefix @*/
+static /*@only@*/ char * yamlFormat(HE_t he)
+	/*@*/
 {
     rpmTagData data = { .ptr = he->p.ptr };
     int element = he->ix;
@@ -595,7 +551,7 @@ assert(he->t == RPM_STRING_TYPE || he->t == RPM_INT64_TYPE || he->t == RPM_BIN_T
     {	int cpl = b64encode_chars_per_line;
 	b64encode_chars_per_line = 0;
 /*@-formatconst@*/
-	s = base64Format(he, formatPrefix, padding);
+	s = base64Format(he);
 	element = -element; 	/* XXX skip "    " indent. */
 /*@=formatconst@*/
 	b64encode_chars_per_line = cpl;
@@ -665,13 +621,7 @@ assert(he->t == RPM_STRING_TYPE || he->t == RPM_INT64_TYPE || he->t == RPM_BIN_T
     if (freeit)
 	s = _free(s);
 
-    nb += padding;
-    val = xmalloc(nb+1);
-    strcat(formatPrefix, "s");
-/*@-formatconst@*/
-    xx = snprintf(val, nb, formatPrefix, t);
-/*@=formatconst@*/
-    val[nb] = '\0';
+    val = xstrdup(t);
 
     return val;
 }
@@ -679,12 +629,9 @@ assert(he->t == RPM_STRING_TYPE || he->t == RPM_INT64_TYPE || he->t == RPM_BIN_T
 /**
  * Display signature fingerprint and time.
  * @param he		tag container
- * @param formatPrefix	(unused)
- * @param padding
  * @return		formatted string
  */
-static /*@only@*/ char * pgpsigFormat(HE_t he,
-		/*@unused@*/ char * formatPrefix, /*@unused@*/ int padding)
+static /*@only@*/ char * pgpsigFormat(HE_t he)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/
 {
@@ -788,14 +735,10 @@ assert(ix == 0);
 /**
  * Format dependency flags for display.
  * @param he		tag container
- * @param formatPrefix
- * @param padding
  * @return		formatted string
  */
-static /*@only@*/ char * depflagsFormat(HE_t he,
-		char * formatPrefix, int padding)
-	/*@modifies formatPrefix @*/
-	/*@requires maxRead(data) >= 0 @*/
+static /*@only@*/ char * depflagsFormat(HE_t he)
+	/*@*/
 {
     rpmTagData data = { .ptr = he->p.ptr };
     int ix = (he->ix > 0 ? he->ix : 0);;
@@ -814,11 +757,11 @@ assert(ix == 0);
 #ifdef	NOTYET	/* XXX appending markers breaks :depflags format. */
 	if (anint & RPMSENSE_SCRIPT_PRE)
 	    t = stpcpy(t, "(pre)");
-	if (anint & RPMSENSE_SCRIPT_POST)
+	else if (anint & RPMSENSE_SCRIPT_POST)
 	    t = stpcpy(t, "(post)");
-	if (anint & RPMSENSE_SCRIPT_PREUN)
+	else if (anint & RPMSENSE_SCRIPT_PREUN)
 	    t = stpcpy(t, "(preun)");
-	if (anint & RPMSENSE_SCRIPT_POSTUN)
+	else if (anint & RPMSENSE_SCRIPT_POSTUN)
 	    t = stpcpy(t, "(postun)");
 #endif
 	if (anint & RPMSENSE_SENSEMASK)
@@ -833,11 +776,7 @@ assert(ix == 0);
 	    *t++ = ' ';
 	*t = '\0';
 
-	val = xmalloc(5 + padding);
-	strcat(formatPrefix, "s");
-	/*@-formatconst@*/
-	sprintf(val, formatPrefix, buf);
-	/*@=formatconst@*/
+	val = xstrdup(buf);
     }
 
     return val;
@@ -892,7 +831,6 @@ static int triggercondsTag(Header h, HE_t he)
     char * item, * flagsStr;
     char * chptr;
     int i, j, xx;
-    char buf[5];
 
     he->freeData = 0;
     xx = headerGetEntry(h, RPMTAG_TRIGGERNAME, NULL, &names, &numNames);
@@ -924,9 +862,8 @@ static int triggercondsTag(Header h, HE_t he)
 
 	    item = xmalloc(strlen(names.argv[j]) + strlen(versions.argv[j]) + 20);
 	    if (flags.i32p[j] & RPMSENSE_SENSEMASK) {
-		buf[0] = '%', buf[1] = '\0';
 		_he->p.i32p = &flags.i32p[j];
-		flagsStr = depflagsFormat(_he, buf, 0);
+		flagsStr = depflagsFormat(_he);
 		sprintf(item, "%s %s %s", names.argv[j], flagsStr, versions.argv[j]);
 		flagsStr = _free(flagsStr);
 	    } else

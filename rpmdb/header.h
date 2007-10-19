@@ -245,13 +245,10 @@ enum headerSprintfExtensionType {
  * HEADER_EXT_TAG format function prototype.
  *
  * @param he		tag container
- * @param formatPrefix
- * @param padding
  * @return		formatted string
  */
-typedef /*only@*/ char * (*headerTagFormatFunction)(HE_t he,
-				char * formatPrefix, int padding)
-	/*@requires maxSet(data) >= 0 @*/;
+typedef /*only@*/ char * (*headerTagFormatFunction)(HE_t he)
+	/*@modifies he @*/;
 
 /** \ingroup header
  * HEADER_EXT_FORMAT format function prototype.
