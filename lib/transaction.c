@@ -101,9 +101,7 @@ static int handleInstInstalledFiles(const rpmts ts,
 	/*@modifies ts, p, fi, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     HGE_t hge = (HGE_t)headerGetExtension;
-    rpmTagData he_p = { .ptr = NULL };
-    HE_s he_s = { .tag = 0, .t = 0, .p = &he_p, .c = 0, .freeData = 0 };
-    HE_t he = &he_s;
+    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     const char * altNVRA = NULL;
     uint_32 tscolor = rpmtsColor(ts);
     uint_32 prefcolor = rpmtsPrefColor(ts);
@@ -124,8 +122,8 @@ static int handleInstInstalledFiles(const rpmts ts,
 	while ((h = rpmdbNextIterator(mi)) != NULL) {
 	    he->tag = RPMTAG_NVRA;
 	    xx = hge(h, he, 0);
-assert(he_p.str != NULL);
-	    altNVRA = he_p.str;
+assert(he->p.str != NULL);
+	    altNVRA = he->p.str;
 	    otherFi = rpmfiNew(ts, h, RPMTAG_BASENAMES, scareMem);
 	    break;
 	}
@@ -249,9 +247,7 @@ static int handleRmvdInstalledFiles(const rpmts ts, rpmfi fi,
 	/*@modifies ts, fi, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     HGE_t hge = (HGE_t)headerGetExtension;
-    rpmTagData he_p = { .ptr = NULL };
-    HE_s he_s = { .tag = 0, .t = 0, .p = &he_p, .c = 0, .freeData = 0 };
-    HE_t he = &he_s;
+    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     Header h;
     const unsigned char * otherStates;
     int i, xx;
@@ -268,7 +264,7 @@ static int handleRmvdInstalledFiles(const rpmts ts, rpmfi fi,
 
     he->tag = RPMTAG_FILESTATES;
     xx = hge(h, he, 0);
-    otherStates = he_p.ptr;
+    otherStates = he->p.ptr;
 
     /* XXX there's an obscure segfault here w/o NULL check ... */
     if (otherStates != NULL)
@@ -282,7 +278,7 @@ static int handleRmvdInstalledFiles(const rpmts ts, rpmfi fi,
 
 	fi->actions[fileNum] = FA_SKIP;
     }
-    he_p.ptr = _free(he_p.ptr);
+    he->p.ptr = _free(he->p.ptr);
     mi = rpmdbFreeIterator(mi);
 
     return 0;
@@ -615,9 +611,7 @@ static int ensureOlder(rpmts ts,
 	/*@modifies ts @*/
 {
     HGE_t hge = (HGE_t)headerGetExtension;
-    rpmTagData he_p = { .ptr = NULL };
-    HE_s he_s = { .tag = 0, .t = 0, .p = &he_p, .c = 0, .freeData = 0 };
-    HE_t he = &he_s;
+    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     int_32 reqFlags = (RPMSENSE_LESS | RPMSENSE_EQUAL);
     const char * reqEVR;
     rpmds req;
@@ -645,13 +639,13 @@ static int ensureOlder(rpmts ts,
 	rpmps ps = rpmtsProblems(ts);
 	he->tag = RPMTAG_NVRA;
 	rc = hge(h, he, 0);
-assert(he_p.str != NULL);
+assert(he->p.str != NULL);
 	rpmpsAppend(ps, RPMPROB_OLDPACKAGE,
 		rpmteNEVR(p), rpmteKey(p),
 		NULL, NULL,
-		he_p.str,
+		he->p.str,
 		0);
-	he_p.ptr = _free(he_p.ptr);
+	he->p.ptr = _free(he->p.ptr);
 	ps = rpmpsFree(ps);
 	rc = 1;
     } else

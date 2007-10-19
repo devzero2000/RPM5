@@ -173,21 +173,19 @@ static void expandFilelist(Header h)
         /*@modifies h @*/
 {
     HGE_t hge = (HGE_t)headerGetExtension;
-    rpmTagData he_p = { .ptr = NULL };
-    HE_s he_s = { .tag = 0, .t = 0, .p = &he_p, .c = 0, .freeData = 0 };
-    HE_t he = &he_s;
     HAE_t hae = (HAE_t)headerAddEntry;
     HRE_t hre = (HRE_t)headerRemoveEntry;
+    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     int xx;
 
     /*@-branchstate@*/
     if (!headerIsEntry(h, RPMTAG_OLDFILENAMES)) {
 	he->tag = RPMTAG_FILEPATHS;
 	xx = hge(h, he, 0);
-	if (he_p.ptr == NULL || he->c <= 0)
+	if (he->p.ptr == NULL || he->c <= 0)
 	    return;
-	xx = hae(h, RPMTAG_OLDFILENAMES, he->t, he_p.ptr, he->c);
-	he_p.ptr = _free(he_p.ptr);
+	xx = hae(h, RPMTAG_OLDFILENAMES, he->t, he->p, he->c);
+	he->p.ptr = _free(he->p.ptr);
     }
     /*@=branchstate@*/
 
@@ -205,11 +203,9 @@ static void compressFilelist(Header h)
 	/*@modifies h @*/
 {
     HGE_t hge = (HGE_t)headerGetExtension;
-    rpmTagData he_p = { .ptr = NULL };
-    HE_s he_s = { .tag = 0, .t = 0, .p = &he_p, .c = 0, .freeData = 0 };
-    HE_t he = &he_s;
     HAE_t hae = (HAE_t)headerAddEntry;
     HRE_t hre = (HRE_t)headerRemoveEntry;
+    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     const char ** fileNames;
     const char ** dirNames;
     const char ** baseNames;
@@ -232,7 +228,7 @@ static void compressFilelist(Header h)
 
     he->tag = RPMTAG_OLDFILENAMES;
     xx = hge(h, he, 0);
-    fileNames = he_p.argv;
+    fileNames = he->p.argv;
     count = he->c;
     if (!xx || fileNames == NULL || count <= 0)
 	return;		/* no file list */
@@ -305,9 +301,7 @@ static void mungeFilelist(Header h)
 	/*@*/
 {
     HGE_t hge = (HGE_t)headerGetExtension;
-    rpmTagData he_p = { .ptr = NULL };
-    HE_s he_s = { .tag = 0, .t = 0, .p = &he_p, .c = 0, .freeData = 0 };
-    HE_t he = &he_s;
+    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     int xx;
 
     if (!headerIsEntry (h, RPMTAG_BASENAMES)
@@ -318,13 +312,13 @@ static void mungeFilelist(Header h)
     he->tag = RPMTAG_FILEPATHS;
     xx = hge(h, he, 0);
 
-    if (he_p.ptr == NULL || he->c <= 0)
+    if (he->p.ptr == NULL || he->c <= 0)
 	return;
 
     /* XXX Legacy tag needs to go away. */
-    headerAddEntry(h, RPMTAG_OLDFILENAMES, he->t, he_p.ptr, he->c);
+    headerAddEntry(h, RPMTAG_OLDFILENAMES, he->t, he->p.ptr, he->c);
 
-    he_p.ptr = _free(he_p.ptr);
+    he->p.ptr = _free(he->p.ptr);
 }
 #endif	/* SUPPORT_RPMV3_BASENAMES_HACKS */
 
@@ -337,9 +331,7 @@ static void mungeFilelist(Header h)
 static void providePackageNVR(Header h)
 {
     HGE_t hge = (HGE_t)headerGetExtension;
-    rpmTagData he_p = { .ptr = NULL };
-    HE_s he_s = { .tag = 0, .t = 0, .p = &he_p, .c = 0, .freeData = 0 };
-    HE_t he = &he_s;
+    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     const char *N, *V, *R;
     int_32 E;
     int gotE;
@@ -361,8 +353,8 @@ static void providePackageNVR(Header h)
     *p = '\0';
     he->tag = RPMTAG_EPOCH;
     gotE = hge(h, he, 0);
-    E = (he_p.i32p ? *he_p.i32p : 0);
-    he_p.ptr = _free(he_p.ptr);
+    E = (he->p.i32p ? *he->p.i32p : 0);
+    he->p.ptr = _free(he->p.ptr);
     if (gotE) {
 	sprintf(p, "%d:", E);
 	p += strlen(p);
@@ -375,7 +367,7 @@ static void providePackageNVR(Header h)
      */
     he->tag = RPMTAG_PROVIDENAME;
     xx = hge(h, he, 0);
-    provides = he_p.argv;
+    provides = he->p.argv;
     providesCount = he->c;
     if (!xx)
 	goto exit;
@@ -385,7 +377,7 @@ static void providePackageNVR(Header h)
      */
     he->tag = RPMTAG_PROVIDEVERSION;
     xx = hge(h, he, 0);
-    providesEVR = he_p.argv;
+    providesEVR = he->p.argv;
     if (!xx) {
 	for (i = 0; i < providesCount; i++) {
 	    char * vdummy = "";
@@ -400,7 +392,7 @@ static void providePackageNVR(Header h)
 
     he->tag = RPMTAG_PROVIDEFLAGS;
     xx = hge(h, he, 0);
-    provideFlags = he_p.i32p;
+    provideFlags = he->p.i32p;
 
     /*@-nullderef@*/	/* LCL: providesEVR is not NULL */
     if (provides && providesEVR && provideFlags)
@@ -700,13 +692,11 @@ long tagNumFromPyObject (PyObject *item)
  * @return		0 on success, 1 on bad magic, 2 on error
  */
 static int rpmHeaderGetEntry(Header h, rpmTag tag, /*@out@*/ rpmTagType *type,
-		/*@out@*/ void **p, /*@out@*/ rpmTagCount *c)
+		/*@out@*/ rpmTagData *p, /*@out@*/ rpmTagCount *c)
 	/*@modifies *type, *p, *c @*/
 {
     HGE_t hge = (HGE_t)headerGetExtension;
-    rpmTagData he_p = { .ptr = NULL };
-    HE_s he_s = { .tag = 0, .t = 0, .p = &he_p, .c = 0, .freeData = 0 };
-    HE_t he = &he_s;
+    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     int xx;
 
     switch (tag) {
@@ -715,9 +705,9 @@ static int rpmHeaderGetEntry(Header h, rpmTag tag, /*@out@*/ rpmTagType *type,
 	he->tag = RPMTAG_FILEPATHS;
 	xx = hge(h, he, 0);
 	if (p)
-	    *p = he_p.ptr;
+	    (*p).ptr = he->p.ptr;
 	else
-	    he_p.ptr = _free(he_p.ptr);
+	    he->p.ptr = _free(he->p.ptr);
 	if (c)	*c = he->c;
 	if (type)	*type = he->t;
 	return (he->c > 0 ? 1 : 0);
@@ -736,7 +726,11 @@ static int rpmHeaderGetEntry(Header h, rpmTag tag, /*@out@*/ rpmTagType *type,
 	/* XXX FIXME: memory leak. */
         msgstr = headerSprintf(h, fmt, rpmTagTable, rpmHeaderFormats, &errstr);
 	if (msgstr) {
-	    *p = (void *) msgstr;
+	    if (p)
+		(*p).str = msgstr;
+	    else
+		msgstr = _free(msgstr);
+
 	    if (type)	*type = RPM_STRING_TYPE;
 	    if (c)	*c = 1;
 	    return 1;
@@ -758,14 +752,11 @@ static int rpmHeaderGetEntry(Header h, rpmTag tag, /*@out@*/ rpmTagType *type,
 static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
 	/*@*/
 {
-    rpmTagData he_p = { .ptr = NULL };
-    HE_s he_s = { .tag = 0, .t = 0, .p = &he_p, .c = 0, .freeData = 0 };
-    HE_t he = &he_s;
+    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     int_32 tag = -1;
-    void * data;
+    rpmTagData data;
     int i;
     PyObject * o, * metao;
-    char ** stringArray;
     int forceArray = 0;
     int freeData = 0;
     char * str;
@@ -793,8 +784,8 @@ static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
 
     /* Retrieve data from extension or header. */
     if (ext) {
-	he->p = (hRET_t *)&data;	/* NOCAST */
         ext->u.tagFunction(s->h, he);
+	data.ptr = he->p.ptr;
 	freeData = he->freeData;
     } else {
         if (tag == -1) {
@@ -866,34 +857,7 @@ static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
     case RPM_OPENPGP_TYPE:
     case RPM_ASN1_TYPE:
     case RPM_BIN_TYPE:
-	o = PyString_FromStringAndSize(data, he->c);
-	break;
-
-    case RPM_INT64_TYPE:
-	if (he->c != 1 || forceArray) {
-	    metao = PyList_New(0);
-	    for (i = 0; i < he->c; i++) {
-		o = PyInt_FromLong(((long long *) data)[i]);
-		PyList_Append(metao, o);
-		Py_DECREF(o);
-	    }
-	    o = metao;
-	} else {
-	    o = PyInt_FromLong(*((long long *) data));
-	}
-	break;
-    case RPM_INT32_TYPE:
-	if (he->c != 1 || forceArray) {
-	    metao = PyList_New(0);
-	    for (i = 0; i < he->c; i++) {
-		o = PyInt_FromLong(((int *) data)[i]);
-		PyList_Append(metao, o);
-		Py_DECREF(o);
-	    }
-	    o = metao;
-	} else {
-	    o = PyInt_FromLong(*((int *) data));
-	}
+	o = PyString_FromStringAndSize(data.str, he->c);
 	break;
 
     case RPM_CHAR_TYPE:
@@ -901,13 +865,13 @@ static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
 	if (he->c != 1 || forceArray) {
 	    metao = PyList_New(0);
 	    for (i = 0; i < he->c; i++) {
-		o = PyInt_FromLong(((char *) data)[i]);
+		o = PyInt_FromLong(data.i8p[i]);
 		PyList_Append(metao, o);
 		Py_DECREF(o);
 	    }
 	    o = metao;
 	} else {
-	    o = PyInt_FromLong(*((char *) data));
+	    o = PyInt_FromLong(data.i8p[0]);
 	}
 	break;
 
@@ -915,44 +879,68 @@ static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
 	if (he->c != 1 || forceArray) {
 	    metao = PyList_New(0);
 	    for (i = 0; i < he->c; i++) {
-		o = PyInt_FromLong(((short *) data)[i]);
+		o = PyInt_FromLong(data.i16p[i]);
 		PyList_Append(metao, o);
 		Py_DECREF(o);
 	    }
 	    o = metao;
 	} else {
-	    o = PyInt_FromLong(*((short *) data));
+	    o = PyInt_FromLong(data.i16p[0]);
+	}
+	break;
+
+    case RPM_INT32_TYPE:
+	if (he->c != 1 || forceArray) {
+	    metao = PyList_New(0);
+	    for (i = 0; i < he->c; i++) {
+		o = PyInt_FromLong(data.i32p[i]);
+		PyList_Append(metao, o);
+		Py_DECREF(o);
+	    }
+	    o = metao;
+	} else {
+	    o = PyInt_FromLong(data.i32p[0]);
+	}
+	break;
+
+    case RPM_INT64_TYPE:
+	if (he->c != 1 || forceArray) {
+	    metao = PyList_New(0);
+	    for (i = 0; i < he->c; i++) {
+		o = PyInt_FromLong(data.i64p[i]);
+		PyList_Append(metao, o);
+		Py_DECREF(o);
+	    }
+	    o = metao;
+	} else {
+	    o = PyInt_FromLong(data.i64p[0]);
 	}
 	break;
 
     case RPM_STRING_ARRAY_TYPE:
-	stringArray = data;
-
 	metao = PyList_New(0);
 	for (i = 0; i < he->c; i++) {
-	    o = PyString_FromString(stringArray[i]);
+	    o = PyString_FromString(data.argv[i]);
 	    PyList_Append(metao, o);
 	    Py_DECREF(o);
 	}
-	free (stringArray);
 	o = metao;
+	data.ptr = _free(data.ptr);
 	break;
 
     case RPM_STRING_TYPE:
 	if (he->c != 1 || forceArray) {
-	    stringArray = data;
-
 	    metao = PyList_New(0);
 	    for (i=0; i < he->c; i++) {
-		o = PyString_FromString(stringArray[i]);
+		o = PyString_FromString(data.argv[i]);
 		PyList_Append(metao, o);
 		Py_DECREF(o);
 	    }
 	    o = metao;
 	} else {
-	    o = PyString_FromString(data);
+	    o = PyString_FromString(data.argv[0]);
 	    if (freeData)
-		free (data);
+		data.ptr = _free(data.ptr);
 	}
 	break;
 

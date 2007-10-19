@@ -106,9 +106,7 @@ static int ftsCachePrint(/*@unused@*/ rpmts ts, FILE * fp)
 static int ftsCacheUpdate(rpmts ts)
 {
     HGE_t hge = (HGE_t)headerGetExtension;
-    hRET_t he_p = { .ptr = NULL };
-    HE_s he_s = { .tag = 0, .t = 0, .p = &he_p, .c = 0, .freeData = 0 };
-    HE_t he = &he_s;
+    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     int_32 tid = rpmtsGetTid(ts);
     rpmdbMatchIterator mi;
     unsigned char * md5;
@@ -134,7 +132,7 @@ static int ftsCacheUpdate(rpmts ts)
 	/* --- Check that identical package is not already cached. */
 	he->tag = RPMTAG_SIGMD5;
 	xx = hge(ip->h, he, 0);
-	md5 = he_p.ui8p;
+	md5 = he->p.ui8p;
  	if (!xx || md5 == NULL) {
 	    md5 = _free(md5);
 	    rc = 1;

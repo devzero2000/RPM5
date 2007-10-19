@@ -176,11 +176,9 @@ typedef rpmTagCount *	hCNT_t;
 #if !defined(SWIG)
 struct _HE_s {
     int_32 tag;
-/*@null@*/
     rpmTagType t;
 /*@null@*/
-    hRET_t * p;
-/*@null@*/
+    rpmTagData p;
     rpmTagCount c;
     int freeData;
 };

@@ -264,7 +264,7 @@ int headerGetExtension(Header h, HE_t he, /*@unused@*/ unsigned int flags)
 	/*@modifies *he @*/
 {
     if (h == NULL) return 0;
-    return (h2hv(h)->hdrext) (h, he->tag, &he->t, he->p, &he->c);
+    return (h2hv(h)->hdrext) (h, he->tag, &he->t, &he->p, &he->c);
 }
 
 /** \ingroup header

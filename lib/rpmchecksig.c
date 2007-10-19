@@ -143,23 +143,21 @@ static int getSignid(Header sigh, int sigtag, unsigned char * signid)
 	/*@modifies *signid, fileSystem, internalState @*/
 {
     HGE_t hge = (HGE_t)headerGetExtension;
-    rpmTagData he_p = { .ptr = NULL };
-    HE_s he_s = { .tag = 0, .t = 0, .p = &he_p, .c = 0, .freeData = 0 };
-    HE_t he = &he_s;
+    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     int rc = 1;
     int xx;
 
     he->tag = sigtag;
     xx = hge(sigh, he, 0);
-    if (xx && he_p.ptr != NULL) {
+    if (xx && he->p.ptr != NULL) {
 	pgpDig dig = pgpNewDig(0);
 
-	if (!pgpPrtPkts(he_p.ptr, he->c, dig, 0)) {
+	if (!pgpPrtPkts(he->p.ptr, he->c, dig, 0)) {
 	    memcpy(signid, dig->signature.signid, sizeof(dig->signature.signid));
 	    rc = 0;
 	}
      
-	he_p.ptr = _free(he_p.ptr);
+	he->p.ptr = _free(he->p.ptr);
 	dig = pgpFreeDig(dig);
     }
     return rc;
@@ -180,9 +178,7 @@ static int rpmReSign(/*@unused@*/ rpmts ts,
                 fileSystem, internalState @*/
 {
     HGE_t hge = (HGE_t)headerGetExtension;
-    rpmTagData he_p = { .ptr = NULL };
-    HE_s he_s = { .tag = 0, .t = 0, .p = &he_p, .c = 0, .freeData = 0 };
-    HE_t he = &he_s;
+    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     rpmgi gi = NULL;
     FD_t fd = NULL;
     FD_t ofd = NULL;
@@ -279,11 +275,11 @@ if (!_nosigh) {
 
 	    nh = headerNew();
 	    if (nh == NULL) {
-		he_p.ptr = _free(he_p.ptr);
+		he->p.ptr = _free(he->p.ptr);
 		goto exit;
 	    }
 
-	    oh = headerCopyLoad(he_p.ptr);
+	    oh = headerCopyLoad(he->p.ptr);
 	    for (hi = headerInitIterator(oh);
 		headerNextIterator(hi, &htag, &type, &ptr, &count);
 		ptr = headerFreeData(ptr, type))
@@ -673,9 +669,7 @@ static int readFile(FD_t fd, const char * fn, pgpDig dig)
 	/*@modifies fd, *dig, fileSystem, internalState @*/
 {
     HGE_t hge = (HGE_t)headerGetExtension;
-    rpmTagData he_p = { .ptr = NULL };
-    HE_s he_s = { .tag = 0, .t = 0, .p = &he_p, .c = 0, .freeData = 0 };
-    HE_t he = &he_s;
+    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     unsigned char buf[4*BUFSIZ];
     ssize_t count;
     int rc = 1;
@@ -699,7 +693,7 @@ static int readFile(FD_t fd, const char * fn, pgpDig dig)
 	
 	    he->tag = RPMTAG_HEADERIMMUTABLE;
 	    xx = hge(h, he, 0);
-	    if (!xx || he_p.ptr == NULL) {
+	    if (!xx || he->p.ptr == NULL) {
 		h = headerFree(h);
 		rpmlog(RPMLOG_ERR, _("%s: headerGetEntry failed\n"), fn);
 		goto exit;
@@ -708,12 +702,12 @@ static int readFile(FD_t fd, const char * fn, pgpDig dig)
 	    dig->hdrsha1ctx = rpmDigestInit(PGPHASHALGO_SHA1, RPMDIGEST_NONE);
 	    if (hmagic && nmagic > 0)
 		(void) rpmDigestUpdate(dig->hdrsha1ctx, hmagic, nmagic);
-	    (void) rpmDigestUpdate(dig->hdrsha1ctx, he_p.ptr, he->c);
+	    (void) rpmDigestUpdate(dig->hdrsha1ctx, he->p.ptr, he->c);
 	    dig->hdrmd5ctx = rpmDigestInit(dig->signature.hash_algo, RPMDIGEST_NONE);
 	    if (hmagic && nmagic > 0)
 		(void) rpmDigestUpdate(dig->hdrmd5ctx, hmagic, nmagic);
-	    (void) rpmDigestUpdate(dig->hdrmd5ctx, he_p.ptr, he->c);
-	    he_p.ptr = _free(he_p.ptr);
+	    (void) rpmDigestUpdate(dig->hdrmd5ctx, he->p.ptr, he->c);
+	    he->p.ptr = _free(he->p.ptr);
 	}
 	h = headerFree(h);
     }
@@ -762,9 +756,7 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 		const char * fn)
 {
     HGE_t hge = (HGE_t)headerGetExtension;
-    rpmTagData he_p = { .ptr = NULL };
-    HE_s he_s = { .tag = 0, .t = 0, .p = &he_p, .c = 0, .freeData = 0 };
-    HE_t he = &he_s;
+    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     int res2, res3;
     char result[1024];
     char buf[8192], * b;
@@ -861,8 +853,8 @@ assert(dig != NULL);
 	) {
 	    he->tag = sigtag;
 	    xx = hge(sigh, he, 0);
-	    xx = pgpPrtPkts(he_p.ptr, he->c, dig, 0);
-	    he_p.ptr = _free(he_p.ptr);
+	    xx = pgpPrtPkts(he->p.ptr, he->c, dig, 0);
+	    he->p.ptr = _free(he->p.ptr);
 #if defined(SUPPORT_RPMV3_VERIFY_RSA)
 	    /* XXX assume same hash_algo in header-only and header+payload */
 	    if ((headerIsEntry(sigh, RPMSIGTAG_PGP)

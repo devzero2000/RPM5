@@ -78,7 +78,7 @@ static char * rpmPermsString(int mode)
 static /*@only@*/ char * triggertypeFormat(HE_t he,
 		/*@unused@*/ char * formatPrefix, /*@unused@*/ int padding)
 {
-    rpmTagData data = { .ptr = (*he->p).ptr };
+    rpmTagData data = { .ptr = he->p.ptr };
     const int_32 * item = data.i32p;
     char * val;
 
@@ -109,7 +109,7 @@ static /*@only@*/ char * permsFormat(HE_t he,
 	/*@modifies formatPrefix @*/
 	/*@requires maxRead(data) >= 0 @*/
 {
-    rpmTagData data = { .ptr = (*he->p).ptr };
+    rpmTagData data = { .ptr = he->p.ptr };
     char * val;
     char * buf;
 
@@ -140,7 +140,7 @@ static /*@only@*/ char * fflagsFormat(HE_t he,
 	/*@modifies formatPrefix @*/
 	/*@requires maxRead(data) >= 0 @*/
 {
-    rpmTagData data = { .ptr = (*he->p).ptr };
+    rpmTagData data = { .ptr = he->p.ptr };
     /* XXX HACK: he->freeData for element index. */
     int element = he->freeData;
     char * val;
@@ -192,7 +192,7 @@ static /*@only@*/ char * armorFormat(HE_t he,
 		/*@unused@*/ char * formatPrefix, /*@unused@*/ int padding)
 	/*@*/
 {
-    rpmTagData data = { .ptr = (*he->p).ptr };
+    rpmTagData data = { .ptr = he->p.ptr };
     const char * enc;
     const unsigned char * s;
     size_t ns;
@@ -249,7 +249,7 @@ static /*@only@*/ char * base64Format(HE_t he,
 		/*@unused@*/ char * formatPrefix, int padding)
 	/*@*/
 {
-    rpmTagData data = { .ptr = (*he->p).ptr };
+    rpmTagData data = { .ptr = he->p.ptr };
     char * val;
 
     if (!(he->t == RPM_BIN_TYPE || he->t == RPM_ASN1_TYPE || he->t == RPM_OPENPGP_TYPE)) {
@@ -350,7 +350,7 @@ static /*@only@*/ char * xmlFormat(HE_t he,
 		char * formatPrefix, int padding)
 	/*@modifies formatPrefix @*/
 {
-    rpmTagData data = { .ptr = (*he->p).ptr };
+    rpmTagData data = { .ptr = he->p.ptr };
     const char * xtag = NULL;
     size_t nb;
     char * val;
@@ -511,7 +511,7 @@ static /*@only@*/ char * yamlFormat(HE_t he,
 		char * formatPrefix, int padding)
 	/*@modifies formatPrefix @*/
 {
-    rpmTagData data = { .ptr = (*he->p).ptr };
+    rpmTagData data = { .ptr = he->p.ptr };
     int element = he->freeData;	/* XXX HACK: he->freeData for element index. */
     const char * xtag = NULL;
     const char * ytag = NULL;
@@ -667,7 +667,7 @@ static /*@only@*/ char * pgpsigFormat(HE_t he,
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/
 {
-    rpmTagData data = { .ptr = (*he->p).ptr };
+    rpmTagData data = { .ptr = he->p.ptr };
     char * val, * t;
 
     if (!(he->t == RPM_BIN_TYPE || he->t == RPM_ASN1_TYPE || he->t == RPM_OPENPGP_TYPE)) {
@@ -774,7 +774,7 @@ static /*@only@*/ char * depflagsFormat(HE_t he,
 	/*@modifies formatPrefix @*/
 	/*@requires maxRead(data) >= 0 @*/
 {
-    rpmTagData data = { .ptr = (*he->p).ptr };
+    rpmTagData data = { .ptr = he->p.ptr };
     char * val;
 
     if (he->t != RPM_INT32_TYPE) {
@@ -833,7 +833,7 @@ static int instprefixTag(Header h, HE_t he)
     char ** array;
 
     he->tag = RPMTAG_INSTALLPREFIX;
-    if (headerGetEntry(h, RPMTAG_INSTALLPREFIX, &he->t, he->p, &he->c)) {
+    if (headerGetEntry(h, RPMTAG_INSTALLPREFIX, &he->t, &he->p, &he->c)) {
 	he->freeData = 0;
 	return 0;
     }
@@ -841,7 +841,7 @@ static int instprefixTag(Header h, HE_t he)
     if (headerGetEntry(h, he->tag, &ipt, &array, &he->c)) {
 	he->t = RPM_STRING_TYPE;
 	he->c = 1;
-	if (he->p) (*he->p).str = xstrdup(array[0]);
+	he->p.str = xstrdup(array[0]);
 	he->freeData = 1;
 	array = headerFreeData(array, ipt);
 	return 0;
@@ -858,6 +858,7 @@ static int instprefixTag(Header h, HE_t he)
 static int triggercondsTag(Header h, HE_t he)
 	/*@modifies he @*/
 {
+    HE_t _he = memset(alloca(sizeof(*_he)), 0, sizeof(*_he));
     rpmTagData flags;
     rpmTagData indices;
     rpmTagData names;
@@ -875,6 +876,12 @@ static int triggercondsTag(Header h, HE_t he)
     if (!xx)
 	return 0;
 
+    _he->tag = he->tag;
+    _he->t = RPM_INT32_TYPE;
+    _he->p.i32p = NULL;
+    _he->c = 1;
+    _he->freeData = -1;
+
     xx = headerGetEntry(h, RPMTAG_TRIGGERINDEX, NULL, &indices, NULL);
     xx = headerGetEntry(h, RPMTAG_TRIGGERFLAGS, NULL, &flags, NULL);
     xx = headerGetEntry(h, RPMTAG_TRIGGERVERSION, NULL, &versions, NULL);
@@ -882,11 +889,9 @@ static int triggercondsTag(Header h, HE_t he)
 
     he->t = RPM_STRING_ARRAY_TYPE;
     he->c = numScripts;
-    if (he->p == NULL)
-	goto exit;
 
     he->freeData = 1;
-    (*he->p).argv = conds = xmalloc(sizeof(*conds) * numScripts);
+    he->p.argv = conds = xmalloc(sizeof(*conds) * numScripts);
     for (i = 0; i < numScripts; i++) {
 	chptr = xstrdup("");
 
@@ -896,14 +901,8 @@ static int triggercondsTag(Header h, HE_t he)
 
 	    item = xmalloc(strlen(names.argv[j]) + strlen(versions.argv[j]) + 20);
 	    if (flags.i32p[j] & RPMSENSE_SENSEMASK) {
-		HE_s _he_s = { .tag = 0, .t = 0, .p = NULL, .c = 0, .freeData = 0 };
-		HE_t _he = &_he_s;
 		buf[0] = '%', buf[1] = '\0';
-		_he->tag = he->tag;
-		_he->t = RPM_INT32_TYPE;
-		_he->p = &flags;
-		_he->c = 1;
-		he->freeData = j;/* XXX HACK: he->freeData for element index. */
+		_he->p.i32p = &flags.i32p[j];
 		flagsStr = depflagsFormat(_he, buf, 0);
 		sprintf(item, "%s %s %s", names.argv[j], flagsStr, versions.argv[j]);
 		flagsStr = _free(flagsStr);
@@ -919,7 +918,6 @@ static int triggercondsTag(Header h, HE_t he)
 	conds[i] = chptr;
     }
 
-exit:
     names.ptr = headerFreeData(names.ptr, -1);
     versions.ptr = headerFreeData(versions.ptr, -1);
     s.ptr = headerFreeData(s.ptr, -1);
@@ -951,11 +949,9 @@ static int triggertypeTag(Header h, HE_t he)
 
     he->t = RPM_STRING_ARRAY_TYPE;
     he->c = numScripts;
-    if (he->p == NULL)
-	goto exit;
 
     he->freeData = 1;
-    (*he->p).argv = conds = xmalloc(sizeof(*conds) * numScripts);
+    he->p.argv = conds = xmalloc(sizeof(*conds) * numScripts);
     for (i = 0; i < numScripts; i++) {
 	for (j = 0; j < numNames; j++) {
 	    if (indices[j] != i)
@@ -975,7 +971,6 @@ static int triggertypeTag(Header h, HE_t he)
 	}
     }
 
-exit:
     s = headerFreeData(s, -1);
     return 0;
 }
@@ -1008,8 +1003,7 @@ static int i18nTag(Header h, HE_t he)
     int rc = 1;		/* assume failure */
 
     he->t = RPM_STRING_TYPE;
-    if (he->p)
-	(*he->p).ptr = NULL;
+    he->p.str = NULL;
     he->c = 0;
     he->freeData = 0;
 
@@ -1060,12 +1054,9 @@ static int i18nTag(Header h, HE_t he)
 	    const char * s = /*@-unrecog@*/ dgettext(domain, msgid) /*@=unrecog@*/;
 	    if (s) {
 		rc = 0;
-		if (he->p) {
-		    (*he->p).str = xstrdup(s);
-		    he->freeData = 1;
-		} else
-		    he->freeData = 0;
+		he->p.str = xstrdup(s);
 		he->c = 1;
+		he->freeData = 1;
 	    }
 	}
     }
@@ -1076,25 +1067,22 @@ static int i18nTag(Header h, HE_t he)
     if (!rc)
 	return rc;
 
-    rc = headerGetEntry(h, he->tag, &he->t, he->p, &he->c);
+    rc = headerGetEntry(h, he->tag, &he->t, &he->p, &he->c);
     if (rc) {
 	rc = 0;
-	if (he->p) {
-	    (*he->p).str = xstrdup((*he->p).str);
-	    (*he->p).str = xstrtolocale((*he->p).str);
-	    he->freeData = 1;
-	}
+	he->p.str = xstrdup(he->p.str);
+	he->p.str = xstrtolocale(he->p.str);
+	he->freeData = 1;
 /*@-nullstate@*/
 	return rc;
 /*@=nullstate@*/
     }
 
     he->t = RPM_STRING_TYPE;
+    he->p.str = NULL;
     he->c = 0;
-    if (he->p) {
-	(*he->p).ptr = NULL;
-	he->freeData = 0;
-    }
+    he->freeData = 0;
+
     return 1;
 }
 
@@ -1105,48 +1093,50 @@ static int localeTag(Header h, HE_t he)
 	/*@modifies he @*/
 {
     rpmTagType t;
-    char **d, **d2, *dp;
-    int_32 c;
+    rpmTagData p;
+    rpmTagCount c;
+    const char ** argv;
+    char * te;
     int rc;
 
-    rc = headerGetEntry(h, he->tag, &t, &d, &c);
-    if (!rc || d == NULL || c == 0) {
-	if (he->p)
-	    (*he->p).ptr = NULL;
+    rc = headerGetEntry(h, he->tag, &t, &p, &c);
+    if (!rc || p.ptr == NULL || c == 0) {
+	he->t = RPM_STRING_TYPE;
+	he->p.str = NULL;
 	he->c = 0;
 	he->freeData = 0;
 	return 1;
     }
 
     if (t == RPM_STRING_TYPE) {
-	d = (char **)xstrdup((char *)d);
-	d = (char **)xstrtolocale((char *)d);
+	p.str = xstrdup(p.str);
+	p.str = xstrtolocale(p.str);
 	he->freeData = 1;
     } else if (t == RPM_STRING_ARRAY_TYPE) {
-	int i, l = 0;
+	size_t l = 0;
+	int i;
 	for (i = 0; i < c; i++) {
-	    d[i] = xstrdup(d[i]);
-	    d[i] = (char *)xstrtolocale(d[i]);
-assert(d[i] != NULL);
-	    l += strlen(d[i]) + 1;
+	    p.argv[i] = xstrdup(p.argv[i]);
+	    p.argv[i] = xstrtolocale(p.argv[i]);
+assert(p.argv[i] != NULL);
+	    l += strlen(p.argv[i]) + 1;
 	}
-	d2 = xmalloc(c * sizeof(*d2) + l);
-	dp = (char *)(d2 + c);
+	argv = xmalloc(c * sizeof(*argv) + l);
+	te = (char *)&argv[c];
 	for (i = 0; i < c; i++) {
-	    d2[i] = dp;
-	    strcpy(dp, d[i]);
-	    dp += strlen(dp) + 1;
-	    d[i] = _free(d[i]);
+	    argv[i] = te;
+	    te = stpcpy(te, p.argv[i]);
+	    te++;
+	    p.argv[i] = _free(p.argv[i]);
 	}
-	d = _free(d);
-	d = d2;
+	p.ptr = _free(p.ptr);
+	p.argv = argv;
 	he->freeData = 1;
     } else
 	he->freeData = 0;
 
     he->t = t;
-    if (he->p)
-	(*he->p).ptr = (void **)d;
+    he->p.ptr = p.ptr;
     he->c = c;
     return 0;
 }
@@ -1222,14 +1212,10 @@ static int dbinstanceTag(Header h, HE_t he)
 {
     he->tag = RPMTAG_DBINSTANCE;
     he->t = RPM_INT32_TYPE;
-    if (he->p) {
-	(*he->p).i32p = xcalloc(1, sizeof(*(*he->p).i32p));
-	(*he->p).i32p[0] = headerGetInstance(h);
-	he->freeData = 1;
-    } else
-	he->freeData = 0;
+    he->p.i32p = xmalloc(sizeof(*he->p.i32p));
+    he->p.i32p[0] = headerGetInstance(h);
+    he->freeData = 1;
     he->c = 1;
-
     return 0;
 }
 /*@=globuse@*/
@@ -1279,7 +1265,7 @@ static int nvraTag(Header h, HE_t he)
 		fileSystem, internalState @*/
 {
     he->t = RPM_STRING_TYPE;
-    if (he->p) (*he->p).str = hGetNVRA(h);
+    he->p.str = hGetNVRA(h);
     he->c = 1;
     he->freeData = 1;
     return 0;
@@ -1305,15 +1291,15 @@ static int nvraTag(Header h, HE_t he)
  */
 static void rpmfiBuildFNames(Header h, rpmTag tagN,
 		/*@null@*/ /*@out@*/ const char *** fnp,
-		/*@null@*/ /*@out@*/ int * fcp)
+		/*@null@*/ /*@out@*/ rpmTagCount * fcp)
 	/*@modifies *fnp, *fcp @*/
 {
-    const char ** baseNames;
-    const char ** dirNames;
-    int * dirIndexes;
-    int count;
-    const char ** fileNames;
-    int size;
+    rpmTagData baseNames;
+    rpmTagData dirNames;
+    rpmTagData dirIndexes;
+    rpmTagData fileNames;
+    rpmTagCount count;
+    size_t size;
     rpmTag dirNameTag = 0;
     rpmTag dirIndexesTag = 0;
     rpmTagType bnt, dnt;
@@ -1337,29 +1323,28 @@ static void rpmfiBuildFNames(Header h, rpmTag tagN,
     xx = headerGetEntry(h, dirNameTag, &dnt, &dirNames, NULL);
     xx = headerGetEntry(h, dirIndexesTag, NULL, &dirIndexes, &count);
 
-    size = sizeof(*fileNames) * count;
+    size = sizeof(*fileNames.argv) * count;
     for (i = 0; i < count; i++) {
 	const char * dn = NULL;
-	(void) urlPath(dirNames[dirIndexes[i]], &dn);
-	size += strlen(baseNames[i]) + strlen(dn) + 1;
+	(void) urlPath(dirNames.argv[dirIndexes.i32p[i]], &dn);
+	size += strlen(baseNames.argv[i]) + strlen(dn) + 1;
     }
 
-    fileNames = xmalloc(size);
-    t = ((char *) fileNames) + (sizeof(*fileNames) * count);
+    fileNames.argv = xmalloc(size);
+    t = (char *)&fileNames.argv[count];
     for (i = 0; i < count; i++) {
 	const char * dn = NULL;
-	fileNames[i] = t;
-	(void) urlPath(dirNames[dirIndexes[i]], &dn);
-	t = stpcpy( stpcpy(t, dn), baseNames[i]);
-	*t++ = '\0';
+	(void) urlPath(dirNames.argv[dirIndexes.i32p[i]], &dn);
+	fileNames.argv[i] = t;
+	t = stpcpy( stpcpy(t, dn), baseNames.argv[i]);
     }
-    baseNames = headerFreeData(baseNames, bnt);
-    dirNames = headerFreeData(dirNames, dnt);
+    baseNames.ptr = headerFreeData(baseNames.ptr, bnt);
+    dirNames.ptr = headerFreeData(dirNames.ptr, dnt);
 
     if (fnp)
-	*fnp = fileNames;
+	*fnp = fileNames.argv;
     else
-	fileNames = _free(fileNames);
+	fileNames.ptr = _free(fileNames.ptr);
     if (fcp) *fcp = count;
 }
 
@@ -1373,7 +1358,7 @@ static int _fnTag(Header h, HE_t he)
 	/*@modifies he @*/
 {
     he->t = RPM_STRING_ARRAY_TYPE;
-    rpmfiBuildFNames(h, he->tag, (he->p ? &(*he->p).argv : NULL), &he->c);
+    rpmfiBuildFNames(h, he->tag, &he->p.argv, &he->c);
     he->freeData = 1;
     return 0;
 }

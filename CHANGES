@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - jbj: remove useless HE_t indirection with (*he->p).ptr, he->p.ptr instead.
     - jbj: fix several indirection problems.
     - jbj: eliminate data arg in (*headerTagFormatFunction).
     - jbj: start simplifying the world's most complicated sprintf.

@@ -1819,8 +1819,7 @@ int headerGetExtension(Header h, int_32 tag,
     const char * name = tagName(tag);
     headerSprintfExtension exts = (headerSprintfExtension)headerCompoundFormats;
     headerSprintfExtension ext;
-    hRET_t he_p = { .ptr = NULL };
-    HE_t he = alloca(sizeof(*he));
+    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     size_t nb = 0;
     int extNum;
     int rc;
@@ -1828,12 +1827,7 @@ int headerGetExtension(Header h, int_32 tag,
     if ((sw = headerGetStats(h, 19)) != NULL)	/* RPMTS_OP_HDRGET */
 	(void) rpmswEnter(sw, 0);
 
-    memset(&he_p, 0, sizeof(he_p));
-    memset(he, 0, sizeof(*he));
     he->tag = tag;
-/*@-immediatetrans@*/
-    he->p = (p ? &he_p : NULL);
-/*@=immediatetrans@*/
 
     /* Search extensions for specific tag override. */
     for (ext = exts, extNum = 0; ext != NULL && ext->type != HEADER_EXT_LAST;
@@ -1848,7 +1842,7 @@ int headerGetExtension(Header h, int_32 tag,
     if (ext && ext->name != NULL && ext->type == HEADER_EXT_TAG)
 	rc = ext->u.tagFunction(h, he);
     else
-	rc = intGetEntry(h, he->tag, &he->t, he->p, &he->c, 0);
+	rc = intGetEntry(h, he->tag, &he->t, &he->p, &he->c, 0);
 
     if (!rc)
 	goto exit;
@@ -1865,21 +1859,21 @@ assert(0);	/* XXX stop unimplemented oversights. */
 	/*@fallthrough@*/
     case RPM_CHAR_TYPE:
     case RPM_INT8_TYPE:
-	nb = he->c * sizeof(*he_p.i8p);
+	nb = he->c * sizeof(*he->p.i8p);
 	break;
     case RPM_INT16_TYPE:
-	nb = he->c * sizeof(*he_p.i16p);
+	nb = he->c * sizeof(*he->p.i16p);
 	break;
     case RPM_INT32_TYPE:
-	nb = he->c * sizeof(*he_p.i32p);
+	nb = he->c * sizeof(*he->p.i32p);
 	break;
     case RPM_INT64_TYPE:
-	nb = he->c * sizeof(*he_p.i64p);
+	nb = he->c * sizeof(*he->p.i64p);
 	break;
     case RPM_I18NSTRING_TYPE:
     case RPM_STRING_TYPE:
-	if (he_p.str)
-	    nb = strlen(he_p.str) + 1;
+	if (he->p.str)
+	    nb = strlen(he->p.str) + 1;
 	else
 	    rc = 0;
 	break;
@@ -1889,15 +1883,15 @@ assert(0);	/* XXX stop unimplemented oversights. */
 
     /* Allocate all returned storage (if not already). */
     if (p && nb && !he->freeData) {
-	void * ptr = memcpy(xmalloc(nb), he_p.ptr, nb);
-	he_p.ptr = ptr;
+	void * ptr = memcpy(xmalloc(nb), he->p.ptr, nb);
+	he->p.ptr = ptr;
     }
 
 exit:
     if (type)
 	*type = he->t;
     if (p)
-	p->ptr = he_p.ptr;
+	p->ptr = he->p.ptr;
     if (c)
 	*c = he->c;
 
@@ -2819,16 +2813,16 @@ static char * intFormat(HE_t he,
 	break;
     case RPM_CHAR_TYPE:	
     case RPM_INT8_TYPE:
-	ival = (*he->p).i8p[ix];
+	ival = he->p.i8p[ix];
 	break;
     case RPM_INT16_TYPE:
-	ival = (*he->p).ui16p[ix];	/* XXX note unsigned. */
+	ival = he->p.ui16p[ix];	/* XXX note unsigned. */
 	break;
     case RPM_INT32_TYPE:
-	ival = (*he->p).i32p[ix];
+	ival = he->p.i32p[ix];
 	break;
     case RPM_INT64_TYPE:
-	ival = (*he->p).i64p[ix];
+	ival = he->p.i64p[ix];
 	break;
     }
 
@@ -2901,7 +2895,7 @@ static char * realDateFormat(HE_t he,
 	/*@modifies formatPrefix @*/
 {
     char * val;
-    rpmTagData data = { .ptr = (*he->p).ptr };
+    rpmTagData data = { .ptr = he->p.ptr };
 
     if (he->t != RPM_INT32_TYPE) {
 	val = xstrdup(_("(not a number)"));
@@ -2967,7 +2961,7 @@ static char * shescapeFormat(HE_t he,
 	/*@modifies formatPrefix @*/
 {
     char * result, * dst, * src, * buf;
-    rpmTagData data = { .ptr = (*he->p).ptr };
+    rpmTagData data = { .ptr = he->p.ptr };
 
     if (he->t == RPM_INT32_TYPE) {
 	result = xmalloc(padding + 20);
@@ -3397,25 +3391,16 @@ static int getExtension(headerSprintfArgs hsa, headerTagTagFunction fn,
 	/*@modifies *typeptr, *data, *countptr, ec @*/
 {
     if (!ec->avail) {
-	HE_s he_s;
-	HE_t he = &he_s;
+	HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
 	int xx;
 
-	he->tag = 0;
-/*@-immediatetrans@*/
-	he->t = 0;
-/*@-type@*/
-	he->p = &ec->data;
-/*@=type@*/
-	he->c = 0;
-/*@=immediatetrans@*/
-	he->freeData = 0;
 	xx = fn(hsa->h, he);
 	ec->type = he->t;
+	ec->data.ptr = he->p.ptr;
 	ec->count = he->c;
+	ec->freeit = he->freeData;
 	if (xx)
 	    return 1;
-	ec->freeit = he->freeData;
 	ec->avail = 1;
     }
 
@@ -3437,9 +3422,7 @@ static int getExtension(headerSprintfArgs hsa, headerTagTagFunction fn,
 static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
 	/*@modifies hsa @*/
 {
-    hRET_t he_p = { .ptr = NULL };
-    HE_s he_s = { .tag = 0, .t = 0, .p = &he_p, .c = 0, .freeData = 0 };
-    HE_t he = &he_s;
+    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     char * val = NULL;
     size_t need = 0;
     char * t, * te;
@@ -3448,17 +3431,17 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
 
     memset(buf, 0, sizeof(buf));
     if (tag->ext) {
-	if (getExtension(hsa, tag->ext, &he->t, he->p, &he->c, hsa->ec + tag->extNum))
+	if (getExtension(hsa, tag->ext, &he->t, &he->p, &he->c, hsa->ec + tag->extNum))
 	{
 	    he->c = 1;
 	    he->t = RPM_STRING_TYPE;	
-	    he_p.str = "(none)";
+	    he->p.str = "(none)";
 	}
     } else {
-	if (!headerGetEntry(hsa->h, tag->tag, &he->t, he->p, &he->c)) {
+	if (!headerGetEntry(hsa->h, tag->tag, &he->t, &he->p, &he->c)) {
 	    he->c = 1;
 	    he->t = RPM_STRING_TYPE;	
-	    he_p.str = "(none)";
+	    he->p.str = "(none)";
 	}
 
 	/* XXX this test is unnecessary, array sizes are checked */
@@ -3466,7 +3449,7 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
 	default:
 	    if (element >= he->c) {
 		/*@-modobserver -observertrans@*/
-		he_p.ptr = headerFreeData(he_p.ptr, he->t);
+		he->p.ptr = headerFreeData(he->p.ptr, he->t);
 		/*@=modobserver =observertrans@*/
 
 		hsa->errmsg = _("(index out of range)");
@@ -3485,42 +3468,42 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
     if (tag->arrayCount) {
 /*@-modobserver -observertrans@*/
 	if (he->freeData) {
-	    he_p.ptr = headerFreeData(he_p.ptr, he->t);
+	    he->p.ptr = headerFreeData(he->p.ptr, he->t);
 	    he->freeData = 0;
 	}
 /*@=modobserver =observertrans@*/
 
 	countBuf = he->c;
-	he_p.i32p = &countBuf;
+	he->p.i32p = &countBuf;
 	he->c = 1;
 	he->t = RPM_INT32_TYPE;
     }
 
     (void) stpcpy( stpcpy(buf, "%"), tag->format);
 
-    if (he_p.ptr)
+    if (he->p.ptr)
     switch (he->t) {
     case RPM_STRING_ARRAY_TYPE:
-    {	hRET_t _he_p = { .ptr = NULL };
-	HE_s _he_s = { .tag = 0, .t = 0, .p = &_he_p, .c = 0, .freeData = 0 };
-	HE_t _he = &_he_s;
+    {	HE_t _he = memset(alloca(sizeof(*_he)), 0, sizeof(*_he));
 	_he->tag = he->tag;
 	_he->t = RPM_STRING_TYPE;
-	(*_he->p).str = (*he->p).argv[element];
+	_he->p.str = he->p.argv[element];
 	_he->c = 1;
-	_he->freeData = -1;
 
-	if (tag->fmt)
+	if (tag->fmt) {
+	    /* XXX HACK: he->freeData for element index. */
+	    _he->freeData = -1;
 	    val = tag->fmt(_he, buf, tag->pad);
+	}
 
 	if (val) {
 	    need = strlen(val);
 	} else {
-	    need = strlen((*_he->p).str) + tag->pad + 20;
+	    need = strlen(_he->p.str) + tag->pad + 20;
 	    val = xmalloc(need+1);
 	    strcat(buf, "s");
 	    /*@-formatconst@*/
-	    sprintf(val, buf, (*_he->p).str);
+	    sprintf(val, buf, _he->p.str);
 	    /*@=formatconst@*/
 	}
 
@@ -3536,11 +3519,11 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
 	if (val) {
 	    need = strlen(val);
 	} else {
-	    need = strlen((*he->p).str) + tag->pad + 20;
+	    need = strlen(he->p.str) + tag->pad + 20;
 	    val = xmalloc(need+1);
 	    strcat(buf, "s");
 	    /*@-formatconst@*/
-	    sprintf(val, buf, (*he->p).str);
+	    sprintf(val, buf, he->p.str);
 	    /*@=formatconst@*/
 	}
 	break;
@@ -3574,11 +3557,11 @@ assert(val);
 	    need = strlen(val);
 	} else {
 #ifdef	NOTYET
-	    val = memcpy(xmalloc(he->c), he_p.ptr, he->c);
+	    val = memcpy(xmalloc(he->c), he->p.ptr, he->c);
 #else
 	    /* XXX format string not used */
 	    static char hex[] = "0123456789abcdef";
-	    const char * s = he_p.str;
+	    const char * s = he->p.str;
 
 	    need = 2 * he->c + tag->pad;
 	    val = t = xmalloc(need+1);
@@ -3601,7 +3584,7 @@ assert(val);
 
 /*@-modobserver -observertrans@*/
     if (he->freeData) {
-	he_p.ptr = headerFreeData(he_p.ptr, he->t);
+	he->p.ptr = headerFreeData(he->p.ptr, he->t);
 	he->freeData = 0;
     }
 /*@=modobserver =observertrans@*/
@@ -3628,9 +3611,7 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 		int element)
 	/*@modifies hsa @*/
 {
-    hRET_t he_p = { .ptr = NULL };
-    HE_s he_s = { .tag = 0, .t = 0, .p = &he_p, .c = 0, .freeData = 0 };
-    HE_t he = &he_s;
+    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     char numbuf[64];	/* XXX big enuf for "Tag_0x01234567" */
     char * t, * te;
     int i, j;
@@ -3883,9 +3864,7 @@ char * headerSprintf(Header h, const char * fmt,
 	/*@requires maxSet(errmsg) >= 0 @*/
 {
     headerSprintfArgs hsa = memset(alloca(sizeof(*hsa)), 0, sizeof(*hsa));
-    hRET_t he_p = { .ptr = NULL };
-    HE_s he_s = { .tag = 0, .t = 0, .p = &he_p, .c = 0, .freeData = 0 };
-    HE_t he = &he_s;
+    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     sprintfToken nextfmt;
     sprintfTag tag;
     char * t, * te;

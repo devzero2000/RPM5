@@ -212,9 +212,7 @@ static int isMemberInEntry(Header h, const char *name, rpmTag tag)
 	/*@*/
 {
     HGE_t hge = (HGE_t)headerGetExtension;
-    rpmTagData he_p = { .ptr = NULL };
-    HE_s he_s = { .tag = 0, .t = 0, .p = &he_p, .c = 0, .freeData = 0 };
-    HE_t he = &he_s;
+    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     int xx;
 
     he->tag = tag;
@@ -223,10 +221,10 @@ static int isMemberInEntry(Header h, const char *name, rpmTag tag)
 	return -1;
 /*@-boundsread@*/
     while (he->c--) {
-	if (!xstrcasecmp(he_p.argv[he->c], name))
+	if (!xstrcasecmp(he->p.argv[he->c], name))
 	    break;
     }
-    he_p.ptr = _free(he_p.ptr);
+    he->p.ptr = _free(he->p.ptr);
 /*@=boundsread@*/
     return (he->c >= 0 ? 1 : 0);
 }
@@ -441,9 +439,7 @@ exit:
 spectag stashSt(Spec spec, Header h, int tag, const char * lang)
 {
     HGE_t hge = (HGE_t)headerGetExtension;
-    rpmTagData he_p = { .ptr = NULL };
-    HE_s he_s = { .tag = 0, .t = 0, .p = &he_p, .c = 0, .freeData = 0 };
-    HE_t he = &he_s;
+    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     spectag t = NULL;
     int xx;
 
@@ -464,10 +460,10 @@ spectag stashSt(Spec spec, Header h, int tag, const char * lang)
 	    xx = hge(h, he, 0);
 	    if (xx) {
 		char buf[1024];
-		sprintf(buf, "%s(%s)", he_p.str, tagName(tag));
+		sprintf(buf, "%s(%s)", he->p.str, tagName(tag));
 		t->t_msgid = xstrdup(buf);
 	    }
-	    he_p.ptr = _free(he_p.ptr);
+	    he->p.ptr = _free(he->p.ptr);
 	}
     }
     /*@-usereleased -compdef@*/
@@ -500,9 +496,7 @@ static int handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
 		rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     HGE_t hge = (HGE_t)headerGetExtension;
-    rpmTagData he_p = { .ptr = NULL };
-    HE_s he_s = { .tag = 0, .t = 0, .p = &he_p, .c = 0, .freeData = 0 };
-    HE_t he = &he_s;
+    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     char * field = spec->line;
     char * end;
     int multiToken = 0;
@@ -604,23 +598,23 @@ static int handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
 	xx = hge(pkg->header, he, 0);
 	if (tag == RPMTAG_PREFIXES)
 	while (he->c--) {
-	    if (he_p.argv[he->c][0] != '/') {
+	    if (he->p.argv[he->c][0] != '/') {
 		rpmlog(RPMLOG_ERR,
 			 _("line %d: Prefixes must begin with \"/\": %s\n"),
 			 spec->lineNum, spec->line);
-		he_p.ptr = _free(he_p.ptr);
+		he->p.ptr = _free(he->p.ptr);
 		return RPMRC_FAIL;
 	    }
-	    len = strlen(he_p.argv[he->c]);
-	    if (he_p.argv[he->c][len - 1] == '/' && len > 1) {
+	    len = strlen(he->p.argv[he->c]);
+	    if (he->p.argv[he->c][len - 1] == '/' && len > 1) {
 		rpmlog(RPMLOG_ERR,
 			 _("line %d: Prefixes must not end with \"/\": %s\n"),
 			 spec->lineNum, spec->line);
-		he_p.ptr = _free(he_p.ptr);
+		he->p.ptr = _free(he->p.ptr);
 		return RPMRC_FAIL;
 	    }
 	}
-	he_p.ptr = _free(he_p.ptr);
+	he->p.ptr = _free(he->p.ptr);
 	break;
     case RPMTAG_DOCDIR:
 	SINGLE_TOKEN_ONLY;

@@ -74,9 +74,7 @@ rpmdb rpmtsGetRdb(rpmts ts)
 rpmRC rpmtsFindPubkey(rpmts ts, void * _dig)
 {
     HGE_t hge = (HGE_t)headerGetExtension;
-    rpmTagData he_p = { .ptr = NULL };
-    HE_s he_s = { .tag = 0, .t = 0, .p = &he_p, .c = 0, .freeData = 0 };
-    HE_t he = &he_s;
+    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     pgpDig dig = (_dig ? _dig : rpmtsDig(ts));
     const void * sig = pgpGetSig(dig);
     pgpDigParams sigp = pgpGetSignature(dig);
@@ -160,10 +158,10 @@ fprintf(stderr, "*** free pkt %p[%d] id %08x %08x\n", ts->pkpkt, ts->pkpktlen, p
 	    ix = rpmdbGetIteratorFileNum(mi);
 /*@-moduncon -nullstate @*/
 	    if (ix >= he->c
-	     || b64decode(he_p.argv[ix], (void **) &ts->pkpkt, &ts->pkpktlen))
+	     || b64decode(he->p.argv[ix], (void **) &ts->pkpkt, &ts->pkpktlen))
 		ix = -1;
 /*@=moduncon =nullstate @*/
-	    he_p.ptr = _free(he_p.ptr);
+	    he->p.ptr = _free(he->p.ptr);
 	    break;
 	}
 	mi = rpmdbFreeIterator(mi);
@@ -539,9 +537,7 @@ static rpmRC rdSignature(FD_t fd, /*@out@*/ /*@null@*/ void * ptr,
 	/*@modifies *ptr, *msg, fileSystem @*/
 {
     HGE_t hge = (HGE_t)headerGetExtension;
-    rpmTagData he_p = { .ptr = NULL };
-    HE_s he_s = { .tag = 0, .t = 0, .p = &he_p, .c = 0, .freeData = 0 };
-    HE_t he = &he_s;
+    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     Header * sighp = ptr;
     char buf[BUFSIZ];
     int_32 block[4];
@@ -710,13 +706,13 @@ static rpmRC rdSignature(FD_t fd, /*@out@*/ /*@null@*/ void * ptr,
 	he->tag = RPMSIGTAG_SIZE;
 	xx = hge(sigh, he, 0);
 	if (xx) {
-	    size_t datasize = *he_p.ui32p;
+	    size_t datasize = he->p.ui32p[0];
 	    rc = printSize(fd, sigSize, pad, datasize);
 	    if (rc != RPMRC_OK)
 		(void) snprintf(buf, sizeof(buf),
 			_("sigh sigSize(%d): BAD, fstat(2) failed\n"), sigSize);
 	}
-	he_p.ptr = _free(he_p.ptr);
+	he->p.ptr = _free(he->p.ptr);
     }
 
 exit:

@@ -96,15 +96,13 @@ static void addTE(rpmts ts, rpmte p, Header h,
 {
     int scareMem = 0;
     HGE_t hge = (HGE_t)headerGetExtension;
-    rpmTagData he_p = { .ptr = NULL };
-    HE_s he_s = { .tag = 0, .t = 0, .p = &he_p, .c = 0, .freeData = 0 };
-    HE_t he = &he_s;
+    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     int xx;
 
     he->tag = RPMTAG_NVRA;
     xx = hge(h, he, 0);
-assert(he_p.str != NULL);
-    p->NEVR = he_p.str;
+assert(he->p.str != NULL);
+    p->NEVR = he->p.str;
     p->name = xstrdup(p->NEVR);
     if ((p->release = strrchr(p->name, '-')) != NULL)
 	*p->release++ = '\0';
@@ -115,32 +113,32 @@ assert(he_p.str != NULL);
 
     he->tag = RPMTAG_HDRID;
     xx = hge(h, he, 0);
-    p->hdrid = he_p.str;
+    p->hdrid = he->p.str;
 
     he->tag = RPMTAG_PKGID;
     xx = hge(h, he, 0);
-    if (he_p.ui8p != NULL) {
+    if (he->p.ui8p != NULL) {
 	static const char hex[] = "0123456789abcdef";
 	char * t;
 	int i;
 
 	p->pkgid = t = xmalloc((2*he->c) + 1);
 	for (i = 0 ; i < he->c; i++) {
-	    *t++ = hex[ (unsigned)((he_p.ui8p[i] >> 4) & 0x0f) ];
-	    *t++ = hex[ (unsigned)((he_p.ui8p[i]     ) & 0x0f) ];
+	    *t++ = hex[ (unsigned)((he->p.ui8p[i] >> 4) & 0x0f) ];
+	    *t++ = hex[ (unsigned)((he->p.ui8p[i]     ) & 0x0f) ];
 	}
 	*t = '\0';
-	he_p.ptr = _free(he_p.ptr);
+	he->p.ptr = _free(he->p.ptr);
     } else
 	p->pkgid = NULL;
 
     he->tag = RPMTAG_ARCH;
     xx = hge(h, he, 0);
-    p->arch = he_p.str;
+    p->arch = he->p.str;
 
     he->tag = RPMTAG_OS;
     xx = hge(h, he, 0);
-    p->os = he_p.str;
+    p->os = he->p.str;
 
     p->isSource =
 	(headerIsEntry(h, RPMTAG_SOURCERPM) == 0 &&
@@ -150,10 +148,10 @@ assert(he_p.str != NULL);
 
     he->tag = RPMTAG_EPOCH;
     xx = hge(h, he, 0);
-    if (he_p.i32p != NULL) {
+    if (he->p.i32p != NULL) {
 	p->epoch = xmalloc(20);
-	sprintf(p->epoch, "%d", *he_p.i32p);
-	he_p.ptr = _free(he_p.ptr);
+	sprintf(p->epoch, "%d", he->p.i32p[0]);
+	he->p.ptr = _free(he->p.ptr);
     } else
 	p->epoch = NULL;
 
@@ -217,9 +215,7 @@ rpmte rpmteNew(const rpmts ts, Header h,
 		alKey pkgKey)
 {
     HGE_t hge = (HGE_t)headerGetExtension;
-    rpmTagData he_p = { .ptr = NULL };
-    HE_s he_s = { .tag = 0, .t = 0, .p = &he_p, .c = 0, .freeData = 0 };
-    HE_t he = &he_s;
+    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     rpmte p = xcalloc(1, sizeof(*p));
     int xx;
 
@@ -233,9 +229,9 @@ rpmte rpmteNew(const rpmts ts, Header h,
 	p->pkgFileSize = 96 + 256;
 	he->tag = RPMTAG_SIGSIZE;
 	xx = hge(h, he, 0);
-	if (xx && he_p.ui32p)
-	    p->pkgFileSize += *he_p.ui32p;
-	he_p.ptr = _free(he_p.ptr);
+	if (xx && he->p.ui32p)
+	    p->pkgFileSize += *he->p.ui32p;
+	he->p.ptr = _free(he->p.ptr);
 	break;
     case TR_REMOVED:
 	p->u.addedKey = pkgKey;
@@ -603,9 +599,7 @@ static int __mydebug = 0;
 int rpmteChain(rpmte p, rpmte q, Header oh, const char * msg)
 {
     HGE_t hge = (HGE_t)headerGetExtension;
-    rpmTagData he_p = { .ptr = NULL };
-    HE_s he_s = { .tag = 0, .t = 0, .p = &he_p, .c = 0, .freeData = 0 };
-    HE_t he = &he_s;
+    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     const char * blinkNEVRA = NULL;
     const char * blinkPkgid = NULL;
     const char * blinkHdrid = NULL;
@@ -615,8 +609,8 @@ int rpmteChain(rpmte p, rpmte q, Header oh, const char * msg)
 	msg = "";
     he->tag = RPMTAG_NVRA;
     xx = hge(oh, he, 0);
-assert(he_p.str != NULL);
-    blinkNEVRA = he_p.str;
+assert(he->p.str != NULL);
+    blinkNEVRA = he->p.str;
 
     /*
      * Convert binary pkgid to a string.
@@ -625,24 +619,24 @@ assert(he_p.str != NULL);
      */
     he->tag = RPMTAG_PKGID;
     xx = hge(oh, he, 0);
-    if (xx && he_p.ui8p != NULL) {
+    if (xx && he->p.ui8p != NULL) {
 	static const char hex[] = "0123456789abcdef";
 	char * t;
 	int i;
 
 	blinkPkgid = t = xmalloc((2*he->c) + 1);
 	for (i = 0 ; i < he->c; i++) {
-	    *t++ = hex[ ((he_p.ui8p[i] >> 4) & 0x0f) ];
-	    *t++ = hex[ ((he_p.ui8p[i]     ) & 0x0f) ];
+	    *t++ = hex[ ((he->p.ui8p[i] >> 4) & 0x0f) ];
+	    *t++ = hex[ ((he->p.ui8p[i]     ) & 0x0f) ];
 	}
 	*t = '\0';
-	he_p.ptr = _free(he_p.ptr);
+	he->p.ptr = _free(he->p.ptr);
     } else
 	blinkPkgid = NULL;
 
     he->tag = RPMTAG_HDRID;
     xx = hge(oh, he, 0);
-    blinkHdrid = he_p.str;
+    blinkHdrid = he->p.str;
 
 /*@-modfilesys@*/
 if (__mydebug)

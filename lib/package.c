@@ -185,9 +185,7 @@ exit:
 rpmRC rpmReadPackageFile(rpmts ts, void * _fd, const char * fn, Header * hdrp)
 {
     HGE_t hge = (HGE_t)headerGetExtension;
-    rpmTagData he_p = { .ptr = NULL };
-    HE_s he_s = { .tag = 0, .t = 0, .p = &he_p, .c = 0, .freeData = 0 };
-    HE_t he = &he_s;
+    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     pgpDig dig = rpmtsDig(ts);
     FD_t fd = _fd;
     char buf[8*BUFSIZ];
@@ -353,7 +351,7 @@ assert(dig != NULL);
     he->tag = sigtag;
     xx = hge(sigh, he, 0);
     sigtype = he->t;
-    sig = he_p.ptr;
+    sig = he->p.ptr;
     siglen = he->c;
     if (sig == NULL) {
 	rc = RPMRC_FAIL;
@@ -383,7 +381,7 @@ assert(dig != NULL);
 	he->tag = RPMTAG_HEADERIMMUTABLE;
 	xx = hge(h, he, 0);
 	uht = he->t;
-	uh = he_p.ptr;
+	uh = he->p.ptr;
 	uhc = he->c;
 	if (!xx)
 	    break;
@@ -422,7 +420,7 @@ assert(dig != NULL);
 	he->tag = RPMTAG_HEADERIMMUTABLE;
 	xx = hge(h, he, 0);
 	uht = he->t;
-	uh = he_p.ptr;
+	uh = he->p.ptr;
 	uhc = he->c;
 	if (!xx)
 	    break;

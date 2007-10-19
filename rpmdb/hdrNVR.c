@@ -36,9 +36,7 @@ int headerMacrosLoad(Header h)
 	/*@modifies rpmGlobalMacroContext @*/
 {
     HGE_t hge = (HGE_t)headerGetExtension;
-    rpmTagData he_p = { .ptr = NULL };
-    HE_s he_s = { .tag = 0, .t = 0, .p = &he_p, .c = 0, .freeData = 0 };
-    HE_t he = &he_s;
+    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     struct tagMacro * tagm;
     char numbuf[32];
     int xx;
@@ -62,11 +60,11 @@ int headerMacrosLoad(Header h)
 	    continue;
 	switch (he->t) {
 	case RPM_INT32_TYPE:
-	    sprintf(numbuf, "%d", *he_p.i32p);
+	    sprintf(numbuf, "%d", he->p.i32p[0]);
 	    addMacro(NULL, tagm->macroname, NULL, numbuf, -1);
 	    /*@switchbreak@*/ break;
 	case RPM_STRING_TYPE:
-	    addMacro(NULL, tagm->macroname, NULL, he_p.str, -1);
+	    addMacro(NULL, tagm->macroname, NULL, he->p.str, -1);
 	    /*@switchbreak@*/ break;
 	case RPM_STRING_ARRAY_TYPE:
 	case RPM_I18NSTRING_TYPE:
@@ -78,7 +76,7 @@ int headerMacrosLoad(Header h)
 	default:
 	    /*@switchbreak@*/ break;
 	}
-	he_p.ptr = _free(he_p.ptr);
+	he->p.ptr = _free(he->p.ptr);
     }
     return 0;
 }
@@ -90,9 +88,7 @@ int headerMacrosUnload(Header h)
 	/*@modifies rpmGlobalMacroContext @*/
 {
     HGE_t hge = (HGE_t)headerGetExtension;
-    rpmTagData he_p = { .ptr = NULL };
-    HE_s he_s = { .tag = 0, .t = 0, .p = &he_p, .c = 0, .freeData = 0 };
-    HE_t he = &he_s;
+    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     struct tagMacro * tagm;
     int xx;
 
@@ -118,7 +114,7 @@ int headerMacrosUnload(Header h)
 	default:
 	    /*@switchbreak@*/ break;
 	}
-	he_p.ptr = _free(he_p.ptr);
+	he->p.ptr = _free(he->p.ptr);
     }
 
     /* XXX restore previous %{buildroot} (if any) */
@@ -178,20 +174,18 @@ int headerNEVRA(Header h, const char **np,
 uint_32 hGetColor(Header h)
 {
     HGE_t hge = (HGE_t)headerGetExtension;
-    rpmTagData he_p = { .ptr = NULL };
-    HE_s he_s = { .tag = 0, .t = 0, .p = &he_p, .c = 0, .freeData = 0 };
-    HE_t he = &he_s;
+    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     uint_32 hcolor = 0;
     int xx;
 
     he->tag = RPMTAG_FILECOLORS;
     xx = hge(h, he, 0);
-    if (xx && he_p.ptr != NULL && he->c > 0) {
+    if (xx && he->p.ptr != NULL && he->c > 0) {
 	int i;
 	for (i = 0; i < he->c; i++)
-	    hcolor |= he_p.ui32p[i];
+	    hcolor |= he->p.ui32p[i];
     }
-    he_p.ptr = _free(he_p.ptr);
+    he->p.ptr = _free(he->p.ptr);
     hcolor &= 0x0f;
 
     return hcolor;

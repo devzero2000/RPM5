@@ -1322,9 +1322,7 @@ static int rpmfcGenerateScriptletDeps(const Spec spec, Package pkg)
         /*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     HGE_t hge = (HGE_t)headerGetExtension;
-    rpmTagData he_p = { .ptr = NULL };
-    HE_s he_s = { .tag = 0, .t = 0, .p = &he_p, .c = 0, .freeData = 0 };
-    HE_t he = &he_s;
+    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     StringBuf sb_stdin = newStringBuf();
     StringBuf sb_stdout = NULL;
     DepMsg_t dm;
@@ -1342,22 +1340,22 @@ static int rpmfcGenerateScriptletDeps(const Spec spec, Package pkg)
 	/* Retrieve scriptlet interpreter. */
 	he->tag = dm->ntag;
 	xx = hge(pkg->header, he, 0);
-	if (!xx || he_p.str == NULL)
+	if (!xx || he->p.str == NULL)
 	    continue;
-	xx = strcmp(he_p.str, "/bin/sh") && strcmp(he_p.str, "/bin/bash");
-	he_p.ptr = _free(he_p.ptr);
+	xx = strcmp(he->p.str, "/bin/sh") && strcmp(he->p.str, "/bin/bash");
+	he->p.ptr = _free(he->p.ptr);
 	if (xx)
 	    continue;
 
 	/* Retrieve scriptlet body. */
 	he->tag = dm->vtag;
 	xx = hge(pkg->header, he, 0);
-	if (!xx || he_p.str == NULL)
+	if (!xx || he->p.str == NULL)
 	    continue;
 	truncStringBuf(sb_stdin);
-	appendLineStringBuf(sb_stdin, he_p.str);
+	appendLineStringBuf(sb_stdin, he->p.str);
 	stripTrailingBlanksStringBuf(sb_stdin);
-	he_p.ptr = _free(he_p.ptr);
+	he->p.ptr = _free(he->p.ptr);
 
 	xx = rpmfcExec(dm->argv, sb_stdin, &sb_stdout, failnonzero);
 	if (xx == -1)

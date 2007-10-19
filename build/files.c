@@ -271,9 +271,7 @@ static void timeCheck(int tc, Header h)
 	/*@modifies internalState @*/
 {
     HGE_t hge = (HGE_t)headerGetExtension;
-    rpmTagData he_p = { .ptr = NULL };
-    HE_s he_s = { .tag = 0, .t = 0, .p = &he_p, .c = 0, .freeData = 0 };
-    HE_t he = &he_s;
+    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     int_32 currentTime = time(NULL);
     int_32 * mtime;
     int xx;
@@ -281,7 +279,7 @@ static void timeCheck(int tc, Header h)
 
     he->tag = RPMTAG_FILEMTIMES;
     xx = hge(h, he, 0);
-    mtime = he_p.i32p;
+    mtime = he->p.i32p;
     he->tag = RPMTAG_OLDFILENAMES;
     xx = hge(h, he, 0);
     
@@ -289,9 +287,9 @@ static void timeCheck(int tc, Header h)
 	xx = currentTime - mtime[i];
 	if (xx < 0) xx = -xx;
 	if (xx > tc)
-	    rpmlog(RPMLOG_WARNING, _("TIMECHECK failure: %s\n"), he_p.argv[i]);
+	    rpmlog(RPMLOG_WARNING, _("TIMECHECK failure: %s\n"), he->p.argv[i]);
     }
-    he_p.ptr = _free(he_p.ptr);
+    he->p.ptr = _free(he->p.ptr);
     mtime = _free(mtime);
 }
 
@@ -1168,11 +1166,9 @@ static void compressFilelist(Header h)
 	/*@modifies h @*/
 {
     HGE_t hge = (HGE_t)headerGetExtension;
-    rpmTagData he_p = { .ptr = NULL };
-    HE_s he_s = { .tag = 0, .t = 0, .p = &he_p, .c = 0, .freeData = 0 };
-    HE_t he = &he_s;
     HAE_t hae = (HAE_t)headerAddEntry;
     HRE_t hre = (HRE_t)headerRemoveEntry;
+    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     const char ** fileNames;
     const char * fn;
     const char ** dirNames;
@@ -1196,7 +1192,7 @@ static void compressFilelist(Header h)
 
     he->tag = RPMTAG_OLDFILENAMES;
     xx = hge(h, he, 0);
-    fileNames = he_p.argv;
+    fileNames = he->p.argv;
     count = he->c;
     if (!xx || fileNames == NULL || count <= 0)
 	return;		/* no file list */
@@ -1252,19 +1248,19 @@ exit:
     if (count > 0) {
 	he->tag = RPMTAG_DIRINDEXES;
 	he->t = RPM_INT32_TYPE;
-	he_p.i32p = dirIndexes;
+	he->p.i32p = dirIndexes;
 	he->c = count;
-	xx = hae(h, he->tag, he->t, he_p, he->c);
+	xx = hae(h, he->tag, he->t, he->p, he->c);
 	he->tag = RPMTAG_BASENAMES;
 	he->t = RPM_STRING_ARRAY_TYPE;
-	he_p.argv = baseNames;
+	he->p.argv = baseNames;
 	he->c = count;
-	xx = hae(h, he->tag, he->t, he_p, he->c);
+	xx = hae(h, he->tag, he->t, he->p, he->c);
 	he->tag = RPMTAG_DIRNAMES;
 	he->t = RPM_STRING_ARRAY_TYPE;
-	he_p.argv = dirNames;
+	he->p.argv = dirNames;
 	he->c = dirIndex + 1;
-	xx = hae(h, he->tag, he->t, he_p, he->c);
+	xx = hae(h, he->tag, he->t, he->p, he->c);
     }
 
     fileNames = _free(fileNames);
@@ -2161,9 +2157,7 @@ static int processPackageFiles(Spec spec, Package pkg,
 		rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     HGE_t hge = (HGE_t)headerGetExtension;
-    rpmTagData he_p = { .ptr = NULL };
-    HE_s he_s = { .tag = 0, .t = 0, .p = &he_p, .c = 0, .freeData = 0 };
-    HE_t he = &he_s;
+    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     struct FileList_s fl;
     char *s, **files, **fp;
     const char *fileName;
@@ -2228,7 +2222,7 @@ static int processPackageFiles(Spec spec, Package pkg,
 
     he->tag = RPMTAG_DEFAULTPREFIX;
     xx = hge(pkg->header, he, 0);
-    fl.prefix = he_p.str;
+    fl.prefix = he->p.str;
 
     fl.fileCount = 0;
     fl.totalFileSize = 0;
@@ -2689,9 +2683,7 @@ int processBinaryFiles(Spec spec, int installSpecialDoc, int test)
 	/*@modifies check_fileList @*/
 {
     HGE_t hge = (HGE_t)headerGetExtension;
-    rpmTagData he_p = { .ptr = NULL };
-    HE_s he_s = { .tag = 0, .t = 0, .p = &he_p, .c = 0, .freeData = 0 };
-    HE_t he = &he_s;
+    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     Package pkg;
     int res = 0;
     int xx;
@@ -2708,8 +2700,8 @@ int processBinaryFiles(Spec spec, int installSpecialDoc, int test)
 
 	he->tag = RPMTAG_NVRA;
 	xx = hge(pkg->header, he, 0);
-	rpmlog(RPMLOG_NOTICE, _("Processing files: %s\n"), he_p.str);
-	he_p.ptr = _free(he_p.ptr);
+	rpmlog(RPMLOG_NOTICE, _("Processing files: %s\n"), he->p.str);
+	he->p.ptr = _free(he->p.ptr);
 		   
 	if ((rc = processPackageFiles(spec, pkg, installSpecialDoc, test)))
 	    res = rc;

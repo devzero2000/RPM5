@@ -305,9 +305,7 @@ static int sugcmp(const void * a, const void * b)
 int rpmtsSolve(rpmts ts, rpmds ds, /*@unused@*/ const void * data)
 {
     HGE_t hge = (HGE_t)headerGetExtension;
-    rpmTagData he_p = { .ptr = NULL };
-    HE_s he_s = { .tag = 0, .t = 0, .p = &he_p, .c = 0, .freeData = 0 };
-    HE_t he = &he_s;
+    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     const char * errstr;
     const char * str = NULL;
     const char * qfmt;
@@ -358,8 +356,8 @@ int rpmtsSolve(rpmts ts, rpmds ds, /*@unused@*/ const void * data)
 
 	he->tag = RPMTAG_NAME;
 	xx = hge(h, he, 0);
-	hnamelen = ((xx && he_p.str) ? strlen(he_p.str) : 0);
-	he_p.ptr = _free(he_p.ptr);
+	hnamelen = ((xx && he->p.str) ? strlen(he->p.str) : 0);
+	he->p.ptr = _free(he->p.ptr);
 
 	/* XXX Prefer the shortest pkg N for basenames/provides resp. */
 	if (bhnamelen > 0 && hnamelen > bhnamelen)
@@ -368,8 +366,8 @@ int rpmtsSolve(rpmts ts, rpmds ds, /*@unused@*/ const void * data)
 	/* XXX Prefer the newest build if given alternatives. */
 	he->tag = RPMTAG_BUILDTIME;
 	xx = hge(h, he, 0);
-	htime = (xx && he_p.i32p ? *he_p.i32p : 0);
-	he_p.ptr = _free(he_p.ptr);
+	htime = (xx && he->p.ui32p ? he->p.ui32p[0] : 0);
+	he->p.ptr = _free(he->p.ptr);
 
 	if (htime <= bhtime)
 	    continue;

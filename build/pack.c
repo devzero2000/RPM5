@@ -174,19 +174,17 @@ static int addFileToTag(Spec spec, const char * file, Header h, int tag)
 	/*@modifies h, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     HGE_t hge = (HGE_t)headerGetExtension;
-    rpmTagData he_p = { .ptr = NULL };
-    HE_s he_s = { .tag = 0, .t = 0, .p = &he_p, .c = 0, .freeData = 0 };
-    HE_t he = &he_s;
+    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     StringBuf sb = newStringBuf();
     int xx;
 
     he->tag = tag;
     xx = hge(h, he, 0);
     if (xx) {
-	appendLineStringBuf(sb, he_p.str);
+	appendLineStringBuf(sb, he->p.str);
 	(void) headerRemoveEntry(h, tag);
     }
-    he_p.ptr = _free(he_p.ptr);
+    he->p.ptr = _free(he->p.ptr);
 
     if ((sb = addFileToTagAux(spec, file, sb)) == NULL)
 	return 1;
@@ -438,9 +436,7 @@ static int rpmLeadVersion(void)
 void providePackageNVR(Header h)
 {
     HGE_t hge = (HGE_t)headerGetExtension;
-    rpmTagData he_p = { .ptr = NULL };
-    HE_s he_s = { .tag = 0, .t = 0, .p = &he_p, .c = 0, .freeData = 0 };
-    HE_t he = &he_s;
+    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     const char *N, *V, *R;
     int_32 E;
     int gotE;
@@ -462,8 +458,8 @@ void providePackageNVR(Header h)
     *p = '\0';
     he->tag = RPMTAG_EPOCH;
     gotE = hge(h, he, 0);
-    E = (he_p.i32p ? *he_p.i32p : 0);
-    he_p.ptr = _free(he_p.ptr);
+    E = (he->p.i32p ? he->p.i32p[0] : 0);
+    he->p.ptr = _free(he->p.ptr);
     if (gotE) {
 	sprintf(p, "%d:", E);
 	p += strlen(p);
@@ -476,7 +472,7 @@ void providePackageNVR(Header h)
      */
     he->tag = RPMTAG_PROVIDENAME;
     xx = hge(h, he, 0);
-    provides = he_p.argv;
+    provides = he->p.argv;
     providesCount = he->c;
     if (!xx)
 	goto exit;
@@ -486,7 +482,7 @@ void providePackageNVR(Header h)
      */
     he->tag = RPMTAG_PROVIDEVERSION;
     xx = hge(h, he, 0);
-    providesEVR = he_p.argv;
+    providesEVR = he->p.argv;
     if (!xx) {
 	for (i = 0; i < providesCount; i++) {
 	    char * vdummy = "";
@@ -501,7 +497,7 @@ void providePackageNVR(Header h)
 
     he->tag = RPMTAG_PROVIDEFLAGS;
     xx = hge(h, he, 0);
-    provideFlags = he_p.i32p;
+    provideFlags = he->p.i32p;
 
     /*@-nullderef@*/	/* LCL: providesEVR is not NULL */
     if (provides && providesEVR && provideFlags)
@@ -859,9 +855,7 @@ static int_32 copyTags[] = {
 int packageBinaries(Spec spec)
 {
     HGE_t hge = (HGE_t)headerGetExtension;
-    rpmTagData he_p = { .ptr = NULL };
-    HE_s he_s = { .tag = 0, .t = 0, .p = &he_p, .c = 0, .freeData = 0 };
-    HE_t he = &he_s;
+    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     struct cpioSourceArchive_s csabuf;
     CSA_t csa = &csabuf;
     int rc;
@@ -913,8 +907,8 @@ int packageBinaries(Spec spec)
 		he->tag = RPMTAG_NVRA;
 		xx = hge(pkg->header, he, 0);
 		rpmlog(RPMLOG_ERR, _("Could not generate output "
-		     "filename for package %s: %s\n"), he_p.str, errorString);
-		he_p.ptr = _free(he_p.ptr);
+		     "filename for package %s: %s\n"), he->p.str, errorString);
+		he->p.ptr = _free(he->p.ptr);
 		return RPMRC_FAIL;
 	    }
 	    fn = rpmGetPath("%{_rpmdir}/", binRpm, NULL);
