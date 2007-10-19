@@ -2908,14 +2908,14 @@ static char * realDateFormat(HE_t he, const char * strftimeFormat)
     rpmTagData data = { .ptr = he->p.ptr };
     char * val;
 
-    if (he->t != RPM_INT32_TYPE) {
+    if (he->t != RPM_INT64_TYPE) {
 	val = xstrdup(_("(not a number)"));
     } else {
 	struct tm * tstruct;
 	char buf[50];
 
-	/* this is important if sizeof(int_32) ! sizeof(time_t) */
-	{   time_t dateint = data.ui32p[0];
+	/* this is important if sizeof(int_64) ! sizeof(time_t) */
+	{   time_t dateint = data.ui64p[0];
 	    tstruct = localtime(&dateint);
 	}
 	buf[0] = '\0';
@@ -3424,14 +3424,12 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
     char * val = NULL;
     size_t need = 0;
     char * t, * te;
-    char buf[20];
     
     rpmTagCount countBuf;
 
     HE_t vhe = memset(alloca(sizeof(*vhe)), 0, sizeof(*vhe));
     int_64 ival = 0;
 
-    memset(buf, 0, sizeof(buf));
     if (tag->ext) {
 	if (getExtension(hsa, tag->ext, &he->t, &he->p, &he->c, hsa->ec + tag->extNum))
 	{
@@ -3480,8 +3478,6 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
 	he->c = 1;
 	he->t = RPM_INT32_TYPE;
     }
-
-    (void) stpcpy( stpcpy(buf, "%"), tag->format);
 
     if (he->p.ptr)
     switch (he->t) {
@@ -3558,6 +3554,19 @@ exit:
 /*@=modobserver =observertrans@*/
 
     if (val && need > 0) {
+	if (tag->format && *tag->format && tag->pad) {
+	    size_t nb;
+	    nb = strlen(tag->format) + sizeof("%s");
+	    t = alloca(nb);
+	    (void) stpcpy( stpcpy( stpcpy(t, "%"), tag->format), "s");
+	    nb = tag->pad + strlen(val) + 1;
+	    te = xmalloc(nb);
+	    (void) snprintf(te, nb, t, val);
+	    te[nb-1] = '\0';
+	    val = _free(val);
+	    val = te;
+	    need += tag->pad;
+	}
 	t = hsaReserve(hsa, need);
 	te = stpcpy(t, val);
 	hsa->vallen += (te - t);

@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - jbj: fix :time and :date formats, pad --info spewage.
     - jbj: eliminate padding & formatPrefix, strings is strings now.
     - jbj: bury hex dump in intFormat defaults, refactor common code.
     - jbj: hmmm, --yaml is b0rken atm, todo++;
