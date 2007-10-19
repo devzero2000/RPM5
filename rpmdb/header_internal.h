@@ -143,11 +143,11 @@ typedef /*@abstract@*/ struct sprintfToken_s * sprintfToken;
 /*@-fielduse@*/
 struct sprintfToken_s {
     enum {
-	PTOK_NONE = 0,
-	PTOK_TAG,
-	PTOK_ARRAY,
-	PTOK_STRING,
-	PTOK_COND
+        PTOK_NONE       = 0,
+        PTOK_TAG        = 1,
+        PTOK_ARRAY      = 2,
+        PTOK_STRING     = 3,
+        PTOK_COND       = 4
     } type;
     union {
 	struct sprintfTag_s tag;	/*!< PTOK_TAG */

@@ -2796,7 +2796,7 @@ bingo:
  */
 static char * intFormat(HE_t he, const char *fmt)
 {
-    int ix = (he->ix > 0 ? he->ix : 0);;
+    int ix = (he->ix > 0 ? he->ix : 0);
     int_64 ival = 0;
     const char * istr = NULL;
     char * b;
@@ -3130,6 +3130,8 @@ static int parseFormat(headerSprintfArgs hsa, /*@null@*/ char * str,
 		if (xisdigit(*start)) {
 		    i = strtoul(start, &start, 10);
 		    token->u.tag.pad += i;
+		    start = chptr;
+		    break;
 		} else {
 		    start++;
 		}
@@ -3185,11 +3187,10 @@ static int parseFormat(headerSprintfArgs hsa, /*@null@*/ char * str,
 		return 1;
 	    }
 
-	    start = next;
+	    dst = start = next;
 	    /*@switchbreak@*/ break;
 
 	case '[':
-	    *dst++ = '\0';
 	    *start++ = '\0';
 	    token = format + numTokens++;
 
@@ -3263,8 +3264,13 @@ static int parseFormat(headerSprintfArgs hsa, /*@null@*/ char * str,
 
     for (i = 0; i < numTokens; i++) {
 	token = format + i;
-	if (token->type == PTOK_STRING)
+	switch(token->type) {
+	default:
+	    break;
+	case PTOK_STRING:
 	    token->u.string.len = strlen(token->u.string.string);
+	    break;
+	}
     }
 
     *numTokensPtr = numTokens;
@@ -3288,7 +3294,7 @@ static int parseExpression(headerSprintfArgs hsa, sprintfToken token,
 	return 1;
     }
 
-    *chptr++ = '\0';;
+    *chptr++ = '\0';
 
     if (*chptr != '{') {
 	hsa->errmsg = _("{ expected after ? in expression");

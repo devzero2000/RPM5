@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - jbj: make the --info field colons align correctly, more (#323221).
     - jbj: fix :time and :date formats, pad --info spewage.
     - jbj: eliminate padding & formatPrefix, strings is strings now.
     - jbj: bury hex dump in intFormat defaults, refactor common code.
