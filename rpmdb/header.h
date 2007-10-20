@@ -177,15 +177,17 @@ typedef rpmTagCount *	hCNT_t;
 struct _HE_s {
     int_32 tag;
     rpmTagType t;
-/*@null@*/
+/*@owned@*/ /*@null@*/
     rpmTagData p;
     rpmTagCount c;
-    int freeData;
     int ix;
+    unsigned int freeData	: 1;
+    unsigned int avail		: 1;
 };
 typedef struct _HE_s HE_s;
 #endif
-typedef HE_s * HE_t;
+typedef HE_s * HE_t;		/* tag container. */
+typedef /*@abstract@*/ HE_s * rpmec;		/* Extension Cache entry. */
 /*@=typeuse =fielduse@*/
 
 /** \ingroup header

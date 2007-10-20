@@ -3437,18 +3437,18 @@ static int getExtension(headerSprintfArgs hsa, headerTagTagFunction fn,
 	int xx;
 
 	xx = fn(hsa->h, he);
-	ec->type = he->t;
-	ec->data.ptr = he->p.ptr;
-	ec->count = he->c;
-	ec->freeit = he->freeData;
+	ec->t = he->t;
+	ec->p.ptr = he->p.ptr;
+	ec->c = he->c;
+	ec->freeData = he->freeData;
 	if (xx)
 	    return 1;
 	ec->avail = 1;
     }
 
-    if (typeptr) *typeptr = ec->type;
-    if (data) (*data).ptr = ec->data.ptr;
-    if (countptr) *countptr = ec->count;
+    if (typeptr) *typeptr = ec->t;
+    if (data) (*data).ptr = ec->p.ptr;
+    if (countptr) *countptr = ec->c;
 
     return 0;
 }
@@ -3871,7 +3871,8 @@ rpmecFree(const headerSprintfExtension exts, /*@only@*/ rpmec ec)
     for (ext = exts, extNum = 0; ext != NULL && ext->type != HEADER_EXT_LAST;
 	ext = (ext->type == HEADER_EXT_MORE ? ext->u.more : ext+1), extNum++)
     {
-	if (ec[extNum].freeit) ec[extNum].data.ptr = _free(ec[extNum].data.ptr);
+	if (ec[extNum].freeData)
+	    ec[extNum].p.ptr = _free(ec[extNum].p.ptr);
     }
 
     ec = _free(ec);

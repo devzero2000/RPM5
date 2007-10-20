@@ -125,19 +125,6 @@ struct sprintfTag_s {
 };
 
 /** \ingroup header
- * Extension cache.
- */
-typedef /*@abstract@*/ struct rpmec_s * rpmec;
-struct rpmec_s {
-    rpmTagType type;
-    int_32 count;
-    int avail;
-    int freeit;
-/*@owned@*/
-    hRET_t data;
-};
-
-/** \ingroup header
  */
 typedef /*@abstract@*/ struct sprintfToken_s * sprintfToken;
 /*@-fielduse@*/
