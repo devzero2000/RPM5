@@ -3837,6 +3837,7 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 /**
  * Create an extension cache.
  * @param exts		headerSprintf extensions
+ * @retval *necp	no. of elements
  * @return		new extension cache
  */
 static /*@only@*/ HE_t
@@ -3856,7 +3857,7 @@ rpmecNew(const headerSprintfExtension exts, /*@null@*/ int * necp)
 
     ec = xcalloc(extNum+1, sizeof(*ec));
     if (*necp)
-	necp = extNum;
+	*necp = extNum;
     return ec;
 }
 
@@ -3881,6 +3882,42 @@ rpmecFree(const headerSprintfExtension exts, /*@only@*/ HE_t ec)
     }
 
     ec = _free(ec);
+    return NULL;
+}
+
+/**
+ * Create tag data cache.
+ * @param ntc		no. of elements
+ * @return		new tag data cache
+ */
+static /*@only@*/ HE_t
+rpmtcNew(int ntc)
+	/*@*/
+{
+    HE_t ec = xcalloc(ntc+1, sizeof(*ec));
+    return ec;
+}
+
+/**
+ * Destroy tag data cache.
+ * @param tc		tag data cache
+ * @param ntc		no. of elements
+ * @return		NULL always
+ */
+static /*@null@*/ HE_t
+rpmtcFree(/*@only@*/ HE_t tc, int ntc)
+	/*@modifies ec @*/
+{
+    int i;
+
+    if (tc != NULL)
+    for (i = 0; i < ntc; i++) {
+	HE_t he = tc + i;
+	if (he->freeData)
+	    he->p.ptr = _free(he->p.ptr);
+	memset(tc, 0, sizeof(*tc));
+    }
+    tc = _free(tc);
     return NULL;
 }
 
@@ -3924,7 +3961,10 @@ char * headerSprintf(Header h, const char * fmt,
     if (parseFormat(hsa, hsa->fmt, &hsa->format, &hsa->numTokens, NULL, PARSER_BEGIN))
 	goto exit;
 
+    hsa->nec = 0;
     hsa->ec = rpmecNew(hsa->exts, &hsa->nec);
+    hsa->ntc = hsa->numTokens;
+    hsa->tc = rpmtcNew(hsa->ntc);
     hsa->val = xstrdup("");
 
     tag =
@@ -3977,6 +4017,8 @@ char * headerSprintf(Header h, const char * fmt,
 
     hsa->ec = rpmecFree(hsa->exts, hsa->ec);
     hsa->nec = 0;
+    hsa->tc = rpmtcFree(hsa->tc, hsa->ntc);
+    hsa->ntc = 0;
     hsa->format = freeFormat(hsa->format, hsa->numTokens);
 
 exit:

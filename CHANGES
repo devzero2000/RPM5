@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - jbj: add tag data cache.
     - jbj: eliminate rpmec data type.
     - jbj: merge rpmec into HE_t.
     - jbj: not yet for binary search retrieve using tagValue.
