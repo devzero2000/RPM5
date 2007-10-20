@@ -734,7 +734,9 @@ static inline const char *rcsid(const char *p) { \
 
 #define	SUPPORT_RPMLEAD		0	/* XXX default is add lead. */
 
+#if 0
 #define SUPPORT_LINEAR_TAGTABLE_LOOKUP	0
+#endif
 
 /**
  * Turn off pgp/pgp5 signing (hasn't been looked at seriously for years).
