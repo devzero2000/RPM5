@@ -30,7 +30,7 @@ int _hdr_debug = 0;
 int _newmagic = 0;
 
 /*@unchecked@*/
-int _tagcache = 0;
+int _tagcache = 1;
 
 /*@access entryInfo @*/
 /*@access indexEntry @*/
@@ -2427,6 +2427,79 @@ static char escapedChar(const char ch)	/*@*/
 }
 
 /**
+ * Mark a tag container with headerGetEntry() freeData.
+ * @param he		tag container
+ */
+static void rpmtcMark(/*@null@*/ HE_t he)
+	/*@modifies he @*/
+{
+    /* Set he->freeData as appropriate for headerGetEntry() . */
+    if (he)
+    switch (he->t) {
+    default:
+	he->freeData = 0;
+	break;
+    case RPM_STRING_ARRAY_TYPE:
+    case RPM_BIN_TYPE:
+	he->freeData = 1;
+	break;
+    }
+    return;
+}
+
+/**
+ * Clean a tag container, free'ing attached malloc's..
+ * @param he		tag container
+ */
+static void rpmtcClean(/*@null@*/ HE_t he)
+	/*@modifies he @*/
+{
+    if (he) {
+	if (he->freeData) {
+if (_jbj)
+fprintf(stderr, " ZAP: %p tag %s(%d)\t%d %p[%d:%d] free %d avail %d\n", he, tagName(he->tag), he->tag, he->t, he->p.ptr, he->ix, he->c, he->freeData, he->avail);
+	    he->p.ptr = _free(he->p.ptr);
+	}
+	memset(he, 0, sizeof(*he));
+    }
+    return;
+}
+
+#ifdef	NOTYET
+/**
+ * Destroy tag data cache.
+ * @param tc		tag data cache
+ * @param ntc		no. of elements
+ * @return		NULL always
+ */
+static /*@null@*/ HE_t
+rpmtcFree(/*@only@*/ HE_t tc, int ntc)
+	/*@modifies ec @*/
+{
+    int i;
+
+    if (tc != NULL)
+    for (i = 0; i < ntc; i++)
+	rpmtcClean(tc + i);
+    tc = _free(tc);
+    return NULL;
+}
+
+/**
+ * Create tag data cache.
+ * @param ntc		no. of elements
+ * @return		new tag data cache
+ */
+static /*@only@*/ HE_t
+rpmtcNew(int ntc)
+	/*@*/
+{
+    HE_t ec = xcalloc(ntc+1, sizeof(*ec));
+    return ec;
+}
+#endif
+
+/**
  * Destroy headerSprintf format array.
  * @param format	sprintf format array
  * @param num		number of elements
@@ -2442,6 +2515,9 @@ freeFormat( /*@only@*/ /*@null@*/ sprintfToken format, int num)
 
     for (i = 0; i < num; i++) {
 	switch (format[i].type) {
+	case PTOK_TAG:
+	    rpmtcClean(&format[i].u.tag.he);
+	    break;
 	case PTOK_ARRAY:
 	    format[i].u.array.format =
 		freeFormat(format[i].u.array.format,
@@ -2454,9 +2530,9 @@ freeFormat( /*@only@*/ /*@null@*/ sprintfToken format, int num)
 	    format[i].u.cond.elseFormat =
 		freeFormat(format[i].u.cond.elseFormat, 
 			format[i].u.cond.numElseTokens);
+	    rpmtcClean(&format[i].u.cond.tag.he);
 	    /*@switchbreak@*/ break;
 	case PTOK_NONE:
-	case PTOK_TAG:
 	case PTOK_STRING:
 	default:
 	    /*@switchbreak@*/ break;
@@ -2584,58 +2660,6 @@ Header headerCopy(Header h)
 }
 
 /**
- * Clean a tag container.
- * @param he		tag container
- */
-static void rpmtcClean(/*@null@*/ HE_t he)
-	/*@modifies he @*/
-{
-    if (he) {
-	if (he->freeData) {
-if (_jbj)
-fprintf(stderr, " ZAP: %p tag %s(%d)\t%d %p[%d:%d] free %d avail %d\n", he, tagName(he->tag), he->tag, he->t, he->p.ptr, he->ix, he->c, he->freeData, he->avail);
-	    he->p.ptr = _free(he->p.ptr);
-	}
-	memset(he, 0, sizeof(*he));
-    }
-    return;
-}
-
-#ifdef	NOTYET
-/**
- * Destroy tag data cache.
- * @param tc		tag data cache
- * @param ntc		no. of elements
- * @return		NULL always
- */
-static /*@null@*/ HE_t
-rpmtcFree(/*@only@*/ HE_t tc, int ntc)
-	/*@modifies ec @*/
-{
-    int i;
-
-    if (tc != NULL)
-    for (i = 0; i < ntc; i++)
-	rpmtcClean(tc + i);
-    tc = _free(tc);
-    return NULL;
-}
-
-/**
- * Create tag data cache.
- * @param ntc		no. of elements
- * @return		new tag data cache
- */
-static /*@only@*/ HE_t
-rpmtcNew(int ntc)
-	/*@*/
-{
-    HE_t ec = xcalloc(ntc+1, sizeof(*ec));
-    return ec;
-}
-#endif
-
-/**
  */
 typedef struct headerSprintfArgs_s {
     Header h;
@@ -2709,26 +2733,15 @@ static sprintfToken hsaNext(/*@returned@*/ headerSprintfArgs hsa)
 	if (hsa->hi == NULL) {
 	    hsa->i++;
 	} else {
-	    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
-	    if (!headerNextIterator(hsa->hi, &he->tag, &he->t, NULL, &he->c))
+	    HE_t he = &tag->he;
+	    rpmtcClean(he);
+	    if (!headerNextIterator(hsa->hi, &he->tag, &he->t, &he->p, &he->c))
 	    {
 		tag->tagno = 0;
 		return NULL;
 	    }
 	    tag->tagno = he->tag;
-#ifdef	NOTYET
-	    /* Set he->freeData as appropriate for headerGetEntry() . */
-	    switch (he->t) {
-	    default:
-		break;
-	    case RPM_STRING_ARRAY_TYPE:
-	    case RPM_OPENPGP_TYPE:
-	    case RPM_ASN1_TYPE:
-	    case RPM_BIN_TYPE:
-		he->freeData = 1;
-		break;
-	    }
-#endif
+	    rpmtcMark(he);
 	    he->avail = 1;
 if (_jbj)
 fprintf(stderr, " NEW: %p tag %s(%d)\t%d %p[%d:%d] free %d avail %d\n", he, tagName(he->tag), he->tag, he->t, he->p.ptr, he->ix, he->c, he->freeData, he->avail);
@@ -3569,7 +3582,7 @@ static int getExtension(headerSprintfArgs hsa, headerTagTagFunction fn,
 static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
 	/*@modifies hsa @*/
 {
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    HE_t he = &tag->he;
     char * val = NULL;
     size_t need = 0;
     char * t, * te;
@@ -3588,25 +3601,13 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
 	}
     } else
     if (!he->avail) {
-	/* XXX calling headerGetEntry for every element in array is pathetic. */
-	he->tag = tag->tagno;
+	he->tag = tag->tagno;	/* XXX necessary? */
 	if (!headerGetEntry(hsa->h, he->tag, &he->t, &he->p, &he->c)) {
 	    he->c = 1;
 	    he->t = RPM_STRING_TYPE;	
 	    he->p.str = "(none)";
 	}
-
-	/* Set he->freeData as appropriate for headerGetEntry() . */
-	switch (he->t) {
-	default:
-	    break;
-	case RPM_STRING_ARRAY_TYPE:
-	case RPM_OPENPGP_TYPE:
-	case RPM_ASN1_TYPE:
-	case RPM_BIN_TYPE:
-	    he->freeData = 1;
-	    break;
-	}
+	rpmtcMark(he);
 	he->avail = 1;
 if (_jbj)
 fprintf(stderr, " NEW: %p tag %s(%d)\t%d %p[%d:%d] free %d avail %d\n", he, tagName(he->tag), he->tag, he->t, he->p.ptr, he->ix, he->c, he->freeData, he->avail);

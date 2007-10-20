@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - jbj: enable Plan B tag data caching.
     - jbj: grr, Plan B: cache w sprintfTag, not sprintfToken.
     - jbj: use tag data cache.
     - jbj: add tag data cache.
