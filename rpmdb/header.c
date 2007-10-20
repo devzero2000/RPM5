@@ -3456,6 +3456,53 @@ static int getExtension(headerSprintfArgs hsa, headerTagTagFunction fn,
 }
 
 /**
+ * Create tag data cache.
+ * @param ntc		no. of elements
+ * @return		new tag data cache
+ */
+static /*@only@*/ HE_t
+rpmtcNew(int ntc)
+	/*@*/
+{
+    HE_t ec = xcalloc(ntc+1, sizeof(*ec));
+    return ec;
+}
+
+/**
+ * Clean a tag container.
+ * @param he		tag container
+ */
+static void rpmtcClean(/*@null@*/ HE_t he)
+	/*@modifies he @*/
+{
+    if (he) {
+	if (he->freeData)
+	    he->p.ptr = _free(he->p.ptr);
+	memset(he, 0, sizeof(*he));
+    }
+    return;
+}
+
+/**
+ * Destroy tag data cache.
+ * @param tc		tag data cache
+ * @param ntc		no. of elements
+ * @return		NULL always
+ */
+static /*@null@*/ HE_t
+rpmtcFree(/*@only@*/ HE_t tc, int ntc)
+	/*@modifies ec @*/
+{
+    int i;
+
+    if (tc != NULL)
+    for (i = 0; i < ntc; i++)
+	rpmtcClean(tc + i);
+    tc = _free(tc);
+    return NULL;
+}
+
+/**
  * Format a single item's value.
  * @param hsa		headerSprintf args
  * @param tag		tag
@@ -3466,7 +3513,7 @@ static int getExtension(headerSprintfArgs hsa, headerTagTagFunction fn,
 static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
 	/*@modifies hsa @*/
 {
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    HE_t he = hsa->tc + hsa->i;
     char * val = NULL;
     size_t need = 0;
     char * t, * te;
@@ -3475,6 +3522,8 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
 
     HE_t vhe = memset(alloca(sizeof(*vhe)), 0, sizeof(*vhe));
     int_64 ival = 0;
+
+    rpmtcClean(he);
 
     if (tag->ext) {
 	if (getExtension(hsa, tag->ext, &he->t, &he->p, &he->c, hsa->ec + tag->extNum))
@@ -3492,6 +3541,7 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
 	    he->p.str = "(none)";
 	}
 
+#if	!defined(DYING)	/* XXX notyet */
 	/* XXX this test is unnecessary, array sizes are checked */
 	switch (he->t) {
 	default:
@@ -3511,20 +3561,24 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
 	    break;
 	}
 	he->freeData = 1;
+#endif
     }
 
     if (tag->arrayCount) {
+	countBuf = he->c;
+#ifdef	DYING
 /*@-modobserver -observertrans@*/
 	if (he->freeData) {
 	    he->p.ptr = headerFreeData(he->p.ptr, he->t);
 	    he->freeData = 0;
 	}
 /*@=modobserver =observertrans@*/
-
-	countBuf = he->c;
+#else
+	rpmtcClean(he);
+#endif
+	he->t = RPM_INT32_TYPE;
 	he->p.i32p = &countBuf;
 	he->c = 1;
-	he->t = RPM_INT32_TYPE;
     }
 
     if (he->p.ptr)
@@ -3882,42 +3936,6 @@ rpmecFree(const headerSprintfExtension exts, /*@only@*/ HE_t ec)
     }
 
     ec = _free(ec);
-    return NULL;
-}
-
-/**
- * Create tag data cache.
- * @param ntc		no. of elements
- * @return		new tag data cache
- */
-static /*@only@*/ HE_t
-rpmtcNew(int ntc)
-	/*@*/
-{
-    HE_t ec = xcalloc(ntc+1, sizeof(*ec));
-    return ec;
-}
-
-/**
- * Destroy tag data cache.
- * @param tc		tag data cache
- * @param ntc		no. of elements
- * @return		NULL always
- */
-static /*@null@*/ HE_t
-rpmtcFree(/*@only@*/ HE_t tc, int ntc)
-	/*@modifies ec @*/
-{
-    int i;
-
-    if (tc != NULL)
-    for (i = 0; i < ntc; i++) {
-	HE_t he = tc + i;
-	if (he->freeData)
-	    he->p.ptr = _free(he->p.ptr);
-	memset(tc, 0, sizeof(*tc));
-    }
-    tc = _free(tc);
     return NULL;
 }
 
