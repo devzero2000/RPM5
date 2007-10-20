@@ -2430,7 +2430,7 @@ static char escapedChar(const char ch)	/*@*/
  * Mark a tag container with headerGetEntry() freeData.
  * @param he		tag container
  */
-static void rpmtcMark(/*@null@*/ HE_t he)
+static HE_t rpmheMark(/*@null@*/ HE_t he)
 	/*@modifies he @*/
 {
     /* Set he->freeData as appropriate for headerGetEntry() . */
@@ -2444,14 +2444,14 @@ static void rpmtcMark(/*@null@*/ HE_t he)
 	he->freeData = 1;
 	break;
     }
-    return;
+    return he;
 }
 
 /**
  * Clean a tag container, free'ing attached malloc's..
  * @param he		tag container
  */
-static void rpmtcClean(/*@null@*/ HE_t he)
+static HE_t rpmheClean(/*@null@*/ HE_t he)
 	/*@modifies he @*/
 {
     if (he) {
@@ -2462,7 +2462,7 @@ fprintf(stderr, " ZAP: %p tag %s(%d)\t%d %p[%d:%d] free %d avail %d\n", he, tagN
 	}
 	memset(he, 0, sizeof(*he));
     }
-    return;
+    return he;
 }
 
 #ifdef	NOTYET
@@ -2516,7 +2516,7 @@ freeFormat( /*@only@*/ /*@null@*/ sprintfToken format, int num)
     for (i = 0; i < num; i++) {
 	switch (format[i].type) {
 	case PTOK_TAG:
-	    rpmtcClean(&format[i].u.tag.he);
+	    (void) rpmheClean(&format[i].u.tag.he);
 	    break;
 	case PTOK_ARRAY:
 	    format[i].u.array.format =
@@ -2530,7 +2530,7 @@ freeFormat( /*@only@*/ /*@null@*/ sprintfToken format, int num)
 	    format[i].u.cond.elseFormat =
 		freeFormat(format[i].u.cond.elseFormat, 
 			format[i].u.cond.numElseTokens);
-	    rpmtcClean(&format[i].u.cond.tag.he);
+	    (void) rpmheClean(&format[i].u.cond.tag.he);
 	    /*@switchbreak@*/ break;
 	case PTOK_NONE:
 	case PTOK_STRING:
@@ -2733,18 +2733,17 @@ static sprintfToken hsaNext(/*@returned@*/ headerSprintfArgs hsa)
 	if (hsa->hi == NULL) {
 	    hsa->i++;
 	} else {
-	    HE_t he = &tag->he;
-	    rpmtcClean(he);
+	    HE_t he = rpmheClean(&tag->he);
 	    if (!headerNextIterator(hsa->hi, &he->tag, &he->t, &he->p, &he->c))
 	    {
 		tag->tagno = 0;
 		return NULL;
 	    }
-	    tag->tagno = he->tag;
-	    rpmtcMark(he);
+	    he = rpmheMark(he);
 	    he->avail = 1;
 if (_jbj)
 fprintf(stderr, " NEW: %p tag %s(%d)\t%d %p[%d:%d] free %d avail %d\n", he, tagName(he->tag), he->tag, he->t, he->p.ptr, he->ix, he->c, he->freeData, he->avail);
+	    tag->tagno = he->tag;
 	}
     }
 
@@ -3586,6 +3585,7 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
     char * val = NULL;
     size_t need = 0;
     char * t, * te;
+    int xx;
     
     rpmTagCount countBuf;
 
@@ -3598,28 +3598,39 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
 	    he->c = 1;
 	    he->t = RPM_STRING_TYPE;	
 	    he->p.str = "(none)";
+	    he->freeData = 0;
 	}
     } else
     if (!he->avail) {
 	he->tag = tag->tagno;	/* XXX necessary? */
-	if (!headerGetEntry(hsa->h, he->tag, &he->t, &he->p, &he->c)) {
+#ifdef	DYING
+	xx = headerGetEntry(hsa->h, he->tag, &he->t, &he->p, &he->c);
+	if (xx)
+	    rpmheMark(he);
+#else
+	xx = headerGetExtension(hsa->h, he->tag, &he->t, &he->p, &he->c);
+	if (xx && he->p.ptr != NULL)
+	    he->freeData = 1;
+#endif
+	if (!xx) {
 	    he->c = 1;
 	    he->t = RPM_STRING_TYPE;	
 	    he->p.str = "(none)";
+	    he->freeData = 0;
 	}
-	rpmtcMark(he);
-	he->avail = 1;
 if (_jbj)
 fprintf(stderr, " NEW: %p tag %s(%d)\t%d %p[%d:%d] free %d avail %d\n", he, tagName(he->tag), he->tag, he->t, he->p.ptr, he->ix, he->c, he->freeData, he->avail);
     }
 
     if (tag->arrayCount) {
 	countBuf = he->c;
-	rpmtcClean(he);
+	he = rpmheClean(he);
 	he->t = RPM_INT32_TYPE;
 	he->p.i32p = &countBuf;
 	he->c = 1;
+	he->freeData = 0;
     }
+    he->avail = 1;
 
     if (he->p.ptr)
     switch (he->t) {
@@ -3691,7 +3702,7 @@ assert(val);
 
 exit:
     if (!_tagcache)
-	rpmtcClean(he);
+	he = rpmheClean(he);
 
     if (val && need > 0) {
 	if (tag->format && *tag->format && tag->pad) {
@@ -3728,14 +3739,16 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 		int element)
 	/*@modifies hsa @*/
 {
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     char numbuf[64];	/* XXX big enuf for "Tag_0x01234567" */
     char * t, * te;
     int i, j;
     int numElements;
     sprintfToken spft;
+    sprintfTag tag;
+    HE_t he;
     int condNumFormats;
     size_t need;
+    int xx;
 
     /* we assume the token and header have been validated already! */
 
@@ -3786,40 +3799,54 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 	spft = token->u.array.format;
 	for (i = 0; i < token->u.array.numTokens; i++, spft++)
 	{
-	    if (spft->type != PTOK_TAG ||
-		spft->u.tag.arrayCount ||
-		spft->u.tag.justOne) continue;
+	    tag = &spft->u.tag;
+	    if (spft->type != PTOK_TAG || tag->arrayCount || tag->justOne)
+		continue;
 
-	    if (spft->u.tag.ext) {
-		if (getExtension(hsa, spft->u.tag.ext, &he->t, NULL, &he->c, 
-				 hsa->ec + spft->u.tag.extNum))
+	    he = &tag->he;
+	    if (tag->ext) {
+		if (getExtension(hsa, tag->ext, &he->t, &he->p, &he->c, 
+				 hsa->ec + tag->extNum))
 		     continue;
 	    } else {
-		he->tag = spft->u.tag.tagno;
-		if (!headerGetEntry(hsa->h, he->tag, &he->t, NULL, &he->c))
+		he->tag = tag->tagno;
+#ifdef	DYING
+		xx = headerGetEntry(hsa->h, he->tag, &he->t, &he->p, &he->c);
+		if (xx)
+		    he = rpmheMark(he);
+#else
+		xx = headerGetExtension(hsa->h, he->tag, &he->t, &he->p, &he->c);
+		if (xx && he->p.ptr != NULL)
+		    he->freeData = 1;
+#endif
+		if (!xx)
 		    continue;
+if (_jbj)
+fprintf(stderr, " NEW: %p tag %s(%d)\t%d %p[%d:%d] free %d avail %d\n", he, tagName(he->tag), he->tag, he->t, he->p.ptr, he->ix, he->c, he->freeData, he->avail);
 	    } 
 
-#if !defined(DYING)	/* XXX notyet */
-	    if (he->t == RPM_BIN_TYPE || he->t == RPM_ASN1_TYPE || he->t == RPM_OPENPGP_TYPE)
-		he->c = 1;      /* XXX count abused as no. of bytes. */
-#endif
-
-	    if (numElements > 1 && he->c != numElements)
+	    /* Check that all iteration items are same size (or scalar). */
 	    switch (he->t) {
 	    default:
+		if (numElements == -1) {
+		    numElements = he->c;
+		    /*@switchbreak@*/ break;
+		}
+		if (he->c == numElements)
+		    /*@switchbreak@*/ break;
 		hsa->errmsg =
 			_("array iterator used with different sized arrays");
+		he = rpmheClean(he);
 		return NULL;
 		/*@notreached@*/ /*@switchbreak@*/ break;
 	    case RPM_OPENPGP_TYPE:
 	    case RPM_ASN1_TYPE:
 	    case RPM_BIN_TYPE:
 	    case RPM_STRING_TYPE:
+		if (numElements == -1)
+		    numElements = 1;
 		/*@switchbreak@*/ break;
 	    }
-	    if (he->c > numElements)
-		numElements = he->c;
 	}
 
 	if (numElements == -1) {
@@ -3837,21 +3864,23 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 	    if (need == 0) break;
 
 	    spft = token->u.array.format;
-	    isxml = (spft->type == PTOK_TAG && spft->u.tag.type != NULL &&
-		!strcmp(spft->u.tag.type, "xml"));
-	    isyaml = (spft->type == PTOK_TAG && spft->u.tag.type != NULL &&
-		!strcmp(spft->u.tag.type, "yaml"));
+	    tag = &spft->u.tag;
+
+	    isxml = (spft->type == PTOK_TAG && tag->type != NULL &&
+		!strcmp(tag->type, "xml"));
+	    isyaml = (spft->type == PTOK_TAG && tag->type != NULL &&
+		!strcmp(tag->type, "yaml"));
 
 	    if (isxml) {
 #if defined(SUPPORT_LINEAR_TAGTABLE_LOOKUP)
-		const char * tagN = myTagName(hsa->tags, spft->u.tag.tagno, NULL);
+		const char * tagN = myTagName(hsa->tags, tag->tagno, NULL);
 #else
-		const char * tagN = tagName(spft->u.tag.tagno);
+		const char * tagN = tagName(tag->tagno);
 #endif
 		/* XXX display "Tag_0x01234567" for unknown tags. */
 		if (tagN == NULL) {
 		    (void) snprintf(numbuf, sizeof(numbuf), "Tag_0x%08x",
-				spft->u.tag.tagno);
+				tag->tagno);
 		    numbuf[sizeof(numbuf)-1] = '\0';
 		    tagN = numbuf;
 		}
@@ -3863,15 +3892,15 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 	    if (isyaml) {
 #if defined(SUPPORT_LINEAR_TAGTABLE_LOOKUP)
 		int tagT = -1;
-		const char * tagN = myTagName(hsa->tags, spft->u.tag.tagno, &tagT);
+		const char * tagN = myTagName(hsa->tags, tag->tagno, &tagT);
 #else
-		rpmTagType tagT = tagType(spft->u.tag.tagno);
-		const char * tagN = tagName(spft->u.tag.tagno);
+		rpmTagType tagT = tagType(tag->tagno);
+		const char * tagN = tagName(tag->tagno);
 #endif
 		/* XXX display "Tag_0x01234567" for unknown tags. */
 		if (tagN == NULL) {
 		    (void) snprintf(numbuf, sizeof(numbuf), "Tag_0x%08x",
-				spft->u.tag.tagno);
+				tag->tagno);
 		    numbuf[sizeof(numbuf)-1] = '\0';
 		    tagN = numbuf;
 		    tagT = numElements > 1
@@ -3889,7 +3918,7 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 		if (((tagT & RPM_MASK_RETURN_TYPE) == RPM_ARRAY_RETURN_TYPE)
 		 && numElements == 1) {
 		    te = stpcpy(te, "    ");
-		    if (spft->u.tag.tagno != 1118)
+		    if (tag->tagno != 1118)
 			te = stpcpy(te, "- ");
 		}
 		*te = '\0';
