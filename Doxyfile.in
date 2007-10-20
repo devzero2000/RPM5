@@ -619,11 +619,12 @@ INPUT                  = @top_srcdir@/Doxyheader \
 			 @top_srcdir@/lua/lzio.h \
                          @top_srcdir@/rpmdb/db3.c \
                          @top_srcdir@/rpmdb/dbconfig.c \
+                         @top_srcdir@/rpmdb/db_emu.h \
                          @top_srcdir@/rpmdb/fprint.c \
                          @top_srcdir@/rpmdb/fprint.h \
-                         @top_srcdir@/rpmdb/hdrNVR.c \
                          @top_srcdir@/rpmdb/hdrfmt.c \
                          @top_srcdir@/rpmdb/hdrinline.h \
+                         @top_srcdir@/rpmdb/hdrNVR.c \
                          @top_srcdir@/rpmdb/header.c \
                          @top_srcdir@/rpmdb/header.h \
                          @top_srcdir@/rpmdb/header_internal.c \
@@ -636,8 +637,11 @@ INPUT                  = @top_srcdir@/Doxyheader \
                          @top_srcdir@/rpmdb/poptDB.c \
                          @top_srcdir@/rpmdb/rpmdb.c \
                          @top_srcdir@/rpmdb/rpmdb.h \
+                         @top_srcdir@/rpmdb/rpmtag.h \
                          @top_srcdir@/rpmdb/signature.c \
                          @top_srcdir@/rpmdb/signature.h \
+                         @top_srcdir@/rpmdb/sqlite.c \
+                         @top_srcdir@/rpmdb/sqlite.h \
                          @top_srcdir@/rpmdb/tagname.c \
                          @top_srcdir@/rpmdb/tagtbl.c \
                          @top_srcdir@/rpmio/argv.c \

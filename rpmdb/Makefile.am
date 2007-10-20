@@ -26,7 +26,7 @@ tjfn_LDFLAGS = @LDFLAGS_STATIC@
 tjfn_LDADD = librpmdb.la
 
 pkgincdir = $(pkgincludedir)$(WITH_PATH_VERSIONED_SUFFIX)
-pkginc_HEADERS = header.h hdrinline.h pkgio.h rpmdb.h signature.h
+pkginc_HEADERS = header.h hdrinline.h pkgio.h rpmdb.h rpmtag.h signature.h
 noinst_HEADERS = fprint.h header_internal.h legacy.h
 
 pkglibdir =		@USRLIBRPM@
@@ -77,9 +77,10 @@ if WITH_PATH_VERSIONED
 	done
 endif
 
-tagtbl.c: Makefile.am $(top_srcdir)/lib/rpmlib.h 
+tagtbl.c: Makefile.am $(top_srcdir)/rpmdb/rpmtag.h 
 	@echo '#include "system.h"' > $@
-	@echo '#include <rpmlib.h>' >> $@
+	@echo '#include <header.h>' >> $@
+	@echo '#include <rpmtag.h>' >> $@
 	@echo '#include "debug.h"' >> $@
 	@echo '' >> $@
 	@echo '/*@observer@*/ /*@unchecked@*/' >> $@

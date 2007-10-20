@@ -3444,7 +3444,9 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
 	    he->p.str = "(none)";
 	}
     } else {
-	if (!headerGetEntry(hsa->h, tag->tag, &he->t, &he->p, &he->c)) {
+	/* XXX calling headerGetEntry for every element is a sorry waste. */
+	he->tag = tag->tag;
+	if (!headerGetEntry(hsa->h, he->tag, &he->t, &he->p, &he->c)) {
 	    he->c = 1;
 	    he->t = RPM_STRING_TYPE;	
 	    he->p.str = "(none)";
