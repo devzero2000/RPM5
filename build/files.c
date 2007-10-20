@@ -217,12 +217,13 @@ static void dumpAttrRec(const char * msg, AttrRec ar)
 #endif
 
 /**
+ * Strip quotes from strtok(3) string.
  * @param s		string
  * @param delim		token delimiters
  */
 /*@-boundswrite@*/
 /*@null@*/
-static char *strtokWithQuotes(/*@null@*/ char *s, char *delim)
+static char *strtokWithQuotes(/*@null@*/ char *s, const char *delim)
 	/*@modifies *s @*/
 {
     static char *olds = NULL;
