@@ -187,7 +187,6 @@ struct _HE_s {
 typedef struct _HE_s HE_s;
 #endif
 typedef HE_s * HE_t;		/* tag container. */
-typedef /*@abstract@*/ HE_s * rpmec;		/* Extension Cache entry. */
 /*@=typeuse =fielduse@*/
 
 /** \ingroup header

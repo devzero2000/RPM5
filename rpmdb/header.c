@@ -30,7 +30,6 @@ int _newmagic = 0;
 /*@access entryInfo @*/
 /*@access indexEntry @*/
 
-/*@access rpmec @*/
 /*@access sprintfTag @*/
 /*@access sprintfToken @*/
 /*@access HV_t @*/
@@ -2591,7 +2590,10 @@ typedef struct headerSprintfArgs_s {
     headerSprintfExtension exts;
 /*@observer@*/ /*@null@*/
     const char * errmsg;
-    rpmec ec;
+    HE_t ec;			/*!< Extension data cache. */
+    int nec;			/*!< No. of extension cache items. */
+    HE_t tc;			/*!< Tag data cache. */
+    int ntc;			/*!< No. of tag cache items. */
     sprintfToken format;
 /*@relnull@*/
     HeaderIterator hi;
@@ -3429,7 +3431,7 @@ static int getExtension(headerSprintfArgs hsa, headerTagTagFunction fn,
 		/*@out@*/ hTYP_t typeptr,
 		/*@out@*/ hRET_t * data,
 		/*@out@*/ hCNT_t countptr,
-		rpmec ec)
+		HE_t ec)
 	/*@modifies *typeptr, *data, *countptr, ec @*/
 {
     if (!ec->avail) {
@@ -3837,21 +3839,24 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
  * @param exts		headerSprintf extensions
  * @return		new extension cache
  */
-static /*@only@*/ rpmec
-rpmecNew(const headerSprintfExtension exts)
+static /*@only@*/ HE_t
+rpmecNew(const headerSprintfExtension exts, /*@null@*/ int * necp)
 	/*@*/
 {
     headerSprintfExtension ext;
-    rpmec ec;
-    int extNum;
+    HE_t ec;
+    int extNum = 0;
 
+    if (exts != NULL)
     for (ext = exts, extNum = 0; ext != NULL && ext->type != HEADER_EXT_LAST;
 	ext = (ext->type == HEADER_EXT_MORE ? ext->u.more : ext+1), extNum++)
     {
 	;
     }
 
-    ec = xcalloc(extNum, sizeof(*ec));
+    ec = xcalloc(extNum+1, sizeof(*ec));
+    if (*necp)
+	necp = extNum;
     return ec;
 }
 
@@ -3861,8 +3866,8 @@ rpmecNew(const headerSprintfExtension exts)
  * @param ec		extension cache
  * @return		NULL always
  */
-static /*@null@*/ rpmec
-rpmecFree(const headerSprintfExtension exts, /*@only@*/ rpmec ec)
+static /*@null@*/ HE_t
+rpmecFree(const headerSprintfExtension exts, /*@only@*/ HE_t ec)
 	/*@modifies ec @*/
 {
     headerSprintfExtension ext;
@@ -3919,7 +3924,7 @@ char * headerSprintf(Header h, const char * fmt,
     if (parseFormat(hsa, hsa->fmt, &hsa->format, &hsa->numTokens, NULL, PARSER_BEGIN))
 	goto exit;
 
-    hsa->ec = rpmecNew(hsa->exts);
+    hsa->ec = rpmecNew(hsa->exts, &hsa->nec);
     hsa->val = xstrdup("");
 
     tag =
@@ -3971,6 +3976,7 @@ char * headerSprintf(Header h, const char * fmt,
 	hsa->val = xrealloc(hsa->val, hsa->vallen+1);	
 
     hsa->ec = rpmecFree(hsa->exts, hsa->ec);
+    hsa->nec = 0;
     hsa->format = freeFormat(hsa->format, hsa->numTokens);
 
 exit:
