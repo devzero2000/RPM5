@@ -1795,7 +1795,35 @@ const char * tagName(int tag)
 /*@=type@*/
 }
 
+/**
+ * Return tag data type from value.
+ * @param tag		tag value
+ * @return		tag data type, RPM_NULL_TYPE on not found.
+ */
+/*@unused@*/ static inline
+int tagType(int tag)
+	/*@*/
+{
+/*@-type@*/
+    return ((*rpmTags->tagType)(tag));
+/*@=type@*/
+}
+
+/**
+ * Return tag value from name.
+ * @param tagstr	name of tag
+ * @return		tag value, -1 on not found
+ */
+/*@unused@*/ static inline
+int tagValue(const char * tagstr)
+	/*@*/
+{
+/*@-type@*/
+    return ((*rpmTags->tagValue)(tagstr));
+/*@=type@*/
+}
 /*@=redecl@*/
+
 /** \ingroup header
  * Retrieve extension or tag value.
  *
@@ -2669,6 +2697,7 @@ static char * hsaReserve(headerSprintfArgs hsa, size_t need)
     return hsa->val + hsa->vallen;
 }
 
+#if defined(SUPPORT_LINEAR_TAGTABLE_LOOKUP)
 /**
  * Return tag name from value.
  * @todo bsearch on sorted value table.
@@ -2719,6 +2748,7 @@ static int myTagValue(headerTagTableEntry tbl, const char * name)
     }
     return 0;
 }
+#endif
 
 /**
  * Search extensions and tags for a name.
@@ -2766,7 +2796,11 @@ static int findTag(headerSprintfArgs hsa, sprintfToken token, const char * name)
     }
 
     /* Search tag names. */
+#if defined(SUPPORT_LINEAR_TAGTABLE_LOOKUP)
     stag->tag = myTagValue(hsa->tags, name);
+#else
+    stag->tag = tagValue(name);
+#endif
     if (stag->tag != 0)
 	goto bingo;
 
@@ -3706,7 +3740,11 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 		!strcmp(spft->u.tag.type, "yaml"));
 
 	    if (isxml) {
+#if defined(SUPPORT_LINEAR_TAGTABLE_LOOKUP)
 		const char * tagN = myTagName(hsa->tags, spft->u.tag.tag, NULL);
+#else
+		const char * tagN = tagName(spft->u.tag.tag);
+#endif
 		/* XXX display "Tag_0x01234567" for unknown tags. */
 		if (tagN == NULL) {
 		    (void) snprintf(numbuf, sizeof(numbuf), "Tag_0x%08x",
@@ -3720,8 +3758,13 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 		hsa->vallen += (te - t);
 	    }
 	    if (isyaml) {
+#if defined(SUPPORT_LINEAR_TAGTABLE_LOOKUP)
 		int tagT = -1;
 		const char * tagN = myTagName(hsa->tags, spft->u.tag.tag, &tagT);
+#else
+		rpmTagType tagT = tagType(spft->u.tag.tag);
+		const char * tagN = tagName(spft->u.tag.tag);
+#endif
 		/* XXX display "Tag_0x01234567" for unknown tags. */
 		if (tagN == NULL) {
 		    (void) snprintf(numbuf, sizeof(numbuf), "Tag_0x%08x",
@@ -3860,7 +3903,9 @@ char * headerSprintf(Header h, const char * fmt,
     hsa->fmt = xstrdup(fmt);
 /*@-castexpose@*/	/* FIX: legacy API shouldn't change. */
     hsa->exts = (headerSprintfExtension) extensions;
+#if defined(SUPPORT_LINEAR_TAGTABLE_LOOKUP)
     hsa->tags = (headerTagTableEntry) tbltags;
+#endif
 /*@=castexpose@*/
     hsa->errmsg = NULL;
 

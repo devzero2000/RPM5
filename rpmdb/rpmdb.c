@@ -13,6 +13,7 @@
 #include <rpmurl.h>
 #include <rpmmacro.h>
 #include <rpmsq.h>
+#include <rpmtag.h>
 
 #define	_RPMEVR_INTERNAL	/* XXX isInstallPrereq */
 #include <rpmevr.h>

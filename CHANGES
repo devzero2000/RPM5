@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - jbj: mark myTagName() and myTagValue() linear lookup for destruction.
     - jbj: create rpmdb/rpmtag.h, split from lib/rpmlib.h.
     - jbj: make the --info field colons align correctly, more (#323221).
     - jbj: fix :time and :date formats, pad --info spewage.

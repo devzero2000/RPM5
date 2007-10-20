@@ -5,6 +5,8 @@
  * \file rpmdb/rpmtag.h
  */
 
+#include <header.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
