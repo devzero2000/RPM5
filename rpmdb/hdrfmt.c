@@ -17,6 +17,8 @@
 
 #include "debug.h"
 
+static int _jbj = 0;	/* XXX private debugging */
+
 /*@access pgpDig @*/
 /*@access pgpDigParams @*/
 
@@ -334,6 +336,8 @@ static /*@only@*/ char * xmlFormat(HE_t he)
     int freeit = 0;
     int xx;
 
+if (_jbj)
+fprintf(stderr, " XML: tag %s(%d) %d %p[%d:%d] free %d\n", tagName(he->tag), he->tag, he->t, he->p.ptr, he->ix, he->c, he->freeData);
 assert(ix == 0);
 assert(he->t == RPM_STRING_TYPE || he->t == RPM_INT64_TYPE || he->t == RPM_BIN_TYPE);
     switch (he->t) {
@@ -500,6 +504,8 @@ static /*@only@*/ char * yamlFormat(HE_t he)
     int xx;
     int c;
 
+if (_jbj)
+fprintf(stderr, "YAML: tag %s(%d) %d %p[%d:%d] free %d\n", tagName(he->tag), he->tag, he->t, he->p.ptr, he->ix, he->c, he->freeData);
 assert(ix == 0);
 assert(he->t == RPM_STRING_TYPE || he->t == RPM_INT64_TYPE || he->t == RPM_BIN_TYPE);
     switch (he->t) {

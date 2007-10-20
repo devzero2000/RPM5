@@ -1,4 +1,6 @@
 4.5 -> 5.0:
+    - jbj: not yet for binary search retrieve using tagValue.
+    - jbj: unbork --yaml.
     - rpm.org: rpmpsi iterator.
     - jbj: mark myTagName() and myTagValue() linear lookup for destruction.
     - jbj: create rpmdb/rpmtag.h, split from lib/rpmlib.h.

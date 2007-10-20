@@ -2,6 +2,10 @@
  * \file rpmdb/header.c
  */
 
+/* Tags are looked up with linear, not binary, search. */
+/* XXX work in progress, caveat emptor. */
+#define SUPPORT_LINEAR_TAGTABLE_LOOKUP	1
+
 /* RPM - Copyright (C) 1995-2002 Red Hat Software */
 
 /* Data written to file descriptors is in network byte order.    */
@@ -3478,7 +3482,7 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
 	    he->p.str = "(none)";
 	}
     } else {
-	/* XXX calling headerGetEntry for every element is a sorry waste. */
+	/* XXX calling headerGetEntry for every element in array is pathetic. */
 	he->tag = tag->tag;
 	if (!headerGetEntry(hsa->h, he->tag, &he->t, &he->p, &he->c)) {
 	    he->c = 1;
@@ -3532,7 +3536,8 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
 	vhe->p.str = he->p.argv[element];
 	vhe->t = RPM_STRING_TYPE;
 	vhe->c = he->c;
-	vhe->ix = -1;
+	/* XXX TODO: force array representation? */
+	vhe->ix = (he->c > 1 ? 0 : -1);
 	break;
     case RPM_STRING_TYPE:
 	vhe->p.str = he->p.str;
@@ -3566,6 +3571,7 @@ assert(0);	/* XXX keep gcc quiet. */
 	vhe->t = RPM_INT64_TYPE;
 	vhe->p.i64p = &ival;
 	vhe->c = he->c;
+	/* XXX TODO: force array representation? */
 	vhe->ix = (he->c > 1 ? 0 : -1);
 	break;
 
