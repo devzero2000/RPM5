@@ -36,6 +36,9 @@ int _nosigh = 0;
 extern int _newmagic;
 
 /*@unchecked@*/
+extern int _tagcache;
+
+/*@unchecked@*/
 static int _debug = 0;
 
 #if defined(POPT_ARGFLAG_RANDOM)
@@ -487,6 +490,10 @@ struct poptOption rpmcliAllPoptTable[] = {
 	N_("disable rpm signature header"), NULL},
  { "newmagic", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_newmagic, -1,
 	N_("dupe region tag into lsb of magic"), NULL},
+ { "notagcache", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_tagcache, 0,
+	N_("disable tag data caching"), NULL},
+ { "tagcache", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_tagcache, 1,
+	N_("enable tag data caching"), NULL},
 
    POPT_TABLEEND
 };

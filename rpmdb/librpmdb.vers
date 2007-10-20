@@ -43,6 +43,7 @@ LIBRPMDB_0
     _init;
     _nolead;
     _newmagic;
+    _tagcache;
     prDbiOpenFlags;
     rdbOptions;
     rpmAddSignature;

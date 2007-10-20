@@ -109,12 +109,13 @@ struct headerToken_s {
  */
 typedef /*@abstract@*/ struct sprintfTag_s * sprintfTag;
 struct sprintfTag_s {
+    HE_s he;
 /*@null@*/
     headerTagFormatFunction fmt;
 /*@null@*/
     headerTagTagFunction ext;   /*!< NULL if tag element is invalid */
     int extNum;
-    int_32 tag;
+    int_32 tagno;
     int justOne;
     int arrayCount;
 /*@kept@*/
@@ -141,7 +142,6 @@ struct sprintfToken_s {
 	struct {
 	/*@only@*/
 	    sprintfToken format;
-	    int i;
 	    int numTokens;
 	} array;			/*!< PTOK_ARRAY */
 	struct {
