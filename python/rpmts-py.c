@@ -6,7 +6,7 @@
 
 #include <rpmio_internal.h>	/* XXX for fdSetOpen */
 
-#define	_RPMPS_INTERNAL	/* XXX rpmps needs iterator */
+#define	_RPMPS_INTERNAL	/* XXX almost (but not quite) opaque. */
 #include <rpmcli.h>
 #include <rpmpgp.h>
 #include <rpmdb.h>
@@ -532,9 +532,9 @@ fprintf(stderr, "*** rpmts_Check(%p) ts %p cb %p\n", s, s->ts, cbInfo.cb);
 
     if (ps != NULL) {
 	list = PyList_New(0);
+	rpmpsi psi = rpmpsInitIterator(ps);
 
-	/* XXX TODO: rpmlib >= 4.0.3 can return multiple suggested keys. */
-	for (i = 0; i < ps->numProblems; i++) {
+	while ((i = rpmpsNextIterator(psi)) >= 0) {
 #ifdef	DYING
 	    cf = Py_BuildValue("((sss)(ss)iOi)", conflicts[i].byName,
 			       conflicts[i].byVersion, conflicts[i].byRelease,
@@ -552,13 +552,13 @@ fprintf(stderr, "*** rpmts_Check(%p) ts %p cb %p\n", s, s->ts, cbInfo.cb);
 	    int needsFlags, sense;
 	    fnpyKey key;
 
-	    p = ps->probs + i;
+	    p = rpmpsProblem(psi);
 
             /* XXX autorelocated i386 on ia64, fix system-config-packages! */
-	    if (p->type == RPMPROB_BADRELOCATE)
+	    if (rpmProblemGetType(p) == RPMPROB_BADRELOCATE)
 		continue;
 
-	    byName = p->pkgNEVR;
+	    byName = rpmProblemGetPkgNEVR(p);
 	    if ((byArch= strrchr(byName, '.')) != NULL)
 		*byArch++ = '\0';
 	    if ((byRelease = strrchr(byName, '-')) != NULL)
@@ -566,9 +566,9 @@ fprintf(stderr, "*** rpmts_Check(%p) ts %p cb %p\n", s, s->ts, cbInfo.cb);
 	    if ((byVersion = strrchr(byName, '-')) != NULL)
 		*byVersion++ = '\0';
 
-	    key = p->key;
+	    key = rpmProblemKey(p);
 
-	    needsName = p->altNEVR;
+	    needsName = rpmProblemGetAltNEVR(p);
 	    if (needsName[1] == ' ') {
 		sense = (needsName[0] == 'C')
 			? RPMDEP_SENSE_CONFLICTS : RPMDEP_SENSE_REQUIRES;
@@ -596,6 +596,7 @@ fprintf(stderr, "*** rpmts_Check(%p) ts %p cb %p\n", s, s->ts, cbInfo.cb);
 	    Py_DECREF(cf);
 	}
 
+	psi = rpmpsFreeIterator(psi);
 	ps = rpmpsFree(ps);
 
 	return list;
@@ -1197,9 +1198,10 @@ rpmts_Run(rpmtsObject * s, PyObject * args, PyObject * kwds)
 	/*@globals rpmGlobalMacroContext, _Py_NoneStruct @*/
 	/*@modifies s, rpmGlobalMacroContext, _Py_NoneStruct @*/
 {
-    int rc, i;
+    int rc;
     PyObject * list;
     rpmps ps;
+    rpmpsi psi;
     struct rpmtsCallbackType_s cbInfo;
     char * kwlist[] = {"callback", "data", NULL};
 
@@ -1255,16 +1257,18 @@ fprintf(stderr, "*** rpmts_Run(%p) ts %p ignore %x\n", s, s->ts, s->ignoreSet);
     }
 
     list = PyList_New(0);
-    for (i = 0; i < ps->numProblems; i++) {
-	rpmProblem p = ps->probs + i;
+    psi = rpmpsInitIterator(ps);
+    while (rpmpsNextIterator(psi) >= 0) {
+	rpmProblem p = rpmpsProblem(psi);
 	unsigned long ulong1 = p->ulong1;
 	PyObject * prob = Py_BuildValue("s(isN)", rpmProblemString(p),
-			     p->type,
+			     rpmProblemGetType(p),
 			     p->str1,
 			     PyLong_FromLongLong(ulong1));
 	PyList_Append(list, prob);
 	Py_DECREF(prob);
     }
+    psi = rpmpsFreeIterator(psi);
 
     ps = rpmpsFree(ps);
 

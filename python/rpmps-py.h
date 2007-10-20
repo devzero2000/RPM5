@@ -15,10 +15,10 @@
 typedef struct rpmpsObject_s {
     PyObject_HEAD
     PyObject *md_dict;		/*!< to look like PyModuleObject */
-    int		active;
-    int		ix;
 /*@relnull@*/
     rpmps	ps;
+/*@relnull@*/
+    rpmpsi	psi;
 } rpmpsObject;
 
 /** \ingroup py_c

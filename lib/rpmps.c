@@ -53,6 +53,50 @@ int rpmpsNumProblems(rpmps ps)
     return numProblems;
 }
 
+rpmpsi rpmpsInitIterator(rpmps ps)
+{
+    rpmpsi psi = NULL;
+    if (ps != NULL) {
+	psi = xcalloc(1, sizeof(*psi));
+	psi->ps = rpmpsLink(ps, "iter ref");
+	psi->ix = -1;
+    }
+    return psi;
+}
+
+rpmpsi rpmpsFreeIterator(rpmpsi psi)
+{
+    if (psi != NULL) {
+	rpmpsUnlink(psi->ps, "iter unref");
+	free(psi);
+	psi = NULL;
+    }
+    return psi;
+}
+
+int rpmpsNextIterator(rpmpsi psi)
+{
+    int i = -1;
+
+    if (psi != NULL && ++psi->ix >= 0) {
+	if (psi->ix < rpmpsNumProblems(psi->ps)) {
+	    i = psi->ix;
+	} else {
+	    psi->ix = -1;
+	}	     
+    }
+    return i;
+}
+
+rpmProblem rpmpsProblem(rpmpsi psi)
+{
+    rpmProblem p = NULL;
+    if (psi != NULL && psi->ix >= 0 && psi->ix < rpmpsNumProblems(psi->ps)) {
+	p = psi->ps->probs + psi->ix;
+    } 
+    return p;
+}
+
 rpmps rpmpsCreate(void)
 {
     rpmps ps = xcalloc(1, sizeof(*ps));
@@ -306,6 +350,7 @@ static int sameProblem(const rpmProblem ap, const rpmProblem bp)
 void rpmpsPrint(FILE *fp, rpmps ps)
 {
     const char * msg;
+    rpmpsi psi;
     int i;
 
     if (ps == NULL || ps->probs == NULL || ps->numProblems <= 0)
@@ -314,20 +359,23 @@ void rpmpsPrint(FILE *fp, rpmps ps)
     if (fp == NULL)
 	fp = stderr;
 
-    for (i = 0; i < ps->numProblems; i++) {
-	rpmProblem p;
+    psi = rpmpsInitIterator(ps);
+    while ((i = rpmpsNextIterator(psi)) >= 0) {
+	rpmProblem p = rpmpsProblem(psi);
+	rpmpsi psif;
 	int j;
-
-	p = ps->probs + i;
 
 	if (p->ignoreProblem)
 	    continue;
 
 	/* Filter already displayed problems. */
-	for (j = 0; j < i; j++) {
-	    if (!sameProblem(p, ps->probs + j))
+	psif = rpmpsInitIterator(ps);
+	while ((j = rpmpsNextIterator(psif)) < i) {
+	    if (!sameProblem(p, rpmpsProblem(psif)))
 		/*@innerbreak@*/ break;
 	}
+	psif = rpmpsFreeIterator(psif);
+
 	if (j < i)
 	    continue;
 
@@ -336,6 +384,7 @@ void rpmpsPrint(FILE *fp, rpmps ps)
 	msg = _free(msg);
 
     }
+    psi = rpmpsFreeIterator(psi);
 }
 
 rpmProblem rpmpsGetProblem(rpmps ps, int num)

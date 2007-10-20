@@ -25,7 +25,7 @@ rpmps_iter(rpmpsObject * s)
 {
 if (_rpmps_debug < 0)
 fprintf(stderr, "*** rpmps_iter(%p)\n", s);
-    s->ix = -1;
+    s->psi = rpmpsInitIterator(s->ps);
     Py_INCREF(s);
     return (PyObject *)s;
 }
@@ -36,24 +36,19 @@ rpmps_iternext(rpmpsObject * s)
 	/*@modifies s @*/
 {
     PyObject * result = NULL;
-    rpmps ps = s->ps;
 
 if (_rpmps_debug < 0)
-fprintf(stderr, "*** rpmps_iternext(%p) ps %p ix %d active %d\n", s, s->ps, s->ix, s->active);
+fprintf(stderr, "*** rpmps_iternext(%p) ps %p psi %p\n", s, s->ps, s->psi);
 
     /* Reset loop indices on 1st entry. */
-    if (!s->active) {
-	s->ix = -1;
-	s->active = 1;
-    }
+    if (s->psi == NULL)
+	s->psi = rpmpsInitIterator(s->ps);
 
     /* If more to do, return a problem set string. */
-    s->ix++;
-    if (s->ix < ps->numProblems) {
-	result = Py_BuildValue("s", rpmProblemString(ps->probs+s->ix));
-    } else {
-	s->active = 0;
-    }
+    if (rpmpsNextIterator(s->psi) >= 0)
+	result = Py_BuildValue("s", rpmProblemString(rpmpsProblem(s->psi)));
+    else
+	s->psi = rpmpsFreeIterator(s->psi);
 
     return result;
 }
@@ -79,12 +74,35 @@ rpmps_Debug(/*@unused@*/ rpmpsObject * s, PyObject * args, PyObject * kwds)
     Py_INCREF(Py_None);
     return Py_None;
 }
+
+static int
+rpmps_Append(rpmpsObject * s, PyObject * value)
+{
+    char *pkgNEVR, *altNEVR, *str1;
+    unsigned long ulong1;
+    int ignoreProblem;
+    rpmProblemType type;
+    fnpyKey key;
+
+    if (!PyArg_ParseTuple(value, "ssOiisN:rpmps value tuple",
+			&pkgNEVR, &altNEVR, &key,
+			&type, &ignoreProblem, &str1,
+			&ulong1))
+    {
+    	return -1;
+    }
+    rpmpsAppend(s->ps, type, pkgNEVR, key, str1, NULL, altNEVR, ulong1);
+    return 0;
+}
+
 /*@}*/
 
 /*@-fullinitblock@*/
 /*@unchecked@*/ /*@observer@*/
 static struct PyMethodDef rpmps_methods[] = {
  {"Debug",	(PyCFunction)rpmps_Debug,	METH_VARARGS|METH_KEYWORDS,
+	NULL},
+ {"Append",	(PyCFunction)rpmps_Append,	METH_VARARGS|METH_KEYWORDS,
 	NULL},
  {NULL,		NULL}		/* sentinel */
 };
@@ -149,8 +167,9 @@ rpmps_subscript(rpmpsObject * s, PyObject * key)
 	/*@*/
 {
     PyObject * result = NULL;
-    rpmps ps;
+    rpmpsi psi;
     int ix;
+    int i;
 
     if (!PyInt_Check(key)) {
 if (_rpmps_debug < 0)
@@ -161,16 +180,23 @@ fprintf(stderr, "*** rpmps_subscript(%p[%s],%p[%s])\n", s, lbl(s), key, lbl(key)
 
     ix = (int) PyInt_AsLong(key);
     /* XXX range check */
-    ps = s->ps;
-    if (ix < ps->numProblems) {
-	result = Py_BuildValue("s", rpmProblemString(ps->probs + ix));
+
+    psi = rpmpsInitIterator(s->ps);
+    while ((i = rpmpsNextIterator(psi)) >= 0) {
+	if (i != ix)
+	    continue;
+	result = Py_BuildValue("s", rpmProblemString(rpmpsPrpblem(psi)));
 if (_rpmps_debug < 0)
 fprintf(stderr, "*** rpmps_subscript(%p,%p) %s\n", s, key, PyString_AsString(result));
+	break;
     }
+    psi = rpmpsFreeIterator(psi);
 
     return result;
 }
 
+#define	PERMIT_RPMPS_SUBSCRIPT	/* XXX likely buggy */
+#if defined(PERMIT_RPMPS_SUBSCRIPT)
 static int
 rpmps_ass_sub(rpmpsObject * s, PyObject * key, PyObject * value)
 	/*@modifies s @*/
@@ -241,11 +267,14 @@ fprintf(stderr, "*** rpmps_ass_sub(%p[%s],%p[%s],%p[%s]) ps %p[%d:%d:%d]\n", s, 
 
     return 0;
 }
+#endif
 
 static PyMappingMethods rpmps_as_mapping = {
         (inquiry) rpmps_length,		/* mp_length */
         (binaryfunc) rpmps_subscript,	/* mp_subscript */
+#if defined(PERMIT_RPMPS_SUBSCRIPT)
         (objobjargproc) rpmps_ass_sub,	/* mp_ass_subscript */
+#endif
 };
 
 /** \ingroup py_c
@@ -262,8 +291,7 @@ fprintf(stderr, "*** rpmps_init(%p,%p,%p)\n", s, args, kwds);
 	return -1;
 
     s->ps = rpmpsCreate();
-    s->active = 0;
-    s->ix = -1;
+    s->psi = NULL;
 
     return 0;
 }
@@ -382,8 +410,7 @@ rpmps_Wrap(rpmps ps)
     if (s == NULL)
 	return NULL;
     s->ps = ps;
-    s->active = 0;
-    s->ix = -1;
+    s->psi = NULL;
     return s;
 }
 /*@=modunconnomods =evalorderuncon @*/

@@ -22,6 +22,10 @@ typedef /*@abstract@*/ struct rpmProblem_s * rpmProblem;
 typedef /*@abstract@*/ /*@refcounted@*/ struct rpmps_s * rpmps;
 
 /**
+*/
+typedef /*@abstract@*/ struct rpmpsi_s * rpmpsi;
+
+/**
  * Enumerate transaction set problem types.
  */
 typedef enum rpmProblemType_e {
@@ -68,6 +72,14 @@ struct rpmps_s {
 /*@refs@*/
     int nrefs;			/*!< Reference count. */
 };
+
+/**
+ */
+struct rpmpsi_s {
+    size_t ix;
+    rpmps ps;
+};
+
 #endif
 
 #ifdef __cplusplus
@@ -128,6 +140,38 @@ rpmps XrpmpsLink (rpmps ps,
  * @return		number of problems
  */
 int rpmpsNumProblems(/*@null@*/ rpmps ps)
+	/*@*/;
+
+/**
+ * Initialize problem set iterator.
+ * @param ps		problem set
+ * @return		problem set iterator
+ */
+rpmpsi rpmpsInitIterator(rpmps ps)
+	/*@*/;
+
+/**
+ * Destroy problem set iterator.
+ * @param psi		problem set iterator
+ * @return		problem set iterator (NULL)
+ */
+rpmpsi rpmpsFreeIterator(rpmpsi psi)
+	/*@*/;
+
+/**
+ * Return next problem set iterator index
+ * @param psi		problem set iterator
+ * @return		iterator index, -1 on termination
+ */
+int rpmpsNextIterator(rpmpsi psi)
+	/*@*/;
+
+/**
+ * Return current problem from problem set
+ * @param psi		problem set iterator
+ * @return		current rpmProblem 
+ */
+rpmProblem rpmpsProblem(rpmpsi psi)
 	/*@*/;
 
 /**

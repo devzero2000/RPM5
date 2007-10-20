@@ -19,8 +19,6 @@
 #include "ugid.h"
 #include "debug.h"
 
-/*@access rpmps @*/
-/*@access rpmProblem @*/
 /*@access rpmpsm @*/	/* XXX for %verifyscript through rpmpsmStage() */
 
 #define S_ISDEV(m) (S_ISBLK((m)) || S_ISCHR((m)))
@@ -374,7 +372,7 @@ static int verifyHeader(QVA_t qva, const rpmts ts, rpmfi fi)
  * @param qva		parsed query/verify options
  * @param ts		transaction set
  * @param h		header
- * @return		0 no problems, 1 problems found
+ * @return		number of problems found (0 for no problems)
  */
 static int verifyDependencies(/*@unused@*/ QVA_t qva, rpmts ts,
 		Header h)
@@ -385,7 +383,6 @@ static int verifyDependencies(/*@unused@*/ QVA_t qva, rpmts ts,
     int instance = headerGetInstance(h);
 #endif
     rpmps ps;
-    int numProblems;
     int rc = 0;		/* assume no problems */
     int xx;
     int i;
@@ -401,36 +398,49 @@ static int verifyDependencies(/*@unused@*/ QVA_t qva, rpmts ts,
     xx = rpmtsCheck(ts);
     ps = rpmtsProblems(ts);
 
-    numProblems = rpmpsNumProblems(ps);
-    if (ps != NULL && numProblems > 0) {
-	const char * pkgNEVR, * altNEVR;
+    if (rpmpsNumProblems(ps) > 0) {
+	const char * altNEVR;
+	const char * pkgNEVR = NULL;
+	rpmpsi psi;
 	rpmProblem p;
 	char * t, * te;
 	int nb = 512;
 
-	for (i = 0; i < numProblems; i++) {
-	    p = ps->probs + i;
-	    altNEVR = (p->altNEVR ? p->altNEVR : "? ?altNEVR?");
+	psi = rpmpsInitIterator(ps);
+	while (rpmpsNextIterator(psi) >= 0) {
+	    p = rpmpsProblem(psi);
+	    if (pkgNEVR == NULL)
+		pkgNEVR = rpmProblemGetPkgNEVR(p);
+
+	    altNEVR = rpmProblemGetAltNEVR(p);
 	    if (altNEVR[0] == 'R' && altNEVR[1] == ' ')
 		nb += sizeof("\tRequires: ")-1;
 	    if (altNEVR[0] == 'C' && altNEVR[1] == ' ')
 		nb += sizeof("\tConflicts: ")-1;
 	    nb += strlen(altNEVR+2) + sizeof("\n") - 1;
+
 	}
+	psi = rpmpsFreeIterator(psi);
+
 	te = t = alloca(nb);
 	*te = '\0';
-	pkgNEVR = (ps->probs->pkgNEVR ? ps->probs->pkgNEVR : "?pkgNEVR?");
 	sprintf(te, _("Unsatisfied dependencies for %s:\n"), pkgNEVR);
 	te += strlen(te);
-	for (i = 0; i < numProblems; i++) {
-	    p = ps->probs + i;
+
+	psi = rpmpsInitIterator(ps);
+	while (rpmpsNextIterator(psi) >= 0) {
+	    p = rpmpsProblem(psi);
+
 	    altNEVR = (p->altNEVR ? p->altNEVR : "? ?altNEVR?");
 	    if (altNEVR[0] == 'R' && altNEVR[1] == ' ')
 		te = stpcpy(te, "\tRequires: ");
 	    if (altNEVR[0] == 'C' && altNEVR[1] == ' ')
 		te = stpcpy(te, "\tConflicts: ");
 	    te = stpcpy( stpcpy(te, altNEVR+2), "\n");
+
+	    rc++;
 	}
+	psi = rpmpsFreeIterator(psi);
 
 	if (te > t) {
 	    *te++ = '\n';
@@ -439,7 +449,6 @@ static int verifyDependencies(/*@unused@*/ QVA_t qva, rpmts ts,
 	    te = t;
 	    *t = '\0';
 	}
-	rc = 1;
     }
 
     ps = rpmpsFree(ps);
