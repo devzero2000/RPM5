@@ -1,4 +1,7 @@
 4.5 -> 5.0:
+    - jbj: start rearranging header.h prior to moving typedefs to rpmtag.h.
+    - jbj: rewrite several toy routines to use HE_t instead.
+    - jbj: replace hRET_t with rpmTagType, avoiding "hRET_t *" issues for now.
     - jbj: hmmm, b0rken --fileclass et al extensions in lib/format.c, todo++.
     - jbj: mark private extension handling for destruction, enabled for now.
     - jbj: permit headerSprintf tbls/exts args tp be NULL using sane default.

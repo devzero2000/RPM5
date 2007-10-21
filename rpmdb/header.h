@@ -107,27 +107,6 @@ typedef /*@abstract@*/ /*@refcounted@*/ struct headerToken_s * Header;
 
 /** \ingroup header
  */
-/*@-typeuse -fielduse@*/
-typedef union hRET_s hRET_t;
-#if !defined(SWIG)
-union hRET_s {
-    void * ptr;
-    const char ** argv;
-    const char * str;
-    uint_64 * ui64p;
-    uint_32 * ui32p;
-    uint_16 * ui16p;
-    uint_8 * ui8p;
-    int_64 * i64p;
-    int_32 * i32p;
-    int_16 * i16p;
-    int_8 * i8p;
-};
-#endif
-/*@=typeuse =fielduse@*/
-
-/** \ingroup header
- */
 typedef enum rpmTag_e rpmTag;
 
 /** \ingroup header
@@ -157,11 +136,38 @@ typedef enum rpmTagType_e rpmTagType;
 
 /** \ingroup header
  */
-typedef hRET_t rpmTagData;
+typedef union rpmDataType_u rpmTagData;
 
 /** \ingroup header
  */
 typedef int_32 rpmTagCount;
+
+/** \ingroup header
+ */
+typedef struct _HE_s * HE_t;		/* tag container. */
+
+/** \ingroup header
+ */
+/*@-typeuse -fielduse@*/
+typedef union rpmDataType_u hRET_t;
+#if !defined(SWIG)
+union rpmDataType_u {
+    void * ptr;
+    int_8 * i8p;		/*!< RPM_INT8_TYPE | RPM_CHAR_TYPE */
+    int_32 * i32p;		/*!< RPM_INT32_TYPE */
+    int_16 * i16p;		/*!< RPM_INT16_TYPE */
+    int_64 * i64p;		/*!< RPM_INT64_TYPE */
+    const char * str;		/*!< RPM_STRING_TYPE */
+    unsigned char * blob;	/*!< RPM_BIN_TYPE */
+    const char ** argv;		/*!< RPM_STRING_ARRAY_TYPE */
+    uint_8 * ui8p;
+    uint_16 * ui16p;
+    uint_32 * ui32p;
+    uint_64 * ui64p;
+    HE_t * he;
+};
+#endif
+/*@=typeuse =fielduse@*/
 
 /** \ingroup header
  */
@@ -186,7 +192,6 @@ struct _HE_s {
 };
 typedef struct _HE_s HE_s;
 #endif
-typedef HE_s * HE_t;		/* tag container. */
 /*@=typeuse =fielduse@*/
 
 /** \ingroup header
