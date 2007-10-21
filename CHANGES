@@ -1,4 +1,7 @@
 4.5 -> 5.0:
+    - jbj: hmmm, b0rken --fileclass et al extensions in lib/format.c, todo++.
+    - jbj: mark private extension handling for destruction, enabled for now.
+    - jbj: permit headerSprintf tbls/exts args tp be NULL using sane default.
     - jbj: start using headerGetExtension under headerSprintf.
     - jbj: prime the tag data cache earlier.
     - jbj: enable Plan B tag data caching.

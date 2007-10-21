@@ -449,19 +449,19 @@ int headerRemoveEntry(Header h, int_32 tag)
  *
  * @param h		header
  * @param fmt		format to use
- * @param tbltags	array of tag name/value pairs
- * @param extensions	chained table of formatting extensions.
+ * @param tags		array of tag name/value/type triples (NULL uses default)
+ * @param exts		formatting extensions chained table (NULL uses default)
  * @retval errmsg	error message (if any)
  * @return		formatted output string (malloc'ed)
  */
 /*@unused@*/ static inline
 /*@only@*/ char * headerSprintf(Header h, const char * fmt,
-		     const struct headerTagTableEntry_s * tbltags,
-		     const struct headerSprintfExtension_s * extensions,
-		     /*@null@*/ /*@out@*/ errmsg_t * errmsg)
+		/*@null@*/ const struct headerTagTableEntry_s * tags,
+		/*@null@*/ const struct headerSprintfExtension_s * exts,
+		/*@null@*/ /*@out@*/ errmsg_t * errmsg)
 	/*@modifies *errmsg @*/
 {
-    return (h2hv(h)->hdrsprintf) (h, fmt, tbltags, extensions, errmsg);
+    return (h2hv(h)->hdrsprintf) (h, fmt, tags, exts, errmsg);
 }
 
 /** \ingroup header

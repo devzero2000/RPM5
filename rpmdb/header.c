@@ -6,6 +6,12 @@
 /* XXX work in progress, caveat emptor. */
 #define SUPPORT_LINEAR_TAGTABLE_LOOKUP	1
 
+#define	SUPPORT_SPRINTF_TAGTABLE	1
+
+#if 1	/* XXX undefining loses the extensions in lib/formats.c. */
+#define	SUPPORT_SPRINTF_EXTTABLE	1
+#endif
+
 static int _jbj = 0;    /* XXX private debugging */
 
 /* RPM - Copyright (C) 1995-2002 Red Hat Software */
@@ -1783,6 +1789,26 @@ static /*@null@*/ void * headerFreeTag(/*@unused@*/ Header h,
     return NULL;
 }
 
+/**
+ * Automatically generated table of tag name/value pairs.
+ * @todo This should come from #include <rpmtag.h>.
+ */
+/*@-redecl@*/
+/*@observer@*/ /*@unchecked@*/
+extern const struct headerTagTableEntry_s * rpmTagTable;
+/*@=redecl@*/
+
+/**
+ * Number of entries in rpmTagTable.
+ * @todo This should come from #include <rpmtag.h>.
+ */
+/*@-redecl@*/
+/*@unchecked@*/
+extern const int rpmTagTableSize;
+
+/**
+ * @todo This should come from #include <rpmtag.h>.
+ */
 /*@-redecl@*/
 /*@unchecked@*/
 extern headerTagIndices rpmTags;
@@ -1790,6 +1816,7 @@ extern headerTagIndices rpmTags;
 
 /**
  * Return tag name from value.
+ * @todo This should come from #include <rpmtag.h>.
  * @param tag		tag value
  * @return		tag name, "(unknown)" on not found
  */
@@ -1805,6 +1832,7 @@ const char * tagName(int tag)
 
 /**
  * Return tag data type from value.
+ * @todo This should come from #include <rpmtag.h>.
  * @param tag		tag value
  * @return		tag data type, RPM_NULL_TYPE on not found.
  */
@@ -1819,6 +1847,7 @@ int tagType(int tag)
 
 /**
  * Return tag value from name.
+ * @todo This should come from #include <rpmtag.h>.
  * @param tagstr	name of tag
  * @return		tag value, -1 on not found
  */
@@ -3532,6 +3561,7 @@ static int parseExpression(headerSprintfArgs hsa, sprintfToken token,
     return 0;
 }
 
+#if defined(SUPPORT_SPRINTF_EXTTABLE)
 /**
  * Call a header extension only once, saving results.
  * @param hsa		headerSprintf args
@@ -3569,6 +3599,7 @@ static int getExtension(headerSprintfArgs hsa, headerTagTagFunction fn,
 
     return 0;
 }
+#endif	/* SUPPORT_SPRINTF_EXTTABLE */
 
 /**
  * Format a single item's value.
@@ -3592,6 +3623,8 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
     HE_t vhe = memset(alloca(sizeof(*vhe)), 0, sizeof(*vhe));
     int_64 ival = 0;
 
+/* XXX likely need to check !he->avail and he->tag == tag->tagno. */
+#if defined(SUPPORT_SPRINTF_EXTTABLE)
     if (tag->ext) {
 	if (getExtension(hsa, tag->ext, &he->t, &he->p, &he->c, hsa->ec + tag->extNum))
 	{
@@ -3601,17 +3634,13 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
 	    he->freeData = 0;
 	}
     } else
-    if (!he->avail) {
+#endif	/* SUPPORT_SPRINTF_EXTTABLE */
+    if (!he->avail || he->tag != tag->tagno) {
+	he = rpmheClean(he);
 	he->tag = tag->tagno;	/* XXX necessary? */
-#ifdef	DYING
-	xx = headerGetEntry(hsa->h, he->tag, &he->t, &he->p, &he->c);
-	if (xx)
-	    rpmheMark(he);
-#else
 	xx = headerGetExtension(hsa->h, he->tag, &he->t, &he->p, &he->c);
 	if (xx && he->p.ptr != NULL)
 	    he->freeData = 1;
-#endif
 	if (!xx) {
 	    he->c = 1;
 	    he->t = RPM_STRING_TYPE;	
@@ -3804,21 +3833,20 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 		continue;
 
 	    he = &tag->he;
+/* XXX likely need to check !he->avail and he->tag == tag->tagno. */
+#if defined(SUPPORT_SPRINTF_EXTTABLE)
 	    if (tag->ext) {
 		if (getExtension(hsa, tag->ext, &he->t, &he->p, &he->c, 
 				 hsa->ec + tag->extNum))
 		     continue;
-	    } else {
+	    } else
+#endif	/* SUPPORT_SPRINTF_EXTTABLE */
+	    if (!he->avail || he->tag != tag->tagno) {
+		he = rpmheClean(he);
 		he->tag = tag->tagno;
-#ifdef	DYING
-		xx = headerGetEntry(hsa->h, he->tag, &he->t, &he->p, &he->c);
-		if (xx)
-		    he = rpmheMark(he);
-#else
 		xx = headerGetExtension(hsa->h, he->tag, &he->t, &he->p, &he->c);
 		if (xx && he->p.ptr != NULL)
 		    he->freeData = 1;
-#endif
 		if (!xx)
 		    continue;
 if (_jbj)
@@ -3958,6 +3986,7 @@ fprintf(stderr, " NEW: %p tag %s(%d)\t%d %p[%d:%d] free %d avail %d\n", he, tagN
     return (hsa->val + hsa->vallen);
 }
 
+#if defined(SUPPORT_SPRINTF_EXTTABLE)
 /**
  * Create an extension cache.
  * @param exts		headerSprintf extensions
@@ -4008,6 +4037,7 @@ rpmecFree(const headerSprintfExtension exts, /*@only@*/ HE_t ec)
     ec = _free(ec);
     return NULL;
 }
+#endif	/* SUPPORT_SPRINTF_EXTTABLE */
 
 /** \ingroup header
  * Return formatted output string from header tags.
@@ -4015,16 +4045,16 @@ rpmecFree(const headerSprintfExtension exts, /*@only@*/ HE_t ec)
  *
  * @param h		header
  * @param fmt		format to use
- * @param tbltags	array of tag name/value pairs
- * @param extensions	chained table of formatting extensions.
+ * @param tags		array of tag name/value/type triples (NULL uses default)
+ * @param exts		formatting extensions chained table (NULL uses default)
  * @retval *errmsg	error message (if any)
  * @return		formatted output string (malloc'ed)
  */
 static /*@only@*/ /*@null@*/
 char * headerSprintf(Header h, const char * fmt,
-		     const struct headerTagTableEntry_s * tbltags,
-		     const struct headerSprintfExtension_s * extensions,
-		     /*@null@*/ /*@out@*/ errmsg_t * errmsg)
+		/*@null@*/ const struct headerTagTableEntry_s * tags,
+		/*@null@*/ const struct headerSprintfExtension_s * exts,
+		/*@null@*/ /*@out@*/ errmsg_t * errmsg)
 	/*@modifies h, *errmsg @*/
 	/*@requires maxSet(errmsg) >= 0 @*/
 {
@@ -4035,13 +4065,20 @@ char * headerSprintf(Header h, const char * fmt,
     int isxml;
     int isyaml;
     int need;
+
+    /* Set some reasonable defaults */
+    if (tags == NULL)
+	tags = rpmTagTable;
+    /* XXX this loses the extensions in lib/formats.c. */
+    if (exts == NULL)
+	exts = headerCompoundFormats;
  
     hsa->h = headerLink(h);
     hsa->fmt = xstrdup(fmt);
 /*@-castexpose@*/	/* FIX: legacy API shouldn't change. */
-    hsa->exts = (headerSprintfExtension) extensions;
+    hsa->exts = (headerSprintfExtension) exts;
 #if defined(SUPPORT_LINEAR_TAGTABLE_LOOKUP)
-    hsa->tags = (headerTagTableEntry) tbltags;
+    hsa->tags = (headerTagTableEntry) tags;
 #endif
 /*@=castexpose@*/
     hsa->errmsg = NULL;
@@ -4049,8 +4086,10 @@ char * headerSprintf(Header h, const char * fmt,
     if (parseFormat(hsa, hsa->fmt, &hsa->format, &hsa->numTokens, NULL, PARSER_BEGIN))
 	goto exit;
 
+#if defined(SUPPORT_SPRINTF_EXTTABLE)
     hsa->nec = 0;
     hsa->ec = rpmecNew(hsa->exts, &hsa->nec);
+#endif	/* SUPPORT_SPRINTF_EXTTABLE */
 #ifdef	NOTYET
     hsa->ntc = numTokens;
     hsa->tc = rpmtcNew(hsa->ntc);
@@ -4105,8 +4144,10 @@ char * headerSprintf(Header h, const char * fmt,
     if (hsa->val != NULL && hsa->vallen < hsa->alloced)
 	hsa->val = xrealloc(hsa->val, hsa->vallen+1);	
 
+#if defined(SUPPORT_SPRINTF_EXTTABLE)
     hsa->ec = rpmecFree(hsa->exts, hsa->ec);
     hsa->nec = 0;
+#endif	/* SUPPORT_SPRINTF_EXTTABLE */
 #ifdef	NOTYET
     hsa->tc = rpmtcFree(hsa->tc, hsa->ntc);
     hsa->ntc = 0;
