@@ -385,7 +385,6 @@ static int verifyDependencies(/*@unused@*/ QVA_t qva, rpmts ts,
     rpmps ps;
     int rc = 0;		/* assume no problems */
     int xx;
-    int i;
 
     rpmtsEmpty(ts);
 #ifdef	NOTYET

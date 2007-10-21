@@ -67,9 +67,11 @@ static inline
 /*@-boundswrite@*/
 int lookupPackage(Spec spec, const char *name, int flag, /*@out@*/Package *pkg)
 {
-    const char *pname;
+    HGE_t hge = (HGE_t)headerGetExtension;
+    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     const char *fullName;
     Package p;
+    int xx;
     
     /* "main" package */
     if (name == NULL) {
@@ -81,11 +83,13 @@ int lookupPackage(Spec spec, const char *name, int flag, /*@out@*/Package *pkg)
     /* Construct package name */
   { char *n;
     if (flag == PART_SUBNAME) {
-	(void) headerGetEntry(spec->packages->header, RPMTAG_NAME,
-		NULL, &pname, NULL);
-	fullName = n = alloca(strlen(pname) + 1 + strlen(name) + 1);
-	while (*pname != '\0') *n++ = *pname++;
+	he->tag = RPMTAG_NAME;
+	xx = hge(spec->packages->header, he, 0);
+	fullName = n = alloca(strlen(he->p.str) + 1 + strlen(name) + 1);
+	n = stpcpy(n, he->p.str);
+	he->p.ptr = _free(he->p.ptr);
 	*n++ = '-';
+	*n = '\0';
     } else {
 	fullName = n = alloca(strlen(name)+1);
     }
@@ -96,11 +100,13 @@ int lookupPackage(Spec spec, const char *name, int flag, /*@out@*/Package *pkg)
 
     /* Locate package with fullName */
     for (p = spec->packages; p != NULL; p = p->next) {
-	(void) headerGetEntry(p->header, RPMTAG_NAME,
-		NULL, &pname, NULL);
-	if (pname && (! strcmp(fullName, pname))) {
+	he->tag = RPMTAG_NAME;
+	xx = hge(p->header, he, 0);
+	if (he->p.str && !strcmp(fullName, he->p.str)) {
+	    he->p.ptr = _free(he->p.ptr);
 	    break;
 	}
+	he->p.ptr = _free(he->p.ptr);
     }
 
     if (pkg)
@@ -629,11 +635,14 @@ printNewSpecfile(Spec spec)
 	/*@globals fileSystem @*/
 	/*@modifies spec->sl->sl_lines[], fileSystem @*/
 {
+    HGE_t hge = (HGE_t)headerGetExtension;
+    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     Header h;
     speclines sl = spec->sl;
     spectags st = spec->st;
     const char * msgstr = NULL;
     int i, j;
+    int xx;
 
     if (sl == NULL || st == NULL)
 	return;
@@ -660,11 +669,14 @@ printNewSpecfile(Spec spec)
 /*@=bounds@*/
 	    h = NULL;
 	    for (pkg = spec->packages; pkg != NULL; pkg = pkg->next) {
-		const char *pkgname;
 		h = pkg->header;
-		(void) headerGetEntry(h, RPMTAG_NAME, NULL, &pkgname, NULL);
-		if (!strcmp(pkgname, fmt))
+		he->tag = RPMTAG_NAME;
+		xx = hge(h, he, 0);
+		if (!strcmp(he->p.str, fmt)) {
+		    he->p.ptr = _free(he->p.ptr);
 		    /*@innerbreak@*/ break;
+		}
+		he->p.ptr = _free(he->p.ptr);
 	    }
 	    if (pkg == NULL || h == NULL)
 		h = spec->packages->header;

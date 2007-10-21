@@ -531,6 +531,8 @@ exit:
 int writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
 		CSA_t csa, char *passPhrase, const char **cookie)
 {
+    HGE_t hge = (HGE_t)headerGetExtension;
+    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     FD_t fd = NULL;
     FD_t ifd = NULL;
     int_32 count, sigtag;
@@ -811,13 +813,11 @@ exit:
 
     /* XXX Fish the pkgid out of the signature header. */
     if (sigh != NULL && pkgidp != NULL) {
-	rpmTagType tagType;
-	unsigned char * MD5 = NULL;
-	int_32 c;
 	int xx;
-	xx = headerGetEntry(sigh, RPMSIGTAG_MD5, &tagType, &MD5, &c);
-	if (tagType == RPM_BIN_TYPE && MD5 != NULL && c == 16)
-	    *pkgidp = MD5;
+	he->tag = RPMSIGTAG_MD5;
+	xx = hge(sigh, he, 0);
+	if (he->t == RPM_BIN_TYPE && he->p.ptr != NULL && he->c == 16)
+	    *pkgidp = he->p.ui8p;		/* XXX memory leak */
     }
 
     sigh = headerFree(sigh);

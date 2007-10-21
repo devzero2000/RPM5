@@ -283,7 +283,7 @@ int headerGetExtension(Header h, HE_t he, /*@unused@*/ unsigned int flags)
 /*@unused@*/ static inline
 int headerGetEntry(Header h, int_32 tag,
 			/*@null@*/ /*@out@*/ hTYP_t type,
-			/*@null@*/ /*@out@*/ void * p,
+			/*@null@*/ /*@out@*/ hRET_t * p,
 			/*@null@*/ /*@out@*/ hCNT_t c)
 	/*@modifies *type, *p, *c @*/
 {
@@ -306,7 +306,7 @@ int headerGetEntry(Header h, int_32 tag,
 /*@unused@*/ static inline
 int headerGetEntryMinMemory(Header h, int_32 tag,
 			/*@null@*/ /*@out@*/ hTYP_t type,
-			/*@null@*/ /*@out@*/ void * p, 
+			/*@null@*/ /*@out@*/ hRET_t * p, 
 			/*@null@*/ /*@out@*/ hCNT_t c)
 	/*@modifies *type, *p, *c @*/
 {
@@ -334,8 +334,7 @@ int headerAddEntry(Header h, int_32 tag, rpmTagType type,
 		const void * p, rpmTagCount c)
 	/*@modifies h @*/
 {
-    hRET_t *q = (void *)&p;
-    return (h2hv(h)->hdradd) (h, tag, type, *q, c);
+    return (h2hv(h)->hdradd) (h, tag, type, p, c);
 }
 
 /** \ingroup header
@@ -357,8 +356,7 @@ int headerAppendEntry(Header h, int_32 tag, rpmTagType type,
 		const void * p, rpmTagCount c)
 	/*@modifies h @*/
 {
-    hRET_t *q = (void *)&p;
-    return (h2hv(h)->hdrappend) (h, tag, type, *q, c);
+    return (h2hv(h)->hdrappend) (h, tag, type, p, c);
 }
 
 /** \ingroup header
@@ -376,8 +374,7 @@ int headerAddOrAppendEntry(Header h, int_32 tag, rpmTagType type,
 		const void * p, rpmTagCount c)
 	/*@modifies h @*/
 {
-    hRET_t *q = (void *)&p;
-    return (h2hv(h)->hdraddorappend) (h, tag, type, *q, c);
+    return (h2hv(h)->hdraddorappend) (h, tag, type, p, c);
 }
 
 /** \ingroup header
@@ -423,8 +420,7 @@ int headerModifyEntry(Header h, int_32 tag, rpmTagType type,
 			const void * p, rpmTagCount c)
 	/*@modifies h @*/
 {
-    hRET_t *q = (void *)&p;
-    return (h2hv(h)->hdrmodify) (h, tag, type, *q, c);
+    return (h2hv(h)->hdrmodify) (h, tag, type, p, c);
 }
 
 /** \ingroup header

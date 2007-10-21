@@ -1251,17 +1251,17 @@ exit:
 	he->t = RPM_INT32_TYPE;
 	he->p.i32p = dirIndexes;
 	he->c = count;
-	xx = hae(h, he->tag, he->t, he->p, he->c);
+	xx = hae(h, he->tag, he->t, he->p.ptr, he->c);
 	he->tag = RPMTAG_BASENAMES;
 	he->t = RPM_STRING_ARRAY_TYPE;
 	he->p.argv = baseNames;
 	he->c = count;
-	xx = hae(h, he->tag, he->t, he->p, he->c);
+	xx = hae(h, he->tag, he->t, he->p.ptr, he->c);
 	he->tag = RPMTAG_DIRNAMES;
 	he->t = RPM_STRING_ARRAY_TYPE;
 	he->p.argv = dirNames;
 	he->c = dirIndex + 1;
-	xx = hae(h, he->tag, he->t, he->p, he->c);
+	xx = hae(h, he->tag, he->t, he->p.ptr, he->c);
     }
 
     fileNames = _free(fileNames);

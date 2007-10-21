@@ -337,14 +337,22 @@ static void fillOutMainPackage(Header h)
 	/*@globals rpmGlobalMacroContext, h_errno @*/
 	/*@modifies h, rpmGlobalMacroContext @*/
 {
+    HAE_t hae = (HAE_t)headerAddEntry;
+    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     struct optionalTag *ot;
+    int xx;
 
     for (ot = optionalTags; ot->ot_mac != NULL; ot++) {
 	if (!headerIsEntry(h, ot->ot_tag)) {
 /*@-boundsread@*/
 	    const char *val = rpmExpand(ot->ot_mac, NULL);
-	    if (val && *val != '%')
-		(void) headerAddEntry(h, ot->ot_tag, RPM_STRING_TYPE, (void *)val, 1);
+	    if (val && *val != '%') {
+		he->tag = ot->ot_tag;
+		he->t = RPM_STRING_TYPE;
+		he->p.str = val;
+		he->c = 1;
+		xx = hae(h, he->tag, he->t, he->p.ptr, he->c);
+	    }
 	    val = _free(val);
 /*@=boundsread@*/
 	}
@@ -358,6 +366,8 @@ static int doIcon(Spec spec, Header h)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies rpmGlobalMacroContext, fileSystem, internalState  @*/
 {
+    HAE_t hae = (HAE_t)headerAddEntry;
+    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     const char *fn, *Lurlfn = NULL;
     struct Source *sp;
     size_t iconsize = 2048;	/* XXX big enuf */
@@ -416,11 +426,19 @@ static int doIcon(Spec spec, Header h)
 	goto exit;
     }
 
-    if (!strncmp(icon, "GIF", sizeof("GIF")-1))
-	xx = headerAddEntry(h, RPMTAG_GIF, RPM_BIN_TYPE, icon, nb);
-    else if (!strncmp(icon, "/* XPM", sizeof("/* XPM")-1))
-	xx = headerAddEntry(h, RPMTAG_XPM, RPM_BIN_TYPE, icon, nb);
-    else {
+    if (!strncmp(icon, "GIF", sizeof("GIF")-1)) {
+	he->tag = RPMTAG_GIF;
+	he->t = RPM_BIN_TYPE;
+	he->p.i8p = icon;
+	he->c = nb;
+	xx = hae(h, he->tag, he->t, he->p.ptr, he->c);
+    } else if (!strncmp(icon, "/* XPM", sizeof("/* XPM")-1)) {
+	he->tag = RPMTAG_XPM;
+	he->t = RPM_BIN_TYPE;
+	he->p.i8p = icon;
+	he->c = nb;
+	xx = hae(h, he->tag, he->t, he->p.ptr, he->c);
+    } else {
 	rpmlog(RPMLOG_ERR, _("Unknown icon type: %s\n"), fn);
 	goto exit;
     }
@@ -496,6 +514,7 @@ static int handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
 		rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     HGE_t hge = (HGE_t)headerGetExtension;
+    HAE_t hae = (HAE_t)headerAddEntry;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     char * field = spec->line;
     char * end;
@@ -556,7 +575,11 @@ static int handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
 	    }
 	    addMacro(spec->macros, "PACKAGE_RELEASE", NULL, field, RMIL_OLDSPEC-1);
 	}
-	(void) headerAddEntry(pkg->header, tag, RPM_STRING_TYPE, field, 1);
+	he->tag = tag;
+	he->t = RPM_STRING_TYPE;
+	he->p.str = field;
+	he->c = 1;
+	xx = hae(pkg->header, he->tag, he->t, he->p.ptr, he->c);
 	break;
     case RPMTAG_GROUP:
     case RPMTAG_SUMMARY:
@@ -566,10 +589,15 @@ static int handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
     case RPMTAG_VENDOR:
     case RPMTAG_LICENSE:
     case RPMTAG_PACKAGER:
-	if (!*lang)
-	    (void) headerAddEntry(pkg->header, tag, RPM_STRING_TYPE, field, 1);
-	else if (!(noLang && strcmp(lang, RPMBUILD_DEFAULT_LANG)))
+	if (!*lang) {
+	    he->tag = tag;
+	    he->t = RPM_STRING_TYPE;
+	    he->p.str = field;
+	    he->c = 1;
+	    xx = hae(pkg->header, he->tag, he->t, he->p.ptr, he->c);
+	} else if (!(noLang && strcmp(lang, RPMBUILD_DEFAULT_LANG))) {
 	    (void) headerAddI18NString(pkg->header, tag, field, lang);
+	}
 	break;
     /* XXX silently ignore BuildRoot: */
     case RPMTAG_BUILDROOT:
@@ -638,7 +666,11 @@ static int handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
 		     spec->lineNum, tagName(tag), spec->line);
 	    return RPMRC_FAIL;
 	}
-	xx = headerAddEntry(pkg->header, tag, RPM_INT32_TYPE, &num, 1);
+	he->tag = tag;
+	he->t = RPM_INT32_TYPE;
+	he->p.i32p = &num;
+	he->c = 1;
+	xx = hae(pkg->header, he->tag, he->t, he->p.ptr, he->c);
 	break;
     case RPMTAG_AUTOREQPROV:
 	pkg->autoReq = parseYesNo(field);
@@ -741,7 +773,11 @@ static int handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
 
     default:
 	macro = 0;
-	(void) headerAddEntry(pkg->header, tag, RPM_STRING_TYPE, field, 1);
+	he->tag = tag;
+	he->t = RPM_STRING_TYPE;
+	he->p.str = field;
+	he->c = 1;
+	xx = hae(pkg->header, he->tag, he->t, he->p.ptr, he->c);
 	break;
     }
 
@@ -927,6 +963,9 @@ static int findPreambleTag(Spec spec, /*@out@*/rpmTag * tag,
 /* XXX should return rpmParseState, but RPMRC_FAIL forces int return. */
 int parsePreamble(Spec spec, int initialPackage)
 {
+    HGE_t hge = (HGE_t)headerGetExtension;
+    HAE_t hae = (HAE_t)headerAddEntry;
+    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     rpmParseState nextPart;
     int rc, xx;
     char *name, *linep;
@@ -956,13 +995,17 @@ int parsePreamble(Spec spec, int initialPackage)
 	
 	/* Construct the package */
 	if (flag == PART_SUBNAME) {
-	    const char * mainName;
-	    xx = headerGetEntry(spec->packages->header, RPMTAG_NAME,
-			NULL, &mainName, NULL);
-	    sprintf(NVR, "%s-%s", mainName, name);
+	    he->tag = RPMTAG_NAME;
+	    xx = hge(spec->packages->header, he, 0);
+	    sprintf(NVR, "%s-%s", he->p.str, name);
+	    he->p.ptr = _free(he->p.ptr);
 	} else
 	    strcpy(NVR, name);
-	xx = headerAddEntry(pkg->header, RPMTAG_NAME, RPM_STRING_TYPE, NVR, 1);
+	he->tag = RPMTAG_NAME;
+	he->t = RPM_STRING_TYPE;
+	he->p.str = NVR;
+	he->c = 1;
+	xx = hae(pkg->header, he->tag, he->t, he->p.ptr, he->c);
     }
 
     if ((rc = readLine(spec, STRIP_TRAILINGSPACE | STRIP_COMMENTS)) > 0) {

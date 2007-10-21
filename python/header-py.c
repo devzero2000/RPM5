@@ -1183,14 +1183,14 @@ int rpmMergeHeaders(PyObject * list, FD_t fd, int matchTag)
 {
     Header h;
     HeaderIterator hi;
-    int_32 * newMatch;
-    int_32 * oldMatch;
+    rpmTagData newMatch;
+    rpmTagData oldMatch;
     hdrObject * hdr;
     int count = 0;
     int_32 tag;
-    rpmTagType type;
-    int_32 c;
-    void * p;
+    rpmTagType t;
+    rpmTagCount c;
+    rpmTagData p;
 
     Py_BEGIN_ALLOW_THREADS
     h = headerRead(fd);
@@ -1210,7 +1210,7 @@ int rpmMergeHeaders(PyObject * list, FD_t fd, int matchTag)
 	    return 1;
 	}
 
-	if (*newMatch != *oldMatch) {
+	if (*newMatch.i32p != *oldMatch.i32p) {
 	    PyErr_SetString(pyrpmError, "match tag mismatch");
 	    return 1;
 	}
@@ -1220,12 +1220,12 @@ int rpmMergeHeaders(PyObject * list, FD_t fd, int matchTag)
 	hdr->linkList = _free(hdr->linkList);
 
 	for (hi = headerInitIterator(h);
-	    headerNextIterator(hi, &tag, &type, (void *) &p, &c);
-	    p = headerFreeData(p, type))
+	    headerNextIterator(hi, &tag, &t, &p, &c);
+	    p.ptr = headerFreeData(p.ptr, t))
 	{
 	    /* could be dupes */
 	    headerRemoveEntry(hdr->h, tag);
-	    headerAddEntry(hdr->h, tag, type, p, c);
+	    headerAddEntry(hdr->h, tag, t, p.ptr, c);
 	}
 
 	headerFreeIterator(hi);

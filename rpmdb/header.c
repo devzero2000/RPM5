@@ -382,12 +382,12 @@ unsigned int headerSizeof(/*@null@*/ Header h)
  * @param pend		pointer to end of data (or NULL)
  * @return		no. bytes in data, -1 on failure
  */
-static int dataLength(rpmTagType type, rpmTagData p, rpmTagCount count, int onDisk,
-		/*@null@*/ rpmTagData pend)
+static int dataLength(rpmTagType type, const void * p, rpmTagCount count, int onDisk,
+		/*@null@*/ const void * pend)
 	/*@*/
 {
-    const unsigned char * s = p.ui8p;
-    const unsigned char * se = pend.ui8p;
+    const unsigned char * s = p;
+    const unsigned char * se = pend;
     int length = 0;
 
     switch (type) {
@@ -417,7 +417,7 @@ static int dataLength(rpmTagType type, rpmTagData p, rpmTagCount count, int onDi
 		}
 	    }
 	} else {
-	    const char ** av = p.argv;
+	    const char ** av = (const char **) p;
 	    while (count--) {
 		/* add one for null termination */
 		length += strlen(*av++) + 1;
@@ -471,7 +471,7 @@ static int regionSwab(/*@null@*/ indexEntry entry, int il, int dl,
 		int regionid)
 	/*@modifies *entry, *dataStart @*/
 {
-    rpmTagData p, pend;
+    const void * p, * pend;
     unsigned char * tprev = NULL;
     unsigned char * t = NULL;
     int tdel = 0;
@@ -501,8 +501,8 @@ static int regionSwab(/*@null@*/ indexEntry entry, int il, int dl,
 	if (dataEnd && t >= dataEnd)
 	    return -1;
 
-	p.ptr = ie.data;
-	pend.ptr = (void *) dataEnd;	/* NOCAST */
+	p = ie.data;
+	pend = dataEnd;
 	ie.length = dataLength(ie.info.type, p, ie.info.count, 1, pend);
 	if (ie.length < 0 || hdrchkData(ie.length))
 	    return -1;
@@ -1758,7 +1758,7 @@ static int intGetEntry(Header h, int_32 tag,
 	/*@=dependenttrans@*/
 	break;
     default:
-	rc = copyEntry(entry, type, p, c, minMem);
+	rc = copyEntry(entry, type, (*p).ptr, c, minMem);
 	break;
     }
 
@@ -1981,7 +1981,7 @@ exit:
 static
 int headerGetEntry(Header h, int_32 tag,
 			/*@null@*/ /*@out@*/ hTYP_t type,
-			/*@null@*/ /*@out@*/ void * p,
+			/*@null@*/ /*@out@*/ hRET_t * p,
 			/*@null@*/ /*@out@*/ hCNT_t c)
 	/*@modifies *type, *p, *c @*/
 	/*@requires maxSet(type) >= 0 /\ maxSet(p) >= 0 /\ maxSet(c) >= 0 @*/
@@ -2011,7 +2011,7 @@ int headerGetEntry(Header h, int_32 tag,
 static
 int headerGetEntryMinMemory(Header h, int_32 tag,
 			/*@null@*/ /*@out@*/ hTYP_t type,
-			/*@null@*/ /*@out@*/ void * p,
+			/*@null@*/ /*@out@*/ hRET_t * p,
 			/*@null@*/ /*@out@*/ hCNT_t c)
 	/*@modifies *type, *p, *c @*/
 	/*@requires maxSet(type) >= 0 /\ maxSet(p) >= 0 /\ maxSet(c) >= 0 @*/
@@ -2051,14 +2051,14 @@ int headerGetRawEntry(Header h, int_32 tag, rpmTagType * type, hRET_t * p, rpmTa
 
 /**
  */
-static void copyData(rpmTagType type, /*@out@*/ void * dstPtr, rpmTagData srcPtr,
+static void copyData(rpmTagType type, /*@out@*/ void * dstPtr, const void * srcPtr,
 		rpmTagCount cnt, int dataLength)
 	/*@modifies *dstPtr @*/
 {
     switch (type) {
     case RPM_STRING_ARRAY_TYPE:
     case RPM_I18NSTRING_TYPE:
-    {	const char ** av = srcPtr.argv;
+    {	const char ** av = (const char **) srcPtr;
 	char * t = dstPtr;
 
 	while (cnt-- > 0 && dataLength > 0) {
@@ -2072,7 +2072,7 @@ static void copyData(rpmTagType type, /*@out@*/ void * dstPtr, rpmTagData srcPtr
     }	break;
 
     default:
-	memmove(dstPtr, srcPtr.ptr, dataLength);
+	memmove(dstPtr, srcPtr, dataLength);
 	break;
     }
 }
@@ -2087,14 +2087,14 @@ static void copyData(rpmTagType type, /*@out@*/ void * dstPtr, rpmTagData srcPtr
  */
 /*@null@*/
 static void *
-grabData(rpmTagType type, rpmTagData p, rpmTagCount c, /*@out@*/ int * lenp)
+grabData(rpmTagType type, const void * p, rpmTagCount c, /*@out@*/ int * lenp)
 	/*@modifies *lenp @*/
 	/*@requires maxSet(lenp) >= 0 @*/
 {
     void * data = NULL;
     int length;
 
-    length = dataLength(type, p, c, 0, (rpmTagData)NULL);	/* NOCAST */
+    length = dataLength(type, p, c, 0, NULL);
     if (length > 0) {
 	data = xmalloc(length);
 	copyData(type, data, p, c, length);
@@ -2120,7 +2120,7 @@ grabData(rpmTagType type, rpmTagData p, rpmTagCount c, /*@out@*/ int * lenp)
  * @return		1 on success, 0 on failure
  */
 static
-int headerAddEntry(Header h, int_32 tag, rpmTagType type, rpmTagData p, rpmTagCount c)
+int headerAddEntry(Header h, int_32 tag, rpmTagType type, const void * p, rpmTagCount c)
 	/*@modifies h @*/
 {
     indexEntry entry;
@@ -2179,7 +2179,7 @@ int headerAddEntry(Header h, int_32 tag, rpmTagType type, rpmTagData p, rpmTagCo
  */
 static
 int headerAppendEntry(Header h, int_32 tag, rpmTagType type,
-		rpmTagData p, rpmTagCount c)
+		const void * p, rpmTagCount c)
 	/*@modifies h @*/
 {
     indexEntry entry;
@@ -2195,7 +2195,7 @@ int headerAppendEntry(Header h, int_32 tag, rpmTagType type,
     if (!entry)
 	return 0;
 
-    length = dataLength(type, p, c, 0, (rpmTagData)NULL);	/* NOCAST */
+    length = dataLength(type, p, c, 0, NULL);
     if (length < 0)
 	return 0;
 
@@ -2227,7 +2227,7 @@ int headerAppendEntry(Header h, int_32 tag, rpmTagType type,
  */
 static
 int headerAddOrAppendEntry(Header h, int_32 tag, rpmTagType type,
-		rpmTagData p, rpmTagCount c)
+		const void * p, rpmTagCount c)
 	/*@modifies h @*/
 {
     return (findEntry(h, tag, type)
@@ -2288,7 +2288,7 @@ int headerAddI18NString(Header h, int_32 tag, const char * string,
 	    p.argv[count++] = lang;
 	}
 	if (!headerAddEntry(h, HEADER_I18NTABLE, RPM_STRING_ARRAY_TYPE, 
-			p, count))
+			p.ptr, count))
 	    return 0;
 	table = findEntry(h, HEADER_I18NTABLE, RPM_STRING_ARRAY_TYPE);
     }
@@ -2323,7 +2323,7 @@ int headerAddI18NString(Header h, int_32 tag, const char * string,
 	for (i = 0; i < langNum; i++)
 	    p.argv[i] = "";
 	p.argv[langNum] = string;
-	return headerAddEntry(h, tag, RPM_I18NSTRING_TYPE, p, langNum + 1);
+	return headerAddEntry(h, tag, RPM_I18NSTRING_TYPE, p.ptr, langNum + 1);
     } else if (langNum >= entry->info.count) {
 	ghosts = langNum - entry->info.count;
 	
@@ -2400,7 +2400,7 @@ int headerAddI18NString(Header h, int_32 tag, const char * string,
  */
 static
 int headerModifyEntry(Header h, int_32 tag, rpmTagType type,
-			rpmTagData p, rpmTagCount c)
+			const void * p, rpmTagCount c)
 	/*@modifies h @*/
 {
     indexEntry entry;
@@ -2678,7 +2678,7 @@ Header headerCopy(Header h)
 	headerNextIterator(hi, &he->tag, &he->t, &he->p, &he->c);
 	he->p.ptr = headerFreeData(he->p.ptr, he->t))
     {
-	if (he->p.ptr) (void) headerAddEntry(nh, he->tag, he->t, he->p, he->c);
+	if (he->p.ptr) (void) headerAddEntry(nh, he->tag, he->t, he->p.ptr, he->c);
     }
     hi = headerFreeIterator(hi);
 
@@ -4163,14 +4163,14 @@ void headerCopyTags(Header headerFrom, Header headerTo, hTAG_t tagstocopy)
 	return;
 
     for (p = tagstocopy; *p != 0; p++) {
-	hRET_t ptr;
+	rpmTagData ptr;
 	rpmTagType type;
 	rpmTagCount count;
 	if (headerIsEntry(headerTo, *p))
 	    continue;
 	if (!headerGetEntryMinMemory(headerFrom, *p, &type, &ptr, &count))
 	    continue;
-	(void) headerAddEntry(headerTo, *p, type, ptr, count);
+	(void) headerAddEntry(headerTo, *p, type, ptr.ptr, count);
 	ptr.ptr = headerFreeData(ptr.ptr, type);
     }
 }

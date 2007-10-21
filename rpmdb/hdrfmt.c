@@ -798,7 +798,7 @@ static int instprefixTag(Header h, HE_t he)
 	/*@modifies he @*/
 {
     rpmTagType ipt;
-    char ** array;
+    rpmTagData array;
 
     he->tag = RPMTAG_INSTALLPREFIX;
     if (headerGetEntry(h, RPMTAG_INSTALLPREFIX, &he->t, &he->p, &he->c)) {
@@ -809,9 +809,9 @@ static int instprefixTag(Header h, HE_t he)
     if (headerGetEntry(h, he->tag, &ipt, &array, &he->c)) {
 	he->t = RPM_STRING_TYPE;
 	he->c = 1;
-	he->p.str = xstrdup(array[0]);
+	he->p.str = xstrdup(array.argv[0]);
 	he->freeData = 1;
-	array = headerFreeData(array, ipt);
+	array.ptr = headerFreeData(array.ptr, ipt);
 	return 0;
     }
     return 1;
@@ -900,9 +900,10 @@ static int triggercondsTag(Header h, HE_t he)
 static int triggertypeTag(Header h, HE_t he)
 	/*@modifies he @*/
 {
-    int_32 * indices, * flags;
+    rpmTagData indices;
+    rpmTagData flags;
     const char ** conds;
-    const char ** s;
+    rpmTagData s;
     int i, j, xx;
     int numScripts, numNames;
 
@@ -920,16 +921,16 @@ static int triggertypeTag(Header h, HE_t he)
     he->p.argv = conds = xmalloc(sizeof(*conds) * numScripts);
     for (i = 0; i < numScripts; i++) {
 	for (j = 0; j < numNames; j++) {
-	    if (indices[j] != i)
+	    if (indices.i32p[j] != i)
 		/*@innercontinue@*/ continue;
 
-	    if (flags[j] & RPMSENSE_TRIGGERPREIN)
+	    if (flags.i32p[j] & RPMSENSE_TRIGGERPREIN)
 		conds[i] = xstrdup("prein");
-	    else if (flags[j] & RPMSENSE_TRIGGERIN)
+	    else if (flags.i32p[j] & RPMSENSE_TRIGGERIN)
 		conds[i] = xstrdup("in");
-	    else if (flags[j] & RPMSENSE_TRIGGERUN)
+	    else if (flags.i32p[j] & RPMSENSE_TRIGGERUN)
 		conds[i] = xstrdup("un");
-	    else if (flags[j] & RPMSENSE_TRIGGERPOSTUN)
+	    else if (flags.i32p[j] & RPMSENSE_TRIGGERPOSTUN)
 		conds[i] = xstrdup("postun");
 	    else
 		conds[i] = xstrdup("");
@@ -937,7 +938,7 @@ static int triggertypeTag(Header h, HE_t he)
 	}
     }
 
-    s = headerFreeData(s, -1);
+    s.ptr = headerFreeData(s.ptr, -1);
     return 0;
 }
 
@@ -980,15 +981,15 @@ static int i18nTag(Header h, HE_t he)
 	const char * msgid;
 
 	{   const char * tn = tagName(he->tag);
-	    const char * n = NULL;
+	    rpmTagData n = { .ptr = NULL };
 	    char * mk;
 	    size_t nb = sizeof("()");
 	    int xx = headerGetEntry(h, RPMTAG_NAME, NULL, &n, NULL);
 	    xx = 0;	/* XXX keep gcc quiet */
 	    if (tn)	nb += strlen(tn);
-	    if (n)	nb += strlen(n);
+	    if (n.str)	nb += strlen(n.str);
 	    mk = alloca(nb);
-	    sprintf(mk, "%s(%s)", (n ? n : ""), (tn ? tn : ""));
+	    sprintf(mk, "%s(%s)", (n.str ? n.str : ""), (tn ? tn : ""));
 	    msgkey = mk;
 	}
 

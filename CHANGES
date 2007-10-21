@@ -1,4 +1,7 @@
 4.5 -> 5.0:
+    - jbj: hmm, still segfaults, more to do.
+    - jbj: change headerGetEntry prototype, use headerGetExtension instead.
+    - jbj: fix: hae needs he->p.ptr, not he->p, as 4th arg.
     - jbj: start rearranging header.h prior to moving typedefs to rpmtag.h.
     - jbj: rewrite several toy routines to use HE_t instead.
     - jbj: replace hRET_t with rpmTagType, avoiding "hRET_t *" issues for now.

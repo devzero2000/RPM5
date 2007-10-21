@@ -151,9 +151,9 @@ static rpmRC markReplacedFiles(const rpmpsm psm)
 
     sfi = replaced;
     while ((h = rpmdbNextIterator(mi)) != NULL) {
-	char * secStates;
+	rpmTagData secStates;
 	int modified;
-	int count;
+	rpmTagCount count;
 
 	modified = 0;
 
@@ -164,8 +164,8 @@ static rpmRC markReplacedFiles(const rpmpsm psm)
 	num = 0;
 	while (sfi->otherPkg && sfi->otherPkg == prev) {
 	    assert(sfi->otherFileNum < count);
-	    if (secStates[sfi->otherFileNum] != RPMFILE_STATE_REPLACED) {
-		secStates[sfi->otherFileNum] = RPMFILE_STATE_REPLACED;
+	    if (secStates.i8p[sfi->otherFileNum] != RPMFILE_STATE_REPLACED) {
+		secStates.i8p[sfi->otherFileNum] = RPMFILE_STATE_REPLACED;
 		if (modified == 0) {
 		    /* Modified header will be rewritten. */
 		    modified = 1;
@@ -1571,7 +1571,9 @@ rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 
 /* XXX hackery to assert(!scaremem) in rpmfiNew. */
 if (fi->h == NULL && fi->te && fi->te->h != NULL) fi->h = headerLink(fi->te->h);
-assert(fi->h != NULL);
+#if 0
+assert(fi->h != NULL);	/* XXX install/verify have fi->h, erasures doesn't. */
+#endif
 
     switch (stage) {
     case PSM_UNKNOWN:
@@ -1842,7 +1844,7 @@ psm->te->h = headerLink(fi->h);
 				he->t = type;
 				he->p.ptr = (void *) ptr;	/* NOCAST */
 				he->c = count;
-				xx = hae(psm->oh, he->tag, he->t, he->p, he->c);
+				xx = hae(psm->oh, he->tag, he->t, he->p.ptr, he->c);
 			    }
 			}
 			hi = headerFreeIterator(hi);
@@ -1906,7 +1908,7 @@ psm->te->h = headerLink(fi->h);
 		he->t = RPM_INT32_TYPE;
 		he->p.i32p = &tid;
 		he->c = 1;
-		xx = hae(psm->oh, he->tag, he->t, he->p, he->c);
+		xx = hae(psm->oh, he->tag, he->t, he->p.ptr, he->c);
 
 		/* Add original header's origin (i.e. URL) */
 		if (origin != NULL) {
@@ -1914,7 +1916,7 @@ psm->te->h = headerLink(fi->h);
 		    he->t = RPM_STRING_TYPE;
 		    he->p.str = origin;
 		    he->c = 1;
-		    xx = hae(psm->oh, he->tag, he->t, he->p, he->c);
+		    xx = hae(psm->oh, he->tag, he->t, he->p.ptr, he->c);
 		    origin = _free(origin);
 		}
 

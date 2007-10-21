@@ -745,7 +745,7 @@ assert(p != NULL);
 		he->t = validType;
 		he->p.argv = validRelocations;
 		he->c = numValid;
-		xx = hae(origH, he->tag, he->t, he->p, he->c);
+		xx = hae(origH, he->tag, he->t, he->p.ptr, he->c);
 	    }
 	    validRelocations = _free(validRelocations);
 	}
@@ -873,7 +873,7 @@ assert(p != NULL);
 	    he->t = RPM_STRING_ARRAY_TYPE;
 	    he->p.argv = actualRelocations;
 	    he->c = numActual;
-	    xx = hae(h, he->tag, he->t, he->p, he->c);
+	    xx = hae(h, he->tag, he->t, he->p.ptr, he->c);
 	}
 
 	actualRelocations = _free(actualRelocations);
@@ -1102,26 +1102,26 @@ dColors[j] |= fColors[i];
 	he->tag = RPMTAG_BASENAMES;
 	xx = hge(h, he, 0);
 	he->tag = RPMTAG_ORIGBASENAMES;
-	xx = hae(h, he->tag, he->t, he->p, he->c);
+	xx = hae(h, he->tag, he->t, he->p.ptr, he->c);
 	he->p.ptr = _free(he->p.ptr);
 
 	he->tag = RPMTAG_DIRNAMES;
 	xx = hge(h, he, 0);
 	he->tag = RPMTAG_ORIGDIRNAMES;
-	xx = hae(h, he->tag, he->t, he->p, he->c);
+	xx = hae(h, he->tag, he->t, he->p.ptr, he->c);
 	he->p.ptr = _free(he->p.ptr);
 
 	he->tag = RPMTAG_DIRINDEXES;
 	xx = hge(h, he, 0);
 	he->tag = RPMTAG_ORIGDIRINDEXES;
-	xx = hae(h, he->tag, he->t, he->p, he->c);
+	xx = hae(h, he->tag, he->t, he->p.ptr, he->c);
 	he->p.ptr = _free(he->p.ptr);
 
 	he->tag = RPMTAG_BASENAMES;
 	he->t = RPM_STRING_ARRAY_TYPE;
 	he->p.argv = baseNames;
 	he->c = fileCount;
-	xx = hme(h, he->tag, he->t, he->p, he->c);
+	xx = hme(h, he->tag, he->t, he->p.ptr, he->c);
 	fi->bnl = _free(fi->bnl);
 	xx = hge(h, he, 0);
 	fi->bnl = he->p.argv;
@@ -1131,7 +1131,7 @@ dColors[j] |= fColors[i];
 	he->t = RPM_STRING_ARRAY_TYPE;
 	he->p.argv = dirNames;
 	he->c = dirCount;
-	xx = hme(h, he->tag, he->t, he->p, he->c);
+	xx = hme(h, he->tag, he->t, he->p.ptr, he->c);
 	fi->dnl = _free(fi->dnl);
 	xx = hge(h, he, 0);
 	fi->dnl = he->p.argv;
@@ -1141,7 +1141,7 @@ dColors[j] |= fColors[i];
 	he->t = RPM_INT32_TYPE;
 	he->p.i32p = dirIndexes;
 	he->c = fileCount;
-	xx = hme(h, he->tag, he->t, he->p, he->c);
+	xx = hme(h, he->tag, he->t, he->p.ptr, he->c);
 	fi->dil = _free(fi->dil);
 	xx = hge(h, he, 0);
 	fi->dil = he->p.ui32p;

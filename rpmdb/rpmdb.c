@@ -3135,7 +3135,7 @@ memset(data, 0, sizeof(*data));
 	he->p.i32p = &tid;
 	he->c = 1;
 	if (!headerIsEntry(h, he->tag))
-	   xx = hae(h, he->tag, he->t, he->p, he->c);
+	   xx = hae(h, he->tag, he->t, he->p.ptr, he->c);
     }
 
     /* Add the package color if not present. */
@@ -3145,7 +3145,7 @@ memset(data, 0, sizeof(*data));
 	he->t = RPM_INT32_TYPE;
 	he->p.ui32p = &hcolor;
 	he->c = 1;
-	xx = hae(h, he->tag, he->t, he->p, he->c);
+	xx = hae(h, he->tag, he->t, he->p.ptr, he->c);
     }
 
 #if defined(SUPPORT_RPMV3_BASENAMES_HACKS)

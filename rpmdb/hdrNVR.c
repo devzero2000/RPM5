@@ -137,23 +137,30 @@ int headerNEVRA(Header h, const char **np,
 		/*@unused@*/ const char **ep, const char **vp, const char **rp,
 		const char **ap)
 {
-    rpmTagType type;
-    int count;
+    rpmTagType t;
+    rpmTagData p;
+    rpmTagCount c;
 
     if (np) {
-	if (!(headerGetEntry(h, RPMTAG_NAME, &type, np, &count)
-	    && type == RPM_STRING_TYPE && count == 1))
-		*np = NULL;
+	if (headerGetEntry(h, RPMTAG_NAME, &t, &p, &c)
+	 && t == RPM_STRING_TYPE && c == 1)
+	    *np = p.str;
+	else
+	    *np = NULL;
     }
     if (vp) {
-	if (!(headerGetEntry(h, RPMTAG_VERSION, &type, vp, &count)
-	    && type == RPM_STRING_TYPE && count == 1))
-		*vp = NULL;
+	if (headerGetEntry(h, RPMTAG_VERSION, &t, &p, &c)
+	 && t == RPM_STRING_TYPE && c == 1)
+	    *vp = p.str;
+	else
+	    *vp = NULL;
     }
     if (rp) {
-	if (!(headerGetEntry(h, RPMTAG_RELEASE, &type, rp, &count)
-	    && type == RPM_STRING_TYPE && count == 1))
-		*rp = NULL;
+	if (headerGetEntry(h, RPMTAG_RELEASE, &t, &p, &c)
+	 && t == RPM_STRING_TYPE && c == 1)
+	    *rp = p.str;
+	else
+	    *rp = NULL;
     }
     if (ap) {
 /*@-observertrans -readonlytrans@*/
@@ -164,9 +171,11 @@ int headerNEVRA(Header h, const char **np,
 	    *ap = "src";
 /*@=observertrans =readonlytrans@*/
 	else
-	if (!(headerGetEntry(h, RPMTAG_ARCH, &type, ap, &count)
-	    && type == RPM_STRING_TYPE && count == 1))
-		*ap = NULL;
+	if (headerGetEntry(h, RPMTAG_ARCH, &t, &p, &c)
+	 && t == RPM_STRING_TYPE && c == 1)
+	    *ap = p.str;
+	else
+	    *ap = NULL;
     }
     return 0;
 }

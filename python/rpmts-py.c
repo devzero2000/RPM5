@@ -235,9 +235,9 @@ rpmtsCallback(/*@unused@*/ const void * hd, const rpmCallbackType what,
     /* Synthesize a python object for callback (if necessary). */
     if (pkgObj == NULL) {
 	if (h) {
-	    const char * n = NULL;
+	    rpmTagData n = { .ptr = NULL };
 	    (void) headerGetEntry(h, RPMTAG_NAME, NULL, &n, NULL);
-	    pkgObj = Py_BuildValue("s", n);
+	    pkgObj = Py_BuildValue("s", n.str);
 	} else {
 	    pkgObj = Py_None;
 	    Py_INCREF(pkgObj);
