@@ -1473,7 +1473,7 @@ static int hSaveFlinks(Header h, const struct rpmChainLink_s * flink)
 	he->c = 1;
     }
 #endif
-    xx = hae(fi->h, he->tag, he->t, he->p.ptr, he->c);
+    xx = hae(h, he->tag, he->t, he->p.ptr, he->c);
 assert(xx);
 
     he->tag = RPMTAG_FLINKPKGID;
