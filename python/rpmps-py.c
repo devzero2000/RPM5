@@ -185,7 +185,7 @@ fprintf(stderr, "*** rpmps_subscript(%p[%s],%p[%s])\n", s, lbl(s), key, lbl(key)
     while ((i = rpmpsNextIterator(psi)) >= 0) {
 	if (i != ix)
 	    continue;
-	result = Py_BuildValue("s", rpmProblemString(rpmpsPrpblem(psi)));
+	result = Py_BuildValue("s", rpmProblemString(rpmpsProblem(psi)));
 if (_rpmps_debug < 0)
 fprintf(stderr, "*** rpmps_subscript(%p,%p) %s\n", s, key, PyString_AsString(result));
 	break;
