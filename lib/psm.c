@@ -248,6 +248,7 @@ rpmRC rpmInstallSourcePackage(rpmts ts, void * _fd,
     }
 
 assert(fi->h != NULL);
+assert(fi->te->h == NULL);	/* XXX headerFree side effect */
     rpmteSetHeader(fi->te, fi->h);
     fi->te->fd = fdLink(fd, "installSourcePackage");
 
@@ -1369,12 +1370,13 @@ static int hCopyTag(Header sh, Header th, rpmTag tag)
 	/*@modifies th @*/
 {
     HGE_t hge = (HGE_t)headerGetExtension;
+    HAE_t hae = (HAE_t)headerAddEntry;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     int xx = 1;
 
     he->tag = tag;
     if (hge(sh, he, 0) && he->c > 0)
-	xx = headerAddEntry(th, he->tag, he->t, he->p.ptr, he->c);
+	xx = hae(th, he->tag, he->t, he->p.ptr, he->c);
 assert(xx);
     he->p.ptr = _free(he->p.ptr);
     return 0;
@@ -1389,36 +1391,51 @@ assert(xx);
 static int hSaveBlinks(Header h, const struct rpmChainLink_s * blink)
 	/*@modifies h @*/
 {
-    /*@observer@*/
+    HAE_t hae = (HAE_t) headerAddEntry;
+    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+/*@observer@*/
     static const char * chain_end = RPMTE_CHAIN_END;
     int ac;
     int xx = 1;
 
+    /* Save forward links into header upgrade chain. */
+    he->tag = RPMTAG_BLINKNEVRA;
+    he->t = RPM_STRING_ARRAY_TYPE;
     ac = argvCount(blink->NEVRA);
-    if (ac > 0)
-	xx = headerAddEntry(h, RPMTAG_BLINKNEVRA, RPM_STRING_ARRAY_TYPE,
-			argvData(blink->NEVRA), ac);
-    else     /* XXX Add an explicit chain terminator on 1st install. */
-	xx = headerAddEntry(h, RPMTAG_BLINKNEVRA, RPM_STRING_ARRAY_TYPE,
-			&chain_end, 1);
+    if (ac > 0) {
+	he->p.argv = argvData(blink->NEVRA);
+	he->c = ac;
+    } else {    /* XXX Add an explicit chain terminator on 1st install. */
+	he->p.argv = &chain_end;
+	he->c = 1;
+    }
+    xx = hae(h, he->tag, he->t, he->p.ptr, he->c);
 assert(xx);
     
+    he->tag = RPMTAG_BLINKPKGID;
+    he->t = RPM_STRING_ARRAY_TYPE;
     ac = argvCount(blink->Pkgid);
-    if (ac > 0) 
-	xx = headerAddEntry(h, RPMTAG_BLINKPKGID, RPM_STRING_ARRAY_TYPE,
-			argvData(blink->Pkgid), ac);
-    else     /* XXX Add an explicit chain terminator on 1st install. */
-	xx = headerAddEntry(h, RPMTAG_BLINKPKGID, RPM_STRING_ARRAY_TYPE,
-			&chain_end, 1);
+    if (ac > 0) {
+	he->p.argv = argvData(blink->Pkgid);
+	he->c = ac;
+    } else {	/* XXX Add an explicit chain terminator on 1st install. */
+	he->p.argv = &chain_end;
+	he->c = 1;
+    }
+    xx = hae(h, he->tag, he->t, he->p.ptr, he->c);
 assert(xx);
 
+    he->tag = RPMTAG_BLINKHDRID;
+    he->t = RPM_STRING_ARRAY_TYPE;
     ac = argvCount(blink->Hdrid);
-    if (ac > 0)
-	xx = headerAddEntry(h, RPMTAG_BLINKHDRID, RPM_STRING_ARRAY_TYPE,
-			argvData(blink->Hdrid), ac);
-    else     /* XXX Add an explicit chain terminator on 1st install. */
-	xx = headerAddEntry(h, RPMTAG_BLINKNEVRA, RPM_STRING_ARRAY_TYPE,
-			&chain_end, 1);
+    if (ac > 0) {
+	he->p.argv = argvData(blink->Hdrid);
+	he->c = ac;
+    } else {	/* XXX Add an explicit chain terminator on 1st install. */
+	he->p.argv = &chain_end;
+	he->c = 1;
+    }
+    xx = hae(h, he->tag, he->t, he->p.ptr, he->c);
 assert(xx);
 
     return 0;
@@ -1433,6 +1450,8 @@ assert(xx);
 static int hSaveFlinks(Header h, const struct rpmChainLink_s * flink)
 	/*@modifies h @*/
 {
+    HAE_t hae = (HAE_t)headerAddEntry;
+    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
 #ifdef	NOTYET
     /*@observer@*/
     static const char * chain_end = RPMTE_CHAIN_END;
@@ -1440,38 +1459,53 @@ static int hSaveFlinks(Header h, const struct rpmChainLink_s * flink)
     int ac;
     int xx = 1;
 
-    /* Save backward links into header upgrade chain. */
+    /* Save forward links into header upgrade chain. */
+    he->tag = RPMTAG_FLINKNEVRA;
+    he->t = RPM_STRING_ARRAY_TYPE;
     ac = argvCount(flink->NEVRA);
-    if (ac > 0)
-	xx = headerAddEntry(h, RPMTAG_FLINKNEVRA, RPM_STRING_ARRAY_TYPE,
-			argvData(flink->NEVRA), ac);
+    if (ac > 0) {
+	he->p.argv = argvData(flink->NEVRA);
+	he->c = ac;
+    }
 #ifdef	NOTYET	/* XXX is an explicit flink terminator needed? */
-    else     /* XXX Add an explicit chain terminator on 1st install. */
-	xx = headerAddEntry(h, RPMTAG_FLINKNEVRA, RPM_STRING_ARRAY_TYPE,
-			&chain_end, 1);
+    else {	/* XXX Add an explicit chain terminator on 1st install. */
+	he->p.argv = &chain_end;
+	he->c = 1;
+    }
 #endif
+    xx = hae(fi->h, he->tag, he->t, he->p.ptr, he->c);
 assert(xx);
 
+    he->tag = RPMTAG_FLINKPKGID;
+    he->t = RPM_STRING_ARRAY_TYPE;
     ac = argvCount(flink->Pkgid);
-    if (ac > 0) 
-	xx = headerAddEntry(h, RPMTAG_FLINKPKGID, RPM_STRING_ARRAY_TYPE,
-			argvData(flink->Pkgid), ac);
+    if (ac > 0) {
+	he->p.argv = argvData(flink->Pkgid);
+	he->c = ac;
+    }
 #ifdef	NOTYET	/* XXX is an explicit flink terminator needed? */
-    else     /* XXX Add an explicit chain terminator on 1st install. */
-	xx = headerAddEntry(h, RPMTAG_FLINKPKGID, RPM_STRING_ARRAY_TYPE,
-			&chain_end, 1);
+    else {	/* XXX Add an explicit chain terminator on 1st install. */
+	he->p.argv = &chain_end;
+	he->c = 1;
+    }
 #endif
+    xx = hae(h, he->tag, he->t, he->p.ptr, he->c);
 assert(xx);
 
+    he->tag = RPMTAG_FLINKHDRID;
+    he->t = RPM_STRING_ARRAY_TYPE;
     ac = argvCount(flink->Hdrid);
-    if (ac > 0)
-	xx = headerAddEntry(h, RPMTAG_FLINKHDRID, RPM_STRING_ARRAY_TYPE,
-			argvData(flink->Hdrid), ac);
+    if (ac > 0) {
+	he->p.argv = argvData(flink->Hdrid);
+	he->c = ac;
+    }
 #ifdef	NOTYET	/* XXX is an explicit flink terminator needed? */
-    else     /* XXX Add an explicit chain terminator on 1st install. */
-	xx = headerAddEntry(h, RPMTAG_FLINKNEVRA, RPM_STRING_ARRAY_TYPE,
-			&chain_end, 1);
+    else {	/* XXX Add an explicit chain terminator on 1st install. */
+	he->p.argv = &chain_end;
+	he->c = 1;
+    }
 #endif
+    xx = hae(h, he->tag, he->t, he->p.ptr, he->c);
 assert(xx);
 
     return 0;
@@ -1487,38 +1521,54 @@ assert(xx);
 static int populateInstallHeader(const rpmts ts, const rpmte te, rpmfi fi)
 	/*@modifies fi @*/
 {
+    HAE_t hae = (HAE_t)headerAddEntry;
+    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     uint_32 tscolor = rpmtsColor(ts);
     uint_32 tecolor = rpmteColor(te);
     int_32 installTime = (int_32) time(NULL);
     int fc = rpmfiFC(fi);
-    const char * origin;
     int xx = 1;
 
 assert(fi->h != NULL);
-    if (fi->fstates != NULL && fc > 0)
-	xx = headerAddEntry(fi->h, RPMTAG_FILESTATES, RPM_CHAR_TYPE,
-				fi->fstates, fc);
+    if (fi->fstates != NULL && fc > 0) {
+	he->tag = RPMTAG_FILESTATES;
+	he->t = RPM_CHAR_TYPE;
+	he->p.i8p = fi->fstates;
+	he->c = fc;
+	xx = hae(fi->h, he->tag, he->t, he->p.ptr, he->c);
+    }
 assert(xx);
 
-    xx = headerAddEntry(fi->h, RPMTAG_INSTALLTIME, RPM_INT32_TYPE,
-			&installTime, 1);
+    he->tag = RPMTAG_INSTALLTIME;
+    he->t = RPM_INT32_TYPE;
+    he->p.i32p = &installTime;
+    he->c = 1;
+    xx = hae(fi->h, he->tag, he->t, he->p.ptr, he->c);
 assert(xx);
 
-    xx = headerAddEntry(fi->h, RPMTAG_INSTALLCOLOR, RPM_INT32_TYPE,
-			&tscolor, 1);
+    he->tag = RPMTAG_INSTALLCOLOR;
+    he->t = RPM_INT32_TYPE;
+    he->p.ui32p = &tscolor;
+    he->c = 1;
+    xx = hae(fi->h, he->tag, he->t, he->p.ptr, he->c);
 assert(xx);
 
     /* XXX FIXME: add preferred color at install. */
 
-    xx = headerAddEntry(fi->h, RPMTAG_PACKAGECOLOR, RPM_INT32_TYPE,
-				&tecolor, 1);
+    he->tag = RPMTAG_PACKAGECOLOR;
+    he->t = RPM_INT32_TYPE;
+    he->p.ui32p = &tecolor;
+    he->c = 1;
+    xx = hae(fi->h, he->tag, he->t, he->p.ptr, he->c);
 assert(xx);
 
     /* Add the header's origin (i.e. URL) */
-    origin = headerGetOrigin(fi->h);
-    if (origin != NULL)
-	xx = headerAddEntry(fi->h, RPMTAG_PACKAGEORIGIN, RPM_STRING_TYPE,
-				origin, 1);
+    he->tag = RPMTAG_PACKAGEORIGIN;
+    he->t = RPM_STRING_TYPE;
+    he->p.str = headerGetOrigin(fi->h);
+    he->c = 1;
+    if (he->p.str != NULL)
+	xx = hae(fi->h, he->tag, he->t, he->p.ptr, he->c);
 assert(xx);
 
     /* XXX Don't clobber forward/backward upgrade chain on rollbacks */
@@ -1560,11 +1610,11 @@ static int rpmpsmNext(rpmpsm psm, pkgStage nstage)
 rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 {
     HGE_t hge = (HGE_t)headerGetExtension;
+    HAE_t hae = (HAE_t)headerAddEntry;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     const rpmts ts = psm->ts;
     uint_32 tscolor = rpmtsColor(ts);
     rpmfi fi = psm->fi;
-    HAE_t hae = (HAE_t) headerAddEntry;
     rpmRC rc = psm->rc;
     int saveerrno;
     int xx;
@@ -1803,7 +1853,7 @@ psm->te->h = headerLink(fi->h);
 	    /* Regenerate original header. */
 	    {	void * uh = NULL;
 
-		/* Save originnal header's origin (i.e. URL) */
+		/* Save original header's origin (i.e. URL) */
 		he->tag = RPMTAG_PACKAGEORIGIN;
 		xx = hge(fi->h, he, 0);
 		origin = he->p.str;
@@ -1821,10 +1871,6 @@ psm->te->h = headerLink(fi->h);
 		    uh = he->p.ptr;
 		    if (xx && uh != NULL) {
 			HeaderIterator hi;
-			int_32 tag;
-			rpmTagType type;
-			const void * ptr;
-			rpmTagCount count;
 			Header oh;
 
 			/* Load the original header from the blob. */
@@ -1834,18 +1880,12 @@ psm->te->h = headerLink(fi->h);
 			psm->oh = headerNew();
 
 			for (hi = headerInitIterator(oh);
-			     headerNextIterator(hi, &tag, &type, &ptr, &count);
-			     ptr = headerFreeData(ptr, type))
+			     headerNextIterator(hi, &he->tag, &he->t, &he->p, &he->c);
+			     he->p.ptr = headerFreeData(he->p.ptr, he->t))
 			{
-			    if (tag == RPMTAG_ARCHIVESIZE)
+			    if (he->tag == RPMTAG_ARCHIVESIZE)
 				noArchiveSize = 1;
-			    if (ptr) {
-				he->tag = tag;
-				he->t = type;
-				he->p.ptr = (void *) ptr;	/* NOCAST */
-				he->c = count;
-				xx = hae(psm->oh, he->tag, he->t, he->p.ptr, he->c);
-			    }
+			    xx = hae(psm->oh, he->tag, he->t, he->p.ptr, he->c);
 			}
 			hi = headerFreeIterator(hi);
 
