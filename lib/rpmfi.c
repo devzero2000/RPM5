@@ -684,11 +684,11 @@ Header relocateFileList(const rpmts ts, rpmfi fi,
 	/*@modifies ts, fi, origH, actions, rpmGlobalMacroContext,
 		internalState @*/
 {
-    rpmte p = rpmtsRelocateElement(ts);
-    HGE_t hge = (HGE_t)headerGetExtension;
-    HAE_t hae = (HAE_t) headerAddEntry;
+    HGE_t hge = headerGetExtension;
+    HAE_t hae = headerAddExtension;
     HME_t hme = (HME_t) headerModifyEntry;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    rpmte p = rpmtsRelocateElement(ts);
     static int _printed = 0;
     int allowBadRelocate = (rpmtsFilterFlags(ts) & RPMPROB_FILTER_FORCERELOCATE);
     rpmRelocation relocations = NULL;
@@ -745,7 +745,7 @@ assert(p != NULL);
 		he->t = validType;
 		he->p.argv = validRelocations;
 		he->c = numValid;
-		xx = hae(origH, he->tag, he->t, he->p.ptr, he->c);
+		xx = hae(origH, he, 0);
 	    }
 	    validRelocations = _free(validRelocations);
 	}
@@ -873,7 +873,7 @@ assert(p != NULL);
 	    he->t = RPM_STRING_ARRAY_TYPE;
 	    he->p.argv = actualRelocations;
 	    he->c = numActual;
-	    xx = hae(h, he->tag, he->t, he->p.ptr, he->c);
+	    xx = hae(h, he, 0);
 	}
 
 	actualRelocations = _free(actualRelocations);
@@ -1102,19 +1102,19 @@ dColors[j] |= fColors[i];
 	he->tag = RPMTAG_BASENAMES;
 	xx = hge(h, he, 0);
 	he->tag = RPMTAG_ORIGBASENAMES;
-	xx = hae(h, he->tag, he->t, he->p.ptr, he->c);
+	xx = hae(h, he, 0);
 	he->p.ptr = _free(he->p.ptr);
 
 	he->tag = RPMTAG_DIRNAMES;
 	xx = hge(h, he, 0);
 	he->tag = RPMTAG_ORIGDIRNAMES;
-	xx = hae(h, he->tag, he->t, he->p.ptr, he->c);
+	xx = hae(h, he, 0);
 	he->p.ptr = _free(he->p.ptr);
 
 	he->tag = RPMTAG_DIRINDEXES;
 	xx = hge(h, he, 0);
 	he->tag = RPMTAG_ORIGDIRINDEXES;
-	xx = hae(h, he->tag, he->t, he->p.ptr, he->c);
+	xx = hae(h, he, 0);
 	he->p.ptr = _free(he->p.ptr);
 
 	he->tag = RPMTAG_BASENAMES;

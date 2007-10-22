@@ -202,85 +202,81 @@ uint_32 hGetColor(Header h)
 
 void headerMergeLegacySigs(Header h, const Header sigh)
 {
+    HAE_t hae = headerAddExtension;
     HFD_t hfd = (HFD_t) headerFreeData;
+    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     HeaderIterator hi;
-    int_32 tag;
-    rpmTagType type;
-    const void * ptr;
-    rpmTagCount count;
     int xx;
 
     if (h == NULL || sigh == NULL)
 	return;
 
     for (hi = headerInitIterator(sigh);
-        headerNextIterator(hi, &tag, &type, &ptr, &count);
-        ptr = hfd(ptr, type))
+        headerNextIterator(hi, &he->tag, &he->t, &he->p, &he->c);
+        he->p.ptr = hfd(he->p.ptr, he->t))
     {
-	switch (tag) {
 	/* XXX Translate legacy signature tag values. */
+	switch (he->tag) {
 	case RPMSIGTAG_SIZE:
-	    tag = RPMTAG_SIGSIZE;
+	    he->tag = RPMTAG_SIGSIZE;
 	    /*@switchbreak@*/ break;
 #if defined(SUPPORT_RPMV3_BROKEN)
 	case RPMSIGTAG_LEMD5_1:
-	    tag = RPMTAG_SIGLEMD5_1;
+	    he->tag = RPMTAG_SIGLEMD5_1;
 	    /*@switchbreak@*/ break;
 	case RPMSIGTAG_LEMD5_2:
-	    tag = RPMTAG_SIGLEMD5_2;
+	    he->tag = RPMTAG_SIGLEMD5_2;
 	    /*@switchbreak@*/ break;
 #endif
 #if defined(SUPPORT_RPMV3_VERIFY_RSA)
 	case RPMSIGTAG_PGP:
-	    tag = RPMTAG_SIGPGP;
+	    he->tag = RPMTAG_SIGPGP;
 	    /*@switchbreak@*/ break;
 	case RPMSIGTAG_PGP5:
-	    tag = RPMTAG_SIGPGP5;
+	    he->tag = RPMTAG_SIGPGP5;
 	    /*@switchbreak@*/ break;
 #endif
 	case RPMSIGTAG_MD5:
-	    tag = RPMTAG_SIGMD5;
+	    he->tag = RPMTAG_SIGMD5;
 	    /*@switchbreak@*/ break;
 #if defined(SUPPORT_RPMV3_VERIFY_DSA)
 	case RPMSIGTAG_GPG:
-	    tag = RPMTAG_SIGGPG;
+	    he->tag = RPMTAG_SIGGPG;
 	    /*@switchbreak@*/ break;
 #endif
 	case RPMSIGTAG_PAYLOADSIZE:
-	    tag = RPMTAG_ARCHIVESIZE;
+	    he->tag = RPMTAG_ARCHIVESIZE;
 	    /*@switchbreak@*/ break;
 	case RPMSIGTAG_SHA1:
 	case RPMSIGTAG_DSA:
 	case RPMSIGTAG_RSA:
 	default:
-	    if (!(tag >= HEADER_SIGBASE && tag < HEADER_TAGBASE))
+	    /* Skip all unknown tags that are not in the signature tag range. */
+	    if (!(he->tag >= HEADER_SIGBASE && he->tag < HEADER_TAGBASE))
 		continue;
 	    /*@switchbreak@*/ break;
 	}
-	if (ptr == NULL) continue;	/* XXX can't happen */
-	if (!headerIsEntry(h, tag)) {
-	    if (hdrchkType(type))
+assert(he->p.ptr != NULL);
+	if (!headerIsEntry(h, he->tag)) {
+	    if (hdrchkType(he->t))
 		continue;
-	    if (count < 0 || hdrchkData(count))
+	    if (he->c < 0 || hdrchkData(he->c))
 		continue;
-	    switch(type) {
-	    case RPM_MASK_TYPE:
-	    case RPM_OPENPGP_TYPE:
-	    case RPM_ASN1_TYPE:
-	    case RPM_NULL_TYPE:
-		continue;
-		/*@notreached@*/ /*@switchbreak@*/ break;
+	    switch(he->t) {
+	    default:
+assert(0);	/* XXX keep gcc quiet */
+		/*@switchbreak@*/ break;
 	    case RPM_CHAR_TYPE:
 	    case RPM_INT8_TYPE:
 	    case RPM_INT16_TYPE:
 	    case RPM_INT32_TYPE:
 	    case RPM_INT64_TYPE:
-		if (count != 1)
+		if (he->c != 1)
 		    continue;
 		/*@switchbreak@*/ break;
 	    case RPM_STRING_TYPE:
 	    case RPM_BIN_TYPE:
-		if (count >= 16*1024)
+		if (he->c >= 16*1024)
 		    continue;
 		/*@switchbreak@*/ break;
 	    case RPM_STRING_ARRAY_TYPE:
@@ -288,7 +284,8 @@ void headerMergeLegacySigs(Header h, const Header sigh)
 		continue;
 		/*@notreached@*/ /*@switchbreak@*/ break;
 	    }
- 	    xx = headerAddEntry(h, tag, type, ptr, count);
+ 	    xx = hae(h, he, 0);
+assert(xx == 1);
 	}
     }
     hi = headerFreeIterator(hi);
@@ -296,67 +293,66 @@ void headerMergeLegacySigs(Header h, const Header sigh)
 
 Header headerRegenSigHeader(const Header h, int noArchiveSize)
 {
+    HAE_t hae = headerAddExtension;
     HFD_t hfd = (HFD_t) headerFreeData;
+    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     Header sigh = headerNew();
     HeaderIterator hi;
-    int_32 stag;
-    int_32 tag;
-    rpmTagType type;
-    const void * ptr;
-    rpmTagCount count;
     int xx;
 
     for (hi = headerInitIterator(h);
-        headerNextIterator(hi, &tag, &type, &ptr, &count);
-        ptr = hfd(ptr, type))
+        headerNextIterator(hi, &he->tag, &he->t, &he->p, &he->c);
+        he->p.ptr = hfd(he->p.ptr, he->t))
     {
-	switch (tag) {
 	/* XXX Translate legacy signature tag values. */
+	switch (he->tag) {
 	case RPMTAG_SIGSIZE:
-	    stag = RPMSIGTAG_SIZE;
+	    he->tag = RPMSIGTAG_SIZE;
 	    /*@switchbreak@*/ break;
 #if defined(SUPPORT_RPMV3_BROKEN)
 	case RPMTAG_SIGLEMD5_1:
-	    stag = RPMSIGTAG_LEMD5_1;
+	    he->tag = RPMSIGTAG_LEMD5_1;
 	    /*@switchbreak@*/ break;
 	case RPMTAG_SIGLEMD5_2:
-	    stag = RPMSIGTAG_LEMD5_2;
+	    he->tag = RPMSIGTAG_LEMD5_2;
 	    /*@switchbreak@*/ break;
 #endif
 #if defined(SUPPORT_RPMV3_VERIFY_RSA)
 	case RPMTAG_SIGPGP:
-	    stag = RPMSIGTAG_PGP;
+	    he->tag = RPMSIGTAG_PGP;
 	    /*@switchbreak@*/ break;
 	case RPMTAG_SIGPGP5:
-	    stag = RPMSIGTAG_PGP5;
+	    he->tag = RPMSIGTAG_PGP5;
 	    /*@switchbreak@*/ break;
 #endif
 	case RPMTAG_SIGMD5:
-	    stag = RPMSIGTAG_MD5;
+	    he->tag = RPMSIGTAG_MD5;
 	    /*@switchbreak@*/ break;
 #if defined(SUPPORT_RPMV3_VERIFY_DSA)
 	case RPMTAG_SIGGPG:
-	    stag = RPMSIGTAG_GPG;
+	    he->tag = RPMSIGTAG_GPG;
 	    /*@switchbreak@*/ break;
 #endif
 	case RPMTAG_ARCHIVESIZE:
 	    /* XXX rpm-4.1 and later has archive size in signature header. */
 	    if (noArchiveSize)
 		continue;
-	    stag = RPMSIGTAG_PAYLOADSIZE;
+	    he->tag = RPMSIGTAG_PAYLOADSIZE;
 	    /*@switchbreak@*/ break;
 	case RPMTAG_SHA1HEADER:
 	case RPMTAG_DSAHEADER:
 	case RPMTAG_RSAHEADER:
 	default:
-	    if (!(tag >= HEADER_SIGBASE && tag < HEADER_TAGBASE))
+	    /* Skip all unknown tags that are not in the signature tag range. */
+	    if (!(he->tag >= HEADER_SIGBASE && he->tag < HEADER_TAGBASE))
 		continue;
-	    stag = tag;
 	    /*@switchbreak@*/ break;
 	}
-	if (ptr == NULL) continue;	/* XXX can't happen */
-	if (!headerIsEntry(sigh, stag))
-	    xx = headerAddEntry(sigh, stag, type, ptr, count);
+assert(he->p.ptr != NULL);
+	if (!headerIsEntry(sigh, he->tag)) {
+	    xx = hae(sigh, he, 0);
+assert(xx == 1);
+	}
     }
     hi = headerFreeIterator(hi);
     return sigh;

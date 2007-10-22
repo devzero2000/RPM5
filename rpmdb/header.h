@@ -371,22 +371,14 @@ typedef int (*HGE_t) (Header h, HE_t he, unsigned int flags)
 	/*@modifies *he @*/;
 
 /**
- * Prototype for headerAddEntry() vector.
+ * Add or append tag container to header.
  *
- * Duplicate tags are okay, but only defined for iteration (with the
- * exceptions noted below). While you are allowed to add i18n string
- * arrays through this function, you probably don't mean to. See
- * headerAddI18NString() instead.
- *
- * @param h             header
- * @param tag           tag
- * @param type          tag value data type
- * @param p             tag value(s)
- * @param c             number of values
- * @return              1 on success, 0 on failure
+ * @param h		header
+ * @param he		tag container
+ * @param flags		(unused)
+ * @return		1 on success, 0 on failure
  */
-typedef int (*HAE_t) (Header h, rpmTag tag, rpmTagType type,
-			const void * p, rpmTagCount c)
+typedef int (*HAE_t) (Header h, HE_t he, unsigned int flags)
 	/*@modifies h @*/;
 
 /**

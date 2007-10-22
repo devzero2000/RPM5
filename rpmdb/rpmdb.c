@@ -3097,8 +3097,8 @@ int rpmdbAdd(rpmdb db, int iid, Header h, /*@unused@*/ rpmts ts)
 DBC * dbcursor = NULL;
 DBT * key = alloca(sizeof(*key));
 DBT * data = alloca(sizeof(*data));
-    HGE_t hge = (HGE_t) headerGetExtension;
-    HAE_t hae = (HAE_t) headerAddEntry;
+    HGE_t hge = headerGetExtension;
+    HAE_t hae = headerAddExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     sigset_t signalMask;
 #if defined(SUPPORT_RPMV3_BASENAMES_HACKS)
@@ -3135,7 +3135,7 @@ memset(data, 0, sizeof(*data));
 	he->p.i32p = &tid;
 	he->c = 1;
 	if (!headerIsEntry(h, he->tag))
-	   xx = hae(h, he->tag, he->t, he->p.ptr, he->c);
+	   xx = hae(h, he, 0);
     }
 
     /* Add the package color if not present. */
@@ -3145,7 +3145,7 @@ memset(data, 0, sizeof(*data));
 	he->t = RPM_INT32_TYPE;
 	he->p.ui32p = &hcolor;
 	he->c = 1;
-	xx = hae(h, he->tag, he->t, he->p.ptr, he->c);
+	xx = hae(h, he, 0);
     }
 
 #if defined(SUPPORT_RPMV3_BASENAMES_HACKS)

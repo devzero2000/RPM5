@@ -1166,8 +1166,8 @@ static int dncmp(const void * a, const void * b)
 static void compressFilelist(Header h)
 	/*@modifies h @*/
 {
-    HGE_t hge = (HGE_t)headerGetExtension;
-    HAE_t hae = (HAE_t)headerAddEntry;
+    HGE_t hge = headerGetExtension;
+    HAE_t hae = headerAddExtension;
     HRE_t hre = (HRE_t)headerRemoveEntry;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     const char ** fileNames;
@@ -1251,17 +1251,17 @@ exit:
 	he->t = RPM_INT32_TYPE;
 	he->p.i32p = dirIndexes;
 	he->c = count;
-	xx = hae(h, he->tag, he->t, he->p.ptr, he->c);
+	xx = hae(h, he, 0);
 	he->tag = RPMTAG_BASENAMES;
 	he->t = RPM_STRING_ARRAY_TYPE;
 	he->p.argv = baseNames;
 	he->c = count;
-	xx = hae(h, he->tag, he->t, he->p.ptr, he->c);
+	xx = hae(h, he, 0);
 	he->tag = RPMTAG_DIRNAMES;
 	he->t = RPM_STRING_ARRAY_TYPE;
 	he->p.argv = dirNames;
 	he->c = dirIndex + 1;
-	xx = hae(h, he->tag, he->t, he->p.ptr, he->c);
+	xx = hae(h, he, 0);
     }
 
     fileNames = _free(fileNames);

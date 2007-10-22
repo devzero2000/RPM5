@@ -337,7 +337,7 @@ static void fillOutMainPackage(Header h)
 	/*@globals rpmGlobalMacroContext, h_errno @*/
 	/*@modifies h, rpmGlobalMacroContext @*/
 {
-    HAE_t hae = (HAE_t)headerAddEntry;
+    HAE_t hae = headerAddExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     struct optionalTag *ot;
     int xx;
@@ -351,7 +351,7 @@ static void fillOutMainPackage(Header h)
 		he->t = RPM_STRING_TYPE;
 		he->p.str = val;
 		he->c = 1;
-		xx = hae(h, he->tag, he->t, he->p.ptr, he->c);
+		xx = hae(h, he, 0);
 	    }
 	    val = _free(val);
 /*@=boundsread@*/
@@ -366,7 +366,7 @@ static int doIcon(Spec spec, Header h)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies rpmGlobalMacroContext, fileSystem, internalState  @*/
 {
-    HAE_t hae = (HAE_t)headerAddEntry;
+    HAE_t hae = headerAddExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     const char *fn, *Lurlfn = NULL;
     struct Source *sp;
@@ -431,13 +431,13 @@ static int doIcon(Spec spec, Header h)
 	he->t = RPM_BIN_TYPE;
 	he->p.i8p = icon;
 	he->c = nb;
-	xx = hae(h, he->tag, he->t, he->p.ptr, he->c);
+	xx = hae(h, he, 0);
     } else if (!strncmp(icon, "/* XPM", sizeof("/* XPM")-1)) {
 	he->tag = RPMTAG_XPM;
 	he->t = RPM_BIN_TYPE;
 	he->p.i8p = icon;
 	he->c = nb;
-	xx = hae(h, he->tag, he->t, he->p.ptr, he->c);
+	xx = hae(h, he, 0);
     } else {
 	rpmlog(RPMLOG_ERR, _("Unknown icon type: %s\n"), fn);
 	goto exit;
@@ -513,8 +513,8 @@ static int handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
 		pkg->header, pkg->autoProv, pkg->autoReq, pkg->icon,
 		rpmGlobalMacroContext, fileSystem, internalState @*/
 {
-    HGE_t hge = (HGE_t)headerGetExtension;
-    HAE_t hae = (HAE_t)headerAddEntry;
+    HGE_t hge = headerGetExtension;
+    HAE_t hae = headerAddExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     char * field = spec->line;
     char * end;
@@ -579,7 +579,7 @@ static int handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
 	he->t = RPM_STRING_TYPE;
 	he->p.str = field;
 	he->c = 1;
-	xx = hae(pkg->header, he->tag, he->t, he->p.ptr, he->c);
+	xx = hae(pkg->header, he, 0);
 	break;
     case RPMTAG_GROUP:
     case RPMTAG_SUMMARY:
@@ -594,7 +594,7 @@ static int handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
 	    he->t = RPM_STRING_TYPE;
 	    he->p.str = field;
 	    he->c = 1;
-	    xx = hae(pkg->header, he->tag, he->t, he->p.ptr, he->c);
+	    xx = hae(pkg->header, he, 0);
 	} else if (!(noLang && strcmp(lang, RPMBUILD_DEFAULT_LANG))) {
 	    (void) headerAddI18NString(pkg->header, tag, field, lang);
 	}
@@ -670,7 +670,7 @@ static int handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
 	he->t = RPM_INT32_TYPE;
 	he->p.i32p = &num;
 	he->c = 1;
-	xx = hae(pkg->header, he->tag, he->t, he->p.ptr, he->c);
+	xx = hae(pkg->header, he, 0);
 	break;
     case RPMTAG_AUTOREQPROV:
 	pkg->autoReq = parseYesNo(field);
@@ -777,7 +777,7 @@ static int handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
 	he->t = RPM_STRING_TYPE;
 	he->p.str = field;
 	he->c = 1;
-	xx = hae(pkg->header, he->tag, he->t, he->p.ptr, he->c);
+	xx = hae(pkg->header, he, 0);
 	break;
     }
 
@@ -963,8 +963,8 @@ static int findPreambleTag(Spec spec, /*@out@*/rpmTag * tag,
 /* XXX should return rpmParseState, but RPMRC_FAIL forces int return. */
 int parsePreamble(Spec spec, int initialPackage)
 {
-    HGE_t hge = (HGE_t)headerGetExtension;
-    HAE_t hae = (HAE_t)headerAddEntry;
+    HGE_t hge = headerGetExtension;
+    HAE_t hae = headerAddExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     rpmParseState nextPart;
     int rc, xx;
@@ -1005,7 +1005,7 @@ int parsePreamble(Spec spec, int initialPackage)
 	he->t = RPM_STRING_TYPE;
 	he->p.str = NVR;
 	he->c = 1;
-	xx = hae(pkg->header, he->tag, he->t, he->p.ptr, he->c);
+	xx = hae(pkg->header, he, 0);
     }
 
     if ((rc = readLine(spec, STRIP_TRAILINGSPACE | STRIP_COMMENTS)) > 0) {

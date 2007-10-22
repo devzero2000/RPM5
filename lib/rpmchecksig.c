@@ -177,8 +177,8 @@ static int rpmReSign(/*@unused@*/ rpmts ts,
         /*@modifies ts, rpmGlobalMacroContext,
                 fileSystem, internalState @*/
 {
-    HGE_t hge = (HGE_t)headerGetExtension;
-    HAE_t hae = (HAE_t)headerAddEntry;
+    HGE_t hge = headerGetExtension;
+    HAE_t hae = headerAddExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     rpmgi gi = NULL;
     FD_t fd = NULL;
@@ -283,8 +283,7 @@ if (!_nosigh) {
 		ohe->p.ptr = headerFreeData(ohe->p.ptr, ohe->t))
 	    {
 		if (ohe->p.ptr) {
-		    xx = hae(nh, ohe->tag, ohe->t, ohe->p.ptr, ohe->c);
-assert(xx);
+		    xx = hae(nh, ohe, 0);
 		}
 	    }
 	    hi = headerFreeIterator(hi);
@@ -456,7 +455,7 @@ exit:
 
 rpmRC rpmcliImportPubkey(const rpmts ts, const unsigned char * pkt, ssize_t pktlen)
 {
-    HAE_t hae = (HAE_t)headerAddEntry;
+    HAE_t hae = headerAddExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     static unsigned char zeros[] =
 	{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
@@ -524,13 +523,14 @@ rpmRC rpmcliImportPubkey(const rpmts ts, const unsigned char * pkt, ssize_t pktl
     /* Build pubkey header. */
     h = headerNew();
 
+    he->append = 1;
+
     he->tag = RPMTAG_PUBKEYS;
     he->t = RPM_STRING_ARRAY_TYPE;
     he->p.argv = &enc;
     he->c = 1;
-    he->append = 1;
-    xx = headerAddOrAppendEntry(h, he->tag, he->t, he->p.ptr, he->c);
-assert(xx);
+    xx = hae(h, he, 0);
+
     he->append = 0;
 
     d = headerSprintf(h, afmt, rpmTagTable, rpmHeaderFormats, NULL);
@@ -541,39 +541,31 @@ assert(xx);
     he->c = 1;
     he->tag = RPMTAG_NAME;
     he->p.str = "gpg-pubkey";
-    xx = hae(h, he->tag, he->t, he->p.ptr, he->c);
-assert(xx);
+    xx = hae(h, he, 0);
     he->tag = RPMTAG_VERSION;
     he->p.str = v+8;
-    xx = hae(h, he->tag, he->t, he->p.ptr, he->c);
-assert(xx);
+    xx = hae(h, he, 0);
     he->tag = RPMTAG_RELEASE;
     he->p.str = r;
-    xx = hae(h, he->tag, he->t, he->p.ptr, he->c);
-assert(xx);
+    xx = hae(h, he, 0);
     he->tag = RPMTAG_DESCRIPTION;
     he->p.str = d;
-    xx = hae(h, he->tag, he->t, he->p.ptr, he->c);
-assert(xx);
+    xx = hae(h, he, 0);
     he->tag = RPMTAG_GROUP;
     he->p.str = group;
-    xx = hae(h, he->tag, he->t, he->p.ptr, he->c);
-assert(xx);
+    xx = hae(h, he, 0);
     he->tag = RPMTAG_LICENSE;
     he->p.str = license;
-    xx = hae(h, he->tag, he->t, he->p.ptr, he->c);
-assert(xx);
+    xx = hae(h, he, 0);
     he->tag = RPMTAG_SUMMARY;
     he->p.str = u;
-    xx = hae(h, he->tag, he->t, he->p.ptr, he->c);
-assert(xx);
+    xx = hae(h, he, 0);
 
     he->tag = RPMTAG_SIZE;
     he->t = RPM_INT32_TYPE;
     he->p.i32p = &zero;
     he->c = 1;
-    xx = hae(h, he->tag, he->t, he->p.ptr, he->c);
-assert(xx);
+    xx = hae(h, he, 0);
 
     he->append = 1;
 
@@ -581,33 +573,33 @@ assert(xx);
     he->t = RPM_STRING_ARRAY_TYPE;
     he->p.argv = &u;
     he->c = 1;
-    xx = headerAddOrAppendEntry(h, he->tag, he->t, he->p.ptr, he->c);
+    xx = hae(h, he, 0);
     he->tag = RPMTAG_PROVIDEVERSION;
     he->t = RPM_STRING_ARRAY_TYPE;
     he->p.argv = &evr;
     he->c = 1;
-    xx = headerAddOrAppendEntry(h, he->tag, he->t, he->p.ptr, he->c);
+    xx = hae(h, he, 0);
     he->tag = RPMTAG_PROVIDEFLAGS;
     he->t = RPM_INT32_TYPE;
     he->p.i32p = &pflags;
     he->c = 1;
-    xx = headerAddOrAppendEntry(h, he->tag, he->t, he->p.ptr, he->c);
+    xx = hae(h, he, 0);
 
     he->tag = RPMTAG_PROVIDENAME;
     he->t = RPM_STRING_ARRAY_TYPE;
     he->p.argv = &n;
     he->c = 1;
-    xx = headerAddOrAppendEntry(h, he->tag, he->t, he->p.ptr, he->c);
+    xx = hae(h, he, 0);
     he->tag = RPMTAG_PROVIDEVERSION;
     he->t = RPM_STRING_ARRAY_TYPE;
     he->p.argv = &evr;
     he->c = 1;
-    xx = headerAddOrAppendEntry(h, he->tag, he->t, he->p.ptr, he->c);
+    xx = hae(h, he, 0);
     he->tag = RPMTAG_PROVIDEFLAGS;
     he->t = RPM_INT32_TYPE;
     he->p.i32p = &pflags;
     he->c = 1;
-    xx = headerAddOrAppendEntry(h, he->tag, he->t, he->p.ptr, he->c);
+    xx = hae(h, he, 0);
 
     he->append = 0;
 
@@ -615,30 +607,26 @@ assert(xx);
     he->t = RPM_STRING_TYPE;
     he->p.str = RPMVERSION;
     he->c = 1;
-    xx = hae(h, he->tag, he->t, he->p.ptr, he->c);
-assert(xx);
+    xx = hae(h, he, 0);
 
     /* XXX W2DO: tag value inheirited from parent? */
     he->tag = RPMTAG_BUILDHOST;
     he->t = RPM_STRING_TYPE;
     he->p.str = buildhost;
     he->c = 1;
-    xx = hae(h, he->tag, he->t, he->p.ptr, he->c);
-assert(xx);
+    xx = hae(h, he, 0);
     {   int_32 tid = rpmtsGetTid(ts);
 	he->tag = RPMTAG_INSTALLTIME;
 	he->t = RPM_INT32_TYPE;
 	he->p.i32p = &tid;
 	he->c = 1;
-	xx = hae(h, he->tag, he->t, he->p.ptr, he->c);
-assert(xx);
+	xx = hae(h, he, 0);
 	/* XXX W2DO: tag value inheirited from parent? */
 	he->tag = RPMTAG_BUILDTIME;
 	he->t = RPM_INT32_TYPE;
 	he->p.i32p = &tid;
 	he->c = 1;
-	xx = hae(h, he->tag, he->t, he->p.ptr, he->c);
-assert(xx);
+	xx = hae(h, he, 0);
     }
 
 #ifdef	NOTYET
@@ -647,8 +635,7 @@ assert(xx);
     he->t = RPM_STRING_TYPE;
     he->p.str = fn;
     he->c = 1;
-    xx = hae(h, he->tag, he->t, he->p.ptr, he->c);
-assert(xx);
+    xx = hae(h, he, 0);
 #endif
 
     /* Add header to database. */

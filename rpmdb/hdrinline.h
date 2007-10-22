@@ -268,6 +268,30 @@ int headerGetExtension(Header h, HE_t he, /*@unused@*/ unsigned int flags)
 }
 
 /** \ingroup header
+ * Add or append tag container to header.
+ *
+ * @param h		header
+ * @param he		tag container
+ * @param flags		(unused)
+ * @return		1 on success, 0 on failure
+ */
+/*@mayexit@*/
+/*@unused@*/ static inline
+int headerAddExtension(Header h, HE_t he, /*@unused@*/ unsigned int flags)
+	/*@modifies h @*/
+{
+    int xx;
+    if (he->append)
+	xx = (h2hv(h)->hdraddorappend) (h, he->tag, he->t, he->p.ptr, he->c);
+    else
+	xx = (h2hv(h)->hdradd) (h, he->tag, he->t, he->p.ptr, he->c);
+#if 0
+assert(xx);
+#endif
+    return xx;
+}
+
+/** \ingroup header
  * Retrieve tag value.
  * Will never return RPM_I18NSTRING_TYPE! RPM_STRING_TYPE elements with
  * RPM_I18NSTRING_TYPE equivalent entries are translated (if HEADER_I18NTABLE
