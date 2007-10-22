@@ -12,8 +12,6 @@
 #define	SUPPORT_SPRINTF_EXTTABLE	1
 #endif
 
-static int _jbj = 0;    /* XXX private debugging */
-
 /* RPM - Copyright (C) 1995-2002 Red Hat Software */
 
 /* Data written to file descriptors is in network byte order.    */
@@ -33,10 +31,13 @@ static int _jbj = 0;    /* XXX private debugging */
 int _hdr_debug = 0;
 
 /*@unchecked@*/
-int _newmagic = 0;
-
+int _newmagic = 0;		/* XXX Change header magic? */
 /*@unchecked@*/
-int _tagcache = 1;
+static int _jbj = 0;    	/* XXX private debugging */
+/*@unchecked@*/
+static int _usehge = 1;		/* XXX Use headerGetExtension? */
+/*@unchecked@*/
+int _tagcache = 1;		/* XXX Cache tag data persistently? */
 
 /*@access entryInfo @*/
 /*@access indexEntry @*/
@@ -98,6 +99,109 @@ static size_t headerMaxbytes = (32*1024*1024);
 
 /*@observer@*/ /*@unchecked@*/
 HV_t hdrVec;	/* forward reference */
+
+/**
+ * Automatically generated table of tag name/value pairs.
+ * @todo This should come from #include <rpmtag.h>.
+ */
+/*@-redecl@*/
+/*@observer@*/ /*@unchecked@*/
+extern const struct headerTagTableEntry_s * rpmTagTable;
+/*@=redecl@*/
+
+/**
+ * Number of entries in rpmTagTable.
+ * @todo This should come from #include <rpmtag.h>.
+ */
+/*@-redecl@*/
+/*@unchecked@*/
+extern const int rpmTagTableSize;
+
+/**
+ * @todo This should come from #include <rpmtag.h>.
+ */
+/*@-redecl@*/
+/*@unchecked@*/
+extern headerTagIndices rpmTags;
+/*@=redecl@*/
+
+#if 0
+static void _valid(const void *ptr, size_t cnt)
+{
+    unsigned char * p = ptr;
+    unsigned xx;
+    int i;
+    for (i = 0; i < cnt; i++)
+	xx = p[i];
+}
+
+static void * _memset(void * s, int c, size_t n)
+{
+    _valid(s, n);
+    return memset(s, c, n);
+}
+
+static void * _memcpy(void * dest, void *src, size_t n)
+{
+    _valid(src, n);
+    _valid(dest, n);
+    return memcpy(dest, src, n);
+}
+
+static void * _memmove(void * dest, void *src, size_t n)
+{
+    _valid(src, n);
+    _valid(dest, n);
+    return memmove(dest, src, n);
+}
+#endif
+
+/**
+ * Return tag name from value.
+ * @todo This should come from #include <rpmtag.h>.
+ * @param tag		tag value
+ * @return		tag name, "(unknown)" on not found
+ */
+/*@-redecl@*/
+/*@unused@*/ static inline /*@observer@*/
+const char * tagName(int tag)
+	/*@*/
+{
+/*@-type@*/
+    return ((*rpmTags->tagName)(tag));
+/*@=type@*/
+}
+
+/**
+ * Return tag data type from value.
+ * @todo This should come from #include <rpmtag.h>.
+ * @param tag		tag value
+ * @return		tag data type, RPM_NULL_TYPE on not found.
+ */
+/*@unused@*/ static inline
+int tagType(int tag)
+	/*@*/
+{
+/*@-type@*/
+    return ((*rpmTags->tagType)(tag));
+/*@=type@*/
+}
+
+/**
+ * Return tag value from name.
+ * @todo This should come from #include <rpmtag.h>.
+ * @param tagstr	name of tag
+ * @return		tag value, -1 on not found
+ */
+/*@unused@*/ static inline
+int tagValue(const char * tagstr)
+	/*@*/
+{
+/*@-type@*/
+    return ((*rpmTags->tagValue)(tagstr));
+/*@=type@*/
+}
+/*@=redecl@*/
 
 /**
  * Global header stats enabler.
@@ -629,6 +733,7 @@ void * headerUnload(Header h, /*@out@*/ /*@null@*/ size_t * lenp)
     int driplen, ndrips;
     int legacy = 0;
 
+fprintf(stderr, "==> headerUnload(%p, %p)\n", h, lenp);
     if ((sw = headerGetStats(h, 18)) != NULL)	/* RPMTS_OP_HDRLOAD */
 	(void) rpmswEnter(sw, 0);
 
@@ -1266,15 +1371,16 @@ Header headerReload(/*@only@*/ Header h, int tag)
 	/*@modifies h @*/
 {
     Header nh;
-    /*@-onlytrans@*/
-    void * uh = headerUnload(h, NULL);
-    const char * origin;
+    void * uh;
+    const char * origin = (h->origin != NULL ? xstrdup(h->origin) : NULL);
     int_32 instance = h->instance;
     int xx;
 
-    origin = (h->origin != NULL ? xstrdup(h->origin) : NULL);
+fprintf(stderr, "==> headerReload(%p, %s)\n", h, tagName(tag));
+/*@-onlytrans@*/
+    uh = headerUnload(h, NULL);
     h = headerFree(h);
-    /*@=onlytrans@*/
+/*@=onlytrans@*/
     if (uh == NULL)
 	return NULL;
     nh = headerLoad(uh);
@@ -1488,6 +1594,8 @@ static int copyEntry(const indexEntry entry,
     rpmTagCount count = entry->info.count;
     int rc = 1;		/* XXX 1 on success. */
 
+if (_jbj)
+fprintf(stderr, "--> cpe(%p, %p, %p, %p)\n", entry, type, p, c);
     if (p)
     switch (entry->info.type) {
     case RPM_BIN_TYPE:
@@ -1737,6 +1845,8 @@ static int intGetEntry(Header h, int_32 tag,
     indexEntry entry;
     int rc;
 
+if (_jbj)
+fprintf(stderr, "--> ige(%p, %s, %p, %p, %p)\n", h, tagName(tag), type, p, c);
     /* First find the tag */
     /*@-mods@*/		/*@ FIX: h modified by sort. */
     entry = findEntry(h, tag, RPM_NULL_TYPE);
@@ -1789,78 +1899,6 @@ static /*@null@*/ void * headerFreeTag(/*@unused@*/ Header h,
     return NULL;
 }
 
-/**
- * Automatically generated table of tag name/value pairs.
- * @todo This should come from #include <rpmtag.h>.
- */
-/*@-redecl@*/
-/*@observer@*/ /*@unchecked@*/
-extern const struct headerTagTableEntry_s * rpmTagTable;
-/*@=redecl@*/
-
-/**
- * Number of entries in rpmTagTable.
- * @todo This should come from #include <rpmtag.h>.
- */
-/*@-redecl@*/
-/*@unchecked@*/
-extern const int rpmTagTableSize;
-
-/**
- * @todo This should come from #include <rpmtag.h>.
- */
-/*@-redecl@*/
-/*@unchecked@*/
-extern headerTagIndices rpmTags;
-/*@=redecl@*/
-
-/**
- * Return tag name from value.
- * @todo This should come from #include <rpmtag.h>.
- * @param tag		tag value
- * @return		tag name, "(unknown)" on not found
- */
-/*@-redecl@*/
-/*@unused@*/ static inline /*@observer@*/
-const char * tagName(int tag)
-	/*@*/
-{
-/*@-type@*/
-    return ((*rpmTags->tagName)(tag));
-/*@=type@*/
-}
-
-/**
- * Return tag data type from value.
- * @todo This should come from #include <rpmtag.h>.
- * @param tag		tag value
- * @return		tag data type, RPM_NULL_TYPE on not found.
- */
-/*@unused@*/ static inline
-int tagType(int tag)
-	/*@*/
-{
-/*@-type@*/
-    return ((*rpmTags->tagType)(tag));
-/*@=type@*/
-}
-
-/**
- * Return tag value from name.
- * @todo This should come from #include <rpmtag.h>.
- * @param tagstr	name of tag
- * @return		tag value, -1 on not found
- */
-/*@unused@*/ static inline
-int tagValue(const char * tagstr)
-	/*@*/
-{
-/*@-type@*/
-    return ((*rpmTags->tagValue)(tagstr));
-/*@=type@*/
-}
-/*@=redecl@*/
-
 /** \ingroup header
  * Retrieve extension or tag value.
  *
@@ -1889,6 +1927,8 @@ int headerGetExtension(Header h, int_32 tag,
     int extNum;
     int rc;
 
+if (_jbj)
+fprintf(stderr, "--> HGE(%p, %s, %p, %p, %p)\n", h, tagName(tag), type, p, c);
     if ((sw = headerGetStats(h, 19)) != NULL)	/* RPMTS_OP_HDRGET */
 	(void) rpmswEnter(sw, 0);
 
@@ -1989,6 +2029,8 @@ int headerGetEntry(Header h, int_32 tag,
     void * sw;
     int rc;
 
+if (_jbj)
+fprintf(stderr, "--> hge(%p, %s, %p, %p, %p)\n", h, tagName(tag), type, p, c);
     if ((sw = headerGetStats(h, 19)) != NULL)	/* RPMTS_OP_HDRGET */
 	(void) rpmswEnter(sw, 0);
     rc = intGetEntry(h, tag, type, p, c, 0);
@@ -2639,6 +2681,8 @@ int headerNextIterator(HeaderIterator hi,
     indexEntry entry = NULL;
     int rc;
 
+if (_jbj)
+fprintf(stderr, "--> hni(%p, %p, %p, %p, %p)\n", h, tag, type, p, c);
     for (slot = hi->next_index; slot < h->indexUsed; slot++) {
 	entry = h->index + slot;
 	if (!ENTRY_IS_REGION(entry))
@@ -3189,6 +3233,20 @@ static int parseExpression(headerSprintfArgs hsa, sprintfToken token,
 	/*@modifies hsa, str, token, *endPtr @*/
 	/*@requires maxSet(endPtr) >= 0 @*/;
 
+static void dumpSprintfTag(const char * msg, sprintfTag tag)
+{
+    if (msg)
+	fprintf(stderr, "%s", msg);
+    fprintf(stderr, " he %p %s", &tag->he, tagName(tag->tagno));
+    if (tag->fmt)
+	fprintf(stderr, " fmt %p", tag->fmt);
+    if (tag->ext)
+	fprintf(stderr, " ext %p[%d]", tag->ext, tag->extNum);
+    if (tag->format)
+	fprintf(stderr, " format \"%s\" pad %d", tag->format, tag->pad);
+}
+
+
 /**
  * Parse a headerSprintf term.
  * @param hsa		headerSprintf args
@@ -3435,12 +3493,16 @@ if (_jbj)
 fprintf(stderr, " none(%d)", token->type);
 	    break;
 	case PTOK_TAG:
-if (_jbj)
-fprintf(stderr, " tag(%d) %s format \"%s\" pad %d", token->type, tagName(token->u.tag.tagno), token->u.tag.format, token->u.tag.pad);
+if (_jbj) {
+fprintf(stderr, " tag(%d)", token->type);
+dumpSprintfTag(" ", &token->u.tag);
+}
 	    break;
 	case PTOK_ARRAY:
-if (_jbj)
+if (_jbj) {
 fprintf(stderr, " array(%d)", token->type);
+dumpSprintfTag(" ", &token->u.array.format->u.tag);
+}
 	    break;
 	case PTOK_STRING:
 	    token->u.string.len = strlen(token->u.string.string);
@@ -3620,11 +3682,21 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
     } else
 #endif	/* SUPPORT_SPRINTF_EXTTABLE */
     if (!he->avail || he->tag != tag->tagno) {
+if (_jbj)
+fprintf(stderr, " ---: %p tag %s(%d)\t%d %p[%d:%d] free %d avail %d\n", he, tagName(he->tag), he->tag, he->t, he->p.ptr, he->ix, he->c, he->freeData, he->avail);
 	he = rpmheClean(he);
 	he->tag = tag->tagno;	/* XXX necessary? */
-	xx = headerGetExtension(hsa->h, he->tag, &he->t, &he->p, &he->c);
-	if (xx && he->p.ptr != NULL)
-	    he->freeData = 1;
+if (_jbj)
+fprintf(stderr, " --+: %p tag %s(%d)\t%d %p[%d:%d] free %d avail %d\n", he, tagName(he->tag), he->tag, he->t, he->p.ptr, he->ix, he->c, he->freeData, he->avail);
+	if (_usehge) {
+	    xx = headerGetExtension(hsa->h, he->tag, &he->t, &he->p, &he->c);
+	    if (xx && he->p.ptr != NULL)
+		he->freeData = 1;
+	} else {
+	    xx = headerGetEntry(hsa->h, he->tag, &he->t, &he->p, &he->c);
+	    if (xx)
+		he = rpmheMark(he);
+	}
 	if (!xx) {
 	    he->c = 1;
 	    he->t = RPM_STRING_TYPE;	
@@ -3757,8 +3829,8 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
     int i, j;
     int numElements;
     sprintfToken spft;
-    sprintfTag tag;
-    HE_t he;
+    sprintfTag tag = NULL;
+    HE_t he = NULL;
     int condNumFormats;
     size_t need;
     int xx;
@@ -3827,9 +3899,15 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 	    if (!he->avail || he->tag != tag->tagno) {
 		he = rpmheClean(he);
 		he->tag = tag->tagno;
-		xx = headerGetExtension(hsa->h, he->tag, &he->t, &he->p, &he->c);
-		if (xx && he->p.ptr != NULL)
-		    he->freeData = 1;
+		if (_usehge) {
+		    xx = headerGetExtension(hsa->h, he->tag, &he->t, &he->p, &he->c);
+		    if (xx && he->p.ptr != NULL)
+			he->freeData = 1;
+		} else {
+		    xx = headerGetEntry(hsa->h, he->tag, &he->t, &he->p, &he->c);
+		    if (xx)
+			he = rpmheMark(he);
+		}
 		if (!xx)
 		    continue;
 if (_jbj)
@@ -3858,7 +3936,10 @@ fprintf(stderr, " NEW: %p tag %s(%d)\t%d %p[%d:%d] free %d avail %d\n", he, tagN
 		    numElements = 1;
 		/*@switchbreak@*/ break;
 	    }
+	    if (!_tagcache)
+		he = rpmheClean(he);
 	}
+	spft = token->u.array.format;
 
 	if (numElements == -1) {
 #ifdef	DYING	/* XXX lots of pugly "(none)" lines with --conflicts. */
@@ -3874,7 +3955,6 @@ fprintf(stderr, " NEW: %p tag %s(%d)\t%d %p[%d:%d] free %d avail %d\n", he, tagN
 	    need = numElements * token->u.array.numTokens;
 	    if (need == 0) break;
 
-	    spft = token->u.array.format;
 	    tag = &spft->u.tag;
 
 	    isxml = (spft->type == PTOK_TAG && tag->type != NULL &&
