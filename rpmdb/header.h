@@ -189,6 +189,7 @@ struct _HE_s {
     int ix;
     unsigned int freeData	: 1;
     unsigned int avail		: 1;
+    unsigned int append		: 1;
 };
 typedef struct _HE_s HE_s;
 #endif
