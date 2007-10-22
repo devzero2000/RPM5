@@ -1390,6 +1390,8 @@ static int rpmfcGenerateScriptletDeps(const Spec spec, Package pkg)
 
 int rpmfcGenerateDepends(void * specp, void * pkgp)
 {
+    HAE_t hae = (HAE_t)headerAddEntry;
+    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     const Spec spec = specp;
     Package pkg = pkgp;
     rpmfi fi = pkg->cpioList;
@@ -1399,13 +1401,12 @@ int rpmfcGenerateDepends(void * specp, void * pkgp)
     ARGV_t av;
     int_16 * fmode;
     int ac = rpmfiFC(fi);
-    const void ** p;
     char buf[BUFSIZ];
     const char * N;
     const char * EVR;
     int genConfigDeps, internaldeps;
-    int c;
     int rc = 0;
+    int i;
     int xx;
 
     /* Skip packages with no files. */
@@ -1430,21 +1431,22 @@ int rpmfcGenerateDepends(void * specp, void * pkgp)
 	xx = rpmfcGenerateScriptletDeps(spec, pkg);
 
     /* Extract absolute file paths in argv format. */
+    /* XXX TODO: should use argvFoo ... */
     av = xcalloc(ac+1, sizeof(*av));
     fmode = xcalloc(ac+1, sizeof(*fmode));
 
     genConfigDeps = 0;
     fi = rpmfiInit(fi, 0);
     if (fi != NULL)
-    while ((c = rpmfiNext(fi)) >= 0) {
+    while ((i = rpmfiNext(fi)) >= 0) {
 	rpmfileAttrs fileAttrs;
 
 	/* Does package have any %config files? */
 	fileAttrs = rpmfiFFlags(fi);
 	genConfigDeps |= (fileAttrs & RPMFILE_CONFIG);
 
-	av[c] = xstrdup(rpmfiFN(fi));
-	fmode[c] = rpmfiFMode(fi);
+	av[i] = xstrdup(rpmfiFN(fi));
+	fmode[i] = rpmfiFMode(fi);
     }
     av[ac] = NULL;
 
@@ -1514,92 +1516,131 @@ assert(EVR != NULL);
     xx = rpmfcApply(fc);
 
     /* Add per-file colors(#files) */
-    p = (const void **) argiData(fc->fcolor);
-    c = argiCount(fc->fcolor);
-assert(ac == c);
-    if (p != NULL && c > 0) {
-	int_32 * fcolors = (int_32 *)p;
+    he->tag = RPMTAG_FILECOLORS;
+    he->t = RPM_INT32_TYPE;
+    he->p.i32p = argiData(fc->fcolor);
+    he->c = argiCount(fc->fcolor);
+assert(ac == he->c);
+    if (he->p.ptr != NULL && he->c > 0) {
+	int_32 * fcolors = he->p.i32p;
 	int i;
 
 	/* XXX Make sure only primary (i.e. Elf32/Elf64) colors are added. */
-	for (i = 0; i < c; i++)
+	for (i = 0; i < he->c; i++)
 	    fcolors[i] &= 0x0f;
-	xx = headerAddEntry(pkg->header, RPMTAG_FILECOLORS, RPM_INT32_TYPE,
-			p, c);
+
+	xx = hae(pkg->header, he->tag, he->t, he->p.ptr, he->c);
+assert(xx);
     }
 
     /* Add classes(#classes) */
-    p = (const void **) argvData(fc->cdict);
-    c = argvCount(fc->cdict);
-    if (p != NULL && c > 0)
-	xx = headerAddEntry(pkg->header, RPMTAG_CLASSDICT, RPM_STRING_ARRAY_TYPE,
-			p, c);
+    he->tag = RPMTAG_CLASSDICT;
+    he->t = RPM_STRING_ARRAY_TYPE;
+    he->p.argv = argvData(fc->cdict);
+    he->c = argvCount(fc->cdict);
+    if (he->p.ptr != NULL && he->c > 0) {
+	xx = hae(pkg->header, he->tag, he->t, he->p.ptr, he->c);
+assert(xx);
+    }
 
     /* Add per-file classes(#files) */
-    p = (const void **) argiData(fc->fcdictx);
-    c = argiCount(fc->fcdictx);
-assert(ac == c);
-    if (p != NULL && c > 0)
-	xx = headerAddEntry(pkg->header, RPMTAG_FILECLASS, RPM_INT32_TYPE,
-			p, c);
+    he->tag = RPMTAG_FILECLASS;
+    he->t = RPM_INT32_TYPE;
+    he->p.i32p = argiData(fc->fcdictx);
+    he->c = argiCount(fc->fcdictx);
+assert(ac == he->c);
+    if (he->p.ptr != NULL && he->c > 0) {
+	xx = hae(pkg->header, he->tag, he->t, he->p.ptr, he->c);
+assert(xx);
+    }
 
     /* Add Provides: */
-    if (fc->provides != NULL && (c = rpmdsCount(fc->provides)) > 0 && !fc->skipProv) {
-	p = (const void **) fc->provides->N;
-	xx = headerAddEntry(pkg->header, RPMTAG_PROVIDENAME, RPM_STRING_ARRAY_TYPE,
-			p, c);
+    if (fc->provides != NULL && (he->c = rpmdsCount(fc->provides)) > 0
+     && !fc->skipProv)
+    {
+	he->tag = RPMTAG_PROVIDENAME;
+	he->t = RPM_STRING_ARRAY_TYPE;
+	he->p.argv = fc->provides->N;
+	xx = hae(pkg->header, he->tag, he->t, he->p.ptr, he->c);
+assert(xx);
+
 	/* XXX rpm prior to 3.0.2 did not always supply EVR and Flags. */
 /*@-nullpass@*/
-	p = (const void **) fc->provides->EVR;
-assert(p != NULL);
-	xx = headerAddEntry(pkg->header, RPMTAG_PROVIDEVERSION, RPM_STRING_ARRAY_TYPE,
-			p, c);
-	p = (const void **) fc->provides->Flags;
-assert(p != NULL);
-	xx = headerAddEntry(pkg->header, RPMTAG_PROVIDEFLAGS, RPM_INT32_TYPE,
-			p, c);
+	he->tag = RPMTAG_PROVIDEVERSION;
+	he->t = RPM_STRING_ARRAY_TYPE;
+	he->p.argv = fc->provides->EVR;
+assert(he->p.ptr != NULL);
+	xx = hae(pkg->header, he->tag, he->t, he->p.ptr, he->c);
+assert(xx);
+
+	he->tag = RPMTAG_PROVIDEFLAGS;
+	he->t = RPM_INT32_TYPE;
+	he->p.i32p = fc->provides->Flags;
+assert(he->p.ptr != NULL);
+	xx = hae(pkg->header, he->tag, he->t, he->p.ptr, he->c);
+assert(xx);
 /*@=nullpass@*/
     }
 
     /* Add Requires: */
-    if (fc->requires != NULL && (c = rpmdsCount(fc->requires)) > 0 && !fc->skipReq) {
-	p = (const void **) fc->requires->N;
-	xx = headerAddEntry(pkg->header, RPMTAG_REQUIRENAME, RPM_STRING_ARRAY_TYPE,
-			p, c);
+    if (fc->requires != NULL && (he->c = rpmdsCount(fc->requires)) > 0
+     && !fc->skipReq)
+    {
+	he->tag = RPMTAG_REQUIRENAME;
+	he->t = RPM_STRING_ARRAY_TYPE;
+	he->p.argv = fc->requires->N;
+assert(he->p.ptr != NULL);
+	xx = hae(pkg->header, he->tag, he->t, he->p.ptr, he->c);
+assert(xx);
+
 	/* XXX rpm prior to 3.0.2 did not always supply EVR and Flags. */
 /*@-nullpass@*/
-	p = (const void **) fc->requires->EVR;
-assert(p != NULL);
-	xx = headerAddEntry(pkg->header, RPMTAG_REQUIREVERSION, RPM_STRING_ARRAY_TYPE,
-			p, c);
-	p = (const void **) fc->requires->Flags;
-assert(p != NULL);
-	xx = headerAddEntry(pkg->header, RPMTAG_REQUIREFLAGS, RPM_INT32_TYPE,
-			p, c);
+	he->tag = RPMTAG_REQUIREVERSION;
+	he->t = RPM_STRING_ARRAY_TYPE;
+	he->p.argv = fc->requires->EVR;
+assert(he->p.ptr != NULL);
+	xx = hae(pkg->header, he->tag, he->t, he->p.ptr, he->c);
+assert(xx);
+
+	he->tag = RPMTAG_REQUIREFLAGS;
+	he->t = RPM_INT32_TYPE;
+	he->p.i32p = fc->requires->Flags;
+assert(he->p.ptr != NULL);
+	xx = hae(pkg->header, he->tag, he->t, he->p.ptr, he->c);
+assert(xx);
 /*@=nullpass@*/
     }
 
     /* Add dependency dictionary(#dependencies) */
-    p = (const void **) argiData(fc->ddictx);
-    c = argiCount(fc->ddictx);
-    if (p != NULL)
-	xx = headerAddEntry(pkg->header, RPMTAG_DEPENDSDICT, RPM_INT32_TYPE,
-			p, c);
+    he->tag = RPMTAG_DEPENDSDICT;
+    he->t = RPM_INT32_TYPE;
+    he->p.i32p = argiData(fc->ddictx);
+    he->c = argiCount(fc->ddictx);
+    if (he->p.ptr != NULL) {
+	xx = hae(pkg->header, he->tag, he->t, he->p.ptr, he->c);
+assert(xx);
+    }
 
     /* Add per-file dependency (start,number) pairs (#files) */
-    p = (const void **) argiData(fc->fddictx);
-    c = argiCount(fc->fddictx);
-assert(ac == c);
-    if (p != NULL)
-	xx = headerAddEntry(pkg->header, RPMTAG_FILEDEPENDSX, RPM_INT32_TYPE,
-			p, c);
+    he->tag = RPMTAG_FILEDEPENDSX;
+    he->t = RPM_INT32_TYPE;
+    he->p.i32p = argiData(fc->fddictx);
+    he->c = argiCount(fc->fddictx);
+assert(ac == he->c);
+    if (he->p.ptr != NULL) {
+	xx = hae(pkg->header, he->tag, he->t, he->p.ptr, he->c);
+assert(xx);
+    }
 
-    p = (const void **) argiData(fc->fddictn);
-    c = argiCount(fc->fddictn);
-assert(ac == c);
-    if (p != NULL)
-	xx = headerAddEntry(pkg->header, RPMTAG_FILEDEPENDSN, RPM_INT32_TYPE,
-			p, c);
+    he->tag = RPMTAG_FILEDEPENDSN;
+    he->t = RPM_INT32_TYPE;
+    he->p.i32p = argiData(fc->fddictn);
+    he->c = argiCount(fc->fddictn);
+assert(ac == he->c);
+    if (he->p.ptr != NULL) {
+	xx = hae(pkg->header, he->tag, he->t, he->p.ptr, he->c);
+assert(xx);
+    }
 
     printDeps(pkg->header);
 

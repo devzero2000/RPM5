@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - jbj: rpmfc.c: wrap headerAddEntry.
     - jbj: psm.c: wrap headerAddEntry.
     - jbj: hmm, still segfaults, more to do.
     - jbj: change headerGetEntry prototype, use headerGetExtension instead.
