@@ -367,12 +367,12 @@ unsigned int headerSizeof(/*@null@*/ Header h, enum hMagic magicp)
  * @param pend		pointer to end of data (or NULL)
  * @return		no. bytes in data, -1 on failure
  */
-static int dataLength(rpmTagType type, hPTR_t p, rpmTagCount count, int onDisk,
-		/*@null@*/ hPTR_t pend)
+static int dataLength(rpmTagType type, rpmTagData p, rpmTagCount count, int onDisk,
+		/*@null@*/ rpmTagData pend)
 	/*@*/
 {
-    const unsigned char * s = p;
-    const unsigned char * se = pend;
+    const unsigned char * s = p.ui8p;
+    const unsigned char * se = pend.ui8p;
     int length = 0;
 
     switch (type) {
@@ -402,7 +402,7 @@ static int dataLength(rpmTagType type, hPTR_t p, rpmTagCount count, int onDisk,
 		}
 	    }
 	} else {
-	    const char ** av = (const char **)p;
+	    const char ** av = p.argv;
 	    while (count--) {
 		/* add one for null termination */
 		length += strlen(*av++) + 1;
@@ -450,11 +450,13 @@ static int dataLength(rpmTagType type, hPTR_t p, rpmTagCount count, int onDisk,
  */
 static int regionSwab(/*@null@*/ indexEntry entry, int il, int dl,
 		entryInfo pe,
-		void * dataStart,
+		unsigned char * dataStart,
 		/*@null@*/ const unsigned char * dataEnd,
 		int regionid)
 	/*@modifies *entry, *dataStart @*/
 {
+    rpmTagData p;
+    rpmTagData pend;
     unsigned char * tprev = NULL;
     unsigned char * t = NULL;
     int tdel = 0;
@@ -484,7 +486,9 @@ static int regionSwab(/*@null@*/ indexEntry entry, int il, int dl,
 	if (dataEnd && t >= dataEnd)
 	    return -1;
 
-	ie.length = dataLength(ie.info.type, ie.data, ie.info.count, 1, dataEnd);
+	p.ptr = ie.data;
+	pend.ui8p = dataEnd;
+	ie.length = dataLength(ie.info.type, p, ie.info.count, 1, pend);
 	if (ie.length < 0 || hdrchkData(ie.length))
 	    return -1;
 
@@ -595,8 +599,8 @@ static /*@only@*/ /*@null@*/ void * doHeaderUnload(Header h,
 {
     int_32 * ei = NULL;
     entryInfo pe;
-    char * dataStart;
-    char * te;
+    unsigned char * dataStart;
+    unsigned char * te;
     unsigned pad;
     unsigned len;
     int_32 il = 0;
@@ -687,19 +691,19 @@ static /*@only@*/ /*@null@*/ void * doHeaderUnload(Header h,
     ei[1] = htonl(dl);
 
     pe = (entryInfo) &ei[2];
-    dataStart = te = (char *) (pe + il);
+    dataStart = te = (unsigned char *) (pe + il);
 
     pad = 0;
     for (i = 0, entry = h->index; i < h->indexUsed; i++, entry++) {
 	const char * src;
-char *t;
+	unsigned char *t;
 	int count;
 	int rdlen;
 
 	if (entry->data == NULL || entry->length <= 0)
 	    continue;
 
-t = te;
+	t = te;
 	pe->tag = htonl(entry->info.tag);
 	pe->type = htonl(entry->info.type);
 	pe->count = htonl(entry->info.count);
@@ -833,9 +837,9 @@ t = te;
     }
    
     /* Insure that there are no memcpy underruns/overruns. */
-    if (((char *)pe) != dataStart)
+    if (((unsigned char *)pe) != dataStart)
 	goto errxit;
-    if ((((char *)ei)+len) != te)
+    if ((((unsigned char *)ei)+len) != te)
 	goto errxit;
 
     if (lengthPtr)
@@ -1439,7 +1443,7 @@ static int copyEntry(const indexEntry entry,
 	    /*@-castexpose@*/
 	    entryInfo pe = (entryInfo) (ei + 2);
 	    /*@=castexpose@*/
-	    char * dataStart = (char *) (pe + ntohl(ei[0]));
+	    unsigned char * dataStart = (unsigned char *) (pe + ntohl(ei[0]));
 	    int_32 rdl = -entry->info.offset;	/* negative offset */
 	    int_32 ril = rdl/sizeof(*pe);
 
@@ -1463,7 +1467,7 @@ static int copyEntry(const indexEntry entry,
 	    pe = (entryInfo) memcpy(ei + 2, pe, (ril * sizeof(*pe)));
 	    /*@=castexpose@*/
 
-	    dataStart = (char *) memcpy(pe + ril, dataStart, rdl);
+	    dataStart = (unsigned char *) memcpy(pe + ril, dataStart, rdl);
 	    /*@=sizeoftype@*/
 
 	    rc = regionSwab(NULL, ril, 0, pe, dataStart, NULL, 0);
@@ -1797,15 +1801,15 @@ int headerGetRawEntry(Header h, int_32 tag, rpmTagType * type, void * p, rpmTagC
 
 /**
  */
-static void copyData(rpmTagType type, /*@out@*/ void * dstPtr, const void * srcPtr,
-		int_32 cnt, int dataLength)
+static void copyData(rpmTagType type, rpmTagData dest, rpmTagData src,
+		rpmTagCount cnt, int dataLength)
 	/*@modifies *dstPtr @*/
 {
     switch (type) {
     case RPM_STRING_ARRAY_TYPE:
     case RPM_I18NSTRING_TYPE:
-    {	const char ** av = (const char **) srcPtr;
-	char * t = dstPtr;
+    {	const char ** av = src.argv;
+	char * t = dest.str;
 
 	while (cnt-- > 0 && dataLength > 0) {
 	    const char * s;
@@ -1818,7 +1822,7 @@ static void copyData(rpmTagType type, /*@out@*/ void * dstPtr, const void * srcP
     }	break;
 
     default:
-	memmove(dstPtr, srcPtr, dataLength);
+	memmove(dest.ptr, src.ptr, dataLength);
 	break;
     }
 }
@@ -1833,22 +1837,22 @@ static void copyData(rpmTagType type, /*@out@*/ void * dstPtr, const void * srcP
  */
 /*@null@*/
 static void *
-grabData(rpmTagType type, hPTR_t p, int_32 c, /*@out@*/ int * lengthPtr)
+grabData(rpmTagType type, rpmTagData p, rpmTagCount c, /*@out@*/ int * lengthPtr)
 	/*@modifies *lengthPtr @*/
 	/*@requires maxSet(lengthPtr) >= 0 @*/
 {
-    void * data = NULL;
+    rpmTagData data = { .ptr = NULL };
     int length;
 
-    length = dataLength(type, p, c, 0, NULL);
+    length = dataLength(type, p, c, 0, (rpmTagData)NULL);
     if (length > 0) {
-	data = xmalloc(length);
+	data.ptr = xmalloc(length);
 	copyData(type, data, p, c, length);
     }
 
     if (lengthPtr)
 	*lengthPtr = length;
-    return data;
+    return data.ptr;
 }
 
 /** \ingroup header
@@ -1870,7 +1874,8 @@ int headerAddEntry(Header h, int_32 tag, int_32 type, const void * p, int_32 c)
 	/*@modifies h @*/
 {
     indexEntry entry;
-    void * data;
+    rpmTagData q = { .ptr = (void *) p };
+    rpmTagData data;
     int length;
 
     /* Count must always be >= 1 for headerAddEntry. */
@@ -1883,8 +1888,8 @@ int headerAddEntry(Header h, int_32 tag, int_32 type, const void * p, int_32 c)
 	return 0;
 
     length = 0;
-    data = grabData(type, p, c, &length);
-    if (data == NULL || length <= 0)
+    data.ptr = grabData(type, q, c, &length);
+    if (data.ptr == NULL || length <= 0)
 	return 0;
 
     /* Allocate more index space if necessary */
@@ -1899,7 +1904,7 @@ int headerAddEntry(Header h, int_32 tag, int_32 type, const void * p, int_32 c)
     entry->info.type = type;
     entry->info.count = c;
     entry->info.offset = 0;
-    entry->data = data;
+    entry->data = data.ptr;
     entry->length = length;
 
     if (h->indexUsed > 0 && tag < h->index[h->indexUsed-1].info.tag)
@@ -1928,6 +1933,8 @@ int headerAppendEntry(Header h, int_32 tag, int_32 type,
 		const void * p, int_32 c)
 	/*@modifies h @*/
 {
+    rpmTagData src = { .ptr = (void *) p };
+    rpmTagData dest = { .ptr = NULL };
     indexEntry entry;
     int length;
 
@@ -1941,7 +1948,7 @@ int headerAppendEntry(Header h, int_32 tag, int_32 type,
     if (!entry)
 	return 0;
 
-    length = dataLength(type, p, c, 0, NULL);
+    length = dataLength(type, src, c, 0, (rpmTagData)NULL);
     if (length < 0)
 	return 0;
 
@@ -1953,7 +1960,8 @@ int headerAppendEntry(Header h, int_32 tag, int_32 type,
     } else
 	entry->data = xrealloc(entry->data, entry->length + length);
 
-    copyData(type, ((char *) entry->data) + entry->length, p, c, length);
+    dest.ptr = ((char *) entry->data) + entry->length;
+    copyData(type, dest, src, c, length);
 
     entry->length += length;
 
@@ -2150,8 +2158,9 @@ int headerModifyEntry(Header h, int_32 tag, int_32 type,
 	/*@modifies h @*/
 {
     indexEntry entry;
-    void * oldData;
-    void * data;
+    rpmTagData q = { .ptr = (void *) p };
+    rpmTagData oldData;
+    rpmTagData newData;
     int length;
 
     /* First find the tag */
@@ -2160,8 +2169,8 @@ int headerModifyEntry(Header h, int_32 tag, int_32 type,
 	return 0;
 
     length = 0;
-    data = grabData(type, p, c, &length);
-    if (data == NULL || length <= 0)
+    newData.ptr = grabData(type, q, c, &length);
+    if (newData.ptr == NULL || length <= 0)
 	return 0;
 
     /* make sure entry points to the first occurence of this tag */
@@ -2170,17 +2179,17 @@ int headerModifyEntry(Header h, int_32 tag, int_32 type,
 
     /* free after we've grabbed the new data in case the two are intertwined;
        that's a bad idea but at least we won't break */
-    oldData = entry->data;
+    oldData.ptr = entry->data;
 
     entry->info.count = c;
     entry->info.type = type;
-    entry->data = data;
+    entry->data = newData.ptr;
     entry->length = length;
 
     if (ENTRY_IN_REGION(entry)) {
 	entry->info.offset = 0;
     } else
-	oldData = _free(oldData);
+	oldData.ptr = _free(oldData.ptr);
 
     return 1;
 }
