@@ -79,7 +79,6 @@
 
 /* RPM - Copyright (C) 1995-2001 Red Hat Software */
 
-#include <stdio.h>
 #include "rpmio.h"
 
 #ifdef __cplusplus
@@ -98,21 +97,103 @@ typedef unsigned int uint_32;
 typedef unsigned short uint_16;
 typedef unsigned char uint_8;
 
-/*@-redef@*/	/* LCL: no clue */
 /** \ingroup header
  */
 typedef const char *	errmsg_t;
 
 /** \ingroup header
  */
-typedef int_32 *	hTAG_t;
-typedef int_32 *	hTYP_t;
-typedef const void *	hPTR_t;
-typedef int_32 *	hCNT_t;
+typedef /*@abstract@*/ /*@refcounted@*/ struct headerToken_s * Header;
+
+/** \ingroup header
+ * The basic types of data in tags from headers.
+ */
+enum rpmTagType_e {
+    RPM_NULL_TYPE		=  0,
+    RPM_CHAR_TYPE		=  1,
+    RPM_INT8_TYPE		=  2,
+    RPM_INT16_TYPE		=  3,
+    RPM_INT32_TYPE		=  4,
+    RPM_INT64_TYPE		=  5,
+    RPM_STRING_TYPE		=  6,
+    RPM_BIN_TYPE		=  7,
+    RPM_STRING_ARRAY_TYPE	=  8,
+    RPM_I18NSTRING_TYPE		=  9,
+    RPM_ASN1_TYPE		= 10,
+    RPM_OPENPGP_TYPE		= 11,
+    RPM_MASK_TYPE		= 0x0000ffff
+};
+#define	RPM_MIN_TYPE		0
+#define	RPM_MAX_TYPE		11
 
 /** \ingroup header
  */
-typedef /*@abstract@*/ /*@refcounted@*/ struct headerToken_s * Header;
+typedef enum rpmTagType_e rpmTagType;
+
+/** \ingroup header
+ */
+typedef union rpmDataType_u rpmTagData;
+
+/** \ingroup header
+ */
+typedef int_32 rpmTagCount;
+
+/** \ingroup header
+ */
+typedef struct _HE_s * HE_t;		/* tag container. */
+
+/** \ingroup header
+ */
+/*@-typeuse -fielduse@*/
+typedef union rpmDataType_u hRET_t;
+#if !defined(SWIG)
+union rpmDataType_u {
+    void * ptr;
+    int_8 * i8p;		/*!< RPM_INT8_TYPE | RPM_CHAR_TYPE */
+    int_32 * i32p;		/*!< RPM_INT32_TYPE */
+    int_16 * i16p;		/*!< RPM_INT16_TYPE */
+    int_64 * i64p;		/*!< RPM_INT64_TYPE */
+    const char * str;		/*!< RPM_STRING_TYPE */
+    unsigned char * blob;	/*!< RPM_BIN_TYPE */
+    const char ** argv;		/*!< RPM_STRING_ARRAY_TYPE */
+    uint_8 * ui8p;
+    uint_16 * ui16p;
+    uint_32 * ui32p;
+    uint_64 * ui64p;
+    HE_t * he;
+};
+#endif
+/*@=typeuse =fielduse@*/
+
+/** \ingroup header
+ */
+typedef int_32 *	hTAG_t;
+typedef rpmTagType *	hTYP_t;
+#ifdef	NOTYET
+typedef rpmTagData *	hPTR_t;
+#else
+typedef const void *	hPTR_t;
+#endif
+typedef rpmTagCount *	hCNT_t;
+
+/** \ingroup header
+ */
+/*@-typeuse -fielduse@*/
+#if !defined(SWIG)
+struct _HE_s {
+    int_32 tag;
+    rpmTagType t;
+/*@owned@*/ /*@null@*/
+    rpmTagData p;
+    rpmTagCount c;
+    int ix;
+    unsigned int freeData	: 1;
+    unsigned int avail		: 1;
+    unsigned int append		: 1;
+};
+typedef struct _HE_s HE_s;
+#endif
+/*@=typeuse =fielduse@*/
 
 /** \ingroup header
  */
@@ -239,27 +320,6 @@ enum hMagic {
 };
 
 /** \ingroup header
- * The basic types of data in tags from headers.
- */
-typedef enum rpmTagType_e {
-    RPM_NULL_TYPE		=  0,
-    RPM_CHAR_TYPE		=  1,
-    RPM_INT8_TYPE		=  2,
-    RPM_INT16_TYPE		=  3,
-    RPM_INT32_TYPE		=  4,
-    RPM_INT64_TYPE		=  5,
-    RPM_STRING_TYPE		=  6,
-    RPM_BIN_TYPE		=  7,
-    RPM_STRING_ARRAY_TYPE	=  8,
-    RPM_I18NSTRING_TYPE		=  9,
-    RPM_ASN1_TYPE		= 10,
-    RPM_OPENPGP_TYPE		= 11,
-    RPM_MASK_TYPE		= 0x0000ffff
-} rpmTagType;
-#define	RPM_MIN_TYPE		0
-#define	RPM_MAX_TYPE		11
-
-/** \ingroup header
  * New rpm data types under consideration/development.
  * These data types may (or may not) be added to rpm at some point. In order
  * to avoid incompatibility with legacy versions of rpm, these data (sub-)types
@@ -305,43 +365,82 @@ typedef enum rpmTagReturnType_e {
 #define	HEADER_TAGBASE		1000
 
 /**
+ * Prototype for headerFreeData() vector.
+ *
+ * @param data		address of data (or NULL)
+ * @param type		type of data (or -1 to force free)
+ * @return		NULL always
  */
-/*@-typeuse -fielduse@*/
-typedef union hRET_s * hRET_t;
-#if !defined(SWIG)
-union hRET_s {
-    const void * ptr;
-    const char ** argv;
-    const char * str;
-    uint_32 * ui32p;
-    uint_16 * ui16p;
-    int_32 * i32p;
-    int_16 * i16p;
-    int_8 * i8p;
-};
-#endif
-/*@=typeuse =fielduse@*/
+typedef /*@null@*/
+    void * (*HFD_t) (/*@only@*/ /*@null@*/ const void * data, rpmTagType type)
+	/*@modifies data @*/;
 
 /**
+ * Prototype for headerGetEntry() vector.
+ *
+ * Will never return RPM_I18NSTRING_TYPE! RPM_STRING_TYPE elements with
+ * RPM_I18NSTRING_TYPE equivalent entries are translated (if HEADER_I18NTABLE
+ * entry is present).
+ *
+ * @param h		header
+ * @param tag		tag
+ * @retval *type	tag value data type (or NULL)
+ * @retval *p		tag value(s) (or NULL)
+ * @retval *c		number of values (or NULL)
+ * @return		1 on success, 0 on failure
  */
-/*@-typeuse -fielduse@*/
-typedef struct HE_s * HE_t;
-#if !defined(SWIG)
-struct HE_s {
-    int_32 tag;
-/*@null@*/
-    hTYP_t typ;
-    union {
-/*@null@*/
-	hPTR_t * ptr;
-/*@null@*/
-	hRET_t * ret;
-    } u;
-/*@null@*/
-    hCNT_t cnt;
-};
-#endif
-/*@=typeuse =fielduse@*/
+typedef int (*HGE_t) (Header h, int_32 tag,
+			/*@null@*/ /*@out@*/ rpmTagType * type,
+			/*@null@*/ /*@out@*/ void * p,
+			/*@null@*/ /*@out@*/ int_32 * c)
+	/*@modifies *type, *p, *c @*/;
+
+/**
+ * Prototype for headerAddEntry() vector.
+ *
+ * Duplicate tags are okay, but only defined for iteration (with the
+ * exceptions noted below). While you are allowed to add i18n string
+ * arrays through this function, you probably don't mean to. See
+ * headerAddI18NString() instead.
+ *
+ * @param h             header
+ * @param tag           tag
+ * @param type          tag value data type
+ * @param p             tag value(s)
+ * @param c             number of values
+ * @return              1 on success, 0 on failure
+ */
+typedef int (*HAE_t) (Header h, int_32 tag, rpmTagType type,
+			const void * p, int_32 c)
+	/*@modifies h @*/;
+
+/**
+ * Prototype for headerModifyEntry() vector.
+ * If there are multiple entries with this tag, the first one gets replaced.
+ *
+ * @param h		header
+ * @param tag		tag
+ * @param type		tag value data type
+ * @param p		tag value(s)
+ * @param c		number of values
+ * @return		1 on success, 0 on failure
+ */
+typedef int (*HME_t) (Header h, int_32 tag, rpmTagType type,
+			const void * p, int_32 c)
+	/*@modifies h @*/;
+
+/**
+ * Prototype for headerRemoveEntry() vector.
+ * Delete tag in header.
+ * Removes all entries of type tag from the header, returns 1 if none were
+ * found.
+ *
+ * @param h		header
+ * @param tag		tag
+ * @return		0 on success, 1 on failure (INCONSISTENT)
+ */
+typedef int (*HRE_t) (Header h, int_32 tag)
+	/*@modifies h @*/;
 
 /** \ingroup header
  * Create new (empty) header instance.
@@ -496,6 +595,23 @@ typedef
 /*@null@*/ void * (*HDRfreetag) (Header h,
 		/*@only@*/ /*@null@*/ const void * data, rpmTagType type)
 	/*@modifies data @*/;
+
+/** \ingroup header
+ * Retrieve extension or tag value.
+ *
+ * @param h		header
+ * @param tag		tag
+ * @retval *type	tag value data type (or NULL)
+ * @retval *p		tag value(s) (or NULL)
+ * @retval *c		number of values (or NULL)
+ * @return		1 on success, 0 on failure
+ */
+typedef
+int (*HDRext) (Header h, int_32 tag,
+			/*@null@*/ /*@out@*/ hTYP_t type,
+			/*@null@*/ /*@out@*/ hRET_t * p,
+			/*@null@*/ /*@out@*/ hCNT_t c)
+	/*@modifies *type, *p, *c @*/;
 
 /** \ingroup header
  * Retrieve tag value.
@@ -702,6 +818,28 @@ int (*HDRnextiter) (HeaderIterator hi,
 	/*@modifies hi, *tag, *type, *p, *c @*/;
 
 /** \ingroup header
+ * Return header magic.
+ * @param h		header
+ * @param *magicp	magic array
+ * @param *nmagicp	no. bytes of magic
+ * @return		0 always
+ */
+typedef
+int (*HDRgetmagic)(/*@null@*/ Header h, unsigned char **magicp, size_t *nmagicp)
+	/*@*/;
+
+/** \ingroup header
+ * Store header magic.
+ * @param h		header
+ * @param magic		magic array
+ * @param nmagic	no. bytes of magic
+ * @return		0 always
+ */
+typedef
+int (*HDRsetmagic)(/*@null@*/ Header h, unsigned char * magic, size_t nmagic)
+	/*@modifies h @*/;
+
+/** \ingroup header
  * Return header origin (e.g path or URL).
  * @param h		header
  * @return		header origin
@@ -738,6 +876,16 @@ int (*HDRgetinstance) (/*@null@*/ Header h)
 typedef
 int (*HDRsetinstance) (/*@null@*/ Header h, int instance)
 	/*@modifies h @*/;
+
+/**
+ * Return header stats accumulator structure.
+ * @param h		header
+ * @param opx		per-header accumulator index (aka rpmtsOpX)
+ * @return		per-header accumulator pointer
+ */
+typedef
+/*@null@*/ void * (*HDRgetstats) (Header h, int opx)
+        /*@*/;
 
 /** \ingroup header
  * Header method vectors.

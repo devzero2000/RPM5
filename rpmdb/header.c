@@ -20,6 +20,9 @@
 /*@unchecked@*/
 int _hdr_debug = 0;
 
+/*@unchecked@*/
+int _tagcache = 1;		/* XXX Cache tag data persistently? */
+
 /*@access entryInfo @*/
 /*@access indexEntry @*/
 
@@ -1866,7 +1869,7 @@ int headerGetEntryMinMemory(Header h, int_32 tag,
     return intGetEntry(h, tag, type, p, c, 1);
 }
 
-int headerGetRawEntry(Header h, int_32 tag, int_32 * type, void * p, int_32 * c)
+int headerGetRawEntry(Header h, int_32 tag, rpmTagType * type, void * p, rpmTagCount * c)
 {
     indexEntry entry;
     int rc;
@@ -2312,6 +2315,43 @@ static char escapedChar(const char ch)	/*@*/
 }
 
 /**
+ * Mark a tag container with headerGetEntry() freeData.
+ * @param he		tag container
+ */
+static HE_t rpmheMark(/*@null@*/ HE_t he)
+	/*@modifies he @*/
+{
+    /* Set he->freeData as appropriate for headerGetEntry() . */
+    if (he)
+    switch (he->t) {
+    default:
+	he->freeData = 0;
+	break;
+    case RPM_STRING_ARRAY_TYPE:
+    case RPM_BIN_TYPE:
+	he->freeData = 1;
+	break;
+    }
+    return he;
+}
+
+/**
+ * Clean a tag container, free'ing attached malloc's..
+ * @param he		tag container
+ */
+static HE_t rpmheClean(/*@null@*/ HE_t he)
+	/*@modifies he @*/
+{
+    if (he) {
+	if (he->freeData) {
+	    he->p.ptr = _free(he->p.ptr);
+	}
+	memset(he, 0, sizeof(*he));
+    }
+    return he;
+}
+
+/**
  * Destroy headerSprintf format array.
  * @param format	sprintf format array
  * @param num		number of elements
@@ -2327,25 +2367,26 @@ freeFormat( /*@only@*/ /*@null@*/ sprintfToken format, int num)
 
     for (i = 0; i < num; i++) {
 	switch (format[i].type) {
+	case PTOK_TAG:
+	    if (_tagcache)
+		(void) rpmheClean(&format[i].u.tag.he);
+	    /*@switchbreak@*/ break;
 	case PTOK_ARRAY:
-/*@-boundswrite@*/
 	    format[i].u.array.format =
 		freeFormat(format[i].u.array.format,
 			format[i].u.array.numTokens);
-/*@=boundswrite@*/
 	    /*@switchbreak@*/ break;
 	case PTOK_COND:
-/*@-boundswrite@*/
 	    format[i].u.cond.ifFormat =
 		freeFormat(format[i].u.cond.ifFormat, 
 			format[i].u.cond.numIfTokens);
 	    format[i].u.cond.elseFormat =
 		freeFormat(format[i].u.cond.elseFormat, 
 			format[i].u.cond.numElseTokens);
-/*@=boundswrite@*/
+	    if (_tagcache)
+		(void) rpmheClean(&format[i].u.cond.tag.he);
 	    /*@switchbreak@*/ break;
 	case PTOK_NONE:
-	case PTOK_TAG:
 	case PTOK_STRING:
 	default:
 	    /*@switchbreak@*/ break;
@@ -2512,7 +2553,7 @@ static headerSprintfArgs hsaInit(/*@returned@*/ headerSprintfArgs hsa)
 
     if (hsa != NULL) {
 	hsa->i = 0;
-	if (tag != NULL && tag->tag == -2)
+	if (tag != NULL && tag->tagno == -2)
 	    hsa->hi = headerInitIterator(hsa->h);
     }
 /*@-nullret@*/
@@ -2542,15 +2583,12 @@ static sprintfToken hsaNext(/*@returned@*/ headerSprintfArgs hsa)
 	if (hsa->hi == NULL) {
 	    hsa->i++;
 	} else {
-	    int_32 tagno;
-	    int_32 type;
-	    int_32 count;
-
-/*@-boundswrite@*/
-	    if (!headerNextIterator(hsa->hi, &tagno, &type, NULL, &count))
+	    HE_t he = rpmheClean(&tag->he);
+	    if (!headerNextIterator(hsa->hi, &he->tag, &he->t, &he->p, &he->c))
 		fmt = NULL;
-	    tag->tag = tagno;
-/*@=boundswrite@*/
+	    he = rpmheMark(he);
+	    he->avail = 1;
+	    tag->tagno = he->tag;
 	}
     }
 
@@ -2663,10 +2701,10 @@ static int findTag(headerSprintfArgs hsa, sprintfToken token, const char * name)
     stag->fmt = NULL;
     stag->ext = NULL;
     stag->extNum = 0;
-    stag->tag = -1;
+    stag->tagno = -1;
 
     if (!strcmp(name, "*")) {
-	stag->tag = -2;
+	stag->tagno = -2;
 	goto bingo;
     }
 
@@ -2694,8 +2732,8 @@ static int findTag(headerSprintfArgs hsa, sprintfToken token, const char * name)
     }
 
     /* Search tag names. */
-    stag->tag = myTagValue(hsa->tags, name);
-    if (stag->tag != 0)
+    stag->tagno = myTagValue(hsa->tags, name);
+    if (stag->tagno != 0)
 	goto bingo;
 
     return 1;
@@ -3134,45 +3172,40 @@ static int getExtension(headerSprintfArgs hsa, headerTagTagFunction fn,
 static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
 	/*@modifies hsa @*/
 {
+    HE_t vhe = memset(alloca(sizeof(*vhe)), 0, sizeof(*vhe));
+    HE_t he = &tag->he;
     char * val = NULL;
     size_t need = 0;
     char * t, * te;
     char buf[20];
-    int_32 count, type;
-    hPTR_t data;
     unsigned int intVal;
     uint_64 llVal;
     const char ** strarray;
-    int datafree = 0;
-    int countBuf;
+    rpmTagCount countBuf;
 
     memset(buf, 0, sizeof(buf));
     if (tag->ext) {
 /*@-boundswrite -branchstate @*/
-	if (getExtension(hsa, tag->ext, &type, &data, &count, hsa->ec + tag->extNum))
+	if (getExtension(hsa, tag->ext, &he->t, &he->p, &he->c, hsa->ec + tag->extNum))
 	{
-	    count = 1;
-	    type = RPM_STRING_TYPE;	
-	    data = "(none)";
+	    he->t = RPM_STRING_TYPE;	
+	    he->c = 1;
+	    he->p.str = "(none)";
 	}
 /*@=boundswrite =branchstate @*/
-    } else {
-/*@-boundswrite -branchstate @*/
-	if (!headerGetEntry(hsa->h, tag->tag, &type, &data, &count)) {
-	    count = 1;
-	    type = RPM_STRING_TYPE;	
-	    data = "(none)";
+    } else
+    if (!he->avail) {
+	he->tag = tag->tagno;
+	if (!headerGetEntry(hsa->h, he->tag, &he->t, &he->p, &he->c)) {
+	    he->c = 1;
+	    he->t = RPM_STRING_TYPE;	
+	    he->p.str = "(none)";
 	}
-/*@=boundswrite =branchstate @*/
-
 	/* XXX this test is unnecessary, array sizes are checked */
-	switch (type) {
+	switch (he->t) {
 	default:
-	    if (element >= count) {
-		/*@-modobserver -observertrans@*/
-		data = headerFreeData(data, type);
-		/*@=modobserver =observertrans@*/
-
+	    if (element >= he->c) {
+		(void) rpmheClean(he);
 		hsa->errmsg = _("(index out of range)");
 		return NULL;
 	    }
@@ -3183,33 +3216,30 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
 	case RPM_STRING_TYPE:
 	    break;
 	}
-	datafree = 1;
+	(void) rpmheMark(he);
     }
 
     if (tag->arrayCount) {
-	/*@-branchstate -observertrans -modobserver@*/
-	if (datafree)
-	    data = headerFreeData(data, type);
-	/*@=branchstate =observertrans =modobserver@*/
-
-	countBuf = count;
-	data = &countBuf;
-	count = 1;
-	type = RPM_INT32_TYPE;
+	countBuf = he->c;
+	(void) rpmheClean(he);
+	he->t = RPM_INT32_TYPE;
+	he->p.i32p = &countBuf;
+	he->c = 1;
     }
+    he->avail = 1;
 
 /*@-boundswrite@*/
     (void) stpcpy( stpcpy(buf, "%"), tag->format);
 /*@=boundswrite@*/
 
     /*@-branchstate@*/
-    if (data)
-    switch (type) {
+    if (he->p.ptr)
+    switch (he->t) {
     case RPM_STRING_ARRAY_TYPE:
-	strarray = (const char **)data;
+	strarray = he->p.argv;
 
 	if (tag->fmt)
-	    val = tag->fmt(RPM_STRING_TYPE, strarray[element], buf, tag->pad, (count > 1 ? element : -1));
+	    val = tag->fmt(RPM_STRING_TYPE, strarray[element], buf, tag->pad, (he->c > 1 ? element : -1));
 
 	if (val) {
 	    need = strlen(val);
@@ -3224,26 +3254,27 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
 
 	break;
 
+    case RPM_I18NSTRING_TYPE:	/* XXX this should _NOT_ be needed. */
     case RPM_STRING_TYPE:
 	if (tag->fmt)
-	    val = tag->fmt(RPM_STRING_TYPE, data, buf, tag->pad,  -1);
+	    val = tag->fmt(RPM_STRING_TYPE, he->p.ptr, buf, tag->pad,  -1);
 
 	if (val) {
 	    need = strlen(val);
 	} else {
-	    need = strlen(data) + tag->pad + 20;
+	    need = strlen(he->p.str) + tag->pad + 20;
 	    val = xmalloc(need+1);
 	    strcat(buf, "s");
 	    /*@-formatconst@*/
-	    sprintf(val, buf, data);
+	    sprintf(val, buf, he->p.str);
 	    /*@=formatconst@*/
 	}
 	break;
 
     case RPM_INT64_TYPE:
-	llVal = *(((int_64 *) data) + element);
+	llVal = he->p.i64p[element];
 	if (tag->fmt)
-	    val = tag->fmt(RPM_INT64_TYPE, &llVal, buf, tag->pad, (count > 1 ? element : -1));
+	    val = tag->fmt(RPM_INT64_TYPE, &llVal, buf, tag->pad, (he->c > 1 ? element : -1));
 	if (val) {
 	    need = strlen(val);
 	} else {
@@ -3260,22 +3291,22 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
     case RPM_INT8_TYPE:
     case RPM_INT16_TYPE:
     case RPM_INT32_TYPE:
-	switch (type) {
+	switch (he->t) {
 	case RPM_CHAR_TYPE:	
 	case RPM_INT8_TYPE:
-	    intVal = *(((int_8 *) data) + element);
+	    intVal = he->p.i8p[element];
 	    /*@innerbreak@*/ break;
 	case RPM_INT16_TYPE:
-	    intVal = *(((uint_16 *) data) + element);
+	    intVal = he->p.ui16p[element];
 	    /*@innerbreak@*/ break;
 	default:		/* keep -Wall quiet */
 	case RPM_INT32_TYPE:
-	    intVal = *(((int_32 *) data) + element);
+	    intVal = he->p.i32p[element];
 	    /*@innerbreak@*/ break;
 	}
 
 	if (tag->fmt)
-	    val = tag->fmt(RPM_INT32_TYPE, &intVal, buf, tag->pad, (count > 1 ? element : -1));
+	    val = tag->fmt(RPM_INT32_TYPE, &intVal, buf, tag->pad, (he->c > 1 ? element : -1));
 
 	if (val) {
 	    need = strlen(val);
@@ -3294,22 +3325,22 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
     case RPM_BIN_TYPE:
 	/* XXX HACK ALERT: element field abused as no. bytes of binary data. */
 	if (tag->fmt)
-	    val = tag->fmt(RPM_BIN_TYPE, data, buf, tag->pad, count);
+	    val = tag->fmt(RPM_BIN_TYPE, he->p.ptr, buf, tag->pad, he->c);
 
 	if (val) {
 	    need = strlen(val);
 	} else {
 #ifdef	NOTYET
-	    val = memcpy(xmalloc(count), data, count);
+	    val = memcpy(xmalloc(he->c), he->p.ptr, he->c);
 #else
 	    /* XXX format string not used */
 	    static char hex[] = "0123456789abcdef";
-	    const char * s = data;
+	    const char * s = he->p.str;
 
 /*@-boundswrite@*/
-	    need = 2*count + tag->pad;
+	    need = 2*he->c + tag->pad;
 	    val = t = xmalloc(need+1);
-	    while (count-- > 0) {
+	    while (he->c-- > 0) {
 		unsigned int i;
 		i = *s++;
 		*t++ = hex[ (i >> 4) & 0xf ];
@@ -3328,10 +3359,8 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
     }
     /*@=branchstate@*/
 
-    /*@-branchstate -observertrans -modobserver@*/
-    if (datafree)
-	data = headerFreeData(data, type);
-    /*@=branchstate =observertrans =modobserver@*/
+    if (!_tagcache)
+	(void) rpmheClean(he);
 
     /*@-branchstate@*/
     if (val && need > 0) {
@@ -3394,7 +3423,7 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 	break;
 
     case PTOK_COND:
-	if (token->u.cond.tag.ext || headerIsEntry(hsa->h, token->u.cond.tag.tag)) {
+	if (token->u.cond.tag.ext || headerIsEntry(hsa->h, token->u.cond.tag.tagno)) {
 	    spft = token->u.cond.ifFormat;
 	    condNumFormats = token->u.cond.numIfTokens;
 	} else {
@@ -3430,7 +3459,7 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 /*@=boundswrite@*/
 	    } else {
 /*@-boundswrite@*/
-		if (!headerGetEntry(hsa->h, spft->u.tag.tag, &type, NULL, &count))
+		if (!headerGetEntry(hsa->h, spft->u.tag.tagno, &type, NULL, &count))
 		    continue;
 /*@=boundswrite@*/
 	    } 
@@ -3478,11 +3507,11 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 		!strcmp(spft->u.tag.type, "yaml"));
 
 	    if (isxml) {
-		const char * tagN = myTagName(hsa->tags, spft->u.tag.tag, NULL);
+		const char * tagN = myTagName(hsa->tags, spft->u.tag.tagno, NULL);
 		/* XXX display "Tag_0x01234567" for unknown tags. */
 		if (tagN == NULL) {
 		    (void) snprintf(numbuf, sizeof(numbuf), "Tag_0x%08x",
-				spft->u.tag.tag);
+				spft->u.tag.tagno);
 		    numbuf[sizeof(numbuf)-1] = '\0';
 		    tagN = numbuf;
 		}
@@ -3495,11 +3524,11 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 	    }
 	    if (isyaml) {
 		int tagT = -1;
-		const char * tagN = myTagName(hsa->tags, spft->u.tag.tag, &tagT);
+		const char * tagN = myTagName(hsa->tags, spft->u.tag.tagno, &tagT);
 		/* XXX display "Tag_0x01234567" for unknown tags. */
 		if (tagN == NULL) {
 		    (void) snprintf(numbuf, sizeof(numbuf), "Tag_0x%08x",
-				spft->u.tag.tag);
+				spft->u.tag.tagno);
 		    numbuf[sizeof(numbuf)-1] = '\0';
 		    tagN = numbuf;
 		    tagT = numElements > 1
@@ -3518,7 +3547,7 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 		if (((tagT & RPM_MASK_RETURN_TYPE) == RPM_ARRAY_RETURN_TYPE)
 		 && numElements == 1) {
 		    te = stpcpy(te, "    ");
-		    if (spft->u.tag.tag != 1118)
+		    if (spft->u.tag.tagno != 1118)
 			te = stpcpy(te, "- ");
 		}
 		*te = '\0';
@@ -3661,8 +3690,8 @@ char * headerSprintf(Header h, const char * fmt,
 	(hsa->format->type == PTOK_ARRAY
 	    ? &hsa->format->u.array.format->u.tag :
 	NULL));
-    isxml = (tag != NULL && tag->tag == -2 && tag->type != NULL && !strcmp(tag->type, "xml"));
-    isyaml = (tag != NULL && tag->tag == -2 && tag->type != NULL && !strcmp(tag->type, "yaml"));
+    isxml = (tag != NULL && tag->tagno == -2 && tag->type != NULL && !strcmp(tag->type, "xml"));
+    isyaml = (tag != NULL && tag->tagno == -2 && tag->type != NULL && !strcmp(tag->type, "yaml"));
 
     if (isxml) {
 	need = sizeof("<rpmHeader>\n") - 1;

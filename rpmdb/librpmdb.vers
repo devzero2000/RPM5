@@ -36,6 +36,7 @@ LIBRPMDB_0
     hGetNEVR;
     hGetNEVRA;
     _init;
+    _tagcache;
     mergesort;
     prDbiOpenFlags;
     rdbOptions;

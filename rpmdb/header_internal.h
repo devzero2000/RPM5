@@ -77,12 +77,13 @@ struct headerToken_s {
  */
 typedef /*@abstract@*/ struct sprintfTag_s * sprintfTag;
 struct sprintfTag_s {
+    HE_s he;
 /*@null@*/
     headerTagFormatFunction fmt;
 /*@null@*/
     headerTagTagFunction ext;   /*!< NULL if tag element is invalid */
     int extNum;
-    int_32 tag;
+    int_32 tagno;
     int justOne;
     int arrayCount;
 /*@kept@*/
@@ -111,18 +112,17 @@ typedef /*@abstract@*/ struct sprintfToken_s * sprintfToken;
 /*@-fielduse@*/
 struct sprintfToken_s {
     enum {
-	PTOK_NONE = 0,
-	PTOK_TAG,
-	PTOK_ARRAY,
-	PTOK_STRING,
-	PTOK_COND
+	PTOK_NONE	= 0,
+	PTOK_TAG	= 1,
+	PTOK_ARRAY	= 2,
+	PTOK_STRING	= 3,
+	PTOK_COND	= 4
     } type;
     union {
 	struct sprintfTag_s tag;	/*!< PTOK_TAG */
 	struct {
 	/*@only@*/
 	    sprintfToken format;
-	    int i;
 	    int numTokens;
 	} array;			/*!< PTOK_ARRAY */
 	struct {

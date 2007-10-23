@@ -26,6 +26,9 @@ const char *__progname;
 /*@access headerTagTableEntry @*/	/* XXX rpmcliFini */
 
 /*@unchecked@*/
+extern int _tagcache;
+
+/*@unchecked@*/
 static int _debug = 0;
 
 /*@-exportheadervar@*/
@@ -467,6 +470,11 @@ struct poptOption rpmcliAllPoptTable[] = {
 	NULL, NULL},
  { "urldebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_url_debug, -1,
 	N_("debug URL cache handling"), NULL},
+
+ { "notagcache", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_tagcache, 0,
+	N_("disable tag data caching"), NULL},
+ { "tagcache", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_tagcache, 1,
+	N_("enable tag data caching"), NULL},
 
    POPT_TABLEEND
 };
