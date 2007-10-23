@@ -3232,12 +3232,13 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 		int element)
 	/*@modifies hsa @*/
 {
-    HE_t he;
     char numbuf[64];	/* XXX big enuf for "Tag_0x01234567" */
     char * t, * te;
     int i, j;
     int numElements;
     sprintfToken spft;
+    sprintfTag tag = NULL;
+    HE_t he = NULL;
     int condNumFormats;
     size_t need;
     int xx;
@@ -3265,7 +3266,9 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 	break;
 
     case PTOK_COND:
-	if (token->u.cond.tag.ext || headerIsEntry(hsa->h, token->u.cond.tag.tagno)) {
+	if (token->u.cond.tag.ext
+	 || headerIsEntry(hsa->h, token->u.cond.tag.tagno))
+	{
 	    spft = token->u.cond.ifFormat;
 	    condNumFormats = token->u.cond.numIfTokens;
 	} else {
@@ -3289,16 +3292,16 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 	spft = token->u.array.format;
 	for (i = 0; i < token->u.array.numTokens; i++, spft++)
 	{
-	    if (spft->type != PTOK_TAG ||
-		spft->u.tag.arrayCount ||
-		spft->u.tag.justOne) continue;
-
-	    he = &spft->u.tag.he;
-	    if (spft->u.tag.ext) {
-		xx = getExtension(hsa, spft->u.tag.ext, &he->t, &he->p, &he->c, 
-				 hsa->ec + spft->u.tag.extNum);
+	    tag = &spft->u.tag;
+	    if (spft->type != PTOK_TAG || tag->arrayCount || tag->justOne)
+		continue;
+	    he = &tag->he;
+	    if (tag->ext) {
+		xx = getExtension(hsa, tag->ext, &he->t, &he->p, &he->c, 
+				 hsa->ec + tag->extNum);
 	    } else {
-		xx = headerGetEntry(hsa->h, spft->u.tag.tagno, (hTYP_t)&he->t, &he->p, &he->c);
+		he->tag = tag->tagno;
+		xx = headerGetEntry(hsa->h, he->tag, (hTYP_t)&he->t, &he->p, &he->c);
 		xx = (xx == 0);	/* XXX invert headerGetEntry return. */
 	    } 
 	    if (xx) {
@@ -3311,6 +3314,7 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 	    if (he->t == RPM_BIN_TYPE || he->t == RPM_ASN1_TYPE || he->t == RPM_OPENPGP_TYPE)
 		he->c = 1;	/* XXX count abused as no. of bytes. */
 
+	    /* Check iteration arrays are same dimension (or scalar). */
 	    if (numElements > 1 && he->c != numElements)
 	    switch (he->t) {
 	    default:
@@ -3327,6 +3331,7 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 	    if (he->c > numElements)
 		numElements = he->c;
 	}
+	spft = token->u.array.format;
 
 	if (numElements == -1) {
 #ifdef	DYING	/* XXX lots of pugly "(none)" lines with --conflicts. */
@@ -3343,17 +3348,18 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 	    if (need == 0) break;
 
 	    spft = token->u.array.format;
-	    isxml = (spft->type == PTOK_TAG && spft->u.tag.type != NULL &&
-		!strcmp(spft->u.tag.type, "xml"));
-	    isyaml = (spft->type == PTOK_TAG && spft->u.tag.type != NULL &&
-		!strcmp(spft->u.tag.type, "yaml"));
+	    tag = &spft->u.tag;
+	    isxml = (spft->type == PTOK_TAG && tag->type != NULL &&
+		!strcmp(tag->type, "xml"));
+	    isyaml = (spft->type == PTOK_TAG && tag->type != NULL &&
+		!strcmp(tag->type, "yaml"));
 
 	    if (isxml) {
-		const char * tagN = myTagName(hsa->tags, spft->u.tag.tagno, NULL);
+		const char * tagN = myTagName(hsa->tags, tag->tagno, NULL);
 		/* XXX display "Tag_0x01234567" for unknown tags. */
 		if (tagN == NULL) {
 		    (void) snprintf(numbuf, sizeof(numbuf), "Tag_0x%08x",
-				spft->u.tag.tagno);
+				tag->tagno);
 		    numbuf[sizeof(numbuf)-1] = '\0';
 		    tagN = numbuf;
 		}
@@ -3364,11 +3370,11 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 	    }
 	    if (isyaml) {
 		int tagT = -1;
-		const char * tagN = myTagName(hsa->tags, spft->u.tag.tagno, &tagT);
+		const char * tagN = myTagName(hsa->tags, tag->tagno, &tagT);
 		/* XXX display "Tag_0x01234567" for unknown tags. */
 		if (tagN == NULL) {
 		    (void) snprintf(numbuf, sizeof(numbuf), "Tag_0x%08x",
-				spft->u.tag.tagno);
+				tag->tagno);
 		    numbuf[sizeof(numbuf)-1] = '\0';
 		    tagN = numbuf;
 		    tagT = numElements > 1
@@ -3386,7 +3392,7 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 		if (((tagT & RPM_MASK_RETURN_TYPE) == RPM_ARRAY_RETURN_TYPE)
 		 && numElements == 1) {
 		    te = stpcpy(te, "    ");
-		    if (spft->u.tag.tagno != 1118)
+		    if (tag->tagno != 1118)
 			te = stpcpy(te, "- ");
 		}
 		*te = '\0';
