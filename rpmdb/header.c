@@ -482,12 +482,12 @@ static int regionSwab(/*@null@*/ indexEntry entry, int il, int dl,
 	if (hdrchkAlign(ie.info.type, ie.info.offset))
 	    return -1;
 
-	ie.data = t = ((unsigned char *)dataStart) + ie.info.offset;
+	ie.data = t = dataStart + ie.info.offset;
 	if (dataEnd && t >= dataEnd)
 	    return -1;
 
 	p.ptr = ie.data;
-	pend.ui8p = dataEnd;
+	pend.ui8p = (unsigned char *) dataEnd;
 	ie.length = dataLength(ie.info.type, p, ie.info.count, 1, pend);
 	if (ie.length < 0 || hdrchkData(ie.length))
 	    return -1;
@@ -518,7 +518,7 @@ static int regionSwab(/*@null@*/ indexEntry entry, int il, int dl,
 	if (ie.info.tag >= HEADER_I18NTABLE) {
 	    tprev = t;
 	} else {
-	    tprev = (unsigned char *)dataStart;
+	    tprev = dataStart;
 	    /* XXX HEADER_IMAGE tags don't include region sub-tag. */
 	    /*@-sizeoftype@*/
 	    if (ie.info.tag == HEADER_IMAGE)
@@ -565,7 +565,7 @@ static int regionSwab(/*@null@*/ indexEntry entry, int il, int dl,
 	}
 
 	dl += ie.length;
-	if (dataEnd && ((unsigned char *)dataStart) + dl > dataEnd) return -1;
+	if (dataEnd && (dataStart + dl) > dataEnd) return -1;
 	tl += tdel;
 	ieprev = ie;	/* structure assignment */
 
@@ -1458,8 +1458,7 @@ static int copyEntry(const indexEntry entry,
 		rdl += REGION_TAG_COUNT;
 	    }
 
-	    (*p).ptr = xmalloc(count);
-	    ei = (*p).i32p;
+	    (*p).ptr = ei = xmalloc(count);
 	    ei[0] = htonl(ril);
 	    ei[1] = htonl(rdl);
 
@@ -1809,7 +1808,7 @@ static void copyData(rpmTagType type, rpmTagData dest, rpmTagData src,
     case RPM_STRING_ARRAY_TYPE:
     case RPM_I18NSTRING_TYPE:
     {	const char ** av = src.argv;
-	char * t = dest.str;
+	char * t = (char *) dest.str;
 
 	while (cnt-- > 0 && dataLength > 0) {
 	    const char * s;
@@ -2015,7 +2014,7 @@ int headerAddI18NString(Header h, int_32 tag, const char * string,
 	/*@modifies h @*/
 {
     indexEntry table, entry;
-    const char ** strArray;
+    rpmTagData p;
     int length;
     int ghosts;
     int i, langNum;
@@ -2028,20 +2027,21 @@ int headerAddI18NString(Header h, int_32 tag, const char * string,
 	return 0;		/* this shouldn't ever happen!! */
 
     if (!table && !entry) {
-	const char * charArray[2];
+	const char * argv[2];
 	int count = 0;
+	p.argv = argv;
 	if (!lang || (lang[0] == 'C' && lang[1] == '\0')) {
 	    /*@-observertrans -readonlytrans@*/
-	    charArray[count++] = "C";
+	    p.argv[count++] = "C";
 	    /*@=observertrans =readonlytrans@*/
 	} else {
 	    /*@-observertrans -readonlytrans@*/
-	    charArray[count++] = "C";
+	    p.argv[count++] = "C";
 	    /*@=observertrans =readonlytrans@*/
-	    charArray[count++] = lang;
+	    p.argv[count++] = lang;
 	}
 	if (!headerAddEntry(h, HEADER_I18NTABLE, RPM_STRING_ARRAY_TYPE, 
-			&charArray, count))
+			p.ptr, count))
 	    return 0;
 	table = findEntry(h, HEADER_I18NTABLE, RPM_STRING_ARRAY_TYPE);
     }
@@ -2072,11 +2072,11 @@ int headerAddI18NString(Header h, int_32 tag, const char * string,
     }
 
     if (!entry) {
-	strArray = alloca(sizeof(*strArray) * (langNum + 1));
+	p.argv = alloca(sizeof(*p.argv) * (langNum + 1));
 	for (i = 0; i < langNum; i++)
-	    strArray[i] = "";
-	strArray[langNum] = string;
-	return headerAddEntry(h, tag, RPM_I18NSTRING_TYPE, strArray, 
+	    p.argv[i] = "";
+	p.argv[langNum] = string;
+	return headerAddEntry(h, tag, RPM_I18NSTRING_TYPE, p.ptr, 
 				langNum + 1);
     } else if (langNum >= entry->info.count) {
 	ghosts = langNum - entry->info.count;
@@ -2239,9 +2239,8 @@ static HE_t rpmheClean(/*@null@*/ HE_t he)
 	/*@modifies he @*/
 {
     if (he) {
-	if (he->freeData) {
+	if (he->freeData)
 	    he->p.ptr = _free(he->p.ptr);
-	}
 	memset(he, 0, sizeof(*he));
     }
     return he;
@@ -2391,16 +2390,15 @@ static /*@null@*/
 Header headerCopy(Header h)
 	/*@modifies h @*/
 {
+    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     Header nh = headerNew();
     HeaderIterator hi;
-    int_32 tag, type, count;
-    hPTR_t ptr;
    
     for (hi = headerInitIterator(h);
-	headerNextIterator(hi, &tag, &type, &ptr, &count);
-	ptr = headerFreeData((void *)ptr, type))
+	headerNextIterator(hi, &he->tag, (hTYP_t)&he->t, (hPTR_t *)&he->p, &he->c);
+	he->p.ptr = headerFreeData(he->p.ptr, he->t))
     {
-	if (ptr) (void) headerAddEntry(nh, tag, type, ptr, count);
+	if (he->p.ptr) (void) headerAddEntry(nh, he->tag, he->t, he->p.ptr, he->c);
     }
     hi = headerFreeIterator(hi);
 
