@@ -26,7 +26,6 @@ int _tagcache = 1;		/* XXX Cache tag data persistently? */
 /*@access entryInfo @*/
 /*@access indexEntry @*/
 
-/*@access rpmec @*/
 /*@access sprintfTag @*/
 /*@access sprintfToken @*/
 /*@access HV_t @*/
@@ -2410,7 +2409,7 @@ typedef struct headerSprintfArgs_s {
     headerSprintfExtension exts;
 /*@observer@*/ /*@null@*/
     const char * errmsg;
-    rpmec ec;
+    HE_t ec;
     sprintfToken format;
 /*@relnull@*/
     HeaderIterator hi;
@@ -2635,6 +2634,212 @@ bingo:
     }
     return 0;
 }
+
+/**
+ * Return octal formatted data.
+ * @param type		tag type
+ * @param data		tag value
+ * @param formatPrefix	sprintf format string
+ * @param padding	no. additional bytes needed by format string
+ * @param element	(unused)
+ * @return		formatted string
+ */
+static char * octalFormat(rpmTagType type, hPTR_t data, 
+		char * formatPrefix, int padding, /*@unused@*/int element)
+	/*@modifies formatPrefix @*/
+{
+    char * val;
+
+    if (type == RPM_INT32_TYPE) {
+	val = xmalloc(20 + padding);
+	strcat(formatPrefix, "o");
+	/*@-formatconst@*/
+	sprintf(val, formatPrefix, *((int_32 *) data));
+	/*@=formatconst@*/
+    } else if (type == RPM_INT64_TYPE) {
+	val = xmalloc(40 + padding);
+	strcat(formatPrefix, "llo");
+	/*@-formatconst@*/
+	sprintf(val, formatPrefix, *((int_64 *) data));
+	/*@=formatconst@*/
+    } else
+	val = xstrdup(_("(not a number)"));
+
+    return val;
+}
+
+/**
+ * Return hex formatted data.
+ * @param type		tag type
+ * @param data		tag value
+ * @param formatPrefix	sprintf format string
+ * @param padding	no. additional bytes needed by format string
+ * @param element	(unused)
+ * @return		formatted string
+ */
+static char * hexFormat(rpmTagType type, hPTR_t data, 
+		char * formatPrefix, int padding, /*@unused@*/int element)
+	/*@modifies formatPrefix @*/
+{
+    char * val;
+
+    if (type == RPM_INT32_TYPE) {
+	val = xmalloc(20 + padding);
+	strcat(formatPrefix, "x");
+	/*@-formatconst@*/
+	sprintf(val, formatPrefix, *((int_32 *) data));
+	/*@=formatconst@*/
+    } else if (type == RPM_INT64_TYPE) {
+	val = xmalloc(40 + padding);
+	strcat(formatPrefix, "llx");
+	/*@-formatconst@*/
+	sprintf(val, formatPrefix, *((int_64 *) data));
+	/*@=formatconst@*/
+    } else
+	val = xstrdup(_("(not a number)"));
+
+    return val;
+}
+
+/**
+ * Return strftime formatted data.
+ * @param type		tag type
+ * @param data		tag value
+ * @param formatPrefix	sprintf format string
+ * @param padding	no. additional bytes needed by format string
+ * @param element	(unused)
+ * @param strftimeFormat strftime(3) format
+ * @return		formatted string
+ */
+static char * realDateFormat(rpmTagType type, hPTR_t data, 
+		char * formatPrefix, int padding, /*@unused@*/int element,
+		const char * strftimeFormat)
+	/*@modifies formatPrefix @*/
+{
+    char * val;
+
+    if (type != RPM_INT32_TYPE) {
+	val = xstrdup(_("(not a number)"));
+    } else {
+	struct tm * tstruct;
+	char buf[50];
+
+	val = xmalloc(50 + padding);
+	strcat(formatPrefix, "s");
+
+	/* this is important if sizeof(int_32) ! sizeof(time_t) */
+	{   time_t dateint = *((int_32 *) data);
+	    tstruct = localtime(&dateint);
+	}
+	buf[0] = '\0';
+	if (tstruct)
+	    (void) strftime(buf, sizeof(buf) - 1, strftimeFormat, tstruct);
+	/*@-formatconst@*/
+	sprintf(val, formatPrefix, buf);
+	/*@=formatconst@*/
+    }
+
+    return val;
+}
+
+/**
+ * Return date formatted data.
+ * @param type		tag type
+ * @param data		tag value
+ * @param formatPrefix	sprintf format string
+ * @param padding	no. additional bytes needed by format string
+ * @param element	(unused)
+ * @return		formatted string
+ */
+static char * dateFormat(rpmTagType type, hPTR_t data, 
+		         char * formatPrefix, int padding, int element)
+	/*@modifies formatPrefix @*/
+{
+    return realDateFormat(type, data, formatPrefix, padding, element,
+			_("%c"));
+}
+
+/**
+ * Return day formatted data.
+ * @param type		tag type
+ * @param data		tag value
+ * @param formatPrefix	sprintf format string
+ * @param padding	no. additional bytes needed by format string
+ * @param element	(unused)
+ * @return		formatted string
+ */
+static char * dayFormat(rpmTagType type, hPTR_t data, 
+		         char * formatPrefix, int padding, int element)
+	/*@modifies formatPrefix @*/
+{
+    return realDateFormat(type, data, formatPrefix, padding, element, 
+			  _("%a %b %d %Y"));
+}
+
+/**
+ * Return shell escape formatted data.
+ * @param type		tag type
+ * @param data		tag value
+ * @param formatPrefix	sprintf format string
+ * @param padding	no. additional bytes needed by format string
+ * @param element	(unused)
+ * @return		formatted string
+ */
+static char * shescapeFormat(rpmTagType type, hPTR_t data, 
+		char * formatPrefix, int padding, /*@unused@*/int element)
+	/*@modifies formatPrefix @*/
+{
+    char * result, * dst, * src, * buf;
+
+    if (type == RPM_INT32_TYPE) {
+	result = xmalloc(padding + 20);
+	strcat(formatPrefix, "d");
+	/*@-formatconst@*/
+	sprintf(result, formatPrefix, *((int_32 *) data));
+	/*@=formatconst@*/
+    } else if (type == RPM_INT64_TYPE) {
+	result = xmalloc(padding + 40);
+	strcat(formatPrefix, "lld");
+	/*@-formatconst@*/
+	sprintf(result, formatPrefix, *((int_64 *) data));
+	/*@=formatconst@*/
+    } else {
+	buf = alloca(strlen(data) + padding + 2);
+	strcat(formatPrefix, "s");
+	/*@-formatconst@*/
+	sprintf(buf, formatPrefix, data);
+	/*@=formatconst@*/
+
+	result = dst = xmalloc(strlen(buf) * 4 + 3);
+	*dst++ = '\'';
+	for (src = buf; *src != '\0'; src++) {
+	    if (*src == '\'') {
+		*dst++ = '\'';
+		*dst++ = '\\';
+		*dst++ = '\'';
+		*dst++ = '\'';
+	    } else {
+		*dst++ = *src;
+	    }
+	}
+	*dst++ = '\'';
+	*dst = '\0';
+
+    }
+
+    return result;
+}
+
+/*@-type@*/ /* FIX: cast? */
+const struct headerSprintfExtension_s headerDefaultFormats[] = {
+    { HEADER_EXT_FORMAT, "octal", { octalFormat } },
+    { HEADER_EXT_FORMAT, "hex", { hexFormat } },
+    { HEADER_EXT_FORMAT, "date", { dateFormat } },
+    { HEADER_EXT_FORMAT, "day", { dayFormat } },
+    { HEADER_EXT_FORMAT, "shescape", { shescapeFormat } },
+    { HEADER_EXT_LAST, NULL, { NULL } }
+};
+/*@=type@*/
 
 /* forward ref */
 /**
@@ -2996,23 +3201,21 @@ static int parseExpression(headerSprintfArgs hsa, sprintfToken token,
  * @return		0 on success, 1 on failure
  */
 static int getExtension(headerSprintfArgs hsa, headerTagTagFunction fn,
-		/*@out@*/ rpmTagType * typeptr,
-		/*@out@*/ rpmTagData * data,
-		/*@out@*/ rpmTagCount * countptr,
-		rpmec ec)
-	/*@modifies *typeptr, *data, *countptr, ec @*/
-	/*@requires maxSet(typeptr) >= 0 /\ maxSet(data) >= 0
-		/\ maxSet(countptr) >= 0 @*/
+		HE_t he, HE_t ec)
+	/*@modifies he, ec @*/
 {
     if (!ec->avail) {
-	if (fn(hsa->h, &ec->type, &ec->data, &ec->count, &ec->freeit))
+	int freeData = 0;
+	if (fn(hsa->h, (int_32 *)&ec->t, (void *)&ec->p.ptr, &ec->c, &freeData))
 	    return 1;
+	ec->freeData = freeData;
 	ec->avail = 1;
     }
 
-    if (typeptr) *typeptr = ec->type;
-    if (data) (*data).ptr = (void *)ec->data;
-    if (countptr) *countptr = ec->count;
+    he->t = ec->t;
+    he->p.ptr = ec->p.ptr;
+    he->c = ec->c;
+    he->freeData = 0;
 
     return 0;
 }
@@ -3041,7 +3244,7 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
 
     memset(buf, 0, sizeof(buf));
     if (tag->ext) {
-	if (getExtension(hsa, tag->ext, &he->t, &he->p, &he->c, hsa->ec + tag->extNum))
+	if (getExtension(hsa, tag->ext, he, hsa->ec + tag->extNum))
 	{
 	    he->t = RPM_STRING_TYPE;	
 	    he->c = 1;
@@ -3297,8 +3500,7 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 		continue;
 	    he = &tag->he;
 	    if (tag->ext) {
-		xx = getExtension(hsa, tag->ext, &he->t, &he->p, &he->c, 
-				 hsa->ec + tag->extNum);
+		xx = getExtension(hsa, tag->ext, he, hsa->ec + tag->extNum);
 	    } else {
 		he->tag = tag->tagno;
 		xx = headerGetEntry(hsa->h, he->tag, (hTYP_t)&he->t, &he->p, &he->c);
@@ -3437,12 +3639,12 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
  * @param exts		headerSprintf extensions
  * @return		new extension cache
  */
-static /*@only@*/ rpmec
+static /*@only@*/ HE_t
 rpmecNew(const headerSprintfExtension exts)
 	/*@*/
 {
     headerSprintfExtension ext;
-    rpmec ec;
+    HE_t ec;
     int i = 0;
 
     for (ext = exts; ext != NULL && ext->type != HEADER_EXT_LAST;
@@ -3461,8 +3663,8 @@ rpmecNew(const headerSprintfExtension exts)
  * @param ec		extension cache
  * @return		NULL always
  */
-static /*@null@*/ rpmec
-rpmecFree(const headerSprintfExtension exts, /*@only@*/ rpmec ec)
+static /*@null@*/ HE_t
+rpmecFree(const headerSprintfExtension exts, /*@only@*/ HE_t ec)
 	/*@modifies ec @*/
 {
     headerSprintfExtension ext;
@@ -3471,7 +3673,7 @@ rpmecFree(const headerSprintfExtension exts, /*@only@*/ rpmec ec)
     for (ext = exts; ext != NULL && ext->type != HEADER_EXT_LAST;
 	ext = (ext->type == HEADER_EXT_MORE ? ext->u.more : ext+1))
     {
-	if (ec[i].freeit) ec[i].data = _free(ec[i].data);
+	rpmheClean(&ec[i]);
 	i++;
     }
 
@@ -3485,15 +3687,15 @@ rpmecFree(const headerSprintfExtension exts, /*@only@*/ rpmec ec)
  *
  * @param h		header
  * @param fmt		format to use
- * @param tbltags	array of tag name/value pairs
- * @param extensions	chained table of formatting extensions.
+ * @param tags		array of tag name/value pairs
+ * @param exts		chained table of formatting extensions.
  * @retval *errmsg	error message (if any)
  * @return		formatted output string (malloc'ed)
  */
 static /*@only@*/ /*@null@*/
 char * headerSprintf(Header h, const char * fmt,
-		     const struct headerTagTableEntry_s * tbltags,
-		     const struct headerSprintfExtension_s * extensions,
+		     const struct headerTagTableEntry_s * tags,
+		     const struct headerSprintfExtension_s * exts,
 		     /*@null@*/ /*@out@*/ errmsg_t * errmsg)
 	/*@modifies h, *errmsg @*/
 	/*@requires maxSet(errmsg) >= 0 @*/
@@ -3509,8 +3711,8 @@ char * headerSprintf(Header h, const char * fmt,
     hsa->h = headerLink(h);
     hsa->fmt = xstrdup(fmt);
 /*@-castexpose@*/	/* FIX: legacy API shouldn't change. */
-    hsa->exts = (headerSprintfExtension) extensions;
-    hsa->tags = (headerTagTableEntry) tbltags;
+    hsa->exts = (headerSprintfExtension) exts;
+    hsa->tags = (headerTagTableEntry) tags;
 /*@=castexpose@*/
     hsa->errmsg = NULL;
 
@@ -3580,212 +3782,6 @@ exit:
     hsa->fmt = _free(hsa->fmt);
     return hsa->val;
 }
-
-/**
- * Return octal formatted data.
- * @param type		tag type
- * @param data		tag value
- * @param formatPrefix	sprintf format string
- * @param padding	no. additional bytes needed by format string
- * @param element	(unused)
- * @return		formatted string
- */
-static char * octalFormat(rpmTagType type, hPTR_t data, 
-		char * formatPrefix, int padding, /*@unused@*/int element)
-	/*@modifies formatPrefix @*/
-{
-    char * val;
-
-    if (type == RPM_INT32_TYPE) {
-	val = xmalloc(20 + padding);
-	strcat(formatPrefix, "o");
-	/*@-formatconst@*/
-	sprintf(val, formatPrefix, *((int_32 *) data));
-	/*@=formatconst@*/
-    } else if (type == RPM_INT64_TYPE) {
-	val = xmalloc(40 + padding);
-	strcat(formatPrefix, "llo");
-	/*@-formatconst@*/
-	sprintf(val, formatPrefix, *((int_64 *) data));
-	/*@=formatconst@*/
-    } else
-	val = xstrdup(_("(not a number)"));
-
-    return val;
-}
-
-/**
- * Return hex formatted data.
- * @param type		tag type
- * @param data		tag value
- * @param formatPrefix	sprintf format string
- * @param padding	no. additional bytes needed by format string
- * @param element	(unused)
- * @return		formatted string
- */
-static char * hexFormat(rpmTagType type, hPTR_t data, 
-		char * formatPrefix, int padding, /*@unused@*/int element)
-	/*@modifies formatPrefix @*/
-{
-    char * val;
-
-    if (type == RPM_INT32_TYPE) {
-	val = xmalloc(20 + padding);
-	strcat(formatPrefix, "x");
-	/*@-formatconst@*/
-	sprintf(val, formatPrefix, *((int_32 *) data));
-	/*@=formatconst@*/
-    } else if (type == RPM_INT64_TYPE) {
-	val = xmalloc(40 + padding);
-	strcat(formatPrefix, "llx");
-	/*@-formatconst@*/
-	sprintf(val, formatPrefix, *((int_64 *) data));
-	/*@=formatconst@*/
-    } else
-	val = xstrdup(_("(not a number)"));
-
-    return val;
-}
-
-/**
- * Return strftime formatted data.
- * @param type		tag type
- * @param data		tag value
- * @param formatPrefix	sprintf format string
- * @param padding	no. additional bytes needed by format string
- * @param element	(unused)
- * @param strftimeFormat strftime(3) format
- * @return		formatted string
- */
-static char * realDateFormat(rpmTagType type, hPTR_t data, 
-		char * formatPrefix, int padding, /*@unused@*/int element,
-		const char * strftimeFormat)
-	/*@modifies formatPrefix @*/
-{
-    char * val;
-
-    if (type != RPM_INT32_TYPE) {
-	val = xstrdup(_("(not a number)"));
-    } else {
-	struct tm * tstruct;
-	char buf[50];
-
-	val = xmalloc(50 + padding);
-	strcat(formatPrefix, "s");
-
-	/* this is important if sizeof(int_32) ! sizeof(time_t) */
-	{   time_t dateint = *((int_32 *) data);
-	    tstruct = localtime(&dateint);
-	}
-	buf[0] = '\0';
-	if (tstruct)
-	    (void) strftime(buf, sizeof(buf) - 1, strftimeFormat, tstruct);
-	/*@-formatconst@*/
-	sprintf(val, formatPrefix, buf);
-	/*@=formatconst@*/
-    }
-
-    return val;
-}
-
-/**
- * Return date formatted data.
- * @param type		tag type
- * @param data		tag value
- * @param formatPrefix	sprintf format string
- * @param padding	no. additional bytes needed by format string
- * @param element	(unused)
- * @return		formatted string
- */
-static char * dateFormat(rpmTagType type, hPTR_t data, 
-		         char * formatPrefix, int padding, int element)
-	/*@modifies formatPrefix @*/
-{
-    return realDateFormat(type, data, formatPrefix, padding, element,
-			_("%c"));
-}
-
-/**
- * Return day formatted data.
- * @param type		tag type
- * @param data		tag value
- * @param formatPrefix	sprintf format string
- * @param padding	no. additional bytes needed by format string
- * @param element	(unused)
- * @return		formatted string
- */
-static char * dayFormat(rpmTagType type, hPTR_t data, 
-		         char * formatPrefix, int padding, int element)
-	/*@modifies formatPrefix @*/
-{
-    return realDateFormat(type, data, formatPrefix, padding, element, 
-			  _("%a %b %d %Y"));
-}
-
-/**
- * Return shell escape formatted data.
- * @param type		tag type
- * @param data		tag value
- * @param formatPrefix	sprintf format string
- * @param padding	no. additional bytes needed by format string
- * @param element	(unused)
- * @return		formatted string
- */
-static char * shescapeFormat(rpmTagType type, hPTR_t data, 
-		char * formatPrefix, int padding, /*@unused@*/int element)
-	/*@modifies formatPrefix @*/
-{
-    char * result, * dst, * src, * buf;
-
-    if (type == RPM_INT32_TYPE) {
-	result = xmalloc(padding + 20);
-	strcat(formatPrefix, "d");
-	/*@-formatconst@*/
-	sprintf(result, formatPrefix, *((int_32 *) data));
-	/*@=formatconst@*/
-    } else if (type == RPM_INT64_TYPE) {
-	result = xmalloc(padding + 40);
-	strcat(formatPrefix, "lld");
-	/*@-formatconst@*/
-	sprintf(result, formatPrefix, *((int_64 *) data));
-	/*@=formatconst@*/
-    } else {
-	buf = alloca(strlen(data) + padding + 2);
-	strcat(formatPrefix, "s");
-	/*@-formatconst@*/
-	sprintf(buf, formatPrefix, data);
-	/*@=formatconst@*/
-
-	result = dst = xmalloc(strlen(buf) * 4 + 3);
-	*dst++ = '\'';
-	for (src = buf; *src != '\0'; src++) {
-	    if (*src == '\'') {
-		*dst++ = '\'';
-		*dst++ = '\\';
-		*dst++ = '\'';
-		*dst++ = '\'';
-	    } else {
-		*dst++ = *src;
-	    }
-	}
-	*dst++ = '\'';
-	*dst = '\0';
-
-    }
-
-    return result;
-}
-
-/*@-type@*/ /* FIX: cast? */
-const struct headerSprintfExtension_s headerDefaultFormats[] = {
-    { HEADER_EXT_FORMAT, "octal", { octalFormat } },
-    { HEADER_EXT_FORMAT, "hex", { hexFormat } },
-    { HEADER_EXT_FORMAT, "date", { dateFormat } },
-    { HEADER_EXT_FORMAT, "day", { dayFormat } },
-    { HEADER_EXT_FORMAT, "shescape", { shescapeFormat } },
-    { HEADER_EXT_LAST, NULL, { NULL } }
-};
-/*@=type@*/
 
 /** \ingroup header
  * Duplicate tag values from one header into another.

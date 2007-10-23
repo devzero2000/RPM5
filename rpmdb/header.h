@@ -763,14 +763,14 @@ int (*HDRremove) (Header h, int_32 tag)
  * @param h		header
  * @param fmt		format to use
  * @param tags		array of tag name/value pairs
- * @param extensions	chained table of formatting extensions.
+ * @param exts		chained table of formatting extensions.
  * @retval errmsg	error message (if any)
  * @return		formatted output string (malloc'ed)
  */
 typedef
 /*@only@*/ char * (*HDRsprintf) (Header h, const char * fmt,
 		     const struct headerTagTableEntry_s * tags,
-		     const struct headerSprintfExtension_s * extensions,
+		     const struct headerSprintfExtension_s * exts,
 		     /*@null@*/ /*@out@*/ errmsg_t * errmsg)
 	/*@modifies *errmsg @*/;
 
