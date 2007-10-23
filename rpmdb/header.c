@@ -589,7 +589,7 @@ static int regionSwab(/*@null@*/ indexEntry entry, int il, int dl,
  * @return		unloaded header blob (NULL on error)
  */
 static /*@only@*/ /*@null@*/ void * doHeaderUnload(Header h,
-		/*@out@*/ int * lengthPtr)
+		/*@out@*/ size_t * lengthPtr)
 	/*@modifies h, *lengthPtr @*/
 	/*@requires maxSet(lengthPtr) >= 0 @*/
 	/*@ensures maxRead(result) == (*lengthPtr) @*/
@@ -863,7 +863,7 @@ static /*@only@*/ /*@null@*/
 void * headerUnload(Header h)
 	/*@modifies h @*/
 {
-    int length;
+    size_t length;
     void * uh = doHeaderUnload(h, &length);
     return uh;
 }
@@ -1011,17 +1011,6 @@ Header headerLoad(/*@kept@*/ void * uh)
     h->flags |= HEADERFLAG_SORTED;
     h->nrefs = 0;
     h = headerLink(h);
-
-    /*
-     * XXX XFree86-libs, ash, and pdksh from Red Hat 5.2 have bogus
-     * %verifyscript tag that needs to be diddled.
-     */
-    if (ntohl(pe->tag) == 15 &&
-	ntohl(pe->type) == RPM_STRING_TYPE &&
-	ntohl(pe->count) == 1)
-    {
-	pe->tag = htonl(1079);
-    }
 
     entry = h->index;
     i = 0;
@@ -1216,7 +1205,7 @@ Header headerReload(/*@only@*/ Header h, int tag)
 	/*@modifies h @*/
 {
     Header nh;
-    int length;
+    size_t length;
     /*@-onlytrans@*/
     void * uh = doHeaderUnload(h, &length);
     const char * origin;
@@ -1372,7 +1361,7 @@ int headerWrite(void * _fd, /*@null@*/ Header h, enum hMagic magicp)
 {
     FD_t fd = _fd;
     ssize_t nb;
-    int length;
+    size_t length;
     const void * uh;
 
     if (h == NULL)
@@ -1427,9 +1416,9 @@ int headerIsEntry(/*@null@*/Header h, int_32 tag)
  * @return		1 on success, otherwise error.
  */
 static int copyEntry(const indexEntry entry,
-		/*@null@*/ /*@out@*/ hTYP_t type,
-		/*@null@*/ /*@out@*/ hPTR_t * p,
-		/*@null@*/ /*@out@*/ hCNT_t c,
+		/*@null@*/ /*@out@*/ rpmTagType * type,
+		/*@null@*/ /*@out@*/ rpmTagData * p,
+		/*@null@*/ /*@out@*/ rpmTagCount * c,
 		int minMem)
 	/*@modifies *type, *p, *c @*/
 	/*@requires maxSet(type) >= 0 /\ maxSet(p) >= 0 /\ maxSet(c) >= 0 @*/
@@ -1466,8 +1455,8 @@ static int copyEntry(const indexEntry entry,
 		rdl += REGION_TAG_COUNT;
 	    }
 
-	    *p = xmalloc(count);
-	    ei = (int_32 *) *p;
+	    (*p).ptr = xmalloc(count);
+	    ei = (*p).i32p;
 	    ei[0] = htonl(ril);
 	    ei[1] = htonl(rdl);
 
@@ -1483,41 +1472,36 @@ static int copyEntry(const indexEntry entry,
 	    rc = (rc < 0) ? 0 : 1;
 	} else {
 	    count = entry->length;
-	    *p = (!minMem
+	    (*p).ptr = (!minMem
 		? memcpy(xmalloc(count), entry->data, count)
 		: entry->data);
 	}
 	break;
     case RPM_STRING_TYPE:
 	if (count == 1) {
-	    *p = entry->data;
+	    (*p).str = entry->data;
 	    break;
 	}
 	/*@fallthrough@*/
     case RPM_STRING_ARRAY_TYPE:
     case RPM_I18NSTRING_TYPE:
-    {	const char ** ptrEntry;
-	/*@-sizeoftype@*/
-	int tableSize = count * sizeof(char *);
-	/*@=sizeoftype@*/
+    {	const char ** argv;
+	size_t nb = count * sizeof(*argv);
 	char * t;
 	int i;
 
 	/*@-mods@*/
 	if (minMem) {
-	    *p = xmalloc(tableSize);
-	    ptrEntry = (const char **) *p;
+	    argv = (*p).argv = xmalloc(nb);
 	    t = entry->data;
 	} else {
-	    t = xmalloc(tableSize + entry->length);
-	    *p = (void *)t;
-	    ptrEntry = (const char **) *p;
-	    t += tableSize;
+	    argv = (*p).argv = xmalloc(nb + entry->length);
+	    t = (char *) &argv[count];
 	    memcpy(t, entry->data, entry->length);
 	}
 	/*@=mods@*/
 	for (i = 0; i < count; i++) {
-	    *ptrEntry++ = t;
+	    argv[i] = t;
 	    t = strchr(t, 0);
 	    t++;
 	}
@@ -1526,7 +1510,7 @@ static int copyEntry(const indexEntry entry,
     case RPM_OPENPGP_TYPE:	/* XXX W2DO? */
     case RPM_ASN1_TYPE:		/* XXX W2DO? */
     default:
-	*p = entry->data;
+	(*p).ptr = entry->data;
 	break;
     }
     if (type) *type = entry->info.type;
@@ -1680,9 +1664,9 @@ headerFindI18NString(Header h, indexEntry entry)
  * @return		1 on success, 0 on not found
  */
 static int intGetEntry(Header h, int_32 tag,
-		/*@null@*/ /*@out@*/ hTAG_t type,
-		/*@null@*/ /*@out@*/ hPTR_t * p,
-		/*@null@*/ /*@out@*/ hCNT_t c,
+		/*@null@*/ /*@out@*/ rpmTagType * type,
+		/*@null@*/ /*@out@*/ rpmTagData * p,
+		/*@null@*/ /*@out@*/ rpmTagCount * c,
 		int minMem)
 	/*@modifies *type, *p, *c @*/
 	/*@requires maxSet(type) >= 0 /\ maxSet(p) >= 0 /\ maxSet(c) >= 0 @*/
@@ -1696,7 +1680,7 @@ static int intGetEntry(Header h, int_32 tag,
     /*@mods@*/
     if (entry == NULL) {
 	if (type) type = 0;
-	if (p) *p = NULL;
+	if (p) (*p).ptr = NULL;
 	if (c) *c = 0;
 	return 0;
     }
@@ -1707,7 +1691,7 @@ static int intGetEntry(Header h, int_32 tag,
 	if (type) *type = RPM_STRING_TYPE;
 	if (c) *c = 1;
 	/*@-dependenttrans@*/
-	if (p) *p = headerFindI18NString(h, entry);
+	if (p) (*p).str = headerFindI18NString(h, entry);
 	/*@=dependenttrans@*/
 	break;
     default:
@@ -1763,7 +1747,7 @@ int headerGetEntry(Header h, int_32 tag,
 	/*@modifies *type, *p, *c @*/
 	/*@requires maxSet(type) >= 0 /\ maxSet(p) >= 0 /\ maxSet(c) >= 0 @*/
 {
-    return intGetEntry(h, tag, type, (hPTR_t *)p, c, 0);
+    return intGetEntry(h, tag, (rpmTagType *)type, (rpmTagData *)p, (rpmTagCount *)c, 0);
 }
 
 /** \ingroup header
@@ -1786,7 +1770,7 @@ int headerGetEntryMinMemory(Header h, int_32 tag,
 	/*@modifies *type, *p, *c @*/
 	/*@requires maxSet(type) >= 0 /\ maxSet(p) >= 0 /\ maxSet(c) >= 0 @*/
 {
-    return intGetEntry(h, tag, type, p, c, 1);
+    return intGetEntry(h, tag, (rpmTagType *)type, (rpmTagData *)p, (rpmTagCount *)c, 1);
 }
 
 int headerGetRawEntry(Header h, int_32 tag, rpmTagType * type, void * p, rpmTagCount * c)
@@ -1806,7 +1790,7 @@ int headerGetRawEntry(Header h, int_32 tag, rpmTagType * type, void * p, rpmTagC
 	return 0;
     }
 
-    rc = copyEntry(entry, (int_32 *)type, p, c, 0);
+    rc = copyEntry(entry, type, p, c, 0);
 
     /* XXX 1 on success */
     return ((rc == 1) ? 1 : 0);
@@ -2384,7 +2368,7 @@ int headerNextIterator(HeaderIterator hi,
     if (tag)
 	*tag = entry->info.tag;
 
-    rc = copyEntry(entry, type, p, c, 0);
+    rc = copyEntry(entry, (rpmTagType *)type, (rpmTagData *)p, (rpmTagCount *)c, 0);
 
     /* XXX 1 on success */
     return ((rc == 1) ? 1 : 0);
@@ -2918,7 +2902,7 @@ static int parseExpression(headerSprintfArgs hsa, sprintfToken token,
 	return 1;
     }
 
-    *chptr++ = '\0';;
+    *chptr++ = '\0';
 
     if (*chptr != '{') {
 	hsa->errmsg = _("{ expected after ? in expression");
@@ -3807,21 +3791,21 @@ static
 void headerCopyTags(Header headerFrom, Header headerTo, hTAG_t tagstocopy)
 	/*@modifies headerTo @*/
 {
-    int * p;
+    int * tagno;
 
     if (headerFrom == headerTo)
 	return;
 
-    for (p = tagstocopy; *p != 0; p++) {
-	char *s;
-	rpmTagType type;
-	rpmTagCount count;
-	if (headerIsEntry(headerTo, *p))
+    for (tagno = tagstocopy; *tagno != 0; tagno++) {
+	rpmTagType t;
+	rpmTagData p = { .ptr = NULL };
+	rpmTagCount c;
+	if (headerIsEntry(headerTo, *tagno))
 	    continue;
-	if (!headerGetEntryMinMemory(headerFrom, *p, (hTYP_t)&type, &s, &count))
+	if (!headerGetEntryMinMemory(headerFrom, *tagno, (hTYP_t)&t, &p, &c))
 	    continue;
-	(void) headerAddEntry(headerTo, *p, type, s, count);
-	s = headerFreeData(s, type);
+	(void) headerAddEntry(headerTo, *tagno, t, p.ptr, c);
+	p.ptr = headerFreeData(p.ptr, t);
     }
 }
 
