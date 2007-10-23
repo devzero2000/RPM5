@@ -2076,8 +2076,7 @@ int headerAddI18NString(Header h, int_32 tag, const char * string,
 	for (i = 0; i < langNum; i++)
 	    p.argv[i] = "";
 	p.argv[langNum] = string;
-	return headerAddEntry(h, tag, RPM_I18NSTRING_TYPE, p.ptr, 
-				langNum + 1);
+	return headerAddEntry(h, tag, RPM_I18NSTRING_TYPE, p.ptr, langNum + 1);
     } else if (langNum >= entry->info.count) {
 	ghosts = langNum - entry->info.count;
 	
@@ -2956,6 +2955,8 @@ static int parseFormat(headerSprintfArgs hsa, /*@null@*/ char * str,
 		if (xisdigit(*start)) {
 		    i = strtoul(start, &start, 10);
 		    token->u.tag.pad += i;
+		    start = chptr;
+		    break;
 		} else {
 		    start++;
 		}
@@ -3011,11 +3012,10 @@ static int parseFormat(headerSprintfArgs hsa, /*@null@*/ char * str,
 		return 1;
 	    }
 
-	    start = next;
+	    dst = start = next;
 	    /*@switchbreak@*/ break;
 
 	case '[':
-	    *dst++ = '\0';
 	    *start++ = '\0';
 	    token = format + numTokens++;
 
@@ -3201,9 +3201,7 @@ static int parseExpression(headerSprintfArgs hsa, sprintfToken token,
  * Call a header extension only once, saving results.
  * @param hsa		headerSprintf args
  * @param fn		function
- * @retval *typeptr	extension type
- * @retval *data	extension data
- * @retval *countptr	extension size
+ @ @retval he		tag container
  * @retval ec		extension cache
  * @return		0 on success, 1 on failure
  */
