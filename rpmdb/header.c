@@ -324,7 +324,7 @@ unsigned int headerSizeof(/*@null@*/ Header h, enum hMagic magicp)
 
     for (i = 0, entry = h->index; i < h->indexUsed; i++, entry++) {
 	unsigned diff;
-	int_32 type;
+	rpmTagType type;
 
 	/* Regions go in as is ... */
         if (ENTRY_IS_REGION(entry)) {
@@ -368,7 +368,7 @@ unsigned int headerSizeof(/*@null@*/ Header h, enum hMagic magicp)
  * @param pend		pointer to end of data (or NULL)
  * @return		no. bytes in data, -1 on failure
  */
-static int dataLength(int_32 type, hPTR_t p, int_32 count, int onDisk,
+static int dataLength(rpmTagType type, hPTR_t p, rpmTagCount count, int onDisk,
 		/*@null@*/ hPTR_t pend)
 	/*@*/
 {
@@ -465,7 +465,7 @@ static int regionSwab(/*@null@*/ indexEntry entry, int il, int dl,
     memset(&ieprev, 0, sizeof(ieprev));
     for (; il > 0; il--, pe++) {
 	struct indexEntry_s ie;
-	int_32 type;
+	rpmTagType type;
 
 	ie.info.tag = ntohl(pe->tag);
 	ie.info.type = ntohl(pe->type);
@@ -603,7 +603,7 @@ static /*@only@*/ /*@null@*/ void * doHeaderUnload(Header h,
     int_32 il = 0;
     int_32 dl = 0;
     indexEntry entry; 
-    int_32 type;
+    rpmTagType type;
     int i;
     int drlen, ndribbles;
     int driplen, ndrips;
@@ -876,7 +876,7 @@ void * headerUnload(Header h)
  * @return 		header entry
  */
 static /*@null@*/
-indexEntry findEntry(/*@null@*/ Header h, int_32 tag, int_32 type)
+indexEntry findEntry(/*@null@*/ Header h, int_32 tag, rpmTagType type)
 	/*@modifies h @*/
 {
     indexEntry entry, entry2, last;
@@ -1434,7 +1434,7 @@ static int copyEntry(const indexEntry entry,
 	/*@modifies *type, *p, *c @*/
 	/*@requires maxSet(type) >= 0 /\ maxSet(p) >= 0 /\ maxSet(c) >= 0 @*/
 {
-    int_32 count = entry->info.count;
+    rpmTagCount count = entry->info.count;
     int rc = 1;		/* XXX 1 on success. */
 
     if (p)
@@ -1814,7 +1814,7 @@ int headerGetRawEntry(Header h, int_32 tag, rpmTagType * type, void * p, rpmTagC
 
 /**
  */
-static void copyData(int_32 type, /*@out@*/ void * dstPtr, const void * srcPtr,
+static void copyData(rpmTagType type, /*@out@*/ void * dstPtr, const void * srcPtr,
 		int_32 cnt, int dataLength)
 	/*@modifies *dstPtr @*/
 {
@@ -1850,7 +1850,7 @@ static void copyData(int_32 type, /*@out@*/ void * dstPtr, const void * srcPtr,
  */
 /*@null@*/
 static void *
-grabData(int_32 type, hPTR_t p, int_32 c, /*@out@*/ int * lengthPtr)
+grabData(rpmTagType type, hPTR_t p, int_32 c, /*@out@*/ int * lengthPtr)
 	/*@modifies *lengthPtr @*/
 	/*@requires maxSet(lengthPtr) >= 0 @*/
 {
@@ -3600,7 +3600,7 @@ exit:
  * @param element	(unused)
  * @return		formatted string
  */
-static char * octalFormat(int_32 type, hPTR_t data, 
+static char * octalFormat(rpmTagType type, hPTR_t data, 
 		char * formatPrefix, int padding, /*@unused@*/int element)
 	/*@modifies formatPrefix @*/
 {
@@ -3633,7 +3633,7 @@ static char * octalFormat(int_32 type, hPTR_t data,
  * @param element	(unused)
  * @return		formatted string
  */
-static char * hexFormat(int_32 type, hPTR_t data, 
+static char * hexFormat(rpmTagType type, hPTR_t data, 
 		char * formatPrefix, int padding, /*@unused@*/int element)
 	/*@modifies formatPrefix @*/
 {
@@ -3667,7 +3667,7 @@ static char * hexFormat(int_32 type, hPTR_t data,
  * @param strftimeFormat strftime(3) format
  * @return		formatted string
  */
-static char * realDateFormat(int_32 type, hPTR_t data, 
+static char * realDateFormat(rpmTagType type, hPTR_t data, 
 		char * formatPrefix, int padding, /*@unused@*/int element,
 		const char * strftimeFormat)
 	/*@modifies formatPrefix @*/
@@ -3707,7 +3707,7 @@ static char * realDateFormat(int_32 type, hPTR_t data,
  * @param element	(unused)
  * @return		formatted string
  */
-static char * dateFormat(int_32 type, hPTR_t data, 
+static char * dateFormat(rpmTagType type, hPTR_t data, 
 		         char * formatPrefix, int padding, int element)
 	/*@modifies formatPrefix @*/
 {
@@ -3724,7 +3724,7 @@ static char * dateFormat(int_32 type, hPTR_t data,
  * @param element	(unused)
  * @return		formatted string
  */
-static char * dayFormat(int_32 type, hPTR_t data, 
+static char * dayFormat(rpmTagType type, hPTR_t data, 
 		         char * formatPrefix, int padding, int element)
 	/*@modifies formatPrefix @*/
 {
@@ -3741,7 +3741,7 @@ static char * dayFormat(int_32 type, hPTR_t data,
  * @param element	(unused)
  * @return		formatted string
  */
-static char * shescapeFormat(int_32 type, hPTR_t data, 
+static char * shescapeFormat(rpmTagType type, hPTR_t data, 
 		char * formatPrefix, int padding, /*@unused@*/int element)
 	/*@modifies formatPrefix @*/
 {
@@ -3814,11 +3814,11 @@ void headerCopyTags(Header headerFrom, Header headerTo, hTAG_t tagstocopy)
 
     for (p = tagstocopy; *p != 0; p++) {
 	char *s;
-	int_32 type;
-	int_32 count;
+	rpmTagType type;
+	rpmTagCount count;
 	if (headerIsEntry(headerTo, *p))
 	    continue;
-	if (!headerGetEntryMinMemory(headerFrom, *p, &type, &s, &count))
+	if (!headerGetEntryMinMemory(headerFrom, *p, (hTYP_t)&type, &s, &count))
 	    continue;
 	(void) headerAddEntry(headerTo, *p, type, s, count);
 	s = headerFreeData(s, type);
