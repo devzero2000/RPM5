@@ -467,7 +467,7 @@ static int dataLength(int_32 type, hPTR_t p, int_32 count, int onDisk,
  */
 static int regionSwab(/*@null@*/ indexEntry entry, int il, int dl,
 		entryInfo pe,
-		unsigned char * dataStart,
+		void * dataStart,
 		/*@null@*/ const unsigned char * dataEnd,
 		int regionid)
 	/*@modifies *entry, *dataStart @*/
@@ -501,7 +501,7 @@ static int regionSwab(/*@null@*/ indexEntry entry, int il, int dl,
 	    return -1;
 /*@=boundsread@*/
 
-	ie.data = t = dataStart + ie.info.offset;
+	ie.data = t = ((unsigned char *)dataStart) + ie.info.offset;
 	if (dataEnd && t >= dataEnd)
 	    return -1;
 
@@ -539,7 +539,7 @@ static int regionSwab(/*@null@*/ indexEntry entry, int il, int dl,
 	if (ie.info.tag >= HEADER_I18NTABLE) {
 	    tprev = t;
 	} else {
-	    tprev = dataStart;
+	    tprev = (unsigned char *)dataStart;
 	    /* XXX HEADER_IMAGE tags don't include region sub-tag. */
 	    /*@-sizeoftype@*/
 	    if (ie.info.tag == HEADER_IMAGE)
@@ -561,7 +561,7 @@ static int regionSwab(/*@null@*/ indexEntry entry, int il, int dl,
 		if (b[1] != ((int_32 *)it)[0])
 		    memcpy(it, b, sizeof(b));
 	    }
-	    t = (char *) it;
+	    t = (unsigned char *) it;
 	}   /*@switchbreak@*/ break;
 	case RPM_INT32_TYPE:
 	{   int_32 * it = (int_32 *)t;
@@ -570,7 +570,7 @@ static int regionSwab(/*@null@*/ indexEntry entry, int il, int dl,
 		    return -1;
 		*it = htonl(*it);
 	    }
-	    t = (char *) it;
+	    t = (unsigned char *) it;
 	}   /*@switchbreak@*/ break;
 	case RPM_INT16_TYPE:
 	{   int_16 * it = (int_16 *) t;
@@ -579,7 +579,7 @@ static int regionSwab(/*@null@*/ indexEntry entry, int il, int dl,
 		    return -1;
 		*it = htons(*it);
 	    }
-	    t = (char *) it;
+	    t = (unsigned char *) it;
 	}   /*@switchbreak@*/ break;
 /*@=bounds@*/
 	default:
@@ -588,7 +588,7 @@ static int regionSwab(/*@null@*/ indexEntry entry, int il, int dl,
 	}
 
 	dl += ie.length;
-	if (dataEnd && dataStart + dl > dataEnd) return -1;
+	if (dataEnd && ((unsigned char *)dataStart) + dl > dataEnd) return -1;
 	tl += tdel;
 	ieprev = ie;	/* structure assignment */
 
@@ -1886,7 +1886,7 @@ int headerGetRawEntry(Header h, int_32 tag, rpmTagType * type, void * p, rpmTagC
 	return 0;
     }
 
-    rc = copyEntry(entry, type, p, c, 0);
+    rc = copyEntry(entry, (int_32 *)type, p, c, 0);
 
     /* XXX 1 on success */
     return ((rc == 1) ? 1 : 0);
@@ -2584,7 +2584,7 @@ static sprintfToken hsaNext(/*@returned@*/ headerSprintfArgs hsa)
 	    hsa->i++;
 	} else {
 	    HE_t he = rpmheClean(&tag->he);
-	    if (!headerNextIterator(hsa->hi, &he->tag, &he->t, &he->p, &he->c))
+	    if (!headerNextIterator(hsa->hi, &he->tag, (hTAG_t)&he->t, (hPTR_t *)&he->p.ptr, &he->c))
 		fmt = NULL;
 	    he = rpmheMark(he);
 	    he->avail = 1;
@@ -3140,9 +3140,9 @@ static int parseExpression(headerSprintfArgs hsa, sprintfToken token,
  * @return		0 on success, 1 on failure
  */
 static int getExtension(headerSprintfArgs hsa, headerTagTagFunction fn,
-		/*@out@*/ hTYP_t typeptr,
-		/*@out@*/ hPTR_t * data,
-		/*@out@*/ hCNT_t countptr,
+		/*@out@*/ rpmTagType * typeptr,
+		/*@out@*/ rpmTagData * data,
+		/*@out@*/ rpmTagCount * countptr,
 		rpmec ec)
 	/*@modifies *typeptr, *data, *countptr, ec @*/
 	/*@requires maxSet(typeptr) >= 0 /\ maxSet(data) >= 0
@@ -3155,7 +3155,7 @@ static int getExtension(headerSprintfArgs hsa, headerTagTagFunction fn,
     }
 
     if (typeptr) *typeptr = ec->type;
-    if (data) *data = ec->data;
+    if (data) (*data).ptr = (void *)ec->data;
     if (countptr) *countptr = ec->count;
 
     return 0;
@@ -3196,7 +3196,7 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
     } else
     if (!he->avail) {
 	he->tag = tag->tagno;
-	if (!headerGetEntry(hsa->h, he->tag, &he->t, &he->p, &he->c)) {
+	if (!headerGetEntry(hsa->h, he->tag, (hTYP_t)&he->t, &he->p, &he->c)) {
 	    he->c = 1;
 	    he->t = RPM_STRING_TYPE;	
 	    he->p.str = "(none)";
@@ -3388,15 +3388,15 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 		int element)
 	/*@modifies hsa @*/
 {
+    HE_t he;
     char numbuf[64];	/* XXX big enuf for "Tag_0x01234567" */
     char * t, * te;
     int i, j;
     int numElements;
-    int_32 type;
-    int_32 count;
     sprintfToken spft;
     int condNumFormats;
     size_t need;
+    int xx;
 
     /* we assume the token and header have been validated already! */
 
@@ -3451,24 +3451,26 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 		spft->u.tag.arrayCount ||
 		spft->u.tag.justOne) continue;
 
+	    he = &spft->u.tag.he;
 	    if (spft->u.tag.ext) {
-/*@-boundswrite@*/
-		if (getExtension(hsa, spft->u.tag.ext, &type, NULL, &count, 
-				 hsa->ec + spft->u.tag.extNum))
-		     continue;
-/*@=boundswrite@*/
+		xx = getExtension(hsa, spft->u.tag.ext, &he->t, &he->p, &he->c, 
+				 hsa->ec + spft->u.tag.extNum);
 	    } else {
-/*@-boundswrite@*/
-		if (!headerGetEntry(hsa->h, spft->u.tag.tagno, &type, NULL, &count))
-		    continue;
-/*@=boundswrite@*/
+		xx = headerGetEntry(hsa->h, spft->u.tag.tagno, (hTYP_t)&he->t, &he->p, &he->c);
+		xx = (xx == 0);	/* XXX invert headerGetEntry return. */
 	    } 
+	    if (xx) {
+		(void) rpmheClean(he);
+		continue;
+	    }
+	    (void) rpmheMark(he);
+	    he->avail = 1;
 
-	    if (type == RPM_BIN_TYPE || type == RPM_ASN1_TYPE || type == RPM_OPENPGP_TYPE)
-		count = 1;	/* XXX count abused as no. of bytes. */
+	    if (he->t == RPM_BIN_TYPE || he->t == RPM_ASN1_TYPE || he->t == RPM_OPENPGP_TYPE)
+		he->c = 1;	/* XXX count abused as no. of bytes. */
 
-	    if (numElements > 1 && count != numElements)
-	    switch (type) {
+	    if (numElements > 1 && he->c != numElements)
+	    switch (he->t) {
 	    default:
 		hsa->errmsg =
 			_("array iterator used with different sized arrays");
@@ -3480,8 +3482,8 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 	    case RPM_STRING_TYPE:
 		/*@switchbreak@*/ break;
 	    }
-	    if (count > numElements)
-		numElements = count;
+	    if (he->c > numElements)
+		numElements = he->c;
 	}
 
 	if (numElements == -1) {

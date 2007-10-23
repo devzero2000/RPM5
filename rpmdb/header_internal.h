@@ -172,9 +172,9 @@ extern "C" {
 /*@-exportlocal@*/
 /*@-incondefs@*/
 int headerGetRawEntry(Header h, int_32 tag,
-			/*@null@*/ /*@out@*/ hTYP_t type,
+			/*@null@*/ /*@out@*/ rpmTagType * type,
 			/*@null@*/ /*@out@*/ void * p, 
-			/*@null@*/ /*@out@*/ hCNT_t c)
+			/*@null@*/ /*@out@*/ rpmTagCount * c)
 	/*@modifies *type, *p, *c @*/
 	/*@requires maxSet(type) >= 0 /\ maxSet(p) >= 0 /\ maxSet(c) >= 0 @*/;
 /*@=incondefs@*/

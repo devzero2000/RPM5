@@ -1,4 +1,6 @@
 4.4.9 -> 4.5:
+    - jbj: eliminate warnings.
+    - jbj: keep the headerFoo() API invariant, eliminate warnings.
     - jbj: backport (and enable) tag data cache.
     - jbj: backport tag data typedef's, and add tag container.
     - jbj: convert rel to abs linkto dependency iff directory is known.

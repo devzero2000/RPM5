@@ -168,13 +168,15 @@ union rpmDataType_u {
 /** \ingroup header
  */
 typedef int_32 *	hTAG_t;
-typedef rpmTagType *	hTYP_t;
 #ifdef	NOTYET
+typedef rpmTagType *	hTYP_t;
 typedef rpmTagData *	hPTR_t;
-#else
-typedef const void *	hPTR_t;
-#endif
 typedef rpmTagCount *	hCNT_t;
+#else
+typedef int_32 *	hTYP_t;
+typedef const void *	hPTR_t;
+typedef int_32 *	hCNT_t;
+#endif
 
 /** \ingroup header
  */
