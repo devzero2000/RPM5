@@ -1,4 +1,6 @@
 4.4.9 -> 4.5:
+    - jbj: completed tag container backport.
+    - jbj: fix: RPM_I18NSTRING_TYPE was being returned as argv array with --xml.
     - jbj: eliminate warnings.
     - jbj: keep the headerFoo() API invariant, eliminate warnings.
     - jbj: backport (and enable) tag data cache.

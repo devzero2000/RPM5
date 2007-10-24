@@ -1506,6 +1506,9 @@ static int copyEntry(const indexEntry entry,
 		: entry->data);
 	}
 	break;
+    case RPM_I18NSTRING_TYPE:
+	count = 1;	/* XXX wrong for headerGetRawEntry() */
+	/*@fallthrough@*/
     case RPM_STRING_TYPE:
 	if (count == 1) {
 	    (*p).str = entry->data;
@@ -1513,7 +1516,6 @@ static int copyEntry(const indexEntry entry,
 	}
 	/*@fallthrough@*/
     case RPM_STRING_ARRAY_TYPE:
-    case RPM_I18NSTRING_TYPE:
     {	const char ** argv;
 	size_t nb = count * sizeof(*argv);
 	char * t;
@@ -3344,6 +3346,7 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
 
     if (he->p.ptr)
     switch (he->t) {
+    case RPM_I18NSTRING_TYPE:	/* XXX this should never be seen. */
     default:
 	val = xstrdup("(unknown type)");
 	need = strlen(val) + 1;
@@ -3368,7 +3371,6 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
 
 	break;
 
-    case RPM_I18NSTRING_TYPE:	/* XXX this should _NOT_ be needed. */
     case RPM_STRING_TYPE:
 	if (tag->fmt)
 	    val = tag->fmt(RPM_STRING_TYPE, he->p.ptr, buf, tag->pad,  -1);
