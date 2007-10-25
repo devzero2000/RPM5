@@ -891,7 +891,7 @@ tsmStage rpmtsSetGoal(rpmts ts, tsmStage goal)
  * @param ts		transaction set
  * @return		dbmode
  */
-int rpmtsDbmode(rpmts ts)
+int rpmtsDBMode(rpmts ts)
 	/*@*/;
 
 /**
@@ -900,7 +900,7 @@ int rpmtsDbmode(rpmts ts)
  * @param dbmode	new dbmode
  * @return		previous dbmode
  */
-int rpmtsSetDbmode(rpmts ts, int dbmode)
+int rpmtsSetDBMode(rpmts ts, int dbmode)
 	/*@modifies ts @*/;
 
 /**

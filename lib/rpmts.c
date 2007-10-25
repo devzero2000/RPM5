@@ -1215,12 +1215,12 @@ tsmStage rpmtsSetGoal(rpmts ts, tsmStage goal)
     return ogoal;
 }
 
-int rpmtsDbmode(rpmts ts)
+int rpmtsDBMode(rpmts ts)
 {
     return (ts != NULL ? ts->dbmode : 0);
 }
 
-int rpmtsSetDbmode(rpmts ts, int dbmode)
+int rpmtsSetDBMode(rpmts ts, int dbmode)
 {
     int odbmode = 0;
     if (ts != NULL) {
