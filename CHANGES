@@ -1,4 +1,8 @@
 4.4.9 -> 4.5:
+    - jbj: hmmm, RPM_BIN_TYPE not displayed correctly with --xml, todo++.
+    - jbj: eliminate unused end-of-array check.
+    - jbj: display RPM_I18NSTRING_TYPE as an array with --xml.
+    - jbj: update doxygen for recent changes.
     - jbj: pass rpmTagData internally by reference, not by value.
     - jbj: fix a memory leak while iterating query tags.
     - jbj: handle RPM_I18NSTRING_TYPE as argv internally.

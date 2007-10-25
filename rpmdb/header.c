@@ -375,10 +375,10 @@ unsigned int headerSizeof(/*@null@*/ Header h, enum hMagic magicp)
 /**
  * Return length of entry data.
  * @param type		entry data type
- * @param *p		entry data
+ * @param *p		tag container data
  * @param count		entry item count
  * @param onDisk	data is concatenated strings (with NUL's))?
- * @param *pend		pointer to end of data (or NULL)
+ * @param *pend		pointer to end of tag container data (or NULL)
  * @return		no. bytes in data, -1 on failure
  */
 static int dataLength(rpmTagType type, rpmTagData * p, rpmTagCount count,
@@ -409,7 +409,7 @@ static int dataLength(rpmTagType type, rpmTagData * p, rpmTagCount count,
 		length++;       /* count nul terminator too */
                while (*s++) {
 		    if (se && s > se)
-			return -1;
+			return -1;	/* XXX change errret, use size_t */
 		    length++;
 		}
 	    }
@@ -421,13 +421,12 @@ static int dataLength(rpmTagType type, rpmTagData * p, rpmTagCount count,
 	    }
 	}
 	break;
-
     default:
 	if (typeSizes[type] == -1)
-	    return -1;
+	    return -1;		/* XXX change errret, use size_t */
 	length = typeSizes[(type & 0xf)] * count;
 	if (length < 0 || (se && (s + length) > se))
-	    return -1;
+	    return -1;		/* XXX change errret, use size_t */
 	break;
     }
 
@@ -1840,8 +1839,8 @@ int headerGetRawEntry(Header h, int_32 tag, rpmTagType * type, void * p, rpmTagC
 /**
  */
 static void copyData(rpmTagType type, rpmTagData * dest, rpmTagData * src,
-		rpmTagCount cnt, int len)
-	/*@modifies *dstPtr @*/
+		rpmTagCount cnt, size_t len)
+	/*@modifies *dest @*/
 {
     switch (type) {
     case RPM_I18NSTRING_TYPE:
@@ -1858,7 +1857,6 @@ static void copyData(rpmTagType type, rpmTagData * dest, rpmTagData * src,
 	    } while (s[-1] && --len > 0);
 	}
     }	break;
-
     default:
 	memmove((*dest).ptr, (*src).ptr, len);
 	break;
@@ -1868,7 +1866,7 @@ static void copyData(rpmTagType type, rpmTagData * dest, rpmTagData * src,
 /**
  * Return (malloc'ed) copy of entry data.
  * @param type		entry data type
- * @param p		entry data
+ * @param *p		tag container data
  * @param c		entry item count
  * @retval *lenp	no. bytes in returned data
  * @return 		(malloc'ed) copy of entry data, NULL on error
@@ -2277,8 +2275,8 @@ static HE_t rpmheMark(/*@null@*/ HE_t he)
 static HE_t rpmheClean(/*@null@*/ HE_t he)
 	/*@modifies he @*/
 {
-    if (he && he->p.ptr) {
-	if (he->freeData)
+    if (he) {
+	if (he->freeData && he->p.ptr != NULL)
 	    he->p.ptr = _free(he->p.ptr);
 	memset(he, 0, sizeof(*he));
     }
@@ -2516,12 +2514,13 @@ static sprintfToken hsaNext(/*@returned@*/ headerSprintfArgs hsa)
 	    hsa->i++;
 	} else {
 	    HE_t he = rpmheClean(&tag->he);
-	    if (!headerNextIterator(hsa->hi, &he->tag, (hTAG_t)&he->t, (hPTR_t *)&he->p.ptr, &he->c)) {
-		fmt = NULL;
-	    } else {
-		he = rpmheMark(he);
-		he->avail = 1;
+	    if (!headerNextIterator(hsa->hi, &he->tag, (hTAG_t)&he->t, (hPTR_t *)&he->p.ptr, &he->c))
+	    {
+		tag->tagno = 0;
+		return NULL;
 	    }
+	    he = rpmheMark(he);
+	    he->avail = 1;
 	    tag->tagno = he->tag;
 	}
     }
@@ -3295,39 +3294,25 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
     unsigned int intVal;
     uint_64 llVal;
     rpmTagCount countBuf;
+    int xx;
 
     memset(buf, 0, sizeof(buf));
-    if (tag->ext) {
-	if (getExtension(hsa, tag->ext, he, hsa->ec + tag->extNum))
-	{
-	    he->t = RPM_STRING_TYPE;	
-	    he->c = 1;
-	    he->p.str = "(none)";
-	}
-    } else
     if (!he->avail) {
 	he->tag = tag->tagno;
-	if (!headerGetEntry(hsa->h, he->tag, (hTYP_t)&he->t, &he->p, &he->c)) {
-	    he->c = 1;
+	if (tag->ext) {
+	    xx = getExtension(hsa, tag->ext, he, hsa->ec + tag->extNum);
+	} else {
+	    xx = headerGetEntry(hsa->h, he->tag,(hTYP_t)&he->t, &he->p, &he->c);
+	    if (xx)	/* XXX 1 on success */
+		(void) rpmheMark(he);
+	    xx = (xx == 0);	/* XXX invert headerGetEntry return. */
+	}
+	if (!xx) {
+	    (void) rpmheClean(he);
 	    he->t = RPM_STRING_TYPE;	
 	    he->p.str = "(none)";
+	    he->c = 1;
 	}
-	/* XXX this test is unnecessary, array sizes are checked */
-	switch (he->t) {
-	default:
-	    if (element >= he->c) {
-		he = rpmheClean(he);
-		hsa->errmsg = _("(index out of range)");
-		return NULL;
-	    }
-	    break;
-	case RPM_OPENPGP_TYPE:
-	case RPM_ASN1_TYPE:
-	case RPM_BIN_TYPE:
-	case RPM_STRING_TYPE:
-	    break;
-	}
-	(void) rpmheMark(he);
     }
 
     if (tag->arrayCount) {
@@ -3336,7 +3321,6 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
 	he->t = RPM_INT32_TYPE;
 	he->p.i32p = &countBuf;
 	he->c = 1;
-	he->freeData = 0;
     }
     he->avail = 1;
 
@@ -3344,12 +3328,12 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
 
     if (he->p.ptr)
     switch (he->t) {
-    case RPM_I18NSTRING_TYPE:	/* XXX this should never be seen. */
     default:
 	val = xstrdup("(unknown type)");
 	need = strlen(val) + 1;
 	goto exit;
 	/*@notreached@*/ break;
+    case RPM_I18NSTRING_TYPE:
     case RPM_STRING_ARRAY_TYPE:
 	if (tag->fmt)
 	    val = tag->fmt(RPM_STRING_TYPE, he->p.argv[element], buf, tag->pad, (he->c > 1 ? element : -1));
@@ -3559,13 +3543,14 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 		    xx = getExtension(hsa, tag->ext, he, hsa->ec + tag->extNum);
 		else {
 		    xx = headerGetEntry(hsa->h, he->tag, (hTYP_t)&he->t, &he->p, &he->c);
+		    if (xx)	/* XXX 1 on success */
+			(void) rpmheMark(he);
 		    xx = (xx == 0);	/* XXX invert headerGetEntry return. */
 		}
 		if (xx) {
 		    (void) rpmheClean(he);
 		    continue;
 		}
-		(void) rpmheMark(he);
 		he->avail = 1;
 	    }
 
