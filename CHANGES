@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - jbj: don't modify strings exposed by method wrappers (#349091).
     - jbj: drill headerAddExtension everywhere.
     - jbj: header.c: insturment headerGet{Entry,Extension} switch, debug goop.
     - jbj: rpmchecksig.c: wrap headerAddEntry. headerAddOrAppend next ...

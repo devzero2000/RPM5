@@ -549,6 +549,7 @@ fprintf(stderr, "*** rpmts_Check(%p) ts %p cb %p\n", s, s->ts, cbInfo.cb);
 #else
 	    char * byName, * byVersion, * byRelease, *byArch;
 	    char * needsName, * needsOP, * needsVersion;
+	    char * a, * b;
 	    int needsFlags, sense;
 	    fnpyKey key;
 
@@ -558,7 +559,7 @@ fprintf(stderr, "*** rpmts_Check(%p) ts %p cb %p\n", s, s->ts, cbInfo.cb);
 	    if (rpmProblemGetType(p) == RPMPROB_BADRELOCATE)
 		continue;
 
-	    byName = rpmProblemGetPkgNEVR(p);
+	    a = byName = xstrdup(rpmProblemGetPkgNEVR(p));
 	    if ((byArch= strrchr(byName, '.')) != NULL)
 		*byArch++ = '\0';
 	    if ((byRelease = strrchr(byName, '-')) != NULL)
@@ -568,7 +569,7 @@ fprintf(stderr, "*** rpmts_Check(%p) ts %p cb %p\n", s, s->ts, cbInfo.cb);
 
 	    key = rpmProblemKey(p);
 
-	    needsName = rpmProblemGetAltNEVR(p);
+	    b = needsName = xstrdup(rpmProblemGetAltNEVR(p));
 	    if (needsName[1] == ' ') {
 		sense = (needsName[0] == 'C')
 			? RPMDEP_SENSE_CONFLICTS : RPMDEP_SENSE_REQUIRES;
@@ -591,6 +592,8 @@ fprintf(stderr, "*** rpmts_Check(%p) ts %p cb %p\n", s, s->ts, cbInfo.cb);
 			       needsName, needsVersion, needsFlags,
 			       (key != NULL ? key : Py_None),
 			       sense);
+	    a = _free(a);
+	    b = _free(b);
 #endif
 	    PyList_Append(list, (PyObject *) cf);
 	    Py_DECREF(cf);
