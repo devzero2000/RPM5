@@ -400,7 +400,7 @@ assert(p != NULL);
 
     /* Do lazy (readonly?) open of rpm database. */
     if (rpmtsGetRdb(ts) == NULL && rpmtsDBMode(ts) != -1) {
-	if ((ec = rpmtsOpenDB(ts, rpmtsDBMode(ts)) != 0)
+	if ((ec = rpmtsOpenDB(ts, rpmtsDBMode(ts)) != 0))
 	    goto exit;
     }
 
