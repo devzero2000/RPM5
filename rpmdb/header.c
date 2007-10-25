@@ -375,18 +375,18 @@ unsigned int headerSizeof(/*@null@*/ Header h, enum hMagic magicp)
 /**
  * Return length of entry data.
  * @param type		entry data type
- * @param p		entry data
+ * @param *p		entry data
  * @param count		entry item count
  * @param onDisk	data is concatenated strings (with NUL's))?
- * @param pend		pointer to end of data (or NULL)
+ * @param *pend		pointer to end of data (or NULL)
  * @return		no. bytes in data, -1 on failure
  */
-static int dataLength(rpmTagType type, rpmTagData p, rpmTagCount count, int onDisk,
-		/*@null@*/ rpmTagData pend)
+static int dataLength(rpmTagType type, rpmTagData * p, rpmTagCount count,
+		int onDisk, /*@null@*/ rpmTagData * pend)
 	/*@*/
 {
-    const unsigned char * s = p.ui8p;
-    const unsigned char * se = pend.ui8p;
+    const unsigned char * s = (*p).ui8p;
+    const unsigned char * se = (pend ? (*pend).ui8p : NULL);
     int length = 0;
 
     switch (type) {
@@ -400,12 +400,10 @@ static int dataLength(rpmTagType type, rpmTagData p, rpmTagCount count, int onDi
 	}
 	length++;	/* count nul terminator too. */
 	break;
-
-    case RPM_STRING_ARRAY_TYPE:
-    case RPM_I18NSTRING_TYPE:
 	/* These are like RPM_STRING_TYPE, except they're *always* an array */
 	/* Compute sum of length of all strings, including nul terminators */
-
+    case RPM_I18NSTRING_TYPE:
+    case RPM_STRING_ARRAY_TYPE:
 	if (onDisk) {
 	    while (count--) {
 		length++;       /* count nul terminator too */
@@ -416,7 +414,7 @@ static int dataLength(rpmTagType type, rpmTagData p, rpmTagCount count, int onDi
 		}
 	    }
 	} else {
-	    const char ** av = p.argv;
+	    const char ** av = (*p).argv;
 	    while (count--) {
 		/* add one for null termination */
 		length += strlen(*av++) + 1;
@@ -502,7 +500,7 @@ static int regionSwab(/*@null@*/ indexEntry entry, int il, int dl,
 
 	p.ptr = ie.data;
 	pend.ui8p = (unsigned char *) dataEnd;
-	ie.length = dataLength(ie.info.type, p, ie.info.count, 1, pend);
+	ie.length = dataLength(ie.info.type, &p, ie.info.count, 1, &pend);
 	if (ie.length < 0 || hdrchkData(ie.length))
 	    return -1;
 
@@ -1506,15 +1504,13 @@ static int copyEntry(const indexEntry entry,
 		: entry->data);
 	}
 	break;
-    case RPM_I18NSTRING_TYPE:
-	count = 1;	/* XXX wrong for headerGetRawEntry() */
-	/*@fallthrough@*/
     case RPM_STRING_TYPE:
 	if (count == 1) {
 	    (*p).str = entry->data;
 	    break;
 	}
 	/*@fallthrough@*/
+    case RPM_I18NSTRING_TYPE:
     case RPM_STRING_ARRAY_TYPE:
     {	const char ** argv;
 	size_t nb = count * sizeof(*argv);
@@ -1843,28 +1839,28 @@ int headerGetRawEntry(Header h, int_32 tag, rpmTagType * type, void * p, rpmTagC
 
 /**
  */
-static void copyData(rpmTagType type, rpmTagData dest, rpmTagData src,
-		rpmTagCount cnt, int dataLength)
+static void copyData(rpmTagType type, rpmTagData * dest, rpmTagData * src,
+		rpmTagCount cnt, int len)
 	/*@modifies *dstPtr @*/
 {
     switch (type) {
-    case RPM_STRING_ARRAY_TYPE:
     case RPM_I18NSTRING_TYPE:
-    {	const char ** av = src.argv;
-	char * t = (char *) dest.str;
+    case RPM_STRING_ARRAY_TYPE:
+    {	const char ** av = (*src).argv;
+	char * t = (char *) (*dest).str;
 
-	while (cnt-- > 0 && dataLength > 0) {
+	while (cnt-- > 0 && len > 0) {
 	    const char * s;
 	    if ((s = *av++) == NULL)
 		continue;
 	    do {
 		*t++ = *s++;
-	    } while (s[-1] && --dataLength > 0);
+	    } while (s[-1] && --len > 0);
 	}
     }	break;
 
     default:
-	memmove(dest.ptr, src.ptr, dataLength);
+	memmove((*dest).ptr, (*src).ptr, len);
 	break;
     }
 }
@@ -1879,17 +1875,17 @@ static void copyData(rpmTagType type, rpmTagData dest, rpmTagData src,
  */
 /*@null@*/
 static void *
-grabData(rpmTagType type, rpmTagData p, rpmTagCount c, /*@out@*/ int * lenp)
+grabData(rpmTagType type, rpmTagData * p, rpmTagCount c, /*@out@*/ int * lenp)
 	/*@modifies *lengthPtr @*/
 	/*@requires maxSet(lengthPtr) >= 0 @*/
 {
     rpmTagData data = { .ptr = NULL };
     int length;
 
-    length = dataLength(type, p, c, 0, (rpmTagData)NULL);
+    length = dataLength(type, p, c, 0, NULL);
     if (length > 0) {
 	data.ptr = xmalloc(length);
-	copyData(type, data, p, c, length);
+	copyData(type, &data, p, c, length);
     }
 
     if (lenp)
@@ -1930,7 +1926,7 @@ int headerAddEntry(Header h, int_32 tag, int_32 type, const void * p, int_32 c)
 	return 0;
 
     length = 0;
-    data.ptr = grabData(type, q, c, &length);
+    data.ptr = grabData(type, &q, c, &length);
     if (data.ptr == NULL || length <= 0)
 	return 0;
 
@@ -1990,7 +1986,7 @@ int headerAppendEntry(Header h, int_32 tag, int_32 type,
     if (!entry)
 	return 0;
 
-    length = dataLength(type, src, c, 0, (rpmTagData)NULL);
+    length = dataLength(type, &src, c, 0, NULL);
     if (length < 0)
 	return 0;
 
@@ -2003,7 +1999,7 @@ int headerAppendEntry(Header h, int_32 tag, int_32 type,
 	entry->data = xrealloc(entry->data, entry->length + length);
 
     dest.ptr = ((char *) entry->data) + entry->length;
-    copyData(type, dest, src, c, length);
+    copyData(type, &dest, &src, c, length);
 
     entry->length += length;
 
@@ -2211,7 +2207,7 @@ int headerModifyEntry(Header h, int_32 tag, int_32 type,
 	return 0;
 
     length = 0;
-    newData.ptr = grabData(type, q, c, &length);
+    newData.ptr = grabData(type, &q, c, &length);
     if (newData.ptr == NULL || length <= 0)
 	return 0;
 
@@ -2265,6 +2261,7 @@ static HE_t rpmheMark(/*@null@*/ HE_t he)
     default:
 	he->freeData = 0;
 	break;
+    case RPM_I18NSTRING_TYPE:
     case RPM_STRING_ARRAY_TYPE:
     case RPM_BIN_TYPE:
 	he->freeData = 1;
@@ -2280,7 +2277,7 @@ static HE_t rpmheMark(/*@null@*/ HE_t he)
 static HE_t rpmheClean(/*@null@*/ HE_t he)
 	/*@modifies he @*/
 {
-    if (he) {
+    if (he && he->p.ptr) {
 	if (he->freeData)
 	    he->p.ptr = _free(he->p.ptr);
 	memset(he, 0, sizeof(*he));
@@ -2519,10 +2516,12 @@ static sprintfToken hsaNext(/*@returned@*/ headerSprintfArgs hsa)
 	    hsa->i++;
 	} else {
 	    HE_t he = rpmheClean(&tag->he);
-	    if (!headerNextIterator(hsa->hi, &he->tag, (hTAG_t)&he->t, (hPTR_t *)&he->p.ptr, &he->c))
+	    if (!headerNextIterator(hsa->hi, &he->tag, (hTAG_t)&he->t, (hPTR_t *)&he->p.ptr, &he->c)) {
 		fmt = NULL;
-	    he = rpmheMark(he);
-	    he->avail = 1;
+	    } else {
+		he = rpmheMark(he);
+		he->avail = 1;
+	    }
 	    tag->tagno = he->tag;
 	}
     }
@@ -3295,7 +3294,6 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
     char buf[20];
     unsigned int intVal;
     uint_64 llVal;
-    const char ** strarray;
     rpmTagCount countBuf;
 
     memset(buf, 0, sizeof(buf));
@@ -3353,19 +3351,17 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
 	goto exit;
 	/*@notreached@*/ break;
     case RPM_STRING_ARRAY_TYPE:
-	strarray = he->p.argv;
-
 	if (tag->fmt)
-	    val = tag->fmt(RPM_STRING_TYPE, strarray[element], buf, tag->pad, (he->c > 1 ? element : -1));
+	    val = tag->fmt(RPM_STRING_TYPE, he->p.argv[element], buf, tag->pad, (he->c > 1 ? element : -1));
 
 	if (val) {
 	    need = strlen(val);
 	} else {
-	    need = strlen(strarray[element]) + tag->pad + 20;
+	    need = strlen(he->p.argv[element]) + tag->pad + 20;
 	    val = xmalloc(need+1);
 	    strcat(buf, "s");
 	    /*@-formatconst@*/
-	    sprintf(val, buf, strarray[element]);
+	    sprintf(val, buf, he->p.argv[element]);
 	    /*@=formatconst@*/
 	}
 
@@ -3557,19 +3553,21 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 	    if (spft->type != PTOK_TAG || tag->arrayCount || tag->justOne)
 		continue;
 	    he = &tag->he;
-	    if (tag->ext) {
-		xx = getExtension(hsa, tag->ext, he, hsa->ec + tag->extNum);
-	    } else {
+	    if (!he->avail) {
 		he->tag = tag->tagno;
-		xx = headerGetEntry(hsa->h, he->tag, (hTYP_t)&he->t, &he->p, &he->c);
-		xx = (xx == 0);	/* XXX invert headerGetEntry return. */
-	    } 
-	    if (xx) {
-		(void) rpmheClean(he);
-		continue;
+		if (tag->ext)
+		    xx = getExtension(hsa, tag->ext, he, hsa->ec + tag->extNum);
+		else {
+		    xx = headerGetEntry(hsa->h, he->tag, (hTYP_t)&he->t, &he->p, &he->c);
+		    xx = (xx == 0);	/* XXX invert headerGetEntry return. */
+		}
+		if (xx) {
+		    (void) rpmheClean(he);
+		    continue;
+		}
+		(void) rpmheMark(he);
+		he->avail = 1;
 	    }
-	    (void) rpmheMark(he);
-	    he->avail = 1;
 
 	    if (he->t == RPM_BIN_TYPE || he->t == RPM_ASN1_TYPE || he->t == RPM_OPENPGP_TYPE)
 		he->c = 1;	/* XXX count abused as no. of bytes. */
