@@ -263,10 +263,7 @@ typedef /*only@*/ char * (*headerTagFormatFunction) (HE_t he)
  * This is allowed to fail, which indicates the tag doesn't exist.
  *
  * @param h		header
- * @retval *type	tag type
- * @retval *data	tag value
- * @retval *count	no. of data items
- * @retval *freedata	data-was-malloc'ed indicator
+ * @param he		tag container
  * @return		0 on success
  */
 typedef int (*headerTagTagFunction) (Header h, HE_t he)

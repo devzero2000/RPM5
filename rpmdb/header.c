@@ -1874,7 +1874,7 @@ static void copyData(rpmTagType type, rpmTagData * dest, rpmTagData * src,
 /*@null@*/
 static void *
 grabData(rpmTagType type, rpmTagData * p, rpmTagCount c, /*@out@*/ int * lenp)
-	/*@modifies *lengthPtr @*/
+	/*@modifies *lenp @*/
 	/*@requires maxSet(lengthPtr) >= 0 @*/
 {
     rpmTagData data = { .ptr = NULL };
