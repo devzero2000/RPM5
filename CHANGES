@@ -1,4 +1,5 @@
 4.4.9 -> 4.5:
+    - jbj: insturment headerNextIterator() statistics (noop in rpm-4.5).
     - jbj: enlarge scope of he->avail test to include header extension cache.
     - jbj: backport header tag/format extensions, reverting element arg hackery.
     - jbj: eliminate unused end-of-array check.

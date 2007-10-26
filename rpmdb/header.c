@@ -2391,6 +2391,7 @@ int headerNextIterator(HeaderIterator hi,
 	/*@requires maxSet(tag) >= 0 /\ maxSet(type) >= 0
 		/\ maxSet(p) >= 0 /\ maxSet(c) >= 0 @*/
 {
+    void * sw;
     Header h = hi->h;
     int slot = hi->next_index;
     indexEntry entry = NULL;
@@ -2409,10 +2410,15 @@ int headerNextIterator(HeaderIterator hi,
     hi->next_index++;
     /*@=noeffect@*/
 
+    if ((sw = headerGetStats(h, 19)) != NULL)	/* RPMTS_OP_HDRGET */
+	(void) rpmswEnter(sw, 0);
+
     if (tag)
 	*tag = entry->info.tag;
 
     rc = copyEntry(entry, (rpmTagType *)type, (rpmTagData *)p, (rpmTagCount *)c, 0);
+
+    if (sw != NULL)	(void) rpmswExit(sw, 0);
 
     /* XXX 1 on success */
     return ((rc == 1) ? 1 : 0);
