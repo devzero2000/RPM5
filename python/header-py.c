@@ -742,7 +742,12 @@ static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
 
     /* Retrieve data from extension or header. */
     if (ext) {
-        ext->u.tagFunction(s->h, &type, (const void **) &data, &count, &freeData);
+	HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+        ext->u.tagFunction(s->h, he);
+	type = he->t;
+	data = he->p.ptr;
+	count = he->c;
+	freeData = he->freeData;
     } else {
         if (tag == -1) {
             PyErr_SetString(PyExc_KeyError, "unknown header tag");

@@ -2678,7 +2678,7 @@ bingo:
 	if (ext->name == NULL || ext->type != HEADER_EXT_FORMAT)
 	    continue;
 	if (!strcmp(ext->name, stag->type)) {
-	    stag->fmt = ext->u.formatFunction;
+	    stag->fmt = ext->u.fmtFunction;
 	    break;
 	}
     }
@@ -2686,107 +2686,140 @@ bingo:
 }
 
 /**
- * Return octal formatted data.
- * @param type		tag type
- * @param data		tag value
- * @param formatPrefix	sprintf format string
- * @param padding	no. additional bytes needed by format string
- * @param element	(unused)
+ * Convert tag data representation.
+ * @param he		tag container
+ * @param fmt		output radix (NULL or "" assumes %d)
  * @return		formatted string
  */
-static char * octalFormat(rpmTagType type, hPTR_t data, 
-		char * formatPrefix, int padding, /*@unused@*/int element)
-	/*@modifies formatPrefix @*/
+static char * intFormat(HE_t he, const char *fmt)
 {
-    char * val;
+    int ix = (he->ix > 0 ? he->ix : 0);
+    int_64 ival = 0;
+    const char * istr = NULL;
+    char * b;
+    size_t nb = 0;
 
-    if (type == RPM_INT32_TYPE) {
-	val = xmalloc(20 + padding);
-	strcat(formatPrefix, "o");
-	/*@-formatconst@*/
-	sprintf(val, formatPrefix, *((int_32 *) data));
-	/*@=formatconst@*/
-    } else if (type == RPM_INT64_TYPE) {
-	val = xmalloc(40 + padding);
-	strcat(formatPrefix, "llo");
-	/*@-formatconst@*/
-	sprintf(val, formatPrefix, *((int_64 *) data));
-	/*@=formatconst@*/
+    if (fmt == NULL || *fmt == '\0')
+	fmt = "d";
+
+    switch (he->t) {
+    default:
+	return xstrdup(_("(not a number)"));
+	break;
+    case RPM_CHAR_TYPE:	
+    case RPM_INT8_TYPE:
+	ival = he->p.i8p[ix];
+	break;
+    case RPM_INT16_TYPE:
+	ival = he->p.ui16p[ix];	/* XXX note unsigned. */
+	break;
+    case RPM_INT32_TYPE:
+	ival = he->p.i32p[ix];
+	break;
+    case RPM_INT64_TYPE:
+	ival = he->p.i64p[ix];
+	break;
+    case RPM_STRING_TYPE:
+	istr = he->p.str;
+	break;
+    case RPM_STRING_ARRAY_TYPE:
+	istr = he->p.argv[ix];
+	break;
+    case RPM_OPENPGP_TYPE:	/* XXX W2DO? */
+    case RPM_ASN1_TYPE:		/* XXX W2DO? */
+    case RPM_BIN_TYPE:
+	{   static char hex[] = "0123456789abcdef";
+	    const char * s = he->p.str;
+	    int c = he->c;
+	    char * t;
+
+	    nb = 2 * c + 1;
+	    t = b = alloca(nb+1);
+	    while (c-- > 0) {
+		unsigned int i;
+		i = *s++;
+		*t++ = hex[ (i >> 4) & 0xf ];
+		*t++ = hex[ (i     ) & 0xf ];
+	    }
+	    *t = '\0';
+	}   break;
+    }
+
+    if (istr) {		/* string */
+	b = (char *)istr;	/* NOCAST */
     } else
-	val = xstrdup(_("(not a number)"));
+    if (nb == 0) {	/* number */
+	char myfmt[] = "%llX";
+	myfmt[3] = *fmt;
+	nb = 64;
+	b = alloca(nb);
+	snprintf(b, nb, myfmt, ival);
+	b[nb-1] = '\0';
+    }
 
-    return val;
+    return xstrdup(b);
+}
+
+/**
+ * Return octal formatted data.
+ * @param he		tag container
+ * @return		formatted string
+ */
+static char * octFormat(HE_t he)
+	/*@*/
+{
+    return intFormat(he, "o");
 }
 
 /**
  * Return hex formatted data.
- * @param type		tag type
- * @param data		tag value
- * @param formatPrefix	sprintf format string
- * @param padding	no. additional bytes needed by format string
- * @param element	(unused)
+ * @param he		tag container
  * @return		formatted string
  */
-static char * hexFormat(rpmTagType type, hPTR_t data, 
-		char * formatPrefix, int padding, /*@unused@*/int element)
-	/*@modifies formatPrefix @*/
+static char * hexFormat(HE_t he)
+	/*@*/
 {
-    char * val;
+    return intFormat(he, "x");
+}
 
-    if (type == RPM_INT32_TYPE) {
-	val = xmalloc(20 + padding);
-	strcat(formatPrefix, "x");
-	/*@-formatconst@*/
-	sprintf(val, formatPrefix, *((int_32 *) data));
-	/*@=formatconst@*/
-    } else if (type == RPM_INT64_TYPE) {
-	val = xmalloc(40 + padding);
-	strcat(formatPrefix, "llx");
-	/*@-formatconst@*/
-	sprintf(val, formatPrefix, *((int_64 *) data));
-	/*@=formatconst@*/
-    } else
-	val = xstrdup(_("(not a number)"));
-
-    return val;
+/**
+ * Return decimal formatted data.
+ * @param he		tag container
+ * @return		formatted string
+ */
+static char * decFormat(HE_t he)
+	/*@*/
+{
+    return intFormat(he, "d");
 }
 
 /**
  * Return strftime formatted data.
- * @param type		tag type
- * @param data		tag value
- * @param formatPrefix	sprintf format string
- * @param padding	no. additional bytes needed by format string
- * @param element	(unused)
+ * @param he		tag container
  * @param strftimeFormat strftime(3) format
  * @return		formatted string
  */
-static char * realDateFormat(rpmTagType type, hPTR_t data, 
-		char * formatPrefix, int padding, /*@unused@*/int element,
-		const char * strftimeFormat)
-	/*@modifies formatPrefix @*/
+static char * realDateFormat(HE_t he, const char * strftimeFormat)
+	/*@*/
 {
+    rpmTagData data = { .ptr = he->p.ptr };
     char * val;
 
-    if (type != RPM_INT32_TYPE) {
+    if (he->t != RPM_INT64_TYPE) {
 	val = xstrdup(_("(not a number)"));
     } else {
 	struct tm * tstruct;
 	char buf[50];
 
-	val = xmalloc(50 + padding);
-	strcat(formatPrefix, "s");
-
-	/* this is important if sizeof(int_32) ! sizeof(time_t) */
-	{   time_t dateint = *((int_32 *) data);
+	/* this is important if sizeof(int_64) ! sizeof(time_t) */
+	{   time_t dateint = data.ui64p[0];
 	    tstruct = localtime(&dateint);
 	}
 	buf[0] = '\0';
 	if (tstruct)
 	    (void) strftime(buf, sizeof(buf) - 1, strftimeFormat, tstruct);
-	/*@-formatconst@*/
-	sprintf(val, formatPrefix, buf);
-	/*@=formatconst@*/
+	buf[sizeof(buf) - 1] = '\0';
+	val = xstrdup(buf);
     }
 
     return val;
@@ -2794,99 +2827,94 @@ static char * realDateFormat(rpmTagType type, hPTR_t data,
 
 /**
  * Return date formatted data.
- * @param type		tag type
- * @param data		tag value
- * @param formatPrefix	sprintf format string
- * @param padding	no. additional bytes needed by format string
- * @param element	(unused)
+ * @param he		tag container
  * @return		formatted string
  */
-static char * dateFormat(rpmTagType type, hPTR_t data, 
-		         char * formatPrefix, int padding, int element)
-	/*@modifies formatPrefix @*/
+static char * dateFormat(HE_t he)
+	/*@*/
 {
-    return realDateFormat(type, data, formatPrefix, padding, element,
-			_("%c"));
+    return realDateFormat(he, _("%c"));
 }
 
 /**
  * Return day formatted data.
- * @param type		tag type
- * @param data		tag value
- * @param formatPrefix	sprintf format string
- * @param padding	no. additional bytes needed by format string
- * @param element	(unused)
+ * @param he		tag container
  * @return		formatted string
  */
-static char * dayFormat(rpmTagType type, hPTR_t data, 
-		         char * formatPrefix, int padding, int element)
-	/*@modifies formatPrefix @*/
+static char * dayFormat(HE_t he)
+	/*@*/
 {
-    return realDateFormat(type, data, formatPrefix, padding, element, 
-			  _("%a %b %d %Y"));
+    return realDateFormat(he, _("%a %b %d %Y"));
 }
 
 /**
  * Return shell escape formatted data.
- * @param type		tag type
- * @param data		tag value
- * @param formatPrefix	sprintf format string
- * @param padding	no. additional bytes needed by format string
- * @param element	(unused)
+ * @param he		tag container
  * @return		formatted string
  */
-static char * shescapeFormat(rpmTagType type, hPTR_t data, 
-		char * formatPrefix, int padding, /*@unused@*/int element)
-	/*@modifies formatPrefix @*/
+static char * shescapeFormat(HE_t he)
+	/*@*/
 {
-    char * result, * dst, * src, * buf;
+    rpmTagData data = { .ptr = he->p.ptr };
+    char * val;
+    size_t nb;
 
-    if (type == RPM_INT32_TYPE) {
-	result = xmalloc(padding + 20);
-	strcat(formatPrefix, "d");
-	/*@-formatconst@*/
-	sprintf(result, formatPrefix, *((int_32 *) data));
-	/*@=formatconst@*/
-    } else if (type == RPM_INT64_TYPE) {
-	result = xmalloc(padding + 40);
-	strcat(formatPrefix, "lld");
-	/*@-formatconst@*/
-	sprintf(result, formatPrefix, *((int_64 *) data));
-	/*@=formatconst@*/
-    } else {
-	buf = alloca(strlen(data) + padding + 2);
-	strcat(formatPrefix, "s");
-	/*@-formatconst@*/
-	sprintf(buf, formatPrefix, data);
-	/*@=formatconst@*/
+    /* XXX one of these integer types is unnecessary. */
+    if (he->t == RPM_INT32_TYPE) {
+	nb = 20;
+	val = xmalloc(nb);
+	snprintf(val, nb, "%d", data.i32p[0]);
+	val[nb-1] = '\0';
+    } else if (he->t == RPM_INT64_TYPE) {
+	nb = 40;
+	val = xmalloc(40);
+	snprintf(val, nb, "%lld", data.i64p[0]);
+	val[nb-1] = '\0';
+    } else if (he->t == RPM_STRING_TYPE) {
+	const char * s = data.str;
+	char * t;
+	int c;
 
-	result = dst = xmalloc(strlen(buf) * 4 + 3);
-	*dst++ = '\'';
-	for (src = buf; *src != '\0'; src++) {
-	    if (*src == '\'') {
-		*dst++ = '\'';
-		*dst++ = '\\';
-		*dst++ = '\'';
-		*dst++ = '\'';
-	    } else {
-		*dst++ = *src;
+	nb = strlen(data.str) + 1;
+	/* XXX count no. of escapes instead. */
+	t = xmalloc(4 * nb + 3);
+	*t++ = '\'';
+	while ((c = *s++) != 0) {
+	    if (c == '\'') {
+		*t++ = '\'';
+		*t++ = '\\';
+		*t++ = '\'';
 	    }
+	    *t++ = c;
 	}
-	*dst++ = '\'';
-	*dst = '\0';
+	*t++ = '\'';
+	*t = '\0';
+	nb = strlen(t) + 1;
+	val = xrealloc(t, nb);
+    } else
+	val = xstrdup(_("invalid type"));
 
-    }
-
-    return result;
+    return val;
 }
 
 /*@-type@*/ /* FIX: cast? */
 const struct headerSprintfExtension_s headerDefaultFormats[] = {
-    { HEADER_EXT_FORMAT, "octal", { octalFormat } },
-    { HEADER_EXT_FORMAT, "hex", { hexFormat } },
-    { HEADER_EXT_FORMAT, "date", { dateFormat } },
-    { HEADER_EXT_FORMAT, "day", { dayFormat } },
-    { HEADER_EXT_FORMAT, "shescape", { shescapeFormat } },
+    { HEADER_EXT_FORMAT, "octal",
+	{ .fmtFunction = octFormat } },
+    { HEADER_EXT_FORMAT, "oct",
+	{ .fmtFunction = octFormat } },
+    { HEADER_EXT_FORMAT, "hex",
+	{ .fmtFunction = hexFormat } },
+    { HEADER_EXT_FORMAT, "decimal",
+	{ .fmtFunction = decFormat } },
+    { HEADER_EXT_FORMAT, "dec",
+	{ .fmtFunction = decFormat } },
+    { HEADER_EXT_FORMAT, "date",
+	{ .fmtFunction = dateFormat } },
+    { HEADER_EXT_FORMAT, "day",
+	{ .fmtFunction = dayFormat } },
+    { HEADER_EXT_FORMAT, "shescape",
+	{ .fmtFunction = shescapeFormat } },
     { HEADER_EXT_LAST, NULL, { NULL } }
 };
 /*@=type@*/
@@ -3258,24 +3286,21 @@ static int getExtension(headerSprintfArgs hsa, headerTagTagFunction fn,
 		HE_t he, HE_t ec)
 	/*@modifies he, ec @*/
 {
+    int rc = 0;
     if (!ec->avail) {
-	int freeData = 0;
-	if (fn(hsa->h, (int_32 *)&ec->t, (void *)&ec->p.ptr, &ec->c, &freeData))
-	    return 1;
-	ec->freeData = freeData;
-	ec->avail = 1;
-    }
-
-    he->t = ec->t;
-    he->p.ptr = ec->p.ptr;
-    he->c = ec->c;
+	he = rpmheClean(he);
+	rc = fn(hsa->h, he);
+	*ec = *he;	/* structure copy. */
+	if (!rc)
+	    ec->avail = 1;
+    } else
+	*he = *ec;	/* structure copy. */
     he->freeData = 0;
-
-    return 0;
+    return rc;
 }
 
 /**
- * Format a single item value.
+ * Format a single item's value.
  * @param hsa		headerSprintf args
  * @param tag		tag
  * @param element	element index
@@ -3290,29 +3315,36 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
     char * val = NULL;
     size_t need = 0;
     char * t, * te;
-    char buf[20];
-    unsigned int intVal;
-    uint_64 llVal;
+    int_64 ival = 0;
     rpmTagCount countBuf;
     int xx;
 
-    memset(buf, 0, sizeof(buf));
     if (!he->avail) {
-	he->tag = tag->tagno;
 	if (tag->ext) {
 	    xx = getExtension(hsa, tag->ext, he, hsa->ec + tag->extNum);
 	} else {
-	    xx = headerGetEntry(hsa->h, he->tag,(hTYP_t)&he->t, &he->p, &he->c);
-	    if (xx)	/* XXX 1 on success */
-		(void) rpmheMark(he);
+	    he->tag = tag->tagno;
+#ifdef	NOTYET
+	    if (_usehge) {
+		xx = headerGetExtension(hsa->h, he->tag, &he->t, &he->p, &he->c);
+		if (xx)		/* XXX 1 on success */
+		    he->freeData = 1;
+	    } else
+#endif
+	    {
+		xx = headerGetEntry(hsa->h, he->tag, (hTYP_t)&he->t, &he->p, &he->c);
+		if (xx)		/* XXX 1 on success */
+		    he = rpmheMark(he);
+	    }
 	    xx = (xx == 0);	/* XXX invert headerGetEntry return. */
 	}
-	if (!xx) {
+	if (xx) {
 	    (void) rpmheClean(he);
 	    he->t = RPM_STRING_TYPE;	
 	    he->p.str = "(none)";
 	    he->c = 1;
 	}
+	he->avail = 1;
     }
 
     if (tag->arrayCount) {
@@ -3321,10 +3353,8 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
 	he->t = RPM_INT32_TYPE;
 	he->p.i32p = &countBuf;
 	he->c = 1;
+	he->freeData = 0;
     }
-    he->avail = 1;
-
-    (void) stpcpy( stpcpy(buf, "%"), tag->format);
 
     if (he->p.ptr)
     switch (he->t) {
@@ -3335,123 +3365,84 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
 	/*@notreached@*/ break;
     case RPM_I18NSTRING_TYPE:
     case RPM_STRING_ARRAY_TYPE:
-	if (tag->fmt)
-	    val = tag->fmt(RPM_STRING_TYPE, he->p.argv[element], buf, tag->pad, (he->c > 1 ? element : -1));
-
-	if (val) {
-	    need = strlen(val);
-	} else {
-	    need = strlen(he->p.argv[element]) + tag->pad + 20;
-	    val = xmalloc(need+1);
-	    strcat(buf, "s");
-	    /*@-formatconst@*/
-	    sprintf(val, buf, he->p.argv[element]);
-	    /*@=formatconst@*/
-	}
-
+	vhe->t = RPM_STRING_TYPE;
+	vhe->p.str = he->p.argv[element];
+	vhe->c = he->c;
+	/* XXX TODO: force array representation? */
+	vhe->ix = (he->c > 1 ? 0 : -1);
 	break;
-
     case RPM_STRING_TYPE:
-	if (tag->fmt)
-	    val = tag->fmt(RPM_STRING_TYPE, he->p.ptr, buf, tag->pad,  -1);
-
-	if (val) {
-	    need = strlen(val);
-	} else {
-	    need = strlen(he->p.str) + tag->pad + 20;
-	    val = xmalloc(need+1);
-	    strcat(buf, "s");
-	    /*@-formatconst@*/
-	    sprintf(val, buf, he->p.str);
-	    /*@=formatconst@*/
-	}
+	vhe->p.str = he->p.str;
+	vhe->t = RPM_STRING_TYPE;
+	vhe->c = he->c;
+	vhe->ix = -1;
 	break;
-
-    case RPM_INT64_TYPE:
-	llVal = he->p.i64p[element];
-	if (tag->fmt)
-	    val = tag->fmt(RPM_INT64_TYPE, &llVal, buf, tag->pad, (he->c > 1 ? element : -1));
-	if (val) {
-	    need = strlen(val);
-	} else {
-	    need = 10 + tag->pad + 40;
-	    val = xmalloc(need+1);
-	    strcat(buf, "lld");
-	    /*@-formatconst@*/
-	    sprintf(val, buf, llVal);
-	    /*@=formatconst@*/
-	}
-	break;
-
     case RPM_CHAR_TYPE:
     case RPM_INT8_TYPE:
     case RPM_INT16_TYPE:
     case RPM_INT32_TYPE:
+    case RPM_INT64_TYPE:
 	switch (he->t) {
+	default:
+assert(0);	/* XXX keep gcc quiet. */
+	    break;
 	case RPM_CHAR_TYPE:	
 	case RPM_INT8_TYPE:
-	    intVal = he->p.i8p[element];
-	    /*@innerbreak@*/ break;
+	    ival = he->p.i8p[element];
+	    break;
 	case RPM_INT16_TYPE:
-	    intVal = he->p.ui16p[element];
-	    /*@innerbreak@*/ break;
-	default:		/* keep -Wall quiet */
+	    ival = he->p.ui16p[element];	/* XXX note unsigned. */
+	    break;
 	case RPM_INT32_TYPE:
-	    intVal = he->p.i32p[element];
-	    /*@innerbreak@*/ break;
+	    ival = he->p.i32p[element];
+	    break;
+	case RPM_INT64_TYPE:
+	    ival = he->p.i64p[element];
+	    break;
 	}
-
-	if (tag->fmt)
-	    val = tag->fmt(RPM_INT32_TYPE, &intVal, buf, tag->pad, (he->c > 1 ? element : -1));
-
-	if (val) {
-	    need = strlen(val);
-	} else {
-	    need = 10 + tag->pad + 20;
-	    val = xmalloc(need+1);
-	    strcat(buf, "d");
-	    /*@-formatconst@*/
-	    sprintf(val, buf, intVal);
-	    /*@=formatconst@*/
-	}
+	vhe->t = RPM_INT64_TYPE;
+	vhe->p.i64p = &ival;
+	vhe->c = he->c;
+	/* XXX TODO: force array representation? */
+	vhe->ix = (he->c > 1 ? 0 : -1);
 	break;
 
     case RPM_OPENPGP_TYPE:	/* XXX W2DO? */
     case RPM_ASN1_TYPE:		/* XXX W2DO? */
     case RPM_BIN_TYPE:
-	/* XXX HACK ALERT: element field abused as no. bytes of binary data. */
-	if (tag->fmt)
-	    val = tag->fmt(RPM_BIN_TYPE, he->p.ptr, buf, tag->pad, he->c);
-
-	if (val) {
-	    need = strlen(val);
-	} else {
-#ifdef	NOTYET
-	    val = memcpy(xmalloc(he->c), he->p.ptr, he->c);
-#else
-	    /* XXX format string not used */
-	    static char hex[] = "0123456789abcdef";
-	    const char * s = he->p.str;
-
-	    need = 2*he->c + tag->pad;
-	    val = t = xmalloc(need+1);
-	    while (he->c-- > 0) {
-		unsigned int i;
-		i = *s++;
-		*t++ = hex[ (i >> 4) & 0xf ];
-		*t++ = hex[ (i     ) & 0xf ];
-	    }
-	    *t = '\0';
-#endif
-	}
+	vhe->t = RPM_BIN_TYPE;
+	vhe->p.ptr = he->p.ptr;
+	vhe->c = he->c;
+	vhe->ix = -1;
 	break;
     }
+
+    if (tag->fmt)
+	val = tag->fmt(vhe);
+    else
+	val = intFormat(vhe, NULL);
+assert(val);
+    if (val)
+	need = strlen(val) + 1;
 
 exit:
     if (!_tagcache)
 	he = rpmheClean(he);
 
     if (val && need > 0) {
+	if (tag->format && *tag->format && tag->pad) {
+	    size_t nb;
+	    nb = strlen(tag->format) + sizeof("%s");
+	    t = alloca(nb);
+	    (void) stpcpy( stpcpy( stpcpy(t, "%"), tag->format), "s");
+	    nb = tag->pad + strlen(val) + 1;
+	    te = xmalloc(nb);
+	    (void) snprintf(te, nb, t, val);
+	    te[nb-1] = '\0';
+	    val = _free(val);
+	    val = te;
+	    need += tag->pad;
+	}
 	t = hsaReserve(hsa, need);
 	te = stpcpy(t, val);
 	hsa->vallen += (te - t);
@@ -3542,10 +3533,19 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 		if (tag->ext)
 		    xx = getExtension(hsa, tag->ext, he, hsa->ec + tag->extNum);
 		else {
-		    xx = headerGetEntry(hsa->h, he->tag, (hTYP_t)&he->t, &he->p, &he->c);
-		    if (xx)	/* XXX 1 on success */
-			(void) rpmheMark(he);
-		    xx = (xx == 0);	/* XXX invert headerGetEntry return. */
+#ifdef	NOTYET
+		    if (_usehge) {
+			xx = headerGetExtension(hsa->h, he->tag, &he->t, &he->p, &he->c);
+			if (xx)
+			    he->freeData = 1;
+		    } else
+#endif
+		    {
+			xx = headerGetEntry(hsa->h, he->tag, (hTYP_t)&he->t, &he->p, &he->c);
+			if (xx)	/* XXX 1 on success */
+			    rpmheMark(he);
+		    }
+		    xx = (xx == 0);     /* XXX invert headerGetEntry return. */
 		}
 		if (xx) {
 		    (void) rpmheClean(he);
@@ -3554,25 +3554,30 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 		he->avail = 1;
 	    }
 
-	    if (he->t == RPM_BIN_TYPE || he->t == RPM_ASN1_TYPE || he->t == RPM_OPENPGP_TYPE)
-		he->c = 1;	/* XXX count abused as no. of bytes. */
-
 	    /* Check iteration arrays are same dimension (or scalar). */
-	    if (numElements > 1 && he->c != numElements)
 	    switch (he->t) {
 	    default:
+		if (numElements == -1) {
+		    numElements = he->c;
+		    /*@switchbreak@*/ break;
+		}
+		if (he->c == numElements)
+		    /*@switchbreak@*/ break;
 		hsa->errmsg =
 			_("array iterator used with different sized arrays");
+		he = rpmheClean(he);
 		return NULL;
 		/*@notreached@*/ /*@switchbreak@*/ break;
 	    case RPM_OPENPGP_TYPE:
 	    case RPM_ASN1_TYPE:
 	    case RPM_BIN_TYPE:
 	    case RPM_STRING_TYPE:
+		if (numElements == -1)
+		    numElements = 1;
 		/*@switchbreak@*/ break;
 	    }
-	    if (he->c > numElements)
-		numElements = he->c;
+	    if (!_tagcache)
+		he = rpmheClean(he);
 	}
 	spft = token->u.array.format;
 

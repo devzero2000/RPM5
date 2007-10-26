@@ -252,20 +252,11 @@ enum headerSprintfExtensionType {
 
 /** \ingroup header
  * HEADER_EXT_TAG format function prototype.
- * This will only ever be passed RPM_INT32_TYPE or RPM_STRING_TYPE to
- * help keep things simple.
- *
- * @param type		tag type
- * @param data		tag value
- * @param formatPrefix
- * @param padding
- * @param element	RPM_BIN_TYPE: no. bytes of data
+ * @param he		tag container
  * @return		formatted string
  */
-typedef /*only@*/ char * (*headerTagFormatFunction)(int_32 type,
-				const void * data, char * formatPrefix,
-				int padding, int element)
-	/*@requires maxSet(data) >= 0 @*/;
+typedef /*only@*/ char * (*headerTagFormatFunction) (HE_t he)
+	/*@modifies he @*/;
 
 /** \ingroup header
  * HEADER_EXT_FORMAT format function prototype.
@@ -278,13 +269,8 @@ typedef /*only@*/ char * (*headerTagFormatFunction)(int_32 type,
  * @retval *freedata	data-was-malloc'ed indicator
  * @return		0 on success
  */
-typedef int (*headerTagTagFunction) (Header h,
-		/*@null@*/ /*@out@*/ hTYP_t type,
-		/*@null@*/ /*@out@*/ hPTR_t * data,
-		/*@null@*/ /*@out@*/ hCNT_t count,
-		/*@null@*/ /*@out@*/ int * freeData)
-	/*@requires maxSet(type) >= 0 /\ maxSet(data) >= 0
-		/\ maxSet(count) >= 0 /\ maxSet(freeData) >= 0 @*/;
+typedef int (*headerTagTagFunction) (Header h, HE_t he)
+	/*@modifies he @*/;
 
 /** \ingroup header
  * Define header tag output formats.
@@ -298,8 +284,8 @@ struct headerSprintfExtension_s {
     union {
 /*@observer@*/ /*@null@*/
 	void * generic;				/*!< Private extension. */
-	headerTagFormatFunction formatFunction; /*!< HEADER_EXT_TAG extension. */
-	headerTagTagFunction tagFunction;	/*!< HEADER_EXT_FORMAT extension. */
+	headerTagFormatFunction fmtFunction; /*!< HEADER_EXT_TAG extension. */
+	headerTagTagFunction tagFunction;   /*!< HEADER_EXT_FORMAT extension. */
 	struct headerSprintfExtension_s * more;	/*!< Chained table extension. */
     } u;
 };

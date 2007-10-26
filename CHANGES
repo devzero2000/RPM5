@@ -1,5 +1,6 @@
 4.4.9 -> 4.5:
-    - jbj: hmmm, RPM_BIN_TYPE not displayed correctly with --xml, todo++.
+    - jbj: enlarge scope of he->avail test to include header extension cache.
+    - jbj: backport header tag/format extensions, reverting element arg hackery.
     - jbj: eliminate unused end-of-array check.
     - jbj: display RPM_I18NSTRING_TYPE as an array with --xml.
     - jbj: update doxygen for recent changes.
