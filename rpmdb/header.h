@@ -254,7 +254,7 @@ enum headerSprintfExtensionType {
  * @param he		tag container
  * @return		formatted string
  */
-typedef /*only@*/ char * (*headerTagFormatFunction)(HE_t he)
+typedef /*only@*/ char * (*headerTagFormatFunction) (HE_t he)
 	/*@modifies he @*/;
 
 /** \ingroup header
@@ -266,7 +266,7 @@ typedef /*only@*/ char * (*headerTagFormatFunction)(HE_t he)
  * @return		0 on success
  */
 typedef int (*headerTagTagFunction) (Header h, HE_t he)
-	/*@modifies he */;
+	/*@modifies he @*/;
 
 /** \ingroup header
  * Define header tag output formats.
@@ -280,8 +280,8 @@ struct headerSprintfExtension_s {
     union {
 /*@observer@*/ /*@null@*/
 	void * generic;				/*!< Private extension. */
-	headerTagFormatFunction formatFunction; /*!< HEADER_EXT_TAG extension. */
-	headerTagTagFunction tagFunction;	/*!< HEADER_EXT_FORMAT extension. */
+	headerTagFormatFunction fmtFunction; /*!< HEADER_EXT_TAG extension. */
+	headerTagTagFunction tagFunction; /*!< HEADER_EXT_FORMAT extension. */
 	struct headerSprintfExtension_s * more;	/*!< Chained table extension. */
     } u;
 };

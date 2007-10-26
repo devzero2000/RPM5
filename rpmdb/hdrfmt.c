@@ -70,6 +70,7 @@ static char * rpmPermsString(int mode)
 
     return perms;
 }
+
 /**
  * Identify type of trigger.
  * @param he		tag container
@@ -1373,25 +1374,25 @@ const struct headerSprintfExtension_s headerCompoundFormats[] = {
     { HEADER_EXT_TAG, "RPMTAG_ORIGPATHS",
 	{ .tagFunction = origpathsTag } },
     { HEADER_EXT_FORMAT, "armor",
-	{ .formatFunction = armorFormat } },
+	{ .fmtFunction = armorFormat } },
     { HEADER_EXT_FORMAT, "base64",
-	{ .formatFunction = base64Format } },
+	{ .fmtFunction = base64Format } },
     { HEADER_EXT_FORMAT, "depflags",
-	{ .formatFunction = depflagsFormat } },
+	{ .fmtFunction = depflagsFormat } },
     { HEADER_EXT_FORMAT, "fflags",
-	{ .formatFunction = fflagsFormat } },
+	{ .fmtFunction = fflagsFormat } },
     { HEADER_EXT_FORMAT, "perms",
-	{ .formatFunction = permsFormat } },
+	{ .fmtFunction = permsFormat } },
     { HEADER_EXT_FORMAT, "permissions",	
-	{ .formatFunction = permsFormat } },
+	{ .fmtFunction = permsFormat } },
     { HEADER_EXT_FORMAT, "pgpsig",
-	{ .formatFunction = pgpsigFormat } },
+	{ .fmtFunction = pgpsigFormat } },
     { HEADER_EXT_FORMAT, "triggertype",	
-	{ .formatFunction = triggertypeFormat } },
+	{ .fmtFunction = triggertypeFormat } },
     { HEADER_EXT_FORMAT, "xml",
-	{ .formatFunction = xmlFormat } },
+	{ .fmtFunction = xmlFormat } },
     { HEADER_EXT_FORMAT, "yaml",
-	{ .formatFunction = yamlFormat } },
+	{ .fmtFunction = yamlFormat } },
     { HEADER_EXT_MORE, NULL,		{ (void *) headerDefaultFormats } }
 } ;
 /*@=type@*/

@@ -2,16 +2,6 @@
  * \file rpmdb/header.c
  */
 
-/* Tags are looked up with linear, not binary, search. */
-/* XXX work in progress, caveat emptor. */
-#define SUPPORT_LINEAR_TAGTABLE_LOOKUP	1
-
-#define	SUPPORT_SPRINTF_TAGTABLE	1
-
-#if 1	/* XXX undefining loses the extensions in lib/formats.c. */
-#define	SUPPORT_SPRINTF_EXTTABLE	1
-#endif
-
 /* RPM - Copyright (C) 1995-2002 Red Hat Software */
 
 /* Data written to file descriptors is in network byte order.    */
@@ -33,7 +23,7 @@ int _hdr_debug = 0;
 /*@unchecked@*/
 int _newmagic = 0;		/* XXX Change header magic? */
 /*@unchecked@*/
-static int _jbj = 0;    	/* XXX private debugging */
+static int _jbj = 1;    	/* XXX private debugging */
 /*@unchecked@*/
 static int _usehge = 1;		/* XXX Use headerGetExtension? */
 /*@unchecked@*/
@@ -124,37 +114,6 @@ extern const int rpmTagTableSize;
 /*@unchecked@*/
 extern headerTagIndices rpmTags;
 /*@=redecl@*/
-
-#if 0
-static void _valid(const void *ptr, size_t cnt)
-{
-    unsigned char * p = ptr;
-    unsigned xx;
-    int i;
-    for (i = 0; i < cnt; i++)
-	xx = p[i];
-}
-
-static void * _memset(void * s, int c, size_t n)
-{
-    _valid(s, n);
-    return memset(s, c, n);
-}
-
-static void * _memcpy(void * dest, void *src, size_t n)
-{
-    _valid(src, n);
-    _valid(dest, n);
-    return memcpy(dest, src, n);
-}
-
-static void * _memmove(void * dest, void *src, size_t n)
-{
-    _valid(src, n);
-    _valid(dest, n);
-    return memmove(dest, src, n);
-}
-#endif
 
 /**
  * Return tag name from value.
@@ -480,18 +439,18 @@ unsigned int headerSizeof(/*@null@*/ Header h)
 /**
  * Return length of entry data.
  * @param type		entry data type
- * @param p		entry data
+ * @param *p		tag container data
  * @param count		entry item count
  * @param onDisk	data is concatenated strings (with NUL's))?
- * @param pend		pointer to end of data (or NULL)
+ * @param *pend		pointer to end of tag container data (or NULL)
  * @return		no. bytes in data, -1 on failure
  */
-static int dataLength(rpmTagType type, const void * p, rpmTagCount count, int onDisk,
-		/*@null@*/ const void * pend)
+static int dataLength(rpmTagType type, rpmTagData * p, rpmTagCount count,
+		int onDisk, /*@null@*/ rpmTagData * pend)
 	/*@*/
 {
-    const unsigned char * s = p;
-    const unsigned char * se = pend;
+    const unsigned char * s = (*p).ui8p;
+    const unsigned char * se = (pend ? (*pend).ui8p : NULL);
     int length = 0;
 
     switch (type) {
@@ -505,36 +464,33 @@ static int dataLength(rpmTagType type, const void * p, rpmTagCount count, int on
 	}
 	length++;	/* count nul terminator too. */
 	break;
-
-    case RPM_STRING_ARRAY_TYPE:
-    case RPM_I18NSTRING_TYPE:
 	/* These are like RPM_STRING_TYPE, except they're *always* an array */
 	/* Compute sum of length of all strings, including nul terminators */
-
+    case RPM_I18NSTRING_TYPE:
+    case RPM_STRING_ARRAY_TYPE:
 	if (onDisk) {
 	    while (count--) {
 		length++;       /* count nul terminator too */
                while (*s++) {
 		    if (se && s > se)
-			return -1;
+			return -1;	/* XXX change errret, use size_t */
 		    length++;
 		}
 	    }
 	} else {
-	    const char ** av = (const char **) p;
+	    const char ** av = (*p).argv;
 	    while (count--) {
 		/* add one for null termination */
 		length += strlen(*av++) + 1;
 	    }
 	}
 	break;
-
     default:
 	if (typeSizes[type] == -1)
-	    return -1;
+	    return -1;		/* XXX change errret, use size_t */
 	length = typeSizes[(type & 0xf)] * count;
 	if (length < 0 || (se && (s + length) > se))
-	    return -1;
+	    return -1;		/* XXX change errret, use size_t */
 	break;
     }
 
@@ -575,7 +531,8 @@ static int regionSwab(/*@null@*/ indexEntry entry, int il, int dl,
 		int regionid)
 	/*@modifies *entry, *dataStart @*/
 {
-    const void * p, * pend;
+    rpmTagData p;
+    rpmTagData pend;
     unsigned char * tprev = NULL;
     unsigned char * t = NULL;
     int tdel = 0;
@@ -605,9 +562,9 @@ static int regionSwab(/*@null@*/ indexEntry entry, int il, int dl,
 	if (dataEnd && t >= dataEnd)
 	    return -1;
 
-	p = ie.data;
-	pend = dataEnd;
-	ie.length = dataLength(ie.info.type, p, ie.info.count, 1, pend);
+	p.ptr = ie.data;
+	pend.ui8p = (unsigned char *) dataEnd;
+	ie.length = dataLength(ie.info.type, &p, ie.info.count, 1, &pend);
 	if (ie.length < 0 || hdrchkData(ie.length))
 	    return -1;
 
@@ -684,7 +641,7 @@ static int regionSwab(/*@null@*/ indexEntry entry, int il, int dl,
 	}
 
 	dl += ie.length;
-	if (dataEnd && dataStart + dl > dataEnd) return -1;
+	if (dataEnd && (dataStart + dl) > dataEnd) return -1;
 	tl += tdel;
 	ieprev = ie;	/* structure assignment */
 
@@ -720,10 +677,10 @@ void * headerUnload(Header h, /*@out@*/ /*@null@*/ size_t * lenp)
     void * sw;
     int_32 * ei = NULL;
     entryInfo pe;
-    char * dataStart;
-    char * te;
+    unsigned char * dataStart;
+    unsigned char * te;
     unsigned pad;
-    unsigned len;
+    unsigned len = 0;
     int_32 il = 0;
     int_32 dl = 0;
     indexEntry entry; 
@@ -733,7 +690,6 @@ void * headerUnload(Header h, /*@out@*/ /*@null@*/ size_t * lenp)
     int driplen, ndrips;
     int legacy = 0;
 
-fprintf(stderr, "==> headerUnload(%p, %p)\n", h, lenp);
     if ((sw = headerGetStats(h, 18)) != NULL)	/* RPMTS_OP_HDRLOAD */
 	(void) rpmswEnter(sw, 0);
 
@@ -816,7 +772,7 @@ fprintf(stderr, "==> headerUnload(%p, %p)\n", h, lenp);
     ei[1] = htonl(dl);
 
     pe = (entryInfo) &ei[2];
-    dataStart = te = (char *) (pe + il);
+    dataStart = te = (unsigned char *) (pe + il);
 
     pad = 0;
     for (i = 0, entry = h->index; i < h->indexUsed; i++, entry++) {
@@ -828,7 +784,7 @@ fprintf(stderr, "==> headerUnload(%p, %p)\n", h, lenp);
 	if (entry->data == NULL || entry->length <= 0)
 	    continue;
 
-	t = (unsigned char *)te;
+	t = te;
 	pe->tag = htonl(entry->info.tag);
 	pe->type = htonl(entry->info.type);
 	pe->count = htonl(entry->info.count);
@@ -962,9 +918,9 @@ fprintf(stderr, "==> headerUnload(%p, %p)\n", h, lenp);
     }
    
     /* Insure that there are no memcpy underruns/overruns. */
-    if (((char *)pe) != dataStart)
+    if (((unsigned char *)pe) != dataStart)
 	goto errxit;
-    if ((((char *)ei)+len) != te)
+    if ((((unsigned char *)ei)+len) != te)
 	goto errxit;
 
     if (lenp)
@@ -1088,7 +1044,7 @@ static /*@null@*/
 Header headerLoad(/*@kept@*/ void * uh)
 	/*@modifies uh @*/
 {
-    void * sw;
+    void * sw = NULL;
     int_32 * ei = (int_32 *) uh;
     int_32 il = ntohl(ei[0]);		/* index length */
     int_32 dl = ntohl(ei[1]);		/* data length */
@@ -1242,14 +1198,14 @@ Header headerLoad(/*@kept@*/ void * uh)
     h->flags &= ~HEADERFLAG_SORTED;
     headerSort(h);
 
-    if (sw != NULL)
-	(void) rpmswExit(sw, pvlen);
+    if (sw != NULL)	(void) rpmswExit(sw, pvlen);
 
     /*@-globstate -observertrans @*/
     return h;
     /*@=globstate =observertrans @*/
 
 errxit:
+    if (sw != NULL)	(void) rpmswExit(sw, pvlen);
     /*@-usereleased@*/
     if (h) {
 	h->index = _free(h->index);
@@ -1376,7 +1332,6 @@ Header headerReload(/*@only@*/ Header h, int tag)
     int_32 instance = h->instance;
     int xx;
 
-fprintf(stderr, "==> headerReload(%p, %s)\n", h, tagName(tag));
 /*@-onlytrans@*/
     uh = headerUnload(h, NULL);
     h = headerFree(h);
@@ -1584,9 +1539,9 @@ int headerIsEntry(/*@null@*/Header h, int_32 tag)
  * @return		1 on success, otherwise error.
  */
 static int copyEntry(const indexEntry entry,
-		/*@null@*/ /*@out@*/ hTYP_t type,
-		/*@null@*/ /*@out@*/ hRET_t * p,
-		/*@null@*/ /*@out@*/ hCNT_t c,
+		/*@null@*/ /*@out@*/ rpmTagType * type,
+		/*@null@*/ /*@out@*/ rpmTagData * p,
+		/*@null@*/ /*@out@*/ rpmTagCount * c,
 		int minMem)
 	/*@modifies *type, *p, *c @*/
 	/*@requires maxSet(type) >= 0 /\ maxSet(p) >= 0 /\ maxSet(c) >= 0 @*/
@@ -1594,8 +1549,6 @@ static int copyEntry(const indexEntry entry,
     rpmTagCount count = entry->info.count;
     int rc = 1;		/* XXX 1 on success. */
 
-if (_jbj)
-fprintf(stderr, "--> cpe(%p, %p, %p, %p)\n", entry, type, p, c);
     if (p)
     switch (entry->info.type) {
     case RPM_BIN_TYPE:
@@ -1648,31 +1601,29 @@ fprintf(stderr, "--> cpe(%p, %p, %p, %p)\n", entry, type, p, c);
 	break;
     case RPM_STRING_TYPE:
 	if (count == 1) {
-	    (*p).str = (char *) entry->data;	/* NOCAST */
+	    (*p).str = entry->data;
 	    break;
 	}
 	/*@fallthrough@*/
-    case RPM_STRING_ARRAY_TYPE:
     case RPM_I18NSTRING_TYPE:
-    {	const char ** ptrEntry;
-	/*@-sizeoftype@*/
-	int tableSize = count * sizeof(char *);
-	/*@=sizeoftype@*/
+    case RPM_STRING_ARRAY_TYPE:
+    {	const char ** argv;
+	size_t nb = count * sizeof(*argv);
 	char * t;
 	int i;
 
 	/*@-mods@*/
 	if (minMem) {
-	    (*p).argv = ptrEntry = xmalloc(tableSize);
+	    (*p).argv = argv = xmalloc(nb);
 	    t = entry->data;
 	} else {
-	    (*p).argv = ptrEntry = xmalloc(tableSize + entry->length);
-	    t = (char *) &ptrEntry[count];
+	    (*p).argv = argv = xmalloc(nb + entry->length);
+	    t = (char *) &argv[count];
 	    memcpy(t, entry->data, entry->length);
 	}
 	/*@=mods@*/
 	for (i = 0; i < count; i++) {
-	    *ptrEntry++ = t;
+	    argv[i] = t;
 	    t = strchr(t, 0);
 	    t++;
 	}
@@ -1835,9 +1786,9 @@ headerFindI18NString(Header h, indexEntry entry)
  * @return		1 on success, 0 on not found
  */
 static int intGetEntry(Header h, int_32 tag,
-		/*@null@*/ /*@out@*/ hTYP_t type,
-		/*@null@*/ /*@out@*/ hRET_t * p,
-		/*@null@*/ /*@out@*/ hCNT_t c,
+		/*@null@*/ /*@out@*/ rpmTagType * type,
+		/*@null@*/ /*@out@*/ rpmTagData * p,
+		/*@null@*/ /*@out@*/ rpmTagCount * c,
 		int minMem)
 	/*@modifies *type, *p, *c @*/
 	/*@requires maxSet(type) >= 0 /\ maxSet(p) >= 0 /\ maxSet(c) >= 0 @*/
@@ -1845,12 +1796,10 @@ static int intGetEntry(Header h, int_32 tag,
     indexEntry entry;
     int rc;
 
-if (_jbj)
-fprintf(stderr, "--> ige(%p, %s, %p, %p, %p)\n", h, tagName(tag), type, p, c);
     /* First find the tag */
-    /*@-mods@*/		/*@ FIX: h modified by sort. */
+/*@-mods@*/		/*@ FIX: h modified by sort. */
     entry = findEntry(h, tag, RPM_NULL_TYPE);
-    /*@mods@*/
+/*@=mods@*/
     if (entry == NULL) {
 	if (type) type = 0;
 	if (p) (*p).ptr = NULL;
@@ -1864,11 +1813,11 @@ fprintf(stderr, "--> ige(%p, %s, %p, %p, %p)\n", h, tagName(tag), type, p, c);
 	if (type) *type = RPM_STRING_TYPE;
 	if (c) *c = 1;
 	/*@-dependenttrans@*/
-	if (p) (*p).ptr = headerFindI18NString(h, entry);
+	if (p) (*p).str = headerFindI18NString(h, entry);
 	/*@=dependenttrans@*/
 	break;
     default:
-	rc = copyEntry(entry, type, (*p).ptr, c, minMem);
+	rc = copyEntry(entry, type, p, c, minMem);
 	break;
     }
 
@@ -1927,8 +1876,6 @@ int headerGetExtension(Header h, int_32 tag,
     int extNum;
     int rc;
 
-if (_jbj)
-fprintf(stderr, "--> HGE(%p, %s, %p, %p, %p)\n", h, tagName(tag), type, p, c);
     if ((sw = headerGetStats(h, 19)) != NULL)	/* RPMTS_OP_HDRGET */
 	(void) rpmswEnter(sw, 0);
 
@@ -2029,11 +1976,9 @@ int headerGetEntry(Header h, int_32 tag,
     void * sw;
     int rc;
 
-if (_jbj)
-fprintf(stderr, "--> hge(%p, %s, %p, %p, %p)\n", h, tagName(tag), type, p, c);
     if ((sw = headerGetStats(h, 19)) != NULL)	/* RPMTS_OP_HDRGET */
 	(void) rpmswEnter(sw, 0);
-    rc = intGetEntry(h, tag, type, p, c, 0);
+    rc = intGetEntry(h, tag, (rpmTagType *)type, (rpmTagData *)p, (rpmTagCount *)c, 0);
     if (sw != NULL)	(void) rpmswExit(sw, 0);
     return rc;
 }
@@ -2063,7 +2008,7 @@ int headerGetEntryMinMemory(Header h, int_32 tag,
 
     if ((sw = headerGetStats(h, 19)) != NULL)	/* RPMTS_OP_HDRGET */
 	(void) rpmswEnter(sw, 0);
-    rc = intGetEntry(h, tag, type, p, c, 1);
+    rc = intGetEntry(h, tag, (rpmTagType *)type, (rpmTagData *)p, (rpmTagCount *)c, 1);
     if (sw != NULL)	(void) rpmswExit(sw, 0);
     return rc;
 }
@@ -2093,28 +2038,27 @@ int headerGetRawEntry(Header h, int_32 tag, rpmTagType * type, hRET_t * p, rpmTa
 
 /**
  */
-static void copyData(rpmTagType type, /*@out@*/ void * dstPtr, const void * srcPtr,
-		rpmTagCount cnt, int dataLength)
-	/*@modifies *dstPtr @*/
+static void copyData(rpmTagType type, rpmTagData * dest, rpmTagData * src,
+		rpmTagCount cnt, size_t len)
+	/*@modifies *dest @*/
 {
     switch (type) {
-    case RPM_STRING_ARRAY_TYPE:
     case RPM_I18NSTRING_TYPE:
-    {	const char ** av = (const char **) srcPtr;
-	char * t = dstPtr;
+    case RPM_STRING_ARRAY_TYPE:
+    {	const char ** av = (*src).argv;
+	char * t = (char *) (*dest).str;
 
-	while (cnt-- > 0 && dataLength > 0) {
+	while (cnt-- > 0 && len > 0) {
 	    const char * s;
 	    if ((s = *av++) == NULL)
 		continue;
 	    do {
 		*t++ = *s++;
-	    } while (s[-1] && --dataLength > 0);
+	    } while (s[-1] && --len > 0);
 	}
     }	break;
-
     default:
-	memmove(dstPtr, srcPtr, dataLength);
+	memmove((*dest).ptr, (*src).ptr, len);
 	break;
     }
 }
@@ -2122,29 +2066,29 @@ static void copyData(rpmTagType type, /*@out@*/ void * dstPtr, const void * srcP
 /**
  * Return (malloc'ed) copy of entry data.
  * @param type		entry data type
- * @param p		entry data
+ * @param *p		tag container data
  * @param c		entry item count
  * @retval *lenp	no. bytes in returned data
  * @return 		(malloc'ed) copy of entry data, NULL on error
  */
 /*@null@*/
 static void *
-grabData(rpmTagType type, const void * p, rpmTagCount c, /*@out@*/ int * lenp)
+grabData(rpmTagType type, rpmTagData * p, rpmTagCount c, /*@out@*/ int * lenp)
 	/*@modifies *lenp @*/
 	/*@requires maxSet(lenp) >= 0 @*/
 {
-    void * data = NULL;
+    rpmTagData data = { .ptr = NULL };
     int length;
 
     length = dataLength(type, p, c, 0, NULL);
     if (length > 0) {
-	data = xmalloc(length);
-	copyData(type, data, p, c, length);
+	data.ptr = xmalloc(length);
+	copyData(type, &data, p, c, length);
     }
 
     if (lenp)
 	*lenp = length;
-    return data;
+    return data.ptr;
 }
 
 /** \ingroup header
@@ -2166,7 +2110,8 @@ int headerAddEntry(Header h, int_32 tag, rpmTagType type, const void * p, rpmTag
 	/*@modifies h @*/
 {
     indexEntry entry;
-    hPTR_t data;
+    rpmTagData q = { .ptr = (void *) p };
+    rpmTagData data;
     int length;
 
     /* Count must always be >= 1 for headerAddEntry. */
@@ -2179,8 +2124,8 @@ int headerAddEntry(Header h, int_32 tag, rpmTagType type, const void * p, rpmTag
 	return 0;
 
     length = 0;
-    data = grabData(type, p, c, &length);
-    if (data == NULL || length <= 0)
+    data.ptr = grabData(type, &q, c, &length);
+    if (data.ptr == NULL || length <= 0)
 	return 0;
 
     /* Allocate more index space if necessary */
@@ -2195,7 +2140,7 @@ int headerAddEntry(Header h, int_32 tag, rpmTagType type, const void * p, rpmTag
     entry->info.type = type;
     entry->info.count = c;
     entry->info.offset = 0;
-    entry->data = (void *) (*data).ptr;	/* NOCAST */
+    entry->data = data.ptr;
     entry->length = length;
 
     if (h->indexUsed > 0 && tag < h->index[h->indexUsed-1].info.tag)
@@ -2224,6 +2169,8 @@ int headerAppendEntry(Header h, int_32 tag, rpmTagType type,
 		const void * p, rpmTagCount c)
 	/*@modifies h @*/
 {
+    rpmTagData src = { .ptr = (void *) p };
+    rpmTagData dest = { .ptr = NULL };
     indexEntry entry;
     int length;
 
@@ -2237,7 +2184,7 @@ int headerAppendEntry(Header h, int_32 tag, rpmTagType type,
     if (!entry)
 	return 0;
 
-    length = dataLength(type, p, c, 0, NULL);
+    length = dataLength(type, &src, c, 0, NULL);
     if (length < 0)
 	return 0;
 
@@ -2249,7 +2196,8 @@ int headerAppendEntry(Header h, int_32 tag, rpmTagType type,
     } else
 	entry->data = xrealloc(entry->data, entry->length + length);
 
-    copyData(type, ((char *) entry->data) + entry->length, p, c, length);
+    dest.ptr = ((char *) entry->data) + entry->length;
+    copyData(type, &dest, &src, c, length);
 
     entry->length += length;
 
@@ -2446,8 +2394,9 @@ int headerModifyEntry(Header h, int_32 tag, rpmTagType type,
 	/*@modifies h @*/
 {
     indexEntry entry;
-    void * oldData;
-    rpmTagData data;
+    rpmTagData q = { .ptr = (void *) p };
+    rpmTagData oldData;
+    rpmTagData newData;
     int length;
 
     /* First find the tag */
@@ -2456,8 +2405,8 @@ int headerModifyEntry(Header h, int_32 tag, rpmTagType type,
 	return 0;
 
     length = 0;
-    data.ptr = grabData(type, p, c, &length);
-    if (data.ptr == NULL || length <= 0)
+    newData.ptr = grabData(type, &q, c, &length);
+    if (newData.ptr == NULL || length <= 0)
 	return 0;
 
     /* make sure entry points to the first occurence of this tag */
@@ -2466,17 +2415,17 @@ int headerModifyEntry(Header h, int_32 tag, rpmTagType type,
 
     /* free after we've grabbed the new data in case the two are intertwined;
        that's a bad idea but at least we won't break */
-    oldData = entry->data;
+    oldData.ptr = entry->data;
 
     entry->info.count = c;
     entry->info.type = type;
-    entry->data = data.ptr;
+    entry->data = newData.ptr;
     entry->length = length;
 
     if (ENTRY_IN_REGION(entry)) {
 	entry->info.offset = 0;
     } else
-	oldData = _free(oldData);
+	oldData.ptr = _free(oldData.ptr);
 
     return 1;
 }
@@ -2510,6 +2459,7 @@ static HE_t rpmheMark(/*@null@*/ HE_t he)
     default:
 	he->freeData = 0;
 	break;
+    case RPM_I18NSTRING_TYPE:
     case RPM_STRING_ARRAY_TYPE:
     case RPM_BIN_TYPE:
 	he->freeData = 1;
@@ -2526,49 +2476,12 @@ static HE_t rpmheClean(/*@null@*/ HE_t he)
 	/*@modifies he @*/
 {
     if (he) {
-	if (he->freeData) {
-if (_jbj)
-fprintf(stderr, " ZAP: %p tag %s(%d)\t%d %p[%d:%d] free %d avail %d\n", he, tagName(he->tag), he->tag, he->t, he->p.ptr, he->ix, he->c, he->freeData, he->avail);
+	if (he->freeData && he->p.ptr != NULL)
 	    he->p.ptr = _free(he->p.ptr);
-	}
 	memset(he, 0, sizeof(*he));
     }
     return he;
 }
-
-#ifdef	NOTYET
-/**
- * Destroy tag data cache.
- * @param tc		tag data cache
- * @param ntc		no. of elements
- * @return		NULL always
- */
-static /*@null@*/ HE_t
-rpmtcFree(/*@only@*/ HE_t tc, int ntc)
-	/*@modifies ec @*/
-{
-    int i;
-
-    if (tc != NULL)
-    for (i = 0; i < ntc; i++)
-	rpmtcClean(tc + i);
-    tc = _free(tc);
-    return NULL;
-}
-
-/**
- * Create tag data cache.
- * @param ntc		no. of elements
- * @return		new tag data cache
- */
-static /*@only@*/ HE_t
-rpmtcNew(int ntc)
-	/*@*/
-{
-    HE_t ec = xcalloc(ntc+1, sizeof(*ec));
-    return ec;
-}
-#endif
 
 /**
  * Destroy headerSprintf format array.
@@ -2587,8 +2500,9 @@ freeFormat( /*@only@*/ /*@null@*/ sprintfToken format, int num)
     for (i = 0; i < num; i++) {
 	switch (format[i].type) {
 	case PTOK_TAG:
-	    (void) rpmheClean(&format[i].u.tag.he);
-	    break;
+	    if (_tagcache)
+		(void) rpmheClean(&format[i].u.tag.he);
+	    /*@switchbreak@*/ break;
 	case PTOK_ARRAY:
 	    format[i].u.array.format =
 		freeFormat(format[i].u.array.format,
@@ -2601,7 +2515,8 @@ freeFormat( /*@only@*/ /*@null@*/ sprintfToken format, int num)
 	    format[i].u.cond.elseFormat =
 		freeFormat(format[i].u.cond.elseFormat, 
 			format[i].u.cond.numElseTokens);
-	    (void) rpmheClean(&format[i].u.cond.tag.he);
+	    if (_tagcache)
+		(void) rpmheClean(&format[i].u.cond.tag.he);
 	    /*@switchbreak@*/ break;
 	case PTOK_NONE:
 	case PTOK_STRING:
@@ -2681,8 +2596,6 @@ int headerNextIterator(HeaderIterator hi,
     indexEntry entry = NULL;
     int rc;
 
-if (_jbj)
-fprintf(stderr, "--> hni(%p, %p, %p, %p, %p)\n", h, tag, type, p, c);
     for (slot = hi->next_index; slot < h->indexUsed; slot++) {
 	entry = h->index + slot;
 	if (!ENTRY_IS_REGION(entry))
@@ -2699,7 +2612,7 @@ fprintf(stderr, "--> hni(%p, %p, %p, %p, %p)\n", h, tag, type, p, c);
     if (tag)
 	*tag = entry->info.tag;
 
-    rc = copyEntry(entry, type, p, c, 0);
+    rc = copyEntry(entry, (rpmTagType *)type, (rpmTagData *)p, (rpmTagCount *)c, 0);
 
     /* XXX 1 on success */
     return ((rc == 1) ? 1 : 0);
@@ -2733,7 +2646,6 @@ Header headerCopy(Header h)
  */
 typedef struct headerSprintfArgs_s {
     Header h;
-    HE_s he;
     char * fmt;
 /*@temp@*/
     headerTagTableEntry tags;
@@ -2743,10 +2655,6 @@ typedef struct headerSprintfArgs_s {
     const char * errmsg;
     HE_t ec;			/*!< Extension data cache. */
     int nec;			/*!< No. of extension cache items. */
-#ifdef	NOTYET
-    HE_t tc;			/*!< Tag data cache. */
-    int ntc;			/*!< No. of tag cache items. */
-#endif
     sprintfToken format;
 /*@relnull@*/
     HeaderIterator hi;
@@ -2813,8 +2721,6 @@ static sprintfToken hsaNext(/*@returned@*/ headerSprintfArgs hsa)
 	    }
 	    he = rpmheMark(he);
 	    he->avail = 1;
-if (_jbj)
-fprintf(stderr, " NEW: %p tag %s(%d)\t%d %p[%d:%d] free %d avail %d\n", he, tagName(he->tag), he->tag, he->t, he->p.ptr, he->ix, he->c, he->freeData, he->avail);
 	    tag->tagno = he->tag;
 	}
     }
@@ -2860,7 +2766,6 @@ static char * hsaReserve(headerSprintfArgs hsa, size_t need)
     return hsa->val + hsa->vallen;
 }
 
-#if defined(SUPPORT_LINEAR_TAGTABLE_LOOKUP)
 /**
  * Return tag name from value.
  * @todo bsearch on sorted value table.
@@ -2911,7 +2816,6 @@ static int myTagValue(headerTagTableEntry tbl, const char * name)
     }
     return 0;
 }
-#endif
 
 /**
  * Search extensions and tags for a name.
@@ -2959,11 +2863,7 @@ static int findTag(headerSprintfArgs hsa, sprintfToken token, const char * name)
     }
 
     /* Search tag names. */
-#if defined(SUPPORT_LINEAR_TAGTABLE_LOOKUP)
     stag->tagno = myTagValue(hsa->tags, name);
-#else
-    stag->tagno = tagValue(name);
-#endif
     if (stag->tagno != 0)
 	goto bingo;
 
@@ -2978,7 +2878,7 @@ bingo:
 	if (ext->name == NULL || ext->type != HEADER_EXT_FORMAT)
 	    continue;
 	if (!strcmp(ext->name, stag->type)) {
-	    stag->fmt = ext->u.formatFunction;
+	    stag->fmt = ext->u.fmtFunction;
 	    break;
 	}
     }
@@ -3200,21 +3100,21 @@ static char * shescapeFormat(HE_t he)
 /*@-type@*/ /* FIX: cast? */
 const struct headerSprintfExtension_s headerDefaultFormats[] = {
     { HEADER_EXT_FORMAT, "octal",
-	{ .formatFunction = octFormat } },
+	{ .fmtFunction = octFormat } },
     { HEADER_EXT_FORMAT, "oct",
-	{ .formatFunction = octFormat } },
+	{ .fmtFunction = octFormat } },
     { HEADER_EXT_FORMAT, "hex",
-	{ .formatFunction = hexFormat } },
+	{ .fmtFunction = hexFormat } },
     { HEADER_EXT_FORMAT, "decimal",
-	{ .formatFunction = decFormat } },
+	{ .fmtFunction = decFormat } },
     { HEADER_EXT_FORMAT, "dec",
-	{ .formatFunction = decFormat } },
+	{ .fmtFunction = decFormat } },
     { HEADER_EXT_FORMAT, "date",
-	{ .formatFunction = dateFormat } },
+	{ .fmtFunction = dateFormat } },
     { HEADER_EXT_FORMAT, "day",
-	{ .formatFunction = dayFormat } },
+	{ .fmtFunction = dayFormat } },
     { HEADER_EXT_FORMAT, "shescape",
-	{ .formatFunction = shescapeFormat } },
+	{ .fmtFunction = shescapeFormat } },
     { HEADER_EXT_LAST, NULL, { NULL } }
 };
 /*@=type@*/
@@ -3232,20 +3132,6 @@ static int parseExpression(headerSprintfArgs hsa, sprintfToken token,
 		char * str, /*@out@*/char ** endPtr)
 	/*@modifies hsa, str, token, *endPtr @*/
 	/*@requires maxSet(endPtr) >= 0 @*/;
-
-static void dumpSprintfTag(const char * msg, sprintfTag tag)
-{
-    if (msg)
-	fprintf(stderr, "%s", msg);
-    fprintf(stderr, " he %p %s", &tag->he, tagName(tag->tagno));
-    if (tag->fmt)
-	fprintf(stderr, " fmt %p", tag->fmt);
-    if (tag->ext)
-	fprintf(stderr, " ext %p[%d]", tag->ext, tag->extNum);
-    if (tag->format)
-	fprintf(stderr, " format \"%s\" pad %d", tag->format, tag->pad);
-}
-
 
 /**
  * Parse a headerSprintf term.
@@ -3483,40 +3369,6 @@ static int parseFormat(headerSprintfArgs hsa, /*@null@*/ char * str,
 	    break;
 	}
     }
-    for (i = 0; i < numTokens; i++) {
-	token = format + i;
-if (_jbj)
-fprintf(stderr, "%4d: %p", i, token);
-	switch(token->type) {
-	case PTOK_NONE:
-if (_jbj)
-fprintf(stderr, " none(%d)", token->type);
-	    break;
-	case PTOK_TAG:
-if (_jbj) {
-fprintf(stderr, " tag(%d)", token->type);
-dumpSprintfTag(" ", &token->u.tag);
-}
-	    break;
-	case PTOK_ARRAY:
-if (_jbj) {
-fprintf(stderr, " array(%d)", token->type);
-dumpSprintfTag(" ", &token->u.array.format->u.tag);
-}
-	    break;
-	case PTOK_STRING:
-	    token->u.string.len = strlen(token->u.string.string);
-if (_jbj)
-fprintf(stderr, " string(%d) \"%s\"", token->type, token->u.string.string);
-	    break;
-	case PTOK_COND:
-if (_jbj)
-fprintf(stderr, " cond(%d)", token->type);
-	    break;
-	}
-if (_jbj)
-fprintf(stderr, "\n");
-    }
 
     *numTokensPtr = numTokens;
     *formatPtr = format;
@@ -3622,7 +3474,6 @@ static int parseExpression(headerSprintfArgs hsa, sprintfToken token,
     return 0;
 }
 
-#if defined(SUPPORT_SPRINTF_EXTTABLE)
 /**
  * Call a header extension only once, saving results.
  * @param hsa		headerSprintf args
@@ -3647,7 +3498,6 @@ static int getExtension(headerSprintfArgs hsa, headerTagTagFunction fn,
     he->freeData = 0;
     return rc;
 }
-#endif	/* SUPPORT_SPRINTF_EXTTABLE */
 
 /**
  * Format a single item's value.
@@ -3669,42 +3519,29 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
     rpmTagCount countBuf;
     int xx;
 
-/* XXX likely need to check !he->avail and he->tag == tag->tagno. */
-#if defined(SUPPORT_SPRINTF_EXTTABLE)
-    if (tag->ext) {
-	if (getExtension(hsa, tag->ext, he, hsa->ec + tag->extNum))
-	{
-	    he->c = 1;
-	    he->t = RPM_STRING_TYPE;	
-	    he->p.str = "(none)";
-	    he->freeData = 0;
-	}
-    } else
-#endif	/* SUPPORT_SPRINTF_EXTTABLE */
-    if (!he->avail || he->tag != tag->tagno) {
-if (_jbj)
-fprintf(stderr, " ---: %p tag %s(%d)\t%d %p[%d:%d] free %d avail %d\n", he, tagName(he->tag), he->tag, he->t, he->p.ptr, he->ix, he->c, he->freeData, he->avail);
-	he = rpmheClean(he);
-	he->tag = tag->tagno;	/* XXX necessary? */
-if (_jbj)
-fprintf(stderr, " --+: %p tag %s(%d)\t%d %p[%d:%d] free %d avail %d\n", he, tagName(he->tag), he->tag, he->t, he->p.ptr, he->ix, he->c, he->freeData, he->avail);
-	if (_usehge) {
-	    xx = headerGetExtension(hsa->h, he->tag, &he->t, &he->p, &he->c);
-	    if (xx && he->p.ptr != NULL)
-		he->freeData = 1;
+    if (!he->avail) {
+	if (tag->ext) {
+	    xx = getExtension(hsa, tag->ext, he, hsa->ec + tag->extNum);
 	} else {
-	    xx = headerGetEntry(hsa->h, he->tag, &he->t, &he->p, &he->c);
-	    if (xx)
-		he = rpmheMark(he);
+	    he->tag = tag->tagno;	/* XXX necessary? */
+	    if (_usehge) {
+		xx = headerGetExtension(hsa->h, he->tag, &he->t, &he->p, &he->c);
+		if (xx)		/* XXX 1 on success */
+		    he->freeData = 1;
+	    } else {
+		xx = headerGetEntry(hsa->h, he->tag, &he->t, &he->p, &he->c);
+		if (xx)		/* XXX 1 on success */
+		    he = rpmheMark(he);
+	    }
+	    xx = (xx == 0);	/* XXX invert headerGetEntry return. */
 	}
-	if (!xx) {
-	    he->c = 1;
+	if (xx) {
+	    (void) rpmheClean(he);
 	    he->t = RPM_STRING_TYPE;	
 	    he->p.str = "(none)";
-	    he->freeData = 0;
+	    he->c = 1;
 	}
-if (_jbj)
-fprintf(stderr, " NEW: %p tag %s(%d)\t%d %p[%d:%d] free %d avail %d\n", he, tagName(he->tag), he->tag, he->t, he->p.ptr, he->ix, he->c, he->freeData, he->avail);
+	he->avail = 1;
     }
 
     if (tag->arrayCount) {
@@ -3715,7 +3552,6 @@ fprintf(stderr, " NEW: %p tag %s(%d)\t%d %p[%d:%d] free %d avail %d\n", he, tagN
 	he->c = 1;
 	he->freeData = 0;
     }
-    he->avail = 1;
 
     if (he->p.ptr)
     switch (he->t) {
@@ -3724,9 +3560,10 @@ fprintf(stderr, " NEW: %p tag %s(%d)\t%d %p[%d:%d] free %d avail %d\n", he, tagN
 	need = strlen(val) + 1;
 	goto exit;
 	/*@notreached@*/ break;
+    case RPM_I18NSTRING_TYPE:
     case RPM_STRING_ARRAY_TYPE:
-	vhe->p.str = he->p.argv[element];
 	vhe->t = RPM_STRING_TYPE;
+	vhe->p.str = he->p.argv[element];
 	vhe->c = he->c;
 	/* XXX TODO: force array representation? */
 	vhe->ix = (he->c > 1 ? 0 : -1);
@@ -3887,32 +3724,29 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 	    tag = &spft->u.tag;
 	    if (spft->type != PTOK_TAG || tag->arrayCount || tag->justOne)
 		continue;
-
 	    he = &tag->he;
-/* XXX likely need to check !he->avail and he->tag == tag->tagno. */
-#if defined(SUPPORT_SPRINTF_EXTTABLE)
-	    if (tag->ext) {
-		if (getExtension(hsa, tag->ext, he, hsa->ec + tag->extNum))
-		     continue;
-	    } else
-#endif	/* SUPPORT_SPRINTF_EXTTABLE */
-	    if (!he->avail || he->tag != tag->tagno) {
-		he = rpmheClean(he);
+	    if (!he->avail) {
 		he->tag = tag->tagno;
-		if (_usehge) {
-		    xx = headerGetExtension(hsa->h, he->tag, &he->t, &he->p, &he->c);
-		    if (xx && he->p.ptr != NULL)
-			he->freeData = 1;
-		} else {
-		    xx = headerGetEntry(hsa->h, he->tag, &he->t, &he->p, &he->c);
-		    if (xx)
-			he = rpmheMark(he);
+		if (tag->ext)
+		    xx = getExtension(hsa, tag->ext, he, hsa->ec + tag->extNum);
+		else {
+		    if (_usehge) {
+			xx = headerGetExtension(hsa->h, he->tag, &he->t, &he->p, &he->c);
+			if (xx)
+			    he->freeData = 1;
+		    } else {
+			xx = headerGetEntry(hsa->h, he->tag, &he->t, &he->p, &he->c);
+			if (xx)	/* XXX 1 on success */
+			    rpmheMark(he);
+		    }
+		    xx = (xx == 0);     /* XXX invert headerGetEntry return. */
 		}
-		if (!xx)
+		if (xx) {
+		    (void) rpmheClean(he);
 		    continue;
-if (_jbj)
-fprintf(stderr, " NEW: %p tag %s(%d)\t%d %p[%d:%d] free %d avail %d\n", he, tagName(he->tag), he->tag, he->t, he->p.ptr, he->ix, he->c, he->freeData, he->avail);
-	    } 
+		}
+		he->avail = 1;
+	    }
 
 	    /* Check iteration arrays are same dimension (or scalar). */
 	    switch (he->t) {
@@ -3963,11 +3797,7 @@ fprintf(stderr, " NEW: %p tag %s(%d)\t%d %p[%d:%d] free %d avail %d\n", he, tagN
 		!strcmp(tag->type, "yaml"));
 
 	    if (isxml) {
-#if defined(SUPPORT_LINEAR_TAGTABLE_LOOKUP)
 		const char * tagN = myTagName(hsa->tags, tag->tagno, NULL);
-#else
-		const char * tagN = tagName(tag->tagno);
-#endif
 		/* XXX display "Tag_0x01234567" for unknown tags. */
 		if (tagN == NULL) {
 		    (void) snprintf(numbuf, sizeof(numbuf), "Tag_0x%08x",
@@ -3981,13 +3811,8 @@ fprintf(stderr, " NEW: %p tag %s(%d)\t%d %p[%d:%d] free %d avail %d\n", he, tagN
 		hsa->vallen += (te - t);
 	    }
 	    if (isyaml) {
-#if defined(SUPPORT_LINEAR_TAGTABLE_LOOKUP)
 		int tagT = -1;
 		const char * tagN = myTagName(hsa->tags, tag->tagno, &tagT);
-#else
-		rpmTagType tagT = tagType(tag->tagno);
-		const char * tagN = tagName(tag->tagno);
-#endif
 		/* XXX display "Tag_0x01234567" for unknown tags. */
 		if (tagN == NULL) {
 		    (void) snprintf(numbuf, sizeof(numbuf), "Tag_0x%08x",
@@ -4049,11 +3874,10 @@ fprintf(stderr, " NEW: %p tag %s(%d)\t%d %p[%d:%d] free %d avail %d\n", he, tagN
     return (hsa->val + hsa->vallen);
 }
 
-#if defined(SUPPORT_SPRINTF_EXTTABLE)
 /**
  * Create an extension cache.
  * @param exts		headerSprintf extensions
- * @retval *necp	no. of elements
+ * @retval *necp	no. of elements (or NULL)
  * @return		new extension cache
  */
 static /*@only@*/ HE_t
@@ -4070,10 +3894,9 @@ rpmecNew(const headerSprintfExtension exts, /*@null@*/ int * necp)
     {
 	;
     }
-
-    ec = xcalloc(extNum+1, sizeof(*ec));
-    if (*necp)
+    if (necp)
 	*necp = extNum;
+    ec = xcalloc(extNum+1, sizeof(*ec));	/* XXX +1 unnecessary */
     return ec;
 }
 
@@ -4093,14 +3916,12 @@ rpmecFree(const headerSprintfExtension exts, /*@only@*/ HE_t ec)
     for (ext = exts, extNum = 0; ext != NULL && ext->type != HEADER_EXT_LAST;
 	ext = (ext->type == HEADER_EXT_MORE ? ext->u.more : ext+1), extNum++)
     {
-	if (ec[extNum].freeData)
-	    ec[extNum].p.ptr = _free(ec[extNum].p.ptr);
+	(void) rpmheClean(&ec[extNum]);
     }
 
     ec = _free(ec);
     return NULL;
 }
-#endif	/* SUPPORT_SPRINTF_EXTTABLE */
 
 /** \ingroup header
  * Return formatted output string from header tags.
@@ -4140,23 +3961,15 @@ char * headerSprintf(Header h, const char * fmt,
     hsa->fmt = xstrdup(fmt);
 /*@-castexpose@*/	/* FIX: legacy API shouldn't change. */
     hsa->exts = (headerSprintfExtension) exts;
-#if defined(SUPPORT_LINEAR_TAGTABLE_LOOKUP)
     hsa->tags = (headerTagTableEntry) tags;
-#endif
 /*@=castexpose@*/
     hsa->errmsg = NULL;
 
     if (parseFormat(hsa, hsa->fmt, &hsa->format, &hsa->numTokens, NULL, PARSER_BEGIN))
 	goto exit;
 
-#if defined(SUPPORT_SPRINTF_EXTTABLE)
     hsa->nec = 0;
     hsa->ec = rpmecNew(hsa->exts, &hsa->nec);
-#endif	/* SUPPORT_SPRINTF_EXTTABLE */
-#ifdef	NOTYET
-    hsa->ntc = numTokens;
-    hsa->tc = rpmtcNew(hsa->ntc);
-#endif
     hsa->val = xstrdup("");
 
     tag =
@@ -4207,14 +4020,8 @@ char * headerSprintf(Header h, const char * fmt,
     if (hsa->val != NULL && hsa->vallen < hsa->alloced)
 	hsa->val = xrealloc(hsa->val, hsa->vallen+1);	
 
-#if defined(SUPPORT_SPRINTF_EXTTABLE)
     hsa->ec = rpmecFree(hsa->exts, hsa->ec);
     hsa->nec = 0;
-#endif	/* SUPPORT_SPRINTF_EXTTABLE */
-#ifdef	NOTYET
-    hsa->tc = rpmtcFree(hsa->tc, hsa->ntc);
-    hsa->ntc = 0;
-#endif
     hsa->format = freeFormat(hsa->format, hsa->numTokens);
 
 exit:
@@ -4237,21 +4044,21 @@ static
 void headerCopyTags(Header headerFrom, Header headerTo, hTAG_t tagstocopy)
 	/*@modifies headerTo @*/
 {
-    int * p;
+    int * tagno;
 
     if (headerFrom == headerTo)
 	return;
 
-    for (p = tagstocopy; *p != 0; p++) {
-	rpmTagData ptr;
-	rpmTagType type;
-	rpmTagCount count;
-	if (headerIsEntry(headerTo, *p))
+    for (tagno = tagstocopy; *tagno != 0; tagno++) {
+	rpmTagType t;
+	rpmTagData p = { .ptr = NULL };
+	rpmTagCount c;
+	if (headerIsEntry(headerTo, *tagno))
 	    continue;
-	if (!headerGetEntryMinMemory(headerFrom, *p, &type, &ptr, &count))
+	if (!headerGetEntryMinMemory(headerFrom, *tagno, (hTYP_t)&t, &p, &c))
 	    continue;
-	(void) headerAddEntry(headerTo, *p, type, ptr.ptr, count);
-	ptr.ptr = headerFreeData(ptr.ptr, type);
+	(void) headerAddEntry(headerTo, *tagno, t, p.ptr, c);
+	p.ptr = headerFreeData(p.ptr, t);
     }
 }
 
