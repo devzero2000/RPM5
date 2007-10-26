@@ -1305,6 +1305,7 @@ static void rpmfiBuildFNames(Header h, rpmTag tagN,
 	(void) urlPath(dirNames.argv[dirIndexes.i32p[i]], &dn);
 	fileNames.argv[i] = t;
 	t = stpcpy( stpcpy(t, dn), baseNames.argv[i]);
+	*t++ = '\0';
     }
     baseNames.ptr = headerFreeData(baseNames.ptr, bnt);
     dirNames.ptr = headerFreeData(dirNames.ptr, dnt);

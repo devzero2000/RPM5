@@ -1151,8 +1151,10 @@ int pgpSetSig(pgpDig dig,
 	int32_t sigtag, int32_t sigtype, const void * sig, int32_t siglen)
 {
     if (dig != NULL) {
+#if 0
 	if (dig->sig)
 	    dig->sig = _free(dig->sig);
+#endif
 	dig->sigtag = sigtag;
 	dig->sigtype = (sig ? sigtype : 0);
 /*@-assignexpose -kepttrans@*/

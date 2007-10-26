@@ -1,4 +1,6 @@
 4.5 -> 5.0:
+    - jbj: trade a double free for a modest memory leak for the moment.
+    - jbj: fix: install modes broken by forgetting to add '\0'.
     - jbj: mostly unbork HEAD. --install modes still non-functional.
     - jbj: don't modify strings exposed by method wrappers (#349091).
     - jbj: drill headerAddExtension everywhere.
