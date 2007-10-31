@@ -799,10 +799,10 @@ rpmts_OpenDB(rpmtsObject * s)
 if (_rpmts_debug)
 fprintf(stderr, "*** rpmts_OpenDB(%p) ts %p\n", s, s->ts);
 
-    if (rpmtsDbmode(s->ts) == -1)
-	(void) rpmtsSetDbmode(s->ts, O_RDONLY);
+    if (rpmtsDBMode(s->ts) == -1)
+	(void) rpmtsSetDBMode(s->ts, O_RDONLY);
 
-    return Py_BuildValue("i", rpmtsOpenDB(s->ts, rpmtsDbmode(s->ts)));
+    return Py_BuildValue("i", rpmtsOpenDB(s->ts, rpmtsDBMode(s->ts)));
 }
 
 /**
@@ -818,7 +818,7 @@ if (_rpmts_debug)
 fprintf(stderr, "*** rpmts_CloseDB(%p) ts %p\n", s, s->ts);
 
     rc = rpmtsCloseDB(s->ts);
-    (void) rpmtsSetDbmode(s->ts, -1);		/* XXX disable lazy opens */
+    (void) rpmtsSetDBMode(s->ts, -1);		/* XXX disable lazy opens */
 
     return Py_BuildValue("i", rc);
 }

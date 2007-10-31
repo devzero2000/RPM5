@@ -230,11 +230,15 @@ LIBRPM_0
     rpmpsCreate;
     _rpmps_debug;
     rpmpsFree;
+    rpmpsFreeIterator;
+    rpmpsInitIterator;
+    rpmpsNextIterator;
     rpmpsmFree;
     rpmpsmNew;
     rpmpsmStage;
     rpmpsNumProblems;
     rpmpsPrint;
+    rpmpsProblem;
     rpmpsTrim;
     rpmProblemGetAltNEVR;
     rpmProblemGetType;
@@ -334,7 +338,7 @@ LIBRPM_0
     rpmtsCreate;
     rpmtsCurrDir;
     _rpmts_debug;
-    rpmtsDbmode;
+    rpmtsDBMode;
     rpmtsDFlags;
     rpmtsDoARBGoal;
     rpmtsElement;
@@ -370,7 +374,7 @@ LIBRPM_0
     rpmtsSetChrootDone;
     rpmtsSetColor;
     rpmtsSetCurrDir;
-    rpmtsSetDbmode;
+    rpmtsSetDBMode;
     rpmtsSetDFlags;
     rpmtsSetFlags;
     rpmtsSetGoal;
