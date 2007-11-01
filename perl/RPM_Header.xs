@@ -25,16 +25,6 @@
 
 #include "rpmxs.h"
 
-void
-_populate_header_tags(HV *href)
-{
-    int i = 0;
-
-    for (i = 0; i < rpmTagTableSize; i++) {
-        hv_store(href, rpmTagTable[i].name, strlen(rpmTagTable[i].name), newSViv(rpmTagTable[i].val), 0);
-    }
-}
-
 MODULE = RPM::Header		PACKAGE = RPM::Header
 
 PROTOTYPES: ENABLE
@@ -131,11 +121,12 @@ tagformat(h, format)
 	Header h
 	char * format
     PREINIT:
-	char * s;
+	const char * s;
     PPCODE:
 	s =  headerSprintf(h, format, rpmTagTable, rpmHeaderFormats, NULL);
-	PUSHs(sv_2mortal(newSVpv((char *)s, 0)));
-	s = _free(s);
+    if (s)
+	    PUSHs(sv_2mortal(newSVpv((char *)s, 0)));
+	s = _free(s); 
 
 # Write rpm header into file pointer
 # fedora use HEADER_MAGIC_NO, too bad, set no_header_magic make the function
