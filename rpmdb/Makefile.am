@@ -106,7 +106,7 @@ install-data-local:
 	$(pkgincHEADERS_INSTALL) $(my_DB_HEADER) $(DESTDIR)$(pkgincdir)/db.h
 
 clean-local:
-	rm -f *.o
+	rm -f *.o tagtbl.c
 
 BUILT_SOURCES = tagtbl.c
 
