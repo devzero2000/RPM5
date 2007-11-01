@@ -491,7 +491,7 @@ AC_CHECK_STATFS
 
 dnl # specific functions (specific)
 AC_CHECK_FUNC(setreuid,      [], [ AC_CHECK_LIB(ucb, setreuid, [if echo $LIBS | grep -- -lucb >/dev/null; then :; else LIBS="$LIBS -lc -lucb" USEUCB=y; fi]) ])
-AC_CHECK_FUNC(rand,          [], [ AC_CHECK_LIB(rand, rand, []) ])
+AC_CHECK_FUNC(rand,          [], [ AC_CHECK_LIB(rand, rand) ])
 AC_CHECK_FUNC(getdomainname, [], [ AC_CHECK_LIB(nsl, getdomainname) ])
 AC_CHECK_FUNC(socket,        [], [ AC_CHECK_LIB(socket, socket) ])
 
