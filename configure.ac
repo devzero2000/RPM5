@@ -973,12 +973,17 @@ RPM_CHECK_LIB(
     [PCRE], [pcre],
     [pcre], [pcre_compile], [pcre.h],
     [no,external:none], [],
-    [ AC_CHECK_HEADERS(pcreposix.h, [
-          AC_CHECK_LIB(pcreposix, regcomp, [
-              AC_DEFINE(WITH_PCRE_POSIX, 1, [Define as 1 if PCRE's POSIX API is available])
-              LIBS="-lpcreposix $LIBS"
-          ])
+    [ dnl # make sure PCRE POSIX API can be really _USED_ by RPM
+      LIBS_SAVED="$LIBS"
+      LIBS="-lpcreposix $LIBS"
+      AC_LINK_IFELSE([
+          AC_LANG_PROGRAM([#include <pcreposix.h>], [(void)regcomp(0, 0, 0)])
+      ], [
+          AC_DEFINE(WITH_PCRE_POSIX, 1, [Define as 1 if PCRE's POSIX API is available])
+      ], [
+          LIBS="$LIBS_SAVED"
       ])
+      dnl # enable PCRE native API support for embedded Lua
       if test ".$WITH_LUA" = .yes; then
           WITH_LUA_SUBDIR_DEF="$WITH_LUA_SUBDIR_DEF -DLUA_USE_PCRE"
       fi
