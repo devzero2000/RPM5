@@ -6,7 +6,7 @@
  * Structure(s) used for file security context pattern handling
  */
 
-#if defined(WITH_PCRE) && defined(HAVE_PCREPOSIX_H)
+#if defined(WITH_PCRE) && defined(WITH_PCRE_POSIX)
 #include <pcreposix.h>
 #else
 #include <regex.h>

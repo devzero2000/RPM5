@@ -16,7 +16,7 @@ extern int fnmatch (const char *__pattern, const char *__name, int __flags)
 /*@=declundef =exportheader =redecl @*/
 #endif
 
-#if defined(WITH_PCRE) && defined(HAVE_PCREPOSIX_H)
+#if defined(WITH_PCRE) && defined(WITH_PCRE_POSIX)
 #include <pcreposix.h>
 #else
 #include <regex.h>

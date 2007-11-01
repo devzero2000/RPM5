@@ -973,18 +973,16 @@ RPM_CHECK_LIB(
     [PCRE], [pcre],
     [pcre], [pcre_compile], [pcre.h],
     [no,external:none], [],
-    [
+    [ AC_CHECK_HEADERS(pcreposix.h, [
+          AC_CHECK_LIB(pcreposix, regcomp, [
+              AC_DEFINE(WITH_PCRE_POSIX, 1, [Define as 1 if PCRE's POSIX API is available])
+              LIBS="-lpcreposix $LIBS"
+          ])
+      ])
       if test ".$WITH_LUA" = .yes; then
           WITH_LUA_SUBDIR_DEF="$WITH_LUA_SUBDIR_DEF -DLUA_USE_PCRE"
       fi
     ], [])
-
-RPM_CHECK_LIB(
-    [PCREPOSIX], [pcreposix],
-    [pcreposix], [regcomp], [pcreposix.h],
-    [no,external:none], [],
-    [], [])
-
 
 dnl # DMalloc
 RPM_CHECK_LIB(
