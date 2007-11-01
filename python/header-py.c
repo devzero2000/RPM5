@@ -679,95 +679,27 @@ long tagNumFromPyObject (PyObject *item)
 }
 
 /** \ingroup py_c
- * Retrieve tag info from header.
- * This is a "dressed" entry to headerGetEntry to do:
- *	1) DIRNAME/BASENAME/DIRINDICES -> FILENAMES tag conversions.
- *	2) i18n lookaside (if enabled).
- *
- * @param h		header
- * @param tag		tag
- * @retval type		address of tag value data type
- * @retval p		address of pointer to tag value(s)
- * @retval c		address of number of values
- * @return		0 on success, 1 on bad magic, 2 on error
- */
-static int rpmHeaderGetEntry(Header h, rpmTag tag, /*@out@*/ rpmTagType *type,
-		/*@out@*/ rpmTagData *p, /*@out@*/ rpmTagCount *c)
-	/*@modifies *type, *p, *c @*/
-{
-    HGE_t hge = (HGE_t)headerGetExtension;
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
-    int xx;
-
-    switch (tag) {
-    case RPMTAG_OLDFILENAMES:
-    {	
-	he->tag = RPMTAG_FILEPATHS;
-	xx = hge(h, he, 0);
-	if (p)
-	    (*p).ptr = he->p.ptr;
-	else
-	    he->p.ptr = _free(he->p.ptr);
-	if (c)	*c = he->c;
-	if (type)	*type = he->t;
-	return (he->c > 0 ? 1 : 0);
-    }	/*@notreached@*/ break;
-
-    case RPMTAG_GROUP:
-    case RPMTAG_DESCRIPTION:
-    case RPMTAG_SUMMARY:
-    {	char fmt[128];
-	const char * msgstr;
-	const char * errstr;
-
-	fmt[0] = '\0';
-	(void) stpcpy( stpcpy( stpcpy( fmt, "%{"), tagName(tag)), "}\n");
-
-	/* XXX FIXME: memory leak. */
-        msgstr = headerSprintf(h, fmt, rpmTagTable, rpmHeaderFormats, &errstr);
-	if (msgstr) {
-	    if (p)
-		(*p).str = msgstr;
-	    else
-		msgstr = _free(msgstr);
-
-	    if (type)	*type = RPM_STRING_TYPE;
-	    if (c)	*c = 1;
-	    return 1;
-	} else {
-	    if (c)	*c = 0;
-	    return 0;
-	}
-    }	/*@notreached@*/ break;
-
-    default:
-	return headerGetEntry(h, tag, type, p, c);
-	/*@notreached@*/ break;
-    }
-    /*@notreached@*/
-}
-
-/** \ingroup py_c
  */
 static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
 	/*@*/
 {
+    HGE_t hge = (HGE_t)headerGetExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     int_32 tag = -1;
-    rpmTagData data;
     int i;
     PyObject * o, * metao;
     int forceArray = 0;
-    int freeData = 0;
-    char * str;
     const struct headerSprintfExtension_s * ext = NULL;
-    const struct headerSprintfExtension_s * extensions = rpmHeaderFormats;
+    int xx;
 
     if (PyCObject_Check (item))
         ext = PyCObject_AsVoidPtr(item);
     else
 	tag = tagNumFromPyObject (item);
+
     if (tag == -1 && (PyString_Check(item) || PyUnicode_Check(item))) {
+	const struct headerSprintfExtension_s * extensions = rpmHeaderFormats;
+	char * str;
 	/* if we still don't have the tag, go looking for the header
 	   extensions */
 	str = PyString_AsString(item);
@@ -785,15 +717,16 @@ static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
     /* Retrieve data from extension or header. */
     if (ext) {
         ext->u.tagFunction(s->h, he);
-	data.ptr = he->p.ptr;
-	freeData = he->freeData;
     } else {
         if (tag == -1) {
             PyErr_SetString(PyExc_KeyError, "unknown header tag");
             return NULL;
         }
         
-	if (!rpmHeaderGetEntry(s->h, tag, &he->t, &data, &he->c)) {
+	he->tag = tag;
+	xx = hge(s->h, he, 0);
+	if (!xx) {
+	    he->p.ptr = _free(he->p.ptr);
 	    switch (tag) {
 	    case RPMTAG_EPOCH:
 	    case RPMTAG_NAME:
@@ -844,11 +777,6 @@ static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
     case RPMTAG_FILEVERIFYFLAGS:
 	forceArray = 1;
 	break;
-    case RPMTAG_SUMMARY:
-    case RPMTAG_GROUP:
-    case RPMTAG_DESCRIPTION:
-	freeData = 1;
-	break;
     default:
         break;
     }
@@ -857,7 +785,7 @@ static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
     case RPM_OPENPGP_TYPE:
     case RPM_ASN1_TYPE:
     case RPM_BIN_TYPE:
-	o = PyString_FromStringAndSize(data.str, he->c);
+	o = PyString_FromStringAndSize(he->p.str, he->c);
 	break;
 
     case RPM_CHAR_TYPE:
@@ -865,13 +793,13 @@ static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
 	if (he->c != 1 || forceArray) {
 	    metao = PyList_New(0);
 	    for (i = 0; i < he->c; i++) {
-		o = PyInt_FromLong(data.i8p[i]);
+		o = PyInt_FromLong(he->p.i8p[i]);
 		PyList_Append(metao, o);
 		Py_DECREF(o);
 	    }
 	    o = metao;
 	} else {
-	    o = PyInt_FromLong(data.i8p[0]);
+	    o = PyInt_FromLong(he->p.i8p[0]);
 	}
 	break;
 
@@ -879,13 +807,13 @@ static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
 	if (he->c != 1 || forceArray) {
 	    metao = PyList_New(0);
 	    for (i = 0; i < he->c; i++) {
-		o = PyInt_FromLong(data.i16p[i]);
+		o = PyInt_FromLong(he->p.i16p[i]);
 		PyList_Append(metao, o);
 		Py_DECREF(o);
 	    }
 	    o = metao;
 	} else {
-	    o = PyInt_FromLong(data.i16p[0]);
+	    o = PyInt_FromLong(he->p.i16p[0]);
 	}
 	break;
 
@@ -893,13 +821,13 @@ static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
 	if (he->c != 1 || forceArray) {
 	    metao = PyList_New(0);
 	    for (i = 0; i < he->c; i++) {
-		o = PyInt_FromLong(data.i32p[i]);
+		o = PyInt_FromLong(he->p.i32p[i]);
 		PyList_Append(metao, o);
 		Py_DECREF(o);
 	    }
 	    o = metao;
 	} else {
-	    o = PyInt_FromLong(data.i32p[0]);
+	    o = PyInt_FromLong(he->p.i32p[0]);
 	}
 	break;
 
@@ -907,47 +835,36 @@ static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
 	if (he->c != 1 || forceArray) {
 	    metao = PyList_New(0);
 	    for (i = 0; i < he->c; i++) {
-		o = PyInt_FromLong(data.i64p[i]);
+		o = PyInt_FromLong(he->p.i64p[i]);
 		PyList_Append(metao, o);
 		Py_DECREF(o);
 	    }
 	    o = metao;
 	} else {
-	    o = PyInt_FromLong(data.i64p[0]);
+	    o = PyInt_FromLong(he->p.i64p[0]);
 	}
 	break;
 
     case RPM_STRING_ARRAY_TYPE:
 	metao = PyList_New(0);
 	for (i = 0; i < he->c; i++) {
-	    o = PyString_FromString(data.argv[i]);
+	    o = PyString_FromString(he->p.argv[i]);
 	    PyList_Append(metao, o);
 	    Py_DECREF(o);
 	}
 	o = metao;
-	data.ptr = _free(data.ptr);
 	break;
 
     case RPM_STRING_TYPE:
-	if (he->c != 1 || forceArray) {
-	    metao = PyList_New(0);
-	    for (i=0; i < he->c; i++) {
-		o = PyString_FromString(data.argv[i]);
-		PyList_Append(metao, o);
-		Py_DECREF(o);
-	    }
-	    o = metao;
-	} else {
-	    o = PyString_FromString(data.argv[0]);
-	    if (freeData)
-		data.ptr = _free(data.ptr);
-	}
+	o = PyString_FromString(he->p.str);
 	break;
 
     default:
 	PyErr_SetString(PyExc_TypeError, "unsupported type in header");
 	return NULL;
     }
+    if (he->freeData)
+	he->p.ptr = _free(he->p.ptr);
 
     return o;
 }

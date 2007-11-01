@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - jbj: upgrade to F8 & fix rpm-python. i18n tags w hdr_subscript are b0rked.
     - jbj: update loader maps for python lazy loads. rpm-python fixing to do.
     - jbj: insturment headerNextIterator() statistics.
     - jbj: trade a double free for a modest memory leak for the moment.
