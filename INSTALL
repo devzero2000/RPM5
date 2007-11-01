@@ -28,7 +28,7 @@ Name            Type      Minimum Used    URL
 ISO C Compiler  mandatory -       -       e.g. http://gcc.gnu.org/
 POSIX make      mandatory -       -       e.g. http://www.gnu.org/software/make/
 Perl            mandatory 5.8.0   5.8.8   http://www.perl.com/
-POPT            mandatory 1.9     1.11    http://rpm5.org/files/popt/
+POPT            mandatory 1.9     1.12    http://rpm5.org/files/popt/
 BeeCrypt        mandatory 4.0     4.1.2   http://www.virtualunlimited.com/products/beecrypt/
 Neon            optional  0.26.0  0.27.2  http://www.webdav.org/neon/
 Berkeley-DB [1] optional  4.5     4.6.21  http://www.oracle.com/database/berkeley-db.html
@@ -37,7 +37,7 @@ Lua         [2] optional  5.1     5.1.2   http://www.lua.org/
 ZLib        [3] optional  1.2     1.2.3   http://www.zlib.net/
 Bzip2           optional  1.0     1.0.4   http://www.bzip.org/
 File/magic  [4] optional  4.0     4.21    ftp://ftp.astron.com/pub/file/
-GNU gettext     optional  1.16    1.16.1  http://www.gnu.org/software/gettext/
+GNU gettext     optional  0.16    0.16.1  http://www.gnu.org/software/gettext/
 GNU iconv       optional  1.11    1.11    http://www.gnu.org/software/libiconv/
 PCRE            optional  7.0     7.4     http://www.pcre.corg/
 DMalloc         optional  5       5.5.2   http://dmalloc.com/
