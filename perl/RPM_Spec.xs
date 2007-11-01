@@ -98,16 +98,24 @@ srcrpm(spec)
     Spec spec
     PREINIT:
     const char *name, *version, *release;
+    char * srctag;
+    char * srcpath;
     PPCODE:
-    (void) headerNVR(spec->packages->header, &name, &version, &release);
-    XPUSHs(sv_2mortal(newSVpvf("%s/%s-%s-%s.%ssrc.rpm",
-        rpmGetPath("%{_srcrpmdir}", NULL),
-        name, version, release,
+    srcpath = rpmGetPath("%{_srcrpmdir}", NULL);
+    srctag = headerSprintf(
+        spec->packages->header,
+        "%{NAME}-%{VERSION}-%{RELEASE}",
+        rpmTagTable,
+        rpmHeaderFormats,
+        NULL
+    );
+    XPUSHs(sv_2mortal(newSVpvf("%s/%s.%ssrc.rpm",
+        srcpath,
+        srctag,
         spec->noSource ? "no" : ""
         )));
-    headerFreeTag(spec->packages->header, name, RPM_STRING_TYPE);
-    headerFreeTag(spec->packages->header, version, RPM_STRING_TYPE);
-    headerFreeTag(spec->packages->header, release, RPM_STRING_TYPE);
+    _free(srcpath);
+    _free(srctag);
 
 void
 binrpm(spec)
