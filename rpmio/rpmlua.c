@@ -172,6 +172,7 @@ void rpmluaSetPrintBuffer(rpmlua _lua, int flag)
     lua->storeprint = flag;
     lua->printbuf = _free(lua->printbuf);
     lua->printbufsize = 0;
+    lua->printbufused = 0;
 }
 
 const char *rpmluaGetPrintBuffer(rpmlua _lua)
@@ -878,15 +879,13 @@ static int rpm_print (lua_State *L)
 	}
 	lua_pop(L, 1);  /* pop result */
     }
-    lua_pop(L, 1);
     if (!lua->storeprint) {
 	(void) fputs("\n", stdout);
     } else {
-	if (lua->printbufused+1 >= lua->printbufsize) {
+	if (lua->printbufused+1 > lua->printbufsize) {
 	    lua->printbufsize += 512;
 	    lua->printbuf = xrealloc(lua->printbuf, lua->printbufsize);
 	}
-	lua->printbuf[lua->printbufused++] = '\n';
 	lua->printbuf[lua->printbufused] = '\0';
     }
     return 0;
