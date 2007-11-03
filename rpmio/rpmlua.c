@@ -6,7 +6,9 @@
 #include <rpmmacro.h>
 #include <rpmerr.h>
 #include <rpmurl.h>
+#include <rpmurl.h>
 #include <rpmhook.h>
+#include <argv.h>
 
 #include <lua.h>
 #include <lualib.h>
@@ -624,6 +626,50 @@ void rpmluaInteractive(rpmlua _lua)
 /* ------------------------------------------------------------------ */
 /* Lua API */
 
+static int rpm_macros(lua_State *L)
+{
+    const char ** av = NULL;
+    int ac = 0;
+    int i;
+
+    lua_newtable(L);
+
+    ac = rpmGetMacroEntries(NULL, NULL, -1, &av);
+
+    if (av != NULL)
+    for (i = 0; i < ac; i++) {
+	char *n, *o, *b;
+
+	/* Parse out "%name(opts)\tbody" into n/o/b strings. */
+	n = (char *) av[i];
+	b = strchr(n, '\t');
+assert(b != NULL);
+	o = ((b > n && b[-1] == ')') ? strchr(n, '(') : NULL);
+	if (*n == '%')	n++;
+	if (o != NULL && *o == '(') {
+	    b[-1] = '\0';
+	    o++;
+	}
+	b++;
+
+        lua_pushstring(L, n);
+        lua_newtable(L);
+        if (o) {
+            lua_pushstring(L, "opts");
+            lua_pushstring(L, o);
+            lua_settable(L, -3);
+        }
+        if (b) {
+            lua_pushstring(L, "body");
+            lua_pushstring(L, b);
+            lua_settable(L, -3);
+        }
+        lua_settable(L, -3);
+    }
+    av = argvFree(av);
+    return 1;
+}
+
 static int rpm_expand(lua_State *L)
 	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
 	/*@modifies L, rpmGlobalMacroContext, internalState @*/
@@ -849,6 +895,7 @@ static int rpm_print (lua_State *L)
 /*@-readonlytrans@*/
 /*@observer@*/ /*@unchecked@*/
 static const luaL_reg rpmlib[] = {
+    {"macros", rpm_macros},
     {"expand", rpm_expand},
     {"define", rpm_define},
     {"register", rpm_register},

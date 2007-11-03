@@ -63,6 +63,109 @@ rpmrc_DelMacro(/*@unused@*/ PyObject * self, PyObject * args, PyObject * kwds)
     return Py_None;
 }
 
+/**
+ */
+PyObject *
+rpmrc_ExpandMacro(/*@unused@*/PyObject * self, PyObject * args, PyObject * kwds)
+{
+    char * macro;
+    char * kwlist[] = {"macro", NULL};
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "s:ExpandMacro", kwlist, &macro))
+	return NULL;
+
+    return Py_BuildValue("s", rpmExpand(macro, NULL));
+}
+
+/**
+ */
+PyObject *
+rpmrc_GetMacros(/*@unused@*/ PyObject * self, PyObject * args, PyObject * kwds)
+{
+    char * kwlist[] = { NULL };
+    PyObject * mdict;
+    PyObject *oo, *bo;
+    const char ** av = NULL;
+    int ac = 0;
+    int i;
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, ":GetMacros", kwlist))
+	return NULL;
+
+    mdict = PyDict_New();
+    ac = rpmGetMacroEntries(NULL, NULL, -1, &av);
+    if (mdict == NULL || ac < 0 || av == NULL) {
+	PyErr_SetString(pyrpmError, "out of memory");
+	return NULL;
+    }
+
+    if (ac == 0) {
+	av = argvFree(av);
+	return mdict;
+    }
+
+    oo = PyString_FromString("opts");
+    bo = PyString_FromString("body");
+
+    if (oo != NULL && bo != NULL)
+    for (i = 0; i < ac; i++) {
+	char *n, *o, *b;
+	PyObject *ndo, *no, *vo;
+	int failed = 0;
+
+	/* Parse out "%name(opts)\tbody" into n/o/b strings. */
+	n = (char *) av[i];
+	b = strchr(n, '\t');
+assert(b != NULL);
+	o = ((b > n && b[-1] == ')') ? strchr(n, '(') : NULL);
+	if (*n == '%')	n++;
+	if (o != NULL && *o == '(') {
+	    b[-1] = '\0';
+	    o++;
+	}
+	b++;
+
+	/* Create a "name" dictionary, add "opts" and "body" items. */
+	no = PyString_FromString(n);
+	if (no == NULL)
+	    break;
+
+	ndo = PyDict_New();
+	if (ndo == NULL) {
+	    Py_DECREF(no);
+	    break;
+	}
+	PyDict_SetItem(mdict, no, ndo);
+	Py_DECREF(ndo);
+
+	if (o) {
+	    if ((vo = PyString_FromString(o)) != NULL)
+		PyDict_SetItem(ndo, oo, vo);
+	    else
+		failed = 1;
+	    Py_XDECREF(vo);
+	}
+
+	if (b) {
+	    if ((vo = PyString_FromString(b)) != NULL)
+		PyDict_SetItem(ndo, bo, vo);
+	    else
+		failed = 1;
+	    Py_XDECREF(vo);
+	}
+
+	if (failed)
+	    PyDict_DelItem(mdict, no);
+	Py_DECREF(no);
+    }
+
+   Py_XDECREF(oo);
+   Py_XDECREF(bo);
+
+   av = argvFree(av);
+   return mdict;
+}
+
 /*@}*/
 
 #if Py_TPFLAGS_HAVE_ITER	/* XXX backport to python-1.5.2 */

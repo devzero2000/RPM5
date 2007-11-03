@@ -177,6 +177,10 @@ static PyMethodDef rpmModuleMethods[] = {
 	NULL },
     { "delMacro", (PyCFunction) rpmrc_DelMacro, METH_VARARGS|METH_KEYWORDS,
 	NULL },
+    { "expandMacro", (PyCFunction)rpmrc_ExpandMacro, METH_VARARGS|METH_KEYWORDS,
+	NULL },
+    { "getMacros", (PyCFunction) rpmrc_GetMacros, METH_VARARGS|METH_KEYWORDS,
+	NULL },
 
     { "signalsCaught", (PyCFunction) signalsCaught, METH_O,
 	NULL },

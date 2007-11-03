@@ -44,6 +44,20 @@ PyObject * rpmrc_DelMacro(PyObject * self, PyObject * args, PyObject * kwds)
 	/*@globals rpmGlobalMacroContext, _Py_NoneStruct @*/
 	/*@modifies rpmGlobalMacroContext, _Py_NoneStruct @*/;
 
+/** \ingroup py_c
+ */
+/*@null@*/
+PyObject * rpmrc_ExpandMacro(PyObject * self, PyObject * args, PyObject * kwds)
+	/*@globals rpmGlobalMacroContext, _Py_NoneStruct @*/
+	/*@modifies rpmGlobalMacroContext, _Py_NoneStruct @*/;
+
+/** \ingroup py_c
+ */
+/*@null@*/
+PyObject * rpmrc_GetMacros(PyObject * self, PyObject * args, PyObject * kwds)
+	/*@globals rpmGlobalMacroContext, _Py_NoneStruct @*/
+	/*@modifies rpmGlobalMacroContext, _Py_NoneStruct @*/;
+
 #if Py_TPFLAGS_HAVE_ITER	/* XXX backport to python-1.5.2 */
 /** \ingroup py_c
  */

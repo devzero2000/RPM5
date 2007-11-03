@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - jbj: add lua/python getMacros bindings (mostly from <pjones@redhat.com>).
     - jbj: add a getter to retrieve macros with used and/or pattern filtering.
     - jbj: macro macro table/element internals opaque.
     - jbj: fix --rebuilddb --root /path.
