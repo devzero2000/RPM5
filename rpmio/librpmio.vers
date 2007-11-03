@@ -212,6 +212,7 @@ LIBRPMIO_0
     rpmExpandNumeric;
     rpmFreeMacros;
     rpmGenPath;
+    rpmGetMacroEntries;
     rpmGetPath;
     rpmGlob;
     rpmGlobalMacroContext;
