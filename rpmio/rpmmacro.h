@@ -1,12 +1,17 @@
 #ifndef _H_MACRO_
 #define	_H_MACRO_
 
+#include <mire.h>
+
 /** \ingroup rpmio
  * \file rpmio/rpmmacro.h
  */
+typedef /*@abstract@*/ struct MacroEntry_s * MacroEntry;
+typedef /*@abstract@*/ struct MacroContext_s * MacroContext;
 
+#if defined(_MACRO_INTERNAL)
 /*! The structure used to store a macro. */
-typedef /*@abstract@*/ struct MacroEntry_s {
+struct MacroEntry_s {
     struct MacroEntry_s *prev;	/*!< Macro entry stack. */
     const char *name;		/*!< Macro name. */
     const char *opts;		/*!< Macro parameters (a la getopt) */
@@ -14,15 +19,16 @@ typedef /*@abstract@*/ struct MacroEntry_s {
     int	used;			/*!< No. of expansions. */
     short level;		/*!< Scoping level. */
     unsigned short flags;	/*!< Flags. */
-} * MacroEntry;
+};
 
 /*! The structure used to store the set of macros in a context. */
-typedef /*@abstract@*/ struct MacroContext_s {
+struct MacroContext_s {
 /*@owned@*//*@null@*/
     MacroEntry *macroTable;	/*!< Macro entry table for context. */
     int	macrosAllocated;	/*!< No. of allocated macros. */
     int	firstFree;		/*!< No. of macros. */
-} * MacroContext;
+};
+#endif
 
 /*@-redecl@*/
 /*@checked@*/
@@ -65,6 +71,20 @@ extern "C" {
 void rpmDumpMacroTable(/*@null@*/ MacroContext mc, /*@null@*/ FILE * fp)
 	/*@globals rpmGlobalMacroContext, fileSystem @*/
 	/*@modifies *fp, fileSystem @*/;
+
+/**
+ * Return macro entries as string array.
+ * @param mc		macro context (NULL uses global context)
+ * @param mire		pattern to match (NULL disables)
+ * @param used		macro usage (<0 all, =0 unused, >=1 used count)
+ * @retval *avp		macro definitions
+ * @return		no. of entries
+ */
+int
+rpmGetMacroEntries(/*@null@*/ MacroContext mc, /*@null@*/ miRE mire,
+		int used, /*@null@*/ const char *** avp)
+	/*@globals rpmGlobalMacroContext @*/
+	/*@modifies *avp @*/;
 
 /**
  * Return URL path(s) from a (URL prefixed) pattern glob.

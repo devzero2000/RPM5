@@ -68,6 +68,7 @@ const char * rpmMacrofiles = MACROFILES;
 
 #endif
 
+#define	_MACRO_INTERNAL
 #include <rpmmacro.h>
 
 #include "debug.h"
@@ -201,7 +202,7 @@ sortMacroTable(MacroContext mc)
     if (mc == NULL || mc->macroTable == NULL)
 	return;
 
-    qsort(mc->macroTable, mc->firstFree, sizeof(*(mc->macroTable)),
+    qsort(mc->macroTable, mc->firstFree, sizeof(mc->macroTable[0]),
 		compareMacroName);
 
     /* Empty pointers are now at end of table. Reset first free index. */
@@ -211,6 +212,31 @@ sortMacroTable(MacroContext mc)
 	mc->firstFree = i;
 	break;
     }
+}
+
+static char * dupMacroEntry(MacroEntry me)
+{
+    char * t, * te;
+    size_t nb;
+
+assert(me != NULL);
+    nb = strlen(me->name) + sizeof("%") - 1;
+    if (me->opts)
+	nb += strlen(me->opts) + sizeof("()") - 1;
+    if (me->body)
+	nb += strlen(me->body) + sizeof("\t") - 1;
+    nb++;
+
+    te = t = xmalloc(nb);
+    *te = '\0';
+    te = stpcpy( stpcpy(te, "%"), me->name);
+    if (me->opts)
+	te = stpcpy( stpcpy( stpcpy(te, "("), me->opts), ")");
+    if (me->body)
+	te = stpcpy( stpcpy(te, "\t"), me->body);
+    *te = '\0';
+
+    return t;
 }
 
 void
@@ -244,6 +270,41 @@ rpmDumpMacroTable(MacroContext mc, FILE * fp)
     }
     fprintf(fp, _("======================== active %d empty %d\n"),
 		nactive, nempty);
+}
+
+int
+rpmGetMacroEntries(MacroContext mc, miRE mire, int used,
+		const char *** avp)
+{
+    const char ** av;
+    int ac;
+    int i;
+
+    if (mc == NULL)
+	mc = rpmGlobalMacroContext;
+
+    if (avp == NULL)
+	return mc->firstFree;
+
+    av = xcalloc( (mc->firstFree+1), sizeof(mc->macroTable[0]));
+    if (mc->macroTable != NULL)
+    for (i = 0; i < mc->firstFree; i++) {
+	MacroEntry me;
+	me = mc->macroTable[i];
+	if (used > 0 && me->used < used)
+	    continue;
+	if (used == 0 && me->used != 0)
+	    continue;
+#if !defined(DEBUG_MACROS)	/* XXX preserve standalone build */
+	if (mireRegexec(mire, me->name))
+	    continue;
+#endif
+	av[ac++] = dupMacroEntry(me);
+    }
+    av[ac] = NULL;
+    *avp = av = xrealloc(av, (ac+1) * sizeof(*av));
+    
+    return ac;
 }
 
 /**

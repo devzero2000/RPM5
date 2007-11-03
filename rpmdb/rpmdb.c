@@ -11,6 +11,7 @@
 #include <rpmio.h>
 #include <rpmpgp.h>
 #include <rpmurl.h>
+#define	_MIRE_INTERNAL
 #include <rpmmacro.h>
 #include <rpmsq.h>
 #include <rpmtag.h>
@@ -27,7 +28,6 @@ extern void rpmtsCleanDig(void * ts)
 #endif
 
 #define	_RPMDB_INTERNAL
-#define	_MIRE_INTERNAL
 #include "rpmdb.h"
 #include "pkgio.h"
 #include "fprint.h"

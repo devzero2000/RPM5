@@ -1,4 +1,6 @@
 4.5 -> 5.0:
+    - jbj: add a getter to retrieve macros with used and/or pattern filtering.
+    - jbj: macro macro table/element internals opaque.
     - jbj: fix --rebuilddb --root /path.
     - rse: fix linking of RPM against PCRE's POSIX API under --with-pcre
     - jbj: upgrade to F8 & fix rpm-python. i18n tags w hdr_subscript are b0rked.
