@@ -268,7 +268,7 @@ int parseNoSource(Spec spec, const char * field, int tag)
 {
     const char *f, *fe;
     const char *name;
-    int num, flag;
+    uint32_t num, flag;
 
     if (tag == RPMTAG_NOSOURCE) {
 	flag = RPMFILE_SOURCE;
@@ -319,7 +319,7 @@ int addSource(Spec spec, Package pkg, const char *field, int tag)
     char *nump;
     const char *fieldp = NULL;
     char buf[BUFSIZ];
-    int num = 0;
+    uint32_t num = 0;
 
     buf[0] = '\0';
     /*@-branchstate@*/

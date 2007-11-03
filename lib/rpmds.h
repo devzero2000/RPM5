@@ -41,11 +41,11 @@ struct rpmds_s {
 /*@only@*/ /*@relnull@*/
     const char ** EVR;		/*!< Epoch-Version-Release. */
 /*@only@*/ /*@relnull@*/
-    int_32 * Flags;		/*!< Bit(s) identifying context/comparison. */
+    uint32_t * Flags;		/*!< Bit(s) identifying context/comparison. */
 /*@only@*/ /*@null@*/
-    uint_32 * Color;		/*!< Bit(s) calculated from file color(s). */
+    uint32_t * Color;		/*!< Bit(s) calculated from file color(s). */
 /*@only@*/ /*@null@*/
-    int_32 * Refs;		/*!< No. of file refs. */
+    uint32_t * Refs;		/*!< No. of file refs. */
 /*@only@*/ /*@null@*/
     int_32 * Result;		/*!< Dependency check result. */
 /*@null@*/
@@ -54,9 +54,9 @@ struct rpmds_s {
     struct rpmns_s ns;		/*!< Name (split). */
 /*@only@*/ /*@null@*/
     const char * A;		/*!< Arch (from containing package). */
-    int_32 BT;			/*!< Package build time tie breaker. */
+    uint32_t BT;		/*!< Package build time tie breaker. */
     rpmTag tagN;		/*!< Header tag. */
-    int_32 Count;		/*!< No. of elements */
+    uint32_t Count;		/*!< No. of elements */
     int i;			/*!< Element index. */
     unsigned l;			/*!< Low element (bsearch). */
     unsigned u;			/*!< High element (bsearch). */
@@ -195,7 +195,7 @@ char * rpmdsNewDNEVR(const char * dspfx, rpmds ds)
  * @return		new dependency set
  */
 /*@null@*/
-rpmds rpmdsThis(Header h, rpmTag tagN, int_32 Flags)
+rpmds rpmdsThis(Header h, rpmTag tagN, uint32_t Flags)
 	/*@*/;
 
 /**
@@ -207,7 +207,7 @@ rpmds rpmdsThis(Header h, rpmTag tagN, int_32 Flags)
  * @return		new dependency set
  */
 /*@null@*/
-rpmds rpmdsSingle(rpmTag tagN, const char * N, const char * EVR, int_32 Flags)
+rpmds rpmdsSingle(rpmTag tagN, const char * N, const char * EVR, uint32_t Flags)
 	/*@*/;
 
 /**
@@ -268,7 +268,7 @@ extern const char * rpmdsEVR(/*@null@*/ const rpmds ds)
  * @param ds		dependency set
  * @return		current dependency flags, 0 on invalid
  */
-int_32 rpmdsFlags(/*@null@*/ const rpmds ds)
+uint32_t rpmdsFlags(/*@null@*/ const rpmds ds)
 	/*@*/;
 
 /**
@@ -365,7 +365,7 @@ void * rpmdsSetEVRcmp(/*@null@*/ rpmds ds,
  * @param ds		dependency set
  * @return		current dependency color (0 if not set)
  */
-uint_32 rpmdsColor(/*@null@*/ const rpmds ds)
+uint32_t rpmdsColor(/*@null@*/ const rpmds ds)
 	/*@*/;
 
 /**
@@ -374,7 +374,7 @@ uint_32 rpmdsColor(/*@null@*/ const rpmds ds)
  * @param color		new dependency color
  * @return		previous dependency color
  */
-uint_32 rpmdsSetColor(/*@null@*/ const rpmds ds, uint_32 color)
+uint32_t rpmdsSetColor(/*@null@*/ const rpmds ds, uint32_t color)
 	/*@modifies ds @*/;
 
 /**
@@ -382,7 +382,7 @@ uint_32 rpmdsSetColor(/*@null@*/ const rpmds ds, uint_32 color)
  * @param ds		dependency set
  * @return		current dependency file refs (0 if not set)
  */
-int_32 rpmdsRefs(/*@null@*/ const rpmds ds)
+uint32_t rpmdsRefs(/*@null@*/ const rpmds ds)
 	/*@*/;
 
 /**
@@ -391,7 +391,7 @@ int_32 rpmdsRefs(/*@null@*/ const rpmds ds)
  * @param refs		new dependency refs
  * @return		previous dependency refs
  */
-int_32 rpmdsSetRefs(/*@null@*/ const rpmds ds, int_32 refs)
+uint32_t rpmdsSetRefs(/*@null@*/ const rpmds ds, uint32_t refs)
 	/*@modifies ds @*/;
 
 /**
@@ -613,11 +613,11 @@ int rpmdsUname(rpmds * dsp, /*@null@*/ const struct utsname * un)
 /**
  * Load provides from a pipe into a dependency set.
  * @retval *dsp		(loaded) depedency set
- * @param tagN		rpmds tag (<= 0 uses RPMTAG_PROVIDENAME).
+ * @param tagN		rpmds tag (0 uses RPMTAG_PROVIDENAME).
  * @param cmd		popen cmd to run (NULL loads perl provides)
  * @return		0 on success
  */
-int rpmdsPipe(rpmds * dsp, int_32 tagN, /*@null@*/ const char * cmd)
+int rpmdsPipe(rpmds * dsp, rpmTag tagN, /*@null@*/ const char * cmd)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies *dsp, rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState @*/;

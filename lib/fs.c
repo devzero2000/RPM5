@@ -268,7 +268,7 @@ static int getFilesystemList(void)
 }
 #endif	/* HAVE_MNTCTL */
 
-int rpmGetFilesystemList(const char *** listptr, int * num)
+int rpmGetFilesystemList(const char *** listptr, uint32_t * num)
 {
     if (!fsnames) 
 	if (getFilesystemList())

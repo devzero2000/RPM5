@@ -38,7 +38,9 @@ int headerMacrosLoad(Header h)
     HGE_t hge = (HGE_t)headerGetExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     struct tagMacro * tagm;
-    char numbuf[32];
+    char numbuf[64];
+    const char * val;
+    uint64_t ival;
     int xx;
 
     /* XXX pre-expand %{buildroot} (if any) */
@@ -58,23 +60,41 @@ int headerMacrosLoad(Header h)
 	xx = hge(h, he, 0);
 	if (!xx)
 	    continue;
+	val = NULL;
+	ival = 0;
 	switch (he->t) {
+	case RPM_CHAR_TYPE:
+	case RPM_INT8_TYPE:
+	    ival = he->p.ui8p[0];
+	    val = numbuf;
+	    /*@switchbreak@*/ break;
+	case RPM_INT16_TYPE:
+	    ival = he->p.ui16p[0];
+	    val = numbuf;
+	    /*@switchbreak@*/ break;
 	case RPM_INT32_TYPE:
-	    sprintf(numbuf, "%d", he->p.i32p[0]);
-	    addMacro(NULL, tagm->macroname, NULL, numbuf, -1);
+	    ival = he->p.ui32p[0];
+	    val = numbuf;
+	    /*@switchbreak@*/ break;
+	case RPM_INT64_TYPE:
+	    ival = he->p.ui64p[0];
+	    val = numbuf;
 	    /*@switchbreak@*/ break;
 	case RPM_STRING_TYPE:
-	    addMacro(NULL, tagm->macroname, NULL, he->p.str, -1);
+	    val = he->p.str;
 	    /*@switchbreak@*/ break;
 	case RPM_STRING_ARRAY_TYPE:
 	case RPM_I18NSTRING_TYPE:
 	case RPM_BIN_TYPE:
 	case RPM_NULL_TYPE:
-	case RPM_CHAR_TYPE:
-	case RPM_INT8_TYPE:
-	case RPM_INT16_TYPE:
 	default:
 	    /*@switchbreak@*/ break;
+	}
+	
+	if (val) {
+	    if (val == numbuf)
+		sprintf(numbuf, "%llu", ival);
+	    addMacro(NULL, tagm->macroname, NULL, val, -1);
 	}
 	he->p.ptr = _free(he->p.ptr);
     }

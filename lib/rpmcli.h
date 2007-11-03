@@ -595,7 +595,7 @@ struct IDT_s {
     const char * key;		/*! removed package file name. */
     Header h;			/*!< removed package header. */
     union {
-	uint_32 u32;		/*!< install/remove transaction id */
+	uint32_t u32;		/*!< install/remove transaction id */
     } val;
 };
 #endif
@@ -660,7 +660,7 @@ IDTX IDTXsort(/*@only@*/ /*@null@*/ IDTX idtx)
  * @return 		id index
  */
 /*@only@*/ /*@null@*/
-IDTX IDTXload(rpmts ts, rpmTag tag, uint_32 rbtid)
+IDTX IDTXload(rpmts ts, rpmTag tag, uint32_t rbtid)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState  @*/;
 
@@ -673,7 +673,7 @@ IDTX IDTXload(rpmts ts, rpmTag tag, uint_32 rbtid)
  * @return 		id index
  */
 /*@only@*/ /*@null@*/
-IDTX IDTXglob(rpmts ts, const char * globstr, rpmTag tag, uint_32 rbtid)
+IDTX IDTXglob(rpmts ts, const char * globstr, rpmTag tag, uint32_t rbtid)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
@@ -809,9 +809,9 @@ struct rpmQVKArguments_s {
     rpmtransFlags transFlags;
     rpmprobFilterFlags probFilter;
     rpmInstallInterfaceFlags installInterfaceFlags;
-    uint_32 arbtid;		/*!< from --arbgoal */
-    uint_32 rbtid;		/*!< from --rollback */
-    uint_32 *rbtidExcludes;	/*!< from --rollback */
+    uint32_t arbtid;		/*!< from --arbgoal */
+    uint32_t rbtid;		/*!< from --rollback */
+    uint32_t *rbtidExcludes;	/*!< from --rollback */
     int numrbtidExcludes;	/*!< from --rollback */
     int numRelocations;
     int noDeps;

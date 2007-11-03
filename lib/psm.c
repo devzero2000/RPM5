@@ -58,17 +58,17 @@ int rpmVersionCompare(Header first, Header second)
     HGE_t hge = (HGE_t)headerGetExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     const char * one, * two;
-    int_32 Eone, Etwo;
+    uint32_t Eone, Etwo;
     int rc;
     int xx;
 
     he->tag = RPMTAG_EPOCH;
     xx = hge(first, he, 0);
-    Eone = (xx && he->p.i32p ? he->p.i32p[0] : 0);
+    Eone = (xx && he->p.ui32p ? he->p.ui32p[0] : 0);
     he->p.ptr = _free(he->p.ptr);
     he->tag = RPMTAG_EPOCH;
     xx = hge(second, he, 0);
-    Etwo = (xx && he->p.i32p ? he->p.i32p[0] : 0);
+    Etwo = (xx && he->p.ui32p ? he->p.ui32p[0] : 0);
     he->p.ptr = _free(he->p.ptr);
 
     if (Eone < Etwo)
@@ -164,8 +164,8 @@ static rpmRC markReplacedFiles(const rpmpsm psm)
 	num = 0;
 	while (sfi->otherPkg && sfi->otherPkg == prev) {
 	    assert(sfi->otherFileNum < count);
-	    if (secStates.i8p[sfi->otherFileNum] != RPMFILE_STATE_REPLACED) {
-		secStates.i8p[sfi->otherFileNum] = RPMFILE_STATE_REPLACED;
+	    if (secStates.ui8p[sfi->otherFileNum] != RPMFILE_STATE_REPLACED) {
+		secStates.ui8p[sfi->otherFileNum] = RPMFILE_STATE_REPLACED;
 		if (modified == 0) {
 		    /* Modified header will be rewritten. */
 		    modified = 1;
@@ -1019,7 +1019,7 @@ static rpmRC handleOneTrigger(const rpmpsm psm,
     rpmds trigger = NULL;
     const char ** triggerScripts;
     const char ** triggerProgs;
-    int_32 * triggerIndices;
+    uint32_t * triggerIndices;
     const char * sourceName;
     const char * triggerName;
     rpmRC rc = RPMRC_OK;
@@ -1041,7 +1041,7 @@ static rpmRC handleOneTrigger(const rpmpsm psm,
 
     while ((i = rpmdsNext(trigger)) >= 0) {
 	const char * Name;
-	int_32 Flags = rpmdsFlags(trigger);
+	uint32_t Flags = rpmdsFlags(trigger);
 
 	if ((Name = rpmdsN(trigger)) == NULL)
 	    continue;   /* XXX can't happen */
@@ -1059,7 +1059,7 @@ static rpmRC handleOneTrigger(const rpmpsm psm,
 
 	he->tag = RPMTAG_TRIGGERINDEX;
 	xx = hge(triggeredH, he, 0);
-	triggerIndices = he->p.i32p;
+	triggerIndices = he->p.ui32p;
 	he->tag = RPMTAG_TRIGGERSCRIPTS;
 	xx = hge(triggeredH, he, 0);
 	triggerScripts = he->p.argv;
@@ -1169,7 +1169,7 @@ static rpmRC runImmedTriggers(rpmpsm psm)
     rpmfi fi = psm->fi;
     const char ** triggerNames;
     int numTriggers;
-    int_32 * triggerIndices;
+    uint32_t * triggerIndices;
     int numTriggerIndices;
     unsigned char * triggersRun;
     rpmRC rc = RPMRC_OK;
@@ -1185,7 +1185,7 @@ assert(fi->h != NULL);
     numTriggers = he->c;
     he->tag = RPMTAG_TRIGGERINDEX;
     xx = hge(fi->h, he, 0);
-    triggerIndices = he->p.i32p;
+    triggerIndices = he->p.ui32p;
     numTriggerIndices = he->c;
 
     if (!(triggerNames && numTriggers > 0 && triggerIndices && numTriggerIndices > 0))
@@ -1344,12 +1344,12 @@ rpmpsm rpmpsmNew(rpmts ts, rpmte te, rpmfi fi)
  * @param tag		tag to load
  * @return		tag value (0 on failure)
  */
-static uint_32 hLoadTID(Header h, rpmTag tag)
+static uint32_t hLoadTID(Header h, rpmTag tag)
 	/*@*/
 {
     HGE_t hge = (HGE_t)headerGetExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
-    uint_32 val;
+    uint32_t val;
     int xx;
 
     he->tag = tag;
@@ -1516,9 +1516,9 @@ static int populateInstallHeader(const rpmts ts, const rpmte te, rpmfi fi)
 {
     HAE_t hae = headerAddExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
-    uint_32 tscolor = rpmtsColor(ts);
-    uint_32 tecolor = rpmteColor(te);
-    int_32 installTime = (int_32) time(NULL);
+    uint32_t tscolor = rpmtsColor(ts);
+    uint32_t tecolor = rpmteColor(te);
+    uint32_t installTime = (uint32_t) time(NULL);
     int fc = rpmfiFC(fi);
     int xx = 1;
 
@@ -1526,14 +1526,14 @@ assert(fi->h != NULL);
     if (fi->fstates != NULL && fc > 0) {
 	he->tag = RPMTAG_FILESTATES;
 	he->t = RPM_CHAR_TYPE;
-	he->p.i8p = fi->fstates;
+	he->p.ui8p = fi->fstates;
 	he->c = fc;
 	xx = hae(fi->h, he, 0);
     }
 
     he->tag = RPMTAG_INSTALLTIME;
     he->t = RPM_INT32_TYPE;
-    he->p.i32p = &installTime;
+    he->p.ui32p = &installTime;
     he->c = 1;
     xx = hae(fi->h, he, 0);
 
@@ -1601,7 +1601,7 @@ rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
     HAE_t hae = headerAddExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     const rpmts ts = psm->ts;
-    uint_32 tscolor = rpmtsColor(ts);
+    uint32_t tscolor = rpmtsColor(ts);
     rpmfi fi = psm->fi;
     rpmRC rc = psm->rc;
     int saveerrno;
@@ -1930,11 +1930,11 @@ psm->te->h = headerLink(fi->h);
 
 	    /* Add remove transaction id to header. */
 	    if (psm->oh != NULL)
-	    {	int_32 tid = rpmtsGetTid(ts);
+	    {	uint32_t tid = rpmtsGetTid(ts);
 
 		he->tag = RPMTAG_REMOVETID;
 		he->t = RPM_INT32_TYPE;
-		he->p.i32p = &tid;
+		he->p.ui32p = &tid;
 		he->c = 1;
 		xx = hae(psm->oh, he, 0);
 
@@ -2388,7 +2388,7 @@ assert(psm->mi == NULL);
 
 	/* Add header to db, doing header check if requested */
 	/* XXX rollback headers propagate the previous transaction id. */
-	{   uint_32 tid = ((rpmtsType(ts) == RPMTRANS_TYPE_ROLLBACK)
+	{   uint32_t tid = ((rpmtsType(ts) == RPMTRANS_TYPE_ROLLBACK)
 		? hLoadTID(fi->h, RPMTAG_INSTALLTID) : rpmtsGetTid(ts));
 	    (void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_DBADD), 0);
 	    if (!(rpmtsVSFlags(ts) & RPMVSF_NOHDRCHK))

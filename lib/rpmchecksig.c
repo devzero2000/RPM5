@@ -463,8 +463,8 @@ rpmRC rpmcliImportPubkey(const rpmts ts, const unsigned char * pkt, ssize_t pktl
     const char * group = "Public Keys";
     const char * license = "pubkey";
     const char * buildhost = "localhost";
-    int_32 pflags = (RPMSENSE_KEYRING|RPMSENSE_EQUAL);
-    int_32 zero = 0;
+    uint32_t pflags = (RPMSENSE_KEYRING|RPMSENSE_EQUAL);
+    uint32_t zero = 0;
     pgpDig dig = NULL;
     pgpDigParams pubp = NULL;
     const char * d = NULL;
@@ -563,7 +563,7 @@ rpmRC rpmcliImportPubkey(const rpmts ts, const unsigned char * pkt, ssize_t pktl
 
     he->tag = RPMTAG_SIZE;
     he->t = RPM_INT32_TYPE;
-    he->p.i32p = &zero;
+    he->p.ui32p = &zero;
     he->c = 1;
     xx = hae(h, he, 0);
 
@@ -581,7 +581,7 @@ rpmRC rpmcliImportPubkey(const rpmts ts, const unsigned char * pkt, ssize_t pktl
     xx = hae(h, he, 0);
     he->tag = RPMTAG_PROVIDEFLAGS;
     he->t = RPM_INT32_TYPE;
-    he->p.i32p = &pflags;
+    he->p.ui32p = &pflags;
     he->c = 1;
     xx = hae(h, he, 0);
 
@@ -597,7 +597,7 @@ rpmRC rpmcliImportPubkey(const rpmts ts, const unsigned char * pkt, ssize_t pktl
     xx = hae(h, he, 0);
     he->tag = RPMTAG_PROVIDEFLAGS;
     he->t = RPM_INT32_TYPE;
-    he->p.i32p = &pflags;
+    he->p.ui32p = &pflags;
     he->c = 1;
     xx = hae(h, he, 0);
 
@@ -615,16 +615,16 @@ rpmRC rpmcliImportPubkey(const rpmts ts, const unsigned char * pkt, ssize_t pktl
     he->p.str = buildhost;
     he->c = 1;
     xx = hae(h, he, 0);
-    {   int_32 tid = rpmtsGetTid(ts);
+    {   uint32_t tid = rpmtsGetTid(ts);
 	he->tag = RPMTAG_INSTALLTIME;
 	he->t = RPM_INT32_TYPE;
-	he->p.i32p = &tid;
+	he->p.ui32p = &tid;
 	he->c = 1;
 	xx = hae(h, he, 0);
 	/* XXX W2DO: tag value inheirited from parent? */
 	he->tag = RPMTAG_BUILDTIME;
 	he->t = RPM_INT32_TYPE;
-	he->p.i32p = &tid;
+	he->p.ui32p = &tid;
 	he->c = 1;
 	xx = hae(h, he, 0);
     }
@@ -832,12 +832,12 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
     char buf[8192], * b;
     char missingKeys[7164], * m;
     char untrustedKeys[7164], * u;
-    int_32 sigtag;
+    uint32_t sigtag;
     rpmTagType sigtype;
     const void * sig;
     pgpDig dig;
     pgpDigParams sigp;
-    int_32 siglen;
+    uint32_t siglen;
     Header sigh = NULL;
     HeaderIterator hi = NULL;
     const char * msg = NULL;

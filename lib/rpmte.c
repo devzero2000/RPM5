@@ -148,9 +148,9 @@ assert(he->p.str != NULL);
 
     he->tag = RPMTAG_EPOCH;
     xx = hge(h, he, 0);
-    if (he->p.i32p != NULL) {
+    if (he->p.ui32p != NULL) {
 	p->epoch = xmalloc(20);
-	sprintf(p->epoch, "%d", he->p.i32p[0]);
+	sprintf(p->epoch, "%u", he->p.ui32p[0]);
 	he->p.ptr = _free(he->p.ptr);
     } else
 	p->epoch = NULL;
@@ -309,12 +309,12 @@ int rpmteIsSource(rpmte te)
     return (te != NULL ? te->isSource : 0);
 }
 
-uint_32 rpmteColor(rpmte te)
+uint32_t rpmteColor(rpmte te)
 {
     return (te != NULL ? te->color : 0);
 }
 
-uint_32 rpmteSetColor(rpmte te, uint_32 color)
+uint32_t rpmteSetColor(rpmte te, uint32_t color)
 {
     int ocolor = 0;
     if (te != NULL) {
@@ -324,7 +324,7 @@ uint_32 rpmteSetColor(rpmte te, uint_32 color)
     return ocolor;
 }
 
-uint_32 rpmtePkgFileSize(rpmte te)
+uint32_t rpmtePkgFileSize(rpmte te)
 {
     return (te != NULL ? te->pkgFileSize : 0);
 }
@@ -531,10 +531,10 @@ void rpmteColorDS(rpmte te, rpmTag tag)
     rpmds ds = rpmteDS(te, tag);
     char deptype = 'R';
     char mydt;
-    const uint_32 * ddict;
-    int_32 * colors;
-    int_32 * refs;
-    int_32 val;
+    const uint32_t * ddict;
+    uint32_t * colors;
+    uint32_t * refs;
+    uint32_t val;
     int Count;
     size_t nb;
     unsigned ix;

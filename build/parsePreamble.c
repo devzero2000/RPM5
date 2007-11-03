@@ -57,16 +57,24 @@ static rpmTag requiredTags[] = {
 
 /**
  */
-static void addOrAppendListEntry(Header h, int_32 tag, char * line)
+static void addOrAppendListEntry(Header h, rpmTag tag, char * line)
 	/*@modifies h @*/
 {
+    HAE_t hae = headerAddExtension;
+    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     int xx;
     int argc;
     const char **argv;
 
     xx = poptParseArgvString(line, &argc, &argv);
-    if (argc)
-	xx = headerAddOrAppendEntry(h, tag, RPM_STRING_ARRAY_TYPE, argv, argc);
+    if (argc) {
+	he->tag = tag;
+	he->t = RPM_STRING_ARRAY_TYPE;
+	he->p.argv = argv;
+	he->c = argc;
+	he->append = 1;
+	xx = hae(h, he, 0);
+    }
     argv = _free(argv);
 }
 
@@ -298,7 +306,7 @@ static int checkForDuplicates(Header h, const char * NVR)
 	/*@modifies h @*/
 {
     int res = 0;
-    int lastTag, tag;
+    rpmTag lastTag, tag;
     HeaderIterator hi;
     
     for (hi = headerInitIterator(h), lastTag = 0;
@@ -372,7 +380,7 @@ static int doIcon(Spec spec, Header h)
     struct Source *sp;
     size_t iconsize = 2048;	/* XXX big enuf */
     size_t nb;
-    char *icon = alloca(iconsize+1);
+    uint8_t * icon = alloca(iconsize+1);
     FD_t fd = NULL;
     int rc = RPMRC_FAIL;	/* assume error */
     int urltype;
@@ -426,16 +434,19 @@ static int doIcon(Spec spec, Header h)
 	goto exit;
     }
 
-    if (!strncmp(icon, "GIF", sizeof("GIF")-1)) {
+    if (icon[0] == 'G' && icon[1] == 'I' && icon[2] == 'F') {
 	he->tag = RPMTAG_GIF;
 	he->t = RPM_BIN_TYPE;
-	he->p.i8p = icon;
+	he->p.ui8p = icon;
 	he->c = nb;
 	xx = hae(h, he, 0);
-    } else if (!strncmp(icon, "/* XPM", sizeof("/* XPM")-1)) {
+    } else
+    if (icon[0] == '/' && icon[1] == '*' && icon[2] == ' '
+     && icon[3] == 'X' && icon[4] == 'P' && icon[5] == 'M')
+    {
 	he->tag = RPMTAG_XPM;
 	he->t = RPM_BIN_TYPE;
-	he->p.i8p = icon;
+	he->p.ui8p = icon;
 	he->c = nb;
 	xx = hae(h, he, 0);
     } else {
@@ -521,7 +532,7 @@ static int handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
     int multiToken = 0;
     rpmsenseFlags tagflags;
     int len;
-    int num;
+    uint32_t num;
     int rc;
     int xx;
     
@@ -668,7 +679,7 @@ static int handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
 	}
 	he->tag = tag;
 	he->t = RPM_INT32_TYPE;
-	he->p.i32p = &num;
+	he->p.ui32p = &num;
 	he->c = 1;
 	xx = hae(pkg->header, he, 0);
 	break;
@@ -1055,7 +1066,7 @@ int parsePreamble(Spec spec, int initialPackage)
 
     if (pkg != spec->packages)
 	headerCopyTags(spec->packages->header, pkg->header,
-			(int_32 *)copyTagsDuringParse);
+			(uint32_t *)copyTagsDuringParse);
 
     if (checkForRequired(pkg->header, NVR))
 	return RPMRC_FAIL;

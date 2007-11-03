@@ -226,7 +226,7 @@ int headerWrite(void * _fd, /*@null@*/ Header h)
  * @return		1 on success, 0 on failure
  */
 /*@unused@*/ static inline
-int headerIsEntry(/*@null@*/ Header h, int_32 tag)
+int headerIsEntry(/*@null@*/ Header h, uint32_t tag)
 	/*@modifies h @*/
 {
     /*@-abstract@*/
@@ -305,7 +305,7 @@ assert(xx);
  * @return		1 on success, 0 on failure
  */
 /*@unused@*/ static inline
-int headerGetEntry(Header h, int_32 tag,
+int headerGetEntry(Header h, uint32_t tag,
 			/*@null@*/ /*@out@*/ hTYP_t type,
 			/*@null@*/ /*@out@*/ hRET_t * p,
 			/*@null@*/ /*@out@*/ hCNT_t c)
@@ -328,7 +328,7 @@ int headerGetEntry(Header h, int_32 tag,
  * @return		1 on success, 0 on failure
  */
 /*@unused@*/ static inline
-int headerGetEntryMinMemory(Header h, int_32 tag,
+int headerGetEntryMinMemory(Header h, uint32_t tag,
 			/*@null@*/ /*@out@*/ hTYP_t type,
 			/*@null@*/ /*@out@*/ hRET_t * p, 
 			/*@null@*/ /*@out@*/ hCNT_t c)
@@ -354,7 +354,7 @@ int headerGetEntryMinMemory(Header h, int_32 tag,
  */
 /*@mayexit@*/
 /*@unused@*/ static inline
-int headerAddEntry(Header h, int_32 tag, rpmTagType type,
+int headerAddEntry(Header h, uint32_t tag, rpmTagType type,
 		const void * p, rpmTagCount c)
 	/*@modifies h @*/
 {
@@ -376,7 +376,7 @@ int headerAddEntry(Header h, int_32 tag, rpmTagType type,
  * @return		1 on success, 0 on failure
  */
 /*@unused@*/ static inline
-int headerAppendEntry(Header h, int_32 tag, rpmTagType type,
+int headerAppendEntry(Header h, uint32_t tag, rpmTagType type,
 		const void * p, rpmTagCount c)
 	/*@modifies h @*/
 {
@@ -394,7 +394,7 @@ int headerAppendEntry(Header h, int_32 tag, rpmTagType type,
  * @return		1 on success, 0 on failure
  */
 /*@unused@*/ static inline
-int headerAddOrAppendEntry(Header h, int_32 tag, rpmTagType type,
+int headerAddOrAppendEntry(Header h, uint32_t tag, rpmTagType type,
 		const void * p, rpmTagCount c)
 	/*@modifies h @*/
 {
@@ -422,7 +422,7 @@ int headerAddOrAppendEntry(Header h, int_32 tag, rpmTagType type,
  * @return		1 on success, 0 on failure
  */
 /*@unused@*/ static inline
-int headerAddI18NString(Header h, int_32 tag, const char * string,
+int headerAddI18NString(Header h, uint32_t tag, const char * string,
 		const char * lang)
 	/*@modifies h @*/
 {
@@ -440,7 +440,7 @@ int headerAddI18NString(Header h, int_32 tag, const char * string,
  * @return		1 on success, 0 on failure
  */
 /*@unused@*/ static inline
-int headerModifyEntry(Header h, int_32 tag, rpmTagType type,
+int headerModifyEntry(Header h, uint32_t tag, rpmTagType type,
 			const void * p, rpmTagCount c)
 	/*@modifies h @*/
 {
@@ -457,7 +457,7 @@ int headerModifyEntry(Header h, int_32 tag, rpmTagType type,
  * @return		0 on success, 1 on failure (INCONSISTENT)
  */
 /*@unused@*/ static inline
-int headerRemoveEntry(Header h, int_32 tag)
+int headerRemoveEntry(Header h, uint32_t tag)
 	/*@modifies h @*/
 {
     return (h2hv(h)->hdrremove) (h, tag);

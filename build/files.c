@@ -273,14 +273,14 @@ static void timeCheck(int tc, Header h)
 {
     HGE_t hge = (HGE_t)headerGetExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
-    int_32 currentTime = time(NULL);
-    int_32 * mtime;
+    uint32_t currentTime = time(NULL);
+    uint32_t * mtime;
     int xx;
     int i;
 
     he->tag = RPMTAG_FILEMTIMES;
     xx = hge(h, he, 0);
-    mtime = he->p.i32p;
+    mtime = he->p.ui32p;
     he->tag = RPMTAG_OLDFILENAMES;
     xx = hge(h, he, 0);
     
@@ -1174,7 +1174,7 @@ static void compressFilelist(Header h)
     const char * fn;
     const char ** dirNames;
     const char ** baseNames;
-    int_32 * dirIndexes;
+    uint32_t * dirIndexes;
     int count;
     int dirIndex = -1;
     int xx;
@@ -1249,7 +1249,7 @@ exit:
     if (count > 0) {
 	he->tag = RPMTAG_DIRINDEXES;
 	he->t = RPM_INT32_TYPE;
-	he->p.i32p = dirIndexes;
+	he->p.ui32p = dirIndexes;
 	he->c = count;
 	xx = hae(h, he, 0);
 	he->tag = RPMTAG_BASENAMES;
@@ -2438,9 +2438,9 @@ exit:
 int initSourceHeader(Spec spec, StringBuf *sfp)
 {
     HeaderIterator hi;
-    int_32 tag;
+    rpmTag tag;
     rpmTagType type;
-    int_32 count;
+    rpmTagCount count;
     const void * ptr;
     StringBuf sourceFiles;
     struct Source *srcPtr;

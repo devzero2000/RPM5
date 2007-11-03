@@ -435,7 +435,7 @@ static PyObject * hdrKeyList(hdrObject * s)
 {
     PyObject * list, *o;
     HeaderIterator hi;
-    int_32 tag;
+    rpmTag tag;
     rpmTagType type;
 
     list = PyList_New(0);
@@ -793,13 +793,13 @@ static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
 	if (he->c != 1 || forceArray) {
 	    metao = PyList_New(0);
 	    for (i = 0; i < he->c; i++) {
-		o = PyInt_FromLong(he->p.i8p[i]);
+		o = PyInt_FromLong(he->p.ui8p[i]);
 		PyList_Append(metao, o);
 		Py_DECREF(o);
 	    }
 	    o = metao;
 	} else {
-	    o = PyInt_FromLong(he->p.i8p[0]);
+	    o = PyInt_FromLong(he->p.ui8p[0]);
 	}
 	break;
 
@@ -807,13 +807,13 @@ static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
 	if (he->c != 1 || forceArray) {
 	    metao = PyList_New(0);
 	    for (i = 0; i < he->c; i++) {
-		o = PyInt_FromLong(he->p.i16p[i]);
+		o = PyInt_FromLong(he->p.ui16p[i]);
 		PyList_Append(metao, o);
 		Py_DECREF(o);
 	    }
 	    o = metao;
 	} else {
-	    o = PyInt_FromLong(he->p.i16p[0]);
+	    o = PyInt_FromLong(he->p.ui16p[0]);
 	}
 	break;
 
@@ -821,13 +821,13 @@ static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
 	if (he->c != 1 || forceArray) {
 	    metao = PyList_New(0);
 	    for (i = 0; i < he->c; i++) {
-		o = PyInt_FromLong(he->p.i32p[i]);
+		o = PyInt_FromLong(he->p.ui32p[i]);
 		PyList_Append(metao, o);
 		Py_DECREF(o);
 	    }
 	    o = metao;
 	} else {
-	    o = PyInt_FromLong(he->p.i32p[0]);
+	    o = PyInt_FromLong(he->p.ui32p[0]);
 	}
 	break;
 
@@ -835,13 +835,13 @@ static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
 	if (he->c != 1 || forceArray) {
 	    metao = PyList_New(0);
 	    for (i = 0; i < he->c; i++) {
-		o = PyInt_FromLong(he->p.i64p[i]);
+		o = PyInt_FromLong(he->p.ui64p[i]);
 		PyList_Append(metao, o);
 		Py_DECREF(o);
 	    }
 	    o = metao;
 	} else {
-	    o = PyInt_FromLong(he->p.i64p[0]);
+	    o = PyInt_FromLong(he->p.ui64p[0]);
 	}
 	break;
 
@@ -1104,7 +1104,7 @@ int rpmMergeHeaders(PyObject * list, FD_t fd, int matchTag)
     rpmTagData oldMatch;
     hdrObject * hdr;
     int count = 0;
-    int_32 tag;
+    rpmTag tag;
     rpmTagType t;
     rpmTagCount c;
     rpmTagData p;
@@ -1127,7 +1127,7 @@ int rpmMergeHeaders(PyObject * list, FD_t fd, int matchTag)
 	    return 1;
 	}
 
-	if (*newMatch.i32p != *oldMatch.i32p) {
+	if (*newMatch.ui32p != *oldMatch.ui32p) {
 	    PyErr_SetString(pyrpmError, "match tag mismatch");
 	    return 1;
 	}

@@ -65,8 +65,8 @@ int addReqProv(/*@unused@*/ Spec spec, Header h, /*@unused@*/ rpmTag tagN,
     len = he->c;
     if (xx) {
 	const char ** versions = NULL;
-	int_32 *flags = NULL;
-	int_32 *indexes = NULL;
+	uint32_t * flags = NULL;
+	uint32_t * indexes = NULL;
 	int duplicate = 0;
 
 	if (flagtag) {
@@ -75,12 +75,12 @@ int addReqProv(/*@unused@*/ Spec spec, Header h, /*@unused@*/ rpmTag tagN,
 	    versions = he->p.argv;
 	    he->tag = flagtag;
 	    xx = hge(h, he, 0);
-	    flags = he->p.i32p;
+	    flags = he->p.ui32p;
 	}
 	if (indextag) {
 	    he->tag = indextag;
 	    xx = hge(h, he, 0);
-	    indexes = he->p.i32p;
+	    indexes = he->p.ui32p;
 	}
 
 /*@-boundsread@*/

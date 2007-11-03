@@ -207,7 +207,7 @@ rpmParseState isPart(const char * line)	/*@*/;
  * @retval res		pointer to int
  * @return		0 on success, 1 on failure
  */
-int parseNum(/*@null@*/ const char * line, /*@null@*/ /*@out@*/int * res)
+int parseNum(/*@null@*/ const char * line, /*@null@*/ /*@out@*/uint32_t * res)
 	/*@modifies *res @*/;
 
 /** \ingroup rpmbuild

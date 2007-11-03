@@ -883,8 +883,8 @@ static int rpmdbExportInfo(/*@unused@*/ rpmdb db, Header h, int adding)
 	    he->tag = RPMTAG_INSTALLTID;
 	    if (hge(h, he, 0)) {
 		struct utimbuf stamp;
-		stamp.actime = he->p.i32p[0];
-		stamp.modtime = he->p.i32p[0];
+		stamp.actime = he->p.ui32p[0];
+		stamp.modtime = he->p.ui32p[0];
 		if (!Utime(fn, &stamp))
 		    rpmlog(RPMLOG_DEBUG, "  +++ %s\n", fn);
 	    }
@@ -2176,7 +2176,7 @@ static int mireSkip (const rpmdbMatchIterator mi)
 		continue;
 	    }
 	    he->t = RPM_INT32_TYPE;
-	    he->p.i32p = xcalloc(1, sizeof(*he->p.i32p));
+	    he->p.ui32p = xcalloc(1, sizeof(*he->p.ui32p));
 	    he->c = 1;
 	}
 
@@ -2186,7 +2186,7 @@ static int mireSkip (const rpmdbMatchIterator mi)
 	    case RPM_CHAR_TYPE:
 	    case RPM_INT8_TYPE:
 		for (j = 0; j < he->c; j++) {
-		    sprintf(numbuf, "%d", he->p.i8p[j]);
+		    sprintf(numbuf, "%u", he->p.ui8p[j]);
 		    rc = mireRegexec(mire, numbuf);
 		    if ((!rc && !mire->notmatch) || (rc && mire->notmatch))
 			anymatch++;
@@ -2194,7 +2194,7 @@ static int mireSkip (const rpmdbMatchIterator mi)
 		/*@switchbreak@*/ break;
 	    case RPM_INT16_TYPE:
 		for (j = 0; j < he->c; j++) {
-		    sprintf(numbuf, "%d", he->p.i16p[j]);
+		    sprintf(numbuf, "%u", he->p.ui16p[j]);
 		    rc = mireRegexec(mire, numbuf);
 		    if ((!rc && !mire->notmatch) || (rc && mire->notmatch))
 			anymatch++;
@@ -2202,7 +2202,7 @@ static int mireSkip (const rpmdbMatchIterator mi)
 		/*@switchbreak@*/ break;
 	    case RPM_INT32_TYPE:
 		for (j = 0; j < he->c; j++) {
-		    sprintf(numbuf, "%d", he->p.i32p[j]);
+		    sprintf(numbuf, "%u", he->p.ui32p[j]);
 		    rc = mireRegexec(mire, numbuf);
 		    if ((!rc && !mire->notmatch) || (rc && mire->notmatch))
 			anymatch++;
@@ -2210,7 +2210,7 @@ static int mireSkip (const rpmdbMatchIterator mi)
 		/*@switchbreak@*/ break;
 	    case RPM_INT64_TYPE:
 		for (j = 0; j < he->c; j++) {
-		    sprintf(numbuf, "%lld", he->p.i64p[j]);
+		    sprintf(numbuf, "%llu", he->p.ui64p[j]);
 		    rc = mireRegexec(mire, numbuf);
 		    if ((!rc && !mire->notmatch) || (rc && mire->notmatch))
 			anymatch++;
@@ -2930,20 +2930,20 @@ assert(0);
 		    /*@switchbreak@*/ break;
 		case RPM_CHAR_TYPE:
 		case RPM_INT8_TYPE:
-		    key->size = sizeof(*he->p.i8p);
-/*@i@*/		    key->data = he->p.i8p + i;
+		    key->size = sizeof(*he->p.ui8p);
+/*@i@*/		    key->data = he->p.ui8p + i;
 		    /*@switchbreak@*/ break;
 		case RPM_INT16_TYPE:
-		    key->size = sizeof(*he->p.i16p);
-/*@i@*/		    key->data = he->p.i16p + i;
+		    key->size = sizeof(*he->p.ui16p);
+/*@i@*/		    key->data = he->p.ui16p + i;
 		    /*@switchbreak@*/ break;
 		case RPM_INT32_TYPE:
-		    key->size = sizeof(*he->p.i32p);
-/*@i@*/		    key->data = he->p.i32p + i;
+		    key->size = sizeof(*he->p.ui32p);
+/*@i@*/		    key->data = he->p.ui32p + i;
 		    /*@switchbreak@*/ break;
 		case RPM_INT64_TYPE:
-		    key->size = sizeof(*he->p.i64p);
-/*@i@*/		    key->data = he->p.i64p + i;
+		    key->size = sizeof(*he->p.ui64p);
+/*@i@*/		    key->data = he->p.ui64p + i;
 		    /*@switchbreak@*/ break;
 		case RPM_OPENPGP_TYPE:
 		case RPM_ASN1_TYPE:
@@ -3129,10 +3129,10 @@ memset(data, 0, sizeof(*data));
     xx = headerRemoveEntry(h, RPMTAG_REMOVETID);
 #endif
     if (iid != 0 && iid != -1) {
-	int_32 tid = iid;
+	uint32_t tid = iid;
 	he->tag = RPMTAG_INSTALLTID;
 	he->t = RPM_INT32_TYPE;
-	he->p.i32p = &tid;
+	he->p.ui32p = &tid;
 	he->c = 1;
 	if (!headerIsEntry(h, he->tag))
 	   xx = hae(h, he, 0);
@@ -3395,8 +3395,8 @@ data->size = 0;
 		    /*@switchbreak@*/ break;
 		case RPMTAG_REQUIRENAME:
 		    /* Filter out install prerequisites. */
-		    if (requireFlags.i32p
-		     && isInstallPreReq(requireFlags.i32p[i]))
+		    if (requireFlags.ui32p
+		     && isInstallPreReq(requireFlags.ui32p[i]))
 			/*@innercontinue@*/ continue;
 		    /*@switchbreak@*/ break;
 		case RPMTAG_TRIGGERNAME:
@@ -3421,20 +3421,20 @@ assert(0);
 		    /*@switchbreak@*/ break;
 		case RPM_CHAR_TYPE:
 		case RPM_INT8_TYPE:
-		    key->size = sizeof(*he->p.i8p);
-/*@i@*/		    key->data = he->p.i8p + i;
+		    key->size = sizeof(*he->p.ui8p);
+/*@i@*/		    key->data = he->p.ui8p + i;
 		    /*@switchbreak@*/ break;
 		case RPM_INT16_TYPE:
-		    key->size = sizeof(*he->p.i16p);
-/*@i@*/		    key->data = he->p.i16p + i;
+		    key->size = sizeof(*he->p.ui16p);
+/*@i@*/		    key->data = he->p.ui16p + i;
 		    /*@switchbreak@*/ break;
 		case RPM_INT32_TYPE:
-		    key->size = sizeof(*he->p.i32p);
-/*@i@*/		    key->data = he->p.i32p + i;
+		    key->size = sizeof(*he->p.ui32p);
+/*@i@*/		    key->data = he->p.ui32p + i;
 		    /*@switchbreak@*/ break;
 		case RPM_INT64_TYPE:
-		    key->size = sizeof(*he->p.i64p);
-/*@i@*/		    key->data = he->p.i64p + i;
+		    key->size = sizeof(*he->p.ui64p);
+/*@i@*/		    key->data = he->p.ui64p + i;
 		    /*@switchbreak@*/ break;
 		case RPM_OPENPGP_TYPE:
 		case RPM_ASN1_TYPE:

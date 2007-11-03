@@ -31,9 +31,9 @@ int rpmcliHashesCurrent = 0;
 /*@unchecked@*/
 int rpmcliHashesTotal = 0;
 /*@unchecked@*/
-unsigned long long rpmcliProgressCurrent = 0;
+uint64_t rpmcliProgressCurrent = 0;
 /*@unchecked@*/
-unsigned long long rpmcliProgressTotal = 0;
+uint64_t rpmcliProgressTotal = 0;
 
 /**
  * Print a CLI progress bar.
@@ -41,7 +41,7 @@ unsigned long long rpmcliProgressTotal = 0;
  * @param amount	current
  * @param total		final
  */
-static void printHash(const unsigned long long amount, const unsigned long long total)
+static void printHash(const uint64_t amount, const uint64_t total)
 	/*@globals rpmcliHashesCurrent, rpmcliHashesTotal,
 		rpmcliProgressCurrent, fileSystem @*/
 	/*@modifies rpmcliHashesCurrent, rpmcliHashesTotal,
@@ -94,8 +94,8 @@ static void printHash(const unsigned long long amount, const unsigned long long 
 
 void * rpmShowProgress(/*@null@*/ const void * arg,
 			const rpmCallbackType what,
-			const unsigned long long amount,
-			const unsigned long long total,
+			const uint64_t amount,
+			const uint64_t total,
 			/*@null@*/ fnpyKey key,
 			/*@null@*/ void * data)
 	/*@globals rpmcliHashesCurrent, rpmcliProgressCurrent, rpmcliProgressTotal,

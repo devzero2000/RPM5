@@ -1878,7 +1878,7 @@ assert(fsm->lpath != NULL);
 	    rpmts ts = fsmGetTs(fsm);
 	    rpmfi fi = fsmGetFi(fsm);
 	    void * ptr;
-	    unsigned long long archivePos = fdGetCpioPos(fsm->cfd);
+	    uint64_t archivePos = fdGetCpioPos(fsm->cfd);
 	    if (archivePos > fi->archivePos) {
 		fi->archivePos = archivePos;
 		ptr = rpmtsNotify(ts, fi->te, RPMCALLBACK_INST_PROGRESS,

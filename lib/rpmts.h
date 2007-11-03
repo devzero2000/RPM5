@@ -146,7 +146,7 @@ struct rpmts_s {
     rpmprobFilterFlags ignoreSet;
 				/*!< Bits to filter current problems. */
 
-    int filesystemCount;	/*!< No. of mounted filesystems. */
+    uint32_t filesystemCount;	/*!< No. of mounted filesystems. */
 /*@dependent@*/ /*@null@*/
     const char ** filesystems;	/*!< Mounted filesystem names. */
 /*@only@*/ /*@relnull@*/
@@ -205,10 +205,10 @@ struct rpmts_s {
 /*@null@*/
     FD_t scriptFd;		/*!< Scriptlet stdout/stderr. */
     int delta;			/*!< Delta for reallocation. */
-    int_32 tid;			/*!< Transaction id. */
+    uint32_t tid;			/*!< Transaction id. */
 
-    uint_32 color;		/*!< Transaction color bits. */
-    uint_32 prefcolor;		/*!< Preferred file color. */
+    uint32_t color;		/*!< Transaction color bits. */
+    uint32_t prefcolor;		/*!< Preferred file color. */
 
 /*@observer@*/ /*@dependent@*/ /*@null@*/
     const char * fn;		/*!< Current package fn. */
@@ -226,7 +226,7 @@ struct rpmts_s {
 /*@null@*/
     Spec spec;			/*!< Spec file control structure. */
 
-    uint_32 arbgoal;		/*!< Autorollback goal */
+    uint32_t arbgoal;		/*!< Autorollback goal */
 
 /*@refs@*/
     int nrefs;			/*!< Reference count. */
@@ -496,7 +496,7 @@ void rpmtsSetType(rpmts ts, rpmTSType type)
  * @param ts		transaction set
  * @return		autorollback goal
  */
-uint_32 rpmtsARBGoal(rpmts ts)
+uint32_t rpmtsARBGoal(rpmts ts)
 	/*@*/;
 
 /**
@@ -504,7 +504,7 @@ uint_32 rpmtsARBGoal(rpmts ts)
  * @param ts		transaction set
  * @param goal		autorollback goal
  */
-void rpmtsSetARBGoal(rpmts ts, uint_32 goal)
+void rpmtsSetARBGoal(rpmts ts, uint32_t goal)
 	/*@modifies ts @*/;
 
 /**
@@ -674,7 +674,7 @@ int rpmtsSetREContext(rpmts ts, rpmsx sx)
  * @param ts		transaction set
  * @return		transaction id
  */
-int_32 rpmtsGetTid(rpmts ts)
+uint32_t rpmtsGetTid(rpmts ts)
 	/*@*/;
 
 /** \ingroup rpmts
@@ -683,7 +683,7 @@ int_32 rpmtsGetTid(rpmts ts)
  * @param tid		new transaction id
  * @return		previous transaction id
  */
-int_32 rpmtsSetTid(rpmts ts, int_32 tid)
+uint32_t rpmtsSetTid(rpmts ts, uint32_t tid)
 	/*@modifies ts @*/;
 
 /** \ingroup rpmts
@@ -743,7 +743,7 @@ int rpmtsInitDSI(const rpmts ts)
  * @param action	file disposition
  */
 void rpmtsUpdateDSI(const rpmts ts, dev_t dev,
-		uint_32 fileSize, uint_32 prevSize, uint_32 fixupSize,
+		uint32_t fileSize, uint32_t prevSize, uint32_t fixupSize,
 		fileAction action)
 	/*@modifies ts @*/;
 
@@ -908,7 +908,7 @@ int rpmtsSetDBMode(rpmts ts, int dbmode)
  * @param ts		transaction set
  * @return		color bits
  */
-uint_32 rpmtsColor(rpmts ts)
+uint32_t rpmtsColor(rpmts ts)
 	/*@*/;
 
 /**
@@ -916,7 +916,7 @@ uint_32 rpmtsColor(rpmts ts)
  * @param ts		transaction set
  * @return		color bits
  */
-uint_32 rpmtsPrefColor(rpmts ts)
+uint32_t rpmtsPrefColor(rpmts ts)
 	/*@*/;
 
 /**
@@ -925,7 +925,7 @@ uint_32 rpmtsPrefColor(rpmts ts)
  * @param color		new color bits
  * @return		previous color bits
  */
-uint_32 rpmtsSetColor(rpmts ts, uint_32 color)
+uint32_t rpmtsSetColor(rpmts ts, uint32_t color)
 	/*@modifies ts @*/;
 
 /**

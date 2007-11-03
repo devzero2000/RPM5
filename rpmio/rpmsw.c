@@ -118,7 +118,7 @@ rpmtime_t tvsub(/*@null@*/ const struct timeval * etv,
 
 rpmtime_t rpmswDiff(rpmsw end, rpmsw begin)
 {
-    unsigned long long ticks = 0;
+    uint64_t ticks = 0;
 
     if (end == NULL || begin == NULL)
 	return 0;
@@ -184,7 +184,7 @@ rpmtime_t rpmswInit(void)
 #if defined(HP_TIMING_NOW)
     rpmtime_t cycles;
     rpmtime_t sum_usecs = 0;
-    unsigned long long sum_cycles = 0;
+    uint64_t sum_cycles = 0;
 #endif
     int i;
 

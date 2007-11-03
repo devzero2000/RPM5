@@ -8,7 +8,7 @@
 typedef	const char * ARGstr_t;
 typedef ARGstr_t * ARGV_t;
 
-typedef	int * ARGint_t;
+typedef	uint32_t * ARGint_t;
 struct ARGI_s {
     unsigned nvals;
     ARGint_t vals;

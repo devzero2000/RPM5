@@ -712,12 +712,12 @@ void rpmtsSetType(rpmts ts, rpmTSType type)
 	ts->type = type;
 }
 
-uint_32 rpmtsARBGoal(rpmts ts)
+uint32_t rpmtsARBGoal(rpmts ts)
 {
     return ((ts != NULL) ?  ts->arbgoal : 0);
 }
 
-void rpmtsSetARBGoal(rpmts ts, uint_32 goal)
+void rpmtsSetARBGoal(rpmts ts, uint32_t goal)
 {
     if (ts != NULL)
 	ts->arbgoal = goal;
@@ -866,18 +866,18 @@ int rpmtsSetREContext(rpmts ts, rpmsx sx)
     return rc;
 }
 
-int_32 rpmtsGetTid(rpmts ts)
+uint32_t rpmtsGetTid(rpmts ts)
 {
-    int_32 tid = -1;	/* XXX -1 is time(2) error return. */
+    uint32_t tid = 0;	/* XXX -1 is time(2) error return. */
     if (ts != NULL) {
 	tid = ts->tid;
     }
     return tid;
 }
 
-int_32 rpmtsSetTid(rpmts ts, int_32 tid)
+uint32_t rpmtsSetTid(rpmts ts, uint32_t tid)
 {
-    int_32 otid = -1;	/* XXX -1 is time(2) error return. */
+    uint32_t otid = 0;	/* XXX -1 is time(2) error return. */
     if (ts != NULL) {
 	otid = ts->tid;
 	ts->tid = tid;
@@ -1004,11 +1004,11 @@ int rpmtsInitDSI(const rpmts ts)
 }
 
 void rpmtsUpdateDSI(const rpmts ts, dev_t dev,
-		uint_32 fileSize, uint_32 prevSize, uint_32 fixupSize,
+		uint32_t fileSize, uint32_t prevSize, uint32_t fixupSize,
 		fileAction action)
 {
     rpmDiskSpaceInfo dsi;
-    unsigned long long bneeded;
+    uint64_t bneeded;
 
     dsi = ts->dsi;
     if (dsi) {
@@ -1097,7 +1097,7 @@ void rpmtsCheckDSIProblems(const rpmts ts, const rpmte te)
 }
 
 void * rpmtsNotify(rpmts ts, rpmte te,
-		rpmCallbackType what, unsigned long long amount, unsigned long long total)
+		rpmCallbackType what, uint64_t amount, uint64_t total)
 {
     void * ptr = NULL;
     if (ts && ts->notify && te) {
@@ -1230,14 +1230,14 @@ int rpmtsSetDBMode(rpmts ts, int dbmode)
     return odbmode;
 }
 
-uint_32 rpmtsColor(rpmts ts)
+uint32_t rpmtsColor(rpmts ts)
 {
     return (ts != NULL ? ts->color : 0);
 }
 
-uint_32 rpmtsSetColor(rpmts ts, uint_32 color)
+uint32_t rpmtsSetColor(rpmts ts, uint32_t color)
 {
-    uint_32 ocolor = 0;
+    uint32_t ocolor = 0;
     if (ts != NULL) {
 	ocolor = ts->color;
 	ts->color = color;
@@ -1245,7 +1245,7 @@ uint_32 rpmtsSetColor(rpmts ts, uint_32 color)
     return ocolor;
 }
 
-uint_32 rpmtsPrefColor(rpmts ts)
+uint32_t rpmtsPrefColor(rpmts ts)
 {
     return (ts != NULL ? ts->prefcolor : 0);
 }
@@ -1293,7 +1293,7 @@ rpmts rpmtsCreate(void)
     ts->dbmode = O_RDONLY;
 
     ts->scriptFd = NULL;
-    ts->tid = (int_32) time(NULL);
+    ts->tid = (uint32_t) time(NULL);
     ts->delta = 5;
 
     ts->color = rpmExpandNumeric("%{?_transaction_color}");

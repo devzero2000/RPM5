@@ -306,7 +306,7 @@ assert(scareMem == 0);		/* XXX always allocate memory */
 	if (tagF > 0) {
 	    he->tag = tagF;
 	    xx = hge(h, he, 0);
-	    ds->Flags = he->p.i32p;
+	    ds->Flags = he->p.ui32p;
 	}
 	{
 	    he->tag = RPMTAG_ARCH;
@@ -470,14 +470,14 @@ char * rpmdsNewDNEVR(const char * dspfx, rpmds ds)
     return tbuf;
 }
 
-rpmds rpmdsThis(Header h, rpmTag tagN, int_32 Flags)
+rpmds rpmdsThis(Header h, rpmTag tagN, uint32_t Flags)
 {
     HGE_t hge = (HGE_t)headerGetExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     rpmds ds = NULL;
     const char * Type;
     const char * Name, * V, * R;
-    int_32 E;
+    uint32_t E;
     const char ** N, ** EVR;
     char * t;
     int xx;
@@ -507,7 +507,7 @@ rpmds rpmdsThis(Header h, rpmTag tagN, int_32 Flags)
 
     he->tag = RPMTAG_EPOCH;
     xx = hge(h, he, 0);
-    E = (he->p.i32p ? he->p.i32p[0] : 0);
+    E = (he->p.ui32p ? he->p.ui32p[0] : 0);
     he->p.ptr = _free(he->p.ptr);
 
 /*@-mods@*/
@@ -559,7 +559,7 @@ exit:
     return rpmdsLink(ds, (ds ? ds->Type : NULL));
 }
 
-rpmds rpmdsSingle(rpmTag tagN, const char * N, const char * EVR, int_32 Flags)
+rpmds rpmdsSingle(rpmTag tagN, const char * N, const char * EVR, uint32_t Flags)
 {
     rpmds ds = NULL;
     const char * Type;
@@ -665,7 +665,7 @@ const char * rpmdsEVR(const rpmds ds)
     return EVR;
 }
 
-int_32 rpmdsFlags(const rpmds ds)
+uint32_t rpmdsFlags(const rpmds ds)
 {
     int_32 Flags = 0;
 
@@ -793,7 +793,7 @@ uint_32 rpmdsSetColor(const rpmds ds, uint_32 color)
     return ocolor;
 }
 
-int_32 rpmdsRefs(const rpmds ds)
+uint32_t rpmdsRefs(const rpmds ds)
 {
     int_32 Refs = 0;
 
@@ -804,7 +804,7 @@ int_32 rpmdsRefs(const rpmds ds)
     return Refs;
 }
 
-int_32 rpmdsSetRefs(const rpmds ds, int_32 refs)
+uint32_t rpmdsSetRefs(const rpmds ds, uint32_t refs)
 {
     int_32 orefs = 0;
 
@@ -990,7 +990,7 @@ int rpmdsMerge(rpmds * dsp, rpmds ods)
     rpmds ds;
     const char ** N;
     const char ** EVR;
-    int_32 * Flags;
+    uint32_t * Flags;
     int j;
 int save;
 
@@ -3379,13 +3379,13 @@ exit:
 /*@unchecked@*/ /*@observer@*/ /*@owned@*/ /*@relnull@*/
 static const char * _perldeps_cmd = NULL;
 
-int rpmdsPipe(rpmds * dsp, int_32 tagN, const char * cmd)
+int rpmdsPipe(rpmds * dsp, rpmTag tagN, const char * cmd)
 	/*@globals _perldeps_cmd @*/
 	/*@modifies _perldeps_cmd @*/
 {
     char buf[BUFSIZ];
     const char *N, *EVR;
-    int_32 Flags = 0;
+    uint32_t Flags = 0;
     rpmds ds;
     char * f, * fe;
     char * g, * ge;
@@ -3711,12 +3711,12 @@ int rpmdsNVRMatchesDep(const Header h, const rpmds req, int nopromote)
     HGE_t hge = (HGE_t)headerGetExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     const char * pkgN, * V, * R;
-    int_32 E;
+    uint32_t E;
     int gotE = 0;
     const char * pkgEVR;
     char * t;
-    int_32 reqFlags = req->ns.Flags;
-    int_32 pkgFlags = RPMSENSE_EQUAL;
+    uint32_t reqFlags = req->ns.Flags;
+    uint32_t pkgFlags = RPMSENSE_EQUAL;
     int result = 1;
     rpmds pkg;
     size_t nb;
@@ -3735,7 +3735,7 @@ assert((rpmdsFlags(req) & RPMSENSE_SENSEMASK) == req->ns.Flags);
 /*@=mods@*/
     he->tag = RPMTAG_EPOCH;
     gotE = hge(h, he, 0);
-    E = (he->p.i32p ? he->p.i32p[0] : 0);
+    E = (he->p.ui32p ? he->p.ui32p[0] : 0);
     he->p.ptr = _free(he->p.ptr);
 
     nb = 21 + 1 + 1;

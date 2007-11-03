@@ -23,8 +23,6 @@ int _hdr_debug = 0;
 /*@unchecked@*/
 int _newmagic = 0;		/* XXX Change header magic? */
 /*@unchecked@*/
-static int _jbj = 1;    	/* XXX private debugging */
-/*@unchecked@*/
 static int _usehge = 1;		/* XXX Use headerGetExtension? */
 /*@unchecked@*/
 int _tagcache = 1;		/* XXX Cache tag data persistently? */
@@ -949,7 +947,7 @@ errxit:
  * @return 		header entry
  */
 static /*@null@*/
-indexEntry findEntry(/*@null@*/ Header h, int_32 tag, rpmTagType type)
+indexEntry findEntry(/*@null@*/ Header h, uint32_t tag, rpmTagType type)
 	/*@modifies h @*/
 {
     indexEntry entry, entry2, last;
@@ -997,7 +995,7 @@ indexEntry findEntry(/*@null@*/ Header h, int_32 tag, rpmTagType type)
  * @return		0 on success, 1 on failure (INCONSISTENT)
  */
 static
-int headerRemoveEntry(Header h, int_32 tag)
+int headerRemoveEntry(Header h, uint32_t tag)
 	/*@modifies h @*/
 {
     indexEntry last = h->index + h->indexUsed;
@@ -1520,7 +1518,7 @@ exit:
  * @return		1 on success, 0 on failure
  */
 static
-int headerIsEntry(/*@null@*/Header h, int_32 tag)
+int headerIsEntry(/*@null@*/Header h, uint32_t tag)
 	/*@*/
 {
     /*@-mods@*/		/*@ FIX: h modified by sort. */
@@ -1559,13 +1557,13 @@ static int copyEntry(const indexEntry entry,
 	 * XXX a legacy header freshly read, but not yet unloaded to the rpmdb).
 	 */
 	if (ENTRY_IS_REGION(entry)) {
-	    int_32 * ei = ((int_32 *)entry->data) - 2;
+	    uint32_t * ei = ((uint32_t *)entry->data) - 2;
 	    /*@-castexpose@*/
 	    entryInfo pe = (entryInfo) (ei + 2);
 	    /*@=castexpose@*/
 	    unsigned char * dataStart = (unsigned char *) (pe + ntohl(ei[0]));
-	    int_32 rdl = -entry->info.offset;	/* negative offset */
-	    int_32 ril = rdl/sizeof(*pe);
+	    int32_t rdl = -entry->info.offset;	/* negative offset */
+	    int32_t ril = rdl/sizeof(*pe);
 
 	    /*@-sizeoftype@*/
 	    rdl = entry->rdlen;
@@ -1578,7 +1576,7 @@ static int copyEntry(const indexEntry entry,
 		rdl += REGION_TAG_COUNT;
 	    }
 
-	    (*p).i32p = ei = xmalloc(count);
+	    (*p).ui32p = ei = xmalloc(count);
 	    ei[0] = htonl(ril);
 	    ei[1] = htonl(rdl);
 
@@ -1785,7 +1783,7 @@ headerFindI18NString(Header h, indexEntry entry)
  * @param minMem	string pointers reference header memory?
  * @return		1 on success, 0 on not found
  */
-static int intGetEntry(Header h, int_32 tag,
+static int intGetEntry(Header h, uint32_t tag,
 		/*@null@*/ /*@out@*/ rpmTagType * type,
 		/*@null@*/ /*@out@*/ rpmTagData * p,
 		/*@null@*/ /*@out@*/ rpmTagCount * c,
@@ -1859,7 +1857,7 @@ static /*@null@*/ void * headerFreeTag(/*@unused@*/ Header h,
  * @return		1 on success, 0 on failure
  */
 static
-int headerGetExtension(Header h, int_32 tag,
+int headerGetExtension(Header h, uint32_t tag,
 			/*@null@*/ /*@out@*/ hTYP_t type,
 			/*@null@*/ /*@out@*/ hRET_t * p,
 			/*@null@*/ /*@out@*/ hCNT_t c)
@@ -1911,18 +1909,19 @@ assert(0);	/* XXX stop unimplemented oversights. */
 	/*@fallthrough@*/
     case RPM_CHAR_TYPE:
     case RPM_INT8_TYPE:
-	nb = he->c * sizeof(*he->p.i8p);
+	nb = he->c * sizeof(*he->p.ui8p);
 	break;
     case RPM_INT16_TYPE:
-	nb = he->c * sizeof(*he->p.i16p);
+	nb = he->c * sizeof(*he->p.ui16p);
 	break;
     case RPM_INT32_TYPE:
-	nb = he->c * sizeof(*he->p.i32p);
+	nb = he->c * sizeof(*he->p.ui32p);
 	break;
     case RPM_INT64_TYPE:
-	nb = he->c * sizeof(*he->p.i64p);
+	nb = he->c * sizeof(*he->p.ui64p);
 	break;
     case RPM_I18NSTRING_TYPE:
+assert(he->c == 1);	/* XXX stop unimplemented oversights. */
     case RPM_STRING_TYPE:
 	if (he->p.str)
 	    nb = strlen(he->p.str) + 1;
@@ -1966,7 +1965,7 @@ exit:
  * @return		1 on success, 0 on failure
  */
 static
-int headerGetEntry(Header h, int_32 tag,
+int headerGetEntry(Header h, uint32_t tag,
 			/*@null@*/ /*@out@*/ hTYP_t type,
 			/*@null@*/ /*@out@*/ hRET_t * p,
 			/*@null@*/ /*@out@*/ hCNT_t c)
@@ -1996,7 +1995,7 @@ int headerGetEntry(Header h, int_32 tag,
  * @return		1 on success, 0 on failure
  */
 static
-int headerGetEntryMinMemory(Header h, int_32 tag,
+int headerGetEntryMinMemory(Header h, uint32_t tag,
 			/*@null@*/ /*@out@*/ hTYP_t type,
 			/*@null@*/ /*@out@*/ hRET_t * p,
 			/*@null@*/ /*@out@*/ hCNT_t c)
@@ -2013,7 +2012,7 @@ int headerGetEntryMinMemory(Header h, int_32 tag,
     return rc;
 }
 
-int headerGetRawEntry(Header h, int_32 tag, rpmTagType * type, hRET_t * p, rpmTagCount * c)
+int headerGetRawEntry(Header h, uint32_t tag, rpmTagType * type, hRET_t * p, rpmTagCount * c)
 {
     indexEntry entry;
     int rc;
@@ -2106,7 +2105,7 @@ grabData(rpmTagType type, rpmTagData * p, rpmTagCount c, /*@out@*/ int * lenp)
  * @return		1 on success, 0 on failure
  */
 static
-int headerAddEntry(Header h, int_32 tag, rpmTagType type, const void * p, rpmTagCount c)
+int headerAddEntry(Header h, uint32_t tag, rpmTagType type, const void * p, rpmTagCount c)
 	/*@modifies h @*/
 {
     indexEntry entry;
@@ -2165,7 +2164,7 @@ int headerAddEntry(Header h, int_32 tag, rpmTagType type, const void * p, rpmTag
  * @return		1 on success, 0 on failure
  */
 static
-int headerAppendEntry(Header h, int_32 tag, rpmTagType type,
+int headerAppendEntry(Header h, uint32_t tag, rpmTagType type,
 		const void * p, rpmTagCount c)
 	/*@modifies h @*/
 {
@@ -2216,7 +2215,7 @@ int headerAppendEntry(Header h, int_32 tag, rpmTagType type,
  * @return		1 on success, 0 on failure
  */
 static
-int headerAddOrAppendEntry(Header h, int_32 tag, rpmTagType type,
+int headerAddOrAppendEntry(Header h, uint32_t tag, rpmTagType type,
 		const void * p, rpmTagCount c)
 	/*@modifies h @*/
 {
@@ -2246,7 +2245,7 @@ int headerAddOrAppendEntry(Header h, int_32 tag, rpmTagType type,
  * @return		1 on success, 0 on failure
  */
 static
-int headerAddI18NString(Header h, int_32 tag, const char * string,
+int headerAddI18NString(Header h, uint32_t tag, const char * string,
 		const char * lang)
 	/*@modifies h @*/
 {
@@ -2389,7 +2388,7 @@ int headerAddI18NString(Header h, int_32 tag, const char * string,
  * @return		1 on success, 0 on failure
  */
 static
-int headerModifyEntry(Header h, int_32 tag, rpmTagType type,
+int headerModifyEntry(Header h, uint32_t tag, rpmTagType type,
 			const void * p, rpmTagCount c)
 	/*@modifies h @*/
 {
@@ -2914,16 +2913,16 @@ static char * intFormat(HE_t he, const char *fmt)
 	break;
     case RPM_CHAR_TYPE:	
     case RPM_INT8_TYPE:
-	ival = he->p.i8p[ix];
+	ival = he->p.ui8p[ix];
 	break;
     case RPM_INT16_TYPE:
 	ival = he->p.ui16p[ix];	/* XXX note unsigned. */
 	break;
     case RPM_INT32_TYPE:
-	ival = he->p.i32p[ix];
+	ival = he->p.ui32p[ix];
 	break;
     case RPM_INT64_TYPE:
-	ival = he->p.i64p[ix];
+	ival = he->p.ui64p[ix];
 	break;
     case RPM_STRING_TYPE:
 	istr = he->p.str;
@@ -3069,12 +3068,12 @@ static char * shescapeFormat(HE_t he)
     if (he->t == RPM_INT32_TYPE) {
 	nb = 20;
 	val = xmalloc(nb);
-	snprintf(val, nb, "%d", data.i32p[0]);
+	snprintf(val, nb, "%u", data.ui32p[0]);
 	val[nb-1] = '\0';
     } else if (he->t == RPM_INT64_TYPE) {
 	nb = 40;
 	val = xmalloc(40);
-	snprintf(val, nb, "%lld", data.i64p[0]);
+	snprintf(val, nb, "%llu", data.ui64p[0]);
 	val[nb-1] = '\0';
     } else if (he->t == RPM_STRING_TYPE) {
 	const char * s = data.str;
@@ -3521,7 +3520,7 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
     char * val = NULL;
     size_t need = 0;
     char * t, * te;
-    int_64 ival = 0;
+    uint64_t ival = 0;
     rpmTagCount countBuf;
     int xx;
 
@@ -3554,7 +3553,7 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
 	countBuf = he->c;
 	he = rpmheClean(he);
 	he->t = RPM_INT32_TYPE;
-	he->p.i32p = &countBuf;
+	he->p.ui32p = &countBuf;
 	he->c = 1;
 	he->freeData = 0;
     }
@@ -3591,20 +3590,20 @@ assert(0);	/* XXX keep gcc quiet. */
 	    break;
 	case RPM_CHAR_TYPE:	
 	case RPM_INT8_TYPE:
-	    ival = he->p.i8p[element];
+	    ival = he->p.ui8p[element];
 	    break;
 	case RPM_INT16_TYPE:
 	    ival = he->p.ui16p[element];	/* XXX note unsigned. */
 	    break;
 	case RPM_INT32_TYPE:
-	    ival = he->p.i32p[element];
+	    ival = he->p.ui32p[element];
 	    break;
 	case RPM_INT64_TYPE:
-	    ival = he->p.i64p[element];
+	    ival = he->p.ui64p[element];
 	    break;
 	}
 	vhe->t = RPM_INT64_TYPE;
-	vhe->p.i64p = &ival;
+	vhe->p.ui64p = &ival;
 	vhe->c = he->c;
 	/* XXX TODO: force array representation? */
 	vhe->ix = (he->c > 1 ? 0 : -1);
@@ -4050,7 +4049,7 @@ static
 void headerCopyTags(Header headerFrom, Header headerTo, hTAG_t tagstocopy)
 	/*@modifies headerTo @*/
 {
-    int * tagno;
+    unsigned int * tagno;
 
     if (headerFrom == headerTo)
 	return;

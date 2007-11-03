@@ -61,8 +61,8 @@
  */
 extern void * rpmShowProgress(/*@null@*/ const void * arg,
                         const rpmCallbackType what,
-                        const unsigned long long amount,
-                        const unsigned long long total,
+                        const uint64_t amount,
+                        const uint64_t total,
                         /*@null@*/ fnpyKey key,
                         /*@null@*/ void * data)
 	/*@*/;
@@ -1792,7 +1792,7 @@ assert(psm != NULL);
 		 */
 		psm->fi = rpmfiFree(psm->fi);
 		{
-		    char * fstates = fi->fstates;
+		    uint8_t * fstates = fi->fstates;
 		    fileAction * actions = fi->actions;
 		    int mapflags = fi->mapflags;
 		    rpmte savep;

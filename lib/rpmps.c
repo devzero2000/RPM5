@@ -127,7 +127,7 @@ rpmps rpmpsFree(rpmps ps)
 void rpmpsAppend(rpmps ps, rpmProblemType type,
 		const char * pkgNEVR, fnpyKey key,
 		const char * dn, const char * bn,
-		const char * altNEVR, unsigned long long ulong1)
+		const char * altNEVR, uint64_t ulong1)
 {
     rpmProblem p;
     char *t;

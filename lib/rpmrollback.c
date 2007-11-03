@@ -88,14 +88,14 @@ IDTX IDTXsort(IDTX idtx)
     return idtx;
 }
 
-IDTX IDTXload(rpmts ts, rpmTag tag, uint_32 rbtid)
+IDTX IDTXload(rpmts ts, rpmTag tag, uint32_t rbtid)
 {
     HGE_t hge = (HGE_t)headerGetExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     IDTX idtx = NULL;
     rpmdbMatchIterator mi;
     Header h;
-    int_32 tid;
+    uint32_t tid;
     int xx;
 
     mi = rpmtsInitIterator(ts, tag, NULL, 0);
@@ -105,9 +105,9 @@ IDTX IDTXload(rpmts ts, rpmTag tag, uint_32 rbtid)
     while ((h = rpmdbNextIterator(mi)) != NULL) {
 	he->tag = tag;
 	xx = hge(h, he, 0);
-	if (!xx || he->p.i32p == NULL)
+	if (!xx || he->p.ui32p == NULL)
 	    continue;
-	tid = (he->p.i32p ? he->p.i32p[0] : 0);
+	tid = (he->p.ui32p ? he->p.ui32p[0] : 0);
 	he->p.ptr = _free(he->p.ptr);
 
 	if (tid == 0 || tid == -1)
@@ -138,13 +138,13 @@ IDTX IDTXload(rpmts ts, rpmTag tag, uint_32 rbtid)
     return IDTXsort(idtx);
 }
 
-IDTX IDTXglob(rpmts ts, const char * globstr, rpmTag tag, uint_32 rbtid)
+IDTX IDTXglob(rpmts ts, const char * globstr, rpmTag tag, uint32_t rbtid)
 {
     HGE_t hge = (HGE_t)headerGetExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     IDTX idtx = NULL;
     Header h;
-    int_32 tid;
+    uint32_t tid;
     FD_t fd;
     const char ** av = NULL;
     const char * fn;
@@ -193,9 +193,9 @@ assert(!strcmp(av[i], origin));
 }
 	he->tag = tag;
 	xx = hge(h, he, 0);
-	if (!xx || he->p.i32p == NULL)
+	if (!xx || he->p.ui32p == NULL)
 	    goto bottom;
-	tid = (he->p.i32p ? he->p.i32p[0] : 0);
+	tid = (he->p.ui32p ? he->p.ui32p[0] : 0);
 	he->p.ptr = _free(he->p.ptr);
 
 	/* Don't bother with headers installed prior to the rollback goal. */
@@ -303,7 +303,7 @@ static int findErases(rpmts ts, /*@null@*/ rpmte p, unsigned thistid,
 	    const char ** flinkPkgid = NULL;
 	    const char ** flinkHdrid = NULL;
 	    const char ** flinkNEVRA = NULL;
-	    int_32 pn, hn, nn;
+	    uint32_t pn, hn, nn;
 	    int bingo;
 
 	    he->tag = RPMTAG_BLINKPKGID;
@@ -494,7 +494,7 @@ int rpmRollback(rpmts ts, QVA_t ia, const char ** argv)
 	/* Is this transaction excluded from the rollback? */
 	if (ia->rbtidExcludes != NULL && ia->numrbtidExcludes > 0)
 	{
-	    uint_32 *excludedTID;
+	    uint32_t *excludedTID;
 	    int excluded = 0;
 	    for(excludedTID = ia->rbtidExcludes; 
 		excludedTID < ia->rbtidExcludes + ia->numrbtidExcludes;

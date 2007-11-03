@@ -327,7 +327,7 @@ static int doSetupMacro(Spec spec, char *line)
     int arg;
     const char * optArg;
     int rc;
-    int num;
+    uint32_t num;
 
     /*@-mods@*/
     leaveDirs = skipDefaultAction = 0;
@@ -484,9 +484,9 @@ static int doPatchMacro(Spec spec, char *line)
     char *s;
     char *opt_b;
     char *opt_d;
-    int opt_P, opt_p, opt_R, opt_E, opt_F;
+    uint32_t opt_P, opt_p, opt_R, opt_E, opt_F;
     char buf[BUFSIZ], *bp;
-    int patch_nums[1024];  /* XXX - we can only handle 1024 patches! */
+    uint32_t patch_nums[1024];  /* XXX - we can only handle 1024 patches! */
     int patch_index, x;
 
     memset(patch_nums, 0, sizeof(patch_nums));

@@ -25,7 +25,7 @@ void rpmFreeFilesystems(void)
  */
 /*@-incondefs@*/
 int rpmGetFilesystemList( /*@null@*/ /*@out@*/ const char *** listptr,
-		/*@null@*/ /*@out@*/ int * num)
+		/*@null@*/ /*@out@*/ uint32_t * num)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies *listptr, *num, fileSystem, internalState @*/
 	/*@requires maxSet(listptr) >= 0 /\ maxSet(num) >= 0 @*/
@@ -42,8 +42,8 @@ int rpmGetFilesystemList( /*@null@*/ /*@out@*/ const char *** listptr,
  * @return			0 on success, 1 on error
  */
 /*@-incondefs@*/
-int rpmGetFilesystemUsage(const char ** fileList, uint_32 * fssizes,
-		int numFiles, /*@null@*/ /*@out@*/ uint_64 ** usagesPtr,
+int rpmGetFilesystemUsage(const char ** fileList, uint32_t * fssizes,
+		int numFiles, /*@null@*/ /*@out@*/ uint64_t ** usagesPtr,
 		int flags)
 	/*@globals rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState @*/

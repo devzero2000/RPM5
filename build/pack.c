@@ -438,14 +438,14 @@ void providePackageNVR(Header h)
     HGE_t hge = (HGE_t)headerGetExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     const char *N, *V, *R;
-    int_32 E;
+    uint32_t E;
     int gotE;
     const char *pEVR;
     char *p;
-    int_32 pFlags = RPMSENSE_EQUAL;
+    uint32_t pFlags = RPMSENSE_EQUAL;
     const char ** provides = NULL;
     const char ** providesEVR = NULL;
-    int_32 * provideFlags = NULL;
+    uint32_t * provideFlags = NULL;
     int providesCount;
     int i, xx;
     int bingo = 1;
@@ -458,7 +458,7 @@ void providePackageNVR(Header h)
     *p = '\0';
     he->tag = RPMTAG_EPOCH;
     gotE = hge(h, he, 0);
-    E = (he->p.i32p ? he->p.i32p[0] : 0);
+    E = (he->p.ui32p ? he->p.ui32p[0] : 0);
     he->p.ptr = _free(he->p.ptr);
     if (gotE) {
 	sprintf(p, "%d:", E);
@@ -497,7 +497,7 @@ void providePackageNVR(Header h)
 
     he->tag = RPMTAG_PROVIDEFLAGS;
     xx = hge(h, he, 0);
-    provideFlags = he->p.i32p;
+    provideFlags = he->p.ui32p;
 
     /*@-nullderef@*/	/* LCL: providesEVR is not NULL */
     if (provides && providesEVR && provideFlags)
@@ -844,7 +844,7 @@ exit:
 /*@=boundswrite@*/
 
 /*@unchecked@*/
-static int_32 copyTags[] = {
+static uint32_t copyTags[] = {
     RPMTAG_CHANGELOGTIME,
     RPMTAG_CHANGELOGNAME,
     RPMTAG_CHANGELOGTEXT,

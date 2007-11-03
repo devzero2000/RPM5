@@ -1518,11 +1518,11 @@ assert(EVR != NULL);
     /* Add per-file colors(#files) */
     he->tag = RPMTAG_FILECOLORS;
     he->t = RPM_INT32_TYPE;
-    he->p.i32p = argiData(fc->fcolor);
+    he->p.ui32p = argiData(fc->fcolor);
     he->c = argiCount(fc->fcolor);
 assert(ac == he->c);
     if (he->p.ptr != NULL && he->c > 0) {
-	int_32 * fcolors = he->p.i32p;
+	uint32_t * fcolors = he->p.ui32p;
 	int i;
 
 	/* XXX Make sure only primary (i.e. Elf32/Elf64) colors are added. */
@@ -1544,7 +1544,7 @@ assert(ac == he->c);
     /* Add per-file classes(#files) */
     he->tag = RPMTAG_FILECLASS;
     he->t = RPM_INT32_TYPE;
-    he->p.i32p = argiData(fc->fcdictx);
+    he->p.ui32p = argiData(fc->fcdictx);
     he->c = argiCount(fc->fcdictx);
 assert(ac == he->c);
     if (he->p.ptr != NULL && he->c > 0) {
@@ -1570,7 +1570,7 @@ assert(he->p.ptr != NULL);
 
 	he->tag = RPMTAG_PROVIDEFLAGS;
 	he->t = RPM_INT32_TYPE;
-	he->p.i32p = fc->provides->Flags;
+	he->p.ui32p = fc->provides->Flags;
 assert(he->p.ptr != NULL);
 	xx = hae(pkg->header, he, 0);
 /*@=nullpass@*/
@@ -1596,7 +1596,7 @@ assert(he->p.ptr != NULL);
 
 	he->tag = RPMTAG_REQUIREFLAGS;
 	he->t = RPM_INT32_TYPE;
-	he->p.i32p = fc->requires->Flags;
+	he->p.ui32p = fc->requires->Flags;
 assert(he->p.ptr != NULL);
 	xx = hae(pkg->header, he, 0);
 /*@=nullpass@*/
@@ -1605,7 +1605,7 @@ assert(he->p.ptr != NULL);
     /* Add dependency dictionary(#dependencies) */
     he->tag = RPMTAG_DEPENDSDICT;
     he->t = RPM_INT32_TYPE;
-    he->p.i32p = argiData(fc->ddictx);
+    he->p.ui32p = argiData(fc->ddictx);
     he->c = argiCount(fc->ddictx);
     if (he->p.ptr != NULL) {
 	xx = hae(pkg->header, he, 0);
@@ -1614,7 +1614,7 @@ assert(he->p.ptr != NULL);
     /* Add per-file dependency (start,number) pairs (#files) */
     he->tag = RPMTAG_FILEDEPENDSX;
     he->t = RPM_INT32_TYPE;
-    he->p.i32p = argiData(fc->fddictx);
+    he->p.ui32p = argiData(fc->fddictx);
     he->c = argiCount(fc->fddictx);
 assert(ac == he->c);
     if (he->p.ptr != NULL) {
@@ -1623,7 +1623,7 @@ assert(ac == he->c);
 
     he->tag = RPMTAG_FILEDEPENDSN;
     he->t = RPM_INT32_TYPE;
-    he->p.i32p = argiData(fc->fddictn);
+    he->p.ui32p = argiData(fc->fddictn);
     he->c = argiCount(fc->fddictn);
 assert(ac == he->c);
     if (he->p.ptr != NULL) {

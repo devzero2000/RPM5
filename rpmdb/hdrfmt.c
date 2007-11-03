@@ -86,7 +86,7 @@ assert(ix == 0);
     if (he->t != RPM_INT64_TYPE)
 	val = xstrdup(_("(invalid type)"));
     else {
-	int anint = data.i64p[ix];
+	uint64_t anint = data.ui64p[ix];
 	if (anint & RPMSENSE_TRIGGERPREIN)
 	    val = xstrdup("prein");
 	else if (anint & RPMSENSE_TRIGGERIN)
@@ -115,7 +115,7 @@ assert(ix == 0);
     if (he->t != RPM_INT64_TYPE) {
 	val = xstrdup(_("(invalid type)"));
     } else {
-	int_32 anint = he->p.i64p[0];
+	uint64_t anint = he->p.ui64p[0];
 	val = rpmPermsString(anint);
     }
 
@@ -138,7 +138,7 @@ assert(ix == 0);
 	val = xstrdup(_("(invalid type)"));
     } else {
 	char buf[15];
-	unsigned anint = data.i64p[ix];
+	uint64_t anint = data.ui64p[ix];
 	buf[0] = '\0';
 	if (anint & RPMFILE_DOC)
 	    strcat(buf, "d");
@@ -333,7 +333,7 @@ static /*@only@*/ char * xmlFormat(HE_t he)
     char * val;
     const char * s = NULL;
     char * t, * te;
-    unsigned long long anint = 0;
+    uint64_t anint = 0;
     int freeit = 0;
     int xx;
 
@@ -375,16 +375,16 @@ assert(he->t == RPM_STRING_TYPE || he->t == RPM_INT64_TYPE || he->t == RPM_BIN_T
 /*@=globs =mods@*/
     case RPM_CHAR_TYPE:
     case RPM_INT8_TYPE:
-	anint = data.i8p[ix];
+	anint = data.ui8p[ix];
 	break;
     case RPM_INT16_TYPE:
 	anint = data.ui16p[ix];	/* XXX note unsigned */
 	break;
     case RPM_INT32_TYPE:
-	anint = data.i32p[ix];
+	anint = data.ui32p[ix];
 	break;
     case RPM_INT64_TYPE:
-	anint = data.i64p[ix];
+	anint = data.ui64p[ix];
 	break;
     case RPM_NULL_TYPE:
     default:
@@ -499,7 +499,7 @@ static /*@only@*/ char * yamlFormat(HE_t he)
     char * val;
     const char * s = NULL;
     char * t, * te;
-    unsigned long long anint = 0;
+    uint64_t anint = 0;
     int freeit = 0;
     int lvl = 0;
     int xx;
@@ -568,16 +568,16 @@ assert(he->t == RPM_STRING_TYPE || he->t == RPM_INT64_TYPE || he->t == RPM_BIN_T
 /*@=globs =mods@*/
     case RPM_CHAR_TYPE:
     case RPM_INT8_TYPE:
-	anint = data.i8p[ix];
+	anint = data.ui8p[ix];
 	break;
     case RPM_INT16_TYPE:
 	anint = data.ui16p[ix];	/* XXX note unsigned */
 	break;
     case RPM_INT32_TYPE:
-	anint = data.i32p[ix];
+	anint = data.ui32p[ix];
 	break;
     case RPM_INT64_TYPE:
-	anint = data.i64p[ix];
+	anint = data.ui64p[ix];
 	break;
     case RPM_NULL_TYPE:
     default:
@@ -755,7 +755,7 @@ assert(ix == 0);
     if (he->t != RPM_INT64_TYPE) {
 	val = xstrdup(_("(invalid type)"));
     } else {
-	int anint = data.i64p[ix];
+	uint64_t anint = data.ui64p[ix];
 	char *t, *buf;
 
 	t = buf = alloca(32);
@@ -832,7 +832,7 @@ static int triggercondsTag(Header h, HE_t he)
     rpmTagData indices;
     rpmTagData names;
     rpmTagData versions;
-    int numNames, numScripts;
+    uint32_t numNames, numScripts;
     const char ** conds;
     rpmTagData s;
     char * item, * flagsStr;
@@ -846,7 +846,7 @@ static int triggercondsTag(Header h, HE_t he)
 
     _he->tag = he->tag;
     _he->t = RPM_INT32_TYPE;
-    _he->p.i32p = NULL;
+    _he->p.ui32p = NULL;
     _he->c = 1;
     _he->freeData = -1;
 
@@ -864,12 +864,12 @@ static int triggercondsTag(Header h, HE_t he)
 	chptr = xstrdup("");
 
 	for (j = 0; j < numNames; j++) {
-	    if (indices.i32p[j] != i)
+	    if (indices.ui32p[j] != i)
 		/*@innercontinue@*/ continue;
 
 	    item = xmalloc(strlen(names.argv[j]) + strlen(versions.argv[j]) + 20);
-	    if (flags.i32p[j] & RPMSENSE_SENSEMASK) {
-		_he->p.i32p = &flags.i32p[j];
+	    if (flags.ui32p[j] & RPMSENSE_SENSEMASK) {
+		_he->p.ui32p = &flags.ui32p[j];
 		flagsStr = depflagsFormat(_he);
 		sprintf(item, "%s %s %s", names.argv[j], flagsStr, versions.argv[j]);
 		flagsStr = _free(flagsStr);
@@ -906,7 +906,7 @@ static int triggertypeTag(Header h, HE_t he)
     const char ** conds;
     rpmTagData s;
     int i, j, xx;
-    int numScripts, numNames;
+    uint32_t numScripts, numNames;
 
     he->freeData = 0;
     if (!headerGetEntry(h, RPMTAG_TRIGGERINDEX, NULL, &indices, &numNames))
@@ -922,16 +922,16 @@ static int triggertypeTag(Header h, HE_t he)
     he->p.argv = conds = xmalloc(sizeof(*conds) * numScripts);
     for (i = 0; i < numScripts; i++) {
 	for (j = 0; j < numNames; j++) {
-	    if (indices.i32p[j] != i)
+	    if (indices.ui32p[j] != i)
 		/*@innercontinue@*/ continue;
 
-	    if (flags.i32p[j] & RPMSENSE_TRIGGERPREIN)
+	    if (flags.ui32p[j] & RPMSENSE_TRIGGERPREIN)
 		conds[i] = xstrdup("prein");
-	    else if (flags.i32p[j] & RPMSENSE_TRIGGERIN)
+	    else if (flags.ui32p[j] & RPMSENSE_TRIGGERIN)
 		conds[i] = xstrdup("in");
-	    else if (flags.i32p[j] & RPMSENSE_TRIGGERUN)
+	    else if (flags.ui32p[j] & RPMSENSE_TRIGGERUN)
 		conds[i] = xstrdup("un");
-	    else if (flags.i32p[j] & RPMSENSE_TRIGGERPOSTUN)
+	    else if (flags.ui32p[j] & RPMSENSE_TRIGGERPOSTUN)
 		conds[i] = xstrdup("postun");
 	    else
 		conds[i] = xstrdup("");
@@ -1180,8 +1180,8 @@ static int dbinstanceTag(Header h, HE_t he)
 {
     he->tag = RPMTAG_DBINSTANCE;
     he->t = RPM_INT32_TYPE;
-    he->p.i32p = xmalloc(sizeof(*he->p.i32p));
-    he->p.i32p[0] = headerGetInstance(h);
+    he->p.ui32p = xmalloc(sizeof(*he->p.ui32p));
+    he->p.ui32p[0] = headerGetInstance(h);
     he->freeData = 1;
     he->c = 1;
     return 0;
@@ -1294,7 +1294,7 @@ static void rpmfiBuildFNames(Header h, rpmTag tagN,
     size = sizeof(*fileNames.argv) * count;
     for (i = 0; i < count; i++) {
 	const char * dn = NULL;
-	(void) urlPath(dirNames.argv[dirIndexes.i32p[i]], &dn);
+	(void) urlPath(dirNames.argv[dirIndexes.ui32p[i]], &dn);
 	size += strlen(baseNames.argv[i]) + strlen(dn) + 1;
     }
 
@@ -1302,7 +1302,7 @@ static void rpmfiBuildFNames(Header h, rpmTag tagN,
     t = (char *)&fileNames.argv[count];
     for (i = 0; i < count; i++) {
 	const char * dn = NULL;
-	(void) urlPath(dirNames.argv[dirIndexes.i32p[i]], &dn);
+	(void) urlPath(dirNames.argv[dirIndexes.ui32p[i]], &dn);
 	fileNames.argv[i] = t;
 	t = stpcpy( stpcpy(t, dn), baseNames.argv[i]);
 	*t++ = '\0';

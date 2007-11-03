@@ -8,7 +8,7 @@
 #include "debug.h"
 
 /*@-boundswrite@*/
-int parseNum(const char * line, int * res)
+int parseNum(const char * line, uint32_t * res)
 {
     char * s1 = NULL;
     unsigned long rc;

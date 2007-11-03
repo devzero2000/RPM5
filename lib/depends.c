@@ -737,7 +737,7 @@ retry:
 	else {
 	    char * end = NULL;
 /*@-unrecog@*/
-	    long long needed = strtoll(rpmdsEVR(dep), &end, 0);
+	    uint64_t needed = strtoll(rpmdsEVR(dep), &end, 0);
 /*@=unrecog@*/
 
 	    if (end && *end) {

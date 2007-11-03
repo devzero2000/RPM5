@@ -202,7 +202,7 @@ int headerVerifyInfo(int il, int dl, const void * pev, void * iv, int negate)
  */
 /*@-exportlocal@*/
 /*@-incondefs@*/
-int headerGetRawEntry(Header h, int_32 tag,
+int headerGetRawEntry(Header h, uint32_t tag,
 			/*@null@*/ /*@out@*/ hTYP_t type,
 			/*@null@*/ /*@out@*/ hRET_t * p, 
 			/*@null@*/ /*@out@*/ hCNT_t c)
