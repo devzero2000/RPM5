@@ -1252,11 +1252,13 @@ exit:
 	he->p.ui32p = dirIndexes;
 	he->c = count;
 	xx = hae(h, he, 0);
+
 	he->tag = RPMTAG_BASENAMES;
 	he->t = RPM_STRING_ARRAY_TYPE;
 	he->p.argv = baseNames;
 	he->c = count;
 	xx = hae(h, he, 0);
+
 	he->tag = RPMTAG_DIRNAMES;
 	he->t = RPM_STRING_ARRAY_TYPE;
 	he->p.argv = dirNames;
@@ -1286,7 +1288,11 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 	/*@modifies h, *fip, fl->processingFailed, fl->fileList,
 		rpmGlobalMacroContext, fileSystem, internalState @*/
 {
+    HAE_t hae = headerAddExtension;
+    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     const char * apath;
+    uint16_t ui16;
+    uint32_t ui32;
     int _addDotSlash = !isSrc;
     int apathlen = 0;
     int dpathlen = 0;
@@ -1382,67 +1388,95 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 	 * compressed file list write before we write the actual package to
 	 * disk.
 	 */
-	(void) headerAddOrAppendEntry(h, RPMTAG_OLDFILENAMES, RPM_STRING_ARRAY_TYPE,
-			       &(flp->fileURL), 1);
+	he->tag = RPMTAG_OLDFILENAMES;
+	he->t = RPM_STRING_ARRAY_TYPE;
+	he->p.argv = &flp->fileURL;
+	he->c = 1;
+	he->append = 1;
+	xx = hae(h, he, 0);
+	he->append = 0;
 
 /*@-sizeoftype@*/
-      if (sizeof(flp->fl_size) != sizeof(uint32_t)) {
-	uint32_t psize = (uint32_t)flp->fl_size;
-	(void) headerAddOrAppendEntry(h, RPMTAG_FILESIZES, RPM_INT32_TYPE,
-			       &(psize), 1);
-      } else {
-	(void) headerAddOrAppendEntry(h, RPMTAG_FILESIZES, RPM_INT32_TYPE,
-			       &(flp->fl_size), 1);
-      }
-	(void) headerAddOrAppendEntry(h, RPMTAG_FILEUSERNAME, RPM_STRING_ARRAY_TYPE,
-			       &(flp->uname), 1);
-	(void) headerAddOrAppendEntry(h, RPMTAG_FILEGROUPNAME, RPM_STRING_ARRAY_TYPE,
-			       &(flp->gname), 1);
-      if (sizeof(flp->fl_mtime) != sizeof(uint32_t)) {
-	uint32_t mtime = (uint32_t)flp->fl_mtime;
-	(void) headerAddOrAppendEntry(h, RPMTAG_FILEMTIMES, RPM_INT32_TYPE,
-			       &(mtime), 1);
-      } else {
-	(void) headerAddOrAppendEntry(h, RPMTAG_FILEMTIMES, RPM_INT32_TYPE,
-			       &(flp->fl_mtime), 1);
-      }
-      if (sizeof(flp->fl_mode) != sizeof(uint16_t)) {
-	uint16_t pmode = (uint16_t)flp->fl_mode;
-	(void) headerAddOrAppendEntry(h, RPMTAG_FILEMODES, RPM_INT16_TYPE,
-			       &(pmode), 1);
-      } else {
-	(void) headerAddOrAppendEntry(h, RPMTAG_FILEMODES, RPM_INT16_TYPE,
-			       &(flp->fl_mode), 1);
-      }
-      if (sizeof(flp->fl_rdev) != sizeof(uint16_t)) {
-	uint16_t prdev = (uint16_t)flp->fl_rdev;
-	(void) headerAddOrAppendEntry(h, RPMTAG_FILERDEVS, RPM_INT16_TYPE,
-			       &(prdev), 1);
-      } else {
-	(void) headerAddOrAppendEntry(h, RPMTAG_FILERDEVS, RPM_INT16_TYPE,
-			       &(flp->fl_rdev), 1);
-      }
-      if (sizeof(flp->fl_dev) != sizeof(uint32_t)) {
-	uint32_t pdevice = (uint32_t)flp->fl_dev;
-	(void) headerAddOrAppendEntry(h, RPMTAG_FILEDEVICES, RPM_INT32_TYPE,
-			       &(pdevice), 1);
-      } else {
-	(void) headerAddOrAppendEntry(h, RPMTAG_FILEDEVICES, RPM_INT32_TYPE,
-			       &(flp->fl_dev), 1);
-      }
-      if (sizeof(flp->fl_ino) != sizeof(uint32_t)) {
-	uint32_t ino = (uint32_t)flp->fl_ino;
-	(void) headerAddOrAppendEntry(h, RPMTAG_FILEINODES, RPM_INT32_TYPE,
-				&(ino), 1);
-      } else {
-	(void) headerAddOrAppendEntry(h, RPMTAG_FILEINODES, RPM_INT32_TYPE,
-				&(flp->fl_ino), 1);
-      }
+	ui32 = flp->fl_size;
+	he->tag = RPMTAG_FILESIZES;
+	he->t = RPM_INT32_TYPE;
+	he->p.ui32p = &ui32;
+	he->c = 1;
+	he->append = 1;
+	xx = hae(h, he, 0);
+	he->append = 0;
+
+	he->tag = RPMTAG_FILEUSERNAME;
+	he->t = RPM_STRING_ARRAY_TYPE;
+	he->p.argv = &flp->uname;
+	he->c = 1;
+	he->append = 1;
+	xx = hae(h, he, 0);
+	he->append = 0;
+
+	he->tag = RPMTAG_FILEGROUPNAME;
+	he->t = RPM_STRING_ARRAY_TYPE;
+	he->p.argv = &flp->gname;
+	he->c = 1;
+	he->append = 1;
+	xx = hae(h, he, 0);
+	he->append = 0;
+
+	ui32 = flp->fl_mtime;
+	he->tag = RPMTAG_FILEMTIMES;
+	he->t = RPM_INT32_TYPE;
+	he->p.ui32p = &ui32;
+	he->c = 1;
+	he->append = 1;
+	xx = hae(h, he, 0);
+	he->append = 0;
+
+	ui16 = flp->fl_mode;
+	he->tag = RPMTAG_FILEMODES;
+	he->t = RPM_INT16_TYPE;
+	he->p.ui16p = &ui16;
+	he->c = 1;
+	he->append = 1;
+	xx = hae(h, he, 0);
+	he->append = 0;
+
+	ui16 = flp->fl_rdev;
+	he->tag = RPMTAG_FILERDEVS;
+	he->t = RPM_INT16_TYPE;
+	he->p.ui16p = &ui16;
+	he->c = 1;
+	he->append = 1;
+	xx = hae(h, he, 0);
+	he->append = 0;
+
+	ui32 = flp->fl_dev;
+	he->tag = RPMTAG_FILEDEVICES;
+	he->t = RPM_INT32_TYPE;
+	he->p.ui32p = &ui32;
+	he->c = 1;
+	he->append = 1;
+	xx = hae(h, he, 0);
+	he->append = 0;
+
+	ui32 = flp->fl_ino;
+	he->tag = RPMTAG_FILEINODES;
+	he->t = RPM_INT32_TYPE;
+	he->p.ui32p = &ui32;
+	he->c = 1;
+	he->append = 1;
+	xx = hae(h, he, 0);
+	he->append = 0;
+
 /*@=sizeoftype@*/
 
-	(void) headerAddOrAppendEntry(h, RPMTAG_FILELANGS, RPM_STRING_ARRAY_TYPE,
-			       &(flp->langs),  1);
-	
+	he->tag = RPMTAG_FILELANGS;
+	he->t = RPM_STRING_ARRAY_TYPE;
+	he->p.argv = &flp->langs;
+	he->c = 1;
+	he->append = 1;
+	xx = hae(h, he, 0);
+	he->append = 0;
+
       { static uint32_t source_file_dalgo = 0;
 	static uint32_t binary_file_dalgo = 0;
 	static int oneshot = 0;
@@ -1483,10 +1517,23 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 	if (S_ISREG(flp->fl_mode))
 	    (void) dodigest(dalgo, flp->diskURL, (unsigned char *)buf, 1, NULL);
 	s = buf;
-	(void) headerAddOrAppendEntry(h, RPMTAG_FILEDIGESTS, RPM_STRING_ARRAY_TYPE,
-			       &s, 1);
-	(void) headerAddOrAppendEntry(h, RPMTAG_FILEDIGESTALGOS, RPM_INT32_TYPE,
-			       &dalgo, 1);
+
+	he->tag = RPMTAG_FILEDIGESTS;
+	he->t = RPM_STRING_ARRAY_TYPE;
+	he->p.argv = &s;
+	he->c = 1;
+	he->append = 1;
+	xx = hae(h, he, 0);
+	he->append = 0;
+
+	ui32 = dalgo;
+	he->tag = RPMTAG_FILEDIGESTALGOS;
+	he->t = RPM_INT32_TYPE;
+	he->p.ui32p = &ui32;
+	he->c = 1;
+	he->append = 1;
+	xx = hae(h, he, 0);
+	he->append = 0;
       }
 	
 	buf[0] = '\0';
@@ -1508,15 +1555,26 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 	    }
 	}
 	s = buf;
-	(void) headerAddOrAppendEntry(h, RPMTAG_FILELINKTOS, RPM_STRING_ARRAY_TYPE,
-			       &s, 1);
-	
+	he->tag = RPMTAG_FILELINKTOS;
+	he->t = RPM_STRING_ARRAY_TYPE;
+	he->p.argv = &s;
+	he->c = 1;
+	he->append = 1;
+	xx = hae(h, he, 0);
+	he->append = 0;
+
 	if (flp->flags & RPMFILE_GHOST) {
 	    flp->verifyFlags &= ~(RPMVERIFY_MD5 | RPMVERIFY_FILESIZE |
 				RPMVERIFY_LINKTO | RPMVERIFY_MTIME);
 	}
-	(void) headerAddOrAppendEntry(h, RPMTAG_FILEVERIFYFLAGS, RPM_INT32_TYPE,
-			       &(flp->verifyFlags), 1);
+	ui32 = flp->verifyFlags;
+	he->tag = RPMTAG_FILEVERIFYFLAGS;
+	he->t = RPM_INT32_TYPE;
+	he->p.ui32p = &ui32;
+	he->c = 1;
+	he->append = 1;
+	xx = hae(h, he, 0);
+	he->append = 0;
 	
 	if (!isSrc && isDoc(fl, flp->fileURL))
 	    flp->flags |= RPMFILE_DOC;
@@ -1524,18 +1582,30 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 	if (S_ISDIR(flp->fl_mode))
 	    flp->flags &= ~(RPMFILE_CONFIG|RPMFILE_DOC);
 
-	(void) headerAddOrAppendEntry(h, RPMTAG_FILEFLAGS, RPM_INT32_TYPE,
-			       &(flp->flags), 1);
-
+	ui32 = flp->flags;
+	he->tag = RPMTAG_FILEFLAGS;
+	he->t = RPM_INT32_TYPE;
+	he->p.ui32p = &ui32;
+	he->c = 1;
+	he->append = 1;
+	xx = hae(h, he, 0);
+	he->append = 0;
+	
 	/* Add file security context to package. */
 	{
-	    mode_t fmode;
 	    static char *nocon = "";
-	    fmode = (uint16_t)flp->fl_mode;
+	    mode_t fmode = flp->fl_mode;
 	    if (matchpathcon(flp->fileURL, fmode, &scon) || scon == NULL)
 		scon = nocon;
-	    (void) headerAddOrAppendEntry(h, RPMTAG_FILECONTEXTS, RPM_STRING_ARRAY_TYPE,
-			       &scon, 1);
+
+	    he->tag = RPMTAG_FILECONTEXTS;
+	    he->t = RPM_STRING_ARRAY_TYPE;
+	    he->p.argv = (const char **)&scon;	/* XXX NOCAST */
+	    he->c = 1;
+	    he->append = 1;
+	    xx = hae(h, he, 0);
+	    he->append = 0;
+
 	    if (scon != nocon)
 		freecon(scon);
 	}
@@ -1544,9 +1614,15 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 	matchpathcon_fini();
     sxfn = _free(sxfn);
 
-    (void) headerAddEntry(h, RPMTAG_SIZE, RPM_INT32_TYPE,
-		   &(fl->totalFileSize), 1);
-
+    ui32 = fl->totalFileSize;
+    he->tag = RPMTAG_SIZE;
+    he->t = RPM_INT32_TYPE;
+    he->p.ui32p = &ui32;
+    he->c = 1;
+    he->append = 1;
+    xx = hae(h, he, 0);
+    he->append = 0;
+	
     compressFilelist(h);
 
   { int scareMem = 0;
@@ -1991,6 +2067,8 @@ static int processMetadataFile(Package pkg, FileList fl, const char * fileURL,
 		check_fileList, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 {
+    HAE_t hae = headerAddExtension;
+    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     const char * buildURL = "%{_builddir}/%{?buildsubdir}/";
     const char * fn = NULL;
     const char * apkt = NULL;
@@ -2036,8 +2114,13 @@ static int processMetadataFile(Package pkg, FileList fl, const char * fileURL,
     }
 /*@=branchstate@*/
 
-    xx = headerAddOrAppendEntry(pkg->header, tag,
-		RPM_STRING_ARRAY_TYPE, &apkt, 1);
+    he->tag = tag;
+    he->t = RPM_STRING_ARRAY_TYPE;
+    he->p.argv = &apkt;
+    he->c = 1;
+    he->append = 1;
+    xx = hae(pkg->header, he, 0);
+    he->append = 0;
 
     rc = 0;
     if (absolute)
@@ -2437,22 +2520,21 @@ exit:
 
 int initSourceHeader(Spec spec, StringBuf *sfp)
 {
+    HAE_t hae = headerAddExtension;
+    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     HeaderIterator hi;
-    rpmTag tag;
-    rpmTagType type;
-    rpmTagCount count;
-    const void * ptr;
     StringBuf sourceFiles;
     struct Source *srcPtr;
+    int xx;
 
     /* Only specific tags are added to the source package header */
     /*@-branchstate@*/
   if (!spec->sourceHdrInit) {
     for (hi = headerInitIterator(spec->packages->header);
-	headerNextIterator(hi, &tag, &type, &ptr, &count);
-	ptr = headerFreeData(ptr, type))
+	headerNextIterator(hi, &he->tag, &he->t, &he->p.ptr, &he->c);
+	he->p.ptr = headerFreeData(he->p.ptr, he->t))
     {
-	switch (tag) {
+	switch (he->tag) {
 	case RPMTAG_NAME:
 	case RPMTAG_VERSION:
 	case RPMTAG_RELEASE:
@@ -2475,8 +2557,8 @@ int initSourceHeader(Spec spec, StringBuf *sfp)
 	case RPMTAG_GIF:
 	case RPMTAG_XPM:
 	case HEADER_I18NTABLE:
-	    if (ptr)
-		(void)headerAddEntry(spec->sourceHeader, tag, type, ptr, count);
+	    if (he->p.ptr)
+		xx = hae(spec->sourceHeader, he, 0);
 	    /*@switchbreak@*/ break;
 	default:
 	    /* do not copy */
@@ -2487,9 +2569,11 @@ int initSourceHeader(Spec spec, StringBuf *sfp)
     /*@=branchstate@*/
 
     if (spec->BANames && spec->BACount > 0) {
-	(void) headerAddEntry(spec->sourceHeader, RPMTAG_BUILDARCHS,
-		       RPM_STRING_ARRAY_TYPE,
-		       spec->BANames, spec->BACount);
+	he->tag = RPMTAG_BUILDARCHS;
+	he->t = RPM_STRING_ARRAY_TYPE;
+	he->p.argv = spec->BANames;
+	he->c = spec->BACount;
+	xx = hae(spec->sourceHeader, he, 0);
     }
   }
 
@@ -2513,19 +2597,39 @@ int initSourceHeader(Spec spec, StringBuf *sfp)
 	    continue;
 
 	if (srcPtr->flags & RPMFILE_SOURCE) {
-	    (void) headerAddOrAppendEntry(spec->sourceHeader, RPMTAG_SOURCE,
-				   RPM_STRING_ARRAY_TYPE, &srcPtr->source, 1);
+	    he->tag = RPMTAG_SOURCE;
+	    he->t = RPM_STRING_ARRAY_TYPE;
+	    he->p.argv = &srcPtr->source;
+	    he->c = 1;
+	    he->append = 1;
+	    xx = hae(spec->sourceHeader, he, 0);
+	    he->append = 0;
 	    if (srcPtr->flags & RPMFILE_GHOST) {
-		(void) headerAddOrAppendEntry(spec->sourceHeader, RPMTAG_NOSOURCE,
-				       RPM_INT32_TYPE, &srcPtr->num, 1);
+		he->tag = RPMTAG_NOSOURCE;
+		he->t = RPM_INT32_TYPE;
+		he->p.ui32p = &srcPtr->num;
+		he->c = 1;
+		he->append = 1;
+		xx = hae(spec->sourceHeader, he, 0);
+		he->append = 0;
 	    }
 	}
 	if (srcPtr->flags & RPMFILE_PATCH) {
-	    (void) headerAddOrAppendEntry(spec->sourceHeader, RPMTAG_PATCH,
-				   RPM_STRING_ARRAY_TYPE, &srcPtr->source, 1);
+	    he->tag = RPMTAG_PATCH;
+	    he->t = RPM_STRING_ARRAY_TYPE;
+	    he->p.argv = &srcPtr->source;
+	    he->c = 1;
+	    he->append = 1;
+	    xx = hae(spec->sourceHeader, he, 0);
+	    he->append = 0;
 	    if (srcPtr->flags & RPMFILE_GHOST) {
-		(void) headerAddOrAppendEntry(spec->sourceHeader, RPMTAG_NOPATCH,
-				       RPM_INT32_TYPE, &srcPtr->num, 1);
+		he->tag = RPMTAG_NOPATCH;
+		he->t = RPM_INT32_TYPE;
+		he->p.ui32p = &srcPtr->num;
+		he->c = 1;
+		he->append = 1;
+		xx = hae(spec->sourceHeader, he, 0);
+		he->append = 0;
 	    }
 	}
     }

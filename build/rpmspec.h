@@ -40,7 +40,7 @@ struct Source {
 /*@dependent@*/
     const char * source;	/* Pointer into fullSource */
     int flags;
-    int num;
+    uint32_t num;
 /*@owned@*/
     struct Source * next;
 };
