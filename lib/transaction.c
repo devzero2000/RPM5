@@ -55,18 +55,6 @@
 /*@access IDTX @*/
 /*@access FD_t @*/
 
-/* XXX: This is a hack.  I needed a to setup a notify callback
- * for the rollback transaction, but I did not want to create
- * a header for rpminstall.c.
- */
-extern void * rpmShowProgress(/*@null@*/ const void * arg,
-                        const rpmCallbackType what,
-                        const uint64_t amount,
-                        const uint64_t total,
-                        /*@null@*/ fnpyKey key,
-                        /*@null@*/ void * data)
-	/*@*/;
-
 /**
  */
 static int sharedCmp(const void * one, const void * two)
