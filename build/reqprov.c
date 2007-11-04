@@ -12,9 +12,10 @@
 
 int addReqProv(/*@unused@*/ Spec spec, Header h, /*@unused@*/ rpmTag tagN,
 		const char * N, const char * EVR, rpmsenseFlags Flags,
-		int index)
+		uint32_t index)
 {
     HGE_t hge = (HGE_t)headerGetExtension;
+    HAE_t hae = headerAddExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     const char ** names;
     rpmTag nametag = 0;
@@ -109,15 +110,40 @@ int addReqProv(/*@unused@*/ Spec spec, Header h, /*@unused@*/ rpmTag tagN,
     }
 
     /* Add this dependency. */
-    xx = headerAddOrAppendEntry(h, nametag, RPM_STRING_ARRAY_TYPE, &N, 1);
+    he->tag = nametag;
+    he->t = RPM_STRING_ARRAY_TYPE;
+    he->p.argv = &N;
+    he->c = 1;
+    he->append = 1;
+    xx = hae(h, he, 0);
+    he->append = 0;
+
     if (flagtag) {
-	xx = headerAddOrAppendEntry(h, versiontag,
-			       RPM_STRING_ARRAY_TYPE, &EVR, 1);
-	xx = headerAddOrAppendEntry(h, flagtag,
-			       RPM_INT32_TYPE, &Flags, 1);
+	he->tag = versiontag;
+	he->t = RPM_STRING_ARRAY_TYPE;
+	he->p.argv = &EVR;
+	he->c = 1;
+	he->append = 1;
+	xx = hae(h, he, 0);
+	he->append = 0;
+
+	he->tag = flagtag;
+	he->t = RPM_INT32_TYPE;
+	he->p.ui32p = &Flags;
+	he->c = 1;
+	he->append = 1;
+	xx = hae(h, he, 0);
+	he->append = 0;
     }
-    if (indextag)
-	xx = headerAddOrAppendEntry(h, indextag, RPM_INT32_TYPE, &index, 1);
+    if (indextag) {
+	he->tag = indextag;
+	he->t = RPM_INT32_TYPE;
+	he->p.ui32p = &index;
+	he->c = 1;
+	he->append = 1;
+	xx = hae(h, he, 0);
+	he->append = 0;
+    }
 
     return 0;
 }

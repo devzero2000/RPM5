@@ -315,7 +315,7 @@ int parsePrep(Spec spec, int verify)
  * @return		0 on success, RPMERR_BADSPEC on failure
  */
 int parseRCPOT(Spec spec, Package pkg, const char * field, rpmTag tagN,
-		int index, rpmsenseFlags tagflags)
+		uint32_t index, rpmsenseFlags tagflags)
 	/*@globals rpmGlobalMacroContext, h_errno @*/
 	/*@modifies rpmGlobalMacroContext @*/;
 
@@ -424,7 +424,7 @@ Package  freePackage(/*@only@*/ /*@null@*/ Package pkg)
  */
 int addReqProv(/*@unused@*/Spec spec, Header h, rpmTag tagN,
 		const char * N, const char * EVR, rpmsenseFlags Flags,
-		int index)
+		uint32_t index)
 	/*@modifies h @*/;
 
 /**

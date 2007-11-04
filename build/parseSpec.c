@@ -435,6 +435,7 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootURL,
 		const char *cookie, int anyarch, int force, int verify)
 {
     HGE_t hge = (HGE_t)headerGetExtension;
+    HAE_t hae = headerAddExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     rpmParseState parsePart = PART_PREAMBLE;
     int initialPackage = 1;
@@ -612,11 +613,23 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootURL,
 	    return RPMRC_FAIL;
 	}
 
-	(void) headerAddEntry(pkg->header, RPMTAG_OS, RPM_STRING_TYPE, os, 1);
-	(void) headerAddEntry(pkg->header, RPMTAG_ARCH,
-		RPM_STRING_TYPE, arch, 1);
-	(void) headerAddEntry(pkg->header, RPMTAG_PLATFORM,
-		RPM_STRING_TYPE, platform, 1);
+	he->tag = RPMTAG_OS;
+	he->t = RPM_STRING_TYPE;
+	he->p.str = os;
+	he->c = 1;
+	xx = hae(pkg->header, he, 0);
+
+	he->tag = RPMTAG_ARCH;
+	he->t = RPM_STRING_TYPE;
+	he->p.str = arch;
+	he->c = 1;
+	xx = hae(pkg->header, he, 0);
+
+	he->tag = RPMTAG_PLATFORM;
+	he->t = RPM_STRING_TYPE;
+	he->p.str = platform;
+	he->c = 1;
+	xx = hae(pkg->header, he, 0);
 
 	pkg->ds = rpmdsThis(pkg->header, RPMTAG_REQUIRENAME, RPMSENSE_EQUAL);
 

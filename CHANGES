@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - jbj: start bulldozing headerAddEntry throughout rpmbuild.
     - jbj: use HAE_t for signature tags, change int_32 to uint32_t where needed.
     - rpm.org: rpmhash.c: use size_t for keySize.
     - rpm.org: remove unnecessary rpmShowProgress() prototype.

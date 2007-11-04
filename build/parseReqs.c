@@ -14,7 +14,7 @@
 #define	SKIPNONWHITE(_x){while(*(_x) &&!(xisspace(*_x) || *(_x) == ',')) (_x)++;}
 
 int parseRCPOT(Spec spec, Package pkg, const char *field, rpmTag tagN,
-	       int index, rpmsenseFlags tagflags)
+	       uint32_t index, rpmsenseFlags tagflags)
 {
     const char *r, *re, *v, *ve;
     char * N, * EVR;

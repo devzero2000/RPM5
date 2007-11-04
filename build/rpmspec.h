@@ -165,7 +165,7 @@ struct Spec_s {
     MacroContext macros;
 
     int (*_parseRCPOT) (Spec spec, Package pkg, const char *field, rpmTag tagN,
-               int index, rpmsenseFlags tagflags);
+               uint32_t index, rpmsenseFlags tagflags);
 
 /*@only@*/
     StringBuf prep;		/*!< %prep scriptlet. */

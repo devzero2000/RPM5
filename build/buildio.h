@@ -13,7 +13,7 @@
 /**
  */
 typedef /*@abstract@*/ struct cpioSourceArchive_s {
-    unsigned int cpioArchiveSize;
+    uint32_t	cpioArchiveSize;
     FD_t	cpioFdIn;
 /*@refcounted@*/ /*@relnull@*/
     rpmfi	cpioList;

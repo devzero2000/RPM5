@@ -14,14 +14,34 @@
 
 void addChangelogEntry(Header h, time_t time, const char *name, const char *text)
 {
+    HAE_t hae = headerAddExtension;
+    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     uint32_t mytime = time;	/* XXX convert to int_32 for header */
+    int xx;
 
-    (void) headerAddOrAppendEntry(h, RPMTAG_CHANGELOGTIME,
-		RPM_INT32_TYPE, &mytime, 1);
-    (void) headerAddOrAppendEntry(h, RPMTAG_CHANGELOGNAME,
-		RPM_STRING_ARRAY_TYPE, &name, 1);
-    (void) headerAddOrAppendEntry(h, RPMTAG_CHANGELOGTEXT,
-		RPM_STRING_ARRAY_TYPE, &text, 1);
+    he->tag = RPMTAG_CHANGELOGTIME;
+    he->t = RPM_INT32_TYPE;
+    he->p.ui32p = &mytime;
+    he->c = 1;
+    he->append = 1;
+    xx = hae(h, he, 0);
+    he->append = 0;
+
+    he->tag = RPMTAG_CHANGELOGNAME;
+    he->t = RPM_STRING_ARRAY_TYPE;
+    he->p.argv = &name;
+    he->c = 1;
+    he->append = 1;
+    xx = hae(h, he, 0);
+    he->append = 0;
+
+    he->tag = RPMTAG_CHANGELOGTEXT;
+    he->t = RPM_STRING_ARRAY_TYPE;
+    he->p.argv = &text;
+    he->c = 1;
+    he->append = 1;
+    xx = hae(h, he, 0);
+    he->append = 0;
 }
 
 /**

@@ -17,14 +17,14 @@
 
 /**
  */
-static int addTriggerIndex(Package pkg, const char *file,
+static uint32_t addTriggerIndex(Package pkg, const char *file,
 	const char *script, const char *prog)
 	/*@modifies pkg->triggerFiles @*/
 {
     struct TriggerFileEntry *tfe;
     struct TriggerFileEntry *list = pkg->triggerFiles;
     struct TriggerFileEntry *last = NULL;
-    int index = 0;
+    uint32_t index = 0;
 
     while (list) {
 	last = list;
@@ -73,6 +73,10 @@ static int addTriggerIndex(Package pkg, const char *file,
 /*@-boundswrite@*/
 int parseScript(Spec spec, int parsePart)
 {
+    HAE_t hae = headerAddExtension;
+    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    int xx;
+
     /* There are a few options to scripts: */
     /*  <pkg>                              */
     /*  -n <pkg>                           */
@@ -86,13 +90,12 @@ int parseScript(Spec spec, int parsePart)
     char *partname = NULL;
     rpmTag reqtag = 0;
     rpmTag tag = 0;
-    int tagflags = 0;
+    rpmsenseFlags tagflags = 0;
     rpmTag progtag = 0;
     int flag = PART_SUBNAME;
     Package pkg;
     StringBuf sb = NULL;
     int nextPart;
-    int index;
     char reqargs[BUFSIZ];
 
     int rc, argc;
@@ -320,24 +323,35 @@ int parseScript(Spec spec, int parsePart)
     /* get the index right.                                   */
     if (tag == RPMTAG_TRIGGERSCRIPTS) {
 	/* Add file/index/prog triple to the trigger file list */
-	index = addTriggerIndex(pkg, file, p, progArgv[0]);
+	uint32_t index = addTriggerIndex(pkg, file, p, progArgv[0]);
 
 	/* Generate the trigger tags */
 	if ((rc = parseRCPOT(spec, pkg, reqargs, reqtag, index, tagflags)))
 	    goto exit;
     } else {
-	if (progArgc == 1)
-	    (void) headerAddEntry(pkg->header, progtag, RPM_STRING_TYPE,
-			*progArgv, progArgc);
-	else {
+	if (progArgc == 1) {
+	    he->tag = progtag;
+	    he->t = RPM_STRING_TYPE;
+	    he->p.str = *progArgv;
+	    he->c = progArgc;
+	    xx = hae(pkg->header, he, 0);
+	} else {
 	    (void) rpmlibNeedsFeature(pkg->header,
 			"ScriptletInterpreterArgs", "4.0.3-1");
-	    (void) headerAddEntry(pkg->header, progtag, RPM_STRING_ARRAY_TYPE,
-			progArgv, progArgc);
+	    he->tag = progtag;
+	    he->t = RPM_STRING_ARRAY_TYPE;
+	    he->p.argv = progArgv;
+	    he->c = progArgc;
+	    xx = hae(pkg->header, he, 0);
 	}
 
-	if (*p != '\0')
-	    (void) headerAddEntry(pkg->header, tag, RPM_STRING_TYPE, p, 1);
+	if (*p != '\0') {
+	    he->tag = tag;
+	    he->t = RPM_STRING_TYPE;
+	    he->p.str = p;
+	    he->c = 1;
+	    xx = hae(pkg->header, he, 0);
+	}
 
 	if (file) {
 	    switch (parsePart) {
