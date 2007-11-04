@@ -89,7 +89,7 @@ struct headerToken_s {
     void * blob;		/*!< Header region blob. */
 /*@only@*/ /*@null@*/
     const char * origin;	/*!< Header origin (e.g. path or URL). */
-    int_32 instance;		/*!< Header instance (if from rpmdb). */
+    uint32_t instance;		/*!< Header instance (if from rpmdb). */
     struct rpmop_s h_loadops;
     struct rpmop_s h_getops;
 /*@owned@*/
@@ -115,7 +115,7 @@ struct sprintfTag_s {
 /*@null@*/
     headerTagTagFunction ext;   /*!< NULL if tag element is invalid */
     int extNum;
-    int_32 tagno;
+    uint32_t tagno;
     int justOne;
     int arrayCount;
 /*@kept@*/

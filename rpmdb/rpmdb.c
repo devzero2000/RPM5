@@ -2788,6 +2788,9 @@ DBT * key = alloca(sizeof(*key));
 DBT * data = alloca(sizeof(*data));
 union _dbswap mi_offset;
     HGE_t hge = (HGE_t)headerGetExtension;
+#ifdef	DYING
+    HAE_t hae = (HAE_t)headerAddExtension;
+#endif
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     Header h;
     sigset_t signalMask;
@@ -2818,8 +2821,12 @@ memset(data, 0, sizeof(*data));
 #ifdef	DYING
     /* Add remove transaction id to header. */
     if (rid != 0 && rid != -1) {
-	int_32 tid = rid;
-	xx = headerAddEntry(h, RPMTAG_REMOVETID, RPM_INT32_TYPE, &tid, 1);
+	uint32_t tid = rid;
+	he->tag = RPMTAG_REMOVETID;
+	he->t = RPM_INT32_TYPE;
+	he->p.ui32p = &tid;
+	he->c = 1;
+	xx = hae(h, he, 0);
     }
 #endif
 
