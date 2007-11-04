@@ -672,8 +672,7 @@ rpmts rpmtsFree(rpmts ts)
 
     if (_rpmts_macros) {
 	const char ** av = NULL;
-	int ac = rpmGetMacroEntries(NULL, NULL, 1, &av);
-	int i;
+	(void)rpmGetMacroEntries(NULL, NULL, 1, &av);
 	argvPrint("macros used", av, NULL);
 	av = argvFree(av);
     }
