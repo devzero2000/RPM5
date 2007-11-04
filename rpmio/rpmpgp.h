@@ -1404,7 +1404,7 @@ pgpDigParams pgpGetSignature(const pgpDig dig)
  * @param dig		container
  * @return		signature tag
  */
-int32_t pgpGetSigtag(const pgpDig dig)
+uint32_t pgpGetSigtag(const pgpDig dig)
 	/*@*/;
 
 /** \ingroup rpmts
@@ -1413,7 +1413,7 @@ int32_t pgpGetSigtag(const pgpDig dig)
  * @param ts		transaction set
  * @return		signature tag type
  */
-int32_t pgpGetSigtype(const pgpDig dig)
+uint32_t pgpGetSigtype(const pgpDig dig)
 	/*@*/;
 
 /**
@@ -1430,7 +1430,7 @@ extern const void * pgpGetSig(const pgpDig dig)
  * @param dig		container
  * @return		signature tag data length
  */
-int32_t pgpGetSiglen(const pgpDig dig)
+uint32_t pgpGetSiglen(const pgpDig dig)
 	/*@*/;
 
 /**
@@ -1443,8 +1443,8 @@ int32_t pgpGetSiglen(const pgpDig dig)
  * @return		0 always
  */
 int pgpSetSig(pgpDig dig,
-		int32_t sigtag, int32_t sigtype,
-		/*@kept@*/ /*@null@*/ const void * sig, int32_t siglen)
+		uint32_t sigtag, uint32_t sigtype,
+		/*@kept@*/ /*@null@*/ const void * sig, uint32_t siglen)
 	/*@modifies dig @*/;
 
 /**

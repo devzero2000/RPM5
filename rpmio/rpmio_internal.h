@@ -63,11 +63,11 @@ struct pgpDig_s {
     struct pgpDigParams_s signature;
     struct pgpDigParams_s pubkey;
 
-    int32_t sigtag;		/*!< Package signature tag. */
-    int32_t sigtype;		/*!< Package signature data type. */
+    uint32_t sigtag;		/*!< Package signature tag. */
+    uint32_t sigtype;		/*!< Package signature data type. */
 /*@relnull@*/
     const void * sig;		/*!< Package signature. */
-    int32_t siglen;		/*!< Package signature length. */
+    uint32_t siglen;		/*!< Package signature length. */
 
     pgpVSFlags vsflags;		/*!< Digest/signature operation disablers. */
     struct rpmop_s dops;	/*!< Digest operation statistics. */

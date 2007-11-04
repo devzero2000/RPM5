@@ -213,8 +213,8 @@ const char * rpmDetectPGPVersion(pgpVersion * pgpVer)
  * @param passPhrase	private key pass phrase
  * @return		0 on success, 1 on failure
  */
-static int makePGPSignature(const char * file, /*@unused@*/ int_32 * sigTagp,
-		/*@out@*/ byte ** pktp, /*@out@*/ int_32 * pktlenp,
+static int makePGPSignature(const char * file, /*@unused@*/ uint32_t * sigTagp,
+		/*@out@*/ byte ** pktp, /*@out@*/ uint32_t * pktlenp,
 		/*@null@*/ const char * passPhrase)
 	/*@globals errno, rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState @*/
@@ -348,8 +348,8 @@ static int makePGPSignature(const char * file, /*@unused@*/ int_32 * sigTagp,
  * @param passPhrase	private key pass phrase
  * @return		0 on success, 1 on failure
  */
-static int makeGPGSignature(const char * file, int_32 * sigTagp,
-		/*@out@*/ byte ** pktp, /*@out@*/ int_32 * pktlenp,
+static int makeGPGSignature(const char * file, uint32_t * sigTagp,
+		/*@out@*/ byte ** pktp, /*@out@*/ uint32_t * pktlenp,
 		/*@null@*/ const char * passPhrase)
 	/*@globals rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState @*/
@@ -518,20 +518,22 @@ static int makeGPGSignature(const char * file, int_32 * sigTagp,
  * @param passPhrase	private key pass phrase
  * @return		0 on success, -1 on failure
  */
-static int makeHDRSignature(Header sigh, const char * file, int_32 sigTag,
+static int makeHDRSignature(Header sigh, const char * file, uint32_t sigTag,
 		/*@null@*/ const char * passPhrase)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies sigh, sigTag, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     HGE_t hge = (HGE_t)headerGetExtension;
+    HAE_t hae = headerAddExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     Header h = NULL;
     FD_t fd = NULL;
     byte * pkt;
-    int_32 pktlen;
+    uint32_t pktlen;
     const char * fn = NULL;
     const char * SHA1 = NULL;
     int ret = -1;	/* assume failure. */
+    int xx;
 
     switch (sigTag) {
     case RPMSIGTAG_SIZE:
@@ -573,7 +575,12 @@ static int makeHDRSignature(Header sigh, const char * file, int_32 sigTag,
 
 	if (SHA1 == NULL)
 	    goto exit;
-	if (!headerAddEntry(sigh, RPMSIGTAG_SHA1, RPM_STRING_TYPE, SHA1, 1))
+	he->tag = RPMSIGTAG_SHA1;
+	he->t = RPM_STRING_TYPE;
+	he->p.str = SHA1;
+	he->c = 1;
+	xx = hae(sigh, he, 0);
+	if (!xx)
 	    goto exit;
 	ret = 0;
 	break;
@@ -590,8 +597,14 @@ static int makeHDRSignature(Header sigh, const char * file, int_32 sigTag,
 	if (headerWrite(fd, h))
 	    goto exit;
 	(void) Fclose(fd);	fd = NULL;
-	if (makeGPGSignature(fn, &sigTag, &pkt, &pktlen, passPhrase)
-	 || !headerAddEntry(sigh, sigTag, RPM_BIN_TYPE, pkt, pktlen))
+	if (makeGPGSignature(fn, &sigTag, &pkt, &pktlen, passPhrase))
+	    goto exit;
+	he->tag = sigTag;
+	he->t = RPM_BIN_TYPE;
+	he->p.ptr = pkt;
+	he->c = pktlen;
+	xx = hae(sigh, he, 0);
+	if (!xx)
 	    goto exit;
 	ret = 0;
 	break;
@@ -609,8 +622,14 @@ static int makeHDRSignature(Header sigh, const char * file, int_32 sigTag,
 	if (headerWrite(fd, h))
 	    goto exit;
 	(void) Fclose(fd);	fd = NULL;
-	if (makePGPSignature(fn, &sigTag, &pkt, &pktlen, passPhrase)
-	 || !headerAddEntry(sigh, sigTag, RPM_BIN_TYPE, pkt, pktlen))
+	if (makePGPSignature(fn, &sigTag, &pkt, &pktlen, passPhrase))
+	    goto exit;
+	he->tag = sigTag;
+	he->t = RPM_BIN_TYPE;
+	he->p.ptr = pkt;
+	he->c = pktlen;
+	xx = hae(sigh, he, 0);
+	if (!xx)
 	    goto exit;
 	ret = 0;
 	break;
@@ -628,28 +647,42 @@ exit:
     return ret;
 }
 
-int rpmAddSignature(Header sigh, const char * file, int_32 sigTag,
+int rpmAddSignature(Header sigh, const char * file, uint32_t sigTag,
 		const char * passPhrase)
 {
+    HAE_t hae = headerAddExtension;
+    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     struct stat st;
     byte * pkt;
-    int_32 pktlen;
+    uint32_t pktlen;
     int ret = -1;	/* assume failure. */
+    int xx;
 
     switch (sigTag) {
     case RPMSIGTAG_SIZE:
 	if (Stat(file, &st) != 0)
 	    break;
 	pktlen = st.st_size;
-	if (!headerAddEntry(sigh, sigTag, RPM_INT32_TYPE, &pktlen, 1))
+	he->tag = sigTag;
+	he->t = RPM_INT32_TYPE;
+	he->p.ui32p = &pktlen;
+	he->c = 1;
+	xx = hae(sigh, he, 0);
+	if (!xx)
 	    break;
 	ret = 0;
 	break;
     case RPMSIGTAG_MD5:
 	pktlen = 16;
 	pkt = memset(alloca(pktlen), 0, pktlen);
-	if (dodigest(PGPHASHALGO_MD5, file, pkt, 0, NULL)
-	 || !headerAddEntry(sigh, sigTag, RPM_BIN_TYPE, pkt, pktlen))
+	if (dodigest(PGPHASHALGO_MD5, file, pkt, 0, NULL))
+	    break;
+	he->tag = sigTag;
+	he->t = RPM_BIN_TYPE;
+	he->p.ptr = pkt;
+	he->c = pktlen;
+	xx = hae(sigh, he, 0);
+	if (!xx)
 	    break;
 	ret = 0;
 	break;
@@ -657,8 +690,14 @@ int rpmAddSignature(Header sigh, const char * file, int_32 sigTag,
     case RPMSIGTAG_PGP5:	/* XXX legacy */
     case RPMSIGTAG_PGP:
 #if defined(SUPPORT_RPMV3_SIGN_RSA)
-	if (makePGPSignature(file, &sigTag, &pkt, &pktlen, passPhrase)
-	 || !headerAddEntry(sigh, sigTag, RPM_BIN_TYPE, pkt, pktlen))
+	if (makePGPSignature(file, &sigTag, &pkt, &pktlen, passPhrase))
+	    break;
+	he->tag = sigTag;
+	he->t = RPM_BIN_TYPE;
+	he->p.ptr = pkt;
+	he->c = pktlen;
+	xx = hae(sigh, he, 0);
+	if (!xx)
 	    break;
 	/* XXX Piggyback a header-only RSA signature as well. */
 #endif
@@ -670,8 +709,14 @@ int rpmAddSignature(Header sigh, const char * file, int_32 sigTag,
 #endif	/* SUPPORT_PGP_SIGNING */
     case RPMSIGTAG_GPG:
 #if defined(SUPPORT_RPMV3_SIGN_DSA)
-	if (makeGPGSignature(file, &sigTag, &pkt, &pktlen, passPhrase)
-	 || !headerAddEntry(sigh, sigTag, RPM_BIN_TYPE, pkt, pktlen))
+	if (makeGPGSignature(file, &sigTag, &pkt, &pktlen, passPhrase))
+	    break;
+	he->tag = sigTag;
+	he->t = RPM_BIN_TYPE;
+	he->p.ptr = pkt;
+	he->c = pktlen;
+	xx = hae(sigh, he, 0);
+	if (!xx)
 	    break;
 	/* XXX Piggyback a header-only DSA signature as well. */
 #endif
@@ -826,7 +871,7 @@ verifySizeSignature(const pgpDig dig, /*@out@*/ char * t)
 {
     const void * sig = pgpGetSig(dig);
     rpmRC res;
-    int_32 size = 0x7fffffff;
+    uint32_t size = 0xffffffff;
 
     *t = '\0';
     t = stpcpy(t, _("Header+Payload size: "));
@@ -842,11 +887,11 @@ verifySizeSignature(const pgpDig dig, /*@out@*/ char * t)
     if (size != dig->nbytes) {
 	res = RPMRC_FAIL;
 	t = stpcpy(t, rpmSigString(res));
-	sprintf(t, " Expected(%d) != (%d)\n", (int)size, (int)dig->nbytes);
+	sprintf(t, " Expected(%u) != (%u)\n", (unsigned)size, (unsigned)dig->nbytes);
     } else {
 	res = RPMRC_OK;
 	t = stpcpy(t, rpmSigString(res));
-	sprintf(t, " (%d)", (int)dig->nbytes);
+	sprintf(t, " (%u)", (unsigned)dig->nbytes);
     }
 
 exit:
@@ -861,7 +906,7 @@ verifyMD5Signature(const pgpDig dig, /*@out@*/ char * t,
 	/*@modifies *t, internalState @*/
 {
     const void * sig = pgpGetSig(dig);
-    int_32 siglen = pgpGetSiglen(dig);
+    uint32_t siglen = pgpGetSiglen(dig);
     rpmRC res;
     byte * md5sum = NULL;
     size_t md5len = 0;
@@ -919,7 +964,7 @@ verifySHA1Signature(const pgpDig dig, /*@out@*/ char * t,
 {
     const void * sig = pgpGetSig(dig);
 #ifdef	NOTYET
-    int_32 siglen = pgpGetSiglen(dig);
+    uint32_t siglen = pgpGetSiglen(dig);
 #endif
     rpmRC res;
     const char * SHA1 = NULL;
@@ -992,9 +1037,9 @@ verifyRSASignature(pgpDig dig, /*@out@*/ char * t,
 {
     const void * sig = pgpGetSig(dig);
 #ifdef	NOTYET
-    int_32 siglen = pgpGetSiglen(dig);
+    uint32_t siglen = pgpGetSiglen(dig);
 #endif
-    int_32 sigtag = pgpGetSigtag(dig);
+    uint32_t sigtag = pgpGetSigtag(dig);
     pgpDigParams sigp = pgpGetSignature(dig);
     const char * prefix = NULL;
     rpmRC res = RPMRC_OK;
@@ -1186,9 +1231,9 @@ verifyDSASignature(pgpDig dig, /*@out@*/ char * t,
 {
     const void * sig = pgpGetSig(dig);
 #ifdef	NOTYET
-    int_32 siglen = pgpGetSiglen(dig);
+    uint32_t siglen = pgpGetSiglen(dig);
 #endif
-    int_32 sigtag = pgpGetSigtag(dig);
+    uint32_t sigtag = pgpGetSigtag(dig);
     pgpDigParams sigp = pgpGetSignature(dig);
     rpmRC res;
     int xx;
@@ -1292,8 +1337,8 @@ rpmVerifySignature(void * _dig, char * result)
 {
     pgpDig dig = _dig;
     const void * sig = pgpGetSig(dig);
-    int_32 siglen = pgpGetSiglen(dig);
-    int_32 sigtag = pgpGetSigtag(dig);
+    uint32_t siglen = pgpGetSiglen(dig);
+    uint32_t sigtag = pgpGetSigtag(dig);
     rpmRC res;
 
     if (dig == NULL || sig == NULL || siglen <= 0) {

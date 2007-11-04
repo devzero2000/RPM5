@@ -74,6 +74,7 @@ static void addOrAppendListEntry(Header h, rpmTag tag, char * line)
 	he->c = argc;
 	he->append = 1;
 	xx = hae(h, he, 0);
+	he->append = 0;
     }
     argv = _free(argv);
 }
