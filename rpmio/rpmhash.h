@@ -44,7 +44,7 @@ typedef int (*hashEqualityType) (const void * key1, const void * key2)
  * @param eq            function to compare keys for equality (NULL for default)
  * @return		pointer to initialized hash table
  */
-hashTable htCreate(int numBuckets, int keySize, int freeData,
+hashTable htCreate(int numBuckets, size_t keySize, int freeData,
 		/*@null@*/ hashFunctionType fn, /*@null@*/ hashEqualityType eq)
 	/*@*/; 
 

@@ -24,7 +24,7 @@ struct hashBucket_s {
  */
 struct hashTable_s {
     int numBuckets;			/*!< number of hash buckets */
-    int keySize;			/*!< size of key (0 if unknown) */
+    size_t keySize;			/*!< size of key (0 if unknown) */
     int freeData;	/*!< should data be freed when table is destroyed? */
     hashBucket * buckets;		/*!< hash bucket array */
     hashFunctionType fn;		/*!< generate hash value for key */
@@ -108,7 +108,7 @@ static int hashEqualityString(const void * key1, const void * key2)
     return strcmp(k1, k2);
 }
 
-hashTable htCreate(int numBuckets, int keySize, int freeData,
+hashTable htCreate(int numBuckets, size_t keySize, int freeData,
 		hashFunctionType fn, hashEqualityType eq)
 {
     hashTable ht;
