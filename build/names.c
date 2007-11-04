@@ -206,13 +206,13 @@ gid_t getGidS(const char *gname)
 }
 /*@=boundswrite@*/
 
-int_32 * getBuildTime(void)
+uint32_t * getBuildTime(void)
 {
-    static int_32 buildTime[1];
+    static uint32_t buildTime[1];
 
 /*@-boundsread@*/
     if (buildTime[0] == 0)
-	buildTime[0] = (int_32) time(NULL);
+	buildTime[0] = (uint32_t) time(NULL);
 /*@=boundsread@*/
     return buildTime;
 }

@@ -164,7 +164,7 @@ extern const char * buildHost(void)
  * @return		build time stamp
  */
 /*@observer@*/
-extern int_32 * getBuildTime(void)
+extern uint32_t * getBuildTime(void)
 	/*@*/;
 
 /** \ingroup rpmbuild

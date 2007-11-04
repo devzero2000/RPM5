@@ -486,7 +486,7 @@ void providePackageNVR(Header h)
     if (!xx) {
 	for (i = 0; i < providesCount; i++) {
 	    char * vdummy = "";
-	    int_32 fdummy = RPMSENSE_ANY;
+	    uint32_t fdummy = RPMSENSE_ANY;
 	    xx = headerAddOrAppendEntry(h, RPMTAG_PROVIDEVERSION, RPM_STRING_ARRAY_TYPE,
 			&vdummy, 1);
 	    xx = headerAddOrAppendEntry(h, RPMTAG_PROVIDEFLAGS, RPM_INT32_TYPE,
@@ -535,7 +535,8 @@ int writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     FD_t fd = NULL;
     FD_t ifd = NULL;
-    int_32 count, sigtag;
+    int_32 count;
+    uint32_t sigtag;
     const char * sigtarget;
     const char * rpmio_flags = NULL;
     const char * payload_format = NULL;
