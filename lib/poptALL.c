@@ -119,6 +119,9 @@ extern int _rpmte_debug;
 extern int _rpmts_debug;
 
 /*@unchecked@*/
+extern int _rpmts_macros;
+
+/*@unchecked@*/
 extern int _rpmts_stats;
 
 /*@unchecked@*/
@@ -423,8 +426,12 @@ struct poptOption rpmcliAllPoptTable[] = {
  { "promoteepoch", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmds_nopromote, 0,
 	NULL, NULL},
 
+ { "avdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_av_debug, -1,
+	N_("debug argv collections"), NULL},
  { "cpiodebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_cpio_debug, -1,
 	N_("debug cpio payloads"), NULL},
+ { "davdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_dav_debug, -1,
+	N_("debug WebDAV data stream"), NULL},
  { "fpsdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_fps_debug, -1,
 	NULL, NULL},
  { "fsmdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_fsm_debug, -1,
@@ -433,11 +440,9 @@ struct poptOption rpmcliAllPoptTable[] = {
 	N_("use threads for file state machine"), NULL},
  { "ftpdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_ftp_debug, -1,
 	N_("debug FTP/HTTP data stream"), NULL},
- { "avdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_av_debug, -1,
-	N_("debug argv collections"), NULL},
- { "davdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_dav_debug, -1,
-	N_("debug WebDAV data stream"), NULL},
  { "hdrdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_hdr_debug, -1,
+	NULL, NULL},
+ { "macrosused", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmts_macros, -1,
 	NULL, NULL},
  { "miredebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_mire_debug, -1,
 	NULL, NULL},

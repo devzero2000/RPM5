@@ -73,6 +73,9 @@ int _rpmts_debug = 0;
 /*@unchecked@*/
 int _rpmts_stats = 0;
 
+/*@unchecked@*/
+int _rpmts_macros = 0;
+
 rpmts XrpmtsUnlink(rpmts ts, const char * msg, const char * fn, unsigned ln)
 {
 /*@-modfilesys@*/
@@ -666,6 +669,14 @@ rpmts rpmtsFree(rpmts ts)
 
     if (_rpmts_stats)
 	rpmtsPrintStats(ts);
+
+    if (_rpmts_macros) {
+	const char ** av = NULL;
+	int ac = rpmGetMacroEntries(NULL, NULL, 1, &av);
+	int i;
+	argvPrint("macros used", av, NULL);
+	av = argvFree(av);
+    }
 
     (void) rpmtsUnlink(ts, "tsCreate");
 

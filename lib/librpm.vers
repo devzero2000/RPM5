@@ -337,7 +337,6 @@ LIBRPM_0
     rpmtsColor;
     rpmtsCreate;
     rpmtsCurrDir;
-    _rpmts_debug;
     rpmtsDBMode;
     rpmtsDFlags;
     rpmtsDoARBGoal;
@@ -390,6 +389,8 @@ LIBRPM_0
     rpmtsSetVSFlags;
     rpmtsSolve;
     rpmtsSpec;
+    _rpmts_debug;
+    _rpmts_macros;
     _rpmts_stats;
     rpmtsUnorderedSuccessors;
     rpmtsUpdateDSI;

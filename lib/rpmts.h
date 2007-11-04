@@ -15,6 +15,8 @@
 /*@unchecked@*/
 extern int _rpmts_debug;
 /*@unchecked@*/
+extern int _rpmts_macros;
+/*@unchecked@*/
 extern int _rpmts_stats;
 /*@unchecked@*/
 extern int _fps_debug;

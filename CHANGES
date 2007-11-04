@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - jbj: add all-mode --macrosused option, debug rpmGetMacroEntries().
     - jbj: access all tag data integers as "unsigned", using <stdint.h> types.
     - rpm.org: fix segfault in %{lua: ...}'s rpm_print, no newline.
     - jbj: add lua/python getMacros bindings (mostly from <pjones@redhat.com>).

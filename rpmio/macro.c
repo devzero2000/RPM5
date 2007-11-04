@@ -277,7 +277,7 @@ rpmGetMacroEntries(MacroContext mc, miRE mire, int used,
 		const char *** avp)
 {
     const char ** av;
-    int ac;
+    int ac = 0;
     int i;
 
     if (mc == NULL)
@@ -296,7 +296,7 @@ rpmGetMacroEntries(MacroContext mc, miRE mire, int used,
 	if (used == 0 && me->used != 0)
 	    continue;
 #if !defined(DEBUG_MACROS)	/* XXX preserve standalone build */
-	if (mireRegexec(mire, me->name))
+	if (mire != NULL && mireRegexec(mire, me->name))
 	    continue;
 #endif
 	av[ac++] = dupMacroEntry(me);
