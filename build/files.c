@@ -8,7 +8,11 @@
 
 #define	MYALLPERMS	07777
 
+#if defined(WITH_PCRE) && defined(WITH_PCRE_POSIX)
+#include <pcreposix.h>
+#else
 #include <regex.h>
+#endif
 
 #include <rpmio_internal.h>
 #include <fts.h>
