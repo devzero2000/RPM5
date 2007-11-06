@@ -1594,8 +1594,7 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 	/* Add file security context to package. */
 	{
 	    static char *nocon = "";
-	    mode_t fmode = flp->fl_mode;
-	    if (matchpathcon(flp->fileURL, fmode, &scon) || scon == NULL)
+	    if (matchpathcon(flp->fileURL, flp->fl_mode, &scon) || scon == NULL)
 		scon = nocon;
 
 	    he->tag = RPMTAG_FILECONTEXTS;
