@@ -15,7 +15,7 @@ GNU m4          mandatory 1.4.0   1.4.9   http://www.gnu.org/software/m4/
 GNU autoconf    mandatory 2.59b   2.61    http://www.gnu.org/software/autoconf/
 GNU automake    mandatory 1.8     1.10    http://www.gnu.org/software/automake/
 GNU libtool     mandatory 1.5     1.5.24  http://www.gnu.org/software/libtool/
-GNU gettext     mandatory 0.16    0.16.1  http://www.gnu.org/software/gettext/
+GNU gettext     mandatory 0.16    0.17    http://www.gnu.org/software/gettext/
 --------------- --------- ------- ------- -------------------------------------
 
 Build-Time
@@ -37,7 +37,7 @@ Lua         [2] optional  5.1     5.1.2   http://www.lua.org/
 ZLib        [3] optional  1.2     1.2.3   http://www.zlib.net/
 Bzip2           optional  1.0     1.0.4   http://www.bzip.org/
 File/magic  [4] optional  4.0     4.21    ftp://ftp.astron.com/pub/file/
-GNU gettext     optional  0.16    0.16.1  http://www.gnu.org/software/gettext/
+GNU gettext     optional  0.16    0.17    http://www.gnu.org/software/gettext/
 GNU iconv       optional  1.11    1.11    http://www.gnu.org/software/libiconv/
 PCRE            optional  7.0     7.4     http://www.pcre.org/
 DMalloc         optional  5       5.5.2   http://dmalloc.com/
