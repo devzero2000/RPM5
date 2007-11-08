@@ -845,7 +845,7 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 {
     HGE_t hge = (HGE_t)headerGetExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
-    HE_t she = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    HE_t she = memset(alloca(sizeof(*she)), 0, sizeof(*she));
     int res2, res3;
     char result[1024];
     char buf[8192], * b;

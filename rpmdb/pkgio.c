@@ -291,9 +291,6 @@ void rpmtsCleanDig(rpmts ts)
 	(void) rpmswAdd(rpmtsOp(ts, opx), pgpStatsAccumulator(ts->dig, opx));
 	opx = RPMTS_OP_SIGNATURE;
 	(void) rpmswAdd(rpmtsOp(ts, opx), pgpStatsAccumulator(ts->dig, opx));
-/*@-noeffect@*/
-	(void) pgpSetSig(ts->dig, 0, 0, NULL, 0); /* move to pgpFreeDig? */
-/*@=noeffect@*/
 	ts->dig = pgpFreeDig(ts->dig);
     }
 }

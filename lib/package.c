@@ -186,15 +186,12 @@ rpmRC rpmReadPackageFile(rpmts ts, void * _fd, const char * fn, Header * hdrp)
 {
     HGE_t hge = (HGE_t)headerGetExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    HE_t she = memset(alloca(sizeof(*she)), 0, sizeof(*she));
     pgpDig dig = rpmtsDig(ts);
     FD_t fd = _fd;
     char buf[8*BUFSIZ];
     ssize_t count;
     Header sigh = NULL;
-    int_32 sigtag;
-    int_32 sigtype;
-    const void * sig;
-    int_32 siglen;
     rpmtsOpX opx;
     rpmop op = NULL;
     size_t nb;
@@ -263,7 +260,7 @@ if (!_nosigh) {
     msg = _free(msg);
 }
 
-#define	_chk(_mask)	(sigtag == 0 && !(vsflags & (_mask)))
+#define	_chk(_mask)	(she->tag == 0 && !(vsflags & (_mask)))
 
     /*
      * Figger the most effective available signature.
@@ -271,20 +268,20 @@ if (!_nosigh) {
      * DSA will be preferred over RSA if both exist because tested first.
      * Note that NEEDPAYLOAD prevents header+payload signatures and digests.
      */
-    sigtag = 0;
+    she->tag = 0;
     opx = 0;
     vsflags = pgpGetVSFlags(dig);
     if (_chk(RPMVSF_NODSAHEADER) && headerIsEntry(sigh, RPMSIGTAG_DSA)) {
-	sigtag = RPMSIGTAG_DSA;
+	she->tag = RPMSIGTAG_DSA;
     } else
     if (_chk(RPMVSF_NORSAHEADER) && headerIsEntry(sigh, RPMSIGTAG_RSA)) {
-	sigtag = RPMSIGTAG_RSA;
+	she->tag = RPMSIGTAG_RSA;
     } else
 #if defined(SUPPORT_RPMV3_VERIFY_DSA)
     if (_chk(RPMVSF_NODSA|RPMVSF_NEEDPAYLOAD) &&
 	headerIsEntry(sigh, RPMSIGTAG_GPG))
     {
-	sigtag = RPMSIGTAG_GPG;
+	she->tag = RPMSIGTAG_GPG;
 	fdInitDigest(fd, PGPHASHALGO_SHA1, 0);
 	opx = RPMTS_OP_SIGNATURE;
     } else
@@ -293,18 +290,18 @@ if (!_nosigh) {
     if (_chk(RPMVSF_NORSA|RPMVSF_NEEDPAYLOAD) &&
 	headerIsEntry(sigh, RPMSIGTAG_PGP))
     {
-	sigtag = RPMSIGTAG_PGP;
+	she->tag = RPMSIGTAG_PGP;
 	fdInitDigest(fd, PGPHASHALGO_MD5, 0);
 	opx = RPMTS_OP_SIGNATURE;
     } else
 #endif
     if (_chk(RPMVSF_NOSHA1HEADER) && headerIsEntry(sigh, RPMSIGTAG_SHA1)) {
-	sigtag = RPMSIGTAG_SHA1;
+	she->tag = RPMSIGTAG_SHA1;
     } else
     if (_chk(RPMVSF_NOMD5|RPMVSF_NEEDPAYLOAD) &&
 	headerIsEntry(sigh, RPMSIGTAG_MD5))
     {
-	sigtag = RPMSIGTAG_MD5;
+	she->tag = RPMSIGTAG_MD5;
 	fdInitDigest(fd, PGPHASHALGO_MD5, 0);
 	opx = RPMTS_OP_DIGEST;
     }
@@ -338,7 +335,7 @@ if (!_nosigh) {
     msg = _free(msg);
 
     /* Any digests or signatures to check? */
-    if (sigtag == 0) {
+    if (she->tag == 0) {
 	rc = RPMRC_OK;
 	goto exit;
     }
@@ -347,24 +344,19 @@ assert(dig != NULL);
     dig->nbytes = 0;
 
     /* Retrieve the tag parameters from the signature header. */
-    sig = NULL;
-    he->tag = sigtag;
-    xx = hge(sigh, he, 0);
-    sigtype = he->t;
-    sig = he->p.ptr;
-    siglen = he->c;
-    if (sig == NULL) {
+    xx = hge(sigh, she, 0);
+    if (she->p.ptr == NULL) {
 	rc = RPMRC_FAIL;
 	goto exit;
     }
 /*@-noeffect@*/
-    xx = pgpSetSig(rpmtsDig(ts), sigtag, sigtype, sig, siglen);
+    xx = pgpSetSig(rpmtsDig(ts), she->tag, she->t, she->p.ptr, she->c);
 /*@=noeffect@*/
 
-    switch (sigtag) {
+    switch (she->tag) {
     case RPMSIGTAG_RSA:
 	/* Parse the parameters from the OpenPGP packets that will be needed. */
-	xx = pgpPrtPkts(sig, siglen, dig, (_print_pkts & rpmIsDebug()));
+	xx = pgpPrtPkts(she->p.ptr, she->c, dig, (_print_pkts & rpmIsDebug()));
 	if (dig->signature.version != 3 && dig->signature.version != 4) {
 	    rpmlog(RPMLOG_ERR,
 		_("skipping package %s with unverifiable V%u signature\n"),
@@ -401,7 +393,7 @@ assert(dig != NULL);
     }	break;
     case RPMSIGTAG_DSA:
 	/* Parse the parameters from the OpenPGP packets that will be needed. */
-	xx = pgpPrtPkts(sig, siglen, dig, (_print_pkts & rpmIsDebug()));
+	xx = pgpPrtPkts(she->p.ptr, she->c, dig, (_print_pkts & rpmIsDebug()));
 	if (dig->signature.version != 3 && dig->signature.version != 4) {
 	    rpmlog(RPMLOG_ERR,
 		_("skipping package %s with unverifiable V%u signature\n"), 
@@ -435,7 +427,7 @@ assert(dig != NULL);
 	(void) rpmDigestUpdate(dig->hdrsha1ctx, uh, uhc);
 	dig->nbytes += uhc;
 	(void) rpmswExit(op, dig->nbytes);
-	if (sigtag == RPMSIGTAG_SHA1)
+	if (she->tag == RPMSIGTAG_SHA1)
 	    op->count--;	/* XXX one too many */
 	uh = _free(uh);
     }	break;
@@ -448,7 +440,7 @@ assert(dig != NULL);
     case RPMSIGTAG_PGP:
 #endif
 	/* Parse the parameters from the OpenPGP packets that will be needed. */
-	xx = pgpPrtPkts(sig, siglen, dig, (_print_pkts & rpmIsDebug()));
+	xx = pgpPrtPkts(she->p.ptr, she->c, dig, (_print_pkts & rpmIsDebug()));
 
 	if (dig->signature.version != 3 && dig->signature.version != 4) {
 	    rpmlog(RPMLOG_ERR,

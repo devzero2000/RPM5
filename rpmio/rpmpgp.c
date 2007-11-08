@@ -1077,7 +1077,11 @@ pgpDig pgpFreeDig(/*@only@*/ /*@null@*/ pgpDig dig)
 {
     if (dig != NULL) {
 
-	/* DUmp the signature/pubkey data. */
+	/* Lose the header tag data. */
+	if (dig->sig)
+	    dig->sig = _free(dig->sig);
+
+	/* Dump the signature/pubkey data. */
 	pgpCleanDig(dig);
 
 	if (dig->hdrsha1ctx != NULL)
