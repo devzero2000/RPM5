@@ -382,14 +382,11 @@ typedef int (*HAE_t) (Header h, HE_t he, unsigned int flags)
  * If there are multiple entries with this tag, the first one gets replaced.
  *
  * @param h		header
- * @param tag		tag
- * @param type		tag value data type
- * @param p		tag value(s)
- * @param c		number of values
+ * @param he		tag container
+ * @param flags		(unused)
  * @return		1 on success, 0 on failure
  */
-typedef int (*HME_t) (Header h, rpmTag tag, rpmTagType type,
-			const void * p, rpmTagCount c)
+typedef int (*HME_t) (Header h, HE_t he, unsigned int flags)
 	/*@modifies h @*/;
 
 /**

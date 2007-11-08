@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - jbj: add headerModifyExtension everywhere.
     - jbj: add header{Init,Next,Free}Extension almost everywhere.
     - jbj: add headerRemoveExtension everywhere.
     - jbj: finish converting to headerAddExtension() everywhere.

@@ -292,6 +292,21 @@ assert(xx);
 }
 
 /** \ingroup header
+ * Modify tag container in header.
+ * If there are multiple entries with this tag, the first one gets replaced.
+ * @param h		header
+ * @param he		tag container
+ * @param flags		(unused)
+ * @return		1 on success, 0 on failure
+ */
+/*@unused@*/ static inline
+int headerModifyExtension(Header h, HE_t he, /*@unused@*/ unsigned int flags)
+	/*@modifies h @*/
+{
+    return (h2hv(h)->hdrmodify) (h, he->tag, he->t, he->p.ptr, he->c);
+}
+
+/** \ingroup header
  * Remove tag container from header.
  *
  * @param h		header
