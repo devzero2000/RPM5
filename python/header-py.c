@@ -1146,11 +1146,7 @@ int rpmMergeHeaders(PyObject * list, FD_t fd, int matchTag)
     rpmTagData newMatch;
     rpmTagData oldMatch;
     hdrObject * hdr;
-    int count = 0;
-    rpmTag tag;
-    rpmTagType t;
-    rpmTagCount c;
-    rpmTagData p;
+    uint32_t count = 0;
     int xx;
 
     Py_BEGIN_ALLOW_THREADS
@@ -1191,7 +1187,7 @@ int rpmMergeHeaders(PyObject * list, FD_t fd, int matchTag)
 
 	for (hi = headerInitIterator(h);
 	    headerNextIterator(hi, &he->tag, &he->t, &he->p, &he->c);
-	    he->p.ptr = headerFreeData(he->p.ptr, t))
+	    he->p.ptr = headerFreeData(he->p.ptr, he->t))
 	{
 	    /* could be dupes */
 	    xx = hre(hdr->h, he->tag);
