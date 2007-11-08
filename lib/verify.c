@@ -9,6 +9,7 @@
 #define	_RPMPS_INTERNAL	/* XXX rpmps needs iterator. */
 #include <rpmcli.h>
 
+#define	_RPMSQ_INTERNAL
 #include "psm.h"
 #define	_RPMFI_INTERNAL
 #include "rpmfi.h"

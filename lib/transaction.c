@@ -11,6 +11,7 @@
 #include <rpmmacro.h>	/* XXX for rpmExpand */
 
 #include "fsm.h"
+#define	_RPMSQ_INTERNAL
 #include "psm.h"
 
 #define	_RPMDB_INTERNAL	/* XXX for dbiIndexFoo() */

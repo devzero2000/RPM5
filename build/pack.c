@@ -14,6 +14,7 @@
 
 #include "cpio.h"
 #include "fsm.h"
+#define	_RPMSQ_INTERNAL
 #include "psm.h"
 
 #define	_RPMFI_INTERNAL		/* XXX fi->fsm */

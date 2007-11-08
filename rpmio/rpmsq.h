@@ -30,6 +30,7 @@ typedef void (*rpmsqAction_t) (int signum, void * info, void * context)
 extern int _rpmsq_debug;
 /*@=redecl@*/
 
+#if defined(_RPMSQ_INTERNAL)
 /**
  * SIGCHLD queue element.
  */
@@ -50,6 +51,7 @@ struct rpmsqElem {
     pthread_cond_t cond;
 #endif
 };
+#endif
 
 /*@-exportlocal@*/
 /*@unchecked@*/
