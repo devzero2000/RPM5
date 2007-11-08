@@ -87,7 +87,7 @@ static char *doPatch(Spec spec, int c, int strip, const char *db,
 	t = stpcpy( stpcpy(t, "--suffix "), db);
     }
     if (fuzz) {
-	t = stpcpy(t, "-F ");
+	t = stpcpy(t, " -F ");
 	sprintf(t, "%10.10d", fuzz);
 	t += strlen(t);
     }
