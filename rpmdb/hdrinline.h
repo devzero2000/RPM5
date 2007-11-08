@@ -308,6 +308,44 @@ int headerRemoveExtension(Header h, HE_t he, /*@unused@*/ unsigned int flags)
 }
 
 /** \ingroup header
+ * Destroy header tag container iterator.
+ * @param hi		header tag container iterator
+ * @return		NULL always
+ */
+/*@unused@*/ static inline
+HeaderIterator headerFreeExtension(/*@only@*/ HeaderIterator hi)
+	/*@modifies hi @*/
+{
+    return hdrVec->hdrfreeiter(hi);
+}
+
+/** \ingroup header
+ * Create header tag iterator.
+ * @param h		header
+ * @return		header tag iterator
+ */
+/*@unused@*/ static inline
+HeaderIterator headerInitExtension(Header h)
+	/*@modifies h */
+{
+    return hdrVec->hdrinititer(h);
+}
+
+/** \ingroup header
+ * Return next tag from header.
+ * @param hi		header tag iterator
+ * @param he		tag container
+ * @param flags		(unused)
+ * @return		1 on success, 0 on failure
+ */
+/*@unused@*/ static inline
+int headerNextExtension(HeaderIterator hi, HE_t he, unsigned int flags)
+	/*@modifies hi, he @*/
+{
+    return hdrVec->hdrnextiter(hi, &he->tag, &he->t, &he->p, &he->c);
+}
+
+/** \ingroup header
  * Retrieve tag value.
  * Will never return RPM_I18NSTRING_TYPE! RPM_STRING_TYPE elements with
  * RPM_I18NSTRING_TYPE equivalent entries are translated (if HEADER_I18NTABLE

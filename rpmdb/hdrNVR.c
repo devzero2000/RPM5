@@ -231,8 +231,8 @@ void headerMergeLegacySigs(Header h, const Header sigh)
     if (h == NULL || sigh == NULL)
 	return;
 
-    for (hi = headerInitIterator(sigh);
-        headerNextIterator(hi, &he->tag, &he->t, &he->p, &he->c);
+    for (hi = headerInitExtension(sigh);
+        headerNextExtension(hi, he, 0);
         he->p.ptr = hfd(he->p.ptr, he->t))
     {
 	/* XXX Translate legacy signature tag values. */
@@ -320,8 +320,8 @@ Header headerRegenSigHeader(const Header h, int noArchiveSize)
     HeaderIterator hi;
     int xx;
 
-    for (hi = headerInitIterator(h);
-        headerNextIterator(hi, &he->tag, &he->t, &he->p, &he->c);
+    for (hi = headerInitExtension(h);
+        headerNextExtension(hi, he, 0);
         he->p.ptr = hfd(he->p.ptr, he->t))
     {
 	/* XXX Translate legacy signature tag values. */

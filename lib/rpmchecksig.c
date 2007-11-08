@@ -279,8 +279,8 @@ if (!_nosigh) {
 	    }
 
 	    oh = headerCopyLoad(he->p.ptr);
-	    for (hi = headerInitIterator(oh);
-		headerNextIterator(hi, &ohe->tag, &ohe->t, &ohe->p, &ohe->c);
+	    for (hi = headerInitExtension(oh);
+		headerNextExtension(hi, ohe, 0);
 		ohe->p.ptr = headerFreeData(ohe->p.ptr, ohe->t))
 	    {
 		if (ohe->p.ptr) {
@@ -845,17 +845,14 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 {
     HGE_t hge = (HGE_t)headerGetExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    HE_t she = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     int res2, res3;
     char result[1024];
     char buf[8192], * b;
     char missingKeys[7164], * m;
     char untrustedKeys[7164], * u;
-    uint32_t sigtag;
-    rpmTagType sigtype;
-    const void * sig;
     pgpDig dig;
     pgpDigParams sigp;
-    uint32_t siglen;
     Header sigh = NULL;
     HeaderIterator hi = NULL;
     const char * msg = NULL;
@@ -906,26 +903,26 @@ nodigests = 1;
 }
 
 	/* Grab a hint of what needs doing to avoid duplication. */
-	sigtag = 0;
-	if (sigtag == 0 && !nosignatures) {
+	she->tag = 0;
+	if (she->tag == 0 && !nosignatures) {
 	    if (headerIsEntry(sigh, RPMSIGTAG_DSA))
-		sigtag = RPMSIGTAG_DSA;
+		she->tag = RPMSIGTAG_DSA;
 	    else if (headerIsEntry(sigh, RPMSIGTAG_RSA))
-		sigtag = RPMSIGTAG_RSA;
+		she->tag = RPMSIGTAG_RSA;
 #if defined(SUPPORT_RPMV3_VERIFY_DSA)
 	    else if (headerIsEntry(sigh, RPMSIGTAG_GPG))
-		sigtag = RPMSIGTAG_GPG;
+		she->tag = RPMSIGTAG_GPG;
 #endif
 #if defined(SUPPORT_RPMV3_VERIFY_RSA)
 	    else if (headerIsEntry(sigh, RPMSIGTAG_PGP))
-		sigtag = RPMSIGTAG_PGP;
+		she->tag = RPMSIGTAG_PGP;
 #endif
 	}
-	if (sigtag == 0 && !nodigests) {
+	if (she->tag == 0 && !nodigests) {
 	    if (headerIsEntry(sigh, RPMSIGTAG_MD5))
-		sigtag = RPMSIGTAG_MD5;
+		she->tag = RPMSIGTAG_MD5;
 	    else if (headerIsEntry(sigh, RPMSIGTAG_SHA1))
-		sigtag = RPMSIGTAG_SHA1;	/* XXX never happens */
+		she->tag = RPMSIGTAG_SHA1;	/* XXX never happens */
 	}
 
 	dig = rpmtsDig(ts);
@@ -933,13 +930,13 @@ assert(dig != NULL);
 	sigp = pgpGetSignature(dig);
 
 	/* XXX RSA needs the hash_algo, so decode early. */
-	if (sigtag == RPMSIGTAG_RSA
+	if (she->tag == RPMSIGTAG_RSA
 #if defined(SUPPORT_RPMV3_VERIFY_RSA)
-	 || sigtag == RPMSIGTAG_PGP
-	 || sigtag == RPMSIGTAG_PGP5
+	 || she->tag == RPMSIGTAG_PGP
+	 || she->tag == RPMSIGTAG_PGP5
 #endif
 	) {
-	    he->tag = sigtag;
+	    he->tag = she->tag;
 	    xx = hge(sigh, he, 0);
 	    xx = pgpPrtPkts(he->p.ptr, he->c, dig, 0);
 	    he->p.ptr = _free(he->p.ptr);
@@ -978,22 +975,21 @@ assert(dig != NULL);
 	b += strlen(b);
 
 	if (sigh != NULL)
-	for (hi = headerInitIterator(sigh);
-	    headerNextIterator(hi, &sigtag, &sigtype, &sig, &siglen) != 0;
+	for (hi = headerInitExtension(sigh);
+	    headerNextExtension(hi, she, 0) != 0;
 	    /*@-noeffect@*/ xx = pgpSetSig(rpmtsDig(ts), 0, 0, NULL, 0) /*@=noeffect@*/)
 	{
 
-	    if (sig == NULL) /* XXX can't happen */
-		continue;
+assert(she->p.ptr != NULL);
 
-	    /* Clean up parameters from previous sigtag. */
+	    /* Clean up parameters from previous she->tag. */
 	    pgpCleanDig(dig);
 
 /*@-noeffect@*/
-	    xx = pgpSetSig(rpmtsDig(ts), sigtag, sigtype, sig, siglen);
+	    xx = pgpSetSig(rpmtsDig(ts), she->tag, she->t, she->p.ptr, she->c);
 /*@=noeffect@*/
 
-	    switch (sigtag) {
+	    switch (she->tag) {
 	    case RPMSIGTAG_RSA:
 	    case RPMSIGTAG_DSA:
 #if defined(SUPPORT_RPMV3_VERIFY_DSA)
@@ -1005,7 +1001,7 @@ assert(dig != NULL);
 #endif
 		if (nosignatures)
 		     continue;
-		xx = pgpPrtPkts(sig, siglen, dig,
+		xx = pgpPrtPkts(she->p.ptr, she->c, dig,
 			(_print_pkts & rpmIsDebug()));
 
 		if (sigp->version != 3 && sigp->version != 4) {
@@ -1020,7 +1016,7 @@ assert(dig != NULL);
 		if (nodigests)
 		     continue;
 		/* XXX Don't bother with header sha1 if header dsa. */
-		if (!nosignatures && sigtag == RPMSIGTAG_DSA)
+		if (!nosignatures && she->tag == RPMSIGTAG_DSA)
 		    continue;
 		/*@switchbreak@*/ break;
 #if defined(SUPPORT_RPMV3_BROKEN)
@@ -1035,7 +1031,7 @@ assert(dig != NULL);
 		 * Don't bother with md5 if pgp, as RSA/MD5 is more reliable
 		 * than the -- now unsupported -- legacy md5 breakage.
 		 */
-		if (!nosignatures && sigtag == RPMSIGTAG_PGP)
+		if (!nosignatures && she->tag == RPMSIGTAG_PGP)
 		    continue;
 #endif
 		/*@switchbreak@*/ break;
@@ -1055,7 +1051,7 @@ assert(dig != NULL);
 #if defined(SUPPORT_RPMV3_VERIFY_RSA) || defined(SUPPORT_RPMV3_VERIFY_DSA)
 		    char *tempKey;
 #endif
-		    switch (sigtag) {
+		    switch (she->tag) {
 		    case RPMSIGTAG_SIZE:
 			b = stpcpy(b, "SIZE ");
 			res2 = 1;
@@ -1146,7 +1142,7 @@ assert(dig != NULL);
 		    b = stpcpy(b, "    ");
 		    b = stpcpy(b, result);
 		} else {
-		    switch (sigtag) {
+		    switch (she->tag) {
 		    case RPMSIGTAG_SIZE:
 			b = stpcpy(b, "size ");
 			/*@switchbreak@*/ break;
