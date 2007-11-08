@@ -83,7 +83,7 @@ static /*@only@*/ char * triggertypeFormat(HE_t he)
     char * val;
 
 assert(ix == 0);
-    if (he->t != RPM_INT64_TYPE)
+    if (he->t != RPM_UINT64_TYPE)
 	val = xstrdup(_("(invalid type)"));
     else {
 	uint64_t anint = data.ui64p[ix];
@@ -112,7 +112,7 @@ static /*@only@*/ char * permsFormat(HE_t he)
     char * val;
 
 assert(ix == 0);
-    if (he->t != RPM_INT64_TYPE) {
+    if (he->t != RPM_UINT64_TYPE) {
 	val = xstrdup(_("(invalid type)"));
     } else {
 	uint64_t anint = he->p.ui64p[0];
@@ -134,7 +134,7 @@ static /*@only@*/ char * fflagsFormat(HE_t he)
     char * val;
 
 assert(ix == 0);
-    if (he->t != RPM_INT64_TYPE) {
+    if (he->t != RPM_UINT64_TYPE) {
 	val = xstrdup(_("(invalid type)"));
     } else {
 	char buf[15];
@@ -201,10 +201,10 @@ assert(ix == 0);
 	break;
     case RPM_NULL_TYPE:
     case RPM_CHAR_TYPE:
-    case RPM_INT8_TYPE:
-    case RPM_INT16_TYPE:
-    case RPM_INT32_TYPE:
-    case RPM_INT64_TYPE:
+    case RPM_UINT8_TYPE:
+    case RPM_UINT16_TYPE:
+    case RPM_UINT32_TYPE:
+    case RPM_UINT64_TYPE:
     case RPM_I18NSTRING_TYPE:
     default:
 	return xstrdup(_("(invalid type)"));
@@ -340,7 +340,7 @@ static /*@only@*/ char * xmlFormat(HE_t he)
 if (_jbj)
 fprintf(stderr, " XML: tag %s(%d) %d %p[%d:%d] free %d\n", tagName(he->tag), he->tag, he->t, he->p.ptr, he->ix, he->c, he->freeData);
 assert(ix == 0);
-assert(he->t == RPM_STRING_TYPE || he->t == RPM_INT64_TYPE || he->t == RPM_BIN_TYPE);
+assert(he->t == RPM_STRING_TYPE || he->t == RPM_UINT64_TYPE || he->t == RPM_BIN_TYPE);
     switch (he->t) {
     case RPM_STRING_ARRAY_TYPE:
 	s = data.argv[ix];
@@ -374,16 +374,16 @@ assert(he->t == RPM_STRING_TYPE || he->t == RPM_INT64_TYPE || he->t == RPM_BIN_T
     }	break;
 /*@=globs =mods@*/
     case RPM_CHAR_TYPE:
-    case RPM_INT8_TYPE:
+    case RPM_UINT8_TYPE:
 	anint = data.ui8p[ix];
 	break;
-    case RPM_INT16_TYPE:
+    case RPM_UINT16_TYPE:
 	anint = data.ui16p[ix];	/* XXX note unsigned */
 	break;
-    case RPM_INT32_TYPE:
+    case RPM_UINT32_TYPE:
 	anint = data.ui32p[ix];
 	break;
-    case RPM_INT64_TYPE:
+    case RPM_UINT64_TYPE:
 	anint = data.ui64p[ix];
 	break;
     case RPM_NULL_TYPE:
@@ -508,7 +508,7 @@ static /*@only@*/ char * yamlFormat(HE_t he)
 if (_jbj)
 fprintf(stderr, "YAML: tag %s(%d) %d %p[%d:%d] free %d\n", tagName(he->tag), he->tag, he->t, he->p.ptr, he->ix, he->c, he->freeData);
 assert(ix == 0);
-assert(he->t == RPM_STRING_TYPE || he->t == RPM_INT64_TYPE || he->t == RPM_BIN_TYPE);
+assert(he->t == RPM_STRING_TYPE || he->t == RPM_UINT64_TYPE || he->t == RPM_BIN_TYPE);
     switch (he->t) {
     case RPM_STRING_ARRAY_TYPE:
     case RPM_I18NSTRING_TYPE:
@@ -567,16 +567,16 @@ assert(he->t == RPM_STRING_TYPE || he->t == RPM_INT64_TYPE || he->t == RPM_BIN_T
     }	break;
 /*@=globs =mods@*/
     case RPM_CHAR_TYPE:
-    case RPM_INT8_TYPE:
+    case RPM_UINT8_TYPE:
 	anint = data.ui8p[ix];
 	break;
-    case RPM_INT16_TYPE:
+    case RPM_UINT16_TYPE:
 	anint = data.ui16p[ix];	/* XXX note unsigned */
 	break;
-    case RPM_INT32_TYPE:
+    case RPM_UINT32_TYPE:
 	anint = data.ui32p[ix];
 	break;
-    case RPM_INT64_TYPE:
+    case RPM_UINT64_TYPE:
 	anint = data.ui64p[ix];
 	break;
     case RPM_NULL_TYPE:
@@ -752,7 +752,7 @@ static /*@only@*/ char * depflagsFormat(HE_t he)
     char * val;
 
 assert(ix == 0);
-    if (he->t != RPM_INT64_TYPE) {
+    if (he->t != RPM_UINT64_TYPE) {
 	val = xstrdup(_("(invalid type)"));
     } else {
 	uint64_t anint = data.ui64p[ix];
@@ -845,7 +845,7 @@ static int triggercondsTag(Header h, HE_t he)
 	return 0;
 
     _he->tag = he->tag;
-    _he->t = RPM_INT32_TYPE;
+    _he->t = RPM_UINT32_TYPE;
     _he->p.ui32p = NULL;
     _he->c = 1;
     _he->freeData = -1;
@@ -1179,7 +1179,7 @@ static int dbinstanceTag(Header h, HE_t he)
 		fileSystem, internalState @*/
 {
     he->tag = RPMTAG_DBINSTANCE;
-    he->t = RPM_INT32_TYPE;
+    he->t = RPM_UINT32_TYPE;
     he->p.ui32p = xmalloc(sizeof(*he->p.ui32p));
     he->p.ui32p[0] = headerGetInstance(h);
     he->freeData = 1;

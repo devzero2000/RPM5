@@ -44,8 +44,8 @@ static int indent = 2;
 
 typedef struct Item_s {
     const char * path;
-    int_32 size;
-    int_32 mtime;
+    uint32_t size;
+    uint32_t mtime;
     rpmds this;
     Header h;
 } * Item;
@@ -105,9 +105,10 @@ static int ftsCachePrint(/*@unused@*/ rpmts ts, FILE * fp)
 
 static int ftsCacheUpdate(rpmts ts)
 {
-    HGE_t hge = (HGE_t)headerGetExtension;
+    HGE_t hge = headerGetExtension;
+    HAE_t hae = headerAddExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
-    int_32 tid = rpmtsGetTid(ts);
+    uint32_t tid = rpmtsGetTid(ts);
     rpmdbMatchIterator mi;
     unsigned char * md5;
     int rc = 0;
@@ -148,17 +149,40 @@ static int ftsCacheUpdate(rpmts ts)
 	}
 
 	/* --- Add cache tags to new cache header. */
-	rc = headerAddOrAppendEntry(ip->h, RPMTAG_CACHECTIME,
-		RPM_INT32_TYPE, &tid, 1);
+	he->tag = RPMTAG_CACHECTIME;
+	he->t = RPM_UINT32_TYPE;
+	he->p.ui32p = &tid;
+	he->c = 1;
+	he->append = 1;
+	rc = hae(ip->h, he, 0);
+	he->append = 0;
 	if (rc != 1) break;
-	rc = headerAddOrAppendEntry(ip->h, RPMTAG_CACHEPKGPATH,
-		RPM_STRING_ARRAY_TYPE, &ip->path, 1);
+
+	he->tag = RPMTAG_CACHEPKGPATH;
+	he->t = RPM_STRING_ARRAY_TYPE;
+	he->p.argv = &ip->path;
+	he->c = 1;
+	he->append = 1;
+	rc = hae(ip->h, he, 0);
+	he->append = 0;
 	if (rc != 1) break;
-	rc = headerAddOrAppendEntry(ip->h, RPMTAG_CACHEPKGSIZE,
-		RPM_INT32_TYPE, &ip->size, 1);
+
+	he->tag = RPMTAG_CACHEPKGSIZE;
+	he->t = RPM_UINT32_TYPE;
+	he->p.ui32p = &ip->size;
+	he->c = 1;
+	he->append = 1;
+	rc = hae(ip->h, he, 0);
+	he->append = 0;
 	if (rc != 1) break;
-	rc = headerAddOrAppendEntry(ip->h, RPMTAG_CACHEPKGMTIME,
-		RPM_INT32_TYPE, &ip->mtime, 1);
+
+	he->tag = RPMTAG_CACHEPKGMTIME;
+	he->t = RPM_UINT32_TYPE;
+	he->p.ui32p = &ip->mtime;
+	he->c = 1;
+	he->append = 1;
+	rc = hae(ip->h, he, 0);
+	he->append = 0;
 	if (rc != 1) break;
 
 	/* --- Add new cache header to database. */

@@ -1532,13 +1532,13 @@ assert(fi->h != NULL);
     }
 
     he->tag = RPMTAG_INSTALLTIME;
-    he->t = RPM_INT32_TYPE;
+    he->t = RPM_UINT32_TYPE;
     he->p.ui32p = &installTime;
     he->c = 1;
     xx = hae(fi->h, he, 0);
 
     he->tag = RPMTAG_INSTALLCOLOR;
-    he->t = RPM_INT32_TYPE;
+    he->t = RPM_UINT32_TYPE;
     he->p.ui32p = &tscolor;
     he->c = 1;
     xx = hae(fi->h, he, 0);
@@ -1546,7 +1546,7 @@ assert(fi->h != NULL);
     /* XXX FIXME: add preferred color at install. */
 
     he->tag = RPMTAG_PACKAGECOLOR;
-    he->t = RPM_INT32_TYPE;
+    he->t = RPM_UINT32_TYPE;
     he->p.ui32p = &tecolor;
     he->c = 1;
     xx = hae(fi->h, he, 0);
@@ -1933,7 +1933,7 @@ psm->te->h = headerLink(fi->h);
 	    {	uint32_t tid = rpmtsGetTid(ts);
 
 		he->tag = RPMTAG_REMOVETID;
-		he->t = RPM_INT32_TYPE;
+		he->t = RPM_UINT32_TYPE;
 		he->p.ui32p = &tid;
 		he->c = 1;
 		xx = hae(psm->oh, he, 0);

@@ -529,7 +529,7 @@ void providePackageNVR(Header h)
 	    he->append = 0;
 
 	    he->tag = RPMTAG_PROVIDEFLAGS;
-	    he->t = RPM_INT32_TYPE;
+	    he->t = RPM_UINT32_TYPE;
 	    he->p.ui32p = &fdummy;
 	    he->c = 1;
 	    he->append = 1;
@@ -579,7 +579,7 @@ exit:
 	he->append = 0;
 
 	he->tag = RPMTAG_PROVIDEFLAGS;
-	he->t = RPM_INT32_TYPE;
+	he->t = RPM_UINT32_TYPE;
 	he->p.ui32p = &pFlags;
 	he->c = 1;
 	he->append = 1;
@@ -624,7 +624,7 @@ int writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
 	csa->cpioArchiveSize = 0;
 	/* Add a bogus archive size to the Header */
 	he->tag = RPMTAG_ARCHIVESIZE;
-	he->t = RPM_INT32_TYPE;
+	he->t = RPM_UINT32_TYPE;
 	he->p.ui32p = &csa->cpioArchiveSize;
 	he->c = 1;
 	xx = hae(h, he, 0);
@@ -790,7 +790,7 @@ assert(0);
 
     {	uint32_t payloadSize = csa->cpioArchiveSize;
 	he->tag = RPMSIGTAG_PAYLOADSIZE;
-	he->t = RPM_INT32_TYPE;
+	he->t = RPM_UINT32_TYPE;
 	he->p.ui32p = &payloadSize;
 	he->c = 1;
 	xx = hae(sigh, he, 0);

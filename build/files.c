@@ -1252,7 +1252,7 @@ static void compressFilelist(Header h)
 exit:
     if (count > 0) {
 	he->tag = RPMTAG_DIRINDEXES;
-	he->t = RPM_INT32_TYPE;
+	he->t = RPM_UINT32_TYPE;
 	he->p.ui32p = dirIndexes;
 	he->c = count;
 	xx = hae(h, he, 0);
@@ -1403,7 +1403,7 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 /*@-sizeoftype@*/
 	ui32 = flp->fl_size;
 	he->tag = RPMTAG_FILESIZES;
-	he->t = RPM_INT32_TYPE;
+	he->t = RPM_UINT32_TYPE;
 	he->p.ui32p = &ui32;
 	he->c = 1;
 	he->append = 1;
@@ -1428,7 +1428,7 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 
 	ui32 = flp->fl_mtime;
 	he->tag = RPMTAG_FILEMTIMES;
-	he->t = RPM_INT32_TYPE;
+	he->t = RPM_UINT32_TYPE;
 	he->p.ui32p = &ui32;
 	he->c = 1;
 	he->append = 1;
@@ -1437,7 +1437,7 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 
 	ui16 = flp->fl_mode;
 	he->tag = RPMTAG_FILEMODES;
-	he->t = RPM_INT16_TYPE;
+	he->t = RPM_UINT16_TYPE;
 	he->p.ui16p = &ui16;
 	he->c = 1;
 	he->append = 1;
@@ -1446,7 +1446,7 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 
 	ui16 = flp->fl_rdev;
 	he->tag = RPMTAG_FILERDEVS;
-	he->t = RPM_INT16_TYPE;
+	he->t = RPM_UINT16_TYPE;
 	he->p.ui16p = &ui16;
 	he->c = 1;
 	he->append = 1;
@@ -1455,7 +1455,7 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 
 	ui32 = flp->fl_dev;
 	he->tag = RPMTAG_FILEDEVICES;
-	he->t = RPM_INT32_TYPE;
+	he->t = RPM_UINT32_TYPE;
 	he->p.ui32p = &ui32;
 	he->c = 1;
 	he->append = 1;
@@ -1464,7 +1464,7 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 
 	ui32 = flp->fl_ino;
 	he->tag = RPMTAG_FILEINODES;
-	he->t = RPM_INT32_TYPE;
+	he->t = RPM_UINT32_TYPE;
 	he->p.ui32p = &ui32;
 	he->c = 1;
 	he->append = 1;
@@ -1532,7 +1532,7 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 
 	ui32 = dalgo;
 	he->tag = RPMTAG_FILEDIGESTALGOS;
-	he->t = RPM_INT32_TYPE;
+	he->t = RPM_UINT32_TYPE;
 	he->p.ui32p = &ui32;
 	he->c = 1;
 	he->append = 1;
@@ -1573,7 +1573,7 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 	}
 	ui32 = flp->verifyFlags;
 	he->tag = RPMTAG_FILEVERIFYFLAGS;
-	he->t = RPM_INT32_TYPE;
+	he->t = RPM_UINT32_TYPE;
 	he->p.ui32p = &ui32;
 	he->c = 1;
 	he->append = 1;
@@ -1588,7 +1588,7 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 
 	ui32 = flp->flags;
 	he->tag = RPMTAG_FILEFLAGS;
-	he->t = RPM_INT32_TYPE;
+	he->t = RPM_UINT32_TYPE;
 	he->p.ui32p = &ui32;
 	he->c = 1;
 	he->append = 1;
@@ -1619,7 +1619,7 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 
     ui32 = fl->totalFileSize;
     he->tag = RPMTAG_SIZE;
-    he->t = RPM_INT32_TYPE;
+    he->t = RPM_UINT32_TYPE;
     he->p.ui32p = &ui32;
     he->c = 1;
     he->append = 1;
@@ -2609,7 +2609,7 @@ int initSourceHeader(Spec spec, StringBuf *sfp)
 	    he->append = 0;
 	    if (srcPtr->flags & RPMFILE_GHOST) {
 		he->tag = RPMTAG_NOSOURCE;
-		he->t = RPM_INT32_TYPE;
+		he->t = RPM_UINT32_TYPE;
 		he->p.ui32p = &srcPtr->num;
 		he->c = 1;
 		he->append = 1;
@@ -2627,7 +2627,7 @@ int initSourceHeader(Spec spec, StringBuf *sfp)
 	    he->append = 0;
 	    if (srcPtr->flags & RPMFILE_GHOST) {
 		he->tag = RPMTAG_NOPATCH;
-		he->t = RPM_INT32_TYPE;
+		he->t = RPM_UINT32_TYPE;
 		he->p.ui32p = &srcPtr->num;
 		he->c = 1;
 		he->append = 1;

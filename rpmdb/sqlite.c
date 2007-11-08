@@ -530,22 +530,22 @@ if (swapped == 1) {
 /*@=castfcnptr =nullpass@*/
 	    /*@innerbreak@*/ break;
 	case RPM_CHAR_TYPE:
-	case RPM_INT8_TYPE:
+	case RPM_UINT8_TYPE:
 	{   unsigned char i;
 /*@i@*/ assert(key->size == sizeof(unsigned char));
 assert(swapped == 0); /* Byte swap?! */
 	    memcpy(&i, key->data, sizeof(i));
 	    rc = sqlite3_bind_int(scp->pStmt, pos, i);
 	} /*@innerbreak@*/ break;
-	case RPM_INT16_TYPE:
+	case RPM_UINT16_TYPE:
 	{	unsigned short i;
 /*@i@*/ assert(key->size == sizeof(int_16));
 assert(swapped == 0); /* Byte swap?! */
 	    memcpy(&i, key->data, sizeof(i));
 	    rc = sqlite3_bind_int(scp->pStmt, pos, i);
 	} /*@innerbreak@*/ break;
-        case RPM_INT32_TYPE:
-/*      case RPM_INT64_TYPE: */   
+        case RPM_UINT32_TYPE:
+	case RPM_UINT64_TYPE:
 	default:
 	{   unsigned int i;
 /*@i@*/ assert(key->size == sizeof(int_32));
@@ -747,10 +747,10 @@ static int sql_initDB(dbiIndex dbi)
 		keytype = "blob UNIQUE";
 		/*@innerbreak@*/ break;
 	    case RPM_CHAR_TYPE:
-	    case RPM_INT8_TYPE:
-	    case RPM_INT16_TYPE:
-	    case RPM_INT32_TYPE:
-/*	    case RPM_INT64_TYPE: */
+	    case RPM_UINT8_TYPE:
+	    case RPM_UINT16_TYPE:
+	    case RPM_UINT32_TYPE:
+	    case RPM_UINT64_TYPE:
 		keytype = "int UNIQUE";
 		/*@innerbreak@*/ break;
 	    case RPM_STRING_TYPE:

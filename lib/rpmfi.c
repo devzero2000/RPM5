@@ -1138,7 +1138,7 @@ dColors[j] |= fColors[i];
 	fi->dc = he->c;
 
 	he->tag = RPMTAG_DIRINDEXES;
-	he->t = RPM_INT32_TYPE;
+	he->t = RPM_UINT32_TYPE;
 	he->p.ui32p = dirIndexes;
 	he->c = fileCount;
 	xx = hme(h, he->tag, he->t, he->p.ptr, he->c);

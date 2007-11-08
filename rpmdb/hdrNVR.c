@@ -64,19 +64,19 @@ int headerMacrosLoad(Header h)
 	ival = 0;
 	switch (he->t) {
 	case RPM_CHAR_TYPE:
-	case RPM_INT8_TYPE:
+	case RPM_UINT8_TYPE:
 	    ival = he->p.ui8p[0];
 	    val = numbuf;
 	    /*@switchbreak@*/ break;
-	case RPM_INT16_TYPE:
+	case RPM_UINT16_TYPE:
 	    ival = he->p.ui16p[0];
 	    val = numbuf;
 	    /*@switchbreak@*/ break;
-	case RPM_INT32_TYPE:
+	case RPM_UINT32_TYPE:
 	    ival = he->p.ui32p[0];
 	    val = numbuf;
 	    /*@switchbreak@*/ break;
-	case RPM_INT64_TYPE:
+	case RPM_UINT64_TYPE:
 	    ival = he->p.ui64p[0];
 	    val = numbuf;
 	    /*@switchbreak@*/ break;
@@ -118,7 +118,7 @@ int headerMacrosUnload(Header h)
 	if (!xx)
 	    continue;
 	switch (he->t) {
-	case RPM_INT32_TYPE:
+	case RPM_UINT32_TYPE:
 	    delMacro(NULL, tagm->macroname);
 	    /*@switchbreak@*/ break;
 	case RPM_STRING_TYPE:
@@ -129,8 +129,8 @@ int headerMacrosUnload(Header h)
 	case RPM_BIN_TYPE:
 	case RPM_NULL_TYPE:
 	case RPM_CHAR_TYPE:
-	case RPM_INT8_TYPE:
-	case RPM_INT16_TYPE:
+	case RPM_UINT8_TYPE:
+	case RPM_UINT16_TYPE:
 	default:
 	    /*@switchbreak@*/ break;
 	}
@@ -287,10 +287,10 @@ assert(he->p.ptr != NULL);
 assert(0);	/* XXX keep gcc quiet */
 		/*@switchbreak@*/ break;
 	    case RPM_CHAR_TYPE:
-	    case RPM_INT8_TYPE:
-	    case RPM_INT16_TYPE:
-	    case RPM_INT32_TYPE:
-	    case RPM_INT64_TYPE:
+	    case RPM_UINT8_TYPE:
+	    case RPM_UINT16_TYPE:
+	    case RPM_UINT32_TYPE:
+	    case RPM_UINT64_TYPE:
 		if (he->c != 1)
 		    continue;
 		/*@switchbreak@*/ break;

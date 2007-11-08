@@ -679,7 +679,7 @@ static int handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
 	    return RPMRC_FAIL;
 	}
 	he->tag = tag;
-	he->t = RPM_INT32_TYPE;
+	he->t = RPM_UINT32_TYPE;
 	he->p.ui32p = &num;
 	he->c = 1;
 	xx = hae(pkg->header, he, 0);

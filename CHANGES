@@ -1,4 +1,6 @@
 4.5 -> 5.0:
+    - jbj: finish converting to headerAddExtension() everywhere.
+    - jbj: change names of header tag integer types: s/INT32/UINT32/ etc.
     - jbj: finish bulldozing headerAddEntry throughout rpmbuild.
     - jbj: start bulldozing headerAddEntry throughout rpmbuild.
     - jbj: use HAE_t for signature tags, change int_32 to uint32_t where needed.

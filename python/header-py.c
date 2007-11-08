@@ -173,7 +173,7 @@ static void expandFilelist(Header h)
         /*@modifies h @*/
 {
     HGE_t hge = (HGE_t)headerGetExtension;
-    HAE_t hae = (HAE_t)headerAddEntry;
+    HAE_t hae = (HAE_t)headerAddExtension;
     HRE_t hre = (HRE_t)headerRemoveEntry;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     int xx;
@@ -184,7 +184,8 @@ static void expandFilelist(Header h)
 	xx = hge(h, he, 0);
 	if (he->p.ptr == NULL || he->c <= 0)
 	    return;
-	xx = hae(h, RPMTAG_OLDFILENAMES, he->t, he->p, he->c);
+	he->tag = RPMTAG_OLDFILENAMES;
+	xx = hae(h, he, 0);
 	he->p.ptr = _free(he->p.ptr);
     }
     /*@=branchstate@*/
@@ -203,14 +204,14 @@ static void compressFilelist(Header h)
 	/*@modifies h @*/
 {
     HGE_t hge = (HGE_t)headerGetExtension;
-    HAE_t hae = (HAE_t)headerAddEntry;
+    HAE_t hae = headerAddExtension;
     HRE_t hre = (HRE_t)headerRemoveEntry;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     const char ** fileNames;
     const char ** dirNames;
     const char ** baseNames;
-    int_32 * dirIndexes;
-    int count;
+    uint32_t * dirIndexes;
+    uint32_t count;
     int dirIndex = -1;
     int xx;
     int i;
@@ -281,11 +282,23 @@ static void compressFilelist(Header h)
 
 exit:
     if (count > 0) {
-	xx = hae(h, RPMTAG_DIRINDEXES, RPM_INT32_TYPE, dirIndexes, count);
-	xx = hae(h, RPMTAG_BASENAMES, RPM_STRING_ARRAY_TYPE,
-			baseNames, count);
-	xx = hae(h, RPMTAG_DIRNAMES, RPM_STRING_ARRAY_TYPE,
-			dirNames, dirIndex + 1);
+	he->tag = RPMTAG_DIRINDEXES;
+	he->t = RPM_UINT32_TYPE;
+	he->p.ui32p = dirIndexes;
+	he->c = count;
+	xx = hae(h, he, 0);
+
+	he->tag = RPMTAG_DIRINDEXES;
+	he->t = RPM_STRING_ARRAY_TYPE;
+	he->p.argv = baseNames;
+	he->c = count;
+	xx = hae(h, he, 0);
+
+	he->tag = RPMTAG_DIRNAMES;
+	he->t = RPM_STRING_ARRAY_TYPE;
+	he->p.argv = dirNames;
+	he->c = dirIndex + 1;
+	xx = hae(h, he, 0);
     }
 
     fileNames = _free(fileNames);
@@ -301,6 +314,7 @@ static void mungeFilelist(Header h)
 	/*@*/
 {
     HGE_t hge = (HGE_t)headerGetExtension;
+    HAE_t hae = headerAddExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     int xx;
 
@@ -316,7 +330,8 @@ static void mungeFilelist(Header h)
 	return;
 
     /* XXX Legacy tag needs to go away. */
-    headerAddEntry(h, RPMTAG_OLDFILENAMES, he->t, he->p.ptr, he->c);
+    he->tag = RPMTAG_OLDFILENAMES;
+    xx = hae(h, he, 0);
 
     he->p.ptr = _free(he->p.ptr);
 }
@@ -331,17 +346,18 @@ static void mungeFilelist(Header h)
 static void providePackageNVR(Header h)
 {
     HGE_t hge = (HGE_t)headerGetExtension;
+    HAE_t hae = headerAddExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     const char *N, *V, *R;
-    int_32 E;
+    uint32_t E;
     int gotE;
     const char *pEVR;
     char *p;
-    int_32 pFlags = RPMSENSE_EQUAL;
+    uint32_t pFlags = RPMSENSE_EQUAL;
     const char ** provides = NULL;
     const char ** providesEVR = NULL;
-    int_32 * provideFlags = NULL;
-    int providesCount;
+    uint32_t * provideFlags = NULL;
+    uint32_t providesCount;
     int i, xx;
     int bingo = 1;
 
@@ -380,12 +396,18 @@ static void providePackageNVR(Header h)
     providesEVR = he->p.argv;
     if (!xx) {
 	for (i = 0; i < providesCount; i++) {
-	    char * vdummy = "";
-	    int_32 fdummy = RPMSENSE_ANY;
-	    xx = headerAddOrAppendEntry(h, RPMTAG_PROVIDEVERSION, RPM_STRING_ARRAY_TYPE,
-			&vdummy, 1);
-	    xx = headerAddOrAppendEntry(h, RPMTAG_PROVIDEFLAGS, RPM_INT32_TYPE,
-			&fdummy, 1);
+	    static char vdummy[] = "";
+	    static uint32_t fdummy = RPMSENSE_ANY;
+	    he->tag = RPMTAG_PROVIDEVERSION;
+	    he->t = RPM_STRING_ARRAY_TYPE;
+	    he->p.argv = &vdummy;
+	    he->c = 1;
+	    xx = hae(h, he, 0);
+	    he->tag = RPMTAG_PROVIDEFLAGS;
+	    he->t = RPM_UINT32_TYPE;
+	    he->p.ui32p = &fdummy;
+	    he->c = 1;
+	    xx = hae(h, he, 0);
 	}
 	goto exit;
     }
@@ -413,12 +435,29 @@ exit:
     provideFlags = _free(provideFlags);
 
     if (bingo) {
-	xx = headerAddOrAppendEntry(h, RPMTAG_PROVIDENAME, RPM_STRING_ARRAY_TYPE,
-		&N, 1);
-	xx = headerAddOrAppendEntry(h, RPMTAG_PROVIDEFLAGS, RPM_INT32_TYPE,
-		&pFlags, 1);
-	xx = headerAddOrAppendEntry(h, RPMTAG_PROVIDEVERSION, RPM_STRING_ARRAY_TYPE,
-		&pEVR, 1);
+	he->tag = RPMTAG_PROVIDENAME;
+	he->t = RPM_STRING_ARRAY_TYPE;
+	he->p.argv = N;
+	he->c = 1;
+	he->append = 1;
+	xx = hae(h, he, 0);
+	he->append = 0;
+
+	he->tag = RPMTAG_PROVIDEVERSION;
+	he->t = RPM_STRING_ARRAY_TYPE;
+	he->p.argv = pEVR;
+	he->c = 1;
+	he->append = 1;
+	xx = hae(h, he, 0);
+	he->append = 0;
+
+	he->tag = RPMTAG_PROVIDEFLAGS;
+	he->t = RPM_UINT32_TYPE;
+	he->p.ui32p = pFlags;
+	he->c = 1;
+	he->append = 1;
+	xx = hae(h, he, 0);
+	he->append = 0;
     }
 }
 #endif	/* SUPPORT_RPMV3_PROVIDE_SELF */
@@ -453,10 +492,10 @@ static PyObject * hdrKeyList(hdrObject * s)
 	case RPM_OPENPGP_TYPE:
 	case RPM_ASN1_TYPE:
 	case RPM_BIN_TYPE:
-	case RPM_INT64_TYPE:
-	case RPM_INT32_TYPE:
-	case RPM_INT16_TYPE:
-	case RPM_INT8_TYPE:
+	case RPM_UINT64_TYPE:
+	case RPM_UINT32_TYPE:
+	case RPM_UINT16_TYPE:
+	case RPM_UINT8_TYPE:
 	case RPM_CHAR_TYPE:
 	case RPM_STRING_ARRAY_TYPE:
 	case RPM_STRING_TYPE:
@@ -789,7 +828,7 @@ static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
 	break;
 
     case RPM_CHAR_TYPE:
-    case RPM_INT8_TYPE:
+    case RPM_UINT8_TYPE:
 	if (he->c != 1 || forceArray) {
 	    metao = PyList_New(0);
 	    for (i = 0; i < he->c; i++) {
@@ -803,7 +842,7 @@ static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
 	}
 	break;
 
-    case RPM_INT16_TYPE:
+    case RPM_UINT16_TYPE:
 	if (he->c != 1 || forceArray) {
 	    metao = PyList_New(0);
 	    for (i = 0; i < he->c; i++) {
@@ -817,7 +856,7 @@ static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
 	}
 	break;
 
-    case RPM_INT32_TYPE:
+    case RPM_UINT32_TYPE:
 	if (he->c != 1 || forceArray) {
 	    metao = PyList_New(0);
 	    for (i = 0; i < he->c; i++) {
@@ -831,7 +870,7 @@ static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
 	}
 	break;
 
-    case RPM_INT64_TYPE:
+    case RPM_UINT64_TYPE:
 	if (he->c != 1 || forceArray) {
 	    metao = PyList_New(0);
 	    for (i = 0; i < he->c; i++) {
@@ -1098,6 +1137,10 @@ PyObject * rpmHeaderFromFile(PyObject * self, PyObject * args, PyObject *kwds)
  */
 int rpmMergeHeaders(PyObject * list, FD_t fd, int matchTag)
 {
+    HGE_t hge = (HGE_t)headerGetExtension;
+    HAE_t hae = headerAddExtension;
+    HRE_t hre = (HRE_t)headerRemoveEntry;
+    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     Header h;
     HeaderIterator hi;
     rpmTagData newMatch;
@@ -1108,22 +1151,32 @@ int rpmMergeHeaders(PyObject * list, FD_t fd, int matchTag)
     rpmTagType t;
     rpmTagCount c;
     rpmTagData p;
+    int xx;
 
     Py_BEGIN_ALLOW_THREADS
     h = headerRead(fd);
     Py_END_ALLOW_THREADS
 
     while (h) {
-	if (!headerGetEntry(h, matchTag, NULL, &newMatch, NULL)) {
+	he->tag = matchTag;
+	xx = hge(hdr->h, he, 0);
+	newMatch.ptr = he->p.ptr;
+	if (!xx) {
 	    PyErr_SetString(pyrpmError, "match tag missing in new header");
 	    return 1;
 	}
 
 	hdr = (hdrObject *) PyList_GetItem(list, count++);
-	if (!hdr) return 1;
+	if (!hdr) {
+	    PyErr_SetString(pyrpmError, "match list item missing");
+	    return 1;
+	}
 
-	if (!headerGetEntry(hdr->h, matchTag, NULL, &oldMatch, NULL)) {
-	    PyErr_SetString(pyrpmError, "match tag missing in new header");
+	he->tag = matchTag;
+	xx = hge(hdr->h, he, 0);
+	oldMatch.ptr = he->p.ptr;
+	if (!xx) {
+	    PyErr_SetString(pyrpmError, "match tag missing in old header");
 	    return 1;
 	}
 
@@ -1137,12 +1190,12 @@ int rpmMergeHeaders(PyObject * list, FD_t fd, int matchTag)
 	hdr->linkList = _free(hdr->linkList);
 
 	for (hi = headerInitIterator(h);
-	    headerNextIterator(hi, &tag, &t, &p, &c);
-	    p.ptr = headerFreeData(p.ptr, t))
+	    headerNextIterator(hi, &he->tag, &he->t, &he->p, &he->c);
+	    he->p.ptr = headerFreeData(he->p.ptr, t))
 	{
 	    /* could be dupes */
-	    headerRemoveEntry(hdr->h, tag);
-	    headerAddEntry(hdr->h, tag, t, p.ptr, c);
+	    xx = hre(hdr->h, he->tag);
+	    xx = hae(hdr->h, he, 0);
 	}
 
 	headerFreeIterator(hi);

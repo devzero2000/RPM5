@@ -20,7 +20,7 @@ void addChangelogEntry(Header h, time_t time, const char *name, const char *text
     int xx;
 
     he->tag = RPMTAG_CHANGELOGTIME;
-    he->t = RPM_INT32_TYPE;
+    he->t = RPM_UINT32_TYPE;
     he->p.ui32p = &mytime;
     he->c = 1;
     he->append = 1;

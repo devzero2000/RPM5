@@ -664,7 +664,7 @@ int rpmAddSignature(Header sigh, const char * file, uint32_t sigTag,
 	    break;
 	pktlen = st.st_size;
 	he->tag = sigTag;
-	he->t = RPM_INT32_TYPE;
+	he->t = RPM_UINT32_TYPE;
 	he->p.ui32p = &pktlen;
 	he->c = 1;
 	xx = hae(sigh, he, 0);

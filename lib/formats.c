@@ -81,7 +81,7 @@ static int fssizesTag(Header h, HE_t he)
     if (rpmGetFilesystemList(NULL, &he->c))
 	goto exit;
 
-    he->t = RPM_INT64_TYPE;
+    he->t = RPM_UINT64_TYPE;
     he->freeData = 1;
 
     if (fnames.ptr == NULL)

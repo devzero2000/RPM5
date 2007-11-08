@@ -63,10 +63,10 @@ static unsigned char meta_magic[8] = {
 static int typeSizes[16] =  { 
     0,	/*!< RPM_NULL_TYPE */
     1,	/*!< RPM_CHAR_TYPE */
-    1,	/*!< RPM_INT8_TYPE */
-    2,	/*!< RPM_INT16_TYPE */
-    4,	/*!< RPM_INT32_TYPE */
-    8,	/*!< RPM_INT64_TYPE */
+    1,	/*!< RPM_UINT8_TYPE */
+    2,	/*!< RPM_UINT16_TYPE */
+    4,	/*!< RPM_UINT32_TYPE */
+    8,	/*!< RPM_UINT64_TYPE */
     -1,	/*!< RPM_STRING_TYPE */
     1,	/*!< RPM_BIN_TYPE */
     -1,	/*!< RPM_STRING_ARRAY_TYPE */
@@ -602,7 +602,7 @@ static int regionSwab(/*@null@*/ indexEntry entry, int il, int dl,
 
 	/* Perform endian conversions */
 	switch (ntohl(pe->type)) {
-	case RPM_INT64_TYPE:
+	case RPM_UINT64_TYPE:
 	{   int_64 * it = (int_64 *)t;
 	    int_32 b[2];
 	    for (; ie.info.count > 0; ie.info.count--, it += 1) {
@@ -615,7 +615,7 @@ static int regionSwab(/*@null@*/ indexEntry entry, int il, int dl,
 	    }
 	    t = (unsigned char *) it;
 	}   /*@switchbreak@*/ break;
-	case RPM_INT32_TYPE:
+	case RPM_UINT32_TYPE:
 	{   int_32 * it = (int_32 *)t;
 	    for (; ie.info.count > 0; ie.info.count--, it += 1) {
 		if (dataEnd && ((unsigned char *)it) >= dataEnd)
@@ -624,7 +624,7 @@ static int regionSwab(/*@null@*/ indexEntry entry, int il, int dl,
 	    }
 	    t = (unsigned char *) it;
 	}   /*@switchbreak@*/ break;
-	case RPM_INT16_TYPE:
+	case RPM_UINT16_TYPE:
 	{   int_16 * it = (int_16 *) t;
 	    for (; ie.info.count > 0; ie.info.count--, it += 1) {
 		if (dataEnd && ((unsigned char *)it) >= dataEnd)
@@ -867,7 +867,7 @@ void * headerUnload(Header h, /*@out@*/ /*@null@*/ size_t * lenp)
 
 	/* copy data w/ endian conversions */
 	switch (entry->info.type) {
-	case RPM_INT64_TYPE:
+	case RPM_UINT64_TYPE:
 	{   int_32 b[2];
 	    count = entry->info.count;
 	    src = entry->data;
@@ -883,7 +883,7 @@ void * headerUnload(Header h, /*@out@*/ /*@null@*/ size_t * lenp)
 	    }
 	}   /*@switchbreak@*/ break;
 
-	case RPM_INT32_TYPE:
+	case RPM_UINT32_TYPE:
 	    count = entry->info.count;
 	    src = entry->data;
 	    while (count--) {
@@ -895,7 +895,7 @@ void * headerUnload(Header h, /*@out@*/ /*@null@*/ size_t * lenp)
 	    }
 	    /*@switchbreak@*/ break;
 
-	case RPM_INT16_TYPE:
+	case RPM_UINT16_TYPE:
 	    count = entry->info.count;
 	    src = entry->data;
 	    while (count--) {
@@ -1908,16 +1908,16 @@ assert(0);	/* XXX stop unimplemented oversights. */
 	he->freeData = 1;	/* XXX RPM_BIN_TYPE is malloc'd */
 	/*@fallthrough@*/
     case RPM_CHAR_TYPE:
-    case RPM_INT8_TYPE:
+    case RPM_UINT8_TYPE:
 	nb = he->c * sizeof(*he->p.ui8p);
 	break;
-    case RPM_INT16_TYPE:
+    case RPM_UINT16_TYPE:
 	nb = he->c * sizeof(*he->p.ui16p);
 	break;
-    case RPM_INT32_TYPE:
+    case RPM_UINT32_TYPE:
 	nb = he->c * sizeof(*he->p.ui32p);
 	break;
-    case RPM_INT64_TYPE:
+    case RPM_UINT64_TYPE:
 	nb = he->c * sizeof(*he->p.ui64p);
 	break;
     case RPM_I18NSTRING_TYPE:
@@ -2912,16 +2912,16 @@ static char * intFormat(HE_t he, const char *fmt)
 	return xstrdup(_("(not a number)"));
 	break;
     case RPM_CHAR_TYPE:	
-    case RPM_INT8_TYPE:
+    case RPM_UINT8_TYPE:
 	ival = he->p.ui8p[ix];
 	break;
-    case RPM_INT16_TYPE:
+    case RPM_UINT16_TYPE:
 	ival = he->p.ui16p[ix];	/* XXX note unsigned. */
 	break;
-    case RPM_INT32_TYPE:
+    case RPM_UINT32_TYPE:
 	ival = he->p.ui32p[ix];
 	break;
-    case RPM_INT64_TYPE:
+    case RPM_UINT64_TYPE:
 	ival = he->p.ui64p[ix];
 	break;
     case RPM_STRING_TYPE:
@@ -3010,7 +3010,7 @@ static char * realDateFormat(HE_t he, const char * strftimeFormat)
     rpmTagData data = { .ptr = he->p.ptr };
     char * val;
 
-    if (he->t != RPM_INT64_TYPE) {
+    if (he->t != RPM_UINT64_TYPE) {
 	val = xstrdup(_("(not a number)"));
     } else {
 	struct tm * tstruct;
@@ -3065,12 +3065,12 @@ static char * shescapeFormat(HE_t he)
     size_t nb;
 
     /* XXX one of these integer types is unnecessary. */
-    if (he->t == RPM_INT32_TYPE) {
+    if (he->t == RPM_UINT32_TYPE) {
 	nb = 20;
 	val = xmalloc(nb);
 	snprintf(val, nb, "%u", data.ui32p[0]);
 	val[nb-1] = '\0';
-    } else if (he->t == RPM_INT64_TYPE) {
+    } else if (he->t == RPM_UINT64_TYPE) {
 	nb = 40;
 	val = xmalloc(40);
 	snprintf(val, nb, "%llu", data.ui64p[0]);
@@ -3552,7 +3552,7 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
     if (tag->arrayCount) {
 	countBuf = he->c;
 	he = rpmheClean(he);
-	he->t = RPM_INT32_TYPE;
+	he->t = RPM_UINT32_TYPE;
 	he->p.ui32p = &countBuf;
 	he->c = 1;
 	he->freeData = 0;
@@ -3580,29 +3580,29 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
 	vhe->ix = -1;
 	break;
     case RPM_CHAR_TYPE:
-    case RPM_INT8_TYPE:
-    case RPM_INT16_TYPE:
-    case RPM_INT32_TYPE:
-    case RPM_INT64_TYPE:
+    case RPM_UINT8_TYPE:
+    case RPM_UINT16_TYPE:
+    case RPM_UINT32_TYPE:
+    case RPM_UINT64_TYPE:
 	switch (he->t) {
 	default:
 assert(0);	/* XXX keep gcc quiet. */
 	    break;
 	case RPM_CHAR_TYPE:	
-	case RPM_INT8_TYPE:
+	case RPM_UINT8_TYPE:
 	    ival = he->p.ui8p[element];
 	    break;
-	case RPM_INT16_TYPE:
+	case RPM_UINT16_TYPE:
 	    ival = he->p.ui16p[element];	/* XXX note unsigned. */
 	    break;
-	case RPM_INT32_TYPE:
+	case RPM_UINT32_TYPE:
 	    ival = he->p.ui32p[element];
 	    break;
-	case RPM_INT64_TYPE:
+	case RPM_UINT64_TYPE:
 	    ival = he->p.ui64p[element];
 	    break;
 	}
-	vhe->t = RPM_INT64_TYPE;
+	vhe->t = RPM_UINT64_TYPE;
 	vhe->p.ui64p = &ival;
 	vhe->c = he->c;
 	/* XXX TODO: force array representation? */

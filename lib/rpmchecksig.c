@@ -562,7 +562,7 @@ rpmRC rpmcliImportPubkey(const rpmts ts, const unsigned char * pkt, ssize_t pktl
     xx = hae(h, he, 0);
 
     he->tag = RPMTAG_SIZE;
-    he->t = RPM_INT32_TYPE;
+    he->t = RPM_UINT32_TYPE;
     he->p.ui32p = &zero;
     he->c = 1;
     xx = hae(h, he, 0);
@@ -580,7 +580,7 @@ rpmRC rpmcliImportPubkey(const rpmts ts, const unsigned char * pkt, ssize_t pktl
     he->c = 1;
     xx = hae(h, he, 0);
     he->tag = RPMTAG_PROVIDEFLAGS;
-    he->t = RPM_INT32_TYPE;
+    he->t = RPM_UINT32_TYPE;
     he->p.ui32p = &pflags;
     he->c = 1;
     xx = hae(h, he, 0);
@@ -596,7 +596,7 @@ rpmRC rpmcliImportPubkey(const rpmts ts, const unsigned char * pkt, ssize_t pktl
     he->c = 1;
     xx = hae(h, he, 0);
     he->tag = RPMTAG_PROVIDEFLAGS;
-    he->t = RPM_INT32_TYPE;
+    he->t = RPM_UINT32_TYPE;
     he->p.ui32p = &pflags;
     he->c = 1;
     xx = hae(h, he, 0);
@@ -617,13 +617,13 @@ rpmRC rpmcliImportPubkey(const rpmts ts, const unsigned char * pkt, ssize_t pktl
     xx = hae(h, he, 0);
     {   uint32_t tid = rpmtsGetTid(ts);
 	he->tag = RPMTAG_INSTALLTIME;
-	he->t = RPM_INT32_TYPE;
+	he->t = RPM_UINT32_TYPE;
 	he->p.ui32p = &tid;
 	he->c = 1;
 	xx = hae(h, he, 0);
 	/* XXX W2DO: tag value inheirited from parent? */
 	he->tag = RPMTAG_BUILDTIME;
-	he->t = RPM_INT32_TYPE;
+	he->t = RPM_UINT32_TYPE;
 	he->p.ui32p = &tid;
 	he->c = 1;
 	xx = hae(h, he, 0);

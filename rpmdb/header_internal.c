@@ -16,10 +16,10 @@
 int rpm_typeAlign[16] =  {
     1,	/*!< RPM_NULL_TYPE */
     1,	/*!< RPM_CHAR_TYPE */
-    1,	/*!< RPM_INT8_TYPE */
-    2,	/*!< RPM_INT16_TYPE */
-    4,	/*!< RPM_INT32_TYPE */
-    8,	/*!< RPM_INT64_TYPE */
+    1,	/*!< RPM_UINT8_TYPE */
+    2,	/*!< RPM_UINT16_TYPE */
+    4,	/*!< RPM_UINT32_TYPE */
+    8,	/*!< RPM_UINT64_TYPE */
     1,	/*!< RPM_STRING_TYPE */
     1,	/*!< RPM_BIN_TYPE */
     1,	/*!< RPM_STRING_ARRAY_TYPE */
@@ -109,16 +109,18 @@ void headerDump(Header h, FILE *f, int flags,
 	case RPM_BIN_TYPE:
 	    type = "BIN";
 	    /*@switchbreak@*/ break;
-	case RPM_INT8_TYPE:
-	    type = "INT8";
+	case RPM_UINT8_TYPE:
+	    type = "UINT8";
 	    /*@switchbreak@*/ break;
-	case RPM_INT16_TYPE:
-	    type = "INT16";
+	case RPM_UINT16_TYPE:
+	    type = "UINT16";
 	    /*@switchbreak@*/ break;
-	case RPM_INT32_TYPE:
-	    type = "INT32";
+	case RPM_UINT32_TYPE:
+	    type = "UINT32";
 	    /*@switchbreak@*/ break;
-	/*case RPM_INT64_TYPE:  	type = "INT64"; 	break;*/
+	case RPM_UINT64_TYPE:
+	    type = "UINT64";
+	    /*@switchbreak@*/ break;
 	case RPM_STRING_TYPE:
 	    type = "STRING";
 	    /*@switchbreak@*/ break;
@@ -152,7 +154,7 @@ void headerDump(Header h, FILE *f, int flags,
 
 	    /* Print the data inline */
 	    switch (p->info.type) {
-	    case RPM_INT32_TYPE:
+	    case RPM_UINT32_TYPE:
 		while (c--) {
 		    fprintf(f, "       Data: %.3d 0x%08x (%d)\n", ct++,
 			    (unsigned) *((int_32 *) dp),
@@ -161,7 +163,7 @@ void headerDump(Header h, FILE *f, int flags,
 		}
 		/*@switchbreak@*/ break;
 
-	    case RPM_INT16_TYPE:
+	    case RPM_UINT16_TYPE:
 		while (c--) {
 		    fprintf(f, "       Data: %.3d 0x%04x (%d)\n", ct++,
 			    (unsigned) (*((int_16 *) dp) & 0xffff),
@@ -169,7 +171,7 @@ void headerDump(Header h, FILE *f, int flags,
 		    dp += sizeof(int_16);
 		}
 		/*@switchbreak@*/ break;
-	    case RPM_INT8_TYPE:
+	    case RPM_UINT8_TYPE:
 		while (c--) {
 		    fprintf(f, "       Data: %.3d 0x%02x (%d)\n", ct++,
 			    (unsigned) (*((int_8 *) dp) & 0xff),

@@ -128,7 +128,7 @@ int addReqProv(/*@unused@*/ Spec spec, Header h, /*@unused@*/ rpmTag tagN,
 	he->append = 0;
 
 	he->tag = flagtag;
-	he->t = RPM_INT32_TYPE;
+	he->t = RPM_UINT32_TYPE;
 	he->p.ui32p = &Flags;
 	he->c = 1;
 	he->append = 1;
@@ -137,7 +137,7 @@ int addReqProv(/*@unused@*/ Spec spec, Header h, /*@unused@*/ rpmTag tagN,
     }
     if (indextag) {
 	he->tag = indextag;
-	he->t = RPM_INT32_TYPE;
+	he->t = RPM_UINT32_TYPE;
 	he->p.ui32p = &index;
 	he->c = 1;
 	he->append = 1;
