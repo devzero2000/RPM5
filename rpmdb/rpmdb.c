@@ -3106,6 +3106,9 @@ DBT * key = alloca(sizeof(*key));
 DBT * data = alloca(sizeof(*data));
     HGE_t hge = headerGetExtension;
     HAE_t hae = headerAddExtension;
+#ifdef	NOTYET	/* XXX headerRemoveEntry() broken on dribbles. */
+    HRE_t hre = headerRemoveExtension;
+#endif
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     sigset_t signalMask;
 #if defined(SUPPORT_RPMV3_BASENAMES_HACKS)
@@ -3133,7 +3136,8 @@ memset(key, 0, sizeof(*key));
 memset(data, 0, sizeof(*data));
 
 #ifdef	NOTYET	/* XXX headerRemoveEntry() broken on dribbles. */
-    xx = headerRemoveEntry(h, RPMTAG_REMOVETID);
+    he->tag = RPMTAG_REMOVETID;
+    xx = hre(h, he, 0);
 #endif
     if (iid != 0 && iid != -1) {
 	uint32_t tid = iid;

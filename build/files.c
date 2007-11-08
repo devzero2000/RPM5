@@ -1172,7 +1172,7 @@ static void compressFilelist(Header h)
 {
     HGE_t hge = headerGetExtension;
     HAE_t hae = headerAddExtension;
-    HRE_t hre = (HRE_t)headerRemoveEntry;
+    HRE_t hre = headerRemoveExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     const char ** fileNames;
     const char * fn;
@@ -1191,7 +1191,8 @@ static void compressFilelist(Header h)
      */
 
     if (headerIsEntry(h, RPMTAG_DIRNAMES)) {
-	xx = hre(h, RPMTAG_OLDFILENAMES);
+	he->tag = RPMTAG_OLDFILENAMES;
+	xx = hre(h, he, 0);
 	return;		/* Already converted. */
     }
 
@@ -1272,7 +1273,8 @@ exit:
 
     fileNames = _free(fileNames);
 
-    xx = hre(h, RPMTAG_OLDFILENAMES);
+    he->tag = RPMTAG_OLDFILENAMES;
+    xx = hre(h, he, 0);
 }
 /*@=bounds@*/
 

@@ -1391,6 +1391,7 @@ static int rpmfcGenerateScriptletDeps(const Spec spec, Package pkg)
 int rpmfcGenerateDepends(void * specp, void * pkgp)
 {
     HAE_t hae = headerAddExtension;
+    HRE_t hre = headerRemoveExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     const Spec spec = specp;
     Package pkg = pkgp;
@@ -1469,9 +1470,12 @@ int rpmfcGenerateDepends(void * specp, void * pkgp)
 	ds = rpmdsNew(pkg->header, RPMTAG_PROVIDENAME, flags);
 	xx = rpmdsMerge(&fc->provides, ds);
 	ds = rpmdsFree(ds);
-	xx = headerRemoveEntry(pkg->header, RPMTAG_PROVIDENAME);
-	xx = headerRemoveEntry(pkg->header, RPMTAG_PROVIDEVERSION);
-	xx = headerRemoveEntry(pkg->header, RPMTAG_PROVIDEFLAGS);
+	he->tag = RPMTAG_PROVIDENAME;
+	xx = hre(pkg->header, he, 0);
+	he->tag = RPMTAG_PROVIDEVERSION;
+	xx = hre(pkg->header, he, 0);
+	he->tag = RPMTAG_PROVIDEFLAGS;
+	xx = hre(pkg->header, he, 0);
 
 	/* Add config dependency, Provides: config(N) = EVR */
 	if (genConfigDeps) {
@@ -1491,9 +1495,12 @@ assert(EVR != NULL);
 	ds = rpmdsNew(pkg->header, RPMTAG_REQUIRENAME, flags);
 	xx = rpmdsMerge(&fc->requires, ds);
 	ds = rpmdsFree(ds);
-	xx = headerRemoveEntry(pkg->header, RPMTAG_REQUIRENAME);
-	xx = headerRemoveEntry(pkg->header, RPMTAG_REQUIREVERSION);
-	xx = headerRemoveEntry(pkg->header, RPMTAG_REQUIREFLAGS);
+	he->tag = RPMTAG_REQUIRENAME;
+	xx = hre(pkg->header, he, 0);
+	he->tag = RPMTAG_REQUIREVERSION;
+	xx = hre(pkg->header, he, 0);
+	he->tag = RPMTAG_REQUIREFLAGS;
+	xx = hre(pkg->header, he, 0);
 
 	/* Add config dependency,  Requires: config(N) = EVR */
 	if (genConfigDeps) {

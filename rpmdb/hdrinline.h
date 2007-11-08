@@ -292,6 +292,22 @@ assert(xx);
 }
 
 /** \ingroup header
+ * Remove tag container from header.
+ *
+ * @param h		header
+ * @param he		tag container
+ * @param flags		(unused)
+ * @return		1 on success, 0 on failure
+ */
+/*@mayexit@*/
+/*@unused@*/ static inline
+int headerRemoveExtension(Header h, HE_t he, /*@unused@*/ unsigned int flags)
+	/*@modifies h @*/
+{
+    return (h2hv(h)->hdrremove) (h, he->tag);
+}
+
+/** \ingroup header
  * Retrieve tag value.
  * Will never return RPM_I18NSTRING_TYPE! RPM_STRING_TYPE elements with
  * RPM_I18NSTRING_TYPE equivalent entries are translated (if HEADER_I18NTABLE

@@ -179,6 +179,7 @@ static int rpmReSign(/*@unused@*/ rpmts ts,
 {
     HGE_t hge = headerGetExtension;
     HAE_t hae = headerAddExtension;
+    HRE_t hre = headerRemoveExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     rpmgi gi = NULL;
     FD_t fd = NULL;
@@ -296,25 +297,37 @@ if (!_nosigh) {
 
 if (sigh != NULL) {
 	/* Eliminate broken digest values. */
-	xx = headerRemoveEntry(sigh, RPMSIGTAG_LEMD5_1);
-	xx = headerRemoveEntry(sigh, RPMSIGTAG_LEMD5_2);
-	xx = headerRemoveEntry(sigh, RPMSIGTAG_BADSHA1_1);
-	xx = headerRemoveEntry(sigh, RPMSIGTAG_BADSHA1_2);
+	he->tag = RPMSIGTAG_LEMD5_1;
+	xx = hre(sigh, he, 0);
+	he->tag = RPMSIGTAG_LEMD5_2;
+	xx = hre(sigh, he, 0);
+	he->tag = RPMSIGTAG_BADSHA1_1;
+	xx = hre(sigh, he, 0);
+	he->tag = RPMSIGTAG_BADSHA1_2;
+	xx = hre(sigh, he, 0);
 
 	/* Toss and recalculate header+payload size and digests. */
-	xx = headerRemoveEntry(sigh, RPMSIGTAG_SIZE);
+	he->tag = RPMSIGTAG_SIZE;
+	xx = hre(sigh, he, 0);
 	xx = rpmAddSignature(sigh, sigtarget, RPMSIGTAG_SIZE, qva->passPhrase);
-	xx = headerRemoveEntry(sigh, RPMSIGTAG_MD5);
+	he->tag = RPMSIGTAG_MD5;
+	xx = hre(sigh, he, 0);
 	xx = rpmAddSignature(sigh, sigtarget, RPMSIGTAG_MD5, qva->passPhrase);
-	xx = headerRemoveEntry(sigh, RPMSIGTAG_SHA1);
+	he->tag = RPMSIGTAG_SHA1;
+	xx = hre(sigh, he, 0);
 	xx = rpmAddSignature(sigh, sigtarget, RPMSIGTAG_SHA1, qva->passPhrase);
 
 	if (deleting) {	/* Nuke all the signature tags. */
-	    xx = headerRemoveEntry(sigh, RPMSIGTAG_GPG);
-	    xx = headerRemoveEntry(sigh, RPMSIGTAG_PGP5);
-	    xx = headerRemoveEntry(sigh, RPMSIGTAG_PGP);
-	    xx = headerRemoveEntry(sigh, RPMSIGTAG_DSA);
-	    xx = headerRemoveEntry(sigh, RPMSIGTAG_RSA);
+	    he->tag = RPMSIGTAG_GPG;
+	    xx = hre(sigh, he, 0);
+	    he->tag = RPMSIGTAG_PGP5;
+	    xx = hre(sigh, he, 0);
+	    he->tag = RPMSIGTAG_PGP;
+	    xx = hre(sigh, he, 0);
+	    he->tag = RPMSIGTAG_DSA;
+	    xx = hre(sigh, he, 0);
+	    he->tag = RPMSIGTAG_RSA;
+	    xx = hre(sigh, he, 0);
 	} else {		/* If gpg/pgp is configured, replace the signature. */
 	  int addsig = 0;
 #if defined(SUPPORT_PGP_SIGNING)
@@ -333,21 +346,26 @@ if (sigh != NULL) {
 
 	    switch (sigtag) {
 	    case RPMSIGTAG_DSA:
-		xx = headerRemoveEntry(sigh, RPMSIGTAG_GPG);
+		he->tag = RPMSIGTAG_GPG;
+		xx = hre(sigh, he, 0);
 		/*@switchbreak@*/ break;
 	    case RPMSIGTAG_RSA:
-		xx = headerRemoveEntry(sigh, RPMSIGTAG_PGP);
+		he->tag = RPMSIGTAG_PGP;
+		xx = hre(sigh, he, 0);
 		/*@switchbreak@*/ break;
 	    case RPMSIGTAG_GPG:
-		xx = headerRemoveEntry(sigh, RPMSIGTAG_DSA);
+		he->tag = RPMSIGTAG_DSA;
+		xx = hre(sigh, he, 0);
 		/*@fallthrough@*/
 	    case RPMSIGTAG_PGP5:
 	    case RPMSIGTAG_PGP:
-		xx = headerRemoveEntry(sigh, RPMSIGTAG_RSA);
+		he->tag = RPMSIGTAG_RSA;
+		xx = hre(sigh, he, 0);
 		/*@switchbreak@*/ break;
 	    }
 
-	    xx = headerRemoveEntry(sigh, sigtag);
+	    he->tag = sigtag;
+	    xx = hre(sigh, he, 0);
 	    xx = rpmAddSignature(sigh, sigtarget, sigtag, qva->passPhrase);
 
 	    /* If package was previously signed, check for same signer. */

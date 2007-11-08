@@ -402,7 +402,7 @@ typedef int (*HME_t) (Header h, rpmTag tag, rpmTagType type,
  * @param tag		tag
  * @return		0 on success, 1 on failure (INCONSISTENT)
  */
-typedef int (*HRE_t) (Header h, uint32_t tag)
+typedef int (*HRE_t) (Header h, HE_t he, unsigned int flags)
 	/*@modifies h @*/;
 
 /** \ingroup header

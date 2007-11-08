@@ -172,9 +172,9 @@ static int dncmp(const void * a, const void * b)
 static void expandFilelist(Header h)
         /*@modifies h @*/
 {
-    HGE_t hge = (HGE_t)headerGetExtension;
-    HAE_t hae = (HAE_t)headerAddExtension;
-    HRE_t hre = (HRE_t)headerRemoveEntry;
+    HGE_t hge = headerGetExtension;
+    HAE_t hae = headerAddExtension;
+    HRE_t hre = headerRemoveExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     int xx;
 
@@ -190,9 +190,12 @@ static void expandFilelist(Header h)
     }
     /*@=branchstate@*/
 
-    xx = hre(h, RPMTAG_DIRNAMES);
-    xx = hre(h, RPMTAG_BASENAMES);
-    xx = hre(h, RPMTAG_DIRINDEXES);
+    he->tag = RPMTAG_DIRNAMES;
+    xx = hre(h, he, 0);
+    he->tag = RPMTAG_BASENAMES;
+    xx = hre(h, he, 0);
+    he->tag = RPMTAG_DIRINDEXES;
+    xx = hre(h, he, 0);
 }
 
 /*@-bounds@*/
@@ -203,9 +206,9 @@ static void expandFilelist(Header h)
 static void compressFilelist(Header h)
 	/*@modifies h @*/
 {
-    HGE_t hge = (HGE_t)headerGetExtension;
+    HGE_t hge = headerGetExtension;
     HAE_t hae = headerAddExtension;
-    HRE_t hre = (HRE_t)headerRemoveEntry;
+    HRE_t hre = headerRemoveExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     const char ** fileNames;
     const char ** dirNames;
@@ -223,7 +226,8 @@ static void compressFilelist(Header h)
      */
 
     if (headerIsEntry(h, RPMTAG_DIRNAMES)) {
-	xx = hre(h, RPMTAG_OLDFILENAMES);
+	he->tag = RPMTAG_OLDFILENAMES;
+	xx = hre(h, he, 0);
 	return;		/* Already converted. */
     }
 
@@ -303,7 +307,8 @@ exit:
 
     fileNames = _free(fileNames);
 
-    xx = hre(h, RPMTAG_OLDFILENAMES);
+    he->tag = RPMTAG_OLDFILENAMES;
+    xx = hre(h, he, 0);
 }
 /*@=bounds@*/
 
@@ -1137,9 +1142,9 @@ PyObject * rpmHeaderFromFile(PyObject * self, PyObject * args, PyObject *kwds)
  */
 int rpmMergeHeaders(PyObject * list, FD_t fd, int matchTag)
 {
-    HGE_t hge = (HGE_t)headerGetExtension;
+    HGE_t hge = headerGetExtension;
     HAE_t hae = headerAddExtension;
-    HRE_t hre = (HRE_t)headerRemoveEntry;
+    HRE_t hre = headerRemoveExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     Header h;
     HeaderIterator hi;
@@ -1190,7 +1195,7 @@ int rpmMergeHeaders(PyObject * list, FD_t fd, int matchTag)
 	    he->p.ptr = headerFreeData(he->p.ptr, he->t))
 	{
 	    /* could be dupes */
-	    xx = hre(hdr->h, he->tag);
+	    xx = hre(hdr->h, he, 0);
 	    xx = hae(hdr->h, he, 0);
 	}
 

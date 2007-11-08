@@ -175,6 +175,7 @@ static int addFileToTag(Spec spec, const char * file, Header h, rpmTag tag)
 {
     HGE_t hge = (HGE_t)headerGetExtension;
     HAE_t hae = headerAddExtension;
+    HRE_t hre = headerRemoveExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     StringBuf sb = newStringBuf();
     int xx;
@@ -183,7 +184,7 @@ static int addFileToTag(Spec spec, const char * file, Header h, rpmTag tag)
     xx = hge(h, he, 0);
     if (xx) {
 	appendLineStringBuf(sb, he->p.str);
-	(void) headerRemoveEntry(h, tag);
+	(void) hre(h, he, 0);
     }
     he->p.ptr = _free(he->p.ptr);
 
