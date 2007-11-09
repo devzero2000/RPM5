@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - rpm.org: Clarify rpmtsCheck() documentation (rhbz#159638).
     - rpm.org: Remove bunch of unnecessary rpmio_internal includes.
     - jbj: include rpmtag.h, not rpmlib.h, if only tag names are needed.
     - jbj: change int_32 to evrFlags and uint32_t in rpmfc.c and rpmds.c.
