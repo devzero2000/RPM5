@@ -891,6 +891,13 @@ void * _free(/*@only@*/ /*@null@*/ /*@out@*/ const void * p)
 #endif
 #endif
 
+/**
+ * Free all memory allocated by rpmio usage.
+ */
+void rpmioClean(void)
+	/*@globals internalState @*/
+	/*@modifies internalState @*/;
+
 #ifdef __cplusplus
 }
 #endif

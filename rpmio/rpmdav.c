@@ -27,7 +27,19 @@
 #include "ne_request.h"
 #include "ne_socket.h"
 #include "ne_string.h"
+
 #include "ne_utils.h"
+#if !defined(HEADER_ERR_H)
+/* cheats to avoid having to explicitly build against OpenSSL */
+extern void ERR_remove_state(int foo);
+extern void ENGINE_cleanup(void);
+extern void CONF_modules_unload(int foo);
+extern void ERR_free_strings(void);
+extern void EVP_cleanup(void);
+extern void CRYPTO_cleanup_all_ex_data(void);
+extern void CRYPTO_mem_leaks(void * ptr);
+#endif
+
 #include "ne_md5.h" /* for version detection only */
 
 /* poor-man's NEON version determination */
@@ -72,6 +84,20 @@ static int httpTimeoutSecs = TIMEOUT_SECS;
 #ifdef WITH_NEON
 
 /* =============================================================== */
+void davDestroy(void)
+{
+    if (ne_has_support(NE_FEATURE_SSL)) {
+/* XXX http://www.nabble.com/Memory-Leaks-in-SSL_Library_init()-t3431875.html */
+	ENGINE_cleanup();
+	CRYPTO_cleanup_all_ex_data();
+	ERR_free_strings();
+	ERR_remove_state(0);
+	EVP_cleanup();
+	CRYPTO_mem_leaks(NULL);
+	CONF_modules_unload(1);
+    }
+}
+
 int davFree(urlinfo u)
 	/*@globals internalState @*/
 	/*@modifies u, internalState @*/

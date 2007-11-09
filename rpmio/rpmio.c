@@ -55,6 +55,7 @@ extern void freeaddrinfo (/*@only@*/ struct addrinfo *__ai)
 #endif
 
 #include <rpmmacro.h>		/* XXX rpmioAccess needs rpmCleanPath() */
+#include <rpmlua.h>		/* XXX rpmioClean() calls rpmluaFree() */
 
 #if defined(HAVE_LIBIO_H) && defined(_G_IO_IO_FILE_VERSION)
 #define	_USE_LIBIO	1
@@ -3842,6 +3843,18 @@ exit:
     if (blenp) *blenp = blen;
 
     return rc;
+}
+
+void rpmioClean(void)
+{
+#if defined(WITH_LUA)   /* XXX this should be done in a rpmioClean() wrapper. */
+    (void) rpmluaFree(NULL);
+#endif
+#if defined(WITH_NEON)
+    davDestroy();
+#endif
+    urlFreeCache();
+    rpmlogClose();
 }
 
 /*@-type@*/ /* LCL: function typedefs */

@@ -65,6 +65,12 @@ int davFree(urlinfo u)
 	/*@modifies u, internalState @*/;
 
 /**
+ */
+void davDestroy(void)
+	/*@globals internalState @*/
+	/*@modifies internalState @*/;
+
+/**
  * Close an argv directory.
  * @param dir		argv DIR
  * @return 		0 always

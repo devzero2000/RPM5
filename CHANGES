@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - jbj: rearrange the steaming piles of ick into an aesthetic constellation.
     - jbj: squeaky clean SSL memory cleanup. Ick.
     - rpm.org: start hiding rpmsq internals.
     - jbj: fix: "trade a double free for a modest memory leak for the moment."
