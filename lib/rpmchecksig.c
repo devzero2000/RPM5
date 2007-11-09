@@ -874,6 +874,7 @@ if (!_nolead) {
 	    res++;
 	    goto exit;
 	}
+	msg = _free(msg);
 }
 
 if (!_nosigh) {

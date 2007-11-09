@@ -562,6 +562,8 @@ void rpmnsClean(void)
     cpuinfoP = rpmdsFree(cpuinfoP);
     getconfP = rpmdsFree(getconfP);
     unameP = rpmdsFree(unameP);
+    _sysinfo_path = _free(_sysinfo_path);
+    sysinfo_path = _free(sysinfo_path);
 }
 
 /**
@@ -900,6 +902,7 @@ retry:
 	    sysinfo_path = xstrdup(SYSCONFIGDIR "/sysinfo");
 	}
     }
+
     if (!rpmioAccess(sysinfo_path, NULL, R_OK)) {
 #ifdef	NOTYET	/* XXX just sysinfo Provides: for now. */
 	rpmTag tagN = (Name[0] == '/' ? RPMTAG_DIRNAMES : RPMTAG_PROVIDENAME);

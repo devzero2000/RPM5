@@ -18,6 +18,9 @@
 extern int _rpmds_debug;
 /*@=exportlocal@*/
 
+/*@unchecked@*/ /*@observer@*/ /*@owned@*/ /*@relnull@*/
+extern const char *_sysinfo_path;
+
 /**
  */
 /*@-exportlocal@*/

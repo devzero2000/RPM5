@@ -1545,7 +1545,7 @@ exit:
 
 #define	_ETC_RPM_SYSINFO	SYSCONFIGDIR "/sysinfo"
 /*@unchecked@*/ /*@observer@*/ /*@owned@*/ /*@relnull@*/
-static const char *_sysinfo_path = NULL;
+const char *_sysinfo_path = NULL;
 
 /*@unchecked@*/ /*@observer@*/ /*@relnull@*/
 static const char *_sysinfo_tags[] = {

@@ -434,7 +434,7 @@ exit:
     else
 	l = _free(l);
 	
-    if (msg != NULL) {
+    if (msg != NULL && buf[0] != '\0') {
 	buf[sizeof(buf)-1] = '\0';
 	*msg = xstrdup(buf);
     }

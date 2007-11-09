@@ -1,4 +1,6 @@
 4.5 -> 5.0:
+    - jbj: hmmm, headerGetExtension should not leak memory on failure. hack it.
+    - jbj: more memory leak canoodling.
     - jbj: plug a couple of memory leaks.
     - jbj: rearrange the steaming piles of ick into an aesthetic constellation.
     - jbj: squeaky clean SSL memory cleanup. Ick.
