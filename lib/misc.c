@@ -11,7 +11,6 @@ const char * RPMVERSION = VERSION;
 #include <rpmurl.h>
 #include <rpmmacro.h>	/* XXX for rpmGetPath */
 #include <rpmlib.h>
-#include "legacy.h"
 #include "misc.h"
 #include "debug.h"
 
