@@ -621,18 +621,6 @@ int writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
     if (pkgidp)
 	*pkgidp = NULL;
 
-#ifdef	DYING
-    if (Fileno(csa->cpioFdIn) < 0) {
-	csa->cpioArchiveSize = 0;
-	/* Add a bogus archive size to the Header */
-	he->tag = RPMTAG_ARCHIVESIZE;
-	he->t = RPM_UINT32_TYPE;
-	he->p.ui32p = &csa->cpioArchiveSize;
-	he->c = 1;
-	xx = hae(h, he, 0);
-    }
-#endif
-
     /* Save payload information */
     isSource =
 	(headerIsEntry(h, RPMTAG_SOURCERPM) == 0 &&
