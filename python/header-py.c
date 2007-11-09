@@ -8,7 +8,6 @@
 #include "rpmcli.h"	/* XXX for rpmCheckSig */
 
 #include "legacy.h"
-#include "misc.h"
 #include "header_internal.h"	/* XXX HEADERFLAG_ALLOCATED */
 
 #include "rpmts.h"	/* XXX rpmtsCreate/rpmtsFree */

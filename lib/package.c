@@ -11,7 +11,6 @@
 
 #include "rpmts.h"
 
-#include "misc.h"		/* XXX stripTrailingChar() */
 #include <pkgio.h>
 
 #include "header_internal.h"	/* XXX headerCheck */

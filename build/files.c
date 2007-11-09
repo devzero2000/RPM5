@@ -33,7 +33,7 @@
 #include "buildio.h"
 
 #include "legacy.h"	/* XXX dodigest */
-#include "misc.h"
+#include "misc.h"	/* for splitString, freeSplitString */
 #include "debug.h"
 
 /*@access Header @*/

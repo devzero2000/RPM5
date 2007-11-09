@@ -15,7 +15,6 @@
 #include <rpmlua.h>
 #include <rpmds.h>
 
-#include "misc.h"
 #include "debug.h"
 
 /*@access miRE@*/

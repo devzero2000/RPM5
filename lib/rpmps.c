@@ -10,7 +10,6 @@
 #define	_RPMPS_INTERNAL
 #include "rpmps.h"
 
-#include "misc.h"
 #include "debug.h"
 
 /*@access fnpyKey @*/

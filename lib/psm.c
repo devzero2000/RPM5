@@ -29,7 +29,7 @@
 #include "rpmts.h"
 
 #include <pkgio.h>
-#include "misc.h"		/* XXX rpmMkdirPath */
+#include "misc.h"		/* XXX rpmMkdirPath, makeTempFile, doputenv */
 #include "rpmdb.h"		/* XXX for db_chrootDone */
 #include "signature.h"		/* signature constants */
 #include "debug.h"
