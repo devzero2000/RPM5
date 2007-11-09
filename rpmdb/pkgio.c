@@ -16,7 +16,7 @@
 #endif
 
 #include <rpmio_internal.h>
-#include <rpmlib.h>
+#include <rpmtag.h>
 
 #include <rpmdb.h>		/* XXX rpmtsFindPubkey */
 #include <rpmmacro.h>

@@ -35,7 +35,7 @@
 
 #include "system.h"
 
-#include <rpmlib.h>
+#include <rpmtag.h>
 #include <rpmio.h>
 #include <rpmmacro.h>
 #include <rpmurl.h>     /* XXX urlPath proto */

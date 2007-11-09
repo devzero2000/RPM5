@@ -5,7 +5,7 @@
 #include "system.h"
 
 #include "rpmio_internal.h"
-#include <rpmlib.h>
+#include <rpmlib.h>	/* XXX RPMFILE_FOO, rpmMkdirPath */
 #include <rpmmacro.h>	/* XXX for %_i18ndomains */
 
 #define _RPMEVR_INTERNAL

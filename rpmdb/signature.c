@@ -8,7 +8,7 @@
 #endif
 
 #include "rpmio_internal.h"
-#include <rpmlib.h>
+#include <rpmtag.h>
 #include <rpmmacro.h>	/* XXX for rpmGetPath() */
 #include "rpmdb.h"
 

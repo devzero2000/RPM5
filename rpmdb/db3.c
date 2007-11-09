@@ -12,7 +12,7 @@ static int _debug = 1;	/* XXX if < 0 debugging, > 0 unusual error returns */
 #include <sys/ipc.h>
 #endif
 
-#include <rpmlib.h>
+#include <rpmtag.h>
 #include <rpmio.h>
 #include <rpmmacro.h>
 #include <rpmurl.h>	/* XXX urlPath proto */

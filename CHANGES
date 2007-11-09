@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - jbj: include rpmtag.h, not rpmlib.h, if only tag names are needed.
     - jbj: change int_32 to evrFlags and uint32_t in rpmfc.c and rpmds.c.
     - rpm.org: Remove two unnecessary legacy.h includes.
     - rpm.org: Remove bunch of unnecessary misc.h includes, document others.
