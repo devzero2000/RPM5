@@ -237,9 +237,9 @@ addtag(h, sv_tag, sv_tagtype, ...)
     for (i = 3; (i < items) && RETVAL; i++) {
         switch (tagtype) {
             case RPM_CHAR_TYPE:
-            case RPM_INT8_TYPE:
-            case RPM_INT16_TYPE:
-            case RPM_INT32_TYPE:
+            case RPM_UINT8_TYPE:
+            case RPM_UINT16_TYPE:
+            case RPM_UINT32_TYPE:
                 ivalue = SvUV(ST(i));
                 RETVAL = headerAddOrAppendEntry(h, tag, tagtype, &ivalue, 1);
                 break;
@@ -331,9 +331,9 @@ tag(h, sv_tag)
                     PUSHs(sv_2mortal(newSVpv((char *)ret, 0)));
                 break;
                 case RPM_CHAR_TYPE:
-                case RPM_INT8_TYPE:
-                case RPM_INT16_TYPE:
-                case RPM_INT32_TYPE:
+                case RPM_UINT8_TYPE:
+                case RPM_UINT16_TYPE:
+                case RPM_UINT32_TYPE:
                     {
                         int i;
                         int *r;
