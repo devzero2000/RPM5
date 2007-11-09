@@ -73,7 +73,7 @@ dnl ##        <lib-link-name>,        -- [$3] e.g. bz2
 dnl ##        <lib-function-name>,    -- [$4] e.g. BZ2_bzlibVersion
 dnl ##        <lib-header-filename>,  -- [$5] e.g. bzlib.h
 dnl ##        <with-arg-default>[,    -- [$6] e.g. yes,external:internal:none
-dnl ##        <internal-subdir>[,     -- [$7] e.g. lib/bzip2
+dnl ##        <internal-subdir>[,     -- [$7] e.g. lib/bzip2:include:src
 dnl ##        <action-success>[,      -- [$8] e.g. AC_DEFINE(USE_BZIP2, 1, [...])
 dnl ##        <action-failure>        -- [$9] e.g. AC_MSG_ERROR([...])
 dnl ##    ]]])
