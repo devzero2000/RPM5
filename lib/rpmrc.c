@@ -606,9 +606,11 @@ void rpmSetTables(int archTable, int osTable)
     }
 }
 
-void rpmSetMachine(const char * arch, const char * os)
-	/*@globals current @*/
-	/*@modifies current @*/
+static void rpmSetMachine(const char * arch, const char * os)
+	/*@globals current, rpmGlobalMacroContext, h_errno,
+		fileSystem, internalState @*/
+	/*@modifies current, rpmGlobalMacroContext,
+		fileSystem, internalState @*/
 {
     if (arch == NULL) {
 /*@i@*/	defaultMachine(&arch, NULL);

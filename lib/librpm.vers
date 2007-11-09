@@ -254,7 +254,6 @@ LIBRPM_0
     rpmReadPackageFile;
     rpmReadPackageManifest;
     rpmRollback;
-    rpmSetMachine;
     rpmSetTables;
     rpmShowProgress;
     rpmShowRC;

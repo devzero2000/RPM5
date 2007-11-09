@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - rpm.org: Remove rpmSetMachine() from API.
     - jbj: hmmm, headerGetExtension should not leak memory on failure. hack it.
     - jbj: more memory leak canoodling.
     - jbj: plug a couple of memory leaks.

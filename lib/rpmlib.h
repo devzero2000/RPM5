@@ -267,20 +267,6 @@ void rpmSetTables(int archTable, int osTable)
 	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /** \ingroup rpmrc
- * Set current arch/os names.
- * NULL as argument is set to the default value (munged uname())
- * pushed through a translation table (if appropriate).
- * @deprecated Use addMacro to set _target_* macros.
- * @todo Eliminate from API.
- *
- * @param arch		arch name (or NULL)
- * @param os		os name (or NULL)
- */
-void rpmSetMachine(/*@null@*/ const char * arch, /*@null@*/ const char * os)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/;
-
-/** \ingroup rpmrc
  * Destroy rpmrc arch/os compatibility tables.
  * @todo Eliminate from API.
  */
