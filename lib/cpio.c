@@ -31,7 +31,7 @@ int _cpio_debug = 0;
  * @param num		max no. of bytes to read
  * @return		converted integer
  */
-static int strntoul(const char *str, /*@out@*/char **endptr, int base, int num)
+static int strntoul(const char *str, /*@out@*/char **endptr, int base, size_t num)
 	/*@modifies *endptr @*/
 	/*@requires maxSet(endptr) >= 0 @*/
 {
