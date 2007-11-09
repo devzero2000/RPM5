@@ -13,13 +13,27 @@ const char *__progname;
 #include <fts.h>
 #include <mire.h>
 
+#if defined(WITH_NEON)	/* XXX this should be done in a rpmioClean() wrapper. */
+#include <ne_utils.h>
+#if !defined(HEADER_ERR_H)
+/* cheats to avoid having to explicitly build against OpenSSL */
+extern void ERR_remove_state(int foo);
+extern void ENGINE_cleanup(void);
+extern void CONF_modules_unload(int foo);
+extern void ERR_free_strings(void);
+extern void EVP_cleanup(void);
+extern void CRYPTO_cleanup_all_ex_data(void);
+extern void CRYPTO_mem_leaks(void * ptr);
+#endif
+#endif
+
 #include "debug.h"
 
 #define POPT_SHOWVERSION	-999
 #define POPT_SHOWRC		-998
 #define POPT_QUERYTAGS		-997
 #define POPT_PREDEFINE		-996
-#ifdef  NOTYET
+#ifdef  DEAD	/* XXX remember the previous definition however. */
 #define POPT_RCFILE		-995
 #endif
 
@@ -507,13 +521,27 @@ struct poptOption rpmcliAllPoptTable[] = {
 poptContext
 rpmcliFini(poptContext optCon)
 {
+    /* XXX this should be done in a rpmioClean() wrapper. */
     /* keeps memory leak checkers quiet */
     rpmFreeMacros(NULL);
 /*@i@*/	rpmFreeMacros(rpmCLIMacroContext);
     rpmFreeRpmrc();
-#ifdef	WITH_LUA
+#if defined(WITH_LUA)	/* XXX this should be done in a rpmioClean() wrapper. */
     (void) rpmluaFree(NULL);
 #endif
+#if defined(WITH_NEON)	/* XXX this should be done in a rpmioClean() wrapper. */
+    if (ne_has_support(NE_FEATURE_SSL)) {
+/* XXX http://www.nabble.com/Memory-Leaks-in-SSL_Library_init()-t3431875.html */
+	ENGINE_cleanup();
+	CRYPTO_cleanup_all_ex_data();
+	ERR_free_strings();
+	ERR_remove_state(0);
+	EVP_cleanup();
+	CRYPTO_mem_leaks(NULL);
+	CONF_modules_unload(1);
+    }
+#endif
+
     rpmFreeFilesystems();
 /*@i@*/	urlFreeCache();
     rpmlogClose();
