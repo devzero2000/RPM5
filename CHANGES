@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - jbj: change int_32 to evrFlags and uint32_t in rpmfc.c and rpmds.c.
     - rpm.org: Remove two unnecessary legacy.h includes.
     - rpm.org: Remove bunch of unnecessary misc.h includes, document others.
     - rpm.org: Remove useless "var" parameter from setup helpers.

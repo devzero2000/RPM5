@@ -284,7 +284,7 @@ static char * rpmfcFileDep(/*@returned@*/ char * buf, int ix,
 	/*@requires maxSet(buf) >= 0 @*/
 	/*@ensures maxRead(buf) == 0 @*/
 {
-    int_32 tagN = rpmdsTagN(ds);
+    uint32_t tagN = rpmdsTagN(ds);
     char deptype = 'X';
 
     buf[0] = '\0';
@@ -323,7 +323,9 @@ static int rpmfcHelper(rpmfc fc, unsigned char deptype, const char * nsdep)
     rpmds * depsp, ds;
     const char * N;
     const char * EVR;
-    int_32 Flags, dsContext, tagN;
+    rpmTag tagN;
+    evrFlags Flags;
+    evrFlags dsContext;
     ARGV_t pav;
     const char * s;
     int pac;
@@ -864,7 +866,7 @@ int rpmfcApply(rpmfc fc)
     rpmds ds;
     const char * N;
     const char * EVR;
-    int_32 Flags;
+    evrFlags Flags;
     unsigned char deptype;
     int nddict;
     int previx;
@@ -1177,7 +1179,7 @@ static void printDeps(Header h)
     rpmds ds = NULL;
     int flags = 0x2;	/* XXX no filtering, !scareMem */
     const char * DNEVR;
-    int_32 Flags;
+    evrFlags Flags;
     int bingo = 0;
 
     for (dm = DepMsgs; dm->msg != NULL; dm++) {

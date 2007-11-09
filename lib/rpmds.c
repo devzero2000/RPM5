@@ -242,7 +242,7 @@ rpmds rpmdsNew(Header h, rpmTag tagN, int flags)
     rpmds ds = NULL;
     const char * Type;
     const char ** N;
-    int_32 Count;
+    uint32_t Count;
     int xx;
 
 assert(scareMem == 0);		/* XXX always allocate memory */
@@ -396,7 +396,7 @@ char * rpmdsNewDNEVR(const char * dspfx, rpmds ds)
     const char * N = rpmdsNewN(ds);
     const char * NS = ds->ns.NS;
     const char * A = ds->ns.A;
-    int_32 dsFlags = 0;
+    evrFlags dsFlags = 0;
     char * tbuf, * t;
     size_t nb = 0;
 
@@ -470,7 +470,7 @@ char * rpmdsNewDNEVR(const char * dspfx, rpmds ds)
     return tbuf;
 }
 
-rpmds rpmdsThis(Header h, rpmTag tagN, uint32_t Flags)
+rpmds rpmdsThis(Header h, rpmTag tagN, evrFlags Flags)
 {
     HGE_t hge = (HGE_t)headerGetExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
@@ -559,7 +559,7 @@ exit:
     return rpmdsLink(ds, (ds ? ds->Type : NULL));
 }
 
-rpmds rpmdsSingle(rpmTag tagN, const char * N, const char * EVR, uint32_t Flags)
+rpmds rpmdsSingle(rpmTag tagN, const char * N, const char * EVR, evrFlags Flags)
 {
     rpmds ds = NULL;
     const char * Type;
@@ -665,9 +665,9 @@ const char * rpmdsEVR(const rpmds ds)
     return EVR;
 }
 
-uint32_t rpmdsFlags(const rpmds ds)
+evrFlags rpmdsFlags(const rpmds ds)
 {
-    int_32 Flags = 0;
+    evrFlags Flags = 0;
 
     if (ds != NULL && ds->i >= 0 && ds->i < ds->Count) {
 	if (ds->Flags != NULL)
@@ -795,7 +795,7 @@ uint_32 rpmdsSetColor(const rpmds ds, uint_32 color)
 
 uint32_t rpmdsRefs(const rpmds ds)
 {
-    int_32 Refs = 0;
+    uint32_t Refs = 0;
 
     if (ds != NULL && ds->i >= 0 && ds->i < ds->Count) {
 	if (ds->Refs != NULL)
@@ -806,7 +806,7 @@ uint32_t rpmdsRefs(const rpmds ds)
 
 uint32_t rpmdsSetRefs(const rpmds ds, uint32_t refs)
 {
-    int_32 orefs = 0;
+    uint32_t orefs = 0;
 
     if (ds == NULL)
 	return orefs;
@@ -990,7 +990,7 @@ int rpmdsMerge(rpmds * dsp, rpmds ods)
     rpmds ds;
     const char ** N;
     const char ** EVR;
-    uint32_t * Flags;
+    evrFlags * Flags;
     int j;
 int save;
 
@@ -1190,7 +1190,7 @@ static int rpmdsCpuinfoCtagFlags(const char * name)
  * @param Flags		comparison/context flags
  */
 static void rpmdsNSAdd(/*@out@*/ rpmds *dsp, const char * NS,
-		const char *N, const char *EVR, int_32 Flags)
+		const char *N, const char *EVR, evrFlags Flags)
 	/*@modifies *dsp @*/
 {
     char *t;
@@ -1336,7 +1336,7 @@ struct rpmlibProvides_s {
     const char * featureName;
 /*@observer@*/ /*@relnull@*/
     const char * featureEVR;
-    int featureFlags;
+    evrFlags featureFlags;
 /*@observer@*/ /*@relnull@*/
     const char * featureDescription;
 };
@@ -1429,7 +1429,7 @@ static int rpmdsSysinfoFile(rpmPRCO PRCO, const char * fn, int tagN)
 {
     char buf[BUFSIZ];
     const char *N, *EVR;
-    int_32 Flags;
+    evrFlags Flags;
     rpmds ds;
     char * f, * fe;
     char * g, * ge;
@@ -2528,7 +2528,7 @@ rpmdsGetconf(rpmds * dsp, const char *path)
     const char *N;
     char * EVR;
     char * t;
-    int_32 Flags;
+    evrFlags Flags;
 
 /*@-modobserver@*/
     if (_getconf_path == NULL) {
@@ -3040,7 +3040,7 @@ int rpmdsLdconfig(rpmPRCO PRCO, const char * fn)
     char buf[BUFSIZ];
     const char *DSOfn;
     const char *N, *EVR;
-    int_32 Flags = 0;
+    evrFlags Flags = 0;
     rpmds ds;
     char * f, * fe;
     char * g, * ge;
@@ -3170,7 +3170,7 @@ int rpmdsRldpath(rpmPRCO PRCO, const char * rldp)
 {
     char buf[BUFSIZ];
     const char *N, *EVR;
-    int_32 Flags = 0;
+    evrFlags Flags = 0;
     rpmds ds;
     const char * f;
     const char * g;
@@ -3385,7 +3385,7 @@ int rpmdsPipe(rpmds * dsp, rpmTag tagN, const char * cmd)
 {
     char buf[BUFSIZ];
     const char *N, *EVR;
-    uint32_t Flags = 0;
+    evrFlags Flags = 0;
     rpmds ds;
     char * f, * fe;
     char * g, * ge;
@@ -3542,8 +3542,8 @@ int rpmdsCompare(const rpmds A, const rpmds B)
     const char *bDepend = (B->DNEVR != NULL ? xstrdup(B->DNEVR+2) : "");
     EVR_t a = memset(alloca(sizeof(*a)), 0, sizeof(*a));
     EVR_t b = memset(alloca(sizeof(*a)), 0, sizeof(*a));
-    int_32 aFlags = A->ns.Flags;
-    int_32 bFlags = B->ns.Flags;
+    evrFlags aFlags = A->ns.Flags;
+    evrFlags bFlags = B->ns.Flags;
     int (*EVRcmp) (const char *a, const char *b);
     int result = 1;
     int sense;
@@ -3658,7 +3658,7 @@ int rpmdsAnyMatchesDep (const Header h, const rpmds req, int nopromote)
 {
     int scareMem = 0;
     rpmds provides = NULL;
-    int_32 reqFlags = req->ns.Flags;
+    evrFlags reqFlags = req->ns.Flags;
     int result = 1;
 
 assert((rpmdsFlags(req) & RPMSENSE_SENSEMASK) == req->ns.Flags);
@@ -3715,8 +3715,8 @@ int rpmdsNVRMatchesDep(const Header h, const rpmds req, int nopromote)
     int gotE = 0;
     const char * pkgEVR;
     char * t;
-    uint32_t reqFlags = req->ns.Flags;
-    uint32_t pkgFlags = RPMSENSE_EQUAL;
+    evrFlags reqFlags = req->ns.Flags;
+    evrFlags pkgFlags = RPMSENSE_EQUAL;
     int result = 1;
     rpmds pkg;
     size_t nb;

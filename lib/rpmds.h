@@ -44,7 +44,7 @@ struct rpmds_s {
 /*@only@*/ /*@relnull@*/
     const char ** EVR;		/*!< Epoch-Version-Release. */
 /*@only@*/ /*@relnull@*/
-    uint32_t * Flags;		/*!< Bit(s) identifying context/comparison. */
+    evrFlags * Flags;		/*!< Bit(s) identifying context/comparison. */
 /*@only@*/ /*@null@*/
     uint32_t * Color;		/*!< Bit(s) calculated from file color(s). */
 /*@only@*/ /*@null@*/
@@ -198,7 +198,7 @@ char * rpmdsNewDNEVR(const char * dspfx, rpmds ds)
  * @return		new dependency set
  */
 /*@null@*/
-rpmds rpmdsThis(Header h, rpmTag tagN, uint32_t Flags)
+rpmds rpmdsThis(Header h, rpmTag tagN, evrFlags Flags)
 	/*@*/;
 
 /**
@@ -210,7 +210,7 @@ rpmds rpmdsThis(Header h, rpmTag tagN, uint32_t Flags)
  * @return		new dependency set
  */
 /*@null@*/
-rpmds rpmdsSingle(rpmTag tagN, const char * N, const char * EVR, uint32_t Flags)
+rpmds rpmdsSingle(rpmTag tagN, const char * N, const char * EVR, evrFlags Flags)
 	/*@*/;
 
 /**
@@ -271,7 +271,7 @@ extern const char * rpmdsEVR(/*@null@*/ const rpmds ds)
  * @param ds		dependency set
  * @return		current dependency flags, 0 on invalid
  */
-uint32_t rpmdsFlags(/*@null@*/ const rpmds ds)
+evrFlags rpmdsFlags(/*@null@*/ const rpmds ds)
 	/*@*/;
 
 /**
