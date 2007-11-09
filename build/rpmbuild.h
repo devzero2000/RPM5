@@ -38,8 +38,6 @@ typedef enum rpmBuildFlags_e {
 } rpmBuildFlags;
 /*@=typeuse@*/
 
-#include <ctype.h>
-
 #define SKIPSPACE(s) { while (*(s) && xisspace(*(s))) (s)++; }
 #define SKIPNONSPACE(s) { while (*(s) && !xisspace(*(s))) (s)++; }
 
