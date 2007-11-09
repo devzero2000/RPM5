@@ -5,7 +5,8 @@
 
 #include "system.h"
 
-#include <rpmio_internal.h>
+#include <rpmio.h>
+#include <rpmurl.h>	/* XXX urlGetPath */
 #include <rpmlib.h>
 
 #include "cpio.h"	/* XXX CPIO_FOO */
