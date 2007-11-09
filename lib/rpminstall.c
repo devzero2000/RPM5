@@ -308,6 +308,8 @@ int rpmcliInstall(rpmts ts, QVA_t ia, const char ** argv)
 {
     HGE_t hge = (HGE_t)headerGetExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    ARGV_t avfn = NULL;
+    int acfn = 0;
     int numFailed = 0;
     int numRPMS = 0;
     rpmRelocation relocations = NULL;
@@ -462,8 +464,8 @@ assert(xx != 0 && he->p.str != NULL);
 	}
 
 	/* === Add binary package to transaction set. */
-	/* XXX xstrdup has memory leak. */
-	rc = rpmtsAddInstallElement(ts, h, (fnpyKey)xstrdup(fn),
+	xx = argvAdd(&avfn, fn);
+	rc = rpmtsAddInstallElement(ts, h, (fnpyKey)avfn[acfn++],
 			(ia->installInterfaceFlags & INSTALL_UPGRADE) != 0,
 			ia->relocations);
 
@@ -501,6 +503,7 @@ assert(xx != 0 && he->p.str != NULL);
     if (numFailed) goto exit;
 
 exit:
+    avfn = argvFree(avfn);
 
 #ifdef	NOTYET	/* XXX grrr, segfault in selabel_close */
     if (!(ia->transFlags & RPMTRANS_FLAG_NOCONTEXTS))

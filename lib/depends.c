@@ -544,6 +544,26 @@ int rpmtsAddEraseElement(rpmts ts, Header h, int dboffset)
     return rc;
 }
 
+/*@only@*/ /*@null@*/ /*@unchecked@*/
+static char *sysinfo_path = NULL;
+
+/*@refcounted@*/ /*@null@*/ /*@unchecked@*/
+static rpmds rpmlibP = NULL;
+/*@refcounted@*/ /*@null@*/ /*@unchecked@*/
+static rpmds cpuinfoP = NULL;
+/*@refcounted@*/ /*@null@*/ /*@unchecked@*/
+static rpmds getconfP = NULL;
+/*@refcounted@*/ /*@null@*/ /*@unchecked@*/
+static rpmds unameP = NULL;
+
+void rpmnsClean(void)
+{
+    rpmlibP = rpmdsFree(rpmlibP);
+    cpuinfoP = rpmdsFree(cpuinfoP);
+    getconfP = rpmdsFree(getconfP);
+    unameP = rpmdsFree(unameP);
+}
+
 /**
  * Check dep for an unsatisfied dependency.
  * @param ts		transaction set
@@ -570,8 +590,6 @@ static int unsatisfiedDepend(rpmts ts, rpmds dep, int adding)
     int rc;
     int xx;
     int retries = 10;
-    /*@only@*/ /*@null@*/
-    static char *sysinfo_path = NULL;;
 
     if ((Name = rpmdsN(dep)) == NULL)
 	return 0;	/* XXX can't happen */
@@ -901,7 +919,6 @@ retry:
      * Check those dependencies now.
      */
     if (NSType == RPMNS_TYPE_RPMLIB) {
-	static rpmds rpmlibP = NULL;
 	static int oneshot = -1;
 
 	if (oneshot)
@@ -917,7 +934,6 @@ retry:
     }
 
     if (NSType == RPMNS_TYPE_CPUINFO) {
-	static rpmds cpuinfoP = NULL;
 	static int oneshot = -1;
 
 	if (oneshot)
@@ -933,7 +949,6 @@ retry:
     }
 
     if (NSType == RPMNS_TYPE_GETCONF) {
-	static rpmds getconfP = NULL;
 	static int oneshot = -1;
 
 	if (oneshot)
@@ -949,7 +964,6 @@ retry:
     }
 
     if (NSType == RPMNS_TYPE_UNAME) {
-	static rpmds unameP = NULL;
 	static int oneshot = -1;
 
 	if (oneshot)

@@ -9,6 +9,7 @@ const char *__progname;
 #include <rpmio.h>
 #include <rpmcli.h>
 #include <fs.h>			/* XXX rpmFreeFilesystems() */
+#include <rpmns.h>		/* XXX rpmnsClean() */
 #include <fts.h>
 #include <mire.h>
 
@@ -512,6 +513,8 @@ rpmcliFini(poptContext optCon)
 /*@i@*/	rpmFreeMacros(rpmCLIMacroContext);
 
     rpmioClean();
+
+    rpmnsClean();
 
     rpmFreeRpmrc();
 

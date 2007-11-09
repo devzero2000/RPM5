@@ -106,6 +106,13 @@ int rpmnsParse(const char * str, rpmns ns)
 	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
 	/*@modifies ns, rpmGlobalMacroContext, internalState @*/;
 
+/** \ingroup rpmns
+ * Clean global name space dependency sets.
+ */
+void rpmnsClean(void)
+	/*@globals internalState @*/
+	/*@modifies internalState @*/;
+
 #ifdef __cplusplus
 }
 #endif
