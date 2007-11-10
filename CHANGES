@@ -1,4 +1,7 @@
 4.5 -> 5.0:
+    - jbj: hotwire -lxar linkage for the moment.
+    - jbj: add proof-of-concept rpmwf "wrapper format" to rpmdb.
+    - jbj: move rpmReadHeader from lib/package.c to rpmdb/pkgio.c.
     - jbj: remove HGE_t casts everywhere.
     - jbj: hmmm, rpm-perl seems to have issues on BIGENDIAN non-int32 retrieves.
     - jbj: use HE_t instead of individual args. dunno HGE_t et al desired ...

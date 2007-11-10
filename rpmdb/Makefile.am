@@ -41,7 +41,7 @@ usrlib_LTLIBRARIES = librpmdb.la
 librpmdb_la_SOURCES = \
 	dbconfig.c fprint.c \
 	hdrfmt.c hdrNVR.c header.c header_internal.c legacy.c merge.c \
-	pkgio.c poptDB.c rpmdb.c \
+	pkgio.c poptDB.c rpmdb.c rpmwf.c \
 	signature.c tagname.c tagtbl.c
 librpmdb_la_LDFLAGS = -release $(LT_CURRENT).$(LT_REVISION)
 if HAVE_LD_VERSION_SCRIPT
@@ -55,7 +55,7 @@ librpmdb_la_LIBADD += \
 endif
 if ENABLE_BUILD_MAXEXTLIBDEP
 librpmdb_la_LDFLAGS += $(LDFLAGS)
-librpmdb_la_LIBADD  += $(LIBS)
+librpmdb_la_LIBADD  += $(LIBS) -lxar
 endif
 librpmdb_la_DEPENDENCIES = $(DBLIBOBJS)
 librpmdb.la: $(librpmdb_la_OBJECTS) $(librpmdb_la_DEPENDENCIES) 

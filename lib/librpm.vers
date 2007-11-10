@@ -250,7 +250,6 @@ LIBRPM_0
     rpmQVKArgs;
     rpmQVSourcePoptTable;
     rpmReadConfigFiles;
-    rpmReadHeader;
     rpmReadPackageFile;
     rpmReadPackageManifest;
     rpmRollback;
