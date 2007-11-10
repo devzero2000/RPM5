@@ -215,49 +215,63 @@ addtag(h, sv_tag, sv_tagtype, ...)
     SV * sv_tag
     SV * sv_tagtype
     PREINIT:
+    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     char * value;
-    int ivalue;
+    uint32_t ivalue;
     int i;
-    rpmTag tag = -1;
-    rpmTagType tagtype = RPM_NULL_TYPE;
     STRLEN len;
     CODE:
+    he->tag = -1;
     if (SvIOK(sv_tag)) {
-        tag = SvIV(sv_tag);
+        he->tag = SvIV(sv_tag);
     } else if (SvPOK(sv_tag)) {
-        tag = tagValue(SvPV_nolen(sv_tag));
+        he->tag = tagValue(SvPV_nolen(sv_tag));
     }
-    tagtype = sv2constant(sv_tagtype, "rpmtagtype");
-    if (tag > 0)
+    he->t = sv2constant(sv_tagtype, "rpmtagtype");
+    if (he->tag > 0)
         RETVAL = 1;
     else
         RETVAL = 0;
-    /* if (tag == RPMTAG_OLDFILENAMES)
+    /* if (he->tag == RPMTAG_OLDFILENAMES)
         expandFilelist(h); */
     for (i = 3; (i < items) && RETVAL; i++) {
-        switch (tagtype) {
+        switch (he->t) {
             case RPM_CHAR_TYPE:
             case RPM_UINT8_TYPE:
             case RPM_UINT16_TYPE:
             case RPM_UINT32_TYPE:
                 ivalue = SvUV(ST(i));
-                RETVAL = headerAddOrAppendEntry(h, tag, tagtype, &ivalue, 1);
+		he->p.ui32p = &ivalue;
+		he->c = 1;
+		he->append = 1;
+                RETVAL = headerAddOrAppendEntry(h, he->tag, he->t, he->p.ptr, he->c);
+		he->append = 0;
                 break;
             case RPM_BIN_TYPE:
                 value = (char *)SvPV(ST(i), len);
-                RETVAL = headerAddEntry(h, tag, tagtype, value, len);
+		he->p.ptr = &value;
+		he->c = len;
+                RETVAL = headerAddEntry(h, he->tag, he->t, he->p.ptr, he->c);
                 break;
             case RPM_STRING_ARRAY_TYPE:
                 value = SvPV_nolen(ST(i));
-                RETVAL = headerAddOrAppendEntry(h, tag, tagtype, &value, 1);
+		he->p.ptr = &value;
+		he->c = 1;
+		he->append = 1;
+                RETVAL = headerAddOrAppendEntry(h, he->tag, he->t, he->p.ptr, he->c);
+		he->append = 0;
                 break;
             default:
                 value = SvPV_nolen(ST(i));
-                RETVAL = headerAddOrAppendEntry(h, tag, tagtype, value, 1); 
+		he->p.ptr = value;
+		he->c = 1;
+		he->append = 1;
+                RETVAL = headerAddOrAppendEntry(h, he->tag, he->t, he->p.ptr, he->c); 
+		he->append = 0;
                 break;
         }
     }
-    /* if (tag == RPMTAG_OLDFILENAMES) {
+    /* if (he->tag == RPMTAG_OLDFILENAMES) {
         compressFilelist(h); 
     } */
     OUTPUT:
@@ -301,34 +315,29 @@ tag(h, sv_tag)
     Header h
     SV * sv_tag
     PREINIT:
-    void *ret = NULL;
-    int type;
-    int n;
-    rpmTag tag = -1;
+    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     PPCODE:
     if (SvIOK(sv_tag)) {
-        tag = SvIV(sv_tag);
+        he->tag = SvIV(sv_tag);
     } else if (SvPOK(sv_tag)) {
-        tag = tagValue(SvPV_nolen(sv_tag));
+        he->tag = tagValue(SvPV_nolen(sv_tag));
     }
-    if (tag > 0)
-        if (headerGetEntry(h, tag, &type, &ret, &n)) {
-            switch(type) {
+    if (he->tag > 0)
+        if (headerGetEntry(h, he->tag, &he->t, &he->p, &he->c)) {
+            switch(he->t) {
                 case RPM_STRING_ARRAY_TYPE:
                     {
                         int i;
-                        char **s;
 
-                        EXTEND(SP, n);
-                        s = (char **)ret;
+                        EXTEND(SP, he->c);
         
-                        for (i = 0; i < n; i++) {
-                            PUSHs(sv_2mortal(newSVpv(s[i], 0)));
+                        for (i = 0; i < he->c; i++) {
+                            PUSHs(sv_2mortal(newSVpv(he->p.argv[i], 0)));
                         }
                     }
                 break;
                 case RPM_STRING_TYPE:
-                    PUSHs(sv_2mortal(newSVpv((char *)ret, 0)));
+                    PUSHs(sv_2mortal(newSVpv(he->p.str, 0)));
                 break;
                 case RPM_CHAR_TYPE:
                 case RPM_UINT8_TYPE:
@@ -336,42 +345,39 @@ tag(h, sv_tag)
                 case RPM_UINT32_TYPE:
                     {
                         int i;
-                        int *r;
 
-                        EXTEND(SP, n);
-                        r = (int *)ret;
+                        EXTEND(SP, he->c);
 
-                        for (i = 0; i < n; i++) {
-                            PUSHs(sv_2mortal(newSViv(r[i])));
+                        for (i = 0; i < he->c; i++) {
+                            PUSHs(sv_2mortal(newSViv(he->p.ui32p[i])));
                         }
                     }
                 break;
                 case RPM_BIN_TYPE:
-                    PUSHs(sv_2mortal(newSVpv((char *)ret, n)));
+                    PUSHs(sv_2mortal(newSVpv(he->p.ptr, he->c)));
                 break;
                 default:
-                    croak("unknown rpm tag type %d", type);
+                    croak("unknown rpm tag type %d", he->t);
             }
         }
-    headerFreeTag(h, ret, type);
+    he->p.ptr = headerFreeData(he->p.ptr, he->t);
 
 int
 tagtype(h, sv_tag)
     Header h
     SV * sv_tag
     PREINIT:
-    int type;
-    rpmTag tag = -1;
+    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     CODE:
     if (SvIOK(sv_tag)) {
-        tag = SvIV(sv_tag);
+        he->tag = SvIV(sv_tag);
     } else if (SvPOK(sv_tag)) {
-        tag = tagValue(SvPV_nolen(sv_tag));
+        he->tag = tagValue(SvPV_nolen(sv_tag));
     }
     RETVAL = RPM_NULL_TYPE;
-    if (tag > 0)
-        if (headerGetEntry(h, tag, &type, NULL, NULL))
-            RETVAL = type;
+    if (he->tag > 0)
+        if (headerGetEntry(h, he->tag, &he->t, NULL, &he->c))
+            RETVAL = he->t;
     OUTPUT:
     RETVAL
     

@@ -1,4 +1,6 @@
 4.5 -> 5.0:
+    - jbj: hmmm, rpm-perl seems to have issues on BIGENDIAN non-int32 retrieves.
+    - jbj: use HE_t instead of individual args. dunno HGE_t et al desired ...
     - jbj: eek, rpm-perl not being built here.
     - rpm.org: Change strntoul to using size_t for sizes.
     - rpm.org: Remove refs to "file/src".
