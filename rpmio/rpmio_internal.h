@@ -185,6 +185,8 @@ struct _FD_s {
     int		oflags;
     mode_t	omode;
 
+    void *	wf;		/* wrapper format descriptor */
+
     FDSTAT_t	stats;		/* I/O statistics */
 
     int		ndigests;
@@ -310,6 +312,30 @@ mode_t fdGetOMode(FD_t fd)
 {
     FDSANE(fd);
     return fd->omode;
+}
+
+/** \ingroup rpmio
+ */
+/*@unused@*/ static inline
+void fdSetWF(FD_t fd, void * wf)
+	/*@modifies fd @*/
+{
+    FDSANE(fd);
+    if (fd->wf != NULL) {
+	free((void *)fd->wf);
+	fd->wf = NULL;
+    }
+    fd->wf = wf;
+}
+
+/** \ingroup rpmio
+ */
+/*@unused@*/ static inline
+/*@null@*/ /*@observer@*/ void * fdGetWF(FD_t fd)
+	/*@*/
+{
+    FDSANE(fd);
+    return fd->wf;
 }
 
 /** \ingroup rpmio

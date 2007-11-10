@@ -39,6 +39,9 @@ extern int _newmagic;
 extern int _tagcache;
 
 /*@unchecked@*/
+extern int _use_xar;
+
+/*@unchecked@*/
 static int _debug = 0;
 
 #if defined(POPT_ARGFLAG_RANDOM)
@@ -499,6 +502,8 @@ struct poptOption rpmcliAllPoptTable[] = {
 	N_("disable tag data caching"), NULL},
  { "tagcache", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_tagcache, 1,
 	N_("enable tag data caching"), NULL},
+ { "xar", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_use_xar, 1,
+	N_("read xar package"), NULL},
 
    POPT_TABLEEND
 };

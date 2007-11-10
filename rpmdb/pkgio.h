@@ -13,6 +13,9 @@ extern "C" {
 /*@unchecked@*/
 extern int _nolead;
 
+/*@unchecked@*/
+extern int _use_xar;
+
 /** 
  * Check header consistency, performing headerGetEntry() the hard way.
  *  

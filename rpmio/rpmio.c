@@ -336,6 +336,7 @@ DBGREFS(fd, (stderr, "--> fd  %p -- %d %s at %s:%u %s\n", fd, fd->nrefs, msg, fi
 	    /*@-refcounttrans -retalias@*/ return fd; /*@=refcounttrans =retalias@*/
 	fd->opath = _free(fd->opath);
 	fd->stats = _free(fd->stats);
+	fd->wf = _free(fd->wf);
 	for (i = fd->ndigests - 1; i >= 0; i--) {
 	    FDDIGEST_t fddig = fd->digests + i;
 	    if (fddig->hashctx == NULL)
@@ -379,6 +380,7 @@ FD_t XfdNew(const char * msg, const char * file, unsigned line)
     fd->syserrno = 0;
     fd->errcookie = NULL;
     fd->stats = xcalloc(1, sizeof(*fd->stats));
+    fd->wf = NULL;
 
     fd->ndigests = 0;
     memset(fd->digests, 0, sizeof(fd->digests));

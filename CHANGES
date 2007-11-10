@@ -1,4 +1,8 @@
 4.5 -> 5.0:
+    - jbj: functional queries of *.xar packages, on to payload.
+    - jbj: lash up rpmwf implicit iteration for Lead/Signature/Header reads.
+    - jbj: add rpmwf getter/setter to FD_t for now.
+    - jbj: add --xar to read *.xar for now, magic later.
     - jbj: txar.c: use rpmwfFoo from -lrpmdb.
     - jbj: hotwire -lxar linkage for the moment.
     - jbj: add proof-of-concept rpmwf "wrapper format" to rpmdb.
