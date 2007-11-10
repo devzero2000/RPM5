@@ -174,7 +174,7 @@ static int addFileToTag(Spec spec, const char * file, Header h, rpmTag tag)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies h, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
-    HGE_t hge = (HGE_t)headerGetExtension;
+    HGE_t hge = headerGetExtension;
     HAE_t hae = headerAddExtension;
     HRE_t hre = headerRemoveExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
@@ -468,7 +468,7 @@ static int rpmLeadVersion(void)
 
 void providePackageNVR(Header h)
 {
-    HGE_t hge = (HGE_t)headerGetExtension;
+    HGE_t hge = headerGetExtension;
     HAE_t hae = headerAddExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     const char *N, *V, *R;
@@ -594,7 +594,7 @@ exit:
 int writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
 		CSA_t csa, char *passPhrase, const char **cookie)
 {
-    HGE_t hge = (HGE_t)headerGetExtension;
+    HGE_t hge = headerGetExtension;
     HAE_t hae = headerAddExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     FD_t fd = NULL;
@@ -939,7 +939,7 @@ static uint32_t copyTags[] = {
 /*@-boundswrite@*/
 int packageBinaries(Spec spec)
 {
-    HGE_t hge = (HGE_t)headerGetExtension;
+    HGE_t hge = headerGetExtension;
     HAE_t hae = headerAddExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     struct cpioSourceArchive_s csabuf;

@@ -523,7 +523,7 @@ static int makeHDRSignature(Header sigh, const char * file, uint32_t sigTag,
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies sigh, sigTag, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
-    HGE_t hge = (HGE_t)headerGetExtension;
+    HGE_t hge = headerGetExtension;
     HAE_t hae = headerAddExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     Header h = NULL;

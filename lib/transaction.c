@@ -89,7 +89,7 @@ static int handleInstInstalledFiles(const rpmts ts,
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, p, fi, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
-    HGE_t hge = (HGE_t)headerGetExtension;
+    HGE_t hge = headerGetExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     const char * altNVRA = NULL;
     uint_32 tscolor = rpmtsColor(ts);
@@ -235,7 +235,7 @@ static int handleRmvdInstalledFiles(const rpmts ts, rpmfi fi,
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, fi, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
-    HGE_t hge = (HGE_t)headerGetExtension;
+    HGE_t hge = headerGetExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     Header h;
     const unsigned char * otherStates;
@@ -599,7 +599,7 @@ static int ensureOlder(rpmts ts,
 		const rpmte p, const Header h)
 	/*@modifies ts @*/
 {
-    HGE_t hge = (HGE_t)headerGetExtension;
+    HGE_t hge = headerGetExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     int_32 reqFlags = (RPMSENSE_LESS | RPMSENSE_EQUAL);
     const char * reqEVR;

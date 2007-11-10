@@ -54,7 +54,7 @@ static int fssizesTag(Header h, HE_t he)
 	/*@modifies he, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 {
-    HGE_t hge = (HGE_t)headerGetExtension;
+    HGE_t hge = headerGetExtension;
     rpmTagData fnames = { .ptr = NULL };
     rpmTagData fsizes = { .ptr = NULL };
     rpmTagData p;

@@ -93,7 +93,7 @@ static void addTE(rpmts ts, rpmte p, Header h,
 		rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     int scareMem = 0;
-    HGE_t hge = (HGE_t)headerGetExtension;
+    HGE_t hge = headerGetExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     int xx;
 
@@ -212,7 +212,7 @@ rpmte rpmteNew(const rpmts ts, Header h,
 		int dboffset,
 		alKey pkgKey)
 {
-    HGE_t hge = (HGE_t)headerGetExtension;
+    HGE_t hge = headerGetExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     rpmte p = xcalloc(1, sizeof(*p));
     int xx;
@@ -596,7 +596,7 @@ static int __mydebug = 0;
 
 int rpmteChain(rpmte p, rpmte q, Header oh, const char * msg)
 {
-    HGE_t hge = (HGE_t)headerGetExtension;
+    HGE_t hge = headerGetExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     const char * blinkNEVRA = NULL;
     const char * blinkPkgid = NULL;

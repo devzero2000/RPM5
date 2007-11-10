@@ -1323,7 +1323,7 @@ static int rpmfcGenerateScriptletDeps(const Spec spec, Package pkg)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
         /*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/
 {
-    HGE_t hge = (HGE_t)headerGetExtension;
+    HGE_t hge = headerGetExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     StringBuf sb_stdin = newStringBuf();
     StringBuf sb_stdout = NULL;

@@ -248,7 +248,7 @@ static
 void fpLookupHeader(fingerPrintCache cache, Header h, fingerPrint * fpList)
 	/*@modifies h, cache, *fpList @*/;
 {
-    HGE_t hge = (HGE_t)headerGetExtension;
+    HGE_t hge = headerGetExtension;
     rpmTagData he_p = { .ptr = NULL };
     HE_s he_s = { .tag = 0, .t = 0, .p = &he_p, .c = 0, .freeData = 0 };
     HE_t he = &he_s;

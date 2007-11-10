@@ -183,7 +183,7 @@ exit:
 /*@-mods@*/
 rpmRC rpmReadPackageFile(rpmts ts, void * _fd, const char * fn, Header * hdrp)
 {
-    HGE_t hge = (HGE_t)headerGetExtension;
+    HGE_t hge = headerGetExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     HE_t she = memset(alloca(sizeof(*she)), 0, sizeof(*she));
     pgpDig dig = rpmtsDig(ts);

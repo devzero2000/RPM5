@@ -1274,7 +1274,7 @@ static inline unsigned char nibble(char c)
 rpmfi rpmfiNew(const rpmts ts, Header h, rpmTag tagN, int flags)
 {
     int scareMem = (flags & 0x1);
-    HGE_t hge = (HGE_t)headerGetExtension;
+    HGE_t hge = headerGetExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     rpmte p;
     rpmfi fi = NULL;

@@ -67,7 +67,7 @@ static inline
 /*@-boundswrite@*/
 int lookupPackage(Spec spec, const char *name, int flag, /*@out@*/Package *pkg)
 {
-    HGE_t hge = (HGE_t)headerGetExtension;
+    HGE_t hge = headerGetExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     const char *fullName;
     Package p;
@@ -635,7 +635,7 @@ printNewSpecfile(Spec spec)
 	/*@globals fileSystem @*/
 	/*@modifies spec->sl->sl_lines[], fileSystem @*/
 {
-    HGE_t hge = (HGE_t)headerGetExtension;
+    HGE_t hge = headerGetExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     Header h;
     speclines sl = spec->sl;

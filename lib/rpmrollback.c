@@ -90,7 +90,7 @@ IDTX IDTXsort(IDTX idtx)
 
 IDTX IDTXload(rpmts ts, rpmTag tag, uint32_t rbtid)
 {
-    HGE_t hge = (HGE_t)headerGetExtension;
+    HGE_t hge = headerGetExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     IDTX idtx = NULL;
     rpmdbMatchIterator mi;
@@ -140,7 +140,7 @@ IDTX IDTXload(rpmts ts, rpmTag tag, uint32_t rbtid)
 
 IDTX IDTXglob(rpmts ts, const char * globstr, rpmTag tag, uint32_t rbtid)
 {
-    HGE_t hge = (HGE_t)headerGetExtension;
+    HGE_t hge = headerGetExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     IDTX idtx = NULL;
     Header h;
@@ -286,7 +286,7 @@ static int findErases(rpmts ts, /*@null@*/ rpmte p, unsigned thistid,
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, p, ip, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
-    HGE_t hge = (HGE_t)headerGetExtension;
+    HGE_t hge = headerGetExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     int rc = 0;
     int xx;

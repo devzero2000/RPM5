@@ -35,7 +35,7 @@ int headerMacrosLoad(Header h)
 	/*@globals rpmGlobalMacroContext @*/
 	/*@modifies rpmGlobalMacroContext @*/
 {
-    HGE_t hge = (HGE_t)headerGetExtension;
+    HGE_t hge = headerGetExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     struct tagMacro * tagm;
     char numbuf[64];
@@ -107,7 +107,7 @@ int headerMacrosUnload(Header h)
 	/*@globals rpmGlobalMacroContext @*/
 	/*@modifies rpmGlobalMacroContext @*/
 {
-    HGE_t hge = (HGE_t)headerGetExtension;
+    HGE_t hge = headerGetExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     struct tagMacro * tagm;
     int xx;
@@ -202,7 +202,7 @@ int headerNEVRA(Header h, const char **np,
 
 uint_32 hGetColor(Header h)
 {
-    HGE_t hge = (HGE_t)headerGetExtension;
+    HGE_t hge = headerGetExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     uint_32 hcolor = 0;
     int xx;

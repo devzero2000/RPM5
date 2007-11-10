@@ -150,7 +150,7 @@ static int removePackage(rpmts ts, Header h, int dboffset,
 static int rpmHeadersIdentical(Header first, Header second)
 	/*@*/
 {
-    HGE_t hge = (HGE_t)headerGetExtension;
+    HGE_t hge = headerGetExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     const char * one, * two;
     int rc = 0;
@@ -190,7 +190,7 @@ static rpmTag _obsolete_tag;
 int rpmtsAddInstallElement(rpmts ts, Header h,
 			fnpyKey key, int upgrade, rpmRelocation relocs)
 {
-    HGE_t hge = (HGE_t)headerGetExtension;
+    HGE_t hge = headerGetExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     rpmdepFlags depFlags = rpmtsDFlags(ts);
     uint_32 tscolor = rpmtsColor(ts);
@@ -1324,7 +1324,7 @@ static int checkPackageSet(rpmts ts, const char * depName,
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, mi, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
-    HGE_t hge = (HGE_t)headerGetExtension;
+    HGE_t hge = headerGetExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     rpmdepFlags depFlags = rpmtsDFlags(ts);
     uint_32 tscolor = rpmtsColor(ts);

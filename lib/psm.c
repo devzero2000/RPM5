@@ -56,7 +56,7 @@ extern int _nosigh;
 
 int rpmVersionCompare(Header first, Header second)
 {
-    HGE_t hge = (HGE_t)headerGetExtension;
+    HGE_t hge = headerGetExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     const char * one, * two;
     uint32_t Eone, Etwo;
@@ -185,7 +185,7 @@ static rpmRC markReplacedFiles(const rpmpsm psm)
 rpmRC rpmInstallSourcePackage(rpmts ts, void * _fd,
 		const char ** specFilePtr, const char ** cookie)
 {
-    HGE_t hge = (HGE_t)headerGetExtension;
+    HGE_t hge = headerGetExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     FD_t fd = _fd;
     int scareMem = 0;
@@ -492,7 +492,7 @@ static rpmRC runLuaScript(rpmpsm psm, Header h, const char *sln,
 	/*@globals h_errno, fileSystem, internalState @*/
 	/*@modifies psm, fileSystem, internalState @*/
 {
-    HGE_t hge = (HGE_t)headerGetExtension;
+    HGE_t hge = headerGetExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     const rpmts ts = psm->ts;
     int rootFdno = -1;
@@ -625,7 +625,7 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
 	/*@modifies psm, ldconfig_done, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 {
-    HGE_t hge = (HGE_t)headerGetExtension;
+    HGE_t hge = headerGetExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     const rpmts ts = psm->ts;
     const char ** argv = NULL;
@@ -952,7 +952,7 @@ static rpmRC runInstScript(rpmpsm psm)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies psm, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
-    HGE_t hge = (HGE_t)headerGetExtension;
+    HGE_t hge = headerGetExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     rpmfi fi = psm->fi;
     const char * argv0 = NULL;
@@ -1014,7 +1014,7 @@ static rpmRC handleOneTrigger(const rpmpsm psm,
 		rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     int scareMem = 0;
-    HGE_t hge = (HGE_t)headerGetExtension;
+    HGE_t hge = headerGetExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     const rpmts ts = psm->ts;
     rpmds trigger = NULL;
@@ -1164,7 +1164,7 @@ static rpmRC runImmedTriggers(rpmpsm psm)
 	/*@modifies psm, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 {
-    HGE_t hge = (HGE_t)headerGetExtension;
+    HGE_t hge = headerGetExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     const rpmts ts = psm->ts;
     rpmfi fi = psm->fi;
@@ -1348,7 +1348,7 @@ rpmpsm rpmpsmNew(rpmts ts, rpmte te, rpmfi fi)
 static uint32_t hLoadTID(Header h, rpmTag tag)
 	/*@*/
 {
-    HGE_t hge = (HGE_t)headerGetExtension;
+    HGE_t hge = headerGetExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     uint32_t val;
     int xx;

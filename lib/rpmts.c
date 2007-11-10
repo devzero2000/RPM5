@@ -307,7 +307,7 @@ static int sugcmp(const void * a, const void * b)
 
 int rpmtsSolve(rpmts ts, rpmds ds, /*@unused@*/ const void * data)
 {
-    HGE_t hge = (HGE_t)headerGetExtension;
+    HGE_t hge = headerGetExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     const char * errstr;
     const char * str = NULL;

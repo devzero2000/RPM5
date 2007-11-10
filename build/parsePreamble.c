@@ -220,7 +220,7 @@ static inline char * findLastChar(char * s)
 static int isMemberInEntry(Header h, const char *name, rpmTag tag)
 	/*@*/
 {
-    HGE_t hge = (HGE_t)headerGetExtension;
+    HGE_t hge = headerGetExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     int xx;
 
@@ -468,7 +468,7 @@ exit:
 
 spectag stashSt(Spec spec, Header h, int tag, const char * lang)
 {
-    HGE_t hge = (HGE_t)headerGetExtension;
+    HGE_t hge = headerGetExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     spectag t = NULL;
     int xx;

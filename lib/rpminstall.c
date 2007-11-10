@@ -306,7 +306,7 @@ int rpmcliInstallRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 /** @todo Generalize --freshen policies. */
 int rpmcliInstall(rpmts ts, QVA_t ia, const char ** argv)
 {
-    HGE_t hge = (HGE_t)headerGetExtension;
+    HGE_t hge = headerGetExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     ARGV_t avfn = NULL;
     int acfn = 0;

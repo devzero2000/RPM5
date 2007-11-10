@@ -860,7 +860,7 @@ static int rpmdbExportInfo(/*@unused@*/ rpmdb db, Header h, int adding)
 	/*@modifies rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 {
-    HGE_t hge = (HGE_t)headerGetExtension;
+    HGE_t hge = headerGetExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     const char * fn = NULL;
     int xx;
@@ -1406,7 +1406,7 @@ static int rpmdbFindByFile(rpmdb db, /*@null@*/ const char * filespec,
 		fileSystem, internalState @*/
 	/*@requires maxSet(matches) >= 0 @*/
 {
-    HGE_t hge = (HGE_t)headerGetExtension;
+    HGE_t hge = headerGetExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     const char * dirName;
     const char * baseName;
@@ -2146,7 +2146,7 @@ exit:
 static int mireSkip (const rpmdbMatchIterator mi)
 	/*@modifies mi->mi_re @*/
 {
-    HGE_t hge = (HGE_t) headerGetExtension;
+    HGE_t hge = headerGetExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     char numbuf[32];
     miRE mire;
@@ -2787,9 +2787,9 @@ DBC * dbcursor = NULL;
 DBT * key = alloca(sizeof(*key));
 DBT * data = alloca(sizeof(*data));
 union _dbswap mi_offset;
-    HGE_t hge = (HGE_t)headerGetExtension;
+    HGE_t hge = headerGetExtension;
 #ifdef	DYING
-    HAE_t hae = (HAE_t)headerAddExtension;
+    HAE_t hae = headerAddExtension;
 #endif
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     Header h;
@@ -3590,7 +3590,7 @@ int rpmdbFindFpList(rpmdb db, fingerPrint * fpList, dbiIndexSet * matchList,
 {
 DBT * key;
 DBT * data;
-    HGE_t hge = (HGE_t)headerGetExtension;
+    HGE_t hge = headerGetExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     rpmdbMatchIterator mi;
     fingerPrintCache fpc;

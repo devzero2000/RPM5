@@ -73,7 +73,7 @@ rpmdb rpmtsGetRdb(rpmts ts)
 
 rpmRC rpmtsFindPubkey(rpmts ts, void * _dig)
 {
-    HGE_t hge = (HGE_t)headerGetExtension;
+    HGE_t hge = headerGetExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     pgpDig dig = (_dig ? _dig : rpmtsDig(ts));
     const void * sig = pgpGetSig(dig);
@@ -533,7 +533,7 @@ static rpmRC rdSignature(FD_t fd, /*@out@*/ /*@null@*/ void * ptr,
 	/*@globals fileSystem @*/
 	/*@modifies *ptr, *msg, fileSystem @*/
 {
-    HGE_t hge = (HGE_t)headerGetExtension;
+    HGE_t hge = headerGetExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     Header * sighp = ptr;
     char buf[BUFSIZ];

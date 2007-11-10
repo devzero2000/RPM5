@@ -142,7 +142,7 @@ static int getSignid(Header sigh, int sigtag, unsigned char * signid)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies *signid, fileSystem, internalState @*/
 {
-    HGE_t hge = (HGE_t)headerGetExtension;
+    HGE_t hge = headerGetExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     int rc = 1;
     int xx;
@@ -756,7 +756,7 @@ static int readFile(FD_t fd, const char * fn, pgpDig dig)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fd, *dig, fileSystem, internalState @*/
 {
-    HGE_t hge = (HGE_t)headerGetExtension;
+    HGE_t hge = headerGetExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     unsigned char buf[4*BUFSIZ];
     ssize_t count;
@@ -843,7 +843,7 @@ exit:
 int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 		const char * fn)
 {
-    HGE_t hge = (HGE_t)headerGetExtension;
+    HGE_t hge = headerGetExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     HE_t she = memset(alloca(sizeof(*she)), 0, sizeof(*she));
     int res2, res3;

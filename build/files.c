@@ -275,7 +275,7 @@ static void timeCheck(int tc, Header h)
 	/*@globals internalState @*/
 	/*@modifies internalState @*/
 {
-    HGE_t hge = (HGE_t)headerGetExtension;
+    HGE_t hge = headerGetExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     uint32_t currentTime = time(NULL);
     uint32_t * mtime;
@@ -2245,7 +2245,7 @@ static int processPackageFiles(Spec spec, Package pkg,
 		pkg->cpioList, pkg->fileList, pkg->specialDoc, pkg->header,
 		rpmGlobalMacroContext, fileSystem, internalState @*/
 {
-    HGE_t hge = (HGE_t)headerGetExtension;
+    HGE_t hge = headerGetExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     struct FileList_s fl;
     char *s, **files, **fp;
@@ -2792,7 +2792,7 @@ int processBinaryFiles(Spec spec, int installSpecialDoc, int test)
 	/*@globals check_fileList @*/
 	/*@modifies check_fileList @*/
 {
-    HGE_t hge = (HGE_t)headerGetExtension;
+    HGE_t hge = headerGetExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     Package pkg;
     int res = 0;

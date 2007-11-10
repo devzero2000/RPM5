@@ -235,7 +235,7 @@ assert(argv[ac] != NULL);
 rpmds rpmdsNew(Header h, rpmTag tagN, int flags)
 {
     int scareMem = (flags & 0x1);
-    HGE_t hge = (HGE_t)headerGetExtension;
+    HGE_t hge = headerGetExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
 
     rpmTag tagEVR, tagF;
@@ -472,7 +472,7 @@ char * rpmdsNewDNEVR(const char * dspfx, rpmds ds)
 
 rpmds rpmdsThis(Header h, rpmTag tagN, evrFlags Flags)
 {
-    HGE_t hge = (HGE_t)headerGetExtension;
+    HGE_t hge = headerGetExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     rpmds ds = NULL;
     const char * Type;
@@ -3708,7 +3708,7 @@ exit:
 
 int rpmdsNVRMatchesDep(const Header h, const rpmds req, int nopromote)
 {
-    HGE_t hge = (HGE_t)headerGetExtension;
+    HGE_t hge = headerGetExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     const char * pkgN, * V, * R;
     uint32_t E;

@@ -317,7 +317,7 @@ exit:
 static void mungeFilelist(Header h)
 	/*@*/
 {
-    HGE_t hge = (HGE_t)headerGetExtension;
+    HGE_t hge = headerGetExtension;
     HAE_t hae = headerAddExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     int xx;
@@ -349,7 +349,7 @@ static void mungeFilelist(Header h)
  */
 static void providePackageNVR(Header h)
 {
-    HGE_t hge = (HGE_t)headerGetExtension;
+    HGE_t hge = headerGetExtension;
     HAE_t hae = headerAddExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     const char *N, *V, *R;
@@ -726,7 +726,7 @@ long tagNumFromPyObject (PyObject *item)
 static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
 	/*@*/
 {
-    HGE_t hge = (HGE_t)headerGetExtension;
+    HGE_t hge = headerGetExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     int_32 tag = -1;
     int i;

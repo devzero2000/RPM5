@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - jbj: remove HGE_t casts everywhere.
     - jbj: hmmm, rpm-perl seems to have issues on BIGENDIAN non-int32 retrieves.
     - jbj: use HE_t instead of individual args. dunno HGE_t et al desired ...
     - jbj: eek, rpm-perl not being built here.

@@ -434,7 +434,7 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootURL,
 		int recursing, const char *passPhrase,
 		const char *cookie, int anyarch, int force, int verify)
 {
-    HGE_t hge = (HGE_t)headerGetExtension;
+    HGE_t hge = headerGetExtension;
     HAE_t hae = headerAddExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     rpmParseState parsePart = PART_PREAMBLE;
