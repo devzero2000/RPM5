@@ -96,6 +96,12 @@ LIBRPMDB_0
     rpmtsGetRdb;
     rpmtsOp;
     rpmtsPubkey;
+    _rpmwf_debug;
+    rdRPM;
+    rdXAR;
+    wrRPM;
+    wrXAR;
+    rpmwfFree;
     rpmVerifySignature;
     sqlitevec;
     XrpmdbLink;

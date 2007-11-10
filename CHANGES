@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - jbj: txar.c: use rpmwfFoo from -lrpmdb.
     - jbj: hotwire -lxar linkage for the moment.
     - jbj: add proof-of-concept rpmwf "wrapper format" to rpmdb.
     - jbj: move rpmReadHeader from lib/package.c to rpmdb/pkgio.c.
