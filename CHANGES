@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - jbj: eek, rpm-perl not being built here.
     - rpm.org: Change strntoul to using size_t for sizes.
     - rpm.org: Remove refs to "file/src".
     - rpm.org: Clarify rpm manpage wrt rpmbuild binary vs package (rhbz#233232).
