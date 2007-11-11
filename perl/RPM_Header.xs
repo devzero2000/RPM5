@@ -236,7 +236,6 @@ addtag(h, sv_tag, sv_tagtype, ...)
         expandFilelist(h); */
     for (i = 3; (i < items) && RETVAL; i++) {
         switch (he->t) {
-            case RPM_CHAR_TYPE:
             case RPM_UINT8_TYPE:
             case RPM_UINT16_TYPE:
             case RPM_UINT32_TYPE:
@@ -339,7 +338,6 @@ tag(h, sv_tag)
                 case RPM_STRING_TYPE:
                     PUSHs(sv_2mortal(newSVpv(he->p.str, 0)));
                 break;
-                case RPM_CHAR_TYPE:
                 case RPM_UINT8_TYPE:
                 case RPM_UINT16_TYPE:
                 case RPM_UINT32_TYPE:
@@ -374,7 +372,7 @@ tagtype(h, sv_tag)
     } else if (SvPOK(sv_tag)) {
         he->tag = tagValue(SvPV_nolen(sv_tag));
     }
-    RETVAL = RPM_NULL_TYPE;
+    RETVAL = 0;
     if (he->tag > 0)
         if (headerGetEntry(h, he->tag, &he->t, NULL, &he->c))
             RETVAL = he->t;

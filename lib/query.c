@@ -355,10 +355,11 @@ exit:
 void rpmDisplayQueryTags(FILE * fp)
 {
     const struct headerTagTableEntry_s * t;
-    int i, ttype;
+    uint32_t ttype;
     headerSprintfExtension exts = (headerSprintfExtension) rpmHeaderFormats;
     headerSprintfExtension ext;
     int extNum;
+    int i;
 
     for (i = 0, t = rpmTagTable; i < rpmTagTableSize; i++, t++) {
 	if (t->name == NULL)
@@ -371,7 +372,7 @@ void rpmDisplayQueryTags(FILE * fp)
 	    };
 	    fprintf(fp, "%-20s %6d", t->name + 7, t->val);
 	    ttype = t->type & RPM_MASK_TYPE;
-	    if (ttype > RPM_NULL_TYPE && ttype <= RPM_MAX_TYPE)
+	    if (ttype >= RPM_MIN_TYPE && ttype <= RPM_MAX_TYPE)
 		fprintf(fp, " %s", tagtypes[ttype]);
 	} else
 	    fprintf(fp, "%s", t->name + 7);

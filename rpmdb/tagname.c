@@ -223,7 +223,7 @@ static int _tagType(int tag)
 	}
 	break;
     }
-    return RPM_NULL_TYPE;
+    return 0;
 }
 
 static int _tagValue(const char * tagstr)

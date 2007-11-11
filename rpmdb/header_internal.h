@@ -179,39 +179,6 @@ int headerVerifyInfo(int il, int dl, const void * pev, void * iv, int negate)
 	/*@modifies *iv @*/;
 
 /** \ingroup header
- * Return array of locales found in header.
- * The array is terminated with a NULL sentinel.
- * @param h		header
- * @return		array of locales (or NULL on error)
- */
-/*@unused@*/
-/*@only@*/ /*@null@*/ const char ** headerGetLangs(Header h)
-	/*@*/;
-
-/** \ingroup header
- * Retrieve tag value with type match.
- * If *type is RPM_NULL_TYPE any type will match, otherwise only *type will
- * match.
- *
- * @param h		header
- * @param tag		tag
- * @retval *type	tag value data type (or NULL)
- * @retval *p		pointer to tag value(s) (or NULL)
- * @retval *c		number of values (or NULL)
- * @return		1 on success, 0 on failure
- */
-/*@-exportlocal@*/
-/*@-incondefs@*/
-int headerGetRawEntry(Header h, uint32_t tag,
-			/*@null@*/ /*@out@*/ hTYP_t type,
-			/*@null@*/ /*@out@*/ hRET_t * p, 
-			/*@null@*/ /*@out@*/ hCNT_t c)
-	/*@modifies *type, *p, *c @*/
-	/*@requires maxSet(type) >= 0 /\ maxSet(p) >= 0 /\ maxSet(c) >= 0 @*/;
-/*@=incondefs@*/
-/*@=exportlocal@*/
-
-/** \ingroup header
  * Return header reference count.
  * @param h		header
  * @return		no. of references
@@ -221,20 +188,6 @@ int headerGetRawEntry(Header h, uint32_t tag,
     return h->nrefs;
 }
 /*@=type@*/
-
-/** \ingroup header
- * Dump a header in human readable format (for debugging).
- * @param h		header
- * @param f		file handle
- * @param flags		0 or HEADER_DUMP_INLINE
- * @param tags		array of tag name/value pairs
- */
-/*@unused@*/
-void headerDump(Header h, FILE *f, int flags,
-		const struct headerTagTableEntry_s * tags)
-	/*@globals fileSystem @*/
-	/*@modifies f, fileSystem @*/;
-#define HEADER_DUMP_INLINE   1
 
 #ifdef __cplusplus
 }   

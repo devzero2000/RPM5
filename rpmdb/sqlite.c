@@ -523,13 +523,11 @@ if (swapped == 1) {
 	} break;
     default:
 	switch (tagType(dbi->dbi_rpmtag) & RPM_MASK_TYPE) {
-	case RPM_NULL_TYPE:   
 	case RPM_BIN_TYPE:
 /*@-castfcnptr -nullpass@*/ /* FIX: annotate sqlite. */
 	    rc = sqlite3_bind_blob(scp->pStmt, pos, key->data, key->size, SQLITE_STATIC);
 /*@=castfcnptr =nullpass@*/
 	    /*@innerbreak@*/ break;
-	case RPM_CHAR_TYPE:
 	case RPM_UINT8_TYPE:
 	{   unsigned char i;
 /*@i@*/ assert(key->size == sizeof(unsigned char));
@@ -544,8 +542,10 @@ assert(swapped == 0); /* Byte swap?! */
 	    memcpy(&i, key->data, sizeof(i));
 	    rc = sqlite3_bind_int(scp->pStmt, pos, i);
 	} /*@innerbreak@*/ break;
-        case RPM_UINT32_TYPE:
 	case RPM_UINT64_TYPE:
+assert(0);	/* borken */
+	/*@innerbreak@*/ break;
+        case RPM_UINT32_TYPE:
 	default:
 	{   unsigned int i;
 /*@i@*/ assert(key->size == sizeof(int_32));
@@ -741,12 +741,10 @@ static int sql_initDB(dbiIndex dbi)
 	    break;
 	default:
 	    switch (tagType(dbi->dbi_rpmtag) & RPM_MASK_TYPE) {
-	    case RPM_NULL_TYPE:
 	    case RPM_BIN_TYPE:
 	    default:
 		keytype = "blob UNIQUE";
 		/*@innerbreak@*/ break;
-	    case RPM_CHAR_TYPE:
 	    case RPM_UINT8_TYPE:
 	    case RPM_UINT16_TYPE:
 	    case RPM_UINT32_TYPE:

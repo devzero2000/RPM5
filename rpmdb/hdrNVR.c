@@ -63,7 +63,6 @@ int headerMacrosLoad(Header h)
 	val = NULL;
 	ival = 0;
 	switch (he->t) {
-	case RPM_CHAR_TYPE:
 	case RPM_UINT8_TYPE:
 	    ival = he->p.ui8p[0];
 	    val = numbuf;
@@ -86,7 +85,6 @@ int headerMacrosLoad(Header h)
 	case RPM_STRING_ARRAY_TYPE:
 	case RPM_I18NSTRING_TYPE:
 	case RPM_BIN_TYPE:
-	case RPM_NULL_TYPE:
 	default:
 	    /*@switchbreak@*/ break;
 	}
@@ -127,10 +125,9 @@ int headerMacrosUnload(Header h)
 	case RPM_STRING_ARRAY_TYPE:
 	case RPM_I18NSTRING_TYPE:
 	case RPM_BIN_TYPE:
-	case RPM_NULL_TYPE:
-	case RPM_CHAR_TYPE:
 	case RPM_UINT8_TYPE:
 	case RPM_UINT16_TYPE:
+	case RPM_UINT64_TYPE:
 	default:
 	    /*@switchbreak@*/ break;
 	}
@@ -286,7 +283,6 @@ assert(he->p.ptr != NULL);
 	    default:
 assert(0);	/* XXX keep gcc quiet */
 		/*@switchbreak@*/ break;
-	    case RPM_CHAR_TYPE:
 	    case RPM_UINT8_TYPE:
 	    case RPM_UINT16_TYPE:
 	    case RPM_UINT32_TYPE:

@@ -113,8 +113,8 @@ typedef enum rpmTag_e rpmTag;
  * The basic types of data in tags from headers.
  */
 enum rpmTagType_e {
-    RPM_NULL_TYPE		=  0,
-    RPM_CHAR_TYPE		=  1,
+    	/* RPM_NULL_TYPE =  0	- never been used. */
+	/* RPM_CHAR_TYPE =  1	- never been used, same as RPM_UINT8_TYPE. */
     RPM_UINT8_TYPE		=  2,
     RPM_UINT16_TYPE		=  3,
     RPM_UINT32_TYPE		=  4,
@@ -122,13 +122,13 @@ enum rpmTagType_e {
     RPM_STRING_TYPE		=  6,
     RPM_BIN_TYPE		=  7,
     RPM_STRING_ARRAY_TYPE	=  8,
-    RPM_I18NSTRING_TYPE		=  9,
-    RPM_ASN1_TYPE		= 10,
-    RPM_OPENPGP_TYPE		= 11,
-    RPM_MASK_TYPE		= 0x0000ffff
+    RPM_I18NSTRING_TYPE		=  9
+	/* RPM_ASN1_TYPE = 10	- never been used. */
+	/* RPM_OPENPGP_TYPE= 11	- never been used. */
 };
-#define	RPM_MIN_TYPE		0
-#define	RPM_MAX_TYPE		11
+#define	RPM_MIN_TYPE		2
+#define	RPM_MAX_TYPE		9
+#define	RPM_MASK_TYPE		0x0000ffff
 
 /** \ingroup header
  */

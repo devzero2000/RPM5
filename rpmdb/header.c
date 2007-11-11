@@ -61,8 +61,8 @@ static unsigned char meta_magic[8] = {
  */
 /*@observer@*/ /*@unchecked@*/
 static int typeSizes[16] =  { 
-    0,	/*!< RPM_NULL_TYPE */
-    1,	/*!< RPM_CHAR_TYPE */
+    0,	/*!< (unused) RPM_NULL_TYPE */
+    1,	/*!< (unused) RPM_CHAR_TYPE */
     1,	/*!< RPM_UINT8_TYPE */
     2,	/*!< RPM_UINT16_TYPE */
     4,	/*!< RPM_UINT32_TYPE */
@@ -71,8 +71,8 @@ static int typeSizes[16] =  {
     1,	/*!< RPM_BIN_TYPE */
     -1,	/*!< RPM_STRING_ARRAY_TYPE */
     -1,	/*!< RPM_I18NSTRING_TYPE */
-    1,  /*!< RPM_ASN1_TYPE */
-    1,  /*!< RPM_OPENPGP_TYPE */
+    0,  /*!< (unused) RPM_ASN1_TYPE */
+    0,  /*!< (unused) RPM_OPENPGP_TYPE */
     0,
     0,
     0,
@@ -133,7 +133,7 @@ const char * tagName(int tag)
  * Return tag data type from value.
  * @todo This should come from #include <rpmtag.h>.
  * @param tag		tag value
- * @return		tag data type, RPM_NULL_TYPE on not found.
+ * @return		tag data type, 0 on not found.
  */
 /*@unused@*/ static inline
 int tagType(int tag)
@@ -963,7 +963,7 @@ indexEntry findEntry(/*@null@*/ Header h, uint32_t tag, rpmTagType type)
     if (entry == NULL)
 	return NULL;
 
-    if (type == RPM_NULL_TYPE)
+    if (type == 0)
 	return entry;
 
     /* look backwards */
@@ -1002,7 +1002,7 @@ int headerRemoveEntry(Header h, uint32_t tag)
     indexEntry entry, first;
     int ne;
 
-    entry = findEntry(h, tag, RPM_NULL_TYPE);
+    entry = findEntry(h, tag, 0);
     if (!entry) return 1;
 
     /* Make sure entry points to the first occurence of this tag. */
@@ -1522,7 +1522,7 @@ int headerIsEntry(/*@null@*/Header h, uint32_t tag)
 	/*@*/
 {
     /*@-mods@*/		/*@ FIX: h modified by sort. */
-    return (findEntry(h, tag, RPM_NULL_TYPE) ? 1 : 0);
+    return (findEntry(h, tag, 0) ? 1 : 0);
     /*@=mods@*/	
 }
 
@@ -1627,8 +1627,6 @@ static int copyEntry(const indexEntry entry,
 	}
     }	break;
 
-    case RPM_OPENPGP_TYPE:	/* XXX W2DO? */
-    case RPM_ASN1_TYPE:		/* XXX W2DO? */
     default:
 	(*p).ptr = entry->data;
 	break;
@@ -1796,7 +1794,7 @@ static int intGetEntry(Header h, uint32_t tag,
 
     /* First find the tag */
 /*@-mods@*/		/*@ FIX: h modified by sort. */
-    entry = findEntry(h, tag, RPM_NULL_TYPE);
+    entry = findEntry(h, tag, 0);
 /*@=mods@*/
     if (entry == NULL) {
 	if (type) type = 0;
@@ -1838,9 +1836,7 @@ static /*@null@*/ void * headerFreeTag(/*@unused@*/ Header h,
 	if (type == -1 ||
 	    type == RPM_STRING_ARRAY_TYPE ||
 	    type == RPM_I18NSTRING_TYPE ||
-	    type == RPM_BIN_TYPE ||
-	    type == RPM_ASN1_TYPE ||
-	    type == RPM_OPENPGP_TYPE)
+	    type == RPM_BIN_TYPE)
 		data = _free(data);
     }
     return NULL;
@@ -1898,16 +1894,12 @@ int headerGetExtension(Header h, uint32_t tag,
 	goto exit;
 
     switch (he->t) {
-    case RPM_NULL_TYPE:
     default:
 assert(0);	/* XXX stop unimplemented oversights. */
 	break;
-    case RPM_OPENPGP_TYPE:
-    case RPM_ASN1_TYPE:
     case RPM_BIN_TYPE:
 	he->freeData = 1;	/* XXX RPM_BIN_TYPE is malloc'd */
 	/*@fallthrough@*/
-    case RPM_CHAR_TYPE:
     case RPM_UINT8_TYPE:
 	nb = he->c * sizeof(*he->p.ui8p);
 	break;
@@ -2010,29 +2002,6 @@ int headerGetEntryMinMemory(Header h, uint32_t tag,
     rc = intGetEntry(h, tag, (rpmTagType *)type, (rpmTagData *)p, (rpmTagCount *)c, 1);
     if (sw != NULL)	(void) rpmswExit(sw, 0);
     return rc;
-}
-
-int headerGetRawEntry(Header h, uint32_t tag, rpmTagType * type, hRET_t * p, rpmTagCount * c)
-{
-    indexEntry entry;
-    int rc;
-
-    if (p == NULL) return headerIsEntry(h, tag);
-
-    /* First find the tag */
-    /*@-mods@*/		/*@ FIX: h modified by sort. */
-    entry = findEntry(h, tag, RPM_NULL_TYPE);
-    /*@=mods@*/
-    if (!entry) {
-	if (p) *(void **)p = NULL;
-	if (c) *c = 0;
-	return 0;
-    }
-
-    rc = copyEntry(entry, type, p, c, 0);
-
-    /* XXX 1 on success */
-    return ((rc == 1) ? 1 : 0);
 }
 
 /**
@@ -2911,7 +2880,6 @@ static char * intFormat(HE_t he, const char *fmt)
     default:
 	return xstrdup(_("(not a number)"));
 	break;
-    case RPM_CHAR_TYPE:	
     case RPM_UINT8_TYPE:
 	ival = he->p.ui8p[ix];
 	break;
@@ -2930,8 +2898,6 @@ static char * intFormat(HE_t he, const char *fmt)
     case RPM_STRING_ARRAY_TYPE:
 	istr = he->p.argv[ix];
 	break;
-    case RPM_OPENPGP_TYPE:	/* XXX W2DO? */
-    case RPM_ASN1_TYPE:		/* XXX W2DO? */
     case RPM_BIN_TYPE:
 	{   static char hex[] = "0123456789abcdef";
 	    const char * s = he->p.str;
@@ -3579,7 +3545,6 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
 	vhe->c = he->c;
 	vhe->ix = -1;
 	break;
-    case RPM_CHAR_TYPE:
     case RPM_UINT8_TYPE:
     case RPM_UINT16_TYPE:
     case RPM_UINT32_TYPE:
@@ -3588,7 +3553,6 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
 	default:
 assert(0);	/* XXX keep gcc quiet. */
 	    break;
-	case RPM_CHAR_TYPE:	
 	case RPM_UINT8_TYPE:
 	    ival = he->p.ui8p[element];
 	    break;
@@ -3609,8 +3573,6 @@ assert(0);	/* XXX keep gcc quiet. */
 	vhe->ix = (he->c > 1 ? 0 : -1);
 	break;
 
-    case RPM_OPENPGP_TYPE:	/* XXX W2DO? */
-    case RPM_ASN1_TYPE:		/* XXX W2DO? */
     case RPM_BIN_TYPE:
 	vhe->t = RPM_BIN_TYPE;
 	vhe->p.ptr = he->p.ptr;
@@ -3767,8 +3729,6 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 		he = rpmheClean(he);
 		return NULL;
 		/*@notreached@*/ /*@switchbreak@*/ break;
-	    case RPM_OPENPGP_TYPE:
-	    case RPM_ASN1_TYPE:
 	    case RPM_BIN_TYPE:
 	    case RPM_STRING_TYPE:
 		if (numElements == -1)

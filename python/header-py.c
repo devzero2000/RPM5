@@ -488,19 +488,14 @@ static PyObject * hdrKeyList(hdrObject * s)
         if (tag == HEADER_I18NTABLE) continue;
 
 	switch (type) {
-	case RPM_NULL_TYPE:
 	case RPM_I18NSTRING_TYPE:
-	case RPM_MASK_TYPE:
 	    continue;
 	    /*@notreached@*/ break;
-	case RPM_OPENPGP_TYPE:
-	case RPM_ASN1_TYPE:
 	case RPM_BIN_TYPE:
 	case RPM_UINT64_TYPE:
 	case RPM_UINT32_TYPE:
 	case RPM_UINT16_TYPE:
 	case RPM_UINT8_TYPE:
-	case RPM_CHAR_TYPE:
 	case RPM_STRING_ARRAY_TYPE:
 	case RPM_STRING_TYPE:
 	    PyList_Append(list, o=PyInt_FromLong(tag));
@@ -825,13 +820,10 @@ static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
     }
 
     switch (he->t) {
-    case RPM_OPENPGP_TYPE:
-    case RPM_ASN1_TYPE:
     case RPM_BIN_TYPE:
 	o = PyString_FromStringAndSize(he->p.str, he->c);
 	break;
 
-    case RPM_CHAR_TYPE:
     case RPM_UINT8_TYPE:
 	if (he->c != 1 || forceArray) {
 	    metao = PyList_New(0);

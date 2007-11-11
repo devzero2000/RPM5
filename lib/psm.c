@@ -1526,7 +1526,7 @@ static int populateInstallHeader(const rpmts ts, const rpmte te, rpmfi fi)
 assert(fi->h != NULL);
     if (fi->fstates != NULL && fc > 0) {
 	he->tag = RPMTAG_FILESTATES;
-	he->t = RPM_CHAR_TYPE;
+	he->t = RPM_UINT8_TYPE;
 	he->p.ui8p = fi->fstates;
 	he->c = fc;
 	xx = hae(fi->h, he, 0);

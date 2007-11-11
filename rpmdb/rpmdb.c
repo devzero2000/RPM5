@@ -2183,7 +2183,6 @@ static int mireSkip (const rpmdbMatchIterator mi)
 	anymatch = 0;		/* no matches yet */
 	while (1) {
 	    switch (he->t) {
-	    case RPM_CHAR_TYPE:
 	    case RPM_UINT8_TYPE:
 		for (j = 0; j < he->c; j++) {
 		    sprintf(numbuf, "%u", he->p.ui8p[j]);
@@ -2237,7 +2236,6 @@ static int mireSkip (const rpmdbMatchIterator mi)
 		    anymatch++;
 		s = _free(s);
 	    }   /*@switchbreak@*/ break;
-	    case RPM_NULL_TYPE:
 	    case RPM_I18NSTRING_TYPE:
 	    default:
 		/*@switchbreak@*/ break;
@@ -2936,10 +2934,6 @@ if (dbiByteSwapped(dbi) == 1)
 		/* Identify value pointer and length. */
 		stringvalued = 0;
 		switch (he->t) {
-		case RPM_NULL_TYPE:		/* XXX never occurs. */
-assert(0);
-		    /*@switchbreak@*/ break;
-		case RPM_CHAR_TYPE:
 		case RPM_UINT8_TYPE:
 		    key->size = sizeof(*he->p.ui8p);
 /*@i@*/		    key->data = he->p.ui8p + i;
@@ -2956,8 +2950,6 @@ assert(0);
 		    key->size = sizeof(*he->p.ui64p);
 /*@i@*/		    key->data = he->p.ui64p + i;
 		    /*@switchbreak@*/ break;
-		case RPM_OPENPGP_TYPE:
-		case RPM_ASN1_TYPE:
 		case RPM_BIN_TYPE:
 		    key->size = he->c;
 /*@i@*/		    key->data = he->p.ptr;
@@ -3431,10 +3423,6 @@ data->size = 0;
 		/* Identify value pointer and length. */
 		stringvalued = 0;
 		switch (he->t) {
-		case RPM_NULL_TYPE:		/* XXX never occurs. */
-assert(0);
-		    /*@switchbreak@*/ break;
-		case RPM_CHAR_TYPE:
 		case RPM_UINT8_TYPE:
 		    key->size = sizeof(*he->p.ui8p);
 /*@i@*/		    key->data = he->p.ui8p + i;
@@ -3451,8 +3439,6 @@ assert(0);
 		    key->size = sizeof(*he->p.ui64p);
 /*@i@*/		    key->data = he->p.ui64p + i;
 		    /*@switchbreak@*/ break;
-		case RPM_OPENPGP_TYPE:
-		case RPM_ASN1_TYPE:
 		case RPM_BIN_TYPE:
 		    key->size = he->c;
 /*@i@*/		    key->data = he->p.ptr;

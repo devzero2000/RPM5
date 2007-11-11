@@ -181,8 +181,6 @@ static /*@only@*/ char * armorFormat(HE_t he)
 
 assert(ix == 0);
     switch (he->t) {
-    case RPM_OPENPGP_TYPE:
-    case RPM_ASN1_TYPE:		/* XXX WRONG */
     case RPM_BIN_TYPE:
 	s = data.ui8p;
 	ns = he->c;
@@ -199,8 +197,6 @@ assert(ix == 0);
 /*@=moduncon@*/
 	atype = PGPARMOR_PUBKEY;	/* XXX check pkt for pubkey */
 	break;
-    case RPM_NULL_TYPE:
-    case RPM_CHAR_TYPE:
     case RPM_UINT8_TYPE:
     case RPM_UINT16_TYPE:
     case RPM_UINT32_TYPE:
@@ -231,7 +227,7 @@ static /*@only@*/ char * base64Format(HE_t he)
     char * val;
 
 assert(ix == 0);
-    if (!(he->t == RPM_BIN_TYPE || he->t == RPM_ASN1_TYPE || he->t == RPM_OPENPGP_TYPE)) {
+    if (!(he->t == RPM_BIN_TYPE)) {
 	val = xstrdup(_("(not a blob)"));
     } else {
 	const char * enc;
@@ -359,8 +355,6 @@ assert(he->t == RPM_STRING_TYPE || he->t == RPM_UINT64_TYPE || he->t == RPM_BIN_
 	s = xstrtolocale(s);
 	freeit = 1;
 	break;
-    case RPM_OPENPGP_TYPE:
-    case RPM_ASN1_TYPE:
     case RPM_BIN_TYPE:
 /*@-globs -mods@*/
     {	int cpl = b64encode_chars_per_line;
@@ -373,7 +367,6 @@ assert(he->t == RPM_STRING_TYPE || he->t == RPM_UINT64_TYPE || he->t == RPM_BIN_
 	freeit = 1;
     }	break;
 /*@=globs =mods@*/
-    case RPM_CHAR_TYPE:
     case RPM_UINT8_TYPE:
 	anint = data.ui8p[ix];
 	break;
@@ -386,7 +379,6 @@ assert(he->t == RPM_STRING_TYPE || he->t == RPM_UINT64_TYPE || he->t == RPM_BIN_
     case RPM_UINT64_TYPE:
 	anint = data.ui64p[ix];
 	break;
-    case RPM_NULL_TYPE:
     default:
 	return xstrdup(_("(invalid xml type)"));
 	/*@notreached@*/ break;
@@ -551,8 +543,6 @@ assert(he->t == RPM_STRING_TYPE || he->t == RPM_UINT64_TYPE || he->t == RPM_BIN_
 	s = xstrtolocale(s);
 	freeit = 1;
 	break;
-    case RPM_OPENPGP_TYPE:
-    case RPM_ASN1_TYPE:
     case RPM_BIN_TYPE:
 /*@-globs -mods@*/
     {	int cpl = b64encode_chars_per_line;
@@ -566,7 +556,6 @@ assert(he->t == RPM_STRING_TYPE || he->t == RPM_UINT64_TYPE || he->t == RPM_BIN_
 	freeit = 1;
     }	break;
 /*@=globs =mods@*/
-    case RPM_CHAR_TYPE:
     case RPM_UINT8_TYPE:
 	anint = data.ui8p[ix];
 	break;
@@ -579,7 +568,6 @@ assert(he->t == RPM_STRING_TYPE || he->t == RPM_UINT64_TYPE || he->t == RPM_BIN_
     case RPM_UINT64_TYPE:
 	anint = data.ui64p[ix];
 	break;
-    case RPM_NULL_TYPE:
     default:
 	return xstrdup(_("(invalid yaml type)"));
 	/*@notreached@*/ break;
@@ -647,7 +635,7 @@ static /*@only@*/ char * pgpsigFormat(HE_t he)
     char * val, * t;
 
 assert(ix == 0);
-    if (!(he->t == RPM_BIN_TYPE || he->t == RPM_ASN1_TYPE || he->t == RPM_OPENPGP_TYPE)) {
+    if (!(he->t == RPM_BIN_TYPE)) {
 	val = xstrdup(_("(not a blob)"));
     } else {
 	unsigned char * pkt = (byte *) data.ptr;
