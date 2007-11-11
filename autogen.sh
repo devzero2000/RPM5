@@ -4,14 +4,14 @@
 AMV="automake (GNU automake) 1.10"
 ACV="autoconf (GNU Autoconf) 2.61"
 LTV="libtoolize (GNU libtool) 1.5.24"
-GTT="gettextize (GNU gettext-tools) 0.16.1"
+GTT="gettextize (GNU gettext-tools) 0.17"
 USAGE="
 To build RPM from plain CVS sources the following
 installed developer tools are mandatory:
     GNU automake  1.10
     GNU autoconf  2.61
     GNU libtool   1.5.24
-    GNU gettext   0.16.1
+    GNU gettext   0.17
 "
 
 #   wrapper for running GNU libtool's libtoolize(1)
