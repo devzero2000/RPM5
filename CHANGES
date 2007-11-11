@@ -1,4 +1,6 @@
 4.5 -> 5.0:
+    - jbj: functional header-only signature verify of *.xar.
+    - jbj: add --rpmwfdebug.
     - jbj: clean up rpmpkg memory leaks.
     - jbj: functional queries of *.xar packages, on to payload.
     - jbj: lash up rpmwf implicit iteration for Lead/Signature/Header reads.

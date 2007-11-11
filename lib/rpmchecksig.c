@@ -752,7 +752,7 @@ rpmtsClean(ts);
 /**
  * @todo If the GPG key was known available, the md5 digest could be skipped.
  */
-static int readFile(FD_t fd, const char * fn, pgpDig dig)
+static int readFile(rpmts ts, FD_t fd, const char * fn, pgpDig dig)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fd, *dig, fileSystem, internalState @*/
 {
@@ -767,11 +767,16 @@ static int readFile(FD_t fd, const char * fn, pgpDig dig)
     dig->nbytes = 0;
 
     /* Read the header from the package. */
-    {	Header h = headerRead(fd);
-	if (h == NULL) {
-	    rpmlog(RPMLOG_ERR, _("%s: headerRead failed\n"), fn);
+    {	Header h = NULL;
+	const char item[] = "Header";
+	const char * msg = NULL;
+	rpmRC rc = rpmReadHeader(ts, fd, &h, &msg);
+	if (rc != RPMRC_OK) {
+	    rpmlog(RPMLOG_ERR, "%s: %s: %s\n", fn, item, msg);
+	    msg = _free(msg);
 	    goto exit;
 	}
+	msg = _free(msg);
 
 	dig->nbytes += headerSizeof(h);
 
@@ -963,7 +968,7 @@ assert(dig != NULL);
 #endif
 
 	/* Read the file, generating digest(s) on the fly. */
-	if (dig == NULL || sigp == NULL || readFile(fd, fn, dig)) {
+	if (dig == NULL || sigp == NULL || readFile(ts, fd, fn, dig)) {
 	    res++;
 	    goto exit;
 	}
