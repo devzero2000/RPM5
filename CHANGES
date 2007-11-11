@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - rse: allow RPM to be built without XAR support again
     - jbj: functional header-only signature verify of *.xar.
     - jbj: add --rpmwfdebug.
     - jbj: clean up rpmpkg memory leaks.
