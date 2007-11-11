@@ -1,11 +1,11 @@
 #ifndef H_RPMTAG
 #define	H_RPMTAG
 
+#include <header.h>
+
 /** \ingroup header
  * \file rpmdb/rpmtag.h
  */
-
-#include <header.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -371,6 +371,7 @@ int tagValue(const char * tagstr)
     return ((*rpmTags->tagValue)(tagstr));
 /*@=type@*/
 }
+
 #endif
 
 #ifdef __cplusplus

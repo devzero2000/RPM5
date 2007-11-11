@@ -271,3 +271,15 @@ static int _tagValue(const char * tagstr)
     }
     return -1;
 }
+
+/**
+ * Validate that implicit and explicit types are identical.
+ * @param he		tag container
+ */
+void tagTypeValidate(HE_t he)
+{
+/* XXX hack around known borkage for now. */
+if (!(he->tag == 261 || he->tag == 269))
+if ((tagType(he->tag) & 0xffff) != he->t)
+fprintf(stderr, "==> warning: tag %u type(0x%x) != implicit type(0x%x)\n", he->tag, he->t, tagType(he->tag));
+}

@@ -1,4 +1,7 @@
 4.5 -> 5.0:
+    - jbj: hmmm, tagno's 261 and 269 are fishy, skip tagTypeValidate for now.
+    - jbj: add tagTypeValidate sanity check before flipping to implicit typing.
+    - jbj: fix: "RPMTAG_FILESTATES has RPM_CHAR_TYPE=1 instead of 2".
     - jbj: eliminate headerGetLangs, query RPMTAG_HEADERI18NTABLE instead.
     - jbj: eliminate headerGetRawEntry(), noone can possibly need.
     - jbj: eliminate headerDump, query with --xml or --yaml instead.

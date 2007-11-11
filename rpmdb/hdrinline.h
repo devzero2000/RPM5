@@ -251,6 +251,8 @@ int headerIsEntry(/*@null@*/ Header h, uint32_t tag)
     return (h2hv(h)->hdrfreetag) (h, data, type);
 }
 
+void tagTypeValidate(HE_t he);
+
 /*
  * Retrieve extension or tag value.
  *
@@ -263,8 +265,12 @@ int headerIsEntry(/*@null@*/ Header h, uint32_t tag)
 int headerGetExtension(Header h, HE_t he, /*@unused@*/ unsigned int flags)
 	/*@modifies *he @*/
 {
+    int xx;
     if (h == NULL) return 0;
-    return (h2hv(h)->hdrext) (h, he->tag, &he->t, &he->p, &he->c);
+    xx = (h2hv(h)->hdrext) (h, he->tag, &he->t, &he->p, &he->c);
+/* XXX verify that explicit and implicit types are identical. */
+if (xx) tagTypeValidate(he);
+    return xx;
 }
 
 /** \ingroup header
@@ -281,13 +287,12 @@ int headerAddExtension(Header h, HE_t he, /*@unused@*/ unsigned int flags)
 	/*@modifies h @*/
 {
     int xx;
+/* XXX verify that explicit and implicit types are identical. */
+tagTypeValidate(he);
     if (he->append)
 	xx = (h2hv(h)->hdraddorappend) (h, he->tag, he->t, he->p.ptr, he->c);
     else
 	xx = (h2hv(h)->hdradd) (h, he->tag, he->t, he->p.ptr, he->c);
-#if 0
-assert(xx);
-#endif
     return xx;
 }
 

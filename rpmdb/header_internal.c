@@ -43,6 +43,11 @@ int headerVerifyInfo(int il, int dl, const void * pev, void * iv, int negate)
     for (i = 0; i < il; i++) {
 	info->tag = ntohl(pe[i].tag);
 	info->type = ntohl(pe[i].type);
+	/* XXX Convert RPMTAG_FILESTATE to RPM_UINT8_TYPE. */
+	if (info->tag == 1029 && info->type == 1) {
+	    info->type = RPM_UINT8_TYPE;
+	    pe[i].type = htonl(info->type);
+	}
 	info->offset = ntohl(pe[i].offset);
 	if (negate)
 	    info->offset = -info->offset;

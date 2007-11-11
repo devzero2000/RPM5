@@ -106,6 +106,7 @@ LIBRPMDB_0
     rpmwfFree;
     rpmVerifySignature;
     sqlitevec;
+    tagTypeValidate;
     XrpmdbLink;
     XrpmdbUnlink;
   local:

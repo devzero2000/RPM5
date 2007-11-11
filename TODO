@@ -53,13 +53,13 @@
     - rse: xar/ has weak (think RPM_CHECK_LIB) support its third-party libraries LibXML, OpenSSL, etc.
     - jbj: RPM_I18NSTRING_TYPE is likely still wonky, certainly true for
 	rpm-python h['summary'] access.
-    - jbj: RPMTAG_FILESTATE needs s/1/2/ type when header is loaded to succeed
+    + jbj: RPMTAG_FILESTATE needs s/1/2/ type when header is loaded to succeed
 	eliminating RPM_CHAR_TYPE. This is likely to show up oddly with a
 	header sanity check failure somewhere, because RPM_MIN_TYPE has been
-	changed.
+	changed. [DONE]
     - jbj: C++ and C have different rules regarding typedef'd enums like rpmTag.
 	The definitions and usage are currently split awkwardly between
-	rpmtag.h and header.h
+	rpmtag.h and header.h.
 
   o to be resolved before RPM 5.0.0:
     - rse: NEWS polishing
