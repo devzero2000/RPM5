@@ -22,6 +22,7 @@ AM_CPPFLAGS = -I. \
 	@WITH_ZLIB_CPPFLAGS@ \
 	@WITH_LUA_CPPFLAGS@ \
 	@WITH_FILE_CPPFLAGS@ \
+	@WITH_XAR_CPPFLAGS@ \
 	-I$(pyincdir)
 
 noinst_HEADERS = header-py.h \

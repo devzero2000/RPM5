@@ -19,7 +19,8 @@ AM_CPPFLAGS = \
 	@WITH_DB_CPPFLAGS@ \
 	@WITH_ZLIB_CPPFLAGS@ \
 	@WITH_LUA_CPPFLAGS@ \
-	@WITH_FILE_CPPFLAGS@
+	@WITH_FILE_CPPFLAGS@ \
+	@WITH_XAR_CPPFLAGS@
 
 RPM_LDADD = \
 	$(top_builddir)/build/librpmbuild.la \

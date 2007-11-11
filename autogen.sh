@@ -41,6 +41,9 @@ echo "<=== zlib"
 echo "===> file"
 ( cd file && sh ./autogen.sh --noconfigure "$@" )
 echo "<=== file"
+echo "===> xar"
+( cd xar && sh ./autogen.sh --noconfigure "$@" )
+echo "<=== xar"
 
 echo "===> rpm"
 rm -rf autom4te.cache || true

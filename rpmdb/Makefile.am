@@ -15,7 +15,8 @@ AM_CPPFLAGS = \
 	@WITH_DB_CPPFLAGS@ \
 	@WITH_ZLIB_CPPFLAGS@ \
 	@WITH_LUA_CPPFLAGS@ \
-	@WITH_FILE_CPPFLAGS@
+	@WITH_FILE_CPPFLAGS@ \
+	@WITH_XAR_CPPFLAGS@
 
 EXTRA_DIST = db3.c sqlite.c db_emu.h librpmdb.vers
 
@@ -55,7 +56,7 @@ librpmdb_la_LIBADD += \
 endif
 if ENABLE_BUILD_MAXEXTLIBDEP
 librpmdb_la_LDFLAGS += $(LDFLAGS)
-librpmdb_la_LIBADD  += $(LIBS) -lxar
+librpmdb_la_LIBADD  += $(LIBS)
 endif
 librpmdb_la_DEPENDENCIES = $(DBLIBOBJS)
 librpmdb.la: $(librpmdb_la_OBJECTS) $(librpmdb_la_DEPENDENCIES) 

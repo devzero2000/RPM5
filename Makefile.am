@@ -47,6 +47,7 @@ SUBDIRS += \
 	@WITH_ZLIB_SUBDIR@ \
 	@WITH_LUA_SUBDIR@ \
 	@WITH_FILE_SUBDIR@ \
+	@WITH_XAR_SUBDIR@ \
 	misc \
 	rpmio \
 	rpmdb \
@@ -71,7 +72,8 @@ AM_CPPFLAGS = \
 	@WITH_DB_CPPFLAGS@ \
 	@WITH_ZLIB_CPPFLAGS@ \
 	@WITH_LUA_CPPFLAGS@ \
-	@WITH_FILE_CPPFLAGS@
+	@WITH_FILE_CPPFLAGS@ \
+	@WITH_XAR_CPPFLAGS@
 
 myLDADD = \
 	$(top_builddir)/build/librpmbuild.la \

@@ -39,7 +39,8 @@ Bzip2           optional  1.0     1.0.4   http://www.bzip.org/
 File/magic  [4] optional  4.0     4.21    ftp://ftp.astron.com/pub/file/
 GNU gettext     optional  0.16    0.17    http://www.gnu.org/software/gettext/
 GNU iconv       optional  1.11    1.11    http://www.gnu.org/software/libiconv/
-PCRE            optional  7.0     7.4     http://www.pcre.org/
+PCRE        [5] optional  7.0     7.4     http://www.pcre.org/
+XAR             optional  1.6     1.6     http://code.google.com/p/xar/
 DMalloc         optional  5       5.5.2   http://dmalloc.com/
 Electric Fence  optional  2.1     2.1.13  http://perens.com/FreeSoftware/ElectricFence/
 Linux KeyUtils  optional  1.2     1.2     http://people.redhat.com/~dhowells/keyutils/
@@ -62,6 +63,9 @@ System libelf   optional  -       -       e.g. http://www.mr511.de/software/engl
 [4] file:      Unmodified File/magic copy bundled with RPM for convenience reasons.
                Building RPM against this internal File/magic requires also internal Zlib.
                Building RPM against stock external File/magic supported, too.
+
+[5] xar:       Modified XAR copy bundled with RPM.
+               Building RPM against stock external XAR currently still not recommended.
 
 Run-Time
 --------
