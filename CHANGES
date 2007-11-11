@@ -1,4 +1,5 @@
 4.5 -> 5.0:
+    - rse: start providing a high-level NEWS document for RPM 5
     - rse: first cut for properly integrate XAR support into the build environment
     - rse: allow RPM to be built without XAR support again
     - jbj: functional header-only signature verify of *.xar.

@@ -1,0 +1,93 @@
+
+  RPM 5
+  =====
+
+  This is a list of the major changes between RPM 4 and RPM 5.
+  For more details please see the CHANGES file.
+
+  o Project Environment:
+    The official RPM code base was relocated from rpm.org to rpm5.org
+    and a completely new project environment was established around it,
+    including anonymous repository browsing access, new mailing lists,
+    etc.
+
+  o Source Tree:
+    The RPM source tree was cleaned up by pruning many old and obsolete
+    files, removing dangling symbolic links, relocating sub-directories
+    and fixing timestamps and other versioning meta-data which got
+    broken over 10 years of RPM development.
+
+  o Build Environment:
+    The Automake/Autoconf/Libtool-based build environment of RPM was
+    completely revamped. Especially the Autoconf parts were finally
+    cleaned up from the ground up, including basing the use of all
+    third-party libraries on a new sophisticated Autoconf macro
+    "RPM_CHECK_LIB". As a result most third-partly libraries now can be
+    linked externally, too.
+
+  o Development Environment:
+    For being able to build RPM under arbitrary Unix platforms despite
+    the fact that RPM needs a larger number of third-party libraries,
+    the "devtool" environment and its "standalone" script is provided.
+    This allows RPM developers to build RPM from scratch under arbitrary
+    Unix platforms in a rather self-contained environment.
+    
+  o Greatly Improved Portability:
+    RPM 5 was ported to all major Unix platforms as of 2007, including
+    BSD, Linux and Solaris flavors. It was successfully built (with the
+    above "devtool" "standalone") on at least the following particular
+    Unix platforms:
+        ix86-freebsd6.2-gcc4.2.0
+        ix86-freebsd6.2-gcc4.3.0s20070713
+        ix86-freebsd6.2-gcc3.4
+        amd64-freebsd6.2-gcc4.1.2
+        ix86-freebsd7.0-gcc4.1.2
+        ia64-freebsd6.2-gcc4.1.2
+        ix86-fedora7-gcc4.2.0
+        ix86-fedora7-sunstudio12
+        ix86-fedora7-icc10.0
+        ix86-debian3.1-gcc4.1.2
+        ix86-debian4.0-gcc4.2.0
+        ix86-rhel4-gcc4.1.2
+        ix86-solaris9-gcc4.1.2
+        sparc64-solaris8-gcc4.1.2
+        sparc64-solaris9-gcc4.1.2
+        sparc64-solaris10-gcc4.1.2
+        amd64-solaris10-gcc4.1.2
+        ppc-macosx10.4-gcc4.0.1
+        ppc-aix5.3-gcc3.3.2
+
+  o Source Code Cleanups:
+    The RPM source base was completely cleanup up. As a result RPM now
+    builds fully warnings-free under all major Unix platforms with GCC.
+    Additionally, RPM now can be built without problems with the Sun
+    Studio and Intel C/C++ compilers, too.
+
+  o Third-Party Library Upgrades:
+    RPM now is able to build against the latest versions of all
+    third-party libraries. Additionally, the internal copies of
+    third-party libraries were also upgraded to the latest versions,
+    including Berkeley-DB 4.6.21, Lua 5.1.2, XAR 1.6, etc.
+
+  o RPM Database:
+    The RPM database (RPMDB) now out-of-the-box supports both
+    Berkeley-DB and SQLite. The SQLite support was greatly improved, but
+    nevertheless inherently still lacks some features of the Berkeley-DB
+    RPMDB. Nevertheless, one can build RPM with an SQLite-only
+    RPMDB, too. But this is not officially supported. It is just an
+    experimental developer feature.
+
+  o "rpmrc" and Platform Detections:
+    Support for the old "rpmrc" (which was used mainly for architecture
+    mappings, etc) was completely removed. Everything is now configured
+    through RPM "macros" only. Additionally, the internal C-based
+    platform detections were completely removed, too.
+
+  o XAR Format Support:
+    Initial support for the XML Archive (XAR) file format was added to
+    RPM. This is just a first cut, more or less just a proof of concept
+    and highly experimental.
+
+  o Application Programming Interface (API) Changes:
+    FIXME: << JBJ: please add details! >>
+
