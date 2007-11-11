@@ -1,0 +1,60 @@
+
+  TODO
+  ====
+
+  RELEASE ENGINEERING ROADMAP
+  ---------------------------
+
+  This is the current RPM 5.0 release engineering roadmap:
+
+  1. weekly Alpha releases in November 2007:
+ 
+     - APIs:     still changing, no guarranties at all for stability
+     - code:     still acceptable to be at least partly broken
+     - audience: early adopters in RPM community only
+     - purpose:  to get initial feedback
+ 
+     2007-11-10  RPM 5.0a1   RPM 5.0 alpha 1                [TODO]
+     2007-11-17  RPM 5.0a2   RPM 5.0 alpha 2                [TODO]
+     2007-11-24  RPM 5.0a3   RPM 5.0 alpha 3                [TODO]
+     2007-12-01  RPM 5.0a4   RPM 5.0 alpha 4                [TODO]
+ 
+  2. weekly Beta releases in December 2007:
+   
+     - APIs:     mostly fixed, nearly a guarranty to be stable
+     - code:     already stable, but perhaps still some subtle bugs
+     - audience: RPM community, especially distro vendors
+     - purpose:  to get final feedback
+   
+     2007-12-08  RPM 5.0b1   RPM 5.0 beta 1                 [TODO]
+     2007-12-15  RPM 5.0b2   RPM 5.0 beta 2                 [TODO]
+     2007-12-22  RPM 5.0b3   RPM 5.0 beta 3                 [TODO]
+     2007-12-29  RPM 5.0b4   RPM 5.0 beta 4                 [TODO]
+   
+  3. release in January 2007:
+   
+     - APIs:     fully fixed, guarranty to be kept stable
+     - code:     stable, no more bugs known bugs left 
+     - audience: RPM community as a whole
+     - purpose:  provide RPM 5.0
+   
+     2007-01-05  CVS HEAD is branched into    RPM 5.0.x     [TODO]
+     2007-01-05  CVS HEAD now becomes base of RPM 5.1.DEVEL [TODO]
+     2007-01-05  RPM 5.0.0   RPM 5.0 patchlevel 0           [TODO]
+     2007-01-05  press release                              [TODO]
+     ...
+
+  KNOWN PENDING ISSUES
+  --------------------
+
+  This is the list of known pending issues which still *HAVE* to be
+  resolved during release engineering. Please do not just list any
+  *CANDO* items.
+
+  o to be resolved before RPM 5.0b1:
+    - rse: provide RPM version number in C API for "#if RPM_VERSION > 0xXXXXXX" comparisons
+    - rse: xar/ has weak (think RPM_CHECK_LIB) support its third-party libraries LibXML, OpenSSL, etc.
+
+  o to be resolved before RPM 5.0.0:
+    - rse: NEWS polishing
+
