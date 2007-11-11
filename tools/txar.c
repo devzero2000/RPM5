@@ -2,7 +2,7 @@
 #define	RPM2XAR
 #include "system.h"
 #include <inttypes.h>
-#include <xar/xar.h>
+#include "xar.h"
 #include <rpmio.h>
 #include <rpmcli.h>
 

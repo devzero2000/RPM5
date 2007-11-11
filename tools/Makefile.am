@@ -7,7 +7,8 @@ AM_CPPFLAGS = -I. \
 	-I$(top_srcdir)/lib \
 	-I$(top_srcdir)/rpmdb \
 	-I$(top_srcdir)/rpmio \
-	-I$(top_srcdir)/misc
+	-I$(top_srcdir)/misc \
+	@WITH_XAR_CPPFLAGS@
 
 EXTRA_DIST =	hashtab.h
 
@@ -49,7 +50,8 @@ rpmkey_LDADD =          $(myLDADD) -lkeyutils
 ## XAR package format work-in-progress.
 ##
 txar_SOURCES =		txar.c
-txar_LDADD =		$(myLDADD) -lxar
+txar_LDADD =		$(myLDADD) @WITH_XAR_LDFLAGS@
+txar_LIBS =		@WITH_XAR_LIBS@
 
 ##
 ##  provide Berkeley-DB tools
