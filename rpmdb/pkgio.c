@@ -1310,14 +1310,14 @@ size_t rpmpkgSizeof(const char * fn, const void * ptr)
 if (_jbj)
 fprintf(stderr, "==> rpmpkgSizeof(%s, %p)\n", fn, ptr);
     if (!strcmp(fn, "Lead"))
-	return 96;	/* RPMLEAD_SIZE */
+	len = 96;	/* RPMLEAD_SIZE */
+    else
     if (!strcmp(fn, "Signature")) {
-	size_t nb = szHeader(ptr);
-	nb += (8 - (nb % 8));   /* padding */
-	return nb;
-    }
+	len = szHeader(ptr);
+	len += (8 - (len % 8));   /* padding */
+    } else
     if (!strcmp(fn, "Header"))
-	return szHeader(ptr);
+	len = szHeader(ptr);
     return len;
 }
 
@@ -1328,7 +1328,7 @@ rpmRC rpmpkgCheck(const char * fn, FD_t fd, const void * ptr, const char ** msg)
 if (_jbj)
 fprintf(stderr, "==> rpmpkgCheck(%s, %p, %p, %p)\n", fn, fd, ptr, msg);
     if (!strcmp(fn, "Header"))
-	return ckHeader(fd, ptr, msg);
+	rc = ckHeader(fd, ptr, msg);
     return rc;
 }
 
@@ -1355,7 +1355,7 @@ assert(wf != NULL);
 	rc = rdSignature(fd, ptr, msg);
     else
     if (!strcmp(fn, "Header"))
-	return rdHeader(fd, ptr, msg);
+	rc = rdHeader(fd, ptr, msg);
     return rc;
 }
 
@@ -1366,10 +1366,22 @@ rpmRC rpmpkgWrite(const char * fn, FD_t fd, void * ptr, const char ** msg)
 if (_jbj)
 fprintf(stderr, "==> rpmpkgWrite(%s, %p, %p, %p) use_xar %d\n", fn, fd, ptr, msg, _use_xar);
     if (!strcmp(fn, "Lead"))
-	return wrLead(fd, ptr, msg);
+	rc = wrLead(fd, ptr, msg);
+    else
     if (!strcmp(fn, "Signature"))
-	return wrSignature(fd, ptr, msg);
+	rc = wrSignature(fd, ptr, msg);
+    else
     if (!strcmp(fn, "Header"))
-	return wrHeader(fd, ptr, msg);
+	rc = wrHeader(fd, ptr, msg);
     return rc;
+}
+
+rpmRC rpmpkgClean(FD_t fd)
+{
+    rpmwf wf = fdGetWF(fd);
+    if (wf != NULL) {
+	fdSetWF(fd, NULL);
+	wf = rpmwfFree(wf);
+    }
+    return RPMRC_OK;
 }

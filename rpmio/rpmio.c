@@ -336,7 +336,6 @@ DBGREFS(fd, (stderr, "--> fd  %p -- %d %s at %s:%u %s\n", fd, fd->nrefs, msg, fi
 	    /*@-refcounttrans -retalias@*/ return fd; /*@=refcounttrans =retalias@*/
 	fd->opath = _free(fd->opath);
 	fd->stats = _free(fd->stats);
-	fd->wf = _free(fd->wf);
 	for (i = fd->ndigests - 1; i >= 0; i--) {
 	    FDDIGEST_t fddig = fd->digests + i;
 	    if (fddig->hashctx == NULL)

@@ -141,6 +141,7 @@ static Header rpmgiReadHeader(rpmgi gi, const char * path)
 	/* XXX what if path needs expansion? */
 	rpmRC rpmrc = rpmReadPackageFile(gi->ts, fd, path, &h);
 
+	(void) rpmpkgClean(fd);
 	(void) Fclose(fd);
 
 	switch (rpmrc) {
@@ -496,6 +497,7 @@ rpmgi rpmgiFree(rpmgi gi)
 	gi->fts = NULL;
     }
     if (gi->fd != NULL) {
+	(void) rpmpkgClean(gi->fd);
 	(void) Fclose(gi->fd);
 	gi->fd = NULL;
     }

@@ -125,8 +125,10 @@ fprintf(stderr, "*** xx %d type %s\n", xx, type);
     xx = xar_extract_tobuffersz(wf->x, wf->f, &b, &nb);
 if (_rpmwf_debug)
 fprintf(stderr, "*** xx %d %p[%lu]\n", xx, b, (unsigned long)nb);
-    if (xx || b == NULL || nb == 0)
+    if (xx || b == NULL || nb == 0) {
+	path = _free(path);
 	return RPMRC_NOTFOUND;
+    }
 
 if (_rpmwf_debug)
 fprintf(stderr, "*** %s %p[%lu]\n", xar_get_path(wf->f), b, (unsigned long)nb);
@@ -148,6 +150,7 @@ fprintf(stderr, "*** %s %p[%lu]\n", xar_get_path(wf->f), b, (unsigned long)nb);
     } else
 	rc = RPMRC_NOTFOUND;
 
+    path = _free(path);
     return rc;
 }
 

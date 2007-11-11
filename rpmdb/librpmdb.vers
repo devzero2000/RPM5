@@ -82,6 +82,7 @@ LIBRPMDB_0
     rpmdbVerify;
     rpmdbVerifyAllDBI;
     rpmpkgCheck;
+    rpmpkgClean;
     rpmpkgRead;
     rpmpkgSizeof;
     rpmpkgWrite;

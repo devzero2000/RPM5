@@ -80,6 +80,14 @@ rpmRC rpmpkgCheck(const char * fn, FD_t fd, const void * ptr, const char ** msg)
 	/*@globals fileSystem @*/
 	/*@modifies ptr, *msg, fileSystem @*/;
 
+/**
+ * Clean attached data.
+ * @param fd		file handle
+ * @return		RPMRC_OK on success
+ */
+rpmRC rpmpkgClean(FD_t fd)
+	/*@modifies fd @*/;
+
 #ifdef __cplusplus
 }
 #endif

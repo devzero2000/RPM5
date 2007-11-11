@@ -321,10 +321,6 @@ void fdSetWF(FD_t fd, void * wf)
 	/*@modifies fd @*/
 {
     FDSANE(fd);
-    if (fd->wf != NULL) {
-	free((void *)fd->wf);
-	fd->wf = NULL;
-    }
     fd->wf = wf;
 }
 
