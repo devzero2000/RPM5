@@ -57,6 +57,9 @@
 	eliminating RPM_CHAR_TYPE. This is likely to show up oddly with a
 	header sanity check failure somewhere, because RPM_MIN_TYPE has been
 	changed.
+    - jbj: C++ and C have different rules regarding typedef'd enums like rpmTag.
+	The definitions and usage are currently split awkwardly between
+	rpmtag.h and header.h
 
   o to be resolved before RPM 5.0.0:
     - rse: NEWS polishing
