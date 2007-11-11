@@ -20,9 +20,11 @@ struct rpmwf_s {
     size_t nh;
     char * p;
     size_t np;
+#ifdef WITH_XAR
     xar_t x;
     xar_file_t f;
     xar_iter_t i;
+#endif
     int first;
 };
 #endif

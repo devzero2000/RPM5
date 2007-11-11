@@ -2,7 +2,9 @@
 #define	RPM2XAR
 #include "system.h"
 #include <inttypes.h>
-#include <xar/xar.h>
+#ifdef WITH_XAR
+#include "xar.h"
+#endif
 #include <rpmio.h>
 #include <rpmlib.h>
 
@@ -15,6 +17,7 @@ int _rpmwf_debug = 0;
 
 rpmRC rpmwfFiniXAR(rpmwf wf)
 {
+#ifdef WITH_XAR
 if (_rpmwf_debug)
 fprintf(stderr, "*** rpmwfFiniXAR(%p)\n", wf);
     if (wf->i) {
@@ -25,11 +28,13 @@ fprintf(stderr, "*** rpmwfFiniXAR(%p)\n", wf);
 	xar_close(wf->x);
 	wf->x = NULL;
     }
+#endif
     return RPMRC_OK;
 }
 
 rpmRC rpmwfInitXAR(rpmwf wf, const char * fn, const char * fmode)
 {
+#ifdef WITH_XAR
     int flags = ((fmode && *fmode == 'w') ? WRITE : READ);
 
 if (_rpmwf_debug)
@@ -43,11 +48,13 @@ assert(fn);
 	wf->i = xar_iter_new();
 	wf->first = 1;
     }
+#endif
     return RPMRC_OK;
 }
 
 rpmRC rpmwfNextXAR(rpmwf wf)
 {
+#ifdef WITH_XAR
 if (_rpmwf_debug)
 fprintf(stderr, "*** rpmwfNextXAR(%p) first %d\n", wf, wf->first);
     if (wf->first) {
@@ -58,12 +65,13 @@ fprintf(stderr, "*** rpmwfNextXAR(%p) first %d\n", wf, wf->first);
 
     if (wf->f == NULL)
 	return RPMRC_NOTFOUND;
-
+#endif
     return RPMRC_OK;
 }
 
 rpmRC rpmwfPushXAR(rpmwf wf, const char * fn)
 {
+#ifdef WITH_XAR
     char * b = NULL;
     size_t nb = 0;
 
@@ -89,15 +97,17 @@ rpmRC rpmwfPushXAR(rpmwf wf, const char * fn)
 	if (wf->f == NULL)
 	    return RPMRC_FAIL;
     }
+#endif
     return RPMRC_OK;
 }
 
 rpmRC rpmwfPullXAR(rpmwf wf, const char * fn)
 {
+    rpmRC rc = RPMRC_OK;
+#ifdef WITH_XAR
     const char * path = xar_get_path(wf->f);
     char * b = NULL;
     size_t nb = 0;
-    rpmRC rc = RPMRC_OK;
     int xx;
 
 #ifdef	NOTYET
@@ -151,6 +161,7 @@ fprintf(stderr, "*** %s %p[%lu]\n", xar_get_path(wf->f), b, (unsigned long)nb);
 	rc = RPMRC_NOTFOUND;
 
     path = _free(path);
+#endif
     return rc;
 }
 
@@ -308,6 +319,7 @@ fprintf(stderr, "*** rdRPM(%s) wf %p\n", rpmfn, wf);
 
 rpmwf rdXAR(const char * xarfn)
 {
+#ifdef WITH_XAR
     rpmwf wf;
     rpmRC rc;
 
@@ -327,10 +339,14 @@ fprintf(stderr, "*** rdXAR(%s) wf %p\n", xarfn, wf);
 
     (void) rpmwfFiniXAR(wf);
     return wf;
+#else
+    return NULL;
+#endif
 }
 
 rpmRC wrXAR(const char * xarfn, rpmwf wf)
 {
+#ifdef WITH_XAR
     rpmRC rc;
 
     if ((rc = rpmwfInitXAR(wf, xarfn, "w")) != RPMRC_OK)
@@ -351,6 +367,9 @@ exit:
     (void) rpmwfFiniXAR(wf);
 
     return rc;
+#else
+    return RPMRC_OK;
+#endif
 }
 
 rpmRC wrRPM(const char * rpmfn, rpmwf wf)

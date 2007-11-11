@@ -26,7 +26,9 @@ int _use_xar = 0;
 #define	_RPMTS_INTERNAL
 #include "rpmts.h"
 
-#include <xar/xar.h>
+#ifdef WITH_XAR
+#include "xar.h"
+#endif
 #define	_RPMWF_INTERNAL
 #include <rpmwf.h>
 
