@@ -566,17 +566,40 @@ rpmRC rpmcliImportPubkey(const rpmts ts, const unsigned char * pkt, ssize_t pktl
     he->tag = RPMTAG_RELEASE;
     he->p.str = r;
     xx = hae(h, he, 0);
+
+    /* Add Summary/Description/Group. */
     he->tag = RPMTAG_DESCRIPTION;
     he->p.str = d;
+#ifdef	BORKED	/* XXX RPM_I18NSTRING_TYPE fixing. */
     xx = hae(h, he, 0);
+#else
+    xx = headerAddI18NString(h, he->tag, he->p.ptr, "C");
+#endif
     he->tag = RPMTAG_GROUP;
     he->p.str = group;
+#ifdef	BORKED	/* XXX RPM_I18NSTRING_TYPE fixing. */
     xx = hae(h, he, 0);
-    he->tag = RPMTAG_LICENSE;
-    he->p.str = license;
-    xx = hae(h, he, 0);
+#else
+    xx = headerAddI18NString(h, he->tag, he->p.ptr, "C");
+#endif
     he->tag = RPMTAG_SUMMARY;
     he->p.str = u;
+#ifdef	BORKED	/* XXX RPM_I18NSTRING_TYPE fixing. */
+    xx = hae(h, he, 0);
+#else
+    xx = headerAddI18NString(h, he->tag, he->p.ptr, "C");
+#endif
+
+    /* Add a "pubkey" arch/os to avoid missing value NULL ptrs. */
+    he->tag = RPMTAG_ARCH;
+    he->p.str = "pubkey";
+    xx = hae(h, he, 0);
+    he->tag = RPMTAG_OS;
+    he->p.str = "pubkey";
+    xx = hae(h, he, 0);
+
+    he->tag = RPMTAG_LICENSE;
+    he->p.str = license;
     xx = hae(h, he, 0);
 
     he->tag = RPMTAG_SIZE;

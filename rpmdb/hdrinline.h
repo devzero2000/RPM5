@@ -390,29 +390,6 @@ int headerGetEntry(Header h, uint32_t tag,
 }
 
 /** \ingroup header
- * Retrieve tag value using header internal array.
- * Get an entry using as little extra RAM as possible to return the tag value.
- * This is only an issue for RPM_STRING_ARRAY_TYPE.
- *
- * @param h		header
- * @param tag		tag
- * @retval *type	tag value data type (or NULL)
- * @retval *p		tag value(s) (or NULL)
- * @retval *c		number of values (or NULL)
- * @return		1 on success, 0 on failure
- */
-/*@unused@*/ static inline
-int headerGetEntryMinMemory(Header h, uint32_t tag,
-			/*@null@*/ /*@out@*/ hTYP_t type,
-			/*@null@*/ /*@out@*/ hRET_t * p, 
-			/*@null@*/ /*@out@*/ hCNT_t c)
-	/*@modifies *type, *p, *c @*/
-{
-    if (h == NULL) return 0;
-    return (h2hv(h)->hdrgetmin) (h, tag, type, p, c);
-}
-
-/** \ingroup header
  * Add tag to header.
  * Duplicate tags are okay, but only defined for iteration (with the
  * exceptions noted below). While you are allowed to add i18n string
@@ -438,9 +415,7 @@ int headerAddEntry(Header h, uint32_t tag, rpmTagType type,
 /** \ingroup header
  * Append element to tag array in header.
  * Appends item p to entry w/ tag and type as passed. Won't work on
- * RPM_STRING_TYPE. Any pointers into header memory returned from
- * headerGetEntryMinMemory() for this entry are invalid after this
- * call has been made!
+ * RPM_STRING_TYPE.
  *
  * @param h		header
  * @param tag		tag

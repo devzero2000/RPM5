@@ -60,6 +60,14 @@
     - jbj: C++ and C have different rules regarding typedef'd enums like rpmTag.
 	The definitions and usage are currently split awkwardly between
 	rpmtag.h and header.h.
+    - jbj: Heh, --import has *always* used the wrong data type for
+	Summary/Description/Group. The header that carries the pubkey
+	lacks RPMTAG_ARCH/RPMTAG_OS as well. Re-importing all pubkeys is
+	one solution, but perhaps a "just works" slam-dunk hack is needed
+	during --rebuildb, or with header extensions.
+    - jbj: markReplacedFiles() subtly rewrites header back into rpmdb
+	with altered RPMTAG_FILESTATES data. get/del/add sequence
+	is needed instead.
 
   o to be resolved before RPM 5.0.0:
     - rse: NEWS polishing

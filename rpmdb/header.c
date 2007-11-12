@@ -1974,36 +1974,6 @@ int headerGetEntry(Header h, uint32_t tag,
     return rc;
 }
 
-/** \ingroup header
- * Retrieve tag value using header internal array.
- * Get an entry using as little extra RAM as possible to return the tag value.
- * This is only an issue for RPM_STRING_ARRAY_TYPE.
- *
- * @param h		header
- * @param tag		tag
- * @retval *type	tag value data type (or NULL)
- * @retval *p		tag value(s) (or NULL)
- * @retval *c		number of values (or NULL)
- * @return		1 on success, 0 on failure
- */
-static
-int headerGetEntryMinMemory(Header h, uint32_t tag,
-			/*@null@*/ /*@out@*/ hTYP_t type,
-			/*@null@*/ /*@out@*/ hRET_t * p,
-			/*@null@*/ /*@out@*/ hCNT_t c)
-	/*@modifies *type, *p, *c @*/
-	/*@requires maxSet(type) >= 0 /\ maxSet(p) >= 0 /\ maxSet(c) >= 0 @*/
-{
-    void * sw;
-    int rc;
-
-    if ((sw = headerGetStats(h, 19)) != NULL)	/* RPMTS_OP_HDRGET */
-	(void) rpmswEnter(sw, 0);
-    rc = intGetEntry(h, tag, (rpmTagType *)type, (rpmTagData *)p, (rpmTagCount *)c, 1);
-    if (sw != NULL)	(void) rpmswExit(sw, 0);
-    return rc;
-}
-
 /**
  */
 static void copyData(rpmTagType type, rpmTagData * dest, rpmTagData * src,
@@ -2121,9 +2091,7 @@ int headerAddEntry(Header h, uint32_t tag, rpmTagType type, const void * p, rpmT
 /** \ingroup header
  * Append element to tag array in header.
  * Appends item p to entry w/ tag and type as passed. Won't work on
- * RPM_STRING_TYPE. Any pointers into header memory returned from
- * headerGetEntryMinMemory() for this entry are invalid after this
- * call has been made!
+ * RPM_STRING_TYPE.
  *
  * @param h		header
  * @param tag		tag
@@ -4020,7 +3988,7 @@ void headerCopyTags(Header headerFrom, Header headerTo, hTAG_t tagstocopy)
 	rpmTagCount c;
 	if (headerIsEntry(headerTo, *tagno))
 	    continue;
-	if (!headerGetEntryMinMemory(headerFrom, *tagno, (hTYP_t)&t, &p, &c))
+	if (!headerGetEntry(headerFrom, *tagno, (hTYP_t)&t, &p, &c))
 	    continue;
 	(void) headerAddEntry(headerTo, *tagno, t, p.ptr, c);
 	p.ptr = headerFreeData(p.ptr, t);
@@ -4047,7 +4015,6 @@ static struct HV_s hdrVec1 = {
     headerFreeTag,
     headerGetExtension,
     headerGetEntry,
-    headerGetEntryMinMemory,
     headerAddEntry,
     headerAppendEntry,
     headerAddOrAppendEntry,

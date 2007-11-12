@@ -1,4 +1,8 @@
 5.0a1 -> 5.0a2:
+    - jbj: hmmm, markReplacedFiles() breaks here, todo++. noone will notice.
+    - jbj: eliminate headerGetEntryMinMemory(), use headerGet{Entry,Extension}.
+    - jbj: invent pubkey/pubkey arch/os convention to avoid missing value pain.
+    - jbj: use RPM_I18NSTRING_TYPE where needed for pubkey imports.
     - rse: relocate <stdint.h> usage to "system.h", too.
     - rse: relocate <inttypes.h> usage to "system.h" and add corresponding Autoconf check
     - rse: fix type mismatches between function prototype and function definitions related to uint64_t
