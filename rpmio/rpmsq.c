@@ -204,7 +204,13 @@ static pthread_mutex_t rpmsigTbl_lock = PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP;
 
 #define	SAME_THREAD(_a, _b)	pthread_equal(((pthread_t)_a), ((pthread_t)_b))
 
-#define	ME()	((void *)pthread_self())
+#define ME() __tid2vp(pthread_self())
+static void *__tid2vp(pthread_t tid)
+{
+    union { pthread_t tid; void *vp; } u;
+    u.tid = tid;
+    return u.vp;
+}
 
 #else
 
@@ -218,7 +224,13 @@ static pthread_mutex_t rpmsigTbl_lock = PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP;
 
 #define	SAME_THREAD(_a, _b)	(42)
 
-#define	ME()	(((void *)getpid()))
+#define ME() __pid2vp(getpid())
+static void *__pid2vp(pid_t pid)
+{
+    union { pid_t pid; void *vp; } u;
+    u.pid = pid;
+    return u.vp;
+}
 
 #endif	/* HAVE_PTHREAD_H */
 
