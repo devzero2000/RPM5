@@ -495,6 +495,11 @@ AC_CHECK_FUNC(rand,          [], [ AC_CHECK_LIB(rand, rand) ])
 AC_CHECK_FUNC(getdomainname, [], [ AC_CHECK_LIB(nsl, getdomainname) ])
 AC_CHECK_FUNC(socket,        [], [ AC_CHECK_LIB(socket, socket) ])
 
+dnl # specific functions (for linking against *external* Berkeley-DB under Solaris)
+AC_CHECK_FUNC(fdatasync,     [], [ AC_CHECK_LIB(rt, fdatasync) ])
+AC_CHECK_FUNC(sched_yield,   [], [ AC_CHECK_LIB(rt, sched_yield) ])
+AC_CHECK_FUNC(clock_gettime, [], [ AC_CHECK_LIB(rt, clock_gettime) ])
+
 dnl # specific functions (generic)
 AC_CHECK_FUNCS(vsnprintf snprintf)
 

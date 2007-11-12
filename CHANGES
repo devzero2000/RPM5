@@ -1,4 +1,5 @@
 5.0a1 -> 5.0a2:
+    - rse: fix building against external Berkeley-DB under Solaris (where -lrt is required)
     - rse: fix distribution tarball by adding the missing misc/librpmmisc.vers
     - jbj: hmmm, tagno's 261 and 269 are fishy, skip tagTypeValidate for now.
     - jbj: add tagTypeValidate sanity check before flipping to implicit typing.
