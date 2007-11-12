@@ -398,9 +398,9 @@ fprintf(stderr, "    tarHeaderWrite(%p, %p)\n", fsm, st);
     if (fsm->lpath && fsm->lpath[0] != '0')
 	strncpy(hdr->linkname, fsm->lpath, sizeof(hdr->linkname));
 
-    sprintf(hdr->mode, "%07o", (st->st_mode & 00007777));
-    sprintf(hdr->uid, "%07o", (st->st_uid & 07777777));
-    sprintf(hdr->gid, "%07o", (st->st_gid & 07777777));
+    sprintf(hdr->mode, "%07o", (unsigned int)(st->st_mode & 00007777));
+    sprintf(hdr->uid, "%07o", (unsigned int)(st->st_uid & 07777777));
+    sprintf(hdr->gid, "%07o", (unsigned int)(st->st_gid & 07777777));
 
     sprintf(hdr->filesize, "%011o", (unsigned) (st->st_size & 037777777777));
     sprintf(hdr->mtime, "%011o", (unsigned) (st->st_mtime & 037777777777));
