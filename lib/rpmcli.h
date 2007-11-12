@@ -457,9 +457,9 @@ extern int rpmcliHashesCurrent;
 /*@unchecked@*/
 extern int rpmcliHashesTotal;
 /*@unchecked@*/
-extern unsigned long long rpmcliProgressCurrent;
+extern uint64_t rpmcliProgressCurrent;
 /*@unchecked@*/
-extern unsigned long long rpmcliProgressTotal;
+extern uint64_t rpmcliProgressTotal;
 
 /** \ingroup rpmcli
  * The rpm CLI generic transaction callback handler.
@@ -480,8 +480,8 @@ extern unsigned long long rpmcliProgressTotal;
 /*@null@*/
 void * rpmShowProgress(/*@null@*/ const void * arg,
 		const rpmCallbackType what,
-		const unsigned long long amount,
-		const unsigned long long total,
+		const uint64_t amount,
+		const uint64_t total,
 		/*@null@*/ fnpyKey key,
 		/*@null@*/ void * data)
 	/*@globals rpmcliHashesCurrent,
