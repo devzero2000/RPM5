@@ -1,4 +1,5 @@
 5.0a1 -> 5.0a2:
+    - rse: relocate <stdint.h> usage to "system.h", too.
     - rse: relocate <inttypes.h> usage to "system.h" and add corresponding Autoconf check
     - rse: fix type mismatches between function prototype and function definitions related to uint64_t
     - rse: replace still existing u_int32_t with uint32_t to get building under Solaris

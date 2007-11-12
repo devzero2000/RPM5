@@ -10,10 +10,6 @@
  */
 #include "system.h"
 
-#if defined(HAVE_STDINT_H)
-#include <stdint.h>
-#endif
-
 #include "md4.h"
 #include <beecrypt/mp.h>
 #include <beecrypt/endianness.h>
