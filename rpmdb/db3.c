@@ -251,7 +251,7 @@ static int db3_fsync_disable(/*@unused@*/ int fd)
  * @return		
  */
 static int db3is_alive(/*@unused@*/ DB_ENV *dbenv, pid_t pid, /*@unused@*/ db_threadid_t tid,
-		u_int32_t flags)
+		uint32_t flags)
 	/*@*/
 {
     int is_alive = 1;	/* assume all processes are alive */
@@ -1100,7 +1100,7 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
     DB_TXN * txnid = NULL;
 #endif
     DBTYPE dbi_type = DB_UNKNOWN;
-    u_int32_t oflags;
+    uint32_t oflags;
     int _printit;
 
     if (dbip)
