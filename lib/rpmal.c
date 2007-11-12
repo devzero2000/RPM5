@@ -151,7 +151,9 @@ static inline alNum alKey2Num(/*@unused@*/ /*@null@*/ const rpmal al,
 	/*@*/
 {
     /*@-nullret -temptrans -retalias @*/
-    return ((alNum)pkgKey);
+    union { alKey key; alNum num; } u;
+    u.key = pkgKey;
+    return u.num;
     /*@=nullret =temptrans =retalias @*/
 }
 
@@ -160,7 +162,9 @@ static inline alKey alNum2Key(/*@unused@*/ /*@null@*/ const rpmal al,
 	/*@*/
 {
     /*@-nullret -temptrans -retalias @*/
-    return ((alKey)pkgNum);
+    union { alKey key; alNum num; } u;
+    u.num = pkgNum;
+    return u.key;
     /*@=nullret =temptrans =retalias @*/
 }
 
@@ -670,7 +674,7 @@ void rpmalMakeIndex(rpmal al)
     ai->k = 0;
     for (i = 0; i < al->size; i++) {
 	alp = al->list + i;
-	rpmalAddProvides(al, (alKey)i, alp->provides, alp->tscolor);
+	rpmalAddProvides(al, alNum2Key(NULL, (alNum)i), alp->provides, alp->tscolor);
     }
 
     /* Reset size to the no. of provides added. */
