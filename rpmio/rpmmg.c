@@ -103,6 +103,6 @@ const char * rpmmgBuffer(rpmmg mg, const char * b, size_t nb)
     t = xstrdup(t);
 
 if (_rpmmg_debug)
-fprintf(stderr, "--> rpmmgBuffer(%p, %p[%d]) %s\n", mg, b, nb, t);
+fprintf(stderr, "--> rpmmgBuffer(%p, %p[%d]) %s\n", mg, b, (int)nb, t);
     return t;
 }

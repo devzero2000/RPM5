@@ -1155,7 +1155,7 @@ if (wf != NULL) {
     if ((rc = rpmwfNextXAR(wf)) != RPMRC_OK) return rc;
     if ((rc = rpmwfPullXAR(wf, "Header")) != RPMRC_OK) return rc;
 if (_jbj)
-fprintf(stderr, "==> wf->h %p[%d]\n", wf->h, wf->nh);
+fprintf(stderr, "==> wf->h %p[%d]\n", wf->h, (int)wf->nh);
 assert(wf->nh > sizeof(block));
     memcpy(block, wf->h, sizeof(block));
 } else {
@@ -1265,7 +1265,7 @@ if (wf != NULL) {
     if ((rc = rpmwfNextXAR(wf)) != RPMRC_OK) return rc;
     if ((rc = rpmwfPullXAR(wf, "Header")) != RPMRC_OK) return rc;
 if (_jbj)
-fprintf(stderr, "==> wf->h %p[%d]\n", wf->h, wf->nh);
+fprintf(stderr, "==> wf->h %p[%d]\n", wf->h, (int)wf->nh);
     h = headerLoad(wf->h);
 } else {
     h = headerRead(fd);

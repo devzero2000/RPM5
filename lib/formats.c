@@ -58,7 +58,7 @@ static int fssizesTag(Header h, HE_t he)
     rpmTagData fnames = { .ptr = NULL };
     rpmTagData fsizes = { .ptr = NULL };
     rpmTagData p;
-    uint_64 * usages;
+    uint64_t *usages;
     int numFiles;
     int rc = 1;		/* assume error */
     int xx, yy;
