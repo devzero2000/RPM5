@@ -389,7 +389,7 @@ assert(he->t == RPM_STRING_TYPE || he->t == RPM_UINT64_TYPE || he->t == RPM_BIN_
 	t = memset(alloca(tlen+1), 0, tlen+1);
 /*@-duplicatequals@*/
 	if (anint != 0)
-	    xx = snprintf(t, tlen, "%llu", anint);
+	    xx = snprintf(t, tlen, "%llu", (unsigned long long)anint);
 /*@=duplicatequals@*/
 	s = t;
 	xtag = "integer";
@@ -577,7 +577,7 @@ assert(he->t == RPM_STRING_TYPE || he->t == RPM_UINT64_TYPE || he->t == RPM_BIN_
 	int tlen = 64;
 	t = memset(alloca(tlen+1), 0, tlen+1);
 /*@-duplicatequals@*/
-	xx = snprintf(t, tlen, "%llu", anint);
+	xx = snprintf(t, tlen, "%llu", (unsigned long long)anint);
 /*@=duplicatequals@*/
 	s = t;
 	xtag = (element >= 0 ? "- " : NULL);

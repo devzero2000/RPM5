@@ -2209,7 +2209,7 @@ static int mireSkip (const rpmdbMatchIterator mi)
 		/*@switchbreak@*/ break;
 	    case RPM_UINT64_TYPE:
 		for (j = 0; j < he->c; j++) {
-		    sprintf(numbuf, "%llu", he->p.ui64p[j]);
+		    sprintf(numbuf, "%llu", (unsigned long long)he->p.ui64p[j]);
 		    rc = mireRegexec(mire, numbuf);
 		    if ((!rc && !mire->notmatch) || (rc && mire->notmatch))
 			anymatch++;

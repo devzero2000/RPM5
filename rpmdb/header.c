@@ -3039,7 +3039,7 @@ static char * shescapeFormat(HE_t he)
     } else if (he->t == RPM_UINT64_TYPE) {
 	nb = 40;
 	val = xmalloc(40);
-	snprintf(val, nb, "%llu", data.ui64p[0]);
+	snprintf(val, nb, "%llu", (unsigned long long)data.ui64p[0]);
 	val[nb-1] = '\0';
     } else if (he->t == RPM_STRING_TYPE) {
 	const char * s = data.str;

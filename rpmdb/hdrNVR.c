@@ -91,7 +91,7 @@ int headerMacrosLoad(Header h)
 	
 	if (val) {
 	    if (val == numbuf)
-		sprintf(numbuf, "%llu", ival);
+		sprintf(numbuf, "%llu", (unsigned long long)ival);
 	    addMacro(NULL, tagm->macroname, NULL, val, -1);
 	}
 	he->p.ptr = _free(he->p.ptr);
