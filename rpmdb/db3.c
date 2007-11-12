@@ -1339,6 +1339,11 @@ assert(dbenv);
 	} else {
 assert(rpmdb && rpmdb->db_dbenv);
 	    dbenv = rpmdb->db_dbenv;
+#define	PLD_CHROOT
+#ifdef	PLD_CHROOT
+	    if (rpmdb->db_chrootDone)
+		dbenv->set_data_dir(dbenv, dbhome);
+#endif
 	    rpmdb->db_opens++;
 	}
 	/*@=mods@*/
@@ -1507,9 +1512,15 @@ assert(rpmdb && rpmdb->db_dbenv);
 		dbpath = (!dbi->dbi_use_dbenv && !dbi->dbi_temporary)
 			? dbfullpath : dbfile;
 #else
+#ifdef	PLD_CHROOT
+		/* XXX Make dbpath relative. */
+		dbpath = (!dbi->dbi_use_dbenv)
+			? dbfullpath : dbfile;
+#else
 		dbpath = (!dbi->dbi_temporary)
 			? dbfullpath : dbfile;
-#endif
+#endif	/* PLD_CHROOT */
+#endif	/* HACK */
 
 #if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 1)
 		rc = (db->open)(db, txnid, dbpath, dbsubfile,

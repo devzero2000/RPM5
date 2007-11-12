@@ -16,9 +16,9 @@ int _rpmwf_debug = 0;
 
 rpmRC rpmwfFiniXAR(rpmwf wf)
 {
-#ifdef WITH_XAR
 if (_rpmwf_debug)
 fprintf(stderr, "*** rpmwfFiniXAR(%p)\n", wf);
+#ifdef WITH_XAR
     if (wf->i) {
 	xar_iter_free(wf->i);
 	wf->i = NULL;
@@ -27,14 +27,17 @@ fprintf(stderr, "*** rpmwfFiniXAR(%p)\n", wf);
 	xar_close(wf->x);
 	wf->x = NULL;
     }
-#endif
     return RPMRC_OK;
+#else
+    return RPMRC_FAIL;
+#endif
 }
 
 rpmRC rpmwfInitXAR(rpmwf wf, const char * fn, const char * fmode)
 {
 #ifdef WITH_XAR
     int flags = ((fmode && *fmode == 'w') ? WRITE : READ);
+#endif
 
 if (_rpmwf_debug)
 fprintf(stderr, "*** rpmwfInitXAR(%p, %s, %s)\n", wf, fn, fmode);
@@ -42,35 +45,37 @@ fprintf(stderr, "*** rpmwfInitXAR(%p, %s, %s)\n", wf, fn, fmode);
 	fn = wf->fn;
 assert(fn);
     
+#ifdef WITH_XAR
     wf->x = xar_open(fn, flags);
     if (flags == READ) {
 	wf->i = xar_iter_new();
 	wf->first = 1;
     }
-#endif
     return RPMRC_OK;
+#else
+    return RPMRC_FAIL;
+#endif
 }
 
 rpmRC rpmwfNextXAR(rpmwf wf)
 {
-#ifdef WITH_XAR
 if (_rpmwf_debug)
 fprintf(stderr, "*** rpmwfNextXAR(%p) first %d\n", wf, wf->first);
+#ifdef WITH_XAR
     if (wf->first) {
 	wf->f = xar_file_first(wf->x, wf->i);
 	wf->first = 0;
     } else
 	wf->f = xar_file_next(wf->i);
+#endif
 
     if (wf->f == NULL)
 	return RPMRC_NOTFOUND;
-#endif
     return RPMRC_OK;
 }
 
 rpmRC rpmwfPushXAR(rpmwf wf, const char * fn)
 {
-#ifdef WITH_XAR
     char * b = NULL;
     size_t nb = 0;
 
@@ -92,11 +97,12 @@ rpmRC rpmwfPushXAR(rpmwf wf, const char * fn)
     }
 
     if (wf->x && b && nb > 0) {
+#ifdef WITH_XAR
 	wf->f = xar_add_frombuffer(wf->x, NULL, fn, b, nb);
 	if (wf->f == NULL)
+#endif
 	    return RPMRC_FAIL;
     }
-#endif
     return RPMRC_OK;
 }
 
@@ -105,9 +111,10 @@ rpmRC rpmwfPullXAR(rpmwf wf, const char * fn)
     rpmRC rc = RPMRC_OK;
 #ifdef WITH_XAR
     const char * path = xar_get_path(wf->f);
+#endif
     char * b = NULL;
     size_t nb = 0;
-    int xx;
+    int xx = 1;		/* assume failure */
 
 #ifdef	NOTYET
     const char * name = NULL;
@@ -131,7 +138,9 @@ fprintf(stderr, "*** xx %d type %s\n", xx, type);
     else
 	assert(!strcmp(fn, path));
 
+#ifdef WITH_XAR
     xx = xar_extract_tobuffersz(wf->x, wf->f, &b, &nb);
+#endif
 if (_rpmwf_debug)
 fprintf(stderr, "*** xx %d %p[%lu]\n", xx, b, (unsigned long)nb);
     if (xx || b == NULL || nb == 0) {
@@ -160,7 +169,6 @@ fprintf(stderr, "*** %s %p[%lu]\n", xar_get_path(wf->f), b, (unsigned long)nb);
 	rc = RPMRC_NOTFOUND;
 
     path = _free(path);
-#endif
     return rc;
 }
 
@@ -318,7 +326,6 @@ fprintf(stderr, "*** rdRPM(%s) wf %p\n", rpmfn, wf);
 
 rpmwf rdXAR(const char * xarfn)
 {
-#ifdef WITH_XAR
     rpmwf wf;
     rpmRC rc;
 
@@ -338,14 +345,10 @@ fprintf(stderr, "*** rdXAR(%s) wf %p\n", xarfn, wf);
 
     (void) rpmwfFiniXAR(wf);
     return wf;
-#else
-    return NULL;
-#endif
 }
 
 rpmRC wrXAR(const char * xarfn, rpmwf wf)
 {
-#ifdef WITH_XAR
     rpmRC rc;
 
     if ((rc = rpmwfInitXAR(wf, xarfn, "w")) != RPMRC_OK)
@@ -366,9 +369,6 @@ exit:
     (void) rpmwfFiniXAR(wf);
 
     return rc;
-#else
-    return RPMRC_OK;
-#endif
 }
 
 rpmRC wrRPM(const char * rpmfn, rpmwf wf)

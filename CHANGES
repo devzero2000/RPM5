@@ -1,4 +1,6 @@
 5.0a1 -> 5.0a2:
+    - jbj: add (tenative) patch to handle cached chroot paths.
+    - jbj: change %system to --with-xar=internal, adding xar_* to loader map.
     - jbj: hmmm, markReplacedFiles() breaks here, todo++. noone will notice.
     - jbj: eliminate headerGetEntryMinMemory(), use headerGet{Entry,Extension}.
     - jbj: invent pubkey/pubkey arch/os convention to avoid missing value pain.

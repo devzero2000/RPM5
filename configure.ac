@@ -1002,7 +1002,7 @@ RPM_CHECK_LIB(
     [ if test ".$RPM_CHECK_LIB_LOCATION" = .internal; then
           AC_DEFINE(HAVE_XAR_H, 1, [Have <xar.h> header])
       fi
-      AC_MSG_WARN([XAR support is highly experimental])
+      AC_MSG_WARN([XAR support is under development])
     ], [])
 
 dnl # DMalloc
