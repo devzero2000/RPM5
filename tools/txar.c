@@ -1,7 +1,6 @@
 
 #define	RPM2XAR
 #include "system.h"
-#include <inttypes.h>
 #include "xar.h"
 #include <rpmio.h>
 #include <rpmcli.h>

@@ -1,7 +1,6 @@
 
 #define	RPM2XAR
 #include "system.h"
-#include <inttypes.h>
 #ifdef WITH_XAR
 #include "xar.h"
 #endif
