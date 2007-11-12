@@ -24,10 +24,14 @@ struct _dbiIndex db3dbi;
 /*@=exportlocal =exportheadervar@*/
 
 /*@unchecked@*/
+#if defined(WITH_DB)
 static int dbi_use_cursors;
+#endif
 
 /*@unchecked@*/
+#if defined(WITH_DB)
 static int dbi_tear_down;
+#endif
 
 /*@-compmempass -immediatetrans -exportlocal -exportheadervar@*/
 /** \ingroup db3
