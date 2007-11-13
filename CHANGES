@@ -1,4 +1,5 @@
 5.0a1 -> 5.0a2:
+    - jbj: don't cache unsatisfied Suggests:.
     - jbj: fix the last memory leak with -Kvv, recheck install/query paths.
     - jbj: functional -Kvv *.xar header-only DSA verify.
     - jbj: disable tagTypeValidate on --addsig and --delsig paths.

@@ -1075,6 +1075,9 @@ retry:
 unsatisfied:
     if (Flags & RPMSENSE_MISSINGOK) {
 	rc = 0;	/* dependency is unsatisfied, but just a hint. */
+#if defined(CACHE_DEPENDENCY_RESULT)
+	_cacheThisRC = 0;
+#endif
 	rpmdsNotify(dep, _("(hint skipped)"), rc);
     } else {
 	rc = 1;	/* dependency is unsatisfied */
