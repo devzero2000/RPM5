@@ -1,4 +1,5 @@
 5.0a1 -> 5.0a2:
+    - jbj: functional -Kvv *.xar header SHA1 and header+payload MD5 verify.
     - jbj: eliminate all but 1 of the memory leaks with -Kvv *.xar.
     - jbj: add he->signature tagTypeValidate disabler, sigtags no workie.
     - jbj: add (tenative) patch to handle cached chroot paths.

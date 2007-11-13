@@ -104,6 +104,8 @@ LIBRPMDB_0
     wrRPM;
     wrXAR;
     rpmwfFree;
+    rpmwfNextXAR;
+    rpmwfPullXAR;
     rpmVerifySignature;
     sqlitevec;
     tagTypeValidate;
