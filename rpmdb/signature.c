@@ -579,7 +579,9 @@ static int makeHDRSignature(Header sigh, const char * file, uint32_t sigTag,
 	he->t = RPM_STRING_TYPE;
 	he->p.str = SHA1;
 	he->c = 1;
+	he->signature = 1;
 	xx = hae(sigh, he, 0);
+	he->signature = 0;
 	if (!xx)
 	    goto exit;
 	ret = 0;
@@ -603,7 +605,9 @@ static int makeHDRSignature(Header sigh, const char * file, uint32_t sigTag,
 	he->t = RPM_BIN_TYPE;
 	he->p.ptr = pkt;
 	he->c = pktlen;
+	he->signature = 1;
 	xx = hae(sigh, he, 0);
+	he->signature = 0;
 	if (!xx)
 	    goto exit;
 	ret = 0;
@@ -628,7 +632,9 @@ static int makeHDRSignature(Header sigh, const char * file, uint32_t sigTag,
 	he->t = RPM_BIN_TYPE;
 	he->p.ptr = pkt;
 	he->c = pktlen;
+	he->signature = 1;
 	xx = hae(sigh, he, 0);
+	he->signature = 0;
 	if (!xx)
 	    goto exit;
 	ret = 0;
@@ -667,7 +673,9 @@ int rpmAddSignature(Header sigh, const char * file, uint32_t sigTag,
 	he->t = RPM_UINT32_TYPE;
 	he->p.ui32p = &pktlen;
 	he->c = 1;
+	he->signature = 1;
 	xx = hae(sigh, he, 0);
+	he->signature = 0;
 	if (!xx)
 	    break;
 	ret = 0;
@@ -681,7 +689,9 @@ int rpmAddSignature(Header sigh, const char * file, uint32_t sigTag,
 	he->t = RPM_BIN_TYPE;
 	he->p.ptr = pkt;
 	he->c = pktlen;
+	he->signature = 1;
 	xx = hae(sigh, he, 0);
+	he->signature = 0;
 	if (!xx)
 	    break;
 	ret = 0;
@@ -696,7 +706,9 @@ int rpmAddSignature(Header sigh, const char * file, uint32_t sigTag,
 	he->t = RPM_BIN_TYPE;
 	he->p.ptr = pkt;
 	he->c = pktlen;
+	he->signature = 1;
 	xx = hae(sigh, he, 0);
+	he->signature = 0;
 	if (!xx)
 	    break;
 	/* XXX Piggyback a header-only RSA signature as well. */
@@ -715,7 +727,9 @@ int rpmAddSignature(Header sigh, const char * file, uint32_t sigTag,
 	he->t = RPM_BIN_TYPE;
 	he->p.ptr = pkt;
 	he->c = pktlen;
+	he->signature = 1;
 	xx = hae(sigh, he, 0);
+	he->signature = 0;
 	if (!xx)
 	    break;
 	/* XXX Piggyback a header-only DSA signature as well. */

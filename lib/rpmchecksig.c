@@ -271,7 +271,9 @@ if (!_nosigh) {
 
 	/* Lose the immutable region (if present). */
 	he->tag = RPMTAG_HEADERSIGNATURES;
+	he->signature = 1;
 	xx = hge(sigh, he, 0);
+	he->signature = 0;
 	if (xx) {
 	    HE_t ohe = memset(alloca(sizeof(*ohe)), 0, sizeof(*ohe));
 	    HeaderIterator hi;
@@ -284,6 +286,7 @@ if (!_nosigh) {
 		goto exit;
 	    }
 
+	    ohe->signature = 1;
 	    oh = headerCopyLoad(he->p.ptr);
 	    for (hi = headerInitExtension(oh);
 		headerNextExtension(hi, ohe, 0);
@@ -295,6 +298,7 @@ if (!_nosigh) {
 	    }
 	    hi = headerFreeIterator(hi);
 	    oh = headerFree(oh);
+	    ohe->signature = 0;
 
 	    sigh = headerFree(sigh);
 	    sigh = headerLink(nh);
