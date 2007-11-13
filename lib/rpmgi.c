@@ -427,7 +427,7 @@ fprintf(stderr, "*** gi %p key %p[%d]\tmi %p\n", gi, gi->keyp, (int)gi->keylen, 
 		if (*a != '\0') {	/* XXX HACK: permit '=foo' */
 		    tag = tagValue(a);
 		    if (tag < 0) {
-			rpmlog(RPMLOG_ERR, _("unknown tag: \"%s\"\n"), a);
+			rpmlog(RPMLOG_NOTICE, _("unknown tag: \"%s\"\n"), a);
 			res = 1;
 		    }
 		}

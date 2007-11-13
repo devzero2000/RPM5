@@ -269,7 +269,7 @@ if (!_nosigh) {
 	/* Both fd and ofd are now closed. sigtarget contains tempfile name. */
 	/* ASSERT: fd == NULL && ofd == NULL */
 
-	/* Dump the immutable region (if present). */
+	/* Lose the immutable region (if present). */
 	he->tag = RPMTAG_HEADERSIGNATURES;
 	xx = hge(sigh, he, 0);
 	if (xx) {
@@ -1238,9 +1238,9 @@ assert(she->p.ptr != NULL);
 
 	if (res2) {
 	    if (rpmIsVerbose()) {
-		rpmlog(RPMLOG_ERR, "%s", buf);
+		rpmlog(RPMLOG_NOTICE, "%s", buf);
 	    } else {
-		rpmlog(RPMLOG_ERR, "%s%s%s%s%s%s%s%s\n", buf,
+		rpmlog(RPMLOG_NOTICE, "%s%s%s%s%s%s%s%s\n", buf,
 			_("NOT OK"),
 			(missingKeys[0] != '\0') ? _(" (MISSING KEYS:") : "",
 			missingKeys,
@@ -1252,9 +1252,9 @@ assert(she->p.ptr != NULL);
 	    }
 	} else {
 	    if (rpmIsVerbose()) {
-		rpmlog(RPMLOG_ERR, "%s", buf);
+		rpmlog(RPMLOG_NOTICE, "%s", buf);
 	    } else {
-		rpmlog(RPMLOG_ERR, "%s%s%s%s%s%s%s%s\n", buf,
+		rpmlog(RPMLOG_NOTICE, "%s%s%s%s%s%s%s%s\n", buf,
 			_("OK"),
 			(missingKeys[0] != '\0') ? _(" (MISSING KEYS:") : "",
 			missingKeys,
