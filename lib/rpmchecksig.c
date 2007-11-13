@@ -1031,7 +1031,7 @@ assert(dig != NULL);
 	if (sigh != NULL)
 	for (hi = headerInitExtension(sigh);
 	    headerNextExtension(hi, she, 0) != 0;
-	    /*@-noeffect@*/ xx = pgpSetSig(rpmtsDig(ts), 0, 0, NULL, 0) /*@=noeffect@*/)
+	    she->p.ptr = headerFreeData(she->p.ptr, she->t))
 	{
 
 assert(she->p.ptr != NULL);
@@ -1234,9 +1234,12 @@ assert(she->p.ptr != NULL);
 		}
 	    }
 	}
-	if (hi != NULL)
-	    hi = headerFreeIterator(hi);
+	hi = headerFreeIterator(hi);
 	she->signature = 0;
+	/* XXX clear the already free'd signature data. */
+/*@-noeffect@*/
+	xx = pgpSetSig(rpmtsDig(ts), 0, 0, NULL, 0);
+/*@=noeffect@*/
 
 	res += res2;
 

@@ -1078,8 +1078,8 @@ pgpDig pgpFreeDig(/*@only@*/ /*@null@*/ pgpDig dig)
     if (dig != NULL) {
 
 	/* Lose the header tag data. */
-	if (dig->sig)
-	    dig->sig = _free(dig->sig);
+	/* XXX this free should be done somewhere else. */
+	dig->sig = _free(dig->sig);
 
 	/* Dump the signature/pubkey data. */
 	pgpCleanDig(dig);
@@ -1155,10 +1155,6 @@ int pgpSetSig(pgpDig dig,
 	uint32_t sigtag, uint32_t sigtype, const void * sig, uint32_t siglen)
 {
     if (dig != NULL) {
-#if 0
-	if (dig->sig)
-	    dig->sig = _free(dig->sig);
-#endif
 	dig->sigtag = sigtag;
 	dig->sigtype = (sig ? sigtype : 0);
 /*@-assignexpose -kepttrans@*/
