@@ -279,6 +279,7 @@ exit 0
 %pubkey pubkeys/JBJ-GPG-KEY
 
 %rpmattr	%{_bindir}/rpm
+%rpmattr	%{_bindir}/rpmconstant
 
 %attr(0755, @RPMUSER@, @RPMGROUP@)	%dir %{_rpmhome}
 %attr(0644, @RPMUSER@, @RPMGROUP@)	%{_rpmhome}/macros
@@ -380,8 +381,10 @@ exit 0
 
 %files libs
 %{_libdir}/librpm-@LT_CURRENT@.@LT_REVISION@.so
+%{_libdir}/librpmconstant-@LT_CURRENT@.@LT_REVISION@.so
 %{_libdir}/librpmdb-@LT_CURRENT@.@LT_REVISION@.so
 %{_libdir}/librpmio-@LT_CURRENT@.@LT_REVISION@.so
+%{_libdir}/librpmmisc-@LT_CURRENT@.@LT_REVISION@.so
 %{_libdir}/librpmbuild-@LT_CURRENT@.@LT_REVISION@.so
 
 %files build
@@ -389,7 +392,6 @@ exit 0
 %rpmattr	%{_rpmhome}/brp-*
 %rpmattr	%{_rpmhome}/check-files
 %rpmattr	%{_rpmhome}/cross-build
-%rpmattr	%{_rpmhome}/debugedit
 %rpmattr	%{_rpmhome}/find-debuginfo.sh
 %rpmattr	%{_rpmhome}/find-lang.sh
 %rpmattr	%{_rpmhome}/find-prov.pl
@@ -398,10 +400,15 @@ exit 0
 %rpmattr	%{_rpmhome}/find-requires.perl
 %rpmattr	%{_rpmhome}/getpo.sh
 %rpmattr	%{_rpmhome}/http.req
+%rpmattr	%{_rpmhome}/install-sh
 %rpmattr	%{_rpmhome}/javadeps.sh
+%rpmattr	%{_rpmhome}/mono-find-provides
+%rpmattr	%{_rpmhome}/mono-find-requires
+%rpmattr	%{_rpmhome}/mkinstalldirs
 
 %rpmattr	%{_rpmhome}/executabledeps.sh
 %rpmattr	%{_rpmhome}/libtooldeps.sh
+%rpmattr	%{_rpmhome}/osgideps.pl
 %rpmattr	%{_rpmhome}/perldeps.pl
 %rpmattr	%{_rpmhome}/perl.prov
 %rpmattr	%{_rpmhome}/perl.req
@@ -409,7 +416,10 @@ exit 0
 %rpmattr	%{_rpmhome}/php.req
 %rpmattr	%{_rpmhome}/pkgconfigdeps.sh
 %rpmattr	%{_rpmhome}/pythondeps.sh
+%rpmattr	%{_rpmhome}/rpmcache
+%rpmattr	%{_rpmhome}/rpmcmp
 %rpmattr	%{_rpmhome}/rpmdeps
+%rpmattr	%{_rpmhome}/rpmdigest
 
 %rpmattr	%{_rpmhome}/symclash.*
 %rpmattr	%{_rpmhome}/u_pkg.sh
@@ -436,15 +446,22 @@ exit 0
 %{_libdir}/librpm.a
 %{_libdir}/librpm.la
 %{_libdir}/librpm.so
+%{_libdir}/librpmconstant.a
+%{_libdir}/librpmconstant.la
+%{_libdir}/librpmconstant.so
 %{_libdir}/librpmdb.a
 %{_libdir}/librpmdb.la
 %{_libdir}/librpmdb.so
 %{_libdir}/librpmio.a
 %{_libdir}/librpmio.la
 %{_libdir}/librpmio.so
+%{_libdir}/librpmmisc.a
+%{_libdir}/librpmmisc.la
+%{_libdir}/librpmmisc.so
 %{_libdir}/librpmbuild.a
 %{_libdir}/librpmbuild.la
 %{_libdir}/librpmbuild.so
+%{_libdir}/pkgconfig/rpm.pc
 
 %changelog
 * Sun Jun 17 2007 Jeff Johnson <jbj@rpm5.org> 5.0-0.2
