@@ -40,6 +40,9 @@ BuildRequires: sqlite-devel
 %if "%{with_bzip2}" == "yes"
 BuildRequires: bzip2-devel >= 1.0
 %endif
+%if "%{with_apidocs}" == "1"
+BuildRequires: doxygen graphviz
+%endif
 %if %{with_python_subpackage}
 BuildRequires: python-devel >= %{with_python_version}
 %endif
@@ -178,6 +181,10 @@ CFLAGS="$RPM_OPT_FLAGS" ./configure --prefix=%{_prefix} $WITH_PYTHON $WITH_PERL 
 make -C zlib || :
 
 make %{?_smp_mflags}
+
+%if %{with_apidocs}
+make apidocs
+%endif
 
 %install
 # XXX rpm needs functioning nptl for configure tests
