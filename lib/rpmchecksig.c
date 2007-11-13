@@ -966,7 +966,9 @@ assert(dig != NULL);
 #endif
 	) {
 	    he->tag = she->tag;
+	    he->signature = 1;
 	    xx = hge(sigh, he, 0);
+	    he->signature = 0;
 	    xx = pgpPrtPkts(he->p.ptr, he->c, dig, 0);
 	    he->p.ptr = _free(he->p.ptr);
 #if defined(SUPPORT_RPMV3_VERIFY_RSA)
@@ -1003,6 +1005,7 @@ assert(dig != NULL);
 	sprintf(b, "%s:%c", fn, (rpmIsVerbose() ? '\n' : ' ') );
 	b += strlen(b);
 
+	she->signature = 1;
 	if (sigh != NULL)
 	for (hi = headerInitExtension(sigh);
 	    headerNextExtension(hi, she, 0) != 0;
@@ -1211,6 +1214,7 @@ assert(she->p.ptr != NULL);
 	}
 	if (hi != NULL)
 	    hi = headerFreeIterator(hi);
+	she->signature = 0;
 
 	res += res2;
 
@@ -1301,7 +1305,10 @@ int rpmcliSign(rpmts ts, QVA_t qva, const char ** argv)
 	    res++;
 	}
 
-	if (fd != NULL) xx = Fclose(fd);
+	if (fd != NULL) {
+	    rpmpkgClean(fd);
+	    xx = Fclose(fd);
+	}
     }
 
     gi = rpmgiFree(gi);

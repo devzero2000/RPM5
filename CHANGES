@@ -1,4 +1,6 @@
 5.0a1 -> 5.0a2:
+    - jbj: eliminate all but 1 of the memory leaks with -Kvv *.xar.
+    - jbj: add he->signature tagTypeValidate disabler, sigtags no workie.
     - jbj: add (tenative) patch to handle cached chroot paths.
     - jbj: change %system to --with-xar=internal, adding xar_* to loader map.
     - jbj: hmmm, markReplacedFiles() breaks here, todo++. noone will notice.

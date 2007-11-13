@@ -738,7 +738,9 @@ assert(wf->ns >= (sizeof(block)+nb));
 	/* Print package component sizes. */
 
 	he->tag = RPMSIGTAG_SIZE;
+	he->signature = 1;
 	xx = hge(sigh, he, 0);
+	he->signature = 0;
 	if (xx) {
 	    size_t datasize = he->p.ui32p[0];
 	    rc = printSize(fd, sigSize, pad, datasize);

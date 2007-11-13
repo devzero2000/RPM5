@@ -111,6 +111,8 @@ rpmRC rpmwfPullXAR(rpmwf wf, const char * fn)
     rpmRC rc = RPMRC_OK;
 #ifdef WITH_XAR
     const char * path = xar_get_path(wf->f);
+#else
+    const char * path = "*** WITHOUT_XAR ***";
 #endif
     char * b = NULL;
     size_t nb = 0;
@@ -149,7 +151,7 @@ fprintf(stderr, "*** xx %d %p[%lu]\n", xx, b, (unsigned long)nb);
     }
 
 if (_rpmwf_debug)
-fprintf(stderr, "*** %s %p[%lu]\n", xar_get_path(wf->f), b, (unsigned long)nb);
+fprintf(stderr, "*** %s %p[%lu]\n", path, b, (unsigned long)nb);
     if (!strcmp(fn, "Lead")) {
 	wf->l = b;
 	wf->nl = nb;
