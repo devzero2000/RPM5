@@ -1,4 +1,5 @@
 5.0a1 -> 5.0a2:
+    - jbj: functional -Kvv *.xar header-only DSA verify.
     - jbj: disable tagTypeValidate on --addsig and --delsig paths.
     - jbj: remap rpmlog levels to status quo ante.
     - jbj: functional -Kvv *.xar header SHA1 and header+payload MD5 verify.
