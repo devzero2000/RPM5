@@ -33,7 +33,16 @@ elif echo $COMPRESSION |grep -q cpio; then
 else
 	# Most versions of file don't support LZMA, therefore we assume
 	# anything not detected is LZMA
-	DECOMPRESSOR="lzmash -d -c"
+	DECOMPRESSOR=`which unlzma 2>/dev/null`
+	case "$DECOMPRESSOR" in
+	    /* ) ;;
+	    *  ) DECOMPRESSOR=`which lzmash 2>/dev/null`
+	         case "$DECOMPRESSOR" in
+	             /* ) DECOMPRESSOR="lzmash -d -c" ;;
+	             *  ) DECOMPRESSOR=cat ;;
+	         esac
+	         ;;
+	esac
 fi
 
 dd if=$pkg ibs=$o skip=1 2>/dev/null | $DECOMPRESSOR
