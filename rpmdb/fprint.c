@@ -217,12 +217,12 @@ int fpEqual(const void * key1, const void * key2)
 }
 
 void fpLookupList(fingerPrintCache cache, const char ** dirNames, 
-		  const char ** baseNames, const uint_32 * dirIndexes, 
-		  int fileCount, fingerPrint * fpList)
+		  const char ** baseNames, const uint32_t * dirIndexes, 
+		  uint32_t fileCount, fingerPrint * fpList)
 {
-    int i;
+    unsigned i;
 
-    for (i = 0; i < fileCount; i++) {
+    for (i = 0; i < (unsigned) fileCount; i++) {
 	/* If this is in the same directory as the last file, don't bother
 	   redoing all of this work */
 	if (i > 0 && dirIndexes[i - 1] == dirIndexes[i]) {
@@ -254,8 +254,8 @@ void fpLookupHeader(fingerPrintCache cache, Header h, fingerPrint * fpList)
     HE_t he = &he_s;
     const char ** baseNames;
     const char ** dirNames;
-    uint_32 * dirIndexes;
-    int fileCount;
+    uint32_t * dirIndexes;
+    rpmTagCount fileCount;
     int xx;
 
     he->tag = RPMTAG_BASENAMES;

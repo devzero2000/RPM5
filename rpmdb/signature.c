@@ -32,7 +32,7 @@ int rpmTempFile(const char * prefix, const char ** fnptr, void * fdptr)
     static int _initialized = 0;
     int temput;
     FD_t fd = NULL;
-    int ran;
+    unsigned int ran;
 
     if (!prefix) prefix = "";
 
@@ -45,7 +45,8 @@ int rpmTempFile(const char * prefix, const char ** fnptr, void * fdptr)
     }
 
     /* XXX should probably use mkstemp here */
-    srand(time(NULL));
+    ran = (unsigned) time(NULL);
+    srand(ran);
     ran = rand() % 100000;
 
     /* maybe this should use link/stat? */
@@ -53,7 +54,7 @@ int rpmTempFile(const char * prefix, const char ** fnptr, void * fdptr)
     do {
 	char tfnbuf[64];
 #ifndef	NOTYET
-	sprintf(tfnbuf, "rpm-tmp.%d", ran++);
+	sprintf(tfnbuf, "rpm-tmp.%u", ran++);
 	tempfn = _free(tempfn);
 	tempfn = rpmGenPath(prefix, tpmacro, tfnbuf);
 #else
@@ -312,11 +313,11 @@ static int makePGPSignature(const char * file, /*@unused@*/ uint32_t * sigTagp,
 	rc = 0;
 	fd = Fopen(sigfile, "r.fdio");
 	if (fd != NULL && !Ferror(fd)) {
-	    rc = timedRead(fd, (void *)*pktp, *pktlenp);
+	    rc = (int) timedRead(fd, (void *)*pktp, *pktlenp);
 	    if (sigfile) (void) Unlink(sigfile);
 	    (void) Fclose(fd);
 	}
-	if (rc != *pktlenp) {
+	if ((unsigned)rc != *pktlenp) {
 	    *pktp = _free(*pktp);
 	    rpmlog(RPMLOG_ERR, _("unable to read the signature\n"));
 	    return 1;
@@ -357,7 +358,8 @@ static int makeGPGSignature(const char * file, uint32_t * sigTagp,
 		fileSystem, internalState @*/
 {
     char * sigfile = alloca(strlen(file)+sizeof(".sig"));
-    int pid, status;
+    pid_t pid;
+    int status;
     int inpipe[2];
     FILE * fpipe;
     struct stat st;
@@ -447,7 +449,7 @@ static int makeGPGSignature(const char * file, uint32_t * sigTagp,
     }
 
     *pktlenp = st.st_size;
-    rpmlog(RPMLOG_DEBUG, D_("GPG sig size: %d\n"), *pktlenp);
+    rpmlog(RPMLOG_DEBUG, D_("GPG sig size: %u\n"), (unsigned)*pktlenp);
     *pktp = xmalloc(*pktlenp);
 
     {	FD_t fd;
@@ -455,18 +457,18 @@ static int makeGPGSignature(const char * file, uint32_t * sigTagp,
 	rc = 0;
 	fd = Fopen(sigfile, "r.fdio");
 	if (fd != NULL && !Ferror(fd)) {
-	    rc = timedRead(fd, (void *)*pktp, *pktlenp);
+	    rc = (int) timedRead(fd, (void *)*pktp, *pktlenp);
 	    if (sigfile) (void) Unlink(sigfile);
 	    (void) Fclose(fd);
 	}
-	if (rc != *pktlenp) {
+	if ((uint32_t)rc != *pktlenp) {
 	    *pktp = _free(*pktp);
 	    rpmlog(RPMLOG_ERR, _("unable to read the signature\n"));
 	    return 1;
 	}
     }
 
-    rpmlog(RPMLOG_DEBUG, D_("Got %d bytes of GPG sig\n"), *pktlenp);
+    rpmlog(RPMLOG_DEBUG, D_("Got %u bytes of GPG sig\n"), (unsigned)*pktlenp);
 
     /* Parse the signature, change signature tag as appropriate. */
     dig = pgpNewDig(0);
@@ -685,7 +687,7 @@ int rpmAddSignature(Header sigh, const char * file, uint32_t sigTag,
     case RPMSIGTAG_MD5:
 	pktlen = 16;
 	pkt = memset(alloca(pktlen), 0, pktlen);
-	if (dodigest(PGPHASHALGO_MD5, file, pkt, 0, NULL))
+	if (dodigest(PGPHASHALGO_MD5, file, (unsigned char *)pkt, 0, NULL))
 	    break;
 	he->tag = sigTag;
 	he->t = RPM_BIN_TYPE;
@@ -752,7 +754,8 @@ int rpmCheckPassPhrase(const char * passPhrase)
 {
     const char *pw;
     int p[2];
-    int pid, status;
+    pid_t pid;
+    int status;
     int rc;
     int xx;
 
@@ -848,8 +851,8 @@ int rpmCheckPassPhrase(const char * passPhrase)
 	pw = passPhrase;
 
     xx = close(p[0]);
-    xx = write(p[1], pw, strlen(pw));
-    xx = write(p[1], "\n", 1);
+    xx = (int) write(p[1], pw, strlen(pw));
+    xx = (int) write(p[1], "\n", 1);
     xx = close(p[1]);
 
 /*@-mods@*/
@@ -1180,7 +1183,7 @@ assert(md5ctx != NULL);	/* XXX can't happen. */
     }
 
     /* Generate RSA modulus parameter. */
-    {	unsigned int nbits = MP_WORDS_TO_BITS(dig->c.size);
+    {	unsigned int nbits = (unsigned) MP_WORDS_TO_BITS(dig->c.size);
 	unsigned int nb = (nbits + 7) >> 3;
 	const char * hexstr;
 	char * tt;
@@ -1295,7 +1298,7 @@ assert(sigp != NULL);
 	    xx = rpmDigestUpdate(ctx, sigp->hash, sigp->hashlen);
 
 	if (sigp->version == 4) {
-	    int nb = sigp->hashlen;
+	    uint32_t nb = sigp->hashlen;
 	    byte trailer[6];
 	    nb = htonl(nb);
 	    trailer[0] = sigp->version;
@@ -1399,7 +1402,7 @@ rpmVerifySignature(void * _dig, char * result)
 	break;
 #endif
     default:
-	sprintf(result, _("Signature: UNKNOWN (%d)\n"), sigtag);
+	sprintf(result, _("Signature: UNKNOWN (%u)\n"), (unsigned)sigtag);
 	res = RPMRC_NOTFOUND;
 	break;
     }

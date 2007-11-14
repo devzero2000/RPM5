@@ -223,16 +223,16 @@ struct headerTagIndices_s {
     int byNameSize;			/*!< no. of entries. */
     int (*byNameCmp) (const void * avp, const void * bvp)
         /*@*/;				/*!< compare entries by name. */
-    int (*tagValue) (const char * name)
+    uint32_t (*tagValue) (const char * name)
 	/*@*/;				/* return value from name. */
 /*@relnull@*/
     headerTagTableEntry * byValue;	/*!< header tags sorted by value. */
     int byValueSize;			/*!< no. of entries. */
     int (*byValueCmp) (const void * avp, const void * bvp)
         /*@*/;				/*!< compare entries by value. */
-    const char * (*tagName) (int value)
+    const char * (*tagName) (uint32_t value)
 	/*@*/;				/* Return name from value. */
-    int (*tagType) (int value)
+    uint32_t (*tagType) (uint32_t value)
 	/*@*/;				/* Return type from value. */
 };
 #endif

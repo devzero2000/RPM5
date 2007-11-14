@@ -98,8 +98,8 @@ static int open_dso(const char * path, /*@null@*/ pid_t * pidp, /*@null@*/ size_
 	if (shdr.sh_type != SHT_DYNAMIC)
 	    continue;
 	while (!bingo && (data = elf_getdata (scn, data)) != NULL) {
-	    int maxndx = data->d_size / shdr.sh_entsize;
-	    int ndx;
+	    unsigned maxndx = (unsigned) (data->d_size / shdr.sh_entsize);
+	    unsigned ndx;
 
             for (ndx = 0; ndx < maxndx; ++ndx) {
 /*@-uniondef@*/
@@ -226,7 +226,7 @@ int dodigest(int digestalgo, const char * fn, unsigned char * digest, int asAsci
 	
 	fdInitDigest(fd, digestalgo, 0);
 	fsize = 0;
-	while ((rc = Fread(buf, sizeof(buf[0]), sizeof(buf), fd)) > 0)
+	while ((rc = (int) Fread(buf, sizeof(buf[0]), sizeof(buf), fd)) > 0)
 	    fsize += rc;
 	fdFiniDigest(fd, digestalgo, &dsum, &dlen, asAscii);
 	if (Ferror(fd))

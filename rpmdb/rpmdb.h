@@ -68,9 +68,9 @@ typedef /*@abstract@*/ struct _dbiIndex * dbiIndex;
  * and was identical to the "data saved" structure below.
  */
 struct _dbiIndexItem {
-    unsigned int hdrNum;		/*!< header instance in db */
-    unsigned int tagNum;		/*!< tag index in header */
-    unsigned int fpNum;			/*!< finger print index */
+    uint32_t hdrNum;			/*!< header instance in db */
+    uint32_t tagNum;			/*!< tag index in header */
+    uint32_t fpNum;			/*!< finger print index */
 };
 
 /** \ingroup dbi
@@ -407,7 +407,7 @@ struct _dbiIndex {
 /*@refcounted@*/
     rpmdb dbi_rpmdb;		/*!< the parent rpm database */
     rpmTag dbi_rpmtag;		/*!< rpm tag used for index */
-    int	dbi_jlen;		/*!< size of join key */
+    size_t dbi_jlen;		/*!< size of join key */
 
 /*@only@*//*@relnull@*/
     DB * dbi_db;		/*!< Berkeley DB * handle */

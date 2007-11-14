@@ -479,7 +479,7 @@ static int dbt2set(dbiIndex dbi, DBT * data, /*@out@*/ dbiIndexSet * setp)
     }
 
     set = xmalloc(sizeof(*set));
-    set->count = data->size / dbi->dbi_jlen;
+    set->count = (int) (data->size / dbi->dbi_jlen);
     set->recs = xmalloc(set->count * sizeof(*(set->recs)));
 
 /*@-sizeoftype @*/
@@ -536,13 +536,13 @@ static int set2dbt(dbiIndex dbi, DBT * data, dbiIndexSet set)
 {
     int _dbbyteswapped;
     char * tdbir;
-    int i;
+    unsigned i;
 
     if (dbi == NULL || data == NULL || set == NULL)
 	return -1;
     _dbbyteswapped = dbiByteSwapped(dbi);
 
-    data->size = set->count * (dbi->dbi_jlen);
+    data->size = (u_int32_t)(set->count * (dbi->dbi_jlen));
     if (data->size == 0) {
 	data->data = NULL;
 	return 0;
@@ -680,12 +680,12 @@ unsigned int dbiIndexSetCount(dbiIndexSet set) {
 
 /* XXX transaction.c */
 unsigned int dbiIndexRecordOffset(dbiIndexSet set, int recno) {
-    return set->recs[recno].hdrNum;
+    return (unsigned) set->recs[recno].hdrNum;
 }
 
 /* XXX transaction.c */
 unsigned int dbiIndexRecordFileNumber(dbiIndexSet set, int recno) {
-    return set->recs[recno].tagNum;
+    return (unsigned) set->recs[recno].tagNum;
 }
 
 /* XXX transaction.c */
@@ -1450,7 +1450,7 @@ static int rpmdbFindByFile(rpmdb db, /*@null@*/ const char * filespec,
 /*@-temptrans@*/
 key->data = (void *) baseName;
 /*@=temptrans@*/
-key->size = strlen(baseName);
+key->size = (u_int32_t) strlen(baseName);
 if (key->size == 0) key->size++;	/* XXX "/" fixup. */
 
 	rc = dbiGet(dbi, dbcursor, key, data, DB_SET);
@@ -1488,7 +1488,7 @@ if (rc == 0)
     while (i < allMatches->count) {
 	const char ** baseNames;
 	const char ** dirNames;
-	uint_32 * dirIndexes;
+	uint32_t * dirIndexes;
 	unsigned int offset = dbiIndexRecordOffset(allMatches, i);
 	unsigned int prevoff;
 	Header h;
@@ -1579,7 +1579,7 @@ memset(data, 0, sizeof(*data));
 /*@-temptrans@*/
 key->data = (void *) name;
 /*@=temptrans@*/
-key->size = strlen(name);
+key->size = (u_int32_t) strlen(name);
 
     xx = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, 0);
     rc = dbiGet(dbi, dbcursor, key, data, DB_SET);
@@ -1646,7 +1646,7 @@ static rpmRC dbiFindMatches(dbiIndex dbi, DBC * dbcursor,
 /*@-temptrans@*/
 key->data = (void *) name;
 /*@=temptrans@*/
-key->size = strlen(name);
+key->size = (u_int32_t) strlen(name);
 
     rc = dbiGet(dbi, dbcursor, key, data, DB_SET);
 
@@ -1853,11 +1853,11 @@ static int miFreeHeader(rpmdbMatchIterator mi, dbiIndex dbi)
 
 	(void) headerGetMagic(mi->mi_h, NULL, &nb);
 /*@i@*/	key->data = (void *) &mi->mi_prevoffset;
-	key->size = sizeof(mi->mi_prevoffset);
+	key->size = (u_int32_t) sizeof(mi->mi_prevoffset);
 	{   size_t len;
 	    len = 0;
 	    data->data = headerUnload(mi->mi_h, &len);
-	    data->size = len;	/* XXX data->size is uint32_t */
+	    data->size = (u_int32_t) len;	/* XXX data->size is uint32_t */
 #ifdef	DYING	/* XXX this is needed iff headerSizeof() is used instead. */
 	    data->size -= nb;	/* XXX HEADER_MAGIC_NO */
 #endif
@@ -2152,7 +2152,7 @@ static int mireSkip (const rpmdbMatchIterator mi)
     miRE mire;
     int ntags = 0;
     int nmatches = 0;
-    int i, j;
+    int i;
     int rc;
 
     if (mi->mi_h == NULL)	/* XXX can't happen */
@@ -2182,33 +2182,34 @@ static int mireSkip (const rpmdbMatchIterator mi)
 
 	anymatch = 0;		/* no matches yet */
 	while (1) {
+	    unsigned j;
 	    switch (he->t) {
 	    case RPM_UINT8_TYPE:
-		for (j = 0; j < he->c; j++) {
-		    sprintf(numbuf, "%u", he->p.ui8p[j]);
+		for (j = 0; j < (unsigned) he->c; j++) {
+		    sprintf(numbuf, "%u", (unsigned) he->p.ui8p[j]);
 		    rc = mireRegexec(mire, numbuf);
 		    if ((!rc && !mire->notmatch) || (rc && mire->notmatch))
 			anymatch++;
 		}
 		/*@switchbreak@*/ break;
 	    case RPM_UINT16_TYPE:
-		for (j = 0; j < he->c; j++) {
-		    sprintf(numbuf, "%u", he->p.ui16p[j]);
+		for (j = 0; j < (unsigned) he->c; j++) {
+		    sprintf(numbuf, "%u", (unsigned) he->p.ui16p[j]);
 		    rc = mireRegexec(mire, numbuf);
 		    if ((!rc && !mire->notmatch) || (rc && mire->notmatch))
 			anymatch++;
 		}
 		/*@switchbreak@*/ break;
 	    case RPM_UINT32_TYPE:
-		for (j = 0; j < he->c; j++) {
-		    sprintf(numbuf, "%u", he->p.ui32p[j]);
+		for (j = 0; j < (unsigned) he->c; j++) {
+		    sprintf(numbuf, "%u", (unsigned) he->p.ui32p[j]);
 		    rc = mireRegexec(mire, numbuf);
 		    if ((!rc && !mire->notmatch) || (rc && mire->notmatch))
 			anymatch++;
 		}
 		/*@switchbreak@*/ break;
 	    case RPM_UINT64_TYPE:
-		for (j = 0; j < he->c; j++) {
+		for (j = 0; j < (unsigned) he->c; j++) {
 		    sprintf(numbuf, "%llu", (unsigned long long)he->p.ui64p[j]);
 		    rc = mireRegexec(mire, numbuf);
 		    if ((!rc && !mire->notmatch) || (rc && mire->notmatch))
@@ -2221,7 +2222,7 @@ static int mireSkip (const rpmdbMatchIterator mi)
 		    anymatch++;
 		/*@switchbreak@*/ break;
 	    case RPM_STRING_ARRAY_TYPE:
-		for (j = 0; j < he->c; j++) {
+		for (j = 0; j < (unsigned) he->c; j++) {
 		    rc = mireRegexec(mire, he->p.argv[j]);
 		    if ((!rc && !mire->notmatch) || (rc && mire->notmatch)) {
 			anymatch++;
@@ -2346,11 +2347,10 @@ if (dbiByteSwapped(dbi) == 1)
 	    keyp = &mi_offset;
 	    keylen = sizeof(mi_offset.ui);
 	} else {
-
-	    key->data = keyp = (void *)mi->mi_keyp;
-	    key->size = keylen = mi->mi_keylen;
+	    key->data = (void *)mi->mi_keyp;
+	    key->size = (u_int32_t) mi->mi_keylen;
 	    data->data = uh;
-	    data->size = uhlen;
+	    data->size = (u_int32_t) uhlen;
 #if !defined(_USE_COPY_LOAD)
 	    data->flags |= DB_DBT_MALLOC;
 #endif
@@ -2373,7 +2373,7 @@ if (dbiByteSwapped(dbi) == 1)
 		memcpy(&mi_offset, keyp, sizeof(mi_offset.ui));
 if (dbiByteSwapped(dbi) == 1)
     _DBSWAP(mi_offset);
-		mi->mi_offset = mi_offset.ui;
+		mi->mi_offset = (unsigned) mi_offset.ui;
 	    }
 
 	    /* Terminate on error or end of keys */
@@ -2394,7 +2394,7 @@ if (dbiByteSwapped(dbi) == 1)
     /* Retrieve next header blob for index iterator. */
     if (uh == NULL) {
 	key->data = keyp;
-	key->size = keylen;
+	key->size = (u_int32_t) keylen;
 #if !defined(_USE_COPY_LOAD)
 	data->flags |= DB_DBT_MALLOC;
 #endif
@@ -2699,8 +2699,8 @@ rpmdbMatchIterator rpmdbInitIterator(rpmdb db, rpmTag rpmtag,
 /*@-temptrans@*/
 key->data = (void *) keyp;
 /*@=temptrans@*/
-key->size = keylen;
-if (key->data && key->size == 0) key->size = strlen((char *)key->data);
+key->size = (u_int32_t) keylen;
+if (key->data && key->size == 0) key->size = (u_int32_t) strlen((char *)key->data);
 if (key->data && key->size == 0) key->size++;	/* XXX "/" fixup. */
 
 /*@-nullstate@*/
@@ -2843,7 +2843,7 @@ memset(data, 0, sizeof(*data));
 	for (dbix = 0; dbix < db->db_ndbi; dbix++) {
 	    dbiIndex dbi;
 	    byte * bin = NULL;
-	    int i, j;
+	    int i;
 
 	    dbi = NULL;
 	    he->tag = db->db_tagn[dbix];
@@ -2872,7 +2872,7 @@ if (dbiByteSwapped(dbi) == 1)
     _DBSWAP(mi_offset);
 		key->data = &mi_offset;
 /*@=immediatetrans@*/
-		key->size = sizeof(mi_offset.ui);
+		key->size = (u_int32_t) sizeof(mi_offset.ui);
 
 		rc = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, DB_WRITECURSOR);
 		rc = dbiGet(dbi, dbcursor, key, data, DB_SET);
@@ -2916,7 +2916,7 @@ if (dbiByteSwapped(dbi) == 1)
 
 	    printed = 0;
 	    xx = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, DB_WRITECURSOR);
-	    for (i = 0; i < he->c; i++) {
+	    for (i = 0; i < (unsigned) he->c; i++) {
 		dbiIndexSet set;
 		int stringvalued;
 
@@ -2935,23 +2935,23 @@ if (dbiByteSwapped(dbi) == 1)
 		stringvalued = 0;
 		switch (he->t) {
 		case RPM_UINT8_TYPE:
-		    key->size = sizeof(*he->p.ui8p);
+		    key->size = (u_int32_t) sizeof(*he->p.ui8p);
 /*@i@*/		    key->data = he->p.ui8p + i;
 		    /*@switchbreak@*/ break;
 		case RPM_UINT16_TYPE:
-		    key->size = sizeof(*he->p.ui16p);
+		    key->size = (u_int32_t) sizeof(*he->p.ui16p);
 /*@i@*/		    key->data = he->p.ui16p + i;
 		    /*@switchbreak@*/ break;
 		case RPM_UINT32_TYPE:
-		    key->size = sizeof(*he->p.ui32p);
+		    key->size = (u_int32_t) sizeof(*he->p.ui32p);
 /*@i@*/		    key->data = he->p.ui32p + i;
 		    /*@switchbreak@*/ break;
 		case RPM_UINT64_TYPE:
-		    key->size = sizeof(*he->p.ui64p);
+		    key->size = (u_int32_t) sizeof(*he->p.ui64p);
 /*@i@*/		    key->data = he->p.ui64p + i;
 		    /*@switchbreak@*/ break;
 		case RPM_BIN_TYPE:
-		    key->size = he->c;
+		    key->size = (u_int32_t) he->c;
 /*@i@*/		    key->data = he->p.ptr;
 		    he->c = 1;		/* XXX break out of loop. */
 		    /*@switchbreak@*/ break;
@@ -2965,13 +2965,14 @@ if (dbiByteSwapped(dbi) == 1)
 			const char * s = he->p.argv[i];
 			size_t dlen = strlen(s);
 			byte * t;
+			unsigned j;
 assert((dlen & 1) == 0);
 			dlen /= 2;
 			bin = t = xcalloc(1, dlen);
-			for (j = 0; j < dlen; j++, t++, s += 2)
+			for (j = 0; j < (unsigned) dlen; j++, t++, s += 2)
 			    *t = (nibble(s[0]) << 4) | nibble(s[1]);
 			key->data = bin;
-			key->size = dlen;
+			key->size = (u_int32_t) dlen;
 			/*@switchbreak@*/ break;
 		    }
 		    /* Extract the pubkey id from the base64 blob. */
@@ -2982,13 +2983,13 @@ assert((dlen & 1) == 0);
 			if (nbin <= 0)
 			    /*@innercontinue@*/ continue;
 			key->data = bin;
-			key->size = nbin;
+			key->size = (u_int32_t) nbin;
 			/*@switchbreak@*/ break;
 		    }
 		    /*@fallthrough@*/
 		default:
 /*@i@*/		    key->data = (void *) he->p.argv[i];
-		    key->size = strlen(he->p.argv[i]);
+		    key->size = (u_int32_t) strlen(he->p.argv[i]);
 		    stringvalued = 1;
 		    /*@switchbreak@*/ break;
 		}
@@ -3000,8 +3001,8 @@ assert((dlen & 1) == 0);
 				(char *)key->data, tagName(dbi->dbi_rpmtag));
 		    } else {
 			rpmlog(RPMLOG_DEBUG,
-				D_("removing %d entries from %s index.\n"),
-				he->c, tagName(dbi->dbi_rpmtag));
+				D_("removing %u entries from %s index.\n"),
+				(unsigned) he->c, tagName(dbi->dbi_rpmtag));
 		    }
 		    printed++;
 		}
@@ -3017,7 +3018,7 @@ assert((dlen & 1) == 0);
 
 		set = NULL;
 
-if (key->size == 0) key->size = strlen((char *)key->data);
+if (key->size == 0) key->size = (u_int32_t) strlen((char *)key->data);
 if (key->size == 0) key->size++;	/* XXX "/" fixup. */
  
 /*@-compmempass@*/
@@ -3112,7 +3113,7 @@ DBT * data = alloca(sizeof(*data));
     int count = 0;
 #endif
     const char ** dirNames;
-    uint_32 * dirIndexes;
+    uint32_t * dirIndexes;
     dbiIndex dbi;
     int dbix;
     union _dbswap mi_offset;
@@ -3199,9 +3200,9 @@ memset(data, 0, sizeof(*data));
 
 /*@-compmempass@*/
 	key->data = keyp;
-	key->size = keylen;
+	key->size = (u_int32_t) keylen;
 /*@i@*/	data->data = datap;
-	data->size = datalen;
+	data->size = (u_int32_t) datalen;
 	ret = dbiGet(dbi, dbcursor, key, data, DB_SET);
 	keyp = key->data;
 	keylen = key->size;
@@ -3214,7 +3215,7 @@ memset(data, 0, sizeof(*data));
 	    memcpy(&mi_offset, datap, sizeof(mi_offset.ui));
 	    if (dbiByteSwapped(dbi) == 1)
 		_DBSWAP(mi_offset);
-	    hdrNum = mi_offset.ui;
+	    hdrNum = (unsigned) mi_offset.ui;
 	}
 	++hdrNum;
 	mi_offset.ui = hdrNum;
@@ -3228,11 +3229,11 @@ memset(data, 0, sizeof(*data));
 	}
 
 	key->data = keyp;
-	key->size = keylen;
+	key->size = (u_int32_t) keylen;
 /*@-kepttrans@*/
 	data->data = datap;
 /*@=kepttrans@*/
-	data->size = datalen;
+	data->size = (u_int32_t) datalen;
 
 /*@-compmempass@*/
 	ret = dbiPut(dbi, dbcursor, key, data, DB_KEYLAST);
@@ -3264,7 +3265,7 @@ memset(data, 0, sizeof(*data));
 	    byte * bin = NULL;
 	    rpmTagData requireFlags;
 	    rpmRC rpmrc;
-	    int i, j;
+	    int i;
 
 	    rpmrc = RPMRC_NOTFOUND;
 	    requireFlags.ptr = NULL;
@@ -3296,13 +3297,13 @@ if (dbiByteSwapped(dbi) == 1)
 /*@-immediatetrans@*/
 key->data = (void *) &mi_offset;
 /*@=immediatetrans@*/
-key->size = sizeof(mi_offset.ui);
+key->size = (u_int32_t) sizeof(mi_offset.ui);
  {  size_t len;
     nb = 0;
     (void) headerGetMagic(h, NULL, &nb);
     len = 0;
     data->data = headerUnload(h, &len);
-    data->size = len;	/* XXX data->size is uint32_t */
+    data->size = (u_int32_t) len;	/* XXX data->size is uint32_t */
 #ifdef	DYING	/* XXX this is needed iff headerSizeof() is used instead. */
     data->size -= nb;	/* XXX HEADER_MAGIC_NO */
 #endif
@@ -3377,7 +3378,7 @@ data->size = 0;
 	    printed = 0;
 	    xx = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, DB_WRITECURSOR);
 
-	    for (i = 0; i < he->c; i++) {
+	    for (i = 0; i < (unsigned) he->c; i++) {
 		dbiIndexSet set;
 		int stringvalued;
 
@@ -3408,6 +3409,7 @@ data->size = 0;
 		    /*@switchbreak@*/ break;
 		case RPMTAG_TRIGGERNAME:
 		    if (i) {	/* don't add duplicates */
+			int j;
 			for (j = 0; j < i; j++) {
 			    if (!strcmp(he->p.argv[i], he->p.argv[j]))
 				/*@innerbreak@*/ break;
@@ -3424,23 +3426,23 @@ data->size = 0;
 		stringvalued = 0;
 		switch (he->t) {
 		case RPM_UINT8_TYPE:
-		    key->size = sizeof(*he->p.ui8p);
+		    key->size = (u_int32_t) sizeof(*he->p.ui8p);
 /*@i@*/		    key->data = he->p.ui8p + i;
 		    /*@switchbreak@*/ break;
 		case RPM_UINT16_TYPE:
-		    key->size = sizeof(*he->p.ui16p);
+		    key->size = (u_int32_t) sizeof(*he->p.ui16p);
 /*@i@*/		    key->data = he->p.ui16p + i;
 		    /*@switchbreak@*/ break;
 		case RPM_UINT32_TYPE:
-		    key->size = sizeof(*he->p.ui32p);
+		    key->size = (u_int32_t) sizeof(*he->p.ui32p);
 /*@i@*/		    key->data = he->p.ui32p + i;
 		    /*@switchbreak@*/ break;
 		case RPM_UINT64_TYPE:
-		    key->size = sizeof(*he->p.ui64p);
+		    key->size = (u_int32_t) sizeof(*he->p.ui64p);
 /*@i@*/		    key->data = he->p.ui64p + i;
 		    /*@switchbreak@*/ break;
 		case RPM_BIN_TYPE:
-		    key->size = he->c;
+		    key->size = (u_int32_t) he->c;
 /*@i@*/		    key->data = he->p.ptr;
 		    he->c = 1;		/* XXX break out of loop. */
 		    /*@switchbreak@*/ break;
@@ -3454,13 +3456,14 @@ data->size = 0;
 			const char * s = he->p.argv[i];
 			size_t dlen = strlen(s);
 			byte * t;
+			unsigned j;
 assert((dlen & 1) == 0);
 			dlen /= 2;
 			bin = t = xcalloc(1, dlen);
-			for (j = 0; j < dlen; j++, t++, s += 2)
+			for (j = 0; j < (unsigned) dlen; j++, t++, s += 2)
 			    *t = (nibble(s[0]) << 4) | nibble(s[1]);
 			key->data = bin;
-			key->size = dlen;
+			key->size = (u_int32_t) dlen;
 			/*@switchbreak@*/ break;
 		    }
 		    /* Extract the pubkey id from the base64 blob. */
@@ -3471,13 +3474,13 @@ assert((dlen & 1) == 0);
 			if (nbin <= 0)
 			    /*@innercontinue@*/ continue;
 			key->data = bin;
-			key->size = nbin;
+			key->size = (u_int32_t) nbin;
 			/*@switchbreak@*/ break;
 		    }
 		    /*@fallthrough@*/
 		default:
 /*@i@*/		    key->data = (void *) he->p.argv[i];
-		    key->size = strlen(he->p.argv[i]);
+		    key->size = (u_int32_t) strlen(he->p.argv[i]);
 		    stringvalued = 1;
 		    /*@switchbreak@*/ break;
 		}
@@ -3489,8 +3492,8 @@ assert((dlen & 1) == 0);
 				(char *)key->data, tagName(dbi->dbi_rpmtag));
 		    } else {
 			rpmlog(RPMLOG_DEBUG,
-				D_("adding %d entries to %s index.\n"),
-				he->c, tagName(dbi->dbi_rpmtag));
+				D_("adding %u entries to %s index.\n"),
+				(unsigned)he->c, tagName(dbi->dbi_rpmtag));
 		    }
 		    printed++;
 		}
@@ -3499,7 +3502,7 @@ assert((dlen & 1) == 0);
 
 		set = NULL;
 
-if (key->size == 0) key->size = strlen((char *)key->data);
+if (key->size == 0) key->size = (u_int32_t) strlen((char *)key->data);
 if (key->size == 0) key->size++;	/* XXX "/" fixup. */
 
 /*@-compmempass@*/
@@ -3602,7 +3605,7 @@ data = &mi->mi_data;
 /*@-dependenttrans@*/
 key->data = (void *) fpList[i].baseName;
 /*@=dependenttrans@*/
-key->size = strlen((char *)key->data);
+key->size = (u_int32_t) strlen((char *)key->data);
 if (key->size == 0) key->size++;	/* XXX "/" fixup. */
 
 	tag = (_db_tagged_file_indices ? taghash(fpList[i].entry->dirName) : 0);
@@ -3625,8 +3628,8 @@ if (key->size == 0) key->size++;	/* XXX "/" fixup. */
 	const char ** dirNames;
 	const char ** baseNames;
 	const char ** fullBaseNames;
-	uint_32 * dirIndexes;
-	uint_32 * fullDirIndexes;
+	uint32_t * dirIndexes;
+	uint32_t * fullDirIndexes;
 	fingerPrint * fps;
 	dbiIndexItem im;
 	int start;

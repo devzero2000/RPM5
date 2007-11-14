@@ -335,7 +335,7 @@ enum rpmtagSignature_e {
  */
 /*@-redecl@*/
 /*@unused@*/ static inline /*@observer@*/
-const char * tagName(int tag)
+const char * tagName(uint32_t tag)
 	/*@*/
 {
 /*@-type@*/
@@ -350,7 +350,7 @@ const char * tagName(int tag)
  * @return		tag data type, RPM_NULL_TYPE on not found.
  */
 /*@unused@*/ static inline
-int tagType(int tag)
+unsigned int tagType(uint32_t tag)
 	/*@*/
 {
 /*@-type@*/
@@ -364,7 +364,7 @@ int tagType(int tag)
  * @return		tag value, -1 on not found
  */
 /*@unused@*/ static inline
-int tagValue(const char * tagstr)
+unsigned int tagValue(const char * tagstr)
 	/*@*/
 {
 /*@-type@*/

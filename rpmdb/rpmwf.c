@@ -163,7 +163,7 @@ fprintf(stderr, "*** xx %d type %s\n", xx, type);
 
 #ifdef WITH_XAR
 /*@-moduncon@*/
-    xx = xar_extract_tobuffersz(wf->x, wf->f, &b, &nb);
+    xx = (int) xar_extract_tobuffersz(wf->x, wf->f, &b, &nb);
 /*@=moduncon@*/
 #endif
 if (_rpmwf_debug)

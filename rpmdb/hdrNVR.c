@@ -197,18 +197,18 @@ int headerNEVRA(Header h, const char **np,
     return 0;
 }
 
-uint_32 hGetColor(Header h)
+uint32_t hGetColor(Header h)
 {
     HGE_t hge = headerGetExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
-    uint_32 hcolor = 0;
+    uint32_t hcolor = 0;
     int xx;
 
     he->tag = RPMTAG_FILECOLORS;
     xx = hge(h, he, 0);
     if (xx && he->p.ptr != NULL && he->c > 0) {
-	int i;
-	for (i = 0; i < he->c; i++)
+	unsigned i;
+	for (i = 0; i < (unsigned) he->c; i++)
 	    hcolor |= he->p.ui32p[i];
     }
     he->p.ptr = _free(he->p.ptr);

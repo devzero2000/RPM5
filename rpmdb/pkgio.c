@@ -398,7 +398,7 @@ if (wf != NULL) {
 assert(wf->nl == sizeof(*l));
     memcpy(l, wf->l, sizeof(*l));
 } else {
-    if ((xx = timedRead(fd, (char *)l, sizeof(*l))) != sizeof(*l)) {
+    if ((xx = (int) timedRead(fd, (char *)l, sizeof(*l))) != (int) sizeof(*l)) {
 	if (Ferror(fd)) {
 	    (void) snprintf(buf, sizeof(buf),
 		_("lead size(%u): BAD, read(%d), %s(%d)"),
@@ -511,7 +511,7 @@ static rpmRC wrSignature(FD_t fd, void * ptr, /*@unused@*/ const char ** msg)
  * @param datalen		length of header+payload
  * @return 			rpmRC return code
  */
-static inline rpmRC printSize(FD_t fd, int siglen, int pad, size_t datalen)
+static inline rpmRC printSize(FD_t fd, size_t siglen, size_t pad, size_t datalen)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
 {
@@ -530,9 +530,10 @@ static inline rpmRC printSize(FD_t fd, int siglen, int pad, size_t datalen)
 
     expected = nl + siglen + pad + datalen;
     rpmlog(RPMLOG_DEBUG,
-	D_("Expected size: %12lu = lead(%u)+sigs(%d)+pad(%d)+data(%lu)\n"),
+	D_("Expected size: %12lu = lead(%u)+sigs(%u)+pad(%u)+data(%lu)\n"),
 		(unsigned long)expected,
-		(unsigned)nl, siglen, pad, (unsigned long)datalen);
+		(unsigned)nl, (unsigned) siglen, (unsigned) pad,
+		(unsigned long)datalen);
     rpmlog(RPMLOG_DEBUG,
 	D_("  Actual size: %12lu\n"), (unsigned long)st->st_size);
 
@@ -583,7 +584,7 @@ if (wf != NULL) {
 assert(wf->ns > sizeof(block));
     memcpy(block, wf->s, sizeof(block));
 } else {
-    if ((xx = timedRead(fd, (void *)block, sizeof(block))) != sizeof(block)) {
+    if ((xx = (int) timedRead(fd, (void *)block, sizeof(block))) != (int) sizeof(block)) {
 	(void) snprintf(buf, sizeof(buf),
 		_("sigh size(%d): BAD, read returned %d\n"), (int)sizeof(block), xx);
 	goto exit;
@@ -628,7 +629,7 @@ if (wf != NULL) {
 assert(wf->ns >= (sizeof(block)+nb));
     memcpy(pe, wf->s+sizeof(block), nb);
 } else {
-    if ((xx = timedRead(fd, (void *)pe, nb)) != nb) {
+    if ((xx = (int) timedRead(fd, (void *)pe, nb)) != (int) nb) {
 	(void) snprintf(buf, sizeof(buf),
 		_("sigh blob(%d): BAD, read returned %d\n"), (int)nb, xx);
 	goto exit;
@@ -720,13 +721,13 @@ assert(wf->ns >= (sizeof(block)+nb));
     if (_newmagic)	/* XXX FIXME: sigh needs its own magic. */
 	(void) headerSetMagic(sigh, sigh_magic, sizeof(sigh_magic));
 
-    {	int sigSize = headerSizeof(sigh);
-	int pad = (8 - (sigSize % 8)) % 8; /* 8-byte pad */
+    {	size_t sigSize = headerSizeof(sigh);
+	size_t pad = (8 - (sigSize % 8)) % 8; /* 8-byte pad */
 
 	/* Position at beginning of header. */
-	if (pad && (xx = timedRead(fd, (void *)block, pad)) != pad) {
+	if (pad && (xx = (int) timedRead(fd, (void *)block, pad)) != (int) pad) {
 	    (void) snprintf(buf, sizeof(buf),
-		_("sigh pad(%d): BAD, read %d bytes\n"), pad, xx);
+		_("sigh pad(%u): BAD, read %d bytes\n"), (unsigned) pad, xx);
 	    goto exit;
 	}
 
@@ -741,7 +742,7 @@ assert(wf->ns >= (sizeof(block)+nb));
 	    rc = printSize(fd, sigSize, pad, datasize);
 	    if (rc != RPMRC_OK)
 		(void) snprintf(buf, sizeof(buf),
-			_("sigh sigSize(%d): BAD, fstat(2) failed\n"), sigSize);
+			_("sigh sigSize(%u): BAD, fstat(2) failed\n"), (unsigned) sigSize);
 	}
 	he->p.ptr = _free(he->p.ptr);
     }
@@ -978,7 +979,7 @@ assert(dig != NULL);
 	if (dig->signature.version != 3 && dig->signature.version != 4) {
 	    rpmlog(RPMLOG_ERR,
 		_("skipping header with unverifiable V%u signature\n"),
-		dig->signature.version);
+		(unsigned) dig->signature.version);
 	    rpmtsCleanDig(ts);
 	    rc = RPMRC_FAIL;
 	    goto exit;
@@ -1022,7 +1023,7 @@ assert(dig != NULL);
 	if (dig->signature.version != 3 && dig->signature.version != 4) {
 	    rpmlog(RPMLOG_ERR,
 		_("skipping header with unverifiable V%u signature\n"),
-		dig->signature.version);
+		(unsigned) dig->signature.version);
 	    rpmtsCleanDig(ts);
 	    rc = RPMRC_FAIL;
 	    goto exit;
@@ -1125,10 +1126,10 @@ rpmRC rpmReadHeader(rpmts ts, void * _fd, Header *hdrp, const char ** msg)
     FD_t fd = _fd;
 rpmwf wf = fdGetWF(fd);
     char buf[BUFSIZ];
-    int_32 block[4];
-    int_32 il;
-    int_32 dl;
-    int_32 * ei = NULL;
+    uint32_t block[4];
+    uint32_t il;
+    uint32_t dl;
+    uint32_t * ei = NULL;
     size_t uc;
     unsigned char * b;
     size_t nb;
@@ -1151,9 +1152,9 @@ if (wf != NULL) {
 assert(wf->nh > sizeof(block));
     memcpy(block, wf->h, sizeof(block));
 } else {
-    if ((xx = timedRead(fd, (char *)block, sizeof(block))) != sizeof(block)) {
+    if ((xx = (int) timedRead(fd, (char *)block, sizeof(block))) != (int)sizeof(block)) {
 	(void) snprintf(buf, sizeof(buf),
-		_("hdr size(%d): BAD, read returned %d\n"), (int)sizeof(block), xx);
+		_("hdr size(%u): BAD, read returned %d\n"), (unsigned)sizeof(block), xx);
 	goto exit;
     }
 }
@@ -1169,14 +1170,14 @@ assert(wf->nh > sizeof(block));
     il = ntohl(block[2]);
     if (hdrchkTags(il)) {
 	(void) snprintf(buf, sizeof(buf),
-		_("hdr tags: BAD, no. of tags(%d) out of range\n"), il);
+		_("hdr tags: BAD, no. of tags(%u) out of range\n"), (unsigned) il);
 
 	goto exit;
     }
     dl = ntohl(block[3]);
     if (hdrchkData(dl)) {
 	(void) snprintf(buf, sizeof(buf),
-		_("hdr data: BAD, no. of bytes(%d) out of range\n"), dl);
+		_("hdr data: BAD, no. of bytes(%u) out of range\n"), (unsigned) dl);
 	goto exit;
     }
 
@@ -1191,7 +1192,7 @@ if (wf != NULL) {
 assert(wf->nh == (sizeof(block)+nb));
     memcpy(&ei[2], wf->h+sizeof(block), nb);
 } else {
-    if ((xx = timedRead(fd, (char *)&ei[2], nb)) != nb) {
+    if ((xx = (int) timedRead(fd, (char *)&ei[2], nb)) != (int) nb) {
 	(void) snprintf(buf, sizeof(buf),
 		_("hdr blob(%u): BAD, read returned %d\n"), (unsigned)nb, xx);
 	goto exit;

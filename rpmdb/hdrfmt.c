@@ -114,7 +114,7 @@ assert(ix == 0);
 	val = xstrdup(_("(invalid type)"));
     } else {
 	uint64_t anint = he->p.ui64p[0];
-	val = rpmPermsString(anint);
+	val = rpmPermsString((int)anint);
     }
 
     return val;
@@ -180,7 +180,7 @@ static /*@only@*/ char * armorFormat(HE_t he)
 assert(ix == 0);
     switch (he->t) {
     case RPM_BIN_TYPE:
-	s = data.ui8p;
+	s = (unsigned char *) data.ui8p;
 	ns = he->c;
 	atype = PGPARMOR_SIGNATURE;	/* XXX check pkt for signature */
 	break;
@@ -632,7 +632,7 @@ assert(ix == 0);
     if (!(he->t == RPM_BIN_TYPE)) {
 	val = xstrdup(_("(not a blob)"));
     } else {
-	unsigned char * pkt = data.ui8p;
+	unsigned char * pkt = (unsigned char *) data.ui8p;
 	unsigned int pktlen = 0;
 	unsigned int v = *pkt;
 	pgpTag tag = 0;
@@ -675,7 +675,7 @@ assert(ix == 0);
 		t = stpcpy(t, "RSA");
 		break;
 	    default:
-		(void) snprintf(t, nb - (t - val), "%d", sigp->pubkey_algo);
+		(void) snprintf(t, nb - (t - val), "%u", (unsigned)sigp->pubkey_algo);
 		t += strlen(t);
 		break;
 	    }
@@ -690,7 +690,7 @@ assert(ix == 0);
 		t = stpcpy(t, "SHA1");
 		break;
 	    default:
-		(void) snprintf(t, nb - (t - val), "%d", sigp->hash_algo);
+		(void) snprintf(t, nb - (t - val), "%u", (unsigned)sigp->hash_algo);
 		t += strlen(t);
 		break;
 	    }
@@ -814,12 +814,13 @@ static int triggercondsTag(Header h, HE_t he)
     rpmTagData indices;
     rpmTagData names;
     rpmTagData versions;
-    uint32_t numNames, numScripts;
     const char ** conds;
     rpmTagData s;
     char * item, * flagsStr;
     char * chptr;
-    int i, j, xx;
+    uint32_t numNames, numScripts;
+    unsigned i, j;
+    int xx;
 
     he->freeData = 0;
     xx = headerGetEntry(h, RPMTAG_TRIGGERNAME, NULL, &names, &numNames);
@@ -842,10 +843,10 @@ static int triggercondsTag(Header h, HE_t he)
 
     he->freeData = 1;
     he->p.argv = conds = xmalloc(sizeof(*conds) * numScripts);
-    for (i = 0; i < numScripts; i++) {
+    for (i = 0; i < (unsigned) numScripts; i++) {
 	chptr = xstrdup("");
 
-	for (j = 0; j < numNames; j++) {
+	for (j = 0; j < (unsigned) numNames; j++) {
 	    if (indices.ui32p[j] != i)
 		/*@innercontinue@*/ continue;
 
@@ -887,8 +888,9 @@ static int triggertypeTag(Header h, HE_t he)
     rpmTagData flags;
     const char ** conds;
     rpmTagData s;
-    int i, j, xx;
     uint32_t numScripts, numNames;
+    unsigned i, j;
+    int xx;
 
     he->freeData = 0;
     if (!headerGetEntry(h, RPMTAG_TRIGGERINDEX, NULL, &indices, &numNames))
@@ -902,8 +904,8 @@ static int triggertypeTag(Header h, HE_t he)
 
     he->freeData = 1;
     he->p.argv = conds = xmalloc(sizeof(*conds) * numScripts);
-    for (i = 0; i < numScripts; i++) {
-	for (j = 0; j < numNames; j++) {
+    for (i = 0; i < (unsigned) numScripts; i++) {
+	for (j = 0; j < (unsigned) numNames; j++) {
 	    if (indices.ui32p[j] != i)
 		/*@innercontinue@*/ continue;
 
@@ -1064,8 +1066,8 @@ static int localeTag(Header h, HE_t he)
 	he->freeData = 1;
     } else if (t == RPM_STRING_ARRAY_TYPE) {
 	size_t l = 0;
-	int i;
-	for (i = 0; i < c; i++) {
+	unsigned i;
+	for (i = 0; i < (unsigned)c; i++) {
 	    p.argv[i] = xstrdup(p.argv[i]);
 	    p.argv[i] = xstrtolocale(p.argv[i]);
 assert(p.argv[i] != NULL);
@@ -1073,7 +1075,7 @@ assert(p.argv[i] != NULL);
 	}
 	argv = xmalloc(c * sizeof(*argv) + l);
 	te = (char *)&argv[c];
-	for (i = 0; i < c; i++) {
+	for (i = 0; i < (unsigned) c; i++) {
 	    argv[i] = te;
 	    te = stpcpy(te, p.argv[i]);
 	    te++;
@@ -1254,7 +1256,8 @@ static void rpmfiBuildFNames(Header h, rpmTag tagN,
     rpmTag dirIndexesTag = 0;
     rpmTagType bnt, dnt;
     char * t;
-    int i, xx;
+    unsigned i;
+    int xx;
 
     if (tagN == RPMTAG_BASENAMES) {
 	dirNameTag = RPMTAG_DIRNAMES;
@@ -1274,7 +1277,7 @@ static void rpmfiBuildFNames(Header h, rpmTag tagN,
     xx = headerGetEntry(h, dirIndexesTag, NULL, &dirIndexes, &count);
 
     size = sizeof(*fileNames.argv) * count;
-    for (i = 0; i < count; i++) {
+    for (i = 0; i < (unsigned)count; i++) {
 	const char * dn = NULL;
 	(void) urlPath(dirNames.argv[dirIndexes.ui32p[i]], &dn);
 	size += strlen(baseNames.argv[i]) + strlen(dn) + 1;
@@ -1282,7 +1285,7 @@ static void rpmfiBuildFNames(Header h, rpmTag tagN,
 
     fileNames.argv = xmalloc(size);
     t = (char *)&fileNames.argv[count];
-    for (i = 0; i < count; i++) {
+    for (i = 0; i < (unsigned)count; i++) {
 	const char * dn = NULL;
 	(void) urlPath(dirNames.argv[dirIndexes.ui32p[i]], &dn);
 	fileNames.argv[i] = t;

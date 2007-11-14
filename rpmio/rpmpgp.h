@@ -1014,11 +1014,11 @@ extern "C" {
  * @return		native-endian integer
  */
 /*@unused@*/ static inline
-unsigned int pgpGrab(const byte *s, int nbytes)
+unsigned int pgpGrab(const byte *s, size_t nbytes)
 	/*@*/
 {
     unsigned int i = 0;
-    int nb = (nbytes <= sizeof(i) ? nbytes : sizeof(i));
+    size_t nb = (nbytes <= sizeof(i) ? nbytes : sizeof(i));
     while (nb--)
 	i = (i << 8) | *s++;
     return i;
@@ -1080,7 +1080,7 @@ unsigned int pgpMpiLen(const byte *p)
  * @return		target buffer
  */
 /*@unused@*/ static inline
-char * pgpHexCvt(/*@returned@*/ char *t, const byte *s, int nbytes)
+char * pgpHexCvt(/*@returned@*/ char *t, const byte *s, size_t nbytes)
 	/*@modifies *t @*/
 {
     static char hex[] = "0123456789abcdef";
@@ -1102,7 +1102,7 @@ char * pgpHexCvt(/*@returned@*/ char *t, const byte *s, int nbytes)
  * @return		hex formatted string
  */
 /*@unused@*/ static inline /*@observer@*/
-char * pgpHexStr(const byte *p, unsigned int plen)
+char * pgpHexStr(const byte *p, size_t plen)
 	/*@*/
 {
     static char prbuf[8*BUFSIZ];	/* XXX ick */
@@ -1186,7 +1186,7 @@ void pgpPrtVal(const char * pre, pgpValTbl vs, byte val)
  * @return		0 on success
  */
 /*@-exportlocal@*/
-int pgpPrtSubType(const byte *h, unsigned int hlen, pgpSigType sigtype)
+int pgpPrtSubType(const byte *h, size_t hlen, pgpSigType sigtype)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
 /*@=exportlocal@*/
@@ -1242,7 +1242,7 @@ int pgpPrtComment(const pgpPkt pp)
  * @return		0 on sucess, else -1
  */
 /*@-exportlocal@*/
-int pgpPubkeyFingerprint(const byte * pkt, unsigned int pktlen,
+int pgpPubkeyFingerprint(const byte * pkt, size_t pktlen,
 		/*@out@*/ byte * keyid)
 	/*@modifies *keyid @*/;
 /*@=exportlocal@*/
@@ -1264,7 +1264,7 @@ int pgpExtractPubkeyFingerprint(const char * b64pkt, /*@out@*/ byte * keyid)
  * @retval pp		packet tag/ptr/len
  * @return		packet length, <0 on error.
  */
-int pgpPktLen(const byte *pkt, unsigned int pleft, /*@out@*/ pgpPkt pp)
+int pgpPktLen(const byte *pkt, size_t pleft, /*@out@*/ pgpPkt pp)
 	/*@modifies pp @*/;
 
 /**
@@ -1274,7 +1274,7 @@ int pgpPktLen(const byte *pkt, unsigned int pleft, /*@out@*/ pgpPkt pp)
  * @return		-1 on error, otherwise this packet length
  */
 /*@-exportlocal@*/
-int pgpPrtPkt(const byte *pkt, unsigned int pleft)
+int pgpPrtPkt(const byte *pkt, size_t pleft)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
 /*@=exportlocal@*/
@@ -1287,7 +1287,7 @@ int pgpPrtPkt(const byte *pkt, unsigned int pleft)
  * @param printing	should packets be printed?
  * @return		-1 on error, 0 on success
  */
-int pgpPrtPkts(const byte *pkts, unsigned int pktlen, pgpDig dig, int printing)
+int pgpPrtPkts(const byte *pkts, size_t pktlen, pgpDig dig, int printing)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies dig, fileSystem, internalState @*/;
 

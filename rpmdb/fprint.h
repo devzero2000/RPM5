@@ -148,8 +148,8 @@ int fpEqual(const void * key1, const void * key2)
  * @retval *fpList	array of finger prints
  */
 void fpLookupList(fingerPrintCache cache, const char ** dirNames, 
-		  const char ** baseNames, const uint_32 * dirIndexes, 
-		  int fileCount, fingerPrint * fpList)
+		  const char ** baseNames, const uint32_t * dirIndexes, 
+		  uint32_t fileCount, fingerPrint * fpList)
 	/*@modifies cache, *fpList @*/;
 
 #ifdef __cplusplus

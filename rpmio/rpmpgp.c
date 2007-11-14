@@ -218,7 +218,7 @@ static void pgpPrtStr(const char *pre, const char *s)
     fprintf(stderr, " %s", s);
 }
 
-static void pgpPrtHex(const char *pre, const byte *p, unsigned int plen)
+static void pgpPrtHex(const char *pre, const byte *p, size_t plen)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
 {

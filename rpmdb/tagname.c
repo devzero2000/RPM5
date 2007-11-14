@@ -36,10 +36,10 @@ static int tagCmpValue(const void * avp, const void * bvp)
 {
     headerTagTableEntry a = *(headerTagTableEntry *) avp;
     headerTagTableEntry b = *(headerTagTableEntry *) bvp;
-    int ret = (a->val - b->val);
+    int ret = ((int)a->val - (int)b->val);
     /* Make sure that sort is stable, longest name first. */
     if (ret == 0)
-	ret = (strlen(b->name) - strlen(a->name));
+	ret = ((int)strlen(b->name) - (int)strlen(a->name));
     return ret;
 }
 
@@ -76,11 +76,11 @@ assert(n == rpmTagTableSize);
 
 
 /* forward refs */
-static const char * _tagName(int tag)
+static const char * _tagName(uint32_t tag)
 	/*@*/;
-static int _tagType(int tag)
+static unsigned int _tagType(uint32_t tag)
 	/*@*/;
-static int _tagValue(const char * tagstr)
+static unsigned int _tagValue(const char * tagstr)
 	/*@*/;
 
 /*@unchecked@*/
@@ -95,7 +95,7 @@ static struct headerTagIndices_s _rpmTags = {
 headerTagIndices rpmTags = &_rpmTags;
 /*@=compmempass@*/
 
-static const char * _tagName(int tag)
+static const char * _tagName(uint32_t tag)
 {
     static char nameBuf[128];	/* XXX yuk */
     const struct headerTagTableEntry_s *t;
@@ -150,7 +150,7 @@ static const char * _tagName(int tag)
 	    i = (l + u) / 2;
 	    t = _rpmTags.byValue[i];
 	
-	    comparison = (tag - t->val);
+	    comparison = ((int)tag - (int)t->val);
 
 	    if (comparison < 0)
 		u = i;
@@ -178,7 +178,7 @@ static const char * _tagName(int tag)
 /*@=statictrans@*/
 }
 
-static int _tagType(int tag)
+static unsigned int _tagType(uint32_t tag)
 {
     const struct headerTagTableEntry_s *t;
     int comparison, i, l, u;
@@ -206,7 +206,7 @@ static int _tagType(int tag)
 	    i = (l + u) / 2;
 	    t = _rpmTags.byValue[i];
 	
-	    comparison = (tag - t->val);
+	    comparison = ((int)tag - (int)t->val);
 
 	    if (comparison < 0)
 		u = i;
@@ -226,7 +226,7 @@ static int _tagType(int tag)
     return 0;
 }
 
-static int _tagValue(const char * tagstr)
+static unsigned int _tagValue(const char * tagstr)
 {
     const struct headerTagTableEntry_s *t;
     int comparison, i, l, u;
@@ -252,7 +252,7 @@ static int _tagValue(const char * tagstr)
     if (_rpmTags.byName == NULL)
 	xx = tagLoadIndex(&_rpmTags.byName, &_rpmTags.byNameSize, tagCmpName);
     if (_rpmTags.byName == NULL)
-	return -1;
+	return 0xffffffff;	/* XXX arbitrary tags */
 
     l = 0;
     u = _rpmTags.byNameSize;
@@ -267,9 +267,9 @@ static int _tagValue(const char * tagstr)
 	else if (comparison > 0)
 	    l = i + 1;
 	else
-	    return t->val;
+	    return (unsigned int)t->val;
     }
-    return -1;
+    return 0xffffffff;	/* XXX arbitrary tags */
 }
 
 /**
@@ -282,5 +282,5 @@ void tagTypeValidate(HE_t he)
 if (!he->signature)
 if (!(he->tag == 261 || he->tag == 269))
 if ((tagType(he->tag) & 0xffff) != he->t)
-fprintf(stderr, "==> warning: tag %u type(0x%x) != implicit type(0x%x)\n", he->tag, he->t, tagType(he->tag));
+fprintf(stderr, "==> warning: tag %u type(0x%x) != implicit type(0x%x)\n", (unsigned) he->tag, he->t, tagType(he->tag));
 }
