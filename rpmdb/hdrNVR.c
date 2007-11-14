@@ -277,7 +277,7 @@ assert(he->p.ptr != NULL);
 	if (!headerIsEntry(h, he->tag)) {
 	    if (hdrchkType(he->t))
 		continue;
-	    if (he->c < 0 || hdrchkData(he->c))
+	    if (hdrchkData(he->c))
 		continue;
 	    switch(he->t) {
 	    default:

@@ -49,8 +49,6 @@ int _use_xar = 0;
 /*@unchecked@*/
 static int _print_pkts = 0;
 
-static int _jbj = 0;
-
 /*===============================================*/
 
 rpmop rpmtsOp(rpmts ts, rpmtsOpX opx)
@@ -381,7 +379,8 @@ static rpmRC wrLead(FD_t fd, const void * ptr, const char ** msg)
  */
 static rpmRC rdLead(FD_t fd, /*@out@*/ /*@null@*/ void * ptr,
 		const char ** msg)
-	/*@modifies *ptr, *msg @*/
+	/*@globals fileSystem @*/
+	/*@modifies *ptr, *msg, fileSystem @*/
 {
 rpmwf wf = fdGetWF(fd);
     struct rpmlead ** leadp = ptr;
@@ -390,8 +389,6 @@ rpmwf wf = fdGetWF(fd);
     rpmRC rc = RPMRC_FAIL;		/* assume failure */
     int xx;
 
-if (_jbj)
-fprintf(stderr, "==> rdLead(%p, %p, %p)\n", fd, ptr, msg);
     buf[0] = '\0';
     if (leadp != NULL) *leadp = NULL;
 
@@ -575,8 +572,6 @@ rpmwf wf = fdGetWF(fd);
     int xx;
     int i;
 
-if (_jbj)
-fprintf(stderr, "==> rdSignature(%p, %p, %p)\n", fd, ptr, msg);
     buf[0] = '\0';
     if (sighp)
 	*sighp = NULL;
@@ -1080,10 +1075,6 @@ assert(dig != NULL);
     /* XXX headerCheck can recurse, free info only at top level. */
     if (hclvl == 1)
 	rpmtsCleanDig(ts);
-#ifdef	DYING
-    if (info->tag == RPMTAG_SHA1HEADER)
-	sig = _free(sig);
-#endif
     hclvl--;
     return rc;
 }
@@ -1128,6 +1119,7 @@ static rpmRC ckHeader(/*@unused@*/ FD_t fd, const void * ptr, const char ** msg)
     return rc;
 }
 
+/*@-mustmod@*/	/* _fd is modified */
 rpmRC rpmReadHeader(rpmts ts, void * _fd, Header *hdrp, const char ** msg)
 {
     FD_t fd = _fd;
@@ -1156,8 +1148,6 @@ rpmwf wf = fdGetWF(fd);
 if (wf != NULL) {
     if ((rc = rpmwfNextXAR(wf)) != RPMRC_OK) return rc;
     if ((rc = rpmwfPullXAR(wf, "Header")) != RPMRC_OK) return rc;
-if (_jbj)
-fprintf(stderr, "==> wf->h %p[%d]\n", wf->h, (int)wf->nh);
 assert(wf->nh > sizeof(block));
     memcpy(block, wf->h, sizeof(block));
 } else {
@@ -1240,6 +1230,7 @@ exit:
 
     return rc;
 }
+/*@=mustmod@*/
 
 /**
  * Read metadata header.
@@ -1258,16 +1249,12 @@ rpmwf wf = fdGetWF(fd);
     Header h = NULL;
     rpmRC rc = RPMRC_OK;
 
-if (_jbj)
-fprintf(stderr, "==> rdHeader(%p, %p, %p)\n", fd, ptr, msg);
     if (msg)
 	*msg = NULL;
 
 if (wf != NULL) {
     if ((rc = rpmwfNextXAR(wf)) != RPMRC_OK) return rc;
     if ((rc = rpmwfPullXAR(wf, "Header")) != RPMRC_OK) return rc;
-if (_jbj)
-fprintf(stderr, "==> wf->h %p[%d]\n", wf->h, (int)wf->nh);
     h = headerLoad(wf->h);
 } else {
     h = headerRead(fd);
@@ -1311,8 +1298,6 @@ size_t rpmpkgSizeof(const char * fn, const void * ptr)
 {
     size_t len = 0;
 
-if (_jbj)
-fprintf(stderr, "==> rpmpkgSizeof(%s, %p)\n", fn, ptr);
     if (!strcmp(fn, "Lead"))
 	len = 96;	/* RPMLEAD_SIZE */
     else
@@ -1329,8 +1314,6 @@ rpmRC rpmpkgCheck(const char * fn, FD_t fd, const void * ptr, const char ** msg)
 {
     rpmRC rc = RPMRC_FAIL;
 
-if (_jbj)
-fprintf(stderr, "==> rpmpkgCheck(%s, %p, %p, %p)\n", fn, fd, ptr, msg);
     if (!strcmp(fn, "Header"))
 	rc = ckHeader(fd, ptr, msg);
     return rc;
@@ -1340,8 +1323,6 @@ rpmRC rpmpkgRead(const char * fn, FD_t fd, void * ptr, const char ** msg)
 {
     rpmRC rc = RPMRC_FAIL;
 
-if (_jbj)
-fprintf(stderr, "==> rpmpkgRead(%s, %p, %p, %p) use_xar %d\n", fn, fd, ptr, msg, _use_xar);
 if (_use_xar) {
 rpmwf wf = fdGetWF(fd);
 if (wf == NULL) {
@@ -1367,8 +1348,6 @@ rpmRC rpmpkgWrite(const char * fn, FD_t fd, void * ptr, const char ** msg)
 {
     rpmRC rc = RPMRC_FAIL;
 
-if (_jbj)
-fprintf(stderr, "==> rpmpkgWrite(%s, %p, %p, %p) use_xar %d\n", fn, fd, ptr, msg, _use_xar);
     if (!strcmp(fn, "Lead"))
 	rc = wrLead(fd, ptr, msg);
     else
@@ -1385,7 +1364,9 @@ rpmRC rpmpkgClean(FD_t fd)
     rpmwf wf = fdGetWF(fd);
     if (wf != NULL) {
 	fdSetWF(fd, NULL);
+/*@-modfilesys@*/
 	wf = rpmwfFree(wf);
+/*@=modfilesys@*/
     }
     return RPMRC_OK;
 }

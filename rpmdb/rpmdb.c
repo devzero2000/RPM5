@@ -3356,7 +3356,7 @@ data->size = 0;
 	    }
 
 	    /* Anything to do? */
-	    if (he->c <= 0)
+	    if (he->c == 0)
 		continue;
 
 	  dbi = dbiOpen(db, he->tag, 0);

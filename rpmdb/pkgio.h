@@ -34,6 +34,19 @@ rpmRC headerCheck(rpmts ts, const void * uh, size_t uc,
 	/*@globals fileSystem, internalState @*/
 	/*@modifies ts, *msg, fileSystem, internalState @*/;
 
+/** 
+ * Return checked and loaded header.
+ * @param ts		transaction set
+ * @param _fd		file handle
+ * @retval hdrp		address of header (or NULL)
+ * @retval *msg		verification error message (or NULL)
+ * @return		RPMRC_OK on success
+ */
+rpmRC rpmReadHeader(rpmts ts, void * _fd, /*@out@*/ Header *hdrp,
+		/*@out@*/ /*@null@*/ const char ** msg)
+        /*@globals fileSystem, internalState @*/
+        /*@modifies ts, *_fd, *hdrp, *msg, fileSystem, internalState @*/;
+
 /**
  * Return size of item in bytes.
  * @param fn		item name

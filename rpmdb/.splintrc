@@ -1,4 +1,4 @@
--I. -I.. -I../build -I../lib -I../rpmio -I../sqlite -I../beecrypt -I../popt -I../elfutils/libelf -DHAVE_CONFIG_H -D_GNU_SOURCE -D__STDC__=1
+-I. -I.. -I../build -I../lib -I../rpmio -I../sqlite -I../xar/include -I../beecrypt -I../popt -I../elfutils/libelf -DHAVE_CONFIG_H -D_GNU_SOURCE -D__STDC__=1
 
 +partial
 +forcehints
@@ -14,6 +14,25 @@
 # --- in progress
 +slovak-fcns
 -bufferoverflowhigh
+
+-assignexpose
+-compdef
+-compmempass
+-duplicatequals
+-globs		# 3
+-incondefs
+-modobserver	# 9
+-nullpass	# 2
+-nullstate	# 2
+-redecl
+
+-dependenttrans
+-kepttrans
+-observertrans
+-onlytrans
+-readonlytrans
+-temptrans
+-unqualifiedtrans
 
 -internalglobs	# 35
 -unrecog	# 2 rpmcliPackagesTotal misplaced

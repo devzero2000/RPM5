@@ -152,6 +152,7 @@ typedef struct _HE_s * HE_t;		/* tag container. */
 typedef union rpmDataType_u hRET_t;
 #if !defined(SWIG)
 union rpmDataType_u {
+/*@null@*/
     void * ptr;
     uint8_t * ui8p;		/*!< RPM_INT8_TYPE | RPM_CHAR_TYPE */
     uint16_t * ui16p;		/*!< RPM_INT16_TYPE */

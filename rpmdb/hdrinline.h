@@ -251,7 +251,9 @@ int headerIsEntry(/*@null@*/ Header h, uint32_t tag)
     return (h2hv(h)->hdrfreetag) (h, data, type);
 }
 
-void tagTypeValidate(HE_t he);
+void tagTypeValidate(HE_t he)
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/;
 
 /*
  * Retrieve extension or tag value.
@@ -268,8 +270,10 @@ int headerGetExtension(Header h, HE_t he, /*@unused@*/ unsigned int flags)
     int xx;
     if (h == NULL) return 0;
     xx = (h2hv(h)->hdrext) (h, he->tag, &he->t, &he->p, &he->c);
+/*@-modfilesys@*/
 /* XXX verify that explicit and implicit types are identical. */
 if (xx) tagTypeValidate(he);
+/*@=modfilesys@*/
     return xx;
 }
 
@@ -287,8 +291,10 @@ int headerAddExtension(Header h, HE_t he, /*@unused@*/ unsigned int flags)
 	/*@modifies h @*/
 {
     int xx;
+/*@-modfilesys@*/
 /* XXX verify that explicit and implicit types are identical. */
 tagTypeValidate(he);
+/*@=modfilesys@*/
     if (he->append)
 	xx = (h2hv(h)->hdraddorappend) (h, he->tag, he->t, he->p.ptr, he->c);
     else
@@ -359,7 +365,7 @@ HeaderIterator headerInitExtension(Header h)
  * @return		1 on success, 0 on failure
  */
 /*@unused@*/ static inline
-int headerNextExtension(HeaderIterator hi, HE_t he, unsigned int flags)
+int headerNextExtension(HeaderIterator hi, HE_t he, /*@unused@*/ unsigned int flags)
 	/*@modifies hi, he @*/
 {
     return hdrVec->hdrnextiter(hi, &he->tag, &he->t, &he->p, &he->c);

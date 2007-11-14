@@ -518,6 +518,7 @@ static int makeGPGSignature(const char * file, uint32_t * sigTagp,
  * @param passPhrase	private key pass phrase
  * @return		0 on success, -1 on failure
  */
+/*@-mustmod@*/ /* sigh is modified */
 static int makeHDRSignature(Header sigh, const char * file, uint32_t sigTag,
 		/*@null@*/ const char * passPhrase)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
@@ -652,6 +653,7 @@ exit:
     if (fd != NULL) (void) Fclose(fd);
     return ret;
 }
+/*@=mustmod@*/
 
 int rpmAddSignature(Header sigh, const char * file, uint32_t sigTag,
 		const char * passPhrase)
@@ -1355,7 +1357,7 @@ rpmVerifySignature(void * _dig, char * result)
     uint32_t sigtag = pgpGetSigtag(dig);
     rpmRC res;
 
-    if (dig == NULL || sig == NULL || siglen <= 0) {
+    if (dig == NULL || sig == NULL || siglen == 0) {
 	sprintf(result, _("Verify signature: BAD PARAMETERS\n"));
 	return RPMRC_NOTFOUND;
     }

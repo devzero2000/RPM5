@@ -1914,6 +1914,7 @@ assert(0);	/* XXX stop unimplemented oversights. */
 	break;
     case RPM_I18NSTRING_TYPE:
 assert(he->c == 1);	/* XXX stop unimplemented oversights. */
+	/*@fallthrough@*/
     case RPM_STRING_TYPE:
 	if (he->p.str)
 	    nb = strlen(he->p.str) + 1;
@@ -2053,7 +2054,7 @@ int headerAddEntry(Header h, uint32_t tag, rpmTagType type, const void * p, rpmT
     int length;
 
     /* Count must always be >= 1 for headerAddEntry. */
-    if (c <= 0)
+    if (c == 0)
 	return 0;
 
     if (hdrchkType(type))
@@ -2386,7 +2387,8 @@ static char escapedChar(const char ch)	/*@*/
  * Mark a tag container with headerGetEntry() freeData.
  * @param he		tag container
  */
-static HE_t rpmheMark(/*@null@*/ HE_t he)
+/*@relnull@*/
+static HE_t rpmheMark(/*@returned@*/ /*@null@*/ HE_t he)
 	/*@modifies he @*/
 {
     /* Set he->freeData as appropriate for headerGetEntry() . */
@@ -2408,7 +2410,8 @@ static HE_t rpmheMark(/*@null@*/ HE_t he)
  * Clean a tag container, free'ing attached malloc's..
  * @param he		tag container
  */
-static HE_t rpmheClean(/*@null@*/ HE_t he)
+/*@relnull@*/
+static HE_t rpmheClean(/*@returned@*/ /*@null@*/ HE_t he)
 	/*@modifies he @*/
 {
     if (he) {
@@ -2834,12 +2837,14 @@ bingo:
  * @return		formatted string
  */
 static char * intFormat(HE_t he, const char *fmt)
+	/*@*/
 {
     int ix = (he->ix > 0 ? he->ix : 0);
     int_64 ival = 0;
     const char * istr = NULL;
     char * b;
     size_t nb = 0;
+    int xx;
 
     if (fmt == NULL || *fmt == '\0')
 	fmt = "d";
@@ -2847,7 +2852,7 @@ static char * intFormat(HE_t he, const char *fmt)
     switch (he->t) {
     default:
 	return xstrdup(_("(not a number)"));
-	break;
+	/*@notreached@*/ break;
     case RPM_UINT8_TYPE:
 	ival = he->p.ui8p[ix];
 	break;
@@ -2892,7 +2897,9 @@ static char * intFormat(HE_t he, const char *fmt)
 	myfmt[3] = *fmt;
 	nb = 64;
 	b = alloca(nb);
-	snprintf(b, nb, myfmt, ival);
+/*@-formatconst@*/
+	xx = snprintf(b, nb, myfmt, ival);
+/*@=formatconst@*/
 	b[nb-1] = '\0';
     }
 
@@ -2997,17 +3004,18 @@ static char * shescapeFormat(HE_t he)
     rpmTagData data = { .ptr = he->p.ptr };
     char * val;
     size_t nb;
+    int xx;
 
     /* XXX one of these integer types is unnecessary. */
     if (he->t == RPM_UINT32_TYPE) {
 	nb = 20;
 	val = xmalloc(nb);
-	snprintf(val, nb, "%u", data.ui32p[0]);
+	xx = snprintf(val, nb, "%u", data.ui32p[0]);
 	val[nb-1] = '\0';
     } else if (he->t == RPM_UINT64_TYPE) {
 	nb = 40;
 	val = xmalloc(40);
-	snprintf(val, nb, "%llu", (unsigned long long)data.ui64p[0]);
+	xx = snprintf(val, nb, "%llu", (unsigned long long)data.ui64p[0]);
 	val[nb-1] = '\0';
     } else if (he->t == RPM_STRING_TYPE) {
 	const char * s = data.str;
@@ -3167,7 +3175,7 @@ static int parseFormat(headerSprintfArgs hsa, /*@null@*/ char * str,
 		    i = strtoul(start, &start, 10);
 		    token->u.tag.pad += i;
 		    start = chptr;
-		    break;
+		    /*@innerbreak@*/ break;
 		} else {
 		    start++;
 		}
@@ -3302,10 +3310,10 @@ static int parseFormat(headerSprintfArgs hsa, /*@null@*/ char * str,
 	token = format + i;
 	switch(token->type) {
 	default:
-	    break;
+	    /*@switchbreak@*/ break;
 	case PTOK_STRING:
 	    token->u.string.len = strlen(token->u.string.string);
-	    break;
+	    /*@switchbreak@*/ break;
 	}
     }
 
@@ -3447,7 +3455,8 @@ static int getExtension(headerSprintfArgs hsa, headerTagTagFunction fn,
  */
 /*@observer@*/ /*@null@*/
 static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
-	/*@modifies hsa @*/
+	/*@globals headerCompoundFormats @*/
+	/*@modifies hsa, tag, headerCompoundFormats @*/
 {
     HE_t vhe = memset(alloca(sizeof(*vhe)), 0, sizeof(*vhe));
     HE_t he = &tag->he;
@@ -3520,19 +3529,19 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
 	switch (he->t) {
 	default:
 assert(0);	/* XXX keep gcc quiet. */
-	    break;
+	    /*@innerbreak@*/ break;
 	case RPM_UINT8_TYPE:
 	    ival = he->p.ui8p[element];
-	    break;
+	    /*@innerbreak@*/ break;
 	case RPM_UINT16_TYPE:
 	    ival = he->p.ui16p[element];	/* XXX note unsigned. */
-	    break;
+	    /*@innerbreak@*/ break;
 	case RPM_UINT32_TYPE:
 	    ival = he->p.ui32p[element];
-	    break;
+	    /*@innerbreak@*/ break;
 	case RPM_UINT64_TYPE:
 	    ival = he->p.ui64p[element];
-	    break;
+	    /*@innerbreak@*/ break;
 	}
 	vhe->t = RPM_UINT64_TYPE;
 	vhe->p.ui64p = &ival;
@@ -3553,7 +3562,7 @@ assert(0);	/* XXX keep gcc quiet. */
 	val = tag->fmt(vhe);
     else
 	val = intFormat(vhe, NULL);
-assert(val);
+assert(val != NULL);
     if (val)
 	need = strlen(val) + 1;
 
@@ -3569,7 +3578,9 @@ exit:
 	    (void) stpcpy( stpcpy( stpcpy(t, "%"), tag->format), "s");
 	    nb = tag->pad + strlen(val) + 1;
 	    te = xmalloc(nb);
+/*@-formatconst@*/
 	    (void) snprintf(te, nb, t, val);
+/*@=formatconst@*/
 	    te[nb-1] = '\0';
 	    val = _free(val);
 	    val = te;
@@ -3594,7 +3605,8 @@ exit:
 /*@observer@*/
 static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 		int element)
-	/*@modifies hsa @*/
+	/*@globals headerCompoundFormats @*/
+	/*@modifies hsa, token, headerCompoundFormats @*/
 {
     char numbuf[64];	/* XXX big enuf for "Tag_0x01234567" */
     char * t, * te;
@@ -3672,7 +3684,7 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 		    } else {
 			xx = headerGetEntry(hsa->h, he->tag, &he->t, &he->p, &he->c);
 			if (xx)	/* XXX 1 on success */
-			    rpmheMark(he);
+			    he = rpmheMark(he);
 		    }
 		    xx = (xx == 0);     /* XXX invert headerGetEntry return. */
 		}
@@ -3815,7 +3827,7 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
  */
 static /*@only@*/ HE_t
 rpmecNew(const headerSprintfExtension exts, /*@null@*/ int * necp)
-	/*@*/
+	/*@modifies *necp @*/
 {
     headerSprintfExtension ext;
     HE_t ec;
@@ -3872,7 +3884,8 @@ char * headerSprintf(Header h, const char * fmt,
 		/*@null@*/ const struct headerTagTableEntry_s * tags,
 		/*@null@*/ const struct headerSprintfExtension_s * exts,
 		/*@null@*/ /*@out@*/ errmsg_t * errmsg)
-	/*@modifies h, *errmsg @*/
+	/*@globals headerCompoundFormats @*/
+	/*@modifies h, *errmsg, headerCompoundFormats @*/
 	/*@requires maxSet(errmsg) >= 0 @*/
 {
     headerSprintfArgs hsa = memset(alloca(sizeof(*hsa)), 0, sizeof(*hsa));

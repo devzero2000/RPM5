@@ -13,8 +13,8 @@
 
 #include <pkgio.h>
 
-#include "header_internal.h"	/* XXX headerCheck */
-#include "signature.h"
+#include "signature.h"		/* XXX rpmVerifySignature */
+
 #include "debug.h"
 
 #define	alloca_strdup(_s)	strcpy(alloca(strlen(_s)+1), (_s))
@@ -22,8 +22,6 @@
 /*@access pgpDig @*/
 /*@access pgpDigParams @*/
 /*@access Header @*/		/* XXX compared with NULL */
-/*@access entryInfo @*/		/* XXX headerCheck */
-/*@access indexEntry @*/	/* XXX headerCheck */
 /*@access FD_t @*/		/* XXX stealing digests */
 
 /*@unchecked@*/

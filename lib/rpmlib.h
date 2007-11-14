@@ -353,20 +353,6 @@ typedef /*@abstract@*/ struct fsm_s * FSM_t;
  */
 typedef /*@abstract@*/ /*@refcounted@*/ struct rpmpsm_s * rpmpsm;
 
-/** 
- * Return checked and loaded header.
- * @param ts		transaction set
- * @param _fd		file handle
- * @retval hdrp		address of header (or NULL)
- * @retval *msg		verification error message (or NULL)
- * @return		RPMRC_OK on success
- */
-rpmRC rpmReadHeader(rpmts ts, void * _fd, /*@out@*/ Header *hdrp,
-		/*@out@*/ /*@null@*/ const char ** msg)
-        /*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-        /*@modifies ts, *_fd, *hdrp, *msg, rpmGlobalMacroContext,
-                fileSystem, internalState @*/;
-
 /**
  * Return package header from file handle, verifying digests/signatures.
  * @param ts		transaction set
