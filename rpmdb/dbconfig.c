@@ -33,7 +33,7 @@ static int dbi_use_cursors;
 static int dbi_tear_down;
 #endif
 
-/*@-compmempass -immediatetrans -exportlocal -exportheadervar@*/
+/*@-compmempass -immediatetrans -exportlocal -exportheadervar -type@*/
 /** \ingroup db3
  */
 /*@unchecked@*/
@@ -629,7 +629,7 @@ DB_STAT_CLEAR		mutex_stat*
 
     POPT_TABLEEND
 };
-/*@=compmempass =immediatetrans =exportlocal =exportheadervar@*/
+/*@=compmempass =immediatetrans =exportlocal =exportheadervar =type@*/
 
 dbiIndex db3Free(dbiIndex dbi)
 {
@@ -681,12 +681,12 @@ dbiIndex db3New(rpmdb rpmdb, rpmTag rpmtag)
 	    int argInfo;
 
 	    /* Skip leading white space. */
-	    while (*o && xisspace(*o))
+	    while (*o && xisspace((int)*o))
 		o++;
 
 	    /* Find and terminate next key=value pair. Save next start point. */
 	    for (oe = o; oe && *oe; oe++) {
-		if (xisspace(*oe))
+		if (xisspace((int)*oe))
 		    /*@innerbreak@*/ break;
 		if (oe[0] == ':' && !(oe[1] == '/' && oe[2] == '/'))
 		    /*@innerbreak@*/ break;

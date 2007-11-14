@@ -533,14 +533,14 @@ if (swapped == 1) {
 /*@i@*/ assert(key->size == sizeof(unsigned char));
 assert(swapped == 0); /* Byte swap?! */
 	    memcpy(&i, key->data, sizeof(i));
-	    rc = sqlite3_bind_int(scp->pStmt, pos, i);
+	    rc = sqlite3_bind_int(scp->pStmt, pos, (int) i);
 	} /*@innerbreak@*/ break;
 	case RPM_UINT16_TYPE:
 	{	unsigned short i;
 /*@i@*/ assert(key->size == sizeof(int_16));
 assert(swapped == 0); /* Byte swap?! */
 	    memcpy(&i, key->data, sizeof(i));
-	    rc = sqlite3_bind_int(scp->pStmt, pos, i);
+	    rc = sqlite3_bind_int(scp->pStmt, pos, (int) i);
 	} /*@innerbreak@*/ break;
 	case RPM_UINT64_TYPE:
 assert(0);	/* borken */
@@ -773,7 +773,7 @@ fprintf(stderr, "\t%s(%d) type(%d) keytype %s\n", tagName(dbi->dbi_rpmtag), dbi-
 	if (rc)
 	    goto exit;
 
-	sprintf(cmd, "INSERT INTO 'db_info' values('%d')", ((union _dbswap *)&endian)->uc[0]);
+	sprintf(cmd, "INSERT INTO 'db_info' values('%u')", (unsigned)((union _dbswap *)&endian)->uc[0]);
 	rc = sqlite3_exec(sqldb->db, cmd, NULL, NULL, (char **)&scp->pzErrmsg);
 	if (rc)
 	    goto exit;
@@ -1371,7 +1371,7 @@ enterChroot(dbi);
 
     if (sql_rc == 0 && scp->nr > 0) {
 assert(scp->av != NULL);
-	db_endian.uc[0] = strtol(scp->av[1], NULL, 10);
+	db_endian.uc[0] = (unsigned char) strtol(scp->av[1], NULL, 10);
 
 	if ( db_endian.uc[0] == ((union _dbswap *)&endian)->uc[0] )
 	    rc = 0; /* Native endian */

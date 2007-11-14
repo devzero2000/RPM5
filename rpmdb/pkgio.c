@@ -5,8 +5,6 @@
 
 #include "system.h"
 
-int _use_xar = 0;
-
 #if defined(HAVE_MACHINE_TYPES_H)
 # include <machine/types.h>
 #endif
@@ -45,6 +43,9 @@ int _use_xar = 0;
 /*@access entryInfo @*/		/* XXX rdSignature */
 /*@access indexEntry @*/	/* XXX rdSignature */
 /*@access FD_t @*/              /* XXX stealing digests */
+
+/*@unchecked@*/
+int _use_xar = 0;
 
 /*@unchecked@*/
 static int _print_pkts = 0;
@@ -192,7 +193,7 @@ fprintf(stderr, "*** free pkt %p[%d] id %08x %08x\n", ts->pkpkt, ts->pkpktlen, p
 
 	xx = 0;
 	if (fn && *fn != '%') {
-	    xx = (pgpReadPkts(fn,&ts->pkpkt,&ts->pkpktlen) != PGPARMOR_PUBKEY);
+	    xx = (pgpReadPkts(fn, (byte **)&ts->pkpkt, &ts->pkpktlen) != PGPARMOR_PUBKEY);
 	}
 	fn = _free(fn);
 	if (xx) {
@@ -227,7 +228,7 @@ fprintf(stderr, "*** free pkt %p[%d] id %08x %08x\n", ts->pkpkt, ts->pkpktlen, p
 	goto exit;
 
     /* Retrieve parameters from pubkey packet(s). */
-    xx = pgpPrtPkts(ts->pkpkt, ts->pkpktlen, dig, 0);
+    xx = pgpPrtPkts((byte *)ts->pkpkt, ts->pkpktlen, dig, 0);
 
     /* Do the parameters match the signature? */
     if (sigp->pubkey_algo == pubp->pubkey_algo
@@ -328,10 +329,12 @@ struct rpmlead {
 /*@unchecked@*/
 int _nolead = SUPPORT_RPMLEAD;
 
+/*@-type@*/
 /*@unchecked@*/ /*@observer@*/
 static unsigned char lead_magic[] = {
     0xed, 0xab, 0xee, 0xdb, 0x00, 0x00, 0x00, 0x00
 };
+/*@=type@*/
 
 /* The lead needs to be 8 byte aligned */
 
@@ -351,8 +354,8 @@ static rpmRC wrLead(FD_t fd, const void * ptr, const char ** msg)
     memcpy(&l, ptr, sizeof(l));
 
     /* Set some sane defaults */
-    if (l.major == 0)
-	l.major = 3;
+    if ((int)l.major == 0)
+	l.major = (unsigned char) 3;
     if (l.signature_type == 0)
 	l.signature_type = 5;		/* RPMSIGTYPE_HEADERSIG */
     if (msg && *msg)
@@ -428,7 +431,7 @@ assert(wf->nl == sizeof(*l));
     switch (l->major) {
     default:
 	(void) snprintf(buf, sizeof(buf),
-		_("lead version(%d): UNSUPPORTED"), l->major);
+		_("lead version(%u): UNSUPPORTED"), (unsigned) l->major);
 	rc = RPMRC_NOTFOUND;
 	goto exit;
 	/*@notreached@*/ break;
@@ -466,10 +469,12 @@ exit:
 extern int _newmagic;
 /*@=redecl@*/
 
+/*@-type@*/
 /*@observer@*/ /*@unchecked@*/
 static unsigned char sigh_magic[8] = {
 	0x8e, 0xad, 0xe8, 0x3e, 0x00, 0x00, 0x00, 0x00
 };
+/*@=type@*/
 
 /**
  * Write signature header.
@@ -483,7 +488,8 @@ static rpmRC wrSignature(FD_t fd, void * ptr, /*@unused@*/ const char ** msg)
 	/*@modifies fd, ptr, fileSystem @*/
 {
     Header sigh = ptr;
-    static unsigned char zero[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };
+    static unsigned char zero[8]
+	= { '\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0' };
     int sigSize, pad;
     rpmRC rc = RPMRC_OK;
     int xx;
@@ -1365,9 +1371,9 @@ rpmRC rpmpkgClean(FD_t fd)
     rpmwf wf = fdGetWF(fd);
     if (wf != NULL) {
 	fdSetWF(fd, NULL);
-/*@-modfilesys@*/
+/*@-dependenttrans -modfilesys -observertrans @*/
 	wf = rpmwfFree(wf);
-/*@=modfilesys@*/
+/*@=dependenttrans =modfilesys =observertrans @*/
     }
     return RPMRC_OK;
 }

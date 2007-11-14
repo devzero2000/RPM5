@@ -140,8 +140,8 @@ setup(unsigned char *list1, /*@out@*/ unsigned char *list2,
 		size_t n, size_t size, int (*cmp) (const void *, const void *))
 	/*@modifies list1, list2 @*/
 {
-	int i, length, size2, tmp, sense;
-	unsigned char *f1, *f2, *s, *l2, *last, *p2;
+	int i, length, size2, sense;
+	unsigned char *f1, *f2, *s, *l2, *last, *p2, tmp;
 
 	size2 = size*2;
 	if (n <= 5) {

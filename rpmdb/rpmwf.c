@@ -226,7 +226,9 @@ fprintf(stderr, "*** rpmwfInitRPM(%p, %s, %s)\n", wf, fn, fmode);
 	fn = wf->fn;
 assert(fn != NULL);
 
+/*@-globs@*/
     wf->fd = Fopen(fn, fmode);
+/*@=globs@*/
 if (_rpmwf_debug)
 fprintf(stderr, "*** Fopen(%s, %s) fd %p nb %u\n", fn, fmode, wf->fd, (unsigned)wf->nb);
     if (wf->fd == NULL || Ferror(wf->fd)) {
@@ -299,10 +301,12 @@ fprintf(stderr, "*** rpmwfFree(%p)\n", wf);
     if (wf) {
 
 	if (wf->b == NULL) {
+/*@-dependenttrans -onlytrans @*/	/* rpm needs dependent, xar needs only */
 	    wf->l = _free(wf->l);
 	    wf->s = _free(wf->s);
 	    wf->h = _free(wf->h);
 	    wf->p = _free(wf->p);
+/*@=dependenttrans =onlytrans @*/
 	}
 
 	(void) rpmwfFiniXAR(wf);
@@ -320,8 +324,10 @@ rpmwf rpmwfNew(const char * fn)
     rpmwf wf;
     int xx;
 
+/*@-globs@*/
     if ((xx = Stat(fn, st)) < 0)
 	return NULL;
+/*@=globs@*/
     wf = xcalloc(1, sizeof(*wf));
     wf->fn = xstrdup(fn);
     wf->nb = st->st_size;

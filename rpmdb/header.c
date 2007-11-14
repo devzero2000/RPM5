@@ -41,20 +41,26 @@ int _tagcache = 1;		/* XXX Cache tag data persistently? */
 
 /** \ingroup header
  */
+/*@-type@*/
 /*@observer@*/ /*@unchecked@*/
 static unsigned char header_magic[8] = {
 	0x8e, 0xad, 0xe8, 0x01, 0x00, 0x00, 0x00, 0x00
 };
+/*@=type@*/
 
+/*@-type@*/
 /*@observer@*/ /*@unchecked@*/
 static unsigned char sigh_magic[8] = {
 	0x8e, 0xad, 0xe8, 0x3e, 0x00, 0x00, 0x00, 0x00
 };
+/*@=type@*/
 
+/*@-type@*/
 /*@observer@*/ /*@unchecked@*/
 static unsigned char meta_magic[8] = {
 	0x8e, 0xad, 0xe8, 0x3f, 0x00, 0x00, 0x00, 0x00
 };
+/*@=type@*/
 
 /** \ingroup header
  * Size of header data types.
@@ -447,15 +453,15 @@ static int dataLength(rpmTagType type, rpmTagData * p, rpmTagCount count,
 		int onDisk, /*@null@*/ rpmTagData * pend)
 	/*@*/
 {
-    const unsigned char * s = (*p).ui8p;
-    const unsigned char * se = (pend ? (*pend).ui8p : NULL);
+    const unsigned char * s = (unsigned char *) (*p).ui8p;
+    const unsigned char * se = (unsigned char *) (pend ? (*pend).ui8p : NULL);
     int length = 0;
 
     switch (type) {
     case RPM_STRING_TYPE:
 	if (count != 1)
 	    return -1;
-	while (*s++) {
+	while (*s++ != '\0') {
 	    if (se && s > se)
 		return -1;
 	    length++;
@@ -469,7 +475,7 @@ static int dataLength(rpmTagType type, rpmTagData * p, rpmTagCount count,
 	if (onDisk) {
 	    while (count--) {
 		length++;       /* count nul terminator too */
-               while (*s++) {
+               while (*s++ != '\0') {
 		    if (se && s > se)
 			return -1;	/* XXX change errret, use size_t */
 		    length++;
@@ -561,8 +567,10 @@ static int regionSwab(/*@null@*/ indexEntry entry, int il, int dl,
 	    return -1;
 
 	p.ptr = ie.data;
-	pend.ui8p = (unsigned char *) dataEnd;
+	pend.ui8p = (uint8_t *) dataEnd;
+/*@-nullstate@*/	/* pend.ui8p derived from dataLength may be null */
 	ie.length = dataLength(ie.info.type, &p, ie.info.count, 1, &pend);
+/*@=nullstate@*/
 	if (ie.length < 0 || hdrchkData(ie.length))
 	    return -1;
 
@@ -570,7 +578,9 @@ static int regionSwab(/*@null@*/ indexEntry entry, int il, int dl,
 
 	if (entry) {
 	    ie.info.offset = regionid;
+/*@-kepttrans@*/	/* entry->data is kept */
 	    *entry = ie;	/* structure assignment */
+/*@=kepttrans@*/
 	    entry++;
 	}
 
@@ -2247,8 +2257,10 @@ int headerAddI18NString(Header h, uint32_t tag, const char * string,
 
     if (!entry) {
 	p.argv = alloca(sizeof(*p.argv) * (langNum + 1));
+/*@-observertrans -readonlytrans@*/
 	for (i = 0; i < langNum; i++)
 	    p.argv[i] = "";
+/*@=observertrans =readonlytrans@*/
 	p.argv[langNum] = string;
 	return headerAddEntry(h, tag, RPM_I18NSTRING_TYPE, p.ptr, langNum + 1);
     } else if (langNum >= entry->info.count) {
@@ -2263,7 +2275,7 @@ int headerAddI18NString(Header h, uint32_t tag, const char * string,
 	} else
 	    entry->data = xrealloc(entry->data, entry->length + length);
 
-	memset(((char *)entry->data) + entry->length, '\0', ghosts);
+	memset(((char *)entry->data) + entry->length, 0, ghosts);
 	memmove(((char *)entry->data) + entry->length + ghosts, string, strlen(string)+1);
 
 	entry->length += length;
@@ -2592,9 +2604,9 @@ Header headerCopy(Header h)
 typedef struct headerSprintfArgs_s {
     Header h;
     char * fmt;
-/*@temp@*/
+/*@observer@*/ /*@temp@*/
     headerTagTableEntry tags;
-/*@temp@*/
+/*@observer@*/ /*@temp@*/
     headerSprintfExtension exts;
 /*@observer@*/ /*@null@*/
     const char * errmsg;
@@ -2738,7 +2750,7 @@ static const char * myTagName(headerTagTableEntry tbl, int val,
     t = name;
     *t++ = *s++;
     while (*s != '\0')
-	*t++ = xtolower(*s++);
+	*t++ = (char)xtolower((int)*s++);
     *t = '\0';
     if (typep)
 	*typep = tbl->type;
@@ -2880,8 +2892,8 @@ static char * intFormat(HE_t he, const char *fmt)
 	    nb = 2 * c + 1;
 	    t = b = alloca(nb+1);
 	    while (c-- > 0) {
-		unsigned int i;
-		i = *s++;
+		unsigned i;
+		i = (unsigned) *s++;
 		*t++ = hex[ (i >> 4) & 0xf ];
 		*t++ = hex[ (i     ) & 0xf ];
 	    }
@@ -3015,7 +3027,9 @@ static char * shescapeFormat(HE_t he)
     } else if (he->t == RPM_UINT64_TYPE) {
 	nb = 40;
 	val = xmalloc(40);
+/*@-duplicatequals@*/
 	xx = snprintf(val, nb, "%llu", (unsigned long long)data.ui64p[0]);
+/*@=duplicatequals@*/
 	val[nb-1] = '\0';
     } else if (he->t == RPM_STRING_TYPE) {
 	const char * s = data.str;
@@ -3026,13 +3040,13 @@ static char * shescapeFormat(HE_t he)
 	/* XXX count no. of escapes instead. */
 	t = xmalloc(4 * nb + 3);
 	*t++ = '\'';
-	while ((c = *s++) != 0) {
-	    if (c == '\'') {
+	while ((c = (int)*s++) != 0) {
+	    if (c == (int)'\'') {
 		*t++ = '\'';
 		*t++ = '\\';
 		*t++ = '\'';
 	    }
-	    *t++ = c;
+	    *t++ = (char) c;
 	}
 	*t++ = '\'';
 	*t = '\0';
@@ -3171,7 +3185,7 @@ static int parseFormat(headerSprintfArgs hsa, /*@null@*/ char * str,
 	    *chptr++ = '\0';
 
 	    while (start < chptr) {
-		if (xisdigit(*start)) {
+		if (xisdigit((int)*start)) {
 		    i = strtoul(start, &start, 10);
 		    token->u.tag.pad += i;
 		    start = chptr;
@@ -3486,7 +3500,7 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
 	if (xx) {
 	    (void) rpmheClean(he);
 	    he->t = RPM_STRING_TYPE;	
-	    he->p.str = "(none)";
+	    he->p.str = xstrdup("(none)");
 	    he->c = 1;
 	}
 	he->avail = 1;
@@ -3558,17 +3572,21 @@ assert(0);	/* XXX keep gcc quiet. */
 	break;
     }
 
+/*@-compmempass@*/	/* vhe->p.ui64p is stack, not owned */
     if (tag->fmt)
 	val = tag->fmt(vhe);
     else
 	val = intFormat(vhe, NULL);
+/*@=compmempass@*/
 assert(val != NULL);
     if (val)
 	need = strlen(val) + 1;
 
 exit:
+/*@-compmempass@*/	/* he->p.ptr is dependent, not owned @*/
     if (!_tagcache)
 	he = rpmheClean(he);
+/*@=compmempass@*/
 
     if (val && need > 0) {
 	if (tag->format && *tag->format && tag->pad) {
@@ -3635,8 +3653,10 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 
     case PTOK_TAG:
 	t = hsa->val + hsa->vallen;
+/*@-modobserver@*/	/* headerCompoundFormats not modified. */
 	te = formatValue(hsa, &token->u.tag,
 			(token->u.tag.justOne ? 0 : element));
+/*@=modobserver@*/
 	if (te == NULL)
 	    return NULL;
 	break;
@@ -3657,7 +3677,9 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 
 	t = hsaReserve(hsa, need);
 	for (i = 0; i < condNumFormats; i++, spft++) {
+/*@-modobserver@*/	/* headerCompoundFormats not modified. */
 	    te = singleSprintf(hsa, spft, element);
+/*@=modobserver@*/
 	    if (te == NULL)
 		return NULL;
 	}
@@ -3791,7 +3813,9 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 	    for (j = 0; j < numElements; j++) {
 		spft = token->u.array.format;
 		for (i = 0; i < token->u.array.numTokens; i++, spft++) {
+/*@-modobserver@*/	/* headerCompoundFormats not modified. */
 		    te = singleSprintf(hsa, spft, j);
+/*@=modobserver@*/
 		    if (te == NULL)
 			return NULL;
 		}
@@ -3906,8 +3930,10 @@ char * headerSprintf(Header h, const char * fmt,
     hsa->h = headerLink(h);
     hsa->fmt = xstrdup(fmt);
 /*@-castexpose@*/	/* FIX: legacy API shouldn't change. */
+/*@-dependenttrans@*/
     hsa->exts = (headerSprintfExtension) exts;
     hsa->tags = (headerTagTableEntry) tags;
+/*@=dependenttrans@*/
 /*@=castexpose@*/
     hsa->errmsg = NULL;
 
@@ -3942,7 +3968,9 @@ char * headerSprintf(Header h, const char * fmt,
 
     hsa = hsaInit(hsa);
     while ((nextfmt = hsaNext(hsa)) != NULL) {
+/*@-modobserver@*/	/* headerCompoundFormats not modified. */
 	te = singleSprintf(hsa, nextfmt, 0);
+/*@=modobserver@*/
 	if (te == NULL) {
 	    hsa->val = _free(hsa->val);
 	    break;

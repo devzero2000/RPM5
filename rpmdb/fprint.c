@@ -187,7 +187,7 @@ uint32_t fpHashFunction(uint32_t h, const void * data, /*@unused@*/ size_t size)
 {
     const fingerPrint * fp = data;
     const char * chptr = fp->baseName;
-    unsigned char ch = 0;
+    unsigned char ch = '\0';
 
     while (*chptr != '\0') ch ^= *chptr++;
 

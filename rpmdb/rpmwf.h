@@ -11,19 +11,19 @@ struct rpmwf_s {
     const char * fn;
 /*@relnull@*/
     FD_t fd;
-/*@relnull@*/
+/*@relnull@*/ /*@owned@*/
     void * b;
     size_t nb;
-/*@relnull@*/
+/*@relnull@*/ /*@dependent@*/
     char * l;
     size_t nl;
-/*@relnull@*/
+/*@relnull@*/ /*@dependent@*/
     char * s;
     size_t ns;
-/*@relnull@*/
+/*@relnull@*/ /*@dependent@*/
     char * h;
     size_t nh;
-/*@relnull@*/
+/*@relnull@*/ /*@dependent@*/
     char * p;
     size_t np;
 #ifdef WITH_XAR
@@ -81,11 +81,11 @@ rpmwf rpmwfNew(const char * fn)
 
 rpmwf rdRPM(const char * rpmfn)
 	/*@globals fileSystem @*/
-	/*@modifies wf, fileSystem @*/;
+	/*@modifies fileSystem @*/;
 
 rpmwf rdXAR(const char * xarfn)
 	/*@globals fileSystem @*/
-	/*@modifies wf, fileSystem @*/;
+	/*@modifies fileSystem @*/;
 
 rpmRC wrXAR(const char * xarfn, rpmwf wf)
 	/*@globals fileSystem @*/

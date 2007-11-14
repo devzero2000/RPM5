@@ -276,7 +276,7 @@ static size_t xmlstrlen(const char * s)
     size_t len = 0;
     int c;
 
-    while ((c = *s++) != '\0')
+    while ((c = (int) *s++) != (int) '\0')
     {
 	switch (c) {
 	case '<':
@@ -300,12 +300,12 @@ static char * xmlstrcpy(/*@returned@*/ char * t, const char * s)
     char * te = t;
     int c;
 
-    while ((c = *s++) != '\0') {
+    while ((c = (int) *s++) != (int) '\0') {
 	switch (c) {
 	case '<':	te = stpcpy(te, "&lt;");	/*@switchbreak@*/ break;
 	case '>':	te = stpcpy(te, "&gt;");	/*@switchbreak@*/ break;
 	case '&':	te = stpcpy(te, "&amp;");	/*@switchbreak@*/ break;
-	default:	*te++ = c;			/*@switchbreak@*/ break;
+	default:	*te++ = (char) c;		/*@switchbreak@*/ break;
 	}
     }
     *te = '\0';
@@ -426,13 +426,13 @@ static size_t yamlstrlen(const char * s, int lvl)
     int indent = (lvl > 0);
     int c;
 
-    while ((c = *s++) != '\0')
+    while ((c = (int) *s++) != (int) '\0')
     {
 	if (indent) {
 	    len += 2 * lvl;
 	    indent = 0;
 	}
-	if (c == '\n')
+	if (c == (int) '\n')
 	    indent = (lvl > 0);
 	len++;
     }
@@ -453,7 +453,7 @@ static char * yamlstrcpy(/*@out@*/ /*@returned@*/ char * t, const char * s, int 
     int indent = (lvl > 0);
     int c;
 
-    while ((c = *s++) != '\0') {
+    while ((c = (int) *s++) != (int) '\0') {
 	if (indent) {
 	    int i;
 	    for (i = 0; i < lvl; i++) {
@@ -462,9 +462,9 @@ static char * yamlstrcpy(/*@out@*/ /*@returned@*/ char * t, const char * s, int 
 	    }
 	    indent = 0;
 	}
-	if (c == '\n')
+	if (c == (int) '\n')
 	    indent = (lvl > 0);
-	*te++ = c;
+	*te++ = (char) c;
     }
     *te = '\0';
     return t;
@@ -504,7 +504,7 @@ assert(he->t == RPM_STRING_TYPE || he->t == RPM_UINT64_TYPE || he->t == RPM_BIN_
 	if (strchr("[", s[0]))	/* leading [ */
 	    xx = 1;
 	if (xx == 0)
-	while ((c = *s++) != '\0') {
+	while ((c = (int) *s++) != (int) '\0') {
 	    switch (c) {
 	    default:
 		continue;
@@ -634,7 +634,7 @@ assert(ix == 0);
     } else {
 	unsigned char * pkt = (unsigned char *) data.ui8p;
 	unsigned int pktlen = 0;
-	unsigned int v = *pkt;
+	unsigned int v = (unsigned int) *pkt;
 	pgpTag tag = 0;
 	unsigned int plen;
 	unsigned int hlen = 0;
@@ -642,11 +642,11 @@ assert(ix == 0);
 	if (v & 0x80) {
 	    if (v & 0x40) {
 		tag = (v & 0x3f);
-		plen = pgpLen(pkt+1, &hlen);
+		plen = pgpLen((byte *)pkt+1, &hlen);
 	    } else {
 		tag = (v >> 2) & 0xf;
 		plen = (1 << (v & 0x3));
-		hlen = pgpGrab(pkt+1, plen);
+		hlen = pgpGrab((byte *)pkt+1, plen);
 	    }
 	
 	    pktlen = 1 + plen + hlen;
@@ -660,7 +660,7 @@ assert(ix == 0);
 	    size_t nb = 0;
 	    const char *tempstr;
 
-	    (void) pgpPrtPkts(pkt, pktlen, dig, 0);
+	    (void) pgpPrtPkts((byte *)pkt, pktlen, dig, 0);
 
 	    val = NULL;
 	again:
@@ -1295,10 +1295,12 @@ static void rpmfiBuildFNames(Header h, rpmTag tagN,
     baseNames.ptr = headerFreeData(baseNames.ptr, bnt);
     dirNames.ptr = headerFreeData(dirNames.ptr, dnt);
 
+/*@-onlytrans@*/
     if (fnp)
 	*fnp = fileNames.argv;
     else
 	fileNames.ptr = _free(fileNames.ptr);
+/*@=onlytrans@*/
     if (fcp) *fcp = count;
 }
 

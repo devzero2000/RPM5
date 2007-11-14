@@ -812,37 +812,37 @@ int ufdGetFile( /*@killref@*/ FD_t sfd, FD_t tfd)
 /*@}*/
 
 /*@unused@*/ static inline int xislower(int c) /*@*/ {
-    return (c >= 'a' && c <= 'z');
+    return (c >= (int)'a' && c <= (int)'z');
 }
 /*@unused@*/ static inline int xisupper(int c) /*@*/ {
-    return (c >= 'A' && c <= 'Z');
+    return (c >= (int)'A' && c <= (int)'Z');
 }
 /*@unused@*/ static inline int xisalpha(int c) /*@*/ {
     return (xislower(c) || xisupper(c));
 }
 /*@unused@*/ static inline int xisdigit(int c) /*@*/ {
-    return (c >= '0' && c <= '9');
+    return (c >= (int)'0' && c <= (int)'9');
 }
 /*@unused@*/ static inline int xisalnum(int c) /*@*/ {
     return (xisalpha(c) || xisdigit(c));
 }
 /*@unused@*/ static inline int xisblank(int c) /*@*/ {
-    return (c == ' ' || c == '\t');
+    return (c == (int)' ' || c == (int)'\t');
 }
 /*@unused@*/ static inline int xisspace(int c) /*@*/ {
-    return (xisblank(c) || c == '\n' || c == '\r' || c == '\f' || c == '\v');
+    return (xisblank(c) || c == (int)'\n' || c == (int)'\r' || c == (int)'\f' || c == (int)'\v');
 }
 /*@unused@*/ static inline int xiscntrl(int c) /*@*/ {
-    return (c < ' ');
+    return (c < (int)' ');
 }
 /*@unused@*/ static inline int xisascii(int c) /*@*/ {
     return ((c & 0x80) != 0x80);
 }
 /*@unused@*/ static inline int xisprint(int c) /*@*/ {
-    return (c >= ' ' && xisascii(c));
+    return (c >= (int)' ' && xisascii(c));
 }
 /*@unused@*/ static inline int xisgraph(int c) /*@*/ {
-    return (c > ' ' && xisascii(c));
+    return (c > (int)' ' && xisascii(c));
 }
 /*@unused@*/ static inline int xispunct(int c) /*@*/ {
     return (xisgraph(c) && !xisalnum(c));

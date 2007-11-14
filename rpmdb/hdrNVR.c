@@ -43,6 +43,7 @@ int headerMacrosLoad(Header h)
     uint64_t ival;
     int xx;
 
+    numbuf[0] = '\0';
     /* XXX pre-expand %{buildroot} (if any) */
     {   const char *s = rpmExpand("%{?buildroot}", NULL);
 	if (s && *s) 
@@ -90,8 +91,10 @@ int headerMacrosLoad(Header h)
 	}
 	
 	if (val) {
+/*@-duplicatequals@*/
 	    if (val == numbuf)
 		sprintf(numbuf, "%llu", (unsigned long long)ival);
+/*@=duplicatequals@*/
 	    addMacro(NULL, tagm->macroname, NULL, val, -1);
 	}
 	he->p.ptr = _free(he->p.ptr);
@@ -158,6 +161,7 @@ int headerNEVRA(Header h, const char **np,
     rpmTagData p;
     rpmTagCount c;
 
+/*@-onlytrans@*/
     if (np) {
 	if (headerGetEntry(h, RPMTAG_NAME, &t, &p, &c)
 	 && t == RPM_STRING_TYPE && c == 1)
@@ -194,6 +198,7 @@ int headerNEVRA(Header h, const char **np,
 	else
 	    *ap = NULL;
     }
+/*@=onlytrans@*/
     return 0;
 }
 

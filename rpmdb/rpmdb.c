@@ -125,12 +125,12 @@ static inline unsigned char nibble(char c)
 	/*@*/
 {
     if (c >= '0' && c <= '9')
-	return (c - '0');
+	return (unsigned char)(c - '0');
     if (c >= 'A' && c <= 'F')
-	return (c - 'A') + 10;
+	return (unsigned char)((int)(c - 'A') + 10);
     if (c >= 'a' && c <= 'f')
-	return (c - 'a') + 10;
-    return 0;
+	return (unsigned char)((int)(c - 'a') + 10);
+    return '\0';
 }
 
 /**
@@ -148,8 +148,8 @@ static char * bin2hex(const void *data, size_t size)
     char * t, * val;
     val = t = xmalloc(size * 2 + 1);
     while (size-- > 0) {
-	unsigned int i;
-	i = *s++;
+	unsigned i;
+	i = (unsigned) *s++;
 	*t++ = hex[ (i >> 4) & 0xf ];
 	*t++ = hex[ (i     ) & 0xf ];
     }
@@ -223,12 +223,12 @@ static void dbiTagsInit(/*@null@*/int ** dbiTagsP, /*@null@*/int * dbiTagsMaxP)
     dbiTags[dbiTagsMax++] = RPMDBI_PACKAGES;
 
     for (o = dbiTagStr; o && *o; o = oe) {
-	while (*o && xisspace(*o))
+	while (*o && xisspace((int)*o))
 	    o++;
 	if (*o == '\0')
 	    break;
 	for (oe = o; oe && *oe; oe++) {
-	    if (xisspace(*oe))
+	    if (xisspace((int)*oe))
 		/*@innerbreak@*/ break;
 	    if (oe[0] == ':' && !(oe[1] == '/' && oe[2] == '/'))
 		/*@innerbreak@*/ break;
@@ -1377,14 +1377,14 @@ int rpmdbVerify(const char * prefix)
  * @param s		(directory) path
  * @return		tagnum with (directory) path hash
  */
-static inline unsigned taghash(const char *s)
+static inline unsigned taghash(const unsigned char *s)
 	/*@*/
 {
     unsigned int r = 0;
     int c;
-    while ((c = *(const unsigned char *)s++) != 0) {
+    while ((c = (int) *s++) != 0) {
 	/* XXX Excluding the '/' character may cause hash collisions. */
-	if (c != '/')
+	if (c != (int) '/')
 	    r += (r << 3) + c;
     }
     return ((r & 0x7fff) | 0x8000) << 16;
@@ -2004,7 +2004,7 @@ static /*@only@*/ char * mireDup(rpmTag tag, rpmMireMode *modep,
 
 	/* Find no. of bytes needed for pattern. */
 	/* periods and plusses are escaped, splats become '.*' */
-	c = '\0';
+	c = (int) '\0';
 	brackets = 0;
 	for (s = pattern; *s != '\0'; s++) {
 	    switch (*s) {
@@ -2020,10 +2020,10 @@ static /*@only@*/ char * mireDup(rpmTag tag, rpmMireMode *modep,
 		brackets = 1;
 		/*@switchbreak@*/ break;
 	    case ']':
-		if (c != '[') brackets = 0;
+		if (c != (int) '[') brackets = 0;
 		/*@switchbreak@*/ break;
 	    }
-	    c = *s;
+	    c = (int) *s;
 	}
 
 	pat = t = xmalloc(nb);
@@ -2031,7 +2031,7 @@ static /*@only@*/ char * mireDup(rpmTag tag, rpmMireMode *modep,
 	if (pattern[0] != '^') *t++ = '^';
 
 	/* Copy pattern, escaping periods, prefixing splats with period. */
-	c = '\0';
+	c = (int) '\0';
 	brackets = 0;
 	for (s = pattern; *s != '\0'; s++, t++) {
 	    switch (*s) {
@@ -2049,10 +2049,11 @@ static /*@only@*/ char * mireDup(rpmTag tag, rpmMireMode *modep,
 		brackets = 1;
 		/*@switchbreak@*/ break;
 	    case ']':
-		if (c != '[') brackets = 0;
+		if (c != (int) '[') brackets = 0;
 		/*@switchbreak@*/ break;
 	    }
-	    c = *t = *s;
+	    *t = *s;
+	    c = (int) *t;
 	}
 
 	if (s > pattern && s[-1] != '$') *t++ = '$';
@@ -2209,12 +2210,14 @@ static int mireSkip (const rpmdbMatchIterator mi)
 		}
 		/*@switchbreak@*/ break;
 	    case RPM_UINT64_TYPE:
+/*@-duplicatequals@*/
 		for (j = 0; j < (unsigned) he->c; j++) {
 		    sprintf(numbuf, "%llu", (unsigned long long)he->p.ui64p[j]);
 		    rc = mireRegexec(mire, numbuf);
 		    if ((!rc && !mire->notmatch) || (rc && mire->notmatch))
 			anymatch++;
 		}
+/*@=duplicatequals@*/
 		/*@switchbreak@*/ break;
 	    case RPM_STRING_TYPE:
 		rc = mireRegexec(mire, he->p.str);
@@ -2969,8 +2972,10 @@ if (dbiByteSwapped(dbi) == 1)
 assert((dlen & 1) == 0);
 			dlen /= 2;
 			bin = t = xcalloc(1, dlen);
+/*@-type@*/
 			for (j = 0; j < (unsigned) dlen; j++, t++, s += 2)
-			    *t = (nibble(s[0]) << 4) | nibble(s[1]);
+			    *t = (byte) (nibble(s[0]) << 4) | nibble(s[1]);
+/*@=type@*/
 			key->data = bin;
 			key->size = (u_int32_t) dlen;
 			/*@switchbreak@*/ break;
@@ -3460,8 +3465,10 @@ data->size = 0;
 assert((dlen & 1) == 0);
 			dlen /= 2;
 			bin = t = xcalloc(1, dlen);
+/*@-type@*/
 			for (j = 0; j < (unsigned) dlen; j++, t++, s += 2)
-			    *t = (nibble(s[0]) << 4) | nibble(s[1]);
+			    *t = (byte) (nibble(s[0]) << 4) | nibble(s[1]);
+/*@=type@*/
 			key->data = bin;
 			key->size = (u_int32_t) dlen;
 			/*@switchbreak@*/ break;
@@ -3552,7 +3559,9 @@ if (key->size == 0) key->size++;	/* XXX "/" fixup. */
 
 	    he->tag = 0;
 	    he->t = 0;
+/*@-kepttrans -onlytrans@*/
 	    he->p.ptr = _free(he->p.ptr);
+/*@=kepttrans =onlytrans@*/
 	    he->c = 0;
 	    bin = _free(bin);
 	    requireFlags.ptr = _free(requireFlags.ptr);

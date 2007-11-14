@@ -534,7 +534,6 @@ static int makeHDRSignature(Header sigh, const char * file, uint32_t sigTag,
     byte * pkt;
     uint32_t pktlen;
     const char * fn = NULL;
-    const char * SHA1 = NULL;
     int ret = -1;	/* assume failure. */
     int xx;
 
@@ -547,6 +546,7 @@ static int makeHDRSignature(Header sigh, const char * file, uint32_t sigTag,
 	goto exit;
 	/*@notreached@*/ break;
     case RPMSIGTAG_SHA1:
+    {	const char * SHA1 = NULL;
 	fd = Fopen(file, "r.fdio");
 	if (fd == NULL || Ferror(fd))
 	    goto exit;
@@ -585,11 +585,12 @@ static int makeHDRSignature(Header sigh, const char * file, uint32_t sigTag,
 	he->signature = 1;
 	xx = hae(sigh, he, 0);
 	he->signature = 0;
+	SHA1 = _free(SHA1);
 	if (!xx)
 	    goto exit;
 	ret = 0;
-	break;
-    case RPMSIGTAG_DSA:
+   }	break;
+   case RPMSIGTAG_DSA:
 	fd = Fopen(file, "r.fdio");
 	if (fd == NULL || Ferror(fd))
 	    goto exit;
@@ -650,7 +651,6 @@ exit:
 	(void) Unlink(fn);
 	fn = _free(fn);
     }
-    SHA1 = _free(SHA1);
     h = headerFree(h);
     if (fd != NULL) (void) Fclose(fd);
     return ret;
@@ -1033,12 +1033,12 @@ static inline unsigned char nibble(char c)
 	/*@*/
 {
     if (c >= '0' && c <= '9')
-	return (c - '0');
+	return (unsigned char) (c - '0');
     if (c >= 'A' && c <= 'F')
-	return (c - 'A') + 10;
+	return (unsigned char)((int)(c - 'A') + 10);
     if (c >= 'a' && c <= 'f')
-	return (c - 'a') + 10;
-    return 0;
+	return (unsigned char)((int)(c - 'a') + 10);
+    return (unsigned char) '\0';
 }
 
 /**
@@ -1174,8 +1174,10 @@ assert(md5ctx != NULL);	/* XXX can't happen. */
 
 	/* Compare leading 16 bits of digest for quick check. */
 	s = dig->md5;
-	signhash16[0] = (nibble(s[0]) << 4) | nibble(s[1]);
-	signhash16[1] = (nibble(s[2]) << 4) | nibble(s[3]);
+/*@-type@*/
+	signhash16[0] = (byte) (nibble(s[0]) << 4) | nibble(s[1]);
+	signhash16[1] = (byte) (nibble(s[2]) << 4) | nibble(s[3]);
+/*@=type@*/
 	if (memcmp(signhash16, sigp->signhash16, sizeof(signhash16))) {
 	    res = RPMRC_FAIL;
 	    goto exit;
@@ -1190,7 +1192,7 @@ assert(md5ctx != NULL);	/* XXX can't happen. */
 
 assert(prefix != NULL);
 	hexstr = tt = xmalloc(2 * nb + 1);
-	memset(tt, 'f', (2 * nb));
+	memset(tt, (int) 'f', (2 * nb));
 	tt[0] = '0'; tt[1] = '0';
 	tt[2] = '0'; tt[3] = '1';
 	tt += (2 * nb) - strlen(prefix) - strlen(dig->md5) - 2;

@@ -167,7 +167,7 @@ static const char * _tagName(uint32_t tag)
 		if (t->name != NULL)
 		    strcpy(nameBuf, t->name + (sizeof("RPMTAG_")-1));
 		for (s = nameBuf+1; *s != '\0'; s++)
-		    *s = xtolower(*s);
+		    *s = (char) xtolower((int)*s);
 		/*@loopbreak@*/ break;
 	    }
 	}
