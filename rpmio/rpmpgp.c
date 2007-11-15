@@ -285,7 +285,7 @@ fprintf(stderr, "\t %s ", pre), mpfprintln(stderr, mpn->size, mpn->data);
     return 0;
 }
 
-int pgpPrtSubType(const byte *h, unsigned int hlen, pgpSigType sigtype)
+int pgpPrtSubType(const byte *h, size_t hlen, pgpSigType sigtype)
 {
     const byte *p = h;
     unsigned plen;
@@ -867,7 +867,7 @@ int pgpPrtComment(const pgpPkt pp)
     return 0;
 }
 
-int pgpPktLen(const byte *pkt, unsigned int pleft, pgpPkt pp)
+int pgpPktLen(const byte *pkt, size_t pleft, pgpPkt pp)
 {
     unsigned int val = *pkt;
     unsigned int plen;
@@ -897,7 +897,7 @@ int pgpPktLen(const byte *pkt, unsigned int pleft, pgpPkt pp)
     return pp->pktlen;
 }
 
-int pgpPubkeyFingerprint(const byte * pkt, unsigned int pktlen, byte * keyid)
+int pgpPubkeyFingerprint(const byte * pkt, size_t pktlen, byte * keyid)
 {
     pgpPkt pp = alloca(sizeof(*pp));
     int rc = pgpPktLen(pkt, pktlen, pp);
@@ -964,7 +964,7 @@ int pgpExtractPubkeyFingerprint(const char * b64pkt, byte * keyid)
     return 8;	/* no. of bytes of pubkey signid */
 }
 
-int pgpPrtPkt(const byte *pkt, unsigned int pleft)
+int pgpPrtPkt(const byte *pkt, size_t pleft)
 {
     pgpPkt pp = alloca(sizeof(*pp));
     int rc = pgpPktLen(pkt, pleft, pp);
@@ -1261,13 +1261,13 @@ static int pgpGrabPkts(const byte * pkts, unsigned int pktlen,
     return 0;
 }
 
-int pgpPrtPkts(const byte * pkts, unsigned int pktlen, pgpDig dig, int printing)
+int pgpPrtPkts(const byte * pkts, size_t pktlen, pgpDig dig, int printing)
 	/*@globals _dig, _digp, _print @*/
 	/*@modifies _dig, _digp, *_digp, _print @*/
 {
     pgpPkt pp = alloca(sizeof(*pp));
     unsigned int val = *pkts;
-    unsigned int pleft;
+    size_t pleft;
     int len;
     byte ** ppkts = NULL;
     int npkts;
