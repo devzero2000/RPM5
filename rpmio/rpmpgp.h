@@ -1035,13 +1035,13 @@ int pgpLen(const byte *s, /*@out@*/ unsigned int *lenp)
 	/*@modifies *lenp @*/
 {
     if (*s < 192) {
-	(*lenp) = *s++;
+	*lenp = (unsigned int) *s++;
 	return 1;
     } else if (*s < 255) {
-	(*lenp) = ((((unsigned)s[0]) - 192) << 8) + s[1] + 192;
+	*lenp = (unsigned int) ((((unsigned)s[0]) - 192) << 8) + s[1] + 192;
 	return 2;
     } else {
-	(*lenp) = pgpGrab(s+1, 4);
+	*lenp = pgpGrab(s+1, 4);
 	return 5;
     }
 }
@@ -1056,7 +1056,7 @@ unsigned int pgpMpiBits(const byte *p)
 	/*@requires maxRead(p) >= 1 @*/
 	/*@*/
 {
-    return ((p[0] << 8) | p[1]);
+    return (unsigned int) ((p[0] << 8) | p[1]);
 }
 
 /**
@@ -1086,7 +1086,7 @@ char * pgpHexCvt(/*@returned@*/ char *t, const byte *s, size_t nbytes)
     static char hex[] = "0123456789abcdef";
     while (nbytes-- > 0) {
 	unsigned int i;
-	i = *s++;
+	i = (unsigned int) *s++;
 	*t++ = hex[ (i >> 4) & 0xf ];
 	*t++ = hex[ (i     ) & 0xf ];
     }
@@ -1141,7 +1141,7 @@ const char * pgpValStr(pgpValTbl vs, byte val)
 	/*@*/
 {
     do {
-	if (vs->val == val)
+	if (vs->val == (int)val)
 	    break;
     } while ((++vs)->val != -1);
     return vs->str;
@@ -1159,7 +1159,7 @@ int pgpValTok(pgpValTbl vs, const char * s, const char * se)
 	/*@*/
 {
     do {
-	int vlen = strlen(vs->str);
+	size_t vlen = strlen(vs->str);
 	if (vlen <= (se-s) && !strncmp(s, vs->str, vlen))
 	    break;
     } while ((++vs)->val != -1);
@@ -1502,7 +1502,7 @@ int pgpFindPubkey(pgpDig dig)
 int pgpIsPkt(const byte * p)
 	/*@*/
 {
-    unsigned int val = *p++;
+    unsigned int val = (unsigned int) *p++;
     pgpTag tag;
     int rc;
 

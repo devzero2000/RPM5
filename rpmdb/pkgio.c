@@ -193,7 +193,7 @@ fprintf(stderr, "*** free pkt %p[%d] id %08x %08x\n", ts->pkpkt, ts->pkpktlen, p
 
 	xx = 0;
 	if (fn && *fn != '%') {
-	    xx = (pgpReadPkts(fn, (byte **)&ts->pkpkt, &ts->pkpktlen) != PGPARMOR_PUBKEY);
+	    xx = (pgpReadPkts(fn, (const byte **)&ts->pkpkt, &ts->pkpktlen) != PGPARMOR_PUBKEY);
 	}
 	fn = _free(fn);
 	if (xx) {
@@ -317,11 +317,11 @@ struct rpmlead {
     unsigned char magic[4];
     unsigned char major;
     unsigned char minor;
-    short type;
-    short archnum;
+    unsigned short type;
+    unsigned short archnum;
     char name[66];
-    short osnum;
-    short signature_type;	/*!< Signature header type (RPMSIG_HEADERSIG) */
+    unsigned short osnum;
+    unsigned short signature_type; /*!< Signature type (RPMSIG_HEADERSIG) */
 /*@unused@*/
     char reserved[16];		/*!< Pad to 96 bytes -- 8 byte aligned! */
 } ;
@@ -362,10 +362,10 @@ static rpmRC wrLead(FD_t fd, const void * ptr, const char ** msg)
 	(void) strncpy(l.name, *msg, sizeof(l.name));
     
     memcpy(&l.magic, lead_magic, sizeof(l.magic));
-    l.type = htons(l.type);
-    l.archnum = htons(l.archnum);
-    l.osnum = htons(l.osnum);
-    l.signature_type = htons(l.signature_type);
+    l.type = (unsigned short) htons(l.type);
+    l.archnum = (unsigned short) htons(l.archnum);
+    l.osnum = (unsigned short) htons(l.osnum);
+    l.signature_type = (unsigned short) htons(l.signature_type);
 	
     if (Fwrite(&l, 1, sizeof(l), fd) != sizeof(l))
 	return RPMRC_FAIL;
@@ -417,10 +417,10 @@ assert(wf->nl == sizeof(*l));
     }
 }
 
-    l->type = ntohs(l->type);
-    l->archnum = ntohs(l->archnum);
-    l->osnum = ntohs(l->osnum);
-    l->signature_type = ntohs(l->signature_type);
+    l->type = (unsigned short) ntohs(l->type);
+    l->archnum = (unsigned short) ntohs(l->archnum);
+    l->osnum = (unsigned short) ntohs(l->osnum);
+    l->signature_type = (unsigned short) ntohs(l->signature_type);
 
     if (memcmp(l->magic, lead_magic, sizeof(l->magic))) {
 	(void) snprintf(buf, sizeof(buf), _("lead magic: BAD"));
@@ -442,7 +442,7 @@ assert(wf->nl == sizeof(*l));
 
     if (l->signature_type != 5) {	/* RPMSIGTYPE_HEADERSIG */
 	(void) snprintf(buf, sizeof(buf),
-		_("sigh type(%d): UNSUPPORTED"), l->signature_type);
+		_("sigh type(%u): UNSUPPORTED"), (unsigned) l->signature_type);
 	rc = RPMRC_NOTFOUND;
 	goto exit;
     }
@@ -563,13 +563,13 @@ rpmwf wf = fdGetWF(fd);
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     Header * sighp = ptr;
     char buf[BUFSIZ];
-    int_32 block[4];
-    int_32 il;
-    int_32 dl;
-    int_32 * ei = NULL;
+    uint32_t block[4];
+    uint32_t il;
+    uint32_t dl;
+    uint32_t * ei = NULL;
     entryInfo pe;
     size_t nb;
-    int_32 ril = 0;
+    uint32_t ril = 0;
     indexEntry entry = memset(alloca(sizeof(*entry)), 0, sizeof(*entry));
     entryInfo info = memset(alloca(sizeof(*info)), 0, sizeof(*info));
     unsigned char * dataStart;
@@ -577,7 +577,7 @@ rpmwf wf = fdGetWF(fd);
     Header sigh = NULL;
     rpmRC rc = RPMRC_FAIL;		/* assume failure */
     int xx;
-    int i;
+    uint32_t i;
 
     buf[0] = '\0';
     if (sighp)
@@ -610,16 +610,16 @@ assert(wf->ns > sizeof(block));
 	    goto exit;
 	}
     }
-    il = ntohl(block[2]);
-    if (il < 0 || il > 32) {
+    il = (uint32_t) ntohl(block[2]);
+    if (il > 32) {
 	(void) snprintf(buf, sizeof(buf),
-		_("sigh tags: BAD, no. of tags(%d) out of range\n"), il);
+		_("sigh tags: BAD, no. of tags(%u) out of range\n"), (unsigned) il);
 	goto exit;
     }
-    dl = ntohl(block[3]);
-    if (dl < 0 || dl > 8192) {
+    dl = (uint32_t) ntohl(block[3]);
+    if (dl > 8192) {
 	(void) snprintf(buf, sizeof(buf),
-		_("sigh data: BAD, no. of bytes(%d) out of range\n"), dl);
+		_("sigh data: BAD, no. of bytes(%u) out of range\n"), (unsigned) dl);
 	goto exit;
     }
 
@@ -637,7 +637,7 @@ assert(wf->ns >= (sizeof(block)+nb));
 } else {
     if ((xx = (int) timedRead(fd, (void *)pe, nb)) != (int) nb) {
 	(void) snprintf(buf, sizeof(buf),
-		_("sigh blob(%d): BAD, read returned %d\n"), (int)nb, xx);
+		_("sigh blob(%u): BAD, read returned %d\n"), (unsigned) nb, xx);
 	goto exit;
     }
 }
@@ -646,9 +646,9 @@ assert(wf->ns >= (sizeof(block)+nb));
     xx = headerVerifyInfo(1, dl, pe, &entry->info, 0);
     if (xx != -1) {
 	(void) snprintf(buf, sizeof(buf),
-		_("tag[%d]: BAD, tag %d type %d offset %d count %d\n"),
-		0, entry->info.tag, entry->info.type,
-		entry->info.offset, entry->info.count);
+		_("tag[%d]: BAD, tag %u type %u offset %d count %u\n"),
+		0, (unsigned) entry->info.tag, (unsigned) entry->info.type,
+		entry->info.offset, (unsigned) entry->info.count);
 	goto exit;
     }
 
@@ -662,9 +662,9 @@ assert(wf->ns >= (sizeof(block)+nb));
 
 	if (entry->info.offset >= dl) {
 	    (void) snprintf(buf, sizeof(buf),
-		_("region offset: BAD, tag %d type %d offset %d count %d\n"),
-		entry->info.tag, entry->info.type,
-		entry->info.offset, entry->info.count);
+		_("region offset: BAD, tag %u type %u offset %d count %u\n"),
+		(unsigned) entry->info.tag, (unsigned) entry->info.type,
+		entry->info.offset, (unsigned) entry->info.count);
 	    goto exit;
 	}
 
@@ -673,8 +673,8 @@ assert(wf->ns >= (sizeof(block)+nb));
 /*@-sizeoftype@*/
 	(void) memcpy(info, dataEnd, REGION_TAG_COUNT);
 	/* XXX Really old packages have HEADER_IMAGE, not HEADER_SIGNATURES. */
-	if (info->tag == htonl(RPMTAG_HEADERIMAGE)) {
-	    int_32 stag = htonl(RPMTAG_HEADERSIGNATURES);
+	if (info->tag == (uint32_t) htonl(RPMTAG_HEADERIMAGE)) {
+	    uint32_t stag = (uint32_t) htonl(RPMTAG_HEADERSIGNATURES);
 	    info->tag = stag;
 	    memcpy(dataEnd, &stag, sizeof(stag));
 	}
@@ -687,32 +687,32 @@ assert(wf->ns >= (sizeof(block)+nb));
 	   && entry->info.count == REGION_TAG_COUNT))
 	{
 	    (void) snprintf(buf, sizeof(buf),
-		_("region trailer: BAD, tag %d type %d offset %d count %d\n"),
-		entry->info.tag, entry->info.type,
-		entry->info.offset, entry->info.count);
+		_("region trailer: BAD, tag %u type %u offset %d count %u\n"),
+		(unsigned) entry->info.tag, (unsigned) entry->info.type,
+		entry->info.offset, (unsigned) entry->info.count);
 	    goto exit;
 	}
 /*@=sizeoftype@*/
 	memset(info, 0, sizeof(*info));
 
 	/* Is the no. of tags in the region less than the total no. of tags? */
-	ril = entry->info.offset/sizeof(*pe);
+	ril = (uint32_t) entry->info.offset/sizeof(*pe);
 	if ((entry->info.offset % sizeof(*pe)) || ril > il) {
 	    (void) snprintf(buf, sizeof(buf),
-		_("region size: BAD, ril(%d) > il(%d)\n"), ril, il);
+		_("region size: BAD, ril(%u) > il(%u)\n"), (unsigned) ril, (unsigned) il);
 	    goto exit;
 	}
     }
 
     /* Sanity check signature tags */
     memset(info, 0, sizeof(*info));
-    for (i = 1; i < il; i++) {
+    for (i = 1; i < (unsigned) il; i++) {
 	xx = headerVerifyInfo(1, dl, pe+i, &entry->info, 0);
 	if (xx != -1) {
 	    (void) snprintf(buf, sizeof(buf),
-		_("sigh tag[%d]: BAD, tag %d type %d offset %d count %d\n"),
-		i, entry->info.tag, entry->info.type,
-		entry->info.offset, entry->info.count);
+		_("sigh tag[%u]: BAD, tag %u type %u offset %d count %u\n"),
+		(unsigned) i, (unsigned) entry->info.tag, (unsigned) entry->info.type,
+		entry->info.offset, (unsigned) entry->info.count);
 	    goto exit;
 	}
     }
@@ -785,14 +785,14 @@ rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, const char ** msg)
 {
     pgpDig dig = rpmtsDig(ts);
     char buf[8*BUFSIZ];
-    int_32 * ei = (int_32 *) uh;
-    int_32 il = ntohl(ei[0]);
-    int_32 dl = ntohl(ei[1]);
+    uint32_t * ei = (uint32_t *) uh;
+    uint32_t il = (uint32_t) ntohl(ei[0]);
+    uint32_t dl = (uint32_t) ntohl(ei[1]);
 /*@-castexpose@*/
     entryInfo pe = (entryInfo) &ei[2];
 /*@=castexpose@*/
-    int_32 ildl[2];
-    int_32 pvlen = sizeof(ildl) + (il * sizeof(*pe)) + dl;
+    uint32_t ildl[2];
+    size_t pvlen = sizeof(ildl) + (il * sizeof(*pe)) + dl;
     unsigned char * dataStart = (unsigned char *) (pe + il);
     indexEntry entry = memset(alloca(sizeof(*entry)), 0, sizeof(*entry));
     entryInfo info = memset(alloca(sizeof(*info)), 0, sizeof(*info));
@@ -800,14 +800,14 @@ rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, const char ** msg)
     unsigned char * b;
     rpmVSFlags vsflags = pgpGetVSFlags(dig);
     rpmop op;
-    int siglen = 0;
+    size_t siglen = 0;
     int blen;
     size_t nb;
-    int_32 ril = 0;
+    uint32_t ril = 0;
     unsigned char * regionEnd = NULL;
     rpmRC rc = RPMRC_FAIL;	/* assume failure */
     int xx;
-    int i;
+    uint32_t i;
     static int hclvl;
 
     hclvl++;
@@ -816,8 +816,8 @@ rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, const char ** msg)
     /* Is the blob the right size? */
     if (uc > 0 && pvlen != uc) {
 	(void) snprintf(buf, sizeof(buf),
-		_("blob size(%d): BAD, 8 + 16 * il(%d) + dl(%d)\n"),
-		(int)uc, (int)il, (int)dl);
+		_("blob size(%d): BAD, 8 + 16 * il(%u) + dl(%u)\n"),
+		(int)uc, (unsigned)il, (unsigned)dl);
 	goto exit;
     }
 
@@ -825,9 +825,9 @@ rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, const char ** msg)
     xx = headerVerifyInfo(1, dl, pe, &entry->info, 0);
     if (xx != -1) {
 	(void) snprintf(buf, sizeof(buf),
-		_("tag[%d]: BAD, tag %d type %d offset %d count %d\n"),
-		0, entry->info.tag, entry->info.type,
-		entry->info.offset, entry->info.count);
+		_("tag[%d]: BAD, tag %u type %u offset %d count %u\n"),
+		0, (unsigned) entry->info.tag, (unsigned) entry->info.type,
+		entry->info.offset, (unsigned) entry->info.count);
 	goto exit;
     }
 
@@ -843,11 +843,11 @@ rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, const char ** msg)
 /*@=sizeoftype@*/
 
     /* Is the offset within the data area? */
-    if (entry->info.offset >= dl) {
+    if (entry->info.offset >= (unsigned) dl) {
 	(void) snprintf(buf, sizeof(buf),
-		_("region offset: BAD, tag %d type %d offset %d count %d\n"),
-		entry->info.tag, entry->info.type,
-		entry->info.offset, entry->info.count);
+		_("region offset: BAD, tag %u type %u offset %d count %u\n"),
+		(unsigned) entry->info.tag, (unsigned) entry->info.type,
+		entry->info.offset, (unsigned) entry->info.count);
 	goto exit;
     }
 
@@ -864,30 +864,30 @@ rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, const char ** msg)
        && entry->info.count == REGION_TAG_COUNT))
     {
 	(void) snprintf(buf, sizeof(buf),
-		_("region trailer: BAD, tag %d type %d offset %d count %d\n"),
-		entry->info.tag, entry->info.type,
-		entry->info.offset, entry->info.count);
+		_("region trailer: BAD, tag %u type %u offset %d count %u\n"),
+		(unsigned) entry->info.tag, (unsigned) entry->info.type,
+		entry->info.offset, (unsigned) entry->info.count);
 	goto exit;
     }
 /*@=sizeoftype@*/
     memset(info, 0, sizeof(*info));
 
     /* Is the no. of tags in the region less than the total no. of tags? */
-    ril = entry->info.offset/sizeof(*pe);
+    ril = (uint32_t) entry->info.offset/sizeof(*pe);
     if ((entry->info.offset % sizeof(*pe)) || ril > il) {
 	(void) snprintf(buf, sizeof(buf),
-		_("region size: BAD, ril(%d) > il(%d)\n"), ril, il);
+		_("region size: BAD, ril(%u) > il(%u)\n"), (unsigned) ril, (unsigned)il);
 	goto exit;
     }
 
     /* Find a header-only digest/signature tag. */
-    for (i = ril; i < il; i++) {
+    for (i = ril; i < (unsigned) il; i++) {
 	xx = headerVerifyInfo(1, dl, pe+i, &entry->info, 0);
 	if (xx != -1) {
 	    (void) snprintf(buf, sizeof(buf),
-		_("tag[%d]: BAD, tag %d type %d offset %d count %d\n"),
-		i, entry->info.tag, entry->info.type,
-		entry->info.offset, entry->info.count);
+		_("tag[%u]: BAD, tag %u type %u offset %d count %u\n"),
+		(unsigned) i, (unsigned) entry->info.tag, (unsigned) entry->info.type,
+		entry->info.offset, (unsigned) entry->info.count);
 	    goto exit;
 	}
 
@@ -951,9 +951,9 @@ exit:
 	xx = headerVerifyInfo(ril-1, dl, pe+1, &entry->info, 0);
 	if (xx != -1) {
 	    (void) snprintf(buf, sizeof(buf),
-		_("tag[%d]: BAD, tag %d type %d offset %d count %d\n"),
-		xx+1, entry->info.tag, entry->info.type,
-		entry->info.offset, entry->info.count);
+		_("tag[%d]: BAD, tag %u type %u offset %d count %u\n"),
+		xx+1, (unsigned) entry->info.tag, (unsigned) entry->info.type,
+		entry->info.offset, (unsigned) entry->info.count);
 	    rc = RPMRC_FAIL;
 	} else {
 	    (void) snprintf(buf, sizeof(buf), "Header sanity check: OK\n");
@@ -991,9 +991,9 @@ assert(dig != NULL);
 	    goto exit;
 	}
 
-	ildl[0] = htonl(ril);
-	ildl[1] = (regionEnd - dataStart);
-	ildl[1] = htonl(ildl[1]);
+	ildl[0] = (uint32_t) htonl(ril);
+	ildl[1] = (uint32_t) (regionEnd - dataStart);
+	ildl[1] = (uint32_t) htonl(ildl[1]);
 
 	op = pgpStatsAccumulator(dig, 10);	/* RPMTS_OP_DIGEST */
 	(void) rpmswEnter(op, 0);
@@ -1012,12 +1012,12 @@ assert(dig != NULL);
 	dig->nbytes += nb;
 
 	b = (unsigned char *) pe;
-	nb = (htonl(ildl[0]) * sizeof(*pe));
+	nb = (size_t) (htonl(ildl[0]) * sizeof(*pe));
 	(void) rpmDigestUpdate(dig->hdrmd5ctx, b, nb);
 	dig->nbytes += nb;
 
 	b = (unsigned char *) dataStart;
-	nb = htonl(ildl[1]);
+	nb = (size_t) htonl(ildl[1]);
 	(void) rpmDigestUpdate(dig->hdrmd5ctx, b, nb);
 	dig->nbytes += nb;
 	(void) rpmswExit(op, dig->nbytes);
@@ -1036,9 +1036,9 @@ assert(dig != NULL);
 	}
 	/*@fallthrough@*/
     case RPMTAG_SHA1HEADER:
-	ildl[0] = htonl(ril);
-	ildl[1] = (regionEnd - dataStart);
-	ildl[1] = htonl(ildl[1]);
+	ildl[0] = (uint32_t) htonl(ril);
+	ildl[1] = (uint32_t) (regionEnd - dataStart);
+	ildl[1] = (uint32_t) htonl(ildl[1]);
 
 	op = pgpStatsAccumulator(dig, 10);	/* RPMTS_OP_DIGEST */
 	(void) rpmswEnter(op, 0);
@@ -1057,12 +1057,12 @@ assert(dig != NULL);
 	dig->nbytes += nb;
 
 	b = (unsigned char *) pe;
-	nb = (htonl(ildl[0]) * sizeof(*pe));
+	nb = (size_t) (htonl(ildl[0]) * sizeof(*pe));
 	(void) rpmDigestUpdate(dig->hdrsha1ctx, b, nb);
 	dig->nbytes += nb;
 
 	b = (unsigned char *) dataStart;
-	nb = htonl(ildl[1]);
+	nb = (size_t) htonl(ildl[1]);
 	(void) rpmDigestUpdate(dig->hdrsha1ctx, b, nb);
 	dig->nbytes += nb;
 	(void) rpmswExit(op, dig->nbytes);

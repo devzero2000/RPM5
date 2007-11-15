@@ -127,7 +127,7 @@ extern headerTagIndices rpmTags;
  */
 /*@-redecl@*/
 /*@unused@*/ static inline /*@observer@*/
-const char * tagName(int tag)
+const char * tagName(uint32_t tag)
 	/*@*/
 {
 /*@-type@*/
@@ -142,7 +142,7 @@ const char * tagName(int tag)
  * @return		tag data type, 0 on not found.
  */
 /*@unused@*/ static inline
-int tagType(int tag)
+uint32_t tagType(uint32_t tag)
 	/*@*/
 {
 /*@-type@*/
@@ -331,7 +331,7 @@ static int indexCmp(const void * avp, const void * bvp)
     /*@-castexpose@*/
     indexEntry ap = (indexEntry) avp, bp = (indexEntry) bvp;
     /*@=castexpose@*/
-    return (ap->info.tag - bp->info.tag);
+    return ((int)ap->info.tag - (int)bp->info.tag);
 }
 
 /** \ingroup header
@@ -355,14 +355,14 @@ static int offsetCmp(const void * avp, const void * bvp) /*@*/
     /*@-castexpose@*/
     indexEntry ap = (indexEntry) avp, bp = (indexEntry) bvp;
     /*@=castexpose@*/
-    int rc = (ap->info.offset - bp->info.offset);
+    int rc = ((int)ap->info.offset - (int)bp->info.offset);
 
     if (rc == 0) {
 	/* Within a region, entries sort by address. Added drips sort by tag. */
 	if (ap->info.offset < 0)
 	    rc = (((char *)ap->data) - ((char *)bp->data));
 	else
-	    rc = (ap->info.tag - bp->info.tag);
+	    rc = ((int)ap->info.tag - (int)bp->info.tag);
     }
     return rc;
 }
@@ -447,15 +447,15 @@ unsigned int headerSizeof(/*@null@*/ Header h)
  * @param count		entry item count
  * @param onDisk	data is concatenated strings (with NUL's))?
  * @param *pend		pointer to end of tag container data (or NULL)
- * @return		no. bytes in data, -1 on failure
+ * @return		no. bytes in data, 0 on failure
  */
-static int dataLength(rpmTagType type, rpmTagData * p, rpmTagCount count,
+static size_t dataLength(rpmTagType type, rpmTagData * p, rpmTagCount count,
 		int onDisk, /*@null@*/ rpmTagData * pend)
 	/*@*/
 {
     const unsigned char * s = (unsigned char *) (*p).ui8p;
     const unsigned char * se = (unsigned char *) (pend ? (*pend).ui8p : NULL);
-    int length = 0;
+    size_t length = 0;
 
     switch (type) {
     case RPM_STRING_TYPE:
@@ -463,7 +463,7 @@ static int dataLength(rpmTagType type, rpmTagData * p, rpmTagCount count,
 	    return -1;
 	while (*s++ != '\0') {
 	    if (se && s > se)
-		return -1;
+		return 0;
 	    length++;
 	}
 	length++;	/* count nul terminator too. */
@@ -477,7 +477,7 @@ static int dataLength(rpmTagType type, rpmTagData * p, rpmTagCount count,
 		length++;       /* count nul terminator too */
                while (*s++ != '\0') {
 		    if (se && s > se)
-			return -1;	/* XXX change errret, use size_t */
+			return 0;
 		    length++;
 		}
 	    }
@@ -491,10 +491,10 @@ static int dataLength(rpmTagType type, rpmTagData * p, rpmTagCount count,
 	break;
     default:
 	if (typeSizes[type] == -1)
-	    return -1;		/* XXX change errret, use size_t */
+	    return 0;
 	length = typeSizes[(type & 0xf)] * count;
-	if (length < 0 || (se && (s + length) > se))
-	    return -1;		/* XXX change errret, use size_t */
+	if ((se && (s + length) > se))
+	    return 0;
 	break;
     }
 
@@ -539,7 +539,7 @@ static int regionSwab(/*@null@*/ indexEntry entry, int il, int dl,
     rpmTagData pend;
     unsigned char * tprev = NULL;
     unsigned char * t = NULL;
-    int tdel = 0;
+    size_t tdel = 0;
     int tl = dl;
     struct indexEntry_s ieprev;
 
@@ -548,9 +548,9 @@ static int regionSwab(/*@null@*/ indexEntry entry, int il, int dl,
 	struct indexEntry_s ie;
 	rpmTagType type;
 
-	ie.info.tag = ntohl(pe->tag);
-	ie.info.type = ntohl(pe->type);
-	ie.info.count = ntohl(pe->count);
+	ie.info.tag = (uint32_t) ntohl(pe->tag);
+	ie.info.type = (uint32_t) ntohl(pe->type);
+	ie.info.count = (uint32_t) ntohl(pe->count);
 	ie.info.offset = ntohl(pe->offset);
 
 	if (hdrchkType(ie.info.type))
@@ -571,7 +571,7 @@ static int regionSwab(/*@null@*/ indexEntry entry, int il, int dl,
 /*@-nullstate@*/	/* pend.ui8p derived from dataLength may be null */
 	ie.length = dataLength(ie.info.type, &p, ie.info.count, 1, &pend);
 /*@=nullstate@*/
-	if (ie.length < 0 || hdrchkData(ie.length))
+	if (ie.length == 0 || hdrchkData(ie.length))
 	    return -1;
 
 	ie.rdlen = 0;
@@ -613,33 +613,33 @@ static int regionSwab(/*@null@*/ indexEntry entry, int il, int dl,
 	/* Perform endian conversions */
 	switch (ntohl(pe->type)) {
 	case RPM_UINT64_TYPE:
-	{   int_64 * it = (int_64 *)t;
-	    int_32 b[2];
+	{   uint64_t * it = (uint64_t *)t;
+	    uint32_t b[2];
 	    for (; ie.info.count > 0; ie.info.count--, it += 1) {
 		if (dataEnd && ((unsigned char *)it) >= dataEnd)
 		    return -1;
-		b[1] = htonl(((int_32 *)it)[0]);
-		b[0] = htonl(((int_32 *)it)[1]);
-		if (b[1] != ((int_32 *)it)[0])
+		b[1] = (uint32_t) htonl(((uint32_t *)it)[0]);
+		b[0] = (uint32_t) htonl(((uint32_t *)it)[1]);
+		if (b[1] != ((uint32_t *)it)[0])
 		    memcpy(it, b, sizeof(b));
 	    }
 	    t = (unsigned char *) it;
 	}   /*@switchbreak@*/ break;
 	case RPM_UINT32_TYPE:
-	{   int_32 * it = (int_32 *)t;
+	{   uint32_t * it = (uint32_t *)t;
 	    for (; ie.info.count > 0; ie.info.count--, it += 1) {
 		if (dataEnd && ((unsigned char *)it) >= dataEnd)
 		    return -1;
-		*it = htonl(*it);
+		*it = (uint32_t) htonl(*it);
 	    }
 	    t = (unsigned char *) it;
 	}   /*@switchbreak@*/ break;
 	case RPM_UINT16_TYPE:
-	{   int_16 * it = (int_16 *) t;
+	{   uint16_t * it = (uint16_t *) t;
 	    for (; ie.info.count > 0; ie.info.count--, it += 1) {
 		if (dataEnd && ((unsigned char *)it) >= dataEnd)
 		    return -1;
-		*it = htons(*it);
+		*it = (uint16_t) htons(*it);
 	    }
 	    t = (unsigned char *) it;
 	}   /*@switchbreak@*/ break;
@@ -683,14 +683,14 @@ void * headerUnload(Header h, /*@out@*/ /*@null@*/ size_t * lenp)
 	/*@ensures maxRead(result) == (*lenp) @*/
 {
     void * sw;
-    int_32 * ei = NULL;
+    uint32_t * ei = NULL;
     entryInfo pe;
     unsigned char * dataStart;
     unsigned char * te;
     unsigned pad;
-    unsigned len = 0;
-    int_32 il = 0;
-    int_32 dl = 0;
+    size_t len = 0;
+    uint32_t il = 0;
+    uint32_t dl = 0;
     indexEntry entry; 
     rpmTagType type;
     int i;
@@ -747,7 +747,7 @@ void * headerUnload(Header h, /*@out@*/ /*@null@*/ size_t * lenp)
 	}
 
 	/* Ignore deleted drips. */
-	if (entry->data == NULL || entry->length <= 0)
+	if (entry->data == NULL || entry->length == 0)
 	    continue;
 
 	/* Alignment */
@@ -776,8 +776,8 @@ void * headerUnload(Header h, /*@out@*/ /*@null@*/ size_t * lenp)
     len = sizeof(il) + sizeof(dl) + (il * sizeof(*pe)) + dl;
 
     ei = xmalloc(len);
-    ei[0] = htonl(il);
-    ei[1] = htonl(dl);
+    ei[0] = (uint32_t) htonl(il);
+    ei[1] = (uint32_t) htonl(dl);
 
     pe = (entryInfo) &ei[2];
     dataStart = te = (unsigned char *) (pe + il);
@@ -786,16 +786,16 @@ void * headerUnload(Header h, /*@out@*/ /*@null@*/ size_t * lenp)
     for (i = 0, entry = h->index; i < h->indexUsed; i++, entry++) {
 	const char * src;
 	unsigned char *t;
-	int count;
-	int rdlen;
+	uint32_t count;
+	uint32_t rdlen;
 
-	if (entry->data == NULL || entry->length <= 0)
+	if (entry->data == NULL || entry->length == 0)
 	    continue;
 
 	t = te;
-	pe->tag = htonl(entry->info.tag);
-	pe->type = htonl(entry->info.type);
-	pe->count = htonl(entry->info.count);
+	pe->tag = (uint32_t) htonl(entry->info.tag);
+	pe->type = (uint32_t) htonl(entry->info.type);
+	pe->count = (uint32_t) htonl(entry->info.count);
 
 	if (ENTRY_IS_REGION(entry)) {
 	    int_32 rdl = -entry->info.offset;	/* negative offset */
@@ -807,7 +807,7 @@ void * headerUnload(Header h, /*@out@*/ /*@null@*/ size_t * lenp)
 
 	    /* XXX Legacy regions do not include the region tag and data. */
 	    if (i == 0 && (h->flags & HEADERFLAG_LEGACY)) {
-		int_32 stei[4];
+		int32_t stei[4];	/* FIXME uint32_t */
 
 		legacy = 1;
 		memcpy(pe+1, src, rdl);
@@ -815,10 +815,10 @@ void * headerUnload(Header h, /*@out@*/ /*@null@*/ size_t * lenp)
 		te += rdlen;
 
 		pe->offset = htonl(te - dataStart);
-		stei[0] = pe->tag;
-		stei[1] = pe->type;
-		stei[2] = htonl(-rdl-entry->info.count);
-		stei[3] = pe->count;
+		stei[0] = (int32_t) pe->tag;
+		stei[1] = (int32_t) pe->type;
+		stei[2] = (int32_t) htonl(-rdl-entry->info.count);
+		stei[3] = (int32_t) pe->count;
 		memcpy(te, stei, entry->info.count);
 		te += entry->info.count;
 		ril++;
@@ -858,7 +858,7 @@ void * headerUnload(Header h, /*@out@*/ /*@null@*/ size_t * lenp)
 	}
 
 	/* Ignore deleted drips. */
-	if (entry->data == NULL || entry->length <= 0)
+	if (entry->data == NULL || entry->length == 0)
 	    continue;
 
 	/* Alignment */
@@ -878,13 +878,13 @@ void * headerUnload(Header h, /*@out@*/ /*@null@*/ size_t * lenp)
 	/* copy data w/ endian conversions */
 	switch (entry->info.type) {
 	case RPM_UINT64_TYPE:
-	{   int_32 b[2];
+	{   uint32_t b[2];
 	    count = entry->info.count;
 	    src = entry->data;
 	    while (count--) {
-		b[1] = htonl(((int_32 *)src)[0]);
-		b[0] = htonl(((int_32 *)src)[1]);
-		if (b[1] == ((int_32 *)src)[0])
+		b[1] = (uint32_t) htonl(((uint32_t *)src)[0]);
+		b[0] = (uint32_t) htonl(((uint32_t *)src)[1]);
+		if (b[1] == ((uint32_t *)src)[0])
 		    memcpy(te, src, sizeof(b));
 		else
 		    memcpy(te, b, sizeof(b));
@@ -897,10 +897,10 @@ void * headerUnload(Header h, /*@out@*/ /*@null@*/ size_t * lenp)
 	    count = entry->info.count;
 	    src = entry->data;
 	    while (count--) {
-		*((int_32 *)te) = htonl(*((int_32 *)src));
+		*((uint32_t *)te) = (uint32_t) htonl(*((uint32_t *)src));
 		/*@-sizeoftype@*/
-		te += sizeof(int_32);
-		src += sizeof(int_32);
+		te += sizeof(uint32_t);
+		src += sizeof(uint32_t);
 		/*@=sizeoftype@*/
 	    }
 	    /*@switchbreak@*/ break;
@@ -909,10 +909,10 @@ void * headerUnload(Header h, /*@out@*/ /*@null@*/ size_t * lenp)
 	    count = entry->info.count;
 	    src = entry->data;
 	    while (count--) {
-		*((int_16 *)te) = htons(*((int_16 *)src));
+		*((uint16_t *)te) = (uint16_t) htons(*((uint16_t *)src));
 		/*@-sizeoftype@*/
-		te += sizeof(int_16);
-		src += sizeof(int_16);
+		te += sizeof(uint16_t);
+		src += sizeof(uint16_t);
 		/*@=sizeoftype@*/
 	    }
 	    /*@switchbreak@*/ break;
@@ -1053,9 +1053,9 @@ Header headerLoad(/*@kept@*/ void * uh)
 	/*@modifies uh @*/
 {
     void * sw = NULL;
-    int_32 * ei = (int_32 *) uh;
-    int_32 il = ntohl(ei[0]);		/* index length */
-    int_32 dl = ntohl(ei[1]);		/* data length */
+    uint32_t * ei = (uint32_t *) uh;
+    uint32_t il = (uint32_t) ntohl(ei[0]);		/* index length */
+    uint32_t dl = (uint32_t) ntohl(ei[1]);		/* data length */
     /*@-sizeoftype@*/
     size_t pvlen = sizeof(il) + sizeof(dl) +
                (il * sizeof(struct entryInfo_s)) + dl;
@@ -1073,7 +1073,7 @@ Header headerLoad(/*@kept@*/ void * uh)
     if (hdrchkTags(il) || hdrchkData(dl))
 	goto errxit;
 
-    ei = (int_32 *) pv;
+    ei = (uint32_t *) pv;
     /*@-castexpose@*/
     pe = (entryInfo) &ei[2];
     /*@=castexpose@*/
@@ -1128,8 +1128,8 @@ Header headerLoad(/*@kept@*/ void * uh)
 
 	h->flags &= ~HEADERFLAG_LEGACY;
 
-	entry->info.type = htonl(pe->type);
-	entry->info.count = htonl(pe->count);
+	entry->info.type = (uint32_t) htonl(pe->type);
+	entry->info.count = (uint32_t) htonl(pe->count);
 
 	if (hdrchkType(entry->info.type))
 	    goto errxit;
@@ -1144,7 +1144,7 @@ Header headerLoad(/*@kept@*/ void * uh)
 /*@-sizeoftype@*/
 		size_t nb = REGION_TAG_COUNT;
 /*@=sizeoftype@*/
-		int_32 * stei = memcpy(alloca(nb), dataStart + off, nb);
+		int32_t * stei = memcpy(alloca(nb), dataStart + off, nb);
 		rdl = -ntohl(stei[2]);	/* negative offset */
 		ril = rdl/sizeof(*pe);
 		if (hdrchkTags(ril) || hdrchkData(rdl))
@@ -1337,7 +1337,7 @@ Header headerReload(/*@only@*/ Header h, int tag)
     Header nh;
     void * uh;
     const char * origin = (h->origin != NULL ? xstrdup(h->origin) : NULL);
-    int_32 instance = h->instance;
+    uint32_t instance = h->instance;
     int xx;
 
 /*@-onlytrans@*/
@@ -1375,9 +1375,9 @@ static /*@null@*/
 Header headerCopyLoad(const void * uh)
 	/*@*/
 {
-    int_32 * ei = (int_32 *) uh;
-    int_32 il = ntohl(ei[0]);		/* index length */
-    int_32 dl = ntohl(ei[1]);		/* data length */
+    uint32_t * ei = (uint32_t *) uh;
+    uint32_t il = (uint32_t) ntohl(ei[0]);		/* index length */
+    uint32_t dl = (uint32_t) ntohl(ei[1]);		/* data length */
     /*@-sizeoftype@*/
     size_t pvlen = sizeof(il) + sizeof(dl) +
 			(il * sizeof(struct entryInfo_s)) + dl;
@@ -1406,12 +1406,12 @@ Header headerRead(void * _fd)
 	/*@modifies _fd @*/
 {
     FD_t fd = _fd;
-    int_32 block[4];
-    int_32 reserved;
-    int_32 * ei = NULL;
-    int_32 il;
-    int_32 dl;
-    int_32 magic;
+    uint32_t block[4];
+    uint32_t reserved;
+    uint32_t * ei = NULL;
+    uint32_t il;
+    uint32_t dl;
+    uint32_t magic;
     Header h = NULL;
     size_t len;
     int i;
@@ -1437,8 +1437,8 @@ Header headerRead(void * _fd)
 	reserved = block[i++];
     }
     
-    il = ntohl(block[i]);	i++;
-    dl = ntohl(block[i]);	i++;
+    il = (uint32_t) ntohl(block[i]);	i++;
+    dl = (uint32_t) ntohl(block[i]);	i++;
 
     /*@-sizeoftype@*/
     len = sizeof(il) + sizeof(dl) + (il * sizeof(struct entryInfo_s)) + dl;
@@ -1449,8 +1449,8 @@ Header headerRead(void * _fd)
 	goto exit;
 
     ei = xmalloc(len);
-    ei[0] = htonl(il);
-    ei[1] = htonl(dl);
+    ei[0] = (uint32_t) htonl(il);
+    ei[1] = (uint32_t) htonl(dl);
     len -= sizeof(il) + sizeof(dl);
 
     /*@-type@*/ /* FIX: cast? */
@@ -1618,7 +1618,7 @@ static int copyEntry(const indexEntry entry,
     {	const char ** argv;
 	size_t nb = count * sizeof(*argv);
 	char * t;
-	int i;
+	unsigned i;
 
 	/*@-mods@*/
 	if (minMem) {
@@ -1630,7 +1630,7 @@ static int copyEntry(const indexEntry entry,
 	    memcpy(t, entry->data, entry->length);
 	}
 	/*@=mods@*/
-	for (i = 0; i < count; i++) {
+	for (i = 0; i < (unsigned) count; i++) {
 	    argv[i] = t;
 	    t = strchr(t, 0);
 	    t++;
@@ -1758,7 +1758,7 @@ headerFindI18NString(Header h, indexEntry entry)
     for (l = lang; *l != '\0'; l = le) {
 	const char *td;
 	char *ed;
-	int langNum;
+	uint32_t langNum;
 
 	while (*l && *l == ':')			/* skip leading colons */
 	    l++;
@@ -2022,12 +2022,12 @@ static void copyData(rpmTagType type, rpmTagData * dest, rpmTagData * src,
  */
 /*@null@*/
 static void *
-grabData(rpmTagType type, rpmTagData * p, rpmTagCount c, /*@out@*/ int * lenp)
+grabData(rpmTagType type, rpmTagData * p, rpmTagCount c, /*@out@*/size_t * lenp)
 	/*@modifies *lenp @*/
 	/*@requires maxSet(lenp) >= 0 @*/
 {
     rpmTagData data = { .ptr = NULL };
-    int length;
+    size_t length;
 
     length = dataLength(type, p, c, 0, NULL);
     if (length > 0) {
@@ -2061,7 +2061,7 @@ int headerAddEntry(Header h, uint32_t tag, rpmTagType type, const void * p, rpmT
     indexEntry entry;
     rpmTagData q = { .ptr = (void *) p };
     rpmTagData data;
-    int length;
+    size_t length;
 
     /* Count must always be >= 1 for headerAddEntry. */
     if (c == 0)
@@ -2074,7 +2074,7 @@ int headerAddEntry(Header h, uint32_t tag, rpmTagType type, const void * p, rpmT
 
     length = 0;
     data.ptr = grabData(type, &q, c, &length);
-    if (data.ptr == NULL || length <= 0)
+    if (data.ptr == NULL || length == 0)
 	return 0;
 
     /* Allocate more index space if necessary */
@@ -2119,7 +2119,7 @@ int headerAppendEntry(Header h, uint32_t tag, rpmTagType type,
     rpmTagData src = { .ptr = (void *) p };
     rpmTagData dest = { .ptr = NULL };
     indexEntry entry;
-    int length;
+    size_t length;
 
     if (type == RPM_STRING_TYPE || type == RPM_I18NSTRING_TYPE) {
 	/* we can't do this */
@@ -2132,7 +2132,7 @@ int headerAppendEntry(Header h, uint32_t tag, rpmTagType type,
 	return 0;
 
     length = dataLength(type, &src, c, 0, NULL);
-    if (length < 0)
+    if (length == 0)
 	return 0;
 
     if (ENTRY_IN_REGION(entry)) {
@@ -2199,9 +2199,10 @@ int headerAddI18NString(Header h, uint32_t tag, const char * string,
 {
     indexEntry table, entry;
     rpmTagData p;
-    int length;
-    int ghosts;
-    int i, langNum;
+    size_t length;
+    size_t ghosts;
+    uint32_t i;
+    uint32_t langNum;
     char * buf;
 
     table = findEntry(h, HEADER_I18NTABLE, RPM_STRING_ARRAY_TYPE);
@@ -2346,7 +2347,7 @@ int headerModifyEntry(Header h, uint32_t tag, rpmTagType type,
     rpmTagData q = { .ptr = (void *) p };
     rpmTagData oldData;
     rpmTagData newData;
-    int length;
+    size_t length;
 
     /* First find the tag */
     entry = findEntry(h, tag, type);
@@ -2355,7 +2356,7 @@ int headerModifyEntry(Header h, uint32_t tag, rpmTagType type,
 
     length = 0;
     newData.ptr = grabData(type, &q, c, &length);
-    if (newData.ptr == NULL || length <= 0)
+    if (newData.ptr == NULL || length == 0)
 	return 0;
 
     /* make sure entry points to the first occurence of this tag */
@@ -2441,14 +2442,14 @@ static HE_t rpmheClean(/*@returned@*/ /*@null@*/ HE_t he)
  * @return		NULL always
  */
 static /*@null@*/ sprintfToken
-freeFormat( /*@only@*/ /*@null@*/ sprintfToken format, int num)
+freeFormat( /*@only@*/ /*@null@*/ sprintfToken format, size_t num)
 	/*@modifies *format @*/
 {
-    int i;
+    unsigned i;
 
     if (format == NULL) return NULL;
 
-    for (i = 0; i < num; i++) {
+    for (i = 0; i < (unsigned) num; i++) {
 	switch (format[i].type) {
 	case PTOK_TAG:
 	    if (_tagcache)
@@ -2619,7 +2620,7 @@ typedef struct headerSprintfArgs_s {
     char * val;
     size_t vallen;
     size_t alloced;
-    int numTokens;
+    size_t numTokens;
     int i;
 } * headerSprintfArgs;
 
@@ -2732,8 +2733,8 @@ static char * hsaReserve(headerSprintfArgs hsa, size_t need)
  * @return		tag name, NULL on not found
  */
 /*@observer@*/ /*@null@*/
-static const char * myTagName(headerTagTableEntry tbl, int val,
-		/*@null@*/ int *typep)
+static const char * myTagName(headerTagTableEntry tbl, uint32_t val,
+		/*@null@*/ uint32_t *typep)
 	/*@modifies *typep @*/
 {
     static char name[128];
@@ -2764,7 +2765,7 @@ static const char * myTagName(headerTagTableEntry tbl, int val,
  * @param name		tag name to find
  * @return		tag value, 0 on not found
  */
-static int myTagValue(headerTagTableEntry tbl, const char * name)
+static uint32_t myTagValue(headerTagTableEntry tbl, const char * name)
 	/*@*/
 {
     for (; tbl->name != NULL; tbl++) {
@@ -2851,8 +2852,8 @@ bingo:
 static char * intFormat(HE_t he, const char *fmt)
 	/*@*/
 {
-    int ix = (he->ix > 0 ? he->ix : 0);
-    int_64 ival = 0;
+    uint32_t ix = (he->ix > 0 ? he->ix : 0);
+    uint64_t ival = 0;
     const char * istr = NULL;
     char * b;
     size_t nb = 0;
@@ -2866,13 +2867,13 @@ static char * intFormat(HE_t he, const char *fmt)
 	return xstrdup(_("(not a number)"));
 	/*@notreached@*/ break;
     case RPM_UINT8_TYPE:
-	ival = he->p.ui8p[ix];
+	ival = (uint64_t) he->p.ui8p[ix];
 	break;
     case RPM_UINT16_TYPE:
-	ival = he->p.ui16p[ix];	/* XXX note unsigned. */
+	ival = (uint64_t) he->p.ui16p[ix];
 	break;
     case RPM_UINT32_TYPE:
-	ival = he->p.ui32p[ix];
+	ival = (uint64_t) he->p.ui32p[ix];
 	break;
     case RPM_UINT64_TYPE:
 	ival = he->p.ui64p[ix];
@@ -2886,7 +2887,7 @@ static char * intFormat(HE_t he, const char *fmt)
     case RPM_BIN_TYPE:
 	{   static char hex[] = "0123456789abcdef";
 	    const char * s = he->p.str;
-	    int c = he->c;
+	    rpmTagCount c = he->c;
 	    char * t;
 
 	    nb = 2 * c + 1;
@@ -2906,7 +2907,7 @@ static char * intFormat(HE_t he, const char *fmt)
     } else
     if (nb == 0) {	/* number */
 	char myfmt[] = "%llX";
-	myfmt[3] = *fmt;
+	myfmt[3] = ((fmt != NULL && *fmt != '\0') ? *fmt : 'd');
 	nb = 64;
 	b = alloca(nb);
 /*@-formatconst@*/
@@ -3022,7 +3023,7 @@ static char * shescapeFormat(HE_t he)
     if (he->t == RPM_UINT32_TYPE) {
 	nb = 20;
 	val = xmalloc(nb);
-	xx = snprintf(val, nb, "%u", data.ui32p[0]);
+	xx = snprintf(val, nb, "%u", (unsigned) data.ui32p[0]);
 	val[nb-1] = '\0';
     } else if (he->t == RPM_UINT64_TYPE) {
 	nb = 40;
@@ -3105,7 +3106,8 @@ static int parseExpression(headerSprintfArgs hsa, sprintfToken token,
  * @return		0 on success
  */
 static int parseFormat(headerSprintfArgs hsa, /*@null@*/ char * str,
-		/*@out@*/sprintfToken * formatPtr, /*@out@*/int * numTokensPtr,
+		/*@out@*/ sprintfToken * formatPtr,
+		/*@out@*/ size_t * numTokensPtr,
 		/*@null@*/ /*@out@*/ char ** endPtr, int state)
 	/*@modifies hsa, str, *formatPtr, *numTokensPtr, *endPtr @*/
 	/*@requires maxSet(formatPtr) >= 0 /\ maxSet(numTokensPtr) >= 0
@@ -3114,8 +3116,8 @@ static int parseFormat(headerSprintfArgs hsa, /*@null@*/ char * str,
     char * chptr, * start, * next, * dst;
     sprintfToken format;
     sprintfToken token;
-    int numTokens;
-    int i;
+    size_t numTokens;
+    unsigned i;
     int done = 0;
 
     /* upper limit on number of individual formats */
@@ -3128,7 +3130,7 @@ static int parseFormat(headerSprintfArgs hsa, /*@null@*/ char * str,
     format = xcalloc(numTokens, sizeof(*format));
     if (endPtr) *endPtr = NULL;
 
-    /*@-infloops@*/ /* LCL: can't detect done termination */
+/*@-infloops@*/ /* LCL: can't detect done termination */
     dst = start = str;
     numTokens = 0;
     token = NULL;
@@ -3315,12 +3317,12 @@ static int parseFormat(headerSprintfArgs hsa, /*@null@*/ char * str,
 	if (done)
 	    break;
     }
-    /*@=infloops@*/
+/*@=infloops@*/
 
     if (dst != NULL)
         *dst = '\0';
 
-    for (i = 0; i < numTokens; i++) {
+    for (i = 0; i < (unsigned) numTokens; i++) {
 	token = format + i;
 	switch(token->type) {
 	default:
@@ -3331,8 +3333,10 @@ static int parseFormat(headerSprintfArgs hsa, /*@null@*/ char * str,
 	}
     }
 
-    *numTokensPtr = numTokens;
-    *formatPtr = format;
+    if (numTokensPtr != NULL)
+	*numTokensPtr = numTokens;
+    if (formatPtr != NULL)
+	*formatPtr = format;
 
     return 0;
 }
@@ -3468,7 +3472,8 @@ static int getExtension(headerSprintfArgs hsa, headerTagTagFunction fn,
  * @return		end of formatted string (NULL on error)
  */
 /*@observer@*/ /*@null@*/
-static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
+static char * formatValue(headerSprintfArgs hsa, sprintfTag tag,
+		uint32_t element)
 	/*@globals headerCompoundFormats @*/
 	/*@modifies hsa, tag, headerCompoundFormats @*/
 {
@@ -3622,18 +3627,18 @@ exit:
  */
 /*@observer@*/
 static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
-		int element)
+		uint32_t element)
 	/*@globals headerCompoundFormats @*/
 	/*@modifies hsa, token, headerCompoundFormats @*/
 {
     char numbuf[64];	/* XXX big enuf for "Tag_0x01234567" */
     char * t, * te;
-    int i, j;
-    int numElements;
+    uint32_t i, j;
+    uint32_t numElements;
     sprintfToken spft;
     sprintfTag tag = NULL;
     HE_t he = NULL;
-    int condNumFormats;
+    uint32_t condNumFormats;
     size_t need;
     int xx;
 
@@ -3686,7 +3691,7 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 	break;
 
     case PTOK_ARRAY:
-	numElements = -1;
+	numElements = 0;
 	spft = token->u.array.format;
 	for (i = 0; i < token->u.array.numTokens; i++, spft++)
 	{
@@ -3720,7 +3725,7 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 	    /* Check iteration arrays are same dimension (or scalar). */
 	    switch (he->t) {
 	    default:
-		if (numElements == -1) {
+		if (numElements == 0) {
 		    numElements = he->c;
 		    /*@switchbreak@*/ break;
 		}
@@ -3733,7 +3738,7 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 		/*@notreached@*/ /*@switchbreak@*/ break;
 	    case RPM_BIN_TYPE:
 	    case RPM_STRING_TYPE:
-		if (numElements == -1)
+		if (numElements == 0)
 		    numElements = 1;
 		/*@switchbreak@*/ break;
 	    }
@@ -3742,7 +3747,7 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 	}
 	spft = token->u.array.format;
 
-	if (numElements == -1) {
+	if (numElements == 0) {
 #ifdef	DYING	/* XXX lots of pugly "(none)" lines with --conflicts. */
 	    need = sizeof("(none)\n") - 1;
 	    t = hsaReserve(hsa, need);
@@ -3768,7 +3773,7 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 		/* XXX display "Tag_0x01234567" for unknown tags. */
 		if (tagN == NULL) {
 		    (void) snprintf(numbuf, sizeof(numbuf), "Tag_0x%08x",
-				tag->tagno);
+				(unsigned) tag->tagno);
 		    numbuf[sizeof(numbuf)-1] = '\0';
 		    tagN = numbuf;
 		}
@@ -3778,12 +3783,12 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 		hsa->vallen += (te - t);
 	    }
 	    if (isyaml) {
-		int tagT = -1;
+		uint32_t tagT = 0;
 		const char * tagN = myTagName(hsa->tags, tag->tagno, &tagT);
 		/* XXX display "Tag_0x01234567" for unknown tags. */
 		if (tagN == NULL) {
 		    (void) snprintf(numbuf, sizeof(numbuf), "Tag_0x%08x",
-				tag->tagno);
+				(unsigned) tag->tagno);
 		    numbuf[sizeof(numbuf)-1] = '\0';
 		    tagN = numbuf;
 		    tagT = numElements > 1
@@ -4018,7 +4023,7 @@ static
 void headerCopyTags(Header headerFrom, Header headerTo, hTAG_t tagstocopy)
 	/*@modifies headerTo @*/
 {
-    unsigned int * tagno;
+    uint32_t * tagno;
 
     if (headerFrom == headerTo)
 	return;

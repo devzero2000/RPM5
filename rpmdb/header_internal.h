@@ -53,10 +53,10 @@ extern int rpm_typeAlign[16];
  */
 typedef /*@abstract@*/ struct entryInfo_s * entryInfo;
 struct entryInfo_s {
-    int_32 tag;			/*!< Tag identifier. */
-    int_32 type;		/*!< Tag data type. */
+    uint32_t tag;		/*!< Tag identifier. */
+    uint32_t type;		/*!< Tag data type. */
     int_32 offset;		/*!< Offset into data segment (ondisk only). */
-    int_32 count;		/*!< Number of tag elements. */
+    uint32_t count;		/*!< Number of tag elements. */
 };
 
 #define	REGION_TAG_TYPE		RPM_BIN_TYPE
@@ -74,7 +74,7 @@ struct indexEntry_s {
     struct entryInfo_s info;	/*!< Description of tag data. */
 /*@owned@*/
     void * data; 		/*!< Location of tag data. */
-    int length;			/*!< No. bytes of data. */
+    size_t length;		/*!< No. bytes of data. */
     int rdlen;			/*!< No. bytes of data in region. */
 };
 
@@ -142,20 +142,20 @@ struct sprintfToken_s {
 	struct {
 	/*@only@*/
 	    sprintfToken format;
-	    int numTokens;
+	    size_t numTokens;
 	} array;			/*!< PTOK_ARRAY */
 	struct {
 	/*@dependent@*/
 	    char * string;
-	    int len;
+	    size_t len;
 	} string;			/*!< PTOK_STRING */
 	struct {
 	/*@only@*/ /*@null@*/
 	    sprintfToken ifFormat;
-	    int numIfTokens;
+	    size_t numIfTokens;
 	/*@only@*/ /*@null@*/
 	    sprintfToken elseFormat;
-	    int numElseTokens;
+	    size_t numElseTokens;
 	    struct sprintfTag_s tag;
 	} cond;				/*!< PTOK_COND */
     } u;
@@ -175,7 +175,7 @@ extern "C" {
  * @param negate	negative offset expected?
  * @return		-1 on success, otherwise failing tag element index
  */
-int headerVerifyInfo(int il, int dl, const void * pev, void * iv, int negate)
+int headerVerifyInfo(uint32_t il, uint32_t dl, const void * pev, void * iv, int negate)
 	/*@modifies *iv @*/;
 
 /** \ingroup header

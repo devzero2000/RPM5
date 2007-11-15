@@ -91,7 +91,7 @@ static char sccsid[] = "@(#)merge.c	8.2 (Berkeley) 2/14/94";
 
 #define	swap(a, b) {					\
 		s = b;					\
-		i = size;				\
+		i = (int) size;				\
 		do {					\
 			tmp = *a; *a++ = *s; *s++ = tmp; \
 		} while (--i);				\
@@ -100,7 +100,7 @@ static char sccsid[] = "@(#)merge.c	8.2 (Berkeley) 2/14/94";
 #define reverse(bot, top) {				\
 	s = top;					\
 	do {						\
-		i = size;				\
+		i = (int) size;				\
 		do {					\
 			tmp = *bot; *bot++ = *s; *s++ = tmp; \
 		} while (--i);				\
@@ -153,7 +153,7 @@ setup(unsigned char *list1, /*@out@*/ unsigned char *list2,
 	 * Avoid running pointers out of bounds; limit n to evens
 	 * for simplicity.
 	 */
-	i = 4 + (n & 1);
+	i = (int)(4 + (n & 1));
 	insertionsort(list1 + (n - i) * size, i, size, cmp);
 	last = list1 + size * (n - i);
 	*EVAL(list2 + (last - list1)) = list2 + n * size;
@@ -273,7 +273,7 @@ rpm_mergesort(void *base, size_t nmemb, size_t size,
 	    				}
 	    		} else {
 /*@-shiftimplementation@*/
-EXPONENTIAL:	    		for (i = size; ; i <<= 1)
+EXPONENTIAL:	    		for (i = (int) size; ; i <<= 1)
 	    				if ((p = (b + i)) >= t) {
 	    					if ((p = t - size) > b &&
 						    (*cmp)(q, p) <= sense)
@@ -283,21 +283,21 @@ EXPONENTIAL:	    		for (i = size; ; i <<= 1)
 	    					/*@innerbreak@*/ break;
 	    				} else if ((*cmp)(q, p) <= sense) {
 	    					t = p;
-	    					if (i == size)
+	    					if (i == (int) size)
 	    						big = 0;
 	    					goto FASTCASE;
 	    				} else
 	    					b = p;
 				/*@-infloopsuncon@*/
 				while (t > b+size) {
-	    				i = (((t - b) / size) >> 1) * size;
+	    				i = (int) ((((t - b) / size) >> 1) * size);
 	    				if ((*cmp)(q, p = b + i) <= sense)
 	    					t = p;
 	    				else
 	    					b = p;
 	    			}
 	    			goto COPY;
-FASTCASE:	    		while (i > size)
+FASTCASE:	    		while (i > (int) size)
 	    				if ((*cmp)(q,
 	    					p = b + (i >>= 1)) <= sense)
 	    					t = p;
@@ -307,7 +307,7 @@ FASTCASE:	    		while (i > size)
 /*@=shiftimplementation@*/
 COPY:	    			b = t;
 	    		}
-	    		i = size;
+	    		i = (int) size;
 	    		if (q == f1) {
 	    			if (iflag) {
 	    				ICOPY_LIST(f2, tp2, b);

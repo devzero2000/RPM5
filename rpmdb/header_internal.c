@@ -32,35 +32,35 @@ int rpm_typeAlign[16] =  {
     0
 };
 
-int headerVerifyInfo(int il, int dl, const void * pev, void * iv, int negate)
+int headerVerifyInfo(uint32_t il, uint32_t dl, const void * pev, void * iv, int negate)
 {
 /*@-castexpose@*/
     entryInfo pe = (entryInfo) pev;
 /*@=castexpose@*/
     entryInfo info = iv;
-    int i;
+    uint32_t i;
 
     for (i = 0; i < il; i++) {
-	info->tag = ntohl(pe[i].tag);
-	info->type = ntohl(pe[i].type);
+	info->tag = (uint32_t) ntohl(pe[i].tag);
+	info->type = (uint32_t) ntohl(pe[i].type);
 	/* XXX Convert RPMTAG_FILESTATE to RPM_UINT8_TYPE. */
 	if (info->tag == 1029 && info->type == 1) {
 	    info->type = RPM_UINT8_TYPE;
-	    pe[i].type = htonl(info->type);
+	    pe[i].type = (uint32_t) htonl(info->type);
 	}
 	info->offset = ntohl(pe[i].offset);
 	if (negate)
 	    info->offset = -info->offset;
-	info->count = ntohl(pe[i].count);
+	info->count = (uint32_t) ntohl(pe[i].count);
 
 	if (hdrchkType(info->type))
-	    return i;
+	    return (int)i;
 	if (hdrchkAlign(info->type, info->offset))
-	    return i;
+	    return (int)i;
 	if (!negate && hdrchkRange(dl, info->offset))
-	    return i;
+	    return (int)i;
 	if (hdrchkData(info->count))
-	    return i;
+	    return (int)i;
 
     }
     return -1;

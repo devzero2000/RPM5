@@ -76,7 +76,7 @@ struct _sql_dbcursor_s {
 /*@only@*/ /*@relnull@*/
     char ** av;			/* item ptrs */
 /*@only@*/ /*@relnull@*/
-    int * avlen;		/* item sizes */
+    size_t * avlen;		/* item sizes */
     int nalloc;
     int ac;			/* no. of items */
     int rx;			/* Which row are we on? 1, 2, 3 ... */
@@ -430,7 +430,7 @@ assert(swapped == 0); /* Byte swap?! */
 		    int32_t v = sqlite3_column_int(scp->pStmt, i);
 		    nb = sizeof(v);
 if (_debug)
-fprintf(stderr, "\t%d %s %s %d\n", i, cname, vtype, v);
+fprintf(stderr, "\t%d %s %s %d\n", i, cname, vtype, (int) v);
 		    if (nb > 0) {
 			scp->av[scp->ac] = memcpy(xmalloc(nb), &v, nb);
 			scp->avlen[scp->ac] = nb;
@@ -1105,7 +1105,7 @@ enterChroot(dbi);
     scp->cmd = sqlite3_mprintf("DELETE FROM '%q' WHERE key=? AND value=?;",
 	dbi->dbi_subfile);
 
-    rc = sqlite3_prepare(sqldb->db, scp->cmd, strlen(scp->cmd), &scp->pStmt, &scp->pzErrmsg);
+    rc = sqlite3_prepare(sqldb->db, scp->cmd, (int)strlen(scp->cmd), &scp->pStmt, &scp->pzErrmsg);
     if (rc) rpmlog(RPMLOG_WARNING, "cdel(%s) prepare %s (%d)\n", dbi->dbi_subfile, sqlite3_errmsg(sqldb->db), rc);
     rc = sql_bind_key(dbi, scp, 1, key);
     if (rc) rpmlog(RPMLOG_WARNING, "cdel(%s) bind key %s (%d)\n", dbi->dbi_subfile, sqlite3_errmsg(sqldb->db), rc);
@@ -1183,7 +1183,7 @@ assert(dbi->dbi_rpmtag == RPMDBI_PACKAGES);
 		    dbi->dbi_subfile);
 	        break;
 	    }
-	    rc = sqlite3_prepare(sqldb->db, scp->cmd, strlen(scp->cmd), &scp->pStmt, &scp->pzErrmsg);
+	    rc = sqlite3_prepare(sqldb->db, scp->cmd, (int)strlen(scp->cmd), &scp->pStmt, &scp->pzErrmsg);
 	    if (rc) rpmlog(RPMLOG_WARNING, "cget(%s) sequential prepare %s (%d)\n", dbi->dbi_subfile, sqlite3_errmsg(sqldb->db), rc);
 
 	    rc = sql_step(dbi, scp);
@@ -1194,7 +1194,7 @@ assert(dbi->dbi_rpmtag == RPMDBI_PACKAGES);
 	    scp->keys = xcalloc(scp->nkeys, sizeof(*scp->keys));
 	    for (ix = 0; ix < scp->nkeys; ix++) {
 		scp->keys[ix] = xmalloc(sizeof(*scp->keys[0]));
-		scp->keys[ix]->size = scp->avlen[ix+1];
+		scp->keys[ix]->size = (u_int32_t) scp->avlen[ix+1];
 		scp->keys[ix]->data = xmalloc(scp->keys[ix]->size);
 		memcpy(scp->keys[ix]->data, scp->av[ix+1], scp->avlen[ix+1]);
 	    }
@@ -1215,7 +1215,7 @@ assert(dbi->dbi_rpmtag == RPMDBI_PACKAGES);
 
         /* Prepare SQL statement to retrieve the value for the current key */
         scp->cmd = sqlite3_mprintf("SELECT value FROM '%q' WHERE key=?;", dbi->dbi_subfile);
-        rc = sqlite3_prepare(sqldb->db, scp->cmd, strlen(scp->cmd), &scp->pStmt, &scp->pzErrmsg);
+        rc = sqlite3_prepare(sqldb->db, scp->cmd, (int)strlen(scp->cmd), &scp->pStmt, &scp->pzErrmsg);
 
         if (rc) rpmlog(RPMLOG_WARNING, "cget(%s) prepare %s (%d)\n", dbi->dbi_subfile, sqlite3_errmsg(sqldb->db), rc);
     }
@@ -1273,7 +1273,7 @@ assert(scp->nr == 1);
 	    scp->ldata = _free(scp->ldata);
 	}
 
-	data->size = scp->avlen[1];
+	data->size = (u_int32_t) scp->avlen[1];
         data->data = xmalloc(data->size);
 	if (! (data->flags & DB_DBT_MALLOC) )
 	    scp->ldata = data->data;
@@ -1328,7 +1328,7 @@ enterChroot(dbi);
     default:
 	scp->cmd = sqlite3_mprintf("INSERT OR REPLACE INTO '%q' VALUES(?, ?);",
 		dbi->dbi_subfile);
-	rc = sqlite3_prepare(sqldb->db, scp->cmd, strlen(scp->cmd), &scp->pStmt, &scp->pzErrmsg);
+	rc = sqlite3_prepare(sqldb->db, scp->cmd, (int)strlen(scp->cmd), &scp->pStmt, &scp->pzErrmsg);
 	if (rc) rpmlog(RPMLOG_WARNING, "cput(%s) prepare %s (%d)\n",dbi->dbi_subfile,  sqlite3_errmsg(sqldb->db), rc);
 	rc = sql_bind_key(dbi, scp, 1, key);
 	if (rc) rpmlog(RPMLOG_WARNING, "cput(%s)  key bind %s (%d)\n", dbi->dbi_subfile, sqlite3_errmsg(sqldb->db), rc);

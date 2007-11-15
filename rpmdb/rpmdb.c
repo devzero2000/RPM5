@@ -1377,7 +1377,7 @@ int rpmdbVerify(const char * prefix)
  * @param s		(directory) path
  * @return		tagnum with (directory) path hash
  */
-static inline unsigned taghash(const unsigned char *s)
+static inline unsigned taghash(const char * s)
 	/*@*/
 {
     unsigned int r = 0;

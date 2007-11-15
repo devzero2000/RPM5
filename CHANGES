@@ -1,4 +1,5 @@
 5.0a1 -> 5.0a2:
+    - jbj: first pass through header.c converting to uint32_t everywhere.
     - jbj: get rid of splint spew before chasing header.c integers.
     - jbj: use splint to check integral types, eliminate the easy stuff.
     - jbj: splint fiddles for rpmdb.
