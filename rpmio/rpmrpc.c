@@ -208,7 +208,7 @@ int Open(const char * path, int flags, mode_t mode)
     int fdno;
 
 if (_rpmio_debug)
-fprintf(stderr, "*** Open(%s, 0x%x, 0%o)\n", path, flags, mode);
+fprintf(stderr, "*** Open(%s, 0x%x, 0%o)\n", path, flags, (unsigned)mode);
     switch (ut) {
     case URL_IS_PATH:
 	path = lpath;
@@ -536,17 +536,17 @@ vfs_parse_filetype (char c)
 	/*@*/
 {
     switch (c) {
-        case 'd': return S_IFDIR;
-        case 'b': return S_IFBLK;
-        case 'c': return S_IFCHR;
-        case 'l': return S_IFLNK;
+        case 'd': return (int)S_IFDIR;
+        case 'b': return (int)S_IFBLK;
+        case 'c': return (int)S_IFCHR;
+        case 'l': return (int)S_IFLNK;
         case 's':
 #ifdef IS_IFSOCK /* And if not, we fall through to IFIFO, which is pretty close */
-	          return S_IFSOCK;
+	          return (int)S_IFSOCK;
 #endif
-        case 'p': return S_IFIFO;
+        case 'p': return (int)S_IFIFO;
         case 'm': case 'n':		/* Don't know what these are :-) */
-        case '-': case '?': return S_IFREG;
+        case '-': case '?': return (int)S_IFREG;
         default: return -1;
     }
 }
@@ -854,8 +854,9 @@ vfs_parse_ls_lga (char * p, /*@out@*/ struct stat * st,
 
     if (((S_ISLNK (st->st_mode) ||
         (num_cols == idx + 3 && st->st_nlink > 1))) /* Maybe a hardlink? (in extfs) */
-        && idx2){
-	int tlen;
+        && idx2)
+    {
+	size_t tlen;
 	char *t;
 
 	if (filename){
@@ -886,7 +887,7 @@ vfs_parse_ls_lga (char * p, /*@out@*/ struct stat * st,
 	    /*
 	    *filename = g_strdup (columns [idx++]);
 	    */
-	    int tlen;
+	    size_t tlen;
 	    char *t;
 
 	    t = g_strdup (p_copy + column_ptr [idx]); idx++;
@@ -960,7 +961,7 @@ static int ftpNLST(const char * url, ftpSysCall_t ftpSysCall,
     char * se;
     const char * urldn;
     char * bn = NULL;
-    int nbn = 0;
+    size_t nbn = 0;
     urlinfo u;
     int rc;
 
@@ -998,7 +999,7 @@ static int ftpNLST(const char * url, ftpSysCall_t ftpSysCall,
 	/* XXX possibly should do "NLST -lais" to get st_ino/st_blocks also */
 	u->openError = ftpReq(fd, "NLST", "-la");
 
-	if (bn == NULL || nbn <= 0) {
+	if (bn == NULL || nbn == 0) {
 	    rc = -2;
 	    goto exit;
 	}
@@ -1114,10 +1115,11 @@ static int ftpNLST(const char * url, ftpSysCall_t ftpSysCall,
 	    rc = -1;
 	} else {
 	    rc = oe - o;
-	    if (rc > rlbufsiz)
-		rc = rlbufsiz;
-	    memcpy(rlbuf, o, rc);
-	    if (rc < rlbufsiz)
+assert(rc >= 0);
+	    if (rc > (int)rlbufsiz)
+		rc = (int)rlbufsiz;
+	    memcpy(rlbuf, o, (size_t)rc);
+	    if (rc < (int)rlbufsiz)
 		rlbuf[rc] = '\0';
 	}
 	break;

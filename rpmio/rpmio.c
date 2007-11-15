@@ -473,7 +473,7 @@ static inline int fdSeek(void * cookie, _libio_pos_t pos, int whence)
 
 DBGIO(fd, (stderr, "==>\tfdSeek(%p,%ld,%d) rc %lx %s\n", cookie, (long)p, whence, (unsigned long)rc, fdbg(fd)));
 
-    return rc;
+    return (int) rc;
 }
 
 static int fdClose( /*@only@*/ void * cookie)
@@ -678,7 +678,7 @@ int fdFgets(FD_t fd, char * buf, size_t len)
 #ifdef	NOISY
 	rc = fdRead(fd, buf + nb, 1);
 #else
-	rc = read(fdFileno(fd), buf + nb, 1);
+	rc = (int)read(fdFileno(fd), buf + nb, 1);
 #endif
 	if (rc < 0) {
 	    fd->syserrno = errno;
@@ -704,7 +704,7 @@ fprintf(stderr, "*** read: fd %p rc %d EOF errno %d %s \"%s\"\n", fd, rc, errno,
 	}
     } while (ec == 0 && nb < len && lastchar != '\n');
 
-    return (ec >= 0 ? nb : ec);
+    return (ec >= 0 ? (int)nb : ec);
 }
 
 /* =============================================================== */
@@ -858,7 +858,7 @@ static int tcpConnect(FD_t ctrl, const char * host, int port)
 	for (res = res0; res != NULL; res = res->ai_next) {
 	    if ((fdno = socket(res->ai_family, res->ai_socktype, res->ai_protocol)) < 0)
 		continue;
-	    if (connect(fdno, res->ai_addr, res->ai_addrlen) < 0) {
+	    if (connect(fdno, res->ai_addr, (int)res->ai_addrlen) < 0) {
 		xx = close(fdno);
 		continue;
 	    }
@@ -1237,7 +1237,7 @@ int ftpReq(FD_t data, const char * ftpCmd, const char * ftpArg)
 #endif	/* HAVE_GETADDRINFO */
     char remoteIP[NI_MAXHOST];
     char * cmd;
-    int cmdlen;
+    size_t cmdlen;
     char * passReply;
     char * chptr;
     int rc;
@@ -1397,7 +1397,7 @@ int ftpReq(FD_t data, const char * ftpCmd, const char * ftpArg)
 
 	    {
 		int criterr = 0;
-	        while (connect(fdFileno(data), res->ai_addr, res->ai_addrlen) < 0) {
+	        while (connect(fdFileno(data), res->ai_addr, (int)res->ai_addrlen) < 0) {
 	            if (errno == EINTR)
 		        /*@innercontinue@*/ continue;
 		    criterr++;
@@ -1514,16 +1514,16 @@ int ufdCopy(FD_t sfd, FD_t tfd)
     }
 
     while (1) {
-	rc = Fread(buf, sizeof(buf[0]), sizeof(buf), sfd);
-	if (rc < 0)
+	rc = (int) Fread(buf, sizeof(buf[0]), sizeof(buf), sfd);
+	if (rc < 0)	/* XXX never happens Fread returns size_t */
 	    break;
 	else if (rc == 0) {
 	    rc = itemsCopied;
 	    break;
 	}
 	itemsRead = rc;
-	rc = Fwrite(buf, sizeof(buf[0]), itemsRead, tfd);
-	if (rc < 0)
+	rc = (int) Fwrite(buf, sizeof(buf[0]), itemsRead, tfd);
+	if (rc < 0)	/* XXX never happens Fwrite returns size_t */
 	    break;
  	if (rc != itemsRead) {
 	    rc = FTPERR_FILE_IO_ERROR;
@@ -1883,8 +1883,8 @@ static ssize_t ufdRead(void * cookie, /*@out@*/ char * buf, size_t count)
 	/*@ensures maxRead(buf) == result @*/
 {
     FD_t fd = c2f(cookie);
-    int bytesRead;
-    int total;
+    size_t bytesRead;
+    size_t total;
 
     /* XXX preserve timedRead() behavior */
     if (fdGetIo(fd) == fdio) {
@@ -1905,19 +1905,19 @@ static ssize_t ufdRead(void * cookie, /*@out@*/ char * buf, size_t count)
 	bytesRead = 0;
 
 	/* Is there data to read? */
-	if (fd->bytesRemain == 0) return total;	/* XXX simulate EOF */
+	if (fd->bytesRemain == 0) return (ssize_t) total; /* XXX simulate EOF */
 	rc = fdReadable(fd, fd->rd_timeoutsecs);
 
 	switch (rc) {
 	case -1:	/* error */
 	case  0:	/* timeout */
-	    return total;
+	    return (ssize_t) total;
 	    /*@notreached@*/ /*@switchbreak@*/ break;
 	default:	/* data to read */
 	    /*@switchbreak@*/ break;
 	}
 
-	rc = fdRead(fd, buf + total, count - total);
+	rc = (int) fdRead(fd, buf + total, count - total);
 
 	if (rc < 0) {
 	    switch (errno) {
@@ -1932,13 +1932,13 @@ fprintf(stderr, "*** read: rc %d errno %d %s \"%s\"\n", rc, errno, strerror(errn
 	    return rc;
 	    /*@notreached@*/ break;
 	} else if (rc == 0) {
-	    return total;
+	    return (ssize_t) total;
 	    /*@notreached@*/ break;
 	}
-	bytesRead = rc;
+	bytesRead = (size_t) rc;
     }
 
-    return count;
+    return (ssize_t) count;
 }
 
 static ssize_t ufdWrite(void * cookie, const char * buf, size_t count)
@@ -1946,8 +1946,8 @@ static ssize_t ufdWrite(void * cookie, const char * buf, size_t count)
 	/*@modifies fileSystem, internalState @*/
 {
     FD_t fd = c2f(cookie);
-    int bytesWritten;
-    int total = 0;
+    size_t bytesWritten;
+    size_t total = 0;
 
 #ifdef	NOTYET
     if (fdGetIo(fd) == fdio) {
@@ -1969,20 +1969,20 @@ static ssize_t ufdWrite(void * cookie, const char * buf, size_t count)
 	/* Is there room to write data? */
 	if (fd->bytesRemain == 0) {
 fprintf(stderr, "*** ufdWrite fd %p WRITE PAST END OF CONTENT\n", fd);
-	    return total;	/* XXX simulate EOF */
+	    return (ssize_t) total;	/* XXX simulate EOF */
 	}
 	rc = fdWritable(fd, 2);		/* XXX configurable? */
 
 	switch (rc) {
 	case -1:	/* error */
 	case  0:	/* timeout */
-	    return total;
+	    return (ssize_t) total;
 	    /*@notreached@*/ /*@switchbreak@*/ break;
 	default:	/* data to write */
 	    /*@switchbreak@*/ break;
 	}
 
-	rc = fdWrite(fd, buf + total, count - total);
+	rc = (int) fdWrite(fd, buf + total, count - total);
 
 	if (rc < 0) {
 	    switch (errno) {
@@ -1997,13 +1997,13 @@ fprintf(stderr, "*** write: rc %d errno %d %s \"%s\"\n", rc, errno, strerror(err
 	    return rc;
 	    /*@notreached@*/ break;
 	} else if (rc == 0) {
-	    return total;
+	    return (ssize_t) total;
 	    /*@notreached@*/ break;
 	}
-	bytesWritten = rc;
+	bytesWritten = (size_t) rc;
     }
 
-    return count;
+    return (ssize_t) count;
 }
 
 static inline int ufdSeek(void * cookie, _libio_pos_t pos, int whence)
@@ -2375,7 +2375,7 @@ static ssize_t gzdRead(void * cookie, /*@out@*/ char * buf, size_t count)
     if (gzfile == NULL) return -2;	/* XXX can't happen */
 
     fdstat_enter(fd, FDSTAT_READ);
-    rc = gzread(gzfile, buf, count);
+    rc = gzread(gzfile, buf, (unsigned)count);
 DBGIO(fd, (stderr, "==>\tgzdRead(%p,%p,%u) rc %lx %s\n", cookie, buf, (unsigned)count, (unsigned long)rc, fdbg(fd)));
     if (rc < 0) {
 	int zerror = 0;
@@ -2407,7 +2407,7 @@ static ssize_t gzdWrite(void * cookie, const char * buf, size_t count)
     if (gzfile == NULL) return -2;	/* XXX can't happen */
 
     fdstat_enter(fd, FDSTAT_WRITE);
-    rc = gzwrite(gzfile, (void *)buf, count);
+    rc = gzwrite(gzfile, (void *)buf, (unsigned)count);
 DBGIO(fd, (stderr, "==>\tgzdWrite(%p,%p,%u) rc %lx %s\n", cookie, buf, (unsigned)count, (unsigned long)rc, fdbg(fd)));
     if (rc < 0) {
 	int zerror = 0;
@@ -2445,7 +2445,7 @@ static inline int gzdSeek(void * cookie, _libio_pos_t pos, int whence)
     if (gzfile == NULL) return -2;	/* XXX can't happen */
 
     fdstat_enter(fd, FDSTAT_SEEK);
-    rc = gzseek(gzfile, p, whence);
+    rc = gzseek(gzfile, (long)p, whence);
 DBGIO(fd, (stderr, "==>\tgzdSeek(%p,%ld,%d) rc %lx %s\n", cookie, (long)p, whence, (unsigned long)rc, fdbg(fd)));
     if (rc < 0) {
 	int zerror = 0;
@@ -2601,7 +2601,7 @@ static ssize_t bzdRead(void * cookie, /*@out@*/ char * buf, size_t count)
     fdstat_enter(fd, FDSTAT_READ);
     if (bzfile)
 	/*@-compdef@*/
-	rc = BZ2_bzread(bzfile, buf, count);
+	rc = BZ2_bzread(bzfile, buf, (int)count);
 	/*@=compdef@*/
     if (rc == -1) {
 	int zerror = 0;
@@ -2633,7 +2633,7 @@ static ssize_t bzdWrite(void * cookie, const char * buf, size_t count)
 
     bzfile = bzdFileno(fd);
     fdstat_enter(fd, FDSTAT_WRITE);
-    rc = BZ2_bzwrite(bzfile, (void *)buf, count);
+    rc = BZ2_bzwrite(bzfile, (void *)buf, (int)count);
     if (rc == -1) {
 	int zerror = 0;
 	fd->errcookie = BZ2_bzerror(bzfile, &zerror);
@@ -2722,7 +2722,7 @@ typedef struct lzfile {
 #if 0
     FILE *file;
 #endif
-    int pid;
+    pid_t pid;
 } LZFILE;
 
 static size_t MyReadFile(FILE *file, void *data, size_t size)
@@ -2773,7 +2773,7 @@ static FD_t lzdWriteOpen(int fdno, int fopen)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/
 {
-    int pid;
+    pid_t pid;
     int p[2];
     int xx;
     const char *lzma;
@@ -3009,7 +3009,7 @@ static int lzdClose( /*@only@*/ void * cookie)
 /*@-noeffectuncon@*/ /* FIX: check rc */
     rc = fclose(lzfile->g_InBuffer.File);
     if (lzfile->pid)
-	rc = wait4(lzfile->pid, NULL, 0, NULL);
+	rc = (int) wait4(lzfile->pid, NULL, 0, NULL);
     else { /* reading */
         lzfile->state.Probs = _free(lzfile->state.Probs);
         lzfile->state.Dictionary = _free(lzfile->state.Dictionary);
@@ -3097,17 +3097,17 @@ DBGIO(fd, (stderr, "==> Fread(%p,%u,%u,%p) %s\n", buf, (unsigned)size, (unsigned
 
     if (fdGetIo(fd) == fpio) {
 	/*@+voidabstract -nullpass@*/
-	rc = fread(buf, size, nmemb, fdGetFILE(fd));
+	rc = (int) fread(buf, size, nmemb, fdGetFILE(fd));
 	/*@=voidabstract =nullpass@*/
-	return rc;
+	return (size_t) rc;
     }
 
     /*@-nullderef@*/
     _read = FDIOVEC(fd, read);
     /*@=nullderef@*/
 
-    rc = (_read ? (*_read) (fd, buf, size * nmemb) : -2);
-    return rc;
+    rc = (int) (_read ? (*_read) (fd, buf, size * nmemb) : -2);
+    return (size_t) rc;
 }
 
 size_t Fwrite(const void *buf, size_t size, size_t nmemb, FD_t fd)
@@ -3120,17 +3120,17 @@ DBGIO(fd, (stderr, "==> Fwrite(%p,%u,%u,%p) %s\n", buf, (unsigned)size, (unsigne
 
     if (fdGetIo(fd) == fpio) {
 	/*@+voidabstract -nullpass@*/
-	rc = fwrite(buf, size, nmemb, fdGetFILE(fd));
+	rc = (int) fwrite(buf, size, nmemb, fdGetFILE(fd));
 	/*@=voidabstract =nullpass@*/
-	return rc;
+	return (size_t) rc;
     }
 
     /*@-nullderef@*/
     _write = FDIOVEC(fd, write);
     /*@=nullderef@*/
 
-    rc = (_write ? _write(fd, buf, size * nmemb) : -2);
-    return rc;
+    rc = (int) (_write ? _write(fd, buf, size * nmemb) : -2);
+    return (size_t) rc;
 }
 
 int Fseek(FD_t fd, _libio_off_t offset, int whence) {
@@ -3152,7 +3152,7 @@ DBGIO(fd, (stderr, "==> Fseek(%p,%ld,%d) %s\n", fd, (long)offset, whence, fdbg(f
 
 	/*@+voidabstract -nullpass@*/
 	fp = fdGetFILE(fd);
-	rc = fseek(fp, offset, whence);
+	rc = fseek(fp, (long)offset, whence);
 	/*@=voidabstract =nullpass@*/
 	return rc;
     }
@@ -3654,7 +3654,7 @@ int rpmioMkpath(const char * path, mode_t mode, uid_t uid, gid_t gid)
     rc = 0;
     if (created)
 	rpmlog(RPMLOG_DEBUG, D_("created directory(s) %s mode 0%o\n"),
-			path, mode);
+			path, (unsigned)mode);
     return rc;
 }
 
@@ -3814,7 +3814,7 @@ int rpmioSlurp(const char * fn, byte ** bp, ssize_t * blenp)
     size = fdSize(fd);
     blen = (size >= 0 ? size : blenmax);
     if (blen) {
-	int nb;
+	size_t nb;
 	b = xmalloc(blen+1);
 	b[0] = (byte) '\0';
 	nb = Fread(b, sizeof(*b), blen, fd);

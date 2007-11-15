@@ -244,7 +244,7 @@ Fts_open(char * const * argv, int options,
 			/*@switchbreak@*/ break;
 		}
 
-		p = fts_alloc(sp, *argv, len);
+		p = fts_alloc(sp, *argv, (int)len);
 		if (p == NULL)
 			goto mem3;
 		p->fts_level = FTS_ROOTLEVEL;
@@ -310,7 +310,7 @@ mem1:	free(sp);
 static void
 fts_load(FTS * sp, FTSENT * p)
 {
-	register int len;
+	register size_t len;
 	register char *cp;
 
 	/*
@@ -325,7 +325,7 @@ fts_load(FTS * sp, FTSENT * p)
 	if ((cp = strrchr(p->fts_name, '/')) && (cp != p->fts_name || cp[1])) {
 		len = strlen(++cp);
 		memmove(p->fts_name, cp, len + 1);
-		p->fts_namelen = len;
+		p->fts_namelen = (u_short)len;
 	}
 	p->fts_accpath = p->fts_path = sp->fts_path;
 	sp->fts_dev = p->fts_dev;
@@ -842,7 +842,7 @@ mem1:				saved_errno = errno;
 		}
 		p->fts_level = level;
 		p->fts_parent = sp->fts_cur;
-		p->fts_pathlen = len + _D_EXACT_NAMLEN (dp);
+		p->fts_pathlen = (u_short)(len + _D_EXACT_NAMLEN (dp));
 
 #if defined FTS_WHITEOUT && 0
 		if (dp->d_type == DT_WHT)

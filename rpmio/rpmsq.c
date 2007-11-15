@@ -477,13 +477,13 @@ fprintf(stderr, "    Enable(%p): %p\n", ME(), sq);
 	/* Block to permit parent time to wait. */
 	xx = close(sq->pipes[1]);
 	if (sq->reaper)
-	    xx = read(sq->pipes[0], &yy, sizeof(yy));
+	    xx = (int)read(sq->pipes[0], &yy, sizeof(yy));
 	xx = close(sq->pipes[0]);
 	sq->pipes[0] = sq->pipes[1] = -1;
 
 #ifdef _RPMSQ_DEBUG
 if (_rpmsq_debug)
-fprintf(stderr, "     Child(%p): %p child %d\n", ME(), sq, getpid());
+fprintf(stderr, "     Child(%p): %p child %d\n", ME(), sq, (int)getpid());
 #endif
 
     } else {				/* Parent. */
@@ -492,7 +492,7 @@ fprintf(stderr, "     Child(%p): %p child %d\n", ME(), sq, getpid());
 
 #ifdef _RPMSQ_DEBUG
 if (_rpmsq_debug)
-fprintf(stderr, "    Parent(%p): %p child %d\n", ME(), sq, sq->child);
+fprintf(stderr, "    Parent(%p): %p child %d\n", ME(), sq, (int)sq->child);
 #endif
 
     }
@@ -559,7 +559,7 @@ assert(sq->reaper);
 
 #ifdef _RPMSQ_DEBUG
 if (_rpmsq_debug)
-fprintf(stderr, "      Wake(%p): %p child %d reaper %d ret %d\n", ME(), sq, sq->child, sq->reaper, ret);
+fprintf(stderr, "      Wake(%p): %p child %d reaper %d ret %d\n", ME(), sq, (int)sq->child, sq->reaper, ret);
 #endif
 
     /* Remove processed SIGCHLD item from queue. */
@@ -580,7 +580,7 @@ pid_t rpmsqWait(rpmsq sq)
 
 #ifdef _RPMSQ_DEBUG
 if (_rpmsq_debug)
-fprintf(stderr, "      Wait(%p): %p child %d reaper %d\n", ME(), sq, sq->child, sq->reaper);
+fprintf(stderr, "      Wait(%p): %p child %d reaper %d\n", ME(), sq, (int)sq->child, sq->reaper);
 #endif
 
     if (sq->reaper) {
@@ -595,13 +595,13 @@ fprintf(stderr, "      Wait(%p): %p child %d reaper %d\n", ME(), sq, sq->child, 
 	sq->status = status;
 #ifdef _RPMSQ_DEBUG
 if (_rpmsq_debug)
-fprintf(stderr, "   Waitpid(%p): %p child %d reaped %d\n", ME(), sq, sq->child, sq->reaped);
+fprintf(stderr, "   Waitpid(%p): %p child %d reaped %d\n", ME(), sq, (int)sq->child, (int)sq->reaped);
 #endif
     }
 
 #ifdef _RPMSQ_DEBUG
 if (_rpmsq_debug)
-fprintf(stderr, "      Fini(%p): %p child %d status 0x%x\n", ME(), sq, sq->child, sq->status);
+fprintf(stderr, "      Fini(%p): %p child %d status 0x%x\n", ME(), sq, (int)sq->child, sq->status);
 #endif
 
     return sq->reaped;

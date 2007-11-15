@@ -160,7 +160,8 @@ static void vrpmlog (unsigned code, const char *fmt, va_list ap)
     /*@unused@*/ unsigned fac = RPMLOG_FAC(code);
 #endif
     char *msgbuf, *msg;
-    int msgnb = BUFSIZ, nb;
+    size_t msgnb = BUFSIZ;
+    int nb;
     FILE * msgout = (_stdlog ? _stdlog : stderr);
 
     if ((mask & rpmlogMask) == 0)
@@ -174,7 +175,7 @@ static void vrpmlog (unsigned code, const char *fmt, va_list ap)
 	va_list apc;
 	/*@-unrecog -usedef@*/ va_copy(apc, ap); /*@=unrecog =usedef@*/
 	nb = vsnprintf(msgbuf, msgnb, fmt, apc);
-	if (nb > -1 && nb < msgnb)
+	if (nb > -1 && (size_t)nb < msgnb)
 	    break;
 	if (nb > -1)		/* glibc 2.1 (and later) */
 	    msgnb = nb+1;

@@ -562,7 +562,7 @@ static int rpmluaReadline(lua_State *L, const char *prompt)
       (void) fputs(prompt, stdout);
       (void) fflush(stdout);
    }
-   if (fgets(buffer, sizeof(buffer), stdin) == NULL) {
+   if (fgets(buffer, (int)sizeof(buffer), stdin) == NULL) {
       return 0;  /* read fails */
    } else {
       lua_pushstring(L, buffer);
@@ -867,7 +867,7 @@ static int rpm_print (lua_State *L)
 	if (s == NULL)
 	    return luaL_error(L, "`tostring' must return a string to `print'");
 	if (lua->storeprint) {
-	    int sl = lua_strlen(L, -1);
+	    size_t sl = lua_strlen(L, -1);
 	    if (lua->printbufused+sl+1 > lua->printbufsize) {
 		lua->printbufsize += sl+512;
 		lua->printbuf = xrealloc(lua->printbuf, lua->printbufsize);

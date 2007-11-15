@@ -80,7 +80,7 @@ static uint32_t hashFunctionString(uint32_t h, const void * data, size_t size)
     const char * chp = data;
     unsigned char sum = (unsigned char)0;
     unsigned char xor = (unsigned char)0;
-    int i;
+    size_t i;
 
     if (size == 0)
 	size = strlen(chp);

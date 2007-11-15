@@ -228,7 +228,7 @@ int argvFgets(ARGV_t * argvp, void * fd)
 
     if (fp == NULL)
 	return -2;
-    while (!rc && (b = fgets(buf, sizeof(buf), fp)) != NULL) {
+    while (!rc && (b = fgets(buf, (int)sizeof(buf), fp)) != NULL) {
 	buf[sizeof(buf)-1] = '\0';
 	be = b + strlen(buf) - 1;
 	while (strchr("\r\n", *be) != NULL)

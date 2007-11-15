@@ -1207,7 +1207,7 @@ FD_t davOpen(const char * url, /*@unused@*/ int flags,
 #endif
 
 if (_dav_debug < 0)
-fprintf(stderr, "*** davOpen(%s,0x%x,0%o,%p)\n", url, flags, mode, uret);
+fprintf(stderr, "*** davOpen(%s,0x%x,0%o,%p)\n", url, flags, (unsigned)mode, uret);
     rc = davInit(url, &u);
     if (rc || u == NULL || u->sess == NULL)
 	goto exit;
@@ -1356,7 +1356,7 @@ int davMkdir(const char * path, mode_t mode)
 
 exit:
 if (_dav_debug)
-fprintf(stderr, "*** davMkdir(%s,0%o) rc %d\n", path, mode, rc);
+fprintf(stderr, "*** davMkdir(%s,0%o) rc %d\n", path, (unsigned)mode, rc);
     return rc;
 }
 
@@ -1454,10 +1454,10 @@ static const char * statstr(const struct stat * st,
 	"*** dev %x ino %x mode %0o nlink %d uid %d gid %d rdev %x size %x\n",
 	(unsigned)st->st_dev,
 	(unsigned)st->st_ino,
-	st->st_mode,
+	(unsigned)st->st_mode,
 	(unsigned)st->st_nlink,
-	st->st_uid,
-	st->st_gid,
+	(unsigned)st->st_uid,
+	(unsigned)st->st_gid,
 	(unsigned)st->st_rdev,
 	(unsigned)st->st_size);
     return buf;
@@ -1656,7 +1656,7 @@ struct dirent * avReaddir(DIR * dir)
 
     dp = (struct dirent *) avdir->data;
     av = (const char **) (dp + 1);
-    ac = avdir->size;
+    ac = (int)avdir->size;
     dt = (unsigned char *) (av + (ac + 1));
     i = avdir->offset + 1;
 
@@ -1778,7 +1778,7 @@ struct dirent * davReaddir(DIR * dir)
 
     dp = (struct dirent *) avdir->data;
     av = (const char **) (dp + 1);
-    ac = avdir->size;
+    ac = (int)avdir->size;
     dt = (unsigned char *) (av + (ac + 1));
     i = avdir->offset + 1;
 

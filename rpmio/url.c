@@ -495,7 +495,7 @@ int urlSplit(const char * url, urlinfo *uret)
 	serv = getservbyname(u->scheme, "tcp");
 /*@=multithreaded =moduncon @*/
 	if (serv != NULL)
-	    u->port = ntohs(serv->s_port);
+	    u->port = (int) ntohs(serv->s_port);
 	else if (u->urltype == URL_IS_FTP)
 	    u->port = IPPORT_FTP;
 	else if (u->urltype == URL_IS_HKP)

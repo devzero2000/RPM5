@@ -190,7 +190,7 @@ static void rpmhookTableDelItem(rpmhookTable *table, const char *name,
 static rpmhookArgs rpmhookArgsParse(const char *argt, va_list ap)
 	/*@*/
 {
-    rpmhookArgs args = rpmhookArgsNew(strlen(argt));
+    rpmhookArgs args = rpmhookArgsNew((int)strlen(argt));
     int i;
 
 /*@-temptrans@*/

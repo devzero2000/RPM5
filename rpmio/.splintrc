@@ -72,4 +72,4 @@
 -boolops		# 117
 +boolint		# 11
 +ignorequals		# 112
-+matchanyintegral	# 39
+#+matchanyintegral	# 39

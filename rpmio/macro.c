@@ -370,7 +370,7 @@ rdcl(/*@returned@*/ char * buf, size_t size, FD_t fd)
     if (f != NULL)
     do {
 	*(++q) = '\0';			/* terminate and move forward. */
-	if (fgets(q, size, f) == NULL)	/* read next line. */
+	if (fgets(q, (int)size, f) == NULL)	/* read next line. */
 	    break;
 	nb = strlen(q);
 	nread += nb;			/* trim trailing \r and \n */
@@ -1524,7 +1524,7 @@ expandMacro(MacroBuf mb)
 		    rc = 1;
 		printbuf = rpmluaGetPrintBuffer(lua);
 		if (printbuf) {
-		    int len = strlen(printbuf);
+		    size_t len = strlen(printbuf);
 		    if (len > mb->nb)
 			len = mb->nb;
 		    memcpy(mb->t, printbuf, len);

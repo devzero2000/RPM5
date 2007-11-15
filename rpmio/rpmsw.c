@@ -113,7 +113,7 @@ rpmtime_t tvsub(/*@null@*/ const struct timeval * etv,
     secs = etv->tv_sec - btv->tv_sec;
     for (usecs = etv->tv_usec - btv->tv_usec; usecs < 0; usecs += 1000000)
 	secs--;
-    return ((secs * 1000000) + usecs);
+    return (rpmtime_t) ((secs * 1000000) + usecs);
 }
 
 rpmtime_t rpmswDiff(rpmsw end, rpmsw begin)
@@ -138,7 +138,7 @@ rpmtime_t rpmswDiff(rpmsw end, rpmsw begin)
 	ticks -= rpmsw_overhead;
     if (rpmsw_cycles > 1)
 	ticks /= rpmsw_cycles;
-    return ticks;
+    return (rpmtime_t) ticks;
 }
 
 #if defined(HP_TIMING_NOW)

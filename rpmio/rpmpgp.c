@@ -713,7 +713,7 @@ static const byte * pgpPrtSeckeyParams(const pgpPkt pp, /*@unused@*/ byte pubkey
 	case 0x03:
 	    pgpPrtVal(" iterated/salted ", pgpHashTbl, p[2]);
 	    /*@-shiftnegative -shiftimplementation @*/ /* FIX: unsigned cast */
-	    i = (16 + (p[11] & 0xf)) << ((p[11] >> 4) + 6);
+	    i = (int)(16 + (p[11] & 0xf)) << ((p[11] >> 4) + 6);
 	    /*@=shiftnegative =shiftimplementation @*/
 	    pgpPrtHex("", p+3, 8);
 	    pgpPrtInt(" iter", i);
@@ -869,7 +869,7 @@ int pgpPrtComment(const pgpPkt pp)
 
 int pgpPktLen(const byte *pkt, size_t pleft, pgpPkt pp)
 {
-    unsigned int val = *pkt;
+    unsigned int val = (unsigned int)*pkt;
     unsigned int plen;
 
     memset(pp, 0, sizeof(*pp));
@@ -887,7 +887,7 @@ int pgpPktLen(const byte *pkt, size_t pleft, pgpPkt pp)
     }
 
     pp->pktlen = 1 + plen + pp->hlen;
-    if (pleft > 0 && pp->pktlen > pleft)
+    if (pleft > 0 && pp->pktlen > (unsigned)pleft)
 	return -1;
 
 /*@-assignexpose -temptrans @*/
@@ -1219,14 +1219,14 @@ int pgpFindPubkey(pgpDig dig)
     return rc;
 }
 
-static int pgpGrabPkts(const byte * pkts, unsigned int pktlen,
+static int pgpGrabPkts(const byte * pkts, size_t pktlen,
 		/*@out@*/ byte *** pppkts, /*@out@*/ int * pnpkts)
 	/*@modifies *pppkts, *pnpkts @*/
 {
     pgpPkt pp = alloca(sizeof(*pp));
     const byte *p;
-    unsigned int pleft;
-    int len;
+    size_t pleft;
+    size_t len;
     int npkts = 0;
     byte ** ppkts;
 
@@ -1266,7 +1266,7 @@ int pgpPrtPkts(const byte * pkts, size_t pktlen, pgpDig dig, int printing)
 	/*@modifies _dig, _digp, *_digp, _print @*/
 {
     pgpPkt pp = alloca(sizeof(*pp));
-    unsigned int val = *pkts;
+    unsigned int val = (unsigned int)*pkts;
     size_t pleft;
     int len;
     byte ** ppkts = NULL;

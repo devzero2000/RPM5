@@ -655,7 +655,6 @@ rpmDigestFinal(DIGEST_CTX ctx, void * datap, size_t *lenp, int asAscii)
 {
     byte * digest;
     char * t;
-    int i;
 
     if (ctx == NULL)
 	return -1;
@@ -678,6 +677,7 @@ DPRINTF((stderr, "*** Final(%p,%p,%p,%d) param %p digest %p\n", ctx, datap, lenp
 	if (datap) {
 	    const byte * s = (const byte *) digest;
 	    static const char hex[] = "0123456789abcdef";
+	    size_t i;
 
 	    *(char **)datap = t = xmalloc((2*ctx->digestsize) + 1);
 	    for (i = 0 ; i < ctx->digestsize; i++) {
