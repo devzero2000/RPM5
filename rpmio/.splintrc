@@ -14,23 +14,22 @@
 # --- in progress
 -branchstate
 -bufferoverflowhigh
--shiftimplementation
--shiftnegative
+-shiftnegative		# 1 lzdReadOpen
 
 -compdef		# 16
--compmempass		# 2
--globs			# 18
+-compmempass		# 2 LZMA
+-globs			# 19
 -moduncon		# 323
--mustmod		# 17
+-mustmod		# 16
 -noeffectuncon		# 183
--protoparammatch	# 1
+-protoparammatch	# 1 LZMA
 
--readonlytrans		# 10
+-readonlytrans		# 10 digest names
 
 -forempty
 -looploopbreak		# 2 LZMA
 -nullptrarith		# 16 LZMA
--shadow
+-shadow			# 3 LZMA
 
 # --- +partial artifacts
 -declundef
@@ -43,33 +42,32 @@
 -varuse
 
 # --- not-yet at strict level
--bitwisesigned		# 204
--elseifcomplete		# 31
--exportconst		# 265
--exportfcn		# 381
--exporttype		# 109
--exportvar		# 32
--fielduse		# 72
+-bitwisesigned		# 236
+-elseifcomplete		# 43
+-exportconst		# 322
+-exportfcn		# 534
+-exporttype		# 116
+-exportvar		# 50
+-fielduse		# 65
 -forblock		# tedious
 -ifblock		# tedious
 -namechecks		# 929 tedious ANSI compliance checks
--ptrarith		# 104
+-ptrarith		# 271
 
--compdestroy		# 21
--mustdefine		# 34
+-compdestroy		# 102
+-mustdefine		# 68
 -sys-dir-errors
 
--strictops		# 51
+-strictops		# 105
 -whileblock		# tedious
 
 # --- not-yet at checks level
-+enumint		# 117
--mustfree		# 136
--predboolptr		# 156
--usedef			# 9
++enumint		# 239
+-mustfree		# 336
+-predboolptr		# 261
+-usedef			# 51
 
 # --- not-yet at standard level
--boolops		# 117
-+boolint		# 11
-+ignorequals		# 112
-#+matchanyintegral	# 39
+-boolops		# 165
++boolint		# 299
++ignorequals		# 708
