@@ -558,10 +558,12 @@ static rpmds unameP = NULL;
 
 void rpmnsClean(void)
 {
+/*@-refcounttrans@*/
     rpmlibP = rpmdsFree(rpmlibP);
     cpuinfoP = rpmdsFree(cpuinfoP);
     getconfP = rpmdsFree(getconfP);
     unameP = rpmdsFree(unameP);
+/*@=refcounttrans@*/
     _sysinfo_path = _free(_sysinfo_path);
     sysinfo_path = _free(sysinfo_path);
 }

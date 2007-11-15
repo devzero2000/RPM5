@@ -76,7 +76,7 @@ struct rpmps_s {
 /**
  */
 struct rpmpsi_s {
-    size_t ix;
+    int ix;
     rpmps ps;
 };
 

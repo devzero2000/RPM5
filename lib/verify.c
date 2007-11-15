@@ -20,7 +20,9 @@
 #include "ugid.h"
 #include "debug.h"
 
+/*@access rpmfi @*/
 /*@access rpmpsm @*/	/* XXX for %verifyscript through rpmpsmStage() */
+/*@access rpmProblem @*/
 
 #define S_ISDEV(m) (S_ISBLK((m)) || S_ISCHR((m)))
 

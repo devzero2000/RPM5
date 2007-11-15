@@ -52,10 +52,8 @@ static void printHash(const uint64_t amount, const uint64_t total)
     rpmcliHashesTotal = (isatty (STDOUT_FILENO) ? 44 : 50);
 
     if (rpmcliHashesCurrent != rpmcliHashesTotal) {
-/*@+relaxtypes@*/
-	float pct = (total ? (((float) amount) / total) : 1.0);
-	hashesNeeded = (rpmcliHashesTotal * pct) + 0.5;
-/*@=relaxtypes@*/
+	float pct = (float) (total ? (((float) amount) / total) : 1);
+	hashesNeeded = (int)((rpmcliHashesTotal * pct) + 0.5);
 	while (hashesNeeded > rpmcliHashesCurrent) {
 	    if (isatty (STDOUT_FILENO)) {
 		int i;
@@ -79,11 +77,9 @@ static void printHash(const uint64_t amount, const uint64_t total)
 	    if (isatty(STDOUT_FILENO)) {
 	        for (i = 1; i < rpmcliHashesCurrent; i++)
 		    (void) putchar ('#');
-/*@+relaxtypes@*/
-		pct = (rpmcliProgressTotal
+		pct = (float) (rpmcliProgressTotal
 		    ? (((float) rpmcliProgressCurrent) / rpmcliProgressTotal)
 		    : 1);
-/*@=relaxtypes@*/
 		fprintf(stdout, " [%3d%%]", (int)((100 * pct) + 0.5));
 	    }
 	    fprintf(stdout, "\n");
@@ -288,18 +284,24 @@ int rpmcliInstallSuggests(rpmts ts)
 
 int rpmcliInstallCheck(rpmts ts)
 {
+/*@-evalorder@*/
     return rpmcliInstallProblems(ts, _("Failed dependencies"), rpmtsCheck(ts));
+/*@=evalorder@*/
 }
 
 int rpmcliInstallOrder(rpmts ts)
 {
+/*@-evalorder@*/
     return rpmcliInstallProblems(ts, _("Ordering problems"), rpmtsOrder(ts));
+/*@=evalorder@*/
 }
 
 int rpmcliInstallRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 {
+/*@-evalorder@*/
     return rpmcliInstallProblems(ts, _("Install/Erase problems"),
 			rpmtsRun(ts, okProbs, ignoreSet));
+/*@=evalorder@*/
 }
 
 

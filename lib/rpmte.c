@@ -585,8 +585,6 @@ assert (ix < Count);
 	te->color |= val;
 	(void) rpmdsSetColor(ds, val);
 	val = refs[i];
-	if (val >= 0)
-	    val++;
 	(void) rpmdsSetRefs(ds, val);
     }
 }

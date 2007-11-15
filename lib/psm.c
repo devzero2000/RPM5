@@ -250,7 +250,7 @@ rpmRC rpmInstallSourcePackage(rpmts ts, void * _fd,
 
 assert(fi->h != NULL);
 assert(fi->te->h == NULL);	/* XXX headerFree side effect */
-    rpmteSetHeader(fi->te, fi->h);
+    (void) rpmteSetHeader(fi->te, fi->h);
     fi->te->fd = fdLink(fd, "installSourcePackage");
 
     (void) headerMacrosLoad(fi->h);
@@ -383,7 +383,7 @@ exit:
     if (h != NULL) h = headerFree(h);
 
     if (fi != NULL) {
-	rpmteSetHeader(fi->te, NULL);
+	(void) rpmteSetHeader(fi->te, NULL);
 	if (fi->te->fd != NULL)
 	    (void) Fclose(fi->te->fd);
 	fi->te->fd = NULL;
@@ -2222,7 +2222,7 @@ if (psm->te->h != NULL)
 psm->te->h = headerFree(psm->te->h);
 #else
 	    if (psm->te != NULL)
-		rpmteSetHeader(psm->te, NULL);
+		(void) rpmteSetHeader(psm->te, NULL);
 #endif
 	    if (fi->h != NULL)
 		fi->h = headerFree(fi->h);

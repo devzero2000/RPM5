@@ -16,22 +16,41 @@
 +slovak-fcns
 -bufferoverflowhigh
 
--globuse
--redecl		# 38
-+voidabstract
--warnlintcomments
+-warnlintcomments	# 1 ARGSUSED in getdate.y
 
 -branchstate
 -compdef
--evalorder
--exportheader
+-compmempass
 -globs
+-globstate
+-globuse
+-incondefs
+-infloops
+-internalglobs
+-modobserver
+-mods
 -mustmod
+-nullderef	# 11
 -nullpass	# 31
+-nullptrarith	# 1
+-nullstate	# 9
+-predboolothers
+-redecl		# 38
+-usereleased
+
+-dependenttrans
+-kepttrans
+-observertrans
+-onlytrans
+-ownedtrans
+-readonlytrans
+-temptrans
+-unqualifiedtrans
 
 # --- +partial artifacts
 -declundef
 -exportheadervar
+-exportheader
 -exportlocal
 
 -enummemuse

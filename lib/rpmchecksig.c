@@ -29,6 +29,7 @@
 /*@access Header @*/		/* XXX void * arg */
 /*@access pgpDig @*/
 /*@access pgpDigParams @*/
+/*@access rpmwf @*/
 
 /*@unchecked@*/
 int _print_pkts = 0;
@@ -785,7 +786,7 @@ rpmtsClean(ts);
 /**
  * @todo If the GPG key was known available, the md5 digest could be skipped.
  */
-static int readFile(rpmts ts, FD_t fd, const char * fn, pgpDig dig)
+static rpmRC readFile(rpmts ts, FD_t fd, const char * fn, pgpDig dig)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fd, *dig, fileSystem, internalState @*/
 {
@@ -794,7 +795,7 @@ rpmwf wf = fdGetWF(fd);
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     unsigned char buf[4*BUFSIZ];
     ssize_t count;
-    int rc = 1;
+    rpmRC rc;
     int xx;
     int i;
 
@@ -804,7 +805,7 @@ rpmwf wf = fdGetWF(fd);
     {	Header h = NULL;
 	const char item[] = "Header";
 	const char * msg = NULL;
-	rpmRC rc = rpmReadHeader(ts, fd, &h, &msg);
+	rc = rpmReadHeader(ts, fd, &h, &msg);
 	if (rc != RPMRC_OK) {
 	    rpmlog(RPMLOG_ERR, "%s: %s: %s\n", fn, item, msg);
 	    msg = _free(msg);
@@ -884,7 +885,7 @@ if (wf != NULL) {
 	(void) rpmDigestUpdate(dig->md5ctx, wf->p, wf->np);
 }
 
-    rc = 0;
+    rc = RPMRC_OK;	/* XXX unnecessary */
 
 exit:
     return rc;
@@ -1015,7 +1016,9 @@ assert(dig != NULL);
 #endif
 
 	/* Read the file, generating digest(s) on the fly. */
-	if (dig == NULL || sigp == NULL || readFile(ts, fd, fn, dig)) {
+	if (dig == NULL || sigp == NULL
+	 || readFile(ts, fd, fn, dig) != RPMRC_OK)
+	{
 	    res++;
 	    goto exit;
 	}
@@ -1331,7 +1334,7 @@ int rpmcliSign(rpmts ts, QVA_t qva, const char ** argv)
 	}
 
 	if (fd != NULL) {
-	    rpmpkgClean(fd);
+	    (void) rpmpkgClean(fd);
 	    xx = Fclose(fd);
 	}
     }

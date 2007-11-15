@@ -386,7 +386,7 @@ void rpmDisplayQueryTags(FILE * fp)
 	    continue;
 
 	/* XXX don't print header tags twice. */
-	if (tagValue(ext->name) >= 0)
+	if (tagValue(ext->name) > 0)
 	    continue;
 	fprintf(fp, "%s\n", ext->name + 7);
     }

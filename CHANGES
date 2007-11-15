@@ -1,4 +1,5 @@
 5.0a1 -> 5.0a2:
+    - jbj: lib: identify and repair several minor flaws caught by splint.
     - jbj: rpmio: casts for integral conversions.
     - jbj: rpmio: casts for character <-> integral conversions.
     - jbj: first pass through header.c converting to uint32_t everywhere.

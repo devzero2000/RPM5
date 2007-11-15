@@ -919,7 +919,7 @@ int rpmtsInitDSI(const rpmts ts)
 	D_("    i        dev    bsize       bavail       iavail mount point\n"));
 
     rc = rpmGetFilesystemList(&ts->filesystems, &ts->filesystemCount);
-    if (rc || ts->filesystems == NULL || ts->filesystemCount <= 0)
+    if (rc || ts->filesystems == NULL || ts->filesystemCount == 0)
 	return rc;
 
     /* Get available space on mounted file systems. */
@@ -1070,7 +1070,7 @@ void rpmtsCheckDSIProblems(const rpmts ts, const rpmte te)
     int fc;
     int i;
 
-    if (ts->filesystems == NULL || ts->filesystemCount <= 0)
+    if (ts->filesystems == NULL || ts->filesystemCount == 0)
 	return;
 
     dsi = ts->dsi;

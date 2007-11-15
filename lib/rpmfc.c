@@ -1532,7 +1532,6 @@ assert(EVR != NULL);
 assert(ac == he->c);
     if (he->p.ptr != NULL && he->c > 0) {
 	uint32_t * fcolors = he->p.ui32p;
-	int i;
 
 	/* XXX Make sure only primary (i.e. Elf32/Elf64) colors are added. */
 	for (i = 0; i < he->c; i++)

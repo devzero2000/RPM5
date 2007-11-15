@@ -66,11 +66,10 @@ rpmpsi rpmpsInitIterator(rpmps ps)
 rpmpsi rpmpsFreeIterator(rpmpsi psi)
 {
     if (psi != NULL) {
-	rpmpsUnlink(psi->ps, "iter unref");
-	free(psi);
-	psi = NULL;
+	psi->ps = rpmpsUnlink(psi->ps, "iter unref");
+	psi = _free(psi);
     }
-    return psi;
+    return NULL;
 }
 
 int rpmpsNextIterator(rpmpsi psi)
