@@ -857,7 +857,7 @@ print (t)\
 
 #	The "transactional rollback" directory in which erased packages will
 #	be saved when using the --repackage option.
-%_repackage_dir		%{_topdir}/TR
+%_repackage_dir		%{_var}/spool/repackage
 
 #	A path (i.e. URL) prefix that is pre-pended to %{_repackage_dir}.
 %_repackage_root	%{nil}

@@ -140,7 +140,8 @@ DBPATH = @DBPATH@
 
 install-data-local:
 	@$(MKDIR_P) $(DESTDIR)$(DBPATH)
-	@for dir in BUILD RPMS SOURCES SPECS SRPMS TR; do\
+	@$(MKDIR_P) $(DESTDIR)$(varprefix)/spool/repackage
+	@for dir in BUILD RPMS SOURCES SPECS SRPMS; do\
 	    $(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/$$dir;\
 	done
 	@case "@host_cpu@" in \
@@ -194,9 +195,11 @@ setperms:
 	done
 	@$(__CHOWN) ${RPMUSER}.${RPMGROUP} $(DESTDIR)$(pkglibdir)
 	@$(__CHOWN) -R ${RPMUSER}.${RPMGROUP} $(DESTDIR)$(varprefix)/lib/rpm
+	@$(__CHOWN) -R ${RPMUSER}.${RPMGROUP} $(DESTDIR)$(varprefix)/spool/repackage
 	-@$(__CHMOD) 0664 $(DESTDIR)$(varprefix)/lib/rpm/[A-Z]*
 	-@$(__CHMOD) 0775 $(DESTDIR)$(varprefix)/lib/rpm
 	-@$(__CHMOD) 0664 $(DESTDIR)$(varprefix)/lib/rpm/__db.*
+	-@$(__CHMOD) 0755 $(DESTDIR)$(varprefix)/spool/repackage
 
 .PHONY:	unsetgid
 unsetgid:
