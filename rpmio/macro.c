@@ -214,7 +214,9 @@ sortMacroTable(MacroContext mc)
     }
 }
 
+/*@only@*/
 static char * dupMacroEntry(MacroEntry me)
+	/*@*/
 {
     char * t, * te;
     size_t nb;
@@ -227,7 +229,7 @@ assert(me != NULL);
 	nb += strlen(me->body) + sizeof("\t") - 1;
     nb++;
 
-    te = t = xmalloc(nb);
+    t = te = xmalloc(nb);
     *te = '\0';
     te = stpcpy( stpcpy(te, "%"), me->name);
     if (me->opts)

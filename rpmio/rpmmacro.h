@@ -84,7 +84,7 @@ int
 rpmGetMacroEntries(/*@null@*/ MacroContext mc, /*@null@*/ miRE mire,
 		int used, /*@null@*/ const char *** avp)
 	/*@globals rpmGlobalMacroContext @*/
-	/*@modifies *avp @*/;
+	/*@modifies mire, *avp @*/;
 
 /**
  * Return URL path(s) from a (URL prefixed) pattern glob.

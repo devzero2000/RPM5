@@ -633,7 +633,9 @@ static int rpm_macros(lua_State *L)
     int ac = 0;
     int i;
 
+/*@-modunconnomods@*/
     lua_newtable(L);
+/*@=modunconnomods@*/
 
     ac = rpmGetMacroEntries(NULL, NULL, -1, &av);
 
@@ -653,6 +655,7 @@ assert(b != NULL);
 	}
 	b++;
 
+/*@-modunconnomods@*/
         lua_pushstring(L, n);
         lua_newtable(L);
         if (o) {
@@ -666,6 +669,7 @@ assert(b != NULL);
             lua_settable(L, -3);
         }
         lua_settable(L, -3);
+/*@=modunconnomods@*/
     }
     av = argvFree(av);
     return 1;

@@ -31,6 +31,7 @@
 #include "ne_utils.h"
 #if !defined(HEADER_ERR_H)
 /* cheats to avoid having to explicitly build against OpenSSL */
+/*@-exportheader@*/
 extern void ERR_remove_state(int foo);
 extern void ENGINE_cleanup(void);
 extern void CONF_modules_unload(int foo);
@@ -38,6 +39,7 @@ extern void ERR_free_strings(void);
 extern void EVP_cleanup(void);
 extern void CRYPTO_cleanup_all_ex_data(void);
 extern void CRYPTO_mem_leaks(void * ptr);
+/*@=exportheader@*/
 #endif
 
 #include "ne_md5.h" /* for version detection only */
