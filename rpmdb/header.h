@@ -463,7 +463,7 @@ void (*HDRunsort) (Header h)
  * @return		size of on-disk header
  */
 typedef
-unsigned int (*HDRsizeof) (/*@null@*/ Header h)
+size_t (*HDRsizeof) (/*@null@*/ Header h)
         /*@modifies h @*/;
 
 /** \ingroup header
@@ -803,7 +803,7 @@ int (*HDRsetorigin) (/*@null@*/ Header h, const char * origin)
  * @return		header instance
  */
 typedef
-int (*HDRgetinstance) (/*@null@*/ Header h)
+uint32_t (*HDRgetinstance) (/*@null@*/ Header h)
 	/*@*/;
 
 /** \ingroup header
@@ -813,7 +813,7 @@ int (*HDRgetinstance) (/*@null@*/ Header h)
  * @return		0 always
  */
 typedef
-int (*HDRsetinstance) (/*@null@*/ Header h, int instance)
+uint32_t (*HDRsetinstance) (/*@null@*/ Header h, uint32_t instance)
 	/*@modifies h @*/;
 
 /**

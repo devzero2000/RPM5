@@ -48,7 +48,8 @@ int headerVerifyInfo(uint32_t il, uint32_t dl, const void * pev, void * iv, int 
 	    info->type = RPM_UINT8_TYPE;
 	    pe[i].type = (uint32_t) htonl(info->type);
 	}
-	info->offset = ntohl(pe[i].offset);
+	info->offset = (int_32) ntohl(pe[i].offset);
+assert(negate || info->offset >= 0);	/* XXX insurance */
 	if (negate)
 	    info->offset = -info->offset;
 	info->count = (uint32_t) ntohl(pe[i].count);
@@ -57,7 +58,7 @@ int headerVerifyInfo(uint32_t il, uint32_t dl, const void * pev, void * iv, int 
 	    return (int)i;
 	if (hdrchkAlign(info->type, info->offset))
 	    return (int)i;
-	if (!negate && hdrchkRange(dl, info->offset))
+	if (!negate && hdrchkRange((int_32)dl, info->offset))
 	    return (int)i;
 	if (hdrchkData(info->count))
 	    return (int)i;

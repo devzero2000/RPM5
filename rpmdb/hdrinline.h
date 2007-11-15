@@ -116,7 +116,7 @@ void headerUnsort(Header h)
  * @return		size of on-disk header
  */
 /*@unused@*/ static inline
-unsigned int headerSizeof(/*@null@*/ Header h)
+size_t headerSizeof(/*@null@*/ Header h)
 	/*@modifies h @*/
 {
     /*@-abstract@*/
@@ -659,7 +659,7 @@ int headerSetOrigin(/*@null@*/ Header h, const char * origin)
  * @return		header instance
  */
 /*@unused@*/ static inline
-int headerGetInstance(/*@null@*/ Header h)
+uint32_t headerGetInstance(/*@null@*/ Header h)
 	/*@*/
 {
     return hdrVec->hdrgetinstance(h);
@@ -672,7 +672,7 @@ int headerGetInstance(/*@null@*/ Header h)
  * @return		0 always
  */
 /*@unused@*/ static inline
-int headerSetInstance(/*@null@*/ Header h, int instance)
+uint32_t headerSetInstance(/*@null@*/ Header h, uint32_t instance)
 	/*@modifies h @*/
 {
     return hdrVec->hdrsetinstance(h, instance);

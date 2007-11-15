@@ -153,8 +153,8 @@ fprintf(stderr, "*** free pkt %p[%d] id %08x %08x\n", ts->pkpkt, ts->pkpktlen, p
 
     /* Try rpmdb keyring lookup. */
     if (ts->pkpkt == NULL) {
-	int hx = -1;
-	int ix = -1;
+	unsigned hx = 0xffffffff;
+	unsigned ix = 0xffffffff;
 	rpmdbMatchIterator mi;
 	Header h;
 
@@ -167,18 +167,18 @@ fprintf(stderr, "*** free pkt %p[%d] id %08x %08x\n", ts->pkpkt, ts->pkpktlen, p
 	    hx = rpmdbGetIteratorOffset(mi);
 	    ix = rpmdbGetIteratorFileNum(mi);
 /*@-moduncon -nullstate @*/
-	    if (ix >= he->c
+	    if (ix >= (unsigned) he->c
 	     || b64decode(he->p.argv[ix], (void **) &ts->pkpkt, &ts->pkpktlen))
-		ix = -1;
+		ix = 0xffffffff;
 /*@=moduncon =nullstate @*/
 	    he->p.ptr = _free(he->p.ptr);
 	    break;
 	}
 	mi = rpmdbFreeIterator(mi);
 
-	if (ix >= 0) {
+	if (ix < 0xffffffff) {
 	    char hnum[32];
-	    sprintf(hnum, "h#%d", hx);
+	    sprintf(hnum, "h#%u", hx);
 	    pubkeysource = xstrdup(hnum);
 	} else {
 	    ts->pkpkt = _free(ts->pkpkt);
@@ -490,7 +490,8 @@ static rpmRC wrSignature(FD_t fd, void * ptr, /*@unused@*/ const char ** msg)
     Header sigh = ptr;
     static unsigned char zero[8]
 	= { '\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0' };
-    int sigSize, pad;
+    size_t sigSize;
+    size_t pad;
     rpmRC rc = RPMRC_OK;
     int xx;
 
@@ -504,7 +505,7 @@ static rpmRC wrSignature(FD_t fd, void * ptr, /*@unused@*/ const char ** msg)
 	if (Fwrite(zero, sizeof(zero[0]), pad, fd) != pad)
 	    rc = RPMRC_FAIL;
     }
-    rpmlog(RPMLOG_DEBUG, D_("Signature: size(%d)+pad(%d)\n"), sigSize, pad);
+    rpmlog(RPMLOG_DEBUG, D_("Signature: size(%u)+pad(%u)\n"), (unsigned)sigSize, (unsigned)pad);
     return rc;
 }
 
@@ -660,7 +661,8 @@ assert(wf->ns >= (sizeof(block)+nb));
     {
 /*@=sizeoftype@*/
 
-	if (entry->info.offset >= dl) {
+assert(entry->info.offset > 0);	/* XXX insurance */
+	if (entry->info.offset >= (int_32)dl) {
 	    (void) snprintf(buf, sizeof(buf),
 		_("region offset: BAD, tag %u type %u offset %d count %u\n"),
 		(unsigned) entry->info.tag, (unsigned) entry->info.type,
@@ -731,7 +733,8 @@ assert(wf->ns >= (sizeof(block)+nb));
 	size_t pad = (8 - (sigSize % 8)) % 8; /* 8-byte pad */
 
 	/* Position at beginning of header. */
-	if (pad && (xx = (int) timedRead(fd, (void *)block, pad)) != (int) pad) {
+	if (pad && (xx = (int) timedRead(fd, (void *)block, pad)) != (int) pad)
+	{
 	    (void) snprintf(buf, sizeof(buf),
 		_("sigh pad(%u): BAD, read %d bytes\n"), (unsigned) pad, xx);
 	    goto exit;

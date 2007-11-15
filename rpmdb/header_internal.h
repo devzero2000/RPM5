@@ -75,7 +75,7 @@ struct indexEntry_s {
 /*@owned@*/
     void * data; 		/*!< Location of tag data. */
     size_t length;		/*!< No. bytes of data. */
-    int rdlen;			/*!< No. bytes of data in region. */
+    size_t rdlen;		/*!< No. bytes of data in region. */
 };
 
 /** \ingroup header
@@ -94,9 +94,9 @@ struct headerToken_s {
     struct rpmop_s h_getops;
 /*@owned@*/
     indexEntry index;		/*!< Array of tags. */
-    int indexUsed;		/*!< Current size of tag array. */
-    int indexAlloced;		/*!< Allocated size of tag array. */
-    int flags;
+    size_t indexUsed;		/*!< Current size of tag array. */
+    size_t indexAlloced;	/*!< Allocated size of tag array. */
+    uint32_t flags;
 #define	HEADERFLAG_SORTED	(1 << 0) /*!< Are header entries sorted? */
 #define	HEADERFLAG_ALLOCATED	(1 << 1) /*!< Is 1st header region allocated? */
 #define	HEADERFLAG_LEGACY	(1 << 2) /*!< Header came from legacy source? */
