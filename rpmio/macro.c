@@ -6,9 +6,9 @@
 #include <stdarg.h>
 
 #if !defined(isblank)
-#define	isblank(_c)	((_c) == ' ' || (_c) == '\t')
+#define	isblank(_c)	((char)(_c) == ' ' || (char)(_c) == '\t')
 #endif
-#define	iseol(_c)	((_c) == '\n' || (_c) == '\r')
+#define	iseol(_c)	((char)(_c) == '\n' || (char)(_c) == '\r')
 
 #define	STREQ(_t, _f, _fn)	((_fn) == (sizeof(_t)-1) && !strncmp((_t), (_f), (_fn)))
 
@@ -112,7 +112,7 @@ typedef /*@abstract@*/ struct MacroBuf_s {
     MacroContext mc;
 } * MacroBuf;
 
-#define SAVECHAR(_mb, _c) { *(_mb)->t = (_c), (_mb)->t++, (_mb)->nb--; }
+#define SAVECHAR(_mb, _c) { *(_mb)->t = (char) (_c), (_mb)->t++, (_mb)->nb--; }
 
 /*@-exportlocal -exportheadervar@*/
 
@@ -527,25 +527,25 @@ printExpansion(MacroBuf mb, const char * t, const char * te)
 
 #define	SKIPBLANK(_s, _c)	\
 	/*@-globs@*/	/* FIX: __ctype_b */ \
-	while (((_c) = *(_s)) && isblank(_c)) \
+	while (((_c) = (int) *(_s)) && isblank(_c)) \
 		(_s)++;		\
 	/*@=globs@*/
 
 #define	SKIPNONBLANK(_s, _c)	\
 	/*@-globs@*/	/* FIX: __ctype_b */ \
-	while (((_c) = *(_s)) && !(isblank(_c) || iseol(_c))) \
+	while (((_c) = (int) *(_s)) && !(isblank(_c) || iseol(_c))) \
 		(_s)++;		\
 	/*@=globs@*/
 
 #define	COPYNAME(_ne, _s, _c)	\
     {	SKIPBLANK(_s,_c);	\
-	while(((_c) = *(_s)) && (xisalnum(_c) || (_c) == '_')) \
+	while(((_c) = (int) *(_s)) && (xisalnum(_c) || (_c) == (int) '_')) \
 		*(_ne)++ = *(_s)++; \
 	*(_ne) = '\0';		\
     }
 
 #define	COPYOPTS(_oe, _s, _c)	\
-    {   while(((_c) = *(_s)) && (_c) != ')') \
+    {   while(((_c) = (int) *(_s)) && (_c) != (int) ')') \
 		*(_oe)++ = *(_s)++; \
 	*(_oe) = '\0';		\
     }
@@ -698,13 +698,13 @@ doDefine(MacroBuf mb, /*@returned@*/ const char * se, int level, int expandbody)
     char *o = NULL, *oe;
     char *b, *be;
     int c;
-    int oc = ')';
+    int oc = (int) ')';
 
     SKIPBLANK(s, c);
-    if (c == '.')		/* XXX readonly macros */
-	*n++ = c = *s++;
-    if (c == '.')		/* XXX readonly macros */
-	*n++ = c = *s++;
+    if (c == (int) '.')		/* XXX readonly macros */
+/*@i@*/	*n++ = c = *s++;
+    if (c == (int) '.')		/* XXX readonly macros */
+/*@i@*/	*n++ = c = *s++;
     ne = n;
 
     /* Copy name */
@@ -722,8 +722,8 @@ doDefine(MacroBuf mb, /*@returned@*/ const char * se, int level, int expandbody)
     /* Copy body, skipping over escaped newlines */
     b = be = oe + 1;
     SKIPBLANK(s, c);
-    if (c == '{') {	/* XXX permit silent {...} grouping */
-	if ((se = matchchar(s, c, '}')) == NULL) {
+    if (c == (int) '{') {	/* XXX permit silent {...} grouping */
+	if ((se = matchchar(s, (char) c, '}')) == NULL) {
 	    rpmlog(RPMLOG_ERR,
 		_("Macro %%%s has unterminated body\n"), n);
 	    se = s;	/* XXX W2DO? */
@@ -770,7 +770,7 @@ doDefine(MacroBuf mb, /*@returned@*/ const char * se, int level, int expandbody)
 
 	/* Trim trailing blanks/newlines */
 /*@-globs@*/
-	while (--be >= b && (c = *be) && (isblank(c) || iseol(c)))
+	while (--be >= b && (c = (int) *be) && (isblank(c) || iseol(c)))
 	    {};
 /*@=globs@*/
 	*(++be) = '\0';	/* one too far */
@@ -782,14 +782,14 @@ doDefine(MacroBuf mb, /*@returned@*/ const char * se, int level, int expandbody)
     se = s;
 
     /* Names must start with alphabetic or _ and be at least 3 chars */
-    if (!((c = *n) && (xisalpha(c) || c == '_') && (ne - n) > 2)) {
+    if (!((c = (int) *n) && (xisalpha(c) || c == (int) '_') && (ne - n) > 2)) {
 	rpmlog(RPMLOG_ERR,
 		_("Macro %%%s has illegal name (%%define)\n"), n);
 	return se;
     }
 
     /* Options must be terminated with ')' */
-    if (o && oc != ')') {
+    if (o && oc != (int) ')') {
 	rpmlog(RPMLOG_ERR, _("Macro %%%s has unterminated opts\n"), n);
 	return se;
     }
@@ -839,7 +839,7 @@ doUndefine(MacroContext mc, /*@returned@*/ const char * se)
     se = s;
 
     /* Names must start with alphabetic or _ and be at least 3 chars */
-    if (!((c = *n) && (xisalpha(c) || c == '_') && (ne - n) > 2)) {
+    if (!((c = (int) *n) && (xisalpha(c) || c == (int) '_') && (ne - n) > 2)) {
 	rpmlog(RPMLOG_ERR,
 		_("Macro %%%s has illegal name (%%undefine)\n"), n);
 	return se;
@@ -1005,10 +1005,10 @@ grabArgs(MacroBuf mb, const MacroEntry me, /*@returned@*/ const char * se,
 
     /* Copy args into buf until lastc */
     *be++ = ' ';
-    while ((c = *se++) != '\0' && (se-1) != lastc) {
+    while ((c = (int) *se++) != (int) '\0' && (se-1) != lastc) {
 /*@-globs@*/
 	if (!isblank(c)) {
-	    *be++ = c;
+	    *be++ = (char) c;
 	    continue;
 	}
 /*@=globs@*/
@@ -1019,7 +1019,7 @@ grabArgs(MacroBuf mb, const MacroEntry me, /*@returned@*/ const char * se,
 	*be++ = ' ';
 	argc++;
     }
-    if (c == '\0') se--;	/* one too far */
+    if (c == (int) '\0') se--;	/* one too far */
     if (be[-1] != ' ')
 	argc++, be++;		/* last word has not trailing ' ' */
     be[-1] = '\0';
@@ -1084,22 +1084,22 @@ grabArgs(MacroBuf mb, const MacroEntry me, /*@returned@*/ const char * se,
     while((c = getopt(argc, (char **)argv, opts)) != -1)
 /*@=nullstate@*/
     {
-	if (c == '?' || (o = strchr(opts, c)) == NULL) {
+	if (c == (int) '?' || (o = strchr(opts, c)) == NULL) {
 	    rpmlog(RPMLOG_ERR, _("Unknown option %c in %s(%s)\n"),
 			(char)c, me->name, opts);
 	    return se;
 	}
 	*be++ = '-';
-	*be++ = c;
+	*be++ = (char) c;
 	if (o[1] == ':') {
 	    *be++ = ' ';
 	    be = stpcpy(be, optarg);
 	}
 	*be++ = '\0';
-	aname[0] = '-'; aname[1] = c; aname[2] = '\0';
+	aname[0] = '-'; aname[1] = (char)c; aname[2] = '\0';
 	addMacro(mb->mc, aname, NULL, b, mb->depth);
 	if (o[1] == ':') {
-	    aname[0] = '-'; aname[1] = c; aname[2] = '*'; aname[3] = '\0';
+	    aname[0] = '-'; aname[1] = (char)c; aname[2] = '*'; aname[3] = '\0';
 	    addMacro(mb->mc, aname, NULL, optarg, mb->depth);
 	}
 	be = b; /* reuse the space */
@@ -1214,10 +1214,10 @@ doFoo(MacroBuf mb, int negate, const char * f, size_t fn,
     } else if (STREQ("uncompress", f, fn)) {
 	rpmCompressedMagic compressed = COMPRESSED_OTHER;
 /*@-globs@*/
-	for (b = buf; (c = *b) && isblank(c);)
+	for (b = buf; (c = (int)*b) && isblank(c);)
 	    b++;
 	/* XXX FIXME: file paths with embedded white space needs rework. */
-	for (be = b; (c = *be) && !isblank(c);)
+	for (be = b; (c = (int)*be) && !isblank(c);)
 	    be++;
 /*@=globs@*/
 	*be++ = '\0';
@@ -1246,10 +1246,10 @@ doFoo(MacroBuf mb, int negate, const char * f, size_t fn,
 	b = be;
     } else if (STREQ("mkstemp", f, fn)) {
 /*@-globs@*/
-	for (b = buf; (c = *b) && isblank(c);)
+	for (b = buf; (c = (int)*b) && isblank(c);)
 	    b++;
 	/* XXX FIXME: file paths with embedded white space needs rework. */
-	for (be = b; (c = *be) && !isblank(c);)
+	for (be = b; (c = (int)*be) && !isblank(c);)
 	    be++;
 /*@=globs@*/
 #if defined(HAVE_MKSTEMP)
@@ -1258,7 +1258,7 @@ doFoo(MacroBuf mb, int negate, const char * f, size_t fn,
         (void) mktemp(b);
 #endif
     } else if (STREQ("S", f, fn)) {
-	for (b = buf; (c = *b) && xisdigit(c);)
+	for (b = buf; (c = (int)*b) && xisdigit(c);)
 	    b++;
 	if (!c) {	/* digit index */
 	    b++;
@@ -1266,7 +1266,7 @@ doFoo(MacroBuf mb, int negate, const char * f, size_t fn,
 	} else
 	    b = buf;
     } else if (STREQ("P", f, fn)) {
-	for (b = buf; (c = *b) && xisdigit(c);)
+	for (b = buf; (c = (int) *b) && xisdigit(c);)
 	    b++;
 	if (!c) {	/* digit index */
 	    b++;
@@ -1320,12 +1320,12 @@ expandMacro(MacroBuf mb)
 	return 1;
     }
 
-    while (rc == 0 && mb->nb > 0 && (c = *s) != '\0') {
+    while (rc == 0 && mb->nb > 0 && (c = (int)*s) != (int)'\0') {
 	s++;
 	/* Copy text until next macro */
 	switch(c) {
 	case '%':
-		if (*s) {	/* Ensure not end-of-string. */
+		if (*s != '\0') {	/* Ensure not end-of-string. */
 		    if (*s != '%')
 			/*@switchbreak@*/ break;
 		    s++;	/* skip first % in %% */
@@ -1345,7 +1345,7 @@ expandMacro(MacroBuf mb)
 	negate = 0;
 	lastc = NULL;
 	chkexist = 0;
-	switch ((c = *s)) {
+	switch ((c = (int) *s)) {
 	default:		/* %name substitution */
 		while (*s != '\0' && strchr("!?", *s) != NULL) {
 			switch(*s++) {
@@ -1360,7 +1360,7 @@ expandMacro(MacroBuf mb)
 		f = se = s;
 		if (*se == '-')
 			se++;
-		while((c = *se) && (xisalnum(c) || c == '_'))
+		while((c = (int) *se) && (xisalnum(c) || c == (int) '_'))
 			se++;
 		/* Recognize non-alnum macros too */
 		switch (*se) {
@@ -1377,13 +1377,13 @@ expandMacro(MacroBuf mb)
 		fe = se;
 		/* For "%name " macros ... */
 /*@-globs@*/
-		if ((c = *fe) && isblank(c))
+		if ((c = (int) *fe) && isblank(c))
 			if ((lastc = strchr(fe,'\n')) == NULL)
 				lastc = strchr(fe, '\0');
 /*@=globs@*/
 		/*@switchbreak@*/ break;
 	case '(':		/* %(...) shell escape */
-		if ((se = matchchar(s, c, ')')) == NULL) {
+		if ((se = matchchar(s, (char)c, ')')) == NULL) {
 			rpmlog(RPMLOG_ERR,
 				_("Unterminated %c: %s\n"), (char)c, s);
 			rc = 1;
@@ -1400,7 +1400,7 @@ expandMacro(MacroBuf mb)
 		continue;
 		/*@notreached@*/ /*@switchbreak@*/ break;
 	case '{':		/* %{...}/%{...:...} substitution */
-		if ((se = matchchar(s, c, '}')) == NULL) {
+		if ((se = matchchar(s, (char)c, '}')) == NULL) {
 			rpmlog(RPMLOG_ERR,
 				_("Unterminated %c: %s\n"), (char)c, s);
 			rc = 1;
@@ -1419,7 +1419,7 @@ expandMacro(MacroBuf mb)
 			}
 		}
 		/* Find end-of-expansion, handle %{foo:bar} expansions. */
-		for (fe = f; (c = *fe) && !strchr(" :}", c);)
+		for (fe = f; (c = (int) *fe) && !strchr(" :}", c);)
 			fe++;
 		switch (c) {
 		case ':':
@@ -1440,7 +1440,7 @@ expandMacro(MacroBuf mb)
 	gn = (ge - g);
 	if ((fe - f) <= 0) {
 /* XXX Process % in unknown context */
-		c = '%';	/* XXX only need to save % */
+		c = (int) '%';	/* XXX only need to save % */
 		SAVECHAR(mb, c);
 #if 0
 		rpmlog(RPMLOG_ERR,
@@ -1620,7 +1620,7 @@ expandMacro(MacroBuf mb)
 		}
 #endif
 		/* XXX hack to permit non-overloaded %foo to be passed */
-		c = '%';	/* XXX only need to save % */
+		c = (int) '%';	/* XXX only need to save % */
 		SAVECHAR(mb, c);
 #else
 		if (!strncmp(f, "if", fn) ||
@@ -2074,12 +2074,13 @@ rpmLoadMacroFile(MacroContext mc, const char * fn)
 
     buf[0] = '\0';
     while(rdcl(buf, bufn, fd) != NULL) {
-	char c, *n;
+	char *n;
+	int c;
 
 	n = buf;
 	SKIPBLANK(n, c);
 
-	if (c != '%')
+	if (c != (int) '%')
 		continue;
 	n++;	/* skip % */
 	rc = rpmDefineMacro(mc, n, RMIL_MACROFILES);
@@ -2221,24 +2222,24 @@ int isCompressed(const char * file, rpmCompressedMagic * compressed)
     if (magic[0] == 'B' && magic[1] == 'Z')
 	*compressed = COMPRESSED_BZIP2;
     else
-    if (magic[0] == 0120 && magic[1] == 0113
-     &&	magic[2] == 0003 && magic[3] == 0004)	/* pkzip */
+    if (magic[0] == (unsigned char) 0120 && magic[1] == (unsigned char) 0113
+     &&	magic[2] == (unsigned char) 0003 && magic[3] == (unsigned char) 0004)	/* pkzip */
 	*compressed = COMPRESSED_ZIP;
     else
-    if (magic[0] == 0x89 && magic[1] == 'L'
+    if (magic[0] == (unsigned char) 0x89 && magic[1] == 'L'
      &&	magic[2] == 'Z' && magic[3] == 'O')	/* lzop */
 	*compressed = COMPRESSED_LZOP;
     else
     /* XXX Ick, LZMA has no magic. See http://lkml.org/lkml/2005/6/13/285 */
-    if (magic[ 9] == 0x00 && magic[10] == 0x00 &&
-	magic[11] == 0x00 && magic[12] == 0x00)	/* lzmash */
+    if (magic[ 9] == (unsigned char) 0x00 && magic[10] == (unsigned char) 0x00 &&
+	magic[11] == (unsigned char) 0x00 && magic[12] == (unsigned char) 0x00)	/* lzmash */
 	*compressed = COMPRESSED_LZMA;
     else
-    if ((magic[0] == 0037 && magic[1] == 0213)	/* gzip */
-     ||	(magic[0] == 0037 && magic[1] == 0236)	/* old gzip */
-     ||	(magic[0] == 0037 && magic[1] == 0036)	/* pack */
-     ||	(magic[0] == 0037 && magic[1] == 0240)	/* SCO lzh */
-     ||	(magic[0] == 0037 && magic[1] == 0235))	/* compress */
+    if ((magic[0] == (unsigned char) 0037 && magic[1] == (unsigned char) 0213)	/* gzip */
+     ||	(magic[0] == (unsigned char) 0037 && magic[1] == (unsigned char) 0236)	/* old gzip */
+     ||	(magic[0] == (unsigned char) 0037 && magic[1] == (unsigned char) 0036)	/* pack */
+     ||	(magic[0] == (unsigned char) 0037 && magic[1] == (unsigned char) 0240)	/* SCO lzh */
+     ||	(magic[0] == (unsigned char) 0037 && magic[1] == (unsigned char) 0235))	/* compress */
 	*compressed = COMPRESSED_OTHER;
 
     return rc;

@@ -170,12 +170,12 @@ int argvSplit(ARGV_t * argvp, const char * str, const char * seps)
     if (seps == NULL)
 	seps = whitespace;
 
-    for (argc = 1, s = str, t = dest; (c = *s); s++, t++) {
+    for (argc = 1, s = str, t = dest; (c = (int) *s); s++, t++) {
 	if (strchr(seps, c)) {
 	    argc++;
-	    c = '\0';
+	    c = (int) '\0';
 	}
-	*t = c;
+	*t = (char) c;
     }
     *t = '\0';
 

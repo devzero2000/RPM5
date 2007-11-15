@@ -848,11 +848,11 @@ int pgpPrtComment(const pgpPkt pp)
 	fprintf(stderr, " ");
     while (i > 0) {
 	int j;
-	if (*h >= ' ' && *h <= 'z') {
+	if (*h >= (byte)' ' && *h <= (byte)'z') {
 	    j = 0;
-	    while (j < i && h[j] != '\0')
+	    while (j < i && h[j] != (byte)'\0')
 		j++;
-	    while (j < i && h[j] == '\0')
+	    while (j < i && h[j] == (byte)'\0')
 		j++;
 	    if (_print && j)
 		fprintf(stderr, "%.*s", (int)strlen((const char *)h), (const char *)h);

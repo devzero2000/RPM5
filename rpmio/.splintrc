@@ -71,6 +71,5 @@
 # --- not-yet at standard level
 -boolops		# 117
 +boolint		# 11
-+charint		# 146
 +ignorequals		# 112
 +matchanyintegral	# 39

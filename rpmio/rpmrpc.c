@@ -416,7 +416,7 @@ vfs_split_text (char *p)
 
     for (numcols = 0; *p && numcols < MAXCOLS; numcols++){
 	while (*p == ' ' || *p == '\r' || *p == '\n'){
-	    *p = 0;
+	    *p = '\0';
 	    p++;
 	}
 	columns [numcols] = p;
@@ -872,9 +872,9 @@ vfs_parse_ls_lga (char * p, /*@out@*/ struct stat * st,
 	    t = g_strdup (p_copy + column_ptr [idx2+1]);
 	    tlen = strlen (t);
 	    if (t [tlen-1] == '\r' || t [tlen-1] == '\n')
-		t [tlen-1] = 0;
+		t [tlen-1] = '\0';
 	    if (t [tlen-2] == '\r' || t [tlen-2] == '\n')
-		t [tlen-2] = 0;
+		t [tlen-2] = '\0';
 		
 	    *linkname = t;
 	}
@@ -893,9 +893,9 @@ vfs_parse_ls_lga (char * p, /*@out@*/ struct stat * st,
 	    tlen = strlen (t);
 	    /* g_strchomp(); */
 	    if (t [tlen-1] == '\r' || t [tlen-1] == '\n')
-	        t [tlen-1] = 0;
+	        t [tlen-1] = '\0';
 	    if (t [tlen-2] == '\r' || t [tlen-2] == '\n')
-		t [tlen-2] = 0;
+		t [tlen-2] = '\0';
 
 	    *filename = t;
 	}
@@ -1227,7 +1227,7 @@ fprintf(stderr, "*** ftpOpendir(%s)\n", path);
     ac = 2;
     sb = NULL;
     s = se = ftpBuf;
-    while ((c = *se) != '\0') {
+    while ((c = (int) *se) != (int) '\0') {
 	se++;
 	switch (c) {
 	case '/':
@@ -1276,12 +1276,12 @@ fprintf(stderr, "*** ftpOpendir(%s)\n", path);
 
     ac = 0;
     /*@-dependenttrans -unrecog@*/
-    dt[ac] = DT_DIR;	av[ac++] = t;	t = stpcpy(t, ".");	t++;
-    dt[ac] = DT_DIR;	av[ac++] = t;	t = stpcpy(t, "..");	t++;
+    dt[ac] = (unsigned char)DT_DIR; av[ac++] = t; t = stpcpy(t, ".");	t++;
+    dt[ac] = (unsigned char)DT_DIR; av[ac++] = t; t = stpcpy(t, "..");	t++;
     /*@=dependenttrans =unrecog@*/
     sb = NULL;
     s = se = ftpBuf;
-    while ((c = *se) != '\0') {
+    while ((c = (int) *se) != (int) '\0') {
 	se++;
 	switch (c) {
 	case '/':
@@ -1295,28 +1295,28 @@ fprintf(stderr, "*** ftpOpendir(%s)\n", path);
 		/*@-unrecog@*/
 		switch(*s) {
 		case 'p':
-		    dt[ac] = DT_FIFO;
+		    dt[ac] = (unsigned char) DT_FIFO;
 		    /*@innerbreak@*/ break;
 		case 'c':
-		    dt[ac] = DT_CHR;
+		    dt[ac] = (unsigned char) DT_CHR;
 		    /*@innerbreak@*/ break;
 		case 'd':
-		    dt[ac] = DT_DIR;
+		    dt[ac] = (unsigned char) DT_DIR;
 		    /*@innerbreak@*/ break;
 		case 'b':
-		    dt[ac] = DT_BLK;
+		    dt[ac] = (unsigned char) DT_BLK;
 		    /*@innerbreak@*/ break;
 		case '-':
-		    dt[ac] = DT_REG;
+		    dt[ac] = (unsigned char) DT_REG;
 		    /*@innerbreak@*/ break;
 		case 'l':
-		    dt[ac] = DT_LNK;
+		    dt[ac] = (unsigned char) DT_LNK;
 		    /*@innerbreak@*/ break;
 		case 's':
-		    dt[ac] = DT_SOCK;
+		    dt[ac] = (unsigned char) DT_SOCK;
 		    /*@innerbreak@*/ break;
 		default:
-		    dt[ac] = DT_UNKNOWN;
+		    dt[ac] = (unsigned char) DT_UNKNOWN;
 		    /*@innerbreak@*/ break;
 		}
 		/*@=unrecog@*/

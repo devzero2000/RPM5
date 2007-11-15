@@ -78,8 +78,8 @@ static uint32_t hashFunctionString(uint32_t h, const void * data, size_t size)
 	/*@*/
 {
     const char * chp = data;
-    unsigned char sum = 0;
-    unsigned char xor = 0;
+    unsigned char sum = (unsigned char)0;
+    unsigned char xor = (unsigned char)0;
     int i;
 
     if (size == 0)
@@ -89,7 +89,7 @@ static uint32_t hashFunctionString(uint32_t h, const void * data, size_t size)
 	sum += *chp;
     }
 
-    h += ((size << 16) + (sum << 8) + xor);
+    h += ((uint32_t)(size << 16) + (uint32_t)(sum << 8) + (uint32_t)xor);
 
     return h;
 }

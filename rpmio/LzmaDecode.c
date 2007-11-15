@@ -129,14 +129,14 @@ int LzmaDecodeProperties(CLzmaProperties *propsRes, const unsigned char *propsDa
   if (size < LZMA_PROPERTIES_SIZE)
     return LZMA_RESULT_DATA_ERROR;
   prop0 = propsData[0];
-  if (prop0 >= (9 * 5 * 5))
+  if (prop0 >= (unsigned char)(9 * 5 * 5))
     return LZMA_RESULT_DATA_ERROR;
   {
-    for (propsRes->pb = 0; prop0 >= (9 * 5); propsRes->pb++, prop0 -= (9 * 5))
+    for (propsRes->pb = 0; prop0 >= (unsigned char)(9 * 5); propsRes->pb++, prop0 -= (unsigned char)(9 * 5))
 	{};
-    for (propsRes->lp = 0; prop0 >= 9; propsRes->lp++, prop0 -= 9)
+    for (propsRes->lp = 0; prop0 >= (unsigned char)9; propsRes->lp++, prop0 -= (unsigned char)9)
 	{};
-    propsRes->lc = prop0;
+    propsRes->lc = (int) prop0;
     /*
     unsigned char remainder = (unsigned char)(prop0 / 9);
     propsRes->lc = prop0 % 9;
@@ -170,7 +170,7 @@ int LzmaDecode(CLzmaDecoderState *vs,
 {
   CProb *p = vs->Probs;
   SizeT nowPos = 0;
-  Byte previousByte = 0;
+  Byte previousByte = '\0';
   UInt32 posStateMask = (1 << (vs->Properties.pb)) - 1;
   UInt32 literalPosMask = (1 << (vs->Properties.lp)) - 1;
   int lc = vs->Properties.lc;
@@ -224,7 +224,7 @@ int LzmaDecode(CLzmaDecoderState *vs,
       globalPos = 0;
       distanceLimit = 0;
       dictionaryPos = 0;
-      dictionary[dictionarySize - 1] = 0;
+      dictionary[dictionarySize - 1] = (Byte)0;
 #ifdef _LZMA_IN_CB
       RC_INIT;
 #else
@@ -302,7 +302,7 @@ int LzmaDecode(CLzmaDecoderState *vs,
         + globalPos
 #endif
         )
-        & literalPosMask) << lc) + (previousByte >> (8 - lc))));
+        & literalPosMask) << lc) + (UInt32)(previousByte >> (8 - lc))));
 
       if (state >= kNumLitStates)
       {
@@ -311,7 +311,7 @@ int LzmaDecode(CLzmaDecoderState *vs,
         UInt32 pos = dictionaryPos - rep0;
         if (pos >= dictionarySize)
           pos += dictionarySize;
-        matchByte = dictionary[pos];
+        matchByte = (int) dictionary[pos];
 #else
         matchByte = outStream[nowPos - rep0];
 #endif

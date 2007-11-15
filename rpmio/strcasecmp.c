@@ -17,14 +17,14 @@ int xstrcasecmp(const char * s1, const char * s2)
 
   do
     {
-      c1 = xtolower (*p1++);
-      c2 = xtolower (*p2++);
+      c1 = (char) xtolower ((int)*p1++);
+      c2 = (char) xtolower ((int)*p2++);
       if (c1 == '\0')
         break;
     }
   while (c1 == c2);
 
-  return (int)(c1 - c2);
+  return ((int)c1 - (int)c2);
 }
 
 int xstrncasecmp(const char *s1, const char *s2, size_t n)
@@ -38,11 +38,11 @@ int xstrncasecmp(const char *s1, const char *s2, size_t n)
 
   do
     {
-      c1 = xtolower (*p1++);
-      c2 = xtolower (*p2++);
+      c1 = (char) xtolower ((int)*p1++);
+      c2 = (char) xtolower ((int)*p2++);
       if (c1 == '\0' || c1 != c2)
 	break;
     } while (--n > 0);
 
-  return (int)(c1 - c2);
+  return ((int)c1 - (int)c2);
 }

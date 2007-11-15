@@ -1728,8 +1728,8 @@ fprintf(stderr, "*** avOpendir(%s)\n", path);
 
     ac = 0;
     /*@-dependenttrans -unrecog@*/
-    dt[ac] = DT_DIR;	av[ac++] = t;	t = stpcpy(t, ".");	t++;
-    dt[ac] = DT_DIR;	av[ac++] = t;	t = stpcpy(t, "..");	t++;
+    dt[ac] = (unsigned char)DT_DIR; av[ac++] = t; t = stpcpy(t, ".");	t++;
+    dt[ac] = (unsigned char)DT_DIR; av[ac++] = t; t = stpcpy(t, "..");	t++;
     /*@=dependenttrans =unrecog@*/
 
     av[ac] = NULL;
@@ -1878,8 +1878,8 @@ fprintf(stderr, "*** davOpendir(%s)\n", path);
 
     nac = 0;
 /*@-dependenttrans -unrecog@*/
-    dt[nac] = DT_DIR;	nav[nac++] = t;	t = stpcpy(t, ".");	t++;
-    dt[nac] = DT_DIR;	nav[nac++] = t;	t = stpcpy(t, "..");	t++;
+    dt[nac] = (unsigned char)DT_DIR; nav[nac++] = t; t = stpcpy(t, ".");  t++;
+    dt[nac] = (unsigned char)DT_DIR; nav[nac++] = t; t = stpcpy(t, ".."); t++;
 /*@=dependenttrans =unrecog@*/
 
     /* Copy DAV items into DIR elments. */
@@ -1887,7 +1887,7 @@ fprintf(stderr, "*** davOpendir(%s)\n", path);
     if (av != NULL)
     while (av[ac] != NULL) {
 	nav[nac] = t;
-	dt[nac] = (S_ISDIR(ctx->modes[ac]) ? DT_DIR : DT_REG);
+	dt[nac] = (unsigned char) (S_ISDIR(ctx->modes[ac]) ? DT_DIR : DT_REG);
 	t = stpcpy(t, av[ac]);
 	ac++;
 	t++;

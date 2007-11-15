@@ -996,7 +996,7 @@ fprintf(stderr, "<- %s\n", s);
 		    ctrl->contentLength = -1;
 		    if ((e = strchr(s, '.')) != NULL) {
 			e++;
-			u->httpVersion = *e - '0';
+			u->httpVersion = (int)(*e - '0');
 			if (u->httpVersion < 1 || u->httpVersion > 2)
 			    ctrl->persist = u->httpVersion = 0;
 			else
@@ -1632,13 +1632,13 @@ int ftpCmd(const char * cmd, const char * url, const char * arg2)
 
 /* XXX these aren't worth the pain of including correctly */
 #if !defined(IAC)
-#define	IAC	255		/* interpret as command: */
+#define	IAC	((unsigned char)255)	/* interpret as command: */
 #endif
 #if !defined(IP)
-#define	IP	244		/* interrupt process--permanently */
+#define	IP	((unsigned char)244)	/* interrupt process--permanently */
 #endif
 #if !defined(DM)
-#define	DM	242		/* data mark--for connect. cleaning */
+#define	DM	((unsigned char)242)	/* data mark--for connect. cleaning */
 #endif
 #if !defined(SHUT_RDWR)
 #define	SHUT_RDWR	1+1
@@ -3816,7 +3816,7 @@ int rpmioSlurp(const char * fn, byte ** bp, ssize_t * blenp)
     if (blen) {
 	int nb;
 	b = xmalloc(blen+1);
-	b[0] = '\0';
+	b[0] = (byte) '\0';
 	nb = Fread(b, sizeof(*b), blen, fd);
 	if (Ferror(fd) || (size > 0 && nb != blen)) {
 	    rc = 1;
@@ -3826,7 +3826,7 @@ int rpmioSlurp(const char * fn, byte ** bp, ssize_t * blenp)
 	    blen = nb;
 	    b = xrealloc(b, blen+1);
 	}
-	b[blen] = '\0';
+	b[blen] = (byte) '\0';
     }
 
 exit:
