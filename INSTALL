@@ -39,8 +39,8 @@ Bzip2           optional  1.0     1.0.4   http://www.bzip.org/
 File/magic  [4] optional  4.0     4.21    ftp://ftp.astron.com/pub/file/
 GNU gettext     optional  0.16    0.17    http://www.gnu.org/software/gettext/
 GNU iconv       optional  1.11    1.11    http://www.gnu.org/software/libiconv/
-PCRE        [5] optional  7.0     7.4     http://www.pcre.org/
-XAR             optional  1.6     1.6     http://code.google.com/p/xar/
+PCRE            optional  7.0     7.4     http://www.pcre.org/
+XAR         [5] optional  1.5     1.6dev  http://code.google.com/p/xar/
 DMalloc         optional  5       5.5.2   http://dmalloc.com/
 Electric Fence  optional  2.1     2.1.13  http://perens.com/FreeSoftware/ElectricFence/
 Linux KeyUtils  optional  1.2     1.2     http://people.redhat.com/~dhowells/keyutils/
@@ -66,6 +66,7 @@ System libelf   optional  -       -       e.g. http://www.mr511.de/software/engl
 
 [5] xar:       Modified XAR copy bundled with RPM.
                Building RPM against stock external XAR currently still not recommended.
+               The 1.5 releases of Xar needs some patching, before they work.
 
 Run-Time
 --------
@@ -203,14 +204,17 @@ partly dependency order from top to bottom):
                          libbz2      (optional)
                          libintl     (optional)
                          libiconv    (optional)
+                         libxar      (optional)
                          libdmalloc  (optional)
                          libefence   (optional)
                          libkeyutils (optional)
                          libelf      (optional)
                          libneon     (optional)
 
-  Third-Party Libraries: libxml2     (required by libneon)
-  (stage 3)              libssl      (required by libneon)
+  Third-Party Libraries: libxml2     (required by libxar)
+  (stage 3)              libz        (required by libxar)
+                         libexpat    (required by libneon)
+                         libssl      (required by libneon)
                          libcrypto   (required by libssl)
                       
   System Libraries:      libc        (required by all)
