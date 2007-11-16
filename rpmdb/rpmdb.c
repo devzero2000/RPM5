@@ -3911,9 +3911,6 @@ int rpmdbRebuild(const char * prefix, rpmts ts)
     int * dbiTags = NULL;
     int dbiTagsMax = 0;
 
-    if (prefix == NULL) prefix = "/";
-    prefix = rpmGetPath(prefix, NULL);	/* strip trailing '/' */
-
     _dbapi = rpmExpandNumeric("%{_dbapi}");
     _dbapi_rebuild = rpmExpandNumeric("%{_dbapi_rebuild}");
 
@@ -3928,6 +3925,17 @@ int rpmdbRebuild(const char * prefix, rpmts ts)
 	rc = 1;
 	goto exit;
     }
+
+    /* Add --root prefix iff --dbpath is not a URL. */
+    switch (urlPath(tfn, NULL)) {
+    default:
+	prefix = xstrdup("");
+	break;
+    case URL_IS_UNKNOWN:
+	prefix = rpmGetPath((prefix ? prefix : "/"), NULL);
+	break;
+    }
+
     dbpath = rootdbpath = rpmGetPath(prefix, tfn, NULL);
     if (!(prefix[0] == '/' && prefix[1] == '\0'))
 	dbpath += strlen(prefix);
@@ -3949,7 +3957,7 @@ int rpmdbRebuild(const char * prefix, rpmts ts)
     }
     newdbpath = newrootdbpath = rpmGetPath(prefix, tfn, NULL);
     if (!(prefix[0] == '/' && prefix[1] == '\0'))
-	newdbpath += strlen(prefix) - 1;
+	newdbpath += strlen(prefix);
     tfn = _free(tfn);
 
     rpmlog(RPMLOG_DEBUG, D_("rebuilding database %s into %s\n"),

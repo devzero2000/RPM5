@@ -1,4 +1,5 @@
 5.0a1 -> 5.0a2:
+    - jbj: handle --root/--dbpath variants, with/without URL, using --rebuilddb.
     - jbj: rpmdb: casts for integral conversions.
     - jbj: lib: identify and repair several minor flaws caught by splint.
     - jbj: rpmio: casts for integral conversions.

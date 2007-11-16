@@ -3642,7 +3642,7 @@ int rpmioMkpath(const char * path, mode_t mode, uid_t uid, gid_t gid)
 		return errno;
 	    created = 1;
 	    if (!(uid == (uid_t) -1 && gid == (gid_t) -1)) {
-		rc = chown(d, uid, gid);
+		rc = Chown(d, uid, gid);
 		if (rc)
 		    return errno;
 	    }
