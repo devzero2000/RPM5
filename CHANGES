@@ -1,4 +1,9 @@
 5.0a1 -> 5.0a2:
+    - jbj: fix: segfault with corrupted rpm reported at
+	http://qa.mandriva.com/show_bug.cgi?id=33735
+    No change needed to rpm-5.0 whatsoever:
+	   % rpm -K rep-gtk-debug-0.18-6mdv2008.0.x86_64.rpm 
+	   error: /tmp/rep-gtk-debug-0.18-6mdv2008.0.x86_64.rpm: Header: region trailer: BAD, tag 63 type 7 offset 848 count 1524040208
     - jbj: handle --root/--dbpath variants, with/without URL, using --rebuilddb.
     - jbj: rpmdb: casts for integral conversions.
     - jbj: lib: identify and repair several minor flaws caught by splint.
