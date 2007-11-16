@@ -19,7 +19,9 @@ int _rpmwf_debug = 0;
 
 rpmRC rpmwfFiniXAR(rpmwf wf)
 {
+#ifdef WITH_XAR
     int xx;
+#endif
 
 if (_rpmwf_debug)
 fprintf(stderr, "*** rpmwfFiniXAR(%p)\n", wf);
@@ -80,11 +82,13 @@ fprintf(stderr, "*** rpmwfNextXAR(%p) first %d\n", wf, wf->first);
     } else
 	wf->f = xar_file_next(wf->i);
 /*@=moduncon@*/
-#endif
 
     if (wf->f == NULL)
 	return RPMRC_NOTFOUND;
     return RPMRC_OK;
+#else
+    return RPMRC_FAIL;
+#endif
 }
 
 rpmRC rpmwfPushXAR(rpmwf wf, const char * fn)
@@ -109,16 +113,18 @@ rpmRC rpmwfPushXAR(rpmwf wf, const char * fn)
 	nb = wf->np;
     }
 
-    if (wf->x && b && nb > 0) {
 #ifdef WITH_XAR
+    if (wf->x && b && nb > 0) {
 /*@-moduncon@*/
 	wf->f = xar_add_frombuffer(wf->x, NULL, fn, b, nb);
 /*@=moduncon@*/
 	if (wf->f == NULL)
-#endif
 	    return RPMRC_FAIL;
     }
     return RPMRC_OK;
+#else
+    return RPMRC_FAIL;
+#endif
 }
 
 rpmRC rpmwfPullXAR(rpmwf wf, const char * fn)
