@@ -1,4 +1,5 @@
 5.0a1 -> 5.0a2:
+    - jbj: Eliminate SUPPORT_RPMV3_PROVIDE_SELF Provies: N = E:V-R retrofit.
     - jbj: Eliminate SUPPORT_RPMV3_BASENAMES_HACKS file path conversions.
     - jbj: Eliminate SUPPORT_RPMV3_VERIFY_{RSA,DSA} header+payload signatures.
     - jbj: Eliminate SUPPORT_RPMV3_SIGN_{RSA,DSA} header+payload signatures.

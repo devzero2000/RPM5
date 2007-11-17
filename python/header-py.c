@@ -153,131 +153,6 @@ struct hdrObject_s {
     return 0;
 }
 
-#if defined(SUPPORT_RPMV3_PROVIDE_SELF)
-/**
- * Retrofit an explicit Provides: N = E:V-R dependency into package headers.
- * Up to rpm 3.0.4, packages implicitly provided their own name-version-release.
- * @param h             header
- */
-static void providePackageNVR(Header h)
-{
-    HGE_t hge = headerGetExtension;
-    HAE_t hae = headerAddExtension;
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
-    const char *N, *V, *R;
-    uint32_t E;
-    int gotE;
-    const char *pEVR;
-    char *p;
-    uint32_t pFlags = RPMSENSE_EQUAL;
-    const char ** provides = NULL;
-    const char ** providesEVR = NULL;
-    uint32_t * provideFlags = NULL;
-    uint32_t providesCount;
-    int i, xx;
-    int bingo = 1;
-
-    /* Generate provides for this package N-V-R. */
-    xx = headerNEVRA(h, &N, NULL, &V, &R, NULL);
-    if (!(N && V && R))
-	return;
-    pEVR = p = alloca(21 + strlen(V) + 1 + strlen(R) + 1);
-    *p = '\0';
-    he->tag = RPMTAG_EPOCH;
-    gotE = hge(h, he, 0);
-    E = (he->p.i32p ? *he->p.i32p : 0);
-    he->p.ptr = _free(he->p.ptr);
-    if (gotE) {
-	sprintf(p, "%d:", E);
-	p += strlen(p);
-    }
-    (void) stpcpy( stpcpy( stpcpy(p, V) , "-") , R);
-
-    /*
-     * Rpm prior to 3.0.3 does not have versioned provides.
-     * If no provides at all are available, we can just add.
-     */
-    he->tag = RPMTAG_PROVIDENAME;
-    xx = hge(h, he, 0);
-    provides = he->p.argv;
-    providesCount = he->c;
-    if (!xx)
-	goto exit;
-
-    /*
-     * Otherwise, fill in entries on legacy packages.
-     */
-    he->tag = RPMTAG_PROVIDEVERSION;
-    xx = hge(h, he, 0);
-    providesEVR = he->p.argv;
-    if (!xx) {
-	for (i = 0; i < providesCount; i++) {
-	    static char vdummy[] = "";
-	    static uint32_t fdummy = RPMSENSE_ANY;
-	    he->tag = RPMTAG_PROVIDEVERSION;
-	    he->t = RPM_STRING_ARRAY_TYPE;
-	    he->p.argv = &vdummy;
-	    he->c = 1;
-	    xx = hae(h, he, 0);
-	    he->tag = RPMTAG_PROVIDEFLAGS;
-	    he->t = RPM_UINT32_TYPE;
-	    he->p.ui32p = &fdummy;
-	    he->c = 1;
-	    xx = hae(h, he, 0);
-	}
-	goto exit;
-    }
-
-    he->tag = RPMTAG_PROVIDEFLAGS;
-    xx = hge(h, he, 0);
-    provideFlags = he->p.i32p;
-
-    /*@-nullderef@*/	/* LCL: providesEVR is not NULL */
-    if (provides && providesEVR && provideFlags)
-    for (i = 0; i < providesCount; i++) {
-        if (!(provides[i] && providesEVR[i]))
-            continue;
-	if (!(provideFlags[i] == RPMSENSE_EQUAL &&
-	    !strcmp(N, provides[i]) && !strcmp(pEVR, providesEVR[i])))
-	    continue;
-	bingo = 0;
-	break;
-    }
-    /*@=nullderef@*/
-
-exit:
-    provides = _free(provides);
-    providesEVR = _free(providesEVR);
-    provideFlags = _free(provideFlags);
-
-    if (bingo) {
-	he->tag = RPMTAG_PROVIDENAME;
-	he->t = RPM_STRING_ARRAY_TYPE;
-	he->p.argv = N;
-	he->c = 1;
-	he->append = 1;
-	xx = hae(h, he, 0);
-	he->append = 0;
-
-	he->tag = RPMTAG_PROVIDEVERSION;
-	he->t = RPM_STRING_ARRAY_TYPE;
-	he->p.argv = pEVR;
-	he->c = 1;
-	he->append = 1;
-	xx = hae(h, he, 0);
-	he->append = 0;
-
-	he->tag = RPMTAG_PROVIDEFLAGS;
-	he->t = RPM_UINT32_TYPE;
-	he->p.ui32p = pFlags;
-	he->c = 1;
-	he->append = 1;
-	xx = hae(h, he, 0);
-	he->append = 0;
-    }
-}
-#endif	/* SUPPORT_RPMV3_PROVIDE_SELF */
-
 /** \ingroup python
  * \name Class: Rpmhdr
  */
@@ -795,9 +670,6 @@ PyObject * hdrLoad(PyObject * self, PyObject * args, PyObject * kwds)
 	return NULL;
     }
     headerAllocated(h);
-#if defined(SUPPORT_RPMV3_PROVIDE_SELF)
-    providePackageNVR (h);
-#endif	/* SUPPORT_RPMV3_PROVIDE_SELF */
 
     hdr = hdr_Wrap(h);
     h = headerFree(h);	/* XXX ref held by hdr */
@@ -824,9 +696,6 @@ PyObject * rpmReadHeaders (FD_t fd)
     Py_END_ALLOW_THREADS
 
     while (h) {
-#if defined(SUPPORT_RPMV3_PROVIDE_SELF)
-	providePackageNVR(h);
-#endif	/* SUPPORT_RPMV3_PROVIDE_SELF */
 	hdr = hdr_Wrap(h);
 	if (PyList_Append(list, (PyObject *) hdr)) {
 	    Py_DECREF(list);
