@@ -756,13 +756,8 @@ assert(0);
     (void) rpmAddSignature(sigh, sigtarget, RPMSIGTAG_SIZE, passPhrase);
     (void) rpmAddSignature(sigh, sigtarget, RPMSIGTAG_MD5, passPhrase);
 
-#if defined(SUPPORT_PGP_SIGNING)
-    sigtag = rpmLookupSignatureType(RPMLOOKUPSIG_QUERY);
-    addsig = (sigtag > 0);
-#else
     sigtag = RPMSIGTAG_GPG;
     addsig = 0;	/* XXX breaks --sign */
-#endif
 
     if (addsig) {
 	rpmlog(RPMLOG_NOTICE, _("Generating signature: %d\n"), sigtag);

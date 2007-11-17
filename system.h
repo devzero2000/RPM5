@@ -740,13 +740,6 @@ static inline const char *rcsid(const char *p) { \
 #define	SUPPORT_RPMLEAD		0	/* XXX default is add lead. */
 
 /**
- * Turn off pgp/pgp5 signing (hasn't been looked at seriously for years).
- */
-#if 0
-#define	SUPPORT_PGP_SIGNING	1
-#endif
-
-/**
  * Mark --initdb and --verifydb for destruction.
  */
 #define	SUPPORT_INITDB		1

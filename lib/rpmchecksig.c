@@ -337,13 +337,9 @@ if (sigh != NULL) {
 	    xx = hre(sigh, he, 0);
 	} else {		/* If gpg/pgp is configured, replace the signature. */
 	  int addsig = 0;
-#if defined(SUPPORT_PGP_SIGNING)
-	  sigtag = rpmLookupSignatureType(RPMLOOKUPSIG_QUERY);
-	  addsig = (sigtag > 0);
-#else
 	  sigtag = RPMSIGTAG_GPG;
 	  addsig = 1;
-#endif
+
 	  if (addsig) {
 	    unsigned char oldsignid[8], newsignid[8];
 

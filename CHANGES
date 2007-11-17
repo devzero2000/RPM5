@@ -1,4 +1,5 @@
 5.0a1 -> 5.0a2:
+    - jbj: Eliminate SUPPORT_PGP_SIGNING signing with pgp/pgp5 code.
     - jbj: Eliminate SUPPORT_RPMV3_BORKEN busted md5 digest tag code.
     - jbj: revert the noisy tag data type validation. explicit typing for 5.0.
     - jbj: add HEADERFLAG_SIGNATURE, revert he->signature access markers.
