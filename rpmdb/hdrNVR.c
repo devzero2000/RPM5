@@ -242,22 +242,9 @@ void headerMergeLegacySigs(Header h, const Header sigh)
 	case RPMSIGTAG_SIZE:
 	    he->tag = RPMTAG_SIGSIZE;
 	    /*@switchbreak@*/ break;
-#if defined(SUPPORT_RPMV3_VERIFY_RSA)
-	case RPMSIGTAG_PGP:
-	    he->tag = RPMTAG_SIGPGP;
-	    /*@switchbreak@*/ break;
-	case RPMSIGTAG_PGP5:
-	    he->tag = RPMTAG_SIGPGP5;
-	    /*@switchbreak@*/ break;
-#endif
 	case RPMSIGTAG_MD5:
 	    he->tag = RPMTAG_SIGMD5;
 	    /*@switchbreak@*/ break;
-#if defined(SUPPORT_RPMV3_VERIFY_DSA)
-	case RPMSIGTAG_GPG:
-	    he->tag = RPMTAG_SIGGPG;
-	    /*@switchbreak@*/ break;
-#endif
 	case RPMSIGTAG_PAYLOADSIZE:
 	    he->tag = RPMTAG_ARCHIVESIZE;
 	    /*@switchbreak@*/ break;
@@ -322,22 +309,9 @@ Header headerRegenSigHeader(const Header h, int noArchiveSize)
 	case RPMTAG_SIGSIZE:
 	    he->tag = RPMSIGTAG_SIZE;
 	    /*@switchbreak@*/ break;
-#if defined(SUPPORT_RPMV3_VERIFY_RSA)
-	case RPMTAG_SIGPGP:
-	    he->tag = RPMSIGTAG_PGP;
-	    /*@switchbreak@*/ break;
-	case RPMTAG_SIGPGP5:
-	    he->tag = RPMSIGTAG_PGP5;
-	    /*@switchbreak@*/ break;
-#endif
 	case RPMTAG_SIGMD5:
 	    he->tag = RPMSIGTAG_MD5;
 	    /*@switchbreak@*/ break;
-#if defined(SUPPORT_RPMV3_VERIFY_DSA)
-	case RPMTAG_SIGGPG:
-	    he->tag = RPMSIGTAG_GPG;
-	    /*@switchbreak@*/ break;
-#endif
 	case RPMTAG_ARCHIVESIZE:
 	    /* XXX rpm-4.1 and later has archive size in signature header. */
 	    if (noArchiveSize)

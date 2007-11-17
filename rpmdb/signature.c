@@ -757,12 +757,7 @@ assert(sigp != NULL);
     /* Verify the desired signature match. */
     switch (sigp->pubkey_algo) {
     case PGPPUBKEYALGO_RSA:
-	if (sigtag == RPMSIGTAG_RSA
-#if defined(SUPPORT_RPMV3_VERIFY_RSA)
-	 || sigtag == RPMSIGTAG_PGP
-	 || sigtag == RPMSIGTAG_PGP5
-#endif
-	)
+	if (sigtag == RPMSIGTAG_RSA)
 	    break;
 	/*@fallthrough@*/
     default:
@@ -952,12 +947,7 @@ assert(sigp != NULL);
     }
 
     /* XXX sanity check on sigtag and signature agreement. */
-    if (!(
-#if defined(SUPPORT_RPMV3_VERIFY_DSA)
-	(sigtag == RPMSIGTAG_GPG || sigtag == RPMSIGTAG_DSA)
-#else
-	(sigtag == RPMSIGTAG_DSA)
-#endif
+    if (!(sigtag == RPMSIGTAG_DSA
     	&& sigp->pubkey_algo == PGPPUBKEYALGO_DSA
     	&& sigp->hash_algo == PGPHASHALGO_SHA1))
     {
@@ -1055,22 +1045,9 @@ rpmVerifySignature(void * _dig, char * result)
     case RPMSIGTAG_RSA:
 	res = verifyRSASignature(dig, result, dig->hdrmd5ctx);
 	break;
-#if defined(SUPPORT_RPMV3_VERIFY_RSA)
-    case RPMSIGTAG_PGP5:	/* XXX legacy */
-    case RPMSIGTAG_PGP:
-	res = verifyRSASignature(dig, result,
-		((dig->signature.hash_algo == PGPHASHALGO_MD5)
-			? dig->md5ctx : dig->sha1ctx));
-	break;
-#endif
     case RPMSIGTAG_DSA:
 	res = verifyDSASignature(dig, result, dig->hdrsha1ctx);
 	break;
-#if defined(SUPPORT_RPMV3_VERIFY_DSA)
-    case RPMSIGTAG_GPG:
-	res = verifyDSASignature(dig, result, dig->sha1ctx);
-	break;
-#endif
     default:
 	sprintf(result, _("Signature: UNKNOWN (%u)\n"), (unsigned)sigtag);
 	res = RPMRC_NOTFOUND;

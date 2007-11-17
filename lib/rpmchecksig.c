@@ -953,14 +953,6 @@ nodigests = 1;
 		she->tag = RPMSIGTAG_DSA;
 	    else if (headerIsEntry(sigh, RPMSIGTAG_RSA))
 		she->tag = RPMSIGTAG_RSA;
-#if defined(SUPPORT_RPMV3_VERIFY_DSA)
-	    else if (headerIsEntry(sigh, RPMSIGTAG_GPG))
-		she->tag = RPMSIGTAG_GPG;
-#endif
-#if defined(SUPPORT_RPMV3_VERIFY_RSA)
-	    else if (headerIsEntry(sigh, RPMSIGTAG_PGP))
-		she->tag = RPMSIGTAG_PGP;
-#endif
 	}
 	if (she->tag == 0 && !nodigests) {
 	    if (headerIsEntry(sigh, RPMSIGTAG_MD5))
@@ -974,36 +966,15 @@ assert(dig != NULL);
 	sigp = pgpGetSignature(dig);
 
 	/* XXX RSA needs the hash_algo, so decode early. */
-	if (she->tag == RPMSIGTAG_RSA
-#if defined(SUPPORT_RPMV3_VERIFY_RSA)
-	 || she->tag == RPMSIGTAG_PGP
-	 || she->tag == RPMSIGTAG_PGP5
-#endif
-	) {
+	if (she->tag == RPMSIGTAG_RSA) {
 	    he->tag = she->tag;
 	    xx = hge(sigh, he, 0);
 	    xx = pgpPrtPkts(he->p.ptr, he->c, dig, 0);
 	    he->p.ptr = _free(he->p.ptr);
-#if defined(SUPPORT_RPMV3_VERIFY_RSA)
-	    /* XXX assume same hash_algo in header-only and header+payload */
-	    if ((headerIsEntry(sigh, RPMSIGTAG_PGP)
-	      || headerIsEntry(sigh, RPMSIGTAG_PGP5))
-	     && dig->signature.hash_algo != PGPHASHALGO_MD5)
-		fdInitDigest(fd, dig->signature.hash_algo, 0);
-#endif
 	}
 
-	if (headerIsEntry(sigh, RPMSIGTAG_MD5)
-#if defined(SUPPORT_RPMV3_VERIFY_RSA)
-	 || headerIsEntry(sigh, RPMSIGTAG_PGP)
-	 || headerIsEntry(sigh, RPMSIGTAG_PGP5)
-#endif
-	)
+	if (headerIsEntry(sigh, RPMSIGTAG_MD5))
 	    fdInitDigest(fd, PGPHASHALGO_MD5, 0);
-#if defined(SUPPORT_RPMV3_VERIFY_DSA)
-	if (headerIsEntry(sigh, RPMSIGTAG_GPG))
-	    fdInitDigest(fd, PGPHASHALGO_SHA1, 0);
-#endif
 
 	/* Read the file, generating digest(s) on the fly. */
 	if (dig == NULL || sigp == NULL
@@ -1038,13 +1009,6 @@ assert(she->p.ptr != NULL);
 	    switch (she->tag) {
 	    case RPMSIGTAG_RSA:
 	    case RPMSIGTAG_DSA:
-#if defined(SUPPORT_RPMV3_VERIFY_DSA)
-	    case RPMSIGTAG_GPG:
-#endif
-#if defined(SUPPORT_RPMV3_VERIFY_RSA)
-	    case RPMSIGTAG_PGP5:	/* XXX legacy */
-	    case RPMSIGTAG_PGP:
-#endif
 		if (nosignatures)
 		     continue;
 		xx = pgpPrtPkts(she->p.ptr, she->c, dig,
@@ -1068,14 +1032,6 @@ assert(she->p.ptr != NULL);
 	    case RPMSIGTAG_MD5:
 		if (nodigests)
 		     continue;
-#if defined(SUPPORT_RPMV3_VERIFY_RSA)
-		/*
-		 * Don't bother with md5 if pgp, as RSA/MD5 is more reliable
-		 * than the -- now unsupported -- legacy md5 breakage.
-		 */
-		if (!nosignatures && she->tag == RPMSIGTAG_PGP)
-		    continue;
-#endif
 		/*@switchbreak@*/ break;
 	    default:
 		continue;
@@ -1090,9 +1046,6 @@ assert(she->p.ptr != NULL);
 		    b = stpcpy(b, result);
 		    res2 = 1;
 		} else {
-#if defined(SUPPORT_RPMV3_VERIFY_RSA) || defined(SUPPORT_RPMV3_VERIFY_DSA)
-		    char *tempKey;
-#endif
 		    switch (she->tag) {
 		    case RPMSIGTAG_SIZE:
 			b = stpcpy(b, "SIZE ");
@@ -1110,65 +1063,10 @@ assert(she->p.ptr != NULL);
 			b = stpcpy(b, "RSA ");
 			res2 = 1;
 			/*@switchbreak@*/ break;
-#if defined(SUPPORT_RPMV3_VERIFY_RSA)
-		    case RPMSIGTAG_PGP5:	/* XXX legacy */
-		    case RPMSIGTAG_PGP:
-			switch (res3) {
-			case RPMRC_NOKEY:
-			    res2 = 1;
-			    /*@fallthrough@*/
-			case RPMRC_NOTTRUSTED:
-			{   int offset = 6;
-			    b = stpcpy(b, "(MD5) (PGP) ");
-			    tempKey = strstr(result, "ey ID");
-			    if (tempKey == NULL) {
-			        tempKey = strstr(result, "keyid:");
-				offset = 9;
-			    }
-			    if (tempKey) {
-			      if (res3 == RPMRC_NOKEY) {
-				m = stpcpy(m, " PGP#");
-				m = stpncpy(m, tempKey + offset, 8);
-				*m = '\0';
-			      } else {
-			        u = stpcpy(u, " PGP#");
-				u = stpncpy(u, tempKey + offset, 8);
-				*u = '\0';
-			      }
-			    }
-			}   /*@innerbreak@*/ break;
-			default:
-			    b = stpcpy(b, "MD5 PGP ");
-			    res2 = 1;
-			    /*@innerbreak@*/ break;
-			}
-			/*@switchbreak@*/ break;
-#endif
 		    case RPMSIGTAG_DSA:
 			b = stpcpy(b, "(SHA1) DSA ");
 			res2 = 1;
 			/*@switchbreak@*/ break;
-#if defined(SUPPORT_RPMV3_VERIFY_DSA)
-		    case RPMSIGTAG_GPG:
-			/* Do not consider this a failure */
-			switch (res3) {
-			case RPMRC_NOKEY:
-			    b = stpcpy(b, "(GPG) ");
-			    m = stpcpy(m, " GPG#");
-			    tempKey = strstr(result, "ey ID");
-			    if (tempKey) {
-				m = stpncpy(m, tempKey+6, 8);
-				*m = '\0';
-			    }
-			    res2 = 1;
-			    /*@innerbreak@*/ break;
-			default:
-			    b = stpcpy(b, "GPG ");
-			    res2 = 1;
-			    /*@innerbreak@*/ break;
-			}
-			/*@switchbreak@*/ break;
-#endif
 		    default:
 			b = stpcpy(b, "?UnknownSignatureType? ");
 			res2 = 1;
@@ -1193,20 +1091,9 @@ assert(she->p.ptr != NULL);
 		    case RPMSIGTAG_RSA:
 			b = stpcpy(b, "rsa ");
 			/*@switchbreak@*/ break;
-#if defined(SUPPORT_RPMV3_VERIFY_RSA)
-		    case RPMSIGTAG_PGP5:	/* XXX legacy */
-		    case RPMSIGTAG_PGP:
-			b = stpcpy(b, "(md5) pgp ");
-			/*@switchbreak@*/ break;
-#endif
 		    case RPMSIGTAG_DSA:
 			b = stpcpy(b, "(sha1) dsa ");
 			/*@switchbreak@*/ break;
-#if defined(SUPPORT_RPMV3_VERIFY_DSA)
-		    case RPMSIGTAG_GPG:
-			b = stpcpy(b, "gpg ");
-			/*@switchbreak@*/ break;
-#endif
 		    default:
 			b = stpcpy(b, "??? ");
 			/*@switchbreak@*/ break;

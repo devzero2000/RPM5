@@ -176,24 +176,6 @@ if (!_nosigh) {
     if (_chk(RPMVSF_NORSAHEADER) && headerIsEntry(sigh, RPMSIGTAG_RSA)) {
 	she->tag = RPMSIGTAG_RSA;
     } else
-#if defined(SUPPORT_RPMV3_VERIFY_DSA)
-    if (_chk(RPMVSF_NODSA|RPMVSF_NEEDPAYLOAD) &&
-	headerIsEntry(sigh, RPMSIGTAG_GPG))
-    {
-	she->tag = RPMSIGTAG_GPG;
-	fdInitDigest(fd, PGPHASHALGO_SHA1, 0);
-	opx = RPMTS_OP_SIGNATURE;
-    } else
-#endif
-#if defined(SUPPORT_RPMV3_VERIFY_RSA)
-    if (_chk(RPMVSF_NORSA|RPMVSF_NEEDPAYLOAD) &&
-	headerIsEntry(sigh, RPMSIGTAG_PGP))
-    {
-	she->tag = RPMSIGTAG_PGP;
-	fdInitDigest(fd, PGPHASHALGO_MD5, 0);
-	opx = RPMTS_OP_SIGNATURE;
-    } else
-#endif
     if (_chk(RPMVSF_NOSHA1HEADER) && headerIsEntry(sigh, RPMSIGTAG_SHA1)) {
 	she->tag = RPMSIGTAG_SHA1;
     } else
@@ -330,26 +312,6 @@ assert(dig != NULL);
 	    op->count--;	/* XXX one too many */
 	uh = _free(uh);
     }	break;
-#if defined(SUPPORT_RPMV3_VERIFY_DSA) || defined(SUPPORT_RPMV3_VERIFY_RSA)
-#if defined(SUPPORT_RPMV3_VERIFY_DSA)
-    case RPMSIGTAG_GPG:
-#endif
-#if defined(SUPPORT_RPMV3_VERIFY_RSA)
-    case RPMSIGTAG_PGP5:	/* XXX legacy */
-    case RPMSIGTAG_PGP:
-#endif
-	/* Parse the parameters from the OpenPGP packets that will be needed. */
-	xx = pgpPrtPkts(she->p.ptr, she->c, dig, (_print_pkts & rpmIsDebug()));
-
-	if (dig->signature.version != 3 && dig->signature.version != 4) {
-	    rpmlog(RPMLOG_ERR,
-		_("skipping package %s with unverifiable V%u signature\n"),
-		fn, dig->signature.version);
-	    rc = RPMRC_FAIL;
-	    goto exit;
-	}
-	/*@fallthrough@*/
-#endif
     case RPMSIGTAG_MD5:
 	/* Legacy signatures need the compressed payload in the digest too. */
 	op = pgpStatsAccumulator(dig, 10);	/* RPMTS_OP_DIGEST */

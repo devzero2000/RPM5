@@ -732,8 +732,6 @@ static inline const char *rcsid(const char *p) { \
 #define	SUPPORT_RPMV3_BASENAMES_HACKS	1
 #define	SUPPORT_RPMV3_PROVIDE_SELF	1
 #endif
-#define SUPPORT_RPMV3_VERIFY_RSA	1
-#define SUPPORT_RPMV3_VERIFY_DSA	1
 
 #define	SUPPORT_RPMLEAD		0	/* XXX default is add lead. */
 
