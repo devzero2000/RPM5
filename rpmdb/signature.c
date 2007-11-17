@@ -268,24 +268,13 @@ static int makeGPGSignature(const char * file, uint32_t * sigTagp,
 
     /* Identify the type of signature being returned. */
     switch (*sigTagp) {
+    default:
+assert(0);	/* XXX never happens. */
+	/*@notreached@*/ break;
     case RPMSIGTAG_SIZE:
     case RPMSIGTAG_MD5:
     case RPMSIGTAG_SHA1:
 	break;
-#if defined(SUPPORT_RPMV3_SIGN_DSA) || defined(SUPPORT_RPMV3_SIGN_RSA)
-    case RPMSIGTAG_GPG:
-	/* XXX check hash algorithm too? */
-	if (sigp->pubkey_algo == PGPPUBKEYALGO_RSA)
-	    *sigTagp = RPMSIGTAG_PGP;
-	break;
-#endif
-#if defined(SUPPORT_RPMV3_SIGN_DSA) || defined(SUPPORT_RPMV3_SIGN_RSA)
-    case RPMSIGTAG_PGP5:	/* XXX legacy */
-    case RPMSIGTAG_PGP:
-	if (sigp->pubkey_algo == PGPPUBKEYALGO_DSA)
-	    *sigTagp = RPMSIGTAG_GPG;
-	break;
-#endif
     case RPMSIGTAG_DSA:
 	/* XXX check hash algorithm too? */
 	if (sigp->pubkey_algo == PGPPUBKEYALGO_RSA)
@@ -427,6 +416,9 @@ int rpmAddSignature(Header sigh, const char * file, uint32_t sigTag,
     int xx;
 
     switch (sigTag) {
+    default:
+assert(0);	/* XXX never happens. */
+	/*@notreached@*/ break;
     case RPMSIGTAG_SIZE:
 	if (Stat(file, &st) != 0)
 	    break;
@@ -441,7 +433,7 @@ int rpmAddSignature(Header sigh, const char * file, uint32_t sigTag,
 	ret = 0;
 	break;
     case RPMSIGTAG_MD5:
-	pktlen = 16;
+	pktlen = 128/8;
 	pkt = memset(alloca(pktlen), 0, pktlen);
 	if (dodigest(PGPHASHALGO_MD5, file, (unsigned char *)pkt, 0, NULL))
 	    break;
@@ -455,18 +447,6 @@ int rpmAddSignature(Header sigh, const char * file, uint32_t sigTag,
 	ret = 0;
 	break;
     case RPMSIGTAG_GPG:
-#if defined(SUPPORT_RPMV3_SIGN_DSA)
-	if (makeGPGSignature(file, &sigTag, &pkt, &pktlen, passPhrase))
-	    break;
-	he->tag = sigTag;
-	he->t = RPM_BIN_TYPE;
-	he->p.ptr = pkt;
-	he->c = pktlen;
-	xx = hae(sigh, he, 0);
-	if (!xx)
-	    break;
-	/* XXX Piggyback a header-only DSA signature as well. */
-#endif
 	ret = makeHDRSignature(sigh, file, RPMSIGTAG_DSA, passPhrase);
 	break;
     case RPMSIGTAG_RSA:
