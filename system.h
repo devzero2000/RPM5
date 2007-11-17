@@ -725,15 +725,7 @@ static inline const char *rcsid(const char *p) { \
 #include <search.h>
 #endif
 
-/**
- * Phase out RPMv3 header+payload issues.
- */
-#if 0
-#define	SUPPORT_RPMV3_BASENAMES_HACKS	1
-#define	SUPPORT_RPMV3_PROVIDE_SELF	1
-#endif
-
-#define	SUPPORT_RPMLEAD		0	/* XXX default is add lead. */
+#define	SUPPORT_RPMLEAD		1	/* XXX default is add lead. */
 
 /**
  * Mark --initdb and --verifydb for destruction.

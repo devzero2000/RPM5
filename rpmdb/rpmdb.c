@@ -3113,10 +3113,6 @@ DBT * data = alloca(sizeof(*data));
 #endif
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     sigset_t signalMask;
-#if defined(SUPPORT_RPMV3_BASENAMES_HACKS)
-    const char ** baseNames;
-    int count = 0;
-#endif
     const char ** dirNames;
     uint32_t * dirIndexes;
     dbiIndex dbi;
@@ -3161,18 +3157,6 @@ memset(data, 0, sizeof(*data));
 	xx = hae(h, he, 0);
     }
 
-#if defined(SUPPORT_RPMV3_BASENAMES_HACKS)
-    /*
-     * If old style filename tags is requested, the basenames need to be
-     * retrieved early, and the header needs to be converted before
-     * being written to the package header database.
-     */
-
-    he->tag = RPMTAG_BASENAMES;
-    xx = hge(h, he, 0);
-    baseNames = he->p.argv;
-    count = he->c;
-#endif
     he->tag = RPMTAG_DIRNAMES;
     xx = hge(h, he, 0);
     dirNames = he->p.argv;
@@ -3342,13 +3326,6 @@ data->size = 0;
 		    xx = dbiSync(dbi, 0);
 		continue;
 		/*@notreached@*/ /*@switchbreak@*/ break;
-#if defined(SUPPORT_RPMV3_BASENAMES_HACKS)
-	    case RPMTAG_BASENAMES:
-		he->t = RPM_STRING_ARRAY_TYPE;
-		he->p.argv = baseNames;	baseNames = NULL;
-		he->c = count;
-		/*@switchbreak@*/ break;
-#endif
 	    case RPMTAG_REQUIRENAME:
 		he->tag = RPMTAG_REQUIREFLAGS;
 		xx = hge(h, he, 0);
@@ -3572,9 +3549,6 @@ if (key->size == 0) key->size++;	/* XXX "/" fixup. */
 
 exit:
     (void) unblockSignals(db, &signalMask);
-#if defined(SUPPORT_RPMV3_BASENAMES_HACKS)
-    baseNames = _free(baseNames);
-#endif
     dirIndexes = _free(dirIndexes);
     dirNames = _free(dirNames);
 

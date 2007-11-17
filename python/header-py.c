@@ -153,194 +153,6 @@ struct hdrObject_s {
     return 0;
 }
 
-#if defined(SUPPORT_RPMV3_BASENAMES_HACKS)
-/*@-boundsread@*/
-static int dncmp(const void * a, const void * b)
-	/*@*/
-{
-    const char *const * first = a;
-    const char *const * second = b;
-    return strcmp(*first, *second);
-}
-/*@=boundsread@*/
-
-/**
- * Convert (dirname,basename,dirindex) tags to absolute path tag.
- * @param h		header
- */
-static void expandFilelist(Header h)
-        /*@modifies h @*/
-{
-    HGE_t hge = headerGetExtension;
-    HAE_t hae = headerAddExtension;
-    HRE_t hre = headerRemoveExtension;
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
-    int xx;
-
-    /*@-branchstate@*/
-    if (!headerIsEntry(h, RPMTAG_OLDFILENAMES)) {
-	he->tag = RPMTAG_FILEPATHS;
-	xx = hge(h, he, 0);
-	if (he->p.ptr == NULL || he->c <= 0)
-	    return;
-	he->tag = RPMTAG_OLDFILENAMES;
-	xx = hae(h, he, 0);
-	he->p.ptr = _free(he->p.ptr);
-    }
-    /*@=branchstate@*/
-
-    he->tag = RPMTAG_DIRNAMES;
-    xx = hre(h, he, 0);
-    he->tag = RPMTAG_BASENAMES;
-    xx = hre(h, he, 0);
-    he->tag = RPMTAG_DIRINDEXES;
-    xx = hre(h, he, 0);
-}
-
-/*@-bounds@*/
-/**
- * Convert absolute path tag to (dirname,basename,dirindex) tags.
- * @param h             header
- */
-static void compressFilelist(Header h)
-	/*@modifies h @*/
-{
-    HGE_t hge = headerGetExtension;
-    HAE_t hae = headerAddExtension;
-    HRE_t hre = headerRemoveExtension;
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
-    const char ** fileNames;
-    const char ** dirNames;
-    const char ** baseNames;
-    uint32_t * dirIndexes;
-    uint32_t count;
-    int dirIndex = -1;
-    int xx;
-    int i;
-
-    /*
-     * This assumes the file list is already sorted, and begins with a
-     * single '/'. That assumption isn't critical, but it makes things go
-     * a bit faster.
-     */
-
-    if (headerIsEntry(h, RPMTAG_DIRNAMES)) {
-	he->tag = RPMTAG_OLDFILENAMES;
-	xx = hre(h, he, 0);
-	return;		/* Already converted. */
-    }
-
-    he->tag = RPMTAG_OLDFILENAMES;
-    xx = hge(h, he, 0);
-    fileNames = he->p.argv;
-    count = he->c;
-    if (!xx || fileNames == NULL || count <= 0)
-	return;		/* no file list */
-
-    dirNames = alloca(sizeof(*dirNames) * count);	/* worst case */
-    baseNames = alloca(sizeof(*dirNames) * count);
-    dirIndexes = alloca(sizeof(*dirIndexes) * count);
-
-    if (fileNames[0][0] != '/') {
-	/* HACK. Source RPM, so just do things differently */
-	dirIndex = 0;
-	dirNames[dirIndex] = "";
-	for (i = 0; i < count; i++) {
-	    dirIndexes[i] = dirIndex;
-	    baseNames[i] = fileNames[i];
-	}
-	goto exit;
-    }
-
-    /*@-branchstate@*/
-    for (i = 0; i < count; i++) {
-	const char ** needle;
-	char savechar;
-	char * baseName;
-	int len;
-
-	if (fileNames[i] == NULL)	/* XXX can't happen */
-	    continue;
-	baseName = strrchr(fileNames[i], '/') + 1;
-	len = baseName - fileNames[i];
-	needle = dirNames;
-	savechar = *baseName;
-	*baseName = '\0';
-/*@-compdef@*/
-	if (dirIndex < 0 ||
-	    (needle = bsearch(&fileNames[i], dirNames, dirIndex + 1, sizeof(dirNames[0]), dncmp)) == NULL) {
-	    char *s = alloca(len + 1);
-	    memcpy(s, fileNames[i], len + 1);
-	    s[len] = '\0';
-	    dirIndexes[i] = ++dirIndex;
-	    dirNames[dirIndex] = s;
-	} else
-	    dirIndexes[i] = needle - dirNames;
-/*@=compdef@*/
-
-	*baseName = savechar;
-	baseNames[i] = baseName;
-    }
-    /*@=branchstate@*/
-
-exit:
-    if (count > 0) {
-	he->tag = RPMTAG_DIRINDEXES;
-	he->t = RPM_UINT32_TYPE;
-	he->p.ui32p = dirIndexes;
-	he->c = count;
-	xx = hae(h, he, 0);
-
-	he->tag = RPMTAG_DIRINDEXES;
-	he->t = RPM_STRING_ARRAY_TYPE;
-	he->p.argv = baseNames;
-	he->c = count;
-	xx = hae(h, he, 0);
-
-	he->tag = RPMTAG_DIRNAMES;
-	he->t = RPM_STRING_ARRAY_TYPE;
-	he->p.argv = dirNames;
-	he->c = dirIndex + 1;
-	xx = hae(h, he, 0);
-    }
-
-    fileNames = _free(fileNames);
-
-    he->tag = RPMTAG_OLDFILENAMES;
-    xx = hre(h, he, 0);
-}
-/*@=bounds@*/
-
-/* make a header with _all_ the tags we need */
-/**
- */
-static void mungeFilelist(Header h)
-	/*@*/
-{
-    HGE_t hge = headerGetExtension;
-    HAE_t hae = headerAddExtension;
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
-    int xx;
-
-    if (!headerIsEntry (h, RPMTAG_BASENAMES)
-	|| !headerIsEntry (h, RPMTAG_DIRNAMES)
-	|| !headerIsEntry (h, RPMTAG_DIRINDEXES))
-	compressFilelist(h);
-
-    he->tag = RPMTAG_FILEPATHS;
-    xx = hge(h, he, 0);
-
-    if (he->p.ptr == NULL || he->c <= 0)
-	return;
-
-    /* XXX Legacy tag needs to go away. */
-    he->tag = RPMTAG_OLDFILENAMES;
-    xx = hae(h, he, 0);
-
-    he->p.ptr = _free(he->p.ptr);
-}
-#endif	/* SUPPORT_RPMV3_BASENAMES_HACKS */
-
 #if defined(SUPPORT_RPMV3_PROVIDE_SELF)
 /**
  * Retrofit an explicit Provides: N = E:V-R dependency into package headers.
@@ -547,41 +359,6 @@ static PyObject * hdrUnload(hdrObject * s, PyObject * args, PyObject *keywords)
     return rc;
 }
 
-#if defined(SUPPORT_RPMV3_BASENAMES_HACKS)
-/**
- */
-static PyObject * hdrExpandFilelist(hdrObject * s)
-	/*@*/
-{
-    expandFilelist (s->h);
-
-    Py_INCREF(Py_None);
-    return Py_None;
-}
-
-/**
- */
-static PyObject * hdrCompressFilelist(hdrObject * s)
-	/*@*/
-{
-    compressFilelist (s->h);
-
-    Py_INCREF(Py_None);
-    return Py_None;
-}
-
-/**
- */
-static PyObject * hdrFullFilelist(hdrObject * s)
-	/*@*/
-{
-    mungeFilelist (s->h);
-
-    Py_INCREF(Py_None);
-    return Py_None;
-}
-#endif	/* SUPPORT_RPMV3_BASENAMES_HACKS */
-
 /**
  */
 static PyObject * hdrGetOrigin(hdrObject * s)
@@ -651,14 +428,6 @@ static struct PyMethodDef hdr_methods[] = {
 	NULL },
     {"unload",		(PyCFunction) hdrUnload,	METH_VARARGS|METH_KEYWORDS,
 	NULL },
-#if defined(SUPPORT_RPMV3_BASENAMES_HACKS)
-    {"expandFilelist",	(PyCFunction) hdrExpandFilelist,METH_NOARGS,
-	NULL },
-    {"compressFilelist",(PyCFunction) hdrCompressFilelist,METH_NOARGS,
-	NULL },
-    {"fullFilelist",	(PyCFunction) hdrFullFilelist,	METH_NOARGS,
-	NULL },
-#endif	/* SUPPORT_RPMV3_BASENAMES_HACKS */
     {"getorigin",	(PyCFunction) hdrGetOrigin,	METH_NOARGS,
 	NULL },
     {"setorigin",	(PyCFunction) hdrSetOrigin,	METH_NOARGS,
@@ -1026,9 +795,6 @@ PyObject * hdrLoad(PyObject * self, PyObject * args, PyObject * kwds)
 	return NULL;
     }
     headerAllocated(h);
-#if defined(SUPPORT_RPMV3_BASENAMES_HACKS)
-    compressFilelist (h);
-#endif	/* SUPPORT_RPMV3_BASENAMES_HACKS */
 #if defined(SUPPORT_RPMV3_PROVIDE_SELF)
     providePackageNVR (h);
 #endif	/* SUPPORT_RPMV3_PROVIDE_SELF */
@@ -1058,9 +824,6 @@ PyObject * rpmReadHeaders (FD_t fd)
     Py_END_ALLOW_THREADS
 
     while (h) {
-#if defined(SUPPORT_RPMV3_BASENAMES_HACKS)
-	compressFilelist(h);
-#endif	/* SUPPORT_RPMV3_BASENAMES_HACKS */
 #if defined(SUPPORT_RPMV3_PROVIDE_SELF)
 	providePackageNVR(h);
 #endif	/* SUPPORT_RPMV3_PROVIDE_SELF */
