@@ -1069,10 +1069,6 @@ assert(she->p.ptr != NULL);
 		if (!nosignatures && she->tag == RPMSIGTAG_DSA)
 		    continue;
 		/*@switchbreak@*/ break;
-#if defined(SUPPORT_RPMV3_BROKEN)
-	    case RPMSIGTAG_LEMD5_2:
-	    case RPMSIGTAG_LEMD5_1:
-#endif
 	    case RPMSIGTAG_MD5:
 		if (nodigests)
 		     continue;
@@ -1110,10 +1106,6 @@ assert(she->p.ptr != NULL);
 			b = stpcpy(b, "SHA1 ");
 			res2 = 1;
 			/*@switchbreak@*/ break;
-#if defined(SUPPORT_RPMV3_BROKEN)
-		    case RPMSIGTAG_LEMD5_2:
-		    case RPMSIGTAG_LEMD5_1:
-#endif
 		    case RPMSIGTAG_MD5:
 			b = stpcpy(b, "MD5 ");
 			res2 = 1;
@@ -1199,10 +1191,6 @@ assert(she->p.ptr != NULL);
 		    case RPMSIGTAG_SHA1:
 			b = stpcpy(b, "sha1 ");
 			/*@switchbreak@*/ break;
-#if defined(SUPPORT_RPMV3_BROKEN)
-		    case RPMSIGTAG_LEMD5_2:
-		    case RPMSIGTAG_LEMD5_1:
-#endif
 		    case RPMSIGTAG_MD5:
 			b = stpcpy(b, "md5 ");
 			/*@switchbreak@*/ break;

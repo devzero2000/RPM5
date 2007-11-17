@@ -242,14 +242,6 @@ void headerMergeLegacySigs(Header h, const Header sigh)
 	case RPMSIGTAG_SIZE:
 	    he->tag = RPMTAG_SIGSIZE;
 	    /*@switchbreak@*/ break;
-#if defined(SUPPORT_RPMV3_BROKEN)
-	case RPMSIGTAG_LEMD5_1:
-	    he->tag = RPMTAG_SIGLEMD5_1;
-	    /*@switchbreak@*/ break;
-	case RPMSIGTAG_LEMD5_2:
-	    he->tag = RPMTAG_SIGLEMD5_2;
-	    /*@switchbreak@*/ break;
-#endif
 #if defined(SUPPORT_RPMV3_VERIFY_RSA)
 	case RPMSIGTAG_PGP:
 	    he->tag = RPMTAG_SIGPGP;
@@ -330,14 +322,6 @@ Header headerRegenSigHeader(const Header h, int noArchiveSize)
 	case RPMTAG_SIGSIZE:
 	    he->tag = RPMSIGTAG_SIZE;
 	    /*@switchbreak@*/ break;
-#if defined(SUPPORT_RPMV3_BROKEN)
-	case RPMTAG_SIGLEMD5_1:
-	    he->tag = RPMSIGTAG_LEMD5_1;
-	    /*@switchbreak@*/ break;
-	case RPMTAG_SIGLEMD5_2:
-	    he->tag = RPMSIGTAG_LEMD5_2;
-	    /*@switchbreak@*/ break;
-#endif
 #if defined(SUPPORT_RPMV3_VERIFY_RSA)
 	case RPMTAG_SIGPGP:
 	    he->tag = RPMSIGTAG_PGP;

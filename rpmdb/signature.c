@@ -1382,13 +1382,6 @@ rpmVerifySignature(void * _dig, char * result)
 	res = verifyDSASignature(dig, result, dig->sha1ctx);
 	break;
 #endif
-#if defined(SUPPORT_RPMV3_BROKEN)
-    case RPMSIGTAG_LEMD5_1:
-    case RPMSIGTAG_LEMD5_2:
-	sprintf(result, _("Broken MD5 digest: UNSUPPORTED\n"));
-	res = RPMRC_NOTFOUND;
-	break;
-#endif
     default:
 	sprintf(result, _("Signature: UNKNOWN (%u)\n"), (unsigned)sigtag);
 	res = RPMRC_NOTFOUND;
