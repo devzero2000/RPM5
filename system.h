@@ -753,4 +753,9 @@ static inline const char *rcsid(const char *p) { \
 #define	SUPPORT_INITDB		1
 #define	SUPPORT_VERIFYDB	1
 
+/**
+ * Use the tag data type compiled into rpm, not the type from the header.
+ */
+#undef SUPPORT_IMPLICIT_TAG_DATA_TYPES	/* XXX postpone to rpm-5.1 */
+
 #endif	/* H_SYSTEM */

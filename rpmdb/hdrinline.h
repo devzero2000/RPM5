@@ -270,10 +270,12 @@ int headerGetExtension(Header h, HE_t he, /*@unused@*/ unsigned int flags)
     int xx;
     if (h == NULL) return 0;
     xx = (h2hv(h)->hdrext) (h, he->tag, &he->t, &he->p, &he->c);
+#if defined(SUPPORT_IMPLICIT_TAG_DATA_TYPES)
 /*@-modfilesys@*/
-/* XXX verify that explicit and implicit types are identical. */
-if (xx) tagTypeValidate(he);
+    /* XXX verify that explicit and implicit types are identical. */
+    if (xx) tagTypeValidate(he);
 /*@=modfilesys@*/
+#endif
     return xx;
 }
 
@@ -291,10 +293,12 @@ int headerAddExtension(Header h, HE_t he, /*@unused@*/ unsigned int flags)
 	/*@modifies h @*/
 {
     int xx;
+#if defined(SUPPORT_IMPLICIT_TAG_DATA_TYPES)
 /*@-modfilesys@*/
-/* XXX verify that explicit and implicit types are identical. */
-tagTypeValidate(he);
+    /* XXX verify that explicit and implicit types are identical. */
+    tagTypeValidate(he);
 /*@=modfilesys@*/
+#endif
     if (he->append)
 	xx = (h2hv(h)->hdraddorappend) (h, he->tag, he->t, he->p.ptr, he->c);
     else

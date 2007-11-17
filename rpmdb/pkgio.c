@@ -726,6 +726,7 @@ assert(entry->info.offset > 0);	/* XXX insurance */
 	goto exit;
     }
     sigh->flags |= HEADERFLAG_ALLOCATED;
+    sigh->flags |= HEADERFLAG_SIGNATURE;
     if (_newmagic)	/* XXX FIXME: sigh needs its own magic. */
 	(void) headerSetMagic(sigh, sigh_magic, sizeof(sigh_magic));
 
@@ -743,9 +744,7 @@ assert(entry->info.offset > 0);	/* XXX insurance */
 	/* Print package component sizes. */
 
 	he->tag = RPMSIGTAG_SIZE;
-	he->signature = 1;
 	xx = hge(sigh, he, 0);
-	he->signature = 0;
 	if (xx) {
 	    size_t datasize = he->p.ui32p[0];
 	    rc = printSize(fd, sigSize, pad, datasize);

@@ -272,9 +272,7 @@ if (!_nosigh) {
 
 	/* Lose the immutable region (if present). */
 	he->tag = RPMTAG_HEADERSIGNATURES;
-	he->signature = 1;
 	xx = hge(sigh, he, 0);
-	he->signature = 0;
 	if (xx) {
 	    HE_t ohe = memset(alloca(sizeof(*ohe)), 0, sizeof(*ohe));
 	    HeaderIterator hi;
@@ -287,7 +285,6 @@ if (!_nosigh) {
 		goto exit;
 	    }
 
-	    ohe->signature = 1;
 	    oh = headerCopyLoad(he->p.ptr);
 	    for (hi = headerInitExtension(oh);
 		headerNextExtension(hi, ohe, 0);
@@ -299,7 +296,6 @@ if (!_nosigh) {
 	    }
 	    hi = headerFreeIterator(hi);
 	    oh = headerFree(oh);
-	    ohe->signature = 0;
 
 	    sigh = headerFree(sigh);
 	    sigh = headerLink(nh);
@@ -581,24 +577,24 @@ rpmRC rpmcliImportPubkey(const rpmts ts, const unsigned char * pkt, ssize_t pktl
     /* Add Summary/Description/Group. */
     he->tag = RPMTAG_DESCRIPTION;
     he->p.str = d;
-#ifdef	BORKED	/* XXX RPM_I18NSTRING_TYPE fixing. */
-    xx = hae(h, he, 0);
-#else
+#if defined(SUPPORT_IMPLICIT_TAG_DATA_TYPES)
     xx = headerAddI18NString(h, he->tag, he->p.ptr, "C");
+#else
+    xx = hae(h, he, 0);
 #endif
     he->tag = RPMTAG_GROUP;
     he->p.str = group;
-#ifdef	BORKED	/* XXX RPM_I18NSTRING_TYPE fixing. */
-    xx = hae(h, he, 0);
-#else
+#if defined(SUPPORT_IMPLICIT_TAG_DATA_TYPES)
     xx = headerAddI18NString(h, he->tag, he->p.ptr, "C");
+#else
+    xx = hae(h, he, 0);
 #endif
     he->tag = RPMTAG_SUMMARY;
     he->p.str = u;
-#ifdef	BORKED	/* XXX RPM_I18NSTRING_TYPE fixing. */
-    xx = hae(h, he, 0);
-#else
+#if defined(SUPPORT_IMPLICIT_TAG_DATA_TYPES)
     xx = headerAddI18NString(h, he->tag, he->p.ptr, "C");
+#else
+    xx = hae(h, he, 0);
 #endif
 
     /* Add a "pubkey" arch/os to avoid missing value NULL ptrs. */
@@ -989,9 +985,7 @@ assert(dig != NULL);
 #endif
 	) {
 	    he->tag = she->tag;
-	    he->signature = 1;
 	    xx = hge(sigh, he, 0);
-	    he->signature = 0;
 	    xx = pgpPrtPkts(he->p.ptr, he->c, dig, 0);
 	    he->p.ptr = _free(he->p.ptr);
 #if defined(SUPPORT_RPMV3_VERIFY_RSA)
@@ -1030,7 +1024,6 @@ assert(dig != NULL);
 	sprintf(b, "%s:%c", fn, (rpmIsVerbose() ? '\n' : ' ') );
 	b += strlen(b);
 
-	she->signature = 1;
 	if (sigh != NULL)
 	for (hi = headerInitExtension(sigh);
 	    headerNextExtension(hi, she, 0) != 0;
@@ -1238,7 +1231,6 @@ assert(she->p.ptr != NULL);
 	    }
 	}
 	hi = headerFreeIterator(hi);
-	she->signature = 0;
 	/* XXX clear the already free'd signature data. */
 /*@-noeffect@*/
 	xx = pgpSetSig(rpmtsDig(ts), 0, 0, NULL, 0);
