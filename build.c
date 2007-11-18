@@ -190,10 +190,10 @@ static int buildForTarget(rpmts ts, const char * arg, BTA_t ba)
 		se += strlen(se);
 	    else
 		se = stpcpy(se, ".");
+	    *se++ = '/';
+	    se += strlen(strcpy(se,basename(strcpy(se, s))));
 	} else
 	    se = stpcpy(se, s);
-	*se++ = '/';
-	se += strlen(basename(strcpy(se, s)));
 	specURL = rpmGetPath(buf, NULL);
 	specut = urlPath(specURL, &specFile);
     }
