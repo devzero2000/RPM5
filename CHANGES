@@ -1,5 +1,6 @@
 5.0a1 -> 5.0a2:
     - jbj: fix: don't add RPMTAG_ARCH to pubkeys, pubkeys cannot be erased.
+    - afb: make devtool %standalone include the required %{_rpmhome}/magic.
     - jbj: fix: handle absolute paths to spec files again.
     - jbj: fix: don't attempt header sanity checks on pubkeys.
     - jbj: fix: don't loop on failed lookup by instance.
