@@ -950,7 +950,7 @@ exit:
 
     /* If no header-only digest/signature, then do simple sanity check. */
     if (info->tag == 0) {
-	xx = headerVerifyInfo(ril-1, dl, pe+1, &entry->info, 0);
+	xx = (ril > 0 ? headerVerifyInfo(ril-1, dl, pe+1, &entry->info, 0) : -1);
 	if (xx != -1) {
 	    (void) snprintf(buf, sizeof(buf),
 		_("tag[%d]: BAD, tag %u type %u offset %d count %u\n"),
