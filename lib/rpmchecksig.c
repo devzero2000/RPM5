@@ -593,6 +593,7 @@ rpmRC rpmcliImportPubkey(const rpmts ts, const unsigned char * pkt, ssize_t pktl
     xx = hae(h, he, 0);
 #endif
 
+#ifdef	NOTYET	/* XXX can't erase pubkeys with "pubkey" arch. */
     /* Add a "pubkey" arch/os to avoid missing value NULL ptrs. */
     he->tag = RPMTAG_ARCH;
     he->p.str = "pubkey";
@@ -600,6 +601,7 @@ rpmRC rpmcliImportPubkey(const rpmts ts, const unsigned char * pkt, ssize_t pktl
     he->tag = RPMTAG_OS;
     he->p.str = "pubkey";
     xx = hae(h, he, 0);
+#endif
 
     he->tag = RPMTAG_LICENSE;
     he->p.str = license;
