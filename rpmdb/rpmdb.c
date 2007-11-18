@@ -2457,8 +2457,12 @@ assert(data->data != NULL);
 	    }
 
 	    /* Skip damaged and inconsistent headers. */
-	    if (rpmrc == RPMRC_FAIL)
+	    if (rpmrc == RPMRC_FAIL) {
+		/* XXX Terminate immediately on failed lookup by instance. */
+		if (mi->mi_set == NULL && mi->mi_keyp != NULL && mi->mi_keylen == 4)
+		    return NULL;
 		goto top;
+	    }
 	}
     }
 
