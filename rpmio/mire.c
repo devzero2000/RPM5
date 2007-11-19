@@ -3,7 +3,7 @@
  */
 #include "system.h"
 
-#include <rpmerr.h>
+#include <rpmlog.h>
 #define	_MIRE_INTERNAL
 #include <mire.h>
 

@@ -63,7 +63,7 @@ static void doRmSource(Spec spec)
 /*
  * @todo Single use by %%doc in files.c prevents static.
  */
-int doScript(Spec spec, int what, const char *name, StringBuf sb, int test)
+rpmRC doScript(Spec spec, int what, const char *name, StringBuf sb, int test)
 {
     const char * rootURL = spec->rootURL;
     const char * rootDir;
@@ -83,9 +83,10 @@ int doScript(Spec spec, int what, const char *name, StringBuf sb, int test)
 
     FD_t fd;
     FD_t xfd;
-    int child;
+    pid_t pid;
+    pid_t child;
     int status;
-    int rc;
+    rpmRC rc;
     
     /*@-branchstate@*/
     switch (what) {
@@ -142,13 +143,13 @@ int doScript(Spec spec, int what, const char *name, StringBuf sb, int test)
     /*@=branchstate@*/
 
     if ((what != RPMBUILD_RMBUILD) && sb == NULL) {
-	rc = 0;
+	rc = RPMRC_OK;
 	goto exit;
     }
     
     if (rpmTempFile(rootURL, &scriptName, &fd) || fd == NULL || Ferror(fd)) {
 	rpmlog(RPMLOG_ERR, _("Unable to open temp file.\n"));
-	rc = RPMERR_SCRIPT;
+	rc = RPMRC_FAIL;
 	goto exit;
     }
 
@@ -161,7 +162,7 @@ int doScript(Spec spec, int what, const char *name, StringBuf sb, int test)
 
     /*@-type@*/ /* FIX: cast? */
     if ((fp = fdGetFp(xfd)) == NULL) {
-	rc = RPMERR_SCRIPT;
+	rc = RPMRC_FAIL;
 	goto exit;
     }
     /*@=type@*/
@@ -192,7 +193,7 @@ int doScript(Spec spec, int what, const char *name, StringBuf sb, int test)
     (void) Fclose(xfd);
 
     if (test) {
-	rc = 0;
+	rc = RPMRC_OK;
 	goto exit;
     }
     
@@ -201,7 +202,7 @@ fprintf(stderr, "*** rootURL %s buildDirURL %s\n", rootURL, buildDirURL);
 /*@-boundsread@*/
     if (buildDirURL && buildDirURL[0] != '/' &&
 	(urlSplit(buildDirURL, &u) != 0)) {
-	rc = RPMERR_SCRIPT;
+	rc = RPMRC_FAIL;
 	goto exit;
     }
 /*@=boundsread@*/
@@ -245,18 +246,18 @@ fprintf(stderr, "*** addMacros\n");
 	_exit(-1);
     }
 
-    rc = waitpid(child, &status, 0);
+    pid = waitpid(child, &status, 0);
 
     if (!WIFEXITED(status) || WEXITSTATUS(status)) {
 	rpmlog(RPMLOG_ERR, _("Bad exit status from %s (%s)\n"),
 		 scriptName, name);
 	rc = RPMRC_FAIL;
     } else
-	rc = 0;
+	rc = RPMRC_OK;
     
 exit:
     if (scriptName) {
-	if (!rc)
+	if (rc == RPMRC_OK)
 	    (void) Unlink(scriptName);
 	scriptName = _free(scriptName);
     }
@@ -289,9 +290,9 @@ fprintf(stderr, "*** delMacros\n");
     return rc;
 }
 
-int buildSpec(rpmts ts, Spec spec, int what, int test)
+rpmRC buildSpec(rpmts ts, Spec spec, int what, int test)
 {
-    int rc = 0;
+    rpmRC rc = RPMRC_OK;
 
     if (!spec->recursing && spec->BACount) {
 	int x;
@@ -358,7 +359,7 @@ int buildSpec(rpmts ts, Spec spec, int what, int test)
 	(void) Unlink(spec->specFile);
 
 exit:
-    if (rc && rpmlogGetNrecs() > 0) {
+    if (rc != RPMRC_OK && rpmlogGetNrecs() > 0) {
 	rpmlog(RPMLOG_NOTICE, _("\n\nRPM build errors:\n"));
 	rpmlogPrint(NULL);
     }

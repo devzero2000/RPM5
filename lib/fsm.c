@@ -14,8 +14,6 @@
 #include "fsm.h"
 #define	fsmUNSAFE	fsmStage
 
-#include "rpmerr.h"
-
 #define	_RPMFI_INTERNAL
 #include "rpmfi.h"
 #include "rpmte.h"

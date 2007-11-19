@@ -12,7 +12,6 @@
 #include "fsm.h"
 #include "ugid.h"
 
-#include "rpmerr.h"
 #include "debug.h"
 
 /*@access FSM_t @*/

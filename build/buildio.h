@@ -58,9 +58,9 @@ extern "C" {
  * @param csa
  * @param passPhrase
  * @retval cookie	generated cookie (i.e build host/time)
- * @return		0 on success
+ * @return		RPMRC_OK on success
  */
-int writeRPM(Header * hdrp, /*@null@*/ unsigned char ** pkgidp,
+rpmRC writeRPM(Header * hdrp, /*@null@*/ unsigned char ** pkgidp,
 		const char * fileName,
 		CSA_t csa,
 		/*@null@*/ char * passPhrase,

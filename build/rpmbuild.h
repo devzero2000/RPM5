@@ -359,9 +359,9 @@ char * parseExpressionString(Spec spec, const char * expr)
  * @param name		name of scriptlet section
  * @param sb		lines that compose script body
  * @param test		don't execute scripts or package if testing
- * @return		0 on success, RPMERR_SCRIPT on failure
+ * @return		RPMRC_OK on success, RPMRC_FAIL on failure
  */
-int doScript(Spec spec, int what, /*@null@*/ const char * name,
+rpmRC doScript(Spec spec, int what, /*@null@*/ const char * name,
 		/*@null@*/ StringBuf sb, int test)
 	/*@globals rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState @*/
@@ -519,9 +519,9 @@ int parseSpec(rpmts ts, const char * specFile,
  * @param spec		spec file control structure
  * @param what		bit(s) to enable stages of build
  * @param test		don't execute scripts or package if testing
- * @return		0 on success
+ * @return		RPMRC_OK on success
  */
-int buildSpec(rpmts ts, Spec spec, int what, int test)
+rpmRC buildSpec(rpmts ts, Spec spec, int what, int test)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies spec->sourceHeader, spec->sourceCpioList, spec->cookie,
 		spec->sourceRpmName, spec->sourcePkgId,

@@ -98,7 +98,7 @@ static StringBuf getOutputFrom(/*@null@*/ const char * dir, ARGV_t argv,
 	/* XXX this error message is probably not seen. */
 	rpmlog(RPMLOG_ERR, _("Couldn't exec %s: %s\n"),
 		argv[0], strerror(errno));
-	_exit(RPMERR_EXEC);
+	_exit(EXIT_FAILURE);
     }
     if (child < 0) {
 	rpmlog(RPMLOG_ERR, _("Couldn't fork %s: %s\n"),

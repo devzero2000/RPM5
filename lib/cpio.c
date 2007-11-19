@@ -15,7 +15,6 @@
 #include "cpio.h"
 #include "fsm.h"
 
-#include "rpmerr.h"
 #include "debug.h"
 
 /*@access FSM_t @*/

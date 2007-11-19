@@ -185,7 +185,7 @@ static int makeGPGSignature(const char * file, uint32_t * sigTagp,
 
 	rpmlog(RPMLOG_ERR, _("Could not exec %s: %s\n"), "gpg",
 			strerror(errno));
-	_exit(RPMERR_EXEC);
+	_exit(EXIT_FAILURE);
     }
 
     delMacro(NULL, "__plaintext_filename");

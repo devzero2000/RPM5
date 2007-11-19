@@ -1,5 +1,9 @@
-5.0a1 -> 5.0a2:
+5.0a2 -> 5.0a3:
+    - jbj: doScript: use pid_t, not int.
+    - jbj: eliminate rpmerr.h, use rpmlog.h instead.
     - jbj: eliminate rpmMessage and RPMMESS_FOO constants, use rpmlog instead.
+
+5.0a1 -> 5.0a2:
     - jbj: fix: don't add RPMTAG_ARCH to pubkeys, pubkeys cannot be erased.
     - afb: make devtool %standalone include the required %{_rpmhome}/magic.
     - jbj: fix: handle absolute paths to spec files again.

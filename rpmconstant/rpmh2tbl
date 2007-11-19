@@ -65,9 +65,6 @@ my %file_const = (
         '^(RPMBUILD_[\w_]+)' => 'rpmBuildFlags',
         '^(PART_[\w_]+)' => 'rpmParseState',
     },
-    'rpmerr.h' => {
-        '^(RPMERR_[\w_]+)' => 'rpmerrCode',
-    },
     'rpmmacro.h' => {
         '^(RMIL_[\w_]+)' => 'rpmMacrosContext',
     },

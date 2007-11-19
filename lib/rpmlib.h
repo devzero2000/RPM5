@@ -9,7 +9,6 @@
  */
 
 #include "rpmmessages.h"
-#include "rpmerr.h"
 #include <rpmtag.h>
 #include "popt.h"
 

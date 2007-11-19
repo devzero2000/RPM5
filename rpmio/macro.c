@@ -60,7 +60,6 @@ const char * rpmMacrofiles = MACROFILES;
 
 #include <rpmio_internal.h>
 #include <rpmmessages.h>
-#include <rpmerr.h>
 
 #ifdef	WITH_LUA
 #include <rpmlua.h>
