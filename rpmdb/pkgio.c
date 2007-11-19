@@ -16,10 +16,12 @@
 #endif
 
 #include <rpmio_internal.h>
+#include <rpmmacro.h>
+#include <rpmcb.h>		/* XXX fnpyKey */
 #include <rpmtag.h>
 
-#include <rpmdb.h>		/* XXX rpmtsFindPubkey */
-#include <rpmmacro.h>
+#include <rpmdb.h>
+#include <pkgio.h>
 
 #define	_RPMTS_INTERNAL
 #include "rpmts.h"
@@ -31,7 +33,6 @@
 #include <rpmwf.h>
 
 #include "header_internal.h"
-#include <pkgio.h>
 #include "signature.h"
 #include "debug.h"
 

@@ -7,6 +7,7 @@
 #include <netinet/in.h>
 
 #include <rpmio_internal.h>
+#include <rpmcb.h>		/* XXX fnpyKey */
 #include <rpmlib.h>
 
 #include "rpmts.h"

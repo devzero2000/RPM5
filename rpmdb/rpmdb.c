@@ -9,6 +9,7 @@
 #include <sys/file.h>
 
 #include <rpmio.h>
+#include <rpmlog.h>
 #include <rpmpgp.h>
 #include <rpmurl.h>
 #define	_MIRE_INTERNAL

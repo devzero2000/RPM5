@@ -8,9 +8,7 @@
  *
  */
 
-#include "rpmmessages.h"
 #include <rpmtag.h>
-#include "popt.h"
 
 #define RPM_FORMAT_VERSION 5
 #define RPM_MAJOR_VERSION 0

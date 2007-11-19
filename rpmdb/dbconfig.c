@@ -4,8 +4,10 @@
 
 #include "system.h"
 
+#include <popt.h>
 #include <rpmtag.h>
 #include <rpmio.h>
+#include <rpmlog.h>
 #include <rpmmacro.h>
 
 #define	_RPMDB_INTERNAL

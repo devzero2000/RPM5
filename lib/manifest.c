@@ -4,7 +4,8 @@
 
 #include "system.h"
 
-#include <rpmio_internal.h>
+#include <rpmio_internal.h>	/* XXX fdGetFp */
+#include <rpmlog.h>
 #include <rpmlib.h>
 #include <rpmmacro.h>
 

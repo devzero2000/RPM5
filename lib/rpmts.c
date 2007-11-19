@@ -5,8 +5,9 @@
 #include "system.h"
 
 #include "rpmio_internal.h"	/* XXX for pgp and beecrypt */
-#include <rpmlib.h>
+#include <rpmcb.h>		/* XXX fnpyKey */
 #include <rpmmacro.h>		/* XXX rpmtsOpenDB() needs rpmGetPath */
+#include <rpmlib.h>
 
 #define	_RPMDB_INTERNAL		/* XXX almost opaque sigh */
 #include "rpmdb.h"		/* XXX stealing db->db_mode. */

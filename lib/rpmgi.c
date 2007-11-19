@@ -4,8 +4,10 @@
  */
 #include "system.h"
 
-#include <rpmlib.h>
 #include <rpmio.h>
+#include <rpmcb.h>		/* XXX fnpyKey */
+#include <rpmmacro.h>		/* XXX rpmExpand */
+#include <rpmlib.h>
 #include <rpmte.h>		/* XXX rpmElementType */
 #include <pkgio.h>		/* XXX rpmElementType */
 
@@ -14,7 +16,6 @@
 #include <rpmgi.h>
 
 #include <rpmdb.h>
-#include <rpmmacro.h>		/* XXX rpmExpand */
 #include "manifest.h"
 
 #include "debug.h"

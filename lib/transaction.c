@@ -5,10 +5,9 @@
 #include "system.h"
 
 #include <rpmio.h>
-#include "rpmcli.h"	/* IDTX prototypes */
-#include <rpmlib.h>
-
 #include <rpmmacro.h>	/* XXX for rpmExpand */
+
+#include "rpmcli.h"	/* IDTX prototypes */
 
 #include "fsm.h"
 #define	_RPMSQ_INTERNAL

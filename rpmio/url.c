@@ -7,7 +7,7 @@
 #include <netinet/in.h>
 
 #include <rpmmacro.h>
-#include <rpmmessages.h>
+#include <rpmcb.h>
 #include <rpmio_internal.h>
 #ifdef WITH_NEON
 #include <rpmdav.h>

@@ -1,8 +1,9 @@
 #include "system.h"
 
-#include <rpmlib.h>
 #include <rpmio.h>
+#include <rpmcb.h>		/* XXX fnpyKey */
 #include <rpmmacro.h>
+#include <rpmlib.h>
 
 #include "rpmts.h"
 #include "rpmlock.h"

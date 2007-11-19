@@ -1,13 +1,15 @@
-#ifndef H_RPMMESSAGES
-#define H_RPMMESSAGES
+#ifndef H_RPMCB
+#define H_RPMCB
 
 /** \ingroup rpmio
- * \file rpmio/rpmmessages.h
- * @todo Eliminate from API.
+ * \file rpmio/rpmcb.h
  */
 
-#include "rpmlog.h"
+#include <rpmlog.h>
 
+/**
+ * @todo These convenience macros belong somewhere else.
+ */
 #define	rpmSetVerbosity(_lvl)	\
 	((void)rpmlogSetMask( RPMLOG_UPTO( RPMLOG_PRI(_lvl))))
 #define	rpmIncreaseVerbosity()	\
@@ -77,4 +79,4 @@ void urlSetCallback(rpmCallbackFunction notify, rpmCallbackData notifyData,
 }
 #endif
 
-#endif  /* H_RPMMESSAGES */
+#endif  /* H_RPMCB */

@@ -8,6 +8,7 @@
 const char * RPMVERSION = VERSION;
 
 #include <rpmio.h>
+#include <rpmlog.h>
 #include <rpmurl.h>
 #include <rpmmacro.h>	/* XXX for rpmGetPath */
 #include <rpmlib.h>

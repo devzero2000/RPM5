@@ -3,6 +3,7 @@
 #include <signal.h>	/* getOutputFrom() */
 
 #include <rpmio.h>
+#include <rpmcb.h>		/* XXX fnpyKey */
 #define	_RPMEVR_INTERNAL
 #include <rpmbuild.h>
 #include <argv.h>

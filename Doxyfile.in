@@ -636,9 +636,9 @@ INPUT                  = @top_srcdir@/Doxyheader \
                          @top_srcdir@/rpmio/getpass.c \
                          @top_srcdir@/rpmio/lookup3.c \
                          @top_srcdir@/rpmio/macro.c \
+                         @top_srcdir@/rpmio/rpmcb.h \
                          @top_srcdir@/rpmio/rpmlog.c \
                          @top_srcdir@/rpmio/rpmlog.h \
-                         @top_srcdir@/rpmio/rpmerr.h \
                          @top_srcdir@/rpmio/rpmhash.c \
                          @top_srcdir@/rpmio/rpmhash.h \
                          @top_srcdir@/rpmio/rpmio.c \
@@ -646,7 +646,6 @@ INPUT                  = @top_srcdir@/Doxyheader \
                          @top_srcdir@/rpmio/rpmio_internal.h \
                          @top_srcdir@/rpmio/rpmmacro.h \
                          @top_srcdir@/rpmio/rpmmalloc.c \
-                         @top_srcdir@/rpmio/rpmmessages.h \
                          @top_srcdir@/rpmio/rpmmg.c \
                          @top_srcdir@/rpmio/rpmmg.h \
                          @top_srcdir@/rpmio/rpmpgp.c \

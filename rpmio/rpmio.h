@@ -440,6 +440,7 @@ int Mknod(const char * path, mode_t mode, dev_t dev)
  * utime(2) clone.
  * @todo Implement remotely.
  */
+struct utimbuf;
 int Utime(const char * path, const struct utimbuf * buf)
 	/*@globals errno, fileSystem, internalState @*/
 	/*@modifies errno, fileSystem, internalState @*/;

@@ -5,6 +5,7 @@
 #include "system.h"
 
 #include <rpmio.h>
+#include <rpmcb.h>		/* XXX fnpyKey */
 #include <rpmlib.h>
 
 #include "rpmdb-py.h"

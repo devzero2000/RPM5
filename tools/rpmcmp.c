@@ -1,5 +1,7 @@
 #include "system.h"
+
 #include <rpmio_internal.h>
+#include <rpmcb.h>		/* XXX fnpyKey */
 #include <rpmlib.h>
 #define	_RPMDS_INTERNAL
 #define	_RPMEVR_INTERNAL

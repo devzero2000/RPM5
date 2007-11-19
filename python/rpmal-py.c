@@ -4,6 +4,7 @@
 
 #include "system.h"
 
+#include <rpmcb.h>		/* XXX fnpyKey */
 #include <rpmlib.h>
 
 #include "rpmal-py.h"

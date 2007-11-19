@@ -3,8 +3,8 @@
  */
 
 #include "system.h"
-#include <rpmlib.h>
 #include <rpmio.h>
+#include <rpmlog.h>
 #include <rpmmacro.h>	/* XXX for rpmGetPath */
 
 #include "fs.h"

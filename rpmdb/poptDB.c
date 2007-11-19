@@ -6,7 +6,9 @@
 #include "system.h"
 
 #include <rpmio.h>
+#include <rpmcb.h>		/* XXX fnpyKey */
 #include <rpmcli.h>
+
 
 #include "debug.h"
 

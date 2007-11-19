@@ -5,11 +5,13 @@
  * \file lib/rpmcli.h
  */
 
-#include "rpmlib.h"
-#include "rpmurl.h"
-#include "rpmmacro.h"
-#include "rpmps.h"
+#include "popt.h"
 #include "argv.h"
+#include "rpmcb.h"
+#include "rpmmacro.h"
+#include "rpmurl.h"
+#include "rpmlib.h"
+#include "rpmps.h"
 
 /** \ingroup rpmcli
  * Should version 3 packages be produced?

@@ -6,10 +6,11 @@
 #include "system.h"
 
 #include <rpmio_internal.h>
-#include <rpmlib.h>
+#include <rpmcb.h>		/* XXX fnpyKey */
 #include <rpmmacro.h>
 #include <rpmurl.h>
 #include <rpmlua.h>
+#include <rpmlib.h>
 
 #include "cpio.h"
 #include "fsm.h"		/* XXX CPIO_FOO/FSM_FOO constants */

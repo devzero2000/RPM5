@@ -5,7 +5,8 @@
 
 #include "system.h"
 
-#include <rpmio_internal.h>
+#include <rpmio_internal.h>	/* XXX urlPath, fdGetCpioPos */
+#include <rpmcb.h>		/* XXX fnpyKey */
 #include <rpmlib.h>
 
 #include "cpio.h"

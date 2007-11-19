@@ -4,8 +4,9 @@
 
 #include "system.h"
 
-#include <rpmlib.h>
 #include <rpmio.h>
+#include <rpmcb.h>		/* XXX fnpyKey */
+#include <rpmlib.h>
 
 #define	_RPMPS_INTERNAL
 #include "rpmps.h"

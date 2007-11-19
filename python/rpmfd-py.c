@@ -7,6 +7,7 @@
 #include <glob.h>	/* XXX rpmio.h */
 #include <dirent.h>	/* XXX rpmio.h */
 #include <rpmio_internal.h>
+#include <rpmcb.h>		/* XXX fnpyKey */
 
 #include <rpmlib.h>	/* XXX _free */
 

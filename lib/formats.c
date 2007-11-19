@@ -4,9 +4,10 @@
 
 #include "system.h"
 
-#include "rpmio_internal.h"
+#include <rpmio.h>
+#include <rpmcb.h>		/* XXX fnpyKey */
+#include <rpmmacro.h>		/* XXX for %_i18ndomains */
 #include <rpmlib.h>
-#include <rpmmacro.h>	/* XXX for %_i18ndomains */
 
 #define	_RPMEVR_INTERNAL
 #include <rpmds.h>

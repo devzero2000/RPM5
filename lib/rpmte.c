@@ -3,8 +3,10 @@
  * Routine(s) to handle an "rpmte"  transaction element.
  */
 #include "system.h"
-#include <rpmlib.h>
+
 #include <rpmio.h>
+#include <rpmcb.h>		/* XXX fnpyKey */
+#include <rpmlib.h>
 
 #include "rpmds.h"
 #include "rpmfi.h"

@@ -609,6 +609,7 @@ int rpmdsCrle(rpmPRCO PRCO, /*@null@*/ const char * fn)
  * @param un		utsname struct (NULL calls uname(2))
  * @return		0 on success
  */
+struct utsname;
 int rpmdsUname(rpmds * dsp, /*@null@*/ const struct utsname * un)
 	/*@globals internalState @*/
 	/*@modifies *dsp, internalState @*/;

@@ -23,7 +23,6 @@
 #include <string.h>
 #include <ctype.h>
 #define rpmlog fprintf
-#define	rpmIsVerbose()	(0)
 #define RPMLOG_ERR stderr
 #undef	_
 #define	_(x)	x
@@ -59,7 +58,7 @@ _free(/*@only@*/ /*@null@*/ const void * p)
 const char * rpmMacrofiles = MACROFILES;
 
 #include <rpmio_internal.h>
-#include <rpmmessages.h>
+#include <rpmlog.h>
 
 #ifdef	WITH_LUA
 #include <rpmlua.h>
@@ -1202,10 +1201,15 @@ doFoo(MacroBuf mb, int negate, const char * f, size_t fn,
     } else if (STREQ("expand", f, fn)) {
 	b = buf;
     } else if (STREQ("verbose", f, fn)) {
+#if defined(RPMLOG_MASK)
 	if (negate)
-	    b = (rpmIsVerbose() ? NULL : buf);
+	    b = ((rpmlogSetMask(0) >= RPMLOG_MASK( RPMLOG_INFO )) ? NULL : buf);
 	else
-	    b = (rpmIsVerbose() ? buf : NULL);
+	    b = ((rpmlogSetMask(0) >= RPMLOG_MASK( RPMLOG_INFO )) ? buf : NULL);
+#else
+	/* XXX assume always verbose when running standalone */
+	b = (negate) ? NULL : buf;
+#endif
     } else if (STREQ("url2path", f, fn) || STREQ("u2p", f, fn)) {
 	int ut = urlPath(buf, (const char **)&b);
 	ut = ut;	/* XXX quiet gcc */

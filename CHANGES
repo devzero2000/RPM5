@@ -1,4 +1,10 @@
 5.0a2 -> 5.0a3:
+    - jbj: add "struct utimbuf" and "struct utsname" to eliminate perl wanings.
+    - jbj: adjust includes throughout.
+    - jbj: move popt.h from rpmlib.h to rpmcli.h, most routines don't need.
+    - jbj: don't include rpmcb.h from rpmlib.h, explcit includes instead.
+    - jbj: update Doxyfile.
+    - jbj: rename rpmmessages.h -> rpmcb.h consistent with callback content.
     - jbj: doScript: use pid_t, not int.
     - jbj: eliminate rpmerr.h, use rpmlog.h instead.
     - jbj: eliminate rpmMessage and RPMMESS_FOO constants, use rpmlog instead.
