@@ -63,6 +63,10 @@
 	"works", but not same FC8 package converted using txar and FC8 pubkey
 	verify.
     - jbj: check that rpmbuild --sign is functional, or eliminate the option.
+    - jbj: parsing error paths (like missing source or patch file) are
+	returning rpmRC in some cases now, with accidental collision with
+	PART_FOO values that drive the spec file parser. Renumbering enum
+	rpmParseState to avoid the collisions should fix most of the problem.
 
   o to be resolved before RPM 5.0.0:
     - rse: NEWS polishing
