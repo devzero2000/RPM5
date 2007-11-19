@@ -1367,14 +1367,14 @@ pgpDig pgpNewDig(pgpVSFlags vsflags)
 
 /**
  * Release (malloc'd) data from container.
- * @param dig		container
+ * @param dig		signature parameters container
  */
 void pgpCleanDig(/*@null@*/ pgpDig dig)
 	/*@modifies dig @*/;
 
 /**
  * Destroy a container for parsed OpenPGP packates.
- * @param dig		container
+ * @param dig		signature parameters container
  * @return		NULL always
  */
 /*@only@*/ /*@null@*/
@@ -1383,7 +1383,7 @@ pgpDig pgpFreeDig(/*@only@*/ /*@null@*/ pgpDig dig)
 
 /**
  * Return OpenPGP pubkey parameters.
- * @param dig		container
+ * @param dig		signature parameters container
  * @return		pubkey parameters
  */
 /*@exposed@*/
@@ -1392,7 +1392,7 @@ pgpDigParams pgpGetPubkey(const pgpDig dig)
 
 /**
  * Return OpenPGP signature parameters.
- * @param dig		container
+ * @param dig		signature parameters container
  * @return		signature parameters
  */
 /*@exposed@*/
@@ -1401,7 +1401,7 @@ pgpDigParams pgpGetSignature(const pgpDig dig)
 
 /**
  * Get signature tag.
- * @param dig		container
+ * @param dig		signature parameters container
  * @return		signature tag
  */
 uint32_t pgpGetSigtag(const pgpDig dig)
@@ -1409,7 +1409,7 @@ uint32_t pgpGetSigtag(const pgpDig dig)
 
 /** \ingroup rpmts
  * Get signature tag type.
- * @param dig		container
+ * @param dig		signature parameters container
  * @param ts		transaction set
  * @return		signature tag type
  */
@@ -1418,7 +1418,7 @@ uint32_t pgpGetSigtype(const pgpDig dig)
 
 /**
  * Get signature tag data, i.e. from header.
- * @param dig		container
+ * @param dig		signature parameters container
  * @return		signature tag data
  */
 /*@observer@*/ /*@null@*/
@@ -1427,7 +1427,7 @@ extern const void * pgpGetSig(const pgpDig dig)
 
 /**
  * Get signature tag data length, i.e. no. of bytes of data.
- * @param dig		container
+ * @param dig		signature parameters container
  * @return		signature tag data length
  */
 uint32_t pgpGetSiglen(const pgpDig dig)
@@ -1435,7 +1435,7 @@ uint32_t pgpGetSiglen(const pgpDig dig)
 
 /**
  * Set signature tag info, i.e. from header.
- * @param dig		container
+ * @param dig		signature parameters container
  * @param sigtag	signature tag
  * @param sigtype	signature tag type
  * @param sig		signature tag data
@@ -1449,7 +1449,7 @@ int pgpSetSig(pgpDig dig,
 
 /**
  * Return pgpDig container accumulator structure.
- * @param dig		container
+ * @param dig		signature parameters container
  * @param opx		per-container accumulator index (aka rpmtsOpX)
  * @return		per-container accumulator pointer
  */
@@ -1458,7 +1458,7 @@ void * pgpStatsAccumulator(pgpDig dig, int opx)
 
 /**
  * Get verify signatures flag(s).
- * @param dig		container
+ * @param dig		signature parameters container
  * @return		verify signatures flags
  */
 pgpVSFlags pgpGetVSFlags(pgpDig dig)
@@ -1466,7 +1466,7 @@ pgpVSFlags pgpGetVSFlags(pgpDig dig)
 
 /**
  * Set verify signatures flag(s).
- * @param dig		container
+ * @param dig		signature parameters container
  * @param vsflags	new verify signatures flags
  * @return		previous value
  */
@@ -1475,7 +1475,7 @@ pgpVSFlags pgpSetVSFlags(pgpDig dig, pgpVSFlags vsflags)
 
 /**
  * Set find pubkey vector.
- * @param dig		container
+ * @param dig		signature parameters container
  * @param findPubkey	routine to find a pubkey.
  * @param ts		argument to (*findPubkey) (ts)
  * @return		0 always
@@ -1487,7 +1487,7 @@ int pgpSetFindPubkey(pgpDig dig,
 
 /**
  * Call find pubkey vector.
- * @param dig		container
+ * @param dig		signature parameters container
  * @return		rpmRC return code
  */
 int pgpFindPubkey(pgpDig dig)

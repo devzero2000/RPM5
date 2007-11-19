@@ -200,7 +200,7 @@ if (!_nosigh) {
     }
 /*@-type@*/	/* XXX arrow access of non-pointer (FDSTAT_t) */
     nb = -fd->stats->ops[FDSTAT_READ].bytes;
-    rc = rpmReadHeader(ts, fd, &h, &msg);
+    rc = rpmReadHeader(dig, fd, &h, &msg);
     nb += fd->stats->ops[FDSTAT_READ].bytes;
 /*@=type@*/
     if (opx > 0 && op != NULL) {

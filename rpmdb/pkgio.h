@@ -23,29 +23,29 @@ extern int _use_xar;
  * header-only digest or signature to verify the blob. If found,
  * the digest or signature is verified.
  *
- * @param ts		transaction set
+ * @param dig		signature parameters container
  * @param uh		unloaded header blob
  * @param uc		no. of bytes in blob (or 0 to disable)
  * @retval *msg		verification error message (or NULL)
  * @return		RPMRC_OK on success
  */
-rpmRC headerCheck(rpmts ts, const void * uh, size_t uc,
+rpmRC headerCheck(pgpDig dig, const void * uh, size_t uc,
 		/*@out@*/ /*@null@*/ const char ** msg)
 	/*@globals fileSystem, internalState @*/
-	/*@modifies ts, *msg, fileSystem, internalState @*/;
+	/*@modifies dig, *msg, fileSystem, internalState @*/;
 
 /** 
  * Return checked and loaded header.
- * @param ts		transaction set
+ * @param dig		signature parameters container
  * @param _fd		file handle
  * @retval hdrp		address of header (or NULL)
  * @retval *msg		verification error message (or NULL)
  * @return		RPMRC_OK on success
  */
-rpmRC rpmReadHeader(rpmts ts, void * _fd, /*@out@*/ Header *hdrp,
+rpmRC rpmReadHeader(pgpDig dig, void * _fd, /*@out@*/ Header *hdrp,
 		/*@out@*/ /*@null@*/ const char ** msg)
         /*@globals fileSystem, internalState @*/
-        /*@modifies ts, *_fd, *hdrp, *msg, fileSystem, internalState @*/;
+        /*@modifies dig, *_fd, *hdrp, *msg, fileSystem, internalState @*/;
 
 /**
  * Return size of item in bytes.

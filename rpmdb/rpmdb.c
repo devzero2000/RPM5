@@ -20,13 +20,12 @@
 #define	_RPMEVR_INTERNAL	/* XXX isInstallPrereq */
 #include <rpmevr.h>
 
-#ifdef	NOTYET
+/* XXX avoid including <rpmts.h> */
 /*@exposed@*/
 extern pgpDig rpmtsDig(void * ts)
         /*@*/;
 extern void rpmtsCleanDig(void * ts)
         /*@modifies ts @*/;
-#endif
 
 #define	_RPMDB_INTERNAL
 #include "rpmdb.h"
@@ -1870,7 +1869,8 @@ static int miFreeHeader(rpmdbMatchIterator mi, dbiIndex dbi)
 	    int lvl;
 
 assert(data->data != NULL);
-	    rpmrc = headerCheck(mi->mi_ts, data->data, data->size, &msg);
+	    rpmrc = headerCheck(rpmtsDig(mi->mi_ts), data->data, data->size, &msg);
+	    rpmtsCleanDig(mi->mi_ts);
 	    lvl = (rpmrc == RPMRC_FAIL ? RPMLOG_ERR : RPMLOG_DEBUG);
 	    rpmlog(lvl, "%s h#%8u %s",
 		(rpmrc == RPMRC_FAIL ? _("miFreeHeader: skipping") : "write"),
@@ -2441,7 +2441,8 @@ if (dbiByteSwapped(dbi) == 1)
 	    int lvl;
 
 assert(data->data != NULL);
-	    rpmrc = headerCheck(mi->mi_ts, uh, uhlen, &msg);
+	    rpmrc = headerCheck(rpmtsDig(mi->mi_ts), uh, uhlen, &msg);
+	    rpmtsCleanDig(mi->mi_ts);
 	    lvl = (rpmrc == RPMRC_FAIL ? RPMLOG_ERR : RPMLOG_DEBUG);
 	    rpmlog(lvl, "%s h#%8u %s",
 		(rpmrc == RPMRC_FAIL ? _("rpmdbNextIterator: skipping") : " read"),
@@ -3309,7 +3310,8 @@ key->size = (u_int32_t) sizeof(mi_offset.ui);
 		    int lvl;
 
 assert(data->data != NULL);
-		    rpmrc = headerCheck(ts, data->data, data->size, &msg);
+		    rpmrc = headerCheck(rpmtsDig(ts), data->data, data->size, &msg);
+		    rpmtsCleanDig(ts);
 		    lvl = (rpmrc == RPMRC_FAIL ? RPMLOG_ERR : RPMLOG_DEBUG);
 		    rpmlog(lvl, "%s h#%8u %s",
 			(rpmrc == RPMRC_FAIL ? _("rpmdbAdd: skipping") : "  +++"),

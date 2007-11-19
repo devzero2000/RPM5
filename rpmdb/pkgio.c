@@ -784,9 +784,8 @@ exit:
  * @retval *msg		signature verification msg
  * @return		RPMRC_OK/RPMRC_NOTFOUND/RPMRC_FAIL
  */
-rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, const char ** msg)
+rpmRC headerCheck(pgpDig dig, const void * uh, size_t uc, const char ** msg)
 {
-    pgpDig dig = rpmtsDig(ts);
     char buf[8*BUFSIZ];
     uint32_t * ei = (uint32_t *) uh;
     uint32_t il = (uint32_t) ntohl(ei[0]);
@@ -811,9 +810,7 @@ rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, const char ** msg)
     rpmRC rc = RPMRC_FAIL;	/* assume failure */
     int xx;
     uint32_t i;
-    static int hclvl;
 
-    hclvl++;
     buf[0] = '\0';
 
     /* Is the blob the right size? */
@@ -945,7 +942,6 @@ exit:
     if (rc != RPMRC_NOTFOUND) {
 	buf[sizeof(buf)-1] = '\0';
 	if (msg) *msg = xstrdup(buf);
-	hclvl--;
 	return rc;
     }
 
@@ -964,7 +960,6 @@ exit:
 	}
 	buf[sizeof(buf)-1] = '\0';
 	if (msg) *msg = xstrdup(buf);
-	hclvl--;
 	return rc;
     }
 
@@ -989,7 +984,6 @@ assert(dig != NULL);
 	    rpmlog(RPMLOG_ERR,
 		_("skipping header with unverifiable V%u signature\n"),
 		(unsigned) dig->signature.version);
-	    rpmtsCleanDig(ts);
 	    rc = RPMRC_FAIL;
 	    goto exit;
 	}
@@ -1033,7 +1027,6 @@ assert(dig != NULL);
 	    rpmlog(RPMLOG_ERR,
 		_("skipping header with unverifiable V%u signature\n"),
 		(unsigned) dig->signature.version);
-	    rpmtsCleanDig(ts);
 	    rc = RPMRC_FAIL;
 	    goto exit;
 	}
@@ -1082,10 +1075,6 @@ assert(dig != NULL);
     buf[sizeof(buf)-1] = '\0';
     if (msg) *msg = xstrdup(buf);
 
-    /* XXX headerCheck can recurse, free info only at top level. */
-    if (hclvl == 1)
-	rpmtsCleanDig(ts);
-    hclvl--;
     return rc;
 }
 
@@ -1130,7 +1119,7 @@ static rpmRC ckHeader(/*@unused@*/ FD_t fd, const void * ptr, const char ** msg)
 }
 
 /*@-mustmod@*/	/* _fd is modified */
-rpmRC rpmReadHeader(rpmts ts, void * _fd, Header *hdrp, const char ** msg)
+rpmRC rpmReadHeader(pgpDig dig, void * _fd, Header *hdrp, const char ** msg)
 {
     FD_t fd = _fd;
 rpmwf wf = fdGetWF(fd);
@@ -1209,7 +1198,7 @@ assert(wf->nh == (sizeof(block)+nb));
 }
 
     /* Sanity check header tags */
-    rc = headerCheck(ts, ei, uc, msg);
+    rc = headerCheck(dig, ei, uc, msg);
     if (rc != RPMRC_OK)
 	goto exit;
 

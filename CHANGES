@@ -1,4 +1,6 @@
 5.0a2 -> 5.0a3:
+    - jbj: eliminate the headerCheck recursion check. not seen w rpm code paths.
+    - jbj: pass dig, not ts, through pkgio.c header routines.
     - jbj: eliminate 2 of 3 remaining uses of headerWrite.
     - jbj: fix: initialize _nolead to 0, not 1.
     - jbj: add "struct utimbuf" and "struct utsname" to eliminate perl wanings.
