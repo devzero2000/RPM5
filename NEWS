@@ -100,6 +100,11 @@
     RPM. This is just a first cut, more or less just a proof of concept
     and highly experimental.
 
+  o Removed RPMv3 Package Format Support:
+    The support for the old RPMv3 (LSB) package format was removed to
+    cleanup and simplify the code base. RPM 5 now supports RPMv4 package
+    format only.
+
   o Application Programming Interface (API) Changes:
     FIXME: << JBJ: please add details! >>
 
