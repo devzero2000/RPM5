@@ -21,11 +21,13 @@
 #include <rpmevr.h>
 
 /* XXX avoid including <rpmts.h> */
+/*@-redecl -type @*/
 /*@exposed@*/
 extern pgpDig rpmtsDig(void * ts)
         /*@*/;
 extern void rpmtsCleanDig(void * ts)
         /*@modifies ts @*/;
+/*@=redecl =type @*/
 
 #define	_RPMDB_INTERNAL
 #include "rpmdb.h"
@@ -3876,6 +3878,7 @@ int rpmdbRebuild(const char * prefix, rpmts ts)
 	/*@globals _rebuildinprogress @*/
 	/*@modifies _rebuildinprogress @*/
 {
+    const char * myprefix;
     rpmdb olddb;
     const char * dbpath = NULL;
     const char * rootdbpath = NULL;
@@ -3910,16 +3913,16 @@ int rpmdbRebuild(const char * prefix, rpmts ts)
     /* Add --root prefix iff --dbpath is not a URL. */
     switch (urlPath(tfn, NULL)) {
     default:
-	prefix = xstrdup("");
+	myprefix = xstrdup("");
 	break;
     case URL_IS_UNKNOWN:
-	prefix = rpmGetPath((prefix ? prefix : "/"), NULL);
+	myprefix = rpmGetPath((prefix ? prefix : "/"), NULL);
 	break;
     }
 
-    dbpath = rootdbpath = rpmGetPath(prefix, tfn, NULL);
-    if (!(prefix[0] == '/' && prefix[1] == '\0'))
-	dbpath += strlen(prefix);
+    dbpath = rootdbpath = rpmGetPath(myprefix, tfn, NULL);
+    if (!(myprefix[0] == '/' && myprefix[1] == '\0'))
+	dbpath += strlen(myprefix);
     tfn = _free(tfn);
 
     /*@-nullpass@*/
@@ -3936,9 +3939,9 @@ int rpmdbRebuild(const char * prefix, rpmts ts)
 	tfn = t;
 	nocleanup = 0;
     }
-    newdbpath = newrootdbpath = rpmGetPath(prefix, tfn, NULL);
-    if (!(prefix[0] == '/' && prefix[1] == '\0'))
-	newdbpath += strlen(prefix);
+    newdbpath = newrootdbpath = rpmGetPath(myprefix, tfn, NULL);
+    if (!(myprefix[0] == '/' && myprefix[1] == '\0'))
+	newdbpath += strlen(myprefix);
     tfn = _free(tfn);
 
     rpmlog(RPMLOG_DEBUG, D_("rebuilding database %s into %s\n"),
@@ -3964,7 +3967,7 @@ int rpmdbRebuild(const char * prefix, rpmts ts)
 
     rpmlog(RPMLOG_DEBUG, D_("opening old database with dbapi %d\n"),
 		_dbapi);
-    if (rpmdbOpenDatabase(prefix, dbpath, _dbapi, &olddb, O_RDONLY, 0644, 
+    if (rpmdbOpenDatabase(myprefix, dbpath, _dbapi, &olddb, O_RDONLY, 0644, 
 		     RPMDB_FLAG_MINIMAL)) {
 	rc = 1;
 	goto exit;
@@ -3974,7 +3977,7 @@ int rpmdbRebuild(const char * prefix, rpmts ts)
     rpmlog(RPMLOG_DEBUG, D_("opening new database with dbapi %d\n"),
 		_dbapi_rebuild);
     (void) rpmDefineMacro(NULL, "_rpmdb_rebuild %{nil}", -1);
-    if (rpmdbOpenDatabase(prefix, newdbpath, _dbapi_rebuild, &newdb, O_RDWR | O_CREAT, 0644, 0)) {
+    if (rpmdbOpenDatabase(myprefix, newdbpath, _dbapi_rebuild, &newdb, O_RDWR | O_CREAT, 0644, 0)) {
 	rc = 1;
 	goto exit;
     }
@@ -4065,12 +4068,12 @@ int rpmdbRebuild(const char * prefix, rpmts ts)
 	rpmlog(RPMLOG_NOTICE, _("failed to rebuild database: original database "
 		"remains in place\n"));
 
-	xx = rpmdbRemoveDatabase(prefix, newdbpath, _dbapi_rebuild,
+	xx = rpmdbRemoveDatabase(myprefix, newdbpath, _dbapi_rebuild,
 			dbiTags, dbiTagsMax);
 	rc = 1;
 	goto exit;
     } else if (!nocleanup) {
-	xx = rpmdbMoveDatabase(prefix, newdbpath, _dbapi_rebuild, dbpath, _dbapi,
+	xx = rpmdbMoveDatabase(myprefix, newdbpath, _dbapi_rebuild, dbpath, _dbapi,
 			dbiTags, dbiTagsMax);
 
 	if (xx) {
@@ -4094,7 +4097,7 @@ exit:
     newrootdbpath = _free(newrootdbpath);
     rootdbpath = _free(rootdbpath);
     dbiTags = _free(dbiTags);
-    prefix = _free(prefix);
+    myprefix = _free(myprefix);
 
     return rc;
 }

@@ -1279,7 +1279,7 @@ if (wf != NULL) {
  */
 static rpmRC wrHeader(FD_t fd, void * ptr, /*@unused@*/ const char ** msg)
 	/*@globals fileSystem @*/
-	/*@modifies fd, ptr, fileSystem @*/
+	/*@modifies fd, ptr, *msg, fileSystem @*/
 {
     Header h = ptr;
     rpmRC rc = RPMRC_OK;

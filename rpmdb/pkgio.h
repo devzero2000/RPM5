@@ -66,7 +66,7 @@ size_t rpmpkgSizeof(const char * fn, /*@null@*/ const void * ptr)
  */
 rpmRC rpmpkgWrite(const char * fn, FD_t fd, void * ptr, const char ** msg)
 	/*@globals fileSystem @*/
-	/*@modifies fd, ptr, fileSystem @*/;
+	/*@modifies fd, ptr, *msg, fileSystem @*/;
 
 /**
  * Read item from file descriptor.
