@@ -608,6 +608,7 @@ rpmRC writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
     const char * rpmio_flags = NULL;
     const char * payload_format = NULL;
     const char * SHA1 = NULL;
+    const char * msg = NULL;
     char *s;
     char buf[BUFSIZ];
     Header h;
@@ -725,24 +726,32 @@ rpmRC writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
 	goto exit;
     }
 
+    /* Write the header to a temp file, computing header SHA1 on the fly. */
     fdInitDigest(fd, PGPHASHALGO_SHA1, 0);
-    if (headerWrite(fd, h)) {
-	rpmlog(RPMLOG_ERR, _("Unable to write temp header\n"));
-	rc = RPMRC_FAIL;
-    } else { /* Write the archive and get the size */
-	(void) Fflush(fd);
-	fdFiniDigest(fd, PGPHASHALGO_SHA1, &SHA1, NULL, 1);
-	if (csa->cpioList != NULL) {
-	    rc = cpio_doio(fd, h, csa, payload_format, rpmio_flags);
-	} else if (Fileno(csa->cpioFdIn) >= 0) {
-	    rc = cpio_copy(fd, csa);
-	} else {
-assert(0);
+    {	const char item[] = "Header";
+	msg = NULL;
+	rc = rpmpkgWrite(item, fd, h, &msg);
+	if (rc != RPMRC_OK) {
+	    rpmlog(RPMLOG_ERR, "%s: %s: %s", sigtarget, item,
+		(msg && *msg ? msg : "write failed\n"));
+	    msg = _free(msg);
+	    rc = RPMRC_FAIL;
+	    goto exit;
 	}
+	(void) Fflush(fd);
     }
+    fdFiniDigest(fd, PGPHASHALGO_SHA1, &SHA1, NULL, 1);
+
+    /* Append the payload to the temp file. */
+    if (csa->cpioList != NULL)
+	rc = cpio_doio(fd, h, csa, payload_format, rpmio_flags);
+    else if (Fileno(csa->cpioFdIn) >= 0)
+	rc = cpio_copy(fd, csa);
+    else
+assert(0);
+
     rpmio_flags = _free(rpmio_flags);
     payload_format = _free(payload_format);
-
     if (rc != RPMRC_OK)
 	goto exit;
 
@@ -803,6 +812,7 @@ assert(0);
 	const char item[] = "Lead";
 	size_t nl = rpmpkgSizeof(item, NULL);
 
+	msg = NULL;
 	if (nl == 0)
 	    rc = RPMRC_FAIL;
 	else {
@@ -826,8 +836,12 @@ assert(0);
     if (!_nosigh) {
 	const char item[] = "Signature";
 
-	rc = rpmpkgWrite(item, fd, sigh, NULL);
+	msg = NULL;
+	rc = rpmpkgWrite(item, fd, sigh, &msg);
 	if (rc != RPMRC_OK) {
+	    rpmlog(RPMLOG_ERR, "%s: %s: %s", fileName, item,
+                (msg && *msg ? msg : "write failed\n"));
+	    msg = _free(msg);
 	    rc = RPMRC_FAIL;
 	    goto exit;
 	}
@@ -843,12 +857,15 @@ assert(0);
     }
 
     /* Add signatures to header, and write header into the package. */
-    /* XXX header+payload digests/signatures might be checked again here. */
-    {	Header nh = headerRead(ifd);
+    {	const char item[] = "Header";
+	Header nh = NULL;
 
-	if (nh == NULL) {
-	    rpmlog(RPMLOG_ERR, _("Unable to read header from %s: %s\n"),
-			sigtarget, Fstrerror(ifd));
+	msg = NULL;
+	rc = rpmpkgRead(item, fd, &nh, &msg);
+	if (rc != RPMRC_OK) {
+	    rpmlog(RPMLOG_ERR, "%s: %s: %s", sigtarget, item,
+                (msg && *msg ? msg : "read failed\n"));
+	    msg = _free(msg);
 	    rc = RPMRC_FAIL;
 	    goto exit;
 	}
@@ -857,12 +874,13 @@ assert(0);
 	(void) headerMergeLegacySigs(nh, sigh);
 #endif
 
-	xx = headerWrite(fd, nh);
+	msg = NULL;
+	rc = rpmpkgWrite(item, fd, nh, &msg);
 	nh = headerFree(nh);
-
-	if (xx) {
-	    rpmlog(RPMLOG_ERR, _("Unable to write header to %s: %s\n"),
-			fileName, Fstrerror(fd));
+	if (rc != RPMRC_OK) {
+	    rpmlog(RPMLOG_ERR, "%s: %s: %s", fileName, item,
+                (msg && *msg ? msg : "write failed\n"));
+	    msg = _free(msg);
 	    rc = RPMRC_FAIL;
 	    goto exit;
 	}

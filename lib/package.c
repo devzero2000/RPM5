@@ -145,7 +145,7 @@ if (!_nosigh) {
     switch (rc) {
     default:
 	rpmlog(RPMLOG_ERR, "%s: %s: %s", fn, item,
-		(msg && *msg ? msg : "\n"));
+		(msg && *msg ? msg : _("read failed\n")));
 	msg = _free(msg);
 	goto exit;
 	/*@notreached@*/ break;

@@ -1,4 +1,6 @@
 5.0a2 -> 5.0a3:
+    - jbj: eliminate 2 of 3 remaining uses of headerWrite.
+    - jbj: fix: initialize _nolead to 0, not 1.
     - jbj: add "struct utimbuf" and "struct utsname" to eliminate perl wanings.
     - jbj: adjust includes throughout.
     - jbj: move popt.h from rpmlib.h to rpmcli.h, most routines don't need.

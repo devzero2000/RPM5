@@ -1961,8 +1961,15 @@ assert(psm->te != NULL);
 	    }
 
 	    /* Write the metadata section into the package. */
-	    rc = headerWrite(psm->fd, psm->oh);
-	    if (rc) break;
+	    {	const char item[] = "Header";
+		const char * msg = NULL;
+		rc = rpmpkgWrite(item, psm->fd, psm->oh, &msg);
+		if (rc != RPMRC_OK) {
+		    rpmlog(RPMLOG_ERR, "%s: %s: %s", psm->pkgfn, item,
+			(msg && *msg ? msg : "write failed\n"));
+		    msg = _free(msg);
+		}
+	    }
 	}
 	break;
     case PSM_PROCESS:

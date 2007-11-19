@@ -1269,9 +1269,11 @@ if (wf != NULL) {
 } else {
     h = headerRead(fd);
 }
-    if (h == NULL)
+    if (h == NULL) {
+	if (msg)
+	    *msg = xstrdup(Fstrerror(fd));
 	rc = RPMRC_FAIL;
-    else if (hdrp) {
+    } else if (hdrp) {
 	*hdrp = headerLink(h);
 	h = headerFree(h);
     }
@@ -1295,8 +1297,11 @@ static rpmRC wrHeader(FD_t fd, void * ptr, /*@unused@*/ const char ** msg)
     int xx;
 
     xx = headerWrite(fd, h);
-    if (xx)
+    if (xx) {
+	if (msg)
+	    *msg = xstrdup(Fstrerror(fd));
 	rc = RPMRC_FAIL;
+    }
 
     return rc;
 }
