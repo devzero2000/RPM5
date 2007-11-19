@@ -1,4 +1,5 @@
 5.0a1 -> 5.0a2:
+    - jbj: eliminate rpmMessage and RPMMESS_FOO constants, use rpmlog instead.
     - jbj: fix: don't add RPMTAG_ARCH to pubkeys, pubkeys cannot be erased.
     - afb: make devtool %standalone include the required %{_rpmhome}/magic.
     - jbj: fix: handle absolute paths to spec files again.

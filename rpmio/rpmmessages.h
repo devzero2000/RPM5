@@ -8,16 +8,6 @@
 
 #include "rpmlog.h"
 
-#define	RPMMESS_DEBUG		RPMLOG_DEBUG
-#define	RPMMESS_VERBOSE		RPMLOG_INFO
-#define	RPMMESS_NORMAL		RPMLOG_NOTICE
-#define	RPMMESS_WARNING		RPMLOG_WARNING
-#define	RPMMESS_ERROR		RPMLOG_ERR
-#define	RPMMESS_FATALERROR	RPMLOG_CRIT
-
-#define	RPMMESS_QUIET		RPMMESS_WARNING
-
-#define	rpmMessage		rpmlog
 #define	rpmSetVerbosity(_lvl)	\
 	((void)rpmlogSetMask( RPMLOG_UPTO( RPMLOG_PRI(_lvl))))
 #define	rpmIncreaseVerbosity()	\
@@ -25,11 +15,11 @@
 #define	rpmDecreaseVerbosity()	\
 	((void)rpmlogSetMask((((int)(rpmlogSetMask(0) & 0xff)) >> 1)))
 #define	rpmIsNormal()		\
-	(rpmlogSetMask(0) >= RPMLOG_MASK( RPMMESS_NORMAL ))
+	(rpmlogSetMask(0) >= RPMLOG_MASK( RPMLOG_NOTICE ))
 #define	rpmIsVerbose()		\
-	(rpmlogSetMask(0) >= RPMLOG_MASK( RPMMESS_VERBOSE ))
+	(rpmlogSetMask(0) >= RPMLOG_MASK( RPMLOG_INFO ))
 #define	rpmIsDebug()		\
-	(rpmlogSetMask(0) >= RPMLOG_MASK( RPMMESS_DEBUG ))
+	(rpmlogSetMask(0) >= RPMLOG_MASK( RPMLOG_DEBUG ))
 
 /*@-redef@*/ /* LCL: ??? */
 typedef /*@abstract@*/ const void * fnpyKey;
