@@ -800,7 +800,7 @@ pgpDig dig = fdGetDig(fd);
     {	Header h = NULL;
 	const char item[] = "Header";
 	const char * msg = NULL;
-	rc = rpmReadHeader(dig, fd, &h, &msg);
+	rc = rpmpkgRead(item, fd, &h, msg);
 	if (rc != RPMRC_OK) {
 	    rpmlog(RPMLOG_ERR, "%s: %s: %s\n", fn, item, msg);
 	    msg = _free(msg);

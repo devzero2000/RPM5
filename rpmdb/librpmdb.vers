@@ -86,7 +86,6 @@ LIBRPMDB_0
     rpmpkgRead;
     rpmpkgSizeof;
     rpmpkgWrite;
-    rpmReadHeader;
     rpm_mergesort;
     rpmTagTable;
     rpmTagTableSize;

@@ -203,21 +203,22 @@ if (!_nosigh) {
     }
 /*@-type@*/	/* XXX arrow access of non-pointer (FDSTAT_t) */
     nb = -fd->stats->ops[FDSTAT_READ].bytes;
-    rc = rpmReadHeader(dig, fd, &h, &msg);
+    {	const char item[] = "Header";
+	msg = NULL;
+	rc = rpmpkgRead(item, fd, &h, msg);
+        if (rc != RPMRC_OK) {
+            rpmlog(RPMLOG_ERR, "%s: %s: %s\n", fn, item, msg);
+            msg = _free(msg);
+            goto exit;
+        }
+        msg = _free(msg);
+    }
     nb += fd->stats->ops[FDSTAT_READ].bytes;
 /*@=type@*/
     if (opx > 0 && op != NULL) {
 	(void) rpmswExit(op, nb);
 	op = NULL;
     }
-
-    if (rc != RPMRC_OK || h == NULL) {
-	rpmlog(RPMLOG_ERR, _("%s: headerRead failed: %s"), fn,
-		(msg && *msg ? msg : "\n"));
-	msg = _free(msg);
-	goto exit;
-    }
-    msg = _free(msg);
 
     /* Any digests or signatures to check? */
     if (she->tag == 0) {

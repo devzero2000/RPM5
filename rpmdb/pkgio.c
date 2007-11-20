@@ -1122,11 +1122,20 @@ static rpmRC ckHeader(/*@unused@*/ FD_t fd, const void * ptr, const char ** msg)
     return rc;
 }
 
-/*@-mustmod@*/	/* _fd is modified */
-rpmRC rpmReadHeader(pgpDig dig, void * _fd, Header *hdrp, const char ** msg)
+/** 
+ * Return checked and loaded header.
+ * @param dig		signature parameters container
+ * @param fd		file handle
+ * @retval hdrp		address of header (or NULL)
+ * @retval *msg		verification error message (or NULL)
+ * @return		RPMRC_OK on success
+ */
+static rpmRC rpmReadHeader(FD_t fd, Header *hdrp, const char ** msg)
+        /*@globals fileSystem, internalState @*/
+        /*@modifies dig, *_fd, *hdrp, *msg, fileSystem, internalState @*/
 {
-    FD_t fd = _fd;
-rpmwf wf = fdGetWF(fd);
+    rpmwf wf = fdGetWF(fd);
+    pgpDig dig = fdGetDig(fd);
     char buf[BUFSIZ];
     uint32_t block[4];
     uint32_t il;
@@ -1140,6 +1149,7 @@ rpmwf wf = fdGetWF(fd);
     rpmRC rc = RPMRC_FAIL;		/* assume failure */
     int xx;
 
+assert(dig != NULL);
     buf[0] = '\0';
 
     if (hdrp)
@@ -1233,7 +1243,6 @@ exit:
 
     return rc;
 }
-/*@=mustmod@*/
 
 /**
  * Read metadata header.
@@ -1260,7 +1269,9 @@ if (wf != NULL) {
     if ((rc = rpmwfPullXAR(wf, "Header")) != RPMRC_OK) return rc;
     h = headerLoad(wf->h);
 } else {
-    h = headerRead(fd);
+    rc = rpmReadHeader(fd, &h, msg);
+    if (rc != RPMRC_OK)
+	return rc;
 }
     if (h == NULL) {
 	if (msg)

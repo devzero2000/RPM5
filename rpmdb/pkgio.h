@@ -34,19 +34,6 @@ rpmRC headerCheck(pgpDig dig, const void * uh, size_t uc,
 	/*@globals fileSystem, internalState @*/
 	/*@modifies dig, *msg, fileSystem, internalState @*/;
 
-/** 
- * Return checked and loaded header.
- * @param dig		signature parameters container
- * @param _fd		file handle
- * @retval hdrp		address of header (or NULL)
- * @retval *msg		verification error message (or NULL)
- * @return		RPMRC_OK on success
- */
-rpmRC rpmReadHeader(pgpDig dig, void * _fd, /*@out@*/ Header *hdrp,
-		/*@out@*/ /*@null@*/ const char ** msg)
-        /*@globals fileSystem, internalState @*/
-        /*@modifies dig, *_fd, *hdrp, *msg, fileSystem, internalState @*/;
-
 /**
  * Return size of item in bytes.
  * @param fn		item name
