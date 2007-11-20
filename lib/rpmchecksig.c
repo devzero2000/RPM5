@@ -799,7 +799,7 @@ rpmwf wf = fdGetWF(fd);
     {	Header h = NULL;
 	const char item[] = "Header";
 	const char * msg = NULL;
-	rc = rpmReadHeader(ts, fd, &h, &msg);
+	rc = rpmReadHeader(dig, fd, &h, &msg);
 	if (rc != RPMRC_OK) {
 	    rpmlog(RPMLOG_ERR, "%s: %s: %s\n", fn, item, msg);
 	    msg = _free(msg);
