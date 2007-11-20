@@ -51,7 +51,7 @@ static int readKeys(const char * uri)
     int rc;
     int ec = 0;
 
-    dig = pgpNewDig(0);
+    dig = pgpDigNew(0);
     for (kip = keyids; *kip; kip += 2) {
 	pgpArmor pa;
 
@@ -77,12 +77,12 @@ fprintf(stderr, "%s\n", pgpHexStr(pkt, pktlen));
 fprintf(stderr, "KEYID: %08x %08x\n", pgpGrab(keyid, 4), pgpGrab(keyid+4, 4));
 
 
-	pgpCleanDig(dig);
+	pgpDigClean(dig);
 
 	free((void *)pkt);
 	pkt = NULL;
     }
-    dig = pgpFreeDig(dig);
+    dig = pgpDigFree(dig);
 
     return ec;
 }

@@ -1358,19 +1358,41 @@ typedef enum pgpVSFlags_e {
     RPMVSF_NORSA )
 
 /**
- * Create a container for parsed OpenPGP packates.
- * @return		container
+ * Unreference a signature parameters instance.
+ * @param dig		signature parameters
+ * @param msg
+ * @return		NULL always
  */
-/*@only@*/
-pgpDig pgpNewDig(pgpVSFlags vsflags)
-	/*@*/;
+/*@unused@*/ /*@null@*/
+pgpDig pgpDigUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ pgpDig dig,
+		/*@null@*/ const char * msg)
+	/*@modifies dig @*/;
+
+/** @todo Remove debugging entry from the ABI. */
+/*@-exportlocal@*/
+/*@null@*/
+pgpDig XpgpDigUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ pgpDig dig,
+		/*@null@*/ const char * msg, const char * fn, unsigned ln)
+	/*@modifies dig @*/;
+/*@=exportlocal@*/
+#define	pgpDigUnlink(_dig, _msg) XpgpDigUnlink(_dig, _msg, __FILE__, __LINE__)
 
 /**
- * Release (malloc'd) data from container.
- * @param dig		signature parameters container
+ * Reference a signature parameters instance.
+ * @param dig		signature parameters
+ * @param msg
+ * @return		new signature parameters reference
  */
-void pgpCleanDig(/*@null@*/ pgpDig dig)
+/*@unused@*/ /*@newref@*/ /*@null@*/
+pgpDig pgpDigLink (/*@null@*/ pgpDig dig, /*@null@*/ const char * msg)
 	/*@modifies dig @*/;
+
+/** @todo Remove debugging entry from the ABI. */
+/*@newref@*/ /*@null@*/
+pgpDig XpgpDigLink (/*@null@*/ pgpDig dig, /*@null@*/ const char * msg,
+		const char * fn, unsigned ln)
+        /*@modifies dig @*/;
+#define	pgpDigLink(_dig, _msg)	XpgpDigLink(_dig, _msg, __FILE__, __LINE__)
 
 /**
  * Destroy a container for parsed OpenPGP packates.
@@ -1378,7 +1400,22 @@ void pgpCleanDig(/*@null@*/ pgpDig dig)
  * @return		NULL always
  */
 /*@only@*/ /*@null@*/
-pgpDig pgpFreeDig(/*@only@*/ /*@null@*/ pgpDig dig)
+pgpDig pgpDigFree(/*@only@*/ /*@null@*/ pgpDig dig)
+	/*@modifies dig @*/;
+
+/**
+ * Create a container for parsed OpenPGP packates.
+ * @return		container
+ */
+/*@only@*/
+pgpDig pgpDigNew(pgpVSFlags vsflags)
+	/*@*/;
+
+/**
+ * Release (malloc'd) data from container.
+ * @param dig		signature parameters container
+ */
+void pgpDigClean(/*@null@*/ pgpDig dig)
 	/*@modifies dig @*/;
 
 /**

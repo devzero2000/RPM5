@@ -655,7 +655,7 @@ assert(ix == 0);
 	if (pktlen == 0 || tag != PGPTAG_SIGNATURE) {
 	    val = xstrdup(_("(not an OpenPGP signature)"));
 	} else {
-	    pgpDig dig = pgpNewDig(0);
+	    pgpDig dig = pgpDigNew(0);
 	    pgpDigParams sigp = pgpGetSignature(dig);
 	    size_t nb = 0;
 	    const char *tempstr;
@@ -714,7 +714,7 @@ assert(ix == 0);
 		goto again;
 	    t = stpcpy(t, tempstr);
 
-	    dig = pgpFreeDig(dig);
+	    dig = pgpDigFree(dig);
 	}
     }
 

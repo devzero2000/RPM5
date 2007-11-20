@@ -157,7 +157,7 @@ static int getSignid(Header sigh, int sigtag, unsigned char * signid)
     he->tag = sigtag;
     xx = hge(sigh, he, 0);
     if (xx && he->p.ptr != NULL) {
-	pgpDig dig = pgpNewDig(0);
+	pgpDig dig = pgpDigNew(0);
 
 	if (!pgpPrtPkts(he->p.ptr, he->c, dig, 0)) {
 	    memcpy(signid, dig->signature.signid, sizeof(dig->signature.signid));
@@ -165,7 +165,7 @@ static int getSignid(Header sigh, int sigtag, unsigned char * signid)
 	}
      
 	he->p.ptr = _free(he->p.ptr);
-	dig = pgpFreeDig(dig);
+	dig = pgpDigFree(dig);
     }
     return rc;
 }
@@ -510,7 +510,7 @@ rpmRC rpmcliImportPubkey(const rpmts ts, const unsigned char * pkt, ssize_t pktl
 	goto exit;
 /*@=moduncon@*/
 
-    dig = pgpNewDig(0);
+    dig = pgpDigNew(0);
 
     /* Build header elements. */
     (void) pgpPrtPkts(pkt, pktlen, dig, 0);
@@ -693,7 +693,7 @@ rpmRC rpmcliImportPubkey(const rpmts ts, const unsigned char * pkt, ssize_t pktl
 exit:
     /* Clean up. */
     h = headerFree(h);
-    dig = pgpFreeDig(dig);
+    dig = pgpDigFree(dig);
     n = _free(n);
     u = _free(u);
     v = _free(v);
@@ -1002,7 +1002,7 @@ assert(dig != NULL);
 assert(she->p.ptr != NULL);
 
 	    /* Clean up parameters from previous she->tag. */
-	    pgpCleanDig(dig);
+	    pgpDigClean(dig);
 
 /*@-noeffect@*/
 	    xx = pgpSetSig(rpmtsDig(ts), she->tag, she->t, she->p.ptr, she->c);

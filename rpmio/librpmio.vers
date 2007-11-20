@@ -147,10 +147,13 @@ LIBRPMIO_0
     pgpArmorKeyTbl;
     pgpArmorTbl;
     pgpArmorWrap;
-    pgpCleanDig;
     pgpCompressionTbl;
+    pgpDigClean;
+    pgpDigFree;
+    pgpDigNew;
+    XpgpDigLink;
+    XpgpDigUnlink;
     pgpFindPubkey;
-    pgpFreeDig;
     pgpGetPubkey;
     pgpGetSignature;
     pgpGetSigtag;
@@ -160,7 +163,6 @@ LIBRPMIO_0
     pgpGetVSFlags;
     pgpHashTbl;
     pgpKeyServerPrefsTbl;
-    pgpNewDig;
     pgpPrtComment;
     pgpPrtKey;
     pgpPrtPkt;

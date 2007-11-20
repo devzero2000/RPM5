@@ -262,7 +262,7 @@ static int makeGPGSignature(const char * file, uint32_t * sigTagp,
     rpmlog(RPMLOG_DEBUG, D_("Got %u bytes of GPG sig\n"), (unsigned)*pktlenp);
 
     /* Parse the signature, change signature tag as appropriate. */
-    dig = pgpNewDig(0);
+    dig = pgpDigNew(0);
 
     (void) pgpPrtPkts(*pktp, *pktlenp, dig, 0);
     sigp = pgpGetSignature(dig);
@@ -287,7 +287,7 @@ assert(0);	/* XXX never happens. */
 	break;
     }
 
-    dig = pgpFreeDig(dig);
+    dig = pgpDigFree(dig);
 
     return 0;
 }

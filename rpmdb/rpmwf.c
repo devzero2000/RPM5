@@ -300,11 +300,36 @@ rpmRC rpmwfPushRPM(rpmwf wf, const char * fn)
     return RPMRC_OK;
 }
 
+rpmwf XrpmwfUnlink(rpmwf wf, const char * msg, const char * fn, unsigned ln)
+{
+    if (wf == NULL) return NULL;
+/*@-modfilesys@*/
+if (_rpmwf_debug && msg != NULL)
+fprintf(stderr, "--> wf %p -- %d %s at %s:%u\n", wf, wf->nrefs, msg, fn, ln);
+/*@=modfilesys@*/
+    wf->nrefs--;
+    return NULL;
+}
+
+rpmwf XrpmwfLink(rpmwf wf, const char * msg, const char * fn, unsigned ln)
+{
+    if (wf == NULL) return NULL;
+    wf->nrefs++;
+
+/*@-modfilesys@*/
+if (_rpmwf_debug && msg != NULL)
+fprintf(stderr, "--> wf %p ++ %d %s at %s:%u\n", wf, wf->nrefs, msg, fn, ln);
+/*@=modfilesys@*/
+
+    /*@-refcounttrans@*/ return wf; /*@=refcounttrans@*/
+}
+
 rpmwf rpmwfFree(rpmwf wf)
 {
-if (_rpmwf_debug)
-fprintf(stderr, "*** rpmwfFree(%p)\n", wf);
     if (wf) {
+
+	if (wf->nrefs > 1)
+	    return rpmwfUnlink(wf, "rpmwfFree");
 
 	if (wf->b == NULL) {
 /*@-dependenttrans -onlytrans @*/	/* rpm needs dependent, xar needs only */
@@ -319,7 +344,12 @@ fprintf(stderr, "*** rpmwfFree(%p)\n", wf);
 	(void) rpmwfFiniRPM(wf);
 
 	wf->fn = _free(wf->fn);
+
+	(void) rpmwfUnlink(wf, "rpmwfFree");
+	/*@-refcounttrans -usereleased@*/
+	memset(wf, 0, sizeof(*wf));         /* XXX trash and burn */
 	wf = _free(wf);
+	/*@=refcounttrans =usereleased@*/
     }
     return NULL;
 }
@@ -340,7 +370,8 @@ rpmwf rpmwfNew(const char * fn)
 
 if (_rpmwf_debug)
 fprintf(stderr, "*** rpmwfNew(%s) wf %p nb %u\n", wf->fn, wf, (unsigned)wf->nb);
-    return wf;
+
+    return rpmwfLink(wf, "rpmwfNew");
 }
 
 rpmwf rdRPM(const char * rpmfn)

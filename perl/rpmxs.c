@@ -13,8 +13,9 @@
 #include <utime.h>
 #include <utime.h>
 
-#include "rpmlib.h"
 #include "rpmio.h"
+#include "rpmlib.h"
+#include "rpmbuild.h"
 #include "rpmconstant.h"
 
 #include "rpmxs.h"

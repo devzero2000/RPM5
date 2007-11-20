@@ -77,6 +77,8 @@ struct pgpDig_s {
 	/*@modifies *_ts, *_dig @*/;/*!< Find pubkey, i.e. rpmtsFindPubkey(). */
 /*@null@*/
     void * _ts;			/*!< Find pubkey argument, i.e. rpmts. */
+/*@refs@*/
+    int nrefs;			/*!< Reference count. */
 
     byte ** ppkts;
     int npkts;

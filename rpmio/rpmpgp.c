@@ -12,7 +12,7 @@
 /*@access pgpPkt @*/
 
 /*@unchecked@*/
-static int _debug = 0;
+static int _pgp_debug = 0;
 
 /*@unchecked@*/
 static int _print = 0;
@@ -272,15 +272,15 @@ static int pgpHexSet(const char * pre, int lbits,
     t = xmalloc(2*nbytes+1);
     ix = 2 * ((nbits - mbits) >> 3);
 
-if (_debug)
+if (_pgp_debug)
 fprintf(stderr, "*** mbits %u nbits %u nbytes %u t %p[%d] ix %u\n", mbits, nbits, nbytes, t, (2*nbytes+1), ix);
     if (ix > 0) memset(t, (int)'0', ix);
     strcpy(t+ix, pgpMpiHex(p));
-if (_debug)
+if (_pgp_debug)
 fprintf(stderr, "*** %s %s\n", pre, t);
     (void) mpnsethex(mpn, t);
     t = _free(t);
-if (_debug && _print)
+if (_pgp_debug && _print)
 fprintf(stderr, "\t %s ", pre), mpfprintln(stderr, mpn->size, mpn->data);
     return 0;
 }
@@ -416,7 +416,7 @@ static int pgpPrtSigParams(const pgpPkt pp, byte pubkey_algo, byte sigtype,
 		switch (i) {
 		case 0:		/* m**d */
 		    (void) mpnsethex(&_dig->c, pgpMpiHex(p));
-if (_debug && _print)
+if (_pgp_debug && _print)
 fprintf(stderr, "\t  m**d = "),  mpfprintln(stderr, _dig->c.size, _dig->c.data);
 		    /*@switchbreak@*/ break;
 		default:
@@ -518,7 +518,7 @@ int pgpPrtSig(const pgpPkt pp)
 	if ((p + plen) > (pp->h + pp->hlen))
 	    return 1;
 
-if (_debug && _print)
+if (_pgp_debug && _print)
 fprintf(stderr, "   hash[%u] -- %s\n", plen, pgpHexStr(p, plen));
 	if (_digp && _digp->pubkey_algo == 0) {
 	    _digp->hashlen = sizeof(*v) + plen;
@@ -533,7 +533,7 @@ fprintf(stderr, "   hash[%u] -- %s\n", plen, pgpHexStr(p, plen));
 	if ((p + plen) > (pp->h + pp->hlen))
 	    return 1;
 
-if (_debug && _print)
+if (_pgp_debug && _print)
 fprintf(stderr, " unhash[%u] -- %s\n", plen, pgpHexStr(p, plen));
 	(void) pgpPrtSubType(p, plen, v->sigtype);
 	p += plen;
@@ -630,12 +630,12 @@ static const byte * pgpPrtPubkeyParams(const pgpPkt pp, byte pubkey_algo,
 		switch (i) {
 		case 0:		/* n */
 		    (void) mpbsethex(&_dig->rsa_pk.n, pgpMpiHex(p));
-if (_debug && _print)
+if (_pgp_debug && _print)
 fprintf(stderr, "\t     n = "),  mpfprintln(stderr, _dig->rsa_pk.n.size, _dig->rsa_pk.n.modl);
 		    /*@switchbreak@*/ break;
 		case 1:		/* e */
 		    (void) mpnsethex(&_dig->rsa_pk.e, pgpMpiHex(p));
-if (_debug && _print)
+if (_pgp_debug && _print)
 fprintf(stderr, "\t     e = "),  mpfprintln(stderr, _dig->rsa_pk.e.size, _dig->rsa_pk.e.data);
 		    /*@switchbreak@*/ break;
 		default:
@@ -649,22 +649,22 @@ fprintf(stderr, "\t     e = "),  mpfprintln(stderr, _dig->rsa_pk.e.size, _dig->r
 		switch (i) {
 		case 0:		/* p */
 		    (void) mpbsethex(&_dig->p, pgpMpiHex(p));
-if (_debug && _print)
+if (_pgp_debug && _print)
 fprintf(stderr, "\t     p = "),  mpfprintln(stderr, _dig->p.size, _dig->p.modl);
 		    /*@switchbreak@*/ break;
 		case 1:		/* q */
 		    (void) mpbsethex(&_dig->q, pgpMpiHex(p));
-if (_debug && _print)
+if (_pgp_debug && _print)
 fprintf(stderr, "\t     q = "),  mpfprintln(stderr, _dig->q.size, _dig->q.modl);
 		    /*@switchbreak@*/ break;
 		case 2:		/* g */
 		    (void) mpnsethex(&_dig->g, pgpMpiHex(p));
-if (_debug && _print)
+if (_pgp_debug && _print)
 fprintf(stderr, "\t     g = "),  mpfprintln(stderr, _dig->g.size, _dig->g.data);
 		    /*@switchbreak@*/ break;
 		case 3:		/* y */
 		    (void) mpnsethex(&_dig->y, pgpMpiHex(p));
-if (_debug && _print)
+if (_pgp_debug && _print)
 fprintf(stderr, "\t     y = "),  mpfprintln(stderr, _dig->y.size, _dig->y.data);
 		    /*@switchbreak@*/ break;
 		default:
@@ -1027,14 +1027,31 @@ int pgpPrtPkt(const byte *pkt, size_t pleft)
     return (rc ? -1 : pp->pktlen);
 }
 
-pgpDig pgpNewDig(pgpVSFlags vsflags)
+pgpDig XpgpDigUnlink(pgpDig dig, const char * msg, const char * fn, unsigned ln)
 {
-    pgpDig dig = xcalloc(1, sizeof(*dig));
-    dig->vsflags = vsflags;
-    return dig;
+    if (dig == NULL) return NULL;
+/*@-modfilesys@*/
+if (_pgp_debug && msg != NULL)
+fprintf(stderr, "--> dig %p -- %d %s at %s:%u\n", dig, dig->nrefs, msg, fn, ln);
+/*@=modfilesys@*/
+    dig->nrefs--;
+    return NULL;
 }
 
-void pgpCleanDig(pgpDig dig)
+pgpDig XpgpDigLink(pgpDig dig, const char * msg, const char * fn, unsigned ln)
+{
+    if (dig == NULL) return NULL;
+    dig->nrefs++;
+
+/*@-modfilesys@*/
+if (_pgp_debug && msg != NULL)
+fprintf(stderr, "--> dig %p ++ %d %s at %s:%u\n", dig, dig->nrefs, msg, fn, ln);
+/*@=modfilesys@*/
+
+    /*@-refcounttrans@*/ return dig; /*@=refcounttrans@*/
+}
+
+void pgpDigClean(pgpDig dig)
 {
     if (dig != NULL) {
 	int i;
@@ -1072,17 +1089,20 @@ void pgpCleanDig(pgpDig dig)
 /*@=nullstate@*/
 }
 
-pgpDig pgpFreeDig(/*@only@*/ /*@null@*/ pgpDig dig)
+pgpDig pgpDigFree(/*@only@*/ /*@null@*/ pgpDig dig)
 	/*@modifies dig @*/
 {
     if (dig != NULL) {
+
+	if (dig->nrefs > 1)
+	    return pgpDigUnlink(dig, "pgpDigFree");
 
 	/* Lose the header tag data. */
 	/* XXX this free should be done somewhere else. */
 	dig->sig = _free(dig->sig);
 
 	/* Dump the signature/pubkey data. */
-	pgpCleanDig(dig);
+	pgpDigClean(dig);
 
 	if (dig->hdrsha1ctx != NULL)
 	    (void) rpmDigestFinal(dig->hdrsha1ctx, NULL, NULL, 0);
@@ -1116,9 +1136,20 @@ pgpDig pgpFreeDig(/*@only@*/ /*@null@*/ pgpDig dig)
 	mpnfree(&dig->c);
 	mpnfree(&dig->hm);
 
+	(void) pgpDigUnlink(dig, "pgpDigFree");
+	/*@-refcounttrans -usereleased@*/
+	memset(dig, 0, sizeof(*dig));         /* XXX trash and burn */
 	dig = _free(dig);
+	/*@=refcounttrans =usereleased@*/
     }
     return dig;
+}
+
+pgpDig pgpDigNew(pgpVSFlags vsflags)
+{
+    pgpDig dig = xcalloc(1, sizeof(*dig));
+    dig->vsflags = vsflags;
+    return pgpDigLink(dig, "pgpDigNew");
 }
 
 pgpDigParams pgpGetSignature(pgpDig dig)

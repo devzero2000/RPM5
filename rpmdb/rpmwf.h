@@ -32,6 +32,8 @@ struct rpmwf_s {
     xar_iter_t i;
 #endif
     int first;
+/*@refs@*/
+    int nrefs;			/*!< Reference count. */
 };
 #endif
 
@@ -70,6 +72,43 @@ rpmRC rpmwfInitRPM(rpmwf wf, const char * fn, const char * fmode)
 rpmRC rpmwfPushRPM(rpmwf wf, const char * fn)
 	/*@globals fileSystem @*/
 	/*@modifies wf, fileSystem @*/;
+
+/**
+ * Unreference a wrapper format instance.
+ * @param wf		wrapper format
+ * @param msg
+ * @return		NULL always
+ */
+/*@unused@*/ /*@null@*/
+rpmwf rpmwfUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ rpmwf wf,
+		/*@null@*/ const char * msg)
+	/*@modifies wf @*/;
+
+/** @todo Remove debugging entry from the ABI. */
+/*@-exportlocal@*/
+/*@null@*/
+rpmwf XrpmwfUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ rpmwf wf,
+		/*@null@*/ const char * msg, const char * fn, unsigned ln)
+	/*@modifies wf @*/;
+/*@=exportlocal@*/
+#define	rpmwfUnlink(_wf, _msg)	XrpmwfUnlink(_wf, _msg, __FILE__, __LINE__)
+
+/**
+ * Reference a wrapper format instance.
+ * @param wf		wrapper format
+ * @param msg
+ * @return		new wrapper format reference
+ */
+/*@unused@*/ /*@newref@*/ /*@null@*/
+rpmwf rpmwfLink (/*@null@*/ rpmwf wf, /*@null@*/ const char * msg)
+	/*@modifies wf @*/;
+
+/** @todo Remove debugging entry from the ABI. */
+/*@newref@*/ /*@null@*/
+rpmwf XrpmwfLink (/*@null@*/ rpmwf wf, /*@null@*/ const char * msg,
+		const char * fn, unsigned ln)
+        /*@modifies wf @*/;
+#define	rpmwfLink(_wf, _msg)	XrpmwfLink(_wf, _msg, __FILE__, __LINE__)
 
 rpmwf rpmwfFree(/*@only@*/ rpmwf wf)
 	/*@globals fileSystem @*/

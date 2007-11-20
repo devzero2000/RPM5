@@ -106,7 +106,7 @@ main(int argc, char *argv[])
     int printing = 1;
     int rc;
 
-    dig = pgpNewDig(0);
+    dig = pgpDigNew(0);
 
     mpbzero(&dig->p);	mpbsethex(&dig->p, fips_p);
     mpbzero(&dig->q);	mpbsethex(&dig->q, fips_q);
@@ -176,7 +176,7 @@ fprintf(stderr, "=============================== DSA verify: rc %d\n", rc);
     mpnfree(&dig->r);
     mpnfree(&dig->s);
 
-    dig = pgpFreeDig(dig);
+    dig = pgpDigFree(dig);
 
     return rc;
 }
