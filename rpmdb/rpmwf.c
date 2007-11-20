@@ -328,16 +328,17 @@ rpmwf rpmwfFree(rpmwf wf)
 {
     if (wf) {
 
+/*@-onlytrans@*/
 	if (wf->nrefs > 1)
 	    return rpmwfUnlink(wf, "rpmwfFree");
 
 	if (wf->b == NULL) {
-/*@-dependenttrans -onlytrans @*/	/* rpm needs dependent, xar needs only */
+/*@-dependenttrans@*/	/* rpm needs dependent, xar needs only */
 	    wf->l = _free(wf->l);
 	    wf->s = _free(wf->s);
 	    wf->h = _free(wf->h);
 	    wf->p = _free(wf->p);
-/*@=dependenttrans =onlytrans @*/
+/*@=dependenttrans@*/
 	}
 
 	(void) rpmwfFiniXAR(wf);
@@ -346,6 +347,7 @@ rpmwf rpmwfFree(rpmwf wf)
 	wf->fn = _free(wf->fn);
 
 	(void) rpmwfUnlink(wf, "rpmwfFree");
+/*@=onlytrans@*/
 	/*@-refcounttrans -usereleased@*/
 	memset(wf, 0, sizeof(*wf));         /* XXX trash and burn */
 	wf = _free(wf);

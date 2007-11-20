@@ -222,7 +222,7 @@ struct rpmts_s {
 
     struct rpmop_s ops[RPMTS_OP_MAX];
 
-/*@relnull@*/
+/*@refcounted@*/ /*@relnull@*/
     pgpDig dig;			/*!< Current signature/pubkey parameters. */
 
 /*@null@*/
@@ -698,7 +698,6 @@ uint32_t rpmtsSetTid(rpmts ts, uint32_t tid)
  * @param ts		transaction set
  * @return		signature/pubkey constants.
  */
-/*@exposed@*/
 pgpDig rpmtsDig(rpmts ts)
 	/*@*/;
 

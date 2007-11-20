@@ -344,6 +344,10 @@ DBGREFS(fd, (stderr, "--> fd  %p -- %d %s at %s:%u %s\n", fd, fd->nrefs, msg, fi
 	    fddig->hashctx = NULL;
 	}
 	fd->ndigests = 0;
+/*@-onlytrans@*/
+	fd->dig = pgpDigFree(fd->dig);
+/*@=onlytrans@*/
+	memset(fd, 0, sizeof(*fd));	/* XXX trash and burn */
 	/*@-refcounttrans@*/ free(fd); /*@=refcounttrans@*/
     }
     return NULL;
@@ -380,6 +384,7 @@ FD_t XfdNew(const char * msg, const char * file, unsigned line)
     fd->errcookie = NULL;
     fd->stats = xcalloc(1, sizeof(*fd->stats));
     fd->wf = NULL;
+    fd->dig = NULL;
 
     fd->ndigests = 0;
     memset(fd->digests, 0, sizeof(fd->digests));

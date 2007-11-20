@@ -22,7 +22,6 @@
 
 /* XXX avoid including <rpmts.h> */
 /*@-redecl -type @*/
-/*@exposed@*/
 extern pgpDig rpmtsDig(void * ts)
         /*@*/;
 extern void rpmtsCleanDig(void * ts)

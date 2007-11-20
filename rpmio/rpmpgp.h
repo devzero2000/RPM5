@@ -1399,15 +1399,15 @@ pgpDig XpgpDigLink (/*@null@*/ pgpDig dig, /*@null@*/ const char * msg,
  * @param dig		signature parameters container
  * @return		NULL always
  */
-/*@only@*/ /*@null@*/
-pgpDig pgpDigFree(/*@only@*/ /*@null@*/ pgpDig dig)
+/*@null@*/
+pgpDig pgpDigFree(/*@killref@*/ /*@only@*/ /*@null@*/ pgpDig dig)
 	/*@modifies dig @*/;
 
 /**
  * Create a container for parsed OpenPGP packates.
  * @return		container
  */
-/*@only@*/
+/*@relnull@*/
 pgpDig pgpDigNew(pgpVSFlags vsflags)
 	/*@*/;
 

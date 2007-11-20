@@ -4,10 +4,11 @@
 /*@unchecked@*/
 extern int _rpmwf_debug;
 
-typedef /*@abstract@*/ struct rpmwf_s * rpmwf;
+typedef /*@abstract@*/ /*@refcounted@*/ struct rpmwf_s * rpmwf;
 
 #ifdef	_RPMWF_INTERNAL
 struct rpmwf_s {
+/*@relnull@*/
     const char * fn;
 /*@relnull@*/
     FD_t fd;
@@ -110,10 +111,12 @@ rpmwf XrpmwfLink (/*@null@*/ rpmwf wf, /*@null@*/ const char * msg,
         /*@modifies wf @*/;
 #define	rpmwfLink(_wf, _msg)	XrpmwfLink(_wf, _msg, __FILE__, __LINE__)
 
+/*@null@*/
 rpmwf rpmwfFree(/*@only@*/ rpmwf wf)
 	/*@globals fileSystem @*/
 	/*@modifies wf, fileSystem @*/;
 
+/*@relnull@*/
 rpmwf rpmwfNew(const char * fn)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;

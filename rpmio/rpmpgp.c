@@ -17,7 +17,7 @@ static int _pgp_debug = 0;
 /*@unchecked@*/
 static int _print = 0;
 
-/*@unchecked@*/ /*@null@*/
+/*@unchecked@*/ /*@refcounted@*/ /*@relnull@*/
 static pgpDig _dig = NULL;
 
 /*@unchecked@*/ /*@null@*/
@@ -1089,11 +1089,11 @@ void pgpDigClean(pgpDig dig)
 /*@=nullstate@*/
 }
 
-pgpDig pgpDigFree(/*@only@*/ /*@null@*/ pgpDig dig)
-	/*@modifies dig @*/
+pgpDig pgpDigFree(pgpDig dig)
 {
     if (dig != NULL) {
 
+/*@-onlytrans@*/
 	if (dig->nrefs > 1)
 	    return pgpDigUnlink(dig, "pgpDigFree");
 
@@ -1137,12 +1137,13 @@ pgpDig pgpDigFree(/*@only@*/ /*@null@*/ pgpDig dig)
 	mpnfree(&dig->hm);
 
 	(void) pgpDigUnlink(dig, "pgpDigFree");
+/*@=onlytrans@*/
 	/*@-refcounttrans -usereleased@*/
 	memset(dig, 0, sizeof(*dig));         /* XXX trash and burn */
 	dig = _free(dig);
 	/*@=refcounttrans =usereleased@*/
     }
-    return dig;
+    return NULL;
 }
 
 pgpDig pgpDigNew(pgpVSFlags vsflags)
@@ -1292,6 +1293,7 @@ static int pgpGrabPkts(const byte * pkts, size_t pktlen,
     return 0;
 }
 
+/*@-globstate -nullderef @*/	/* _dig annotation are not correct. */
 int pgpPrtPkts(const byte * pkts, size_t pktlen, pgpDig dig, int printing)
 	/*@globals _dig, _digp, _print @*/
 	/*@modifies _dig, _digp, *_digp, _print @*/
@@ -1305,7 +1307,7 @@ int pgpPrtPkts(const byte * pkts, size_t pktlen, pgpDig dig, int printing)
     int i;
 
     _print = printing;
-    _dig = dig;
+    _dig = pgpDigLink(dig, "pgpPrtPkts");
     if (dig != NULL && (val & 0x80)) {
 	pgpTag tag = (val & 0x40) ? (val & 0x3f) : ((val >> 2) & 0xf);
 	_digp = (tag == PGPTAG_SIGNATURE) ? &_dig->signature : &_dig->pubkey;
@@ -1313,8 +1315,10 @@ int pgpPrtPkts(const byte * pkts, size_t pktlen, pgpDig dig, int printing)
     } else
 	_digp = NULL;
 
-    if (pgpGrabPkts(pkts, pktlen, &ppkts, &npkts) || ppkts == NULL)
+    if (pgpGrabPkts(pkts, pktlen, &ppkts, &npkts) || ppkts == NULL) {
+	_dig = pgpDigFree(_dig);
 	return -1;
+    }
 
     if (ppkts != NULL)
     for (i = 0, pleft = pktlen; i < npkts; i++, pleft -= len) {
@@ -1329,8 +1333,10 @@ int pgpPrtPkts(const byte * pkts, size_t pktlen, pgpDig dig, int printing)
     } else
 	ppkts = _free(ppkts);
 
+    _dig = pgpDigFree(_dig);
     return 0;
 }
+/*@=globstate =nullderef @*/
 
 pgpArmor pgpReadPkts(const char * fn, const byte ** pkt, size_t * pktlen)
 {

@@ -18,7 +18,7 @@
 
 /**
  */
-typedef /*@abstract@*/ struct pgpDig_s * pgpDig;
+typedef /*@abstract@*/ /*@refcounted@*/ struct pgpDig_s * pgpDig;
 
 /**
  */

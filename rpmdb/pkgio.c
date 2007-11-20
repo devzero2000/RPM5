@@ -291,7 +291,9 @@ pgpDig rpmtsDig(rpmts ts)
 /*@=refcounttrans@*/
     }
 /*@=mods@*/
+/*@-compdef -retexpose -usereleased@*/
     return ts->dig;
+/*@=compdef =retexpose =usereleased@*/
 }
 
 void rpmtsCleanDig(rpmts ts)
@@ -302,7 +304,9 @@ void rpmtsCleanDig(rpmts ts)
 	(void) rpmswAdd(rpmtsOp(ts, opx), pgpStatsAccumulator(ts->dig, opx));
 	opx = RPMTS_OP_SIGNATURE;
 	(void) rpmswAdd(rpmtsOp(ts, opx), pgpStatsAccumulator(ts->dig, opx));
+/*@-onlytrans@*/
 	ts->dig = pgpDigFree(ts->dig);
+/*@=onlytrans@*/
     }
 }
 
@@ -1368,9 +1372,9 @@ rpmRC rpmpkgClean(FD_t fd)
     rpmwf wf = fdGetWF(fd);
     if (wf != NULL) {
 	fdSetWF(fd, NULL);
-/*@-dependenttrans -modfilesys -observertrans @*/
+/*@-dependenttrans -modfilesys -observertrans -refcounttrans @*/
 	wf = rpmwfFree(wf);
-/*@=dependenttrans =modfilesys =observertrans @*/
+/*@=dependenttrans =modfilesys =observertrans =refcounttrans @*/
     }
     return RPMRC_OK;
 }

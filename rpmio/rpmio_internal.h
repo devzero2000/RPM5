@@ -189,6 +189,8 @@ struct _FD_s {
 
 /*@kept@*/
     void *	wf;		/* wrapper format descriptor */
+/*@refcounted@*/ /*@relnull@*/
+    pgpDig	dig;		/* signature parameters */
 
     FDSTAT_t	stats;		/* I/O statistics */
 
