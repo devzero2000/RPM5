@@ -1,4 +1,5 @@
 5.0a2 -> 5.0a3:
+    - jbj: remove headerWrite() from the public API, use rpmpkgWrite instead.
     - jbj: convert last headerWrite to use rpmpkgWrite instead.
     - jbj: conver 2 (of 9 remaining) headerRead's to use rpmpkgRead instead.
     - jbj: add newlines to error message spew from pkgio.

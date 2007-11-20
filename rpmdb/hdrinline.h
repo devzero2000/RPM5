@@ -204,22 +204,6 @@ void * headerUnload(Header h, /*@out@*/ /*@null@*/ size_t * lenp)
 }
 
 /** \ingroup header
- * Write (with unload) header to file handle.
- * @param _fd		file handle
- * @param h		header
- * @return		0 on success, 1 on error
- */
-/*@unused@*/ static inline
-int headerWrite(void * _fd, /*@null@*/ Header h)
-	/*@modifies _fd, h @*/
-{
-    /*@-abstract@*/
-    if (h == NULL) return 0;
-    /*@=abstract@*/
-    return (h2hv(h)->hdrwrite) (_fd, h);
-}
-
-/** \ingroup header
  * Check if tag is in header.
  * @param h		header
  * @param tag		tag

@@ -142,7 +142,12 @@ write(h, fp, no_header_magic = 0)
     RETVAL = 0;
     if (h) {
         if ((fd = fdDup(fileno(fp))) != NULL) {
-            headerWrite(fd, h);
+	    const char item[] = "Header";
+	    const char * msg = NULL;
+	    rpmRC rc = rpmpkgWrite(item, fd, h, &msg);
+	    if (rc != RPMRC_OK)
+		rpmlog(RPMLOG_ERR, "%s: %s: %s\n", "write", item, msg);
+	    msg = _free(msg);
             Fclose(fd);
             RETVAL = 1;
         }
