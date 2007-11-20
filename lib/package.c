@@ -117,6 +117,9 @@ rpmRC rpmReadPackageFile(rpmts ts, void * _fd, const char * fn, Header * hdrp)
     }
 #endif
 
+assert(dig != NULL);
+    (void) fdSetDig(fd, dig);
+
     /* Snapshot current I/O counters (cached persistent I/O reuses counters) */
     (void) rpmswAdd(opsave, fdstat_op(fd, FDSTAT_READ));
 
@@ -222,7 +225,6 @@ if (!_nosigh) {
 	goto exit;
     }
 
-assert(dig != NULL);
     dig->nbytes = 0;
 
     /* Retrieve the tag parameters from the signature header. */
@@ -232,7 +234,7 @@ assert(dig != NULL);
 	goto exit;
     }
 /*@-noeffect@*/
-    xx = pgpSetSig(rpmtsDig(ts), she->tag, she->t, she->p.ptr, she->c);
+    xx = pgpSetSig(dig, she->tag, she->t, she->p.ptr, she->c);
 /*@=noeffect@*/
 
     switch (she->tag) {

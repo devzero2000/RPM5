@@ -1006,7 +1006,7 @@ assert(she->p.ptr != NULL);
 	    pgpDigClean(dig);
 
 /*@-noeffect@*/
-	    xx = pgpSetSig(rpmtsDig(ts), she->tag, she->t, she->p.ptr, she->c);
+	    xx = pgpSetSig(dig, she->tag, she->t, she->p.ptr, she->c);
 /*@=noeffect@*/
 
 	    switch (she->tag) {
