@@ -1149,7 +1149,15 @@ static rpmRC rpmReadHeader(FD_t fd, Header *hdrp, const char ** msg)
     rpmRC rc = RPMRC_FAIL;		/* assume failure */
     int xx;
 
-assert(dig != NULL);
+    if (dig == NULL) {
+	*hdrp = headerRead(fd);
+	if (*hdrp == NULL) {
+	    if (msg)
+		*msg = xstrdup(Fstrerror(fd));
+	    return RPMRC_FAIL;
+	}
+	return RPMRC_OK;
+    }
     buf[0] = '\0';
 
     if (hdrp)

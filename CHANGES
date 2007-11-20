@@ -1,4 +1,8 @@
 5.0a2 -> 5.0a3:
+    - jbj: convert last headerWrite to use rpmpkgWrite instead.
+    - jbj: conver 2 (of 9 remaining) headerRead's to use rpmpkgRead instead.
+    - jbj: add newlines to error message spew from pkgio.
+    - jbj: fix: read from the input, not the output, fd.
     - jbj: bury rpmReadHeader underneath rpmpkgRead("Header", ...).
     - jbj: use the fd attached pgpDig everywhere necessary.
     - jbj: attach pgpDig to the fd being used to verify signatures.

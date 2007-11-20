@@ -314,6 +314,8 @@ static int makeHDRSignature(Header sigh, const char * file, uint32_t sigTag,
     byte * pkt;
     uint32_t pktlen;
     const char * fn = NULL;
+    const char * msg;
+    rpmRC rc;
     int ret = -1;	/* assume failure. */
     int xx;
 
@@ -330,9 +332,16 @@ static int makeHDRSignature(Header sigh, const char * file, uint32_t sigTag,
 	fd = Fopen(file, "r.fdio");
 	if (fd == NULL || Ferror(fd))
 	    goto exit;
-	h = headerRead(fd);
-	if (h == NULL)
-	    goto exit;
+	{   const char item[] = "Header";
+	    msg = NULL;
+	    rc = rpmpkgRead(item, fd, &h, &msg);
+	    if (rc != RPMRC_OK) {
+		rpmlog(RPMLOG_ERR, "%s: %s: %s\n", fn, item, msg);
+		msg = _free(msg);
+		goto exit;
+	    }
+	    msg = _free(msg);
+	}
 	(void) Fclose(fd);	fd = NULL;
 
 	if (headerIsEntry(h, RPMTAG_HEADERIMMUTABLE)) {
@@ -372,15 +381,32 @@ static int makeHDRSignature(Header sigh, const char * file, uint32_t sigTag,
 	fd = Fopen(file, "r.fdio");
 	if (fd == NULL || Ferror(fd))
 	    goto exit;
-	h = headerRead(fd);
-	if (h == NULL)
-	    goto exit;
+	{   const char item[] = "Header";
+	    msg = NULL;
+	    rc = rpmpkgRead(item, fd, &h, &msg);
+	    if (rc != RPMRC_OK) {
+		rpmlog(RPMLOG_ERR, "%s: %s: %s\n", fn, item, msg);
+		msg = _free(msg);
+		goto exit;
+	    }
+	    msg = _free(msg);
+	}
 	(void) Fclose(fd);	fd = NULL;
+
 	if (rpmTempFile(NULL, &fn, &fd))
 	    goto exit;
-	if (headerWrite(fd, h))
-	    goto exit;
+	{   const char item[] = "Header";
+	    msg = NULL;
+	    rc = rpmpkgWrite(item, fd, h, &msg);
+	    if (rc != RPMRC_OK) {
+		rpmlog(RPMLOG_ERR, "%s: %s: %s\n", fn, item, msg);
+		msg = _free(msg);
+		goto exit;
+	    }
+	    msg = _free(msg);
+	}
 	(void) Fclose(fd);	fd = NULL;
+
 	if (makeGPGSignature(fn, &sigTag, &pkt, &pktlen, passPhrase))
 	    goto exit;
 	he->tag = sigTag;

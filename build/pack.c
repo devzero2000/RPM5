@@ -361,21 +361,21 @@ int readRPM(const char *fileName, Spec *specp, void * l,
 
 	if (nl == 0) {
 	    rc = RPMRC_FAIL;
-	    msg = "item size is zero";
+	    msg = xstrdup("item size is zero");
 	} else {
 	    l = xcalloc(1, nl);		/* XXX memory leak */
 	    msg = NULL;
 	    rc = rpmpkgRead(item, fdi, l, &msg);
-	    if (rc != RPMRC_OK && msg == NULL)
-		msg = Fstrerror(fdi);
 	}
     }
 
     if (rc != RPMRC_OK) {
 	rpmlog(RPMLOG_ERR, _("readRPM: read %s: %s\n"),
 		(fileName ? fileName : "<stdin>"), msg);
+	msg = _free(msg);
 	return RPMRC_FAIL;
     }
+    msg = _free(msg);
     /*@=sizeoftype@*/
 
     /* XXX FIXME: EPIPE on <stdin> */
@@ -732,7 +732,7 @@ rpmRC writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
 	msg = NULL;
 	rc = rpmpkgWrite(item, fd, h, &msg);
 	if (rc != RPMRC_OK) {
-	    rpmlog(RPMLOG_ERR, "%s: %s: %s", sigtarget, item,
+	    rpmlog(RPMLOG_ERR, "%s: %s: %s\n", sigtarget, item,
 		(msg && *msg ? msg : "write failed\n"));
 	    msg = _free(msg);
 	    rc = RPMRC_FAIL;
@@ -839,7 +839,7 @@ assert(0);
 	msg = NULL;
 	rc = rpmpkgWrite(item, fd, sigh, &msg);
 	if (rc != RPMRC_OK) {
-	    rpmlog(RPMLOG_ERR, "%s: %s: %s", fileName, item,
+	    rpmlog(RPMLOG_ERR, "%s: %s: %s\n", fileName, item,
                 (msg && *msg ? msg : "write failed\n"));
 	    msg = _free(msg);
 	    rc = RPMRC_FAIL;
@@ -861,9 +861,9 @@ assert(0);
 	Header nh = NULL;
 
 	msg = NULL;
-	rc = rpmpkgRead(item, fd, &nh, &msg);
+	rc = rpmpkgRead(item, ifd, &nh, &msg);
 	if (rc != RPMRC_OK) {
-	    rpmlog(RPMLOG_ERR, "%s: %s: %s", sigtarget, item,
+	    rpmlog(RPMLOG_ERR, "%s: %s: %s\n", sigtarget, item,
                 (msg && *msg ? msg : "read failed\n"));
 	    msg = _free(msg);
 	    rc = RPMRC_FAIL;
@@ -878,7 +878,7 @@ assert(0);
 	rc = rpmpkgWrite(item, fd, nh, &msg);
 	nh = headerFree(nh);
 	if (rc != RPMRC_OK) {
-	    rpmlog(RPMLOG_ERR, "%s: %s: %s", fileName, item,
+	    rpmlog(RPMLOG_ERR, "%s: %s: %s\n", fileName, item,
                 (msg && *msg ? msg : "write failed\n"));
 	    msg = _free(msg);
 	    rc = RPMRC_FAIL;
