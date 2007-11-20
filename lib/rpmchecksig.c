@@ -780,7 +780,7 @@ rpmtsClean(ts);
 /**
  * @todo If the GPG key was known available, the md5 digest could be skipped.
  */
-static rpmRC readFile(rpmts ts, FD_t fd, const char * fn, pgpDig dig)
+static rpmRC readFile(FD_t fd, const char * fn, pgpDig dig)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fd, *dig, fileSystem, internalState @*/
 {
@@ -980,7 +980,7 @@ assert(dig != NULL);
 
 	/* Read the file, generating digest(s) on the fly. */
 	if (dig == NULL || sigp == NULL
-	 || readFile(ts, fd, fn, dig) != RPMRC_OK)
+	 || readFile(fd, fn, dig) != RPMRC_OK)
 	{
 	    res++;
 	    goto exit;
