@@ -478,7 +478,7 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootURL,
     /* which handles the initial entry into a spec file.         */
     
     /*@-infloops@*/	/* LCL: parsePart is modified @*/
-    while (parsePart < PART_LAST && parsePart != PART_NONE) {
+    while (parsePart < PART_LAST && parsePart > PART_NONE) {
 	switch (parsePart) {
 	case PART_PREAMBLE:
 	    parsePart = parsePreamble(spec, initialPackage);
@@ -524,7 +524,7 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootURL,
 	    /*@switchbreak@*/ break;
 	}
 
-	if (parsePart >= PART_LAST) {
+	if (parsePart < PART_NONE || parsePart >= PART_LAST) {
 	    spec = freeSpec(spec);
 	    return parsePart;
 	}

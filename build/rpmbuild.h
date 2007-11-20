@@ -47,30 +47,31 @@ typedef enum rpmBuildFlags_e {
 /** \ingroup rpmbuild
  * Spec file parser states.
  */
+#define	PART_BASE	256
 typedef enum rpmParseState_e {
-    PART_NONE		=  0,	/*!< */
-    PART_PREAMBLE	=  1,	/*!< */
-    PART_PREP		=  2,	/*!< */
-    PART_BUILD		=  3,	/*!< */
-    PART_INSTALL	=  4,	/*!< */
-    PART_CHECK		=  5,	/*!< */
-    PART_CLEAN		=  6,	/*!< */
-    PART_FILES		=  7,	/*!< */
-    PART_PRE		=  8,	/*!< */
-    PART_POST		=  9,	/*!< */
-    PART_PREUN		= 10,	/*!< */
-    PART_POSTUN		= 11,	/*!< */
-    PART_PRETRANS	= 12,	/*!< */
-    PART_POSTTRANS	= 13,	/*!< */
-    PART_DESCRIPTION	= 14,	/*!< */
-    PART_CHANGELOG	= 15,	/*!< */
-    PART_TRIGGERIN	= 16,	/*!< */
-    PART_TRIGGERUN	= 17,	/*!< */
-    PART_VERIFYSCRIPT	= 18,	/*!< */
-    PART_BUILDARCHITECTURES= 19,/*!< */
-    PART_TRIGGERPOSTUN	= 20,	/*!< */
-    PART_TRIGGERPREIN	= 21,	/*!< */
-    PART_LAST		= 22	/*!< */
+    PART_NONE		=  0+PART_BASE,	/*!< */
+    PART_PREAMBLE	=  1+PART_BASE,	/*!< */
+    PART_PREP		=  2+PART_BASE,	/*!< */
+    PART_BUILD		=  3+PART_BASE,	/*!< */
+    PART_INSTALL	=  4+PART_BASE,	/*!< */
+    PART_CHECK		=  5+PART_BASE,	/*!< */
+    PART_CLEAN		=  6+PART_BASE,	/*!< */
+    PART_FILES		=  7+PART_BASE,	/*!< */
+    PART_PRE		=  8+PART_BASE,	/*!< */
+    PART_POST		=  9+PART_BASE,	/*!< */
+    PART_PREUN		= 10+PART_BASE,	/*!< */
+    PART_POSTUN		= 11+PART_BASE,	/*!< */
+    PART_PRETRANS	= 12+PART_BASE,	/*!< */
+    PART_POSTTRANS	= 13+PART_BASE,	/*!< */
+    PART_DESCRIPTION	= 14+PART_BASE,	/*!< */
+    PART_CHANGELOG	= 15+PART_BASE,	/*!< */
+    PART_TRIGGERIN	= 16+PART_BASE,	/*!< */
+    PART_TRIGGERUN	= 17+PART_BASE,	/*!< */
+    PART_VERIFYSCRIPT	= 18+PART_BASE,	/*!< */
+    PART_BUILDARCHITECTURES= 19+PART_BASE,/*!< */
+    PART_TRIGGERPOSTUN	= 20+PART_BASE,	/*!< */
+    PART_TRIGGERPREIN	= 21+PART_BASE,	/*!< */
+    PART_LAST		= 22+PART_BASE	/*!< */
 } rpmParseState;
 
 #define STRIP_NOTHING             0
