@@ -780,11 +780,12 @@ rpmtsClean(ts);
 /**
  * @todo If the GPG key was known available, the md5 digest could be skipped.
  */
-static rpmRC readFile(FD_t fd, const char * fn, pgpDig dig)
+static rpmRC readFile(FD_t fd, const char * fn)
 	/*@globals fileSystem, internalState @*/
-	/*@modifies fd, *dig, fileSystem, internalState @*/
+	/*@modifies fd, fileSystem, internalState @*/
 {
 rpmwf wf = fdGetWF(fd);
+pgpDig dig = fdGetDig(fd);
     HGE_t hge = headerGetExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     unsigned char buf[4*BUFSIZ];
@@ -964,7 +965,7 @@ nodigests = 1;
 	}
 
 	dig = rpmtsDig(ts);
-assert(dig != NULL);
+	(void) fdSetDig(fd, dig);
 	sigp = pgpGetSignature(dig);
 
 	/* XXX RSA needs the hash_algo, so decode early. */
@@ -980,7 +981,7 @@ assert(dig != NULL);
 
 	/* Read the file, generating digest(s) on the fly. */
 	if (dig == NULL || sigp == NULL
-	 || readFile(fd, fn, dig) != RPMRC_OK)
+	 || readFile(fd, fn) != RPMRC_OK)
 	{
 	    res++;
 	    goto exit;
@@ -1106,7 +1107,7 @@ assert(she->p.ptr != NULL);
 	hi = headerFreeIterator(hi);
 	/* XXX clear the already free'd signature data. */
 /*@-noeffect@*/
-	xx = pgpSetSig(rpmtsDig(ts), 0, 0, NULL, 0);
+	xx = pgpSetSig(dig, 0, 0, NULL, 0);
 /*@=noeffect@*/
 
 	res += res2;

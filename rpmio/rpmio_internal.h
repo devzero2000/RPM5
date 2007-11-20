@@ -322,6 +322,29 @@ mode_t fdGetOMode(FD_t fd)
 /** \ingroup rpmio
  */
 /*@unused@*/ static inline
+void fdSetDig(FD_t fd, pgpDig dig)
+	/*@modifies fd, dig @*/
+{
+    FDSANE(fd);
+    fd->dig = pgpDigFree(fd->dig);
+    fd->dig = pgpDigLink(dig, "fdSetDig");
+}
+
+/** \ingroup rpmio
+ */
+/*@unused@*/ static inline
+/*@null@*/ pgpDig fdGetDig(FD_t fd)
+	/*@*/
+{
+    FDSANE(fd);
+    /*@-retexpose -refcounttrans -usereleased @*/
+    return fd->dig;
+    /*@=retexpose =refcounttrans =usereleased @*/
+}
+
+/** \ingroup rpmio
+ */
+/*@unused@*/ static inline
 void fdSetWF(FD_t fd, /*@kept@*/ void * wf)
 	/*@modifies fd @*/
 {

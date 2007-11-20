@@ -1,4 +1,5 @@
 5.0a2 -> 5.0a3:
+    - jbj: attach pgpDig to the fd being used to verify signatures.
     - jbj: splint fiddles for refcounted storage.
     - jbj: add refcounts to rpmwf and pgpDig, they're gonna be snarly.
     - jbj: eliminate the headerCheck recursion check. not seen w rpm code paths.
