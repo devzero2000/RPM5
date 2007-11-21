@@ -38,7 +38,18 @@ stream2header(fp, callback = NULL)
     Header header;
     PPCODE:
     if (fp && (fd = fdDup(fileno(fp)))) {
-        while ((header = headerRead(fd))) {
+	while (1) {
+	    const char item[] = "Header";
+	    const char * msg = NULL;
+	    header = NULL;
+	    rpmRC rc = rpmpkgRead(item, fd, &header, &msg);
+	    if (rc != RPMRC_OK) {
+		rpmlog(RPMLOG_ERR, "%s: %s: %s\n", "headerRead", item, msg);
+		header = NULL;
+	    }
+	    msg = _free(msg);
+	    if (header == NULL)
+		break;
             if (callback != NULL && SvROK(callback)) {
                 ENTER;
                 SAVETMPS;

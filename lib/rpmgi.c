@@ -672,7 +672,15 @@ nextkey:
 	    path = _free(path);
 	}
 	if (gi->fd != NULL) {
-	    Header h = headerRead(gi->fd);
+	    Header h = NULL;
+	    const char item[] = "Header";
+	    const char * msg = NULL;
+	    rpmrc = rpmpkgRead(item, gi->fd, &h, &msg);
+	    if (rpmrc != RPMRC_OK) {
+		rpmlog(RPMLOG_ERR, "%s: %s: %s\n", "headerRead", item, msg);
+		h = NULL;
+	    }
+	    msg = _free(msg);
 	    if (h != NULL) {
 		if (!(gi->flags & RPMGI_NOHEADER))
 		    gi->h = headerLink(h);

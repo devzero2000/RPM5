@@ -53,6 +53,18 @@ static int _print_pkts = 0;
 
 /*===============================================*/
 /** \ingroup header
+ * Read (and load) header from file handle.
+ * @param _fd		file handle
+ * @return		header (or NULL on error)
+ */
+/*@unused@*/ static inline
+/*@null@*/ Header headerRead(void * _fd)
+	/*@modifies _fd @*/
+{
+    return hdrVec->hdrread(_fd);
+}
+
+/** \ingroup header
  * Write (with unload) header to file handle.
  * @param _fd		file handle
  * @param h		header

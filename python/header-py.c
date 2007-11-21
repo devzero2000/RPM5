@@ -692,7 +692,13 @@ PyObject * rpmReadHeaders (FD_t fd)
 
     list = PyList_New(0);
     Py_BEGIN_ALLOW_THREADS
-    h = headerRead(fd);
+    {   const char item[] = "Header";
+	const char * msg = NULL;
+	rpmRC rc = rpmpkgRead(item, fd, &h, &msg);
+	if (rc != RPMRC_OK)
+	    rpmlog(RPMLOG_ERR, "%s: %s: %s\n", "headerRead", item, msg);
+	msg = _free(msg);
+    }
     Py_END_ALLOW_THREADS
 
     while (h) {
@@ -707,7 +713,13 @@ PyObject * rpmReadHeaders (FD_t fd)
 	h = headerFree(h);	/* XXX ref held by hdr */
 
 	Py_BEGIN_ALLOW_THREADS
-	h = headerRead(fd);
+	{   const char item[] = "Header";
+	    const char * msg = NULL;
+	    rpmRC rc = rpmpkgRead(item, fd, &h, &msg);
+	    if (rc != RPMRC_OK)
+		rpmlog(RPMLOG_ERR, "%s: %s: %s\n", "headerRead", item, msg);
+	    msg = _free(msg);
+	}
 	Py_END_ALLOW_THREADS
     }
 
@@ -778,7 +790,13 @@ int rpmMergeHeaders(PyObject * list, FD_t fd, int matchTag)
     int xx;
 
     Py_BEGIN_ALLOW_THREADS
-    h = headerRead(fd);
+    {   const char item[] = "Header";
+	const char * msg = NULL;
+	rpmRC rc = rpmpkgRead(item, fd, &h, &msg);
+	if (rc != RPMRC_OK)
+	    rpmlog(RPMLOG_ERR, "%s: %s: %s\n", "headerRead", item, msg);
+	msg = _free(msg);
+    }
     Py_END_ALLOW_THREADS
 
     while (h) {
@@ -826,7 +844,13 @@ int rpmMergeHeaders(PyObject * list, FD_t fd, int matchTag)
 	h = headerFree(h);
 
 	Py_BEGIN_ALLOW_THREADS
-	h = headerRead(fd);
+	{   const char item[] = "Header";
+	    const char * msg = NULL;
+	    rpmRC rc = rpmpkgRead(item, fd, &h, &msg);
+	    if (rc != RPMRC_OK)
+		rpmlog(RPMLOG_ERR, "%s: %s: %s\n", "headerRead", item, msg);
+	    msg = _free(msg);
+	}
 	Py_END_ALLOW_THREADS
     }
 
@@ -890,7 +914,13 @@ rpmSingleHeaderFromFD(PyObject * self, PyObject * args, PyObject * kwds)
     }
 
     Py_BEGIN_ALLOW_THREADS
-    h = headerRead(fd);
+    {   const char item[] = "Header";
+	const char * msg = NULL;
+	rpmRC rc = rpmpkgRead(item, fd, &h, &msg);
+	if (rc != RPMRC_OK)
+	    rpmlog(RPMLOG_ERR, "%s: %s: %s\n", "headerRead", item, msg);
+	msg = _free(msg);
+    }
     Py_END_ALLOW_THREADS
 
     Fclose(fd);
