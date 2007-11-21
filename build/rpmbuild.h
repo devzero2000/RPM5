@@ -47,7 +47,7 @@ typedef enum rpmBuildFlags_e {
 /** \ingroup rpmbuild
  * Spec file parser states.
  */
-#define	PART_BASE	256
+#define	PART_BASE	0
 typedef enum rpmParseState_e {
     PART_NONE		=  0+PART_BASE,	/*!< */
     PART_PREAMBLE	=  1+PART_BASE,	/*!< */
