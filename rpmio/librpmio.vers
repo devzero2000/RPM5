@@ -153,6 +153,7 @@ LIBRPMIO_0
     pgpDigNew;
     XpgpDigLink;
     XpgpDigUnlink;
+    _pgp_debug;
     pgpFindPubkey;
     pgpGetPubkey;
     pgpGetSignature;
@@ -298,6 +299,11 @@ LIBRPMIO_0
     rpmswInit;
     rpmswNow;
     rpmswSub;
+    rpmxarFini;
+    rpmxarInit;
+    rpmxarNext;
+    rpmxarPush;
+    rpmxarPull;
     Stat;
     _Stat;
     Symlink;
@@ -328,6 +334,7 @@ LIBRPMIO_0
     Utimes;
     _Utimes;
     vmefail;
+    _xar_debug;
     xstrcasecmp;
     xstrncasecmp;
     xstrtolocale;

@@ -125,6 +125,9 @@ extern int _rpmts_debug;
 extern int _rpmwf_debug;
 
 /*@unchecked@*/
+extern int _xar_debug;
+
+/*@unchecked@*/
 extern int _rpmts_macros;
 
 /*@unchecked@*/
@@ -489,6 +492,8 @@ struct poptOption rpmcliAllPoptTable[] = {
  { "rpmtsdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmts_debug, -1,
 	NULL, NULL},
  { "rpmwfdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmwf_debug, -1,
+	NULL, NULL},
+ { "xardebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_xar_debug, -1,
 	NULL, NULL},
  { "tardebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_tar_debug, -1,
 	N_("debug tar payloads"), NULL},
