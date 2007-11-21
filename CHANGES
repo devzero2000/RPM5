@@ -1,4 +1,5 @@
 5.0a2 -> 5.0a3:
+    - jbj: switch to using rpmxar instead of rpmwf most everywhere.
     - jbj: stub in rpmio/rpmxar.c xar payload extraction.
     - jbj: create rpmWriteHeader with error msg returns.
     - jbj: use rpmReadHeader with error msg returns.

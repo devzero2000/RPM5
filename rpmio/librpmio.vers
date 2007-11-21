@@ -299,11 +299,13 @@ LIBRPMIO_0
     rpmswInit;
     rpmswNow;
     rpmswSub;
-    rpmxarFini;
-    rpmxarInit;
+    rpmxarFree;
+    XrpmxarLink;
+    rpmxarNew;
     rpmxarNext;
     rpmxarPush;
     rpmxarPull;
+    XrpmxarUnlink;
     Stat;
     _Stat;
     Symlink;

@@ -14,43 +14,77 @@
 int _xar_debug = 0;
 
 #if defined(WITH_XAR)
-int rpmxarFini(rpmxar xar)
-{
-    int xx;
 
-if (_xar_debug)
-fprintf(stderr, "*** rpmxarFini(%p)\n", xar);
-/*@-moduncon@*/
-    if (xar->i) {
-/*@-noeffectuncon@*/
-	xar_iter_free(xar->i);
-/*@=noeffectuncon@*/
-	xar->i = NULL;
-    }
-    if (xar->x) {
-	xx = xar_close(xar->x);
-	xar->x = NULL;
-    }
-    return 0;
-/*@=moduncon@*/
+rpmxar XrpmxarUnlink(rpmxar xar, const char * msg, const char * fn, unsigned ln)
+{
+    if (xar == NULL) return NULL;
+/*@-modfilesys@*/
+if (_xar_debug && msg != NULL)
+fprintf(stderr, "--> xar %p -- %d %s at %s:%u\n", xar, xar->nrefs, msg, fn, ln);
+/*@=modfilesys@*/
+    xar->nrefs--;
+    return NULL;
 }
 
-int rpmxarInit(rpmxar xar, const char * fn, const char * fmode)
+rpmxar XrpmxarLink(rpmxar xar, const char * msg, const char * fn, unsigned ln)
 {
+    if (xar == NULL) return NULL;
+    xar->nrefs++;
+
+/*@-modfilesys@*/
+if (_xar_debug && msg != NULL)
+fprintf(stderr, "--> xar %p ++ %d %s at %s:%u\n", xar, xar->nrefs, msg, fn, ln);
+/*@=modfilesys@*/
+
+    /*@-refcounttrans@*/ return xar; /*@=refcounttrans@*/
+}
+
+rpmxar rpmxarFree(rpmxar xar)
+{
+    if (xar) {
+	int xx;
+
+/*@-onlytrans@*/
+	if (xar->nrefs > 1)
+	    return rpmxarUnlink(xar, "rpmxarFree");
+
+	if (xar->i) {
+/*@-noeffectuncon@*/
+	    xar_iter_free(xar->i);
+/*@=noeffectuncon@*/
+	    xar->i = NULL;
+	}
+	if (xar->x) {
+/*@-noeffectuncon@*/
+	    xx = xar_close(xar->x);
+/*@=noeffectuncon@*/
+	    xar->x = NULL;
+	}
+
+	(void) rpmxarUnlink(xar, "rpmxarFree");
+/*@=onlytrans@*/
+	/*@-refcounttrans -usereleased@*/
+	memset(xar, 0, sizeof(*xar));         /* XXX trash and burn */
+	xar = _free(xar);
+	/*@=refcounttrans =usereleased@*/
+    }
+    return NULL;
+}
+
+rpmxar rpmxarNew(const char * fn, const char * fmode)
+{
+    rpmxar xar = xcalloc(1, sizeof(*xar));
     int flags = ((fmode && *fmode == 'w') ? WRITE : READ);
 
-if (_xar_debug)
-fprintf(stderr, "*** rpmxarInit(%p, %s, %s)\n", xar, fn, fmode);
 assert(fn != NULL);
-    
 /*@-moduncon@*/
     xar->x = xar_open(fn, flags);
     if (flags == READ) {
 	xar->i = xar_iter_new();
 	xar->first = 1;
     }
-    return 0;
 /*@=moduncon@*/
+    return rpmxarLink(xar, "rpmxarNew");
 }
 
 int rpmxarNext(rpmxar xar)
@@ -87,32 +121,27 @@ int rpmxarPull(rpmxar xar, const char * fn, void * bp, size_t * nbp)
 /*@=moduncon@*/
     char * b = NULL;
     size_t nb = 0;
-    int xx;
+    int rc;
 
-    if (fn == NULL)
-	fn = path;
-    else
-	assert(!strcmp(fn, path));
-
-/*@-moduncon@*/
-    xx = (int) xar_extract_tobuffersz(xar->x, xar->f, &b, &nb);
-/*@=moduncon@*/
-if (_xar_debug)
-fprintf(stderr, "*** xx %d %p[%lu]\n", xx, b, (unsigned long)nb);
-    if (xx || b == NULL || nb == 0) {
+    if (fn != NULL && strcmp(fn, path)) {
 	path = _free(path);
 	return 1;
     }
 
+/*@-moduncon@*/
+    rc = (int) xar_extract_tobuffersz(xar->x, xar->f, &b, &nb);
+/*@=moduncon@*/
 if (_xar_debug)
-fprintf(stderr, "*** %s %p[%lu]\n", path, b, (unsigned long)nb);
+fprintf(stderr, "*** %s %p[%lu] rc %d\n", path, b, (unsigned long)nb, rc);
+    path = _free(path);
+    if (rc || b == NULL || nb == 0)
+	return 1;
 
     if (bp)
 	*((char **)bp) = b;
     if (nbp)
 	*nbp = nb;
 
-    path = _free(path);
     return 0;
 }
 #endif

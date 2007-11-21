@@ -15,9 +15,7 @@
 #include "rpmdb.h"
 #include "rpmgi.h"
 
-#ifdef WITH_XAR
-#include "xar.h"
-#endif
+#include <rpmxar.h>
 #define	_RPMWF_INTERNAL
 #include <rpmwf.h>
 #include <pkgio.h>
@@ -800,7 +798,7 @@ pgpDig dig = fdGetDig(fd);
     {	Header h = NULL;
 	const char item[] = "Header";
 	const char * msg = NULL;
-	rc = rpmpkgRead(item, fd, &h, msg);
+	rc = rpmpkgRead(item, fd, &h, &msg);
 	if (rc != RPMRC_OK) {
 	    rpmlog(RPMLOG_ERR, "%s: %s: %s\n", fn, item, msg);
 	    msg = _free(msg);
@@ -874,7 +872,7 @@ assert(dig->sha1ctx == NULL);
 if (wf != NULL) {
     if (dig->md5ctx)
 	(void) rpmDigestUpdate(dig->md5ctx, wf->h, wf->nh);
-    if ((rc = rpmwfNextXAR(wf)) != RPMRC_OK) return rc;
+    if ((xx = rpmxarNext(wf->xar)) != 0)	return RPMRC_FAIL;
     if ((rc = rpmwfPullXAR(wf, "Payload")) != RPMRC_OK) return rc;
     if (dig->md5ctx)
 	(void) rpmDigestUpdate(dig->md5ctx, wf->p, wf->np);

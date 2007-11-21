@@ -27,12 +27,8 @@ struct rpmwf_s {
 /*@relnull@*/ /*@dependent@*/
     char * p;
     size_t np;
-#ifdef WITH_XAR
-    xar_t x;
-    xar_file_t f;
-    xar_iter_t i;
-#endif
-    int first;
+/*@relnull@*/
+    void * xar;
 /*@refs@*/
     int nrefs;			/*!< Reference count. */
 };
@@ -42,18 +38,6 @@ struct rpmwf_s {
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-rpmRC rpmwfFiniXAR(rpmwf wf)
-	/*@globals fileSystem @*/
-	/*@modifies wf, fileSystem @*/;
-
-rpmRC rpmwfInitXAR(rpmwf wf, const char * fn, const char * fmode)
-	/*@globals fileSystem @*/
-	/*@modifies wf, fileSystem @*/;
-
-rpmRC rpmwfNextXAR(rpmwf wf)
-	/*@globals fileSystem @*/
-	/*@modifies wf, fileSystem @*/;
 
 rpmRC rpmwfPushXAR(rpmwf wf, const char * fn)
 	/*@modifies wf @*/;

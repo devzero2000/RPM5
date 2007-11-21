@@ -26,9 +26,7 @@
 #define	_RPMTS_INTERNAL
 #include "rpmts.h"
 
-#ifdef WITH_XAR
-#include "xar.h"
-#endif
+#include <rpmxar.h>
 #define	_RPMWF_INTERNAL
 #include <rpmwf.h>
 
@@ -475,7 +473,7 @@ rpmwf wf = fdGetWF(fd);
     if (leadp != NULL) *leadp = NULL;
 
 if (wf != NULL) {
-    if ((rc = rpmwfNextXAR(wf)) != RPMRC_OK) return rc;
+    if ((xx = rpmxarNext(wf->xar)) != 0)	return RPMRC_FAIL;
     if ((rc = rpmwfPullXAR(wf, "Lead")) != RPMRC_OK) return rc;
 assert(wf->nl == sizeof(*l));
     memcpy(l, wf->l, sizeof(*l));
@@ -652,7 +650,7 @@ rpmwf wf = fdGetWF(fd);
 
     memset(block, 0, sizeof(block));
 if (wf != NULL) {
-    if ((rc = rpmwfNextXAR(wf)) != RPMRC_OK) return rc;
+    if ((xx = rpmxarNext(wf->xar)) != 0)	return RPMRC_FAIL;
     if ((rc = rpmwfPullXAR(wf, "Signature")) != RPMRC_OK) return rc;
 assert(wf->ns > sizeof(block));
     memcpy(block, wf->s, sizeof(block));
@@ -1226,7 +1224,7 @@ static rpmRC rpmReadHeader(FD_t fd, /*@null@*/ Header * hdrp,
 
     memset(block, 0, sizeof(block));
 if (wf != NULL) {
-    if ((rc = rpmwfNextXAR(wf)) != RPMRC_OK) return rc;
+    if ((xx = rpmxarNext(wf->xar)) != 0)	return RPMRC_FAIL;
     if ((rc = rpmwfPullXAR(wf, "Header")) != RPMRC_OK) return rc;
 assert(wf->nh > sizeof(block));
     memcpy(block, wf->h, sizeof(block));
@@ -1327,14 +1325,18 @@ rpmwf wf = fdGetWF(fd);
     Header * hdrp = ptr;
     Header h = NULL;
     rpmRC rc = RPMRC_OK;
+    int xx;
 
     if (msg)
 	*msg = NULL;
 
 if (wf != NULL) {
-    if ((rc = rpmwfNextXAR(wf)) != RPMRC_OK) return rc;
+uint32_t * ei;
+    if ((xx = rpmxarNext(wf->xar)) != 0)	return RPMRC_FAIL;
     if ((rc = rpmwfPullXAR(wf, "Header")) != RPMRC_OK) return rc;
-    h = headerLoad(wf->h);
+ei = (uint32_t *)wf->h;
+fprintf(stderr, "==> Header %p[%u] 0x%08x 0x%08x 0x%08x 0x%08x 0x%08x 0x%08x\n", wf->h, (unsigned) wf->nh, ei[0], ei[1], ei[2], ei[3], ei[4], ei[5]);
+    h = headerLoad(&ei[2]);
     if (h == NULL) {
 	if (msg)
 	    *msg = xstrdup(_("headerLoad failed"));
@@ -1402,10 +1404,12 @@ rpmRC rpmpkgRead(const char * fn, FD_t fd, void * ptr, const char ** msg)
 
 if (_use_xar) {
 rpmwf wf = fdGetWF(fd);
+const char * fn = fdGetOPath(fd);
 if (wf == NULL) {
-    wf = rpmwfNew(fdGetOPath(fd));
+    wf = rpmwfNew(fn);
     fdSetWF(fd, wf);
-if ((rc = rpmwfInitXAR(wf, NULL, "r")) != RPMRC_OK) return rc;
+    wf->xar = rpmxarNew(fn, "r");
+    assert(wf->xar != NULL);
 }
 assert(wf != NULL);
 }

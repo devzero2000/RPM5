@@ -21,11 +21,49 @@ struct rpmxar_s {
 extern "C" {
 #endif
 
-int rpmxarFini(rpmxar xar)
-	/*@globals fileSystem @*/
-	/*@modifies xar, fileSystem @*/;
+/**
+ * Unreference a xar archive instance.
+ * @param xar		xar archive
+ * @param msg
+ * @return		NULL always
+ */
+/*@unused@*/ /*@null@*/
+rpmxar rpmxarUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ rpmxar xar,
+		/*@null@*/ const char * msg)
+	/*@modifies xar @*/;
 
-int rpmxarInit(rpmxar xar, const char * fn, const char * fmode)
+/** @todo Remove debugging entry from the ABI. */
+/*@-exportlocal@*/
+/*@null@*/
+rpmxar XrpmxarUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ rpmxar xar,
+		/*@null@*/ const char * msg, const char * fn, unsigned ln)
+	/*@modifies xar @*/;
+/*@=exportlocal@*/
+#define	rpmxarUnlink(_xar, _msg) XrpmxarUnlink(_xar, _msg, __FILE__, __LINE__)
+
+/**
+ * Reference a xar archive instance.
+ * @param xar		xar archive
+ * @param msg
+ * @return		new xar archive reference
+ */
+/*@unused@*/ /*@newref@*/ /*@null@*/
+rpmxar rpmxarLink (/*@null@*/ rpmxar xar, /*@null@*/ const char * msg)
+	/*@modifies xar @*/;
+
+/** @todo Remove debugging entry from the ABI. */
+/*@newref@*/ /*@null@*/
+rpmxar XrpmxarLink (/*@null@*/ rpmxar xar, /*@null@*/ const char * msg,
+		const char * fn, unsigned ln)
+        /*@modifies xar @*/;
+#define	rpmxarLink(_xar, _msg)	XrpmxarLink(_xar, _msg, __FILE__, __LINE__)
+
+/*@null@*/
+rpmxar rpmxarFree(/*@only@*/ rpmxar xar)
+	/*@modifies xar @*/;
+
+/*@relnull@*/
+rpmxar rpmxarNew(const char * fn, const char * fmode)
 	/*@globals fileSystem @*/
 	/*@modifies xar, fileSystem @*/;
 
