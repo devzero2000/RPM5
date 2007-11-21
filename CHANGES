@@ -1,4 +1,7 @@
 5.0a2 -> 5.0a3:
+    - jbj: create rpmWriteHeader with error msg returns.
+    - jbj: use rpmReadHeader with error msg returns.
+    - jbj: eliminate HDRread/HDRwrite vectors.
     - jbj: revert "rebase rpmParseState_e +256", more than rebasing needs doing.
     - jbj: convert+remove headerRead() from the API, use rpmpkgRead instead.
     - jbj: rebase rpmParseState_e +256 to permit rpmRC to be returned too.

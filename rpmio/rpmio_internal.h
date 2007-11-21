@@ -337,9 +337,9 @@ void fdSetDig(FD_t fd, pgpDig dig)
 	/*@*/
 {
     FDSANE(fd);
-    /*@-retexpose -refcounttrans -usereleased @*/
+    /*@-compdef -retexpose -refcounttrans -usereleased @*/
     return fd->dig;
-    /*@=retexpose =refcounttrans =usereleased @*/
+    /*@=compdef =retexpose =refcounttrans =usereleased @*/
 }
 
 /** \ingroup rpmio

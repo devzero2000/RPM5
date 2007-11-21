@@ -41,8 +41,9 @@
 /*@access pgpDig @*/
 /*@access pgpDigParams @*/
 /*@access Header @*/            /* XXX compared with NULL */
-/*@access entryInfo @*/		/* XXX rdSignature */
-/*@access indexEntry @*/	/* XXX rdSignature */
+/*@access HV_t @*/
+/*@access entryInfo @*/
+/*@access indexEntry @*/
 /*@access FD_t @*/              /* XXX stealing digests */
 
 /*@unchecked@*/
@@ -51,33 +52,77 @@ int _use_xar = 0;
 /*@unchecked@*/
 static int _print_pkts = 0;
 
+/*@-redecl@*/
+/*@unchecked@*/
+extern int _newmagic;
+/*@=redecl@*/
+
+/*@-type@*/
+/*@observer@*/ /*@unchecked@*/
+static unsigned char sigh_magic[8] = {
+	0x8e, 0xad, 0xe8, 0x3e, 0x00, 0x00, 0x00, 0x00
+};
+/*@=type@*/
+
 /*===============================================*/
 /** \ingroup header
- * Read (and load) header from file handle.
- * @param _fd		file handle
- * @return		header (or NULL on error)
- */
-/*@unused@*/ static inline
-/*@null@*/ Header headerRead(void * _fd)
-	/*@modifies _fd @*/
-{
-    return hdrVec->hdrread(_fd);
-}
-
-/** \ingroup header
  * Write (with unload) header to file handle.
- * @param _fd		file handle
+ * @param fd		file handle
  * @param h		header
- * @return		0 on success, 1 on error
+ * @return		RPMRC_OK on success
  */
-/*@unused@*/ static inline
-int headerWrite(void * _fd, /*@null@*/ Header h)
-	/*@modifies _fd, h @*/
+static
+rpmRC rpmWriteHeader(FD_t fd, /*@null@*/ Header h, /*@null@*/ const char ** msg)
+	/*@globals fileSystem @*/
+	/*@modifies fd, h, fileSystem @*/
 {
-    /*@-abstract@*/
-    if (h == NULL) return 0;
-    /*@=abstract@*/
-    return (h2hv(h)->hdrwrite) (_fd, h);
+    const void * uh = NULL;
+    ssize_t nb;
+    size_t length;
+    rpmRC rc = RPMRC_FAIL;	/* assume failure */
+
+    if (h == NULL) {
+	if (msg)
+	    *msg = xstrdup(_("write of NULL header"));
+	goto exit;
+    }
+
+    uh = headerUnload(h, &length);
+    if (uh == NULL) {
+	if (msg)
+	    *msg = xstrdup(_("headerUnload failed"));
+	goto exit;
+    }
+
+    {   unsigned char * hmagic = NULL;
+	size_t nmagic = 0;
+
+	(void) headerGetMagic(NULL, &hmagic, &nmagic);
+	nb = Fwrite(hmagic, sizeof(hmagic[0]), nmagic, fd);
+	if (nb != nmagic || Ferror(fd)) {
+	    if (msg)
+		*msg = (nb > 0
+			? xstrdup(_("short write of header magic"))
+			: xstrdup(Fstrerror(fd)) );
+	    goto exit;
+	}
+    }
+
+    /*@-sizeoftype@*/
+    nb = Fwrite(uh, sizeof(char), length, fd);
+    /*@=sizeoftype@*/
+    if (nb != length || Ferror(fd)) {
+	if (msg)
+	    *msg = (nb > 0
+		    ? xstrdup(_("short write of header"))
+		    : xstrdup(Fstrerror(fd)) );
+	    goto exit;
+    }
+    rc = RPMRC_OK;
+
+exit:
+    uh = _free(uh);
+    return rc;
 }
 
 /*===============================================*/
@@ -498,18 +543,6 @@ exit:
 
 /*===============================================*/
 
-/*@-redecl@*/
-/*@unchecked@*/
-extern int _newmagic;
-/*@=redecl@*/
-
-/*@-type@*/
-/*@observer@*/ /*@unchecked@*/
-static unsigned char sigh_magic[8] = {
-	0x8e, 0xad, 0xe8, 0x3e, 0x00, 0x00, 0x00, 0x00
-};
-/*@=type@*/
-
 /**
  * Write signature header.
  * @param fd		file handle
@@ -527,11 +560,10 @@ static rpmRC wrSignature(FD_t fd, void * ptr, /*@unused@*/ const char ** msg)
     size_t sigSize;
     size_t pad;
     rpmRC rc = RPMRC_OK;
-    int xx;
 
-    xx = headerWrite(fd, sigh);
-    if (xx)
-	return RPMRC_FAIL;
+    rc = rpmWriteHeader(fd, sigh, msg);
+    if (rc != RPMRC_OK)
+	return rc;
 
     sigSize = headerSizeof(sigh);
     pad = (8 - (sigSize % 8)) % 8;
@@ -1159,9 +1191,10 @@ static rpmRC ckHeader(/*@unused@*/ FD_t fd, const void * ptr, const char ** msg)
  * @retval *msg		verification error message (or NULL)
  * @return		RPMRC_OK on success
  */
-static rpmRC rpmReadHeader(FD_t fd, Header *hdrp, const char ** msg)
+static rpmRC rpmReadHeader(FD_t fd, /*@null@*/ Header * hdrp,
+		/*@null@*/ const char ** msg)
         /*@globals fileSystem, internalState @*/
-        /*@modifies dig, *_fd, *hdrp, *msg, fileSystem, internalState @*/
+        /*@modifies fd, *hdrp, *msg, fileSystem, internalState @*/
 {
     rpmwf wf = fdGetWF(fd);
     pgpDig dig = fdGetDig(fd);
@@ -1178,15 +1211,12 @@ static rpmRC rpmReadHeader(FD_t fd, Header *hdrp, const char ** msg)
     rpmRC rc = RPMRC_FAIL;		/* assume failure */
     int xx;
 
+    /* Create (if not already) a signature parameters container. */
     if (dig == NULL) {
-	*hdrp = headerRead(fd);
-	if (*hdrp == NULL) {
-	    if (msg)
-		*msg = xstrdup(Fstrerror(fd));
-	    return RPMRC_FAIL;
-	}
-	return RPMRC_OK;
+	dig = pgpDigNew(0);
+	(void) fdSetDig(fd, dig);
     }
+
     buf[0] = '\0';
 
     if (hdrp)
@@ -1305,19 +1335,20 @@ if (wf != NULL) {
     if ((rc = rpmwfNextXAR(wf)) != RPMRC_OK) return rc;
     if ((rc = rpmwfPullXAR(wf, "Header")) != RPMRC_OK) return rc;
     h = headerLoad(wf->h);
-} else {
-    rc = rpmReadHeader(fd, &h, msg);
-    if (rc != RPMRC_OK)
-	return rc;
-}
     if (h == NULL) {
 	if (msg)
-	    *msg = xstrdup(Fstrerror(fd));
+	    *msg = xstrdup(_("headerLoad failed"));
 	rc = RPMRC_FAIL;
-    } else if (hdrp) {
-	*hdrp = headerLink(h);
-	h = headerFree(h);
     }
+} else {
+    rc = rpmReadHeader(fd, &h, msg);
+}
+
+    if (rc != RPMRC_OK)
+	return rc;
+    if (hdrp)
+	*hdrp = headerLink(h);
+    h = headerFree(h);
 
     return rc;
 }
@@ -1334,17 +1365,7 @@ static rpmRC wrHeader(FD_t fd, void * ptr, /*@unused@*/ const char ** msg)
 	/*@modifies fd, ptr, *msg, fileSystem @*/
 {
     Header h = ptr;
-    rpmRC rc = RPMRC_OK;
-    int xx;
-
-    xx = headerWrite(fd, h);
-    if (xx) {
-	if (msg)
-	    *msg = xstrdup(Fstrerror(fd));
-	rc = RPMRC_FAIL;
-    }
-
-    return rc;
+    return rpmWriteHeader(fd, h, msg);
 }
 /*@=globuse@*/
 

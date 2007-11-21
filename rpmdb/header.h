@@ -515,26 +515,6 @@ typedef
 	/*@*/;
 
 /** \ingroup header
- * Read (and load) header from file handle.
- * @param fd		file handle
- * @return		header (or NULL on error)
- */
-typedef
-/*@null@*/ Header (*HDRread) (void * fd)
-	/*@modifies fd @*/;
-
-/** \ingroup header
- * Write (with unload) header to file handle.
- * @param fd		file handle
- * @param h		header
- * @return		0 on success, 1 on error
- */
-typedef
-int (*HDRwrite) (void * fd, /*@null@*/ Header h)
-	/*@globals fileSystem @*/
-	/*@modifies fd, h, fileSystem @*/;
-
-/** \ingroup header
  * Check if tag is in header.
  * @param h		header
  * @param tag		tag
@@ -844,8 +824,6 @@ struct HV_s {
     HDRcopy	hdrcopy;
     HDRload	hdrload;
     HDRcopyload	hdrcopyload;
-    HDRread	hdrread;
-    HDRwrite	hdrwrite;
     HDRisentry	hdrisentry;
     HDRfreetag	hdrfreetag;
     HDRext	hdrext;
