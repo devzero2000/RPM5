@@ -102,6 +102,7 @@ struct headerToken_s {
 #define	HEADERFLAG_LEGACY	(1 << 2) /*!< Header came from legacy source? */
 #define HEADERFLAG_DEBUG	(1 << 3) /*!< Debug this header? */
 #define HEADERFLAG_SIGNATURE	(1 << 4) /*!< Signature header? */
+#define HEADERFLAG_XARALLOCATED	(1 << 5) /*!< Did XAR allocate the region? */
 /*@refs@*/
     int nrefs;			/*!< Reference count. */
 };

@@ -1,4 +1,8 @@
 5.0a2 -> 5.0a3:
+    - jbj: functional (and leak free) queries of both *.rpm and *.xar.
+    - jbj: transparently recognize XAR magic when reading.
+    - jbj: eliminate rpmpkgClean, rpmxar memory free on Fclose instead.
+    - jbj: use refcounted rpmxar attached to FD_t to handle xar state.
     - jbj: switch to using rpmxar instead of rpmwf most everywhere.
     - jbj: stub in rpmio/rpmxar.c xar payload extraction.
     - jbj: create rpmWriteHeader with error msg returns.

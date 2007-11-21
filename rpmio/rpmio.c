@@ -345,6 +345,7 @@ DBGREFS(fd, (stderr, "--> fd  %p -- %d %s at %s:%u %s\n", fd, fd->nrefs, msg, fi
 	}
 	fd->ndigests = 0;
 /*@-onlytrans@*/
+	fd->xar = rpmxarFree(fd->xar);
 	fd->dig = pgpDigFree(fd->dig);
 /*@=onlytrans@*/
 	memset(fd, 0, sizeof(*fd));	/* XXX trash and burn */
@@ -383,7 +384,7 @@ FD_t XfdNew(const char * msg, const char * file, unsigned line)
     fd->syserrno = 0;
     fd->errcookie = NULL;
     fd->stats = xcalloc(1, sizeof(*fd->stats));
-    fd->wf = NULL;
+    fd->xar = NULL;
     fd->dig = NULL;
 
     fd->ndigests = 0;

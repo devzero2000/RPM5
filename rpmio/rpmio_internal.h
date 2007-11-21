@@ -15,6 +15,7 @@
 
 #include <rpmpgp.h>
 #include <rpmsw.h>
+#include <rpmxar.h>
 
 /* Drag in the beecrypt includes. */
 #include <beecrypt/beecrypt.h>
@@ -187,8 +188,8 @@ struct _FD_s {
     int		oflags;
     mode_t	omode;
 
-/*@kept@*/
-    void *	wf;		/* wrapper format descriptor */
+/*@refcounted@*/ /*@relnull@*/
+    rpmxar	xar;		/* xar archive wrapper */
 /*@refcounted@*/ /*@relnull@*/
     pgpDig	dig;		/* signature parameters */
 
@@ -345,24 +346,22 @@ void fdSetDig(FD_t fd, pgpDig dig)
 /** \ingroup rpmio
  */
 /*@unused@*/ static inline
-void fdSetWF(FD_t fd, /*@kept@*/ void * wf)
+void fdSetXAR(FD_t fd, rpmxar xar)
 	/*@modifies fd @*/
 {
     FDSANE(fd);
-    /*@-assignexpose@*/
-    fd->wf = wf;
-    /*@=assignexpose@*/
+    fd->xar = rpmxarLink(xar, "fdSetXAR");
 }
 
 /** \ingroup rpmio
  */
 /*@unused@*/ static inline
-/*@null@*/ /*@kept@*/ void * fdGetWF(FD_t fd)
+/*@null@*/ /*@kept@*/ void * fdGetXAR(FD_t fd)
 	/*@*/
 {
     FDSANE(fd);
     /*@-retexpose -usereleased @*/
-    return fd->wf;
+    return fd->xar;
     /*@=retexpose =usereleased @*/
 }
 

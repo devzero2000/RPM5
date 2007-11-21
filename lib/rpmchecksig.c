@@ -16,8 +16,6 @@
 #include "rpmgi.h"
 
 #include <rpmxar.h>
-#define	_RPMWF_INTERNAL
-#include <rpmwf.h>
 #include <pkgio.h>
 
 #include "signature.h"
@@ -27,7 +25,6 @@
 /*@access Header @*/		/* XXX void * arg */
 /*@access pgpDig @*/
 /*@access pgpDigParams @*/
-/*@access rpmwf @*/
 
 /*@unchecked@*/
 int _print_pkts = 0;
@@ -782,7 +779,6 @@ static rpmRC readFile(FD_t fd, const char * fn)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fd, fileSystem, internalState @*/
 {
-rpmwf wf = fdGetWF(fd);
 pgpDig dig = fdGetDig(fd);
     HGE_t hge = headerGetExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
@@ -833,7 +829,6 @@ pgpDig dig = fdGetDig(fd);
 	h = headerFree(h);
     }
 
-if (wf == NULL) {
     /* Read the payload from the package. */
     while ((count = Fread(buf, sizeof(buf[0]), sizeof(buf), fd)) > 0)
 	dig->nbytes += count;
@@ -841,7 +836,6 @@ if (wf == NULL) {
 	rpmlog(RPMLOG_ERR, _("%s: Fread failed: %s\n"), fn, Fstrerror(fd));
 	goto exit;
     }
-}
 
     /* XXX Steal the digest-in-progress from the file handle. */
     for (i = fd->ndigests - 1; i >= 0; i--) {
@@ -868,15 +862,6 @@ assert(dig->sha1ctx == NULL);
 	    /*@switchbreak@*/ break;
 	}
     }
-
-if (wf != NULL) {
-    if (dig->md5ctx)
-	(void) rpmDigestUpdate(dig->md5ctx, wf->h, wf->nh);
-    if ((xx = rpmxarNext(wf->xar)) != 0)	return RPMRC_FAIL;
-    if ((rc = rpmwfPullXAR(wf, "Payload")) != RPMRC_OK) return rc;
-    if (dig->md5ctx)
-	(void) rpmDigestUpdate(dig->md5ctx, wf->p, wf->np);
-}
 
     rc = RPMRC_OK;	/* XXX unnecessary */
 
@@ -1198,7 +1183,6 @@ int rpmcliSign(rpmts ts, QVA_t qva, const char ** argv)
 	}
 
 	if (fd != NULL) {
-	    (void) rpmpkgClean(fd);
 	    xx = Fclose(fd);
 	}
     }

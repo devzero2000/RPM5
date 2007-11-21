@@ -27,15 +27,12 @@
 #include "rpmts.h"
 
 #include <rpmxar.h>
-#define	_RPMWF_INTERNAL
-#include <rpmwf.h>
 
 #include "header_internal.h"
 #include "signature.h"
 #include "debug.h"
 
 /*@access rpmts @*/
-/*@access rpmwf @*/
 /*@access pgpDig @*/
 /*@access pgpDigParams @*/
 /*@access Header @*/            /* XXX compared with NULL */
@@ -462,7 +459,7 @@ static rpmRC rdLead(FD_t fd, /*@out@*/ /*@null@*/ void * ptr,
 	/*@globals fileSystem @*/
 	/*@modifies *ptr, *msg, fileSystem @*/
 {
-rpmwf wf = fdGetWF(fd);
+    rpmxar xar = fdGetXAR(fd);
     struct rpmlead ** leadp = ptr;
     struct rpmlead * l = xcalloc(1, sizeof(*l));
     char buf[BUFSIZ];
@@ -472,12 +469,7 @@ rpmwf wf = fdGetWF(fd);
     buf[0] = '\0';
     if (leadp != NULL) *leadp = NULL;
 
-if (wf != NULL) {
-    if ((xx = rpmxarNext(wf->xar)) != 0)	return RPMRC_FAIL;
-    if ((rc = rpmwfPullXAR(wf, "Lead")) != RPMRC_OK) return rc;
-assert(wf->nl == sizeof(*l));
-    memcpy(l, wf->l, sizeof(*l));
-} else {
+    /* Read the first 96 bytes of the file. */
     if ((xx = (int) timedRead(fd, (char *)l, sizeof(*l))) != (int) sizeof(*l)) {
 	if (Ferror(fd)) {
 	    (void) snprintf(buf, sizeof(buf),
@@ -492,7 +484,35 @@ assert(wf->nl == sizeof(*l));
 	}
 	goto exit;
     }
-}
+
+    /* Attach rpmxar handler to fd if this is a xar archive. */
+    if (xar == NULL) {
+	unsigned char * bh = (unsigned char *)l;
+	if (bh[0] == 'x' && bh[1] == 'a' && bh[2] == 'r' && bh[3] == '!') {
+	    const char * fn = fdGetOPath(fd);
+	    xar = rpmxarNew(fn, "r");
+	    fdSetXAR(fd, xar);
+	    (void) rpmxarFree(xar);
+	}
+    }
+
+    /* With XAR, read lead from a xar archive file called "Lead". */
+    if (xar != NULL) {
+	void *b;
+	size_t nb;
+	if ((xx = rpmxarNext(xar)) != 0)	return RPMRC_FAIL;
+	if ((xx = rpmxarPull(xar, "Lead", &b, &nb)) != 0) return RPMRC_FAIL;
+	if (nb != sizeof(*l)) {
+	    b = _free(b);
+	    (void) snprintf(buf, sizeof(buf),
+		_("lead size(%u): BAD, xar read(%u)"),
+		(unsigned)sizeof(*l), (unsigned)nb);
+	    rc = RPMRC_NOTFOUND;
+	    goto exit;
+	}
+	memcpy(l, b, nb);
+	b = _free(b);
+    }
 
     l->type = (unsigned short) ntohs(l->type);
     l->archnum = (unsigned short) ntohs(l->archnum);
@@ -623,7 +643,7 @@ static rpmRC rdSignature(FD_t fd, /*@out@*/ /*@null@*/ void * ptr,
 	/*@globals fileSystem @*/
 	/*@modifies *ptr, *msg, fileSystem @*/
 {
-rpmwf wf = fdGetWF(fd);
+rpmxar xar = fdGetXAR(fd);
     HGE_t hge = headerGetExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     Header * sighp = ptr;
@@ -643,17 +663,19 @@ rpmwf wf = fdGetWF(fd);
     rpmRC rc = RPMRC_FAIL;		/* assume failure */
     int xx;
     uint32_t i;
+    unsigned char * bh = NULL;
+    size_t nbh = 0;
 
     buf[0] = '\0';
     if (sighp)
 	*sighp = NULL;
 
     memset(block, 0, sizeof(block));
-if (wf != NULL) {
-    if ((xx = rpmxarNext(wf->xar)) != 0)	return RPMRC_FAIL;
-    if ((rc = rpmwfPullXAR(wf, "Signature")) != RPMRC_OK) return rc;
-assert(wf->ns > sizeof(block));
-    memcpy(block, wf->s, sizeof(block));
+if (xar != NULL) {
+    if ((xx = rpmxarNext(xar)) != 0)	return RPMRC_FAIL;
+    if ((xx = rpmxarPull(xar, "Signature", &bh, &nbh)) != 0) return RPMRC_FAIL;
+assert(nbh > sizeof(block));
+    memcpy(block, bh, sizeof(block));
 } else {
     if ((xx = (int) timedRead(fd, (void *)block, sizeof(block))) != (int) sizeof(block)) {
 	(void) snprintf(buf, sizeof(buf),
@@ -691,21 +713,21 @@ assert(wf->ns > sizeof(block));
 /*@-sizeoftype@*/
     nb = (il * sizeof(struct entryInfo_s)) + dl;
 /*@=sizeoftype@*/
-    ei = xmalloc(sizeof(il) + sizeof(dl) + nb);
-    ei[0] = block[2];
-    ei[1] = block[3];
-    pe = (entryInfo) &ei[2];
-    dataStart = (unsigned char *) (pe + il);
-if (wf != NULL) {
-assert(wf->ns >= (sizeof(block)+nb));
-    memcpy(pe, wf->s+sizeof(block), nb);
+if (xar != NULL) {
+assert(nbh >= (sizeof(block)+nb));
+    ei = &((uint32_t *)bh)[2];
 } else {
-    if ((xx = (int) timedRead(fd, (void *)pe, nb)) != (int) nb) {
+    ei = xmalloc(sizeof(il) + sizeof(dl) + nb);
+    if ((xx = (int) timedRead(fd, (void *)&ei[2], nb)) != (int) nb) {
 	(void) snprintf(buf, sizeof(buf),
 		_("sigh blob(%u): BAD, read returned %d\n"), (unsigned) nb, xx);
 	goto exit;
     }
 }
+    ei[0] = block[2];
+    ei[1] = block[3];
+    pe = (entryInfo) &ei[2];
+    dataStart = (unsigned char *) (pe + il);
     
     /* Check (and convert) the 1st tag element. */
     xx = headerVerifyInfo(1, dl, pe, &entry->info, 0);
@@ -789,6 +811,7 @@ assert(entry->info.offset > 0);	/* XXX insurance */
 	(void) snprintf(buf, sizeof(buf), _("sigh load: BAD\n"));
 	goto exit;
     }
+if (xar != NULL) sigh->flags |= HEADERFLAG_XARALLOCATED;
     sigh->flags |= HEADERFLAG_ALLOCATED;
     sigh->flags |= HEADERFLAG_SIGNATURE;
     if (_newmagic)	/* XXX FIXME: sigh needs its own magic. */
@@ -1170,9 +1193,6 @@ static rpmRC ckHeader(/*@unused@*/ FD_t fd, const void * ptr, const char ** msg)
     rpmRC rc = RPMRC_OK;
     Header h;
 
-    if (msg)
-	*msg = NULL;
-
     h = headerLoad((void *)ptr);
     if (h == NULL)
 	rc = RPMRC_FAIL;
@@ -1194,7 +1214,7 @@ static rpmRC rpmReadHeader(FD_t fd, /*@null@*/ Header * hdrp,
         /*@globals fileSystem, internalState @*/
         /*@modifies fd, *hdrp, *msg, fileSystem, internalState @*/
 {
-    rpmwf wf = fdGetWF(fd);
+rpmxar xar = fdGetXAR(fd);
     pgpDig dig = fdGetDig(fd);
     char buf[BUFSIZ];
     uint32_t block[4];
@@ -1207,6 +1227,8 @@ static rpmRC rpmReadHeader(FD_t fd, /*@null@*/ Header * hdrp,
     Header h = NULL;
     const char * origin = NULL;
     rpmRC rc = RPMRC_FAIL;		/* assume failure */
+    unsigned char * bh = NULL;
+    size_t nbh = 0;
     int xx;
 
     /* Create (if not already) a signature parameters container. */
@@ -1219,15 +1241,17 @@ static rpmRC rpmReadHeader(FD_t fd, /*@null@*/ Header * hdrp,
 
     if (hdrp)
 	*hdrp = NULL;
-    if (msg)
-	*msg = NULL;
 
     memset(block, 0, sizeof(block));
-if (wf != NULL) {
-    if ((xx = rpmxarNext(wf->xar)) != 0)	return RPMRC_FAIL;
-    if ((rc = rpmwfPullXAR(wf, "Header")) != RPMRC_OK) return rc;
-assert(wf->nh > sizeof(block));
-    memcpy(block, wf->h, sizeof(block));
+if (xar != NULL) {
+    if ((xx = rpmxarNext(xar)) != 0)	return RPMRC_FAIL;
+    if ((xx = rpmxarPull(xar, "Header", &bh, &nbh)) != 0) return RPMRC_FAIL;
+    if (nbh <= sizeof(block)) {
+	(void) snprintf(buf, sizeof(buf),
+		_("hdr size(%u): BAD, xar read returned %u\n"), (unsigned)sizeof(block), (unsigned)nb);
+	goto exit;
+    }
+    memcpy(block, bh, sizeof(block));
 } else {
     if ((xx = (int) timedRead(fd, (char *)block, sizeof(block))) != (int)sizeof(block)) {
 	(void) snprintf(buf, sizeof(buf),
@@ -1262,19 +1286,24 @@ assert(wf->nh > sizeof(block));
     nb = (il * sizeof(struct entryInfo_s)) + dl;
 /*@=sizeoftype@*/
     uc = sizeof(il) + sizeof(dl) + nb;
-    ei = xmalloc(uc);
-    ei[0] = block[2];
-    ei[1] = block[3];
-if (wf != NULL) {
-assert(wf->nh == (sizeof(block)+nb));
-    memcpy(&ei[2], wf->h+sizeof(block), nb);
+if (xar != NULL) {
+    if (nbh != (sizeof(block)+nb)) {
+	(void) snprintf(buf, sizeof(buf),
+		_("hdr size(%u): BAD, xar read returned %u\n"), (unsigned)(sizeof(block)+nb), (unsigned)nb);
+	goto exit;
+    }
+    ei = &((uint32_t *)bh)[2];
 } else {
+    bh = xmalloc(uc);
+    ei = (uint32_t *)bh;
     if ((xx = (int) timedRead(fd, (char *)&ei[2], nb)) != (int) nb) {
 	(void) snprintf(buf, sizeof(buf),
 		_("hdr blob(%u): BAD, read returned %d\n"), (unsigned)nb, xx);
 	goto exit;
     }
 }
+    ei[0] = block[2];
+    ei[1] = block[3];
 
     /* Sanity check header tags */
     rc = headerCheck(dig, ei, uc, msg);
@@ -1287,8 +1316,9 @@ assert(wf->nh == (sizeof(block)+nb));
 	(void) snprintf(buf, sizeof(buf), _("hdr load: BAD\n"));
         goto exit;
     }
+if (xar != NULL) h->flags |= HEADERFLAG_XARALLOCATED;
     h->flags |= HEADERFLAG_ALLOCATED;
-    ei = NULL;	/* XXX will be freed with header */
+    bh = NULL;	/* XXX will be freed with header */
 
     /* Save the opened path as the header origin. */
     origin = fdGetOPath(fd);
@@ -1298,7 +1328,7 @@ assert(wf->nh == (sizeof(block)+nb));
 exit:
     if (hdrp && h && rc == RPMRC_OK)
 	*hdrp = headerLink(h);
-    ei = _free(ei);
+    bh = _free(bh);
     h = headerFree(h);
 
     if (msg != NULL && *msg == NULL && buf[0] != '\0') {
@@ -1321,38 +1351,8 @@ static rpmRC rdHeader(FD_t fd, /*@out@*/ /*@null@*/ void * ptr,
 	/*@globals fileSystem @*/
 	/*@modifies fd, *ptr, *msg, fileSystem @*/
 {
-rpmwf wf = fdGetWF(fd);
     Header * hdrp = ptr;
-    Header h = NULL;
-    rpmRC rc = RPMRC_OK;
-    int xx;
-
-    if (msg)
-	*msg = NULL;
-
-if (wf != NULL) {
-uint32_t * ei;
-    if ((xx = rpmxarNext(wf->xar)) != 0)	return RPMRC_FAIL;
-    if ((rc = rpmwfPullXAR(wf, "Header")) != RPMRC_OK) return rc;
-ei = (uint32_t *)wf->h;
-fprintf(stderr, "==> Header %p[%u] 0x%08x 0x%08x 0x%08x 0x%08x 0x%08x 0x%08x\n", wf->h, (unsigned) wf->nh, ei[0], ei[1], ei[2], ei[3], ei[4], ei[5]);
-    h = headerLoad(&ei[2]);
-    if (h == NULL) {
-	if (msg)
-	    *msg = xstrdup(_("headerLoad failed"));
-	rc = RPMRC_FAIL;
-    }
-} else {
-    rc = rpmReadHeader(fd, &h, msg);
-}
-
-    if (rc != RPMRC_OK)
-	return rc;
-    if (hdrp)
-	*hdrp = headerLink(h);
-    h = headerFree(h);
-
-    return rc;
+    return rpmReadHeader(fd, hdrp, msg);
 }
 
 /**
@@ -1393,6 +1393,9 @@ rpmRC rpmpkgCheck(const char * fn, FD_t fd, const void * ptr, const char ** msg)
 {
     rpmRC rc = RPMRC_FAIL;
 
+    if (msg)
+	*msg = NULL;
+
     if (!strcmp(fn, "Header"))
 	rc = ckHeader(fd, ptr, msg);
     return rc;
@@ -1402,17 +1405,8 @@ rpmRC rpmpkgRead(const char * fn, FD_t fd, void * ptr, const char ** msg)
 {
     rpmRC rc = RPMRC_FAIL;
 
-if (_use_xar) {
-rpmwf wf = fdGetWF(fd);
-const char * fn = fdGetOPath(fd);
-if (wf == NULL) {
-    wf = rpmwfNew(fn);
-    fdSetWF(fd, wf);
-    wf->xar = rpmxarNew(fn, "r");
-    assert(wf->xar != NULL);
-}
-assert(wf != NULL);
-}
+    if (msg)
+	*msg = NULL;
 
     if (!strcmp(fn, "Lead"))
 	rc = rdLead(fd, ptr, msg);
@@ -1429,6 +1423,9 @@ rpmRC rpmpkgWrite(const char * fn, FD_t fd, void * ptr, const char ** msg)
 {
     rpmRC rc = RPMRC_FAIL;
 
+    if (msg)
+	*msg = NULL;
+
     if (!strcmp(fn, "Lead"))
 	rc = wrLead(fd, ptr, msg);
     else
@@ -1438,16 +1435,4 @@ rpmRC rpmpkgWrite(const char * fn, FD_t fd, void * ptr, const char ** msg)
     if (!strcmp(fn, "Header"))
 	rc = wrHeader(fd, ptr, msg);
     return rc;
-}
-
-rpmRC rpmpkgClean(FD_t fd)
-{
-    rpmwf wf = fdGetWF(fd);
-    if (wf != NULL) {
-	fdSetWF(fd, NULL);
-/*@-dependenttrans -modfilesys -observertrans -refcounttrans @*/
-	wf = rpmwfFree(wf);
-/*@=dependenttrans =modfilesys =observertrans =refcounttrans @*/
-    }
-    return RPMRC_OK;
 }

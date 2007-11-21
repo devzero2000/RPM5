@@ -265,8 +265,13 @@ Header headerFree(/*@killref@*/ /*@null@*/ Header h)
 	for (i = 0; i < h->indexUsed; i++, entry++) {
 	    if ((h->flags & HEADERFLAG_ALLOCATED) && ENTRY_IS_REGION(entry)) {
 		if (entry->length > 0) {
-		    int_32 * ei = entry->data;
-		    if ((ei - 2) == h->blob) h->blob = _free(h->blob);
+		    uint32_t * ei = entry->data;
+		    if ((ei - 2) == h->blob) {
+			/* Adjust for XAR including 8b of magic. */
+			if (h->flags & HEADERFLAG_XARALLOCATED)
+			    h->blob = &((char *)h->blob)[-8];
+			h->blob = _free(h->blob);
+		    }
 		    entry->data = NULL;
 		}
 	    } else if (!ENTRY_IN_REGION(entry)) {
