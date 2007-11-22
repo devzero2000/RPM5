@@ -31,10 +31,12 @@ my %file_const = (
         '^(RPMTRANS_TYPE_[\w_]+)' => 'rpmtsType',
         '^(RPMTS_OP_[\w_]+)' => 'rpmtsOpX',
     },
+    'rpmtag.h' => {
+        '^(RPMTAG_[\w_]+)' => 'rpmTag',
+    },
     'rpmlib.h' => {
         '^(RPMDBI_[\w_]+)' => 'rpmdbi',
         '^_?(RPMSENSE_[\w_]+)' => 'rpmsenseflags',
-        '^(RPMTAG_[\w_]+)' => 'rpmTag',
         '^(RPMRC_[\w_]+)' => 'rpmRC',
         '^(RPMFILE_[^(STATE_)][\w_]+)' => 'rpmfileAttrs',
         '^(RPMFILE_STATE_[\w_]+)' => 'rpmfileState',
