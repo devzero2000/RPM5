@@ -8,10 +8,15 @@ typedef /*@abstract@*/ /*@refcounted@*/ struct rpmxar_s * rpmxar;
 
 #ifdef	_RPMXAR_INTERNAL
 struct rpmxar_s {
-    int first;
     xar_t x;
     xar_file_t f;
     xar_iter_t i;
+/*@null@*/
+    const char * member;	/*!< Current archive member. */
+    char * b;			/*!< Data buffer. */
+    size_t bsize;		/*!< No. bytes of data. */
+    size_t bx;			/*!< Data byte index. */
+    int first;
 /*@refs@*/
     int nrefs;			/*!< Reference count. */
 };
@@ -71,13 +76,22 @@ int rpmxarNext(rpmxar xar)
 	/*@globals fileSystem @*/
 	/*@modifies xar, fileSystem @*/;
 
-int rpmxarPush(rpmxar xar, const char * fn, void * b, size_t nb)
+int rpmxarPush(rpmxar xar, const char * fn)
 	/*@modifies xar @*/;
 
-int rpmxarPull(rpmxar xar, /*@null@*/ const char * fn,
-		/*@null@*/ void * bp, /*@null@*/ size_t * nbp)
+int rpmxarPull(rpmxar xar, /*@null@*/ const char * fn)
 	/*@globals fileSystem @*/
 	/*@modifies xar, fileSystem @*/;
+
+int rpmxarSwapBuf(rpmxar xar, /*@null@*/ char * b, size_t bsize,
+		/*@null@*/ char ** obp, /*@null@*/ size_t * obsizep)
+	/*@modifies xar, *obp, *obsizep @*/;
+
+ssize_t xarRead(void * cookie, /*@out@*/ char * buf, size_t count)
+        /*@globals fileSystem, internalState @*/
+        /*@modifies buf, fileSystem, internalState @*/
+	/*@requires maxSet(buf) >= (count - 1) @*/
+	/*@ensures maxRead(buf) == result @*/;
 
 #ifdef __cplusplus
 }

@@ -498,10 +498,11 @@ static rpmRC rdLead(FD_t fd, /*@out@*/ /*@null@*/ void * ptr,
 
     /* With XAR, read lead from a xar archive file called "Lead". */
     if (xar != NULL) {
-	void *b;
-	size_t nb;
+	void *b = NULL;
+	size_t nb = 0;
 	if ((xx = rpmxarNext(xar)) != 0)	return RPMRC_FAIL;
-	if ((xx = rpmxarPull(xar, "Lead", &b, &nb)) != 0) return RPMRC_FAIL;
+	if ((xx = rpmxarPull(xar, "Lead")) != 0) return RPMRC_FAIL;
+	(void) rpmxarSwapBuf(xar, NULL, 0, &b, &nb);
 	if (nb != sizeof(*l)) {
 	    b = _free(b);
 	    (void) snprintf(buf, sizeof(buf),
@@ -663,8 +664,6 @@ rpmxar xar = fdGetXAR(fd);
     rpmRC rc = RPMRC_FAIL;		/* assume failure */
     int xx;
     uint32_t i;
-    unsigned char * bh = NULL;
-    size_t nbh = 0;
 
     buf[0] = '\0';
     if (sighp)
@@ -673,16 +672,13 @@ rpmxar xar = fdGetXAR(fd);
     memset(block, 0, sizeof(block));
 if (xar != NULL) {
     if ((xx = rpmxarNext(xar)) != 0)	return RPMRC_FAIL;
-    if ((xx = rpmxarPull(xar, "Signature", &bh, &nbh)) != 0) return RPMRC_FAIL;
-assert(nbh > sizeof(block));
-    memcpy(block, bh, sizeof(block));
-} else {
+    if ((xx = rpmxarPull(xar, "Signature")) != 0) return RPMRC_FAIL;
+}
     if ((xx = (int) timedRead(fd, (void *)block, sizeof(block))) != (int) sizeof(block)) {
 	(void) snprintf(buf, sizeof(buf),
 		_("sigh size(%d): BAD, read returned %d\n"), (int)sizeof(block), xx);
 	goto exit;
     }
-}
 
     {   unsigned char * hmagic = NULL;
 	size_t nmagic = 0;
@@ -713,17 +709,12 @@ assert(nbh > sizeof(block));
 /*@-sizeoftype@*/
     nb = (il * sizeof(struct entryInfo_s)) + dl;
 /*@=sizeoftype@*/
-if (xar != NULL) {
-assert(nbh >= (sizeof(block)+nb));
-    ei = &((uint32_t *)bh)[2];
-} else {
     ei = xmalloc(sizeof(il) + sizeof(dl) + nb);
     if ((xx = (int) timedRead(fd, (void *)&ei[2], nb)) != (int) nb) {
 	(void) snprintf(buf, sizeof(buf),
 		_("sigh blob(%u): BAD, read returned %d\n"), (unsigned) nb, xx);
 	goto exit;
     }
-}
     ei[0] = block[2];
     ei[1] = block[3];
     pe = (entryInfo) &ei[2];
@@ -811,7 +802,6 @@ assert(entry->info.offset > 0);	/* XXX insurance */
 	(void) snprintf(buf, sizeof(buf), _("sigh load: BAD\n"));
 	goto exit;
     }
-if (xar != NULL) sigh->flags |= HEADERFLAG_XARALLOCATED;
     sigh->flags |= HEADERFLAG_ALLOCATED;
     sigh->flags |= HEADERFLAG_SIGNATURE;
     if (_newmagic)	/* XXX FIXME: sigh needs its own magic. */
@@ -1228,7 +1218,6 @@ rpmxar xar = fdGetXAR(fd);
     const char * origin = NULL;
     rpmRC rc = RPMRC_FAIL;		/* assume failure */
     unsigned char * bh = NULL;
-    size_t nbh = 0;
     int xx;
 
     /* Create (if not already) a signature parameters container. */
@@ -1245,20 +1234,13 @@ rpmxar xar = fdGetXAR(fd);
     memset(block, 0, sizeof(block));
 if (xar != NULL) {
     if ((xx = rpmxarNext(xar)) != 0)	return RPMRC_FAIL;
-    if ((xx = rpmxarPull(xar, "Header", &bh, &nbh)) != 0) return RPMRC_FAIL;
-    if (nbh <= sizeof(block)) {
-	(void) snprintf(buf, sizeof(buf),
-		_("hdr size(%u): BAD, xar read returned %u\n"), (unsigned)sizeof(block), (unsigned)nb);
-	goto exit;
-    }
-    memcpy(block, bh, sizeof(block));
-} else {
+    if ((xx = rpmxarPull(xar, "Header")) != 0) return RPMRC_FAIL;
+}
     if ((xx = (int) timedRead(fd, (char *)block, sizeof(block))) != (int)sizeof(block)) {
 	(void) snprintf(buf, sizeof(buf),
 		_("hdr size(%u): BAD, read returned %d\n"), (unsigned)sizeof(block), xx);
 	goto exit;
     }
-}
 
     b = NULL;
     nb = 0;
@@ -1286,14 +1268,6 @@ if (xar != NULL) {
     nb = (il * sizeof(struct entryInfo_s)) + dl;
 /*@=sizeoftype@*/
     uc = sizeof(il) + sizeof(dl) + nb;
-if (xar != NULL) {
-    if (nbh != (sizeof(block)+nb)) {
-	(void) snprintf(buf, sizeof(buf),
-		_("hdr size(%u): BAD, xar read returned %u\n"), (unsigned)(sizeof(block)+nb), (unsigned)nb);
-	goto exit;
-    }
-    ei = &((uint32_t *)bh)[2];
-} else {
     bh = xmalloc(uc);
     ei = (uint32_t *)bh;
     if ((xx = (int) timedRead(fd, (char *)&ei[2], nb)) != (int) nb) {
@@ -1301,7 +1275,6 @@ if (xar != NULL) {
 		_("hdr blob(%u): BAD, read returned %d\n"), (unsigned)nb, xx);
 	goto exit;
     }
-}
     ei[0] = block[2];
     ei[1] = block[3];
 
@@ -1316,7 +1289,6 @@ if (xar != NULL) {
 	(void) snprintf(buf, sizeof(buf), _("hdr load: BAD\n"));
         goto exit;
     }
-if (xar != NULL) h->flags |= HEADERFLAG_XARALLOCATED;
     h->flags |= HEADERFLAG_ALLOCATED;
     bh = NULL;	/* XXX will be freed with header */
 

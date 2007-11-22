@@ -779,6 +779,7 @@ static rpmRC readFile(FD_t fd, const char * fn)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fd, fileSystem, internalState @*/
 {
+rpmxar xar = fdGetXAR(fd);
 pgpDig dig = fdGetDig(fd);
     HGE_t hge = headerGetExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
@@ -813,6 +814,7 @@ pgpDig dig = fdGetDig(fd);
 	    if (!xx || he->p.ptr == NULL) {
 		h = headerFree(h);
 		rpmlog(RPMLOG_ERR, _("%s: headerGetEntry failed\n"), fn);
+		rc = RPMRC_FAIL;
 		goto exit;
 	    }
 	    (void) headerGetMagic(NULL, &hmagic, &nmagic);
@@ -829,11 +831,17 @@ pgpDig dig = fdGetDig(fd);
 	h = headerFree(h);
     }
 
+if (xar != NULL) {
+    if ((xx = rpmxarNext(xar)) != 0)	return RPMRC_FAIL;
+    if ((xx = rpmxarPull(xar, "Payload")) != 0) return RPMRC_FAIL;
+}
+
     /* Read the payload from the package. */
     while ((count = Fread(buf, sizeof(buf[0]), sizeof(buf), fd)) > 0)
 	dig->nbytes += count;
-    if (count < 0) {
+    if (count < 0 || Ferror(fd)) {
 	rpmlog(RPMLOG_ERR, _("%s: Fread failed: %s\n"), fn, Fstrerror(fd));
+	rc = RPMRC_FAIL;
 	goto exit;
     }
 

@@ -305,6 +305,7 @@ LIBRPMIO_0
     rpmxarNext;
     rpmxarPush;
     rpmxarPull;
+    rpmxarSwapBuf;
     XrpmxarUnlink;
     Stat;
     _Stat;

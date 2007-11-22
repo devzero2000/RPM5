@@ -38,7 +38,8 @@ rpmRC rpmwfPushXAR(rpmwf wf, const char * fn)
 	nb = wf->np;
     }
 
-    xx = rpmxarPush(wf->xar, fn, b, nb);
+    xx = rpmxarSwapBuf(wf->xar, b, nb, NULL, NULL);
+    xx = rpmxarPush(wf->xar, fn);
     return (xx == 0 ? RPMRC_OK : RPMRC_FAIL);
 }
 
@@ -49,9 +50,10 @@ rpmRC rpmwfPullXAR(rpmwf wf, const char * fn)
     size_t nb = 0;
     int xx;
 
-    xx = rpmxarPull(wf->xar, fn, &b, &nb);
+    xx = rpmxarPull(wf->xar, fn);
     if (xx == 1)
 	return RPMRC_NOTFOUND;
+    xx = rpmxarSwapBuf(wf->xar, NULL, 0, &b, &nb);
 
     if (!strcmp(fn, "Lead")) {
 	wf->l = b;

@@ -419,6 +419,9 @@ static ssize_t fdRead(void * cookie, /*@out@*/ char * buf, size_t count)
 	if (rc == 0)
 	    fd->bytesRemain = 0;
     } else
+    if (fd->xar != NULL) {
+	rc = xarRead(fd, buf, (count > fd->bytesRemain ? fd->bytesRemain : count));
+    } else
 	rc = read(fdFileno(fd), buf, (count > fd->bytesRemain ? fd->bytesRemain : count));
     fdstat_exit(fd, FDSTAT_READ, rc);
 

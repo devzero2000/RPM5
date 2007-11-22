@@ -1,4 +1,7 @@
 5.0a2 -> 5.0a3:
+    - jbj: functional (and leak free) -Kvv of both *.rpm and *.xar.
+    - jbj: revert xar handling to rpmio model, buffer handling in rpmxar.
+    - jbj: fix: add RPMRC_FAIL where needed using -Kvv.
     - jbj: functional (and leak free) queries of both *.rpm and *.xar.
     - jbj: transparently recognize XAR magic when reading.
     - jbj: eliminate rpmpkgClean, rpmxar memory free on Fclose instead.
