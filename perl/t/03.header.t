@@ -57,9 +57,9 @@ can_ok('RPM::Header',
     my $header = rpm2header("test-rpm-1.0-1.noarch.rpm");
     $header->removetag('name');
     ok(!$header->hastag('name'), "tag name were removed");
-    $header->addtag('epoch', 'int32', 1);
+    $header->addtag('epoch', 'uint32', 1);
     is($header->tag('epoch'), 1, "can add a tag");
     $header->removetag('vendor');
-    $header->addtag('vendor', 'int32', 1, 2);
+    $header->addtag('vendor', 'uint32', 1, 2);
     is(scalar($header->tag('vendor')), 2, "can add tag w/ multiple value");
 }
