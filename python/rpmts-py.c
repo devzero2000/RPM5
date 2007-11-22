@@ -462,7 +462,7 @@ fprintf(stderr, "*** rpmts_AddErase(%p) ts %p\n", s, s->ts);
 	mi = rpmdbFreeIterator(mi);
     } else
     if (PyInt_Check(o)) {
-	uint_32 instance = PyInt_AsLong(o);
+	uint32_t instance = PyInt_AsLong(o);
 
 	mi = rpmtsInitIterator(s->ts, RPMDBI_PACKAGES, &instance, sizeof(instance));
 	if (instance == 0 || mi == NULL) {
@@ -472,7 +472,7 @@ fprintf(stderr, "*** rpmts_AddErase(%p) ts %p\n", s, s->ts);
 	} else {
 	    Header h;
 	    while ((h = rpmdbNextIterator(mi)) != NULL) {
-		uint_32 recOffset = rpmdbGetIteratorOffset(mi);
+		uint32_t recOffset = rpmdbGetIteratorOffset(mi);
 		if (recOffset)
 		    rpmtsAddEraseElement(s->ts, h, recOffset);
 		break;
@@ -657,7 +657,7 @@ rpmts_IDTXload(rpmtsObject * s, PyObject * args, PyObject * kwds)
     PyObject * result = NULL;
     rpmTag tag = RPMTAG_INSTALLTID;
     char * kwlist[] = {"rbtid", NULL};
-    uint_32 rbtid = 0;
+    uint32_t rbtid = 0;
     IDTX idtx;
 
 if (_rpmts_debug)
@@ -708,7 +708,7 @@ rpmts_IDTXglob(rpmtsObject * s, PyObject * args, PyObject * kwds)
     const char * globstr;
     rpmTag tag = RPMTAG_REMOVETID;
     char * kwlist[] = {"rbtid", NULL};
-    uint_32 rbtid = 0;
+    uint32_t rbtid = 0;
     IDTX idtx;
 
 if (_rpmts_debug)
@@ -760,7 +760,7 @@ rpmts_Rollback(rpmtsObject * s, PyObject * args, PyObject * kwds)
     QVA_t ia = memset(alloca(sizeof(*ia)), 0, sizeof(*ia));
     rpmtransFlags transFlags;
     const char ** av = NULL;
-    uint_32 rbtid;
+    uint32_t rbtid;
     int rc;
     char * kwlist[] = {"transactionId", NULL};
 
@@ -1025,7 +1025,7 @@ static PyObject *
 rpmts_SetColor(rpmtsObject * s, PyObject * args, PyObject * kwds)
 	/*@modifies s @*/
 {
-    uint_32 tscolor;
+    uint32_t tscolor;
     char * kwlist[] = {"color", NULL};
 
 if (_rpmts_debug)

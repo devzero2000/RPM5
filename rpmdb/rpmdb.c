@@ -486,7 +486,7 @@ static int dbt2set(dbiIndex dbi, DBT * data, /*@out@*/ dbiIndexSet * setp)
 /*@-sizeoftype @*/
     switch (dbi->dbi_jlen) {
     default:
-    case 2*sizeof(int_32):
+    case 2*sizeof(uint32_t):
 	for (i = 0; i < set->count; i++) {
 	    union _dbswap hdrNum, tagNum;
 
@@ -503,7 +503,7 @@ static int dbt2set(dbiIndex dbi, DBT * data, /*@out@*/ dbiIndexSet * setp)
 	    set->recs[i].fpNum = 0;
 	}
 	break;
-    case 1*sizeof(int_32):
+    case 1*sizeof(uint32_t):
 	for (i = 0; i < set->count; i++) {
 	    union _dbswap hdrNum;
 
@@ -553,7 +553,7 @@ static int set2dbt(dbiIndex dbi, DBT * data, dbiIndexSet set)
 /*@-sizeoftype@*/
     switch (dbi->dbi_jlen) {
     default:
-    case 2*sizeof(int_32):
+    case 2*sizeof(uint32_t):
 	for (i = 0; i < set->count; i++) {
 	    union _dbswap hdrNum, tagNum;
 
@@ -571,7 +571,7 @@ static int set2dbt(dbiIndex dbi, DBT * data, dbiIndexSet set)
 	    tdbir += sizeof(tagNum.ui);
 	}
 	break;
-    case 1*sizeof(int_32):
+    case 1*sizeof(uint32_t):
 	for (i = 0; i < set->count; i++) {
 	    union _dbswap hdrNum;
 

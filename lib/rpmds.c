@@ -764,9 +764,9 @@ void * rpmdsSetEVRcmp(rpmds ds, int (*EVRcmp)(const char *a, const char *b))
     return oEVRcmp;
 }
 
-uint_32 rpmdsColor(const rpmds ds)
+uint32_t rpmdsColor(const rpmds ds)
 {
-    uint_32 Color = 0;
+    uint32_t Color = 0;
 
     if (ds != NULL && ds->i >= 0 && ds->i < ds->Count) {
 	if (ds->Color != NULL)
@@ -775,9 +775,9 @@ uint_32 rpmdsColor(const rpmds ds)
     return Color;
 }
 
-uint_32 rpmdsSetColor(const rpmds ds, uint_32 color)
+uint32_t rpmdsSetColor(const rpmds ds, uint32_t color)
 {
-    uint_32 ocolor = 0;
+    uint32_t ocolor = 0;
 
     if (ds == NULL)
 	return ocolor;
@@ -824,9 +824,9 @@ uint32_t rpmdsSetRefs(const rpmds ds, uint32_t refs)
     return orefs;
 }
 
-int_32 rpmdsResult(const rpmds ds)
+int32_t rpmdsResult(const rpmds ds)
 {
-    int_32 result = 0;
+    int32_t result = 0;
 
     if (ds != NULL && ds->i >= 0 && ds->i < ds->Count) {
 	if (ds->Result != NULL)
@@ -835,9 +835,9 @@ int_32 rpmdsResult(const rpmds ds)
     return result;
 }
 
-int_32 rpmdsSetResult(const rpmds ds, int_32 result)
+int32_t rpmdsSetResult(const rpmds ds, int32_t result)
 {
-    int_32 oresult = 0;
+    int32_t oresult = 0;
 
     if (ds == NULL)
 	return oresult;
@@ -1380,7 +1380,7 @@ static struct rpmlibProvides_s rpmlibProvides[] = {
 #endif
     { "rpmlib(HeaderTagTypeInt64)",    "4.4.3-1",
 	(                RPMSENSE_EQUAL),
-    N_("header tags can be type int_64.") },
+    N_("header tag data can be of type uint64_t.") },
     { "rpmlib(PayloadIsUstar)",		"4.4.4-1",
 	(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
     N_("package payload can be in ustar tar archive format.") },

@@ -699,7 +699,7 @@ assert(ix == 0);
 
 	    t = stpcpy(t, ", ");
 
-	    /* this is important if sizeof(int_32) ! sizeof(time_t) */
+	    /* this is important if sizeof(uint32_t) ! sizeof(time_t) */
 	    {	time_t dateint = pgpGrab(sigp->time, sizeof(sigp->time));
 		struct tm * tstruct = localtime(&dateint);
 		if (tstruct)

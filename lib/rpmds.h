@@ -50,7 +50,7 @@ struct rpmds_s {
 /*@only@*/ /*@null@*/
     uint32_t * Refs;		/*!< No. of file refs. */
 /*@only@*/ /*@null@*/
-    int_32 * Result;		/*!< Dependency check result. */
+    int32_t * Result;		/*!< Dependency check result. */
 /*@null@*/
     int (*EVRparse) (const char *evrstr, EVR_t evr);	 /* EVR parsing. */
     int (*EVRcmp) (const char *a, const char *b);	 /* EVR comparison. */
@@ -402,7 +402,7 @@ uint32_t rpmdsSetRefs(/*@null@*/ const rpmds ds, uint32_t refs)
  * @param ds		dependency set
  * @return		current dependency result (0 if not set)
  */
-int_32 rpmdsResult(/*@null@*/ const rpmds ds)
+int32_t rpmdsResult(/*@null@*/ const rpmds ds)
 	/*@*/;
 
 /**
@@ -411,7 +411,7 @@ int_32 rpmdsResult(/*@null@*/ const rpmds ds)
  * @param result	new dependency result
  * @return		previous dependency result
  */
-int_32 rpmdsSetResult(/*@null@*/ const rpmds ds, int_32 result)
+int32_t rpmdsSetResult(/*@null@*/ const rpmds ds, int32_t result)
 	/*@modifies ds @*/;
 
 /**

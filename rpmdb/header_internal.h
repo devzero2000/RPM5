@@ -55,7 +55,7 @@ typedef /*@abstract@*/ struct entryInfo_s * entryInfo;
 struct entryInfo_s {
     uint32_t tag;		/*!< Tag identifier. */
     uint32_t type;		/*!< Tag data type. */
-    int_32 offset;		/*!< Offset into data segment (ondisk only). */
+    int32_t offset;		/*!< Offset into data segment (ondisk only). */
     uint32_t count;		/*!< Number of tag elements. */
 };
 
@@ -102,7 +102,6 @@ struct headerToken_s {
 #define	HEADERFLAG_LEGACY	(1 << 2) /*!< Header came from legacy source? */
 #define HEADERFLAG_DEBUG	(1 << 3) /*!< Debug this header? */
 #define HEADERFLAG_SIGNATURE	(1 << 4) /*!< Signature header? */
-#define HEADERFLAG_XARALLOCATED	(1 << 5) /*!< Did XAR allocate the region? */
 /*@refs@*/
     int nrefs;			/*!< Reference count. */
 };

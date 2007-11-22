@@ -40,7 +40,7 @@ static void printFileInfo(char * te, const char * name,
     char sizefield[15];
     char ownerfield[8+1], groupfield[8+1];
     char timefield[100];
-    time_t when = mtime;  /* important if sizeof(int_32) ! sizeof(time_t) */
+    time_t when = mtime;  /* important if sizeof(uint32_t) ! sizeof(time_t) */
     struct tm * tm;
     static time_t now;
     static struct tm nowtm;
@@ -200,7 +200,7 @@ int showQueryPackage(QVA_t qva, rpmts ts, Header h)
 	const char * fuser;
 	const char * fgroup;
 	const char * flink;
-	int_32 fnlink;
+	uint32_t fnlink;
 
 	fflags = rpmfiFFlags(fi);
 	fmode = rpmfiFMode(fi);
@@ -512,7 +512,7 @@ int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
     case RPMQV_PKGID:
     {	unsigned char MD5[16];
 	unsigned char * t;
-	int_32 tag;
+	uint32_t tag;
 
 	for (i = 0, s = arg; *s && isxdigit(*s); s++, i++)
 	    {};

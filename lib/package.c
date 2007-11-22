@@ -250,8 +250,8 @@ if (!_nosigh) {
 	    goto exit;
 	}
     {	void * uh = NULL;
-	int_32 uht;
-	int_32 uhc;
+	rpmTagType uht;
+	rpmTagCount uhc;
 	unsigned char * hmagic = NULL;
 	size_t nmagic = 0;
 
@@ -289,8 +289,8 @@ if (!_nosigh) {
 	/*@fallthrough@*/
     case RPMSIGTAG_SHA1:
     {	void * uh = NULL;
-	int_32 uht;
-	int_32 uhc;
+	rpmTagType uht;
+	rpmTagCount uhc;
 	unsigned char * hmagic = NULL;
 	size_t nmagic = 0;
 

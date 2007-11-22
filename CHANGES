@@ -1,4 +1,7 @@
 5.0a2 -> 5.0a3:
+    - jbj: eliminate rpm peculier int typedefs, use stdint types instead.
+    - jbj: convert all remaining uses of int_XY to stdint types.
+    - jbj: revert HEADER_XARALLOCATED gloopiness.
     - jbj: functional (and leak free) -Kvv of both *.rpm and *.xar.
     - jbj: revert xar handling to rpmio model, buffer handling in rpmxar.
     - jbj: fix: add RPMRC_FAIL where needed using -Kvv.

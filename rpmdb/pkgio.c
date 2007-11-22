@@ -739,7 +739,7 @@ if (xar != NULL) {
 /*@=sizeoftype@*/
 
 assert(entry->info.offset > 0);	/* XXX insurance */
-	if (entry->info.offset >= (int_32)dl) {
+	if (entry->info.offset >= (int32_t)dl) {
 	    (void) snprintf(buf, sizeof(buf),
 		_("region offset: BAD, tag %u type %u offset %d count %u\n"),
 		(unsigned) entry->info.tag, (unsigned) entry->info.type,

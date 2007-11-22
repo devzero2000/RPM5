@@ -966,7 +966,7 @@ assert(dix >= 0);
     return 0;
 }
 
-int rpmfcClassify(rpmfc fc, ARGV_t argv, int_16 * fmode)
+int rpmfcClassify(rpmfc fc, ARGV_t argv, uint16_t * fmode)
 {
     ARGV_t fcav = NULL;
     ARGV_t dav;
@@ -999,7 +999,7 @@ assert(mg != NULL);	/* XXX figger a proper return path. */
     for (fc->ix = 0; fc->ix < fc->nfiles; fc->ix++) {
 	const char * ftype;
 	int freeftype;
-	int_16 mode = (fmode ? fmode[fc->ix] : 0);
+	uint16_t mode = (fmode ? fmode[fc->ix] : 0);
 	int urltype;
 
 	ftype = "";	freeftype = 0;
@@ -1403,7 +1403,7 @@ int rpmfcGenerateDepends(void * specp, void * pkgp)
     rpmds ds;
     int flags = 0x2;	/* XXX no filtering, !scareMem */
     ARGV_t av;
-    int_16 * fmode;
+    uint16_t * fmode;
     int ac = rpmfiFC(fi);
     char buf[BUFSIZ];
     const char * N;

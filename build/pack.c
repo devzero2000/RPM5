@@ -602,7 +602,7 @@ rpmRC writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     FD_t fd = NULL;
     FD_t ifd = NULL;
-    int_32 count;
+    uint32_t count;
     uint32_t sigtag;
     const char * sigtarget;
     const char * rpmio_flags = NULL;
@@ -887,14 +887,16 @@ assert(0);
     }
 	
     /* Write the payload into the package. */
-    while ((count = Fread(buf, sizeof(buf[0]), sizeof(buf), ifd)) > 0) {
-	if (count == -1) {
+    while ((xx = Fread(buf, sizeof(buf[0]), sizeof(buf), ifd)) > 0) {
+	if (xx <= -1 || Ferror(ifd)) {
 	    rpmlog(RPMLOG_ERR, _("Unable to read payload from %s: %s\n"),
 		     sigtarget, Fstrerror(ifd));
 	    rc = RPMRC_FAIL;
 	    goto exit;
 	}
-	if (Fwrite(buf, sizeof(buf[0]), count, fd) != count) {
+	count = (uint32_t) xx;
+	xx = Fwrite(buf, sizeof(buf[0]), count, fd);
+	if ((uint32_t)xx != count || Ferror(fd)) {
 	    rpmlog(RPMLOG_ERR, _("Unable to write payload to %s: %s\n"),
 		     fileName, Fstrerror(fd));
 	    rc = RPMRC_FAIL;
@@ -909,7 +911,6 @@ exit:
 
     /* XXX Fish the pkgid out of the signature header. */
     if (sigh != NULL && pkgidp != NULL) {
-	int xx;
 	he->tag = RPMSIGTAG_MD5;
 	xx = hge(sigh, he, 0);
 	if (he->t == RPM_BIN_TYPE && he->p.ptr != NULL && he->c == 16)

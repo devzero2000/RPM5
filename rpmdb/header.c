@@ -266,12 +266,8 @@ Header headerFree(/*@killref@*/ /*@null@*/ Header h)
 	    if ((h->flags & HEADERFLAG_ALLOCATED) && ENTRY_IS_REGION(entry)) {
 		if (entry->length > 0) {
 		    uint32_t * ei = entry->data;
-		    if ((ei - 2) == h->blob) {
-			/* Adjust for XAR including 8b of magic. */
-			if (h->flags & HEADERFLAG_XARALLOCATED)
-			    h->blob = &((char *)h->blob)[-8];
+		    if ((ei - 2) == h->blob)
 			h->blob = _free(h->blob);
-		    }
 		    entry->data = NULL;
 		}
 	    } else if (!ENTRY_IN_REGION(entry)) {
@@ -405,7 +401,7 @@ size_t headerSizeof(/*@null@*/ Header h)
     size += sizeof(header_magic);	/* XXX HEADER_MAGIC_YES */
 
     /*@-sizeoftype@*/
-    size += 2 * sizeof(int_32);	/* count of index entries */
+    size += 2 * sizeof(uint32_t);	/* count of index entries */
     /*@=sizeoftype@*/
 
     for (i = 0, entry = h->index; i < h->indexUsed; i++, entry++) {
@@ -507,7 +503,7 @@ static size_t dataLength(rpmTagType type, rpmTagData * p, rpmTagCount count,
 }
 
 /** \ingroup header
- * Swap int_32 and int_16 arrays within header region.
+ * Swap uint32_t and uint16_t arrays within header region.
  *
  * This code is way more twisty than I would like.
  *
@@ -556,7 +552,7 @@ static uint32_t regionSwab(/*@null@*/ indexEntry entry, uint32_t il, uint32_t dl
 	ie.info.tag = (uint32_t) ntohl(pe->tag);
 	ie.info.type = (uint32_t) ntohl(pe->type);
 	ie.info.count = (uint32_t) ntohl(pe->count);
-	ie.info.offset = (int_32) ntohl(pe->offset);
+	ie.info.offset = (int32_t) ntohl(pe->offset);
 assert(ie.info.offset >= 0);	/* XXX insurance */
 
 	if (hdrchkType(ie.info.type))
@@ -718,7 +714,7 @@ void * headerUnload(Header h, /*@out@*/ /*@null@*/ size_t * lenp)
 	if (ENTRY_IS_REGION(entry)) {
 	    uint32_t rdl;
 	    uint32_t ril;
-	    int_32 rid;
+	    int32_t rid;
 
 assert(entry->info.offset <= 0);	/* XXX insurance */
 	    rdl = -entry->info.offset;	/* negative offset */
@@ -810,7 +806,7 @@ assert(entry->info.offset <= 0);	/* XXX insurance */
 	if (ENTRY_IS_REGION(entry)) {
 	    uint32_t rdl;
 	    uint32_t ril;
-	    int_32 rid;
+	    int32_t rid;
 
 assert(entry->info.offset <= 0);	/* XXX insurance */
 
@@ -830,7 +826,7 @@ assert(entry->info.offset <= 0);	/* XXX insurance */
 		memcpy(te, src + rdl, rdlen);
 		te += rdlen;
 
-		pe->offset = (int_32) htonl(te - dataStart);
+		pe->offset = (int32_t) htonl(te - dataStart);
 		stei[0] = (uint32_t) pe->tag;
 		stei[1] = (uint32_t) pe->type;
 		stei[2] = (uint32_t) htonl(-rdl-entry->info.count);
@@ -852,8 +848,8 @@ assert(entry->info.offset <= 0);	/* XXX insurance */
 		{   /*@-castexpose@*/
 		    entryInfo se = (entryInfo)src;
 		    /*@=castexpose@*/
-		    int_32 off = (int_32) ntohl(se->offset);
-		    pe->offset = (int_32)((off)
+		    int32_t off = (int32_t) ntohl(se->offset);
+		    pe->offset = (int32_t)((off)
 			? htonl(te - dataStart) : htonl(off));
 		}
 		te += entry->info.count + drlen;
@@ -890,7 +886,7 @@ assert(entry->info.offset <= 0);	/* XXX insurance */
 	    }
 	}
 
-	pe->offset = (int_32) htonl(te - dataStart);
+	pe->offset = (int32_t) htonl(te - dataStart);
 
 	/* copy data w/ endian conversions */
 	switch (entry->info.type) {
@@ -1153,7 +1149,7 @@ Header headerLoad(/*@kept@*/ void * uh)
 	if (hdrchkTags(entry->info.count))
 	    goto errxit;
 
-	{   int_32 off = (int_32) ntohl(pe->offset);
+	{   int32_t off = (int32_t) ntohl(pe->offset);
 
 	    if (hdrchkData(off))
 		goto errxit;
@@ -1163,7 +1159,7 @@ Header headerLoad(/*@kept@*/ void * uh)
 /*@=sizeoftype@*/
 		uint32_t * stei = memcpy(alloca(nb), dataStart + off, nb);
 		rdl = -ntohl(stei[2]);	/* negative offset */
-assert((int_32)rdl >= 0);	/* XXX insurance */
+assert((int32_t)rdl >= 0);	/* XXX insurance */
 		ril = rdl/sizeof(*pe);
 		if (hdrchkTags(ril) || hdrchkData(rdl))
 		    goto errxit;
@@ -1176,7 +1172,7 @@ assert((int_32)rdl >= 0);	/* XXX insurance */
 		entry->info.tag = HEADER_IMAGE;
 	    }
 	}
-	entry->info.offset = (int_32) -rdl;	/* negative offset */
+	entry->info.offset = (int32_t) -rdl;	/* negative offset */
 
 	/*@-assignexpose@*/
 	entry->data = pe;
@@ -1190,7 +1186,7 @@ assert((int_32)rdl >= 0);	/* XXX insurance */
 	if (ril < h->indexUsed) {
 	    indexEntry newEntry = entry + ril;
 	    size_t ne = (h->indexUsed - ril);
-	    int_32 rid = entry->info.offset+1;
+	    int32_t rid = entry->info.offset+1;
 	    uint32_t rc;
 
 	    /* Load dribble entries from region. */
@@ -2865,7 +2861,7 @@ static char * realDateFormat(HE_t he, const char * strftimeFormat)
 	struct tm * tstruct;
 	char buf[50];
 
-	/* this is important if sizeof(int_64) ! sizeof(time_t) */
+	/* this is important if sizeof(uint64_t) ! sizeof(time_t) */
 	{   time_t dateint = data.ui64p[0];
 	    tstruct = localtime(&dateint);
 	}

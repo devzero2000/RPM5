@@ -91,7 +91,7 @@ rpmRC rpmwfFiniRPM(rpmwf wf)
     return RPMRC_OK;
 }
 
-static size_t hSize(uint_32 *p)
+static size_t hSize(uint32_t *p)
 	/*@*/
 {
     return (8 + 8 + 16 * ntohl(p[2]) + ntohl(p[3]));

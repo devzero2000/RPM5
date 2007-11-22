@@ -574,7 +574,7 @@ main(int argc, char *argv[])
 	vsflags |= RPMVSF_NOHDRCHK;
     (void) rpmtsSetVSFlags(ts, vsflags);
 
-    {   int_32 tid = (int_32) time(NULL);
+    {   uint32_t tid = (uint32_t) time(NULL);
 	(void) rpmtsSetTid(ts, tid);
     }
 

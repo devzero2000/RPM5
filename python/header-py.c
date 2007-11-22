@@ -137,9 +137,9 @@ struct hdrObject_s {
     char ** md5list;
     char ** fileList;
     char ** linkList;
-    int_32 * fileSizes;
-    int_32 * mtimes;
-    int_32 * uids, * gids;	/* XXX these tags are not used anymore */
+    uint32_t * fileSizes;
+    uint32_t * mtimes;
+    uint32_t * uids, * gids;	/* XXX these tags are not used anymore */
     unsigned short * rdevs;
     unsigned short * modes;
 } ;
@@ -367,7 +367,7 @@ static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
 {
     HGE_t hge = headerGetExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
-    int_32 tag = -1;
+    uint32_t tag = 0xffffffff;
     int i;
     PyObject * o, * metao;
     int forceArray = 0;
@@ -379,7 +379,7 @@ static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
     else
 	tag = tagNumFromPyObject (item);
 
-    if (tag == -1 && (PyString_Check(item) || PyUnicode_Check(item))) {
+    if (tag == 0xffffffff && (PyString_Check(item) || PyUnicode_Check(item))) {
 	const struct headerSprintfExtension_s * extensions = rpmHeaderFormats;
 	char * str;
 	/* if we still don't have the tag, go looking for the header
@@ -400,7 +400,7 @@ static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
     if (ext) {
         ext->u.tagFunction(s->h, he);
     } else {
-        if (tag == -1) {
+        if (tag == 0xffffffff) {
             PyErr_SetString(PyExc_KeyError, "unknown header tag");
             return NULL;
         }

@@ -187,7 +187,7 @@ static int rpmReSign(/*@unused@*/ rpmts ts,
     FD_t fd = NULL;
     FD_t ofd = NULL;
     struct rpmlead *lead = NULL;
-    int_32 sigtag;
+    uint32_t sigtag;
     const char *sigtarget = NULL;
     char tmprpm[1024+1];
     Header sigh = NULL;
@@ -201,7 +201,7 @@ static int rpmReSign(/*@unused@*/ rpmts ts,
 
     if (argv)
  {       /* start-of-arg-iteration */
-    int tag = (qva->qva_source == RPMQV_FTSWALK)
+    uint32_t tag = (qva->qva_source == RPMQV_FTSWALK)
 	? RPMDBI_FTSWALK : RPMDBI_ARGLIST;
     rpmgiFlags _giFlags = RPMGI_NONE;
 

@@ -37,7 +37,7 @@ struct availablePackage_s {
 /*@refcounted@*/ /*@null@*/
     rpmfi fi;			/*!< File info set. */
 
-    uint_32 tscolor;		/*!< Transaction color bits. */
+    uint32_t tscolor;		/*!< Transaction color bits. */
 
 /*@exposed@*/ /*@dependent@*/ /*@null@*/
     fnpyKey key;		/*!< Associated file name/python object */
@@ -86,7 +86,7 @@ struct fileIndexEntry_s {
     const char * baseName;	/*!< File basename. */
     int baseNameLen;
     alNum pkgNum;		/*!< Containing package index. */
-    uint_32 ficolor;
+    uint32_t ficolor;
 };
 
 typedef /*@abstract@*/ struct dirInfo_s *		dirInfo;
@@ -114,7 +114,7 @@ struct rpmal_s {
     int delta;			/*!< Delta for pkg list reallocation. */
     int size;			/*!< No. of pkgs in list. */
     int alloced;		/*!< No. of pkgs allocated for list. */
-    uint_32 tscolor;		/*!< Transaction color. */
+    uint32_t tscolor;		/*!< Transaction color. */
     int numDirs;		/*!< No. of directories. */
 /*@owned@*/ /*@null@*/
     dirInfo dirs;		/*!< Set of directories. */
@@ -416,7 +416,7 @@ fprintf(stderr, "    die[%5d] memset(%p,0,0x%x)\n", al->numDirs, al->dirs + al->
 }
 
 alKey rpmalAdd(rpmal * alistp, alKey pkgKey, fnpyKey key,
-		rpmds provides, rpmfi fi, uint_32 tscolor)
+		rpmds provides, rpmfi fi, uint32_t tscolor)
 {
     alNum pkgNum;
     rpmal al;
@@ -611,9 +611,9 @@ static int indexcmp(const void * one, const void * two)
     return strcmp(a->entry, b->entry);
 }
 
-void rpmalAddProvides(rpmal al, alKey pkgKey, rpmds provides, uint_32 tscolor)
+void rpmalAddProvides(rpmal al, alKey pkgKey, rpmds provides, uint32_t tscolor)
 {
-    uint_32 dscolor;
+    uint32_t dscolor;
     const char * Name;
     alNum pkgNum = alKey2Num(al, pkgKey);
     availableIndex ai = &al->index;
@@ -686,8 +686,8 @@ void rpmalMakeIndex(rpmal al)
 fnpyKey *
 rpmalAllFileSatisfiesDepend(const rpmal al, const rpmds ds, alKey * keyp)
 {
-    uint_32 tscolor;
-    uint_32 ficolor;
+    uint32_t tscolor;
+    uint32_t ficolor;
     int found = 0;
     const char * dirName;
     const char * baseName;
