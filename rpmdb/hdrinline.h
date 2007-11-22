@@ -363,7 +363,7 @@ int headerNextExtension(HeaderIterator hi, HE_t he, /*@unused@*/ unsigned int fl
 /*@unused@*/ static inline
 int headerGetEntry(Header h, uint32_t tag,
 			/*@null@*/ /*@out@*/ rpmTagType * type,
-			/*@null@*/ /*@out@*/ hRET_t * p,
+			/*@null@*/ /*@out@*/ rpmTagData * p,
 			/*@null@*/ /*@out@*/ rpmTagCount * c)
 	/*@modifies *type, *p, *c @*/
 {
@@ -568,12 +568,11 @@ HeaderIterator headerInitIterator(Header h)
 int headerNextIterator(HeaderIterator hi,
 		/*@null@*/ /*@out@*/ hTAG_t tag,
 		/*@null@*/ /*@out@*/ rpmTagType * type,
-		/*@null@*/ /*@out@*/ const void * p,
+		/*@null@*/ /*@out@*/ rpmTagData * p,
 		/*@null@*/ /*@out@*/ rpmTagCount * c)
 	/*@modifies hi, *tag, *type, *p, *c @*/
 {
-    hRET_t **q = (void *)&p;
-    return hdrVec->hdrnextiter(hi, tag, type, *q, c);
+    return hdrVec->hdrnextiter(hi, tag, type, p, c);
 }
 
 /** \ingroup header

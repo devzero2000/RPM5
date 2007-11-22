@@ -137,7 +137,6 @@ typedef struct _HE_s * HE_t;		/* tag container. */
 /** \ingroup header
  */
 /*@-typeuse -fielduse@*/
-typedef union rpmDataType_u hRET_t;
 #if !defined(SWIG)
 union rpmDataType_u {
 /*@null@*/
@@ -535,7 +534,7 @@ typedef
 typedef
 int (*HDRext) (Header h, uint32_t tag,
 			/*@null@*/ /*@out@*/ rpmTagType * type,
-			/*@null@*/ /*@out@*/ hRET_t * p,
+			/*@null@*/ /*@out@*/ rpmTagData * p,
 			/*@null@*/ /*@out@*/ rpmTagCount * c)
 	/*@modifies *type, *p, *c @*/;
 
@@ -555,7 +554,7 @@ int (*HDRext) (Header h, uint32_t tag,
 typedef
 int (*HDRget) (Header h, uint32_t tag,
 			/*@null@*/ /*@out@*/ rpmTagType * type,
-			/*@null@*/ /*@out@*/ hRET_t * p,
+			/*@null@*/ /*@out@*/ rpmTagData * p,
 			/*@null@*/ /*@out@*/ rpmTagCount * c)
 	/*@modifies *type, *p, *c @*/;
 
@@ -718,7 +717,7 @@ typedef
 int (*HDRnextiter) (HeaderIterator hi,
 		/*@null@*/ /*@out@*/ hTAG_t tag,
 		/*@null@*/ /*@out@*/ rpmTagType * type,
-		/*@null@*/ /*@out@*/ hRET_t * p,
+		/*@null@*/ /*@out@*/ rpmTagData * p,
 		/*@null@*/ /*@out@*/ rpmTagCount * c)
 	/*@modifies hi, *tag, *type, *p, *c @*/;
 

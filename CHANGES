@@ -1,4 +1,6 @@
 5.0a2 -> 5.0a3:
+    - jbj: eliminate hRET_t, use rpmTagData instead.
+    - jbj: fix: files.c: pass union ptr, not 1st element, address.
     - jbj: eliminate hTYP_t and hCNT_t typedefs everywhere.
     - jbj: fix: python: pass pgpDig, not rpmts, as 1st arg to  headerCheck.
     - jbj: fix: python: include pkgio.h for rpmpkgRead prototype.

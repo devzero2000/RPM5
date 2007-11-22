@@ -1758,7 +1758,7 @@ static /*@null@*/ void * headerFreeTag(/*@unused@*/ Header h,
 static
 int headerGetExtension(Header h, uint32_t tag,
 			/*@null@*/ /*@out@*/ rpmTagType * type,
-			/*@null@*/ /*@out@*/ hRET_t * p,
+			/*@null@*/ /*@out@*/ rpmTagData * p,
 			/*@null@*/ /*@out@*/ rpmTagCount * c)
 	/*@globals headerCompoundFormats @*/
 	/*@modifies *type, *p, *c @*/
@@ -1863,7 +1863,7 @@ exit:
 static
 int headerGetEntry(Header h, uint32_t tag,
 			/*@null@*/ /*@out@*/ rpmTagType * type,
-			/*@null@*/ /*@out@*/ hRET_t * p,
+			/*@null@*/ /*@out@*/ rpmTagData * p,
 			/*@null@*/ /*@out@*/ rpmTagCount * c)
 	/*@modifies *type, *p, *c @*/
 	/*@requires maxSet(type) >= 0 /\ maxSet(p) >= 0 /\ maxSet(c) >= 0 @*/
@@ -2428,7 +2428,7 @@ static
 int headerNextIterator(HeaderIterator hi,
 		/*@null@*/ /*@out@*/ hTAG_t tag,
 		/*@null@*/ /*@out@*/ rpmTagType * type,
-		/*@null@*/ /*@out@*/ hRET_t * p,
+		/*@null@*/ /*@out@*/ rpmTagData * p,
 		/*@null@*/ /*@out@*/ rpmTagCount * c)
 	/*@modifies hi, *tag, *type, *p, *c @*/
 	/*@requires maxSet(tag) >= 0 /\ maxSet(type) >= 0

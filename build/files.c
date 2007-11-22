@@ -2536,7 +2536,7 @@ int initSourceHeader(Spec spec, StringBuf *sfp)
     /*@-branchstate@*/
   if (!spec->sourceHdrInit) {
     for (hi = headerInitIterator(spec->packages->header);
-	headerNextIterator(hi, &he->tag, &he->t, &he->p.ptr, &he->c);
+	headerNextIterator(hi, &he->tag, &he->t, &he->p, &he->c);
 	he->p.ptr = headerFreeData(he->p.ptr, he->t))
     {
 	switch (he->tag) {
