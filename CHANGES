@@ -1,4 +1,5 @@
 5.0a2 -> 5.0a3:
+    - jbj: unsnarl header.h from everything else.
     - jbj: eliminate hRET_t, use rpmTagData instead.
     - jbj: fix: files.c: pass union ptr, not 1st element, address.
     - jbj: eliminate hTYP_t and hCNT_t typedefs everywhere.

@@ -6,7 +6,8 @@
  *  This is the *only* module users of librpmbuild should need to include.
  */
 
-#include "rpmcli.h"
+#include <header.h>
+#include <rpmcli.h>
 
 /* and it shouldn't need these :-( */
 #include "stringbuf.h"

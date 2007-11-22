@@ -7,14 +7,13 @@
 #undef Stat
 
 #include "../config.h"
-#ifdef HAVE_BEECRYPT_API_H
-#include <beecrypt/api.h>
-#endif
+/* XXX artifacts needed to include "rpmio_internal.h" w/o "system.h" */
+void * vmefail(size_t size);
+#define xstrdup(_str)   (strcpy((malloc(strlen(_str)+1) ? : vmefail(strlen(_str)+1)), (_str)))
 
+#include "rpmio_internal.h"
 #include "rpmlib.h"
 #include "rpmfi.h"
-#include "rpmio_internal.h"
-#include "rpmpgp.h"
 
 MODULE = RPM::Files		PACKAGE = RPM::Files
 

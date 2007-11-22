@@ -11,15 +11,15 @@
 #include <utime.h>
 #include <utime.h>
 
-#include "rpmlib.h"
 #include "rpmio.h"
+#include "rpmlog.h"
+#include "rpmmacro.h"
+#include "header.h"
+#include "rpmdb.h"
 #include "rpmcli.h"
 #include "rpmts.h"
 #include "rpmte.h"
-#include "rpmmacro.h"
 #include "rpmevr.h"
-#include "header.h"
-#include "rpmdb.h"
 #include "misc.h"
 
 /* The perl callback placeholder for output err messages */

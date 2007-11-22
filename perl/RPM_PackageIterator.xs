@@ -9,14 +9,14 @@
 #include <stdio.h>
 #include <string.h>
 #include <utime.h>
-#include "rpmlib.h"
+
 #include <rpmio.h>
+#include "header.h"
 #include "rpmcli.h"
 
 #include "rpmts.h"
 #include "rpmte.h"
 
-#include "header.h"
 #include "rpmdb.h"
 #include "misc.h"
 

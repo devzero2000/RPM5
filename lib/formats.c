@@ -7,6 +7,7 @@
 #include <rpmio.h>
 #include <rpmcb.h>		/* XXX fnpyKey */
 #include <rpmmacro.h>		/* XXX for %_i18ndomains */
+#include <header.h>
 #include <rpmlib.h>
 
 #define	_RPMEVR_INTERNAL

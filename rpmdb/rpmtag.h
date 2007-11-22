@@ -1,8 +1,6 @@
 #ifndef H_RPMTAG
 #define	H_RPMTAG
 
-#include <header.h>
-
 /** \ingroup header
  * \file rpmdb/rpmtag.h
  */
@@ -10,6 +8,142 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+/** \ingroup header
+ */
+typedef const char *	errmsg_t;
+
+/** \ingroup header
+ */
+typedef /*@abstract@*/ /*@refcounted@*/ struct headerToken_s * Header;
+
+/** \ingroup header
+ * The basic types of data in tags from headers.
+ */
+enum rpmTagType_e {
+    	/* RPM_NULL_TYPE =  0	- never been used. */
+	/* RPM_CHAR_TYPE =  1	- never been used, same as RPM_UINT8_TYPE. */
+    RPM_UINT8_TYPE		=  2,
+    RPM_UINT16_TYPE		=  3,
+    RPM_UINT32_TYPE		=  4,
+    RPM_UINT64_TYPE		=  5,
+    RPM_STRING_TYPE		=  6,
+    RPM_BIN_TYPE		=  7,
+    RPM_STRING_ARRAY_TYPE	=  8,
+    RPM_I18NSTRING_TYPE		=  9
+	/* RPM_ASN1_TYPE = 10	- never been used. */
+	/* RPM_OPENPGP_TYPE= 11	- never been used. */
+};
+#define	RPM_MIN_TYPE		2
+#define	RPM_MAX_TYPE		9
+#define	RPM_MASK_TYPE		0x0000ffff
+
+/** \ingroup header
+ */
+typedef enum rpmTagType_e rpmTagType;
+
+/** \ingroup header
+ */
+typedef union rpmDataType_u rpmTagData;
+
+/** \ingroup header
+ */
+typedef uint32_t rpmTagCount;
+
+/** \ingroup header
+ */
+typedef struct _HE_s * HE_t;		/* tag container. */
+
+/** \ingroup header
+ */
+/*@-typeuse -fielduse@*/
+#if !defined(SWIG)
+union rpmDataType_u {
+/*@null@*/
+    void * ptr;
+    uint8_t * ui8p;		/*!< RPM_INT8_TYPE | RPM_CHAR_TYPE */
+    uint16_t * ui16p;		/*!< RPM_INT16_TYPE */
+    uint32_t * ui32p;		/*!< RPM_INT32_TYPE */
+    uint64_t * ui64p;		/*!< RPM_INT64_TYPE */
+    const char * str;		/*!< RPM_STRING_TYPE */
+    unsigned char * blob;	/*!< RPM_BIN_TYPE */
+    const char ** argv;		/*!< RPM_STRING_ARRAY_TYPE */
+    HE_t * he;
+};
+#endif
+/*@=typeuse =fielduse@*/
+
+/** \ingroup header
+ */
+typedef uint32_t *	hTAG_t;
+typedef rpmTagData *	hPTR_t;
+
+/** \ingroup header
+ */
+/*@-typeuse -fielduse@*/
+#if !defined(SWIG)
+struct _HE_s {
+    uint32_t tag;
+    rpmTagType t;
+/*@owned@*/ /*@null@*/
+    rpmTagData p;
+    rpmTagCount c;
+    int ix;
+    unsigned int freeData	: 1;
+    unsigned int avail		: 1;
+    unsigned int append		: 1;
+    unsigned int signature	: 1;
+};
+typedef struct _HE_s HE_s;
+#endif
+
+/*@=typeuse =fielduse@*/
+/** \ingroup header
+ */
+/*@-enummemuse -typeuse @*/
+typedef enum rpmSubTagType_e {
+    RPM_REGION_TYPE		= -10,
+    RPM_BIN_ARRAY_TYPE		= -11,
+    RPM_XREF_TYPE		= -12
+} rpmSubTagType;
+/*@=enummemuse =typeuse @*/
+
+/** \ingroup header
+ * Identify how to return the header data type.
+ */
+/*@-enummemuse -typeuse @*/
+typedef enum rpmTagReturnType_e {
+    RPM_ANY_RETURN_TYPE		= 0,
+    RPM_SCALAR_RETURN_TYPE	= 0x00010000,
+    RPM_ARRAY_RETURN_TYPE	= 0x00020000,
+    RPM_MAPPING_RETURN_TYPE	= 0x00040000,
+    RPM_MASK_RETURN_TYPE	= 0xffff0000
+} rpmTagReturnType;
+/*@=enummemuse =typeuse @*/
+
+/**
+ * Header private tags.
+ * @note General use tags should start at 1000 (RPM's tag space starts there).
+ */
+#define	HEADER_IMAGE		61
+#define	HEADER_SIGNATURES	62
+#define	HEADER_IMMUTABLE	63
+#define	HEADER_REGIONS		64
+#define HEADER_I18NTABLE	100
+#define	HEADER_SIGBASE		256
+#define	HEADER_TAGBASE		1000
+
+/** \ingroup header
+ */
+typedef /*@abstract@*/ struct headerIterator_s * HeaderIterator;
+
+/** \ingroup header
+ */
+typedef /*@abstract@*/ struct headerTagIndices_s * headerTagIndices;
+
+/** \ingroup header
+ */
+typedef /*@abstract@*/ struct headerSprintfExtension_s * headerSprintfExtension;
 
 /**
  * Automatically generated table of tag name/value pairs.
@@ -327,6 +461,40 @@ enum rpmtagSignature_e {
     RPMSIGTAG_RSA	= RPMTAG_RSAHEADER	/*!< internal RSA header signature. */
 };
 
+/** \ingroup header
+ */
+typedef enum rpmTag_e rpmTag;
+
+/**
+ */
+typedef /*@abstract@*/ struct headerTagTableEntry_s * headerTagTableEntry;
+
+/**
+ */
+#if !defined(SWIG)
+struct headerTagIndices_s {
+    int (*loadIndex) (headerTagTableEntry ** ipp, int * np,
+                int (*cmp) (const void * avp, const void * bvp))
+        /*@ modifies *ipp, *np */;	/*!< load sorted tag index. */
+/*@relnull@*/
+    headerTagTableEntry * byName;	/*!< header tags sorted by name. */
+    int byNameSize;			/*!< no. of entries. */
+    int (*byNameCmp) (const void * avp, const void * bvp)
+        /*@*/;				/*!< compare entries by name. */
+    uint32_t (*tagValue) (const char * name)
+	/*@*/;				/* return value from name. */
+/*@relnull@*/
+    headerTagTableEntry * byValue;	/*!< header tags sorted by value. */
+    int byValueSize;			/*!< no. of entries. */
+    int (*byValueCmp) (const void * avp, const void * bvp)
+        /*@*/;				/*!< compare entries by value. */
+    const char * (*tagName) (uint32_t value)
+	/*@*/;				/* Return name from value. */
+    uint32_t (*tagType) (uint32_t value)
+	/*@*/;				/* Return type from value. */
+};
+#endif
+
 #if !defined(SWIG)
 /**
  * Return tag name from value.
@@ -373,6 +541,69 @@ unsigned int tagValue(const char * tagstr)
 }
 
 #endif
+
+/** \ingroup header
+ */
+enum headerSprintfExtensionType {
+    HEADER_EXT_LAST = 0,	/*!< End of extension chain. */
+    HEADER_EXT_FORMAT,		/*!< headerTagFormatFunction() extension */
+    HEADER_EXT_MORE,		/*!< Chain to next table. */
+    HEADER_EXT_TAG		/*!< headerTagTagFunction() extension */
+};
+
+/** \ingroup header
+ * HEADER_EXT_TAG format function prototype.
+ *
+ * @param he		tag container
+ * @return		formatted string
+ */
+typedef /*only@*/ char * (*headerTagFormatFunction) (HE_t he)
+	/*@modifies he @*/;
+
+/** \ingroup header
+ * HEADER_EXT_FORMAT format function prototype.
+ * This is allowed to fail, which indicates the tag doesn't exist.
+ *
+ * @param h		header
+ * @retval he		tag container
+ * @return		0 on success
+ */
+typedef int (*headerTagTagFunction) (Header h, HE_t he)
+	/*@modifies he @*/;
+
+/** \ingroup header
+ * Define header tag output formats.
+ */
+#if !defined(SWIG)
+struct headerSprintfExtension_s {
+    enum headerSprintfExtensionType type;	/*!< Type of extension. */
+/*@observer@*/ /*@null@*/
+    const char * name;				/*!< Name of extension. */
+    union {
+/*@observer@*/ /*@null@*/
+	void * generic;				/*!< Private extension. */
+	headerTagFormatFunction fmtFunction; /*!< HEADER_EXT_TAG extension. */
+	headerTagTagFunction tagFunction; /*!< HEADER_EXT_FORMAT extension. */
+	struct headerSprintfExtension_s * more;	/*!< Chained table extension. */
+    } u;
+};
+#endif
+
+/** \ingroup header
+ * Supported default header tag output formats.
+ */
+/*@-redecl@*/
+/*@observer@*/
+extern const struct headerSprintfExtension_s headerDefaultFormats[];
+/*@=redecl@*/
+
+/** \ingroup header
+ * Supported default header extension/tag output formats.
+ */
+/*@-redecl@*/
+/*@observer@*/
+extern const struct headerSprintfExtension_s headerCompoundFormats[];
+/*@=redecl@*/
 
 #ifdef __cplusplus
 }

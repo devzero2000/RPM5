@@ -9,6 +9,7 @@ const char *__progname;
 #include <fts.h>
 
 #include <rpmio.h>
+#include <header.h>
 #include <rpmcli.h>
 
 #define	_RPMGI_INTERNAL

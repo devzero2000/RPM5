@@ -4,6 +4,7 @@
 
 #include <rpmio.h>
 #include <rpmcb.h>		/* XXX fnpyKey */
+#include <header.h>
 #define	_RPMEVR_INTERNAL
 #include <rpmbuild.h>
 #include <argv.h>

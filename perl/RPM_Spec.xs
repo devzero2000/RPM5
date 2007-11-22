@@ -97,9 +97,8 @@ void
 srcrpm(spec)
     Spec spec
     PREINIT:
-    const char *name, *version, *release;
-    char * srctag;
-    char * srcpath;
+    const char * srctag;
+    const char * srcpath;
     PPCODE:
     srcpath = rpmGetPath("%{_srcrpmdir}", NULL);
     srctag = headerSprintf(
@@ -144,7 +143,6 @@ void
 check(spec, ts = NULL)
     Spec spec
     PREINIT:
-    int rc;
     rpmts ts = rpmtsCreate();
     rpmps ps;
     PPCODE:

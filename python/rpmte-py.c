@@ -6,6 +6,7 @@
 
 #include <rpmio.h>
 #include <rpmcb.h>		/* XXX fnpyKey */
+#include <header.h>
 #include <rpmlib.h>
 
 #include "header-py.h"	/* XXX tagNumFromPyObject */

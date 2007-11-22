@@ -7,6 +7,7 @@
 #include <rpmio.h>
 #include <rpmcb.h>		/* XXX fnpyKey */
 #include <rpmmacro.h>		/* XXX rpmExpand */
+#include <header.h>
 #include <rpmlib.h>
 #include <rpmte.h>		/* XXX rpmElementType */
 #include <pkgio.h>		/* XXX rpmElementType */

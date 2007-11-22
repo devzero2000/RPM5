@@ -10,6 +10,7 @@
 #include <rpmmacro.h>
 #include <rpmurl.h>
 #include <rpmlua.h>
+#include <header.h>
 #include <rpmlib.h>
 
 #include "cpio.h"

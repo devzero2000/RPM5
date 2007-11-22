@@ -7,6 +7,7 @@
 
 #include <rpmio_internal.h>	/* XXX urlPath, fdGetCpioPos */
 #include <rpmcb.h>		/* XXX fnpyKey */
+#include <header.h>
 #include <rpmlib.h>
 
 #include "cpio.h"

@@ -12,6 +12,7 @@
 #endif
 
 #include <rpmio.h>
+#include <header.h>
 #include <rpmcli.h>
 
 #include "rpmdb.h"

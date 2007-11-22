@@ -120,53 +120,6 @@ extern headerTagIndices rpmTags;
 /*@=redecl@*/
 
 /**
- * Return tag name from value.
- * @todo This should come from #include <rpmtag.h>.
- * @param tag		tag value
- * @return		tag name, "(unknown)" on not found
- */
-/*@-redecl@*/
-/*@unused@*/ static inline /*@observer@*/
-const char * tagName(uint32_t tag)
-	/*@*/
-{
-/*@-type@*/
-    return ((*rpmTags->tagName)(tag));
-/*@=type@*/
-}
-
-/**
- * Return tag data type from value.
- * @todo This should come from #include <rpmtag.h>.
- * @param tag		tag value
- * @return		tag data type, 0 on not found.
- */
-/*@unused@*/ static inline
-uint32_t tagType(uint32_t tag)
-	/*@*/
-{
-/*@-type@*/
-    return ((*rpmTags->tagType)(tag));
-/*@=type@*/
-}
-
-/**
- * Return tag value from name.
- * @todo This should come from #include <rpmtag.h>.
- * @param tagstr	name of tag
- * @return		tag value, -1 on not found
- */
-/*@unused@*/ static inline
-int tagValue(const char * tagstr)
-	/*@*/
-{
-/*@-type@*/
-    return ((*rpmTags->tagValue)(tagstr));
-/*@=type@*/
-}
-/*@=redecl@*/
-
-/**
  * Global header stats enabler.
  */
 /*@unchecked@*/

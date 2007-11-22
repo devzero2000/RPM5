@@ -9,9 +9,12 @@
 #include <stdio.h>
 #include <string.h>
 #include <utime.h>
-#include "rpmlib.h"
+
 #include <rpmio.h>
+#include <header.h>
+#include "rpmdb.h"
 #include "rpmcli.h"
+#include <pkgio.h>
 
 #include "rpmts.h"
 #include "rpmte.h"
@@ -19,8 +22,6 @@
 #include "rpmds.h"
 #include "rpmfi.h"
 
-#include "header.h"
-#include "rpmdb.h"
 #include "misc.h"
 
 #include "rpmxs.h"
@@ -191,7 +192,7 @@ string(h, no_header_magic = 0)
     int no_header_magic
     PREINIT:
     char * string = NULL;
-    int offset = 8; /* header magic length */
+    size_t offset = 8; /* header magic length */
     char * ptr = NULL;
     int hsize = 0;
     PPCODE:
@@ -199,8 +200,8 @@ string(h, no_header_magic = 0)
     string = headerUnload(h, NULL);
     if (! no_header_magic) {
         ptr = malloc(hsize);
-        memcpy(ptr, header_magic, 8);
-        memcpy(ptr + 8, string, hsize - 8);
+        memcpy(ptr, header_magic, offset);
+        memcpy(ptr + offset, string, hsize - 8);
     }
     XPUSHs(sv_2mortal(newSVpv(ptr ? ptr : string, hsize)));
     free(string);
@@ -297,7 +298,7 @@ listtag(h)
     Header h
     PREINIT:
     HeaderIterator iterator;
-    int tag;
+    rpmTag tag;
     PPCODE:
     iterator = headerInitIterator(h);
     while (headerNextIterator(iterator, &tag, NULL, NULL, NULL)) {
@@ -310,14 +311,14 @@ hastag(h, sv_tag)
     Header h
     SV * sv_tag
     PREINIT:
-    rpmTag tag = -1;
+    rpmTag tag = 0xffffffff;
     CODE:
     if (SvIOK(sv_tag)) {
         tag = SvIV(sv_tag);
     } else if (SvPOK(sv_tag)) {
         tag = tagValue(SvPV_nolen(sv_tag));
     }    
-    if (tag > 0)
+    if (tag < 0xffffffff)
         RETVAL = headerIsEntry(h, tag);
     else
         RETVAL = -1;
@@ -413,7 +414,6 @@ files(header, ts = NULL)
     Header header
     rpmts ts
     PREINIT:
-    rpmfi fi;
     CODE:
     if (ts)
         ts = rpmtsLink(ts, "RPM::Header::files");
