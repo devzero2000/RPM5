@@ -8,9 +8,11 @@ typedef /*@abstract@*/ /*@refcounted@*/ struct rpmxar_s * rpmxar;
 
 #ifdef	_RPMXAR_INTERNAL
 struct rpmxar_s {
+#ifdef HAVE_XAR_H
     xar_t x;
     xar_file_t f;
     xar_iter_t i;
+#endif
 /*@null@*/
     const char * member;	/*!< Current archive member. */
     char * b;			/*!< Data buffer. */
