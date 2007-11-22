@@ -502,7 +502,7 @@ static rpmRC rdLead(FD_t fd, /*@out@*/ /*@null@*/ void * ptr,
 	size_t nb = 0;
 	if ((xx = rpmxarNext(xar)) != 0)	return RPMRC_FAIL;
 	if ((xx = rpmxarPull(xar, "Lead")) != 0) return RPMRC_FAIL;
-	(void) rpmxarSwapBuf(xar, NULL, 0, &b, &nb);
+	(void) rpmxarSwapBuf(xar, NULL, 0, (char **)&b, &nb);
 	if (nb != sizeof(*l)) {
 	    b = _free(b);
 	    (void) snprintf(buf, sizeof(buf),

@@ -362,9 +362,9 @@ int headerNextExtension(HeaderIterator hi, HE_t he, /*@unused@*/ unsigned int fl
  */
 /*@unused@*/ static inline
 int headerGetEntry(Header h, uint32_t tag,
-			/*@null@*/ /*@out@*/ hTYP_t type,
+			/*@null@*/ /*@out@*/ rpmTagType * type,
 			/*@null@*/ /*@out@*/ hRET_t * p,
-			/*@null@*/ /*@out@*/ hCNT_t c)
+			/*@null@*/ /*@out@*/ rpmTagCount * c)
 	/*@modifies *type, *p, *c @*/
 {
     if (h == NULL) return 0;
@@ -567,9 +567,9 @@ HeaderIterator headerInitIterator(Header h)
 /*@unused@*/ static inline
 int headerNextIterator(HeaderIterator hi,
 		/*@null@*/ /*@out@*/ hTAG_t tag,
-		/*@null@*/ /*@out@*/ hTYP_t type,
+		/*@null@*/ /*@out@*/ rpmTagType * type,
 		/*@null@*/ /*@out@*/ const void * p,
-		/*@null@*/ /*@out@*/ hCNT_t c)
+		/*@null@*/ /*@out@*/ rpmTagCount * c)
 	/*@modifies hi, *tag, *type, *p, *c @*/
 {
     hRET_t **q = (void *)&p;

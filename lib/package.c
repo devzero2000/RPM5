@@ -205,7 +205,7 @@ if (!_nosigh) {
     nb = -fd->stats->ops[FDSTAT_READ].bytes;
     {	const char item[] = "Header";
 	msg = NULL;
-	rc = rpmpkgRead(item, fd, &h, msg);
+	rc = rpmpkgRead(item, fd, &h, &msg);
 	if (rc != RPMRC_OK) {
 	    rpmlog(RPMLOG_ERR, "%s: %s: %s\n", fn, item, msg);
 	    msg = _free(msg);

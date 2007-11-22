@@ -1,4 +1,8 @@
 5.0a2 -> 5.0a3:
+    - jbj: eliminate hTYP_t and hCNT_t typedefs everywhere.
+    - jbj: fix: python: pass pgpDig, not rpmts, as 1st arg to  headerCheck.
+    - jbj: fix: python: include pkgio.h for rpmpkgRead prototype.
+    - jbj: fix: package.c: pass pointer to msg, not NULL, calling rpmpkgRead.
     - jbj: eliminate rpm peculier int typedefs, use stdint types instead.
     - jbj: convert all remaining uses of int_XY to stdint types.
     - jbj: revert HEADER_XARALLOCATED gloopiness.

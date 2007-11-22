@@ -949,6 +949,7 @@ rpmts_HdrCheck(rpmtsObject * s, PyObject * args, PyObject * kwds)
     const char * msg = NULL;
     const void * uh;
     int uc;
+    pgpDig dig;
     rpmRC rpmrc;
     char * kwlist[] = {"headers", NULL};
 
@@ -969,7 +970,9 @@ fprintf(stderr, "*** rpmts_HdrCheck(%p) ts %p\n", s, s->ts);
     uh = PyString_AsString(blob);
     uc = PyString_Size(blob);
 
-    rpmrc = headerCheck(s->ts, uh, uc, &msg);
+    dig = pgpDigNew(rpmtsVSFlags(s->ts));
+    rpmrc = headerCheck(dig, uh, uc, &msg);
+    dig = pgpDigFree(dig);
 
     switch (rpmrc) {
     case RPMRC_OK:
@@ -978,6 +981,7 @@ fprintf(stderr, "*** rpmts_HdrCheck(%p) ts %p\n", s, s->ts);
 	break;
 
     case RPMRC_NOKEY:
+	/* XXX note "availaiable", the script kiddies need the misspelling. */
 	PyErr_SetString(pyrpmError, "public key not availaiable");
 	break;
 

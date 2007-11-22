@@ -9,6 +9,7 @@
 
 #include "legacy.h"
 #include "header_internal.h"	/* XXX HEADERFLAG_ALLOCATED */
+#include "pkgio.h"		/* XXX rpmpkgRead */
 
 #include "rpmts.h"	/* XXX rpmtsCreate/rpmtsFree */
 #define	_RPMEVR_INTERNAL
