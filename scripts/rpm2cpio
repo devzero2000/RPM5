@@ -22,8 +22,9 @@ dl=`expr 256 \* \( 256 \* \( 256 \* $6 + $7 \) + $8 \) + $9`
 
 hdrsize=`expr 8 + 16 \* $il + $dl`
 o=`expr $o + $hdrsize`
+EXTRACTOR="dd if=$pkg ibs=$o skip=1"
 
-COMPRESSION=`(dd if=$pkg ibs=$o skip=1 |file -) 2>/dev/null`
+COMPRESSION=`($EXTRACTOR |file -) 2>/dev/null`
 if echo $COMPRESSION |grep -q gzip; then
 	DECOMPRESSOR=gunzip
 elif echo $COMPRESSION |grep -q bzip2; then
@@ -45,4 +46,4 @@ else
 	esac
 fi
 
-dd if=$pkg ibs=$o skip=1 2>/dev/null | $DECOMPRESSOR
+$EXTRACTOR 2>/dev/null | $DECOMPRESSOR
