@@ -1,4 +1,7 @@
 5.0a2 -> 5.0a3:
+    - jbj: hmm, a memory leak, add doco to the TODO file.
+    - jbj: eliminate hTAG_t, use "rpmTag *" instead.
+    - jbj: drill rpmTag everywhere needed in header methods.
     - jbj: unsnarl header.h from everything else.
     - jbj: eliminate hRET_t, use rpmTagData instead.
     - jbj: fix: files.c: pass union ptr, not 1st element, address.

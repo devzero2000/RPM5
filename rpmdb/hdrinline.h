@@ -198,7 +198,7 @@ void * headerUnload(Header h, /*@out@*/ /*@null@*/ size_t * lenp)
  * @return		1 on success, 0 on failure
  */
 /*@unused@*/ static inline
-int headerIsEntry(/*@null@*/ Header h, uint32_t tag)
+int headerIsEntry(/*@null@*/ Header h, rpmTag tag)
 	/*@modifies h @*/
 {
     /*@-abstract@*/
@@ -361,7 +361,7 @@ int headerNextExtension(HeaderIterator hi, HE_t he, /*@unused@*/ unsigned int fl
  * @return		1 on success, 0 on failure
  */
 /*@unused@*/ static inline
-int headerGetEntry(Header h, uint32_t tag,
+int headerGetEntry(Header h, rpmTag tag,
 			/*@null@*/ /*@out@*/ rpmTagType * type,
 			/*@null@*/ /*@out@*/ rpmTagData * p,
 			/*@null@*/ /*@out@*/ rpmTagCount * c)
@@ -387,7 +387,7 @@ int headerGetEntry(Header h, uint32_t tag,
  */
 /*@mayexit@*/
 /*@unused@*/ static inline
-int headerAddEntry(Header h, uint32_t tag, rpmTagType type,
+int headerAddEntry(Header h, rpmTag tag, rpmTagType type,
 		const void * p, rpmTagCount c)
 	/*@modifies h @*/
 {
@@ -407,7 +407,7 @@ int headerAddEntry(Header h, uint32_t tag, rpmTagType type,
  * @return		1 on success, 0 on failure
  */
 /*@unused@*/ static inline
-int headerAppendEntry(Header h, uint32_t tag, rpmTagType type,
+int headerAppendEntry(Header h, rpmTag tag, rpmTagType type,
 		const void * p, rpmTagCount c)
 	/*@modifies h @*/
 {
@@ -425,7 +425,7 @@ int headerAppendEntry(Header h, uint32_t tag, rpmTagType type,
  * @return		1 on success, 0 on failure
  */
 /*@unused@*/ static inline
-int headerAddOrAppendEntry(Header h, uint32_t tag, rpmTagType type,
+int headerAddOrAppendEntry(Header h, rpmTag tag, rpmTagType type,
 		const void * p, rpmTagCount c)
 	/*@modifies h @*/
 {
@@ -453,7 +453,7 @@ int headerAddOrAppendEntry(Header h, uint32_t tag, rpmTagType type,
  * @return		1 on success, 0 on failure
  */
 /*@unused@*/ static inline
-int headerAddI18NString(Header h, uint32_t tag, const char * string,
+int headerAddI18NString(Header h, rpmTag tag, const char * string,
 		const char * lang)
 	/*@modifies h @*/
 {
@@ -471,7 +471,7 @@ int headerAddI18NString(Header h, uint32_t tag, const char * string,
  * @return		1 on success, 0 on failure
  */
 /*@unused@*/ static inline
-int headerModifyEntry(Header h, uint32_t tag, rpmTagType type,
+int headerModifyEntry(Header h, rpmTag tag, rpmTagType type,
 			const void * p, rpmTagCount c)
 	/*@modifies h @*/
 {
@@ -488,7 +488,7 @@ int headerModifyEntry(Header h, uint32_t tag, rpmTagType type,
  * @return		0 on success, 1 on failure (INCONSISTENT)
  */
 /*@unused@*/ static inline
-int headerRemoveEntry(Header h, uint32_t tag)
+int headerRemoveEntry(Header h, rpmTag tag)
 	/*@modifies h @*/
 {
     return (h2hv(h)->hdrremove) (h, tag);
@@ -522,7 +522,7 @@ int headerRemoveEntry(Header h, uint32_t tag)
  * @param tagstocopy	array of tags that are copied
  */
 /*@unused@*/ static inline
-void headerCopyTags(Header headerFrom, Header headerTo, hTAG_t tagstocopy)
+void headerCopyTags(Header headerFrom, Header headerTo, rpmTag * tagstocopy)
 	/*@modifies headerFrom, headerTo @*/
 {
 /*@-noeffectuncon@*/ /* FIX: add rc */
@@ -566,7 +566,7 @@ HeaderIterator headerInitIterator(Header h)
  */
 /*@unused@*/ static inline
 int headerNextIterator(HeaderIterator hi,
-		/*@null@*/ /*@out@*/ hTAG_t tag,
+		/*@null@*/ /*@out@*/ rpmTag * tag,
 		/*@null@*/ /*@out@*/ rpmTagType * type,
 		/*@null@*/ /*@out@*/ rpmTagData * p,
 		/*@null@*/ /*@out@*/ rpmTagCount * c)

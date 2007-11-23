@@ -923,7 +923,7 @@ errxit:
  * @return 		header entry
  */
 static /*@null@*/
-indexEntry findEntry(/*@null@*/ Header h, uint32_t tag, rpmTagType type)
+indexEntry findEntry(/*@null@*/ Header h, rpmTag tag, rpmTagType type)
 	/*@modifies h @*/
 {
     indexEntry entry, entry2, last;
@@ -971,7 +971,7 @@ indexEntry findEntry(/*@null@*/ Header h, uint32_t tag, rpmTagType type)
  * @return		0 on success, 1 on failure (INCONSISTENT)
  */
 static
-int headerRemoveEntry(Header h, uint32_t tag)
+int headerRemoveEntry(Header h, rpmTag tag)
 	/*@modifies h @*/
 {
     indexEntry last = h->index + h->indexUsed;
@@ -1370,7 +1370,7 @@ Header headerCopyLoad(const void * uh)
  * @return		1 on success, 0 on failure
  */
 static
-int headerIsEntry(/*@null@*/Header h, uint32_t tag)
+int headerIsEntry(/*@null@*/Header h, rpmTag tag)
 	/*@*/
 {
     /*@-mods@*/		/*@ FIX: h modified by sort. */
@@ -1637,7 +1637,7 @@ headerFindI18NString(Header h, indexEntry entry)
  * @param minMem	string pointers reference header memory?
  * @return		1 on success, 0 on not found
  */
-static int intGetEntry(Header h, uint32_t tag,
+static int intGetEntry(Header h, rpmTag tag,
 		/*@null@*/ /*@out@*/ rpmTagType * type,
 		/*@null@*/ /*@out@*/ rpmTagData * p,
 		/*@null@*/ /*@out@*/ rpmTagCount * c,
@@ -1709,7 +1709,7 @@ static /*@null@*/ void * headerFreeTag(/*@unused@*/ Header h,
  * @return		1 on success, 0 on failure
  */
 static
-int headerGetExtension(Header h, uint32_t tag,
+int headerGetExtension(Header h, rpmTag tag,
 			/*@null@*/ /*@out@*/ rpmTagType * type,
 			/*@null@*/ /*@out@*/ rpmTagData * p,
 			/*@null@*/ /*@out@*/ rpmTagCount * c)
@@ -1814,7 +1814,7 @@ exit:
  * @return		1 on success, 0 on failure
  */
 static
-int headerGetEntry(Header h, uint32_t tag,
+int headerGetEntry(Header h, rpmTag tag,
 			/*@null@*/ /*@out@*/ rpmTagType * type,
 			/*@null@*/ /*@out@*/ rpmTagData * p,
 			/*@null@*/ /*@out@*/ rpmTagCount * c)
@@ -1901,7 +1901,7 @@ grabData(rpmTagType type, rpmTagData * p, rpmTagCount c, /*@out@*/size_t * lenp)
  * @return		1 on success, 0 on failure
  */
 static
-int headerAddEntry(Header h, uint32_t tag, rpmTagType type, const void * p, rpmTagCount c)
+int headerAddEntry(Header h, rpmTag tag, rpmTagType type, const void * p, rpmTagCount c)
 	/*@modifies h @*/
 {
     indexEntry entry;
@@ -1958,7 +1958,7 @@ int headerAddEntry(Header h, uint32_t tag, rpmTagType type, const void * p, rpmT
  * @return		1 on success, 0 on failure
  */
 static
-int headerAppendEntry(Header h, uint32_t tag, rpmTagType type,
+int headerAppendEntry(Header h, rpmTag tag, rpmTagType type,
 		const void * p, rpmTagCount c)
 	/*@modifies h @*/
 {
@@ -2009,7 +2009,7 @@ int headerAppendEntry(Header h, uint32_t tag, rpmTagType type,
  * @return		1 on success, 0 on failure
  */
 static
-int headerAddOrAppendEntry(Header h, uint32_t tag, rpmTagType type,
+int headerAddOrAppendEntry(Header h, rpmTag tag, rpmTagType type,
 		const void * p, rpmTagCount c)
 	/*@modifies h @*/
 {
@@ -2039,7 +2039,7 @@ int headerAddOrAppendEntry(Header h, uint32_t tag, rpmTagType type,
  * @return		1 on success, 0 on failure
  */
 static
-int headerAddI18NString(Header h, uint32_t tag, const char * string,
+int headerAddI18NString(Header h, rpmTag tag, const char * string,
 		const char * lang)
 	/*@modifies h @*/
 {
@@ -2185,7 +2185,7 @@ int headerAddI18NString(Header h, uint32_t tag, const char * string,
  * @return		1 on success, 0 on failure
  */
 static
-int headerModifyEntry(Header h, uint32_t tag, rpmTagType type,
+int headerModifyEntry(Header h, rpmTag tag, rpmTagType type,
 			const void * p, rpmTagCount c)
 	/*@modifies h @*/
 {
@@ -2379,7 +2379,7 @@ HeaderIterator headerInitIterator(Header h)
  */
 static
 int headerNextIterator(HeaderIterator hi,
-		/*@null@*/ /*@out@*/ hTAG_t tag,
+		/*@null@*/ /*@out@*/ rpmTag * tag,
 		/*@null@*/ /*@out@*/ rpmTagType * type,
 		/*@null@*/ /*@out@*/ rpmTagData * p,
 		/*@null@*/ /*@out@*/ rpmTagCount * c)
@@ -3627,7 +3627,7 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 		hsa->vallen += (te - t);
 	    }
 	    if (isyaml) {
-		uint32_t tagT = 0;
+		rpmTag tagT = 0;
 		const char * tagN = myTagName(hsa->tags, tag->tagno, &tagT);
 		/* XXX display "Tag_0x01234567" for unknown tags. */
 		if (tagN == NULL) {
@@ -3864,10 +3864,10 @@ exit:
  * @param tagstocopy	array of tags that are copied
  */
 static
-void headerCopyTags(Header headerFrom, Header headerTo, hTAG_t tagstocopy)
+void headerCopyTags(Header headerFrom, Header headerTo, rpmTag * tagstocopy)
 	/*@modifies headerTo @*/
 {
-    uint32_t * tagno;
+    rpmTag * tagno;
 
     if (headerFrom == headerTo)
 	return;

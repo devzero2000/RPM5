@@ -68,34 +68,14 @@ union rpmDataType_u {
     const char * str;		/*!< RPM_STRING_TYPE */
     unsigned char * blob;	/*!< RPM_BIN_TYPE */
     const char ** argv;		/*!< RPM_STRING_ARRAY_TYPE */
-    HE_t * he;
+    HE_t he;
 };
 #endif
 /*@=typeuse =fielduse@*/
 
 /** \ingroup header
  */
-typedef uint32_t *	hTAG_t;
 typedef rpmTagData *	hPTR_t;
-
-/** \ingroup header
- */
-/*@-typeuse -fielduse@*/
-#if !defined(SWIG)
-struct _HE_s {
-    uint32_t tag;
-    rpmTagType t;
-/*@owned@*/ /*@null@*/
-    rpmTagData p;
-    rpmTagCount c;
-    int ix;
-    unsigned int freeData	: 1;
-    unsigned int avail		: 1;
-    unsigned int append		: 1;
-    unsigned int signature	: 1;
-};
-typedef struct _HE_s HE_s;
-#endif
 
 /*@=typeuse =fielduse@*/
 /** \ingroup header
@@ -465,6 +445,25 @@ enum rpmtagSignature_e {
  */
 typedef enum rpmTag_e rpmTag;
 
+/** \ingroup header
+ */
+/*@-typeuse -fielduse@*/
+#if !defined(SWIG)
+struct _HE_s {
+    rpmTag tag;
+    rpmTagType t;
+/*@owned@*/ /*@null@*/
+    rpmTagData p;
+    rpmTagCount c;
+    int ix;
+    unsigned int freeData	: 1;
+    unsigned int avail		: 1;
+    unsigned int append		: 1;
+    unsigned int signature	: 1;
+};
+typedef struct _HE_s HE_s;
+#endif
+
 /**
  */
 typedef /*@abstract@*/ struct headerTagTableEntry_s * headerTagTableEntry;
@@ -481,16 +480,16 @@ struct headerTagIndices_s {
     int byNameSize;			/*!< no. of entries. */
     int (*byNameCmp) (const void * avp, const void * bvp)
         /*@*/;				/*!< compare entries by name. */
-    uint32_t (*tagValue) (const char * name)
+    rpmTag (*tagValue) (const char * name)
 	/*@*/;				/* return value from name. */
 /*@relnull@*/
     headerTagTableEntry * byValue;	/*!< header tags sorted by value. */
     int byValueSize;			/*!< no. of entries. */
     int (*byValueCmp) (const void * avp, const void * bvp)
         /*@*/;				/*!< compare entries by value. */
-    const char * (*tagName) (uint32_t value)
+    const char * (*tagName) (rpmTag value)
 	/*@*/;				/* Return name from value. */
-    uint32_t (*tagType) (uint32_t value)
+    rpmTag (*tagType) (rpmTag value)
 	/*@*/;				/* Return type from value. */
 };
 #endif
@@ -503,7 +502,7 @@ struct headerTagIndices_s {
  */
 /*@-redecl@*/
 /*@unused@*/ static inline /*@observer@*/
-const char * tagName(uint32_t tag)
+const char * tagName(rpmTag tag)
 	/*@*/
 {
 /*@-type@*/
@@ -518,7 +517,7 @@ const char * tagName(uint32_t tag)
  * @return		tag data type, RPM_NULL_TYPE on not found.
  */
 /*@unused@*/ static inline
-unsigned int tagType(uint32_t tag)
+unsigned int tagType(rpmTag tag)
 	/*@*/
 {
 /*@-type@*/
@@ -532,7 +531,7 @@ unsigned int tagType(uint32_t tag)
  * @return		tag value, -1 on not found
  */
 /*@unused@*/ static inline
-unsigned int tagValue(const char * tagstr)
+rpmTag tagValue(const char * tagstr)
 	/*@*/
 {
 /*@-type@*/

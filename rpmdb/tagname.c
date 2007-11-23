@@ -76,11 +76,11 @@ assert(n == rpmTagTableSize);
 
 
 /* forward refs */
-static const char * _tagName(uint32_t tag)
+static const char * _tagName(rpmTag tag)
 	/*@*/;
-static unsigned int _tagType(uint32_t tag)
+static unsigned int _tagType(rpmTag tag)
 	/*@*/;
-static unsigned int _tagValue(const char * tagstr)
+static rpmTag _tagValue(const char * tagstr)
 	/*@*/;
 
 /*@unchecked@*/
@@ -95,7 +95,7 @@ static struct headerTagIndices_s _rpmTags = {
 headerTagIndices rpmTags = &_rpmTags;
 /*@=compmempass@*/
 
-static const char * _tagName(uint32_t tag)
+static const char * _tagName(rpmTag tag)
 {
     static char nameBuf[128];	/* XXX yuk */
     const struct headerTagTableEntry_s *t;
@@ -178,7 +178,7 @@ static const char * _tagName(uint32_t tag)
 /*@=statictrans@*/
 }
 
-static unsigned int _tagType(uint32_t tag)
+static unsigned int _tagType(rpmTag tag)
 {
     const struct headerTagTableEntry_s *t;
     int comparison, i, l, u;
@@ -226,7 +226,7 @@ static unsigned int _tagType(uint32_t tag)
     return 0;
 }
 
-static unsigned int _tagValue(const char * tagstr)
+static rpmTag _tagValue(const char * tagstr)
 {
     const struct headerTagTableEntry_s *t;
     int comparison, i, l, u;

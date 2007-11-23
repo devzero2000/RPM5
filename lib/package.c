@@ -239,6 +239,9 @@ if (!_nosigh) {
 /*@=noeffect@*/
 
     switch (she->tag) {
+    default:	/* XXX keep gcc quiet. */
+assert(0);
+	/*@notreached@*/ break;
     case RPMSIGTAG_RSA:
 	/* Parse the parameters from the OpenPGP packets that will be needed. */
 	xx = pgpPrtPkts(she->p.ptr, she->c, dig, (_print_pkts & rpmIsDebug()));

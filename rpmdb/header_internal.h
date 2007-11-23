@@ -53,10 +53,10 @@ extern int rpm_typeAlign[16];
  */
 typedef /*@abstract@*/ struct entryInfo_s * entryInfo;
 struct entryInfo_s {
-    uint32_t tag;		/*!< Tag identifier. */
-    uint32_t type;		/*!< Tag data type. */
+    rpmTag tag;		/*!< Tag identifier. */
+    rpmTagType type;		/*!< Tag data type. */
     int32_t offset;		/*!< Offset into data segment (ondisk only). */
-    uint32_t count;		/*!< Number of tag elements. */
+    rpmTagCount count;		/*!< Number of tag elements. */
 };
 
 #define	REGION_TAG_TYPE		RPM_BIN_TYPE
@@ -116,7 +116,7 @@ struct sprintfTag_s {
 /*@null@*/
     headerTagTagFunction ext;   /*!< NULL if tag element is invalid */
     int extNum;
-    uint32_t tagno;
+    rpmTag tagno;
     int justOne;
     int arrayCount;
 /*@kept@*/
