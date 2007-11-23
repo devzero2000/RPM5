@@ -12,21 +12,13 @@ extern int _xar_debug;
 typedef /*@abstract@*/ /*@refcounted@*/ struct rpmxar_s * rpmxar;
 
 #ifdef	_RPMXAR_INTERNAL
-#if defined(HAVE_XAR_H)
-#include "xar.h"
-#else
-typedef	void *	xar_t;
-typedef	void *	xar_file_t;
-typedef	void *	xar_iter_t;
-#endif
-
 struct rpmxar_s {
 /*@relnull@*/
-    xar_t x;
+    void * x;			/*!< xar_t */
 /*@relnull@*/
-    xar_file_t f;
+    void * f;			/*!< xar_file_t */
 /*@relnull@*/
-    xar_iter_t i;
+    void * i;			/*!< xar_iter_t */
 /*@null@*/
     const char * member;	/*!< Current archive member. */
 /*@null@*/
@@ -96,7 +88,8 @@ int rpmxarNext(rpmxar xar)
 	/*@modifies xar, fileSystem @*/;
 
 int rpmxarPush(rpmxar xar, const char * fn, char * b, size_t bsize)
-	/*@modifies xar @*/;
+	/*@globals fileSystem @*/
+	/*@modifies xar, fileSystem @*/;
 
 int rpmxarPull(rpmxar xar, /*@null@*/ const char * fn)
 	/*@globals fileSystem @*/
@@ -104,7 +97,8 @@ int rpmxarPull(rpmxar xar, /*@null@*/ const char * fn)
 
 int rpmxarSwapBuf(rpmxar xar, /*@null@*/ char * b, size_t bsize,
 		/*@null@*/ char ** obp, /*@null@*/ size_t * obsizep)
-	/*@modifies xar, *obp, *obsizep @*/;
+	/*@globals fileSystem @*/
+	/*@modifies xar, *obp, *obsizep, fileSystem @*/;
 
 /*@-incondefs@*/
 ssize_t xarRead(void * cookie, /*@out@*/ char * buf, size_t count)

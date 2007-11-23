@@ -49,7 +49,8 @@ extern "C" {
 #endif
 
 rpmRC rpmwfPushXAR(rpmwf wf, const char * fn)
-	/*@modifies wf @*/;
+	/*@globals fileSystem @*/
+	/*@modifies wf, fileSystem @*/;
 
 rpmRC rpmwfPullXAR(rpmwf wf, const char * fn)
 	/*@globals fileSystem @*/
