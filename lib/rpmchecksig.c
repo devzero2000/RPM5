@@ -832,18 +832,21 @@ pgpDig dig = fdGetDig(fd);
 	h = headerFree(h);
     }
 
-#ifdef WITH_XAR
-if (xar != NULL) {
-    if ((xx = rpmxarNext(xar)) != 0)	return RPMRC_FAIL;
-    if ((xx = rpmxarPull(xar, "Payload")) != 0) return RPMRC_FAIL;
-}
-#endif
+    if (xar != NULL) {
+	const char item[] = "Payload";
+	if ((xx = rpmxarNext(xar)) != 0 || (xx = rpmxarPull(xar, item)) != 0) {
+	    rpmlog(RPMLOG_ERR, "%s: %s: %s\n", fn, item,
+		_("XAR file not found (or no XAR support)"));
+	    rc = RPMRC_NOTFOUND;
+	    goto exit;
+	}
+    }
 
     /* Read the payload from the package. */
     while ((count = Fread(buf, sizeof(buf[0]), sizeof(buf), fd)) > 0)
 	dig->nbytes += count;
     if (count < 0 || Ferror(fd)) {
-	rpmlog(RPMLOG_ERR, _("%s: Fread failed: %s\n"), fn, Fstrerror(fd));
+	rpmlog(RPMLOG_ERR, "%s: %s: %s\n", fn, _("Fread failed"), Fstrerror(fd));
 	rc = RPMRC_FAIL;
 	goto exit;
     }

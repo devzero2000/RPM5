@@ -1,4 +1,6 @@
 #include "system.h"
+
+#undef WITH_XAR
 #ifdef HAVE_XAR_H
 #include "xar.h"
 #endif
@@ -14,8 +16,6 @@
 
 /*@unchecked@*/
 int _xar_debug = 0;
-
-#if defined(WITH_XAR)
 
 rpmxar XrpmxarUnlink(rpmxar xar, const char * msg, const char * fn, unsigned ln)
 {
@@ -44,12 +44,12 @@ fprintf(stderr, "--> xar %p ++ %d %s at %s:%u\n", xar, xar->nrefs, msg, fn, ln);
 rpmxar rpmxarFree(rpmxar xar)
 {
     if (xar) {
-	int xx;
 
 /*@-onlytrans@*/
 	if (xar->nrefs > 1)
 	    return rpmxarUnlink(xar, "rpmxarFree");
 
+#if defined(WITH_XAR)
 	if (xar->i) {
 /*@-noeffectuncon@*/
 	    xar_iter_free(xar->i);
@@ -57,11 +57,13 @@ rpmxar rpmxarFree(rpmxar xar)
 	    xar->i = NULL;
 	}
 	if (xar->x) {
+	    int xx;
 /*@-noeffectuncon@*/
 	    xx = xar_close(xar->x);
 /*@=noeffectuncon@*/
 	    xar->x = NULL;
 	}
+#endif	/* WITH_XAR */
 
 	xar->member = _free(xar->member);
 	xar->b = _free(xar->b);
@@ -79,9 +81,12 @@ rpmxar rpmxarFree(rpmxar xar)
 rpmxar rpmxarNew(const char * fn, const char * fmode)
 {
     rpmxar xar = xcalloc(1, sizeof(*xar));
+#if defined(WITH_XAR)
     int flags = ((fmode && *fmode == 'w') ? WRITE : READ);
+#endif	/* WITH_XAR */
 
 assert(fn != NULL);
+#if defined(WITH_XAR)
 /*@-moduncon@*/
     xar->x = xar_open(fn, flags);
     if (flags == READ) {
@@ -89,6 +94,7 @@ assert(fn != NULL);
 	xar->first = 1;
     }
 /*@=moduncon@*/
+#endif	/* WITH_XAR */
     return rpmxarLink(xar, "rpmxarNew");
 }
 
@@ -96,6 +102,8 @@ int rpmxarNext(rpmxar xar)
 {
 if (_xar_debug)
 fprintf(stderr, "*** rpmxarNext(%p) first %d\n", xar, xar->first);
+
+#if defined(WITH_XAR)
 /*@-moduncon@*/
     if (xar->first) {
 	xar->f = xar_file_first(xar->x, xar->i);
@@ -103,6 +111,7 @@ fprintf(stderr, "*** rpmxarNext(%p) first %d\n", xar, xar->first);
     } else
 	xar->f = xar_file_next(xar->i);
 /*@=moduncon@*/
+#endif	/* WITH_XAR */
 
     return (xar->f == NULL ? 1 : 0);
 }
@@ -110,9 +119,11 @@ fprintf(stderr, "*** rpmxarNext(%p) first %d\n", xar, xar->first);
 int rpmxarPush(rpmxar xar, const char * fn)
 {
     if (xar->x && xar->b != NULL) {
+#if defined(WITH_XAR)
 /*@-moduncon@*/
 	xar->f = xar_add_frombuffer(xar->x, NULL, fn, xar->b, xar->bsize);
 /*@=moduncon@*/
+#endif
 	if (xar->f == NULL)
 	    return 2;
     }
@@ -121,14 +132,18 @@ int rpmxarPush(rpmxar xar, const char * fn)
 
 int rpmxarPull(rpmxar xar, const char * fn)
 {
+#if defined(WITH_XAR)
 /*@-moduncon@*/
     const char * path = xar_get_path(xar->f);
 /*@=moduncon@*/
-    int rc;
+#else
+    const char * path = xstrdup("*No XAR*");
+#endif	/* WITH_XAR */
+    int rc = 1;
 
     if (fn != NULL && strcmp(fn, path)) {
 	path = _free(path);
-	return 1;
+	return rc;
     }
     xar->member = _free(xar->member);
     xar->member = path;
@@ -136,9 +151,12 @@ int rpmxarPull(rpmxar xar, const char * fn)
     xar->b = _free(xar->b);
     xar->bsize = xar->bx = 0;
 
+#if defined(WITH_XAR)
 /*@-moduncon -nullstate @*/
     rc = (int) xar_extract_tobuffersz(xar->x, xar->f, &xar->b, &xar->bsize);
 /*@=moduncon =nullstate @*/
+#endif	/* WITH_XAR */
+
 if (_xar_debug)
 fprintf(stderr, "*** %s %p[%lu] rc %d\n", xar->member, xar->b, (unsigned long)xar->bsize, rc);
     if (rc)
@@ -204,4 +222,3 @@ fprintf(stderr, "*** xarRead(%p,%p,0x%x) %s %p[%u:%u] rc 0x%x\n", cookie, buf, (
 
     return rc;
 }
-#endif

@@ -494,7 +494,6 @@ static rpmRC rdLead(FD_t fd, /*@out@*/ /*@null@*/ void * ptr,
 	goto exit;
     }
 
-#ifdef WITH_XAR
     /* Attach rpmxar handler to fd if this is a xar archive. */
     if (xar == NULL) {
 	unsigned char * bh = (unsigned char *)l;
@@ -511,21 +510,25 @@ static rpmRC rdLead(FD_t fd, /*@out@*/ /*@null@*/ void * ptr,
     if (xar != NULL) {
 	void *b = NULL;
 	size_t nb = 0;
-	if ((xx = rpmxarNext(xar)) != 0)	return RPMRC_FAIL;
-	if ((xx = rpmxarPull(xar, "Lead")) != 0) return RPMRC_FAIL;
+	const char item[] = "Lead";
+	if ((xx = rpmxarNext(xar)) != 0 || (xx = rpmxarPull(xar, item)) != 0) {
+	    (void) snprintf(buf, sizeof(buf),
+		_("XAR file not found (or no XAR support)"));
+	    rc = RPMRC_NOTFOUND;
+	    goto exit;
+	}
 	(void) rpmxarSwapBuf(xar, NULL, 0, (char **)&b, &nb);
 	if (nb != sizeof(*l)) {
 	    b = _free(b);
 	    (void) snprintf(buf, sizeof(buf),
 		_("lead size(%u): BAD, xar read(%u)"),
 		(unsigned)sizeof(*l), (unsigned)nb);
-	    rc = RPMRC_NOTFOUND;
+	    rc = RPMRC_FAIL;
 	    goto exit;
 	}
 	memcpy(l, b, nb);
 	b = _free(b);
     }
-#endif
 
     l->type = (unsigned short) ntohs(l->type);
     l->archnum = (unsigned short) ntohs(l->archnum);
@@ -682,12 +685,15 @@ rpmxar xar = fdGetXAR(fd);
 	*sighp = NULL;
 
     memset(block, 0, sizeof(block));
-#ifdef WITH_XAR
-if (xar != NULL) {
-    if ((xx = rpmxarNext(xar)) != 0)	return RPMRC_FAIL;
-    if ((xx = rpmxarPull(xar, "Signature")) != 0) return RPMRC_FAIL;
-}
-#endif
+    if (xar != NULL) {
+	const char item[] = "Signature";
+	if ((xx = rpmxarNext(xar)) != 0 || (xx = rpmxarPull(xar, item)) != 0) {
+	    (void) snprintf(buf, sizeof(buf),
+		_("XAR file not found (or no XAR support)"));
+	    rc = RPMRC_NOTFOUND;
+	    goto exit;
+	}
+    }
     if ((xx = (int) timedRead(fd, (void *)block, sizeof(block))) != (int) sizeof(block)) {
 	(void) snprintf(buf, sizeof(buf),
 		_("sigh size(%d): BAD, read returned %d\n"), (int)sizeof(block), xx);
@@ -1246,12 +1252,15 @@ rpmxar xar = fdGetXAR(fd);
 	*hdrp = NULL;
 
     memset(block, 0, sizeof(block));
-#ifdef WITH_XAR
-if (xar != NULL) {
-    if ((xx = rpmxarNext(xar)) != 0)	return RPMRC_FAIL;
-    if ((xx = rpmxarPull(xar, "Header")) != 0) return RPMRC_FAIL;
-}
-#endif
+    if (xar != NULL) {
+	const char item[] = "Header";
+	if ((xx = rpmxarNext(xar)) != 0 || (xx = rpmxarPull(xar, item)) != 0) {
+	    (void) snprintf(buf, sizeof(buf),
+		_("XAR file not found (or no XAR support)"));
+	    rc = RPMRC_NOTFOUND;
+	    goto exit;
+	}
+    }
     if ((xx = (int) timedRead(fd, (char *)block, sizeof(block))) != (int)sizeof(block)) {
 	(void) snprintf(buf, sizeof(buf),
 		_("hdr size(%u): BAD, read returned %d\n"), (unsigned)sizeof(block), xx);
