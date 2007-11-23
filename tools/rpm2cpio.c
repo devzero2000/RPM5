@@ -1,0 +1,102 @@
+/* rpmarchive: spit out the main archive portion of a package */
+
+#include "system.h"
+const char *__progname;
+
+#include <rpmio.h>
+#include <rpmcb.h>	/* XXX fnpyKey */
+#include <header.h>
+#include <rpmlib.h>
+#include <rpmts.h>
+
+#include "debug.h"
+
+int main(int argc, char **argv)
+{
+    FD_t fdi, fdo;
+    Header h;
+    char * rpmio_flags;
+    rpmRC rc;
+    FD_t gzdi;
+
+    setprogname(argv[0]);	/* Retrofit glibc __progname */
+    if (argc == 1)
+	fdi = fdDup(STDIN_FILENO);
+    else
+	fdi = Fopen(argv[1], "r");
+
+    if (Ferror(fdi)) {
+	fprintf(stderr, "%s: %s: %s\n", argv[0],
+		(argc == 1 ? "<stdin>" : argv[1]), Fstrerror(fdi));
+	exit(EXIT_FAILURE);
+    }
+    fdo = fdDup(STDOUT_FILENO);
+
+    {	rpmts ts = rpmtsCreate();
+	rpmVSFlags vsflags = 0;
+
+	/* XXX retain the ageless behavior of rpm2cpio */
+        vsflags |= _RPMVSF_NODIGESTS;
+        vsflags |= _RPMVSF_NOSIGNATURES;
+        vsflags |= RPMVSF_NOHDRCHK;
+	(void) rpmtsSetVSFlags(ts, vsflags);
+
+	/*@-mustmod@*/      /* LCL: segfault */
+	rc = rpmReadPackageFile(ts, fdi, "rpm2cpio", &h);
+	/*@=mustmod@*/
+
+	ts = rpmtsFree(ts);
+    }
+
+    switch (rc) {
+    case RPMRC_OK:
+    case RPMRC_NOKEY:
+    case RPMRC_NOTTRUSTED:
+	break;
+    case RPMRC_NOTFOUND:
+	fprintf(stderr, _("argument is not an RPM package\n"));
+	exit(EXIT_FAILURE);
+	break;
+    case RPMRC_FAIL:
+    default:
+	fprintf(stderr, _("error reading header from package\n"));
+	exit(EXIT_FAILURE);
+	break;
+    }
+
+    /* Retrieve type of payload compression. */
+    {	HGE_t hge = headerGetExtension;
+	HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+	const char * payload_compressor = NULL;
+	char * t;
+	int xx;
+
+	he->tag = RPMTAG_PAYLOADCOMPRESSOR;
+	xx = hge(h, he, 0);
+	payload_compressor = (xx ? he->p.str : "gzip");
+
+	rpmio_flags = t = alloca(sizeof("r.gzdio"));
+	*t++ = 'r';
+	if (!strcmp(payload_compressor, "gzip"))
+	    t = stpcpy(t, ".gzdio");
+	if (!strcmp(payload_compressor, "bzip2"))
+	    t = stpcpy(t, ".bzdio");
+	if (!strcmp(payload_compressor, "lzma"))
+	    t = stpcpy(t, ".lzdio");
+	he->p.ptr = _free(he->p.ptr);
+    }
+
+    gzdi = Fdopen(fdi, rpmio_flags);	/* XXX gzdi == fdi */
+    if (gzdi == NULL) {
+	fprintf(stderr, _("cannot re-open payload: %s\n"), Fstrerror(gzdi));
+	exit(EXIT_FAILURE);
+    }
+
+    rc = ufdCopy(gzdi, fdo);
+    rc = (rc <= 0) ? EXIT_FAILURE : EXIT_SUCCESS;
+    Fclose(fdo);
+
+    Fclose(gzdi);	/* XXX gzdi == fdi */
+
+    return rc;
+}

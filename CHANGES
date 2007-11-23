@@ -1,4 +1,5 @@
 5.0a2 -> 5.0a3:
+    - jbj: re-add rpm2cpio.c.
     - jbj: spiffy error msgs for the XAR challenged users.
     - jbj: splint fiddles for rpmxar and rpmTag.
     - jbj: bury timedRead in pkgio.c, eliminate everywhere else.

@@ -12,7 +12,7 @@ AM_CPPFLAGS = -I. \
 
 EXTRA_DIST =	hashtab.h
 
-EXTRA_PROGRAMS = debugedit rpmkey txar
+EXTRA_PROGRAMS = debugedit rpm2cpio rpmkey txar
 
 myLDADD = \
 	$(top_builddir)/build/librpmbuild.la \
@@ -41,13 +41,19 @@ rpmdigest_SOURCES =	rpmdigest.c
 rpmdigest_LDADD =	$(myLDADD)
 
 ##
+## Traditional rpm2cpio
+##
+rpm2cpio_SOURCES =	rpm2cpio.c
+rpm2cpio_LDADD =	$(myLDADD)
+
+##
 ##  keyctl(1) clone
 ##
 rpmkey_SOURCES =        rpmkey.c
 rpmkey_LDADD =          $(myLDADD) -lkeyutils
 
 ##
-## XAR package format work-in-progress.
+## XAR <-> RPM package converter
 ##
 txar_SOURCES =		txar.c
 txar_LDADD =		$(myLDADD) @WITH_XAR_LDFLAGS@
