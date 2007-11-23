@@ -12,15 +12,21 @@ extern int _xar_debug;
 typedef /*@abstract@*/ /*@refcounted@*/ struct rpmxar_s * rpmxar;
 
 #ifdef	_RPMXAR_INTERNAL
+#if defined(HAVE_XAR_H)
+#include "xar.h"
+#else
+typedef	void *	xar_t;
+typedef	void *	xar_file_t;
+typedef	void *	xar_iter_t;
+#endif
+
 struct rpmxar_s {
-#ifdef HAVE_XAR_H
 /*@relnull@*/
     xar_t x;
 /*@relnull@*/
     xar_file_t f;
 /*@relnull@*/
     xar_iter_t i;
-#endif
 /*@null@*/
     const char * member;	/*!< Current archive member. */
 /*@null@*/

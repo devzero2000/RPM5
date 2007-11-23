@@ -1,9 +1,5 @@
 #include "system.h"
 
-#ifdef HAVE_XAR_H
-#include "xar.h"
-#endif
-
 #define	_RPMXAR_INTERNAL
 #include <rpmio_internal.h>
 

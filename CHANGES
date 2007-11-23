@@ -1,4 +1,5 @@
 5.0a2 -> 5.0a3:
+    - jbj: retrofit 3 needed typedef's when compiling w/o HAVE_XAR_H.
     - jbj: rescusitate txar, pass private buffer through rpmxarPush.
     - jbj: re-add rpm2cpio.c.
     - jbj: spiffy error msgs for the XAR challenged users.
