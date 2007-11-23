@@ -1,9 +1,18 @@
 #ifndef H_RPMWF
 #define H_RPMWF
 
+/**
+ * \file rpmdb/rpmwf.h
+ * Structure(s)and methods for a archive wrapper format (e.g. XAR).
+ */
+
+#include <rpmxar.h>
+
 /*@unchecked@*/
 extern int _rpmwf_debug;
 
+/**
+ */
 typedef /*@abstract@*/ /*@refcounted@*/ struct rpmwf_s * rpmwf;
 
 #ifdef	_RPMWF_INTERNAL
@@ -27,8 +36,8 @@ struct rpmwf_s {
 /*@relnull@*/ /*@dependent@*/
     char * p;
     size_t np;
-/*@relnull@*/
-    void * xar;
+/*@relnull@*/ /*@refcounted@*/
+    rpmxar xar;
 /*@refs@*/
     int nrefs;			/*!< Reference count. */
 };

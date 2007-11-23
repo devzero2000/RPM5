@@ -136,9 +136,9 @@ int rpmxarPull(rpmxar xar, const char * fn)
     xar->b = _free(xar->b);
     xar->bsize = xar->bx = 0;
 
-/*@-moduncon@*/
+/*@-moduncon -nullstate @*/
     rc = (int) xar_extract_tobuffersz(xar->x, xar->f, &xar->b, &xar->bsize);
-/*@=moduncon@*/
+/*@=moduncon =nullstate @*/
 if (_xar_debug)
 fprintf(stderr, "*** %s %p[%lu] rc %d\n", xar->member, xar->b, (unsigned long)xar->bsize, rc);
     if (rc)
@@ -150,20 +150,28 @@ fprintf(stderr, "*** %s %p[%lu] rc %d\n", xar->member, xar->b, (unsigned long)xa
 int rpmxarSwapBuf(rpmxar xar, char * b, size_t bsize,
 		char ** obp, size_t * obsizep)
 {
+/*@-modfilesys@*/
 if (_xar_debug)
 fprintf(stderr, "*** rpmxarSwapBuf(%p, %p[%u], %p, %p) %p[%u]\n", xar, b, (unsigned) bsize, obp, obsizep, xar->b, (unsigned) xar->bsize);
+/*@=modfilesys@*/
     if (xar) {
 	if (obsizep != NULL)
 	    *obsizep = xar->bsize;
 	if (obp != NULL) {
+/*@-onlytrans@*/
 	    *obp = xar->b;
+/*@=onlytrans@*/
 	    xar->b = NULL;
 	}
 	xar->b = _free(xar->b);
+/*@-assignexpose -temptrans @*/
 	xar->b = b;
+/*@=assignexpose =temptrans @*/
 	xar->bsize = bsize;
     }
+/*@-nullstate@*/
     return 0;
+/*@=nullstate@*/
 }
 
 ssize_t xarRead(void * cookie, /*@out@*/ char * buf, size_t count)
@@ -182,6 +190,7 @@ assert(xar != NULL);
     rc = xar->bsize - xar->bx;
     if (rc > 0) {
 	if (count < rc) rc = count;
+assert(xar->b != NULL);
 	memmove(buf, &xar->b[xar->bx], rc);
 	xar->bx += rc;
     } else
@@ -191,7 +200,7 @@ assert(xar != NULL);
 	rc = 0;
 
 if (_xar_debug)
-fprintf(stderr, "*** xarRead(%p,%p,0x%x) %s %p[%u:%u] rc 0x%x\n", cookie, buf, (unsigned)count, xar->member, xar->b, (unsigned)xar->bx, (unsigned)xar->bsize, (unsigned)rc);
+fprintf(stderr, "*** xarRead(%p,%p,0x%x) %s %p[%u:%u] rc 0x%x\n", cookie, buf, (unsigned)count, (xar->member ? xar->member : "(nil)"), xar->b, (unsigned)xar->bx, (unsigned)xar->bsize, (unsigned)rc);
 
     return rc;
 }

@@ -1691,7 +1691,7 @@ static int ftpAbort(urlinfo u, FD_t data)
 	tosecs = data->rd_timeoutsecs;
 	data->rd_timeoutsecs = 10;
 	if (fdReadable(data, data->rd_timeoutsecs) > 0) {
-	    while (timedRead(data, u->buf, u->bufAlloced) > 0)
+	    while ((ufdio->read)(data, u->buf, u->bufAlloced) > 0)
 		u->buf[0] = '\0';
 	}
 	data->rd_timeoutsecs = tosecs;
@@ -1895,7 +1895,6 @@ static ssize_t ufdRead(void * cookie, /*@out@*/ char * buf, size_t count)
     size_t bytesRead;
     size_t total;
 
-    /* XXX preserve timedRead() behavior */
     if (fdGetIo(fd) == fdio) {
 	struct stat sb;
 	int fdno = fdFileno(fd);

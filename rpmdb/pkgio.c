@@ -59,6 +59,15 @@ static unsigned char sigh_magic[8] = {
 };
 /*@=type@*/
 
+/**
+ */
+/*@-exportheader@*/
+/*@unused@*/ ssize_t timedRead(FD_t fd, /*@out@*/ void * bufptr, size_t length)
+	/*@globals fileSystem @*/
+	/*@modifies fd, *bufptr, fileSystem @*/;
+#define	timedRead	(ufdio->read)
+/*@=exportheader@*/
+
 /*===============================================*/
 /** \ingroup header
  * Write (with unload) header to file handle.
@@ -69,7 +78,7 @@ static unsigned char sigh_magic[8] = {
 static
 rpmRC rpmWriteHeader(FD_t fd, /*@null@*/ Header h, /*@null@*/ const char ** msg)
 	/*@globals fileSystem @*/
-	/*@modifies fd, h, fileSystem @*/
+	/*@modifies fd, h, *msg, fileSystem @*/
 {
     const void * uh = NULL;
     ssize_t nb;
@@ -457,7 +466,7 @@ static rpmRC wrLead(FD_t fd, const void * ptr, const char ** msg)
 static rpmRC rdLead(FD_t fd, /*@out@*/ /*@null@*/ void * ptr,
 		const char ** msg)
 	/*@globals fileSystem @*/
-	/*@modifies *ptr, *msg, fileSystem @*/
+	/*@modifies fd, *ptr, *msg, fileSystem @*/
 {
     rpmxar xar = fdGetXAR(fd);
     struct rpmlead ** leadp = ptr;
@@ -497,6 +506,7 @@ static rpmRC rdLead(FD_t fd, /*@out@*/ /*@null@*/ void * ptr,
     }
 
     /* With XAR, read lead from a xar archive file called "Lead". */
+    xar = fdGetXAR(fd);
     if (xar != NULL) {
 	void *b = NULL;
 	size_t nb = 0;
@@ -571,7 +581,7 @@ exit:
  */
 static rpmRC wrSignature(FD_t fd, void * ptr, /*@unused@*/ const char ** msg)
 	/*@globals fileSystem @*/
-	/*@modifies fd, ptr, fileSystem @*/
+	/*@modifies fd, ptr, *msg, fileSystem @*/
 {
     Header sigh = ptr;
     static unsigned char zero[8]
@@ -726,7 +736,7 @@ if (xar != NULL) {
 	(void) snprintf(buf, sizeof(buf),
 		_("tag[%d]: BAD, tag %u type %u offset %d count %u\n"),
 		0, (unsigned) entry->info.tag, (unsigned) entry->info.type,
-		entry->info.offset, (unsigned) entry->info.count);
+		(int)entry->info.offset, (unsigned) entry->info.count);
 	goto exit;
     }
 
@@ -743,7 +753,7 @@ assert(entry->info.offset > 0);	/* XXX insurance */
 	    (void) snprintf(buf, sizeof(buf),
 		_("region offset: BAD, tag %u type %u offset %d count %u\n"),
 		(unsigned) entry->info.tag, (unsigned) entry->info.type,
-		entry->info.offset, (unsigned) entry->info.count);
+		(int)entry->info.offset, (unsigned) entry->info.count);
 	    goto exit;
 	}
 
@@ -768,7 +778,7 @@ assert(entry->info.offset > 0);	/* XXX insurance */
 	    (void) snprintf(buf, sizeof(buf),
 		_("region trailer: BAD, tag %u type %u offset %d count %u\n"),
 		(unsigned) entry->info.tag, (unsigned) entry->info.type,
-		entry->info.offset, (unsigned) entry->info.count);
+		(int)entry->info.offset, (unsigned) entry->info.count);
 	    goto exit;
 	}
 /*@=sizeoftype@*/
@@ -791,7 +801,7 @@ assert(entry->info.offset > 0);	/* XXX insurance */
 	    (void) snprintf(buf, sizeof(buf),
 		_("sigh tag[%u]: BAD, tag %u type %u offset %d count %u\n"),
 		(unsigned) i, (unsigned) entry->info.tag, (unsigned) entry->info.type,
-		entry->info.offset, (unsigned) entry->info.count);
+		(int)entry->info.offset, (unsigned) entry->info.count);
 	    goto exit;
 	}
     }
@@ -820,7 +830,7 @@ assert(entry->info.offset > 0);	/* XXX insurance */
 
 	/* Print package component sizes. */
 
-	he->tag = RPMSIGTAG_SIZE;
+	he->tag = (rpmTag) RPMSIGTAG_SIZE;
 	xx = hge(sigh, he, 0);
 	if (xx) {
 	    size_t datasize = he->p.ui32p[0];
@@ -903,7 +913,7 @@ rpmRC headerCheck(pgpDig dig, const void * uh, size_t uc, const char ** msg)
 	(void) snprintf(buf, sizeof(buf),
 		_("tag[%d]: BAD, tag %u type %u offset %d count %u\n"),
 		0, (unsigned) entry->info.tag, (unsigned) entry->info.type,
-		entry->info.offset, (unsigned) entry->info.count);
+		(int)entry->info.offset, (unsigned) entry->info.count);
 	goto exit;
     }
 
@@ -923,7 +933,7 @@ rpmRC headerCheck(pgpDig dig, const void * uh, size_t uc, const char ** msg)
 	(void) snprintf(buf, sizeof(buf),
 		_("region offset: BAD, tag %u type %u offset %d count %u\n"),
 		(unsigned) entry->info.tag, (unsigned) entry->info.type,
-		entry->info.offset, (unsigned) entry->info.count);
+		(int)entry->info.offset, (unsigned) entry->info.count);
 	goto exit;
     }
 
@@ -942,7 +952,7 @@ rpmRC headerCheck(pgpDig dig, const void * uh, size_t uc, const char ** msg)
 	(void) snprintf(buf, sizeof(buf),
 		_("region trailer: BAD, tag %u type %u offset %d count %u\n"),
 		(unsigned) entry->info.tag, (unsigned) entry->info.type,
-		entry->info.offset, (unsigned) entry->info.count);
+		(int)entry->info.offset, (unsigned) entry->info.count);
 	goto exit;
     }
 /*@=sizeoftype@*/
@@ -963,7 +973,7 @@ rpmRC headerCheck(pgpDig dig, const void * uh, size_t uc, const char ** msg)
 	    (void) snprintf(buf, sizeof(buf),
 		_("tag[%u]: BAD, tag %u type %u offset %d count %u\n"),
 		(unsigned) i, (unsigned) entry->info.tag, (unsigned) entry->info.type,
-		entry->info.offset, (unsigned) entry->info.count);
+		(int)entry->info.offset, (unsigned) entry->info.count);
 	    goto exit;
 	}
 
@@ -1028,7 +1038,7 @@ exit:
 	    (void) snprintf(buf, sizeof(buf),
 		_("tag[%d]: BAD, tag %u type %u offset %d count %u\n"),
 		xx+1, (unsigned) entry->info.tag, (unsigned) entry->info.type,
-		entry->info.offset, (unsigned) entry->info.count);
+		(int)entry->info.offset, (unsigned) entry->info.count);
 	    rc = RPMRC_FAIL;
 	} else {
 	    (void) snprintf(buf, sizeof(buf), "Header sanity check: OK\n");
@@ -1176,9 +1186,10 @@ assert(ptr != NULL);
  * @retval *msg		failure msg
  * @return		rpmRC return code
  */
-static rpmRC ckHeader(/*@unused@*/ FD_t fd, const void * ptr, const char ** msg)
+static rpmRC ckHeader(/*@unused@*/ FD_t fd, const void * ptr,
+		/*@unused@*/ const char ** msg)
 	/*@globals fileSystem @*/
-	/*@modifies ptr, *msg, fileSystem @*/
+	/*@modifies ptr, fileSystem @*/
 {
     rpmRC rc = RPMRC_OK;
     Header h;
@@ -1217,7 +1228,6 @@ rpmxar xar = fdGetXAR(fd);
     Header h = NULL;
     const char * origin = NULL;
     rpmRC rc = RPMRC_FAIL;		/* assume failure */
-    unsigned char * bh = NULL;
     int xx;
 
     /* Create (if not already) a signature parameters container. */
@@ -1268,8 +1278,7 @@ if (xar != NULL) {
     nb = (il * sizeof(struct entryInfo_s)) + dl;
 /*@=sizeoftype@*/
     uc = sizeof(il) + sizeof(dl) + nb;
-    bh = xmalloc(uc);
-    ei = (uint32_t *)bh;
+    ei = (uint32_t *) xmalloc(uc);
     if ((xx = (int) timedRead(fd, (char *)&ei[2], nb)) != (int) nb) {
 	(void) snprintf(buf, sizeof(buf),
 		_("hdr blob(%u): BAD, read returned %d\n"), (unsigned)nb, xx);
@@ -1290,7 +1299,7 @@ if (xar != NULL) {
         goto exit;
     }
     h->flags |= HEADERFLAG_ALLOCATED;
-    bh = NULL;	/* XXX will be freed with header */
+    ei = NULL;	/* XXX will be freed with header */
 
     /* Save the opened path as the header origin. */
     origin = fdGetOPath(fd);
@@ -1300,7 +1309,7 @@ if (xar != NULL) {
 exit:
     if (hdrp && h && rc == RPMRC_OK)
 	*hdrp = headerLink(h);
-    bh = _free(bh);
+    ei = _free(ei);
     h = headerFree(h);
 
     if (msg != NULL && *msg == NULL && buf[0] != '\0') {
@@ -1324,7 +1333,9 @@ static rpmRC rdHeader(FD_t fd, /*@out@*/ /*@null@*/ void * ptr,
 	/*@modifies fd, *ptr, *msg, fileSystem @*/
 {
     Header * hdrp = ptr;
+/*@-compdef@*/
     return rpmReadHeader(fd, hdrp, msg);
+/*@=compdef@*/
 }
 
 /**

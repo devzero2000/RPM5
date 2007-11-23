@@ -238,7 +238,7 @@ void headerMergeLegacySigs(Header h, const Header sigh)
         he->p.ptr = hfd(he->p.ptr, he->t))
     {
 	/* XXX Translate legacy signature tag values. */
-	switch (he->tag) {
+	switch ((rpmSigTag)he->tag) {
 	case RPMSIGTAG_SIZE:
 	    he->tag = RPMTAG_SIGSIZE;
 	    /*@switchbreak@*/ break;
@@ -307,16 +307,16 @@ Header headerRegenSigHeader(const Header h, int noArchiveSize)
 	/* XXX Translate legacy signature tag values. */
 	switch (he->tag) {
 	case RPMTAG_SIGSIZE:
-	    he->tag = RPMSIGTAG_SIZE;
+	    he->tag = (rpmTag) RPMSIGTAG_SIZE;
 	    /*@switchbreak@*/ break;
 	case RPMTAG_SIGMD5:
-	    he->tag = RPMSIGTAG_MD5;
+	    he->tag = (rpmTag) RPMSIGTAG_MD5;
 	    /*@switchbreak@*/ break;
 	case RPMTAG_ARCHIVESIZE:
 	    /* XXX rpm-4.1 and later has archive size in signature header. */
 	    if (noArchiveSize)
 		continue;
-	    he->tag = RPMSIGTAG_PAYLOADSIZE;
+	    he->tag = (rpmTag) RPMSIGTAG_PAYLOADSIZE;
 	    /*@switchbreak@*/ break;
 	case RPMTAG_SHA1HEADER:
 	case RPMTAG_DSAHEADER:

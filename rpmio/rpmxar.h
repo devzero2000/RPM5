@@ -1,6 +1,11 @@
 #ifndef H_RPMXAR
 #define H_RPMXAR
 
+/**
+ * \file rpmio/rpmxar.h
+ * Structure(s)and methods for a XAR archive wrapper format.
+ */
+
 /*@unchecked@*/
 extern int _xar_debug;
 
@@ -9,12 +14,16 @@ typedef /*@abstract@*/ /*@refcounted@*/ struct rpmxar_s * rpmxar;
 #ifdef	_RPMXAR_INTERNAL
 struct rpmxar_s {
 #ifdef HAVE_XAR_H
+/*@relnull@*/
     xar_t x;
+/*@relnull@*/
     xar_file_t f;
+/*@relnull@*/
     xar_iter_t i;
 #endif
 /*@null@*/
     const char * member;	/*!< Current archive member. */
+/*@null@*/
     char * b;			/*!< Data buffer. */
     size_t bsize;		/*!< No. bytes of data. */
     size_t bx;			/*!< Data byte index. */
@@ -66,13 +75,15 @@ rpmxar XrpmxarLink (/*@null@*/ rpmxar xar, /*@null@*/ const char * msg,
 #define	rpmxarLink(_xar, _msg)	XrpmxarLink(_xar, _msg, __FILE__, __LINE__)
 
 /*@null@*/
-rpmxar rpmxarFree(/*@only@*/ rpmxar xar)
+rpmxar rpmxarFree(/*@killref@*/ /*@only@*/ rpmxar xar)
 	/*@modifies xar @*/;
 
+/*@-globuse@*/
 /*@relnull@*/
 rpmxar rpmxarNew(const char * fn, const char * fmode)
 	/*@globals fileSystem @*/
-	/*@modifies xar, fileSystem @*/;
+	/*@modifies fileSystem @*/;
+/*@=globuse@*/
 
 int rpmxarNext(rpmxar xar)
 	/*@globals fileSystem @*/
@@ -89,11 +100,13 @@ int rpmxarSwapBuf(rpmxar xar, /*@null@*/ char * b, size_t bsize,
 		/*@null@*/ char ** obp, /*@null@*/ size_t * obsizep)
 	/*@modifies xar, *obp, *obsizep @*/;
 
+/*@-incondefs@*/
 ssize_t xarRead(void * cookie, /*@out@*/ char * buf, size_t count)
         /*@globals fileSystem, internalState @*/
         /*@modifies buf, fileSystem, internalState @*/
 	/*@requires maxSet(buf) >= (count - 1) @*/
 	/*@ensures maxRead(buf) == result @*/;
+/*@=incondefs@*/
 
 #ifdef __cplusplus
 }

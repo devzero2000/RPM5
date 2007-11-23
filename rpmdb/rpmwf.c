@@ -11,6 +11,7 @@
 #include "debug.h"
 
 /*@access FD_t @*/
+/*@access rpmxar @*/	/* XXX fprintf */
 
 /*@unchecked@*/
 int _rpmwf_debug = 0;

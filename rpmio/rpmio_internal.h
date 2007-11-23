@@ -347,7 +347,7 @@ void fdSetDig(FD_t fd, pgpDig dig)
  */
 /*@unused@*/ static inline
 void fdSetXAR(FD_t fd, rpmxar xar)
-	/*@modifies fd @*/
+	/*@modifies fd, xar @*/
 {
     FDSANE(fd);
     fd->xar = rpmxarLink(xar, "fdSetXAR");
@@ -356,13 +356,13 @@ void fdSetXAR(FD_t fd, rpmxar xar)
 /** \ingroup rpmio
  */
 /*@unused@*/ static inline
-/*@null@*/ /*@kept@*/ void * fdGetXAR(FD_t fd)
+/*@null@*/ rpmxar fdGetXAR(FD_t fd)
 	/*@*/
 {
     FDSANE(fd);
-    /*@-retexpose -usereleased @*/
+    /*@-compdef -refcounttrans -retexpose -usereleased @*/
     return fd->xar;
-    /*@=retexpose =usereleased @*/
+    /*@=compdef =refcounttrans =retexpose =usereleased @*/
 }
 
 /** \ingroup rpmio

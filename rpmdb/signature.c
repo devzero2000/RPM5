@@ -246,9 +246,9 @@ static int makeGPGSignature(const char * file, uint32_t * sigTagp,
     {	FD_t fd;
 
 	rc = 0;
-	fd = Fopen(sigfile, "r.fdio");
+	fd = Fopen(sigfile, "r.ufdio");
 	if (fd != NULL && !Ferror(fd)) {
-	    rc = (int) timedRead(fd, (void *)*pktp, *pktlenp);
+	    rc = (int) Fread(*pktp, sizeof((*pktp)[0]), *pktlenp, fd);
 	    if (sigfile) (void) Unlink(sigfile);
 	    (void) Fclose(fd);
 	}
@@ -367,7 +367,7 @@ static int makeHDRSignature(Header sigh, const char * file, uint32_t sigTag,
 
 	if (SHA1 == NULL)
 	    goto exit;
-	he->tag = RPMSIGTAG_SHA1;
+	he->tag = (rpmTag) RPMSIGTAG_SHA1;
 	he->t = RPM_STRING_TYPE;
 	he->p.str = SHA1;
 	he->c = 1;

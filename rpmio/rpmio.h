@@ -774,13 +774,6 @@ int ufdGetFile( /*@killref@*/ FD_t sfd, FD_t tfd)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies sfd, tfd, fileSystem, internalState @*/;
 
-/**
- */
-/*@unused@*/ int timedRead(FD_t fd, /*@out@*/ void * bufptr, int length)
-	/*@globals fileSystem @*/
-	/*@modifies fd, *bufptr, fileSystem @*/;
-#define	timedRead	(ufdio->read)
-
 /*@-exportlocal@*/
 /**
  */

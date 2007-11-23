@@ -27,6 +27,11 @@ static int _usehge = 1;		/* XXX Use headerGetExtension? */
 /*@unchecked@*/
 int _tagcache = 1;		/* XXX Cache tag data persistently? */
 
+/*@access Header @*/
+/*@access HeaderIterator @*/
+/*@access headerSprintfExtension @*/
+/*@access headerTagTableEntry @*/
+
 /*@access entryInfo @*/
 /*@access indexEntry @*/
 
@@ -486,7 +491,7 @@ static uint32_t regionSwab(/*@null@*/ indexEntry entry, uint32_t il, uint32_t dl
 		entryInfo pe,
 		unsigned char * dataStart,
 		/*@null@*/ const unsigned char * dataEnd,
-		int regionid)
+		int32_t regionid)
 	/*@modifies *entry, *dataStart @*/
 {
     rpmTagData p;
@@ -3319,7 +3324,7 @@ static int getExtension(headerSprintfArgs hsa, headerTagTagFunction fn,
 static char * formatValue(headerSprintfArgs hsa, sprintfTag tag,
 		uint32_t element)
 	/*@globals headerCompoundFormats @*/
-	/*@modifies hsa, tag, headerCompoundFormats @*/
+	/*@modifies hsa, tag @*/
 {
     HE_t vhe = memset(alloca(sizeof(*vhe)), 0, sizeof(*vhe));
     HE_t he = &tag->he;
@@ -3473,7 +3478,7 @@ exit:
 static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 		uint32_t element)
 	/*@globals headerCompoundFormats @*/
-	/*@modifies hsa, token, headerCompoundFormats @*/
+	/*@modifies hsa, token @*/
 {
     char numbuf[64];	/* XXX big enuf for "Tag_0x01234567" */
     char * t, * te;
@@ -3635,8 +3640,10 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 				(unsigned) tag->tagno);
 		    numbuf[sizeof(numbuf)-1] = '\0';
 		    tagN = numbuf;
+/*@-type@*/
 		    tagT = numElements > 1
 			?  RPM_ARRAY_RETURN_TYPE : RPM_SCALAR_RETURN_TYPE;
+/*@=type@*/
 		}
 		need = sizeof("  :     - ") + strlen(tagN);
 		te = t = hsaReserve(hsa, need);
@@ -3644,11 +3651,16 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 		*te++ = ' ';
 		te = stpcpy(te, tagN);
 		*te++ = ':';
+/*@-type@*/
 		*te++ = (((tagT & RPM_MASK_RETURN_TYPE) == RPM_ARRAY_RETURN_TYPE)
 			? '\n' : ' ');
+/*@=type@*/
 		/* XXX Dirnames: in srpms need "    " indent */
+/*@-type@*/
 		if (((tagT & RPM_MASK_RETURN_TYPE) == RPM_ARRAY_RETURN_TYPE)
-		 && numElements == 1) {
+		 && numElements == 1)
+/*@=type@*/
+		{
 		    te = stpcpy(te, "    ");
 		    if (tag->tagno != 1118)
 			te = stpcpy(te, "- ");
@@ -3758,7 +3770,7 @@ char * headerSprintf(Header h, const char * fmt,
 		/*@null@*/ const struct headerSprintfExtension_s * exts,
 		/*@null@*/ /*@out@*/ errmsg_t * errmsg)
 	/*@globals headerCompoundFormats @*/
-	/*@modifies h, *errmsg, headerCompoundFormats @*/
+	/*@modifies h, *errmsg @*/
 	/*@requires maxSet(errmsg) >= 0 @*/
 {
     headerSprintfArgs hsa = memset(alloca(sizeof(*hsa)), 0, sizeof(*hsa));

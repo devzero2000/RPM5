@@ -402,7 +402,7 @@ enum rpmTag_e {
 /** \ingroup signature
  * Tags found in signature header from package.
  */
-enum rpmtagSignature_e {
+enum rpmSigTag_e {
     RPMSIGTAG_SIZE	= 1000,	/*!< internal Header+Payload size in bytes. */
     RPMSIGTAG_LEMD5_1	= 1001,	/*!< internal Broken MD5, take 1 @deprecated legacy. */
     RPMSIGTAG_PGP	= 1002,	/*!< internal PGP 2.6.3 signature. */
@@ -421,6 +421,10 @@ enum rpmtagSignature_e {
 /** \ingroup header
  */
 typedef enum rpmTag_e rpmTag;
+
+/** \ingroup header
+ */
+typedef enum rpmSigTag_e rpmSigTag;
 
 /** \ingroup header
  */
