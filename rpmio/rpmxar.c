@@ -1,6 +1,5 @@
 #include "system.h"
 
-#undef WITH_XAR
 #ifdef HAVE_XAR_H
 #include "xar.h"
 #endif
