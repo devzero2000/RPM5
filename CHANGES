@@ -1,4 +1,5 @@
 5.0a2 -> 5.0a3:
+    - jbj: eliminate (unused) hPTR_t.
     - jbj: hmm, a memory leak, add doco to the TODO file.
     - jbj: eliminate hTAG_t, use "rpmTag *" instead.
     - jbj: drill rpmTag everywhere needed in header methods.

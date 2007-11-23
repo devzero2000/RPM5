@@ -40,19 +40,19 @@ enum rpmTagType_e {
 
 /** \ingroup header
  */
-typedef enum rpmTagType_e rpmTagType;
+typedef enum rpmTagType_e rpmTagType;	/*!< tag data type. */
 
 /** \ingroup header
  */
-typedef union rpmDataType_u rpmTagData;
+typedef union rpmDataType_u rpmTagData;	/*!< tag data. */
 
 /** \ingroup header
  */
-typedef uint32_t rpmTagCount;
+typedef uint32_t rpmTagCount;	/*!< tag data element count. */
 
 /** \ingroup header
  */
-typedef struct _HE_s * HE_t;		/* tag container. */
+typedef struct _HE_s * HE_t;	/*!< tag container. */
 
 /** \ingroup header
  */
@@ -61,10 +61,10 @@ typedef struct _HE_s * HE_t;		/* tag container. */
 union rpmDataType_u {
 /*@null@*/
     void * ptr;
-    uint8_t * ui8p;		/*!< RPM_INT8_TYPE | RPM_CHAR_TYPE */
-    uint16_t * ui16p;		/*!< RPM_INT16_TYPE */
-    uint32_t * ui32p;		/*!< RPM_INT32_TYPE */
-    uint64_t * ui64p;		/*!< RPM_INT64_TYPE */
+    uint8_t * ui8p;		/*!< RPM_UINT8_TYPE | RPM_CHAR_TYPE */
+    uint16_t * ui16p;		/*!< RPM_UINT16_TYPE */
+    uint32_t * ui32p;		/*!< RPM_UINT32_TYPE */
+    uint64_t * ui64p;		/*!< RPM_UINT64_TYPE */
     const char * str;		/*!< RPM_STRING_TYPE */
     unsigned char * blob;	/*!< RPM_BIN_TYPE */
     const char ** argv;		/*!< RPM_STRING_ARRAY_TYPE */
@@ -72,10 +72,6 @@ union rpmDataType_u {
 };
 #endif
 /*@=typeuse =fielduse@*/
-
-/** \ingroup header
- */
-typedef rpmTagData *	hPTR_t;
 
 /*@=typeuse =fielduse@*/
 /** \ingroup header
@@ -124,25 +120,6 @@ typedef /*@abstract@*/ struct headerTagIndices_s * headerTagIndices;
 /** \ingroup header
  */
 typedef /*@abstract@*/ struct headerSprintfExtension_s * headerSprintfExtension;
-
-/**
- * Automatically generated table of tag name/value pairs.
- */
-/*@-redecl@*/
-/*@observer@*/ /*@unchecked@*/
-extern const struct headerTagTableEntry_s * rpmTagTable;
-/*@=redecl@*/
-
-/**
- * Number of entries in rpmTagTable.
- */
-/*@-redecl@*/
-/*@unchecked@*/
-extern const int rpmTagTableSize;
-
-/*@unchecked@*/
-extern headerTagIndices rpmTags;
-/*@=redecl@*/
 
 /**
  * Pseudo-tags used by the rpmdb and rpmgi iterator API's.
@@ -467,6 +444,25 @@ typedef struct _HE_s HE_s;
 /**
  */
 typedef /*@abstract@*/ struct headerTagTableEntry_s * headerTagTableEntry;
+
+/**
+ * Automatically generated table of tag name/value pairs.
+ */
+/*@-redecl@*/
+/*@observer@*/ /*@unchecked@*/
+extern const struct headerTagTableEntry_s * rpmTagTable;
+/*@=redecl@*/
+
+/**
+ * Number of entries in rpmTagTable.
+ */
+/*@-redecl@*/
+/*@unchecked@*/
+extern const int rpmTagTableSize;
+
+/*@unchecked@*/
+extern headerTagIndices rpmTags;
+/*@=redecl@*/
 
 /**
  */
