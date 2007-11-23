@@ -16,6 +16,8 @@
 /*@unchecked@*/
 int _rpmwf_debug = 0;
 
+#if defined(WITH_XAR)
+
 rpmRC rpmwfPushXAR(rpmwf wf, const char * fn)
 {
     char * b = NULL;
@@ -339,3 +341,5 @@ exit:
 
     return rc;
 }
+
+#endif

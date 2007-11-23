@@ -832,10 +832,12 @@ pgpDig dig = fdGetDig(fd);
 	h = headerFree(h);
     }
 
+#ifdef WITH_XAR
 if (xar != NULL) {
     if ((xx = rpmxarNext(xar)) != 0)	return RPMRC_FAIL;
     if ((xx = rpmxarPull(xar, "Payload")) != 0) return RPMRC_FAIL;
 }
+#endif
 
     /* Read the payload from the package. */
     while ((count = Fread(buf, sizeof(buf[0]), sizeof(buf), fd)) > 0)

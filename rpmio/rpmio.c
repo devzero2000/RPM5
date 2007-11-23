@@ -345,7 +345,9 @@ DBGREFS(fd, (stderr, "--> fd  %p -- %d %s at %s:%u %s\n", fd, fd->nrefs, msg, fi
 	}
 	fd->ndigests = 0;
 /*@-onlytrans@*/
+#ifdef WITH_XAR
 	fd->xar = rpmxarFree(fd->xar);
+#endif
 	fd->dig = pgpDigFree(fd->dig);
 /*@=onlytrans@*/
 	memset(fd, 0, sizeof(*fd));	/* XXX trash and burn */
@@ -420,7 +422,11 @@ static ssize_t fdRead(void * cookie, /*@out@*/ char * buf, size_t count)
 	    fd->bytesRemain = 0;
     } else
     if (fd->xar != NULL) {
+#ifdef WITH_XAR
 	rc = xarRead(fd, buf, (count > fd->bytesRemain ? fd->bytesRemain : count));
+#else
+	rc = -1;
+#endif
     } else
 	rc = read(fdFileno(fd), buf, (count > fd->bytesRemain ? fd->bytesRemain : count));
     fdstat_exit(fd, FDSTAT_READ, rc);
