@@ -89,7 +89,7 @@ int rpmxarNext(rpmxar xar)
 	/*@globals fileSystem @*/
 	/*@modifies xar, fileSystem @*/;
 
-int rpmxarPush(rpmxar xar, const char * fn)
+int rpmxarPush(rpmxar xar, const char * fn, char * b, size_t bsize)
 	/*@modifies xar @*/;
 
 int rpmxarPull(rpmxar xar, /*@null@*/ const char * fn)

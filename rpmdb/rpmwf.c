@@ -39,8 +39,10 @@ rpmRC rpmwfPushXAR(rpmwf wf, const char * fn)
 	nb = wf->np;
     }
 
-    xx = rpmxarSwapBuf(wf->xar, b, nb, NULL, NULL);
-    xx = rpmxarPush(wf->xar, fn);
+if (_rpmwf_debug)
+fprintf(stderr, "==> rpmwfPushXAR(%p, %s) %p[%u]\n", wf, fn, b, (unsigned) nb);
+
+    xx = rpmxarPush(wf->xar, fn, b, nb);
     return (xx == 0 ? RPMRC_OK : RPMRC_FAIL);
 }
 
@@ -55,6 +57,9 @@ rpmRC rpmwfPullXAR(rpmwf wf, const char * fn)
     if (xx == 1)
 	return RPMRC_NOTFOUND;
     xx = rpmxarSwapBuf(wf->xar, NULL, 0, &b, &nb);
+
+if (_rpmwf_debug)
+fprintf(stderr, "==> rpmwfPullXAR(%p, %s) %p[%u]\n", wf, fn, b, (unsigned) nb);
 
     if (!strcmp(fn, "Lead")) {
 	wf->l = b;
@@ -77,9 +82,12 @@ rpmRC rpmwfPullXAR(rpmwf wf, const char * fn)
     return rc;
 }
 
-rpmRC rpmwfFiniRPM(rpmwf wf)
+rpmRC rpmwfFini(rpmwf wf)
 {
     int xx;
+
+if (_rpmwf_debug)
+fprintf(stderr, "==> rpmwfFini(%p)\n", wf);
 
     if (wf->b && wf->b != (void *)-1) {
 	xx = munmap(wf->b, wf->nb);
@@ -98,10 +106,10 @@ static size_t hSize(uint32_t *p)
     return (8 + 8 + 16 * ntohl(p[2]) + ntohl(p[3]));
 }
 
-rpmRC rpmwfInitRPM(rpmwf wf, const char * fn, const char * fmode)
+rpmRC rpmwfInit(rpmwf wf, const char * fn, const char * fmode)
 {
 if (_rpmwf_debug)
-fprintf(stderr, "*** rpmwfInitRPM(%p, %s, %s)\n", wf, fn, fmode);
+fprintf(stderr, "==> rpmwfInit(%p, %s, %s)\n", wf, fn, fmode);
     if (fn == NULL)
 	fn = wf->fn;
 assert(fn != NULL);
@@ -109,10 +117,8 @@ assert(fn != NULL);
 /*@-globs@*/
     wf->fd = Fopen(fn, fmode);
 /*@=globs@*/
-if (_rpmwf_debug)
-fprintf(stderr, "*** Fopen(%s, %s) fd %p nb %u\n", fn, fmode, wf->fd, (unsigned)wf->nb);
     if (wf->fd == NULL || Ferror(wf->fd)) {
-	(void) rpmwfFiniRPM(wf);
+	(void) rpmwfFini(wf);
 	return RPMRC_NOTFOUND;
     }
 
@@ -121,7 +127,7 @@ fprintf(stderr, "*** Fopen(%s, %s) fd %p nb %u\n", fn, fmode, wf->fd, (unsigned)
 
 	if (wf->b == (void *)-1) {
 	    wf->b = NULL;
-	    (void) rpmwfFiniRPM(wf);
+	    (void) rpmwfFini(wf);
 	    return RPMRC_NOTFOUND;
 	}
 
@@ -168,7 +174,10 @@ rpmRC rpmwfPushRPM(rpmwf wf, const char * fn)
     if (!(b && nb > 0))
 	return RPMRC_NOTFOUND;
 
-    if (Fwrite(b, 1, nb, wf->fd) != nb)
+if (_rpmwf_debug)
+fprintf(stderr, "==> rpmwfPushRPM(%p, %s) %p[%u]\n", wf, fn, b, (unsigned) nb);
+
+    if (Fwrite(b, sizeof(b[0]), nb, wf->fd) != nb)
 	return RPMRC_FAIL;
 
     return RPMRC_OK;
@@ -179,7 +188,7 @@ rpmwf XrpmwfUnlink(rpmwf wf, const char * msg, const char * fn, unsigned ln)
     if (wf == NULL) return NULL;
 /*@-modfilesys@*/
 if (_rpmwf_debug && msg != NULL)
-fprintf(stderr, "--> wf %p -- %d %s at %s:%u\n", wf, wf->nrefs, msg, fn, ln);
+fprintf(stderr, "-->  wf %p -- %d %s at %s:%u\n", wf, wf->nrefs, msg, fn, ln);
 /*@=modfilesys@*/
     wf->nrefs--;
     return NULL;
@@ -192,7 +201,7 @@ rpmwf XrpmwfLink(rpmwf wf, const char * msg, const char * fn, unsigned ln)
 
 /*@-modfilesys@*/
 if (_rpmwf_debug && msg != NULL)
-fprintf(stderr, "--> wf %p ++ %d %s at %s:%u\n", wf, wf->nrefs, msg, fn, ln);
+fprintf(stderr, "-->  wf %p ++ %d %s at %s:%u\n", wf, wf->nrefs, msg, fn, ln);
 /*@=modfilesys@*/
 
     /*@-refcounttrans@*/ return wf; /*@=refcounttrans@*/
@@ -216,7 +225,7 @@ rpmwf rpmwfFree(rpmwf wf)
 	}
 
 	wf->xar = rpmxarFree(wf->xar);
-	(void) rpmwfFiniRPM(wf);
+	(void) rpmwfFini(wf);
 
 	wf->fn = _free(wf->fn);
 
@@ -244,9 +253,6 @@ rpmwf rpmwfNew(const char * fn)
     wf->fn = xstrdup(fn);
     wf->nb = st->st_size;
 
-if (_rpmwf_debug)
-fprintf(stderr, "*** rpmwfNew(%s) wf %p nb %u\n", wf->fn, wf, (unsigned)wf->nb);
-
     return rpmwfLink(wf, "rpmwfNew");
 }
 
@@ -258,13 +264,13 @@ rpmwf rdRPM(const char * rpmfn)
     if ((wf = rpmwfNew(rpmfn)) == NULL)
 	return wf;
 
-    if ((rc = rpmwfInitRPM(wf, NULL, "r")) != RPMRC_OK) {
+    if ((rc = rpmwfInit(wf, NULL, "r")) != RPMRC_OK) {
 	wf = rpmwfFree(wf);
 	return NULL;
     }
 
 if (_rpmwf_debug)
-fprintf(stderr, "*** rdRPM(%s) wf %p\n", rpmfn, wf);
+fprintf(stderr, "==> rdRPM(%s) wf %p\n\tLead %p[%u]\n\tSignature %p[%u]\n\tHeader %p[%u]\n\tPayload %p[%u]\n", rpmfn, wf, wf->l, (unsigned)wf->nl, wf->s, (unsigned) wf->ns, wf->h, (unsigned) wf->nh, wf->p, (unsigned) wf->np);
 
     return wf;
 }
@@ -282,13 +288,14 @@ rpmwf rdXAR(const char * xarfn)
 	wf = rpmwfFree(wf);
 	return NULL;
     }
-if (_rpmwf_debug)
-fprintf(stderr, "*** rdXAR(%s) wf %p xar %p\n", xarfn, wf, wf->xar);
 
     while (rpmxarNext(wf->xar) == 0)
 	rc = rpmwfPullXAR(wf, NULL);
-
     wf->xar = rpmxarFree(wf->xar);
+
+if (_rpmwf_debug)
+fprintf(stderr, "==> rdXAR(%s) wf %p\n\tLead %p[%u]\n\tSignature %p[%u]\n\tHeader %p[%u]\n\tPayload %p[%u]\n", xarfn, wf, wf->l, (unsigned)wf->nl, wf->s, (unsigned) wf->ns, wf->h, (unsigned) wf->nh, wf->p, (unsigned) wf->np);
+
     return wf;
 }
 
@@ -297,7 +304,8 @@ rpmRC wrXAR(const char * xarfn, rpmwf wf)
     rpmRC rc;
 
 if (_rpmwf_debug)
-fprintf(stderr, "*** wrXAR(%s, %p)\n", xarfn, wf);
+fprintf(stderr, "==> wrXAR(%s) wf %p\n\tLead %p[%u]\n\tSignature %p[%u]\n\tHeader %p[%u]\n\tPayload %p[%u]\n", xarfn, wf, wf->l, (unsigned)wf->nl, wf->s, (unsigned) wf->ns, wf->h, (unsigned) wf->nh, wf->p, (unsigned) wf->np);
+
     wf->xar = rpmxarNew(xarfn, "w");
     if (wf->xar == NULL)
 	return RPMRC_FAIL;
@@ -320,10 +328,11 @@ rpmRC wrRPM(const char * rpmfn, rpmwf wf)
 {
     rpmRC rc;
 
-    if ((rc = rpmwfInitRPM(wf, rpmfn, "w")) != RPMRC_OK)
+    if ((rc = rpmwfInit(wf, rpmfn, "w")) != RPMRC_OK)
 	goto exit;
+
 if (_rpmwf_debug)
-fprintf(stderr, "*** wrRPM(%s, %p)\n", rpmfn, wf);
+fprintf(stderr, "==> wrRPM(%s) wf %p\n\tLead %p[%u]\n\tSignature %p[%u]\n\tHeader %p[%u]\n\tPayload %p[%u]\n", rpmfn, wf, wf->l, (unsigned)wf->nl, wf->s, (unsigned) wf->ns, wf->h, (unsigned) wf->nh, wf->p, (unsigned) wf->np);
 
     if ((rc = rpmwfPushRPM(wf, "Lead")) != RPMRC_OK)
 	goto exit;
@@ -335,7 +344,7 @@ fprintf(stderr, "*** wrRPM(%s, %p)\n", rpmfn, wf);
 	goto exit;
 
 exit:
-    (void) rpmwfFiniRPM(wf);
+    (void) rpmwfFini(wf);
 
     return rc;
 }

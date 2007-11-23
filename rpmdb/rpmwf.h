@@ -55,11 +55,11 @@ rpmRC rpmwfPullXAR(rpmwf wf, const char * fn)
 	/*@globals fileSystem @*/
 	/*@modifies wf, fileSystem @*/;
 
-rpmRC rpmwfFiniRPM(rpmwf wf)
+rpmRC rpmwfFini(rpmwf wf)
 	/*@globals fileSystem @*/
 	/*@modifies wf, fileSystem @*/;
 
-rpmRC rpmwfInitRPM(rpmwf wf, const char * fn, const char * fmode)
+rpmRC rpmwfInit(rpmwf wf, const char * fn, const char * fmode)
 	/*@globals fileSystem @*/
 	/*@modifies wf, fileSystem @*/;
 

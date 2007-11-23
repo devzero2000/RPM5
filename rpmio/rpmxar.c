@@ -99,8 +99,10 @@ assert(fn != NULL);
 
 int rpmxarNext(rpmxar xar)
 {
+/*@-modfilesys@*/
 if (_xar_debug)
-fprintf(stderr, "*** rpmxarNext(%p) first %d\n", xar, xar->first);
+fprintf(stderr, "--> rpmxarNext(%p) first %d\n", xar, xar->first);
+/*@=modfilesys@*/
 
 #if defined(WITH_XAR)
 /*@-moduncon@*/
@@ -115,12 +117,17 @@ fprintf(stderr, "*** rpmxarNext(%p) first %d\n", xar, xar->first);
     return (xar->f == NULL ? 1 : 0);
 }
 
-int rpmxarPush(rpmxar xar, const char * fn)
+int rpmxarPush(rpmxar xar, const char * fn, char * b, size_t bsize)
 {
-    if (xar->x && xar->b != NULL) {
+/*@-modfilesys@*/
+if (_xar_debug)
+fprintf(stderr, "--> rpmxarPush(%p, %s) %p[%u]\n", xar, fn, b, (unsigned)bsize);
+/*@=modfilesys@*/
+
+    if (xar->x && b != NULL) {
 #if defined(WITH_XAR)
 /*@-moduncon@*/
-	xar->f = xar_add_frombuffer(xar->x, NULL, fn, xar->b, xar->bsize);
+	xar->f = xar_add_frombuffer(xar->x, NULL, fn, b, bsize);
 /*@=moduncon@*/
 #endif
 	if (xar->f == NULL)
@@ -156,8 +163,11 @@ int rpmxarPull(rpmxar xar, const char * fn)
 /*@=moduncon =nullstate @*/
 #endif	/* WITH_XAR */
 
+/*@-modfilesys@*/
 if (_xar_debug)
-fprintf(stderr, "*** %s %p[%lu] rc %d\n", xar->member, xar->b, (unsigned long)xar->bsize, rc);
+fprintf(stderr, "--> rpmxarPull(%p, %s) %p[%u] rc %d\n", xar, fn, xar->b, (unsigned)xar->bsize, rc);
+/*@=modfilesys@*/
+
     if (rc)
 	return 1;
 
@@ -171,6 +181,7 @@ int rpmxarSwapBuf(rpmxar xar, char * b, size_t bsize,
 if (_xar_debug)
 fprintf(stderr, "*** rpmxarSwapBuf(%p, %p[%u], %p, %p) %p[%u]\n", xar, b, (unsigned) bsize, obp, obsizep, xar->b, (unsigned) xar->bsize);
 /*@=modfilesys@*/
+
     if (xar) {
 	if (obsizep != NULL)
 	    *obsizep = xar->bsize;
