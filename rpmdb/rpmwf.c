@@ -136,7 +136,7 @@ assert(fn != NULL);
 
 	wf->s = wf->l + wf->nl;
 	wf->ns = hSize((void *)wf->s);
-	wf->ns += (8 - (wf->ns % 8));	/* padding */
+	wf->ns += ((8 - (wf->ns % 8)) % 8);	/* padding */
 
 	wf->h = wf->s + wf->ns;
 	wf->nh = hSize((void *)wf->h);
@@ -256,6 +256,22 @@ rpmwf rpmwfNew(const char * fn)
     return rpmwfLink(wf, "rpmwfNew");
 }
 
+static void rpmwfDumpItem(const char * item, unsigned char * b, size_t bsize)
+	/*@*/
+{
+    fprintf(stderr, "\t%s:\t%p[%u]\t%02x%02x%02x%02x%02x%02x%02x%02x\n", item, b, (unsigned)bsize, b[0], b[1], b[2], b[3], b[4], b[5], b[6], b[7]);
+}
+
+static void rpmwfDump(rpmwf wf, const char * msg, const char * fn)
+	/*@*/
+{
+    fprintf(stderr, "==> %s(%s) wf %p\n", msg, fn, wf);
+    rpmwfDumpItem("     Lead", wf->l, wf->nl);
+    rpmwfDumpItem("Signature", wf->s, wf->ns);
+    rpmwfDumpItem("   Header", wf->h, wf->nh);
+    rpmwfDumpItem("  Payload", wf->p, wf->np);
+}
+
 rpmwf rdRPM(const char * rpmfn)
 {
     rpmwf wf;
@@ -269,8 +285,7 @@ rpmwf rdRPM(const char * rpmfn)
 	return NULL;
     }
 
-if (_rpmwf_debug)
-fprintf(stderr, "==> rdRPM(%s) wf %p\n\tLead %p[%u]\n\tSignature %p[%u]\n\tHeader %p[%u]\n\tPayload %p[%u]\n", rpmfn, wf, wf->l, (unsigned)wf->nl, wf->s, (unsigned) wf->ns, wf->h, (unsigned) wf->nh, wf->p, (unsigned) wf->np);
+if (_rpmwf_debug) rpmwfDump(wf, "rdRPM", rpmfn);
 
     return wf;
 }
@@ -293,8 +308,7 @@ rpmwf rdXAR(const char * xarfn)
 	rc = rpmwfPullXAR(wf, NULL);
     wf->xar = rpmxarFree(wf->xar);
 
-if (_rpmwf_debug)
-fprintf(stderr, "==> rdXAR(%s) wf %p\n\tLead %p[%u]\n\tSignature %p[%u]\n\tHeader %p[%u]\n\tPayload %p[%u]\n", xarfn, wf, wf->l, (unsigned)wf->nl, wf->s, (unsigned) wf->ns, wf->h, (unsigned) wf->nh, wf->p, (unsigned) wf->np);
+if (_rpmwf_debug) rpmwfDump(wf, "rdXAR", xarfn);
 
     return wf;
 }
@@ -303,8 +317,7 @@ rpmRC wrXAR(const char * xarfn, rpmwf wf)
 {
     rpmRC rc;
 
-if (_rpmwf_debug)
-fprintf(stderr, "==> wrXAR(%s) wf %p\n\tLead %p[%u]\n\tSignature %p[%u]\n\tHeader %p[%u]\n\tPayload %p[%u]\n", xarfn, wf, wf->l, (unsigned)wf->nl, wf->s, (unsigned) wf->ns, wf->h, (unsigned) wf->nh, wf->p, (unsigned) wf->np);
+if (_rpmwf_debug) rpmwfDump(wf, "wrXAR", xarfn);
 
     wf->xar = rpmxarNew(xarfn, "w");
     if (wf->xar == NULL)

@@ -1,4 +1,7 @@
 5.0a2 -> 5.0a3:
+    - jbj: display 1st 8 bytes of content for XAR archive members.
+    - jbj: remove newlines in pkgio messages.
+    - jbj: fix: padding between signature <-> metadata headers wrong, grr.
     - jbj: rpmxar.c: rearrange the messy markup and defines.
     - jbj: remove messy HAVE_XAR_H from installed rpmxar.h include.
     - jbj: retrofit 3 needed typedef's when compiling w/o HAVE_XAR_H.

@@ -147,13 +147,13 @@ fprintf(stderr, "--> rpmxarNext(%p) first %d\n", xar, xar->first);
     return (xar->f == NULL ? 1 : 0);
 }
 
-int rpmxarPush(rpmxar xar, const char * fn, char * b, size_t bsize)
+int rpmxarPush(rpmxar xar, const char * fn, unsigned char * b, size_t bsize)
 {
 if (_xar_debug)
-fprintf(stderr, "--> rpmxarPush(%p, %s) %p[%u]\n", xar, fn, b, (unsigned)bsize);
+fprintf(stderr, "--> rpmxarPush(%p, %s) %p[%u] %02x%02x%02x%02x%02x%02x%02x%02x\n", xar, fn, b, (unsigned)bsize, b[0], b[1], b[2], b[3], b[4], b[5], b[6], b[7]);
 
     if (xar->x && b != NULL) {
-	xar->f = xar_add_frombuffer(xar->x, NULL, fn, b, bsize);
+	xar->f = xar_add_frombuffer(xar->x, NULL, fn, (char *)b, bsize);
 	if (xar->f == NULL)
 	    return 2;
     }
@@ -176,23 +176,25 @@ int rpmxarPull(rpmxar xar, const char * fn)
     xar->bsize = xar->bx = 0;
 
 /*@-nullstate @*/
-    rc = (int) xar_extract_tobuffersz(xar->x, xar->f, &xar->b, &xar->bsize);
+    rc = (int) xar_extract_tobuffersz(xar->x, xar->f, (char **)&xar->b, &xar->bsize);
 /*@=nullstate @*/
-
-if (_xar_debug)
-fprintf(stderr, "--> rpmxarPull(%p, %s) %p[%u] rc %d\n", xar, xar->member, xar->b, (unsigned)xar->bsize, rc);
-
     if (rc)
 	return 1;
+
+if (_xar_debug) {
+unsigned char * b = xar->b;
+size_t bsize = xar->bsize;
+fprintf(stderr, "--> rpmxarPull(%p, %s) %p[%u] %02x%02x%02x%02x%02x%02x%02x%02x\n", xar, fn, b, (unsigned)bsize, b[0], b[1], b[2], b[3], b[4], b[5], b[6], b[7]);
+}
 
     return 0;
 }
 
-int rpmxarSwapBuf(rpmxar xar, char * b, size_t bsize,
-		char ** obp, size_t * obsizep)
+int rpmxarSwapBuf(rpmxar xar, unsigned char * b, size_t bsize,
+		unsigned char ** obp, size_t * obsizep)
 {
 if (_xar_debug)
-fprintf(stderr, "*** rpmxarSwapBuf(%p, %p[%u], %p, %p) %p[%u]\n", xar, b, (unsigned) bsize, obp, obsizep, xar->b, (unsigned) xar->bsize);
+fprintf(stderr, "--> rpmxarSwapBuf(%p, %p[%u], %p, %p) %p[%u]\n", xar, b, (unsigned) bsize, obp, obsizep, xar->b, (unsigned) xar->bsize);
 
     if (xar) {
 	if (obsizep != NULL)
@@ -240,7 +242,7 @@ assert(xar->b != NULL);
 	rc = 0;
 
 if (_xar_debug)
-fprintf(stderr, "*** xarRead(%p,%p,0x%x) %s %p[%u:%u] rc 0x%x\n", cookie, buf, (unsigned)count, (xar->member ? xar->member : "(nil)"), xar->b, (unsigned)xar->bx, (unsigned)xar->bsize, (unsigned)rc);
+fprintf(stderr, "--> xarRead(%p,%p,0x%x) %s %p[%u:%u] rc 0x%x\n", cookie, buf, (unsigned)count, (xar->member ? xar->member : "(nil)"), xar->b, (unsigned)xar->bx, (unsigned)xar->bsize, (unsigned)rc);
 
     return rc;
 }

@@ -14,15 +14,15 @@ typedef /*@abstract@*/ /*@refcounted@*/ struct rpmxar_s * rpmxar;
 #ifdef	_RPMXAR_INTERNAL
 struct rpmxar_s {
 /*@relnull@*/
-    void * x;			/*!< xar_t */
+    const void * x;		/*!< xar_t */
 /*@relnull@*/
-    void * f;			/*!< xar_file_t */
+    const void * f;		/*!< xar_file_t */
 /*@relnull@*/
-    void * i;			/*!< xar_iter_t */
+    const void * i;		/*!< xar_iter_t */
 /*@null@*/
     const char * member;	/*!< Current archive member. */
 /*@null@*/
-    char * b;			/*!< Data buffer. */
+    unsigned char * b;		/*!< Data buffer. */
     size_t bsize;		/*!< No. bytes of data. */
     size_t bx;			/*!< Data byte index. */
     int first;
@@ -87,7 +87,7 @@ int rpmxarNext(rpmxar xar)
 	/*@globals fileSystem @*/
 	/*@modifies xar, fileSystem @*/;
 
-int rpmxarPush(rpmxar xar, const char * fn, char * b, size_t bsize)
+int rpmxarPush(rpmxar xar, const char * fn, unsigned char * b, size_t bsize)
 	/*@globals fileSystem @*/
 	/*@modifies xar, fileSystem @*/;
 
@@ -95,8 +95,8 @@ int rpmxarPull(rpmxar xar, /*@null@*/ const char * fn)
 	/*@globals fileSystem @*/
 	/*@modifies xar, fileSystem @*/;
 
-int rpmxarSwapBuf(rpmxar xar, /*@null@*/ char * b, size_t bsize,
-		/*@null@*/ char ** obp, /*@null@*/ size_t * obsizep)
+int rpmxarSwapBuf(rpmxar xar, /*@null@*/ unsigned char * b, size_t bsize,
+		/*@null@*/ unsigned char ** obp, /*@null@*/ size_t * obsizep)
 	/*@globals fileSystem @*/
 	/*@modifies xar, *obp, *obsizep, fileSystem @*/;
 
