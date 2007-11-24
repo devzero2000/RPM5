@@ -56,9 +56,11 @@ static unsigned char header_magic[8] = {
 
 /*@-type@*/
 /*@observer@*/ /*@unchecked@*/
+#if 0
 static unsigned char sigh_magic[8] = {
 	0x8e, 0xad, 0xe8, 0x3e, 0x00, 0x00, 0x00, 0x00
 };
+#endif
 /*@=type@*/
 
 /*@-type@*/
