@@ -4,8 +4,9 @@
 
 #include "system.h"
 
-#include <header.h>
-#include <rpmio.h>
+#include <rpmio.h>	/* XXX xtolower, xstrcasecmp */
+#define	_RPMTAG_INTERNAL
+#include <rpmtag.h>
 #include "debug.h"
 
 /*@access headerTagTableEntry @*/
@@ -60,7 +61,7 @@ static int tagLoadIndex(headerTagTableEntry ** ipp, int * np,
     ip = xcalloc(rpmTagTableSize, sizeof(*ip));
     n = 0;
 /*@-dependenttrans@*/ /*@-observertrans@*/ /*@-castexpose@*/ /*@-mods@*/ /*@-modobserver@*/
-    for (tte = (headerTagTableEntry)rpmTagTable; tte->name != NULL; tte++) {
+    for (tte = rpmTagTable; tte->name != NULL; tte++) {
 	ip[n] = tte;
 	n++;
     }
@@ -98,7 +99,7 @@ headerTagIndices rpmTags = &_rpmTags;
 static const char * _tagName(rpmTag tag)
 {
     static char nameBuf[128];	/* XXX yuk */
-    const struct headerTagTableEntry_s *t;
+    headerTagTableEntry t;
     int comparison, i, l, u;
     int xx;
     char *s;
@@ -180,7 +181,7 @@ static const char * _tagName(rpmTag tag)
 
 static unsigned int _tagType(rpmTag tag)
 {
-    const struct headerTagTableEntry_s *t;
+    headerTagTableEntry t;
     int comparison, i, l, u;
     int xx;
 
@@ -228,7 +229,7 @@ static unsigned int _tagType(rpmTag tag)
 
 static rpmTag _tagValue(const char * tagstr)
 {
-    const struct headerTagTableEntry_s *t;
+    headerTagTableEntry t;
     int comparison, i, l, u;
     int xx;
 
@@ -270,6 +271,31 @@ static rpmTag _tagValue(const char * tagstr)
 	    return (unsigned int)t->val;
     }
     return 0xffffffff;	/* XXX arbitrary tags */
+}
+
+const char * tagName(rpmTag tag)
+{
+    return ((*rpmTags->tagName)(tag));
+}
+
+unsigned int tagType(rpmTag tag)
+{
+    return ((*rpmTags->tagType)(tag));
+}
+
+rpmTag tagValue(const char * tagstr)
+{
+    return ((*rpmTags->tagValue)(tagstr));
+}
+
+void tagClean(headerTagIndices _rpmTags)
+{
+    if (_rpmTags == NULL)
+	_rpmTags = rpmTags;
+   if (_rpmTags) {
+	_rpmTags->byName = _free(_rpmTags->byName);
+	_rpmTags->byValue = _free(_rpmTags->byValue);
+    }
 }
 
 #if defined(SUPPORT_IMPLICIT_TAG_DATA_TYPES)

@@ -1,4 +1,8 @@
 5.0a2 -> 5.0a3:
+    - jbj: add tag{Clean,Name,Value,Type} methods to librpmdb.
+    - jbj: lose header.h in favor of rpmtag.h several places.
+    - jbj: make "struct headerTagTableEntry_s" opaque.
+    - jbj: rpmte.h: mark the diagnostic routines with _RPMTE_INTERNAL.
     - jbj: remove signature header padding issue from the TODO.
     - jbj: fix: --querytags as uint32, not int32, display array return type.
     - jbj: add level of chaining indirection => opaque headerSprintfExtension_s.

@@ -107,7 +107,11 @@ LIBRPMDB_0
     rpmwfPullXAR;
     rpmVerifySignature;
     sqlitevec;
+    tagClean;
+    tagName;
+    tagType;
     tagTypeValidate;
+    tagValue;
     XrpmdbLink;
     XrpmdbUnlink;
   local:

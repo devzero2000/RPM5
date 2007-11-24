@@ -80,21 +80,21 @@ endif
 
 tagtbl.c: Makefile.am $(top_srcdir)/rpmdb/rpmtag.h 
 	@echo '#include "system.h"' > $@
-	@echo '#include <header.h>' >> $@
+	@echo '#define _RPMTAG_INTERNAL' >> $@
 	@echo '#include <rpmtag.h>' >> $@
 	@echo '#include "debug.h"' >> $@
 	@echo '' >> $@
 	@echo '/*@observer@*/ /*@unchecked@*/' >> $@
-	@echo 'static const struct headerTagTableEntry_s rpmTagTbl[] = {' >> $@
+	@echo 'static const struct headerTagTableEntry_s _rpmTagTable[] = {' >> $@
 	${AWK} '/[ \t](RPMTAG_[A-Z0-9]*)[ \t]+([0-9]*)/ && !/internal/ {tt = "NULL"; ta = "ANY"; if ($$5 == "c") {tt = "UINT8"; ta = "SCALAR"} if ($$5 == "c[]") {tt = "UINT8"; ta = "ARRAY"} if ($$5 == "h") {tt = "UINT16"; ta = "SCALAR"} if ($$5 == "h[]") {tt = "UINT16"; ta = "ARRAY"} if ($$5 == "i") {tt = "UINT32"; ta = "SCALAR"} if ($$5 == "i[]") {tt = "UINT32"; ta = "ARRAY"} if ($$5 == "l") {tt = "UINT64"; ta = "SCALAR"} if ($$5 == "l[]") {tt = "UINT64"; ta = "ARRAY"} if ($$5 == "s") {tt = "STRING"; ta = "SCALAR"} if ($$5 == "s[]") {tt = "STRING_ARRAY"; ta = "ARRAY"} if ($$5 == "s{}") {tt = "I18NSTRING"; ta = "SCALAR"} if ($$5 == "x") {tt = "BIN"; ta = "SCALAR"} if ($$2 == "=") { printf("\t{ \"%s\",	%s	RPM_%s_TYPE + RPM_%s_RETURN_TYPE },\n", $$1, $$3, tt, ta) } else { printf("\t{ \"%s\",	%s,	RPM_%s_TYPE + RPM_%s_RETURN_TYPE  },\n", $$2, $$3, tt, ta) } }' < ${top_srcdir}/rpmdb/rpmtag.h | sort >> $@
 	@echo '	{ NULL, 0, 0 }' >> $@
 	@echo '};' >> $@
 	@echo '' >> $@
 	@echo '/*@observer@*/ /*@unchecked@*/' >> $@
-	@echo 'const struct headerTagTableEntry_s * rpmTagTable = rpmTagTbl;' >> $@
+	@echo 'headerTagTableEntry rpmTagTable = _rpmTagTable;' >> $@
 	@echo '' >> $@
 	@echo '/*@unchecked@*/' >> $@
-	@echo 'const int rpmTagTableSize = sizeof(rpmTagTbl) / sizeof(rpmTagTbl[0]) - 1;' >> $@
+	@echo 'int rpmTagTableSize = sizeof(_rpmTagTable) / sizeof(_rpmTagTable[0]) - 1;' >> $@
 
 if WITH_DB_INTERNAL
 my_DB_HEADER = $(top_builddir)/$(WITH_DB_SUBDIR)/db.h

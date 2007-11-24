@@ -454,14 +454,30 @@ typedef struct _HE_s HE_s;
 
 /**
  */
-typedef /*@abstract@*/ struct headerTagTableEntry_s * headerTagTableEntry;
+typedef /*@abstract@*/ const struct headerTagTableEntry_s * headerTagTableEntry;
+
+#if defined(_RPMTAG_INTERNAL)
+/**
+ */
+/** \ingroup header
+ * Associate tag names with numeric values.
+ */
+#if !defined(SWIG)
+struct headerTagTableEntry_s {
+/*@observer@*/ /*@relnull@*/
+    const char * name;		/*!< Tag name. */
+    rpmTag val;			/*!< Tag numeric value. */
+    rpmTagType type;		/*!< Tag type. */
+};
+#endif
+#endif	/* _RPMTAG_INTERNAL */
 
 /**
  * Automatically generated table of tag name/value pairs.
  */
 /*@-redecl@*/
 /*@observer@*/ /*@unchecked@*/
-extern const struct headerTagTableEntry_s * rpmTagTable;
+extern headerTagTableEntry rpmTagTable;
 /*@=redecl@*/
 
 /**
@@ -469,12 +485,13 @@ extern const struct headerTagTableEntry_s * rpmTagTable;
  */
 /*@-redecl@*/
 /*@unchecked@*/
-extern const int rpmTagTableSize;
+extern int rpmTagTableSize;
 
 /*@unchecked@*/
 extern headerTagIndices rpmTags;
 /*@=redecl@*/
 
+#if defined(_RPMTAG_INTERNAL)
 /**
  */
 #if !defined(SWIG)
@@ -500,53 +517,41 @@ struct headerTagIndices_s {
 	/*@*/;				/* Return type from value. */
 };
 #endif
+#endif	/* _RPMTAG_INTERNAL */
 
-#if !defined(SWIG)
 /**
  * Return tag name from value.
  * @param tag		tag value
  * @return		tag name, "(unknown)" on not found
  */
-/*@-redecl@*/
-/*@unused@*/ static inline /*@observer@*/
+/*@observer@*/
 const char * tagName(rpmTag tag)
-	/*@*/
-{
-/*@-type@*/
-    return ((*rpmTags->tagName)(tag));
-/*@=type@*/
-}
-/*@=redecl@*/
+	/*@*/;
 
 /**
  * Return tag data type from value.
+ * @todo Return rpmTagType-like, not unsigned int. There's no clear typedef yet.
  * @param tag		tag value
- * @return		tag data type, RPM_NULL_TYPE on not found.
+ * @return		tag data type, 0 on not found.
  */
-/*@unused@*/ static inline
 unsigned int tagType(rpmTag tag)
-	/*@*/
-{
-/*@-type@*/
-    return ((*rpmTags->tagType)(tag));
-/*@=type@*/
-}
+	/*@*/;
 
 /**
  * Return tag value from name.
  * @param tagstr	name of tag
  * @return		tag value, -1 on not found
  */
-/*@unused@*/ static inline
 rpmTag tagValue(const char * tagstr)
-	/*@*/
-{
-/*@-type@*/
-    return ((*rpmTags->tagValue)(tagstr));
-/*@=type@*/
-}
+	/*@*/;
 
-#endif
+/**
+ * Free memory in header tag indices.
+ * @param _rpmTags	header tag indices (NULL uses rpmTags)
+ */
+void tagClean(/*@null@*/ headerTagIndices _rpmTags)
+	/*@globals rpmTags @*/
+	/*@modifies _rpmTags, rpmTags @*/;
 
 #if defined(_RPMTAG_INTERNAL)
 /** \ingroup header

@@ -536,8 +536,7 @@ rpmcliFini(poptContext optCon)
     rpmFreeFilesystems();
 /*@i@*/	rpmcliTargets = _free(rpmcliTargets);
 
-    rpmTags->byName = _free(rpmTags->byName);
-    rpmTags->byValue = _free(rpmTags->byValue);
+    tagClean(NULL);	/* Free header tag indices. */
 
     optCon = poptFreeContext(optCon);
 

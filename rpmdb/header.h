@@ -86,18 +86,6 @@
 extern "C" {
 #endif
 
-/** \ingroup header
- * Associate tag names with numeric values.
- */
-#if !defined(SWIG)
-struct headerTagTableEntry_s {
-/*@observer@*/ /*@relnull@*/
-    const char * name;		/*!< Tag name. */
-    uint32_t val;			/*!< Tag numeric value. */
-    rpmTagType type;		/*!< Tag type. */
-};
-#endif
-
 /**
  * Prototype for headerFreeData() vector.
  *
@@ -438,8 +426,8 @@ int (*HDRremove) (Header h, rpmTag tag)
  */
 typedef
 /*@only@*/ char * (*HDRsprintf) (Header h, const char * fmt,
-		/*@null@*/ const struct headerTagTableEntry_s * tags,
-		/*@null@*/ const struct headerSprintfExtension_s * exts,
+		/*@null@*/ headerTagTableEntry tags,
+		/*@null@*/ headerSprintfExtension exts,
 		/*@null@*/ /*@out@*/ errmsg_t * errmsg)
 	/*@modifies *errmsg @*/;
 

@@ -507,8 +507,8 @@ int headerRemoveEntry(Header h, rpmTag tag)
  */
 /*@unused@*/ static inline
 /*@only@*/ char * headerSprintf(Header h, const char * fmt,
-		/*@null@*/ const struct headerTagTableEntry_s * tags,
-		/*@null@*/ const struct headerSprintfExtension_s * exts,
+		/*@null@*/ headerTagTableEntry tags,
+		/*@null@*/ headerSprintfExtension exts,
 		/*@null@*/ /*@out@*/ errmsg_t * errmsg)
 	/*@modifies *errmsg @*/
 {

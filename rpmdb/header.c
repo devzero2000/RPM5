@@ -103,31 +103,6 @@ static size_t headerMaxbytes = (32*1024*1024);
 HV_t hdrVec;	/* forward reference */
 
 /**
- * Automatically generated table of tag name/value pairs.
- * @todo This should come from #include <rpmtag.h>.
- */
-/*@-redecl@*/
-/*@observer@*/ /*@unchecked@*/
-extern const struct headerTagTableEntry_s * rpmTagTable;
-/*@=redecl@*/
-
-/**
- * Number of entries in rpmTagTable.
- * @todo This should come from #include <rpmtag.h>.
- */
-/*@-redecl@*/
-/*@unchecked@*/
-extern const int rpmTagTableSize;
-
-/**
- * @todo This should come from #include <rpmtag.h>.
- */
-/*@-redecl@*/
-/*@unchecked@*/
-extern headerTagIndices rpmTags;
-/*@=redecl@*/
-
-/**
  * Global header stats enabler.
  */
 /*@unchecked@*/
@@ -3771,8 +3746,8 @@ rpmecFree(const headerSprintfExtension exts, /*@only@*/ HE_t ec)
  */
 static /*@only@*/ /*@null@*/
 char * headerSprintf(Header h, const char * fmt,
-		/*@null@*/ const struct headerTagTableEntry_s * tags,
-		/*@null@*/ const struct headerSprintfExtension_s * exts,
+		/*@null@*/ headerTagTableEntry tags,
+		/*@null@*/ headerSprintfExtension exts,
 		/*@null@*/ /*@out@*/ errmsg_t * errmsg)
 	/*@globals headerCompoundFormats @*/
 	/*@modifies h, *errmsg @*/
@@ -3795,12 +3770,10 @@ char * headerSprintf(Header h, const char * fmt,
  
     hsa->h = headerLink(h);
     hsa->fmt = xstrdup(fmt);
-/*@-castexpose@*/	/* FIX: legacy API shouldn't change. */
 /*@-dependenttrans@*/
-    hsa->exts = (headerSprintfExtension) exts;
-    hsa->tags = (headerTagTableEntry) tags;
+    hsa->exts = exts;
+    hsa->tags = tags;
 /*@=dependenttrans@*/
-/*@=castexpose@*/
     hsa->errmsg = NULL;
 
     if (parseFormat(hsa, hsa->fmt, &hsa->format, &hsa->numTokens, NULL, PARSER_BEGIN))

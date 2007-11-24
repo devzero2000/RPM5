@@ -6,7 +6,6 @@
 #include "system.h"
 
 #include <rpmio.h>
-#include <header.h>
 #include <rpmcli.h>
 #include <rpmgi.h>		/* XXX for giFlags */
 
