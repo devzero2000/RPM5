@@ -42,7 +42,7 @@ rpmRC rpmwfPushXAR(rpmwf wf, const char * fn)
 if (_rpmwf_debug)
 fprintf(stderr, "==> rpmwfPushXAR(%p, %s) %p[%u]\n", wf, fn, b, (unsigned) nb);
 
-    xx = rpmxarPush(wf->xar, fn, b, nb);
+    xx = rpmxarPush(wf->xar, fn, (unsigned char *)b, nb);
     return (xx == 0 ? RPMRC_OK : RPMRC_FAIL);
 }
 
@@ -56,7 +56,7 @@ rpmRC rpmwfPullXAR(rpmwf wf, const char * fn)
     xx = rpmxarPull(wf->xar, fn);
     if (xx == 1)
 	return RPMRC_NOTFOUND;
-    xx = rpmxarSwapBuf(wf->xar, NULL, 0, &b, &nb);
+    xx = rpmxarSwapBuf(wf->xar, NULL, 0, (unsigned char **)&b, &nb);
 
 if (_rpmwf_debug)
 fprintf(stderr, "==> rpmwfPullXAR(%p, %s) %p[%u]\n", wf, fn, b, (unsigned) nb);
@@ -266,10 +266,10 @@ static void rpmwfDump(rpmwf wf, const char * msg, const char * fn)
 	/*@*/
 {
     fprintf(stderr, "==> %s(%s) wf %p\n", msg, fn, wf);
-    rpmwfDumpItem("     Lead", wf->l, wf->nl);
-    rpmwfDumpItem("Signature", wf->s, wf->ns);
-    rpmwfDumpItem("   Header", wf->h, wf->nh);
-    rpmwfDumpItem("  Payload", wf->p, wf->np);
+    rpmwfDumpItem("     Lead", (unsigned char *)wf->l, wf->nl);
+    rpmwfDumpItem("Signature", (unsigned char *)wf->s, wf->ns);
+    rpmwfDumpItem("   Header", (unsigned char *)wf->h, wf->nh);
+    rpmwfDumpItem("  Payload", (unsigned char *)wf->p, wf->np);
 }
 
 rpmwf rdRPM(const char * rpmfn)

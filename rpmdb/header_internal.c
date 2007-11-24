@@ -5,6 +5,7 @@
 
 #include "system.h"
 
+#define	_RPMTAG_INTERNAL
 #include <header_internal.h>
 
 #include "debug.h"

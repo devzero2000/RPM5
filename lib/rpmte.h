@@ -682,7 +682,6 @@ static inline void rpmtePrintID(rpmte p)
 	if (p->flink.NEVRA) argvPrint("flink.NEVRA", p->flink.NEVRA, NULL);
     }
 };
-#endif
 
 static inline void hdrPrintInstalled(Header h)
 	/*@globals fileSystem @*/
@@ -718,6 +717,7 @@ static inline void hdrPrintErased(Header h)
 	str = _free(str);
     }
 }
+#endif
 #endif
 
 #ifdef __cplusplus

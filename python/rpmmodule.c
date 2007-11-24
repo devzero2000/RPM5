@@ -5,13 +5,14 @@
 #include "system.h"
 
 #include <rpmio_internal.h>
-#include <rpmcli.h>	/* XXX for rpmCheckSig */
-#include <rpmdb.h>
 #include <rpmsq.h>
+#define	_RPMTAG_INTERNAL
+#include <rpmtag.h>
+#include <rpmdb.h>
+#include <rpmcli.h>	/* XXX for rpmCheckSig */
 
 #include "legacy.h"
 #include "misc.h"
-#include "header.h"
 
 #include "header-py.h"
 #include "rpmal-py.h"
@@ -238,8 +239,6 @@ void init_rpm(void)
 {
     PyObject * d, *o, * tag = NULL, * dict;
     int i;
-    const struct headerSprintfExtension_s * extensions = rpmHeaderFormats;
-    struct headerSprintfExtension_s * ext;
     PyObject * m;
 
 #if Py_TPFLAGS_HAVE_ITER        /* XXX backport to python-1.5.2 */
@@ -345,20 +344,23 @@ void init_rpm(void)
 	Py_DECREF(o);
     }
 
-    while (extensions->name) {
-	if (extensions->type == HEADER_EXT_TAG) {
-            ext = extensions;
-            PyDict_SetItemString(d, (char *) extensions->name, o=PyCObject_FromVoidPtr(ext, NULL));
-	    Py_DECREF(o);
-            PyDict_SetItem(dict, tag, o=PyString_FromString(ext->name + 7));
-	    Py_DECREF(o);
-        }
-        extensions++;
+ {  headerSprintfExtension exts = rpmHeaderFormats;
+    headerSprintfExtension ext;
+    int extNum;
+    for (ext = exts, extNum = 0; ext != NULL && ext->type != HEADER_EXT_LAST;
+        ext = (ext->type == HEADER_EXT_MORE ? *ext->u.more : ext+1), extNum++)
+    {
+	if (ext->name == NULL || ext->type != HEADER_EXT_TAG)
+	    continue;
+	PyDict_SetItemString(d, (char *) ext->name, o=PyCObject_FromVoidPtr((void *)ext, NULL));
+	Py_DECREF(o);
+        PyDict_SetItem(dict, tag, o=PyString_FromString(ext->name + 7));
+	Py_DECREF(o);
     }
+ }
 
     PyDict_SetItemString(d, "tagnames", dict);
     Py_DECREF(dict);
-
 
 #define REGISTER_ENUM(val) \
     PyDict_SetItemString(d, #val, o=PyInt_FromLong( val )); \

@@ -111,11 +111,11 @@ typedef /*@abstract@*/ /*@refcounted@*/ struct rpmgi_s * rpmgi;
 
 /**
  * Table of query format extensions.
- * @note Chains headerCompoundFormats[] -> headerDefaultFormats[].
+ * @note Chains *headerCompoundFormats -> *headerDefaultFormats.
  */
 /*@-redecl@*/
 /*@unchecked@*/
-extern const struct headerSprintfExtension_s rpmHeaderFormats[];
+extern headerSprintfExtension rpmHeaderFormats;
 /*@=redecl@*/
 
 /**

@@ -5,9 +5,11 @@
 #include "system.h"
 
 #include "rpmio_internal.h"
+#include <rpmmacro.h>	/* XXX for %_i18ndomains */
+
+#define	_RPMTAG_INTERNAL
 #include <header.h>
 #include <rpmlib.h>	/* XXX RPMFILE_FOO, rpmMkdirPath */
-#include <rpmmacro.h>	/* XXX for %_i18ndomains */
 
 #define _RPMEVR_INTERNAL
 #include <rpmevr.h>	/* XXX RPMSENSE_FOO */
@@ -1335,7 +1337,7 @@ static int origpathsTag(Header h, HE_t he)
 }
 
 /*@-type@*/ /* FIX: cast? */
-const struct headerSprintfExtension_s headerCompoundFormats[] = {
+static struct headerSprintfExtension_s _headerCompoundFormats[] = {
     { HEADER_EXT_TAG, "RPMTAG_CHANGELOGNAME",
 	{ .tagFunction = changelognameTag } },
     { HEADER_EXT_TAG, "RPMTAG_CHANGELOGTEXT",
@@ -1382,6 +1384,8 @@ const struct headerSprintfExtension_s headerCompoundFormats[] = {
 	{ .fmtFunction = xmlFormat } },
     { HEADER_EXT_FORMAT, "yaml",
 	{ .fmtFunction = yamlFormat } },
-    { HEADER_EXT_MORE, NULL,		{ (void *) headerDefaultFormats } }
+    { HEADER_EXT_MORE, NULL,		{ (void *) &headerDefaultFormats } }
 } ;
 /*@=type@*/
+
+headerSprintfExtension headerCompoundFormats = &_headerCompoundFormats[0];

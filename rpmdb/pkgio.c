@@ -18,7 +18,9 @@
 #include <rpmio_internal.h>
 #include <rpmmacro.h>
 #include <rpmcb.h>		/* XXX fnpyKey */
-#include <rpmtag.h>
+
+#define	_RPMTAG_INTERNAL
+#include "header_internal.h"
 
 #include <rpmdb.h>
 #include <pkgio.h>
@@ -28,7 +30,6 @@
 
 #include <rpmxar.h>
 
-#include "header_internal.h"
 #include "signature.h"
 #include "debug.h"
 
@@ -508,7 +509,7 @@ static rpmRC rdLead(FD_t fd, /*@out@*/ /*@null@*/ void * ptr,
     /* With XAR, read lead from a xar archive file called "Lead". */
     xar = fdGetXAR(fd);
     if (xar != NULL) {
-	void *b = NULL;
+	unsigned char *b = NULL;
 	size_t nb = 0;
 	const char item[] = "Lead";
 	if ((xx = rpmxarNext(xar)) != 0 || (xx = rpmxarPull(xar, item)) != 0) {
@@ -517,12 +518,12 @@ static rpmRC rdLead(FD_t fd, /*@out@*/ /*@null@*/ void * ptr,
 	    rc = RPMRC_NOTFOUND;
 	    goto exit;
 	}
-	(void) rpmxarSwapBuf(xar, NULL, 0, (char **)&b, &nb);
+	(void) rpmxarSwapBuf(xar, NULL, 0, &b, &nb);
 	if (nb != sizeof(*l)) {
-	    b = _free(b);
 	    (void) snprintf(buf, sizeof(buf),
 		_("lead size(%u): BAD, xar read(%u)"),
 		(unsigned)sizeof(*l), (unsigned)nb);
+	    b = _free(b);
 	    rc = RPMRC_FAIL;
 	    goto exit;
 	}

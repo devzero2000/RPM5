@@ -1,4 +1,8 @@
 5.0a2 -> 5.0a3:
+    - jbj: remove signature header padding issue from the TODO.
+    - jbj: fix: --querytags as uint32, not int32, display array return type.
+    - jbj: add level of chaining indirection => opaque headerSprintfExtension_s.
+    - jbj: casts to remove compiler signedness warnings.
     - jbj: display 1st 8 bytes of content for XAR archive members.
     - jbj: remove newlines in pkgio messages.
     - jbj: fix: padding between signature <-> metadata headers wrong, grr.

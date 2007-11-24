@@ -12,7 +12,8 @@
 
 #define	__HEADER_PROTOTYPES__
 
-#include <rpmio_internal.h>	/* XXX for fdGetOPath() */
+#include <rpmio.h>
+#define	_RPMTAG_INTERNAL
 #include <header_internal.h>
 
 #include "debug.h"
@@ -1724,7 +1725,7 @@ int headerGetExtension(Header h, rpmTag tag,
 {
     void * sw;
     const char * name = tagName(tag);
-    headerSprintfExtension exts = (headerSprintfExtension)headerCompoundFormats;
+    headerSprintfExtension exts = headerCompoundFormats;
     headerSprintfExtension ext;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     size_t nb = 0;
@@ -1738,7 +1739,7 @@ int headerGetExtension(Header h, rpmTag tag,
 
     /* Search extensions for specific tag override. */
     for (ext = exts, extNum = 0; ext != NULL && ext->type != HEADER_EXT_LAST;
-	ext = (ext->type == HEADER_EXT_MORE ? ext->u.more : ext+1), extNum++)
+	ext = (ext->type == HEADER_EXT_MORE ? *ext->u.more : ext+1), extNum++)
     {
 	if (ext->name == NULL || ext->type != HEADER_EXT_TAG)
 	    continue;
@@ -2658,7 +2659,7 @@ static int findTag(headerSprintfArgs hsa, sprintfToken token, const char * name)
 
     /* Search extensions for specific tag override. */
     for (ext = exts, extNum = 0; ext != NULL && ext->type != HEADER_EXT_LAST;
-	ext = (ext->type == HEADER_EXT_MORE ? ext->u.more : ext+1), extNum++)
+	ext = (ext->type == HEADER_EXT_MORE ? *ext->u.more : ext+1), extNum++)
     {
 	if (ext->name == NULL || ext->type != HEADER_EXT_TAG)
 	    continue;
@@ -2680,7 +2681,7 @@ bingo:
     /* Search extensions for specific format. */
     if (stag->type != NULL)
     for (ext = exts; ext != NULL && ext->type != HEADER_EXT_LAST;
-	    ext = (ext->type == HEADER_EXT_MORE ? ext->u.more : ext+1))
+	    ext = (ext->type == HEADER_EXT_MORE ? *ext->u.more : ext+1))
     {
 	if (ext->name == NULL || ext->type != HEADER_EXT_FORMAT)
 	    continue;
@@ -2909,7 +2910,7 @@ static char * shescapeFormat(HE_t he)
 }
 
 /*@-type@*/ /* FIX: cast? */
-const struct headerSprintfExtension_s headerDefaultFormats[] = {
+static struct headerSprintfExtension_s _headerDefaultFormats[] = {
     { HEADER_EXT_FORMAT, "octal",
 	{ .fmtFunction = octFormat } },
     { HEADER_EXT_FORMAT, "oct",
@@ -2929,6 +2930,8 @@ const struct headerSprintfExtension_s headerDefaultFormats[] = {
     { HEADER_EXT_LAST, NULL, { NULL } }
 };
 /*@=type@*/
+
+headerSprintfExtension headerDefaultFormats = &_headerDefaultFormats[0];
 
 /* forward ref */
 /**
@@ -3720,7 +3723,7 @@ rpmecNew(const headerSprintfExtension exts, /*@null@*/ int * necp)
 
     if (exts != NULL)
     for (ext = exts, extNum = 0; ext != NULL && ext->type != HEADER_EXT_LAST;
-	ext = (ext->type == HEADER_EXT_MORE ? ext->u.more : ext+1), extNum++)
+	ext = (ext->type == HEADER_EXT_MORE ? *ext->u.more : ext+1), extNum++)
     {
 	;
     }
@@ -3744,7 +3747,7 @@ rpmecFree(const headerSprintfExtension exts, /*@only@*/ HE_t ec)
     int extNum;
 
     for (ext = exts, extNum = 0; ext != NULL && ext->type != HEADER_EXT_LAST;
-	ext = (ext->type == HEADER_EXT_MORE ? ext->u.more : ext+1), extNum++)
+	ext = (ext->type == HEADER_EXT_MORE ? *ext->u.more : ext+1), extNum++)
     {
 	(void) rpmheClean(&ec[extNum]);
     }

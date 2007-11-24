@@ -93,6 +93,13 @@ typedef enum rpmTagReturnType_e {
     RPM_SCALAR_RETURN_TYPE	= 0x00010000,
     RPM_ARRAY_RETURN_TYPE	= 0x00020000,
     RPM_MAPPING_RETURN_TYPE	= 0x00040000,
+	/* 0x00080000 */
+    RPM_PROBE_RETURN_TYPE	= 0x00100000,
+    RPM_TREE_RETURN_TYPE	= 0x00200000,
+    RPM_OPENPGP_RETURN_TYPE	= 0x00400000,
+    RPM_X509_RETURN_TYPE	= 0x00800000,
+    RPM_ASN1_RETURN_TYPE	= 0x01000000,
+    RPM_OPAQUE_RETURN_TYPE	= 0x10000000,
     RPM_MASK_RETURN_TYPE	= 0xffff0000
 } rpmTagReturnType;
 /*@=enummemuse =typeuse @*/
@@ -119,7 +126,7 @@ typedef /*@abstract@*/ struct headerTagIndices_s * headerTagIndices;
 
 /** \ingroup header
  */
-typedef /*@abstract@*/ struct headerSprintfExtension_s * headerSprintfExtension;
+typedef /*@abstract@*/ const struct headerSprintfExtension_s * headerSprintfExtension;
 
 /**
  * Pseudo-tags used by the rpmdb and rpmgi iterator API's.
@@ -541,14 +548,15 @@ rpmTag tagValue(const char * tagstr)
 
 #endif
 
+#if defined(_RPMTAG_INTERNAL)
 /** \ingroup header
  */
-enum headerSprintfExtensionType {
+typedef enum headerSprintfExtensionType_e {
     HEADER_EXT_LAST = 0,	/*!< End of extension chain. */
     HEADER_EXT_FORMAT,		/*!< headerTagFormatFunction() extension */
     HEADER_EXT_MORE,		/*!< Chain to next table. */
     HEADER_EXT_TAG		/*!< headerTagTagFunction() extension */
-};
+} headerSprintfExtensionType;
 
 /** \ingroup header
  * HEADER_EXT_TAG format function prototype.
@@ -575,7 +583,7 @@ typedef int (*headerTagTagFunction) (Header h, HE_t he)
  */
 #if !defined(SWIG)
 struct headerSprintfExtension_s {
-    enum headerSprintfExtensionType type;	/*!< Type of extension. */
+    headerSprintfExtensionType type;		/*!< Type of extension. */
 /*@observer@*/ /*@null@*/
     const char * name;				/*!< Name of extension. */
     union {
@@ -583,17 +591,18 @@ struct headerSprintfExtension_s {
 	void * generic;				/*!< Private extension. */
 	headerTagFormatFunction fmtFunction; /*!< HEADER_EXT_TAG extension. */
 	headerTagTagFunction tagFunction; /*!< HEADER_EXT_FORMAT extension. */
-	struct headerSprintfExtension_s * more;	/*!< Chained table extension. */
+	headerSprintfExtension * more;	/*!< Chained table extension. */
     } u;
 };
 #endif
+#endif	/* _RPMTAG_INTERNAL */
 
 /** \ingroup header
  * Supported default header tag output formats.
  */
 /*@-redecl@*/
 /*@observer@*/
-extern const struct headerSprintfExtension_s headerDefaultFormats[];
+extern headerSprintfExtension headerDefaultFormats;
 /*@=redecl@*/
 
 /** \ingroup header
@@ -601,7 +610,7 @@ extern const struct headerSprintfExtension_s headerDefaultFormats[];
  */
 /*@-redecl@*/
 /*@observer@*/
-extern const struct headerSprintfExtension_s headerCompoundFormats[];
+extern headerSprintfExtension headerCompoundFormats;
 /*@=redecl@*/
 
 #ifdef __cplusplus

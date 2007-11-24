@@ -3,10 +3,10 @@
  */
 
 #include "system.h"
-#include <rpmtag.h>
 #include <rpmio.h>
 #include <rpmmacro.h>
 
+#define	_RPMTAG_INTERNAL
 #include "header_internal.h"		/* XXX hdrchkType(), hdrchkData() */
 
 #include "debug.h"

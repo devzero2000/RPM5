@@ -7,6 +7,8 @@
 #include <rpmio.h>
 #include <rpmcb.h>		/* XXX fnpyKey */
 #include <rpmmacro.h>		/* XXX for %_i18ndomains */
+
+#define	_RPMTAG_INTERNAL
 #include <header.h>
 #include <rpmlib.h>
 
@@ -20,7 +22,6 @@
 #include "fs.h"
 
 #include "debug.h"
-
 
 /**
  * Retrieve mounted file system paths.
@@ -262,7 +263,7 @@ assert(ds != NULL);
 }
 
 /*@-type@*/ /* FIX: cast? */
-const struct headerSprintfExtension_s rpmHeaderFormats[] = {
+static struct headerSprintfExtension_s _rpmHeaderFormats[] = {
     { HEADER_EXT_TAG, "RPMTAG_ENHANCES",
 	{ .tagFunction = missingokTag } },
     { HEADER_EXT_TAG, "RPMTAG_FILECLASS",
@@ -283,6 +284,8 @@ const struct headerSprintfExtension_s rpmHeaderFormats[] = {
 	{ .tagFunction = recontextsTag } },
     { HEADER_EXT_TAG, "RPMTAG_SUGGESTS",
 	{ .tagFunction = missingokTag } },
-    { HEADER_EXT_MORE, NULL,		{ (void *) headerCompoundFormats } }
+    { HEADER_EXT_MORE, NULL,		{ (void *) &headerCompoundFormats } }
 } ;
 /*@=type@*/
+
+headerSprintfExtension rpmHeaderFormats = &_rpmHeaderFormats[0];

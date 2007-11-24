@@ -15,7 +15,9 @@
 #define	_MIRE_INTERNAL
 #include <rpmmacro.h>
 #include <rpmsq.h>
-#include <rpmtag.h>
+
+#define	_RPMTAG_INTERNAL
+#include "header_internal.h"	/* XXX for HEADERFLAG_ALLOCATED */
 
 #define	_RPMEVR_INTERNAL	/* XXX isInstallPrereq */
 #include <rpmevr.h>
@@ -33,7 +35,6 @@ extern void rpmtsCleanDig(void * ts)
 #include "pkgio.h"
 #include "fprint.h"
 #include "legacy.h"
-#include "header_internal.h"	/* XXX for HEADERFLAG_ALLOCATED */
 
 #include "debug.h"
 
@@ -836,12 +837,11 @@ static int unblockSignals(/*@unused@*/ rpmdb db, sigset_t * oldMask)
 static inline /*@null@*/ const char * queryHeader(Header h, const char * qfmt)
 	/*@globals headerDefaultFormats @*/
 {
-    static const struct headerSprintfExtension_s * hdrfmts = headerDefaultFormats;
     const char * errstr = "(unkown error)";
     const char * str;
 
 /*@-modobserver@*/
-    str = headerSprintf(h, qfmt, rpmTagTable, hdrfmts, &errstr);
+    str = headerSprintf(h, qfmt, rpmTagTable, headerDefaultFormats, &errstr);
 /*@=modobserver@*/
     if (str == NULL)
 	rpmlog(RPMLOG_ERR, _("incorrect format: \"%s\": %s\n"), qfmt, errstr);

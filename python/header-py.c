@@ -5,10 +5,11 @@
 #include "system.h"
 
 #include "rpmio_internal.h"
-#include "rpmcli.h"	/* XXX for rpmCheckSig */
 
 #include "legacy.h"
+#define	_RPMTAG_INTERNAL
 #include "header_internal.h"	/* XXX HEADERFLAG_ALLOCATED */
+#include "rpmcli.h"	/* XXX for rpmCheckSig */
 #include "pkgio.h"		/* XXX rpmpkgRead */
 
 #include "rpmts.h"	/* XXX rpmtsCreate/rpmtsFree */
@@ -393,7 +394,7 @@ static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
 	    }
 	    extensions++;
 	    if (extensions->type == HEADER_EXT_MORE)
-		extensions = extensions->u.more;
+		extensions = *extensions->u.more;
 	}
     }
 
