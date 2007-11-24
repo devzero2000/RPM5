@@ -1364,13 +1364,12 @@ static uint32_t hLoadTID(Header h, rpmTag tag)
 static int hCopyTag(Header sh, Header th, rpmTag tag)
 	/*@modifies th @*/
 {
-    HAE_t hae = headerAddExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     int xx = 1;
 
     he->tag = tag;
     if (headerGet(sh, he, 0) && he->c > 0)
-	xx = hae(th, he, 0);
+	xx = headerPut(th, he, 0);
     he->p.ptr = _free(he->p.ptr);
     return 0;
 }
@@ -1384,7 +1383,6 @@ static int hCopyTag(Header sh, Header th, rpmTag tag)
 static int hSaveBlinks(Header h, const struct rpmChainLink_s * blink)
 	/*@modifies h @*/
 {
-    HAE_t hae = headerAddExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
 /*@observer@*/
     static const char * chain_end = RPMTE_CHAIN_END;
@@ -1402,7 +1400,7 @@ static int hSaveBlinks(Header h, const struct rpmChainLink_s * blink)
 	he->p.argv = &chain_end;
 	he->c = 1;
     }
-    xx = hae(h, he, 0);
+    xx = headerPut(h, he, 0);
     
     he->tag = RPMTAG_BLINKPKGID;
     he->t = RPM_STRING_ARRAY_TYPE;
@@ -1414,7 +1412,7 @@ static int hSaveBlinks(Header h, const struct rpmChainLink_s * blink)
 	he->p.argv = &chain_end;
 	he->c = 1;
     }
-    xx = hae(h, he, 0);
+    xx = headerPut(h, he, 0);
 
     he->tag = RPMTAG_BLINKHDRID;
     he->t = RPM_STRING_ARRAY_TYPE;
@@ -1426,7 +1424,7 @@ static int hSaveBlinks(Header h, const struct rpmChainLink_s * blink)
 	he->p.argv = &chain_end;
 	he->c = 1;
     }
-    xx = hae(h, he, 0);
+    xx = headerPut(h, he, 0);
 
     return 0;
 }
@@ -1440,7 +1438,6 @@ static int hSaveBlinks(Header h, const struct rpmChainLink_s * blink)
 static int hSaveFlinks(Header h, const struct rpmChainLink_s * flink)
 	/*@modifies h @*/
 {
-    HAE_t hae = headerAddExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
 #ifdef	NOTYET
     /*@observer@*/
@@ -1463,7 +1460,7 @@ static int hSaveFlinks(Header h, const struct rpmChainLink_s * flink)
 	he->c = 1;
     }
 #endif
-    xx = hae(h, he, 0);
+    xx = headerPut(h, he, 0);
 
     he->tag = RPMTAG_FLINKPKGID;
     he->t = RPM_STRING_ARRAY_TYPE;
@@ -1478,7 +1475,7 @@ static int hSaveFlinks(Header h, const struct rpmChainLink_s * flink)
 	he->c = 1;
     }
 #endif
-    xx = hae(h, he, 0);
+    xx = headerPut(h, he, 0);
 
     he->tag = RPMTAG_FLINKHDRID;
     he->t = RPM_STRING_ARRAY_TYPE;
@@ -1493,7 +1490,7 @@ static int hSaveFlinks(Header h, const struct rpmChainLink_s * flink)
 	he->c = 1;
     }
 #endif
-    xx = hae(h, he, 0);
+    xx = headerPut(h, he, 0);
 
     return 0;
 }
@@ -1508,7 +1505,6 @@ static int hSaveFlinks(Header h, const struct rpmChainLink_s * flink)
 static int populateInstallHeader(const rpmts ts, const rpmte te, rpmfi fi)
 	/*@modifies fi @*/
 {
-    HAE_t hae = headerAddExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     uint32_t tscolor = rpmtsColor(ts);
     uint32_t tecolor = rpmteColor(te);
@@ -1522,20 +1518,20 @@ assert(fi->h != NULL);
 	he->t = RPM_UINT8_TYPE;
 	he->p.ui8p = fi->fstates;
 	he->c = fc;
-	xx = hae(fi->h, he, 0);
+	xx = headerPut(fi->h, he, 0);
     }
 
     he->tag = RPMTAG_INSTALLTIME;
     he->t = RPM_UINT32_TYPE;
     he->p.ui32p = &installTime;
     he->c = 1;
-    xx = hae(fi->h, he, 0);
+    xx = headerPut(fi->h, he, 0);
 
     he->tag = RPMTAG_INSTALLCOLOR;
     he->t = RPM_UINT32_TYPE;
     he->p.ui32p = &tscolor;
     he->c = 1;
-    xx = hae(fi->h, he, 0);
+    xx = headerPut(fi->h, he, 0);
 
     /* XXX FIXME: add preferred color at install. */
 
@@ -1543,7 +1539,7 @@ assert(fi->h != NULL);
     he->t = RPM_UINT32_TYPE;
     he->p.ui32p = &tecolor;
     he->c = 1;
-    xx = hae(fi->h, he, 0);
+    xx = headerPut(fi->h, he, 0);
 
     /* Add the header's origin (i.e. URL) */
     he->tag = RPMTAG_PACKAGEORIGIN;
@@ -1551,7 +1547,7 @@ assert(fi->h != NULL);
     he->p.str = headerGetOrigin(fi->h);
     he->c = 1;
     if (he->p.str != NULL)
-	xx = hae(fi->h, he, 0);
+	xx = headerPut(fi->h, he, 0);
 
     /* XXX Don't clobber forward/backward upgrade chain on rollbacks */
     if (rpmtsType(ts) != RPMTRANS_TYPE_ROLLBACK)
@@ -1591,7 +1587,6 @@ static int rpmpsmNext(rpmpsm psm, pkgStage nstage)
 /*@-nullpass@*/ /* FIX: testing null annotation for fi->h */
 rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 {
-    HAE_t hae = headerAddExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     const rpmts ts = psm->ts;
     uint32_t tscolor = rpmtsColor(ts);
@@ -1866,7 +1861,7 @@ psm->te->h = headerLink(fi->h);
 			{
 			    if (he->tag == RPMTAG_ARCHIVESIZE)
 				noArchiveSize = 1;
-			    xx = hae(psm->oh, he, 0);
+			    xx = headerPut(psm->oh, he, 0);
 			}
 			hi = headerFreeIterator(hi);
 
@@ -1929,7 +1924,7 @@ psm->te->h = headerLink(fi->h);
 		he->t = RPM_UINT32_TYPE;
 		he->p.ui32p = &tid;
 		he->c = 1;
-		xx = hae(psm->oh, he, 0);
+		xx = headerPut(psm->oh, he, 0);
 
 		/* Add original header's origin (i.e. URL) */
 		if (origin != NULL) {
@@ -1937,7 +1932,7 @@ psm->te->h = headerLink(fi->h);
 		    he->t = RPM_STRING_TYPE;
 		    he->p.str = origin;
 		    he->c = 1;
-		    xx = hae(psm->oh, he, 0);
+		    xx = headerPut(psm->oh, he, 0);
 		    origin = _free(origin);
 		}
 

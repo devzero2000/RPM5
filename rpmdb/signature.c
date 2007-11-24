@@ -306,7 +306,6 @@ static int makeHDRSignature(Header sigh, const char * file, uint32_t sigTag,
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies sigh, sigTag, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
-    HAE_t hae = headerAddExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     Header h = NULL;
     FD_t fd = NULL;
@@ -370,7 +369,7 @@ static int makeHDRSignature(Header sigh, const char * file, uint32_t sigTag,
 	he->t = RPM_STRING_TYPE;
 	he->p.str = SHA1;
 	he->c = 1;
-	xx = hae(sigh, he, 0);
+	xx = headerPut(sigh, he, 0);
 	SHA1 = _free(SHA1);
 	if (!xx)
 	    goto exit;
@@ -412,7 +411,7 @@ static int makeHDRSignature(Header sigh, const char * file, uint32_t sigTag,
 	he->t = RPM_BIN_TYPE;
 	he->p.ptr = pkt;
 	he->c = pktlen;
-	xx = hae(sigh, he, 0);
+	xx = headerPut(sigh, he, 0);
 	if (!xx)
 	    goto exit;
 	ret = 0;
@@ -433,7 +432,6 @@ exit:
 int rpmAddSignature(Header sigh, const char * file, uint32_t sigTag,
 		const char * passPhrase)
 {
-    HAE_t hae = headerAddExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     struct stat st;
     byte * pkt;
@@ -453,7 +451,7 @@ assert(0);	/* XXX never happens. */
 	he->t = RPM_UINT32_TYPE;
 	he->p.ui32p = &pktlen;
 	he->c = 1;
-	xx = hae(sigh, he, 0);
+	xx = headerPut(sigh, he, 0);
 	if (!xx)
 	    break;
 	ret = 0;
@@ -467,7 +465,7 @@ assert(0);	/* XXX never happens. */
 	he->t = RPM_BIN_TYPE;
 	he->p.ptr = pkt;
 	he->c = pktlen;
-	xx = hae(sigh, he, 0);
+	xx = headerPut(sigh, he, 0);
 	if (!xx)
 	    break;
 	ret = 0;

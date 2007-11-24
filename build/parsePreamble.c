@@ -60,7 +60,6 @@ static rpmTag requiredTags[] = {
 static void addOrAppendListEntry(Header h, rpmTag tag, char * line)
 	/*@modifies h @*/
 {
-    HAE_t hae = headerAddExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     int xx;
     int argc;
@@ -73,7 +72,7 @@ static void addOrAppendListEntry(Header h, rpmTag tag, char * line)
 	he->p.argv = argv;
 	he->c = argc;
 	he->append = 1;
-	xx = hae(h, he, 0);
+	xx = headerPut(h, he, 0);
 	he->append = 0;
     }
     argv = _free(argv);
@@ -345,7 +344,6 @@ static void fillOutMainPackage(Header h)
 	/*@globals rpmGlobalMacroContext, h_errno @*/
 	/*@modifies h, rpmGlobalMacroContext @*/
 {
-    HAE_t hae = headerAddExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     struct optionalTag *ot;
     int xx;
@@ -359,7 +357,7 @@ static void fillOutMainPackage(Header h)
 		he->t = RPM_STRING_TYPE;
 		he->p.str = val;
 		he->c = 1;
-		xx = hae(h, he, 0);
+		xx = headerPut(h, he, 0);
 	    }
 	    val = _free(val);
 /*@=boundsread@*/
@@ -374,7 +372,6 @@ static int doIcon(Spec spec, Header h)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies rpmGlobalMacroContext, fileSystem, internalState  @*/
 {
-    HAE_t hae = headerAddExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     const char *fn, *Lurlfn = NULL;
     struct Source *sp;
@@ -439,7 +436,7 @@ static int doIcon(Spec spec, Header h)
 	he->t = RPM_BIN_TYPE;
 	he->p.ui8p = icon;
 	he->c = nb;
-	xx = hae(h, he, 0);
+	xx = headerPut(h, he, 0);
     } else
     if (icon[0] == '/' && icon[1] == '*' && icon[2] == ' '
      && icon[3] == 'X' && icon[4] == 'P' && icon[5] == 'M')
@@ -448,7 +445,7 @@ static int doIcon(Spec spec, Header h)
 	he->t = RPM_BIN_TYPE;
 	he->p.ui8p = icon;
 	he->c = nb;
-	xx = hae(h, he, 0);
+	xx = headerPut(h, he, 0);
     } else {
 	rpmlog(RPMLOG_ERR, _("Unknown icon type: %s\n"), fn);
 	goto exit;
@@ -523,7 +520,6 @@ static int handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
 		pkg->header, pkg->autoProv, pkg->autoReq, pkg->icon,
 		rpmGlobalMacroContext, fileSystem, internalState @*/
 {
-    HAE_t hae = headerAddExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     char * field = spec->line;
     char * end;
@@ -588,7 +584,7 @@ static int handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
 	he->t = RPM_STRING_TYPE;
 	he->p.str = field;
 	he->c = 1;
-	xx = hae(pkg->header, he, 0);
+	xx = headerPut(pkg->header, he, 0);
 	break;
     case RPMTAG_GROUP:
     case RPMTAG_SUMMARY:
@@ -603,7 +599,7 @@ static int handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
 	    he->t = RPM_STRING_TYPE;
 	    he->p.str = field;
 	    he->c = 1;
-	    xx = hae(pkg->header, he, 0);
+	    xx = headerPut(pkg->header, he, 0);
 	} else if (!(noLang && strcmp(lang, RPMBUILD_DEFAULT_LANG))) {
 	    (void) headerAddI18NString(pkg->header, tag, field, lang);
 	}
@@ -679,7 +675,7 @@ static int handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
 	he->t = RPM_UINT32_TYPE;
 	he->p.ui32p = &num;
 	he->c = 1;
-	xx = hae(pkg->header, he, 0);
+	xx = headerPut(pkg->header, he, 0);
 	break;
     case RPMTAG_AUTOREQPROV:
 	pkg->autoReq = parseYesNo(field);
@@ -786,7 +782,7 @@ static int handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
 	he->t = RPM_STRING_TYPE;
 	he->p.str = field;
 	he->c = 1;
-	xx = hae(pkg->header, he, 0);
+	xx = headerPut(pkg->header, he, 0);
 	break;
     }
 
@@ -972,7 +968,6 @@ static int findPreambleTag(Spec spec, /*@out@*/rpmTag * tag,
 /* XXX should return rpmParseState, but RPMRC_FAIL forces int return. */
 int parsePreamble(Spec spec, int initialPackage)
 {
-    HAE_t hae = headerAddExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     rpmParseState nextPart;
     int rc, xx;
@@ -1013,7 +1008,7 @@ int parsePreamble(Spec spec, int initialPackage)
 	he->t = RPM_STRING_TYPE;
 	he->p.str = NVR;
 	he->c = 1;
-	xx = hae(pkg->header, he, 0);
+	xx = headerPut(pkg->header, he, 0);
     }
 
     if ((rc = readLine(spec, STRIP_TRAILINGSPACE | STRIP_COMMENTS)) > 0) {

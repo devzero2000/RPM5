@@ -106,7 +106,6 @@ static int ftsCachePrint(/*@unused@*/ rpmts ts, FILE * fp)
 
 static int ftsCacheUpdate(rpmts ts)
 {
-    HAE_t hae = headerAddExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     uint32_t tid = rpmtsGetTid(ts);
     rpmdbMatchIterator mi;
@@ -154,7 +153,7 @@ static int ftsCacheUpdate(rpmts ts)
 	he->p.ui32p = &tid;
 	he->c = 1;
 	he->append = 1;
-	rc = hae(ip->h, he, 0);
+	rc = headerPut(ip->h, he, 0);
 	he->append = 0;
 	if (rc != 1) break;
 
@@ -163,7 +162,7 @@ static int ftsCacheUpdate(rpmts ts)
 	he->p.argv = &ip->path;
 	he->c = 1;
 	he->append = 1;
-	rc = hae(ip->h, he, 0);
+	rc = headerPut(ip->h, he, 0);
 	he->append = 0;
 	if (rc != 1) break;
 
@@ -172,7 +171,7 @@ static int ftsCacheUpdate(rpmts ts)
 	he->p.ui32p = &ip->size;
 	he->c = 1;
 	he->append = 1;
-	rc = hae(ip->h, he, 0);
+	rc = headerPut(ip->h, he, 0);
 	he->append = 0;
 	if (rc != 1) break;
 
@@ -181,7 +180,7 @@ static int ftsCacheUpdate(rpmts ts)
 	he->p.ui32p = &ip->mtime;
 	he->c = 1;
 	he->append = 1;
-	rc = hae(ip->h, he, 0);
+	rc = headerPut(ip->h, he, 0);
 	he->append = 0;
 	if (rc != 1) break;
 

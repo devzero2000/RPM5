@@ -30,11 +30,14 @@ LIBRPMDB_0
     headerCheck;
     headerCompoundFormats;
     headerDefaultFormats;
+    headerDel;
     headerGet;
     headerMacrosLoad;
     headerMacrosUnload;
     headerMergeLegacySigs;
+    headerMod;
     headerNEVRA;
+    headerPut;
     headerRegenSigHeader;
     headerSprintf;
     headerVerifyInfo;

@@ -2360,5 +2360,53 @@ assert(he->c == 1);	/* XXX stop unimplemented oversights. */
 exit:
     if (sw != NULL)	(void) rpmswExit(sw, 0);
 
+#if defined(SUPPORT_IMPLICIT_TAG_DATA_TYPES)
+/*@-modfilesys@*/
+    /* XXX verify that explicit and implicit types are identical. */
+    if (rc)
+	tagTypeValidate(he);
+/*@=modfilesys@*/
+#endif
+
     return rc;
+}
+
+int headerPut(Header h, HE_t he, /*@unused@*/ unsigned int flags)
+{
+    int rc;
+
+#if defined(SUPPORT_IMPLICIT_TAG_DATA_TYPES)
+/*@-modfilesys@*/
+    /* XXX verify that explicit and implicit types are identical. */
+    tagTypeValidate(he);
+/*@=modfilesys@*/
+#endif
+
+    if (he->append)
+	rc = headerAddOrAppendEntry(h, he->tag, he->t, he->p.ptr, he->c);
+    else
+	rc = headerAddEntry(h, he->tag, he->t, he->p.ptr, he->c);
+assert(rc == 1);
+
+    return rc;
+}
+
+int headerDel(Header h, HE_t he, /*@unused@*/ unsigned int flags)
+	/*@modifies h @*/
+{
+    return headerRemoveEntry(h, he->tag);
+}
+
+int headerMod(Header h, HE_t he, /*@unused@*/ unsigned int flags)
+	/*@modifies h @*/
+{
+
+#if defined(SUPPORT_IMPLICIT_TAG_DATA_TYPES)
+/*@-modfilesys@*/
+    /* XXX verify that explicit and implicit types are identical. */
+    tagTypeValidate(he);
+/*@=modfilesys@*/
+#endif
+
+    return headerModifyEntry(h, he->tag, he->t, he->p.ptr, he->c);
 }

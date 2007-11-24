@@ -14,7 +14,6 @@ int addReqProv(/*@unused@*/ Spec spec, Header h, /*@unused@*/ rpmTag tagN,
 		const char * N, const char * EVR, rpmsenseFlags Flags,
 		uint32_t index)
 {
-    HAE_t hae = headerAddExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     const char ** names;
     rpmTag nametag = 0;
@@ -114,7 +113,7 @@ int addReqProv(/*@unused@*/ Spec spec, Header h, /*@unused@*/ rpmTag tagN,
     he->p.argv = &N;
     he->c = 1;
     he->append = 1;
-    xx = hae(h, he, 0);
+    xx = headerPut(h, he, 0);
     he->append = 0;
 
     if (flagtag) {
@@ -123,7 +122,7 @@ int addReqProv(/*@unused@*/ Spec spec, Header h, /*@unused@*/ rpmTag tagN,
 	he->p.argv = &EVR;
 	he->c = 1;
 	he->append = 1;
-	xx = hae(h, he, 0);
+	xx = headerPut(h, he, 0);
 	he->append = 0;
 
 	he->tag = flagtag;
@@ -131,7 +130,7 @@ int addReqProv(/*@unused@*/ Spec spec, Header h, /*@unused@*/ rpmTag tagN,
 	he->p.ui32p = &Flags;
 	he->c = 1;
 	he->append = 1;
-	xx = hae(h, he, 0);
+	xx = headerPut(h, he, 0);
 	he->append = 0;
     }
     if (indextag) {
@@ -140,7 +139,7 @@ int addReqProv(/*@unused@*/ Spec spec, Header h, /*@unused@*/ rpmTag tagN,
 	he->p.ui32p = &index;
 	he->c = 1;
 	he->append = 1;
-	xx = hae(h, he, 0);
+	xx = headerPut(h, he, 0);
 	he->append = 0;
     }
 

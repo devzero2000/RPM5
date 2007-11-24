@@ -97,42 +97,6 @@ typedef /*@null@*/
     void * (*HFD_t) (/*@only@*/ /*@null@*/ const void * data, rpmTagType type)
 	/*@modifies data @*/;
 
-/**
- * Add or append tag container to header.
- *
- * @param h		header
- * @param he		tag container
- * @param flags		(unused)
- * @return		1 on success, 0 on failure
- */
-typedef int (*HAE_t) (Header h, HE_t he, unsigned int flags)
-	/*@modifies h @*/;
-
-/**
- * Prototype for headerModifyEntry() vector.
- * If there are multiple entries with this tag, the first one gets replaced.
- *
- * @param h		header
- * @param he		tag container
- * @param flags		(unused)
- * @return		1 on success, 0 on failure
- */
-typedef int (*HME_t) (Header h, HE_t he, unsigned int flags)
-	/*@modifies h @*/;
-
-/**
- * Prototype for headerRemoveEntry() vector.
- * Delete tag in header.
- * Removes all entries of type tag from the header, returns 1 if none were
- * found.
- *
- * @param h		header
- * @param tag		tag
- * @return		0 on success, 1 on failure (INCONSISTENT)
- */
-typedef int (*HRE_t) (Header h, HE_t he, unsigned int flags)
-	/*@modifies h @*/;
-
 /** \ingroup header
  * Create new (empty) header instance.
  * @return		header

@@ -73,7 +73,6 @@ static uint32_t addTriggerIndex(Package pkg, const char *file,
 /*@-boundswrite@*/
 int parseScript(Spec spec, int parsePart)
 {
-    HAE_t hae = headerAddExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     int xx;
 
@@ -334,7 +333,7 @@ int parseScript(Spec spec, int parsePart)
 	    he->t = RPM_STRING_TYPE;
 	    he->p.str = *progArgv;
 	    he->c = progArgc;
-	    xx = hae(pkg->header, he, 0);
+	    xx = headerPut(pkg->header, he, 0);
 	} else {
 	    (void) rpmlibNeedsFeature(pkg->header,
 			"ScriptletInterpreterArgs", "4.0.3-1");
@@ -342,7 +341,7 @@ int parseScript(Spec spec, int parsePart)
 	    he->t = RPM_STRING_ARRAY_TYPE;
 	    he->p.argv = progArgv;
 	    he->c = progArgc;
-	    xx = hae(pkg->header, he, 0);
+	    xx = headerPut(pkg->header, he, 0);
 	}
 
 	if (*p != '\0') {
@@ -350,7 +349,7 @@ int parseScript(Spec spec, int parsePart)
 	    he->t = RPM_STRING_TYPE;
 	    he->p.str = p;
 	    he->c = 1;
-	    xx = hae(pkg->header, he, 0);
+	    xx = headerPut(pkg->header, he, 0);
 	}
 
 	if (file) {

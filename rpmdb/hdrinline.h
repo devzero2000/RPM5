@@ -224,64 +224,6 @@ int headerIsEntry(/*@null@*/ Header h, rpmTag tag)
 }
 
 /** \ingroup header
- * Add or append tag container to header.
- *
- * @param h		header
- * @param he		tag container
- * @param flags		(unused)
- * @return		1 on success, 0 on failure
- */
-/*@mayexit@*/
-/*@unused@*/ static inline
-int headerAddExtension(Header h, HE_t he, /*@unused@*/ unsigned int flags)
-	/*@modifies h @*/
-{
-    int xx;
-#if defined(SUPPORT_IMPLICIT_TAG_DATA_TYPES)
-/*@-modfilesys@*/
-    /* XXX verify that explicit and implicit types are identical. */
-    tagTypeValidate(he);
-/*@=modfilesys@*/
-#endif
-    if (he->append)
-	xx = (h2hv(h)->hdraddorappend) (h, he->tag, he->t, he->p.ptr, he->c);
-    else
-	xx = (h2hv(h)->hdradd) (h, he->tag, he->t, he->p.ptr, he->c);
-    return xx;
-}
-
-/** \ingroup header
- * Modify tag container in header.
- * If there are multiple entries with this tag, the first one gets replaced.
- * @param h		header
- * @param he		tag container
- * @param flags		(unused)
- * @return		1 on success, 0 on failure
- */
-/*@unused@*/ static inline
-int headerModifyExtension(Header h, HE_t he, /*@unused@*/ unsigned int flags)
-	/*@modifies h @*/
-{
-    return (h2hv(h)->hdrmodify) (h, he->tag, he->t, he->p.ptr, he->c);
-}
-
-/** \ingroup header
- * Remove tag container from header.
- *
- * @param h		header
- * @param he		tag container
- * @param flags		(unused)
- * @return		1 on success, 0 on failure
- */
-/*@mayexit@*/
-/*@unused@*/ static inline
-int headerRemoveExtension(Header h, HE_t he, /*@unused@*/ unsigned int flags)
-	/*@modifies h @*/
-{
-    return (h2hv(h)->hdrremove) (h, he->tag);
-}
-
-/** \ingroup header
  * Destroy header tag container iterator.
  * @param hi		header tag container iterator
  * @return		NULL always

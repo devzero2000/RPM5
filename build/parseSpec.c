@@ -434,7 +434,6 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootURL,
 		int recursing, const char *passPhrase,
 		const char *cookie, int anyarch, int force, int verify)
 {
-    HAE_t hae = headerAddExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     rpmParseState parsePart = PART_PREAMBLE;
     int initialPackage = 1;
@@ -616,19 +615,19 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootURL,
 	he->t = RPM_STRING_TYPE;
 	he->p.str = os;
 	he->c = 1;
-	xx = hae(pkg->header, he, 0);
+	xx = headerPut(pkg->header, he, 0);
 
 	he->tag = RPMTAG_ARCH;
 	he->t = RPM_STRING_TYPE;
 	he->p.str = arch;
 	he->c = 1;
-	xx = hae(pkg->header, he, 0);
+	xx = headerPut(pkg->header, he, 0);
 
 	he->tag = RPMTAG_PLATFORM;
 	he->t = RPM_STRING_TYPE;
 	he->p.str = platform;
 	he->c = 1;
-	xx = hae(pkg->header, he, 0);
+	xx = headerPut(pkg->header, he, 0);
 
 	pkg->ds = rpmdsThis(pkg->header, RPMTAG_REQUIRENAME, RPMSENSE_EQUAL);
 

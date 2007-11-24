@@ -177,8 +177,6 @@ static int addFileToTag(Spec spec, const char * file, Header h, rpmTag tag)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies h, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
-    HAE_t hae = headerAddExtension;
-    HRE_t hre = headerRemoveExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     StringBuf sb = newStringBuf();
     int xx;
@@ -187,7 +185,7 @@ static int addFileToTag(Spec spec, const char * file, Header h, rpmTag tag)
     xx = headerGet(h, he, 0);
     if (xx) {
 	appendLineStringBuf(sb, he->p.str);
-	(void) hre(h, he, 0);
+	xx = headerDel(h, he, 0);
     }
     he->p.ptr = _free(he->p.ptr);
 
@@ -198,7 +196,7 @@ static int addFileToTag(Spec spec, const char * file, Header h, rpmTag tag)
     he->t = RPM_STRING_TYPE;
     he->p.str = getStringBuf(sb);
     he->c = 1;
-    xx = hae(h, he, 0);
+    xx = headerPut(h, he, 0);
 
     sb = freeStringBuf(sb);
     return 0;
@@ -210,7 +208,6 @@ static int addFileToArrayTag(Spec spec, const char *file, Header h, int tag)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies h, rpmGlobalMacroContext, fileSystem, internalState  @*/
 {
-    HAE_t hae = headerAddExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     StringBuf sb = newStringBuf();
     const char *s;
@@ -226,7 +223,7 @@ static int addFileToArrayTag(Spec spec, const char *file, Header h, int tag)
     he->p.argv = &s;
     he->c = 1;
     he->append = 1;
-    xx = hae(h, he, 0);
+    xx = headerPut(h, he, 0);
     he->append = 0;
 
     sb = freeStringBuf(sb);
@@ -238,7 +235,6 @@ int processScriptFiles(Spec spec, Package pkg)
 	/*@modifies pkg->header, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 {
-    HAE_t hae = headerAddExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     struct TriggerFileEntry *p;
     int xx;
@@ -300,7 +296,7 @@ int processScriptFiles(Spec spec, Package pkg)
 	he->p.argv = (const char **)&p->prog;	/* XXX NOCAST */
 	he->c = 1;
 	he->append = 1;
-	xx = hae(pkg->header, he, 0);
+	xx = headerPut(pkg->header, he, 0);
 	he->append = 0;
 	if (p->script) {
 	    he->tag = RPMTAG_TRIGGERSCRIPTS;
@@ -308,7 +304,7 @@ int processScriptFiles(Spec spec, Package pkg)
 	    he->p.argv = (const char **)&p->script;	/* XXX NOCAST */
 	    he->c = 1;
 	    he->append = 1;
-	    xx = hae(pkg->header, he, 0);
+	    xx = headerPut(pkg->header, he, 0);
 	    he->append = 0;
 	} else if (p->fileName) {
 	    if (addFileToArrayTag(spec, p->fileName, pkg->header,
@@ -325,7 +321,7 @@ int processScriptFiles(Spec spec, Package pkg)
 	    he->p.argv = &bull;
 	    he->c = 1;
 	    he->append = 1;
-	    xx = hae(pkg->header, he, 0);
+	    xx = headerPut(pkg->header, he, 0);
 	    he->append = 0;
 	}
     }
@@ -470,7 +466,6 @@ static int rpmLeadVersion(void)
 
 void providePackageNVR(Header h)
 {
-    HAE_t hae = headerAddExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     const char *N, *V, *R;
     uint32_t E;
@@ -528,7 +523,7 @@ void providePackageNVR(Header h)
 	    he->p.argv = &vdummy;
 	    he->c = 1;
 	    he->append = 1;
-	    xx = hae(h, he, 0);
+	    xx = headerPut(h, he, 0);
 	    he->append = 0;
 
 	    he->tag = RPMTAG_PROVIDEFLAGS;
@@ -536,7 +531,7 @@ void providePackageNVR(Header h)
 	    he->p.ui32p = &fdummy;
 	    he->c = 1;
 	    he->append = 1;
-	    xx = hae(h, he, 0);
+	    xx = headerPut(h, he, 0);
 	    he->append = 0;
 	}
 	goto exit;
@@ -570,7 +565,7 @@ exit:
 	he->p.argv = &N;
 	he->c = 1;
 	he->append = 1;
-	xx = hae(h, he, 0);
+	xx = headerPut(h, he, 0);
 	he->append = 0;
 
 	he->tag = RPMTAG_PROVIDEVERSION;
@@ -578,7 +573,7 @@ exit:
 	he->p.argv = &pEVR;
 	he->c = 1;
 	he->append = 1;
-	xx = hae(h, he, 0);
+	xx = headerPut(h, he, 0);
 	he->append = 0;
 
 	he->tag = RPMTAG_PROVIDEFLAGS;
@@ -586,7 +581,7 @@ exit:
 	he->p.ui32p = &pFlags;
 	he->c = 1;
 	he->append = 1;
-	xx = hae(h, he, 0);
+	xx = headerPut(h, he, 0);
 	he->append = 0;
     }
 }
@@ -595,7 +590,6 @@ exit:
 rpmRC writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
 		CSA_t csa, char *passPhrase, const char **cookie)
 {
-    HAE_t hae = headerAddExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     FD_t fd = NULL;
     FD_t ifd = NULL;
@@ -657,7 +651,7 @@ rpmRC writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
 	    he->t = RPM_STRING_TYPE;
 	    he->p.str = payload_format;
 	    he->c = 1;
-	    xx = hae(h, he, 0);
+	    xx = headerPut(h, he, 0);
 	}
 
 	/* XXX addition to header is too late to be displayed/sorted. */
@@ -666,19 +660,19 @@ rpmRC writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
 	    he->t = RPM_STRING_TYPE;
 	    he->p.str = "gzip";
 	    he->c = 1;
-	    xx = hae(h, he, 0);
+	    xx = headerPut(h, he, 0);
 	} else if (s[1] == 'b' && s[2] == 'z') {
 	    he->tag = RPMTAG_PAYLOADCOMPRESSOR;
 	    he->t = RPM_STRING_TYPE;
 	    he->p.str = "bzip2";
 	    he->c = 1;
-	    xx = hae(h, he, 0);
+	    xx = headerPut(h, he, 0);
 	} else if (s[1] == 'l' && s[2] == 'z') {
 	    he->tag = RPMTAG_PAYLOADCOMPRESSOR;
 	    he->t = RPM_STRING_TYPE;
 	    he->p.str = "lzma";
 	    he->c = 1;
-	    xx = hae(h, he, 0);
+	    xx = headerPut(h, he, 0);
 	    (void) rpmlibNeedsFeature(h, "PayloadIsLzma", "4.4.6-1");
 	}
 	strcpy(buf, rpmio_flags);
@@ -688,7 +682,7 @@ rpmRC writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
 	he->t = RPM_STRING_TYPE;
 	he->p.str = buf+1;
 	he->c = 1;
-	xx = hae(h, he, 0);
+	xx = headerPut(h, he, 0);
     }
 
     /* Create and add the cookie */
@@ -699,7 +693,7 @@ rpmRC writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
 	he->t = RPM_STRING_TYPE;
 	he->p.str = *cookie;
 	he->c = 1;
-	xx = hae(h, he, 0);
+	xx = headerPut(h, he, 0);
     }
     
     /* Reallocate the header into one contiguous region. */
@@ -775,7 +769,7 @@ assert(0);
 	he->t = RPM_STRING_TYPE;
 	he->p.str = SHA1;
 	he->c = 1;
-	xx = hae(sigh, he, 0);
+	xx = headerPut(sigh, he, 0);
 	SHA1 = _free(SHA1);
     }
 
@@ -784,7 +778,7 @@ assert(0);
 	he->t = RPM_UINT32_TYPE;
 	he->p.ui32p = &payloadSize;
 	he->c = 1;
-	xx = hae(sigh, he, 0);
+	xx = headerPut(sigh, he, 0);
     }
 
     /* Reallocate the signature into one contiguous region. */
@@ -948,7 +942,6 @@ static uint32_t copyTags[] = {
 /*@-boundswrite@*/
 int packageBinaries(Spec spec)
 {
-    HAE_t hae = headerAddExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     struct cpioSourceArchive_s csabuf;
     CSA_t csa = &csabuf;
@@ -968,7 +961,7 @@ int packageBinaries(Spec spec)
 	    he->t = RPM_STRING_TYPE;
 	    he->p.str = spec->cookie;
 	    he->c = 1;
-	    xx = hae(pkg->header, he, 0);
+	    xx = headerPut(pkg->header, he, 0);
 	}
 
 	/* Copy changelog from src rpm */
@@ -978,25 +971,25 @@ int packageBinaries(Spec spec)
 	he->t = RPM_STRING_TYPE;
 	he->p.str = VERSION;
 	he->c = 1;
-	xx = hae(pkg->header, he, 0);
+	xx = headerPut(pkg->header, he, 0);
 
 	he->tag = RPMTAG_BUILDHOST;
 	he->t = RPM_STRING_TYPE;
 	he->p.str = buildHost();
 	he->c = 1;
-	xx = hae(pkg->header, he, 0);
+	xx = headerPut(pkg->header, he, 0);
 
 	he->tag = RPMTAG_BUILDTIME;
 	he->t = RPM_STRING_TYPE;
 	he->p.ui32p = getBuildTime();
 	he->c = 1;
-	xx = hae(pkg->header, he, 0);
+	xx = headerPut(pkg->header, he, 0);
 
 	he->tag = RPMTAG_OPTFLAGS;
 	he->t = RPM_STRING_TYPE;
 	he->p.str = rpmExpand("%{optflags}", NULL);
 	he->c = 1;
-	xx = hae(pkg->header, he, 0);
+	xx = headerPut(pkg->header, he, 0);
 	he->p.ptr = _free(he->p.ptr);
 
 	(void) genSourceRpmName(spec);
@@ -1004,14 +997,14 @@ int packageBinaries(Spec spec)
 	he->t = RPM_STRING_TYPE;
 	he->p.str = spec->sourceRpmName;
 	he->c = 1;
-	xx = hae(pkg->header, he, 0);
+	xx = headerPut(pkg->header, he, 0);
 
 	if (spec->sourcePkgId != NULL) {
 	    he->tag = RPMTAG_SOURCEPKGID;
 	    he->t = RPM_BIN_TYPE;
 	    he->p.ptr = spec->sourcePkgId;
 	    he->c = 16;
-	    xx = hae(pkg->header, he, 0);
+	    xx = headerPut(pkg->header, he, 0);
 	}
 	
 	{   const char *binFormat = rpmGetPath("%{_rpmfilename}", NULL);
@@ -1077,7 +1070,6 @@ int packageBinaries(Spec spec)
 /*@-boundswrite@*/
 int packageSources(Spec spec)
 {
-    HAE_t hae = headerAddExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     struct cpioSourceArchive_s csabuf;
     CSA_t csa = &csabuf;
@@ -1089,19 +1081,19 @@ int packageSources(Spec spec)
     he->t = RPM_STRING_TYPE;
     he->p.str = VERSION;
     he->c = 1;
-    xx = hae(spec->sourceHeader, he, 0);
+    xx = headerPut(spec->sourceHeader, he, 0);
 
     he->tag = RPMTAG_BUILDHOST;
     he->t = RPM_STRING_TYPE;
     he->p.str = buildHost();
     he->c = 1;
-    xx = hae(spec->sourceHeader, he, 0);
+    xx = headerPut(spec->sourceHeader, he, 0);
 
     he->tag = RPMTAG_BUILDTIME;
     he->t = RPM_STRING_TYPE;
     he->p.ui32p = getBuildTime();
     he->c = 1;
-    xx = hae(spec->sourceHeader, he, 0);
+    xx = headerPut(spec->sourceHeader, he, 0);
 
     (void) genSourceRpmName(spec);
 

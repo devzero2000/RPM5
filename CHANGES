@@ -1,4 +1,7 @@
 5.0a2 -> 5.0a3:
+    - jbj: finalize headerMod, add to the ABI, remove HME_t goop.
+    - jbj: finalize headerDel, add to the ABI, remove HRE_t goop.
+    - jbj: finalize headerPut, add to the ABI, remove HAE_t goop.
     - jbj: finalize headerGet, add to the ABI, remove HGE_t goop.
     - jbj: re-add headerSprintf to the ABI, removing wrappers/methods.
     - jbj: move headerSprintf goop out of header.c into hdrfmt.c.

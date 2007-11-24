@@ -2792,9 +2792,6 @@ DBC * dbcursor = NULL;
 DBT * key = alloca(sizeof(*key));
 DBT * data = alloca(sizeof(*data));
 union _dbswap mi_offset;
-#ifdef	DYING
-    HAE_t hae = headerAddExtension;
-#endif
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     Header h;
     sigset_t signalMask;
@@ -2830,7 +2827,7 @@ memset(data, 0, sizeof(*data));
 	he->t = RPM_UINT32_TYPE;
 	he->p.ui32p = &tid;
 	he->c = 1;
-	xx = hae(h, he, 0);
+	xx = headerPut(h, he, 0);
     }
 #endif
 
@@ -3109,10 +3106,6 @@ int rpmdbAdd(rpmdb db, int iid, Header h, /*@unused@*/ rpmts ts)
 DBC * dbcursor = NULL;
 DBT * key = alloca(sizeof(*key));
 DBT * data = alloca(sizeof(*data));
-    HAE_t hae = headerAddExtension;
-#ifdef	NOTYET	/* XXX headerRemoveEntry() broken on dribbles. */
-    HRE_t hre = headerRemoveExtension;
-#endif
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     sigset_t signalMask;
     const char ** dirNames;
@@ -3137,7 +3130,7 @@ memset(data, 0, sizeof(*data));
 
 #ifdef	NOTYET	/* XXX headerRemoveEntry() broken on dribbles. */
     he->tag = RPMTAG_REMOVETID;
-    xx = hre(h, he, 0);
+    xx = headerDel(h, he, 0);
 #endif
     if (iid != 0 && iid != -1) {
 	uint32_t tid = iid;
@@ -3146,7 +3139,7 @@ memset(data, 0, sizeof(*data));
 	he->p.ui32p = &tid;
 	he->c = 1;
 	if (!headerIsEntry(h, he->tag))
-	   xx = hae(h, he, 0);
+	   xx = headerPut(h, he, 0);
     }
 
     /* Add the package color if not present. */
@@ -3156,7 +3149,7 @@ memset(data, 0, sizeof(*data));
 	he->t = RPM_UINT32_TYPE;
 	he->p.ui32p = &hcolor;
 	he->c = 1;
-	xx = hae(h, he, 0);
+	xx = headerPut(h, he, 0);
     }
 
     he->tag = RPMTAG_DIRNAMES;

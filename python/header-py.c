@@ -778,8 +778,6 @@ PyObject * rpmHeaderFromFile(PyObject * self, PyObject * args, PyObject *kwds)
  */
 int rpmMergeHeaders(PyObject * list, FD_t fd, int matchTag)
 {
-    HAE_t hae = headerAddExtension;
-    HRE_t hre = headerRemoveExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     Header h;
     HeaderIterator hi;
@@ -836,8 +834,8 @@ int rpmMergeHeaders(PyObject * list, FD_t fd, int matchTag)
 	    he->p.ptr = headerFreeData(he->p.ptr, he->t))
 	{
 	    /* could be dupes */
-	    xx = hre(hdr->h, he, 0);
-	    xx = hae(hdr->h, he, 0);
+	    xx = headerDel(hdr->h, he, 0);
+	    xx = headerPut(hdr->h, he, 0);
 	}
 
 	headerFreeIterator(hi);

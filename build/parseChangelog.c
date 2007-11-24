@@ -14,7 +14,6 @@
 
 void addChangelogEntry(Header h, time_t time, const char *name, const char *text)
 {
-    HAE_t hae = headerAddExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     uint32_t mytime = time;	/* XXX convert to uint32_t for header */
     int xx;
@@ -24,7 +23,7 @@ void addChangelogEntry(Header h, time_t time, const char *name, const char *text
     he->p.ui32p = &mytime;
     he->c = 1;
     he->append = 1;
-    xx = hae(h, he, 0);
+    xx = headerPut(h, he, 0);
     he->append = 0;
 
     he->tag = RPMTAG_CHANGELOGNAME;
@@ -32,7 +31,7 @@ void addChangelogEntry(Header h, time_t time, const char *name, const char *text
     he->p.argv = &name;
     he->c = 1;
     he->append = 1;
-    xx = hae(h, he, 0);
+    xx = headerPut(h, he, 0);
     he->append = 0;
 
     he->tag = RPMTAG_CHANGELOGTEXT;
@@ -40,7 +39,7 @@ void addChangelogEntry(Header h, time_t time, const char *name, const char *text
     he->p.argv = &text;
     he->c = 1;
     he->append = 1;
-    xx = hae(h, he, 0);
+    xx = headerPut(h, he, 0);
     he->append = 0;
 }
 

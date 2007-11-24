@@ -687,8 +687,6 @@ Header relocateFileList(const rpmts ts, rpmfi fi,
 	/*@modifies ts, fi, origH, actions, rpmGlobalMacroContext,
 		internalState @*/
 {
-    HAE_t hae = headerAddExtension;
-    HME_t hme = headerModifyExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     rpmte p = rpmtsRelocateElement(ts);
     static int _printed = 0;
@@ -747,7 +745,7 @@ assert(p != NULL);
 		he->t = validType;
 		he->p.argv = validRelocations;
 		he->c = numValid;
-		xx = hae(origH, he, 0);
+		xx = headerPut(origH, he, 0);
 	    }
 	    validRelocations = _free(validRelocations);
 	}
@@ -875,7 +873,7 @@ assert(p != NULL);
 	    he->t = RPM_STRING_ARRAY_TYPE;
 	    he->p.argv = actualRelocations;
 	    he->c = numActual;
-	    xx = hae(h, he, 0);
+	    xx = headerPut(h, he, 0);
 	}
 
 	actualRelocations = _free(actualRelocations);
@@ -1104,26 +1102,26 @@ dColors[j] |= fColors[i];
 	he->tag = RPMTAG_BASENAMES;
 	xx = headerGet(h, he, 0);
 	he->tag = RPMTAG_ORIGBASENAMES;
-	xx = hae(h, he, 0);
+	xx = headerPut(h, he, 0);
 	he->p.ptr = _free(he->p.ptr);
 
 	he->tag = RPMTAG_DIRNAMES;
 	xx = headerGet(h, he, 0);
 	he->tag = RPMTAG_ORIGDIRNAMES;
-	xx = hae(h, he, 0);
+	xx = headerPut(h, he, 0);
 	he->p.ptr = _free(he->p.ptr);
 
 	he->tag = RPMTAG_DIRINDEXES;
 	xx = headerGet(h, he, 0);
 	he->tag = RPMTAG_ORIGDIRINDEXES;
-	xx = hae(h, he, 0);
+	xx = headerPut(h, he, 0);
 	he->p.ptr = _free(he->p.ptr);
 
 	he->tag = RPMTAG_BASENAMES;
 	he->t = RPM_STRING_ARRAY_TYPE;
 	he->p.argv = baseNames;
 	he->c = fileCount;
-	xx = hme(h, he, 0);
+	xx = headerMod(h, he, 0);
 	fi->bnl = _free(fi->bnl);
 	xx = headerGet(h, he, 0);
 	fi->bnl = he->p.argv;
@@ -1133,7 +1131,7 @@ dColors[j] |= fColors[i];
 	he->t = RPM_STRING_ARRAY_TYPE;
 	he->p.argv = dirNames;
 	he->c = dirCount;
-	xx = hme(h, he, 0);
+	xx = headerMod(h, he, 0);
 	fi->dnl = _free(fi->dnl);
 	xx = headerGet(h, he, 0);
 	fi->dnl = he->p.argv;
@@ -1143,7 +1141,7 @@ dColors[j] |= fColors[i];
 	he->t = RPM_UINT32_TYPE;
 	he->p.ui32p = dirIndexes;
 	he->c = fileCount;
-	xx = hme(h, he, 0);
+	xx = headerMod(h, he, 0);
 	fi->dil = _free(fi->dil);
 	xx = headerGet(h, he, 0);
 	fi->dil = he->p.ui32p;

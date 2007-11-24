@@ -179,8 +179,6 @@ static int rpmReSign(/*@unused@*/ rpmts ts,
         /*@modifies ts, rpmGlobalMacroContext,
                 fileSystem, internalState @*/
 {
-    HAE_t hae = headerAddExtension;
-    HRE_t hre = headerRemoveExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     rpmgi gi = NULL;
     FD_t fd = NULL;
@@ -285,7 +283,7 @@ if (!_nosigh) {
 		ohe->p.ptr = headerFreeData(ohe->p.ptr, ohe->t))
 	    {
 		if (ohe->p.ptr) {
-		    xx = hae(nh, ohe, 0);
+		    xx = headerPut(nh, ohe, 0);
 		}
 	    }
 	    hi = headerFreeIterator(hi);
@@ -299,36 +297,36 @@ if (!_nosigh) {
 if (sigh != NULL) {
 	/* Eliminate broken digest values. */
 	he->tag = RPMSIGTAG_LEMD5_1;
-	xx = hre(sigh, he, 0);
+	xx = headerDel(sigh, he, 0);
 	he->tag = RPMSIGTAG_LEMD5_2;
-	xx = hre(sigh, he, 0);
+	xx = headerDel(sigh, he, 0);
 	he->tag = RPMSIGTAG_BADSHA1_1;
-	xx = hre(sigh, he, 0);
+	xx = headerDel(sigh, he, 0);
 	he->tag = RPMSIGTAG_BADSHA1_2;
-	xx = hre(sigh, he, 0);
+	xx = headerDel(sigh, he, 0);
 
 	/* Toss and recalculate header+payload size and digests. */
 	he->tag = RPMSIGTAG_SIZE;
-	xx = hre(sigh, he, 0);
+	xx = headerDel(sigh, he, 0);
 	xx = rpmAddSignature(sigh, sigtarget, RPMSIGTAG_SIZE, qva->passPhrase);
 	he->tag = RPMSIGTAG_MD5;
-	xx = hre(sigh, he, 0);
+	xx = headerDel(sigh, he, 0);
 	xx = rpmAddSignature(sigh, sigtarget, RPMSIGTAG_MD5, qva->passPhrase);
 	he->tag = RPMSIGTAG_SHA1;
-	xx = hre(sigh, he, 0);
+	xx = headerDel(sigh, he, 0);
 	xx = rpmAddSignature(sigh, sigtarget, RPMSIGTAG_SHA1, qva->passPhrase);
 
 	if (deleting) {	/* Nuke all the signature tags. */
 	    he->tag = RPMSIGTAG_GPG;
-	    xx = hre(sigh, he, 0);
+	    xx = headerDel(sigh, he, 0);
 	    he->tag = RPMSIGTAG_PGP5;
-	    xx = hre(sigh, he, 0);
+	    xx = headerDel(sigh, he, 0);
 	    he->tag = RPMSIGTAG_PGP;
-	    xx = hre(sigh, he, 0);
+	    xx = headerDel(sigh, he, 0);
 	    he->tag = RPMSIGTAG_DSA;
-	    xx = hre(sigh, he, 0);
+	    xx = headerDel(sigh, he, 0);
 	    he->tag = RPMSIGTAG_RSA;
-	    xx = hre(sigh, he, 0);
+	    xx = headerDel(sigh, he, 0);
 	} else {		/* If gpg/pgp is configured, replace the signature. */
 	  int addsig = 0;
 	  sigtag = RPMSIGTAG_GPG;
@@ -344,25 +342,25 @@ if (sigh != NULL) {
 	    switch (sigtag) {
 	    case RPMSIGTAG_DSA:
 		he->tag = RPMSIGTAG_GPG;
-		xx = hre(sigh, he, 0);
+		xx = headerDel(sigh, he, 0);
 		/*@switchbreak@*/ break;
 	    case RPMSIGTAG_RSA:
 		he->tag = RPMSIGTAG_PGP;
-		xx = hre(sigh, he, 0);
+		xx = headerDel(sigh, he, 0);
 		/*@switchbreak@*/ break;
 	    case RPMSIGTAG_GPG:
 		he->tag = RPMSIGTAG_DSA;
-		xx = hre(sigh, he, 0);
+		xx = headerDel(sigh, he, 0);
 		/*@fallthrough@*/
 	    case RPMSIGTAG_PGP5:
 	    case RPMSIGTAG_PGP:
 		he->tag = RPMSIGTAG_RSA;
-		xx = hre(sigh, he, 0);
+		xx = headerDel(sigh, he, 0);
 		/*@switchbreak@*/ break;
 	    }
 
 	    he->tag = sigtag;
-	    xx = hre(sigh, he, 0);
+	    xx = headerDel(sigh, he, 0);
 	    xx = rpmAddSignature(sigh, sigtarget, sigtag, qva->passPhrase);
 
 	    /* If package was previously signed, check for same signer. */
@@ -470,7 +468,6 @@ exit:
 
 rpmRC rpmcliImportPubkey(const rpmts ts, const unsigned char * pkt, ssize_t pktlen)
 {
-    HAE_t hae = headerAddExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     static unsigned char zeros[] =
 	{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
@@ -544,7 +541,7 @@ rpmRC rpmcliImportPubkey(const rpmts ts, const unsigned char * pkt, ssize_t pktl
     he->t = RPM_STRING_ARRAY_TYPE;
     he->p.argv = &enc;
     he->c = 1;
-    xx = hae(h, he, 0);
+    xx = headerPut(h, he, 0);
 
     he->append = 0;
 
@@ -556,13 +553,13 @@ rpmRC rpmcliImportPubkey(const rpmts ts, const unsigned char * pkt, ssize_t pktl
     he->c = 1;
     he->tag = RPMTAG_NAME;
     he->p.str = "gpg-pubkey";
-    xx = hae(h, he, 0);
+    xx = headerPut(h, he, 0);
     he->tag = RPMTAG_VERSION;
     he->p.str = v+8;
-    xx = hae(h, he, 0);
+    xx = headerPut(h, he, 0);
     he->tag = RPMTAG_RELEASE;
     he->p.str = r;
-    xx = hae(h, he, 0);
+    xx = headerPut(h, he, 0);
 
     /* Add Summary/Description/Group. */
     he->tag = RPMTAG_DESCRIPTION;
@@ -570,42 +567,42 @@ rpmRC rpmcliImportPubkey(const rpmts ts, const unsigned char * pkt, ssize_t pktl
 #if defined(SUPPORT_IMPLICIT_TAG_DATA_TYPES)
     xx = headerAddI18NString(h, he->tag, he->p.ptr, "C");
 #else
-    xx = hae(h, he, 0);
+    xx = headerPut(h, he, 0);
 #endif
     he->tag = RPMTAG_GROUP;
     he->p.str = group;
 #if defined(SUPPORT_IMPLICIT_TAG_DATA_TYPES)
     xx = headerAddI18NString(h, he->tag, he->p.ptr, "C");
 #else
-    xx = hae(h, he, 0);
+    xx = headerPut(h, he, 0);
 #endif
     he->tag = RPMTAG_SUMMARY;
     he->p.str = u;
 #if defined(SUPPORT_IMPLICIT_TAG_DATA_TYPES)
     xx = headerAddI18NString(h, he->tag, he->p.ptr, "C");
 #else
-    xx = hae(h, he, 0);
+    xx = headerPut(h, he, 0);
 #endif
 
 #ifdef	NOTYET	/* XXX can't erase pubkeys with "pubkey" arch. */
     /* Add a "pubkey" arch/os to avoid missing value NULL ptrs. */
     he->tag = RPMTAG_ARCH;
     he->p.str = "pubkey";
-    xx = hae(h, he, 0);
+    xx = headerPut(h, he, 0);
     he->tag = RPMTAG_OS;
     he->p.str = "pubkey";
-    xx = hae(h, he, 0);
+    xx = headerPut(h, he, 0);
 #endif
 
     he->tag = RPMTAG_LICENSE;
     he->p.str = license;
-    xx = hae(h, he, 0);
+    xx = headerPut(h, he, 0);
 
     he->tag = RPMTAG_SIZE;
     he->t = RPM_UINT32_TYPE;
     he->p.ui32p = &zero;
     he->c = 1;
-    xx = hae(h, he, 0);
+    xx = headerPut(h, he, 0);
 
     he->append = 1;
 
@@ -613,33 +610,33 @@ rpmRC rpmcliImportPubkey(const rpmts ts, const unsigned char * pkt, ssize_t pktl
     he->t = RPM_STRING_ARRAY_TYPE;
     he->p.argv = &u;
     he->c = 1;
-    xx = hae(h, he, 0);
+    xx = headerPut(h, he, 0);
     he->tag = RPMTAG_PROVIDEVERSION;
     he->t = RPM_STRING_ARRAY_TYPE;
     he->p.argv = &evr;
     he->c = 1;
-    xx = hae(h, he, 0);
+    xx = headerPut(h, he, 0);
     he->tag = RPMTAG_PROVIDEFLAGS;
     he->t = RPM_UINT32_TYPE;
     he->p.ui32p = &pflags;
     he->c = 1;
-    xx = hae(h, he, 0);
+    xx = headerPut(h, he, 0);
 
     he->tag = RPMTAG_PROVIDENAME;
     he->t = RPM_STRING_ARRAY_TYPE;
     he->p.argv = &n;
     he->c = 1;
-    xx = hae(h, he, 0);
+    xx = headerPut(h, he, 0);
     he->tag = RPMTAG_PROVIDEVERSION;
     he->t = RPM_STRING_ARRAY_TYPE;
     he->p.argv = &evr;
     he->c = 1;
-    xx = hae(h, he, 0);
+    xx = headerPut(h, he, 0);
     he->tag = RPMTAG_PROVIDEFLAGS;
     he->t = RPM_UINT32_TYPE;
     he->p.ui32p = &pflags;
     he->c = 1;
-    xx = hae(h, he, 0);
+    xx = headerPut(h, he, 0);
 
     he->append = 0;
 
@@ -647,26 +644,26 @@ rpmRC rpmcliImportPubkey(const rpmts ts, const unsigned char * pkt, ssize_t pktl
     he->t = RPM_STRING_TYPE;
     he->p.str = RPMVERSION;
     he->c = 1;
-    xx = hae(h, he, 0);
+    xx = headerPut(h, he, 0);
 
     /* XXX W2DO: tag value inheirited from parent? */
     he->tag = RPMTAG_BUILDHOST;
     he->t = RPM_STRING_TYPE;
     he->p.str = buildhost;
     he->c = 1;
-    xx = hae(h, he, 0);
+    xx = headerPut(h, he, 0);
     {   uint32_t tid = rpmtsGetTid(ts);
 	he->tag = RPMTAG_INSTALLTIME;
 	he->t = RPM_UINT32_TYPE;
 	he->p.ui32p = &tid;
 	he->c = 1;
-	xx = hae(h, he, 0);
+	xx = headerPut(h, he, 0);
 	/* XXX W2DO: tag value inheirited from parent? */
 	he->tag = RPMTAG_BUILDTIME;
 	he->t = RPM_UINT32_TYPE;
 	he->p.ui32p = &tid;
 	he->c = 1;
-	xx = hae(h, he, 0);
+	xx = headerPut(h, he, 0);
     }
 
 #ifdef	NOTYET
@@ -675,7 +672,7 @@ rpmRC rpmcliImportPubkey(const rpmts ts, const unsigned char * pkt, ssize_t pktl
     he->t = RPM_STRING_TYPE;
     he->p.str = fn;
     he->c = 1;
-    xx = hae(h, he, 0);
+    xx = headerPut(h, he, 0);
 #endif
 
     /* Add header to database. */

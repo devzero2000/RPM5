@@ -1169,8 +1169,6 @@ static int dncmp(const void * a, const void * b)
 static void compressFilelist(Header h)
 	/*@modifies h @*/
 {
-    HAE_t hae = headerAddExtension;
-    HRE_t hre = headerRemoveExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     const char ** fileNames;
     const char * fn;
@@ -1190,7 +1188,7 @@ static void compressFilelist(Header h)
 
     if (headerIsEntry(h, RPMTAG_DIRNAMES)) {
 	he->tag = RPMTAG_OLDFILENAMES;
-	xx = hre(h, he, 0);
+	xx = headerDel(h, he, 0);
 	return;		/* Already converted. */
     }
 
@@ -1254,25 +1252,25 @@ exit:
 	he->t = RPM_UINT32_TYPE;
 	he->p.ui32p = dirIndexes;
 	he->c = count;
-	xx = hae(h, he, 0);
+	xx = headerPut(h, he, 0);
 
 	he->tag = RPMTAG_BASENAMES;
 	he->t = RPM_STRING_ARRAY_TYPE;
 	he->p.argv = baseNames;
 	he->c = count;
-	xx = hae(h, he, 0);
+	xx = headerPut(h, he, 0);
 
 	he->tag = RPMTAG_DIRNAMES;
 	he->t = RPM_STRING_ARRAY_TYPE;
 	he->p.argv = dirNames;
 	he->c = dirIndex + 1;
-	xx = hae(h, he, 0);
+	xx = headerPut(h, he, 0);
     }
 
     fileNames = _free(fileNames);
 
     he->tag = RPMTAG_OLDFILENAMES;
-    xx = hre(h, he, 0);
+    xx = headerDel(h, he, 0);
 }
 /*@=bounds@*/
 
@@ -1292,7 +1290,6 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 	/*@modifies h, *fip, fl->processingFailed, fl->fileList,
 		rpmGlobalMacroContext, fileSystem, internalState @*/
 {
-    HAE_t hae = headerAddExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     const char * apath;
     uint16_t ui16;
@@ -1397,7 +1394,7 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 	he->p.argv = &flp->fileURL;
 	he->c = 1;
 	he->append = 1;
-	xx = hae(h, he, 0);
+	xx = headerPut(h, he, 0);
 	he->append = 0;
 
 /*@-sizeoftype@*/
@@ -1407,7 +1404,7 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 	he->p.ui32p = &ui32;
 	he->c = 1;
 	he->append = 1;
-	xx = hae(h, he, 0);
+	xx = headerPut(h, he, 0);
 	he->append = 0;
 
 	he->tag = RPMTAG_FILEUSERNAME;
@@ -1415,7 +1412,7 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 	he->p.argv = &flp->uname;
 	he->c = 1;
 	he->append = 1;
-	xx = hae(h, he, 0);
+	xx = headerPut(h, he, 0);
 	he->append = 0;
 
 	he->tag = RPMTAG_FILEGROUPNAME;
@@ -1423,7 +1420,7 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 	he->p.argv = &flp->gname;
 	he->c = 1;
 	he->append = 1;
-	xx = hae(h, he, 0);
+	xx = headerPut(h, he, 0);
 	he->append = 0;
 
 	ui32 = flp->fl_mtime;
@@ -1432,7 +1429,7 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 	he->p.ui32p = &ui32;
 	he->c = 1;
 	he->append = 1;
-	xx = hae(h, he, 0);
+	xx = headerPut(h, he, 0);
 	he->append = 0;
 
 	ui16 = flp->fl_mode;
@@ -1441,7 +1438,7 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 	he->p.ui16p = &ui16;
 	he->c = 1;
 	he->append = 1;
-	xx = hae(h, he, 0);
+	xx = headerPut(h, he, 0);
 	he->append = 0;
 
 	ui16 = flp->fl_rdev;
@@ -1450,7 +1447,7 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 	he->p.ui16p = &ui16;
 	he->c = 1;
 	he->append = 1;
-	xx = hae(h, he, 0);
+	xx = headerPut(h, he, 0);
 	he->append = 0;
 
 	ui32 = flp->fl_dev;
@@ -1459,7 +1456,7 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 	he->p.ui32p = &ui32;
 	he->c = 1;
 	he->append = 1;
-	xx = hae(h, he, 0);
+	xx = headerPut(h, he, 0);
 	he->append = 0;
 
 	ui32 = flp->fl_ino;
@@ -1468,7 +1465,7 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 	he->p.ui32p = &ui32;
 	he->c = 1;
 	he->append = 1;
-	xx = hae(h, he, 0);
+	xx = headerPut(h, he, 0);
 	he->append = 0;
 
 /*@=sizeoftype@*/
@@ -1478,7 +1475,7 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 	he->p.argv = &flp->langs;
 	he->c = 1;
 	he->append = 1;
-	xx = hae(h, he, 0);
+	xx = headerPut(h, he, 0);
 	he->append = 0;
 
       { static uint32_t source_file_dalgo = 0;
@@ -1527,7 +1524,7 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 	he->p.argv = &s;
 	he->c = 1;
 	he->append = 1;
-	xx = hae(h, he, 0);
+	xx = headerPut(h, he, 0);
 	he->append = 0;
 
 	ui32 = dalgo;
@@ -1536,7 +1533,7 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 	he->p.ui32p = &ui32;
 	he->c = 1;
 	he->append = 1;
-	xx = hae(h, he, 0);
+	xx = headerPut(h, he, 0);
 	he->append = 0;
       }
 	
@@ -1564,7 +1561,7 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 	he->p.argv = &s;
 	he->c = 1;
 	he->append = 1;
-	xx = hae(h, he, 0);
+	xx = headerPut(h, he, 0);
 	he->append = 0;
 
 	if (flp->flags & RPMFILE_GHOST) {
@@ -1577,7 +1574,7 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 	he->p.ui32p = &ui32;
 	he->c = 1;
 	he->append = 1;
-	xx = hae(h, he, 0);
+	xx = headerPut(h, he, 0);
 	he->append = 0;
 	
 	if (!isSrc && isDoc(fl, flp->fileURL))
@@ -1592,7 +1589,7 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 	he->p.ui32p = &ui32;
 	he->c = 1;
 	he->append = 1;
-	xx = hae(h, he, 0);
+	xx = headerPut(h, he, 0);
 	he->append = 0;
 	
 	/* Add file security context to package. */
@@ -1606,7 +1603,7 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 	    he->p.argv = (const char **)&scon;	/* XXX NOCAST */
 	    he->c = 1;
 	    he->append = 1;
-	    xx = hae(h, he, 0);
+	    xx = headerPut(h, he, 0);
 	    he->append = 0;
 
 	    if (scon != nocon)
@@ -1623,7 +1620,7 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
     he->p.ui32p = &ui32;
     he->c = 1;
     he->append = 1;
-    xx = hae(h, he, 0);
+    xx = headerPut(h, he, 0);
     he->append = 0;
 	
     compressFilelist(h);
@@ -2070,7 +2067,6 @@ static int processMetadataFile(Package pkg, FileList fl, const char * fileURL,
 		check_fileList, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 {
-    HAE_t hae = headerAddExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     const char * buildURL = "%{_builddir}/%{?buildsubdir}/";
     const char * fn = NULL;
@@ -2122,7 +2118,7 @@ static int processMetadataFile(Package pkg, FileList fl, const char * fileURL,
     he->p.argv = &apkt;
     he->c = 1;
     he->append = 1;
-    xx = hae(pkg->header, he, 0);
+    xx = headerPut(pkg->header, he, 0);
     he->append = 0;
 
     rc = 0;
@@ -2522,7 +2518,6 @@ exit:
 
 int initSourceHeader(Spec spec, StringBuf *sfp)
 {
-    HAE_t hae = headerAddExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     HeaderIterator hi;
     StringBuf sourceFiles;
@@ -2560,7 +2555,7 @@ int initSourceHeader(Spec spec, StringBuf *sfp)
 	case RPMTAG_XPM:
 	case HEADER_I18NTABLE:
 	    if (he->p.ptr)
-		xx = hae(spec->sourceHeader, he, 0);
+		xx = headerPut(spec->sourceHeader, he, 0);
 	    /*@switchbreak@*/ break;
 	default:
 	    /* do not copy */
@@ -2575,7 +2570,7 @@ int initSourceHeader(Spec spec, StringBuf *sfp)
 	he->t = RPM_STRING_ARRAY_TYPE;
 	he->p.argv = spec->BANames;
 	he->c = spec->BACount;
-	xx = hae(spec->sourceHeader, he, 0);
+	xx = headerPut(spec->sourceHeader, he, 0);
     }
   }
 
@@ -2604,7 +2599,7 @@ int initSourceHeader(Spec spec, StringBuf *sfp)
 	    he->p.argv = &srcPtr->source;
 	    he->c = 1;
 	    he->append = 1;
-	    xx = hae(spec->sourceHeader, he, 0);
+	    xx = headerPut(spec->sourceHeader, he, 0);
 	    he->append = 0;
 	    if (srcPtr->flags & RPMFILE_GHOST) {
 		he->tag = RPMTAG_NOSOURCE;
@@ -2612,7 +2607,7 @@ int initSourceHeader(Spec spec, StringBuf *sfp)
 		he->p.ui32p = &srcPtr->num;
 		he->c = 1;
 		he->append = 1;
-		xx = hae(spec->sourceHeader, he, 0);
+		xx = headerPut(spec->sourceHeader, he, 0);
 		he->append = 0;
 	    }
 	}
@@ -2622,7 +2617,7 @@ int initSourceHeader(Spec spec, StringBuf *sfp)
 	    he->p.argv = &srcPtr->source;
 	    he->c = 1;
 	    he->append = 1;
-	    xx = hae(spec->sourceHeader, he, 0);
+	    xx = headerPut(spec->sourceHeader, he, 0);
 	    he->append = 0;
 	    if (srcPtr->flags & RPMFILE_GHOST) {
 		he->tag = RPMTAG_NOPATCH;
@@ -2630,7 +2625,7 @@ int initSourceHeader(Spec spec, StringBuf *sfp)
 		he->p.ui32p = &srcPtr->num;
 		he->c = 1;
 		he->append = 1;
-		xx = hae(spec->sourceHeader, he, 0);
+		xx = headerPut(spec->sourceHeader, he, 0);
 		he->append = 0;
 	    }
 	}

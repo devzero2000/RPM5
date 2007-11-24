@@ -1393,8 +1393,6 @@ static int rpmfcGenerateScriptletDeps(const Spec spec, Package pkg)
 
 int rpmfcGenerateDepends(void * specp, void * pkgp)
 {
-    HAE_t hae = headerAddExtension;
-    HRE_t hre = headerRemoveExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     const Spec spec = specp;
     Package pkg = pkgp;
@@ -1474,11 +1472,11 @@ int rpmfcGenerateDepends(void * specp, void * pkgp)
 	xx = rpmdsMerge(&fc->provides, ds);
 	ds = rpmdsFree(ds);
 	he->tag = RPMTAG_PROVIDENAME;
-	xx = hre(pkg->header, he, 0);
+	xx = headerDel(pkg->header, he, 0);
 	he->tag = RPMTAG_PROVIDEVERSION;
-	xx = hre(pkg->header, he, 0);
+	xx = headerDel(pkg->header, he, 0);
 	he->tag = RPMTAG_PROVIDEFLAGS;
-	xx = hre(pkg->header, he, 0);
+	xx = headerDel(pkg->header, he, 0);
 
 	/* Add config dependency, Provides: config(N) = EVR */
 	if (genConfigDeps) {
@@ -1499,11 +1497,11 @@ assert(EVR != NULL);
 	xx = rpmdsMerge(&fc->requires, ds);
 	ds = rpmdsFree(ds);
 	he->tag = RPMTAG_REQUIRENAME;
-	xx = hre(pkg->header, he, 0);
+	xx = headerDel(pkg->header, he, 0);
 	he->tag = RPMTAG_REQUIREVERSION;
-	xx = hre(pkg->header, he, 0);
+	xx = headerDel(pkg->header, he, 0);
 	he->tag = RPMTAG_REQUIREFLAGS;
-	xx = hre(pkg->header, he, 0);
+	xx = headerDel(pkg->header, he, 0);
 
 	/* Add config dependency,  Requires: config(N) = EVR */
 	if (genConfigDeps) {
@@ -1538,7 +1536,7 @@ assert(ac == he->c);
 	for (i = 0; i < he->c; i++)
 	    fcolors[i] &= 0x0f;
 
-	xx = hae(pkg->header, he, 0);
+	xx = headerPut(pkg->header, he, 0);
     }
 
     /* Add classes(#classes) */
@@ -1547,7 +1545,7 @@ assert(ac == he->c);
     he->p.argv = argvData(fc->cdict);
     he->c = argvCount(fc->cdict);
     if (he->p.ptr != NULL && he->c > 0) {
-	xx = hae(pkg->header, he, 0);
+	xx = headerPut(pkg->header, he, 0);
     }
 
     /* Add per-file classes(#files) */
@@ -1557,7 +1555,7 @@ assert(ac == he->c);
     he->c = argiCount(fc->fcdictx);
 assert(ac == he->c);
     if (he->p.ptr != NULL && he->c > 0) {
-	xx = hae(pkg->header, he, 0);
+	xx = headerPut(pkg->header, he, 0);
     }
 
     /* Add Provides: */
@@ -1567,7 +1565,7 @@ assert(ac == he->c);
 	he->tag = RPMTAG_PROVIDENAME;
 	he->t = RPM_STRING_ARRAY_TYPE;
 	he->p.argv = fc->provides->N;
-	xx = hae(pkg->header, he, 0);
+	xx = headerPut(pkg->header, he, 0);
 
 	/* XXX rpm prior to 3.0.2 did not always supply EVR and Flags. */
 /*@-nullpass@*/
@@ -1575,13 +1573,13 @@ assert(ac == he->c);
 	he->t = RPM_STRING_ARRAY_TYPE;
 	he->p.argv = fc->provides->EVR;
 assert(he->p.ptr != NULL);
-	xx = hae(pkg->header, he, 0);
+	xx = headerPut(pkg->header, he, 0);
 
 	he->tag = RPMTAG_PROVIDEFLAGS;
 	he->t = RPM_UINT32_TYPE;
 	he->p.ui32p = fc->provides->Flags;
 assert(he->p.ptr != NULL);
-	xx = hae(pkg->header, he, 0);
+	xx = headerPut(pkg->header, he, 0);
 /*@=nullpass@*/
     }
 
@@ -1593,7 +1591,7 @@ assert(he->p.ptr != NULL);
 	he->t = RPM_STRING_ARRAY_TYPE;
 	he->p.argv = fc->requires->N;
 assert(he->p.ptr != NULL);
-	xx = hae(pkg->header, he, 0);
+	xx = headerPut(pkg->header, he, 0);
 
 	/* XXX rpm prior to 3.0.2 did not always supply EVR and Flags. */
 /*@-nullpass@*/
@@ -1601,13 +1599,13 @@ assert(he->p.ptr != NULL);
 	he->t = RPM_STRING_ARRAY_TYPE;
 	he->p.argv = fc->requires->EVR;
 assert(he->p.ptr != NULL);
-	xx = hae(pkg->header, he, 0);
+	xx = headerPut(pkg->header, he, 0);
 
 	he->tag = RPMTAG_REQUIREFLAGS;
 	he->t = RPM_UINT32_TYPE;
 	he->p.ui32p = fc->requires->Flags;
 assert(he->p.ptr != NULL);
-	xx = hae(pkg->header, he, 0);
+	xx = headerPut(pkg->header, he, 0);
 /*@=nullpass@*/
     }
 
@@ -1617,7 +1615,7 @@ assert(he->p.ptr != NULL);
     he->p.ui32p = argiData(fc->ddictx);
     he->c = argiCount(fc->ddictx);
     if (he->p.ptr != NULL) {
-	xx = hae(pkg->header, he, 0);
+	xx = headerPut(pkg->header, he, 0);
     }
 
     /* Add per-file dependency (start,number) pairs (#files) */
@@ -1627,7 +1625,7 @@ assert(he->p.ptr != NULL);
     he->c = argiCount(fc->fddictx);
 assert(ac == he->c);
     if (he->p.ptr != NULL) {
-	xx = hae(pkg->header, he, 0);
+	xx = headerPut(pkg->header, he, 0);
     }
 
     he->tag = RPMTAG_FILEDEPENDSN;
@@ -1636,7 +1634,7 @@ assert(ac == he->c);
     he->c = argiCount(fc->fddictn);
 assert(ac == he->c);
     if (he->p.ptr != NULL) {
-	xx = hae(pkg->header, he, 0);
+	xx = headerPut(pkg->header, he, 0);
     }
 
     printDeps(pkg->header);

@@ -221,7 +221,6 @@ uint32_t hGetColor(Header h)
 
 void headerMergeLegacySigs(Header h, const Header sigh)
 {
-    HAE_t hae = headerAddExtension;
     HFD_t hfd = (HFD_t) headerFreeData;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     HeaderIterator hi;
@@ -281,7 +280,7 @@ assert(0);	/* XXX keep gcc quiet */
 		continue;
 		/*@notreached@*/ /*@switchbreak@*/ break;
 	    }
- 	    xx = hae(h, he, 0);
+ 	    xx = headerPut(h, he, 0);
 assert(xx == 1);
 	}
     }
@@ -290,7 +289,6 @@ assert(xx == 1);
 
 Header headerRegenSigHeader(const Header h, int noArchiveSize)
 {
-    HAE_t hae = headerAddExtension;
     HFD_t hfd = (HFD_t) headerFreeData;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     Header sigh = headerNew();
@@ -326,7 +324,7 @@ Header headerRegenSigHeader(const Header h, int noArchiveSize)
 	}
 assert(he->p.ptr != NULL);
 	if (!headerIsEntry(sigh, he->tag)) {
-	    xx = hae(sigh, he, 0);
+	    xx = headerPut(sigh, he, 0);
 assert(xx == 1);
 	}
     }

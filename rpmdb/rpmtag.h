@@ -658,9 +658,44 @@ char * headerSprintf(Header h, const char * fmt,
  * @param flags		(unused)
  * @return		1 on success, 0 on failure
  */
-int headerGet(Header h, HE_t he, unsigned int flags)
+int headerGet(Header h, HE_t he, /*@unused@*/ unsigned int flags)
 	/*@globals headerCompoundFormats @*/
 	/*@modifies he @*/;
+
+/** \ingroup header
+ * Add or append tag container to header.
+ *
+ * @param h		header
+ * @param he		tag container
+ * @param flags		(unused)
+ * @return		1 on success, 0 on failure
+ */
+/*@mayexit@*/
+int headerPut(Header h, HE_t he, /*@unused@*/ unsigned int flags)
+	/*@modifies h @*/;
+
+/** \ingroup header
+ * Remove tag container from header.
+ *
+ * @param h		header
+ * @param he		tag container
+ * @param flags		(unused)
+ * @return		1 on success, 0 on failure
+ */
+/*@mayexit@*/
+int headerDel(Header h, HE_t he, /*@unused@*/ unsigned int flags)
+	/*@modifies h @*/;
+
+/** \ingroup header
+ * Modify tag container in header.
+ * If there are multiple entries with this tag, the first one gets replaced.
+ * @param h		header
+ * @param he		tag container
+ * @param flags		(unused)
+ * @return		1 on success, 0 on failure
+ */
+int headerMod(Header h, HE_t he, /*@unused@*/ unsigned int flags)
+	/*@modifies h @*/;
 
 #ifdef __cplusplus
 }
