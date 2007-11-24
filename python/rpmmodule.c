@@ -336,25 +336,28 @@ void init_rpm(void)
 
     dict = PyDict_New();
 
-    for (i = 0; i < rpmTagTableSize; i++) {
-	tag = PyInt_FromLong(rpmTagTable[i].val);
-	PyDict_SetItemString(d, (char *) rpmTagTable[i].name, tag);
-	Py_DECREF(tag);
-        PyDict_SetItem(dict, tag, o=PyString_FromString(rpmTagTable[i].name + 7));
+ {  const struct headerTagTableEntry_s * t;
+    PyObject * to;
+    for (t = rpmTagTable; t && t->name; t++) {
+	PyDict_SetItemString(d, (char *) t->name, to=PyInt_FromLong(t->val));
+	Py_DECREF(to);
+        PyDict_SetItem(dict, to, o=PyString_FromString(t->name + 7));
 	Py_DECREF(o);
     }
+ }
 
  {  headerSprintfExtension exts = rpmHeaderFormats;
     headerSprintfExtension ext;
+    PyObject * to;
     int extNum;
     for (ext = exts, extNum = 0; ext != NULL && ext->type != HEADER_EXT_LAST;
         ext = (ext->type == HEADER_EXT_MORE ? *ext->u.more : ext+1), extNum++)
     {
 	if (ext->name == NULL || ext->type != HEADER_EXT_TAG)
 	    continue;
-	PyDict_SetItemString(d, (char *) ext->name, o=PyCObject_FromVoidPtr((void *)ext, NULL));
-	Py_DECREF(o);
-        PyDict_SetItem(dict, tag, o=PyString_FromString(ext->name + 7));
+	PyDict_SetItemString(d, (char *) ext->name, to=PyCObject_FromVoidPtr((void *)ext, NULL));
+	Py_DECREF(to);
+        PyDict_SetItem(dict, to, o=PyString_FromString(ext->name + 7));
 	Py_DECREF(o);
     }
  }

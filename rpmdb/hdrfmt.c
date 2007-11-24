@@ -1397,7 +1397,6 @@ void rpmDisplayQueryTags(FILE * fp, headerTagTableEntry _rpmTagTable, headerSpri
     headerSprintfExtension exts;
     headerSprintfExtension ext;
     int extNum;
-    int i;
 
     if (fp == NULL)
 	fp = stdout;
@@ -1408,13 +1407,9 @@ void rpmDisplayQueryTags(FILE * fp, headerTagTableEntry _rpmTagTable, headerSpri
     if (_rpmHeaderFormats == NULL)
 	_rpmHeaderFormats = headerCompoundFormats;
 
-/* XXX FIXME: don't use rpmTagTableSize here. */
-assert(_rpmTagTable == rpmTagTable);
-    for (i = 0, t = _rpmTagTable; i < rpmTagTableSize; i++, t++) {
+    for (t = _rpmTagTable; t && t->name; t++) {
 	uint32_t ttype;
 
-	if (t->name == NULL)
-	    continue;
 	if (rpmIsVerbose()) {
 	    /*@observer@*/
 	    static const char * tagtypes[] = {

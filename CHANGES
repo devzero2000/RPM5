@@ -1,4 +1,6 @@
 5.0a2 -> 5.0a3:
+    - jbj: python: hmmm, add header extensions to dictionary correctly.
+    - jbj: terminate on headerTagTable sentinel, don't use rpmTagTableSize.
     - jbj: use NULL default, not rpmTagTable, arg to headerSprintf everywhere.
     - jbj: hdrfmt.c: relocate (and extend) rpmDisplayQueryTags.
     - jbj: add tag{Clean,Name,Value,Type} methods to librpmdb.
