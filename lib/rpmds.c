@@ -237,7 +237,6 @@ assert(argv[ac] != NULL);
 rpmds rpmdsNew(Header h, rpmTag tagN, int flags)
 {
     int scareMem = (flags & 0x1);
-    HGE_t hge = headerGetExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
 
     rpmTag tagEVR, tagF;
@@ -286,7 +285,7 @@ assert(scareMem == 0);		/* XXX always allocate memory */
 	goto exit;
 
     he->tag = tagN;
-    xx = hge(h, he, 0);
+    xx = headerGet(h, he, 0);
     N = he->p.argv;
     Count = he->c;
     if (xx && N != NULL && Count > 0) {
@@ -302,22 +301,22 @@ assert(scareMem == 0);		/* XXX always allocate memory */
 
 	if (tagEVR > 0) {
 	    he->tag = tagEVR;
-	    xx = hge(h, he, 0);
+	    xx = headerGet(h, he, 0);
 	    ds->EVR = he->p.argv;
 	}
 	if (tagF > 0) {
 	    he->tag = tagF;
-	    xx = hge(h, he, 0);
+	    xx = headerGet(h, he, 0);
 	    ds->Flags = he->p.ui32p;
 	}
 	{
 	    he->tag = RPMTAG_ARCH;
-	    xx = hge(h, he, 0);
+	    xx = headerGet(h, he, 0);
 	    ds->A = he->p.str;
 	}
 	{
 	    he->tag = RPMTAG_BUILDTIME;
-	    xx = hge(h, he, 0);
+	    xx = headerGet(h, he, 0);
 	    ds->BT = (he->p.ui32p ? he->p.ui32p[0] : 0);
 	    he->p.ptr = _free(he->p.ptr);
 	}
@@ -474,7 +473,6 @@ char * rpmdsNewDNEVR(const char * dspfx, rpmds ds)
 
 rpmds rpmdsThis(Header h, rpmTag tagN, evrFlags Flags)
 {
-    HGE_t hge = headerGetExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     rpmds ds = NULL;
     const char * Type;
@@ -508,7 +506,7 @@ rpmds rpmdsThis(Header h, rpmTag tagN, evrFlags Flags)
 	goto exit;
 
     he->tag = RPMTAG_EPOCH;
-    xx = hge(h, he, 0);
+    xx = headerGet(h, he, 0);
     E = (he->p.ui32p ? he->p.ui32p[0] : 0);
     he->p.ptr = _free(he->p.ptr);
 
@@ -541,11 +539,11 @@ rpmds rpmdsThis(Header h, rpmTag tagN, evrFlags Flags)
     ds->Flags = xmalloc(sizeof(*ds->Flags));	ds->Flags[0] = Flags;
 
     he->tag = RPMTAG_ARCH;
-    xx = hge(h, he, 0);
+    xx = headerGet(h, he, 0);
     ds->A = he->p.str;
 
     he->tag = RPMTAG_BUILDTIME;
-    xx = hge(h, he, 0);
+    xx = headerGet(h, he, 0);
     ds->BT = (he->p.ui32p ? he->p.ui32p[0] : 0);
     he->p.ptr = _free(he->p.ptr);
 
@@ -3710,7 +3708,6 @@ exit:
 
 int rpmdsNVRMatchesDep(const Header h, const rpmds req, int nopromote)
 {
-    HGE_t hge = headerGetExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     const char * pkgN, * V, * R;
     uint32_t E;
@@ -3736,7 +3733,7 @@ assert((rpmdsFlags(req) & RPMSENSE_SENSEMASK) == req->ns.Flags);
     (void) headerNEVRA(h, &pkgN, NULL, &V, &R, NULL);
 /*@=mods@*/
     he->tag = RPMTAG_EPOCH;
-    gotE = hge(h, he, 0);
+    gotE = headerGet(h, he, 0);
     E = (he->p.ui32p ? he->p.ui32p[0] : 0);
     he->p.ptr = _free(he->p.ptr);
 

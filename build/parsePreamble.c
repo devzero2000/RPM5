@@ -220,12 +220,11 @@ static inline char * findLastChar(char * s)
 static int isMemberInEntry(Header h, const char *name, rpmTag tag)
 	/*@*/
 {
-    HGE_t hge = headerGetExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     int xx;
 
     he->tag = tag;
-    xx = hge(h, he, 0);
+    xx = headerGet(h, he, 0);
     if (!xx)
 	return -1;
 /*@-boundsread@*/
@@ -468,7 +467,6 @@ exit:
 
 spectag stashSt(Spec spec, Header h, int tag, const char * lang)
 {
-    HGE_t hge = headerGetExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     spectag t = NULL;
     int xx;
@@ -487,7 +485,7 @@ spectag stashSt(Spec spec, Header h, int tag, const char * lang)
 	t->t_msgid = NULL;
 	if (!(t->t_lang && strcmp(t->t_lang, RPMBUILD_DEFAULT_LANG))) {
 	    he->tag = RPMTAG_NAME;
-	    xx = hge(h, he, 0);
+	    xx = headerGet(h, he, 0);
 	    if (xx) {
 		char buf[1024];
 		sprintf(buf, "%s(%s)", he->p.str, tagName(tag));
@@ -525,7 +523,6 @@ static int handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
 		pkg->header, pkg->autoProv, pkg->autoReq, pkg->icon,
 		rpmGlobalMacroContext, fileSystem, internalState @*/
 {
-    HGE_t hge = headerGetExtension;
     HAE_t hae = headerAddExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     char * field = spec->line;
@@ -635,7 +632,7 @@ static int handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
     case RPMTAG_PREFIXES:
 	addOrAppendListEntry(pkg->header, tag, field);
 	he->tag = tag;
-	xx = hge(pkg->header, he, 0);
+	xx = headerGet(pkg->header, he, 0);
 	if (tag == RPMTAG_PREFIXES)
 	while (he->c--) {
 	    if (he->p.argv[he->c][0] != '/') {
@@ -975,7 +972,6 @@ static int findPreambleTag(Spec spec, /*@out@*/rpmTag * tag,
 /* XXX should return rpmParseState, but RPMRC_FAIL forces int return. */
 int parsePreamble(Spec spec, int initialPackage)
 {
-    HGE_t hge = headerGetExtension;
     HAE_t hae = headerAddExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     rpmParseState nextPart;
@@ -1008,7 +1004,7 @@ int parsePreamble(Spec spec, int initialPackage)
 	/* Construct the package */
 	if (flag == PART_SUBNAME) {
 	    he->tag = RPMTAG_NAME;
-	    xx = hge(spec->packages->header, he, 0);
+	    xx = headerGet(spec->packages->header, he, 0);
 	    sprintf(NVR, "%s-%s", he->p.str, name);
 	    he->p.ptr = _free(he->p.ptr);
 	} else

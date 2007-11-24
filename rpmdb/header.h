@@ -97,17 +97,6 @@ typedef /*@null@*/
     void * (*HFD_t) (/*@only@*/ /*@null@*/ const void * data, rpmTagType type)
 	/*@modifies data @*/;
 
-/*
- * Retrieve extension or tag value.
- *
- * @param h		header
- * @param he		tag container
- * @param flags		(unused)
- * @return		1 on success, 0 on failure
- */
-typedef int (*HGE_t) (Header h, HE_t he, unsigned int flags)
-	/*@modifies *he @*/;
-
 /**
  * Add or append tag container to header.
  *
@@ -275,23 +264,6 @@ typedef
 /*@null@*/ void * (*HDRfreetag) (Header h,
 		/*@only@*/ /*@null@*/ const void * data, rpmTagType type)
 	/*@modifies data @*/;
-
-/** \ingroup header
- * Retrieve extension or tag value.
- *
- * @param h		header
- * @param tag		tag
- * @retval *type	tag value data type (or NULL)
- * @retval *p		tag value(s) (or NULL)
- * @retval *c		number of values (or NULL)
- * @return		1 on success, 0 on failure
- */
-typedef
-int (*HDRext) (Header h, rpmTag tag,
-			/*@null@*/ /*@out@*/ rpmTagType * type,
-			/*@null@*/ /*@out@*/ rpmTagData * p,
-			/*@null@*/ /*@out@*/ rpmTagCount * c)
-	/*@modifies *type, *p, *c @*/;
 
 /** \ingroup header
  * Retrieve tag value.
@@ -548,7 +520,6 @@ struct HV_s {
     HDRcopyload	hdrcopyload;
     HDRisentry	hdrisentry;
     HDRfreetag	hdrfreetag;
-    HDRext	hdrext;
     HDRget	hdrget;
     HDRadd	hdradd;
     HDRappend	hdrappend;

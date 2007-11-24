@@ -1707,8 +1707,6 @@ void rpmDisplayQueryTags(FILE * fp, headerTagTableEntry _rpmTagTable, headerSpri
 #define PARSER_IN_EXPR  2
 
 /*@unchecked@*/
-static int _usehge = 1;		/* XXX Use headerGetExtension? */
-/*@unchecked@*/
 int _tagcache = 1;		/* XXX Cache tag data persistently? */
 
 /** \ingroup header
@@ -2529,15 +2527,9 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag,
 	    xx = getExtension(hsa, tag->ext, he, hsa->ec + tag->extNum);
 	} else {
 	    he->tag = tag->tagno;	/* XXX necessary? */
-	    if (_usehge) {
-		xx = headerGetExtension(hsa->h, he, 0);
-		if (xx)		/* XXX 1 on success */
-		    he->freeData = 1;
-	    } else {
-		xx = headerGetEntry(hsa->h, he->tag, &he->t, &he->p, &he->c);
-		if (xx)		/* XXX 1 on success */
-		    he = rpmheMark(he);
-	    }
+	    xx = headerGet(hsa->h, he, 0);
+	    if (xx)		/* XXX 1 on success */
+		he->freeData = 1;
 	    xx = (xx == 0);	/* XXX invert headerGetEntry return. */
 	}
 	if (xx) {
@@ -2742,16 +2734,10 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 		if (tag->ext)
 		    xx = getExtension(hsa, tag->ext, he, hsa->ec + tag->extNum);
 		else {
-		    if (_usehge) {
-			xx = headerGetExtension(hsa->h, he, 0);
-			if (xx)
-			    he->freeData = 1;
-		    } else {
-			xx = headerGetEntry(hsa->h, he->tag, &he->t, &he->p, &he->c);
-			if (xx)	/* XXX 1 on success */
-			    he = rpmheMark(he);
-		    }
-		    xx = (xx == 0);     /* XXX invert headerGetEntry return. */
+		    xx = headerGet(hsa->h, he, 0);
+		    if (xx)
+			he->freeData = 1;
+		    xx = (xx == 0);     /* XXX invert headerGet return. */
 		}
 		if (xx) {
 		    (void) rpmheClean(he);

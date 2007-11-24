@@ -96,12 +96,11 @@ static void addTE(rpmts ts, rpmte p, Header h,
 		rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     int scareMem = 0;
-    HGE_t hge = headerGetExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     int xx;
 
     he->tag = RPMTAG_NVRA;
-    xx = hge(h, he, 0);
+    xx = headerGet(h, he, 0);
 assert(he->p.str != NULL);
     p->NEVR = he->p.str;
     p->name = xstrdup(p->NEVR);
@@ -113,11 +112,11 @@ assert(he->p.str != NULL);
     p->db_instance = 0;
 
     he->tag = RPMTAG_HDRID;
-    xx = hge(h, he, 0);
+    xx = headerGet(h, he, 0);
     p->hdrid = he->p.str;
 
     he->tag = RPMTAG_PKGID;
-    xx = hge(h, he, 0);
+    xx = headerGet(h, he, 0);
     if (he->p.ui8p != NULL) {
 	static const char hex[] = "0123456789abcdef";
 	char * t;
@@ -134,11 +133,11 @@ assert(he->p.str != NULL);
 	p->pkgid = NULL;
 
     he->tag = RPMTAG_ARCH;
-    xx = hge(h, he, 0);
+    xx = headerGet(h, he, 0);
     p->arch = he->p.str;
 
     he->tag = RPMTAG_OS;
-    xx = hge(h, he, 0);
+    xx = headerGet(h, he, 0);
     p->os = he->p.str;
 
     p->isSource =
@@ -148,7 +147,7 @@ assert(he->p.str != NULL);
     p->NEVRA = xstrdup(p->NEVR);
 
     he->tag = RPMTAG_EPOCH;
-    xx = hge(h, he, 0);
+    xx = headerGet(h, he, 0);
     if (he->p.ui32p != NULL) {
 	p->epoch = xmalloc(20);
 	sprintf(p->epoch, "%u", he->p.ui32p[0]);
@@ -215,7 +214,6 @@ rpmte rpmteNew(const rpmts ts, Header h,
 		int dboffset,
 		alKey pkgKey)
 {
-    HGE_t hge = headerGetExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     rpmte p = xcalloc(1, sizeof(*p));
     int xx;
@@ -229,7 +227,7 @@ rpmte rpmteNew(const rpmts ts, Header h,
 	/* XXX 256 is only an estimate of signature header. */
 	p->pkgFileSize = 96 + 256;
 	he->tag = RPMTAG_SIGSIZE;
-	xx = hge(h, he, 0);
+	xx = headerGet(h, he, 0);
 	if (xx && he->p.ui32p)
 	    p->pkgFileSize += *he->p.ui32p;
 	he->p.ptr = _free(he->p.ptr);
@@ -597,7 +595,6 @@ static int __mydebug = 0;
 
 int rpmteChain(rpmte p, rpmte q, Header oh, const char * msg)
 {
-    HGE_t hge = headerGetExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     const char * blinkNEVRA = NULL;
     const char * blinkPkgid = NULL;
@@ -607,7 +604,7 @@ int rpmteChain(rpmte p, rpmte q, Header oh, const char * msg)
     if (msg == NULL)
 	msg = "";
     he->tag = RPMTAG_NVRA;
-    xx = hge(oh, he, 0);
+    xx = headerGet(oh, he, 0);
 assert(he->p.str != NULL);
     blinkNEVRA = he->p.str;
 
@@ -617,7 +614,7 @@ assert(he->p.str != NULL);
      * tags appended.
      */
     he->tag = RPMTAG_PKGID;
-    xx = hge(oh, he, 0);
+    xx = headerGet(oh, he, 0);
     if (xx && he->p.ui8p != NULL) {
 	static const char hex[] = "0123456789abcdef";
 	char * t;
@@ -634,7 +631,7 @@ assert(he->p.str != NULL);
 	blinkPkgid = NULL;
 
     he->tag = RPMTAG_HDRID;
-    xx = hge(oh, he, 0);
+    xx = headerGet(oh, he, 0);
     blinkHdrid = he->p.str;
 
 /*@-modfilesys@*/

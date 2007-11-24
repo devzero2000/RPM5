@@ -1,4 +1,5 @@
 5.0a2 -> 5.0a3:
+    - jbj: finalize headerGet, add to the ABI, remove HGE_t goop.
     - jbj: re-add headerSprintf to the ABI, removing wrappers/methods.
     - jbj: move headerSprintf goop out of header.c into hdrfmt.c.
     - jbj: python: hmmm, add header extensions to dictionary correctly.

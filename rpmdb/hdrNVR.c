@@ -35,7 +35,6 @@ int headerMacrosLoad(Header h)
 	/*@globals rpmGlobalMacroContext @*/
 	/*@modifies rpmGlobalMacroContext @*/
 {
-    HGE_t hge = headerGetExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     struct tagMacro * tagm;
     char numbuf[64];
@@ -58,7 +57,7 @@ int headerMacrosLoad(Header h)
 
     for (tagm = tagMacros; tagm->macroname != NULL; tagm++) {
 	he->tag = tagm->tag;
-	xx = hge(h, he, 0);
+	xx = headerGet(h, he, 0);
 	if (!xx)
 	    continue;
 	val = NULL;
@@ -108,14 +107,13 @@ int headerMacrosUnload(Header h)
 	/*@globals rpmGlobalMacroContext @*/
 	/*@modifies rpmGlobalMacroContext @*/
 {
-    HGE_t hge = headerGetExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     struct tagMacro * tagm;
     int xx;
 
     for (tagm = tagMacros; tagm->macroname != NULL; tagm++) {
 	he->tag = tagm->tag;
-	xx = hge(h, he, 0);
+	xx = headerGet(h, he, 0);
 	if (!xx)
 	    continue;
 	switch (he->t) {
@@ -204,13 +202,12 @@ int headerNEVRA(Header h, const char **np,
 
 uint32_t hGetColor(Header h)
 {
-    HGE_t hge = headerGetExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     uint32_t hcolor = 0;
     int xx;
 
     he->tag = RPMTAG_FILECOLORS;
-    xx = hge(h, he, 0);
+    xx = headerGet(h, he, 0);
     if (xx && he->p.ptr != NULL && he->c > 0) {
 	unsigned i;
 	for (i = 0; i < (unsigned) he->c; i++)

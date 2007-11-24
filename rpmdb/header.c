@@ -1671,108 +1671,6 @@ static /*@null@*/ void * headerFreeTag(/*@unused@*/ Header h,
 }
 
 /** \ingroup header
- * Retrieve extension or tag value.
- *
- * @param h		header
- * @param tag		tag
- * @retval *type	tag value data type (or NULL)
- * @retval *p		tag value(s) (or NULL)
- * @retval *c		number of values (or NULL)
- * @return		1 on success, 0 on failure
- */
-static
-int headerGetExtension(Header h, rpmTag tag,
-			/*@null@*/ /*@out@*/ rpmTagType * type,
-			/*@null@*/ /*@out@*/ rpmTagData * p,
-			/*@null@*/ /*@out@*/ rpmTagCount * c)
-	/*@globals headerCompoundFormats @*/
-	/*@modifies *type, *p, *c @*/
-	/*@requires maxSet(type) >= 0 /\ maxSet(p) >= 0 /\ maxSet(c) >= 0 @*/
-{
-    void * sw;
-    const char * name = tagName(tag);
-    headerSprintfExtension exts = headerCompoundFormats;
-    headerSprintfExtension ext;
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
-    size_t nb = 0;
-    int extNum;
-    int rc;
-
-    if ((sw = headerGetStats(h, 19)) != NULL)	/* RPMTS_OP_HDRGET */
-	(void) rpmswEnter(sw, 0);
-
-    he->tag = tag;
-
-    /* Search extensions for specific tag override. */
-    for (ext = exts, extNum = 0; ext != NULL && ext->type != HEADER_EXT_LAST;
-	ext = (ext->type == HEADER_EXT_MORE ? *ext->u.more : ext+1), extNum++)
-    {
-	if (ext->name == NULL || ext->type != HEADER_EXT_TAG)
-	    continue;
-	if (!xstrcasecmp(ext->name + (sizeof("RPMTAG_")-1), name))
-	    break;
-    }
-
-    if (ext && ext->name != NULL && ext->type == HEADER_EXT_TAG)
-	rc = ext->u.tagFunction(h, he);
-    else
-	rc = intGetEntry(h, he->tag, &he->t, &he->p, &he->c, 0);
-
-    if (!rc)
-	goto exit;
-
-    switch (he->t) {
-    default:
-assert(0);	/* XXX stop unimplemented oversights. */
-	break;
-    case RPM_BIN_TYPE:
-	he->freeData = 1;	/* XXX RPM_BIN_TYPE is malloc'd */
-	/*@fallthrough@*/
-    case RPM_UINT8_TYPE:
-	nb = he->c * sizeof(*he->p.ui8p);
-	break;
-    case RPM_UINT16_TYPE:
-	nb = he->c * sizeof(*he->p.ui16p);
-	break;
-    case RPM_UINT32_TYPE:
-	nb = he->c * sizeof(*he->p.ui32p);
-	break;
-    case RPM_UINT64_TYPE:
-	nb = he->c * sizeof(*he->p.ui64p);
-	break;
-    case RPM_I18NSTRING_TYPE:
-assert(he->c == 1);	/* XXX stop unimplemented oversights. */
-	/*@fallthrough@*/
-    case RPM_STRING_TYPE:
-	if (he->p.str)
-	    nb = strlen(he->p.str) + 1;
-	else
-	    rc = 0;
-	break;
-    case RPM_STRING_ARRAY_TYPE:
-	break;
-    }
-
-    /* Allocate all returned storage (if not already). */
-    if (p && nb && !he->freeData) {
-	void * ptr = memcpy(xmalloc(nb), he->p.ptr, nb);
-	he->p.ptr = ptr;
-    }
-
-exit:
-    if (type)
-	*type = he->t;
-    if (p)
-	p->ptr = he->p.ptr;
-    if (c)
-	*c = he->c;
-
-    if (sw != NULL)	(void) rpmswExit(sw, 0);
-
-    return rc;
-}
-
-/** \ingroup header
  * Retrieve tag value.
  * Will never return RPM_I18NSTRING_TYPE! RPM_STRING_TYPE elements with
  * RPM_I18NSTRING_TYPE equivalent entries are translated (if HEADER_I18NTABLE
@@ -2360,7 +2258,6 @@ static struct HV_s hdrVec1 = {
     headerCopyLoad,
     headerIsEntry,
     headerFreeTag,
-    headerGetExtension,
     headerGetEntry,
     headerAddEntry,
     headerAppendEntry,
@@ -2387,3 +2284,81 @@ static struct HV_s hdrVec1 = {
 /*@observer@*/ /*@unchecked@*/
 HV_t hdrVec = &hdrVec1;
 /*@=compmempass =redef@*/
+
+int headerGet(Header h, HE_t he, /*@unused@*/ unsigned int flags)
+{
+    void * sw;
+    const char * name;
+    headerSprintfExtension exts = headerCompoundFormats;
+    headerSprintfExtension ext;
+    size_t nb = 0;
+    int extNum;
+    int rc;
+
+    if (h == NULL || he == NULL)	return 0;	/* XXX this is nutty. */
+    name = tagName(he->tag);
+
+    if ((sw = headerGetStats(h, 19)) != NULL)	/* RPMTS_OP_HDRGET */
+	(void) rpmswEnter(sw, 0);
+
+    /* Search extensions for specific tag override. */
+    for (ext = exts, extNum = 0; ext != NULL && ext->type != HEADER_EXT_LAST;
+	ext = (ext->type == HEADER_EXT_MORE ? *ext->u.more : ext+1), extNum++)
+    {
+	if (ext->name == NULL || ext->type != HEADER_EXT_TAG)
+	    continue;
+	if (!xstrcasecmp(ext->name + (sizeof("RPMTAG_")-1), name))
+	    break;
+    }
+
+    if (ext && ext->name != NULL && ext->type == HEADER_EXT_TAG)
+	rc = ext->u.tagFunction(h, he);
+    else
+	rc = intGetEntry(h, he->tag, &he->t, &he->p, &he->c, 0);
+
+    if (!rc)
+	goto exit;
+
+    switch (he->t) {
+    default:
+assert(0);	/* XXX stop unimplemented oversights. */
+	break;
+    case RPM_BIN_TYPE:
+	he->freeData = 1;	/* XXX RPM_BIN_TYPE is malloc'd */
+	/*@fallthrough@*/
+    case RPM_UINT8_TYPE:
+	nb = he->c * sizeof(*he->p.ui8p);
+	break;
+    case RPM_UINT16_TYPE:
+	nb = he->c * sizeof(*he->p.ui16p);
+	break;
+    case RPM_UINT32_TYPE:
+	nb = he->c * sizeof(*he->p.ui32p);
+	break;
+    case RPM_UINT64_TYPE:
+	nb = he->c * sizeof(*he->p.ui64p);
+	break;
+    case RPM_I18NSTRING_TYPE:
+assert(he->c == 1);	/* XXX stop unimplemented oversights. */
+	/*@fallthrough@*/
+    case RPM_STRING_TYPE:
+	if (he->p.str)
+	    nb = strlen(he->p.str) + 1;
+	else
+	    rc = 0;
+	break;
+    case RPM_STRING_ARRAY_TYPE:
+	break;
+    }
+
+    /* Allocate all returned storage (if not already). */
+    if (he->p.ptr && nb && !he->freeData) {
+	void * ptr = memcpy(xmalloc(nb), he->p.ptr, nb);
+	he->p.ptr = ptr;
+    }
+
+exit:
+    if (sw != NULL)	(void) rpmswExit(sw, 0);
+
+    return rc;
+}

@@ -4,8 +4,8 @@
 
 #include "system.h"
 
-#include <rpmdb.h>
 #include <rpmmacro.h>	/* XXX for rpmCleanPath */
+#include <rpmdb.h>
 
 #include "fprint.h"
 #include "debug.h"
@@ -248,7 +248,6 @@ static
 void fpLookupHeader(fingerPrintCache cache, Header h, fingerPrint * fpList)
 	/*@modifies h, cache, *fpList @*/;
 {
-    HGE_t hge = headerGetExtension;
     rpmTagData he_p = { .ptr = NULL };
     HE_s he_s = { .tag = 0, .t = 0, .p = &he_p, .c = 0, .freeData = 0 };
     HE_t he = &he_s;
@@ -259,17 +258,17 @@ void fpLookupHeader(fingerPrintCache cache, Header h, fingerPrint * fpList)
     int xx;
 
     he->tag = RPMTAG_BASENAMES;
-    xx = hge(h, he->tag, &he->t, he->p, &he->c);
+    xx = headerGet(h, he->tag, &he->t, he->p, &he->c);
     baseNames = he_p.argv;
     fileCount = he->c;
     if (!xx)
 	return;
 
     he->tag = RPMTAG_DIRNAMES;
-    xx = hge(h, he->tag, &he->t, he->p, &he->c);
+    xx = headerGet(h, he, 0);
     dirNames = he_p.argv;
     he->tag = RPMTAG_DIRINDEXES;
-    xx = hge(h, he->tag, &he->t, he->p, &he->c);
+    xx = headerGet(h, he, 0);
     dirIndexes = he_p.ui32p;
 
     fpLookupList(cache, dirNames, baseNames, dirIndexes, fileCount, fpList);

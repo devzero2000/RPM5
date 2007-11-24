@@ -223,34 +223,6 @@ int headerIsEntry(/*@null@*/ Header h, rpmTag tag)
     return (h2hv(h)->hdrfreetag) (h, data, type);
 }
 
-void tagTypeValidate(HE_t he)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/;
-
-/*
- * Retrieve extension or tag value.
- *
- * @param h		header
- * @param he		tag container
- * @param flags		(unused)
- * @return		1 on success, 0 on failure
- */
-/*@unused@*/ static inline
-int headerGetExtension(Header h, HE_t he, /*@unused@*/ unsigned int flags)
-	/*@modifies *he @*/
-{
-    int xx;
-    if (h == NULL) return 0;
-    xx = (h2hv(h)->hdrext) (h, he->tag, &he->t, &he->p, &he->c);
-#if defined(SUPPORT_IMPLICIT_TAG_DATA_TYPES)
-/*@-modfilesys@*/
-    /* XXX verify that explicit and implicit types are identical. */
-    if (xx) tagTypeValidate(he);
-/*@=modfilesys@*/
-#endif
-    return xx;
-}
-
 /** \ingroup header
  * Add or append tag container to header.
  *

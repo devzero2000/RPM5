@@ -65,14 +65,13 @@ int main(int argc, char **argv)
     }
 
     /* Retrieve type of payload compression. */
-    {	HGE_t hge = headerGetExtension;
-	HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    {	HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
 	const char * payload_compressor = NULL;
 	char * t;
 	int xx;
 
 	he->tag = RPMTAG_PAYLOADCOMPRESSOR;
-	xx = hge(h, he, 0);
+	xx = headerGet(h, he, 0);
 	payload_compressor = (xx ? he->p.str : "gzip");
 
 	rpmio_flags = t = alloca(sizeof("r.gzdio"));

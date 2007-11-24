@@ -91,7 +91,6 @@ IDTX IDTXsort(IDTX idtx)
 
 IDTX IDTXload(rpmts ts, rpmTag tag, uint32_t rbtid)
 {
-    HGE_t hge = headerGetExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     IDTX idtx = NULL;
     rpmdbMatchIterator mi;
@@ -105,7 +104,7 @@ IDTX IDTXload(rpmts ts, rpmTag tag, uint32_t rbtid)
 #endif
     while ((h = rpmdbNextIterator(mi)) != NULL) {
 	he->tag = tag;
-	xx = hge(h, he, 0);
+	xx = headerGet(h, he, 0);
 	if (!xx || he->p.ui32p == NULL)
 	    continue;
 	tid = (he->p.ui32p ? he->p.ui32p[0] : 0);
@@ -141,7 +140,6 @@ IDTX IDTXload(rpmts ts, rpmTag tag, uint32_t rbtid)
 
 IDTX IDTXglob(rpmts ts, const char * globstr, rpmTag tag, uint32_t rbtid)
 {
-    HGE_t hge = headerGetExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     IDTX idtx = NULL;
     Header h;
@@ -193,7 +191,7 @@ assert(origin != NULL);
 assert(!strcmp(av[i], origin));
 }
 	he->tag = tag;
-	xx = hge(h, he, 0);
+	xx = headerGet(h, he, 0);
 	if (!xx || he->p.ui32p == NULL)
 	    goto bottom;
 	tid = (he->p.ui32p ? he->p.ui32p[0] : 0);
@@ -287,7 +285,6 @@ static int findErases(rpmts ts, /*@null@*/ rpmte p, unsigned thistid,
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, p, ip, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
-    HGE_t hge = headerGetExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     int rc = 0;
     int xx;
@@ -308,7 +305,7 @@ static int findErases(rpmts ts, /*@null@*/ rpmte p, unsigned thistid,
 	    int bingo;
 
 	    he->tag = RPMTAG_BLINKPKGID;
-	    xx = hge(ip->h, he, 0);
+	    xx = headerGet(ip->h, he, 0);
 	    flinkPkgid = he->p.argv;
 	    pn = he->c;
 
@@ -319,11 +316,11 @@ static int findErases(rpmts ts, /*@null@*/ rpmte p, unsigned thistid,
 	    }
 
 	    he->tag = RPMTAG_BLINKHDRID;
-	    xx = hge(ip->h, he, 0);
+	    xx = headerGet(ip->h, he, 0);
 	    flinkHdrid = he->p.argv;
 	    hn = he->c;
 	    he->tag = RPMTAG_BLINKNEVRA;
-	    xx = hge(ip->h, he, 0);
+	    xx = headerGet(ip->h, he, 0);
 	    flinkNEVRA = he->p.argv;
 	    nn = he->c;
 

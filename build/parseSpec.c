@@ -434,7 +434,6 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootURL,
 		int recursing, const char *passPhrase,
 		const char *cookie, int anyarch, int force, int verify)
 {
-    HGE_t hge = headerGetExtension;
     HAE_t hae = headerAddExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     rpmParseState parsePart = PART_PREAMBLE;
@@ -605,7 +604,7 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootURL,
     for (pkg = spec->packages; pkg != NULL; pkg = pkg->next) {
 	if (!headerIsEntry(pkg->header, RPMTAG_DESCRIPTION)) {
 	    he->tag = RPMTAG_NVRA;
-	    xx = hge(pkg->header, he, 0);
+	    xx = headerGet(pkg->header, he, 0);
 	    rpmlog(RPMLOG_ERR, _("Package has no %%description: %s\n"),
 			he->p.str);
 	    he->p.ptr = _free(he->p.ptr);

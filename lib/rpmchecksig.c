@@ -145,13 +145,12 @@ static int getSignid(Header sigh, int sigtag, unsigned char * signid)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies *signid, fileSystem, internalState @*/
 {
-    HGE_t hge = headerGetExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     int rc = 1;
     int xx;
 
     he->tag = sigtag;
-    xx = hge(sigh, he, 0);
+    xx = headerGet(sigh, he, 0);
     if (xx && he->p.ptr != NULL) {
 	pgpDig dig = pgpDigNew(0);
 
@@ -180,7 +179,6 @@ static int rpmReSign(/*@unused@*/ rpmts ts,
         /*@modifies ts, rpmGlobalMacroContext,
                 fileSystem, internalState @*/
 {
-    HGE_t hge = headerGetExtension;
     HAE_t hae = headerAddExtension;
     HRE_t hre = headerRemoveExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
@@ -268,7 +266,7 @@ if (!_nosigh) {
 
 	/* Lose the immutable region (if present). */
 	he->tag = RPMTAG_HEADERSIGNATURES;
-	xx = hge(sigh, he, 0);
+	xx = headerGet(sigh, he, 0);
 	if (xx) {
 	    HE_t ohe = memset(alloca(sizeof(*ohe)), 0, sizeof(*ohe));
 	    HeaderIterator hi;
@@ -782,7 +780,6 @@ static rpmRC readFile(FD_t fd, const char * fn)
 {
 rpmxar xar = fdGetXAR(fd);
 pgpDig dig = fdGetDig(fd);
-    HGE_t hge = headerGetExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     unsigned char buf[4*BUFSIZ];
     ssize_t count;
@@ -811,7 +808,7 @@ pgpDig dig = fdGetDig(fd);
 	    size_t nmagic = 0;
 	
 	    he->tag = RPMTAG_HEADERIMMUTABLE;
-	    xx = hge(h, he, 0);
+	    xx = headerGet(h, he, 0);
 	    if (!xx || he->p.ptr == NULL) {
 		h = headerFree(h);
 		rpmlog(RPMLOG_ERR, _("%s: headerGetEntry failed\n"), fn);
@@ -886,7 +883,6 @@ exit:
 int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 		const char * fn)
 {
-    HGE_t hge = headerGetExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     HE_t she = memset(alloca(sizeof(*she)), 0, sizeof(*she));
     int res2, res3;
@@ -968,7 +964,7 @@ nodigests = 1;
 	/* XXX RSA needs the hash_algo, so decode early. */
 	if (she->tag == RPMSIGTAG_RSA) {
 	    he->tag = she->tag;
-	    xx = hge(sigh, he, 0);
+	    xx = headerGet(sigh, he, 0);
 	    xx = pgpPrtPkts(he->p.ptr, he->c, dig, 0);
 	    he->p.ptr = _free(he->p.ptr);
 	}

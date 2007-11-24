@@ -14,7 +14,6 @@ int addReqProv(/*@unused@*/ Spec spec, Header h, /*@unused@*/ rpmTag tagN,
 		const char * N, const char * EVR, rpmsenseFlags Flags,
 		uint32_t index)
 {
-    HGE_t hge = headerGetExtension;
     HAE_t hae = headerAddExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     const char ** names;
@@ -61,7 +60,7 @@ int addReqProv(/*@unused@*/ Spec spec, Header h, /*@unused@*/ rpmTag tagN,
     
     /* Check for duplicate dependencies. */
     he->tag = nametag;
-    xx = hge(h, he, 0);
+    xx = headerGet(h, he, 0);
     names = he->p.argv;
     len = he->c;
     if (xx) {
@@ -72,15 +71,15 @@ int addReqProv(/*@unused@*/ Spec spec, Header h, /*@unused@*/ rpmTag tagN,
 
 	if (flagtag) {
 	    he->tag = versiontag;
-	    xx = hge(h, he, 0);
+	    xx = headerGet(h, he, 0);
 	    versions = he->p.argv;
 	    he->tag = flagtag;
-	    xx = hge(h, he, 0);
+	    xx = headerGet(h, he, 0);
 	    flags = he->p.ui32p;
 	}
 	if (indextag) {
 	    he->tag = indextag;
-	    xx = hge(h, he, 0);
+	    xx = headerGet(h, he, 0);
 	    indexes = he->p.ui32p;
 	}
 

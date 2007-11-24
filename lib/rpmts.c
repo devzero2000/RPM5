@@ -309,7 +309,6 @@ static int sugcmp(const void * a, const void * b)
 
 int rpmtsSolve(rpmts ts, rpmds ds, /*@unused@*/ const void * data)
 {
-    HGE_t hge = headerGetExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     const char * errstr;
     const char * str = NULL;
@@ -360,7 +359,7 @@ int rpmtsSolve(rpmts ts, rpmds ds, /*@unused@*/ const void * data)
 	    continue;
 
 	he->tag = RPMTAG_NAME;
-	xx = hge(h, he, 0);
+	xx = headerGet(h, he, 0);
 	hnamelen = ((xx && he->p.str) ? strlen(he->p.str) : 0);
 	he->p.ptr = _free(he->p.ptr);
 
@@ -370,7 +369,7 @@ int rpmtsSolve(rpmts ts, rpmds ds, /*@unused@*/ const void * data)
 
 	/* XXX Prefer the newest build if given alternatives. */
 	he->tag = RPMTAG_BUILDTIME;
-	xx = hge(h, he, 0);
+	xx = headerGet(h, he, 0);
 	htime = (xx && he->p.ui32p ? he->p.ui32p[0] : 0);
 	he->p.ptr = _free(he->p.ptr);
 

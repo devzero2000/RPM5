@@ -275,7 +275,6 @@ static void timeCheck(int tc, Header h)
 	/*@globals internalState @*/
 	/*@modifies internalState @*/
 {
-    HGE_t hge = headerGetExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     uint32_t currentTime = time(NULL);
     uint32_t * mtime;
@@ -283,10 +282,10 @@ static void timeCheck(int tc, Header h)
     int i;
 
     he->tag = RPMTAG_FILEMTIMES;
-    xx = hge(h, he, 0);
+    xx = headerGet(h, he, 0);
     mtime = he->p.ui32p;
     he->tag = RPMTAG_OLDFILENAMES;
-    xx = hge(h, he, 0);
+    xx = headerGet(h, he, 0);
     
     for (i = 0; i < he->c; i++) {
 	xx = currentTime - mtime[i];
@@ -1170,7 +1169,6 @@ static int dncmp(const void * a, const void * b)
 static void compressFilelist(Header h)
 	/*@modifies h @*/
 {
-    HGE_t hge = headerGetExtension;
     HAE_t hae = headerAddExtension;
     HRE_t hre = headerRemoveExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
@@ -1197,7 +1195,7 @@ static void compressFilelist(Header h)
     }
 
     he->tag = RPMTAG_OLDFILENAMES;
-    xx = hge(h, he, 0);
+    xx = headerGet(h, he, 0);
     fileNames = he->p.argv;
     count = he->c;
     if (!xx || fileNames == NULL || count <= 0)
@@ -2245,7 +2243,6 @@ static int processPackageFiles(Spec spec, Package pkg,
 		pkg->cpioList, pkg->fileList, pkg->specialDoc, pkg->header,
 		rpmGlobalMacroContext, fileSystem, internalState @*/
 {
-    HGE_t hge = headerGetExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     struct FileList_s fl;
     char *s, **files, **fp;
@@ -2310,7 +2307,7 @@ static int processPackageFiles(Spec spec, Package pkg,
     fl.buildRootURL = rpmGenPath(spec->rootURL, "%{?buildroot}", NULL);
 
     he->tag = RPMTAG_DEFAULTPREFIX;
-    xx = hge(pkg->header, he, 0);
+    xx = headerGet(pkg->header, he, 0);
     fl.prefix = he->p.str;
 
     fl.fileCount = 0;
@@ -2792,7 +2789,6 @@ int processBinaryFiles(Spec spec, int installSpecialDoc, int test)
 	/*@globals check_fileList @*/
 	/*@modifies check_fileList @*/
 {
-    HGE_t hge = headerGetExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     Package pkg;
     int res = 0;
@@ -2809,7 +2805,7 @@ int processBinaryFiles(Spec spec, int installSpecialDoc, int test)
 	(void) headerMacrosLoad(pkg->header);
 
 	he->tag = RPMTAG_NVRA;
-	xx = hge(pkg->header, he, 0);
+	xx = headerGet(pkg->header, he, 0);
 	rpmlog(RPMLOG_NOTICE, _("Processing files: %s\n"), he->p.str);
 	he->p.ptr = _free(he->p.ptr);
 		   

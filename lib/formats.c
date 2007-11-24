@@ -57,7 +57,6 @@ static int fssizesTag(Header h, HE_t he)
 	/*@modifies he, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 {
-    HGE_t hge = headerGetExtension;
     rpmTagData fnames = { .ptr = NULL };
     rpmTagData fsizes = { .ptr = NULL };
     rpmTagData p;
@@ -68,10 +67,10 @@ static int fssizesTag(Header h, HE_t he)
 
     p.ptr = he->p.ptr;
     he->tag = RPMTAG_FILESIZES;
-    xx = hge(h, he, 0);
+    xx = headerGet(h, he, 0);
     fsizes.ptr = he->p.ptr;
     he->tag = RPMTAG_FILEPATHS;
-    yy = hge(h, he, 0);
+    yy = headerGet(h, he, 0);
     fnames.ptr = he->p.ptr;
     numFiles = he->c;
     he->p.ptr = p.ptr;

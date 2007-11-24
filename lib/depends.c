@@ -151,17 +151,16 @@ static int removePackage(rpmts ts, Header h, int dboffset,
 static int rpmHeadersIdentical(Header first, Header second)
 	/*@*/
 {
-    HGE_t hge = headerGetExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     const char * one, * two;
     int rc = 0;
     int xx;
 
     he->tag = RPMTAG_HDRID;
-    xx = hge(first, he, 0);
+    xx = headerGet(first, he, 0);
     one = he->p.str;
     he->tag = RPMTAG_HDRID;
-    xx = hge(second, he, 0);
+    xx = headerGet(second, he, 0);
     two = he->p.str;
 
     if (one && two)
@@ -191,7 +190,6 @@ static rpmTag _obsolete_tag;
 int rpmtsAddInstallElement(rpmts ts, Header h,
 			fnpyKey key, int upgrade, rpmRelocation relocs)
 {
-    HGE_t hge = headerGetExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     rpmdepFlags depFlags = rpmtsDFlags(ts);
     uint32_t tscolor = rpmtsColor(ts);
@@ -231,16 +229,16 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
      * Check platform affinity of binary packages.
      */
     he->tag = RPMTAG_ARCH;
-    xx = hge(h, he, 0);
+    xx = headerGet(h, he, 0);
     arch = he->p.str;
     he->tag = RPMTAG_OS;
-    xx = hge(h, he, 0);
+    xx = headerGet(h, he, 0);
     os = he->p.str;
     if (nplatpat > 1) {
 	const char * platform = NULL;
 
 	he->tag = RPMTAG_PLATFORM;
-	xx = hge(h, he, 0);
+	xx = headerGet(h, he, 0);
 	platform = he->p.str;
 	if (!xx || platform == NULL)
 	    platform = rpmExpand(arch, "-unknown-", os, NULL);
@@ -249,7 +247,7 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
 	if (rc <= 0) {
 	    rpmps ps = rpmtsProblems(ts);
 	    he->tag = RPMTAG_NVRA;
-	    xx = hge(h, he, 0);
+	    xx = headerGet(h, he, 0);
 assert(he->p.str != NULL);
 	    rpmpsAppend(ps, RPMPROB_BADPLATFORM, he->p.str, key,
                         platform, NULL, NULL, 0);
@@ -1330,7 +1328,6 @@ static int checkPackageSet(rpmts ts, const char * depName,
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, mi, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
-    HGE_t hge = headerGetExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     rpmdepFlags depFlags = rpmtsDFlags(ts);
     uint32_t tscolor = rpmtsColor(ts);
@@ -1348,7 +1345,7 @@ static int checkPackageSet(rpmts ts, const char * depName,
 	int rc;
 
 	he->tag = RPMTAG_NVRA;
-	rc = hge(h, he, 0);
+	rc = headerGet(h, he, 0);
 assert(he->p.str != NULL);
 	if (!(depFlags & RPMDEPS_FLAG_NOREQUIRES))
 	    requires = rpmdsNew(h, RPMTAG_REQUIRENAME, scareMem);

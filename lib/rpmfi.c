@@ -687,7 +687,6 @@ Header relocateFileList(const rpmts ts, rpmfi fi,
 	/*@modifies ts, fi, origH, actions, rpmGlobalMacroContext,
 		internalState @*/
 {
-    HGE_t hge = headerGetExtension;
     HAE_t hae = headerAddExtension;
     HME_t hme = headerModifyExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
@@ -721,7 +720,7 @@ Header relocateFileList(const rpmts ts, rpmfi fi,
     int xx;
 
     he->tag = RPMTAG_PREFIXES;
-    xx = hge(origH, he, 0);
+    xx = headerGet(origH, he, 0);
     validType = he->t;
     validRelocations = he->p.argv;
     numValid = he->c;
@@ -884,24 +883,24 @@ assert(p != NULL);
     }
 
     he->tag = RPMTAG_BASENAMES;
-    xx = hge(h, he, 0);
+    xx = headerGet(h, he, 0);
     baseNames = he->p.argv;
     fileCount = he->c;
     he->tag = RPMTAG_DIRINDEXES;
-    xx = hge(h, he, 0);
+    xx = headerGet(h, he, 0);
     dirIndexes = he->p.ui32p;
     he->tag = RPMTAG_DIRNAMES;
-    xx = hge(h, he, 0);
+    xx = headerGet(h, he, 0);
     dirNames = he->p.argv;
     dirCount = he->c;
     he->tag = RPMTAG_FILEFLAGS;
-    xx = hge(h, he, 0);
+    xx = headerGet(h, he, 0);
     fFlags = he->p.ui32p;
     he->tag = RPMTAG_FILECOLORS;
-    xx = hge(h, he, 0);
+    xx = headerGet(h, he, 0);
     fColors = he->p.ui32p;
     he->tag = RPMTAG_FILEMODES;
-    xx = hge(h, he, 0);
+    xx = headerGet(h, he, 0);
     fModes = he->p.ui16p;
 
     dColors = alloca(dirCount * sizeof(*dColors));
@@ -1103,19 +1102,19 @@ dColors[j] |= fColors[i];
     /* Save original filenames in header and replace (relocated) filenames. */
     if (nrelocated) {
 	he->tag = RPMTAG_BASENAMES;
-	xx = hge(h, he, 0);
+	xx = headerGet(h, he, 0);
 	he->tag = RPMTAG_ORIGBASENAMES;
 	xx = hae(h, he, 0);
 	he->p.ptr = _free(he->p.ptr);
 
 	he->tag = RPMTAG_DIRNAMES;
-	xx = hge(h, he, 0);
+	xx = headerGet(h, he, 0);
 	he->tag = RPMTAG_ORIGDIRNAMES;
 	xx = hae(h, he, 0);
 	he->p.ptr = _free(he->p.ptr);
 
 	he->tag = RPMTAG_DIRINDEXES;
-	xx = hge(h, he, 0);
+	xx = headerGet(h, he, 0);
 	he->tag = RPMTAG_ORIGDIRINDEXES;
 	xx = hae(h, he, 0);
 	he->p.ptr = _free(he->p.ptr);
@@ -1126,7 +1125,7 @@ dColors[j] |= fColors[i];
 	he->c = fileCount;
 	xx = hme(h, he, 0);
 	fi->bnl = _free(fi->bnl);
-	xx = hge(h, he, 0);
+	xx = headerGet(h, he, 0);
 	fi->bnl = he->p.argv;
 	fi->fc = he->c;
 
@@ -1136,7 +1135,7 @@ dColors[j] |= fColors[i];
 	he->c = dirCount;
 	xx = hme(h, he, 0);
 	fi->dnl = _free(fi->dnl);
-	xx = hge(h, he, 0);
+	xx = headerGet(h, he, 0);
 	fi->dnl = he->p.argv;
 	fi->dc = he->c;
 
@@ -1146,7 +1145,7 @@ dColors[j] |= fColors[i];
 	he->c = fileCount;
 	xx = hme(h, he, 0);
 	fi->dil = _free(fi->dil);
-	xx = hge(h, he, 0);
+	xx = headerGet(h, he, 0);
 	fi->dil = he->p.ui32p;
     }
 
@@ -1265,18 +1264,17 @@ static inline unsigned char nibble(char c)
 
 #define _fdupestring(_h, _tag, _data) \
     he->tag = _tag; \
-    xx = hge((_h), he, 0); \
+    xx = headerGet((_h), he, 0); \
     _data = he->p.str;
 
 #define _fdupedata(_h, _tag, _data) \
     he->tag = _tag; \
-    xx = hge((_h), he, 0); \
+    xx = headerGet((_h), he, 0); \
     _data = he->p.ptr;
 
 rpmfi rpmfiNew(const rpmts ts, Header h, rpmTag tagN, int flags)
 {
     int scareMem = (flags & 0x1);
-    HGE_t hge = headerGetExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     rpmte p;
     rpmfi fi = NULL;
@@ -1316,7 +1314,7 @@ assert(scareMem == 0);		/* XXX always allocate memory */
 
     /* 0 means unknown */
     he->tag = RPMTAG_ARCHIVESIZE;
-    xx = hge(h, he, 0);
+    xx = headerGet(h, he, 0);
     fi->archivePos = 0;
     fi->archiveSize = (xx && he->p.ui32p ? he->p.ui32p[0] : 0);
     he->p.ptr = _free(he->p.ptr);
@@ -1330,7 +1328,7 @@ assert(scareMem == 0);		/* XXX always allocate memory */
     _fdupestring(h, RPMTAG_VERIFYSCRIPTPROG, fi->verifyscriptprog);
 
     he->tag = RPMTAG_BASENAMES;
-    xx = hge(h, he, 0);
+    xx = headerGet(h, he, 0);
     fi->bnl = he->p.argv;
     fi->fc = he->c;
     if (!xx) {

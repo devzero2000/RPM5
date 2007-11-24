@@ -367,7 +367,6 @@ long tagNumFromPyObject (PyObject *item)
 static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
 	/*@*/
 {
-    HGE_t hge = headerGetExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     uint32_t tag = 0xffffffff;
     int i;
@@ -408,7 +407,7 @@ static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
         }
         
 	he->tag = tag;
-	xx = hge(s->h, he, 0);
+	xx = headerGet(s->h, he, 0);
 	if (!xx) {
 	    he->p.ptr = _free(he->p.ptr);
 	    switch (tag) {
@@ -779,7 +778,6 @@ PyObject * rpmHeaderFromFile(PyObject * self, PyObject * args, PyObject *kwds)
  */
 int rpmMergeHeaders(PyObject * list, FD_t fd, int matchTag)
 {
-    HGE_t hge = headerGetExtension;
     HAE_t hae = headerAddExtension;
     HRE_t hre = headerRemoveExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
@@ -803,7 +801,7 @@ int rpmMergeHeaders(PyObject * list, FD_t fd, int matchTag)
 
     while (h) {
 	he->tag = matchTag;
-	xx = hge(hdr->h, he, 0);
+	xx = headerGet(hdr->h, he, 0);
 	newMatch.ptr = he->p.ptr;
 	if (!xx) {
 	    PyErr_SetString(pyrpmError, "match tag missing in new header");
@@ -817,7 +815,7 @@ int rpmMergeHeaders(PyObject * list, FD_t fd, int matchTag)
 	}
 
 	he->tag = matchTag;
-	xx = hge(hdr->h, he, 0);
+	xx = headerGet(hdr->h, he, 0);
 	oldMatch.ptr = he->p.ptr;
 	if (!xx) {
 	    PyErr_SetString(pyrpmError, "match tag missing in old header");

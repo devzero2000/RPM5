@@ -177,7 +177,6 @@ static int addFileToTag(Spec spec, const char * file, Header h, rpmTag tag)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies h, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
-    HGE_t hge = headerGetExtension;
     HAE_t hae = headerAddExtension;
     HRE_t hre = headerRemoveExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
@@ -185,7 +184,7 @@ static int addFileToTag(Spec spec, const char * file, Header h, rpmTag tag)
     int xx;
 
     he->tag = tag;
-    xx = hge(h, he, 0);
+    xx = headerGet(h, he, 0);
     if (xx) {
 	appendLineStringBuf(sb, he->p.str);
 	(void) hre(h, he, 0);
@@ -471,7 +470,6 @@ static int rpmLeadVersion(void)
 
 void providePackageNVR(Header h)
 {
-    HGE_t hge = headerGetExtension;
     HAE_t hae = headerAddExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     const char *N, *V, *R;
@@ -494,7 +492,7 @@ void providePackageNVR(Header h)
     pEVR = p = alloca(21 + strlen(V) + 1 + strlen(R) + 1);
     *p = '\0';
     he->tag = RPMTAG_EPOCH;
-    gotE = hge(h, he, 0);
+    gotE = headerGet(h, he, 0);
     E = (he->p.ui32p ? he->p.ui32p[0] : 0);
     he->p.ptr = _free(he->p.ptr);
     if (gotE) {
@@ -508,7 +506,7 @@ void providePackageNVR(Header h)
      * If no provides at all are available, we can just add.
      */
     he->tag = RPMTAG_PROVIDENAME;
-    xx = hge(h, he, 0);
+    xx = headerGet(h, he, 0);
     provides = he->p.argv;
     providesCount = he->c;
     if (!xx)
@@ -518,7 +516,7 @@ void providePackageNVR(Header h)
      * Otherwise, fill in entries on legacy packages.
      */
     he->tag = RPMTAG_PROVIDEVERSION;
-    xx = hge(h, he, 0);
+    xx = headerGet(h, he, 0);
     providesEVR = he->p.argv;
     if (!xx) {
 	for (i = 0; i < providesCount; i++) {
@@ -545,7 +543,7 @@ void providePackageNVR(Header h)
     }
 
     he->tag = RPMTAG_PROVIDEFLAGS;
-    xx = hge(h, he, 0);
+    xx = headerGet(h, he, 0);
     provideFlags = he->p.ui32p;
 
     /*@-nullderef@*/	/* LCL: providesEVR is not NULL */
@@ -597,7 +595,6 @@ exit:
 rpmRC writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
 		CSA_t csa, char *passPhrase, const char **cookie)
 {
-    HGE_t hge = headerGetExtension;
     HAE_t hae = headerAddExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     FD_t fd = NULL;
@@ -912,7 +909,7 @@ exit:
     /* XXX Fish the pkgid out of the signature header. */
     if (sigh != NULL && pkgidp != NULL) {
 	he->tag = RPMSIGTAG_MD5;
-	xx = hge(sigh, he, 0);
+	xx = headerGet(sigh, he, 0);
 	if (he->t == RPM_BIN_TYPE && he->p.ptr != NULL && he->c == 16)
 	    *pkgidp = he->p.ui8p;		/* XXX memory leak */
     }
@@ -951,7 +948,6 @@ static uint32_t copyTags[] = {
 /*@-boundswrite@*/
 int packageBinaries(Spec spec)
 {
-    HGE_t hge = headerGetExtension;
     HAE_t hae = headerAddExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     struct cpioSourceArchive_s csabuf;
@@ -1025,7 +1021,7 @@ int packageBinaries(Spec spec)
 	    binFormat = _free(binFormat);
 	    if (binRpm == NULL) {
 		he->tag = RPMTAG_NVRA;
-		xx = hge(pkg->header, he, 0);
+		xx = headerGet(pkg->header, he, 0);
 		rpmlog(RPMLOG_ERR, _("Could not generate output "
 		     "filename for package %s: %s\n"), he->p.str, errorString);
 		he->p.ptr = _free(he->p.ptr);

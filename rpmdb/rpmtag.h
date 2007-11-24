@@ -650,6 +650,18 @@ char * headerSprintf(Header h, const char * fmt,
 	/*@modifies h, *errmsg @*/
 	/*@requires maxSet(errmsg) >= 0 @*/;
 
+/** \ingroup header
+ * Retrieve extension or tag value from a header.
+ *
+ * @param h		header
+ * @param he		tag container
+ * @param flags		(unused)
+ * @return		1 on success, 0 on failure
+ */
+int headerGet(Header h, HE_t he, unsigned int flags)
+	/*@globals headerCompoundFormats @*/
+	/*@modifies he @*/;
+
 #ifdef __cplusplus
 }
 #endif

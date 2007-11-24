@@ -88,7 +88,6 @@ static int handleInstInstalledFiles(const rpmts ts,
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, p, fi, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
-    HGE_t hge = headerGetExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     const char * altNVRA = NULL;
     uint32_t tscolor = rpmtsColor(ts);
@@ -109,7 +108,7 @@ static int handleInstInstalledFiles(const rpmts ts,
 			&shared->otherPkg, sizeof(shared->otherPkg));
 	while ((h = rpmdbNextIterator(mi)) != NULL) {
 	    he->tag = RPMTAG_NVRA;
-	    xx = hge(h, he, 0);
+	    xx = headerGet(h, he, 0);
 assert(he->p.str != NULL);
 	    altNVRA = he->p.str;
 	    otherFi = rpmfiNew(ts, h, RPMTAG_BASENAMES, scareMem);
@@ -234,7 +233,6 @@ static int handleRmvdInstalledFiles(const rpmts ts, rpmfi fi,
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, fi, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
-    HGE_t hge = headerGetExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     Header h;
     const unsigned char * otherStates;
@@ -251,7 +249,7 @@ static int handleRmvdInstalledFiles(const rpmts ts, rpmfi fi,
     }
 
     he->tag = RPMTAG_FILESTATES;
-    xx = hge(h, he, 0);
+    xx = headerGet(h, he, 0);
     otherStates = he->p.ptr;
 
     /* XXX there's an obscure segfault here w/o NULL check ... */
@@ -598,7 +596,6 @@ static int ensureOlder(rpmts ts,
 		const rpmte p, const Header h)
 	/*@modifies ts @*/
 {
-    HGE_t hge = headerGetExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     uint32_t reqFlags = (RPMSENSE_LESS | RPMSENSE_EQUAL);
     const char * reqEVR;
@@ -626,7 +623,7 @@ static int ensureOlder(rpmts ts,
     if (rc == 0) {
 	rpmps ps = rpmtsProblems(ts);
 	he->tag = RPMTAG_NVRA;
-	rc = hge(h, he, 0);
+	rc = headerGet(h, he, 0);
 assert(he->p.str != NULL);
 	rpmpsAppend(ps, RPMPROB_OLDPACKAGE,
 		rpmteNEVR(p), rpmteKey(p),

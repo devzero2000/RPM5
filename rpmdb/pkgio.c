@@ -163,7 +163,6 @@ rpmdb rpmtsGetRdb(rpmts ts)
 
 rpmRC rpmtsFindPubkey(rpmts ts, void * _dig)
 {
-    HGE_t hge = headerGetExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     pgpDig dig = (_dig ? _dig : rpmtsDig(ts));
     const void * sig = pgpGetSig(dig);
@@ -242,7 +241,7 @@ fprintf(stderr, "*** free pkt %p[%d] id %08x %08x\n", ts->pkpkt, ts->pkpktlen, p
 	he->tag = RPMTAG_PUBKEYS;
 	mi = rpmdbInitIterator(rpmtsGetRdb(ts), RPMTAG_PUBKEYS, sigp->signid, sizeof(sigp->signid));
 	while ((h = rpmdbNextIterator(mi)) != NULL) {
-	    if (!hge(h, he, 0))
+	    if (!headerGet(h, he, 0))
 		continue;
 	    hx = rpmdbGetIteratorOffset(mi);
 	    ix = rpmdbGetIteratorFileNum(mi);
@@ -661,7 +660,6 @@ static rpmRC rdSignature(FD_t fd, /*@out@*/ /*@null@*/ void * ptr,
 	/*@modifies *ptr, *msg, fileSystem @*/
 {
 rpmxar xar = fdGetXAR(fd);
-    HGE_t hge = headerGetExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     Header * sighp = ptr;
     char buf[BUFSIZ];
@@ -842,7 +840,7 @@ assert(entry->info.offset > 0);	/* XXX insurance */
 	/* Print package component sizes. */
 
 	he->tag = (rpmTag) RPMSIGTAG_SIZE;
-	xx = hge(sigh, he, 0);
+	xx = headerGet(sigh, he, 0);
 	if (xx) {
 	    size_t datasize = he->p.ui32p[0];
 	    rc = printSize(fd, sigSize, pad, datasize);

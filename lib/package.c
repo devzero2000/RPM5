@@ -84,7 +84,6 @@ static int pgpStashKeyid(pgpDig dig)
 /*@-mods@*/
 rpmRC rpmReadPackageFile(rpmts ts, void * _fd, const char * fn, Header * hdrp)
 {
-    HGE_t hge = headerGetExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     HE_t she = memset(alloca(sizeof(*she)), 0, sizeof(*she));
     pgpDig dig = rpmtsDig(ts);
@@ -229,7 +228,7 @@ if (!_nosigh) {
     dig->nbytes = 0;
 
     /* Retrieve the tag parameters from the signature header. */
-    xx = hge(sigh, she, 0);
+    xx = headerGet(sigh, she, 0);
     if (she->p.ptr == NULL) {
 	rc = RPMRC_FAIL;
 	goto exit;
@@ -259,7 +258,7 @@ assert(0);
 	size_t nmagic = 0;
 
 	he->tag = RPMTAG_HEADERIMMUTABLE;
-	xx = hge(h, he, 0);
+	xx = headerGet(h, he, 0);
 	uht = he->t;
 	uh = he->p.ptr;
 	uhc = he->c;
@@ -298,7 +297,7 @@ assert(0);
 	size_t nmagic = 0;
 
 	he->tag = RPMTAG_HEADERIMMUTABLE;
-	xx = hge(h, he, 0);
+	xx = headerGet(h, he, 0);
 	uht = he->t;
 	uh = he->p.ptr;
 	uhc = he->c;

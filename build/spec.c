@@ -67,7 +67,6 @@ static inline
 /*@-boundswrite@*/
 int lookupPackage(Spec spec, const char *name, int flag, /*@out@*/Package *pkg)
 {
-    HGE_t hge = headerGetExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     const char *fullName;
     Package p;
@@ -84,7 +83,7 @@ int lookupPackage(Spec spec, const char *name, int flag, /*@out@*/Package *pkg)
   { char *n;
     if (flag == PART_SUBNAME) {
 	he->tag = RPMTAG_NAME;
-	xx = hge(spec->packages->header, he, 0);
+	xx = headerGet(spec->packages->header, he, 0);
 	fullName = n = alloca(strlen(he->p.str) + 1 + strlen(name) + 1);
 	n = stpcpy(n, he->p.str);
 	he->p.ptr = _free(he->p.ptr);
@@ -101,7 +100,7 @@ int lookupPackage(Spec spec, const char *name, int flag, /*@out@*/Package *pkg)
     /* Locate package with fullName */
     for (p = spec->packages; p != NULL; p = p->next) {
 	he->tag = RPMTAG_NAME;
-	xx = hge(p->header, he, 0);
+	xx = headerGet(p->header, he, 0);
 	if (he->p.str && !strcmp(fullName, he->p.str)) {
 	    he->p.ptr = _free(he->p.ptr);
 	    break;
@@ -635,7 +634,6 @@ printNewSpecfile(Spec spec)
 	/*@globals fileSystem @*/
 	/*@modifies spec->sl->sl_lines[], fileSystem @*/
 {
-    HGE_t hge = headerGetExtension;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     Header h;
     speclines sl = spec->sl;
@@ -671,7 +669,7 @@ printNewSpecfile(Spec spec)
 	    for (pkg = spec->packages; pkg != NULL; pkg = pkg->next) {
 		h = pkg->header;
 		he->tag = RPMTAG_NAME;
-		xx = hge(h, he, 0);
+		xx = headerGet(h, he, 0);
 		if (!strcmp(he->p.str, fmt)) {
 		    he->p.ptr = _free(he->p.ptr);
 		    /*@innerbreak@*/ break;
