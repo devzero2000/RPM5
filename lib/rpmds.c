@@ -78,7 +78,7 @@ static GElf_Vernaux *gelf_getvernaux(Elf_Data *data, int offset,
 #include <rpmio_internal.h>	/* XXX fdGetFILE */
 #include <rpmcb.h>		/* XXX fnpyKey */
 #include <rpmmacro.h>
-#include <header.h>
+#include <header.h>		/* XXX headerFree, headerNEVRA, headerLink */
 #include <rpmlib.h>
 
 #define	_RPMDS_INTERNAL

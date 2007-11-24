@@ -1,4 +1,5 @@
 5.0a2 -> 5.0a3:
+    - jbj: include <header.h> only where needed, doco remaining destruction.
     - jbj: finalize headerMod, add to the ABI, remove HME_t goop.
     - jbj: finalize headerDel, add to the ABI, remove HRE_t goop.
     - jbj: finalize headerPut, add to the ABI, remove HAE_t goop.

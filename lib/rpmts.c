@@ -7,7 +7,7 @@
 #include "rpmio_internal.h"	/* XXX for pgp and beecrypt */
 #include <rpmcb.h>		/* XXX fnpyKey */
 #include <rpmmacro.h>		/* XXX rpmtsOpenDB() needs rpmGetPath */
-#include <header.h>
+#include <header.h>		/* XXX headerFree, headerLink */
 #include <rpmlib.h>
 
 #define	_RPMDB_INTERNAL		/* XXX almost opaque sigh */

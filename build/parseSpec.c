@@ -6,6 +6,7 @@
 #include "system.h"
 
 #include <rpmio_internal.h>
+#include <header.h>		/* XXX headerIsEntry */
 #include <rpmbuild.h>
 #include "rpmds.h"
 #include "rpmts.h"

@@ -6,6 +6,7 @@
 
 #include <rpmio_internal.h>	/* XXX for fdSetOpen */
 
+#include <header.h>		/* XXX headerGetEntry, headerFree */
 #define	_RPMPS_INTERNAL	/* XXX almost (but not quite) opaque. */
 #include <rpmcli.h>
 #include <rpmpgp.h>

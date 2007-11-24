@@ -6,7 +6,7 @@
 
 #include <rpmio.h>
 #include <rpmmacro.h>	/* XXX for rpmExpand */
-#include <header.h>
+#include <rpmtag.h>
 #include "rpmcli.h"	/* IDTX prototypes */
 
 #include "fsm.h"

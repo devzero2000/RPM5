@@ -13,7 +13,7 @@
 
 #include <rpmio.h>
 #define	_RPMTAG_INTERNAL
-#include <header.h>
+#include <rpmtag.h>
 #include <rpmcli.h>
 
 #include "rpmdb.h"

@@ -17,6 +17,7 @@
 #include <rpmio_internal.h>
 #include <fts.h>
 
+#include <header.h>		/* XXX headerIsEntry, headerFreeData, headerInitIterator, headerNextIterator, headerFreeIterator, headerMacrosLoad, headerMacrosUnload */
 #include <rpmbuild.h>
 
 #include "cpio.h"

@@ -6,6 +6,7 @@
 #include "system.h"
 
 #include <rpmio.h>
+#include <header.h>		/* XXX headerIsEntry */
 #define	_RPMEVR_INTERNAL
 #include "rpmbuild.h"
 #include "debug.h"

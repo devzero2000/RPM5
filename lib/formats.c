@@ -9,7 +9,7 @@
 #include <rpmmacro.h>		/* XXX for %_i18ndomains */
 
 #define	_RPMTAG_INTERNAL
-#include <header.h>
+#include <rpmtag.h>
 #include <rpmlib.h>
 
 #define	_RPMEVR_INTERNAL

@@ -6,7 +6,7 @@
 
 #include <rpmio.h>
 #include <rpmcb.h>		/* XXX fnpyKey */
-#include <header.h>
+#include <header.h>		/* XXX headerFree, headerLink. headerIsEntry */
 #include <rpmlib.h>
 
 #include "rpmds.h"
