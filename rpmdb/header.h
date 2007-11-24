@@ -414,24 +414,6 @@ int (*HDRremove) (Header h, rpmTag tag)
         /*@modifies h @*/;
 
 /** \ingroup header
- * Return formatted output string from header tags.
- * The returned string must be free()d.
- *
- * @param h		header
- * @param fmt		format to use
- * @param tags		array of tag name/value/type triples (NULL uses default)
- * @param exts		formatting extensions chained table (NULL uses default)
- * @retval errmsg	error message (if any)
- * @return		formatted output string (malloc'ed)
- */
-typedef
-/*@only@*/ char * (*HDRsprintf) (Header h, const char * fmt,
-		/*@null@*/ headerTagTableEntry tags,
-		/*@null@*/ headerSprintfExtension exts,
-		/*@null@*/ /*@out@*/ errmsg_t * errmsg)
-	/*@modifies *errmsg @*/;
-
-/** \ingroup header
  * Duplicate tag values from one header into another.
  * @param headerFrom	source header
  * @param headerTo	destination header
@@ -574,7 +556,6 @@ struct HV_s {
     HDRaddi18n	hdraddi18n;
     HDRmodify	hdrmodify;
     HDRremove	hdrremove;
-    HDRsprintf	hdrsprintf;
     HDRcopytags	hdrcopytags;
     HDRfreeiter	hdrfreeiter;
     HDRinititer	hdrinititer;

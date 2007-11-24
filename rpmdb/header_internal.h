@@ -106,63 +106,6 @@ struct headerToken_s {
     int nrefs;			/*!< Reference count. */
 };
 
-/** \ingroup header
- */
-typedef /*@abstract@*/ struct sprintfTag_s * sprintfTag;
-struct sprintfTag_s {
-    HE_s he;
-/*@null@*/
-    headerTagFormatFunction fmt;
-/*@null@*/
-    headerTagTagFunction ext;   /*!< NULL if tag element is invalid */
-    int extNum;
-    rpmTag tagno;
-    int justOne;
-    int arrayCount;
-/*@kept@*/
-    char * format;
-/*@kept@*/ /*@null@*/
-    char * type;
-    int pad;
-};
-
-/** \ingroup header
- */
-typedef /*@abstract@*/ struct sprintfToken_s * sprintfToken;
-/*@-fielduse@*/
-struct sprintfToken_s {
-    enum {
-        PTOK_NONE       = 0,
-        PTOK_TAG        = 1,
-        PTOK_ARRAY      = 2,
-        PTOK_STRING     = 3,
-        PTOK_COND       = 4
-    } type;
-    union {
-	struct sprintfTag_s tag;	/*!< PTOK_TAG */
-	struct {
-	/*@only@*/
-	    sprintfToken format;
-	    size_t numTokens;
-	} array;			/*!< PTOK_ARRAY */
-	struct {
-	/*@dependent@*/
-	    char * string;
-	    size_t len;
-	} string;			/*!< PTOK_STRING */
-	struct {
-	/*@only@*/ /*@null@*/
-	    sprintfToken ifFormat;
-	    size_t numIfTokens;
-	/*@only@*/ /*@null@*/
-	    sprintfToken elseFormat;
-	    size_t numElseTokens;
-	    struct sprintfTag_s tag;
-	} cond;				/*!< PTOK_COND */
-    } u;
-};
-/*@=fielduse@*/
-
 #ifdef __cplusplus
 extern "C" {
 #endif

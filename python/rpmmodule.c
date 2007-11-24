@@ -237,8 +237,7 @@ void init_rpm(void);	/* XXX eliminate gcc warning */
  */
 void init_rpm(void)
 {
-    PyObject * d, *o, * tag = NULL, * dict;
-    int i;
+    PyObject * d, *o, * dict;
     PyObject * m;
 
 #if Py_TPFLAGS_HAVE_ITER        /* XXX backport to python-1.5.2 */

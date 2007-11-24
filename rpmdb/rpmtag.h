@@ -630,6 +630,26 @@ void rpmDisplayQueryTags(/*@null@*/ FILE * fp,
 	/*@globals fileSystem, internalState @*/
 	/*@modifies *fp, fileSystem, internalState @*/;
 
+/** \ingroup header
+ * Return formatted output string from header tags.
+ * The returned string must be free()d.
+ *
+ * @param h		header
+ * @param fmt		format to use
+ * @param tags		array of tag name/value/type triples (NULL uses default)
+ * @param exts		formatting extensions chained table (NULL uses default)
+ * @retval errmsg	error message (if any)
+ * @return		formatted output string (malloc'ed)
+ */
+/*@only@*/ /*@null@*/
+char * headerSprintf(Header h, const char * fmt,
+		/*@null@*/ headerTagTableEntry tags,
+		/*@null@*/ headerSprintfExtension exts,
+		/*@null@*/ /*@out@*/ errmsg_t * errmsg)
+	/*@globals headerCompoundFormats @*/
+	/*@modifies h, *errmsg @*/
+	/*@requires maxSet(errmsg) >= 0 @*/;
+
 #ifdef __cplusplus
 }
 #endif

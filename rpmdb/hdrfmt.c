@@ -23,7 +23,249 @@
 
 /*@access pgpDig @*/
 /*@access pgpDigParams @*/
+/*@access headerSprintfExtension @*/
+/*@access sprintfTag @*/
+/*@access sprintfToken @*/
 
+/**
+ * Convert tag data representation.
+ * @param he		tag container
+ * @param fmt		output radix (NULL or "" assumes %d)
+ * @return		formatted string
+ */
+static char * intFormat(HE_t he, const char *fmt)
+	/*@*/
+{
+    uint32_t ix = (he->ix > 0 ? he->ix : 0);
+    uint64_t ival = 0;
+    const char * istr = NULL;
+    char * b;
+    size_t nb = 0;
+    int xx;
+
+    if (fmt == NULL || *fmt == '\0')
+	fmt = "d";
+
+    switch (he->t) {
+    default:
+	return xstrdup(_("(not a number)"));
+	/*@notreached@*/ break;
+    case RPM_UINT8_TYPE:
+	ival = (uint64_t) he->p.ui8p[ix];
+	break;
+    case RPM_UINT16_TYPE:
+	ival = (uint64_t) he->p.ui16p[ix];
+	break;
+    case RPM_UINT32_TYPE:
+	ival = (uint64_t) he->p.ui32p[ix];
+	break;
+    case RPM_UINT64_TYPE:
+	ival = he->p.ui64p[ix];
+	break;
+    case RPM_STRING_TYPE:
+	istr = he->p.str;
+	break;
+    case RPM_STRING_ARRAY_TYPE:
+	istr = he->p.argv[ix];
+	break;
+    case RPM_BIN_TYPE:
+	{   static char hex[] = "0123456789abcdef";
+	    const char * s = he->p.str;
+	    rpmTagCount c = he->c;
+	    char * t;
+
+	    nb = 2 * c + 1;
+	    t = b = alloca(nb+1);
+	    while (c-- > 0) {
+		unsigned i;
+		i = (unsigned) *s++;
+		*t++ = hex[ (i >> 4) & 0xf ];
+		*t++ = hex[ (i     ) & 0xf ];
+	    }
+	    *t = '\0';
+	}   break;
+    }
+
+    if (istr) {		/* string */
+	b = (char *)istr;	/* NOCAST */
+    } else
+    if (nb == 0) {	/* number */
+	char myfmt[] = "%llX";
+	myfmt[3] = ((fmt != NULL && *fmt != '\0') ? *fmt : 'd');
+	nb = 64;
+	b = alloca(nb);
+/*@-formatconst@*/
+	xx = snprintf(b, nb, myfmt, ival);
+/*@=formatconst@*/
+	b[nb-1] = '\0';
+    }
+
+    return xstrdup(b);
+}
+
+/**
+ * Return octal formatted data.
+ * @param he		tag container
+ * @return		formatted string
+ */
+static char * octFormat(HE_t he)
+	/*@*/
+{
+    return intFormat(he, "o");
+}
+
+/**
+ * Return hex formatted data.
+ * @param he		tag container
+ * @return		formatted string
+ */
+static char * hexFormat(HE_t he)
+	/*@*/
+{
+    return intFormat(he, "x");
+}
+
+/**
+ * Return decimal formatted data.
+ * @param he		tag container
+ * @return		formatted string
+ */
+static char * decFormat(HE_t he)
+	/*@*/
+{
+    return intFormat(he, "d");
+}
+
+/**
+ * Return strftime formatted data.
+ * @param he		tag container
+ * @param strftimeFormat strftime(3) format
+ * @return		formatted string
+ */
+static char * realDateFormat(HE_t he, const char * strftimeFormat)
+	/*@*/
+{
+    rpmTagData data = { .ptr = he->p.ptr };
+    char * val;
+
+    if (he->t != RPM_UINT64_TYPE) {
+	val = xstrdup(_("(not a number)"));
+    } else {
+	struct tm * tstruct;
+	char buf[50];
+
+	/* this is important if sizeof(uint64_t) ! sizeof(time_t) */
+	{   time_t dateint = data.ui64p[0];
+	    tstruct = localtime(&dateint);
+	}
+	buf[0] = '\0';
+	if (tstruct)
+	    (void) strftime(buf, sizeof(buf) - 1, strftimeFormat, tstruct);
+	buf[sizeof(buf) - 1] = '\0';
+	val = xstrdup(buf);
+    }
+
+    return val;
+}
+
+/**
+ * Return date formatted data.
+ * @param he		tag container
+ * @return		formatted string
+ */
+static char * dateFormat(HE_t he)
+	/*@*/
+{
+    return realDateFormat(he, _("%c"));
+}
+
+/**
+ * Return day formatted data.
+ * @param he		tag container
+ * @return		formatted string
+ */
+static char * dayFormat(HE_t he)
+	/*@*/
+{
+    return realDateFormat(he, _("%a %b %d %Y"));
+}
+
+/**
+ * Return shell escape formatted data.
+ * @param he		tag container
+ * @return		formatted string
+ */
+static char * shescapeFormat(HE_t he)
+	/*@*/
+{
+    rpmTagData data = { .ptr = he->p.ptr };
+    char * val;
+    size_t nb;
+    int xx;
+
+    /* XXX one of these integer types is unnecessary. */
+    if (he->t == RPM_UINT32_TYPE) {
+	nb = 20;
+	val = xmalloc(nb);
+	xx = snprintf(val, nb, "%u", (unsigned) data.ui32p[0]);
+	val[nb-1] = '\0';
+    } else if (he->t == RPM_UINT64_TYPE) {
+	nb = 40;
+	val = xmalloc(40);
+/*@-duplicatequals@*/
+	xx = snprintf(val, nb, "%llu", (unsigned long long)data.ui64p[0]);
+/*@=duplicatequals@*/
+	val[nb-1] = '\0';
+    } else if (he->t == RPM_STRING_TYPE) {
+	const char * s = data.str;
+	char * t;
+	int c;
+
+	nb = strlen(data.str) + 1;
+	/* XXX count no. of escapes instead. */
+	t = xmalloc(4 * nb + 3);
+	*t++ = '\'';
+	while ((c = (int)*s++) != 0) {
+	    if (c == (int)'\'') {
+		*t++ = '\'';
+		*t++ = '\\';
+		*t++ = '\'';
+	    }
+	    *t++ = (char) c;
+	}
+	*t++ = '\'';
+	*t = '\0';
+	nb = strlen(t) + 1;
+	val = xrealloc(t, nb);
+    } else
+	val = xstrdup(_("invalid type"));
+
+    return val;
+}
+
+/*@-type@*/ /* FIX: cast? */
+static struct headerSprintfExtension_s _headerDefaultFormats[] = {
+    { HEADER_EXT_FORMAT, "octal",
+	{ .fmtFunction = octFormat } },
+    { HEADER_EXT_FORMAT, "oct",
+	{ .fmtFunction = octFormat } },
+    { HEADER_EXT_FORMAT, "hex",
+	{ .fmtFunction = hexFormat } },
+    { HEADER_EXT_FORMAT, "decimal",
+	{ .fmtFunction = decFormat } },
+    { HEADER_EXT_FORMAT, "dec",
+	{ .fmtFunction = decFormat } },
+    { HEADER_EXT_FORMAT, "date",
+	{ .fmtFunction = dateFormat } },
+    { HEADER_EXT_FORMAT, "day",
+	{ .fmtFunction = dayFormat } },
+    { HEADER_EXT_FORMAT, "shescape",
+	{ .fmtFunction = shescapeFormat } },
+    { HEADER_EXT_LAST, NULL, { NULL } }
+};
+/*@=type@*/
+
+headerSprintfExtension headerDefaultFormats = &_headerDefaultFormats[0];
 /* XXX FIXME: static for now, refactor from manifest.c later. */
 static char * rpmPermsString(int mode)
 	/*@*/
@@ -1391,6 +1633,8 @@ static struct headerSprintfExtension_s _headerCompoundFormats[] = {
 
 headerSprintfExtension headerCompoundFormats = &_headerCompoundFormats[0];
 
+/*====================================================================*/
+
 void rpmDisplayQueryTags(FILE * fp, headerTagTableEntry _rpmTagTable, headerSprintfExtension _rpmHeaderFormats)
 {
     const struct headerTagTableEntry_s * t;
@@ -1454,4 +1698,1345 @@ void rpmDisplayQueryTags(FILE * fp, headerTagTableEntry _rpmTagTable, headerSpri
 	    continue;
 	fprintf(fp, "%s\n", ext->name + 7);
     }
+}
+
+/*====================================================================*/
+
+#define PARSER_BEGIN 	0
+#define PARSER_IN_ARRAY 1
+#define PARSER_IN_EXPR  2
+
+/*@unchecked@*/
+static int _usehge = 1;		/* XXX Use headerGetExtension? */
+/*@unchecked@*/
+int _tagcache = 1;		/* XXX Cache tag data persistently? */
+
+/** \ingroup header
+ */
+typedef /*@abstract@*/ struct sprintfTag_s * sprintfTag;
+
+/** \ingroup header
+ */
+struct sprintfTag_s {
+    HE_s he;
+/*@null@*/
+    headerTagFormatFunction fmt;
+/*@null@*/
+    headerTagTagFunction ext;   /*!< NULL if tag element is invalid */
+    int extNum;
+    rpmTag tagno;
+    int justOne;
+    int arrayCount;
+/*@kept@*/
+    char * format;
+/*@kept@*/ /*@null@*/
+    char * type;
+    int pad;
+};
+
+/** \ingroup header
+ */
+typedef /*@abstract@*/ struct sprintfToken_s * sprintfToken;
+
+/** \ingroup header
+ */
+struct sprintfToken_s {
+    enum {
+        PTOK_NONE       = 0,
+        PTOK_TAG        = 1,
+        PTOK_ARRAY      = 2,
+        PTOK_STRING     = 3,
+        PTOK_COND       = 4
+    } type;
+    union {
+	struct sprintfTag_s tag;	/*!< PTOK_TAG */
+	struct {
+	/*@only@*/
+	    sprintfToken format;
+	    size_t numTokens;
+	} array;			/*!< PTOK_ARRAY */
+	struct {
+	/*@dependent@*/
+	    char * string;
+	    size_t len;
+	} string;			/*!< PTOK_STRING */
+	struct {
+	/*@only@*/ /*@null@*/
+	    sprintfToken ifFormat;
+	    size_t numIfTokens;
+	/*@only@*/ /*@null@*/
+	    sprintfToken elseFormat;
+	    size_t numElseTokens;
+	    struct sprintfTag_s tag;
+	} cond;				/*!< PTOK_COND */
+    } u;
+};
+
+/** \ingroup header
+ */
+typedef struct headerSprintfArgs_s * headerSprintfArgs;
+
+/** \ingroup header
+ */
+struct headerSprintfArgs_s {
+    Header h;
+    char * fmt;
+/*@observer@*/ /*@temp@*/
+    headerTagTableEntry tags;
+/*@observer@*/ /*@temp@*/
+    headerSprintfExtension exts;
+/*@observer@*/ /*@null@*/
+    const char * errmsg;
+    HE_t ec;			/*!< Extension data cache. */
+    int nec;			/*!< No. of extension cache items. */
+    sprintfToken format;
+/*@relnull@*/
+    HeaderIterator hi;
+/*@owned@*/
+    char * val;
+    size_t vallen;
+    size_t alloced;
+    size_t numTokens;
+    size_t i;
+};
+
+/**
+ */
+static char escapedChar(const char ch)	/*@*/
+{
+    switch (ch) {
+    case 'a': 	return '\a';
+    case 'b': 	return '\b';
+    case 'f': 	return '\f';
+    case 'n': 	return '\n';
+    case 'r': 	return '\r';
+    case 't': 	return '\t';
+    case 'v': 	return '\v';
+    default:	return ch;
+    }
+}
+
+/**
+ * Mark a tag container with headerGetEntry() freeData.
+ * @param he		tag container
+ */
+/*@relnull@*/
+static HE_t rpmheMark(/*@returned@*/ /*@null@*/ HE_t he)
+	/*@modifies he @*/
+{
+    /* Set he->freeData as appropriate for headerGetEntry() . */
+    if (he)
+    switch (he->t) {
+    default:
+	he->freeData = 0;
+	break;
+    case RPM_I18NSTRING_TYPE:
+    case RPM_STRING_ARRAY_TYPE:
+    case RPM_BIN_TYPE:
+	he->freeData = 1;
+	break;
+    }
+    return he;
+}
+
+/**
+ * Clean a tag container, free'ing attached malloc's.
+ * @param he		tag container
+ */
+/*@relnull@*/
+static HE_t rpmheClean(/*@returned@*/ /*@null@*/ HE_t he)
+	/*@modifies he @*/
+{
+    if (he) {
+	if (he->freeData && he->p.ptr != NULL)
+	    he->p.ptr = _free(he->p.ptr);
+	memset(he, 0, sizeof(*he));
+    }
+    return he;
+}
+
+/**
+ * Destroy headerSprintf format array.
+ * @param format	sprintf format array
+ * @param num		number of elements
+ * @return		NULL always
+ */
+static /*@null@*/ sprintfToken
+freeFormat( /*@only@*/ /*@null@*/ sprintfToken format, size_t num)
+	/*@modifies *format @*/
+{
+    unsigned i;
+
+    if (format == NULL) return NULL;
+
+    for (i = 0; i < (unsigned) num; i++) {
+	switch (format[i].type) {
+	case PTOK_TAG:
+	    if (_tagcache)
+		(void) rpmheClean(&format[i].u.tag.he);
+	    /*@switchbreak@*/ break;
+	case PTOK_ARRAY:
+	    format[i].u.array.format =
+		freeFormat(format[i].u.array.format,
+			format[i].u.array.numTokens);
+	    /*@switchbreak@*/ break;
+	case PTOK_COND:
+	    format[i].u.cond.ifFormat =
+		freeFormat(format[i].u.cond.ifFormat, 
+			format[i].u.cond.numIfTokens);
+	    format[i].u.cond.elseFormat =
+		freeFormat(format[i].u.cond.elseFormat, 
+			format[i].u.cond.numElseTokens);
+	    if (_tagcache)
+		(void) rpmheClean(&format[i].u.cond.tag.he);
+	    /*@switchbreak@*/ break;
+	case PTOK_NONE:
+	case PTOK_STRING:
+	default:
+	    /*@switchbreak@*/ break;
+	}
+    }
+    format = _free(format);
+    return NULL;
+}
+
+/**
+ * Initialize an hsa iteration.
+ * @param hsa		headerSprintf args
+ * @return		headerSprintf args
+ */
+static headerSprintfArgs hsaInit(/*@returned@*/ headerSprintfArgs hsa)
+	/*@modifies hsa */
+{
+    sprintfTag tag =
+	(hsa->format->type == PTOK_TAG
+	    ? &hsa->format->u.tag :
+	(hsa->format->type == PTOK_ARRAY
+	    ? &hsa->format->u.array.format->u.tag :
+	NULL));
+
+    if (hsa != NULL) {
+	hsa->i = 0;
+	if (tag != NULL && tag->tagno == -2)
+	    hsa->hi = headerInitIterator(hsa->h);
+    }
+/*@-nullret@*/
+    return hsa;
+/*@=nullret@*/
+}
+
+/**
+ * Return next hsa iteration item.
+ * @param hsa		headerSprintf args
+ * @return		next sprintfToken (or NULL)
+ */
+/*@null@*/
+static sprintfToken hsaNext(/*@returned@*/ headerSprintfArgs hsa)
+	/*@modifies hsa */
+{
+    sprintfToken fmt = NULL;
+    sprintfTag tag =
+	(hsa->format->type == PTOK_TAG
+	    ? &hsa->format->u.tag :
+	(hsa->format->type == PTOK_ARRAY
+	    ? &hsa->format->u.array.format->u.tag :
+	NULL));
+
+    if (hsa != NULL && hsa->i < hsa->numTokens) {
+	fmt = hsa->format + hsa->i;
+	if (hsa->hi == NULL) {
+	    hsa->i++;
+	} else {
+	    HE_t he = rpmheClean(&tag->he);
+	    if (!headerNextIterator(hsa->hi, &he->tag, &he->t, &he->p, &he->c))
+	    {
+		tag->tagno = 0;
+		return NULL;
+	    }
+	    he = rpmheMark(he);
+	    he->avail = 1;
+	    tag->tagno = he->tag;
+	}
+    }
+
+/*@-dependenttrans -onlytrans@*/
+    return fmt;
+/*@=dependenttrans =onlytrans@*/
+}
+
+/**
+ * Finish an hsa iteration.
+ * @param hsa		headerSprintf args
+ * @return		headerSprintf args
+ */
+static headerSprintfArgs hsaFini(/*@returned@*/ headerSprintfArgs hsa)
+	/*@modifies hsa */
+{
+    if (hsa != NULL) {
+	hsa->hi = headerFreeIterator(hsa->hi);
+	hsa->i = 0;
+    }
+/*@-nullret@*/
+    return hsa;
+/*@=nullret@*/
+}
+
+/**
+ * Reserve sufficient buffer space for next output value.
+ * @param hsa		headerSprintf args
+ * @param need		no. of bytes to reserve
+ * @return		pointer to reserved space
+ */
+/*@dependent@*/ /*@exposed@*/
+static char * hsaReserve(headerSprintfArgs hsa, size_t need)
+	/*@modifies hsa */
+{
+    if ((hsa->vallen + need) >= hsa->alloced) {
+	if (hsa->alloced <= need)
+	    hsa->alloced += need;
+	hsa->alloced <<= 1;
+	hsa->val = xrealloc(hsa->val, hsa->alloced+1);	
+    }
+    return hsa->val + hsa->vallen;
+}
+
+/**
+ * Return tag name from value.
+ * @todo bsearch on sorted value table.
+ * @param tbl		tag table
+ * @param val		tag value to find
+ * @retval *typep	tag type (or NULL)
+ * @return		tag name, NULL on not found
+ */
+/*@observer@*/ /*@null@*/
+static const char * myTagName(headerTagTableEntry tbl, uint32_t val,
+		/*@null@*/ uint32_t *typep)
+	/*@modifies *typep @*/
+{
+    static char name[128];
+    const char * s;
+    char *t;
+
+    for (; tbl->name != NULL; tbl++) {
+	if (tbl->val == val)
+	    break;
+    }
+    if ((s = tbl->name) == NULL)
+	return NULL;
+    s += sizeof("RPMTAG_") - 1;
+    t = name;
+    *t++ = *s++;
+    while (*s != '\0')
+	*t++ = (char)xtolower((int)*s++);
+    *t = '\0';
+    if (typep)
+	*typep = tbl->type;
+    return name;
+}
+
+/**
+ * Return tag value from name.
+ * @todo bsearch on sorted name table.
+ * @param tbl		tag table
+ * @param name		tag name to find
+ * @return		tag value, 0 on not found
+ */
+static uint32_t myTagValue(headerTagTableEntry tbl, const char * name)
+	/*@*/
+{
+    for (; tbl->name != NULL; tbl++) {
+	if (!xstrcasecmp(tbl->name, name))
+	    return tbl->val;
+    }
+    return 0;
+}
+
+/**
+ * Search extensions and tags for a name.
+ * @param hsa		headerSprintf args
+ * @param token		parsed fields
+ * @param name		name to find
+ * @return		0 on success, 1 on not found
+ */
+static int findTag(headerSprintfArgs hsa, sprintfToken token, const char * name)
+	/*@modifies token @*/
+{
+    headerSprintfExtension exts = hsa->exts;
+    headerSprintfExtension ext;
+    sprintfTag stag = (token->type == PTOK_COND
+	? &token->u.cond.tag : &token->u.tag);
+    int extNum;
+
+    stag->fmt = NULL;
+    stag->ext = NULL;
+    stag->extNum = 0;
+    stag->tagno = -1;
+
+    if (!strcmp(name, "*")) {
+	stag->tagno = -2;
+	goto bingo;
+    }
+
+    if (strncmp("RPMTAG_", name, sizeof("RPMTAG_")-1)) {
+	char * t = alloca(strlen(name) + sizeof("RPMTAG_"));
+	(void) stpcpy( stpcpy(t, "RPMTAG_"), name);
+	name = t;
+    }
+
+    /* Search extensions for specific tag override. */
+    for (ext = exts, extNum = 0; ext != NULL && ext->type != HEADER_EXT_LAST;
+	ext = (ext->type == HEADER_EXT_MORE ? *ext->u.more : ext+1), extNum++)
+    {
+	if (ext->name == NULL || ext->type != HEADER_EXT_TAG)
+	    continue;
+	if (!xstrcasecmp(ext->name, name)) {
+	    stag->ext = ext->u.tagFunction;
+	    stag->extNum = extNum;
+	    goto bingo;
+	}
+    }
+
+    /* Search tag names. */
+    stag->tagno = myTagValue(hsa->tags, name);
+    if (stag->tagno != 0)
+	goto bingo;
+
+    return 1;
+
+bingo:
+    /* Search extensions for specific format. */
+    if (stag->type != NULL)
+    for (ext = exts; ext != NULL && ext->type != HEADER_EXT_LAST;
+	    ext = (ext->type == HEADER_EXT_MORE ? *ext->u.more : ext+1))
+    {
+	if (ext->name == NULL || ext->type != HEADER_EXT_FORMAT)
+	    continue;
+	if (!strcmp(ext->name, stag->type)) {
+	    stag->fmt = ext->u.fmtFunction;
+	    break;
+	}
+    }
+    return 0;
+}
+
+/* forward ref */
+/**
+ * Parse a headerSprintf expression.
+ * @param hsa		headerSprintf args
+ * @param token
+ * @param str
+ * @retval *endPtr
+ * @return		0 on success
+ */
+static int parseExpression(headerSprintfArgs hsa, sprintfToken token,
+		char * str, /*@out@*/char ** endPtr)
+	/*@modifies hsa, str, token, *endPtr @*/
+	/*@requires maxSet(endPtr) >= 0 @*/;
+
+/**
+ * Parse a headerSprintf term.
+ * @param hsa		headerSprintf args
+ * @param str
+ * @retval *formatPtr
+ * @retval *numTokensPtr
+ * @retval *endPtr
+ * @param state
+ * @return		0 on success
+ */
+static int parseFormat(headerSprintfArgs hsa, /*@null@*/ char * str,
+		/*@out@*/ sprintfToken * formatPtr,
+		/*@out@*/ size_t * numTokensPtr,
+		/*@null@*/ /*@out@*/ char ** endPtr, int state)
+	/*@modifies hsa, str, *formatPtr, *numTokensPtr, *endPtr @*/
+	/*@requires maxSet(formatPtr) >= 0 /\ maxSet(numTokensPtr) >= 0
+		/\ maxSet(endPtr) >= 0 @*/
+{
+    char * chptr, * start, * next, * dst;
+    sprintfToken format;
+    sprintfToken token;
+    size_t numTokens;
+    unsigned i;
+    int done = 0;
+
+    /* upper limit on number of individual formats */
+    numTokens = 0;
+    if (str != NULL)
+    for (chptr = str; *chptr != '\0'; chptr++)
+	if (*chptr == '%') numTokens++;
+    numTokens = numTokens * 2 + 1;
+
+    format = xcalloc(numTokens, sizeof(*format));
+    if (endPtr) *endPtr = NULL;
+
+/*@-infloops@*/ /* LCL: can't detect done termination */
+    dst = start = str;
+    numTokens = 0;
+    token = NULL;
+    if (start != NULL)
+    while (*start != '\0') {
+	switch (*start) {
+	case '%':
+	    /* handle %% */
+	    if (*(start + 1) == '%') {
+		if (token == NULL || token->type != PTOK_STRING) {
+		    token = format + numTokens++;
+		    token->type = PTOK_STRING;
+		    /*@-temptrans -assignexpose@*/
+		    dst = token->u.string.string = start;
+		    /*@=temptrans =assignexpose@*/
+		}
+		start++;
+		*dst++ = *start++;
+		/*@switchbreak@*/ break;
+	    } 
+
+	    token = format + numTokens++;
+	    *dst++ = '\0';
+	    start++;
+
+	    if (*start == '|') {
+		char * newEnd;
+
+		start++;
+		if (parseExpression(hsa, token, start, &newEnd))
+		{
+		    format = freeFormat(format, numTokens);
+		    return 1;
+		}
+		start = newEnd;
+		/*@switchbreak@*/ break;
+	    }
+
+	    /*@-assignexpose@*/
+	    token->u.tag.format = start;
+	    /*@=assignexpose@*/
+	    token->u.tag.pad = 0;
+	    token->u.tag.justOne = 0;
+	    token->u.tag.arrayCount = 0;
+
+	    chptr = start;
+	    while (*chptr && *chptr != '{' && *chptr != '%') chptr++;
+	    if (!*chptr || *chptr == '%') {
+		hsa->errmsg = _("missing { after %");
+		format = freeFormat(format, numTokens);
+		return 1;
+	    }
+
+	    *chptr++ = '\0';
+
+	    while (start < chptr) {
+		if (xisdigit((int)*start)) {
+		    i = strtoul(start, &start, 10);
+		    token->u.tag.pad += i;
+		    start = chptr;
+		    /*@innerbreak@*/ break;
+		} else {
+		    start++;
+		}
+	    }
+
+	    if (*start == '=') {
+		token->u.tag.justOne = 1;
+		start++;
+	    } else if (*start == '#') {
+		token->u.tag.justOne = 1;
+		token->u.tag.arrayCount = 1;
+		start++;
+	    }
+
+	    next = start;
+	    while (*next && *next != '}') next++;
+	    if (!*next) {
+		hsa->errmsg = _("missing } after %{");
+		format = freeFormat(format, numTokens);
+		return 1;
+	    }
+	    *next++ = '\0';
+
+	    chptr = start;
+	    while (*chptr && *chptr != ':') chptr++;
+
+	    if (*chptr != '\0') {
+		*chptr++ = '\0';
+		if (!*chptr) {
+		    hsa->errmsg = _("empty tag format");
+		    format = freeFormat(format, numTokens);
+		    return 1;
+		}
+		/*@-assignexpose@*/
+		token->u.tag.type = chptr;
+		/*@=assignexpose@*/
+	    } else {
+		token->u.tag.type = NULL;
+	    }
+	    
+	    if (!*start) {
+		hsa->errmsg = _("empty tag name");
+		format = freeFormat(format, numTokens);
+		return 1;
+	    }
+
+	    i = 0;
+	    token->type = PTOK_TAG;
+
+	    if (findTag(hsa, token, start)) {
+		hsa->errmsg = _("unknown tag");
+		format = freeFormat(format, numTokens);
+		return 1;
+	    }
+
+	    dst = start = next;
+	    /*@switchbreak@*/ break;
+
+	case '[':
+	    *start++ = '\0';
+	    token = format + numTokens++;
+
+	    if (parseFormat(hsa, start,
+			    &token->u.array.format,
+			    &token->u.array.numTokens,
+			    &start, PARSER_IN_ARRAY))
+	    {
+		format = freeFormat(format, numTokens);
+		return 1;
+	    }
+
+	    if (!start) {
+		hsa->errmsg = _("] expected at end of array");
+		format = freeFormat(format, numTokens);
+		return 1;
+	    }
+
+	    dst = start;
+
+	    token->type = PTOK_ARRAY;
+
+	    /*@switchbreak@*/ break;
+
+	case ']':
+	    if (state != PARSER_IN_ARRAY) {
+		hsa->errmsg = _("unexpected ]");
+		format = freeFormat(format, numTokens);
+		return 1;
+	    }
+	    *start++ = '\0';
+	    if (endPtr) *endPtr = start;
+	    done = 1;
+	    /*@switchbreak@*/ break;
+
+	case '}':
+	    if (state != PARSER_IN_EXPR) {
+		hsa->errmsg = _("unexpected }");
+		format = freeFormat(format, numTokens);
+		return 1;
+	    }
+	    *start++ = '\0';
+	    if (endPtr) *endPtr = start;
+	    done = 1;
+	    /*@switchbreak@*/ break;
+
+	default:
+	    if (token == NULL || token->type != PTOK_STRING) {
+		token = format + numTokens++;
+		token->type = PTOK_STRING;
+		/*@-temptrans -assignexpose@*/
+		dst = token->u.string.string = start;
+		/*@=temptrans =assignexpose@*/
+	    }
+
+	    if (*start == '\\') {
+		start++;
+		*dst++ = escapedChar(*start++);
+	    } else {
+		*dst++ = *start++;
+	    }
+	    /*@switchbreak@*/ break;
+	}
+	if (done)
+	    break;
+    }
+/*@=infloops@*/
+
+    if (dst != NULL)
+        *dst = '\0';
+
+    for (i = 0; i < (unsigned) numTokens; i++) {
+	token = format + i;
+	switch(token->type) {
+	default:
+	    /*@switchbreak@*/ break;
+	case PTOK_STRING:
+	    token->u.string.len = strlen(token->u.string.string);
+	    /*@switchbreak@*/ break;
+	}
+    }
+
+    if (numTokensPtr != NULL)
+	*numTokensPtr = numTokens;
+    if (formatPtr != NULL)
+	*formatPtr = format;
+
+    return 0;
+}
+
+static int parseExpression(headerSprintfArgs hsa, sprintfToken token,
+		char * str, /*@out@*/ char ** endPtr)
+{
+    char * chptr;
+    char * end;
+
+    hsa->errmsg = NULL;
+    chptr = str;
+    while (*chptr && *chptr != '?') chptr++;
+
+    if (*chptr != '?') {
+	hsa->errmsg = _("? expected in expression");
+	return 1;
+    }
+
+    *chptr++ = '\0';
+
+    if (*chptr != '{') {
+	hsa->errmsg = _("{ expected after ? in expression");
+	return 1;
+    }
+
+    chptr++;
+
+    if (parseFormat(hsa, chptr, &token->u.cond.ifFormat, 
+		    &token->u.cond.numIfTokens, &end, PARSER_IN_EXPR)) 
+	return 1;
+
+    /* XXX fix segfault on "rpm -q rpm --qf='%|NAME?{%}:{NAME}|\n'"*/
+    if (!(end && *end)) {
+	hsa->errmsg = _("} expected in expression");
+	token->u.cond.ifFormat =
+		freeFormat(token->u.cond.ifFormat, token->u.cond.numIfTokens);
+	return 1;
+    }
+
+    chptr = end;
+    if (*chptr != ':' && *chptr != '|') {
+	hsa->errmsg = _(": expected following ? subexpression");
+	token->u.cond.ifFormat =
+		freeFormat(token->u.cond.ifFormat, token->u.cond.numIfTokens);
+	return 1;
+    }
+
+    if (*chptr == '|') {
+	if (parseFormat(hsa, NULL, &token->u.cond.elseFormat, 
+		&token->u.cond.numElseTokens, &end, PARSER_IN_EXPR))
+	{
+	    token->u.cond.ifFormat =
+		freeFormat(token->u.cond.ifFormat, token->u.cond.numIfTokens);
+	    return 1;
+	}
+    } else {
+	chptr++;
+
+	if (*chptr != '{') {
+	    hsa->errmsg = _("{ expected after : in expression");
+	    token->u.cond.ifFormat =
+		freeFormat(token->u.cond.ifFormat, token->u.cond.numIfTokens);
+	    return 1;
+	}
+
+	chptr++;
+
+	if (parseFormat(hsa, chptr, &token->u.cond.elseFormat, 
+			&token->u.cond.numElseTokens, &end, PARSER_IN_EXPR)) 
+	    return 1;
+
+	/* XXX fix segfault on "rpm -q rpm --qf='%|NAME?{a}:{%}|{NAME}\n'" */
+	if (!(end && *end)) {
+	    hsa->errmsg = _("} expected in expression");
+	    token->u.cond.ifFormat =
+		freeFormat(token->u.cond.ifFormat, token->u.cond.numIfTokens);
+	    return 1;
+	}
+
+	chptr = end;
+	if (*chptr != '|') {
+	    hsa->errmsg = _("| expected at end of expression");
+	    token->u.cond.ifFormat =
+		freeFormat(token->u.cond.ifFormat, token->u.cond.numIfTokens);
+	    token->u.cond.elseFormat =
+		freeFormat(token->u.cond.elseFormat, token->u.cond.numElseTokens);
+	    return 1;
+	}
+    }
+	
+    chptr++;
+
+    *endPtr = chptr;
+
+    token->type = PTOK_COND;
+
+    (void) findTag(hsa, token, str);
+
+    return 0;
+}
+
+/**
+ * Call a header extension only once, saving results.
+ * @param hsa		headerSprintf args
+ * @param fn		function
+ * @retval he		tag container
+ * @retval ec		extension cache
+ * @return		0 on success, 1 on failure
+ */
+static int getExtension(headerSprintfArgs hsa, headerTagTagFunction fn,
+		HE_t he, HE_t ec)
+	/*@modifies he, ec @*/
+{
+    int rc = 0;
+    if (!ec->avail) {
+	he = rpmheClean(he);
+	rc = fn(hsa->h, he);
+	*ec = *he;	/* structure copy. */
+	if (!rc)
+	    ec->avail = 1;
+    } else
+	*he = *ec;	/* structure copy. */
+    he->freeData = 0;
+    return rc;
+}
+
+/**
+ * Format a single item's value.
+ * @param hsa		headerSprintf args
+ * @param tag		tag
+ * @param element	element index
+ * @return		end of formatted string (NULL on error)
+ */
+/*@observer@*/ /*@null@*/
+static char * formatValue(headerSprintfArgs hsa, sprintfTag tag,
+		uint32_t element)
+	/*@globals headerCompoundFormats @*/
+	/*@modifies hsa, tag @*/
+{
+    HE_t vhe = memset(alloca(sizeof(*vhe)), 0, sizeof(*vhe));
+    HE_t he = &tag->he;
+    char * val = NULL;
+    size_t need = 0;
+    char * t, * te;
+    uint64_t ival = 0;
+    rpmTagCount countBuf;
+    int xx;
+
+    if (!he->avail) {
+	if (tag->ext) {
+	    xx = getExtension(hsa, tag->ext, he, hsa->ec + tag->extNum);
+	} else {
+	    he->tag = tag->tagno;	/* XXX necessary? */
+	    if (_usehge) {
+		xx = headerGetExtension(hsa->h, he, 0);
+		if (xx)		/* XXX 1 on success */
+		    he->freeData = 1;
+	    } else {
+		xx = headerGetEntry(hsa->h, he->tag, &he->t, &he->p, &he->c);
+		if (xx)		/* XXX 1 on success */
+		    he = rpmheMark(he);
+	    }
+	    xx = (xx == 0);	/* XXX invert headerGetEntry return. */
+	}
+	if (xx) {
+	    (void) rpmheClean(he);
+	    he->t = RPM_STRING_TYPE;	
+	    he->p.str = xstrdup("(none)");
+	    he->c = 1;
+	}
+	he->avail = 1;
+    }
+
+    if (tag->arrayCount) {
+	countBuf = he->c;
+	he = rpmheClean(he);
+	he->t = RPM_UINT32_TYPE;
+	he->p.ui32p = &countBuf;
+	he->c = 1;
+	he->freeData = 0;
+    }
+
+    if (he->p.ptr)
+    switch (he->t) {
+    default:
+	val = xstrdup("(unknown type)");
+	need = strlen(val) + 1;
+	goto exit;
+	/*@notreached@*/ break;
+    case RPM_I18NSTRING_TYPE:
+    case RPM_STRING_ARRAY_TYPE:
+	vhe->t = RPM_STRING_TYPE;
+	vhe->p.str = he->p.argv[element];
+	vhe->c = he->c;
+	/* XXX TODO: force array representation? */
+	vhe->ix = (he->c > 1 ? 0 : -1);
+	break;
+    case RPM_STRING_TYPE:
+	vhe->p.str = he->p.str;
+	vhe->t = RPM_STRING_TYPE;
+	vhe->c = he->c;
+	vhe->ix = -1;
+	break;
+    case RPM_UINT8_TYPE:
+    case RPM_UINT16_TYPE:
+    case RPM_UINT32_TYPE:
+    case RPM_UINT64_TYPE:
+	switch (he->t) {
+	default:
+assert(0);	/* XXX keep gcc quiet. */
+	    /*@innerbreak@*/ break;
+	case RPM_UINT8_TYPE:
+	    ival = he->p.ui8p[element];
+	    /*@innerbreak@*/ break;
+	case RPM_UINT16_TYPE:
+	    ival = he->p.ui16p[element];	/* XXX note unsigned. */
+	    /*@innerbreak@*/ break;
+	case RPM_UINT32_TYPE:
+	    ival = he->p.ui32p[element];
+	    /*@innerbreak@*/ break;
+	case RPM_UINT64_TYPE:
+	    ival = he->p.ui64p[element];
+	    /*@innerbreak@*/ break;
+	}
+	vhe->t = RPM_UINT64_TYPE;
+	vhe->p.ui64p = &ival;
+	vhe->c = he->c;
+	/* XXX TODO: force array representation? */
+	vhe->ix = (he->c > 1 ? 0 : -1);
+	break;
+
+    case RPM_BIN_TYPE:
+	vhe->t = RPM_BIN_TYPE;
+	vhe->p.ptr = he->p.ptr;
+	vhe->c = he->c;
+	vhe->ix = -1;
+	break;
+    }
+
+/*@-compmempass@*/	/* vhe->p.ui64p is stack, not owned */
+    if (tag->fmt)
+	val = tag->fmt(vhe);
+    else
+	val = intFormat(vhe, NULL);
+/*@=compmempass@*/
+assert(val != NULL);
+    if (val)
+	need = strlen(val) + 1;
+
+exit:
+/*@-compmempass@*/	/* he->p.ptr is dependent, not owned @*/
+    if (!_tagcache)
+	he = rpmheClean(he);
+/*@=compmempass@*/
+
+    if (val && need > 0) {
+	if (tag->format && *tag->format && tag->pad) {
+	    size_t nb;
+	    nb = strlen(tag->format) + sizeof("%s");
+	    t = alloca(nb);
+	    (void) stpcpy( stpcpy( stpcpy(t, "%"), tag->format), "s");
+	    nb = tag->pad + strlen(val) + 1;
+	    te = xmalloc(nb);
+/*@-formatconst@*/
+	    (void) snprintf(te, nb, t, val);
+/*@=formatconst@*/
+	    te[nb-1] = '\0';
+	    val = _free(val);
+	    val = te;
+	    need += tag->pad;
+	}
+	t = hsaReserve(hsa, need);
+	te = stpcpy(t, val);
+	hsa->vallen += (te - t);
+	val = _free(val);
+    }
+
+    return (hsa->val + hsa->vallen);
+}
+
+/**
+ * Format a single headerSprintf item.
+ * @param hsa		headerSprintf args
+ * @param token		item to format
+ * @param element	element index
+ * @return		end of formatted string (NULL on error)
+ */
+/*@observer@*/
+static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
+		uint32_t element)
+	/*@globals headerCompoundFormats @*/
+	/*@modifies hsa, token @*/
+{
+    char numbuf[64];	/* XXX big enuf for "Tag_0x01234567" */
+    char * t, * te;
+    uint32_t i, j;
+    uint32_t numElements;
+    sprintfToken spft;
+    sprintfTag tag = NULL;
+    HE_t he = NULL;
+    uint32_t condNumFormats;
+    size_t need;
+    int xx;
+
+    /* we assume the token and header have been validated already! */
+
+    switch (token->type) {
+    case PTOK_NONE:
+	break;
+
+    case PTOK_STRING:
+	need = token->u.string.len;
+	if (need == 0) break;
+	t = hsaReserve(hsa, need);
+	te = stpcpy(t, token->u.string.string);
+	hsa->vallen += (te - t);
+	break;
+
+    case PTOK_TAG:
+	t = hsa->val + hsa->vallen;
+/*@-modobserver@*/	/* headerCompoundFormats not modified. */
+	te = formatValue(hsa, &token->u.tag,
+			(token->u.tag.justOne ? 0 : element));
+/*@=modobserver@*/
+	if (te == NULL)
+	    return NULL;
+	break;
+
+    case PTOK_COND:
+	if (token->u.cond.tag.ext
+	 || headerIsEntry(hsa->h, token->u.cond.tag.tagno))
+	{
+	    spft = token->u.cond.ifFormat;
+	    condNumFormats = token->u.cond.numIfTokens;
+	} else {
+	    spft = token->u.cond.elseFormat;
+	    condNumFormats = token->u.cond.numElseTokens;
+	}
+
+	need = condNumFormats * 20;
+	if (spft == NULL || need == 0) break;
+
+	t = hsaReserve(hsa, need);
+	for (i = 0; i < condNumFormats; i++, spft++) {
+/*@-modobserver@*/	/* headerCompoundFormats not modified. */
+	    te = singleSprintf(hsa, spft, element);
+/*@=modobserver@*/
+	    if (te == NULL)
+		return NULL;
+	}
+	break;
+
+    case PTOK_ARRAY:
+	numElements = 0;
+	spft = token->u.array.format;
+	for (i = 0; i < token->u.array.numTokens; i++, spft++)
+	{
+	    tag = &spft->u.tag;
+	    if (spft->type != PTOK_TAG || tag->arrayCount || tag->justOne)
+		continue;
+	    he = &tag->he;
+	    if (!he->avail) {
+		he->tag = tag->tagno;
+		if (tag->ext)
+		    xx = getExtension(hsa, tag->ext, he, hsa->ec + tag->extNum);
+		else {
+		    if (_usehge) {
+			xx = headerGetExtension(hsa->h, he, 0);
+			if (xx)
+			    he->freeData = 1;
+		    } else {
+			xx = headerGetEntry(hsa->h, he->tag, &he->t, &he->p, &he->c);
+			if (xx)	/* XXX 1 on success */
+			    he = rpmheMark(he);
+		    }
+		    xx = (xx == 0);     /* XXX invert headerGetEntry return. */
+		}
+		if (xx) {
+		    (void) rpmheClean(he);
+		    continue;
+		}
+		he->avail = 1;
+	    }
+
+	    /* Check iteration arrays are same dimension (or scalar). */
+	    switch (he->t) {
+	    default:
+		if (numElements == 0) {
+		    numElements = he->c;
+		    /*@switchbreak@*/ break;
+		}
+		if (he->c == numElements)
+		    /*@switchbreak@*/ break;
+		hsa->errmsg =
+			_("array iterator used with different sized arrays");
+		he = rpmheClean(he);
+		return NULL;
+		/*@notreached@*/ /*@switchbreak@*/ break;
+	    case RPM_BIN_TYPE:
+	    case RPM_STRING_TYPE:
+		if (numElements == 0)
+		    numElements = 1;
+		/*@switchbreak@*/ break;
+	    }
+	    if (!_tagcache)
+		he = rpmheClean(he);
+	}
+	spft = token->u.array.format;
+
+	if (numElements == 0) {
+#ifdef	DYING	/* XXX lots of pugly "(none)" lines with --conflicts. */
+	    need = sizeof("(none)\n") - 1;
+	    t = hsaReserve(hsa, need);
+	    te = stpcpy(t, "(none)\n");
+	    hsa->vallen += (te - t);
+#endif
+	} else {
+	    int isxml;
+	    int isyaml;
+
+	    need = numElements * token->u.array.numTokens;
+	    if (need == 0) break;
+
+	    tag = &spft->u.tag;
+
+	    isxml = (spft->type == PTOK_TAG && tag->type != NULL &&
+		!strcmp(tag->type, "xml"));
+	    isyaml = (spft->type == PTOK_TAG && tag->type != NULL &&
+		!strcmp(tag->type, "yaml"));
+
+	    if (isxml) {
+		const char * tagN = myTagName(hsa->tags, tag->tagno, NULL);
+		/* XXX display "Tag_0x01234567" for unknown tags. */
+		if (tagN == NULL) {
+		    (void) snprintf(numbuf, sizeof(numbuf), "Tag_0x%08x",
+				(unsigned) tag->tagno);
+		    numbuf[sizeof(numbuf)-1] = '\0';
+		    tagN = numbuf;
+		}
+		need = sizeof("  <rpmTag name=\"\">\n") + strlen(tagN);
+		te = t = hsaReserve(hsa, need);
+		te = stpcpy( stpcpy( stpcpy(te, "  <rpmTag name=\""), tagN), "\">\n");
+		hsa->vallen += (te - t);
+	    }
+	    if (isyaml) {
+		rpmTag tagT = 0;
+		const char * tagN = myTagName(hsa->tags, tag->tagno, &tagT);
+		/* XXX display "Tag_0x01234567" for unknown tags. */
+		if (tagN == NULL) {
+		    (void) snprintf(numbuf, sizeof(numbuf), "Tag_0x%08x",
+				(unsigned) tag->tagno);
+		    numbuf[sizeof(numbuf)-1] = '\0';
+		    tagN = numbuf;
+/*@-type@*/
+		    tagT = numElements > 1
+			?  RPM_ARRAY_RETURN_TYPE : RPM_SCALAR_RETURN_TYPE;
+/*@=type@*/
+		}
+		need = sizeof("  :     - ") + strlen(tagN);
+		te = t = hsaReserve(hsa, need);
+		*te++ = ' ';
+		*te++ = ' ';
+		te = stpcpy(te, tagN);
+		*te++ = ':';
+/*@-type@*/
+		*te++ = (((tagT & RPM_MASK_RETURN_TYPE) == RPM_ARRAY_RETURN_TYPE)
+			? '\n' : ' ');
+/*@=type@*/
+		/* XXX Dirnames: in srpms need "    " indent */
+/*@-type@*/
+		if (((tagT & RPM_MASK_RETURN_TYPE) == RPM_ARRAY_RETURN_TYPE)
+		 && numElements == 1)
+/*@=type@*/
+		{
+		    te = stpcpy(te, "    ");
+		    if (tag->tagno != 1118)
+			te = stpcpy(te, "- ");
+		}
+		*te = '\0';
+		hsa->vallen += (te - t);
+	    }
+
+	    need = numElements * token->u.array.numTokens * 10;
+	    t = hsaReserve(hsa, need);
+	    for (j = 0; j < numElements; j++) {
+		spft = token->u.array.format;
+		for (i = 0; i < token->u.array.numTokens; i++, spft++) {
+/*@-modobserver@*/	/* headerCompoundFormats not modified. */
+		    te = singleSprintf(hsa, spft, j);
+/*@=modobserver@*/
+		    if (te == NULL)
+			return NULL;
+		}
+	    }
+
+	    if (isxml) {
+		need = sizeof("  </rpmTag>\n") - 1;
+		te = t = hsaReserve(hsa, need);
+		te = stpcpy(te, "  </rpmTag>\n");
+		hsa->vallen += (te - t);
+	    }
+	    if (isyaml) {
+#if 0
+		need = sizeof("\n") - 1;
+		te = t = hsaReserve(hsa, need);
+		te = stpcpy(te, "\n");
+		hsa->vallen += (te - t);
+#endif
+	    }
+
+	}
+	break;
+    }
+
+    return (hsa->val + hsa->vallen);
+}
+
+/**
+ * Create an extension cache.
+ * @param exts		headerSprintf extensions
+ * @retval *necp	no. of elements (or NULL)
+ * @return		new extension cache
+ */
+static /*@only@*/ HE_t
+rpmecNew(const headerSprintfExtension exts, /*@null@*/ int * necp)
+	/*@modifies *necp @*/
+{
+    headerSprintfExtension ext;
+    HE_t ec;
+    int extNum = 0;
+
+    if (exts != NULL)
+    for (ext = exts, extNum = 0; ext != NULL && ext->type != HEADER_EXT_LAST;
+	ext = (ext->type == HEADER_EXT_MORE ? *ext->u.more : ext+1), extNum++)
+    {
+	;
+    }
+    if (necp)
+	*necp = extNum;
+    ec = xcalloc(extNum+1, sizeof(*ec));	/* XXX +1 unnecessary */
+    return ec;
+}
+
+/**
+ * Destroy an extension cache.
+ * @param exts		headerSprintf extensions
+ * @param ec		extension cache
+ * @return		NULL always
+ */
+static /*@null@*/ HE_t
+rpmecFree(const headerSprintfExtension exts, /*@only@*/ HE_t ec)
+	/*@modifies ec @*/
+{
+    headerSprintfExtension ext;
+    int extNum;
+
+    for (ext = exts, extNum = 0; ext != NULL && ext->type != HEADER_EXT_LAST;
+	ext = (ext->type == HEADER_EXT_MORE ? *ext->u.more : ext+1), extNum++)
+    {
+	(void) rpmheClean(&ec[extNum]);
+    }
+
+    ec = _free(ec);
+    return NULL;
+}
+
+char * headerSprintf(Header h, const char * fmt,
+		headerTagTableEntry tags,
+		headerSprintfExtension exts,
+		errmsg_t * errmsg)
+{
+    headerSprintfArgs hsa = memset(alloca(sizeof(*hsa)), 0, sizeof(*hsa));
+    sprintfToken nextfmt;
+    sprintfTag tag;
+    char * t, * te;
+    int isxml;
+    int isyaml;
+    int need;
+
+    /* Set some reasonable defaults */
+    if (tags == NULL)
+	tags = rpmTagTable;
+    /* XXX this loses the extensions in lib/formats.c. */
+    if (exts == NULL)
+	exts = headerCompoundFormats;
+ 
+    hsa->h = headerLink(h);
+    hsa->fmt = xstrdup(fmt);
+/*@-dependenttrans@*/
+    hsa->exts = exts;
+    hsa->tags = tags;
+/*@=dependenttrans@*/
+    hsa->errmsg = NULL;
+
+    if (parseFormat(hsa, hsa->fmt, &hsa->format, &hsa->numTokens, NULL, PARSER_BEGIN))
+	goto exit;
+
+    hsa->nec = 0;
+    hsa->ec = rpmecNew(hsa->exts, &hsa->nec);
+    hsa->val = xstrdup("");
+
+    tag =
+	(hsa->format->type == PTOK_TAG
+	    ? &hsa->format->u.tag :
+	(hsa->format->type == PTOK_ARRAY
+	    ? &hsa->format->u.array.format->u.tag :
+	NULL));
+    isxml = (tag != NULL && tag->tagno == -2 && tag->type != NULL && !strcmp(tag->type, "xml"));
+    isyaml = (tag != NULL && tag->tagno == -2 && tag->type != NULL && !strcmp(tag->type, "yaml"));
+
+    if (isxml) {
+	need = sizeof("<rpmHeader>\n") - 1;
+	t = hsaReserve(hsa, need);
+	te = stpcpy(t, "<rpmHeader>\n");
+	hsa->vallen += (te - t);
+    }
+    if (isyaml) {
+	need = sizeof("- !!omap\n") - 1;
+	t = hsaReserve(hsa, need);
+	te = stpcpy(t, "- !!omap\n");
+	hsa->vallen += (te - t);
+    }
+
+    hsa = hsaInit(hsa);
+    while ((nextfmt = hsaNext(hsa)) != NULL) {
+/*@-modobserver@*/	/* headerCompoundFormats not modified. */
+	te = singleSprintf(hsa, nextfmt, 0);
+/*@=modobserver@*/
+	if (te == NULL) {
+	    hsa->val = _free(hsa->val);
+	    break;
+	}
+    }
+    hsa = hsaFini(hsa);
+
+    if (isxml) {
+	need = sizeof("</rpmHeader>\n") - 1;
+	t = hsaReserve(hsa, need);
+	te = stpcpy(t, "</rpmHeader>\n");
+	hsa->vallen += (te - t);
+    }
+    if (isyaml) {
+	need = sizeof("\n") - 1;
+	t = hsaReserve(hsa, need);
+	te = stpcpy(t, "\n");
+	hsa->vallen += (te - t);
+    }
+
+    if (hsa->val != NULL && hsa->vallen < hsa->alloced)
+	hsa->val = xrealloc(hsa->val, hsa->vallen+1);	
+
+    hsa->ec = rpmecFree(hsa->exts, hsa->ec);
+    hsa->nec = 0;
+    hsa->format = freeFormat(hsa->format, hsa->numTokens);
+
+exit:
+/*@-dependenttrans -observertrans @*/
+    if (errmsg)
+	*errmsg = hsa->errmsg;
+/*@=dependenttrans =observertrans @*/
+    hsa->h = headerFree(hsa->h);
+    hsa->fmt = _free(hsa->fmt);
+    return hsa->val;
 }

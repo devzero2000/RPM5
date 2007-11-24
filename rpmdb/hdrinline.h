@@ -495,27 +495,6 @@ int headerRemoveEntry(Header h, rpmTag tag)
 }
 
 /** \ingroup header
- * Return formatted output string from header tags.
- * The returned string must be free()d.
- *
- * @param h		header
- * @param fmt		format to use
- * @param tags		array of tag name/value/type triples (NULL uses default)
- * @param exts		formatting extensions chained table (NULL uses default)
- * @retval errmsg	error message (if any)
- * @return		formatted output string (malloc'ed)
- */
-/*@unused@*/ static inline
-/*@only@*/ char * headerSprintf(Header h, const char * fmt,
-		/*@null@*/ headerTagTableEntry tags,
-		/*@null@*/ headerSprintfExtension exts,
-		/*@null@*/ /*@out@*/ errmsg_t * errmsg)
-	/*@modifies *errmsg @*/
-{
-    return (h2hv(h)->hdrsprintf) (h, fmt, tags, exts, errmsg);
-}
-
-/** \ingroup header
  * Duplicate tag values from one header into another.
  * @param headerFrom	source header
  * @param headerTo	destination header
