@@ -1,4 +1,6 @@
 5.0a2 -> 5.0a3:
+    - jbj: use NULL default, not rpmTagTable, arg to headerSprintf everywhere.
+    - jbj: hdrfmt.c: relocate (and extend) rpmDisplayQueryTags.
     - jbj: add tag{Clean,Name,Value,Type} methods to librpmdb.
     - jbj: lose header.h in favor of rpmtag.h several places.
     - jbj: make "struct headerTagTableEntry_s" opaque.

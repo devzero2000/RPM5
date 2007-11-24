@@ -283,7 +283,7 @@ static PyObject * hdrSprintf(hdrObject * s, PyObject * args, PyObject * kwds)
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "s", kwlist, &fmt))
 	return NULL;
 
-    r = headerSprintf(s->h, fmt, rpmTagTable, rpmHeaderFormats, &err);
+    r = headerSprintf(s->h, fmt, NULL, rpmHeaderFormats, &err);
     if (!r) {
 	PyErr_SetString(pyrpmError, err);
 	return NULL;

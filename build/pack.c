@@ -1020,7 +1020,7 @@ int packageBinaries(Spec spec)
 	
 	{   const char *binFormat = rpmGetPath("%{_rpmfilename}", NULL);
 	    char *binRpm, *binDir;
-	    binRpm = headerSprintf(pkg->header, binFormat, rpmTagTable,
+	    binRpm = headerSprintf(pkg->header, binFormat, NULL,
 			       rpmHeaderFormats, &errorString);
 	    binFormat = _free(binFormat);
 	    if (binRpm == NULL) {

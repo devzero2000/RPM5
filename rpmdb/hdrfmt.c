@@ -5,6 +5,7 @@
 #include "system.h"
 
 #include "rpmio_internal.h"
+#include <rpmcb.h>	/* XXX rpmIsVerbose */
 #include <rpmmacro.h>	/* XXX for %_i18ndomains */
 
 #define	_RPMTAG_INTERNAL
@@ -1389,3 +1390,73 @@ static struct headerSprintfExtension_s _headerCompoundFormats[] = {
 /*@=type@*/
 
 headerSprintfExtension headerCompoundFormats = &_headerCompoundFormats[0];
+
+void rpmDisplayQueryTags(FILE * fp, headerTagTableEntry _rpmTagTable, headerSprintfExtension _rpmHeaderFormats)
+{
+    const struct headerTagTableEntry_s * t;
+    headerSprintfExtension exts;
+    headerSprintfExtension ext;
+    int extNum;
+    int i;
+
+    if (fp == NULL)
+	fp = stdout;
+    if (_rpmTagTable == NULL)
+	_rpmTagTable = rpmTagTable;
+
+    /* XXX this should use rpmHeaderFormats, but there are linkage problems. */
+    if (_rpmHeaderFormats == NULL)
+	_rpmHeaderFormats = headerCompoundFormats;
+
+/* XXX FIXME: don't use rpmTagTableSize here. */
+assert(_rpmTagTable == rpmTagTable);
+    for (i = 0, t = _rpmTagTable; i < rpmTagTableSize; i++, t++) {
+	uint32_t ttype;
+
+	if (t->name == NULL)
+	    continue;
+	if (rpmIsVerbose()) {
+	    /*@observer@*/
+	    static const char * tagtypes[] = {
+		"", "char", "uint8", "uint16", "uint32", "uint64",
+		"string", "octets", "argv", "i18nstring",
+	    };
+	    fprintf(fp, "%-20s %6d", t->name + 7, t->val);
+	    ttype = t->type & RPM_MASK_TYPE;
+	    if (ttype < RPM_MIN_TYPE || ttype > RPM_MAX_TYPE)
+		continue;
+	    if (t->type & RPM_OPENPGP_RETURN_TYPE)
+		fprintf(fp, " openpgp");
+	    if (t->type & RPM_X509_RETURN_TYPE)
+		fprintf(fp, " x509");
+	    if (t->type & RPM_ASN1_RETURN_TYPE)
+		fprintf(fp, " asn1");
+	    if (t->type & RPM_OPAQUE_RETURN_TYPE)
+		fprintf(fp, " opaque");
+	    fprintf(fp, " %s", tagtypes[ttype]);
+	    if (t->type & RPM_ARRAY_RETURN_TYPE)
+		fprintf(fp, " array");
+	    if (t->type & RPM_MAPPING_RETURN_TYPE)
+		fprintf(fp, " mapping");
+	    if (t->type & RPM_PROBE_RETURN_TYPE)
+		fprintf(fp, " probe");
+	    if (t->type & RPM_TREE_RETURN_TYPE)
+		fprintf(fp, " tree");
+	} else
+	    fprintf(fp, "%s", t->name + 7);
+	fprintf(fp, "\n");
+    }
+
+    exts = _rpmHeaderFormats;
+    for (ext = exts, extNum = 0; ext != NULL && ext->type != HEADER_EXT_LAST;
+	ext = (ext->type == HEADER_EXT_MORE ? *ext->u.more : ext+1), extNum++)
+    {
+	if (ext->name == NULL || ext->type != HEADER_EXT_TAG)
+	    continue;
+
+	/* XXX don't print header tags twice. */
+	if (tagValue(ext->name) > 0)
+	    continue;
+	fprintf(fp, "%s\n", ext->name + 7);
+    }
+}

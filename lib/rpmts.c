@@ -393,7 +393,7 @@ int rpmtsSolve(rpmts ts, rpmds ds, /*@unused@*/ const void * data)
     qfmt = rpmExpand("%{?_solve_name_fmt}", NULL);
     if (qfmt == NULL || *qfmt == '\0')
 	goto exit;
-    str = headerSprintf(bh, qfmt, rpmTagTable, rpmHeaderFormats, &errstr);
+    str = headerSprintf(bh, qfmt, NULL, rpmHeaderFormats, &errstr);
     bh = headerFree(bh);
     qfmt = _free(qfmt);
     if (str == NULL) {

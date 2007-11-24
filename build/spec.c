@@ -692,7 +692,7 @@ printNewSpecfile(Spec spec)
 	msgstr = _free(msgstr);
 
 	/* XXX this should use queryHeader(), but prints out tn as well. */
-	msgstr = headerSprintf(h, fmt, rpmTagTable, rpmHeaderFormats, &errstr);
+	msgstr = headerSprintf(h, fmt, NULL, rpmHeaderFormats, &errstr);
 	if (msgstr == NULL) {
 	    rpmlog(RPMLOG_ERR, _("can't query %s: %s\n"), tn, errstr);
 	    return;

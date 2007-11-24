@@ -117,7 +117,7 @@ static inline /*@null@*/ const char * queryHeader(Header h, const char * qfmt)
     const char * str;
 
 /*@-modobserver@*/
-    str = headerSprintf(h, qfmt, rpmTagTable, rpmHeaderFormats, &errstr);
+    str = headerSprintf(h, qfmt, NULL, rpmHeaderFormats, &errstr);
 /*@=modobserver@*/
     if (str == NULL)
 	rpmlog(RPMLOG_ERR, _("incorrect format: %s\n"), errstr);
@@ -352,63 +352,6 @@ exit:
 
     fi = rpmfiFree(fi);
     return rc;
-}
-
-void rpmDisplayQueryTags(FILE * fp)
-{
-    const struct headerTagTableEntry_s * t;
-    uint32_t ttype;
-    headerSprintfExtension exts = rpmHeaderFormats;
-    headerSprintfExtension ext;
-    int extNum;
-    int i;
-
-    for (i = 0, t = rpmTagTable; i < rpmTagTableSize; i++, t++) {
-	if (t->name == NULL)
-	    continue;
-	if (rpmIsVerbose()) {
-	    /*@observer@*/
-	    static const char * tagtypes[] = {
-		"", "char", "uint8", "uint16", "uint32", "uint64",
-		"string", "octets", "argv", "i18nstring",
-	    };
-	    fprintf(fp, "%-20s %6d", t->name + 7, t->val);
-	    ttype = t->type & RPM_MASK_TYPE;
-	    if (ttype < RPM_MIN_TYPE || ttype > RPM_MAX_TYPE)
-		continue;
-	    if (t->type & RPM_OPENPGP_RETURN_TYPE)
-		fprintf(fp, " openpgp");
-	    if (t->type & RPM_X509_RETURN_TYPE)
-		fprintf(fp, " x509");
-	    if (t->type & RPM_ASN1_RETURN_TYPE)
-		fprintf(fp, " asn1");
-	    if (t->type & RPM_OPAQUE_RETURN_TYPE)
-		fprintf(fp, " opaque");
-	    fprintf(fp, " %s", tagtypes[ttype]);
-	    if (t->type & RPM_ARRAY_RETURN_TYPE)
-		fprintf(fp, " array");
-	    if (t->type & RPM_MAPPING_RETURN_TYPE)
-		fprintf(fp, " mapping");
-	    if (t->type & RPM_PROBE_RETURN_TYPE)
-		fprintf(fp, " probe");
-	    if (t->type & RPM_TREE_RETURN_TYPE)
-		fprintf(fp, " tree");
-	} else
-	    fprintf(fp, "%s", t->name + 7);
-	fprintf(fp, "\n");
-    }
-
-    for (ext = exts, extNum = 0; ext != NULL && ext->type != HEADER_EXT_LAST;
-	ext = (ext->type == HEADER_EXT_MORE ? *ext->u.more : ext+1), extNum++)
-    {
-	if (ext->name == NULL || ext->type != HEADER_EXT_TAG)
-	    continue;
-
-	/* XXX don't print header tags twice. */
-	if (tagValue(ext->name) > 0)
-	    continue;
-	fprintf(fp, "%s\n", ext->name + 7);
-    }
 }
 
 static int rpmgiShowMatches(QVA_t qva, rpmts ts)

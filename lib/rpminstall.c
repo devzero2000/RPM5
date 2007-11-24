@@ -150,7 +150,7 @@ void * rpmShowProgress(/*@null@*/ const void * arg,
 	/* @todo Remove headerSprintf() on a progress callback. */
 	if (flags & INSTALL_HASH) {
 	    s = headerSprintf(h, "%{NAME}",
-				rpmTagTable, rpmHeaderFormats, NULL);
+				NULL, rpmHeaderFormats, NULL);
 	    if (isatty (STDOUT_FILENO))
 		fprintf(stdout, "%4d:%-23.23s", (int)rpmcliProgressCurrent + 1, s);
 	    else
@@ -159,7 +159,7 @@ void * rpmShowProgress(/*@null@*/ const void * arg,
 	    s = _free(s);
 	} else {
 	    s = headerSprintf(h, "%{NAME}-%{VERSION}-%{RELEASE}",
-				  rpmTagTable, rpmHeaderFormats, NULL);
+				  NULL, rpmHeaderFormats, NULL);
 	    fprintf(stdout, "%s\n", s);
 	    (void) fflush(stdout);
 	    s = _free(s);

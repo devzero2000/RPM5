@@ -618,6 +618,18 @@ extern headerSprintfExtension headerDefaultFormats;
 extern headerSprintfExtension headerCompoundFormats;
 /*@=redecl@*/
 
+/**
+ * Display list of tags that can be used in --queryformat.
+ * @param fp		file handle to use for display (NULL uses stdout)
+ * @param _rpmTagTable	rpm tag table (NULL uses rpmTagTable)
+ * @param _rpmHeaderFormats	rpm tag extensions & formats (NULL uses headerCompoundFormats)
+ */
+void rpmDisplayQueryTags(/*@null@*/ FILE * fp,
+		/*@null@*/ headerTagTableEntry _rpmTagTable,
+		/*@null@*/ headerSprintfExtension _rpmHeaderFormats)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies *fp, fileSystem, internalState @*/;
+
 #ifdef __cplusplus
 }
 #endif

@@ -1749,7 +1749,7 @@ psm->te->h = headerLink(fi->h);
 		xx = snprintf(tiddn, sizeof(tiddn), "%d", rpmtsGetTid(ts));
 		bfmt = rpmGetPath(tiddn, "/", "%{_repackage_name_fmt}", NULL);
 		pkgbn = headerSprintf(fi->h, bfmt,
-					rpmTagTable, rpmHeaderFormats, NULL);
+					NULL, rpmHeaderFormats, NULL);
 		bfmt = _free(bfmt);
 		psm->pkgURL = rpmGenPath("%{?_repackage_root}",
 					 "%{?_repackage_dir}",

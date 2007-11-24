@@ -135,7 +135,7 @@ tagformat(h, format)
     PREINIT:
 	const char * s;
     PPCODE:
-	s =  headerSprintf(h, format, rpmTagTable, rpmHeaderFormats, NULL);
+	s =  headerSprintf(h, format, NULL, rpmHeaderFormats, NULL);
     if (s)
 	    PUSHs(sv_2mortal(newSVpv((char *)s, 0)));
 	s = _free(s); 

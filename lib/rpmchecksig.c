@@ -550,7 +550,7 @@ rpmRC rpmcliImportPubkey(const rpmts ts, const unsigned char * pkt, ssize_t pktl
 
     he->append = 0;
 
-    d = headerSprintf(h, afmt, rpmTagTable, rpmHeaderFormats, NULL);
+    d = headerSprintf(h, afmt, NULL, rpmHeaderFormats, NULL);
     if (d == NULL)
 	goto exit;
 

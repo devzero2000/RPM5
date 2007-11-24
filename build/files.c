@@ -1030,7 +1030,7 @@ static int parseForSimple(/*@unused@*/Spec spec, Package pkg, char * buf,
 			_docdir_fmt = "%{NAME}-%{VERSION}";
 		    oneshot = 1;
 		}
-		fmt = headerSprintf(pkg->header, _docdir_fmt, rpmTagTable, rpmHeaderFormats, &errstr);
+		fmt = headerSprintf(pkg->header, _docdir_fmt, NULL, rpmHeaderFormats, &errstr);
 		if (!fmt) {
 		    rpmlog(RPMLOG_ERR, _("illegal _docdir_fmt: %s\n"), errstr);
 		    fl->processingFailed = 1;

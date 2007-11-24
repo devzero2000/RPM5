@@ -268,7 +268,7 @@ static void rpmcliAllArgCallback(poptContext con,
 	exit(EXIT_SUCCESS);
 	/*@notreached@*/ break;
     case POPT_QUERYTAGS:
-	rpmDisplayQueryTags(stdout);
+	rpmDisplayQueryTags(NULL, NULL, NULL);
 /*@i@*/	con = rpmcliFini(con);
 	exit(EXIT_SUCCESS);
 	/*@notreached@*/ break;

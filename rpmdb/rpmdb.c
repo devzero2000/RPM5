@@ -829,7 +829,7 @@ static int unblockSignals(/*@unused@*/ rpmdb db, sigset_t * oldMask)
 
 /**
  * Return header query string.
- * @warning Only default header extensions are available here.
+ * @warning Only compound header extensions are available here.
  * @param h		header
  * @param qfmt		header sprintf format
  * @return		header query string
@@ -841,7 +841,7 @@ static inline /*@null@*/ const char * queryHeader(Header h, const char * qfmt)
     const char * str;
 
 /*@-modobserver@*/
-    str = headerSprintf(h, qfmt, rpmTagTable, headerDefaultFormats, &errstr);
+    str = headerSprintf(h, qfmt, NULL, headerCompoundFormats, &errstr);
 /*@=modobserver@*/
     if (str == NULL)
 	rpmlog(RPMLOG_ERR, _("incorrect format: \"%s\": %s\n"), qfmt, errstr);

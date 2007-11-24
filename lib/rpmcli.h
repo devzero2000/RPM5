@@ -310,14 +310,6 @@ int rpmcliShowMatches(QVA_t qva, rpmts ts)
 	/*@modifies qva, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /** \ingroup rpmcli
- * Display list of tags that can be used in --queryformat.
- * @param fp	file handle to use for display
- */
-void rpmDisplayQueryTags(FILE * fp)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies *fp, fileSystem, internalState @*/;
-
-/** \ingroup rpmcli
  * Common query/verify source interface, called once for each CLI arg.
  *
  * This routine uses:

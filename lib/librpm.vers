@@ -87,7 +87,6 @@ LIBRPM_0
     rpmcliSign;
     rpmcliTargets;
     rpmcliVerify;
-    rpmDisplayQueryTags;
     rpmdsAnyMatchesDep;
     rpmdsBT;
     rpmdsColor;

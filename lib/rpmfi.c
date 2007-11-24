@@ -1450,7 +1450,7 @@ assert(dalgo == fi->fdigestalgos[i]);
 	Header foo;
 
 	/* XXX error handling. */
-	newPath = headerSprintf(h, fmt, rpmTagTable, rpmHeaderFormats, &errstr);
+	newPath = headerSprintf(h, fmt, NULL, rpmHeaderFormats, &errstr);
 	fmt = _free(fmt);
 
 	/* XXX Make sure autoreloc is not already specified. */

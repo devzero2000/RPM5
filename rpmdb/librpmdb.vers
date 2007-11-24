@@ -81,6 +81,7 @@ LIBRPMDB_0
     rpmdbSync;
     rpmdbVerify;
     rpmdbVerifyAllDBI;
+    rpmDisplayQueryTags;
     rpmpkgCheck;
     rpmpkgClean;
     rpmpkgRead;

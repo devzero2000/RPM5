@@ -104,7 +104,7 @@ srcrpm(spec)
     srctag = headerSprintf(
         spec->packages->header,
         "%{NAME}-%{VERSION}-%{RELEASE}",
-        rpmTagTable,
+        NULL,
         rpmHeaderFormats,
         NULL
     );
