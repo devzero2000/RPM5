@@ -2097,227 +2097,15 @@ int headerModifyEntry(Header h, rpmTag tag, rpmTagType type,
 }
 
 /**
- * Header tag iterator data structure.
- */
-struct headerIterator_s {
-    Header h;		/*!< Header being iterated. */
-    size_t next_index;	/*!< Next tag index. */
-};
-
-/** \ingroup header
- * Destroy header tag iterator.
- * @param hi		header tag iterator
- * @return		NULL always
- */
-static /*@null@*/
-HeaderIterator headerFreeIterator(/*@only@*/ HeaderIterator hi)
-	/*@modifies hi @*/
-{
-    if (hi != NULL) {
-	hi->h = headerFree(hi->h);
-	hi = _free(hi);
-    }
-    return hi;
-}
-
-/** \ingroup header
- * Create header tag iterator.
- * @param h		header
- * @return		header tag iterator
- */
-static
-HeaderIterator headerInitIterator(Header h)
-	/*@modifies h */
-{
-    HeaderIterator hi = xmalloc(sizeof(*hi));
-
-    headerSort(h);
-
-    hi->h = headerLink(h);
-    hi->next_index = 0;
-    return hi;
-}
-
-/** \ingroup header
- * Return next tag from header.
- * @param hi		header tag iterator
- * @retval *tag		tag
- * @retval *type	tag value data type
- * @retval *p		pointer to tag value(s)
- * @retval *c		number of values
+ * Always realloc HE_t memory.
+ * @param he		tag container
  * @return		1 on success, 0 on failure
  */
-static
-int headerNextIterator(HeaderIterator hi,
-		/*@null@*/ /*@out@*/ rpmTag * tag,
-		/*@null@*/ /*@out@*/ rpmTagType * type,
-		/*@null@*/ /*@out@*/ rpmTagData * p,
-		/*@null@*/ /*@out@*/ rpmTagCount * c)
-	/*@modifies hi, *tag, *type, *p, *c @*/
-	/*@requires maxSet(tag) >= 0 /\ maxSet(type) >= 0
-		/\ maxSet(p) >= 0 /\ maxSet(c) >= 0 @*/
+static int rpmheRealloc(HE_t he)
+	/*@modifies he @*/
 {
-    void * sw;
-    Header h = hi->h;
-    size_t slot = hi->next_index;
-    indexEntry entry = NULL;
-    int rc;
-
-    for (slot = hi->next_index; slot < h->indexUsed; slot++) {
-	entry = h->index + slot;
-	if (!ENTRY_IS_REGION(entry))
-	    break;
-    }
-    hi->next_index = slot;
-    if (entry == NULL || slot >= h->indexUsed)
-	return 0;
-
-    /*@-noeffect@*/	/* LCL: no clue */
-    hi->next_index++;
-    /*@=noeffect@*/
-
-    if ((sw = headerGetStats(h, 19)) != NULL)	/* RPMTS_OP_HDRGET */
-	(void) rpmswEnter(sw, 0);
-
-    if (tag)
-	*tag = entry->info.tag;
-
-    rc = copyEntry(entry, (rpmTagType *)type, (rpmTagData *)p, (rpmTagCount *)c, 0);
-
-    if (sw != NULL)	(void) rpmswExit(sw, 0);
-
-    /* XXX 1 on success */
-    return ((rc == 1) ? 1 : 0);
-}
-
-/** \ingroup header
- * Duplicate a header.
- * @param h		header
- * @return		new header instance
- */
-static /*@null@*/
-Header headerCopy(Header h)
-	/*@modifies h @*/
-{
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
-    Header nh = headerNew();
-    HeaderIterator hi;
-   
-    for (hi = headerInitIterator(h);
-	headerNextIterator(hi, &he->tag, &he->t, &he->p, &he->c);
-	he->p.ptr = headerFreeData(he->p.ptr, he->t))
-    {
-	if (he->p.ptr) (void) headerAddEntry(nh, he->tag, he->t, he->p.ptr, he->c);
-    }
-    hi = headerFreeIterator(hi);
-
-    return headerReload(nh, HEADER_IMAGE);
-}
-
-/** \ingroup header
- * Duplicate tag values from one header into another.
- * @param headerFrom	source header
- * @param headerTo	destination header
- * @param tagstocopy	array of tags that are copied
- */
-static
-void headerCopyTags(Header headerFrom, Header headerTo, rpmTag * tagstocopy)
-	/*@modifies headerTo @*/
-{
-    rpmTag * tagno;
-
-    if (headerFrom == headerTo)
-	return;
-
-    for (tagno = tagstocopy; *tagno != 0; tagno++) {
-	rpmTagType t;
-	rpmTagData p = { .ptr = NULL };
-	rpmTagCount c;
-	if (headerIsEntry(headerTo, *tagno))
-	    continue;
-	if (!headerGetEntry(headerFrom, *tagno, &t, &p, &c))
-	    continue;
-	(void) headerAddEntry(headerTo, *tagno, t, p.ptr, c);
-	p.ptr = headerFreeData(p.ptr, t);
-    }
-}
-
-/*@observer@*/ /*@unchecked@*/
-static struct HV_s hdrVec1 = {
-    headerLink,
-    headerUnlink,
-    headerFree,
-    headerNew,
-    headerSort,
-    headerUnsort,
-    headerSizeof,
-    headerUnload,
-    headerReload,
-    headerCopy,
-    headerLoad,
-    headerCopyLoad,
-    headerIsEntry,
-    headerFreeTag,
-    headerGetEntry,
-    headerAddEntry,
-    headerAppendEntry,
-    headerAddOrAppendEntry,
-    headerAddI18NString,
-    headerModifyEntry,
-    headerRemoveEntry,
-    headerCopyTags,
-    headerFreeIterator,
-    headerInitIterator,
-    headerNextIterator,
-    headerGetMagic,
-    headerSetMagic,
-    headerGetOrigin,
-    headerSetOrigin,
-    headerGetInstance,
-    headerSetInstance,
-    headerGetStats,
-    NULL, NULL,
-    1
-};
-
-/*@-compmempass -redef@*/
-/*@observer@*/ /*@unchecked@*/
-HV_t hdrVec = &hdrVec1;
-/*@=compmempass =redef@*/
-
-int headerGet(Header h, HE_t he, /*@unused@*/ unsigned int flags)
-{
-    void * sw;
-    const char * name;
-    headerSprintfExtension exts = headerCompoundFormats;
-    headerSprintfExtension ext;
     size_t nb = 0;
-    int extNum;
-    int rc;
-
-    if (h == NULL || he == NULL)	return 0;	/* XXX this is nutty. */
-    name = tagName(he->tag);
-
-    if ((sw = headerGetStats(h, 19)) != NULL)	/* RPMTS_OP_HDRGET */
-	(void) rpmswEnter(sw, 0);
-
-    /* Search extensions for specific tag override. */
-    for (ext = exts, extNum = 0; ext != NULL && ext->type != HEADER_EXT_LAST;
-	ext = (ext->type == HEADER_EXT_MORE ? *ext->u.more : ext+1), extNum++)
-    {
-	if (ext->name == NULL || ext->type != HEADER_EXT_TAG)
-	    continue;
-	if (!xstrcasecmp(ext->name + (sizeof("RPMTAG_")-1), name))
-	    break;
-    }
-
-    if (ext && ext->name != NULL && ext->type == HEADER_EXT_TAG)
-	rc = ext->u.tagFunction(h, he);
-    else
-	rc = intGetEntry(h, he->tag, &he->t, &he->p, &he->c, 0);
-
-    if (!rc)
-	goto exit;
+    int rc = 1;		/* assume success */
 
     switch (he->t) {
     default:
@@ -2357,7 +2145,208 @@ assert(he->c == 1);	/* XXX stop unimplemented oversights. */
 	he->p.ptr = ptr;
     }
 
-exit:
+    if (rc)
+	he->freeData = 1;
+
+    return rc;
+}
+
+/**
+ * Header tag iterator data structure.
+ */
+struct headerIterator_s {
+    Header h;		/*!< Header being iterated. */
+    size_t next_index;	/*!< Next tag index. */
+};
+
+HeaderIterator headerFini(/*@only@*/ HeaderIterator hi)
+{
+    if (hi != NULL) {
+	hi->h = headerFree(hi->h);
+	hi = _free(hi);
+    }
+    return hi;
+}
+
+HeaderIterator headerInit(Header h)
+{
+    HeaderIterator hi = xmalloc(sizeof(*hi));
+
+    headerSort(h);
+
+    hi->h = headerLink(h);
+    hi->next_index = 0;
+    return hi;
+}
+
+int headerNext(HeaderIterator hi, HE_t he, /*@unused@*/ unsigned int flags)
+{
+    void * sw;
+    Header h = hi->h;
+    size_t slot = hi->next_index;
+    indexEntry entry = NULL;
+    int rc;
+
+    /* Insure that *he is reliably initialized. */
+    memset(he, 0, sizeof(*he));
+
+    for (slot = hi->next_index; slot < h->indexUsed; slot++) {
+	entry = h->index + slot;
+	if (!ENTRY_IS_REGION(entry))
+	    break;
+    }
+    hi->next_index = slot;
+    if (entry == NULL || slot >= h->indexUsed)
+	return 0;
+
+    hi->next_index++;
+
+    if ((sw = headerGetStats(h, 19)) != NULL)	/* RPMTS_OP_HDRGET */
+	(void) rpmswEnter(sw, 0);
+
+    he->tag = entry->info.tag;
+    rc = copyEntry(entry, &he->t, &he->p, &he->c, 0);
+    if (rc)
+	rc = rpmheRealloc(he);
+
+    if (sw != NULL)	(void) rpmswExit(sw, 0);
+
+    /* XXX 1 on success */
+    return ((rc == 1) ? 1 : 0);
+}
+
+/** \ingroup header
+ * Duplicate a header.
+ * @param h		header
+ * @return		new header instance
+ */
+static /*@null@*/
+Header headerCopy(Header h)
+	/*@modifies h @*/
+{
+    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    Header nh = headerNew();
+    HeaderIterator hi;
+   
+    for (hi = headerInit(h);
+	headerNext(hi, he, 0);
+	he->p.ptr = _free(he->p.ptr))
+    {
+	if (he->p.ptr) (void) headerAddEntry(nh, he->tag, he->t, he->p.ptr, he->c);
+    }
+    hi = headerFini(hi);
+
+    return headerReload(nh, HEADER_IMAGE);
+}
+
+/** \ingroup header
+ * Duplicate tag values from one header into another.
+ * @param headerFrom	source header
+ * @param headerTo	destination header
+ * @param tagstocopy	array of tags that are copied
+ */
+static
+void headerCopyTags(Header headerFrom, Header headerTo, rpmTag * tagstocopy)
+	/*@modifies headerTo @*/
+{
+    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    rpmTag * tagno;
+    int xx;
+
+    if (headerFrom == headerTo)
+	return;
+
+    for (tagno = tagstocopy; *tagno != 0; tagno++) {
+	if (headerIsEntry(headerTo, *tagno))
+	    continue;
+	he->tag = *tagno;
+	if (!headerGet(headerFrom, he, 0))
+	    continue;
+	xx = headerPut(headerTo, he, 0);
+	he->p.ptr = _free(he->p.ptr);
+    }
+}
+
+/*@observer@*/ /*@unchecked@*/
+static struct HV_s hdrVec1 = {
+    headerLink,
+    headerUnlink,
+    headerFree,
+    headerNew,
+    headerSort,
+    headerUnsort,
+    headerSizeof,
+    headerUnload,
+    headerReload,
+    headerCopy,
+    headerLoad,
+    headerCopyLoad,
+    headerIsEntry,
+    headerFreeTag,
+    headerGetEntry,
+    headerAddEntry,
+    headerAppendEntry,
+    headerAddOrAppendEntry,
+    headerAddI18NString,
+    headerModifyEntry,
+    headerRemoveEntry,
+    headerCopyTags,
+    headerGetMagic,
+    headerSetMagic,
+    headerGetOrigin,
+    headerSetOrigin,
+    headerGetInstance,
+    headerSetInstance,
+    headerGetStats,
+    NULL, NULL,
+    1
+};
+
+/*@-compmempass -redef@*/
+/*@observer@*/ /*@unchecked@*/
+HV_t hdrVec = &hdrVec1;
+/*@=compmempass =redef@*/
+
+int headerGet(Header h, HE_t he, /*@unused@*/ unsigned int flags)
+{
+    void * sw;
+    const char * name;
+    headerSprintfExtension exts = headerCompoundFormats;
+    headerSprintfExtension ext;
+    int extNum;
+    int rc;
+
+    if (h == NULL || he == NULL)	return 0;	/* XXX this is nutty. */
+
+    /* Insure that *he is reliably initialized. */
+    {	rpmTag tag = he->tag;
+	memset(he, 0, sizeof(*he));
+	he->tag = tag;
+    }
+    name = tagName(he->tag);
+
+    if ((sw = headerGetStats(h, 19)) != NULL)	/* RPMTS_OP_HDRGET */
+	(void) rpmswEnter(sw, 0);
+
+    /* Search extensions for specific tag override. */
+    for (ext = exts, extNum = 0; ext != NULL && ext->type != HEADER_EXT_LAST;
+	ext = (ext->type == HEADER_EXT_MORE ? *ext->u.more : ext+1), extNum++)
+    {
+	if (ext->name == NULL || ext->type != HEADER_EXT_TAG)
+	    continue;
+	if (!xstrcasecmp(ext->name + (sizeof("RPMTAG_")-1), name))
+	    break;
+    }
+
+    if (ext && ext->name != NULL && ext->type == HEADER_EXT_TAG) {
+	rc = ext->u.tagFunction(h, he);
+	rc = (rc == 0);		/* XXX invert extension return. */
+    } else
+	rc = intGetEntry(h, he->tag, &he->t, &he->p, &he->c, 0);
+
+    if (rc)
+	rc = rpmheRealloc(he);
+
     if (sw != NULL)	(void) rpmswExit(sw, 0);
 
 #if defined(SUPPORT_IMPLICIT_TAG_DATA_TYPES)
@@ -2367,6 +2356,12 @@ exit:
 	tagTypeValidate(he);
 /*@=modfilesys@*/
 #endif
+
+    if (!((rc == 0 && he->freeData == 0 && he->p.ptr == NULL) ||
+	  (rc == 1 && he->freeData == 1 && he->p.ptr != NULL)))
+    {
+fprintf(stderr, "==> %s(%u) %u %p[%u] free %u rc %d\n", name, (unsigned) he->tag, (unsigned) he->t, he->p.ptr, (unsigned) he->c, he->freeData, rc);
+    }
 
     return rc;
 }
@@ -2386,7 +2381,6 @@ int headerPut(Header h, HE_t he, /*@unused@*/ unsigned int flags)
 	rc = headerAddOrAppendEntry(h, he->tag, he->t, he->p.ptr, he->c);
     else
 	rc = headerAddEntry(h, he->tag, he->t, he->p.ptr, he->c);
-assert(rc == 1);
 
     return rc;
 }

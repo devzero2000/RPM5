@@ -7,7 +7,7 @@
 
 #include <rpmio_internal.h>
 
-#include <header.h>		/* XXX headerIsEntry, headerInitIterator, headerNextIterator, headerFreeIterator, headerAddI18NString, headerCopyTags */
+#include <header.h>		/* XXX headerIsEntry, headerAddI18NString, headerCopyTags */
 #define	_RPMEVR_INTERNAL
 #include <rpmbuild.h>
 #include "debug.h"
@@ -306,21 +306,24 @@ static int checkForRequired(Header h, const char * NVR)
 static int checkForDuplicates(Header h, const char * NVR)
 	/*@modifies h @*/
 {
-    int res = 0;
-    rpmTag lastTag, tag;
+    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     HeaderIterator hi;
+    rpmTag lastTag = 0;
+    int res = 0;
     
-    for (hi = headerInitIterator(h), lastTag = 0;
-	headerNextIterator(hi, &tag, NULL, NULL, NULL);
-	lastTag = tag)
+    for (hi = headerInit(h);
+	headerNext(hi, he, 0);
+	he->p.ptr = _free(he->p.ptr))
     {
-	if (tag != lastTag)
+	if (he->tag != lastTag) {
+	    lastTag = he->tag;
 	    continue;
+	}
 	rpmlog(RPMLOG_ERR, _("Duplicate %s entries in package: %s\n"),
-		     tagName(tag), NVR);
+		     tagName(he->tag), NVR);
 	res = 1;
     }
-    hi = headerFreeIterator(hi);
+    hi = headerFini(hi);
 
     return res;
 }

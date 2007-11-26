@@ -297,14 +297,16 @@ void
 listtag(h)
     Header h
     PREINIT:
-    HeaderIterator iterator;
-    rpmTag tag;
+    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    HeaderIterator hi;
     PPCODE:
-    iterator = headerInitIterator(h);
-    while (headerNextIterator(iterator, &tag, NULL, NULL, NULL)) {
-        XPUSHs(sv_2mortal(newSViv(tag)));
+    for (hi = headerInit(h);
+	headerNext(hi, he, 0);
+	he->p.ptr = _free(he->p.ptr))
+    {
+        XPUSHs(sv_2mortal(newSViv(he->tag)));
     }
-    headerFreeIterator(iterator);
+    hi = headerFini(hi);
     
 int
 hastag(h, sv_tag)
@@ -338,8 +340,9 @@ tag(h, sv_tag)
     } else if (SvPOK(sv_tag)) {
         he->tag = tagValue(SvPV_nolen(sv_tag));
     }
-    if (he->tag > 0)
-        if (headerGetEntry(h, he->tag, &he->t, &he->p, &he->c)) {
+    if (he->tag > 0) {
+        int xx = headerGet(h, he, 0);
+        if (xx) {
             switch(he->t) {
                 case RPM_STRING_ARRAY_TYPE:
                     {
@@ -374,8 +377,9 @@ tag(h, sv_tag)
                 default:
                     croak("unknown rpm tag type %d", he->t);
             }
+	    he->p.ptr = _free(he->p.ptr);
         }
-    he->p.ptr = headerFreeData(he->p.ptr, he->t);
+    }
 
 int
 tagtype(h, sv_tag)
@@ -390,9 +394,13 @@ tagtype(h, sv_tag)
         he->tag = tagValue(SvPV_nolen(sv_tag));
     }
     RETVAL = 0;
-    if (he->tag > 0)
-        if (headerGetEntry(h, he->tag, &he->t, NULL, &he->c))
+    if (he->tag > 0) {
+        int xx = headerGet(h, he, 0);
+        if (xx) {
             RETVAL = he->t;
+	    he->p.ptr = _free(he->p.ptr);
+	}
+    }
     OUTPUT:
     RETVAL
     

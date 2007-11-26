@@ -122,16 +122,16 @@ void _newiterator(rpmts ts, SV * sv_tagname, SV * sv_tagvalue, int keylen) {
 }
 
 int _headername_vs_dep(Header h, rpmds dep, int nopromote) {
-    rpmTagType type;
-    rpmTagData name;
+    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     int rc = 0;
     CHECK_RPMDS_IX(dep);
-    headerGetEntry(h, RPMTAG_NAME, &type, &name, NULL);
-    if (strcmp(name.str, rpmdsN(dep)) != 0)
+    he->tag = RPMTAG_NAME;
+    headerGet(h, he, 0);
+    if (strcmp(he->p.str, rpmdsN(dep)) != 0)
         rc = 0;
     else
         rc = rpmdsNVRMatchesDep(h, dep, nopromote);
-    name.ptr = headerFreeData(name.ptr, type);
+    he->p.ptr = _free(he->p.ptr);
     return rc;
     /* return 1 if match */
 }

@@ -125,10 +125,9 @@
  * 	print hdr['release']
  * \endcode
  *
- * This method of access is a teensy bit slower because the name must be
- * translated into the tag number dynamically. You also must make sure
- * the strings in header lookups don't get translated, or the lookups
- * will fail.
+ * This method of access is slower because the name must be translated
+ * into the tag number dynamically. You also must make sure the strings
+ * in header lookups don't get translated, or the lookups will fail.
  */
 
 /** \ingroup py_c
@@ -136,14 +135,6 @@
 struct hdrObject_s {
     PyObject_HEAD
     Header h;
-    char ** md5list;
-    char ** fileList;
-    char ** linkList;
-    uint32_t * fileSizes;
-    uint32_t * mtimes;
-    uint32_t * uids, * gids;	/* XXX these tags are not used anymore */
-    unsigned short * rdevs;
-    unsigned short * modes;
 } ;
 
 /**
@@ -165,21 +156,20 @@ struct hdrObject_s {
 static PyObject * hdrKeyList(hdrObject * s)
 	/*@*/
 {
+    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     PyObject * list, *o;
     HeaderIterator hi;
-    rpmTag tag;
-    rpmTagType type;
 
     list = PyList_New(0);
 
-    hi = headerInitIterator(s->h);
-    while (headerNextIterator(hi, &tag, &type, NULL, NULL)) {
-        if (tag == HEADER_I18NTABLE) continue;
-
-	switch (type) {
+    for (hi = headerInit(s->h);
+	headerNext(hi, he, 0);
+	he->p.ptr = _free(he->p.ptr))
+    {
+        if (he->tag == HEADER_I18NTABLE) continue;
+	switch (he->t) {
 	case RPM_I18NSTRING_TYPE:
-	    continue;
-	    /*@notreached@*/ break;
+	    break;
 	case RPM_BIN_TYPE:
 	case RPM_UINT64_TYPE:
 	case RPM_UINT32_TYPE:
@@ -187,12 +177,12 @@ static PyObject * hdrKeyList(hdrObject * s)
 	case RPM_UINT8_TYPE:
 	case RPM_STRING_ARRAY_TYPE:
 	case RPM_STRING_TYPE:
-	    PyList_Append(list, o=PyInt_FromLong(tag));
+	    PyList_Append(list, o=PyInt_FromLong(he->tag));
 	    Py_DECREF(o);
 	    break;
 	}
     }
-    headerFreeIterator(hi);
+    hi = headerFini(hi);
 
     return list;
 }
@@ -341,9 +331,6 @@ static void hdr_dealloc(hdrObject * s)
 	/*@*/
 {
     if (s->h) headerFree(s->h);
-    s->md5list = _free(s->md5list);
-    s->fileList = _free(s->fileList);
-    s->linkList = _free(s->linkList);
     PyObject_Del(s);
 }
 
@@ -632,9 +619,6 @@ hdrObject * hdr_Wrap(Header h)
 {
     hdrObject * hdr = PyObject_New(hdrObject, &hdr_Type);
     hdr->h = headerLink(h);
-    hdr->fileList = hdr->linkList = hdr->md5list = NULL;
-    hdr->uids = hdr->gids = hdr->mtimes = hdr->fileSizes = NULL;
-    hdr->modes = hdr->rdevs = NULL;
     return hdr;
 }
 
@@ -770,121 +754,6 @@ PyObject * rpmHeaderFromFile(PyObject * self, PyObject * args, PyObject *kwds)
     Fclose(fd);
 
     return list;
-}
-
-/**
- * This assumes the order of list matches the order of the new headers, and
- * throws an exception if that isn't true.
- */
-int rpmMergeHeaders(PyObject * list, FD_t fd, int matchTag)
-{
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
-    Header h;
-    HeaderIterator hi;
-    rpmTagData newMatch;
-    rpmTagData oldMatch;
-    hdrObject * hdr;
-    uint32_t count = 0;
-    int xx;
-
-    Py_BEGIN_ALLOW_THREADS
-    {   const char item[] = "Header";
-	const char * msg = NULL;
-	rpmRC rc = rpmpkgRead(item, fd, &h, &msg);
-	if (rc != RPMRC_OK)
-	    rpmlog(RPMLOG_ERR, "%s: %s: %s\n", "headerRead", item, msg);
-	msg = _free(msg);
-    }
-    Py_END_ALLOW_THREADS
-
-    while (h) {
-	he->tag = matchTag;
-	xx = headerGet(hdr->h, he, 0);
-	newMatch.ptr = he->p.ptr;
-	if (!xx) {
-	    PyErr_SetString(pyrpmError, "match tag missing in new header");
-	    return 1;
-	}
-
-	hdr = (hdrObject *) PyList_GetItem(list, count++);
-	if (!hdr) {
-	    PyErr_SetString(pyrpmError, "match list item missing");
-	    return 1;
-	}
-
-	he->tag = matchTag;
-	xx = headerGet(hdr->h, he, 0);
-	oldMatch.ptr = he->p.ptr;
-	if (!xx) {
-	    PyErr_SetString(pyrpmError, "match tag missing in old header");
-	    return 1;
-	}
-
-	if (*newMatch.ui32p != *oldMatch.ui32p) {
-	    PyErr_SetString(pyrpmError, "match tag mismatch");
-	    return 1;
-	}
-
-	hdr->md5list = _free(hdr->md5list);
-	hdr->fileList = _free(hdr->fileList);
-	hdr->linkList = _free(hdr->linkList);
-
-	for (hi = headerInitIterator(h);
-	    headerNextIterator(hi, &he->tag, &he->t, &he->p, &he->c);
-	    he->p.ptr = headerFreeData(he->p.ptr, he->t))
-	{
-	    /* could be dupes */
-	    xx = headerDel(hdr->h, he, 0);
-	    xx = headerPut(hdr->h, he, 0);
-	}
-
-	headerFreeIterator(hi);
-	h = headerFree(h);
-
-	Py_BEGIN_ALLOW_THREADS
-	{   const char item[] = "Header";
-	    const char * msg = NULL;
-	    rpmRC rc = rpmpkgRead(item, fd, &h, &msg);
-	    if (rc != RPMRC_OK)
-		rpmlog(RPMLOG_ERR, "%s: %s: %s\n", "headerRead", item, msg);
-	    msg = _free(msg);
-	}
-	Py_END_ALLOW_THREADS
-    }
-
-    return 0;
-}
-
-PyObject *
-rpmMergeHeadersFromFD(PyObject * self, PyObject * args, PyObject * kwds)
-{
-    FD_t fd;
-    int fileno;
-    PyObject * list;
-    int rc;
-    int matchTag;
-    char * kwlist[] = {"list", "fd", "matchTag", NULL};
-
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "Oii", kwlist, &list,
-	    &fileno, &matchTag))
-	return NULL;
-
-    if (!PyList_Check(list)) {
-	PyErr_SetString(PyExc_TypeError, "first parameter must be a list");
-	return NULL;
-    }
-
-    fd = fdDup(fileno);
-
-    rc = rpmMergeHeaders (list, fd, matchTag);
-    Fclose(fd);
-
-    if (rc) {
-	return NULL;
-    }
-
-    Py_INCREF(Py_None);
-    return Py_None;
 }
 
 /**

@@ -17,7 +17,7 @@
 #include <rpmio_internal.h>
 #include <fts.h>
 
-#include <header.h>		/* XXX headerIsEntry, headerFreeData, headerInitIterator, headerNextIterator, headerFreeIterator, headerMacrosLoad, headerMacrosUnload */
+#include <header.h>		/* XXX headerIsEntry, headerMacrosLoad, headerMacrosUnload */
 #include <rpmbuild.h>
 
 #include "cpio.h"
@@ -1666,8 +1666,8 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
     if (fl->buildRootURL)
 	fi->astriplen = strlen(fl->buildRootURL);
     fi->striplen = 0;
-    fi->fuser = headerFreeData(fi->fuser, -1);		/* XXX memory leak */
-    fi->fgroup = headerFreeData(fi->fgroup, -1);	/* XXX memory leak */
+    fi->fuser = _free(fi->fuser);
+    fi->fgroup = _free(fi->fgroup);
 
     /* Make the cpio list */
     if (fi->dil != NULL)	/* XXX can't happen */
@@ -2528,9 +2528,9 @@ int initSourceHeader(Spec spec, StringBuf *sfp)
     /* Only specific tags are added to the source package header */
     /*@-branchstate@*/
   if (!spec->sourceHdrInit) {
-    for (hi = headerInitIterator(spec->packages->header);
-	headerNextIterator(hi, &he->tag, &he->t, &he->p, &he->c);
-	he->p.ptr = headerFreeData(he->p.ptr, he->t))
+    for (hi = headerInit(spec->packages->header);
+	headerNext(hi, he, 0);
+	he->p.ptr = _free(he->p.ptr))
     {
 	switch (he->tag) {
 	case RPMTAG_NAME:
@@ -2563,7 +2563,7 @@ int initSourceHeader(Spec spec, StringBuf *sfp)
 	    /*@switchbreak@*/ break;
 	}
     }
-    hi = headerFreeIterator(hi);
+    hi = headerFini(hi);
     /*@=branchstate@*/
 
     if (spec->BANames && spec->BACount > 0) {

@@ -53,9 +53,6 @@
     - rse: xar/ has weak (think RPM_CHECK_LIB) support its third-party libraries LibXML, OpenSSL, etc.
     - jbj: RPM_I18NSTRING_TYPE is likely still wonky, certainly true for
 	rpm-python h['summary'] access.
-    - jbj: C++ and C have different rules regarding typedef'd enums like rpmTag.
-	The definitions and usage are currently split awkwardly between
-	rpmtag.h and header.h.
     - jbj: markReplacedFiles() subtly rewrites header back into rpmdb
 	with altered RPMTAG_FILESTATES data. get/del/add sequence
 	is needed instead.
@@ -64,25 +61,25 @@
 	returning rpmRC in some cases now, with accidental collision with
 	PART_FOO values that drive the spec file parser. Renumbering enum
 	rpmParseState to avoid the collisions should fix most of the problem.
-    - jbj: choose between db-4.5.20 and db-4.6.18. db-4.5.20 may have fewer
-	upgrade/downgrade issues because of the db-4.6.18 DB_HASH change,
+    - jbj: choose between db-4.5.20 and db-4.6.21. db-4.5.20 may have fewer
+	upgrade/downgrade issues because of the db-4.6.21 DB_HASH change,
 	but rpm-5.0 already uses DB_BTREE for Packages.
-    - jbj: this memory leak seen with "valgrind rpm -qa" no idea what pkg yet:
-	==5186== 112 bytes in 16 blocks are definitely lost in loss record 2 of 2
-	==5186==    at 0x4805525: malloc (vg_replace_malloc.c:149)
-	==5186==    by 0x48E3923: formatValue (header.c:3403)
-	==5186==    by 0x48E3FAB: singleSprintf (header.c:3557)
-	==5186==    by 0x48E4C1E: headerSprintf (header.c:3872)
-	==5186==    by 0x487C075: headerSprintf (hdrinline.h:515)
-	==5186==    by 0x487BFFB: queryHeader (query.c:118)
-	==5186==    by 0x487B4A9: showQueryPackage (query.c:162)
-	==5186==    by 0x487C29D: rpmgiShowMatches (query.c:410)
-	==5186==    by 0x487C48D: rpmQueryVerify (query.c:475)
-	==5186==    by 0x487D4AC: rpmcliArgIter (query.c:739)
-	==5186==    by 0x487DB08: rpmcliQuery (query.c:855)
-	==5186==    by 0x46F9: main (rpmqv.c:738)
     - jbj: rpm-5.0 is almost compilation warning free, some effort to remove
 	the Mickey Mouse warnings that remain should be undertaken.
+    - jbj: headerNEVRA now malloc's the returned strinsg. rpmbuild likely has
+	a few new memory leaks (install/erase/query paths are clean).
+    - jbj: memory leak seen with repackaging
+==4811== 249 bytes in 3 blocks are definitely lost in loss record 1 of 1
+==4811==    at 0x4805525: malloc (vg_replace_malloc.c:149)
+==4811==    by 0x48E1C14: copyEntry (header.c:1446)
+==4811==    by 0x48E33A6: headerNext (header.c:2208)
+==4811==    by 0x48DF183: headerRegenSigHeader (hdrNVR.c:303)
+==4811==    by 0x4877D11: rpmpsmStage (psm.c:1904)
+==4811==    by 0x4876C7D: rpmpsmNext (psm.c:1580)
+==4811==    by 0x48790C2: rpmpsmStage (psm.c:2244)
+==4811==    by 0x48A9C83: rpmtsRun (transaction.c:1689)
+==4811==    by 0x4897D28: rpmErase (rpminstall.c:627)
+==4811==    by 0x43FC: main (rpmqv.c:678)
 
   o to be resolved before RPM 5.0.0:
     - rse: NEWS polishing

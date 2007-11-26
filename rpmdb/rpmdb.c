@@ -2893,11 +2893,8 @@ if (dbiByteSwapped(dbi) == 1)
 		/*@notreached@*/ /*@switchbreak@*/ break;
 	    default:
 		xx = headerGet(h, he, 0);
-		if (!xx) {
-		    /* XXX FIXME: headerGetExtension shouldn't malloc. */
-		    he->p.ptr = _free(he->p.ptr);
+		if (!xx)
 		    continue;
-		}
 		/*@switchbreak@*/ break;
 
 	    }

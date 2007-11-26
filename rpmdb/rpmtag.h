@@ -697,6 +697,32 @@ int headerDel(Header h, HE_t he, /*@unused@*/ unsigned int flags)
 int headerMod(Header h, HE_t he, /*@unused@*/ unsigned int flags)
 	/*@modifies h @*/;
 
+/** \ingroup header
+ * Destroy header tag container iterator.
+ * @param hi		header tag container iterator
+ * @return		NULL always
+ */
+HeaderIterator headerFini(/*@only@*/ HeaderIterator hi)
+	/*@modifies hi @*/;
+
+/** \ingroup header
+ * Create header tag iterator.
+ * @param h		header
+ * @return		header tag iterator
+ */
+HeaderIterator headerInit(Header h)
+	/*@modifies h */;
+
+/** \ingroup header
+ * Return next tag from header.
+ * @param hi		header tag iterator
+ * @param he		tag container
+ * @param flags		(unused)
+ * @return		1 on success, 0 on failure
+ */
+int headerNext(HeaderIterator hi, HE_t he, /*@unused@*/ unsigned int flags)
+	/*@modifies hi, he @*/;
+
 #ifdef __cplusplus
 }
 #endif

@@ -102,7 +102,7 @@ static void addTE(rpmts ts, rpmte p, Header h,
     he->tag = RPMTAG_NVRA;
     xx = headerGet(h, he, 0);
 assert(he->p.str != NULL);
-    p->NEVR = he->p.str;
+    p->NEVR = (xx ? he->p.str : xstrdup("?N-?V-?R.?A"));
     p->name = xstrdup(p->NEVR);
     if ((p->release = strrchr(p->name, '-')) != NULL)
 	*p->release++ = '\0';
@@ -113,7 +113,7 @@ assert(he->p.str != NULL);
 
     he->tag = RPMTAG_HDRID;
     xx = headerGet(h, he, 0);
-    p->hdrid = he->p.str;
+    p->hdrid = (xx ? he->p.str : xstrdup("?RPMTAG_HDRID?"));
 
     he->tag = RPMTAG_PKGID;
     xx = headerGet(h, he, 0);
@@ -134,11 +134,11 @@ assert(he->p.str != NULL);
 
     he->tag = RPMTAG_ARCH;
     xx = headerGet(h, he, 0);
-    p->arch = he->p.str;
+    p->arch = (xx ? he->p.str : xstrdup("?RPMTAG_ARCH?"));
 
     he->tag = RPMTAG_OS;
     xx = headerGet(h, he, 0);
-    p->os = he->p.str;
+    p->os = (xx ? he->p.str : xstrdup("?RPMTAG_OS?"));
 
     p->isSource =
 	(headerIsEntry(h, RPMTAG_SOURCERPM) == 0 &&

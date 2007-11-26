@@ -1855,15 +1855,15 @@ psm->te->h = headerLink(fi->h);
 			/* XXX this is headerCopy w/o headerReload() */
 			psm->oh = headerNew();
 
-			for (hi = headerInitExtension(oh);
-			     headerNextExtension(hi, he, 0);
-			     he->p.ptr = headerFreeData(he->p.ptr, he->t))
+			for (hi = headerInit(oh);
+			     headerNext(hi, he, 0);
+			     he->p.ptr = _free(he->p.ptr))
 			{
 			    if (he->tag == RPMTAG_ARCHIVESIZE)
 				noArchiveSize = 1;
 			    xx = headerPut(psm->oh, he, 0);
 			}
-			hi = headerFreeIterator(hi);
+			hi = headerFini(hi);
 
 			oh = headerFree(oh);
 			uh = _free(uh);

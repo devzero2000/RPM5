@@ -155,46 +155,52 @@ int headerNEVRA(Header h, const char **np,
 		/*@unused@*/ const char **ep, const char **vp, const char **rp,
 		const char **ap)
 {
-    rpmTagType t;
-    rpmTagData p;
-    rpmTagCount c;
+    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
 
 /*@-onlytrans@*/
     if (np) {
-	if (headerGetEntry(h, RPMTAG_NAME, &t, &p, &c)
-	 && t == RPM_STRING_TYPE && c == 1)
-	    *np = p.str;
+	he->tag = RPMTAG_NAME;
+	if (headerGet(h, he, 0)
+	 && he->t == RPM_STRING_TYPE && he->c == 1)
+	    *np = xstrdup(he->p.str);
 	else
 	    *np = NULL;
+	he->p.ptr = _free(he->p.ptr);
     }
     if (vp) {
-	if (headerGetEntry(h, RPMTAG_VERSION, &t, &p, &c)
-	 && t == RPM_STRING_TYPE && c == 1)
-	    *vp = p.str;
+	he->tag = RPMTAG_VERSION;
+	if (headerGet(h, he, 0)
+	 && he->t == RPM_STRING_TYPE && he->c == 1)
+	    *vp = xstrdup(he->p.str);
 	else
 	    *vp = NULL;
+	he->p.ptr = _free(he->p.ptr);
     }
     if (rp) {
-	if (headerGetEntry(h, RPMTAG_RELEASE, &t, &p, &c)
-	 && t == RPM_STRING_TYPE && c == 1)
-	    *rp = p.str;
+	he->tag = RPMTAG_RELEASE;
+	if (headerGet(h, he, 0)
+	 && he->t == RPM_STRING_TYPE && he->c == 1)
+	    *rp = xstrdup(he->p.str);
 	else
 	    *rp = NULL;
+	he->p.ptr = _free(he->p.ptr);
     }
     if (ap) {
+	he->tag = RPMTAG_ARCH;
 /*@-observertrans -readonlytrans@*/
-	if (!headerIsEntry(h, RPMTAG_ARCH))
-	    *ap = "pubkey";
+	if (!headerIsEntry(h, he->tag))
+	    *ap = xstrdup("pubkey");
 	else
 	if (!headerIsEntry(h, RPMTAG_SOURCERPM))
-	    *ap = "src";
+	    *ap = xstrdup("src");
 /*@=observertrans =readonlytrans@*/
 	else
-	if (headerGetEntry(h, RPMTAG_ARCH, &t, &p, &c)
-	 && t == RPM_STRING_TYPE && c == 1)
-	    *ap = p.str;
+	if (headerGet(h, he, 0)
+	 && he->t == RPM_STRING_TYPE && he->c == 1)
+	    *ap = xstrdup(he->p.str);
 	else
 	    *ap = NULL;
+	he->p.ptr = _free(he->p.ptr);
     }
 /*@=onlytrans@*/
     return 0;
@@ -221,7 +227,6 @@ uint32_t hGetColor(Header h)
 
 void headerMergeLegacySigs(Header h, const Header sigh)
 {
-    HFD_t hfd = (HFD_t) headerFreeData;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     HeaderIterator hi;
     int xx;
@@ -229,9 +234,9 @@ void headerMergeLegacySigs(Header h, const Header sigh)
     if (h == NULL || sigh == NULL)
 	return;
 
-    for (hi = headerInitExtension(sigh);
-        headerNextExtension(hi, he, 0);
-        he->p.ptr = hfd(he->p.ptr, he->t))
+    for (hi = headerInit(sigh);
+        headerNext(hi, he, 0);
+        he->p.ptr = _free(he->p.ptr))
     {
 	/* XXX Translate legacy signature tag values. */
 	switch ((rpmSigTag)he->tag) {
@@ -284,20 +289,19 @@ assert(0);	/* XXX keep gcc quiet */
 assert(xx == 1);
 	}
     }
-    hi = headerFreeIterator(hi);
+    hi = headerFini(hi);
 }
 
 Header headerRegenSigHeader(const Header h, int noArchiveSize)
 {
-    HFD_t hfd = (HFD_t) headerFreeData;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     Header sigh = headerNew();
     HeaderIterator hi;
     int xx;
 
-    for (hi = headerInitExtension(h);
-        headerNextExtension(hi, he, 0);
-        he->p.ptr = hfd(he->p.ptr, he->t))
+    for (hi = headerInit(h);
+	headerNext(hi, he, 0);
+	he->p.ptr = _free(he->p.ptr))
     {
 	/* XXX Translate legacy signature tag values. */
 	switch (he->tag) {
@@ -328,6 +332,6 @@ assert(he->p.ptr != NULL);
 assert(xx == 1);
 	}
     }
-    hi = headerFreeIterator(hi);
+    hi = headerFini(hi);
     return sigh;
 }

@@ -278,15 +278,15 @@ if (!_nosigh) {
 	    }
 
 	    oh = headerCopyLoad(he->p.ptr);
-	    for (hi = headerInitExtension(oh);
-		headerNextExtension(hi, ohe, 0);
-		ohe->p.ptr = headerFreeData(ohe->p.ptr, ohe->t))
+	    for (hi = headerInit(oh);
+		headerNext(hi, ohe, 0);
+		ohe->p.ptr = _free(ohe->p.ptr))
 	    {
 		if (ohe->p.ptr) {
 		    xx = headerPut(nh, ohe, 0);
 		}
 	    }
-	    hi = headerFreeIterator(hi);
+	    hi = headerFini(hi);
 	    oh = headerFree(oh);
 
 	    sigh = headerFree(sigh);
@@ -808,7 +808,8 @@ pgpDig dig = fdGetDig(fd);
 	    xx = headerGet(h, he, 0);
 	    if (!xx || he->p.ptr == NULL) {
 		h = headerFree(h);
-		rpmlog(RPMLOG_ERR, _("%s: headerGetEntry failed\n"), fn);
+		rpmlog(RPMLOG_ERR, "%s: %s: %s\n", fn, _("headerGet failed"),
+			_("failed to retrieve original header\n"));
 		rc = RPMRC_FAIL;
 		goto exit;
 	    }
@@ -985,9 +986,9 @@ nodigests = 1;
 	b += strlen(b);
 
 	if (sigh != NULL)
-	for (hi = headerInitExtension(sigh);
-	    headerNextExtension(hi, she, 0) != 0;
-	    she->p.ptr = headerFreeData(she->p.ptr, she->t))
+	for (hi = headerInit(sigh);
+	    headerNext(hi, she, 0) != 0;
+	    she->p.ptr = _free(she->p.ptr))
 	{
 
 assert(she->p.ptr != NULL);
@@ -1094,7 +1095,7 @@ assert(she->p.ptr != NULL);
 		}
 	    }
 	}
-	hi = headerFreeIterator(hi);
+	hi = headerFini(hi);
 	/* XXX clear the already free'd signature data. */
 /*@-noeffect@*/
 	xx = pgpSetSig(dig, 0, 0, NULL, 0);

@@ -224,44 +224,6 @@ int headerIsEntry(/*@null@*/ Header h, rpmTag tag)
 }
 
 /** \ingroup header
- * Destroy header tag container iterator.
- * @param hi		header tag container iterator
- * @return		NULL always
- */
-/*@unused@*/ static inline
-HeaderIterator headerFreeExtension(/*@only@*/ HeaderIterator hi)
-	/*@modifies hi @*/
-{
-    return hdrVec->hdrfreeiter(hi);
-}
-
-/** \ingroup header
- * Create header tag iterator.
- * @param h		header
- * @return		header tag iterator
- */
-/*@unused@*/ static inline
-HeaderIterator headerInitExtension(Header h)
-	/*@modifies h */
-{
-    return hdrVec->hdrinititer(h);
-}
-
-/** \ingroup header
- * Return next tag from header.
- * @param hi		header tag iterator
- * @param he		tag container
- * @param flags		(unused)
- * @return		1 on success, 0 on failure
- */
-/*@unused@*/ static inline
-int headerNextExtension(HeaderIterator hi, HE_t he, /*@unused@*/ unsigned int flags)
-	/*@modifies hi, he @*/
-{
-    return hdrVec->hdrnextiter(hi, &he->tag, &he->t, &he->p, &he->c);
-}
-
-/** \ingroup header
  * Retrieve tag value.
  * Will never return RPM_I18NSTRING_TYPE! RPM_STRING_TYPE elements with
  * RPM_I18NSTRING_TYPE equivalent entries are translated (if HEADER_I18NTABLE
@@ -422,50 +384,6 @@ void headerCopyTags(Header headerFrom, Header headerTo, rpmTag * tagstocopy)
     hdrVec->hdrcopytags(headerFrom, headerTo, tagstocopy);
 /*@=noeffectuncon@*/
     return;
-}
-
-/** \ingroup header
- * Destroy header tag iterator.
- * @param hi		header tag iterator
- * @return		NULL always
- */
-/*@unused@*/ static inline
-HeaderIterator headerFreeIterator(/*@only@*/ HeaderIterator hi)
-	/*@modifies hi @*/
-{
-    return hdrVec->hdrfreeiter(hi);
-}
-
-/** \ingroup header
- * Create header tag iterator.
- * @param h		header
- * @return		header tag iterator
- */
-/*@unused@*/ static inline
-HeaderIterator headerInitIterator(Header h)
-	/*@modifies h */
-{
-    return hdrVec->hdrinititer(h);
-}
-
-/** \ingroup header
- * Return next tag from header.
- * @param hi		header tag iterator
- * @retval *tag		tag
- * @retval *type	tag value data type
- * @retval *p		pointer to tag value(s)
- * @retval *c		number of values
- * @return		1 on success, 0 on failure
- */
-/*@unused@*/ static inline
-int headerNextIterator(HeaderIterator hi,
-		/*@null@*/ /*@out@*/ rpmTag * tag,
-		/*@null@*/ /*@out@*/ rpmTagType * type,
-		/*@null@*/ /*@out@*/ rpmTagData * p,
-		/*@null@*/ /*@out@*/ rpmTagCount * c)
-	/*@modifies hi, *tag, *type, *p, *c @*/
-{
-    return hdrVec->hdrnextiter(hi, tag, type, p, c);
 }
 
 /** \ingroup header

@@ -1026,21 +1026,18 @@ assert(ix == 0);
 static int instprefixTag(Header h, HE_t he)
 	/*@modifies he @*/
 {
-    rpmTagType ipt;
-    rpmTagData array;
-
     he->tag = RPMTAG_INSTALLPREFIX;
-    if (headerGetEntry(h, RPMTAG_INSTALLPREFIX, &he->t, &he->p, &he->c)) {
-	he->freeData = 0;
+    if (headerGet(h, he, 0))
 	return 0;
-    }
+
     he->tag = RPMTAG_INSTPREFIXES;
-    if (headerGetEntry(h, he->tag, &ipt, &array, &he->c)) {
+    if (headerGet(h, he, 0)) {
+	rpmTagData array = { .argv = he->p.argv };
 	he->t = RPM_STRING_TYPE;
 	he->c = 1;
 	he->p.str = xstrdup(array.argv[0]);
 	he->freeData = 1;
-	array.ptr = headerFreeData(array.ptr, ipt);
+	array.ptr = _free(array.ptr);
 	return 0;
     }
     return 1;
@@ -1056,40 +1053,64 @@ static int triggercondsTag(Header h, HE_t he)
 	/*@modifies he @*/
 {
     HE_t _he = memset(alloca(sizeof(*_he)), 0, sizeof(*_he));
-    rpmTagData flags;
-    rpmTagData indices;
-    rpmTagData names;
-    rpmTagData versions;
-    const char ** conds;
+    rpmTagData flags = { .ptr = NULL };
+    rpmTagData indices = { .ptr = NULL };
+    rpmTagData names = { .ptr = NULL };
+    rpmTagData versions = { .ptr = NULL };
     rpmTagData s;
-    char * item, * flagsStr;
-    char * chptr;
-    uint32_t numNames, numScripts;
+    rpmTagCount numNames;
+    rpmTagCount numScripts;
     unsigned i, j;
+    int rc = 1;		/* assume failure */
     int xx;
 
     he->freeData = 0;
-    xx = headerGetEntry(h, RPMTAG_TRIGGERNAME, NULL, &names, &numNames);
-    if (!xx)
-	return 0;
+
+    _he->tag = RPMTAG_TRIGGERNAME;
+    xx = headerGet(h, _he, 0);
+    names.argv = _he->p.argv;
+    numNames = _he->c;
+    if (!xx) {		/* no triggers, succeed anyways */
+	rc = 0;
+	goto exit;
+    }
+
+    _he->tag = RPMTAG_TRIGGERINDEX;
+    xx = headerGet(h, _he, 0);
+    indices.ui32p = _he->p.ui32p;
+    if (!xx) goto exit;
+
+    _he->tag = RPMTAG_TRIGGERFLAGS;
+    xx = headerGet(h, _he, 0);
+    flags.ui32p = _he->p.ui32p;
+    if (!xx) goto exit;
+
+    _he->tag = RPMTAG_TRIGGERVERSION;
+    xx = headerGet(h, _he, 0);
+    versions.argv = _he->p.argv;
+    if (!xx) goto exit;
+
+    _he->tag = RPMTAG_TRIGGERSCRIPTS;
+    xx = headerGet(h, _he, 0);
+    s.argv = _he->p.argv;
+    numScripts = _he->c;
+    if (!xx) goto exit;
 
     _he->tag = he->tag;
     _he->t = RPM_UINT32_TYPE;
     _he->p.ui32p = NULL;
     _he->c = 1;
-    _he->freeData = -1;
-
-    xx = headerGetEntry(h, RPMTAG_TRIGGERINDEX, NULL, &indices, NULL);
-    xx = headerGetEntry(h, RPMTAG_TRIGGERFLAGS, NULL, &flags, NULL);
-    xx = headerGetEntry(h, RPMTAG_TRIGGERVERSION, NULL, &versions, NULL);
-    xx = headerGetEntry(h, RPMTAG_TRIGGERSCRIPTS, NULL, &s, &numScripts);
+    _he->freeData = 0;
 
     he->t = RPM_STRING_ARRAY_TYPE;
     he->c = numScripts;
 
     he->freeData = 1;
-    he->p.argv = conds = xmalloc(sizeof(*conds) * numScripts);
-    for (i = 0; i < (unsigned) numScripts; i++) {
+    he->p.argv = xmalloc(sizeof(*he->p.argv) * he->c);
+    for (i = 0; i < (unsigned) he->c; i++) {
+	char * item, * flagsStr;
+	char * chptr;
+
 	chptr = xstrdup("");
 
 	for (j = 0; j < (unsigned) numNames; j++) {
@@ -1111,14 +1132,18 @@ static int triggercondsTag(Header h, HE_t he)
 	    item = _free(item);
 	}
 
-	conds[i] = chptr;
+	he->p.argv[i] = chptr;
     }
+    rc = 0;
 
-    names.ptr = headerFreeData(names.ptr, -1);
-    versions.ptr = headerFreeData(versions.ptr, -1);
-    s.ptr = headerFreeData(s.ptr, -1);
+exit:
+    indices.ptr = _free(indices.ptr);
+    flags.ptr = _free(flags.ptr);
+    names.ptr = _free(names.ptr);
+    versions.ptr = _free(versions.ptr);
+    s.ptr = _free(s.ptr);
 
-    return 0;
+    return rc;
 }
 
 /**
@@ -1130,46 +1155,65 @@ static int triggercondsTag(Header h, HE_t he)
 static int triggertypeTag(Header h, HE_t he)
 	/*@modifies he @*/
 {
+    HE_t _he = memset(alloca(sizeof(*_he)), 0, sizeof(*_he));
     rpmTagData indices;
     rpmTagData flags;
-    const char ** conds;
     rpmTagData s;
-    uint32_t numScripts, numNames;
+    rpmTagCount numNames;
+    rpmTagCount numScripts;
     unsigned i, j;
+    int rc = 1;		/* assume failure */
     int xx;
 
     he->freeData = 0;
-    if (!headerGetEntry(h, RPMTAG_TRIGGERINDEX, NULL, &indices, &numNames))
-	return 1;
 
-    xx = headerGetEntry(h, RPMTAG_TRIGGERFLAGS, NULL, &flags, NULL);
-    xx = headerGetEntry(h, RPMTAG_TRIGGERSCRIPTS, NULL, &s, &numScripts);
+    _he->tag = RPMTAG_TRIGGERINDEX;
+    xx = headerGet(h, _he, 0);
+    indices.ui32p = _he->p.ui32p;
+    numNames = _he->c;
+    if (!xx) goto exit;
+
+    _he->tag = RPMTAG_TRIGGERFLAGS;
+    xx = headerGet(h, _he, 0);
+    flags.ui32p = _he->p.ui32p;
+    if (!xx) goto exit;
+
+    _he->tag = RPMTAG_TRIGGERSCRIPTS;
+    xx = headerGet(h, _he, 0);
+    s.argv = _he->p.argv;
+    numScripts = _he->c;
+    if (!xx) goto exit;
 
     he->t = RPM_STRING_ARRAY_TYPE;
     he->c = numScripts;
 
     he->freeData = 1;
-    he->p.argv = conds = xmalloc(sizeof(*conds) * numScripts);
-    for (i = 0; i < (unsigned) numScripts; i++) {
+    he->p.argv = xmalloc(sizeof(*he->p.argv) * he->c);
+    for (i = 0; i < (unsigned) he->c; i++) {
 	for (j = 0; j < (unsigned) numNames; j++) {
 	    if (indices.ui32p[j] != i)
 		/*@innercontinue@*/ continue;
 
+	    /* XXX FIXME: there's memory leaks here. */
 	    if (flags.ui32p[j] & RPMSENSE_TRIGGERPREIN)
-		conds[i] = xstrdup("prein");
+		he->p.argv[i] = xstrdup("prein");
 	    else if (flags.ui32p[j] & RPMSENSE_TRIGGERIN)
-		conds[i] = xstrdup("in");
+		he->p.argv[i] = xstrdup("in");
 	    else if (flags.ui32p[j] & RPMSENSE_TRIGGERUN)
-		conds[i] = xstrdup("un");
+		he->p.argv[i] = xstrdup("un");
 	    else if (flags.ui32p[j] & RPMSENSE_TRIGGERPOSTUN)
-		conds[i] = xstrdup("postun");
+		he->p.argv[i] = xstrdup("postun");
 	    else
-		conds[i] = xstrdup("");
+		he->p.argv[i] = xstrdup("");
 	    /*@innerbreak@*/ break;
 	}
     }
+    rc = 0;
 
-    s.ptr = headerFreeData(s.ptr, -1);
+exit:
+    indices.ptr = _free(indices.ptr);
+    flags.ptr = _free(flags.ptr);
+    s.ptr = _free(s.ptr);
     return 0;
 }
 
@@ -1290,52 +1334,49 @@ static int i18nTag(Header h, HE_t he)
 static int localeTag(Header h, HE_t he)
 	/*@modifies he @*/
 {
-    rpmTagType t;
-    rpmTagData p;
-    rpmTagCount c;
-    const char ** argv;
-    char * te;
     int rc;
 
-    rc = headerGetEntry(h, he->tag, &t, &p, &c);
-    if (!rc || p.ptr == NULL || c == 0) {
+    rc = headerGetEntry(h, he->tag, &he->t, &he->p, &he->c);
+    if (!rc || he->p.str == NULL || he->c == 0) {
 	he->t = RPM_STRING_TYPE;
-	he->p.str = NULL;
-	he->c = 0;
 	he->freeData = 0;
 	return 1;
     }
 
-    if (t == RPM_STRING_TYPE) {
-	p.str = xstrdup(p.str);
-	p.str = xstrtolocale(p.str);
+    switch (he->t) {
+    default:
+	he->freeData = 0;
+	break;
+    case RPM_STRING_TYPE:
+	he->p.str = xstrdup(he->p.str);
+	he->p.str = xstrtolocale(he->p.str);
 	he->freeData = 1;
-    } else if (t == RPM_STRING_ARRAY_TYPE) {
+	break;
+    case RPM_STRING_ARRAY_TYPE:
+    {	const char ** argv;
+	char * te;
 	size_t l = 0;
 	unsigned i;
-	for (i = 0; i < (unsigned)c; i++) {
-	    p.argv[i] = xstrdup(p.argv[i]);
-	    p.argv[i] = xstrtolocale(p.argv[i]);
-assert(p.argv[i] != NULL);
-	    l += strlen(p.argv[i]) + 1;
+	for (i = 0; i < (unsigned) he->c; i++) {
+	    he->p.argv[i] = xstrdup(he->p.argv[i]);
+	    he->p.argv[i] = xstrtolocale(he->p.argv[i]);
+assert(he->p.argv[i] != NULL);
+	    l += strlen(he->p.argv[i]) + 1;
 	}
-	argv = xmalloc(c * sizeof(*argv) + l);
-	te = (char *)&argv[c];
-	for (i = 0; i < (unsigned) c; i++) {
+	argv = xmalloc(he->c * sizeof(*argv) + l);
+	te = (char *)&argv[he->c];
+	for (i = 0; i < (unsigned) he->c; i++) {
 	    argv[i] = te;
-	    te = stpcpy(te, p.argv[i]);
+	    te = stpcpy(te, he->p.argv[i]);
 	    te++;
-	    p.argv[i] = _free(p.argv[i]);
+	    he->p.argv[i] = _free(he->p.argv[i]);
 	}
-	p.ptr = _free(p.ptr);
-	p.argv = argv;
+	he->p.ptr = _free(he->p.ptr);
+	he->p.argv = argv;
 	he->freeData = 1;
-    } else
-	he->freeData = 0;
+    }	break;
+    }
 
-    he->t = t;
-    he->p.ptr = p.ptr;
-    he->c = c;
     return 0;
 }
 
@@ -1446,6 +1487,10 @@ static char * hGetNVRA(Header h)
     if (V)	t = stpcpy( stpcpy(t, "-"), V);
     if (R)	t = stpcpy( stpcpy(t, "-"), R);
     if (A)	t = stpcpy( stpcpy(t, "."), A);
+    N = _free(N);
+    V = _free(V);
+    R = _free(R);
+    A = _free(A);
     return NVRA;
 }
 
@@ -1492,15 +1537,15 @@ static void rpmfiBuildFNames(Header h, rpmTag tagN,
 		/*@null@*/ /*@out@*/ rpmTagCount * fcp)
 	/*@modifies *fnp, *fcp @*/
 {
+    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    rpmTag dirNameTag = 0;
+    rpmTag dirIndexesTag = 0;
     rpmTagData baseNames;
     rpmTagData dirNames;
     rpmTagData dirIndexes;
     rpmTagData fileNames;
     rpmTagCount count;
     size_t size;
-    rpmTag dirNameTag = 0;
-    rpmTag dirIndexesTag = 0;
-    rpmTagType bnt, dnt;
     char * t;
     unsigned i;
     int xx;
@@ -1511,16 +1556,31 @@ static void rpmfiBuildFNames(Header h, rpmTag tagN,
     } else if (tagN == RPMTAG_ORIGBASENAMES) {
 	dirNameTag = RPMTAG_ORIGDIRNAMES;
 	dirIndexesTag = RPMTAG_ORIGDIRINDEXES;
+    } else {
+	if (fnp) *fnp = NULL;
+	if (fcp) *fcp = 0;
+	return;		/* programmer error */
     }
 
-    if (!headerGetEntry(h, tagN, &bnt, &baseNames, &count)) {
+    he->tag = tagN;
+    xx = headerGet(h, he, 0);
+    baseNames.argv = he->p.argv;
+    count = he->c;
+
+    if (!xx) {
 	if (fnp) *fnp = NULL;
 	if (fcp) *fcp = 0;
 	return;		/* no file list */
     }
 
-    xx = headerGetEntry(h, dirNameTag, &dnt, &dirNames, NULL);
-    xx = headerGetEntry(h, dirIndexesTag, NULL, &dirIndexes, &count);
+    he->tag = dirNameTag;
+    xx = headerGet(h, he, 0);
+    dirNames.argv = he->p.argv;
+
+    he->tag = dirIndexesTag;
+    xx = headerGet(h, he, 0);
+    dirIndexes.ui32p = he->p.ui32p;
+    count = he->c;
 
     size = sizeof(*fileNames.argv) * count;
     for (i = 0; i < (unsigned)count; i++) {
@@ -1538,8 +1598,9 @@ static void rpmfiBuildFNames(Header h, rpmTag tagN,
 	t = stpcpy( stpcpy(t, dn), baseNames.argv[i]);
 	*t++ = '\0';
     }
-    baseNames.ptr = headerFreeData(baseNames.ptr, bnt);
-    dirNames.ptr = headerFreeData(dirNames.ptr, dnt);
+    baseNames.ptr = _free(baseNames.ptr);
+    dirNames.ptr = _free(dirNames.ptr);
+    dirIndexes.ptr = _free(dirIndexes.ptr);
 
 /*@-onlytrans@*/
     if (fnp)
@@ -1815,29 +1876,6 @@ static char escapedChar(const char ch)	/*@*/
 }
 
 /**
- * Mark a tag container with headerGetEntry() freeData.
- * @param he		tag container
- */
-/*@relnull@*/
-static HE_t rpmheMark(/*@returned@*/ /*@null@*/ HE_t he)
-	/*@modifies he @*/
-{
-    /* Set he->freeData as appropriate for headerGetEntry() . */
-    if (he)
-    switch (he->t) {
-    default:
-	he->freeData = 0;
-	break;
-    case RPM_I18NSTRING_TYPE:
-    case RPM_STRING_ARRAY_TYPE:
-    case RPM_BIN_TYPE:
-	he->freeData = 1;
-	break;
-    }
-    return he;
-}
-
-/**
  * Clean a tag container, free'ing attached malloc's.
  * @param he		tag container
  */
@@ -1916,7 +1954,7 @@ static headerSprintfArgs hsaInit(/*@returned@*/ headerSprintfArgs hsa)
     if (hsa != NULL) {
 	hsa->i = 0;
 	if (tag != NULL && tag->tagno == -2)
-	    hsa->hi = headerInitIterator(hsa->h);
+	    hsa->hi = headerInit(hsa->h);
     }
 /*@-nullret@*/
     return hsa;
@@ -1946,12 +1984,11 @@ static sprintfToken hsaNext(/*@returned@*/ headerSprintfArgs hsa)
 	    hsa->i++;
 	} else {
 	    HE_t he = rpmheClean(&tag->he);
-	    if (!headerNextIterator(hsa->hi, &he->tag, &he->t, &he->p, &he->c))
+	    if (!headerNext(hsa->hi, he, 0))
 	    {
 		tag->tagno = 0;
 		return NULL;
 	    }
-	    he = rpmheMark(he);
 	    he->avail = 1;
 	    tag->tagno = he->tag;
 	}
@@ -1971,7 +2008,7 @@ static headerSprintfArgs hsaFini(/*@returned@*/ headerSprintfArgs hsa)
 	/*@modifies hsa */
 {
     if (hsa != NULL) {
-	hsa->hi = headerFreeIterator(hsa->hi);
+	hsa->hi = headerFini(hsa->hi);
 	hsa->i = 0;
     }
 /*@-nullret@*/
@@ -2481,7 +2518,7 @@ static int parseExpression(headerSprintfArgs hsa, sprintfToken token,
  * @param fn		function
  * @retval he		tag container
  * @retval ec		extension cache
- * @return		0 on success, 1 on failure
+ * @return		1 on success, 0 on failure
  */
 static int getExtension(headerSprintfArgs hsa, headerTagTagFunction fn,
 		HE_t he, HE_t ec)
@@ -2497,6 +2534,7 @@ static int getExtension(headerSprintfArgs hsa, headerTagTagFunction fn,
     } else
 	*he = *ec;	/* structure copy. */
     he->freeData = 0;
+    rc = (rc == 0);	/* XXX invert getExtension return. */
     return rc;
 }
 
@@ -2523,20 +2561,18 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag,
     int xx;
 
     if (!he->avail) {
-	if (tag->ext) {
+	if (tag->ext)
 	    xx = getExtension(hsa, tag->ext, he, hsa->ec + tag->extNum);
-	} else {
+	else {
 	    he->tag = tag->tagno;	/* XXX necessary? */
 	    xx = headerGet(hsa->h, he, 0);
-	    if (xx)		/* XXX 1 on success */
-		he->freeData = 1;
-	    xx = (xx == 0);	/* XXX invert headerGetEntry return. */
 	}
-	if (xx) {
+	if (!xx) {
 	    (void) rpmheClean(he);
 	    he->t = RPM_STRING_TYPE;	
 	    he->p.str = xstrdup("(none)");
 	    he->c = 1;
+	    he->freeData = 1;
 	}
 	he->avail = 1;
     }
@@ -2733,13 +2769,9 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 		he->tag = tag->tagno;
 		if (tag->ext)
 		    xx = getExtension(hsa, tag->ext, he, hsa->ec + tag->extNum);
-		else {
+		else
 		    xx = headerGet(hsa->h, he, 0);
-		    if (xx)
-			he->freeData = 1;
-		    xx = (xx == 0);     /* XXX invert headerGet return. */
-		}
-		if (xx) {
+		if (!xx) {
 		    (void) rpmheClean(he);
 		    continue;
 		}

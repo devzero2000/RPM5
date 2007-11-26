@@ -86,17 +86,6 @@
 extern "C" {
 #endif
 
-/**
- * Prototype for headerFreeData() vector.
- *
- * @param data		address of data (or NULL)
- * @param type		type of data (or -1 to force free)
- * @return		NULL always
- */
-typedef /*@null@*/
-    void * (*HFD_t) (/*@only@*/ /*@null@*/ const void * data, rpmTagType type)
-	/*@modifies data @*/;
-
 /** \ingroup header
  * Create new (empty) header instance.
  * @return		header
@@ -360,41 +349,6 @@ void (*HDRcopytags) (Header headerFrom, Header headerTo, rpmTag * tagstocopy)
 	/*@modifies headerFrom, headerTo @*/;
 
 /** \ingroup header
- * Destroy header tag iterator.
- * @param hi		header tag iterator
- * @return		NULL always
- */
-typedef
-HeaderIterator (*HDRfreeiter) (/*@only@*/ HeaderIterator hi)
-	/*@modifies hi @*/;
-
-/** \ingroup header
- * Create header tag iterator.
- * @param h		header
- * @return		header tag iterator
- */
-typedef
-HeaderIterator (*HDRinititer) (Header h)
-	/*@modifies h */;
-
-/** \ingroup header
- * Return next tag from header.
- * @param hi		header tag iterator
- * @retval *tag		tag
- * @retval *type	tag value data type
- * @retval *p		tag value(s)
- * @retval *c		number of values
- * @return		1 on success, 0 on failure
- */
-typedef
-int (*HDRnextiter) (HeaderIterator hi,
-		/*@null@*/ /*@out@*/ rpmTag * tag,
-		/*@null@*/ /*@out@*/ rpmTagType * type,
-		/*@null@*/ /*@out@*/ rpmTagData * p,
-		/*@null@*/ /*@out@*/ rpmTagCount * c)
-	/*@modifies hi, *tag, *type, *p, *c @*/;
-
-/** \ingroup header
  * Return header magic.
  * @param h		header
  * @param *magicp	magic array
@@ -492,9 +446,6 @@ struct HV_s {
     HDRmodify	hdrmodify;
     HDRremove	hdrremove;
     HDRcopytags	hdrcopytags;
-    HDRfreeiter	hdrfreeiter;
-    HDRinititer	hdrinititer;
-    HDRnextiter	hdrnextiter;
     HDRgetmagic hdrgetmagic;
     HDRsetmagic hdrsetmagic;
     HDRgetorigin hdrgetorigin;
@@ -508,33 +459,6 @@ struct HV_s {
     void *	hdrdata;
     int		hdrversion;
 };
-#endif
-
-#if !defined(SWIG)
-/** \ingroup header
- * Free data allocated when retrieved from header.
- * @deprecated Use headerFreeTag() instead.
- * @todo Remove from API.
- *
- * @param data		address of data (or NULL)
- * @param type		type of data (or -1 to force free)
- * @return		NULL always
- */
-/*@unused@*/ static inline /*@null@*/
-void * headerFreeData( /*@only@*/ /*@null@*/ const void * data, rpmTagType type)
-	/*@modifies data @*/
-{
-    if (data) {
-	/*@-branchstate@*/
-	if (type == -1 ||
-	    type == RPM_STRING_ARRAY_TYPE ||
-	    type == RPM_I18NSTRING_TYPE ||
-	    type == RPM_BIN_TYPE)
-		free((void *)data);
-	/*@=branchstate@*/
-    }
-    return NULL;
-}
 #endif
 
 #if !defined(__HEADER_PROTOTYPES__)

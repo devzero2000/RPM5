@@ -1,4 +1,8 @@
 5.0a2 -> 5.0a3:
+    - jbj: insure that HE_t in headerGet/headerNext is initialized sanely.
+    - jbj: python: lose rpmMergeHeaderFoo methods.
+    - jbj: eliminate headerFreeData, w00t!, just free all tag data.
+    - jbj: finalize headerInit/headerNext/headerFini, add to the ABI.
     - jbj: include <header.h> only where needed, doco remaining destruction.
     - jbj: finalize headerMod, add to the ABI, remove HME_t goop.
     - jbj: finalize headerDel, add to the ABI, remove HRE_t goop.

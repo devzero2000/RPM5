@@ -236,9 +236,15 @@ rpmtsCallback(/*@unused@*/ const void * hd, const rpmCallbackType what,
     /* Synthesize a python object for callback (if necessary). */
     if (pkgObj == NULL) {
 	if (h) {
-	    rpmTagData n = { .ptr = NULL };
-	    (void) headerGetEntry(h, RPMTAG_NAME, NULL, &n, NULL);
-	    pkgObj = Py_BuildValue("s", n.str);
+	    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+	    he->tag = RPMTAG_NAME;
+	    if (headerGet(h, he, 0)) {
+		pkgObj = Py_BuildValue("s", he->p.str);
+		he->p.ptr = _free(he->p.ptr);
+	    } else {
+		pkgObj = Py_None;
+		Py_INCREF(pkgObj);
+	    }
 	} else {
 	    pkgObj = Py_None;
 	    Py_INCREF(pkgObj);

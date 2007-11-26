@@ -520,6 +520,7 @@ rpmds rpmdsThis(Header h, rpmTag tagN, evrFlags Flags)
     *t = '\0';
     N[0] = t;
     t = stpcpy(t, Name);
+    Name = _free(Name);
 
     t = xmalloc(sizeof(*EVR) + 20 + strlen(V) + strlen(R) + sizeof("-"));
     EVR = (const char **) t;
@@ -529,6 +530,8 @@ rpmds rpmdsThis(Header h, rpmTag tagN, evrFlags Flags)
     sprintf(t, "%d:", E);
     t += strlen(t);
     t = stpcpy( stpcpy( stpcpy( t, V), "-"), R);
+    V = _free(V);
+    R = _free(R);
 
     ds = xcalloc(1, sizeof(*ds));
     ds->Type = Type;
