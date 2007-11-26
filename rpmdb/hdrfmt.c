@@ -1310,10 +1310,9 @@ static int i18nTag(Header h, HE_t he)
     if (!rc)
 	return rc;
 
-    rc = headerGetEntry(h, he->tag, &he->t, &he->p, &he->c);
+    rc = headerGet(h, he, HEADERGET_NOEXTENSION);
     if (rc) {
 	rc = 0;
-	he->p.str = xstrdup(he->p.str);
 	he->p.str = xstrtolocale(he->p.str);
 	he->freeData = 1;
 /*@-nullstate@*/
@@ -1337,7 +1336,7 @@ static int localeTag(Header h, HE_t he)
 {
     int rc;
 
-    rc = headerGetEntry(h, he->tag, &he->t, &he->p, &he->c);
+    rc = headerGet(h, he, HEADERGET_NOEXTENSION);
     if (!rc || he->p.str == NULL || he->c == 0) {
 	he->t = RPM_STRING_TYPE;
 	he->freeData = 0;
@@ -1349,7 +1348,6 @@ static int localeTag(Header h, HE_t he)
 	he->freeData = 0;
 	break;
     case RPM_STRING_TYPE:
-	he->p.str = xstrdup(he->p.str);
 	he->p.str = xstrtolocale(he->p.str);
 	he->freeData = 1;
 	break;

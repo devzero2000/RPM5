@@ -1493,27 +1493,6 @@ static int intGetEntry(Header h, HE_t he, int minMem)
     return ((rc == 1) ? 1 : 0);
 }
 
-int headerGetEntry(Header h, rpmTag tag, rpmTagType * type,
-			rpmTagData * p, rpmTagCount * c)
-{
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
-    void * sw;
-    int rc;
-
-    if ((sw = headerGetStats(h, 19)) != NULL)	/* RPMTS_OP_HDRGET */
-	(void) rpmswEnter(sw, 0);
-    he->tag = tag;
-    rc = intGetEntry(h, he, 0);
-    if (sw != NULL)	(void) rpmswExit(sw, 0);
-    if (type)
-	*type = he->t;
-    if (p)
-	(*p).ptr = he->p.ptr;
-    if (c)
-	*c = he->c;
-    return rc;
-}
-
 /**
  */
 static void copyData(rpmTagType type, rpmTagData * dest, rpmTagData * src,
@@ -2038,12 +2017,12 @@ void headerCopyTags(Header headerFrom, Header headerTo, rpmTag * tagstocopy)
     }
 }
 
-int headerGet(Header h, HE_t he, /*@unused@*/ unsigned int flags)
+int headerGet(Header h, HE_t he, unsigned int flags)
 {
     void * sw;
     const char * name;
     headerSprintfExtension exts = headerCompoundFormats;
-    headerSprintfExtension ext;
+    headerSprintfExtension ext = NULL;
     int extNum;
     int rc;
 
@@ -2060,6 +2039,7 @@ int headerGet(Header h, HE_t he, /*@unused@*/ unsigned int flags)
 	(void) rpmswEnter(sw, 0);
 
     /* Search extensions for specific tag override. */
+    if (!(flags & HEADERGET_NOEXTENSION))
     for (ext = exts, extNum = 0; ext != NULL && ext->type != HEADER_EXT_LAST;
 	ext = (ext->type == HEADER_EXT_MORE ? *ext->u.more : ext+1), extNum++)
     {

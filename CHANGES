@@ -1,4 +1,5 @@
 5.0a2 -> 5.0a3:
+    - jbj: add HEADERGET_NOEXTENSION disabler, kill off headerGetEntry.
     - jbj: 1 down, 2 to go, to get rid of headerGetEntry.
     - jbj: limit headerGetEntry usage to -lrpmdb only.
     - jbj: Eliminate header.h and hdrinline.h.

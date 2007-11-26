@@ -657,12 +657,13 @@ char * headerSprintf(Header h, const char * fmt,
  *
  * @param h		header
  * @param he		tag container
- * @param flags		(unused)
+ * @param flags		tag retrieval flags
  * @return		1 on success, 0 on failure
  */
-int headerGet(Header h, HE_t he, /*@unused@*/ unsigned int flags)
+int headerGet(Header h, HE_t he, unsigned int flags)
 	/*@globals headerCompoundFormats @*/
 	/*@modifies he @*/;
+#define	HEADERGET_NOEXTENSION	(1 << 0) /*!< Extension search disabler. */
 
 /** \ingroup header
  * Add or append tag container to header.
@@ -820,26 +821,6 @@ Header headerCopyLoad(const void * uh)
  */
 int headerIsEntry(/*@null@*/ Header h, rpmTag tag)
 	/*@*/;
-
-/** \ingroup header
- * Retrieve tag value.
- * @todo Eliminate.
- * Will never return RPM_I18NSTRING_TYPE! RPM_STRING_TYPE elements with
- * RPM_I18NSTRING_TYPE equivalent entries are translated (if HEADER_I18NTABLE
- * entry is present).
- *
- * @param h		header
- * @param tag		tag
- * @retval *type	tag value data type (or NULL)
- * @retval *p		pointer to tag value(s) (or NULL)
- * @retval *c		number of values (or NULL)
- * @return		1 on success, 0 on failure
- */
-int headerGetEntry(Header h, rpmTag tag,
-			/*@null@*/ /*@out@*/ rpmTagType * type,
-			/*@null@*/ /*@out@*/ rpmTagData * p,
-			/*@null@*/ /*@out@*/ rpmTagCount * c)
-	/*@modifies *type, *p, *c @*/;
 
 /** \ingroup header
  * Add locale specific tag to header.
