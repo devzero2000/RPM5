@@ -1647,10 +1647,10 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
     *d = '\0';
 
     fi->bnl = xmalloc(fi->fc * (sizeof(*fi->bnl) + sizeof(*fi->dil)));
-/*@-dependenttrans@*/ /* FIX: artifact of spoofing headerGetEntry */
+/*@-dependenttrans@*/ /* FIX: artifact of spoofing header tag store */
     fi->dil = (!scareMem)
 	? xcalloc(sizeof(*fi->dil), fi->fc)
-	: (int *)(fi->bnl + fi->fc);
+	: (uint32_t *)(fi->bnl + fi->fc);
 /*@=dependenttrans@*/
 
     /* XXX Insure at least 1 byte is always allocated. */
@@ -1688,7 +1688,7 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 
 	/* Create disk directory and base name. */
 	fi->dil[i] = i;
-/*@-dependenttrans@*/ /* FIX: artifact of spoofing headerGetEntry */
+/*@-dependenttrans@*/ /* FIX: artifact of spoofing header tag store */
 	fi->dnl[fi->dil[i]] = d;
 /*@=dependenttrans@*/
 	d = stpcpy(d, flp->diskURL);

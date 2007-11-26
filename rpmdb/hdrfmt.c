@@ -1254,16 +1254,18 @@ static int i18nTag(Header h, HE_t he)
 	const char * msgkey;
 	const char * msgid;
 
-	{   const char * tn = tagName(he->tag);
-	    rpmTagData n = { .ptr = NULL };
+	{   HE_t nhe = memset(alloca(sizeof(*nhe)), 0, sizeof(*nhe));
+	    const char * tn = tagName(he->tag);
 	    char * mk;
 	    size_t nb = sizeof("()");
-	    int xx = headerGetEntry(h, RPMTAG_NAME, NULL, &n, NULL);
-	    xx = 0;	/* XXX keep gcc quiet */
+	    int xx;
+	    nhe->tag = RPMTAG_NAME;
+	    xx = headerGet(h, nhe, 0);
 	    if (tn)	nb += strlen(tn);
-	    if (n.str)	nb += strlen(n.str);
+	    if (nhe->p.str)	nb += strlen(nhe->p.str);
 	    mk = alloca(nb);
-	    sprintf(mk, "%s(%s)", (n.str ? n.str : ""), (tn ? tn : ""));
+	    sprintf(mk, "%s(%s)", (nhe->p.str ? nhe->p.str : ""), (tn ? tn : ""));
+	    nhe->p.ptr = _free(nhe->p.ptr);
 	    msgkey = mk;
 	}
 

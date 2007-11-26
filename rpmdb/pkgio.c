@@ -867,7 +867,7 @@ exit:
 /*===============================================*/
 
 /**
- * Check header consistency, performing headerGetEntry() the hard way.
+ * Check header consistency, performing headerGet() the hard way.
  *
  * Sanity checks on the header are performed while looking for a
  * header-only digest or signature to verify the blob. If found,
