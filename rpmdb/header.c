@@ -10,8 +10,6 @@
 
 #include "system.h"
 
-#define	__HEADER_PROTOTYPES__
-
 #include <rpmio.h>
 #define	_RPMTAG_INTERNAL
 #include <header_internal.h>
@@ -26,12 +24,11 @@ int _newmagic = 0;		/* XXX Change header magic? */
 
 /*@access Header @*/
 /*@access HeaderIterator @*/
+/*@access headerSprintfExtension @*/
 /*@access headerTagTableEntry @*/
 
 /*@access entryInfo @*/
 /*@access indexEntry @*/
-
-/*@access FD_t @*/		/* XXX void * arg headerRead/headerWrite */
 
 /** \ingroup header
  */
@@ -42,14 +39,14 @@ static unsigned char header_magic[8] = {
 };
 /*@=type@*/
 
+#if 0
 /*@-type@*/
 /*@observer@*/ /*@unchecked@*/
-#if 0
 static unsigned char sigh_magic[8] = {
 	0x8e, 0xad, 0xe8, 0x3e, 0x00, 0x00, 0x00, 0x00
 };
-#endif
 /*@=type@*/
+#endif
 
 /*@-type@*/
 /*@observer@*/ /*@unchecked@*/
@@ -1748,7 +1745,9 @@ int headerAddI18NString(Header h, rpmTag tag, const char * string,
 	he->t = RPM_I18NSTRING_TYPE;
 	he->p.ptr = p.ptr;
 	he->c = langNum + 1;
+/*@-compmempass@*/
 	return headerAddEntry(h, he);
+/*@=compmempass@*/
     } else if (langNum >= entry->info.count) {
 	ghosts = langNum - entry->info.count;
 	
@@ -2068,11 +2067,13 @@ int headerGet(Header h, HE_t he, unsigned int flags)
 /*@=modfilesys@*/
 #endif
 
+/*@-modfilesys@*/
     if (!((rc == 0 && he->freeData == 0 && he->p.ptr == NULL) ||
 	  (rc == 1 && he->freeData == 1 && he->p.ptr != NULL)))
     {
 fprintf(stderr, "==> %s(%u) %u %p[%u] free %u rc %d\n", name, (unsigned) he->tag, (unsigned) he->t, he->p.ptr, (unsigned) he->c, he->freeData, rc);
     }
+/*@=modfilesys@*/
 
     return rc;
 }

@@ -23,8 +23,7 @@
 /*@access pgpDig @*/
 /*@access pgpDigParams @*/
 /*@access headerSprintfExtension @*/
-/*@access sprintfTag @*/
-/*@access sprintfToken @*/
+/*@access headerTagTableEntry @*/
 
 /**
  * Convert tag data representation.
@@ -1065,6 +1064,7 @@ static int triggercondsTag(Header h, HE_t he)
 
     he->freeData = 0;
 
+/*@-compmempass@*/
     _he->tag = RPMTAG_TRIGGERNAME;
     xx = headerGet(h, _he, 0);
     names.argv = _he->p.argv;
@@ -1094,6 +1094,7 @@ static int triggercondsTag(Header h, HE_t he)
     s.argv = _he->p.argv;
     numScripts = _he->c;
     if (!xx) goto exit;
+/*@=compmempass@*/
 
     _he->tag = he->tag;
     _he->t = RPM_UINT32_TYPE;
@@ -1117,6 +1118,7 @@ static int triggercondsTag(Header h, HE_t he)
 		/*@innercontinue@*/ continue;
 
 	    item = xmalloc(strlen(names.argv[j]) + strlen(versions.argv[j]) + 20);
+/*@-compmempass@*/
 	    if (flags.ui32p[j] & RPMSENSE_SENSEMASK) {
 		_he->p.ui32p = &flags.ui32p[j];
 		flagsStr = depflagsFormat(_he);
@@ -1124,6 +1126,7 @@ static int triggercondsTag(Header h, HE_t he)
 		flagsStr = _free(flagsStr);
 	    } else
 		strcpy(item, names.argv[j]);
+/*@=compmempass@*/
 
 	    chptr = xrealloc(chptr, strlen(chptr) + strlen(item) + 5);
 	    if (*chptr != '\0') strcat(chptr, ", ");
@@ -1166,6 +1169,7 @@ static int triggertypeTag(Header h, HE_t he)
 
     he->freeData = 0;
 
+/*@-compmempass@*/
     _he->tag = RPMTAG_TRIGGERINDEX;
     xx = headerGet(h, _he, 0);
     indices.ui32p = _he->p.ui32p;
@@ -1182,6 +1186,7 @@ static int triggertypeTag(Header h, HE_t he)
     s.argv = _he->p.argv;
     numScripts = _he->c;
     if (!xx) goto exit;
+/*@=compmempass@*/
 
     he->t = RPM_STRING_ARRAY_TYPE;
     he->c = numScripts;
@@ -1561,6 +1566,7 @@ static void rpmfiBuildFNames(Header h, rpmTag tagN,
 	return;		/* programmer error */
     }
 
+/*@-compmempass@*/
     he->tag = tagN;
     xx = headerGet(h, he, 0);
     baseNames.argv = he->p.argv;
@@ -1580,6 +1586,7 @@ static void rpmfiBuildFNames(Header h, rpmTag tagN,
     xx = headerGet(h, he, 0);
     dirIndexes.ui32p = he->p.ui32p;
     count = he->c;
+/*@=compmempass@*/
 
     size = sizeof(*fileNames.argv) * count;
     for (i = 0; i < (unsigned)count; i++) {
@@ -1712,14 +1719,14 @@ void rpmDisplayQueryTags(FILE * fp, headerTagTableEntry _rpmTagTable, headerSpri
 	_rpmHeaderFormats = headerCompoundFormats;
 
     for (t = _rpmTagTable; t && t->name; t++) {
+	/*@observer@*/
+	static const char * tagtypes[] = {
+		"", "char", "uint8", "uint16", "uint32", "uint64",
+		"string", "octets", "argv", "i18nstring",
+	};
 	uint32_t ttype;
 
 	if (rpmIsVerbose()) {
-	    /*@observer@*/
-	    static const char * tagtypes[] = {
-		"", "char", "uint8", "uint16", "uint32", "uint64",
-		"string", "octets", "argv", "i18nstring",
-	    };
 	    fprintf(fp, "%-20s %6d", t->name + 7, t->val);
 	    ttype = t->type & RPM_MASK_TYPE;
 	    if (ttype < RPM_MIN_TYPE || ttype > RPM_MAX_TYPE)
@@ -1832,7 +1839,7 @@ struct sprintfToken_s {
 
 /** \ingroup header
  */
-typedef struct headerSprintfArgs_s * headerSprintfArgs;
+typedef /*@abstract@*/ struct headerSprintfArgs_s * headerSprintfArgs;
 
 /** \ingroup header
  */
@@ -1857,6 +1864,10 @@ struct headerSprintfArgs_s {
     size_t numTokens;
     size_t i;
 };
+
+/*@access sprintfTag @*/
+/*@access sprintfToken @*/
+/*@access headerSprintfArgs @*/
 
 /**
  */
@@ -2547,7 +2558,6 @@ static int getExtension(headerSprintfArgs hsa, headerTagTagFunction fn,
 /*@observer@*/ /*@null@*/
 static char * formatValue(headerSprintfArgs hsa, sprintfTag tag,
 		uint32_t element)
-	/*@globals headerCompoundFormats @*/
 	/*@modifies hsa, tag @*/
 {
     HE_t vhe = memset(alloca(sizeof(*vhe)), 0, sizeof(*vhe));
@@ -2693,7 +2703,6 @@ exit:
 /*@observer@*/
 static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 		uint32_t element)
-	/*@globals headerCompoundFormats @*/
 	/*@modifies hsa, token @*/
 {
     char numbuf[64];	/* XXX big enuf for "Tag_0x01234567" */
@@ -2981,10 +2990,10 @@ char * headerSprintf(Header h, const char * fmt,
  
     hsa->h = headerLink(h);
     hsa->fmt = xstrdup(fmt);
-/*@-dependenttrans@*/
+/*@-assignexpose -dependenttrans@*/
     hsa->exts = exts;
     hsa->tags = tags;
-/*@=dependenttrans@*/
+/*@=assignexpose =dependenttrans@*/
     hsa->errmsg = NULL;
 
     if (parseFormat(hsa, hsa->fmt, &hsa->format, &hsa->numTokens, NULL, PARSER_BEGIN))
@@ -3055,5 +3064,7 @@ exit:
 /*@=dependenttrans =observertrans @*/
     hsa->h = headerFree(hsa->h);
     hsa->fmt = _free(hsa->fmt);
+/*@-retexpose@*/
     return hsa->val;
+/*@=retexpose@*/
 }

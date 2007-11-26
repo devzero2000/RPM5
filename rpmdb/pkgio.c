@@ -37,7 +37,6 @@
 /*@access pgpDig @*/
 /*@access pgpDigParams @*/
 /*@access Header @*/            /* XXX compared with NULL */
-/*@access HV_t @*/
 /*@access entryInfo @*/
 /*@access indexEntry @*/
 /*@access FD_t @*/              /* XXX stealing digests */
@@ -536,7 +535,9 @@ static rpmRC rdLead(FD_t fd, /*@out@*/ /*@null@*/ void * ptr,
     l->signature_type = (unsigned short) ntohs(l->signature_type);
 
     if (memcmp(l->magic, lead_magic, sizeof(l->magic))) {
+/*@+charint@*/
 	(void) snprintf(buf, sizeof(buf), _("lead magic: BAD, read %02x%02x%02x%02x"), l->magic[0], l->magic[1], l->magic[2], l->magic[3]);
+/*@=charint@*/
 	rc = RPMRC_NOTFOUND;
 	goto exit;
     }
@@ -708,7 +709,9 @@ rpmxar xar = fdGetXAR(fd);
 
 	if (memcmp(block, hmagic, nmagic)) {
 	    unsigned char * x = (unsigned char *)block;
+/*@+charint@*/
 	    (void) snprintf(buf, sizeof(buf), _("sigh magic: BAD, read %02x%02x%02x%02x%02x%02x%02x%02x"), x[0], x[1], x[2], x[3], x[4], x[5], x[6], x[7]);
+/*@=charint@*/
 	    goto exit;
 	}
     }
@@ -1271,7 +1274,9 @@ rpmxar xar = fdGetXAR(fd);
     (void) headerGetMagic(NULL, &b, &nb);
     if (memcmp(block, b, nb)) {
 	unsigned char * x = (unsigned char *) block;
+/*@+charint@*/
 	(void) snprintf(buf, sizeof(buf), _("hdr magic: BAD, read %02x%02x%02x%02x%02x%02x%02x%02x"), x[0], x[1], x[2], x[3], x[4], x[5], x[6], x[7]);
+/*@=charint@*/
 	goto exit;
     }
 

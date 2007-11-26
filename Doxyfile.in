@@ -607,10 +607,8 @@ INPUT                  = @top_srcdir@/Doxyheader \
                          @top_srcdir@/rpmdb/fprint.c \
                          @top_srcdir@/rpmdb/fprint.h \
                          @top_srcdir@/rpmdb/hdrfmt.c \
-                         @top_srcdir@/rpmdb/hdrinline.h \
                          @top_srcdir@/rpmdb/hdrNVR.c \
                          @top_srcdir@/rpmdb/header.c \
-                         @top_srcdir@/rpmdb/header.h \
                          @top_srcdir@/rpmdb/header_internal.c \
                          @top_srcdir@/rpmdb/header_internal.h \
                          @top_srcdir@/rpmdb/legacy.c \

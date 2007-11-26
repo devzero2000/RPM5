@@ -673,7 +673,9 @@ nextkey:
 	    Header h = NULL;
 	    const char item[] = "Header";
 	    const char * msg = NULL;
+/*@+voidabstract@*/
 	    rpmrc = rpmpkgRead(item, gi->fd, &h, &msg);
+/*@=voidabstract@*/
 	    if (rpmrc != RPMRC_OK) {
 		rpmlog(RPMLOG_ERR, "%s: %s: %s\n", "headerRead", item, msg);
 		h = NULL;

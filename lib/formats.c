@@ -23,6 +23,8 @@
 
 #include "debug.h"
 
+/*@access headerSprintfExtension @*/
+
 /**
  * Retrieve mounted file system paths.
  * @param h		header

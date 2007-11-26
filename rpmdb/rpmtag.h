@@ -67,6 +67,7 @@ union rpmDataType_u {
     uint16_t * ui16p;		/*!< RPM_UINT16_TYPE */
     uint32_t * ui32p;		/*!< RPM_UINT32_TYPE */
     uint64_t * ui64p;		/*!< RPM_UINT64_TYPE */
+/*@relnull@*/
     const char * str;		/*!< RPM_STRING_TYPE */
     unsigned char * blob;	/*!< RPM_BIN_TYPE */
     const char ** argv;		/*!< RPM_STRING_ARRAY_TYPE */
@@ -607,18 +608,14 @@ struct headerSprintfExtension_s {
 /** \ingroup header
  * Supported default header tag output formats.
  */
-/*@-redecl@*/
-/*@observer@*/
+/*@unchecked@*/ /*@observer@*/
 extern headerSprintfExtension headerDefaultFormats;
-/*@=redecl@*/
 
 /** \ingroup header
  * Supported default header extension/tag output formats.
  */
-/*@-redecl@*/
-/*@observer@*/
+/*@unchecked@*/ /*@observer@*/
 extern headerSprintfExtension headerCompoundFormats;
-/*@=redecl@*/
 
 /**
  * Display list of tags that can be used in --queryformat.
@@ -661,7 +658,6 @@ char * headerSprintf(Header h, const char * fmt,
  * @return		1 on success, 0 on failure
  */
 int headerGet(Header h, HE_t he, unsigned int flags)
-	/*@globals headerCompoundFormats @*/
 	/*@modifies he @*/;
 #define	HEADERGET_NOEXTENSION	(1 << 0) /*!< Extension search disabler. */
 
@@ -705,6 +701,7 @@ int headerMod(Header h, HE_t he, /*@unused@*/ unsigned int flags)
  * @param hi		header tag container iterator
  * @return		NULL always
  */
+/*@null@*/
 HeaderIterator headerFini(/*@only@*/ HeaderIterator hi)
 	/*@modifies hi @*/;
 

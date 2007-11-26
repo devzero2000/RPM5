@@ -173,19 +173,19 @@ if (!_nosigh) {
     she->tag = 0;
     opx = 0;
     vsflags = pgpGetVSFlags(dig);
-    if (_chk(RPMVSF_NODSAHEADER) && headerIsEntry(sigh, RPMSIGTAG_DSA)) {
-	she->tag = RPMSIGTAG_DSA;
+    if (_chk(RPMVSF_NODSAHEADER) && headerIsEntry(sigh, (rpmTag)RPMSIGTAG_DSA)) {
+	she->tag = (rpmTag)RPMSIGTAG_DSA;
     } else
-    if (_chk(RPMVSF_NORSAHEADER) && headerIsEntry(sigh, RPMSIGTAG_RSA)) {
-	she->tag = RPMSIGTAG_RSA;
+    if (_chk(RPMVSF_NORSAHEADER) && headerIsEntry(sigh, (rpmTag)RPMSIGTAG_RSA)) {
+	she->tag = (rpmTag)RPMSIGTAG_RSA;
     } else
-    if (_chk(RPMVSF_NOSHA1HEADER) && headerIsEntry(sigh, RPMSIGTAG_SHA1)) {
-	she->tag = RPMSIGTAG_SHA1;
+    if (_chk(RPMVSF_NOSHA1HEADER) && headerIsEntry(sigh, (rpmTag)RPMSIGTAG_SHA1)) {
+	she->tag = (rpmTag)RPMSIGTAG_SHA1;
     } else
     if (_chk(RPMVSF_NOMD5|RPMVSF_NEEDPAYLOAD) &&
-	headerIsEntry(sigh, RPMSIGTAG_MD5))
+	headerIsEntry(sigh, (rpmTag)RPMSIGTAG_MD5))
     {
-	she->tag = RPMSIGTAG_MD5;
+	she->tag = (rpmTag)RPMSIGTAG_MD5;
 	fdInitDigest(fd, PGPHASHALGO_MD5, 0);
 	opx = RPMTS_OP_DIGEST;
     }
@@ -237,7 +237,7 @@ if (!_nosigh) {
     xx = pgpSetSig(dig, she->tag, she->t, she->p.ptr, she->c);
 /*@=noeffect@*/
 
-    switch (she->tag) {
+    switch ((rpmSigTag)she->tag) {
     default:	/* XXX keep gcc quiet. */
 assert(0);
 	/*@notreached@*/ break;
@@ -314,7 +314,7 @@ assert(0);
 	(void) rpmDigestUpdate(dig->hdrsha1ctx, uh, uhc);
 	dig->nbytes += uhc;
 	(void) rpmswExit(op, dig->nbytes);
-	if (she->tag == RPMSIGTAG_SHA1)
+	if ((rpmSigTag)she->tag == RPMSIGTAG_SHA1)
 	    op->count--;	/* XXX one too many */
 	uh = _free(uh);
     }	break;

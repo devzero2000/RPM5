@@ -259,17 +259,23 @@ rpmwf rpmwfNew(const char * fn)
 static void rpmwfDumpItem(const char * item, unsigned char * b, size_t bsize)
 	/*@*/
 {
+/*@+charint -modfilesys @*/
     fprintf(stderr, "\t%s:\t%p[%u]\t%02x%02x%02x%02x%02x%02x%02x%02x\n", item, b, (unsigned)bsize, b[0], b[1], b[2], b[3], b[4], b[5], b[6], b[7]);
+/*@=charint =modfilesys @*/
 }
 
 static void rpmwfDump(rpmwf wf, const char * msg, const char * fn)
 	/*@*/
 {
+/*@-modfilesys @*/
     fprintf(stderr, "==> %s(%s) wf %p\n", msg, fn, wf);
+/*@=modfilesys @*/
+/*@-noeffect@*/
     rpmwfDumpItem("     Lead", (unsigned char *)wf->l, wf->nl);
     rpmwfDumpItem("Signature", (unsigned char *)wf->s, wf->ns);
     rpmwfDumpItem("   Header", (unsigned char *)wf->h, wf->nh);
     rpmwfDumpItem("  Payload", (unsigned char *)wf->p, wf->np);
+/*@=noeffect@*/
 }
 
 rpmwf rdRPM(const char * rpmfn)
@@ -285,7 +291,9 @@ rpmwf rdRPM(const char * rpmfn)
 	return NULL;
     }
 
+/*@-noeffect@*/
 if (_rpmwf_debug) rpmwfDump(wf, "rdRPM", rpmfn);
+/*@=noeffect@*/
 
     return wf;
 }
@@ -308,7 +316,9 @@ rpmwf rdXAR(const char * xarfn)
 	rc = rpmwfPullXAR(wf, NULL);
     wf->xar = rpmxarFree(wf->xar);
 
+/*@-noeffect@*/
 if (_rpmwf_debug) rpmwfDump(wf, "rdXAR", xarfn);
+/*@=noeffect@*/
 
     return wf;
 }
@@ -317,7 +327,9 @@ rpmRC wrXAR(const char * xarfn, rpmwf wf)
 {
     rpmRC rc;
 
+/*@-noeffect@*/
 if (_rpmwf_debug) rpmwfDump(wf, "wrXAR", xarfn);
+/*@=noeffect@*/
 
     wf->xar = rpmxarNew(xarfn, "w");
     if (wf->xar == NULL)

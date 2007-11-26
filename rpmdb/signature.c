@@ -451,7 +451,9 @@ assert(0);	/* XXX never happens. */
 	he->t = RPM_UINT32_TYPE;
 	he->p.ui32p = &pktlen;
 	he->c = 1;
+/*@-compmempass@*/
 	xx = headerPut(sigh, he, 0);
+/*@=compmempass@*/
 	if (!xx)
 	    break;
 	ret = 0;

@@ -835,7 +835,8 @@ static int unblockSignals(/*@unused@*/ rpmdb db, sigset_t * oldMask)
  * @return		header query string
  */
 static inline /*@null@*/ const char * queryHeader(Header h, const char * qfmt)
-	/*@globals headerDefaultFormats @*/
+	/*@globals headerCompoundFormats @*/
+	/*@modifies h @*/
 {
     const char * errstr = "(unkown error)";
     const char * str;
@@ -856,9 +857,9 @@ static inline /*@null@*/ const char * queryHeader(Header h, const char * qfmt)
  * @return		0 on success
  */
 static int rpmdbExportInfo(/*@unused@*/ rpmdb db, Header h, int adding)
-	/*@globals headerDefaultFormats, rpmGlobalMacroContext, h_errno,
+	/*@globals headerCompoundFormats, rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState @*/
-	/*@modifies rpmGlobalMacroContext,
+	/*@modifies h, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
@@ -3136,7 +3137,9 @@ memset(data, 0, sizeof(*data));
 	he->p.ui32p = &tid;
 	he->c = 1;
 	if (!headerIsEntry(h, he->tag))
+/*@-compmempass@*/
 	   xx = headerPut(h, he, 0);
+/*@=compmempass@*/
     }
 
     /* Add the package color if not present. */
@@ -3146,14 +3149,20 @@ memset(data, 0, sizeof(*data));
 	he->t = RPM_UINT32_TYPE;
 	he->p.ui32p = &hcolor;
 	he->c = 1;
+/*@-compmempass@*/
 	xx = headerPut(h, he, 0);
+/*@=compmempass@*/
     }
 
     he->tag = RPMTAG_DIRNAMES;
+/*@-compmempass@*/
     xx = headerGet(h, he, 0);
+/*@=compmempass@*/
     dirNames = he->p.argv;
     he->tag = RPMTAG_DIRINDEXES;
+/*@-compmempass@*/
     xx = headerGet(h, he, 0);
+/*@=compmempass@*/
     dirIndexes = he->p.ui32p;
 
     (void) blockSignals(db, &signalMask);
@@ -3321,13 +3330,19 @@ data->size = 0;
 		/*@notreached@*/ /*@switchbreak@*/ break;
 	    case RPMTAG_REQUIRENAME:
 		he->tag = RPMTAG_REQUIREFLAGS;
+/*@-compmempass@*/
 		xx = headerGet(h, he, 0);
+/*@=compmempass@*/
 		requireFlags.ptr = he->p.ptr;
 		he->tag = RPMTAG_REQUIRENAME;
+/*@-compmempass@*/
 		xx = headerGet(h, he, 0);
+/*@=compmempass@*/
 		/*@switchbreak@*/ break;
 	    default:
+/*@-compmempass@*/
 		xx = headerGet(h, he, 0);
+/*@=compmempass@*/
 		/*@switchbreak@*/ break;
 	    }
 

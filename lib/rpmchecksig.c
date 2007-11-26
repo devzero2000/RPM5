@@ -184,7 +184,7 @@ static int rpmReSign(/*@unused@*/ rpmts ts,
     FD_t fd = NULL;
     FD_t ofd = NULL;
     struct rpmlead *lead = NULL;
-    uint32_t sigtag;
+    rpmSigTag sigtag;
     const char *sigtarget = NULL;
     char tmprpm[1024+1];
     Header sigh = NULL;
@@ -296,36 +296,36 @@ if (!_nosigh) {
 
 if (sigh != NULL) {
 	/* Eliminate broken digest values. */
-	he->tag = RPMSIGTAG_LEMD5_1;
+	he->tag = (rpmTag)RPMSIGTAG_LEMD5_1;
 	xx = headerDel(sigh, he, 0);
-	he->tag = RPMSIGTAG_LEMD5_2;
+	he->tag = (rpmTag)RPMSIGTAG_LEMD5_2;
 	xx = headerDel(sigh, he, 0);
-	he->tag = RPMSIGTAG_BADSHA1_1;
+	he->tag = (rpmTag)RPMSIGTAG_BADSHA1_1;
 	xx = headerDel(sigh, he, 0);
-	he->tag = RPMSIGTAG_BADSHA1_2;
+	he->tag = (rpmTag)RPMSIGTAG_BADSHA1_2;
 	xx = headerDel(sigh, he, 0);
 
 	/* Toss and recalculate header+payload size and digests. */
-	he->tag = RPMSIGTAG_SIZE;
+	he->tag = (rpmTag)RPMSIGTAG_SIZE;
 	xx = headerDel(sigh, he, 0);
 	xx = rpmAddSignature(sigh, sigtarget, RPMSIGTAG_SIZE, qva->passPhrase);
-	he->tag = RPMSIGTAG_MD5;
+	he->tag = (rpmTag)RPMSIGTAG_MD5;
 	xx = headerDel(sigh, he, 0);
 	xx = rpmAddSignature(sigh, sigtarget, RPMSIGTAG_MD5, qva->passPhrase);
-	he->tag = RPMSIGTAG_SHA1;
+	he->tag = (rpmTag)RPMSIGTAG_SHA1;
 	xx = headerDel(sigh, he, 0);
 	xx = rpmAddSignature(sigh, sigtarget, RPMSIGTAG_SHA1, qva->passPhrase);
 
 	if (deleting) {	/* Nuke all the signature tags. */
-	    he->tag = RPMSIGTAG_GPG;
+	    he->tag = (rpmTag)RPMSIGTAG_GPG;
 	    xx = headerDel(sigh, he, 0);
-	    he->tag = RPMSIGTAG_PGP5;
+	    he->tag = (rpmTag)RPMSIGTAG_PGP5;
 	    xx = headerDel(sigh, he, 0);
-	    he->tag = RPMSIGTAG_PGP;
+	    he->tag = (rpmTag)RPMSIGTAG_PGP;
 	    xx = headerDel(sigh, he, 0);
-	    he->tag = RPMSIGTAG_DSA;
+	    he->tag = (rpmTag)RPMSIGTAG_DSA;
 	    xx = headerDel(sigh, he, 0);
-	    he->tag = RPMSIGTAG_RSA;
+	    he->tag = (rpmTag)RPMSIGTAG_RSA;
 	    xx = headerDel(sigh, he, 0);
 	} else {		/* If gpg/pgp is configured, replace the signature. */
 	  int addsig = 0;
@@ -340,26 +340,28 @@ if (sigh != NULL) {
 	    xx = getSignid(sigh, sigtag, oldsignid);
 
 	    switch (sigtag) {
+	    default:
+		/*@switchbreak@*/ break;
 	    case RPMSIGTAG_DSA:
-		he->tag = RPMSIGTAG_GPG;
+		he->tag = (rpmTag)RPMSIGTAG_GPG;
 		xx = headerDel(sigh, he, 0);
 		/*@switchbreak@*/ break;
 	    case RPMSIGTAG_RSA:
-		he->tag = RPMSIGTAG_PGP;
+		he->tag = (rpmTag)RPMSIGTAG_PGP;
 		xx = headerDel(sigh, he, 0);
 		/*@switchbreak@*/ break;
 	    case RPMSIGTAG_GPG:
-		he->tag = RPMSIGTAG_DSA;
+		he->tag = (rpmTag)RPMSIGTAG_DSA;
 		xx = headerDel(sigh, he, 0);
 		/*@fallthrough@*/
 	    case RPMSIGTAG_PGP5:
 	    case RPMSIGTAG_PGP:
-		he->tag = RPMSIGTAG_RSA;
+		he->tag = (rpmTag)RPMSIGTAG_RSA;
 		xx = headerDel(sigh, he, 0);
 		/*@switchbreak@*/ break;
 	    }
 
-	    he->tag = sigtag;
+	    he->tag = (rpmTag)sigtag;
 	    xx = headerDel(sigh, he, 0);
 	    xx = rpmAddSignature(sigh, sigtarget, sigtag, qva->passPhrase);
 
@@ -943,16 +945,16 @@ nodigests = 1;
 	/* Grab a hint of what needs doing to avoid duplication. */
 	she->tag = 0;
 	if (she->tag == 0 && !nosignatures) {
-	    if (headerIsEntry(sigh, RPMSIGTAG_DSA))
-		she->tag = RPMSIGTAG_DSA;
-	    else if (headerIsEntry(sigh, RPMSIGTAG_RSA))
-		she->tag = RPMSIGTAG_RSA;
+	    if (headerIsEntry(sigh, (rpmTag) RPMSIGTAG_DSA))
+		she->tag = (rpmTag) RPMSIGTAG_DSA;
+	    else if (headerIsEntry(sigh, (rpmTag) RPMSIGTAG_RSA))
+		she->tag = (rpmTag) RPMSIGTAG_RSA;
 	}
 	if (she->tag == 0 && !nodigests) {
-	    if (headerIsEntry(sigh, RPMSIGTAG_MD5))
-		she->tag = RPMSIGTAG_MD5;
-	    else if (headerIsEntry(sigh, RPMSIGTAG_SHA1))
-		she->tag = RPMSIGTAG_SHA1;	/* XXX never happens */
+	    if (headerIsEntry(sigh, (rpmTag) RPMSIGTAG_MD5))
+		she->tag = (rpmTag) RPMSIGTAG_MD5;
+	    else if (headerIsEntry(sigh, (rpmTag) RPMSIGTAG_SHA1))
+		she->tag = (rpmTag) RPMSIGTAG_SHA1;	/* XXX never happens */
 	}
 
 	dig = rpmtsDig(ts);
@@ -960,14 +962,14 @@ nodigests = 1;
 	sigp = pgpGetSignature(dig);
 
 	/* XXX RSA needs the hash_algo, so decode early. */
-	if (she->tag == RPMSIGTAG_RSA) {
+	if ((rpmSigTag) she->tag == RPMSIGTAG_RSA) {
 	    he->tag = she->tag;
 	    xx = headerGet(sigh, he, 0);
 	    xx = pgpPrtPkts(he->p.ptr, he->c, dig, 0);
 	    he->p.ptr = _free(he->p.ptr);
 	}
 
-	if (headerIsEntry(sigh, RPMSIGTAG_MD5))
+	if (headerIsEntry(sigh, (rpmTag)RPMSIGTAG_MD5))
 	    fdInitDigest(fd, PGPHASHALGO_MD5, 0);
 
 	/* Read the file, generating digest(s) on the fly. */
@@ -1000,7 +1002,7 @@ assert(she->p.ptr != NULL);
 	    xx = pgpSetSig(dig, she->tag, she->t, she->p.ptr, she->c);
 /*@=noeffect@*/
 
-	    switch (she->tag) {
+	    switch ((rpmSigTag)she->tag) {
 	    case RPMSIGTAG_RSA:
 	    case RPMSIGTAG_DSA:
 		if (nosignatures)
@@ -1020,7 +1022,7 @@ assert(she->p.ptr != NULL);
 		if (nodigests)
 		     continue;
 		/* XXX Don't bother with header sha1 if header dsa. */
-		if (!nosignatures && she->tag == RPMSIGTAG_DSA)
+		if (!nosignatures && (rpmSigTag)she->tag == RPMSIGTAG_DSA)
 		    continue;
 		/*@switchbreak@*/ break;
 	    case RPMSIGTAG_MD5:
@@ -1040,7 +1042,7 @@ assert(she->p.ptr != NULL);
 		    b = stpcpy(b, result);
 		    res2 = 1;
 		} else {
-		    switch (she->tag) {
+		    switch ((rpmSigTag)she->tag) {
 		    case RPMSIGTAG_SIZE:
 			b = stpcpy(b, "SIZE ");
 			res2 = 1;
@@ -1072,7 +1074,7 @@ assert(she->p.ptr != NULL);
 		    b = stpcpy(b, "    ");
 		    b = stpcpy(b, result);
 		} else {
-		    switch (she->tag) {
+		    switch ((rpmSigTag)she->tag) {
 		    case RPMSIGTAG_SIZE:
 			b = stpcpy(b, "size ");
 			/*@switchbreak@*/ break;
