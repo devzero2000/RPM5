@@ -149,8 +149,10 @@ fprintf(stderr, "--> rpmxarNext(%p) first %d\n", xar, xar->first);
 
 int rpmxarPush(rpmxar xar, const char * fn, unsigned char * b, size_t bsize)
 {
+/*@+charint@*/
 if (_xar_debug)
 fprintf(stderr, "--> rpmxarPush(%p, %s) %p[%u] %02x%02x%02x%02x%02x%02x%02x%02x\n", xar, fn, b, (unsigned)bsize, b[0], b[1], b[2], b[3], b[4], b[5], b[6], b[7]);
+/*@=charint@*/
 
     if (xar->x && b != NULL) {
 	xar->f = xar_add_frombuffer(xar->x, NULL, fn, (char *)b, bsize);
@@ -181,11 +183,13 @@ int rpmxarPull(rpmxar xar, const char * fn)
     if (rc)
 	return 1;
 
+/*@+charint -nullpass -nullderef @*/
 if (_xar_debug) {
 unsigned char * b = xar->b;
 size_t bsize = xar->bsize;
 fprintf(stderr, "--> rpmxarPull(%p, %s) %p[%u] %02x%02x%02x%02x%02x%02x%02x%02x\n", xar, fn, b, (unsigned)bsize, b[0], b[1], b[2], b[3], b[4], b[5], b[6], b[7]);
 }
+/*@=charint =nullpass =nullderef @*/
 
     return 0;
 }
