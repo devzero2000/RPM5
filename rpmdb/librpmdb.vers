@@ -36,7 +36,6 @@ LIBRPMDB_0
     headerFini;
     headerFree;
     headerGet;
-    headerGetEntry;
     headerGetInstance;
     headerGetMagic;
     headerGetOrigin;

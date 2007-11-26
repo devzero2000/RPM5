@@ -1,4 +1,5 @@
 5.0a2 -> 5.0a3:
+    - jbj: limit headerGetEntry usage to -lrpmdb only.
     - jbj: Eliminate header.h and hdrinline.h.
     - jbj: insure that HE_t in headerGet/headerNext is initialized sanely.
     - jbj: python: lose rpmMergeHeaderFoo methods.

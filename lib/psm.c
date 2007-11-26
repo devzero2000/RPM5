@@ -112,6 +112,7 @@ static rpmRC markReplacedFiles(const rpmpsm psm)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies psm, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
+    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     const rpmts ts = psm->ts;
     rpmte te = psm->te;
     rpmfi fi = psm->fi;
@@ -153,21 +154,22 @@ static rpmRC markReplacedFiles(const rpmpsm psm)
 
     sfi = replaced;
     while ((h = rpmdbNextIterator(mi)) != NULL) {
-	rpmTagData secStates;
 	int modified;
-	rpmTagCount count;
 
 	modified = 0;
 
-	if (!headerGetEntry(h, RPMTAG_FILESTATES, NULL, &secStates, &count))
+	/* XXX FIXME: not correct yet, but headerGetEntry needs to die now! */
+	he->tag = RPMTAG_FILESTATES;
+	xx = headerGet(h, he, 0);
+	if (!xx)
 	    continue;
 	
 	prev = rpmdbGetIteratorOffset(mi);
 	num = 0;
 	while (sfi->otherPkg && sfi->otherPkg == prev) {
-	    assert(sfi->otherFileNum < count);
-	    if (secStates.ui8p[sfi->otherFileNum] != RPMFILE_STATE_REPLACED) {
-		secStates.ui8p[sfi->otherFileNum] = RPMFILE_STATE_REPLACED;
+assert(sfi->otherFileNum < he->c);
+	    if (he->p.ui8p[sfi->otherFileNum] != RPMFILE_STATE_REPLACED) {
+		he->p.ui8p[sfi->otherFileNum] = RPMFILE_STATE_REPLACED;
 		if (modified == 0) {
 		    /* Modified header will be rewritten. */
 		    modified = 1;
@@ -177,6 +179,7 @@ static rpmRC markReplacedFiles(const rpmpsm psm)
 	    }
 	    sfi++;
 	}
+	he->p.ptr = _free(he->p.ptr);
     }
     mi = rpmdbFreeIterator(mi);
 
