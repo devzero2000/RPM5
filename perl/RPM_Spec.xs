@@ -6,7 +6,6 @@
 #undef Mkdir
 #undef Stat
 
-#include "header.h"	/* XXX headerIsEntry, headerLink */
 #include "rpmlib.h"
 #include "rpmio.h"
 #include "rpmcli.h"

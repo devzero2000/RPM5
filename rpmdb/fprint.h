@@ -7,7 +7,6 @@
  */
 
 #include "rpmhash.h"
-#include "header.h"
 
 /**
  */

@@ -5,6 +5,8 @@
  * \file rpmdb/rpmtag.h
  */
 
+#include <rpmsw.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -723,6 +725,282 @@ HeaderIterator headerInit(Header h)
 int headerNext(HeaderIterator hi, HE_t he, /*@unused@*/ unsigned int flags)
 	/*@modifies hi, he @*/;
 
+/** \ingroup header
+ * Reference a header instance.
+ * @param h		header
+ * @return		referenced header instance
+ */
+Header headerLink(Header h)
+	/*@modifies h @*/;
+
+/** \ingroup header
+ * Dereference a header instance.
+ * @param h		header
+ * @return		NULL always
+ */
+Header headerUnlink(/*@killref@*/ /*@null@*/ Header h)
+	/*@modifies h @*/;
+
+/** \ingroup header
+ * Dereference a header instance.
+ * @param h		header
+ * @return		NULL always
+ */
+/*@null@*/
+Header headerFree(/*@killref@*/ /*@null@*/ Header h)
+	/*@modifies h @*/;
+
+/** \ingroup header
+ * Create new (empty) header instance.
+ * @return		header
+ */
+Header headerNew(void)
+	/*@*/;
+
+/** \ingroup header
+ * Return size of on-disk header representation in bytes.
+ * @param h		header
+ * @return		size of on-disk header
+ */
+size_t headerSizeof(/*@null@*/ Header h)
+	/*@modifies h @*/;
+
+/** \ingroup header
+ * @param h		header
+ * @retval *lenp	no. bytes in unloaded header blob
+ * @return		unloaded header blob (NULL on error)
+ */
+/*@only@*/ /*@null@*/
+void * headerUnload(Header h, /*@out@*/ /*@null@*/ size_t * lenp)
+	/*@modifies h, *lenp @*/;
+
+/** \ingroup header
+ * Convert header to on-disk representation, and then reload.
+ * This is used to insure that all header data is in one chunk.
+ * @param h		header (with pointers)
+ * @param tag		region tag
+ * @return		on-disk header (with offsets)
+ */
+/*@null@*/
+Header headerReload(/*@only@*/ Header h, int tag)
+	/*@modifies h @*/;
+
+/** \ingroup header
+ * Duplicate a header.
+ * @param h		header
+ * @return		new header instance
+ */
+/*@null@*/
+Header headerCopy(Header h)
+	/*@modifies h @*/;
+
+/** \ingroup header
+ * Convert header to in-memory representation.
+ * @param uh		on-disk header blob (i.e. with offsets)
+ * @return		header
+ */
+/*@null@*/
+Header headerLoad(/*@kept@*/ void * uh)
+	/*@modifies uh @*/;
+
+/** \ingroup header
+ * Make a copy and convert header to in-memory representation.
+ * @param uh		on-disk header blob (i.e. with offsets)
+ * @return		header
+ */
+/*@null@*/
+Header headerCopyLoad(const void * uh)
+	/*@*/;
+
+/** \ingroup header
+ * Check if tag is in header.
+ * @param h		header
+ * @param tag		tag
+ * @return		1 on success, 0 on failure
+ */
+int headerIsEntry(/*@null@*/ Header h, rpmTag tag)
+	/*@*/;
+
+/** \ingroup header
+ * Retrieve tag value.
+ * @todo Eliminate.
+ * Will never return RPM_I18NSTRING_TYPE! RPM_STRING_TYPE elements with
+ * RPM_I18NSTRING_TYPE equivalent entries are translated (if HEADER_I18NTABLE
+ * entry is present).
+ *
+ * @param h		header
+ * @param tag		tag
+ * @retval *type	tag value data type (or NULL)
+ * @retval *p		pointer to tag value(s) (or NULL)
+ * @retval *c		number of values (or NULL)
+ * @return		1 on success, 0 on failure
+ */
+int headerGetEntry(Header h, rpmTag tag,
+			/*@null@*/ /*@out@*/ rpmTagType * type,
+			/*@null@*/ /*@out@*/ rpmTagData * p,
+			/*@null@*/ /*@out@*/ rpmTagCount * c)
+	/*@modifies *type, *p, *c @*/;
+
+/** \ingroup header
+ * Add locale specific tag to header.
+ * A NULL lang is interpreted as the C locale. Here are the rules:
+ * \verbatim
+ *	- If the tag isn't in the header, it's added with the passed string
+ *	   as new value.
+ *	- If the tag occurs multiple times in entry, which tag is affected
+ *	   by the operation is undefined.
+ *	- If the tag is in the header w/ this language, the entry is
+ *	   *replaced* (like headerModifyEntry()).
+ * \endverbatim
+ * This function is intended to just "do the right thing". If you need
+ * more fine grained control use headerAddEntry() and headerModifyEntry().
+ *
+ * @param h		header
+ * @param tag		tag
+ * @param string	tag value
+ * @param lang		locale
+ * @return		1 on success, 0 on failure
+ */
+int headerAddI18NString(Header h, rpmTag tag, const char * string,
+		const char * lang)
+	/*@modifies h @*/;
+
+/** \ingroup header
+ * Duplicate tag values from one header into another.
+ * @param headerFrom	source header
+ * @param headerTo	destination header
+ * @param tagstocopy	array of tags that are copied
+ */
+void headerCopyTags(Header headerFrom, Header headerTo, rpmTag * tagstocopy)
+	/*@modifies headerTo @*/;
+
+/** \ingroup header
+ * Return header magic.
+ * @param h		header
+ * @param *magicp	magic array
+ * @param *nmagicp	no. bytes of magic
+ * @return		0 always
+ */
+int headerGetMagic(/*@null@*/ Header h, unsigned char **magicp, size_t *nmagicp)
+	/*@modifies *magicp, *nmagicp @*/;
+
+/** \ingroup header
+ * Store header magic.
+ * @param h		header
+ * @param magic		magic array
+ * @param nmagic	no. bytes of magic
+ * @return		0 always
+ */
+int headerSetMagic(/*@null@*/ Header h, unsigned char * magic, size_t nmagic)
+	/*@modifies h @*/;
+
+/** \ingroup header
+ * Return header origin (e.g path or URL).
+ * @param h		header
+ * @return		header origin
+ */
+/*@observer@*/ /*@null@*/
+const char * headerGetOrigin(/*@null@*/ Header h)
+	/*@*/;
+
+/** \ingroup header
+ * Store header origin (e.g path or URL).
+ * @param h		header
+ * @param origin	new header origin
+ * @return		0 always
+ */
+int headerSetOrigin(/*@null@*/ Header h, const char * origin)
+	/*@modifies h @*/;
+
+/** \ingroup header
+ * Return header instance (if from rpmdb).
+ * @param h		header
+ * @return		header instance
+ */
+uint32_t headerGetInstance(/*@null@*/ Header h)
+	/*@*/;
+
+/** \ingroup header
+ * Store header instance (e.g path or URL).
+ * @param h		header
+ * @param origin	new header instance
+ * @return		0 always
+ */
+uint32_t headerSetInstance(/*@null@*/ Header h, uint32_t instance)
+	/*@modifies h @*/;
+
+/** \ingroup header
+ * Return header stats accumulator structure.
+ * @param h		header
+ * @param opx		per-header accumulator index (aka rpmtsOpX)
+ * @return		per-header accumulator pointer
+ */
+/*@null@*/
+void * headerGetStats(Header h, int opx)
+        /*@*/;
+
+/**
+ * Define per-header macros.
+ * @param h		header
+ * @return		0 always
+ */
+int headerMacrosLoad(Header h)
+	/*@globals internalState @*/
+	/*@modifies internalState @*/;
+
+/**
+ * Define per-header macros.
+ * @param h		header
+ * @return		0 always
+ */
+int headerMacrosUnload(Header h)
+	/*@globals internalState @*/
+	/*@modifies internalState @*/;
+
+/** \ingroup header
+ * Return name, epoch, version, release, arch strings from header.
+ * @param h		header
+ * @retval *np		name pointer (or NULL)
+ * @retval *ep		epoch pointer (or NULL)
+ * @retval *vp		version pointer (or NULL)
+ * @retval *rp		release pointer (or NULL)
+ * @retval *ap		arch pointer (or NULL)
+ * @return		0 always
+ */
+int headerNEVRA(Header h,
+		/*@null@*/ /*@out@*/ const char ** np,
+		/*@null@*/ /*@out@*/ /*@unused@*/ const char ** ep,
+		/*@null@*/ /*@out@*/ const char ** vp,
+		/*@null@*/ /*@out@*/ const char ** rp,
+		/*@null@*/ /*@out@*/ const char ** ap)
+	/*@modifies h, *np, *vp, *rp, *ap @*/;
+
+/**
+ * Return header color.
+ * @param h		header
+ * @return		header color
+ */
+uint32_t hGetColor(Header h)
+	/*@modifies h @*/;
+
+/** \ingroup header
+ * Translate and merge legacy signature tags into header.
+ * @todo Remove headerSort() through headerInitIterator() modifies sig.
+ * @param h		header
+ * @param sigh		signature header
+ */
+void headerMergeLegacySigs(Header h, const Header sigh)
+	/*@modifies h, sigh @*/;
+
+/** \ingroup header
+ * Regenerate signature header.
+ * @todo Remove headerSort() through headerInitIterator() modifies h.
+ * @param h		header
+ * @param noArchiveSize	don't copy archive size tag (pre rpm-4.1)
+ * @return		regenerated signature header
+ */
+Header headerRegenSigHeader(const Header h, int noArchiveSize)
+	/*@modifies h @*/;
 #ifdef __cplusplus
 }
 #endif

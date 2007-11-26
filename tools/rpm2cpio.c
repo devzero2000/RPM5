@@ -5,7 +5,6 @@ const char *__progname;
 
 #include <rpmio.h>
 #include <rpmcb.h>	/* XXX fnpyKey */
-#include <header.h>
 #include <rpmlib.h>
 #include <rpmts.h>
 

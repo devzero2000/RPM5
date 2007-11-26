@@ -6,7 +6,6 @@
 #include "system.h"
 
 #include <rpmio.h>
-#include <header.h>		/* XXX headerNew, headerFree */
 #include "buildio.h"
 #include "rpmds.h"
 #include "rpmfi.h"

@@ -7,7 +7,6 @@
 #include "structmember.h"
 
 #include <rpmio.h>
-#include <header.h>
 #include "rpmdebug-py.c"
 
 #include <rpmcli.h>

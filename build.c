@@ -5,7 +5,6 @@
 #include "system.h"
 
 #include <rpmio.h>
-#include <header.h>		/* XXX headerIsEntry */
 #include <rpmcli.h>
 #include <rpmbuild.h>
 

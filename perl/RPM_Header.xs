@@ -11,7 +11,6 @@
 #include <utime.h>
 
 #include <rpmio.h>
-#include <header.h>
 #include "rpmdb.h"
 #include "rpmcli.h"
 #include <pkgio.h>
@@ -212,15 +211,16 @@ removetag(h, sv_tag)
     Header h
     SV * sv_tag
     PREINIT:
-    rpmTag tag = -1;
+    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     CODE:
+    he->tag = 0xffffffff;
     if (SvIOK(sv_tag)) {
-        tag = SvIV(sv_tag);
+        he->tag = SvIV(sv_tag);
     } else if (SvPOK(sv_tag)) {
-        tag = tagValue(SvPV_nolen(sv_tag));
+        he->tag = tagValue(SvPV_nolen(sv_tag));
     }
-    if (tag > 0)
-        RETVAL = headerRemoveEntry(h, tag);
+    if (he->tag > 0 && he->tag < 0xffffffff)
+        RETVAL = headerDel(h, he, 0);
     else
         RETVAL = 1;
     OUTPUT:
@@ -238,14 +238,14 @@ addtag(h, sv_tag, sv_tagtype, ...)
     int i;
     STRLEN len;
     CODE:
-    he->tag = -1;
+    he->tag = 0xffffffff;
     if (SvIOK(sv_tag)) {
         he->tag = SvIV(sv_tag);
     } else if (SvPOK(sv_tag)) {
         he->tag = tagValue(SvPV_nolen(sv_tag));
     }
     he->t = sv2constant(sv_tagtype, "rpmtagtype");
-    if (he->tag > 0)
+    if (he->tag > 0 && he->tag < 0xffffffff)
         RETVAL = 1;
     else
         RETVAL = 0;
@@ -260,21 +260,21 @@ addtag(h, sv_tag, sv_tagtype, ...)
 		he->p.ui32p = &ivalue;
 		he->c = 1;
 		he->append = 1;
-                RETVAL = headerAddOrAppendEntry(h, he->tag, he->t, he->p.ptr, he->c);
+                RETVAL = headerPut(h, he, 0);
 		he->append = 0;
                 break;
             case RPM_BIN_TYPE:
                 value = (char *)SvPV(ST(i), len);
 		he->p.ptr = &value;
 		he->c = len;
-                RETVAL = headerAddEntry(h, he->tag, he->t, he->p.ptr, he->c);
+                RETVAL = headerPut(h, he, 0);
                 break;
             case RPM_STRING_ARRAY_TYPE:
                 value = SvPV_nolen(ST(i));
 		he->p.ptr = &value;
 		he->c = 1;
 		he->append = 1;
-                RETVAL = headerAddOrAppendEntry(h, he->tag, he->t, he->p.ptr, he->c);
+                RETVAL = headerPut(h, he, 0);
 		he->append = 0;
                 break;
             default:
@@ -282,7 +282,7 @@ addtag(h, sv_tag, sv_tagtype, ...)
 		he->p.ptr = value;
 		he->c = 1;
 		he->append = 1;
-                RETVAL = headerAddOrAppendEntry(h, he->tag, he->t, he->p.ptr, he->c); 
+                RETVAL = headerPut(h, he, 0); 
 		he->append = 0;
                 break;
         }

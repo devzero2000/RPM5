@@ -5,7 +5,6 @@
 #include "system.h"
 
 #include "rpmio_internal.h"	/* XXX PGPHASHALGO_MD5 */
-#include <header.h>		/* XXX hGetColor, headerIsEntry */
 #include <rpmcli.h>		/* XXX rpmcliPackagesTotal */
 
 #include <rpmmacro.h>		/* XXX rpmExpand("%{_dependency_whiteout}" */

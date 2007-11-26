@@ -5,7 +5,7 @@
  * \file rpmdb/header_internal.h
  */
 
-#include <header.h>
+#include <rpmtag.h>
 
 #if !defined(__LCLINT__)
 #include <netinet/in.h>
@@ -82,8 +82,6 @@ struct indexEntry_s {
  * The Header data structure.
  */
 struct headerToken_s {
-/*@unused@*/
-    struct HV_s hv;		/*!< Header public methods. */
     unsigned char magic[8];	/*!< Header magic. */
 /*@only@*/ /*@null@*/
     void * blob;		/*!< Header region blob. */

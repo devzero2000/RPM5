@@ -32,6 +32,8 @@ my %file_const = (
         '^(RPMTS_OP_[\w_]+)' => 'rpmtsOpX',
     },
     'rpmtag.h' => {
+        '^(HEADER_MAGIC_[\w_]+)' => 'rpmhMagic',
+        '^(RPM_[\w]+)_TYPE$' => 'rpmTagType',
         '^(RPMTAG_[\w_]+)' => 'rpmTag',
     },
     'rpmlib.h' => {
@@ -58,10 +60,6 @@ my %file_const = (
     },
     'rpmdb.h' => {
         '^(RPMMIRE_[\w_]+)' => 'rpmMireMode',
-    },
-    'header.h' => {
-        '^(HEADER_MAGIC_[\w_]+)' => 'rpmhMagic',
-        '^(RPM_[\w]+)_TYPE$' => 'rpmTagType',
     },
     'rpmbuild.h' => {
         '^(RPMBUILD_[\w_]+)' => 'rpmBuildFlags',

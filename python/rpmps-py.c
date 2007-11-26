@@ -7,7 +7,6 @@
 
 #include <rpmio.h>
 #include <rpmcb.h>		/* XXX fnpyKey */
-#include <header.h>
 #define	_RPMPS_INTERNAL	/* XXX rpmps needs iterator */
 #include <rpmlib.h>
 

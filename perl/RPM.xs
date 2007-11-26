@@ -14,7 +14,6 @@
 #include "rpmio.h"
 #include "rpmlog.h"
 #include "rpmmacro.h"
-#include "header.h"
 #include "rpmdb.h"
 #include "rpmcli.h"
 #include "rpmts.h"

@@ -6,7 +6,6 @@
 #include "system.h"
 
 #include <rpmio.h>
-#include <header.h>		/* XXX headerAddI18NString */
 #include "rpmbuild.h"
 #include "debug.h"
 

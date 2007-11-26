@@ -8,7 +8,6 @@
 #include <rpmio.h>
 #include <rpmcb.h>		/* XXX fnpyKey */
 #include <rpmurl.h>	/* XXX urlGetPath */
-#include <header.h>		/* XXX headerFree, headerIsEntry, headerLink, headerMacrosLoad, headerMacrosUnload */
 #include <rpmlib.h>
 
 #include "cpio.h"	/* XXX CPIO_FOO */

@@ -11,7 +11,6 @@
 #include <utime.h>
 
 #include "rpmio.h"
-#include "header.h"
 #include "rpmcli.h"
 #include "rpmts.h"
 #include "rpmte.h"

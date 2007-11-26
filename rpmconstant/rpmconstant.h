@@ -18,7 +18,6 @@
  *
  */
 
-#include <header.h>
 #include <rpmio.h>
 #include <rpmcb.h>		/* XXX fnpyKey */
 #include <rpmdb.h>

@@ -7,7 +7,6 @@
 
 #include <rpmio_internal.h>
 
-#include <header.h>		/* XXX headerIsEntry, headerAddI18NString, headerCopyTags */
 #define	_RPMEVR_INTERNAL
 #include <rpmbuild.h>
 #include "debug.h"
