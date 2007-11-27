@@ -43,12 +43,16 @@ static inline int genSourceRpmName(Spec spec)
 	/*@modifies spec->sourceRpmName @*/
 {
     if (spec->sourceRpmName == NULL) {
-	const char *name, *version, *release;
+	const char *N, *V, *R;
 	char fileName[BUFSIZ];
 
-	(void) headerNEVRA(spec->packages->header, &name, NULL, &version, &release, NULL);
-	sprintf(fileName, "%s-%s-%s.%ssrc.rpm", name, version, release,
+	(void) headerNEVRA(spec->packages->header, &N, NULL, &V, &R, NULL);
+	snprintf(fileName, sizeof(fileName), "%s-%s-%s.%ssrc.rpm", N, V, R,
 	    spec->noSource ? "no" : "");
+	fileName[sizeof(fileName)-1] = '\0';
+	N = _free(N);
+	V = _free(V);
+	R = _free(R);
 	spec->sourceRpmName = xstrdup(fileName);
     }
 
@@ -495,6 +499,8 @@ void providePackageNVR(Header h)
 	p += strlen(p);
     }
     (void) stpcpy( stpcpy( stpcpy(p, V) , "-") , R);
+    V = _free(V);
+    R = _free(R);
 
     /*
      * Rpm prior to 3.0.3 does not have versioned provides.
@@ -584,6 +590,7 @@ exit:
 	xx = headerPut(h, he, 0);
 	he->append = 0;
     }
+    N = _free(N);
 }
 
 /*@-boundswrite@*/
@@ -687,8 +694,8 @@ rpmRC writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
 
     /* Create and add the cookie */
     if (cookie) {
-	sprintf(buf, "%s %d", buildHost(), (int) (*getBuildTime()));
-	*cookie = xstrdup(buf);
+	sprintf(buf, "%s %u", buildHost(), (unsigned) (*getBuildTime()));
+	*cookie = xstrdup(buf);		/* XXX memory leak */
 	he->tag = RPMTAG_COOKIE;
 	he->t = RPM_STRING_TYPE;
 	he->p.str = *cookie;
@@ -813,6 +820,9 @@ assert(0);
 	    (void) headerNEVRA(h, &N, NULL, &V, &R, NULL);
 	    sprintf(buf, "%s-%s-%s", N, V, R);
 	    rc = rpmpkgWrite(item, fd, l, &msg);
+	    N = _free(N);
+	    V = _free(V);
+	    R = _free(R);
 	}
 
 	if (rc != RPMRC_OK) {

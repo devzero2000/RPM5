@@ -383,9 +383,12 @@ static int doSetupMacro(Spec spec, char *line)
     if (dirName) {
 	spec->buildSubdir = xstrdup(dirName);
     } else {
-	const char *name, *version;
-	(void) headerNEVRA(spec->packages->header, &name, NULL, &version, NULL, NULL);
-	sprintf(buf, "%s-%s", name, version);
+	const char *N, *V;
+	(void) headerNEVRA(spec->packages->header, &N, NULL, &V, NULL, NULL);
+	snprintf(buf, sizeof(buf), "%s-%s", N, V);
+	buf[sizeof(buf)-1] = '\0';
+	N = _free(N);
+	V = _free(V);
 	spec->buildSubdir = xstrdup(buf);
     }
     addMacro(spec->macros, "buildsubdir", NULL, spec->buildSubdir, RMIL_SPEC);

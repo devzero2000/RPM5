@@ -49,12 +49,12 @@ static int open_dso(const char * path, /*@null@*/ pid_t * pidp, /*@null@*/ size_
 {
 /*@only@*/
     static const char * cmd = NULL;
-    static int initted = 0;
+    static int oneshot = 0;
     int fdno;
 
-    if (!initted) {
+    if (!oneshot) {
 	cmd = rpmExpand("%{?__prelink_undo_cmd}", NULL);
-	initted++;
+	oneshot++;
     }
 
     if (pidp) *pidp = 0;

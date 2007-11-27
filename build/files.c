@@ -1025,8 +1025,10 @@ static int parseForSimple(/*@unused@*/Spec spec, Package pkg, char * buf,
 		const char *ddir, *fmt, *errstr;
 		if (!oneshot) {
 		    _docdir_fmt = rpmExpand("%{?_docdir_fmt}", NULL);
-		    if (!_docdir_fmt || !*_docdir_fmt)
+		    if (!_docdir_fmt || !*_docdir_fmt) {
+			_docdir_fmt = _free(_docdir_fmt);
 			_docdir_fmt = "%{NAME}-%{VERSION}";
+		    }
 		    oneshot = 1;
 		}
 		fmt = headerSprintf(pkg->header, _docdir_fmt, NULL, rpmHeaderFormats, &errstr);

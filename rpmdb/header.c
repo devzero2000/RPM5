@@ -334,7 +334,7 @@ static size_t dataLength(rpmTagType type, rpmTagData * p, rpmTagCount count,
     switch (type) {
     case RPM_STRING_TYPE:
 	if (count != 1)
-	    return -1;
+	    return 0;
 	while (*s++ != '\0') {
 	    if (se && s > se)
 		return 0;
@@ -349,7 +349,7 @@ static size_t dataLength(rpmTagType type, rpmTagData * p, rpmTagCount count,
 	if (onDisk) {
 	    while (count--) {
 		length++;       /* count nul terminator too */
-               while (*s++ != '\0') {
+		while (*s++ != '\0') {
 		    if (se && s > se)
 			return 0;
 		    length++;
@@ -429,17 +429,17 @@ static uint32_t regionSwab(/*@null@*/ indexEntry entry, uint32_t il, uint32_t dl
 assert(ie.info.offset >= 0);	/* XXX insurance */
 
 	if (hdrchkType(ie.info.type))
-	    return -1;
+	    return 0;
 	if (hdrchkData(ie.info.count))
-	    return -1;
+	    return 0;
 	if (hdrchkData(ie.info.offset))
-	    return -1;
+	    return 0;
 	if (hdrchkAlign(ie.info.type, ie.info.offset))
-	    return -1;
+	    return 0;
 
 	ie.data = t = dataStart + ie.info.offset;
 	if (dataEnd && t >= dataEnd)
-	    return -1;
+	    return 0;
 
 	p.ptr = ie.data;
 	pend.ui8p = (uint8_t *) dataEnd;
@@ -447,7 +447,7 @@ assert(ie.info.offset >= 0);	/* XXX insurance */
 	ie.length = dataLength(ie.info.type, &p, ie.info.count, 1, &pend);
 /*@=nullstate@*/
 	if (ie.length == 0 || hdrchkData(ie.length))
-	    return -1;
+	    return 0;
 
 	ie.rdlen = 0;
 
@@ -491,7 +491,7 @@ assert(ie.info.offset >= 0);	/* XXX insurance */
 	    uint32_t b[2];
 	    for (; ie.info.count > 0; ie.info.count--, it += 1) {
 		if (dataEnd && ((unsigned char *)it) >= dataEnd)
-		    return -1;
+		    return 0;
 		b[1] = (uint32_t) htonl(((uint32_t *)it)[0]);
 		b[0] = (uint32_t) htonl(((uint32_t *)it)[1]);
 		if (b[1] != ((uint32_t *)it)[0])
@@ -503,7 +503,7 @@ assert(ie.info.offset >= 0);	/* XXX insurance */
 	{   uint32_t * it = (uint32_t *)t;
 	    for (; ie.info.count > 0; ie.info.count--, it += 1) {
 		if (dataEnd && ((unsigned char *)it) >= dataEnd)
-		    return -1;
+		    return 0;
 		*it = (uint32_t) htonl(*it);
 	    }
 	    t = (unsigned char *) it;
@@ -512,7 +512,7 @@ assert(ie.info.offset >= 0);	/* XXX insurance */
 	{   uint16_t * it = (uint16_t *) t;
 	    for (; ie.info.count > 0; ie.info.count--, it += 1) {
 		if (dataEnd && ((unsigned char *)it) >= dataEnd)
-		    return -1;
+		    return 0;
 		*it = (uint16_t) htons(*it);
 	    }
 	    t = (unsigned char *) it;
@@ -523,7 +523,7 @@ assert(ie.info.offset >= 0);	/* XXX insurance */
 	}
 
 	dl += ie.length;
-	if (dataEnd && (dataStart + dl) > dataEnd) return -1;
+	if (dataEnd && (dataStart + dl) > dataEnd) return 0;
 	tl += tdel;
 	ieprev = ie;	/* structure assignment */
 

@@ -1,4 +1,6 @@
 5.0a2 -> 5.0a3:
+    - jbj: rpmbuild: plug some memory leaks.
+    - jbj: fix: return 0, not -1, with unsigned changes as error.
     - jbj: add HEADERGET_NOEXTENSION disabler, kill off headerGetEntry.
     - jbj: 1 down, 2 to go, to get rid of headerGetEntry.
     - jbj: limit headerGetEntry usage to -lrpmdb only.
