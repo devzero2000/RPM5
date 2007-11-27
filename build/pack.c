@@ -995,7 +995,7 @@ int packageBinaries(Spec spec)
 
 	he->tag = RPMTAG_BUILDTIME;
 	he->t = RPM_UINT32_TYPE;
-	he->p.ui32p = *getBuildTime();
+	he->p.ui32p = getBuildTime();
 	he->c = 1;
 	xx = headerPut(pkg->header, he, 0);
 
