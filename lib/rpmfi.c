@@ -1254,11 +1254,6 @@ static inline unsigned char nibble(char c)
     return 0;
 }
 
-#define	_fdupe(_fi, _data)	\
-    if ((_fi)->_data != NULL)	\
-	(_fi)->_data = memcpy(xmalloc((_fi)->fc * sizeof(*(_fi)->_data)), \
-			(_fi)->_data, (_fi)->fc * sizeof(*(_fi)->_data))
-
 #define _fdupestring(_h, _tag, _data) \
     he->tag = _tag; \
     xx = headerGet((_h), he, 0); \

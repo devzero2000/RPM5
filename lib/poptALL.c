@@ -563,7 +563,6 @@ static inline int checkfd(const char * devnull, int fdno, int flags)
 poptContext
 rpmcliInit(int argc, char *const argv[], struct poptOption * optionsTable)
 {
-    const char * optArg;
     poptContext optCon;
     char *path_buf, *path, *path_next;
     int rc;
@@ -649,7 +648,8 @@ rpmcliInit(int argc, char *const argv[], struct poptOption * optionsTable)
 
     /* Process all options, whine if unknown. */
     while ((rc = poptGetNextOpt(optCon)) > 0) {
-	optArg = poptGetOptArg(optCon);
+	const char * optArg = poptGetOptArg(optCon);
+	optArg = _free(optArg);
 	switch (rc) {
 	default:
 /*@-nullpass@*/

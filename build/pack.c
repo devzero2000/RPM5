@@ -736,6 +736,7 @@ rpmRC writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
 	    rc = RPMRC_FAIL;
 	    goto exit;
 	}
+	msg = _free(msg);
 	(void) Fflush(fd);
     }
     fdFiniDigest(fd, PGPHASHALGO_SHA1, &SHA1, NULL, 1);
@@ -846,6 +847,7 @@ assert(0);
 	    rc = RPMRC_FAIL;
 	    goto exit;
 	}
+	msg = _free(msg);
     }
 
     /* Append the header and archive */
@@ -870,6 +872,7 @@ assert(0);
 	    rc = RPMRC_FAIL;
 	    goto exit;
 	}
+	msg = _free(msg);
 
 #ifdef	NOTYET
 	(void) headerMergeLegacySigs(nh, sigh);
@@ -885,6 +888,7 @@ assert(0);
 	    rc = RPMRC_FAIL;
 	    goto exit;
 	}
+	msg = _free(msg);
     }
 	
     /* Write the payload into the package. */

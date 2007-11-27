@@ -1228,7 +1228,7 @@ static rpmRC rpmReadHeader(FD_t fd, /*@null@*/ Header * hdrp,
         /*@modifies fd, *hdrp, *msg, fileSystem, internalState @*/
 {
 rpmxar xar = fdGetXAR(fd);
-    pgpDig dig = fdGetDig(fd);
+    pgpDig dig = pgpDigLink(fdGetDig(fd), "rpmReadHeader");
     char buf[BUFSIZ];
     uint32_t block[4];
     uint32_t il;
@@ -1330,6 +1330,7 @@ exit:
     if (hdrp && h && rc == RPMRC_OK)
 	*hdrp = headerLink(h);
     ei = _free(ei);
+    dig = pgpDigFree(dig);
     h = headerFree(h);
 
     if (msg != NULL && *msg == NULL && buf[0] != '\0') {
