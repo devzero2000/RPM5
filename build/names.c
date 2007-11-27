@@ -208,7 +208,7 @@ gid_t getGidS(const char *gname)
 
 uint32_t * getBuildTime(void)
 {
-    static uint32_t buildTime[1];
+    static uint32_t buildTime[1] = { 0 };
 
 /*@-boundsread@*/
     if (buildTime[0] == 0)
