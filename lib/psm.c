@@ -391,7 +391,9 @@ exit:
 	    (void) Fclose(fi->te->fd);
 	fi->te->fd = NULL;
 	fi->te = NULL;
+#if 0
 	fi = rpmfiFree(fi);
+#endif
     }
 
     /* XXX nuke the added package(s). */

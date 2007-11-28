@@ -1,4 +1,5 @@
 5.0a2 -> 5.0a3:
+    - jbj: fix: ditto, for *.src.rpm as well.
     - jbj: fix: RPMTAG_BUILDTIME is type RPM_UINT32_TYPE, not RPM_STRING_TYPE.
     - jbj: fix: getBuildTime returns uint32_t *, not uint32_t.
     - jbj: rpmbuild: more memory leak plugging.
