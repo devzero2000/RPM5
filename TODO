@@ -66,8 +66,6 @@
 	but rpm-5.0 already uses DB_BTREE for Packages.
     - jbj: rpm-5.0 is almost compilation warning free, some effort to remove
 	the Mickey Mouse warnings that remain should be undertaken.
-    - jbj: headerNEVRA now malloc's the returned strinsg. rpmbuild likely has
-	a few new memory leaks (install/erase/query paths are clean).
     - jbj: memory leak seen with repackaging
 ==4811== 249 bytes in 3 blocks are definitely lost in loss record 1 of 1
 ==4811==    at 0x4805525: malloc (vg_replace_malloc.c:149)
@@ -80,6 +78,18 @@
 ==4811==    by 0x48A9C83: rpmtsRun (transaction.c:1689)
 ==4811==    by 0x4897D28: rpmErase (rpminstall.c:627)
 ==4811==    by 0x43FC: main (rpmqv.c:678)
+    - jbj: blueprinting *.rpm and *.src rpm contents built with
+	rpm-4.5 and rpm-5.0 indicates another likely signature padding
+	calculation problem (- is 4.5 built src.rpm, + is 5.0 built src.rpm)
+-  Sigsize: 107888
+-  Pkgid:     !!binary YkBolGxVnon0gGm8YV5lug==
+-  Hdrid: 827180de364f6948e94623b29dffa13e45898227
++  Sigsize: 107896
++  Pkgid:     !!binary pM5VJBrMT40gEk4TSvNrdA==
++  Hdrid: 72a11d90029ae1fbd61cd3741f4bb25681d8546d
+	(other contents are now identical after fixing RPMTAG_BUILDTIME).
+
+	
 
   o to be resolved before RPM 5.0.0:
     - rse: NEWS polishing
