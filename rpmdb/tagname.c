@@ -4,7 +4,7 @@
 
 #include "system.h"
 
-#include <rpmio.h>	/* XXX xtolower, xstrcasecmp */
+#include <rpmio_internal.h>	/* XXX DIGEST_CTX, xtolower, xstrcasecmp */
 #define	_RPMTAG_INTERNAL
 #include <rpmtag.h>
 #include "debug.h"
@@ -75,6 +75,31 @@ assert(n == rpmTagTableSize);
     return 0;
 }
 
+static char * _tagCanonicalize(const char * s)
+	/*@*/
+{
+    return xstrdup(s);
+}
+
+static rpmTag _tagGenerate(const char *s)
+	/*@*/
+{
+    DIGEST_CTX ctx = rpmDigestInit(PGPHASHALGO_SHA1, RPMDIGEST_NONE);
+    const char * digest = NULL;
+    size_t digestlen = 0;
+    size_t nb = strlen(s);
+    rpmTag tag = 0;
+
+    rpmDigestUpdate(ctx, s, nb);
+    rpmDigestFinal(ctx, &digest, &digestlen, 0);
+    if (digest && digestlen > 4) {
+	memcpy(&tag, digest + (digestlen - 4), 4);
+	tag &= 0x3fffffff;
+	tag |= 0x40000000;
+    }
+    digest = _free(digest);
+    return tag;
+}
 
 /* forward refs */
 static const char * _tagName(rpmTag tag)
@@ -89,6 +114,7 @@ static struct headerTagIndices_s _rpmTags = {
     tagLoadIndex,
     NULL, 0, tagCmpName, _tagValue,
     NULL, 0, tagCmpValue, _tagName, _tagType,
+    NULL, _tagCanonicalize, _tagGenerate
 };
 
 /*@-compmempass@*/
@@ -230,7 +256,10 @@ static unsigned int _tagType(rpmTag tag)
 static rpmTag _tagValue(const char * tagstr)
 {
     headerTagTableEntry t;
-    int comparison, i, l, u;
+    int comparison;
+    size_t i, l, u;
+    const char * s;
+    rpmTag tag;
     int xx;
 
     if (!xstrcasecmp(tagstr, "Packages"))
@@ -253,7 +282,7 @@ static rpmTag _tagValue(const char * tagstr)
     if (_rpmTags.byName == NULL)
 	xx = tagLoadIndex(&_rpmTags.byName, &_rpmTags.byNameSize, tagCmpName);
     if (_rpmTags.byName == NULL)
-	return 0xffffffff;	/* XXX arbitrary tags */
+	goto exit;
 
     l = 0;
     u = _rpmTags.byNameSize;
@@ -268,9 +297,15 @@ static rpmTag _tagValue(const char * tagstr)
 	else if (comparison > 0)
 	    l = i + 1;
 	else
-	    return (unsigned int)t->val;
+	    return t->val;
     }
-    return 0xffffffff;	/* XXX arbitrary tags */
+
+exit:
+    /* Generate an arbitrary tag string. */
+    s = _tagCanonicalize(tagstr);
+    tag = _tagGenerate(s);
+    s = _free(s);
+    return tag;
 }
 
 const char * tagName(rpmTag tag)
@@ -288,11 +323,22 @@ rpmTag tagValue(const char * tagstr)
     return ((*rpmTags->tagValue)(tagstr));
 }
 
+char * tagCanoincalize(const char * s)
+{
+    return ((*rpmTags->tagCanonicalize)(s));
+}
+
+rpmTag tagGenerate(const char * s)
+{
+    return ((*rpmTags->tagGenerate)(s));
+}
+
 void tagClean(headerTagIndices _rpmTags)
 {
     if (_rpmTags == NULL)
 	_rpmTags = rpmTags;
    if (_rpmTags) {
+	_rpmTags->nameBuf = _free(_rpmTags->nameBuf);
 	_rpmTags->byName = _free(_rpmTags->byName);
 	_rpmTags->byValue = _free(_rpmTags->byValue);
     }

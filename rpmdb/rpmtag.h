@@ -501,23 +501,30 @@ extern headerTagIndices rpmTags;
 struct headerTagIndices_s {
     int (*loadIndex) (headerTagTableEntry ** ipp, int * np,
                 int (*cmp) (const void * avp, const void * bvp))
-        /*@ modifies *ipp, *np */;	/*!< load sorted tag index. */
+        /*@ modifies *ipp, *np */;	/*!< Load sorted tag index. */
 /*@relnull@*/
-    headerTagTableEntry * byName;	/*!< header tags sorted by name. */
-    int byNameSize;			/*!< no. of entries. */
+    headerTagTableEntry * byName;	/*!< rpmTag's sorted by name. */
+    int byNameSize;			/*!< No. of entries. */
     int (*byNameCmp) (const void * avp, const void * bvp)
-        /*@*/;				/*!< compare entries by name. */
+        /*@*/;				/*!< Compare entries by name. */
     rpmTag (*tagValue) (const char * name)
-	/*@*/;				/* return value from name. */
+	/*@*/;				/* Return value from name. */
 /*@relnull@*/
-    headerTagTableEntry * byValue;	/*!< header tags sorted by value. */
-    int byValueSize;			/*!< no. of entries. */
+    headerTagTableEntry * byValue;	/*!< rpmTag's sorted by value. */
+    int byValueSize;			/*!< No. of entries. */
     int (*byValueCmp) (const void * avp, const void * bvp)
-        /*@*/;				/*!< compare entries by value. */
+        /*@*/;				/*!< Compare entries by value. */
     const char * (*tagName) (rpmTag value)
 	/*@*/;				/* Return name from value. */
     rpmTag (*tagType) (rpmTag value)
 	/*@*/;				/* Return type from value. */
+/*@owned@*/ /*@relnull@*/
+    char * nameBuf;			/* Name buffer. */
+/*@only@*/
+    char * (*tagCanonicalize) (const char * s)
+	/*@*/;				/* Canonicalize an arbitrary string. */
+    rpmTag (*tagGenerate) (const char * s)
+	/*@*/;				/* Generate value from name. */
 };
 #endif
 #endif	/* _RPMTAG_INTERNAL */
@@ -543,9 +550,26 @@ unsigned int tagType(rpmTag tag)
 /**
  * Return tag value from name.
  * @param tagstr	name of tag
- * @return		tag value, -1 on not found
+ * @return		tag value, 0xffffffff on not found
  */
 rpmTag tagValue(const char * tagstr)
+	/*@*/;
+
+/**
+ * Canonicalize a rpmTag string.
+ * @param s		string
+ * @return		canonicalized string
+ */
+/*@only@*/
+char * tagCanonicalize(const char * s)
+	/*@*/;
+
+/**
+ * Generate a tag from arbitrary string.
+ * @param s		string
+ * @return		generated tag value
+ */
+rpmTag tagGenerate(const char * s)
 	/*@*/;
 
 /**
