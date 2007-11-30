@@ -64,6 +64,8 @@
 %__lua			@__LUA@
 %__ln_s			@LN_S@
 %__lzma			@__LZMA@
+%__lzma_encode_args	@__LZMA_ENCODE_ARGS@
+%__lzma_decode_args	@__LZMA_DECODE_ARGS@
 %__lzmash		@__LZMASH@
 %__lzop			@__LZOP@
 %__make			@__MAKE@
