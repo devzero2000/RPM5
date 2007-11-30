@@ -418,7 +418,7 @@ AC_PATH_PROG(__OBJDUMP, objdump, %{_bindir}/objdump, $MYPATH)
 AC_PATH_PROG(__STRIP, strip, %{_bindir}/strip, $MYPATH)
 
 dnl # check for id -u
-AC_MSG_CHECKING(checking whether id supports -u)
+AC_MSG_CHECKING(whether id supports -u)
 if ${__ID} -u 2>&1 > /dev/null; then
     __ID_U="%{__id} -u"
     AC_MSG_RESULT(yes)
