@@ -78,7 +78,25 @@ assert(n == rpmTagTableSize);
 static char * _tagCanonicalize(const char * s)
 	/*@*/
 {
-    return xstrdup(s);
+    const char * se = s;
+    size_t nb = 0;
+    char * te;
+    char * t;
+    int c;
+
+    while ((c = *se++) && xisalpha(c))
+	nb++;
+
+    te = t = xmalloc(nb+1);
+    if (*s) {
+	*te++ = xtoupper(*s++);
+	nb--;
+    }
+    while (nb--)
+	*te++ = xtolower(*s++);
+    *te = '\0';
+
+    return t;
 }
 
 static rpmTag _tagGenerate(const char *s)
@@ -323,7 +341,7 @@ rpmTag tagValue(const char * tagstr)
     return ((*rpmTags->tagValue)(tagstr));
 }
 
-char * tagCanoincalize(const char * s)
+char * tagCanonicalize(const char * s)
 {
     return ((*rpmTags->tagCanonicalize)(s));
 }

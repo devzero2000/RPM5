@@ -797,30 +797,6 @@ static int handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
 }
 /*@=boundswrite@*/
 
-static rpmTag generateArbitraryTagNum(const char *s)
-{
-    const char *se;
-    rpmTag tag = 0;
-
-   for (se = s; *se && *se != ':'; se++)
-	;
-
-    if (se > s && *se == ':') {
-	DIGEST_CTX ctx = rpmDigestInit(PGPHASHALGO_SHA1, RPMDIGEST_NONE);
-	const char * digest = NULL;
-	size_t digestlen = 0;
-	rpmDigestUpdate(ctx, s, (se-s));
-	rpmDigestFinal(ctx, &digest, &digestlen, 0);
-	if (digest && digestlen > 4) {
-	    memcpy(&tag, digest + (digestlen - 4), 4);
-	    tag &= 0x3fffffff;
-	    tag |= 0x40000000;
-	}
-	digest = _free(digest);
-    }
-    return tag;
-}
-
 /* This table has to be in a peculiar order.  If one tag is the */
 /* same as another, plus a few letters, it must come first.     */
 
@@ -898,17 +874,25 @@ static struct PreambleRec_s preambleList[] = {
     /*@=nullassign@*/
 };
 
+static int argvStrcasecmp(const void * a, const void * b)
+{
+    ARGstr_t astr = *(ARGV_t)a;
+    ARGstr_t bstr = *(ARGV_t)b;
+    return xstrcasecmp(astr, bstr);
+}
+
 /**
  */
 /*@-boundswrite@*/
-static int findPreambleTag(Spec spec, /*@out@*/rpmTag * tag,
+static int findPreambleTag(Spec spec, /*@out@*/rpmTag * tagp,
 		/*@null@*/ /*@out@*/ const char ** macro, /*@out@*/ char * lang)
-	/*@modifies *tag, *macro, *lang @*/
+	/*@modifies *tagp, *macro, *lang @*/
 {
     PreambleRec p;
     char *s;
     size_t len = 0;
 
+    /* Search for defined tags. */
     for (p = preambleList; p->token != NULL; p++) {
 	len = strlen(p->token);
 	if (!(p->token && !xstrncasecmp(spec->line, p->token, len)))
@@ -922,10 +906,34 @@ static int findPreambleTag(Spec spec, /*@out@*/rpmTag * tag,
     }
     if (p == NULL)
 	return 1;
-    if (p->token == NULL) {
-	if (tag && (*tag = generateArbitraryTagNum(spec->line)) )
-	    return 0;
-	return 1;
+
+    /* Search for arbitrary tags. */
+    if (tagp && p->token == NULL) {
+	static ARGV_t aTags = NULL;
+	static int oneshot = 0;
+	int rc = 1;	/* assume failure */
+
+	if (!oneshot) {
+	    s = rpmExpand("%{?_arbitrary_tags}", NULL);
+	    if (s && *s) {
+		(void) argvSplit(&aTags, s, ":");
+		if (aTags)
+		    (void) argvSort(aTags, NULL);
+	    }
+	    s = _free(s);
+	    oneshot++;
+	}
+	if (aTags != NULL && aTags[0] != NULL) {
+	    ARGV_t av;
+	    s = tagCanonicalize(spec->line);
+	    av = argvSearch(aTags, s, argvStrcasecmp);
+	    if (av != NULL) {
+		*tagp = tagGenerate(s);
+		rc = 0;
+	    }
+	    s = _free(s);
+	}
+	return rc;
     }
 
     s = spec->line + len;
@@ -959,7 +967,7 @@ static int findPreambleTag(Spec spec, /*@out@*/rpmTag * tag,
 	break;
     }
 
-    *tag = p->tag;
+    *tagp = p->tag;
     if (macro)
 	/*@-onlytrans -observertrans -dependenttrans@*/	/* FIX: double indirection. */
 	*macro = p->token;

@@ -50,28 +50,29 @@ typedef enum rpmBuildFlags_e {
 #define	PART_BASE	0
 typedef enum rpmParseState_e {
     PART_NONE		=  0+PART_BASE,	/*!< */
-    PART_PREAMBLE	=  1+PART_BASE,	/*!< */
-    PART_PREP		=  2+PART_BASE,	/*!< */
-    PART_BUILD		=  3+PART_BASE,	/*!< */
-    PART_INSTALL	=  4+PART_BASE,	/*!< */
-    PART_CHECK		=  5+PART_BASE,	/*!< */
-    PART_CLEAN		=  6+PART_BASE,	/*!< */
-    PART_FILES		=  7+PART_BASE,	/*!< */
-    PART_PRE		=  8+PART_BASE,	/*!< */
-    PART_POST		=  9+PART_BASE,	/*!< */
-    PART_PREUN		= 10+PART_BASE,	/*!< */
-    PART_POSTUN		= 11+PART_BASE,	/*!< */
-    PART_PRETRANS	= 12+PART_BASE,	/*!< */
-    PART_POSTTRANS	= 13+PART_BASE,	/*!< */
-    PART_DESCRIPTION	= 14+PART_BASE,	/*!< */
-    PART_CHANGELOG	= 15+PART_BASE,	/*!< */
-    PART_TRIGGERIN	= 16+PART_BASE,	/*!< */
-    PART_TRIGGERUN	= 17+PART_BASE,	/*!< */
-    PART_VERIFYSCRIPT	= 18+PART_BASE,	/*!< */
-    PART_BUILDARCHITECTURES= 19+PART_BASE,/*!< */
-    PART_TRIGGERPOSTUN	= 20+PART_BASE,	/*!< */
-    PART_TRIGGERPREIN	= 21+PART_BASE,	/*!< */
-    PART_LAST		= 22+PART_BASE	/*!< */
+    /* leave room for RPMRC_NOTFOUND returns. */
+    PART_PREAMBLE	= 11+PART_BASE,	/*!< */
+    PART_PREP		= 12+PART_BASE,	/*!< */
+    PART_BUILD		= 13+PART_BASE,	/*!< */
+    PART_INSTALL	= 14+PART_BASE,	/*!< */
+    PART_CHECK		= 15+PART_BASE,	/*!< */
+    PART_CLEAN		= 16+PART_BASE,	/*!< */
+    PART_FILES		= 17+PART_BASE,	/*!< */
+    PART_PRE		= 18+PART_BASE,	/*!< */
+    PART_POST		= 19+PART_BASE,	/*!< */
+    PART_PREUN		= 20+PART_BASE,	/*!< */
+    PART_POSTUN		= 21+PART_BASE,	/*!< */
+    PART_PRETRANS	= 22+PART_BASE,	/*!< */
+    PART_POSTTRANS	= 23+PART_BASE,	/*!< */
+    PART_DESCRIPTION	= 24+PART_BASE,	/*!< */
+    PART_CHANGELOG	= 25+PART_BASE,	/*!< */
+    PART_TRIGGERIN	= 26+PART_BASE,	/*!< */
+    PART_TRIGGERUN	= 27+PART_BASE,	/*!< */
+    PART_VERIFYSCRIPT	= 28+PART_BASE,	/*!< */
+    PART_BUILDARCHITECTURES= 29+PART_BASE,/*!< */
+    PART_TRIGGERPOSTUN	= 30+PART_BASE,	/*!< */
+    PART_TRIGGERPREIN	= 31+PART_BASE,	/*!< */
+    PART_LAST		= 32+PART_BASE	/*!< */
 } rpmParseState;
 
 #define STRIP_NOTHING             0

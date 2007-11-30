@@ -125,7 +125,9 @@ LIBRPMDB_0
     rpmwfPullXAR;
     rpmVerifySignature;
     sqlitevec;
+    tagCanonicalize;
     tagClean;
+    tagGenerate;
     tagName;
     tagType;
     tagTypeValidate;

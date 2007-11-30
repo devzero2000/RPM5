@@ -171,7 +171,7 @@ int argvSplit(ARGV_t * argvp, const char * str, const char * seps)
 	seps = whitespace;
 
     for (argc = 1, s = str, t = dest; (c = (int) *s); s++, t++) {
-	if (strchr(seps, c)) {
+	if (strchr(seps, c) && !(s[0] == ':' && s[1] == '/' && s[2] == '/')) {
 	    argc++;
 	    c = (int) '\0';
 	}

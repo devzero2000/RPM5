@@ -519,6 +519,10 @@ print (t)\
 # Path to magic file used for file classification.
 %_rpmfc_magic_path	%{_rpmhome}/magic
 
+#
+# Colon separated list of permitted arbitrary tag names
+%_arbitrary_tags	Foo:Bar:Baz
+
 #==============================================================================
 # ---- Database configuration macros.
 #	Macros used to configure Berkley db parameters.

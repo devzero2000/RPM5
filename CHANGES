@@ -1,4 +1,6 @@
 5.0a2 -> 5.0a3:
+    - jbj: parse arbitrary tags permitted by _arbitrary_tags white list.
+    - jbj: fix: renumber rpmParseState_e to avoid rpmRC error returns.
     - rpm.org: remove unnecessary includes.
     - jbj: stub in arbitrary tag methods.
     - jbj: fix: ditto, for *.src.rpm as well.
