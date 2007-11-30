@@ -36,6 +36,7 @@ SQLite      [1] optional  3.3     3.5.2   http://www.sqlite.org/
 Lua         [2] optional  5.1     5.1.2   http://www.lua.org/
 ZLib        [3] optional  1.2     1.2.3   http://www.zlib.net/
 Bzip2           optional  1.0     1.0.4   http://www.bzip.org/
+LZMA SDK        internal  4.27    4.32    http://www.7-zip.org/sdk.html
 File/magic  [4] optional  4.0     4.21    ftp://ftp.astron.com/pub/file/
 GNU gettext     optional  0.16    0.17    http://www.gnu.org/software/gettext/
 GNU iconv       optional  1.11    1.11    http://www.gnu.org/software/libiconv/
@@ -78,6 +79,7 @@ Name            Type      Minimum Used    URL
 --------------- --------- ------- ------- -------------------------------------
 GNU zip         optional  -       -       http://www.gzip.org/
 Bzip2           optional  -       -       http://www.bzip.org/
+LZMA Utils      optional  -       -       http://tukaani.org/lzma/
 GNU tar         optional  -       -       http://www.gnu.org/software/tar/
 GNU cpio        optional  -       -       http://www.gnu.org/software/cpio/
 UnZip           optional  -       -       http://www.info-zip.org/UnZip.html
