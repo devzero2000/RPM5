@@ -192,10 +192,11 @@ partly dependency order from top to bottom):
   RPM Executables:       rpm
   (stage 0)              rpmbuild
 
-  RPM Libraries:         librpmbuild
-  (stage 1)              librpm 
+  RPM Libraries:         librpm
+  (stage 1)              librpmbuild
+                         librpmconstant
                          librpmdb
-                         librpmio 
+                         librpmio
                          librpmmisc
 
   Third-Party Libraries: libpopt     (mandatory)
@@ -226,10 +227,11 @@ partly dependency order from top to bottom):
 
 The most important aspects to notice are: librpmbuild requires mainly
 librpm, librpm in turn requires both librpmdb and librpmio, and all
-librpm* require librpmmisc. Additionally, librpmmisc is a container for
-the internal local copies of third-party libraries. Finally, notice that
-the set of third-party libraries at stage 2 can be dynamically choosen
-at build-time and are not a fixed set.
+librpm* require librpmmisc. Additionally; librpmmisc is a container for
+the internal local copies of third-party libraries, and librpmconstant
+provides RPM API constants (usually to language bindings). Finally,
+notice that the set of third-party libraries at stage 2 can be dynamically 
+chosen at build-time and are not a fixed set.
 
 Unfortunately, there are many link-time approaches to handle these
 internal and external dependencies. The currently implemented approach
