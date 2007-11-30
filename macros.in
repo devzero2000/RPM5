@@ -351,7 +351,7 @@ package or when debugging this package.\
 #	Compression type and level for source/binary package payloads.
 #		"w9.gzdio"	gzip level 9 (default).
 #		"w9.bzdio"	bzip2 level 9.
-#		"w9.lzdio"	lzma level 9.
+#		"w7.lzdio"	lzma level 7.
 #
 #%_source_payload	w9.gzdio
 #%_binary_payload	w9.gzdio
