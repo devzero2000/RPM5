@@ -1,4 +1,5 @@
 5.0a2 -> 5.0a3:
+    - afb: use %{?__lzma_encode_args} and %{?__lzma_decode_args} macros.
     - jbj: parse arbitrary tags permitted by _arbitrary_tags white list.
     - jbj: fix: renumber rpmParseState_e to avoid rpmRC error returns.
     - rpm.org: remove unnecessary includes.

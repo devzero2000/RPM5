@@ -260,7 +260,7 @@ static const char *doUntar(Spec spec, int c, int quietly)
 	    t = "%{__lzop} -dc";
 	    break;
 	case COMPRESSED_LZMA:
-	    t = "%{__lzma} -dc";
+	    t = "%{__lzma} %{?__lzma_decode_args}%{!?__lzma_decode_args:-dc}";
 	    break;
 	case COMPRESSED_ZIP:
 	    if (rpmIsVerbose() && !quietly)

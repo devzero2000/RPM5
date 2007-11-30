@@ -2782,6 +2782,8 @@ static inline /*@dependent@*/ void * lzdFileno(FD_t fd)
     return rc;
 }
 
+#define LZMA_ARGS_LEN	32 /* should be enough for any tweaking */
+
 /*@-mods@*/	/* XXX hide rpmGlobalMacroContext mods for now. */
 static FD_t lzdWriteOpen(int fdno, int fopen)
 	/*@globals fileSystem, internalState @*/
@@ -2791,6 +2793,9 @@ static FD_t lzdWriteOpen(int fdno, int fopen)
     int p[2];
     int xx;
     const char *lzma;
+    char *args;
+    char *av[LZMA_ARGS_LEN+2];
+    char *saveptr;
 
     if (fdno < 0) return NULL;
     if (pipe(p) < 0) {
@@ -2828,9 +2833,15 @@ static FD_t lzdWriteOpen(int fdno, int fopen)
         for (i = 3; i < 1024; i++)
 	    xx = close(i);
         lzma = rpmGetPath("%{?__lzma}%{!?__lzma:/usr/bin/lzma}", NULL);
-        if (execl(lzma, "lzma", "e", "-si", "-so", NULL))
+        av[0] = (char*)lzma;
+        args = rpmExpand("%{?__lzma_encode_args}", NULL);
+        for (i = 1; i < sizeof(av)/sizeof(av[0])-1; i++)
+            av[i] = strtok_r(i == 1 ? args : NULL, " ", &saveptr);
+        av[i] = NULL;
+        if (execv(lzma, av))
             _exit(1);
         lzma = _free(lzma);
+        args = _free(args);
     }
     return NULL; /* warning */
 }
