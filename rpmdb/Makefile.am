@@ -78,7 +78,7 @@ if WITH_PATH_VERSIONED
 	done
 endif
 
-tagtbl.c: Makefile.am $(top_srcdir)/rpmdb/rpmtag.h 
+tagtbl.c: Makefile $(top_srcdir)/rpmdb/rpmtag.h 
 	@echo '#include "system.h"' > $@
 	@echo '#define _RPMTAG_INTERNAL' >> $@
 	@echo '#include <rpmtag.h>' >> $@
