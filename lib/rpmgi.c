@@ -677,7 +677,7 @@ nextkey:
 	    rpmrc = rpmpkgRead(item, gi->fd, &h, &msg);
 /*@=voidabstract@*/
 	    if (rpmrc != RPMRC_OK) {
-		rpmlog(RPMLOG_ERR, "%s: %s: %s\n", "headerRead", item, msg);
+		rpmlog(RPMLOG_ERR, "%s: %s: %s\n", "rpmpkgRead", item, msg);
 		h = NULL;
 	    }
 	    msg = _free(msg);
