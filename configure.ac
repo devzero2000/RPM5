@@ -538,7 +538,7 @@ dnl # non-standard Unix library search path order. This causes great
 dnl # problems when linking against the third-party libraries.
 dnl # Force ld(1) to stick standard Unix search path order.
 case "$host" in
-    *-*-darwin8* ) LDFLAGS="$LDFLAGS -Wl,-search_paths_first" ;;
+    *-*-darwin* ) LDFLAGS="$LDFLAGS -Wl,-search_paths_first" ;;
 esac
 
 dnl # FIXME: platform-hack: SCO and SunOS 4.x
