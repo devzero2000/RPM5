@@ -416,8 +416,8 @@ suggest:
 
 There is no %{_target_os_version} tag, so if you need to also
 distinguish between RPMs for certain versions of the OS, you can
-hard-code the version in the rpmrc on the build machine, so that .rpm
-files are generated with the version as part of the filename.
+hard-code the version in the macros on the build machine, so that
+.rpm files are generated with the version as part of the filename.
 
 For example when one user builds RPMs for Digital Unix 4.0b and 4.0d,
 optimization is important and he will build one set of RPMs for the
