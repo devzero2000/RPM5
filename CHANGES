@@ -2,7 +2,6 @@
     - jbj: pkgio: hdlist readers need RPMRC_NOTFOUND EOF indicator.
     - jbj: pkgio: drill in sufficient debugging to sort per/python I/O issues.
     - jbj: re-add symbols for perl "make test". hmm, headerRead failure todo++.
-    - afb: use %{?__lzma_encode_args} and %{?__lzma_decode_args} macros.
     - jbj: parse arbitrary tags permitted by _arbitrary_tags white list.
     - jbj: fix: renumber rpmParseState_e to avoid rpmRC error returns.
     - rpm.org: remove unnecessary includes.
