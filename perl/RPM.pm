@@ -11,8 +11,6 @@ use File::Spec ();
 use vars qw/@ISA @EXPORT/;
 @ISA = qw/DynaLoader Exporter/;
 
-bootstrap RPM;
-
 @EXPORT = qw(
     rpmlog
     setlogcallback
@@ -27,6 +25,8 @@ bootstrap RPM;
     dump_macros
     platformscore
 );
+
+bootstrap RPM;
 
 1;
 
