@@ -428,24 +428,6 @@ else
 fi
 AC_SUBST(__ID_U)
 
-dnl # check whether we are using LZMA SDK or LZMA Utils variant of lzma(1).
-AC_MSG_CHECKING(for lzma(1) variant)
-if (${__LZMA} -V 2>&1 | grep "LZMA Utils") >/dev/null 2>&1; then
-    AC_MSG_RESULT([LZMA Utils])
-    __LZMA_ENCODE_ARGS="%{nil}"
-    __LZMA_DECODE_ARGS="-dc"
-elif (${__LZMA} -V 2>&1 | grep "^LZMA") >/dev/null 2>&1; then
-    AC_MSG_RESULT([LZMA SDK])
-    __LZMA_ENCODE_ARGS="e -si -so"
-    __LZMA_DECODE_ARGS="d -si -so"
-else
-    AC_MSG_RESULT(none)
-    __LZMA_ENCODE_ARGS="%{nil}"
-    __LZMA_DECODE_ARGS="%{nil}"
-fi
-AC_SUBST(__LZMA_ENCODE_ARGS)
-AC_SUBST(__LZMA_DECODE_ARGS)
-
 dnl # auto-detect whether doxygen generated API docs should be included.
 AC_PATH_PROG(__DOXYGEN, doxygen, no, $PATH)
 withval=auto
