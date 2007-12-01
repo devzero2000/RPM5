@@ -1062,11 +1062,14 @@ AC_MSG_RESULT([$ROOT_GROUP])
 AC_SUBST(ROOT_GROUP)
 
 dnl # provide platform-specific "find-provides" and "find-requires" script symlinks
+target_os_gnu="%{nil}"
 if echo "$target_os" | grep '.*-gnulibc1' > /dev/null ; then
 	target_os=`echo "${target_os}" | sed 's/-gnulibc1$//'`
+	target_os_gnu="-gnulibc1"
 fi
 if echo "$target_os" | grep '.*-gnu' > /dev/null ; then
 	target_os=`echo "${target_os}" | sed 's/-gnu$//'`
+	target_os_gnu="-gnu"
 fi
 changequote(<, >)
 target_os_exact="${target_os}"
@@ -1144,12 +1147,14 @@ unknown|pc|ibm|redhat|pld|mandrake|conectiva|lvr|yellowdog|caos|crux|ark)
 	;;
 esac
 RPMCANONOS="$target_os_noversion"
+RPMCANONGNU="$target_os_gnu"
 AC_SUBST(RPMCANONCOLOR)
 AC_SUBST(autorelocate_path)
 AC_SUBST(autorelocate_dcolor)
 AC_SUBST(RPMCANONARCH)
 AC_SUBST(RPMCANONVENDOR)
 AC_SUBST(RPMCANONOS)
+AC_SUBST(RPMCANONGNU)
 
 dnl # RPM installation user/group and uid/gid
 : ${RPMUSER=rpm}
