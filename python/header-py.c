@@ -681,7 +681,7 @@ PyObject * rpmReadHeaders (FD_t fd)
 	const char * msg = NULL;
 	rpmRC rc = rpmpkgRead(item, fd, &h, &msg);
 	if (rc != RPMRC_OK)
-	    rpmlog(RPMLOG_ERR, "%s: %s: %s\n", "headerRead", item, msg);
+	    rpmlog(RPMLOG_ERR, "%s: %s: %s\n", "rpmpkgRead", item, msg);
 	msg = _free(msg);
     }
     Py_END_ALLOW_THREADS
@@ -702,7 +702,7 @@ PyObject * rpmReadHeaders (FD_t fd)
 	    const char * msg = NULL;
 	    rpmRC rc = rpmpkgRead(item, fd, &h, &msg);
 	    if (rc != RPMRC_OK)
-		rpmlog(RPMLOG_ERR, "%s: %s: %s\n", "headerRead", item, msg);
+		rpmlog(RPMLOG_ERR, "%s: %s: %s\n", "rpmpkgRead", item, msg);
 	    msg = _free(msg);
 	}
 	Py_END_ALLOW_THREADS
@@ -785,7 +785,7 @@ rpmSingleHeaderFromFD(PyObject * self, PyObject * args, PyObject * kwds)
 	const char * msg = NULL;
 	rpmRC rc = rpmpkgRead(item, fd, &h, &msg);
 	if (rc != RPMRC_OK)
-	    rpmlog(RPMLOG_ERR, "%s: %s: %s\n", "headerRead", item, msg);
+	    rpmlog(RPMLOG_ERR, "%s: %s: %s\n", "rpmpkgRead", item, msg);
 	msg = _free(msg);
     }
     Py_END_ALLOW_THREADS

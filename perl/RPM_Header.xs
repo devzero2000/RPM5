@@ -44,7 +44,7 @@ stream2header(fp, callback = NULL)
 	    header = NULL;
 	    rpmRC rc = rpmpkgRead(item, fd, &header, &msg);
 	    if (rc != RPMRC_OK) {
-		rpmlog(RPMLOG_ERR, "%s: %s: %s\n", "headerRead", item, msg);
+		rpmlog(RPMLOG_ERR, "%s: %s: %s\n", "rpmpkgRead", item, msg);
 		header = NULL;
 	    }
 	    msg = _free(msg);

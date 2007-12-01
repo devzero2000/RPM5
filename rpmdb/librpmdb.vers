@@ -29,6 +29,7 @@ LIBRPMDB_0
     headerAddI18NString;
     headerCheck;
     headerCompoundFormats;
+    headerCopy;
     headerCopyLoad;
     headerCopyTags;
     headerDefaultFormats;
@@ -42,6 +43,7 @@ LIBRPMDB_0
     headerInit;
     headerIsEntry;
     headerLink;
+    headerLoad;
     headerMacrosLoad;
     headerMacrosUnload;
     headerMergeLegacySigs;
@@ -55,6 +57,7 @@ LIBRPMDB_0
     headerSetInstance;
     headerSizeof;
     headerSprintf;
+    headerUnload;
     headerVerifyInfo;
     hGetColor;
     _init;
