@@ -42,6 +42,9 @@
 /*@access FD_t @*/              /* XXX stealing digests */
 
 /*@unchecked@*/
+int _pkgio_debug = 0;
+
+/*@unchecked@*/
 int _use_xar = 0;
 
 /*@unchecked@*/
@@ -84,6 +87,9 @@ rpmRC rpmWriteHeader(FD_t fd, /*@null@*/ Header h, /*@null@*/ const char ** msg)
     ssize_t nb;
     size_t length;
     rpmRC rc = RPMRC_FAIL;	/* assume failure */
+
+if (_pkgio_debug)
+fprintf(stderr, "--> rpmWriteHeader(%p, %p, %p)\n", fd, h, msg);
 
     if (h == NULL) {
 	if (msg)
@@ -433,6 +439,9 @@ static rpmRC wrLead(FD_t fd, const void * ptr, const char ** msg)
 {
     struct rpmlead l;
 
+if (_pkgio_debug)
+fprintf(stderr, "--> wrLead(%p, %p, %p)\n", fd, ptr, msg);
+
     memcpy(&l, ptr, sizeof(l));
 
     /* Set some sane defaults */
@@ -473,6 +482,9 @@ static rpmRC rdLead(FD_t fd, /*@out@*/ /*@null@*/ void * ptr,
     char buf[BUFSIZ];
     rpmRC rc = RPMRC_FAIL;		/* assume failure */
     int xx;
+
+if (_pkgio_debug)
+fprintf(stderr, "--> rdLead(%p, %p, %p)\n", fd, ptr, msg);
 
     buf[0] = '\0';
     if (leadp != NULL) *leadp = NULL;
@@ -596,6 +608,9 @@ static rpmRC wrSignature(FD_t fd, void * ptr, /*@unused@*/ const char ** msg)
     size_t pad;
     rpmRC rc = RPMRC_OK;
 
+if (_pkgio_debug)
+fprintf(stderr, "--> wrSignature(%p, %p, %p)\n", fd, ptr, msg);
+
     rc = rpmWriteHeader(fd, sigh, msg);
     if (rc != RPMRC_OK)
 	return rc;
@@ -679,6 +694,9 @@ rpmxar xar = fdGetXAR(fd);
     rpmRC rc = RPMRC_FAIL;		/* assume failure */
     int xx;
     uint32_t i;
+
+if (_pkgio_debug)
+fprintf(stderr, "--> rdSignature(%p, %p, %p)\n", fd, ptr, msg);
 
     buf[0] = '\0';
     if (sighp)
@@ -908,6 +926,9 @@ rpmRC headerCheck(pgpDig dig, const void * uh, size_t uc, const char ** msg)
     rpmRC rc = RPMRC_FAIL;	/* assume failure */
     int xx;
     uint32_t i;
+
+if (_pkgio_debug)
+fprintf(stderr, "--> headerCheck(%p, %p[%u], %p)\n", dig, uh, (unsigned) uc, msg);
 
     buf[0] = '\0';
 
@@ -1242,6 +1263,9 @@ rpmxar xar = fdGetXAR(fd);
     rpmRC rc = RPMRC_FAIL;		/* assume failure */
     int xx;
 
+if (_pkgio_debug)
+fprintf(stderr, "--> rpmReadHeader(%p, %p, %p)\n", fd, hdrp, msg);
+
     /* Create (if not already) a signature parameters container. */
     if (dig == NULL) {
 	dig = pgpDigNew(0);
@@ -1263,8 +1287,13 @@ rpmxar xar = fdGetXAR(fd);
 	    goto exit;
 	}
     }
+
     if ((xx = (int) timedRead(fd, (char *)block, sizeof(block))) != (int)sizeof(block)) {
-	(void) snprintf(buf, sizeof(buf),
+	/* XXX Handle EOF's as RPMRC_NOTFOUND, not RPMRC_FAIL, returns. */
+	if (xx == 0)
+	    rc = RPMRC_NOTFOUND;
+	else
+	    (void) snprintf(buf, sizeof(buf),
 		_("hdr size(%u): BAD, read returned %d"), (unsigned)sizeof(block), xx);
 	goto exit;
     }

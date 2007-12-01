@@ -41,11 +41,18 @@ stream2header(fp, callback = NULL)
 	while (1) {
 	    const char item[] = "Header";
 	    const char * msg = NULL;
+	    rpmRC rc;
 	    header = NULL;
-	    rpmRC rc = rpmpkgRead(item, fd, &header, &msg);
-	    if (rc != RPMRC_OK) {
+	    rc = rpmpkgRead(item, fd, &header, &msg);
+	    switch (rc) {
+	    default:
 		rpmlog(RPMLOG_ERR, "%s: %s: %s\n", "rpmpkgRead", item, msg);
+		/*@fallthrough@*/
+	    case RPMRC_NOTFOUND:
 		header = NULL;
+		/*@fallthrough@*/
+	    case RPMRC_OK:
+		break;
 	    }
 	    msg = _free(msg);
 	    if (header == NULL)
