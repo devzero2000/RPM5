@@ -499,6 +499,7 @@ extern headerTagIndices rpmTags;
  */
 #if !defined(SWIG)
 struct headerTagIndices_s {
+/*@relnull@*/
     int (*loadIndex) (headerTagTableEntry ** ipp, int * np,
                 int (*cmp) (const void * avp, const void * bvp))
         /*@ modifies *ipp, *np */;	/*!< Load sorted tag index. */
@@ -508,23 +509,25 @@ struct headerTagIndices_s {
     int (*byNameCmp) (const void * avp, const void * bvp)
         /*@*/;				/*!< Compare entries by name. */
     rpmTag (*tagValue) (const char * name)
-	/*@*/;				/* Return value from name. */
+	/*@*/;				/*!< Return value from name. */
 /*@relnull@*/
     headerTagTableEntry * byValue;	/*!< rpmTag's sorted by value. */
     int byValueSize;			/*!< No. of entries. */
     int (*byValueCmp) (const void * avp, const void * bvp)
         /*@*/;				/*!< Compare entries by value. */
     const char * (*tagName) (rpmTag value)
-	/*@*/;				/* Return name from value. */
+	/*@*/;				/*!< Return name from value. */
     rpmTag (*tagType) (rpmTag value)
-	/*@*/;				/* Return type from value. */
+	/*@*/;				/*!< Return type from value. */
+    size_t nameBufLen;			/*!< No. bytes allocated for nameBuf. */
+    const char ** aTags;		/*!< Arbitrary tags array (ARGV_t) */
 /*@owned@*/ /*@relnull@*/
     char * nameBuf;			/* Name buffer. */
 /*@only@*/
     char * (*tagCanonicalize) (const char * s)
-	/*@*/;				/* Canonicalize an arbitrary string. */
+	/*@*/;				/*!< Canonicalize arbitrary string. */
     rpmTag (*tagGenerate) (const char * s)
-	/*@*/;				/* Generate value from name. */
+	/*@*/;				/*!< Generate tag from string. */
 };
 #endif
 #endif	/* _RPMTAG_INTERNAL */

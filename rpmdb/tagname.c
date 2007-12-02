@@ -5,12 +5,41 @@
 #include "system.h"
 
 #include <rpmio_internal.h>	/* XXX DIGEST_CTX, xtolower, xstrcasecmp */
+#include <rpmmacro.h>
+#include <argv.h>
 #define	_RPMTAG_INTERNAL
 #include <rpmtag.h>
 #include "debug.h"
 
 /*@access headerTagTableEntry @*/
 /*@access headerTagIndices @*/
+
+/**
+ * Load/sort arbitrary tags.
+ * @retval *argvp	arbitrary tag array
+ * @return		0 always
+ */
+static int tagLoadATags(ARGV_t * argvp,
+		int (*cmp) (const void * avp, const void * bvp))
+	/*@modifies *ipp, *np @*/
+{
+    ARGV_t aTags = NULL;
+    char * s = rpmExpand("%{?_arbitrary_tags}", NULL);
+
+    if (s && *s)
+	(void) argvSplit(&aTags, s, ":");
+    else
+	aTags = xcalloc(1, sizeof(*aTags));
+    if (aTags && aTags[0])
+	(void) argvSort(aTags, cmp);
+    s = _free(s);
+
+    if (argvp)
+	*argvp = aTags;
+    else
+	aTags = argvFree(aTags);
+    return 0;
+}
 
 /**
  * Compare tag table entries by name.
@@ -56,7 +85,7 @@ static int tagLoadIndex(headerTagTableEntry ** ipp, int * np,
 	/*@modifies *ipp, *np @*/
 {
     headerTagTableEntry tte, *ip;
-    int n = 0;
+    size_t n = 0;
 
     ip = xcalloc(rpmTagTableSize, sizeof(*ip));
     n = 0;
@@ -135,7 +164,7 @@ static struct headerTagIndices_s _rpmTags = {
     tagLoadIndex,
     NULL, 0, tagCmpName, _tagValue,
     NULL, 0, tagCmpValue, _tagName, _tagType,
-    NULL, _tagCanonicalize, _tagGenerate
+    256, NULL, NULL, _tagCanonicalize, _tagGenerate
 };
 
 /*@-compmempass@*/
@@ -145,17 +174,21 @@ headerTagIndices rpmTags = &_rpmTags;
 
 static const char * _tagName(rpmTag tag)
 {
-    static size_t nameBufLen = 256;
     char * nameBuf;
     headerTagTableEntry t;
     int comparison, i, l, u;
     int xx;
     char *s;
 
+    if (_rpmTags.aTags == NULL)
+	xx = tagLoadATags(&_rpmTags.aTags, NULL);
     if (_rpmTags.byValue == NULL)
-	xx = tagLoadIndex(&_rpmTags.byValue, &_rpmTags.byValueSize, tagCmpValue);
+	xx = tagLoadIndex(&_rpmTags.byValue, &_rpmTags.byValueSize,
+		tagCmpValue);
+    if (_rpmTags.nameBufLen == 0)
+	_rpmTags.nameBufLen = 256;
     if (_rpmTags.nameBuf == NULL)
-	_rpmTags.nameBuf = xcalloc(1, nameBufLen);
+	_rpmTags.nameBuf = xcalloc(1, _rpmTags.nameBufLen);
     nameBuf = _rpmTags.nameBuf;
 
     switch (tag) {
@@ -217,8 +250,8 @@ static const char * _tagName(rpmTag tag)
 		}
 		t = _rpmTags.byValue[i];
 		s = (*_rpmTags.tagCanonicalize) (t->name);
-		strncpy(nameBuf, s, nameBufLen);
-		nameBuf[nameBufLen-1] = '\0';
+		strncpy(nameBuf, s, _rpmTags.nameBufLen);
+		nameBuf[_rpmTags.nameBufLen-1] = '\0';
 		s = _free(s);
 		/*@loopbreak@*/ break;
 	    }
@@ -234,6 +267,8 @@ static unsigned int _tagType(rpmTag tag)
     int comparison, i, l, u;
     int xx;
 
+    if (_rpmTags.aTags == NULL)
+	xx = tagLoadATags(&_rpmTags.aTags, NULL);
     if (_rpmTags.byValue == NULL)
 	xx = tagLoadIndex(&_rpmTags.byValue, &_rpmTags.byValueSize, tagCmpValue);
 
@@ -302,6 +337,8 @@ static rpmTag _tagValue(const char * tagstr)
     if (!xstrcasecmp(tagstr, "Ftswalk"))
 	return RPMDBI_FTSWALK;
 
+    if (_rpmTags.aTags == NULL)
+	xx = tagLoadATags(&_rpmTags.aTags, NULL);
     if (_rpmTags.byName == NULL)
 	xx = tagLoadIndex(&_rpmTags.byName, &_rpmTags.byNameSize, tagCmpName);
     if (_rpmTags.byName == NULL)
@@ -364,6 +401,7 @@ void tagClean(headerTagIndices _rpmTags)
 	_rpmTags->nameBuf = _free(_rpmTags->nameBuf);
 	_rpmTags->byName = _free(_rpmTags->byName);
 	_rpmTags->byValue = _free(_rpmTags->byValue);
+	_rpmTags->aTags = argvFree(_rpmTags->aTags);
     }
 }
 

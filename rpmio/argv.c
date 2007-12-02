@@ -86,6 +86,13 @@ int argvCmp(const void * a, const void * b)
     return strcmp(astr, bstr);
 }
 
+int argvStrcasecmp(const void * a, const void * b)
+{
+    ARGstr_t astr = *(ARGV_t)a;
+    ARGstr_t bstr = *(ARGV_t)b;
+    return xstrcasecmp(astr, bstr);
+}
+
 int argvSort(ARGV_t argv, int (*compar)(const void *, const void *))
 {
     if (compar == NULL)

@@ -2047,7 +2047,6 @@ static char * hsaReserve(headerSprintfArgs hsa, size_t need)
 
 /**
  * Return tag name from value.
- * @todo bsearch on sorted value table.
  * @param tbl		tag table
  * @param val		tag value to find
  * @retval *typep	tag type (or NULL)
@@ -2058,9 +2057,17 @@ static const char * myTagName(headerTagTableEntry tbl, uint32_t val,
 		/*@null@*/ uint32_t *typep)
 	/*@modifies *typep @*/
 {
-    static char name[128];
+    static char name[128];	/* XXX Ick. */
     const char * s;
     char *t;
+
+    /* XXX Use bsearch on the "normal" rpmTagTable lookup. */
+    if (tbl == NULL || tbl == rpmTagTable) {
+	s = tagName(val);
+	if (s != NULL && typep != NULL)
+	    *typep = tagType(val);
+	return s;
+    }
 
     for (; tbl->name != NULL; tbl++) {
 	if (tbl->val == val)
@@ -2081,7 +2088,6 @@ static const char * myTagName(headerTagTableEntry tbl, uint32_t val,
 
 /**
  * Return tag value from name.
- * @todo bsearch on sorted name table.
  * @param tbl		tag table
  * @param name		tag name to find
  * @return		tag value, 0 on not found
@@ -2089,6 +2095,10 @@ static const char * myTagName(headerTagTableEntry tbl, uint32_t val,
 static uint32_t myTagValue(headerTagTableEntry tbl, const char * name)
 	/*@*/
 {
+    /* XXX Use bsearch on the "normal" rpmTagTable lookup. */
+    if (tbl == NULL || tbl == rpmTagTable)
+	return tagValue(name);
+
     for (; tbl->name != NULL; tbl++) {
 	if (!xstrcasecmp(tbl->name, name))
 	    return tbl->val;

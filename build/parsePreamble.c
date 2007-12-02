@@ -8,6 +8,7 @@
 #include <rpmio_internal.h>
 
 #define	_RPMEVR_INTERNAL
+#define	_RPMTAG_INTERNAL	/* XXX rpmTags->aTags */
 #include <rpmbuild.h>
 #include "debug.h"
 
@@ -874,13 +875,6 @@ static struct PreambleRec_s preambleList[] = {
     /*@=nullassign@*/
 };
 
-static int argvStrcasecmp(const void * a, const void * b)
-{
-    ARGstr_t astr = *(ARGV_t)a;
-    ARGstr_t bstr = *(ARGV_t)b;
-    return xstrcasecmp(astr, bstr);
-}
-
 /**
  */
 /*@-boundswrite@*/
@@ -909,20 +903,11 @@ static int findPreambleTag(Spec spec, /*@out@*/rpmTag * tagp,
 
     /* Search for arbitrary tags. */
     if (tagp && p->token == NULL) {
-	static ARGV_t aTags = NULL;
-	static int oneshot = 0;
+	ARGV_t aTags = NULL;
 	int rc = 1;	/* assume failure */
 
-	if (!oneshot) {
-	    s = rpmExpand("%{?_arbitrary_tags}", NULL);
-	    if (s && *s) {
-		(void) argvSplit(&aTags, s, ":");
-		if (aTags)
-		    (void) argvSort(aTags, NULL);
-	    }
-	    s = _free(s);
-	    oneshot++;
-	}
+	(void) tagName(0); /* XXX force arbitrary tags to be initialized. */
+	aTags = rpmTags->aTags;
 	if (aTags != NULL && aTags[0] != NULL) {
 	    ARGV_t av;
 	    s = tagCanonicalize(spec->line);

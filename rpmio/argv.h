@@ -83,7 +83,7 @@ ARGV_t argvData(/*@null@*/ ARGV_t argv)
 	/*@*/;
 
 /**
- * Compare argv arrays (qsort/bsearch).
+ * Compare argv arrays using strcmp (qsort/bsearch).
  * @param a		1st instance address
  * @param b		2nd instance address
  * @return		result of comparison
@@ -92,6 +92,15 @@ ARGV_t argvData(/*@null@*/ ARGV_t argv)
 int argvCmp(const void * a, const void * b)
 	/*@*/;
 /*@=exportlocal@*/
+
+/**
+ * Compare argv arrays using strcasecmp (qsort/bsearch).
+ * @param a		1st instance address
+ * @param b		2nd instance address
+ * @return		result of comparison
+ */
+int argvStrcasecmp(const void * a, const void * b)
+	/*@*/;
 
 /**
  * Sort an argv array.

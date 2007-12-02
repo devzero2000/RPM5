@@ -20,6 +20,7 @@ LIBRPMIO_0
     argvSearch;
     argvSort;
     argvSplit;
+    argvStrcasecmp;
     avClosedir;
     _av_debug;
     avmagicdir;
