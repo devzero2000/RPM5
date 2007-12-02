@@ -218,39 +218,3 @@ sources_url(spec, is = 0)
         XPUSHs(sv_2mortal(newSVpv(srcPtr->fullSource, 0)));
     }
 
-void
-icon(spec)
-    Spec spec
-    PREINIT:
-    Package pkg;
-    PPCODE:
-    /* TODO obsoletes ?
-    for (pkg = spec->packages; pkg != NULL; pkg = pkg->next) {
-        char * dest = NULL;
-        int len;
-        if (!pkg->icon)
-            continue;
-        len = strlen(pkg->icon->source);
-        dest = malloc(len);
-        memcpy(dest, pkg->icon->source, len);
-        XPUSHs(sv_2mortal(newSVpv(dest, len)));
-    } */
-
-void
-icon_url(spec)
-    Spec spec
-    PREINIT:
-    Package pkg;
-    /* TODO obsoletes ?
-    PPCODE:
-    for (pkg = spec->packages; pkg != NULL; pkg = pkg->next) {
-        char * dest = NULL;
-        int len;
-        if (!pkg->icon)
-            continue;
-        len = strlen(pkg->icon->fullSource);
-        dest = malloc(len);
-        memcpy(dest, pkg->icon->fullSource, len);
-        XPUSHs(sv_2mortal(newSVpv(dest, len)));
-    } */
-

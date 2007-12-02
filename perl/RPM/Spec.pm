@@ -4,7 +4,6 @@ use strict;
 use Exporter;
 use RPM;
 
-
 =head1 NAME
 
 RPM::Spec
@@ -15,7 +14,7 @@ An object to handle operation around specs file
 
 =head1 FUNCTIONS
 
-E<61>new($specfile, %options)
+=head2 new($specfile, %options)
 
 Create a new B<RPM::Spec> object over $specfile spec file.
 
@@ -35,6 +34,44 @@ Optional options are:
 
 =back
 
+=head2 srcheader
+
+Return a L<RPM::Header> object about the futur source rpm
+
+=head2 binheader
+
+Return an array of L<RPM::Header> object about futur binaries rpms
+
+=head2 srcrpm
+
+Return the full path where srcrpm will located after build
+
+=head2 binrpm
+
+Return an array containing path where binaries rpms will be located after
+build
+
+=head2 check
+
+Perform build dependencies check, return undef if everythings is fine, or
+a L<RPM::Problems> object containing list of issue.
+
+=head2 build( $flags )
+
+Build rpms from the specfile. $flags is either an integer, either an array ref
+of build step to perform.
+
+=head2 specfile
+
+Return the specfile location.
+
+=head2 sources
+
+Return an array listing sources included in the specfile.
+
+=head2 sources_url
+
+Return an array listing sources url included in the specfile.
 =cut
 
 # currently everything is in the XS code
