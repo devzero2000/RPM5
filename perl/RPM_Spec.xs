@@ -167,7 +167,7 @@ check(spec, ts = NULL)
 
     ps = rpmtsProblems(ts);
     if (ps &&  rpmpsNumProblems(ps)) /* if no problem, return undef */
-        XPUSHs(sv_2mortal(sv_setref_pv(newSVpv("", 0), "RPM::Dependencies", ps)));
+        XPUSHs(sv_2mortal(sv_setref_pv(newSVpv("", 0), "RPM::Problems", ps)));
     ts = rpmtsFree(ts);
     SPAGAIN;
     
