@@ -3,6 +3,7 @@
 Makefile
 Makefile.in
 getdate.c
+rpmversion.h
 .libs
 *.la
 *.lcd

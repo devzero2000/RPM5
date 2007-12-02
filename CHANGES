@@ -1,4 +1,5 @@
 5.0a2 -> 5.0a3:
+    - rse: provide RPM version in API via macros RPM_{VERSION,TIMESTAMP,VENDOR} and functions rpm_{version,timestamp,vendor}
     - jbj: pkgio: hdlist readers need RPMRC_NOTFOUND EOF indicator.
     - jbj: pkgio: drill in sufficient debugging to sort per/python I/O issues.
     - jbj: re-add symbols for perl "make test". hmm, headerRead failure todo++.

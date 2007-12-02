@@ -423,6 +423,9 @@ LIBRPM_0
     XrpmtsiInit;
     XrpmtsLink;
     XrpmtsUnlink;
+    rpm_version;
+    rpm_timestamp;
+    rpm_vendor;
   local:
     *;
 };

@@ -49,7 +49,6 @@
   *CANDO* items.
 
   o to be resolved before RPM 5.0b1:
-    - rse: provide RPM version number in C API for "#if RPM_VERSION > 0xXXXXXX" comparisons
     - rse: xar/ has weak (think RPM_CHECK_LIB) support its third-party libraries LibXML, OpenSSL, etc.
     - afb: remove xar and libxar from default install with internal xar (use through rpm and librpm*)
     - afb: make sure %standalone devtool target includes support for xar

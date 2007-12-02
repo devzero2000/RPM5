@@ -9,6 +9,7 @@
  */
 
 #include <rpmtag.h>
+#include <rpmversion.h>
 
 #define RPM_FORMAT_VERSION 5
 #define RPM_MAJOR_VERSION 0

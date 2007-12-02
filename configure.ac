@@ -9,6 +9,7 @@ dnl ##
 AC_PREREQ(2.60)
 AC_DEFUN([PACKAGE_BUGREPORT_DEFAULT], [rpm-devel@rpm5.org])
 AC_INIT(rpm, [5.0.DEVEL], [PACKAGE_BUGREPORT_DEFAULT])
+PACKAGE_TIMESTAMP="2007" dnl # YYYY[-MM[-DD[ HH[:MM]]]]
 AC_MSG_TITLE([RPM Package Manager (RPM)], [$PACKAGE_VERSION])
 
 AC_MSG_HEADER([INITIALIZATION])
@@ -36,6 +37,55 @@ dnl # Interfaces removed:                           AGE=0
 AC_SUBST(LT_CURRENT,  5)
 AC_SUBST(LT_REVISION, 0)
 AC_SUBST(LT_AGE,      0)
+
+dnl # provide RPM exported version
+RPM_VERSION="0,0,_,0,0,_"
+case "$PACKAGE_VERSION" in
+    *.*.DEVEL )
+        RPM_VERSION=`echo "$PACKAGE_VERSION" |\
+            sed -e 's;^\([[^.]]*\)\.\([[^.]]*\).*;\1,\2,_,0,0,_;'`
+        ;;
+    *.*.SNAPSHOT.* )
+        RPM_VERSION=`echo "$PACKAGE_VERSION" |\
+            sed -e 's;^\([[^.]]*\)\.\([[^.]]*\).*;\1,\2,_,0,0,s;'`
+        ;;
+    *.*a* )
+        RPM_VERSION=`echo "$PACKAGE_VERSION" |\
+            sed -e 's;^;X;' \
+                -e 's;^X\([[^.]]*\)\.\([[^.]]*\)a\([[^.]]*\)\.\([[^.]]*\)$;\1,\2,a,\3,\4,_;' \
+                -e 's;^X\([[^.]]*\)\.\([[^.]]*\)a\([[^.]]*\)$;\1,\2,a,\3,0,_;'`
+        ;;
+    *.*b* )
+        RPM_VERSION=`echo "$PACKAGE_VERSION" |\
+            sed -e 's;^;X;' \
+                -e 's;^X\([[^.]]*\)\.\([[^.]]*\)b\([[^.]]*\)\.\([[^.]]*\)$;\1,\2,b,\3,\4,_;' \
+                -e 's;^X\([[^.]]*\)\.\([[^.]]*\)b\([[^.]]*\)$;\1,\2,b,\3,0,_;'`
+        ;;
+    *.*rc* )
+        RPM_VERSION=`echo "$PACKAGE_VERSION" |\
+            sed -e 's;^;X;' \
+                -e 's;^X\([[^.]]*\)\.\([[^.]]*\)rc\([[^.]]*\)\.\([[^.]]*\)$;\1,\2,c,\3,\4,_;' \
+                -e 's;^X\([[^.]]*\)\.\([[^.]]*\)rc\([[^.]]*\)$;\1,\2,c,\3,0,_;'`
+        ;;
+    *.*.* )
+        RPM_VERSION=`echo "$PACKAGE_VERSION" |\
+            sed -e 's;^;X;' \
+                -e 's;^X\([[^.]]*\)\.\([[^.]]*\)\.\([[^.]]*\)\.\([[^.]]*\)$;\1,\2,c,\3,\4,_;' \
+                -e 's;^X\([[^.]]*\)\.\([[^.]]*\)\.\([[^.]]*\)$;\1,\2,r,\3,0,_;'`
+        ;;
+esac
+RPM_TIMESTAMP=`echo "$PACKAGE_TIMESTAMP" |\
+    sed -e 's;^;X;' \
+        -e 's;^X\([[0-9]]*\)-\([[0-9]]*\)-\([[0-9]]*\) \([[0-9]]*\):\([[0-9]]*\)$;\1,\2,\3,\4,\5;' \
+        -e 's;^X\([[0-9]]*\)-\([[0-9]]*\)-\([[0-9]]*\) \([[0-9]]*\)$;\1,\2,\3,\4,0;' \
+        -e 's;^X\([[0-9]]*\)-\([[0-9]]*\)-\([[0-9]]*\)$;\1,\2,\3,0,0;' \
+        -e 's;^X\([[0-9]]*\)-\([[0-9]]*\)$;\1,\2,0,0,0;' \
+        -e 's;^X\([[0-9]]*\)$;\1,0,0,0,0;' \
+        -e 's;^X.*$;0,0,0,0,0;'`
+RPM_VENDOR="'R','P','M','5'"
+AC_SUBST([RPM_VERSION])
+AC_SUBST([RPM_TIMESTAMP])
+AC_SUBST([RPM_VENDOR])
 
 dnl # set of available languages.
 ALL_LINGUAS="cs da de fi fr gl id is ja ko nb pl pt pt_BR ro ru sk sl sr@Latn sv tr uk"
@@ -1375,7 +1425,7 @@ AC_CONFIG_FILES([ po/Makefile.in
     scripts/macros.python tools/Makefile misc/Makefile doc/Makefile
     doc/manual/Makefile doc/fr/Makefile doc/ja/Makefile doc/ko/Makefile
     doc/pl/Makefile doc/ru/Makefile doc/sk/Makefile python/Makefile
-    python/rpm/Makefile scripts/rpm.pc
+    python/rpm/Makefile scripts/rpm.pc lib/rpmversion.h
     rpmconstant/Makefile
 ])
 
