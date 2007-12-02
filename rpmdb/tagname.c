@@ -78,12 +78,15 @@ assert(n == rpmTagTableSize);
 static char * _tagCanonicalize(const char * s)
 	/*@*/
 {
-    const char * se = s;
+    const char * se;
     size_t nb = 0;
     char * te;
     char * t;
     int c;
 
+    if (!strncasecmp(s, "RPMTAG_", sizeof("RPMTAG_")-1))
+	s += sizeof("RPMTAG_") - 1;
+    se = s;
     while ((c = *se++) && xisalpha(c))
 	nb++;
 
@@ -142,7 +145,8 @@ headerTagIndices rpmTags = &_rpmTags;
 
 static const char * _tagName(rpmTag tag)
 {
-    static char nameBuf[128];	/* XXX yuk */
+    static size_t nameBufLen = 256;
+    char * nameBuf;
     headerTagTableEntry t;
     int comparison, i, l, u;
     int xx;
@@ -150,6 +154,9 @@ static const char * _tagName(rpmTag tag)
 
     if (_rpmTags.byValue == NULL)
 	xx = tagLoadIndex(&_rpmTags.byValue, &_rpmTags.byValueSize, tagCmpValue);
+    if (_rpmTags.nameBuf == NULL)
+	_rpmTags.nameBuf = xcalloc(1, nameBufLen);
+    nameBuf = _rpmTags.nameBuf;
 
     switch (tag) {
     case RPMDBI_PACKAGES:
@@ -209,18 +216,16 @@ static const char * _tagName(rpmTag tag)
 		    t--;
 		}
 		t = _rpmTags.byValue[i];
-		if (t->name != NULL)
-		    strcpy(nameBuf, t->name + (sizeof("RPMTAG_")-1));
-		for (s = nameBuf+1; *s != '\0'; s++)
-		    *s = (char) xtolower((int)*s);
+		s = (*_rpmTags.tagCanonicalize) (t->name);
+		strncpy(nameBuf, s, nameBufLen);
+		nameBuf[nameBufLen-1] = '\0';
+		s = _free(s);
 		/*@loopbreak@*/ break;
 	    }
 	}
 	break;
     }
-/*@-statictrans@*/
     return nameBuf;
-/*@=statictrans@*/
 }
 
 static unsigned int _tagType(rpmTag tag)
