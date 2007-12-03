@@ -1,7 +1,7 @@
 #ifndef	H_RPMPGP
 #define	H_RPMPGP
 
-/** \ingroup rpmio
+/** \ingroup rpmpgp
  * \file rpmio/rpmpgp.h
  *
  * OpenPGP constants and structures from RFC-2440.
@@ -14,16 +14,18 @@
 #include <popt.h>
 
 #if !defined(_BEECRYPT_API_H)
+/** \ingroup rpmpgp
+ */
 /*@-redef@*/
 typedef unsigned char byte;
 /*@=redef@*/
 #endif	/* _BEECRYPT_API_H */
 
-/**
+/** \ingroup rpmpgp
  */
 typedef /*@abstract@*/ struct DIGEST_CTX_s * DIGEST_CTX;
 
-/**
+/** \ingroup rpmpgp
  */
 typedef /*@abstract@*/ struct pgpPkt_s * pgpPkt;
 
@@ -34,7 +36,7 @@ typedef const struct pgpValTbl_s {
 /*@observer@*/ const char * str;
 } * pgpValTbl;
  
-/**
+/** \ingroup rpmpgp
  * 4.3. Packet Tags
  * 
  * The packet tag denotes what type of packet the body holds. Note that
@@ -67,12 +69,12 @@ typedef enum pgpTag_e {
     PGPTAG_CONTROL		= 63  /*!< Control (GPG) */
 } pgpTag;
 
-/**
+/** \ingroup rpmpgp
  */
 /*@observer@*/ /*@unchecked@*/ /*@unused@*/
 extern struct pgpValTbl_s pgpTagTbl[];
 
-/**
+/** \ingroup rpmpgp
  * 5.1. Public-Key Encrypted Session Key Packets (Tag 1)
  *
  * A Public-Key Encrypted Session Key packet holds the session key used
@@ -113,7 +115,7 @@ typedef struct pgpPktPubkey_s {
 } pgpPktPubkey;
 
 
-/**
+/** \ingroup rpmpgp
  * 5.2.1. Signature Types
  * 
  * There are a number of possible meanings for a signature, which are
@@ -141,12 +143,12 @@ typedef enum pgpSigType_e {
 } pgpSigType;
 /*@=typeuse@*/
 
-/**
+/** \ingroup rpmpgp
  */
 /*@observer@*/ /*@unchecked@*/ /*@unused@*/
 extern struct pgpValTbl_s pgpSigTypeTbl[];
 
-/**
+/** \ingroup rpmpgp
  * 9.1. Public Key Algorithms
  *
 \verbatim
@@ -183,12 +185,12 @@ typedef enum pgpPubkeyAlgo_e {
 } pgpPubkeyAlgo;
 /*@=typeuse@*/
 
-/**
+/** \ingroup rpmpgp
  */
 /*@observer@*/ /*@unchecked@*/ /*@unused@*/
 extern struct pgpValTbl_s pgpPubkeyTbl[];
 
-/**
+/** \ingroup rpmpgp
  * 9.2. Symmetric Key Algorithms
  *
 \verbatim
@@ -229,13 +231,13 @@ typedef enum pgpSymkeyAlgo_e {
 } pgpSymkeyAlgo;
 /*@=typeuse@*/
 
-/**
+/** \ingroup rpmpgp
  * Symmetric key (string, value) pairs.
  */
 /*@observer@*/ /*@unchecked@*/ /*@unused@*/
 extern struct pgpValTbl_s pgpSymkeyTbl[];
 
-/**
+/** \ingroup rpmpgp
  * 9.3. Compression Algorithms
  *
 \verbatim
@@ -259,13 +261,13 @@ typedef enum pgpCompressAlgo_e {
 } pgpCompressAlgo;
 /*@=typeuse@*/
 
-/**
+/** \ingroup rpmpgp
  * Compression (string, value) pairs.
  */
 /*@observer@*/ /*@unchecked@*/ /*@unused@*/
 extern struct pgpValTbl_s pgpCompressionTbl[];
 
-/**
+/** \ingroup rpmpgp
  * 9.4. Hash Algorithms
  *
 \verbatim
@@ -311,13 +313,13 @@ typedef enum pgpHashAlgo_e {
 
 } pgpHashAlgo;
 
-/**
+/** \ingroup rpmpgp
  * Hash (string, value) pairs.
  */
 /*@observer@*/ /*@unchecked@*/ /*@unused@*/
 extern struct pgpValTbl_s pgpHashTbl[];
 
-/**
+/** \ingroup rpmpgp
  * 5.2.2. Version 3 Signature Packet Format
  * 
  * The body of a version 3 Signature Packet contains:
@@ -349,7 +351,7 @@ typedef struct pgpPktSigV3_s {
     byte signhash16[2];	/*!< left 16 bits of signed hash value. */
 } * pgpPktSigV3;
 
-/**
+/** \ingroup rpmpgp
  * 5.2.3. Version 4 Signature Packet Format
  * 
  * The body of a version 4 Signature Packet contains:
@@ -378,7 +380,7 @@ typedef struct pgpPktSigV4_s {
     byte hashlen[2];	/*!< length of following hashed material. */
 } * pgpPktSigV4;
 
-/**
+/** \ingroup rpmpgp
  * 5.2.3.1. Signature Subpacket Specification
  * 
  * The subpacket fields consist of zero or more signature subpackets.
@@ -487,13 +489,13 @@ typedef enum pgpSubType_e {
 } pgpSubType;
 /*@=typeuse@*/
 
-/**
+/** \ingroup rpmpgp
  * Subtype (string, value) pairs.
  */
 /*@observer@*/ /*@unchecked@*/ /*@unused@*/
 extern struct pgpValTbl_s pgpSubTypeTbl[];
 
-/**
+/** \ingroup rpmpgp
  * 5.2. Signature Packet (Tag 2)
  *
  * A signature packet describes a binding between some public key and
@@ -518,7 +520,7 @@ typedef union pgpPktSig_u {
     struct pgpPktSigV4_s v4;
 } * pgpPktSig;
 
-/**
+/** \ingroup rpmpgp
  * 5.3. Symmetric-Key Encrypted Session-Key Packets (Tag 3)
  *
  * The Symmetric-Key Encrypted Session Key packet holds the symmetric-
@@ -552,7 +554,7 @@ typedef struct pgpPktSymkey_s {
     byte s2k[1];
 } pgpPktSymkey;
 
-/**
+/** \ingroup rpmpgp
  * 5.4. One-Pass Signature Packets (Tag 4)
  *
  * The One-Pass Signature packet precedes the signed data and contains
@@ -590,7 +592,7 @@ typedef struct pgpPktOnepass_s {
     byte nested;
 } * pgpPktOnepass;
 
-/**
+/** \ingroup rpmpgp
  * 5.5.1. Key Packet Variants
  *
  * 5.5.1.1. Public Key Packet (Tag 6)
@@ -669,7 +671,7 @@ typedef struct pgpPktKeyV3_s {
     byte pubkey_algo;	/*!< public key algorithm. */
 } * pgpPktKeyV3;
 
-/**
+/** \ingroup rpmpgp
  * The version 4 format is similar to the version 3 format except for
  * the absence of a validity period.  This has been moved to the
  * signature packet.  In addition, fingerprints of version 4 keys are
@@ -706,7 +708,7 @@ typedef struct pgpPktKeyV4_s {
     byte pubkey_algo;	/*!< public key algorithm. */
 } * pgpPktKeyV4;
 
-/**
+/** \ingroup rpmpgp
  * 5.5.3. Secret Key Packet Formats
  *
  * The Secret Key and Secret Subkey packets contain all the data of the
@@ -775,7 +777,7 @@ typedef union pgpPktKey_u {
     struct pgpPktKeyV4_s v4;
 } pgpPktKey;
 
-/*
+/** \ingroup rpmpgp
  * 5.6. Compressed Data Packet (Tag 8)
  *
  * The Compressed Data packet contains compressed data. Typically, this
@@ -804,7 +806,7 @@ typedef struct pgpPktCdata_s {
     byte data[1];
 } pgpPktCdata;
 
-/*
+/** \ingroup rpmpgp
  * 5.7. Symmetrically Encrypted Data Packet (Tag 9)
  *
  * The Symmetrically Encrypted Data packet contains data encrypted with
@@ -842,7 +844,7 @@ typedef struct pgpPktEdata_s {
     byte data[1];
 } pgpPktEdata;
 
-/*
+/** \ingroup rpmpgp
  * 5.8. Marker Packet (Obsolete Literal Packet) (Tag 10)
  *
  * An experimental version of PGP used this packet as the Literal
@@ -895,7 +897,7 @@ typedef struct pgpPktLdata_s {
     byte filename[1];
 } pgpPktLdata;
 
-/*
+/** \ingroup rpmpgp
  * 5.10. Trust Packet (Tag 12)
  *
  * The Trust packet is used only within keyrings and is not normally
@@ -912,7 +914,7 @@ typedef struct pgpPktTrust_s {
     byte flag;
 } pgpPktTrust;
 
-/*
+/** \ingroup rpmpgp
  * 5.11. User ID Packet (Tag 13)
  *
  * A User ID packet consists of data that is intended to represent the
@@ -926,7 +928,7 @@ typedef struct pgpPktUid_s {
     byte userid[1];
 } pgpPktUid;
 
-/**
+/** \ingroup rpmpgp
  */
 union pgpPktPre_u {
     pgpPktPubkey pubkey;	/*!< 5.1. Public-Key Encrypted Session Key */
@@ -942,7 +944,7 @@ union pgpPktPre_u {
     pgpPktUid uid;		/*!< 5.11. User ID */
 };
 
-/**
+/** \ingroup rpmpgp
  */
 /*@-typeuse@*/
 typedef enum pgpArmor_e {
@@ -965,13 +967,13 @@ typedef enum pgpArmor_e {
 } pgpArmor;
 /*@=typeuse@*/
 
-/**
+/** \ingroup rpmpgp
  * Armor (string, value) pairs.
  */
 /*@observer@*/ /*@unchecked@*/ /*@unused@*/
 extern struct pgpValTbl_s pgpArmorTbl[];
 
-/**
+/** \ingroup rpmpgp
  */
 /*@-typeuse@*/
 typedef enum pgpArmorKey_e {
@@ -983,22 +985,26 @@ typedef enum pgpArmorKey_e {
 } pgpArmorKey;
 /*@=typeuse@*/
 
-/**
+/** \ingroup rpmpgp
  * Armor key (string, value) pairs.
  */
 /*@observer@*/ /*@unchecked@*/ /*@unused@*/
 extern struct pgpValTbl_s pgpArmorKeyTbl[];
 
-/** \ingroup rpmio
+/** \ingroup rpmpgp
  * Bit(s) to control digest operation.
  */
 typedef enum rpmDigestFlags_e {
     RPMDIGEST_NONE	= 0
 } rpmDigestFlags;
 
+/** \ingroup rpmpgp
+ */
 /*@unchecked@*/
 extern pgpHashAlgo rpmDigestHashAlgo;
 
+/** \ingroup rpmpgp
+ */
 /*@unchecked@*/ /*@observer@*/
 extern struct poptOption rpmDigestPoptTable[];
 
@@ -1007,7 +1013,7 @@ extern struct poptOption rpmDigestPoptTable[];
 extern "C" {
 #endif
 
-/**
+/** \ingroup rpmpgp
  * Return (native-endian) integer from big-endian representation.
  * @param s		pointer to big-endian integer
  * @param nbytes	no. of bytes
@@ -1024,7 +1030,7 @@ unsigned int pgpGrab(const byte *s, size_t nbytes)
     return i;
 }
 
-/**
+/** \ingroup rpmpgp
  * Return length of an OpenPGP packet.
  * @param s		pointer to packet
  * @retval *lenp	no. of bytes in packet
@@ -1046,7 +1052,7 @@ int pgpLen(const byte *s, /*@out@*/ unsigned int *lenp)
     }
 }
 
-/**
+/** \ingroup rpmpgp
  * Return no. of bits in a multiprecision integer.
  * @param p		pointer to multiprecision integer
  * @return		no. of bits
@@ -1059,7 +1065,7 @@ unsigned int pgpMpiBits(const byte *p)
     return (unsigned int) ((p[0] << 8) | p[1]);
 }
 
-/**
+/** \ingroup rpmpgp
  * Return no. of bytes in a multiprecision integer.
  * @param p		pointer to multiprecision integer
  * @return		no. of bytes
@@ -1072,7 +1078,7 @@ unsigned int pgpMpiLen(const byte *p)
     return (2 + ((pgpMpiBits(p)+7)>>3));
 }
 	
-/**
+/** \ingroup rpmpgp
  * Convert to hex.
  * @param t		target buffer (returned)
  * @param s		source bytes
@@ -1094,7 +1100,7 @@ char * pgpHexCvt(/*@returned@*/ char *t, const byte *s, size_t nbytes)
     return t;
 }
 
-/**
+/** \ingroup rpmpgp
  * Return hex formatted representation of bytes.
  * @todo Remove static buffer. 
  * @param p		bytes
@@ -1111,7 +1117,7 @@ char * pgpHexStr(const byte *p, size_t plen)
     return prbuf;
 }
 
-/**
+/** \ingroup rpmpgp
  * Return hex formatted representation of a multiprecision integer.
  * @todo Remove static buffer. 
  * @param p		bytes
@@ -1130,7 +1136,7 @@ const char * pgpMpiStr(const byte *p)
     return prbuf;
 }
 
-/**
+/** \ingroup rpmpgp
  * Return string representation of am OpenPGP value.
  * @param vs		table of (string,value) pairs
  * @param val		byte value to lookup
@@ -1147,7 +1153,7 @@ const char * pgpValStr(pgpValTbl vs, byte val)
     return vs->str;
 }
 
-/**
+/** \ingroup rpmpgp
  * Return value of an OpenPGP string.
  * @param vs		table of (string,value) pairs
  * @param s		string token to lookup
@@ -1166,7 +1172,7 @@ int pgpValTok(pgpValTbl vs, const char * s, const char * se)
     return vs->val;
 }
 
-/**
+/** \ingroup rpmpgp
  * Print an OpenPGP value.
  * @param pre		output prefix
  * @param vs		table of (string,value) pairs
@@ -1178,7 +1184,7 @@ void pgpPrtVal(const char * pre, pgpValTbl vs, byte val)
 	/*@modifies fileSystem @*/;
 /*@=exportlocal@*/
 
-/**
+/** \ingroup rpmpgp
  * Print/parse an OpenPGP subtype packet.
  * @param h		packet
  * @param hlen		packet length (no. of bytes)
@@ -1191,7 +1197,7 @@ int pgpPrtSubType(const byte *h, size_t hlen, pgpSigType sigtype)
 	/*@modifies fileSystem @*/;
 /*@=exportlocal@*/
 
-/**
+/** \ingroup rpmpgp
  * Print/parse an OpenPGP signature packet.
  * @param pp		packet tag/ptr/len
  * @return		0 on success
@@ -1202,7 +1208,7 @@ int pgpPrtSig(const pgpPkt pp)
 	/*@modifies fileSystem, internalState @*/;
 /*@=exportlocal@*/
 
-/**
+/** \ingroup rpmpgp
  * Print/parse an OpenPGP key packet.
  * @param pp		packet tag/ptr/len
  * @return		0 on success
@@ -1211,7 +1217,7 @@ int pgpPrtKey(const pgpPkt pp)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
 
-/**
+/** \ingroup rpmpgp
  * Print/parse an OpenPGP userid packet.
  * @param pp		packet tag/ptr/len
  * @return		0 on success
@@ -1222,7 +1228,7 @@ int pgpPrtUserID(const pgpPkt pp)
 	/*@modifies fileSystem, internalState @*/;
 /*@=exportlocal@*/
 
-/**
+/** \ingroup rpmpgp
  * Print/parse an OpenPGP comment packet.
  * @param pp		packet tag/ptr/len
  * @return		0 on success
@@ -1233,7 +1239,7 @@ int pgpPrtComment(const pgpPkt pp)
 	/*@modifies fileSystem @*/;
 /*@=exportlocal@*/
 
-/**
+/** \ingroup rpmpgp
  * Calculate OpenPGP public key fingerprint.
  * @todo V3 non-RSA public keys not implemented.
  * @param pkt		OpenPGP packet (i.e. PGPTAG_PUBLIC_KEY)
@@ -1247,7 +1253,7 @@ int pgpPubkeyFingerprint(const byte * pkt, size_t pktlen,
 	/*@modifies *keyid @*/;
 /*@=exportlocal@*/
 
-/**
+/** \ingroup rpmpgp
  * Extract OpenPGP public key fingerprint from base64 encoded packet.
  * @todo V3 non-RSA public keys not implemented.
  * @param b64pkt	base64 encoded openpgp packet
@@ -1257,7 +1263,7 @@ int pgpPubkeyFingerprint(const byte * pkt, size_t pktlen,
 int pgpExtractPubkeyFingerprint(const char * b64pkt, /*@out@*/ byte * keyid)
 	/*@modifies *keyid @*/;
 
-/**
+/** \ingroup rpmpgp
  * Return lenth of a OpenPGP packet.
  * @param pkt		OpenPGP packet (i.e. PGPTAG_PUBLIC_KEY)
  * @param pleft		OpenPGP packet length (no. of bytes)
@@ -1267,7 +1273,7 @@ int pgpExtractPubkeyFingerprint(const char * b64pkt, /*@out@*/ byte * keyid)
 int pgpPktLen(const byte *pkt, size_t pleft, /*@out@*/ pgpPkt pp)
 	/*@modifies pp @*/;
 
-/**
+/** \ingroup rpmpgp
  * Print/parse next OpenPGP packet.
  * @param pkt		OpenPGP packet
  * @param pleft		no. bytes remaining
@@ -1279,7 +1285,7 @@ int pgpPrtPkt(const byte *pkt, size_t pleft)
 	/*@modifies fileSystem, internalState @*/;
 /*@=exportlocal@*/
 
-/**
+/** \ingroup rpmpgp
  * Print/parse a OpenPGP packet(s).
  * @param pkts		OpenPGP packet(s)
  * @param pktlen	OpenPGP packet(s) length (no. of bytes)
@@ -1291,7 +1297,7 @@ int pgpPrtPkts(const byte *pkts, size_t pktlen, pgpDig dig, int printing)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies dig, fileSystem, internalState @*/;
 
-/**
+/** \ingroup rpmpgp
  * Parse armored OpenPGP packets from a file.
  * @param fn		file name
  * @retval pkt		dearmored OpenPGP packet(s)
@@ -1303,7 +1309,7 @@ pgpArmor pgpReadPkts(const char * fn,
 	/*@globals h_errno, fileSystem, internalState @*/
 	/*@modifies *pkt, *pktlen, fileSystem, internalState @*/;
 
-/**
+/** \ingroup rpmpgp
  * Wrap a OpenPGP packets in ascii armor for transport.
  * @param atype		type of armor
  * @param s		binary pkt data
@@ -1313,7 +1319,7 @@ pgpArmor pgpReadPkts(const char * fn,
 char * pgpArmorWrap(int atype, const unsigned char * s, size_t ns)
 	/*@*/;
 
-/**
+/** \ingroup rpmpgp
  * Bit(s) to control digest and signature verification.
  */
 typedef enum pgpVSFlags_e {
@@ -1357,7 +1363,7 @@ typedef enum pgpVSFlags_e {
     RPMVSF_NODSA |		\
     RPMVSF_NORSA )
 
-/**
+/** \ingroup rpmpgp
  * Unreference a signature parameters instance.
  * @param dig		signature parameters
  * @param msg
@@ -1377,7 +1383,7 @@ pgpDig XpgpDigUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ pgpDig dig,
 /*@=exportlocal@*/
 #define	pgpDigUnlink(_dig, _msg) XpgpDigUnlink(_dig, _msg, __FILE__, __LINE__)
 
-/**
+/** \ingroup rpmpgp
  * Reference a signature parameters instance.
  * @param dig		signature parameters
  * @param msg
@@ -1394,7 +1400,7 @@ pgpDig XpgpDigLink (/*@null@*/ pgpDig dig, /*@null@*/ const char * msg,
         /*@modifies dig @*/;
 #define	pgpDigLink(_dig, _msg)	XpgpDigLink(_dig, _msg, __FILE__, __LINE__)
 
-/**
+/** \ingroup rpmpgp
  * Destroy a container for parsed OpenPGP packates.
  * @param dig		signature parameters container
  * @return		NULL always
@@ -1403,7 +1409,7 @@ pgpDig XpgpDigLink (/*@null@*/ pgpDig dig, /*@null@*/ const char * msg,
 pgpDig pgpDigFree(/*@killref@*/ /*@only@*/ /*@null@*/ pgpDig dig)
 	/*@modifies dig @*/;
 
-/**
+/** \ingroup rpmpgp
  * Create a container for parsed OpenPGP packates.
  * @return		container
  */
@@ -1411,14 +1417,14 @@ pgpDig pgpDigFree(/*@killref@*/ /*@only@*/ /*@null@*/ pgpDig dig)
 pgpDig pgpDigNew(pgpVSFlags vsflags)
 	/*@*/;
 
-/**
+/** \ingroup rpmpgp
  * Release (malloc'd) data from container.
  * @param dig		signature parameters container
  */
 void pgpDigClean(/*@null@*/ pgpDig dig)
 	/*@modifies dig @*/;
 
-/**
+/** \ingroup rpmpgp
  * Return OpenPGP pubkey parameters.
  * @param dig		signature parameters container
  * @return		pubkey parameters
@@ -1427,7 +1433,7 @@ void pgpDigClean(/*@null@*/ pgpDig dig)
 pgpDigParams pgpGetPubkey(const pgpDig dig)
 	/*@*/;
 
-/**
+/** \ingroup rpmpgp
  * Return OpenPGP signature parameters.
  * @param dig		signature parameters container
  * @return		signature parameters
@@ -1436,7 +1442,7 @@ pgpDigParams pgpGetPubkey(const pgpDig dig)
 pgpDigParams pgpGetSignature(const pgpDig dig)
 	/*@*/;
 
-/**
+/** \ingroup rpmpgp
  * Get signature tag.
  * @param dig		signature parameters container
  * @return		signature tag
@@ -1444,7 +1450,7 @@ pgpDigParams pgpGetSignature(const pgpDig dig)
 uint32_t pgpGetSigtag(const pgpDig dig)
 	/*@*/;
 
-/** \ingroup rpmts
+/** \ingroup rpmpgp
  * Get signature tag type.
  * @param dig		signature parameters container
  * @param ts		transaction set
@@ -1453,7 +1459,7 @@ uint32_t pgpGetSigtag(const pgpDig dig)
 uint32_t pgpGetSigtype(const pgpDig dig)
 	/*@*/;
 
-/**
+/** \ingroup rpmpgp
  * Get signature tag data, i.e. from header.
  * @param dig		signature parameters container
  * @return		signature tag data
@@ -1462,7 +1468,7 @@ uint32_t pgpGetSigtype(const pgpDig dig)
 extern const void * pgpGetSig(const pgpDig dig)
 	/*@*/;
 
-/**
+/** \ingroup rpmpgp
  * Get signature tag data length, i.e. no. of bytes of data.
  * @param dig		signature parameters container
  * @return		signature tag data length
@@ -1470,7 +1476,7 @@ extern const void * pgpGetSig(const pgpDig dig)
 uint32_t pgpGetSiglen(const pgpDig dig)
 	/*@*/;
 
-/**
+/** \ingroup rpmpgp
  * Set signature tag info, i.e. from header.
  * @param dig		signature parameters container
  * @param sigtag	signature tag
@@ -1484,7 +1490,7 @@ int pgpSetSig(pgpDig dig,
 		/*@kept@*/ /*@null@*/ const void * sig, uint32_t siglen)
 	/*@modifies dig @*/;
 
-/**
+/** \ingroup rpmpgp
  * Return pgpDig container accumulator structure.
  * @param dig		signature parameters container
  * @param opx		per-container accumulator index (aka rpmtsOpX)
@@ -1493,7 +1499,7 @@ int pgpSetSig(pgpDig dig,
 void * pgpStatsAccumulator(pgpDig dig, int opx)
         /*@*/;
 
-/**
+/** \ingroup rpmpgp
  * Get verify signatures flag(s).
  * @param dig		signature parameters container
  * @return		verify signatures flags
@@ -1501,7 +1507,7 @@ void * pgpStatsAccumulator(pgpDig dig, int opx)
 pgpVSFlags pgpGetVSFlags(pgpDig dig)
 	/*@*/;
 
-/**
+/** \ingroup rpmpgp
  * Set verify signatures flag(s).
  * @param dig		signature parameters container
  * @param vsflags	new verify signatures flags
@@ -1510,7 +1516,7 @@ pgpVSFlags pgpGetVSFlags(pgpDig dig)
 pgpVSFlags pgpSetVSFlags(pgpDig dig, pgpVSFlags vsflags)
 	/*@modifies dig @*/;
 
-/**
+/** \ingroup rpmpgp
  * Set find pubkey vector.
  * @param dig		signature parameters container
  * @param findPubkey	routine to find a pubkey.
@@ -1522,7 +1528,7 @@ int pgpSetFindPubkey(pgpDig dig,
 		/*@exposed@*/ /*@null@*/ void * _ts)
 	/*@modifies dig @*/;
 
-/**
+/** \ingroup rpmpgp
  * Call find pubkey vector.
  * @param dig		signature parameters container
  * @return		rpmRC return code
@@ -1530,7 +1536,7 @@ int pgpSetFindPubkey(pgpDig dig,
 int pgpFindPubkey(pgpDig dig)
 	/*@modifies dig @*/;
 
-/**
+/** \ingroup rpmpgp
  * Is buffer at beginning of an OpenPGP packet?
  * @param p		buffer
  * @return		1 if an OpenPGP packet, 0 otherwise
@@ -1589,7 +1595,7 @@ int pgpIsPkt(const byte * p)
 #define CRC24_INIT	0xb704ce
 #define CRC24_POLY	0x1864cfb
 
-/**
+/** \ingroup rpmpgp
  * Return CRC of a buffer.
  * @param octets	bytes
  * @param len		no. of bytes
@@ -1613,7 +1619,7 @@ unsigned int pgpCRC(const byte *octets, size_t len)
     return crc & 0xffffff;
 }
 
-/** \ingroup rpmio
+/** \ingroup rpmpgp
  * Duplicate a digest context.
  * @param octx		existing digest context
  * @return		duplicated digest context
@@ -1622,7 +1628,7 @@ unsigned int pgpCRC(const byte *octets, size_t len)
 DIGEST_CTX rpmDigestDup(DIGEST_CTX octx)
 	/*@*/;
 
-/** \ingroup rpmio
+/** \ingroup rpmpgp
  * Initialize digest.
  * Set bit count to 0 and buffer to mysterious initialization constants.
  * @param hashalgo	type of digest
@@ -1633,7 +1639,7 @@ DIGEST_CTX rpmDigestDup(DIGEST_CTX octx)
 DIGEST_CTX rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 	/*@*/;
 
-/** \ingroup rpmio
+/** \ingroup rpmpgp
  * Update context with next plain text buffer.
  * @param ctx		digest context
  * @param data		next data buffer
@@ -1643,7 +1649,7 @@ DIGEST_CTX rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 int rpmDigestUpdate(/*@null@*/ DIGEST_CTX ctx, const void * data, size_t len)
 	/*@modifies ctx @*/;
 
-/** \ingroup rpmio
+/** \ingroup rpmpgp
  * Return digest and destroy context.
  * Final wrapup - pad to 64-byte boundary with the bit pattern 
  * 1 0* (64-bit count of bits processed, MSB-first)
