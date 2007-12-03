@@ -4,7 +4,7 @@
 
 #include "system.h"
 
-#include "rpmio_internal.h"	/* XXX PGPHASHALGO_MD5 */
+#include <rpmio.h>
 #define	_RPMTE_INTERNAL
 #define	_RPMTS_INTERNAL
 #include <rpmcli.h>		/* XXX rpmcliPackagesTotal */

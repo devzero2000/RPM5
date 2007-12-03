@@ -1,4 +1,5 @@
 5.0a4 -> 5.0b1:
+    - rpm.org: Split digest-stuff out of rpmio_internal to separate header.
     - rpm.org: Eliminate copy-paste fd digest stealing, stuff into rpmio_internal.
     - rpm.org: Add doxygen grouping to rpmte methods.
     - rpm.org: Add doxygen grouping to rpmds methods.

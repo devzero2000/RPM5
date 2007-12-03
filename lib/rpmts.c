@@ -4,7 +4,9 @@
  */
 #include "system.h"
 
-#include "rpmio_internal.h"	/* XXX for pgp and beecrypt */
+#include <rpmio.h>
+#include <rpmurl.h>
+#include <rpmpgp.h>
 #include <rpmcb.h>		/* XXX fnpyKey */
 #include <rpmmacro.h>		/* XXX rpmtsOpenDB() needs rpmGetPath */
 #include <rpmlib.h>

@@ -32,7 +32,7 @@ RPM_LDADD = \
 
 pkgincdir = $(pkgincludedir)$(WITH_PATH_VERSIONED_SUFFIX)
 pkginc_HEADERS = \
-	argv.h envvar.h fts.h mire.h rpmcb.h rpmdav.h rpmhash.h \
+	argv.h envvar.h fts.h mire.h rpmbeecrypt.h rpmcb.h rpmdav.h rpmhash.h \
 	rpmio.h rpmio-stub.h rpmlog.h rpmmacro.h rpmmg.h rpmpgp.h \
 	rpmsq.h rpmsw.h rpmurl.h rpmxar.h ugid.h
 noinst_HEADERS = \

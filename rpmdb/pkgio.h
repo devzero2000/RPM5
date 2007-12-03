@@ -6,6 +6,8 @@
  * Methods to handle package elements.
  */
 
+#include <rpmpgp.h>	/* XXX pgpDig typedef */
+
 #ifdef __cplusplus
 extern "C" {
 #endif

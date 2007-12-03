@@ -14,7 +14,7 @@
 #include <regex.h>
 #endif
 
-#include <rpmio_internal.h>
+#include <rpmio_internal.h>	/* XXX fdGetFp */
 #include <fts.h>
 
 #define	_RPMFI_INTERNAL

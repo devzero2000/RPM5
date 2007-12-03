@@ -7,7 +7,9 @@
 #include <keyutils.h>
 #endif
 
-#include "rpmio_internal.h"
+#include <rpmio.h>
+#include <rpmurl.h>
+#include <rpmbeecrypt.h>
 #include <rpmcb.h>	/* XXX rpmIsVerbose() */
 #include <rpmtag.h>
 #include <rpmmacro.h>	/* XXX for rpmGetPath() */

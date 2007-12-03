@@ -5,7 +5,7 @@
 
 #include "system.h"
 
-#include <rpmio_internal.h>
+#include <rpmio.h>
 #include <rpmlib.h>
 
 #include "tar.h"

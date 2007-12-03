@@ -5,7 +5,7 @@
 
 #include "system.h"
 
-#include <rpmio_internal.h>
+#include <rpmio_internal.h>	/* XXX FDSTAT_READ */
 #include <rpmcb.h>		/* XXX fnpyKey */
 #include <rpmmacro.h>
 #include <rpmurl.h>

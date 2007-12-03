@@ -5,7 +5,7 @@
 
 #include "system.h"
 
-#include "rpmio_internal.h"
+#include <rpmio_internal.h>
 #include <rpmtag.h>
 #include <rpmcli.h>
 #define	_RPMEVR_INTERNAL	/* XXX RPMSENSE_KEYRING */

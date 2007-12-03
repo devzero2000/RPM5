@@ -16,14 +16,6 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-/**
- */
-typedef /*@abstract@*/ /*@refcounted@*/ struct pgpDig_s * pgpDig;
-
-/**
- */
-typedef /*@abstract@*/ struct pgpDigParams_s * pgpDigParams;
-
 /** \ingroup rpmio
  * Hide libio API lossage.
  * The libio interface changed after glibc-2.1.3 to pass the seek offset

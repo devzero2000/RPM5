@@ -31,6 +31,14 @@ typedef /*@abstract@*/ struct pgpPkt_s * pgpPkt;
 
 /**
  */
+typedef /*@abstract@*/ /*@refcounted@*/ struct pgpDig_s * pgpDig;
+
+/**
+ */
+typedef /*@abstract@*/ struct pgpDigParams_s * pgpDigParams;
+
+/**
+ */
 typedef const struct pgpValTbl_s {
     int val;
 /*@observer@*/ const char * str;
