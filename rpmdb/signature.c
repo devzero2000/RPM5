@@ -728,23 +728,6 @@ exit:
 }
 
 /**
- * Convert hex to binary nibble.
- * @param c            hex character
- * @return             binary nibble
- */
-static inline unsigned char nibble(char c)
-	/*@*/
-{
-    if (c >= '0' && c <= '9')
-	return (unsigned char) (c - '0');
-    if (c >= 'A' && c <= 'F')
-	return (unsigned char)((int)(c - 'A') + 10);
-    if (c >= 'a' && c <= 'f')
-	return (unsigned char)((int)(c - 'a') + 10);
-    return (unsigned char) '\0';
-}
-
-/**
  * Verify RSA signature.
  * @param dig		container
  * @retval t		verbose success/failure text
@@ -793,97 +776,60 @@ assert(sigp != NULL);
 	break;
     }
 
-    /* Verify the desired hash match. */
-    /* XXX Values from PKCS#1 v2.1 (aka RFC-3447) */
+    /* Identify the RSA/hash. */
     switch (sigp->hash_algo) {
     case PGPHASHALGO_MD5:
 	t = stpcpy(t, " RSA/MD5");
-	prefix = "3020300c06082a864886f70d020505000410";
 	break;
     case PGPHASHALGO_SHA1:
 	t = stpcpy(t, " RSA/SHA1");
-	prefix = "3021300906052b0e03021a05000414";
 	break;
     case PGPHASHALGO_RIPEMD160:
 	t = stpcpy(t, " RSA/RIPEMD160");
-	prefix = "3021300906052b2403020105000414";
 	break;
     case PGPHASHALGO_MD2:
 	t = stpcpy(t, " RSA/MD2");
-	prefix = "3020300c06082a864886f70d020205000410";
 	break;
     case PGPHASHALGO_TIGER192:
 	t = stpcpy(t, " RSA/TIGER192");
-	prefix = "3029300d06092b06010401da470c0205000418";
 	break;
     case PGPHASHALGO_HAVAL_5_160:
 	res = RPMRC_NOKEY;
-	prefix = NULL;
 	break;
     case PGPHASHALGO_SHA256:
 	t = stpcpy(t, " RSA/SHA256");
-	prefix = "3031300d060960864801650304020105000420";
 	break;
     case PGPHASHALGO_SHA384:
 	t = stpcpy(t, " RSA/SHA384");
-	prefix = "3041300d060960864801650304020205000430";
 	break;
     case PGPHASHALGO_SHA512:
 	t = stpcpy(t, " RSA/SHA512");
-	prefix = "3051300d060960864801650304020305000440";
 	break;
     default:
 	res = RPMRC_NOKEY;
-	prefix = NULL;
 	break;
     }
 
     t = stpcpy(t, _(" signature: "));
-    if (res != RPMRC_OK) {
+    if (res != RPMRC_OK)
 	goto exit;
-    }
 
 assert(md5ctx != NULL);	/* XXX can't happen. */
     {	rpmop op = pgpStatsAccumulator(dig, 10);	/* RPMTS_OP_DIGEST */
 	DIGEST_CTX ctx;
-	byte signhash16[2];
-	const char * s;
 
 	(void) rpmswEnter(op, 0);
 	ctx = rpmDigestDup(md5ctx);
 	if (sigp->hash != NULL)
 	    xx = rpmDigestUpdate(ctx, sigp->hash, sigp->hashlen);
-
-#ifdef	NOTYET	/* XXX not for binary/text signatures as in packages. */
-	if (!(sigp->sigtype == PGPSIGTYPE_BINARY || sigp->sigtype == PGP_SIGTYPE_TEXT)) {
-	    int nb = dig->nbytes + sigp->hashlen;
-	    byte trailer[6];
-	    nb = htonl(nb);
-	    trailer[0] = 0x4;
-	    trailer[1] = 0xff;
-	    memcpy(trailer+2, &nb, sizeof(nb));
-	    xx = rpmDigestUpdate(ctx, trailer, sizeof(trailer));
-	}
-#endif
-
-	xx = rpmDigestFinal(ctx, (void **)&dig->md5, &dig->md5len, 1);
 	(void) rpmswExit(op, sigp->hashlen);
 	op->count--;	/* XXX one too many */
 
-	/* Compare leading 16 bits of digest for quick check. */
-	s = dig->md5;
-/*@-type@*/
-	signhash16[0] = (byte) (nibble(s[0]) << 4) | nibble(s[1]);
-	signhash16[1] = (byte) (nibble(s[2]) << 4) | nibble(s[3]);
-/*@=type@*/
-	if (memcmp(signhash16, sigp->signhash16, sizeof(signhash16))) {
+	if (pgpSetRSA(ctx, dig, sigp)) {
 	    res = RPMRC_FAIL;
 	    goto exit;
 	}
     }
-
-    /* Set the RSA modulus. */
-    pgpSetRSA(dig, prefix);
 
     /* Retrieve the matching public key. */
     res = pgpFindPubkey(dig);
@@ -959,7 +905,6 @@ assert(sigp != NULL);
 
     {	rpmop op = pgpStatsAccumulator(dig, 10);	/* RPMTS_OP_DIGEST */
 	DIGEST_CTX ctx;
-	byte signhash16[2];
 
 	(void) rpmswEnter(op, 0);
 	ctx = rpmDigestDup(sha1ctx);
@@ -975,16 +920,10 @@ assert(sigp != NULL);
 	    memcpy(trailer+2, &nb, sizeof(nb));
 	    xx = rpmDigestUpdate(ctx, trailer, sizeof(trailer));
 	}
-	xx = rpmDigestFinal(ctx, (void **)&dig->sha1, &dig->sha1len, 1);
 	(void) rpmswExit(op, sigp->hashlen);
 	op->count--;	/* XXX one too many */
 
-	pgpSetDSA(dig);
-
-	/* Compare leading 16 bits of digest for quick check. */
-	signhash16[0] = (*dig->hm.data >> 24) & 0xff;
-	signhash16[1] = (*dig->hm.data >> 16) & 0xff;
-	if (memcmp(signhash16, sigp->signhash16, sizeof(signhash16))) {
+	if (pgpSetDSA(ctx, dig, sigp)) {
 	    res = RPMRC_FAIL;
 	    goto exit;
 	}
