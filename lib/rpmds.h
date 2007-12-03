@@ -11,17 +11,19 @@
 #include "rpmns.h"
 #include "rpmps.h"
 
-/**
+/** \ingroup rpmds
  */
 /*@-exportlocal@*/
 /*@unchecked@*/
 extern int _rpmds_debug;
 /*@=exportlocal@*/
 
+/** \ingroup rpmds
+ */
 /*@unchecked@*/ /*@observer@*/ /*@owned@*/ /*@relnull@*/
 extern const char *_sysinfo_path;
 
-/**
+/** \ingroup rpmds
  */
 /*@-exportlocal@*/
 /*@unchecked@*/
@@ -113,7 +115,7 @@ extern "C" {
 
 /** \name RPMDS */
 /*@{*/
-/**
+/** \ingroup rpmds
  * Unreference a dependency set instance.
  * @param ds		dependency set
  * @param msg
@@ -133,7 +135,7 @@ rpmds XrpmdsUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ rpmds ds,
 /*@=exportlocal@*/
 #define	rpmdsUnlink(_ds, _msg)	XrpmdsUnlink(_ds, _msg, __FILE__, __LINE__)
 
-/**
+/** \ingroup rpmds
  * Reference a dependency set instance.
  * @param ds		dependency set
  * @param msg
@@ -150,7 +152,7 @@ rpmds XrpmdsLink (/*@null@*/ rpmds ds, /*@null@*/ const char * msg,
         /*@modifies ds @*/;
 #define	rpmdsLink(_ds, _msg)	XrpmdsLink(_ds, _msg, __FILE__, __LINE__)
 
-/**
+/** \ingroup rpmds
  * Destroy a dependency set.
  * @param ds		dependency set
  * @return		NULL always
@@ -158,7 +160,7 @@ rpmds XrpmdsLink (/*@null@*/ rpmds ds, /*@null@*/ const char * msg,
 /*@null@*/
 rpmds rpmdsFree(/*@killref@*/ /*@only@*/ /*@null@*/ rpmds ds)
 	/*@modifies ds @*/;
-/**
+/** \ingroup rpmds
  * Create and load a dependency set.
  * @param h		header
  * @param tagN		type of dependency
@@ -170,7 +172,7 @@ rpmds rpmdsNew(Header h, rpmTag tagN, int flags)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies h, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
-/**
+/** \ingroup rpmds
  * Return N string, expanded if necessary.
  * @param ds		dependency set
  * @return		new N string (malloc'ed)
@@ -180,7 +182,7 @@ const char * rpmdsNewN(rpmds ds)
 	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
 	/*@modifies ds, rpmGlobalMacroContext, internalState @*/;
 
-/**
+/** \ingroup rpmds
  * Return new formatted dependency string.
  * @param dspfx		formatted dependency string prefix
  * @param ds		dependency set
@@ -190,7 +192,7 @@ char * rpmdsNewDNEVR(const char * dspfx, rpmds ds)
 	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
 	/*@modifies ds, rpmGlobalMacroContext, internalState @*/;
 
-/**
+/** \ingroup rpmds
  * Create, load and initialize a dependency for this header. 
  * @param h		header
  * @param tagN		type of dependency
@@ -201,7 +203,7 @@ char * rpmdsNewDNEVR(const char * dspfx, rpmds ds)
 rpmds rpmdsThis(Header h, rpmTag tagN, evrFlags Flags)
 	/*@*/;
 
-/**
+/** \ingroup rpmds
  * Create, load and initialize a dependency set of size 1.
  * @param tagN		type of dependency
  * @param N		name
@@ -213,7 +215,7 @@ rpmds rpmdsThis(Header h, rpmTag tagN, evrFlags Flags)
 rpmds rpmdsSingle(rpmTag tagN, const char * N, const char * EVR, evrFlags Flags)
 	/*@*/;
 
-/**
+/** \ingroup rpmds
  * Return dependency set count.
  * @param ds		dependency set
  * @return		current count
@@ -221,7 +223,7 @@ rpmds rpmdsSingle(rpmTag tagN, const char * N, const char * EVR, evrFlags Flags)
 int rpmdsCount(/*@null@*/ const rpmds ds)
 	/*@*/;
 
-/**
+/** \ingroup rpmds
  * Return dependency set index.
  * @param ds		dependency set
  * @return		current index
@@ -229,7 +231,7 @@ int rpmdsCount(/*@null@*/ const rpmds ds)
 int rpmdsIx(/*@null@*/ const rpmds ds)
 	/*@*/;
 
-/**
+/** \ingroup rpmds
  * Set dependency set index.
  * @param ds		dependency set
  * @param ix		new index
@@ -238,7 +240,7 @@ int rpmdsIx(/*@null@*/ const rpmds ds)
 int rpmdsSetIx(/*@null@*/ rpmds ds, int ix)
 	/*@modifies ds @*/;
 
-/**
+/** \ingroup rpmds
  * Return current formatted dependency string.
  * @param ds		dependency set
  * @return		current dependency DNEVR, NULL on invalid
@@ -247,7 +249,7 @@ int rpmdsSetIx(/*@null@*/ rpmds ds, int ix)
 extern const char * rpmdsDNEVR(/*@null@*/ const rpmds ds)
 	/*@*/;
 
-/**
+/** \ingroup rpmds
  * Return current dependency name.
  * @param ds		dependency set
  * @return		current dependency name, NULL on invalid
@@ -257,7 +259,7 @@ extern const char * rpmdsN(/*@null@*/ rpmds ds)
 	/*@globals internalState @*/
 	/*@modifies internalState @*/;
 
-/**
+/** \ingroup rpmds
  * Return current dependency epoch-version-release.
  * @param ds		dependency set
  * @return		current dependency EVR, NULL on invalid
@@ -266,7 +268,7 @@ extern const char * rpmdsN(/*@null@*/ rpmds ds)
 extern const char * rpmdsEVR(/*@null@*/ const rpmds ds)
 	/*@*/;
 
-/**
+/** \ingroup rpmds
  * Return current dependency flags.
  * @param ds		dependency set
  * @return		current dependency flags, 0 on invalid
@@ -274,7 +276,7 @@ extern const char * rpmdsEVR(/*@null@*/ const rpmds ds)
 evrFlags rpmdsFlags(/*@null@*/ const rpmds ds)
 	/*@*/;
 
-/**
+/** \ingroup rpmds
  * Return current dependency type.
  * @param ds		dependency set
  * @return		current dependency type, 0 on invalid
@@ -282,7 +284,7 @@ evrFlags rpmdsFlags(/*@null@*/ const rpmds ds)
 rpmTag rpmdsTagN(/*@null@*/ const rpmds ds)
 	/*@*/;
 
-/**
+/** \ingroup rpmds
  * Return current dependency arch.
  * @param ds		dependency set
  * @return		current dependency arch, NULL on invalid
@@ -291,7 +293,7 @@ rpmTag rpmdsTagN(/*@null@*/ const rpmds ds)
 extern const char * rpmdsA(/*@null@*/ const rpmds ds)
 	/*@*/;
 
-/**
+/** \ingroup rpmds
  * Return dependency build time.
  * @param ds		dependency set
  * @return		dependency build time, 0 on invalid
@@ -299,7 +301,7 @@ extern const char * rpmdsA(/*@null@*/ const rpmds ds)
 time_t rpmdsBT(/*@null@*/ const rpmds ds)
 	/*@*/;
 
-/**
+/** \ingroup rpmds
  * Set dependency build time.
  * @param ds		dependency set
  * @param BT		build time
@@ -308,7 +310,7 @@ time_t rpmdsBT(/*@null@*/ const rpmds ds)
 time_t rpmdsSetBT(/*@null@*/ const rpmds ds, time_t BT)
 	/*@modifies ds @*/;
 
-/**
+/** \ingroup rpmds
  * Return dependency class type.
  * @param ds		dependency set
  * @return		dependency class type
@@ -316,7 +318,7 @@ time_t rpmdsSetBT(/*@null@*/ const rpmds ds, time_t BT)
 nsType rpmdsNSType(/*@null@*/ const rpmds ds)
 	/*@*/;
 
-/**
+/** \ingroup rpmds
  * Return current "Don't promote Epoch:" flag.
  *
  * This flag controls for Epoch: promotion when a dependency set is
@@ -332,7 +334,7 @@ nsType rpmdsNSType(/*@null@*/ const rpmds ds)
 int rpmdsNoPromote(/*@null@*/ const rpmds ds)
 	/*@*/;
 
-/**
+/** \ingroup rpmds
  * Set "Don't promote Epoch:" flag.
  * @param ds		dependency set
  * @param nopromote	Should an unspecified Epoch: be treated as Epoch: 0?
@@ -341,7 +343,7 @@ int rpmdsNoPromote(/*@null@*/ const rpmds ds)
 int rpmdsSetNoPromote(/*@null@*/ rpmds ds, int nopromote)
 	/*@modifies ds @*/;
 
-/**
+/** \ingroup rpmds
  * Set EVR parsing function.
  * @param ds		dependency set
  * @param EVRparse	EVR parsing function (NULL uses default)
@@ -352,7 +354,7 @@ void * rpmdsSetEVRparse(/*@null@*/ rpmds ds,
 		/*@null@*/ int (*EVRparse)(const char *everstr, EVR_t evr))
 	/*@modifies ds @*/;
 
-/**
+/** \ingroup rpmds
  * Set EVR comparison function.
  * @param ds		dependency set
  * @param EVRcmp	EVR comparison function (NULL uses default)
@@ -363,7 +365,7 @@ void * rpmdsSetEVRcmp(/*@null@*/ rpmds ds,
 		/*@null@*/ int (*EVRcmp)(const char *a, const char *b))
 	/*@modifies ds @*/;
 
-/**
+/** \ingroup rpmds
  * Return current dependency color.
  * @param ds		dependency set
  * @return		current dependency color (0 if not set)
@@ -371,7 +373,7 @@ void * rpmdsSetEVRcmp(/*@null@*/ rpmds ds,
 uint32_t rpmdsColor(/*@null@*/ const rpmds ds)
 	/*@*/;
 
-/**
+/** \ingroup rpmds
  * Set current dependency color.
  * @param ds		dependency set
  * @param color		new dependency color
@@ -380,7 +382,7 @@ uint32_t rpmdsColor(/*@null@*/ const rpmds ds)
 uint32_t rpmdsSetColor(/*@null@*/ const rpmds ds, uint32_t color)
 	/*@modifies ds @*/;
 
-/**
+/** \ingroup rpmds
  * Return current dependency file refs.
  * @param ds		dependency set
  * @return		current dependency file refs (0 if not set)
@@ -388,7 +390,7 @@ uint32_t rpmdsSetColor(/*@null@*/ const rpmds ds, uint32_t color)
 uint32_t rpmdsRefs(/*@null@*/ const rpmds ds)
 	/*@*/;
 
-/**
+/** \ingroup rpmds
  * Set current dependency file refs.
  * @param ds		dependency set
  * @param refs		new dependency refs
@@ -397,7 +399,7 @@ uint32_t rpmdsRefs(/*@null@*/ const rpmds ds)
 uint32_t rpmdsSetRefs(/*@null@*/ const rpmds ds, uint32_t refs)
 	/*@modifies ds @*/;
 
-/**
+/** \ingroup rpmds
  * Return current dependency comparison result.
  * @param ds		dependency set
  * @return		current dependency result (0 if not set)
@@ -405,7 +407,7 @@ uint32_t rpmdsSetRefs(/*@null@*/ const rpmds ds, uint32_t refs)
 int32_t rpmdsResult(/*@null@*/ const rpmds ds)
 	/*@*/;
 
-/**
+/** \ingroup rpmds
  * Set current dependency comparison result.
  * @param ds		dependency set
  * @param result	new dependency result
@@ -414,7 +416,7 @@ int32_t rpmdsResult(/*@null@*/ const rpmds ds)
 int32_t rpmdsSetResult(/*@null@*/ const rpmds ds, int32_t result)
 	/*@modifies ds @*/;
 
-/**
+/** \ingroup rpmds
  * Notify of results of dependency match.
  * @param ds		dependency set
  * @param where		where dependency was resolved (or NULL)
@@ -426,7 +428,7 @@ void rpmdsNotify(/*@null@*/ rpmds ds, /*@null@*/ const char * where, int rc)
 	/*@modifies fileSystem @*/;
 /*@=globuse@*/
 
-/**
+/** \ingroup rpmds
  * Return next dependency set iterator index.
  * @param ds		dependency set
  * @return		dependency set iterator index, -1 on termination
@@ -434,7 +436,7 @@ void rpmdsNotify(/*@null@*/ rpmds ds, /*@null@*/ const char * where, int rc)
 int rpmdsNext(/*@null@*/ rpmds ds)
 	/*@modifies ds @*/;
 
-/**
+/** \ingroup rpmds
  * Initialize dependency set iterator.
  * @param ds		dependency set
  * @return		dependency set
@@ -443,7 +445,7 @@ int rpmdsNext(/*@null@*/ rpmds ds)
 rpmds rpmdsInit(/*@null@*/ rpmds ds)
 	/*@modifies ds @*/;
 
-/**
+/** \ingroup rpmds
  * Find a dependency set element using binary search.
  * @param ds		dependency set to search
  * @param ods		dependency set element to find.
@@ -452,7 +454,7 @@ rpmds rpmdsInit(/*@null@*/ rpmds ds)
 int rpmdsFind(rpmds ds, /*@null@*/ const rpmds ods)
 	/*@modifies ds @*/;
 
-/**
+/** \ingroup rpmds
  * Merge a dependency set maintaining (N,EVR,Flags) sorted order.
  * @retval *dsp		(merged) dependency set
  * @param ods		dependency set to merge
@@ -461,7 +463,7 @@ int rpmdsFind(rpmds ds, /*@null@*/ const rpmds ods)
 int rpmdsMerge(/*@null@*/ /*@out@*/ rpmds * dsp, /*@null@*/ rpmds ods)
 	/*@modifies *dsp, ods @*/;
 
-/**
+/** \ingroup rpmds
  * Search a sorted dependency set for an element that overlaps.
  * A boolean result is saved (if allocated) and accessible through
  * rpmdsResult(ods) afterwards.
@@ -472,7 +474,7 @@ int rpmdsMerge(/*@null@*/ /*@out@*/ rpmds * dsp, /*@null@*/ rpmds ods)
 int rpmdsSearch(/*@null@*/ rpmds ds, /*@null@*/ rpmds ods)
 	/*@modifies ds, ods @*/;
 
-/**
+/** \ingroup rpmds
  * Load /proc/cpuinfo provides into a dependency set.
  * @retval *dsp		(loaded) depedency set
  * @param fn		path to file (NULL uses /proc/cpuinfo)
@@ -482,7 +484,7 @@ int rpmdsCpuinfo(/*@out@*/ rpmds * dsp, /*@null@*/ const char * fn)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies *dsp, rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/;
 
-/**
+/** \ingroup rpmds
  * Load rpmlib provides into a dependency set.
  * @retval *dsp		(loaded) depedency set
  * @param tblp		rpmlib provides table (NULL uses internal table)
@@ -491,7 +493,7 @@ int rpmdsCpuinfo(/*@out@*/ rpmds * dsp, /*@null@*/ const char * fn)
 int rpmdsRpmlib(rpmds * dsp, /*@null@*/ void * tblp)
 	/*@modifies *dsp @*/;
 
-/**
+/** \ingroup rpmds
  * Load sysinfo dependencies into a dependency set.
  * @retval *PRCO	provides/requires/conflicts/obsoletes depedency set(s)
  * @param fn		path to file (NULL uses /etc/rpm/sysinfo)
@@ -502,7 +504,7 @@ int rpmdsSysinfo(rpmPRCO PRCO, /*@null@*/ const char * fn)
 	/*@modifies PRCO, rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState @*/;
 
-/**
+/** \ingroup rpmds
  * Load getconf provides into a dependency set.
  * @retval *dsp		(loaded) depedency set
  * @param path		getconf path (NULL uses /)
@@ -513,7 +515,7 @@ int rpmdsGetconf(rpmds * dsp, /*@null@*/ const char * path)
 	/*@modifies *dsp, rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState @*/;
 
-/**
+/** \ingroup rpmds
  * Merge provides/requires/conflicts/obsoletes dependencies.
  * @param context	merge dependency set(s) container
  * @param ds		dependency set to merge
@@ -522,7 +524,7 @@ int rpmdsGetconf(rpmds * dsp, /*@null@*/ const char * path)
 int rpmdsMergePRCO(void * context, rpmds ds)
 	/*@modifies context, ds @*/;
 
-/**
+/** \ingroup rpmds
  * Free dependency set(s) container.
  * @param PRCO		dependency set(s) container
  * @return		NULL
@@ -531,7 +533,7 @@ int rpmdsMergePRCO(void * context, rpmds ds)
 rpmPRCO rpmdsFreePRCO(/*@only@*/ /*@null@*/ rpmPRCO PRCO)
 	/*@modifies PRCO @*/;
 
-/**
+/** \ingroup rpmds
  * Create dependency set(s) container.
  * @param h		header
  * @return		0 on success
@@ -540,7 +542,7 @@ rpmPRCO rpmdsNewPRCO(/*@null@*/ Header h)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies h, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
-/**
+/** \ingroup rpmds
  * Retrieve a dependency set from container.
  * @param PRCO		dependency set(s) container
  * @param tagN		type of dependency set
@@ -550,7 +552,7 @@ rpmPRCO rpmdsNewPRCO(/*@null@*/ Header h)
 rpmds rpmdsFromPRCO(/*@null@*/ rpmPRCO PRCO, rpmTag tagN)
 	/*@*/;
 
-/**
+/** \ingroup rpmds
  * Extract ELF dependencies from a file.
  * @param fn		file name
  * @param flags		1: skip provides 2: skip requires
@@ -565,7 +567,7 @@ int rpmdsELF(const char * fn, int flags,
 #define RPMELF_FLAG_SKIPPROVIDES	0x1	/*<! rpmdsELF: skip provides */
 #define RPMELF_FLAG_SKIPREQUIRES	0x2	/*<! rpmdsELF: skip requires */
 
-/**
+/** \ingroup rpmds
  * Load /etc/ld.so.cache provides into a dependency set.
  * @todo Add dependency colors, and attach to file.
  * @retval *PRCO	provides/requires/conflicts/obsoletes depedency set(s)
@@ -577,7 +579,7 @@ int rpmdsLdconfig(rpmPRCO PRCO, /*@null@*/ const char * fn)
 	/*@modifies *PRCO, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 #if defined(__sun)
-/**
+/** \ingroup rpmds
  * Given a colon-separated list of directories, search each of those
  * directories for (ELF or ELF64) shared objects, and load the provided
  * shared objects into a dependency set.
@@ -590,7 +592,7 @@ int rpmdsRldpath(rpmPRCO PRCO, /*@null@*/ const char * rldp)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies *PRCO, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
-/**
+/** \ingroup rpmds
  * Use Solaris' crle(1) command to find the ELF (or ELF64) loader path.
  * calls rpmdsRldpath once it has the loader path.
  * @todo Add dependency colors, and attach to file.
@@ -603,7 +605,7 @@ int rpmdsCrle(rpmPRCO PRCO, /*@null@*/ const char * fn)
 	/*@modifies *PRCO, rpmGlobalMacroContext, fileSystem, internalState @*/;
 #endif
 
-/**
+/** \ingroup rpmds
  * Load uname(2) provides into a dependency set.
  * @retval *dsp		(loaded) depedency set
  * @param un		utsname struct (NULL calls uname(2))
@@ -614,7 +616,7 @@ int rpmdsUname(rpmds * dsp, /*@null@*/ const struct utsname * un)
 	/*@globals internalState @*/
 	/*@modifies *dsp, internalState @*/;
 
-/**
+/** \ingroup rpmds
  * Load provides from a pipe into a dependency set.
  * @retval *dsp		(loaded) depedency set
  * @param tagN		rpmds tag (0 uses RPMTAG_PROVIDENAME).
@@ -626,7 +628,7 @@ int rpmdsPipe(rpmds * dsp, rpmTag tagN, /*@null@*/ const char * cmd)
 	/*@modifies *dsp, rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState @*/;
 
-/**
+/** \ingroup rpmds
  * Compare two versioned dependency ranges, looking for overlap.
  * @param A		1st dependency
  * @param B		2nd dependency
@@ -635,7 +637,7 @@ int rpmdsPipe(rpmds * dsp, rpmTag tagN, /*@null@*/ const char * cmd)
 int rpmdsCompare(const rpmds A, const rpmds B)
 	/*@*/;
 
-/**
+/** \ingroup rpmds
  * Report a Requires: or Conflicts: dependency problem.
  * @param ps		transaction set problems
  * @param pkgNEVR	package name/epoch/version/release
@@ -649,7 +651,7 @@ void rpmdsProblem(/*@null@*/ rpmps ps, const char * pkgNEVR, const rpmds ds,
 	/*@globals internalState @*/
 	/*@modifies ps, internalState @*/;
 
-/**
+/** \ingroup rpmds
  * Compare package provides dependencies from header with a single dependency.
  * @param h		header
  * @param req		dependency set
@@ -660,7 +662,7 @@ int rpmdsAnyMatchesDep (const Header h, const rpmds req, int nopromote)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies h, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
-/**
+/** \ingroup rpmds
  * Compare package name-version-release from header with a single dependency.
  * @param h		header
  * @param req		dependency set
@@ -670,7 +672,7 @@ int rpmdsAnyMatchesDep (const Header h, const rpmds req, int nopromote)
 int rpmdsNVRMatchesDep(const Header h, const rpmds req, int nopromote)
 	/*@*/;
 
-/**
+/** \ingroup rpmds
  * Negate return code for negated comparisons.
  * @param ds		dependency set
  * @param rc		postive return code
@@ -680,7 +682,7 @@ int rpmdsNegateRC(const rpmds ds, int rc)
 	/*@*/;
 
 #if !defined(SWIG)
-/**
+/** \ingroup rpmds
  * Return current dependency type name.
  * @param ds		dependency set
  * @return		current dependency type name
@@ -702,7 +704,7 @@ const char * rpmdsTagName(/*@null@*/ const rpmds ds)
     return tagName(tagN);
 }
 
-/**
+/** \ingroup rpmds
  * Print current dependency set contents.
  * @param ds		dependency set
  * @param fp		file handle (NULL uses stderr)
@@ -721,7 +723,7 @@ int rpmdsPrint(/*@null@*/ rpmds ds, /*@null@*/ FILE * fp)
     return 0;
 }
 
-/**
+/** \ingroup rpmds
  * Print current dependency set results.
  * @param ds		dependency set
  * @param fp		file handle (NULL uses stderr)
@@ -744,7 +746,7 @@ int rpmdsPrintResults(/*@null@*/ rpmds ds, /*@null@*/ FILE * fp)
     return 0;
 }
 
-/**
+/** \ingroup rpmds
  * Check Provides: against Requires: and print closure results.
  * @param P		Provides: dependency set
  * @param R		Requires: dependency set
