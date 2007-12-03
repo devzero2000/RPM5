@@ -2061,6 +2061,7 @@ static const char * myTagName(headerTagTableEntry tbl, uint32_t val,
     const char * s;
     char *t;
 
+#ifdef	NOTYET
     /* XXX Use bsearch on the "normal" rpmTagTable lookup. */
     if (tbl == NULL || tbl == rpmTagTable) {
 	s = tagName(val);
@@ -2068,6 +2069,7 @@ static const char * myTagName(headerTagTableEntry tbl, uint32_t val,
 	    *typep = tagType(val);
 	return s;
     }
+#endif
 
     for (; tbl->name != NULL; tbl++) {
 	if (tbl->val == val)
@@ -2095,9 +2097,11 @@ static const char * myTagName(headerTagTableEntry tbl, uint32_t val,
 static uint32_t myTagValue(headerTagTableEntry tbl, const char * name)
 	/*@*/
 {
+#ifdef	NOTYET
     /* XXX Use bsearch on the "normal" rpmTagTable lookup. */
     if (tbl == NULL || tbl == rpmTagTable)
 	return tagValue(name);
+#endif
 
     for (; tbl->name != NULL; tbl++) {
 	if (!xstrcasecmp(tbl->name, name))
