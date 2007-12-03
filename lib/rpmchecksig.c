@@ -784,7 +784,6 @@ pgpDig dig = fdGetDig(fd);
     ssize_t count;
     rpmRC rc;
     int xx;
-    int i;
 
     dig->nbytes = 0;
 
@@ -849,30 +848,7 @@ pgpDig dig = fdGetDig(fd);
     }
 
     /* XXX Steal the digest-in-progress from the file handle. */
-    for (i = fd->ndigests - 1; i >= 0; i--) {
-	FDDIGEST_t fddig = fd->digests + i;
-	if (fddig->hashctx != NULL)
-	switch (fddig->hashalgo) {
-	case PGPHASHALGO_MD5:
-assert(dig->md5ctx == NULL);
-	    dig->md5ctx = fddig->hashctx;
-	    fddig->hashctx = NULL;
-	    /*@switchbreak@*/ break;
-	case PGPHASHALGO_SHA1:
-	case PGPHASHALGO_RIPEMD160:
-#if defined(HAVE_BEECRYPT_API_H)
-	case PGPHASHALGO_SHA256:
-	case PGPHASHALGO_SHA384:
-	case PGPHASHALGO_SHA512:
-#endif
-assert(dig->sha1ctx == NULL);
-	    dig->sha1ctx = fddig->hashctx;
-	    fddig->hashctx = NULL;
-	    /*@switchbreak@*/ break;
-	default:
-	    /*@switchbreak@*/ break;
-	}
-    }
+    fdStealDigest(fd, dig);
 
     rc = RPMRC_OK;	/* XXX unnecessary */
 

@@ -100,7 +100,6 @@ rpmRC rpmReadPackageFile(rpmts ts, void * _fd, const char * fn, Header * hdrp)
     rpmRC rc = RPMRC_FAIL;	/* assume failure */
     rpmop opsave = memset(alloca(sizeof(*opsave)), 0, sizeof(*opsave));
     int xx;
-    int i;
 
     if (hdrp) *hdrp = NULL;
 
@@ -335,28 +334,7 @@ assert(0);
 	}
 
 	/* XXX Steal the digest-in-progress from the file handle. */
-	for (i = fd->ndigests - 1; i >= 0; i--) {
-	    FDDIGEST_t fddig = fd->digests + i;
-	    if (fddig->hashctx != NULL)
-	    switch (fddig->hashalgo) {
-	    case PGPHASHALGO_MD5:
-		dig->md5ctx = fddig->hashctx;
-		fddig->hashctx = NULL;
-		/*@switchbreak@*/ break;
-	    case PGPHASHALGO_SHA1:
-	    case PGPHASHALGO_RIPEMD160:
-#if defined(HAVE_BEECRYPT_API_H)
-	    case PGPHASHALGO_SHA256:
-	    case PGPHASHALGO_SHA384:
-	    case PGPHASHALGO_SHA512:
-#endif
-		dig->sha1ctx = fddig->hashctx;
-		fddig->hashctx = NULL;
-		/*@switchbreak@*/ break;
-	    default:
-		/*@switchbreak@*/ break;
-	    }
-	}
+	fdStealDigest(fd, dig);
 	break;
     }
 

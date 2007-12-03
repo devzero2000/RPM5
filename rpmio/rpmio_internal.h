@@ -698,6 +698,39 @@ void fdFiniDigest(FD_t fd, pgpHashAlgo hashalgo,
 	fd->ndigests++;		/* convert index to count */
 }
 
+/** \ingroup rpmio
+ */
+/*@unused@*/ static inline
+void fdStealDigest(FD_t fd, pgpDig dig)
+	/*@modifies fd, dig @*/
+{
+    int i;
+    for (i = fd->ndigests - 1; i >= 0; i--) {
+	FDDIGEST_t fddig = fd->digests + i;
+	if (fddig->hashctx != NULL)
+	switch (fddig->hashalgo) {
+	case PGPHASHALGO_MD5:
+assert(dig->md5ctx == NULL);
+	    dig->md5ctx = fddig->hashctx;
+	    fddig->hashctx = NULL;
+	    break;
+	case PGPHASHALGO_SHA1:
+	case PGPHASHALGO_RIPEMD160:
+#if defined(HAVE_BEECRYPT_API_H)
+	case PGPHASHALGO_SHA256:
+	case PGPHASHALGO_SHA384:
+	case PGPHASHALGO_SHA512:
+#endif
+assert(dig->sha1ctx == NULL);
+	    dig->sha1ctx = fddig->hashctx;
+	    fddig->hashctx = NULL;
+	    break;
+	default:
+	    break;
+	}
+    }
+}
+
 /*@-shadow@*/
 /** \ingroup rpmio
  */
