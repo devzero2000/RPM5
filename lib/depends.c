@@ -5,6 +5,8 @@
 #include "system.h"
 
 #include "rpmio_internal.h"	/* XXX PGPHASHALGO_MD5 */
+#define	_RPMTE_INTERNAL
+#define	_RPMTS_INTERNAL
 #include <rpmcli.h>		/* XXX rpmcliPackagesTotal */
 
 #include <rpmmacro.h>		/* XXX rpmExpand("%{_dependency_whiteout}" */
@@ -21,12 +23,6 @@
 #define	_RPMEVR_INTERNAL
 #include "rpmds.h"
 #include "rpmfi.h"
-
-#define	_RPMTE_INTERNAL
-#include "rpmte.h"
-
-#define	_RPMTS_INTERNAL
-#include "rpmts.h"
 
 #include "debug.h"
 

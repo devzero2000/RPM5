@@ -12,6 +12,8 @@
 #include "rpmurl.h"
 #include "rpmlib.h"
 #include "rpmps.h"
+#include "rpmte.h"
+#include "rpmts.h"
 
 /** \ingroup rpmcli
  * Should version 3 packages be produced?

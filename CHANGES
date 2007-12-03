@@ -1,4 +1,5 @@
 5.0a4 -> 5.0b1:
+    - rpm.org: Move rpmtransFlags enums to rpmts.h where it logically belongs.
     - jbj: hijack rse's versioning name space, add to *.rpm packages too.
     - jbj: fix: rpmbuild -ba dir/foo.spec was broken.
     - jbj: arbitrary tags w RPM_STRING_ARRAY_TYPE default type, append assumed.

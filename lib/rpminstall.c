@@ -6,6 +6,7 @@
 
 #include <rpmio.h>
 #include <rpmtag.h>
+#define	_RPMTS_INTERNAL		/* XXX ts->suggests */
 #include <rpmcli.h>
 
 #include "rpmdb.h"
@@ -14,8 +15,6 @@
 #endif
 
 #include "rpmte.h"		/* XXX rpmtsPrint() */
-#define	_RPMTS_INTERNAL		/* XXX ts->suggests */
-#include "rpmts.h"
 
 #include "manifest.h"
 #include "rpmgi.h"
