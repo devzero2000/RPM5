@@ -1,10 +1,10 @@
 5.0a4 -> 5.0b1:
-
-5.0a3 -> 5.0a4:
     - jbj: using tagValue instead permits queries of arbitrary tags.
     - jbj: do binary, not linear, search for tag name/type/value.
     - jbj: lazy arbitrary tag array initialization in rpmTags methods instead.
     - jbj: eliminate hard-wired static nameBuf for tag strings.
+
+5.0a3 -> 5.0a4:
     - rse: provide RPM version in API via macros RPM_{VERSION,TIMESTAMP,VENDOR} and functions rpm_{version,timestamp,vendor}
     - jbj: pkgio: hdlist readers need RPMRC_NOTFOUND EOF indicator.
     - jbj: pkgio: drill in sufficient debugging to sort per/python I/O issues.
