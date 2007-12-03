@@ -175,6 +175,7 @@ headerTagIndices rpmTags = &_rpmTags;
 static const char * _tagName(rpmTag tag)
 {
     char * nameBuf;
+    size_t nameBufLen = 0;
     headerTagTableEntry t;
     int comparison, i, l, u;
     int xx;
@@ -190,43 +191,44 @@ static const char * _tagName(rpmTag tag)
     if (_rpmTags.nameBuf == NULL)
 	_rpmTags.nameBuf = xcalloc(1, _rpmTags.nameBufLen);
     nameBuf = _rpmTags.nameBuf;
+    nameBuf[0] = nameBuf[1] = '\0';
+    nameBufLen = _rpmTags.nameBufLen;
 
     switch (tag) {
     case RPMDBI_PACKAGES:
-	strcpy(nameBuf, "Packages");
+	strncpy(nameBuf, "Packages", nameBufLen);
 	break;
     case RPMDBI_DEPENDS:
-	strcpy(nameBuf, "Depends");
+	strncpy(nameBuf, "Depends", nameBufLen);
 	break;
     case RPMDBI_ADDED:
-	strcpy(nameBuf, "Added");
+	strncpy(nameBuf, "Added", nameBufLen);
 	break;
     case RPMDBI_REMOVED:
-	strcpy(nameBuf, "Removed");
+	strncpy(nameBuf, "Removed", nameBufLen);
 	break;
     case RPMDBI_AVAILABLE:
-	strcpy(nameBuf, "Available");
+	strncpy(nameBuf, "Available", nameBufLen);
 	break;
     case RPMDBI_HDLIST:
-	strcpy(nameBuf, "Hdlist");
+	strncpy(nameBuf, "Hdlist", nameBufLen);
 	break;
     case RPMDBI_ARGLIST:
-	strcpy(nameBuf, "Arglist");
+	strncpy(nameBuf, "Arglist", nameBufLen);
 	break;
     case RPMDBI_FTSWALK:
-	strcpy(nameBuf, "Ftswalk");
+	strncpy(nameBuf, "Ftswalk", nameBufLen);
 	break;
 
     /* XXX make sure rpmdb indices are identically named. */
     case RPMTAG_CONFLICTS:
-	strcpy(nameBuf, "Conflictname");
+	strncpy(nameBuf, "Conflictname", nameBufLen);
 	break;
     case RPMTAG_HDRID:
-	strcpy(nameBuf, "Sha1header");
+	strncpy(nameBuf, "Sha1header", nameBufLen);
 	break;
 
     default:
-	strcpy(nameBuf, "(unknown)");
 	if (_rpmTags.byValue == NULL)
 	    break;
 	l = 0;
@@ -242,7 +244,6 @@ static const char * _tagName(rpmTag tag)
 	    else if (comparison > 0)
 		l = i + 1;
 	    else {
-		nameBuf[0] = nameBuf[1] = '\0';
 		/* Make sure that the bsearch retrieve is stable. */
 		while (i > 0 && tag == _rpmTags.byValue[i-1]->val) {
 		    i--;
@@ -250,14 +251,16 @@ static const char * _tagName(rpmTag tag)
 		}
 		t = _rpmTags.byValue[i];
 		s = (*_rpmTags.tagCanonicalize) (t->name);
-		strncpy(nameBuf, s, _rpmTags.nameBufLen);
-		nameBuf[_rpmTags.nameBufLen-1] = '\0';
+		strncpy(nameBuf, s, nameBufLen);
 		s = _free(s);
 		/*@loopbreak@*/ break;
 	    }
 	}
 	break;
     }
+    if (nameBuf[0] == '\0')
+	snprintf(nameBuf, nameBufLen, "Tag_0x%08x", (unsigned) tag);
+    nameBuf[nameBufLen-1] = '\0';
     return nameBuf;
 }
 

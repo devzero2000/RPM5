@@ -784,10 +784,12 @@ static int handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
     default:
 	macro = 0;
 	he->tag = tag;
-	he->t = RPM_STRING_TYPE;
-	he->p.str = field;
+	he->t = RPM_STRING_ARRAY_TYPE;
+	he->p.argv= (const char **) &field;	/* XXX NOCAST */
 	he->c = 1;
+	he->append = 1;
 	xx = headerPut(pkg->header, he, 0);
+	he->append = 0;
 	break;
     }
 
