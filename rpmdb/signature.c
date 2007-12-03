@@ -882,44 +882,18 @@ assert(md5ctx != NULL);	/* XXX can't happen. */
 	}
     }
 
-    /* Generate RSA modulus parameter. */
-    {	unsigned int nbits = (unsigned) MP_WORDS_TO_BITS(dig->c.size);
-	unsigned int nb = (nbits + 7) >> 3;
-	const char * hexstr;
-	char * tt;
-
-assert(prefix != NULL);
-	hexstr = tt = xmalloc(2 * nb + 1);
-	memset(tt, (int) 'f', (2 * nb));
-	tt[0] = '0'; tt[1] = '0';
-	tt[2] = '0'; tt[3] = '1';
-	tt += (2 * nb) - strlen(prefix) - strlen(dig->md5) - 2;
-	*tt++ = '0'; *tt++ = '0';
-	tt = stpcpy(tt, prefix);
-	tt = stpcpy(tt, dig->md5);
-
-/*@-moduncon -noeffectuncon @*/
-	mpnzero(&dig->rsahm);	(void) mpnsethex(&dig->rsahm, hexstr);
-/*@=moduncon =noeffectuncon @*/
-
-	hexstr = _free(hexstr);
-
-    }
+    /* Set the RSA modulus. */
+    pgpSetRSA(dig, prefix);
 
     /* Retrieve the matching public key. */
     res = pgpFindPubkey(dig);
     if (res != RPMRC_OK)
 	goto exit;
 
+    /* Verify the RSA signature. */
     {	rpmop op = pgpStatsAccumulator(dig, 11);	/* RPMTS_OP_SIGNATURE */
 	(void) rpmswEnter(op, 0);
-/*@-moduncon@*/
-#if defined(HAVE_BEECRYPT_API_H)
-	xx = rsavrfy(&dig->rsa_pk.n, &dig->rsa_pk.e, &dig->c, &dig->rsahm);
-#else
-	xx = rsavrfy(&dig->rsa_pk, &dig->rsahm, &dig->c);
-#endif
-/*@=moduncon@*/
+	xx = pgpVerifyRSA(dig);
 	(void) rpmswExit(op, 0);
 	res = (xx ? RPMRC_OK : RPMRC_FAIL);
     }
@@ -1005,9 +979,7 @@ assert(sigp != NULL);
 	(void) rpmswExit(op, sigp->hashlen);
 	op->count--;	/* XXX one too many */
 
-/*@-moduncon -noeffectuncon @*/
-	mpnzero(&dig->hm);	(void) mpnsethex(&dig->hm, dig->sha1);
-/*@=moduncon =noeffectuncon @*/
+	pgpSetDSA(dig);
 
 	/* Compare leading 16 bits of digest for quick check. */
 	signhash16[0] = (*dig->hm.data >> 24) & 0xff;
@@ -1023,15 +995,11 @@ assert(sigp != NULL);
     if (res != RPMRC_OK)
 	goto exit;
 
+    /* Verify the DSA signature. */
     {	rpmop op = pgpStatsAccumulator(dig, 11);	/* RPMTS_OP_SIGNATURE */
 	(void) rpmswEnter(op, 0);
-/*@-moduncon@*/
-	if (dsavrfy(&dig->p, &dig->q, &dig->g,
-		&dig->hm, &dig->y, &dig->r, &dig->s))
-	    res = RPMRC_OK;
-	else
-	    res = RPMRC_FAIL;
-/*@=moduncon@*/
+	xx = pgpVerifyDSA(dig);
+	res = (xx ? RPMRC_OK : RPMRC_FAIL);
 	(void) rpmswExit(op, 0);
     }
 

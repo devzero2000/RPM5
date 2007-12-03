@@ -112,6 +112,71 @@ struct pgpDig_s {
     mpnumber rsahm;
 };
 
+/*@unused@*/ static inline
+void pgpSetRSA(pgpDig dig, const char * prefix)
+	/*@modifies dig @*/
+{
+    unsigned int nbits = (unsigned) MP_WORDS_TO_BITS(dig->c.size);
+    unsigned int nb = (nbits + 7) >> 3;
+    const char * hexstr;
+    char * tt;
+
+assert(prefix != NULL);
+    hexstr = tt = xmalloc(2 * nb + 1);
+    memset(tt, (int) 'f', (2 * nb));
+    tt[0] = '0'; tt[1] = '0';
+    tt[2] = '0'; tt[3] = '1';
+    tt += (2 * nb) - strlen(prefix) - strlen(dig->md5) - 2;
+    *tt++ = '0'; *tt++ = '0';
+    tt = stpcpy(tt, prefix);
+    tt = stpcpy(tt, dig->md5);
+
+/*@-moduncon -noeffectuncon @*/
+    mpnzero(&dig->rsahm);   (void) mpnsethex(&dig->rsahm, hexstr);
+/*@=moduncon =noeffectuncon @*/
+
+    hexstr = _free(hexstr);
+}
+
+/*@unused@*/ static inline
+int pgpVerifyRSA(pgpDig dig)
+	/*@*/
+{
+    int rc;
+
+/*@-moduncon@*/
+#if defined(HAVE_BEECRYPT_API_H)
+	rc = rsavrfy(&dig->rsa_pk.n, &dig->rsa_pk.e, &dig->c, &dig->rsahm);
+#else
+	rc = rsavrfy(&dig->rsa_pk, &dig->rsahm, &dig->c);
+#endif
+/*@=moduncon@*/
+
+    return rc;
+}
+
+/*@unused@*/ static inline
+void pgpSetDSA(pgpDig dig)
+	/*@modifies dig @*/
+{
+/*@-moduncon -noeffectuncon @*/
+	mpnzero(&dig->hm);	(void) mpnsethex(&dig->hm, dig->sha1);
+/*@=moduncon =noeffectuncon @*/
+}
+
+/*@unused@*/ static inline
+int pgpVerifyDSA(pgpDig dig)
+	/*@*/
+{
+    int rc;
+
+/*@-moduncon@*/
+    rc = dsavrfy(&dig->p, &dig->q, &dig->g, &dig->hm, &dig->y, &dig->r, &dig->s);
+/*@=moduncon@*/
+
+    return rc;
+}
+
 #ifdef __cplusplus
 extern "C" {
 #endif
