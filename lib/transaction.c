@@ -8,6 +8,7 @@
 #include <rpmmacro.h>	/* XXX for rpmExpand */
 #include <rpmtag.h>
 
+#define	_RPMFI_INTERNAL
 #define	_RPMTE_INTERNAL
 #define	_RPMTS_INTERNAL
 #include "rpmcli.h"	/* IDTX prototypes */
@@ -22,9 +23,6 @@
 #include "rpmds.h"
 
 #include "rpmlock.h"
-
-#define	_RPMFI_INTERNAL
-#include "rpmfi.h"
 
 #include "cpio.h"
 #include "fprint.h"

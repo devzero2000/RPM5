@@ -14,15 +14,13 @@
 #include <rpmlib.h>
 
 #include "cpio.h"
+#define	_RPMFI_INTERNAL
 #include "fsm.h"		/* XXX CPIO_FOO/FSM_FOO constants */
 #define	_RPMSQ_INTERNAL
 #include "psm.h"
 
 #define	_RPMEVR_INTERNAL
 #include "rpmds.h"
-
-#define _RPMFI_INTERNAL
-#include "rpmfi.h"
 
 #define	_RPMTE_INTERNAL
 #include "rpmte.h"

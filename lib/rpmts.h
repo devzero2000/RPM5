@@ -7,6 +7,7 @@
  */
 
 #include "rpmps.h"
+#include "rpmfi.h"
 #include "rpmsw.h"
 #include "rpmsx.h"
 #include <rpmpgp.h>		/* XXX pgpVSFlags */

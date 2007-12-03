@@ -7,6 +7,7 @@
  */
 
 #include "cpio.h"
+#include "rpmfi.h"	/* XXX fileAction typedef */
 
 /*@-exportlocal@*/
 /*@unchecked@*/

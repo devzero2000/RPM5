@@ -13,11 +13,10 @@
 #include "cpio.h"
 #include "tar.h"
 
+#define	_RPMFI_INTERNAL
 #include "fsm.h"
 #define	fsmUNSAFE	fsmStage
 
-#define	_RPMFI_INTERNAL
-#include "rpmfi.h"
 #include "rpmte.h"
 #include "rpmts.h"
 #include "rpmsq.h"

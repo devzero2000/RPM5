@@ -6,15 +6,12 @@
 #include "system.h"
 
 #include <rpmio.h>
+#define	_RPMFI_INTERNAL
 #define	_RPMPS_INTERNAL	/* XXX rpmps needs iterator. */
 #include <rpmcli.h>
 
 #define	_RPMSQ_INTERNAL
 #include "psm.h"
-#define	_RPMFI_INTERNAL
-#include "rpmfi.h"
-
-#include "rpmts.h"
 
 #include "legacy.h"	/* XXX dodigest(), uidToUname(), gnameToGid */
 #include "ugid.h"

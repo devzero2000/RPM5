@@ -17,6 +17,7 @@
 #include <rpmio_internal.h>
 #include <fts.h>
 
+#define	_RPMFI_INTERNAL
 #define	_RPMTE_INTERNAL
 #include <rpmbuild.h>
 
@@ -24,9 +25,6 @@
 
 #include "argv.h"
 #include "rpmfc.h"
-
-#define	_RPMFI_INTERNAL
-#include "rpmfi.h"
 
 #include "buildio.h"
 

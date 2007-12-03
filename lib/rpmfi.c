@@ -11,13 +11,11 @@
 #include <rpmlib.h>
 
 #include "cpio.h"	/* XXX CPIO_FOO */
+#define	_RPMFI_INTERNAL
 #include "fsm.h"	/* XXX newFSM() */
 #include "legacy.h"	/* XXX dodigest */
 
 #include "rpmds.h"
-
-#define	_RPMFI_INTERNAL
-#include "rpmfi.h"
 
 #define	_RPMTE_INTERNAL	/* relocations */
 #include "rpmte.h"

@@ -6,16 +6,13 @@
 #include "system.h"
 
 #include <rpmio_internal.h>
+#define	_RPMFI_INTERNAL		/* XXX fi->fsm */
 #define	_RPMEVR_INTERNAL	/* XXX RPMSENSE_ANY */
 #include <rpmbuild.h>
 #include "signature.h"		/* XXX rpmTempFile */
 
 #include "cpio.h"
 #include "fsm.h"
-
-#define	_RPMFI_INTERNAL		/* XXX fi->fsm */
-#include "rpmfi.h"
-#include "rpmts.h"
 
 #include "buildio.h"
 
