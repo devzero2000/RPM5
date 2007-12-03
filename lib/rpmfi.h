@@ -29,6 +29,49 @@ typedef enum rpmFileTypes_e {
 } rpmFileTypes;
 
 /**
+ * File States (when installed).
+ */
+typedef enum rpmfileState_e {
+    RPMFILE_STATE_NORMAL 	= 0,
+    RPMFILE_STATE_REPLACED 	= 1,
+    RPMFILE_STATE_NOTINSTALLED	= 2,
+    RPMFILE_STATE_NETSHARED	= 3,
+    RPMFILE_STATE_WRONGCOLOR	= 4
+} rpmfileState;
+#define	RPMFILE_STATE_MISSING	-1	/* XXX used for unavailable data */
+
+/**
+ * File Attributes.
+ */
+typedef	enum rpmfileAttrs_e {
+/*@-enummemuse@*/
+    RPMFILE_NONE	= 0,
+/*@=enummemuse@*/
+    RPMFILE_CONFIG	= (1 <<  0),	/*!< from %%config */
+    RPMFILE_DOC		= (1 <<  1),	/*!< from %%doc */
+    RPMFILE_ICON	= (1 <<  2),	/*!< from Icon: */
+    RPMFILE_MISSINGOK	= (1 <<  3),	/*!< from %%config(missingok) */
+    RPMFILE_NOREPLACE	= (1 <<  4),	/*!< from %%config(noreplace) */
+    RPMFILE_SPECFILE	= (1 <<  5),	/*!< the specfile (srpm only). */
+    RPMFILE_GHOST	= (1 <<  6),	/*!< from %%ghost */
+    RPMFILE_LICENSE	= (1 <<  7),	/*!< from %%license */
+    RPMFILE_README	= (1 <<  8),	/*!< from %%readme */
+    RPMFILE_EXCLUDE	= (1 <<  9),	/*!< from %%exclude, internal */
+    RPMFILE_UNPATCHED	= (1 << 10),	/*!< (deprecated) placeholder (SuSE) */
+    RPMFILE_PUBKEY	= (1 << 11),	/*!< from %%pubkey */
+    RPMFILE_POLICY	= (1 << 12),	/*!< from %%policy */
+    RPMFILE_EXISTS	= (1 << 13),	/*!< did lstat(fn, st) succeed? */
+    RPMFILE_SPARSE	= (1 << 14),	/*!< was ((512*st->st_blocks) < st->st_size) ? */
+    RPMFILE_TYPED	= (1 << 15),	/*!< (unimplemented) from %%spook */
+    RPMFILE_SOURCE	= (1 << 16),	/*!< from SourceN: (srpm only). */
+    RPMFILE_PATCH	= (1 << 17),	/*!< from PatchN: (srpm only). */
+    RPMFILE_OPTIONAL	= (1 << 18)	/*!< from %%optional. */
+} rpmfileAttrs;
+
+#define	RPMFILE_SPOOK	(RPMFILE_GHOST|RPMFILE_TYPED)
+#define	RPMFILE_ALL	~(RPMFILE_NONE)
+
+/**
  * File disposition(s) during package install/erase transaction.
  */
 typedef enum fileAction_e {

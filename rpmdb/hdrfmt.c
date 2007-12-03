@@ -9,7 +9,10 @@
 #include <rpmmacro.h>	/* XXX for %_i18ndomains */
 
 #define	_RPMTAG_INTERNAL
-#include <rpmlib.h>	/* XXX RPMFILE_FOO, rpmMkdirPath */
+#include <rpmtag.h>
+
+#include <rpmlib.h>	/* XXX rpmfi, rpmMkdirPath */
+#include <rpmfi.h>	/* XXX RPMFILE_FOO */
 
 #define _RPMEVR_INTERNAL
 #include <rpmevr.h>	/* XXX RPMSENSE_FOO */
