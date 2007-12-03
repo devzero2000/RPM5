@@ -488,7 +488,7 @@ rpmdbMatchIterator rpmtsInitIterator(const rpmts ts, rpmTag rpmtag,
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
-/**
+/** \ingroup rpmts
  * Retrieve pubkey from rpm database.
  * @param ts		rpm transaction
  * @param _dig		container (NULL uses rpmtsDig(ts) instead).
@@ -523,7 +523,7 @@ int rpmtsOpenSDB(rpmts ts, int dbmode)
 	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/;
 /*@=exportlocal@*/
 
-/**
+/** \ingroup rpmts
  * Attempt to solve a needed dependency using the solve database.
  * @param ts		transaction set
  * @param ds		dependency set
@@ -536,7 +536,7 @@ int rpmtsSolve(rpmts ts, rpmds ds, const void * data)
 	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/;
 /*@=exportlocal@*/
 
-/**
+/** \ingroup rpmts
  * Attempt to solve a needed dependency using memory resident tables.
  * @deprecated This function will move from rpmlib to the python bindings.
  * @param ts		transaction set
@@ -548,7 +548,7 @@ int rpmtsAvailable(rpmts ts, const rpmds ds)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies ts, fileSystem, internalState @*/;
 
-/**
+/** \ingroup rpmts
  * Set dependency solver callback.
  * @param ts		transaction set
  * @param (*solve)	dependency solver callback
@@ -560,7 +560,7 @@ int rpmtsSetSolveCallback(rpmts ts,
 		const void * solveData)
 	/*@modifies ts @*/;
 
-/**
+/** \ingroup rpmts
  * Return the type of a transaction.
  * @param ts		transaction set
  * @return		transaction type, 0 on unknown
@@ -568,7 +568,7 @@ int rpmtsSetSolveCallback(rpmts ts,
 rpmTSType rpmtsType(rpmts ts)
 	/*@*/;
 
-/**
+/** \ingroup rpmts
  * Set transaction type.
  *   Allowed types are:
  * 	RPMTRANS_TYPE_NORMAL
@@ -581,7 +581,7 @@ rpmTSType rpmtsType(rpmts ts)
 void rpmtsSetType(rpmts ts, rpmTSType type)
 	/*@modifies ts @*/;
 
-/**
+/** \ingroup rpmts
  * Return the autorollback goal. 
  * @param ts		transaction set
  * @return		autorollback goal
@@ -589,7 +589,7 @@ void rpmtsSetType(rpmts ts, rpmTSType type)
 uint32_t rpmtsARBGoal(rpmts ts)
 	/*@*/;
 
-/**
+/** \ingroup rpmts
  * Set autorollback goal.   
  * @param ts		transaction set
  * @param goal		autorollback goal
@@ -597,7 +597,7 @@ uint32_t rpmtsARBGoal(rpmts ts)
 void rpmtsSetARBGoal(rpmts ts, uint32_t goal)
 	/*@modifies ts @*/;
 
-/**
+/** \ingroup rpmts
  * Return current transaction set problems.
  * @param ts		transaction set
  * @return		current problem set (or NULL)
@@ -844,7 +844,7 @@ void rpmtsUpdateDSI(const rpmts ts, dev_t dev,
 void rpmtsCheckDSIProblems(const rpmts ts, const rpmte te)
 	/*@modifies ts @*/;
 
-/**
+/** \ingroup rpmts
  * Perform transaction progress notify callback.
  * @warning This function's args have changed, so the function cannot be
  * used portably
@@ -860,7 +860,7 @@ void * rpmtsNotify(rpmts ts, rpmte te,
                 rpmCallbackType what, uint64_t amount, uint64_t total)
 	/*@*/;
 
-/**
+/** \ingroup rpmts
  * Return number of (ordered) transaction set elements.
  * @param ts		transaction set
  * @return		no. of transaction set elements
@@ -868,7 +868,7 @@ void * rpmtsNotify(rpmts ts, rpmte te,
 int rpmtsNElements(rpmts ts)
 	/*@*/;
 
-/**
+/** \ingroup rpmts
  * Return (ordered) transaction set element.
  * @param ts		transaction set
  * @param ix		transaction element index
@@ -958,7 +958,7 @@ rpmte rpmtsRelocateElement(rpmts ts)
 rpmte rpmtsSetRelocateElement(rpmts ts, /*@null@*/ rpmte relocateElement)
 	/*@modifies ts @*/;
 
-/**
+/** \ingroup rpmts
  * Retrieve goal of transaction set.
  * @param ts		transaction set
  * @return		goal
@@ -966,7 +966,7 @@ rpmte rpmtsSetRelocateElement(rpmts ts, /*@null@*/ rpmte relocateElement)
 tsmStage rpmtsGoal(rpmts ts)
 	/*@*/;
 
-/**
+/** \ingroup rpmts
  * Set goal of transaction set.
  * @param ts		transaction set
  * @param goal		new goal
@@ -975,7 +975,7 @@ tsmStage rpmtsGoal(rpmts ts)
 tsmStage rpmtsSetGoal(rpmts ts, tsmStage goal)
 	/*@modifies ts @*/;
 
-/**
+/** \ingroup rpmts
  * Retrieve dbmode of transaction set.
  * @param ts		transaction set
  * @return		dbmode
@@ -983,7 +983,7 @@ tsmStage rpmtsSetGoal(rpmts ts, tsmStage goal)
 int rpmtsDBMode(rpmts ts)
 	/*@*/;
 
-/**
+/** \ingroup rpmts
  * Set dbmode of transaction set.
  * @param ts		transaction set
  * @param dbmode	new dbmode
@@ -992,7 +992,7 @@ int rpmtsDBMode(rpmts ts)
 int rpmtsSetDBMode(rpmts ts, int dbmode)
 	/*@modifies ts @*/;
 
-/**
+/** \ingroup rpmts
  * Retrieve color bits of transaction set.
  * @param ts		transaction set
  * @return		color bits
@@ -1000,7 +1000,7 @@ int rpmtsSetDBMode(rpmts ts, int dbmode)
 uint32_t rpmtsColor(rpmts ts)
 	/*@*/;
 
-/**
+/** \ingroup rpmts
  * Retrieve prefered file color
  * @param ts		transaction set
  * @return		color bits
@@ -1008,7 +1008,7 @@ uint32_t rpmtsColor(rpmts ts)
 uint32_t rpmtsPrefColor(rpmts ts)
 	/*@*/;
 
-/**
+/** \ingroup rpmts
  * Set color bits of transaction set.
  * @param ts		transaction set
  * @param color		new color bits
@@ -1017,7 +1017,7 @@ uint32_t rpmtsPrefColor(rpmts ts)
 uint32_t rpmtsSetColor(rpmts ts, uint32_t color)
 	/*@modifies ts @*/;
 
-/**
+/** \ingroup rpmts
  * Retrieve operation timestamp from a transaction set.
  * @param ts		transaction set
  * @param opx		operation timestamp index
@@ -1086,7 +1086,7 @@ int rpmtsAddEraseElement(rpmts ts, Header h, int dboffset)
 
 #if !defined(SWIG)
 #if defined(_RPMTS_PRINT)
-/**
+/** \ingroup rpmts
  * Print current transaction set contents.
  * @param ts		transaction set
  * @param fp		file handle (NULL uses stderr)

@@ -1,4 +1,5 @@
 5.0a4 -> 5.0b1:
+    - rpm.org: Add bunch of missing rpmts doxygen groupings.
     - rpm.org: Move file state defs to rpmfi where they logically belong.
     - rpm.org: Move file type enums to rpmfi where it logically belongs.
     - rpm.org: Move RPMFILE_* file attributes to rpmfi.h.
