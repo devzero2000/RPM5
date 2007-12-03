@@ -191,7 +191,7 @@ static int buildForTarget(rpmts ts, const char * arg, BTA_t ba)
 	    else
 		se = stpcpy(se, ".");
 	    *se++ = '/';
-	    se += strlen(strcpy(se,basename(strcpy(se, s))));
+	    se += strlen(strcpy(se,strcpy(se, s)));
 	} else
 	    se = stpcpy(se, s);
 	specURL = rpmGetPath(buf, NULL);
