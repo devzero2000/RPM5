@@ -1,4 +1,7 @@
 5.0a4 -> 5.0b1:
+    - jbj: re-enable binary, not linear, tag lookups.
+    - jbj: strip leading "RPMTAG_" prefix, in tagValue lookup.
+    - jbj: test arbitrary bit, not tag lookup failure, for --yaml/--xml display.
     - afb: pass level on, to %{__lzma}.
     - jbj: revert binary search, todo++.
     - jbj: using tagValue instead permits queries of arbitrary tags.

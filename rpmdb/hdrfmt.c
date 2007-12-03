@@ -2061,7 +2061,6 @@ static const char * myTagName(headerTagTableEntry tbl, uint32_t val,
     const char * s;
     char *t;
 
-#ifdef	NOTYET
     /* XXX Use bsearch on the "normal" rpmTagTable lookup. */
     if (tbl == NULL || tbl == rpmTagTable) {
 	s = tagName(val);
@@ -2069,7 +2068,6 @@ static const char * myTagName(headerTagTableEntry tbl, uint32_t val,
 	    *typep = tagType(val);
 	return s;
     }
-#endif
 
     for (; tbl->name != NULL; tbl++) {
 	if (tbl->val == val)
@@ -2097,17 +2095,19 @@ static const char * myTagName(headerTagTableEntry tbl, uint32_t val,
 static uint32_t myTagValue(headerTagTableEntry tbl, const char * name)
 	/*@*/
 {
-#ifdef	NOTYET
+    uint32_t val = 0;
+
     /* XXX Use bsearch on the "normal" rpmTagTable lookup. */
     if (tbl == NULL || tbl == rpmTagTable)
 	return tagValue(name);
-#endif
 
     for (; tbl->name != NULL; tbl++) {
-	if (!xstrcasecmp(tbl->name, name))
-	    return tbl->val;
+	if (xstrcasecmp(tbl->name, name))
+	    continue;
+	val = tbl->val;
+	break;
     }
-    return 0;
+    return val;
 }
 
 /**
@@ -2847,14 +2847,15 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 		!strcmp(tag->type, "yaml"));
 
 	    if (isxml) {
-		const char * tagN = myTagName(hsa->tags, tag->tagno, NULL);
-		/* XXX display "Tag_0x01234567" for unknown tags. */
-		if (tagN == NULL) {
+		const char * tagN;
+		/* XXX display "Tag_0x01234567" for arbitrary tags. */
+		if (tag->tagno & 0x40000000) {
 		    (void) snprintf(numbuf, sizeof(numbuf), "Tag_0x%08x",
 				(unsigned) tag->tagno);
 		    numbuf[sizeof(numbuf)-1] = '\0';
 		    tagN = numbuf;
-		}
+		} else
+		    tagN = myTagName(hsa->tags, tag->tagno, NULL);
 		need = sizeof("  <rpmTag name=\"\">\n") + strlen(tagN);
 		te = t = hsaReserve(hsa, need);
 		te = stpcpy( stpcpy( stpcpy(te, "  <rpmTag name=\""), tagN), "\">\n");
@@ -2862,9 +2863,9 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 	    }
 	    if (isyaml) {
 		rpmTag tagT = 0;
-		const char * tagN = myTagName(hsa->tags, tag->tagno, &tagT);
-		/* XXX display "Tag_0x01234567" for unknown tags. */
-		if (tagN == NULL) {
+		const char * tagN;
+		/* XXX display "Tag_0x01234567" for arbitrary tags. */
+		if (tag->tagno & 0x40000000) {
 		    (void) snprintf(numbuf, sizeof(numbuf), "Tag_0x%08x",
 				(unsigned) tag->tagno);
 		    numbuf[sizeof(numbuf)-1] = '\0';
@@ -2873,7 +2874,8 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 		    tagT = numElements > 1
 			?  RPM_ARRAY_RETURN_TYPE : RPM_SCALAR_RETURN_TYPE;
 /*@=type@*/
-		}
+		} else
+		    tagN = myTagName(hsa->tags, tag->tagno, &tagT);
 		need = sizeof("  :     - ") + strlen(tagN);
 		te = t = hsaReserve(hsa, need);
 		*te++ = ' ';

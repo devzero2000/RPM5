@@ -320,6 +320,10 @@ static rpmTag _tagValue(const char * tagstr)
     rpmTag tag;
     int xx;
 
+    /* XXX headerSprintf looks up by "RPMTAG_FOO", not "FOO". */
+    if (!strncasecmp(tagstr, "RPMTAG_", sizeof("RPMTAG_")-1))
+	tagstr += sizeof("RPMTAG_") - 1;
+
     if (!xstrcasecmp(tagstr, "Packages"))
 	return RPMDBI_PACKAGES;
     if (!xstrcasecmp(tagstr, "Depends"))
