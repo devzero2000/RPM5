@@ -20,9 +20,9 @@
 #include "rpmfd-py.h"
 #include "rpmfts-py.h"
 #include "rpmfi-py.h"
+#include "rpmmacro-py.h"
 #include "rpmmi-py.h"
 #include "rpmps-py.h"
-#include "rpmrc-py.h"
 #include "rpmte-py.h"
 #include "rpmts-py.h"
 #include "spec-py.h"
@@ -170,17 +170,13 @@ static PyMethodDef rpmModuleMethods[] = {
 "rpm.TransactionSet([rootDir, [db]]) -> ts\n\
 - Create a transaction set.\n" },
 
-#if Py_TPFLAGS_HAVE_ITER        /* XXX backport to python-1.5.2 */
-    { "newrc", (PyCFunction) rpmrc_Create, METH_VARARGS|METH_KEYWORDS,
+    { "addMacro", (PyCFunction) rpmmacro_AddMacro, METH_VARARGS|METH_KEYWORDS,
 	NULL },
-#endif
-    { "addMacro", (PyCFunction) rpmrc_AddMacro, METH_VARARGS|METH_KEYWORDS,
+    { "delMacro", (PyCFunction) rpmmacro_DelMacro, METH_VARARGS|METH_KEYWORDS,
 	NULL },
-    { "delMacro", (PyCFunction) rpmrc_DelMacro, METH_VARARGS|METH_KEYWORDS,
+    { "expandMacro", (PyCFunction)rpmmacro_ExpandMacro, METH_VARARGS|METH_KEYWORDS,
 	NULL },
-    { "expandMacro", (PyCFunction)rpmrc_ExpandMacro, METH_VARARGS|METH_KEYWORDS,
-	NULL },
-    { "getMacros", (PyCFunction) rpmrc_GetMacros, METH_VARARGS|METH_KEYWORDS,
+    { "getMacros", (PyCFunction) rpmmacro_GetMacros, METH_VARARGS|METH_KEYWORDS,
 	NULL },
 
     { "signalsCaught", (PyCFunction) signalsCaught, METH_O,
@@ -250,9 +246,6 @@ void init_rpm(void)
     if (PyType_Ready(&rpmmi_Type) < 0) return;
     if (PyType_Ready(&rpmps_Type) < 0) return;
 
-    rpmrc_Type.tp_base = &PyDict_Type;
-    if (PyType_Ready(&rpmrc_Type) < 0) return;
-
     if (PyType_Ready(&rpmte_Type) < 0) return;
     if (PyType_Ready(&rpmts_Type) < 0) return;
     if (PyType_Ready(&spec_Type) < 0) return;
@@ -307,9 +300,6 @@ void init_rpm(void)
 
     Py_INCREF(&rpmps_Type);
     PyModule_AddObject(m, "ps", (PyObject *) &rpmps_Type);
-
-    Py_INCREF(&rpmrc_Type);
-    PyModule_AddObject(m, "rc", (PyObject *) &rpmrc_Type);
 
     Py_INCREF(&rpmte_Type);
     PyModule_AddObject(m, "te", (PyObject *) &rpmte_Type);

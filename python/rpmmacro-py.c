@@ -1,0 +1,165 @@
+/** \ingroup py_c
+ * \file python/rpmrc-py.c
+ */
+
+#include "system.h"
+
+#include "structmember.h"
+
+#include <rpmio.h>
+#include <rpmmacro.h>
+
+#include "rpmdebug-py.c"
+#include "rpmmacro-py.h"
+
+#include "debug.h"
+
+/** \ingroup python
+ * \class Rpmmacro
+ * \brief A python rpm.macro object encapsulates macro configuration.
+ */
+
+/** \ingroup python
+ * \name Class: Rpmmacro
+ */
+/*@{*/
+
+/**
+ */
+PyObject *
+rpmmacro_AddMacro(/*@unused@*/ PyObject * self, PyObject * args, PyObject * kwds)
+{
+    char * name, * val;
+    char * kwlist[] = {"name", "value", NULL};
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "ss:AddMacro", kwlist,
+	    &name, &val))
+	return NULL;
+
+    addMacro(NULL, name, NULL, val, -1);
+
+    Py_INCREF(Py_None);
+    return Py_None;
+}
+
+/**
+ */
+PyObject *
+rpmmacro_DelMacro(/*@unused@*/ PyObject * self, PyObject * args, PyObject * kwds)
+{
+    char * name;
+    char * kwlist[] = {"name", NULL};
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "s:DelMacro", kwlist, &name))
+	return NULL;
+
+    delMacro(NULL, name);
+
+    Py_INCREF(Py_None);
+    return Py_None;
+}
+
+/**
+ */
+PyObject *
+rpmmacro_ExpandMacro(/*@unused@*/PyObject * self, PyObject * args, PyObject * kwds)
+{
+    char * macro;
+    char * kwlist[] = {"macro", NULL};
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "s:ExpandMacro", kwlist, &macro))
+	return NULL;
+
+    return Py_BuildValue("s", rpmExpand(macro, NULL));
+}
+
+/**
+ */
+PyObject *
+rpmmacro_GetMacros(/*@unused@*/ PyObject * self, PyObject * args, PyObject * kwds)
+{
+    char * kwlist[] = { NULL };
+    PyObject * mdict;
+    PyObject *oo, *bo;
+    const char ** av = NULL;
+    int ac = 0;
+    int i;
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, ":GetMacros", kwlist))
+	return NULL;
+
+    mdict = PyDict_New();
+    ac = rpmGetMacroEntries(NULL, NULL, -1, &av);
+    if (mdict == NULL || ac < 0 || av == NULL) {
+	PyErr_SetString(pyrpmError, "out of memory");
+	return NULL;
+    }
+
+    if (ac == 0) {
+	av = argvFree(av);
+	return mdict;
+    }
+
+    oo = PyString_FromString("opts");
+    bo = PyString_FromString("body");
+
+    if (oo != NULL && bo != NULL)
+    for (i = 0; i < ac; i++) {
+	char *n, *o, *b;
+	PyObject *ndo, *no, *vo;
+	int failed = 0;
+
+	/* Parse out "%name(opts)\tbody" into n/o/b strings. */
+	n = (char *) av[i];
+	b = strchr(n, '\t');
+assert(b != NULL);
+	o = ((b > n && b[-1] == ')') ? strchr(n, '(') : NULL);
+	if (*n == '%')	n++;
+	if (o != NULL && *o == '(') {
+	    b[-1] = '\0';
+	    o++;
+	}
+	b++;
+
+	/* Create a "name" dictionary, add "opts" and "body" items. */
+	no = PyString_FromString(n);
+	if (no == NULL)
+	    break;
+
+	ndo = PyDict_New();
+	if (ndo == NULL) {
+	    Py_DECREF(no);
+	    break;
+	}
+	PyDict_SetItem(mdict, no, ndo);
+	Py_DECREF(ndo);
+
+	if (o) {
+	    if ((vo = PyString_FromString(o)) != NULL)
+		PyDict_SetItem(ndo, oo, vo);
+	    else
+		failed = 1;
+	    Py_XDECREF(vo);
+	}
+
+	if (b) {
+	    if ((vo = PyString_FromString(b)) != NULL)
+		PyDict_SetItem(ndo, bo, vo);
+	    else
+		failed = 1;
+	    Py_XDECREF(vo);
+	}
+
+	if (failed)
+	    PyDict_DelItem(mdict, no);
+	Py_DECREF(no);
+    }
+
+   Py_XDECREF(oo);
+   Py_XDECREF(bo);
+
+   av = argvFree(av);
+   return mdict;
+}
+
+/*@}*/
