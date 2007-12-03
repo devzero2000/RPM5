@@ -14,12 +14,12 @@
 extern int _rpmte_debug;
 /*@=exportlocal@*/
 
-/**
+/** \ingroup rpmte
  * Transaction element ordering chain linkage.
  */
 typedef /*@abstract@*/ struct tsortInfo_s *		tsortInfo;
 
-/**
+/** \ingroup rpmte
  * Transaction element iterator.
  */
 typedef /*@abstract@*/ struct rpmtsi_s *		rpmtsi;
@@ -68,11 +68,11 @@ struct rpmChainLink_s {
     ARGV_t NEVRA;		/*!< link element NEVRA's. */
 };
 
-/**
+/** \ingroup rpmte
  */
 typedef struct sharedFileInfo_s *		sharedFileInfo;
 
-/**
+/** \ingroup rpmte
  * Replaced file cross reference.
  */
 struct sharedFileInfo_s {
@@ -164,7 +164,7 @@ struct rpmte_s {
 
 };
 
-/**
+/** \ingroup rpmte
  * Iterator across transaction elements, forward on install, backward on erase.
  */
 struct rpmtsi_s {
@@ -181,7 +181,7 @@ struct rpmtsi_s {
 extern "C" {
 #endif
 
-/**
+/** \ingroup rpmte
  * Destroy a transaction element.
  * @param te		transaction element
  * @return		NULL always
@@ -191,7 +191,7 @@ rpmte rpmteFree(/*@only@*/ /*@null@*/ rpmte te)
 	/*@globals fileSystem @*/
 	/*@modifies te, fileSystem @*/;
 
-/**
+/** \ingroup rpmte
  * Create a transaction element.
  * @param ts		transaction set
  * @param h		header
@@ -211,7 +211,7 @@ rpmte rpmteNew(const rpmts ts, Header h, rpmElementType type,
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, h, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
-/**
+/** \ingroup rpmte
  * Retrieve header from transaction element.
  * @param te		transaction element
  * @return		header
@@ -219,7 +219,7 @@ rpmte rpmteNew(const rpmts ts, Header h, rpmElementType type,
 extern Header rpmteHeader(rpmte te)
 	/*@modifies te @*/;
 
-/**
+/** \ingroup rpmte
  * Save header into transaction element.
  * @param te		transaction element
  * @param h		header
@@ -228,7 +228,7 @@ extern Header rpmteHeader(rpmte te)
 extern Header rpmteSetHeader(rpmte te, Header h)
 	/*@modifies te, h @*/;
 
-/**
+/** \ingroup rpmte
  * Retrieve type of transaction element.
  * @param te		transaction element
  * @return		type
@@ -236,7 +236,7 @@ extern Header rpmteSetHeader(rpmte te, Header h)
 rpmElementType rpmteType(rpmte te)
 	/*@*/;
 
-/**
+/** \ingroup rpmte
  * Retrieve name string of transaction element.
  * @param te		transaction element
  * @return		name string
@@ -245,7 +245,7 @@ rpmElementType rpmteType(rpmte te)
 extern const char * rpmteN(rpmte te)
 	/*@*/;
 
-/**
+/** \ingroup rpmte
  * Retrieve epoch string of transaction element.
  * @param te		transaction element
  * @return		epoch string
@@ -254,7 +254,7 @@ extern const char * rpmteN(rpmte te)
 extern const char * rpmteE(rpmte te)
 	/*@*/;
 
-/**
+/** \ingroup rpmte
  * Retrieve version string of transaction element.
  * @param te		transaction element
  * @return		version string
@@ -263,7 +263,7 @@ extern const char * rpmteE(rpmte te)
 extern const char * rpmteV(rpmte te)
 	/*@*/;
 
-/**
+/** \ingroup rpmte
  * Retrieve release string of transaction element.
  * @param te		transaction element
  * @return		release string
@@ -272,7 +272,7 @@ extern const char * rpmteV(rpmte te)
 extern const char * rpmteR(rpmte te)
 	/*@*/;
 
-/**
+/** \ingroup rpmte
  * Retrieve arch string of transaction element.
  * @param te		transaction element
  * @return		arch string
@@ -281,7 +281,7 @@ extern const char * rpmteR(rpmte te)
 extern const char * rpmteA(rpmte te)
 	/*@*/;
 
-/**
+/** \ingroup rpmte
  * Retrieve os string of transaction element.
  * @param te		transaction element
  * @return		os string
@@ -290,7 +290,7 @@ extern const char * rpmteA(rpmte te)
 extern const char * rpmteO(rpmte te)
 	/*@*/;
 
-/**
+/** \ingroup rpmte
  * Retrieve isSource attribute of transaction element.
  * @param te		transaction element
  * @return		isSource attribute
@@ -298,7 +298,7 @@ extern const char * rpmteO(rpmte te)
 extern int rpmteIsSource(rpmte te)
 	/*@*/;
 
-/**
+/** \ingroup rpmte
  * Retrieve color bits of transaction element.
  * @param te		transaction element
  * @return		color bits
@@ -306,7 +306,7 @@ extern int rpmteIsSource(rpmte te)
 uint32_t rpmteColor(rpmte te)
 	/*@*/;
 
-/**
+/** \ingroup rpmte
  * Set color bits of transaction element.
  * @param te		transaction element
  * @param color		new color bits
@@ -315,7 +315,7 @@ uint32_t rpmteColor(rpmte te)
 uint32_t rpmteSetColor(rpmte te, uint32_t color)
 	/*@modifies te @*/;
 
-/**
+/** \ingroup rpmte
  * Retrieve last instance installed to the database.
  * @param te		transaction element
  * @return		last install instance.
@@ -323,7 +323,7 @@ uint32_t rpmteSetColor(rpmte te, uint32_t color)
 unsigned int rpmteDBInstance(rpmte te)
 	/*@*/;
 
-/**
+/** \ingroup rpmte
  * Set last instance installed to the database.
  * @param te		transaction element
  * @param instance	Database instance of last install element.
@@ -332,7 +332,7 @@ unsigned int rpmteDBInstance(rpmte te)
 void rpmteSetDBInstance(rpmte te, unsigned int instance)
 	/*@modifies te @*/;
 
-/**
+/** \ingroup rpmte
  * Retrieve size in bytes of package file.
  * @todo Signature header is estimated at 256b.
  * @param te		transaction element
@@ -341,7 +341,7 @@ void rpmteSetDBInstance(rpmte te, unsigned int instance)
 uint32_t rpmtePkgFileSize(rpmte te)
 	/*@*/;
 
-/**
+/** \ingroup rpmte
  * Retrieve dependency tree depth of transaction element.
  * @param te		transaction element
  * @return		depth
@@ -349,7 +349,7 @@ uint32_t rpmtePkgFileSize(rpmte te)
 int rpmteDepth(rpmte te)
 	/*@*/;
 
-/**
+/** \ingroup rpmte
  * Set dependency tree depth of transaction element.
  * @param te		transaction element
  * @param ndepth	new depth
@@ -358,7 +358,7 @@ int rpmteDepth(rpmte te)
 int rpmteSetDepth(rpmte te, int ndepth)
 	/*@modifies te @*/;
 
-/**
+/** \ingroup rpmte
  * Retrieve dependency tree breadth of transaction element.
  * @param te		transaction element
  * @return		breadth
@@ -366,7 +366,7 @@ int rpmteSetDepth(rpmte te, int ndepth)
 int rpmteBreadth(rpmte te)
 	/*@*/;
 
-/**
+/** \ingroup rpmte
  * Set dependency tree breadth of transaction element.
  * @param te		transaction element
  * @param nbreadth	new breadth
@@ -375,7 +375,7 @@ int rpmteBreadth(rpmte te)
 int rpmteSetBreadth(rpmte te, int nbreadth)
 	/*@modifies te @*/;
 
-/**
+/** \ingroup rpmte
  * Retrieve tsort no. of predecessors of transaction element.
  * @param te		transaction element
  * @return		no. of predecessors
@@ -383,7 +383,7 @@ int rpmteSetBreadth(rpmte te, int nbreadth)
 int rpmteNpreds(rpmte te)
 	/*@*/;
 
-/**
+/** \ingroup rpmte
  * Set tsort no. of predecessors of transaction element.
  * @param te		transaction element
  * @param npreds	new no. of predecessors
@@ -392,7 +392,7 @@ int rpmteNpreds(rpmte te)
 int rpmteSetNpreds(rpmte te, int npreds)
 	/*@modifies te @*/;
 
-/**
+/** \ingroup rpmte
  * Retrieve tree index of transaction element.
  * @param te		transaction element
  * @return		tree index
@@ -400,7 +400,7 @@ int rpmteSetNpreds(rpmte te, int npreds)
 int rpmteTree(rpmte te)
 	/*@*/;
 
-/**
+/** \ingroup rpmte
  * Set tree index of transaction element.
  * @param te		transaction element
  * @param ntree		new tree index
@@ -409,7 +409,7 @@ int rpmteTree(rpmte te)
 int rpmteSetTree(rpmte te, int ntree)
 	/*@modifies te @*/;
 
-/**
+/** \ingroup rpmte
  * Retrieve parent transaction element.
  * @param te		transaction element
  * @return		parent transaction element
@@ -418,7 +418,7 @@ int rpmteSetTree(rpmte te, int ntree)
 rpmte rpmteParent(rpmte te)
 	/*@*/;
 
-/**
+/** \ingroup rpmte
  * Set parent transaction element.
  * @param te		transaction element
  * @param pte		new parent transaction element
@@ -428,7 +428,7 @@ rpmte rpmteParent(rpmte te)
 rpmte rpmteSetParent(rpmte te, rpmte pte)
 	/*@modifies te @*/;
 
-/**
+/** \ingroup rpmte
  * Retrieve number of children of transaction element.
  * @param te		transaction element
  * @return		tree index
@@ -436,7 +436,7 @@ rpmte rpmteSetParent(rpmte te, rpmte pte)
 int rpmteDegree(rpmte te)
 	/*@*/;
 
-/**
+/** \ingroup rpmte
  * Set number of children of transaction element.
  * @param te		transaction element
  * @param ndegree	new number of children
@@ -445,7 +445,7 @@ int rpmteDegree(rpmte te)
 int rpmteSetDegree(rpmte te, int ndegree)
 	/*@modifies te @*/;
 
-/**
+/** \ingroup rpmte
  * Retrieve tsort info for transaction element.
  * @param te		transaction element
  * @return		tsort info
@@ -453,21 +453,21 @@ int rpmteSetDegree(rpmte te, int ndegree)
 tsortInfo rpmteTSI(rpmte te)
 	/*@*/;
 
-/**
+/** \ingroup rpmte
  * Destroy tsort info of transaction element.
  * @param te		transaction element
  */
 void rpmteFreeTSI(rpmte te)
 	/*@modifies te @*/;
 
-/**
+/** \ingroup rpmte
  * Initialize tsort info of transaction element.
  * @param te		transaction element
  */
 void rpmteNewTSI(rpmte te)
 	/*@modifies te @*/;
 
-/**
+/** \ingroup rpmte
  * Destroy dependency set info of transaction element.
  * @param te		transaction element
  */
@@ -475,7 +475,7 @@ void rpmteNewTSI(rpmte te)
 void rpmteCleanDS(rpmte te)
 	/*@modifies te @*/;
 
-/**
+/** \ingroup rpmte
  * Retrieve pkgKey of TR_ADDED transaction element.
  * @param te		transaction element
  * @return		pkgKey
@@ -484,7 +484,7 @@ void rpmteCleanDS(rpmte te)
 alKey rpmteAddedKey(rpmte te)
 	/*@*/;
 
-/**
+/** \ingroup rpmte
  * Set pkgKey of TR_ADDED transaction element.
  * @param te		transaction element
  * @param npkgKey	new pkgKey
@@ -495,7 +495,7 @@ alKey rpmteSetAddedKey(rpmte te,
 		/*@exposed@*/ /*@dependent@*/ /*@null@*/ alKey npkgKey)
 	/*@modifies te @*/;
 
-/**
+/** \ingroup rpmte
  * Retrieve rpmdb instance of TR_REMOVED transaction element.
  * @param te		transaction element
  * @return		rpmdb instance
@@ -503,7 +503,7 @@ alKey rpmteSetAddedKey(rpmte te,
 int rpmteDBOffset(rpmte te)
 	/*@*/;
 
-/**
+/** \ingroup rpmte
  * Retrieve name-version-release string from transaction element.
  * @param te		transaction element
  * @return		name-version-release string
@@ -512,7 +512,7 @@ int rpmteDBOffset(rpmte te)
 extern const char * rpmteNEVR(rpmte te)
 	/*@*/;
 
-/**
+/** \ingroup rpmte
  * Retrieve name-version-release.arch string from transaction element.
  * @param te		transaction element
  * @return		name-version-release.arch string
@@ -523,7 +523,7 @@ extern const char * rpmteNEVRA(rpmte te)
 	/*@*/;
 /*@=exportlocal@*/
 
-/**
+/** \ingroup rpmte
  * Retrieve pkgid string from transaction element.
  * @param te		transaction element
  * @return		pkgid string
@@ -534,7 +534,7 @@ extern const char * rpmtePkgid(rpmte te)
 	/*@*/;
 /*@=exportlocal@*/
 
-/**
+/** \ingroup rpmte
  * Retrieve hdrid string from transaction element.
  * @param te		transaction element
  * @return		hdrid string
@@ -545,7 +545,7 @@ extern const char * rpmteHdrid(rpmte te)
 	/*@*/;
 /*@=exportlocal@*/
 
-/**
+/** \ingroup rpmte
  * Retrieve file handle from transaction element.
  * @param te		transaction element
  * @return		file handle
@@ -553,7 +553,7 @@ extern const char * rpmteHdrid(rpmte te)
 FD_t rpmteFd(rpmte te)
 	/*@*/;
 
-/**
+/** \ingroup rpmte
  * Retrieve key from transaction element.
  * @param te		transaction element
  * @return		key
@@ -562,7 +562,7 @@ FD_t rpmteFd(rpmte te)
 fnpyKey rpmteKey(rpmte te)
 	/*@*/;
 
-/**
+/** \ingroup rpmte
  * Retrieve dependency tag set from transaction element.
  * @param te		transaction element
  * @param tag		dependency tag
@@ -571,7 +571,7 @@ fnpyKey rpmteKey(rpmte te)
 rpmds rpmteDS(rpmte te, rpmTag tag)
 	/*@*/;
 
-/**
+/** \ingroup rpmte
  * Retrieve file info tag set from transaction element.
  * @param te		transaction element
  * @param tag		file info tag (RPMTAG_BASENAMES)
@@ -580,7 +580,7 @@ rpmds rpmteDS(rpmte te, rpmTag tag)
 rpmfi rpmteFI(rpmte te, rpmTag tag)
 	/*@*/;
 
-/**
+/** \ingroup rpmte
  * Calculate transaction element dependency colors/refs from file info.
  * @param te		transaction element
  * @param tag		dependency tag (RPMTAG_PROVIDENAME, RPMTAG_REQUIRENAME)
@@ -590,7 +590,7 @@ void rpmteColorDS(rpmte te, rpmTag tag)
         /*@modifies te @*/;
 /*@=exportlocal@*/
 
-/**
+/** \ingroup rpmte
  * Chain p <-> q forward/backward transaction element links.
  * @param p		installed element (needs backward link)
  * @param q		erased element (needs forward link)
@@ -603,7 +603,7 @@ int rpmteChain(rpmte p, rpmte q, Header oh, /*@null@*/ const char * msg)
 
 #define	RPMTE_CHAIN_END	"CHAIN END"	/*!< End of chain marker. */
 
-/**
+/** \ingroup rpmte
  * Return transaction element index.
  * @param tsi		transaction element iterator
  * @return		transaction element index
@@ -611,7 +611,7 @@ int rpmteChain(rpmte p, rpmte q, Header oh, /*@null@*/ const char * msg)
 int rpmtsiOc(rpmtsi tsi)
 	/*@*/;
 
-/**
+/** \ingroup rpmte
  * Destroy transaction element iterator.
  * @param tsi		transaction element iterator
  * @return		NULL always
@@ -621,7 +621,7 @@ rpmtsi rpmtsiFree(/*@only@*//*@null@*/ rpmtsi tsi)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
 
-/**
+/** \ingroup rpmte
  * Destroy transaction element iterator.
  * @param tsi		transaction element iterator
  * @param fn
@@ -635,7 +635,7 @@ rpmtsi XrpmtsiFree(/*@only@*//*@null@*/ rpmtsi tsi,
 	/*@modifies fileSystem @*/;
 #define	rpmtsiFree(_tsi)	XrpmtsiFree(_tsi, __FILE__, __LINE__)
 
-/**
+/** \ingroup rpmte
  * Create transaction element iterator.
  * @param ts		transaction set
  * @return		transaction element iterator
@@ -644,7 +644,7 @@ rpmtsi XrpmtsiFree(/*@only@*//*@null@*/ rpmtsi tsi,
 rpmtsi rpmtsiInit(rpmts ts)
 	/*@modifies ts @*/;
 
-/**
+/** \ingroup rpmte
  * Create transaction element iterator.
  * @param ts		transaction set
  * @param fn
@@ -657,7 +657,7 @@ rpmtsi XrpmtsiInit(rpmts ts,
 	/*@modifies ts @*/;
 #define	rpmtsiInit(_ts)		XrpmtsiInit(_ts, __FILE__, __LINE__)
 
-/**
+/** \ingroup rpmte
  * Return next transaction element of type.
  * @param tsi		transaction element iterator
  * @param type		transaction element type selector (0 for any)
@@ -669,6 +669,8 @@ rpmte rpmtsiNext(rpmtsi tsi, rpmElementType type)
 
 #if !defined(SWIG)
 #if	defined(_RPMTE_INTERNAL)
+/** \ingroup rpmte
+ */
 static inline void rpmtePrintID(rpmte p)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
@@ -683,6 +685,8 @@ static inline void rpmtePrintID(rpmte p)
     }
 };
 
+/** \ingroup rpmte
+ */
 static inline void hdrPrintInstalled(Header h)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
@@ -701,6 +705,8 @@ static inline void hdrPrintInstalled(Header h)
     }
 }
 
+/** \ingroup rpmte
+ */
 static inline void hdrPrintErased(Header h)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
