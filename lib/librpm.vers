@@ -217,6 +217,9 @@ LIBRPM_0
     rpmInstallPoptTable;
     rpmInstallSource;
     rpmInstallSourcePackage;
+    rpmlibVersion;
+    rpmlibTimestamp;
+    rpmlibVendor;
     rpmMkdirPath;
     rpmNAME;
     _rpmns_debug;
@@ -423,9 +426,6 @@ LIBRPM_0
     XrpmtsiInit;
     XrpmtsLink;
     XrpmtsUnlink;
-    rpm_version;
-    rpm_timestamp;
-    rpm_vendor;
   local:
     *;
 };

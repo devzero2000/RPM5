@@ -6,18 +6,18 @@
 #include "rpmversion.h"
 #include "debug.h"
 
-unsigned long rpm_version(void)
+uint32_t rpmlibVersion(void)
 {
-    return (unsigned long)RPM_VERSION;
+    return (uint32_t)RPMLIB_VERSION;
 }
 
-unsigned long rpm_timestamp(void)
+uint32_t rpmlibTimestamp(void)
 {
-    return (unsigned long)RPM_TIMESTAMP;
+    return (uint32_t)RPMLIB_TIMESTAMP;
 }
 
-unsigned long rpm_vendor(void)
+uint32_t rpmlibVendor(void)
 {
-    return (unsigned long)RPM_VENDOR;
+    return (uint32_t)RPMLIB_VENDOR;
 }
 

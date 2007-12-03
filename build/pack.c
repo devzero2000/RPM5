@@ -941,6 +941,55 @@ exit:
 }
 /*@=boundswrite@*/
 
+static int rpmlibMarkers(Header h)
+	/*@modifies h @*/
+{
+    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    uint32_t val;
+    int xx;
+
+    he->tag = RPMTAG_RPMVERSION;
+    he->t = RPM_STRING_TYPE;
+    he->p.str = VERSION;
+    he->c = 1;
+    xx = headerPut(h, he, 0);
+
+    val = rpmlibTimestamp();
+    he->tag = RPMTAG_RPMLIBTIMESTAMP;
+    he->t = RPM_UINT32_TYPE;
+    he->p.ui32p = &val;
+    he->c = 1;
+    xx = headerPut(h, he, 0);
+
+    val = rpmlibVendor();
+    he->tag = RPMTAG_RPMLIBVENDOR;
+    he->t = RPM_UINT32_TYPE;
+    he->p.ui32p = &val;
+    he->c = 1;
+    xx = headerPut(h, he, 0);
+
+    val = rpmlibVersion();
+    he->tag = RPMTAG_RPMLIBVERSION;
+    he->t = RPM_UINT32_TYPE;
+    he->p.ui32p = &val;
+    he->c = 1;
+    xx = headerPut(h, he, 0);
+
+    he->tag = RPMTAG_BUILDHOST;
+    he->t = RPM_STRING_TYPE;
+    he->p.str = buildHost();
+    he->c = 1;
+    xx = headerPut(h, he, 0);
+
+    he->tag = RPMTAG_BUILDTIME;
+    he->t = RPM_UINT32_TYPE;
+    he->p.ui32p = getBuildTime();
+    he->c = 1;
+    xx = headerPut(h, he, 0);
+
+    return 0;
+}
+
 /*@unchecked@*/
 static uint32_t copyTags[] = {
     RPMTAG_CHANGELOGTIME,
@@ -976,25 +1025,10 @@ int packageBinaries(Spec spec)
 
 	/* Copy changelog from src rpm */
 	headerCopyTags(spec->packages->header, pkg->header, copyTags);
+
+	/* Add rpmlib markers for tracking. */
+	(void) rpmlibMarkers(pkg->header);
 	
-	he->tag = RPMTAG_RPMVERSION;
-	he->t = RPM_STRING_TYPE;
-	he->p.str = VERSION;
-	he->c = 1;
-	xx = headerPut(pkg->header, he, 0);
-
-	he->tag = RPMTAG_BUILDHOST;
-	he->t = RPM_STRING_TYPE;
-	he->p.str = buildHost();
-	he->c = 1;
-	xx = headerPut(pkg->header, he, 0);
-
-	he->tag = RPMTAG_BUILDTIME;
-	he->t = RPM_UINT32_TYPE;
-	he->p.ui32p = getBuildTime();
-	he->c = 1;
-	xx = headerPut(pkg->header, he, 0);
-
 	he->tag = RPMTAG_OPTFLAGS;
 	he->t = RPM_STRING_TYPE;
 	he->p.str = rpmExpand("%{optflags}", NULL);
@@ -1080,31 +1114,13 @@ int packageBinaries(Spec spec)
 /*@-boundswrite@*/
 int packageSources(Spec spec)
 {
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     struct cpioSourceArchive_s csabuf;
     CSA_t csa = &csabuf;
     int rc;
-    int xx;
 
-    /* Add some cruft */
-    he->tag = RPMTAG_RPMVERSION;
-    he->t = RPM_STRING_TYPE;
-    he->p.str = VERSION;
-    he->c = 1;
-    xx = headerPut(spec->sourceHeader, he, 0);
-
-    he->tag = RPMTAG_BUILDHOST;
-    he->t = RPM_STRING_TYPE;
-    he->p.str = buildHost();
-    he->c = 1;
-    xx = headerPut(spec->sourceHeader, he, 0);
-
-    he->tag = RPMTAG_BUILDTIME;
-    he->t = RPM_UINT32_TYPE;
-    he->p.ui32p = getBuildTime();
-    he->c = 1;
-    xx = headerPut(spec->sourceHeader, he, 0);
-
+    /* Add rpmlib markers for tracking. */
+    (void) rpmlibMarkers(spec->sourceHeader);
+	
     (void) genSourceRpmName(spec);
 
     spec->cookie = _free(spec->cookie);

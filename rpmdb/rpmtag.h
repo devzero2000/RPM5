@@ -401,6 +401,9 @@ enum rpmTag_e {
     RPMTAG_NVRA			= 1196, /* s */
     RPMTAG_FILEPATHS		= 1197, /* s[] */
     RPMTAG_ORIGPATHS		= 1198, /* s[] */
+    RPMTAG_RPMLIBVERSION	= 1199, /* i */
+    RPMTAG_RPMLIBTIMESTAMP	= 1200, /* i */
+    RPMTAG_RPMLIBVENDOR		= 1201, /* i */
 
 /*@-enummemuse@*/
     RPMTAG_FIRSTFREE_TAG	/*!< internal */
