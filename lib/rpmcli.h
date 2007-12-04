@@ -446,8 +446,10 @@ typedef enum rpmInstallInterfaceFlags_e {
     INSTALL_ALLMATCHES	= (1 <<  9)	/*!< from --allmatches (erase) */
 } rpmInstallInterfaceFlags;
 
+/*@-redecl@*/
 /*@unchecked@*/
 extern int rpmcliPackagesTotal;
+/*@=redecl@*/
 /*@unchecked@*/
 extern int rpmcliHashesCurrent;
 /*@unchecked@*/

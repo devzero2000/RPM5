@@ -3820,11 +3820,11 @@ exit:
     return rc;
 }
 
-int rpmioSlurp(const char * fn, byte ** bp, ssize_t * blenp)
+int rpmioSlurp(const char * fn, uint8_t ** bp, ssize_t * blenp)
 {
     static ssize_t blenmax = (32 * BUFSIZ);
     ssize_t blen = 0;
-    byte * b = NULL;
+    uint8_t * b = NULL;
     ssize_t size;
     FD_t fd;
     int rc = 0;
@@ -3840,7 +3840,7 @@ int rpmioSlurp(const char * fn, byte ** bp, ssize_t * blenp)
     if (blen) {
 	size_t nb;
 	b = xmalloc(blen+1);
-	b[0] = (byte) '\0';
+	b[0] = (uint8_t) '\0';
 	nb = Fread(b, sizeof(*b), blen, fd);
 	if (Ferror(fd) || (size > 0 && nb != blen)) {
 	    rc = 1;
@@ -3850,7 +3850,7 @@ int rpmioSlurp(const char * fn, byte ** bp, ssize_t * blenp)
 	    blen = nb;
 	    b = xrealloc(b, blen+1);
 	}
-	b[blen] = (byte) '\0';
+	b[blen] = (uint8_t) '\0';
     }
 
 exit:

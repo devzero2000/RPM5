@@ -144,7 +144,7 @@ errxit:
  * @return		0 on success, 1 on failure
  */
 static int makeGPGSignature(const char * file, uint32_t * sigTagp,
-		/*@out@*/ byte ** pktp, /*@out@*/ uint32_t * pktlenp,
+		/*@out@*/ uint8_t ** pktp, /*@out@*/ uint32_t * pktlenp,
 		/*@null@*/ const char * passPhrase)
 	/*@globals rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState @*/
@@ -312,7 +312,7 @@ static int makeHDRSignature(Header sigh, const char * file, uint32_t sigTag,
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     Header h = NULL;
     FD_t fd = NULL;
-    byte * pkt;
+    uint8_t * pkt;
     uint32_t pktlen;
     const char * fn = NULL;
     const char * msg;
@@ -437,7 +437,7 @@ int rpmAddSignature(Header sigh, const char * file, uint32_t sigTag,
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     struct stat st;
-    byte * pkt;
+    uint8_t * pkt;
     uint32_t pktlen;
     int ret = -1;	/* assume failure. */
     int xx;
@@ -631,7 +631,7 @@ verifyMD5Signature(const pgpDig dig, /*@out@*/ char * t,
     const void * sig = pgpGetSig(dig);
     uint32_t siglen = pgpGetSiglen(dig);
     rpmRC res;
-    byte * md5sum = NULL;
+    uint8_t * md5sum = NULL;
     size_t md5len = 0;
 
     *t = '\0';
@@ -913,7 +913,7 @@ assert(sigp != NULL);
 
 	if (sigp->version == 4) {
 	    uint32_t nb = sigp->hashlen;
-	    byte trailer[6];
+	    uint8_t trailer[6];
 	    nb = htonl(nb);
 	    trailer[0] = sigp->version;
 	    trailer[1] = 0xff;

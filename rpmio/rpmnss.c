@@ -129,8 +129,8 @@ int rpmnssVerifyDSA(pgpDig dig)
  */
 static
 int rpmnssMpiSet(const char * pre, int lbits,
-		/*@out@*/ void * dest, const byte * p,
-		/*@null@*/ const byte * pend)
+		/*@out@*/ void * dest, const uint8_t * p,
+		/*@null@*/ const uint8_t * pend)
 	/*@globals fileSystem @*/
 	/*@modifies *dest, fileSystem @*/
 {
@@ -165,7 +165,7 @@ fprintf(stderr, "\t %s %s", pre, pgpHexStr(dest, nbytes));
 static
 /*@only@*/ /*@null@*/
 SECItem * rpmnssMpiCopy(PRArenaPool * arena, /*@returned@*/ SECItem * item,
-		const byte * p)
+		const uint8_t * p)
 	/*@modifies item @*/
 {
     unsigned int nbytes = pgpMpiLen(p)-2;
@@ -238,7 +238,7 @@ SECKEYPublicKey * rpmnssNewDSAKey(void)
 
 static
 int rpmnssMpiItem(const char * pre, pgpDig dig, int itemno,
-		const byte * p, /*@null@*/ const byte * pend)
+		const uint8_t * p, /*@null@*/ const uint8_t * pend)
 	/*@globals fileSystem @*/
 	/*@modifies dig, fileSystem @*/
 {

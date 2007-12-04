@@ -2846,7 +2846,7 @@ memset(data, 0, sizeof(*data));
 	if (db->db_tagn != NULL)
 	for (dbix = 0; dbix < db->db_ndbi; dbix++) {
 	    dbiIndex dbi;
-	    byte * bin = NULL;
+	    uint8_t * bin = NULL;
 	    int i;
 
 	    dbi = NULL;
@@ -2965,14 +2965,14 @@ if (dbiByteSwapped(dbi) == 1)
 		    if (dbi->dbi_rpmtag == RPMTAG_FILEDIGESTS) {
 			const char * s = he->p.argv[i];
 			size_t dlen = strlen(s);
-			byte * t;
+			uint8_t * t;
 			unsigned j;
 assert((dlen & 1) == 0);
 			dlen /= 2;
 			bin = t = xcalloc(1, dlen);
 /*@-type@*/
 			for (j = 0; j < (unsigned) dlen; j++, t++, s += 2)
-			    *t = (byte) (nibble(s[0]) << 4) | nibble(s[1]);
+			    *t = (uint8_t) (nibble(s[0]) << 4) | nibble(s[1]);
 /*@=type@*/
 			key->data = bin;
 			key->size = (u_int32_t) dlen;
@@ -3252,7 +3252,7 @@ memset(data, 0, sizeof(*data));
 	
 	if (db->db_tagn != NULL)
 	for (dbix = 0; dbix < db->db_ndbi; dbix++) {
-	    byte * bin = NULL;
+	    uint8_t * bin = NULL;
 	    rpmTagData requireFlags;
 	    rpmRC rpmrc;
 	    int i;
@@ -3445,14 +3445,14 @@ data->size = 0;
 		    if (dbi->dbi_rpmtag == RPMTAG_FILEDIGESTS) {
 			const char * s = he->p.argv[i];
 			size_t dlen = strlen(s);
-			byte * t;
+			uint8_t * t;
 			unsigned j;
 assert((dlen & 1) == 0);
 			dlen /= 2;
 			bin = t = xcalloc(1, dlen);
 /*@-type@*/
 			for (j = 0; j < (unsigned) dlen; j++, t++, s += 2)
-			    *t = (byte) (nibble(s[0]) << 4) | nibble(s[1]);
+			    *t = (uint8_t) (nibble(s[0]) << 4) | nibble(s[1]);
 /*@=type@*/
 			key->data = bin;
 			key->size = (u_int32_t) dlen;
