@@ -186,10 +186,7 @@ static PyMethodDef rpmModuleMethods[] = {
 
     { "headerLoad", (PyCFunction) hdrLoad, METH_VARARGS|METH_KEYWORDS,
 	NULL },
-#if defined(DEAD)
-    { "mergeHeaderListFromFD", (PyCFunction) rpmMergeHeadersFromFD, METH_VARARGS|METH_KEYWORDS,
-	NULL },
-#endif
+
     { "readHeaderListFromFD", (PyCFunction) rpmHeaderFromFD, METH_VARARGS|METH_KEYWORDS,
 	NULL },
     { "readHeaderListFromFile", (PyCFunction) rpmHeaderFromFile, METH_VARARGS|METH_KEYWORDS,

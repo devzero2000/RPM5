@@ -85,8 +85,6 @@
 +  Pkgid:     !!binary pM5VJBrMT40gEk4TSvNrdA==
 +  Hdrid: 72a11d90029ae1fbd61cd3741f4bb25681d8546d
 	(other contents are now identical after fixing RPMTAG_BUILDTIME).
-    - jbj: rpmMergeHeadersFromFD has gone AWOL and is needed by yum
-	/usr/lib/python2.5/site-packages/rpm/_rpmmodule.so: undefined symbol: rpmMergeHeadersFromFD
     - jbj: retrieved headers are occaisionally failing sanity checks.
     - jbj: VSFlags (and --nodigest/--nosignature) is now per-verify rather than
 	persistently per-transaction scoped because of moving the flags into
