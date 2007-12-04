@@ -55,6 +55,7 @@ LIBRPMDB_0
     headerRegenSigHeader;
     headerReload;
     headerSetInstance;
+    headerSetOrigin;
     headerSizeof;
     headerSprintf;
     headerUnload;

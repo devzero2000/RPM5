@@ -1,4 +1,7 @@
 5.0a4 -> 5.0b1:
+    - jbj: resurrect rpmMergeHeadersFromFD goop. Yah, mon, DEAD code ...
+    - jbj: re-add symbols needed for rpm-python import to loader map.
+    - jbj: stub in WITH_NSS define to try rpmnss. Yep, borked, but now tested.
     - jbj: complete rpmnss.[ch] implementation (untested).
     - jbj: stub in the rpmnss.[ch] implementation.
     - jbj: pluggable RSA/DSA signature verification framework.

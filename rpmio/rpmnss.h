@@ -8,10 +8,12 @@
 #include <rpmpgp.h>
 #include <rpmsw.h>
 
+#if defined(_RPMNSS_INTERNAL)
 #include <nss.h>
 #include <sechash.h>
 #include <keyhi.h>
 #include <cryptohi.h>
+#endif
 
 /** \ingroup rpmpgp
  */

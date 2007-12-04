@@ -50,15 +50,17 @@ PyObject * labelCompare (PyObject * self, PyObject * args)
 PyObject * versionCompare (PyObject * self, PyObject * args, PyObject * kwds)
 	/*@*/;
 
+#if defined(DEAD)
 /** \ingroup py_c
  */
-PyObject * rpmMergeHeadersFromFD(PyObject * self, PyObject * args, PyObject * kwds)
+int rpmMergeHeaders(PyObject * list, FD_t fd, rpmTag matchTag)
 	/*@*/;
 
 /** \ingroup py_c
  */
-int rpmMergeHeaders(PyObject * list, FD_t fd, int matchTag)
+PyObject * rpmMergeHeadersFromFD(PyObject * self, PyObject * args, PyObject * kwds)
 	/*@*/;
+#endif	/* DEAD */
 
 /** \ingroup py_c
  */

@@ -7,6 +7,9 @@
 #include "rpmio_internal.h"
 #define	_RPMPGP_INTERNAL
 #include <rpmbc.h>	/* XXX still needs base64 goop */
+#if defined(WITH_NSS)
+#include <rpmnss.h>
+#endif
 #include "debug.h"
 
 /*@access pgpDig @*/
@@ -20,7 +23,12 @@ int _pgp_debug = 0;
 int _pgp_print = 0;
 
 /*@unchecked@*/
-pgpImplVecs_t * pgpImplVecs = &rpmbcImplVecs;
+pgpImplVecs_t * pgpImplVecs =
+#if defined(WITH_NSS)
+	&rpmnssImplVecs;
+#else
+	&rpmbcImplVecs;
+#endif
 
 /*@unchecked@*/ /*@refcounted@*/ /*@relnull@*/
 static pgpDig _dig = NULL;
