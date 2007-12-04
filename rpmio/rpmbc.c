@@ -229,43 +229,43 @@ int rpmbcMpiItem(const char * pre, pgpDig dig, int itemno,
     default:
 assert(0);
 	break;
-    case 10:
+    case 10:		/* RSA m**d */
 	(void) mpnsethex(&bc->c, pgpMpiHex(p));
 if (_pgp_debug && _pgp_print)
 fprintf(stderr, "\t %s ", pre),  mpfprintln(stderr, bc->c.size, bc->c.data);
 	break;
-    case 20:
+    case 20:		/* DSA r */
 	rc = pgpMpiSet(pre, 160, &bc->r, p, pend);
 	break;
-    case 21:
+    case 21:		/* DSA s */
 	rc = pgpMpiSet(pre, 160, &bc->s, p, pend);
 	break;
-    case 30:
+    case 30:		/* RSA n */
 	(void) mpbsethex(&bc->rsa_pk.n, pgpMpiHex(p));
 if (_pgp_debug && _pgp_print)
 fprintf(stderr, "\t %s ", pre),  mpfprintln(stderr, bc->rsa_pk.n.size, bc->rsa_pk.n.modl);
 	break;
-    case 31:
+    case 31:		/* RSA e */
 	(void) mpnsethex(&bc->rsa_pk.e, pgpMpiHex(p));
 if (_pgp_debug && _pgp_print)
 fprintf(stderr, "\t %s ", pre),  mpfprintln(stderr, bc->rsa_pk.e.size, bc->rsa_pk.e.data);
 	break;
-    case 40:
+    case 40:		/* DSA p */
 	(void) mpbsethex(&bc->p, pgpMpiHex(p));
 if (_pgp_debug && _pgp_print)
 fprintf(stderr, "\t %s ", pre),  mpfprintln(stderr, bc->p.size, bc->p.modl);
 	break;
-    case 41:
+    case 41:		/* DSA q */
 	(void) mpbsethex(&bc->q, pgpMpiHex(p));
 if (_pgp_debug && _pgp_print)
 fprintf(stderr, "\t %s ", pre),  mpfprintln(stderr, bc->q.size, bc->q.modl);
 	break;
-    case 42:
+    case 42:		/* DSA g */
 	(void) mpnsethex(&bc->g, pgpMpiHex(p));
 if (_pgp_debug && _pgp_print)
 fprintf(stderr, "\t %s ", pre),  mpfprintln(stderr, bc->g.size, bc->g.data);
 	break;
-    case 43:
+    case 43:		/* DSA y */
 	(void) mpnsethex(&bc->y, pgpMpiHex(p));
 if (_pgp_debug && _pgp_print)
 fprintf(stderr, "\t %s ", pre),  mpfprintln(stderr, bc->y.size, bc->y.data);

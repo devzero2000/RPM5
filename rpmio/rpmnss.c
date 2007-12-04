@@ -73,12 +73,12 @@ int rpmnssVerifyRSA(pgpDig dig)
     rpmnss nss = dig->impl;
     int rc;
 
-    nss->digest.type = siBuffer;
-    nss->digest.data = dig->md5;
-    nss->digest.len = dig->md5len;
+    nss->item.type = siBuffer;
+    nss->item.data = dig->md5;
+    nss->item.len = dig->md5len;
 
 /*@-moduncon@*/
-    rc = (VFY_VerifyDigest(&nss->digest, nss->rsa, nss->rsasig, nss->sigalg, NULL) == SECSuccess);
+    rc = (VFY_VerifyDigest(&nss->item, nss->rsa, nss->rsasig, nss->sigalg, NULL) == SECSuccess);
 /*@=moduncon@*/
 
     return rc;
@@ -104,19 +104,122 @@ int rpmnssVerifyDSA(pgpDig dig)
 	/*@*/
 {
     rpmnss nss = dig->impl;
-    SECItem digest;
     int rc;
 
-    nss->digest.type = siBuffer;
-    nss->digest.data = dig->sha1;
-    nss->digest.len = dig->sha1len;
+    nss->item.type = siBuffer;
+    nss->item.data = dig->sha1;
+    nss->item.len = dig->sha1len;
 
 /*@-moduncon@*/
-    rc = (VFY_VerifyDigest(&nss->digest, nss->dsa, nss->dsasig, nss->sigalg, NULL) == SECSuccess);
+    rc = (VFY_VerifyDigest(&nss->item, nss->dsa, nss->dsasig, nss->sigalg, NULL) == SECSuccess);
 /*@=moduncon@*/
 
     return rc;
 }
+
+/**
+ * @return		0 on success
+ */
+static
+int rpmnssMpiSet(const char * pre, int lbits,
+		/*@out@*/ void * dest, const byte * p,
+		/*@null@*/ const byte * pend)
+	/*@globals fileSystem @*/
+	/*@modifies mpn, fileSystem @*/
+{
+    unsigned int mbits = pgpMpiBits(p);
+    unsigned int nbits;
+    unsigned int nbytes;
+    char * t = dest;
+    unsigned int ix;
+
+    if (pend != NULL && (p + ((mbits+7) >> 3)) > pend)
+	return 1;
+
+    if (mbits > lbits)
+	return 1;
+
+    nbits = (lbits > mbits ? lbits : mbits);
+    nbytes = ((nbits + 7) >> 3);
+    ix = ((nbits - mbits) >> 3);
+
+if (_pgp_debug)
+fprintf(stderr, "*** mbits %u nbits %u nbytes %u ix %u\n", mbits, nbits, nbytes, ix);
+    if (ix > 0) memset(t, (int)'\0', ix);
+    memcpy(t+ix, p+2, nbytes-ix);
+if (_pgp_debug && _pgp_print)
+fprintf(stderr, "\t %s %s", pre, pgpHexStr(dest, nbytes));
+    return 0;
+}
+
+/**
+ * @return		NULL on error
+ */
+static
+SECItem * rpmnssMpiCopy(PRArenaPool * arena, SECItem * item, const byte * p)
+{
+    unsigned int nbytes = pgpMpiLen(p)-2;
+
+    if (item == NULL) {
+	if ((item=SECITEM_AllocItem(arena, item, nbytes)) == NULL)
+	    return item;
+    } else {
+	if (arena != NULL)
+	    item->data = PORT_ArenaGrow(arena, item->data, item->len, nbytes);
+	else
+	    item->data = PORT_Realloc(item->data, nbytes);
+ 	
+	if (item->data == NULL) {
+	    if (arena == NULL)
+		SECITEM_FreeItem(item, PR_TRUE);
+	    return NULL;
+	}
+    }
+
+    memcpy(item->data, p+2, nbytes);
+    item->len = nbytes;
+    return item;
+}
+
+static
+SECKEYPublicKey * rpmnssNewPublicKey(KeyType type)
+{
+    PRArenaPool *arena;
+    SECKEYPublicKey *key;
+
+    arena = PORT_NewArena(DER_DEFAULT_CHUNKSIZE);
+    if (arena == NULL)
+	return NULL;
+
+    key = PORT_ArenaZAlloc(arena, sizeof(SECKEYPublicKey));
+
+    if (key == NULL) {
+	PORT_FreeArena(arena, PR_FALSE);
+	return NULL;
+    }
+    
+    key->keyType = type;
+    key->pkcs11ID = CK_INVALID_HANDLE;
+    key->pkcs11Slot = NULL;
+    key->arena = arena;
+    return key;
+}
+
+static
+SECKEYPublicKey * rpmnssNewRSAKey(void)
+{
+    return rpmnssNewPublicKey(rsaKey);
+}
+
+static
+SECKEYPublicKey * rpmnssNewDSAKey(void)
+{
+    return rpmnssNewPublicKey(dsaKey);
+}
+
+#ifndef DSA_SUBPRIME_LEN
+#define DSA_SUBPRIME_LEN 20
+#endif
 
 static
 int rpmnssMpiItem(const char * pre, pgpDig dig, int itemno,
@@ -124,29 +227,80 @@ int rpmnssMpiItem(const char * pre, pgpDig dig, int itemno,
 	/*@globals fileSystem @*/
 	/*@modifies dig, fileSystem @*/
 {
+    rpmnss nss = dig->impl;
     int rc = 0;
+
+    nss->item.type = 0;
+    nss->item.len = 2 * DSA_SUBPRIME_LEN;
+    nss->item.data = memset(alloca(nss->item.len), 0, nss->item.len);
 
     switch (itemno) {
     default:
 assert(0);
 	break;
-    case 10:
+    case 10:		/* RSA m**d */
+	nss->rsasig = rpmnssMpiCopy(NULL, nss->rsasig, p);
+	if (nss->rsasig == NULL)
+	    rc = 1;
 	break;
-    case 20:
+    case 20:		/* DSA r */
+	rc = rpmnssMpiSet(pre, DSA_SUBPRIME_LEN*8, nss->item.data, p, pend);
 	break;
-    case 21:
+    case 21:		/* DSA s */
+	rc = rpmnssMpiSet(pre, DSA_SUBPRIME_LEN*8, nss->item.data + DSA_SUBPRIME_LEN, p, pend);
+	if (nss->dsasig != NULL)
+	    SECITEM_FreeItem(nss->dsasig, PR_FALSE);
+	if ((nss->dsasig = SECITEM_AllocItem(NULL, NULL, 0)) == NULL
+	 || DSAU_EncodeDerSig(nss->dsasig, &nss->item) != SECSuccess)
+	    rc = 1;
 	break;
-    case 30:
+    case 30:		/* RSA n */
+	if (nss->rsa == NULL)
+	    nss->rsa = rpmnssNewRSAKey();
+	if (nss->rsa == NULL)
+	    rc = 1;
+	else
+	    (void) rpmnssMpiCopy(nss->rsa->arena, &nss->rsa->u.rsa.modulus, p);
 	break;
-    case 31:
+    case 31:		/* RSA e */
+	if (nss->rsa == NULL)
+	    nss->rsa = rpmnssNewRSAKey();
+	if (nss->rsa == NULL)
+	    rc = 1;
+	else
+	    (void) rpmnssMpiCopy(nss->rsa->arena, &nss->rsa->u.rsa.publicExponent, p);
 	break;
-    case 40:
+    case 40:		/* DSA p */
+	if (nss->dsa == NULL)
+	    nss->dsa = rpmnssNewDSAKey();
+	if (nss->dsa == NULL)
+	    rc = 1;
+	else
+	    (void) rpmnssMpiCopy(nss->dsa->arena, &nss->dsa->u.dsa.params.prime, p);
 	break;
-    case 41:
+    case 41:		/* DSA q */
+	if (nss->dsa == NULL)
+	    nss->dsa = rpmnssNewDSAKey();
+	if (nss->dsa == NULL)
+	    rc = 1;
+	else
+	    (void) rpmnssMpiCopy(nss->dsa->arena, &nss->dsa->u.dsa.params.subPrime, p);
 	break;
-    case 42:
+    case 42:		/* DSA g */
+	if (nss->dsa == NULL)
+	    nss->dsa = rpmnssNewDSAKey();
+	if (nss->dsa == NULL)
+	    rc = 1;
+	else
+	    (void) rpmnssMpiCopy(nss->dsa->arena, &nss->dsa->u.dsa.params.base, p);
 	break;
-    case 43:
+    case 43:		/* DSA y */
+	if (nss->dsa == NULL)
+	    nss->dsa = rpmnssNewDSAKey();
+	if (nss->dsa == NULL)
+	    rc = 1;
+	else
+	    (void) rpmnssMpiCopy(nss->dsa->arena, &nss->dsa->u.dsa.publicValue, p);
 	break;
     }
     return rc;
@@ -158,6 +312,22 @@ void rpmnssClean(void * impl)
 {
     rpmnss nss = impl;
     if (nss != NULL) {
+	if (nss->dsa != NULL) {
+	    SECKEY_DestroyPublicKey(nss->dsa);
+	    nss->dsa = NULL;
+	}
+	if (nss->dsasig != NULL) {
+	    SECITEM_ZfreeItem(nss->dsasig, PR_TRUE);
+	    nss->dsasig = NULL;
+	}
+	if (nss->rsa != NULL) {
+	    SECKEY_DestroyPublicKey(nss->rsa);
+	    nss->rsa = NULL;
+	}
+	if (nss->rsasig != NULL) {
+	    SECITEM_ZfreeItem(nss->rsasig, PR_TRUE);
+	    nss->rsasig = NULL;
+	}
     }
 }
 
@@ -167,6 +337,7 @@ void * rpmnssFree(/*@only@*/ void * impl)
 {
     rpmnss nss = impl;
     if (nss != NULL) {
+	rpmnssClean(impl);
 	nss = _free(nss);
     }
     return NULL;
@@ -177,6 +348,9 @@ void * rpmnssInit(void)
 	/*@*/
 {
     rpmnss nss = xcalloc(1, sizeof(*nss));
+
+    NSS_NoDB_Init(NULL);
+
     return (void *) nss;
 }
 

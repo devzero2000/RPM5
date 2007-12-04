@@ -23,15 +23,15 @@ typedef	/*abstract@*/ struct rpmnss_s * rpmnss;
 struct rpmnss_s {
 
     SECOidTag sigalg;
-    SECItem digest;
+    SECItem item;
 
     /* DSA parameters. */
     SECKEYPublicKey *dsa;
-    SECItem *dsasig;
+    SECItem * dsasig;
 
     /* RSA parameters. */
     SECKEYPublicKey *rsa;
-    SECItem *rsasig;
+    SECItem * rsasig;
 };
 #endif
 
