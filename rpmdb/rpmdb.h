@@ -43,7 +43,7 @@ typedef /*@abstract@*/ /*@refcounted@*/ struct rpmdb_s * rpmdb;
 /** \ingroup rpmdb
  * Database iterator.
  */
-typedef /*@abstract@*/ struct _rpmdbMatchIterator * rpmdbMatchIterator;
+typedef /*@abstract@*/ struct rpmdbMatchIterator_s * rpmdbMatchIterator;
 #endif
 
 /**

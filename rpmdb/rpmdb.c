@@ -699,7 +699,7 @@ dbiIndexSet dbiFreeIndexSet(dbiIndexSet set) {
     return set;
 }
 
-struct _rpmdbMatchIterator {
+struct rpmdbMatchIterator_s {
 /*@dependent@*/ /*@null@*/
     rpmdbMatchIterator	mi_next;
 /*@only@*/
