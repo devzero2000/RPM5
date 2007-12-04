@@ -17,6 +17,7 @@
 #define RPMLIB_VENDOR RPM_VENDOR
 #endif
 
+/*@-shiftimplementation @*/
 uint32_t rpmlibVersion(void)
 {
     return (uint32_t)RPMLIB_VERSION;
@@ -31,4 +32,5 @@ uint32_t rpmlibVendor(void)
 {
     return (uint32_t)RPMLIB_VENDOR;
 }
+/*@=shiftimplementation @*/
 

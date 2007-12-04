@@ -1052,6 +1052,9 @@ rpmts rpmtsCreate(void)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/;
 
+/*@unchecked@*/
+extern int rpmcliPackagesTotal;
+
 /** \ingroup rpmts
  * Add package to be installed to transaction set.
  *
