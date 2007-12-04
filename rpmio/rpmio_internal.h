@@ -8,9 +8,9 @@
 #include <rpmio.h>
 #include <rpmurl.h>
 
-#include <rpmbc.h>
+#define	_RPMPGP_INTERNAL
+#include <rpmpgp.h>
 
-#include <rpmsw.h>
 #include <rpmxar.h>
 
 /** \ingroup rpmio

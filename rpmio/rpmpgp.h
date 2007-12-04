@@ -37,6 +37,127 @@ typedef /*@abstract@*/ /*@refcounted@*/ struct pgpDig_s * pgpDig;
  */
 typedef /*@abstract@*/ struct pgpDigParams_s * pgpDigParams;
 
+/** \ingroup rpmpgp
+ * Bit(s) to control digest and signature verification.
+ */
+typedef enum pgpVSFlags_e {
+    RPMVSF_DEFAULT	= 0,
+    RPMVSF_NOHDRCHK	= (1 <<  0),
+    RPMVSF_NEEDPAYLOAD	= (1 <<  1),
+    /* bit(s) 2-7 unused */
+    RPMVSF_NOSHA1HEADER	= (1 <<  8),
+    RPMVSF_NOMD5HEADER	= (1 <<  9),	/* unimplemented */
+    RPMVSF_NODSAHEADER	= (1 << 10),
+    RPMVSF_NORSAHEADER	= (1 << 11),
+    /* bit(s) 12-15 unused */
+    RPMVSF_NOSHA1	= (1 << 16),	/* unimplemented */
+    RPMVSF_NOMD5	= (1 << 17),
+    RPMVSF_NODSA	= (1 << 18),
+    RPMVSF_NORSA	= (1 << 19)
+    /* bit(s) 20-31 unused */
+} pgpVSFlags;
+
+#define	_RPMVSF_NODIGESTS	\
+  ( RPMVSF_NOSHA1HEADER |	\
+    RPMVSF_NOMD5HEADER |	\
+    RPMVSF_NOSHA1 |		\
+    RPMVSF_NOMD5 )
+
+#define	_RPMVSF_NOSIGNATURES	\
+  ( RPMVSF_NODSAHEADER |	\
+    RPMVSF_NORSAHEADER |	\
+    RPMVSF_NODSA |		\
+    RPMVSF_NORSA )
+
+#define	_RPMVSF_NOHEADER	\
+  ( RPMVSF_NOSHA1HEADER |	\
+    RPMVSF_NOMD5HEADER |	\
+    RPMVSF_NODSAHEADER |	\
+    RPMVSF_NORSAHEADER )
+
+#define	_RPMVSF_NOPAYLOAD	\
+  ( RPMVSF_NOSHA1 |		\
+    RPMVSF_NOMD5 |		\
+    RPMVSF_NODSA |		\
+    RPMVSF_NORSA )
+
+#if defined(_RPMPGP_INTERNAL)
+#include <rpmsw.h>
+
+/** \ingroup rpmpgp
+ * Values parsed from OpenPGP signature/pubkey packet(s).
+ */
+struct pgpDigParams_s {
+/*@only@*/ /*@null@*/
+    const char * userid;
+/*@only@*/ /*@null@*/
+    const byte * hash;
+    const char * params[4];
+    byte tag;
+
+    byte version;		/*!< version number. */
+    byte time[4];		/*!< time that the key was created. */
+    byte pubkey_algo;		/*!< public key algorithm. */
+
+    byte hash_algo;
+    byte sigtype;
+    byte hashlen;
+    byte signhash16[2];
+    byte signid[8];
+    byte saved;
+#define	PGPDIG_SAVED_TIME	(1 << 0)
+#define	PGPDIG_SAVED_ID		(1 << 1)
+
+};
+
+/** \ingroup rpmpgp
+ * Container for values parsed from an OpenPGP signature and public key.
+ */
+struct pgpDig_s {
+    struct pgpDigParams_s signature;
+    struct pgpDigParams_s pubkey;
+
+    uint32_t sigtag;		/*!< Package signature tag. */
+    uint32_t sigtype;		/*!< Package signature data type. */
+/*@relnull@*/
+    const void * sig;		/*!< Package signature. */
+    uint32_t siglen;		/*!< Package signature length. */
+
+    pgpVSFlags vsflags;		/*!< Digest/signature operation disablers. */
+    struct rpmop_s dops;	/*!< Digest operation statistics. */
+    struct rpmop_s sops;	/*!< Signature operation statistics. */
+
+    int (*findPubkey) (void * _ts, /*@null@*/ void * _dig)
+	/*@modifies *_ts, *_dig @*/;/*!< Find pubkey, i.e. rpmtsFindPubkey(). */
+/*@null@*/
+    void * _ts;			/*!< Find pubkey argument, i.e. rpmts. */
+/*@refs@*/
+    int nrefs;			/*!< Reference count. */
+
+    byte ** ppkts;
+    int npkts;
+    size_t nbytes;		/*!< No. bytes of plain text. */
+
+/*@only@*/ /*@null@*/
+    DIGEST_CTX sha1ctx;		/*!< (dsa) sha1 hash context. */
+/*@only@*/ /*@null@*/
+    DIGEST_CTX hdrsha1ctx;	/*!< (dsa) header sha1 hash context. */
+/*@only@*/ /*@null@*/
+    void * sha1;		/*!< (dsa) V3 signature hash. */
+    size_t sha1len;		/*!< (dsa) V3 signature hash length. */
+
+/*@only@*/ /*@null@*/
+    DIGEST_CTX md5ctx;		/*!< (rsa) md5 hash context. */
+/*@only@*/ /*@null@*/
+    DIGEST_CTX hdrmd5ctx;	/*!< (rsa) header md5 hash context. */
+/*@only@*/ /*@null@*/
+    void * md5;			/*!< (rsa) V3 signature hash. */
+    size_t md5len;		/*!< (rsa) V3 signature hash length. */
+
+    void * impl;		/*!< Implementation data */
+};
+#endif
+
 /**
  */
 typedef const struct pgpValTbl_s {
@@ -1328,50 +1449,6 @@ char * pgpArmorWrap(int atype, const unsigned char * s, size_t ns)
 	/*@*/;
 
 /** \ingroup rpmpgp
- * Bit(s) to control digest and signature verification.
- */
-typedef enum pgpVSFlags_e {
-    RPMVSF_DEFAULT	= 0,
-    RPMVSF_NOHDRCHK	= (1 <<  0),
-    RPMVSF_NEEDPAYLOAD	= (1 <<  1),
-    /* bit(s) 2-7 unused */
-    RPMVSF_NOSHA1HEADER	= (1 <<  8),
-    RPMVSF_NOMD5HEADER	= (1 <<  9),	/* unimplemented */
-    RPMVSF_NODSAHEADER	= (1 << 10),
-    RPMVSF_NORSAHEADER	= (1 << 11),
-    /* bit(s) 12-15 unused */
-    RPMVSF_NOSHA1	= (1 << 16),	/* unimplemented */
-    RPMVSF_NOMD5	= (1 << 17),
-    RPMVSF_NODSA	= (1 << 18),
-    RPMVSF_NORSA	= (1 << 19)
-    /* bit(s) 20-31 unused */
-} pgpVSFlags;
-
-#define	_RPMVSF_NODIGESTS	\
-  ( RPMVSF_NOSHA1HEADER |	\
-    RPMVSF_NOMD5HEADER |	\
-    RPMVSF_NOSHA1 |		\
-    RPMVSF_NOMD5 )
-
-#define	_RPMVSF_NOSIGNATURES	\
-  ( RPMVSF_NODSAHEADER |	\
-    RPMVSF_NORSAHEADER |	\
-    RPMVSF_NODSA |		\
-    RPMVSF_NORSA )
-
-#define	_RPMVSF_NOHEADER	\
-  ( RPMVSF_NOSHA1HEADER |	\
-    RPMVSF_NOMD5HEADER |	\
-    RPMVSF_NODSAHEADER |	\
-    RPMVSF_NORSAHEADER )
-
-#define	_RPMVSF_NOPAYLOAD	\
-  ( RPMVSF_NOSHA1 |		\
-    RPMVSF_NOMD5 |		\
-    RPMVSF_NODSA |		\
-    RPMVSF_NORSA )
-
-/** \ingroup rpmpgp
  * Unreference a signature parameters instance.
  * @param dig		signature parameters
  * @param msg
@@ -1672,6 +1749,44 @@ int rpmDigestFinal(/*@only@*/ /*@null@*/ DIGEST_CTX ctx,
 	/*@null@*/ /*@out@*/ void * datap,
 	/*@null@*/ /*@out@*/ size_t * lenp, int asAscii)
 		/*@modifies *datap, *lenp @*/;
+
+#include <rpmbc.h>
+
+/*@unused@*/ static inline
+int pgpSetRSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
+        /*@modifies ctx, dig @*/
+{
+    return rpmbcSetRSA(ctx, dig, sigp);
+}
+
+/*@unused@*/ static inline
+int pgpVerifyRSA(pgpDig dig)
+        /*@*/
+{
+    return rpmbcVerifyRSA(dig);
+}
+
+/*@unused@*/ static inline
+int pgpSetDSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
+        /*@modifies ctx, dig @*/
+{
+    return rpmbcSetDSA(ctx, dig, sigp);
+}
+
+/*@unused@*/ static inline
+int pgpVerifyDSA(pgpDig dig)
+        /*@*/
+{
+    return rpmbcVerifyDSA(dig);
+}
+
+/*@unused@*/ static inline
+int pgpMpiItem(const char * pre, pgpDig dig, int itemno,
+                const byte * p, /*@null@*/ const byte * pend)
+        /*@modifies dig @*/
+{
+    return rpmbcMpiItem(pre, dig, itemno, p, pend);
+}
 
 #ifdef __cplusplus
 }

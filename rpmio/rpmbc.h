@@ -9,7 +9,6 @@
 #include <beecrypt/api.h>
 #endif
 
-#include <rpmpgp.h>
 #include <rpmsw.h>
 
 /* Drag in the beecrypt includes. */
@@ -26,76 +25,14 @@
 #include <beecrypt/sha384.h>
 #include <beecrypt/sha512.h>
 
-/** \ingroup rpmpgp
- * Values parsed from OpenPGP signature/pubkey packet(s).
+/**
  */
-struct pgpDigParams_s {
-/*@only@*/ /*@null@*/
-    const char * userid;
-/*@only@*/ /*@null@*/
-    const byte * hash;
-    const char * params[4];
-    byte tag;
+typedef	/*abstract@*/ struct rpmbc_s * rpmbc;
 
-    byte version;		/*!< version number. */
-    byte time[4];		/*!< time that the key was created. */
-    byte pubkey_algo;		/*!< public key algorithm. */
-
-    byte hash_algo;
-    byte sigtype;
-    byte hashlen;
-    byte signhash16[2];
-    byte signid[8];
-    byte saved;
-#define	PGPDIG_SAVED_TIME	(1 << 0)
-#define	PGPDIG_SAVED_ID		(1 << 1)
-
-};
-
-/** \ingroup rpmpgp
- * Container for values parsed from an OpenPGP signature and public key.
+/**
  */
-struct pgpDig_s {
-    struct pgpDigParams_s signature;
-    struct pgpDigParams_s pubkey;
-
-    uint32_t sigtag;		/*!< Package signature tag. */
-    uint32_t sigtype;		/*!< Package signature data type. */
-/*@relnull@*/
-    const void * sig;		/*!< Package signature. */
-    uint32_t siglen;		/*!< Package signature length. */
-
-    pgpVSFlags vsflags;		/*!< Digest/signature operation disablers. */
-    struct rpmop_s dops;	/*!< Digest operation statistics. */
-    struct rpmop_s sops;	/*!< Signature operation statistics. */
-
-    int (*findPubkey) (void * _ts, /*@null@*/ void * _dig)
-	/*@modifies *_ts, *_dig @*/;/*!< Find pubkey, i.e. rpmtsFindPubkey(). */
-/*@null@*/
-    void * _ts;			/*!< Find pubkey argument, i.e. rpmts. */
-/*@refs@*/
-    int nrefs;			/*!< Reference count. */
-
-    byte ** ppkts;
-    int npkts;
-    size_t nbytes;		/*!< No. bytes of plain text. */
-
-/*@only@*/ /*@null@*/
-    DIGEST_CTX sha1ctx;		/*!< (dsa) sha1 hash context. */
-/*@only@*/ /*@null@*/
-    DIGEST_CTX hdrsha1ctx;	/*!< (dsa) header sha1 hash context. */
-/*@only@*/ /*@null@*/
-    void * sha1;		/*!< (dsa) V3 signature hash. */
-    size_t sha1len;		/*!< (dsa) V3 signature hash length. */
-
-/*@only@*/ /*@null@*/
-    DIGEST_CTX md5ctx;		/*!< (rsa) md5 hash context. */
-/*@only@*/ /*@null@*/
-    DIGEST_CTX hdrmd5ctx;	/*!< (rsa) header md5 hash context. */
-/*@only@*/ /*@null@*/
-    void * md5;			/*!< (rsa) V3 signature hash. */
-    size_t md5len;		/*!< (rsa) V3 signature hash length. */
-
+#if defined(_RPMBC_INTERNAL)
+struct rpmbc_s {
     /* DSA parameters. */
     mpbarrett p;
     mpbarrett q;
@@ -111,32 +48,37 @@ struct pgpDig_s {
     mpnumber c;
     mpnumber rsahm;
 };
+#endif
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-int pgpSetRSA(DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
+int rpmbcSetRSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
 	/*@modifies ctx, dig @*/;
 
-int pgpVerifyRSA(pgpDig dig)
+int rpmbcVerifyRSA(pgpDig dig)
 	/*@*/;
 
-int pgpSetDSA(DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
+int rpmbcSetDSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
 	/*@modifies ctx, dig @*/;
 
-int pgpVerifyDSA(pgpDig dig)
+int rpmbcVerifyDSA(pgpDig dig)
 	/*@*/;
 
-int pgpMpiItem(const char * pre, pgpDig dig, int itemno,
+int rpmbcMpiItem(const char * pre, pgpDig dig, int itemno,
 		const byte * p, /*@null@*/ const byte * pend)
 	/*@modifies dig @*/;
 
-void rpmbcClean(pgpDig dig)
-	/*@modifies dig @*/;
+void rpmbcClean(void * impl)
+	/*@modifies impl @*/;
 
-void rpmbcFree(pgpDig dig)
-	/*@modifies dig @*/;
+/*@null@*/
+void * rpmbcFree(/*@only@*/ void * impl)
+	/*@modifies impl @*/;
+
+void * rpmbcInit(void)
+	/*@*/;
 
 #ifdef __cplusplus
 }

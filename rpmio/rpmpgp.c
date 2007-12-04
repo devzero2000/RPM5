@@ -5,6 +5,8 @@
 
 #include "system.h"
 #include "rpmio_internal.h"
+#define	_RPMPGP_INTERNAL
+#include <rpmpgp.h>
 #include "debug.h"
 
 /*@access pgpDig @*/
@@ -1015,7 +1017,7 @@ void pgpDigClean(pgpDig dig)
 	dig->md5 = _free(dig->md5);
 	dig->sha1 = _free(dig->sha1);
 
-	rpmbcClean(dig);
+	rpmbcClean(dig->impl);
 
     }
 /*@-nullstate@*/
@@ -1056,7 +1058,7 @@ pgpDig pgpDigFree(pgpDig dig)
 	    (void) rpmDigestFinal(dig->md5ctx, NULL, NULL, 0);
 	dig->md5ctx = NULL;
 
-	rpmbcFree(dig);
+	dig->impl = rpmbcFree(dig->impl);
 
 	(void) pgpDigUnlink(dig, "pgpDigFree");
 /*@=onlytrans@*/
@@ -1072,6 +1074,7 @@ pgpDig pgpDigNew(pgpVSFlags vsflags)
 {
     pgpDig dig = xcalloc(1, sizeof(*dig));
     dig->vsflags = vsflags;
+    dig->impl = rpmbcInit();
     return pgpDigLink(dig, "pgpDigNew");
 }
 

@@ -9,8 +9,9 @@
 
 #include <rpmio.h>
 #include <rpmurl.h>
-#include <rpmbc.h>
 #include <rpmcb.h>	/* XXX rpmIsVerbose() */
+#define	_RPMPGP_INTERNAL
+#include <rpmpgp.h>
 #include <rpmtag.h>
 #include <rpmmacro.h>	/* XXX for rpmGetPath() */
 #include "rpmdb.h"
@@ -746,7 +747,6 @@ verifyRSASignature(pgpDig dig, /*@out@*/ char * t,
 #endif
     uint32_t sigtag = pgpGetSigtag(dig);
     pgpDigParams sigp = pgpGetSignature(dig);
-    const char * prefix = NULL;
     rpmRC res = RPMRC_OK;
     int xx;
 

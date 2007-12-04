@@ -4,7 +4,9 @@
 
 #include "system.h"
 #include <rpmio.h>
-#include <rpmbc.h>
+#define	_RPMBC_INTERNAL
+#define	_RPMPGP_INTERNAL
+#include <rpmpgp.h>
 #include "debug.h"
 
 /*@unchecked@*/
@@ -31,9 +33,10 @@ unsigned char nibble(char c)
     return (unsigned char) '\0';
 }
 
-int pgpSetRSA(DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
+int rpmbcSetRSA(DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
 {
-    unsigned int nbits = (unsigned) MP_WORDS_TO_BITS(dig->c.size);
+    rpmbc bc = dig->impl;
+    unsigned int nbits = (unsigned) MP_WORDS_TO_BITS(bc->c.size);
     unsigned int nb = (nbits + 7) >> 3;
     const char * prefix;
     const char * hexstr;
@@ -89,7 +92,7 @@ int pgpSetRSA(DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
     tt = stpcpy(tt, dig->md5);
 
 /*@-moduncon -noeffectuncon @*/
-    mpnzero(&dig->rsahm);   (void) mpnsethex(&dig->rsahm, hexstr);
+    mpnzero(&bc->rsahm);   (void) mpnsethex(&bc->rsahm, hexstr);
 /*@=moduncon =noeffectuncon @*/
 
     hexstr = _free(hexstr);
@@ -103,44 +106,47 @@ int pgpSetRSA(DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
     return memcmp(signhash16, sigp->signhash16, sizeof(signhash16));
 }
 
-int pgpVerifyRSA(pgpDig dig)
+int rpmbcVerifyRSA(pgpDig dig)
 {
+    rpmbc bc = dig->impl;
     int rc;
 
 /*@-moduncon@*/
 #if defined(HAVE_BEECRYPT_API_H)
-	rc = rsavrfy(&dig->rsa_pk.n, &dig->rsa_pk.e, &dig->c, &dig->rsahm);
+	rc = rsavrfy(&bc->rsa_pk.n, &bc->rsa_pk.e, &bc->c, &bc->rsahm);
 #else
-	rc = rsavrfy(&dig->rsa_pk, &dig->rsahm, &dig->c);
+	rc = rsavrfy(&bc->rsa_pk, &bc->rsahm, &bc->c);
 #endif
 /*@=moduncon@*/
 
     return rc;
 }
 
-int pgpSetDSA(DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
+int rpmbcSetDSA(DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
 {
+    rpmbc bc = dig->impl;
     byte signhash16[2];
     int xx;
 
     xx = rpmDigestFinal(ctx, (void **)&dig->sha1, &dig->sha1len, 1);
 
 /*@-moduncon -noeffectuncon @*/
-    mpnzero(&dig->hm);	(void) mpnsethex(&dig->hm, dig->sha1);
+    mpnzero(&bc->hm);	(void) mpnsethex(&bc->hm, dig->sha1);
 /*@=moduncon =noeffectuncon @*/
 
     /* Compare leading 16 bits of digest for quick check. */
-    signhash16[0] = (*dig->hm.data >> 24) & 0xff;
-    signhash16[1] = (*dig->hm.data >> 16) & 0xff;
+    signhash16[0] = (*bc->hm.data >> 24) & 0xff;
+    signhash16[1] = (*bc->hm.data >> 16) & 0xff;
     return memcmp(signhash16, sigp->signhash16, sizeof(signhash16));
 }
 
-int pgpVerifyDSA(pgpDig dig)
+int rpmbcVerifyDSA(pgpDig dig)
 {
+    rpmbc bc = dig->impl;
     int rc;
 
 /*@-moduncon@*/
-    rc = dsavrfy(&dig->p, &dig->q, &dig->g, &dig->hm, &dig->y, &dig->r, &dig->s);
+    rc = dsavrfy(&bc->p, &bc->q, &bc->g, &bc->hm, &bc->y, &bc->r, &bc->s);
 /*@=moduncon@*/
 
     return rc;
@@ -198,87 +204,99 @@ fprintf(stderr, "\t %s ", pre), mpfprintln(stderr, mpn->size, mpn->data);
     return 0;
 }
 
-int pgpMpiItem(const char * pre, pgpDig dig, int itemno,
+int rpmbcMpiItem(const char * pre, pgpDig dig, int itemno,
 		const byte * p, const byte * pend)
 {
+    rpmbc bc = dig->impl;
     int rc = 0;
+
     switch (itemno) {
     default:
 assert(0);
 	break;
     case 10:
-	(void) mpnsethex(&dig->c, pgpMpiHex(p));
+	(void) mpnsethex(&bc->c, pgpMpiHex(p));
 if (_pgp_debug && _pgp_print)
-fprintf(stderr, "\t %s ", pre),  mpfprintln(stderr, dig->c.size, dig->c.data);
+fprintf(stderr, "\t %s ", pre),  mpfprintln(stderr, bc->c.size, bc->c.data);
 	break;
     case 20:
-	rc = pgpMpiSet(pre, 160, &dig->r, p, pend);
+	rc = pgpMpiSet(pre, 160, &bc->r, p, pend);
 	break;
     case 21:
-	rc = pgpMpiSet(pre, 160, &dig->s, p, pend);
+	rc = pgpMpiSet(pre, 160, &bc->s, p, pend);
 	break;
     case 30:
-	(void) mpbsethex(&dig->rsa_pk.n, pgpMpiHex(p));
+	(void) mpbsethex(&bc->rsa_pk.n, pgpMpiHex(p));
 if (_pgp_debug && _pgp_print)
-fprintf(stderr, "\t %s ", pre),  mpfprintln(stderr, dig->rsa_pk.n.size, dig->rsa_pk.n.modl);
+fprintf(stderr, "\t %s ", pre),  mpfprintln(stderr, bc->rsa_pk.n.size, bc->rsa_pk.n.modl);
 	break;
     case 31:
-	(void) mpnsethex(&dig->rsa_pk.e, pgpMpiHex(p));
+	(void) mpnsethex(&bc->rsa_pk.e, pgpMpiHex(p));
 if (_pgp_debug && _pgp_print)
-fprintf(stderr, "\t %s ", pre),  mpfprintln(stderr, dig->rsa_pk.e.size, dig->rsa_pk.e.data);
+fprintf(stderr, "\t %s ", pre),  mpfprintln(stderr, bc->rsa_pk.e.size, bc->rsa_pk.e.data);
 	break;
     case 40:
-	(void) mpbsethex(&dig->p, pgpMpiHex(p));
+	(void) mpbsethex(&bc->p, pgpMpiHex(p));
 if (_pgp_debug && _pgp_print)
-fprintf(stderr, "\t %s ", pre),  mpfprintln(stderr, dig->p.size, dig->p.modl);
+fprintf(stderr, "\t %s ", pre),  mpfprintln(stderr, bc->p.size, bc->p.modl);
 	break;
     case 41:
-	(void) mpbsethex(&dig->q, pgpMpiHex(p));
+	(void) mpbsethex(&bc->q, pgpMpiHex(p));
 if (_pgp_debug && _pgp_print)
-fprintf(stderr, "\t %s ", pre),  mpfprintln(stderr, dig->q.size, dig->q.modl);
+fprintf(stderr, "\t %s ", pre),  mpfprintln(stderr, bc->q.size, bc->q.modl);
 	break;
     case 42:
-	(void) mpnsethex(&dig->g, pgpMpiHex(p));
+	(void) mpnsethex(&bc->g, pgpMpiHex(p));
 if (_pgp_debug && _pgp_print)
-fprintf(stderr, "\t %s ", pre),  mpfprintln(stderr, dig->g.size, dig->g.data);
+fprintf(stderr, "\t %s ", pre),  mpfprintln(stderr, bc->g.size, bc->g.data);
 	break;
     case 43:
-	(void) mpnsethex(&dig->y, pgpMpiHex(p));
+	(void) mpnsethex(&bc->y, pgpMpiHex(p));
 if (_pgp_debug && _pgp_print)
-fprintf(stderr, "\t %s ", pre),  mpfprintln(stderr, dig->y.size, dig->y.data);
+fprintf(stderr, "\t %s ", pre),  mpfprintln(stderr, bc->y.size, bc->y.data);
 	break;
     }
     return rc;
 }
 
-void rpmbcClean(pgpDig dig)
+void rpmbcClean(void * impl)
 {
-    if (dig != NULL) {
-	mpnfree(&dig->hm);
-	mpnfree(&dig->r);
-	mpnfree(&dig->s);
-	(void) rsapkFree(&dig->rsa_pk);
-	mpnfree(&dig->m);
-	mpnfree(&dig->c);
-	mpnfree(&dig->rsahm);
+    rpmbc bc = impl;
+    if (bc != NULL) {
+	mpnfree(&bc->hm);
+	mpnfree(&bc->r);
+	mpnfree(&bc->s);
+	(void) rsapkFree(&bc->rsa_pk);
+	mpnfree(&bc->m);
+	mpnfree(&bc->c);
+	mpnfree(&bc->rsahm);
     }
 }
 
-void rpmbcFree(pgpDig dig)
+void * rpmbcFree(void * impl)
 {
-    if (dig != NULL) {
-	mpbfree(&dig->p);
-	mpbfree(&dig->q);
-	mpnfree(&dig->g);
-	mpnfree(&dig->y);
-	mpnfree(&dig->hm);
-	mpnfree(&dig->r);
-	mpnfree(&dig->s);
+    rpmbc bc = impl;
+    if (bc != NULL) {
+	mpbfree(&bc->p);
+	mpbfree(&bc->q);
+	mpnfree(&bc->g);
+	mpnfree(&bc->y);
+	mpnfree(&bc->hm);
+	mpnfree(&bc->r);
+	mpnfree(&bc->s);
 
-	mpbfree(&dig->rsa_pk.n);
-	mpnfree(&dig->rsa_pk.e);
-	mpnfree(&dig->m);
-	mpnfree(&dig->c);
-	mpnfree(&dig->hm);
+	mpbfree(&bc->rsa_pk.n);
+	mpnfree(&bc->rsa_pk.e);
+	mpnfree(&bc->m);
+	mpnfree(&bc->c);
+	mpnfree(&bc->hm);
+	bc = _free(bc);
     }
+    return NULL;
+}
+
+void * rpmbcInit(void)
+{
+    rpmbc bc = xcalloc(1, sizeof(*bc));
+    return (void *) bc;
 }
