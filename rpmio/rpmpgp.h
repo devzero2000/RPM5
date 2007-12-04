@@ -13,6 +13,11 @@
 #include <string.h>
 #include <popt.h>
 
+#ifdef HAVE_BEECRYPT_API_H
+/* BeeCrypt also has "byte" */
+#include <beecrypt/api.h>
+#endif
+
 #if !defined(_BEECRYPT_API_H)
 /** \ingroup rpmpgp
  */
