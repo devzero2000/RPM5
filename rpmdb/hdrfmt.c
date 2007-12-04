@@ -5,6 +5,7 @@
 #include "system.h"
 
 #include "rpmio_internal.h"
+#include <rpmbc.h>	/* XXX beecrypt base64 */
 #include <rpmcb.h>	/* XXX rpmIsVerbose */
 #include <rpmmacro.h>	/* XXX for %_i18ndomains */
 

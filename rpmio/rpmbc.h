@@ -9,6 +9,7 @@
 #include <beecrypt/api.h>
 #endif
 
+#include <rpmpgp.h>
 #include <rpmsw.h>
 
 /* Drag in the beecrypt includes. */
@@ -50,39 +51,7 @@ struct rpmbc_s {
 };
 #endif
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-int rpmbcSetRSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
-	/*@modifies ctx, dig @*/;
-
-int rpmbcVerifyRSA(pgpDig dig)
-	/*@*/;
-
-int rpmbcSetDSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
-	/*@modifies ctx, dig @*/;
-
-int rpmbcVerifyDSA(pgpDig dig)
-	/*@*/;
-
-int rpmbcMpiItem(const char * pre, pgpDig dig, int itemno,
-		const byte * p, /*@null@*/ const byte * pend)
-	/*@globals fileSystem @*/
-	/*@modifies dig, fileSystem @*/;
-
-void rpmbcClean(void * impl)
-	/*@modifies impl @*/;
-
-/*@null@*/
-void * rpmbcFree(/*@only@*/ void * impl)
-	/*@modifies impl @*/;
-
-void * rpmbcInit(void)
-	/*@*/;
-
-#ifdef __cplusplus
-}
-#endif
+/*@unchecked@*/
+extern pgpImplVecs_t rpmbcImplVecs;
 
 #endif	/* H_RPMBC */

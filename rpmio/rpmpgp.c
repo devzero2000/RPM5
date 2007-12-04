@@ -6,7 +6,7 @@
 #include "system.h"
 #include "rpmio_internal.h"
 #define	_RPMPGP_INTERNAL
-#include <rpmpgp.h>
+#include <rpmbc.h>	/* XXX still needs base64 goop */
 #include "debug.h"
 
 /*@access pgpDig @*/
@@ -18,6 +18,9 @@ int _pgp_debug = 0;
 
 /*@unchecked@*/
 int _pgp_print = 0;
+
+/*@unchecked@*/
+pgpImplVecs_t * pgpImplVecs = &rpmbcImplVecs;
 
 /*@unchecked@*/ /*@refcounted@*/ /*@relnull@*/
 static pgpDig _dig = NULL;
@@ -372,7 +375,7 @@ static int pgpPrtSigParams(const pgpPkt pp, byte pubkey_algo, byte sigtype,
 		xx = 0;
 		switch (i) {
 		case 0:		/* m**d */
-		    xx = pgpMpiItem(pgpSigRSA[i], _dig, 10+i, p, pend);
+		    xx = pgpImplMpiItem(pgpSigRSA[i], _dig, 10+i, p, pend);
 		    /*@switchbreak@*/ break;
 		default:
 		    xx = 1;
@@ -389,10 +392,10 @@ static int pgpPrtSigParams(const pgpPkt pp, byte pubkey_algo, byte sigtype,
 		xx = 0;
 		switch (i) {
 		case 0:		/* r */
-		    xx = pgpMpiItem(pgpSigDSA[i], _dig, 20+i, p, pend);
+		    xx = pgpImplMpiItem(pgpSigDSA[i], _dig, 20+i, p, pend);
 		    /*@switchbreak@*/ break;
 		case 1:		/* s */
-		    xx = pgpMpiItem(pgpSigDSA[i], _dig, 20+i, p, pend);
+		    xx = pgpImplMpiItem(pgpSigDSA[i], _dig, 20+i, p, pend);
 		    /*@switchbreak@*/ break;
 		default:
 		    xx = 1;
@@ -585,10 +588,10 @@ static const byte * pgpPrtPubkeyParams(const pgpPkt pp, byte pubkey_algo,
 	    if (_dig) {
 		switch (i) {
 		case 0:		/* n */
-		    (void) pgpMpiItem(pgpPublicRSA[i], _dig, 30+i, p, NULL);
+		    (void) pgpImplMpiItem(pgpPublicRSA[i], _dig, 30+i, p, NULL);
 		    /*@switchbreak@*/ break;
 		case 1:		/* e */
-		    (void) pgpMpiItem(pgpPublicRSA[i], _dig, 30+i, p, NULL);
+		    (void) pgpImplMpiItem(pgpPublicRSA[i], _dig, 30+i, p, NULL);
 		    /*@switchbreak@*/ break;
 		default:
 		    /*@switchbreak@*/ break;
@@ -600,16 +603,16 @@ static const byte * pgpPrtPubkeyParams(const pgpPkt pp, byte pubkey_algo,
 	    if (_dig) {
 		switch (i) {
 		case 0:		/* p */
-		    (void) pgpMpiItem(pgpPublicDSA[i], _dig, 40+i, p, NULL);
+		    (void) pgpImplMpiItem(pgpPublicDSA[i], _dig, 40+i, p, NULL);
 		    /*@switchbreak@*/ break;
 		case 1:		/* q */
-		    (void) pgpMpiItem(pgpPublicDSA[i], _dig, 40+i, p, NULL);
+		    (void) pgpImplMpiItem(pgpPublicDSA[i], _dig, 40+i, p, NULL);
 		    /*@switchbreak@*/ break;
 		case 2:		/* g */
-		    (void) pgpMpiItem(pgpPublicDSA[i], _dig, 40+i, p, NULL);
+		    (void) pgpImplMpiItem(pgpPublicDSA[i], _dig, 40+i, p, NULL);
 		    /*@switchbreak@*/ break;
 		case 3:		/* y */
-		    (void) pgpMpiItem(pgpPublicDSA[i], _dig, 40+i, p, NULL);
+		    (void) pgpImplMpiItem(pgpPublicDSA[i], _dig, 40+i, p, NULL);
 		    /*@switchbreak@*/ break;
 		default:
 		    /*@switchbreak@*/ break;
@@ -1020,7 +1023,7 @@ void pgpDigClean(pgpDig dig)
 	dig->md5 = _free(dig->md5);
 	dig->sha1 = _free(dig->sha1);
 
-	rpmbcClean(dig->impl);
+	pgpImplClean(dig->impl);
 
     }
 /*@-nullstate@*/
@@ -1061,7 +1064,7 @@ pgpDig pgpDigFree(pgpDig dig)
 	    (void) rpmDigestFinal(dig->md5ctx, NULL, NULL, 0);
 	dig->md5ctx = NULL;
 
-	dig->impl = rpmbcFree(dig->impl);
+	dig->impl = pgpImplFree(dig->impl);
 
 	(void) pgpDigUnlink(dig, "pgpDigFree");
 /*@=onlytrans@*/
@@ -1077,7 +1080,7 @@ pgpDig pgpDigNew(pgpVSFlags vsflags)
 {
     pgpDig dig = xcalloc(1, sizeof(*dig));
     dig->vsflags = vsflags;
-    dig->impl = rpmbcInit();
+    dig->impl = pgpImplInit();
     return pgpDigLink(dig, "pgpDigNew");
 }
 

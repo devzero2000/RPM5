@@ -164,6 +164,7 @@ LIBRPMIO_0
     pgpGetSiglen;
     pgpGetVSFlags;
     pgpHashTbl;
+    pgpImplVecs;
     pgpKeyServerPrefsTbl;
     pgpPrtComment;
     pgpPrtKey;
@@ -199,10 +200,6 @@ LIBRPMIO_0
     _RequestPass;
     Rmdir;
     _Rmdir;
-    rpmbcSetDSA;
-    rpmbcSetRSA;
-    rpmbcVerifyDSA;
-    rpmbcVerifyRSA;
     rpmCleanPath;
     rpmCLIMacroContext;
     rpmDefineMacro;

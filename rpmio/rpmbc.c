@@ -6,7 +6,7 @@
 #include <rpmio.h>
 #define	_RPMBC_INTERNAL
 #define	_RPMPGP_INTERNAL
-#include <rpmpgp.h>
+#include <rpmbc.h>
 #include "debug.h"
 
 /*@access pgpDig @*/
@@ -36,7 +36,9 @@ unsigned char nibble(char c)
     return (unsigned char) '\0';
 }
 
+static
 int rpmbcSetRSA(DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
+	/*@modifies ctx, dig @*/
 {
     rpmbc bc = dig->impl;
     unsigned int nbits = (unsigned) MP_WORDS_TO_BITS(bc->c.size);
@@ -109,7 +111,9 @@ int rpmbcSetRSA(DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
     return memcmp(signhash16, sigp->signhash16, sizeof(signhash16));
 }
 
+static
 int rpmbcVerifyRSA(pgpDig dig)
+	/*@*/
 {
     rpmbc bc = dig->impl;
     int rc;
@@ -125,7 +129,9 @@ int rpmbcVerifyRSA(pgpDig dig)
     return rc;
 }
 
+static
 int rpmbcSetDSA(DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
+	/*@modifies ctx, dig @*/
 {
     rpmbc bc = dig->impl;
     byte signhash16[2];
@@ -143,7 +149,9 @@ int rpmbcSetDSA(DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
     return memcmp(signhash16, sigp->signhash16, sizeof(signhash16));
 }
 
+static
 int rpmbcVerifyDSA(pgpDig dig)
+	/*@*/
 {
     rpmbc bc = dig->impl;
     int rc;
@@ -208,8 +216,11 @@ fprintf(stderr, "\t %s ", pre), mpfprintln(stderr, mpn->size, mpn->data);
     return 0;
 }
 
+static
 int rpmbcMpiItem(const char * pre, pgpDig dig, int itemno,
 		const byte * p, const byte * pend)
+	/*@globals fileSystem @*/
+	/*@modifies dig, fileSystem @*/
 {
     rpmbc bc = dig->impl;
     int rc = 0;
@@ -263,7 +274,9 @@ fprintf(stderr, "\t %s ", pre),  mpfprintln(stderr, bc->y.size, bc->y.data);
     return rc;
 }
 
+static
 void rpmbcClean(void * impl)
+	/*@modifies impl @*/
 {
     rpmbc bc = impl;
     if (bc != NULL) {
@@ -277,7 +290,9 @@ void rpmbcClean(void * impl)
     }
 }
 
-void * rpmbcFree(void * impl)
+static
+void * rpmbcFree(/*@only@*/ void * impl)
+	/*@modifies impl @*/
 {
     rpmbc bc = impl;
     if (bc != NULL) {
@@ -299,8 +314,17 @@ void * rpmbcFree(void * impl)
     return NULL;
 }
 
+static
 void * rpmbcInit(void)
+	/*@*/
 {
     rpmbc bc = xcalloc(1, sizeof(*bc));
     return (void *) bc;
 }
+
+struct pgpImplVecs_s rpmbcImplVecs = {
+	rpmbcSetRSA, rpmbcVerifyRSA,
+	rpmbcSetDSA, rpmbcVerifyDSA,
+	rpmbcMpiItem, rpmbcClean,
+	rpmbcFree, rpmbcInit
+};

@@ -825,7 +825,7 @@ assert(md5ctx != NULL);	/* XXX can't happen. */
 	(void) rpmswExit(op, sigp->hashlen);
 	op->count--;	/* XXX one too many */
 
-	if (pgpSetRSA(ctx, dig, sigp)) {
+	if (pgpImplSetRSA(ctx, dig, sigp)) {
 	    res = RPMRC_FAIL;
 	    goto exit;
 	}
@@ -839,7 +839,7 @@ assert(md5ctx != NULL);	/* XXX can't happen. */
     /* Verify the RSA signature. */
     {	rpmop op = pgpStatsAccumulator(dig, 11);	/* RPMTS_OP_SIGNATURE */
 	(void) rpmswEnter(op, 0);
-	xx = pgpVerifyRSA(dig);
+	xx = pgpImplVerifyRSA(dig);
 	(void) rpmswExit(op, 0);
 	res = (xx ? RPMRC_OK : RPMRC_FAIL);
     }
@@ -923,7 +923,7 @@ assert(sigp != NULL);
 	(void) rpmswExit(op, sigp->hashlen);
 	op->count--;	/* XXX one too many */
 
-	if (pgpSetDSA(ctx, dig, sigp)) {
+	if (pgpImplSetDSA(ctx, dig, sigp)) {
 	    res = RPMRC_FAIL;
 	    goto exit;
 	}
@@ -937,7 +937,7 @@ assert(sigp != NULL);
     /* Verify the DSA signature. */
     {	rpmop op = pgpStatsAccumulator(dig, 11);	/* RPMTS_OP_SIGNATURE */
 	(void) rpmswEnter(op, 0);
-	xx = pgpVerifyDSA(dig);
+	xx = pgpImplVerifyDSA(dig);
 	res = (xx ? RPMRC_OK : RPMRC_FAIL);
 	(void) rpmswExit(op, 0);
     }

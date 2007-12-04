@@ -8,6 +8,8 @@
 
 #include "rpmio_internal.h"
 
+#include <rpmbc.h>
+
 #include "md2.h"
 #include "md4.h"
 #include "sha224.h"

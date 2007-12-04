@@ -6,6 +6,7 @@
 #include "system.h"
 
 #include <rpmio_internal.h>
+#include <rpmbc.h>		/* XXX beecrypt base64 */
 #include <rpmtag.h>
 #include <rpmcli.h>
 #define	_RPMEVR_INTERNAL	/* XXX RPMSENSE_KEYRING */

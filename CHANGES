@@ -1,4 +1,5 @@
 5.0a4 -> 5.0b1:
+    - jbj: pluggable RSA/DSA signature verification framework.
     - rpm.org: Rename _rpmdbMatchIterator -> rpmdbMatchIterator_s.
     - jbj: split out implementation specific storage from pgpDig.
     - jbj: create rpmbc.c and rpmbc.h to hide beecrypt signature internals.

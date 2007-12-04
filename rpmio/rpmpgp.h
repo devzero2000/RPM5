@@ -1755,43 +1755,129 @@ int rpmDigestFinal(/*@only@*/ /*@null@*/ DIGEST_CTX ctx,
 	/*@null@*/ /*@out@*/ size_t * lenp, int asAscii)
 		/*@modifies *datap, *lenp @*/;
 
-#include <rpmbc.h>
+/**
+ */
+typedef int (*pgpImplSet_t) (/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
+        /*@modifies ctx, dig @*/;
 
+/**
+ */
+typedef int (*pgpImplVerify_t) (pgpDig dig)
+        /*@*/;
+
+/**
+ */
+typedef int (*pgpImplMpiItem_t) (const char * pre, pgpDig dig, int itemno,
+		const byte * p, /*@null@*/ const byte * pend)
+	/*@globals fileSystem @*/
+	/*@modifies dig, fileSystem @*/;
+
+/**
+ */
+typedef void (*pgpImplClean_t) (void * impl)
+        /*@modifies impl @*/;
+
+/**
+ */
+typedef /*@null@*/ void * (*pgpImplFree_t) (/*@only@*/ void * impl)
+        /*@modifies impl @*/;
+
+/**
+ */
+typedef void * (*pgpImplInit_t) (void)
+        /*@*/;
+
+
+/**
+ */
+typedef struct pgpImplVecs_s {
+    pgpImplSet_t	_pgpSetRSA;
+    pgpImplVerify_t	_pgpVerifyRSA;
+    pgpImplSet_t	_pgpSetDSA;
+    pgpImplVerify_t	_pgpVerifyDSA;
+    pgpImplMpiItem_t	_pgpMpiItem;
+    pgpImplClean_t	_pgpClean;
+    pgpImplFree_t	_pgpFree;
+    pgpImplInit_t	_pgpInit;
+} pgpImplVecs_t;
+
+/**
+ */
+extern pgpImplVecs_t * pgpImplVecs;
+
+/**
+ */
 /*@unused@*/ static inline
-int pgpSetRSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
+int pgpImplSetRSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
 	/*@modifies ctx, dig @*/
 {
-    return rpmbcSetRSA(ctx, dig, sigp);
+    return (*pgpImplVecs->_pgpSetRSA) (ctx, dig, sigp);
 }
 
+/**
+ */
 /*@unused@*/ static inline
-int pgpVerifyRSA(pgpDig dig)
+int pgpImplVerifyRSA(pgpDig dig)
 	/*@*/
 {
-    return rpmbcVerifyRSA(dig);
+    return (*pgpImplVecs->_pgpVerifyRSA) (dig);
 }
 
+/**
+ */
 /*@unused@*/ static inline
-int pgpSetDSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
+int pgpImplSetDSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
 	/*@modifies ctx, dig @*/
 {
-    return rpmbcSetDSA(ctx, dig, sigp);
+    return (*pgpImplVecs->_pgpSetDSA) (ctx, dig, sigp);
 }
 
+/**
+ */
 /*@unused@*/ static inline
-int pgpVerifyDSA(pgpDig dig)
+int pgpImplVerifyDSA(pgpDig dig)
 	/*@*/
 {
-    return rpmbcVerifyDSA(dig);
+    return (*pgpImplVecs->_pgpVerifyDSA) (dig);
 }
 
+/**
+ */
 /*@unused@*/ static inline
-int pgpMpiItem(const char * pre, pgpDig dig, int itemno,
+int pgpImplMpiItem(const char * pre, pgpDig dig, int itemno,
 		const byte * p, /*@null@*/ const byte * pend)
 	/*@globals fileSystem @*/
 	/*@modifies dig, fileSystem @*/
 {
-    return rpmbcMpiItem(pre, dig, itemno, p, pend);
+    return (*pgpImplVecs->_pgpMpiItem) (pre, dig, itemno, p, pend);
+}
+
+/**
+ */
+/*@unused@*/ static inline
+void pgpImplClean(void * impl)
+        /*@modifies impl @*/
+{
+    return (*pgpImplVecs->_pgpClean) (impl);
+}
+
+/**
+ */
+/*@unused@*/ static inline
+/*@null@*/
+void * pgpImplFree(/*@only@*/ void * impl)
+        /*@modifies impl @*/
+{
+    return (*pgpImplVecs->_pgpFree) (impl);
+}
+
+/**
+ */
+/*@unused@*/ static inline
+void * pgpImplInit(void)
+        /*@*/
+{
+    return (*pgpImplVecs->_pgpInit) ();
 }
 
 #ifdef __cplusplus
