@@ -32,7 +32,7 @@ RPM_LDADD = \
 
 pkgincdir = $(pkgincludedir)$(WITH_PATH_VERSIONED_SUFFIX)
 pkginc_HEADERS = \
-	argv.h envvar.h fts.h mire.h rpmbeecrypt.h rpmcb.h rpmdav.h rpmhash.h \
+	argv.h envvar.h fts.h mire.h rpmbc.h rpmcb.h rpmdav.h rpmhash.h \
 	rpmio.h rpmio-stub.h rpmlog.h rpmmacro.h rpmmg.h rpmpgp.h \
 	rpmsq.h rpmsw.h rpmurl.h rpmxar.h ugid.h
 noinst_HEADERS = \
@@ -46,7 +46,7 @@ librpmio_la_SOURCES = \
 	argv.c digest.c fts.c getpass.c macro.c mire.c mount.c \
 	md2.c md4.c rmd128.c rmd160.c rmd256.c rmd320.c sha224.c \
 	salsa10.c salsa20.c tiger.c LzmaDecode.c \
-	rpmdav.c rpmhash.c rpmhook.c rpmio.c rpmio-stub.c \
+	rpmbc.c rpmdav.c rpmhash.c rpmhook.c rpmio.c rpmio-stub.c \
 	rpmlog.c rpmlua.c rpmmalloc.c rpmmg.c rpmpgp.c \
 	rpmrpc.c rpmsq.c rpmsw.c rpmxar.c \
 	strcasecmp.c strtolocale.c url.c ugid.c

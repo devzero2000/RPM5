@@ -8,7 +8,7 @@
 #include <rpmio.h>
 #include <rpmurl.h>
 
-#include <rpmbeecrypt.h>
+#include <rpmbc.h>
 
 #include <rpmsw.h>
 #include <rpmxar.h>

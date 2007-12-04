@@ -9,7 +9,7 @@
 
 #include <rpmio.h>
 #include <rpmurl.h>
-#include <rpmbeecrypt.h>
+#include <rpmbc.h>
 #include <rpmcb.h>	/* XXX rpmIsVerbose() */
 #include <rpmtag.h>
 #include <rpmmacro.h>	/* XXX for rpmGetPath() */

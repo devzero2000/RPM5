@@ -178,7 +178,9 @@ LIBRPMIO_0
     pgpPktLen;
     pgpPubkeyTbl;
     pgpReadPkts;
+    pgpSetDSA;
     pgpSetFindPubkey;
+    pgpSetRSA;
     pgpSetSig;
     pgpSetVSFlags;
     pgpSigTypeTbl;
@@ -186,6 +188,8 @@ LIBRPMIO_0
     pgpSubTypeTbl;
     pgpSymkeyTbl;
     pgpTagTbl;
+    pgpVerifyDSA;
+    pgpVerifyRSA;
     print_expand_trace;
     print_macro_trace;
     prpsoffsets32;
