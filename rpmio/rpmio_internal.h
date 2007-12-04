@@ -601,15 +601,18 @@ void fdStealDigest(FD_t fd, pgpDig dig)
 	/*@modifies fd, dig @*/
 {
     int i;
+/*@-type@*/	/* FIX: getters for pgpDig internals */
     for (i = fd->ndigests - 1; i >= 0; i--) {
 	FDDIGEST_t fddig = fd->digests + i;
 	if (fddig->hashctx != NULL)
 	switch (fddig->hashalgo) {
 	case PGPHASHALGO_MD5:
 assert(dig->md5ctx == NULL);
+/*@-onlytrans@*/
 	    dig->md5ctx = fddig->hashctx;
+/*@=onlytrans@*/
 	    fddig->hashctx = NULL;
-	    break;
+	    /*@switchbreak@*/ break;
 	case PGPHASHALGO_SHA1:
 	case PGPHASHALGO_RIPEMD160:
 #if defined(HAVE_BEECRYPT_API_H)
@@ -618,13 +621,16 @@ assert(dig->md5ctx == NULL);
 	case PGPHASHALGO_SHA512:
 #endif
 assert(dig->sha1ctx == NULL);
+/*@-onlytrans@*/
 	    dig->sha1ctx = fddig->hashctx;
+/*@=onlytrans@*/
 	    fddig->hashctx = NULL;
-	    break;
+	    /*@switchbreak@*/ break;
 	default:
-	    break;
+	    /*@switchbreak@*/ break;
 	}
     }
+/*@=type@*/
 }
 
 /*@-shadow@*/

@@ -158,7 +158,7 @@ struct pgpDig_s {
 /*@only@*/ /*@null@*/
     void * md5;			/*!< (rsa) V3 signature hash. */
     size_t md5len;		/*!< (rsa) V3 signature hash length. */
-
+/*@owned@*/ /*@relnull@*/
     void * impl;		/*!< Implementation data */
 };
 #endif
@@ -1487,7 +1487,7 @@ pgpDig pgpDigLink (/*@null@*/ pgpDig dig, /*@null@*/ const char * msg)
 /*@newref@*/ /*@null@*/
 pgpDig XpgpDigLink (/*@null@*/ pgpDig dig, /*@null@*/ const char * msg,
 		const char * fn, unsigned ln)
-        /*@modifies dig @*/;
+	/*@modifies dig @*/;
 #define	pgpDigLink(_dig, _msg)	XpgpDigLink(_dig, _msg, __FILE__, __LINE__)
 
 /** \ingroup rpmpgp
@@ -1587,7 +1587,7 @@ int pgpSetSig(pgpDig dig,
  * @return		per-container accumulator pointer
  */
 void * pgpStatsAccumulator(pgpDig dig, int opx)
-        /*@*/;
+	/*@*/;
 
 /** \ingroup rpmpgp
  * Get verify signatures flag(s).
@@ -1759,36 +1759,37 @@ int rpmDigestFinal(/*@only@*/ /*@null@*/ DIGEST_CTX ctx,
 
 /*@unused@*/ static inline
 int pgpSetRSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
-        /*@modifies ctx, dig @*/
+	/*@modifies ctx, dig @*/
 {
     return rpmbcSetRSA(ctx, dig, sigp);
 }
 
 /*@unused@*/ static inline
 int pgpVerifyRSA(pgpDig dig)
-        /*@*/
+	/*@*/
 {
     return rpmbcVerifyRSA(dig);
 }
 
 /*@unused@*/ static inline
 int pgpSetDSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
-        /*@modifies ctx, dig @*/
+	/*@modifies ctx, dig @*/
 {
     return rpmbcSetDSA(ctx, dig, sigp);
 }
 
 /*@unused@*/ static inline
 int pgpVerifyDSA(pgpDig dig)
-        /*@*/
+	/*@*/
 {
     return rpmbcVerifyDSA(dig);
 }
 
 /*@unused@*/ static inline
 int pgpMpiItem(const char * pre, pgpDig dig, int itemno,
-                const byte * p, /*@null@*/ const byte * pend)
-        /*@modifies dig @*/
+		const byte * p, /*@null@*/ const byte * pend)
+	/*@globals fileSystem @*/
+	/*@modifies dig, fileSystem @*/
 {
     return rpmbcMpiItem(pre, dig, itemno, p, pend);
 }

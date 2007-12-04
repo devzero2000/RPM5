@@ -9,6 +9,9 @@
 #include <rpmpgp.h>
 #include "debug.h"
 
+/*@access pgpDig @*/
+/*@access pgpDigParams @*/
+
 /*@unchecked@*/
 extern int _pgp_debug;
 
@@ -169,7 +172,8 @@ const char * pgpMpiHex(const byte *p)
  */
 static
 int pgpMpiSet(const char * pre, int lbits,
-		/*@out@*/ void * dest, const byte * p, const byte * pend)
+		/*@out@*/ void * dest, const byte * p,
+		/*@null@*/ const byte * pend)
 	/*@globals fileSystem @*/
 	/*@modifies dest, fileSystem @*/
 {
@@ -180,7 +184,7 @@ int pgpMpiSet(const char * pre, int lbits,
     char * t;
     unsigned int ix;
 
-    if ((p + ((mbits+7) >> 3)) > pend)
+    if (pend != NULL && (p + ((mbits+7) >> 3)) > pend)
 	return 1;
 
     if (mbits > lbits)

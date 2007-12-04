@@ -360,6 +360,7 @@ static int pgpPrtSigParams(const pgpPkt pp, byte pubkey_algo, byte sigtype,
 	/*@modifies fileSystem @*/
 {
     const byte * pend = pp->h + pp->hlen;
+    int xx;
     int i;
 
     for (i = 0; p < pend; i++, p += pgpMpiLen(p)) {
@@ -368,13 +369,16 @@ static int pgpPrtSigParams(const pgpPkt pp, byte pubkey_algo, byte sigtype,
 	    if (_dig &&
 	(sigtype == PGPSIGTYPE_BINARY || sigtype == PGPSIGTYPE_TEXT))
 	    {
+		xx = 0;
 		switch (i) {
 		case 0:		/* m**d */
-		    pgpMpiItem(pgpSigRSA[i], _dig, 10+i, p, pend);
+		    xx = pgpMpiItem(pgpSigRSA[i], _dig, 10+i, p, pend);
 		    /*@switchbreak@*/ break;
 		default:
+		    xx = 1;
 		    /*@switchbreak@*/ break;
 		}
+		if (xx) return xx;
 	    }
 	    pgpPrtStr("", pgpSigRSA[i]);
 	} else if (pubkey_algo == PGPPUBKEYALGO_DSA) {
@@ -382,7 +386,6 @@ static int pgpPrtSigParams(const pgpPkt pp, byte pubkey_algo, byte sigtype,
 	    if (_dig &&
 	(sigtype == PGPSIGTYPE_BINARY || sigtype == PGPSIGTYPE_TEXT))
 	    {
-		int xx;
 		xx = 0;
 		switch (i) {
 		case 0:		/* r */
@@ -1218,7 +1221,7 @@ static int pgpGrabPkts(const byte * pkts, size_t pktlen,
     return 0;
 }
 
-/*@-globstate -nullderef @*/	/* _dig annotation are not correct. */
+/*@-globstate -incondefs -nullderef @*/	/* _dig annotations are not correct. */
 int pgpPrtPkts(const byte * pkts, size_t pktlen, pgpDig dig, int printing)
 	/*@globals _dig, _digp, _pgp_print @*/
 	/*@modifies _dig, _digp, *_digp, _pgp_print @*/
@@ -1261,7 +1264,7 @@ int pgpPrtPkts(const byte * pkts, size_t pktlen, pgpDig dig, int printing)
     _dig = pgpDigFree(_dig);
     return 0;
 }
-/*@=globstate =nullderef @*/
+/*@=globstate =incondefs =nullderef @*/
 
 pgpArmor pgpReadPkts(const char * fn, const byte ** pkt, size_t * pktlen)
 {

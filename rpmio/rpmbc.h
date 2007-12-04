@@ -68,7 +68,8 @@ int rpmbcVerifyDSA(pgpDig dig)
 
 int rpmbcMpiItem(const char * pre, pgpDig dig, int itemno,
 		const byte * p, /*@null@*/ const byte * pend)
-	/*@modifies dig @*/;
+	/*@globals fileSystem @*/
+	/*@modifies dig, fileSystem @*/;
 
 void rpmbcClean(void * impl)
 	/*@modifies impl @*/;
