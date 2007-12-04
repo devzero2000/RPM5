@@ -12,11 +12,13 @@
 /*@access pgpDig @*/
 /*@access pgpDigParams @*/
 
+/*@-redecl@*/
 /*@unchecked@*/
 extern int _pgp_debug;
 
 /*@unchecked@*/
 extern int _pgp_print;
+/*@=redecl@*/
 
 /**
  * Convert hex to binary nibble.
@@ -37,7 +39,7 @@ unsigned char nibble(char c)
 }
 
 static
-int rpmbcSetRSA(DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
+int rpmbcSetRSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
 	/*@modifies ctx, dig @*/
 {
     rpmbc bc = dig->impl;
@@ -130,7 +132,7 @@ int rpmbcVerifyRSA(pgpDig dig)
 }
 
 static
-int rpmbcSetDSA(DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
+int rpmbcSetDSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
 	/*@modifies ctx, dig @*/
 {
     rpmbc bc = dig->impl;
@@ -183,7 +185,7 @@ int pgpMpiSet(const char * pre, int lbits,
 		/*@out@*/ void * dest, const byte * p,
 		/*@null@*/ const byte * pend)
 	/*@globals fileSystem @*/
-	/*@modifies dest, fileSystem @*/
+	/*@modifies *dest, fileSystem @*/
 {
     mpnumber * mpn = dest;
     unsigned int mbits = pgpMpiBits(p);
@@ -218,7 +220,7 @@ fprintf(stderr, "\t %s ", pre), mpfprintln(stderr, mpn->size, mpn->data);
 
 static
 int rpmbcMpiItem(const char * pre, pgpDig dig, int itemno,
-		const byte * p, const byte * pend)
+		const byte * p, /*@null@*/ const byte * pend)
 	/*@globals fileSystem @*/
 	/*@modifies dig, fileSystem @*/
 {

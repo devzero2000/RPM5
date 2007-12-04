@@ -596,6 +596,7 @@ void fdFiniDigest(FD_t fd, pgpHashAlgo hashalgo,
 
 /** \ingroup rpmio
  */
+/*@-mustmod@*/
 /*@unused@*/ static inline
 void fdStealDigest(FD_t fd, pgpDig dig)
 	/*@modifies fd, dig @*/
@@ -632,6 +633,7 @@ assert(dig->sha1ctx == NULL);
     }
 /*@=type@*/
 }
+/*@=mustmod@*/
 
 /*@-shadow@*/
 /** \ingroup rpmio

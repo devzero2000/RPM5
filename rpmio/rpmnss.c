@@ -4,6 +4,11 @@
 
 #include "system.h"
 #include <rpmio.h>
+
+#if defined(__LCLINT__)
+#define	__i386__
+#endif
+
 #define	_RPMNSS_INTERNAL
 #define	_RPMPGP_INTERNAL
 #include <rpmnss.h>
@@ -12,11 +17,13 @@
 /*@access pgpDig @*/
 /*@access pgpDigParams @*/
 
+/*@-redecl@*/
 /*@unchecked@*/
 extern int _pgp_debug;
 
 /*@unchecked@*/
 extern int _pgp_print;
+/*@=redecl@*/
 
 static
 int rpmnssSetRSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
@@ -75,11 +82,11 @@ int rpmnssVerifyRSA(pgpDig dig)
 
     nss->item.type = siBuffer;
     nss->item.data = dig->md5;
-    nss->item.len = dig->md5len;
+    nss->item.len = (unsigned) dig->md5len;
 
-/*@-moduncon@*/
+/*@-moduncon -nullstate @*/
     rc = (VFY_VerifyDigest(&nss->item, nss->rsa, nss->rsasig, nss->sigalg, NULL) == SECSuccess);
-/*@=moduncon@*/
+/*@=moduncon =nullstate @*/
 
     return rc;
 }
@@ -108,11 +115,11 @@ int rpmnssVerifyDSA(pgpDig dig)
 
     nss->item.type = siBuffer;
     nss->item.data = dig->sha1;
-    nss->item.len = dig->sha1len;
+    nss->item.len = (unsigned) dig->sha1len;
 
-/*@-moduncon@*/
+/*@-moduncon -nullstate @*/
     rc = (VFY_VerifyDigest(&nss->item, nss->dsa, nss->dsasig, nss->sigalg, NULL) == SECSuccess);
-/*@=moduncon@*/
+/*@=moduncon =nullstate @*/
 
     return rc;
 }
@@ -125,7 +132,7 @@ int rpmnssMpiSet(const char * pre, int lbits,
 		/*@out@*/ void * dest, const byte * p,
 		/*@null@*/ const byte * pend)
 	/*@globals fileSystem @*/
-	/*@modifies mpn, fileSystem @*/
+	/*@modifies *dest, fileSystem @*/
 {
     unsigned int mbits = pgpMpiBits(p);
     unsigned int nbits;
@@ -156,12 +163,15 @@ fprintf(stderr, "\t %s %s", pre, pgpHexStr(dest, nbytes));
  * @return		NULL on error
  */
 static
-SECItem * rpmnssMpiCopy(PRArenaPool * arena, SECItem * item, const byte * p)
+/*@only@*/ /*@null@*/
+SECItem * rpmnssMpiCopy(PRArenaPool * arena, /*@returned@*/ SECItem * item,
+		const byte * p)
+	/*@modifies item @*/
 {
     unsigned int nbytes = pgpMpiLen(p)-2;
 
     if (item == NULL) {
-	if ((item=SECITEM_AllocItem(arena, item, nbytes)) == NULL)
+	if ((item = SECITEM_AllocItem(arena, item, nbytes)) == NULL)
 	    return item;
     } else {
 	if (arena != NULL)
@@ -178,11 +188,14 @@ SECItem * rpmnssMpiCopy(PRArenaPool * arena, SECItem * item, const byte * p)
 
     memcpy(item->data, p+2, nbytes);
     item->len = nbytes;
+/*@-temptrans@*/
     return item;
+/*@=temptrans@*/
 }
 
 static
 SECKEYPublicKey * rpmnssNewPublicKey(KeyType type)
+	/*@*/
 {
     PRArenaPool *arena;
     SECKEYPublicKey *key;
@@ -191,7 +204,7 @@ SECKEYPublicKey * rpmnssNewPublicKey(KeyType type)
     if (arena == NULL)
 	return NULL;
 
-    key = PORT_ArenaZAlloc(arena, sizeof(SECKEYPublicKey));
+    key = PORT_ArenaZAlloc(arena, sizeof(*key));
 
     if (key == NULL) {
 	PORT_FreeArena(arena, PR_FALSE);
@@ -207,12 +220,14 @@ SECKEYPublicKey * rpmnssNewPublicKey(KeyType type)
 
 static
 SECKEYPublicKey * rpmnssNewRSAKey(void)
+	/*@*/
 {
     return rpmnssNewPublicKey(rsaKey);
 }
 
 static
 SECKEYPublicKey * rpmnssNewDSAKey(void)
+	/*@*/
 {
     return rpmnssNewPublicKey(dsaKey);
 }
@@ -349,7 +364,7 @@ void * rpmnssInit(void)
 {
     rpmnss nss = xcalloc(1, sizeof(*nss));
 
-    NSS_NoDB_Init(NULL);
+    (void) NSS_NoDB_Init(NULL);
 
     return (void *) nss;
 }

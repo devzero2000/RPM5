@@ -502,19 +502,19 @@ extern headerTagIndices rpmTags;
 #if !defined(SWIG)
 struct headerTagIndices_s {
 /*@relnull@*/
-    int (*loadIndex) (headerTagTableEntry ** ipp, int * np,
+    int (*loadIndex) (headerTagTableEntry ** ipp, size_t * np,
                 int (*cmp) (const void * avp, const void * bvp))
         /*@ modifies *ipp, *np */;	/*!< Load sorted tag index. */
 /*@relnull@*/
     headerTagTableEntry * byName;	/*!< rpmTag's sorted by name. */
-    int byNameSize;			/*!< No. of entries. */
+    size_t byNameSize;			/*!< No. of entries. */
     int (*byNameCmp) (const void * avp, const void * bvp)
         /*@*/;				/*!< Compare entries by name. */
     rpmTag (*tagValue) (const char * name)
 	/*@*/;				/*!< Return value from name. */
 /*@relnull@*/
     headerTagTableEntry * byValue;	/*!< rpmTag's sorted by value. */
-    int byValueSize;			/*!< No. of entries. */
+    size_t byValueSize;			/*!< No. of entries. */
     int (*byValueCmp) (const void * avp, const void * bvp)
         /*@*/;				/*!< Compare entries by value. */
     const char * (*tagName) (rpmTag value)
@@ -522,8 +522,9 @@ struct headerTagIndices_s {
     rpmTag (*tagType) (rpmTag value)
 	/*@*/;				/*!< Return type from value. */
     size_t nameBufLen;			/*!< No. bytes allocated for nameBuf. */
+/*@relnull@*/
     const char ** aTags;		/*!< Arbitrary tags array (ARGV_t) */
-/*@owned@*/ /*@relnull@*/
+/*@owned@*/ /*@null@*/
     char * nameBuf;			/* Name buffer. */
 /*@only@*/
     char * (*tagCanonicalize) (const char * s)

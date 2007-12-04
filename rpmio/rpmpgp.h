@@ -1779,7 +1779,7 @@ typedef void (*pgpImplClean_t) (void * impl)
 
 /**
  */
-typedef /*@null@*/ void * (*pgpImplFree_t) (/*@only@*/ void * impl)
+typedef void * (*pgpImplFree_t) (/*@only@*/ void * impl)
         /*@modifies impl @*/;
 
 /**
@@ -1803,8 +1803,10 @@ typedef struct pgpImplVecs_s {
 
 /**
  */
+/*@unchecked@*/
 extern pgpImplVecs_t * pgpImplVecs;
 
+/*@-mustmod@*/
 /**
  */
 /*@unused@*/ static inline
@@ -1846,8 +1848,7 @@ int pgpImplVerifyDSA(pgpDig dig)
 /*@unused@*/ static inline
 int pgpImplMpiItem(const char * pre, pgpDig dig, int itemno,
 		const byte * p, /*@null@*/ const byte * pend)
-	/*@globals fileSystem @*/
-	/*@modifies dig, fileSystem @*/
+	/*@modifies dig @*/
 {
     return (*pgpImplVecs->_pgpMpiItem) (pre, dig, itemno, p, pend);
 }
@@ -1858,7 +1859,9 @@ int pgpImplMpiItem(const char * pre, pgpDig dig, int itemno,
 void pgpImplClean(void * impl)
         /*@modifies impl @*/
 {
-    return (*pgpImplVecs->_pgpClean) (impl);
+/*@-noeffectuncon@*/
+    (*pgpImplVecs->_pgpClean) (impl);
+/*@=noeffectuncon@*/
 }
 
 /**
@@ -1879,6 +1882,7 @@ void * pgpImplInit(void)
 {
     return (*pgpImplVecs->_pgpInit) ();
 }
+/*@=mustmod@*/
 
 #ifdef __cplusplus
 }

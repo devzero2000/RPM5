@@ -19,9 +19,10 @@
  * @retval *argvp	arbitrary tag array
  * @return		0 always
  */
-static int tagLoadATags(ARGV_t * argvp,
+static int tagLoadATags(/*@null@*/ ARGV_t * argvp,
 		int (*cmp) (const void * avp, const void * bvp))
-	/*@modifies *ipp, *np @*/
+	/*@globals rpmGlobalMacroContext, h_errno @*/
+	/*@modifies *argvp, rpmGlobalMacroContext @*/
 {
     ARGV_t aTags = NULL;
     char * s = rpmExpand("%{?_arbitrary_tags}", NULL);
@@ -38,7 +39,9 @@ static int tagLoadATags(ARGV_t * argvp,
 	*argvp = aTags;
     else
 	aTags = argvFree(aTags);
+/*@-nullstate@*/	/* *argvp may be NULL */
     return 0;
+/*@=nullstate@*/
 }
 
 /**
@@ -80,7 +83,7 @@ static int tagCmpValue(const void * avp, const void * bvp)
  * @param cmp		sort compare routine
  * @return		0 always
  */
-static int tagLoadIndex(headerTagTableEntry ** ipp, int * np,
+static int tagLoadIndex(headerTagTableEntry ** ipp, size_t * np,
 		int (*cmp) (const void * avp, const void * bvp))
 	/*@modifies *ipp, *np @*/
 {
@@ -116,16 +119,16 @@ static char * _tagCanonicalize(const char * s)
     if (!strncasecmp(s, "RPMTAG_", sizeof("RPMTAG_")-1))
 	s += sizeof("RPMTAG_") - 1;
     se = s;
-    while ((c = *se++) && xisalpha(c))
+    while ((c = (int)*se++) && xisalpha(c))
 	nb++;
 
     te = t = xmalloc(nb+1);
-    if (*s) {
-	*te++ = xtoupper(*s++);
+    if (*s != '\0') {
+	*te++ = (char) xtoupper((int)*s++);
 	nb--;
     }
     while (nb--)
-	*te++ = xtolower(*s++);
+	*te++ = (char) xtolower((int)*s++);
     *te = '\0';
 
     return t;
@@ -139,9 +142,10 @@ static rpmTag _tagGenerate(const char *s)
     size_t digestlen = 0;
     size_t nb = strlen(s);
     rpmTag tag = 0;
+    int xx;
 
-    rpmDigestUpdate(ctx, s, nb);
-    rpmDigestFinal(ctx, &digest, &digestlen, 0);
+    xx = rpmDigestUpdate(ctx, s, nb);
+    xx = rpmDigestFinal(ctx, &digest, &digestlen, 0);
     if (digest && digestlen > 4) {
 	memcpy(&tag, digest + (digestlen - 4), 4);
 	tag &= 0x3fffffff;
@@ -153,11 +157,14 @@ static rpmTag _tagGenerate(const char *s)
 
 /* forward refs */
 static const char * _tagName(rpmTag tag)
-	/*@*/;
+	/*@globals rpmGlobalMacroContext, h_errno @*/
+	/*@modifies rpmGlobalMacroContext @*/;
 static unsigned int _tagType(rpmTag tag)
-	/*@*/;
+	/*@globals rpmGlobalMacroContext, h_errno @*/
+	/*@modifies rpmGlobalMacroContext @*/;
 static rpmTag _tagValue(const char * tagstr)
-	/*@*/;
+	/*@globals rpmGlobalMacroContext, h_errno @*/
+	/*@modifies rpmGlobalMacroContext @*/;
 
 /*@unchecked@*/
 static struct headerTagIndices_s _rpmTags = {
@@ -172,12 +179,14 @@ static struct headerTagIndices_s _rpmTags = {
 headerTagIndices rpmTags = &_rpmTags;
 /*@=compmempass@*/
 
+/*@-mods@*/
 static const char * _tagName(rpmTag tag)
 {
     char * nameBuf;
     size_t nameBufLen = 0;
     headerTagTableEntry t;
-    int comparison, i, l, u;
+    size_t i, l, u;
+    int comparison;
     int xx;
     char *s;
 
@@ -259,15 +268,19 @@ static const char * _tagName(rpmTag tag)
 	break;
     }
     if (nameBuf[0] == '\0')
-	snprintf(nameBuf, nameBufLen, "Tag_0x%08x", (unsigned) tag);
+	xx = snprintf(nameBuf, nameBufLen, "Tag_0x%08x", (unsigned) tag);
     nameBuf[nameBufLen-1] = '\0';
+/*@-globstate@*/	/* _rpmTags.nameBuf reachable. */
     return nameBuf;
+/*@=globstate@*/
 }
+/*@=mods@*/
 
 static unsigned int _tagType(rpmTag tag)
 {
     headerTagTableEntry t;
-    int comparison, i, l, u;
+    size_t i, l, u;
+    int comparison;
     int xx;
 
     if (_rpmTags.aTags == NULL)
