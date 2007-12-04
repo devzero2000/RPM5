@@ -87,8 +87,16 @@
 	(other contents are now identical after fixing RPMTAG_BUILDTIME).
     - jbj: rpmMergeHeadersFromFD has gone AWOL and is needed by yum
 	/usr/lib/python2.5/site-packages/rpm/_rpmmodule.so: undefined symbol: rpmMergeHeadersFromFD
-    - jbj: retrieved headers are failing sanity checks.
-
+    - jbj: retrieved headers are occaisionally failing sanity checks.
+    - jbj: VSFlags (and --nodigest/--nosignature) is now per-verify rather than
+	persistently per-transaction scoped because of moving the flags into
+	pgpDig. What really needs to be done is to permit end-user to set
+	their own policy, setting VSFlags through macro configuration, and
+	nuke all the rpmtsVSFlags method goopiness.
+    - jbj: decide on including rpmnss or not. Happily, the implementation
+	is currently DOA, making the decision rather easy.
+    - jbj: Mandriva perl-URPM "make test" indicates a problem querying binary
+	package headers that would be produced by a spec file.
 
   o to be resolved before RPM 5.0.0:
     - rse: NEWS polishing
