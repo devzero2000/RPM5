@@ -91,8 +91,6 @@
 	pgpDig. What really needs to be done is to permit end-user to set
 	their own policy, setting VSFlags through macro configuration, and
 	nuke all the rpmtsVSFlags method goopiness.
-    - jbj: decide on including rpmnss or not. Happily, the implementation
-	is currently DOA, making the decision rather easy.
     - jbj: Mandriva perl-URPM "make test" indicates a problem querying binary
 	package headers that would be produced by a spec file.
 

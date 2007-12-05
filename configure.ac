@@ -912,6 +912,13 @@ RPM_CHECK_LIB(
     [yes,external], [beecrypt],
     [], [ AC_MSG_ERROR([mandatory BeeCrypt library not found]) ])
 
+dnl # NSS
+RPM_CHECK_LIB(
+    [NSS], [nss],
+    [nss3], [NSS_NoDB_Init], [nss3/nss.h],
+    [no,external], [],
+    [], [])
+
 dnl # Neon
 RPM_CHECK_LIB(
     [Neon], [neon],

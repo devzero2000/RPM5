@@ -201,6 +201,7 @@ LIBRPMIO_0
     _RequestPass;
     Rmdir;
     _Rmdir;
+    rpmbcImplVecs;
     rpmCleanPath;
     rpmCLIMacroContext;
     rpmDefineMacro;
@@ -282,6 +283,7 @@ LIBRPMIO_0
     rpmmgNew;
     rpmmgFile;
     rpmmgBuffer;
+    rpmnssImplVecs;
     rpmsqAction;
     rpmsqCaught;
     _rpmsq_debug;

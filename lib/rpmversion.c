@@ -6,17 +6,6 @@
 #include "rpmversion.h"
 #include "debug.h"
 
-/* XXX Which one is it, RPM or RPMLIB ? */
-#ifndef RPMLIB_VERSION
-#define RPMLIB_VERSION RPM_VERSION
-#endif
-#ifndef RPMLIB_TIMESTAMP
-#define RPMLIB_TIMESTAMP RPM_TIMESTAMP
-#endif
-#ifndef RPMLIB_VENDOR
-#define RPMLIB_VENDOR RPM_VENDOR
-#endif
-
 /*@-shiftimplementation @*/
 uint32_t rpmlibVersion(void)
 {
