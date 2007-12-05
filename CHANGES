@@ -1,4 +1,5 @@
 5.0a4 -> 5.0b1:
+    - rse: add XAR support to "devtool standalone"
     - jbj: fix: s/RPM_/RPMLIB_/ in rpmversion.h.in. That should "stick" now.
     - rpm.org: credit for the original NSS hacks.
     - jbj: no-brainer AutoFu for WITH_NSS enabling, add rpmnss.[ch] to rpmio.
