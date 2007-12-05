@@ -218,6 +218,7 @@ LIBRPMIO_0
     rpmExpand;
     rpmExpandNumeric;
     rpmFreeMacros;
+    rpmgcImplVecs;
     rpmGenPath;
     rpmGetMacroEntries;
     rpmGetPath;
@@ -297,6 +298,7 @@ LIBRPMIO_0
     rpmsqThread;
     rpmsqThreadEqual;
     rpmsqWait;
+    rpmsslImplVecs;
     rpmswAdd;
     rpmswDiff;
     rpmswEnter;

@@ -9,11 +9,17 @@ extern int _pgp_print;
 
 #include "system.h"
 #include <rpmio.h>
-#define	_RPMBC_INTERNAL
+
 #define	_RPMPGP_INTERNAL
+#define	_RPMBC_INTERNAL
 #include <rpmbc.h>
+#define	_RPMGC_INTERNAL
+#include <rpmgc.h>
 #define	_RPMNSS_INTERNAL
 #include <rpmnss.h>
+#define	_RPMSSL_INTERNAL
+#include <rpmssl.h>
+
 #include "debug.h"
 
 static int doit(const char *sig, pgpDig dig, int printing)
@@ -131,7 +137,7 @@ fprintf(stderr, "=============================== DSA FIPS-186-1: rc %d\n", rc);
 
     dig = pgpDigFree(dig);
 
-    pgpImplVecs = &rpmnssImplVecs;
+    pgpImplVecs = &rpmgcImplVecs;
 
     dig = pgpDigNew(0);
 _pgp_debug = 0;
