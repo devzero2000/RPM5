@@ -912,10 +912,10 @@ RPM_CHECK_LIB(
     [yes,external], [beecrypt],
     [], [ AC_MSG_ERROR([mandatory BeeCrypt library not found]) ])
 
-dnl # NSS
+dnl # Mozilla NSS
 RPM_CHECK_LIB(
-    [NSS], [nss],
-    [nss3], [NSS_NoDB_Init], [nss3/nss.h],
+    [Mozilla NSS], [nss],
+    [nss3 nss], [NSS_NoDB_Init], [nss.h],
     [no,external], [],
     [], [])
 
