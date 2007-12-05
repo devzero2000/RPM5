@@ -6,7 +6,9 @@
 static int _debug = 0;
 
 #include "system.h"
-#include "rpmio_internal.h"
+#define	_RPMBC_INTERNAL
+#define	_RPMPGP_INTERNAL
+#include <rpmbc.h>
 #include "debug.h"
 
 static int doit(const char *sig, pgpDig dig, int printing)
@@ -103,32 +105,34 @@ int
 main(int argc, char *argv[])
 {
     pgpDig dig;
+    rpmbc bc;
     int printing = 1;
     int rc;
 
     dig = pgpDigNew(0);
+    bc = dig->impl;
 
-    mpbzero(&dig->p);	mpbsethex(&dig->p, fips_p);
-    mpbzero(&dig->q);	mpbsethex(&dig->q, fips_q);
-    mpnzero(&dig->g);	mpnsethex(&dig->g, fips_g);
-    mpnzero(&dig->y);	mpnsethex(&dig->y, fips_y);
-    mpnzero(&dig->r);	mpnsethex(&dig->r, fips_r);
-    mpnzero(&dig->s);	mpnsethex(&dig->s, fips_s);
-    mpnzero(&dig->hm);	mpnsethex(&dig->hm, fips_hm);
+    mpbzero(&bc->p);	mpbsethex(&bc->p, fips_p);
+    mpbzero(&bc->q);	mpbsethex(&bc->q, fips_q);
+    mpnzero(&bc->g);	mpnsethex(&bc->g, fips_g);
+    mpnzero(&bc->y);	mpnsethex(&bc->y, fips_y);
+    mpnzero(&bc->r);	mpnsethex(&bc->r, fips_r);
+    mpnzero(&bc->s);	mpnsethex(&bc->s, fips_s);
+    mpnzero(&bc->hm);	mpnsethex(&bc->hm, fips_hm);
 
-    rc = dsavrfy(&dig->p, &dig->q, &dig->g, &dig->hm,
-		&dig->y, &dig->r, &dig->s);
+    rc = dsavrfy(&bc->p, &bc->q, &bc->g, &bc->hm,
+		&bc->y, &bc->r, &bc->s);
 
 fprintf(stderr, "=============================== DSA FIPS-186-1: rc %d\n", rc);
 
-    mpbfree(&dig->p);
-    mpbfree(&dig->q);
-    mpnfree(&dig->g);
-    mpnfree(&dig->y);
+    mpbfree(&bc->p);
+    mpbfree(&bc->q);
+    mpnfree(&bc->g);
+    mpnfree(&bc->y);
 
-    mpnfree(&dig->hm);
-    mpnfree(&dig->r);
-    mpnfree(&dig->s);
+    mpnfree(&bc->hm);
+    mpnfree(&bc->r);
+    mpnfree(&bc->s);
 
 fprintf(stderr, "=============================== GPG Secret Key\n");
     if ((rc = doit(jbjSecretDSA, dig, printing)) != 0)
@@ -152,7 +156,7 @@ fprintf(stderr, "=============================== GPG Signature of \"abc\"\n");
 	rpmDigestUpdate(ctx, dsig->hash, dsig->hashlen);
 	rpmDigestFinal(ctx, (void **)&digest, &digestlen, 1);
 
-	mpnzero(&dig->hm); mpnsethex(&dig->hm, digest);
+	mpnzero(&bc->hm); mpnsethex(&bc->hm, digest);
 
 fprintf(stderr, "\n    hm = [ 160]: %s\n\n", digest);
 
@@ -162,19 +166,19 @@ fprintf(stderr, "\n    hm = [ 160]: %s\n\n", digest);
 	}
     }
 
-    rc = dsavrfy(&dig->p, &dig->q, &dig->g, &dig->hm,
-		&dig->y, &dig->r, &dig->s);
+    rc = dsavrfy(&bc->p, &bc->q, &bc->g, &bc->hm,
+		&bc->y, &bc->r, &bc->s);
 
 fprintf(stderr, "=============================== DSA verify: rc %d\n", rc);
 
-    mpbfree(&dig->p);
-    mpbfree(&dig->q);
-    mpnfree(&dig->g);
-    mpnfree(&dig->y);
+    mpbfree(&bc->p);
+    mpbfree(&bc->q);
+    mpnfree(&bc->g);
+    mpnfree(&bc->y);
 
-    mpnfree(&dig->hm);
-    mpnfree(&dig->r);
-    mpnfree(&dig->s);
+    mpnfree(&bc->hm);
+    mpnfree(&bc->r);
+    mpnfree(&bc->s);
 
     dig = pgpDigFree(dig);
 
