@@ -37,12 +37,12 @@ SQLite      [1] optional  3.3     3.5.2   http://www.sqlite.org/
 Lua         [2] optional  5.1     5.1.2   http://www.lua.org/
 ZLib        [3] optional  1.2     1.2.3   http://www.zlib.net/
 Bzip2           optional  1.0     1.0.4   http://www.bzip.org/
-LZMA SDK        internal  4.27    4.32    http://www.7-zip.org/sdk.html
-File/magic  [4] optional  4.0     4.21    ftp://ftp.astron.com/pub/file/
+LZMA SDK    [4] internal  4.27    4.32    http://www.7-zip.org/sdk.html
+File/magic  [5] optional  4.0     4.21    ftp://ftp.astron.com/pub/file/
 GNU gettext     optional  0.16    0.17    http://www.gnu.org/software/gettext/
 GNU iconv       optional  1.11    1.11    http://www.gnu.org/software/libiconv/
 PCRE            optional  7.0     7.4     http://www.pcre.org/
-XAR         [5] optional  1.5     1.6dev  http://code.google.com/p/xar/
+XAR         [6] optional  1.5     1.6dev  http://code.google.com/p/xar/
 DMalloc         optional  5       5.5.2   http://dmalloc.com/
 Electric Fence  optional  2.1     2.1.13  http://perens.com/FreeSoftware/ElectricFence/
 Linux KeyUtils  optional  1.2     1.2     http://people.redhat.com/~dhowells/keyutils/
@@ -63,11 +63,14 @@ System libelf   optional  -       -       e.g. http://www.mr511.de/software/engl
                Building RPM against stock external Zlib not recommended
                as it reduces its RPM-specific functionality.
 
-[4] file:      Unmodified File/magic copy bundled with RPM for convenience reasons.
+[4] lzma:      RPM has a copy of the LZMA SDK 4.32 decompression routines bundled,
+               but for compression the external command line interface lzma(1) is required.
+
+[5] file:      Unmodified File/magic copy bundled with RPM for convenience reasons.
                Building RPM against this internal File/magic requires also internal Zlib.
                Building RPM against stock external File/magic supported, too.
 
-[5] xar:       Modified XAR copy bundled with RPM.
+[6] xar:       Modified XAR copy bundled with RPM.
                Building RPM against stock external XAR currently still not recommended.
                The 1.5 releases of Xar needs some patching, before they work.
 
