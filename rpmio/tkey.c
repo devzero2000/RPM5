@@ -4,11 +4,16 @@
  */
 
 static int _debug = 0;
+extern int _pgp_debug;
+extern int _pgp_print;
 
 #include "system.h"
+#include <rpmio.h>
 #define	_RPMBC_INTERNAL
 #define	_RPMPGP_INTERNAL
 #include <rpmbc.h>
+#define	_RPMNSS_INTERNAL
+#include <rpmnss.h>
 #include "debug.h"
 
 static int doit(const char *sig, pgpDig dig, int printing)
@@ -120,19 +125,17 @@ main(int argc, char *argv[])
     mpnzero(&bc->s);	mpnsethex(&bc->s, fips_s);
     mpnzero(&bc->hm);	mpnsethex(&bc->hm, fips_hm);
 
-    rc = dsavrfy(&bc->p, &bc->q, &bc->g, &bc->hm,
-		&bc->y, &bc->r, &bc->s);
+    rc = pgpImplVerifyDSA(dig);
 
 fprintf(stderr, "=============================== DSA FIPS-186-1: rc %d\n", rc);
 
-    mpbfree(&bc->p);
-    mpbfree(&bc->q);
-    mpnfree(&bc->g);
-    mpnfree(&bc->y);
+    dig = pgpDigFree(dig);
 
-    mpnfree(&bc->hm);
-    mpnfree(&bc->r);
-    mpnfree(&bc->s);
+    pgpImplVecs = &rpmnssImplVecs;
+
+    dig = pgpDigNew(0);
+_pgp_debug = 0;
+_pgp_print = 0;
 
 fprintf(stderr, "=============================== GPG Secret Key\n");
     if ((rc = doit(jbjSecretDSA, dig, printing)) != 0)
@@ -147,38 +150,18 @@ fprintf(stderr, "=============================== GPG Signature of \"abc\"\n");
 	fprintf(stderr, "==> FAILED: rc %d\n", rc);
 
     {	DIGEST_CTX ctx = rpmDigestInit(PGPHASHALGO_SHA1, RPMDIGEST_NONE);
-	struct pgpDigParams_s * dsig = &dig->signature;
-	const char * digest = NULL;
-	size_t digestlen = 0;
+	pgpDigParams dsig = pgpGetSignature(dig);
 	const char * txt = "abc";
 	
 	rpmDigestUpdate(ctx, txt, strlen(txt));
 	rpmDigestUpdate(ctx, dsig->hash, dsig->hashlen);
-	rpmDigestFinal(ctx, (void **)&digest, &digestlen, 1);
 
-	mpnzero(&bc->hm); mpnsethex(&bc->hm, digest);
-
-fprintf(stderr, "\n    hm = [ 160]: %s\n\n", digest);
-
-	if (digest) {
-	    free((void *)digest);
-	    digest = NULL;
-	}
+	(void) pgpImplSetDSA(ctx, dig, dsig);
     }
 
-    rc = dsavrfy(&bc->p, &bc->q, &bc->g, &bc->hm,
-		&bc->y, &bc->r, &bc->s);
-
+    rc = pgpImplVerifyDSA(dig);
+    
 fprintf(stderr, "=============================== DSA verify: rc %d\n", rc);
-
-    mpbfree(&bc->p);
-    mpbfree(&bc->q);
-    mpnfree(&bc->g);
-    mpnfree(&bc->y);
-
-    mpnfree(&bc->hm);
-    mpnfree(&bc->r);
-    mpnfree(&bc->s);
 
     dig = pgpDigFree(dig);
 

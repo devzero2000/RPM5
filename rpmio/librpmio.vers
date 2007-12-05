@@ -155,6 +155,7 @@ LIBRPMIO_0
     XpgpDigLink;
     XpgpDigUnlink;
     _pgp_debug;
+    _pgp_print;
     pgpFindPubkey;
     pgpGetPubkey;
     pgpGetSignature;

@@ -127,8 +127,9 @@ tglob_LDADD = $(RPM_LDADD)
 tinv_SOURCES = tinv.c
 tinv_LDADD = $(RPM_LDADD)
 
-tkey_SOURCES = tkey.c
-tkey_LDADD = $(RPM_LDADD)
+tkey_SOURCES = tkey.c rpmnss.c
+tkey_CFLAGS  = $(CFLAGS) -I/usr/include/nss3 -I/usr/include/nspr4
+tkey_LDADD = $(RPM_LDADD) -lnss3 -lplds4 -lplc4 -lnspr4 -lpthread -ldl
 
 trpmio_SOURCES = trpmio.c
 trpmio_LDADD = $(RPM_LDADD)

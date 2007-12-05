@@ -1,4 +1,6 @@
 5.0a4 -> 5.0b1:
+    - jbj: tkey indicates functional DSA verification with rpmnss.c.
+    - jbj: fix: debug the stoopids in rpmnss.c.
     - jbj: eliminate dueling typdef byte, beecrypt "owns" the typedef.
     - jbj: make sure that yum can upgrade zlib-devel. Trash the DEAD code.
     - jbj: resurrect rpmMergeHeadersFromFD goop. Yah, mon, DEAD code ...

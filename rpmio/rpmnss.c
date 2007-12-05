@@ -100,7 +100,7 @@ int rpmnssSetDSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
 
     nss->sigalg = SEC_OID_ANSIX9_DSA_SIGNATURE_WITH_SHA1_DIGEST;
 
-    xx = rpmDigestFinal(ctx, (void **)&dig->sha1, &dig->sha1len, 1);
+    xx = rpmDigestFinal(ctx, (void **)&dig->sha1, &dig->sha1len, 0);
 
     /* Compare leading 16 bits of digest for quick check. */
     return memcmp(dig->sha1, sigp->signhash16, sizeof(sigp->signhash16));
@@ -232,10 +232,6 @@ SECKEYPublicKey * rpmnssNewDSAKey(void)
     return rpmnssNewPublicKey(dsaKey);
 }
 
-#ifndef DSA_SUBPRIME_LEN
-#define DSA_SUBPRIME_LEN 20
-#endif
-
 static
 int rpmnssMpiItem(const char * pre, pgpDig dig, int itemno,
 		const uint8_t * p, /*@null@*/ const uint8_t * pend)
@@ -244,10 +240,6 @@ int rpmnssMpiItem(const char * pre, pgpDig dig, int itemno,
 {
     rpmnss nss = dig->impl;
     int rc = 0;
-
-    nss->item.type = 0;
-    nss->item.len = 2 * DSA_SUBPRIME_LEN;
-    nss->item.data = memset(alloca(nss->item.len), 0, nss->item.len);
 
     switch (itemno) {
     default:
@@ -259,15 +251,19 @@ assert(0);
 	    rc = 1;
 	break;
     case 20:		/* DSA r */
-	rc = rpmnssMpiSet(pre, DSA_SUBPRIME_LEN*8, nss->item.data, p, pend);
+	nss->item.type = 0;
+	nss->item.len = 2 * (160/8);
+	nss->item.data = xcalloc(1, nss->item.len);
+	rc = rpmnssMpiSet(pre, 160, nss->item.data, p, pend);
 	break;
     case 21:		/* DSA s */
-	rc = rpmnssMpiSet(pre, DSA_SUBPRIME_LEN*8, nss->item.data + DSA_SUBPRIME_LEN, p, pend);
+	rc = rpmnssMpiSet(pre, 160, nss->item.data + (160/8), p, pend);
 	if (nss->dsasig != NULL)
 	    SECITEM_FreeItem(nss->dsasig, PR_FALSE);
 	if ((nss->dsasig = SECITEM_AllocItem(NULL, NULL, 0)) == NULL
 	 || DSAU_EncodeDerSig(nss->dsasig, &nss->item) != SECSuccess)
 	    rc = 1;
+	nss->item.data = _free(nss->item.data);
 	break;
     case 30:		/* RSA n */
 	if (nss->rsa == NULL)
