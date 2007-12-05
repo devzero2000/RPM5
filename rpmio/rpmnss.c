@@ -4,7 +4,6 @@
 
 #include "system.h"
 #include <rpmio.h>
-#include <rpmnss.h>
 
 #if defined(__LCLINT__)
 #define	__i386__
@@ -14,6 +13,9 @@
 #define	_RPMNSS_INTERNAL
 #define	_RPMPGP_INTERNAL
 #include <rpmnss.h>
+#else
+/* need DIGEST_CTX */
+#include <rpmpgp.h>
 #endif
 
 #include "debug.h"
