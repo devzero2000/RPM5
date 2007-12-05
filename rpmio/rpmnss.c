@@ -4,6 +4,7 @@
 
 #include "system.h"
 #include <rpmio.h>
+#include <rpmnss.h>
 
 #if defined(__LCLINT__)
 #define	__i386__
