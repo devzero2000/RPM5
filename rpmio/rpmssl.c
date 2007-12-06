@@ -4,6 +4,7 @@
 
 #include "system.h"
 #include <rpmio.h>
+#include <rpmlog.h>
 
 #define	_RPMPGP_INTERNAL
 #if defined(WITH_SSL)
@@ -165,7 +166,7 @@ int rpmsslVerifyRSA(pgpDig dig)
      */
 
     nb = BN_num_bytes(ssl->rsahm);
-    rsahm = xmalloc(1, nb);
+    rsahm = xmalloc(nb);
     xx = BN_bn2bin(ssl->rsahm, rsahm);
     ll = BN_num_bytes(ssl->rsa->n);
     xx = ll;	/* WRONG WRONG WRONG */
