@@ -22,12 +22,30 @@ extern int _pgp_debug;
 extern int _pgp_print;
 /*@=redecl@*/
 
+/**
+ * Convert hex to binary nibble.
+ * @param c            hex character
+ * @return             binary nibble
+ */
+static
+unsigned char nibble(char c)
+	/*@*/
+{
+    if (c >= '0' && c <= '9')
+	return (unsigned char) (c - '0');
+    if (c >= 'A' && c <= 'F')
+	return (unsigned char)((int)(c - 'A') + 10);
+    if (c >= 'a' && c <= 'f')
+	return (unsigned char)((int)(c - 'a') + 10);
+    return (unsigned char) '\0';
+}
+
 static
 int rpmsslSetRSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
 	/*@modifies ctx, dig @*/
 {
     rpmssl ssl = dig->impl;
-    unsigned int nbits = 0;	/* WRONG WRONG WRONG */
+    unsigned int nbits = BN_num_bits(ssl->c);
     unsigned int nb = (nbits + 7) >> 3;
     const char * prefix;
     const char * hexstr;
@@ -36,19 +54,24 @@ int rpmsslSetRSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
     char * tt;
     int xx;
 
+    ssl->type = 0;
     /* XXX Values from PKCS#1 v2.1 (aka RFC-3447) */
     switch (sigp->hash_algo) {
     case PGPHASHALGO_MD5:
 	prefix = "3020300c06082a864886f70d020505000410";
+	ssl->type = NID_md5;
 	break;
     case PGPHASHALGO_SHA1:
 	prefix = "3021300906052b0e03021a05000414";
+	ssl->type = NID_sha1;
 	break;
     case PGPHASHALGO_RIPEMD160:
 	prefix = "3021300906052b2403020105000414";
+	ssl->type = NID_ripemd160;
 	break;
     case PGPHASHALGO_MD2:
 	prefix = "3020300c06082a864886f70d020205000410";
+	ssl->type = NID_md2;
 	break;
     case PGPHASHALGO_TIGER192:
 	prefix = "3029300d06092b06010401da470c0205000418";
@@ -69,10 +92,10 @@ int rpmsslSetRSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
 	prefix = NULL;
 	break;
     }
-    if (prefix == NULL)
+    if (prefix == NULL || ssl->type == 0)
 	return 1;
 
-    xx = rpmDigestFinal(ctx, (void **)&dig->md5, &dig->md5len, 0);
+    xx = rpmDigestFinal(ctx, (void **)&dig->md5, &dig->md5len, 1);
     hexstr = tt = xmalloc(2 * nb + 1);
     memset(tt, (int) 'f', (2 * nb));
     tt[0] = '0'; tt[1] = '0';
@@ -84,12 +107,18 @@ int rpmsslSetRSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
 
     /* Set RSA hash. */
 /*@-moduncon -noeffectuncon @*/
+    xx = BN_hex2bn(&ssl->rsahm, hexstr);
 /*@=moduncon =noeffectuncon @*/
 
     hexstr = _free(hexstr);
 
     /* Compare leading 16 bits of digest for quick check. */
-    return memcmp(dig->md5, sigp->signhash16, sizeof(sigp->signhash16));
+    s = dig->md5;
+/*@-type@*/
+    signhash16[0] = (uint8_t) (nibble(s[0]) << 4) | nibble(s[1]);
+    signhash16[1] = (uint8_t) (nibble(s[2]) << 4) | nibble(s[3]);
+/*@=type@*/
+    return memcmp(signhash16, sigp->signhash16, sizeof(sigp->signhash16));
 }
 
 static
@@ -102,7 +131,25 @@ int rpmsslVerifyRSA(pgpDig dig)
     /* Verify RSA signature. */
 /*@-moduncon@*/
 #if 0
-    rc = RSA_verify(type, m, m_len, sigbuf, siglen, ssl->rsa)
+    /* XXX This is _NOT_ the openssl function to use:
+     *	rc = RSA_verify(type, m, m_len, sigbuf, siglen, ssl->rsa)
+     */
+#endif
+#if 0
+     Here's what needs doing (from OpenPGP reference sources in 1999):
+	static u32_t checkrsa(BIGNUM * a, RSA * key, u8_t * hash, int hlen)
+	{
+	  u8_t dbuf[MAXSIGM];
+	  int j, ll;
+
+	  j = BN_bn2bin(a, dbuf);
+	  ll = BN_num_bytes(key->n);
+	  while (j < ll)
+	    memmove(&dbuf[1], dbuf, j++), dbuf[0] = 0;
+	  j = RSA_public_decrypt(ll, dbuf, dbuf, key, RSA_PKCS1_PADDING);
+	  RSA_free(key);
+	  return (j != hlen || memcmp(dbuf, hash, j));
+	}
 #endif
 /*@=moduncon@*/
 
