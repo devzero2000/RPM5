@@ -66,19 +66,6 @@
                      explicitly set and no other implicit sets wished.
      ________________________________________________________________________
 
-     Change:         extra-section-track
-     Purpose:        Add support for custom section "%track",
-                     a package build-time section containing a script
-                     which can check whether the current package is
-                     still based on the latest upstream vendor version.
-     Reason:         In OpenPKG all "external" sources (see above)
-                     are automatically and bi-daily tracked for new
-                     available versions from the upstream vendor. For
-                     this OpenPKG places vcheck(1) based config snippets
-                     into its %track sections and lets them be executed
-                     through vcheck(1) via "rpm -bt".
-     ________________________________________________________________________
-
      Change:         extra-section-test
      Purpose:        Add support for custom section "%test",
                      a package install-time section containing a script

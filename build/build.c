@@ -153,7 +153,6 @@ rpmRC doScript(Spec spec, int what, const char *name, StringBuf sb, int test)
 	mPost = "%{__spec_clean_post}";
 	mCmd = "%{__spec_clean_cmd}";
 	break;
-#if defined(RPM_VENDOR_OPENPKG) /* extra-section-track */
     /* support "%track" script/section */
     case RPMBUILD_TRACK:
 	name = "%track";
@@ -162,7 +161,6 @@ rpmRC doScript(Spec spec, int what, const char *name, StringBuf sb, int test)
 	mPost = "%{__spec_track_post}";
 	mCmd = "%{__spec_track_cmd}";
 	break;
-#endif
     case RPMBUILD_STRINGBUF:
     default:
 	mTemplate = "%{___build_template}";
@@ -211,12 +209,8 @@ rpmRC doScript(Spec spec, int what, const char *name, StringBuf sb, int test)
 
     (void) fputs(buildTemplate, fp);
 
-#if defined(RPM_VENDOR_OPENPKG) /* extra-section-track */
     /* support "%track" script/section */
     if (what != RPMBUILD_PREP && what != RPMBUILD_RMBUILD && spec->buildSubdir && what != RPMBUILD_TRACK)
-#else
-    if (what != RPMBUILD_PREP && what != RPMBUILD_RMBUILD && spec->buildSubdir)
-#endif
 	fprintf(fp, "cd '%s'\n", spec->buildSubdir);
 
     if (what == RPMBUILD_RMBUILD) {
@@ -267,11 +261,8 @@ fprintf(stderr, "*** addMacros\n");
     buildCmd = rpmExpand(mCmd, " ", buildScript, NULL);
     (void) poptParseArgvString(buildCmd, &argc, &argv);
 
-#if defined(RPM_VENDOR_OPENPKG) /* extra-section-track */
-    /* support "%track" script/section */
-    if (what != RPMBUILD_TRACK)
-#endif
-    rpmlog(RPMLOG_NOTICE, _("Executing(%s): %s\n"), name, buildCmd);
+    if (what != RPMBUILD_TRACK)		/* support "%track" script/section */
+	rpmlog(RPMLOG_NOTICE, _("Executing(%s): %s\n"), name, buildCmd);
     if (!(child = fork())) {
 
 	/*@-mods@*/
@@ -359,12 +350,10 @@ rpmRC buildSpec(rpmts ts, Spec spec, int what, int test)
 /*@=boundsread@*/
 	}
     } else {
-#if defined(RPM_VENDOR_OPENPKG) /* extra-section-track */
 	/* support "%track" script/section */
 	if ((what & RPMBUILD_TRACK) &&
 	    (rc = doScript(spec, RPMBUILD_TRACK, NULL, NULL, test)))
 		goto exit;
-#endif
 
 	if ((what & RPMBUILD_PREP) &&
 	    (rc = doScript(spec, RPMBUILD_PREP, NULL, NULL, test)))

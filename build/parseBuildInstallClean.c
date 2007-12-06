@@ -31,13 +31,10 @@ int parseBuildInstallClean(Spec spec, rpmParseState parsePart)
 	sbp = &spec->clean;
 	name = "%clean";
     }
-#if defined(RPM_VENDOR_OPENPKG) /* extra-section-track */
-    /* support "%track" script/section */
-    else if (parsePart == PART_TRACK) {
+    else if (parsePart == PART_TRACK) {	/* support "%track" script/section */
        sbp = &(spec->track);
        name = "%track";
     }
-#endif
     /*@=branchstate@*/
     
     if (*sbp != NULL) {

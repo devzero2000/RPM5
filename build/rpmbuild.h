@@ -34,11 +34,8 @@ typedef enum rpmBuildFlags_e {
     RPMBUILD_RMSOURCE	= (1 <<  8),	/*!< Remove source(s) and patch(s). */
     RPMBUILD_RMBUILD	= (1 <<  9),	/*!< Remove build sub-tree. */
     RPMBUILD_STRINGBUF	= (1 << 10),	/*!< only for doScript() */
-#if 1 || defined(RPM_VENDOR_OPENPKG) /* extra-section-track */
-    /* support "%track" script/section */
-    RPMBUILD_TRACK	= (1 << 12),	/*!< Execute %%track. */
-#endif
-    RPMBUILD_RMSPEC	= (1 << 11)	/*!< Remove spec file. */
+    RPMBUILD_TRACK	= (1 << 11),	/*!< Execute %%track. */
+    RPMBUILD_RMSPEC	= (1 << 12)	/*!< Remove spec file. */
 } rpmBuildFlags;
 /*@=typeuse@*/
 
@@ -76,14 +73,10 @@ typedef enum rpmParseState_e {
     PART_BUILDARCHITECTURES= 29+PART_BASE,/*!< */
     PART_TRIGGERPOSTUN	= 30+PART_BASE,	/*!< */
     PART_TRIGGERPREIN	= 31+PART_BASE,	/*!< */
-#if 1 || defined(RPM_VENDOR_OPENPKG) /* extra-section-track extra-section-test */
     /* support "%track" and "%test" scripts/sections */
     PART_TRACK		= 32+PART_BASE, /*!< */
     PART_TEST		= 33+PART_BASE, /*!< */
     PART_LAST		= 34+PART_BASE  /*!< */
-#else
-    PART_LAST		= 32+PART_BASE	/*!< */
-#endif
 } rpmParseState;
 
 #define STRIP_NOTHING             0

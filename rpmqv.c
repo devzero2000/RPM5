@@ -644,9 +644,7 @@ int main(int argc, const char ** argv)
 	    ba->noDeps = 1;
 #endif
 	    /*@innerbreak@*/ break;
-#if defined(RPM_VENDOR_OPENPKG) /* extra-section-track */
-	/* support extracting the "%track" script/section */
-	case 't':
+	case 't':	/* support extracting the "%track" script/section */
 	    ba->buildAmount |= RPMBUILD_TRACK;
 	    /* enforce no dependency checking and expansion of %setup, %patch and %prep macros */
 	    ba->noDeps = 1;
@@ -654,7 +652,6 @@ int main(int argc, const char ** argv)
 	    rpmDefineMacro(NULL, "patch #", RMIL_CMDLINE);
 	    rpmDefineMacro(NULL, "prep %%prep", RMIL_CMDLINE);
 	    /*@innerbreak@*/ break;
-#endif
 	}
 
 	if (!poptPeekArg(optCon)) {

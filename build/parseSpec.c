@@ -43,13 +43,9 @@ static struct PartRec {
     { PART_TRIGGERIN,     0, "%triggerin"},
     { PART_TRIGGERIN,     0, "%trigger"},
     { PART_VERIFYSCRIPT,  0, "%verifyscript"},
-#if defined(RPM_VENDOR_OPENPKG) /* extra-section-track */
-    /* support "%track" script/section */
-    { PART_TRACK,         0, "%track"},
-#endif
+    { PART_TRACK,         0, "%track"},	/* support "%track" script/section */
 #if defined(RPM_VENDOR_OPENPKG) /* extra-section-test */
-    /* support "%test" script/section */
-    { PART_TEST,          0, "%test"},
+    { PART_TEST,          0, "%test"},	/* support "%test" script/section */
 #endif
     {0, 0, 0}
 };
@@ -533,12 +529,9 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootURL,
 	case PART_BUILDARCHITECTURES:
 	    /*@switchbreak@*/ break;
 
-#if defined(RPM_VENDOR_OPENPKG) /* extra-section-track */
-	/* support "%track" script/section */
-	case PART_TRACK:
+	case PART_TRACK:	/* support "%track" script/section */
 	    parsePart = parseBuildInstallClean(spec, parsePart);
 	    /*@switchbreak@*/ break;
-#endif
 #if defined(RPM_VENDOR_OPENPKG) /* extra-section-test */
 	/* support "%test" script/section */
 	case PART_TEST:

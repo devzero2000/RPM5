@@ -509,10 +509,7 @@ Spec newSpec(void)
     spec->install = NULL;
     spec->check = NULL;
     spec->clean = NULL;
-#if defined(RPM_VENDOR_OPENPKG) /* extra-section-track */
-    /* support "%track" script/section */
-    spec->track = NULL;
-#endif
+    spec->track = NULL;		/* support "%track" script/section */
 
     spec->sources = NULL;
     spec->packages = NULL;
@@ -559,10 +556,7 @@ Spec freeSpec(Spec spec)
     spec->install = freeStringBuf(spec->install);
     spec->check = freeStringBuf(spec->check);
     spec->clean = freeStringBuf(spec->clean);
-#if defined(RPM_VENDOR_OPENPKG) /* extra-section-track */
-    /* support "%track" script/section */
-    spec->track = freeStringBuf(spec->track);
-#endif
+    spec->track = freeStringBuf(spec->track);	/* support "%track" script/section */
 
     spec->buildSubdir = _free(spec->buildSubdir);
     spec->rootURL = _free(spec->rootURL);

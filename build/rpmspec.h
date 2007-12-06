@@ -177,11 +177,8 @@ struct Spec_s {
     StringBuf check;		/*!< %check scriptlet. */
 /*@only@*/
     StringBuf clean;		/*!< %clean scriptlet. */
-#if defined(RPM_VENDOR_OPENPKG) /* extra-section-track */
-    /* support "%track" script/section */
 /*@only@*/
     StringBuf track;		/*!< %track scriptlet. */
-#endif
 
 /*@owned@*/
     Package packages;		/*!< Package list. */
