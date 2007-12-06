@@ -307,7 +307,7 @@ enum rpmTag_e {
     RPMTAG_BUILDREQUIRES	= 1109, /* internal */
     RPMTAG_BUILDCONFLICTS	= 1110, /* internal */
 /*@-enummemuse@*/
-    RPMTAG_BUILDMACROS		= 1111, /* internal - unused */
+    RPMTAG_BUILDMACROS		= 1111, /* s[] srpms only */
 /*@=enummemuse@*/
     RPMTAG_PROVIDEFLAGS		= 1112,	/* i[] */
     RPMTAG_PROVIDEVERSION	= 1113,	/* s[] */
@@ -335,10 +335,10 @@ enum rpmTag_e {
     RPMTAG_PATCHESNAME		= 1133, /* s[] deprecated placeholder (SuSE) */
     RPMTAG_PATCHESFLAGS		= 1134, /* i[] deprecated placeholder (SuSE) */
     RPMTAG_PATCHESVERSION	= 1135, /* s[] deprecated placeholder (SuSE) */
-    RPMTAG_CACHECTIME		= 1136,	/* i */
-    RPMTAG_CACHEPKGPATH		= 1137,	/* s */
-    RPMTAG_CACHEPKGSIZE		= 1138,	/* i */
-    RPMTAG_CACHEPKGMTIME	= 1139,	/* i */
+    RPMTAG_CACHECTIME		= 1136,	/* i rpmcache(8) only */
+    RPMTAG_CACHEPKGPATH		= 1137,	/* s rpmcache(8) only */
+    RPMTAG_CACHEPKGSIZE		= 1138,	/* i rpmcache(8) only */
+    RPMTAG_CACHEPKGMTIME	= 1139,	/* i rpmcache(8) only */
     RPMTAG_FILECOLORS		= 1140,	/* i[] */
     RPMTAG_FILECLASS		= 1141,	/* i[] */
     RPMTAG_CLASSDICT		= 1142,	/* s[] */

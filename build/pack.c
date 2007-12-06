@@ -1118,6 +1118,7 @@ int packageBinaries(Spec spec)
 /*@-boundswrite@*/
 int packageSources(Spec spec)
 {
+    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     struct cpioSourceArchive_s csabuf;
     CSA_t csa = &csabuf;
     int rc;
@@ -1126,6 +1127,19 @@ int packageSources(Spec spec)
     (void) rpmlibMarkers(spec->sourceHeader);
 	
     (void) genSourceRpmName(spec);
+
+    {	const char ** av = NULL;
+	int xx;
+	(void)rpmGetMacroEntries(NULL, NULL, 1, &av);
+	if (av != NULL && av[0] != NULL) {
+	    he->tag = RPMTAG_BUILDMACROS;
+	    he->t = RPM_STRING_ARRAY_TYPE;
+	    he->p.argv = av;
+	    he->c = argvCount(av);
+	    xx = headerPut(spec->sourceHeader, he, 0);
+	}
+	av = argvFree(av);
+    }
 
     spec->cookie = _free(spec->cookie);
     
