@@ -765,7 +765,7 @@ assert(0);
     (void) rpmAddSignature(sigh, sigtarget, RPMSIGTAG_MD5, passPhrase);
 
     sigtag = RPMSIGTAG_GPG;
-    addsig = 0;	/* XXX breaks --sign */
+    addsig = (passPhrase && passPhrase[0]);
 
     if (addsig) {
 	rpmlog(RPMLOG_NOTICE, _("Generating signature: %d\n"), sigtag);

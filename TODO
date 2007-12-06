@@ -55,7 +55,6 @@
     - jbj: markReplacedFiles() subtly rewrites header back into rpmdb
 	with altered RPMTAG_FILESTATES data. get/del/add sequence
 	is needed instead.
-    - jbj: check that rpmbuild --sign is functional, or eliminate the option.
     - jbj: choose between db-4.5.20 and db-4.6.21. db-4.5.20 may have fewer
 	upgrade/downgrade issues because of the db-4.6.21 DB_HASH change,
 	but rpm-5.0 already uses DB_BTREE for Packages.
@@ -105,6 +104,8 @@
     - jbj: fix openssl RSA signature verification.
     - jbj: drill Requires: sanitycheck(N) = E:V-R runtime probe.
     - jbj: write up added featlets/bugtures in %docdir notes.
+    - jbj: rpmbuild --sign is functional. However, behavior may have changed
+	for empty passwords when not using linux keyutils. Should I care?
 
   RPM 5.1 ROADMAP ISSUES
   ----------------------
