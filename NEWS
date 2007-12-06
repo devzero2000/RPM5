@@ -105,6 +105,9 @@
     cleanup and simplify the code base. RPM 5 now supports RPMv4 package
     format only.
 
+  o Additional Specification Features:
+    FIXME: Class, %track+vcheck, %sanitycheck
+
   o Application Programming Interface (API) Changes:
     FIXME: << JBJ: please add details! >>
 
