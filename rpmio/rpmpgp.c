@@ -24,7 +24,7 @@ int _pgp_print = 0;
 
 /*@unchecked@*/
 pgpImplVecs_t * pgpImplVecs =
-#if defined(WITH_NSS)
+#if defined(WITH_NSS_NOTYET)
 	&rpmnssImplVecs;
 #else
 	&rpmbcImplVecs;

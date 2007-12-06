@@ -106,6 +106,7 @@
     - jbj: write up added featlets/bugtures in %docdir notes.
     - jbj: rpmbuild --sign is functional. However, behavior may have changed
 	for empty passwords when not using linux keyutils. Should I care?
+    - jbj: rpmnss is reporting NOKEY with --rebuilddb.
 
   RPM 5.1 ROADMAP ISSUES
   ----------------------
