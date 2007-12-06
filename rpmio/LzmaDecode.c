@@ -4,7 +4,7 @@
   LzmaDecode.c
   LZMA Decoder (optimized for Speed version)
   
-  LZMA SDK 4.22 Copyright (c) 1999-2005 Igor Pavlov (2005-06-10)
+  LZMA SDK 4.32 Copyright (c) 1999-2005 Igor Pavlov (2005-12-09)
   http://www.7-zip.org/
 
   LZMA SDK is licensed under two licenses:

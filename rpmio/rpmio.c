@@ -2813,13 +2813,25 @@ static inline /*@dependent@*/ void * lzdFileno(FD_t fd)
     return rc;
 }
 
-static FD_t lzdWriteOpen(int fdno, int fopen)
+/*@-mods@*/     /* XXX hide rpmGlobalMacroContext mods for now. */
+static FD_t lzdWriteOpen(int fdno, int fopen, const char * mode)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/
 {
     int pid;
     int p[2];
     int xx;
+    const char *lzma;
+    char l[3];
+    const char *level;
+    
+    if (isdigit(mode[1])) /* "w5" */
+    {
+	sprintf(l, "-%c", mode[1]);
+	level = l;
+    }
+    else
+        level = NULL;
 
     if (fdno < 0) return NULL;
     if (pipe(p) < 0) {
@@ -2856,8 +2868,10 @@ static FD_t lzdWriteOpen(int fdno, int fopen)
         xx = dup2(fdno, 1);
         for (i = 3; i < 1024; i++)
 	    xx = close(i);
-        if (execl("/usr/bin/lzma", "lzma", "e", "-si", "-so", NULL))
+	lzma = rpmGetPath("%{?__lzma}%{!?__lzma:/usr/bin/lzma}", NULL);
+	if (execl(lzma, "lzma", level, NULL))
             _exit(1);
+	lzma = _free(lzma);
     }
     return NULL; /* warning */
 }
@@ -2923,7 +2937,7 @@ static /*@null@*/ FD_t lzdOpen(const char * path, const char * mode)
         int fdno = open(path, O_WRONLY);
 
         if (fdno < 0) return NULL;
-        return lzdWriteOpen(fdno, 1);
+        return lzdWriteOpen(fdno, 1, mode);
     } else {
         int fdno = open(path, O_RDONLY);
 
@@ -2946,7 +2960,7 @@ static /*@null@*/ FD_t lzdFdopen(void * cookie, const char * fmode)
     fdSetFdno(fd, -1);		/* XXX skip the fdio close */
     if (fdno < 0) return NULL;
     if (fmode[0] == 'w') {
-        return lzdWriteOpen(fdno, 0);
+        return lzdWriteOpen(fdno, 0, fmode);
     } else {
         return lzdReadOpen(fdno, 0);
     }
