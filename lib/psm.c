@@ -667,6 +667,7 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
     FD_t out;
     rpmRC rc = RPMRC_FAIL;	/* assume failure */
     const char * NVRA;
+    const char * body = NULL;
     int * ssp = NULL;
     int xx;
     int i;
@@ -679,6 +680,9 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
     if (progArgv == NULL && script == NULL)
 	return RPMRC_OK;
 
+    /* Macro expand all scriptlets. */
+    body = rpmExpand(script, NULL);
+
     he->tag = RPMTAG_NVRA;
     xx = headerGet(h, he, 0);
 assert(he->p.str != NULL);
@@ -690,7 +694,7 @@ assert(he->p.str != NULL);
 		D_("%s: %s(%s) running <lua> scriptlet.\n"),
 		psm->stepName, tag2sln(psm->scriptTag), NVRA);
 	rc = runLuaScript(psm, h, sln, progArgc, progArgv,
-			    script, arg1, arg2);
+			    body, arg1, arg2);
 #endif
 	goto exit;
     }
@@ -773,10 +777,10 @@ assert(he->p.str != NULL);
 	    xx = Fwrite(set_x, sizeof(set_x[0]), sizeof(set_x)-1, fd);
 	}
 
-	if (ldconfig_path && strstr(script, ldconfig_path) != NULL)
+	if (ldconfig_path && strstr(body, ldconfig_path) != NULL)
 	    ldconfig_done = 1;
 
-	xx = Fwrite(script, sizeof(script[0]), strlen(script), fd);
+	xx = Fwrite(body, sizeof(body[0]), strlen(body), fd);
 	xx = Fclose(fd);
 
 	{   const char * sn = fn;
@@ -965,6 +969,7 @@ exit:
 	fn = _free(fn);
     }
 
+    body = _free(body);
     NVRA = _free(NVRA);
 
     return rc;

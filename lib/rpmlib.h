@@ -160,6 +160,7 @@ typedef enum rpmScriptState_e {
 /** \ingroup rpmrc
  * Build and install arch/os table identifiers.
  * @deprecated Eliminate from API.
+ * @todo	Eliminate in rpm-5.1.
  */
 enum rpm_machtable_e {
     RPM_MACHTABLE_INSTARCH	= 0,	/*!< Install platform architecture. */
@@ -212,7 +213,7 @@ int rpmShowRC(FILE * fp)
 
 /** \ingroup rpmrc
  * @deprecated Use addMacro to set _target_* macros.
- * @todo Eliminate from API.
+ * @todo	Eliminate in rpm-5.1.
  # @note Only used by build code.
  * @param archTable
  * @param osTable
@@ -222,6 +223,7 @@ void rpmSetTables(int archTable, int osTable)
 	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /** \ingroup rpmrc
+ * @todo	Eliminate in rpm-5.1.
  * Destroy rpmrc arch/os compatibility tables.
  * @todo Eliminate from API.
  */
@@ -250,6 +252,7 @@ struct rpmRelocation_s {
 /**
  * Compare headers to determine which header is "newer".
  * @deprecated Use rpmdsCompare instead.
+ * @todo	Eliminate in rpm-5.1.
  * @param first		1st header
  * @param second	2nd header
  * @return		result of comparison
@@ -288,6 +291,8 @@ rpmRC rpmReadPackageFile(rpmts ts, void * _fd,
 
 /**
  * Install source package.
+ * @deprecated	This routine needs to DIE! DIE! DIE!.
+ * @todo	Eliminate in rpm-5.1, insturment rpmtsRun() state machine instead.
  * @param ts		transaction set
  * @param _fd		file handle
  * @retval specFilePtr	address of spec file name (or NULL)

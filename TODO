@@ -103,6 +103,7 @@
     - rse: NEWS polishing
     - jbj: fix openssl RSA signature verification.
     - jbj: drill Requires: sanitycheck(N) = E:V-R runtime probe.
+    - jbj: write up added featlets/bugtures in %docdir notes.
 
   RPM 5.1 ROADMAP ISSUES
   ----------------------
@@ -118,3 +119,4 @@
     - jbj: add per-implementation symmetric ciphers.
     - jbj: permit per-file encryption with password caching through keyutils.
     - jbj: generalize the Leopard XAR format to ar (as in *.deb), tar, and cpio.
+    - jbj: eliminate the oddball *.src.rpm paths, nuke rpmInstallSourcePackage.
