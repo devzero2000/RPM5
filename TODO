@@ -115,4 +115,6 @@
 	types for tag data.
     - jbj: add libTomCrypt signature verification.
     - jbj: add per-implementation crypto hashes.
+    - jbj: add per-implementation symmetric ciphers.
+    - jbj: permit per-file encryption with password caching through keyutils.
     - jbj: generalize the Leopard XAR format to ar (as in *.deb), tar, and cpio.
