@@ -27,7 +27,7 @@ int rpmsslSetRSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
 	/*@modifies ctx, dig @*/
 {
     rpmssl ssl = dig->impl;
-    unsigned int nbits = 0;	/* WRONG */
+    unsigned int nbits = 0;	/* WRONG WRONG WRONG */
     unsigned int nb = (nbits + 7) >> 3;
     const char * prefix;
     const char * hexstr;
@@ -97,10 +97,13 @@ int rpmsslVerifyRSA(pgpDig dig)
 	/*@*/
 {
     rpmssl ssl = dig->impl;
-    int rc;
+    int rc = 0;
 
     /* Verify RSA signature. */
 /*@-moduncon@*/
+#if 0
+    rc = RSA_verify(type, m, m_len, sigbuf, siglen, ssl->rsa)
+#endif
 /*@=moduncon@*/
 
     return rc;
@@ -110,14 +113,10 @@ static
 int rpmsslSetDSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
 	/*@modifies ctx, dig @*/
 {
-    rpmssl ssl = dig->impl;
     int xx;
 
-    xx = rpmDigestFinal(ctx, (void **)&dig->sha1, &dig->sha1len, 1);
-
-   /* Set DSA hash. */
-/*@-moduncon -noeffectuncon @*/
-/*@=moduncon =noeffectuncon @*/
+    /* Set DSA hash. */
+    xx = rpmDigestFinal(ctx, (void **)&dig->sha1, &dig->sha1len, 0);
 
     /* Compare leading 16 bits of digest for quick check. */
     return memcmp(dig->sha1, sigp->signhash16, sizeof(sigp->signhash16));
@@ -132,6 +131,7 @@ int rpmsslVerifyDSA(pgpDig dig)
 
     /* Verify DSA signature. */
 /*@-moduncon@*/
+    rc = (DSA_do_verify(dig->sha1, dig->sha1len, ssl->dsasig, ssl->dsa) == 1);
 /*@=moduncon@*/
 
     return rc;
@@ -144,31 +144,51 @@ int rpmsslMpiItem(const char * pre, pgpDig dig, int itemno,
 	/*@modifies dig, fileSystem @*/
 {
     rpmssl ssl = dig->impl;
+    unsigned int nb = ((pgpMpiBits(p) + 7) >> 3);
     int rc = 0;
 
+/*@-moduncon@*/
     switch (itemno) {
     default:
 assert(0);
 	break;
     case 10:		/* RSA m**d */
+	ssl->c = BN_bin2bn(p+2, nb, ssl->c);
 	break;
     case 20:		/* DSA r */
+	if (ssl->dsasig == NULL) ssl->dsasig = DSA_SIG_new();
+	ssl->dsasig->r = BN_bin2bn(p+2, nb, ssl->dsasig->r);
 	break;
     case 21:		/* DSA s */
+	if (ssl->dsasig == NULL) ssl->dsasig = DSA_SIG_new();
+	ssl->dsasig->s = BN_bin2bn(p+2, nb, ssl->dsasig->s);
 	break;
     case 30:		/* RSA n */
+	if (ssl->rsa == NULL) ssl->rsa = RSA_new();
+	ssl->rsa->n = BN_bin2bn(p+2, nb, ssl->rsa->n);
 	break;
     case 31:		/* RSA e */
+	if (ssl->rsa == NULL) ssl->rsa = RSA_new();
+	ssl->rsa->e = BN_bin2bn(p+2, nb, ssl->rsa->e);
 	break;
     case 40:		/* DSA p */
+	if (ssl->dsa == NULL) ssl->dsa = DSA_new();
+	ssl->dsa->p = BN_bin2bn(p+2, nb, ssl->dsa->p);
 	break;
     case 41:		/* DSA q */
+	if (ssl->dsa == NULL) ssl->dsa = DSA_new();
+	ssl->dsa->q = BN_bin2bn(p+2, nb, ssl->dsa->q);
 	break;
     case 42:		/* DSA g */
+	if (ssl->dsa == NULL) ssl->dsa = DSA_new();
+	ssl->dsa->g = BN_bin2bn(p+2, nb, ssl->dsa->g);
 	break;
     case 43:		/* DSA y */
+	if (ssl->dsa == NULL) ssl->dsa = DSA_new();
+	ssl->dsa->pub_key = BN_bin2bn(p+2, nb, ssl->dsa->pub_key);
 	break;
     }
+/*@=moduncon@*/
     return rc;
 }
 
@@ -178,6 +198,22 @@ void rpmsslClean(void * impl)
 {
     rpmssl ssl = impl;
     if (ssl != NULL) {
+	if (ssl->dsa) {
+	    DSA_free(ssl->dsa);
+	    ssl->dsa = NULL;
+	}
+	if (ssl->dsasig) {
+	    DSA_SIG_free(ssl->dsasig);
+	    ssl->dsasig = NULL;
+	}
+	if (ssl->rsa) {
+	    RSA_free(ssl->rsa);
+	    ssl->rsa = NULL;
+	}
+	if (ssl->c) {
+	    BN_free(ssl->c);
+	    ssl->c = NULL;
+	}
     }
 }
 
@@ -197,6 +233,7 @@ void * rpmsslInit(void)
 	/*@*/
 {
     rpmssl ssl = xcalloc(1, sizeof(*ssl));
+    ERR_load_crypto_strings();
     return (void *) ssl;
 }
 

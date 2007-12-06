@@ -38,7 +38,6 @@ struct rpmgc_s {
     gcry_mpi_t hm;
 
     /* RSA parameters. */
-    gcry_mpi_t md;
     gcry_mpi_t n;
     gcry_mpi_t e;
     gcry_mpi_t c;

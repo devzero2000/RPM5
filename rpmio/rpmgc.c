@@ -119,6 +119,7 @@ int rpmgcSetRSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
 		"(data (flags pkcs1) (hash %s %m))",
 		gcry_pk_algo_name(sigp->hash_algo), c);
     gcry_mpi_release(c);
+if (_pgp_debug)
 rpmgcDump("gc->hash", gc->hash);
 /*@=moduncon =noeffectuncon @*/
 
@@ -130,7 +131,6 @@ rpmgcDump("gc->hash", gc->hash);
     signhash16[0] = (uint8_t) (nibble(s[0]) << 4) | nibble(s[1]);
     signhash16[1] = (uint8_t) (nibble(s[2]) << 4) | nibble(s[3]);
 /*@=type@*/
-
     return memcmp(signhash16, sigp->signhash16, sizeof(sigp->signhash16));
 }
 

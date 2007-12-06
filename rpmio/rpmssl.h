@@ -10,6 +10,10 @@
 
 /* Implementation specific includes. */
 #if defined(_RPMSSL_INTERNAL)
+#include <openssl/bn.h>
+#include <openssl/dsa.h>
+#include <openssl/rsa.h>
+#include <openssl/engine.h>
 #endif
 
 /**
@@ -21,11 +25,14 @@ typedef	/*abstract@*/ struct rpmssl_s * rpmssl;
  */
 #if defined(_RPMSSL_INTERNAL)
 struct rpmssl_s {
-    int foo;
-
     /* DSA parameters. */
+    DSA * dsa;
+    DSA_SIG * dsasig;
 
     /* RSA parameters. */
+    RSA * rsa;
+
+    BIGNUM * c;
 };
 #endif
 
