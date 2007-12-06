@@ -1181,8 +1181,6 @@ print (t)\
 #%{__spec_clean_post}\
 #%{nil}
 
-#if defined(RPM_VENDOR_OPENPKG) /* extra-section-track */
-# support %track script/section
 %__spec_track_shell    %{___build_shell}
 %__spec_track_args     %{___build_args}
 %__spec_track_cmd      %{___build_cmd}
@@ -1192,20 +1190,16 @@ print (t)\
 %__spec_track_template #!%{__spec_track_shell}\
 %{__spec_track_pre}\
 %{nil}
-#endif
 
-#if defined(RPM_VENDOR_OPENPKG) /* extra-section-test */
-# support %test script/section
-%__spec_test_shell    %{___build_shell}
-%__spec_test_args     %{___build_args}
-%__spec_test_cmd      %{___build_cmd}
-%__spec_test_pre      %{___build_pre}
-%__spec_test_body     %{___build_body}
-%__spec_test_post     %{___build_post}
-%__spec_test_template #!%{__spec_test_shell}\
-%{__spec_test_pre}\
+%__spec_sanitycheck_shell    %{___build_shell}
+%__spec_sanitycheck_args     %{___build_args}
+%__spec_sanitycheck_cmd      %{___build_cmd}
+%__spec_sanitycheck_pre      %{___build_pre}
+%__spec_sanitycheck_body     %{___build_body}
+%__spec_sanitycheck_post     %{___build_post}
+%__spec_sanitycheck_template #!%{__spec_sanitycheck_shell}\
+%{__spec_sanitycheck_pre}\
 %{nil}
-#endif
 
 %__spec_rmbuild_shell	%{___build_shell}
 %__spec_rmbuild_args	%{___build_args}
