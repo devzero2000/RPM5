@@ -66,13 +66,6 @@
                      explicitly set and no other implicit sets wished.
      ________________________________________________________________________
 
-     Change:         extra-header-class
-     Purpose:        Add support for custom header/tag "Class".
-     Reason:         OpenPKG required a package classification based
-                     on a quality and not a functional grouping (as it
-                     is the case for "Group").
-     ________________________________________________________________________
-
      Change:         extra-section-track
      Purpose:        Add support for custom section "%track",
                      a package build-time section containing a script

@@ -404,10 +404,7 @@ enum rpmTag_e {
     RPMTAG_RPMLIBVERSION	= 1199, /* i */
     RPMTAG_RPMLIBTIMESTAMP	= 1200, /* i */
     RPMTAG_RPMLIBVENDOR		= 1201, /* i */
-#if 1 || defined(RPM_VENDOR_OPENPKG) /* extra-header-class */
-    /* support "Class" tag/header */
     RPMTAG_CLASS		= 1202, /* s (OpenPKG Class: placeholder) */
-#endif
 #if 1 || defined(RPM_VENDOR_OPENPKG) /* extra-section-test */
     /* support "%track" script/section */
     RPMTAG_TRACK		= 1203, /* s (OpenPKG %track) */
