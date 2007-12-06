@@ -64,7 +64,6 @@
 %__lua			@__LUA@
 %__ln_s			@LN_S@
 %__lzma			@__LZMA@
-%__lzmash		@__LZMASH@
 %__lzop			@__LZOP@
 %__make			@__MAKE@
 %make			%{__make}
