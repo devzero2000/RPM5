@@ -21,6 +21,14 @@ AC_REQUIRE_AUX_FILE([install-sh])
 AC_REQUIRE_AUX_FILE([mkinstalldirs])
 AM_MAINTAINER_MODE
 
+dnl # allow packagers to override the officially branding name
+RPM_NAME="RPM"
+AC_ARG_WITH(name,
+    AS_HELP_STRING([--with-name=NAME], [set official name of program (default: "RPM")]), [dnl
+    RPM_NAME="$withval"
+])
+AC_DEFINE_UNQUOTED(RPM_NAME, "$RPM_NAME", [official name of program])
+
 dnl # allow packagers to override the bugreport address
 AC_ARG_WITH(bugreport,
     AS_HELP_STRING([--with-bugreport=ADDRESS], [set packager bugreport Email/Web address (PACKAGE_BUGREPORT_DEFAULT)]), [dnl

@@ -149,12 +149,7 @@ static void printVersion(FILE * fp)
 	/*@globals rpmEVR, fileSystem @*/
 	/*@modifies *fp, fileSystem @*/
 {
-#if defined(RPM_VENDOR_OPENPKG) /* branding */
-    /* use OpenPKG branding */
-    fprintf(fp, _("OpenPKG RPM %s\n"), rpmEVR);
-#else
-    fprintf(fp, _("RPM version %s\n"), rpmEVR);
-#endif
+    fprintf(fp, _("%s version %s\n"), RPM_NAME, rpmEVR);
 }
 
 static void printUsage(poptContext con, FILE * fp, int flags)

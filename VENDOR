@@ -92,12 +92,6 @@
      Hint:           This is not tested at all as it is still unused!
      ________________________________________________________________________
 
-     Change:         branding
-     Purpose:        Apply some branding for the OpenPKG distribution.
-     Reason:         To make sure the users notice that this is not 100%
-                     a standard RPM from rpm5.org which is used by OpenPKG.
-     ________________________________________________________________________
-
      Change:         no-deps-on-building-srpms
      Purpose:        Do not perform any dependency checking on building SRPMs.
      Reason:         We never found any reason why this is of any benefit for
