@@ -34,7 +34,7 @@ typedef enum rpmBuildFlags_e {
     RPMBUILD_RMSOURCE	= (1 <<  8),	/*!< Remove source(s) and patch(s). */
     RPMBUILD_RMBUILD	= (1 <<  9),	/*!< Remove build sub-tree. */
     RPMBUILD_STRINGBUF	= (1 << 10),	/*!< only for doScript() */
-#if defined(RPM_VENDOR_OPENPKG) /* extra-section-track */
+#if 1 || defined(RPM_VENDOR_OPENPKG) /* extra-section-track */
     /* support "%track" script/section */
     RPMBUILD_TRACK	= (1 << 12),	/*!< Execute %%track. */
 #endif
@@ -76,7 +76,7 @@ typedef enum rpmParseState_e {
     PART_BUILDARCHITECTURES= 29+PART_BASE,/*!< */
     PART_TRIGGERPOSTUN	= 30+PART_BASE,	/*!< */
     PART_TRIGGERPREIN	= 31+PART_BASE,	/*!< */
-#if defined(RPM_VENDOR_OPENPKG) /* extra-section-track extra-section-test */
+#if 1 || defined(RPM_VENDOR_OPENPKG) /* extra-section-track extra-section-test */
     /* support "%track" and "%test" scripts/sections */
     PART_TRACK		= 32+PART_BASE, /*!< */
     PART_TEST		= 33+PART_BASE, /*!< */
