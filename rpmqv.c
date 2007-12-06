@@ -149,7 +149,8 @@ static void printVersion(FILE * fp)
 	/*@globals rpmEVR, fileSystem @*/
 	/*@modifies *fp, fileSystem @*/
 {
-    fprintf(fp, _("%s version %s\n"), RPM_NAME, rpmEVR);
+    fprintf(fp, _("%s version %s rpmlib markers (0x%08x,0x%08x,0x%08X)\n"),
+	RPM_NAME, rpmEVR, rpmlibVersion(), rpmlibTimestamp(), rpmlibVendor());
 }
 
 static void printUsage(poptContext con, FILE * fp, int flags)

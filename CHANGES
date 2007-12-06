@@ -1,4 +1,5 @@
 5.0a4 -> 5.0b1:
+    - jbj: display the rpmlib Version/Timestamp/Vendor markers lest I forget.
     - jbj: macro expand all scriptlet bodies before execution. W00t!
     - jbj: populate RPMTAG_BUILDMACROS. implementation took 6+ years ...
     - jbj: add %sanitycheck scriptlet to packages. more wiring needed todo++.
