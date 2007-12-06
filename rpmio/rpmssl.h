@@ -32,6 +32,8 @@ struct rpmssl_s {
     /* RSA parameters. */
     RSA * rsa;
 
+    BIGNUM * rsahm;
+
     BIGNUM * c;
 };
 #endif

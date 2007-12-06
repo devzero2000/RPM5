@@ -9,13 +9,12 @@
 #define	__i386__
 #endif
 
+#define	_RPMPGP_INTERNAL
 #if defined(WITH_NSS)
 #define	_RPMNSS_INTERNAL
-#define	_RPMPGP_INTERNAL
 #include <rpmnss.h>
 #else
-/* need DIGEST_CTX */
-#include <rpmpgp.h>
+#include <rpmpgp.h>		/* XXX DIGEST_CTX */
 #endif
 
 #include "debug.h"

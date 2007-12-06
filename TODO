@@ -96,6 +96,7 @@
 
   o to be resolved before RPM 5.0.0:
     - rse: NEWS polishing
+    - jbj: fix openssl RSA signature verification.
 
   RPM 5.1 ROADMAP ISSUES
   ----------------------
@@ -106,3 +107,5 @@
 	during --rebuildb, or with header extensions. When this issue is
 	resolved, then rpm can/should use implicit, rather than explicit, data
 	types for tag data.
+    - jbj: add libTomCrypt signature verification.
+    - jbj: add per-implementation crypto hashes.

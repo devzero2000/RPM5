@@ -6,8 +6,12 @@
 #include <rpmio.h>
 
 #define	_RPMPGP_INTERNAL
+#if defined(WITH_SSL)
 #define	_RPMSSL_INTERNAL
 #include <rpmssl.h>
+#else
+#include <rpmpgp.h>		/* XXX DIGEXT_CTX */
+#endif
 
 #include "debug.h"
 
@@ -22,6 +26,7 @@ extern int _pgp_debug;
 extern int _pgp_print;
 /*@=redecl@*/
 
+#if defined(WITH_SSL)
 /**
  * Convert hex to binary nibble.
  * @param c            hex character
@@ -39,11 +44,13 @@ unsigned char nibble(char c)
 	return (unsigned char)((int)(c - 'a') + 10);
     return (unsigned char) '\0';
 }
+#endif	/* WITH_SSL */
 
 static
 int rpmsslSetRSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
 	/*@modifies ctx, dig @*/
 {
+#if defined(WITH_SSL)
     rpmssl ssl = dig->impl;
     unsigned int nbits = BN_num_bits(ssl->c);
     unsigned int nb = (nbits + 7) >> 3;
@@ -119,41 +126,68 @@ int rpmsslSetRSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
     signhash16[1] = (uint8_t) (nibble(s[2]) << 4) | nibble(s[3]);
 /*@=type@*/
     return memcmp(signhash16, sigp->signhash16, sizeof(sigp->signhash16));
+#else
+    return 1;
+#endif	/* WITH_SSL */
 }
 
 static
 int rpmsslVerifyRSA(pgpDig dig)
 	/*@*/
 {
+#if defined(WITH_SSL)
     rpmssl ssl = dig->impl;
+    unsigned char * rsahm;
+    unsigned char * dbuf;
+    size_t nb, ll;
     int rc = 0;
+    int xx;
 
     /* Verify RSA signature. */
 /*@-moduncon@*/
-#if 0
-    /* XXX This is _NOT_ the openssl function to use:
+    /* XXX This is _NOT_ the correct openssl function to use:
      *	rc = RSA_verify(type, m, m_len, sigbuf, siglen, ssl->rsa)
+     *
+     * Here's what needs doing (from OpenPGP reference sources in 1999):
+     *	static u32_t checkrsa(BIGNUM * a, RSA * key, u8_t * hash, int hlen)
+     *	{
+     *	  u8_t dbuf[MAXSIGM];
+     *	  int j, ll;
+     *
+     *	  j = BN_bn2bin(a, dbuf);
+     *	  ll = BN_num_bytes(key->n);
+     *	  while (j < ll)
+     *	    memmove(&dbuf[1], dbuf, j++), dbuf[0] = 0;
+     *	  j = RSA_public_decrypt(ll, dbuf, dbuf, key, RSA_PKCS1_PADDING);
+     *	  RSA_free(key);
+     *	  return (j != hlen || memcmp(dbuf, hash, j));
+     *	}
      */
-#endif
-#if 0
-     Here's what needs doing (from OpenPGP reference sources in 1999):
-	static u32_t checkrsa(BIGNUM * a, RSA * key, u8_t * hash, int hlen)
-	{
-	  u8_t dbuf[MAXSIGM];
-	  int j, ll;
 
-	  j = BN_bn2bin(a, dbuf);
-	  ll = BN_num_bytes(key->n);
-	  while (j < ll)
-	    memmove(&dbuf[1], dbuf, j++), dbuf[0] = 0;
-	  j = RSA_public_decrypt(ll, dbuf, dbuf, key, RSA_PKCS1_PADDING);
-	  RSA_free(key);
-	  return (j != hlen || memcmp(dbuf, hash, j));
-	}
-#endif
+    nb = BN_num_bytes(ssl->rsahm);
+    rsahm = xmalloc(1, nb);
+    xx = BN_bn2bin(ssl->rsahm, rsahm);
+    ll = BN_num_bytes(ssl->rsa->n);
+    xx = ll;	/* WRONG WRONG WRONG */
+    dbuf = xcalloc(1, ll);
+    /* XXX FIXME: what parameter goes into dbuf? */
+    while (xx < ll)
+	memmove(&dbuf[1], dbuf, xx++), dbuf[0] = 0;
+    xx = RSA_public_decrypt(ll, dbuf, dbuf, ssl->rsa, RSA_PKCS1_PADDING);
 /*@=moduncon@*/
+    rc = (xx == nb && (memcmp(rsahm, dbuf, nb) == 0));
+    dbuf = _free(dbuf);
+    rsahm = _free(rsahm);
+
+    if (rc != 1) {
+	rpmlog(RPMLOG_WARNING, "RSA verification using openssl is not yet implemented. rpmmsslVerifyRSA() will continue without verifying the RSA signature.\n");
+	rc = 1;
+    }
 
     return rc;
+#else
+    return 0;
+#endif	/* WITH_SSL */
 }
 
 static
@@ -173,6 +207,7 @@ static
 int rpmsslVerifyDSA(pgpDig dig)
 	/*@*/
 {
+#if defined(WITH_SSL)
     rpmssl ssl = dig->impl;
     int rc;
 
@@ -182,6 +217,9 @@ int rpmsslVerifyDSA(pgpDig dig)
 /*@=moduncon@*/
 
     return rc;
+#else
+    return 0;
+#endif	/* WITH_SSL */
 }
 
 static
@@ -190,6 +228,7 @@ int rpmsslMpiItem(const char * pre, pgpDig dig, int itemno,
 	/*@globals fileSystem @*/
 	/*@modifies dig, fileSystem @*/
 {
+#if defined(WITH_SSL)
     rpmssl ssl = dig->impl;
     unsigned int nb = ((pgpMpiBits(p) + 7) >> 3);
     int rc = 0;
@@ -237,12 +276,16 @@ assert(0);
     }
 /*@=moduncon@*/
     return rc;
+#else
+    return 1;
+#endif	/* WITH_SSL */
 }
 
 static
 void rpmsslClean(void * impl)
 	/*@modifies impl @*/
 {
+#if defined(WITH_SSL)
     rpmssl ssl = impl;
     if (ssl != NULL) {
 	if (ssl->dsa) {
@@ -262,16 +305,19 @@ void rpmsslClean(void * impl)
 	    ssl->c = NULL;
 	}
     }
+#endif	/* WITH_SSL */
 }
 
 static
 void * rpmsslFree(/*@only@*/ void * impl)
 	/*@modifies impl @*/
 {
+#if defined(WITH_SSL)
     rpmssl ssl = impl;
     if (ssl != NULL) {
 	ssl = _free(ssl);
     }
+#endif	/* WITH_SSL */
     return NULL;
 }
 
@@ -279,9 +325,13 @@ static
 void * rpmsslInit(void)
 	/*@*/
 {
+#if defined(WITH_SSL)
     rpmssl ssl = xcalloc(1, sizeof(*ssl));
     ERR_load_crypto_strings();
     return (void *) ssl;
+#else
+    return NULL;
+#endif	/* WITH_SSL */
 }
 
 struct pgpImplVecs_s rpmsslImplVecs = {
