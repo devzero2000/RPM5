@@ -149,13 +149,19 @@ fprintf(stderr, "--> rpmxarNext(%p) first %d\n", xar, xar->first);
 
 int rpmxarPush(rpmxar xar, const char * fn, unsigned char * b, size_t bsize)
 {
+    int payload = !strcmp(fn, "Payload");
+
 /*@+charint@*/
 if (_xar_debug)
 fprintf(stderr, "--> rpmxarPush(%p, %s) %p[%u] %02x%02x%02x%02x%02x%02x%02x%02x\n", xar, fn, b, (unsigned)bsize, b[0], b[1], b[2], b[3], b[4], b[5], b[6], b[7]);
 /*@=charint@*/
 
     if (xar->x && b != NULL) {
+	if (payload) /* payload is already compressed */
+	    xar_opt_set(xar->x, XAR_OPT_COMPRESSION, XAR_OPT_VAL_NONE);
 	xar->f = xar_add_frombuffer(xar->x, NULL, fn, (char *)b, bsize);
+	if (payload) /* restore default xar compression */
+	    xar_opt_set(xar->x, XAR_OPT_COMPRESSION, XAR_OPT_VAL_GZIP);
 	if (xar->f == NULL)
 	    return 2;
     }
