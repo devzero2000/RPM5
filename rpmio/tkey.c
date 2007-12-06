@@ -48,6 +48,7 @@ fprintf(stderr, "*** sig is\n%s\n", sig);
 	fprintf(stderr, "*** b64encode failed\n");
 	return rc;
     }
+    dec = _free(dec);
 
 if (_debug)
 fprintf(stderr, "*** enc is\n%s\n", enc);
@@ -60,6 +61,7 @@ for (i = 0, s = sig, t = enc; *s & *t; i++, s++, t++) {
 fprintf(stderr, "??? %5d %02x != %02x '%c' != '%c'\n", i, (*s & 0xff), (*t & 0xff), *s, *t);
     rc = 5;
 }
+    enc = _free(enc);
 
     return rc;
 }
@@ -120,6 +122,9 @@ main(int argc, char *argv[])
     int printing = 1;
     int rc;
 
+
+    pgpImplVecs = &rpmbcImplVecs;
+
     dig = pgpDigNew(0);
     bc = dig->impl;
 
@@ -140,8 +145,8 @@ fprintf(stderr, "=============================== DSA FIPS-186-1: rc %d\n", rc);
     pgpImplVecs = &rpmgcImplVecs;
 
     dig = pgpDigNew(0);
-_pgp_debug = 0;
-_pgp_print = 0;
+_pgp_debug = 1;
+_pgp_print = 1;
 
 fprintf(stderr, "=============================== GPG Secret Key\n");
     if ((rc = doit(jbjSecretDSA, dig, printing)) != 0)
@@ -170,6 +175,9 @@ fprintf(stderr, "=============================== GPG Signature of \"abc\"\n");
 fprintf(stderr, "=============================== DSA verify: rc %d\n", rc);
 
     dig = pgpDigFree(dig);
+
+    if (pgpImplVecs == &rpmnssImplVecs)
+	NSS_Shutdown();
 
     return rc;
 }

@@ -72,7 +72,7 @@ int rpmsslSetRSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
     if (prefix == NULL)
 	return 1;
 
-    xx = rpmDigestFinal(ctx, (void **)&dig->md5, &dig->md5len, 1);
+    xx = rpmDigestFinal(ctx, (void **)&dig->md5, &dig->md5len, 0);
     hexstr = tt = xmalloc(2 * nb + 1);
     memset(tt, (int) 'f', (2 * nb));
     tt[0] = '0'; tt[1] = '0';
@@ -89,12 +89,7 @@ int rpmsslSetRSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
     hexstr = _free(hexstr);
 
     /* Compare leading 16 bits of digest for quick check. */
-    s = dig->md5;
-/*@-type@*/
-    signhash16[0] = (uint8_t) (nibble(s[0]) << 4) | nibble(s[1]);
-    signhash16[1] = (uint8_t) (nibble(s[2]) << 4) | nibble(s[3]);
-/*@=type@*/
-    return memcmp(signhash16, sigp->signhash16, sizeof(signhash16));
+    return memcmp(dig->md5, sigp->signhash16, sizeof(sigp->signhash16));
 }
 
 static
@@ -116,7 +111,6 @@ int rpmsslSetDSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
 	/*@modifies ctx, dig @*/
 {
     rpmssl ssl = dig->impl;
-    uint8_t signhash16[2];
     int xx;
 
     xx = rpmDigestFinal(ctx, (void **)&dig->sha1, &dig->sha1len, 1);
@@ -126,7 +120,7 @@ int rpmsslSetDSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
 /*@=moduncon =noeffectuncon @*/
 
     /* Compare leading 16 bits of digest for quick check. */
-    return memcmp(signhash16, sigp->signhash16, sizeof(signhash16));
+    return memcmp(dig->sha1, sigp->signhash16, sizeof(sigp->signhash16));
 }
 
 static

@@ -1,4 +1,5 @@
 5.0a4 -> 5.0b1:
+    - jbj: flesh out rpmgc implementation. stil buggy ...
     - jbj: stub in rpmgc/rpmssl for gcrypt & openssl signature verification.
     - rse: add XAR support to "devtool standalone"
     - jbj: fix: s/RPM_/RPMLIB_/ in rpmversion.h.in. That should "stick" now.
