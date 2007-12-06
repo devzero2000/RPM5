@@ -241,6 +241,11 @@ static int rpmVerifyScript(/*@unused@*/ QVA_t qva, rpmts ts,
     psm->progTag = RPMTAG_VERIFYSCRIPTPROG;
     rc = rpmpsmStage(psm, PSM_SCRIPT);
 
+    psm->stepName = "sanitycheck";
+    psm->scriptTag = RPMTAG_SANITYCHECK;
+    psm->progTag = RPMTAG_SANITYCHECKPROG;
+    rc = rpmpsmStage(psm, PSM_SCRIPT);
+
     if (scriptFd != NULL)
 	rpmtsSetScriptFd(psm->ts, NULL);
 
@@ -481,7 +486,8 @@ int showVerifyPackage(QVA_t qva, rpmts ts, Header h)
 		ec = rc;
 	}
 	if ((qva->qva_flags & VERIFY_SCRIPT)
-	 && headerIsEntry(h, RPMTAG_VERIFYSCRIPT))
+	 && (headerIsEntry(h, RPMTAG_VERIFYSCRIPT) ||
+	     headerIsEntry(h, RPMTAG_SANITYCHECK)))
 	{
 	    FD_t fdo = fdDup(STDOUT_FILENO);
 

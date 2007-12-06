@@ -890,6 +890,28 @@ retry:
 	goto exit;
     }
 
+    if (NSType == RPMNS_TYPE_SANITY) {
+	/* XXX only the installer does not have the database open here. */
+	rc = 1;		/* assume failure */
+	if (rpmtsGetRdb(ts) != NULL) {
+	    mi = rpmtsInitIterator(ts, RPMTAG_PROVIDENAME, Name, 0);
+	    while ((h = rpmdbNextIterator(mi)) != NULL) {
+		if (!rpmdsAnyMatchesDep(h, dep, _rpmds_nopromote))
+		    continue;
+		rc = (headerIsEntry(h, RPMTAG_SANITYCHECK) == 0);
+		if (rc == 0) {
+		    /* XXX FIXME: actually run the sanitycheck script. */
+		    break;
+		}
+	    }
+	    mi = rpmdbFreeIterator(mi);
+	}
+	if (Flags & RPMSENSE_MISSINGOK)
+	    goto unsatisfied;
+	rpmdsNotify(dep, _("(sanity probe)"), rc);
+	goto exit;
+    }
+
     /* Search system configured provides. */
     if (sysinfo_path == NULL) {
 	sysinfo_path = rpmExpand("%{?_rpmds_sysinfo_path}", NULL);
@@ -1049,7 +1071,6 @@ retry:
 	    }
 	}
 	mi = rpmdbFreeIterator(mi);
-
     }
 
     /*

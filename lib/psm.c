@@ -451,6 +451,7 @@ static /*@observer@*/ const char * tag2sln(int tag)
     case RPMTAG_POSTTRANS:	return "%posttrans";
     case RPMTAG_TRIGGERPOSTUN:	return "%triggerpostun";
     case RPMTAG_VERIFYSCRIPT:	return "%verify";
+    case RPMTAG_SANITYCHECK:	return "%sanitycheck";
     }
     return "%unknownscript";
 }
@@ -475,6 +476,7 @@ static rpmScriptID tag2slx(int tag)
     case RPMTAG_POSTTRANS:	return RPMSCRIPT_POSTTRANS;
     case RPMTAG_TRIGGERPOSTUN:	return RPMSCRIPT_TRIGGERPOSTUN;
     case RPMTAG_VERIFYSCRIPT:	return RPMSCRIPT_VERIFY;
+    case RPMTAG_SANITYCHECK:	return RPMSCRIPT_SANITYCHECK;
     }
     return RPMSCRIPT_UNKNOWN;
 }

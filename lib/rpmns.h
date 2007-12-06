@@ -48,6 +48,7 @@ typedef enum nsType_e {
     RPMNS_TYPE_MACRO	=  (1 << 22),	/*!< macro(foo) */
     RPMNS_TYPE_ENVVAR	=  (1 << 23),	/*!< envvar(foo) */
     RPMNS_TYPE_RUNNING	=  (1 << 24),	/*!< running(foo) */
+    RPMNS_TYPE_SANITY	=  (1 << 25),	/*!< sanitycheck(foo) */
 } nsType;
 
 #if defined(_RPMNS_INTERNAL)

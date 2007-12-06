@@ -77,6 +77,7 @@ static struct _rpmnsProbes_s {
     { "macro",		RPMNS_TYPE_MACRO },
     { "envvar",		RPMNS_TYPE_ENVVAR },
     { "running",	RPMNS_TYPE_RUNNING },
+    { "sanitycheck",	RPMNS_TYPE_SANITY },
     { "exists",		RPMNS_TYPE_ACCESS },
     { "executable",	RPMNS_TYPE_ACCESS },
     { "readable",	RPMNS_TYPE_ACCESS },
@@ -192,6 +193,7 @@ int rpmnsParse(const char * str, rpmns ns)
     case RPMNS_TYPE_MACRO:
     case RPMNS_TYPE_ENVVAR:
     case RPMNS_TYPE_RUNNING:
+    case RPMNS_TYPE_SANITY:
 	ns->NS = ns->str;
 	if (ns->NS[0] == '!')
 	    ns->NS++;

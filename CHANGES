@@ -1,4 +1,6 @@
 5.0a4 -> 5.0b1:
+    - jbj: stub in Requires: sanitycheck(N) probe. needs to run the script, duh.
+    - jbj: drill sanitycheck exec into psmStage() like %verifyscript.
     - jbj: --rebuilddb has too many NOKEY's using rpmnss. use rpmbc in beta1.
     - jbj: fix: rpmbuild --sign needed to test for password entry.
     - jbj: display the rpmlib Version/Timestamp/Vendor markers lest I forget.

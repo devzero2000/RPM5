@@ -136,6 +136,7 @@ typedef enum rpmScriptID_e {
     RPMSCRIPT_POSTTRANS		= 10,	/*!< %posttrans scriptlet  */
 	/* 11-15 unused */
     RPMSCRIPT_VERIFY		= 16,	/*!< %verify scriptlet  */
+    RPMSCRIPT_SANITYCHECK	= 17,	/*!< %sanitycheck scriptlet  */
     RPMSCRIPT_MAX		= 32
 } rpmScriptID;
 
