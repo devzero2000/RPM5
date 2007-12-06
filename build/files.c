@@ -2562,10 +2562,7 @@ int initSourceHeader(Spec spec, StringBuf *sfp)
 	case RPMTAG_PROVIDEVERSION:
 	case RPMTAG_PROVIDEFLAGS:
 #endif
-#if defined(RPM_VENDOR_OPENPKG) /* extra-header-class */
-	/* support "Class" header */
-	case RPMTAG_CLASS:
-#endif
+	case RPMTAG_CLASS:	/* support "Class" header */
 	    if (he->p.ptr)
 		xx = headerPut(spec->sourceHeader, he, 0);
 	    /*@switchbreak@*/ break;

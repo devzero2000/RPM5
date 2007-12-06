@@ -93,6 +93,8 @@
 	nuke all the rpmtsVSFlags method goopiness.
     - jbj: Mandriva perl-URPM "make test" indicates a problem querying binary
 	package headers that would be produced by a spec file.
+    - jbj: add the wiring for RPMTAG_CLASS as an arbitrary tag.
+    - jbj: change RPM_I18NSTRING_TYPE wiring to use arbitrary tag.
 
   o to be resolved before RPM 5.0.0:
     - rse: NEWS polishing
@@ -109,3 +111,4 @@
 	types for tag data.
     - jbj: add libTomCrypt signature verification.
     - jbj: add per-implementation crypto hashes.
+    - jbj: generalize the Leopard XAR format to ar (as in *.deb), tar, and cpio.

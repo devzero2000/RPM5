@@ -41,10 +41,7 @@ static rpmTag copyTagsDuringParse[] = {
     RPMTAG_XMINOR,
     RPMTAG_REPOTAG,
     RPMTAG_KEYWORDS,
-#if defined(RPM_VENDOR_OPENPKG) /* extra-header-class */
-    /* support "Class" tag/header */
-    RPMTAG_CLASS,
-#endif
+    RPMTAG_CLASS,		/* support "Class" tag/header */
     0
 };
 
@@ -344,10 +341,7 @@ static struct optionalTag {
     { RPMTAG_PACKAGER,		"%{packager}" },
     { RPMTAG_DISTRIBUTION,	"%{distribution}" },
     { RPMTAG_DISTURL,		"%{disturl}" },
-#if defined(RPM_VENDOR_OPENPKG) /* extra-header-class */
-    /* support "Class" tag/header */
-    { RPMTAG_CLASS,		"%{class}" },
-#endif
+    { RPMTAG_CLASS,		"%{class}" },	/* support "Class" tag/header */
     { -1, NULL }
 };
 
@@ -618,10 +612,7 @@ static int handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
     case RPMTAG_VENDOR:
     case RPMTAG_LICENSE:
     case RPMTAG_PACKAGER:
-#if defined(RPM_VENDOR_OPENPKG) /* extra-header-class */
-    /* support "Class" tag/header */
-    case RPMTAG_CLASS:
-#endif
+    case RPMTAG_CLASS:		/* support "Class" tag/header */
 	if (!*lang) {
 	    he->tag = tag;
 	    he->t = RPM_STRING_TYPE;
@@ -901,10 +892,7 @@ static struct PreambleRec_s preambleList[] = {
     {RPMTAG_KEYWORDS,		0, 0, "keywords"},
     {RPMTAG_KEYWORDS,		0, 0, "keyword"},
     {RPMTAG_BUILDPLATFORMS,	0, 0, "buildplatforms"},
-#if defined(RPM_VENDOR_OPENPKG) /* extra-header-class */
-    /* support "Class" tag/header */
-    {RPMTAG_CLASS,		0, 0, "class"},
-#endif
+    {RPMTAG_CLASS,		0, 0, "class"},	/* support "Class" tag/header */
     /*@-nullassign@*/	/* LCL: can't add null annotation */
     {0, 0, 0, 0}
     /*@=nullassign@*/
