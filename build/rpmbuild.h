@@ -75,7 +75,7 @@ typedef enum rpmParseState_e {
     PART_TRIGGERPREIN	= 31+PART_BASE,	/*!< */
     /* support "%track" and "%test" scripts/sections */
     PART_TRACK		= 32+PART_BASE, /*!< */
-    PART_TEST		= 33+PART_BASE, /*!< */
+    PART_SANITYCHECK	= 33+PART_BASE, /*!< */
     PART_LAST		= 34+PART_BASE  /*!< */
 } rpmParseState;
 

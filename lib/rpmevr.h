@@ -60,17 +60,14 @@ enum evrFlags_e {
     RPMSENSE_SCRIPT_BUILD = (1 << 21),	/*!< %build build dependency. */
     RPMSENSE_SCRIPT_INSTALL = (1 << 22),/*!< %install build dependency. */
     RPMSENSE_SCRIPT_CLEAN = (1 << 23),	/*!< %clean build dependency. */
-#if defined(RPM_VENDOR_OPENPKG) /* extra-section-test */
-    /* support "%test" script/section */
-    RPMSENSE_SCRIPT_TEST = (1 << 31),	/*!< %test build dependency. */
-#endif
     RPMSENSE_RPMLIB = (1 << 24),	/*!< rpmlib(feature) dependency. */
     RPMSENSE_TRIGGERPREIN = (1 << 25),	/*!< %triggerprein dependency. */
     RPMSENSE_KEYRING	= (1 << 26),
     RPMSENSE_STRONG	= (1 << 27),	/*!< placeholder SuSE */
     RPMSENSE_CONFIG	= (1 << 28),
     RPMSENSE_PROBE	= (1 << 29),
-    RPMSENSE_PACKAGE	= (1 << 30)
+    RPMSENSE_PACKAGE	= (1 << 30),
+    RPMSENSE_SCRIPT_SANITYCHECK = (1 << 31) /*!< %sanitycheck dependency. */
 #endif
 };
 /*@=matchfields@*/

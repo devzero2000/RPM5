@@ -212,11 +212,8 @@ struct Package_s {
     const char * postTransFile;	/*!< %posttrans scriptlet. */
 /*@only@*/
     const char * verifyFile;	/*!< %verifyscript scriptlet. */
-#if defined(RPM_VENDOR_OPENPKG) /* extra-section-test */
-    /* support "%test" script/section */
 /*@only@*/
-    const char * testFile;	/*!< %test scriptlet. */
-#endif
+    const char * sanityCheckFile;/*!< %sanitycheck scriptlet. */
 
 /*@only@*/
     StringBuf specialDoc;

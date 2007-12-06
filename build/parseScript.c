@@ -181,15 +181,13 @@ int parseScript(Spec spec, int parsePart)
 	progtag = RPMTAG_TRIGGERSCRIPTPROG;
 	partname = "%triggerpostun";
 	break;
-#if defined(RPM_VENDOR_OPENPKG) /* extra-section-test */
-      /* support "%test" script/section */
-      case PART_TEST:
-	tag = RPMTAG_TEST;
-	tagflags = RPMSENSE_SCRIPT_TEST;
-	progtag = RPMTAG_TESTPROG;
-	partname = "%test";
+      /* support "%sanitycheck" script/section */
+      case PART_SANITYCHECK:
+	tag = RPMTAG_SANITYCHECK;
+	tagflags = RPMSENSE_SCRIPT_SANITYCHECK;
+	progtag = RPMTAG_SANITYCHECKPROG;
+	partname = "%sanitycheck";
 	break;
-#endif
     }
     /*@=branchstate@*/
 
@@ -390,11 +388,9 @@ int parseScript(Spec spec, int parsePart)
 	      case PART_VERIFYSCRIPT:
 		pkg->verifyFile = xstrdup(file);
 		break;
-#if defined(RPM_VENDOR_OPENPKG) /* extra-section-test */
-	      case PART_TEST:
-		pkg->testFile = xstrdup(file);
+	      case PART_SANITYCHECK:
+		pkg->sanityCheckFile = xstrdup(file);
 	        break;
-#endif
 	    }
 	}
     }

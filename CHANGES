@@ -1,4 +1,5 @@
 5.0a4 -> 5.0b1:
+    - jbj: add %sanitycheck scriptlet to packages. more wiring needed todo++.
     - jbj: add %track section/scriptlet. Hmmm, not in *.rpm content yet, todo++.
     - jbj: add RPMTAG_CLASS as one more spec file tag. arbitrary tag next ...
     - jbj: rpmssl.c w DSA is gud enuf to go into beta1 (but disabled/unused).

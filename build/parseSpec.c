@@ -44,9 +44,7 @@ static struct PartRec {
     { PART_TRIGGERIN,     0, "%trigger"},
     { PART_VERIFYSCRIPT,  0, "%verifyscript"},
     { PART_TRACK,         0, "%track"},	/* support "%track" script/section */
-#if defined(RPM_VENDOR_OPENPKG) /* extra-section-test */
-    { PART_TEST,          0, "%test"},	/* support "%test" script/section */
-#endif
+    { PART_SANITYCHECK,	  0, "%sanitycheck"},	/* support "%sanitycheck" scriptlet */
     {0, 0, 0}
 };
 
@@ -532,12 +530,10 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootURL,
 	case PART_TRACK:	/* support "%track" script/section */
 	    parsePart = parseBuildInstallClean(spec, parsePart);
 	    /*@switchbreak@*/ break;
-#if defined(RPM_VENDOR_OPENPKG) /* extra-section-test */
-	/* support "%test" script/section */
-	case PART_TEST:
+	/* support "%sanitycheck" script/section */
+	case PART_SANITYCHECK:
 	    parsePart = parseScript(spec, parsePart);
 	    /*@switchbreak@*/ break;
-#endif
 	}
 
 	if (goterror || parsePart >= PART_LAST) {

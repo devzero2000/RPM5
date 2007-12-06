@@ -145,10 +145,7 @@ Package newPackage(Spec spec)
     p->preUnFile = NULL;
     p->postUnFile = NULL;
     p->verifyFile = NULL;
-#if defined(RPM_VENDOR_OPENPKG) /* extra-section-test */
-    /* support "%test" script/section */
-    p->testFile = NULL;
-#endif
+    p->sanityCheckFile = NULL;
 
     p->specialDoc = NULL;
 
@@ -174,10 +171,7 @@ Package freePackage(Package pkg)
     pkg->preUnFile = _free(pkg->preUnFile);
     pkg->postUnFile = _free(pkg->postUnFile);
     pkg->verifyFile = _free(pkg->verifyFile);
-#if defined(RPM_VENDOR_OPENPKG) /* extra-section-test */
-    /* support "%test" script/section */
-    pkg->testFile = _free(pkg->testFile);
-#endif
+    pkg->sanityCheckFile = _free(pkg->sanityCheckFile);
 
     pkg->header = headerFree(pkg->header);
     pkg->ds = rpmdsFree(pkg->ds);

@@ -407,11 +407,8 @@ enum rpmTag_e {
     RPMTAG_CLASS		= 1202, /* s (OPENPKG Class: tag ) */
     RPMTAG_TRACK		= 1203, /* s (OPENPKG %track scriptlet) */
     RPMTAG_TRACKPROG		= 1204, /* s */
-#if 1 || defined(RPM_VENDOR_OPENPKG) /* extra-section-test */
-    /* support "%test" script/section */
-    RPMTAG_TEST			= 1205, /* s */
-    RPMTAG_TESTPROG		= 1206, /* s */
-#endif
+    RPMTAG_SANITYCHECK		= 1205, /* s */
+    RPMTAG_SANITYCHECKPROG	= 1206, /* s */
 
 /*@-enummemuse@*/
     RPMTAG_FIRSTFREE_TAG	/*!< internal */
