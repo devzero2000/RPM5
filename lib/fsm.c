@@ -763,20 +763,40 @@ int fsmMapAttrs(FSM_t fsm)
 	uid_t uid = fi->uid;
 	gid_t gid = fi->gid;
 
+#if defined(RPM_VENDOR_OPENPKG) /* no-owner-group-on-srpm-install */
+	/* Make sure OpenPKG RPM does not try to set file owner/group on files during
+	   installation of _source_ RPMs. Instead, let it use the current
+	   run-time owner/group, because most of the time the owner/group in
+	   the source RPM (which is the owner/group of the files as staying on
+	   the package author system) is not existing on the target system, of
+	   course. */
+#endif
 	if (fi->fuser && unameToUid(fi->fuser[i], &uid)) {
+#if defined(RPM_VENDOR_OPENPKG) /* no-owner-group-on-srpm-install */
+	    if (!headerIsEntry(fi->h, RPMTAG_SOURCEPACKAGE)) {
+#endif
 	    if (fsm->goal == FSM_PKGINSTALL)
 		rpmlog(RPMLOG_WARNING,
 		    _("user %s does not exist - using root\n"), fi->fuser[i]);
 	    uid = 0;
 	    finalMode &= ~S_ISUID;      /* turn off suid bit */
+#if defined(RPM_VENDOR_OPENPKG) /* no-owner-group-on-srpm-install */
+	    }
+#endif
 	}
 
 	if (fi->fgroup && gnameToGid(fi->fgroup[i], &gid)) {
+#if defined(RPM_VENDOR_OPENPKG) /* no-owner-group-on-srpm-install */
+	    if (!headerIsEntry(fi->h, RPMTAG_SOURCEPACKAGE)) {
+#endif
 	    if (fsm->goal == FSM_PKGINSTALL)
 		rpmlog(RPMLOG_WARNING,
 		    _("group %s does not exist - using root\n"), fi->fgroup[i]);
 	    gid = 0;
 	    finalMode &= ~S_ISGID;	/* turn off sgid bit */
+#if defined(RPM_VENDOR_OPENPKG) /* no-owner-group-on-srpm-install */
+	    }
+#endif
 	}
 
 	if (fsm->mapFlags & CPIO_MAP_MODE)

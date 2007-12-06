@@ -16,11 +16,29 @@ static int _build_debug = 0;
 
 /**
  */
+#if defined(RPM_VENDOR_OPENPKG) /* splitted-source-directory */
+const char * getSourceDir(rpmfileAttrs attr, const char *filename)
+#else
 const char * getSourceDir(rpmfileAttrs attr)
+#endif
     /*@globals rpmGlobalMacroContext @*/
 {
     const char * dir = NULL;
+#if defined(RPM_VENDOR_OPENPKG) /* splitted-source-directory */
+	const char *fn;
 
+	/* support splitted source directories, i.e., source files which
+	   are alternatively placed into the .spec directory and picked
+	   up from there, too. */
+	if (attr & (RPMFILE_SOURCE|RPMFILE_PATCH|RPMFILE_ICON) && filename != NULL) {
+	    fn = rpmGetPath("%{_specdir}/", filename, NULL);
+	    if (access(fn, F_OK) == 0)
+			dir = "%{_specdir}/";
+	    fn = _free(fn);
+	}
+	if (dir != NULL) {
+	} else
+#endif
     if (attr & RPMFILE_SOURCE)
         dir = "%{_sourcedir}/";
     else if (attr & RPMFILE_PATCH)
@@ -52,7 +70,11 @@ static void doRmSource(Spec spec)
 	const char *dn, *fn;
     if (sp->flags & RPMFILE_GHOST)
         continue;
+#if defined(RPM_VENDOR_OPENPKG) /* splitted-source-directory */
+    if (! (dn = getSourceDir(sp->flags, sp->source)))
+#else
     if (! (dn = getSourceDir(sp->flags)))
+#endif
         continue;
 	fn = rpmGenPath(NULL, dn, sp->source);
 	rc = Unlink(fn);
@@ -131,6 +153,16 @@ rpmRC doScript(Spec spec, int what, const char *name, StringBuf sb, int test)
 	mPost = "%{__spec_clean_post}";
 	mCmd = "%{__spec_clean_cmd}";
 	break;
+#if defined(RPM_VENDOR_OPENPKG) /* extra-section-track */
+    /* support "%track" script/section */
+    case RPMBUILD_TRACK:
+	name = "%track";
+	sb = spec->track;
+	mTemplate = "%{__spec_track_template}";
+	mPost = "%{__spec_track_post}";
+	mCmd = "%{__spec_track_cmd}";
+	break;
+#endif
     case RPMBUILD_STRINGBUF:
     default:
 	mTemplate = "%{___build_template}";
@@ -179,7 +211,12 @@ rpmRC doScript(Spec spec, int what, const char *name, StringBuf sb, int test)
 
     (void) fputs(buildTemplate, fp);
 
+#if defined(RPM_VENDOR_OPENPKG) /* extra-section-track */
+    /* support "%track" script/section */
+    if (what != RPMBUILD_PREP && what != RPMBUILD_RMBUILD && spec->buildSubdir && what != RPMBUILD_TRACK)
+#else
     if (what != RPMBUILD_PREP && what != RPMBUILD_RMBUILD && spec->buildSubdir)
+#endif
 	fprintf(fp, "cd '%s'\n", spec->buildSubdir);
 
     if (what == RPMBUILD_RMBUILD) {
@@ -230,6 +267,10 @@ fprintf(stderr, "*** addMacros\n");
     buildCmd = rpmExpand(mCmd, " ", buildScript, NULL);
     (void) poptParseArgvString(buildCmd, &argc, &argv);
 
+#if defined(RPM_VENDOR_OPENPKG) /* extra-section-track */
+    /* support "%track" script/section */
+    if (what != RPMBUILD_TRACK)
+#endif
     rpmlog(RPMLOG_NOTICE, _("Executing(%s): %s\n"), name, buildCmd);
     if (!(child = fork())) {
 
@@ -257,7 +298,15 @@ fprintf(stderr, "*** addMacros\n");
     
 exit:
     if (scriptName) {
+#if defined(RPM_VENDOR_OPENPKG) /* always-remove-tempfiles */
+	/* Unconditionally remove temporary files ("rpm-tmp.XXXXX") which
+	   were generated for the executed scripts. In OpenPKG we run the
+	   scripts in debug mode ("set -x") anyway, so we never need to
+	   see the whole generated script -- not even if it breaks.  Instead
+	   we would just have temporary files staying around forever. */
+#else
 	if (rc == RPMRC_OK)
+#endif
 	    (void) Unlink(scriptName);
 	scriptName = _free(scriptName);
     }
@@ -310,6 +359,13 @@ rpmRC buildSpec(rpmts ts, Spec spec, int what, int test)
 /*@=boundsread@*/
 	}
     } else {
+#if defined(RPM_VENDOR_OPENPKG) /* extra-section-track */
+	/* support "%track" script/section */
+	if ((what & RPMBUILD_TRACK) &&
+	    (rc = doScript(spec, RPMBUILD_TRACK, NULL, NULL, test)))
+		goto exit;
+#endif
+
 	if ((what & RPMBUILD_PREP) &&
 	    (rc = doScript(spec, RPMBUILD_PREP, NULL, NULL, test)))
 		goto exit;
@@ -357,6 +413,28 @@ rpmRC buildSpec(rpmts ts, Spec spec, int what, int test)
 
     if (what & RPMBUILD_RMSPEC)
 	(void) Unlink(spec->specFile);
+
+#if defined(RPM_VENDOR_OPENPKG) /* auto-remove-source-directories */
+    /* In OpenPKG we use per-package %{_sourcedir} and %{_specdir}
+       definitions (macros have trailing ".../%{name}"). On removal of
+       source(s) and .spec file, this per-package directory would be kept
+       (usually <prefix>/RPM/SRC/<name>/), because RPM does not know about
+       this OpenPKG convention. So, let RPM try(!) to remove the two
+       directories (if they are empty) and just ignore removal failures
+       (if they are still not empty). */
+    if (what & RPMBUILD_RMSOURCE) {
+        const char *pn;
+        pn = rpmGetPath("%{_sourcedir}", NULL);
+        Rmdir(pn); /* ignore error, it is ok if it fails (usually with ENOTEMPTY) */
+        pn = _free(pn);
+    }
+    if (what & RPMBUILD_RMSPEC) {
+        const char *pn;
+        pn = rpmGetPath("%{_specdir}", NULL);
+        Rmdir(pn); /* ignore error, it is ok if it fails (usually with ENOTEMPTY) */
+        pn = _free(pn);
+    }
+#endif
 
 exit:
     if (rc != RPMRC_OK && rpmlogGetNrecs() > 0) {

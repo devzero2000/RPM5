@@ -31,6 +31,13 @@ int parseBuildInstallClean(Spec spec, rpmParseState parsePart)
 	sbp = &spec->clean;
 	name = "%clean";
     }
+#if defined(RPM_VENDOR_OPENPKG) /* extra-section-track */
+    /* support "%track" script/section */
+    else if (parsePart == PART_TRACK) {
+       sbp = &(spec->track);
+       name = "%track";
+    }
+#endif
     /*@=branchstate@*/
     
     if (*sbp != NULL) {
@@ -52,7 +59,10 @@ int parseBuildInstallClean(Spec spec, rpmParseState parsePart)
 	if (s && *s)
 	    appendStringBuf(*sbp, s);
 	s = _free(s);
+#if !defined(RPM_VENDOR_OPENPKG) /* still-support-section-clean */
+	/* OpenPKG still wishes to use "%clean" script/section */
 	sbp = NULL;	/* XXX skip %clean from spec file. */
+#endif
     }
 
     /* There are no options to %build, %install, %check, or %clean */

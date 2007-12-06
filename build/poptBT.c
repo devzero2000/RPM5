@@ -35,6 +35,10 @@ struct rpmBuildArguments_s         rpmBTArgs;
 #define	POPT_BL			0x626c
 #define	POPT_BP			0x6270
 #define	POPT_BS			0x6273
+#if defined(RPM_VENDOR_OPENPKG) /* extra-section-track */
+/* support "%track" script/section */
+#define POPT_BT			0x6274
+#endif
 #define	POPT_TA			0x7461
 #define	POPT_TB			0x7462
 #define	POPT_TC			0x7463
@@ -80,6 +84,10 @@ static void buildArgCallback( /*@unused@*/ poptContext con,
     case POPT_BL:
     case POPT_BP:
     case POPT_BS:
+#if defined(RPM_VENDOR_OPENPKG) /* extra-section-track */
+    /* support "%track" script/section */
+    case POPT_BT:
+#endif
     case POPT_TA:
     case POPT_TB:
     case POPT_TC:
@@ -153,6 +161,12 @@ struct poptOption rpmBuildPoptTable[] = {
  { "bs", 0, POPT_ARGFLAG_ONEDASH, NULL, POPT_BS,
 	N_("build source package only from <specfile>"),
 	N_("<specfile>") },
+#if defined(RPM_VENDOR_OPENPKG) /* extra-section-track */
+    /* support "%track" script/section */
+ { "bt", 0, POPT_ARGFLAG_ONEDASH, 0, POPT_BT,
+	N_("track versions of sources from <specfile>"),
+	N_("<specfile>") },
+#endif
 
  { "tp", 0, POPT_ARGFLAG_ONEDASH, NULL, POPT_TP,
 	N_("build through %prep (unpack sources and apply patches) from <tarball>"),

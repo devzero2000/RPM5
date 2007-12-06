@@ -84,6 +84,11 @@ static char *doPatch(Spec spec, int c, int strip, const char *db,
     *t = '\0';
     if (db)
 	t = stpcpy( stpcpy(t, "-b --suffix "), db);
+#if defined(RPM_VENDOR_OPENPKG) /* always-backup-on-patching */
+    /* always create backup files in OpenPKG */
+    else
+	t = stpcpy(t, "-b --suffix .orig ");
+#endif
     if (subdir)
 	t = stpcpy( stpcpy(t, "-d "), subdir);
     if (fuzz) {
@@ -216,7 +221,11 @@ static const char *doUntar(Spec spec, int c, int quietly)
     taropts = ((rpmIsVerbose() && !quietly) ? "-xvvf" : "-xf");
     /*@=internalglobs@*/
 
+#if defined(RPM_VENDOR_OPENPKG) /* splitted-source-directory */
+    Lurlfn = rpmGenPath(NULL, getSourceDir(sp->flags, sp->source), sp->source);
+#else
     Lurlfn = rpmGenPath(NULL, getSourceDir(sp->flags), sp->source);
+#endif
 
     /* XXX On non-build parse's, file cannot be stat'd or read */
     if (!spec->force && (isCompressed(Lurlfn, &compressed) || checkOwners(Lurlfn))) {
@@ -620,6 +629,9 @@ static int prepFetch(Spec spec)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/
 {
+#if defined(RPM_VENDOR_OPENPKG) /* splitted-source-directory */
+    const char *Smacro;
+#endif
     const char *Lmacro, *Lurlfn = NULL;
     const char *Rmacro, *Rurlfn = NULL;
     struct Source *sp;
@@ -658,7 +670,14 @@ static int prepFetch(Spec spec)
     ec = 0;
     for (sp = spec->sources; sp != NULL; sp = sp->next) {
     
+#if defined(RPM_VENDOR_OPENPKG) /* splitted-source-directory */
+	Smacro = "%{?_specdir}/";
+#endif
+#if defined(RPM_VENDOR_OPENPKG) /* splitted-source-directory */
+    if (! (Lmacro = getSourceDir(sp->flags, sp->source)))
+#else
     if (! (Lmacro = getSourceDir(sp->flags)))
+#endif
         continue;
 	if (sp->flags & RPMFILE_SOURCE) {
 	    Rmacro = "%{?_Rsourcedir}/";
@@ -671,6 +690,15 @@ static int prepFetch(Spec spec)
 	} else
 	    continue;
 
+#if defined(RPM_VENDOR_OPENPKG) /* splitted-source-directory */
+	/* support splitted source directories, i.e., source files which
+	   are alternatively placed into the .spec directory and picked
+	   up from there, too. */
+	Lurlfn = rpmGenPath(NULL, Smacro, sp->source);
+	rc = Lstat(Lurlfn, &st);
+	if (rc == 0)
+	    goto bottom;
+#endif
 	Lurlfn = rpmGenPath(NULL, Lmacro, sp->source);
 	rc = Lstat(Lurlfn, &st);
 	if (rc == 0)

@@ -177,6 +177,11 @@ struct Spec_s {
     StringBuf check;		/*!< %check scriptlet. */
 /*@only@*/
     StringBuf clean;		/*!< %clean scriptlet. */
+#if defined(RPM_VENDOR_OPENPKG) /* extra-section-track */
+    /* support "%track" script/section */
+/*@only@*/
+    StringBuf track;		/*!< %track scriptlet. */
+#endif
 
 /*@owned@*/
     Package packages;		/*!< Package list. */
@@ -210,6 +215,11 @@ struct Package_s {
     const char * postTransFile;	/*!< %posttrans scriptlet. */
 /*@only@*/
     const char * verifyFile;	/*!< %verifyscript scriptlet. */
+#if defined(RPM_VENDOR_OPENPKG) /* extra-section-test */
+    /* support "%test" script/section */
+/*@only@*/
+    const char * testFile;	/*!< %test scriptlet. */
+#endif
 
 /*@only@*/
     StringBuf specialDoc;
@@ -348,7 +358,11 @@ int specSourceFlags(SpecSource source)
  * @param attr      rpmfileAttrs from source
  * @return          string containings macros about location, NULL on failure
  */
+#if defined(RPM_VENDOR_OPENPKG) /* splitted-source-directory */
+const char * getSourceDir(rpmfileAttrs attr, const char *filename)
+#else
 const char * getSourceDir(rpmfileAttrs attr)
+#endif
     /*@modifies nothing @*/;
 
 #ifdef __cplusplus

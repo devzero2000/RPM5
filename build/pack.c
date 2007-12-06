@@ -287,6 +287,16 @@ int processScriptFiles(Spec spec, Package pkg)
 	}
     }
 
+#if defined(RPM_VENDOR_OPENPKG) /* extra-section-test */
+    /* support "%test" script/section */
+    if (pkg->testFile) {
+        if (addFileToTag(spec, pkg->testFile, pkg->header, RPMTAG_TEST)) {
+            rpmlog(RPMLOG_ERR, _("Could not open Test file: %s\n"), pkg->testFile);
+            return RPMRC_FAIL;
+        }
+    }
+#endif
+
     for (p = pkg->triggerFiles; p != NULL; p = p->next) {
 	he->tag = RPMTAG_TRIGGERSCRIPTPROG;
 	he->t = RPM_STRING_ARRAY_TYPE;

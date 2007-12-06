@@ -41,6 +41,10 @@ static rpmTag copyTagsDuringParse[] = {
     RPMTAG_XMINOR,
     RPMTAG_REPOTAG,
     RPMTAG_KEYWORDS,
+#if defined(RPM_VENDOR_OPENPKG) /* extra-header-class */
+    /* support "Class" tag/header */
+    RPMTAG_CLASS,
+#endif
     0
 };
 
@@ -340,6 +344,10 @@ static struct optionalTag {
     { RPMTAG_PACKAGER,		"%{packager}" },
     { RPMTAG_DISTRIBUTION,	"%{distribution}" },
     { RPMTAG_DISTURL,		"%{disturl}" },
+#if defined(RPM_VENDOR_OPENPKG) /* extra-header-class */
+    /* support "Class" tag/header */
+    { RPMTAG_CLASS,		"%{class}" },
+#endif
     { -1, NULL }
 };
 
@@ -397,7 +405,18 @@ static int doIcon(Spec spec, Header h)
 	goto exit;
     }
 
+#if defined(RPM_VENDOR_OPENPKG) /* splitted-source-directory */
+    /* support splitted source directories, i.e., source files which
+       are alternatively placed into the .spec directory and picked
+       up from there, too. */
+    Lurlfn = rpmGenPath(NULL, "%{_specdir}/", sp->source);
+    if (access(Lurlfn, F_OK) == -1) {
+        Lurlfn = _free(Lurlfn);
+        Lurlfn = rpmGenPath(NULL, "%{_icondir}/", sp->source);
+    }
+#else
     Lurlfn = rpmGenPath(NULL, "%{_icondir}/", sp->source);
+#endif
 
     fn = NULL;
     urltype = urlPath(Lurlfn, &fn);
@@ -599,6 +618,10 @@ static int handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
     case RPMTAG_VENDOR:
     case RPMTAG_LICENSE:
     case RPMTAG_PACKAGER:
+#if defined(RPM_VENDOR_OPENPKG) /* extra-header-class */
+    /* support "Class" tag/header */
+    case RPMTAG_CLASS:
+#endif
 	if (!*lang) {
 	    he->tag = tag;
 	    he->t = RPM_STRING_TYPE;
@@ -782,6 +805,11 @@ static int handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
 	break;
 
     default:
+#if defined(RPM_VENDOR_OPENPKG) /* not-fully-arbitrary-tags */
+	/* revert to old behaviour where *arbitrary* tags are *not* allowed */
+	rpmlog(RPMLOG_ERR, _("Internal error: Bogus tag %d\n"), tag);
+	return RPMRC_FAIL;
+#else
 	macro = 0;
 	he->tag = tag;
 	he->t = RPM_STRING_ARRAY_TYPE;
@@ -790,6 +818,7 @@ static int handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
 	he->append = 1;
 	xx = headerPut(pkg->header, he, 0);
 	he->append = 0;
+#endif
 	break;
     }
 
@@ -872,6 +901,10 @@ static struct PreambleRec_s preambleList[] = {
     {RPMTAG_KEYWORDS,		0, 0, "keywords"},
     {RPMTAG_KEYWORDS,		0, 0, "keyword"},
     {RPMTAG_BUILDPLATFORMS,	0, 0, "buildplatforms"},
+#if defined(RPM_VENDOR_OPENPKG) /* extra-header-class */
+    /* support "Class" tag/header */
+    {RPMTAG_CLASS,		0, 0, "class"},
+#endif
     /*@-nullassign@*/	/* LCL: can't add null annotation */
     {0, 0, 0, 0}
     /*@=nullassign@*/

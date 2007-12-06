@@ -274,6 +274,26 @@ assert(fi->te->h == NULL);	/* XXX headerFree side effect */
 
     fi->uid = getuid();
     fi->gid = getgid();
+#if defined(RPM_VENDOR_OPENPKG) /* switch-from-susr-to-musr-on-srpm-install */
+    /* If running as the OpenPKG "susr", do not unpack source RPM
+       packages with "susr" file ownerships as the OpenPKG Set-UID
+       wrapper switches from "musr" to "susr" on "openpkg rpm -Uvh
+       *.src.rpm". As a result the installed files could be never
+       removed again by "musr". It is more consistent to always unpack
+       as "musr" if possible. */
+    if (fi->uid == 0) {
+        char *muid_str;
+        char *mgid_str;
+        uid_t muid;
+        gid_t mgid;
+        if ((muid_str = rpmExpand("%{l_muid}", NULL)) != NULL)
+            if ((muid = (uid_t)strtol(muid_str, (char **)NULL, 10)) > 0)
+                fi->uid = muid;
+        if ((mgid_str = rpmExpand("%{l_mgid}", NULL)) != NULL)
+            if ((mgid = (gid_t)strtol(mgid_str, (char **)NULL, 10)) > 0)
+                fi->gid = mgid;
+    }
+#endif
     fi->astriplen = 0;
     fi->striplen = 0;
 
@@ -313,6 +333,9 @@ assert(fi->te->h == NULL);	/* XXX headerFree side effect */
 	rpmrc = RPMRC_FAIL;
 	goto exit;
     }
+#if defined(RPM_VENDOR_OPENPKG) /* switch-from-susr-to-musr-on-srpm-install */
+    chown(_sourcedir, fi->uid, fi->gid);
+#endif
 
     _specdir = rpmGenPath(rpmtsRootDir(ts), "%{_specdir}", "");
     rpmrc = rpmMkdirPath(_specdir, "specdir");
@@ -326,6 +349,9 @@ assert(fi->te->h == NULL);	/* XXX headerFree side effect */
 	rpmrc = RPMRC_FAIL;
 	goto exit;
     }
+#if defined(RPM_VENDOR_OPENPKG) /* switch-from-susr-to-musr-on-srpm-install */
+    chown(_specdir, fi->uid, fi->gid);
+#endif
 
     /* Build dnl/dil with {_sourcedir, _specdir} as values. */
     if (i < fi->fc) {

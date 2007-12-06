@@ -482,9 +482,14 @@ static int rpmPlatform(const char * platform)
 	    addMacro(NULL, "_host_os", NULL, cvog->os, -1);
 	}
 
+#if defined(RPM_VENDOR_OPENPKG) /* explicit-platform */
+	/* do not use vendor and GNU attribution */
+	p = rpmExpand("%{_host_cpu}-%{_host_os}", NULL);
+#else
 	p = rpmExpand("%{_host_cpu}-%{_host_vendor}-%{_host_os}",
 		(cvog && *cvog->gnu ? "-" : NULL),
 		(cvog ? cvog->gnu : NULL), NULL);
+#endif
 	xx = mireAppend(RPMMIRE_STRCMP, 0, p, &mi_re, &mi_nre);
 	p = _free(p);
 	
@@ -536,16 +541,77 @@ static void defaultMachine(/*@out@*/ const char ** arch,
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies *arch, *os, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
+#if defined(RPM_VENDOR_OPENPKG) /* larger-utsname */
+    /* utsname fields on some platforms (like HP-UX) are very small
+       (just about 8 characters). This is too small for OpenPKG, so cheat! */
+    static struct utsname un_real;
+    static struct {
+        char sysname[32];
+        char nodename[32];
+        char release[32];
+        char version[32];
+        char machine[32];
+    } un;
+#else
     static struct utsname un;
+#endif
     static int gotDefaults = 0;
     int rc;
 
     while (!gotDefaults) {
 	CVOG_t cvog = NULL;
+#if defined(RPM_VENDOR_OPENPKG) /* larger-utsname */
+	const char *cp;
+#endif
+#if defined(RPM_VENDOR_OPENPKG) /* larger-utsname */
+	/* utsname fields on some platforms (like HP-UX) are very small
+	   (just about 8 characters). This is too small for OpenPKG, so cheat! */
+	rc = uname(&un_real);
+	strncpy(un.sysname,  un_real.sysname,  sizeof(un.sysname));  un.sysname [sizeof(un.sysname) -1] = '\0';
+	strncpy(un.nodename, un_real.nodename, sizeof(un.nodename)); un.nodename[sizeof(un.nodename)-1] = '\0';
+	strncpy(un.release,  un_real.release,  sizeof(un.release));  un.release [sizeof(un.release) -1] = '\0';
+	strncpy(un.version,  un_real.version,  sizeof(un.version));  un.version [sizeof(un.version) -1] = '\0';
+	strncpy(un.machine,  un_real.machine,  sizeof(un.machine));  un.machine [sizeof(un.machine) -1] = '\0';
+#else
 	rc = uname(&un);
+#endif
 	if (rc < 0) return;
 
+#if defined(RPM_VENDOR_OPENPKG) /* platform-major-minor-only */
+    /* Reduce the platform version to major and minor version numbers */
+    {
+        char *cp;
+        char *cpR;
+        int n;
+        cpR = un.release;
+        if ((n = strcspn(cpR, "0123456789")) > 0)
+            cpR += n;
+        if ((n = strspn(cpR, "0123456789.")) > 0) {
+            /* terminate after "N.N.N...." prefix */
+            cpR[n] = '\0';
+            /* shorten to "N.N" if longer */
+            if ((cp = strchr(cpR, '.')) != NULL) {
+                if ((cp = strchr(cp+1, '.')) != NULL)
+                    *cp = '\0';
+            }
+            strcat(un.sysname, cpR);
+        }
+        /* fix up machine hardware name containing white-space as it
+           happens to be on Power Macs running MacOS X */
+        if (!strncmp(un.machine, "Power Macintosh", 15))
+            sprintf(un.machine, "powerpc");
+    }
+#endif
+
+#if defined(RPM_VENDOR_OPENPKG) /* explicit-platform */
+	/* allow the path to the "platforms" file be overridden under run-time */
+	cp = rpmExpand("%{?__platform}", NULL);
+	if (cp == NULL || cp[0] == '\0')
+	    cp = platform;
+	if (!rpmPlatform(cp)) {
+#else
 	if (!rpmPlatform(platform)) {
+#endif
 	    const char * s;
 	    gotDefaults = 1;
 	    s = rpmExpand("%{?_host_cpu}", NULL);
@@ -561,6 +627,12 @@ static void defaultMachine(/*@out@*/ const char ** arch,
 	    }
 	    s = _free(s);
 	}
+
+#if defined(RPM_VENDOR_OPENPKG) /* explicit-platform */
+	/* cleanup after above processing */
+	if (cp != NULL && cp != platform)
+	    cp = _free(cp);
+#endif
 
 	if (configTarget && !parseCVOG(configTarget, &cvog) && cvog != NULL) {
 	    gotDefaults = 1;

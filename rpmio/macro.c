@@ -130,7 +130,14 @@ int print_expand_trace = _PRINT_EXPAND_TRACE;
 #define	MACRO_CHUNK_SIZE	16
 
 /* Size of expansion buffers. */
+#if defined(RPM_VENDOR_OPENPKG) /* fixed-size-macro-buffer */
+/* Don't use the stdio variable BUFSIZ because it is of unknown size.
+   Usually, it is just 1024 on some platforms but on Linux it can be
+   even 8192. Use a fixed 16KB buffer in OpenPKG for now. */
+static size_t _macro_BUFSIZ = 16 * 1024;
+#else
 static size_t _macro_BUFSIZ = 4 * BUFSIZ;
+#endif
 
 /* forward ref */
 static int expandMacro(MacroBuf mb)
@@ -1176,6 +1183,9 @@ doFoo(MacroBuf mb, int negate, const char * f, size_t fn,
 	buf[gn] = '\0';
 	(void) expandU(mb, buf, bufn);
     }
+#if defined(RPM_VENDOR_OPENPKG) /* patch-as-plain-macro */
+#define NOTYET
+#endif
 #if defined(NOTYET)	/* XXX change needs parsePrep and macros changes too */
     if (fn > 5 && STREQ("patch", f, 5) && xisdigit(f[5])) {
 	/* Skip leading zeros */
@@ -1185,6 +1195,9 @@ doFoo(MacroBuf mb, int negate, const char * f, size_t fn,
 	be = stpncpy( stpcpy(b, "%patch -P "), f+c, fn-c);
 	*be = '\0';
     } else
+#endif
+#if defined(RPM_VENDOR_OPENPKG) /* patch-as-plain-macro */
+#undef NOTYET
 #endif
     if (STREQ("basename", f, fn)) {
 	if ((b = strrchr(buf, '/')) == NULL)
@@ -1485,7 +1498,13 @@ expandMacro(MacroBuf mb)
 	    STREQ("error", f, fn)) {
 		int waserror = 0;
 		if (STREQ("error", f, fn))
+#if defined(RPM_VENDOR_OPENPKG) /* stop-on-error-macro */
+			/* Make sure that an %{error:<msg>} macro really stops further
+			   processing. Else it would be nothing more than a %{warn:<msg>}. */
+			waserror = 1, rc = 1;
+#else
 			waserror = 1;
+#endif
 		if (g != NULL && g < ge)
 			doOutput(mb, waserror, g, gn);
 		else
@@ -1541,7 +1560,11 @@ expandMacro(MacroBuf mb)
 	}
 #endif
 
+#if defined(RPM_VENDOR_OPENPKG) /* patch-as-plain-macro */
+#define NOTYET
+#endif
 #if defined(NOTYET)	/* XXX change needs parsePrep and macros changes too */
+	/* enable for OpenPKG */
 	/* Rewrite "%patchNN ..." as "%patch -P NN ..." and expand. */
 	if (lastc != NULL && fn > 5 && STREQ("patch", f, 5) && xisdigit(f[5])) {
 		/*@-internalglobs@*/ /* FIX: verbose may be set */
@@ -1550,6 +1573,9 @@ expandMacro(MacroBuf mb)
 		s = lastc;
 		continue;
 	}
+#endif
+#if defined(RPM_VENDOR_OPENPKG) /* patch-as-plain-macro */
+#undef NOTYET
 #endif
 
 	/* XXX necessary but clunky */

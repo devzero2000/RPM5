@@ -1,0 +1,291 @@
+
+  VENDOR CHANGES
+  ==============
+
+  APPLICATION RULES
+  -----------------
+
+  The rpm5.org code base to a very restricted and limited scope contains
+  some RPM changes from third-party distribution vendors. A vendor patch
+  *might* be accepted for inclusion into the rpm5.org code base if it at
+  least follows the following rules *and* is accepted after a detailed
+  review by JBJ:
+
+  1. RULE:
+     at least one representative of a vendor has to be part of the
+     official rpm5.org developer team. Additionally, the vendor and its
+     representative is explicitly listed below.
+
+  2. RULE:
+     all source code changes have to be really surgically and
+     minimally touching the rpm5.org code base only (no large code
+     block reorderings, no accidential whitespace changes, etc).
+     Additionally, all changes have to be *entirely* wrapped with "#if
+     defined(RPM_VENDOR_<name-id>) /* <change-id> */... #endif" where
+     <name-id> and <change-id> are explicitly listed in this document
+     below under "Name" and "Change".
+
+  VENDOR REGISTRY
+  ---------------
+
+  o  Name:           OPENPKG
+     Vendor:         OpenPKG <http://openpkg.org/>
+     Representative: Ralf S. Engelschall <rse@openpkg.org> <rse@rpm5.org>
+     Application:    RPM-based Unix software distribution (> 1100 packages),
+     Characteristic: cross-platform multiple-instance use of RPM
+     ________________________________________________________________________
+
+     Change:         splitted-source-directory
+     Purpose:        support so-called "splitted source directories", i.e.,
+                     source files (listed on SourceX and PatchX headers)
+                     can be placed into %{_specdir} in addition to
+                     %{_sourcedir}.
+     Reason:         OpenPKG ultra-strictly separates sources files into
+                     two classes: external ones -- those which are
+                     referenced with fully-qualified URLs and can be
+                     (re-)fetched from the Internet -- and internal
+                     ones -- those which are references as plain files
+                     and which are kept in the local version control
+                     system (VCS). As in OpenPKG the .spec file is just
+                     one of those "internal" files, they are all stored
+                     under %{_specdir} while %{_sourcedir} is used
+                     for everything which is downloaded from external
+                     sources (in OpenPKG even an automated process).
+     Hint:           The even better solution would be to introduce
+                     %{_sourcedir_external} and %{_sourcedir_internal}
+                     and support this throughout RPM.
+     ________________________________________________________________________
+
+     Change:         explicit-platform
+     Purpose:        Allow the platform identification be set explicitly only.
+     Reason:         As OpenPKG is a cross-platform distribution,
+                     the "platform" had to be determined by GNU shtool's
+                     "shtool platform" script since many years. The
+                     result is stored into the "platform" file which
+                     RPM internally reads in. This way the platform is
+                     explicitly set and no other implicit sets wished.
+     ________________________________________________________________________
+
+     Change:         extra-section-track
+     Purpose:        Add support for custom section "%track",
+                     a package build-time section containing a script
+                     which can check whether the current package is
+                     still based on the latest upstream vendor version.
+     Reason:         In OpenPKG all "external" sources (see above)
+                     are automatically and bi-daily tracked for new
+                     available versions from the upstream vendor. For
+                     this OpenPKG places vcheck(1) based config snippets
+                     into its %track sections and lets them be executed
+                     through vcheck(1) via "rpm -bt".
+     ________________________________________________________________________
+
+     Change:         extra-section-test
+     Purpose:        Add support for custom section "%test",
+                     a package install-time section containing a script
+                     which can check whether the current package is
+                     working under run-time, usually by executing some
+                     commands of the package.
+     Reason:         In OpenPKG we want some form of package regression
+                     tests which are directly attached to the packages.
+                     Unfortunately, we never got to the point of using
+                     %test until now. Shame on us!
+     Hint:           This is not tested at all as it is still unused!
+     ________________________________________________________________________
+
+     Change:         branding
+     Purpose:        Apply some branding for the OpenPKG distribution.
+     Reason:         To make sure the users notice that this is not 100%
+                     a standard RPM from rpm5.org which is used by OpenPKG.
+     ________________________________________________________________________
+
+     Change:         no-deps-on-building-srpms
+     Purpose:        Do not perform any dependency checking on building SRPMs.
+     Reason:         We never found any reason why this is of any benefit for
+                     just rolling a source RPM package.
+     ________________________________________________________________________
+
+     Change:         always-remove-tempfiles
+     Purpose:        Unconditionally remove temporary files ("rpm-tmp.XXXXX")
+                     which were generated for the executed scripts.
+     Reason:         In OpenPKG we run the scripts in debug mode ("set -x")
+                     anyway, so we never need to see the whole generated
+                     script -- not even if it breaks. Instead we would
+                     just have temporary files staying around forever.
+     ________________________________________________________________________
+
+     Change:         no-default-doc-files
+     Purpose:        Do not declare some files as %doc by default.
+     Reason:         In OpenPKG we want to be explicit in the declaration
+                     of %doc files and do it entirely from a package
+                     %files section only. No magic in the code wished.
+     ________________________________________________________________________
+
+     Change:         support-srcdefattr
+     Purpose:        allow to set SRPM file attributes via %{_srcdefattr} macro
+     Reason:         This makes the generated SRPMs look more uniform
+     ________________________________________________________________________
+
+     Change:         still-support-section-clean
+     Purpose:        allow us to still use %clean section
+     Reason:         for temporary backward compatibility only
+     ________________________________________________________________________
+
+     Change:         not-fully-arbitrary-tags
+     Purpose:        do not allow fully arbitrary tags/headers
+     Reason:         we want to allow only those extra tags which are
+                     explicitly configured in the macros
+     ________________________________________________________________________
+
+     Change:         always-backup-on-patching
+     Purpose:        always create backup files on patching files via %patch
+     Reason:         In OpenPKG we maintain our patches via "rpm -bp" plus
+                     subsequent "svs" commands, so we always want that
+                     backup files are created.
+     Hint:           We could explicitly specify -b all the time, too.
+     ________________________________________________________________________
+
+     Change:         no-require-bin-sh
+     Purpose:        do not implicitly add a requirement for /bin/sh
+     Reason:         In OpenPKG RPM does not operate on operating system
+                     scope. Instead it operates in a fully
+                     self-contained multiple-instance environment.
+                     There /bin/sh is NEVER provided by an OpenPKG RPM
+                     package.
+     ________________________________________________________________________
+
+     Change:         bdb-no-partial-locking
+     Purpose:        Perform full instead of partial record locking.
+     Reason:         At least Solaris may reject (see its fcntl(2) manpage)
+                     the (partial) locking, because BDB mmap(2)'ed the file
+     ________________________________________________________________________
+
+     Change:         bdb-bugfix-fcntl-usage
+     Purpose:        Fix the usage of fcntl(2)
+     Reason:         POSIX/SUSv3 clearly expresses that fcntl(2)
+                     returns "value other than -1" on success, so check
+                     for equality to -1 instead of non-equality to 0.
+                     In practice this does not harm on most platforms,
+                     because they fortunately (by conincidence and
+                     common practice) return 0.
+     ________________________________________________________________________
+
+     Change:         bdb-use-odirect-on-freebsd-only
+     Purpose:        Use O_DIRECT on FreeBSD only
+     Reason:         The O_DIRECT feature is fully broken under at least Linux
+                     2.2 and 2.4. It is sometimes accepted by open(2)
+                     without error and later causes a write(2) to fail
+                     with EINVAL -- all depending on the underlying
+                     filesystem (usually works on tmpfs and fails on
+                     ext3). Sometimes it also causes open(2) to fail
+                     with EINVAL. In general, it does especially no
+                     "graceful degradation" and so is useless for use on
+                     mostly all platforms except for those where we know
+                     it works (currently FreeBSD only). Interestingly,
+                     RPM works on RedHat, just because RedHat's "kernel"
+                     package contains a patch which masks out O_DIRECT
+                     usage... ;-)
+     ________________________________________________________________________
+
+     Change:         no-owner-group-on-srpm-install
+     Purpose:        Do not set owner/group on installation/unpacking of SRPM
+     Reason:         In OpenPKG it is not wished that file owner/group are
+                     set on files during installation of _source_ RPMs.
+                     Instead, the current run-time owner/group should
+                     be used, because most of the time the owner/group
+                     in the source RPM (which is the owner/group of the
+                     files as staying on the package author system) is
+                     not existing on the target system anyway.
+     ________________________________________________________________________
+
+     Change:         switch-from-susr-to-musr-on-srpm-install
+     Purpose:        If running as the OpenPKG "susr", do not unpack source
+                     RPM packages with "susr" file ownerships. Instead
+                     unpack with "musr" file ownerships.
+     Reason:         The OpenPKG Set-UID wrapper switches from "musr" to
+                     "susr" on "openpkg rpm -Uvh *.src.rpm". As a result
+                     the installed files could be never removed again by
+                     "musr". It is more consistent to always unpack as
+                     "musr" if possible.
+     ________________________________________________________________________
+
+     Change:         adjust-verbose-listing
+     Purpose:        In verbose file listing output, give the owner and group
+                     fields more width and at the same time reduce the
+                     fields more nlink and size to typical sizes within
+                     fields more OpenPKG.
+     Reason:         Just cosmetics to improve output.
+     ________________________________________________________________________
+
+     Change:         larger-utsname
+     Purpose:        Increase size of "struct utsname"
+     Reason:         OpenPKG requires more space for storage
+     ________________________________________________________________________
+
+     Change:         platform-major-minor-only
+     Purpose:        Reduce the platform version to major and minor version numbers only.
+     Reason:         Experience shows that more is never reasonable in practice.
+     ________________________________________________________________________
+
+     Change:         allow-excludedocs-default
+     Purpose:        Do not override the %{_excludedocs} macro.
+     Reason:         The "%_excludedocs" macro is intended to set the
+                     _default_ if both --excludedocs and --includedocs
+                     are not specified and it is evaluated already
+                     before. So, do not override it here again, because
+                     it would not allow us to make "%_excludedocs 1" the
+                     default.
+     ________________________________________________________________________
+
+     Change:         bdb-allow-zero-sized-files
+     Purpose:        Make sure RPM passes DB_CREATE to Berkeley-DB also
+                     if file exists, but is (still) zero-sized.
+     Reason:         In OpenPKG all database files are pre-created
+                     to fixate permissions.
+     Hint:           This might be obsolete soon as we now create real
+                     BDB files instead of empty files.
+     ________________________________________________________________________
+
+     Change:         no-architecture-expose
+     Purpose:        Do not expose the architecture in outputs.
+     Reason:         This is too less information, as in OpenPKG the
+                     "platform" is described by the
+                     architecture+operating-system combination. But
+                     as the whole "platform" information is actually
+                     overkill, just revert to the RPM 4 behaviour and do
+                     not expose any such information at all
+     Hint:           FIXME, not sufficient: still some information exposed during
+                     rpm -qa for the case of public keys.
+     ________________________________________________________________________
+
+     Change:         fixed-size-macro-buffer
+     Purpose:        Use a fixed 16KB buffer for macro expansion.
+     Reason:         Don't use the stdio variable BUFSIZ because it is of
+                     unknown size. Usually, it is just 1024 on some
+                     platforms but on Linux it can be even 8192. Use a
+                     fixed 16KB buffer in OpenPKG for now.
+     ________________________________________________________________________
+
+     Change:         patch-as-plain-macro
+     Purpose:        Use %patch as a plain macro instead of internal implementation.
+     Reason:         The macro is more flexible and we especially can introduce
+                     some Lua-based substitution magic there more easily.
+     ________________________________________________________________________
+
+     Change:         stop-on-error-macro
+     Purpose:        Make sure that an %{error:<msg>} macro really stops further
+                     processing. Else it would be nothing more than a %{warn:<msg>}.
+     Reason:         OpenPKG wants that %error results in a processing stop.
+     ________________________________________________________________________
+
+     Change:         auto-remove-source-directories
+     Purpose:        Automatically remove source directories if they are empty.
+     Reason:         In OpenPKG we use per-package %{_sourcedir} and
+                     %{_specdir} definitions (macros have trailing
+                     ".../%{name}"). On removal of source(s) and .spec
+                     file, this per-package directory would be kept
+                     (usually <prefix>/RPM/SRC/<name>/), because RPM
+                     does not know about this OpenPKG convention. So,
+                     let RPM try(!) to remove the two directories (if
+                     they are empty) and just ignore removal failures
+                     (if they are still not empty).
+

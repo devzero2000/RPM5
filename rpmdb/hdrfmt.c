@@ -1487,14 +1487,30 @@ static char * hGetNVRA(Header h)
     if (N)	nb += strlen(N);
     if (V)	nb += strlen(V) + 1;
     if (R)	nb += strlen(R) + 1;
+#if defined(RPM_VENDOR_OPENPKG) /* no-architecture-expose */
+    /* do not expose the architecture as this is too less
+       information, as in OpenPKG the "platform" is described by the
+       architecture+operating-system combination. But as the whole
+       "platform" information is actually overkill, just revert to the
+       RPM 4 behaviour and do not expose any such information at all. */
+#else
     if (A)	nb += strlen(A) + 1;
+#endif
     nb++;
     NVRA = t = xmalloc(nb);
     *t = '\0';
     if (N)	t = stpcpy(t, N);
     if (V)	t = stpcpy( stpcpy(t, "-"), V);
     if (R)	t = stpcpy( stpcpy(t, "-"), R);
+#if defined(RPM_VENDOR_OPENPKG) /* no-architecture-expose */
+    /* do not expose the architecture as this is too less
+       information, as in OpenPKG the "platform" is described by the
+       architecture+operating-system combination. But as the whole
+       "platform" information is actually overkill, just revert to the
+       RPM 4 behaviour and do not expose any such information at all. */
+#else
     if (A)	t = stpcpy( stpcpy(t, "."), A);
+#endif
     N = _free(N);
     V = _free(V);
     R = _free(R);

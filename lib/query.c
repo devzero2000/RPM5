@@ -40,7 +40,14 @@ static void printFileInfo(char * te, const char * name,
 	/*@modifies *te @*/
 {
     char sizefield[15];
+#if defined(RPM_VENDOR_OPENPKG) /* adjust-verbose-listing */
+    /* In verbose file listing output, give the owner and group fields
+       more width and at the same time reduce the nlink and size fields
+       more to typical sizes within OpenPKG. */
+    char ownerfield[13+1], groupfield[13+1];
+#else
     char ownerfield[8+1], groupfield[8+1];
+#endif
     char timefield[100];
     time_t when = mtime;  /* important if sizeof(uint32_t) ! sizeof(time_t) */
     struct tm * tm;
@@ -63,7 +70,14 @@ static void printFileInfo(char * te, const char * name,
     groupfield[sizeof(groupfield)-1] = '\0';
 
     /* this is normally right */
+#if defined(RPM_VENDOR_OPENPKG) /* adjust-verbose-listing */
+    /* In verbose file listing output, give the owner and group fields
+       more width and at the same time reduce the nlink and size fields
+       more to typical sizes within OpenPKG. */
+    sprintf(sizefield, "%8u", size);
+#else
     sprintf(sizefield, "%12u", size);
+#endif
 
     /* this knows too much about dev_t */
 
@@ -103,7 +117,14 @@ static void printFileInfo(char * te, const char * name,
 	(void)strftime(timefield, sizeof(timefield) - 1, fmt, tm);
     }
 
+#if defined(RPM_VENDOR_OPENPKG) /* adjust-verbose-listing */
+    /* In verbose file listing output, give the owner and group fields
+       more width and at the same time reduce the nlink and size fields
+       more to typical sizes within OpenPKG. */
+    sprintf(te, "%s %d %-13s %-13s %8s %s %s", perms,
+#else
     sprintf(te, "%s %4d %-7s %-8s %10s %s %s", perms,
+#endif
 	(int)nlink, ownerfield, groupfield, sizefield, timefield, namefield);
     perms = _free(perms);
 }

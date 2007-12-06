@@ -145,6 +145,10 @@ Package newPackage(Spec spec)
     p->preUnFile = NULL;
     p->postUnFile = NULL;
     p->verifyFile = NULL;
+#if defined(RPM_VENDOR_OPENPKG) /* extra-section-test */
+    /* support "%test" script/section */
+    p->testFile = NULL;
+#endif
 
     p->specialDoc = NULL;
 
@@ -170,6 +174,10 @@ Package freePackage(Package pkg)
     pkg->preUnFile = _free(pkg->preUnFile);
     pkg->postUnFile = _free(pkg->postUnFile);
     pkg->verifyFile = _free(pkg->verifyFile);
+#if defined(RPM_VENDOR_OPENPKG) /* extra-section-test */
+    /* support "%test" script/section */
+    pkg->testFile = _free(pkg->testFile);
+#endif
 
     pkg->header = headerFree(pkg->header);
     pkg->ds = rpmdsFree(pkg->ds);
@@ -342,8 +350,10 @@ int addSource(Spec spec, Package pkg, const char *field, int tag)
 assert(0);
 	/*@notreached@*/ break;
     }
+#if !defined(RPM_VENDOR_OPENPKG) /* splitted-source-directory */
     mdir = getSourceDir(flag);
 assert(mdir != NULL);
+#endif
     /*@=branchstate@*/
 
     /* Get the number */
@@ -386,6 +396,9 @@ assert(mdir != NULL);
     spec->numSources++;
 
     /* XXX FIXME: need to add ICON* macros. */
+#if defined(RPM_VENDOR_OPENPKG) /* splitted-source-directory */
+    mdir = getSourceDir(flag, p->source);
+#endif
     if (tag != RPMTAG_ICON) {
 	const char *body = rpmGenPath(NULL, mdir, p->source);
 
@@ -496,6 +509,10 @@ Spec newSpec(void)
     spec->install = NULL;
     spec->check = NULL;
     spec->clean = NULL;
+#if defined(RPM_VENDOR_OPENPKG) /* extra-section-track */
+    /* support "%track" script/section */
+    spec->track = NULL;
+#endif
 
     spec->sources = NULL;
     spec->packages = NULL;
@@ -542,6 +559,10 @@ Spec freeSpec(Spec spec)
     spec->install = freeStringBuf(spec->install);
     spec->check = freeStringBuf(spec->check);
     spec->clean = freeStringBuf(spec->clean);
+#if defined(RPM_VENDOR_OPENPKG) /* extra-section-track */
+    /* support "%track" script/section */
+    spec->track = freeStringBuf(spec->track);
+#endif
 
     spec->buildSubdir = _free(spec->buildSubdir);
     spec->rootURL = _free(spec->rootURL);

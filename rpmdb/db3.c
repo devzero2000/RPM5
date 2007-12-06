@@ -1216,7 +1216,17 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 	    const char * dbf = rpmGetPath(dbhome, "/__db.001", NULL);
 	    /*@=mods@*/
 
+#if defined(RPM_VENDOR_OPENPKG) /* bdb-allow-zero-sized-files */
+	    /* Make sure RPM passes DB_CREATE to Berkeley-DB also
+	       if file exists, but is (still) zero-sized. */
+	    struct stat sb;
+	    long size = -1;
+	    if (stat(dbf, &sb) == 0)
+		size = (long)sb.st_size;
+	    if (access(dbf, F_OK) == -1 || size == 0) {
+#else
 	    if (access(dbf, F_OK) == -1) {
+#endif
 		/* ... non-existent (or unwritable) DBENV, will create ... */
 		dbi->dbi_oeflags |= DB_CREATE;
 		dbi->dbi_eflags &= ~DB_JOINENV;

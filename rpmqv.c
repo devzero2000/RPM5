@@ -149,7 +149,12 @@ static void printVersion(FILE * fp)
 	/*@globals rpmEVR, fileSystem @*/
 	/*@modifies *fp, fileSystem @*/
 {
+#if defined(RPM_VENDOR_OPENPKG) /* branding */
+    /* use OpenPKG branding */
+    fprintf(fp, _("OpenPKG RPM %s\n"), rpmEVR);
+#else
     fprintf(fp, _("RPM version %s\n"), rpmEVR);
+#endif
 }
 
 static void printUsage(poptContext con, FILE * fp, int flags)
@@ -639,7 +644,22 @@ int main(int argc, const char ** argv)
 	    /*@innerbreak@*/ break;
 	case 's':
 	    ba->buildAmount |= RPMBUILD_PACKAGESOURCE;
+#if defined(RPM_VENDOR_OPENPKG) /* no-deps-on-build-srpms */
+	    /* enforce no dependency checking when rolling a source RPM */
+	    ba->noDeps = 1;
+#endif
 	    /*@innerbreak@*/ break;
+#if defined(RPM_VENDOR_OPENPKG) /* extra-section-track */
+	/* support extracting the "%track" script/section */
+	case 't':
+	    ba->buildAmount |= RPMBUILD_TRACK;
+	    /* enforce no dependency checking and expansion of %setup, %patch and %prep macros */
+	    ba->noDeps = 1;
+	    rpmDefineMacro(NULL, "setup #", RMIL_CMDLINE);
+	    rpmDefineMacro(NULL, "patch #", RMIL_CMDLINE);
+	    rpmDefineMacro(NULL, "prep %%prep", RMIL_CMDLINE);
+	    /*@innerbreak@*/ break;
+#endif
 	}
 
 	if (!poptPeekArg(optCon)) {

@@ -660,8 +660,16 @@ static void skipFiles(const rpmts ts, rpmfi fi)
     int dc;
     int i, j;
 
+#if defined(RPM_VENDOR_OPENPKG) /* allow-excludedocs-default */
+    /* The "%_excludedocs" macro is intended to set the _default_ if
+       both --excludedocs and --includedocs are not specified and it
+       is evaluated already before. So, do not override it here again,
+       because it would not allow us to make "%_excludedocs 1" the
+       default. */
+#else
     if (!noDocs)
 	noDocs = rpmExpandNumeric("%{_excludedocs}");
+#endif
 
     {	const char *tmpPath = rpmExpand("%{_netsharedpath}", NULL);
 	if (tmpPath && *tmpPath != '%')

@@ -1182,6 +1182,32 @@ print (t)\
 #%{__spec_clean_post}\
 #%{nil}
 
+#if defined(RPM_VENDOR_OPENPKG) /* extra-section-track */
+# support %track script/section
+%__spec_track_shell    %{___build_shell}
+%__spec_track_args     %{___build_args}
+%__spec_track_cmd      %{___build_cmd}
+%__spec_track_pre      %{___build_pre}
+%__spec_track_body     %{___build_body}
+%__spec_track_post     %{___build_post}
+%__spec_track_template #!%{__spec_track_shell}\
+%{__spec_track_pre}\
+%{nil}
+#endif
+
+#if defined(RPM_VENDOR_OPENPKG) /* extra-section-test */
+# support %test script/section
+%__spec_test_shell    %{___build_shell}
+%__spec_test_args     %{___build_args}
+%__spec_test_cmd      %{___build_cmd}
+%__spec_test_pre      %{___build_pre}
+%__spec_test_body     %{___build_body}
+%__spec_test_post     %{___build_post}
+%__spec_test_template #!%{__spec_test_shell}\
+%{__spec_test_pre}\
+%{nil}
+#endif
+
 %__spec_rmbuild_shell	%{___build_shell}
 %__spec_rmbuild_args	%{___build_args}
 %__spec_rmbuild_cmd	%{___build_cmd}
@@ -1242,11 +1268,15 @@ print (t)\
 %_build_cpu		%{_host_cpu}
 %_build_vendor		%{_host_vendor}
 %_build_os		%{_host_os}
+#if !defined(RPM_VENDOR_OPENPKG) /* explicit-platform */
+# do not override the "_host*" macros because their value (derived
+# from the "platform" file) is already correctly set internally.
 %_host			@host@
 %_host_alias		@host_alias@%{nil}
 %_host_cpu		@host_cpu@
 %_host_vendor		@host_vendor@
 %_host_os		@host_os@
+#endif
 %_target		%{_host}
 %_target_alias		%{_host_alias}
 %_target_cpu		%{_host_cpu}

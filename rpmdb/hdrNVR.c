@@ -186,6 +186,12 @@ int headerNEVRA(Header h, const char **np,
 	he->p.ptr = _free(he->p.ptr);
     }
     if (ap) {
+#if !defined(RPM_VENDOR_OPENPKG) /* no-architecture-expose */
+        /* do not expose the architecture as this is too less
+           information, as in OpenPKG the "platform" is described by the
+           architecture+operating-system combination. But as the whole
+           "platform" information is actually overkill, just revert to the
+           RPM 4 behaviour and do not expose any such information at all. */
 	he->tag = RPMTAG_ARCH;
 /*@-observertrans -readonlytrans@*/
 	if (!headerIsEntry(h, he->tag))
@@ -199,6 +205,7 @@ int headerNEVRA(Header h, const char **np,
 	 && he->t == RPM_STRING_TYPE && he->c == 1)
 	    *ap = xstrdup(he->p.str);
 	else
+#endif
 	    *ap = NULL;
 	he->p.ptr = _free(he->p.ptr);
     }

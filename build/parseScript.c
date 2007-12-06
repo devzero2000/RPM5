@@ -181,6 +181,15 @@ int parseScript(Spec spec, int parsePart)
 	progtag = RPMTAG_TRIGGERSCRIPTPROG;
 	partname = "%triggerpostun";
 	break;
+#if defined(RPM_VENDOR_OPENPKG) /* extra-section-test */
+      /* support "%test" script/section */
+      case PART_TEST:
+	tag = RPMTAG_TEST;
+	tagflags = RPMSENSE_SCRIPT_TEST;
+	progtag = RPMTAG_TESTPROG;
+	partname = "%test";
+	break;
+#endif
     }
     /*@=branchstate@*/
 
@@ -313,6 +322,12 @@ int parseScript(Spec spec, int parsePart)
 		 spec->lineNum, progArgv[0]);
 	rc = RPMRC_FAIL;
 	goto exit;
+#if defined(RPM_VENDOR_OPENPKG) /* no-require-bin-sh */
+    } else if (strcmp(progArgv[0], "/bin/sh") == 0) {
+	/* Not everything on a system is RPM based (for instance OpenPKG is
+	   just an add-on to the system), so do not assume we can just require
+	   a package to provide "/bin/sh". */
+#endif
     } else {
         (void) addReqProv(spec, pkg->header, RPMTAG_REQUIRENAME,
 		progArgv[0], NULL, (tagflags | RPMSENSE_INTERP), 0);
@@ -375,6 +390,11 @@ int parseScript(Spec spec, int parsePart)
 	      case PART_VERIFYSCRIPT:
 		pkg->verifyFile = xstrdup(file);
 		break;
+#if defined(RPM_VENDOR_OPENPKG) /* extra-section-test */
+	      case PART_TEST:
+		pkg->testFile = xstrdup(file);
+	        break;
+#endif
 	    }
 	}
     }

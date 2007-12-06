@@ -2333,6 +2333,9 @@ static int processPackageFiles(Spec spec, Package pkg,
     fl.defSpecdFlags = 0;
 
     fl.docDirCount = 0;
+#if defined(RPM_VENDOR_OPENPKG) /* no-default-doc-files */
+    /* do not declare any files as %doc files by default. */
+#else
     fl.docDirs[fl.docDirCount++] = xstrdup("/usr/doc");
     fl.docDirs[fl.docDirCount++] = xstrdup("/usr/man");
     fl.docDirs[fl.docDirCount++] = xstrdup("/usr/info");
@@ -2346,6 +2349,7 @@ static int processPackageFiles(Spec spec, Package pkg,
     fl.docDirs[fl.docDirCount++] = rpmGetPath("%{_infodir}", NULL);
     fl.docDirs[fl.docDirCount++] = rpmGetPath("%{_javadocdir}", NULL);
     fl.docDirs[fl.docDirCount++] = rpmGetPath("%{_examplesdir}", NULL);
+#endif
     
     fl.fileList = NULL;
     fl.fileListRecsAlloced = 0;
@@ -2552,6 +2556,16 @@ int initSourceHeader(Spec spec, StringBuf *sfp)
 	case RPMTAG_GIF:
 	case RPMTAG_XPM:
 	case HEADER_I18NTABLE:
+#if defined(RPM_VENDOR_OPENPKG) /* propagate-provides-to-srpms */
+	/* make sure the "Provides" headers are available for querying from the .src.rpm files. */
+	case RPMTAG_PROVIDENAME:
+	case RPMTAG_PROVIDEVERSION:
+	case RPMTAG_PROVIDEFLAGS:
+#endif
+#if defined(RPM_VENDOR_OPENPKG) /* extra-header-class */
+	/* support "Class" header */
+	case RPMTAG_CLASS:
+#endif
 	    if (he->p.ptr)
 		xx = headerPut(spec->sourceHeader, he, 0);
 	    /*@switchbreak@*/ break;
@@ -2583,7 +2597,11 @@ int initSourceHeader(Spec spec, StringBuf *sfp)
     for (srcPtr = spec->sources; srcPtr != NULL; srcPtr = srcPtr->next) {
       {	const char * sfn;
 	sfn = rpmGetPath( ((srcPtr->flags & RPMFILE_GHOST) ? "!" : ""),
+#if defined(RPM_VENDOR_OPENPKG) /* splitted-source-directory */
+		getSourceDir(srcPtr->flags, srcPtr->source), srcPtr->source, NULL);
+#else
 		getSourceDir(srcPtr->flags), srcPtr->source, NULL);
+#endif
 	appendLineStringBuf(sourceFiles, sfn);
 	sfn = _free(sfn);
       }
@@ -2644,9 +2662,27 @@ int processSourceFiles(Spec spec)
     struct FileList_s fl;
     char **files, **fp;
     int rc;
+#if defined(RPM_VENDOR_OPENPKG) /* support-srcdefattr */
+    /* srcdefattr: needed variables */
+    char _srcdefattr_buf[BUFSIZ];
+    char *_srcdefattr;
+#endif
+
+#if defined(RPM_VENDOR_OPENPKG) /* support-srcdefattr */
+    _srcdefattr = rpmExpand("%{?_srcdefattr}", NULL);
+#endif
 
     *sfp = newStringBuf();
     x = initSourceHeader(spec, sfp);
+
+#if defined(RPM_VENDOR_OPENPKG) /* support-srcdefattr */
+    /* srcdefattr: initialize file list structure */
+    memset(&fl, 0, sizeof(fl));
+    if (_srcdefattr && *_srcdefattr) {
+        snprintf(_srcdefattr_buf, sizeof(_srcdefattr_buf), "%%defattr %s", _srcdefattr);
+        parseForAttr(_srcdefattr_buf, &fl);
+    }
+#endif
 
     /* Construct the SRPM file list. */
     fl.fileList = xcalloc((spec->numSources + 1), sizeof(*fl.fileList));
@@ -2698,8 +2734,18 @@ int processSourceFiles(Spec spec)
 	    rc = fl.processingFailed = 1;
 	}
 
+#if defined(RPM_VENDOR_OPENPKG) /* support-srcdefattr */
+	/* srcdefattr: allow to set SRPM file attributes via %{_srcdefattr} macro */
+	if (fl.def_ar.ar_fmodestr) {
+	    flp->fl_mode &= S_IFMT;
+	    flp->fl_mode |= fl.def_ar.ar_fmode;
+	}
+        flp->uname = fl.def_ar.ar_user  ? getUnameS(fl.def_ar.ar_user)  : getUname(flp->fl_uid);
+	flp->gname = fl.def_ar.ar_group ? getGnameS(fl.def_ar.ar_group) : getGname(flp->fl_gid);
+#else
 	flp->uname = getUname(flp->fl_uid);
 	flp->gname = getGname(flp->fl_gid);
+#endif
 	flp->langs = xstrdup("");
 	
 	fl.totalFileSize += flp->fl_size;
