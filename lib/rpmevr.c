@@ -19,7 +19,7 @@ int _rpmevr_debug = 0;
 
 /* XXX Force digits to beat alphas. See bugzilla #50977. */
 /*@unchecked@*/
-static int _invert_digits_alphas_comparison = -1;
+static int _invert_digits_alphas_comparison = 1;
 
 /* XXX Punctuation characters that are not treated as alphas */
 /*@unchecked@*/ /*@observer@*/
