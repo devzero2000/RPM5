@@ -927,6 +927,14 @@ RPM_CHECK_LIB(
     [no,external], [],
     [], [])
 
+dnl # OpenSSL
+RPM_CHECK_LIB(
+    [OpenSSL], [openssl],
+    [crypto], [ERR_load_CRYPTO_strings], [openssl/crypto.h],
+    [no,external], [],
+    [ AC_DEFINE(WITH_SSL, 1, [Define if building with OpenSSL])
+    ], [])
+
 dnl # Neon
 RPM_CHECK_LIB(
     [Neon], [neon],
