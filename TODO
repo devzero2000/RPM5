@@ -103,6 +103,10 @@
 	devtool-test.spec (no mkdir -p in %install).
     - jbj: fold-in patch-as-plain-macro at first convenient opportunity.
     - jbj: ditto, patch-as-plain-macro.
+    - jbj: tagCanoicalize needs to permit digits for RPMTAG_HEADERI18NTABLE.
+	Seen with --yaml:
+	  Headeri:
+	    - C
 
   o to be resolved before RPM 5.0.0:
     - rse: xar/ has weak (think RPM_CHECK_LIB) support its third-party
