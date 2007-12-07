@@ -132,3 +132,8 @@
     - jbj: generalize the Leopard XAR format to ar (as in *.deb), tar, and cpio.
     - jbj: eliminate the oddball *.src.rpm paths, nuke rpmInstallSourcePackage.
     - jbj: VPATH-like generalization to fold-in splitted-source-directory patch.
+    - jbj: add per file RPMTAG_ENTROPY a la Shannon to start making the choice
+	of compression scheme computible.
+    - jbj: explicitly compute sums of header and package sizes to help
+	distro maintainers understand their cdrom/dvd and memory footprint
+	needs.
