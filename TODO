@@ -115,6 +115,8 @@
     - jbj: rpmnss is reporting NOKEY with --rebuilddb.
     - jbj: handle SourceN: foo-V-R.src.rpm unpacking.
     - jbj: fix (or at least document) the /sbin/ldconfig optimization flaw.
+    - jbj: finish --trust with --import (or punt to 5.1).
+    - jbj: add build script templates for install scriptlets (or punt to 5.1).
 
   RPM 5.1 ROADMAP ISSUES
   ----------------------
@@ -137,3 +139,6 @@
     - jbj: explicitly compute sums of header and package sizes to help
 	distro maintainers understand their cdrom/dvd and memory footprint
 	needs.
+    - jbj: split rpmtsRun() into 2 pieces, moving the file resolution
+	computation into its own method.
+	
