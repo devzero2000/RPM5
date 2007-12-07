@@ -94,6 +94,13 @@
     - jbj: change RPM_I18NSTRING_TYPE wiring to use arbitrary tag.
     - jbj: hmm RPMTAG_TRACK contents not added to *.rpm yet.
     - jbj: add Requires: sanitycheck(N) runtime namespace probe.
+    - jbj: re-add %{_bindir}/rpm2cpio, push rpm2cpio.sh into %{_rpmlibdir}.
+    - jbj: add macro disabler for scriptlet interpreter dependencies, fold
+	in no-require-bin-sh patch.
+    - jbj: fold in not-fully-arbitrary-tags by adding %{_arbitrary_tags} test.
+    - jbj: reproducer for the "devtool standalone testdrive" segfault.
+    - jbj: add lazy mkdir -p to handle packaging pathologies like in
+	devtool-test.spec (no mkdir -p in %install).
 
   o to be resolved before RPM 5.0.0:
     - rse: xar/ has weak (think RPM_CHECK_LIB) support its third-party
@@ -106,6 +113,8 @@
     - jbj: rpmbuild --sign is functional. However, behavior may have changed
 	for empty passwords when not using linux keyutils. Should I care?
     - jbj: rpmnss is reporting NOKEY with --rebuilddb.
+    - jbj: handle SourceN: foo-V-R.src.rpm unpacking.
+    - jbj: fix (or at least document) the /sbin/ldconfig optimization flaw.
 
   RPM 5.1 ROADMAP ISSUES
   ----------------------
@@ -122,3 +131,4 @@
     - jbj: permit per-file encryption with password caching through keyutils.
     - jbj: generalize the Leopard XAR format to ar (as in *.deb), tar, and cpio.
     - jbj: eliminate the oddball *.src.rpm paths, nuke rpmInstallSourcePackage.
+    - jbj: VPATH-like generalization to fold-in splitted-source-directory patch.
