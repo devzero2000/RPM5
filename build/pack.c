@@ -1122,6 +1122,7 @@ int packageSources(Spec spec)
     struct cpioSourceArchive_s csabuf;
     CSA_t csa = &csabuf;
     int rc;
+    int xx;
 
     /* Add rpmlib markers for tracking. */
     (void) rpmlibMarkers(spec->sourceHeader);
@@ -1129,7 +1130,6 @@ int packageSources(Spec spec)
     (void) genSourceRpmName(spec);
 
     {	const char ** av = NULL;
-	int xx;
 	(void)rpmGetMacroEntries(NULL, NULL, 1, &av);
 	if (av != NULL && av[0] != NULL) {
 	    he->tag = RPMTAG_BUILDMACROS;
@@ -1139,6 +1139,27 @@ int packageSources(Spec spec)
 	    xx = headerPut(spec->sourceHeader, he, 0);
 	}
 	av = argvFree(av);
+    }
+
+    if (spec->track != NULL) {
+	const char * track = getStringBuf(spec->track);
+	he->p.str = rpmExpand("%{?__vcheck}", NULL);
+	if (track != NULL && track[0] != '\0'
+	 && he->p.str != NULL && he->p.str[0] != '\0')
+	{
+	    he->tag = RPMTAG_TRACKPROG;
+	    he->t = RPM_STRING_TYPE;
+	    he->c = 1;
+	    if (he->p.str != NULL && he->p.str[0] != '\0')
+		xx = headerPut(spec->sourceHeader, he, 0);
+	    he->p.str = _free(he->p.str);
+	    he->tag = RPMTAG_TRACK;
+	    he->t = RPM_STRING_TYPE;
+	    he->p.str = track;
+	    he->c = 1;
+	    xx = headerPut(spec->sourceHeader, he, 0);
+	} else
+	    he->p.str = _free(he->p.str);
     }
 
     spec->cookie = _free(spec->cookie);
@@ -1164,6 +1185,7 @@ int packageSources(Spec spec)
 	/*@=type@*/
 	fn = _free(fn);
     }
+
     return rc;
 }
 /*@=boundswrite@*/

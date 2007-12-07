@@ -43,7 +43,7 @@ static struct PartRec {
     { PART_TRIGGERIN,     0, "%triggerin"},
     { PART_TRIGGERIN,     0, "%trigger"},
     { PART_VERIFYSCRIPT,  0, "%verifyscript"},
-    { PART_TRACK,         0, "%track"},	/* support "%track" script/section */
+    { PART_TRACK,         0, "%track"},	/* support "%track" scriptlet */
     { PART_SANITYCHECK,	  0, "%sanitycheck"},	/* support "%sanitycheck" scriptlet */
     {0, 0, 0}
 };
@@ -494,6 +494,7 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootURL,
 	case PART_BUILD:
 	case PART_INSTALL:
 	case PART_CHECK:
+	case PART_TRACK:	/* support "%track" scriptlet */
 	case PART_CLEAN:
 	    parsePart = parseBuildInstallClean(spec, parsePart);
 	    /*@switchbreak@*/ break;
@@ -511,6 +512,7 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootURL,
 	case PART_PRETRANS:
 	case PART_POSTTRANS:
 	case PART_VERIFYSCRIPT:
+	case PART_SANITYCHECK:
 	case PART_TRIGGERPREIN:
 	case PART_TRIGGERIN:
 	case PART_TRIGGERUN:
@@ -525,14 +527,6 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootURL,
 	case PART_NONE:		/* XXX avoid gcc whining */
 	case PART_LAST:
 	case PART_BUILDARCHITECTURES:
-	    /*@switchbreak@*/ break;
-
-	case PART_TRACK:	/* support "%track" script/section */
-	    parsePart = parseBuildInstallClean(spec, parsePart);
-	    /*@switchbreak@*/ break;
-	/* support "%sanitycheck" script/section */
-	case PART_SANITYCHECK:
-	    parsePart = parseScript(spec, parsePart);
 	    /*@switchbreak@*/ break;
 	}
 
