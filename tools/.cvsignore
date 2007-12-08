@@ -5,6 +5,7 @@ Makefile
 Makefile.in
 convertdb1
 debugedit
+rpm2cpio
 rpmcache
 rpmcmp
 rpmdeps
