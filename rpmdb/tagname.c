@@ -119,7 +119,7 @@ static char * _tagCanonicalize(const char * s)
     if (!strncasecmp(s, "RPMTAG_", sizeof("RPMTAG_")-1))
 	s += sizeof("RPMTAG_") - 1;
     se = s;
-    while ((c = (int)*se++) && xisalpha(c))
+    while ((c = (int)*se++) && xisalnum(c))
 	nb++;
 
     te = t = xmalloc(nb+1);
