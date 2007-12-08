@@ -155,7 +155,7 @@ rpmgi rpmgiNew(rpmts ts, int tag, /*@kept@*/ /*@null@*/ const void * keyp,
 /**
  * Perform next iteration step.
  * @param gi		generalized iterator
- * @returns		RPMRC_OK on success, RPMRC_NOTFOUND on EOI
+ * @return		RPMRC_OK on success, RPMRC_NOTFOUND on EOI
  */
 rpmRC rpmgiNext(/*@null@*/ rpmgi gi)
 	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
@@ -164,7 +164,7 @@ rpmRC rpmgiNext(/*@null@*/ rpmgi gi)
 /**
  * Return current iteration flags.
  * @param gi		generalized iterator
- * @returns		flags
+ * @return		flags
  */
 rpmgiFlags rpmgiGetFlags(/*@null@*/ rpmgi gi)
         /*@*/;
@@ -172,7 +172,7 @@ rpmgiFlags rpmgiGetFlags(/*@null@*/ rpmgi gi)
 /**
  * Return current header path.
  * @param gi		generalized iterator
- * @returns		header path
+ * @return		header path
  */
 /*@observer@*/ /*@null@*/
 const char * rpmgiHdrPath(/*@null@*/ rpmgi gi)
@@ -181,7 +181,7 @@ const char * rpmgiHdrPath(/*@null@*/ rpmgi gi)
 /**
  * Return current iteration header.
  * @param gi		generalized iterator
- * @returns		header
+ * @return		header
  */
 /*@null@*/
 Header rpmgiHeader(/*@null@*/ rpmgi gi)
@@ -190,7 +190,7 @@ Header rpmgiHeader(/*@null@*/ rpmgi gi)
 /**
  * Return current iteration transaction set.
  * @param gi		generalized iterator
- * @returns		transaction set
+ * @return		transaction set
  */
 /*@null@*/
 rpmts rpmgiTs(/*@null@*/ rpmgi gi)
@@ -210,7 +210,7 @@ const char * rpmgiEscapeSpaces(const char * s)
  * @param argv		arg list
  * @param ftsOpts	fts(3) flags
  * @param flags		iterator flags
- * @returns		RPMRC_OK on success
+ * @return		RPMRC_OK on success
  */
 rpmRC rpmgiSetArgs(/*@null@*/ rpmgi gi, /*@null@*/ ARGV_t argv,
 		int ftsOpts, rpmgiFlags flags)
