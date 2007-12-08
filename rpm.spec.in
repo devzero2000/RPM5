@@ -369,6 +369,7 @@ exit 0
 
 %{_mandir}/man1/gendiff.1*
 %{_mandir}/man8/rpmbuild.8*
+%{_mandir}/man8/rpmconstant.8*
 %{_mandir}/man8/rpmdeps.8*
 #%lang(ja)	%{_mandir}/ja/man1/gendiff.1*
 %lang(ja)	%{_mandir}/ja/man8/rpmbuild.8*
