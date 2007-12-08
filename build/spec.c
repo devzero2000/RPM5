@@ -65,7 +65,7 @@ static inline
 }
 
 /*@-boundswrite@*/
-int lookupPackage(Spec spec, const char *name, int flag, /*@out@*/Package *pkg)
+rpmRC lookupPackage(Spec spec, const char *name, int flag, /*@out@*/Package *pkg)
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     const char *fullName;
@@ -76,7 +76,7 @@ int lookupPackage(Spec spec, const char *name, int flag, /*@out@*/Package *pkg)
     if (name == NULL) {
 	if (pkg)
 	    *pkg = spec->packages;
-	return 0;
+	return RPMRC_OK;
     }
 
     /* Construct package name */
@@ -110,7 +110,7 @@ int lookupPackage(Spec spec, const char *name, int flag, /*@out@*/Package *pkg)
 
     if (pkg)
 	/*@-dependenttrans@*/ *pkg = p; /*@=dependenttrans@*/
-    return ((p == NULL) ? 1 : 0);
+    return ((p == NULL) ? RPMRC_FAIL : RPMRC_OK);
 }
 /*@=boundswrite@*/
 

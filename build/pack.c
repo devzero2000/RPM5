@@ -227,7 +227,7 @@ static int addFileToArrayTag(Spec spec, const char *file, Header h, int tag)
     return 0;
 }
 
-int processScriptFiles(Spec spec, Package pkg)
+rpmRC processScriptFiles(Spec spec, Package pkg)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies pkg->header, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
@@ -330,7 +330,7 @@ int processScriptFiles(Spec spec, Package pkg)
 	}
     }
 
-    return 0;
+    return RPMRC_OK;
 }
 
 #if defined(DEAD)
@@ -1003,14 +1003,14 @@ static uint32_t copyTags[] = {
 };
 
 /*@-boundswrite@*/
-int packageBinaries(Spec spec)
+rpmRC packageBinaries(Spec spec)
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     struct cpioSourceArchive_s csabuf;
     CSA_t csa = &csabuf;
-    int rc;
     const char *errorString;
     Package pkg;
+    rpmRC rc;
     int xx;
 
     for (pkg = spec->packages; pkg != NULL; pkg = pkg->next) {
@@ -1111,17 +1111,17 @@ int packageBinaries(Spec spec)
 	    return rc;
     }
     
-    return 0;
+    return RPMRC_OK;
 }
 /*@=boundswrite@*/
 
 /*@-boundswrite@*/
-int packageSources(Spec spec)
+rpmRC packageSources(Spec spec)
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     struct cpioSourceArchive_s csabuf;
     CSA_t csa = &csabuf;
-    int rc;
+    rpmRC rc;
     int xx;
 
     /* Add rpmlib markers for tracking. */
@@ -1186,6 +1186,6 @@ int packageSources(Spec spec)
 	fn = _free(fn);
     }
 
-    return rc;
+    return (rc ? RPMRC_FAIL : RPMRC_OK);
 }
 /*@=boundswrite@*/

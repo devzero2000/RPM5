@@ -164,7 +164,7 @@ struct Spec_s {
 /*@dependent@*/ /*@null@*/
     MacroContext macros;
 
-    int (*_parseRCPOT) (Spec spec, Package pkg, const char *field, rpmTag tagN,
+    rpmRC (*_parseRCPOT) (Spec spec, Package pkg, const char *field, rpmTag tagN,
                uint32_t index, rpmsenseFlags tagflags);
 
 /*@only@*/

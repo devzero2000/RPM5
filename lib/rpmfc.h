@@ -118,7 +118,7 @@ extern "C" {
  * @param av		helper argv (with possible macros)
  * @param sb_stdin	helper input
  * @retval *sb_stdoutp	helper output
- * @param failnonzero	IS non-zero helper exit status a failure?
+ * @param failnonzero	Is non-zero helper exit status a failure?
  */
 int rpmfcExec(ARGV_t av, StringBuf sb_stdin, /*@out@*/ StringBuf * sb_stdoutp,
 		int failnonzero)
@@ -175,10 +175,10 @@ rpmfc rpmfcNew(void)
  * @param fc		file classifier
  * @param argv		files to classify
  * @param fmode		files mode_t array (or NULL)
- * @return		0 on success
+ * @return		RPMRC_OK on success
  */
 /*@-exportlocal@*/
-int rpmfcClassify(rpmfc fc, ARGV_t argv, /*@null@*/ uint16_t * fmode)
+rpmRC rpmfcClassify(rpmfc fc, ARGV_t argv, /*@null@*/ uint16_t * fmode)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies fc, rpmGlobalMacroContext, fileSystem, internalState @*/;
 /*@=exportlocal@*/
@@ -186,10 +186,10 @@ int rpmfcClassify(rpmfc fc, ARGV_t argv, /*@null@*/ uint16_t * fmode)
 /**
  * Build file/package dependency dictionary and mappings.
  * @param fc		file classifier
- * @return		0 on success
+ * @return		RPMRC_OK on success
  */
 /*@-exportlocal@*/
-int rpmfcApply(rpmfc fc)
+rpmRC rpmfcApply(rpmfc fc)
 	/*@modifies fc @*/;
 /*@=exportlocal@*/
 
@@ -197,9 +197,9 @@ int rpmfcApply(rpmfc fc)
  * Generate package dependencies.
  * @param specp		spec file control
  * @param pkgp		package control
- * @return		0 on success
+ * @return		RPMRC_OK on success
  */
-int rpmfcGenerateDepends(void * specp, void * pkgp)
+rpmRC rpmfcGenerateDepends(void * specp, void * pkgp)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies *pkgp,
 		rpmGlobalMacroContext, fileSystem, internalState @*/;

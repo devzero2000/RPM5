@@ -13,7 +13,7 @@
 #define	SKIPWHITE(_x)	{while(*(_x) && (xisspace(*_x) || *(_x) == ',')) (_x)++;}
 #define	SKIPNONWHITE(_x){while(*(_x) &&!(xisspace(*_x) || *(_x) == ',')) (_x)++;}
 
-int parseRCPOT(Spec spec, Package pkg, const char *field, rpmTag tagN,
+rpmRC parseRCPOT(Spec spec, Package pkg, const char *field, rpmTag tagN,
 	       uint32_t index, rpmsenseFlags tagflags)
 {
     const char *r, *re, *v, *ve;
@@ -161,5 +161,5 @@ int parseRCPOT(Spec spec, Package pkg, const char *field, rpmTag tagN,
     }
 /*@=boundsread@*/
 
-    return 0;
+    return RPMRC_OK;
 }

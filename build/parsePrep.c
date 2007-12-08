@@ -33,9 +33,9 @@
 /**
  * Check that file owner and group are known.
  * @param urlfn		file url
- * @return		0 on success
+ * @return		RPMRC_OK on success
  */
-static int checkOwners(const char * urlfn)
+static rpmRC checkOwners(const char * urlfn)
 	/*@globals h_errno, fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/
 {
@@ -51,7 +51,7 @@ static int checkOwners(const char * urlfn)
 	return RPMRC_FAIL;
     }
 
-    return 0;
+    return RPMRC_OK;
 }
 
 #ifndef	DYING
@@ -484,10 +484,10 @@ static int doSetupMacro(Spec spec, char *line)
  * Parse %patch line.
  * @param spec		build info
  * @param line		current line from spec file
- * @return		0 on success
+ * @return		RPMRC_OK on success
  */
 /*@-boundswrite@*/
-static int doPatchMacro(Spec spec, char *line)
+static rpmRC doPatchMacro(Spec spec, char *line)
 	/*@globals rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState @*/
 	/*@modifies spec->prep, rpmGlobalMacroContext,
@@ -617,7 +617,7 @@ static int doPatchMacro(Spec spec, char *line)
 	appendLineStringBuf(spec->prep, s);
     }
     
-    return 0;
+    return RPMRC_OK;
 }
 /*@=boundswrite@*/
 #endif

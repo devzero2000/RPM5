@@ -13,9 +13,10 @@
 /*@-boundswrite@*/
 int parseBuildInstallClean(Spec spec, rpmParseState parsePart)
 {
-    int nextPart, rc;
+    int nextPart;
     StringBuf *sbp = NULL;
     const char *name = NULL;
+    rpmRC rc;
 
     /*@-branchstate@*/
     if (parsePart == PART_BUILD) {
@@ -64,7 +65,7 @@ int parseBuildInstallClean(Spec spec, rpmParseState parsePart)
     /* There are no options to %build, %install, %check, or %clean */
     if ((rc = readLine(spec, STRIP_NOTHING)) > 0)
 	return PART_NONE;
-    if (rc)
+    if (rc != RPMRC_OK)
 	return rc;
     
     while (! (nextPart = isPart(spec->line))) {

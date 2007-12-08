@@ -128,10 +128,10 @@ extern time_t get_date(const char * p, void * now);     /* XXX expedient lies */
  * Add %changelog section to header.
  * @param h		header
  * @param sb		changelog strings
- * @return		0 on success
+ * @return		RPMRC_OK on success
  */
 /*@-boundswrite@*/
-static int addChangelog(Header h, StringBuf sb)
+static rpmRC addChangelog(Header h, StringBuf sb)
 	/*@globals rpmGlobalMacroContext, h_errno @*/
 	/*@modifies h, rpmGlobalMacroContext @*/
 {
@@ -262,15 +262,16 @@ static int addChangelog(Header h, StringBuf sb)
 
 int parseChangelog(Spec spec)
 {
-    int nextPart, res, rc;
+    int nextPart;
     StringBuf sb = newStringBuf();
+    rpmRC rc;
     
     /* There are no options to %changelog */
     if ((rc = readLine(spec, STRIP_COMMENTS)) > 0) {
 	sb = freeStringBuf(sb);
 	return PART_NONE;
     }
-    if (rc)
+    if (rc != RPMRC_OK)
 	return rc;
     
     while (! (nextPart = isPart(spec->line))) {
@@ -283,12 +284,12 @@ int parseChangelog(Spec spec)
 	    nextPart = PART_NONE;
 	    break;
 	}
-	if (rc)
+	if (rc != RPMRC_OK)
 	    return rc;
     }
 
-    res = addChangelog(spec->packages->header, sb);
+    rc = addChangelog(spec->packages->header, sb);
     sb = freeStringBuf(sb);
 
-    return (res) ? res : nextPart;
+    return (rc != RPMRC_OK ? rc : nextPart);
 }

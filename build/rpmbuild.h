@@ -316,9 +316,9 @@ int parsePrep(Spec spec, int verify)
  * @param tagN		tag, identifies type of dependency
  * @param index		(0 always)
  * @param tagflags	dependency flags already known from context
- * @return		0 on success, RPMERR_BADSPEC on failure
+ * @return		RPMRC_OK on success
  */
-int parseRCPOT(Spec spec, Package pkg, const char * field, rpmTag tagN,
+rpmRC parseRCPOT(Spec spec, Package pkg, const char * field, rpmTag tagN,
 		uint32_t index, rpmsenseFlags tagflags)
 	/*@globals rpmGlobalMacroContext, h_errno @*/
 	/*@modifies rpmGlobalMacroContext @*/;
@@ -380,9 +380,9 @@ rpmRC doScript(Spec spec, int what, /*@null@*/ const char * name,
  * @param name		(sub-)package name
  * @param flag		if PART_SUBNAME, then 1st package name is prepended
  * @retval pkg		package control structure
- * @return		0 on success, 1 on failure
+ * @return		RPMRC_OK on success
  */
-int lookupPackage(Spec spec, /*@null@*/ const char * name, int flag,
+rpmRC lookupPackage(Spec spec, /*@null@*/ const char * name, int flag,
 		/*@out@*/ Package * pkg)
 	/*@modifies spec->packages, *pkg @*/;
 
@@ -435,9 +435,9 @@ int addReqProv(/*@unused@*/Spec spec, Header h, rpmTag tagN,
  * Append files (if any) to scriptlet tags.
  * @param spec		spec file control structure
  * @param pkg		package control structure
- * @return		0 on success
+ * @return		RPMRC_OK on success
  */
-int processScriptFiles(Spec spec, Package pkg)
+rpmRC processScriptFiles(Spec spec, Package pkg)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies pkg->header, rpmGlobalMacroContext,
 		fileSystem, internalState @*/;
@@ -465,9 +465,9 @@ int rpmlibNeedsFeature(Header h, const char * feature, const char * featureEVR)
  * @param spec		spec file control structure
  * @param installSpecialDoc
  * @param test		don't execute scripts or package if testing
- * @return		0 on success
+ * @return		RPMRC_OK on success
  */
-int processBinaryFiles(Spec spec, int installSpecialDoc, int test)
+rpmRC processBinaryFiles(Spec spec, int installSpecialDoc, int test)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies spec->macros, *spec->packages,
 		spec->packages->cpioList, spec->packages->fileList,
@@ -540,9 +540,9 @@ rpmRC buildSpec(rpmts ts, Spec spec, int what, int test)
 /** \ingroup rpmbuild
  * Generate binary package(s).
  * @param spec		spec file control structure
- * @return		0 on success
+ * @return		rpmRC on success
  */
-int packageBinaries(Spec spec)
+rpmRC packageBinaries(Spec spec)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies spec->packages->header, spec->packages->cpioList,
 		spec->sourceRpmName,
@@ -551,9 +551,9 @@ int packageBinaries(Spec spec)
 /** \ingroup rpmbuild
  * Generate source package.
  * @param spec		spec file control structure
- * @return		0 on success
+ * @return		RPMRC_OK on success
  */
-int packageSources(Spec spec)
+rpmRC packageSources(Spec spec)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies spec->sourceHeader, spec->cookie, spec->sourceCpioList,
 		spec->sourceRpmName, spec->sourcePkgId,

@@ -97,10 +97,11 @@ int parseScript(Spec spec, int parsePart)
     int nextPart;
     char reqargs[BUFSIZ];
 
-    int rc, argc;
+    int argc;
     int arg;
     const char **argv = NULL;
     poptContext optCon = NULL;
+    rpmRC rc;
     
     reqargs[0] = '\0';
     /*@-mods@*/
@@ -261,7 +262,7 @@ int parseScript(Spec spec, int parsePart)
 	}
     }
     
-    if (lookupPackage(spec, name, flag, &pkg)) {
+    if (lookupPackage(spec, name, flag, &pkg) != RPMRC_OK) {
 	rpmlog(RPMLOG_ERR, _("line %d: Package does not exist: %s\n"),
 		 spec->lineNum, spec->line);
 	rc = RPMRC_FAIL;

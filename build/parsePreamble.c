@@ -276,13 +276,13 @@ exit:
  * Check that required tags are present in header.
  * @param h		header
  * @param NVR		package name-version-release
- * @return		0 if OK
+ * @return		RPMRC_OK if OK
  */
-static int checkForRequired(Header h, const char * NVR)
-	/*@modifies h @*/ /* LCL: parse error here with modifies */
+static rpmRC checkForRequired(Header h, const char * NVR)
+	/*@modifies h @*/
 {
-    int res = 0;
     rpmTag * p;
+    rpmRC rc = RPMRC_OK;
 
 /*@-boundsread@*/
     for (p = requiredTags; *p != 0; p++) {
@@ -290,27 +290,27 @@ static int checkForRequired(Header h, const char * NVR)
 	    rpmlog(RPMLOG_ERR,
 			_("%s field must be present in package: %s\n"),
 			tagName(*p), NVR);
-	    res = 1;
+	    rc = RPMRC_FAIL;
 	}
     }
 /*@=boundsread@*/
 
-    return res;
+    return rc;
 }
 
 /**
  * Check that no duplicate tags are present in header.
  * @param h		header
  * @param NVR		package name-version-release
- * @return		0 if OK
+ * @return		RPMRC_OK if OK
  */
-static int checkForDuplicates(Header h, const char * NVR)
+static rpmRC checkForDuplicates(Header h, const char * NVR)
 	/*@modifies h @*/
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     HeaderIterator hi;
     rpmTag lastTag = 0;
-    int res = 0;
+    rpmRC rc = RPMRC_OK;
     
     for (hi = headerInit(h);
 	headerNext(hi, he, 0);
@@ -322,11 +322,11 @@ static int checkForDuplicates(Header h, const char * NVR)
 	}
 	rpmlog(RPMLOG_ERR, _("Duplicate %s entries in package: %s\n"),
 		     tagName(he->tag), NVR);
-	res = 1;
+	rc = RPMRC_FAIL;
     }
     hi = headerFini(hi);
 
-    return res;
+    return rc;
 }
 
 /**
@@ -528,7 +528,7 @@ extern int noLang;
 /**
  */
 /*@-boundswrite@*/
-static int handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
+static rpmRC handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
 		const char *macro, const char *lang)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies spec->macros, spec->st,
@@ -816,7 +816,7 @@ static int handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
     if (macro)
 	addMacro(spec->macros, macro, NULL, field, RMIL_SPEC);
     
-    return 0;
+    return RPMRC_OK;
 }
 /*@=boundswrite@*/
 
@@ -990,11 +990,12 @@ int parsePreamble(Spec spec, int initialPackage)
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     rpmParseState nextPart;
-    int rc, xx;
+    int xx;
     char *name, *linep;
     Package pkg;
     char NVR[BUFSIZ];
     char lang[BUFSIZ];
+    rpmRC rc;
 
     strcpy(NVR, "(main package)");
 
@@ -1010,7 +1011,7 @@ int parsePreamble(Spec spec, int initialPackage)
 	    return RPMRC_FAIL;
 	}
 	
-	if (!lookupPackage(spec, name, flag, NULL)) {
+	if (lookupPackage(spec, name, flag, NULL) == RPMRC_OK) {
 	    rpmlog(RPMLOG_ERR, _("Package already exists: %s\n"),
 			spec->line);
 	    return RPMRC_FAIL;
@@ -1073,14 +1074,14 @@ int parsePreamble(Spec spec, int initialPackage)
     if (pkg == spec->packages)
 	fillOutMainPackage(pkg->header);
 
-    if (checkForDuplicates(pkg->header, NVR))
+    if (checkForDuplicates(pkg->header, NVR) != RPMRC_OK)
 	return RPMRC_FAIL;
 
     if (pkg != spec->packages)
 	headerCopyTags(spec->packages->header, pkg->header,
 			(uint32_t *)copyTagsDuringParse);
 
-    if (checkForRequired(pkg->header, NVR))
+    if (checkForRequired(pkg->header, NVR) != RPMRC_OK)
 	return RPMRC_FAIL;
 
     return nextPart;

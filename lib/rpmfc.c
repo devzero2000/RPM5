@@ -860,7 +860,7 @@ static struct rpmfcApplyTbl_s rpmfcApplyTable[] = {
     { NULL, 0 }
 };
 
-int rpmfcApply(rpmfc fc)
+rpmRC rpmfcApply(rpmfc fc)
 {
     rpmfcApplyTbl fcat;
     const char * s;
@@ -964,10 +964,10 @@ assert(dix >= 0);
 	    fc->fddictn->vals[ix]++;
     }
 
-    return 0;
+    return RPMRC_OK;
 }
 
-int rpmfcClassify(rpmfc fc, ARGV_t argv, uint16_t * fmode)
+rpmRC rpmfcClassify(rpmfc fc, ARGV_t argv, uint16_t * fmode)
 {
     ARGV_t fcav = NULL;
     ARGV_t dav;
@@ -979,7 +979,7 @@ int rpmfcClassify(rpmfc fc, ARGV_t argv, uint16_t * fmode)
     const char * magicfile = NULL;
 
     if (fc == NULL || argv == NULL)
-	return 0;
+	return RPMRC_OK;
 
     magicfile = rpmExpand("%{?_rpmfc_magic_path}", NULL);
     if (magicfile == NULL || *magicfile == '\0')
@@ -1105,7 +1105,7 @@ assert(se != NULL);
     mg = rpmmgFree(mg);
     magicfile = _free(magicfile);
 
-    return 0;
+    return RPMRC_OK;
 }
 
 /**
@@ -1219,7 +1219,7 @@ static void printDeps(Header h)
 
 /**
  */
-static int rpmfcGenerateDependsHelper(const Spec spec, Package pkg, rpmfi fi)
+static rpmRC rpmfcGenerateDependsHelper(const Spec spec, Package pkg, rpmfi fi)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
         /*@modifies fi, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
@@ -1227,7 +1227,7 @@ static int rpmfcGenerateDependsHelper(const Spec spec, Package pkg, rpmfi fi)
     StringBuf sb_stdout;
     DepMsg_t dm;
     int failnonzero = 0;
-    int rc = 0;
+    rpmRC rc = RPMRC_OK;
 
     /*
      * Create file manifest buffer to deliver to dependency finder.
@@ -1391,7 +1391,7 @@ static int rpmfcGenerateScriptletDeps(const Spec spec, Package pkg)
     return rc;
 }
 
-int rpmfcGenerateDepends(void * specp, void * pkgp)
+rpmRC rpmfcGenerateDepends(void * specp, void * pkgp)
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     const Spec spec = specp;
@@ -1407,17 +1407,17 @@ int rpmfcGenerateDepends(void * specp, void * pkgp)
     const char * N;
     const char * EVR;
     int genConfigDeps, internaldeps;
-    int rc = 0;
+    rpmRC rc = RPMRC_OK;
     int i;
     int xx;
 
     /* Skip packages with no files. */
     if (ac <= 0)
-	return 0;
+	return RPMRC_OK;
 
     /* Skip packages that have dependency generation disabled. */
     if (! (pkg->autoReq || pkg->autoProv))
-	return 0;
+	return RPMRC_OK;
 
     /* If new-fangled dependency generation is disabled ... */
     internaldeps = rpmExpandNumeric("%{?_use_internal_dependency_generator}");

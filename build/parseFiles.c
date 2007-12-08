@@ -76,7 +76,7 @@ int parseFiles(Spec spec)
 	}
     }
 
-    if (lookupPackage(spec, name, flag, &pkg)) {
+    if (lookupPackage(spec, name, flag, &pkg) != RPMRC_OK) {
 	rpmlog(RPMLOG_ERR, _("line %d: Package does not exist: %s\n"),
 		 spec->lineNum, spec->line);
 	rc = RPMRC_FAIL;
