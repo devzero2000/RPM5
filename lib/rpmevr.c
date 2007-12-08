@@ -18,8 +18,13 @@ int _rpmevr_debug = 0;
 #endif
 
 /* XXX Force digits to beat alphas. See bugzilla #50977. */
+#if defined(RPM_VENDOR_MANDRIVA)
 /*@unchecked@*/
 static int _invert_digits_alphas_comparison = 1;
+#else
+/*@unchecked@*/
+static int _invert_digits_alphas_comparison = -1;
+#endif
 
 /* XXX Punctuation characters that are not treated as alphas */
 /*@unchecked@*/ /*@observer@*/
