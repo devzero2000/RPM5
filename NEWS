@@ -89,6 +89,11 @@
     RPMDB, too. But this is not officially supported. It is just an
     experimental developer feature.
 
+  o Compression:
+    The RPM packages support both Bzip2 and LZMA payloads, in addition
+    to the default Gzip compression format. Support for LZMA_Alone with
+    rpmio was added, with the lzma syntax upgraded to newer LZMA Utils.
+
   o "rpmrc" and Platform Detections:
     Support for the old "rpmrc" (which was used mainly for architecture
     mappings, etc) was completely removed. Everything is now configured
