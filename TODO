@@ -62,14 +62,11 @@
 +  Pkgid:     !!binary pM5VJBrMT40gEk4TSvNrdA==
 +  Hdrid: 72a11d90029ae1fbd61cd3741f4bb25681d8546d
 	(other contents are now identical after fixing RPMTAG_BUILDTIME).
-    - jbj: retrieved headers are occaisionally failing sanity checks.
     - jbj: VSFlags (and --nodigest/--nosignature) is now per-verify rather than
 	persistently per-transaction scoped because of moving the flags into
 	pgpDig. What really needs to be done is to permit end-user to set
 	their own policy, setting VSFlags through macro configuration, and
 	nuke all the rpmtsVSFlags method goopiness.
-    - jbj: re-add %{_bindir}/rpm2cpio, push rpm2cpio.sh into %{_rpmlibdir}.
-    - jbj: reproducer for the "devtool standalone testdrive" segfault.
 
   o to be resolved before RPM 5.0.0:
     - rse: xar/ has weak (think RPM_CHECK_LIB) support its third-party
@@ -115,6 +112,7 @@
 	is needed instead.
     - jbj: rpm-5.0 is almost compilation warning free, some effort to remove
 	the Mickey Mouse warnings that remain should be undertaken.
+    - jbj: retrieved headers are occaisionally failing sanity checks.
 
   RPM 5.1 ROADMAP ISSUES
   ----------------------
