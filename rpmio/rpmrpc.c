@@ -1738,6 +1738,7 @@ int Glob(const char *pattern, int flags,
 {
     const char * lpath;
     int ut = urlPath(pattern, &lpath);
+    const char *home = getenv("HOME");
 
 /*@-castfcnptr@*/
 if (_rpmio_debug)
@@ -1761,6 +1762,10 @@ fprintf(stderr, "*** Glob(%s,0x%x,%p,%p)\n", pattern, (unsigned)flags, (void *)e
 	pattern = lpath;
 	/*@fallthrough@*/
     case URL_IS_UNKNOWN:
+	if (home && home[0])
+	    flags |= GLOB_TILDE;
+	else
+	    flags &= ~GLOB_TILDE;
 	break;
     case URL_IS_DASH:
     case URL_IS_HKP:
