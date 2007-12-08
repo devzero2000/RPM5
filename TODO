@@ -115,6 +115,12 @@
 	some may care. Establishing a end-user, not a per-application or
 	per-transaction, package integrity/security policy is the only
 	rational end-point.
+    - jbj: get rid of undocumented construction scaffholding options like
+	--nolead and --newmagic. There's --rsegfault/--wsegfault too,
+	but I kinda like the irony of delivering a program that will randomly
+	assert(0) fail on demand. Demonstrating stale look removal to the
+	Berkeley DB haters may still be essential and necessary rpm
+	functionality imho.
 
   RPM 5.1 ROADMAP ISSUES
   ----------------------
