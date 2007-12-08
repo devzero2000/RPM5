@@ -50,6 +50,7 @@ char *xar_get_path(xar_file_t f)
 #define	xar_add_frombuffer(_x, _parent, _fn, _b, _bsize)	(NULL)
 #define	xar_extract_tobuffersz(_x, _f, _b, _bsize)	(1)
 #define	xar_get_path(_f)	"*No XAR*"
+#define xar_opt_set(_a1, _a2, _a3) (1)
 #endif	/* WITH_XAR */
 
 #define	_RPMXAR_INTERNAL
