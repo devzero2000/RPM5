@@ -242,6 +242,8 @@ void * rpmShowProgress(/*@null@*/ const void * arg,
 	break;
     case RPMCALLBACK_CPIO_ERROR:
 	break;
+    case RPMCALLBACK_SCRIPT_ERROR:
+	break;
     case RPMCALLBACK_UNKNOWN:
     default:
 	break;

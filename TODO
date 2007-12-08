@@ -146,4 +146,6 @@
 	needs.
     - jbj: split rpmtsRun() into 2 pieces, moving the file resolution
 	computation into its own method.
+    - jbj: redesign the bleeping callback, which is good for nothing but pushing
+	script kiddie progress bars across the screen.
 	

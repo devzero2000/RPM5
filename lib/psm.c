@@ -590,8 +590,12 @@ assert(he->p.str != NULL);
 	char buf[BUFSIZ];
 	xx = snprintf(buf, BUFSIZ, "%s(%s)", sln, he->p.str);
 	xx = rpmluaRunScript(lua, script, buf);
-	if (xx == -1)
+	if (xx == -1) {
+	    void * ptr = rpmtsNotify(ts, psm->te, RPMCALLBACK_SCRIPT_ERROR,
+				 psm->scriptTag, 1);
+	    ptr = ptr;	/* XXX keep gcc happy. */
 	    rc = RPMRC_FAIL;
+	}
 	if (ssp != NULL) {
 	    *ssp &= ~0xffff;
 	    *ssp |= (xx & 0xffff);
@@ -937,6 +941,7 @@ assert(he->p.str != NULL);
 
   /* XXX filter order dependent multilib "other" arch helper error. */
   if (!(psm->sq.reaped >= 0 && !strcmp(argv[0], "/usr/sbin/glibc_post_upgrade") && WEXITSTATUS(psm->sq.status) == 110)) {
+    void *ptr = NULL;
     if (psm->sq.reaped < 0) {
 	rpmlog(RPMLOG_ERR,
 		_("%s(%s) scriptlet failed, waitpid(%d) rc %d: %s\n"),
@@ -945,10 +950,14 @@ assert(he->p.str != NULL);
     } else
     if (!WIFEXITED(psm->sq.status) || WEXITSTATUS(psm->sq.status)) {
 	if (WIFSIGNALED(psm->sq.status)) {
+	    ptr = rpmtsNotify(ts, psm->te, RPMCALLBACK_SCRIPT_ERROR,
+				 psm->scriptTag, WTERMSIG(psm->sq.status));
 	    rpmlog(RPMLOG_ERR,
                  _("%s(%s) scriptlet failed, signal %d\n"),
                  sln, NVRA, WTERMSIG(psm->sq.status));
 	} else {
+	    ptr = rpmtsNotify(ts, psm->te, RPMCALLBACK_SCRIPT_ERROR,
+				 psm->scriptTag, WEXITSTATUS(psm->sq.status));
 	    rpmlog(RPMLOG_ERR,
 		_("%s(%s) scriptlet failed, exit status %d\n"),
 		sln, NVRA, WEXITSTATUS(psm->sq.status));
