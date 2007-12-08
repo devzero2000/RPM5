@@ -12,7 +12,7 @@ AM_CPPFLAGS = -I. \
 
 EXTRA_DIST =	hashtab.h
 
-EXTRA_PROGRAMS = debugedit rpm2cpio rpmkey txar
+EXTRA_PROGRAMS = debugedit rpmkey txar
 
 myLDADD = \
 	$(top_builddir)/build/librpmbuild.la \
@@ -21,6 +21,8 @@ myLDADD = \
 	$(top_builddir)/rpmio/librpmio.la \
 	$(top_builddir)/misc/librpmmisc.la \
 	@LTLIBINTL@
+
+bin_PROGRAMS =		rpm2cpio
 
 pkglibdir =		@USRLIBRPM@
 pkglib_PROGRAMS =	rpmcache rpmcmp rpmdeps rpmdigest @WITH_LIBELF_DEBUGEDIT@

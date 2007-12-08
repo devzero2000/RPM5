@@ -5,6 +5,7 @@ const char *__progname;
 
 #include <rpmio.h>
 #include <rpmcb.h>	/* XXX fnpyKey */
+#include <rpmurl.h>
 #include <rpmlib.h>
 #include <rpmts.h>
 
@@ -21,8 +22,15 @@ int main(int argc, char **argv)
     setprogname(argv[0]);	/* Retrofit glibc __progname */
     if (argc == 1)
 	fdi = fdDup(STDIN_FILENO);
-    else
+    else {
+	int ut = urlPath(argv[1], NULL);
+	if (ut == URL_IS_HTTP || ut == URL_IS_HTTPS) {
+	    fprintf(stderr, "%s: %s: HTTP/HTTPS transport is non-functional.\n",
+		argv[0], argv[1]);
+	    exit(EXIT_FAILURE);
+	}
 	fdi = Fopen(argv[1], "r");
+    }
 
     if (Ferror(fdi)) {
 	fprintf(stderr, "%s: %s: %s\n", argv[0],

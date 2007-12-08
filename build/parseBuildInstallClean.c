@@ -30,9 +30,8 @@ int parseBuildInstallClean(Spec spec, rpmParseState parsePart)
     } else if (parsePart == PART_CLEAN) {
 	sbp = &spec->clean;
 	name = "%clean";
-    }
-    else if (parsePart == PART_TRACK) {	/* support "%track" script/section */
-       sbp = &(spec->track);
+    } else if (parsePart == PART_TRACK) { /* support "%track" scriptlet */
+       sbp = &spec->track;
        name = "%track";
     }
     /*@=branchstate@*/

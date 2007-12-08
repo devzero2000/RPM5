@@ -22,13 +22,13 @@ EXTRA_DIST = \
 	rpm.daily rpm.log rpm.xinetd \
 	rpmsort symset-table \
 	sql.prov sql.req symclash.py symclash.sh tcl.req tgpg trpm u_pkg.sh \
-	vpkg-provides.sh vpkg-provides2.sh \
+	vcheck vpkg-provides.sh vpkg-provides2.sh \
 	macros.perl* macros.python* \
 	macros.php* find-*.php find-php-*
 
 all:
 
-bin_SCRIPTS = gendiff rpm2cpio
+bin_SCRIPTS = gendiff
 
 pkglibdir =		@USRLIBRPM@
 pkglib_SCRIPTS = \
@@ -44,10 +44,10 @@ pkglib_SCRIPTS = \
 	osgideps.pl pkgconfigdeps.sh \
 	perldeps.pl perl.prov perl.req pythondeps.sh \
 	php.prov php.req \
-	rpmdb_loadcvt \
+	rpm2cpio rpmdb_loadcvt \
 	rpm.daily rpm.log rpm.xinetd \
 	symclash.py symclash.sh tgpg u_pkg.sh \
-	vpkg-provides.sh vpkg-provides2.sh
+	vcheck vpkg-provides.sh vpkg-provides2.sh
 
 pkgconfigdir = $(prefix)/lib/pkgconfig
 pkgconfig_DATA = rpm.pc

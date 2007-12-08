@@ -52,23 +52,6 @@
     - afb: remove xar and libxar from default install with internal xar (use through rpm and librpm*)
     - jbj: RPM_I18NSTRING_TYPE is likely still wonky, certainly true for
 	rpm-python h['summary'] access.
-    - jbj: markReplacedFiles() subtly rewrites header back into rpmdb
-	with altered RPMTAG_FILESTATES data. get/del/add sequence
-	is needed instead.
-    - jbj: rpm-5.0 is almost compilation warning free, some effort to remove
-	the Mickey Mouse warnings that remain should be undertaken.
-    - jbj: memory leak seen with repackaging
-==4811== 249 bytes in 3 blocks are definitely lost in loss record 1 of 1
-==4811==    at 0x4805525: malloc (vg_replace_malloc.c:149)
-==4811==    by 0x48E1C14: copyEntry (header.c:1446)
-==4811==    by 0x48E33A6: headerNext (header.c:2208)
-==4811==    by 0x48DF183: headerRegenSigHeader (hdrNVR.c:303)
-==4811==    by 0x4877D11: rpmpsmStage (psm.c:1904)
-==4811==    by 0x4876C7D: rpmpsmNext (psm.c:1580)
-==4811==    by 0x48790C2: rpmpsmStage (psm.c:2244)
-==4811==    by 0x48A9C83: rpmtsRun (transaction.c:1689)
-==4811==    by 0x4897D28: rpmErase (rpminstall.c:627)
-==4811==    by 0x43FC: main (rpmqv.c:678)
     - jbj: blueprinting *.rpm and *.src rpm contents built with
 	rpm-4.5 and rpm-5.0 indicates another likely signature padding
 	calculation problem (- is 4.5 built src.rpm, + is 5.0 built src.rpm)
@@ -85,21 +68,8 @@
 	pgpDig. What really needs to be done is to permit end-user to set
 	their own policy, setting VSFlags through macro configuration, and
 	nuke all the rpmtsVSFlags method goopiness.
-    - jbj: Mandriva perl-URPM "make test" indicates a problem querying binary
-	package headers that would be produced by a spec file.
-    - jbj: add the wiring for RPMTAG_CLASS as an arbitrary tag.
-    - jbj: change RPM_I18NSTRING_TYPE wiring to use arbitrary tag.
-    - jbj: hmm RPMTAG_TRACK contents not added to *.rpm yet.
-    - jbj: add Requires: sanitycheck(N) runtime namespace probe.
     - jbj: re-add %{_bindir}/rpm2cpio, push rpm2cpio.sh into %{_rpmlibdir}.
-    - jbj: add macro disabler for scriptlet interpreter dependencies, fold
-	in no-require-bin-sh patch.
-    - jbj: fold in not-fully-arbitrary-tags by adding %{_arbitrary_tags} test.
     - jbj: reproducer for the "devtool standalone testdrive" segfault.
-    - jbj: add lazy mkdir -p to handle packaging pathologies like in
-	devtool-test.spec (no mkdir -p in %install).
-    - jbj: fold-in patch-as-plain-macro at first convenient opportunity.
-    - jbj: ditto, patch-as-plain-macro.
 
   o to be resolved before RPM 5.0.0:
     - rse: xar/ has weak (think RPM_CHECK_LIB) support its third-party
@@ -107,7 +77,8 @@
            against external XAR, so this issue is no longer such dramatic IMHO.
     - rse: NEWS polishing
     - jbj: fix openssl RSA signature verification.
-    - jbj: drill Requires: sanitycheck(N) = E:V-R runtime probe.
+    - jbj: finish Requires: sanitycheck(N) = E:V-R runtime probe.
+    - jbj: finish BuildRequires: vcheck(N) = E:V-R runtime probe.
     - jbj: write up added featlets/bugtures in %docdir notes.
     - jbj: rpmbuild --sign is functional. However, behavior may have changed
 	for empty passwords when not using linux keyutils. Should I care?
@@ -116,6 +87,34 @@
     - jbj: fix (or at least document) the /sbin/ldconfig optimization flaw.
     - jbj: finish --trust with --import (or punt to 5.1).
     - jbj: add build script templates for install scriptlets (or punt to 5.1).
+    - jbj: add the wiring for RPMTAG_CLASS as an arbitrary tag.
+    - jbj: change RPM_I18NSTRING_TYPE wiring to use arbitrary tag.
+    - jbj: add lazy mkdir -p to handle packaging pathologies like in
+	devtool-test.spec (no mkdir -p in %install).
+    - jbj: fold-in patch-as-plain-macro at first convenient opportunity.
+    - jbj: ditto, patch-as-plain-macro.
+    - jbj: add macro disabler for scriptlet interpreter dependencies, fold
+	in no-require-bin-sh patch.
+    - jbj: fold in not-fully-arbitrary-tags by adding %{_arbitrary_tags} test.
+    - jbj: Mandriva perl-URPM "make test" indicates a problem querying binary
+	package headers that would be produced by a spec file.
+    - jbj: memory leak seen with repackaging
+==4811== 249 bytes in 3 blocks are definitely lost in loss record 1 of 1
+==4811==    at 0x4805525: malloc (vg_replace_malloc.c:149)
+==4811==    by 0x48E1C14: copyEntry (header.c:1446)
+==4811==    by 0x48E33A6: headerNext (header.c:2208)
+==4811==    by 0x48DF183: headerRegenSigHeader (hdrNVR.c:303)
+==4811==    by 0x4877D11: rpmpsmStage (psm.c:1904)
+==4811==    by 0x4876C7D: rpmpsmNext (psm.c:1580)
+==4811==    by 0x48790C2: rpmpsmStage (psm.c:2244)
+==4811==    by 0x48A9C83: rpmtsRun (transaction.c:1689)
+==4811==    by 0x4897D28: rpmErase (rpminstall.c:627)
+==4811==    by 0x43FC: main (rpmqv.c:678)
+    - jbj: markReplacedFiles() subtly rewrites header back into rpmdb
+	with altered RPMTAG_FILESTATES data. get/del/add sequence
+	is needed instead.
+    - jbj: rpm-5.0 is almost compilation warning free, some effort to remove
+	the Mickey Mouse warnings that remain should be undertaken.
 
   RPM 5.1 ROADMAP ISSUES
   ----------------------

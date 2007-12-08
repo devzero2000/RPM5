@@ -1,4 +1,10 @@
 5.0a4 -> 5.0b1:
+    - jbj: punt on minor issues for beta1.
+    - jbj: rpm2cpio: fail http/https transport attempts with error.
+    - jbj: install /usr/bin/rpm2cpio executable.
+    - jbj: install /usr/lib/rpm/rpm2cpio shell script.
+    - jbj: install /usr/lib/rpm/vcheck.
+    - jbj: RPMTAG_TRACK tag is being added to srpms.
     - jbj: fix: display canonical "Headeri18ntable" tag name correctly.
     - jbj: pop RPMTAG_TRACK work-in-progress into CVS. push "segfault on HEAD".
     - jbj: stub in Requires: sanitycheck(N) probe. needs to run the script, duh.
