@@ -15,7 +15,7 @@
  * Sanity check on no. of tags.
  * This check imposes a limit of 65K tags, more than enough.
  */
-#define hdrchkTags(_ntags)      ((_ntags) & 0xffff0000)
+#define hdrchkTags(_ntags)      ((_ntags) & 0xff000000)
 
 /**
  * Sanity check on type values.
@@ -24,9 +24,9 @@
 
 /**
  * Sanity check on data size and/or offset and/or count.
- * This check imposes a limit of 16 MB, more than enough.
+ * This check imposes a limit of 1 Gb.
  */
-#define hdrchkData(_nbytes) ((_nbytes) & 0xff000000)
+#define hdrchkData(_nbytes) ((_nbytes) & 0x80000000)
 
 /**
  * Sanity check on data alignment for data type.

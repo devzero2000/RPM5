@@ -82,7 +82,7 @@ static int typeSizes[16] =  {
  * Maximum no. of bytes permitted in a header.
  */
 /*@unchecked@*/
-static size_t headerMaxbytes = (32*1024*1024);
+static size_t headerMaxbytes = (1024*1024*1024);
 
 /**
  * Global header stats enabler.
