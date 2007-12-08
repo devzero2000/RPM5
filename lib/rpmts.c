@@ -690,12 +690,15 @@ rpmts rpmtsFree(rpmts ts)
 
 rpmVSFlags rpmtsVSFlags(rpmts ts)
 {
-    return pgpGetVSFlags(ts->dig);
+    return pgpDigVSFlags;
 }
 
 rpmVSFlags rpmtsSetVSFlags(rpmts ts, rpmVSFlags vsflags)
 {
-    return pgpSetVSFlags(ts->dig, vsflags);
+    rpmVSFlags ovsflags;
+    ovsflags = pgpDigVSFlags;
+    pgpDigVSFlags = vsflags;
+    return ovsflags;
 }
 
 /*

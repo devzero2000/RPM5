@@ -917,7 +917,7 @@ rpmRC headerCheck(pgpDig dig, const void * uh, size_t uc, const char ** msg)
     entryInfo info = memset(alloca(sizeof(*info)), 0, sizeof(*info));
     const void * sig = NULL;
     unsigned char * b;
-    rpmVSFlags vsflags = pgpGetVSFlags(dig);
+    rpmVSFlags vsflags = pgpDigVSFlags;
     rpmop op;
     size_t siglen = 0;
     int blen;

@@ -1,4 +1,6 @@
 5.0a4 -> 5.0b1:
+    - jbj: refactor some final \n out of msgs into rpmlog format instead.
+    - jbj: add global pgpDigVSFlags, nuke unused pgpDig{Get,Set}VSFlags.
     - jbj: punt on minor issues for beta1.
     - jbj: rpm2cpio: fail http/https transport attempts with error.
     - jbj: install /usr/bin/rpm2cpio executable.

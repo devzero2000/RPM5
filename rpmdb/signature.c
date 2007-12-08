@@ -618,7 +618,6 @@ verifySizeSignature(const pgpDig dig, /*@out@*/ char * t)
     }
 
 exit:
-    t = stpcpy(t, "\n");
     return res;
 }
 
@@ -668,7 +667,6 @@ verifyMD5Signature(const pgpDig dig, /*@out@*/ char * t,
 
 exit:
     md5sum = _free(md5sum);
-    t = stpcpy(t, "\n");
     return res;
 }
 
@@ -724,7 +722,6 @@ verifySHA1Signature(const pgpDig dig, /*@out@*/ char * t,
 
 exit:
     SHA1 = _free(SHA1);
-    t = stpcpy(t, "\n");
     return res;
 }
 
@@ -851,7 +848,6 @@ exit:
 	(void) pgpHexCvt(t, sigp->signid+4, sizeof(sigp->signid)-4);
 	t += strlen(t);
     }
-    t = stpcpy(t, "\n");
     return res;
 }
 
@@ -949,7 +945,6 @@ exit:
 	(void) pgpHexCvt(t, sigp->signid+4, sizeof(sigp->signid)-4);
 	t += strlen(t);
     }
-    t = stpcpy(t, "\n");
     return res;
 }
 

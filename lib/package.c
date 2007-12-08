@@ -171,7 +171,7 @@ if (!_nosigh) {
      */
     she->tag = 0;
     opx = 0;
-    vsflags = pgpGetVSFlags(dig);
+    vsflags = pgpDigVSFlags;
     if (_chk(RPMVSF_NODSAHEADER) && headerIsEntry(sigh, (rpmTag)RPMSIGTAG_DSA)) {
 	she->tag = (rpmTag)RPMSIGTAG_DSA;
     } else

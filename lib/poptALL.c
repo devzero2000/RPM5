@@ -279,14 +279,17 @@ static void rpmcliAllArgCallback(poptContext con,
 #endif
     case RPMCLI_POPT_NODIGEST:
 	rpmcliQueryFlags |= VERIFY_DIGEST;
+	pgpDigVSFlags |= _RPMVSF_NODIGESTS;
 	break;
 
     case RPMCLI_POPT_NOSIGNATURE:
 	rpmcliQueryFlags |= VERIFY_SIGNATURE;
+	pgpDigVSFlags |= _RPMVSF_NOSIGNATURES;
 	break;
 
     case RPMCLI_POPT_NOHDRCHK:
 	rpmcliQueryFlags |= VERIFY_HDRCHK;
+	pgpDigVSFlags |= RPMVSF_NOHDRCHK;
 	break;
 
     case RPMCLI_POPT_TARGETPLATFORM:

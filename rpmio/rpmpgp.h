@@ -1440,6 +1440,12 @@ pgpArmor pgpReadPkts(const char * fn,
 char * pgpArmorWrap(int atype, const unsigned char * s, size_t ns)
 	/*@*/;
 
+/**
+ * Disabler bits(s) for signature/digest checking.
+ */
+/*@unchecked@*/
+extern pgpVSFlags pgpDigVSFlags;
+
 /** \ingroup rpmpgp
  * Unreference a signature parameters instance.
  * @param dig		signature parameters
@@ -1491,7 +1497,7 @@ pgpDig pgpDigFree(/*@killref@*/ /*@only@*/ /*@null@*/ pgpDig dig)
  * @return		container
  */
 /*@relnull@*/
-pgpDig pgpDigNew(pgpVSFlags vsflags)
+pgpDig pgpDigNew(/*@unused@*/ pgpVSFlags vsflags)
 	/*@*/;
 
 /** \ingroup rpmpgp
@@ -1575,23 +1581,6 @@ int pgpSetSig(pgpDig dig,
  */
 void * pgpStatsAccumulator(pgpDig dig, int opx)
 	/*@*/;
-
-/** \ingroup rpmpgp
- * Get verify signatures flag(s).
- * @param dig		signature parameters container
- * @return		verify signatures flags
- */
-pgpVSFlags pgpGetVSFlags(pgpDig dig)
-	/*@*/;
-
-/** \ingroup rpmpgp
- * Set verify signatures flag(s).
- * @param dig		signature parameters container
- * @param vsflags	new verify signatures flags
- * @return		previous value
- */
-pgpVSFlags pgpSetVSFlags(pgpDig dig, pgpVSFlags vsflags)
-	/*@modifies dig @*/;
 
 /** \ingroup rpmpgp
  * Set find pubkey vector.

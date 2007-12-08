@@ -154,6 +154,7 @@ LIBRPMIO_0
     pgpDigNew;
     XpgpDigLink;
     XpgpDigUnlink;
+    pgpDigVSFlags;
     _pgp_debug;
     _pgp_print;
     pgpFindPubkey;
@@ -163,7 +164,6 @@ LIBRPMIO_0
     pgpGetSigtype;
     pgpGetSig;
     pgpGetSiglen;
-    pgpGetVSFlags;
     pgpHashTbl;
     pgpImplVecs;
     pgpKeyServerPrefsTbl;
@@ -182,7 +182,6 @@ LIBRPMIO_0
     pgpReadPkts;
     pgpSetFindPubkey;
     pgpSetSig;
-    pgpSetVSFlags;
     pgpSigTypeTbl;
     pgpStatsAccumulator;
     pgpSubTypeTbl;

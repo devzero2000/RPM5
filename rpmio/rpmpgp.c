@@ -982,6 +982,9 @@ int pgpPrtPkt(const uint8_t * pkt, size_t pleft)
     return (rc ? -1 : pp->pktlen);
 }
 
+/*@unchecked@*/
+pgpVSFlags pgpDigVSFlags;
+
 pgpDig XpgpDigUnlink(pgpDig dig, const char * msg, const char * fn, unsigned ln)
 {
     if (dig == NULL) return NULL;
@@ -1084,10 +1087,10 @@ pgpDig pgpDigFree(pgpDig dig)
     return NULL;
 }
 
-pgpDig pgpDigNew(pgpVSFlags vsflags)
+pgpDig pgpDigNew(/*@unused@*/ pgpVSFlags vsflags)
 {
     pgpDig dig = xcalloc(1, sizeof(*dig));
-    dig->vsflags = vsflags;
+    dig->vsflags = pgpDigVSFlags;
     dig->impl = pgpImplInit();
     return pgpDigLink(dig, "pgpDigNew");
 }
@@ -1148,24 +1151,6 @@ void * pgpStatsAccumulator(pgpDig dig, int opx)
 	break;
     }
     return sw;
-}
-
-pgpVSFlags pgpGetVSFlags(pgpDig dig)
-{
-    pgpVSFlags vsflags = 0;
-    if (dig != NULL)
-	vsflags = dig->vsflags;
-    return vsflags;
-}
-
-pgpVSFlags pgpSetVSFlags(pgpDig dig, pgpVSFlags vsflags)
-{
-    pgpVSFlags ovsflags = 0;
-    if (dig != NULL) {
-	ovsflags = dig->vsflags;
-	dig->vsflags = vsflags;
-    }
-    return ovsflags;
 }
 
 int pgpSetFindPubkey(pgpDig dig,

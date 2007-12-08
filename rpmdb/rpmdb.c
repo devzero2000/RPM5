@@ -2443,9 +2443,9 @@ assert(data->data != NULL);
 	    rpmrc = headerCheck(rpmtsDig(mi->mi_ts), uh, uhlen, &msg);
 	    rpmtsCleanDig(mi->mi_ts);
 	    lvl = (rpmrc == RPMRC_FAIL ? RPMLOG_ERR : RPMLOG_DEBUG);
-	    rpmlog(lvl, "%s h#%8u %s",
-		(rpmrc == RPMRC_FAIL ? _("rpmdbNextIterator: skipping") : " read"),
-			mi->mi_offset, (msg ? msg : "\n"));
+	    rpmlog(lvl, "%s h#%8u %s\n",
+		(rpmrc == RPMRC_FAIL ? _("rpmdb: skipping") : " read"),
+			mi->mi_offset, (msg ? msg : ""));
 	    msg = _free(msg);
 
 	    /* Mark header checked. */
