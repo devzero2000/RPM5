@@ -534,7 +534,7 @@ void providePackageNVR(Header h)
 
 	    he->tag = RPMTAG_PROVIDEFLAGS;
 	    he->t = RPM_UINT32_TYPE;
-	    he->p.ui32p = &fdummy;
+	    he->p.ui32p = (uint32_t *) &fdummy;
 	    he->c = 1;
 	    he->append = 1;
 	    xx = headerPut(h, he, 0);

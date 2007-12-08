@@ -306,7 +306,7 @@ assert(scareMem == 0);		/* XXX always allocate memory */
 	if (tagF > 0) {
 	    he->tag = tagF;
 	    xx = headerGet(h, he, 0);
-	    ds->Flags = he->p.ui32p;
+	    ds->Flags = (evrFlags * ) he->p.ui32p;
 	}
 	{
 	    he->tag = RPMTAG_ARCH;

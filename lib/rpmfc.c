@@ -1577,7 +1577,7 @@ assert(he->p.ptr != NULL);
 
 	he->tag = RPMTAG_PROVIDEFLAGS;
 	he->t = RPM_UINT32_TYPE;
-	he->p.ui32p = fc->provides->Flags;
+	he->p.ui32p = (uint32_t *) fc->provides->Flags;
 assert(he->p.ptr != NULL);
 	xx = headerPut(pkg->header, he, 0);
 /*@=nullpass@*/
@@ -1603,7 +1603,7 @@ assert(he->p.ptr != NULL);
 
 	he->tag = RPMTAG_REQUIREFLAGS;
 	he->t = RPM_UINT32_TYPE;
-	he->p.ui32p = fc->requires->Flags;
+	he->p.ui32p = (uint32_t *) fc->requires->Flags;
 assert(he->p.ptr != NULL);
 	xx = headerPut(pkg->header, he, 0);
 /*@=nullpass@*/
