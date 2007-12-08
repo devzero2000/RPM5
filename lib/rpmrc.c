@@ -430,10 +430,10 @@ static int mireAppend(rpmMireMode mode, int tag, const char * pattern,
 /**
  * Read and configure /etc/rpm/platform patterns.
  * @param platform	path to platform patterns
- * @return		0 on success
+ * @return		RPMRC_OK on success
  */
 /*@-onlytrans@*/	/* XXX miRE array, not refcounted. */
-static int rpmPlatform(const char * platform)
+static rpmRC rpmPlatform(const char * platform)
 	/*@globals nplatpat, platpat,
 		rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies nplatpat, platpat,
@@ -446,13 +446,13 @@ static int rpmPlatform(const char * platform)
     miRE mi_re = NULL;
     int mi_nre = 0;
     char * p, * pe;
-    int rc;
+    rpmRC rc;
     int xx;
 
     rc = rpmioSlurp(platform, &b, &blen);
 
     if (rc || b == NULL || blen <= 0) {
-	rc = -1;
+	rc = RPMRC_FAIL;
 	goto exit;
     }
 
@@ -495,7 +495,7 @@ static int rpmPlatform(const char * platform)
 	
 	init_platform++;
     }
-    rc = (init_platform ? 0 : -1);
+    rc = (init_platform ? RPMRC_OK : RPMRC_FAIL);
 
 exit:
     if (cvog) {
@@ -505,7 +505,7 @@ exit:
 /*@-modobserver@*/
     b = _free(b);
 /*@=modobserver@*/
-    if (rc == 0) {
+    if (rc == RPMRC_OK) {
 	platpat = mireFreeAll(platpat, nplatpat);
 	platpat = mi_re;
 	nplatpat = mi_nre;
@@ -608,9 +608,9 @@ static void defaultMachine(/*@out@*/ const char ** arch,
 	cp = rpmExpand("%{?__platform}", NULL);
 	if (cp == NULL || cp[0] == '\0')
 	    cp = platform;
-	if (!rpmPlatform(cp)) {
+	if (rpmPlatform(cp) == RPMRC_OK) {
 #else
-	if (!rpmPlatform(platform)) {
+	if (rpmPlatform(platform) == RPMRC_OK) {
 #endif
 	    const char * s;
 	    gotDefaults = 1;
