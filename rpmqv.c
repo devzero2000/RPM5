@@ -638,18 +638,30 @@ int main(int argc, const char ** argv)
 	case 'b':
 	    ba->buildAmount |= RPMBUILD_PACKAGEBINARY;
 	    ba->buildAmount |= RPMBUILD_CLEAN;
-	    if ((ba->buildChar == 'b') && ba->shortCircuit)
+	    if (
+#if !defined(RPM_VENDOR_MANDRIVA)
+		(ba->buildChar == 'b') &&
+#endif
+		ba->shortCircuit)
 		/*@innerbreak@*/ break;
 	    /*@fallthrough@*/
 	case 'i':
 	    ba->buildAmount |= RPMBUILD_INSTALL;
 	    ba->buildAmount |= RPMBUILD_CHECK;
-	    if ((ba->buildChar == 'i') && ba->shortCircuit)
+	    if (
+#if !defined(RPM_VENDOR_MANDRIVA)
+		(ba->buildChar == 'i') &&
+#endif
+		ba->shortCircuit)
 		/*@innerbreak@*/ break;
 	    /*@fallthrough@*/
 	case 'c':
 	    ba->buildAmount |= RPMBUILD_BUILD;
-	    if ((ba->buildChar == 'c') && ba->shortCircuit)
+	    if (
+#if !defined(RPM_VENDOR_MANDRIVA)
+ 		(ba->buildChar == 'c') &&
+#endif
+		ba->shortCircuit)
 		/*@innerbreak@*/ break;
 	    /*@fallthrough@*/
 	case 'p':
