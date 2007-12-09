@@ -1,7 +1,10 @@
-5.0a4 -> 5.0b1:
+5.0b1 -> 5.0b2:
+    - jbj: simplify *Format routines, he->p is now reliably populated and const.
     - jbj: rewrite shescapeFormat to count # escapes needed, not sloppy realloc.
     - jbj: add debugging hack to test a hypothesis re rpm-5.0beta1 segfault.
     - jbj: Leopard claims to have functional stat64. Let's find out ...
+
+5.0a4 -> 5.0b1:
     - rpm.org: Yet More RPMRC_OK returns from functions.
     - rpm.org: use RPMRC_OK, not 0, returns in many functions.
     - rpm.org: @return, not @returns, in doxygen markup.

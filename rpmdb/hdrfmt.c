@@ -147,7 +147,6 @@ static char * decFormat(HE_t he)
 static char * realDateFormat(HE_t he, const char * strftimeFormat)
 	/*@*/
 {
-    rpmTagData data = { .ptr = he->p.ptr };
     char * val;
 
     if (he->t != RPM_UINT64_TYPE) {
@@ -157,7 +156,7 @@ static char * realDateFormat(HE_t he, const char * strftimeFormat)
 	char buf[50];
 
 	/* this is important if sizeof(uint64_t) ! sizeof(time_t) */
-	{   time_t dateint = data.ui64p[0];
+	{   time_t dateint = he->p.ui64p[0];
 	    tstruct = localtime(&dateint);
 	}
 	buf[0] = '\0';
@@ -200,7 +199,6 @@ static char * dayFormat(HE_t he)
 static char * shescapeFormat(HE_t he)
 	/*@*/
 {
-    rpmTagData data = { .ptr = he->p.ptr };
     char * val;
     size_t nb;
     int xx;
@@ -209,22 +207,22 @@ static char * shescapeFormat(HE_t he)
     if (he->t == RPM_UINT32_TYPE) {
 	nb = 20;
 	val = xmalloc(nb);
-	xx = snprintf(val, nb, "%u", (unsigned) data.ui32p[0]);
+	xx = snprintf(val, nb, "%u", (unsigned) he->p.ui32p[0]);
 	val[nb-1] = '\0';
     } else if (he->t == RPM_UINT64_TYPE) {
 	nb = 40;
 	val = xmalloc(40);
 /*@-duplicatequals@*/
-	xx = snprintf(val, nb, "%llu", (unsigned long long)data.ui64p[0]);
+	xx = snprintf(val, nb, "%llu", (unsigned long long)he->p.ui64p[0]);
 /*@=duplicatequals@*/
 	val[nb-1] = '\0';
     } else if (he->t == RPM_STRING_TYPE) {
-	const char * s = data.str;
+	const char * s = he->p.str;
 	char * t;
 	int c;
 
 	nb = 0;
-	for (s = data.str; (c = (int)*s) != 0; s++)  {
+	for (s = he->p.str; (c = (int)*s) != 0; s++)  {
 	    nb++;
 	    if (c == (int)'\'')
 		nb += 3;
@@ -232,7 +230,7 @@ static char * shescapeFormat(HE_t he)
 	nb += 3;
 	t = val = xmalloc(nb);
 	*t++ = '\'';
-	for (s = data.str; (c = (int)*s) != 0; s++)  {
+	for (s = he->p.str; (c = (int)*s) != 0; s++)  {
 	    if (c == (int)'\'') {
 		*t++ = '\'';
 		*t++ = '\\';
@@ -327,7 +325,6 @@ static char * rpmPermsString(int mode)
  */
 static /*@only@*/ char * triggertypeFormat(HE_t he)
 {
-    rpmTagData data = { .ptr = he->p.ptr };
     int ix = (he->ix > 0 ? he->ix : 0);
     char * val;
 
@@ -335,7 +332,7 @@ assert(ix == 0);
     if (he->t != RPM_UINT64_TYPE)
 	val = xstrdup(_("(invalid type)"));
     else {
-	uint64_t anint = data.ui64p[ix];
+	uint64_t anint = he->p.ui64p[ix];
 	if (anint & RPMSENSE_TRIGGERPREIN)
 	    val = xstrdup("prein");
 	else if (anint & RPMSENSE_TRIGGERIN)
@@ -378,7 +375,6 @@ assert(ix == 0);
  */
 static /*@only@*/ char * fflagsFormat(HE_t he)
 {
-    rpmTagData data = { .ptr = he->p.ptr };
     int ix = (he->ix >= 0 ? he->ix : 0);
     char * val;
 
@@ -387,7 +383,7 @@ assert(ix == 0);
 	val = xstrdup(_("(invalid type)"));
     } else {
 	char buf[15];
-	uint64_t anint = data.ui64p[ix];
+	uint64_t anint = he->p.ui64p[ix];
 	buf[0] = '\0';
 	if (anint & RPMFILE_DOC)
 	    strcat(buf, "d");
@@ -420,7 +416,6 @@ assert(ix == 0);
 static /*@only@*/ char * armorFormat(HE_t he)
 	/*@*/
 {
-    rpmTagData data = { .ptr = he->p.ptr };
     int ix = (he->ix > 0 ? he->ix : 0);
     const char * enc;
     const unsigned char * s;
@@ -431,13 +426,13 @@ static /*@only@*/ char * armorFormat(HE_t he)
 assert(ix == 0);
     switch (he->t) {
     case RPM_BIN_TYPE:
-	s = (unsigned char *) data.ui8p;
+	s = (unsigned char *) he->p.ui8p;
 	ns = he->c;
 	atype = PGPARMOR_SIGNATURE;	/* XXX check pkt for signature */
 	break;
     case RPM_STRING_TYPE:
     case RPM_STRING_ARRAY_TYPE:
-	enc = data.str;
+	enc = he->p.str;
 	s = NULL;
 	ns = 0;
 /*@-moduncon@*/
@@ -471,7 +466,6 @@ assert(ix == 0);
 static /*@only@*/ char * base64Format(HE_t he)
 	/*@*/
 {
-    rpmTagData data = { .ptr = he->p.ptr };
     int ix = (he->ix > 0 ? he->ix : 0);
     char * val;
 
@@ -500,7 +494,7 @@ assert(ix == 0);
 
     /* XXX b64encode accesses uninitialized memory. */
     { 	unsigned char * _data = xcalloc(1, ns+1);
-	memcpy(_data, data.ptr, ns);
+	memcpy(_data, he->p.ptr, ns);
 /*@-moduncon@*/
 	if ((enc = b64encode(_data, ns)) != NULL) {
 	    t = stpcpy(t, enc);
@@ -571,7 +565,6 @@ static char * xmlstrcpy(/*@returned@*/ char * t, const char * s)
 static /*@only@*/ char * xmlFormat(HE_t he)
 	/*@*/
 {
-    rpmTagData data = { .ptr = he->p.ptr };
     int ix = (he->ix > 0 ? he->ix : 0);
     const char * xtag = NULL;
     size_t nb;
@@ -586,7 +579,7 @@ assert(ix == 0);
 assert(he->t == RPM_STRING_TYPE || he->t == RPM_UINT64_TYPE || he->t == RPM_BIN_TYPE);
     switch (he->t) {
     case RPM_STRING_ARRAY_TYPE:
-	s = data.argv[ix];
+	s = he->p.argv[ix];
 	xtag = "string";
 	/* XXX Force utf8 strings. */
 	s = xstrdup(s);
@@ -595,7 +588,7 @@ assert(he->t == RPM_STRING_TYPE || he->t == RPM_UINT64_TYPE || he->t == RPM_BIN_
 	break;
     case RPM_I18NSTRING_TYPE:
     case RPM_STRING_TYPE:
-	s = data.str;
+	s = he->p.str;
 	xtag = "string";
 	/* XXX Force utf8 strings. */
 	s = xstrdup(s);
@@ -615,16 +608,16 @@ assert(he->t == RPM_STRING_TYPE || he->t == RPM_UINT64_TYPE || he->t == RPM_BIN_
     }	break;
 /*@=globs =mods@*/
     case RPM_UINT8_TYPE:
-	anint = data.ui8p[ix];
+	anint = he->p.ui8p[ix];
 	break;
     case RPM_UINT16_TYPE:
-	anint = data.ui16p[ix];	/* XXX note unsigned */
+	anint = he->p.ui16p[ix];
 	break;
     case RPM_UINT32_TYPE:
-	anint = data.ui32p[ix];
+	anint = he->p.ui32p[ix];
 	break;
     case RPM_UINT64_TYPE:
-	anint = data.ui64p[ix];
+	anint = he->p.ui64p[ix];
 	break;
     default:
 	return xstrdup(_("(invalid xml type)"));
@@ -729,7 +722,6 @@ static char * yamlstrcpy(/*@out@*/ /*@returned@*/ char * t, const char * s, int 
 static /*@only@*/ char * yamlFormat(HE_t he)
 	/*@*/
 {
-    rpmTagData data = { .ptr = he->p.ptr };
     int element = he->ix;
     int ix = (he->ix > 0 ? he->ix : 0);
     const char * xtag = NULL;
@@ -751,7 +743,7 @@ assert(he->t == RPM_STRING_TYPE || he->t == RPM_UINT64_TYPE || he->t == RPM_BIN_
     case RPM_I18NSTRING_TYPE:
     case RPM_STRING_TYPE:
 	xx = 0;
-	s = (he->t == RPM_STRING_ARRAY_TYPE ? data.argv[ix] : data.str);
+	s = (he->t == RPM_STRING_ARRAY_TYPE ? he->p.argv[ix] : he->p.str);
 	if (strchr("[", s[0]))	/* leading [ */
 	    xx = 1;
 	if (xx == 0)
@@ -784,7 +776,7 @@ assert(he->t == RPM_STRING_TYPE || he->t == RPM_UINT64_TYPE || he->t == RPM_BIN_
 	}
 
 	/* XXX Force utf8 strings. */
-	s = xstrdup(data.str);
+	s = xstrdup(he->p.str);
 	s = xstrtolocale(s);
 	freeit = 1;
 	break;
@@ -802,16 +794,16 @@ assert(he->t == RPM_STRING_TYPE || he->t == RPM_UINT64_TYPE || he->t == RPM_BIN_
     }	break;
 /*@=globs =mods@*/
     case RPM_UINT8_TYPE:
-	anint = data.ui8p[ix];
+	anint = he->p.ui8p[ix];
 	break;
     case RPM_UINT16_TYPE:
-	anint = data.ui16p[ix];	/* XXX note unsigned */
+	anint = he->p.ui16p[ix];
 	break;
     case RPM_UINT32_TYPE:
-	anint = data.ui32p[ix];
+	anint = he->p.ui32p[ix];
 	break;
     case RPM_UINT64_TYPE:
-	anint = data.ui64p[ix];
+	anint = he->p.ui64p[ix];
 	break;
     default:
 	return xstrdup(_("(invalid yaml type)"));
@@ -875,7 +867,6 @@ static /*@only@*/ char * pgpsigFormat(HE_t he)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/
 {
-    rpmTagData data = { .ptr = he->p.ptr };
     int ix = (he->ix > 0 ? he->ix : 0);
     char * val, * t;
 
@@ -883,7 +874,7 @@ assert(ix == 0);
     if (!(he->t == RPM_BIN_TYPE)) {
 	val = xstrdup(_("(not a blob)"));
     } else {
-	unsigned char * pkt = (unsigned char *) data.ui8p;
+	unsigned char * pkt = (unsigned char *) he->p.ui8p;
 	unsigned int pktlen = 0;
 	unsigned int v = (unsigned int) *pkt;
 	pgpTag tag = 0;
@@ -980,7 +971,6 @@ assert(ix == 0);
 static /*@only@*/ char * depflagsFormat(HE_t he)
 	/*@*/
 {
-    rpmTagData data = { .ptr = he->p.ptr };
     int ix = (he->ix > 0 ? he->ix : 0);
     char * val;
 
@@ -988,7 +978,7 @@ assert(ix == 0);
     if (he->t != RPM_UINT64_TYPE) {
 	val = xstrdup(_("(invalid type)"));
     } else {
-	uint64_t anint = data.ui64p[ix];
+	uint64_t anint = he->p.ui64p[ix];
 	char *t, *buf;
 
 	t = buf = alloca(32);
