@@ -102,8 +102,19 @@
 
   o XAR Format Support:
     Initial support for the XML Archive (XAR) file format was added to
-    RPM. This is just a first cut, more or less just a proof of concept
-    and highly experimental.
+    RPM. The initial implementation establishes a wrapper archive
+    format for mapping the 4 sections used in *.rpm package file:
+	Lead
+	Signature
+	Header
+	Payload
+    to files with the same name in a XAR archive wrapper. A wrapper archive to
+    carry package sections is already used by Apple Leopard *.pkg (using XAR)
+    and Debian *.deb packages (using AR), rpm-5.0 now has a well defined
+    representation of *.rpm packages in a wrapper archive format.
+    Establishing a direct mapping between rpm tags and XAR attributes/properties
+    in XML in order to fully use the extensibility of an XAR archive will be
+    attempted after rpm-5.0 is released.
 
   o Removed RPMv3 Package Format Support:
     The support for the old RPMv3 (LSB) package format was removed to
