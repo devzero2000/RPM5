@@ -18,7 +18,7 @@ FILES_DISK=`mktemp $TMPDIR/rpmXXXXXX`
 FILES_RPM=`mktemp $TMPDIR/rpmXXXXXX`
 
 find $RPM_BUILD_ROOT -type f -o -type l | LC_ALL=C sort > $FILES_DISK
-LC_ALL=C sort > $FILES_RPM
+LC_ALL=C sort -u > $FILES_RPM
 
 diff "$FILES_DISK" "$FILES_RPM" | grep "^< " | cut -c3- | sed -e "s#^$RPM_BUILD_ROOT#   #g"
 
