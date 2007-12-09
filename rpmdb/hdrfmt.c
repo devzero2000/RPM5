@@ -223,11 +223,16 @@ static char * shescapeFormat(HE_t he)
 	char * t;
 	int c;
 
-	nb = strlen(data.str) + 1;
-	/* XXX count no. of escapes instead. */
-	t = xmalloc(4 * nb + 3);
+	nb = 0;
+	for (s = data.str; (c = (int)*s) != 0; s++)  {
+	    nb++;
+	    if (c == (int)'\'')
+		nb += 3;
+	}
+	nb += 3;
+	t = val = xmalloc(nb);
 	*t++ = '\'';
-	while ((c = (int)*s++) != 0) {
+	for (s = data.str; (c = (int)*s) != 0; s++)  {
 	    if (c == (int)'\'') {
 		*t++ = '\'';
 		*t++ = '\\';
@@ -237,8 +242,6 @@ static char * shescapeFormat(HE_t he)
 	}
 	*t++ = '\'';
 	*t = '\0';
-	nb = strlen(t) + 1;
-	val = xrealloc(t, nb);
     } else
 	val = xstrdup(_("invalid type"));
 
@@ -1816,7 +1819,7 @@ struct sprintfTag_s {
     char * format;
 /*@kept@*/ /*@null@*/
     char * type;
-    int pad;
+    unsigned pad;
 };
 
 /** \ingroup header
@@ -2687,12 +2690,14 @@ assert(0);	/* XXX keep gcc quiet. */
     }
 
 /*@-compmempass@*/	/* vhe->p.ui64p is stack, not owned */
-    if (tag->fmt)
+    if (tag->fmt) {
 	val = tag->fmt(vhe);
-    else
-	val = intFormat(vhe, NULL);
-/*@=compmempass@*/
 assert(val != NULL);
+    } else {
+	val = intFormat(vhe, NULL);
+assert(val != NULL);
+    }
+/*@=compmempass@*/
     if (val)
 	need = strlen(val) + 1;
 
@@ -2703,7 +2708,7 @@ exit:
 /*@=compmempass@*/
 
     if (val && need > 0) {
-	if (tag->format && *tag->format && tag->pad) {
+	if (tag->format && *tag->format && tag->pad > 0) {
 	    size_t nb;
 	    nb = strlen(tag->format) + sizeof("%s");
 	    t = alloca(nb);
