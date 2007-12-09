@@ -297,6 +297,7 @@ assert(scareMem == 0);		/* XXX always allocate memory */
      && N != NULL && Count > 0)
     {
 	int xx;
+	int_32 CountEVR, CountF;
 
 	ds = xcalloc(1, sizeof(*ds));
 	ds->Type = Type;
@@ -310,9 +311,9 @@ assert(scareMem == 0);		/* XXX always allocate memory */
 	ds->nopromote = _rpmds_nopromote;
 
 	if (tagEVR > 0)
-	    xx = hge(h, tagEVR, &ds->EVRt, &ds->EVR, NULL);
+	    xx = hge(h, tagEVR, &ds->EVRt, &ds->EVR, &CountEVR);
 	if (tagF > 0)
-	    xx = hge(h, tagF, &ds->Ft, &ds->Flags, NULL);
+	    xx = hge(h, tagF, &ds->Ft, &ds->Flags, &CountF);
 /*@-boundsread@*/
 	if (!scareMem && ds->Flags != NULL)
 	    ds->Flags = memcpy(xmalloc(ds->Count * sizeof(*ds->Flags)),
@@ -350,6 +351,8 @@ assert(scareMem == 0);		/* XXX always allocate memory */
 	    }
 	} else
 	if (tagN == RPMTAG_FILELINKTOS) {
+	    if (Count > CountF) Count = CountF;
+
 	    /* XXX Construct the absolute path of the target symlink(s). */
 	    const char ** av = xcalloc(Count+1, sizeof(*av));
 	    int i;
@@ -359,7 +362,7 @@ assert(scareMem == 0);		/* XXX always allocate memory */
 		    av[i] = xstrdup("");
 		else if (*N[i] == '/')
 		    av[i] = xstrdup(N[i]);
-		else if (ds->EVR && ds->Flags)
+		else if (ds->EVR && ds->Flags && ds->Flags[i] >= 0 && ds->Flags[i] < CountEVR)
 /*@-nullderef@*/	/* XXX ds->Flags != NULL */
 		    av[i] = rpmGenPath(NULL, ds->EVR[ds->Flags[i]], N[i]);
 /*@=nullderef@*/
