@@ -231,6 +231,16 @@ static int copyNextLine(Spec spec, OFI_t *ofi, int strip)
 }
 /*@=boundswrite@*/
 
+static const char *getAlternateArch(const char *arch)
+{
+    const char *alternate_arch = NULL;
+    if (! strncmp("x86_64", arch, sizeof("x86_64")-1))
+      alternate_arch = "amd64";
+    else if (! strncmp("amd64", arch, sizeof("amd64")-1))
+      alternate_arch = "x86_64";
+    return alternate_arch;
+}
+
 /*@-boundswrite@*/
 int readLine(Spec spec, int strip)
 {
@@ -314,13 +324,15 @@ retry:
 	match = 0;
     } else if (! strncmp("%ifarch", s, sizeof("%ifarch")-1)) {
 	const char *arch = rpmExpand("%{_target_cpu}", NULL);
+	const char *alternate_arch = getAlternateArch(arch);
 	s += 7;
-	match = matchTok(arch, s);
+	match = matchTok(arch, s) || (alternate_arch && matchTok(alternate_arch, s));
 	arch = _free(arch);
     } else if (! strncmp("%ifnarch", s, sizeof("%ifnarch")-1)) {
 	const char *arch = rpmExpand("%{_target_cpu}", NULL);
+	const char *alternate_arch = getAlternateArch(arch);
 	s += 8;
-	match = !matchTok(arch, s);
+	match = !matchTok(arch, s) && (!alternate_arch || !matchTok(alternate_arch, s));
 	arch = _free(arch);
     } else if (! strncmp("%ifos", s, sizeof("%ifos")-1)) {
 	const char *os = rpmExpand("%{_target_os}", NULL);
