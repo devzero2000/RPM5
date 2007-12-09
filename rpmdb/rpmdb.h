@@ -596,7 +596,7 @@ int dbiDel(dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key, DBT * data,
 	/*@globals fileSystem, internalState @*/
 	/*@modifies dbi, *dbcursor, fileSystem, internalState @*/
 {
-    void * sw = dbiStatsAccumulator(dbi, 16);	/* RPMTS_OP_DBDEL */
+    rpmop sw = (rpmop)dbiStatsAccumulator(dbi, 16);	/* RPMTS_OP_DBDEL */
     int rc;
     assert(key->data != NULL && key->size > 0);
     (void) rpmswEnter(sw, 0);
@@ -620,7 +620,7 @@ int dbiGet(dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key, DBT * data,
 	/*@globals fileSystem, internalState @*/
 	/*@modifies dbi, *dbcursor, *key, *data, fileSystem, internalState @*/
 {
-    void * sw = dbiStatsAccumulator(dbi, 14);	/* RPMTS_OP_DBGET */
+    rpmop sw = (rpmop)dbiStatsAccumulator(dbi, 14);	/* RPMTS_OP_DBGET */
     int rc;
     assert((flags == DB_NEXT) || (key->data != NULL && key->size > 0));
     (void) rpmswEnter(sw, 0);
@@ -645,7 +645,7 @@ int dbiPget(dbiIndex dbi, /*@null@*/ DBC * dbcursor,
 	/*@globals fileSystem, internalState @*/
 	/*@modifies dbi, *dbcursor, *key, *pkey, *data, fileSystem, internalState @*/
 {
-    void * sw = dbiStatsAccumulator(dbi, 14);	/* RPMTS_OP_DBGET */
+    rpmop sw = (rpmop)dbiStatsAccumulator(dbi, 14);	/* RPMTS_OP_DBGET */
     int rc;
     assert((flags == DB_NEXT) || (key->data != NULL && key->size > 0));
     (void) rpmswEnter(sw, 0);
@@ -669,7 +669,7 @@ int dbiPut(dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key, DBT * data,
 	/*@globals fileSystem, internalState @*/
 	/*@modifies dbi, *dbcursor, *key, fileSystem, internalState @*/
 {
-    void * sw = dbiStatsAccumulator(dbi, 15);	/* RPMTS_OP_DBPUT */
+    rpmop sw = (rpmop)dbiStatsAccumulator(dbi, 15);	/* RPMTS_OP_DBPUT */
     int rc;
     assert(key->data != NULL && key->size > 0 && data->data != NULL && data->size > 0);
     (void) rpmswEnter(sw, 0);
