@@ -992,7 +992,7 @@ assert(fi->h != NULL);
     }
     /*@=branchstate@*/
 
-    if (argv[0][0] == '%')
+    if (argv && argv[0] && argv[0][0] == '%')
 	argv[0] = argv0 = rpmExpand(argv[0], NULL);
 
     if (fi->h != NULL)	/* XXX can't happen */
