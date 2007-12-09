@@ -90,7 +90,7 @@ RPM_TIMESTAMP=`echo "$PACKAGE_TIMESTAMP" |\
         -e 's;^X\([[0-9]]*\)-\([[0-9]]*\)$;\1,\2,0,0,0;' \
         -e 's;^X\([[0-9]]*\)$;\1,0,0,0,0;' \
         -e 's;^X.*$;0,0,0,0,0;' \
-        -e 's;,0;,;g'`
+        -e 's;,0\([[0-9]]\);,\1;g'`
 RPM_VENDOR="'R','P','M','5'"
 AC_SUBST([RPM_VERSION])
 AC_SUBST([RPM_TIMESTAMP])
