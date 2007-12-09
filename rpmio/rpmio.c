@@ -2824,6 +2824,9 @@ static FD_t lzdWriteOpen(int fdno, int fopen, const char * mode)
     const char *lzma;
     char l[3];
     const char *level;
+
+    /* revisit use of LZMA_Alone, when lzdRead supports new LZMA Utils */
+    char *env[] = { "LZMA_OPT=--format=alone", NULL };
     
     if (isdigit(mode[1])) /* "w5" */
     {
@@ -2869,7 +2872,7 @@ static FD_t lzdWriteOpen(int fdno, int fopen, const char * mode)
         for (i = 3; i < 1024; i++)
 	    xx = close(i);
 	lzma = rpmGetPath("%{?__lzma}%{!?__lzma:/usr/bin/lzma}", NULL);
-	if (execl(lzma, "lzma", level, NULL))
+	if (execle(lzma, "lzma", level, NULL, env))
             _exit(1);
 	lzma = _free(lzma);
     }
