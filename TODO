@@ -24,7 +24,7 @@
      - audience: RPM community, especially distro vendors
      - purpose:  to get final feedback
    
-     2007-12-08  RPM 5.0b1   RPM 5.0 beta 1                 [TODO]
+     2007-12-09  RPM 5.0b1   RPM 5.0 beta 1                 [DONE]
      2007-12-15  RPM 5.0b2   RPM 5.0 beta 2                 [TODO]
      2007-12-22  RPM 5.0b3   RPM 5.0 beta 3                 [TODO]
      2007-12-29  RPM 5.0b4   RPM 5.0 beta 4                 [TODO]
@@ -48,7 +48,7 @@
   resolved during release engineering. Please do not just list any
   *CANDO* items.
 
-  o to be resolved before RPM 5.0b1:
+  o to be resolved before RPM 5.0b2:
     - jbj: HEAD segfaults under "devtool standalone"'s test-drive as it
            builds RPM with prefix="/tmp/rpm" (see line 309 in
            devtool.conf). When one uses a longer prefix, e.g.
