@@ -367,7 +367,15 @@ FD_t XfdNew(const char * msg, const char * file, unsigned line)
     fd->oflags = 0;
     fd->omode = 0;
     fd->url = NULL;
+#if defined(RPM_VENDOR_MANDRIVA)
+    /* important to fix parse_hdlist (and so genhdlist2) on heavy loaded boxes,
+     * otherwise it timeouts after a read miss of 1 second (even a pipe),
+     * and there is no way we can retry since we would need to backtrack the fd
+     */
+    fd->rd_timeoutsecs = 60;
+#else
     fd->rd_timeoutsecs = 1;	/* XXX default value used to be -1 */
+#endif
     fd->contentLength = fd->bytesRemain = -1;
     fd->wr_chunked = 0;
     fd->syserrno = 0;
@@ -2297,7 +2305,15 @@ fprintf(stderr, "*** ufdOpen(%s,0x%x,0%o)\n", url, (unsigned)flags, (unsigned)mo
 	fd = fdOpen(path, flags, mode);
 	if (fd) {
 	    fdSetIo(fd, ufdio);
+#if defined(RPM_VENDOR_MANDRIVA)
+	    /* important to fix parse_hdlist (and so genhdlist2) on heavy loaded boxes,
+	     * otherwise it timeouts after a read miss of 1 second (even a pipe),
+	     * and there is no way we can retry since we would need to backtrack the fd
+	     */
+	    fd->rd_timeoutsecs = 60;
+#else
 	    fd->rd_timeoutsecs = 1;
+#endif
 	    fd->contentLength = fd->bytesRemain = -1;
 	}
 	break;
