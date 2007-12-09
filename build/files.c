@@ -2374,6 +2374,7 @@ exit:
     }
 
     fl.fileList = freeFileList(fl.fileList, fl.fileListRecsUsed);
+
     while (fl.docDirCount--)
 	fl.docDirs[fl.docDirCount] = _free(fl.docDirs[fl.docDirCount]);
     return fl.processingFailed;
@@ -2488,9 +2489,21 @@ int processSourceFiles(Spec spec)
     struct FileList_s fl;
     char **files, **fp;
     int rc;
+    char *_srcdefattr;
+    char buf[BUFSIZ];
+
+    _srcdefattr = rpmExpand("%{?_srcdefattr}", NULL);
+
 
     *sfp = newStringBuf();
     x = initSourceHeader(spec, sfp);
+
+    /* Init the file list structure */
+    memset(&fl, 0, sizeof(fl));
+    if (_srcdefattr && *_srcdefattr) {
+	    sprintf(buf, "%%defattr %s", _srcdefattr);
+	    parseForAttr(buf, &fl);
+    }
 
     /* Construct the SRPM file list. */
     fl.fileList = xcalloc((spec->numSources + 1), sizeof(*fl.fileList));
@@ -2542,8 +2555,19 @@ int processSourceFiles(Spec spec)
 	    rc = fl.processingFailed = 1;
 	}
 
-	flp->uname = getUname(flp->fl_uid);
-	flp->gname = getGname(flp->fl_gid);
+	if (fl.def_ar.ar_fmodestr) {
+	    flp->fl_mode &= S_IFMT;
+	    flp->fl_mode |= fl.def_ar.ar_fmode;
+	}
+	
+    flp->uname = fl.def_ar.ar_user ?
+        getUnameS(fl.def_ar.ar_user):
+        getUname(flp->fl_uid);
+	
+    flp->gname = fl.def_ar.ar_group ?
+        getGnameS(fl.def_ar.ar_group) :
+	    getGname(flp->fl_gid);
+
 	flp->langs = xstrdup("");
 	
 	fl.totalFileSize += flp->fl_size;
@@ -2568,6 +2592,8 @@ int processSourceFiles(Spec spec)
 exit:
     *sfp = freeStringBuf(*sfp);
     fl.fileList = freeFileList(fl.fileList, fl.fileListRecsUsed);
+    _free(_srcdefattr);
+    freeAttrRec(&fl.def_ar);
     return rc;
 }
 
