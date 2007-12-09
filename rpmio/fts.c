@@ -62,8 +62,15 @@ static char sccsid[] = "@(#)fts.c	8.6 (Berkeley) 8/14/94";
 #   define __fxstat64(_stat_ver, _fd, _sbp)	fstat((_fd), (_sbp))
 #endif
 #if defined(__APPLE__)
+#   include <sys/stat.h>
 #   define __errno_location()	(__error())
+#ifndef __DARWIN_STRUCT_STAT64
+#   define stat64		stat
+#endif
 #   define _STAT_VER		0
+#ifndef __DARWIN_STRUCT_STAT64
+#   define __fxstat64(_stat_ver, _fd, _sbp)	fstat((_fd), (_sbp))
+#endif
 #endif
 #if defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__) || defined(__DragonFly__)
 #   define __errno_location()  (&errno)
