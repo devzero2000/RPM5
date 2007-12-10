@@ -70,6 +70,8 @@ static char sccsid[] = "@(#)fts.c	8.6 (Berkeley) 8/14/94";
 #   define _STAT_VER		0
 #ifndef __DARWIN_STRUCT_STAT64
 #   define __fxstat64(_stat_ver, _fd, _sbp)	fstat((_fd), (_sbp))
+#else
+#   define __fxstat64(_stat_ver, _fd, _sbp)	fstat64((_fd), (_sbp))
 #endif
 #endif
 #if defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__) || defined(__DragonFly__)
