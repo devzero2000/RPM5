@@ -4,15 +4,22 @@
     - proyvind: make rpm -bb --quiet" quiet as should be (from pixel)
     - proyvind: do check free size when bavail is 0 (from pixel)
     - proyvind: allow to set %_srcdefattr for src.rpm (from pixel)
+    - proyvind: Check amd64 vs x86_64, they're the same arch (from Gwenole Beauchesne/gb)
     - proyvind: do not crash when FILELINKTOS has more entries than DIRNAMES (from pixel)
     - proyvind: fix parse_hdlist (and so genhdlist2) on heavy loaded boxes for Mandriva (from pixel)
     - proyvind: fix diff issue when buildroot contains some "//" (from Nanar)
     - proyvind: avoid taking into account duplicates in file list when checking for unpackaged files
+    - proyvind: Install perl module in vendor directory (from Rafael Garcia-Suarez/rgs)
+    - proyvind: add some extra functionality to gendiff (from Frederic Lepied/flepied)
     - proyvind: fix segfault for old packages with postin, but no postinprog (from pixel)
     - proyvind: fix rpm -K segfaulting on corrupted header (from pixel)
-    - proyvind: fix free on invalid pointer after displaying "Unable to open temp file" (from pixel)
-    - proyvind: allow --short-circuit -bb & -ba in Mandriva
-    - proyvind: make rpmdb cpp compliant (from spturtle)
+    - proyvind: fix free on invalid pointer after displaying "Unable to open temp file" (from Pascal Rigaux/pixel)
+    - proyvind: allow --short-circuit -bb & -ba in Mandriva (from Nanar)
+    - proyvind: make rpmdb cpp compliant (from spturtle/Christiaan Welvaart)
+    - proyvind: make find-lang --with-gnome picks up omf files (rpm.org 4.4.2.2 / rhbz#251400)
+    - proyvind: fix usage with tar >= 1.15.91 that needs the --wildcard option to list *.spec files (for rpm -ta) (from pixel)
+    - proyvind: use LZMA_Alone file format, even with newer versions (from afb/rpm5 backport)
+    - proyvind: update lzma payload support for newer lzma utils (from afb/rpm5 backport)
     - jbj: leave EVRcmp change as Mandriva specific for now.
     - jbj: don't cache unsatisfied Suggests:.
     - jbj: insturment headerNextIterator() statistics (noop in rpm-4.5).
