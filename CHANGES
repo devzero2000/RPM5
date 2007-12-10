@@ -1,4 +1,6 @@
 5.0b1 -> 5.0b2:
+    - jbj: leave behind the heavy duty debugging goop for the next --qf buggery.
+    - jbj: fix: consume the escaped character after copy, wotta pita.
     - jbj: simplify *Format routines, he->p is now reliably populated and const.
     - jbj: rewrite shescapeFormat to count # escapes needed, not sloppy realloc.
     - jbj: add debugging hack to test a hypothesis re rpm-5.0beta1 segfault.

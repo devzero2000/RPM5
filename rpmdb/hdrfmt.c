@@ -24,6 +24,9 @@
 
 #include "debug.h"
 
+/*@unchecked@*/
+extern int _hdr_debug;
+
 /*@access pgpDig @*/
 /*@access pgpDigParams @*/
 /*@access headerSprintfExtension @*/
@@ -1886,6 +1889,8 @@ struct headerSprintfArgs_s {
  */
 static char escapedChar(const char ch)	/*@*/
 {
+if (_hdr_debug)
+fprintf(stderr, "\t\t\\%c\n", ch);
     switch (ch) {
     case 'a': 	return '\a';
     case 'b': 	return '\b';
@@ -2223,12 +2228,18 @@ static int parseFormat(headerSprintfArgs hsa, /*@null@*/ char * str,
 	/*@requires maxSet(formatPtr) >= 0 /\ maxSet(numTokensPtr) >= 0
 		/\ maxSet(endPtr) >= 0 @*/
 {
+static const char *pstates[] = {
+"NORMAL", "ARRAY", "EXPR", "WTF?"
+};
     char * chptr, * start, * next, * dst;
     sprintfToken format;
     sprintfToken token;
     size_t numTokens;
     unsigned i;
     int done = 0;
+
+if (_hdr_debug)
+fprintf(stderr, "-->     parseFormat(%p, \"%s\", %p, %p, %p, %s)\n", hsa, str, formatPtr, numTokensPtr, endPtr, pstates[(state & 0x3)]);
 
     /* upper limit on number of individual formats */
     numTokens = 0;
@@ -2294,6 +2305,8 @@ static int parseFormat(headerSprintfArgs hsa, /*@null@*/ char * str,
 		return 1;
 	    }
 
+if (_hdr_debug)
+fprintf(stderr, "\tchptr *%p = NUL\n", chptr);
 	    *chptr++ = '\0';
 
 	    while (start < chptr) {
@@ -2323,6 +2336,8 @@ static int parseFormat(headerSprintfArgs hsa, /*@null@*/ char * str,
 		format = freeFormat(format, numTokens);
 		return 1;
 	    }
+if (_hdr_debug)
+fprintf(stderr, "\tnext *%p = NUL\n", next);
 	    *next++ = '\0';
 
 	    chptr = start;
@@ -2358,9 +2373,13 @@ static int parseFormat(headerSprintfArgs hsa, /*@null@*/ char * str,
 	    }
 
 	    dst = start = next;
+if (_hdr_debug)
+fprintf(stderr, "\tdst = start = next %p\n", dst);
 	    /*@switchbreak@*/ break;
 
 	case '[':
+if (_hdr_debug)
+fprintf(stderr, "\t%s => %s *%p = NUL\n", pstates[(state & 0x3)], pstates[PARSER_IN_ARRAY], start);
 	    *start++ = '\0';
 	    token = format + numTokens++;
 
@@ -2380,6 +2399,8 @@ static int parseFormat(headerSprintfArgs hsa, /*@null@*/ char * str,
 	    }
 
 	    dst = start;
+if (_hdr_debug)
+fprintf(stderr, "\tdst = start %p\n", dst);
 
 	    token->type = PTOK_ARRAY;
 
@@ -2392,6 +2413,8 @@ static int parseFormat(headerSprintfArgs hsa, /*@null@*/ char * str,
 		return 1;
 	    }
 	    *start++ = '\0';
+if (_hdr_debug)
+fprintf(stderr, "\t<= %s %p[-1] = NUL\n", pstates[(state & 0x3)], start);
 	    if (endPtr) *endPtr = start;
 	    done = 1;
 	    /*@switchbreak@*/ break;
@@ -2403,6 +2426,8 @@ static int parseFormat(headerSprintfArgs hsa, /*@null@*/ char * str,
 		return 1;
 	    }
 	    *start++ = '\0';
+if (_hdr_debug)
+fprintf(stderr, "\t<= %s %p[-1] = NUL\n", pstates[(state & 0x3)], start);
 	    if (endPtr) *endPtr = start;
 	    done = 1;
 	    /*@switchbreak@*/ break;
@@ -2416,9 +2441,12 @@ static int parseFormat(headerSprintfArgs hsa, /*@null@*/ char * str,
 		/*@=temptrans =assignexpose@*/
 	    }
 
+if (_hdr_debug)
+fprintf(stderr, "\t*%p = *%p \"%s\"\n", dst, start, start);
 	    if (*start == '\\') {
 		start++;
-		*dst++ = escapedChar(*start++);
+		*dst++ = escapedChar(*start);
+		*start++ = '\0';
 	    } else {
 		*dst++ = *start++;
 	    }
@@ -2456,6 +2484,9 @@ static int parseExpression(headerSprintfArgs hsa, sprintfToken token,
 {
     char * chptr;
     char * end;
+
+if (_hdr_debug)
+fprintf(stderr, "-->   parseExpression(%p, %p, \"%s\", %p)\n", hsa, token, str, endPtr);
 
     hsa->errmsg = NULL;
     chptr = str;
@@ -3011,6 +3042,9 @@ char * headerSprintf(Header h, const char * fmt,
     int isxml;
     int isyaml;
     int need;
+
+if (_hdr_debug)
+fprintf(stderr, "==> headerSprintf(%p, \"%s\", %p, %p, %p)\n", h, fmt, tags, exts, errmsg);
 
     /* Set some reasonable defaults */
     if (tags == NULL)
