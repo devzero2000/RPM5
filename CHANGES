@@ -1,4 +1,18 @@
 4.4.9 -> 4.5:
+    - proyvind: fix built-in zlib dependencies (from gb)
+    - proyvind: force generation of PIC code for static libs that can be built into a DSO (zlib, file) (from gb)
+    - proyvind: make rpm -bb --quiet" quiet as should be (from pixel)
+    - proyvind: do check free size when bavail is 0 (from pixel)
+    - proyvind: allow to set %_srcdefattr for src.rpm (from pixel)
+    - proyvind: do not crash when FILELINKTOS has more entries than DIRNAMES (from pixel)
+    - proyvind: fix parse_hdlist (and so genhdlist2) on heavy loaded boxes for Mandriva (from pixel)
+    - proyvind: fix diff issue when buildroot contains some "//" (from Nanar)
+    - proyvind: avoid taking into account duplicates in file list when checking for unpackaged files
+    - proyvind: fix segfault for old packages with postin, but no postinprog (from pixel)
+    - proyvind: fix rpm -K segfaulting on corrupted header (from pixel)
+    - proyvind: fix free on invalid pointer after displaying "Unable to open temp file" (from pixel)
+    - proyvind: allow --short-circuit -bb & -ba in Mandriva
+    - proyvind: make rpmdb cpp compliant (from spturtle)
     - jbj: leave EVRcmp change as Mandriva specific for now.
     - jbj: don't cache unsatisfied Suggests:.
     - jbj: insturment headerNextIterator() statistics (noop in rpm-4.5).
