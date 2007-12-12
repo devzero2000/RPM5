@@ -20,6 +20,8 @@ extern int _pgp_print;
 #define	_RPMSSL_INTERNAL
 #include <rpmssl.h>
 
+#include "gengpg.h"
+
 #include "debug.h"
 
 static int doit(const char *sig, pgpDig dig, int printing)
@@ -32,7 +34,7 @@ static int doit(const char *sig, pgpDig dig, int printing)
     int i;
 
 if (_debug)
-fprintf(stderr, "*** sig is\n%s\n", sig);
+fprintf(stderr, "*** before\n%s\n", sig);
 
     if ((rc = b64decode(sig, (void **)&dec, &declen)) != 0) {
 	fprintf(stderr, "*** b64decode returns %d\n", rc);
@@ -51,7 +53,7 @@ fprintf(stderr, "*** sig is\n%s\n", sig);
     dec = _free(dec);
 
 if (_debug)
-fprintf(stderr, "*** enc is\n%s\n", enc);
+fprintf(stderr, "***  after\n%s\n", enc);
 
 rc = 0;
 for (i = 0, s = sig, t = enc; *s & *t; i++, s++, t++) {
@@ -78,48 +80,12 @@ static const char * fips_y = "19131871d75b1612a819f29d78d1b0d7346f7aa77bb62a859b
 static const char * fips_r = "8bac1ab66410435cb7181f95b16ab97c92b341c0";
 static const char * fips_s = "41e2345f1f56df2458f426d155b4ba2db6dcd8c8";
 
-/* Secret key */
-static const char * jbjSecretDSA =
-"lQFvBDu6XHwRAwCTIHRgKeIlOFUIEZeJVYSrXn0eUrM5S8OF471tTc+IV7AwiXBR\n"
-"zCFCan4lO1ipmoAipyN2A6ZX0HWOcWdYlWz2adxA7l8JNiZTzkemA562xwex2wLy\n"
-"AQWVTtRN6jv0LccAoN4UWZkIvkT6tV918sEvDEggGARxAv9190RhrDq/GMqd+AHm\n"
-"qWrRkrBRHDUBBL2fYEuU3gFekYrW5CDIN6s3Mcq/yUsvwHl7bwmoqbf2qabbyfnv\n"
-"Y66ETOPKLcw67ggcptHXHcwlvpfJmHKpjK+ByzgauPXXbRAC+gKDjzXL0kAQxjmT\n"
-"2D+16O4vI8Emlx2JVcGLlq/aWhspvQWIzN6PytA3iKZ6uzesrM7yXmqzgodZUsJh\n"
-"1wwl/0K5OIJn/oD41UayU8RXNER8SzDYvDYsJymFRwE1s58lL/8DAwJUAllw1pdZ\n"
-"WmBIoAvRiv7kE6hWfeCvZzdBVgrHYrp8ceUa3OdulGfYw/0sIzpEU0FfZmFjdG9y\n"
-"OgAA30gJ4JMFKVfthnDCHHL+O8lNxykKBmrgVPLClue0KUplZmYgSm9obnNvbiAo\n"
-"QVJTIE4zTlBRKSA8amJqQHJlZGhhdC5jb20+iFcEExECABcFAju6XHwFCwcKAwQD\n"
-"FQMCAxYCAQIXgAAKCRCB0qVW2I6DmQU6AJ490bVWZuM4yCOh8MWj6qApCr1/gwCf\n"
-"f3+QgXFXAeTyPtMmReyWxThABtE=\n"
-;
-
-/* Public key */
-static const char * jbjPublicDSA =
-"mQFCBDu6XHwRAwCTIHRgKeIlOFUIEZeJVYSrXn0eUrM5S8OF471tTc+IV7AwiXBR\n"
-"zCFCan4lO1ipmoAipyN2A6ZX0HWOcWdYlWz2adxA7l8JNiZTzkemA562xwex2wLy\n"
-"AQWVTtRN6jv0LccAoN4UWZkIvkT6tV918sEvDEggGARxAv9190RhrDq/GMqd+AHm\n"
-"qWrRkrBRHDUBBL2fYEuU3gFekYrW5CDIN6s3Mcq/yUsvwHl7bwmoqbf2qabbyfnv\n"
-"Y66ETOPKLcw67ggcptHXHcwlvpfJmHKpjK+ByzgauPXXbRAC+gKDjzXL0kAQxjmT\n"
-"2D+16O4vI8Emlx2JVcGLlq/aWhspvQWIzN6PytA3iKZ6uzesrM7yXmqzgodZUsJh\n"
-"1wwl/0K5OIJn/oD41UayU8RXNER8SzDYvDYsJymFRwE1s58lL7QpSmVmZiBKb2hu\n"
-"c29uIChBUlMgTjNOUFEpIDxqYmpAcmVkaGF0LmNvbT6IVwQTEQIAFwUCO7pcfAUL\n"
-"BwoDBAMVAwIDFgIBAheAAAoJEIHSpVbYjoOZBToAn3TXaAI+bhg51EeyaiFip/6W\n"
-"OVwBAJ44rTtNsgZBQxXISjB64CWxl4VaWQ==\n"
-;
-
-/* Signature */
-static const char * abcSignatureDSA =
-"iD8DBQA7vII+gdKlVtiOg5kRAvg4AJ0fV3gDBADobAnK2HOkV88bfmFMEgCeNysO\n"
-"nP3dWWJnp0Pnbor7pIob4Dk=\n"
-;
-
 int
 main(int argc, char *argv[])
 {
     pgpDig dig;
     rpmbc bc;
-    int printing = 1;
+    int printing = -1;
     int rc;
 
 
@@ -142,29 +108,24 @@ fprintf(stderr, "=============================== DSA FIPS-186-1: rc %d\n", rc);
 
     dig = pgpDigFree(dig);
 
-    pgpImplVecs = &rpmsslImplVecs;
+    pgpImplVecs = &rpmbcImplVecs;
 
     dig = pgpDigNew(0);
 _pgp_debug = 1;
 _pgp_print = 1;
 
-fprintf(stderr, "=============================== GPG Secret Key\n");
-    if ((rc = doit(jbjSecretDSA, dig, printing)) != 0)
+fprintf(stderr, "=============================== DSA Public Key\n");
+    if ((rc = doit(DSApub, dig, printing)) != 0)
 	fprintf(stderr, "==> FAILED: rc %d\n", rc);
 
-fprintf(stderr, "=============================== GPG Public Key\n");
-    if ((rc = doit(jbjPublicDSA, dig, printing)) != 0)
-	fprintf(stderr, "==> FAILED: rc %d\n", rc);
-
-fprintf(stderr, "=============================== GPG Signature of \"abc\"\n");
-    if ((rc = doit(abcSignatureDSA, dig, printing)) != 0)
+fprintf(stderr, "=============================== DSA Signature of \"%s\"\n", str);
+    if ((rc = doit(DSAsig, dig, printing)) != 0)
 	fprintf(stderr, "==> FAILED: rc %d\n", rc);
 
     {	DIGEST_CTX ctx = rpmDigestInit(PGPHASHALGO_SHA1, RPMDIGEST_NONE);
 	pgpDigParams dsig = pgpGetSignature(dig);
-	const char * txt = "abc";
 	
-	rpmDigestUpdate(ctx, txt, strlen(txt));
+	rpmDigestUpdate(ctx, str, strlen(str));
 	rpmDigestUpdate(ctx, dsig->hash, dsig->hashlen);
 
 	(void) pgpImplSetDSA(ctx, dig, dsig);
@@ -173,6 +134,35 @@ fprintf(stderr, "=============================== GPG Signature of \"abc\"\n");
     rc = pgpImplVerifyDSA(dig);
     
 fprintf(stderr, "=============================== DSA verify: rc %d\n", rc);
+
+    dig = pgpDigFree(dig);
+
+    pgpImplVecs = &rpmbcImplVecs;
+
+    dig = pgpDigNew(0);
+_pgp_debug = 1;
+_pgp_print = 1;
+
+fprintf(stderr, "=============================== RSA Public Key\n");
+    if ((rc = doit(RSApub, dig, printing)) != 0)
+	fprintf(stderr, "==> FAILED: rc %d\n", rc);
+
+fprintf(stderr, "=============================== RSA Signature of \"%s\"\n", str);
+    if ((rc = doit(RSAsig, dig, printing)) != 0)
+	fprintf(stderr, "==> FAILED: rc %d\n", rc);
+
+    {	DIGEST_CTX ctx = rpmDigestInit(PGPHASHALGO_SHA1, RPMDIGEST_NONE);
+	pgpDigParams dsig = pgpGetSignature(dig);
+	
+	rpmDigestUpdate(ctx, str, strlen(str));
+	rpmDigestUpdate(ctx, dsig->hash, dsig->hashlen);
+
+	(void) pgpImplSetRSA(ctx, dig, dsig);
+    }
+
+    rc = pgpImplVerifyRSA(dig);
+    
+fprintf(stderr, "=============================== RSA verify: rc %d\n", rc);
 
     dig = pgpDigFree(dig);
 

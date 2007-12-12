@@ -4,9 +4,9 @@ AUTOMAKE_OPTIONS = 1.4 foreign
 
 LINT = splint
 
-EXTRA_DIST = tax.c tdir.c tfts.c tget.c thkp.c tput.c tglob.c tinv.c tkey.c trpmio.c lookup3.c tpw.c librpmio.vers
+EXTRA_DIST = gengpg.sh tdir.c tfts.c tget.c thkp.c tput.c tglob.c tinv.c tkey.c trpmio.c lookup3.c tpw.c librpmio.vers
 
-EXTRA_PROGRAMS = tax tdir tfts tget thkp tmacro tput tglob tinv tkey tmagic trpmio tsw dumpasn1 lookup3 tpw
+EXTRA_PROGRAMS = tdir tfts tget thkp tmacro tput tglob tinv tkey tmagic trpmio tsw dumpasn1 lookup3 tpw
 
 AM_CPPFLAGS = \
 	-I$(srcdir) \
@@ -95,9 +95,6 @@ sources:
 lint:
 	$(LINT) $(DEFS) $(INCLUDES) $(librpmio_la_SOURCES)
 
-tax_SOURCES = tax.c
-tax_LDADD = $(RPM_LDADD)
-
 tdir_SOURCES = tdir.c
 tdir_LDADD = $(RPM_LDADD)
 
@@ -127,9 +124,12 @@ tglob_LDADD = $(RPM_LDADD)
 tinv_SOURCES = tinv.c
 tinv_LDADD = $(RPM_LDADD)
 
-tkey_SOURCES = tkey.c rpmgc.c rpmnss.c rpmssl.c
+tkey_SOURCES = gengpg.h tkey.c rpmgc.c rpmnss.c rpmssl.c
 tkey_CFLAGS  = $(CFLAGS)
 tkey_LDADD = $(RPM_LDADD) -lgcrypt
+
+gengpg.h:
+	-sh ./gengpg.sh > gengpg.h
 
 trpmio_SOURCES = trpmio.c
 trpmio_LDADD = $(RPM_LDADD)
