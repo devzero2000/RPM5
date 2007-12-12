@@ -1,4 +1,6 @@
 5.0b1 -> 5.0b2:
+    - jbj: re-enable preferring rpmnss (if WITH_NSS is defined).
+    - jbj: fix: --rebuilddb needs an explicit open for Pubkeys lookup.
     - rpm.org: Register the new SCRIPT_ERROR callback value to python.
     - jbj: leave behind the heavy duty debugging goop for the next --qf buggery.
     - jbj: fix: consume the escaped character after copy, wotta pita.
