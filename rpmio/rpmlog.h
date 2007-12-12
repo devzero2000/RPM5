@@ -156,11 +156,17 @@ typedef void (*rpmlogCallback) (void);
 
 /**
  */
-typedef /*@abstract@*/ struct rpmlogRec_s {
+typedef /*@abstract@*/ struct rpmlogRec_s * rpmlogRec;
+
+#if defined(_RPMLOG_INTERNAL)
+/**
+ */
+struct rpmlogRec_s {
     int		code;
 /*@owned@*/ /*@null@*/
     const char * message;
-} * rpmlogRec;
+};
+#endif
 
 #ifdef __cplusplus
 extern "C" {
