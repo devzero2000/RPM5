@@ -1208,6 +1208,19 @@ doFoo(MacroBuf mb, int negate, const char * f, size_t fn,
 	if ((b = strrchr(buf, '/')) != NULL)
 	    *b = '\0';
 	b = buf;
+#if defined(RPM_VENDOR_OPENPKG) /* support-realpath-macro */
+    } else if (STREQ("realpath", f, fn)) {
+        char rp[PATH_MAX];
+        char *cp;
+        size_t l;
+        if ((cp = realpath(buf, rp)) != NULL) {
+            l = strlen(cp);
+            if (l+1 <= bufn) {
+                memcpy(buf, cp, l+1);
+                b = buf;
+            }
+        }
+#endif
     } else if (STREQ("suffix", f, fn)) {
 	if ((b = strrchr(buf, '.')) != NULL)
 	    b++;
@@ -1581,6 +1594,9 @@ expandMacro(MacroBuf mb)
 	/* XXX necessary but clunky */
 	if (STREQ("basename", f, fn) ||
 	    STREQ("dirname", f, fn) ||
+#if defined(RPM_VENDOR_OPENPKG) /* support-realpath-macro */
+	    STREQ("realpath", f, fn) ||
+#endif
 	    STREQ("suffix", f, fn) ||
 	    STREQ("expand", f, fn) ||
 	    STREQ("verbose", f, fn) ||
@@ -2083,6 +2099,25 @@ rpmLoadMacros(MacroContext mc, int level)
     }
 }
 
+#if defined(RPM_VENDOR_OPENPKG) /* expand-macrosfile-macro */
+static void expand_macrosfile_macro(const char *file_name, const char *buf, size_t bufn)
+{
+    char *cp;
+    size_t l, k;
+    static const char *macro_name = "%{macrosfile}";
+
+    l = strlen(macro_name);
+    k = strlen(file_name);
+    while ((cp = strstr(buf, macro_name)) != NULL) {
+        if (((strlen(buf) - l) + k) < bufn) {
+            memmove(cp+k, cp+l, strlen(cp+l)+1);
+            memcpy(cp, file_name, k);
+        }
+    }
+    return;
+}
+#endif
+
 int
 rpmLoadMacroFile(MacroContext mc, const char * fn)
 {
@@ -2112,6 +2147,9 @@ rpmLoadMacroFile(MacroContext mc, const char * fn)
 	if (c != (int) '%')
 		continue;
 	n++;	/* skip % */
+#if defined(RPM_VENDOR_OPENPKG) /* expand-macro-source */
+	expand_macrosfile_macro(fn, buf, bufn);
+#endif
 	rc = rpmDefineMacro(mc, n, RMIL_MACROFILES);
     }
     rc = Fclose(fd);

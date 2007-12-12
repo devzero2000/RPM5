@@ -256,4 +256,26 @@
                      let RPM try(!) to remove the two directories (if
                      they are empty) and just ignore removal failures
                      (if they are still not empty).
+     ________________________________________________________________________
+
+     Change:         expand-macrosfile-macro
+     Purpose:        Provide special pseudo-macro %{macrosfile}
+     Reason:         In order to support local .rpmmacros (those
+                     which stay directly inside a development area)
+                     which redefine %{_specdir}/%{_sourcedir}/etc to
+                     point to local directories, it is necessary to be
+                     able to override those macros with absolute paths
+                     relative to the .rpmmacros file itself. For this
+                     it is necessary that one can expand a macro which
+                     results in the pathname of the .rpmmacros file
+                     itself. Together with %{dirname:...} and other
+                     macro constructs this way one can allow arbitrarily
+                     relocatable development environments.
+     ________________________________________________________________________
+
+     Change:         support-realpath-macro
+     Purpose:        Provide macro %{realpath:<path>}
+     Reason:         This is a macro-frontend to realpath(3) and
+                     allows one to resolve a (relative) path into
+                     an absolute path.
 
