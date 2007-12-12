@@ -128,6 +128,10 @@
     - jbj: RPM_I18NSTRING_TYPE is possibly still wonky, the test is to see
 	whether rpm-python h['summary'] returns a string (which is correct)
 	or an argv tuple (which is broken).
+    - jbj: there's a buildroot compatibility issue that needs to be addressed
+	in (at least) doco. The problem is common to rpm-4_5 and HEAD.
+	Issue at
+		http://qa.mandriva.com/show_bug.cgi?id=34705
 
   RPM 5.1 ROADMAP ISSUES
   ----------------------
