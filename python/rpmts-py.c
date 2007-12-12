@@ -1007,6 +1007,14 @@ fprintf(stderr, "*** rpmts_HdrCheck(%p) ts %p\n", s, s->ts);
 
 /**
  */
+static PyObject *
+rpmts_GetVSFlags(rpmtsObject * s)
+{
+    return Py_BuildValue("i", rpmtsVSFlags(s->ts));
+}
+
+/**
+ */
 /*@null@*/
 static PyObject *
 rpmts_SetVSFlags(rpmtsObject * s, PyObject * args, PyObject * kwds)
@@ -1469,6 +1477,9 @@ static struct PyMethodDef rpmts_methods[] = {
 - Read a package header from a file descriptor.\n" },
  {"hdrCheck",	(PyCFunction) rpmts_HdrCheck,	METH_VARARGS|METH_KEYWORDS,
 	NULL },
+{"getVSFlags",(PyCFunction) rpmts_GetVSFlags,	METH_NOARGS,
+"ts.getVSFlags() -> vsflags\n\
+- Retrieve current signature verification flags from transaction\n" },
  {"setVSFlags",(PyCFunction) rpmts_SetVSFlags,	METH_VARARGS|METH_KEYWORDS,
 "ts.setVSFlags(vsflags) -> ovsflags\n\
 - Set signature verification flags. Values for vsflags are:\n\
