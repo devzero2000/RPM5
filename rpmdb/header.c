@@ -1893,23 +1893,13 @@ assert(0);	/* XXX stop unimplemented oversights. */
     case RPM_UINT64_TYPE:
 	nb = he->c * sizeof(*he->p.ui64p);
 	break;
-    case RPM_I18NSTRING_TYPE:
-#if HACK_AROUND
-assert(he->c == 1);	/* XXX stop unimplemented oversights. */
-#else
-	if (he->c > 1) {
-	    he->t = RPM_STRING_TYPE;
-	    he->p.str = he->p.argv[0];
-	    he->c = 1;
-	}
-#endif
-	/*@fallthrough@*/
     case RPM_STRING_TYPE:
 	if (he->p.str)
 	    nb = strlen(he->p.str) + 1;
 	else
 	    rc = 0;
 	break;
+    case RPM_I18NSTRING_TYPE:
     case RPM_STRING_ARRAY_TYPE:
 	break;
     }
