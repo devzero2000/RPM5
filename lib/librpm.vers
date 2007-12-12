@@ -247,6 +247,8 @@ LIBRPM_0
     rpmpsGetProblem;
     rpmProblemGetPkgNEVR;
     rpmProblemGetAltNEVR;
+    rpmProblemGetStr;
+    rpmProblemGetLong;
     rpmProblemGetType;
     rpmProblemKey;
     rpmQueryPoptTable;
