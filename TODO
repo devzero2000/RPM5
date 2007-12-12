@@ -136,6 +136,9 @@
 	needs doing is insuring that rpm qa --yaml can be loaded by some
 	existing yaml parser, and that the xml parses correctly. The YAML
 	is likelier to be borked than the XML.
+    - jbj: make a complete pass through rpm.org check-ins and make sure they
+	have exactly zero "features" that are not already in rpm-5.0. With
+	full attribution of course ...
 
 
   RPM 5.1 ROADMAP ISSUES
