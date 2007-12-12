@@ -4,7 +4,6 @@
 /** \ingroup rpmio
  * \file rpmio/rpmlog.h
  * Yet Another syslog(3) API clone.
- * Used to unify rpmError() and rpmMessage() interfaces in rpm.
  */
 
 #include <stdarg.h>
@@ -150,19 +149,36 @@ RPMCODE facilitynames[] =
 #define	RPMLOG_PERROR	0x20	/*!< log to stderr as well */
 
 /**
- * @todo Add argument(s), integrate with other types of callbacks.
  */
-typedef void (*rpmlogCallback) (void);
+typedef /*@abstract@*/ struct rpmlogRec_s * rpmlogRec;
 
 /**
  */
-typedef /*@abstract@*/ struct rpmlogRec_s * rpmlogRec;
+typedef /*@abstract@*/ void * rpmlogCallbackData;
+
+/**
+  * @param rec		rpmlog record
+  * @param data		private callback data
+  * @return		flags to define further behavior:
+  * 			RPMLOG_DEFAULT to continue to default logger,
+  * 			RPMLOG_EXIT to exit after processing
+  *			0 to return after callback.
+  */
+typedef int (*rpmlogCallback) (rpmlogRec rec, rpmlogCallbackData data)
+	/*@*/;
+
+/**
+ * Option flags for callback return value.
+ */
+#define RPMLOG_DEFAULT	0x01	/*!< perform default logging */	
+#define RPMLOG_EXIT	0x02	/*!< exit after logging */
 
 #if defined(_RPMLOG_INTERNAL)
 /**
  */
 struct rpmlogRec_s {
     int		code;
+    rpmlogLvl	pri;		/* priority */
 /*@owned@*/ /*@null@*/
     const char * message;
 };
@@ -173,7 +189,24 @@ extern "C" {
 #endif
 
 /**
- * Return number of rpmError() ressages.
+ * Return translated prefix string (if any) given log level.
+ * @param pri		log priority
+ * @return		message prefix (or "" for none)
+ */
+const char * rpmlogLevelPrefix(rpmlogLvl pri);
+
+/**
+ * Set rpmlog callback function.
+ * @param cb		rpmlog callback function
+ * @param data		callback private (user) data
+ * @return		previous rpmlog callback function
+ */
+rpmlogCallback rpmlogSetCallback(rpmlogCallback cb, rpmlogCallbackData data)
+	/*@globals internalState@*/
+	/*@modifies internalState @*/;
+
+/**
+ * Return number of messages.
  * @return		number of messages
  */
 int rpmlogGetNrecs(void)	/*@*/;
@@ -239,15 +272,6 @@ int rpmlogCode(void)
 	/*@*/;
 
 /**
- * Set rpmlog callback function.
- * @param cb		rpmlog callback function
- * @return		previous rpmlog callback function
- */
-rpmlogCallback rpmlogSetCallback(rpmlogCallback cb)
-	/*@globals internalState@*/
-	/*@modifies internalState @*/;
-
-/**
  * Set rpmlog file handle.
  * @param fp		rpmlog file handle (NULL uses stdout/stderr)
  * @return		previous rpmlog file handle
@@ -257,31 +281,6 @@ FILE * rpmlogSetFile(/*@null@*/ FILE * fp)
 	/*@globals internalState@*/
 	/*@modifies internalState @*/;
 /*@=exportlocal@*/
-
-/**
- * Set rpmlog callback function.
- * @deprecated gnorpm needs, use rpmlogSetCallback() instead.
- */
-extern rpmlogCallback rpmErrorSetCallback(rpmlogCallback cb)
-	/*@globals internalState@*/
-	/*@modifies internalState @*/;
-
-/**
- * Return error code from last rpmError() message.
- * @deprecated Perl-RPM needs, use rpmlogCode() instead.
- * @return		code from last message
- */
-extern int rpmErrorCode(void)
-	/*@*/;
-
-/**
- * Return text of last rpmError() message.
- * @deprecated gnorpm needs, use rpmlogMessage() instead.
- * @return		text of last message
- */
-/*@-redecl@*/
-/*@observer@*/ /*@null@*/ extern const char * rpmErrorString(void)	/*@*/;
-/*@=redecl@*/
 
 #ifdef __cplusplus
 }

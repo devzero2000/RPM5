@@ -211,9 +211,6 @@ LIBRPMIO_0
     rpmDigestPoptTable;
     rpmDigestUpdate;
     rpmDumpMacroTable;
-    rpmErrorCode;
-    rpmErrorSetCallback;
-    rpmErrorString;
     rpmExpand;
     rpmExpandNumeric;
     rpmFreeMacros;
@@ -243,6 +240,7 @@ LIBRPMIO_0
     rpmlogClose;
     rpmlogCode;
     rpmlogGetNrecs;
+    rpmlogLevelPrefix;
     rpmlogMessage;
     rpmlogOpen;
     rpmlogPrint;
