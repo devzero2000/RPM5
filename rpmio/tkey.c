@@ -108,7 +108,7 @@ fprintf(stderr, "=============================== DSA FIPS-186-1: rc %d\n", rc);
 
     dig = pgpDigFree(dig);
 
-    pgpImplVecs = &rpmbcImplVecs;
+    pgpImplVecs = &rpmsslImplVecs;
 
     dig = pgpDigNew(0);
 _pgp_debug = 1;
@@ -137,7 +137,7 @@ fprintf(stderr, "=============================== DSA verify: rc %d\n", rc);
 
     dig = pgpDigFree(dig);
 
-    pgpImplVecs = &rpmbcImplVecs;
+    pgpImplVecs = &rpmsslImplVecs;
 
     dig = pgpDigNew(0);
 _pgp_debug = 1;

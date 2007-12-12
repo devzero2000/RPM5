@@ -6,6 +6,9 @@
 #include "system.h"
 
 #include <rpmio.h>
+#ifdef	NOTYET
+#include <rpmmg.h>
+#endif
 #include <rpmbuild.h>
 #include "debug.h"
 
@@ -248,6 +251,18 @@ static const char *doUntar(Spec spec, int c, int quietly)
 	return NULL;
 	/*@notreached@*/ break;
     }
+#ifdef	NOTYET
+    {	rpmmg mg;
+	
+_rpmmg_debug = 1;
+	mg = rpmmgNew(NULL, 0);
+	t = (char *) rpmmgFile(mg, fn);
+	mg = rpmmgFree(mg);
+fprintf(stderr, "==> %s: %s\n", fn, t);
+	t = _free(t);
+_rpmmg_debug = 0;
+    }
+#endif
 
     tar = rpmGetPath("%{__tar}", NULL);
     if (strcmp(tar, "%{__tar}") == 0)
