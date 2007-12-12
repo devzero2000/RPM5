@@ -80,6 +80,10 @@
     - jbj: fold in not-fully-arbitrary-tags by adding %{_arbitrary_tags} test.
     - jbj: Mandriva perl-URPM "make test" indicates a problem querying binary
 	package headers that would be produced by a spec file.
+	Dvalin has found that reverting this patch
+		http://rpm5.org/cvs/chngview?cn=6994
+	restores legacy behavior (but breaks other "stuff" I believe). So
+	the patch needs some re-balancing before being added to rpm-5.0.
     - jbj: memory leak seen with repackaging
 ==4811== 249 bytes in 3 blocks are definitely lost in loss record 1 of 1
 ==4811==    at 0x4805525: malloc (vg_replace_malloc.c:149)
