@@ -132,6 +132,11 @@
 	in (at least) doco. The problem is common to rpm-4_5 and HEAD.
 	Issue at
 		http://qa.mandriva.com/show_bug.cgi?id=34705
+    - jbj: both --yaml and --xml are in need of a QA sanity check. All that
+	needs doing is insuring that rpm qa --yaml can be loaded by some
+	existing yaml parser, and that the xml parses correctly. The YAML
+	is likelier to be borked than the XML.
+
 
   RPM 5.1 ROADMAP ISSUES
   ----------------------
