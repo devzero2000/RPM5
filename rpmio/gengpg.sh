@@ -40,3 +40,6 @@ echo ";"
 echo "static const char * RSAsig ="
 echo -n "$str" | $gpg -sab -u RSApub | sed -e'1,3d; $d' | sed -e's/^/"/; s/$/\\n"/; $d'
 echo ";"
+
+rm -rf $hdir
+
