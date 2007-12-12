@@ -1,4 +1,5 @@
 4.4.9 -> 4.5:
+    - proyvind: Rename rpmcliImportPubkey() -> rpmtsImportPubkey() (from and for rpm.org compatibility)
     - proyvind: expose more functions in rpmps API (as rpm.org, initially based on us ;p)
     - proyvind: fix built-in zlib dependencies (from gb)
     - proyvind: force generation of PIC code for static libs that can be built into a DSO (zlib, file) (from gb)
