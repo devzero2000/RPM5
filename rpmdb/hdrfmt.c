@@ -1792,6 +1792,9 @@ void rpmDisplayQueryTags(FILE * fp, headerTagTableEntry _rpmTagTable, headerSpri
 /*@unchecked@*/
 int _tagcache = 1;		/* XXX Cache tag data persistently? */
 
+/*@unchechecked@*/
+int _tagbsearch = 1;		/* XXX Use bsearch, not linear, tag lookup. */
+
 /** \ingroup header
  */
 typedef /*@abstract@*/ struct sprintfTag_s * sprintfTag;
@@ -2080,7 +2083,7 @@ static const char * myTagName(headerTagTableEntry tbl, uint32_t val,
     char *t;
 
     /* XXX Use bsearch on the "normal" rpmTagTable lookup. */
-    if (tbl == NULL || tbl == rpmTagTable) {
+    if (_tagbsearch && (tbl == NULL || tbl == rpmTagTable)) {
 	s = tagName(val);
 	if (s != NULL && typep != NULL)
 	    *typep = tagType(val);

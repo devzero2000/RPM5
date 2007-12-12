@@ -36,6 +36,9 @@ int _nosigh = 0;
 extern int _newmagic;
 
 /*@unchecked@*/
+extern int _tagbsearch;
+
+/*@unchecked@*/
 extern int _tagcache;
 
 /*@unchecked@*/
@@ -512,10 +515,14 @@ struct poptOption rpmcliAllPoptTable[] = {
 	N_("disable rpm signature header"), NULL},
  { "newmagic", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_newmagic, -1,
 	N_("dupe region tag into lsb of magic"), NULL},
+ { "notagbsearch", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_tagbsearch, 0,
+	N_("disable tag lookup using binary search"), NULL},
+ { "tagbsearch", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_tagbsearch, 1,
+	N_("enable tag lookup using binary search"), NULL},
  { "notagcache", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_tagcache, 0,
-	N_("disable tag data caching"), NULL},
+	N_("disable tag array data caching"), NULL},
  { "tagcache", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_tagcache, 1,
-	N_("enable tag data caching"), NULL},
+	N_("enable tag array data caching"), NULL},
  { "xar", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_use_xar, 1,
 	N_("read xar package"), NULL},
 

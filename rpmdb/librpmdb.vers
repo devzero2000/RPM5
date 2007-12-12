@@ -64,6 +64,7 @@ LIBRPMDB_0
     _init;
     _nolead;
     _newmagic;
+    _tagbsearch;
     _tagcache;
     _use_xar;
     prDbiOpenFlags;

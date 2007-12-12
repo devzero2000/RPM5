@@ -1894,7 +1894,15 @@ assert(0);	/* XXX stop unimplemented oversights. */
 	nb = he->c * sizeof(*he->p.ui64p);
 	break;
     case RPM_I18NSTRING_TYPE:
+#if HACK_AROUND
 assert(he->c == 1);	/* XXX stop unimplemented oversights. */
+#else
+	if (he->c > 1) {
+	    he->t = RPM_STRING_TYPE;
+	    he->p.str = he->p.argv[0];
+	    he->c = 1;
+	}
+#endif
 	/*@fallthrough@*/
     case RPM_STRING_TYPE:
 	if (he->p.str)

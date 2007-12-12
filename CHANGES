@@ -1,4 +1,6 @@
 5.0b1 -> 5.0b2:
+    - jbj: attempt to measure performance improvement using binary tag search.
+    - jbj: trade an I18NSTRING assert failure for a memory leak for the moment.
     - jbj: push rpm2cpio w-i-p into cvs, try to measure linear <-> bsearch win.
     - rpm.org: Logging enhancements (not the best fix, much more needs doing).
     - rpm.org: Make rpmLogRec opaque.
