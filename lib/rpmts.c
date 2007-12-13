@@ -122,7 +122,7 @@ int rpmtsOpenDB(rpmts ts, int dbmode)
 
     (void) rpmtsCloseDB(ts);
 
-    /* XXX there's a potential db lock race here. */
+    /* XXX there's a db lock race here that is the callers responsibility. */
 
     ts->dbmode = dbmode;
     rc = rpmdbOpen(ts->rootDir, &ts->rdb, ts->dbmode, 0644);
