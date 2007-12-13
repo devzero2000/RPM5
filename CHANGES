@@ -1,4 +1,5 @@
 5.0b1 -> 5.0b2:
+    - jbj: insure that he->tag is set for use by format extensions.
     - rse: do not segfault on invalid usages like "rpm -qa '!name=foo'"
     - jbj: fix: explicit rpmtsOpenDB on -Kvv code paths.
     - jbj: more bleeping newlines.

@@ -581,7 +581,7 @@ static /*@only@*/ char * xmlFormat(HE_t he)
 assert(ix == 0);
 assert(he->t == RPM_STRING_TYPE || he->t == RPM_UINT64_TYPE || he->t == RPM_BIN_TYPE);
     switch (he->t) {
-    case RPM_STRING_ARRAY_TYPE:
+    case RPM_STRING_ARRAY_TYPE:	/* XXX currently never happens */
 	s = he->p.argv[ix];
 	xtag = "string";
 	/* XXX Force utf8 strings. */
@@ -589,7 +589,7 @@ assert(he->t == RPM_STRING_TYPE || he->t == RPM_UINT64_TYPE || he->t == RPM_BIN_
 	s = xstrtolocale(s);
 	freeit = 1;
 	break;
-    case RPM_I18NSTRING_TYPE:
+    case RPM_I18NSTRING_TYPE:	/* XXX currently never happens */
     case RPM_STRING_TYPE:
 	s = he->p.str;
 	xtag = "string";
@@ -741,11 +741,11 @@ static /*@only@*/ char * yamlFormat(HE_t he)
 
 assert(ix == 0);
 assert(he->t == RPM_STRING_TYPE || he->t == RPM_UINT64_TYPE || he->t == RPM_BIN_TYPE);
+    xx = 0;
     switch (he->t) {
-    case RPM_STRING_ARRAY_TYPE:
-    case RPM_I18NSTRING_TYPE:
+    case RPM_STRING_ARRAY_TYPE:	/* XXX currently never happens */
+    case RPM_I18NSTRING_TYPE:	/* XXX currently never happens */
     case RPM_STRING_TYPE:
-	xx = 0;
 	s = (he->t == RPM_STRING_ARRAY_TYPE ? he->p.argv[ix] : he->p.str);
 	if (strchr("[", s[0]))	/* leading [ */
 	    xx = 1;
@@ -2655,6 +2655,8 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag,
 	he->c = 1;
 	he->freeData = 0;
     }
+
+    vhe->tag = he->tag;
 
     if (he->p.ptr)
     switch (he->t) {
