@@ -344,20 +344,20 @@ assert(0);
     rc = rpmVerifySignature(dig, buf);
     switch (rc) {
     case RPMRC_OK:		/* Signature is OK. */
-	rpmlog(RPMLOG_DEBUG, "%s: %s", fn, buf);
+	rpmlog(RPMLOG_DEBUG, "%s: %s\n", fn, buf);
 	break;
     case RPMRC_NOTTRUSTED:	/* Signature is OK, but key is not trusted. */
     case RPMRC_NOKEY:		/* Public key is unavailable. */
 	/* XXX Print NOKEY/NOTTRUSTED warning only once. */
     {	int lvl = (pgpStashKeyid(dig) ? RPMLOG_DEBUG : RPMLOG_WARNING);
-	rpmlog(lvl, "%s: %s", fn, buf);
+	rpmlog(lvl, "%s: %s\n", fn, buf);
     }	break;
     case RPMRC_NOTFOUND:	/* Signature is unknown type. */
-	rpmlog(RPMLOG_WARNING, "%s: %s", fn, buf);
+	rpmlog(RPMLOG_WARNING, "%s: %s\n", fn, buf);
 	break;
     default:
     case RPMRC_FAIL:		/* Signature does not verify. */
-	rpmlog(RPMLOG_ERR, "%s: %s", fn, buf);
+	rpmlog(RPMLOG_ERR, "%s: %s\n", fn, buf);
 	break;
     }
 
