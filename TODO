@@ -83,7 +83,6 @@ rpm: header.c:1897: rpmheRealloc: Assertion `he->c == 1' failed.
     - jbj: ditto, patch-as-plain-macro.
     - jbj: add macro disabler for scriptlet interpreter dependencies, fold
 	in no-require-bin-sh patch.
-    - jbj: fold in not-fully-arbitrary-tags by adding %{_arbitrary_tags} test.
     - jbj: Mandriva perl-URPM "make test" indicates a problem querying binary
 	package headers that would be produced by a spec file.
 	Dvalin has found that reverting this patch

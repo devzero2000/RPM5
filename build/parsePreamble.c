@@ -796,11 +796,6 @@ static rpmRC handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
 	break;
 
     default:
-#if defined(RPM_VENDOR_OPENPKG) /* not-fully-arbitrary-tags */
-	/* revert to old behaviour where *arbitrary* tags are *not* allowed */
-	rpmlog(RPMLOG_ERR, _("Internal error: Bogus tag %d\n"), tag);
-	return RPMRC_FAIL;
-#else
 	macro = 0;
 	he->tag = tag;
 	he->t = RPM_STRING_ARRAY_TYPE;
@@ -809,7 +804,6 @@ static rpmRC handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
 	he->append = 1;
 	xx = headerPut(pkg->header, he, 0);
 	he->append = 0;
-#endif
 	break;
     }
 

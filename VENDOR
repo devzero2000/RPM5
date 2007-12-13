@@ -98,12 +98,6 @@
      Reason:         for temporary backward compatibility only
      ________________________________________________________________________
 
-     Change:         not-fully-arbitrary-tags
-     Purpose:        do not allow fully arbitrary tags/headers
-     Reason:         we want to allow only those extra tags which are
-                     explicitly configured in the macros
-     ________________________________________________________________________
-
      Change:         always-backup-on-patching
      Purpose:        always create backup files on patching files via %patch
      Reason:         In OpenPKG we maintain our patches via "rpm -bp" plus
