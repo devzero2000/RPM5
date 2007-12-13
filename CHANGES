@@ -1,4 +1,5 @@
 5.0b1 -> 5.0b2:
+    - jbj: more bleeping newlines.
     - jbj: put newlines back into the format now that rpmpkg msgs don't supply.
     - rpm.org: Add getter methods for rpmlogRec items (message + level).
     - jbj: another attempt to identify the RPM_I18NSTRING_TYPE flaw.

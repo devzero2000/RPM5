@@ -239,8 +239,8 @@ if (!_nosigh) {
 	rc = rpmpkgRead(item, fd, &sigh, &msg);
 	switch (rc) {
 	default:
-	    rpmlog(RPMLOG_ERR, "%s: %s: %s", fn, item,
-			(msg && *msg ? msg : "\n"));
+	    rpmlog(RPMLOG_ERR, "%s: %s: %s\n", fn, item,
+			(msg && *msg ? msg : ""));
 	    msg = _free(msg);
 	    goto exit;
 	    /*@notreached@*/ /*@switchbreak@*/ break;
@@ -899,8 +899,8 @@ if (!_nosigh) {
 	rc = rpmpkgRead(item, fd, &sigh, &msg);
 	switch (rc) {
 	default:
-	    rpmlog(RPMLOG_ERR, "%s: %s: %s", fn, item,
-			(msg && *msg ? msg : "\n"));
+	    rpmlog(RPMLOG_ERR, "%s: %s: %s\n", fn, item,
+			(msg && *msg ? msg : ""));
 	    msg = _free(msg);
 	    res++;
 	    goto exit;
@@ -1015,8 +1015,7 @@ assert(she->p.ptr != NULL);
 
 	    if (res3) {
 		if (rpmIsVerbose()) {
-		    b = stpcpy(b, "    ");
-		    b = stpcpy(b, result);
+		    b = stpcpy( stpcpy( stpcpy(b, "    "), result), "\n");
 		    res2 = 1;
 		} else {
 		    switch ((rpmSigTag)she->tag) {
@@ -1048,8 +1047,7 @@ assert(she->p.ptr != NULL);
 		}
 	    } else {
 		if (rpmIsVerbose()) {
-		    b = stpcpy(b, "    ");
-		    b = stpcpy(b, result);
+		    b = stpcpy( stpcpy( stpcpy(b, "    "), result), "\n");
 		} else {
 		    switch ((rpmSigTag)she->tag) {
 		    case RPMSIGTAG_SIZE:
