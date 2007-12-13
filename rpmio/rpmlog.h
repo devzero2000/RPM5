@@ -193,7 +193,8 @@ extern "C" {
  * @param pri		log priority
  * @return		message prefix (or "" for none)
  */
-const char * rpmlogLevelPrefix(rpmlogLvl pri);
+const char * rpmlogLevelPrefix(rpmlogLvl pri)
+	/*@*/;
 
 /**
  * Set rpmlog callback function.
@@ -209,7 +210,24 @@ rpmlogCallback rpmlogSetCallback(rpmlogCallback cb, rpmlogCallbackData data)
  * Return number of messages.
  * @return		number of messages
  */
-int rpmlogGetNrecs(void)	/*@*/;
+int rpmlogGetNrecs(void)
+	/*@*/;
+
+/**
+ * Retrieve log message string from rpmlog record
+ * @param rec		rpmlog record
+ * @return		log message
+ */
+const char * rpmlogRecMessage(rpmlogRec rec)
+	/*@*/;
+
+/**
+ * Retrieve log priority from rpmlog record
+ * @param rec		rpmlog record
+ * @return		log priority
+ */
+rpmlogLvl rpmlogRecPriority(rpmlogRec rec)
+	/*@*/;
 
 /**
  * Print all rpmError() messages.

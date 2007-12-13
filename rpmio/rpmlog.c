@@ -39,12 +39,23 @@ int rpmlogCode(void)
     return -1;
 }
 
-
 const char * rpmlogMessage(void)
 {
     if (recs != NULL && nrecs > 0)
 	return recs[nrecs-1].message;
     return _("(no error)");
+}
+
+const char * rpmlogRecMessage(rpmlogRec rec)
+{
+    assert(rec != NULL);
+    return (rec->message);
+}
+
+rpmlogLvl rpmlogRecPriority(rpmlogRec rec)
+{
+    assert(rec != NULL);
+    return (rec->pri);
 }
 
 /*@-modfilesys@*/
