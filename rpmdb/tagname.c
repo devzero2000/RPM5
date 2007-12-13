@@ -123,7 +123,7 @@ static char * _tagCanonicalize(const char * s)
 	nb++;
 
     te = t = xmalloc(nb+1);
-    if (*s != '\0') {
+    if (*s != '\0' && nb > 0) {
 	*te++ = (char) xtoupper((int)*s++);
 	nb--;
     }
