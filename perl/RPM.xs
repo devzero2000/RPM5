@@ -28,7 +28,7 @@ SV * log_callback_function = NULL;
  * is set for for the logging system.
  * If the callback is set, rpm does not print any message,
  * and let the callback to do it */
-void logcallback(void) {
+int logcallback(rpmlogRec rec, rpmlogCallbackData data) {
     dSP;
     if (log_callback_function) {
         int logcode = rpmlogCode();
@@ -42,7 +42,9 @@ void logcallback(void) {
         PUTBACK;
         call_sv(log_callback_function, G_DISCARD | G_SCALAR);
         SPAGAIN;
+        return 0;
     }
+    return RPMLOG_DEFAULT;
 }
 
 MODULE = RPM		PACKAGE = RPM
@@ -181,7 +183,7 @@ setlogcallback(function = NULL)
             SvREFCNT_dec(log_callback_function);
             log_callback_function = NULL;
         }
-        rpmlogSetCallback(NULL);
+        rpmlogSetCallback(NULL, NULL);
     } else if (SvTYPE(SvRV(function)) == SVt_PVCV) {
         if (log_callback_function) {
             SvREFCNT_dec(log_callback_function);
@@ -189,7 +191,7 @@ setlogcallback(function = NULL)
         }
         SvREFCNT_inc(function);
         log_callback_function = newSVsv(function);
-        rpmlogSetCallback(logcallback);
+        rpmlogSetCallback(logcallback, (rpmlogCallbackData) NULL);
     } else
         croak("First arg is not a code reference");
 
