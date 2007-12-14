@@ -164,6 +164,28 @@ static int __RPM_sigpause(int sig)
 #define sigpause(sig) __RPM_sigpause(sig)
 #endif
 
+/* portability fallback for insque(3)/remque(3) */
+#if defined(__CYGWIN__) || defined(__MINGW32__)
+struct qelem {
+  struct qelem *q_forw;
+  struct qelem *q_back;
+};
+
+static	void insque(struct qelem * elem, struct qelem * pred)
+{
+  elem -> q_forw = pred -> q_forw;
+  pred -> q_forw -> q_back = elem;
+  elem -> q_back = pred;
+  pred -> q_forw = elem;
+}
+
+static	void remque(struct qelem * elem)
+{
+  elem -> q_forw -> q_back = elem -> q_back;
+  elem -> q_back -> q_forw = elem -> q_forw;
+}
+#endif
+
 #if defined(HAVE_PTHREAD_H)
 
 #include <pthread.h>

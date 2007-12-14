@@ -1668,11 +1668,11 @@ struct dirent * avReaddir(DIR * dir)
     /* XXX glob(3) uses REAL_DIR_ENTRY(dp) test on d_ino */
 /*@-type@*/
     dp->d_ino = i + 1;		/* W2DO? */
-#if !defined(__DragonFly__)
+#if !defined(__DragonFly__) && !defined(__CYGWIN__)
     dp->d_reclen = 0;		/* W2DO? */
 #endif
 
-#if !(defined(hpux) || defined(__hpux) || defined(sun) || defined(RPM_OS_AIX))
+#if !(defined(hpux) || defined(__hpux) || defined(sun) || defined(RPM_OS_AIX) || defined(__CYGWIN__))
 #if !defined(__APPLE__) && !defined(__FreeBSD_kernel__) && !defined(__FreeBSD__) && !defined(__NetBSD__) && !defined(__DragonFly__)
     dp->d_off = 0;		/* W2DO? */
 #endif
@@ -1790,9 +1790,11 @@ struct dirent * davReaddir(DIR * dir)
     /* XXX glob(3) uses REAL_DIR_ENTRY(dp) test on d_ino */
 /*@-type@*/
     dp->d_ino = i + 1;		/* W2DO? */
+#if !defined(__DragonFly__) && !defined(__CYGWIN__)
     dp->d_reclen = 0;		/* W2DO? */
+#endif
 
-#if !(defined(hpux) || defined(__hpux) || defined(sun) || defined(RPM_OS_AIX))
+#if !(defined(hpux) || defined(__hpux) || defined(sun) || defined(RPM_OS_AIX) || defined(__CYGWIN__))
 #if !defined(__APPLE__) && !defined(__FreeBSD_kernel__) && !defined(__FreeBSD__) && !defined(__NetBSD__) && !defined(__DragonFly__)
     dp->d_off = 0;		/* W2DO? */
 #endif

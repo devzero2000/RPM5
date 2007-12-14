@@ -2577,6 +2577,7 @@ rpmdsGetconf(rpmds * dsp, const char *path)
 	    }
 	    /*@switchbreak@*/ break;
 	case CONFSTR:
+#ifndef __CYGWIN__
 	    clen = confstr(c->call_name, (char *) NULL, 0);
 	    EVR = xmalloc(clen+1);
 	    *EVR = '\0';
@@ -2585,6 +2586,7 @@ rpmdsGetconf(rpmds * dsp, const char *path)
 		exit (EXIT_FAILURE);
 	    }
 	    EVR[clen] = '\0';
+#endif
 	    /*@switchbreak@*/ break;
 	}
 	if (EVR == NULL)

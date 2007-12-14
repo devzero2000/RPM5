@@ -70,6 +70,8 @@
 
 #include "fnmatch.h"
 #include "fnmatch.c"
+#ifndef __CYGWIN__
 #include "glob.h"
 #include "glob.c"
+#endif
 

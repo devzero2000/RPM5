@@ -13,6 +13,10 @@
 # include <sys/socket.h>
 #endif
 
+#ifndef NI_MAXHOST
+#define NI_MAXHOST      1025
+#endif
+
 #if defined(__LCLINT__)
 struct addrinfo
 {
