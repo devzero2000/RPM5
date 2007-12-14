@@ -174,4 +174,7 @@ rpm: header.c:1897: rpmheRealloc: Assertion `he->c == 1' failed.
 	is pathetic. Ditto, rpmdb/fprint.c:186 fpHashFunction(). FYI, the
 	fingerprint hash is in the top 10 pigs when profiling rpm installs, so
 	better has immediate performance benefits. rpmio/lookup3.c == better.
+    - jbj: using qsort to insure that nearly sorted lists of join keys in
+	an rpmdb remain sorted is stoopid: quicksort on nearly sorted lists
+	is slower than alternative implementations like mergesort.
 	
