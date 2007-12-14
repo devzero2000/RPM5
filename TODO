@@ -170,4 +170,8 @@ rpm: header.c:1897: rpmheRealloc: Assertion `he->c == 1' failed.
 	script kiddie progress bars across the screen.
     - jbj: arbitrary "%foo -p /bar" scriptlets as pair'ed RPMTAG_{FOO,FOOPROG}.
     - jbj: arbitrary triggers, like scriptlets, but with a condition check too.
+    - jbj: the hash *ahem* algorithm at rpmio/rpmhash.c:77 hashFunctionString()
+	is pathetic. Ditto, rpmdb/fprint.c:186 fpHashFunction(). FYI, the
+	fingerprint hash is in the top 10 pigs when profiling rpm installs, so
+	better has immediate performance benefits. rpmio/lookup3.c == better.
 	
