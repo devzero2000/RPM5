@@ -170,10 +170,13 @@ rpm: header.c:1897: rpmheRealloc: Assertion `he->c == 1' failed.
 	script kiddie progress bars across the screen.
     - jbj: arbitrary "%foo -p /bar" scriptlets as pair'ed RPMTAG_{FOO,FOOPROG}.
     - jbj: arbitrary triggers, like scriptlets, but with a condition check too.
-    - jbj: the hash *ahem* algorithm at rpmio/rpmhash.c:77 hashFunctionString()
-	is pathetic. Ditto, rpmdb/fprint.c:186 fpHashFunction(). FYI, the
-	fingerprint hash is in the top 10 pigs when profiling rpm installs, so
-	better has immediate performance benefits. rpmio/lookup3.c == better.
+    - jbj: the hash *ahem* algorithm at rpmdb/fprint.c:186 fpHashFunction() is
+	pathetic. FYI, the fingerprint hash is in the top 10 pigs when
+	profiling rpm installs, so better has immediate performance benefits.
+	rpmio/lookup3.c is possibly better. The other important usage case
+	is restructuring the multi-level add package "provides" lookup in
+	lib/rpmal.c (but that likely needs to be thrown into a Berkeley DB
+	table to minimize memory footprint).
     - jbj: using qsort to insure that nearly sorted lists of join keys in
 	an rpmdb remain sorted is stoopid: quicksort on nearly sorted lists
 	is slower than alternative implementations like mergesort.

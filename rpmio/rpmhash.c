@@ -77,19 +77,67 @@ hashBucket findEntry(hashTable ht, const void * key)
 static uint32_t hashFunctionString(uint32_t h, const void * data, size_t size)
 	/*@*/
 {
-    const char * chp = data;
-    unsigned char sum = (unsigned char)0;
-    unsigned char xor = (unsigned char)0;
-    size_t i;
+    const char *key = data;
 
     if (size == 0)
-	size = strlen(chp);
-    for (i = 0; i < size; i++, chp++) {
-	xor ^= *chp;
-	sum += *chp;
-    }
+	size = strlen(key);
 
-    h += ((uint32_t)(size << 16) + (uint32_t)(sum << 8) + (uint32_t)xor);
+    /*
+     * DJBX33A (Daniel J. Bernstein, Times 33 with Addition)
+     *
+     * This is Daniel J. Bernstein's popular `times 33' hash function as
+     * posted by him years ago on comp.lang.c. It basically uses a  function
+     * like ``hash(i) = hash(i-1) * 33 + str[i]''. This is one of the best
+     * known hash functions for strings. Because it is both computed very
+     * fast and distributes very well.
+     *
+     * The magic of number 33, i.e. why it works better than many other
+     * constants, prime or not, has never been adequately explained by
+     * anyone. So I try an explanation: if one experimentally tests all
+     * multipliers between 1 and 256 (as RSE did now) one detects that even
+     * numbers are not useable at all. The remaining 128 odd numbers
+     * (except for the number 1) work more or less all equally well. They
+     * all distribute in an acceptable way and this way fill a hash table
+     * with an average percent of approx. 86%.
+     *
+     * If one compares the Chi^2 values of the variants, the number 33 not
+     * even has the best value. But the number 33 and a few other equally
+     * good numbers like 17, 31, 63, 127 and 129 have nevertheless a great
+     * advantage to the remaining numbers in the large set of possible
+     * multipliers: their multiply operation can be replaced by a faster
+     * operation based on just one shift plus either a single addition
+     * or subtraction operation. And because a hash function has to both
+     * distribute good _and_ has to be very fast to compute, those few
+     * numbers should be preferred and seems to be the reason why Daniel J.
+     * Bernstein also preferred it.
+     *
+     * Below you can find the variant implemented with the
+     * multiplication optimized via bit shifts and hash unrolled eight
+     * times for speed.
+     *                     -- Ralf S. Engelschall <rse@engelschall.com>
+     */
+    if (h == 0)
+	h = 5381;
+    for (; size >= 8; size -= 8) {
+	h = ((h << 5) + h) + *key++;
+	h = ((h << 5) + h) + *key++;
+	h = ((h << 5) + h) + *key++;
+	h = ((h << 5) + h) + *key++;
+	h = ((h << 5) + h) + *key++;
+	h = ((h << 5) + h) + *key++;
+	h = ((h << 5) + h) + *key++;
+	h = ((h << 5) + h) + *key++;
+    }
+    switch (size) {
+	case 7: h = ((h << 5) + h) + *key++; /*@fallthrough@*/
+	case 6: h = ((h << 5) + h) + *key++; /*@fallthrough@*/
+	case 5: h = ((h << 5) + h) + *key++; /*@fallthrough@*/
+	case 4: h = ((h << 5) + h) + *key++; /*@fallthrough@*/
+	case 3: h = ((h << 5) + h) + *key++; /*@fallthrough@*/
+	case 2: h = ((h << 5) + h) + *key++; /*@fallthrough@*/
+	case 1: h = ((h << 5) + h) + *key++; break;
+	default: /* case 0: */ break;
+    }
 
     return h;
 }
