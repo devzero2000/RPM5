@@ -279,10 +279,6 @@ static void dbiTagsInit(/*@null@*/ dbiTagStore * dbiTagsP,
 	dbiNTags++;
     }
 
-    if (_rpmdb_debug)
-        for (dbix = 0; dbix < dbiNTags; dbix++)
-            fprintf(stderr, "--> %4d %s[%u] 0x%x\n", dbix, dbiTags[dbix].str, dbiTags[dbix].tag, dbiTags[dbix].tag);
-
     if (dbiNTagsP != NULL)
 	*dbiNTagsP = dbiNTags;
     if (dbiTagsP != NULL)
