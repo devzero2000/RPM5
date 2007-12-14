@@ -102,6 +102,26 @@ int argvCmp(const void * a, const void * b)
 int argvStrcasecmp(const void * a, const void * b)
 	/*@*/;
 
+#if defined(RPM_VENDOR_OPENPKG) /* wildcard-matching-arbitrary-tagnames */
+/**
+ * Wildcard-match argv arrays using fnmatch.
+ * @param a		1st instance address
+ * @param b		2nd instance address
+ * @return		result of comparison
+ */
+int argvFnmatch(const void * a, const void * b)
+	/*@*/;
+
+/**
+ * Wildcard-match argv arrays using fnmatch (case-insensitive).
+ * @param a		1st instance address
+ * @param b		2nd instance address
+ * @return		result of comparison
+ */
+int argvFnmatchCasefold(const void * a, const void * b)
+	/*@*/;
+#endif
+
 /**
  * Sort an argv array.
  * @param argv		argv array
@@ -122,6 +142,20 @@ int argvSort(ARGV_t argv, int (*compar)(const void *, const void *))
 ARGV_t argvSearch(ARGV_t argv, ARGstr_t val,
 		int (*compar)(const void *, const void *))
 	/*@*/;
+
+#if defined(RPM_VENDOR_OPENPKG) /* wildcard-matching-arbitrary-tagnames */
+/**
+ * Find an element in an argv array (via linear searching and just match/no-match comparison).
+ * @param argv		argv array
+ * @param val		string to find
+ * @param compar	strcmp-like comparison function, or NULL for argvCmp()
+ * @return		found string (NULL on failure)
+ */
+/*@dependent@*/ /*@null@*/
+ARGV_t argvSearchLinear(ARGV_t argv, ARGstr_t val,
+		int (*compar)(const void *, const void *))
+	/*@*/;
+#endif
 
 /**
  * Add an int to an argi array.

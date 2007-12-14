@@ -93,6 +93,22 @@ int argvStrcasecmp(const void * a, const void * b)
     return xstrcasecmp(astr, bstr);
 }
 
+#if defined(RPM_VENDOR_OPENPKG) /* wildcard-matching-arbitrary-tagnames */
+int argvFnmatch(const void * a, const void * b)
+{
+    ARGstr_t astr = *(ARGV_t)a;
+    ARGstr_t bstr = *(ARGV_t)b;
+    return (fnmatch(astr, bstr, 0) == 0 ? 0 : 1);
+}
+
+int argvFnmatchCasefold(const void * a, const void * b)
+{
+    ARGstr_t astr = *(ARGV_t)a;
+    ARGstr_t bstr = *(ARGV_t)b;
+    return (fnmatch(astr, bstr, FNM_CASEFOLD) == 0 ? 0 : 1);
+}
+#endif
+
 int argvSort(ARGV_t argv, int (*compar)(const void *, const void *))
 {
     if (compar == NULL)
@@ -110,6 +126,27 @@ ARGV_t argvSearch(ARGV_t argv, ARGstr_t val,
 	compar = argvCmp;
     return bsearch(&val, argv, argvCount(argv), sizeof(*argv), compar);
 }
+
+#if defined(RPM_VENDOR_OPENPKG) /* wildcard-matching-arbitrary-tagnames */
+ARGV_t argvSearchLinear(ARGV_t argv, ARGstr_t val,
+		int (*compar)(const void *, const void *))
+{
+    ARGV_t result;
+    ARGV_t av;
+    if (argv == NULL)
+        return NULL;
+    if (compar == NULL)
+        compar = argvCmp;
+    result = NULL;
+    for (av = argv; *av != NULL; av++) {
+        if (compar(av, &val) == 0) {
+            result = av;
+            break;
+        }
+    }
+    return result;
+}
+#endif
 
 int argiAdd(/*@out@*/ ARGI_t * argip, int ix, int val)
 {

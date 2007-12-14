@@ -272,4 +272,14 @@
      Reason:         This is a macro-frontend to realpath(3) and
                      allows one to resolve a (relative) path into
                      an absolute path.
+     ________________________________________________________________________
+
+     Change:         wildcard-matching-arbitrary-tagnames
+     Purpose:        Allow wildcards in %{_arbitrary_tags}
+     Reason:         In order to support e.g. "%_arbitrary_tags My*"
+                     for custom but clearly distinguishable user
+                     headers, the matching of tagnames is done via a
+                     slower but more flexible linear search based on
+                     fnmatch(3) instead of a binary search based on
+                     strcasecmp(3).
 
