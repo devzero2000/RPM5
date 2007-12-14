@@ -168,4 +168,6 @@ rpm: header.c:1897: rpmheRealloc: Assertion `he->c == 1' failed.
 	computation into its own method.
     - jbj: redesign the bleeping callback, which is good for nothing but pushing
 	script kiddie progress bars across the screen.
+    - jbj: arbitrary "%foo -p /bar" scriptlets as pair'ed RPMTAG_{FOO,FOOPROG}.
+    - jbj: arbitrary triggers, like scriptlets, but with a condition check too.
 	
