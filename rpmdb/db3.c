@@ -174,22 +174,27 @@ static int cvtdberr(/*@unused@*/ dbiIndex dbi, const char * msg, int error, int 
 /*@=globuse =mustmod @*/
 
 /**
- * Return (possibly renamed) tagName. Handles Filedigests -> Filemd5s renaming.
- * @param value		tag value
+ * Return (possibly renamed) tagName. Handles arbitrary tags.
+ * @param rpmdb		rpm database
+ * @param dbi		rpm database index
  * @return		tag string
  */
 /*@observer@*/
-static const char * mapTagName(int value)
+static const char * mapTagName(rpmdb rpmdb, dbiIndex dbi)
 	/*@*/
 {
-    const char * s = tagName(value);
-    if (s == NULL)
-	s = "";
-#ifdef	NOTYET
-    else if (!strcmp(s, "Filedigests"))
-	s = "Filemd5s";
-#endif
-    return s;
+    dbiTagStore dbiTags = rpmdb->db_tags;
+    int dbix = 0;
+
+    if (dbiTags != NULL)
+    while (dbix < rpmdb->db_ndbi) {
+	if (dbi->dbi_rpmtag == dbiTags->tag)
+	    return dbiTags->str;
+	dbiTags++;
+	dbix++;
+    }
+    /* XXX should never reach here */
+    return tagName(dbi->dbi_rpmtag);
 }
 
 static int db_fini(dbiIndex dbi, const char * dbhome,
@@ -937,6 +942,7 @@ static int db3close(/*@only@*/ dbiIndex dbi, /*@unused@*/ unsigned int flags)
     const char * dbfile;
     const char * dbsubfile;
     DB * db = dbi->dbi_db;
+    const char * dbiBN = mapTagName(rpmdb, dbi);
     int _printit;
     int rc = 0, xx;
 
@@ -964,9 +970,9 @@ static int db3close(/*@only@*/ dbiIndex dbi, /*@unused@*/ unsigned int flags)
     } else {
 #ifdef	HACK	/* XXX necessary to support dbsubfile */
 	dbfile = (dbi->dbi_file ? dbi->dbi_file : db3basename);
-	dbsubfile = (dbi->dbi_subfile ? dbi->dbi_subfile : mapTagName(dbi->dbi_rpmtag));
+	dbsubfile = (dbi->dbi_subfile ? dbi->dbi_subfile : dbiBN);
 #else
-	dbfile = (dbi->dbi_file ? dbi->dbi_file : mapTagName(dbi->dbi_rpmtag));
+	dbfile = (dbi->dbi_file ? dbi->dbi_file : dbiBN);
 	dbsubfile = NULL;
 #endif
     }
@@ -979,7 +985,7 @@ static int db3close(/*@only@*/ dbiIndex dbi, /*@unused@*/ unsigned int flags)
 	db = dbi->dbi_db = NULL;
 
 	rpmlog(RPMLOG_DEBUG, D_("closed   db index       %s/%s\n"),
-		dbhome, (dbfile ? dbfile : mapTagName(dbi->dbi_rpmtag)));
+		dbhome, (dbfile ? dbfile : dbiBN));
 
     }
 
@@ -1052,7 +1058,7 @@ static int db3close(/*@only@*/ dbiIndex dbi, /*@unused@*/ unsigned int flags)
 
 		rpmlog(RPMLOG_DEBUG, D_("verified db index       %s/%s\n"),
 			(dbhome ? dbhome : ""),
-			(dbfile ? dbfile : mapTagName(dbi->dbi_rpmtag)));
+			(dbfile ? dbfile : dbiBN));
 
 	        /*
 		 * The DB handle may not be accessed again after
@@ -1091,6 +1097,7 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
     const char * dbhome;
     const char * dbfile;
     const char * dbsubfile;
+    const char * dbiBN;
     dbiIndex dbi = NULL;
     int rc = 0;
     int xx;
@@ -1117,6 +1124,7 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 	/*@=nullstate@*/
     /*@=mods@*/
     dbi->dbi_api = DB_VERSION_MAJOR;
+    dbiBN = mapTagName(rpmdb, dbi);
 
     /*
      * Get the prefix/root component and directory path.
@@ -1140,9 +1148,9 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
     } else {
 #ifdef	HACK	/* XXX necessary to support dbsubfile */
 	dbfile = (dbi->dbi_file ? dbi->dbi_file : db3basename);
-	dbsubfile = (dbi->dbi_subfile ? dbi->dbi_subfile : mapTagName(dbi->dbi_rpmtag));
+	dbsubfile = (dbi->dbi_subfile ? dbi->dbi_subfile : dbiBN);
 #else
-	dbfile = (dbi->dbi_file ? dbi->dbi_file : mapTagName(dbi->dbi_rpmtag));
+	dbfile = (dbi->dbi_file ? dbi->dbi_file : dbiBN);
 	dbsubfile = NULL;
 #endif
     }
@@ -1249,7 +1257,7 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
      */
     if ((oflags & DB_CREATE) && (oflags & DB_RDONLY)) {
 	/* dbhome is writable, and DB->open flags may conflict. */
-	const char * dbfn = (dbfile ? dbfile : mapTagName(dbi->dbi_rpmtag));
+	const char * dbfn = (dbfile ? dbfile : dbiBN);
 	/*@-mods@*/
 	const char * dbf = rpmGetPath(dbhome, "/", dbfn, NULL);
 	/*@=mods@*/
@@ -1361,7 +1369,7 @@ assert(rpmdb && rpmdb->db_dbenv);
     }
 
     rpmlog(RPMLOG_DEBUG, D_("opening  db index       %s/%s %s mode=0x%x\n"),
-		dbhome, (dbfile ? dbfile : mapTagName(dbi->dbi_rpmtag)),
+		dbhome, (dbfile ? dbfile : dbiBN),
 		prDbiOpenFlags(oflags, 0), dbi->dbi_mode);
 
     if (rc == 0) {

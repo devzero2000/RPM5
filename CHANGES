@@ -1,4 +1,9 @@
 5.0b1 -> 5.0b2:
+    - jbj: add Foo:Bar:Baz indices for now.
+    - jbj: permit arbitrary tags to be indexed by "Name", not Tag_0x12345678.
+    - jbj: permit tag aliases in rpmdb index names (Filedigests <-> Filemd5s).
+    - jbj: remember (and use) the configured dbi names, not tagName() returns.
+    - jbj: fix: configure rpmdb indices using Filedigests, not older Filemd5s.
     - jbj: insure that he->tag is set for use by format extensions.
     - rse: do not segfault on invalid usages like "rpm -qa '!name=foo'"
     - jbj: fix: explicit rpmtsOpenDB on -Kvv code paths.

@@ -59,6 +59,10 @@ typedef /*@abstract@*/ struct _dbiIndexSet * dbiIndexSet;
  */
 typedef /*@abstract@*/ struct _dbiIndex * dbiIndex;
 
+/** \ingroup rpmdb
+ */
+typedef struct dbiTagStore_s * dbiTagStore;
+
 #if defined(_RPMDB_INTERNAL)
 #include <rpmsw.h>
 #if !defined(SWIG)	/* XXX inline dbiFoo() need */
@@ -423,6 +427,14 @@ struct _dbiIndex {
 #endif	/* !defined(SWIG) */
 
 /** \ingroup rpmdb
+ */
+struct dbiTagStore_s {
+/*@only@*/
+    const char * str;		/*!< Tag string (might be arbitrary). */
+    int tag;			/*!< Tag value. */
+};
+
+/** \ingroup rpmdb
  * Describes the collection of index databases used by rpm.
  */
 struct rpmdb_s {
@@ -464,8 +476,8 @@ struct rpmdb_s {
     int		db_opens;	/*!< No. of opens for this rpmdb. */
 /*@only@*/ /*@null@*/
     void *	db_dbenv;	/*!< Berkeley DB_ENV handle. */
-    int *	db_tagn;	/*!< Tag index mappings. */
-    int		db_ndbi;	/*!< No. of tag indices. */
+    dbiTagStore	db_tags;	/*!< Tag name/value mappings. */
+    size_t	db_ndbi;	/*!< No. of tag indices. */
 /*@only@*/ /*@null@*/
     dbiIndex * _dbi;		/*!< Tag indices. */
 
