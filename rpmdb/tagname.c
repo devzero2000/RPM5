@@ -31,7 +31,7 @@ static int tagLoadATags(/*@null@*/ ARGV_t * argvp,
 	(void) argvSplit(&aTags, s, ":");
     else
 	aTags = xcalloc(1, sizeof(*aTags));
-    if (aTags && aTags[0])
+    if (aTags && aTags[0] && aTags[1])
 	(void) argvSort(aTags, cmp);
     s = _free(s);
 

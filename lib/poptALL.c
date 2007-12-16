@@ -496,6 +496,8 @@ rpmcliFini(poptContext optCon)
     rpmFreeFilesystems();
 /*@i@*/	rpmcliTargets = _free(rpmcliTargets);
 
+    keyids = _free(keyids);
+
     tagClean(NULL);	/* Free header tag indices. */
 
     optCon = poptFreeContext(optCon);

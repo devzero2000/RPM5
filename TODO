@@ -75,18 +75,6 @@
 		http://rpm5.org/cvs/chngview?cn=6994
 	restores legacy behavior (but breaks other "stuff" I believe). So
 	the patch needs some re-balancing before being added to rpm-5.0.
-    - jbj: memory leak seen with repackaging
-==4811== 249 bytes in 3 blocks are definitely lost in loss record 1 of 1
-==4811==    at 0x4805525: malloc (vg_replace_malloc.c:149)
-==4811==    by 0x48E1C14: copyEntry (header.c:1446)
-==4811==    by 0x48E33A6: headerNext (header.c:2208)
-==4811==    by 0x48DF183: headerRegenSigHeader (hdrNVR.c:303)
-==4811==    by 0x4877D11: rpmpsmStage (psm.c:1904)
-==4811==    by 0x4876C7D: rpmpsmNext (psm.c:1580)
-==4811==    by 0x48790C2: rpmpsmStage (psm.c:2244)
-==4811==    by 0x48A9C83: rpmtsRun (transaction.c:1689)
-==4811==    by 0x4897D28: rpmErase (rpminstall.c:627)
-==4811==    by 0x43FC: main (rpmqv.c:678)
     - jbj: markReplacedFiles() subtly rewrites header back into rpmdb
 	with altered RPMTAG_FILESTATES data. get/del/add sequence
 	is needed instead.
@@ -159,4 +147,16 @@
 	is slower than alternative implementations like mergesort.
     - jbj: eliminate internal --initdb (useless) and --verifydb (peculier
 	to Berkeley DB and adequately/equivalently achievable with db_verify).
+    - jbj: NSS has many memory leaks that are not free'd by NSS_Shutdown().
+    - jbj: this leak needs fixing somewhen:
+==3436== 12 bytes in 1 blocks are definitely lost in loss record 3 of 9
+==3436==    at 0x4805525: malloc (vg_replace_malloc.c:149)
+==3436==    by 0x4934365: argvSplit (argv.c:207)
+==3436==    by 0x48F89F9: tagLoadATags (tagname.c:31)
+==3436==    by 0x48F969E: _tagValue (tagname.c:361)
+==3436==    by 0x48F9805: tagValue (tagname.c:403)
+==3436==    by 0x48878F9: rpmdsSysinfo (rpmds.c:1600)
+==3436==    by 0x48A5BDE: rpmtsCreate (rpmts.c:1302)
+==3436==    by 0x3EFA: main (rpmqv.c:540)
+
 	

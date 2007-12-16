@@ -3877,6 +3877,10 @@ exit:
     return rc;
 }
 
+#if defined(WITH_NSS)
+extern void NSS_Shutdown(void);
+#endif
+
 void rpmioClean(void)
 {
 #if defined(WITH_LUA)   /* XXX this should be done in a rpmioClean() wrapper. */
@@ -3884,6 +3888,9 @@ void rpmioClean(void)
 #endif
 #if defined(WITH_NEON)
     davDestroy();
+#endif
+#if defined(WITH_NSS)
+    (void) NSS_Shutdown();
 #endif
     urlFreeCache();
     rpmlogClose();

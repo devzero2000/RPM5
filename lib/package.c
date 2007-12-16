@@ -35,7 +35,7 @@ static unsigned int nkeyids = 0;
 /*@unchecked@*/
 static unsigned int nextkeyid  = 0;
 /*@unchecked@*/ /*@only@*/ /*@null@*/
-static unsigned int * keyids;
+unsigned int * keyids = NULL;
 
 /**
  * Remember current key id.

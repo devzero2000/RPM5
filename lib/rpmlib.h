@@ -46,6 +46,9 @@ extern const char * rpmEVR;
 extern int rpmFLAGS;
 /*@=redecl@*/
 
+/*@unchecked@*/ /*@only@*/ /*@null@*/
+extern unsigned int * keyids;
+
 #ifdef __cplusplus
 extern "C" {
 #endif
