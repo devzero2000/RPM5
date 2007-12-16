@@ -92,8 +92,6 @@
     - jbj: markReplacedFiles() subtly rewrites header back into rpmdb
 	with altered RPMTAG_FILESTATES data. get/del/add sequence
 	is needed instead.
-    - jbj: rpm-5.0 is almost compilation warning free, some effort to remove
-	the Mickey Mouse warnings that remain should be undertaken.
     - jbj: VSFlags (and --nodigest/--nosignature) is now global rather than
 	persistently per-transaction. That means its no longer possible to
 	have two transactions, one which verifies signatures while the other
