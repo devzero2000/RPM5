@@ -3878,7 +3878,9 @@ exit:
 }
 
 #if defined(WITH_NSS)
+/*@-exportheader@*/
 extern void NSS_Shutdown(void);
+/*@=exportheader@*/
 #endif
 
 void rpmioClean(void)

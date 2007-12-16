@@ -133,7 +133,8 @@ rpmlogCallback rpmlogSetCallback(rpmlogCallback cb, rpmlogCallbackData data)
 static FILE * _stdlog = NULL;
 
 static int rpmlogDefault(rpmlogRec rec)
-	/*@*/
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/
 {
     FILE *msgout = (_stdlog ? _stdlog : stderr);
 
@@ -154,7 +155,8 @@ static int rpmlogDefault(rpmlogRec rec)
 
     (void) fputs(rpmlogLevelPrefix(rec->pri), msgout);
 
-    (void) fputs(rec->message, msgout);
+    if (rec->message)
+	(void) fputs(rec->message, msgout);
     (void) fflush(msgout);
 
     return (rec->pri <= RPMLOG_CRIT ? RPMLOG_EXIT : 0);
@@ -185,10 +187,7 @@ static const char *rpmlogMsgPrefix[] = {
 
 const char * rpmlogLevelPrefix(rpmlogLvl pri)
 {
-    const char * prefix = "";
-    if (rpmlogMsgPrefix[pri] && *rpmlogMsgPrefix[pri]) 
-	prefix = _(rpmlogMsgPrefix[pri]);
-    return prefix;
+    return rpmlogMsgPrefix[pri&0x7];
 }
 
 #if !defined(HAVE_VSNPRINTF)
@@ -255,9 +254,10 @@ static void vrpmlog (unsigned code, const char *fmt, va_list ap)
 	    recs = xrealloc(recs, (nrecs+2) * sizeof(*recs));
 	recs[nrecs].code = rec.code;
 	recs[nrecs].pri = rec.pri;
-	recs[nrecs].message = msg = xrealloc(msgbuf, strlen(msgbuf)+1);
+	recs[nrecs].message = xrealloc(msgbuf, strlen(msgbuf)+1);
 	msgbuf = NULL;		/* XXX don't free at exit. */
 	recs[nrecs+1].code = 0;
+	recs[nrecs].pri = 0;
 	recs[nrecs+1].message = NULL;
 	++nrecs;
     }
@@ -268,11 +268,15 @@ static void vrpmlog (unsigned code, const char *fmt, va_list ap)
     }
 
     if (cbrc & RPMLOG_DEFAULT) {
+/*@-usereleased@*/
 	cbrc = rpmlogDefault(&rec);
+/*@=usereleased@*/
 	needexit += cbrc & RPMLOG_EXIT;
     }
 
+/*@-usereleased@*/	/* msgbuf is NULL or needs free'ing */
     msgbuf = _free(msgbuf);
+/*@=usereleased@*/
     if (needexit)
 	exit(EXIT_FAILURE);
 }

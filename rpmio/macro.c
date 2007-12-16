@@ -1183,9 +1183,9 @@ doFoo(MacroBuf mb, int negate, const char * f, size_t fn,
 	buf[gn] = '\0';
 	(void) expandU(mb, buf, bufn);
     }
-    if (fn > 5 && STREQ("patch", f, 5) && xisdigit(f[5])) {
+    if (fn > 5 && STREQ("patch", f, 5) && xisdigit((int)f[5])) {
 	/* Skip leading zeros */
-	for (c = 5; c < fn-1 && f[c] == '0' && xisdigit(f[c+1]);)
+	for (c = 5; c < fn-1 && f[c] == '0' && xisdigit((int)f[c+1]);)
 	    c++;
 	b = buf;
 	be = stpncpy( stpcpy(b, "%patch -P "), f+c, fn-c);
@@ -1565,9 +1565,8 @@ expandMacro(MacroBuf mb)
 	}
 #endif
 
-	/* enable for OpenPKG */
 	/* Rewrite "%patchNN ..." as "%patch -P NN ..." and expand. */
-	if (lastc != NULL && fn > 5 && STREQ("patch", f, 5) && xisdigit(f[5])) {
+	if (lastc && fn > 5 && STREQ("patch", f, 5) && xisdigit((int)f[5])) {
 		/*@-internalglobs@*/ /* FIX: verbose may be set */
 		doFoo(mb, negate, f, (lastc - f), NULL, 0);
 		/*@=internalglobs@*/

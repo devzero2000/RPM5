@@ -162,10 +162,10 @@ fprintf(stderr, "--> rpmxarPush(%p, %s) %p[%u] %02x%02x%02x%02x%02x%02x%02x%02x\
 
     if (xar->x && b != NULL) {
 	if (payload) /* payload is already compressed */
-	    xar_opt_set(xar->x, XAR_OPT_COMPRESSION, XAR_OPT_VAL_NONE);
+	    (void) xar_opt_set(xar->x, XAR_OPT_COMPRESSION, XAR_OPT_VAL_NONE);
 	xar->f = xar_add_frombuffer(xar->x, NULL, fn, (char *)b, bsize);
 	if (payload) /* restore default xar compression */
-	    xar_opt_set(xar->x, XAR_OPT_COMPRESSION, XAR_OPT_VAL_GZIP);
+	    (void) xar_opt_set(xar->x, XAR_OPT_COMPRESSION, XAR_OPT_VAL_GZIP);
 	if (xar->f == NULL)
 	    return 2;
     }

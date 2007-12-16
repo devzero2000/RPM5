@@ -1,8 +1,10 @@
-5.0b1 -> 5.0b2:
+5.0b2 -> 5.0b3:
     - jbj: fold in patch-as-plain-macro changes.
     - jbj: fix some minor memory leaks.
     - jbj: XAR magic is detected when reading packages, --xar is superfluous.
     - jbj: eliminate development construction scaffholding.
+
+5.0b1 -> 5.0b2:
     - rse: DJBX33A hash with unrolling is more better (no need to measure).
     - afb: made it compile on Cygwin too.
     - jbj: add Foo:Bar:Baz indices for now.

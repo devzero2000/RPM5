@@ -119,23 +119,23 @@ static uint32_t hashFunctionString(uint32_t h, const void * data, size_t size)
     if (h == 0)
 	h = 5381;
     for (; size >= 8; size -= 8) {
-	h = ((h << 5) + h) + *key++;
-	h = ((h << 5) + h) + *key++;
-	h = ((h << 5) + h) + *key++;
-	h = ((h << 5) + h) + *key++;
-	h = ((h << 5) + h) + *key++;
-	h = ((h << 5) + h) + *key++;
-	h = ((h << 5) + h) + *key++;
-	h = ((h << 5) + h) + *key++;
+	h = ((h << 5) + h) + (uint32_t)*key++;
+	h = ((h << 5) + h) + (uint32_t)*key++;
+	h = ((h << 5) + h) + (uint32_t)*key++;
+	h = ((h << 5) + h) + (uint32_t)*key++;
+	h = ((h << 5) + h) + (uint32_t)*key++;
+	h = ((h << 5) + h) + (uint32_t)*key++;
+	h = ((h << 5) + h) + (uint32_t)*key++;
+	h = ((h << 5) + h) + (uint32_t)*key++;
     }
     switch (size) {
-	case 7: h = ((h << 5) + h) + *key++; /*@fallthrough@*/
-	case 6: h = ((h << 5) + h) + *key++; /*@fallthrough@*/
-	case 5: h = ((h << 5) + h) + *key++; /*@fallthrough@*/
-	case 4: h = ((h << 5) + h) + *key++; /*@fallthrough@*/
-	case 3: h = ((h << 5) + h) + *key++; /*@fallthrough@*/
-	case 2: h = ((h << 5) + h) + *key++; /*@fallthrough@*/
-	case 1: h = ((h << 5) + h) + *key++; break;
+	case 7: h = ((h << 5) + h) + (uint32_t)*key++; /*@fallthrough@*/
+	case 6: h = ((h << 5) + h) + (uint32_t)*key++; /*@fallthrough@*/
+	case 5: h = ((h << 5) + h) + (uint32_t)*key++; /*@fallthrough@*/
+	case 4: h = ((h << 5) + h) + (uint32_t)*key++; /*@fallthrough@*/
+	case 3: h = ((h << 5) + h) + (uint32_t)*key++; /*@fallthrough@*/
+	case 2: h = ((h << 5) + h) + (uint32_t)*key++; /*@fallthrough@*/
+	case 1: h = ((h << 5) + h) + (uint32_t)*key++; break;
 	default: /* case 0: */ break;
     }
 

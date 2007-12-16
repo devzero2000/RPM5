@@ -179,7 +179,7 @@ typedef int (*rpmlogCallback) (rpmlogRec rec, rpmlogCallbackData data)
 struct rpmlogRec_s {
     int		code;
     rpmlogLvl	pri;		/* priority */
-/*@owned@*/ /*@null@*/
+/*@owned@*/ /*@relnull@*/
     const char * message;
 };
 #endif
@@ -193,6 +193,7 @@ extern "C" {
  * @param pri		log priority
  * @return		message prefix (or "" for none)
  */
+/*@observer@*/
 const char * rpmlogLevelPrefix(rpmlogLvl pri)
 	/*@*/;
 
@@ -218,6 +219,7 @@ int rpmlogGetNrecs(void)
  * @param rec		rpmlog record
  * @return		log message
  */
+/*@observer@*/ /*@retexpose@*/
 const char * rpmlogRecMessage(rpmlogRec rec)
 	/*@*/;
 
