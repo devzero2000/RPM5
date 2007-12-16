@@ -27,9 +27,6 @@ const char *__progname;
 /*@access headerTagTableEntry @*/	/* XXX rpmcliFini */
 
 /*@unchecked@*/
-extern int _use_xar;
-
-/*@unchecked@*/
 static int _debug = 0;
 
 /*@-exportheadervar@*/
@@ -477,9 +474,6 @@ struct poptOption rpmcliAllPoptTable[] = {
 	NULL, NULL},
  { "urldebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_url_debug, -1,
 	N_("debug URL cache handling"), NULL},
-
- { "xar", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_use_xar, 1,
-	N_("read xar package"), NULL},
 
    POPT_TABLEEND
 };

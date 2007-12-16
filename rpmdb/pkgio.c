@@ -46,9 +46,6 @@
 int _pkgio_debug = 0;
 
 /*@unchecked@*/
-int _use_xar = 0;
-
-/*@unchecked@*/
 static int _print_pkts = 0;
 
 /**

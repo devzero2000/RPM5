@@ -1,4 +1,5 @@
 5.0b1 -> 5.0b2:
+    - jbj: XAR magic is detected when reading packages, --xar is superfluous.
     - jbj: eliminate development construction scaffholding.
     - rse: DJBX33A hash with unrolling is more better (no need to measure).
     - afb: made it compile on Cygwin too.
