@@ -168,4 +168,6 @@
     - jbj: using qsort to insure that nearly sorted lists of join keys in
 	an rpmdb remain sorted is stoopid: quicksort on nearly sorted lists
 	is slower than alternative implementations like mergesort.
+    - jbj: eliminate internal --initdb (useless) and --verifydb (peculier
+	to Berkeley DB and adequately/equivalently achievable with db_verify).
 	
