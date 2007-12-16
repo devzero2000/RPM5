@@ -41,7 +41,6 @@ static rpmTag copyTagsDuringParse[] = {
     RPMTAG_XMINOR,
     RPMTAG_REPOTAG,
     RPMTAG_KEYWORDS,
-    RPMTAG_CLASS,		/* support "Class" tag/header */
     0
 };
 
@@ -341,7 +340,7 @@ static struct optionalTag {
     { RPMTAG_PACKAGER,		"%{packager}" },
     { RPMTAG_DISTRIBUTION,	"%{distribution}" },
     { RPMTAG_DISTURL,		"%{disturl}" },
-    { RPMTAG_CLASS,		"%{class}" },	/* support "Class" tag/header */
+    { 0xffffffff,		"%{class}" },
     { -1, NULL }
 };
 
@@ -356,19 +355,29 @@ static void fillOutMainPackage(Header h)
     int xx;
 
     for (ot = optionalTags; ot->ot_mac != NULL; ot++) {
-	if (!headerIsEntry(h, ot->ot_tag)) {
-/*@-boundsread@*/
-	    const char *val = rpmExpand(ot->ot_mac, NULL);
-	    if (val && *val != '%') {
-		he->tag = ot->ot_tag;
+	const char * val;
+	rpmTag tag;
+
+	tag = ot->ot_tag;
+
+	/* Generate arbitrary tag (if necessary). */
+	if (tag == 0xffffffff) {
+	    val = tagCanonicalize(ot->ot_mac + (sizeof("%{")-1));
+	    tag = tagGenerate(val);
+	    val = _free(val);
+	}
+
+	if (headerIsEntry(h, tag))
+	    continue;
+	val = rpmExpand(ot->ot_mac, NULL);
+	if (val && *val != '%') {
+		he->tag = tag;
 		he->t = RPM_STRING_TYPE;
 		he->p.str = val;
 		he->c = 1;
 		xx = headerPut(h, he, 0);
-	    }
-	    val = _free(val);
-/*@=boundsread@*/
 	}
+	val = _free(val);
     }
 }
 
@@ -612,7 +621,6 @@ static rpmRC handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
     case RPMTAG_VENDOR:
     case RPMTAG_LICENSE:
     case RPMTAG_PACKAGER:
-    case RPMTAG_CLASS:		/* support "Class" tag/header */
 	if (!*lang) {
 	    he->tag = tag;
 	    he->t = RPM_STRING_TYPE;
@@ -886,7 +894,6 @@ static struct PreambleRec_s preambleList[] = {
     {RPMTAG_KEYWORDS,		0, 0, "keywords"},
     {RPMTAG_KEYWORDS,		0, 0, "keyword"},
     {RPMTAG_BUILDPLATFORMS,	0, 0, "buildplatforms"},
-    {RPMTAG_CLASS,		0, 0, "class"},	/* support "Class" tag/header */
     /*@-nullassign@*/	/* LCL: can't add null annotation */
     {0, 0, 0, 0}
     /*@=nullassign@*/

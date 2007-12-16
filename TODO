@@ -61,7 +61,6 @@
     - jbj: fix (or at least document) the /sbin/ldconfig optimization flaw.
     - jbj: finish --trust with --import (or punt to 5.1).
     - jbj: add build script templates for install scriptlets (or punt to 5.1).
-    - jbj: add the wiring for RPMTAG_CLASS as an arbitrary tag.
     - jbj: change RPM_I18NSTRING_TYPE wiring to use arbitrary tag.
     - jbj: add lazy mkdir -p to handle packaging pathologies like in
 	devtool-test.spec (no mkdir -p in %install).

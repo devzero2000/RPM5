@@ -2112,8 +2112,8 @@ static uint32_t myTagValue(headerTagTableEntry tbl, const char * name)
 
     /* XXX Use bsearch on the "normal" rpmTagTable lookup. */
     if (tbl == NULL || tbl == rpmTagTable)
-	return tagValue(name);
-
+	val = tagValue(name);
+    else
     for (; tbl->name != NULL; tbl++) {
 	if (xstrcasecmp(tbl->name, name))
 	    continue;

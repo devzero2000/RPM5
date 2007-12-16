@@ -2520,7 +2520,11 @@ int initSourceHeader(Spec spec, StringBuf *sfp)
     HeaderIterator hi;
     StringBuf sourceFiles;
     struct Source *srcPtr;
+    static rpmTag classTag = 0xffffffff;
     int xx;
+
+    if (classTag == 0xffffffff)
+	classTag = tagGenerate("Class");
 
     /* Only specific tags are added to the source package header */
     /*@-branchstate@*/
@@ -2558,12 +2562,12 @@ int initSourceHeader(Spec spec, StringBuf *sfp)
 	case RPMTAG_PROVIDEVERSION:
 	case RPMTAG_PROVIDEFLAGS:
 #endif
-	case RPMTAG_CLASS:	/* support "Class" header */
 	    if (he->p.ptr)
 		xx = headerPut(spec->sourceHeader, he, 0);
 	    /*@switchbreak@*/ break;
 	default:
-	    /* do not copy */
+	    if (classTag == he->tag && he->p.ptr != NULL)
+		xx = headerPut(spec->sourceHeader, he, 0);
 	    /*@switchbreak@*/ break;
 	}
     }
