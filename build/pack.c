@@ -957,6 +957,9 @@ int packageSources(Spec spec)
 {
     struct cpioSourceArchive_s csabuf;
     CSA_t csa = &csabuf;
+#if defined(RPM_VENDOR_MANDRIVA)
+    int_32 one = 1;
+#endif
     int rc;
 
     /* Add some cruft */
@@ -966,6 +969,10 @@ int packageSources(Spec spec)
 		   RPM_STRING_TYPE, buildHost(), 1);
     (void) headerAddEntry(spec->sourceHeader, RPMTAG_BUILDTIME,
 		   RPM_INT32_TYPE, getBuildTime(), 1);
+#if defined(RPM_VENDOR_MANDRIVA)    
+    (void) headerAddEntry(spec->sourceHeader, RPMTAG_SOURCEPACKAGE, 
+            RPM_INT32_TYPE, &one, 1);
+#endif
 
     (void) genSourceRpmName(spec);
 

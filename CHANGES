@@ -1,18 +1,19 @@
 4.4.9 -> 4.5:
-    - proyvind: Add back rpm v3 format support for Mandriva
-    - proyvind: Rename rpmcliImportPubkey() -> rpmtsImportPubkey() (from and for rpm.org compatibility)
+    - proyvind: add back SOURCEPACKAGE tag for Mandriva to allow packages to be rebuilt on older releases
+    - proyvind: add back rpm v3 format support for Mandriva
+    - proyvind: rename rpmcliImportPubkey() -> rpmtsImportPubkey() (from and for rpm.org compatibility)
     - proyvind: expose more functions in rpmps API (as rpm.org, initially based on us ;p)
     - proyvind: fix built-in zlib dependencies (from gb)
     - proyvind: force generation of PIC code for static libs that can be built into a DSO (zlib, file) (from gb)
     - proyvind: make rpm -bb --quiet" quiet as should be (from pixel)
     - proyvind: do check free size when bavail is 0 (from pixel)
     - proyvind: allow to set %_srcdefattr for src.rpm (from pixel)
-    - proyvind: Check amd64 vs x86_64, they're the same arch (from Gwenole Beauchesne/gb)
+    - proyvind: check amd64 vs x86_64, they're the same arch (from Gwenole Beauchesne/gb)
     - proyvind: do not crash when FILELINKTOS has more entries than DIRNAMES (from pixel)
     - proyvind: fix parse_hdlist (and so genhdlist2) on heavy loaded boxes for Mandriva (from pixel)
     - proyvind: fix diff issue when buildroot contains some "//" (from Nanar)
     - proyvind: avoid taking into account duplicates in file list when checking for unpackaged files
-    - proyvind: Install perl module in vendor directory (from Rafael Garcia-Suarez/rgs)
+    - proyvind: install perl module in vendor directory (from Rafael Garcia-Suarez/rgs)
     - proyvind: add some extra functionality to gendiff (from Frederic Lepied/flepied)
     - proyvind: fix segfault for old packages with postin, but no postinprog (from pixel)
     - proyvind: fix rpm -K segfaulting on corrupted header (from pixel)
