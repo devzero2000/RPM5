@@ -10,7 +10,6 @@
 
 /*@access StringBuf @*/
 
-/*@-boundswrite@*/
 int parseBuildInstallClean(Spec spec, rpmParseState parsePart)
 {
     int nextPart;
@@ -18,7 +17,6 @@ int parseBuildInstallClean(Spec spec, rpmParseState parsePart)
     const char *name = NULL;
     rpmRC rc;
 
-    /*@-branchstate@*/
     if (parsePart == PART_BUILD) {
 	sbp = &spec->build;
 	name = "%build";
@@ -35,7 +33,6 @@ int parseBuildInstallClean(Spec spec, rpmParseState parsePart)
        sbp = &spec->track;
        name = "%track";
     }
-    /*@=branchstate@*/
     
     if (*sbp != NULL) {
 	rpmlog(RPMLOG_ERR, _("line %d: second %s\n"),
@@ -79,4 +76,3 @@ int parseBuildInstallClean(Spec spec, rpmParseState parsePart)
 
     return nextPart;
 }
-/*@=boundswrite@*/

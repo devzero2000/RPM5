@@ -221,7 +221,6 @@ static void dumpAttrRec(const char * msg, AttrRec ar)
  * @param s		string
  * @param delim		token delimiters
  */
-/*@-boundswrite@*/
 /*@null@*/
 static char *strtokWithQuotes(/*@null@*/ char *s, const char *delim)
 	/*@modifies *s @*/
@@ -263,7 +262,6 @@ static char *strtokWithQuotes(/*@null@*/ char *s, const char *delim)
     return token;
     /*@=retalias =temptrans @*/
 }
-/*@=boundswrite@*/
 
 /**
  */
@@ -324,7 +322,6 @@ VFA_t verifyAttrs[] = {
  * @param fl		package file tree walk data
  * @return		RPMRC_OK on success
  */
-/*@-boundswrite@*/
 static rpmRC parseForVerify(char * buf, FileList fl)
 	/*@modifies buf, fl->processingFailed,
 		fl->currentVerifyFlags, fl->defVerifyFlags,
@@ -412,7 +409,6 @@ static rpmRC parseForVerify(char * buf, FileList fl)
 
     return RPMRC_OK;
 }
-/*@=boundswrite@*/
 
 #define	isAttrDefault(_ars)	((_ars)[0] == '-' && (_ars)[1] == '\0')
 
@@ -422,7 +418,6 @@ static rpmRC parseForVerify(char * buf, FileList fl)
  * @param fl		package file tree walk data
  * @return		RPMRC_OK on success
  */
-/*@-boundswrite@*/
 static rpmRC parseForDev(char * buf, FileList fl)
 	/*@modifies buf, fl->processingFailed,
 		fl->noGlob, fl->devtype, fl->devmajor, fl->devminor @*/
@@ -516,7 +511,6 @@ exit:
     }
     return rc;
 }
-/*@=boundswrite@*/
 
 /**
  * Parse %attr and %defattr from file manifest.
@@ -524,7 +518,6 @@ exit:
  * @param fl		package file tree walk data
  * @return		RPMRC_OK on success
  */
-/*@-boundswrite@*/
 static rpmRC parseForAttr(char * buf, FileList fl)
 	/*@modifies buf, fl->processingFailed,
 		fl->cur_ar, fl->def_ar,
@@ -649,7 +642,6 @@ static rpmRC parseForAttr(char * buf, FileList fl)
     
     return RPMRC_OK;
 }
-/*@=boundswrite@*/
 
 /**
  * Parse %config from file manifest.
@@ -657,7 +649,6 @@ static rpmRC parseForAttr(char * buf, FileList fl)
  * @param fl		package file tree walk data
  * @return		RPMRC_OK on success
  */
-/*@-boundswrite@*/
 static rpmRC parseForConfig(char * buf, FileList fl)
 	/*@modifies buf, fl->processingFailed, fl->currentFlags @*/
 {
@@ -715,16 +706,13 @@ static rpmRC parseForConfig(char * buf, FileList fl)
 
     return RPMRC_OK;
 }
-/*@=boundswrite@*/
 
 /**
  */
 static int langCmp(const void * ap, const void * bp)
 	/*@*/
 {
-/*@-boundsread@*/
     return strcmp(*(const char **)ap, *(const char **)bp);
-/*@=boundsread@*/
 }
 
 /**
@@ -733,7 +721,6 @@ static int langCmp(const void * ap, const void * bp)
  * @param fl		package file tree walk data
  * @return		RPMRC_OK on success
  */
-/*@-bounds@*/
 static rpmRC parseForLang(char * buf, FileList fl)
 	/*@modifies buf, fl->processingFailed,
 		fl->currentLangs, fl->nLangs @*/
@@ -820,11 +807,9 @@ static rpmRC parseForLang(char * buf, FileList fl)
 
     return RPMRC_OK;
 }
-/*@=bounds@*/
 
 /**
  */
-/*@-boundswrite@*/
 static int parseForRegexLang(const char * fileName, /*@out@*/ char ** lang)
 	/*@globals rpmGlobalMacroContext, h_errno @*/
 	/*@modifies *lang, rpmGlobalMacroContext @*/
@@ -866,7 +851,6 @@ static int parseForRegexLang(const char * fileName, /*@out@*/ char ** lang)
 	*lang = buf;
     return 0;
 }
-/*@=boundswrite@*/
 
 /**
  */
@@ -904,7 +888,6 @@ VFA_t virtualFileAttributes[] = {
  * @retval *fileName	file name
  * @return		RPMRC_OK on success
  */
-/*@-boundswrite@*/
 static rpmRC parseForSimple(/*@unused@*/Spec spec, Package pkg, char * buf,
 			  FileList fl, /*@out@*/ const char ** fileName)
 	/*@globals rpmGlobalMacroContext, h_errno @*/
@@ -976,7 +959,6 @@ static rpmRC parseForSimple(/*@unused@*/Spec spec, Package pkg, char * buf,
 	    res = RPMRC_FAIL;
 	}
 
-	/*@-branchstate@*/
 	if (*s != '/') {
 	    if (fl->currentFlags & RPMFILE_DOC) {
 		specialDoc = 1;
@@ -1004,7 +986,6 @@ static rpmRC parseForSimple(/*@unused@*/Spec spec, Package pkg, char * buf,
 	} else {
 	    *fileName = s;
 	}
-	/*@=branchstate@*/
     }
 
     if (specialDoc) {
@@ -1077,7 +1058,6 @@ static rpmRC parseForSimple(/*@unused@*/Spec spec, Package pkg, char * buf,
 
     return res;
 }
-/*@=boundswrite@*/
 
 /**
  */
@@ -1145,7 +1125,6 @@ static int checkHardLinks(FileList fl)
     return 0;
 }
 
-/*@-boundsread@*/
 static int dncmp(const void * a, const void * b)
 	/*@*/
 {
@@ -1157,9 +1136,7 @@ static int dncmp(const void * a, const void * b)
     (void) urlPath(*burlp, &bdn);
     return strcmp(adn, bdn);
 }
-/*@=boundsread@*/
 
-/*@-bounds@*/
 /**
  * Convert absolute path tag to (dirname,basename,dirindex) tags.
  * @param h             header
@@ -1213,7 +1190,6 @@ static void compressFilelist(Header h)
 	goto exit;
     }
 
-    /*@-branchstate@*/
     for (i = 0; i < count; i++) {
 	const char ** needle;
 	char savechar;
@@ -1242,7 +1218,6 @@ static void compressFilelist(Header h)
 	*baseName = savechar;
 	baseNames[i] = baseName;
     }
-    /*@=branchstate@*/
 
 exit:
     if (count > 0) {
@@ -1270,7 +1245,6 @@ exit:
     he->tag = RPMTAG_OLDFILENAMES;
     xx = headerDel(h, he, 0);
 }
-/*@=bounds@*/
 
 /**
  * Add file entries to header.
@@ -1281,7 +1255,6 @@ exit:
  * @param h
  * @param isSrc
  */
-/*@-bounds@*/
 static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 		rpmfi * fip, Header h, int isSrc)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
@@ -1720,19 +1693,17 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 	    fi->fmapflags[i] |= CPIO_FOLLOW_SYMLINKS;
 
     }
-    /*@-branchstate -compdef@*/
+    /*@-compdef@*/
     if (fip)
 	*fip = fi;
     else
 	fi = rpmfiFree(fi);
-    /*@=branchstate =compdef@*/
+    /*@=compdef@*/
   }
 }
-/*@=bounds@*/
 
 /**
  */
-/*@-boundswrite@*/
 static /*@null@*/ FileListRec freeFileList(/*@only@*/ FileListRec fileList,
 			int count)
 	/*@*/
@@ -1745,7 +1716,6 @@ static /*@null@*/ FileListRec freeFileList(/*@only@*/ FileListRec fileList,
     fileList = _free(fileList);
     return NULL;
 }
-/*@=boundswrite@*/
 
 /* forward ref */
 static rpmRC recurseDir(FileList fl, const char * diskURL)
@@ -1764,7 +1734,6 @@ static rpmRC recurseDir(FileList fl, const char * diskURL)
  * @param statp		file stat (possibly NULL)
  * @return		RPMRC_OK on success
  */
-/*@-boundswrite@*/
 static int addFile(FileList fl, const char * diskURL,
 		/*@null@*/ struct stat * statp)
 	/*@globals check_fileList, rpmGlobalMacroContext, h_errno,
@@ -1797,7 +1766,6 @@ static int addFile(FileList fl, const char * diskURL,
      *  recurseDir		path			stat
      *
      */
-/*@-branchstate@*/
     {	const char *fileName;
 	int urltype = urlPath(fileURL, &fileName);
 	switch (urltype) {
@@ -1817,13 +1785,10 @@ static int addFile(FileList fl, const char * diskURL,
 	    break;
 	}
     }
-/*@=branchstate@*/
 
     /* XXX make sure '/' can be packaged also */
-    /*@-branchstate@*/
     if (*fileURL == '\0')
 	fileURL = "/";
-    /*@=branchstate@*/
 
     /* If we are using a prefix, validate the file */
     if (!fl->inFtw && fl->prefix) {
@@ -1990,7 +1955,6 @@ exit:
 /*@i@*/ fn = _free(fn);
     return rc;
 }
-/*@=boundswrite@*/
 
 /**
  * Add directory (and all of its files) to the package manifest.
@@ -2082,7 +2046,6 @@ static rpmRC processMetadataFile(Package pkg, FileList fl, const char * fileURL,
     } else
 	fn = rpmGenPath(buildURL, NULL, fn);
 
-/*@-branchstate@*/
     switch (tag) {
     default:
 	rpmlog(RPMLOG_ERR, _("%s: can't load unknown tag (%d).\n"),
@@ -2109,7 +2072,6 @@ static rpmRC processMetadataFile(Package pkg, FileList fl, const char * fileURL,
 	pkt = NULL;
 	break;
     }
-/*@=branchstate@*/
 
     he->tag = tag;
     he->t = RPM_STRING_ARRAY_TYPE;
@@ -2189,14 +2151,11 @@ static rpmRC processBinaryFile(/*@unused@*/ Package pkg, FileList fl,
 	    goto exit;
 	}
 
-	/*@-branchstate@*/
 	xx = rpmGlob(diskURL, &argc, &argv);
 	if (xx == 0 && argc >= 1) {
 	    for (i = 0; i < argc; i++) {
 		rc = addFile(fl, argv[i], NULL);
-/*@-boundswrite@*/
 		argv[i] = _free(argv[i]);
-/*@=boundswrite@*/
 	    }
 	    argv = _free(argv);
 	} else {
@@ -2211,7 +2170,6 @@ static rpmRC processBinaryFile(/*@unused@*/ Package pkg, FileList fl,
 	    }
 	    goto exit;
 	}
-	/*@=branchstate@*/
     } else
 	rc = addFile(fl, diskURL, NULL);
 
@@ -2224,7 +2182,6 @@ exit:
 
 /**
  */
-/*@-boundswrite@*/
 static rpmRC processPackageFiles(Spec spec, Package pkg,
 			       int installSpecialDoc, int test)
 	/*@globals rpmGlobalMacroContext, h_errno,
@@ -2410,7 +2367,6 @@ static rpmRC processPackageFiles(Spec spec, Package pkg,
 	if (fileName == NULL)
 	    continue;
 
-	/*@-branchstate@*/
 	if (fl.isSpecialDoc) {
 	    /* Save this stuff for last */
 	    specialDoc = _free(specialDoc);
@@ -2429,7 +2385,6 @@ static rpmRC processPackageFiles(Spec spec, Package pkg,
 	    (void) processBinaryFile(pkg, &fl, fileName);
 /*@=nullstate@*/
 	}
-	/*@=branchstate@*/
     }
 
     /* Now process special doc, if there is one */
@@ -2512,7 +2467,6 @@ exit:
 	fl.docDirs[fl.docDirCount] = _free(fl.docDirs[fl.docDirCount]);
     return (fl.processingFailed ? RPMRC_FAIL : RPMRC_OK);
 }
-/*@=boundswrite@*/
 
 int initSourceHeader(Spec spec, StringBuf *sfp)
 {
@@ -2527,7 +2481,6 @@ int initSourceHeader(Spec spec, StringBuf *sfp)
 	classTag = tagGenerate("Class");
 
     /* Only specific tags are added to the source package header */
-    /*@-branchstate@*/
   if (!spec->sourceHdrInit) {
     for (hi = headerInit(spec->packages->header);
 	headerNext(hi, he, 0);
@@ -2572,7 +2525,6 @@ int initSourceHeader(Spec spec, StringBuf *sfp)
 	}
     }
     hi = headerFini(hi);
-    /*@=branchstate@*/
 
     if (spec->BANames && spec->BACount > 0) {
 	he->tag = RPMTAG_BUILDARCHS;
@@ -2795,9 +2747,7 @@ static int checkFiles(StringBuf fileList)
 
     rpmlog(RPMLOG_NOTICE, _("Checking for unpackaged file(s): %s\n"), s);
 
-/*@-boundswrite@*/
     rc = rpmfcExec(av_ckfile, fileList, &sb_stdout, 0);
-/*@=boundswrite@*/
     if (rc < 0)
 	goto exit;
     

@@ -49,7 +49,6 @@ void addChangelogEntry(Header h, time_t time, const char *name, const char *text
  * @retval secs		secs since the unix epoch
  * @return 		0 on success, -1 on error
  */
-/*@-boundswrite@*/
 static int dateToTimet(const char * datestr, /*@out@*/ time_t * secs)
 	/*@modifies *secs @*/
 {
@@ -118,7 +117,6 @@ static int dateToTimet(const char * datestr, /*@out@*/ time_t * secs)
 
     return 0;
 }
-/*@=boundswrite@*/
 
 /*@-redecl@*/
 extern time_t get_date(const char * p, void * now);     /* XXX expedient lies */
@@ -130,7 +128,6 @@ extern time_t get_date(const char * p, void * now);     /* XXX expedient lies */
  * @param sb		changelog strings
  * @return		RPMRC_OK on success
  */
-/*@-boundswrite@*/
 static rpmRC addChangelog(Header h, StringBuf sb)
 	/*@globals rpmGlobalMacroContext, h_errno @*/
 	/*@modifies h, rpmGlobalMacroContext @*/
@@ -258,7 +255,6 @@ static rpmRC addChangelog(Header h, StringBuf sb)
 
     return 0;
 }
-/*@=boundswrite@*/
 
 int parseChangelog(Spec spec)
 {

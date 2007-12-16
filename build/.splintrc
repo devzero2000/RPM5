@@ -12,11 +12,45 @@
 +strict			# lclint level
 
 # --- in progress
-+bounds
+-branchstate
 -bufferoverflowhigh
+
+-compdef
+-compmempass
+-globs
+-globuse
+-incondefs
+-internalglobs
+-mods
+-modobserver
+-moduncon
+-mustmod
+-noeffect
+-noeffectuncon
+-nullderef
+-nullpass
+-nullret
+-nullstate
+-paramuse
+-retalias
+-retvalint
+-shadow
+-type
+-unrecog
+-unsignedcompare
+-usereleased
+
+-dependenttrans
+-observertrans
+-onlytrans
+-readonlytrans
+-statictrans
+
+-forempty
 
 # --- +partial artifacts
 -declundef
+-exportheader
 -exportheadervar
 -exportlocal
 

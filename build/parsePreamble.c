@@ -85,7 +85,6 @@ static void addOrAppendListEntry(Header h, rpmTag tag, char * line)
 
 /**
  */
-/*@-boundswrite@*/
 static int parseSimplePart(char *line, /*@out@*/char **name,
 		/*@out@*/rpmParseState *flag)
 	/*@globals internalState@*/
@@ -117,7 +116,6 @@ static int parseSimplePart(char *line, /*@out@*/char **name,
 
     return (strtok(NULL, " \t\n")) ? 1 : 0;
 }
-/*@=boundswrite@*/
 
 /**
  */
@@ -164,7 +162,6 @@ static struct tokenBits_s buildScriptBits[] = {
 
 /**
  */
-/*@-boundswrite@*/
 static int parseBits(const char * s, const tokenBits tokbits,
 		/*@out@*/ rpmsenseFlags * bp)
 	/*@modifies *bp @*/
@@ -198,7 +195,6 @@ static int parseBits(const char * s, const tokenBits tokbits,
     if (c == 0 && bp) *bp = bits;
     return (c ? RPMRC_FAIL : RPMRC_OK);
 }
-/*@=boundswrite@*/
 
 /**
  */
@@ -207,10 +203,8 @@ static inline char * findLastChar(char * s)
 {
     char *se = s + strlen(s);
 
-/*@-bounds@*/
     while (--se > s && strchr(" \t\n\r", *se) != NULL)
 	*se = '\0';
-/*@=bounds@*/
 /*@-temptrans -retalias @*/
     return se;
 /*@=temptrans =retalias @*/
@@ -228,13 +222,11 @@ static int isMemberInEntry(Header h, const char *name, rpmTag tag)
     xx = headerGet(h, he, 0);
     if (!xx)
 	return -1;
-/*@-boundsread@*/
     while (he->c--) {
 	if (!xstrcasecmp(he->p.argv[he->c], name))
 	    break;
     }
     he->p.ptr = _free(he->p.ptr);
-/*@=boundsread@*/
     return (he->c >= 0 ? 1 : 0);
 }
 
@@ -283,7 +275,6 @@ static rpmRC checkForRequired(Header h, const char * NVR)
     rpmTag * p;
     rpmRC rc = RPMRC_OK;
 
-/*@-boundsread@*/
     for (p = requiredTags; *p != 0; p++) {
 	if (!headerIsEntry(h, *p)) {
 	    rpmlog(RPMLOG_ERR,
@@ -292,7 +283,6 @@ static rpmRC checkForRequired(Header h, const char * NVR)
 	    rc = RPMRC_FAIL;
 	}
     }
-/*@=boundsread@*/
 
     return rc;
 }
@@ -383,7 +373,6 @@ static void fillOutMainPackage(Header h)
 
 /**
  */
-/*@-boundswrite@*/
 static int doIcon(Spec spec, Header h)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies rpmGlobalMacroContext, fileSystem, internalState  @*/
@@ -487,7 +476,6 @@ exit:
     Lurlfn = _free(Lurlfn);
     return rc;
 }
-/*@=boundswrite@*/
 
 spectag stashSt(Spec spec, Header h, int tag, const char * lang)
 {
@@ -536,7 +524,6 @@ extern int noLang;
 
 /**
  */
-/*@-boundswrite@*/
 static rpmRC handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
 		const char *macro, const char *lang)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
@@ -638,9 +625,7 @@ static rpmRC handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
 #ifdef	DYING
 	buildRootURL = rpmGenPath(spec->rootURL, "%{?buildroot}", NULL);
 	(void) urlPath(buildRootURL, &buildRoot);
-	/*@-branchstate@*/
 	if (*buildRoot == '\0') buildRoot = "/";
-	/*@=branchstate@*/
 	if (!strcmp(buildRoot, "/")) {
 	    rpmlog(RPMLOG_ERR,
 		     _("BuildRoot can not be \"/\": %s\n"), spec->buildRootURL);
@@ -820,7 +805,6 @@ static rpmRC handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
     
     return RPMRC_OK;
 }
-/*@=boundswrite@*/
 
 /* This table has to be in a peculiar order.  If one tag is the */
 /* same as another, plus a few letters, it must come first.     */
@@ -901,7 +885,6 @@ static struct PreambleRec_s preambleList[] = {
 
 /**
  */
-/*@-boundswrite@*/
 static int findPreambleTag(Spec spec, /*@out@*/rpmTag * tagp,
 		/*@null@*/ /*@out@*/ const char ** macro, /*@out@*/ char * lang)
 	/*@modifies *tagp, *macro, *lang @*/
@@ -987,9 +970,7 @@ static int findPreambleTag(Spec spec, /*@out@*/rpmTag * tagp,
 	/*@=onlytrans =observertrans =dependenttrans@*/
     return 0;
 }
-/*@=boundswrite@*/
 
-/*@-boundswrite@*/
 /* XXX should return rpmParseState, but RPMRC_FAIL forces int return. */
 int parsePreamble(Spec spec, int initialPackage)
 {
@@ -1091,4 +1072,3 @@ int parsePreamble(Spec spec, int initialPackage)
 
     return nextPart;
 }
-/*@=boundswrite@*/

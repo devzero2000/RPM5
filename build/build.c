@@ -110,7 +110,6 @@ rpmRC doScript(Spec spec, int what, const char *name, StringBuf sb, int test)
     int status;
     rpmRC rc;
     
-    /*@-branchstate@*/
     switch (what) {
     case RPMBUILD_PREP:
 	name = "%prep";
@@ -170,7 +169,6 @@ rpmRC doScript(Spec spec, int what, const char *name, StringBuf sb, int test)
     }
     if (name == NULL)	/* XXX shouldn't happen */
 	name = "???";
-    /*@=branchstate@*/
 
     if ((what != RPMBUILD_RMBUILD) && sb == NULL) {
 	rc = RPMRC_OK;
@@ -183,12 +181,10 @@ rpmRC doScript(Spec spec, int what, const char *name, StringBuf sb, int test)
 	goto exit;
     }
 
-    /*@-branchstate@*/
     if (fdGetFp(fd) == NULL)
 	xfd = Fdopen(fd, "w.fpio");
     else
 	xfd = fd;
-    /*@=branchstate@*/
 
     /*@-type@*/ /* FIX: cast? */
     if ((fp = fdGetFp(xfd)) == NULL) {
@@ -198,9 +194,7 @@ rpmRC doScript(Spec spec, int what, const char *name, StringBuf sb, int test)
     /*@=type@*/
     
     (void) urlPath(rootURL, &rootDir);
-    /*@-branchstate@*/
     if (*rootDir == '\0') rootDir = "/";
-    /*@=branchstate@*/
 
     (void) urlPath(scriptName, &buildScript);
 
@@ -230,13 +224,11 @@ rpmRC doScript(Spec spec, int what, const char *name, StringBuf sb, int test)
     
 if (_build_debug)
 fprintf(stderr, "*** rootURL %s buildDirURL %s\n", rootURL, buildDirURL);
-/*@-boundsread@*/
     if (buildDirURL && buildDirURL[0] != '/' &&
 	(urlSplit(buildDirURL, &u) != 0)) {
 	rc = RPMRC_FAIL;
 	goto exit;
     }
-/*@=boundsread@*/
     if (u != NULL) {
 	switch (u->urltype) {
 	case URL_IS_HTTPS:
@@ -268,9 +260,7 @@ fprintf(stderr, "*** addMacros\n");
 	/*@-mods@*/
 	errno = 0;
 	/*@=mods@*/
-/*@-boundsread@*/
 	(void) execvp(argv[0], (char *const *)argv);
-/*@=boundsread@*/
 
 	rpmlog(RPMLOG_ERR, _("Exec of %s failed (%s): %s\n"),
 		scriptName, name, strerror(errno));
@@ -340,14 +330,12 @@ rpmRC buildSpec(rpmts ts, Spec spec, int what, int test)
 	/* packaging on the first run, and skip RMSOURCE altogether */
 	if (spec->BASpecs != NULL)
 	for (x = 0; x < spec->BACount; x++) {
-/*@-boundsread@*/
 	    if ((rc = buildSpec(ts, spec->BASpecs[x],
 				(what & ~RPMBUILD_RMSOURCE) |
 				(x ? 0 : (what & RPMBUILD_PACKAGESOURCE)),
 				test))) {
 		goto exit;
 	    }
-/*@=boundsread@*/
 	}
     } else {
 	/* support "%track" script/section */

@@ -69,7 +69,6 @@ static rpmRC checkOwners(const char * urlfn)
  * @param fuzz		include -F?
  * @return		expanded %patch macro (NULL on error)
  */
-/*@-boundswrite@*/
 /*@observer@*/
 static char *doPatch(Spec spec, int c, int strip, const char *db,
 		     int reverse, int removeEmpties, int fuzz, const char *subdir)
@@ -185,7 +184,6 @@ static char *doPatch(Spec spec, int c, int strip, const char *db,
     Lurlfn = _free(Lurlfn);
     return buf;
 }
-/*@=boundswrite@*/
 #endif
 
 /**
@@ -195,7 +193,6 @@ static char *doPatch(Spec spec, int c, int strip, const char *db,
  * @param quietly	should -vv be omitted from tar?
  * @return		expanded %setup macro (NULL on error)
  */
-/*@-boundswrite@*/
 /*@observer@*/
 static const char *doUntar(Spec spec, int c, int quietly)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
@@ -328,7 +325,6 @@ _rpmmg_debug = 0;
     Lurlfn = _free(Lurlfn);
     return buf;
 }
-/*@=boundswrite@*/
 
 /**
  * Parse %setup macro.
@@ -482,12 +478,10 @@ static int doSetupMacro(Spec spec, char *line)
 
 	for (fm = fixmacs; *fm; fm++) {
 	    const char *fix;
-/*@-boundsread@*/
 	    fix = rpmExpand(*fm, " .", NULL);
 	    if (fix && *fix != '%')
 		appendLineStringBuf(spec->prep, fix);
 	    fix = _free(fix);
-/*@=boundsread@*/
 	}
     }
     
@@ -501,7 +495,6 @@ static int doSetupMacro(Spec spec, char *line)
  * @param line		current line from spec file
  * @return		RPMRC_OK on success
  */
-/*@-boundswrite@*/
 static rpmRC doPatchMacro(Spec spec, char *line)
 	/*@globals rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState @*/
@@ -634,7 +627,6 @@ static rpmRC doPatchMacro(Spec spec, char *line)
     
     return RPMRC_OK;
 }
-/*@=boundswrite@*/
 #endif
 
 /**
@@ -681,7 +673,6 @@ static int prepFetch(Spec spec)
     if (rpmrc != RPMRC_OK)
 	return -1;
 
-/*@-branchstate@*/
     ec = 0;
     for (sp = spec->sources; sp != NULL; sp = sp->next) {
     
@@ -746,7 +737,6 @@ bottom:
 	Lurlfn = _free(Lurlfn);
 	Rurlfn = _free(Rurlfn);
     }
-/*@=branchstate@*/
 
     return ec;
 }
@@ -798,7 +788,6 @@ int parsePrep(Spec spec, int verify)
 	res = 0;
 	for (cp = *lines; *cp == ' ' || *cp == '\t'; cp++)
 	    ;
-/*@-boundsread@*/
 	if (! strncmp(cp, "%setup", sizeof("%setup")-1)) {
 	    res = doSetupMacro(spec, cp);
 #ifndef	DYING
@@ -808,7 +797,6 @@ int parsePrep(Spec spec, int verify)
 	} else {
 	    appendLineStringBuf(spec->prep, *lines);
 	}
-/*@=boundsread@*/
 	if (res && !spec->force) {
 	    freeSplitString(saveLines);
 	    sb = freeStringBuf(sb);

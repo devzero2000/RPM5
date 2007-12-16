@@ -65,7 +65,6 @@ static rpmRC cpio_doio(FD_t fdo, /*@unused@*/ Header h, CSA_t csa,
     rpmRC rc = RPMRC_OK;
     int xx;
 
-/*@-boundsread@*/
     {	const char *fmode = rpmExpand(fmodeMacro, NULL);
 	if (!(fmode && fmode[0] == 'w'))
 	    fmode = xstrdup("w9.gzdio");
@@ -75,7 +74,6 @@ static rpmRC cpio_doio(FD_t fdo, /*@unused@*/ Header h, CSA_t csa,
 	/*@=nullpass@*/
 	fmode = _free(fmode);
     }
-/*@=boundsread@*/
     if (cfd == NULL)
 	return RPMRC_FAIL;
 
@@ -331,7 +329,6 @@ rpmRC processScriptFiles(Spec spec, Package pkg)
 }
 
 #if defined(DEAD)
-/*@-boundswrite@*/
 int readRPM(const char *fileName, Spec *specp, void * l,
 		Header *sigs, CSA_t csa)
 {
@@ -419,12 +416,10 @@ int readRPM(const char *fileName, Spec *specp, void * l,
 	/*@notreached@*/ break;
     }
 
-    /*@-branchstate@*/
     if (specp)
 	*specp = spec;
     else
 	spec = freeSpec(spec);
-    /*@=branchstate@*/
 
     if (csa != NULL)
 	csa->cpioFdIn = fdi;
@@ -433,7 +428,6 @@ int readRPM(const char *fileName, Spec *specp, void * l,
 
     return 0;
 }
-/*@=boundswrite@*/
 #endif
 
 #if defined(DEAD)
@@ -590,7 +584,6 @@ exit:
     N = _free(N);
 }
 
-/*@-boundswrite@*/
 rpmRC writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
 		CSA_t csa, char *passPhrase, const char **cookie)
 {
@@ -938,7 +931,6 @@ exit:
 
     return rc;
 }
-/*@=boundswrite@*/
 
 static int rpmlibMarkers(Header h)
 	/*@modifies h @*/
@@ -997,7 +989,6 @@ static uint32_t copyTags[] = {
     0
 };
 
-/*@-boundswrite@*/
 rpmRC packageBinaries(Spec spec)
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
@@ -1108,9 +1099,7 @@ rpmRC packageBinaries(Spec spec)
     
     return RPMRC_OK;
 }
-/*@=boundswrite@*/
 
-/*@-boundswrite@*/
 rpmRC packageSources(Spec spec)
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
@@ -1183,4 +1172,3 @@ rpmRC packageSources(Spec spec)
 
     return (rc ? RPMRC_FAIL : RPMRC_OK);
 }
-/*@=boundswrite@*/

@@ -27,7 +27,6 @@ static ugstr_t gnames[1024];
 /*@unchecked@*/
 static int gid_used = 0;
     
-/*@-boundswrite@*/
 void freeNames(void)
 {
     int x;
@@ -36,9 +35,7 @@ void freeNames(void)
     for (x = 0; x < gid_used; x++)
 	gnames[x] = _free(gnames[x]);
 }
-/*@=boundswrite@*/
 
-/*@-boundswrite@*/
 const char *getUname(uid_t uid)
 	/*@globals uid_used, uids, unames @*/
 	/*@modifies uid_used, uids, unames @*/
@@ -62,9 +59,7 @@ const char *getUname(uid_t uid)
     unames[uid_used] = xstrdup(pw->pw_name);
     return unames[uid_used++];
 }
-/*@=boundswrite@*/
 
-/*@-boundswrite@*/
 const char *getUnameS(const char *uname)
 	/*@globals uid_used, uids, unames @*/
 	/*@modifies uid_used, uids, unames @*/
@@ -91,9 +86,7 @@ const char *getUnameS(const char *uname)
     }
     return unames[uid_used++];
 }
-/*@=boundswrite@*/
 
-/*@-boundswrite@*/
 uid_t getUidS(const char *uname)
 	/*@globals uid_used, uids, unames @*/
 	/*@modifies uid_used, uids, unames @*/
@@ -120,9 +113,7 @@ uid_t getUidS(const char *uname)
     }
     return uids[uid_used++];
 }
-/*@=boundswrite@*/
 
-/*@-boundswrite@*/
 const char *getGname(gid_t gid)
 	/*@globals gid_used, gids, gnames @*/
 	/*@modifies gid_used, gids, gnames @*/
@@ -146,9 +137,7 @@ const char *getGname(gid_t gid)
     gnames[gid_used] = xstrdup(gr->gr_name);
     return gnames[gid_used++];
 }
-/*@=boundswrite@*/
 
-/*@-boundswrite@*/
 const char *getGnameS(const char *gname)
 	/*@globals gid_used, gids, gnames @*/
 	/*@modifies gid_used, gids, gnames @*/
@@ -175,9 +164,7 @@ const char *getGnameS(const char *gname)
     }
     return gnames[gid_used++];
 }
-/*@=boundswrite@*/
 
-/*@-boundswrite@*/
 gid_t getGidS(const char *gname)
 	/*@globals gid_used, gids, gnames @*/
 	/*@modifies gid_used, gids, gnames @*/
@@ -204,20 +191,16 @@ gid_t getGidS(const char *gname)
     }
     return gids[gid_used++];
 }
-/*@=boundswrite@*/
 
 uint32_t * getBuildTime(void)
 {
     static uint32_t buildTime[1];
 
-/*@-boundsread@*/
     if (buildTime[0] == 0)
 	buildTime[0] = (uint32_t) time(NULL);
-/*@=boundsread@*/
     return buildTime;
 }
 
-/*@-boundswrite@*/
 const char * buildHost(void)
 {
     static char hostname[1024];
@@ -240,5 +223,4 @@ const char * buildHost(void)
     }
     return(hostname);
 }
-/*@=boundswrite@*/
 /*@=mods@*/

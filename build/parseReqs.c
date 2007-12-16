@@ -83,7 +83,6 @@ rpmRC parseRCPOT(Spec spec, Package pkg, const char *field, rpmTag tagN,
 	break;
     }
 
-/*@-boundsread@*/
     for (r = field; *r != '\0'; r = re) {
 	size_t nr;
 	SKIPWHITE(r);
@@ -138,7 +137,6 @@ rpmRC parseRCPOT(Spec spec, Package pkg, const char *field, rpmTag tagN,
 	    Flags |= F;
 	}
 
-	/*@-branchstate@*/
  	if (Flags & RPMSENSE_SENSEMASK) {
 	    if (*v == '\0' || ve == v) {
 		rpmlog(RPMLOG_ERR, _("line %d: Version required: %s\n"),
@@ -151,7 +149,6 @@ rpmRC parseRCPOT(Spec spec, Package pkg, const char *field, rpmTag tagN,
 	    re = ve;	/* ==> next token after EVR string starts here */
 	} else
 	    EVR = NULL;
-	/*@=branchstate@*/
 
 	(void) addReqProv(spec, h, tagN, N, EVR, Flags, index);
 
@@ -159,7 +156,6 @@ rpmRC parseRCPOT(Spec spec, Package pkg, const char *field, rpmTag tagN,
 	EVR = _free(EVR);
 
     }
-/*@=boundsread@*/
 
     return RPMRC_OK;
 }

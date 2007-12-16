@@ -70,7 +70,6 @@ static uint32_t addTriggerIndex(Package pkg, const char *file,
 /* We then pass the remaining arguments to parseRCPOT, along with   */
 /* an index we just determined.                                     */
 
-/*@-boundswrite@*/
 int parseScript(Spec spec, int parsePart)
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
@@ -110,7 +109,6 @@ int parseScript(Spec spec, int parsePart)
     file = NULL;
     /*@=mods@*/
     
-    /*@-branchstate@*/
     switch (parsePart) {
       case PART_PRE:
 	tag = RPMTAG_PREIN;
@@ -190,7 +188,6 @@ int parseScript(Spec spec, int parsePart)
 	partname = "%sanitycheck";
 	break;
     }
-    /*@=branchstate@*/
 
     if (tag == RPMTAG_TRIGGERSCRIPTS) {
 	/* break line into two */
@@ -403,4 +400,3 @@ exit:
     
     return rc;
 }
-/*@=boundswrite@*/

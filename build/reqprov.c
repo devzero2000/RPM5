@@ -52,10 +52,8 @@ int addReqProv(/*@unused@*/ Spec spec, Header h, /*@unused@*/ rpmTag tagN,
 
     Flags = (Flags & RPMSENSE_SENSEMASK) | extra;
 
-    /*@-branchstate@*/
     if (EVR == NULL)
 	EVR = "";
-    /*@=branchstate@*/
     
     /* Check for duplicate dependencies. */
     he->tag = nametag;
@@ -82,7 +80,6 @@ int addReqProv(/*@unused@*/ Spec spec, Header h, /*@unused@*/ rpmTag tagN,
 	    indexes = he->p.ui32p;
 	}
 
-/*@-boundsread@*/
 	while (len > 0) {
 	    len--;
 	    if (strcmp(names[len], N))
@@ -98,7 +95,6 @@ int addReqProv(/*@unused@*/ Spec spec, Header h, /*@unused@*/ rpmTag tagN,
 
 	    break;
 	}
-/*@=boundsread@*/
 	names = _free(names);
 	versions = _free(versions);
 	flags = _free(flags);
@@ -146,7 +142,6 @@ int addReqProv(/*@unused@*/ Spec spec, Header h, /*@unused@*/ rpmTag tagN,
     return 0;
 }
 
-/*@-boundswrite@*/
 int rpmlibNeedsFeature(Header h, const char * feature, const char * featureEVR)
 {
     char * reqname = alloca(sizeof("rpmlib()") + strlen(feature));
@@ -157,4 +152,3 @@ int rpmlibNeedsFeature(Header h, const char * feature, const char * featureEVR)
    return addReqProv(NULL, h, RPMTAG_REQUIRENAME, reqname, featureEVR,
 	RPMSENSE_RPMLIB|(RPMSENSE_LESS|RPMSENSE_EQUAL), 0);
 }
-/*@=boundswrite@*/

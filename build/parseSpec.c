@@ -61,18 +61,14 @@ rpmParseState isPart(const char *line)
 {
     struct PartRec *p;
 
-/*@-boundsread@*/
     if (partList[0].len == 0)
 	initParts(partList);
-/*@=boundsread@*/
     
     for (p = partList; p->token != NULL; p++) {
 	char c;
 	if (xstrncasecmp(line, p->token, p->len))
 	    continue;
-/*@-boundsread@*/
 	c = *(line + p->len);
-/*@=boundsread@*/
 	if (c == '\0' || xisspace(c))
 	    break;
     }
@@ -89,7 +85,6 @@ static int matchTok(const char *token, const char *line)
     size_t toklen = strlen(token);
     int rc = 0;
 
-/*@-boundsread@*/
     while ( *(b = be) != '\0' ) {
 	SKIPSPACE(b);
 	be = b;
@@ -101,19 +96,16 @@ static int matchTok(const char *token, const char *line)
 	rc = 1;
 	break;
     }
-/*@=boundsread@*/
 
     return rc;
 }
 
-/*@-boundswrite@*/
 void handleComments(char *s)
 {
     SKIPSPACE(s);
     if (*s == '#')
 	*s = '\0';
 }
-/*@=boundswrite@*/
 
 /**
  */
@@ -130,7 +122,6 @@ static void forceIncludeFile(Spec spec, const char * fileName)
 
 /**
  */
-/*@-boundswrite@*/
 static int copyNextLine(Spec spec, OFI_t *ofi, int strip)
 	/*@globals rpmGlobalMacroContext, h_errno,
 		fileSystem @*/
@@ -231,9 +222,7 @@ static int copyNextLine(Spec spec, OFI_t *ofi, int strip)
 
     return 0;
 }
-/*@=boundswrite@*/
 
-/*@-boundswrite@*/
 int readLine(Spec spec, int strip)
 {
 #ifdef	DYING
@@ -248,7 +237,6 @@ int readLine(Spec spec, int strip)
 
 retry:
     /* Make sure the current file is open */
-    /*@-branchstate@*/
     if (ofi->fd == NULL) {
 	ofi->fd = Fopen(ofi->fileName, "r.fpio");
 	if (ofi->fd == NULL || Ferror(ofi->fd)) {
@@ -259,7 +247,6 @@ retry:
 	}
 	spec->lineNum = ofi->lineNum = 0;
     }
-    /*@=branchstate@*/
 
     /* Make sure we have something in the read buffer */
     if (!(ofi->readPtr && *(ofi->readPtr))) {
@@ -410,7 +397,6 @@ retry:
     return 0;
     /*@=compmempass@*/
 }
-/*@=boundswrite@*/
 
 void closeSpec(Spec spec)
 {
@@ -431,7 +417,6 @@ extern int noLang;		/* XXX FIXME: pass as arg */
 /*@=redecl@*/
 
 /*@todo Skip parse recursion if os is not compatible. @*/
-/*@-boundswrite@*/
 int parseSpec(rpmts ts, const char *specFile, const char *rootURL,
 		int recursing, const char *passPhrase,
 		const char *cookie, int anyarch, int force, int verify)
@@ -587,14 +572,12 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootURL,
 	     * further problem that the macro context, particularly
 	     * %{_target_cpu}, disagrees with the info in the header.
 	     */
-	    /*@-branchstate@*/
 	    if (spec->BACount >= 1) {
 		Spec nspec = spec->BASpecs[0];
 		spec->BASpecs = _free(spec->BASpecs);
 		spec = freeSpec(spec);
 		spec = nspec;
 	    }
-	    /*@=branchstate@*/
 
 	    (void) rpmtsSetSpec(ts, spec);
 	    return 0;
@@ -651,4 +634,3 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootURL,
 
     return 0;
 }
-/*@=boundswrite@*/
