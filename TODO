@@ -154,5 +154,4 @@
 ==3436==    by 0x48A5BDE: rpmtsCreate (rpmts.c:1302)
 ==3436==    by 0x3EFA: main (rpmqv.c:540)
     - jbj: eliminate %patch-as-macro-in-C implementation.
-
-	
+    - jbj: convert unused syntax (like Disttag:/Repotag:/Cvsid:) to arbitrary tags
