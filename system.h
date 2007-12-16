@@ -725,8 +725,6 @@ static inline const char *rcsid(const char *p) { \
 #include <search.h>
 #endif
 
-#define	SUPPORT_RPMLEAD		0	/* XXX default is add lead. */
-
 /**
  * Mark --initdb and --verifydb for destruction.
  */

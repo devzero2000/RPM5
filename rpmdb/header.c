@@ -19,9 +19,6 @@
 /*@unchecked@*/
 int _hdr_debug = 0;
 
-/*@unchecked@*/
-int _newmagic = 0;		/* XXX Change header magic? */
-
 /*@access Header @*/
 /*@access HeaderIterator @*/
 /*@access headerSprintfExtension @*/
@@ -36,22 +33,6 @@ int _newmagic = 0;		/* XXX Change header magic? */
 /*@observer@*/ /*@unchecked@*/
 static unsigned char header_magic[8] = {
 	0x8e, 0xad, 0xe8, 0x01, 0x00, 0x00, 0x00, 0x00
-};
-/*@=type@*/
-
-#if 0
-/*@-type@*/
-/*@observer@*/ /*@unchecked@*/
-static unsigned char sigh_magic[8] = {
-	0x8e, 0xad, 0xe8, 0x3e, 0x00, 0x00, 0x00, 0x00
-};
-/*@=type@*/
-#endif
-
-/*@-type@*/
-/*@observer@*/ /*@unchecked@*/
-static unsigned char meta_magic[8] = {
-	0x8e, 0xad, 0xe8, 0x3f, 0x00, 0x00, 0x00, 0x00
 };
 /*@=type@*/
 
@@ -953,7 +934,7 @@ Header headerLoad(void * uh)
     h = xcalloc(1, sizeof(*h));
     if ((sw = headerGetStats(h, 18)) != NULL)	/* RPMTS_OP_HDRLOAD */
 	(void) rpmswEnter(sw, 0);
-    {	unsigned char * hmagic = (_newmagic ? meta_magic : header_magic);
+    {	unsigned char * hmagic = header_magic;
 	(void) memcpy(h->magic, hmagic, sizeof(h->magic));
     }
     /*@-assignexpose -kepttrans@*/
@@ -1097,7 +1078,7 @@ errxit:
 
 int headerGetMagic(Header h, unsigned char ** magicp, size_t * nmagicp)
 {
-    unsigned char * hmagic = (_newmagic ? meta_magic : header_magic);
+    unsigned char * hmagic = header_magic;
     if (magicp)
 	*magicp = (h ? h->magic : hmagic);
     if (nmagicp)

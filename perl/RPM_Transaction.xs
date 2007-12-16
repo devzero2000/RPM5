@@ -201,6 +201,9 @@ void *
         case RPMCALLBACK_CPIO_ERROR:
             s_what = "CPIO_ERROR";
         break;
+        case RPMCALLBACK_SCRIPT_ERROR:
+            s_what = "SCRIPT_ERROR";
+        break;
     }
    
     XPUSHs(sv_2mortal(newSVpv("what", 0)));

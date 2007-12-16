@@ -49,12 +49,6 @@ extern void rpmtsCleanDig(void * ts)
 int _rpmdb_debug = 0;
 
 /*@unchecked@*/
-int _rsegfault = 0;
-
-/*@unchecked@*/
-int _wsegfault = 0;
-
-/*@unchecked@*/
 static int _rebuildinprogress = 0;
 /*@unchecked@*/
 static int _db_filter_dups = 0;

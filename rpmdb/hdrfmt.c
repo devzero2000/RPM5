@@ -1789,12 +1789,6 @@ void rpmDisplayQueryTags(FILE * fp, headerTagTableEntry _rpmTagTable, headerSpri
 #define PARSER_IN_ARRAY 1
 #define PARSER_IN_EXPR  2
 
-/*@unchecked@*/
-int _tagcache = 1;		/* XXX Cache tag data persistently? */
-
-/*@unchechecked@*/
-int _tagbsearch = 1;		/* XXX Use bsearch, not linear, tag lookup. */
-
 /** \ingroup header
  */
 typedef /*@abstract@*/ struct sprintfTag_s * sprintfTag;
@@ -1939,8 +1933,7 @@ freeFormat( /*@only@*/ /*@null@*/ sprintfToken format, size_t num)
     for (i = 0; i < (unsigned) num; i++) {
 	switch (format[i].type) {
 	case PTOK_TAG:
-	    if (_tagcache)
-		(void) rpmheClean(&format[i].u.tag.he);
+	    (void) rpmheClean(&format[i].u.tag.he);
 	    /*@switchbreak@*/ break;
 	case PTOK_ARRAY:
 	    format[i].u.array.format =
@@ -1954,8 +1947,7 @@ freeFormat( /*@only@*/ /*@null@*/ sprintfToken format, size_t num)
 	    format[i].u.cond.elseFormat =
 		freeFormat(format[i].u.cond.elseFormat, 
 			format[i].u.cond.numElseTokens);
-	    if (_tagcache)
-		(void) rpmheClean(&format[i].u.cond.tag.he);
+	    (void) rpmheClean(&format[i].u.cond.tag.he);
 	    /*@switchbreak@*/ break;
 	case PTOK_NONE:
 	case PTOK_STRING:
@@ -2083,7 +2075,7 @@ static const char * myTagName(headerTagTableEntry tbl, uint32_t val,
     char *t;
 
     /* XXX Use bsearch on the "normal" rpmTagTable lookup. */
-    if (_tagbsearch && (tbl == NULL || tbl == rpmTagTable)) {
+    if (tbl == NULL || tbl == rpmTagTable) {
 	s = tagName(val);
 	if (s != NULL && typep != NULL)
 	    *typep = tagType(val);
@@ -2728,11 +2720,6 @@ assert(val != NULL);
 	need = strlen(val) + 1;
 
 exit:
-/*@-compmempass@*/	/* he->p.ptr is dependent, not owned @*/
-    if (!_tagcache)
-	he = rpmheClean(he);
-/*@=compmempass@*/
-
     if (val && need > 0) {
 	if (tag->format && *tag->format && tag->pad > 0) {
 	    size_t nb;
@@ -2871,8 +2858,6 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 		    numElements = 1;
 		/*@switchbreak@*/ break;
 	    }
-	    if (!_tagcache)
-		he = rpmheClean(he);
 	}
 	spft = token->u.array.format;
 

@@ -13,9 +13,6 @@ extern "C" {
 #endif
 
 /*@unchecked@*/
-extern int _nolead;
-
-/*@unchecked@*/
 extern int _use_xar;
 
 /** 

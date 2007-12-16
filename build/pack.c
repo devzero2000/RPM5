@@ -27,9 +27,6 @@
 /*@access StringBuf @*/	/* compared with NULL */
 /*@access CSA_t @*/
 
-extern int _nolead;	/* disable writing lead. */
-extern int _nosigh;	/* disable writing signature header. */
-
 /**
  */
 static inline int genSourceRpmName(Spec spec)
@@ -807,8 +804,7 @@ assert(0);
     }
 
     /* Write the lead section into the package. */
-    if (!_nolead) {
-	const char item[] = "Lead";
+    {	const char item[] = "Lead";
 	size_t nl = rpmpkgSizeof(item, NULL);
 
 	msg = NULL;
@@ -835,8 +831,7 @@ assert(0);
     }
 
     /* Write the signature section into the package. */
-    if (!_nosigh) {
-	const char item[] = "Signature";
+    {	const char item[] = "Signature";
 
 	msg = NULL;
 	rc = rpmpkgWrite(item, fd, sigh, &msg);

@@ -198,16 +198,18 @@ string(h, no_header_magic = 0)
     int no_header_magic
     PREINIT:
     char * string = NULL;
-    size_t offset = 8; /* header magic length */
     char * ptr = NULL;
     int hsize = 0;
     PPCODE:
-    hsize = headerSizeof(h);
+    hsize = headerSizeof(h);		/* XXX hsize includes nmagic */
     string = headerUnload(h, NULL);
     if (! no_header_magic) {
-        ptr = malloc(hsize);
-        memcpy(ptr, header_magic, offset);
-        memcpy(ptr + offset, string, hsize - 8);
+	unsigned char * hmagic = NULL;
+	size_t nmagic = 0;
+	(void) headerGetMagic(h, &hmagic, &nmagic);
+        ptr = malloc(hsize);		/* XXX hsize includes nmagic */
+        memcpy(ptr, hmagic, nmagic);
+        memcpy(ptr + nmagic, string, hsize - nmagic);
     }
     XPUSHs(sv_2mortal(newSVpv(ptr ? ptr : string, hsize)));
     free(string);

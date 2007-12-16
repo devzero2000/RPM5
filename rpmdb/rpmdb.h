@@ -21,19 +21,6 @@
 extern int _rpmdb_debug;
 /*@=exportlocal@*/
 
-/*@unchecked@*/
-extern int _rsegfault;
-/*@unchecked@*/
-extern int _wsegfault;
-
-#if defined(__LCLINT__)
-#define	RSEGFAULT
-#define	WSEGFAULT
-#else
-#define	RSEGFAULT	{ if (_rsegfault > 0) assert(--_rsegfault); }
-#define	WSEGFAULT	{ if (_wsegfault > 0) assert(--_wsegfault); }
-#endif
-
 #ifdef	NOTYET
 /** \ingroup rpmdb
  * Database of headers and tag value indices.
@@ -634,7 +621,6 @@ int dbiDel(dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key, DBT * data,
     (void) rpmswEnter(sw, 0);
     rc = (dbi->dbi_vec->cdel) (dbi, dbcursor, key, data, flags);
     (void) rpmswExit(sw, data->size);
-WSEGFAULT;
     return rc;
 }
 
@@ -659,7 +645,6 @@ int dbiGet(dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key, DBT * data,
     (void) rpmswEnter(sw, 0);
     rc = (dbi->dbi_vec->cget) (dbi, dbcursor, key, data, flags);
     (void) rpmswExit(sw, data->size);
-RSEGFAULT;
     return rc;
 }
 
@@ -709,7 +694,6 @@ int dbiPut(dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key, DBT * data,
     (void) rpmswEnter(sw, 0);
     rc = (dbi->dbi_vec->cput) (dbi, dbcursor, key, data, flags);
     (void) rpmswExit(sw, data->size);
-WSEGFAULT;
     return rc;
 }
 

@@ -31,9 +31,6 @@
 /*@unchecked@*/
 int _print_pkts = 0;
 
-extern int _nolead;
-extern int _nosigh;
-
 /**
  */
 static int manageFile(/*@out@*/ FD_t *fdp,
@@ -221,8 +218,7 @@ static int rpmReSign(/*@unused@*/ rpmts ts,
 	    goto exit;
 /*@=modobserver@*/
 
-if (!_nolead) {
-	const char item[] = "Lead";
+    {	const char item[] = "Lead";
 	msg = NULL;
 	rc = rpmpkgRead(item, fd, &lead, &msg);
 	if (rc != RPMRC_OK) {
@@ -231,10 +227,9 @@ if (!_nolead) {
 	    goto exit;
 	}
 	msg = _free(msg);
-}
+    }
 
-if (!_nosigh) {
-	const char item[] = "Signature";
+    {	const char item[] = "Signature";
 	msg = NULL;
 	rc = rpmpkgRead(item, fd, &sigh, &msg);
 	switch (rc) {
@@ -252,7 +247,7 @@ if (!_nosigh) {
 	    /*@switchbreak@*/ break;
 	}
 	msg = _free(msg);
-}
+    }
 
 	/* Write the header and archive to a temp file */
 	/* ASSERT: ofd == NULL && sigtarget == NULL */
@@ -408,24 +403,21 @@ if (sigh != NULL) {
 	if (manageFile(&ofd, &tfn, O_WRONLY|O_CREAT|O_TRUNC, 0))
 	    goto exit;
 
-if (!_nolead) {
-	const char item[] = "Lead";
-	rc = rpmpkgWrite(item, ofd, lead, NULL);
-	if (rc != RPMRC_OK) {
-	    rpmlog(RPMLOG_ERR, "%s: %s: %s\n", tfn, item, Fstrerror(ofd));
-	    goto exit;
+	{   const char item[] = "Lead";
+	    rc = rpmpkgWrite(item, ofd, lead, NULL);
+	    if (rc != RPMRC_OK) {
+		rpmlog(RPMLOG_ERR, "%s: %s: %s\n", tfn, item, Fstrerror(ofd));
+		goto exit;
+	    }
 	}
-}
 
-if (!_nosigh) {
-	const char item[] = "Signature";
-	rc = rpmpkgWrite(item, ofd, sigh, NULL);
-	if (rc != RPMRC_OK) {
-	    rpmlog(RPMLOG_ERR, "%s: %s: %s\n", tfn, item,
-		Fstrerror(ofd));
-	    goto exit;
+	{   const char item[] = "Signature";
+	    rc = rpmpkgWrite(item, ofd, sigh, NULL);
+	    if (rc != RPMRC_OK) {
+		rpmlog(RPMLOG_ERR, "%s: %s: %s\n", tfn, item, Fstrerror(ofd));
+		goto exit;
+	    }
 	}
-}
 
 	/* Append the header and archive from the temp file */
 	/* ASSERT: fd == NULL && ofd != NULL */
@@ -885,45 +877,39 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
     }
 
     {
-
-if (!_nolead) {
-	const char item[] = "Lead";
-	msg = NULL;
-	rc = rpmpkgRead(item, fd, NULL, &msg);
-	if (rc != RPMRC_OK) {
-	    rpmlog(RPMLOG_ERR, "%s: %s: %s\n", fn, item, msg);
-	    msg = _free(msg);
-	    res++;
-	    goto exit;
-	}
-	msg = _free(msg);
-}
-
-if (!_nosigh) {
-	const char item[] = "Signature";
-	msg = NULL;
-	rc = rpmpkgRead(item, fd, &sigh, &msg);
-	switch (rc) {
-	default:
-	    rpmlog(RPMLOG_ERR, "%s: %s: %s\n", fn, item,
-			(msg && *msg ? msg : ""));
-	    msg = _free(msg);
-	    res++;
-	    goto exit;
-	    /*@notreached@*/ /*@switchbreak@*/ break;
-	case RPMRC_OK:
-	    if (sigh == NULL) {
-		rpmlog(RPMLOG_ERR, _("%s: No signature available\n"), fn);
+	{   const char item[] = "Lead";
+	    msg = NULL;
+	    rc = rpmpkgRead(item, fd, NULL, &msg);
+	    if (rc != RPMRC_OK) {
+		rpmlog(RPMLOG_ERR, "%s: %s: %s\n", fn, item, msg);
+		msg = _free(msg);
 		res++;
 		goto exit;
 	    }
-	    /*@switchbreak@*/ break;
+	    msg = _free(msg);
 	}
-	msg = _free(msg);
-} else {
-nosignatures = 1;
-nodigests = 1;
-}
+
+	{   const char item[] = "Signature";
+	    msg = NULL;
+	    rc = rpmpkgRead(item, fd, &sigh, &msg);
+	    switch (rc) {
+	    default:
+		rpmlog(RPMLOG_ERR, "%s: %s: %s\n", fn, item,
+			(msg && *msg ? msg : ""));
+		msg = _free(msg);
+		res++;
+		goto exit;
+		/*@notreached@*/ /*@switchbreak@*/ break;
+	    case RPMRC_OK:
+		if (sigh == NULL) {
+		    rpmlog(RPMLOG_ERR, _("%s: No signature available\n"), fn);
+		    res++;
+		    goto exit;
+		}
+		/*@switchbreak@*/ break;
+	    }
+	    msg = _free(msg);
+	}
 
 	/* Grab a hint of what needs doing to avoid duplication. */
 	she->tag = 0;

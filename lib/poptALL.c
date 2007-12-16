@@ -27,34 +27,10 @@ const char *__progname;
 /*@access headerTagTableEntry @*/	/* XXX rpmcliFini */
 
 /*@unchecked@*/
-extern int _nolead;
-
-/*@unchecked@*/
-int _nosigh = 0;
-
-/*@unchecked@*/
-extern int _newmagic;
-
-/*@unchecked@*/
-extern int _tagbsearch;
-
-/*@unchecked@*/
-extern int _tagcache;
-
-/*@unchecked@*/
 extern int _use_xar;
 
 /*@unchecked@*/
 static int _debug = 0;
-
-#if defined(POPT_ARGFLAG_RANDOM)
-/** @todo Eliminate. */
-/*@unchecked@*/
-extern int _rsegfault;
-
-/*@unchecked@*/
-extern int _wsegfault;
-#endif
 
 /*@-exportheadervar@*/
 /*@unchecked@*/
@@ -383,13 +359,6 @@ struct poptOption rpmcliAllPoptTable[] = {
  { "debug", 'd', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_debug, -1,
         NULL, NULL },
 
-#if defined(POPT_ARGFLAG_RANDOM)
- { "rsegfault", '\0', POPT_ARG_INT|POPT_ARGFLAG_RANDOM|POPT_ARGFLAG_DOC_HIDDEN,
-	&_rsegfault, 0, NULL, NULL },
- { "wsegfault", '\0', POPT_ARG_INT|POPT_ARGFLAG_RANDOM|POPT_ARGFLAG_DOC_HIDDEN,
-	&_wsegfault, 0, NULL, NULL },
-#endif
-
  { "predefine", '\0', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN, NULL, POPT_PREDEFINE,
 	N_("predefine MACRO with value EXPR"),
 	N_("'MACRO EXPR'") },
@@ -509,20 +478,6 @@ struct poptOption rpmcliAllPoptTable[] = {
  { "urldebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_url_debug, -1,
 	N_("debug URL cache handling"), NULL},
 
- { "nolead", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_nolead, -1,
-	N_("disable rpm lead"), NULL},
- { "nosigh", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_nosigh, -1,
-	N_("disable rpm signature header"), NULL},
- { "newmagic", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_newmagic, -1,
-	N_("dupe region tag into lsb of magic"), NULL},
- { "notagbsearch", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_tagbsearch, 0,
-	N_("disable tag lookup using binary search"), NULL},
- { "tagbsearch", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_tagbsearch, 1,
-	N_("enable tag lookup using binary search"), NULL},
- { "notagcache", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_tagcache, 0,
-	N_("disable tag array data caching"), NULL},
- { "tagcache", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_tagcache, 1,
-	N_("enable tag array data caching"), NULL},
  { "xar", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_use_xar, 1,
 	N_("read xar package"), NULL},
 

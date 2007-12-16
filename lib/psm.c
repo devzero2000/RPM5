@@ -40,9 +40,6 @@ int _psm_debug = _PSM_DEBUG;
 /*@unchecked@*/
 int _psm_threads = 0;
 
-extern int _nolead;
-extern int _nosigh;
-
 /*@access FD_t @*/		/* XXX void * arg */
 /*@access Header @*/		/* XXX void * arg */
 
@@ -1923,8 +1920,7 @@ psm->te->h = headerLink(fi->h);
 	    /*@=nullstate@*/
 
 	    /* Write the lead section into the package. */
-	    if (!_nolead) {
-		static const char item[] = "Lead";
+	    {	static const char item[] = "Lead";
 		const char * NEVR = rpmteNEVR(psm->te);
 		size_t nb = rpmpkgSizeof(item, NULL);
 	
@@ -1944,8 +1940,7 @@ psm->te->h = headerLink(fi->h);
 
 	    /* Write the signature section into the package. */
 	    /* XXX rpm-4.1 and later has archive size in signature header. */
-	    if (!_nosigh) {
-		static const char item[] = "Signature";
+	    {	static const char item[] = "Signature";
 		Header sigh = headerRegenSigHeader(fi->h, noArchiveSize);
 		/* Reallocate the signature into one contiguous region. */
 		sigh = headerReload(sigh, RPMTAG_HEADERSIGNATURES);

@@ -51,18 +51,6 @@ int _use_xar = 0;
 /*@unchecked@*/
 static int _print_pkts = 0;
 
-/*@-redecl@*/
-/*@unchecked@*/
-extern int _newmagic;
-/*@=redecl@*/
-
-/*@-type@*/
-/*@observer@*/ /*@unchecked@*/
-static unsigned char sigh_magic[8] = {
-	0x8e, 0xad, 0xe8, 0x3e, 0x00, 0x00, 0x00, 0x00
-};
-/*@=type@*/
-
 /**
  */
 /*@-exportheader@*/
@@ -415,9 +403,6 @@ struct rpmlead {
     char reserved[16];		/*!< Pad to 96 bytes -- 8 byte aligned! */
 } ;
 
-/*@unchecked@*/
-int _nolead = SUPPORT_RPMLEAD;
-
 /*@-type@*/
 /*@unchecked@*/ /*@observer@*/
 static unsigned char lead_magic[] = {
@@ -723,8 +708,6 @@ fprintf(stderr, "--> rdSignature(%p, %p, %p)\n", fd, ptr, msg);
 	size_t nmagic = 0;
 
 	(void) headerGetMagic(NULL, &hmagic, &nmagic);
-	if (_newmagic)	/* XXX FIXME: sigh needs its own magic. */
-	    hmagic = sigh_magic;
 
 	if (memcmp(block, hmagic, nmagic)) {
 	    unsigned char * x = (unsigned char *)block;
@@ -845,8 +828,6 @@ assert(entry->info.offset > 0);	/* XXX insurance */
     }
     sigh->flags |= HEADERFLAG_ALLOCATED;
     sigh->flags |= HEADERFLAG_SIGNATURE;
-    if (_newmagic)	/* XXX FIXME: sigh needs its own magic. */
-	(void) headerSetMagic(sigh, sigh_magic, sizeof(sigh_magic));
 
     {	size_t sigSize = headerSizeof(sigh);
 	size_t pad = (8 - (sigSize % 8)) % 8; /* 8-byte pad */

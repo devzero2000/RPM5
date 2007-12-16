@@ -37,11 +37,6 @@ static unsigned int nextkeyid  = 0;
 /*@unchecked@*/ /*@only@*/ /*@null@*/
 static unsigned int * keyids;
 
-/*@unchecked@*/
-extern int _nolead;
-/*@unchecked@*/
-extern int _nosigh;
-
 /**
  * Remember current key id.
  * @param dig		container
@@ -121,45 +116,43 @@ assert(dig != NULL);
     /* Snapshot current I/O counters (cached persistent I/O reuses counters) */
     (void) rpmswAdd(opsave, fdstat_op(fd, FDSTAT_READ));
 
-if (!_nolead) {
-    const char item[] = "Lead";
-    msg = NULL;
-    rc = rpmpkgRead(item, fd, NULL, &msg);
-    switch (rc) {
-    default:
-	rpmlog(RPMLOG_ERR, "%s: %s: %s\n", fn, item, msg);
-	/*@fallthrough@*/
-    case RPMRC_NOTFOUND:
-	msg = _free(msg);
-	goto exit;
-	/*@notreached@*/ break;
-    case RPMRC_OK:
-	break;
-    }
-    msg = _free(msg);
-}
-
-if (!_nosigh) {
-    const char item[] = "Signature";
-    msg = NULL;
-    rc = rpmpkgRead(item, fd, &sigh, &msg);
-    switch (rc) {
-    default:
-	rpmlog(RPMLOG_ERR, "%s: %s: %s", fn, item,
-		(msg && *msg ? msg : _("read failed\n")));
-	msg = _free(msg);
-	goto exit;
-	/*@notreached@*/ break;
-    case RPMRC_OK:
-	if (sigh == NULL) {
-	    rpmlog(RPMLOG_ERR, _("%s: No signature available\n"), fn);
-	    rc = RPMRC_FAIL;
-	    goto exit;
+   {	const char item[] = "Lead";
+	msg = NULL;
+	rc = rpmpkgRead(item, fd, NULL, &msg);
+	switch (rc) {
+	default:
+	   rpmlog(RPMLOG_ERR, "%s: %s: %s\n", fn, item, msg);
+	   /*@fallthrough@*/
+	case RPMRC_NOTFOUND:
+	   msg = _free(msg);
+	   goto exit;
+	   /*@notreached@*/ break;
+	case RPMRC_OK:
+	   break;
 	}
-	break;
+	msg = _free(msg);
     }
-    msg = _free(msg);
-}
+
+    {	const char item[] = "Signature";
+	msg = NULL;
+	rc = rpmpkgRead(item, fd, &sigh, &msg);
+	switch (rc) {
+	default:
+	    rpmlog(RPMLOG_ERR, "%s: %s: %s", fn, item,
+		(msg && *msg ? msg : _("read failed\n")));
+	    msg = _free(msg);
+	    goto exit;
+	    /*@notreached@*/ break;
+	case RPMRC_OK:
+	    if (sigh == NULL) {
+		rpmlog(RPMLOG_ERR, _("%s: No signature available\n"), fn);
+		rc = RPMRC_FAIL;
+		goto exit;
+	    }
+	    break;
+	}
+	msg = _free(msg);
+    }
 
 #define	_chk(_mask)	(she->tag == 0 && !(vsflags & (_mask)))
 

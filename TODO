@@ -94,7 +94,6 @@
 	is needed instead.
     - jbj: rpm-5.0 is almost compilation warning free, some effort to remove
 	the Mickey Mouse warnings that remain should be undertaken.
-    - jbj: retrieved headers are occaisionally failing sanity checks.
     - jbj: VSFlags (and --nodigest/--nosignature) is now global rather than
 	persistently per-transaction. That means its no longer possible to
 	have two transactions, one which verifies signatures while the other
@@ -102,12 +101,6 @@
 	some may care. Establishing a end-user, not a per-application or
 	per-transaction, package integrity/security policy is the only
 	rational end-point.
-    - jbj: get rid of undocumented construction scaffholding options like
-	--nolead and --newmagic. There's --rsegfault/--wsegfault too,
-	but I kinda like the irony of delivering a program that will randomly
-	assert(0) fail on demand. Demonstrating stale look removal to the
-	Berkeley DB haters may still be essential and necessary rpm
-	functionality imho.
     - jbj: blueprinting *.rpm and *.src rpm contents built with
 	rpm-4.5 and rpm-5.0 indicates another possible signature padding
 	calculation problem (- is 4.5 built src.rpm, + is 5.0 built src.rpm)
