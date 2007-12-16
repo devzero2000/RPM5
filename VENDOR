@@ -106,15 +106,6 @@
      Hint:           We could explicitly specify -b all the time, too.
      ________________________________________________________________________
 
-     Change:         no-require-bin-sh
-     Purpose:        do not implicitly add a requirement for /bin/sh
-     Reason:         In OpenPKG RPM does not operate on operating system
-                     scope. Instead it operates in a fully
-                     self-contained multiple-instance environment.
-                     There /bin/sh is NEVER provided by an OpenPKG RPM
-                     package.
-     ________________________________________________________________________
-
      Change:         bdb-no-partial-locking
      Purpose:        Perform full instead of partial record locking.
      Reason:         At least Solaris may reject (see its fcntl(2) manpage)

@@ -321,13 +321,11 @@ int parseScript(Spec spec, int parsePart)
 		 spec->lineNum, progArgv[0]);
 	rc = RPMRC_FAIL;
 	goto exit;
-#if defined(RPM_VENDOR_OPENPKG) /* no-require-bin-sh */
-    } else if (strcmp(progArgv[0], "/bin/sh") == 0) {
-	/* Not everything on a system is RPM based (for instance OpenPKG is
-	   just an add-on to the system), so do not assume we can just require
-	   a package to provide "/bin/sh". */
-#endif
-    } else {
+    } else
+    if (!(rpmExpandNumeric("%{?_disable_shell_interpreter_deps}")
+     && !strcmp(progArgv[0], "/bin/sh")))
+    {
+
         (void) addReqProv(spec, pkg->header, RPMTAG_REQUIRENAME,
 		progArgv[0], NULL, (tagflags | RPMSENSE_INTERP), 0);
     }

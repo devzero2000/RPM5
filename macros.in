@@ -428,6 +428,10 @@ package or when debugging this package.\
 %_use_internal_dependency_generator	2
 
 #
+# Disabler for adding /bin/sh scriptlet interpreter dependencies.
+%_disable_shell_interpreter_deps	0
+
+#
 # Filter GLIBC_PRIVATE Provides: and Requires:
 %_filter_GLIBC_PRIVATE			0
 
