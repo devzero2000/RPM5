@@ -31,6 +31,7 @@ extern int _hdr_debug;
 /*@access pgpDigParams @*/
 /*@access headerSprintfExtension @*/
 /*@access headerTagTableEntry @*/
+/*@access Header @*/	/* XXX debugging msgs */
 
 /**
  * Convert tag data representation.
@@ -1886,8 +1887,10 @@ struct headerSprintfArgs_s {
  */
 static char escapedChar(const char ch)	/*@*/
 {
+/*@-modfilesys@*/
 if (_hdr_debug)
 fprintf(stderr, "\t\t\\%c\n", ch);
+/*@=modfilesys@*/
     switch (ch) {
     case 'a': 	return '\a';
     case 'b': 	return '\b';
@@ -2223,6 +2226,7 @@ static int parseFormat(headerSprintfArgs hsa, /*@null@*/ char * str,
 	/*@requires maxSet(formatPtr) >= 0 /\ maxSet(numTokensPtr) >= 0
 		/\ maxSet(endPtr) >= 0 @*/
 {
+/*@observer@*/
 static const char *pstates[] = {
 "NORMAL", "ARRAY", "EXPR", "WTF?"
 };
@@ -2233,8 +2237,10 @@ static const char *pstates[] = {
     unsigned i;
     int done = 0;
 
+/*@-modfilesys@*/
 if (_hdr_debug)
 fprintf(stderr, "-->     parseFormat(%p, \"%s\", %p, %p, %p, %s)\n", hsa, str, formatPtr, numTokensPtr, endPtr, pstates[(state & 0x3)]);
+/*@=modfilesys@*/
 
     /* upper limit on number of individual formats */
     numTokens = 0;
@@ -2300,8 +2306,10 @@ fprintf(stderr, "-->     parseFormat(%p, \"%s\", %p, %p, %p, %s)\n", hsa, str, f
 		return 1;
 	    }
 
+/*@-modfilesys@*/
 if (_hdr_debug)
 fprintf(stderr, "\tchptr *%p = NUL\n", chptr);
+/*@=modfilesys@*/
 	    *chptr++ = '\0';
 
 	    while (start < chptr) {
@@ -2331,8 +2339,10 @@ fprintf(stderr, "\tchptr *%p = NUL\n", chptr);
 		format = freeFormat(format, numTokens);
 		return 1;
 	    }
+/*@-modfilesys@*/
 if (_hdr_debug)
 fprintf(stderr, "\tnext *%p = NUL\n", next);
+/*@=modfilesys@*/
 	    *next++ = '\0';
 
 	    chptr = start;
@@ -2368,13 +2378,17 @@ fprintf(stderr, "\tnext *%p = NUL\n", next);
 	    }
 
 	    dst = start = next;
+/*@-modfilesys@*/
 if (_hdr_debug)
 fprintf(stderr, "\tdst = start = next %p\n", dst);
+/*@=modfilesys@*/
 	    /*@switchbreak@*/ break;
 
 	case '[':
+/*@-modfilesys@*/
 if (_hdr_debug)
 fprintf(stderr, "\t%s => %s *%p = NUL\n", pstates[(state & 0x3)], pstates[PARSER_IN_ARRAY], start);
+/*@=modfilesys@*/
 	    *start++ = '\0';
 	    token = format + numTokens++;
 
@@ -2394,8 +2408,10 @@ fprintf(stderr, "\t%s => %s *%p = NUL\n", pstates[(state & 0x3)], pstates[PARSER
 	    }
 
 	    dst = start;
+/*@-modfilesys@*/
 if (_hdr_debug)
 fprintf(stderr, "\tdst = start %p\n", dst);
+/*@=modfilesys@*/
 
 	    token->type = PTOK_ARRAY;
 
@@ -2408,8 +2424,10 @@ fprintf(stderr, "\tdst = start %p\n", dst);
 		return 1;
 	    }
 	    *start++ = '\0';
+/*@-modfilesys@*/
 if (_hdr_debug)
 fprintf(stderr, "\t<= %s %p[-1] = NUL\n", pstates[(state & 0x3)], start);
+/*@=modfilesys@*/
 	    if (endPtr) *endPtr = start;
 	    done = 1;
 	    /*@switchbreak@*/ break;
@@ -2421,8 +2439,10 @@ fprintf(stderr, "\t<= %s %p[-1] = NUL\n", pstates[(state & 0x3)], start);
 		return 1;
 	    }
 	    *start++ = '\0';
+/*@-modfilesys@*/
 if (_hdr_debug)
 fprintf(stderr, "\t<= %s %p[-1] = NUL\n", pstates[(state & 0x3)], start);
+/*@=modfilesys@*/
 	    if (endPtr) *endPtr = start;
 	    done = 1;
 	    /*@switchbreak@*/ break;
@@ -2436,8 +2456,10 @@ fprintf(stderr, "\t<= %s %p[-1] = NUL\n", pstates[(state & 0x3)], start);
 		/*@=temptrans =assignexpose@*/
 	    }
 
+/*@-modfilesys@*/
 if (_hdr_debug)
 fprintf(stderr, "\t*%p = *%p \"%s\"\n", dst, start, start);
+/*@=modfilesys@*/
 	    if (*start == '\\') {
 		start++;
 		*dst++ = escapedChar(*start);
@@ -2480,8 +2502,10 @@ static int parseExpression(headerSprintfArgs hsa, sprintfToken token,
     char * chptr;
     char * end;
 
+/*@-modfilesys@*/
 if (_hdr_debug)
 fprintf(stderr, "-->   parseExpression(%p, %p, \"%s\", %p)\n", hsa, token, str, endPtr);
+/*@=modfilesys@*/
 
     hsa->errmsg = NULL;
     chptr = str;
@@ -3033,8 +3057,10 @@ char * headerSprintf(Header h, const char * fmt,
     int isyaml;
     int need;
 
+/*@-modfilesys@*/
 if (_hdr_debug)
 fprintf(stderr, "==> headerSprintf(%p, \"%s\", %p, %p, %p)\n", h, fmt, tags, exts, errmsg);
+/*@=modfilesys@*/
 
     /* Set some reasonable defaults */
     if (tags == NULL)

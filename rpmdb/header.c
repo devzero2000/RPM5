@@ -1729,8 +1729,6 @@ int headerAddI18NString(Header h, rpmTag tag, const char * string,
 /*@-compmempass@*/
 	xx = headerAddEntry(h, he);
 /*@=compmempass@*/
-/* XXX Add debugging hackery to test a hypothesis re rpm-5.0beta1 segfault. */
-if (_hdr_debug) (void) tagName(tag);
 	return xx;
     } else if (langNum >= entry->info.count) {
 	ghosts = langNum - entry->info.count;
