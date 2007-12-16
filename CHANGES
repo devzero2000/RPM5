@@ -1,4 +1,5 @@
 5.0b1 -> 5.0b2:
+    - jbj: fold in patch-as-plain-macro changes.
     - jbj: fix some minor memory leaks.
     - jbj: XAR magic is detected when reading packages, --xar is superfluous.
     - jbj: eliminate development construction scaffholding.

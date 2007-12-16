@@ -227,12 +227,6 @@
                      fixed 16KB buffer in OpenPKG for now.
      ________________________________________________________________________
 
-     Change:         patch-as-plain-macro
-     Purpose:        Use %patch as a plain macro instead of internal implementation.
-     Reason:         The macro is more flexible and we especially can introduce
-                     some Lua-based substitution magic there more easily.
-     ________________________________________________________________________
-
      Change:         stop-on-error-macro
      Purpose:        Make sure that an %{error:<msg>} macro really stops further
                      processing. Else it would be nothing more than a %{warn:<msg>}.

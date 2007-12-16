@@ -1183,10 +1183,6 @@ doFoo(MacroBuf mb, int negate, const char * f, size_t fn,
 	buf[gn] = '\0';
 	(void) expandU(mb, buf, bufn);
     }
-#if defined(RPM_VENDOR_OPENPKG) /* patch-as-plain-macro */
-#define NOTYET
-#endif
-#if defined(NOTYET)	/* XXX change needs parsePrep and macros changes too */
     if (fn > 5 && STREQ("patch", f, 5) && xisdigit(f[5])) {
 	/* Skip leading zeros */
 	for (c = 5; c < fn-1 && f[c] == '0' && xisdigit(f[c+1]);)
@@ -1195,10 +1191,6 @@ doFoo(MacroBuf mb, int negate, const char * f, size_t fn,
 	be = stpncpy( stpcpy(b, "%patch -P "), f+c, fn-c);
 	*be = '\0';
     } else
-#endif
-#if defined(RPM_VENDOR_OPENPKG) /* patch-as-plain-macro */
-#undef NOTYET
-#endif
     if (STREQ("basename", f, fn)) {
 	if ((b = strrchr(buf, '/')) == NULL)
 	    b = buf;
@@ -1573,10 +1565,6 @@ expandMacro(MacroBuf mb)
 	}
 #endif
 
-#if defined(RPM_VENDOR_OPENPKG) /* patch-as-plain-macro */
-#define NOTYET
-#endif
-#if defined(NOTYET)	/* XXX change needs parsePrep and macros changes too */
 	/* enable for OpenPKG */
 	/* Rewrite "%patchNN ..." as "%patch -P NN ..." and expand. */
 	if (lastc != NULL && fn > 5 && STREQ("patch", f, 5) && xisdigit(f[5])) {
@@ -1586,10 +1574,6 @@ expandMacro(MacroBuf mb)
 		s = lastc;
 		continue;
 	}
-#endif
-#if defined(RPM_VENDOR_OPENPKG) /* patch-as-plain-macro */
-#undef NOTYET
-#endif
 
 	/* XXX necessary but clunky */
 	if (STREQ("basename", f, fn) ||

@@ -391,7 +391,7 @@ package or when debugging this package.\
 # a file and apply using patch(1).
 #
 
-%Xpatch(b:p:P:REz:F:d:) \
+%patch(b:p:P:REz:F:d:) \
 %define patch_file	%{P:%{-P:%{-P*}}%{!-P:0}} \
 %define patch_suffix	%{-b:-b --suffix %{-b*}} %{-z:--suffix %{-z*}} \
   echo "Patch #%{-P:%{-P*}}%{!-P:0} (%{basename:%patch_file}):" \

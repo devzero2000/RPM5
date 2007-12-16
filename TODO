@@ -65,8 +65,6 @@
     - jbj: change RPM_I18NSTRING_TYPE wiring to use arbitrary tag.
     - jbj: add lazy mkdir -p to handle packaging pathologies like in
 	devtool-test.spec (no mkdir -p in %install).
-    - jbj: fold-in patch-as-plain-macro at first convenient opportunity.
-    - jbj: ditto, patch-as-plain-macro.
     - jbj: add macro disabler for scriptlet interpreter dependencies, fold
 	in no-require-bin-sh patch.
     - jbj: Mandriva perl-URPM "make test" indicates a problem querying binary
@@ -158,5 +156,6 @@
 ==3436==    by 0x48878F9: rpmdsSysinfo (rpmds.c:1600)
 ==3436==    by 0x48A5BDE: rpmtsCreate (rpmts.c:1302)
 ==3436==    by 0x3EFA: main (rpmqv.c:540)
+    - jbj: eliminate %patch-as-macro-in-C implementation.
 
 	
