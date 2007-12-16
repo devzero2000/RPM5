@@ -170,14 +170,14 @@ static char *doPatch(Spec spec, int c, int strip, const char *db,
 		"if [ $STATUS -ne 0 ]; then\n"
 		"  exit $STATUS\n"
 		"fi",
-		c, /*@-unrecog@*/ (const char *) basename(fn), /*@=unrecog@*/
+		c, /*@-unrecog@*/ (const char *) basename((char *)fn), /*@=unrecog@*/
 		zipper,
 		fn, patch, strip, args);
 	zipper = _free(zipper);
     } else {
 	sprintf(buf,
 		"echo \"Patch #%d (%s):\"\n"
-		"%s -p%d %s -s < '%s'", c, (const char *) basename(fn),
+		"%s -p%d %s -s < '%s'", c, (const char *) basename((char *)fn),
 		patch, strip, args, fn);
     }
 
