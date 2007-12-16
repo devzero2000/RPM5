@@ -57,8 +57,6 @@
     - jbj: finish Requires: sanitycheck(N) = E:V-R runtime probe.
     - jbj: finish BuildRequires: vcheck(N) = E:V-R runtime probe.
     - jbj: write up added featlets/bugtures in %docdir notes.
-    - jbj: rpmbuild --sign is functional. However, behavior may have changed
-	for empty passwords when not using linux keyutils. Should I care?
     - jbj: handle SourceN: foo-V-R.src.rpm unpacking.
     - jbj: fix (or at least document) the /sbin/ldconfig optimization flaw.
     - jbj: finish --trust with --import (or punt to 5.1).
