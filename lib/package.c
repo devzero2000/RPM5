@@ -9,6 +9,11 @@
 #include <rpmio_internal.h>
 #include <rpmlib.h>
 
+#if defined(RPM_VENDOR_MANDRIVA)
+#define	_RPMEVR_INTERNAL
+#include "rpmevr.h"
+#endif
+
 #include "rpmts.h"
 
 #include "misc.h"	/* XXX stripTrailingChar() */
@@ -93,6 +98,225 @@ static int typeAlign[16] =  {
  * Sanity check on range of data offset.
  */
 #define hdrchkRange(_dl, _off)		((_off) < 0 || (_off) > (_dl))
+
+#if defined(RPM_VENDOR_MANDRIVA)
+/*@-boundsread@*/
+static int dncmp(const void * a, const void * b)
+       /*@*/
+{
+    const char *const * first = a;
+    const char *const * second = b;
+    return strcmp(*first, *second);
+}
+/*@=boundsread@*/
+
+/*@-bounds@*/
+/**
+ * Convert absolute path tag to (dirname,basename,dirindex) tags.
+ * @param h             header
+ */
+static void compressFilelist(Header h)
+	/*@modifies h @*/
+{
+    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
+    HAE_t hae = (HAE_t)headerAddEntry;
+    HRE_t hre = (HRE_t)headerRemoveEntry;
+    HFD_t hfd = headerFreeData;
+    char ** fileNames;
+    const char ** dirNames;
+    const char ** baseNames;
+    int_32 * dirIndexes;
+    rpmTagType fnt;
+    int count;
+    int i, xx;
+    int dirIndex = -1;
+
+    /*
+     * This assumes the file list is already sorted, and begins with a
+     * single '/'. That assumption isn't critical, but it makes things go
+     * a bit faster.
+     */
+
+    if (headerIsEntry(h, RPMTAG_DIRNAMES)) {
+	xx = hre(h, RPMTAG_OLDFILENAMES);
+	return;		/* Already converted. */
+    }
+
+    if (!hge(h, RPMTAG_OLDFILENAMES, &fnt, (void **) &fileNames, &count))
+	return;		/* no file list */
+    if (fileNames == NULL || count <= 0)
+	return;
+
+    dirNames = alloca(sizeof(*dirNames) * count);	/* worst case */
+    baseNames = alloca(sizeof(*dirNames) * count);
+    dirIndexes = alloca(sizeof(*dirIndexes) * count);
+
+    if (fileNames[0][0] != '/') {
+	/* HACK. Source RPM, so just do things differently */
+	dirIndex = 0;
+	dirNames[dirIndex] = "";
+	for (i = 0; i < count; i++) {
+	    dirIndexes[i] = dirIndex;
+	    baseNames[i] = fileNames[i];
+	}
+	goto exit;
+    }
+
+    /*@-branchstate@*/
+    for (i = 0; i < count; i++) {
+	const char ** needle;
+	char savechar;
+	char * baseName;
+	int len;
+
+	if (fileNames[i] == NULL)	/* XXX can't happen */
+	    continue;
+	baseName = strrchr(fileNames[i], '/') + 1;
+	len = baseName - fileNames[i];
+	needle = dirNames;
+	savechar = *baseName;
+	*baseName = '\0';
+/*@-compdef@*/
+	if (dirIndex < 0 ||
+	    (needle = bsearch(&fileNames[i], dirNames, dirIndex + 1, sizeof(dirNames[0]), dncmp)) == NULL) {
+	    char *s = alloca(len + 1);
+	    memcpy(s, fileNames[i], len + 1);
+	    s[len] = '\0';
+	    dirIndexes[i] = ++dirIndex;
+	    dirNames[dirIndex] = s;
+	} else
+	    dirIndexes[i] = needle - dirNames;
+/*@=compdef@*/
+
+	*baseName = savechar;
+	baseNames[i] = baseName;
+    }
+    /*@=branchstate@*/
+
+exit:
+    if (count > 0) {
+	xx = hae(h, RPMTAG_DIRINDEXES, RPM_INT32_TYPE, dirIndexes, count);
+	xx = hae(h, RPMTAG_BASENAMES, RPM_STRING_ARRAY_TYPE,
+			baseNames, count);
+	xx = hae(h, RPMTAG_DIRNAMES, RPM_STRING_ARRAY_TYPE,
+			dirNames, dirIndex + 1);
+    }
+
+    fileNames = hfd(fileNames, fnt);
+
+    xx = hre(h, RPMTAG_OLDFILENAMES);
+}
+/*@=bounds@*/
+
+
+/* copied verbatim from build/pack.c */
+static void providePackageNVR(Header h)
+	/*@modifies h @*/
+{
+    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
+    HFD_t hfd = headerFreeData;
+    const char *name, *version, *release;
+    int_32 * epoch;
+    const char *pEVR;
+    char *p;
+    int_32 pFlags = RPMSENSE_EQUAL;
+    const char ** provides = NULL;
+    const char ** providesEVR = NULL;
+    rpmTagType pnt, pvt;
+    int_32 * provideFlags = NULL;
+    int providesCount;
+    int i, xx;
+    int bingo = 1;
+
+    /* Generate provides for this package name-version-release. */
+    xx = headerNVR(h, &name, &version, &release);
+    if (!(name && version && release))
+	return;
+    pEVR = p = alloca(21 + strlen(version) + 1 + strlen(release) + 1);
+    *p = '\0';
+    if (hge(h, RPMTAG_EPOCH, NULL, (void **) &epoch, NULL)) {
+	sprintf(p, "%d:", *epoch);
+	while (*p != '\0')
+	    p++;
+    }
+    (void) stpcpy( stpcpy( stpcpy(p, version) , "-") , release);
+
+    /*
+     * Rpm prior to 3.0.3 does not have versioned provides.
+     * If no provides at all are available, we can just add.
+     */
+    if (!hge(h, RPMTAG_PROVIDENAME, &pnt, (void **) &provides, &providesCount))
+	goto exit;
+
+    /*
+     * Otherwise, fill in entries on legacy packages.
+     */
+    if (!hge(h, RPMTAG_PROVIDEVERSION, &pvt, (void **) &providesEVR, NULL)) {
+	for (i = 0; i < providesCount; i++) {
+	    char * vdummy = "";
+	    int_32 fdummy = RPMSENSE_ANY;
+	    xx = headerAddOrAppendEntry(h, RPMTAG_PROVIDEVERSION, RPM_STRING_ARRAY_TYPE,
+			&vdummy, 1);
+	    xx = headerAddOrAppendEntry(h, RPMTAG_PROVIDEFLAGS, RPM_INT32_TYPE,
+			&fdummy, 1);
+	}
+	goto exit;
+    }
+
+    xx = hge(h, RPMTAG_PROVIDEFLAGS, NULL, (void **) &provideFlags, NULL);
+
+    /*@-nullderef@*/	/* LCL: providesEVR is not NULL */
+    if (provides && providesEVR && provideFlags)
+    for (i = 0; i < providesCount; i++) {
+        if (!(provides[i] && providesEVR[i]))
+            continue;
+	if (!(provideFlags[i] == RPMSENSE_EQUAL &&
+	    !strcmp(name, provides[i]) && !strcmp(pEVR, providesEVR[i])))
+	    continue;
+	bingo = 0;
+	break;
+    }
+    /*@=nullderef@*/
+
+exit:
+    provides = hfd(provides, pnt);
+    providesEVR = hfd(providesEVR, pvt);
+
+    if (bingo) {
+	xx = headerAddOrAppendEntry(h, RPMTAG_PROVIDENAME, RPM_STRING_ARRAY_TYPE,
+		&name, 1);
+	xx = headerAddOrAppendEntry(h, RPMTAG_PROVIDEFLAGS, RPM_INT32_TYPE,
+		&pFlags, 1);
+	xx = headerAddOrAppendEntry(h, RPMTAG_PROVIDEVERSION, RPM_STRING_ARRAY_TYPE,
+		&pEVR, 1);
+    }
+}
+
+static void add_RPMTAG_SOURCERPM(Header h)
+{
+  if (!headerIsEntry(h, RPMTAG_SOURCERPM) && !headerIsEntry(h, RPMTAG_SOURCEPACKAGE)) {
+    /* we have no way to know if this is a srpm or an rpm with no SOURCERPM */
+    /* but since this is an old v3 rpm, we suppose it's not a srpm */
+    headerAddEntry(h, RPMTAG_SOURCERPM, RPM_STRING_TYPE, "\0", 1);
+  }
+}
+
+/* rpm v3 compatibility */
+static void rpm3to4(Header h) {
+    char * rpmversion;
+    rpmTagType rpmversion_type;
+
+    (void) headerGetEntry(h, RPMTAG_RPMVERSION, NULL, (void **) &rpmversion, &rpmversion_type);
+
+    if ((!rpmversion) || rpmversion[0] < '4') {
+        add_RPMTAG_SOURCERPM(h);
+        providePackageNVR(h);
+        compressFilelist(h);
+    }
+    headerFreeTag(h, (void *) rpmversion, rpmversion_type);
+    return;
+}
+#endif
 
 void headerMergeLegacySigs(Header h, const Header sigh)
 {
@@ -1063,6 +1287,10 @@ exit:
 
 	/* Append (and remap) signature tags to the metadata. */
 	headerMergeLegacySigs(h, sigh);
+
+#if defined(RPM_VENDOR_MANDRIVA)
+    rpm3to4(h);
+#endif
 
 	/* Bump reference count for return. */
 /*@-boundswrite@*/
