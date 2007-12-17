@@ -1175,7 +1175,7 @@ print (t)\
 %__spec_clean_args	%{___build_args}
 %__spec_clean_cmd	%{___build_cmd}
 %__spec_clean_pre	%{___build_pre}
-%__spec_clean_body	%{__rm} -rf '%{buildroot}'\
+%__spec_clean_body	%{?buildroot:%{__rm} -rf '%{buildroot}'}\
 %{nil}
 %__spec_clean_post	%{nil}
 %__spec_clean_template	#!%{__spec_clean_cmd}\
