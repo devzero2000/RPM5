@@ -26,7 +26,7 @@
 
 int parseFiles(Spec spec)
 {
-    int nextPart;
+    rpmParseState nextPart;
     Package pkg;
     int rc, argc;
     int arg;

@@ -93,7 +93,7 @@ int parseScript(Spec spec, int parsePart)
     int flag = PART_SUBNAME;
     Package pkg;
     StringBuf sb = NULL;
-    int nextPart;
+    rpmParseState nextPart;
     char reqargs[BUFSIZ];
 
     int argc;

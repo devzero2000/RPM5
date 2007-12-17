@@ -31,7 +31,7 @@ int parseDescription(Spec spec)
 	/*@globals name, lang @*/
 	/*@modifies name, lang @*/
 {
-    int nextPart = RPMRC_FAIL;	/* assume error */
+    rpmParseState nextPart = RPMRC_FAIL;	/* assume error */
     StringBuf sb;
     int flag = PART_SUBNAME;
     Package pkg;

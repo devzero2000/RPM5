@@ -750,7 +750,8 @@ bottom:
 
 int parsePrep(Spec spec, int verify)
 {
-    int nextPart, res, rc;
+    rpmParseState nextPart;
+    int res, rc;
     StringBuf sb;
     char **lines, **saveLines;
     char *cp;

@@ -260,7 +260,7 @@ static rpmRC addChangelog(Header h, StringBuf sb)
 
 int parseChangelog(Spec spec)
 {
-    int nextPart;
+    rpmParseState nextPart;
     StringBuf sb = newStringBuf();
     rpmRC rc;
     

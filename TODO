@@ -62,8 +62,6 @@
     - jbj: finish --trust with --import (or punt to 5.1).
     - jbj: add build script templates for install scriptlets (or punt to 5.1).
     - jbj: change RPM_I18NSTRING_TYPE wiring to use arbitrary tag.
-    - jbj: add lazy mkdir -p to handle packaging pathologies like in
-	devtool-test.spec (no mkdir -p in %install).
     - jbj: Mandriva perl-URPM "make test" indicates a problem querying binary
 	package headers that would be produced by a spec file.
 	Dvalin has found that reverting this patch
