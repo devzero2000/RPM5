@@ -21,7 +21,6 @@ const char * getSourceDir(rpmfileAttrs attr, const char *filename)
 #else
 const char * getSourceDir(rpmfileAttrs attr)
 #endif
-    /*@globals rpmGlobalMacroContext @*/
 {
     const char * dir = NULL;
 #if defined(RPM_VENDOR_OPENPKG) /* splitted-source-directory */

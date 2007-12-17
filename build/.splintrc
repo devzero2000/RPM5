@@ -15,19 +15,17 @@
 -branchstate
 -bufferoverflowhigh
 
--compdef
--compmempass
--incondefs
+-compdef		# 4
+-compmempass		# 55
+-incondefs		# 4 rpmFooMacroContext typedef
 -internalglobs		# 32
 -mustmod
--nullstate
--usereleased
+-nullstate		# 3
+-usereleased		# 7
 
 -dependenttrans		# 7
 -observertrans		# 16
 -readonlytrans		# 8
-
--forempty
 
 # --- +partial artifacts
 -declundef

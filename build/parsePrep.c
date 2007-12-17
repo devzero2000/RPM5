@@ -794,7 +794,7 @@ int parsePrep(Spec spec, int verify)
     for (lines = saveLines; *lines; lines++) {
 	res = 0;
 	for (cp = *lines; *cp == ' ' || *cp == '\t'; cp++)
-	    ;
+	    {};
 	if (! strncmp(cp, "%setup", sizeof("%setup")-1)) {
 	    res = doSetupMacro(spec, cp);
 #ifndef	DYING

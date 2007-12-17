@@ -229,7 +229,7 @@ SpecSource getSource(Spec spec, int num)
     int i;
 
     for (i = 0; i < num; i++)
-    if (!(p = p->next)) return NULL;
+	if ((p = p->next) == NULL) return NULL;
 
     return p;
 }

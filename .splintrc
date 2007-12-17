@@ -1,9 +1,9 @@
--I. -I./build -I./lib -I./rpmdb -I./rpmio -I./beecrypt -I./lua/include -I./lua/local -I./file/src -I./popt -I./elfutils/libelf -I./zlib -I/usr/lib/gcc-lib/i386-redhat-linux/3.1/include -DHAVE_CONFIG_H -D_GNU_SOURCE -D_REENTRANT -DHAVE_DEV_DSP -DHAVE_SYS_SOUNDCARD
+-I. -I./build -I./lib -I./rpmdb -I./rpmio -I/usr/include/nss3 -I/usr/include/nspr4 -I/usr/include/beecrypt -I/usr/include/neon -I/usr/include/xar -I./lua -I./lua/local -I./file/src -DHAVE_CONFIG_H -D_GNU_SOURCE -D_REENTRANT
 
 #+partial
 +forcehints
 
--warnunixlib
+#-warnunixlib
 -warnposix
 
 +unixlib
@@ -16,9 +16,65 @@
 #+likelybounds
 +slovak-fcns
 +access-slovak
--redecl
+-branchstate
 -bufferoverflowhigh
+-redecl
+
+-aliasunique
+-compdef
+-compmempass
+-duplicatequals
+-evalorder
+-formatconst
+-globs
+-globstate
+-globuse
+-incondefs
+-infloops
+-infloopsuncon
+-internalglobs
+-modobserver
+-mods
+-moduncon
+-mustmod
+-noeffect
+-noeffectuncon
+-noparams
+-nullassign
+-nullderef
+-nullpass
+-nullptrarith
+-nullstate
+-oldstyle
+-paramuse
+-protoparammatch
+-retvalint
+-retvalother
+-shadow
+-shiftimplementation
+-shiftnegative
+-sizeoftype
+-type
+-unrecog
+-usereleased
+-warnlintcomments
+
+-dependenttrans
+-kepttrans
+-temptrans
+-observertrans
+-onlytrans
+-ownedtrans
+-readonlytrans
+-statictrans
+-unqualifiedtrans
+
+-looploopbreak
 -whileempty
+
+-exportheader
+-exportheadervar
+-exportlocal
 
 -macroparams
 -declundef
