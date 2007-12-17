@@ -233,7 +233,7 @@ static int isMemberInEntry(Header h, const char *name, rpmTag tag)
 	break;
     }
     he->p.ptr = _free(he->p.ptr);
-    return (he->c >= 0 ? 1 : 0);
+    return rc;
 }
 
 /**
