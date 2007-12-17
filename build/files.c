@@ -895,7 +895,7 @@ static rpmRC parseForSimple(/*@unused@*/Spec spec, Package pkg, char * buf,
 		fl->currentFlags,
 		fl->docDirs, fl->docDirCount, fl->isDir,
 		fl->passedSpecialDoc, fl->isSpecialDoc,
-		pkg->specialDoc, rpmGlobalMacroContext @*/
+		pkg->header, pkg->specialDoc, rpmGlobalMacroContext @*/
 {
     char *s, *t;
     int specialDoc = 0;
@@ -997,27 +997,30 @@ static rpmRC parseForSimple(/*@unused@*/Spec spec, Package pkg, char * buf,
 	    res = RPMRC_FAIL;
 	} else {
 	/* XXX WATCHOUT: buf is an arg */
-	   {	static char *_docdir_fmt= 0;
+	   {	
+		/*@only@*/
+		static char *_docdir_fmt = NULL;
 		static int oneshot = 0;
 		const char *ddir, *fmt, *errstr;
 		if (!oneshot) {
 		    _docdir_fmt = rpmExpand("%{?_docdir_fmt}", NULL);
-		    if (!_docdir_fmt || !*_docdir_fmt) {
+		    if (!(_docdir_fmt && *_docdir_fmt))
 			_docdir_fmt = _free(_docdir_fmt);
-			_docdir_fmt = "%{NAME}-%{VERSION}";
-		    }
 		    oneshot = 1;
 		}
+		if (_docdir_fmt == NULL)
+		    _docdir_fmt = xstrdup("%{NAME}-%{VERSION}");
 		fmt = headerSprintf(pkg->header, _docdir_fmt, NULL, rpmHeaderFormats, &errstr);
-		if (!fmt) {
+		if (fmt == NULL) {
 		    rpmlog(RPMLOG_ERR, _("illegal _docdir_fmt: %s\n"), errstr);
 		    fl->processingFailed = 1;
 		    res = RPMRC_FAIL;
+		} else {
+		    ddir = rpmGetPath("%{_docdir}/", fmt, NULL);
+		    strcpy(buf, ddir);
+		    ddir = _free(ddir);
+		    fmt = _free(fmt);
 		}
-		ddir = rpmGetPath("%{_docdir}/", fmt, NULL);
-		strcpy(buf, ddir);
-		ddir = _free(ddir);
-		fmt = _free(fmt);
 	    }
 
 	/* XXX FIXME: this is easy to do as macro expansion */
@@ -1288,8 +1291,10 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
     }
 
     sxfn = rpmGetPath("%{?_build_file_context_path}", NULL);
+/*@-moduncon@*/
     if (sxfn != NULL && *sxfn != '\0')
 	xx = matchpathcon_init(sxfn);
+/*@=moduncon@*/
 
     for (i = 0, flp = fl->fileList; i < fl->fileListRecsUsed; i++, flp++) {
 	const char *s;
@@ -1510,7 +1515,7 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 	
 	buf[0] = '\0';
 	if (S_ISLNK(flp->fl_mode)) {
-	    int xx = Readlink(flp->diskURL, buf, BUFSIZ);
+	    xx = Readlink(flp->diskURL, buf, BUFSIZ);
 	    if (xx >= 0)
 		buf[xx] = '\0';
 	    if (fl->buildRootURL) {
@@ -1566,8 +1571,10 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 	/* Add file security context to package. */
 	{
 	    static char *nocon = "";
+/*@-moduncon@*/
 	    if (matchpathcon(flp->fileURL, flp->fl_mode, &scon) || scon == NULL)
 		scon = nocon;
+/*@=moduncon@*/
 
 	    he->tag = RPMTAG_FILECONTEXTS;
 	    he->t = RPM_STRING_ARRAY_TYPE;
@@ -1577,12 +1584,16 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 	    xx = headerPut(h, he, 0);
 	    he->append = 0;
 
+/*@-modobserver@*/	/* observer nocon not modified. */
 	    if (scon != nocon)
 		freecon(scon);
+/*@=modobserver@*/
 	}
     }
+/*@-moduncon -noeffectuncon @*/
     if (sxfn != NULL && *sxfn != '\0')
 	matchpathcon_fini();
+/*@=moduncon =noeffectuncon @*/
     sxfn = _free(sxfn);
 
     ui32 = fl->totalFileSize;
@@ -2206,7 +2217,9 @@ static rpmRC processPackageFiles(Spec spec, Package pkg,
     if (pkg->fileFile) {
 	char *saveptr;
 	char *filesFiles = xstrdup(pkg->fileFile);
+/*@-unrecog@*/
 	char *token = strtok_r(filesFiles, ",", &saveptr);
+/*@=unrecog@*/
 	do {
 	    const char *ffn;
 	    FILE * f;
@@ -2545,12 +2558,14 @@ int initSourceHeader(Spec spec, StringBuf *sfp)
     if (spec->sourceHeader != NULL)
     for (srcPtr = spec->sources; srcPtr != NULL; srcPtr = srcPtr->next) {
       {	const char * sfn;
+/*@-nullpass@*/		/* XXX getSourceDir returns NULL with bad flags. */
 	sfn = rpmGetPath( ((srcPtr->flags & RPMFILE_GHOST) ? "!" : ""),
 #if defined(RPM_VENDOR_OPENPKG) /* splitted-source-directory */
 		getSourceDir(srcPtr->flags, srcPtr->source), srcPtr->source, NULL);
 #else
 		getSourceDir(srcPtr->flags), srcPtr->source, NULL);
 #endif
+/*@=nullpass@*/
 	appendLineStringBuf(sourceFiles, sfn);
 	sfn = _free(sfn);
       }

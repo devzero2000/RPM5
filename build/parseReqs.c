@@ -119,7 +119,9 @@ rpmRC parseRCPOT(Spec spec, Package pkg, const char *field, rpmTag tagN,
 
 	/* Check for possible logical operator */
 	if (ve > v) {
+/*@-mods@*/
 	    rpmsenseFlags F = rpmEVRflags(v, &ve);
+/*@=mods@*/
 	    if (F && r[0] == '/') {
 		rpmlog(RPMLOG_ERR,
 			 _("line %d: Versioned file name not permitted: %s\n"),

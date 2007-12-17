@@ -235,7 +235,7 @@ void addChangelogEntry(Header h, time_t time, const char * name,
 int parseBuildInstallClean(Spec spec, rpmParseState parsePart)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies spec->build, spec->install, spec->check, spec->clean,
-		spec->macros,
+		spec->track, spec->macros,
 		spec->fileStack, spec->readStack, spec->line, spec->lineNum,
 		spec->nextline, spec->nextpeekc, spec->lbuf, spec->sl,
 		rpmGlobalMacroContext, fileSystem, internalState @*/;
@@ -306,6 +306,7 @@ int parsePrep(Spec spec, int verify)
 	/*@modifies spec->prep, spec->buildSubdir, spec->macros,
 		spec->fileStack, spec->readStack, spec->line, spec->lineNum,
 		spec->nextline, spec->nextpeekc, spec->lbuf, spec->sl,
+		spec->packages->header,
 		rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /** \ingroup rpmbuild
@@ -320,8 +321,7 @@ int parsePrep(Spec spec, int verify)
  */
 rpmRC parseRCPOT(Spec spec, Package pkg, const char * field, rpmTag tagN,
 		uint32_t index, rpmsenseFlags tagflags)
-	/*@globals rpmGlobalMacroContext, h_errno @*/
-	/*@modifies rpmGlobalMacroContext @*/;
+	/*@*/;
 
 /** \ingroup rpmbuild
  * Parse %%pre et al scriptlets from a spec file.
@@ -481,9 +481,11 @@ rpmRC processBinaryFiles(Spec spec, int installSpecialDoc, int test)
  * @return		0 always
  */
 int initSourceHeader(Spec spec, /*@null@*/ StringBuf *sfp)
-	/*@modifies spec->sourceHeader,
+	/*@globals rpmGlobalMacroContext, h_errno @*/
+	/*@modifies spec->sourceHeader, spec->sourceHdrInit,
 		spec->BANames, *sfp,
-		spec->packages->header @*/;
+		spec->packages->header,
+		rpmGlobalMacroContext @*/;
 
 /** \ingroup rpmbuild
  * Post-build processing for source package.
@@ -493,7 +495,7 @@ int initSourceHeader(Spec spec, /*@null@*/ StringBuf *sfp)
 int processSourceFiles(Spec spec)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies spec->sourceHeader, spec->sourceCpioList,
-		spec->BANames,
+		spec->BANames, spec->sourceHdrInit,
 		spec->packages->header,
 		rpmGlobalMacroContext, fileSystem, internalState @*/;
 
@@ -530,7 +532,7 @@ int parseSpec(rpmts ts, const char * specFile,
 rpmRC buildSpec(rpmts ts, Spec spec, int what, int test)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies spec->sourceHeader, spec->sourceCpioList, spec->cookie,
-		spec->sourceRpmName, spec->sourcePkgId,
+		spec->sourceRpmName, spec->sourcePkgId, spec->sourceHdrInit,
 		spec->macros, spec->BASpecs,
 		spec->BANames, *spec->packages,
 		spec->packages->cpioList, spec->packages->fileList,
@@ -545,7 +547,7 @@ rpmRC buildSpec(rpmts ts, Spec spec, int what, int test)
 rpmRC packageBinaries(Spec spec)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies spec->packages->header, spec->packages->cpioList,
-		spec->sourceRpmName,
+		spec->sourceRpmName, spec->cookie, spec->sourcePkgId,
 		rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /** \ingroup rpmbuild
@@ -556,7 +558,7 @@ rpmRC packageBinaries(Spec spec)
 rpmRC packageSources(Spec spec)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies spec->sourceHeader, spec->cookie, spec->sourceCpioList,
-		spec->sourceRpmName, spec->sourcePkgId,
+		spec->sourceRpmName, spec->sourcePkgId, spec->packages->header,
 		rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /*@=redecl@*/

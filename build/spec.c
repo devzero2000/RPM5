@@ -238,14 +238,14 @@ SpecSource getSource(Spec spec, int num)
  */
 const char * specSourceName(SpecSource source)
 {
-    return(source->source);
+    return source->source;
 }
 
 /**
  */
 const char * specFullSourceName(SpecSource source)
 {
-    return(source->fullSource);
+    return source->fullSource;
 }
 
 /**
@@ -306,7 +306,7 @@ int parseNoSource(Spec spec, const char * field, int tag)
     return 0;
 }
 
-int addSource(Spec spec, Package pkg, const char *field, int tag)
+int addSource(Spec spec, /*@unused@*/ Package pkg, const char *field, int tag)
 {
     struct Source *p;
     int flag = 0;
@@ -621,7 +621,7 @@ struct OpenFileInfo * newOpenFileInfo(void)
 static void
 printNewSpecfile(Spec spec)
 	/*@globals fileSystem @*/
-	/*@modifies spec->sl->sl_lines[], fileSystem @*/
+	/*@modifies spec->sl->sl_lines[], spec->packages->header, fileSystem @*/
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     Header h;

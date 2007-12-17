@@ -30,15 +30,15 @@
 /**
  */
 static inline int genSourceRpmName(Spec spec)
-	/*@modifies spec->sourceRpmName @*/
+	/*@modifies spec->sourceRpmName, spec->packages->header @*/
 {
     if (spec->sourceRpmName == NULL) {
 	const char *N, *V, *R;
 	char fileName[BUFSIZ];
 
 	(void) headerNEVRA(spec->packages->header, &N, NULL, &V, &R, NULL);
-	snprintf(fileName, sizeof(fileName), "%s-%s-%s.%ssrc.rpm", N, V, R,
-	    spec->noSource ? "no" : "");
+	(void) snprintf(fileName, sizeof(fileName), "%s-%s-%s.%ssrc.rpm",
+			N, V, R, spec->noSource ? "no" : "");
 	fileName[sizeof(fileName)-1] = '\0';
 	N = _free(N);
 	V = _free(V);
@@ -763,7 +763,7 @@ assert(0);
     }
     
     if (SHA1) {
-	he->tag = RPMSIGTAG_SHA1;
+	he->tag = (rpmTag) RPMSIGTAG_SHA1;
 	he->t = RPM_STRING_TYPE;
 	he->p.str = SHA1;
 	he->c = 1;
@@ -772,7 +772,7 @@ assert(0);
     }
 
     {	uint32_t payloadSize = csa->cpioArchiveSize;
-	he->tag = RPMSIGTAG_PAYLOADSIZE;
+	he->tag = (rpmTag) RPMSIGTAG_PAYLOADSIZE;
 	he->t = RPM_UINT32_TYPE;
 	he->p.ui32p = &payloadSize;
 	he->c = 1;
@@ -805,14 +805,14 @@ assert(0);
 	    rc = RPMRC_FAIL;
 	else {
 	    void * l = memset(alloca(nl), 0, nl);
-	    const char * msg = buf;
 	    const char *N, *V, *R;
 	    (void) headerNEVRA(h, &N, NULL, &V, &R, NULL);
 	    sprintf(buf, "%s-%s-%s", N, V, R);
-	    rc = rpmpkgWrite(item, fd, l, &msg);
 	    N = _free(N);
 	    V = _free(V);
 	    R = _free(R);
+	    msg = buf;
+	    rc = rpmpkgWrite(item, fd, l, &msg);
 	}
 
 	if (rc != RPMRC_OK) {
@@ -904,7 +904,7 @@ exit:
 
     /* XXX Fish the pkgid out of the signature header. */
     if (sigh != NULL && pkgidp != NULL) {
-	he->tag = RPMSIGTAG_MD5;
+	he->tag = (rpmTag) RPMSIGTAG_MD5;
 	xx = headerGet(sigh, he, 0);
 	if (he->t == RPM_BIN_TYPE && he->p.ptr != NULL && he->c == 16)
 	    *pkgidp = he->p.ui8p;		/* XXX memory leak */
@@ -1081,14 +1081,17 @@ rpmRC packageBinaries(Spec spec)
 	csa->cpioArchiveSize = 0;
 	/*@-type@*/ /* LCL: function typedefs */
 	csa->cpioFdIn = fdNew("init (packageBinaries)");
-	/*@-assignexpose -newreftrans@*/
+/*@-assignexpose -newreftrans@*/
 	csa->cpioList = rpmfiLink(pkg->cpioList, "packageBinaries");
-	/*@=assignexpose =newreftrans@*/
+/*@=assignexpose =newreftrans@*/
+assert(csa->cpioList != NULL);
 
 	rc = writeRPM(&pkg->header, NULL, fn,
 		    csa, spec->passPhrase, NULL);
 
+/*@-onlytrans@*/
 	csa->cpioList->te = _free(csa->cpioList->te);	/* XXX memory leak */
+/*@=onlytrans@*/
 	csa->cpioList = rpmfiFree(csa->cpioList);
 	csa->cpioFdIn = fdFree(csa->cpioFdIn, "init (packageBinaries)");
 	/*@=type@*/
@@ -1155,15 +1158,18 @@ rpmRC packageSources(Spec spec)
 	csa->cpioArchiveSize = 0;
 	/*@-type@*/ /* LCL: function typedefs */
 	csa->cpioFdIn = fdNew("init (packageSources)");
-	/*@-assignexpose -newreftrans@*/
+/*@-assignexpose -newreftrans@*/
 	csa->cpioList = rpmfiLink(spec->sourceCpioList, "packageSources");
-	/*@=assignexpose =newreftrans@*/
+/*@=assignexpose =newreftrans@*/
+assert(csa->cpioList != NULL);
 
 	spec->sourcePkgId = NULL;
 	rc = writeRPM(&spec->sourceHeader, &spec->sourcePkgId, fn,
 		csa, spec->passPhrase, &(spec->cookie));
 
+/*@-onlytrans@*/
 	csa->cpioList->te = _free(csa->cpioList->te);	/* XXX memory leak */
+/*@=onlytrans@*/
 	csa->cpioList = rpmfiFree(csa->cpioList);
 	csa->cpioFdIn = fdFree(csa->cpioFdIn, "init (packageSources)");
 	/*@=type@*/

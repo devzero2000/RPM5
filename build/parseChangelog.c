@@ -110,7 +110,9 @@ static int dateToTimet(const char * datestr, /*@out@*/ time_t * secs)
     if (*secs == -1) return -1;
 
     /* determine timezone offset */
+/*@-nullpass@*/		/* gmtime(3) unlikely to return NULL soon. */
     timezone_offset = mktime(gmtime(secs)) - *secs;
+/*@=nullpass@*/
 
     /* adjust to UTC */
     *secs += timezone_offset;

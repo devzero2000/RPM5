@@ -169,14 +169,20 @@ static char *doPatch(Spec spec, int c, int strip, const char *db,
 		"if [ $STATUS -ne 0 ]; then\n"
 		"  exit $STATUS\n"
 		"fi",
-		c, /*@-unrecog@*/ (const char *) basename((char *)fn), /*@=unrecog@*/
+		c,
+/*@-moduncon@*/
+		(const char *) basename((char *)fn),
+/*@=moduncon@*/
 		zipper,
 		fn, patch, strip, args);
 	zipper = _free(zipper);
     } else {
 	sprintf(buf,
 		"echo \"Patch #%d (%s):\"\n"
-		"%s -p%d %s -s < '%s'", c, (const char *) basename((char *)fn),
+		"%s -p%d %s -s < '%s'", c,
+/*@-moduncon@*/
+		(const char *) basename((char *)fn),
+/*@=moduncon@*/
 		patch, strip, args, fn);
     }
 
@@ -336,6 +342,7 @@ _rpmmg_debug = 0;
 static int doSetupMacro(Spec spec, char *line)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies spec->buildSubdir, spec->macros, spec->prep,
+		spec->packages->header,
 		rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     char buf[BUFSIZ];
@@ -405,7 +412,7 @@ static int doSetupMacro(Spec spec, char *line)
     } else {
 	const char *N, *V;
 	(void) headerNEVRA(spec->packages->header, &N, NULL, &V, NULL, NULL);
-	snprintf(buf, sizeof(buf), "%s-%s", N, V);
+	(void) snprintf(buf, sizeof(buf), "%s-%s", N, V);
 	buf[sizeof(buf)-1] = '\0';
 	N = _free(N);
 	V = _free(V);

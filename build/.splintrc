@@ -17,34 +17,15 @@
 
 -compdef
 -compmempass
--globs
--globuse
 -incondefs
--internalglobs
--mods
--modobserver
--moduncon
+-internalglobs		# 32
 -mustmod
--noeffect
--noeffectuncon
--nullderef
--nullpass
--nullret
 -nullstate
--paramuse
--retalias
--retvalint
--shadow
--type
--unrecog
--unsignedcompare
 -usereleased
 
--dependenttrans
--observertrans
--onlytrans
--readonlytrans
--statictrans
+-dependenttrans		# 7
+-observertrans		# 16
+-readonlytrans		# 8
 
 -forempty
 

@@ -25,19 +25,20 @@ const char * getSourceDir(rpmfileAttrs attr)
 {
     const char * dir = NULL;
 #if defined(RPM_VENDOR_OPENPKG) /* splitted-source-directory */
-	const char *fn;
+    const char *fn;
 
-	/* support splitted source directories, i.e., source files which
-	   are alternatively placed into the .spec directory and picked
-	   up from there, too. */
-	if (attr & (RPMFILE_SOURCE|RPMFILE_PATCH|RPMFILE_ICON) && filename != NULL) {
-	    fn = rpmGetPath("%{_specdir}/", filename, NULL);
-	    if (access(fn, F_OK) == 0)
-			dir = "%{_specdir}/";
-	    fn = _free(fn);
-	}
-	if (dir != NULL) {
-	} else
+    /*	support splitted source directories, i.e., source files which
+	are alternatively placed into the .spec directory and picked
+	up from there, too. */
+    if (attr & (RPMFILE_SOURCE|RPMFILE_PATCH|RPMFILE_ICON) && filename != NULL)
+    {
+	fn = rpmGetPath("%{_specdir}/", filename, NULL);
+	if (access(fn, F_OK) == 0)
+		dir = "%{_specdir}/";
+	fn = _free(fn);
+    }
+    if (dir != NULL) {
+    } else
 #endif
     if (attr & RPMFILE_SOURCE)
         dir = "%{_sourcedir}/";

@@ -13,6 +13,7 @@
 #include "debug.h"
 
 /*@access FD_t @*/	/* compared with NULL */
+/*@access headerTagIndices @*/	/* rpmTags->aTags */
 
 /**
  */
@@ -216,15 +217,20 @@ static int isMemberInEntry(Header h, const char *name, rpmTag tag)
 	/*@*/
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    int rc = -1;
     int xx;
 
     he->tag = tag;
     xx = headerGet(h, he, 0);
     if (!xx)
-	return -1;
-    while (he->c--) {
-	if (!xstrcasecmp(he->p.argv[he->c], name))
-	    break;
+	return rc;
+    rc = 0;
+    while (he->c) {
+	he->c--;
+	if (xstrcasecmp(he->p.argv[he->c], name))
+	    continue;
+	rc = 1;
+	break;
     }
     he->p.ptr = _free(he->p.ptr);
     return (he->c >= 0 ? 1 : 0);
@@ -375,7 +381,7 @@ static void fillOutMainPackage(Header h)
  */
 static int doIcon(Spec spec, Header h)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies rpmGlobalMacroContext, fileSystem, internalState  @*/
+	/*@modifies h, rpmGlobalMacroContext, fileSystem, internalState  @*/
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     const char *fn, *Lurlfn = NULL;
@@ -531,7 +537,7 @@ static rpmRC handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
 		spec->sources, spec->numSources, spec->noSource,
 		spec->sourceHeader, spec->BANames, spec->BACount,
 		spec->line,
-		pkg->header, pkg->autoProv, pkg->autoReq, pkg->icon,
+		pkg->header, pkg->autoProv, pkg->autoReq,
 		rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
@@ -913,7 +919,9 @@ static int findPreambleTag(Spec spec, /*@out@*/rpmTag * tagp,
 	ARGV_t aTags = NULL;
 	int rc = 1;	/* assume failure */
 
+/*@-noeffect@*/
 	(void) tagName(0); /* XXX force arbitrary tags to be initialized. */
+/*@=noeffect@*/
 	aTags = rpmTags->aTags;
 	if (aTags != NULL && aTags[0] != NULL) {
 	    ARGV_t av;
@@ -963,7 +971,8 @@ static int findPreambleTag(Spec spec, /*@out@*/rpmTag * tagp,
 	break;
     }
 
-    *tagp = p->tag;
+    if (tagp)
+	*tagp = p->tag;
     if (macro)
 	/*@-onlytrans -observertrans -dependenttrans@*/	/* FIX: double indirection. */
 	*macro = p->token;

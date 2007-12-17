@@ -689,7 +689,7 @@ static inline void rpmtePrintID(rpmte p)
  */
 static inline void hdrPrintInstalled(Header h)
 	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/
+	/*@modifies h, fileSystem @*/
 {
     const char * qfmt = "[%{erasednevra} O:%{packageorigin} P:%{erasedpkgid} H:%{erasedhdrid}\n]";
     const char * errstr = "(unknown error)";
@@ -709,7 +709,7 @@ static inline void hdrPrintInstalled(Header h)
  */
 static inline void hdrPrintErased(Header h)
 	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/
+	/*@modifies h, fileSystem @*/
 {
     const char * qfmt = "[%{installednevra} O:%{packageorigin} P:%{installedpkgid} H:%{installedhdrid}\n]";
     const char * errstr = "(unknown error)";
