@@ -22,7 +22,7 @@
     completely revamped. Especially the Autoconf parts were finally
     cleaned up from the ground up, including basing the use of all
     third-party libraries on a new sophisticated Autoconf macro
-    "RPM_CHECK_LIB". As a result most third-partly libraries now can be
+    "RPM_CHECK_LIB". As a result most third-party libraries now can be
     linked externally, too.
 
   o Development Environment:
@@ -70,7 +70,7 @@
         Mac OS X 10.5 "leopard" - PowerPC and Intel (MacOSX10.5.sdk)
 
   o Source Code Cleanups:
-    The RPM source base was completely cleanup up. As a result RPM now
+    The RPM source base was completely cleaned up. As a result RPM now
     builds fully warnings-free under all major Unix platforms with GCC.
     Additionally, RPM now can be built without problems with the Sun
     Studio and Intel C/C++ compilers, too.
