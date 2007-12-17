@@ -32,6 +32,11 @@ int parseBuildInstallClean(Spec spec, rpmParseState parsePart)
     } else if (parsePart == PART_TRACK) { /* support "%track" scriptlet */
        sbp = &spec->track;
        name = "%track";
+    } else if (parsePart == PART_ARBITRARY) {
+	spec->foo = xrealloc(spec->foo, (spec->nfoo + 1) * sizeof(*spec->foo));
+	sbp = &spec->foo[spec->nfoo++];
+	*sbp = NULL;
+	name = "%arbitrary";
     }
     
     if (*sbp != NULL) {

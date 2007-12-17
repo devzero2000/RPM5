@@ -180,6 +180,10 @@ struct Spec_s {
 /*@only@*/
     StringBuf track;		/*!< %track scriptlet. */
 
+    int nfoo;
+/*@only@*/ /*@null@*/
+    StringBuf *foo;
+
 /*@owned@*/
     Package packages;		/*!< Package list. */
 };

@@ -76,7 +76,8 @@ typedef enum rpmParseState_e {
     /* support "%track" and "%sanitycheck" scripts/sections */
     PART_TRACK		= 32+PART_BASE, /*!< */
     PART_SANITYCHECK	= 33+PART_BASE, /*!< */
-    PART_LAST		= 34+PART_BASE  /*!< */
+    PART_ARBITRARY	= 34+PART_BASE, /*!< */
+    PART_LAST		= 35+PART_BASE  /*!< */
 } rpmParseState;
 
 #define STRIP_NOTHING             0

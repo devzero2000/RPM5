@@ -1,4 +1,5 @@
 5.0b2 -> 5.0b3:
+    - jbj: preliminaries for %foo arbitrary section parsing (not added yet).
     - jbj: start using rpmParseState typedef rather than int.
     - jbj: fix: explicitly add mkdir -p to spec_install_pre.
     - jbj: explicitly compare against PART_NONE, avoid RPMRC_FOO collisions.

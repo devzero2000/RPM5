@@ -6,6 +6,7 @@
 #include "system.h"
 
 #include <rpmio_internal.h>	/* XXX fdGetFp */
+#define	_RPMTAG_INTERNAL	/* XXX rpmTags->aTags */
 #include <rpmbuild.h>
 #include "rpmds.h"
 #include "rpmts.h"
@@ -60,6 +61,7 @@ static inline void initParts(struct PartRec *p)
 rpmParseState isPart(const char *line)
 {
     struct PartRec *p;
+    rpmParseState nextPart = PART_NONE;	/* assume failure */
 
     if (partList[0].len == 0)
 	initParts(partList);
@@ -69,11 +71,35 @@ rpmParseState isPart(const char *line)
 	if (xstrncasecmp(line, p->token, p->len))
 	    continue;
 	c = *(line + p->len);
-	if (c == '\0' || xisspace(c))
+	if (c == '\0' || xisspace(c)) {
+	    nextPart = p->part;
 	    break;
+	}
     }
 
-    return (p->token ? p->part : PART_NONE);
+    /* If %foo is not found explictly, check for an arbitrary %foo tag. */
+    if (nextPart == PART_NONE) {
+	ARGV_t aTags = NULL;
+	const char * s;
+/*@-noeffect@*/
+        (void) tagName(0); /* XXX force arbitrary tags to be initialized. */
+/*@=noeffect@*/
+        aTags = rpmTags->aTags;
+        if (aTags != NULL && aTags[0] != NULL) {
+            ARGV_t av;
+            s = tagCanonicalize(line+1);	/* XXX +1 to skip leading '%' */
+#if defined(RPM_VENDOR_OPENPKG) /* wildcard-matching-arbitrary-tagnames */
+            av = argvSearchLinear(aTags, s, argvFnmatchCasefold);
+#else
+            av = argvSearch(aTags, s, argvStrcasecmp);
+#endif
+            if (av != NULL)
+                nextPart = PART_ARBITRARY;
+            s = _free(s);
+        }
+    }
+
+    return nextPart;
 }
 
 /**
@@ -481,6 +507,7 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootURL,
 	case PART_CHECK:
 	case PART_TRACK:	/* support "%track" scriptlet */
 	case PART_CLEAN:
+	case PART_ARBITRARY:
 	    parsePart = parseBuildInstallClean(spec, parsePart);
 	    /*@switchbreak@*/ break;
 	case PART_CHANGELOG:
