@@ -1,4 +1,5 @@
 5.0b2 -> 5.0b3:
+    - jbj: explicitly compare against PART_NONE, avoid RPMRC_FOO collisions.
     - jbj: fold in patch-as-plain-macro changes.
     - jbj: fix some minor memory leaks.
     - jbj: XAR magic is detected when reading packages, --xar is superfluous.

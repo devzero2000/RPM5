@@ -288,7 +288,7 @@ int parseScript(Spec spec, int parsePart)
     } else {
 	if (rc)
 	    goto exit;
-	while (! (nextPart = isPart(spec->line))) {
+	while ((nextPart = isPart(spec->line)) == PART_NONE) {
 	    appendStringBuf(sb, spec->line);
 	    if ((rc = readLine(spec, STRIP_NOTHING)) > 0) {
 		nextPart = PART_NONE;

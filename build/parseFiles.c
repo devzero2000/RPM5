@@ -102,7 +102,7 @@ int parseFiles(Spec spec)
     } else {
 	if (rc)
 	    goto exit;
-	while (! (nextPart = isPart(spec->line))) {
+	while ((nextPart = isPart(spec->line)) == PART_NONE) {
 	    appendStringBuf(pkg->fileList, spec->line);
 	    if ((rc = readLine(spec, STRIP_COMMENTS)) > 0) {
 		nextPart = PART_NONE;

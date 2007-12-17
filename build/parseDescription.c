@@ -104,7 +104,7 @@ int parseDescription(Spec spec)
 	    nextPart = RPMRC_FAIL;
 	    goto exit;
 	}
-	while (! (nextPart = isPart(spec->line))) {
+	while ((nextPart = isPart(spec->line)) == PART_NONE) {
 	    appendLineStringBuf(sb, spec->line);
 	    if (t) t->t_nlines++;
 	    if ((rc =

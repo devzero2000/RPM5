@@ -65,7 +65,7 @@ int parseBuildInstallClean(Spec spec, rpmParseState parsePart)
     if (rc != RPMRC_OK)
 	return rc;
     
-    while (! (nextPart = isPart(spec->line))) {
+    while ((nextPart = isPart(spec->line)) == PART_NONE) {
 	if (sbp)
 	    appendStringBuf(*sbp, spec->line);
 	if ((rc = readLine(spec, STRIP_NOTHING)) > 0)

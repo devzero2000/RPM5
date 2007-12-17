@@ -17,8 +17,8 @@
  */
 /*@unchecked@*/
 static struct PartRec {
-    int part;
-    int len;
+    rpmParseState part;
+    size_t len;
 /*@observer@*/ /*@null@*/
     const char * token;
 } partList[] = {

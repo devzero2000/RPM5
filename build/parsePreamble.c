@@ -1032,7 +1032,7 @@ int parsePreamble(Spec spec, int initialPackage)
     } else {
 	if (rc)
 	    return rc;
-	while (! (nextPart = isPart(spec->line))) {
+	while ((nextPart = isPart(spec->line)) == PART_NONE) {
 	    const char * macro = NULL;
 	    rpmTag tag;
 

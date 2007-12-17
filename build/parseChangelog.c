@@ -272,7 +272,7 @@ int parseChangelog(Spec spec)
     if (rc != RPMRC_OK)
 	return rc;
     
-    while (! (nextPart = isPart(spec->line))) {
+    while ((nextPart = isPart(spec->line)) == PART_NONE) {
 	const char * line;
 	line = xstrdup(spec->line);
 	line = xstrtolocale(line);

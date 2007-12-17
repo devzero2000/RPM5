@@ -48,7 +48,7 @@ typedef enum rpmBuildFlags_e {
 /** \ingroup rpmbuild
  * Spec file parser states.
  */
-#define	PART_BASE	0
+#define	PART_BASE	100
 typedef enum rpmParseState_e {
     PART_NONE		=  0+PART_BASE,	/*!< */
     /* leave room for RPMRC_NOTFOUND returns. */
@@ -73,7 +73,7 @@ typedef enum rpmParseState_e {
     PART_BUILDARCHITECTURES= 29+PART_BASE,/*!< */
     PART_TRIGGERPOSTUN	= 30+PART_BASE,	/*!< */
     PART_TRIGGERPREIN	= 31+PART_BASE,	/*!< */
-    /* support "%track" and "%test" scripts/sections */
+    /* support "%track" and "%sanitycheck" scripts/sections */
     PART_TRACK		= 32+PART_BASE, /*!< */
     PART_SANITYCHECK	= 33+PART_BASE, /*!< */
     PART_LAST		= 34+PART_BASE  /*!< */
