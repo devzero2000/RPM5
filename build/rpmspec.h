@@ -177,12 +177,10 @@ struct Spec_s {
     StringBuf check;		/*!< %check scriptlet. */
 /*@only@*/
     StringBuf clean;		/*!< %clean scriptlet. */
-/*@only@*/
-    StringBuf track;		/*!< %track scriptlet. */
 
-    int nfoo;
+    size_t nfoo;
 /*@only@*/ /*@null@*/
-    StringBuf *foo;
+    tagStore_t foo;
 
 /*@owned@*/
     Package packages;		/*!< Package list. */

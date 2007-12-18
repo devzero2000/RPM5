@@ -487,7 +487,6 @@ Spec newSpec(void)
     spec->install = NULL;
     spec->check = NULL;
     spec->clean = NULL;
-    spec->track = NULL;		/* support "%track" script/section */
     spec->foo = NULL;
     spec->nfoo = 0;
 
@@ -536,13 +535,7 @@ Spec freeSpec(Spec spec)
     spec->install = freeStringBuf(spec->install);
     spec->check = freeStringBuf(spec->check);
     spec->clean = freeStringBuf(spec->clean);
-    spec->track = freeStringBuf(spec->track);	/* support "%track" script/section */
-    if (spec->foo) {
-	int i;
-	for (i = 0; i < spec->nfoo; i++)
-	    spec->foo[i] = freeStringBuf(spec->foo[i]);
-	spec->foo = _free(spec->foo);
-    }
+    spec->foo = tagStoreFree(spec->foo, spec->nfoo);
     spec->nfoo = 0;
 
     spec->buildSubdir = _free(spec->buildSubdir);

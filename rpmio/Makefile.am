@@ -34,7 +34,7 @@ pkgincdir = $(pkgincludedir)$(WITH_PATH_VERSIONED_SUFFIX)
 pkginc_HEADERS = \
 	argv.h envvar.h fts.h mire.h rpmbc.h rpmcb.h rpmdav.h rpmhash.h \
 	rpmio.h rpmio-stub.h rpmlog.h rpmmacro.h rpmmg.h rpmnss.h rpmpgp.h \
-	rpmsq.h rpmssl.h rpmsw.h rpmurl.h rpmxar.h ugid.h
+	rpmsq.h rpmssl.h rpmsw.h rpmurl.h rpmxar.h stringbuf.h ugid.h
 noinst_HEADERS = \
 	md2.h md4.h rmd128.h rmd160.h rmd256.h rmd320.h sha224.h \
 	salsa10.h salsa20.h tiger.h \
@@ -49,7 +49,7 @@ librpmio_la_SOURCES = \
 	rpmbc.c rpmdav.c rpmhash.c rpmhook.c rpmio.c rpmio-stub.c \
 	rpmlog.c rpmlua.c rpmmalloc.c rpmmg.c rpmnss.c rpmpgp.c \
 	rpmrpc.c rpmsq.c rpmssl.c rpmsw.c rpmxar.c \
-	strcasecmp.c strtolocale.c url.c ugid.c
+	strcasecmp.c stringbuf.c strtolocale.c url.c ugid.c
 librpmio_la_LDFLAGS = -release $(LT_CURRENT).$(LT_REVISION)
 if HAVE_LD_VERSION_SCRIPT
 librpmio_la_LDFLAGS += -Wl,--version-script=$(srcdir)/librpmio.vers

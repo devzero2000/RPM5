@@ -4,6 +4,7 @@
  */
 #include "system.h"
 
+#define	_RPMTAG_INTERNAL
 #include <rpmio.h>
 #include "rpmbuild.h"
 #include "debug.h"
@@ -19,28 +20,24 @@ int parseBuildInstallClean(Spec spec, rpmParseState parsePart)
 
     if (parsePart == PART_BUILD) {
 	sbp = &spec->build;
-	name = "%build";
+	name = "build";
     } else if (parsePart == PART_INSTALL) {
 	sbp = &spec->install;
-	name = "%install";
+	name = "install";
     } else if (parsePart == PART_CHECK) {
 	sbp = &spec->check;
-	name = "%check";
+	name = "check";
     } else if (parsePart == PART_CLEAN) {
 	sbp = &spec->clean;
-	name = "%clean";
-    } else if (parsePart == PART_TRACK) { /* support "%track" scriptlet */
-       sbp = &spec->track;
-       name = "%track";
+	name = "clean";
     } else if (parsePart == PART_ARBITRARY) {
-	spec->foo = xrealloc(spec->foo, (spec->nfoo + 1) * sizeof(*spec->foo));
-	sbp = &spec->foo[spec->nfoo++];
-	*sbp = NULL;
-	name = "%arbitrary";
+assert(spec->nfoo > 0);
+	sbp = &spec->foo[spec->nfoo-1].val;
+	name = spec->foo[spec->nfoo-1].str;
     }
     
     if (*sbp != NULL) {
-	rpmlog(RPMLOG_ERR, _("line %d: second %s\n"),
+	rpmlog(RPMLOG_ERR, _("line %d: second %%%s section\n"),
 		spec->lineNum, name);
 	return RPMRC_FAIL;
     }
@@ -70,7 +67,7 @@ int parseBuildInstallClean(Spec spec, rpmParseState parsePart)
     if (rc != RPMRC_OK)
 	return rc;
     
-    while ((nextPart = isPart(spec->line)) == PART_NONE) {
+    while ((nextPart = isPart(spec)) == PART_NONE) {
 	if (sbp)
 	    appendStringBuf(*sbp, spec->line);
 	if ((rc = readLine(spec, STRIP_NOTHING)) > 0)

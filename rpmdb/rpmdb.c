@@ -172,25 +172,6 @@ static int printable(const void * ptr, size_t len)	/*@*/
 #endif
 
 /**
- * Destroy dbiTagStore array.
- * @param dbiTags	dbi tag storage
- * @param dbiNTags	no. of dbi tags
- * @return		NULL always
- */
-static /*@null@*/
-dbiTagStore dbiTagStoreFree(/*@only@*/ dbiTagStore dbiTags, size_t dbiNTags)
-	/*@modifies dbiTags @*/
-{
-    if (dbiTags != NULL) {
-	size_t i;
-	for (i = 0; i < dbiNTags; i++)
-	    dbiTags[i].str = _free(dbiTags[i].str);
-	dbiTags = _free(dbiTags);
-    }
-    return NULL;
-}
-
-/**
  * Return dbi index used for rpm tag.
  * @param db		rpm database
  * @param rpmtag	rpm header tag
@@ -214,7 +195,7 @@ static size_t dbiTagToDbix(rpmdb db, rpmTag rpmtag)
  * Initialize database (index, tag) tuple from configuration.
  */
 /*@-exportheader@*/
-static void dbiTagsInit(/*@null@*/ dbiTagStore * dbiTagsP,
+static void dbiTagsInit(/*@null@*/ tagStore_t * dbiTagsP,
 		/*@null@*/ size_t * dbiNTagsP)
 	/*@globals rpmGlobalMacroContext, h_errno @*/
 	/*@modifies *dbiTagsP, *dbiNTagsP, rpmGlobalMacroContext @*/
@@ -222,7 +203,7 @@ static void dbiTagsInit(/*@null@*/ dbiTagStore * dbiTagsP,
 /*@observer@*/
     static const char * const _dbiTagStr_default =
 	"Packages:Name:Basenames:Group:Requirename:Providename:Conflictname:Triggername:Dirnames:Requireversion:Provideversion:Installtid:Sigmd5:Sha1header:Filemd5s:Depends:Pubkeys";
-    dbiTagStore dbiTags = NULL;
+    tagStore_t dbiTags = NULL;
     size_t dbiNTags = 0;
     char * dbiTagStr = NULL;
     char * o, * oe;
@@ -240,6 +221,7 @@ static void dbiTagsInit(/*@null@*/ dbiTagStore * dbiTagsP,
     dbiTags = xcalloc(1, sizeof(*dbiTags));
     dbiTags[dbiNTags].str = xstrdup("Packages");
     dbiTags[dbiNTags].tag = RPMDBI_PACKAGES;
+    dbiTags[dbiNTags].val = NULL;
     dbiNTags++;
 
     for (o = dbiTagStr; o && *o; o = oe) {
@@ -271,6 +253,7 @@ static void dbiTagsInit(/*@null@*/ dbiTagStore * dbiTagsP,
 	dbiTags = xrealloc(dbiTags, (dbiNTags + 1) * sizeof(*dbiTags));
 	dbiTags[dbiNTags].str = xstrdup(o);
 	dbiTags[dbiNTags].tag = rpmtag;
+	dbiTags[dbiNTags].val = NULL;
 	dbiNTags++;
     }
 
@@ -279,7 +262,7 @@ static void dbiTagsInit(/*@null@*/ dbiTagStore * dbiTagsP,
     if (dbiTagsP != NULL)
 	*dbiTagsP = dbiTags;
     else
-	dbiTags = dbiTagStoreFree(dbiTags, dbiNTags);
+	dbiTags = tagStoreFree(dbiTags, dbiNTags);
     dbiTagStr = _free(dbiTagStr);
 }
 /*@=exportheader@*/
@@ -332,7 +315,7 @@ dbiIndex dbiOpen(rpmdb db, rpmTag rpmtag, /*@unused@*/ unsigned int flags)
 {
     static int _oneshot = 0;
     size_t dbix;
-    dbiTagStore dbiTag;
+    tagStore_t dbiTag;
     const char * dbiBN;
     dbiIndex dbi = NULL;
     int _dbapi, _dbapi_rebuild, _dbapi_wanted;
@@ -946,7 +929,7 @@ int rpmdbOpenAll(rpmdb db)
 
     if (db->db_tags != NULL && db->_dbi != NULL)
     for (dbix = 0; dbix < db->db_ndbi; dbix++) {
-	dbiTagStore dbiTag = db->db_tags + dbix;
+	tagStore_t dbiTag = db->db_tags + dbix;
 	int rpmtag = dbiTag->tag;
 	if (rpmtag < 0)
 	    continue;
@@ -1045,7 +1028,7 @@ int rpmdbClose(rpmdb db)
     db->db_root = _free(db->db_root);
     db->db_home = _free(db->db_home);
     db->db_bits = PBM_FREE(db->db_bits);
-    db->db_tags = dbiTagStoreFree(db->db_tags, db->db_ndbi);
+    db->db_tags = tagStoreFree(db->db_tags, db->db_ndbi);
     db->_dbi = _free(db->_dbi);
     db->db_ndbi = 0;
 
@@ -1246,7 +1229,7 @@ int rpmdbOpenDatabase(/*@null@*/ const char * prefix,
 	rc = 0;
 	if (db->db_tags != NULL)
 	for (dbix = 0; rc == 0 && dbix < db->db_ndbi; dbix++) {
-	    dbiTagStore dbiTag = db->db_tags + dbix;
+	    tagStore_t dbiTag = db->db_tags + dbix;
 	    rpmTag rpmtag = dbiTag->tag;
 	    dbiIndex dbi;
 
@@ -2869,7 +2852,7 @@ memset(data, 0, sizeof(*data));
 
 	if (db->db_tags != NULL)
 	for (dbix = 0; dbix < db->db_ndbi; dbix++) {
-	    dbiTagStore dbiTag = db->db_tags + dbix;
+	    tagStore_t dbiTag = db->db_tags + dbix;
 	    rpmTag rpmtag = dbiTag->tag;
 	    const char * dbiBN = (dbiTag->str != NULL
 		? dbiTag->str : tagName(rpmtag));
@@ -3280,7 +3263,7 @@ memset(data, 0, sizeof(*data));
 	
 	if (db->db_tags != NULL)
 	for (dbix = 0; dbix < db->db_ndbi; dbix++) {
-	    dbiTagStore dbiTags = db->db_tags + dbix;
+	    tagStore_t dbiTags = db->db_tags + dbix;
 	    const char * dbiBN = (dbiTags->str != NULL
 			? dbiTags->str : tagName(dbiTags->tag));
 	    uint8_t * bin = NULL;
@@ -3758,7 +3741,7 @@ static int rpmioFileExists(const char * urlfn)
 
 static int rpmdbRemoveDatabase(const char * prefix,
 		const char * dbpath, int _dbapi,
-		/*@null@*/ const dbiTagStore dbiTags, size_t dbiNTags)
+		/*@null@*/ const tagStore_t dbiTags, size_t dbiNTags)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/
 { 
@@ -3809,7 +3792,7 @@ static int rpmdbRemoveDatabase(const char * prefix,
 static int rpmdbMoveDatabase(const char * prefix,
 		const char * olddbpath, int _olddbapi,
 		const char * newdbpath, /*@unused@*/ int _newdbapi,
-		/*@null@*/ const dbiTagStore dbiTags, size_t dbiNTags)
+		/*@null@*/ const tagStore_t dbiTags, size_t dbiNTags)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/
 {
@@ -3925,7 +3908,7 @@ int rpmdbRebuild(const char * prefix, rpmts ts)
     int rc = 0, xx;
     int _dbapi;
     int _dbapi_rebuild;
-    dbiTagStore dbiTags = NULL;
+    tagStore_t dbiTags = NULL;
     size_t dbiNTags = 0;
 
     _dbapi = rpmExpandNumeric("%{_dbapi}");
@@ -4129,7 +4112,7 @@ exit:
     }
     newrootdbpath = _free(newrootdbpath);
     rootdbpath = _free(rootdbpath);
-    dbiTags = dbiTagStoreFree(dbiTags, dbiNTags);
+    dbiTags = tagStoreFree(dbiTags, dbiNTags);
     myprefix = _free(myprefix);
 
     return rc;

@@ -6,6 +6,7 @@
 #include "system.h"
 
 #include <rpmio_internal.h>	/* XXX fdGetFp */
+#define	_RPMTAG_INTERNAL
 #include <rpmbuild.h>
 #include "signature.h"		/* XXX rpmTempFile */
 
@@ -109,6 +110,7 @@ rpmRC doScript(Spec spec, int what, const char *name, StringBuf sb, int test)
     pid_t child;
     int status;
     rpmRC rc;
+    int i;
     
     switch (what) {
     case RPMBUILD_PREP:
@@ -155,7 +157,17 @@ rpmRC doScript(Spec spec, int what, const char *name, StringBuf sb, int test)
     /* support "%track" script/section */
     case RPMBUILD_TRACK:
 	name = "%track";
-	sb = spec->track;
+	sb = NULL;
+	if (spec->foo)
+	for (i = 0; i < spec->nfoo; i++) {
+	    if (spec->foo[i].str == NULL || spec->foo[i].val == NULL)
+		continue;
+	    if (xstrcasecmp(spec->foo[i].str, "track"))
+		continue;
+	    sb = spec->foo[i].val;
+	    break;
+	}
+assert(sb != NULL);
 	mTemplate = "%{__spec_track_template}";
 	mPost = "%{__spec_track_post}";
 	mCmd = "%{__spec_track_cmd}";

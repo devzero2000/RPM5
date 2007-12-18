@@ -778,7 +778,7 @@ int parsePrep(Spec spec, int verify)
     
     sb = newStringBuf();
     
-    while ((nextPart = isPart(spec->line)) == PART_NONE) {
+    while ((nextPart = isPart(spec)) == PART_NONE) {
 	/* Need to expand the macros inline.  That way we  */
 	/* can give good line number information on error. */
 	appendStringBuf(sb, spec->line);

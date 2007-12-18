@@ -17,6 +17,7 @@ static int _debug = 1;	/* XXX if < 0 debugging, > 0 unusual error returns */
 #include <rpmmacro.h>
 #include <rpmurl.h>	/* XXX urlPath proto */
 
+#define	_RPMTAG_INTERNAL
 #include <rpmtag.h>
 #define	_RPMDB_INTERNAL
 #include <rpmdb.h>
@@ -183,7 +184,7 @@ static int cvtdberr(/*@unused@*/ dbiIndex dbi, const char * msg, int error, int 
 static const char * mapTagName(rpmdb rpmdb, dbiIndex dbi)
 	/*@*/
 {
-    dbiTagStore dbiTags = rpmdb->db_tags;
+    tagStore_t dbiTags = rpmdb->db_tags;
     int dbix = 0;
 
     if (dbiTags != NULL)

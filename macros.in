@@ -525,7 +525,7 @@ print (t)\
 
 #
 # Colon separated list of permitted arbitrary tag names
-%_arbitrary_tags	Class:Foo:Bar:Baz
+%_arbitrary_tags	Class:Track:Trackprog:Foo:Bar:Baz
 
 #==============================================================================
 # ---- Database configuration macros.

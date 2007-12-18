@@ -44,7 +44,6 @@ static struct PartRec {
     { PART_TRIGGERIN,     0, "%triggerin"},
     { PART_TRIGGERIN,     0, "%trigger"},
     { PART_VERIFYSCRIPT,  0, "%verifyscript"},
-    { PART_TRACK,         0, "%track"},	/* support "%track" scriptlet */
     { PART_SANITYCHECK,	  0, "%sanitycheck"},	/* support "%sanitycheck" scriptlet */
     {0, 0, 0}
 };
@@ -58,8 +57,9 @@ static inline void initParts(struct PartRec *p)
 	p->len = strlen(p->token);
 }
 
-rpmParseState isPart(const char *line)
+rpmParseState isPart(Spec spec)
 {
+    const char * line = spec->line;
     struct PartRec *p;
     rpmParseState nextPart = PART_NONE;	/* assume failure */
 
@@ -93,8 +93,14 @@ rpmParseState isPart(const char *line)
 #else
             av = argvSearch(aTags, s, argvStrcasecmp);
 #endif
-            if (av != NULL)
+            if (av != NULL) {
+		spec->foo = xrealloc(spec->foo, (spec->nfoo + 1) * sizeof(*spec->foo));
+		spec->foo[spec->nfoo].str = xstrdup(s);
+		spec->foo[spec->nfoo].tag = tagGenerate(s);
+		spec->foo[spec->nfoo].val = NULL;
+		spec->nfoo++;
                 nextPart = PART_ARBITRARY;
+	    }
             s = _free(s);
         }
     }
@@ -505,7 +511,6 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootURL,
 	case PART_BUILD:
 	case PART_INSTALL:
 	case PART_CHECK:
-	case PART_TRACK:	/* support "%track" scriptlet */
 	case PART_CLEAN:
 	case PART_ARBITRARY:
 	    parsePart = parseBuildInstallClean(spec, parsePart);

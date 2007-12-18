@@ -99,6 +99,7 @@
     - jbj: make a complete pass through rpm.org check-ins and make sure they
 	have exactly zero "features" that are not already in rpm-5.0. With
 	full attribution of course ...
+    - jbj: hmmm, Foo: and %foo simultaneously != RPM_STRING_ARRAY_TYPE append.
 
 
   RPM 5.1 ROADMAP ISSUES
@@ -153,3 +154,7 @@
 ==3436==    by 0x3EFA: main (rpmqv.c:540)
     - jbj: eliminate %patch-as-macro-in-C implementation.
     - jbj: convert unused syntax (like Disttag:/Repotag:/Cvsid:) to arbitrary tags
+    - jbj: convert %prep/%build/%install/%check/%clean to arbitrary srpm tags.
+    - jbj: use devtool.sh as a model for an arbitrary state machine that
+	runs arbitrary scripts in deterministic order, checking error codes.
+	Rewrite rpmbuild.c accordingly.

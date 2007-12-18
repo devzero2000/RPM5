@@ -1,4 +1,7 @@
 5.0b2 -> 5.0b3:
+    - jbj: reimplement %track as an arbitrary section.
+    - jbj: generalize tagStore to keep track of arbitrary tag name/content.
+    - jbj: move stringbuf lib -> rpmio for use by tagStore.
     - jbj: preliminaries for %foo arbitrary section parsing (not added yet).
     - jbj: start using rpmParseState typedef rather than int.
     - jbj: fix: explicitly add mkdir -p to spec_install_pre.

@@ -26,7 +26,7 @@ pkgincdir = $(pkgincludedir)$(WITH_PATH_VERSIONED_SUFFIX)
 pkginc_HEADERS = \
 	fs.h misc.h rpmcli.h rpmlib.h rpmversion.h \
 	rpmal.h rpmdpkg.h rpmds.h rpmevr.h rpmfc.h rpmfi.h rpmgi.h \
-	rpmns.h rpmps.h rpmsx.h rpmte.h rpmts.h stringbuf.h
+	rpmns.h rpmps.h rpmsx.h rpmte.h rpmts.h
 noinst_HEADERS = \
 	cpio.h fsm.h manifest.h psm.h rpmlock.h tar.h
 
@@ -39,8 +39,7 @@ librpm_la_SOURCES = \
 	rpmal.c rpmchecksig.c rpmdpkg.c rpmds.c rpmevr.c rpmfc.c \
 	rpmfi.c rpmgi.c rpminstall.c rpmrollback.c rpmversion.c \
 	rpmlock.c rpmns.c rpmps.c rpmrc.c rpmsx.c rpmte.c rpmts.c \
-	stringbuf.c transaction.c \
-	verify.c tar.c
+	transaction.c verify.c tar.c
 librpm_la_LDFLAGS = -release $(LT_CURRENT).$(LT_REVISION)
 if HAVE_LD_VERSION_SCRIPT
 librpm_la_LDFLAGS += -Wl,--version-script=$(srcdir)/librpm.vers

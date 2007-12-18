@@ -1,7 +1,6 @@
 LIBRPM_0
 {
   global:
-    appendStringBufAux;
     __assert_program_name;
     _cacheDependsRC;
     cpioStrerror;
@@ -17,7 +16,6 @@ LIBRPM_0
     _fps_debug;
     freeFSM;
     freeSplitString;
-    freeStringBuf;
     _fsm_debug;
     fsmGetFi;
     fsmGetTs;
@@ -30,7 +28,6 @@ LIBRPM_0
     _fsm_threads;
     ftsOpts;
     get_date;
-    getStringBuf;
     giFlags;
     global_depFlags;
     IDTXfree;
@@ -42,7 +39,6 @@ LIBRPM_0
     _init;
     makeTempFile;
     newFSM;
-    newStringBuf;
     _nosigh;
     nplatpat;
     platpat;
@@ -408,8 +404,6 @@ LIBRPM_0
     specedit;
     splitString;
     strict_erasures;
-    stripTrailingBlanksStringBuf;
-    truncStringBuf;
     XrpmdsLink;
     XrpmdsUnlink;
     XrpmfiLink;

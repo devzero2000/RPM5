@@ -425,6 +425,19 @@ void tagClean(headerTagIndices _rpmTags)
     }
 }
 
+tagStore_t tagStoreFree(tagStore_t dbiTags, size_t dbiNTags)
+{
+    if (dbiTags != NULL) {
+	size_t i;
+	for (i = 0; i < dbiNTags; i++) {
+	    dbiTags[i].str = _free(dbiTags[i].str);
+	    dbiTags[i].val = freeStringBuf(dbiTags[i].val);
+	}
+	dbiTags = _free(dbiTags);
+    }
+    return NULL;
+}
+
 #if defined(SUPPORT_IMPLICIT_TAG_DATA_TYPES)
 /**
  * Validate that implicit and explicit types are identical.

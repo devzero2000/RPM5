@@ -73,11 +73,10 @@ typedef enum rpmParseState_e {
     PART_BUILDARCHITECTURES= 29+PART_BASE,/*!< */
     PART_TRIGGERPOSTUN	= 30+PART_BASE,	/*!< */
     PART_TRIGGERPREIN	= 31+PART_BASE,	/*!< */
-    /* support "%track" and "%sanitycheck" scripts/sections */
-    PART_TRACK		= 32+PART_BASE, /*!< */
-    PART_SANITYCHECK	= 33+PART_BASE, /*!< */
-    PART_ARBITRARY	= 34+PART_BASE, /*!< */
-    PART_LAST		= 35+PART_BASE  /*!< */
+    /* support "%sanitycheck" script */
+    PART_SANITYCHECK	= 32+PART_BASE, /*!< */
+    PART_ARBITRARY	= 33+PART_BASE, /*!< */
+    PART_LAST		= 34+PART_BASE  /*!< */
 } rpmParseState;
 
 #define STRIP_NOTHING             0
@@ -201,10 +200,11 @@ void handleComments(char * s)
 
 /** \ingroup rpmbuild
  * Check line for section separator, return next parser state.
- * @param		line from spec file
+ * @param spec		spec file control structure
  * @return		next parser state
  */
-rpmParseState isPart(const char * line)	/*@*/;
+rpmParseState isPart(Spec spec)
+	/*@*/;
 
 /** \ingroup rpmbuild
  * Parse a number.
@@ -236,7 +236,7 @@ void addChangelogEntry(Header h, time_t time, const char * name,
 int parseBuildInstallClean(Spec spec, rpmParseState parsePart)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies spec->build, spec->install, spec->check, spec->clean,
-		spec->track, spec->macros,
+		spec->macros,
 		spec->fileStack, spec->readStack, spec->line, spec->lineNum,
 		spec->nextline, spec->nextpeekc, spec->lbuf, spec->sl,
 		rpmGlobalMacroContext, fileSystem, internalState @*/;

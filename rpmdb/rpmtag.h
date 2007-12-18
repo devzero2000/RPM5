@@ -6,6 +6,7 @@
  */
 
 #include <rpmsw.h>
+#include <stringbuf.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -405,8 +406,8 @@ enum rpmTag_e {
     RPMTAG_RPMLIBTIMESTAMP	= 1200, /* i */
     RPMTAG_RPMLIBVENDOR		= 1201, /* i */
     RPMTAG_CLASS		= 1202, /* s internal arbitrary */
-    RPMTAG_TRACK		= 1203, /* s (OPENPKG %track scriptlet) */
-    RPMTAG_TRACKPROG		= 1204, /* s */
+    RPMTAG_TRACK		= 1203, /* s internal arbitrary */
+    RPMTAG_TRACKPROG		= 1204, /* s internal arbitrary */
     RPMTAG_SANITYCHECK		= 1205, /* s */
     RPMTAG_SANITYCHECKPROG	= 1206, /* s */
 
@@ -459,8 +460,15 @@ struct _HE_s {
     unsigned int avail		: 1;
     unsigned int append		: 1;
 };
-typedef struct _HE_s HE_s;
 #endif
+
+/**
+ */
+typedef struct _HE_s HE_s;
+
+/** \ingroup rpmdb
+ */
+typedef struct tagStore_s * tagStore_t;
 
 /**
  */
@@ -480,6 +488,15 @@ struct headerTagTableEntry_s {
     rpmTagType type;		/*!< Tag type. */
 };
 #endif
+
+/**
+ */ 
+struct tagStore_s {
+/*@only@*/
+    const char * str;           /*!< Tag string (might be arbitrary). */
+    rpmTag tag;                 /*!< Tag number. */
+    StringBuf val;		/*!< Tag contents. */
+};  
 #endif	/* _RPMTAG_INTERNAL */
 
 /**
@@ -590,6 +607,16 @@ rpmTag tagGenerate(const char * s)
 void tagClean(/*@null@*/ headerTagIndices _rpmTags)
 	/*@globals rpmTags @*/
 	/*@modifies _rpmTags, rpmTags @*/;
+
+/**
+ * Destroy tagStore array.
+ * @param dbiTags	dbi tag storage
+ * @param dbiNTags	no. of dbi tags
+ * @return		NULL always
+ */
+/*@null@*/
+tagStore_t tagStoreFree(/*@only@*/ tagStore_t dbiTags, size_t dbiNTags)
+	/*@modifies dbiTags @*/;
 
 #if defined(_RPMTAG_INTERNAL)
 /** \ingroup header

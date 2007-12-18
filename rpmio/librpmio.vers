@@ -4,6 +4,7 @@ LIBRPMIO_0
     Access;
     _Access;
     addMacro;
+    appendStringBufAux;
     argiAdd;
     argiCount;
     argiData;
@@ -81,6 +82,7 @@ LIBRPMIO_0
     fpio;
     Fread;
     _Fread;
+    freeStringBuf;
     Fseek;
     _Fseek;
     Fstrerror;
@@ -99,6 +101,7 @@ LIBRPMIO_0
     _Fwrite;
     Getpass;
     _GetPass;
+    getStringBuf;
     gidToGname;
     Glob;
     _Glob;
@@ -140,6 +143,7 @@ LIBRPMIO_0
     Mknod;
     _Mknod;
     Mount;
+    newStringBuf;
     noLibio;
     Open;
     _Open;
@@ -313,6 +317,8 @@ LIBRPMIO_0
     XrpmxarUnlink;
     Stat;
     _Stat;
+    stripTrailingBlanksStringBuf;
+    truncStringBuf;
     Symlink;
     _Symlink;
     ufdClose;
