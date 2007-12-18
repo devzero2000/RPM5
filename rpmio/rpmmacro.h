@@ -215,7 +215,7 @@ char * rpmExpand(/*@null@*/ const char * arg, ...)
 /**
  * Canonicalize file path.
  * @param path		path to canonicalize (in-place)
- * @return		canonicalized path (malloc'ed)
+ * @return		pointer to path
  */
 /*@null@*/
 char * rpmCleanPath(/*@returned@*/ /*@null@*/ char * path)
