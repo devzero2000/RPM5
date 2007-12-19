@@ -99,7 +99,6 @@
     - jbj: make a complete pass through rpm.org check-ins and make sure they
 	have exactly zero "features" that are not already in rpm-5.0. With
 	full attribution of course ...
-    - jbj: hmmm, Foo: and %foo simultaneously != RPM_STRING_ARRAY_TYPE append.
 
 
   RPM 5.1 ROADMAP ISSUES
@@ -158,3 +157,8 @@
     - jbj: use devtool.sh as a model for an arbitrary state machine that
 	runs arbitrary scripts in deterministic order, checking error codes.
 	Rewrite rpmbuild.c accordingly.
+    - jbj: hmmm, arbitrary Foo: (except for Class:) ends up in binary *.rpm's,
+	while %foo (like %track) ends up in *.src.rpm's. I'll pretend that's
+	a feature until a means to more precisely specify arbitrary tag
+	copying into binary/source rpm's is devised.
+
