@@ -1160,7 +1160,7 @@ rpmRC packageSources(Spec spec)
 	he->append = headerIsEntry(spec->sourceHeader, tag);
 	if (he->append) {
 	    he->t = RPM_STRING_ARRAY_TYPE;
-	    he->p.argv = &s;
+	    he->p.argv = (const char **) &s;
 	    he->c = 1;
 	} else {
 	    he->t = RPM_STRING_TYPE;
