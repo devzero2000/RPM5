@@ -156,5 +156,10 @@
     - jbj: MacPorts is going to universal binaries (the Mac OS X equivalent
 	of multilib) with a "fat" arch in *.rpm packages. Better can be done,
 	including insturmenting running lipo(1) automagically during install.
+    - jbj: build/build.c doScript() was a crack-soaked proof-of-concept build
+	system script invoker with macro templates that I threw together on
+	a Saturday afternoon in November, 1999. Noone has ever bothered to
+	rewrite the goop sadly, far better could and should be done.
+
 
 
