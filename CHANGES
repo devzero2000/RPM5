@@ -1,4 +1,6 @@
 5.0b2 -> 5.0b3:
+    - jbj: using tagValue() rather than tagGenerate() permits changing the tagno
+	to & from arbitrary transparent. likely more needs doing.
     - jbj: reimplement %track as an arbitrary section.
     - jbj: generalize tagStore to keep track of arbitrary tag name/content.
     - jbj: move stringbuf lib -> rpmio for use by tagStore.

@@ -1130,6 +1130,7 @@ rpmRC packageSources(Spec spec)
 	av = argvFree(av);
     }
 
+    /* Load arbitrary tags into srpm header. */
     if (spec->foo)
     for (i = 0; i < spec->nfoo; i++) {
 	const char * str = spec->foo[i].str;
@@ -1147,7 +1148,7 @@ rpmRC packageSources(Spec spec)
 		he->p.str = _free(he->p.str);
 		continue;
 	    }
-	    he->tag = tagGenerate("Trackprog");
+	    he->tag = tagValue("Trackprog");
 	    he->t = RPM_STRING_TYPE;
 	    he->c = 1;
 	    xx = headerPut(spec->sourceHeader, he, 0);

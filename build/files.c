@@ -2491,7 +2491,7 @@ int initSourceHeader(Spec spec, StringBuf *sfp)
     int xx;
 
     if (classTag == 0xffffffff)
-	classTag = tagGenerate("Class");
+	classTag = tagValue("Class");
 
     /* Only specific tags are added to the source package header */
   if (!spec->sourceHdrInit) {
