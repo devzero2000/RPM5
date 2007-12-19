@@ -78,16 +78,6 @@
 	some may care. Establishing a end-user, not a per-application or
 	per-transaction, package integrity/security policy is the only
 	rational end-point.
-    - jbj: blueprinting *.rpm and *.src rpm contents built with
-	rpm-4.5 and rpm-5.0 indicates another possible signature padding
-	calculation problem (- is 4.5 built src.rpm, + is 5.0 built src.rpm)
--  Sigsize: 107888
--  Pkgid:     !!binary YkBolGxVnon0gGm8YV5lug==
--  Hdrid: 827180de364f6948e94623b29dffa13e45898227
-+  Sigsize: 107896
-+  Pkgid:     !!binary pM5VJBrMT40gEk4TSvNrdA==
-+  Hdrid: 72a11d90029ae1fbd61cd3741f4bb25681d8546d
-	(other contents are now identical after fixing RPMTAG_BUILDTIME).
     - jbj: there's a buildroot compatibility issue that needs to be addressed
 	in (at least) doco. The problem is common to rpm-4_5 and HEAD.
 	Issue at
