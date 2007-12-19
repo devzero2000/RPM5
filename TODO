@@ -161,4 +161,10 @@
 	while %foo (like %track) ends up in *.src.rpm's. I'll pretend that's
 	a feature until a means to more precisely specify arbitrary tag
 	copying into binary/source rpm's is devised.
+    - jbj: rpm --help using popt-1.13 with non-utf8 needs some work.
+	POPT_fprintf using iconv(3) is the common element so far.
+    - jbj: MacPorts is going to universal binaries (the Mac OS X equivalent
+	of multilib) with a "fat" arch in *.rpm packages. Better can be done,
+	including insturmenting running lipo(1) automagically during install.
+
 
