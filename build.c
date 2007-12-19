@@ -114,7 +114,7 @@ static int buildForTarget(rpmts ts, const char * arg, BTA_t ba)
     size_t nb = strlen(arg) + BUFSIZ;
     char * buf = alloca(nb);
     Spec spec = NULL;
-    int verify = 1;
+    int verify = ((ba->buildAmount & RPMBUILD_TRACK) ? 0 : 1);
     int xx;
     int rc;
 

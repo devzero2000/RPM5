@@ -85,7 +85,7 @@
 %__tar			@__TAR@
 %__tclsh		@__TCLSH@
 %__unzip		@__UNZIP@
-%__vcheck		%{__rpmhome}/vcheck
+%__vcheck		%{_rpmhome}/vcheck
 %__wget			@__WGET@
 %__xar			@__XAR@
 
@@ -1189,9 +1189,10 @@ print (t)\
 %__spec_track_shell    %{___build_shell}
 %__spec_track_args     %{___build_args}
 %__spec_track_cmd      %{___build_cmd}
-%__spec_track_pre      %{___build_pre}
+%__spec_track_pre      %{__vcheck} -f - << GO_SYSIN_DD
 %__spec_track_body     %{___build_body}
-%__spec_track_post     %{___build_post}
+%__spec_track_post     GO_SYSIN_DD\
+%{nil}
 %__spec_track_template #!%{__spec_track_shell}\
 %{__spec_track_pre}\
 %{nil}
