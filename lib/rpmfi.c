@@ -1485,13 +1485,13 @@ if (fi->actions == NULL)
 	char * te;
 	size_t nb;
 
-	xx = headerMacrosLoad(fi->h);
+	xx = headerMacrosLoad(h);
 	av[0] = rpmGenPath(rpmtsRootDir(ts), "%{_sourcedir}", "");
 	av[1] = rpmGenPath(rpmtsRootDir(ts), "%{_specdir}", "");
 	av[2] = rpmGenPath(rpmtsRootDir(ts), "%{_patchdir}", "");
 	av[3] = rpmGenPath(rpmtsRootDir(ts), "%{_icondir}", "");
 	av[4] = NULL;
-	xx = headerMacrosUnload(fi->h);
+	xx = headerMacrosUnload(h);
 
 	/* Hack up a header RPM_STRING_ARRAY_TYPE array. */
 	fi->dnl = _free(fi->dnl);

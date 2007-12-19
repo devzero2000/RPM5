@@ -1,4 +1,5 @@
 5.0b2 -> 5.0b3:
+    - jbj: fix: insure that %{name} is expanded correctly in srpm paths.
     - jbj: using tagValue() rather than tagGenerate() permits changing the tagno
 	to & from arbitrary transparent. likely more needs doing.
     - jbj: reimplement %track as an arbitrary section.
