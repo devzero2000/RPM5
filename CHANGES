@@ -1,5 +1,6 @@
 5.0b2 -> 5.0b3:
-    - jbj: expedient fix for  http://qa.mandriva.com/show_bug.cgi?id=27417.
+    - pixel: fix http://qa.mandriva.com/show_bug.cgi?id=27417.
+    - jbj: expedient fix for http://qa.mandriva.com/show_bug.cgi?id=31680.
     - jbj: functional rpmbuild -bt foo.spec (if %track is present in foo.spec).
     - jbj: fix: insure that %{name} is expanded correctly in srpm paths.
     - jbj: using tagValue() rather than tagGenerate() permits changing the tagno
