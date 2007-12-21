@@ -1,5 +1,5 @@
 /**
- * \file lib/stringbuf.c
+ * \file rpmio/stringbuf.c
  */
 
 #include "system.h"

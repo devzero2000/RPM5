@@ -558,8 +558,6 @@ INPUT                  = @top_srcdir@/Doxyheader \
                          @top_srcdir@/lib/rpmts.h \
                          @top_srcdir@/lib/rpmversion.c \
                          @top_srcdir@/lib/rpmversion.h \
-                         @top_srcdir@/lib/stringbuf.c \
-                         @top_srcdir@/lib/stringbuf.h \
                          @top_srcdir@/lib/transaction.c \
                          @top_srcdir@/lib/tar.c \
                          @top_srcdir@/lib/tar.h \
@@ -657,6 +655,8 @@ INPUT                  = @top_srcdir@/Doxyheader \
                          @top_srcdir@/rpmio/rpmsw.h \
                          @top_srcdir@/rpmio/rpmurl.h \
                          @top_srcdir@/rpmio/strcasecmp.c \
+                         @top_srcdir@/rpmio/stringbuf.h \
+                         @top_srcdir@/rpmio/stringbuf.c \
                          @top_srcdir@/rpmio/stubs.c \
                          @top_srcdir@/rpmio/ugid.c \
                          @top_srcdir@/rpmio/ugid.h \

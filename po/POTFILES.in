@@ -52,7 +52,6 @@ lib/rpmrollback.c
 lib/rpmsx.c
 lib/rpmte.c
 lib/rpmts.c
-lib/stringbuf.c
 lib/tar.c
 lib/transaction.c
 lib/verify.c
@@ -95,6 +94,7 @@ rpmio/rpmsq.c
 rpmio/rpmsw.c
 rpmio/sha224.c
 rpmio/strcasecmp.c
+rpmio/stringbuf.c
 rpmio/strtolocale.c
 rpmio/tiger.c
 rpmio/ugid.c

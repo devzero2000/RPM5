@@ -1,7 +1,7 @@
 #ifndef _STRINGBUF_H_
 #define _STRINGBUF_H_
 
-/** \file lib/stringbuf.h
+/** \file rpmio/stringbuf.h
  *
  */
 
