@@ -160,6 +160,11 @@
 	system script invoker with macro templates that I threw together on
 	a Saturday afternoon in November, 1999. Noone has ever bothered to
 	rewrite the goop sadly, far better could and should be done.
+    - jbj: users continually expect the ability to create "noarch" subpkgs even
+	though rpm has only a single build (and arch is a constant for that build).
+	Permitting noarch subpkgs is no more complicated than applying an
+	explict sanity check that, indeed, the subpkg contents are "noarch".
+
 
 
 
