@@ -1,4 +1,5 @@
 5.0b2 -> 5.0b3:
+    - afb: make find-lang.sh work with sed that doesn't have \+ in regexps.
     - afb: make sure to dereference symlinks for the python library paths.
     - jbj: fix: permit -bt on specfiles w/o %track, remove an assertion.
     - rse: fix paths to stringbuf.[ch]
