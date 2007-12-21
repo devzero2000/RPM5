@@ -167,7 +167,6 @@ rpmRC doScript(Spec spec, int what, const char *name, StringBuf sb, int test)
 	    sb = spec->foo[i].val;
 	    break;
 	}
-assert(sb != NULL);
 	mTemplate = "%{__spec_track_template}";
 	mPost = "%{__spec_track_post}";
 	mCmd = "%{__spec_track_cmd}";
