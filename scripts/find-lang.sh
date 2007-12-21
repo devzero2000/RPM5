@@ -87,8 +87,8 @@ done
 
 find $TOP_DIR -type f -or -type l|sed '
 s:'"$TOP_DIR"'::
-'"$ALL_NAME$MO"'s:\(.*/share/locale/\)\([^/_]\+\)\(.*\.mo$\):%lang(\2) \1\2\3:
-'"$NO_ALL_NAME$MO"'s:\(.*/share/locale/\)\([^/_]\+\)\(.*/'"$NAME"'\.mo$\):%lang(\2) \1\2\3:
+'"$ALL_NAME$MO"'s:\(.*/share/locale/\)\([^/_][^/_]*\)\(.*\.mo$\):%lang(\2) \1\2\3:
+'"$NO_ALL_NAME$MO"'s:\(.*/share/locale/\)\([^/_][^/_]*\)\(.*/'"$NAME"'\.mo$\):%lang(\2) \1\2\3:
 s:^\([^%].*\)::
 s:%lang(C) ::
 /^$/d' > $MO_NAME
@@ -96,22 +96,22 @@ s:%lang(C) ::
 find $TOP_DIR -type d|sed '
 s:'"$TOP_DIR"'::
 '"$NO_ALL_NAME$GNOME"'s:\(.*/gnome/help/'"$NAME"'$\):%dir \1:
-'"$NO_ALL_NAME$GNOME"'s:\(.*/gnome/help/'"$NAME"'/[a-zA-Z0-9.\_\-]/.\+\)::
-'"$NO_ALL_NAME$GNOME"'s:\(.*/gnome/help/'"$NAME"'\/\)\([^/_]\+\):%lang(\2) \1\2:
-'"$ALL_NAME$GNOME"'s:\(.*/gnome/help/[a-zA-Z0-9.\_\-]\+$\):%dir \1:
-'"$ALL_NAME$GNOME"'s:\(.*/gnome/help/[a-zA-Z0-9.\_\-]\+/[a-zA-Z0-9.\_\-]/.\+\)::
-'"$ALL_NAME$GNOME"'s:\(.*/gnome/help/[a-zA-Z0-9.\_\-]\+\/\)\([^/_]\+\):%lang(\2) \1\2:
-s:%lang(.*) .*/gnome/help/[a-zA-Z0-9.\_\-]\+/[a-zA-Z0-9.\_\-]\+/.*::
+'"$NO_ALL_NAME$GNOME"'s:\(.*/gnome/help/'"$NAME"'/[a-zA-Z0-9.\_\-]/..*\)::
+'"$NO_ALL_NAME$GNOME"'s:\(.*/gnome/help/'"$NAME"'\/\)\([^/_][^/_]*\):%lang(\2) \1\2:
+'"$ALL_NAME$GNOME"'s:\(.*/gnome/help/[a-zA-Z0-9.\_\-]\{1,\}$\):%dir \1:
+'"$ALL_NAME$GNOME"'s:\(.*/gnome/help/[a-zA-Z0-9.\_\-]\{1,\}/[a-zA-Z0-9.\_\-]/..*\)::
+'"$ALL_NAME$GNOME"'s:\(.*/gnome/help/[a-zA-Z0-9.\_\-]\{1,\}\/\)\([^/_][^/_]*\):%lang(\2) \1\2:
+s:%lang(.*) .*/gnome/help/[a-zA-Z0-9.\_\-]\{1,\}/[a-zA-Z0-9.\_\-]\{1,\}/.*::
 s:^\([^%].*\)::
 s:%lang(C) ::
 /^$/d' >> $MO_NAME
 
 find $TOP_DIR -type d|sed '
 s:'"$TOP_DIR"'::
-'"$NO_ALL_NAME$KDE"'s:\(.*/doc/kde/HTML/\)\([^/_]\+\)\(.*/'"$NAME"'/\)::
-'"$NO_ALL_NAME$KDE"'s:\(.*/doc/kde/HTML/\)\([^/_]\+\)\(.*/'"$NAME"'\)$:%lang(\2) \1\2\3:
-'"$ALL_NAME$KDE"'s:\(.*/doc/kde/HTML/\)\([^/_]\+\)\(.*/[a-zA-Z0-9.\_\-]\+/\)::
-'"$ALL_NAME$KDE"'s:\(.*/doc/kde/HTML/\)\([^/_]\+\)\(.*/[a-zA-Z0-9.\_\-]\+$\):%lang(\2) \1\2\3:
+'"$NO_ALL_NAME$KDE"'s:\(.*/doc/kde/HTML/\)\([^/_][^/_]*\)\(.*/'"$NAME"'/\)::
+'"$NO_ALL_NAME$KDE"'s:\(.*/doc/kde/HTML/\)\([^/_][^/_]*\)\(.*/'"$NAME"'\)$:%lang(\2) \1\2\3:
+'"$ALL_NAME$KDE"'s:\(.*/doc/kde/HTML/\)\([^/_]\{1,\}\)\(.*/[a-zA-Z0-9.\_\-]\{1,\}/\)::
+'"$ALL_NAME$KDE"'s:\(.*/doc/kde/HTML/\)\([^/_]\{1,\}\)\(.*/[a-zA-Z0-9.\_\-]\{1,\}$\):%lang(\2) \1\2\3:
 s:^\([^%].*\)::
 s:%lang(C) ::
 /^$/d' >> $MO_NAME
