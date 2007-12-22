@@ -268,3 +268,17 @@
                      fnmatch(3) instead of a binary search based on
                      strcasecmp(3).
 
+     ________________________________________________________________________
+
+     Change:         no-auto-verbose-increase-for-track
+     Purpose:        Do not enforce --verbose on -bt (execute %track section)
+     Reason:         RPM always enforces --verbose for all build commands
+                     and this way renders the use of %{verbose:...}
+                     useless for all types of build scripts. For all
+                     other scripts this is already strange since years
+                     (although at the other hand one usually always
+                     wants "set -x" for the scripts by default and then
+                     better be able to check for a --quiet option via
+                     macros), but for %track we really want to control
+                     verbosity explicitly.
+

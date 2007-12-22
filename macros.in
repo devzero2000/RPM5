@@ -1189,7 +1189,7 @@ print (t)\
 %__spec_track_shell    %{___build_shell}
 %__spec_track_args     %{___build_args}
 %__spec_track_cmd      %{___build_cmd}
-%__spec_track_pre      %{__vcheck} -f - << GO_SYSIN_DD
+%__spec_track_pre      %{__vcheck} %{verbose:--verbose}%{!verbose:--noverbose} -f - << GO_SYSIN_DD
 %__spec_track_body     %{___build_body}
 %__spec_track_post     GO_SYSIN_DD\
 %{nil}
