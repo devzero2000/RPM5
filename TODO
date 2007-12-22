@@ -48,8 +48,7 @@
   resolved during release engineering. Please do not just list any
   *CANDO* items.
 
-  o to be resolved before RPM 5.0.0:
-    - rse: NEWS polishing
+  o to be resolved before RPM 5.0b4 (i.e. *BEFORE* 2007-12-29 !!):
     - jbj: fix openssl RSA signature verification.
     - jbj: finish Requires: sanitycheck(N) = E:V-R runtime probe.
     - jbj: finish BuildRequires: vcheck(N) = E:V-R runtime probe.
@@ -87,6 +86,8 @@
 	have exactly zero "features" that are not already in rpm-5.0. With
 	full attribution of course ...
 
+  o to be resolved before RPM 5.0.0:
+    - rse: NEWS polishing
 
   RPM 5.1 ROADMAP ISSUES
   ----------------------
