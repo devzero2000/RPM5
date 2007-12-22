@@ -85,7 +85,7 @@
 %__tar			@__TAR@
 %__tclsh		@__TCLSH@
 %__unzip		@__UNZIP@
-%__vcheck		%{_rpmhome}/vcheck
+%__vcheck		%{__perl} %{_rpmhome}/vcheck
 %__wget			@__WGET@
 %__xar			@__XAR@
 
