@@ -78,10 +78,15 @@
 	in (at least) doco. The problem is common to rpm-4_5 and HEAD.
 	Issue at
 		http://qa.mandriva.com/show_bug.cgi?id=34705
-    - jbj: both --yaml and --xml are in need of a QA sanity check. All that
-	needs doing is insuring that rpm qa --yaml can be loaded by some
-	existing yaml parser, and that the xml parses correctly. The YAML
-	is likelier to be borked than the XML.
+    - jbj: both --yaml and --xml are in need of a QA sanity check.
+	26 of 1300 packages fail to YAML load correctly. One flaw is this
+	(note lack of indentation after |-)
+	  Changelogname:
+	    - |-
+	    Jeff Johnson <jbj@jbj.org> - 4.43-5.1
+	  Changelogtext:
+	    - |-
+	    - Swipe from PLD.
     - jbj: make a complete pass through rpm.org check-ins and make sure they
 	have exactly zero "features" that are not already in rpm-5.0. With
 	full attribution of course ...
