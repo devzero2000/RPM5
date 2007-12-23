@@ -1,4 +1,6 @@
 5.0b3 -> 5.0b4:
+    - rse: output "Fetching(SourceX): <url>" to clearly indicate that something is fetched remotely
+    - rse: try to download missing source files from remote location only if %{_Rxxxx} is really defined
     - jbj: permit rpm -q --qf '%{track}\n' --specsrpm foo.spec queries.
     - jbj: fix: supply additional indentation for forced array[1] with --yaml.
 

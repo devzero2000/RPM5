@@ -652,6 +652,7 @@ static int prepFetch(Spec spec)
     struct stat st;
     rpmRC rpmrc;
     int ec, rc;
+    char *cp;
 
     /* XXX insure that %{_sourcedir} exists */
     rpmrc = RPMRC_OK;
@@ -724,21 +725,30 @@ static int prepFetch(Spec spec)
 	    goto bottom;
 	}
 
-	Rurlfn = rpmGenPath(NULL, Rmacro, sp->source);
-	if (Rurlfn == NULL || Rurlfn[0] == '\0' || !strcmp(Rurlfn, "/") || !strcmp(Lurlfn, Rurlfn)) {
-	    rpmlog(RPMLOG_ERR, _("file %s missing: %s\n"),
-		Lurlfn, strerror(errno));
-	    ec++;
-	    goto bottom;
-	}
+        /* try to fetch via macro-controlled remote locations */
+        cp = rpmExpand(Rmacro, NULL);
+        if (cp != NULL && strcmp(cp, "/") != 0) {
+            cp = _free(cp);
+            Rurlfn = rpmGenPath(NULL, Rmacro, sp->source);
+            if (!(Rurlfn == NULL || Rurlfn[0] == '\0' || !strcmp(Rurlfn, "/") || !strcmp(Lurlfn, Rurlfn))) {
+                rpmlog(RPMLOG_NOTICE, _("Fetching(%s%d): %s\n"),
+                       (sp->flags & RPMFILE_SOURCE) ? "Source" : "Patch", sp->num, Rurlfn);
+                rc = urlGetFile(Rurlfn, Lurlfn);
+                if (rc == 0)
+                    goto bottom;
+                else {
+                    rpmlog(RPMLOG_ERR, _("Fetching %s%d failed: %s\n"),
+                           (sp->flags & RPMFILE_SOURCE) ? "Source" : "Patch", sp->num, ftpStrerror(rc));
+                    ec++;
+                }
+            }
+        }
+        cp = _free(cp);
 
-	rc = urlGetFile(Rurlfn, Lurlfn);
-	if (rc != 0) {
-	    rpmlog(RPMLOG_ERR, _("Fetching %s failed: %s\n"),
-		Rurlfn, ftpStrerror(rc));
-	    ec++;
-	    goto bottom;
-	}
+        rpmlog(RPMLOG_ERR, _("Missing %s%d: %s: %s\n"),
+            ((sp->flags & RPMFILE_SOURCE) ? "Source" : "Patch"),
+            sp->num, sp->source, strerror(ENOENT));
+        ec++;
 
 bottom:
 	Lurlfn = _free(Lurlfn);
