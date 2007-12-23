@@ -294,7 +294,7 @@
                      to use an external download tool. In OpenPKG cURL
                      is part of the OpenPKG bootstrap (and used for all
                      other downloads outside of RPM anyway), so we will
-                     use '%__urlgetfile() %{l_curl} -o "%2" "%1"' in the
-                     global "rpmmacros" file. Other tools can be used
-                     similarily.
+                     use '%__urlgetfile() %{l_curl} "-#" -L -R -o "%2"
+                     "%1"' in the global "rpmmacros" file. Other tools
+                     can be used similarily.
 
