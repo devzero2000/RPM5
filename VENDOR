@@ -270,8 +270,8 @@
 
      ________________________________________________________________________
 
-     Change:         no-auto-verbose-increase-for-track
-     Purpose:        Do not enforce --verbose on -bt (execute %track section)
+     Change:         no-auto-verbose-increase-for-track-and-fetch
+     Purpose:        Do not enforce --verbose on -bt/-bf
      Reason:         RPM always enforces --verbose for all build commands
                      and this way renders the use of %{verbose:...}
                      useless for all types of build scripts. For all
@@ -280,7 +280,8 @@
                      wants "set -x" for the scripts by default and then
                      better be able to check for a --quiet option via
                      macros), but for %track we really want to control
-                     verbosity explicitly.
+                     verbosity explicitly. Similar to "-bf", where one
+                     should be able to control verbosity manually.
      ________________________________________________________________________
 
      Change:         support-external-download-command

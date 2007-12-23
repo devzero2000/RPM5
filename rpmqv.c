@@ -607,8 +607,8 @@ int main(int argc, const char ** argv)
     case MODE_BUILD:
     case MODE_TARBUILD:
     {	const char * pkg;
-#if defined(RPM_VENDOR_OPENPKG) /* no-auto-verbose-increase-for-track */
-	if (ba->buildChar != 't')
+#if defined(RPM_VENDOR_OPENPKG) /* no-auto-verbose-increase-for-track-and-fetch */
+	if (ba->buildChar != 't' && ba->buildChar != 'f')
 #endif
         while (!rpmIsVerbose())
 	    rpmIncreaseVerbosity();
