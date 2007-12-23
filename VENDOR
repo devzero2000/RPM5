@@ -297,4 +297,14 @@
                      use '%__urlgetfile() %{l_curl} "-#" -L -R -o "%2"
                      "%1"' in the global "rpmmacros" file. Other tools
                      can be used similarily.
+     ________________________________________________________________________
+
+     Change:         download-source-files-from-original-location
+     Purpose:        Allow RPM to download missing source files also
+                     from the original location (in addition to the
+                     macro-controlled remote locations).
+     Reason:         In OpenPKG we always download URL-based source
+                     files directly from the upstream vendor. Hence we
+                     want that RPM is able to download from the original
+                     location, too.
 

@@ -745,6 +745,20 @@ static int prepFetch(Spec spec)
         }
         cp = _free(cp);
 
+#if defined(RPM_VENDOR_OPENPKG) /* download-source-files-from-original-location */
+        /* try to fetch from original location */
+        rpmlog(RPMLOG_NOTICE, _("Fetching(%s%d): %s\n"),
+               (sp->flags & RPMFILE_SOURCE) ? "Source" : "Patch", sp->num, sp->fullSource);
+        rc = urlGetFile(sp->fullSource, Lurlfn);
+        if (rc == 0)
+            goto bottom;
+        else {
+            rpmlog(RPMLOG_ERR, _("Fetching %s%d failed: %s\n"),
+                   (sp->flags & RPMFILE_SOURCE) ? "Source" : "Patch", sp->num, ftpStrerror(rc));
+            ec++;
+        }
+#endif
+
         rpmlog(RPMLOG_ERR, _("Missing %s%d: %s: %s\n"),
             ((sp->flags & RPMFILE_SOURCE) ? "Source" : "Patch"),
             sp->num, sp->source, strerror(ENOENT));
