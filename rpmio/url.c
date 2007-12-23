@@ -550,6 +550,10 @@ int urlGetFile(const char * url, const char * dest)
             cmd = _free(cmd);
             goto exit;
         }
+        else {
+            rc = 0;
+            goto exit;
+        }
     }
     cmd = _free(cmd);
 #endif
