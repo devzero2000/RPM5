@@ -37,7 +37,7 @@ struct rpmBuildArguments_s         rpmBTArgs;
 #define	POPT_BS			0x6273
 #define POPT_BT			0x6274	/* support "%track" script/section */
 #if defined(RPM_VENDOR_OPENPKG) /* explicit-source-fetch-cli-option */
-#define POPT_BF			0x6275
+#define POPT_BF			0x6266
 #endif
 #define	POPT_TA			0x7461
 #define	POPT_TB			0x7462
