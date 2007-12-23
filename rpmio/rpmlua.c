@@ -652,7 +652,10 @@ assert(b != NULL);
 	if (o != NULL && *o == '(') {
 	    b[-1] = '\0';
 	    o++;
+            o[-1] = '\0';
 	}
+        else
+            b[0] = '\0';
 	b++;
 
 /*@-modunconnomods@*/
@@ -895,6 +898,20 @@ static int rpm_print (lua_State *L)
     return 0;
 }
 
+static int rpm_load(lua_State *L)
+	/*@globals internalState @*/
+	/*@modifies L, internalState @*/
+{
+    if (!lua_isstring(L, 1)) {
+	(void)luaL_argerror(L, 1, "filename expected");
+    } else {
+        rpmlua lua = (rpmlua)getdata(L, "lua");
+	const char *filename = lua_tostring(L, 1);
+	(void)rpmluaRunScriptFile(lua, filename);
+    }
+    return 0;
+}
+
 /*@-readonlytrans@*/
 /*@observer@*/ /*@unchecked@*/
 static const luaL_reg rpmlib[] = {
@@ -905,6 +922,7 @@ static const luaL_reg rpmlib[] = {
     {"unregister", rpm_unregister},
     {"call", rpm_call},
     {"interactive", rpm_interactive},
+    {"load", rpm_load},
     {NULL, NULL}
 };
 /*@=readonlytrans@*/
