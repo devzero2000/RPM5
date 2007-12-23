@@ -636,6 +636,33 @@ static rpmRC doPatchMacro(Spec spec, char *line)
 }
 #endif
 
+static void prepFetchVerbose(struct Source *sp, struct stat *st)
+{
+#if defined(RPM_VENDOR_OPENPKG) /* explicit-source-fetch-cli-option */
+    char *buf;
+    size_t buf_len;
+    int i;
+
+    if (!(rpmIsVerbose() && !quietly && (rpmBTArgs.buildAmount & RPMBUILD_FETCHSOURCE)))
+        return;
+    buf_len = 2*80;
+    if ((buf = (char *)malloc(buf_len)) == NULL)
+        return;
+    snprintf(buf, buf_len, "%s%d:", (sp->flags & RPMFILE_SOURCE) ? "Source" : "Patch", sp->num);
+    for (i = strlen(buf); i <= 11; i++)
+        buf[i] = ' ';
+    snprintf(buf+i, buf_len-i, "%-52.52s", sp->source);
+    i = strlen(buf);
+    if (st != NULL)
+        snprintf(buf+i, buf_len-i, " %9lu Bytes\n", (unsigned long)st->st_size);
+    else
+        snprintf(buf+i, buf_len-i, "      ...MISSING\n");
+    rpmlog(RPMLOG_NOTICE, "%s", buf);
+    buf = _free(buf);
+#endif
+    return;
+}
+
 /**
  * Check that all sources/patches/icons exist locally, fetching if necessary.
  */
@@ -681,6 +708,11 @@ static int prepFetch(Spec spec)
     if (rpmrc != RPMRC_OK)
 	return -1;
 
+#if defined(RPM_VENDOR_OPENPKG) /* explicit-source-fetch-cli-option */
+    if (rpmIsVerbose() && !quietly && (rpmBTArgs.buildAmount & RPMBUILD_FETCHSOURCE))
+        rpmlog(RPMLOG_NOTICE, "Checking source and patch file(s):\n");
+#endif
+
     ec = 0;
     for (sp = spec->sources; sp != NULL; sp = sp->next) {
     
@@ -710,13 +742,18 @@ static int prepFetch(Spec spec)
 	   up from there, too. */
 	Lurlfn = rpmGenPath(NULL, Smacro, sp->source);
 	rc = Lstat(Lurlfn, &st);
-	if (rc == 0)
+	if (rc == 0) {
+            prepFetchVerbose(sp, &st);
 	    goto bottom;
+        }
 #endif
 	Lurlfn = rpmGenPath(NULL, Lmacro, sp->source);
 	rc = Lstat(Lurlfn, &st);
-	if (rc == 0)
+	if (rc == 0) {
+            prepFetchVerbose(sp, &st);
 	    goto bottom;
+        }
+        prepFetchVerbose(sp, NULL);
 	if (errno != ENOENT) {
 	    ec++;
 	    rpmlog(RPMLOG_ERR, _("Missing %s%d %s: %s\n"),
