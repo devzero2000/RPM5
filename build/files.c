@@ -17,6 +17,7 @@
 #include <rpmio_internal.h>	/* XXX fdGetFp */
 #include <fts.h>
 
+#define	_RPMTAG_INTERNAL	/* XXX rpmTags->aTags */
 #define	_RPMFI_INTERNAL
 #define	_RPMTE_INTERNAL
 #include <rpmbuild.h>
@@ -2489,6 +2490,7 @@ int initSourceHeader(Spec spec, StringBuf *sfp)
     struct Source *srcPtr;
     static rpmTag classTag = 0xffffffff;
     int xx;
+    int i;
 
     if (classTag == 0xffffffff)
 	classTag = tagValue("Class");
@@ -2545,6 +2547,47 @@ int initSourceHeader(Spec spec, StringBuf *sfp)
 	he->p.argv = spec->BANames;
 	he->c = spec->BACount;
 	xx = headerPut(spec->sourceHeader, he, 0);
+    }
+
+    /* Load arbitrary tags into srpm header. */
+    if (spec->foo)
+    for (i = 0; i < spec->nfoo; i++) {
+	const char * str = spec->foo[i].str;
+	rpmTag tag = spec->foo[i].tag;
+	StringBuf sb = spec->foo[i].val;
+	char * s;
+
+	if (str == NULL || sb == NULL)
+	    continue;
+
+	/* XXX Special case %track interpreter for now. */
+	if (!xstrcasecmp(str, "track")) {
+	    he->p.str = rpmExpand("%{?__vcheck}", NULL);
+	    if (!(he->p.str != NULL && he->p.str[0] != '\0')) {
+		he->p.str = _free(he->p.str);
+		continue;
+	    }
+	    he->tag = tagValue("Trackprog");
+	    he->t = RPM_STRING_TYPE;
+	    he->c = 1;
+	    xx = headerPut(spec->sourceHeader, he, 0);
+	    he->p.str = _free(he->p.str);
+	}
+
+	s = getStringBuf(sb);
+	he->tag = tag;
+	he->append = headerIsEntry(spec->sourceHeader, tag);
+	if (he->append) {
+	    he->t = RPM_STRING_ARRAY_TYPE;
+	    he->p.argv = (const char **) &s;
+	    he->c = 1;
+	} else {
+	    he->t = RPM_STRING_TYPE;
+	    he->p.str = s;
+	    he->c = 1;
+	}
+	xx = headerPut(spec->sourceHeader, he, 0);
+	he->append = 0;
     }
   }
 

@@ -1111,7 +1111,6 @@ rpmRC packageSources(Spec spec)
     CSA_t csa = &csabuf;
     rpmRC rc;
     int xx;
-    int i;
 
     /* Add rpmlib markers for tracking. */
     (void) rpmlibMarkers(spec->sourceHeader);
@@ -1128,47 +1127,6 @@ rpmRC packageSources(Spec spec)
 	    xx = headerPut(spec->sourceHeader, he, 0);
 	}
 	av = argvFree(av);
-    }
-
-    /* Load arbitrary tags into srpm header. */
-    if (spec->foo)
-    for (i = 0; i < spec->nfoo; i++) {
-	const char * str = spec->foo[i].str;
-	rpmTag tag = spec->foo[i].tag;
-	StringBuf sb = spec->foo[i].val;
-	char * s;
-
-	if (str == NULL || sb == NULL)
-	    continue;
-
-	/* XXX Special case %track interpreter for now. */
-	if (!xstrcasecmp(str, "track")) {
-	    he->p.str = rpmExpand("%{?__vcheck}", NULL);
-	    if (!(he->p.str != NULL && he->p.str[0] != '\0')) {
-		he->p.str = _free(he->p.str);
-		continue;
-	    }
-	    he->tag = tagValue("Trackprog");
-	    he->t = RPM_STRING_TYPE;
-	    he->c = 1;
-	    xx = headerPut(spec->sourceHeader, he, 0);
-	    he->p.str = _free(he->p.str);
-	}
-
-	s = getStringBuf(sb);
-	he->tag = tag;
-	he->append = headerIsEntry(spec->sourceHeader, tag);
-	if (he->append) {
-	    he->t = RPM_STRING_ARRAY_TYPE;
-	    he->p.argv = (const char **) &s;
-	    he->c = 1;
-	} else {
-	    he->t = RPM_STRING_TYPE;
-	    he->p.str = s;
-	    he->c = 1;
-	}
-	xx = headerPut(spec->sourceHeader, he, 0);
-	he->append = 0;
     }
 
     spec->cookie = _free(spec->cookie);
