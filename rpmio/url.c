@@ -524,6 +524,9 @@ int urlGetFile(const char * url, const char * dest)
     FD_t tfd = NULL;
     const char * sfuPath = NULL;
     int urlType = urlPath(url, &sfuPath);
+#if defined(RPM_VENDOR_OPENPKG) /* support-external-download-command */
+    char *cmd;
+#endif
 
     if (*sfuPath == '\0')
 	return FTPERR_UNKNOWN;
@@ -536,6 +539,20 @@ int urlGetFile(const char * url, const char * dest)
     }
     if (dest == NULL)
 	return FTPERR_UNKNOWN;
+
+#if defined(RPM_VENDOR_OPENPKG) /* support-external-download-command */
+    cmd = rpmExpand("%{?__urlgetfile:%{__urlgetfile ", url, " ", dest, "}}", NULL);
+    if (cmd != NULL && cmd[0] != '\0') {
+        rc = system(cmd);
+        if ((rc >> 8) != 0) {
+            rpmlog(RPMLOG_DEBUG, D_("failed to fetch URL %s via external command: %s: %s\n"), url, Fstrerror(sfd));
+            rc = FTPERR_UNKNOWN;
+            cmd = _free(cmd);
+            goto exit;
+        }
+    }
+    cmd = _free(cmd);
+#endif
 
     sfd = Fopen(url, "r");
     if (sfd == NULL || Ferror(sfd)) {
