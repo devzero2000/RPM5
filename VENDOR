@@ -308,3 +308,14 @@
                      want that RPM is able to download from the original
                      location, too.
 
+     ________________________________________________________________________
+
+     Change:         explicit-source-fetch-cli-option
+     Purpose:        Provide build-time option "-bt" for just fetching
+                     the missing source and patch files.
+     Reason:         In OpenPKG we want to have an CLI option for explicitly
+                     fetching the missing source and patch files only as
+                     we want to fetch at a particular controlled step
+                     in the packaging life-cycle (between "rpm -bt" and
+                     "rpm -bp").
+

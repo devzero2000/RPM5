@@ -36,6 +36,9 @@ struct rpmBuildArguments_s         rpmBTArgs;
 #define	POPT_BP			0x6270
 #define	POPT_BS			0x6273
 #define POPT_BT			0x6274	/* support "%track" script/section */
+#if defined(RPM_VENDOR_OPENPKG) /* explicit-source-fetch-cli-option */
+#define POPT_BF			0x6275
+#endif
 #define	POPT_TA			0x7461
 #define	POPT_TB			0x7462
 #define	POPT_TC			0x7463
@@ -81,6 +84,9 @@ static void buildArgCallback( /*@unused@*/ poptContext con,
     case POPT_BP:
     case POPT_BS:
     case POPT_BT:	/* support "%track" script/section */
+#if defined(RPM_VENDOR_OPENPKG) /* explicit-source-fetch-cli-option */
+    case POPT_BF:
+#endif
     case POPT_TA:
     case POPT_TB:
     case POPT_TC:
@@ -157,6 +163,11 @@ struct poptOption rpmBuildPoptTable[] = {
  { "bt", 0, POPT_ARGFLAG_ONEDASH, 0, POPT_BT,
 	N_("track versions of sources from <specfile>"),
 	N_("<specfile>") },
+#if defined(RPM_VENDOR_OPENPKG) /* explicit-source-fetch-cli-option */
+ { "bf", 0, POPT_ARGFLAG_ONEDASH, 0, POPT_BF,
+	N_("fetch missing source and patch files"),
+	N_("<specfile>") },
+#endif
 
  { "tp", 0, POPT_ARGFLAG_ONEDASH, NULL, POPT_TP,
 	N_("build through %prep (unpack sources and apply patches) from <tarball>"),

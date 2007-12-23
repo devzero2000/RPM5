@@ -36,6 +36,9 @@ typedef enum rpmBuildFlags_e {
     RPMBUILD_STRINGBUF	= (1 << 10),	/*!< only for doScript() */
     RPMBUILD_TRACK	= (1 << 11),	/*!< Execute %%track. */
     RPMBUILD_RMSPEC	= (1 << 12)	/*!< Remove spec file. */
+#if defined(RPM_VENDOR_OPENPKG) /* explicit-source-fetch-cli-option */
+   ,RPMBUILD_FETCHSOURCE= (1 <<  13)	/*!< Fetch source(s) and patch(s). */
+#endif
 } rpmBuildFlags;
 /*@=typeuse@*/
 

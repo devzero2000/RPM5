@@ -656,6 +656,12 @@ int main(int argc, const char ** argv)
 	    rpmDefineMacro(NULL, "patch #", RMIL_CMDLINE);
 	    rpmDefineMacro(NULL, "prep %%prep", RMIL_CMDLINE);
 	    /*@innerbreak@*/ break;
+#if defined(RPM_VENDOR_OPENPKG) /* explicit-source-fetch-cli-option */
+	case 'f':
+	    ba->buildAmount |= RPMBUILD_FETCHSOURCE;
+	    ba->noDeps = 1;
+	    /*@innerbreak@*/ break;
+#endif
 	}
 
 	if (!poptPeekArg(optCon)) {
