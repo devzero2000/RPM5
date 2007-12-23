@@ -527,13 +527,6 @@ int urlGetFile(const char * url, const char * dest)
 
     if (*sfuPath == '\0')
 	return FTPERR_UNKNOWN;
-	
-    sfd = Fopen(url, "r");
-    if (sfd == NULL || Ferror(sfd)) {
-	rpmlog(RPMLOG_DEBUG, D_("failed to open %s: %s\n"), url, Fstrerror(sfd));
-	rc = FTPERR_UNKNOWN;
-	goto exit;
-    }
 
     if (dest == NULL) {
 	if ((dest = strrchr(sfuPath, '/')) != NULL)
@@ -541,9 +534,15 @@ int urlGetFile(const char * url, const char * dest)
 	else
 	    dest = sfuPath;
     }
-
     if (dest == NULL)
 	return FTPERR_UNKNOWN;
+
+    sfd = Fopen(url, "r");
+    if (sfd == NULL || Ferror(sfd)) {
+	rpmlog(RPMLOG_DEBUG, D_("failed to open %s: %s\n"), url, Fstrerror(sfd));
+	rc = FTPERR_UNKNOWN;
+	goto exit;
+    }
 
     /* XXX this can fail if directory in path does not exist. */
     tfd = Fopen(dest, "w");
