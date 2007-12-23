@@ -78,15 +78,6 @@
 	in (at least) doco. The problem is common to rpm-4_5 and HEAD.
 	Issue at
 		http://qa.mandriva.com/show_bug.cgi?id=34705
-    - jbj: both --yaml and --xml are in need of a QA sanity check.
-	26 of 1300 packages fail to YAML load correctly. One flaw is this
-	(note lack of indentation after |-)
-	  Changelogname:
-	    - |-
-	    Jeff Johnson <jbj@jbj.org> - 4.43-5.1
-	  Changelogtext:
-	    - |-
-	    - Swipe from PLD.
     - jbj: make a complete pass through rpm.org check-ins and make sure they
 	have exactly zero "features" that are not already in rpm-5.0. With
 	full attribution of course ...
@@ -167,7 +158,7 @@
 	though rpm has only a single build (and arch is a constant for that build).
 	Permitting noarch subpkgs is no more complicated than applying an
 	explict sanity check that, indeed, the subpkg contents are "noarch".
-
-
-
-
+    - jbj: both --yaml and --xml are in need of QA regression tests.
+	2 of 1300 packages fail to YAML load correctly. One of the
+	failure cases was irregular white space in %description,
+	the other case involved RPM_I18NSTRING_TYPE.

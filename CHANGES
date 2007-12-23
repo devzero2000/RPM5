@@ -1,3 +1,6 @@
+5.0b3 -> 5.0b4:
+    - jbj: fix: supply additional indentation for forced array[1] with --yaml.
+
 5.0b2 -> 5.0b3:
     - afb: make find-lang.sh work with sed that doesn't have \+ in regexps.
     - afb: make sure to dereference symlinks for the python library paths.

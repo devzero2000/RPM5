@@ -729,7 +729,6 @@ static /*@only@*/ char * yamlFormat(HE_t he)
     int element = he->ix;
     int ix = (he->ix > 0 ? he->ix : 0);
     const char * xtag = NULL;
-    const char * ytag = NULL;
     size_t nb;
     char * val;
     const char * s = NULL;
@@ -774,6 +773,7 @@ assert(he->t == RPM_STRING_TYPE || he->t == RPM_UINT64_TYPE || he->t == RPM_BIN_
 	    } else {
 		xtag = "|-\n";
 		lvl = 2;
+		if (he->ix < 0) lvl++;	/* XXX extra indent for array[1] */
 	    }
 	} else {
 	    xtag = (element >= 0 ? "- " : NULL);
@@ -839,8 +839,6 @@ assert(he->t == RPM_STRING_TYPE || he->t == RPM_UINT64_TYPE || he->t == RPM_BIN_
 	    nb += sizeof("    ") - 1;
 	if (xtag)
 	    nb += strlen(xtag);
-	if (ytag)
-	    nb += strlen(ytag);
 	nb++;
 	te = t = alloca(nb);
 	if (element >= 0)
@@ -849,8 +847,6 @@ assert(he->t == RPM_STRING_TYPE || he->t == RPM_UINT64_TYPE || he->t == RPM_BIN_
 	    te = stpcpy(te, xtag);
 	te = yamlstrcpy(te, s, lvl);
 	te += strlen(te);
-	if (ytag)
-	    te = stpcpy(te, ytag);
     }
 
     /* XXX s was malloc'd */
