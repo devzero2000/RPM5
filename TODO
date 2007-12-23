@@ -58,12 +58,6 @@
     - jbj: finish --trust with --import (or punt to 5.1).
     - jbj: add build script templates for install scriptlets (or punt to 5.1).
     - jbj: change RPM_I18NSTRING_TYPE wiring to use arbitrary tag.
-    - jbj: Mandriva perl-URPM "make test" indicates a problem querying binary
-	package headers that would be produced by a spec file.
-	Dvalin has found that reverting this patch
-		http://rpm5.org/cvs/chngview?cn=6994
-	restores legacy behavior (but breaks other "stuff" I believe). So
-	the patch needs some re-balancing before being added to rpm-5.0.
     - jbj: markReplacedFiles() subtly rewrites header back into rpmdb
 	with altered RPMTAG_FILESTATES data. get/del/add sequence
 	is needed instead.
