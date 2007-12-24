@@ -35,10 +35,8 @@ typedef enum rpmBuildFlags_e {
     RPMBUILD_RMBUILD	= (1 <<  9),	/*!< Remove build sub-tree. */
     RPMBUILD_STRINGBUF	= (1 << 10),	/*!< only for doScript() */
     RPMBUILD_TRACK	= (1 << 11),	/*!< Execute %%track. */
-    RPMBUILD_RMSPEC	= (1 << 12)	/*!< Remove spec file. */
-#if defined(RPM_VENDOR_OPENPKG) /* explicit-source-fetch-cli-option */
-   ,RPMBUILD_FETCHSOURCE= (1 <<  13)	/*!< Fetch source(s) and patch(s). */
-#endif
+    RPMBUILD_RMSPEC	= (1 << 12),	/*!< Remove spec file. */
+    RPMBUILD_FETCHSOURCE= (1 << 13)	/*!< Fetch source(s) and patch(s). */
 } rpmBuildFlags;
 /*@=typeuse@*/
 
