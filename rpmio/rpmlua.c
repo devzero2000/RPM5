@@ -71,9 +71,9 @@ rpmlua rpmluaNew()
 	{LUA_DBLIBNAME, luaopen_debug},
 	/* local LUA libraries (RPM only) */
 #ifdef WITH_LUA_INTERNAL
-	{"local", luaopen_local},
 	{"posix", luaopen_posix},
 	{"rex", luaopen_rex},
+	{"local", luaopen_local},
 #endif
 	{"rpm", luaopen_rpm},
 	{NULL, NULL},
