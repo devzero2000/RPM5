@@ -1,9 +1,10 @@
 5.0b3 -> 5.0b4:
+    - rse: add an RPM Lua function rpm.load() for loading external RPM macro definition file
     - rse: provide RPM Lua function rpm.undefine() based on the C function rpmUndefineMacro
     - rse: provide rpmUndefineMacro API function to complement the existing rpmDefineMacro API function
     - rse: add scripts/lua-dump.lua, a recursive dumper for Lua data structures
     - rse: fix parsing of the table key in RPM Lua function rpm.macros()
-    - rse: add an RPM Lua function rpm.load() for loading external Lua scripts
+    - rse: add an RPM Lua function rpm.source() for loading and executing external Lua script file
     - rse: output "Fetching(SourceX): <url>" to clearly indicate that something is fetched remotely
     - rse: try to download missing source files from remote location only if %{_Rxxxx} is really defined
     - jbj: permit rpm -q --qf '%{track}\n' --specsrpm foo.spec queries.

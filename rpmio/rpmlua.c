@@ -907,7 +907,7 @@ static int rpm_print (lua_State *L)
     return 0;
 }
 
-static int rpm_load(lua_State *L)
+static int rpm_source(lua_State *L)
 	/*@globals internalState @*/
 	/*@modifies L, internalState @*/
 {
@@ -917,6 +917,19 @@ static int rpm_load(lua_State *L)
         rpmlua lua = (rpmlua)getdata(L, "lua");
 	const char *filename = lua_tostring(L, 1);
 	(void)rpmluaRunScriptFile(lua, filename);
+    }
+    return 0;
+}
+
+static int rpm_load(lua_State *L)
+	/*@globals internalState @*/
+	/*@modifies L, internalState @*/
+{
+    if (!lua_isstring(L, 1)) {
+	(void)luaL_argerror(L, 1, "filename expected");
+    } else {
+	const char *filename = lua_tostring(L, 1);
+	(void)rpmLoadMacroFile(NULL, filename);
     }
     return 0;
 }
@@ -932,6 +945,7 @@ static const luaL_reg rpmlib[] = {
     {"unregister", rpm_unregister},
     {"call", rpm_call},
     {"interactive", rpm_interactive},
+    {"source", rpm_source},
     {"load", rpm_load},
     {NULL, NULL}
 };
