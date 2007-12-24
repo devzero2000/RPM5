@@ -22,7 +22,7 @@ EXTRA_DIST = \
 	rpm.daily rpm.log rpm.xinetd \
 	rpmsort symset-table \
 	sql.prov sql.req symclash.py symclash.sh tcl.req tgpg trpm u_pkg.sh \
-	vcheck lua-dump.lua vpkg-provides.sh vpkg-provides2.sh \
+	vcheck vpkg-provides.sh vpkg-provides2.sh \
 	macros.perl* macros.python* \
 	macros.php* find-*.php find-php-*
 
