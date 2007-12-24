@@ -2061,6 +2061,15 @@ rpmDefineMacro(MacroContext mc, const char * macro, int level)
 }
 /*@=mustmod@*/
 
+/*@-mustmod@*/ /* LCL: mc is modified through mb->mc, mb is abstract */
+int
+rpmUndefineMacro(MacroContext mc, const char * macro)
+{
+    (void) doUndefine(mc ? mc : rpmGlobalMacroContext, macro);
+    return 0;
+}
+/*@=mustmod@*/
+
 void
 rpmLoadMacros(MacroContext mc, int level)
 {

@@ -696,6 +696,15 @@ static int rpm_define(lua_State *L)
     return 0;
 }
 
+static int rpm_undefine(lua_State *L)
+	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
+	/*@modifies L, rpmGlobalMacroContext, internalState @*/
+{
+    const char *str = luaL_checkstring(L, 1);
+    (void) rpmUndefineMacro(NULL, str);
+    return 0;
+}
+
 static int rpm_interactive(lua_State *L)
 	/*@globals fileSystem @*/
 	/*@modifies L, fileSystem @*/
@@ -918,6 +927,7 @@ static const luaL_reg rpmlib[] = {
     {"macros", rpm_macros},
     {"expand", rpm_expand},
     {"define", rpm_define},
+    {"undefine", rpm_undefine},
     {"register", rpm_register},
     {"unregister", rpm_unregister},
     {"call", rpm_call},

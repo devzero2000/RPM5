@@ -1,4 +1,6 @@
 5.0b3 -> 5.0b4:
+    - rse: provide RPM Lua function rpm.undefine() based on the C function rpmUndefineMacro
+    - rse: provide rpmUndefineMacro API function to complement the existing rpmDefineMacro API function
     - rse: add scripts/lua-dump.lua, a recursive dumper for Lua data structures
     - rse: fix parsing of the table key in RPM Lua function rpm.macros()
     - rse: add an RPM Lua function rpm.load() for loading external Lua scripts

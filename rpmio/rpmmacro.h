@@ -148,6 +148,16 @@ int rpmDefineMacro(/*@null@*/ MacroContext mc, const char * macro, int level)
 	/*@modifies mc, rpmGlobalMacroContext, internalState @*/;
 
 /**
+ * Undefine macro in context.
+ * @param mc		macro context (NULL uses global context).
+ * @param macro		macro name
+ * @return		@todo Document.
+ */
+int rpmUndefineMacro(/*@null@*/ MacroContext mc, const char * macro)
+	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
+	/*@modifies mc, rpmGlobalMacroContext, internalState @*/;
+
+/**
  * Load macros from specific context into global context.
  * @param mc		macro context (NULL does nothing).
  * @param level		macro recursion level (0 is entry API)
