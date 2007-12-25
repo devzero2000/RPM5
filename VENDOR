@@ -321,4 +321,11 @@
                      we want to fetch at a particular controlled step
                      in the packaging life-cycle (between "rpm -bt" and
                      "rpm -bp").
+     ________________________________________________________________________
+
+     Change:         no-extra-terminating-newline-on-eval
+     Purpose:        Do not output an extra newline on --eval '' if the
+                     expanded macro text already terminates with a newline
+     Reason:         Using e.g. rpm --eval "%{lua: print('foo\\n') }" should
+                     not lead to an extra trailing blank line.
 
