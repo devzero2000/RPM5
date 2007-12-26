@@ -1,4 +1,5 @@
 5.0b3 -> 5.0b4:
+    - rse: compare MD5 hex value on "digest(/path) = hex" dependency case-insensitive to be less restrictive in syntax
     - rse: merge scripts/lua-dump.lua directly into lua/local/llocal.lua to make it always easily available
     - rse: add local Lua functions util.rmatch() and util.rsubst() for regex matching/substitution
     - rse: improve rex.new Lua object by using PCRE if possible and fallback to POSIX regex only
