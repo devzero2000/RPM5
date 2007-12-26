@@ -795,7 +795,7 @@ static rpmRC handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
 	break;
 
     default:
-	macro = 0;
+	macro = NULL;
 	he->tag = tag;
 	he->t = RPM_STRING_ARRAY_TYPE;
 	he->p.argv= (const char **) &field;	/* XXX NOCAST */
