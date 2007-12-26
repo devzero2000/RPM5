@@ -781,11 +781,23 @@ retry:
 
     if (NSType == RPMNS_TYPE_DIGEST) {
 	const char * EVR = rpmdsEVR(dep);
-	FD_t fd = Fopen(Name, "r.fdio");
+        const char *filename;
+        pgpHashAlgo digestHashAlgo;
+        FD_t fd;
+        char *cp;
+        int algo;
 
+        filename = Name;
+        digestHashAlgo = PGPHASHALGO_MD5;
+        if ((cp = strchr(filename, ':')) != NULL) {
+            if ((algo = pgpHashAlgoStringToNumber(filename, cp-filename)) != -1) {
+                digestHashAlgo = algo;
+                filename = cp + 1;
+            }
+        }
 	rc = 1;		/* XXX assume failure */
+        fd = Fopen(filename, "r.fdio");
 	if (fd && !Ferror(fd)) {
-	    pgpHashAlgo digestHashAlgo = PGPHASHALGO_MD5;
 	    DIGEST_CTX ctx = rpmDigestInit(digestHashAlgo, RPMDIGEST_NONE);
 	    const char * digest = NULL;
 	    size_t digestlen = 0;

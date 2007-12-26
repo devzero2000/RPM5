@@ -1440,6 +1440,15 @@ pgpArmor pgpReadPkts(const char * fn,
 char * pgpArmorWrap(int atype, const unsigned char * s, size_t ns)
 	/*@*/;
 
+/** \ingroup rpmpgp
+ * Convert a hash algorithm <name> to the internal PGPHASHALGO_<name> number
+ * @param name		name of hash algorithm
+ * @param name_len		length of name or 0 for strlen(name)
+ * @return		PGPHASHALGO_<name> or -1 in case of error
+ */
+int pgpHashAlgoStringToNumber(const char *name, size_t name_len)
+	/*@*/;
+
 /**
  * Disabler bits(s) for signature/digest checking.
  */

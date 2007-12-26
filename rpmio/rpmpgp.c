@@ -1461,3 +1461,18 @@ char * pgpArmorWrap(int atype, const unsigned char * s, size_t ns)
     return val;
 /*@=globstate@*/
 }
+
+int pgpHashAlgoStringToNumber(const char *name, size_t name_len)
+{
+    int i;
+
+    if (name == NULL)
+        return -1;
+    if (name_len == 0)
+        name_len = strlen(name);
+    for (i = 0; i < sizeof(pgpHashTbl)/sizeof(pgpHashTbl[0]); i++)
+        if (xstrncasecmp(name, pgpHashTbl[i].str, name_len) == 0)
+            return pgpHashTbl[i].val;
+    return -1;
+}
+
