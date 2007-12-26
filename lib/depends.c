@@ -799,7 +799,7 @@ retry:
 	    xx = Fclose(fd);	fd = NULL;
 	    xx = rpmDigestFinal(ctx, &digest, &digestlen, asAscii);
 
-	    xx = (EVR && *EVR && digest && *digest) ? strcmp(EVR, digest) : -1;
+	    xx = (EVR && *EVR && digest && *digest) ? strcasecmp(EVR, digest) : -1;
 	    /* XXX only equality makes sense for digest compares */
 	    if ((Flags & RPMSENSE_EQUAL) && xx == 0) rc = 0;
 	}
