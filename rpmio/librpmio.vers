@@ -168,6 +168,7 @@ LIBRPMIO_0
     pgpGetSigtype;
     pgpGetSig;
     pgpGetSiglen;
+    pgpHashAlgoStringToNumber;
     pgpHashTbl;
     pgpImplVecs;
     pgpKeyServerPrefsTbl;
@@ -307,6 +308,7 @@ LIBRPMIO_0
     rpmswInit;
     rpmswNow;
     rpmswSub;
+    rpmUndefineMacro;
     rpmxarFree;
     XrpmxarLink;
     rpmxarNew;
