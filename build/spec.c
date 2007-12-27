@@ -472,7 +472,8 @@ Spec newSpec(void)
     spec->st = newSt();
 
     spec->fileStack = NULL;
-    spec->lbuf[0] = '\0';
+    spec->lbuf_len = (size_t)rpmExpandNumeric("%{?_spec_line_buffer_size}%{!?_spec_line_buffer_size:10000}");
+    spec->lbuf = (char *)xcalloc(1, spec->lbuf_len);
     spec->line = spec->lbuf;
     spec->nextline = NULL;
     spec->nextpeekc = '\0';
@@ -526,6 +527,8 @@ Spec freeSpec(Spec spec)
     struct ReadLevelEntry *rl;
 
     if (spec == NULL) return NULL;
+
+    spec->lbuf = _free(spec->lbuf);
 
     spec->sl = freeSl(spec->sl);
     spec->st = freeSt(spec->st);

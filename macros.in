@@ -530,6 +530,10 @@ print (t)\
 # Colon separated list of permitted arbitrary tag names
 %_arbitrary_tags	Class:Track:Trackprog:Foo:Bar:Baz
 
+#
+# Byte size of line buffer for .spec file parsing
+%_spec_line_buffer_size 10000
+
 #==============================================================================
 # ---- Database configuration macros.
 #	Macros used to configure Berkley db parameters.
