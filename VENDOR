@@ -328,4 +328,24 @@
                      expanded macro text already terminates with a newline
      Reason:         Using e.g. rpm --eval "%{lua: print('foo\\n') }" should
                      not lead to an extra trailing blank line.
+     ________________________________________________________________________
+
+     Change:         make-class-available-as-macro
+     Purpose:        Do not treat "Class" tag as a fully arbitrary tag.
+     Reason:         In OpenPKG some .spec processing depends on the
+                     macro %{class} to be filled from the value of the
+                     "Class" tag, hence make sure it is not treated fully
+                     arbitrary (or else the macro would be not available).
+     Hint:           As %_arbitrary_tags restricts the allowed tags anyway,
+                     best would be to export also arbitrary tags as macros!
+     ________________________________________________________________________
+
+     Change:         append-tag-value-to-macro
+     Purpose:        Instead of overwriting macro "foo" with the latest
+                     value "quux" in case of tag "Foo: bar" followed
+                     by tag "Foo: quux", set the macro "foo" to the
+                     comma-separated list "bar, quux".
+     Reason:         This allows one to get the values of all(!) tags
+                     instead of just the last one. In OpenPKG we use this
+                     to fetch the value of tags like BuildPreReq or NoSource.
 

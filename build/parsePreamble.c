@@ -608,6 +608,9 @@ static rpmRC handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
 	break;
     case RPMTAG_GROUP:
     case RPMTAG_SUMMARY:
+#if defined(RPM_VENDOR_OPENPKG) /* make-class-available-as-macro */
+    case RPMTAG_CLASS:
+#endif
 	(void) stashSt(spec, pkg->header, tag, lang);
 	/*@fallthrough@*/
     case RPMTAG_DISTRIBUTION:
@@ -807,7 +810,18 @@ static rpmRC handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
     }
 
     if (macro)
+#if defined(RPM_VENDOR_OPENPKG) /* append-tag-value-to-macro */
+    {
+        char *value = rpmExpand("%{?", macro, ":%{", macro, "}, }", NULL);
+        size_t value_len = strlen(value);
+        value = xrealloc(value, value_len + strlen(field) + 1);
+        strcpy(value+value_len, field);
+        addMacro(spec->macros, macro, NULL, value, RMIL_SPEC);
+        value = _free(value);
+    }
+#else
 	addMacro(spec->macros, macro, NULL, field, RMIL_SPEC);
+#endif
     
     return RPMRC_OK;
 }
@@ -884,6 +898,9 @@ static struct PreambleRec_s preambleList[] = {
     {RPMTAG_KEYWORDS,		0, 0, "keywords"},
     {RPMTAG_KEYWORDS,		0, 0, "keyword"},
     {RPMTAG_BUILDPLATFORMS,	0, 0, "buildplatforms"},
+#if defined(RPM_VENDOR_OPENPKG) /* make-class-available-as-macro */
+    {RPMTAG_CLASS,		0, 0, "class"},
+#endif
     /*@-nullassign@*/	/* LCL: can't add null annotation */
     {0, 0, 0, 0}
     /*@=nullassign@*/
