@@ -1,4 +1,6 @@
 5.0b3 -> 5.0b4:
+    - rse: fix %{uncompress:<file>.lzo} by passing the required "-dc" options to LZOP's lzop(1)
+    - rse: fix %{uncompress:<file>.lzma} by passing the required "-dc" options to LZMA Utils' lzma(1)
     - rse: support arbitrary hash algorithm via the originally intended syntax "digest([<algorithm>:]/path) = hex"
     - rse: compare MD5 hex value on "digest(/path) = hex" dependency case-insensitive to be less restrictive in syntax
     - rse: merge scripts/lua-dump.lua directly into lua/local/llocal.lua to make it always easily available

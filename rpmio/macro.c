@@ -1258,10 +1258,10 @@ doFoo(MacroBuf mb, int negate, const char * f, size_t fn,
 	    sprintf(be, "%%__unzip -qq '%s'", b);
 	    break;
 	case 4:	/* COMPRESSED_LZOP */
-	    sprintf(be, "%%__lzop '%s'", b);
+	    sprintf(be, "%%__lzop -dc '%s'", b);
 	    break;
 	case 5:	/* COMPRESSED_LZMA */
-	    sprintf(be, "%%__lzma '%s'", b);
+	    sprintf(be, "%%__lzma -dc '%s'", b);
 	    break;
 	}
 	b = be;
