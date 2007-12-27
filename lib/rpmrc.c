@@ -603,6 +603,10 @@ static void defaultMachine(/*@out@*/ const char ** arch,
     }
 #endif
 
+	if (!strncmp(un.machine, "Power Macintosh", 15)) {
+	    sprintf(un.machine, "ppc");
+	}
+
 #if defined(RPM_VENDOR_OPENPKG) /* explicit-platform */
 	/* allow the path to the "platforms" file be overridden under run-time */
 	cp = rpmExpand("%{?__platform}", NULL);
