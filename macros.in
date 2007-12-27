@@ -111,7 +111,7 @@
 %__strip		@__STRIP@
 
 # XXX avoid failures if tools are not installed when rpm is built.
-%__libtoolize		libtoolize
+%__libtoolize		@LIBTOOLIZE@
 %__aclocal		aclocal
 %__autoheader		autoheader
 %__automake		automake
