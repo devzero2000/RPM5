@@ -5,7 +5,7 @@ use ExtUtils::MakeMaker;
 my @libdir = qw(. build lib popt rpmdb rpmio misc rpmconstant);
 
 my @ldaddp = map { '-L@top_srcdir@/' . $_ . '/.libs' } @libdir;
-my @ldadd = map { '-l' . $_ } qw(rpmio rpmbuild rpm popt rpmdb rpmconstant);
+my @ldadd = map { '-l' . $_ } qw(rpmmisc rpmio rpmbuild rpm popt rpmdb rpmconstant);
 
 my @objects = qw(
     rpmxs.o 
