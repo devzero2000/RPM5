@@ -13,7 +13,8 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/lib \
 	-I$(top_srcdir)/rpmdb \
 	-I$(top_srcdir)/rpmio \
-	-I$(top_srcdir)/misc
+	-I$(top_srcdir)/misc \
+	@WITH_DB_CPPFLAGS@
 
 bin_PROGRAMS = rpmconstant
 usrlibdir = $(libdir)
