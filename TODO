@@ -48,7 +48,7 @@
   resolved during release engineering. Please do not just list any
   *CANDO* items.
 
-  o to be resolved before RPM 5.0b4 (i.e. *BEFORE* 2007-12-29 !!):
+  o to be resolved before RPM 5.0b4 (i.e. *BEFORE* 2007-12-29 !!!!):
     - jbj: fix openssl RSA signature verification.
     - jbj: finish Requires: sanitycheck(N) = E:V-R runtime probe.
     - jbj: finish BuildRequires: vcheck(N) = E:V-R runtime probe.
