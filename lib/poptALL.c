@@ -22,6 +22,7 @@ const char *__progname;
 #ifdef  DEAD	/* XXX remember the previous definition however. */
 #define POPT_RCFILE		-995
 #endif
+#define POPT_UNDEFINE		-994
 
 /*@access headerTagIndices @*/		/* XXX rpmcliFini */
 /*@access headerTagTableEntry @*/	/* XXX rpmcliFini */
@@ -226,6 +227,23 @@ static void rpmcliAllArgCallback(poptContext con,
 /*@=type@*/
 	s = _free(s);
     }	break;
+    case POPT_UNDEFINE:
+    {	char *s, *t;
+	/* XXX Convert '-' in macro name to underscore, skip leading %. */
+	s = t = xstrdup(arg);
+	while (*t && !xisspace(*t)) {
+	    if (*t == '-') *t = '_';
+	    t++;
+	}
+	t = s;
+	if (*t == '%') t++;
+/*@-type@*/
+	rpmcliConfigured();
+	(void) rpmUndefineMacro(NULL, t);
+	(void) rpmUndefineMacro(rpmCLIMacroContext, t);
+/*@=type@*/
+	s = _free(s);
+    }	break;
     case 'E':
 	rpmcliConfigured();
 	{   const char *val = rpmExpand(arg, NULL);
@@ -369,6 +387,9 @@ struct poptOption rpmcliAllPoptTable[] = {
  { "define", 'D', POPT_ARG_STRING, NULL, 'D',
 	N_("define MACRO with value EXPR"),
 	N_("'MACRO EXPR'") },
+ { "undefine", '\0', POPT_ARG_STRING, NULL, POPT_UNDEFINE,
+	N_("undefine MACRO"),
+	N_("'MACRO'") },
  { "eval", 'E', POPT_ARG_STRING, NULL, 'E',
 	N_("print macro expansion of EXPR"),
 	N_("'EXPR'") },
