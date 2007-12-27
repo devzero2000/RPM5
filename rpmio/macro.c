@@ -1329,6 +1329,7 @@ expandMacro(MacroBuf mb)
     int c;
     int rc = 0;
     int negate;
+    int stackarray;
     const char * lastc;
     int chkexist;
 
@@ -1363,13 +1364,15 @@ expandMacro(MacroBuf mb)
 	g = ge = NULL;
 	if (mb->depth > 1)	/* XXX full expansion for outermost level */
 		t = mb->t;	/* save expansion pointer for printExpand */
-	negate = 0;
+	stackarray = chkexist = negate = 0;
 	lastc = NULL;
-	chkexist = 0;
 	switch ((c = (int) *s)) {
 	default:		/* %name substitution */
-		while (*s != '\0' && strchr("!?", *s) != NULL) {
+		while (*s != '\0' && strchr("!?@", *s) != NULL) {
 			switch(*s++) {
+			case '@':
+				stackarray = ((stackarray + 1) % 2);
+				/*@switchbreak@*/ break;
 			case '!':
 				negate = ((negate + 1) % 2);
 				/*@switchbreak@*/ break;
@@ -1429,8 +1432,11 @@ expandMacro(MacroBuf mb)
 		}
 		f = s+1;/* skip { */
 		se++;	/* skip } */
-		while (strchr("!?", *f) != NULL) {
+		while (strchr("!?@", *f) != NULL) {
 			switch(*f++) {
+			case '@':
+				stackarray = ((stackarray + 1) % 2);
+				/*@switchbreak@*/ break;
 			case '!':
 				negate = ((negate + 1) % 2);
 				/*@switchbreak@*/ break;
@@ -1637,7 +1643,7 @@ expandMacro(MacroBuf mb)
 		s = se;
 		continue;
 	}
-	
+
 	if (me == NULL) {	/* leave unknown %... as is */
 #ifndef HACK
 #if DEAD
@@ -1662,6 +1668,17 @@ expandMacro(MacroBuf mb)
 			s = se;
 		}
 #endif
+		continue;
+	}
+
+	/* XXX Special processing to create a tuple from stack'd values. */
+	if (stackarray) {
+		c = ((g && g < ge) ? *g : ',');
+		do {
+			if (me != *mep)	SAVECHAR(mb, c);
+			rc = expandT(mb, me->body, strlen(me->body));
+		} while ((me = me->prev) != NULL);
+		s = se;
 		continue;
 	}
 
