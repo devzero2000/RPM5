@@ -33,6 +33,11 @@
 %_usrlibrpm		@USRLIBRPM@
 %_etcrpm		@SYSCONFIGDIR@
 
+%__objext		@objext@
+%__libext		@libext@
+%__shlibext		@shlibext@
+%__exeext		@exeext@%{nil}
+
 %_rpmhome		%{_usrlibrpm}
 
 #==============================================================================

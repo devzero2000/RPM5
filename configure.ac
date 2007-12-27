@@ -1284,6 +1284,22 @@ AC_DEFINE_UNQUOTED(
 )
 AC_SUBST(usrprefix)
 
+dnl # Object file suffix (normally "o").
+objext="$ac_cv_objext"
+AC_SUBST(objext)
+
+dnl # Static library suffix (normally "a").
+libext="$acl_cv_libext"
+AC_SUBST(libext)
+
+dnl # Shared library suffix (normally "so").
+shlibext="$acl_cv_shlibext"
+AC_SUBST(shlibext)
+
+dnl # Executable file suffix (normally "").
+exeext="$ac_exeext"
+AC_SUBST(exeext)
+
 dnl # determine RPM database directory path
 AC_MSG_CHECKING([for RPM database directory])
 DBPATH=`echo "${varprefix}/lib/rpm"`

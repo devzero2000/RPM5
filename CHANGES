@@ -1,4 +1,5 @@
 5.0b3 -> 5.0b4:
+    - afb: added %__objext,%__libext,%__shlibext,%__exeext for file extensions.
     - rse: make size of line buffer for .spec file parsing run-time configurable via macro _spec_line_buffer_size
     - rse: improve %patch macro implementation: less expansion redundancy and macro namespace collision avoidance
     - rse: fix %{uncompress:<file>.lzo} by passing the required "-dc" options to LZOP's lzop(1)
