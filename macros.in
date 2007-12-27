@@ -392,10 +392,13 @@ package or when debugging this package.\
 #
 
 %patch(b:p:P:REz:F:d:) \
-%define patch_file	%{P:%{-P:%{-P*}}%{!-P:0}} \
-%define patch_suffix	%{-b:-b --suffix %{-b*}} %{-z:--suffix %{-z*}} \
-  echo "Patch #%{-P:%{-P*}}%{!-P:0} (%{basename:%patch_file}):" \
-  %{uncompress:%patch_file} | %{__patch} -s %{-p:-p%{-p*}} %{-F:-F%{-F*}} %{-d:-d%{-d*}} %patch_suffix %{-R} %{-E}
+%define __patch_number  %{-P:%{-P*}}%{!-P:0} \
+%define __patch_file    %{P:%{__patch_number}} \
+%define __patch_suffix  %{-b:-b --suffix %{-b*}} %{-z:--suffix %{-z*}} \
+%define __patch_options -s %{-p:-p%{-p*}} %{-F:-F%{-F*}} %{-d:-d%{-d*}} %{-R} %{-E} %{__patch_suffix} \
+echo "Patch #%{__patch_number} (%{basename:%{__patch_file}}):"\
+%{uncompress:%{__patch_file}} | %{__patch} %{__patch_options}\
+%{nil}
 
 #
 # Script gets packaged file list on input and buildroot as first parameter.
