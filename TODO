@@ -156,3 +156,8 @@
 	2 of 1300 packages fail to YAML load correctly. One of the
 	failure cases was irregular white space in %description,
 	the other case involved RPM_I18NSTRING_TYPE.
+    - jbj: XOR operator needed, such that Requires: LSB ^ !LSB has valid 
+        truth table
+    - jbj: RFE: capture arbitrary 'defines' from the ENV, and the invocation 
+	command line, each to end up in binary *.rpm's to show more of build 
+	time options
