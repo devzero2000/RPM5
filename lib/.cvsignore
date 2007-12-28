@@ -2,8 +2,10 @@
 .depend
 Makefile
 Makefile.in
+genpgp.h
 getdate.c
 rpmversion.h
+tpgp
 .libs
 *.la
 *.lcd

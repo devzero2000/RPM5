@@ -18,9 +18,9 @@ AM_CPPFLAGS = \
 	@WITH_FILE_CPPFLAGS@ \
 	@WITH_XAR_CPPFLAGS@
 
-EXTRA_DIST = getdate.y librpm.vers
+EXTRA_DIST = genpgp.sh getdate.y librpm.vers tpgp.c
 
-EXTRA_PROGRAMS =
+EXTRA_PROGRAMS = tpgp
 
 pkgincdir = $(pkgincludedir)$(WITH_PATH_VERSIONED_SUFFIX)
 pkginc_HEADERS = \
@@ -117,3 +117,10 @@ sources:
 .PHONY:	lint
 lint:
 	$(LINT) $(DEFS) $(INCLUDES) $(librpm_la_SOURCES)
+
+tpgp_SOURCES = genpgp.h tpgp.c
+tpgp_CFLAGS  = $(CFLAGS)
+tpgp_LDADD = librpm.la
+
+genpgp.h:
+	-sh ./genpgp.sh > genpgp.h
