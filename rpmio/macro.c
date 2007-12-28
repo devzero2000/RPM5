@@ -1309,12 +1309,10 @@ static int expandFIFO(MacroBuf mb, MacroEntry me, const char *g, size_t gn)
 {
     int rc = 0;
 
-    if (me->prev == NULL)
-	return rc;
-
-    expandFIFO(mb, me->prev, g, gn);
-    if (me->prev->prev)
+    if (me && me->prev && me->prev->prev) {
+	rc = expandFIFO(mb, me->prev, g, gn);
 	rc = expandT(mb, g, gn);
+    }
     return expandT(mb, me->body, strlen(me->body));
 }
 

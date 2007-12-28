@@ -1,4 +1,5 @@
 5.0b3 -> 5.0b4:
+    - jbj: simplify expandFIFO().
     - jbj: use "\n", not ",", as the default for %@foo expansion.
     - jbj: fixup %{@foo:, } per rse comments.
     - jbj: convert %{@foo:|} to "foo|bar|quux" tuple. %@foo assumes CSV comma.
