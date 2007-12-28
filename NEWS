@@ -128,6 +128,7 @@
 
   o Additional CLI Features:
     FIXME: rpm -bt for %track execution
+    FIXME: rpm --undefine "macro"
 
   o Application Programming Interface (API) Changes:
     FIXME: << JBJ: please add details! >>
