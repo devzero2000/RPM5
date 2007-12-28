@@ -35,7 +35,7 @@ echo "static const char * DSApub = \"DSA.pub\";"
 
 $gpg --detach-sign -a -u RSApub --output - plaintext > RSA.sig
 $gpg --clearsign -u RSApub --output - plaintext > RSA.pem
-$gpg --export -a -u RSApub > RSA.pubkey
+$gpg --export -a -u RSApub > RSA.pub
 
 echo "static const char * RSAsig = \"RSA.sig\";"
 echo "static const char * RSApem = \"RSA.pem\";"

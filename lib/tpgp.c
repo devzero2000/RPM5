@@ -9,6 +9,7 @@ extern int _pgp_print;
 
 #include "system.h"
 #include <rpmio.h>
+#include <rpmmacro.h>
 
 #define	_RPMPGP_INTERNAL
 #define	_RPMBC_INTERNAL
@@ -28,17 +29,52 @@ static
 int rpmCheckPgpSignatureOnFile(const char * fn, const char * sigfn,
 		const char * pubfn, const char * pubfingerprint)
 {
+    const char * _fn = NULL;
+    const char * _sigfn = NULL;
+    const unsigned char * sigpkt = NULL;
+    size_t sigpktlen = 0;
+    const char * _pubfn = NULL;
+    const unsigned char * pubpkt = NULL;
+    size_t pubpktlen = 0;
+    int rc = 0;
+    int xx;
 
 if (_debug)
 fprintf(stderr, "==> check(%s, %s, %s, %s)\n", fn, sigfn, pubfn, pubfingerprint);
-    return 1;
+
+    _fn = rpmExpand(fn, NULL);
+
+#ifdef	NOTYET
+    _sigfn = rpmExpand(sigfn, NULL);
+    xx = pgpReadPkts(_sigfn, &sigpkt, &sigpktlen);
+    if (xx != PGPARMOR_SIGNATURE) {
+fprintf(stderr, "==> pgpReadPkts(%s) SIG %p[%u] ret %d\n", _sigfn, sigpkt, sigpktlen, xx);
+	goto exit;
+    }
+#endif
+
+    _pubfn = rpmExpand(pubfn, NULL);
+    xx = pgpReadPkts(_pubfn, &pubpkt, &pubpktlen);
+    if (xx != PGPARMOR_PUBKEY) {
+fprintf(stderr, "==> pgpReadPkts(%s) PUB %p[%u] ret %d\n", _pubfn, pubpkt, pubpktlen, xx);
+	goto exit;
+    }
+
+    rc = 1;
+
+exit:
+    pubpkt = _free(pubpkt);
+    _pubfn = _free(_pubfn);
+    sigpkt = _free(sigpkt);
+    _sigfn = _free(_sigfn);
+    _fn = _free(_fn);
+    return rc;
 }
 
 static
 int doit(const char * sigtype)
 {
     pgpDig dig;
-    int printing = -1;
     int rc = 0;
 
     dig = pgpDigNew(0);
