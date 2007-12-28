@@ -8,7 +8,7 @@ extern int _pgp_debug;
 extern int _pgp_print;
 
 #include "system.h"
-#include <rpmio.h>
+#include <rpmio_internal.h>	/* XXX rpmioSlurp */
 #include <rpmmacro.h>
 
 #define	_RPMPGP_INTERNAL
@@ -23,13 +23,20 @@ extern int _pgp_print;
 
 #include "genpgp.h"
 
+#include <rpmcli.h>
+
+#include <rpmcb.h>
+#include <rpmdb.h>
+#include <rpmps.h>
+#include <rpmts.h>
+
 #include "debug.h"
 
 static
-int rpmCheckPgpSignatureOnFile(const char * fn, const char * sigfn,
+int rpmCheckPgpSignatureOnFile(rpmts ts, const char * fn, const char * sigfn,
 		const char * pubfn, const char * pubfingerprint)
 {
-    pgpDig dig = pgpDigNew(0);
+    pgpDig dig = rpmtsDig(ts);
     pgpDigParams sigp;
     const unsigned char * sigpkt = NULL;
     size_t sigpktlen = 0;
@@ -61,6 +68,13 @@ fprintf(stderr, "==> pgpPrtPkts SIG %p[%u] ret %d\n", sigpkt, sigpktlen, xx);
 	goto exit;
     }
 
+    sigp = pgpGetSignature(dig);
+
+    if (sigp->version != 3 && sigp->version != 4) {
+fprintf(stderr, "==> unverifiable V%d\n", sigp->version);
+	goto exit;
+    }
+
     /* Load the pubkey. Use pubfn if specified, otherwise rpmdb keyring. */
     if (pubfn != NULL) {
 	const char * _pubfn = rpmExpand(pubfn, NULL);
@@ -71,27 +85,25 @@ fprintf(stderr, "==> pgpReadPkts(%s) PUB %p[%u] ret %d\n", _pubfn, pubpkt, pubpk
 	    goto exit;
 	}
 	_pubfn = _free(_pubfn);
-    } else {
-    }
-    xx = pgpPrtPkts((uint8_t *)pubpkt, pubpktlen, dig, printing);
-    if (xx) {
+	xx = pgpPrtPkts((uint8_t *)pubpkt, pubpktlen, dig, printing);
+	if (xx) {
 fprintf(stderr, "==> pgpPrtPkts PUB %p[%u] ret %d\n", pubpkt, pubpktlen, xx);
-	goto exit;
-    }
-
-    sigp = pgpGetSignature(dig);
-
-    if (sigp->version != 3 && sigp->version != 4) {
-fprintf(stderr, "==> unverifiable V%d\n", sigp->version);
-	goto exit;
+	    goto exit;
+	}
+    } else {
+	rpmRC res = rpmtsFindPubkey(ts, dig);
+	if (res != RPMRC_OK) {
+fprintf(stderr, "==> rpmtsFindPubkey ret %d\n", res);
+	    goto exit;
+	}
     }
 
     /* Compute the message digest. */
     ctx = rpmDigestInit(sigp->hash_algo, RPMDIGEST_NONE);
 
     {	const char * _fn = rpmExpand(fn, NULL);
-	const char * b = NULL;
-	size_t blen = 0;
+	uint8_t * b = NULL;
+	ssize_t blen = 0;
 	int _rc = rpmioSlurp(_fn, &b, &blen);
 
 	if (!(_rc == 0 && b != NULL && blen > 0)) {
@@ -150,7 +162,7 @@ fprintf(stderr, "==> can't load pubkey_algo(%u)\n", sigp->pubkey_algo);
 exit:
     pubpkt = _free(pubpkt);
     sigpkt = _free(sigpkt);
-    dig = pgpDigFree(dig);
+    rpmtsCleanDig(ts);
 
 if (_debug)
 fprintf(stderr, "============================ verify: rc %d\n", rc);
@@ -159,35 +171,56 @@ fprintf(stderr, "============================ verify: rc %d\n", rc);
 }
 
 static
-int doit(const char * sigtype)
+int doit(rpmts ts, const char * sigtype)
 {
     int rc = 0;
 
     if (!strcmp("DSA", sigtype)) {
-	rc = rpmCheckPgpSignatureOnFile("plaintext", DSAsig, DSApub, NULL);
+	rc = rpmCheckPgpSignatureOnFile(ts, "plaintext", DSAsig, DSApub, NULL);
+	rc = rpmCheckPgpSignatureOnFile(ts, "plaintext", DSAsig, NULL, NULL);
     }
     if (!strcmp("RSA", sigtype)) {
-	rc = rpmCheckPgpSignatureOnFile("plaintext", RSAsig, RSApub, NULL);
+	rc = rpmCheckPgpSignatureOnFile(ts, "plaintext", RSAsig, RSApub, NULL);
+	rc = rpmCheckPgpSignatureOnFile(ts, "plaintext", RSAsig, NULL, NULL);
     }
     
     return rc;
 }
 
+static struct poptOption optionsTable[] = {
+
+ { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmcliAllPoptTable, 0,
+        N_("Common options:"),
+        NULL },
+   POPT_AUTOALIAS
+   POPT_AUTOHELP
+   POPT_TABLEEND
+};      
+
 int
 main(int argc, char *argv[])
 {
+    poptContext optCon = rpmcliInit(argc, argv, optionsTable);
+    rpmts ts = NULL;
     int rc;
 
     pgpImplVecs = &rpmnssImplVecs;
 _pgp_debug = 1;
 _pgp_print = 1;
 
-    rc = doit("DSA");
+    ts = rpmtsCreate();
+    (void) rpmtsOpenDB(ts, O_RDONLY);
 
-    rc = doit("RSA");
+    rc = doit(ts, "DSA");
+
+    rc = doit(ts, "RSA");
+
+    ts = rpmtsFree(ts);
 
     if (pgpImplVecs == &rpmnssImplVecs)
 	NSS_Shutdown();
+
+    optCon = rpmcliFini(optCon);
 
     return rc;
 }

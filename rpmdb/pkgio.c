@@ -156,7 +156,6 @@ rpmRC rpmtsFindPubkey(rpmts ts, void * _dig)
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     pgpDig dig = (_dig ? _dig : rpmtsDig(ts));
-    const void * sig = pgpGetSig(dig);
     pgpDigParams sigp = pgpGetSignature(dig);
     pgpDigParams pubp = pgpGetPubkey(dig);
     rpmRC res = RPMRC_NOKEY;
@@ -166,7 +165,6 @@ rpmRC rpmtsFindPubkey(rpmts ts, void * _dig)
 #endif
     int xx;
 
-assert(sig != NULL);
 assert(dig != NULL);
 assert(sigp != NULL);
 assert(pubp != NULL);
