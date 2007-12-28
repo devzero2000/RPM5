@@ -338,14 +338,4 @@
                      arbitrary (or else the macro would be not available).
      Hint:           As %_arbitrary_tags restricts the allowed tags anyway,
                      best would be to export also arbitrary tags as macros!
-     ________________________________________________________________________
-
-     Change:         append-tag-value-to-macro
-     Purpose:        Instead of overwriting macro "foo" with the latest
-                     value "quux" in case of tag "Foo: bar" followed
-                     by tag "Foo: quux", set the macro "foo" to the
-                     comma-separated list "bar, quux".
-     Reason:         This allows one to get the values of all(!) tags
-                     instead of just the last one. In OpenPKG we use this
-                     to fetch the value of tags like BuildPreReq or NoSource.
 

@@ -810,18 +810,7 @@ static rpmRC handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
     }
 
     if (macro)
-#if defined(RPM_VENDOR_OPENPKG) /* append-tag-value-to-macro */
-    {
-        char *value = rpmExpand("%{?", macro, ":%{", macro, "}, }", NULL);
-        size_t value_len = strlen(value);
-        value = xrealloc(value, value_len + strlen(field) + 1);
-        strcpy(value+value_len, field);
-        addMacro(spec->macros, macro, NULL, value, RMIL_SPEC);
-        value = _free(value);
-    }
-#else
 	addMacro(spec->macros, macro, NULL, field, RMIL_SPEC);
-#endif
     
     return RPMRC_OK;
 }
