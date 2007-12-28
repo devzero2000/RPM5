@@ -217,9 +217,18 @@ static void rpmcliAllArgCallback(poptContext con,
 	}
 	t = s;
 	if (*t == '%') t++;
+#if 0
 	/* XXX Predefine macro if not initialized yet. */
+        /* rse: this is a very bad hack from the year 2002 which especially results in
+           the value of the first --define option to occur twice on %{@foo} macro stack
+           expansions. We have now disabled it because:
+           1. it is a very confusing sematic
+           2. it applies only to the absolutely first occurrence of a --define usage
+           3. there is already the explicit --predefine in case one really has to
+              define a macro before the config files are loaded. */
 	if (rpmcliInitialized < 0)
 	    (void) rpmDefineMacro(NULL, t, RMIL_CMDLINE);
+#endif
 	rpmcliConfigured();
 /*@-type@*/
 	(void) rpmDefineMacro(NULL, t, RMIL_CMDLINE);

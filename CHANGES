@@ -1,4 +1,6 @@
 5.0b3 -> 5.0b4:
+    - rse: fix %{@foo} macro stack expansion including also the value at the stack bottom
+    - rse: remove the confusing additional --predefine behaviour when --define is used as the first CLI option
     - jbj: simplify expandFIFO().
     - jbj: use "\n", not ",", as the default for %@foo expansion.
     - jbj: fixup %{@foo:, } per rse comments.
