@@ -1304,6 +1304,20 @@ doFoo(MacroBuf mb, int negate, const char * f, size_t fn,
     }
 }
 
+static int expandFIFO(MacroBuf mb, MacroEntry me, const char *g, size_t gn)
+	/*@*/
+{
+    int rc = 0;
+
+    if (me->prev == NULL)
+	return rc;
+
+    expandFIFO(mb, me->prev, g, gn);
+    if (me->prev->prev)
+	rc = expandT(mb, g, gn);
+    return expandT(mb, me->body, strlen(me->body));
+}
+
 /**
  * The main macro recursion loop.
  * @todo Dynamically reallocate target buffer.
@@ -1673,11 +1687,11 @@ expandMacro(MacroBuf mb)
 
 	/* XXX Special processing to create a tuple from stack'd values. */
 	if (stackarray) {
-		c = ((g && g < ge) ? *g : ',');
-		do {
-			if (me != *mep)	SAVECHAR(mb, c);
-			rc = expandT(mb, me->body, strlen(me->body));
-		} while ((me = me->prev) != NULL);
+		if (!(g && g < ge)) {
+			g = ",";
+			gn = strlen(g);
+		}
+		rc = expandFIFO(mb, me, g, gn);
 		s = se;
 		continue;
 	}
