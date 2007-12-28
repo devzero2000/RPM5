@@ -822,7 +822,7 @@ retry:
     }
 
     if (NSType == RPMNS_TYPE_GNUPG) {
-	static const char gnupg_pre[] = "%(%{__gpg} -qv ";
+	static const char gnupg_pre[] = "%(%{__gpg} --batch --no-tty --quiet --verify ";
 	static const char gnupg_post[] = " 2>/dev/null; echo $?)";
 	const char * t = rpmExpand(gnupg_pre, Name, gnupg_post, NULL);
 
