@@ -44,14 +44,12 @@ fprintf(stderr, "==> check(%s, %s, %s, %s)\n", fn, sigfn, pubfn, pubfingerprint)
 
     _fn = rpmExpand(fn, NULL);
 
-#ifdef	NOTYET
     _sigfn = rpmExpand(sigfn, NULL);
     xx = pgpReadPkts(_sigfn, &sigpkt, &sigpktlen);
     if (xx != PGPARMOR_SIGNATURE) {
 fprintf(stderr, "==> pgpReadPkts(%s) SIG %p[%u] ret %d\n", _sigfn, sigpkt, sigpktlen, xx);
 	goto exit;
     }
-#endif
 
     _pubfn = rpmExpand(pubfn, NULL);
     xx = pgpReadPkts(_pubfn, &pubpkt, &pubpktlen);

@@ -1,4 +1,5 @@
 5.0b3 -> 5.0b4:
+    - jbj: fix: undo deliberate damage from rpm's RHL8 security audit. ptooey!
     - rse: allow assertion of a particular GnuPG signing key via "gnupg(<path>) = <fingerprint>" in dependencies
     - rse: fix invocaction of GnuPG's gpg(1) command for gnupg(<path>) dependency assertions
     - afb: hide the rpmlib Version/Timestamp/Vendor markers spew unless verbose.

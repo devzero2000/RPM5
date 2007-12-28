@@ -1284,15 +1284,15 @@ pgpArmor pgpReadPkts(const char * fn, const uint8_t ** pkt, size_t * pktlen)
 	goto exit;
     }
 
+    /* Read unarmored packets. */
     if (pgpIsPkt(b)) {
-#ifdef NOTYET	/* XXX ASCII Pubkeys only, please. */
-	ec = 0;	/* XXX fish out pkt type. */
-#endif
+	ec = 0;		/* XXX FIXME: fish out pkt type from unarmored item. */
 	goto exit;
     }
 
 #define	TOKEQ(_s, _tok)	(!strncmp((_s), (_tok), sizeof(_tok)-1))
 
+    /* Read armored packets, converting to binary. */
     for (t = (char *)b; t && *t; t = te) {
 	if ((te = strchr(t, '\n')) == NULL)
 	    te = t + strlen(t);
@@ -1311,8 +1311,7 @@ pgpArmor pgpReadPkts(const char * fn, const uint8_t ** pkt, size_t * pktlen)
 		ec = PGPARMOR_ERR_UNKNOWN_ARMOR_TYPE;
 		goto exit;
 	    }
-	    if (rc != PGPARMOR_PUBKEY)	/* XXX ASCII Pubkeys only, please. */
-		continue;
+	    ec = rc;	/* Save the packet type as exit code. */
 	    armortype = t;
 
 	    t = strchr(t, '\n');
@@ -1396,7 +1395,6 @@ pgpArmor pgpReadPkts(const char * fn, const uint8_t ** pkt, size_t * pktlen)
 	    b = _free(b);
 	    b = dec;
 	    blen = declen;
-	    ec = PGPARMOR_PUBKEY;	/* XXX ASCII Pubkeys only, please. */
 	    goto exit;
 	    /*@notreached@*/ /*@switchbreak@*/ break;
 	}
