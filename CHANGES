@@ -1,4 +1,5 @@
 5.0b3 -> 5.0b4:
+    - afb: hide the rpmlib Version/Timestamp/Vendor markers spew unless verbose.
     - rse: fix %{@foo} macro stack expansion including also the value at the stack bottom
     - rse: remove the confusing additional --predefine behaviour when --define is used as the first CLI option
     - jbj: simplify expandFIFO().
