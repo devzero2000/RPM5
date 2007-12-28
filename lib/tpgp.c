@@ -29,14 +29,10 @@ static
 int rpmCheckPgpSignatureOnFile(const char * fn, const char * sigfn,
 		const char * pubfn, const char * pubfingerprint)
 {
-    static const char * plaintext = "This is the plaintext\n";
-    pgpDig dig;
+    pgpDig dig = pgpDigNew(0);
     pgpDigParams sigp;
-    const char * _fn = NULL;
-    const char * _sigfn = NULL;
     const unsigned char * sigpkt = NULL;
     size_t sigpktlen = 0;
-    const char * _pubfn = NULL;
     const unsigned char * pubpkt = NULL;
     size_t pubpktlen = 0;
     DIGEST_CTX ctx = NULL;
@@ -47,25 +43,41 @@ int rpmCheckPgpSignatureOnFile(const char * fn, const char * sigfn,
 if (_debug)
 fprintf(stderr, "==> check(%s, %s, %s, %s)\n", fn, sigfn, pubfn, pubfingerprint);
 
-    dig = pgpDigNew(0);
-
-    _fn = rpmExpand(fn, NULL);
-
-    _sigfn = rpmExpand(sigfn, NULL);
-    xx = pgpReadPkts(_sigfn, &sigpkt, &sigpktlen);
-    if (xx != PGPARMOR_SIGNATURE) {
+    /* Load the signature. Use sigfn if specified, otherwise clearsign. */
+    if (sigfn != NULL) {
+	const char * _sigfn = rpmExpand(sigfn, NULL);
+	xx = pgpReadPkts(_sigfn, &sigpkt, &sigpktlen);
+	if (xx != PGPARMOR_SIGNATURE) {
 fprintf(stderr, "==> pgpReadPkts(%s) SIG %p[%u] ret %d\n", _sigfn, sigpkt, sigpktlen, xx);
-	goto exit;
+	    _sigfn = _free(_sigfn);
+	    goto exit;
+	}
+	_sigfn = _free(_sigfn);
+    } else {
     }
     xx = pgpPrtPkts((uint8_t *)sigpkt, sigpktlen, dig, printing);
-
-    _pubfn = rpmExpand(pubfn, NULL);
-    xx = pgpReadPkts(_pubfn, &pubpkt, &pubpktlen);
-    if (xx != PGPARMOR_PUBKEY) {
-fprintf(stderr, "==> pgpReadPkts(%s) PUB %p[%u] ret %d\n", _pubfn, pubpkt, pubpktlen, xx);
+    if (xx) {
+fprintf(stderr, "==> pgpPrtPkts SIG %p[%u] ret %d\n", sigpkt, sigpktlen, xx);
 	goto exit;
     }
+
+    /* Load the pubkey. Use pubfn if specified, otherwise rpmdb keyring. */
+    if (pubfn != NULL) {
+	const char * _pubfn = rpmExpand(pubfn, NULL);
+	xx = pgpReadPkts(_pubfn, &pubpkt, &pubpktlen);
+	if (xx != PGPARMOR_PUBKEY) {
+fprintf(stderr, "==> pgpReadPkts(%s) PUB %p[%u] ret %d\n", _pubfn, pubpkt, pubpktlen, xx);
+	    _pubfn = _free(_pubfn);
+	    goto exit;
+	}
+	_pubfn = _free(_pubfn);
+    } else {
+    }
     xx = pgpPrtPkts((uint8_t *)pubpkt, pubpktlen, dig, printing);
+    if (xx) {
+fprintf(stderr, "==> pgpPrtPkts PUB %p[%u] ret %d\n", pubpkt, pubpktlen, xx);
+	goto exit;
+    }
 
     sigp = pgpGetSignature(dig);
 
@@ -74,9 +86,24 @@ fprintf(stderr, "==> unverifiable V%d\n", sigp->version);
 	goto exit;
     }
 
+    /* Compute the message digest. */
     ctx = rpmDigestInit(sigp->hash_algo, RPMDIGEST_NONE);
 
-    xx = rpmDigestUpdate(ctx, plaintext, strlen(plaintext));
+    {	const char * _fn = rpmExpand(fn, NULL);
+	const char * b = NULL;
+	size_t blen = 0;
+	int _rc = rpmioSlurp(_fn, &b, &blen);
+
+	if (!(_rc == 0 && b != NULL && blen > 0)) {
+fprintf(stderr, "==> rpmioSlurp(%s) MSG %p[%u] ret %d\n", _fn, b, blen, _rc);
+	    b = _free(b);
+	    _fn = _free(_fn);
+	    goto exit;
+	}
+	_fn = _free(_fn);
+	xx = rpmDigestUpdate(ctx, b, blen);
+	b = _free(b);
+    }
 
     if (sigp->hash != NULL)
 	xx = rpmDigestUpdate(ctx, sigp->hash, sigp->hashlen);
@@ -90,6 +117,7 @@ fprintf(stderr, "==> unverifiable V%d\n", sigp->version);
 	xx = rpmDigestUpdate(ctx, trailer, sizeof(trailer));
     }
 
+    /* Load the message digest. */
     switch(sigp->pubkey_algo) {
     default:
 	xx = 1;
@@ -106,6 +134,7 @@ fprintf(stderr, "==> can't load pubkey_algo(%u)\n", sigp->pubkey_algo);
 	goto exit;
     }
 
+    /* Verify the signature. */
     switch(sigp->pubkey_algo) {
     default:
 	rc = 0;
@@ -120,11 +149,7 @@ fprintf(stderr, "==> can't load pubkey_algo(%u)\n", sigp->pubkey_algo);
 
 exit:
     pubpkt = _free(pubpkt);
-    _pubfn = _free(_pubfn);
     sigpkt = _free(sigpkt);
-    _sigfn = _free(_sigfn);
-    _fn = _free(_fn);
-
     dig = pgpDigFree(dig);
 
 if (_debug)
