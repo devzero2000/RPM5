@@ -3,7 +3,7 @@
  * Routines to handle RFC-2440 detached signatures.
  */
 
-static int _debug = 0;
+static int _debug = 1;
 extern int _pgp_debug;
 extern int _pgp_print;
 
@@ -24,147 +24,51 @@ extern int _pgp_print;
 
 #include "debug.h"
 
-static int doit(const char *sig, pgpDig dig, int printing)
+static
+int rpmCheckPgpSignatureOnFile(const char * fn, const char * sigfn,
+		const char * pubfn, const char * pubfingerprint)
 {
-    const char *s, *t;
-    unsigned char * dec;
-    size_t declen;
-    char * enc;
-    int rc;
-    int i;
 
 if (_debug)
-fprintf(stderr, "*** before\n%s\n", sig);
-
-    if ((rc = b64decode(sig, (void **)&dec, &declen)) != 0) {
-	fprintf(stderr, "*** b64decode returns %d\n", rc);
-	return rc;
-    }
-    rc = pgpPrtPkts(dec, declen, dig, printing);
-    if (rc < 0) {
-	fprintf(stderr, "*** pgpPrtPkts returns %d\n", rc);
-	return rc;
-    }
-
-    if ((enc = b64encode(dec, declen)) == NULL) {
-	fprintf(stderr, "*** b64encode failed\n");
-	return rc;
-    }
-    dec = _free(dec);
-
-if (_debug)
-fprintf(stderr, "***  after\n%s\n", enc);
-
-rc = 0;
-for (i = 0, s = sig, t = enc; *s & *t; i++, s++, t++) {
-    if (*s == '\n') s++;
-    if (*t == '\n') t++;
-    if (*s == *t) continue;
-fprintf(stderr, "??? %5d %02x != %02x '%c' != '%c'\n", i, (*s & 0xff), (*t & 0xff), *s, *t);
-    rc = 5;
+fprintf(stderr, "==> check(%s, %s, %s, %s)\n", fn, sigfn, pubfn, pubfingerprint);
+    return 1;
 }
-    enc = _free(enc);
+
+static
+int doit(const char * sigtype)
+{
+    pgpDig dig;
+    int printing = -1;
+    int rc = 0;
+
+    dig = pgpDigNew(0);
+
+    if (!strcmp("DSA", sigtype))
+	rc = rpmCheckPgpSignatureOnFile("plaintext", DSAsig, DSApub, NULL);
+    if (!strcmp("RSA", sigtype))
+	rc = rpmCheckPgpSignatureOnFile("plaintext", RSAsig, RSApub, NULL);
+    
+if (_debug)
+fprintf(stderr, "============================ %s verify: rc %d\n", sigtype, rc);
+
+    dig = pgpDigFree(dig);
 
     return rc;
+
 }
-
-/* FIPS-186 test vectors. */
-static const char * fips_p = "8df2a494492276aa3d25759bb06869cbeac0d83afb8d0cf7cbb8324f0d7882e5d0762fc5b7210eafc2e9adac32ab7aac49693dfbf83724c2ec0736ee31c80291";
-static const char * fips_q = "c773218c737ec8ee993b4f2ded30f48edace915f";
-static const char * fips_g = "626d027839ea0a13413163a55b4cb500299d5522956cefcb3bff10f399ce2c2e71cb9de5fa24babf58e5b79521925c9cc42e9f6f464b088cc572af53e6d78802";
-
-static const char * fips_hm = "a9993e364706816aba3e25717850c26c9cd0d89d";
-
-static const char * fips_y = "19131871d75b1612a819f29d78d1b0d7346f7aa77bb62a859bfd6c5675da9d212d3a36ef1672ef660b8c7c255cc0ec74858fba33f44c06699630a76b030ee333";
-
-static const char * fips_r = "8bac1ab66410435cb7181f95b16ab97c92b341c0";
-static const char * fips_s = "41e2345f1f56df2458f426d155b4ba2db6dcd8c8";
 
 int
 main(int argc, char *argv[])
 {
-    pgpDig dig;
-    rpmbc bc;
-    int printing = -1;
     int rc;
 
-
-    pgpImplVecs = &rpmbcImplVecs;
-
-    dig = pgpDigNew(0);
-    bc = dig->impl;
-
-    mpbzero(&bc->p);	mpbsethex(&bc->p, fips_p);
-    mpbzero(&bc->q);	mpbsethex(&bc->q, fips_q);
-    mpnzero(&bc->g);	mpnsethex(&bc->g, fips_g);
-    mpnzero(&bc->y);	mpnsethex(&bc->y, fips_y);
-    mpnzero(&bc->r);	mpnsethex(&bc->r, fips_r);
-    mpnzero(&bc->s);	mpnsethex(&bc->s, fips_s);
-    mpnzero(&bc->hm);	mpnsethex(&bc->hm, fips_hm);
-
-    rc = pgpImplVerifyDSA(dig);
-
-fprintf(stderr, "=============================== DSA FIPS-186-1: rc %d\n", rc);
-
-    dig = pgpDigFree(dig);
-
-    pgpImplVecs = &rpmsslImplVecs;
-
-    dig = pgpDigNew(0);
+    pgpImplVecs = &rpmnssImplVecs;
 _pgp_debug = 1;
 _pgp_print = 1;
 
-fprintf(stderr, "=============================== DSA Public Key\n");
-    if ((rc = doit(DSApub, dig, printing)) != 0)
-	fprintf(stderr, "==> FAILED: rc %d\n", rc);
+    rc = doit("DSA");
 
-fprintf(stderr, "=============================== DSA Signature of \"%s\"\n", str);
-    if ((rc = doit(DSAsig, dig, printing)) != 0)
-	fprintf(stderr, "==> FAILED: rc %d\n", rc);
-
-    {	DIGEST_CTX ctx = rpmDigestInit(PGPHASHALGO_SHA1, RPMDIGEST_NONE);
-	pgpDigParams dsig = pgpGetSignature(dig);
-	
-	rpmDigestUpdate(ctx, str, strlen(str));
-	rpmDigestUpdate(ctx, dsig->hash, dsig->hashlen);
-
-	(void) pgpImplSetDSA(ctx, dig, dsig);
-    }
-
-    rc = pgpImplVerifyDSA(dig);
-    
-fprintf(stderr, "=============================== DSA verify: rc %d\n", rc);
-
-    dig = pgpDigFree(dig);
-
-    pgpImplVecs = &rpmsslImplVecs;
-
-    dig = pgpDigNew(0);
-_pgp_debug = 1;
-_pgp_print = 1;
-
-fprintf(stderr, "=============================== RSA Public Key\n");
-    if ((rc = doit(RSApub, dig, printing)) != 0)
-	fprintf(stderr, "==> FAILED: rc %d\n", rc);
-
-fprintf(stderr, "=============================== RSA Signature of \"%s\"\n", str);
-    if ((rc = doit(RSAsig, dig, printing)) != 0)
-	fprintf(stderr, "==> FAILED: rc %d\n", rc);
-
-    {	DIGEST_CTX ctx = rpmDigestInit(PGPHASHALGO_SHA1, RPMDIGEST_NONE);
-	pgpDigParams dsig = pgpGetSignature(dig);
-	
-	rpmDigestUpdate(ctx, str, strlen(str));
-	rpmDigestUpdate(ctx, dsig->hash, dsig->hashlen);
-
-	(void) pgpImplSetRSA(ctx, dig, dsig);
-    }
-
-    rc = pgpImplVerifyRSA(dig);
-    
-fprintf(stderr, "=============================== RSA verify: rc %d\n", rc);
-
-    dig = pgpDigFree(dig);
+    rc = doit("RSA");
 
     if (pgpImplVecs == &rpmnssImplVecs)
 	NSS_Shutdown();

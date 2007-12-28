@@ -22,24 +22,21 @@ Name-Email: jbj@jbj.org
 %commit
 GO_SYSIN_DD
 
-str="abc"
-echo "static const char * str = \"$str\";"
+str="This is the plaintext"
+echo "This is the plaintext" > plaintext
 
-echo "static const char * DSApub ="
-$gpg --export -a -u DSApub | sed -e'1,3d; $d' | sed -e's/^/"/; s/$/\\n"/; $d'
-echo ";"
+$gpg --detach-sign -a -u DSApub --output - plaintext > DSA.sig
+$gpg --clearsign -u DSApub --output - plaintext > DSA.pem
+$gpg --export -a -u DSApub > DSA.pub
 
-echo "static const char * DSAsig ="
-echo -n "$str" | $gpg -sab -u DSApub | sed -e'1,3d; $d' | sed -e's/^/"/; s/$/\\n"/; $d'
-echo ";"
+echo "static const char * DSAsig = \"DSA.sig\";"
+echo "static const char * DSApem = \"DSA.pem\";"
+echo "static const char * DSApub = \"DSA.pub\";"
 
-echo "static const char * RSApub ="
-$gpg --export -a -u RSApub | sed -e'1,3d; $d' | sed -e's/^/"/; s/$/\\n"/; $d'
-echo ";"
+$gpg --detach-sign -a -u RSApub --output - plaintext > RSA.sig
+$gpg --clearsign -u RSApub --output - plaintext > RSA.pem
+$gpg --export -a -u RSApub > RSA.pubkey
 
-echo "static const char * RSAsig ="
-echo -n "$str" | $gpg -sab -u RSApub | sed -e'1,3d; $d' | sed -e's/^/"/; s/$/\\n"/; $d'
-echo ";"
-
-rm -rf $hdir
-
+echo "static const char * RSAsig = \"RSA.sig\";"
+echo "static const char * RSApem = \"RSA.pem\";"
+echo "static const char * RSApub = \"RSA.pub\";"
