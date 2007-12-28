@@ -822,12 +822,21 @@ retry:
     }
 
     if (NSType == RPMNS_TYPE_GNUPG) {
-	static const char gnupg_pre[] = "%(%{__gpg} --batch --no-tty --quiet --verify ";
-	static const char gnupg_post[] = " 2>/dev/null; echo $?)";
-	const char * t = rpmExpand(gnupg_pre, Name, gnupg_post, NULL);
-
-	rc = (t && t[0] == '0') ? 0 : 1;
-	t = _free(t);
+	const char * EVR = rpmdsEVR(dep);
+	if (!(EVR && *EVR)) {
+	    static const char gnupg_pre[] = "%(%{__gpg} --batch --no-tty --quiet --verify ";
+	    static const char gnupg_post[] = " 2>/dev/null; echo $?)";
+	    const char * t = rpmExpand(gnupg_pre, Name, gnupg_post, NULL);
+	    rc = (t && t[0] == '0') ? 0 : 1;
+	    t = _free(t);
+        }
+        else {
+	    static const char gnupg_pre[] = "%(%{__gpg} --batch --no-tty --quiet --verify ";
+	    static const char gnupg_post[] = " 2>&1 | grep '^Primary key fingerprint:' | sed -e 's;^.*: *;;' -e 's; *;;g')";
+	    const char * t = rpmExpand(gnupg_pre, Name, gnupg_post, NULL);
+	    rc = ((Flags & RPMSENSE_EQUAL) && strcasecmp(EVR, t) == 0) ? 0 : 1;
+	    t = _free(t);
+        }
 	if (Flags & RPMSENSE_MISSINGOK)
 	    goto unsatisfied;
 	rpmdsNotify(dep, _("(gnupg probe)"), rc);
