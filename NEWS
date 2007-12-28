@@ -123,6 +123,11 @@
 
   o Additional Specification Features:
     FIXME: Class, %track+vcheck, %sanitycheck
+    FIXME: arbitrary tag support
+    FIXME: %{@<name>:<separator>} macro stack expansion
+
+  o Additional CLI Features:
+    FIXME: rpm -bt for %track execution
 
   o Application Programming Interface (API) Changes:
     FIXME: << JBJ: please add details! >>
