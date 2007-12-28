@@ -405,7 +405,7 @@ enum rpmTag_e {
     RPMTAG_RPMLIBVERSION	= 1199, /* i */
     RPMTAG_RPMLIBTIMESTAMP	= 1200, /* i */
     RPMTAG_RPMLIBVENDOR		= 1201, /* i */
-    RPMTAG_CLASS		= 1202, /* s internal arbitrary */
+    RPMTAG_CLASS		= 1202, /* s */
     RPMTAG_TRACK		= 1203, /* s internal arbitrary */
     RPMTAG_TRACKPROG		= 1204, /* s internal arbitrary */
     RPMTAG_SANITYCHECK		= 1205, /* s */
