@@ -1688,7 +1688,7 @@ expandMacro(MacroBuf mb)
 	/* XXX Special processing to create a tuple from stack'd values. */
 	if (stackarray) {
 		if (!(g && g < ge)) {
-			g = ",";
+			g = "\n";
 			gn = strlen(g);
 		}
 		rc = expandFIFO(mb, me, g, gn);

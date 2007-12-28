@@ -1,4 +1,5 @@
 5.0b3 -> 5.0b4:
+    - jbj: use "\n", not ",", as the default for %@foo expansion.
     - jbj: fixup %{@foo:, } per rse comments.
     - jbj: convert %{@foo:|} to "foo|bar|quux" tuple. %@foo assumes CSV comma.
     - rse: implement "rpm --undefine <macro>" as the counterpart to "rpm --define '<macro> <value>'"
