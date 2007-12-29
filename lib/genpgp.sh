@@ -25,6 +25,9 @@ GO_SYSIN_DD
 str="This is the plaintext"
 echo "This is the plaintext" > plaintext
 
+echo "static const char * plaintext = \"$str\";"
+echo "static const char * plaintextfn = \"plaintext\";"
+
 $gpg --detach-sign -a -u DSApub --output - plaintext > DSA.sig
 $gpg --clearsign -u DSApub --output - plaintext > DSA.pem
 $gpg --export -a DSApub > DSA.pub

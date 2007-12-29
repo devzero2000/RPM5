@@ -61,7 +61,7 @@ fprintf(stderr, "==> pgpReadPkts(%s) SIG %p[%u] ret %d\n", _sigfn, sigpkt, sigpk
 	}
 	_sigfn = _free(_sigfn);
     } else {
-	/* XXX FIXME: read clearsign'd file with appended signature.
+	/* XXX FIXME: read clearsign'd file with appended signature. */
     }
     xx = pgpPrtPkts((uint8_t *)sigpkt, sigpktlen, dig, printing);
     if (xx) {
@@ -196,22 +196,36 @@ int doit(rpmts ts, const char * sigtype)
     int rc = 0;
 
     if (!strcmp("DSA", sigtype)) {
-	rc = rpmCheckPgpSignatureOnFile(ts, "plaintext", DSAsig, DSApub, NULL);
-	rc = rpmCheckPgpSignatureOnFile(ts, "plaintext", DSAsig, NULL, NULL);
+	rc = rpmCheckPgpSignatureOnFile(ts, plaintextfn, DSAsig, DSApub, NULL);
+	rc = rpmCheckPgpSignatureOnFile(ts, plaintextfn, DSAsig, NULL, NULL);
     }
     if (!strcmp("RSA", sigtype)) {
-	rc = rpmCheckPgpSignatureOnFile(ts, "plaintext", RSAsig, RSApub, NULL);
-	rc = rpmCheckPgpSignatureOnFile(ts, "plaintext", RSAsig, NULL, NULL);
+	rc = rpmCheckPgpSignatureOnFile(ts, plaintextfn, RSAsig, RSApub, NULL);
+#ifdef	NOTYET	/* XXX RSA key id's are funky. */
+	rc = rpmCheckPgpSignatureOnFile(ts, plaintextfn, RSAsig, NULL, NULL);
+#endif
     }
     
     return rc;
 }
 
 static struct poptOption optionsTable[] = {
-
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmcliAllPoptTable, 0,
         N_("Common options:"),
         NULL },
+
+ /* XXX Note: these entries assume sizeof(int) == sizeof (void *). */
+ { "bc", 0, POPT_ARG_VAL, &pgpImplVecs, (int)&rpmbcImplVecs,
+        N_("use beecrypt crypto implementation"), NULL },
+#ifdef	NOTYET
+ { "gc", 0, POPT_ARG_VAL, &pgpImplVecs, (int)&rpmgcImplVecs,
+        N_("use gcrypt crypto implementation"), NULL },
+#endif
+ { "nss", 0, POPT_ARG_VAL, &pgpImplVecs, (int)&rpmnssImplVecs,
+        N_("use NSS crypto implementation"), NULL },
+ { "ssl", 0, POPT_ARG_VAL, &pgpImplVecs, (int)&rpmsslImplVecs,
+        N_("use OpenSSL crypto implementation"), NULL },
+
    POPT_AUTOALIAS
    POPT_AUTOHELP
    POPT_TABLEEND
@@ -220,7 +234,7 @@ static struct poptOption optionsTable[] = {
 int
 main(int argc, char *argv[])
 {
-    poptContext optCon = rpmcliInit(argc, argv, optionsTable);
+    poptContext optCon;
     rpmts ts = NULL;
     int rc;
 
@@ -228,6 +242,7 @@ main(int argc, char *argv[])
 _pgp_debug = 1;
 _pgp_print = 1;
 
+    optCon = rpmcliInit(argc, argv, optionsTable);
     ts = rpmtsCreate();
     (void) rpmtsOpenDB(ts, O_RDONLY);
 
