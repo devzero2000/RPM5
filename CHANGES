@@ -1,4 +1,6 @@
 5.0b3 -> 5.0b4:
+    - jbj: re-add all the debugging spew under --rpmnsdebug for now.
+    - jbj: functional signature(...) name space probe.
     - jbj: add rpmnsProbeSignature() & "signature(/text:/sig) = /pub:id" probe.
     - jbj: pgpReadPkts: truncate binary encoded pgp pktlen to actual length.
     - jbj: pgpReadPkts: identify binary encoded pgp pkts correctly.

@@ -125,7 +125,7 @@ fprintf(stderr, "==> pgpPrtPkts PUB %p[%u] ret %d\n", ts->pkpkt, ts->pkpktlen, x
 	rpmRC res = pgpFindPubkey(dig);
 	if (res != RPMRC_OK) {
 if (_debug)
-fprintf(stderr, "==> rpmtsFindPubkey ret %d\n", res);
+fprintf(stderr, "==> pgpFindPubkey ret %d\n", res);
 	    goto exit;
 	}
     }

@@ -821,6 +821,35 @@ retry:
 	goto exit;
     }
 
+    if (NSType == RPMNS_TYPE_SIGNATURE) {
+	const char * EVR = rpmdsEVR(dep);
+	char * fn = xstrdup(Name);
+	char * sigfn = NULL;
+	char * pubfn = ((EVR && *EVR) ? xstrdup(EVR) : NULL);
+	char * pubid = NULL;
+
+	/* Split /fn:/sig */
+	if ((sigfn = strrchr(fn, ':')) != NULL)
+	    *sigfn++ = '\0';
+
+	/* Split /pub:id */
+	if (pubfn) {
+	    if ((pubid = strrchr(pubfn, ':')) != NULL)
+		*pubid++ = '\0';
+	}
+
+	xx = rpmnsProbeSignature(ts, fn, sigfn, pubfn, pubid);
+	rc = (xx ? 0 : 1);
+
+	fn = _free(fn);
+	pubfn = _free(pubfn);
+
+	if (Flags & RPMSENSE_MISSINGOK)
+	    goto unsatisfied;
+	rpmdsNotify(dep, _("(signature probe)"), rc);
+	goto exit;
+    }
+
     if (NSType == RPMNS_TYPE_GNUPG) {
 	const char * EVR = rpmdsEVR(dep);
 	if (!(EVR && *EVR)) {
@@ -1749,6 +1778,9 @@ static inline int addRelation(rpmts ts,
     case RPMNS_TYPE_MACRO:
     case RPMNS_TYPE_ENVVAR:
     case RPMNS_TYPE_RUNNING:
+    case RPMNS_TYPE_SANITY:
+    case RPMNS_TYPE_VCHECK:
+    case RPMNS_TYPE_SIGNATURE:
 	return 0;
 	/*@notreached@*/ break;
     default:
