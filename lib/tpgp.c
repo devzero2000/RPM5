@@ -197,10 +197,15 @@ int doit(rpmts ts, const char * sigtype)
 
     if (!strcmp("DSA", sigtype)) {
 	rc = rpmCheckPgpSignatureOnFile(ts, plaintextfn, DSAsig, DSApub, NULL);
+	rc = rpmCheckPgpSignatureOnFile(ts, plaintextfn, DSAsig, DSApubpem, NULL);
+	rc = rpmCheckPgpSignatureOnFile(ts, plaintextfn, DSAsigpem, DSApub, NULL);
+	rc = rpmCheckPgpSignatureOnFile(ts, plaintextfn, DSAsigpem, DSApubpem, NULL);
 	rc = rpmCheckPgpSignatureOnFile(ts, plaintextfn, DSAsig, NULL, NULL);
+	rc = rpmCheckPgpSignatureOnFile(ts, plaintextfn, DSAsigpem, NULL, NULL);
     }
     if (!strcmp("RSA", sigtype)) {
 	rc = rpmCheckPgpSignatureOnFile(ts, plaintextfn, RSAsig, RSApub, NULL);
+	rc = rpmCheckPgpSignatureOnFile(ts, plaintextfn, RSAsigpem, RSApubpem, NULL);
 #ifdef	NOTYET	/* XXX RSA key id's are funky. */
 	rc = rpmCheckPgpSignatureOnFile(ts, plaintextfn, RSAsig, NULL, NULL);
 #endif

@@ -1617,8 +1617,8 @@ int pgpFindPubkey(pgpDig dig)
  * @return		1 if an OpenPGP packet, 0 otherwise
  */
 /*@unused@*/ static inline
-int pgpIsPkt(const uint8_t * p)
-	/*@*/
+int pgpIsPkt(const uint8_t * p, /*@null@*/ pgpTag * tagp)
+	/*@modifies *tagp @*/
 {
     unsigned int val = (unsigned int) *p++;
     pgpTag tag;
@@ -1663,7 +1663,8 @@ int pgpIsPkt(const uint8_t * p)
 	rc = 0;
 	break;
     }
-
+    if (tagp)
+	*tagp = tag;
     return rc;
 }
 

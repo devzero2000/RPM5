@@ -1277,6 +1277,7 @@ pgpArmor pgpReadPkts(const char * fn, const uint8_t ** pkt, size_t * pktlen)
     char * t, * te;
     int pstate = 0;
     pgpArmor ec = PGPARMOR_ERR_NO_BEGIN_PGP;	/* XXX assume failure */
+    pgpTag tag = 0;
     int rc;
 
     rc = rpmioSlurp(fn, &b, &blen);
@@ -1285,8 +1286,19 @@ pgpArmor pgpReadPkts(const char * fn, const uint8_t ** pkt, size_t * pktlen)
     }
 
     /* Read unarmored packets. */
-    if (pgpIsPkt(b)) {
-	ec = 0;		/* XXX FIXME: fish out pkt type from unarmored item. */
+    if (pgpIsPkt(b, &tag)) {
+	switch (tag) {
+	default:		ec = PGPARMOR_NONE;	break;
+	case PGPTAG_PUBLIC_KEY:	ec = PGPARMOR_PUBKEY;	break;
+	case PGPTAG_SIGNATURE:	ec = PGPARMOR_SIGNATURE;	break;
+#ifdef	NOTYET
+	case PGPTAG_SECRET_KEY:	ec = PGPARMOR_SECKEY;	break;
+	case PGPTAG_FOO:	ec = PGPARMOR_MESSAGE;	break;
+	case PGPTAG_FOO:	ec = PGPARMOR_SIGNED_MESSAGE;	break;
+	case PGPTAG_FOO:	ec = PGPARMOR_FILE;	break;
+	case PGPTAG_FOO:	ec = PGPARMOR_PRIVKEY;	break;
+#endif
+	}
 	goto exit;
     }
 
