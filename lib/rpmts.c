@@ -666,8 +666,7 @@ rpmts rpmtsFree(rpmts ts)
 /*@=type =voidabstract @*/
     ts->orderAlloced = 0;
 
-    if (ts->pkpkt != NULL)
-	ts->pkpkt = _free(ts->pkpkt);
+    ts->pkpkt = _free(ts->pkpkt);
     ts->pkpktlen = 0;
     memset(ts->pksignid, 0, sizeof(ts->pksignid));
 

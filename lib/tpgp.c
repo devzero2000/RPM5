@@ -23,6 +23,7 @@ extern int _pgp_print;
 
 #include "genpgp.h"
 
+#define	_RPMTS_INTERNAL		/* XXX ts->pkpkt */
 #include <rpmcli.h>
 
 #include <rpmcb.h>
@@ -38,10 +39,9 @@ int rpmCheckPgpSignatureOnFile(rpmts ts, const char * fn, const char * sigfn,
 {
     pgpDig dig = rpmtsDig(ts);
     pgpDigParams sigp;
+    pgpDigParams pubp;
     const unsigned char * sigpkt = NULL;
     size_t sigpktlen = 0;
-    const unsigned char * pubpkt = NULL;
-    size_t pubpktlen = 0;
     DIGEST_CTX ctx = NULL;
     int printing = 0;
     int rc = 0;
@@ -61,6 +61,7 @@ fprintf(stderr, "==> pgpReadPkts(%s) SIG %p[%u] ret %d\n", _sigfn, sigpkt, sigpk
 	}
 	_sigfn = _free(_sigfn);
     } else {
+	/* XXX FIXME: read clearsign'd file with appended signature.
     }
     xx = pgpPrtPkts((uint8_t *)sigpkt, sigpktlen, dig, printing);
     if (xx) {
@@ -78,24 +79,42 @@ fprintf(stderr, "==> unverifiable V%d\n", sigp->version);
     /* Load the pubkey. Use pubfn if specified, otherwise rpmdb keyring. */
     if (pubfn != NULL) {
 	const char * _pubfn = rpmExpand(pubfn, NULL);
-	xx = pgpReadPkts(_pubfn, &pubpkt, &pubpktlen);
+	xx = pgpReadPkts(_pubfn, &ts->pkpkt, &ts->pkpktlen);
 	if (xx != PGPARMOR_PUBKEY) {
-fprintf(stderr, "==> pgpReadPkts(%s) PUB %p[%u] ret %d\n", _pubfn, pubpkt, pubpktlen, xx);
+fprintf(stderr, "==> pgpReadPkts(%s) PUB %p[%u] ret %d\n", _pubfn, ts->pkpkt, ts->pkpktlen, xx);
 	    _pubfn = _free(_pubfn);
 	    goto exit;
 	}
 	_pubfn = _free(_pubfn);
-	xx = pgpPrtPkts((uint8_t *)pubpkt, pubpktlen, dig, printing);
+	xx = pgpPrtPkts((uint8_t *)ts->pkpkt, ts->pkpktlen, dig, printing);
 	if (xx) {
-fprintf(stderr, "==> pgpPrtPkts PUB %p[%u] ret %d\n", pubpkt, pubpktlen, xx);
+fprintf(stderr, "==> pgpPrtPkts PUB %p[%u] ret %d\n", ts->pkpkt, ts->pkpktlen, xx);
 	    goto exit;
 	}
     } else {
-	rpmRC res = rpmtsFindPubkey(ts, dig);
+	rpmRC res = pgpFindPubkey(dig);
 	if (res != RPMRC_OK) {
 fprintf(stderr, "==> rpmtsFindPubkey ret %d\n", res);
 	    goto exit;
 	}
+    }
+
+    pubp = pgpGetPubkey(dig);
+
+    /* Do the parameters match the signature? */
+    if (!(sigp->pubkey_algo == pubp->pubkey_algo
+#ifdef  NOTYET
+     && sigp->hash_algo == pubp->hash_algo
+#endif
+    /* XXX V4 RSA key id's seem to be broken. */
+     && (pubp->pubkey_algo == PGPPUBKEYALGO_RSA || !memcmp(sigp->signid, pubp->signid, sizeof(sigp->signid))) ) )
+    {
+fprintf(stderr, "==> mismatch between signature and pubkey\n");
+fprintf(stderr, "\tpubkey_algo: %u  %u\n", sigp->pubkey_algo, pubp->pubkey_algo);
+fprintf(stderr, "\tsignid: %08X %08X    %08X %08X\n",
+pgpGrab(sigp->signid, 4), pgpGrab(sigp->signid+4, 4), 
+pgpGrab(pubp->signid, 4), pgpGrab(pubp->signid+4, 4));
+	goto exit;
     }
 
     /* Compute the message digest. */
@@ -160,8 +179,9 @@ fprintf(stderr, "==> can't load pubkey_algo(%u)\n", sigp->pubkey_algo);
     }
 
 exit:
-    pubpkt = _free(pubpkt);
     sigpkt = _free(sigpkt);
+    ts->pkpkt = _free(ts->pkpkt);
+    ts->pkpktlen = 0;
     rpmtsCleanDig(ts);
 
 if (_debug)

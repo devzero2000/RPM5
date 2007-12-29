@@ -27,7 +27,7 @@ echo "This is the plaintext" > plaintext
 
 $gpg --detach-sign -a -u DSApub --output - plaintext > DSA.sig
 $gpg --clearsign -u DSApub --output - plaintext > DSA.pem
-$gpg --export -a -u DSApub > DSA.pub
+$gpg --export -a DSApub > DSA.pub
 
 echo "static const char * DSAsig = \"DSA.sig\";"
 echo "static const char * DSApem = \"DSA.pem\";"
@@ -35,7 +35,7 @@ echo "static const char * DSApub = \"DSA.pub\";"
 
 $gpg --detach-sign -a -u RSApub --output - plaintext > RSA.sig
 $gpg --clearsign -u RSApub --output - plaintext > RSA.pem
-$gpg --export -a -u RSApub > RSA.pub
+$gpg --export -a RSApub > RSA.pub
 
 echo "static const char * RSAsig = \"RSA.sig\";"
 echo "static const char * RSApem = \"RSA.pem\";"
