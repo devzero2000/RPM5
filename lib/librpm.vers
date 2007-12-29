@@ -221,6 +221,7 @@ LIBRPM_0
     _rpmns_debug;
     rpmnsClassify;
     rpmnsParse;
+    rpmnsProbeSignature;
     rpmPermsString;
     rpmPlatformScore;
     rpmProblemString;

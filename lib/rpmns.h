@@ -50,6 +50,7 @@ typedef enum nsType_e {
     RPMNS_TYPE_RUNNING	=  (1 << 24),	/*!< running(foo) */
     RPMNS_TYPE_SANITY	=  (1 << 25),	/*!< sanitycheck(foo) */
     RPMNS_TYPE_VCHECK	=  (1 << 26),	/*!< vcheck(foo) */
+    RPMNS_TYPE_SIGNATURE=  (1 << 27),	/*!< signature(/text:/sig) = /pub:id */
 } nsType;
 
 #if defined(_RPMNS_INTERNAL)
@@ -114,6 +115,21 @@ int rpmnsParse(const char * str, rpmns ns)
 void rpmnsClean(void)
 	/*@globals internalState @*/
 	/*@modifies internalState @*/;
+
+/** \ingroup rpmns
+ * Verify OpenPGP signature on a file.
+ * @param _ts		transaction set
+ * @param fn		plaintext (or clearsign) file
+ * @param sigfn		binary/pem encoded signature file (NULL iff clearsign)
+ * @param pubfn		binary/pem encoded pubkey file (NULL uses rpmdb keyring)
+ * @param pubid		pubkey fingerprint hex string (NULL disables check)
+ * @return		1 if verified, 0 if not verified
+ */
+int rpmnsProbeSignature(void * _ts, const char * fn,
+		/*@null@*/ const char * sigfn,
+		/*@null@*/ const char * pubfn,
+		/*@null@*/ const char * pubid)
+	/*@*/;
 
 #ifdef __cplusplus
 }

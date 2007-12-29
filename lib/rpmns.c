@@ -3,13 +3,22 @@
  */
 #include "system.h"
 
-#include <rpmio.h>
+#include <rpmio_internal.h>	/* XXX rpmioSlurp */
 #include <rpmmacro.h>
+
+#define	_RPMPGP_INTERNAL
+#include <rpmpgp.h>
 
 #define	_RPMEVR_INTERNAL
 #include <rpmevr.h>
 #define	_RPMNS_INTERNAL
 #include <rpmns.h>
+
+#include <rpmcb.h>
+#include <rpmdb.h>
+#include <rpmps.h>
+#define	_RPMTS_INTERNAL		/* XXX ts->pkpkt */
+#include <rpmts.h>
 
 #include "debug.h"
 
@@ -79,6 +88,7 @@ static struct _rpmnsProbes_s {
     { "running",	RPMNS_TYPE_RUNNING },
     { "sanitycheck",	RPMNS_TYPE_SANITY },
     { "vcheck",		RPMNS_TYPE_VCHECK },
+    { "signature",	RPMNS_TYPE_SIGNATURE },
     { "exists",		RPMNS_TYPE_ACCESS },
     { "executable",	RPMNS_TYPE_ACCESS },
     { "readable",	RPMNS_TYPE_ACCESS },
@@ -196,6 +206,7 @@ int rpmnsParse(const char * str, rpmns ns)
     case RPMNS_TYPE_RUNNING:
     case RPMNS_TYPE_SANITY:
     case RPMNS_TYPE_VCHECK:
+    case RPMNS_TYPE_SIGNATURE:
 	ns->NS = ns->str;
 	if (ns->NS[0] == '!')
 	    ns->NS++;
@@ -225,4 +236,222 @@ int rpmnsParse(const char * str, rpmns ns)
 	break;
     }
     return 0;
+}
+
+/**
+ * Convert hex to binary nibble.
+ * @param c            hex character
+ * @return             binary nibble
+ */
+static inline unsigned char nibble(char c)
+	/*@*/
+{
+    if (c >= '0' && c <= '9')
+	return (c - '0');
+    if (c >= 'A' && c <= 'F')
+	return (c - 'A') + 10;
+    if (c >= 'a' && c <= 'f')
+	return (c - 'a') + 10;
+    return 0;
+}
+
+int rpmnsProbeSignature(void * _ts, const char * fn, const char * sigfn,
+		const char * pubfn, const char * pubid)
+{
+    rpmts ts = _ts;
+    pgpDig dig = rpmtsDig(ts);
+    pgpDigParams sigp;
+    pgpDigParams pubp;
+    const unsigned char * sigpkt = NULL;
+    size_t sigpktlen = 0;
+    DIGEST_CTX ctx = NULL;
+    int printing = 0;
+    int rc = 0;
+    int xx;
+
+    /* Load the signature. Use sigfn if specified, otherwise clearsign. */
+    if (sigfn != NULL) {
+	const char * _sigfn = rpmExpand(sigfn, NULL);
+	xx = pgpReadPkts(_sigfn, &sigpkt, &sigpktlen);
+	if (xx != PGPARMOR_SIGNATURE) {
+	    _sigfn = _free(_sigfn);
+	    goto exit;
+	}
+	_sigfn = _free(_sigfn);
+    } else {
+	const char * _sigfn = rpmExpand(fn, NULL);
+	xx = pgpReadPkts(_sigfn, &sigpkt, &sigpktlen);
+	if (xx != PGPARMOR_SIGNATURE) {
+	    _sigfn = _free(_sigfn);
+	    goto exit;
+	}
+	_sigfn = _free(_sigfn);
+    }
+    xx = pgpPrtPkts((uint8_t *)sigpkt, sigpktlen, dig, printing);
+    if (xx)
+	goto exit;
+
+    sigp = pgpGetSignature(dig);
+
+    if (sigp->version != 3 && sigp->version != 4)
+	goto exit;
+
+    /* Load the pubkey. Use pubfn if specified, otherwise rpmdb keyring. */
+    if (pubfn != NULL) {
+	const char * _pubfn = rpmExpand(pubfn, NULL);
+	xx = pgpReadPkts(_pubfn, &ts->pkpkt, &ts->pkpktlen);
+	if (xx != PGPARMOR_PUBKEY) {
+	    _pubfn = _free(_pubfn);
+	    goto exit;
+	}
+	_pubfn = _free(_pubfn);
+	xx = pgpPrtPkts((uint8_t *)ts->pkpkt, ts->pkpktlen, dig, printing);
+	if (xx)
+	    goto exit;
+    } else {
+	if (pgpFindPubkey(dig) != RPMRC_OK)
+	    goto exit;
+    }
+
+    pubp = pgpGetPubkey(dig);
+
+    /* Is this the requested pubkey? */
+    if (pubid != NULL) {
+	size_t ns = strlen(pubid);
+	const char * s;
+	char * t;
+	int i;
+
+	/* At least 8 hex digits please. */
+	for (i = 0, s = pubid; *s && isxdigit(*s); s++, i++)
+	    ;
+	if (!(*s == '\0' && i > 8 && (i%2) == 0))
+	    goto exit;
+
+	/* Truncate to key id size. */
+	s = pubid;
+	if (ns > 16) {
+	    s += (ns - 16);
+	    ns = 16;
+	}
+	ns >>= 1;
+	t = memset(alloca(ns), 0, ns);
+	for (i = 0; i < ns; i++)
+	    t[i] = (nibble(s[2*i]) << 4) | nibble(s[2*i+1]);
+
+	/* Compare the pubkey id. */
+	s = (const char *)pubp->signid;
+	xx = memcmp(t, s + (8 - ns), ns);
+
+	/* XXX HACK: V4 RSA key id's are wonky atm. */
+	if (pubp->pubkey_algo == PGPPUBKEYALGO_RSA)
+	    xx = 0;
+
+	if (xx)
+	    goto exit;
+    }
+
+    /* Do the parameters match the signature? */
+    if (!(sigp->pubkey_algo == pubp->pubkey_algo
+#ifdef  NOTYET
+     && sigp->hash_algo == pubp->hash_algo
+#endif
+    /* XXX HACK: V4 RSA key id's are wonky atm. */
+     && (pubp->pubkey_algo == PGPPUBKEYALGO_RSA || !memcmp(sigp->signid, pubp->signid, sizeof(sigp->signid))) ) )
+	goto exit;
+
+    /* Compute the message digest. */
+    ctx = rpmDigestInit(sigp->hash_algo, RPMDIGEST_NONE);
+
+    {	
+	static const char clrtxt[] = "-----BEGIN PGP SIGNED MESSAGE-----";
+	static const char sigtxt[] = "-----BEGIN PGP SIGNATURE-----";
+	const char * _fn = rpmExpand(fn, NULL);
+	uint8_t * b = NULL;
+	ssize_t blen = 0;
+	int _rc = rpmioSlurp(_fn, &b, &blen);
+
+	if (!(_rc == 0 && b != NULL && blen > 0)) {
+	    b = _free(b);
+	    _fn = _free(_fn);
+	    goto exit;
+	}
+	_fn = _free(_fn);
+
+	/* XXX clearsign sig is PGPSIGTYPE_TEXT not PGPSIGTYPE_BINARY. */
+	if (!strncmp((char *)b, clrtxt, strlen(clrtxt))) {
+	    const char * be = (char *) (b + blen);
+	    const char * t;
+	    const char * te;
+
+	    /* Skip to '\n\n' start-of-plaintext */
+	    t = (char *) b;
+	    while (t && t < be && *t != '\n')
+		t = strchr(t, '\n') + 1;
+	    if (!(t && t < be))
+		goto exit;
+	    t++;
+
+	    /* Skip to start-of-signature */
+	    te = t;
+	    while (te && te < be && strncmp(te, sigtxt, strlen(sigtxt)))
+		te = strchr(te, '\n') + 1;
+	    if (!(te && te < be))
+		goto exit;
+	    te--;	/* hmmm, one too far? does clearsign snip last \n? */
+
+	    xx = rpmDigestUpdate(ctx, t, (te - t));
+	} else
+	    xx = rpmDigestUpdate(ctx, b, blen);
+
+	b = _free(b);
+    }
+
+    if (sigp->hash != NULL)
+	xx = rpmDigestUpdate(ctx, sigp->hash, sigp->hashlen);
+    if (sigp->version == 4) {
+	uint32_t nb = sigp->hashlen;
+	uint8_t trailer[6];
+	nb = htonl(nb);
+	trailer[0] = sigp->version;
+	trailer[1] = 0xff;
+	memcpy(trailer+2, &nb, sizeof(nb));
+	xx = rpmDigestUpdate(ctx, trailer, sizeof(trailer));
+    }
+
+    /* Load the message digest. */
+    switch(sigp->pubkey_algo) {
+    default:
+	xx = 1;
+	break;
+    case PGPPUBKEYALGO_DSA:
+	xx = pgpImplSetDSA(ctx, dig, sigp);
+	break;
+    case PGPPUBKEYALGO_RSA:
+	xx = pgpImplSetRSA(ctx, dig, sigp);
+	break;
+    }
+    if (xx)
+	goto exit;
+
+    /* Verify the signature. */
+    switch(sigp->pubkey_algo) {
+    default:
+	rc = 0;
+	break;
+    case PGPPUBKEYALGO_DSA:
+	rc = pgpImplVerifyDSA(dig);
+	break;
+    case PGPPUBKEYALGO_RSA:
+	rc = pgpImplVerifyRSA(dig);
+	break;
+    }
+
+exit:
+    sigpkt = _free(sigpkt);
+    ts->pkpkt = _free(ts->pkpkt);
+    ts->pkpktlen = 0;
+    rpmtsCleanDig(ts);
+
+    return rc;
 }
