@@ -27,7 +27,7 @@
      2007-12-09  RPM 5.0b1   RPM 5.0 beta 1                 [DONE]
      2007-12-15  RPM 5.0b2   RPM 5.0 beta 2                 [DONE]
      2007-12-22  RPM 5.0b3   RPM 5.0 beta 3                 [DONE]
-     2007-12-29  RPM 5.0b4   RPM 5.0 beta 4                 [TODO]
+     2007-12-30  RPM 5.0b4   RPM 5.0 beta 4                 [TODO]
    
   3. release in January 2008:
      - APIs:     fully fixed, guaranteed to be kept stable
@@ -48,7 +48,7 @@
   resolved during release engineering. Please do not just list any
   *CANDO* items.
 
-  o to be resolved before RPM 5.0b4 (i.e. *BEFORE* 2007-12-29 !!!!):
+  o to be resolved before RPM 5.0b4 (i.e. *BEFORE* 2007-12-30 20:00 UTC+0100):
     - jbj: fix openssl RSA signature verification.
     - jbj: finish Requires: sanitycheck(N) = E:V-R runtime probe.
     - jbj: finish BuildRequires: vcheck(N) = E:V-R runtime probe.
