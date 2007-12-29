@@ -39,6 +39,8 @@ echo "static const char * DSAsigpem = \"DSA.sigpem\";"
 echo "static const char * DSApem = \"DSA.pem\";"
 echo "static const char * DSApub = \"DSA.pub\";"
 echo "static const char * DSApubpem = \"DSA.pubpem\";"
+echo "static const char * DSApubid = \"`$gpg --fingerprint DSApub | grep 'finger' | sed -e 's/.*print = //' -e 's/ //g'`\";"
+
 
 $gpg --detach-sign -u RSApub --output - plaintext > RSA.sig
 $gpg --detach-sign -a -u RSApub --output - plaintext > RSA.sigpem
@@ -51,3 +53,4 @@ echo "static const char * RSAsigpem = \"RSA.sigpem\";"
 echo "static const char * RSApem = \"RSA.pem\";"
 echo "static const char * RSApub = \"RSA.pub\";"
 echo "static const char * RSApubpem = \"RSA.pubpem\";"
+echo "static const char * RSApubid = \"`$gpg --fingerprint RSApub | grep 'finger' | sed -e 's/.*print = //' -e 's/ //g'`\";"

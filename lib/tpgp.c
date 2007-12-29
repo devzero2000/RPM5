@@ -33,9 +33,26 @@ extern int _pgp_print;
 
 #include "debug.h"
 
+/**
+ * Convert hex to binary nibble.
+ * @param c            hex character
+ * @return             binary nibble
+ */
+static inline unsigned char nibble(char c)
+	/*@*/
+{
+    if (c >= '0' && c <= '9')
+	return (c - '0');
+    if (c >= 'A' && c <= 'F')
+	return (c - 'A') + 10;
+    if (c >= 'a' && c <= 'f')
+	return (c - 'a') + 10;
+    return 0;
+}
+
 static
 int rpmCheckPgpSignatureOnFile(rpmts ts, const char * fn, const char * sigfn,
-		const char * pubfn, const char * pubfingerprint)
+		const char * pubfn, const char * pubid)
 {
     pgpDig dig = rpmtsDig(ts);
     pgpDigParams sigp;
@@ -48,7 +65,7 @@ int rpmCheckPgpSignatureOnFile(rpmts ts, const char * fn, const char * sigfn,
     int xx;
 
 if (_debug)
-fprintf(stderr, "==> check(%s, %s, %s, %s)\n", fn, sigfn, pubfn, pubfingerprint);
+fprintf(stderr, "==> check(%s, %s, %s, %s)\n", fn, sigfn, pubfn, pubid);
 
     /* Load the signature. Use sigfn if specified, otherwise clearsign. */
     if (sigfn != NULL) {
@@ -115,12 +132,51 @@ fprintf(stderr, "==> rpmtsFindPubkey ret %d\n", res);
 
     pubp = pgpGetPubkey(dig);
 
+    /* Is this the requested pubkey? */
+    if (pubid != NULL) {
+	size_t ns = strlen(pubid);
+	const char * s;
+	char * t;
+	int i;
+
+	/* At least 8 hex digits please. */
+	for (i = 0, s = pubid; *s && isxdigit(*s); s++, i++)
+	    ;
+	if (!(*s == '\0' && i > 8 && (i%2) == 0))
+	    goto exit;
+
+	/* Truncate to key id size. */
+	s = pubid;
+	if (ns > 16) {
+	    s += (ns - 16);
+	    ns = 16;
+	}
+	ns >>= 1;
+	t = memset(alloca(ns), 0, ns);
+	for (i = 0; i < ns; i++)
+	    t[i] = (nibble(s[2*i]) << 4) | nibble(s[2*i+1]);
+
+	/* Compare the pubkey id. */
+	s = (const char *)pubp->signid;
+	xx = memcmp(t, s + (8 - ns), ns);
+
+	/* XXX HACK: V4 RSA key id's are wonky atm. */
+	if (pubp->pubkey_algo == PGPPUBKEYALGO_RSA)
+	    xx = 0;
+
+	if (xx) {
+fprintf(stderr, "==> mismatched: pubkey id (%08x %08x) != %s\n",
+pgpGrab(pubp->signid, 4), pgpGrab(pubp->signid+4, 4), pubid);
+	    goto exit;
+	}
+    }
+
     /* Do the parameters match the signature? */
     if (!(sigp->pubkey_algo == pubp->pubkey_algo
 #ifdef  NOTYET
      && sigp->hash_algo == pubp->hash_algo
 #endif
-    /* XXX V4 RSA key id's seem to be broken. */
+    /* XXX HACK: V4 RSA key id's are wonky atm. */
      && (pubp->pubkey_algo == PGPPUBKEYALGO_RSA || !memcmp(sigp->signid, pubp->signid, sizeof(sigp->signid))) ) )
     {
 if (_debug) {
@@ -243,20 +299,20 @@ int doit(rpmts ts, const char * sigtype)
     int rc = 0;
 
     if (!strcmp("DSA", sigtype)) {
-	rc = rpmCheckPgpSignatureOnFile(ts, DSApem, NULL, DSApub, NULL);
-	rc = rpmCheckPgpSignatureOnFile(ts, plaintextfn, DSAsig, DSApub, NULL);
-	rc = rpmCheckPgpSignatureOnFile(ts, plaintextfn, DSAsig, DSApubpem, NULL);
-	rc = rpmCheckPgpSignatureOnFile(ts, plaintextfn, DSAsigpem, DSApub, NULL);
-	rc = rpmCheckPgpSignatureOnFile(ts, plaintextfn, DSAsigpem, DSApubpem, NULL);
-	rc = rpmCheckPgpSignatureOnFile(ts, plaintextfn, DSAsig, NULL, NULL);
-	rc = rpmCheckPgpSignatureOnFile(ts, plaintextfn, DSAsigpem, NULL, NULL);
+	rc = rpmCheckPgpSignatureOnFile(ts, DSApem, NULL, DSApub, DSApubid);
+	rc = rpmCheckPgpSignatureOnFile(ts, plaintextfn, DSAsig, DSApub, DSApubid);
+	rc = rpmCheckPgpSignatureOnFile(ts, plaintextfn, DSAsig, DSApubpem, DSApubid);
+	rc = rpmCheckPgpSignatureOnFile(ts, plaintextfn, DSAsigpem, DSApub, DSApubid);
+	rc = rpmCheckPgpSignatureOnFile(ts, plaintextfn, DSAsigpem, DSApubpem, DSApubid);
+	rc = rpmCheckPgpSignatureOnFile(ts, plaintextfn, DSAsig, NULL, DSApubid);
+	rc = rpmCheckPgpSignatureOnFile(ts, plaintextfn, DSAsigpem, NULL, DSApubid);
     }
     if (!strcmp("RSA", sigtype)) {
-	rc = rpmCheckPgpSignatureOnFile(ts, RSApem, NULL, RSApub, NULL);
+	rc = rpmCheckPgpSignatureOnFile(ts, RSApem, NULL, RSApub, RSApubid);
 #ifdef	NOTYET	/* XXX RSA key id's are funky. */
-	rc = rpmCheckPgpSignatureOnFile(ts, plaintextfn, RSAsig, RSApub, NULL);
-	rc = rpmCheckPgpSignatureOnFile(ts, plaintextfn, RSAsigpem, RSApubpem, NULL);
-	rc = rpmCheckPgpSignatureOnFile(ts, plaintextfn, RSAsig, NULL, NULL);
+	rc = rpmCheckPgpSignatureOnFile(ts, plaintextfn, RSAsig, RSApub, RSApubid);
+	rc = rpmCheckPgpSignatureOnFile(ts, plaintextfn, RSAsigpem, RSApubpem, RSApubid);
+	rc = rpmCheckPgpSignatureOnFile(ts, plaintextfn, RSAsig, NULL, RSApubid);
 #endif
     }
     
