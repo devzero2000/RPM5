@@ -55,16 +55,26 @@ fprintf(stderr, "==> check(%s, %s, %s, %s)\n", fn, sigfn, pubfn, pubfingerprint)
 	const char * _sigfn = rpmExpand(sigfn, NULL);
 	xx = pgpReadPkts(_sigfn, &sigpkt, &sigpktlen);
 	if (xx != PGPARMOR_SIGNATURE) {
+if (_debug)
 fprintf(stderr, "==> pgpReadPkts(%s) SIG %p[%u] ret %d\n", _sigfn, sigpkt, sigpktlen, xx);
 	    _sigfn = _free(_sigfn);
 	    goto exit;
 	}
 	_sigfn = _free(_sigfn);
     } else {
-	/* XXX FIXME: read clearsign'd file with appended signature. */
+	const char * _sigfn = rpmExpand(fn, NULL);
+	xx = pgpReadPkts(_sigfn, &sigpkt, &sigpktlen);
+	if (xx != PGPARMOR_SIGNATURE) {
+if (_debug)
+fprintf(stderr, "==> pgpReadPkts(%s) SIG %p[%u] ret %d\n", _sigfn, sigpkt, sigpktlen, xx);
+	    _sigfn = _free(_sigfn);
+	    goto exit;
+	}
+	_sigfn = _free(_sigfn);
     }
     xx = pgpPrtPkts((uint8_t *)sigpkt, sigpktlen, dig, printing);
     if (xx) {
+if (_debug)
 fprintf(stderr, "==> pgpPrtPkts SIG %p[%u] ret %d\n", sigpkt, sigpktlen, xx);
 	goto exit;
     }
@@ -72,6 +82,7 @@ fprintf(stderr, "==> pgpPrtPkts SIG %p[%u] ret %d\n", sigpkt, sigpktlen, xx);
     sigp = pgpGetSignature(dig);
 
     if (sigp->version != 3 && sigp->version != 4) {
+if (_debug)
 fprintf(stderr, "==> unverifiable V%d\n", sigp->version);
 	goto exit;
     }
@@ -81,6 +92,7 @@ fprintf(stderr, "==> unverifiable V%d\n", sigp->version);
 	const char * _pubfn = rpmExpand(pubfn, NULL);
 	xx = pgpReadPkts(_pubfn, &ts->pkpkt, &ts->pkpktlen);
 	if (xx != PGPARMOR_PUBKEY) {
+if (_debug)
 fprintf(stderr, "==> pgpReadPkts(%s) PUB %p[%u] ret %d\n", _pubfn, ts->pkpkt, ts->pkpktlen, xx);
 	    _pubfn = _free(_pubfn);
 	    goto exit;
@@ -88,12 +100,14 @@ fprintf(stderr, "==> pgpReadPkts(%s) PUB %p[%u] ret %d\n", _pubfn, ts->pkpkt, ts
 	_pubfn = _free(_pubfn);
 	xx = pgpPrtPkts((uint8_t *)ts->pkpkt, ts->pkpktlen, dig, printing);
 	if (xx) {
+if (_debug)
 fprintf(stderr, "==> pgpPrtPkts PUB %p[%u] ret %d\n", ts->pkpkt, ts->pkpktlen, xx);
 	    goto exit;
 	}
     } else {
 	rpmRC res = pgpFindPubkey(dig);
 	if (res != RPMRC_OK) {
+if (_debug)
 fprintf(stderr, "==> rpmtsFindPubkey ret %d\n", res);
 	    goto exit;
 	}
@@ -109,30 +123,62 @@ fprintf(stderr, "==> rpmtsFindPubkey ret %d\n", res);
     /* XXX V4 RSA key id's seem to be broken. */
      && (pubp->pubkey_algo == PGPPUBKEYALGO_RSA || !memcmp(sigp->signid, pubp->signid, sizeof(sigp->signid))) ) )
     {
+if (_debug) {
 fprintf(stderr, "==> mismatch between signature and pubkey\n");
 fprintf(stderr, "\tpubkey_algo: %u  %u\n", sigp->pubkey_algo, pubp->pubkey_algo);
 fprintf(stderr, "\tsignid: %08X %08X    %08X %08X\n",
 pgpGrab(sigp->signid, 4), pgpGrab(sigp->signid+4, 4), 
 pgpGrab(pubp->signid, 4), pgpGrab(pubp->signid+4, 4));
+}
 	goto exit;
     }
 
     /* Compute the message digest. */
     ctx = rpmDigestInit(sigp->hash_algo, RPMDIGEST_NONE);
 
-    {	const char * _fn = rpmExpand(fn, NULL);
+    {	
+	static const char clrtxt[] = "-----BEGIN PGP SIGNED MESSAGE-----";
+	static const char sigtxt[] = "-----BEGIN PGP SIGNATURE-----";
+	const char * _fn = rpmExpand(fn, NULL);
 	uint8_t * b = NULL;
 	ssize_t blen = 0;
 	int _rc = rpmioSlurp(_fn, &b, &blen);
 
 	if (!(_rc == 0 && b != NULL && blen > 0)) {
+if (_debug)
 fprintf(stderr, "==> rpmioSlurp(%s) MSG %p[%u] ret %d\n", _fn, b, blen, _rc);
 	    b = _free(b);
 	    _fn = _free(_fn);
 	    goto exit;
 	}
 	_fn = _free(_fn);
-	xx = rpmDigestUpdate(ctx, b, blen);
+
+	/* XXX clearsign sig is PGPSIGTYPE_TEXT not PGPSIGTYPE_BINARY. */
+	if (!strncmp((char *)b, clrtxt, strlen(clrtxt))) {
+	    const char * be = (char *) (b + blen);
+	    const char * t;
+	    const char * te;
+
+	    /* Skip to '\n\n' start-of-plaintext */
+	    t = (char *) b;
+	    while (t && t < be && *t != '\n')
+		t = strchr(t, '\n') + 1;
+	    if (!(t && t < be))
+		goto exit;
+	    t++;
+
+	    /* Skip to start-of-signature */
+	    te = t;
+	    while (te && te < be && strncmp(te, sigtxt, strlen(sigtxt)))
+		te = strchr(te, '\n') + 1;
+	    if (!(te && te < be))
+		goto exit;
+	    te--;	/* hmmm, one too far? does clearsign snip last \n? */
+
+	    xx = rpmDigestUpdate(ctx, t, (te - t));
+	} else
+	    xx = rpmDigestUpdate(ctx, b, blen);
+
 	b = _free(b);
     }
 
@@ -161,6 +207,7 @@ fprintf(stderr, "==> rpmioSlurp(%s) MSG %p[%u] ret %d\n", _fn, b, blen, _rc);
 	break;
     }
     if (xx) {
+if (_debug)
 fprintf(stderr, "==> can't load pubkey_algo(%u)\n", sigp->pubkey_algo);
 	goto exit;
     }
@@ -196,6 +243,7 @@ int doit(rpmts ts, const char * sigtype)
     int rc = 0;
 
     if (!strcmp("DSA", sigtype)) {
+	rc = rpmCheckPgpSignatureOnFile(ts, DSApem, NULL, DSApub, NULL);
 	rc = rpmCheckPgpSignatureOnFile(ts, plaintextfn, DSAsig, DSApub, NULL);
 	rc = rpmCheckPgpSignatureOnFile(ts, plaintextfn, DSAsig, DSApubpem, NULL);
 	rc = rpmCheckPgpSignatureOnFile(ts, plaintextfn, DSAsigpem, DSApub, NULL);
@@ -204,9 +252,10 @@ int doit(rpmts ts, const char * sigtype)
 	rc = rpmCheckPgpSignatureOnFile(ts, plaintextfn, DSAsigpem, NULL, NULL);
     }
     if (!strcmp("RSA", sigtype)) {
+	rc = rpmCheckPgpSignatureOnFile(ts, RSApem, NULL, RSApub, NULL);
+#ifdef	NOTYET	/* XXX RSA key id's are funky. */
 	rc = rpmCheckPgpSignatureOnFile(ts, plaintextfn, RSAsig, RSApub, NULL);
 	rc = rpmCheckPgpSignatureOnFile(ts, plaintextfn, RSAsigpem, RSApubpem, NULL);
-#ifdef	NOTYET	/* XXX RSA key id's are funky. */
 	rc = rpmCheckPgpSignatureOnFile(ts, plaintextfn, RSAsig, NULL, NULL);
 #endif
     }

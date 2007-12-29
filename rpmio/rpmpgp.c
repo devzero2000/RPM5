@@ -1328,6 +1328,9 @@ pgpArmor pgpReadPkts(const char * fn, const uint8_t ** pkt, size_t * pktlen)
 		ec = PGPARMOR_ERR_UNKNOWN_ARMOR_TYPE;
 		goto exit;
 	    }
+	    /* XXX Ignore clear signed message start. */
+	    if (rc == PGPARMOR_SIGNED_MESSAGE)
+		continue;
 	    ec = rc;	/* Save the packet type as exit code. */
 	    armortype = t;
 
