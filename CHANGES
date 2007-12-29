@@ -1,4 +1,5 @@
 5.0b3 -> 5.0b4:
+    - jbj: pgpReadPkts: truncate binary encoded pgp pktlen to actual length.
     - jbj: pgpReadPkts: identify binary encoded pgp pkts correctly.
     - jbj: fix: remove unused assertion.
     - jbj: fix: undo deliberate damage from rpm's RHL8 security audit. ptooey!

@@ -1299,6 +1299,11 @@ pgpArmor pgpReadPkts(const char * fn, const uint8_t ** pkt, size_t * pktlen)
 	case PGPTAG_FOO:	ec = PGPARMOR_PRIVKEY;	break;
 #endif
 	}
+	/* Truncate blen to actual no. of octets in packet. */
+	if (ec != PGPARMOR_NONE) {
+	    pgpPkt pp = alloca(sizeof(*pp));
+	    blen = pgpPktLen(b, blen, pp);
+	}
 	goto exit;
     }
 
