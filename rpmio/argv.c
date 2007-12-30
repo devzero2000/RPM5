@@ -225,11 +225,11 @@ int argvSplit(ARGV_t * argvp, const char * str, const char * seps)
 
     argv = xmalloc( (argc + 1) * sizeof(*argv));
 
-    for (c = 0, s = dest; s < t; s+= strlen(s) + 1) {
-	if (*s == '\0')
+    for (c = 0, s = dest; s < t; s += strlen(s) + 1) {
+	/* XXX Skip repeated seperators (i.e. whitespace). */
+	if (seps == whitespace && s[0] == '\0')
 	    continue;
-	argv[c] = xstrdup(s);
-	c++;
+	argv[c++] = xstrdup(s);
     }
     argv[c] = NULL;
     *argvp = argv;

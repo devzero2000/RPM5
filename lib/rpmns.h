@@ -123,12 +123,14 @@ void rpmnsClean(void)
  * @param sigfn		binary/pem encoded signature file (NULL iff clearsign)
  * @param pubfn		binary/pem encoded pubkey file (NULL uses rpmdb keyring)
  * @param pubid		pubkey fingerprint hex string (NULL disables check)
- * @return		1 if verified, 0 if not verified
+ * @param flags		(unused)
+ * @return		RPMRC_OK if verified, RPMRC_FAIL if not verified
  */
-int rpmnsProbeSignature(void * _ts, const char * fn,
+rpmRC rpmnsProbeSignature(void * _ts, const char * fn,
 		/*@null@*/ const char * sigfn,
 		/*@null@*/ const char * pubfn,
-		/*@null@*/ const char * pubid)
+		/*@null@*/ const char * pubid,
+		int flags)
 	/*@*/;
 
 #ifdef __cplusplus

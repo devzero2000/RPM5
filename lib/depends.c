@@ -823,26 +823,21 @@ retry:
 
     if (NSType == RPMNS_TYPE_SIGNATURE) {
 	const char * EVR = rpmdsEVR(dep);
-	char * fn = xstrdup(Name);
-	char * sigfn = NULL;
-	char * pubfn = ((EVR && *EVR) ? xstrdup(EVR) : NULL);
-	char * pubid = NULL;
+	ARGV_t avN = NULL;
+	ARGV_t avEVR = NULL;
+	rpmRC res;
 
 	/* Split /fn:/sig */
-	if ((sigfn = strrchr(fn, ':')) != NULL)
-	    *sigfn++ = '\0';
+	xx = argvSplit(&avN, Name, ":");
 
 	/* Split /pub:id */
-	if (pubfn) {
-	    if ((pubid = strrchr(pubfn, ':')) != NULL)
-		*pubid++ = '\0';
-	}
+	xx = (EVR && *EVR) ? argvSplit(&avEVR, EVR, ":") : argvAdd(&avEVR, "");
 
-	xx = rpmnsProbeSignature(ts, fn, sigfn, pubfn, pubid);
-	rc = (xx ? 0 : 1);
+	res = rpmnsProbeSignature(ts, avN[0], avN[1], avEVR[0], avEVR[1], 0);
+	rc = (res == RPMRC_OK ? 0 : 1);
 
-	fn = _free(fn);
-	pubfn = _free(pubfn);
+	avN = argvFree(avN);
+	avEVR = argvFree(avEVR);
 
 	if (Flags & RPMSENSE_MISSINGOK)
 	    goto unsatisfied;

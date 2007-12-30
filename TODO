@@ -162,3 +162,4 @@
 	command line, each to end up in binary *.rpm's to show more of build 
 	time options
     - jbj: rewrite pgpReadPkts to return array of clearsign'd segments instead.
+    - jbj: teach argvSplit about escaped seperator characters.

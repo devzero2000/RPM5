@@ -1,4 +1,9 @@
 5.0b3 -> 5.0b4:
+    - jbj: add a (unused) flags arg to rpmnsProbeSignature.
+    - jbj: change rpmnsProbeSignature to return rpmRC (note: success is 0 now).
+    - jbj: add --rpmnsdebug to see rpmnsProbeSignature() spew.
+    - jbj: permit URI's in signature(...) arguments.
+    - jbj: fix: argvSplit was doing ltrim and skipping spans of seperators.
     - rse: improve RPM Lua function util.rsubst(): perform repeated substitutions and honor prolog/epilog parts
     - jbj: re-add all the debugging spew under --rpmnsdebug for now.
     - jbj: functional signature(...) name space probe.

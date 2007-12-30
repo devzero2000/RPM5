@@ -9,6 +9,7 @@
 #define	_RPMPGP_INTERNAL
 #include <rpmpgp.h>
 
+#include <rpmlib.h>		/* XXX RPMRC_OK */
 #define	_RPMEVR_INTERNAL
 #include <rpmevr.h>
 #define	_RPMNS_INTERNAL
@@ -255,8 +256,8 @@ static inline unsigned char nibble(char c)
     return 0;
 }
 
-int rpmnsProbeSignature(void * _ts, const char * fn, const char * sigfn,
-		const char * pubfn, const char * pubid)
+rpmRC rpmnsProbeSignature(void * _ts, const char * fn, const char * sigfn,
+		const char * pubfn, const char * pubid, int flags)
 {
     rpmts ts = _ts;
     pgpDig dig = rpmtsDig(ts);
@@ -266,7 +267,7 @@ int rpmnsProbeSignature(void * _ts, const char * fn, const char * sigfn,
     size_t sigpktlen = 0;
     DIGEST_CTX ctx = NULL;
     int printing = 0;
-    int rc = 0;
+    rpmRC rc = RPMRC_FAIL;	/* assume failure */
     int xx;
 
 if (_rpmns_debug)
@@ -327,7 +328,7 @@ fprintf(stderr, "==> pgpPrtPkts PUB %p[%u] ret %d\n", ts->pkpkt, ts->pkpktlen, x
 	    goto exit;
 	}
     } else {
-	if ((xx = pgpFindPubkey(dig)) != RPMRC_OK) {
+	if ((rc = pgpFindPubkey(dig)) != RPMRC_OK) {
 if (_rpmns_debug)
 fprintf(stderr, "==> pgpFindPubkey ret %d\n", xx);
 	    goto exit;
@@ -457,16 +458,16 @@ fprintf(stderr, "==> rpmioSlurp(%s) MSG %p[%u] ret %d\n", _fn, b, blen, _rc);
     /* Load the message digest. */
     switch(sigp->pubkey_algo) {
     default:
-	xx = 1;
+	rc = RPMRC_FAIL;
 	break;
     case PGPPUBKEYALGO_DSA:
-	xx = pgpImplSetDSA(ctx, dig, sigp);
+	rc = (pgpImplSetDSA(ctx, dig, sigp) ? RPMRC_FAIL : RPMRC_OK);
 	break;
     case PGPPUBKEYALGO_RSA:
-	xx = pgpImplSetRSA(ctx, dig, sigp);
+	rc = (pgpImplSetRSA(ctx, dig, sigp) ? RPMRC_FAIL : RPMRC_OK);
 	break;
     }
-    if (xx) {
+    if (rc != RPMRC_OK) {
 if (_rpmns_debug)
 fprintf(stderr, "==> can't load pubkey_algo(%u)\n", sigp->pubkey_algo);
 	goto exit;
@@ -475,13 +476,13 @@ fprintf(stderr, "==> can't load pubkey_algo(%u)\n", sigp->pubkey_algo);
     /* Verify the signature. */
     switch(sigp->pubkey_algo) {
     default:
-	rc = 0;
+	rc = RPMRC_FAIL;
 	break;
     case PGPPUBKEYALGO_DSA:
-	rc = pgpImplVerifyDSA(dig);
+	rc = (pgpImplVerifyDSA(dig) ? RPMRC_OK : RPMRC_FAIL);
 	break;
     case PGPPUBKEYALGO_RSA:
-	rc = pgpImplVerifyRSA(dig);
+	rc = (pgpImplVerifyRSA(dig) ? RPMRC_OK : RPMRC_FAIL);
 	break;
     }
 
@@ -492,7 +493,8 @@ exit:
     rpmtsCleanDig(ts);
 
 if (_rpmns_debug)
-fprintf(stderr, "============================ verify: rc %d\n", rc);
+fprintf(stderr, "============================ verify: %s\n",
+	(rc == RPMRC_OK ? "OK" : "FAIL"));
 
     return rc;
 }
