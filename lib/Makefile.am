@@ -18,6 +18,14 @@ AM_CPPFLAGS = \
 	@WITH_FILE_CPPFLAGS@ \
 	@WITH_XAR_CPPFLAGS@
 
+RPM_LDADD = \
+	$(top_builddir)/build/librpmbuild.la \
+	$(top_builddir)/lib/librpm.la \
+	$(top_builddir)/rpmdb/librpmdb.la \
+	$(top_builddir)/rpmio/librpmio.la \
+	$(top_builddir)/misc/librpmmisc.la \
+	@LTLIBINTL@
+
 EXTRA_DIST = genpgp.sh getdate.y librpm.vers tpgp.c
 
 EXTRA_PROGRAMS = tpgp
@@ -119,8 +127,10 @@ lint:
 	$(LINT) $(DEFS) $(INCLUDES) $(librpm_la_SOURCES)
 
 tpgp_SOURCES = genpgp.h tpgp.c
-tpgp_CFLAGS  = $(CFLAGS)
-tpgp_LDADD = librpm.la
+tpgp_LDADD = $(RPM_LDADD)
 
-genpgp.h:
+tpgp.c: genpgp.h
+
+genpgp.h: genpgp.sh
 	-sh ./genpgp.sh > genpgp.h
+

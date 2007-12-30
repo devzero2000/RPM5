@@ -16,10 +16,14 @@ extern int _pgp_print;
 #include <rpmbc.h>
 #define	_RPMGC_INTERNAL
 #include <rpmgc.h>
+#if defined(WITH_NSS)
 #define	_RPMNSS_INTERNAL
 #include <rpmnss.h>
+#endif
+#if defined(WITH_SSL)
 #define	_RPMSSL_INTERNAL
 #include <rpmssl.h>
+#endif
 
 #include "genpgp.h"
 
@@ -331,10 +335,14 @@ static struct poptOption optionsTable[] = {
  { "gc", 0, POPT_ARG_VAL, &pgpImplVecs, (int)&rpmgcImplVecs,
         N_("use gcrypt crypto implementation"), NULL },
 #endif
+#if defined(WITH_NSS)
  { "nss", 0, POPT_ARG_VAL, &pgpImplVecs, (int)&rpmnssImplVecs,
         N_("use NSS crypto implementation"), NULL },
+#endif
+#if defined(WITH_SSL)
  { "ssl", 0, POPT_ARG_VAL, &pgpImplVecs, (int)&rpmsslImplVecs,
         N_("use OpenSSL crypto implementation"), NULL },
+#endif
 
    POPT_AUTOALIAS
    POPT_AUTOHELP
@@ -348,7 +356,11 @@ main(int argc, char *argv[])
     rpmts ts = NULL;
     int rc;
 
+#if defined(WITH_NSS)
     pgpImplVecs = &rpmnssImplVecs;
+#else
+    pgpImplVecs = &rpmbcImplVecs;
+#endif
 _pgp_debug = 1;
 _pgp_print = 1;
 
@@ -362,8 +374,10 @@ _pgp_print = 1;
 
     ts = rpmtsFree(ts);
 
+#if defined(WITH_NSS)
     if (pgpImplVecs == &rpmnssImplVecs)
 	NSS_Shutdown();
+#endif
 
     optCon = rpmcliFini(optCon);
 
