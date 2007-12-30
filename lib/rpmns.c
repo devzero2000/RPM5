@@ -418,7 +418,6 @@ fprintf(stderr, "==> rpmioSlurp(%s) MSG %p[%u] ret %d\n", _fn, b, blen, _rc);
 	if (!strncmp((char *)b, clrtxt, strlen(clrtxt))) {
 	    const char * be = (char *) (b + blen);
 	    const char * t;
-	    const char * te;
 
 	    /* Skip to '\n\n' start-of-plaintext */
 	    t = (char *) b;
@@ -428,15 +427,19 @@ fprintf(stderr, "==> rpmioSlurp(%s) MSG %p[%u] ret %d\n", _fn, b, blen, _rc);
 		goto exit;
 	    t++;
 
-	    /* Skip to start-of-signature */
-	    te = t;
-	    while (te && te < be && strncmp(te, sigtxt, strlen(sigtxt)))
-		te = strchr(te, '\n') + 1;
-	    if (!(te && te < be))
-		goto exit;
-	    te--;	/* hmmm, one too far? does clearsign snip last \n? */
-
-	    xx = rpmDigestUpdate(ctx, t, (te - t));
+	    /* Clearsign digest rtrims " \t\r\n", inserts "\r\n" inter-lines. */
+	    while (t < be) {
+		const char * teol;
+		const char * te;
+		if ((teol = strchr(t, '\n')) == NULL)
+		    break;
+		for (te = teol; te > t && strchr(" \t\r\n", te[-1]); te--)
+		    ;
+		xx = rpmDigestUpdate(ctx, t, (te - t));
+ 		if (!strncmp((t = teol + 1), sigtxt, strlen(sigtxt)))
+		    break;
+		xx = rpmDigestUpdate(ctx, "\r\n", sizeof("\r\n")-1);
+	    }
 	} else
 	    xx = rpmDigestUpdate(ctx, b, blen);
 

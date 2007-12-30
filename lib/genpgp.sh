@@ -22,10 +22,18 @@ Name-Email: jbj@jbj.org
 %commit
 GO_SYSIN_DD
 
-str="This is the plaintext"
-echo "This is the plaintext" > plaintext
+str="test"
 
-echo "static const char * plaintext = \"$str\";"
+# Note carefully the trailing white space on 1st line below: "${str}       "
+# $ od -c plaintext 
+# 0000000   t   e   s   t                              \n   t   e   s   t
+# 0000020  \n
+# 0000021
+cat << GO_SYSIN_DD > plaintext
+${str}       
+${str}
+GO_SYSIN_DD
+
 echo "static const char * plaintextfn = \"plaintext\";"
 
 $gpg --detach-sign -u DSApub --output - plaintext > DSA.sig
