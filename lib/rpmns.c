@@ -494,7 +494,9 @@ exit:
 
 if (_rpmns_debug)
 fprintf(stderr, "============================ verify: %s\n",
-	(rc == RPMRC_OK ? "OK" : "FAIL"));
+	(rc == RPMRC_OK ? "OK" :
+	(rc == RPMRC_NOKEY ? "NOKEY" :
+	"FAIL")));
 
     return rc;
 }
