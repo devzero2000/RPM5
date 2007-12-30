@@ -6,7 +6,6 @@
 #include <rpmmacro.h>
 #include <rpmlog.h>
 #include <rpmurl.h>
-#include <rpmurl.h>
 #include <rpmhook.h>
 #include <argv.h>
 
