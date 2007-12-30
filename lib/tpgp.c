@@ -81,6 +81,7 @@ main(int argc, char *argv[])
     rpmts ts = NULL;
     int rc;
 
+_rpmns_debug = 1;
 _pgp_debug = 1;
 _pgp_print = 1;
 

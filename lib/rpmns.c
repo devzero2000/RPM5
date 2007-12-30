@@ -431,10 +431,10 @@ fprintf(stderr, "==> rpmioSlurp(%s) MSG %p[%u] ret %d\n", _fn, b, blen, _rc);
 	    while (t < be) {
 		const char * teol;
 		const char * te;
-		if ((teol = strchr(t, '\n')) == NULL)
+		if ((teol = te = strchr(t, '\n')) == NULL)
 		    break;
-		for (te = teol; te > t && strchr(" \t\r\n", te[-1]); te--)
-		    ;
+		while (te > t && strchr(" \t\r\n", te[-1]))
+		    te--;
 		xx = rpmDigestUpdate(ctx, t, (te - t));
  		if (!strncmp((t = teol + 1), sigtxt, strlen(sigtxt)))
 		    break;
