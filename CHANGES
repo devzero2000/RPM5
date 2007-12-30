@@ -1,4 +1,7 @@
 5.0b3 -> 5.0b4:
+    - jbj: rip --predefine entirely, add comment re macro added both global/CLI.
+    - jbj: link tpgp against rpmnsProbeSignature() instead.
+    - jbj: add (hidden) --usecrypto option.
     - jbj: add a (unused) flags arg to rpmnsProbeSignature.
     - jbj: change rpmnsProbeSignature to return rpmRC (note: success is 0 now).
     - jbj: add --rpmnsdebug to see rpmnsProbeSignature() spew.

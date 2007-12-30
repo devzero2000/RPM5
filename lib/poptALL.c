@@ -13,6 +13,24 @@ const char *__progname;
 #include <fts.h>
 #include <mire.h>
 
+#define _RPMPGP_INTERNAL
+#if defined(WITH_BEECRYPT)
+#define _RPMBC_INTERNAL
+#include <rpmbc.h>
+#endif
+#if defined(WITH_GCRYPT)
+#define _RPMGC_INTERNAL
+#include <rpmgc.h>
+#endif
+#if defined(WITH_NSS)
+#define _RPMNSS_INTERNAL
+#include <rpmnss.h>
+#endif
+#if defined(WITH_SSL)
+#define _RPMSSL_INTERNAL
+#include <rpmssl.h>
+#endif
+
 #include "debug.h"
 
 #define POPT_SHOWVERSION	-999
@@ -23,6 +41,7 @@ const char *__progname;
 #define POPT_RCFILE		-995
 #endif
 #define POPT_UNDEFINE		-994
+#define	POPT_CRYPTO		-993
 
 /*@access headerTagIndices @*/		/* XXX rpmcliFini */
 /*@access headerTagTableEntry @*/	/* XXX rpmcliFini */
@@ -219,20 +238,9 @@ static void rpmcliAllArgCallback(poptContext con,
 	}
 	t = s;
 	if (*t == '%') t++;
-#if 0
-	/* XXX Predefine macro if not initialized yet. */
-        /* rse: this is a very bad hack from the year 2002 which especially results in
-           the value of the first --define option to occur twice on %{@foo} macro stack
-           expansions. We have now disabled it because:
-           1. it is a very confusing sematic
-           2. it applies only to the absolutely first occurrence of a --define usage
-           3. there is already the explicit --predefine in case one really has to
-              define a macro before the config files are loaded. */
-	if (rpmcliInitialized < 0)
-	    (void) rpmDefineMacro(NULL, t, RMIL_CMDLINE);
-#endif
 	rpmcliConfigured();
 /*@-type@*/
+	/* XXX adding macro to global context isn't Right Thing Todo. */
 	(void) rpmDefineMacro(NULL, t, RMIL_CMDLINE);
 	(void) rpmDefineMacro(rpmCLIMacroContext, t, RMIL_CMDLINE);
 /*@=type@*/
@@ -255,6 +263,28 @@ static void rpmcliAllArgCallback(poptContext con,
 /*@=type@*/
 	s = _free(s);
     }	break;
+    case POPT_CRYPTO:
+	rpmcliConfigured();
+	{   const char *val = rpmExpand(arg, NULL);
+#if defined(WITH_BEECRYPT)
+	    if (!xstrcasecmp(val, "beecrypt") || !xstrcasecmp(val, "bc"))
+		pgpImplVecs = &rpmbcImplVecs;
+#endif
+#if defined(WITH_GCRYPT)
+	    if (!xstrcasecmp(val, "gcrypt") || !xstrcasecmp(val, "gc"))
+		pgpImplVecs = &rpmgcImplVecs;
+#endif
+#if defined(WITH_NSS)
+	    if (!xstrcasecmp(val, "NSS"))
+		pgpImplVecs = &rpmnssImplVecs;
+#endif
+#if defined(WITH_SSL)
+	    if (!xstrcasecmp(val, "OpenSSL") || !xstrcasecmp(val, "ssl"))
+		pgpImplVecs = &rpmsslImplVecs;
+#endif
+	    val = _free(val);
+	}
+	break;
     case 'E':
 	rpmcliConfigured();
 	{   const char *val = rpmExpand(arg, NULL);
@@ -430,10 +460,10 @@ struct poptOption rpmcliAllPoptTable[] = {
 
  { "querytags", '\0', 0, NULL, POPT_QUERYTAGS,
         N_("display known query tags"), NULL },
- { "showrc", '\0', 0, NULL, POPT_SHOWRC,
-	N_("display final rpmrc and macro configuration"), NULL },
  { "quiet", '\0', 0, NULL, 'q',
 	N_("provide less detailed output"), NULL},
+ { "showrc", '\0', 0, NULL, POPT_SHOWRC,
+	N_("display final rpmrc and macro configuration"), NULL },
  { "verbose", 'v', 0, NULL, 'v',
 	N_("provide more detailed output"), NULL},
  { "version", '\0', 0, NULL, POPT_SHOWVERSION,
@@ -446,6 +476,10 @@ struct poptOption rpmcliAllPoptTable[] = {
 
  { "promoteepoch", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmds_nopromote, 0,
 	NULL, NULL},
+
+ { "usecrypto",'\0', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN, NULL, POPT_CRYPTO,
+        N_("select cryptography implementation"),
+	N_("CRYPTO") },
 
  { "avdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_av_debug, -1,
 	N_("debug argv collections"), NULL},
