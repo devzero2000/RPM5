@@ -1,4 +1,5 @@
 5.0b3 -> 5.0b4:
+    - rse: improve RPM Lua function util.rsubst(): perform repeated substitutions and honor prolog/epilog parts
     - jbj: re-add all the debugging spew under --rpmnsdebug for now.
     - jbj: functional signature(...) name space probe.
     - jbj: add rpmnsProbeSignature() & "signature(/text:/sig) = /pub:id" probe.
