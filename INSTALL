@@ -66,6 +66,7 @@ System libelf   optional  -       -       e.g. http://www.mr511.de/software/engl
 
 [4] lzma:      RPM has a copy of the LZMA SDK 4.32 decompression routines bundled,
                but for compression the external command line interface lzma(1) is required.
+               You need either LZMA Utils (recommended) or LZMA SDK and the lzmash wrapper.
 
 [5] file:      Unmodified File/magic copy bundled with RPM for convenience reasons.
                Building RPM against this internal File/magic requires also internal Zlib.
