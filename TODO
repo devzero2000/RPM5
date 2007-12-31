@@ -164,3 +164,10 @@
 	time options
     - jbj: rewrite pgpReadPkts to return array of clearsign'd segments instead.
     - jbj: teach argvSplit about escaped seperator characters.
+    - jasonc: spec file parser: one cannot represent a "odd" file path in a
+        Provides such as:
+          Provides: /path/with spaces/and,commas/foo.bar
+        currently because both spaces and commas can be used to indicate    
+        multiple provides entries (Mac OS X is great at finding these types of
+        "problems")
+
