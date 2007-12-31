@@ -73,7 +73,7 @@ System libelf   optional  -       -       e.g. http://www.mr511.de/software/engl
 
 [6] xar:       Modified XAR copy bundled with RPM.
                Building RPM against stock external XAR currently still not recommended.
-               The 1.5 releases of Xar needs some patching, before they work.
+               The 1.5 and 1.5.1 releases of XAR needs some patching, before they work.
 
 Run-Time
 --------
