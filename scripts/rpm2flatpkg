@@ -1,0 +1,84 @@
+#!/bin/sh
+
+# rpm2flatpkg - Converts a binary RPM into a Mac OS X package
+# Copyright (C) 2005-2007 Anders F Bjorklund <afb@rpm5.org>
+#
+# NOTE: Flat .pkg packages requires Mac OS X 10.5 "Leopard"
+# (resulting .pkg can be used with both Installer and RPM)
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 2.1 of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+
+rpm=$1
+if [ "$rpm" = "" -o ! -e "$rpm" ]; then
+   echo "no package supplied" 1>&2
+   exit 1
+fi
+rpmfile=`basename $rpm`
+rpmnvra=`echo $rpmfile | sed -e s/.rpm$//`
+
+PREFIX=/usr/local
+
+RPM=$PREFIX/bin/rpm
+TXAR=$PREFIX/lib/rpm/txar
+RPM2CPIO=$PREFIX/bin/rpm2cpio
+
+TMPDIR=`mktemp -t rpm2xpkg -d || mkdir -v /tmp/rpm2xpkg.$$`
+
+XAR=/usr/bin/xar
+INSTALLER=/usr/sbin/installer
+PACKAGEMAKER=/Developer/Applications/Utilities/PackageMaker.app/Contents/MacOS/PackageMaker
+
+if [ ! -x "$PACKAGEMAKER" ]; then
+   echo "PackageMaker not found" 1>&2
+   exit 1
+fi
+
+#
+
+rpmpath=$TMPDIR/$rpmnvra.rpm
+pkgpath=$TMPDIR/$rpmnvra.pkg
+xarpath=$TMPDIR/$rpmnvra.xar
+
+cp $rpm $rpmpath
+NAME="`$RPM -qp --qf %{name} $rpmpath`"
+VERS="`$RPM -qp --qf %{version} $rpmpath`"
+
+DESTROOT=$TMPDIR/Root
+mkdir -p $DESTROOT
+( cd $DESTROOT; $RPM2CPIO $rpmpath | cpio -dim )
+
+INFOFILE=$TMPDIR/PackageInfo
+cat >>$INFOFILE <<__EOF__
+<pkg-info install-location="/" relocatable="false" auth="root">
+</pkg-info>
+__EOF__
+
+$PACKAGEMAKER --root $DESTROOT --out $pkgpath --info $INFOFILE \
+              --target 10.5 --domain system --id "org.rpm5.pkg.$NAME"
+
+( cd $TMPDIR; $TXAR $rpmnvra.rpm )
+
+pkgpart="PackageInfo Bom Payload"
+rpmpart="Lead Signature Header Payload"
+
+( cd $TMPDIR; $XAR -xf $pkgpath; $XAR -xf $xarpath; $XAR -cf $pkgpath $rpmpart $pkgpart)
+
+#
+
+echo "RPM: `$RPM -qp $pkgpath`"
+echo "PKG: `$INSTALLER -pkginfo -pkg $pkgpath`"
+
+cp $pkgpath `dirname $rpm`
+rm -rf "$TMPDIR"

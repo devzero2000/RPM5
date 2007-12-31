@@ -1,0 +1,492 @@
+#!/usr/bin/perl -w
+
+# rpm2pkg - Converts a binary Darwin RPM into a Mac OS X pkg
+# Copyright (C) 2004,2007 Anders F Bjorklund <afb@rpm5.org>
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 2.1 of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+
+use Cwd qw/getcwd chdir realpath/;
+use File::Basename qw /basename dirname/;
+
+=head1 NAME
+
+rpm2pkg - Convert an RPM to a Mac OS X package (in a disk image)
+
+=head1 SYNOPSIS
+
+B<rpm2pkg> name-version-release.arch.rpm ...
+
+=head1 DESCRIPTION
+
+B<rpm2pkg> converts binary RPMS for the Darwin platform
+(.RPM) into Installer packages (.PKG) for Mac OS X.
+
+Not affiliated with "rpm2pkg" for Solaris or FreeBSD,
+just has a similar name ("pkg" isn't exactly unique)
+
+It will create an internet-enabled disk image (.DMG),
+for easy installation as distribution as a single file.
+
+The output files (packages, tarballs) are placed in the
+same directory as the input, temporary files in /tmp.
+
+The disk-images are gzip-compressed HFS+ file systems,
+and can only (easily) be opened on Mac OS X systems.
+
+If you don't like the pax command (prefer tar archives),
+it's also possible to generate "OSXPM" packages (.XPM).
+
+Currently only the GPL and LGPL licenses are displayed in
+their entirety during the installation, others in summary.
+
+More licenses (rtf,html,txt) can be added to the "rpm2pkg"
+data directory, their name should match the License field. 
+
+=head1 BUGS
+
+Options to control the output are not yet implemented.
+(use_packagemaker, use_pax_archiver, make_diskimage, make_tarball)
+
+Will replace all configuration files during upgrades, since
+the Mac OS X Installer has yet no concept of a config file.
+
+Scripts and triggers are not copied over to the new package.
+(The resulting package will not have any pre or post scripts)
+
+Packages and Disk images can only be created on Apple Mac OS X,
+since the required tools (mkbom, hdiutil) are not Open Source.
+
+Mac OS X Installer Packages can not (yet?) be uninstalled.
+The PackageMaker control files and path are horrible to use.
+
+=cut
+
+die "Usage: rpm2pkg name-version-release.arch.rpm ..."
+    if ($#ARGV < 0);
+
+die "You must be root to create packages, sorry... (try sudo?)"
+    if ($) != 0);
+
+### RPM info:
+my @tags = qw/name version release epoch size summary description
+              arch os license vendor url group distribution packager/;
+
+my $queryformat = "";
+foreach my $tag (@tags)
+{
+    $queryformat .= "%{$tag}\\a"
+}
+
+### Options:
+my $verbose = 1;
+my $clean = 0;
+my $use_packagemaker = 1;
+my $use_pax_archiver = 1;
+my $make_diskimage = 1;
+my $make_tarball = 0;
+
+
+foreach my $file (@ARGV)
+{
+    $file = realpath($file);
+    
+    my $filename = basename($file);
+    my $dirname = dirname($file);
+
+    ######################################################
+
+    my $command = "rpm --queryformat \'$queryformat\' -qp $file";
+    my @values = split(/\a/, `$command`);
+
+    my %rpm = ();
+    foreach my $tag (@tags)
+    {
+        $rpm{$tag} = shift @values;
+    }
+
+    warn and next unless $rpm{name} and $rpm{version};
+    my $nvr = "$rpm{name}-$rpm{version}-$rpm{release}";
+
+    ######################################################
+
+    my $TEMP = "/tmp/$rpm{name}-$rpm{version}-package";
+
+    mkdir($TEMP);
+
+    my $INFO = "$TEMP/Info.plist";
+    my $DESC = "$TEMP/Description.plist";
+    my $ROOT = "$TEMP/Root";
+    my $RSRC = "$TEMP/Resources";
+
+    my $package =   "$TEMP/$nvr.pkg";
+    my $xpackage =  "$TEMP/$nvr.xpm";
+    my $diskimage = "$TEMP/$nvr.dmg";
+    my $tarball =   "$TEMP/$nvr.tgz";
+
+    ######################################################
+    ### Prepare the package Info
+
+    open(INFO,">$INFO") or warn "$!";
+    print INFO <<__INFO__;
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>CFBundleGetInfoString</key>
+    <string>$rpm{name} $rpm{version}-$rpm{release}</string>
+    <key>CFBundleIdentifier</key>
+    <string>org.rpm5.pkg.$rpm{name}</string>
+    <key>CFBundleName</key>
+    <string>$rpm{name}</string>
+    <key>CFBundleShortVersionString</key>
+    <string>$rpm{version}</string>
+<!--
+    <key>IFMajorVersion</key>
+    <integer>1</integer>
+    <key>IFMinorVersion</key>
+    <integer>0</integer>
+-->
+    <key>IFPkgFlagAllowBackRev</key>
+    <false/>
+    <key>IFPkgFlagAuthorizationAction</key>
+    <string>RootAuthorization</string>
+    <key>IFPkgFlagDefaultLocation</key>
+    <string>/</string>
+    <key>IFPkgFlagInstallFat</key>
+    <false/>
+    <key>IFPkgFlagIsRequired</key>
+    <false/>
+    <key>IFPkgFlagOverwritePermissions</key>
+    <false/>
+    <key>IFPkgFlagRelocatable</key>
+    <false/>
+    <key>IFPkgFlagFollowLinks</key>
+    <true/>
+    <key>IFPkgFlagRestartAction</key>
+    <string>NoRestart</string>
+    <key>IFPkgFlagRootVolumeOnly</key>
+    <true/>
+    <key>IFPkgFlagUpdateInstalledLanguages</key>
+    <false/>
+    <key>IFPkgFlagUseUserMask</key>
+    <true/>
+    <key>IFPkgFormatVersion</key>
+    <real>0.10000000000000001</real>
+</dict>
+</plist>
+__INFO__
+
+    ######################################################
+    ### Prepare the package Description
+
+    open(DESC,">$DESC") or warn "$!";
+    print DESC <<__DESC__;
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>IFPkgDescriptionTitle</key>
+    <string>$rpm{name}</string>
+    <key>IFPkgDescriptionVersion</key>
+    <string>$rpm{version}</string>
+    <key>IFPkgDescriptionDeleteWarning</key>
+    <string></string>
+</dict>
+</plist>
+__DESC__
+
+    ######################################################
+    ### Prepare the package Root
+    
+    system("rm -rf \"$ROOT\"") if (-d "$ROOT");
+    system("mkdir -p $ROOT") == 0 or warn "$!";
+
+    die unless $ROOT and "$ROOT" ne "/" and -d "$ROOT";
+
+    $verbose and print "Preparing Root: $nvr (Size: $rpm{size})\n";
+
+    my $cwd = getcwd();
+    system("cd $ROOT; rpm2cpio $file | cpio -i -d -m -u") == 0 or die ("$!");
+    chdir($cwd);
+
+    system("mkdir -p $ROOT/private/etc; mv $ROOT/etc/* $ROOT/private/etc; rm -r $ROOT/etc") if (-d "$ROOT/etc");
+    system("mkdir -p $ROOT/private/var; mv $ROOT/var/* $ROOT/private/var; rm -r $ROOT/var") if (-d "$ROOT/var");
+    system("mkdir -p $ROOT/private/tmp; mv $ROOT/tmp/* $ROOT/private/tmp; rm -r $ROOT/tmp") if (-d "$ROOT/tmp");
+
+    # TODO: look for config files, and delete them - so that they don't get just replaced
+
+    # TODO: look for empty directories, create .DS_Store - to make PackageMaker keep them
+
+    chown(0,80,$ROOT) or warn "$!";
+    chmod(01775,$ROOT) or warn "$!";
+    unlink("$ROOT/.DS_Store") if (-r "$ROOT/.DS_Store");
+
+    ######################################################
+    ### Prepare the package Resources
+
+    system("rm -rf \"$RSRC\"") if (-d "$RSRC");
+    system("mkdir -p $RSRC") == 0 or warn "$!";
+
+    $verbose and print "Preparing Resources: $nvr (License: $rpm{license})\n";
+
+    my $licensedir = "Licenses";
+    $licensedir = "/usr/local/share/rpm2pkg" unless -d $licensedir;
+    $licensedir = "/usr/share/rpm2pkg" unless -d $licensedir;
+
+    my @doc_suffixes = ('rtf', 'html', 'txt');
+
+    if (-d $licensedir )
+    {
+        foreach my $suffix (@doc_suffixes)
+        {
+            if (-r "$licensedir/$rpm{license}.$suffix")
+            {
+                system("cp $licensedir/$rpm{license}.$suffix $RSRC/License.$suffix") == 0 or warn "$!";
+            }
+        }
+    }
+    
+    open(WELCOME,">$RSRC/Welcome.html") or warn "$!";
+    print WELCOME <<__WELCOME__;
+<font face="Helvetica">
+<h1>$nvr</h1>
+
+<p>
+<b>$rpm{summary}</b></p>
+
+<p>
+__WELCOME__
+
+print WELCOME "Vendor: $rpm{vendor}<br>\n"
+    if $rpm{vendor} and $rpm{vendor} ne "(none)";
+
+print WELCOME "Packager: $rpm{packager}<br>\n"
+    if $rpm{packager} and $rpm{packager} ne "(none)";
+
+print WELCOME "Distribution: $rpm{distribution}<br>\n"
+    if $rpm{distribution} and $rpm{distribution} ne "(none)";
+
+print WELCOME "URL: <a href=\"$rpm{url}\">$rpm{url}</a><br>\n"
+    if $rpm{url} and $rpm{url} ne "(none)";
+
+print WELCOME "License: $rpm{license}<br>\n"
+    if $rpm{license} and $rpm{license} ne "Unknown";
+
+    print WELCOME <<__WELCOME__;
+Group: <i>$rpm{group}</i><br></p>
+<p>
+$rpm{description}</p>
+
+<p>
+<small>Prepared from <tt>$filename</tt>
+by <i>rpm2pkg</i></small><br>
+</font>
+__WELCOME__
+    close(WELCOME);
+
+    ######################################################
+    ### Write the package
+    
+    my $pax = -x '/usr/bin/pax' ? '/usr/bin/pax': '/bin/pax';
+    my $tar = -x '/usr/bin/gnutar' ? '/usr/bin/gnutar' : '/usr/bin/tar';
+
+    my $lsbom = -x '/usr/bin/lsbom' ? '/usr/bin/lsbom' : '/usr/etc/lsbom';
+    my $mkbom = -x '/usr/bin/mkbom' ? '/usr/bin/mkbom' : '/usr/etc/mkbom';
+    
+    my $packagemaker='/Developer/Applications/Utilities/PackageMaker.app/Contents/MacOS/PackageMaker';
+
+    if (-x $packagemaker && $use_packagemaker)
+    {
+        $verbose and print "Making package: $nvr.pkg\n";
+
+        system("$packagemaker -build -p $package -f $ROOT -r $RSRC -i $INFO -d $DESC 2>/dev/null");
+    }
+    else
+    {
+        # OK, so the PackageMaker is missing... Let's do it the hard way then.
+    
+         $verbose and print "Making package: $nvr" .
+            ((-x $pax && $use_pax_archiver) ? ".pkg\n" : ".xpm\n");
+
+        system("rm -rf \"$package\"")  if (-e "$package");
+        system("rm -rf \"$xpackage\"") if (-e "$xpackage");
+
+        my $contents = "$package/Contents";
+        system("mkdir -p $contents");
+
+        my ($numfiles, $archiver, $compressor);
+        
+        system("echo -n 'pmkrpkg1' > $contents/PkgInfo");
+        system("cp $INFO $contents/Info.plist");
+        
+        if (-x $mkbom)
+        {
+            system("$mkbom $ROOT $contents/Archive.bom");
+        }
+        else
+        {
+            die("mkbom - the BOM (bill of materials) tools are missing!");
+        }   
+        
+        $cwd = getcwd();
+        if (-x $pax && $use_pax_archiver)
+        {
+            $archiver = "PAX";
+            
+            $compressor = "GZIP";
+    
+            system("cd $ROOT && $pax -w -z -x cpio . > $contents/Archive.pax.gz");
+        }
+        else
+        {
+            $archiver = "GNUTAR";
+            
+            if (-x "/usr/bin/bzip2")
+            {
+                $compressor = "BZIP2"; # requires about 10x the mem/time than gzip
+            
+                system("cd $ROOT && nice $tar -c -j -f $contents/Archive.tar.bz2 .");
+            }
+            else
+            {
+                $compressor = "GZIP";
+            
+                system("cd $ROOT && $tar -c -z -f $contents/Archive.tar.gz .");
+            }
+        }
+        chdir($cwd);
+
+        my $resources = "$contents/Resources";
+        
+        system("cp -r $RSRC $resources");
+        system("cp $DESC $resources/Description.plist"  );
+
+       ######################################################
+       # Add legacy compatibility stuff, for the old Installer
+        
+        if (-x $lsbom)
+        {
+            $numfiles = `$lsbom -s $contents/Archive.bom | wc -l`;
+            $numfiles =~ s/\s+//g; # trim whitespace
+        }
+        else
+        {
+            die("lsbom - the BOM (bill of materials) tools are missing!");
+        }   
+        
+        system("ln -sf ../Archive.bom $resources/$nvr.bom");
+            
+        if ($archiver eq "PAX")
+        {
+            system("ln -sf ../Archive.pax.gz $resources/$nvr.pax.gz");
+        }
+        elsif ($archiver eq "GNUTAR")
+        {
+            if ($compressor eq "BZIP2")
+            {
+              system("ln -sf ../Archive.tar.bz2 $resources/$nvr.tar.bz2");
+            }
+            elsif ($compressor eq "GZIP")
+            {
+              system("ln -sf ../Archive.tar.gz $resources/$nvr.tar.gz");
+            }
+        }
+        
+        open(OLDINFO,">$resources/$nvr.info");
+        print OLDINFO <<__OLDINFO__;
+Title $rpm{name}
+Version $rpm{version}
+Description $rpm{summary}
+DefaultLocation /
+DeleteWarning
+
+__OLDINFO__
+
+         print OLDINFO <<__OSXPM__ if ($archiver ne "PAX");
+### OSXPM Extras
+Archiver $archiver
+Compressor $compressor
+
+__OSXPM__
+
+       print OLDINFO <<__OLDINFO__;
+### Package Flags
+
+NeedsAuthorization YES
+Required NO
+Relocatable NO
+RequiresReboot NO
+UseUserMask YES
+OverwritePermissions NO
+InstallFat NO
+RootVolumeOnly YES
+__OLDINFO__
+        close(OLDINFO);
+    
+        my $instsize = `du -ks $ROOT | cut -f1`; chomp($instsize);
+        my $compsize = `du -ks $package | cut -f1`; chomp($compsize);
+            
+        open(OLDSIZES,">$resources/$nvr.sizes");
+        print OLDSIZES <<__OLDSIZES__;
+NumFiles $numfiles
+InstalledSize $instsize
+CompressedSize $compsize
+__OLDSIZES__
+        close(OLDSIZES);
+
+        if ($archiver ne "PAX")
+        {
+            system("mv $package $xpackage");
+        }
+    }
+    
+    system("mkdir -p $TEMP/$nvr; mv $package $TEMP/$nvr");
+    ######################################################
+    ### Make the disk image (requires Mac OS X)
+
+    my $hdiutil='/usr/bin/hdiutil';
+    
+    if (-x $hdiutil and $make_diskimage)
+    {
+        $verbose and print "Making image: $nvr.dmg\n";
+        
+        system("$hdiutil create -srcfolder $TEMP/$nvr -fs HFS+ -format UDZO -quiet -ov $diskimage");
+        system("$hdiutil internet-enable -yes -quiet $diskimage");
+    
+        system("cp $diskimage $dirname/$nvr.dmg");
+    }
+
+    ######################################################
+    ### Make the package tarball
+
+    if (! -x $hdiutil or $make_tarball)
+    {
+        $verbose and print "Making tarball: $nvr.tgz\n";
+        
+        system("$tar -c -z -f $tarball -C $TEMP/$nvr ./$nvr.pkg");
+
+        system("cp $tarball $dirname/$nvr.tgz");
+    }
+    
+    ######################################################
+    system("mv $TEMP/$nvr/$nvr.pkg $package; rmdir $TEMP/$nvr");
+    
+    # Done making package. Next!
+
+    ######################################################
+    ### Clean up (if requested to)
+    
+    system("rm -rf $TEMP") if ($clean);
+}
