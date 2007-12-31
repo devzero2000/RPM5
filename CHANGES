@@ -1,3 +1,8 @@
+5.0b4 -> 5.0.0:
+    - rse: add often required RPM Lua convenience function util.slurp()
+    - rse: add PCRE to "devtool standalone" procedure
+    - rse: make RPM configuration in "devtool standalone" procedure more flexible
+
 5.0b3 -> 5.0b4:
     - jbj: fix: calculate clearsign'd text digests correctly.
     - jbj: fix: display RPMRC_NOKEY failures explicitly.
