@@ -338,4 +338,12 @@
                      arbitrary (or else the macro would be not available).
      Hint:           As %_arbitrary_tags restricts the allowed tags anyway,
                      best would be to export also arbitrary tags as macros!
+     ________________________________________________________________________
+
+  o  Name:           RPM4DARWIN
+     Vendor:         RPM for Darwin (Mac OS X) <http://rpm4darwin.sourceforge.net/>
+     Representative: Anders F. Bjorklund <afb@users.sourceforge.net> <afb@rpm5.org>
+     Application:    a port of the RPM software (RPM 4.x) to Darwin and Mac OS X
+     Characteristic: standalone installation of RPM that installs into /usr/local
+     ________________________________________________________________________
 
