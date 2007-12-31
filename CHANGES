@@ -1,4 +1,5 @@
 5.0b4 -> 5.0.0:
+    - rse: add RPM Lua function rpm.verbose() to be able to check CLI option --verbose
     - rse: add often required RPM Lua convenience function util.slurp()
     - rse: add PCRE to "devtool standalone" procedure
     - rse: make RPM configuration in "devtool standalone" procedure more flexible

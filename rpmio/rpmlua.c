@@ -7,6 +7,7 @@
 #include <rpmlog.h>
 #include <rpmurl.h>
 #include <rpmhook.h>
+#include <rpmcb.h>
 #include <argv.h>
 
 #include <lua.h>
@@ -933,6 +934,17 @@ static int rpm_load(lua_State *L)
     return 0;
 }
 
+static int rpm_verbose(lua_State *L)
+	/*@globals internalState @*/
+	/*@modifies L, internalState @*/
+{
+    if (rpmIsVerbose())
+        lua_pushinteger(L, 1);
+    else
+        lua_pushnil(L);
+    return 1;
+}
+
 /*@-readonlytrans@*/
 /*@observer@*/ /*@unchecked@*/
 static const luaL_reg rpmlib[] = {
@@ -946,6 +958,7 @@ static const luaL_reg rpmlib[] = {
     {"interactive", rpm_interactive},
     {"source", rpm_source},
     {"load", rpm_load},
+    {"verbose", rpm_verbose},
     {NULL, NULL}
 };
 /*@=readonlytrans@*/
