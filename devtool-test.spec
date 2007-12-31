@@ -1,6 +1,5 @@
-
-Name:      devtool-test
 Summary:   devtool test
+Name:      devtool-test
 Version:   1.0
 Release:   1
 License:   Public Domain
@@ -26,7 +25,6 @@ prog rpm = {
 %clean
 
 %files
-%defattr(-,root,root)
 
 %changelog
 
