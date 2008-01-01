@@ -340,6 +340,24 @@
                      best would be to export also arbitrary tags as macros!
      ________________________________________________________________________
 
+     Change:         rpm-lua-extensions-based-on-rpm-lib-functionality
+     Purpose:        Adds RPM Lua extensions based on "lib" functionality
+     Reason:         The RPM Lua implementation is part of "rpmio". Hence
+                     it cannot use RPM "lib" functionality without
+                     breaking the RPM library dependency hierarchy.
+                     Nevertheless it is very useful to have RPM "lib"
+                     functionality in RPM Lua. The lib/rpmluaext.[ch]
+                     provides this now. It attaches additional
+                     functionality into the RPM Lua scope from within
+                     RPM "lib". Currently it mainly provides the
+                     following essential methods: rpm.digest() for
+                     calculating a message digest, rpm.signature() to
+                     check the public key signature on a clearsigned
+                     file or a file and its detached signature, and
+                     rpm.query() to query the RPMDB similar to "rpm -q
+                     --qf '[...]' [-a] [...]" directly from within Lua.
+     ________________________________________________________________________
+
   o  Name:           RPM4DARWIN
      Vendor:         RPM for Darwin (Mac OS X) <http://rpm4darwin.sourceforge.net/>
      Representative: Anders F. Bjorklund <afb@users.sourceforge.net> <afb@rpm5.org>

@@ -11,6 +11,7 @@
 #define _MIRE_INTERNAL
 #include <rpmio_internal.h> /* for rpmioSlurp() */
 #include <rpmlua.h>
+#include <rpmluaext.h>
 #include <rpmmacro.h>
 #include <rpmcli.h>
 #include <rpmds.h>
@@ -957,6 +958,7 @@ int rpmReadConfigFiles(/*@unused@*/ const char * file, const char * target)
     /* Force Lua state initialization */
 #ifdef WITH_LUA
     (void)rpmluaGetPrintBuffer(NULL);
+    (void)rpmluaextActivate(rpmluaGetGlobalState());
 #endif
 
     return 0;

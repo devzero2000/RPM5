@@ -216,6 +216,7 @@ LIBRPM_0
     rpmlibVersion;
     rpmlibTimestamp;
     rpmlibVendor;
+    rpmluaextActivate;
     rpmMkdirPath;
     rpmNAME;
     _rpmns_debug;
