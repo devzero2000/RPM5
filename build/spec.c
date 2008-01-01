@@ -472,7 +472,7 @@ Spec newSpec(void)
     spec->st = newSt();
 
     spec->fileStack = NULL;
-    spec->lbuf_len = (size_t)rpmExpandNumeric("%{?_spec_line_buffer_size}%{!?_spec_line_buffer_size:10000}");
+    spec->lbuf_len = (size_t)rpmExpandNumeric("%{?_spec_line_buffer_size}%{!?_spec_line_buffer_size:100000}");
     spec->lbuf = (char *)xcalloc(1, spec->lbuf_len);
     spec->line = spec->lbuf;
     spec->nextline = NULL;
