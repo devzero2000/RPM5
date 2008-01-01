@@ -129,6 +129,14 @@ rpmlogCallback rpmlogSetCallback(rpmlogCallback cb, rpmlogCallbackData data)
     return ocb;
 }
 
+void rpmlogGetCallback(rpmlogCallback *cb, rpmlogCallbackData *data)
+	/*@globals _rpmlogCallback, _rpmlogCallbackData @*/
+{
+    *cb = _rpmlogCallback;
+    *data = _rpmlogCallbackData;
+    return;
+}
+
 /*@unchecked@*/ /*@null@*/
 static FILE * _stdlog = NULL;
 

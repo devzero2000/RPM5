@@ -208,6 +208,15 @@ rpmlogCallback rpmlogSetCallback(rpmlogCallback cb, rpmlogCallbackData data)
 	/*@modifies internalState @*/;
 
 /**
+ * Get rpmlog callback function and data.
+ * @param cb		pointer to rpmlog callback function
+ * @param data		pointer to callback private (user) data
+ * @return		none
+ */
+void rpmlogGetCallback(rpmlogCallback *cb, rpmlogCallbackData *data)
+	/*@*/;
+
+/**
  * Return number of messages.
  * @return		number of messages
  */

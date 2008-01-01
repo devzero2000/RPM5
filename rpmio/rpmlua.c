@@ -52,6 +52,11 @@ static int rpm_print(lua_State *L)
 	/*@globals fileSystem @*/
 	/*@modifies L, fileSystem @*/;
 
+rpmlua rpmluaGetGlobalState(void)
+{
+    return globalLuaState;
+}
+
 /*@-mods@*/	/* XXX hide rpmGlobalMacroContext mods for now. */
 rpmlua rpmluaNew()
 {

@@ -45,6 +45,7 @@ typedef /*@abstract@*/ struct rpmluav_s * rpmluav;
 
 /*@-exportlocal@*/
 /*@only@*/
+rpmlua rpmluaGetGlobalState(void);
 rpmlua rpmluaNew(void)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;

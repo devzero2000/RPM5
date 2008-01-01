@@ -250,6 +250,7 @@ LIBRPMIO_0
     rpmlogOpen;
     rpmlogPrint;
     rpmlogSetCallback;
+    rpmlogGetCallback;
     rpmlogSetFile;
     rpmlogSetMask;
     rpmluaCheckScript;
@@ -258,6 +259,7 @@ LIBRPMIO_0
     rpmluaGetPrintBuffer;
     rpmluaGetVar;
     rpmluaInteractive;
+    rpmluaGetGlobalState;
     rpmluaNew;
     rpmluaPop;
     rpmluaPushTable;
