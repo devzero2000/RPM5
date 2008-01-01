@@ -938,10 +938,7 @@ static int rpm_verbose(lua_State *L)
 	/*@globals internalState @*/
 	/*@modifies L, internalState @*/
 {
-    if (rpmIsVerbose())
-        lua_pushinteger(L, 1);
-    else
-        lua_pushnil(L);
+    lua_pushboolean(L, rpmIsVerbose());
     return 1;
 }
 
