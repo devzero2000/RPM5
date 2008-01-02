@@ -358,7 +358,7 @@
                      --qf '[...]' [-a] [...]" directly from within Lua.
      ________________________________________________________________________
 
-     Change:         backward-compat-rpmtag-sourcepackage */
+     Change:         backward-compat-rpmtag-sourcepackage
      Purpose:        Still mark SRPMS with RPMTAG_SOURCEPACKAGE
      Reason:         For backward compatibility with RPM < 4.4.6
                      (remember: OpenPKG used RPM 4.2.1 until 2008) let
