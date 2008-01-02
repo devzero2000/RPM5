@@ -28,6 +28,40 @@
 #include "debug.h"
 
 /* RPM Lua function:
+ * <result> = rpm.vercmp(
+ *     <version1>  -- first  version (e.g. "N.N.N")
+ *     <version2>  -- second version (e.g. "N.N.N")
+ * )
+ */
+static int rpmluaext_vercmp(lua_State *L)
+{
+    const char *version1;
+    const char *version2;
+    int rc;
+
+    /* fetch arguments */
+    if (lua_isstring(L, 1))
+        version1 = lua_tostring(L, 1);
+    else {
+        (void)luaL_argerror(L, 1, "first version string");
+        return 0;
+    }
+    if (lua_isstring(L, 2))
+        version2 = lua_tostring(L, 2);
+    else {
+        (void)luaL_argerror(L, 2, "second version string");
+        return 0;
+    }
+
+    /* compare versions */
+    rc = rpmvercmp(version1, version2);
+
+    /* provide results */
+    lua_pushinteger(L, rc);
+    return 1;
+}
+
+/* RPM Lua function:
  * <digest> = rpm.digest(
  *     <type>,     -- digest algorithm type ("md5", "sha1", etc)
  *     <data-file> -- file to calculate digest for
@@ -234,6 +268,7 @@ static int rpmluaext_query(lua_State *L)
 
 /* RPM Lua "rpm.*" function registry */
 static const luaL_reg rpmluaext_registry[] = {
+    { "vercmp",    rpmluaext_vercmp    },
     { "digest",    rpmluaext_digest    },
     { "signature", rpmluaext_signature },
     { "query",     rpmluaext_query     },
