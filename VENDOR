@@ -370,6 +370,11 @@
                      plus "rpm -bb" operations.
      ________________________________________________________________________
 
+     Change:         integrity-checking
+     Purpose:        RPM integrity checking framework
+     Reason:         [see scripts/integrity.txt for detailed documentation]
+     ________________________________________________________________________
+
   o  Name:           RPM4DARWIN
      Vendor:         RPM for Darwin (Mac OS X) <http://rpm4darwin.sourceforge.net/>
      Representative: Anders F. Bjorklund <afb@users.sourceforge.net> <afb@rpm5.org>

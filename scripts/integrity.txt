@@ -1,0 +1,150 @@
+
+  RPM Integrity Checking Framework
+  ================================
+
+  Author:   Ralf S. Engelschall <rse@engelschall.com>
+  Created:  2007-12-30
+  Modified: 2008-01-02
+
+  Background
+  ----------
+
+  If a software installation is RPM based, RPM plays the role of the
+  central management tool. Hence installation integrity checking should
+  be wired directly into RPM.
+
+  The valid "integrity" of a software installation can be defined
+  arbitrarily. It can mean that all installation files are untouched
+  (still match a particular checksum or message digest), it can mean
+  that a valid run-time license is installed (which was signed by the
+  trusted license issuer), it can mean that the underlying system is
+  operating in a particular mode or in a particular network environment,
+  etc.
+
+  Approach
+  --------
+
+  As it is not possible for a generic tool like RPM to cover all
+  possibilities, RPM provides just the "framework" for hooking arbitrary
+  integrity checks into its operation. For flexibility the integrity
+  checking is split into the following four technological parts:
+
+  1. Declarative   Integrity Configuration Specification  (.cfg)
+  2. Programmatic  Integrity Validation    Processor      (.lua)
+  3. Cryptographic Integrity Authority     Public-Key     (.pgp)
+  4. Cryptographic Integrity Authority     Fingerprint    (.fp)
+
+  In detail these are:
+
+  1. Declarative Integrity Configuration Specification (.cfg)
+     --------------------------------------------------------
+
+     This is a static and declarative specification of the integrity
+     configuration. It is a text file consisting of key/value pairs
+     matching the following regular expression:
+
+     ([A-Za-z0-9][A-Za-z0-9-]*):[ \t]*([^\r\n]*(?:\r?\n
+     [ \t]+[^\r\n]+)*)\r?\n
+
+     Examples are key/value pairs are "Foo: Bar\n" or "Foo: Bar\n Baz\n
+     Quux\n". The integrity configuration usually is individually issued
+     for a particular software installation or a class of similar
+     software installations. The supported and required key/value pairs
+     depend entirely on the particular Integrity Validation Processor.
+
+     The file has to be PGP "clear-signed" by the Integrity Authority.
+
+  2. Programmatic Integrity Validation Processor (.lua)
+     --------------------------------------------------
+
+     This is a dynamic and programmatic integrity validation processor.
+     It is a Lua script file consisting of at least a definition of
+     the Lua string variable "integrity.version" and the Lua function
+     "integrity.validate(ctx, spec)". The minimum valid Lua script is:
+
+         integrity.version = "0"
+         function integrity.validate(ctx, spec)
+             return "OK"
+         end
+
+     The integrity validation processor usually is generic and reusable
+     across a larger set of integrity configuration specifications. It
+     is also implemented outside the RPM scope as its implementation
+     can be arbitrary and RPM independent. It is dynamically loaded and
+     executed under RPM run-time.
+
+     The file has to be PGP "clear-signed" by the Integrity Authority.
+
+  3. Cryptographic Integrity Authority Public-Key (.pgp)
+     ---------------------------------------------------
+
+     This is the OpenPGP public key of the integrity authority, a
+     party which is trusted by RPM to issue Integrity Configuraton
+     Specifications and Integrity Validation Processors. RPM uses this
+     file to cryptographically check the integrity of the Integrity
+     Configuraton Specification and Integrity Validation Processor. For
+     flexibility reasons it is also kept outside of RPM.
+
+  4. Cryptographic Integrity Authority Fingerprint (.fp)
+     ---------------------------------------------------
+
+     This is the fingerprint (usually MD5 or SHA-1 message digest) of
+     the OpenPGP public key of the Integrity Authority Public-Key. It is
+     hard-coded into RPM during the build-time of RPM. It is the root of
+     the integrity trust chain.
+
+  Implementation
+  --------------
+
+  The current implementation for RPM 5 is as following:
+
+  -  RPM is built with the fixed/hard-coded Integrity Authority
+     Fingerprint in the C preprocessor variable RPM_INTEGRITY_FP.
+     Additionally, it is built with the fixed/hard-coded minimum version
+     of the Integrity Validation Processor in the C preprocessor
+     variable RPM_INTEGRITY_MV.
+
+  -  The paths to the external files are configured via RPM macros:
+     %{_integrity_spec_cfg}: Declarative Integrity Configuration Specification
+     %{_integrity_proc_lua}: Programmatic Integrity Validation Processor
+     %{_integrity_pkey_pgp}: Cryptographic Integrity Authority Public-Key
+
+  -  RPM during run-time always runs the integrity checking via:
+
+     1. ensuring that %{_integrity_spec_cfg} is valid by checking
+        that it was signed by the %{_integrity_pkey_pgp}
+        and that %{_integrity_pkey_pgp} has the fingerprint
+        RPM_INTEGRITY_FP.
+
+     2. ensuring that %{_integrity_proc_lua} is valid by checking
+        that it was signed by the %{_integrity_pkey_pgp}
+        and that %{_integrity_pkey_pgp} has the fingerprint
+        RPM_INTEGRITY_FP.
+
+     3. extracting the declarative key/value pairs from
+        the file %{_integrity_spec_cfg} as a Lua table "spec"
+
+     4. extracting the Lua function integrity.validate(ctx, spec)
+        from the file %{_integrity_proc_lua}
+
+     5. assembling at least the RPM program name and run-time mode
+        into the Lua table "ctx" as "ctx.rpm.name" and "ctx.rpm.mode".
+
+     6. executing the Lua function integrity.validate(ctx, spec)
+
+  -  The purpose of the integrity.validate(ctx, spec) function
+     is to validate the current run-time environment against the
+     integrity configuration specification. It can return:
+
+     - "OK" to indicate that RPM should silently continue
+       with its regular processing.
+
+     - "WARNING[: ...]" to indicate a detected non-fatal anomaly in the
+       environment. RPM will print the warning, wait a few seconds and
+       then still contunue with its regular processing.
+
+     - "ERROR[: ...]" to indicate a detected fatal anomaly in the
+       environment. RPM will print the error, wait a few seconds and
+       then stop the regular processing immediately and exit with the
+       special process return code 42.
+
