@@ -958,7 +958,9 @@ int rpmReadConfigFiles(/*@unused@*/ const char * file, const char * target)
     /* Force Lua state initialization */
 #ifdef WITH_LUA
     (void)rpmluaGetPrintBuffer(NULL);
+#if defined(RPM_VENDOR_OPENPKG) /* rpm-lua-extensions-based-on-rpm-lib-functionality */
     (void)rpmluaextActivate(rpmluaGetGlobalState());
+#endif /* RPM_VENDOR_OPENPKG */
 #endif
 
     return 0;
