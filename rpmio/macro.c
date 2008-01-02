@@ -1512,13 +1512,7 @@ expandMacro(MacroBuf mb)
 	    STREQ("error", f, fn)) {
 		int waserror = 0;
 		if (STREQ("error", f, fn))
-#if defined(RPM_VENDOR_OPENPKG) /* stop-on-error-macro */
-			/* Make sure that an %{error:<msg>} macro really stops further
-			   processing. Else it would be nothing more than a %{warn:<msg>}. */
 			waserror = 1, rc = 1;
-#else
-			waserror = 1;
-#endif
 		if (g != NULL && g < ge)
 			doOutput(mb, waserror, g, gn);
 		else

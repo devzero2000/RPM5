@@ -70,6 +70,9 @@
      Purpose:        Do not perform any dependency checking on building SRPMs.
      Reason:         We never found any reason why this is of any benefit for
                      just rolling a source RPM package.
+     Hint:           (jbj) There is a benefit if you want digest(...) and/or
+                     signature(...) verification of build elements before
+                     inclusion in *.src.rpm.
      ________________________________________________________________________
 
      Change:         always-remove-tempfiles
@@ -137,6 +140,9 @@
                      RPM works on RedHat, just because RedHat's "kernel"
                      package contains a patch which masks out O_DIRECT
                      usage... ;-)
+     Hint:           O_DIRECT is very b0rken on linux. OTOH using vmalloc to
+                     get page aligned buffer for I/O is merely obscure, easily
+                     doable. Likely should be sent to Oracle.
      ________________________________________________________________________
 
      Change:         no-owner-group-on-srpm-install
@@ -208,12 +214,6 @@
                      not expose any such information at all
      Hint:           FIXME, not sufficient: still some information exposed during
                      rpm -qa for the case of public keys.
-     ________________________________________________________________________
-
-     Change:         stop-on-error-macro
-     Purpose:        Make sure that an %{error:<msg>} macro really stops further
-                     processing. Else it would be nothing more than a %{warn:<msg>}.
-     Reason:         OpenPKG wants that %error results in a processing stop.
      ________________________________________________________________________
 
      Change:         auto-remove-source-directories

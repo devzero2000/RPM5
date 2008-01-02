@@ -1,4 +1,5 @@
 5.0b4 -> 5.0.0:
+    - jbj: differentiate %warn and %error (now stops) behavior (from openpkg).
     - jbj: merge %{realpath:...}. won't hurt a thing (from openpkg).
     - jbj: set macro_BUFSIZ as 16K independent of BUFSIZ (from openpkg).
     - rse: add RPM Lua function util.rsplit() for flexibly splitting strings into tokens based on regex
