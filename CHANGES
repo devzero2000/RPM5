@@ -1,4 +1,5 @@
 5.0b4 -> 5.0.0:
+    - rse: add RPM Lua function util.rsplit() for flexibly splitting strings into tokens based on regex
     - rse: add rpmlogGetCallback() function to allow one to restore the complete rpmlog() callback information
     - rse: add rpmluaGetGlobalState() function to allow foreign code to further extend the RPM Lua environment
     - rse: add RPM Lua function rpm.verbose() to be able to check CLI option --verbose
