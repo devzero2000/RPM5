@@ -210,14 +210,6 @@
                      rpm -qa for the case of public keys.
      ________________________________________________________________________
 
-     Change:         fixed-size-macro-buffer
-     Purpose:        Use a fixed 16KB buffer for macro expansion.
-     Reason:         Don't use the stdio variable BUFSIZ because it is of
-                     unknown size. Usually, it is just 1024 on some
-                     platforms but on Linux it can be even 8192. Use a
-                     fixed 16KB buffer in OpenPKG for now.
-     ________________________________________________________________________
-
      Change:         stop-on-error-macro
      Purpose:        Make sure that an %{error:<msg>} macro really stops further
                      processing. Else it would be nothing more than a %{warn:<msg>}.

@@ -130,14 +130,7 @@ int print_expand_trace = _PRINT_EXPAND_TRACE;
 #define	MACRO_CHUNK_SIZE	16
 
 /* Size of expansion buffers. */
-#if defined(RPM_VENDOR_OPENPKG) /* fixed-size-macro-buffer */
-/* Don't use the stdio variable BUFSIZ because it is of unknown size.
-   Usually, it is just 1024 on some platforms but on Linux it can be
-   even 8192. Use a fixed 16KB buffer in OpenPKG for now. */
 static size_t _macro_BUFSIZ = 16 * 1024;
-#else
-static size_t _macro_BUFSIZ = 4 * BUFSIZ;
-#endif
 
 /* forward ref */
 static int expandMacro(MacroBuf mb)
