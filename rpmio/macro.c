@@ -1729,6 +1729,25 @@ expandMacro(MacroBuf mb)
     return rc;
 }
 
+#if defined(RPM_VENDOR_OPENPKG) /* security-sanity-check-rpmpopt-and-rpmmacros */
+int rpmSecuritySaneFile(const char *filename)
+{
+    struct stat sb;
+    uid_t uid;
+
+    if (stat(filename, &sb) == -1)
+        return (errno == ENOENT ? 1 : 0);
+    uid = getuid();
+    if (sb.st_uid != uid)
+        return 0;
+    if (!S_ISREG(sb.st_mode))
+        return 0;
+    if (sb.st_mode & (S_IWGRP|S_IWOTH))
+        return 0;
+    return 1;
+}
+#endif
+
 #if !defined(DEBUG_MACROS)
 /* =============================================================== */
 /* XXX dupe'd to avoid change in linkage conventions. */
@@ -2204,6 +2223,16 @@ rpmInitMacros(MacroContext mc, const char * macrofiles)
 	    *me++ = '\0';
 	else
 	    me = m + strlen(m);
+
+#if defined(RPM_VENDOR_OPENPKG) /* security-sanity-check-rpmpopt-and-rpmmacros */
+        if (m[0] == '@' /* attention */) {
+            m++;
+            if (!rpmSecuritySaneFile(m)) {
+                rpmlog(RPMLOG_WARNING, "existing macros file \"%s\" considered INSECURE -- not loaded\n", m);
+                continue;
+            }
+        }
+#endif
 
 	/* Glob expand the macro file path element, expanding ~ to $HOME. */
 	ac = 0;

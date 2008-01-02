@@ -663,6 +663,16 @@ rpmcliInit(int argc, char *const argv[], struct poptOption * optionsTable)
         else
             path_next = path + strlen(path);
 
+#if defined(RPM_VENDOR_OPENPKG) /* security-sanity-check-rpmpopt-and-rpmmacros */
+        if (path[0] == '@' /* attention */) {
+            path++;
+            if (!rpmSecuritySaneFile(path)) {
+                rpmlog(RPMLOG_WARNING, "existing POPT configuration file \"%s\" considered INSECURE -- not loaded\n", path);
+                continue;
+            }
+        }
+#endif
+
         /* glob-expand the path element */
         ac = 0;
         av = NULL;

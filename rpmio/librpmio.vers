@@ -282,6 +282,7 @@ LIBRPMIO_0
     rpmluavSetValue;
     rpmluavSetValueNum;
     rpmluavValueIsNum;
+    rpmSecuritySaneFile;
     rpmMacrofiles;
     _rpmmg_debug;
     rpmmgFree;

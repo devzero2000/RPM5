@@ -87,6 +87,14 @@ rpmGetMacroEntries(/*@null@*/ MacroContext mc, /*@null@*/ miRE mire,
 	/*@modifies mire, *avp @*/;
 
 /**
+ * Check whether configuration file is moderately secure to load.
+ * @param filename	filename to check
+ * @return		1 on success, 0 on failure
+ */
+int rpmSecuritySaneFile(const char *filename)
+	/*@globals fileSystem, internalState @*/;
+
+/**
  * Return URL path(s) from a (URL prefixed) pattern glob.
  * @param patterns	glob pattern
  * @retval *argcPtr	no. of paths

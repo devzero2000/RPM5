@@ -375,6 +375,36 @@
      Reason:         [see scripts/integrity.txt for detailed documentation]
      ________________________________________________________________________
 
+     Change:         security-sanity-check-rpmpopt-and-rpmmacros
+     Purpose:        Support secure loading of "rpmpopt" and "rpmmacros"
+                     from relative paths.
+     Reason:         In OpenPKG we want to use "local"
+                     ".openpkg/{rpmpopt,rpmmacros} files in order
+                     to support flexible and path-independent build
+                     environments for package development. For this we
+                     build RPM with --with-path-rpmpopt="$RPMPOPT" and
+                     --with-path-macros="$RPMMACROS" and calculate the
+                     paths as following:
+                       RPMPOPT="%{l_prefix}/lib/openpkg/rpmpopt"
+                       RPMPOPT="$RPMPOPT:%{l_prefix}/etc/openpkg/rpmpopt"
+                       RPMPOPT="$RPMPOPT:%{l_prefix}/etc/openpkg/rpmpopt.d/*"
+                       RPMPOPT="$RPMPOPT:~/.openpkg/rpmpopt"
+                       RPMPOPT="$RPMPOPT:@../../.openpkg/rpmpopt"
+                       RPMPOPT="$RPMPOPT:@../.openpkg/rpmpopt"
+                       RPMPOPT="$RPMPOPT:@./.openpkg/rpmpopt"
+                       RPMMACROS="%{l_prefix}/lib/openpkg/macros"
+                       RPMMACROS="$RPMMACROS:%{l_prefix}/etc/openpkg/rpmmacros"
+                       RPMMACROS="$RPMMACROS:%{l_prefix}/etc/openpkg/rpmmacros.d/*"
+                       RPMMACROS="$RPMMACROS:~/.openpkg/rpmmacros"
+                       RPMMACROS="$RPMMACROS:@../../.openpkg/rpmmacros"
+                       RPMMACROS="$RPMMACROS:@../.openpkg/rpmmacros"
+                       RPMMACROS="$RPMMACROS:@./.openpkg/rpmmacros"
+                     This means that the files from relative paths
+                     (which we do not control) should be only loaded if
+                     they pass an explicitly requested (via prefix "@"
+                     for "attention") security check.
+     ________________________________________________________________________
+
   o  Name:           RPM4DARWIN
      Vendor:         RPM for Darwin (Mac OS X) <http://rpm4darwin.sourceforge.net/>
      Representative: Anders F. Bjorklund <afb@users.sourceforge.net> <afb@rpm5.org>
