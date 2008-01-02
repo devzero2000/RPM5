@@ -73,7 +73,7 @@ $PACKAGEMAKER --root $DESTROOT --out $pkgpath --info $INFOFILE \
 pkgpart="PackageInfo Bom Payload"
 rpmpart="Lead Signature Header Payload"
 
-( cd $TMPDIR; $XAR -xf $pkgpath; $XAR -xf $xarpath; $XAR -cf $pkgpath $rpmpart $pkgpart)
+( cd $TMPDIR; $XAR -xf $pkgpath; $XAR -xf $xarpath; $XAR -cf $pkgpath --no-compress=Payload $rpmpart $pkgpart)
 
 #
 
