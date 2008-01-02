@@ -1193,7 +1193,6 @@ doFoo(MacroBuf mb, int negate, const char * f, size_t fn,
 	if ((b = strrchr(buf, '/')) != NULL)
 	    *b = '\0';
 	b = buf;
-#if defined(RPM_VENDOR_OPENPKG) /* support-realpath-macro */
     } else if (STREQ("realpath", f, fn)) {
         char rp[PATH_MAX];
         char *cp;
@@ -1205,7 +1204,6 @@ doFoo(MacroBuf mb, int negate, const char * f, size_t fn,
                 b = buf;
             }
         }
-#endif
     } else if (STREQ("suffix", f, fn)) {
 	if ((b = strrchr(buf, '.')) != NULL)
 	    b++;
@@ -1588,9 +1586,7 @@ expandMacro(MacroBuf mb)
 	/* XXX necessary but clunky */
 	if (STREQ("basename", f, fn) ||
 	    STREQ("dirname", f, fn) ||
-#if defined(RPM_VENDOR_OPENPKG) /* support-realpath-macro */
 	    STREQ("realpath", f, fn) ||
-#endif
 	    STREQ("suffix", f, fn) ||
 	    STREQ("expand", f, fn) ||
 	    STREQ("verbose", f, fn) ||

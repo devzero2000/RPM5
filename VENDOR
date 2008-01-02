@@ -244,13 +244,6 @@
                      relocatable development environments.
      ________________________________________________________________________
 
-     Change:         support-realpath-macro
-     Purpose:        Provide macro %{realpath:<path>}
-     Reason:         This is a macro-frontend to realpath(3) and
-                     allows one to resolve a (relative) path into
-                     an absolute path.
-     ________________________________________________________________________
-
      Change:         wildcard-matching-arbitrary-tagnames
      Purpose:        Allow wildcards in %{_arbitrary_tags}
      Reason:         In order to support e.g. "%_arbitrary_tags My*"
