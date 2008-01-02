@@ -358,6 +358,18 @@
                      --qf '[...]' [-a] [...]" directly from within Lua.
      ________________________________________________________________________
 
+     Change:         backward-compat-rpmtag-sourcepackage */
+     Purpose:        Still mark SRPMS with RPMTAG_SOURCEPACKAGE
+     Reason:         For backward compatibility with RPM < 4.4.6
+                     (remember: OpenPKG used RPM 4.2.1 until 2008) let
+                     RPM 5 still mark SRPMS with RPMTAG_SOURCEPACKAGE.
+                     This especially allows OpenPKG to smoothly upgrade
+                     the "openpkg" package (which contains RPM) from the
+                     RPM 4 to the RPM 5 world order. Without this the
+                     upgrade procedure would involve manual "rpm2cpio"
+                     plus "rpm -bb" operations.
+     ________________________________________________________________________
+
   o  Name:           RPM4DARWIN
      Vendor:         RPM for Darwin (Mac OS X) <http://rpm4darwin.sourceforge.net/>
      Representative: Anders F. Bjorklund <afb@users.sourceforge.net> <afb@rpm5.org>

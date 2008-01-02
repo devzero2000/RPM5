@@ -1111,9 +1111,22 @@ rpmRC packageSources(Spec spec)
     CSA_t csa = &csabuf;
     rpmRC rc;
     int xx;
+#if defined(RPM_VENDOR_OPENPKG) /* backward-compat-rpmtag-sourcepackage */
+    uint32_t val;
+#endif
 
     /* Add rpmlib markers for tracking. */
     (void) rpmlibMarkers(spec->sourceHeader);
+
+#if defined(RPM_VENDOR_OPENPKG) /* backward-compat-rpmtag-sourcepackage */
+    /* Mark package as a SRPM for backward compatibility with RPM < 4.4.6 */
+    he->tag = RPMTAG_SOURCEPACKAGE;
+    he->t = RPM_UINT32_TYPE;
+    val = 1;
+    he->p.ui32p = &val;
+    he->c = 1;
+    xx = headerPut(spec->sourceHeader, he, 0);
+#endif
 	
     (void) genSourceRpmName(spec);
 
