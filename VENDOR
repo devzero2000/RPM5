@@ -252,7 +252,6 @@
                      slower but more flexible linear search based on
                      fnmatch(3) instead of a binary search based on
                      strcasecmp(3).
-
      ________________________________________________________________________
 
      Change:         no-auto-verbose-increase-for-track-and-fetch
@@ -293,7 +292,6 @@
                      files directly from the upstream vendor. Hence we
                      want that RPM is able to download from the original
                      location, too.
-
      ________________________________________________________________________
 
      Change:         explicit-source-fetch-cli-option
