@@ -1,4 +1,5 @@
 5.0b4 -> 5.0.0:
+    - mgh: allow --ignoresize when doing an erase
     - rse: fix database configuration for recently added indices "Nvra" and "Sourcepkgid"
     - jbj: differentiate %warn and %error (now stops) behavior (from openpkg).
     - jbj: merge %{realpath:...}. won't hurt a thing (from openpkg).

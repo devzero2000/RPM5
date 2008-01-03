@@ -625,7 +625,8 @@ int rpmErase(rpmts ts, QVA_t ia, const char ** argv)
 	/* Drop added/available package indices and dependency sets. */
 	rpmtsClean(ts);
 
-	numPackages = rpmtsRun(ts, NULL, 0);
+	numPackages = rpmtsRun(ts, NULL, 
+		ia->probFilter & (RPMPROB_FILTER_DISKSPACE|RPMPROB_FILTER_DISKNODES));
 	ps = rpmtsProblems(ts);
 	if (rpmpsNumProblems(ps) > 0)
 	    rpmpsPrint(NULL, ps);

@@ -608,11 +608,6 @@ int main(int argc, const char ** argv)
 	argerror(_("--ignoreos may only be specified during package "
 		   "installation"));
 
-    if (bigMode != MODE_INSTALL &&
-	(ia->probFilter & (RPMPROB_FILTER_DISKSPACE|RPMPROB_FILTER_DISKNODES)))
-	argerror(_("--ignoresize may only be specified during package "
-		   "installation"));
-
     if ((ia->installInterfaceFlags & INSTALL_ALLMATCHES) && bigMode != MODE_ERASE)
 	argerror(_("--allmatches may only be specified during package "
 		   "erasure"));
