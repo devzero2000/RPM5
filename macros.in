@@ -679,7 +679,7 @@ print (t)\
 
 # database tag configuration
 %_dbi_tags                      %{expand:%%{_dbi_tags_%{_dbapi_used}}}
-%_dbi_tags_3                    Packages:Name:Basenames:Group:Requirename:Providename:Conflictname:Triggername:Dirnames:Requireversion:Provideversion:Installtid:Sigmd5:Sha1header:Filedigests:Pubkeys:Packagecolor:Nvra:Sourcepkgid:Foo:Bar:Baz
+%_dbi_tags_3                    Packages:Name:Basenames:Group:Requirename:Providename:Conflictname:Triggername:Dirnames:Requireversion:Provideversion:Installtid:Sigmd5:Sha1header:Filedigests:Pubkeys:Packagecolor:Nvra:Sourcepkgid
 %_dbi_tags_4                    Packages:Name:Basenames:Group:Requirename:Providename:Conflictname:Triggername:Dirnames:Requireversion:Provideversion:Installtid:Sigmd5:Sha1header:Filedigests:Pubkeys:Packagecolor:Nvra:Sourcepkgid
 
 # database configuration: Berkeley-DB [dbapi 3 hooks]
@@ -703,7 +703,8 @@ print (t)\
 %_dbi_config_3_Triggername      %{_dbi_btconfig}
 %_dbi_config_3_Packages         %{_dbi_btconfig} lockdbfd
 %_dbi_config_3_Depends          %{_dbi_btconfig} temporary private
-%_dbi_config_3_Nvra		%{_dbi_btconfig} noload
+%_dbi_config_3_Nvra             %{_dbi_btconfig} noload
+%_dbi_config_3_Sourcepkgid      %{_dbi_btconfig}
 
 # database configuration: SQLite [dbapi 4 hooks]
 %_dbi_config_4                  %{_dbi_sqlconfig}
@@ -726,7 +727,8 @@ print (t)\
 %_dbi_config_4_Triggername      %{_dbi_sqlconfig}
 %_dbi_config_4_Packages         %{_dbi_sqlconfig}
 %_dbi_config_4_Depends          %{_dbi_sqlconfig} temporary private
-%_dbi_config_4_Nvra		%{_dbi_btconfig} noload
+%_dbi_config_4_Nvra             %{_dbi_sqlconfig} noload
+%_dbi_config_4_Sourcepkgid      %{_dbi_sqlconfig}
 
 # database configuration [code entry hooks]
 %_dbi_config                    %{expand:%%{_dbi_config_%{_dbapi_used}}}
@@ -749,6 +751,8 @@ print (t)\
 %_dbi_config_Triggername        %{expand:%%{_dbi_config_%{_dbapi_used}_Triggername}}
 %_dbi_config_Packages           %{expand:%%{_dbi_config_%{_dbapi_used}_Packages}}
 %_dbi_config_Depends            %{expand:%%{_dbi_config_%{_dbapi_used}_Depends}}
+%_dbi_config_Nvra               %{expand:%%{_dbi_config_%{_dbapi_used}_Nvra}}
+%_dbi_config_Sourcepkgid        %{expand:%%{_dbi_config_%{_dbapi_used}_Sourcepkgid}}
 
 # Database API configuration:
 #
