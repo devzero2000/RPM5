@@ -841,7 +841,7 @@ int main(int argc, const char ** argv)
 	    /*@innerbreak@*/ break;
 	case 's':
 	    ba->buildAmount |= RPMBUILD_PACKAGESOURCE;
-#if defined(RPM_VENDOR_OPENPKG) /* no-deps-on-build-srpms */
+#if defined(RPM_VENDOR_OPENPKG) /* no-deps-on-building-srpms */
 	    /* enforce no dependency checking when rolling a source RPM */
 	    ba->noDeps = 1;
 #endif
