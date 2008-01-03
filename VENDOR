@@ -72,7 +72,23 @@
                      just rolling a source RPM package.
      Hint:           (jbj) There is a benefit if you want digest(...) and/or
                      signature(...) verification of build elements before
-                     inclusion in *.src.rpm.
+                     inclusion in *.src.rpm. 
+                     (rse) Yes, This is something we really want, OTOH
+                     we really do NEVER want to have to install all
+                     BuildPreReq _packages_ just to roll a SRPM. OTOH
+                     "-bs --nodeps" then also skipps the wished checks.
+                     Hmmm... we would need to replace the boolean
+                     "noDeps" with DEPS_NONE, DEPS_INTEGRITY and
+                     DEPS_ALL. DEPS_NONE is the old "noDeps = 1",
+                     DEPS_ALL is the old "noDeps = 1" and DEPS_INTEGRITY
+                     is new and would lead to the checking of only
+                     those BuildRequires/BuildPreReqs which ensure the
+                     integrity of the rolled SRPMS (currently AFAIK
+                     "digest(...)", "signature(...)", "gnupg(...)", etc)
+                     and especially skip the dependencies to installed
+                     packages. Or even better: make DEPS_XXX bits of a
+                     bitmask and allow one to assemble what one really
+                     wished to be checked.
      ________________________________________________________________________
 
      Change:         always-remove-tempfiles
