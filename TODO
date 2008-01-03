@@ -51,6 +51,7 @@
   o to be resolved before RPM 5.0.0:
     - rse: NEWS polishing
     - rse: cross-platform build tests
+    - afb: add read-only support for 070707 cpio so we can piggy-back on pkg
     - afb: clean up build macros for the %macosx platforms (incl. fat/*64)
     - afb: check for missing features from legacy darwin and cygwin rpm's
     - jbj: make a complete pass through rpm.org check-ins and make sure they
