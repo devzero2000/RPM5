@@ -88,6 +88,7 @@ static int httpTimeoutSecs = TIMEOUT_SECS;
 /* =============================================================== */
 void davDestroy(void)
 {
+#ifdef NE_FEATURE_SSL
     if (ne_has_support(NE_FEATURE_SSL)) {
 /* XXX http://www.nabble.com/Memory-Leaks-in-SSL_Library_init()-t3431875.html */
 	ENGINE_cleanup();
@@ -98,6 +99,7 @@ void davDestroy(void)
 	CRYPTO_mem_leaks(NULL);
 	CONF_modules_unload(1);
     }
+#endif
 }
 
 int davFree(urlinfo u)
