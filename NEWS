@@ -81,7 +81,7 @@
     RPM now is able to build against the latest versions of all
     third-party libraries. Additionally, the internal copies of
     third-party libraries were also upgraded to the latest versions,
-    including Berkeley-DB 4.6.21, Lua 5.1.2, XAR 1.6, etc.
+    including Berkeley-DB 4.6.21, Lua 5.1.2, XAR 1.5.2, etc.
 
   o RPM Database:
     The RPM database (RPMDB) now out-of-the-box supports both
