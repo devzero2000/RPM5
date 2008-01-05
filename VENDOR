@@ -54,6 +54,14 @@
      Hint:           The even better solution would be to introduce
                      %{_sourcedir_external} and %{_sourcedir_internal}
                      and support this throughout RPM.
+                     (afb) rpm4darwin also separated these two, but
+                     kept the internal in SOURCES and added a new
+                     directory DISTFILES for holding the external...
+                     The external ones were automatically fetched
+                     from a central repository over HTTP if missing.
+                     (http://prdownloads.sourceforge.net/rpm4darwin/)
+                     This can still be done in RPM, by setting the
+                     two macros: %{_Rsourcedir} and %{_Rpatchdir}
      ________________________________________________________________________
 
      Change:         explicit-platform
