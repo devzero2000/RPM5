@@ -2,45 +2,6 @@
   TODO
   ====
 
-  RELEASE ENGINEERING ROADMAP
-  ---------------------------
-
-  This is the current RPM 5.0 release engineering roadmap:
-
-  1. weekly Alpha releases in November 2007:
-     - APIs:     still changing, no guarantees at all for stability
-     - code:     still acceptable to be at least partly broken
-     - audience: early adopters in RPM community only
-     - purpose:  to get initial feedback
- 
-     2007-11-10  RPM 5.0a1   RPM 5.0 alpha 1                [DONE]
-     2007-11-19  RPM 5.0a2   RPM 5.0 alpha 2                [DONE]
-     2007-11-24  RPM 5.0a3   RPM 5.0 alpha 3                [DONE]
-     2007-12-02  RPM 5.0a4   RPM 5.0 alpha 4                [DONE]
- 
-  2. weekly Beta releases in December 2007:
-     - APIs:     mostly fixed, nearly a guarantee to be stable
-     - code:     already stable, but perhaps still some subtle bugs
-     - audience: RPM community, especially distro vendors
-     - purpose:  to get final feedback
-   
-     2007-12-09  RPM 5.0b1   RPM 5.0 beta 1                 [DONE]
-     2007-12-15  RPM 5.0b2   RPM 5.0 beta 2                 [DONE]
-     2007-12-22  RPM 5.0b3   RPM 5.0 beta 3                 [DONE]
-     2007-12-30  RPM 5.0b4   RPM 5.0 beta 4                 [DONE]
-   
-  3. release in January 2008:
-     - APIs:     fully fixed, guaranteed to be kept stable
-     - code:     stable, no more bugs known bugs left 
-     - audience: RPM community as a whole
-     - purpose:  provide RPM 5.0
-   
-     2007-01-05  RPM 5.0.0   RPM 5.0 patchlevel 0           [TODO]
-     2007-01-05  press release                              [TODO]
-     2007-01-05  CVS HEAD is branched into    RPM 5.0.x     [TODO]
-     2007-01-05  CVS HEAD now becomes base of RPM 5.1.DEVEL [TODO]
-     ...
-
   KNOWN PENDING ISSUES
   --------------------
 
@@ -48,8 +9,6 @@
   resolved during release engineering. Please do not just list any
   *CANDO* items.
 
-  RPM 5.1 ROADMAP ISSUES
-  ----------------------
     - jbj: make a complete pass through rpm.org check-ins and make sure they
 	have exactly zero "features" that are not already in rpm-5.0. With
 	full attribution of course ...
@@ -167,4 +126,7 @@
         "problems")
     - rse: XAR 1.5.2 doesn't build under Solaris 10 as <fts.h> and the
       BSD4.4 fts(3) API is completely missing there.
+
+  RPM 5.2 ROADMAP ISSUES
+  ----------------------
 
