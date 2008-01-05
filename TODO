@@ -35,10 +35,10 @@
      - audience: RPM community as a whole
      - purpose:  provide RPM 5.0
    
-     2007-01-05  CVS HEAD is branched into    RPM 5.0.x     [TODO]
-     2007-01-05  CVS HEAD now becomes base of RPM 5.1.DEVEL [TODO]
      2007-01-05  RPM 5.0.0   RPM 5.0 patchlevel 0           [TODO]
      2007-01-05  press release                              [TODO]
+     2007-01-05  CVS HEAD is branched into    RPM 5.0.x     [TODO]
+     2007-01-05  CVS HEAD now becomes base of RPM 5.1.DEVEL [TODO]
      ...
 
   KNOWN PENDING ISSUES
