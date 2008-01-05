@@ -2451,7 +2451,7 @@ assert(data->data != NULL);
 	    rpmtsCleanDig(mi->mi_ts);
 	    lvl = (rpmrc == RPMRC_FAIL ? RPMLOG_ERR : RPMLOG_DEBUG);
 	    rpmlog(lvl, "%s h#%8u %s\n",
-		(rpmrc == RPMRC_FAIL ? _("rpmdb: skipping") : " read"),
+		(rpmrc == RPMRC_FAIL ? _("rpmdb: skipping") : _("rpmdb: read")),
 			mi->mi_offset, (msg ? msg : ""));
 	    msg = _free(msg);
 
