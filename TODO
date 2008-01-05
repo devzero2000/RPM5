@@ -48,9 +48,6 @@
   resolved during release engineering. Please do not just list any
   *CANDO* items.
 
-  o to be resolved before RPM 5.0.0:
-    - rse: cross-platform build tests
-
   RPM 5.1 ROADMAP ISSUES
   ----------------------
     - jbj: make a complete pass through rpm.org check-ins and make sure they
