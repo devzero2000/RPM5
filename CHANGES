@@ -1,3 +1,7 @@
+5.0.0 -> 5.1a1:
+
+=============================================================================
+
 5.0b4 -> 5.0.0:
     - rse: final polishing of NEWS document
     - rse: align "rpm [--verbose] --version" output with the syntax used in mostly all GNU tools nowadays
