@@ -51,8 +51,6 @@
   o to be resolved before RPM 5.0.0:
     - rse: NEWS polishing
     - rse: cross-platform build tests
-    - afb: clean up build macros for the %macosx platforms (incl. fat/*64)
-    - afb: check for missing features from legacy darwin and cygwin rpm's
     - jbj: make a complete pass through rpm.org check-ins and make sure they
 	have exactly zero "features" that are not already in rpm-5.0. With
 	full attribution of course ...
