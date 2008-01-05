@@ -36,7 +36,7 @@
     RPM 5 was ported to all major Unix platforms as of 2007, including
     BSD, Linux and Solaris flavors. It was successfully built (with the
     above "devtool" "standalone") on at least the following particular
-    Unix platforms:
+    Unix platforms (including Mac OS X "Darwin" and Windows "Cygwin"):
         ix86-freebsd6.2-gcc4.2.0
         ix86-freebsd6.2-gcc4.3.0s20070713
         ix86-freebsd6.2-gcc3.4
@@ -55,7 +55,9 @@
         sparc64-solaris10-gcc4.1.2
         amd64-solaris10-gcc4.1.2
         ppc-macosx10.4-gcc4.0.1
+        ix86-macosx10.4-gcc4.0.1
         ppc-aix5.3-gcc3.3.2
+        ix86-cygwin_nt5.1-gcc3.4.4
 
   o Mac OS X Cross Development:
     RPM 5 can now be built for all recent versions of Mac OS X, with
