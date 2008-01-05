@@ -2211,7 +2211,7 @@ rpmInitMacros(MacroContext mc, const char * macrofiles)
         if (m[0] == '@' /* attention */) {
             m++;
             if (!rpmSecuritySaneFile(m)) {
-                rpmlog(RPMLOG_WARNING, "existing macros file \"%s\" considered INSECURE -- not loaded\n", m);
+                rpmlog(RPMLOG_WARNING, "existing RPM macros file \"%s\" considered INSECURE -- not loaded\n", m);
                 continue;
             }
         }
