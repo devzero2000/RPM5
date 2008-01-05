@@ -31,7 +31,7 @@
     the "devtool" environment and its "standalone" script is provided.
     This allows RPM developers to build RPM from scratch under arbitrary
     Unix platforms in a rather self-contained environment.
-    
+
   o Greatly Improved Portability:
     RPM 5 was ported to all major Unix platforms as of 2007, including
     BSD, Linux and Solaris flavors. It was successfully built (with the
@@ -62,10 +62,10 @@
   o Mac OS X Cross Development:
     RPM 5 can now be built for all recent versions of Mac OS X, with
     detection of Python.framework and with Universal Binary support
-    (both PowerPC and Intel architectures in a single binary file).
-    The Mac OS X version will install in /usr/local and /var/local.
-    It will work with the following versions of the OS and/or SDK,
-    using the above devtool and with the target name quoted below:
+    (both PowerPC and Intel architectures in a single binary file). The
+    Mac OS X version will install in /usr/local and /var/local. It will
+    work with the following versions of the OS and/or SDK, using the
+    above devtool and with the target name quoted below:
         Mac OS X 10.x "macosx" - build native version
         Mac OS X 10.3 "panther" - PowerPC (MacOSX10.3.9.sdk)
         Mac OS X 10.4 "tiger" - PowerPC and Intel (MacOSX10.4u.sdk)
@@ -103,20 +103,17 @@
     platform detections were completely removed, too.
 
   o XAR Format Support:
-    Initial support for the XML Archive (XAR) file format was added to
-    RPM. The initial implementation establishes a wrapper archive
-    format for mapping the 4 sections used in *.rpm package file:
-	Lead
-	Signature
-	Header
-	Payload
-    to files with the same name in a XAR archive wrapper. A wrapper archive to
-    carry package sections is already used by Apple Leopard *.pkg (using XAR)
-    and Debian *.deb packages (using AR), rpm-5.0 now has a well defined
-    representation of *.rpm packages in a wrapper archive format.
-    Establishing a direct mapping between rpm tags and XAR attributes/properties
-    in XML in order to fully use the extensibility of an XAR archive will be
-    attempted after rpm-5.0 is released.
+    Initial support for the XML Archive (XAR) file format was added
+    to RPM. The initial implementation establishes a wrapper archive
+    format for mapping the 4 sections used in *.rpm package file (Lead,
+    Signature, Header and Payload) to files with the same name in a XAR
+    archive wrapper. A wrapper archive to carry package sections is
+    already used by Apple Leopard *.pkg (using XAR) and Debian *.deb
+    packages (using AR), rpm-5.0 now has a well defined representation
+    of *.rpm packages in a wrapper archive format. Establishing a direct
+    mapping between rpm tags and XAR attributes/properties in XML in
+    order to fully use the extensibility of an XAR archive will be
+    attempted for RPM 5.1.
 
   o Removed RPMv3 Package Format Support:
     The support for the old RPMv3 (LSB) package format was removed to
@@ -124,14 +121,26 @@
     format only.
 
   o Additional Specification Features:
-    FIXME: Class, %track+vcheck, %sanitycheck
-    FIXME: arbitrary tag support
-    FIXME: %{@<name>:<separator>} macro stack expansion
+    A larger set of additional features or provided for use in package
+    specifications (.spec): new tag "Class" for quality assurance
+    based classification, new section "%track" for vcheck(1) based
+    upstream vendor source version tracking, new section "%sanitycheck"
+    for sanity checking the run-time of a package by performing
+    run-time tests, etc. Additionally, RPM can be configured via
+    macro %{_arbitrary_tags_arbitrary_tags} to support so-called
+    "arbitrary tags" -- this allows one to attach custom information
+    with an RPM package. Finally, the macro processor now supports the
+    "%{@<name>:<separator>}" syntax for expanding all values from the
+    macro stack of a macro <name> by concatenating the values with
+    <separator>.
 
-  o Additional CLI Features:
-    FIXME: rpm -bt for %track execution
-    FIXME: rpm --undefine "macro"
+  o Additional Command Line Interface (CLI) Features:
+    The CLI supports additional options, including "-bt" for executing
+    the new "%track" section (the step logically coming before "-bp"),
+    "--undefine '<macroname>'" for reversing the effect of "--define
+    '<macroname> <macrovalue>'", etc.
 
   o Application Programming Interface (API) Changes:
-    FIXME: << JBJ: please add details! >>
+    There were various RPM C API changes. See CHANGES file for more
+    details.
 

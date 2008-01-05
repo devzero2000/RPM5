@@ -49,7 +49,6 @@
   *CANDO* items.
 
   o to be resolved before RPM 5.0.0:
-    - rse: NEWS polishing
     - rse: cross-platform build tests
     - jbj: make a complete pass through rpm.org check-ins and make sure they
 	have exactly zero "features" that are not already in rpm-5.0. With
