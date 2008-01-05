@@ -165,4 +165,6 @@
         currently because both spaces and commas can be used to indicate    
         multiple provides entries (Mac OS X is great at finding these types of
         "problems")
+    - rse: XAR 1.5.2 doesn't build under Solaris 10 as <fts.h> and the
+      BSD4.4 fts(3) API is completely missing there.
 
