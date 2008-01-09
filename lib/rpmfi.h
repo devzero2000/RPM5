@@ -210,10 +210,10 @@ struct rpmfi_s {
 
 /*@only@*/ /*@null@*/
     char * fn;			/*!< File name buffer. */
-    int fnlen;			/*!< File name buffer length. */
+    size_t fnlen;		/*!< File name buffer length. */
 
-    int astriplen;
-    int striplen;
+    size_t astriplen;
+    size_t striplen;
     unsigned long long archivePos;
     unsigned long long archiveSize;
     mode_t dperms;		/*!< Directory perms (0755) if not mapped. */

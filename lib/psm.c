@@ -352,8 +352,8 @@ assert(fi->te->h == NULL);	/* XXX headerFree side effect */
 
     /* Build dnl/dil with {_sourcedir, _specdir} as values. */
     if (i < fi->fc) {
-	int speclen = strlen(_specdir) + 2;
-	int sourcelen = strlen(_sourcedir) + 2;
+	size_t speclen = strlen(_specdir) + 2;
+	size_t sourcelen = strlen(_sourcedir) + 2;
 	char * t;
 
 /*@i@*/	fi->dnl = _free(fi->dnl);
@@ -662,8 +662,8 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
     int argc = 0;
     const char ** prefixes = NULL;
     int numPrefixes;
-    int maxPrefixLength;
-    int len;
+    size_t maxPrefixLength;
+    size_t len;
     char * prefixBuf = NULL;
     const char * fn = NULL;
     FD_t scriptFd;
