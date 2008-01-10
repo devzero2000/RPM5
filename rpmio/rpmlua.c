@@ -17,6 +17,7 @@
 #include <llocal.h>
 #include <lposix.h>
 #include <lrexlib.h>
+#include <luuid.h>
 #endif
 
 #include <unistd.h>
@@ -78,6 +79,7 @@ rpmlua rpmluaNew()
 #ifdef WITH_LUA_INTERNAL
 	{"posix", luaopen_posix},
 	{"rex", luaopen_rex},
+	{"uuid", luaopen_uuid},
 	{"local", luaopen_local},
 #endif
 	{"rpm", luaopen_rpm},

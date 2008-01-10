@@ -1070,6 +1070,17 @@ RPM_CHECK_LIB(
       fi
     ], [])
 
+dnl # OSSP uuid
+RPM_CHECK_LIB(
+    [OSSP uuid], [uuid],
+    [uuid], [uuid_import], [uuid.h],
+    [no,external:none], [],
+    [ dnl # enable OSSP uuid native API support for embedded Lua
+      if test ".$WITH_LUA" = .yes; then
+          WITH_LUA_SUBDIR_DEF="$WITH_LUA_SUBDIR_DEF -DLUA_USE_UUID"
+      fi
+    ], [])
+
 dnl # XAR
 RPM_CHECK_LIB(
     [XAR], [xar],

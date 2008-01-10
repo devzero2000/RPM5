@@ -1,4 +1,5 @@
 5.0.0 -> 5.1a1:
+    - rse: add OSSP uuid support to RPM Lua via functions uuid.generate() and uuid.describe()
     - rpm.org: Assorted int -> size_t corrections for string lengths.
     - rpm.org: More assorted int -> size_t uses.
 
