@@ -39,7 +39,7 @@ Lua         [2] optional  5.1     5.1.2   http://www.lua.org/
 ZLib        [3] optional  1.2     1.2.3   http://www.zlib.net/
 Bzip2           optional  1.0     1.0.4   http://www.bzip.org/
 LZMA SDK    [4] internal  4.27    4.32    http://www.7-zip.org/sdk.html
-File/magic  [5] optional  4.0     4.22    ftp://ftp.astron.com/pub/file/
+File/magic  [5] optional  4.0     4.23    ftp://ftp.astron.com/pub/file/
 GNU gettext     optional  0.16    0.17    http://www.gnu.org/software/gettext/
 GNU iconv       optional  1.11    1.11    http://www.gnu.org/software/libiconv/
 PCRE            optional  7.0     7.5     http://www.pcre.org/
