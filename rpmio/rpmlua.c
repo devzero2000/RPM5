@@ -2,6 +2,7 @@
 #include "system.h"
 
 #ifdef	WITH_LUA
+#include <rpmio_internal.h>
 #include <rpmio.h>
 #include <rpmmacro.h>
 #include <rpmlog.h>
@@ -949,6 +950,30 @@ static int rpm_verbose(lua_State *L)
     return 1;
 }
 
+static int rpm_slurp(lua_State *L)
+	/*@globals internalState @*/
+	/*@modifies L, internalState @*/
+{
+    uint8_t *b;
+    ssize_t blen;
+    int rc;
+    const char *fn;
+
+    if (lua_isstring(L, 1))
+        fn = lua_tostring(L, 1);
+    else {
+        (void)luaL_argerror(L, 1, "filename");
+        return 0;
+    }
+    rc = rpmioSlurp(fn, &b, &blen);
+    if (rc || b == NULL || blen <= 0) {
+        luaL_error(L, "failed to slurp data");
+        return 0;
+    }
+    lua_pushlstring(L, (const char *)b, (size_t)blen);
+    return 1;
+}
+
 /*@-readonlytrans@*/
 /*@observer@*/ /*@unchecked@*/
 static const luaL_reg rpmlib[] = {
@@ -963,6 +988,7 @@ static const luaL_reg rpmlib[] = {
     {"source", rpm_source},
     {"load", rpm_load},
     {"verbose", rpm_verbose},
+    {"slurp", rpm_slurp},
     {NULL, NULL}
 };
 /*@=readonlytrans@*/
