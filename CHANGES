@@ -1,4 +1,6 @@
 5.0.0 -> 5.1a1:
+    - jbj: permit opt-in network access using %_rpmgio macro.
+    - jbj: fix: deny rpmioSlurp network access (like all other Fopen call's).
     - rse: add RPM Lua function rpm.slurp() for slurping in the whole content of a file or an URL
     - rse: add OSSP uuid support to RPM Lua via functions uuid.generate() and uuid.describe()
     - rpm.org: Assorted int -> size_t corrections for string lengths.

@@ -3836,7 +3836,7 @@ int rpmioSlurp(const char * fn, uint8_t ** bp, ssize_t * blenp)
     FD_t fd;
     int rc = 0;
 
-    fd = Fopen(fn, "r");
+    fd = Fopen(fn, "r%{?_rpmgio}");
     if (fd == NULL || Ferror(fd)) {
 	rc = 2;
 	goto exit;
