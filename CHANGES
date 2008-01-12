@@ -1,4 +1,5 @@
 5.0.0 -> 5.1a1:
+    - rse: add a RPM Lua function rpm.sleep() as a trivial frontend to sleep(3)
     - rse: fix PGP clearsign signature verification by correctly skipping RFC2440 "dash-escapes"
     - rse: fix line-continuation handling in macro definition parsing
     - rse: implement RPM Lua function util.textwrap() for auto-wrapping junks of larger text messages

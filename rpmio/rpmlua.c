@@ -975,6 +975,22 @@ static int rpm_slurp(lua_State *L)
     return 1;
 }
 
+static int rpm_sleep(lua_State *L)
+    /*@globals internalState @*/
+    /*@modifies L, internalState @*/
+{
+    int sec;
+
+    if (lua_isnumber(L, 1))
+        sec = lua_tonumber(L, 1);
+    else {
+        (void)luaL_argerror(L, 1, "seconds");
+        return 0;
+    }
+    sleep(sec);
+    return 0;
+}
+
 /*@-readonlytrans@*/
 /*@observer@*/ /*@unchecked@*/
 static const luaL_reg rpmlib[] = {
@@ -990,6 +1006,7 @@ static const luaL_reg rpmlib[] = {
     {"load", rpm_load},
     {"verbose", rpm_verbose},
     {"slurp", rpm_slurp},
+    {"sleep", rpm_sleep},
     {NULL, NULL}
 };
 /*@=readonlytrans@*/
