@@ -79,7 +79,8 @@ rpmlua rpmluaNew()
 	/* local LUA libraries (RPM only) */
 #ifdef WITH_LUA_INTERNAL
 	{"posix", luaopen_posix},
-	{"rex", luaopen_rex},
+	{"rex_posix", luaopen_rex_posix},
+	{"rex_pcre", luaopen_rex_pcre},
 	{"uuid", luaopen_uuid},
 	{"local", luaopen_local},
 #endif
