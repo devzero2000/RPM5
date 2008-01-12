@@ -22,7 +22,7 @@ function integrity.validate(ctx, cfg)
         --  query RPMDB for names of all installed packages
         local packages = rpm.query("%{NAME}", true, "*")
         --  iterate over all constraints
-        for _, constraint in ipairs(util.rsplit(util.rsubst(cfg.Package, "(?s)^\\s*(.+?)\\s*$", "$1"), "(?s)\\s+")) do
+        for _, constraint in ipairs(util.rsplit(util.rsubst(cfg.Package, "(?s)^\\s*(.+?)\\s*$", "%1"), "(?s)\\s+")) do
             --  parse constraint
             local s, _, m = util.rmatch(constraint, "(?s)^(!?)([^:]+):(!?)(.+)$")
             if s == nil then
@@ -59,7 +59,7 @@ end
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.8 (OpenPKG-CURRENT)
 
-iEYEARECAAYFAkd7wjQACgkQ0mcr4lELukvhbQCfZjAV4Ut2fUr+TjQaxorJWgzi
-mDgAnjwALDwR5rFVf07HJXGkg1Q+mxQE
-=bwnz
+iEYEARECAAYFAkeIus4ACgkQ4NtEALXQTms37ACdGutltMufb5o7ow9a+i9BWlWQ
+ABUAoIzBInaquk+Rl5dZ6UPsNF8L9sxl
+=6qWp
 -----END PGP SIGNATURE-----
