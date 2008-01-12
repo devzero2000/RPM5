@@ -1,4 +1,5 @@
 5.0.0 -> 5.1a1:
+    - rse: fix line-continuation handling in macro definition parsing
     - rse: implement RPM Lua function util.textwrap() for auto-wrapping junks of larger text messages
     - rse: upgrade RPM Lua functions util.rmatch(), util.rsubst() and util.rsplit() to new lrexlib 2.2
     - rse: upgrade the RPM Lua extension lrexlib from ancient version 1.1x to latest version 2.2

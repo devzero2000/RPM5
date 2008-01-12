@@ -378,6 +378,8 @@ rdcl(/*@returned@*/ char * buf, size_t size, FD_t fd)
 	    switch (*p) {
 		case '\\':
 		    switch (*(p+1)) {
+			case '\r': /*@switchbreak@*/ break;
+			case '\n': /*@switchbreak@*/ break;
 			case '\0': /*@switchbreak@*/ break;
 			default: p++; /*@switchbreak@*/ break;
 		    }
