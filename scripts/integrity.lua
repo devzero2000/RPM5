@@ -1,8 +1,10 @@
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA1
 
+- --  integrity processor version
 integrity.version = "0.9.0"
 
+- --  integrity processor validation callback function
 function integrity.validate(ctx, cfg)
     --  display configuration specification information
     if rpm.verbose() then
@@ -59,7 +61,7 @@ end
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.8 (OpenPKG-CURRENT)
 
-iEYEARECAAYFAkeIus4ACgkQ4NtEALXQTms37ACdGutltMufb5o7ow9a+i9BWlWQ
-ABUAoIzBInaquk+Rl5dZ6UPsNF8L9sxl
-=6qWp
+iEYEARECAAYFAkeJPowACgkQT2TZ2Fa+K6bGbQCZATh+P9f6N4547Ju50SHilAmZ
+8vgAn3Llp6DjUb1q5Xp6xFVCbUm/iI7L
+=IN0a
 -----END PGP SIGNATURE-----

@@ -38,10 +38,12 @@ clearsign () {
             .*
             $
         /$1/xs;
+        $txt =~ s/^- //mg;
         print $txt;
     ' <$1 >$1.tmp && \
     gpg --quiet --batch --clearsign --output - $1.tmp >$1
     rm -f $1.tmp
+    gpg --quiet --batch --verify $1 || exit $?
 }
 clearsign integrity.cfg
 clearsign integrity.lua
