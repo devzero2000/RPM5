@@ -1,76 +1,77 @@
-# Turkish translations for RPM Package.
-# Copyright (C) 2003 Free Software Foundation, Inc.
-# Nilgün Belma Bugüner <nilgun@superonline.com>, 2001,...,2003
+# Vietnamese translation for rpm-4.2.
+# Copyright © 2006 Free Software Foundation, Inc.
+# Ngô Trần Thủy <ngotranthuy@gmail.com>, 2006.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: rpm 4.1\n"
+"Project-Id-Version: rpm 4.2\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
 "POT-Creation-Date: 2008-01-13 14:35-0500\n"
-"PO-Revision-Date: 2003-12-31 09:08+0300\n"
-"Last-Translator: Nilgün Belma Bugüner <nilgun@superonline.com>\n"
-"Language-Team: Turkish <gnu-tr-u12a@lists.sourceforge.net>\n"
+"PO-Revision-Date: 2006-04-18 18:16+0930\n"
+"Last-Translator: Ngô Trần Thủy <ngotranthuy@gmail.com>\n"
+"Language-Team: Vietnamese <gnomevi-list@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: KBabel 1.0\n"
+"Plural-Forms: nplurals=1; plural=0\n"
+"X-Generator: LocFactoryEditor 1.6b36\n"
 
 #: build.c:41
 msgid "Failed build dependencies:\n"
-msgstr "Başarısız kurgu bağımlılıkları:\n"
+msgstr "Tập hợp các gói phụ thuộc bị lỗi:\n"
 
 #: build.c:72
 #, c-format
 msgid "Unable to open spec file %s: %s\n"
-msgstr "%s spec dosyası açılamadı: %s\n"
+msgstr "Không thể mở tệp tin đặc tả %s: %s\n"
 
 #: build.c:149
 #, c-format
 msgid "Failed to read spec file from %s\n"
-msgstr "%s paketinden spec dosyası okunamadı\n"
+msgstr "Đọc tệp tin đặc tả từ %s bị lỗi\n"
 
 #: build.c:163
 #, c-format
 msgid "Failed to rename %s to %s: %m\n"
-msgstr "%s %s olarak değiştirilemedi: %m\n"
+msgstr "Đổi tên từ %s thành %s bị lỗi: %m\n"
 
 #: build.c:204
 #, c-format
 msgid "failed to stat %s: %m\n"
-msgstr "%s durumlanamadı: %m\n"
+msgstr "khởi động %s bị lỗi: %m\n"
 
 #: build.c:209
 #, c-format
 msgid "File %s is not a regular file.\n"
-msgstr "%s bir normal bir dosya değil.\n"
+msgstr "Tệp tin %s không phải là tập tin chính quy.\n"
 
 #: build.c:218
 #, c-format
 msgid "File %s does not appear to be a specfile.\n"
-msgstr "%s bir spec dosyası gibi görünmüyor.\n"
+msgstr "Tệp tin %s dường như không phải là một tập tin đặc tả.\n"
 
 #: build.c:292
 #, c-format
 msgid "Building target platforms: %s\n"
-msgstr "Hedef platformlar derleniyor: %s\n"
+msgstr "Đang xây dựng các nền tảng mục tiêu: %s\n"
 
 #: build.c:307 build/spec.c:827
 #, fuzzy, c-format
 msgid "    target platform: %s\n"
-msgstr "Hedef platformlar derleniyor: %s\n"
+msgstr "Đang xây dựng các nền tảng mục tiêu: %s\n"
 
 #: rpmqv.c:89
 msgid "Query options (with -q or --query):"
-msgstr "Sorgulama seçenekleri (-q ya da --query ile)"
+msgstr "Các lựa chọn chất vấn (với -q hoặc --query):"
 
 #: rpmqv.c:92
 msgid "Verify options (with -V or --verify):"
-msgstr "Doğrulama seçenekleri (-V ya da --verify ile):"
+msgstr "Xác nhận các lựa chọn (với -V hoặc --verify):"
 
 #: rpmqv.c:96
 #, fuzzy
 msgid "Source options (with --query or --verify):"
-msgstr "Doğrulama seçenekleri (-V ya da --verify ile):"
+msgstr "Xác nhận các lựa chọn (với -V hoặc --verify):"
 
 #: rpmqv.c:103
 msgid "Dependency check/order options:"
@@ -82,30 +83,29 @@ msgstr ""
 
 #: rpmqv.c:115
 msgid "Signature options:"
-msgstr "İmza seçenekleri:"
+msgstr "Các lựa chọn ký số:"
 
 #: rpmqv.c:121
 msgid "Database options:"
-msgstr "Veritabanı seçenekleri:"
+msgstr "Các lựa chọn cơ sở dữ liệu:"
 
 #: rpmqv.c:127
 msgid "Build options with [ <specfile> | <tarball> | <source package> ]:"
-msgstr ""
-"[ <specDosyası> | <tarPaketi> | <kaynakPaketi> ] ile kurgulama seçenekleri:"
+msgstr "Xây dựng lựa chọn với [ <đặc tả> | <tập tin nén> | <gói nguồn> ]:"
 
 #: rpmqv.c:133
 msgid "Install/Upgrade/Erase options:"
-msgstr "Kurma/Güncelleme/Kaldırma seçenekleri:"
+msgstr "Cài đặt/Nâng cấp/Xóa bỏ các lựa chọn:"
 
 #: rpmqv.c:138 tools/rpmdeps.c:155
 #, fuzzy
 msgid "Common options:"
-msgstr "Tüm rpm kipleri için ortak seçenekler:"
+msgstr "Các lựa chọn chung cho tất cả các chế độ rpm"
 
 #: rpmqv.c:155 lib/poptI.c:44
 #, c-format
 msgid "%s: %s\n"
-msgstr "dosya %s: %s\n"
+msgstr "%s: %s\n"
 
 #: rpmqv.c:163 lib/poptALL.c:179
 #, c-format
@@ -114,220 +114,219 @@ msgstr ""
 
 #: rpmqv.c:482 rpmqv.c:488 rpmqv.c:494 rpmqv.c:531
 msgid "only one major mode may be specified"
-msgstr "sadece bir ana kip belirtilebilir"
+msgstr "duy nhất một phương thức chính có thể được định rõ"
 
 #: rpmqv.c:510
 msgid "one type of query/verify may be performed at a time"
-msgstr "bir anda sadece bir sorgulama/denetleme türü uygulanabilir"
+msgstr "một kiểu truy vấn/xác nhận có thể được thi hành tại một thời điểm"
 
 #: rpmqv.c:514
 msgid "unexpected query flags"
-msgstr "beklenmeyen sorgulama bayrakları"
+msgstr "những cờ hiệu truy vấn không mong đợi"
 
 #: rpmqv.c:517
 msgid "unexpected query format"
-msgstr "beklenmeyen sorgulama biçimi"
+msgstr "định dạng truy vấn không mong đợi"
 
 #: rpmqv.c:520
 msgid "unexpected query source"
-msgstr "beklenmeyen sorgulama kaynağı"
+msgstr "nguồn truy vấn không mong đợi"
 
 #: rpmqv.c:563
 msgid "only installation, upgrading, rmsource and rmspec may be forced"
 msgstr ""
-"sadece  kaynak ve spec silme, kurma, güncelleme işlemleri için zorlanabilir"
+"chỉ có sự cài đặt, nâng cấp, gỡ bỏ nguồn và gỡ bỏ đặc tả mới có thể bị bắt "
+"buộc"
 
 #: rpmqv.c:565
 msgid "files may only be relocated during package installation"
-msgstr ""
-"dosyalar sadece paket kurulumu sırasında yeni yerlerine yerleştirilebilir"
+msgstr "những tập tin có thể chỉ được xây dựng lại trong quá trình cài đặt gói"
 
 #: rpmqv.c:568
 msgid "cannot use --prefix with --relocate or --excludepath"
-msgstr ""
+msgstr "không thể dùng --prefix với --relocate hoặc --excludepath"
 
 #: rpmqv.c:571
 msgid ""
 "--relocate and --excludepath may only be used when installing new packages"
 msgstr ""
-"--relocate ve --excludepath sadece yeni paket kurulumunda kullanılabilir"
+"--relocate và --excludepath có thể chỉ được dùng khi cài đặt những gói mới"
 
 #: rpmqv.c:574
 msgid "--prefix may only be used when installing new packages"
-msgstr "--prefix sadece yeni paketlerin kurulması sırasında kullanılabilir"
+msgstr "--prefix có thể chỉ được dùng khi cài đặt những gói mới"
 
 #: rpmqv.c:577
 msgid "arguments to --prefix must begin with a /"
-msgstr "--prefix ile belirtilenler '/' ile başlamalı"
+msgstr "những đối số của --prefix phải được bắt đầu với a /"
 
 #: rpmqv.c:580
 msgid "--hash (-h) may only be specified during package installation"
-msgstr "--hash (-h) sadece paket kurulumu sırasında kullanılabilir"
+msgstr "--hash (-h) có thể chỉ được định rõ trong quá trình cài đặt gói"
 
 #: rpmqv.c:584
 msgid "--percent may only be specified during package installation"
-msgstr "--percent sadece paket kurulumu sırasında kullanılabilir"
+msgstr "--percent có thể chỉ được định rõ trong quá trình cài đặt gói"
 
 #: rpmqv.c:588
 msgid "--replacepkgs may only be specified during package installation"
-msgstr "--replacepkgs sadece paket kurulumu sırasında kullanılabilir"
+msgstr "có thể chỉ được định rõ trong quá trình cài đặt gói"
 
 #: rpmqv.c:592
 msgid "--excludedocs may only be specified during package installation"
-msgstr "--excludedocs sadece paket kurulumu sırasında kullanılabilir"
+msgstr "--excludedocs có thể chỉ được định rõ trong quá trình cài đặt gói"
 
 #: rpmqv.c:596
 msgid "--includedocs may only be specified during package installation"
-msgstr "--includedocs sadece paket kurulumu sırasında kullanılabilir"
+msgstr "--includedocs có thể chỉ được định rõ trong quá trình cài đặt gói"
 
 #: rpmqv.c:600
 msgid "only one of --excludedocs and --includedocs may be specified"
-msgstr "--excludedocs ve --includedocs bir arada kullanılamaz"
+msgstr "chỉ một trong --excludedocs và --includedocs có thể được định rõ"
 
 #: rpmqv.c:604
 msgid "--ignorearch may only be specified during package installation"
-msgstr "--ignorearch sadece paket kurulumu sırasında kullanılabilir"
+msgstr "--ignorearch có thể chỉ được định rõ trong quá trình cài đặt gói"
 
 #: rpmqv.c:608
 msgid "--ignoreos may only be specified during package installation"
-msgstr "--ignoreos sadece paket kurulumu sırasında kullanılabilir"
+msgstr "--ignoreos có thể chỉ được định rõ trong quá trình cài đặt gói"
 
 #: rpmqv.c:612
 msgid "--allmatches may only be specified during package erasure"
-msgstr "--allmatches sadece paket kaldırılması sırasında kullanılabilir"
+msgstr "--allmatches có thể chỉ được định rõ trong quá trình cài đặt gói"
 
 #: rpmqv.c:616
 msgid "--allfiles may only be specified during package installation"
-msgstr "--allfiles sadece paket kurulumu sırasında kullanılabilir"
+msgstr "--allfiles có thể chỉ được định rõ trong quá trình cài đặt gói"
 
 #: rpmqv.c:621
 msgid "--justdb may only be specified during package installation and erasure"
-msgstr ""
-"--justdb sadece paket kurulumu ve kaldırılması sırasında kullanılabilir"
+msgstr "--justdb có thể chỉ được định rõ trong quá trình cài đặt gói và xóa bỏ"
 
 #: rpmqv.c:626
 msgid ""
 "script disabling options may only be specified during package installation "
 "and erasure"
 msgstr ""
-"betik iptal etme seçenekleri sadece paketin kurulması ve kaldırılması "
-"sırasında kullanılabilir"
+"các lựa chọn vô hiệu hóa kịch bản có thể chỉ được định rõ trong quá trình "
+"cài đặt gói và xóa bỏ"
 
 #: rpmqv.c:631
 msgid ""
 "trigger disabling options may only be specified during package installation "
 "and erasure"
 msgstr ""
-"tetikleme iptal seçenekleri sadece paketin kurulması ve kaldırılması "
-"sırasında kullanılabilir"
+"các lựa chọn vô hiệu hóa khởi sự có thể chỉ được định rõ trong quá trình cài "
+"đặt gói và xóa bỏ"
 
 #: rpmqv.c:635
 msgid ""
 "--nodeps may only be specified during package building, rebuilding, "
 "recompilation, installation,erasure, and verification"
 msgstr ""
-"--nodeps sadece paket oluşturma, yeniden oluşturma, yeniden derleme, "
-"kurulum, kaldırma ve doğrulama işlemlerinde kullanılabilir"
+"--nodeps có thể chỉ được định rõ trong quá trình xây dựng, xây dựng lại, "
+"biên dịch lại, cài đặt, xóa bỏ, và sự xác nhận"
 
 #: rpmqv.c:640
 msgid ""
 "--test may only be specified during package installation, erasure, and "
 "building"
 msgstr ""
-"--test sadece paket kurulumu, kaldırılması ve oluşturulması işlemlerinde "
-"kullanılabilir"
+"--test có thể chỉ được định rõ trong quá trình cài đặt gói, xóa bỏ, và xây "
+"dựng"
 
 #: rpmqv.c:645
 msgid ""
 "--root (-r) may only be specified during installation, erasure, querying, "
 "and database rebuilds"
 msgstr ""
-"--root (-r) sadece kurulum, kaldırma, sorgulama ve yeniden veritabanı "
-"oluşturma işlemlerinde kullanılabilir"
+"--root (-r) có thể chỉ được định rõ trong quá trình cài đặt gói, xóa bỏ, "
+"truy vấn và xây dựng lại những cơ sở dữ liệu"
 
 #: rpmqv.c:657
 msgid "arguments to --root (-r) must begin with a /"
-msgstr "--root (-r) ile verilenler '/' ile başlamalı"
+msgstr "đối số của --root (-r) phải bắt đầu với a /"
 
 #: rpmqv.c:685
 #, c-format
 msgid "no files to sign\n"
-msgstr "imzalanacak dosya yok\n"
+msgstr "không có tệp tin nào để đánh dấu\n"
 
 #: rpmqv.c:690
 #, c-format
 msgid "cannot access file %s\n"
-msgstr "%s dosyası bulunamıyor\n"
+msgstr "không thể truy cập tệp tin %s\n"
 
 #: rpmqv.c:702
 msgid "Enter pass phrase: "
-msgstr "Anahtar parolasını girin: "
+msgstr "Nhập vào nhóm từ vượt qua:"
 
 #: rpmqv.c:704
 #, c-format
 msgid "Pass phrase check failed\n"
-msgstr "Anahtar parolası kontrolü başarısız\n"
+msgstr "Nhóm từ vượt qua bị sai\n"
 
 #: rpmqv.c:708
 #, c-format
 msgid "Pass phrase is good.\n"
-msgstr "Anahtar parolası doğru.\n"
+msgstr "Nhóm từ vượt qua đúng.\n"
 
 #: rpmqv.c:725
 #, c-format
 msgid "exec failed\n"
-msgstr "icra başarısız\n"
+msgstr "Việc thực thi bị lỗi\n"
 
 #: rpmqv.c:769
 msgid "no packages files given for rebuild"
-msgstr "yeniden oluşturmak için paket dosyaları belirtilmemiş"
+msgstr "không có những gói tin, tập tin xác định nào cho việc xây dựng lại"
 
 #: rpmqv.c:862
 msgid "no spec files given for build"
-msgstr "oluşturma için gerekli spec dosyası belirtilmemiş"
+msgstr "không có tập tin đặc tả xác định nào cho việc xây dựng"
 
 #: rpmqv.c:864
 msgid "no tar files given for build"
-msgstr "oluşturma için gereken tar dosyaları belirtilmemiş"
+msgstr "không có tập tin tar xác định nào cho việc xây dựng"
 
 #: rpmqv.c:885
 msgid "no packages given for erase"
-msgstr "silinecek paketler belirtilmedi"
+msgstr "không có gói tin xác định nào cho việc xóa bỏ"
 
 #: rpmqv.c:929
 msgid "no packages given for install"
-msgstr "yüklenecek paketler belirtilmedi"
+msgstr "không có gói tin xác định nào cho việc cài đặt"
 
 #: rpmqv.c:949
 msgid "no arguments given for query"
-msgstr "sorgulama için hiç argüman belirtilmedi"
+msgstr "không có đối số xác định nào cho việc truy vấn"
 
 #: rpmqv.c:966
 msgid "no arguments given for verify"
-msgstr "doğrulama için hiç argüman belirtilmedi"
+msgstr "không có đối số xác định nào cho việc xác nhận"
 
 #: rpmqv.c:981
 msgid "no arguments given"
-msgstr "hiç argüman belirtilmedi"
+msgstr "không có đối số xác định"
 
 #: build/build.c:190 build/pack.c:713
 msgid "Unable to open temp file.\n"
-msgstr "Geçici dosya açılamadı.\n"
+msgstr "Không thể mở tập tin tạm thời.\n"
 
 #: build/build.c:268
 #, c-format
 msgid "Executing(%s): %s\n"
-msgstr "%s icra ediliyor: %s\n"
+msgstr "Đang thực thi (%s): %s\n"
 
 #: build/build.c:276
 #, c-format
 msgid "Exec of %s failed (%s): %s\n"
-msgstr "%s 'in icrası başarısız (%s): %s\n"
+msgstr "Việc thực thi %s bị lỗi (%s): %s\n"
 
 #: build/build.c:285
 #, c-format
 msgid "Bad exit status from %s (%s)\n"
-msgstr "%s çıkışında hata (%s)\n"
+msgstr "Tình trạng xấu khi thoát khỏi %s (%s)\n"
 
 #: build/build.c:429
 msgid ""
@@ -337,136 +336,136 @@ msgid ""
 msgstr ""
 "\n"
 "\n"
-"RPM oluşturma hataları:\n"
+"những lỗi xây dựng RPM:\n"
 
 #: build/expression.c:228
 msgid "syntax error while parsing ==\n"
-msgstr "== çözümlenirken sözdizimi hatası\n"
+msgstr "cú pháp không đúng trong khi phân tích ==\n"
 
 #: build/expression.c:258
 msgid "syntax error while parsing &&\n"
-msgstr "&& çözümlenirken sözdizimi hatası\n"
+msgstr "cú pháp không đúng trong khi phân tích &&\n"
 
 #: build/expression.c:267
 msgid "syntax error while parsing ||\n"
-msgstr "|| çözümlenirken sözdizimi hatası\n"
+msgstr "cú pháp không đúng trong khi phân tích ||\n"
 
 #: build/expression.c:310
 msgid "parse error in expression\n"
-msgstr "ifadede çözümleme hatası\n"
+msgstr "phân tích không đúng trong biểu thức\n"
 
 #: build/expression.c:350
 msgid "unmatched (\n"
-msgstr "eşleşmeyen (\n"
+msgstr "không khớp (\n"
 
 #: build/expression.c:382
 msgid "- only on numbers\n"
-msgstr "- sadece sayılarda\n"
+msgstr "- duy nhất trên số học\n"
 
 #: build/expression.c:398
 msgid "! only on numbers\n"
-msgstr "! sadece sayılarda\n"
+msgstr "! duy nhất trên số học\n"
 
 #: build/expression.c:444 build/expression.c:496 build/expression.c:558
 #: build/expression.c:653
 msgid "types must match\n"
-msgstr "türler eşleşmeli\n"
+msgstr "những mẫu phải khớp\n"
 
 #: build/expression.c:457
 msgid "* / not suported for strings\n"
-msgstr "* / dizgelerde desteklenmez\n"
+msgstr "* / không được hỗ trợ cho những chuỗi\n"
 
 #: build/expression.c:512
 msgid "- not suported for strings\n"
-msgstr "- dizgelerde desteklenmez\n"
+msgstr "- không được hỗ trợ cho những chuỗi\n"
 
 #: build/expression.c:666
 msgid "&& and || not suported for strings\n"
-msgstr "&& ve || dizgelerde desteklenmez\n"
+msgstr "&& và || không được hỗ trợ cho những chuỗi\n"
 
 #: build/expression.c:699 build/expression.c:746
 msgid "syntax error in expression\n"
-msgstr "ifadede sözdizimi hatası\n"
+msgstr "cú pháp không đúng trong biểu thức\n"
 
 #: build/files.c:289
 #, c-format
 msgid "TIMECHECK failure: %s\n"
-msgstr "TIMECHECK başarısızlığı: %s\n"
+msgstr "Kiểm Tra Thì Giờ thất bại: %s\n"
 
 #: build/files.c:353 build/files.c:549 build/files.c:739
 #, c-format
 msgid "Missing '(' in %s %s\n"
-msgstr "%s %s içinde '(' yok\n"
+msgstr "Thiếu '(' in %s %s\n"
 
 #: build/files.c:364 build/files.c:677 build/files.c:750
 #, c-format
 msgid "Missing ')' in %s(%s\n"
-msgstr "%s(%s içinde ')' yok\n"
+msgstr "Thiếu ')' in %s %s\n"
 
 #: build/files.c:402 build/files.c:702
 #, c-format
 msgid "Invalid %s token: %s\n"
-msgstr "%s dizgeciği geçersiz: %s\n"
+msgstr "Bằng chứng %s không có căn cứ: %s\n"
 
 #: build/files.c:510
 #, c-format
 msgid "Missing %s in %s %s\n"
-msgstr "%s %s içinde %s yok\n"
+msgstr "Thiếu %s trong %s %s\n"
 
 #: build/files.c:565
 #, c-format
 msgid "Non-white space follows %s(): %s\n"
-msgstr "%s() den sonra boşluk yok: %s\n"
+msgstr "Không có khoảng trắng theo sau %s(): %s\n"
 
 #: build/files.c:603
 #, c-format
 msgid "Bad syntax: %s(%s)\n"
-msgstr "Sözdizimi hatası: %s(%s)\n"
+msgstr "Cú pháp sai: %s(%s)\n"
 
 #: build/files.c:613
 #, c-format
 msgid "Bad mode spec: %s(%s)\n"
-msgstr "mode spec hatalı: %s(%s)\n"
+msgstr "Kiểu đặc tả sai: %s(%s)\n"
 
 #: build/files.c:625
 #, c-format
 msgid "Bad dirmode spec: %s(%s)\n"
-msgstr "dirmode spec hatalı: %s(%s)\n"
+msgstr "Kiểu đặc tả thư mục sai: %s(%s)\n"
 
 #: build/files.c:777
 #, c-format
 msgid "Unusual locale length: \"%.*s\" in %%lang(%s)\n"
-msgstr "yerel uzunluğu hatalı: \"%.*s\" (%%lang(%s))\n"
+msgstr "Độ dài địa điểm ít dùng: \"%.*s\" trong %%lang(%s)\n"
 
 #: build/files.c:788
 #, c-format
 msgid "Duplicate locale %.*s in %%lang(%s)\n"
-msgstr "%.*s yereli %%lang(%s) içinde tekrarlanmış\n"
+msgstr "Gấp đôi địa điểm %.*s trong %%lang(%s)\n"
 
 #: build/files.c:915
 #, c-format
 msgid "Hit limit for %%docdir\n"
-msgstr "%%docdir için hit sınırı\n"
+msgstr "Đạt tới giới hạn của %%docdir\n"
 
 #: build/files.c:923
 #, c-format
 msgid "Only one arg for %%docdir\n"
-msgstr "%%docdir için sadece tek argüman\n"
+msgstr "Chỉ có một arg cho %%docdir\n"
 
 #: build/files.c:957
 #, c-format
 msgid "Two files on one line: %s\n"
-msgstr "Bir satırda iki dosya: %s\n"
+msgstr "Hai tệp tin trên một dòng: %s\n"
 
 #: build/files.c:978
 #, c-format
 msgid "File must begin with \"/\": %s\n"
-msgstr "Dosya \"/\" ile başlamalı: %s\n"
+msgstr "Tệp tin phải bắt đầu với \"/\": %s\n"
 
 #: build/files.c:995
 #, c-format
 msgid "Can't mix special %%doc with other forms: %s\n"
-msgstr "Özel %%doc ile diğer biçimler karıştırılamaz: %s\n"
+msgstr "Không thể trộn lẫn tài liệu đặc biệt %%doc với dạng khác: %s\n"
 
 #: build/files.c:1016
 #, c-format
@@ -476,27 +475,27 @@ msgstr ""
 #: build/files.c:1314
 #, c-format
 msgid "File listed twice: %s\n"
-msgstr "Dosya iki kere gösterildi: %s\n"
+msgstr "Tệp tin liệt kê hai lần: %s\n"
 
 #: build/files.c:1529
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
-msgstr "Sembolik bağ BuildRoot gösteriyor: %s -> %s\n"
+msgstr "Những điểm liên kết tới gốc cài đặt: %s -> %s\n"
 
 #: build/files.c:1816
 #, c-format
 msgid "File doesn't match prefix (%s): %s\n"
-msgstr "Dosya önek (%s) ile uyumsuz: %s\n"
+msgstr "Tệp tin không khớp tiền tố (%s): %s\n"
 
 #: build/files.c:1842
 #, fuzzy, c-format
 msgid "Optional file not found: %s\n"
-msgstr "Dosya bulunamadı: %s\n"
+msgstr "Không tìm thấy tệp tin: %s\n"
 
 #: build/files.c:1845
 #, c-format
 msgid "File not found: %s\n"
-msgstr "Dosya bulunamadı: %s\n"
+msgstr "Không tìm thấy tệp tin: %s\n"
 
 #: build/files.c:2063
 #, c-format
@@ -504,64 +503,64 @@ msgid "%s: can't load unknown tag (%d).\n"
 msgstr ""
 
 #: build/files.c:2069
-#, fuzzy, c-format
+#, c-format
 msgid "%s: public key read failed.\n"
-msgstr "%s: import read başarısız.\n"
+msgstr "%s: Khoá chung đọc sai.\n"
 
 #: build/files.c:2073 lib/rpmchecksig.c:746
 #, c-format
 msgid "%s: not an armored public key.\n"
-msgstr "%s: bir zırhlı genel anahtar değil.\n"
+msgstr "%s: khoá chung không được bảo vệ.\n"
 
 #: build/files.c:2080
 #, fuzzy, c-format
 msgid "%s: *.te policy read failed.\n"
-msgstr "%s: import read başarısız.\n"
+msgstr "%s: Khoá chung đọc sai.\n"
 
 #: build/files.c:2136
 #, c-format
 msgid "File needs leading \"/\": %s\n"
-msgstr "Dosya \"/\" ile içermeli: %s\n"
+msgstr "Tệp tin cần hướng dẫn \"/\": %s\n"
 
 #: build/files.c:2160
 #, c-format
 msgid "Glob not permitted: %s\n"
-msgstr "Glob yasak: %s\n"
+msgstr "Glob không được phép: %s\n"
 
 #: build/files.c:2175
 #, fuzzy, c-format
 msgid "Optional file not found by glob: %s\n"
-msgstr "Dosya glob tarafından bulunamadı: %s\n"
+msgstr "Glob không tìm thấy tệp tin: %s\n"
 
 #: build/files.c:2179
 #, c-format
 msgid "File not found by glob: %s\n"
-msgstr "Dosya glob tarafından bulunamadı: %s\n"
+msgstr "Glob không tìm thấy tệp tin: %s\n"
 
 #: build/files.c:2243
 #, c-format
 msgid "Could not open %%files file %s: %s\n"
-msgstr "%%files dosya %s dosyasında açılamadı: %s\n"
+msgstr "Tệp tin không thể mở %%files %s:%s\n"
 
 #: build/files.c:2254 build/pack.c:156
 #, c-format
 msgid "line: %s\n"
-msgstr "satır: %s\n"
+msgstr "dòng: %s\n"
 
 #: build/files.c:2739
 #, c-format
 msgid "Bad file: %s: %s\n"
-msgstr "Dosya hatalı: %s: %s\n"
+msgstr "Tệp tin sai: %s: %s\n"
 
 #: build/files.c:2761 build/parsePrep.c:53
 #, c-format
 msgid "Bad owner/group: %s\n"
-msgstr "Kullanıcı/grup hatalı: %s\n"
+msgstr "Chủ/nhóm sai: %s\n"
 
 #: build/files.c:2806
 #, c-format
 msgid "Checking for unpackaged file(s): %s\n"
-msgstr "Paketlenmemiş dosyalar için bakılıyor: %s\n"
+msgstr "Đang kiểm tra việc mở (những) tệp tin: %s\n"
 
 #: build/files.c:2821
 #, c-format
@@ -569,275 +568,275 @@ msgid ""
 "Installed (but unpackaged) file(s) found:\n"
 "%s"
 msgstr ""
-"Kurulu (ama paketlenmemiş) dosyalar var:\n"
+"Đã cài đặt (những) tệp tin tìm thấy (trừ ra các tệp tin được mở):\n"
 "%s"
 
 #: build/files.c:2853
 #, fuzzy, c-format
 msgid "Processing files: %s\n"
-msgstr "İşlenen dosyalar: %s-%s-%s\n"
+msgstr "Đang xử lý các tệp tin: %s-%s-%s\n"
 
 #: build/names.c:54
 msgid "getUname: too many uid's\n"
-msgstr "getUname: çok fazla kullanıcı-kimliği\n"
+msgstr "Nhận được Uname: quá nhiều uid's\n"
 
 #: build/names.c:78
 msgid "getUnameS: too many uid's\n"
-msgstr "getUnameS: çok fazla kullanıcı-kimliği\n"
+msgstr "Nhận được UnameS: quá nhiều uid's\n"
 
 #: build/names.c:105
 msgid "getUidS: too many uid's\n"
-msgstr "getUidS: çok fazla kullanıcı-kimliği\n"
+msgstr "Nhận được UidS: quá nhiều uid's\n"
 
 #: build/names.c:132
 msgid "getGname: too many gid's\n"
-msgstr "getGname: çok fazla grup-kimliği\n"
+msgstr "Nhận được Gname: quá nhiều gid's\n"
 
 #: build/names.c:156
 msgid "getGnameS: too many gid's\n"
-msgstr "getGnameS: çok fazla grup-kimliği\n"
+msgstr "Nhận được GnameS: quá nhiều gid's\n"
 
 #: build/names.c:183
 msgid "getGidS: too many gid's\n"
-msgstr "getGidS: çok fazla grup-kimliği\n"
+msgstr "Nhận được GidS: quá nhiều gid's\n"
 
 #: build/names.c:221
 #, c-format
 msgid "Could not canonicalize hostname: %s\n"
-msgstr "Konak ismi meşrulaştırılamadı: %s\n"
+msgstr "Không thể hợp chuẩn hoá tên máy chủ: %s\n"
 
 #: build/pack.c:91
 #, c-format
 msgid "create archive failed on file %s: %s\n"
-msgstr "%s dosyasında arşiv oluşturulamadı: %s\n"
+msgstr "lỗi khi tạo lưu trữ tệp tin %s: %s\n"
 
 #: build/pack.c:94
 #, c-format
 msgid "create archive failed: %s\n"
-msgstr "arşiv oluşturulamadı: %s\n"
+msgstr "lỗi khi tạo lưu trữ: %s\n"
 
 #: build/pack.c:116
 #, c-format
 msgid "cpio_copy write failed: %s\n"
-msgstr "cpio_copy yazma hatası:%s\n"
+msgstr "lỗi ghi cpio_copy: %s\n"
 
 #: build/pack.c:123
 #, c-format
 msgid "cpio_copy read failed: %s\n"
-msgstr "cpio_copy okuma hatası: %s\n"
+msgstr "lỗi đọc cpio_copy: %s\n"
 
 #: build/pack.c:238 build/pack.c:252
 #, c-format
 msgid "Could not open PreIn file: %s\n"
-msgstr "PreIn dosyası açılamadı: %s\n"
+msgstr "Không thể mở tệp tin PreIn: %s\n"
 
 #: build/pack.c:245
 #, c-format
 msgid "Could not open PreUn file: %s\n"
-msgstr "PreUn dosyası açılamadı: %s\n"
+msgstr "Không thể mở tệp tin PreUn: %s\n"
 
 #: build/pack.c:259
 #, c-format
 msgid "Could not open PostIn file: %s\n"
-msgstr "PostIn dosyası açılamadı: %s\n"
+msgstr "Không thể mở tệp tin PostIn: %s\n"
 
 #: build/pack.c:266 build/pack.c:273
 #, c-format
 msgid "Could not open PostUn file: %s\n"
-msgstr "PostUn dosyası açılamadı: %s\n"
+msgstr "Không thể mở tệp tin PostUn: %s\n"
 
 #: build/pack.c:281
 #, c-format
 msgid "Could not open VerifyScript file: %s\n"
-msgstr "VerifyScript dosyası açılamadı: %s\n"
+msgstr "Không thể mở tệp tin VerifyScript: %s\n"
 
 #: build/pack.c:288
 #, fuzzy, c-format
 msgid "Could not open Test file: %s\n"
-msgstr "PostIn dosyası açılamadı: %s\n"
+msgstr "Không thể mở tệp tin PostIn: %s\n"
 
 #: build/pack.c:313
 #, c-format
 msgid "Could not open Trigger script file: %s\n"
-msgstr "Trigger betik dosyası açılamadı: %s\n"
+msgstr "Không thể mở tệp tin kịch bản khởi sự: %s\n"
 
 #: build/pack.c:346
 #, c-format
 msgid "readRPM: open %s: %s\n"
-msgstr "readRPM: %s açılırken: %s\n"
+msgstr "đọc RPM: mở %s: %s\n"
 
 #: build/pack.c:367
 #, c-format
 msgid "readRPM: read %s: %s\n"
-msgstr "readRPM: %s okunurken: %s\n"
+msgstr "đọc RPM: đọc %s: %s\n"
 
 #: build/pack.c:377
 #, c-format
 msgid "%s: Fseek failed: %s\n"
-msgstr "%s: Fseek başarısız: %s\n"
+msgstr "%s: lỗi Fseek: %s\n"
 
 #: build/pack.c:409
 #, c-format
 msgid "readRPM: %s is not an RPM package\n"
-msgstr "readRPM: %s bir RPM paketi değil\n"
+msgstr "đọc RPM: %s không phải là gói RPM\n"
 
 #: build/pack.c:414
 #, c-format
 msgid "readRPM: reading header from %s\n"
-msgstr "readRPM: %s başlığı okunuyor\n"
+msgstr "đọc RPM: đang đọc tiêu đề từ %s\n"
 
 #: build/pack.c:700
 msgid "Unable to create immutable header region.\n"
-msgstr "Sabit başlık bölümü oluşturulamadı.\n"
+msgstr "Không thể tạo vùng tiêu đề cố định.\n"
 
 #: build/pack.c:762
 #, c-format
 msgid "Generating signature: %d\n"
-msgstr "İmza üretiliyor: %d\n"
+msgstr "Phát sinh chữ ký: %d\n"
 
 #: build/pack.c:786
 msgid "Unable to reload signature header.\n"
-msgstr "İmza başlığı tekrar yüklenemedi\n"
+msgstr "Không thể nạp lại tiêu đề chữ ký.\n"
 
 #: build/pack.c:794
 #, c-format
 msgid "Could not open %s: %s\n"
-msgstr "%s açılamadı: %s\n"
+msgstr "Không thể mở %s: %s\n"
 
 #: build/pack.c:820 lib/psm.c:1935
 #, c-format
 msgid "Unable to write package: %s\n"
-msgstr "Paket yazılamadı: %s\n"
+msgstr "Không thể ghi vào gói: %s\n"
 
 #: build/pack.c:845
 #, c-format
 msgid "Unable to open sigtarget %s: %s\n"
-msgstr "sigtarget %s açılamadı: %s\n"
+msgstr "Không thể mở tâm điểm %s: %s\n"
 
 #: build/pack.c:886
 #, c-format
 msgid "Unable to read payload from %s: %s\n"
-msgstr "%s'den payload okunamadı: %s\n"
+msgstr "Không thể đọc dữ liệu tải về từ %s: %s\n"
 
 #: build/pack.c:894
 #, c-format
 msgid "Unable to write payload to %s: %s\n"
-msgstr "%s'e payload yazılamadı: %s\n"
+msgstr "Không thể ghi dữ liệu tải về vào %s: %s\n"
 
 #: build/pack.c:929 lib/psm.c:2229
 #, c-format
 msgid "Wrote: %s\n"
-msgstr "Yazıldı: %s\n"
+msgstr "Đã ghi: %s\n"
 
 #: build/pack.c:1053
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
-msgstr "%s paketi için çıktı dosya adı üretilemedi: %s\n"
+msgstr "Không thể tạo tên tệp tin tín hiệu cho gói %s: %s\n"
 
 #: build/pack.c:1071
 #, c-format
 msgid "cannot create %s: %s\n"
-msgstr "%s dosyası oluşturulamıyor: %s\n"
+msgstr "không thể tạo %s: %s\n"
 
 #: build/parseBuildInstallClean.c:40
 #, fuzzy, c-format
 msgid "line %d: second %%%s section\n"
-msgstr "%d. satır: %s saniye\n"
+msgstr "dòng %d: thứ nhì %s\n"
 
 #: build/parseChangelog.c:174
 #, c-format
 msgid "%%changelog entries must start with *\n"
-msgstr "%%changelog girdileri * ile başlamalı\n"
+msgstr "%%nhập bản ghi thay đổi phải bắt đầu với *\n"
 
 #: build/parseChangelog.c:182
 #, c-format
 msgid "incomplete %%changelog entry\n"
-msgstr "%%changelog girdi eksik\n"
+msgstr "không đầy đủ %%nhập bản ghi thay đổi\n"
 
 #: build/parseChangelog.c:199
 #, c-format
 msgid "bad date in %%changelog: %s\n"
-msgstr "%%changelog içinde tarih hatası: %s\n"
+msgstr "ngày tháng sai trong %%bản ghi thay đổi: %s\n"
 
 #: build/parseChangelog.c:204
 #, c-format
 msgid "%%changelog not in descending chronological order\n"
-msgstr "%%changelog azalan kronolojik sırada değil\n"
+msgstr "%%bản ghi thay đổi không theo thứ tự thời gian giảm dần\n"
 
 #: build/parseChangelog.c:212 build/parseChangelog.c:223
 #, c-format
 msgid "missing name in %%changelog\n"
-msgstr "%%changelog içinde isim eksik\n"
+msgstr "thiếu tên trong %%bản ghi thay đổi\n"
 
 #: build/parseChangelog.c:230
 #, c-format
 msgid "no description in %%changelog\n"
-msgstr "%%changelog içinde açıklama yok\n"
+msgstr "không có miêu tả trong %%bản ghi thay đổi\n"
 
 #: build/parseDescription.c:48
 #, c-format
 msgid "line %d: Error parsing %%description: %s\n"
-msgstr "%d. satır: %%description ayrıştırılırken hata: %s \n"
+msgstr "dòng %d: %%miêu tả phân tích lỗi: %s\n"
 
 #: build/parseDescription.c:61 build/parseFiles.c:57 build/parseScript.c:240
 #, c-format
 msgid "line %d: Bad option %s: %s\n"
-msgstr " %d. satır: %s seçeneği hatalı: %s\n"
+msgstr "dòng %d: lựa chọn sai %s: %s\n"
 
 #: build/parseDescription.c:72 build/parseFiles.c:71 build/parseScript.c:254
 #, c-format
 msgid "line %d: Too many names: %s\n"
-msgstr "%d. satır: İsim sayısı fazla: %s\n"
+msgstr "dòng %d: Quá nhiều tên: %s\n"
 
 #: build/parseDescription.c:80 build/parseFiles.c:80 build/parseScript.c:263
 #, c-format
 msgid "line %d: Package does not exist: %s\n"
-msgstr "%d. satır: Paket yok: %s\n"
+msgstr "dòng %d: Gói không hiện hành: %s\n"
 
 #: build/parseDescription.c:90
 #, c-format
 msgid "line %d: Second description\n"
-msgstr "%d. satır: İkinci açıklama\n"
+msgstr "dòng %d: Miêu tả thứ nhì\n"
 
 #: build/parseFiles.c:43
 #, c-format
 msgid "line %d: Error parsing %%files: %s\n"
-msgstr "%d. satır: %%files ayrıştırılırken hata: %s\n"
+msgstr "dòng %d: %% những tệp tin phân tích lỗi: %s\n"
 
 #: build/parseFiles.c:87
 #, c-format
 msgid "line %d: Second %%files list\n"
-msgstr "%d. satır: İkinci %%files listesi\n"
+msgstr "dòng %d: Danh sách %%tập tin thứ nhì\n"
 
 #: build/parsePreamble.c:250
 #, c-format
 msgid "Architecture is excluded: %s\n"
-msgstr "Mimari dışlandı: %s\n"
+msgstr "Cấu trúc bị loại trừ: %s\n"
 
 #: build/parsePreamble.c:254
 #, c-format
 msgid "Architecture is not included: %s\n"
-msgstr "Mimari içerilmedi: %s\n"
+msgstr "Cấu trúc không bao gồm: %s\n"
 
 #: build/parsePreamble.c:258
 #, c-format
 msgid "OS is excluded: %s\n"
-msgstr "OS dışlandı: %s\n"
+msgstr "OS bị loại trừ: %s\n"
 
 #: build/parsePreamble.c:262
 #, c-format
 msgid "OS is not included: %s\n"
-msgstr "OS içerilmedi: %s\n"
+msgstr "OS không bao gồm: %s\n"
 
 #: build/parsePreamble.c:287
 #, c-format
 msgid "%s field must be present in package: %s\n"
-msgstr "Pakette %s alan mevcut olmalı: %s\n"
+msgstr "%s trường phải hiện diện trong gói: %s\n"
 
 #: build/parsePreamble.c:318
 #, c-format
 msgid "Duplicate %s entries in package: %s\n"
-msgstr "Pakette %s girdi tekrarlanmış: %s\n"
+msgstr "Gấp đôi %s các mục nhập trong gói: %s\n"
 
 #: build/parsePreamble.c:402
 msgid "No icon file in sources\n"
@@ -846,17 +845,17 @@ msgstr ""
 #: build/parsePreamble.c:430
 #, fuzzy, c-format
 msgid "Invalid icon URL: %s\n"
-msgstr "%s dizgeciği geçersiz: %s\n"
+msgstr "Bằng chứng %s không có căn cứ: %s\n"
 
 #: build/parsePreamble.c:437
 #, c-format
 msgid "Unable to open icon %s: %s\n"
-msgstr "%s simgesi açılamadı: %s\n"
+msgstr "Không thể mở biểu tượng %s: %s\n"
 
 #: build/parsePreamble.c:446
 #, c-format
 msgid "Unable to read icon %s: %s\n"
-msgstr "%s simgesi okunamadı: %s\n"
+msgstr "Không thể đọc biểu tượng %s: %s\n"
 
 #: build/parsePreamble.c:451
 #, c-format
@@ -866,62 +865,62 @@ msgstr ""
 #: build/parsePreamble.c:472
 #, c-format
 msgid "Unknown icon type: %s\n"
-msgstr "bilinmeyen simge türü: %s\n"
+msgstr "Kiểu biểu tượng lạ: %s\n"
 
 #: build/parsePreamble.c:522
 #, c-format
 msgid "line %d: Tag takes single token only: %s\n"
-msgstr "%d. satır: Etiket sadece tek dizgecik alır: %s\n"
+msgstr "dòng %d: Thẻ ghi có duy nhất dấu hiệu đơn: %s\n"
 
 #: build/parsePreamble.c:558
 #, c-format
 msgid "line %d: Malformed tag: %s\n"
-msgstr "%d. satır: Etiket bozuk: %s\n"
+msgstr "dòng %d: Thẻ ghi không hợp: %s\n"
 
 #: build/parsePreamble.c:566
 #, c-format
 msgid "line %d: Empty tag: %s\n"
-msgstr "%d. satır: Etiket boş: %s\n"
+msgstr "dòng %d: Thẻ ghi rỗng: %s\n"
 
 #: build/parsePreamble.c:590 build/parsePreamble.c:597
 #, c-format
 msgid "line %d: Illegal char '-' in %s: %s\n"
-msgstr "%d. satır:  %s içinde '-' karakteri kuraldışı: %s\n"
+msgstr "dòng %d: ký tự không hợp lệ '-' trong %s: %s\n"
 
 #: build/parsePreamble.c:640
 #, c-format
 msgid "BuildRoot can not be \"/\": %s\n"
-msgstr "BuildRoot \"/\" olamaz: %s\n"
+msgstr "Gốc cài đặt không thể là \"/\": %s\n"
 
 #: build/parsePreamble.c:657
 #, fuzzy, c-format
 msgid "line %d: Prefixes must begin with \"/\": %s\n"
-msgstr "%d. satır: Önekler \"/\" ile bitemez: %s\n"
+msgstr "dòng %d: Tiền tố không nên kết thúc với \"/\": %s\n"
 
 #: build/parsePreamble.c:665
 #, c-format
 msgid "line %d: Prefixes must not end with \"/\": %s\n"
-msgstr "%d. satır: Önekler \"/\" ile bitemez: %s\n"
+msgstr "dòng %d: Tiền tố không nên kết thúc với \"/\": %s\n"
 
 #: build/parsePreamble.c:677
 #, c-format
 msgid "line %d: Docdir must begin with '/': %s\n"
-msgstr "%d. satır: Docdir '/' ile başlamalı: %s\n"
+msgstr "dòng %d: Danh mục tài liệu phải bắt đầu với '/': %s\n"
 
 #: build/parsePreamble.c:691
 #, fuzzy, c-format
 msgid "line %d: %s takes an integer value: %s\n"
-msgstr "%d. satır: Etiket sadece tek dizgecik alır: %s\n"
+msgstr "dòng %d: Thẻ ghi có duy nhất dấu hiệu đơn: %s\n"
 
 #: build/parsePreamble.c:737 build/parsePreamble.c:748
 #, c-format
 msgid "line %d: Bad %s: qualifiers: %s\n"
-msgstr "%d. satır: %s hatalı: niteleyiciler: %s\n"
+msgstr "dòng %d: Lỗi %s: những người đủ điều kiện: %s\n"
 
 #: build/parsePreamble.c:792
 #, c-format
 msgid "line %d: Bad BuildArchitecture format: %s\n"
-msgstr "%d. satır: BuildArchitecture biçimi hatalı: %s\n"
+msgstr "dòng %d: Định dạng Cấu Trúc Xây Dựng lỗi: %s\n"
 
 #: build/parsePreamble.c:914
 #, c-format
@@ -931,249 +930,247 @@ msgstr ""
 #: build/parsePreamble.c:1010
 #, c-format
 msgid "Bad package specification: %s\n"
-msgstr "Paket belirtimi hatalı: %s\n"
+msgstr "Chi tiết gói lỗi: %s\n"
 
 #: build/parsePreamble.c:1016
 #, c-format
 msgid "Package already exists: %s\n"
-msgstr "Paket zaten var: %s\n"
+msgstr "Gói đã có: %s\n"
 
 #: build/parsePreamble.c:1050
 #, c-format
 msgid "line %d: Unknown tag: %s\n"
-msgstr "%d. satır: Bilinmeyen etiket: %s\n"
+msgstr "dòng %d: Thẻ ghi không xác định: %s\n"
 
 #: build/parsePrep.c:48
 #, c-format
 msgid "Bad source: %s: %s\n"
-msgstr "Kaynak hatalı: %s: %s\n"
+msgstr "Nguồn sai: %s: %s\n"
 
 #: build/parsePrep.c:111
 #, c-format
 msgid "No patch number %d\n"
-msgstr "%d yama numarası yok\n"
+msgstr "Miếng vá không có số %d\n"
 
 #: build/parsePrep.c:222
 #, c-format
 msgid "No source number %d\n"
-msgstr "%d kaynak kodu numarası yok\n"
+msgstr "Nguồn không có số %d\n"
 
 #: build/parsePrep.c:366
 #, c-format
 msgid "Error parsing %%setup: %s\n"
-msgstr "%%setup çözümlenirken hata: %s\n"
+msgstr "Lỗi khi phân tích cài đặt%%: %s\n"
 
 #: build/parsePrep.c:381
 #, c-format
 msgid "line %d: Bad arg to %%setup: %s\n"
-msgstr "%d. satır: %%setup argumanı hatalı: %s\n"
+msgstr "dòng %d: Đối số sai tới %%thiết lập: %s\n"
 
 #: build/parsePrep.c:399
 #, c-format
 msgid "line %d: Bad %%setup option %s: %s\n"
-msgstr "%d. satır: %%setup seçeneği %s hatalı: %s\n"
+msgstr "dòng %d: Lựa chọn %s cài đặt %% sai: %s\n"
 
 #: build/parsePrep.c:549
 #, c-format
 msgid "line %d: Need arg to %%patch -b: %s\n"
-msgstr "%d. satır: %%patch -b'ye argüman gerekli: %s\n"
+msgstr "dòng %d: Cần đối số để vá%% -b: %s\n"
 
 #: build/parsePrep.c:558
 #, c-format
 msgid "line %d: Need arg to %%patch -z: %s\n"
-msgstr "%d. satır: %%patch -z'ye argüman gerekli: %s\n"
+msgstr "dòng %d: Cần đối số để vá%% -z: %s\n"
 
 #: build/parsePrep.c:571
 #, fuzzy, c-format
 msgid "line %d: Bad arg to %%patch -F: %s\n"
-msgstr "%d. satır: %%patch -p'nin argümanı hatalı: %s\n"
+msgstr "dòng %d: Đối số sai để vá%% -p: %s\n"
 
 #: build/parsePrep.c:580
 #, fuzzy, c-format
 msgid "line %d: Need arg to %%patch -d: %s\n"
-msgstr "%d. satır: %%patch -b'ye argüman gerekli: %s\n"
+msgstr "dòng %d: Cần đối số để vá%% -b: %s\n"
 
 #: build/parsePrep.c:592
 #, c-format
 msgid "line %d: Need arg to %%patch -p: %s\n"
-msgstr "%d. satır: %%patch -p'ye argüman gerekli: %s\n"
+msgstr "dòng %d: Cần đối số để vá%% -p: %s\n"
 
 #: build/parsePrep.c:599
 #, c-format
 msgid "line %d: Bad arg to %%patch -p: %s\n"
-msgstr "%d. satır: %%patch -p'nin argümanı hatalı: %s\n"
+msgstr "dòng %d: Đối số sai để vá%% -p: %s\n"
 
 #: build/parsePrep.c:606
 msgid "Too many patches!\n"
-msgstr "Yamalar çok fazla!\n"
+msgstr "Quá nhiều miếng vá!\n"
 
 #: build/parsePrep.c:610
 #, c-format
 msgid "line %d: Bad arg to %%patch: %s\n"
-msgstr "%d. satır: %%patch argüman hatası: %s\n"
+msgstr "dòng %d: Đối số sai để vá%%: %s\n"
 
 #: build/parsePrep.c:759
 #, fuzzy, c-format
 msgid "Missing %s%d %s: %s\n"
-msgstr "%s %s içinde %s yok\n"
+msgstr "Thiếu %s trong %s %s\n"
 
 #: build/parsePrep.c:771 build/parsePrep.c:787
 #, fuzzy, c-format
 msgid "Fetching(%s%d): %s\n"
-msgstr "%s icra ediliyor: %s\n"
+msgstr "Đang thực thi (%s): %s\n"
 
 #: build/parsePrep.c:777 build/parsePrep.c:793
 #, fuzzy, c-format
 msgid "Fetching %s%d failed: %s\n"
-msgstr "%s açılamadı: %s\n"
+msgstr "mở %s thất bại: %s\n"
 
 #: build/parsePrep.c:799
 #, fuzzy, c-format
 msgid "Missing %s%d: %s: %s\n"
-msgstr "%s %s içinde %s yok\n"
+msgstr "Thiếu %s trong %s %s\n"
 
 #: build/parsePrep.c:821
 #, c-format
 msgid "line %d: second %%prep\n"
-msgstr "%d. satır: ikinci %%prep\n"
+msgstr "dòng %d: %%prep thứ nhì\n"
 
 #: build/parseReqs.c:101
 #, fuzzy, c-format
 msgid ""
 "line %d: Dependency \"%s\" must begin with alpha-numeric, '_' or '/': %s\n"
 msgstr ""
-"%d. satır: Bağımlılık kısaltmaları bir alfanümerik, '_' veya '/' ile "
-"başlamalı: %s\n"
+"dòng %d: Những dấu hiệu phụ thuộc phải bắt đầu với alpha-numeric, '_' hoặc "
+"'/': %s\n"
 
 #: build/parseReqs.c:127
 #, c-format
 msgid "line %d: Versioned file name not permitted: %s\n"
-msgstr "%d. satır: Sürüm içeren dosya adı uygun değil: %s\n"
+msgstr "dòng %d: Phiên bản tệp tin không được phép: %s\n"
 
 #: build/parseReqs.c:144
 #, c-format
 msgid "line %d: Version required: %s\n"
-msgstr "%d. satır: Sürüm gerekli: %s\n"
+msgstr "dòng %d: Phiên bản yêu cầu: %s\n"
 
 #: build/parseScript.c:196
 #, c-format
 msgid "line %d: triggers must have --: %s\n"
-msgstr "%d. satır: tetikleyiciler -- içermeli: %s\n"
+msgstr "dòng %d: Bắt buộc phải có những nút bấm --: %s\n"
 
 #: build/parseScript.c:206 build/parseScript.c:279
 #, c-format
 msgid "line %d: Error parsing %s: %s\n"
-msgstr "%d. satır: %s çözümlenirken hata: %s\n"
+msgstr "dòng %d: Lỗi phân tích %s: %s\n"
 
 #: build/parseScript.c:218
 #, fuzzy, c-format
 msgid "line %d: internal script must end with '>': %s\n"
-msgstr "%d. satır: betik yazılımı '/' ile başlamalı: %s\n"
+msgstr "dòng %d: Kịch bản chương trình phải bắt đầu với '/': %s\n"
 
 #: build/parseScript.c:227
 #, c-format
 msgid "line %d: script program must begin with '/': %s\n"
-msgstr "%d. satır: betik yazılımı '/' ile başlamalı: %s\n"
+msgstr "dòng %d: Kịch bản chương trình phải bắt đầu với '/': %s\n"
 
 #: build/parseScript.c:271
 #, c-format
 msgid "line %d: Second %s\n"
-msgstr "%d. satır: İkinci %s\n"
+msgstr "dòng %d: Thứ nhì %s\n"
 
 #: build/parseScript.c:317
 #, fuzzy, c-format
 msgid "line %d: unsupported internal script: %s\n"
-msgstr "%d. satır: %%description ayrıştırılırken hata: %s \n"
+msgstr "dòng %d: %%miêu tả phân tích lỗi: %s\n"
 
 #: build/parseSpec.c:235
 #, c-format
 msgid "line %d: %s\n"
-msgstr "%d. satır: %s\n"
+msgstr "dòng %d: %s\n"
 
 #: build/parseSpec.c:286
 #, c-format
 msgid "Unable to open %s: %s\n"
-msgstr "%s açılamadı: %s\n"
+msgstr "Không thể mở %s: %s\n"
 
 #: build/parseSpec.c:301
 #, c-format
 msgid "Unclosed %%if\n"
-msgstr "%%if kapanmamış\n"
+msgstr "Không đóng %%if\n"
 
 #: build/parseSpec.c:390
 #, c-format
 msgid "%s:%d: parseExpressionBoolean returns %d\n"
-msgstr "%s:%d: parseExpressionBoolean %d ile dönüyor\n"
+msgstr "%s:%d: phân tích biểu thức Boolean trả lại %d\n"
 
 #: build/parseSpec.c:399
 #, c-format
 msgid "%s:%d: Got a %%else with no %%if\n"
-msgstr "%s:%d: %%if'siz bir  %%else alındı\n"
+msgstr "%s:%d: Có một %%else với không %%if\n"
 
 #: build/parseSpec.c:411
 #, c-format
 msgid "%s:%d: Got a %%endif with no %%if\n"
-msgstr "%s:%d: %%if'siz bir %%endif alındı\n"
+msgstr "%s:%d: Có một %%endif không có %%if\n"
 
 #: build/parseSpec.c:425 build/parseSpec.c:434
 #, c-format
 msgid "malformed %%include statement\n"
-msgstr "%%include deyimi bozuk\n"
+msgstr "câu lệnh %%include không hợp\n"
 
 #: build/parseSpec.c:620
 msgid "No compatible architectures found for build\n"
-msgstr "Kurgulamak için uyumlu mimari yok\n"
+msgstr "Tìm thấy những cấu trúc không tương thích cho việc xây dựng\n"
 
 #: build/parseSpec.c:659
 #, c-format
 msgid "Package has no %%description: %s\n"
-msgstr "Paket %%description içermiyor: %s\n"
+msgstr "Gói không có %%description: %s\n"
 
 #: build/poptBT.c:142
 #, c-format
 msgid "build through %prep (unpack sources and apply patches) from <specfile>"
 msgstr ""
-"<specfile>dan  %prep adımı sayesinde oluşturulur (kaynak paketi açılır ve "
-"yamalar uygulanır)"
+"xây dựng qua %prep (mở gói nguồn và áp dụng những miếng vá) từ <tệp tin đặc "
+"tả>"
 
 #: build/poptBT.c:143 build/poptBT.c:146 build/poptBT.c:149 build/poptBT.c:152
 #: build/poptBT.c:155 build/poptBT.c:158 build/poptBT.c:161 build/poptBT.c:165
 #: build/poptBT.c:169
 msgid "<specfile>"
-msgstr "<specfile>"
+msgstr "<tệp tin đặc tả>"
 
 #: build/poptBT.c:145
 msgid "build through %build (%prep, then compile) from <specfile>"
-msgstr ""
-"<specfile>dan %build adımı sayesinde oluşturulur (%prep, sonra da derlenir)"
+msgstr "xây dựng qua %build (%prep, sau đó biên dịch) từ <tệp tin đặc tả>"
 
 #: build/poptBT.c:148
 msgid "build through %install (%prep, %build, then install) from <specfile>"
 msgstr ""
-"<specfile>dan %install adımı sayesinde oluşturulur (%prep, %build, sonra da "
-"kurulum)"
+"xây dựng qua %install (%prep, %build, sau đó cài đặt) từ <tệp tin đặc tả>"
 
 #: build/poptBT.c:151
 #, c-format
 msgid "verify %files section from <specfile>"
-msgstr "<specfile>dan %files bölümünü doğrular"
+msgstr "thẩm tra đoạn %files từ <tệp tin đặc tả>"
 
 #: build/poptBT.c:154
 msgid "build source and binary packages from <specfile>"
-msgstr "kaynak ve çalıştırılabilir paketleri <specfile> dosyasından oluşturur"
+msgstr "xây dựng nguồn và những gói nhị phân từ <tệp tin đặc tả>"
 
 #: build/poptBT.c:157
 msgid "build binary package only from <specfile>"
-msgstr "çalıştırılabilir paketi sadece <specfile> dosyasından oluşturur"
+msgstr "xây dựng gói nhị phân duy nhất từ <tệp tin đặc tả>"
 
 #: build/poptBT.c:160
 msgid "build source package only from <specfile>"
-msgstr "kaynak paketi sadece <specfile> dosyasından oluşturur"
+msgstr "xây dựng gói nguồn duy nhất từ <tệp tin đặc tả>"
 
 #: build/poptBT.c:164
 #, fuzzy
 msgid "track versions of sources from <specfile>"
-msgstr "<specfile>dan %files bölümünü doğrular"
+msgstr "thẩm tra đoạn %files từ <tệp tin đặc tả>"
 
 #: build/poptBT.c:168
 msgid "fetch missing source and patch files"
@@ -1182,112 +1179,105 @@ msgstr ""
 #: build/poptBT.c:173
 #, c-format
 msgid "build through %prep (unpack sources and apply patches) from <tarball>"
-msgstr ""
-"<tarball>dan %prep adımı sayesinde oluşturulur (kaynak paketi açılır ve "
-"yamalar uygulanır)"
+msgstr "xây dựng qua %prep (mở các nguồn và áp dụng các miếng vá) từ <tệp nén>"
 
 #: build/poptBT.c:174 build/poptBT.c:177 build/poptBT.c:180 build/poptBT.c:183
 #: build/poptBT.c:186 build/poptBT.c:189 build/poptBT.c:192
 msgid "<tarball>"
-msgstr "<tarball>"
+msgstr "<tệp tin nén>"
 
 #: build/poptBT.c:176
 msgid "build through %build (%prep, then compile) from <tarball>"
-msgstr ""
-"<tarball>dan %build adımı sayesinde oluşturulur (%prep, sonra da derleme)"
+msgstr "xây dựng qua %build (%prep, sau đó biên dịch) từ <tệp tin nén>"
 
 #: build/poptBT.c:179
 msgid "build through %install (%prep, %build, then install) from <tarball>"
-msgstr ""
-"<tarball>dan %install adımı sayesinde oluşturulur (%prep, %build, sonra da "
-"kurulur)"
+msgstr "xây dựng qua %install (%prep, %build, sau đó cài đặt) từ <tệp tin nén>"
 
 #: build/poptBT.c:182
 #, c-format
 msgid "verify %files section from <tarball>"
-msgstr "<tarball>dan %files bölümünü doğrular"
+msgstr "thẩm tra đoạn %files từ <tệp tin nén>"
 
 #: build/poptBT.c:185
 msgid "build source and binary packages from <tarball>"
-msgstr "kaynak ve çalıştırılabilir paketleri <tarball>dan oluşturur"
+msgstr "xây dựng nguồn và các gói nhị phân từ <tệp tin nén>"
 
 #: build/poptBT.c:188
 msgid "build binary package only from <tarball>"
-msgstr "çalıştırılabilir paketi sadece <tarball>dan oluşturur"
+msgstr "xây dựng gói nhị phân duy nhất từ <tệp tin nén>"
 
 #: build/poptBT.c:191
 msgid "build source package only from <tarball>"
-msgstr "kaynak paketi sadece <tarball>dan oluşturur"
+msgstr "xây dựng gói nguồn duy nhất từ <tệp tin nén>"
 
 #: build/poptBT.c:195
 msgid "build binary package from <source package>"
-msgstr "çalıştırılabilir paketi <kaynak paketi>nden oluşturur"
+msgstr "xây dựng gói nhị phân từ <gói nguồn>"
 
 #: build/poptBT.c:196 build/poptBT.c:199
 msgid "<source package>"
-msgstr "<kaynak paketi>"
+msgstr "<gói nguồn>"
 
 #: build/poptBT.c:198
 msgid ""
 "build through %install (%prep, %build, then install) from <source package>"
-msgstr ""
-"<kaynak paketi>nden %install adımı sayesinde oluşturulur (%prep, %build, "
-"sonra da kurulur)"
+msgstr "xây dựng qua %install (%prep, %build, sau đó cài đặt) từ <gói nguồn>"
 
 #: build/poptBT.c:202
 msgid "remove build tree when done"
-msgstr "işlem sonunda paket oluşturma ağacını siler"
+msgstr "gỡ bỏ cây xây dựng khi hoàn thành"
 
 #: build/poptBT.c:204
 msgid "debug file state machine"
-msgstr "hata ayıklama dosyası durum motoru"
+msgstr "chỉnh lỗi tệp tin tình trạng máy"
 
 #: build/poptBT.c:206
 msgid "do not execute any stages of the build"
-msgstr "oluşumun hiçbir adımı icra edilmez"
+msgstr "không thực thi bất kỳ giai đoạn nào của việc xây dựng"
 
 #: build/poptBT.c:208
 msgid "do not verify build dependencies"
-msgstr "kurgulama bağımlılıklarını doğrulanmaz"
+msgstr "không thẩm tra các phần phụ thuộc của việc xây dựng"
 
 #: build/poptBT.c:211 lib/poptALL.c:444 lib/poptI.c:342 lib/poptQV.c:406
 #: lib/poptQV.c:415 lib/poptQV.c:457
 msgid "don't verify package digest(s)"
-msgstr "paket özetleri doğrulanmaz"
+msgstr "không thẩm tra (các) yết thị của gói"
 
 #: build/poptBT.c:213 lib/poptALL.c:446 lib/poptI.c:344 lib/poptQV.c:409
 #: lib/poptQV.c:417 lib/poptQV.c:460
 msgid "don't verify database header(s) when retrieved"
-msgstr "alırken veritabanı başlıkları doğrulanmaz"
+msgstr "không thẩm tra (các) tiêu đề cơ sở dữ liệu khi tìm được"
 
 #: build/poptBT.c:215 lib/poptALL.c:452 lib/poptI.c:346 lib/poptQV.c:412
 #: lib/poptQV.c:419 lib/poptQV.c:462
 msgid "don't verify package signature(s)"
-msgstr "paket imzasını doğrular"
+msgstr "không thẩm tra (các) chữ ký gói"
 
 #: build/poptBT.c:218
 msgid "do not accept i18N msgstr's from specfile"
-msgstr "spec dosyası içindeki i18n msgstr'leri kabul edilmez"
+msgstr "không chấp nhận dòng thông báo của i18N từ tệp tin đặc tả"
 
 #: build/poptBT.c:220
 msgid "remove sources when done"
-msgstr "işlem sonunda kaynakları siler"
+msgstr "gỡ bỏ nguồn khi kết thúc"
 
 #: build/poptBT.c:222
 msgid "remove specfile when done"
-msgstr "işlem sonunda spec dosyasını siler"
+msgstr "gỡ bỏ tệp tin đặc tả khi kết thúc"
 
 #: build/poptBT.c:224
 msgid "skip straight to specified stage (only for c,i)"
-msgstr "doğrudan belirtilen adıma atlar (sadece c ve i için)"
+msgstr "bỏ qua thẳng tới giai đoạn định rõ (chỉ cho c,i)"
 
 #: build/poptBT.c:226
 msgid "generate PGP/GPG signature"
-msgstr "PGP/GPG imzası üretir"
+msgstr "tạo chữ ký PGP/GPG"
 
 #: build/poptBT.c:228
 msgid "override target platform"
-msgstr "hedef platforma zorlar"
+msgstr "ghi đè nền tảng mục tiêu"
 
 #: build/poptBT.c:228 lib/poptALL.c:441 lib/poptQV.c:317
 msgid "CPU-VENDOR-OS"
@@ -1295,98 +1285,97 @@ msgstr ""
 
 #: build/poptBT.c:230
 msgid "lookup i18N strings in specfile catalog"
-msgstr "spec dosyasındaki i18n iletilerine bakar"
+msgstr "tra cứu các dòng của i18N trong mục lục tệp tin đặc tả"
 
 #: build/spec.c:291
 #, c-format
 msgid "line %d: Bad number: %s\n"
-msgstr "%d. satır: Numara hatalı: %s\n"
+msgstr "dòng %d: số sai: %s\n"
 
 #: build/spec.c:297
 #, c-format
 msgid "line %d: Bad no%s number: %d\n"
-msgstr "%d. satır: Hatalı no%s numarası: %d\n"
+msgstr "dòng %d: số no%s sai: %d\n"
 
 #: build/spec.c:363
 #, c-format
 msgid "line %d: Bad %s number: %s\n"
-msgstr "%d. satır: Hatalı %s numarası: %s\n"
+msgstr "dòng %d: số %s sai: %s\n"
 
 #: build/spec.c:684
 #, c-format
 msgid "can't query %s: %s\n"
-msgstr "%s sorgulanamıyor: %s\n"
+msgstr "không thể truy vấn %s: %s\n"
 
 #: build/spec.c:761
 #, c-format
 msgid "query of specfile %s failed, can't parse\n"
-msgstr "%s spec dosyasının sorgulanması başarısız, çözümlenemiyor\n"
+msgstr "truy vấn tệp tin đặc tả %s thất bại, không thể phân tích\n"
 
 #: build/spec.c:815
 #, fuzzy, c-format
 msgid "Query specfile for platform(s): %s\n"
-msgstr "Hedef platformlar derleniyor: %s\n"
+msgstr "Đang xây dựng các nền tảng mục tiêu: %s\n"
 
 #: lib/cpio.c:230
 #, c-format
 msgid "(error 0x%x)"
-msgstr "(hata 0x%x)"
+msgstr "(error 0x%x)"
 
 #: lib/cpio.c:233
 msgid "Bad magic"
-msgstr "Magic hatalı"
+msgstr "Ma thuật sai"
 
 #: lib/cpio.c:234
 msgid "Bad/unreadable  header"
-msgstr "Hatalı/okunamayan başlık"
+msgstr "tiêu đề sai/không thể đọc"
 
 #: lib/cpio.c:256
 msgid "Header size too big"
-msgstr "Başlık çok uzun"
+msgstr "Cỡ tiêu đề quá lớn"
 
 #: lib/cpio.c:257
 msgid "Unknown file type"
-msgstr "Bilinmeyen dosya türü"
+msgstr "Không biết kiểu tệp tin"
 
 #: lib/cpio.c:258
 msgid "Missing hard link(s)"
-msgstr "Sabit bağ(lar) eksik"
+msgstr "Thất lạc (các) đường liên kết cứng"
 
 #: lib/cpio.c:259
 #, fuzzy
 msgid "File digest mismatch"
-msgstr "MD5 toplamı çelişkili"
+msgstr "tổng MD5 không khớp"
 
 #: lib/cpio.c:260
 msgid "Internal error"
-msgstr "İç hata"
+msgstr "Lỗi nội tại"
 
 #: lib/cpio.c:261
 msgid "Archive file not in header"
-msgstr "Arşiv dosyası başlıkta değil"
+msgstr "Tệp tin lưu trữ không trong tiêu đề"
 
 #: lib/cpio.c:272
 msgid " failed - "
-msgstr " başarısız - "
+msgstr "lỗi - "
 
 #: lib/depends.c:314
 #, fuzzy, c-format
 msgid "package %s was already added, skipping %s\n"
-msgstr "%s paketi zaten ekli, %s ile yer değiştiriliyor\n"
+msgstr "gói %s đã được thêm vào, thay thế với %s\n"
 
 #: lib/depends.c:328
 #, c-format
 msgid "package %s was already added, replacing with %s\n"
-msgstr "%s paketi zaten ekli, %s ile yer değiştiriliyor\n"
+msgstr "gói %s đã được thêm vào, thay thế với %s\n"
 
 #: lib/depends.c:638
 msgid "(cached)"
-msgstr "(arabellekli)"
+msgstr "(cached)"
 
 #: lib/depends.c:654
-#, fuzzy
 msgid "(function probe)"
-msgstr "(bilinmeyen tür)"
+msgstr ""
 
 #: lib/depends.c:673
 msgid "(user lookup)"
@@ -1399,12 +1388,12 @@ msgstr ""
 #: lib/depends.c:699
 #, fuzzy
 msgid "(access probe)"
-msgstr "(önlem eklendi)"
+msgstr "(thêm dự phòng)"
 
 #: lib/depends.c:721
 #, fuzzy
 msgid "(mtab probe)"
-msgstr "(db sağlar)"
+msgstr "(db provides)"
 
 #: lib/depends.c:778
 msgid "(diskspace probe)"
@@ -1413,12 +1402,12 @@ msgstr ""
 #: lib/depends.c:820
 #, fuzzy
 msgid "(digest probe)"
-msgstr "(önlem eklendi)"
+msgstr "(thêm dự phòng)"
 
 #: lib/depends.c:844
 #, fuzzy
 msgid "(signature probe)"
-msgstr "İmza seçenekleri:"
+msgstr "Các lựa chọn ký số:"
 
 #: lib/depends.c:866
 msgid "(gnupg probe)"
@@ -1427,16 +1416,15 @@ msgstr ""
 #: lib/depends.c:879
 #, fuzzy
 msgid "(macro probe)"
-msgstr "(rpmrc sağlar)"
+msgstr "(rpmrc provides)"
 
 #: lib/depends.c:907
 msgid "(envvar probe)"
 msgstr ""
 
 #: lib/depends.c:934
-#, fuzzy
 msgid "(running probe)"
-msgstr "(bilinmeyen tür)"
+msgstr ""
 
 #: lib/depends.c:956
 msgid "(sanity probe)"
@@ -1449,39 +1437,39 @@ msgstr ""
 #: lib/depends.c:998
 #, fuzzy
 msgid "(sysinfo provides)"
-msgstr "(db sağlar)"
+msgstr "(db provides)"
 
 #: lib/depends.c:1017
 msgid "(rpmlib provides)"
-msgstr "(rpmlib sağlar)"
+msgstr "(rpmlib provides)"
 
 #: lib/depends.c:1032
 #, fuzzy
 msgid "(cpuinfo provides)"
-msgstr "(rpmlib sağlar)"
+msgstr "(rpmlib provides)"
 
 #: lib/depends.c:1047
 #, fuzzy
 msgid "(getconf provides)"
-msgstr "(db sağlar)"
+msgstr "(db provides)"
 
 #: lib/depends.c:1062
 #, fuzzy
 msgid "(uname provides)"
-msgstr "(önlem eklendi)"
+msgstr "(thêm dự phòng)"
 
 #: lib/depends.c:1094
 #, fuzzy
 msgid "(soname provides)"
-msgstr "(önlem eklendi)"
+msgstr "(thêm dự phòng)"
 
 #: lib/depends.c:1122
 msgid "(db files)"
-msgstr "(db dosyaları)"
+msgstr "(db files)"
 
 #: lib/depends.c:1134
 msgid "(db provides)"
-msgstr "(db sağlar)"
+msgstr "(db provides)"
 
 #: lib/depends.c:1164
 msgid "(hint skipped)"
@@ -1490,106 +1478,106 @@ msgstr ""
 #: lib/depends.c:1591
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
-msgstr "Paket ismi ilişkileri [%d]\t%s -> %s yoksayılıyor\n"
+msgstr "bỏ quan (các) sự liên quan tên gói [%d]\t%s -> %s\n"
 
 #: lib/depends.c:1714
 #, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
-msgstr "tsort bağıntılarından %s \"%s\" kaldırılıyor.\n"
+msgstr "gỡ bỏ %s \"%s\" từ các mối quan hệ tsort.\n"
 
 #: lib/depends.c:2288
 msgid "LOOP:\n"
-msgstr "ÇEVRİM:\n"
+msgstr "LOOP:\n"
 
 #: lib/depends.c:2324
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
-msgstr "rpmtsOrder başarısız, %d eleman kaldı\n"
+msgstr "rpmts Yêu cầu thất bại, %d các yếu tố còn lại\n"
 
 #: lib/fs.c:79
 #, c-format
 msgid "mntctl() failed to return size: %s\n"
-msgstr "mntctl() sonuçlanan hatalı boyut nedeniyle başarısız: %s\n"
+msgstr "mntctl() trở lại kích thước thất bại: %s\n"
 
 #: lib/fs.c:94
 #, c-format
 msgid "mntctl() failed to return mount points: %s\n"
-msgstr "mntctl() sonuçlanan hatalı bağlantı yerleri nedeniyle başarısız: %s\n"
+msgstr "mntctl() trở lại các điểm gắn kết thất bại: %s\n"
 
 #: lib/fs.c:114 lib/fs.c:219 lib/fs.c:336
 #, c-format
 msgid "failed to stat %s: %s\n"
-msgstr "%s durumlanamadı: %s\n"
+msgstr "khởi động %s thất bại: %s\n"
 
 #: lib/fs.c:159
 #, c-format
 msgid "failed to open %s: %s\n"
-msgstr "%s açılamadı: %s\n"
+msgstr "mở %s thất bại: %s\n"
 
 #: lib/fs.c:241
-#, fuzzy, c-format
+#, c-format
 msgid "%5d 0x%04x %s %s\n"
-msgstr "Dosya%5d: %07o %s.%s\t %s\n"
+msgstr "%5d 0x%04x %s %s\n"
 
 #: lib/fs.c:359
 #, c-format
 msgid "file %s is on an unknown device\n"
-msgstr "%s dosyasının bulunduğu aygıt anlaşılamadı\n"
+msgstr "tệp tin %s tại một thiết bị không xác định\n"
 
 #: lib/fsm.c:780
 #, c-format
 msgid "user %s does not exist - using root\n"
-msgstr "kullanıcı %s yok - root kullanılacak\n"
+msgstr "người dùng %s không tồn tại -sử dụng root\n"
 
 #: lib/fsm.c:794
 #, c-format
 msgid "group %s does not exist - using root\n"
-msgstr "grup %s yok - root kullanılacak\n"
+msgstr "nhóm %s không tồn tại- sử dụng root\n"
 
 #: lib/fsm.c:1689
 #, c-format
 msgid "archive file %s was not found in header file list\n"
-msgstr "%s arşiv dosyası başlık dosyası listesinde yoktu\n"
+msgstr "tệp tin lưu trữ %s không tìm thấy trong danh sách tệp tin tiêu đề\n"
 
 #: lib/fsm.c:1833 lib/fsm.c:1953
 #, c-format
 msgid "%s saved as %s\n"
-msgstr "%s %s olarak kaydedildi\n"
+msgstr "%s được lưu như %s\n"
 
 #: lib/fsm.c:1980
 #, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
-msgstr "%s / %s dizin silinemedi - Dizin boş değil\n"
+msgstr "%s rmdir của %s thất bại: Thư mục không rỗng\n"
 
 #: lib/fsm.c:1986
 #, c-format
 msgid "%s rmdir of %s failed: %s\n"
-msgstr "%s / %s dizinin silinmesi başarısız: %s\n"
+msgstr "%s rmdir của %s thất bại: %s\n"
 
 #: lib/fsm.c:2001
 #, fuzzy, c-format
 msgid " %s: unlink of %s failed: %s\n"
-msgstr "%s / %s bağ kaldırılamadı: %s\n"
+msgstr "%s tháo liên kết của %s thất bại: %s\n"
 
 #: lib/fsm.c:2026
 #, c-format
 msgid "%s created as %s\n"
-msgstr "%s %s olarak oluşturuldu\n"
+msgstr "%s được tạo như %s\n"
 
 #: lib/misc.c:41
 #, c-format
 msgid "cannot create %%%s %s\n"
-msgstr "%%%s dosyası oluşturulamıyor: %s\n"
+msgstr "không thể tạo %%%s %s\n"
 
 #: lib/package.c:142
 #, fuzzy
 msgid "read failed\n"
-msgstr "icra başarısız\n"
+msgstr "Việc thực thi bị lỗi\n"
 
 #: lib/package.c:148 lib/rpmchecksig.c:244 lib/rpmchecksig.c:905
 #, c-format
 msgid "%s: No signature available\n"
-msgstr "%s: İmza bulundurmuyor\n"
+msgstr "%s: không có chữ ký\n"
 
 #: lib/package.c:241 lib/package.c:278 lib/rpmchecksig.c:984
 #, c-format
@@ -1599,55 +1587,55 @@ msgstr ""
 #: lib/package.c:323 lib/rpmchecksig.c:118
 #, c-format
 msgid "%s: Fread failed: %s\n"
-msgstr "%s: Fread başarısız: %s\n"
+msgstr "%s: đọc F thất bại: %s\n"
 
 #: lib/poptALL.c:359
 #, fuzzy
 msgid "FTS_COMFOLLOW: follow command line symlinks"
-msgstr "komut satırındaki sembolik bağlar izlenir"
+msgstr "theo sau các liên kết dòng lệnh"
 
 #: lib/poptALL.c:361
 #, fuzzy
 msgid "FTS_LOGICAL: logical walk"
-msgstr "mantıksal yürüyüş"
+msgstr "đường đi hợp lý"
 
 #: lib/poptALL.c:363
 #, fuzzy
 msgid "FTS_NOCHDIR: don't change directories"
-msgstr "dizinler değiştirilmez"
+msgstr "không thay đổi các thư mục"
 
 #: lib/poptALL.c:365
 #, fuzzy
 msgid "FTS_NOSTAT: don't get stat info"
-msgstr "stat bilgisi alınmaz"
+msgstr "không lấy thông tin trạng thái"
 
 #: lib/poptALL.c:367
 #, fuzzy
 msgid "FTS_PHYSICAL: physical walk"
-msgstr "fiziksel yürüyüş"
+msgstr "đường đi vật lý"
 
 #: lib/poptALL.c:369
 #, fuzzy
 msgid "FTS_SEEDOT: return dot and dot-dot"
-msgstr "nokta ve nokta-nokta döner"
+msgstr "trở về dot (.) và dot-dot (.-.)"
 
 #: lib/poptALL.c:371
 #, fuzzy
 msgid "FTS_XDEV: don't cross devices"
-msgstr "aygıtları çaprazlamaz"
+msgstr "không để các thiết bị giao nhau"
 
 #: lib/poptALL.c:373
 #, fuzzy
 msgid "FTS_WHITEOUT: return whiteout information"
-msgstr "boşluksuz bilgi döner"
+msgstr "lấy lại thông tin bị xoá"
 
 #: lib/poptALL.c:383 lib/poptI.c:210 lib/poptQV.c:287 lib/poptQV.c:334
 msgid "add suggested packages to transaction"
-msgstr "önerilen paketleri veri olarak ekler"
+msgstr "thêm gói đề nghị vào giao dịch"
 
 #: lib/poptALL.c:386 lib/poptI.c:213
 msgid "use anaconda \"presentation order\""
-msgstr ""
+msgstr "sử dụng anaconda \"thứ tự trình bày\""
 
 #: lib/poptALL.c:389 lib/poptI.c:216
 msgid "print dependency loops as warning"
@@ -1655,12 +1643,12 @@ msgstr ""
 
 #: lib/poptALL.c:392 lib/poptI.c:219
 msgid "do not suggest missing dependency resolution(s)"
-msgstr "eksik bağımlılık çözümlerini önermez"
+msgstr "không đề nghị các cách giải quyết phần phụ thuộc còn thiếu"
 
 #: lib/poptALL.c:395 lib/poptI.c:222
 #, fuzzy
 msgid "do not check added package conflicts"
-msgstr "pakete özgü hiçbir betik çalıştırılmaz"
+msgstr "không thực thi những gói vi kịch bản"
 
 #: lib/poptALL.c:398 lib/poptI.c:225
 msgid "ignore added package requires on symlink targets"
@@ -1673,30 +1661,29 @@ msgstr ""
 #: lib/poptALL.c:404 lib/poptI.c:231
 #, fuzzy
 msgid "ignore added package requires on file parent directory"
-msgstr ""
-"ismi değiştirilerek alt dizine kaydedilmek suretiyle silinen dosyaları saklar"
+msgstr "bảo lưu các tệp tin gói bị xoá bằng cách đổi tên thư mục con"
 
 #: lib/poptALL.c:407 lib/poptI.c:234
 #, fuzzy
 msgid "do not check added package requires"
-msgstr "paket betikleri çalıştırılmaz"
+msgstr "không thực thi những gói vi kịch bản"
 
 #: lib/poptALL.c:410 lib/poptI.c:237
 #, fuzzy
 msgid "ignore added package upgrades"
-msgstr "%s sağlayan paket yok\n"
+msgstr "không có gói nào chuẩn bị %s\n"
 
 #: lib/poptALL.c:426
 msgid "predefine MACRO with value EXPR"
-msgstr "İFADE değerli önceden tanımlı MAKRO"
+msgstr "định nghĩa MACRO trước với giá trị EXPR"
 
 #: lib/poptALL.c:427 lib/poptALL.c:430
 msgid "'MACRO EXPR'"
-msgstr "'MAKRO İFADE'"
+msgstr "'MACRO EXPR'"
 
 #: lib/poptALL.c:429
 msgid "define MACRO with value EXPR"
-msgstr "İFADE değeriyle tanımlı MAKRO"
+msgstr "định nghĩa MACRO với giá trị EXPR"
 
 #: lib/poptALL.c:432
 msgid "undefine MACRO"
@@ -1705,68 +1692,68 @@ msgstr ""
 #: lib/poptALL.c:433
 #, fuzzy
 msgid "'MACRO'"
-msgstr "'MAKRO İFADE'"
+msgstr "'MACRO EXPR'"
 
 #: lib/poptALL.c:435
 msgid "print macro expansion of EXPR"
-msgstr "İFADEnin makro açılımını basar"
+msgstr "in phần mở rộng macro của EXPR"
 
 #: lib/poptALL.c:436
 msgid "'EXPR'"
-msgstr "'İFADE'"
+msgstr "'EXPR'"
 
 #: lib/poptALL.c:438
 msgid "read <FILE:...> instead of default file(s)"
-msgstr "öntanımlı dosyalar yerine <DOSYA:...> okunur"
+msgstr "đọc <TỆP TIN:...> thay thế các tệp tin mặc định"
 
 #: lib/poptALL.c:439
 msgid "<FILE:...>"
-msgstr "<DOSYA:...>"
+msgstr "<TỆP TIN:...>"
 
 #: lib/poptALL.c:441 lib/poptQV.c:317
 #, fuzzy
 msgid "specify target platform"
-msgstr "hedef platforma zorlar"
+msgstr "ghi đè nền tảng mục tiêu"
 
 #: lib/poptALL.c:449 lib/poptALL.c:474
 msgid "disable use of libio(3) API"
-msgstr "libio(3) API kullanımını iptal eder"
+msgstr "loại trừ quyền sử dụng của libio(3) APT"
 
 #: lib/poptALL.c:455
 msgid "send stdout to CMD"
-msgstr "standart çıktıyı KOMUTa gönderir"
+msgstr "gửi stdout tới CMD"
 
 #: lib/poptALL.c:456
 msgid "CMD"
-msgstr "KOMUT"
+msgstr "CMD"
 
 #: lib/poptALL.c:458
 msgid "use ROOT as top level directory"
-msgstr "Üst düzey dizin olarak KÖK kullanılır"
+msgstr "sử dụng ROOT như thư mục mức cao nhất"
 
 #: lib/poptALL.c:459
 msgid "ROOT"
-msgstr "KÖK"
+msgstr "ROOT"
 
 #: lib/poptALL.c:462
 msgid "display known query tags"
-msgstr "bilinen sorgulama etiketlerini gösterir"
+msgstr "hiển thị các thẻ ghi truy vấn đã biết"
 
 #: lib/poptALL.c:464
 msgid "provide less detailed output"
-msgstr "daha az ayrıntılı çıktı sağlar"
+msgstr "cung cấp ít hơn chi tiết tín hiệu ra"
 
 #: lib/poptALL.c:466
 msgid "display final rpmrc and macro configuration"
-msgstr "son rpmrc ve makro yapılandırmasını gösterir"
+msgstr "hiển thị rpmrc cuối cùng và cấu hình macro"
 
 #: lib/poptALL.c:468
 msgid "provide more detailed output"
-msgstr "daha ayrıntılı çıktı sağlar"
+msgstr "cung cấp nhiều hơn chi tiết tín hiệu ra"
 
 #: lib/poptALL.c:470
 msgid "print the version of rpm being used"
-msgstr "Kullanılan RPM sürümünü verir"
+msgstr "in phiên bản của rpm đang sử được sử dụng"
 
 #: lib/poptALL.c:481
 msgid "select cryptography implementation"
@@ -1787,38 +1774,38 @@ msgstr ""
 #: lib/poptALL.c:489
 #, fuzzy
 msgid "debug WebDAV data stream"
-msgstr "protokol veri akışında hata kontrolu"
+msgstr "gỡ rối dòng dữ liệu"
 
 #: lib/poptALL.c:493
 msgid "debug payload file state machine"
-msgstr "payload dosyası durum motoru hata kontrolü"
+msgstr "gỡ rối tệp tin trạng thái máy tải về"
 
 #: lib/poptALL.c:495
 #, fuzzy
 msgid "use threads for file state machine"
-msgstr "payload dosyası durum motoru hata kontrolü"
+msgstr "gỡ rối tệp tin trạng thái máy tải về"
 
 #: lib/poptALL.c:497
 #, fuzzy
 msgid "debug FTP/HTTP data stream"
-msgstr "protokol veri akışında hata kontrolu"
+msgstr "gỡ rối dòng dữ liệu"
 
 #: lib/poptALL.c:506
 msgid "debug option/argument processing"
-msgstr "hata ayıklama seçenek/argümanı işleme"
+msgstr "gỡ rối lựa chọn/đối số đang xử lý"
 
 #: lib/poptALL.c:511
 msgid "debug package state machine"
-msgstr "hata ayıklama paketi durum motoru"
+msgstr "gỡ rối gói tình trạng máy"
 
 #: lib/poptALL.c:513
 #, fuzzy
 msgid "use threads for package state machine"
-msgstr "hata ayıklama paketi durum motoru"
+msgstr "gỡ rối gói tình trạng máy"
 
 #: lib/poptALL.c:527
 msgid "debug rpmio I/O"
-msgstr "rpmio G/Ç hata kontrolu"
+msgstr "gỡ rối rpmio Nhập/Xuất"
 
 #: lib/poptALL.c:547
 msgid "debug tar payloads"
@@ -1826,33 +1813,32 @@ msgstr ""
 
 #: lib/poptALL.c:551
 msgid "debug URL cache handling"
-msgstr "URL arabellek kullanımı hata kontrolu"
+msgstr "gỡ rối URL xử lý bộ nhớ đệm"
 
 #: lib/poptALL.c:703
 #, c-format
 msgid "%s: option table misconfigured (%d)\n"
-msgstr "%s: seçenek tablosu yanlış yapılandırılmış (%d)\n"
+msgstr "%s: bảng lựa chọn đã cấu hình sai (%d)\n"
 
 #: lib/poptI.c:70
 msgid "exclude paths must begin with a /"
-msgstr "dışlanan dosya yolu / ile başlamalı"
+msgstr "loại trừ các đường dẫn phải bắt đầu với a /"
 
 #: lib/poptI.c:84
-#, fuzzy
 msgid "Option --relocate needs /old/path=/new/path argument"
-msgstr "   --relocate <eskidizin>=<yenidizin>"
+msgstr ""
 
 #: lib/poptI.c:86
 msgid "relocations must begin with a /"
-msgstr "yeniden konumlandırma işlemleri / ile başlamalı"
+msgstr "những sự di chuyển phải bắt đầu với a /"
 
 #: lib/poptI.c:89
 msgid "relocations must contain a ="
-msgstr "yeniden konumlandırma işlemleri = içermelidir"
+msgstr "những sự di chuyển phải chứa a ="
 
 #: lib/poptI.c:92
 msgid "relocations must have a / following the ="
-msgstr "yeniden konumlandırma için = den sonra bir / gerekir"
+msgstr "những sự di chuyển phải có a / theo sau ="
 
 #: lib/poptI.c:110
 msgid "Option --rbexclude needs transaction id argument(s)"
@@ -1861,212 +1847,212 @@ msgstr ""
 #: lib/poptI.c:141
 #, fuzzy
 msgid "Option --rollback needs a time/date stamp argument"
-msgstr "rollback argüman olarak bir tarih/zaman damgası alır"
+msgstr "sự quay lại chiếm một đối số đặc trưng thời gian/ngày tháng"
 
 #: lib/poptI.c:145
 #, fuzzy, c-format
 msgid "Rollback goal:  %-24.24s (0x%08x)\n"
-msgstr "(+%d/-%d) den %-24.24s (0x%08x) e doğru paketler geri toplanıyor:\n"
+msgstr "Hoàn lại các gói (+%d/-%d) tới %-24.24s (0x%08x):\n"
 
 #: lib/poptI.c:149
 msgid "malformed rollback time/date stamp argument"
-msgstr "rollback tarih/zaman damgası bozuk"
+msgstr "đối số đặc trưng thời gian/ngày tháng trở lại không hợp lệ"
 
 #: lib/poptI.c:156
 #, fuzzy
 msgid "arbgoal takes a time/date stamp argument"
-msgstr "rollback argüman olarak bir tarih/zaman damgası alır"
+msgstr "sự quay lại chiếm một đối số đặc trưng thời gian/ngày tháng"
 
 #: lib/poptI.c:163
 #, fuzzy
 msgid "malformed arbgoal time/date stamp argument"
-msgstr "rollback tarih/zaman damgası bozuk"
+msgstr "đối số đặc trưng thời gian/ngày tháng trở lại không hợp lệ"
 
 #: lib/poptI.c:242
 msgid "install all files, even configurations which might otherwise be skipped"
-msgstr "yapılandırmalarda atlanmış bile olsa tüm dosyaları kurar"
+msgstr ""
+"cài đặt tất cả các tệp tin, ngay cả cấu hình mà có thể nếu không sẽ bị bỏ qua"
 
 #: lib/poptI.c:246
 msgid ""
 "remove all packages which match <package> (normally an error is generated if "
 "<package> specified multiple packages)"
 msgstr ""
-"<paket> ile eşlenen tüm paketleri kaldırır (<paket> ile çok sayıda paket "
-"belirtilmişse normalde bir hata oluşur)"
+"gỡ bỏ tất cả các gói mà phù hợp <gói> (thường thì một lỗi phát sinh nếu<gói> "
+"đã được định rõ các gói đa thành phần)"
 
 #: lib/poptI.c:252 lib/poptI.c:326
 msgid "do not execute package scriptlet(s)"
-msgstr "paket betikleri çalıştırılmaz"
+msgstr "không thực thi những gói vi kịch bản"
 
 #: lib/poptI.c:256
 #, fuzzy
 msgid "relocate files in non-relocatable package"
-msgstr "yeniden konumlanamayan paketin dosyalarını yeniden konumlandırır"
+msgstr "xây dựng lại các tệp tin trong gói không thể xây dựng lại"
 
 #: lib/poptI.c:260
 msgid "save erased package files by renaming into sub-directory"
-msgstr ""
-"ismi değiştirilerek alt dizine kaydedilmek suretiyle silinen dosyaları saklar"
+msgstr "bảo lưu các tệp tin gói bị xoá bằng cách đổi tên thư mục con"
 
 #: lib/poptI.c:263
 msgid "erase (uninstall) package"
-msgstr "paketi siler (kaldırır)"
+msgstr "xoá (tháo gỡ) gói"
 
 #: lib/poptI.c:263
 msgid "<package>+"
-msgstr "<paket>+"
+msgstr "<gói>+"
 
 #: lib/poptI.c:266 lib/poptI.c:306
-#, fuzzy
 msgid "do not install configuration files"
-msgstr "tüm yapılandırma dosyalarını listeler"
+msgstr "không cài đặt các tệp tin cấu hình"
 
 #: lib/poptI.c:269 lib/poptI.c:311
 msgid "do not install documentation"
-msgstr "belgeleri kurmaz"
+msgstr "không cài đặt tài liệu"
 
 #: lib/poptI.c:271
 msgid "skip files with leading component <path> "
-msgstr "<dosyayolu> ile başlayan dosyaları atlar "
+msgstr "bỏ qua các tệp tin với bộ phận hướng dẫn <đường dẫn>"
 
 #: lib/poptI.c:272
 msgid "<path>"
-msgstr "<dosyaYolu>"
+msgstr "<đường dẫn>"
 
 #: lib/poptI.c:276
 #, fuzzy
 msgid "detect file conflicts between packages"
-msgstr "yeniden konumlanamayan paketin dosyalarını yeniden konumlandırır"
+msgstr "xây dựng lại các tệp tin trong gói không thể xây dựng lại"
 
 #: lib/poptI.c:280
 msgid "upgrade package(s) if already installed"
-msgstr "paket(ler) kurulu ise paket(ler)i günceller"
+msgstr "nâng cấp các gói nếu đã được cài đặt"
 
 #: lib/poptI.c:281 lib/poptI.c:299 lib/poptI.c:399
 msgid "<packagefile>+"
-msgstr "<paketDosyası>+"
+msgstr "<tệp tin gói>+"
 
 #: lib/poptI.c:283
 msgid "print hash marks as package installs (good with -v)"
-msgstr "paketin kurulma sürecini gösteren imler basar (-v ile)"
+msgstr "in những ký hiệu lộn xộn vì cài đặt gói (rất tốt với -v)"
 
 #: lib/poptI.c:287
 msgid "don't verify package architecture"
-msgstr "paket mimarisi doğrulanmaz"
+msgstr "không thẩm tra kiến trúc gói"
 
 #: lib/poptI.c:290
 msgid "don't verify package operating system"
-msgstr "paketin ait olduğu işletim sistemini doğrulamaz"
+msgstr "không thẩm tra hệ thống hoạt động gói"
 
 #: lib/poptI.c:294
 msgid "don't check disk space before installing"
-msgstr "kurmadan önce yeterli disk alanı denetimi yapmaz"
+msgstr "không kiểm tra khoảng trống trên đĩa trước khi cài đặt"
 
 #: lib/poptI.c:296
 msgid "install documentation"
-msgstr "paket ile gelen belgeleri kurar"
+msgstr "cài đặt tài liệu"
 
 #: lib/poptI.c:299
 msgid "install package(s)"
-msgstr "paket(ler)i kurar"
+msgstr "cài đặt các gói"
 
 #: lib/poptI.c:302
 msgid "update the database, but do not modify the filesystem"
-msgstr "veri tabanını günceller, ama dosya sistemini değiştirmez"
+msgstr "cập nhật cơ sở dữ liệu, nhưng không sửa đổi tệp tin hệ thống"
 
 #: lib/poptI.c:308
 msgid "do not verify package dependencies"
-msgstr "paket bağımlılıklarını doğrulamaz"
+msgstr "không thẩm tra các gói phụ thuộc"
 
 #: lib/poptI.c:314 lib/poptI.c:316 lib/poptQV.c:348 lib/poptQV.c:351
 #: lib/poptQV.c:353
 #, fuzzy
 msgid "don't verify file digests"
-msgstr "paket bağımlılıkları doğrulanmaz"
+msgstr "không thẩm tra (các) yết thị của gói"
 
 #: lib/poptI.c:318
+#, fuzzy
 msgid "don't install file security contexts"
-msgstr ""
+msgstr "không cài đặt các tệp tin cấu hình"
 
 #: lib/poptI.c:322
 msgid "do not reorder package installation to satisfy dependencies"
-msgstr "paket kurulum sırasını bağımlılıklara göre düzenlemez"
+msgstr "không sắp xếp lại gói cài đặt để thoả mãn các phần phụ thuộc"
 
 #: lib/poptI.c:330
 #, c-format
 msgid "do not execute %%pre scriptlet (if any)"
-msgstr "%%pre betiği (varsa) çalıştırılmaz"
+msgstr "không thực thi vi kịch bản %%pre (nếu có)"
 
 #: lib/poptI.c:333
 #, c-format
 msgid "do not execute %%post scriptlet (if any)"
-msgstr "%%post betiği (varsa) çalıştırılmaz"
+msgstr "không thực thi vi kịch bản %%post (nếu có)"
 
 #: lib/poptI.c:336
 #, c-format
 msgid "do not execute %%preun scriptlet (if any)"
-msgstr "%%preun betiği (varsa) çalıştırılmaz"
+msgstr "không thực thi vi kịch bản %%preun (nếu có)"
 
 #: lib/poptI.c:339
 #, c-format
 msgid "do not execute %%postun scriptlet (if any)"
-msgstr "%%postun betiği (varsa) çalıştırılmaz"
+msgstr "không thực thi vi kịch bản %%posthun (nếu có)"
 
 #: lib/poptI.c:349
 msgid "do not execute any scriptlet(s) triggered by this package"
-msgstr "bu paket tarafından tetiklenen hiç bir betik çalıştırılmaz"
+msgstr "không thực thi bất kì vi kịch bản nào phát sinh bởi gói này"
 
 #: lib/poptI.c:352
 #, c-format
 msgid "do not execute any %%triggerprein scriptlet(s)"
-msgstr "hiçbir %%triggerprein betiği çalıştırılmaz"
+msgstr "không thực thi bất kỳ vi kịch bản %%triggerprein nào"
 
 #: lib/poptI.c:355
 #, c-format
 msgid "do not execute any %%triggerin scriptlet(s)"
-msgstr "hiçbir %%triggerin betiği çalıştırılmaz."
+msgstr "không thực thi bất kỳ vi kịch bản %%triggerin nào"
 
 #: lib/poptI.c:358
 #, c-format
 msgid "do not execute any %%triggerun scriptlet(s)"
-msgstr "hiçbir %%triggerun betiği çalıştırılmaz."
+msgstr "không thực thi bất kỳ vi kịch bản %%triggerun nào"
 
 #: lib/poptI.c:361
 #, c-format
 msgid "do not execute any %%triggerpostun scriptlet(s)"
-msgstr "hiçbir %%triggerpostun betiği çalıştırılmaz."
+msgstr "không thực thi bất kỳ vi kịch bản %%tringgerpostun nào"
 
 #: lib/poptI.c:365
 msgid ""
 "upgrade to an old version of the package (--force on upgrades does this "
 "automatically)"
 msgstr ""
-"paketin eski bir sürüme güncellenmesini sağlar (--force aynı işi otomatik "
-"yapar)"
+"nâng cấp lên một phiên bản cũ của gói (--force trong nâng cấp thực thi việc "
+"nàytự động)"
 
 #: lib/poptI.c:369
 msgid "print percentages as package installs"
-msgstr "kurulumun gelişimi yüzde olarak gösterilir"
+msgstr "in tỷ lệ phần trăm việc cài đặt gói"
 
 #: lib/poptI.c:371
 msgid "relocate the package to <dir>, if relocatable"
-msgstr "eğer değitirilebiliyorsa paketin yerini <dizin>'e değiştirir"
+msgstr "xây dựng lại gói tới <thư mục>, nếu có thể xây dựng lại"
 
 #: lib/poptI.c:372
 msgid "<dir>"
-msgstr "<dizin>"
+msgstr "<thư mục>"
 
 #: lib/poptI.c:374
 msgid "relocate files from path <old> to <new>"
-msgstr "dosyaları <eski> dizininden kaldırıp <yeni> dizinine yerleştirir"
+msgstr "xây dựng lại các tệp tin từ đường dẫn <cũ> tới <mới>"
 
 #: lib/poptI.c:375
 msgid "<old>=<new>"
-msgstr "<eski>=<yeni>"
+msgstr "<cũ>=<mới>"
 
 #: lib/poptI.c:378
 msgid "save erased package files by repackaging"
-msgstr "yeniden paketleyerek silinen paket dosyalarını kaydeder"
+msgstr "bao gói lại lưu các gói tệp tin bị xoá"
 
 #: lib/poptI.c:381
 msgid "ignore file conflicts between packages"
@@ -2074,16 +2060,15 @@ msgstr ""
 
 #: lib/poptI.c:384
 msgid "reinstall if the package is already present"
-msgstr "paket zaten kuruluysa yeniden kurar"
+msgstr "cài đặt lại nếu gói đã hiện hành"
 
 #: lib/poptI.c:386
 msgid "deinstall new, reinstall old, package(s), back to <date>"
-msgstr ""
-"yeni paket(ler) kaldırılır, <tarih>e dönerek eski paket(ler) yeniden kurulur"
+msgstr "cài đặt lại mới, cài đặt lại cũ, (các) gói, trở lại <ngày tháng>"
 
 #: lib/poptI.c:387 lib/poptI.c:390
 msgid "<date>"
-msgstr "<tarih>"
+msgstr "<ngày tháng>"
 
 #: lib/poptI.c:389
 msgid "If transaction fails rollback to <date>"
@@ -2096,108 +2081,108 @@ msgstr ""
 #: lib/poptI.c:393
 #, fuzzy
 msgid "<tid>"
-msgstr "<seçenek>"
+msgstr "<lựa chọn>"
 
 #: lib/poptI.c:395
 msgid "don't install, but tell if it would work or not"
-msgstr "kurulum yapmaz, sadece çalışıp çalışmayacağını belirtir"
+msgstr "không cài đặt, nhưng cho biết nó có thể hoạt động hay không"
 
 #: lib/poptI.c:398
 msgid "upgrade package(s)"
-msgstr "paket(leri) günceller"
+msgstr "nâng cấp (các) gói"
 
 #: lib/poptQV.c:118
 msgid "query/verify all packages"
-msgstr "tüm paketleri sorgular/doğrular"
+msgstr "truy vấn/thẩm tra tất cả các gói"
 
 #: lib/poptQV.c:120
 msgid "rpm checksig mode"
-msgstr "rpm imza denetim kipi"
+msgstr "chế độ rpm checksig"
 
 #: lib/poptQV.c:122
 msgid "query/verify package(s) owning file"
-msgstr "dosyayı içeren paketleri sorgular/denetler"
+msgstr "truy vấn/thẩm tra (các) gói tệp tin của chính mình"
 
 #: lib/poptQV.c:124
 msgid "query/verify package(s) in group"
-msgstr "gruptaki paketleri sorgular/doğrular"
+msgstr "truy vấn/thẩm tra (các) gói trong nhóm"
 
 #: lib/poptQV.c:126
 msgid "query/verify a package file"
-msgstr "bir paket dosyasını sorgular/doğrular"
+msgstr "truy vấn/thẩm tra một tệp tin gói"
 
 #: lib/poptQV.c:129
 #, fuzzy
 msgid "query/verify package(s) from TOP file tree walk"
-msgstr "kurulum veri aktarımında paketleri sorgular/doğrular"
+msgstr "truy vấn/thẩm tra (các) gói từ sự thực hiện cài đặt"
 
 #: lib/poptQV.c:131
 #, fuzzy
 msgid "query/verify package(s) from system HDLIST"
-msgstr "kurulum veri aktarımında paketleri sorgular/doğrular"
+msgstr "truy vấn/thẩm tra (các) gói từ sự thực hiện cài đặt"
 
 #: lib/poptQV.c:134
 #, fuzzy
 msgid "query/verify package(s) with source package identifier"
-msgstr "paket belirteçli paketleri sorgular/doğrular"
+msgstr "truy vấn/thẩm tra (các) gói với nhận dạng gói"
 
 #: lib/poptQV.c:136
 msgid "query/verify package(s) with package identifier"
-msgstr "paket belirteçli paketleri sorgular/doğrular"
+msgstr "truy vấn/thẩm tra (các) gói với nhận dạng gói"
 
 #: lib/poptQV.c:138
 msgid "query/verify package(s) with header identifier"
-msgstr "başlık belirteçli paketleri sorgular/doğrular"
+msgstr "truy vấn/thẩm tra (các) gói với nhận dạng tiêu đề"
 
 #: lib/poptQV.c:140
 msgid "query/verify package(s) with file identifier"
-msgstr "dosya belirteçli paketleri sorgular/doğrular"
+msgstr "truy vấn/thẩm tra (các) gói với nhận dạng tệp tin"
 
 #: lib/poptQV.c:143
 msgid "rpm query mode"
-msgstr "rpm sorgulama kipi"
+msgstr "chế độ truy vấn rpm"
 
 #: lib/poptQV.c:145
 msgid "query/verify a header instance"
-msgstr "bir başlık örneğini sorgular/doğrular"
+msgstr "truy vấn/thẩm tra một trường hợp tiêu đề cá biệt"
 
 #: lib/poptQV.c:147
 msgid "query a spec file"
-msgstr "bir spec dosyasını sorgular"
+msgstr "truy vấn một tệp tin đặc tả"
 
 #: lib/poptQV.c:147 lib/poptQV.c:149
 msgid "<spec>"
-msgstr "<spec>"
+msgstr "<đặc tả>"
 
 #: lib/poptQV.c:149
 #, fuzzy
 msgid "query source metadata from spec file parse"
-msgstr "kaynak paketi sadece <specfile> dosyasından oluşturur"
+msgstr "xây dựng gói nguồn duy nhất từ <tệp tin đặc tả>"
 
 #: lib/poptQV.c:151
 msgid "query/verify package(s) from install transaction"
-msgstr "kurulum veri aktarımında paketleri sorgular/doğrular"
+msgstr "truy vấn/thẩm tra (các) gói từ sự thực hiện cài đặt"
 
 #: lib/poptQV.c:153
 msgid "query the package(s) triggered by the package"
-msgstr "paket tarafından tetiklenen paketleri sorgular"
+msgstr "truy vấn (các) gói được tạo ra bởi gói"
 
 #: lib/poptQV.c:155
 msgid "rpm verify mode"
-msgstr "rpm doğrulama kipi"
+msgstr "chế độ thẩm tra rpm"
 
 #: lib/poptQV.c:157
 msgid "query/verify the package(s) which require a dependency"
-msgstr "bir bağımlılık gerektiren paketleri sorgular/doğrular"
+msgstr "truy vấn/thẩm tra (các) gói mà yêu cầu một phần phụ thuộc"
 
 #: lib/poptQV.c:159
 #, fuzzy
 msgid "query/verify the package(s) which require any contained provide"
-msgstr "bir bağımlılık gerektiren paketleri sorgular/doğrular"
+msgstr "truy vấn/thẩm tra (các) gói mà yêu cầu một phần phụ thuộc"
 
 #: lib/poptQV.c:163
 msgid "query/verify the package(s) which provide a dependency"
-msgstr "bir bağımlılığı sağlayan  paketleri sorgular/doğrular"
+msgstr "truy vấn/thẩm tra (các) gói mà cung cấp một phần phụ thuộc"
 
 #: lib/poptQV.c:166
 msgid "create transaction set"
@@ -2210,7 +2195,7 @@ msgstr ""
 #: lib/poptQV.c:170
 #, fuzzy
 msgid "do not glob arguments"
-msgstr "hiç argüman belirtilmedi"
+msgstr "không có đối số xác định"
 
 #: lib/poptQV.c:172
 msgid "do not process non-package files as manifests"
@@ -2219,52 +2204,52 @@ msgstr ""
 #: lib/poptQV.c:174
 #, fuzzy
 msgid "do not read headers"
-msgstr "%s: 0x%x de başlık okunamadı\n"
+msgstr "%s: không thể đọc tiêu đề tại 0x%x\n"
 
 #: lib/poptQV.c:275
 msgid "list all configuration files"
-msgstr "tüm yapılandırma dosyalarını listeler"
+msgstr "liệt kê tất cả các tệp tin cấu hình"
 
 #: lib/poptQV.c:277
 msgid "list all documentation files"
-msgstr "tüm belgeleme dosyalarını listeler"
+msgstr "liệt kê tất cả các tệp tin tài liệu"
 
 #: lib/poptQV.c:279
 msgid "dump basic file information"
-msgstr "temel dosya bilgilerini gösterir"
+msgstr "lưu thông tin cơ bản về tệp tin"
 
 #: lib/poptQV.c:283
 msgid "list files in package"
-msgstr "paketteki dosyaları gösterir"
+msgstr "liệt kê các tệp tin trong gói"
 
 #: lib/poptQV.c:292 lib/poptQV.c:339
 #, fuzzy, c-format
 msgid "skip %%config files"
-msgstr "%%license dosyaları atlanır"
+msgstr "bỏ qua các tệp tin %%license"
 
 #: lib/poptQV.c:295 lib/poptQV.c:342
 #, fuzzy, c-format
 msgid "skip %%doc files"
-msgstr "%%ghost dosyaları atlanır"
+msgstr "bỏ qua các tệp tin %%ghost"
 
 #: lib/poptQV.c:298
 #, c-format
 msgid "skip %%ghost files"
-msgstr "%%ghost dosyaları atlanır"
+msgstr "bỏ qua các tệp tin %%ghost"
 
 #: lib/poptQV.c:302
 #, c-format
 msgid "skip %%license files"
-msgstr "%%license dosyaları atlanır"
+msgstr "bỏ qua các tệp tin %%license"
 
 #: lib/poptQV.c:305
 #, c-format
 msgid "skip %%readme files"
-msgstr "%%readme dosyaları atlanır"
+msgstr "bỏ qua các tệp tin %%readme"
 
 #: lib/poptQV.c:311
 msgid "use the following query format"
-msgstr "izleyen sorgulama biçimini kullanır"
+msgstr "sử dụng định dạng truy vấn theo sau"
 
 #: lib/poptQV.c:311
 msgid "QUERYFORMAT"
@@ -2272,77 +2257,77 @@ msgstr ""
 
 #: lib/poptQV.c:313
 msgid "substitute i18n sections into spec file"
-msgstr "spec dosyasındaki i18n bölümleri yerine kullanılır"
+msgstr "thay thế các đoạn i18n vào trong tệp tin đặc tả"
 
 #: lib/poptQV.c:315
 msgid "display the states of the listed files"
-msgstr "listelenmiş dosyaların durumunu gösterir"
+msgstr "hiển thị các trạng thái của các tệp tin được liệt kê"
 
 #: lib/poptQV.c:357
 msgid "don't verify size of files"
-msgstr "dosyaların uzunlukları doğrulanmaz"
+msgstr "không thẩm tra kích cỡ của các tệp tin"
 
 #: lib/poptQV.c:360
 msgid "don't verify symlink path of files"
-msgstr "dosyaların sembolik bağ dosya yolları doğrulanmaz"
+msgstr "không thẩm tra đường dẫn liên kết của các tệp tin"
 
 #: lib/poptQV.c:363
 msgid "don't verify owner of files"
-msgstr "dosyaların sahipleri doğrulanmaz"
+msgstr "không thẩm tra chủ nhân của các tệp tin"
 
 #: lib/poptQV.c:366
 msgid "don't verify group of files"
-msgstr "dosyaların grupları doğrulanmaz"
+msgstr "không thẩm tra nhóm của các tệp tin"
 
 #: lib/poptQV.c:369
 msgid "don't verify modification time of files"
-msgstr "dosyaların değişiklik zamanları doğrulanmaz"
+msgstr "không thẩm tra thời gian sửa đổi của các tệp tin"
 
 #: lib/poptQV.c:372 lib/poptQV.c:375
 msgid "don't verify mode of files"
-msgstr "dosyaların kipleri doğrulanmaz"
+msgstr "không thẩm tra kiểu của các tệp tin"
 
 #: lib/poptQV.c:378
 #, fuzzy
 msgid "don't verify file security contexts"
-msgstr "paketteki dosyalar doğrulanamaz"
+msgstr "không thẩm tra các tệp tin trong gói"
 
 #: lib/poptQV.c:380
 msgid "don't verify files in package"
-msgstr "paketteki dosyalar doğrulanamaz"
+msgstr "không thẩm tra các tệp tin trong gói"
 
 #: lib/poptQV.c:383 lib/poptQV.c:386
 msgid "don't verify package dependencies"
-msgstr "paket bağımlılıkları doğrulanmaz"
+msgstr "không thẩm tra các gói phụ thuộc"
 
 #: lib/poptQV.c:391 lib/poptQV.c:395 lib/poptQV.c:398 lib/poptQV.c:401
 msgid "don't execute verify script(s)"
-msgstr "doğrulama betikleri çalıştırılmaz"
+msgstr "không thực thi (các) kịch bản thẩm tra"
 
 #: lib/poptQV.c:435
 msgid "sign package(s) (identical to --resign)"
-msgstr "paket(ler)i imzalar (--resign ile eşdeğer)"
+msgstr "ký tên (các) gói (đồng nhất tới --resign)"
 
 #: lib/poptQV.c:437
 msgid "verify package signature(s)"
-msgstr "paket imzalarını doğrular"
+msgstr "thẩm tra (các) chữ ký của gói"
 
 #: lib/poptQV.c:439
 #, fuzzy
 msgid "delete package signatures"
-msgstr "paket imzalarını doğrular"
+msgstr "thẩm tra (các) chữ ký của gói"
 
 #: lib/poptQV.c:441
 msgid "import an armored public key"
-msgstr "bir zırhlı genel anahtarı indirir"
+msgstr "nhập một chìa khóa công cộng được bảo vệ"
 
 #: lib/poptQV.c:443
 msgid "sign package(s) (identical to --addsign)"
-msgstr "paket(ler)i imzalar (--addsign ile eşdeğer)"
+msgstr "ký tên (các) gói (đồng nhất tới --addsign)"
 
 #: lib/poptQV.c:445
 msgid "generate signature"
-msgstr "imza üretir"
+msgstr "phát sinh chữ ký"
 
 #: lib/poptQV.c:448
 msgid "specify trust metric"
@@ -2358,234 +2343,234 @@ msgstr ""
 
 #: lib/psm.c:225
 msgid "source package expected, binary found\n"
-msgstr "kaynak paketi gerekirken çalıştırılabilir paketi bulundu\n"
+msgstr "đúng gói nguồn mong chờ, tìm thấy nhị phân\n"
 
 #: lib/psm.c:328 lib/psm.c:344
 #, c-format
 msgid "cannot write to %%%s %s\n"
-msgstr "%%%s dosyasına yazılamaz %s\n"
+msgstr "không thể ghi vào %%%s %s\n"
 
 #: lib/psm.c:380
 msgid "source package contains no .spec file\n"
-msgstr "kaynak paketi .spec dosyası içermiyor\n"
+msgstr "gói nguồn không chứa tệp tin đặc tả\n"
 
 #: lib/psm.c:933 lib/rpmfc.c:106
-#, c-format
+#, fuzzy, c-format
 msgid "Couldn't fork %s: %s\n"
-msgstr "%s ayrılamadı: %s\n"
+msgstr "Không thể mở %s: %s\n"
 
 #: lib/psm.c:944
 #, fuzzy, c-format
 msgid "%s(%s) scriptlet failed, waitpid(%d) rc %d: %s\n"
-msgstr "%s(%s-%s-%s) betik başarısız, waitpid(%d) rc %d: %s\n"
+msgstr " vi kịch bản %s(%s-%s-%s) thất bại, chờ đợi pid(%d) rc %d: %s\n"
 
 #: lib/psm.c:953
 #, fuzzy, c-format
 msgid "%s(%s) scriptlet failed, signal %d\n"
-msgstr "%s(%s-%s-%s) betik başarısız, çıkış durumu %d\n"
+msgstr " vi kịch bản %s(%s-%s-%s) thất bại, thoát khỏi các tình trạng %d\n"
 
 #: lib/psm.c:959
 #, fuzzy, c-format
 msgid "%s(%s) scriptlet failed, exit status %d\n"
-msgstr "%s(%s-%s-%s) betik başarısız, çıkış durumu %d\n"
+msgstr " vi kịch bản %s(%s-%s-%s) thất bại, thoát khỏi các tình trạng %d\n"
 
 #: lib/psm.c:1840
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s\n"
-msgstr "%s: %s betik başarısız (%d), %s atlanıyor\n"
+msgstr "%s: vi kịch bản %s thất bại (%d), bỏ qua %s\n"
 
 #: lib/psm.c:1948
 msgid "Unable to reload signature header\n"
-msgstr "İmza başlığı yeniden yüklenemiyor\n"
+msgstr "không thể tải lại tiêu đề chữ ký\n"
 
 #: lib/psm.c:2058
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
-msgstr "arşiv paketi açılırken başarısız%s%s: %s\n"
+msgstr "mở gói lưu trữ thất bại%s%s: %s\n"
 
 #: lib/psm.c:2059
 msgid " on file "
-msgstr " dosyada "
+msgstr "trên tập tin"
 
 #: lib/psm.c:2237
 #, c-format
 msgid "%s failed on file %s: %s\n"
-msgstr "%s, %s dosyasında başarısız oldu: %s\n"
+msgstr "%s thất bại trên tập tin %s: %s\n"
 
 #: lib/psm.c:2240
 #, c-format
 msgid "%s failed: %s\n"
-msgstr "%s başarısız: %s\n"
+msgstr "%s thất bại: %s\n"
 
 #: lib/query.c:144
 #, c-format
 msgid "incorrect format: %s\n"
-msgstr "biçem yanlış: %s\n"
+msgstr "định dạng sai: %s\n"
 
 #: lib/query.c:208
 msgid "(contains no files)"
-msgstr "(hiç dosya içermiyor)"
+msgstr "(không chứa tệp tin nào)"
 
 #: lib/query.c:296
 msgid "normal        "
-msgstr "normal        "
+msgstr "bình thường        "
 
 #: lib/query.c:299
 msgid "replaced      "
-msgstr "yerine        "
+msgstr "đã thay thế      "
 
 #: lib/query.c:302
 msgid "not installed "
-msgstr "yüklenmedi "
+msgstr "không cài đặt "
 
 #: lib/query.c:305
 msgid "net shared    "
-msgstr "ağ paylaşımlı "
+msgstr "mạng đã chia sẻ    "
 
 #: lib/query.c:308
 msgid "wrong color   "
-msgstr ""
+msgstr "màu sắc sai   "
 
 #: lib/query.c:311
 msgid "(no state)    "
-msgstr "(durumsuz)    "
+msgstr "(không trạng thái)    "
 
 #: lib/query.c:314
 #, c-format
 msgid "(unknown %3d) "
-msgstr "(bilinmeyen %3d)"
+msgstr "(chưa biết %3d) "
 
 #: lib/query.c:331 lib/query.c:361
 #, fuzzy
 msgid "package without owner/group tags\n"
-msgstr "paket sahip/grup listesi için bir dosya içermiyor\n"
+msgstr "gói không có danh mục người chủ/nhóm tệp tin\n"
 
 #: lib/query.c:478
 #, c-format
 msgid "group %s does not contain any packages\n"
-msgstr "%s grubu hiç paket içermiyor\n"
+msgstr "nhóm %s không chứa bất kỳ gói nào\n"
 
 #: lib/query.c:487
 #, c-format
 msgid "no package triggers %s\n"
-msgstr "%s tetikleyen paket yok\n"
+msgstr "không có gói nào phát sinh %s\n"
 
 #: lib/query.c:502 lib/query.c:525 lib/query.c:547 lib/query.c:582
 #, c-format
 msgid "malformed %s: %s\n"
-msgstr "%s bozulmuş: %s.\n"
+msgstr "không hợp %s: %s\n"
 
 #: lib/query.c:514 lib/query.c:531 lib/query.c:558 lib/query.c:587
 #, c-format
 msgid "no package matches %s: %s\n"
-msgstr "%s ile eşleşen paket yok: %s\n"
+msgstr "không có gói nào khớp %s: %s\n"
 
 #: lib/query.c:598
 #, c-format
 msgid "no package requires %s\n"
-msgstr "%s gerektiren paket yok\n"
+msgstr "không có gói nào yêu cầu %s\n"
 
 #: lib/query.c:609
 #, c-format
 msgid "no package provides %s\n"
-msgstr "%s sağlayan paket yok\n"
+msgstr "không có gói nào chuẩn bị %s\n"
 
 #: lib/query.c:643
 #, c-format
 msgid "file %s: %s\n"
-msgstr "dosya %s: %s\n"
+msgstr "tệp tin %s: %s\n"
 
 #: lib/query.c:646
 #, c-format
 msgid "file %s is not owned by any package\n"
-msgstr "%s dosyası, hiç bir pakete ait değil\n"
+msgstr "tệp tin %s không thuộc sở hữu của bất kỳ gói nào\n"
 
 #: lib/query.c:671
 #, c-format
 msgid "invalid package number: %s\n"
-msgstr "geçersiz paket numarası: %s\n"
+msgstr "số của gói không có hiệu lực: %s\n"
 
 #: lib/query.c:678
 #, c-format
 msgid "record %u could not be read\n"
-msgstr "%u. kayıt okunamadı\n"
+msgstr "ghi chép %u không thể đọc\n"
 
 #: lib/query.c:688 lib/query.c:694 lib/rpminstall.c:574
 #, c-format
 msgid "package %s is not installed\n"
-msgstr "%s paketi kurulu değil\n"
+msgstr "gói %s không được cài đặt\n"
 
 #: lib/rpmal.c:768
 msgid "(added files)"
-msgstr "(dosyalar eklendi)"
+msgstr "(thêm các tệp tin)"
 
 #: lib/rpmal.c:846
 msgid "(added provide)"
-msgstr "(önlem eklendi)"
+msgstr "(thêm dự phòng)"
 
 #: lib/rpmchecksig.c:60 lib/rpmchecksig.c:1155
 #, c-format
 msgid "%s: open failed: %s\n"
-msgstr "%s: açılamadı: %s\n"
+msgstr "%s: mở thất bại: %s\n"
 
 #: lib/rpmchecksig.c:72
 #, fuzzy
 msgid "rpmTempFile failed\n"
-msgstr "makeTempFile başarısız\n"
+msgstr "tạo Tệp tin tạm thất bại\n"
 
 #: lib/rpmchecksig.c:112
 #, c-format
 msgid "%s: Fwrite failed: %s\n"
-msgstr "%s: Fwrite başarısız: %s\n"
+msgstr "%s: Ghi tệp tin thất bại: %s\n"
 
 #: lib/rpmchecksig.c:122
 #, fuzzy, c-format
 msgid "%s: Fflush failed: %s\n"
-msgstr "%s: Fseek başarısız: %s\n"
+msgstr "%s: lỗi Fseek: %s\n"
 
 #: lib/rpmchecksig.c:375
 #, c-format
 msgid "%s: was already signed by key ID %s, skipping\n"
-msgstr "%s: %s kimlikli anahtarla zaten imzalanmış, atlanıyor\n"
+msgstr "%s: đã được ký bởi chìa khoá định danh %s, bỏ qua\n"
 
 #: lib/rpmchecksig.c:741
 #, fuzzy, c-format
 msgid "%s: import read failed(%d).\n"
-msgstr "%s: import read başarısız.\n"
+msgstr "%s: đọc nội dung thất bại.\n"
 
 #: lib/rpmchecksig.c:753
 #, c-format
 msgid "%s: import failed.\n"
-msgstr "%s: import başarısız.\n"
+msgstr "%s: nội dung thất bại.\n"
 
 #: lib/rpmchecksig.c:805
 #, fuzzy
 msgid "headerGet failed"
-msgstr "%s: headerGetEntry başarısız\n"
+msgstr "%s: Ghi vào tiêu đề thất bại\n"
 
 #: lib/rpmchecksig.c:806
 #, fuzzy
 msgid "failed to retrieve original header\n"
-msgstr "Son başlık yazılamadı\n"
+msgstr "Không thể ghi tiêu đề cuối cùng\n"
 
 #: lib/rpmchecksig.c:828 rpmdb/pkgio.c:508 rpmdb/pkgio.c:691
 #: rpmdb/pkgio.c:1262
 #, fuzzy, c-format
 msgid "XAR file not found (or no XAR support)"
-msgstr "Dosya sunucuda bulunamadı"
+msgstr "Không tìm thất tệp tin trên máy chủ"
 
 #: lib/rpmchecksig.c:838
 #, fuzzy
 msgid "Fread failed"
-msgstr "%s: Fread başarısız: %s\n"
+msgstr "%s: đọc F thất bại: %s\n"
 
 #: lib/rpmchecksig.c:1080
 msgid "NOT OK"
-msgstr "TAMAM DEĞİL"
+msgstr "KHÔNG ĐƯỢC"
 
 #: lib/rpmchecksig.c:1081 lib/rpmchecksig.c:1095
 msgid " (MISSING KEYS:"
-msgstr " (EKSİK ANAHTARLAR:"
+msgstr " (THIẾU CÁC CHÌA KHOÁ:"
 
 #: lib/rpmchecksig.c:1083 lib/rpmchecksig.c:1097
 msgid ") "
@@ -2593,7 +2578,7 @@ msgstr ") "
 
 #: lib/rpmchecksig.c:1084 lib/rpmchecksig.c:1098
 msgid " (UNTRUSTED KEYS:"
-msgstr " (GÜVENCESİZ ANAHTARLAR:"
+msgstr "(CÁC CHÌA KHOÁ KHÔNG ĐÁNG TIN CẬY:"
 
 #: lib/rpmchecksig.c:1086 lib/rpmchecksig.c:1100
 msgid ")"
@@ -2601,60 +2586,61 @@ msgstr ")"
 
 #: lib/rpmchecksig.c:1094
 msgid "OK"
-msgstr "Tamam"
+msgstr "TỐT"
 
 #: lib/rpmds.c:867 lib/rpmds.c:3627
 msgid "NO "
-msgstr "HAYIR "
+msgstr "KHÔNG"
 
 #: lib/rpmds.c:867 lib/rpmds.c:3627
 msgid "YES"
-msgstr "EVET"
+msgstr "ĐỒNG Ý"
 
 #: lib/rpmds.c:1350
 msgid "PreReq:, Provides:, and Obsoletes: dependencies support versions."
 msgstr ""
-"Öngereks:, Önlemler:, ve Atıl olanlar: bağımlılıklar sürümleri destekler."
+"PreReq:, Provides:, and Obsoletes: các phiên bản hỗ trợ các phần phụ thuộc."
 
 #: lib/rpmds.c:1353
 msgid "file name(s) stored as (dirName,baseName,dirIndex) tuple, not as path."
 msgstr ""
-"Dosya isimleri isim listesi (dirName,baseName,dirIndex) olarak saklandı, "
-"dosyayolu olarak değil."
+"(các) tên tệp tin lưu trữ như (dirName, baseName,dirIndex)        , không "
+"phải như đường dẫn "
 
 #: lib/rpmds.c:1357
 #, fuzzy
 msgid "package payload can be compressed using bzip2."
-msgstr "payload paketi bzip2 kullanılarak sıkıştırılmış."
+msgstr "gói tải về được nén bởi bzip2."
 
 #: lib/rpmds.c:1361
 msgid "package payload file(s) have \"./\" prefix."
-msgstr "paket payload dosyaları \"./\" öneki içeriyor."
+msgstr "(các) gói tệp tin tải về có tiền tố \"./\"."
 
 #: lib/rpmds.c:1364
 msgid "package name-version-release is not implicitly provided."
-msgstr "paket ismi-sürüm-dağıtım biçimi dolaylı olarak sağlanmamış."
+msgstr "tên gói phiên bản phát hành không hoàn toàn được chuẩn bị đầy đủ."
 
 #: lib/rpmds.c:1367
 msgid "header tags are always sorted after being loaded."
-msgstr "başlık etiketleri yüklemenin ardından daima sıralanır."
+msgstr "các thẻ ghi tiêu đề luôn được sắp xếp sau khi được nạp."
 
 #: lib/rpmds.c:1370
 msgid "the scriptlet interpreter can use arguments from header."
-msgstr "betik yorumlayıcı başlıktaki argümanları kullanabilir."
+msgstr "vi kịch bản người phiên dịch có thể sử dụng các đối số từ tiêu đề."
 
 #: lib/rpmds.c:1373
 msgid "a hardlink file set may be installed without being complete."
-msgstr "bir sabit bağ dosyaları kümesi tamamlanmadan kurulmuş olabilir"
+msgstr "một bộ tệp tin đường liên kết cứng có thể được cài đặt không trọn vẹn"
 
 #: lib/rpmds.c:1376
 msgid "package scriptlets may access the rpm database while installing."
 msgstr ""
+"các gói vi kịch bản có thể truy cập cơ sở dữ liệu rpm trong khi cài đặt."
 
 #: lib/rpmds.c:1380
 #, fuzzy
 msgid "internal support for lua scripts."
-msgstr "- dizgelerde desteklenmez\n"
+msgstr "- không được hỗ trợ cho những chuỗi\n"
 
 #: lib/rpmds.c:1384
 msgid "header tag data can be of type uint64_t."
@@ -2667,7 +2653,7 @@ msgstr ""
 #: lib/rpmds.c:1390
 #, fuzzy
 msgid "package payload can be compressed using lzma."
-msgstr "payload paketi bzip2 kullanılarak sıkıştırılmış."
+msgstr "gói tải về được nén bởi bzip2."
 
 #: lib/rpmds.c:1393
 msgid "file digests can be other than MD5."
@@ -2676,7 +2662,7 @@ msgstr ""
 #: lib/rpmds.c:1483 lib/rpmds.c:3457
 #, fuzzy, c-format
 msgid "%s:%d \"%s\" has invalid name. Skipping ...\n"
-msgstr "%s geçersiz sayısal değer içeriyor, atlandı\n"
+msgstr "%s chứa giá trị số không giá trị, đã bỏ qua\n"
 
 #: lib/rpmds.c:1506 lib/rpmds.c:3474
 #, c-format
@@ -2706,7 +2692,7 @@ msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
 "\tA = \"%s\"\tB = \"%s\"\n"
 msgstr ""
-"\"B\" bağımlılığı bir dönemsellik gerektirir (tabii ki \"A\" da)\n"
+" \"B\" phần phụ thuộc cần một giai đoạn (giả sử giai đoạn giống \"A\")\n"
 "\tA = \"%s\"\tB = \"%s\"\n"
 
 #: lib/rpmds.c:3626
@@ -2715,9 +2701,9 @@ msgid "  %s    A %s\tB %s\n"
 msgstr "  %s    A %s\tB %s\n"
 
 #: lib/rpmfc.c:101
-#, c-format
+#, fuzzy, c-format
 msgid "Couldn't exec %s: %s\n"
-msgstr "%s icra edilemedi: %s\n"
+msgstr "Không thể thực thi %s: %s\n"
 
 #: lib/rpmfc.c:196
 #, c-format
@@ -2725,66 +2711,66 @@ msgid "Command \"%s\" failed, exit(%d)\n"
 msgstr ""
 
 #: lib/rpmfc.c:201
-#, c-format
+#, fuzzy, c-format
 msgid "failed to write all data to %s\n"
-msgstr "tüm veri %s içine yazılamadı\n"
+msgstr "Không thể ghi dữ liệu tải về vào %s: %s\n"
 
 #: lib/rpmfc.c:1273
-#, c-format
+#, fuzzy, c-format
 msgid "Finding  %s: %s\n"
-msgstr "%s aranıyor: %s\n"
+msgstr "Tệp tin %s: %s\n"
 
 #: lib/rpmfc.c:1278 lib/rpmfc.c:1290
-#, c-format
+#, fuzzy, c-format
 msgid "Failed to find %s:\n"
-msgstr "%s bulunamadı:\n"
+msgstr "Thất bại khi đọc %s: %s.\n"
 
 #: lib/rpmgi.c:99 lib/rpminstall.c:121 lib/rpmrollback.c:162 lib/rpmts.c:412
 #, c-format
 msgid "open of %s failed: %s\n"
-msgstr "%s açılamadı: %s\n"
+msgstr "mở %s thất bại: %s\n"
 
 #: lib/rpmgi.c:430
 #, fuzzy, c-format
 msgid "unknown tag: \"%s\"\n"
-msgstr "bilinmeyen etiket"
+msgstr "thẻ ghi không xác định"
 
 #: lib/rpmgi.c:778 lib/rpminstall.c:608
 msgid "Failed dependencies:\n"
-msgstr "bu bağımlılıklar gerekli:\n"
+msgstr "Các phần phụ thuộc thất bại:\n"
 
 #: lib/rpmgi.c:783 lib/rpminstall.c:276
 msgid "    Suggested resolutions:\n"
-msgstr "        Önerilen çözümler:\n"
+msgstr "    Các giải pháp đề nghị:\n"
 
 #: lib/rpminstall.c:188
 msgid "Preparing..."
-msgstr "Hazırlanıyor..."
+msgstr "Đang chuẩn bị..."
 
 #: lib/rpminstall.c:190
 msgid "Preparing packages for installation..."
-msgstr "Kurulacak paketler hazırlanıyor..."
+msgstr "Đang chuẩn bị các gói cho việc cài đặt..."
 
 #: lib/rpminstall.c:208
 msgid "Repackaging..."
-msgstr "Yeniden paketleniyor..."
+msgstr "Đang đóng gói lại..."
 
 #: lib/rpminstall.c:210
 msgid "Repackaging erased files..."
-msgstr "Silinen dosyalar yeniden paketleniyor..."
+msgstr "Đang đóng gói lại các tệp tin bị xoá..."
 
 #: lib/rpminstall.c:229
 msgid "Upgrading..."
-msgstr "Üst sürüme güncelleniyor..."
+msgstr "Đang nâng cấp..."
 
 #: lib/rpminstall.c:231
 msgid "Upgrading packages..."
-msgstr "Paketler üst sürüme güncelleniyor..."
+msgstr "Đang nâng cấp các gói..."
 
 #: lib/rpminstall.c:290
 #, fuzzy
 msgid "Failed dependencies"
-msgstr "bu bağımlılıklar gerekli:\n"
+msgstr "Các phần phụ thuộc thất bại:\n"
 
 #: lib/rpminstall.c:297
 msgid "Ordering problems"
@@ -2793,37 +2779,37 @@ msgstr ""
 #: lib/rpminstall.c:304
 #, fuzzy
 msgid "Install/Erase problems"
-msgstr "Kurma/Güncelleme/Kaldırma seçenekleri:"
+msgstr "Cài đặt/Nâng cấp/Xóa bỏ các lựa chọn:"
 
 #: lib/rpminstall.c:436
 #, fuzzy, c-format
 msgid "package %s is not relocatable\n"
-msgstr "%s paketi yeniden konumlandırılamaz\n"
+msgstr "gói %s không thể xây dựng lại\n"
 
 #: lib/rpminstall.c:583
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
-msgstr "\"%s\" birden fazla paketi tanımlıyor\n"
+msgstr "\"%s\" định rõ nhiều gói\n"
 
 #: lib/rpminstall.c:652
 #, c-format
 msgid "cannot open %s: %s\n"
-msgstr "%s açılamadı: %s\n"
+msgstr "không thể mở %s: %s\n"
 
 #: lib/rpminstall.c:658
 #, c-format
 msgid "Installing %s\n"
-msgstr "%s kuruluyor\n"
+msgstr "Đang cài đặt %s\n"
 
 #: lib/rpminstall.c:668
 #, c-format
 msgid "%s cannot be installed\n"
-msgstr "%s yüklenemedi\n"
+msgstr "%s không thể cài đặt được\n"
 
 #: lib/rpmlock.c:150 lib/rpmlock.c:159
 #, fuzzy, c-format
 msgid "can't create transaction lock on %s\n"
-msgstr "%s kilit  %s/%s'den alınamadı\n"
+msgstr "không thể khoá %s trên %s/%s\n"
 
 #: lib/rpmlock.c:155
 #, c-format
@@ -2832,17 +2818,17 @@ msgstr ""
 
 #: lib/rpmps.c:241
 msgid "different"
-msgstr "farklı"
+msgstr "khác biệt"
 
 #: lib/rpmps.c:249
 #, fuzzy, c-format
 msgid "package %s is intended for a %s platform"
-msgstr "%s paketi %s mimarisi için olmalı"
+msgstr "gói %s được  nhằm cho một kiến trúc %s"
 
 #: lib/rpmps.c:254
 #, c-format
 msgid "package %s is already installed"
-msgstr "%s zaten kurulu"
+msgstr "gói %s đã được cài đặt"
 
 #: lib/rpmps.c:259
 #, c-format
@@ -2852,61 +2838,63 @@ msgstr ""
 #: lib/rpmps.c:264
 #, fuzzy, c-format
 msgid "path %s in package %s is not relocatable"
-msgstr "%s dosya yolu %s paketinde yeniden konumlandırılamaz"
+msgstr "đường dẫn %s trong gói %s không thể xây dựng lại"
 
 #: lib/rpmps.c:269
 #, c-format
 msgid "file %s conflicts between attempted installs of %s and %s"
-msgstr "%s dosyası kalkışılan %s ve %s kurulumları arasında çelişiyor"
+msgstr "tệp tin %s xung đột giữa cố gắng cài đặt %s và %s"
 
 #: lib/rpmps.c:274
 #, c-format
 msgid "file %s from install of %s conflicts with file from package %s"
-msgstr "%s dosyasının %s kurulumu %s kurulumundaki dosya ile çelişiyor"
+msgstr "tệp tin %s từ cài đặt của %s xung đột với tệp tin từ gói %s"
 
 #: lib/rpmps.c:279
 #, c-format
 msgid "package %s (which is newer than %s) is already installed"
-msgstr "%s paketi zaten yüklü (%s sürümünden daha yeni)"
+msgstr "gói %s (mới hơn %s) đã được cài đặt"
 
 #: lib/rpmps.c:284
 #, fuzzy, c-format
 msgid "installing package %s needs %lu%cB on the %s filesystem"
-msgstr "%1$s kurulumu %4$s dosya sisteminde %2$ld%3$cB gerektiriyor"
+msgstr "việc cài đặt gói %s cần %ld%cB trong tệp tin hệ thống %s"
 
 #: lib/rpmps.c:294
 #, fuzzy, c-format
 msgid "installing package %s needs %lu inodes on the %s filesystem"
-msgstr "%s kurulumu %ld i-düğüm gerektiriyor (%s dosya sisteminde)"
+msgstr ""
+"việc cài đặt gói %s cần những chuỗi thông tin về tệp tin %ld trong tệp tin "
+"hệ thống %s"
 
 #: lib/rpmps.c:299
 #, c-format
 msgid "package %s pre-transaction syscall(s): %s failed: %s"
-msgstr "%s işlem öncesi sistem çağrı(sı/ları): %s başarısız: %s"
+msgstr "gói %s các cú pháp định hướng tiền giao dịch: %s thất bại: %s"
 
 #: lib/rpmps.c:303
 #, c-format
 msgid "%s is needed by %s%s"
-msgstr "%s, %s%s için gerekli"
+msgstr "%s%s cần %s"
 
 #: lib/rpmps.c:305 lib/rpmps.c:310
 msgid "(installed) "
-msgstr "(kurulu)"
+msgstr "(đã cài đặt) "
 
 #: lib/rpmps.c:308
 #, c-format
 msgid "%s conflicts with %s%s"
-msgstr "%s, %s%s ile çelişiyor"
+msgstr "%s xung đột với %s%s"
 
 #: lib/rpmps.c:314
 #, fuzzy, c-format
 msgid "installing package %s on %s rdonly filesystem"
-msgstr "%1$s kurulumu %4$s dosya sisteminde %2$ld%3$cB gerektiriyor"
+msgstr "việc cài đặt gói %s cần %ld%cB trong tệp tin hệ thống %s"
 
 #: lib/rpmps.c:319
 #, c-format
 msgid "unknown error %d encountered while manipulating package %s"
-msgstr "anlaşılamayan %d hatası, %s paketi işlenirken saptandı"
+msgstr "lỗi không xác định %d bắt gặp khi sử dụng gói %s"
 
 #: lib/rpmrc.c:1025
 #, c-format
@@ -2941,12 +2929,12 @@ msgstr ""
 #: lib/rpmrollback.c:601
 #, fuzzy
 msgid "Missing re-packaged package(s)"
-msgstr "paket(leri) günceller"
+msgstr "nâng cấp (các) gói"
 
 #: lib/rpmrollback.c:609
 #, c-format
 msgid "Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"
-msgstr "(+%d/-%d) den %-24.24s (0x%08x) e doğru paketler geri toplanıyor:\n"
+msgstr "Hoàn lại các gói (+%d/-%d) tới %-24.24s (0x%08x):\n"
 
 #: lib/rpmrollback.c:635
 msgid "Cleaning up repackaged packages:\n"
@@ -2955,7 +2943,7 @@ msgstr ""
 #: lib/rpmrollback.c:642
 #, fuzzy, c-format
 msgid "\tRemoving %s:\n"
-msgstr "%s alınıyor\n"
+msgstr "Đang tìm %s\n"
 
 #: lib/rpmsx.c:368
 #, c-format
@@ -2985,42 +2973,42 @@ msgstr ""
 #: lib/rpmts.c:133
 #, c-format
 msgid "cannot open Packages database in %s\n"
-msgstr "%s de Paket veritabanı açılamadı\n"
+msgstr "không thể mở cơ sở dữ liệu Packages trong %s\n"
 
 #: lib/rpmts.c:201
 #, fuzzy, c-format
 msgid "extra '(' in package label: %s\n"
-msgstr "geçersiz paket numarası: %s\n"
+msgstr "số của gói không có hiệu lực: %s\n"
 
 #: lib/rpmts.c:219
 #, fuzzy, c-format
 msgid "missing '(' in package label: %s\n"
-msgstr "%s %s içinde '(' yok\n"
+msgstr "Thiếu '(' in %s %s\n"
 
 #: lib/rpmts.c:227
 #, fuzzy, c-format
 msgid "missing ')' in package label: %s\n"
-msgstr "geçersiz paket numarası: %s\n"
+msgstr "số của gói không có hiệu lực: %s\n"
 
 #: lib/rpmts.c:289
 #, c-format
 msgid "cannot open Solve database in %s\n"
-msgstr "%s içindeki Solve veritabanı açılamıyor\n"
+msgstr "không thể mở cơ sở dữ liệu Solve trong %s\n"
 
 #: lib/rpmts.c:402
 #, fuzzy, c-format
 msgid "incorrect solve path format: %s\n"
-msgstr "biçem yanlış: %s\n"
+msgstr "định dạng sai: %s\n"
 
 #: lib/transaction.c:979
 #, fuzzy, c-format
 msgid "rpmdb erase failed. NEVRA: %s\n"
-msgstr "%s / %s dizinin silinmesi başarısız: %s\n"
+msgstr "%s rmdir của %s thất bại: %s\n"
 
 #: lib/transaction.c:997
 #, fuzzy, c-format
 msgid "Rollback to %-24.24s (0x%08x)\n"
-msgstr "(+%d/-%d) den %-24.24s (0x%08x) e doğru paketler geri toplanıyor:\n"
+msgstr "Hoàn lại các gói (+%d/-%d) tới %-24.24s (0x%08x):\n"
 
 #: lib/transaction.c:1144
 msgid "Invalid number of transaction elements.\n"
@@ -3029,22 +3017,22 @@ msgstr ""
 #: lib/verify.c:305
 #, fuzzy, c-format
 msgid "missing   %c %s"
-msgstr "%c %s eksik"
+msgstr "thiếu %c %s"
 
 #: lib/verify.c:431
 #, fuzzy, c-format
 msgid "Unsatisfied dependencies for %s:\n"
-msgstr "%s için giderilmemiş bağımlılıklar: "
+msgstr "Không thoả mãn các phần phụ thuộc cho %s: "
 
 #: rpmdb/db3.c:165
 #, c-format
 msgid "db%d error(%d) from %s: %s\n"
-msgstr "db%d hata(%d) %s'den: %s\n"
+msgstr "db%d lỗi(%d) từ %s: %s\n"
 
 #: rpmdb/db3.c:168
 #, c-format
 msgid "db%d error(%d): %s\n"
-msgstr "db%d hata(%d): %s\n"
+msgstr "db%d lỗi(%d): %s\n"
 
 #: rpmdb/db3.c:1304
 msgid "Runnning db->verify ...\n"
@@ -3053,39 +3041,39 @@ msgstr ""
 #: rpmdb/db3.c:1615
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
-msgstr "%s kilit  %s/%s'den alınamadı\n"
+msgstr "không thể khoá %s trên %s/%s\n"
 
 #: rpmdb/db3.c:1617
 msgid "exclusive"
-msgstr "bağdaşık"
+msgstr "loại trừ"
 
 #: rpmdb/db3.c:1617
 msgid "shared"
-msgstr "paylaşımlı"
+msgstr "đã chia sẻ"
 
 #: rpmdb/dbconfig.c:718
 #, c-format
 msgid "unrecognized db option: \"%s\" ignored.\n"
-msgstr "tanınmayan db seçeneği: \"%s\" yoksayıldı\n"
+msgstr "đã không chấp nhận lựa chọn db: \"%s\" đã bỏ qua.\n"
 
 #: rpmdb/dbconfig.c:758
 #, c-format
 msgid "%s has invalid numeric value, skipped\n"
-msgstr "%s geçersiz sayısal değer içeriyor, atlandı\n"
+msgstr "%s chứa giá trị số không giá trị, đã bỏ qua\n"
 
 #: rpmdb/dbconfig.c:767
 #, c-format
 msgid "%s has too large or too small long value, skipped\n"
-msgstr "%s ya çok büyük ya da çok küçük 'long' değer içeriyor, atlandı\n"
+msgstr "%s chứa giá trị đầy đủ quá lớn hoặc quá nhỏ, đã bỏ qua\n"
 
 #: rpmdb/dbconfig.c:776
 #, c-format
 msgid "%s has too large or too small integer value, skipped\n"
-msgstr "%s ya çok büyük ya da çok küçük 'integer' değer içeriyor, atlandı\n"
+msgstr "%s chứa giá trị nguyên quá lớn hoặc quá nhỏ, đã bỏ qua\n"
 
 #: rpmdb/hdrfmt.c:57 rpmdb/hdrfmt.c:157
 msgid "(not a number)"
-msgstr "(bir sayı değil)"
+msgstr "(not a number)"
 
 #: rpmdb/hdrfmt.c:184
 #, c-format
@@ -3099,106 +3087,108 @@ msgstr ""
 #: rpmdb/hdrfmt.c:248
 #, fuzzy
 msgid "invalid type"
-msgstr "(geçersiz tür)"
+msgstr "(invalid type)"
 
 #: rpmdb/hdrfmt.c:337 rpmdb/hdrfmt.c:366 rpmdb/hdrfmt.c:387 rpmdb/hdrfmt.c:454
 #: rpmdb/hdrfmt.c:979
 msgid "(invalid type)"
-msgstr "(geçersiz tür)"
+msgstr "(invalid type)"
 
 #: rpmdb/hdrfmt.c:444
 msgid "(not base64)"
-msgstr "(base64 değil)"
+msgstr "(not base64)"
 
 #: rpmdb/hdrfmt.c:478 rpmdb/hdrfmt.c:875
 msgid "(not a blob)"
-msgstr "(bir blob değil)"
+msgstr "(không là một khối dữ liệu lớn)"
 
 #: rpmdb/hdrfmt.c:627
 #, fuzzy
 msgid "(invalid xml type)"
-msgstr "(geçersiz tür)"
+msgstr "(invalid type)"
 
 #: rpmdb/hdrfmt.c:813
 #, fuzzy
 msgid "(invalid yaml type)"
-msgstr "(geçersiz tür)"
+msgstr "(invalid type)"
 
 #: rpmdb/hdrfmt.c:898
 msgid "(not an OpenPGP signature)"
-msgstr "(bir PGP imzası değil)"
+msgstr "(not an OpenPGP signature)"
 
 #: rpmdb/hdrfmt.c:2300
 msgid "missing { after %"
-msgstr "%% den sonraki { yok"
+msgstr "thiếu { sau %"
 
 #: rpmdb/hdrfmt.c:2334
 msgid "missing } after %{"
-msgstr "%%{ den sonraki } yok"
+msgstr "thiếu } sau %{"
 
 #: rpmdb/hdrfmt.c:2350
 msgid "empty tag format"
-msgstr "etiket biçemi boş"
+msgstr "định dạng thẻ ghi rỗng"
 
 #: rpmdb/hdrfmt.c:2362
 msgid "empty tag name"
-msgstr "etiket ismi boş"
+msgstr "tên thẻ ghi rỗng"
 
 #: rpmdb/hdrfmt.c:2371
 msgid "unknown tag"
-msgstr "bilinmeyen etiket"
+msgstr "thẻ ghi không xác định"
 
 #: rpmdb/hdrfmt.c:2401
 msgid "] expected at end of array"
-msgstr "dizinin sonunda ] gerekli"
+msgstr "] được chờ đợi tại cuối mảng"
 
 #: rpmdb/hdrfmt.c:2418
 msgid "unexpected ]"
-msgstr "beklenmeyen ]"
+msgstr "không được chờ đợi ]"
 
 #: rpmdb/hdrfmt.c:2433
 msgid "unexpected }"
-msgstr "beklenmeyen }"
+msgstr "không được chờ đợi }"
 
 #: rpmdb/hdrfmt.c:2511
 msgid "? expected in expression"
-msgstr "ifade içerisinde ? gerekli"
+msgstr "? được chờ đợi trong biểu thức"
 
 #: rpmdb/hdrfmt.c:2518
 msgid "{ expected after ? in expression"
-msgstr "ifade içerisinde ? dan sonra { gerekli"
+msgstr "{ được chờ đợi sau ? trong biểu thức"
 
 #: rpmdb/hdrfmt.c:2530 rpmdb/hdrfmt.c:2570
 msgid "} expected in expression"
-msgstr "ifade içinde } gerekli"
+msgstr "} được chờ đợi trong biểu thức"
 
 #: rpmdb/hdrfmt.c:2538
 msgid ": expected following ? subexpression"
-msgstr "? alt ifadesinden sonra : gerekli"
+msgstr ": được chờ đợi đi theo sau ? biểu thức phụ"
 
 #: rpmdb/hdrfmt.c:2556
 msgid "{ expected after : in expression"
-msgstr "ifade içersinde : den sonra { gerekli"
+msgstr "{ được chờ đợi sau : trong biểu thức"
 
 #: rpmdb/hdrfmt.c:2578
 msgid "| expected at end of expression"
-msgstr "ifadenin sonunda | gerekli"
+msgstr "| được chờ đợi tại kết thúc của biểu thức"
 
 #: rpmdb/hdrfmt.c:2871
 msgid "array iterator used with different sized arrays"
-msgstr ""
+msgstr "vòng lặp mảng được sử dụng với các mảng có kích cỡ khác nhau"
 
 #: rpmdb/poptDB.c:22
 msgid "initialize database"
-msgstr "veritabanını başlangıç durumuna getirir"
+msgstr "khởi chạy cơ sở dữ liệu"
 
 #: rpmdb/poptDB.c:25
 msgid "rebuild database inverted lists from installed package headers"
-msgstr "kurulu paket başlıklarından veritabanı listelerini yeniden oluşturur"
+msgstr ""
+"xây dựng lại các danh sách nghịch chuyển cơ sở dữ liệu từ các tiêu đề gói "
+"được cài đặt"
 
 #: rpmdb/poptDB.c:29
 msgid "verify database files"
-msgstr "veritabanı dosyaralını doğrular"
+msgstr "thẩm tra các tệp tin cơ sở dữ liệu"
 
 #: rpmdb/pkgio.c:82
 msgid "write of NULL header"
@@ -3207,7 +3197,7 @@ msgstr ""
 #: rpmdb/pkgio.c:89
 #, fuzzy
 msgid "headerUnload failed"
-msgstr "%s: headerRead başarısız\n"
+msgstr "%s: đọc tiêu đề thất bại\n"
 
 #: rpmdb/pkgio.c:101
 msgid "short write of header magic"
@@ -3216,17 +3206,17 @@ msgstr ""
 #: rpmdb/pkgio.c:113
 #, fuzzy
 msgid "short write of header"
-msgstr "Son başlık yazılamadı\n"
+msgstr "Không thể ghi tiêu đề cuối cùng\n"
 
 #: rpmdb/pkgio.c:477 rpmdb/pkgio.c:482
 #, fuzzy, c-format
 msgid "lead size(%u): BAD, read(%d), %s(%d)"
-msgstr "başlık boyu(%d): HATALI, okuma %d ile döndü\n"
+msgstr "kích thước hdr(%d): BAD, đọc phản hồi %d\n"
 
 #: rpmdb/pkgio.c:515
 #, fuzzy, c-format
 msgid "lead size(%u): BAD, xar read(%u)"
-msgstr "başlık boyu(%d): HATALI, okuma %d ile döndü\n"
+msgstr "kích thước hdr(%d): BAD, đọc phản hồi %d\n"
 
 #: rpmdb/pkgio.c:532
 #, c-format
@@ -3246,7 +3236,7 @@ msgstr ""
 #: rpmdb/pkgio.c:698
 #, fuzzy, c-format
 msgid "sigh size(%d): BAD, read returned %d"
-msgstr "sigh boyutu(%d): HATALI, dönen %d\n"
+msgstr "kích cỡ (%d): XẤU, đọc kết quả %d\n"
 
 #: rpmdb/pkgio.c:710
 #, c-format
@@ -3256,82 +3246,82 @@ msgstr ""
 #: rpmdb/pkgio.c:718
 #, fuzzy, c-format
 msgid "sigh tags: BAD, no. of tags(%u) out of range"
-msgstr "sigh etiketleri: HATALI, etiket numarası (%d) aralık dışında\n"
+msgstr "các thẻ ghi: XẤU, thứ tự của các thẻ ghi (%d) ngoài phạm vi\n"
 
 #: rpmdb/pkgio.c:724
 #, fuzzy, c-format
 msgid "sigh data: BAD, no. of bytes(%u) out of range"
-msgstr "sigh verisi: HATALI, bayt sayısı (%d) aralık dışında\n"
+msgstr "dữ liệu: XẤU, thứ tự của bytes(%d) ngoài phạm vi\n"
 
 #: rpmdb/pkgio.c:734
 #, fuzzy, c-format
 msgid "sigh blob(%u): BAD, read returned %d"
-msgstr "sigh blob(%d): HATALI, dönen %d\n"
+msgstr "khối dữ liệu lớn(%d): XẤU, đọc kết quả %d\n"
 
 #: rpmdb/pkgio.c:746 rpmdb/pkgio.c:924 rpmdb/pkgio.c:1049
 #, fuzzy, c-format
 msgid "tag[%d]: BAD, tag %u type %u offset %d count %u"
-msgstr "etiket[%d]: HATALI, etiket %d tür %d konum %d sayı %d\n"
+msgstr "thẻ ghi[%d]: BAD, thẻ ghi %d loại %d khoảng chừa trống %d đếm %d\n"
 
 #: rpmdb/pkgio.c:763 rpmdb/pkgio.c:944
 #, fuzzy, c-format
 msgid "region offset: BAD, tag %u type %u offset %d count %u"
-msgstr "bölge konumu:  HATALI, etiket %d tür %d konum %d sayı %d\n"
+msgstr "vùng chừa trống: BAD, thẻ ghi %d loại %d khoảng chừa trống %d đếm %d\n"
 
 #: rpmdb/pkgio.c:788 rpmdb/pkgio.c:963
 #, fuzzy, c-format
 msgid "region trailer: BAD, tag %u type %u offset %d count %u"
-msgstr "bölge ucu:  HATALI, etiket %d tür %d konum %d sayı %d\n"
+msgstr "vùng theo đuôi: BAD, thẻ ghi %d loại %d khoảng chừa trống %d đếm %d\n"
 
 #: rpmdb/pkgio.c:800 rpmdb/pkgio.c:975
 #, fuzzy, c-format
 msgid "region size: BAD, ril(%u) > il(%u)"
-msgstr "bölge boyutu: HATALI, ril(%d) > il(%d)\n"
+msgstr "kích thước vùng: BAD, ril(%d) > il(%d)\n"
 
 #: rpmdb/pkgio.c:811
 #, fuzzy, c-format
 msgid "sigh tag[%u]: BAD, tag %u type %u offset %d count %u"
-msgstr "sigh etiketi[%d]: HATALI, etiket %d türü %d konumu %d sayısı %d\n"
+msgstr "thẻ ghi[%d]: XẤU, bản ghi %d loại %d khoảng chừa trống %d đếm %d\n"
 
 #: rpmdb/pkgio.c:821
 #, fuzzy, c-format
 msgid "sigh load: BAD"
-msgstr "sigh yükleme: HATALI\n"
+msgstr "nạp: XẤU\n"
 
 #: rpmdb/pkgio.c:834
 #, fuzzy, c-format
 msgid "sigh pad(%u): BAD, read %d bytes"
-msgstr "sigh adımlama(%d): HATALI, %d bayt okundu\n"
+msgstr "đệm (%d): XẤU, đọc %d bytes\n"
 
 #: rpmdb/pkgio.c:847
 #, fuzzy, c-format
 msgid "sigh sigSize(%u): BAD, fstat(2) failed"
-msgstr "sigh boyutu(%d): HATALI, dönen %d\n"
+msgstr "kích cỡ (%d): XẤU, đọc kết quả %d\n"
 
 #: rpmdb/pkgio.c:915
 #, fuzzy, c-format
 msgid "blob size(%d): BAD, 8 + 16 * il(%u) + dl(%u)"
-msgstr "blob boyutu(%d): HATALI, 8 + 16 * il(%d) + dl(%d)\n"
+msgstr "kích cỡ khối dữ liệu lớn(%d): BAD, 8 + 16 * il(%d) + dl(%d)\n"
 
 #: rpmdb/pkgio.c:984
 #, fuzzy, c-format
 msgid "tag[%u]: BAD, tag %u type %u offset %d count %u"
-msgstr "etiket[%d]: HATALI, etiket %d tür %d konum %d sayı %d\n"
+msgstr "thẻ ghi[%d]: BAD, thẻ ghi %d loại %d khoảng chừa trống %d đếm %d\n"
 
 #: rpmdb/pkgio.c:1002
 #, fuzzy, c-format
 msgid "hdr SHA1: BAD, not hex"
-msgstr "başlık SHA1: HATALI, onaltılık değil\n"
+msgstr "hdr SHA1: BAD, not hex\n"
 
 #: rpmdb/pkgio.c:1014
 #, fuzzy, c-format
 msgid "hdr RSA: BAD, not binary"
-msgstr "başlık DSA: HATALI, ikilik değil\n"
+msgstr "hdr DSA: BAD, not binary\n"
 
 #: rpmdb/pkgio.c:1024
 #, fuzzy, c-format
 msgid "hdr DSA: BAD, not binary"
-msgstr "başlık DSA: HATALI, ikilik değil\n"
+msgstr "hdr DSA: BAD, not binary\n"
 
 #: rpmdb/pkgio.c:1081 rpmdb/pkgio.c:1124
 #, c-format
@@ -3341,7 +3331,7 @@ msgstr ""
 #: rpmdb/pkgio.c:1274
 #, fuzzy, c-format
 msgid "hdr size(%u): BAD, read returned %d"
-msgstr "başlık boyu(%d): HATALI, okuma %d ile döndü\n"
+msgstr "kích thước hdr(%d): BAD, đọc phản hồi %d\n"
 
 #: rpmdb/pkgio.c:1284
 #, c-format
@@ -3351,61 +3341,61 @@ msgstr ""
 #: rpmdb/pkgio.c:1292
 #, fuzzy, c-format
 msgid "hdr tags: BAD, no. of tags(%u) out of range"
-msgstr "başlık etiketleri: HATALI, etiket(%d) numarası aralık dışında\n"
+msgstr "những thẻ ghi hdr: BAD, thứ tự của các thẻ ghi(%d) ngoài phạm vi\n"
 
 #: rpmdb/pkgio.c:1299
 #, fuzzy, c-format
 msgid "hdr data: BAD, no. of bytes(%u) out of range\n"
-msgstr "başlık verisi: HATALI, no. of bytes(%d) out of range\n"
+msgstr "dữ liệu hdr: BAD, thứ tự của các byte(%d) ngoài phạm vi\n"
 
 #: rpmdb/pkgio.c:1310
 #, fuzzy, c-format
 msgid "hdr blob(%u): BAD, read returned %d"
-msgstr "başlık blob(%d): HATALI, okuma %d ile döndü\n"
+msgstr "khối dữ liệu lớn hdr(%d): BAD, đọc phản hồi %d\n"
 
 #: rpmdb/pkgio.c:1324
 #, c-format
 msgid "hdr load: BAD\n"
-msgstr "başlık yükü: HATALI\n"
+msgstr "nạp hdr: BAD\n"
 
 #: rpmdb/rpmdb.c:379
 #, fuzzy, c-format
 msgid "cannot open %s(%u) index using db%d - %s (%d)\n"
-msgstr "%s indeksi db%d - %s (%d) kullanarak açılamadı\n"
+msgstr "không thể mở danh mục %s sử dụng db%d - %s (%d)\n"
 
 #: rpmdb/rpmdb.c:399
 #, fuzzy, c-format
 msgid "cannot open %s(%u) index\n"
-msgstr "%s indeksi açılamadı\n"
+msgstr "không thể mở danh mục %s\n"
 
 #: rpmdb/rpmdb.c:850
 #, fuzzy, c-format
 msgid "incorrect format: \"%s\": %s\n"
-msgstr "biçem yanlış: %s\n"
+msgstr "định dạng sai: %s\n"
 
 #: rpmdb/rpmdb.c:1168
 msgid "no dbpath has been set\n"
-msgstr "belirtilmiş bir dbpath değeri yok\n"
+msgstr "không có dbpath nào được đặt\n"
 
 #: rpmdb/rpmdb.c:1466 rpmdb/rpmdb.c:1613 rpmdb/rpmdb.c:1669 rpmdb/rpmdb.c:2576
 #: rpmdb/rpmdb.c:2726 rpmdb/rpmdb.c:3522
 #, c-format
 msgid "error(%d) getting \"%s\" records from %s index\n"
-msgstr "hata(%d): \"%s\" kayıt %s indeksinden alınırken\n"
+msgstr "lỗi (%d) trong khi nhận \"%s\" các bản ghi từ danh mục %s\n"
 
 #: rpmdb/rpmdb.c:1883
 msgid "miFreeHeader: skipping"
-msgstr "miFreeHeader: atlanıyor"
+msgstr "miFreeHeader: đang bỏ qua"
 
 #: rpmdb/rpmdb.c:1893
 #, c-format
 msgid "error(%d) storing record #%d into %s\n"
-msgstr "hata(%d) %d. kayıt %s içine yazılıyor\n"
+msgstr "lỗi (%d) trong khi cất giữ bản ghi #%d vào %s\n"
 
 #: rpmdb/rpmdb.c:2454
 #, fuzzy
 msgid "rpmdb: skipping"
-msgstr "rpmdbAdd: atlanıyor"
+msgstr "rpmdbAdd: bỏ qua"
 
 #: rpmdb/rpmdb.c:2454
 msgid "rpmdb: read"
@@ -3414,101 +3404,100 @@ msgstr ""
 #: rpmdb/rpmdb.c:2489
 #, c-format
 msgid "rpmdb: damaged header #%u retrieved -- skipping.\n"
-msgstr "rpmdb: bozuk başlık #%u alındı -- atlanıyor.\n"
+msgstr "rpmdb: đã tìm được #%u tiêu đề bị hư hại -- đang bỏ qua.\n"
 
 #: rpmdb/rpmdb.c:2825
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
-msgstr "%s: 0x%x de başlık okunamadı\n"
+msgstr "%s: không thể đọc tiêu đề tại 0x%x\n"
 
 #: rpmdb/rpmdb.c:2896
 #, c-format
 msgid "error(%d) setting header #%d record for %s removal\n"
-msgstr "hata(%1$d) kaldırılan %3$s için  %2$d. başlık kaydı ayarlanırken\n"
+msgstr "lỗi (%d) khi đang thiết lập tiêu đề bản ghi #%d cho sự gỡ bỏ %s \n"
 
 #: rpmdb/rpmdb.c:3046
 #, c-format
 msgid "error(%d) setting \"%s\" records from %s index\n"
-msgstr "hata(%1$d): %3$s indisindeki \"%2$s\" kaydı ayarlanırken\n"
+msgstr "lỗi (%d) khi đang thiết lập các bản ghi \"%s\" từ danh mục %s\n"
 
 #: rpmdb/rpmdb.c:3067
 #, c-format
 msgid "error(%d) storing record \"%s\" into %s\n"
-msgstr "hata(%d): \"%s\" kaydı %s içine yazılırken\n"
+msgstr "lỗi (%d) khi đang cất giữ bản ghi \"%s\" vào %s\n"
 
 #: rpmdb/rpmdb.c:3077
 #, c-format
 msgid "error(%d) removing record \"%s\" from %s\n"
-msgstr "hata(%d) \"%s\" kaydı %s dosyasından silinirken\n"
+msgstr "lỗi (%d) khi đang gỡ bỏ bản ghi \"%s\" từ %s\n"
 
 #: rpmdb/rpmdb.c:3252
 #, c-format
 msgid "error(%d) allocating new package instance\n"
-msgstr "yeni paket örneğini tutma hatası(%d)\n"
+msgstr "lỗi (%d) khi đang phân phối gói mới\n"
 
 #: rpmdb/rpmdb.c:3326
 msgid "rpmdbAdd: skipping"
-msgstr "rpmdbAdd: atlanıyor"
+msgstr "rpmdbAdd: bỏ qua"
 
 #: rpmdb/rpmdb.c:3541
 #, c-format
 msgid "error(%d) storing record %s into %s\n"
-msgstr "hata(%d): %s kayıt %s içine yazılıyor\n"
+msgstr "lỗi (%d) trong khi cất giữ bản ghi %s vào %s\n"
 
 #: rpmdb/rpmdb.c:3967
 #, c-format
 msgid "temporary database %s already exists\n"
-msgstr "geçici veritabanı %s zaten mevcut\n"
+msgstr "cơ sở dữ liệu tạm %s đã tồn tại\n"
 
 #: rpmdb/rpmdb.c:3975
 #, c-format
 msgid "creating directory %s: %s\n"
-msgstr "%s dizini oluşturuluyor: %s\n"
+msgstr "đang tạo thư mục %s: %s\n"
 
 #: rpmdb/rpmdb.c:4022
 #, c-format
 msgid "header #%u in the database is bad -- skipping.\n"
-msgstr "veritabanındaki %u. başlık hatalı -- atlanıyor\n"
+msgstr "tiêu đề #%u trong cơ sở dữ liệu sai -- đang bỏ qua.\n"
 
 #: rpmdb/rpmdb.c:4030
 #, fuzzy, c-format
 msgid "header #%u in the database is SRPM -- skipping.\n"
-msgstr "veritabanındaki %u. başlık hatalı -- atlanıyor\n"
+msgstr "tiêu đề #%u trong cơ sở dữ liệu sai -- đang bỏ qua.\n"
 
 #: rpmdb/rpmdb.c:4070
 #, c-format
 msgid "cannot add record originally at %u\n"
-msgstr "kayıt özgün olarak %u e eklenemedi\n"
+msgstr "không thể thêm bản ghi từ lúc bắt đầu tại %u\n"
 
 #: rpmdb/rpmdb.c:4084
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
-"veritabanı yeniden oluşturulamadı: mevcut veritabanı değişmeden\n"
-"yerinde bırakıldı\n"
+"xây dựng lại cơ sở dữ liệu thất bại: cơ sở dữ liệu gốc giữ nguyên vị trí\n"
 
 #: rpmdb/rpmdb.c:4096
 msgid "failed to replace old database with new database!\n"
-msgstr "eski veritabanının yenisiyle değiştirilirmesi başarısız!\n"
+msgstr "thay thế cơ sở dữ liệu cũ bằng cơ sở dữ liệu mới thất bại!\n"
 
 #: rpmdb/rpmdb.c:4098
 #, c-format
 msgid "replace files in %s with files from %s to recover"
-msgstr "kurtarmak için %s içindeki dosyalar %s deki dosyalarla değiştiriliyor"
+msgstr "thay thế các tệp tin trong %s bằng các tệp tin từ %s để khôi phục"
 
 #: rpmdb/rpmdb.c:4110
 #, c-format
 msgid "failed to remove directory %s: %s\n"
-msgstr "%s dizininin silinmesi başarısız: %s\n"
+msgstr "gỡ bỏ thư mục %s thất bại: %s\n"
 
 #: rpmdb/signature.c:97 rpmdb/signature.c:102 rpmdb/signature.c:108
 #, c-format
 msgid "error creating temporary file %s\n"
-msgstr "%s geçici dosyası oluşturulurken hata\n"
+msgstr "lỗi trong khi tạo tệp tin tạm thời %s\n"
 
 #: rpmdb/signature.c:190 rpmdb/signature.c:534
 #, c-format
 msgid "Could not exec %s: %s\n"
-msgstr "%s çalıştırılamadı: %s\n"
+msgstr "Không thể thực thi %s: %s\n"
 
 #: rpmdb/signature.c:208 rpmdb/signature.c:548
 #, c-format
@@ -3518,51 +3507,51 @@ msgstr ""
 #: rpmdb/signature.c:234
 #, fuzzy, c-format
 msgid "gpg exec failed (%d)\n"
-msgstr "icra başarısız\n"
+msgstr "Việc thực thi bị lỗi\n"
 
 #: rpmdb/signature.c:241
 msgid "gpg failed to write signature\n"
-msgstr "imzanın yazılması sırasında gpg hata verdi\n"
+msgstr "ghi chữ ký gpg thất bại\n"
 
 #: rpmdb/signature.c:260
 msgid "unable to read the signature\n"
-msgstr "imza okunamadı\n"
+msgstr "không thể đọc chữ ký\n"
 
 #: rpmdb/signature.c:600
 msgid "Header+Payload size: "
-msgstr "Header+Payload boyutu: "
+msgstr "kích cỡ Tiêu đề+Dữ liệu tải về:"
 
 #: rpmdb/signature.c:637
 msgid "MD5 digest: "
-msgstr "MD5 özeti: "
+msgstr "yết thị MD5: "
 
 #: rpmdb/signature.c:694
 msgid "Header SHA1 digest: "
-msgstr "Başlık SHA1 özeti: "
+msgstr "Tiêu đề yết thị SHA1: "
 
 #: rpmdb/signature.c:754 rpmdb/signature.c:880
 msgid "Header "
-msgstr "Başlık "
+msgstr "Tiêu đề "
 
 #: rpmdb/signature.c:810
 #, fuzzy
 msgid " signature: "
-msgstr "V3 DSA imza: "
+msgstr "chữ ký V3 DSA: "
 
 #: rpmdb/signature.c:886
 #, fuzzy
 msgid " DSA signature: "
-msgstr "V3 DSA imza: "
+msgstr "chữ ký V3 DSA: "
 
 #: rpmdb/signature.c:961
 #, c-format
 msgid "Verify signature: BAD PARAMETERS\n"
-msgstr "İmza doğrulama: PARAMETRELER HATALI\n"
+msgstr "Thẩm tra chữ ký: THAM SỐ SAI\n"
 
 #: rpmdb/signature.c:982
 #, fuzzy, c-format
 msgid "Signature: UNKNOWN (%u)\n"
-msgstr "İmza: BİLİNMİYOR (%d)\n"
+msgstr "Chữ ký: KHÔNG RÕ (%d)\n"
 
 #: rpmdb/sqlite.c:670
 #, c-format
@@ -3572,77 +3561,77 @@ msgstr ""
 #: rpmio/macro.c:271
 #, c-format
 msgid "======================== active %d empty %d\n"
-msgstr "======================== %d etkin %d boş\n"
+msgstr "======================== hoạt động %d rỗng %d\n"
 
 #: rpmio/macro.c:454
 #, c-format
 msgid "%3d>%*s(empty)"
-msgstr "%3d>%*s(boş)"
+msgstr "%3d>%*s(rỗng)"
 
 #: rpmio/macro.c:497
 #, c-format
 msgid "%3d<%*s(empty)\n"
-msgstr "%3d<%*s(boş)\n"
+msgstr "%3d<%*s(rỗng)\n"
 
 #: rpmio/macro.c:726 rpmio/macro.c:764
 #, c-format
 msgid "Macro %%%s has unterminated body\n"
-msgstr "%%%s makrosunun gövdesi sonlandırılmamış\n"
+msgstr "Macro %%%s có thân chưa hoàn thiện\n"
 
 #: rpmio/macro.c:785
 #, c-format
 msgid "Macro %%%s has illegal name (%%define)\n"
-msgstr "%%%s makrosunun ismi kuraldışı (%%define)\n"
+msgstr "Macro %%%s có tên không hợp lệ (%%định nghĩa)\n"
 
 #: rpmio/macro.c:791
 #, c-format
 msgid "Macro %%%s has unterminated opts\n"
-msgstr "%%%s makrosunu seçenekleri sonlandırılmamış\n"
+msgstr "Macro %%%s có các lựa chọn chưa hoàn thiện\n"
 
 #: rpmio/macro.c:796
 #, c-format
 msgid "Macro %%%s has empty body\n"
-msgstr "%%%s makrosu boş\n"
+msgstr "Macro %%%s không có nội dung\n"
 
 #: rpmio/macro.c:802
 #, c-format
 msgid "Macro %%%s failed to expand\n"
-msgstr "%%%s makrosu genişletmede başarısız\n"
+msgstr "Macro %%%s mở rộng thất bại\n"
 
 #: rpmio/macro.c:842
 #, c-format
 msgid "Macro %%%s has illegal name (%%undefine)\n"
-msgstr "%%%s makrosunun ismi kuraldışı (%%define)\n"
+msgstr "Macro %%%s có tên không hợp lệ (%%chưa định nghĩa)\n"
 
 #: rpmio/macro.c:958
 #, c-format
 msgid "Macro %%%s (%s) was not used below level %d\n"
-msgstr "%%%s (%s) makrosu %d seviyenin altında kullanılmadı\n"
+msgstr "Macro %%%s (%s) không sử dụng được dưới mức %d\n"
 
 #: rpmio/macro.c:1086
 #, c-format
 msgid "Unknown option %c in %s(%s)\n"
-msgstr "%c seçeneği %s(%s) de anlaşılamadı\n"
+msgstr "Lựa chọn chưa biết %c trong %s(%s)\n"
 
 #: rpmio/macro.c:1341
 #, c-format
 msgid "Recursion depth(%d) greater than max(%d)\n"
-msgstr "Yineleme derinliği(%d) mümkün miktardan(%d) büyük\n"
+msgstr "Độ sâu vòng lặp(%d) lớn hơn tối đa(%d)\n"
 
 #: rpmio/macro.c:1415 rpmio/macro.c:1432
 #, c-format
 msgid "Unterminated %c: %s\n"
-msgstr "%c sonlandırılmamış: %s\n"
+msgstr "Chưa hoàn thiện %c: %s\n"
 
 #: rpmio/macro.c:1477
 #, c-format
 msgid "A %% is followed by an unparseable macro\n"
-msgstr "Bir ayrıştırılamayan makro tarafından bir %% izlendi\n"
+msgstr "A %% được theo sau bởi một macro phân tích\n"
 
 #: rpmio/macro.c:1662
 #, c-format
 msgid "Macro %%%.*s not found, skipping\n"
-msgstr "%%%.*s makrosu bulunamadı, atlanıyor\n"
+msgstr "Không tìm thấy macro %%%.*s, đang bỏ qua\n"
 
 #: rpmio/macro.c:2020
 msgid "Macro expansion too big for target buffer\n"
@@ -3656,12 +3645,12 @@ msgstr ""
 #: rpmio/macro.c:2303 rpmio/macro.c:2309
 #, c-format
 msgid "File %s: %s\n"
-msgstr "%s dosyası: %s\n"
+msgstr "Tệp tin %s: %s\n"
 
 #: rpmio/macro.c:2312
 #, c-format
 msgid "File %s is smaller than %u bytes\n"
-msgstr "%s dosyası %u bayttan küçük\n"
+msgstr "Tệp tin %s nhỏ hơn %u bytes\n"
 
 #: rpmio/rpmdav.c:729
 msgid "Authorization Required"
@@ -3674,85 +3663,85 @@ msgstr ""
 #: rpmio/rpmdav.c:733
 #, fuzzy
 msgid "Server Error"
-msgstr "Sunucu G/Ç hatası"
+msgstr "Lỗi Nhập/Xuất máy chủ"
 
 #: rpmio/rpmdav.c:735
 #, fuzzy
 msgid "Unknown Error"
-msgstr "(hata yok)"
+msgstr "(không lỗi)"
 
 #: rpmio/rpmio.c:736
 msgid "Success"
-msgstr "Başarılı"
+msgstr "Thành công"
 
 #: rpmio/rpmio.c:759
 msgid "Bad server response"
-msgstr "Sunucudan kötü yanıt"
+msgstr "Đáp ứng của máy chủ sai"
 
 #: rpmio/rpmio.c:761
 msgid "Server I/O error"
-msgstr "Sunucu G/Ç hatası"
+msgstr "Lỗi Nhập/Xuất máy chủ"
 
 #: rpmio/rpmio.c:763
 msgid "Server timeout"
-msgstr "Sunucu zaman aşımı"
+msgstr "Gián đoạn máy chủ"
 
 #: rpmio/rpmio.c:765
 msgid "Unable to lookup server host address"
-msgstr "Sunucu makina adresi bulunamadı"
+msgstr "Không tìm được địa chỉ máy chủ"
 
 #: rpmio/rpmio.c:767
 msgid "Unable to lookup server host name"
-msgstr "Sunucu makina ismi bulunamadı"
+msgstr "Không tìm được tên máy chủ"
 
 #: rpmio/rpmio.c:769
 msgid "Failed to connect to server"
-msgstr "Sunucuya bağlanılamadı"
+msgstr "Kết nối với máy chủ thất bại"
 
 #: rpmio/rpmio.c:771
 msgid "Failed to establish data connection to server"
-msgstr "Sunucuya veri bağlantısı kurulamadı"
+msgstr "Thiết lập kết nối dữ liệu với máy chủ thất bại"
 
 #: rpmio/rpmio.c:773
 msgid "I/O error to local file"
-msgstr "Yerel dosyaya G/Ç hatası"
+msgstr "lỗi Nhập/Xuất tới tệp tin nội bộ"
 
 #: rpmio/rpmio.c:775
 msgid "Error setting remote server to passive mode"
-msgstr "Karşı sunucuyu pasif kipe sokma ayarlarında hata"
+msgstr "Lỗi khi đang thiết lập máy chủ từ xa về chế độ thụ động"
 
 #: rpmio/rpmio.c:777
 msgid "File not found on server"
-msgstr "Dosya sunucuda bulunamadı"
+msgstr "Không tìm thất tệp tin trên máy chủ"
 
 #: rpmio/rpmio.c:779
 msgid "Abort in progress"
-msgstr "Kesme işlemi sürüyor"
+msgstr "Đang thực hiện bãi bỏ"
 
 #: rpmio/rpmio.c:783
 msgid "Unknown or unexpected error"
-msgstr "Bilinmeyen ya da beklenmeyen hata"
+msgstr "Lỗi không xác định hoặc không mong đợi"
 
 #: rpmio/rpmio.c:800
 #, fuzzy
 msgid "Malformed URL"
-msgstr "%s bozulmuş: %s.\n"
+msgstr "không hợp %s: %s\n"
 
 #: rpmio/rpmlog.c:46
 msgid "(no error)"
-msgstr "(hata yok)"
+msgstr "(không lỗi)"
 
 #: rpmio/rpmlog.c:185 rpmio/rpmlog.c:186 rpmio/rpmlog.c:187
 msgid "fatal error: "
-msgstr "ölümcül hata: "
+msgstr "lỗi nặng: "
 
 #: rpmio/rpmlog.c:188
 msgid "error: "
-msgstr "hata: "
+msgstr "lỗi: "
 
 #: rpmio/rpmlog.c:189
 msgid "warning: "
-msgstr "uyarı: "
+msgstr "cảnh báo: "
 
 #: rpmio/rpmlua.c:512
 #, c-format
@@ -3762,42 +3751,42 @@ msgstr ""
 #: rpmio/rpmlua.c:528
 #, fuzzy, c-format
 msgid "invalid syntax in Lua script: %s\n"
-msgstr "geçersiz paket numarası: %s\n"
+msgstr "số của gói không có hiệu lực: %s\n"
 
 #: rpmio/rpmlua.c:533 rpmio/rpmlua.c:552
 #, fuzzy, c-format
 msgid "Lua script failed: %s\n"
-msgstr "%s: Fwrite başarısız: %s\n"
+msgstr "%s: Ghi tệp tin thất bại: %s\n"
 
 #: rpmio/rpmlua.c:547
 #, fuzzy, c-format
 msgid "invalid syntax in Lua file: %s\n"
-msgstr "geçersiz paket numarası: %s\n"
+msgstr "số của gói không có hiệu lực: %s\n"
 
 #: rpmio/rpmlua.c:762
 #, fuzzy, c-format
 msgid "lua hook failed: %s\n"
-msgstr "%s başarısız: %s\n"
+msgstr "%s thất bại: %s\n"
 
 #: rpmio/rpmmalloc.c:22
 #, c-format
 msgid "memory alloc (%u bytes) returned NULL.\n"
-msgstr "bellek ayrılırken (%u bayt) NULL döndü.\n"
+msgstr "chỉ định bộ nhớ (%u bytes) trở về NULL.\n"
 
 #: rpmio/rpmmg.c:49
 #, fuzzy, c-format
 msgid "magic_open(0x%x) failed: %s\n"
-msgstr "%s açılamadı: %s\n"
+msgstr "mở %s thất bại: %s\n"
 
 #: rpmio/rpmmg.c:55
 #, fuzzy, c-format
 msgid "magic_load(ms, %s) failed: %s\n"
-msgstr "%s / %s dizinin silinmesi başarısız: %s\n"
+msgstr "%s rmdir của %s thất bại: %s\n"
 
 #: rpmio/rpmmg.c:74
 #, fuzzy, c-format
 msgid "magic_file(ms, %s) failed: %s\n"
-msgstr "%s / %s dizinin silinmesi başarısız: %s\n"
+msgstr "%s rmdir của %s thất bại: %s\n"
 
 #: rpmio/rpmmg.c:96
 #, c-format
@@ -3807,31 +3796,31 @@ msgstr ""
 #: rpmio/url.c:113
 #, c-format
 msgid "warning: u %p ctrl %p nrefs != 0 (%s %s)\n"
-msgstr "uyarı: u %p ctrl %p nrefs != 0 (%s %s)\n"
+msgstr "cảnh báo: u %p ctrl %p nrefs != 0 (%s %s)\n"
 
 #: rpmio/url.c:133
 #, c-format
 msgid "warning: u %p data %p nrefs != 0 (%s %s)\n"
-msgstr "uyarı: u %p veri %p nrefs != 0 (%s %s)\n"
+msgstr "cảnh báo: u %p data %p nrefs != 0 (%s %s)\n"
 
 #: rpmio/url.c:164
 #, c-format
 msgid "warning: _url_cache[%d] %p nrefs(%d) != 1 (%s %s)\n"
-msgstr "uyarı: _url_cache[%d] %p nrefs(%d) != 1 (%s %s)\n"
+msgstr "cảnh báo: _url_cache[%d] %p nrefs(%d) != 1 (%s %s)\n"
 
 #: rpmio/url.c:258
 #, c-format
 msgid "Password for %s@%s: "
-msgstr "%s@%s için parola: "
+msgstr "Mật khẩu cho %s@%s: "
 
 #: rpmio/url.c:287 rpmio/url.c:313
 #, c-format
 msgid "error: %sport must be a number\n"
-msgstr "hata: %sport bir sayı olmalı\n"
+msgstr "lỗi: %sport phải là một số\n"
 
 #: rpmio/url.c:482
 msgid "url port must be a number\n"
-msgstr "url portu bir sayı olmalı\n"
+msgstr "cổng url phải là một số\n"
 
 #: tools/rpmdeps.c:159
 msgid "print cpuinfo(...) dependency set"
@@ -3900,7 +3889,7 @@ msgstr ""
 #: tools/rpmdeps.c:193
 #, fuzzy
 msgid "print package(...) dependency set"
-msgstr "paketin bağımlılıklarını gösterir"
+msgstr "không thẩm tra các gói phụ thuộc"
 
 #: tools/rpmdeps.c:196
 msgid "print java(...) dependency set"
@@ -3935,1313 +3924,553 @@ msgid "check Requires: against Provides: for dependency closure"
 msgstr ""
 
 #~ msgid "Failed to open tar pipe: %m\n"
-#~ msgstr "tar veriyolu açılamadı: %m\n"
+#~ msgstr "Mở chuyển hướng lệnh tar bị lỗi: %m\n"
 
 #~ msgid "Building for target %s\n"
-#~ msgstr "%s için derleniyor\n"
+#~ msgstr "Đang xây dựng cho mục tiêu %s\n"
 
 #~ msgid "argument is not an RPM package\n"
-#~ msgstr "argüman bir RPM paketi değil\n"
+#~ msgstr "đối số không phải là một gói RPM\n"
 
 #~ msgid "error reading header from package\n"
-#~ msgstr "paketten başlık okunması sırasında hata oluştu\n"
+#~ msgstr "xảy ra lỗi trong khi đọc tiêu đề từ gói\n"
 
 #~ msgid "cannot re-open payload: %s\n"
-#~ msgstr "payload tekrar açılamıyor: %s\n"
+#~ msgstr "không thể mở lại dữ liệu tải về: %s\n"
 
 #~ msgid "RPM version %s\n"
-#~ msgstr "RPM Sürüm %s\n"
+#~ msgstr "phiên bản RPM %s\n"
 
 #~ msgid "Copyright (C) 1998-2002 - Red Hat, Inc.\n"
-#~ msgstr "Telif hakkı © 1998 - 2002 - Red Hat, Inc.\n"
+#~ msgstr "Bản quyền thuộc về Red Hat, Inc. 1998-2002\n"
 
 #~ msgid ""
 #~ "This program may be freely redistributed under the terms of the GNU GPL\n"
-#~ msgstr ""
-#~ "Bu yazılım GNU GPL koşullarına uygun olarak serbestçe dağıtılabilir.\n"
+#~ msgstr "Chương trình này được phân phối tự do theo giấy phép của GNU GPL\n"
 
 #~ msgid "Internal error in argument processing (%d) :-(\n"
-#~ msgstr "(%d) argümanı işlenirken iç hata oluştu :-(\n"
-
-#~ msgid "only one of --prefix or --relocate may be used"
-#~ msgstr "--prefix ve --relocate seçeneklerinden sadece biri kullanılabilir"
+#~ msgstr "Lỗi nội tại trong quá trình xử lý đối số (%d) :-(\n"
 
 #~ msgid "--replacefiles may only be specified during package installation"
-#~ msgstr "--replacefiles sadece paket kurulumu sırasında kullanılabilir"
+#~ msgstr "--replacefiles có thể chỉ được định rõ trong quá trình cài đặt gói"
 
 #~ msgid "--ignoresize may only be specified during package installation"
-#~ msgstr "--ignoresize sadece paket kurulumu sırasında kullanılabilir"
+#~ msgstr "--ignoresize có thể chỉ được định rõ trong quá trình cài đặt gói"
 
 #~ msgid "pgp not found: "
-#~ msgstr "pgp bulunamadı: "
+#~ msgstr "không tìm thấy pgp:"
 
 #~ msgid "Invalid %%_signature spec in macro file.\n"
-#~ msgstr "Makro dosyasındaki %%_signature spec geçersiz.\n"
+#~ msgstr "Chữ ký đặc tả trong tệp tin macro %% không có hiệu lực.\n"
 
 #~ msgid "--sign may only be used during package building"
-#~ msgstr "--sign sadece paket oluşturulurken kullanılabilir"
-
-#~ msgid "%s failed\n"
-#~ msgstr "%s başarısız\n"
+#~ msgstr "--sign có thể chỉ được dùng trong quá trình xây dựng gói"
 
 #~ msgid "Unable to write temp header\n"
-#~ msgstr "Geçici başlık yazılamadı\n"
+#~ msgstr "Không thể ghi tiêu đề tạm thời\n"
 
 #~ msgid "Bad CSA data\n"
-#~ msgstr "CSA verisi geçersiz\n"
+#~ msgstr "Dữ liệu CSA sai\n"
 
 #~ msgid "Unable to read header from %s: %s\n"
-#~ msgstr "%s'den başlık okunamadı: %s\n"
+#~ msgstr "Không thể đọc tiêu đề từ %s: %s\n"
 
 #~ msgid "Unable to write header to %s: %s\n"
-#~ msgstr "%s'e başlık yazılamadı: %s\n"
+#~ msgstr "Không thể ghi tiêu đề vào %s: %s\n"
 
 #~ msgid "line %d: Epoch/Serial field must be a number: %s\n"
-#~ msgstr "%d. satır: Epoch/Serial alanı bir sayı olmalı: %s\n"
+#~ msgstr "dòng %d: trường Epoch/Serial phải là một số: %s\n"
 
 #~ msgid "Internal error: Bogus tag %d\n"
-#~ msgstr "İçsel hata: %d. etiket sahte\n"
+#~ msgstr "Lỗi nội tại: Thẻ ghi không có thật %d\n"
 
 #~ msgid "Spec file can't use BuildRoot\n"
-#~ msgstr "Spec dosyası BuildRoot kullanamaz\n"
+#~ msgstr "Tệp tin đặc tả không thể sử dụng gốc cài đặt\n"
 
 #~ msgid "Couldn't download nosource %s: %s\n"
-#~ msgstr "Kaynak kodu olmayan %s sunucudan indirilemedi: %s\n"
+#~ msgstr "Không thể tải nguồn rỗng %s: %s\n"
 
 #~ msgid "line %d: File name not permitted: %s\n"
-#~ msgstr "%d. satır: Dosya adı uygun değil: %s\n"
+#~ msgstr "dòng %d: Tên tệp tin không được phép: %s\n"
 
 #~ msgid "buildroot already specified, ignoring %s\n"
-#~ msgstr "buildroot zaten belirtilmiş, %s yoksayılıyor\n"
+#~ msgstr "gốc cài đặt đã được chỉ rõ, bỏ qua %s\n"
 
 #~ msgid "override build root"
-#~ msgstr "build root'a zorlar"
+#~ msgstr "ghi đè lên thư mục tạm"
 
 #~ msgid "generate headers compatible with rpm4 packaging"
-#~ msgstr "rpm4 paketleme ile uyumlu başlıkları üretir"
+#~ msgstr "phát sinh các tiêu đề thích hợp với gói rpm4"
 
 #~ msgid "ignore ExcludeArch: directives from spec file"
-#~ msgstr "spec dosyasındaki ExcludeArch: yönergeleri yoksayılıyor"
+#~ msgstr "bỏ qua ExcludeArch: chỉ dẫn từ tệp tin đặc tả"
 
 #~ msgid ""
 #~ "generate package header(s) compatible with (legacy) rpm[23] packaging"
-#~ msgstr "paket başlıklarını (eski) rpm[23] paketleme ile uyumlu üretir"
+#~ msgstr "phát sinh (các) tiêu đề gói thích hợp với (di sản) bao bì rpm[23]"
 
 #~ msgid "(db package)"
-#~ msgstr "(db paketi)"
+#~ msgstr "(db package)"
 
 #~ msgid "========== recording tsort relations\n"
-#~ msgstr "========== tsort bağıntıları kaydediliyor\n"
+#~ msgstr "========== ghi chép các mối quan hệ tsort\n"
 
 #~ msgid ""
 #~ "========== tsorting packages (order, #predecessors, #succesors, tree, "
 #~ "depth)\n"
 #~ msgstr ""
-#~ "========== paketler tsort'lanıyor (sıra, #öncüller, #ardıllar, ağaç, "
-#~ "derinlik)\n"
+#~ "========== các gói tsorting (yêu cầu, #phần tử trước, #những phần tử tiếp "
+#~ "sau, cây, depth)\n"
 
-#~ msgid "========== successors only (presentation order)\n"
-#~ msgstr "========== sadece ardıllar (sunum sırası)\n"
+#~ msgid "========== successors only (%d bytes)\n"
+#~ msgstr "========== duy nhất phẩn tử tiếp sau (%d bytes)\n"
 
 #~ msgid "========== continuing tsort ...\n"
-#~ msgstr "========== tsort sürüyor ...\n"
+#~ msgstr "========== tiếp tục tsort ...\n"
 
 #~ msgid "========== Directories not explictly included in package:\n"
-#~ msgstr "========= Pakette açıkça bulunmayan dizinler:\n"
+#~ msgstr "========== Gói chứa các thư mục không rõ ràng:\n"
 
 #~ msgid "%10d %s\n"
 #~ msgstr "%10d %s\n"
 
 #~ msgid "%s directory created with perms %04o.\n"
-#~ msgstr "%s dizin %04o izinleriyle oluşturuldu.\n"
+#~ msgstr "%s thư mục đã tạo với sự cho phép %04o.\n"
 
 #~ msgid "only V3 signatures can be verified, skipping V%u signature\n"
-#~ msgstr "sadece V3 imzaları doğrulanabilir, V%u imzaları atlanıyor\n"
+#~ msgstr ""
+#~ "duy nhất những chữ ký V3 có thể được thẩm tra, nhảy qua chữ ký V%u\n"
 
 #~ msgid "hdr magic: BAD\n"
-#~ msgstr "başlık dosya türü no: HATALI\n"
+#~ msgstr "ma thuật hdr: BAD\n"
 
 #~ msgid "packaging version 1 is not supported by this version of RPM\n"
-#~ msgstr "RPM'nin bu sürümünde paketleme sürümü 1 desteklenmiyor\n"
+#~ msgstr "phiên bản 1 của gói không được phiên bản RPM này hỗ trợ\n"
 
 #~ msgid ""
 #~ "only packaging with major numbers <= 4 is supported by this version of "
 #~ "RPM\n"
-#~ msgstr ""
-#~ "RPM'nin bu sürümünde sadece ilk sürüm rakamı <= 4 olan paketler "
-#~ "destekleniyor\n"
+#~ msgstr "chỉ có gói có các số chủ yếu <= 4 được phiên bản RPM này hỗ trợ\n"
 
 #~ msgid "%s: rpmReadSignature failed: %s"
-#~ msgstr "%s: rpmReadSignature başarısız: %s"
+#~ msgstr "%s: đợc chữ ký rpm thất bại: %s"
 
 #~ msgid "%s: headerRead failed: %s"
-#~ msgstr "%s: headerRead başarısız: %s"
+#~ msgstr "%s: đọc tiêu đề thất bại: %s"
 
 #~ msgid "short hand for --replacepkgs --replacefiles"
-#~ msgstr "--replacepkgs --replacefiles için kısaltma"
+#~ msgstr "viết tắt cho --replacepkgs --replacefiles"
 
 #~ msgid "don't verify MD5 digest of files"
-#~ msgstr "dosyaların MD5 özümlemesi doğrulanmaz"
+#~ msgstr "không thẩm tra yết thị MD5 của các tệp tin"
 
 #~ msgid "install even if the package replaces installed files"
-#~ msgstr "paket dosyaları mevcut dosyalarla değiştirse bile paketi kurar"
+#~ msgstr "cài đặt cho dù nếu gói thay thế các tệp tin được cài đặt"
 
 #~ msgid "don't verify GPG V3 DSA signature(s)"
-#~ msgstr "GPG V3 DSA imzalar doğrulanmaz"
+#~ msgstr "không thẩm tra (các) chữ ký GPG V3 DSA"
 
 #~ msgid "don't verify PGP V3 RSA/MD5 signature(s)"
-#~ msgstr "PGP V3 RSA/MD5 imzalar doğrulanmaz"
-
-#~ msgid "Data type %d not supported\n"
-#~ msgstr "%d veri türü desteklenmiyor\n"
+#~ msgstr "không thẩm tra (các) chữ ký PGP V3 RSA/MD5"
 
 #~ msgid "%s: waitpid(%d) rc %d status %x\n"
-#~ msgstr "%s: waitpid(%d) rc %d durum %x\n"
+#~ msgstr "%s: chờ đợi pid(%d) rc %d tình trạng %x\n"
 
 #~ msgid "%s: %s(%s-%s-%s) skipping redundant \"%s\".\n"
-#~ msgstr "%s: %s(%s-%s-%s) bellekten paylaşımlı \"%s\" atlanıyor.\n"
+#~ msgstr "%s: %s(%s-%s-%s) bỏ qua thừa dư\"%s\".\n"
 
 #~ msgid "%s: %s(%s-%s-%s) %ssynchronous scriptlet start\n"
-#~ msgstr "%s: %s(%s-%s-%s) %s eşzamanlı betiği başlatılıyor\n"
+#~ msgstr "%s: %s(%s-%s-%s) %s đồng bộ vi kịch bản khởi động\n"
 
 #~ msgid "%s: %s(%s-%s-%s)\texecv(%s) pid %d\n"
 #~ msgstr "%s: %s(%s-%s-%s)\texecv(%s) pid %d\n"
 
 #~ msgid "%s: %s has %d files, test = %d\n"
-#~ msgstr "%s: %s, %d dosyaya sahip, sınanan = %d\n"
+#~ msgstr "%s: %s có %d các tệp tin, kiểm tra = %d\n"
 
 #~ msgid "package has neither file owner or id lists\n"
-#~ msgstr "paket ne dosya sahibi ne de kimlik listesi içeriyor\n"
+#~ msgstr ""
+#~ "gói không có người chủ tệp tin mà cũng không có các danh mục định danh\n"
 
 #~ msgid "query of %s failed\n"
-#~ msgstr "%s 'nin sorgulaması başarısızlıkla sonuçlandı\n"
+#~ msgstr "truy vấn %s thất bại\n"
 
 #~ msgid "old format source packages cannot be queried\n"
-#~ msgstr "eski biçem kaynak paketleri sorgulanamaz\n"
+#~ msgstr "định dạng các gói nguồn cũ không thể truy vấn\n"
 
 #~ msgid "%s: not an rpm package (or package manifest): %s\n"
-#~ msgstr "%s: bir rpm paketi değil (ya da paket bildirimi hatalı): %s\n"
+#~ msgstr "%s: không phải là một gói rpm (hoặc bản kê gói): %s\n"
 
 #~ msgid "no packages\n"
-#~ msgstr "paket yok\n"
+#~ msgstr "không có gói\n"
 
 #~ msgid "package record number: %u\n"
-#~ msgstr "paket kayıt numarası: %u\n"
+#~ msgstr "số ghi chép của gói: %u\n"
 
 #~ msgid "%s: not an rpm package\n"
-#~ msgstr "%s: bir rpm paketi değil\n"
+#~ msgstr "%s: không phải là một gói rpm\n"
 
 #~ msgid "%s: Can't sign v1 packaging\n"
-#~ msgstr "%s: v1 paketleri imzalanamaz\n"
+#~ msgstr "%s: Không thể ký đóng gói v1\n"
 
 #~ msgid "%s: Can't re-sign v2 packaging\n"
-#~ msgstr "%s: v2 paketleri yeniden imzalanamaz\n"
+#~ msgstr "%s: Không thể ký lại đóng gói v2\n"
 
 #~ msgid "%s: writeLead failed: %s\n"
-#~ msgstr "%s: writeLead başarısız: %s\n"
+#~ msgstr "%s: ghi Lead thất bại: %s\n"
 
 #~ msgid "%s: rpmWriteSignature failed: %s\n"
-#~ msgstr "%s: rpmWriteSignature başarısız: %s\n"
+#~ msgstr "%s: Ghi chữ ký rpm thất bại: %s\n"
 
 #~ msgid "%s: No signature available (v1.0 RPM)\n"
-#~ msgstr "%s: İmza bulundurmuyor (v1.0 RPM)\n"
+#~ msgstr "%s: chữ ký không có sẵn (v1.0 RPM)\n"
 
 #~ msgid "package %s has unsatisfied %s: %s\n"
-#~ msgstr "paket %s  giderilmemiş %s içeriyor: %s\n"
+#~ msgstr "gói %s không thoả mãn %s: %s\n"
 
 #~ msgid "========== relocations\n"
-#~ msgstr "========== yeniden konumlama\n"
+#~ msgstr "========== các sự xây dựng lại\n"
 
 #~ msgid "%5d exclude  %s\n"
-#~ msgstr "%5d %s'i dışlıyor\n"
+#~ msgstr "%5d bao gồm  %s\n"
 
 #~ msgid "%5d relocate %s -> %s\n"
-#~ msgstr "%5d yeniden konumlandırılıyor: %s -> %s\n"
-
-#~ msgid "excluding multilib path %s%s\n"
-#~ msgstr "multilib dosya yolu dışlanıyor %s%s\n"
+#~ msgstr "%5d xây dựng lại %s -> %s\n"
 
 #~ msgid "excluding %s %s\n"
-#~ msgstr "%s %s dışlanıyor\n"
+#~ msgstr "bao gồm %s %s\n"
 
 #~ msgid "relocating %s to %s\n"
-#~ msgstr "%s %s'e konumlanıyor\n"
+#~ msgstr "xây dựng lại %s thành %s\n"
 
 #~ msgid "relocating directory %s to %s\n"
-#~ msgstr "%s dizini %s de yeniden konumlanıyor\n"
+#~ msgstr "xây dựng lại thư mục %s thành %s\n"
 
 #~ msgid "Adding goal: %s\n"
-#~ msgstr "Amaç ekleniyor: %s\n"
+#~ msgstr "Thêm mục tiêu: %s\n"
 
 #~ msgid " ... as %s\n"
-#~ msgstr "... %s olarak\n"
+#~ msgstr "... như là %s\n"
 
 #~ msgid "skipping %s - transfer failed - %s\n"
-#~ msgstr "%s atlanıyor - aktarım başarısız - %s\n"
+#~ msgstr "bỏ qua %s - sự di chuyển thất bại - %s\n"
 
 #~ msgid "error reading from file %s\n"
-#~ msgstr "%s dosyasından okuma hatalı\n"
+#~ msgstr "lỗi trong lúc đọc tệp tin %s\n"
 
 #~ msgid "file %s requires a newer version of RPM\n"
-#~ msgstr "%s dosyası RPM'nin daha yeni bir sürümünü gerektiriyor\n"
+#~ msgstr "tệp tin %s yêu cầu một phiên bản RPM mới hơn\n"
 
 #~ msgid "found %d source and %d binary packages\n"
-#~ msgstr "%d kaynak ve %d icra edilebilir paketi bulundu\n"
+#~ msgstr "tìm thấy nguồn %d và các gói nhị phân %d\n"
 
 #~ msgid "installing binary packages\n"
-#~ msgstr "icra edilebilir paketler kuruluyor\n"
+#~ msgstr "đang cài đặt các gói nhị phân\n"
 
 #~ msgid "cannot open file %s: %s\n"
-#~ msgstr "%s dosyası açılamadı: %s\n"
+#~ msgstr "không thể mở tệp tin %s: %s\n"
 
 #~ msgid "read failed: %s (%d)\n"
-#~ msgstr "okuma başarısız: %s (%d)\n"
+#~ msgstr "đọc thất bại: %s (%d)\n"
 
 #~ msgid "package %s is intended for a %s operating system"
-#~ msgstr "%s paketi %s işletim sistemi için olmalı"
+#~ msgstr "gói %s được nhằm cho một hệ thống hoạt động %s"
 
 #~ msgid "missing second ':' at %s:%d\n"
-#~ msgstr "%s:%d - ikinci ':' eksik\n"
+#~ msgstr "thiếu phần phụ ':' tại %s:%d\n"
 
 #~ msgid "missing architecture name at %s:%d\n"
-#~ msgstr "%s:%d - mimari ismi eksik\n"
+#~ msgstr "thiếu tên kiến trúc tại %s:%d\n"
 
 #~ msgid "Incomplete data line at %s:%d\n"
-#~ msgstr "%s:%d - veri satırı tamamlanmamış\n"
+#~ msgstr "dòng dữ liệu không hoàn thành tại %s:%d\n"
 
 #~ msgid "Too many args in data line at %s:%d\n"
-#~ msgstr "%s:%d - veri satırında çok fazla argüman\n"
+#~ msgstr "Quá nhiều đối số trong dòng dữ liệu tại %s:%d\n"
 
 #~ msgid "Bad arch/os number: %s (%s:%d)\n"
-#~ msgstr "arch/os numarası hatalı: %s (%s:%d)\n"
+#~ msgstr "số arch/os sai: %s (%s:%d)\n"
 
 #~ msgid "Incomplete default line at %s:%d\n"
-#~ msgstr "%s:%d - öntanımlı satır tamamlanmamış\n"
+#~ msgstr "Dòng mặc định không hoàn thành tại %s:%d\n"
 
 #~ msgid "Too many args in default line at %s:%d\n"
-#~ msgstr "%s:%d - öntanımlı satırda çok fazla argüman\n"
-
-#~ msgid "Failed to read %s: %s.\n"
-#~ msgstr "%s okunamadı: %s.\n"
+#~ msgstr "Quá nhiều đối số trong dòng mặc định tại %s:%d\n"
 
 #~ msgid "missing ':' (found 0x%02x) at %s:%d\n"
-#~ msgstr "(0x%02x bulundu) %s:%d de ':' yok\n"
+#~ msgstr "thiếu ':' (tìm thấy 0x%02x) tại %s:%d\n"
 
 #~ msgid "missing argument for %s at %s:%d\n"
-#~ msgstr "%s için %s:%d de argüman eksik\n"
+#~ msgstr "thiếu đối số cho %s tại %s:%d\n"
 
 #~ msgid "%s expansion failed at %s:%d \"%s\"\n"
-#~ msgstr "%s genişletmesi %s:%d \"%s\" de başarısız \n"
+#~ msgstr "%s sự mở rộng thất bại tại %s:%d \"%s\"\n"
 
 #~ msgid "cannot open %s at %s:%d: %s\n"
-#~ msgstr "%s dosyası açılamıyor (%s:%d): %s\n"
+#~ msgstr "không thể mở %s tại %s:%d: %s\n"
 
 #~ msgid "missing architecture for %s at %s:%d\n"
-#~ msgstr "%s için %s:%d'de eksik mimari\n"
+#~ msgstr "thiếu kiến trúc cho %s tại %s:%d\n"
 
 #~ msgid "bad option '%s' at %s:%d\n"
-#~ msgstr "seçenek '%s' (%s:%d) de hatalı\n"
+#~ msgstr "lựa chọn sai '%s' tại %s:%d\n"
 
 #~ msgid "Unknown system: %s\n"
-#~ msgstr "Bilinmeyen sistem: %s\n"
+#~ msgstr "Hệ thống chưa biết: %s\n"
 
 #~ msgid "Please contact rpm-list@redhat.com\n"
-#~ msgstr "Lütfen rpm-list@redhat.com listesine üye olun\n"
+#~ msgstr "Vui lòng liên hệ rpm-list@redhat.com\n"
 
 #~ msgid "Cannot expand %s\n"
-#~ msgstr "%s genişletilemiyor\n"
+#~ msgstr "Không thể mở rộng %s\n"
 
 #~ msgid "Cannot read %s, HOME is too large.\n"
-#~ msgstr "%s okunamıyor, EV çok büyük\n"
+#~ msgstr "Không thể đọc %s, HOME quá lớn.\n"
 
 #~ msgid "Unable to open %s for reading: %s.\n"
-#~ msgstr "%s okuma erişimi için açılamadı: %s.\n"
+#~ msgstr "Không thể mở %s để đọc: %s.\n"
 
 #~ msgid "Adding: %s\n"
-#~ msgstr "Eklenen: %s\n"
+#~ msgstr "Thêm: %s\n"
 
 #~ msgid "Suggesting: %s\n"
-#~ msgstr "Önerilen: %s\n"
+#~ msgstr "Đề nghị: %s\n"
 
-#~ msgid "getting list of mounted filesystems\n"
-#~ msgstr "bağlı dosya sistemlerinin listesi alınıyor\n"
+#~ msgid "mounted filesystems:\n"
+#~ msgstr "đã gắn kết các tệp tin hệ thống:\n"
+
+#~ msgid "    i    dev bsize       bavail       iavail mount point\n"
+#~ msgstr "    i    dev bsize       bavail       iavail điểm gắn kết\n"
+
+#~ msgid "%5d 0x%04x %5u %12ld %12ld %s\n"
+#~ msgstr "%5d 0x%04x %5u %12ld %12ld %s\n"
 
 #~ msgid "Expected size: %12d = lead(%d)+sigs(%d)+pad(%d)+data(%d)\n"
-#~ msgstr "gereken boyut: %12d = (%d)uç+(%d)imza+(%d)iz+(%d)veri\n"
+#~ msgstr ""
+#~ "Kích cỡ được mong đợi: %12d = chỉ dẫn(%d)+các tín hiệu(%d)+đệm(%d)+dữ liệu"
+#~ "(%d)\n"
 
 #~ msgid "  Actual size: %12d\n"
-#~ msgstr "  Gerçek boyut: %12d\n"
+#~ msgstr "  Kích cỡ hiện tại: %12d\n"
 
 #~ msgid "sigh magic: BAD\n"
-#~ msgstr "sigh magic: HATALI\n"
+#~ msgstr "ma thuật: XẤU\n"
 
 #~ msgid "Signature: size(%d)+pad(%d)\n"
-#~ msgstr "İmza: boyut(%d)+iz(%d)\n"
+#~ msgstr "Chữ ký: kích cỡ(%d)+đệm(%d)\n"
 
 #~ msgid "pgp failed\n"
-#~ msgstr "pgp hata verdi\n"
+#~ msgstr "pgp thất bại\n"
 
 #~ msgid "pgp failed to write signature\n"
-#~ msgstr "pgp imzasının yazılması başarısız\n"
+#~ msgstr "ghi chữ ký pgp thất bại\n"
 
 #~ msgid "PGP sig size: %d\n"
-#~ msgstr "PGP imza uzunluğu: %d\n"
+#~ msgstr "kích cỡ chữ ký PGP: %d\n"
 
 #~ msgid "Got %d bytes of PGP sig\n"
-#~ msgstr "GPG imzasının %d baytı alındı\n"
+#~ msgstr "Nhận được %d bytes của chữ ký PGP\n"
 
 #~ msgid "gpg failed\n"
-#~ msgstr "gpg hata verdi\n"
+#~ msgstr "gpg thất bại\n"
 
 #~ msgid "GPG sig size: %d\n"
-#~ msgstr "GPG imza uzunluğu: %d\n"
+#~ msgstr "kích cỡ chữ ký GPG: %d\n"
 
 #~ msgid "Got %d bytes of GPG sig\n"
-#~ msgstr "GPG imzasının %d baytı alındı\n"
+#~ msgstr "Nhận được %d bytes của chữ ký GPG\n"
 
 #~ msgid "Invalid %%_signature spec in macro file\n"
-#~ msgstr "Makro dosyasında %%_signature spec geçersiz\n"
+#~ msgstr "chữ ký_%% vô hiệu đặc tả trong tệp tin macro\n"
 
 #~ msgid "You must set \"%%_gpg_name\" in your macro file\n"
-#~ msgstr "Makro dosyanızda \"%%_pgp_name\" tanımlanmış olmalı\n"
+#~ msgstr "Bạn phải đặt \"%%_gpg_name\" trong tệp tin macro của bạn\n"
 
 #~ msgid "You must set \"%%_pgp_name\" in your macro file\n"
-#~ msgstr "Makro dosyanızda \"%%_pgp_name\" belirtmelisiniz\n"
+#~ msgstr "Bạn phải đặt \"%%_gpg_name\" trong tệp tin macro của bạn\n"
 
 #~ msgid "V3 RSA/MD5 signature: "
-#~ msgstr "V3 RSA/MD5 imza: "
+#~ msgstr "chữ ký V3 RSA/MD5: "
 
 #~ msgid "Broken MD5 digest: UNSUPPORTED\n"
-#~ msgstr "Bozuk MD5 özeti: DESTEKLENMİYOR\n"
+#~ msgstr "Yết thị MD5 đổ vỡ: KHÔNG HỖ TRỢ\n"
 
 #~ msgid "%s skipped due to missingok flag\n"
-#~ msgstr "missingok flamasından dolayı %s atlandı\n"
+#~ msgstr "%s bị bỏ qua do thiếu cờ đồng ý\n"
 
 #~ msgid "excluding directory %s\n"
-#~ msgstr "%s dizini dışlanıyor\n"
+#~ msgstr "đang loại trừ thư mục %s\n"
 
-#~ msgid "sanity checking %d elments\n"
-#~ msgstr "%d elemanlı bütünlük sınaması\n"
+#~ msgid "sanity checking %d elements\n"
+#~ msgstr "kiểm tra sự đúng đắn của các yếu tố %d\n"
 
 #~ msgid "computing %d file fingerprints\n"
-#~ msgstr "%d dosya parmakizi hesaplanıyor\n"
+#~ msgstr "tính toán bản ghi đăng nhập tệp tin %d\n"
 
 #~ msgid "computing file dispositions\n"
-#~ msgstr "dosya yeterliliği hesplanıyor\n"
+#~ msgstr "tính toán các cách bố trí tệp tin\n"
 
 #~ msgid "closed   db environment %s/%s\n"
-#~ msgstr "kapandı      db ortamı %s/%s\n"
+#~ msgstr "đã đóng  môi trường  db %s/%s\n"
 
 #~ msgid "removed  db environment %s/%s\n"
-#~ msgstr "silindi       db ortamı %s/%s\n"
+#~ msgstr "đã gỡ bỏ môi trường  db %s/%s\n"
 
 #~ msgid "opening  db environment %s/%s %s\n"
-#~ msgstr "açılıyor      db ortamı %s/%s %s\n"
+#~ msgstr "đang mở môi trường  db %s/%s %s\n"
 
 #~ msgid "closed   db index       %s/%s\n"
-#~ msgstr "kapandı      db endeks %s/%s\n"
+#~ msgstr "đã đóng danh mục  db      %s/%s\n"
 
 #~ msgid "verified db index       %s/%s\n"
-#~ msgstr "doğrulandı    db endeks %s/%s\n"
+#~ msgstr "đã thẩm tra danh mục db      %s/%s\n"
+
+#~ msgid ""
+#~ "unshared posix mutexes found(%d), adding DB_PRIVATE, using fcntl lock\n"
+#~ msgstr ""
+#~ "đã ngừng chia sẻ các nguồn giao diện hệ thống hoạt động di động tìm thấy(%"
+#~ "d), đang thêm DB_PRIVATE, sử dụng khoá fcntl\n"
 
 #~ msgid "opening  db index       %s/%s %s mode=0x%x\n"
-#~ msgstr "açılıyor       db endeks %s/%s %s kip=0x%x\n"
+#~ msgstr "đang mở danh mục  db      %s/%s %s mode=0x%x\n"
 
 #~ msgid "locked   db index       %s/%s\n"
-#~ msgstr "kilitli      db endeks %s/%s\n"
+#~ msgstr "đã khoá danh mục   db       %s/%s\n"
+
+#~ msgid "(index out of range)"
+#~ msgstr "(danh mục ngoài phạm vi)"
+
+#~ msgid "Data type %d not supported\n"
+#~ msgstr "Kiểu dữ liệu %d không được hỗ trợ\n"
 
 #~ msgid "generate headers compatible with (legacy) rpm[23] packaging"
-#~ msgstr "(eski) rpm[23] paketleme ile uyumlu başlıkları üretir"
+#~ msgstr ""
+#~ "phát sinh các tiêu đề tương thích với (thừa kế) sự đóng gói rpm[23] "
 
 #~ msgid "dbiTagsInit: unrecognized tag name: \"%s\" ignored\n"
-#~ msgstr "dbiTagsInit: tanımlanmamış etiket adı: \"%s\" yoksayıldı\n"
+#~ msgstr "dbiTagsInit: không thể nhận ra tên thẻ ghi: \"%s\" bỏ qua\n"
 
 #~ msgid "rpmdbNextIterator: skipping"
-#~ msgstr "rpmdbNextIterator: atlanıyor"
+#~ msgstr "rpmdbNextIterator: đang bỏ qua"
 
 #~ msgid "removing \"%s\" from %s index.\n"
-#~ msgstr "\"%s\" %s indeksinden siliniyor.\n"
+#~ msgstr "đang gỡ bỏ \"%s\" từ danh mục %s.\n"
 
 #~ msgid "removing %d entries from %s index.\n"
-#~ msgstr "%d girdi %s indeksinden siliniyor.\n"
+#~ msgstr "đang gỡ bỏ mục nhập %d từ danh mục %s.\n"
 
 #~ msgid "adding \"%s\" to %s index.\n"
-#~ msgstr "\"%s\" %s indeksine ekleniyor.\n"
+#~ msgstr "thêm \"%s\" vào danh mục %s.\n"
 
 #~ msgid "adding %d entries to %s index.\n"
-#~ msgstr "%d girdi %s indeksine ekleniyor.\n"
+#~ msgstr "thêm các mục nhập %d vào danh mục %s.\n"
 
 #~ msgid "removing %s after successful db3 rebuild.\n"
-#~ msgstr "başarılı db3 yeniden oluşturma ertesinde %s kaldırılıyor\n"
+#~ msgstr "đang gỡ bỏ %s sau khi xây dựng lại db3 thành công.\n"
 
 #~ msgid "no dbpath has been set"
-#~ msgstr "belirtilmiş bir dbpath yok"
+#~ msgstr "không có dbpath nào được thiết lập"
 
 #~ msgid "rebuilding database %s into %s\n"
-#~ msgstr "%s veritabanı %s içinde yeniden oluşturuluyor\n"
+#~ msgstr "đang xây dựng lại cơ sở dữ liệu %s vào %s\n"
 
 #~ msgid "creating directory %s\n"
-#~ msgstr "%s dizini oluşturuluyor\n"
+#~ msgstr "đang tạo thư mục %s\n"
 
 #~ msgid "opening old database with dbapi %d\n"
-#~ msgstr "eski veritabanı dbapi %d ile açılıyor\n"
+#~ msgstr "đang mở cơ sở dữ liệu cũ với dbapi %d\n"
 
 #~ msgid "opening new database with dbapi %d\n"
-#~ msgstr "yeni veritabanı dbapi %d ile açılıyor\n"
+#~ msgstr "đang mở cơ sở dữ liệu mới dbapi %d\n"
 
 #~ msgid "removing directory %s\n"
-#~ msgstr "%s dizini siliniyor\n"
+#~ msgstr "đang gỡ bỏ thư mục %s\n"
 
 #~ msgid "Target buffer overflow\n"
-#~ msgstr "Hedef tampon bellek taştı\n"
+#~ msgstr "Tràn bộ nhớ đệm của đích\n"
 
 #~ msgid "logging into %s as %s, pw %s\n"
-#~ msgstr "%s sunucusuna %s olarak giriliyor, parola %s\n"
+#~ msgstr "đang đăng nhập vào %s như %s, mật khẩu %s\n"
 
 #~ msgid "failed to create %s: %s\n"
-#~ msgstr "%s oluşturulamadı: %s\n"
+#~ msgstr "tạo %s thất bại: %s\n"
 
 #~ msgid "don't verify header+payload signature"
-#~ msgstr "header+payload imzası doğrulanmaz"
+#~ msgstr "không thẩm tra chữ ký tiêu đề+tải về"
 
 #~ msgid "don't update cache database, only print package paths"
-#~ msgstr "önbellek veritabanı güncellenmez, sadece paket yolu basılır"
+#~ msgstr "không cập nhật cơ sở dữ liệu cất giữ, chỉ có các đường dẫn gói in"
 
 #~ msgid "Common options for all rpm modes and executables:"
-#~ msgstr "Tüm rpm kipleri ve çalıştırılabilirler için ortak seçenekler:"
+#~ msgstr "các lựa chọn chung cho tất cả các kiểu rpm và có thể thực thi được:"
 
 #~ msgid "%s: %%{_cache_dbpath} macro is mis-configured.\n"
-#~ msgstr "%s: %%{_cache_dbpath} makrosu yanlış yapılandırılmış.\n"
+#~ msgstr "%s: %%{_cache_dbpath} macro thiếu cấu hình.\n"
 
 #~ msgid "%s: cache operation failed: ec %d.\n"
-#~ msgstr "%s: önbellek işlemi başarısız: ec %d\n"
+#~ msgstr "%s: thao tác cất trữ thất bại: ec %d.\n"
 
 #~ msgid "%s: read manifest failed: %s\n"
-#~ msgstr "%s: bildirge okuma başarısız: %s\n"
+#~ msgstr "%s: đọc bản kê khai thất bại: %s\n"
 
 #~ msgid "list install/erase scriptlets from package(s)"
-#~ msgstr "paket(ler)deki kurma/kaldırma betiklerini listeler"
+#~ msgstr "liệt các vi kịch bản kê cài đặt/xoá bỏ từ (các) gói"
 
 #~ msgid "set permissions of files in a package"
-#~ msgstr "bir paketteki dosyaların izinlerini belirler"
+#~ msgstr "thiết lập các sự cho phép của tệp tin trong một gói"
 
 #~ msgid "set user/group ownership of files in a package"
-#~ msgstr "bir paketteki dosyaların kullanıcı/grup iyeliğini belirler"
+#~ msgstr ""
+#~ "thiết lập quyền sở hữu người dùng/nhóm của các tệp tin trong một gói"
 
 #~ msgid "list capabilities this package conflicts with"
-#~ msgstr "bu paketin çeliştiği yetenekleri listeler"
+#~ msgstr "liệt kê xung đột tiềm tàng của gói này"
 
 #~ msgid "list other packages removed by installing this package"
-#~ msgstr "bu paketin kurulmasıyla kaldırılan diğer paketleri listeler"
+#~ msgstr "liệt kê các gói khác bị gỡ bỏ bởi việc cài đặt gói này"
 
 #~ msgid "list capabilities that this package provides"
-#~ msgstr "bu paketle sağlanan yetenekleri listeler"
+#~ msgstr "liệt kê các khả năng mà gói này cung cấp"
 
 #~ msgid "list capabilities required by package(s)"
-#~ msgstr "paket(ler)in gerektirdiği yetenekleri listeler"
+#~ msgstr "liệt kê các khả năng mà (các) gói yêu cầu"
 
 #~ msgid "list descriptive information from package(s)"
-#~ msgstr "paket(ler)deki açıklayıcı bilgileri listeler"
+#~ msgstr "liệt kê thông tin mô tả từ (các) gói"
 
 #~ msgid "list change logs for this package"
-#~ msgstr "bu paket için değişiklik kayıtlarını listeler"
+#~ msgstr "liệt kê các bản ghi thay đổi cho gói này"
 
 #~ msgid "list trigger scriptlets from package(s)"
-#~ msgstr "paket(ler)deki tetikleyici betikleri listeler"
+#~ msgstr "liệt kê các vi kịch bản khởi sự từ (các) gói"
 
 #~ msgid "list package(s) by install time, most recent first"
-#~ msgstr ""
-#~ "paket(ler)i en sonuncusu ilk olmak üzere kurulum zamanına göre listeler"
+#~ msgstr "liệt kê (các) gói theo thời gian cài đặt từ mới đến cũ"
 
 #~ msgid "list all files from each package"
-#~ msgstr "her paketin bütün dosyalarını listeler "
+#~ msgstr "liệt kê tất cả các tệp tin từ mỗi gói"
 
 #~ msgid ""
 #~ "find package name that contains a provided capability (needs rpmdb-redhat "
 #~ "package installed)"
 #~ msgstr ""
-#~ "bir yeteneği sağlayan paket ismini bulur (rpmdb-redhat paketinin kurulu "
-#~ "olması gerekir)"
-
-#, fuzzy
-#~ msgid ""
-#~ "find package name that contains a required capability (needs rpmdb-redhat "
-#~ "package installed)"
-#~ msgstr ""
-#~ "bir yeteneği sağlayan paket ismini bulur (rpmdb-redhat paketinin kurulu "
-#~ "olması gerekir)"
+#~ "tìm tên gói mà chứa năng lực cung cấp (cần gói rpmdb-redhat đã cài đặt)"
 
 #~ msgid "set buildroot <policy> (e.g. compress man pages)"
 #~ msgstr ""
-#~ "kurulum kök dizinini <policy> ayarlar (örn, man sayfaları sıkıştırılır)"
+#~ "thiết lập <chính sách> gốc cài đặt(ví dụ các trang hướng dẫn compress)"
 
 #~ msgid "<policy>"
-#~ msgstr "<policy>"
+#~ msgstr "<chính sách>"
 
 #~ msgid "enable configure <option> for build"
-#~ msgstr "kurgulama için yapılandırma <seçenek>'i etkinleştirilir"
+#~ msgstr "kích hoạt cấu hình <lựa chọn> cho việc xây dựng"
 
 #~ msgid "disable configure <option> for build"
-#~ msgstr "kurgulama için yapılandırma <seçenek>'i kapatılır"
+#~ msgstr "ngừng kích hoạt cấu hình <lựa chọn> cho việc xây dựng"
 
 #~ msgid "use database in DIRECTORY"
-#~ msgstr "DİZİN içindeki veritabanı kullanılır"
+#~ msgstr "sử dụng cơ sở dữ liệu trong THƯ MỤC"
 
 #~ msgid "DIRECTORY"
-#~ msgstr "DİZİN"
-
-#~ msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
-#~ msgstr "dataLength() RPM_STRING_TYPE sayısı 1 olmalı.\n"
-
-#~ msgid "file is not regular -- skipping size check\n"
-#~ msgstr "dosya normal değil -- uzunluk denetimi atlanıyor\n"
-
-#~ msgid "No signature\n"
-#~ msgstr "İmza yok\n"
-
-#~ msgid "Old PGP signature\n"
-#~ msgstr "Eski PGP imzası\n"
-
-#~ msgid "Old (internal-only) signature!  How did you get that!?\n"
-#~ msgstr "Eski imza !!! Bunu nasıl aldın!?\n"
-
-#, fuzzy
-#~ msgid "%s: running %s scriptlet\n"
-#~ msgstr "%s: %s betiği çalıştırılıyor (varsa)\n"
-
-#~ msgid ""
-#~ "execution of %s scriptlet from %s-%s-%s failed, waitpid returned %s\n"
-#~ msgstr "%s betiğinin %s-%s-%s'den icrası başarısız, waitpid sonucu %s\n"
-
-#, fuzzy
-#~ msgid "%s: base64 encode failed.\n"
-#~ msgstr "%s: readLead başarısız\n"
-
-#~ msgid "%s: readLead failed\n"
-#~ msgstr "%s: readLead başarısız\n"
-
-#, fuzzy
-#~ msgid "h#%7u: %s"
-#~ msgstr "dosya %s: %s\n"
-
-#~ msgid "unexpected arguments to --querytags "
-#~ msgstr "--querytags ile beklenmeyen girdiler"
-
-#~ msgid "<cmd>"
-#~ msgstr "<kmt>"
-
-#~ msgid "read <file:...> instead of default macro file(s)"
-#~ msgstr "öntanımlı makro dosyası yerine <dosya:...> okunur"
-
-#~ msgid "<file:...>"
-#~ msgstr "<dosya:...>"
-
-#~ msgid "read <file:...> instead of default rpmrc file(s)"
-#~ msgstr "öntanımlı rpmrc dosyası yerine <dosya:...> okunur"
-
-#~ msgid "Usage: %s {--help}\n"
-#~ msgstr "Kullanımı: %s {--help}\n"
-
-#~ msgid "The --rcfile option has been eliminated.\n"
-#~ msgstr "--rcfile seçeneği kaldırılmıştı.\n"
-
-#~ msgid "Use \"--macros <file:...>\" instead.\n"
-#~ msgstr "Yerine \"--macros <dosya:...>\" kullanın.\n"
-
-#~ msgid "--dbpath given for operation that does not use a database"
-#~ msgstr "--dbpath bir veritabanı kullanmayan işlemler için verilmiş"
-
-#~ msgid "query/verify a package file (i.e. a binary *.rpm file)"
-#~ msgstr ""
-#~ "bir paket dosyasını sorgular/denetler (örn. bir çalıştırılabilir *.rpm "
-#~ "dosyası)"
-
-#~ msgid "display a verbose file listing"
-#~ msgstr "ayrıntılı dosya listesi gösterir"
-
-#, fuzzy
-#~ msgid "don't verify package signature"
-#~ msgstr "paket imzasını denetler"
-
-#~ msgid "define macro <name> with value <body>"
-#~ msgstr "<isim> makrosunu <gövde> değeriyle tanımlar"
-
-#~ msgid "'<name> <body>'"
-#~ msgstr "'<isim> <gövde>'"
-
-#~ msgid "<expr>+"
-#~ msgstr "<ifade>+"
-
-#~ msgid "removing these packages would break dependencies:\n"
-#~ msgstr ""
-#~ "bu paketin silinmesi aşağıdakilerin bağımlılıklarını etkileyecektir:\n"
-
-#, fuzzy
-#~ msgid "package %s has unsatisfied Requires: %s\n"
-#~ msgstr "paket %s-%s-%s gereksinimi tatmin edici değil: %s\n"
-
-#, fuzzy
-#~ msgid "package %s has unsatisfied Conflicts: %s\n"
-#~ msgstr "%s paketi çelişiyor: %s\n"
-
-#~ msgid "rpm: %s\n"
-#~ msgstr "rpm: %s\n"
-
-#~ msgid "Usage: rpm {--help}"
-#~ msgstr "Kullanımı: rpm {--help}"
-
-#~ msgid "       rpm {--version}"
-#~ msgstr "       rpm {--version}"
-
-#~ msgid "       rpm {--initdb}   [--dbpath <dir>]"
-#~ msgstr "       rpm {--initdb}   [--dbpath <dizin>]"
-
-#~ msgid ""
-#~ "       rpm {--install -i} [-v] [--hash -h] [--percent] [--force] [--test]"
-#~ msgstr ""
-#~ "       rpm {--install -i} [-v] [--hash -h] [--percent] [--force] [--test]"
-
-#~ msgid ""
-#~ "                        [--replacepkgs] [--replacefiles] [--root <dir>]"
-#~ msgstr ""
-#~ "                        [--replacepkgs] [--replacefiles] [--root <dizin>]"
-
-#~ msgid ""
-#~ "                        [--excludedocs] [--includedocs] [--noscripts]"
-#~ msgstr ""
-#~ "                        [--excludedocs] [--includedocs] [--noscripts]"
-
-#~ msgid ""
-#~ "                        [--rcfile <file>] [--ignorearch] [--dbpath <dir>]"
-#~ msgstr ""
-#~ "                        [--rcfile <dosya>] [--ignorearch] [--dbpath "
-#~ "<dizin>]"
-
-#~ msgid ""
-#~ "                        [--prefix <dir>] [--ignoreos] [--nodeps] [--"
-#~ "allfiles]"
-#~ msgstr ""
-#~ "                        [--prefix <dizin>] [--ignoreos] [--nodeps] [--"
-#~ "allfiles]"
-
-#~ msgid "                        [--ftpproxy <host>] [--ftpport <port>]"
-#~ msgstr "                        [--ftpproxy <makina>] [--ftpport <port>]"
-
-#~ msgid "                        [--httpproxy <host>] [--httpport <port>]"
-#~ msgstr "                        [--httpproxy <makina>] [--httpport <port>]"
-
-#~ msgid ""
-#~ "                        [--justdb] [--noorder] [--relocate "
-#~ "oldpath=newpath]"
-#~ msgstr ""
-#~ "                        [--justdb] [--noorder] [--relocate "
-#~ "eskiDizin=yeniDizin]"
-
-#~ msgid ""
-#~ "                        [--badreloc] [--notriggers] [--excludepath <path>]"
-#~ msgstr ""
-#~ "                        [--badreloc] [--notriggers] [--excludepath "
-#~ "<dyolu>]"
-
-#~ msgid "                        [--ignoresize] file1.rpm ... fileN.rpm"
-#~ msgstr "                        [--ignoresize] dosya1.rpm ... dosyaN.rpm"
-
-#~ msgid ""
-#~ "       rpm {--upgrade -U} [-v] [--hash -h] [--percent] [--force] [--test]"
-#~ msgstr ""
-#~ "       rpm {--upgrade -U} [-v] [--hash -h] [--percent] [--force] [--test]"
-
-#~ msgid "                        [--oldpackage] [--root <dir>] [--noscripts]"
-#~ msgstr ""
-#~ "                        [--oldpackage] [--root <dizin>] [--noscripts]"
-
-#~ msgid ""
-#~ "                        [--excludedocs] [--includedocs] [--rcfile <file>]"
-#~ msgstr ""
-#~ "                        [--excludedocs] [--includedocs] [--rcfile <dosya>]"
-
-#~ msgid ""
-#~ "                        [--ignorearch]  [--dbpath <dir>] [--prefix <dir>] "
-#~ msgstr ""
-#~ "                        [--ignorearch]  [--dbpath <dizin>] [--prefix "
-#~ "<dizin>] "
-
-#~ msgid "                        [--httpproxy <host>] [--httpport <port>] "
-#~ msgstr "                        [--httpproxy <makina>] [--httpport <port>]"
-
-#~ msgid ""
-#~ "                        [--ignoreos] [--nodeps] [--allfiles] [--justdb]"
-#~ msgstr ""
-#~ "                        [--ignoreos] [--nodeps] [--allfiles] [--justdb]"
-
-#~ msgid "                        [--noorder] [--relocate oldpath=newpath]"
-#~ msgstr ""
-#~ "                        [--noorder] [--relocate eskiDizin=yeniDizin]"
-
-#~ msgid ""
-#~ "                        [--badreloc] [--excludepath <path>] [--ignoresize]"
-#~ msgstr ""
-#~ "                        [--badreloc] [--excludepath <dyolu>] [--"
-#~ "ignoresize]"
-
-#~ msgid "                        file1.rpm ... fileN.rpm"
-#~ msgstr "                        dosya1.rpm ... dosyaN.rpm"
-
-#~ msgid "       rpm {--query -q} [-afpg] [-i] [-l] [-s] [-d] [-c] [-v] [-R]"
-#~ msgstr "       rpm {--query -q} [-afpg] [-i] [-l] [-s] [-d] [-c] [-v] [-R]"
-
-#~ msgid "                        [--scripts] [--root <dir>] [--rcfile <file>]"
-#~ msgstr ""
-#~ "                        [--scripts] [--root <dizin>] [--rcfile <dosya>]"
-
-#~ msgid ""
-#~ "                        [--whatprovides] [--whatrequires] [--requires]"
-#~ msgstr ""
-#~ "                        [--whatprovides] [--whatrequires] [--requires]"
-
-#~ msgid "                        [--triggeredby]"
-#~ msgstr "                        [--triggeredby]"
-
-#~ msgid "                        [--provides] [--triggers] [--dump]"
-#~ msgstr "                        [--provides] [--triggers] [--dump]"
-
-#~ msgid "                        [--changelog] [--dbpath <dir>] [targets]"
-#~ msgstr "                        [--changelog] [--dbpath <dizin>] [hedefler]"
-
-#~ msgid "       rpm {--verify -V -y} [-afpg] [--root <dir>] [--rcfile <file>]"
-#~ msgstr ""
-#~ "       rpm {--verify -V -y} [-afpg] [--root <dizin>] [--rcfile <dosya>]"
-
-#~ msgid ""
-#~ "                        [--dbpath <dir>] [--nodeps] [--nofiles] [--"
-#~ "noscripts]"
-#~ msgstr ""
-#~ "                        [--dbpath <dizin>] [--nodeps] [--nofiles] [--"
-#~ "noscripts]"
-
-#~ msgid "                        [--nomd5] [targets]"
-#~ msgstr "                        [--nomd5] [hedefler]"
-
-#~ msgid "       rpm {--setperms} [-afpg] [target]"
-#~ msgstr "       rpm {--setperms} [-afpg] [hedef]"
-
-#~ msgid "       rpm {--setugids} [-afpg] [target]"
-#~ msgstr "       rpm {--setugids} [-afpg] [hedef]"
-
-#~ msgid "       rpm {--freshen -F} file1.rpm ... fileN.rpm"
-#~ msgstr "       rpm {--freshen -F} dosya1.rpm ... dosyaN.rpm"
-
-#~ msgid ""
-#~ "       rpm {--erase -e} [--root <dir>] [--noscripts] [--rcfile <file>]"
-#~ msgstr ""
-#~ "       rpm {--erase -e] [--root <dizin>] [--noscripts] [--rcfile <dosya>]"
-
-#~ msgid "                        [--dbpath <dir>] [--nodeps] [--allmatches]"
-#~ msgstr ""
-#~ "                        [--dbpath <dizin>] [--nodeps] [--allmatches]"
-
-#~ msgid ""
-#~ "                        [--justdb] [--notriggers] package1 ... packageN"
-#~ msgstr "                        [--justdb] [--notriggers] paket1 ... paketN"
-
-#~ msgid ""
-#~ "       rpm {--resign} [--rcfile <file>] package1 package2 ... packageN"
-#~ msgstr "       rpm {--resign} [--rcfile <dosya>] paket1 paket2 ... paketN"
-
-#~ msgid ""
-#~ "       rpm {--addsign} [--rcfile <file>] package1 package2 ... packageN"
-#~ msgstr "       rpm {--addsign} [--rcfile <dosya>] paket1 paket2 ... paketN"
-
-#~ msgid ""
-#~ "       rpm {--checksig -K} [--nopgp] [--nogpg] [--nomd5] [--rcfile <file>]"
-#~ msgstr ""
-#~ "       rpm {--checksig -K} [--nopgp] [--nogpg] [--nomd5] [--rcfile "
-#~ "<dosya>]"
-
-#~ msgid "                           package1 ... packageN"
-#~ msgstr "                           paket1 ... paketN"
-
-#~ msgid "       rpm {--rebuilddb} [--rcfile <file>] [--dbpath <dir>]"
-#~ msgstr "       rpm {--rebuilddb} [--rcfile <dosya>] [--dbpath <dizin>]"
-
-#~ msgid "       rpm {--verifydb} [--rcfile <file>] [--dbpath <dir>]"
-#~ msgstr "       rpm {--verifydb} [--rcfile <dosya>] [--dbpath <dizin>]"
-
-#~ msgid "       rpm {--querytags}"
-#~ msgstr "       rpm {--querytags}"
-
-#~ msgid "Usage:"
-#~ msgstr "Kullanımı:"
-
-#~ msgid "print this message"
-#~ msgstr "Bu iletiyi gösterir"
-
-#~ msgid "   All modes support the following arguments:"
-#~ msgstr "   Tüm kipler aşağıdaki argümanları destekler:"
-
-#~ msgid "    --define '<name> <body>'"
-#~ msgstr "    --define '<isim> <gövde>'"
-
-#~ msgid "    --eval '<name>+'      "
-#~ msgstr "    --eval '<isim>+'      "
-
-#~ msgid "print the expansion of macro <name> to stdout"
-#~ msgstr "<isim> makrosunun açılımını gösterir"
-
-#~ msgid "    --pipe <cmd>          "
-#~ msgstr "    --pipe <komut>        "
-
-#~ msgid "    --rcfile <file>       "
-#~ msgstr "    --rcfile <dosya>      "
-
-#~ msgid "use <file> instead of /etc/rpmrc and $HOME/.rpmrc"
-#~ msgstr "/etc/rpmrc ve $HOME/.rpmrc yerine <dosya> kullanılır"
-
-#~ msgid "be a little more verbose"
-#~ msgstr "daha çok açıklama verilir"
-
-#~ msgid "be incredibly verbose (for debugging)"
-#~ msgstr "çok fazla açıklama verilir (hata ayıklama için)"
-
-#~ msgid ""
-#~ "   Install, upgrade and query (with -p) allow URL's to be used in place"
-#~ msgstr ""
-#~ "   URL'lerde yerinde işlem için kurma, güncelleme ve sorgulamaya (-p ile) "
-#~ "izin verir"
-
-#~ msgid "   of file names as well as the following options:"
-#~ msgstr "   dosya isimleriyle aşağıdaki seçenekler:"
-
-#~ msgid "      --ftpproxy <host>   "
-#~ msgstr "      --ftpproxy <makina> "
-
-#~ msgid "hostname or IP of ftp proxy"
-#~ msgstr "ftp proxy'nin makina ismi ya da IP numarası"
-
-#~ msgid "      --ftpport <port>    "
-#~ msgstr "      --ftpport <port>    "
-
-#~ msgid "port number of ftp server (or proxy)"
-#~ msgstr "FTP sunucusunun (ya da proxy'nin) port numarası"
-
-#~ msgid "      --httpproxy <host>  "
-#~ msgstr "      --httpproxy <makina>  "
-
-#~ msgid "hostname or IP of http proxy"
-#~ msgstr "makina ismi veya http proxy'nin IP numarası"
-
-#~ msgid "      --httpport <port>   "
-#~ msgstr "      --httpport <port>   "
-
-#~ msgid "port number of http server (or proxy)"
-#~ msgstr "http sunucusunun (ya da proxy'nin) port numarası"
-
-#~ msgid "query mode"
-#~ msgstr "sorgulama kipi"
-
-#~ msgid "      --dbpath <dir>      "
-#~ msgstr "      --dbpath <dizin>    "
-
-#~ msgid "use <dir> as the directory for the database"
-#~ msgstr "veritabanı dizini olarak <dizin> kullanılır"
-
-#~ msgid "      --queryformat <qfmt>"
-#~ msgstr "      --queryformat <sorbçm>"
-
-#~ msgid "use <qfmt> as the header format (implies --info)"
-#~ msgstr "başlık biçemi olarak <sbçm> kullanılır (--info içerir)"
-
-#~ msgid "      --root <dir>        "
-#~ msgstr "      --root <dizin>      "
-
-#~ msgid "      Package specification options:"
-#~ msgstr "      Paket özellik seçenekleri:"
-
-#~ msgid "query all packages"
-#~ msgstr "tüm paketler sorgulanır"
-
-#~ msgid "        -f <file>+        "
-#~ msgstr "        -f <dosya>+       "
-
-#~ msgid "query package owning <file>"
-#~ msgstr "<dosya> içeren paket sorgulanır"
-
-#~ msgid "        -p <packagefile>+ "
-#~ msgstr "        -p <paketDosyası>+ "
-
-#~ msgid "query (uninstalled) package <packagefile>"
-#~ msgstr "(kurulu olmayan) <paketDosyası> paketi sorgulanır"
-
-#~ msgid "        --triggeredby <pkg>"
-#~ msgstr "        --triggeredby <pkt>"
-
-#~ msgid "query packages triggered by <pkg>"
-#~ msgstr "<pkt> tarafından tetiklenen paketler sorgulanır"
-
-#~ msgid "        --whatprovides <cap>"
-#~ msgstr "        --whatprovides <ytnk>"
-
-#~ msgid "query packages which provide <cap> capability"
-#~ msgstr "<ytnk> yeteneğini sağlayan paketler sorgulanır"
-
-#~ msgid "        --whatrequires <cap>"
-#~ msgstr "        --whatrequires <ytnk>"
-
-#~ msgid "query packages which require <cap> capability"
-#~ msgstr "<ytnk> yeteneğini gerektiren paketler sorgulanır"
-
-#~ msgid "      Information selection options:"
-#~ msgstr "      Bilgi seçim seçenekleri:"
-
-#~ msgid "display package information"
-#~ msgstr "paket bilgileri gösterilir"
-
-#~ msgid "display the package's change log"
-#~ msgstr "Paketin 'Change Log' (değişiklik) bilgisi gösterilir"
-
-#~ msgid "display package file list"
-#~ msgstr "Paketin içerdiği dosyalar gösterilir"
-
-#~ msgid "show file states (implies -l)"
-#~ msgstr "dosya durumlarını gösterir (-l içerir)"
-
-#~ msgid "list only documentation files (implies -l)"
-#~ msgstr "sadece belge dosyalarını gösterir (-l içerir)"
-
-#~ msgid "list only configuration files (implies -l)"
-#~ msgstr "sadece yapılandırma dosyalarını gösterir (-l ile)"
-
-#~ msgid ""
-#~ "show all verifiable information for each file (must be used with -l, -c, "
-#~ "or -d)"
-#~ msgstr ""
-#~ "her dosya için doğrulanabilir bilgileri gösterir (-l, -c veya -d ile "
-#~ "kullanılmalı)"
-
-#~ msgid "list capabilities package provides"
-#~ msgstr "paketin sağladığı yetenekleri gösterir"
-
-#~ msgid "print the various [un]install scripts"
-#~ msgstr "paketin çeşitli kurma/kaldırma betiklerini gösterir"
-
-#~ msgid "show the trigger scripts contained in the package"
-#~ msgstr "paketin içerdiği tetikleme betiklerini gösterir"
-
-#~ msgid ""
-#~ "verify a package installation using the same same package specification "
-#~ "options as -q"
-#~ msgstr ""
-#~ "bir paketin kurulumunu -q ile belirtilen paket parametrelerini kullanarak "
-#~ "denetler"
-
-#~ msgid "do not verify file md5 checksums"
-#~ msgstr "dosyaların 'md5-checksum' larını denetlemez"
-
-#~ msgid "do not verify file attributes"
-#~ msgstr "dosya özelliklerini denetlemez"
-
-#~ msgid "list the tags that can be used in a query format"
-#~ msgstr "sorgulama sırasında kullanılabilecek etiketleri gösterir"
-
-#~ msgid "    --install <packagefile>"
-#~ msgstr "    --install <paketDosyası>"
-
-#~ msgid "    -i <packagefile>      "
-#~ msgstr "    -i <paketDosyası>     "
-
-#~ msgid "      --excludepath <path>"
-#~ msgstr "      --excludepath <dizin>"
-
-#~ msgid "skip files in path <path>"
-#~ msgstr "<dizin> yolunda bulunan dosyaları atlar"
-
-#~ msgid "relocate files from <oldpath> to <newpath>"
-#~ msgstr "<eskidizin> deki dosyaları <yenidizin> e yerleştirir"
-
-#~ msgid "      --prefix <dir>      "
-#~ msgstr "      --prefix <dizin>    "
-
-#~ msgid "don't execute any installation scripts"
-#~ msgstr "kurulum betiklerini çalıştırmaz."
-
-#~ msgid "don't execute any scripts triggered by this package"
-#~ msgstr "bu paket tarafından tetiklenen betikleri çalıştırmaz"
-
-#~ msgid "    --upgrade <packagefile>"
-#~ msgstr "   --upgrade <paketDosyası>"
-
-#~ msgid "    -U <packagefile>      "
-#~ msgstr "    -U <paketDosyası>     "
-
-#~ msgid "upgrade package (same options as --install, plus)"
-#~ msgstr "Paketi günceller (seçenekler --install ile aynı, fazlası var)"
-
-#~ msgid "    --erase <package>"
-#~ msgstr "    --erase <paket>  "
-
-#~ msgid "    -e <package>          "
-#~ msgstr "    -e <paket>     "
-
-#~ msgid "    -b<stage> <spec>      "
-#~ msgstr "    -b<adım> <spec>       "
-
-#~ msgid "    -t<stage> <tarball>   "
-#~ msgstr "    -t<adım> <tarPaketi>  "
-
-#~ msgid "build package, where <stage> is one of:"
-#~ msgstr "paketi aşağıdaki <adım> lardan biri ile oluşturur:"
-
-#~ msgid "prep (unpack sources and apply patches)"
-#~ msgstr "hazırlama (kaynak dosyaları açılır ve yamalar uygulanır)"
-
-#~ msgid "list check (do some cursory checks on %files)"
-#~ msgstr "denetimi gösterir (%files üstünkörü bir kontrol edilir)"
-
-#~ msgid "compile (prep and compile)"
-#~ msgstr "derler (hazırlar ve derler)"
-
-#~ msgid "install (prep, compile, install)"
-#~ msgstr "kurar (hazırlar, derler, kurar)"
-
-#~ msgid "binary package (prep, compile, install, package)"
-#~ msgstr ""
-#~ "çalıştırılabilir paket oluşturur (hazırlar, derler, kurar, paketler)"
-
-#~ msgid "bin/src package (prep, compile, install, package)"
-#~ msgstr ""
-#~ "çalıştırılabilir ve kaynak paketlerini oluşturur (hazırlar, derler, "
-#~ "kurar, paketler)"
-
-#~ msgid "remove spec file when done"
-#~ msgstr "işlem sonunda spec dosyasını siler"
-
-#~ msgid "      --buildroot <dir>   "
-#~ msgstr "      --buildroot <dizin> "
-
-#~ msgid "use <dir> as the build root"
-#~ msgstr "<dizin> paket kök dizini olarak kullanılır"
-
-#~ msgid "      --target=<platform>+"
-#~ msgstr "      --target=<platform>+"
-
-#~ msgid "build the packages for the build targets platform1...platformN."
-#~ msgstr "platform1...platformN hedefleri için paketleri derler."
-
-#~ msgid "do not execute any stages"
-#~ msgstr "adımların hiç birini çalıştırmaz"
-
-#~ msgid "    --rebuild <src_pkg>   "
-#~ msgstr "   --rebuild <kaynak_pkt> "
-
-#~ msgid ""
-#~ "install source package, build binary package and remove spec file, "
-#~ "sources, patches, and icons."
-#~ msgstr ""
-#~ "kaynak paketini açar, çalışır paketi oluşturur ve spec dosyası, "
-#~ "kaynaklar, yamalar ile kısayol simgelerini siler"
-
-#~ msgid "    --recompile <src_pkg> "
-#~ msgstr "  --recompile <kaynak_pkt> "
-
-#~ msgid "like --rebuild, but don't build any package"
-#~ msgstr "--rebuild gibi, ama paket oluşturmaz"
-
-#~ msgid "    --resign <pkg>+       "
-#~ msgstr "    --resign <pkt>+       "
-
-#~ msgid "    --addsign <pkg>+      "
-#~ msgstr "    --addsign <pkt>+      "
-
-#~ msgid "add a signature to a package"
-#~ msgstr "pakete bir imza ekler"
-
-#~ msgid "    --checksig <pkg>+"
-#~ msgstr "    --checksig <pkt>+"
-
-#~ msgid "    -K <pkg>+             "
-#~ msgstr "    -K <pkt>+             "
-
-#~ msgid "skip any GPG signatures"
-#~ msgstr "tüm GPG imzalarını atlar"
-
-#~ msgid "make sure a valid database exists"
-#~ msgstr "geçerli bir veritabanınız varsa kullanmayın"
-
-#~ msgid "rebuild database from existing database"
-#~ msgstr "mevcut veritabanı kullanılarak veritabanı yeniden oluşturulur"
-
-#~ msgid ""
-#~ "set the file permissions to those in the package database using the same "
-#~ "package specification options as -q"
-#~ msgstr ""
-#~ "-q ile belirlenen aynı paket özellik seçeneklerini kullanarak dosya "
-#~ "izinlerini paket veritabanında düzenler"
-
-#~ msgid ""
-#~ "set the file owner and group to those in the package database using the "
-#~ "same package specification options as -q"
-#~ msgstr ""
-#~ "-q ile belirlenen aynı paket özellik seçeneklerini kullanarak dosya "
-#~ "sahibi ve grubunu paket veritabanında düzenler"
-
-#~ msgid "-u and --uninstall are deprecated and no longer work.\n"
-#~ msgstr "-u ve --uninstall komutları eskidirler ve çalışmamaktadırlar.\n"
-
-#~ msgid "Use -e or --erase instead.\n"
-#~ msgstr "Yerine  -e veya --erase kullanın.\n"
-
-#~ msgid "Use --macros with a colon separated list of macro files to read.\n"
-#~ msgstr ""
-#~ "--macros ile okunacak makro dosyalarını iki nokta üstüstelerle ayrılmış "
-#~ "bir liste olarak verin.\n"
-
-#~ msgid ""
-#~ "script disabling options may only be specified during package "
-#~ "installation, erasure, and verification"
-#~ msgstr ""
-#~ "betik iptal seçenekleri sadece paketin kurulması, kaldırılması, silinmesi "
-#~ "ve denetlenmesi sırasında belirtilebilir"
-
-#~ msgid "--apply may only be specified during package installation"
-#~ msgstr "--apply sadece paketin kurulumu sırasında belirtilebilir"
-
-#~ msgid "--oldpackage may only be used during upgrades"
-#~ msgstr "--oldpackage sadece güncelleme sırasında kullanılabilir"
-
-#~ msgid "--nopgp may only be used during signature checking"
-#~ msgstr "--nopgp sadece imza kontrolü sırasında kullanılabilir"
-
-#~ msgid "--nogpg may only be used during signature checking"
-#~ msgstr "--nogpg sadece imza kontrolü sırasında kullanılabilir"
-
-#~ msgid ""
-#~ "--nomd5 may only be used during signature checking and package "
-#~ "verification"
-#~ msgstr ""
-#~ "--nomd5 sadece imza kontrolü veya paket denetimi sırasında kullanılır"
-
-#~ msgid "no packages given for signature check"
-#~ msgstr "imzası kontrol edilecek paket(ler) belirtilmedi"
-
-#~ msgid "no packages given for signing"
-#~ msgstr "imzalanacak paket(ler) belirtilmedi"
-
-#~ msgid "no packages given for uninstall"
-#~ msgstr "sistemden silinecek paket(ler) belirtilmedi"
-
-#~ msgid "extra arguments given for query of all packages"
-#~ msgstr "tüm paketlerin sorgulanması için fazladan argümanlar belirtildi"
-
-#~ msgid "extra arguments given for verify of all packages"
-#~ msgstr "tüm paketlerin denetlenmesi için fazladan argümanlar belirtildi"
-
-#~ msgid "%s: %-45s YES (added files)\n"
-#~ msgstr "%s: %-45s EVET (dosyalar eklendi)\n"
-
-#~ msgid "%s: %-45s %-s (cached)\n"
-#~ msgstr "%s: %-45s %-s (arabellekli)\n"
-
-#~ msgid "%s: %-45s YES (db files)\n"
-#~ msgstr "%s: %-45s EVET (db dosyaları)\n"
-
-#~ msgid "%s: %-45s YES (db package)\n"
-#~ msgstr "%s: %-45s EVET (db paketi)\n"
-
-#~ msgid "%s: %-45s NO\n"
-#~ msgstr "%s: %-45s HAYIR\n"
-
-#~ msgid "%s: (%s, %s) added to Depends cache.\n"
-#~ msgstr "%s: (%s, %s) Bağımlılar alanına eklendi.\n"
-
-#~ msgid "package %s-%s-%s require not satisfied: %s\n"
-#~ msgstr "paket %s-%s-%s gereksinimi tatmin edici değil: %s\n"
-
-#~ msgid "package %s conflicts: %s\n"
-#~ msgstr "%s paketi çelişiyor: %s\n"
-
-#~ msgid "rpm verify mode (legacy)"
-#~ msgstr "rpm denetleme kipi (eski tip)"
-
-#~ msgid "cannot open %s/packages.rpm\n"
-#~ msgstr "%s/packages.rpm açılamıyor\n"
-
-#~ msgid "Generating signature using PGP.\n"
-#~ msgstr "PGP kullanarak imza üretiliyor.\n"
-
-#~ msgid "Generating signature using GPG.\n"
-#~ msgstr "GPG kullanılarak imza üretiliyor.\n"
-
-#~ msgid ""
-#~ "package lacks both user name and id lists (this should never happen)\n"
-#~ msgstr ""
-#~ "paket hem kullanıcı ismi hem de kimlik listelerinden yoksun (bu hiç iyi "
-#~ "değil)\n"
-
-#~ msgid ""
-#~ "package lacks both group name and id lists (this should never happen)\n"
-#~ msgstr ""
-#~ "paket hem grup ismi hem de kimlik listelerinden yoksun (bu hiç iyi "
-#~ "değil)\n"
-
-#~ msgid "%s-%s-%s: immutable header region digest check failed\n"
-#~ msgstr "%s-%s-%s: değişmez başlık alanı özet denetimi başarısız\n"
-
-#~ msgid ""
-#~ "Broken package chain at offset %d(0x%08x), attempting to reconnect ...\n"
-#~ msgstr ""
-#~ "%d(0x%08x) göreli konumunda paket zinciri kopuk, yeniden bağlanmaya "
-#~ "çalışılıyor...\n"
-
-#~ msgid "Reconnecting broken chain at offset %d(0x%08x).\n"
-#~ msgstr "%d(0x%08x) göreli konumunda kopan zincir yeniden bağlanıyor.\n"
-
-#~ msgid "closed  db file        %s\n"
-#~ msgstr "kapanan db dosyası     %s\n"
-
-#~ msgid "removed db file        %s\n"
-#~ msgstr "silinen db dosyası     %s\n"
-
-#~ msgid "opening db file        %s mode 0x%x\n"
-#~ msgstr "açılan db dosyası      %s kip 0x%x\n"
-
-#~ msgid "cannot get %s lock on database\n"
-#~ msgstr "Veritabanı için %s kilit alınamadı\n"
-
-#~ msgid ""
-#~ "free list corrupt (%u)- please run\n"
-#~ "\t\"rpm --rebuilddb\"\n"
-#~ "More information is available from http://www.rpm.org or the rpm-"
-#~ "list@redhat.com mailing list\n"
-#~ "if \"rpm --rebuilddb\" fails to correct the problem.\n"
-#~ msgstr ""
-#~ "serbest liste bozuk (%u)- lütfen \t\"rpm --rebuilddb\" ile çalıştırın\n"
-#~ "eğer \"rpm --rebuilddb\" çalışmazsa problemin çözümü ve\n"
-#~ "daha fazla bilgi için http://www.rpm.org adresine bakın veya rpm-"
-#~ "list@redhat.com e-posta listesine kaydolun.\n"
-
-#~ msgid ""
-#~ "old format database is present; use --rebuilddb to generate a new format "
-#~ "database\n"
-#~ msgstr ""
-#~ "veritabanı eski sürüme ait; yeni sürüm bir veritabanı oluşturmak için --"
-#~ "rebuilddb kullanın\n"
-
-#~ msgid "error(%d) counting packages\n"
-#~ msgstr "paketler taranırken hata(%d)\n"
-
-#~ msgid "Couldn't exec pgp (%s)\n"
-#~ msgstr "pgp çalıştırılamadı (%s)\n"
-
-#~ msgid "Couldn't exec gpg\n"
-#~ msgstr "gpg çalıştırılamadı\n"
-
-#~ msgid "Could not run pgp.  Use --nopgp to skip PGP checks.\n"
-#~ msgstr ""
-#~ "pgp çalıştırılamadı. PGP kontrollerini atlamak için --nopgp kullanın.\n"
-
-#~ msgid "Could not run gpg.  Use --nogpg to skip GPG checks.\n"
-#~ msgstr ""
-#~ "gpg çalıştırılamadı. GPG kontrollerini atlamak için --nogpg kullanın.\n"
-
-#~ msgid "Couldn't exec pgp\n"
-#~ msgstr "pgp çalıştırılamadı\n"
+#~ msgstr "THƯ MỤC"
