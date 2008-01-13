@@ -162,7 +162,7 @@ int rpmDefineMacro(/*@null@*/ MacroContext mc, const char * macro, int level)
  * @return		@todo Document.
  */
 int rpmUndefineMacro(/*@null@*/ MacroContext mc, const char * macro)
-	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
+	/*@globals rpmGlobalMacroContext, internalState @*/
 	/*@modifies mc, rpmGlobalMacroContext, internalState @*/;
 
 /**

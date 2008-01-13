@@ -1201,7 +1201,7 @@ doFoo(MacroBuf mb, int negate, const char * f, size_t fn,
         size_t l;
         if ((cp = realpath(buf, rp)) != NULL) {
             l = strlen(cp);
-            if (l+1 <= bufn) {
+            if ((size_t)(l+1) <= bufn) {
                 memcpy(buf, cp, l+1);
                 b = buf;
             }
@@ -1298,15 +1298,19 @@ doFoo(MacroBuf mb, int negate, const char * f, size_t fn,
 }
 
 static int expandFIFO(MacroBuf mb, MacroEntry me, const char *g, size_t gn)
-	/*@*/
+	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@modifies mb, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     int rc = 0;
 
-    if (me && me->prev) {
-	rc = expandFIFO(mb, me->prev, g, gn);
-	rc = expandT(mb, g, gn);
+    if (me) {
+	if (me->prev) {
+	    rc = expandFIFO(mb, me->prev, g, gn);
+	    rc = expandT(mb, g, gn);
+	}
+	rc = expandT(mb, me->body, strlen(me->body));
     }
-    return expandT(mb, me->body, strlen(me->body));
+    return rc;
 }
 
 /**

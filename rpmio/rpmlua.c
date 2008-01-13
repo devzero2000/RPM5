@@ -45,7 +45,7 @@ static inline int vsnprintf(char * buf, /*@unused@*/ int nb,
 			/*@=mods@*/ \
 	    )
 
-/*@only@*/ /*@unchecked@*/ /*@null@*/
+/*@only@*/ /*@unchecked@*/ /*@relnull@*/
 static rpmlua globalLuaState = NULL;
 
 static int luaopen_rpm(lua_State *L)
@@ -56,7 +56,9 @@ static int rpm_print(lua_State *L)
 
 rpmlua rpmluaGetGlobalState(void)
 {
+/*@-globstate@*/
     return globalLuaState;
+/*@=globstate@*/
 }
 
 /*@-mods@*/	/* XXX hide rpmGlobalMacroContext mods for now. */
@@ -706,7 +708,7 @@ static int rpm_define(lua_State *L)
 }
 
 static int rpm_undefine(lua_State *L)
-	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
+	/*@globals rpmGlobalMacroContext, internalState @*/
 	/*@modifies L, rpmGlobalMacroContext, internalState @*/
 {
     const char *str = luaL_checkstring(L, 1);
@@ -917,8 +919,8 @@ static int rpm_print (lua_State *L)
 }
 
 static int rpm_source(lua_State *L)
-	/*@globals internalState @*/
-	/*@modifies L, internalState @*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies L, fileSystem, internalState @*/
 {
     if (!lua_isstring(L, 1)) {
 	(void)luaL_argerror(L, 1, "filename expected");
@@ -931,8 +933,8 @@ static int rpm_source(lua_State *L)
 }
 
 static int rpm_load(lua_State *L)
-	/*@globals internalState @*/
-	/*@modifies L, internalState @*/
+	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@modifies L, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     if (!lua_isstring(L, 1)) {
 	(void)luaL_argerror(L, 1, "filename expected");
@@ -952,8 +954,8 @@ static int rpm_verbose(lua_State *L)
 }
 
 static int rpm_slurp(lua_State *L)
-	/*@globals internalState @*/
-	/*@modifies L, internalState @*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies L, fileSystem, internalState @*/
 {
     uint8_t *b;
     ssize_t blen;
@@ -968,7 +970,7 @@ static int rpm_slurp(lua_State *L)
     }
     rc = rpmioSlurp(fn, &b, &blen);
     if (rc || b == NULL || blen <= 0) {
-        luaL_error(L, "failed to slurp data");
+        (void)luaL_error(L, "failed to slurp data");
         return 0;
     }
     lua_pushlstring(L, (const char *)b, (size_t)blen);
@@ -976,18 +978,18 @@ static int rpm_slurp(lua_State *L)
 }
 
 static int rpm_sleep(lua_State *L)
-    /*@globals internalState @*/
-    /*@modifies L, internalState @*/
+    /*@globals fileSystem, internalState @*/
+    /*@modifies L, fileSystem, internalState @*/
 {
-    int sec;
+    unsigned sec;
 
     if (lua_isnumber(L, 1))
-        sec = lua_tonumber(L, 1);
+        sec = (unsigned) lua_tonumber(L, 1);
     else {
         (void)luaL_argerror(L, 1, "seconds");
         return 0;
     }
-    sleep(sec);
+    (void) sleep(sec);
     return 0;
 }
 
