@@ -412,6 +412,15 @@
                      for "attention") security check.
      ________________________________________________________________________
 
+     Change:         support-rpm-popt-path
+     Purpose:        Support the environment variable "RPM_POPT_PATH" to
+                     on-the-fly override hard-coded path of the Autoconf option
+                     --path-rpmpopt.
+     Reason:         OpenPKG requires this in its bootstrapping procedure in
+                     order to let RPM load its standard rpmpopt file although
+                     from a temporary location (still under $RPM_BUILD_ROOT).
+     ________________________________________________________________________
+
   o  Name:           RPM4DARWIN
      Vendor:         RPM for Darwin (Mac OS X) <http://rpm4darwin.sourceforge.net/>
      Representative: Anders F. Bjorklund <afb@users.sourceforge.net> <afb@rpm5.org>

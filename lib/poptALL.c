@@ -651,6 +651,11 @@ rpmcliInit(int argc, char *const argv[], struct poptOption * optionsTable)
 /*@=nullpass =temptrans@*/
 
     /* read all RPM POPT configuration files */
+#if defined(RPM_VENDOR_OPENPKG) /* support-rpm-popt-path */
+    if ((path = getenv("RPM_POPT_PATH")) != NULL)
+        path_buf = xstrdup(path);
+    else
+#endif
     path_buf = xstrdup(RPMPOPTFILES);
     for (path = path_buf; path != NULL && *path != '\0'; path = path_next) {
         const char **av;
