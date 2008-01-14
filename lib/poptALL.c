@@ -169,6 +169,11 @@ extern int _rpmio_debug;
 /*@unchecked@*/
 static int rpmcliInitialized = -1;
 
+#if defined(RPM_VENDOR_OPENPKG) /* support-rpmpopt-option */
+/*@unchecked@*/
+static char *rpmpoptfiles = RPMPOPTFILES;
+#endif
+
 /**
  * Display rpm version.
  */
@@ -437,6 +442,12 @@ struct poptOption rpmcliAllPoptTable[] = {
  { "macros", '\0', POPT_ARG_STRING, &rpmMacrofiles, 0,
 	N_("read <FILE:...> instead of default file(s)"),
 	N_("<FILE:...>") },
+#if defined(RPM_VENDOR_OPENPKG) /* support-rpmpopt-option */
+ { "rpmpopt", '\0', POPT_ARG_STRING, NULL, 0,
+	N_("read <FILE:...> instead of default POPT file(s)"),
+	N_("<FILE:...>") },
+#endif
+
  { "target", '\0', POPT_ARG_STRING, NULL,  RPMCLI_POPT_TARGETPLATFORM,
         N_("specify target platform"), N_("CPU-VENDOR-OS") },
 
@@ -603,6 +614,9 @@ rpmcliInit(int argc, char *const argv[], struct poptOption * optionsTable)
     poptContext optCon;
     char *path_buf, *path, *path_next;
     int rc;
+#if defined(RPM_VENDOR_OPENPKG) /* support-rpmpopt-option */
+    int i;
+#endif
 
 #if defined(HAVE_MCHECK_H) && defined(HAVE_MTRACE)
     /*@-noeffect@*/
@@ -651,12 +665,21 @@ rpmcliInit(int argc, char *const argv[], struct poptOption * optionsTable)
 /*@=nullpass =temptrans@*/
 
     /* read all RPM POPT configuration files */
-#if defined(RPM_VENDOR_OPENPKG) /* support-rpm-popt-path */
-    if ((path = getenv("RPM_POPT_PATH")) != NULL)
-        path_buf = xstrdup(path);
-    else
-#endif
+#if defined(RPM_VENDOR_OPENPKG) /* support-rpmpopt-option */
+    for (i = 1; i < argc; i++) {
+        if (strcmp(argv[i], "--rpmpopt") == 0 && i+1 < argc) {
+            rpmpoptfiles = argv[i+1];
+            break;
+        }
+        else if (strncmp(argv[i], "--rpmpopt=", 10) == 0) {
+            rpmpoptfiles = argv[i]+10;
+            break;
+        }
+    }
+    path_buf = xstrdup(rpmpoptfiles);
+#else
     path_buf = xstrdup(RPMPOPTFILES);
+#endif
     for (path = path_buf; path != NULL && *path != '\0'; path = path_next) {
         const char **av;
         int ac, i;
