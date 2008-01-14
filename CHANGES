@@ -1,4 +1,5 @@
 5.0.0 -> 5.1a1:
+    - jbj: don't follow symlinks using chown/chgrp from --setugids pipe.
     - jbj: sync *.po with the translation project (sr@latin.po needs work).
     - rse: add a RPM Lua function rpm.sleep() as a trivial frontend to sleep(3)
     - rse: fix PGP clearsign signature verification by correctly skipping RFC2440 "dash-escapes"
