@@ -49,7 +49,7 @@ pkglib_SCRIPTS = \
 	symclash.py symclash.sh tgpg u_pkg.sh \
 	vcheck vpkg-provides.sh vpkg-provides2.sh
 
-pkgconfigdir = $(prefix)/lib/pkgconfig
+pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = rpm.pc
 
 install-exec-hook:
