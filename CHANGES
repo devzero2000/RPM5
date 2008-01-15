@@ -1,5 +1,5 @@
 5.0.0 -> 5.1a1:
-    - proyvind: fix install location of rpm.pc (lib64 fix)
+    - proyvind: fix install location of pkgconfig & python bindings (lib64 fix)
     - jbj: don't follow symlinks using chown/chgrp from --setugids pipe.
     - jbj: sync *.po with the translation project (sr@latin.po needs work).
     - rse: add a RPM Lua function rpm.sleep() as a trivial frontend to sleep(3)
