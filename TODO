@@ -14,3 +14,8 @@
   resolved during release engineering. Please do not just list any
   *CANDO* items.
 
+  - /usr/lib64 is reported not expanded into rpm.pc pkgconfig fle and
+	___init.py___.
+
+  - distributing per-platform configuration needs to be done. At a minimum,
+	the cpu-os.macros.tar.gz file needs distributing with the rpm tarball.
