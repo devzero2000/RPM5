@@ -97,7 +97,7 @@ AC_SUBST([RPM_TIMESTAMP])
 AC_SUBST([RPM_VENDOR])
 
 dnl # set of available languages.
-ALL_LINGUAS="cs da de es fi fr id is ja ko nb nl pa pl pt pt_BR ru sk sl sr@latin sv tr uk vi zh_TW"
+ALL_LINGUAS="cs da de es fi fr id is it ja ko nb nl pa pl pt pt_BR ru sk sl sr@latin sv tr uk vi zh_TW"
 
 dnl ##
 dnl ## ==== TOOL-CHAIN CHECKS ====
