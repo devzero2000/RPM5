@@ -126,6 +126,13 @@
         "problems")
     - rse: XAR 1.5.2 doesn't build under Solaris 10 as <fts.h> and the
       BSD4.4 fts(3) API is completely missing there.
+    - jbj: "make dist" no workie with XAR internal. layering in automake is
+	preferred way forward.
+    - jbj: /usr/lib64 is reported not expanded into rpm.pc pkgconfig fle and
+        ___init.py___.
+    - jbj: distributing per-platform configuration needs to be done. At a minimum,
+        the cpu-os.macros.tar.gz file needs distributing with the rpm tarball.
+
 
   RPM 5.2 ROADMAP ISSUES
   ----------------------
