@@ -542,8 +542,8 @@ int urlGetFile(const char * url, const char * dest)
 
 #if defined(RPM_VENDOR_OPENPKG) /* support-external-download-command */
     if (rpmExpandNumeric("%{?__urlgetfile:1}%{!?__urlgetfile:0}")) {
-        result = rpmExpand("%(%{__urlgetfile ", url, " ", dest, "}; echo $?)", NULL);
-        if (result != NULL && strcmp(result, "0") == 0)
+        result = rpmExpand("%{__urlgetfile ", url, " ", dest, "}", NULL);
+        if (result != NULL && strcmp(result, "OK") == 0)
             rc = 0;
         else {
             rpmlog(RPMLOG_DEBUG, D_("failed to fetch URL %s via external command\n"), url);
