@@ -10,6 +10,6 @@ pyincdir = @WITH_PYTHON_INCDIR@
 EXTRA_DIST = \
 	__init__.py
 
-rpmdir = $(pylibdir)/site-packages/rpm
+rpmdir = $(pylibdir)/rpm
 rpm_SCRIPTS = \
 	__init__.py
