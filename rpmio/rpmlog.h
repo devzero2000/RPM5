@@ -214,7 +214,8 @@ rpmlogCallback rpmlogSetCallback(rpmlogCallback cb, rpmlogCallbackData data)
  * @return		none
  */
 void rpmlogGetCallback(rpmlogCallback *cb, rpmlogCallbackData *data)
-	/*@*/;
+	/*@globals internalState @*/
+	/*@modifies *cb, *data, internalState @*/;
 
 /**
  * Return number of messages.

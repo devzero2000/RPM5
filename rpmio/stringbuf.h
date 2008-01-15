@@ -49,7 +49,7 @@ void stripTrailingBlanksStringBuf(StringBuf sb)
 
 /**
  */
-void appendStringBufAux(StringBuf sb, const char * s, int nl)
+void appendStringBufAux(StringBuf sb, const char * s, size_t nl)
 	/*@modifies sb @*/;
 
 #ifdef __cplusplus

@@ -1482,7 +1482,7 @@ char * pgpArmorWrap(int atype, const unsigned char * s, size_t ns)
 
 int pgpHashAlgoStringToNumber(const char *name, size_t name_len)
 {
-    int i;
+    size_t i;
 
     if (name == NULL)
         return -1;

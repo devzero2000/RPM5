@@ -431,6 +431,8 @@ fprintf(stderr, "==> rpmioSlurp(%s) MSG %p[%u] ret %d\n", _fn, b, blen, _rc);
 	    while (t < be) {
 		const char * teol;
 		const char * te;
+		if (strncmp(t, "- ", 2) == 0)
+			t += 2;
 		if ((teol = te = strchr(t, '\n')) == NULL)
 		    break;
 		while (te > t && strchr(" \t\r\n", te[-1]))

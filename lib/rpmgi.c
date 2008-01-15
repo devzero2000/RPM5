@@ -115,7 +115,7 @@ static rpmRC rpmgiLoadManifest(rpmgi gi, const char * path)
 	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
 	/*@modifies gi, rpmGlobalMacroContext, h_errno, internalState @*/
 {
-    FD_t fd = rpmgiOpen(path, "r.fdio");
+    FD_t fd = rpmgiOpen(path, "r%{?_rpmgio}");
     rpmRC rpmrc = RPMRC_FAIL;
 
     if (fd != NULL) {
@@ -136,7 +136,7 @@ static Header rpmgiReadHeader(rpmgi gi, const char * path)
 	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
 	/*@modifies gi, rpmGlobalMacroContext, h_errno, internalState @*/
 {
-    FD_t fd = rpmgiOpen(path, "r.fdio");
+    FD_t fd = rpmgiOpen(path, "r%{?_rpmgio}");
     Header h = NULL;
 
     if (fd != NULL) {
@@ -665,7 +665,7 @@ nextkey:
 		path = _free(path);
 		path = rpmExpand(_query_hdlist_path, NULL);
 	    }
-	    gi->fd = rpmgiOpen(path, "rm.fdio");
+	    gi->fd = rpmgiOpen(path, "rm%{?_rpmgio}");
 	    gi->active = 1;
 	    path = _free(path);
 	}

@@ -975,6 +975,10 @@ print (t)\
 # Path for rpm -qH (default is /usr/share/comps/%{_arch}/hdlist)
 %_query_hdlist_path	%{_datadir}/comps/%{_arch}/hdlist
 
+#
+# Permit network access? (".fdio" prohibits network access)
+%_rpmgio	.fdio
+
 #==============================================================================
 # ---- Run-time probe dependency macros.
 
