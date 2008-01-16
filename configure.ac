@@ -779,6 +779,15 @@ WITH_PERL_SUBDIR=""
 WITH_PERL_SUBPACKAGE=0
 AC_ARG_WITH(perl, AS_HELP_STRING([--with-perl], [build with RPM Perl language bindings]), [
     if test ".$withval" != .no; then
+	    PERL_INSTALLDIRS=""
+	    if test "$withval" == "vendor"; then
+		    PERL_INSTALLDIRS="'INSTALLDIRS'	=> 'vendor',"
+	    fi
+	    if test "$withval" == "site"; then
+		    PERL_INSTALLDIRS="'INSTALLDIRS'     => 'site',"
+	    fi
+	    AC_DEFINE_UNQUOTED([PERL_INSTALLDIRS], [$PERL_INSTALLDIRS])
+	    AC_SUBST(PERL_INSTALLDIRS)
         WITH_PERL_SUBDIR=perl
         WITH_PERL_SUBPACKAGE=1
         AC_CONFIG_FILES([perl/Makefile.PL])
