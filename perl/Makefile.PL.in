@@ -45,5 +45,6 @@ WriteMakefile(
 	      'INC'	=> join(' ', map { '-I@top_srcdir@/'. $_ } @libdir) . ' @CPPFLAGS@',
 	      'INSTALLMAN1DIR'	=> '@mandir@/man1',
 	      'INSTALLMAN3DIR'	=> '@mandir@/man3',
+	      @PERL_INSTALLDIRS@
 );
 
