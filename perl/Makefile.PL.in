@@ -43,5 +43,7 @@ WriteMakefile(
 	      'dynamic_lib'	=> { OTHERLDFLAGS => join(' ', @ldflags) },
 	      'OPTIMIZE'=> '-g',
 	      'INC'	=> join(' ', map { '-I@top_srcdir@/'. $_ } @libdir) . ' @CPPFLAGS@',
+	      'INSTALLMAN1DIR'	=> '@mandir@/man1',
+	      'INSTALLMAN3DIR'	=> '@mandir@/man3',
 );
 
