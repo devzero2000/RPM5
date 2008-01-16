@@ -696,7 +696,6 @@ Header relocateFileList(const rpmts ts, rpmfi fi,
     const char ** baseNames;
     const char ** dirNames;
     uint32_t * dirIndexes;
-    uint32_t * newDirIndexes;
     uint32_t fileCount;
     uint32_t dirCount;
     uint32_t mydColor = rpmExpandNumeric("%{?_autorelocate_dcolor}");
@@ -900,10 +899,6 @@ assert(p != NULL);
 
     dColors = alloca(dirCount * sizeof(*dColors));
     memset(dColors, 0, dirCount * sizeof(*dColors));
-
-    newDirIndexes = alloca(sizeof(*newDirIndexes) * fileCount);
-    memcpy(newDirIndexes, dirIndexes, sizeof(*newDirIndexes) * fileCount);
-    dirIndexes = newDirIndexes;
 
     /*
      * For all relocations, we go through sorted file/relocation lists 
@@ -1391,7 +1386,7 @@ assert(dalgo == fi->fdigestalgos[i]);
 	case PGPHASHALGO_SHA512:	fi->digestlen = 512/8;	break;
 	case PGPHASHALGO_CRC32:		fi->digestlen = 32/8;	break;
 	}
-	fi->fdigestalgos = NULL;
+	fi->fdigestalgos = _free(fi->fdigestalgos);
     }
 
     _fdupedata(h, RPMTAG_FILEDIGESTS, fi->fdigests);

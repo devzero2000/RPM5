@@ -1,4 +1,6 @@
 5.0.0 -> 5.0.1:
+    - jbj: fix: plug memory leak with digest algos array.
+    - jbj: fix: --relocate no longer needs to copy dirIndexes data.
     - proyvind: make perl install directory overriddable from configure as an argument (--with-perl=vendor/site)
     - proyvind: fix install location of man pages for perl bindings
     - proyvind: fix install location of pkgconfig & python bindings (lib64 fix)
