@@ -1,4 +1,5 @@
 5.0.0 -> 5.0.1:
+    - proyvind: fix install location of rpm.pc (lib64 fix)
     - jbj: don't follow symlinks using chown/chgrp from --setugids pipe.
     - jbj: sync *.po with the translation project (sr@latin.po needs work).
     - rse: fix PGP clearsign signature verification by correctly skipping RFC2440 "dash-escapes"
