@@ -403,6 +403,16 @@ char * rpmProblemGetAltNEVR(rpmProblem prob)
     return(prob->altNEVR);
 }
 
+char * rpmProblemGetStr(rpmProblem prob)
+{
+    return(prob->str1);
+}
+
+unsigned long long rpmProblemGetLong(rpmProblem prob)
+{
+    return(prob->ulong1);
+}
+
 rpmProblemType rpmProblemGetType(rpmProblem prob)
 {
     return(prob->type);

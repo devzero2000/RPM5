@@ -240,11 +240,13 @@ LIBRPM_0
     rpmpsPrint;
     rpmpsProblem;
     rpmpsTrim;
-    rpmProblemGetAltNEVR;
-    rpmProblemGetType;
-    rpmProblemKey;
-    rpmProblemGetPkgNEVR;
     rpmpsGetProblem;
+    rpmProblemGetAltNEVR;
+    rpmProblemGetLong;
+    rpmProblemGetStr;
+    rpmProblemGetType;
+    rpmProblemGetPkgNEVR;
+    rpmProblemKey;
     rpmQueryPoptTable;
     rpmQueryVerify;
     rpmQVKArgs;

@@ -1,4 +1,5 @@
 5.0.0 -> 5.1a1:
+    - proyvind: expose more functions in rpmps API (as rpm.org, initially based on us ;p)
     - jbj: fix: plug memory leak with digest algos array.
     - jbj: fix: --relocate no longer needs to copy dirIndexes data.
     - proyvind: make perl install directory overriddable from configure as an argument (--with-perl=vendor/site)
