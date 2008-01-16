@@ -286,6 +286,24 @@ char * rpmProblemGetAltNEVR(rpmProblem prob)
 	/*@*/;
 
 /**
+ * Return a generic data string from a problem
+ * @param prob		rpm problem
+ * @return		a generic data string
+ * @todo		needs a better name
+ */
+char * rpmProblemGetStr(rpmProblem prob)
+	/*@*/;
+
+/**
+ * Return generic pointer/long attribute from a problem
+ * @param prob		rpm problem
+ * @return		a generic pointer/long attribute
+ * @todo		needs a better name
+ */
+unsigned long long rpmProblemGetLong(rpmProblem prob)
+	/*@*/;
+
+/**
  * Return the problem type
  *
  * @param prob  rpm problem
