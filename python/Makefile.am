@@ -41,7 +41,7 @@ mylibs = \
 #LDADD =
 #LIBS =
 
-rpmdir = $(pylibdir)/site-packages/rpm
+rpmdir = $(pylibdir)/rpm
 rpm_LTLIBRARIES = _rpmmodule.la
 
 _rpmmodule_la_LDFLAGS = $(mylibs) -module -avoid-version
