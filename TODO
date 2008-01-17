@@ -132,6 +132,10 @@
         ___init.py___.
     - jbj: distributing per-platform configuration needs to be done. At a minimum,
         the cpu-os.macros.tar.gz file needs distributing with the rpm tarball.
+    - jbj: verify whether RPMv3 installs (or not).
+    - jbj: use txar to convert RPMv3 -> rpmv4 (headerReload needs adding).
+    - jbj: configure --parentdirs/--noparentdirs win persistent run-time macro
+	and stop discussing in public.
 
 
   RPM 5.2 ROADMAP ISSUES
