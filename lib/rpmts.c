@@ -4,6 +4,8 @@
  */
 #include "system.h"
 
+#include <rpmio_internal.h>
+#include <rpmbc.h>		/* XXX beecrypt base64 */
 #include <rpmio.h>
 #include <rpmurl.h>
 #include <rpmpgp.h>
