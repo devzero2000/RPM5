@@ -461,6 +461,236 @@ exit:
     return res;
 }
 
+rpmRC rpmcliImportPubkey(const rpmts ts, const unsigned char * pkt, ssize_t pktlen)
+{
+    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    static unsigned char zeros[] =
+	{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+    const char * afmt = "%{pubkeys:armor}";
+    const char * group = "Public Keys";
+    const char * license = "pubkey";
+    const char * buildhost = "localhost";
+    uint32_t pflags = (RPMSENSE_KEYRING|RPMSENSE_EQUAL);
+    uint32_t zero = 0;
+    pgpDig dig = NULL;
+    pgpDigParams pubp = NULL;
+    const char * d = NULL;
+    const char * enc = NULL;
+    const char * n = NULL;
+    const char * u = NULL;
+    const char * v = NULL;
+    const char * r = NULL;
+    const char * evr = NULL;
+    Header h = NULL;
+    rpmRC rc = RPMRC_FAIL;		/* assume failure */
+    char * t;
+    int xx;
+
+    if (pkt == NULL || pktlen <= 0)
+	return RPMRC_FAIL;
+    if (rpmtsOpenDB(ts, (O_RDWR|O_CREAT)))
+	return RPMRC_FAIL;
+
+/*@-moduncon@*/
+    if ((enc = b64encode(pkt, pktlen)) == NULL)
+	goto exit;
+/*@=moduncon@*/
+
+    dig = pgpDigNew(0);
+
+    /* Build header elements. */
+    (void) pgpPrtPkts(pkt, pktlen, dig, 0);
+    pubp = pgpGetPubkey(dig);
+
+    if (!memcmp(pubp->signid, zeros, sizeof(pubp->signid))
+     || !memcmp(pubp->time, zeros, sizeof(pubp->time))
+     || pubp->userid == NULL)
+	goto exit;
+
+    v = t = xmalloc(16+1);
+    t = stpcpy(t, pgpHexStr(pubp->signid, sizeof(pubp->signid)));
+
+    r = t = xmalloc(8+1);
+    t = stpcpy(t, pgpHexStr(pubp->time, sizeof(pubp->time)));
+
+    n = t = xmalloc(sizeof("gpg()")+8);
+    t = stpcpy( stpcpy( stpcpy(t, "gpg("), v+8), ")");
+
+    /*@-nullpass@*/ /* FIX: pubp->userid may be NULL */
+    u = t = xmalloc(sizeof("gpg()")+strlen(pubp->userid));
+    t = stpcpy( stpcpy( stpcpy(t, "gpg("), pubp->userid), ")");
+    /*@=nullpass@*/
+
+    evr = t = xmalloc(sizeof("4X:-")+strlen(v)+strlen(r));
+    t = stpcpy(t, (pubp->version == 4 ? "4:" : "3:"));
+    t = stpcpy( stpcpy( stpcpy(t, v), "-"), r);
+
+    /* Check for pre-existing header. */
+
+    /* Build pubkey header. */
+    h = headerNew();
+
+    he->append = 1;
+
+    he->tag = RPMTAG_PUBKEYS;
+    he->t = RPM_STRING_ARRAY_TYPE;
+    he->p.argv = &enc;
+    he->c = 1;
+    xx = headerPut(h, he, 0);
+
+    he->append = 0;
+
+    d = headerSprintf(h, afmt, NULL, rpmHeaderFormats, NULL);
+    if (d == NULL)
+	goto exit;
+
+    he->t = RPM_STRING_TYPE;
+    he->c = 1;
+    he->tag = RPMTAG_NAME;
+    he->p.str = "gpg-pubkey";
+    xx = headerPut(h, he, 0);
+    he->tag = RPMTAG_VERSION;
+    he->p.str = v+8;
+    xx = headerPut(h, he, 0);
+    he->tag = RPMTAG_RELEASE;
+    he->p.str = r;
+    xx = headerPut(h, he, 0);
+
+    /* Add Summary/Description/Group. */
+    he->tag = RPMTAG_DESCRIPTION;
+    he->p.str = d;
+#if defined(SUPPORT_IMPLICIT_TAG_DATA_TYPES)
+    xx = headerAddI18NString(h, he->tag, he->p.ptr, "C");
+#else
+    xx = headerPut(h, he, 0);
+#endif
+    he->tag = RPMTAG_GROUP;
+    he->p.str = group;
+#if defined(SUPPORT_IMPLICIT_TAG_DATA_TYPES)
+    xx = headerAddI18NString(h, he->tag, he->p.ptr, "C");
+#else
+    xx = headerPut(h, he, 0);
+#endif
+    he->tag = RPMTAG_SUMMARY;
+    he->p.str = u;
+#if defined(SUPPORT_IMPLICIT_TAG_DATA_TYPES)
+    xx = headerAddI18NString(h, he->tag, he->p.ptr, "C");
+#else
+    xx = headerPut(h, he, 0);
+#endif
+
+#ifdef	NOTYET	/* XXX can't erase pubkeys with "pubkey" arch. */
+    /* Add a "pubkey" arch/os to avoid missing value NULL ptrs. */
+    he->tag = RPMTAG_ARCH;
+    he->p.str = "pubkey";
+    xx = headerPut(h, he, 0);
+    he->tag = RPMTAG_OS;
+    he->p.str = "pubkey";
+    xx = headerPut(h, he, 0);
+#endif
+
+    he->tag = RPMTAG_LICENSE;
+    he->p.str = license;
+    xx = headerPut(h, he, 0);
+
+    he->tag = RPMTAG_SIZE;
+    he->t = RPM_UINT32_TYPE;
+    he->p.ui32p = &zero;
+    he->c = 1;
+    xx = headerPut(h, he, 0);
+
+    he->append = 1;
+
+    he->tag = RPMTAG_PROVIDENAME;
+    he->t = RPM_STRING_ARRAY_TYPE;
+    he->p.argv = &u;
+    he->c = 1;
+    xx = headerPut(h, he, 0);
+    he->tag = RPMTAG_PROVIDEVERSION;
+    he->t = RPM_STRING_ARRAY_TYPE;
+    he->p.argv = &evr;
+    he->c = 1;
+    xx = headerPut(h, he, 0);
+    he->tag = RPMTAG_PROVIDEFLAGS;
+    he->t = RPM_UINT32_TYPE;
+    he->p.ui32p = &pflags;
+    he->c = 1;
+    xx = headerPut(h, he, 0);
+
+    he->tag = RPMTAG_PROVIDENAME;
+    he->t = RPM_STRING_ARRAY_TYPE;
+    he->p.argv = &n;
+    he->c = 1;
+    xx = headerPut(h, he, 0);
+    he->tag = RPMTAG_PROVIDEVERSION;
+    he->t = RPM_STRING_ARRAY_TYPE;
+    he->p.argv = &evr;
+    he->c = 1;
+    xx = headerPut(h, he, 0);
+    he->tag = RPMTAG_PROVIDEFLAGS;
+    he->t = RPM_UINT32_TYPE;
+    he->p.ui32p = &pflags;
+    he->c = 1;
+    xx = headerPut(h, he, 0);
+
+    he->append = 0;
+
+    he->tag = RPMTAG_RPMVERSION;
+    he->t = RPM_STRING_TYPE;
+    he->p.str = RPMVERSION;
+    he->c = 1;
+    xx = headerPut(h, he, 0);
+
+    /* XXX W2DO: tag value inheirited from parent? */
+    he->tag = RPMTAG_BUILDHOST;
+    he->t = RPM_STRING_TYPE;
+    he->p.str = buildhost;
+    he->c = 1;
+    xx = headerPut(h, he, 0);
+    {   uint32_t tid = rpmtsGetTid(ts);
+	he->tag = RPMTAG_INSTALLTIME;
+	he->t = RPM_UINT32_TYPE;
+	he->p.ui32p = &tid;
+	he->c = 1;
+	xx = headerPut(h, he, 0);
+	/* XXX W2DO: tag value inheirited from parent? */
+	he->tag = RPMTAG_BUILDTIME;
+	he->t = RPM_UINT32_TYPE;
+	he->p.ui32p = &tid;
+	he->c = 1;
+	xx = headerPut(h, he, 0);
+    }
+
+#ifdef	NOTYET
+    /* XXX W2DO: tag value inheirited from parent? */
+    he->tag = RPMTAG_SOURCERPM;
+    he->t = RPM_STRING_TYPE;
+    he->p.str = fn;
+    he->c = 1;
+    xx = headerPut(h, he, 0);
+#endif
+
+    /* Add header to database. */
+    xx = rpmdbAdd(rpmtsGetRdb(ts), rpmtsGetTid(ts), h, NULL);
+    if (xx != 0)
+	goto exit;
+    rc = RPMRC_OK;
+
+exit:
+    /* Clean up. */
+    h = headerFree(h);
+    dig = pgpDigFree(dig);
+    n = _free(n);
+    u = _free(u);
+    v = _free(v);
+    r = _free(r);
+    evr = _free(evr);
+    enc = _free(enc);
+    d = _free(d);
+    
+    return rc;
+}
+
 /** \ingroup rpmcli
  * Import public key(s).
  * @todo Implicit --update policy for gpg-pubkey headers.
@@ -519,7 +749,7 @@ static int rpmcliImportPubkeys(const rpmts ts,
 	}
 
 	/* Import pubkey packet(s). */
-	if ((rpmrc = rpmtsImportPubkey(ts, pkt, pktlen)) != RPMRC_OK) {
+	if ((rpmrc = rpmcliImportPubkey(ts, pkt, pktlen)) != RPMRC_OK) {
 	    rpmlog(RPMLOG_ERR, _("%s: import failed.\n"), fn);
 	    res++;
 	    continue;
