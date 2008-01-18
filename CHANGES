@@ -1,4 +1,6 @@
 5.0.0 -> 5.1a1:
+    - jbj: fix several typos noticed by the translation project.
+    - jbj: add -noautoreq/--noautoprov options to rpmbuild.
     - proyvind: Rename rpmcliImportPubkey() -> rpmtsImportPubkey() (from and for a hint of rpm.org API compatibility;)
     - proyvind: expose more functions in rpmps API (as rpm.org, initially based on us ;p)
     - jbj: fix: plug memory leak with digest algos array.

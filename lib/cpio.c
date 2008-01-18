@@ -231,7 +231,7 @@ const char * cpioStrerror(int rc)
 	s = NULL;
 	break;
     case CPIOERR_BAD_MAGIC:	s = _("Bad magic");		break;
-    case CPIOERR_BAD_HEADER:	s = _("Bad/unreadable  header");break;
+    case CPIOERR_BAD_HEADER:	s = _("Bad/unreadable header");	break;
 
     case CPIOERR_OPEN_FAILED:	s = "open";	break;
     case CPIOERR_CHMOD_FAILED:	s = "chmod";	break;

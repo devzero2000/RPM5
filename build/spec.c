@@ -17,6 +17,9 @@
 extern int specedit;
 /*@=redecl@*/
 
+/*@unchecked@*/
+extern int _rpmbuildAutoFlags;
+
 #define SKIPWHITE(_x)	{while(*(_x) && (xisspace(*_x) || *(_x) == ',')) (_x)++;}
 #define SKIPNONWHITE(_x){while(*(_x) &&!(xisspace(*_x) || *(_x) == ',')) (_x)++;}
 
@@ -122,8 +125,8 @@ Package newPackage(Spec spec)
     p->header = headerNew();
     p->ds = NULL;
 
-    p->autoProv = 1;
-    p->autoReq = 1;
+    p->autoProv = ((_rpmbuildAutoFlags & 0x1) != 0);
+    p->autoReq = ((_rpmbuildAutoFlags & 0x2) != 0);
     
 #if 0    
     p->reqProv = NULL;

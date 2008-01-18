@@ -47,10 +47,8 @@ struct rpmBuildArguments_s         rpmBTArgs;
 #define	POPT_TP			0x7470
 #define	POPT_TS			0x7473
 
-/*@-redecl@*/
 /*@unchecked@*/
-extern int _fsm_debug;
-/*@=redecl@*/
+int _rpmbuildAutoFlags = 3;
 
 /*@-exportlocal@*/
 /*@unchecked@*/
@@ -200,12 +198,14 @@ struct poptOption rpmBuildPoptTable[] = {
 
  { "clean", '\0', 0, NULL, POPT_RMBUILD,
 	N_("remove build tree when done"), NULL},
- { "fsmdebug", '\0', (POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN), &_fsm_debug, -1,
-	N_("debug file state machine"), NULL},
  { "nobuild", '\0', 0, NULL, POPT_NOBUILD,
 	N_("do not execute any stages of the build"), NULL },
  { "nodeps", '\0', 0, NULL, RPMCLI_POPT_NODEPS,
 	N_("do not verify build dependencies"), NULL },
+ { "noautoprov", '\0', POPT_BIT_CLR|POPT_ARGFLAG_DOC_HIDDEN, &_rpmbuildAutoFlags, 1,
+	N_("disable automagic Provides: extraction"), NULL },
+ { "noautoreq", '\0', POPT_BIT_CLR|POPT_ARGFLAG_DOC_HIDDEN, &_rpmbuildAutoFlags, 2,
+	N_("disable automagic Requires: extraction"), NULL },
 
  { "nodigest", '\0', POPT_ARGFLAG_DOC_HIDDEN, NULL, RPMCLI_POPT_NODIGEST,
         N_("don't verify package digest(s)"), NULL },
@@ -215,7 +215,7 @@ struct poptOption rpmBuildPoptTable[] = {
         N_("don't verify package signature(s)"), NULL },
 
  { "nolang", '\0', POPT_ARGFLAG_DOC_HIDDEN, &noLang, POPT_NOLANG,
-	N_("do not accept i18N msgstr's from specfile"), NULL},
+	N_("do not accept i18n msgstr's from specfile"), NULL},
  { "rmsource", '\0', 0, NULL, POPT_RMSOURCE,
 	N_("remove sources when done"), NULL},
  { "rmspec", '\0', 0, NULL, POPT_RMSPEC,
@@ -227,7 +227,7 @@ struct poptOption rpmBuildPoptTable[] = {
  { "target", '\0', POPT_ARG_STRING, NULL,  RPMCLI_POPT_TARGETPLATFORM,
 	N_("override target platform"), N_("CPU-VENDOR-OS") },
  { "usecatalog", '\0', POPT_ARGFLAG_DOC_HIDDEN, &useCatalog, POPT_USECATALOG,
-	N_("lookup i18N strings in specfile catalog"), NULL},
+	N_("look up i18n strings in specfile catalog"), NULL},
 
    POPT_TABLEEND
 };
