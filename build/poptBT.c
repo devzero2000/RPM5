@@ -200,8 +200,6 @@ struct poptOption rpmBuildPoptTable[] = {
 
  { "clean", '\0', 0, NULL, POPT_RMBUILD,
 	N_("remove build tree when done"), NULL},
- { "fsmdebug", '\0', (POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN), &_fsm_debug, -1,
-	N_("debug file state machine"), NULL},
  { "nobuild", '\0', 0, NULL, POPT_NOBUILD,
 	N_("do not execute any stages of the build"), NULL },
  { "nodeps", '\0', 0, NULL, RPMCLI_POPT_NODEPS,
@@ -215,7 +213,7 @@ struct poptOption rpmBuildPoptTable[] = {
         N_("don't verify package signature(s)"), NULL },
 
  { "nolang", '\0', POPT_ARGFLAG_DOC_HIDDEN, &noLang, POPT_NOLANG,
-	N_("do not accept i18N msgstr's from specfile"), NULL},
+	N_("do not accept i18n msgstr's from specfile"), NULL},
  { "rmsource", '\0', 0, NULL, POPT_RMSOURCE,
 	N_("remove sources when done"), NULL},
  { "rmspec", '\0', 0, NULL, POPT_RMSPEC,
@@ -227,7 +225,7 @@ struct poptOption rpmBuildPoptTable[] = {
  { "target", '\0', POPT_ARG_STRING, NULL,  RPMCLI_POPT_TARGETPLATFORM,
 	N_("override target platform"), N_("CPU-VENDOR-OS") },
  { "usecatalog", '\0', POPT_ARGFLAG_DOC_HIDDEN, &useCatalog, POPT_USECATALOG,
-	N_("lookup i18N strings in specfile catalog"), NULL},
+	N_("look up i18n strings in specfile catalog"), NULL},
 
    POPT_TABLEEND
 };

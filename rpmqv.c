@@ -633,7 +633,7 @@ int main(int argc, const char ** argv)
 
     if (ia->noDeps & (bigMode & ~MODES_FOR_NODEPS))
 	argerror(_("--nodeps may only be specified during package "
-		   "building, rebuilding, recompilation, installation,"
+		   "building, rebuilding, recompilation, installation, "
 		   "erasure, and verification"));
 
     if ((ia->transFlags & RPMTRANS_FLAG_TEST) && (bigMode & ~MODES_FOR_TEST))
