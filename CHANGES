@@ -1,4 +1,5 @@
 5.0.0 -> 5.1a1:
+    - jbj: proof-of-concept rpmbuild --lsb implementation. ptooey!
     - jbj: unbreak rpm-python, preserve existing symbol in released versions.
     - jbj: fix several typos noticed by the translation project.
     - jbj: add -noautoreq/--noautoprov options to rpmbuild.
