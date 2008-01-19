@@ -1,4 +1,5 @@
 5.0.0 -> 5.1a1:
+    - rse: unconditionally provide RPM Lua functions posix.{setenv,unsetenv}
     - jbj: proof-of-concept rpmbuild --lsb implementation. ptooey!
     - jbj: unbreak rpm-python, preserve existing symbol in released versions.
     - jbj: fix several typos noticed by the translation project.
