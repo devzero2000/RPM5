@@ -993,6 +993,28 @@ static int rpm_sleep(lua_State *L)
     return 0;
 }
 
+static int rpm_realpath(lua_State *L)
+    /*@globals fileSystem, internalState @*/
+    /*@modifies L, fileSystem, internalState @*/
+{
+    const char *pn;
+    char rp_buf[PATH_MAX];
+    char *rp;
+
+    if (lua_isstring(L, 1))
+        pn = lua_tostring(L, 1);
+    else {
+        (void)luaL_argerror(L, 1, "pathname");
+        return 0;
+    }
+    if ((rp = realpath(pn, rp_buf)) == NULL) {
+        (void)luaL_error(L, "failed to resolve path via realpath(3): %s", strerror(errno));
+        return 0;
+    }
+    lua_pushstring(L, (const char *)rp);
+    return 1;
+}
+
 /*@-readonlytrans@*/
 /*@observer@*/ /*@unchecked@*/
 static const luaL_reg rpmlib[] = {
@@ -1009,6 +1031,7 @@ static const luaL_reg rpmlib[] = {
     {"verbose", rpm_verbose},
     {"slurp", rpm_slurp},
     {"sleep", rpm_sleep},
+    {"realpath", rpm_realpath},
     {NULL, NULL}
 };
 /*@=readonlytrans@*/
