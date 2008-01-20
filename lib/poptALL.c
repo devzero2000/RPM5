@@ -709,7 +709,8 @@ rpmcliInit(int argc, char *const argv[], struct poptOption * optionsTable)
 
         /* work-off each resulting file from the path element */
         for (i = 0; i < ac; i++) {
-            (void)poptReadConfigFile(optCon, av[i]);
+            char *fn = av[i];
+            (void)poptReadConfigFile(optCon, fn);
             av[i] = _free(av[i]);
         }
         av = _free(av);

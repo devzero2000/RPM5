@@ -2241,16 +2241,17 @@ rpmInitMacros(MacroContext mc, const char * macrofiles)
 
 	for (i = 0; i < ac; i++) {
 	    size_t slen = strlen(av[i]);
+	    char *fn = av[i];
 
 	/* Skip backup files and %config leftovers. */
 #define	_suffix(_s, _x) \
     (slen >= sizeof(_x) && !strcmp((_s)+slen-(sizeof(_x)-1), (_x)))
-	    if (!(_suffix(av[i], "~")
-	       || _suffix(av[i], ".rpmnew")
-	       || _suffix(av[i], ".rpmorig")
-	       || _suffix(av[i], ".rpmsave"))
+	    if (!(_suffix(fn, "~")
+	       || _suffix(fn, ".rpmnew")
+	       || _suffix(fn, ".rpmorig")
+	       || _suffix(fn, ".rpmsave"))
 	       )
-		   (void) rpmLoadMacroFile(mc, av[i]);
+		   (void) rpmLoadMacroFile(mc, fn);
 #undef _suffix
 
 	    av[i] = _free(av[i]);
