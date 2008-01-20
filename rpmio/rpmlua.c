@@ -104,8 +104,7 @@ rpmlua rpmluaNew()
 	lua_call(L, 1, 0);
 /*@=noeffectuncon@*/
     }
-#define	_LUADOTDIR	"%{?_rpmhome}%{!?_rpmhome:" USRLIBRPM "}"
-    {	const char * _lua_path = rpmGetPath(_LUADOTDIR, "/lua/?.lua", NULL);
+    {	const char * _lua_path = rpmGetPath("%{?_rpmhome}%{!?_rpmhome:" USRLIBRPM "}", "/lua/?.lua", NULL);
 	if (_lua_path != NULL) {
 	    lua_pushliteral(L, "LUA_PATH");
 	    lua_pushstring(L, _lua_path);
@@ -117,15 +116,6 @@ rpmlua rpmluaNew()
     lua_pushcfunction(L, rpm_print);
     lua_rawset(L, LUA_GLOBALSINDEX);
     rpmluaSetData(lua, "lua", lua);
-    {	const char * _lua_init = rpmGetPath(_LUADOTDIR, "/init.lua", NULL);
-	if (_lua_init != NULL) {
-	    struct stat st;
-	    if (Stat(_lua_init, &st) != -1)
-		(void)rpmluaRunScriptFile(lua, _lua_init);
-	    _lua_init = _free(_lua_init);
-	}
-    }
-#undef	_LUADOTDIR
 
     /* load all standard RPM Lua script files */
     path_buf = xstrdup(RPMLUAFILES);

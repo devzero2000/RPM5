@@ -1469,7 +1469,7 @@ AC_MSG_RESULT([$RPMPOPTFILES])
 
 dnl # determine RPM Lua script files path
 AC_MSG_CHECKING([for RPM Lua script files path])
-RPMLUAFILES="${USRLIBRPM}/rpmlua"
+RPMLUAFILES="${USRLIBRPM}/init.lua:${USRLIBRPM}/rpmlua"
 RPMLUAFILES="${RPMLUAFILES}:${USRLIBRPM}/%{_target}/rpmlua"
 RPMLUAFILES="${RPMLUAFILES}:${SYSCONFIGDIR}/rpmlua.*"
 RPMLUAFILES="${RPMLUAFILES}:${SYSCONFIGDIR}/rpmlua"
