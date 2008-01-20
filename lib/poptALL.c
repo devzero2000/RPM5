@@ -691,16 +691,6 @@ rpmcliInit(int argc, char *const argv[], struct poptOption * optionsTable)
         else
             path_next = path + strlen(path);
 
-#if defined(RPM_VENDOR_OPENPKG) /* security-sanity-check-rpmpopt-and-rpmmacros */
-        if (path[0] == '@' /* attention */) {
-            path++;
-            if (!rpmSecuritySaneFile(path)) {
-                rpmlog(RPMLOG_WARNING, "existing POPT configuration file \"%s\" considered INSECURE -- not loaded\n", path);
-                continue;
-            }
-        }
-#endif
-
         /* glob-expand the path element */
         ac = 0;
         av = NULL;
@@ -709,7 +699,16 @@ rpmcliInit(int argc, char *const argv[], struct poptOption * optionsTable)
 
         /* work-off each resulting file from the path element */
         for (i = 0; i < ac; i++) {
-            char *fn = av[i];
+            const char *fn = av[i];
+#if defined(RPM_VENDOR_OPENPKG) /* security-sanity-check-rpmpopt-and-rpmmacros */
+            if (fn[0] == '@' /* attention */) {
+                fn++;
+                if (!rpmSecuritySaneFile(fn)) {
+                    rpmlog(RPMLOG_WARNING, "existing POPT configuration file \"%s\" considered INSECURE -- not loaded\n", fn);
+                    continue;
+                }
+            }
+#endif
             (void)poptReadConfigFile(optCon, fn);
             av[i] = _free(av[i]);
         }

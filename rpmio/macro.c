@@ -2213,16 +2213,6 @@ rpmInitMacros(MacroContext mc, const char * macrofiles)
 	else
 	    me = m + strlen(m);
 
-#if defined(RPM_VENDOR_OPENPKG) /* security-sanity-check-rpmpopt-and-rpmmacros */
-        if (m[0] == '@' /* attention */) {
-            m++;
-            if (!rpmSecuritySaneFile(m)) {
-                rpmlog(RPMLOG_WARNING, "existing RPM macros file \"%s\" considered INSECURE -- not loaded\n", m);
-                continue;
-            }
-        }
-#endif
-
 	/* Glob expand the macro file path element, expanding ~ to $HOME. */
 	ac = 0;
 	av = NULL;
@@ -2241,7 +2231,17 @@ rpmInitMacros(MacroContext mc, const char * macrofiles)
 
 	for (i = 0; i < ac; i++) {
 	    size_t slen = strlen(av[i]);
-	    char *fn = av[i];
+	    const char *fn = av[i];
+
+#if defined(RPM_VENDOR_OPENPKG) /* security-sanity-check-rpmpopt-and-rpmmacros */
+        if (fn[0] == '@' /* attention */) {
+            fn++;
+            if (!rpmSecuritySaneFile(fn)) {
+                rpmlog(RPMLOG_WARNING, "existing RPM macros file \"%s\" considered INSECURE -- not loaded\n", fn);
+                continue;
+            }
+        }
+#endif
 
 	/* Skip backup files and %config leftovers. */
 #define	_suffix(_s, _x) \
