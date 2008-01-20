@@ -92,6 +92,9 @@ rpmlua rpmluaNew()
     /*@observer@*/ /*@unchecked@*/
     const luaL_reg *lib = lualibs;
     /*@=readonlytrans@*/
+    char *path_buf;
+    char *path_next;
+    char *path;
 
     lua->L = L;
     for (; lib->name; lib++) {
@@ -123,6 +126,47 @@ rpmlua rpmluaNew()
 	}
     }
 #undef	_LUADOTDIR
+
+    /* load all standard RPM Lua script files */
+    path_buf = xstrdup(RPMLUAFILES);
+    for (path = path_buf; path != NULL && *path != '\0'; path = path_next) {
+        const char **av;
+        struct stat st;
+        int ac, i;
+
+        /* locate start of next path element */
+        path_next = strchr(path, ':');
+        if (path_next != NULL && *path_next == ':')
+            *path_next++ = '\0';
+        else
+            path_next = path + strlen(path);
+
+        /* glob-expand the path element */
+        ac = 0;
+        av = NULL;
+        if ((i = rpmGlob(path, &ac, &av)) != 0)
+            continue;
+
+        /* work-off each resulting file from the path element */
+        for (i = 0; i < ac; i++) {
+            const char *fn = av[i];
+#if defined(RPM_VENDOR_OPENPKG) /* security-sanity-check-rpmpopt-and-rpmmacros */
+            if (fn[0] == '@' /* attention */) {
+                fn++;
+                if (!rpmSecuritySaneFile(fn)) {
+                    rpmlog(RPMLOG_WARNING, "existing RPM Lua script file \"%s\" considered INSECURE -- not loaded\n", fn);
+                    continue;
+                }
+            }
+#endif
+            if (Stat(fn, &st) != -1)
+                (void)rpmluaRunScriptFile(lua, fn);
+            av[i] = _free(av[i]);
+        }
+        av = _free(av);
+    }
+    path_buf = _free(path_buf);
+
     return lua;
 }
 /*@=mods@*/

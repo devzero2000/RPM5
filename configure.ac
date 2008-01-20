@@ -1467,6 +1467,30 @@ AC_DEFINE_UNQUOTED(
 AC_SUBST(RPMPOPTFILES)
 AC_MSG_RESULT([$RPMPOPTFILES])
 
+dnl # determine RPM Lua script files path
+AC_MSG_CHECKING([for RPM Lua script files path])
+RPMLUAFILES="${USRLIBRPM}/rpmlua"
+RPMLUAFILES="${RPMLUAFILES}:${USRLIBRPM}/%{_target}/rpmlua"
+RPMLUAFILES="${RPMLUAFILES}:${SYSCONFIGDIR}/rpmlua.*"
+RPMLUAFILES="${RPMLUAFILES}:${SYSCONFIGDIR}/rpmlua"
+RPMLUAFILES="${RPMLUAFILES}:${SYSCONFIGDIR}/%{_target}/rpmlua"
+if test ".$WITH_PATH_VERSIONED" = .yes; then
+    RPMLUAFILES="${RPMLUAFILES}:~/.rpmlua-${VERSION}"
+else
+    RPMLUAFILES="${RPMLUAFILES}:~/.rpmlua"
+fi
+AC_ARG_WITH(
+    [path-rpmlua],
+    AS_HELP_STRING([--with-path-rpmlua=ARG], [build with colon-separated RPM Lua script file path]),
+    [RPMLUAFILES="$withval"]
+)
+AC_DEFINE_UNQUOTED(
+    [RPMLUAFILES], ["$RPMLUAFILES"],
+    [Colon separated RPM Lua script files path]
+)
+AC_SUBST(RPMLUAFILES)
+AC_MSG_RESULT([$RPMLUAFILES])
+
 testdir="`pwd`/tests"
 AC_SUBST(testdir)
 

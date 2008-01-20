@@ -1,4 +1,5 @@
 5.0.0 -> 5.1a1:
+    - rse: let RPM Lua init procedure load all init scripts configured with new Autoconf option --with-path-rpmlua 
     - rse: fix Autoconf procedure by running python(1) based checks only under --with-python
     - rse: provide RPM Lua function rpm.realpath(<path>) to complement RPM macro %{realpath:<path>}
     - rse: unconditionally provide RPM Lua functions posix.{setenv,unsetenv}
