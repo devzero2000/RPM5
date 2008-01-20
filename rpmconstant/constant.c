@@ -69,8 +69,8 @@ int main(int argc, char *argv[]) {
         if (qmode & QMODE_REVERSE) {
             if(sscanf(name, "%d", &token)) {
                 if (qmode & QMODE_SET) {
-                    printf("%d:", token);
                     int i = 0;
+                    printf("%d:", token);
                     while ((val = rpmconstantFindMask(context, token, (void *) &name, showprefix))) {
                         printf(" %s", name);
                         token &= ~val;
