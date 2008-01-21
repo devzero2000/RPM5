@@ -61,6 +61,7 @@ const char * rpmMacrofiles = MACROFILES;
 #include <rpmlog.h>
 
 #ifdef	WITH_LUA
+#define	_RPMLUA_INTERNAL	/* XXX lua->printbuf access */
 #include <rpmlua.h>
 #endif
 
@@ -1548,14 +1549,21 @@ expandMacro(MacroBuf mb)
 
 #ifdef	WITH_LUA
 	if (STREQ("lua", f, fn)) {
-		rpmlua lua = NULL; /* Global state. */
+		rpmlua lua = rpmluaGetGlobalState();
+		rpmlua olua = memcpy(alloca(sizeof(*olua)), lua, sizeof(*olua));
 		const char *ls = s+sizeof("{lua:")-1;
 		const char *lse = se-sizeof("}")+1;
 		char *scriptbuf = (char *)xmalloc((lse-ls)+1);
 		const char *printbuf;
+
+		/* Reset the stateful output buffer bfore recursing down. */
+		lua->storeprint = 1;
+		lua->printbuf = NULL;
+		lua->printbufsize = 0;
+		lua->printbufused = 0;
+
 		memcpy(scriptbuf, ls, lse-ls);
 		scriptbuf[lse-ls] = '\0';
-		rpmluaSetPrintBuffer(lua, 1);
 		if (rpmluaRunScript(lua, scriptbuf, NULL) == -1)
 		    rc = 1;
 		printbuf = rpmluaGetPrintBuffer(lua);
@@ -1567,7 +1575,13 @@ expandMacro(MacroBuf mb)
 		    mb->t += len;
 		    mb->nb -= len;
 		}
-		rpmluaSetPrintBuffer(lua, 0);
+
+		/* Restore the stateful output buffer after recursion. */
+		lua->storeprint = olua->storeprint;
+		lua->printbuf = olua->printbuf;
+		lua->printbufsize = olua->printbufsize;
+		lua->printbufused = olua->printbufused;
+
 		free(scriptbuf);
 		s = se;
 		continue;
