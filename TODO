@@ -19,3 +19,18 @@
 
   - distributing per-platform configuration needs to be done. At a minimum,
 	the cpu-os.macros.tar.gz file needs distributing with the rpm tarball.
+
+  - decide on whether rpmbuild --lsb should be included (or not).
+
+  - pkgioRead() has a cosmetic error message if/when called after end-of-header
+	(or equivalent EOF) condition. The current fix is mapping return to
+	RPMRC_NOTFOUND, but RPMRC_OK with 0 length EOF read may be necessary.
+
+	...
+        /* XXX Handle EOF's as RPMRC_NOTFOUND, not RPMRC_FAIL, returns. */
+        if (xx == 0)
+            rc = RPMRC_NOTFOUND;
+        else
+	...
+
+
