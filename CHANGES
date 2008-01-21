@@ -1,4 +1,5 @@
 5.0.0 -> 5.1a1:
+    - rse: allow to compile without <langinfo.h> and its nl_langinfo(3)
     - rse: provide RPM Lua function posix.glob(<pattern>)
     - rse: make older C compiler happy by not declaring a variable in the middle of a block in rpmconstant/constant.c
     - rse: let RPM Lua init procedure load all init scripts configured with new Autoconf option --with-path-rpmlua 

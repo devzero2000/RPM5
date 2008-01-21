@@ -537,6 +537,7 @@ AC_CHECK_HEADERS([dnl
     sys/param.h sys/mount.h sys/mntctl.h sys/vmount.h dnl
     libio.h err.h mcheck.h limits.h libgen.h float.h dnl
     glob.h poll.h netinet/in.h arpa/inet.h stdint.h inttypes.h dnl
+    langinfo.h dnl
 ])
 
 dnl # GNU gettext support
