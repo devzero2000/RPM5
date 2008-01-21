@@ -1556,7 +1556,7 @@ expandMacro(MacroBuf mb)
 		char *scriptbuf = (char *)xmalloc((lse-ls)+1);
 		const char *printbuf;
 
-		/* Reset the stateful output buffer bfore recursing down. */
+		/* Reset the stateful output buffer before recursing down. */
 		lua->storeprint = 1;
 		lua->printbuf = NULL;
 		lua->printbufsize = 0;
