@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 5.0\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2008-01-13 13:46-0500\n"
+"POT-Creation-Date: 2008-01-22 13:58-0500\n"
 "PO-Revision-Date: 2001-04-05 23:03GMT\n"
 "Last-Translator: Claus Hindsgaul <claus_h@image.dk>\n"
 "Language-Team: Danish <dansk@klid.dk>\n"
@@ -103,7 +103,7 @@ msgstr "Fælles tilvalg for alle rpm-tilstande:"
 msgid "%s: %s\n"
 msgstr "fil %s: %s\n"
 
-#: rpmqv.c:163 lib/poptALL.c:179
+#: rpmqv.c:163 lib/poptALL.c:184
 #, c-format
 msgid "%s ("
 msgstr ""
@@ -212,9 +212,10 @@ msgid ""
 msgstr "--notriggers kan kun angives ved installation og sletning af pakker"
 
 #: rpmqv.c:635
+#, fuzzy
 msgid ""
 "--nodeps may only be specified during package building, rebuilding, "
-"recompilation, installation,erasure, and verification"
+"recompilation, installation, erasure, and verification"
 msgstr ""
 "--nodeps kan kun angives ved opbygning, genopbygning, genoversættelse, "
 "installation, sletning og verifikation"
@@ -468,99 +469,99 @@ msgstr ""
 msgid "File listed twice: %s\n"
 msgstr "Fil angivet to gange: %s\n"
 
-#: build/files.c:1529
+#: build/files.c:1531
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr "Symbolsk lænke peger på BuildRoot: %s -> %s\n"
 
-#: build/files.c:1816
+#: build/files.c:1819
 #, c-format
 msgid "File doesn't match prefix (%s): %s\n"
 msgstr "Fil passer ikke til præfiks (%s): %s\n"
 
-#: build/files.c:1842
+#: build/files.c:1845
 #, fuzzy, c-format
 msgid "Optional file not found: %s\n"
 msgstr "Fil ikke fundet: %s\n"
 
-#: build/files.c:1845
+#: build/files.c:1848
 #, c-format
 msgid "File not found: %s\n"
 msgstr "Fil ikke fundet: %s\n"
 
-#: build/files.c:2063
+#: build/files.c:2066
 #, c-format
 msgid "%s: can't load unknown tag (%d).\n"
 msgstr ""
 
-#: build/files.c:2069
+#: build/files.c:2072
 #, fuzzy, c-format
 msgid "%s: public key read failed.\n"
 msgstr "%s: readLead mislykkedes\n"
 
-#: build/files.c:2073 lib/rpmchecksig.c:746
+#: build/files.c:2076 lib/rpmchecksig.c:746
 #, c-format
 msgid "%s: not an armored public key.\n"
 msgstr ""
 
-#: build/files.c:2080
+#: build/files.c:2083
 #, fuzzy, c-format
 msgid "%s: *.te policy read failed.\n"
 msgstr "%s: readLead mislykkedes\n"
 
-#: build/files.c:2136
+#: build/files.c:2139
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "Fil kræver foranstillet \"/\": %s\n"
 
-#: build/files.c:2160
+#: build/files.c:2163
 #, fuzzy, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "linie %d: Filnavn ikke tilladt: %s\n"
 
-#: build/files.c:2175
+#: build/files.c:2178
 #, fuzzy, c-format
 msgid "Optional file not found by glob: %s\n"
 msgstr "Fil ikke fundet med glob: %s\n"
 
-#: build/files.c:2179
+#: build/files.c:2182
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Fil ikke fundet med glob: %s\n"
 
-#: build/files.c:2243
+#: build/files.c:2246
 #, c-format
 msgid "Could not open %%files file %s: %s\n"
 msgstr "Kunne ikke åbne '%%files'-fil %s: %s\n"
 
-#: build/files.c:2254 build/pack.c:156
+#: build/files.c:2257 build/pack.c:156
 #, c-format
 msgid "line: %s\n"
 msgstr "linie: %s\n"
 
-#: build/files.c:2739
+#: build/files.c:2742
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "Ugyldig fil: %s: %s\n"
 
-#: build/files.c:2761 build/parsePrep.c:53
+#: build/files.c:2764 build/parsePrep.c:53
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "Ugyldig ejer/gruppe: %s\n"
 
-#: build/files.c:2806
+#: build/files.c:2809
 #, fuzzy, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "udpakning af arkiv mislykkedes%s%s: %s\n"
 
-#: build/files.c:2821
+#: build/files.c:2824
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
 "%s"
 msgstr ""
 
-#: build/files.c:2853
+#: build/files.c:2856
 #, fuzzy, c-format
 msgid "Processing files: %s\n"
 msgstr "Gennemløber filer: %s-%s-%s\n"
@@ -721,12 +722,12 @@ msgstr "Kunne ikke skrive pakkeindhold til %s: %s\n"
 msgid "Wrote: %s\n"
 msgstr "Skrev: %s\n"
 
-#: build/pack.c:1053
+#: build/pack.c:1057
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr "Kunne ikke generere filnavn til oprettelse af pakke %s: %s\n"
 
-#: build/pack.c:1071
+#: build/pack.c:1075
 #, c-format
 msgid "cannot create %s: %s\n"
 msgstr "kan ikke oprette %s: %s\n"
@@ -1124,165 +1125,175 @@ msgstr "Ingen arkitekturer, der kan opbygges\n"
 msgid "Package has no %%description: %s\n"
 msgstr "Pakke har ingen %%description: %s\n"
 
-#: build/poptBT.c:142
+#: build/poptBT.c:140
 #, c-format
 msgid "build through %prep (unpack sources and apply patches) from <specfile>"
 msgstr "opbyg gennem %prep (udpak kilder og påfør lapper) ud fra <spec-fil>"
 
-#: build/poptBT.c:143 build/poptBT.c:146 build/poptBT.c:149 build/poptBT.c:152
-#: build/poptBT.c:155 build/poptBT.c:158 build/poptBT.c:161 build/poptBT.c:165
-#: build/poptBT.c:169
+#: build/poptBT.c:141 build/poptBT.c:144 build/poptBT.c:147 build/poptBT.c:150
+#: build/poptBT.c:153 build/poptBT.c:156 build/poptBT.c:159 build/poptBT.c:163
+#: build/poptBT.c:167
 msgid "<specfile>"
 msgstr "<spec-fil>"
 
-#: build/poptBT.c:145
+#: build/poptBT.c:143
 msgid "build through %build (%prep, then compile) from <specfile>"
 msgstr "opbyg gennem %build (%prep, så oversæt) ud fra <spec-fil>"
 
-#: build/poptBT.c:148
+#: build/poptBT.c:146
 msgid "build through %install (%prep, %build, then install) from <specfile>"
 msgstr "opbyg gennem %install (%prep, %build, så installér) ud fra <spec-fil>"
 
-#: build/poptBT.c:151
+#: build/poptBT.c:149
 #, c-format
 msgid "verify %files section from <specfile>"
 msgstr "verificér afsnittet %files ud fra <spec-fil>"
 
-#: build/poptBT.c:154
+#: build/poptBT.c:152
 msgid "build source and binary packages from <specfile>"
 msgstr "opbyg kilde- og binærpakke ud fra <spec-fil>"
 
-#: build/poptBT.c:157
+#: build/poptBT.c:155
 msgid "build binary package only from <specfile>"
 msgstr "opbyg kun binærpakke ud fra <spec-fil>"
 
-#: build/poptBT.c:160
+#: build/poptBT.c:158
 msgid "build source package only from <specfile>"
 msgstr "opbyg kun kildepakke ud fra <spec-fil>"
 
-#: build/poptBT.c:164
+#: build/poptBT.c:162
 #, fuzzy
 msgid "track versions of sources from <specfile>"
 msgstr "verificér afsnittet %files ud fra <spec-fil>"
 
-#: build/poptBT.c:168
+#: build/poptBT.c:166
 msgid "fetch missing source and patch files"
 msgstr ""
 
-#: build/poptBT.c:173
+#: build/poptBT.c:171
 #, c-format
 msgid "build through %prep (unpack sources and apply patches) from <tarball>"
 msgstr "opbyg gennem %prep (udpak kilder og påfør lapper) ud fra <tararkiv>"
 
-#: build/poptBT.c:174 build/poptBT.c:177 build/poptBT.c:180 build/poptBT.c:183
-#: build/poptBT.c:186 build/poptBT.c:189 build/poptBT.c:192
+#: build/poptBT.c:172 build/poptBT.c:175 build/poptBT.c:178 build/poptBT.c:181
+#: build/poptBT.c:184 build/poptBT.c:187 build/poptBT.c:190
 msgid "<tarball>"
 msgstr "<tararkiv>"
 
-#: build/poptBT.c:176
+#: build/poptBT.c:174
 msgid "build through %build (%prep, then compile) from <tarball>"
 msgstr "opbyg gennem %build (%prep, så oversæt) ud fra <tararkiv>"
 
-#: build/poptBT.c:179
+#: build/poptBT.c:177
 msgid "build through %install (%prep, %build, then install) from <tarball>"
 msgstr "opbyg gennem %install (%prep, %build, så installér) ud fra <tararkiv>"
 
-#: build/poptBT.c:182
+#: build/poptBT.c:180
 #, c-format
 msgid "verify %files section from <tarball>"
 msgstr "verificér afsnittet %files fra <tararkiv>"
 
-#: build/poptBT.c:185
+#: build/poptBT.c:183
 msgid "build source and binary packages from <tarball>"
 msgstr "opbyg kilde- og binærpakker ud fra <tararkiv>"
 
-#: build/poptBT.c:188
+#: build/poptBT.c:186
 msgid "build binary package only from <tarball>"
 msgstr "opbyg kun binærpakke ud fra <tararkiv>"
 
-#: build/poptBT.c:191
+#: build/poptBT.c:189
 msgid "build source package only from <tarball>"
 msgstr "opbyg kun kildepakke ud fra <tararkiv>"
 
-#: build/poptBT.c:195
+#: build/poptBT.c:193
 msgid "build binary package from <source package>"
 msgstr "opbyg binærpakke ud fra <kildepakke>"
 
-#: build/poptBT.c:196 build/poptBT.c:199
+#: build/poptBT.c:194 build/poptBT.c:197
 msgid "<source package>"
 msgstr "<kildepakke>"
 
-#: build/poptBT.c:198
+#: build/poptBT.c:196
 msgid ""
 "build through %install (%prep, %build, then install) from <source package>"
 msgstr ""
 "opbyg gennem %install (%prep, %build, så installér) ud fra <kildepakke>"
 
-#: build/poptBT.c:202
+#: build/poptBT.c:200
 msgid "remove build tree when done"
 msgstr "fjern bygge-træ ved afslutning"
 
-#: build/poptBT.c:204
-msgid "debug file state machine"
-msgstr ""
-
-#: build/poptBT.c:206
+#: build/poptBT.c:202
 msgid "do not execute any stages of the build"
 msgstr "udfør ingen stadier af opbygningen"
 
-#: build/poptBT.c:208
+#: build/poptBT.c:204
 #, fuzzy
 msgid "do not verify build dependencies"
 msgstr "undlad at tjekke pakkers afhængighedskrav"
 
-#: build/poptBT.c:211 lib/poptALL.c:444 lib/poptI.c:342 lib/poptQV.c:406
+#: build/poptBT.c:206
+msgid "disable automagic Provides: extraction"
+msgstr ""
+
+#: build/poptBT.c:208
+msgid "disable automagic Requires: extraction"
+msgstr ""
+
+#: build/poptBT.c:210
+msgid "disable tags forbidden by LSB"
+msgstr ""
+
+#: build/poptBT.c:213 lib/poptALL.c:455 lib/poptI.c:342 lib/poptQV.c:406
 #: lib/poptQV.c:415 lib/poptQV.c:457
 #, fuzzy
 msgid "don't verify package digest(s)"
 msgstr "undlad at tjekke pakkers afhængighedskrav"
 
-#: build/poptBT.c:213 lib/poptALL.c:446 lib/poptI.c:344 lib/poptQV.c:409
+#: build/poptBT.c:215 lib/poptALL.c:457 lib/poptI.c:344 lib/poptQV.c:409
 #: lib/poptQV.c:417 lib/poptQV.c:460
 #, fuzzy
 msgid "don't verify database header(s) when retrieved"
 msgstr "tjek ikke pakkens arkitektur"
 
-#: build/poptBT.c:215 lib/poptALL.c:452 lib/poptI.c:346 lib/poptQV.c:412
+#: build/poptBT.c:217 lib/poptALL.c:463 lib/poptI.c:346 lib/poptQV.c:412
 #: lib/poptQV.c:419 lib/poptQV.c:462
 #, fuzzy
 msgid "don't verify package signature(s)"
 msgstr "verificér pakkesignatur"
 
-#: build/poptBT.c:218
-msgid "do not accept i18N msgstr's from specfile"
+#: build/poptBT.c:220
+#, fuzzy
+msgid "do not accept i18n msgstr's from specfile"
 msgstr "acceptér ikke i18N msgstr'er fra spec-fil"
 
-#: build/poptBT.c:220
+#: build/poptBT.c:222
 msgid "remove sources when done"
 msgstr "fjern kilder ved afslutning"
 
-#: build/poptBT.c:222
+#: build/poptBT.c:224
 msgid "remove specfile when done"
 msgstr "fjern spec-fil ved afslutning"
 
-#: build/poptBT.c:224
+#: build/poptBT.c:226
 msgid "skip straight to specified stage (only for c,i)"
 msgstr "spring direkte til angivet stadium (kun for c,i)"
 
-#: build/poptBT.c:226
+#: build/poptBT.c:228
 msgid "generate PGP/GPG signature"
 msgstr "generér PGP/GPG-signatur"
 
-#: build/poptBT.c:228
+#: build/poptBT.c:230
 msgid "override target platform"
 msgstr "gennemtving målplatform"
 
-#: build/poptBT.c:228 lib/poptALL.c:441 lib/poptQV.c:317
+#: build/poptBT.c:230 lib/poptALL.c:452 lib/poptQV.c:317
 msgid "CPU-VENDOR-OS"
 msgstr ""
 
-#: build/poptBT.c:230
-msgid "lookup i18N strings in specfile catalog"
+#: build/poptBT.c:232
+#, fuzzy
+msgid "look up i18n strings in specfile catalog"
 msgstr "slå i18N-strenge op i spec-fil katalog"
 
 #: build/spec.c:291
@@ -1325,7 +1336,8 @@ msgid "Bad magic"
 msgstr "Ugyldigt magisk tal"
 
 #: lib/cpio.c:234
-msgid "Bad/unreadable  header"
+#, fuzzy
+msgid "Bad/unreadable header"
 msgstr "Ugyldigt/ulæseligt hoved"
 
 #: lib/cpio.c:256
@@ -1598,230 +1610,235 @@ msgstr ""
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: Fread mislykkedes: %s\n"
 
-#: lib/poptALL.c:359
+#: lib/poptALL.c:364
 msgid "FTS_COMFOLLOW: follow command line symlinks"
 msgstr ""
 
-#: lib/poptALL.c:361
+#: lib/poptALL.c:366
 msgid "FTS_LOGICAL: logical walk"
 msgstr ""
 
-#: lib/poptALL.c:363
+#: lib/poptALL.c:368
 #, fuzzy
 msgid "FTS_NOCHDIR: don't change directories"
 msgstr ""
 "opretter kataloget %s\n"
 "\n"
 
-#: lib/poptALL.c:365
+#: lib/poptALL.c:370
 msgid "FTS_NOSTAT: don't get stat info"
 msgstr ""
 
-#: lib/poptALL.c:367
+#: lib/poptALL.c:372
 msgid "FTS_PHYSICAL: physical walk"
 msgstr ""
 
-#: lib/poptALL.c:369
+#: lib/poptALL.c:374
 msgid "FTS_SEEDOT: return dot and dot-dot"
 msgstr ""
 
-#: lib/poptALL.c:371
+#: lib/poptALL.c:376
 msgid "FTS_XDEV: don't cross devices"
 msgstr ""
 
-#: lib/poptALL.c:373
+#: lib/poptALL.c:378
 msgid "FTS_WHITEOUT: return whiteout information"
 msgstr ""
 
-#: lib/poptALL.c:383 lib/poptI.c:210 lib/poptQV.c:287 lib/poptQV.c:334
+#: lib/poptALL.c:388 lib/poptI.c:210 lib/poptQV.c:287 lib/poptQV.c:334
 #, fuzzy
 msgid "add suggested packages to transaction"
 msgstr "forespørg/verificér pakke(r) i gruppen"
 
-#: lib/poptALL.c:386 lib/poptI.c:213
+#: lib/poptALL.c:391 lib/poptI.c:213
 msgid "use anaconda \"presentation order\""
 msgstr ""
 
-#: lib/poptALL.c:389 lib/poptI.c:216
+#: lib/poptALL.c:394 lib/poptI.c:216
 msgid "print dependency loops as warning"
 msgstr ""
 
-#: lib/poptALL.c:392 lib/poptI.c:219
+#: lib/poptALL.c:397 lib/poptI.c:219
 msgid "do not suggest missing dependency resolution(s)"
 msgstr ""
 
-#: lib/poptALL.c:395 lib/poptI.c:222
+#: lib/poptALL.c:400 lib/poptI.c:222
 #, fuzzy
 msgid "do not check added package conflicts"
 msgstr "udfør ingen pakkespecifikke skripter"
 
-#: lib/poptALL.c:398 lib/poptI.c:225
+#: lib/poptALL.c:403 lib/poptI.c:225
 msgid "ignore added package requires on symlink targets"
 msgstr ""
 
-#: lib/poptALL.c:401 lib/poptI.c:228
+#: lib/poptALL.c:406 lib/poptI.c:228
 msgid "ignore added package obsoletes"
 msgstr ""
 
-#: lib/poptALL.c:404 lib/poptI.c:231
+#: lib/poptALL.c:409 lib/poptI.c:231
 msgid "ignore added package requires on file parent directory"
 msgstr ""
 
-#: lib/poptALL.c:407 lib/poptI.c:234
+#: lib/poptALL.c:412 lib/poptI.c:234
 #, fuzzy
 msgid "do not check added package requires"
 msgstr "udfør ingen pakkespecifikke skripter"
 
-#: lib/poptALL.c:410 lib/poptI.c:237
+#: lib/poptALL.c:415 lib/poptI.c:237
 #, fuzzy
 msgid "ignore added package upgrades"
 msgstr "ingen pakker tilfører %s\n"
 
-#: lib/poptALL.c:426
+#: lib/poptALL.c:431
 msgid "predefine MACRO with value EXPR"
 msgstr ""
 
-#: lib/poptALL.c:427 lib/poptALL.c:430
+#: lib/poptALL.c:432 lib/poptALL.c:435
 msgid "'MACRO EXPR'"
 msgstr ""
 
-#: lib/poptALL.c:429
+#: lib/poptALL.c:434
 msgid "define MACRO with value EXPR"
 msgstr ""
 
-#: lib/poptALL.c:432
+#: lib/poptALL.c:437
 msgid "undefine MACRO"
 msgstr ""
 
-#: lib/poptALL.c:433
+#: lib/poptALL.c:438
 msgid "'MACRO'"
 msgstr ""
 
-#: lib/poptALL.c:435
+#: lib/poptALL.c:440
 #, fuzzy
 msgid "print macro expansion of EXPR"
 msgstr "udlæs makroudvidelse af <udtryk>+"
 
-#: lib/poptALL.c:436
+#: lib/poptALL.c:441
 msgid "'EXPR'"
 msgstr ""
 
-#: lib/poptALL.c:438
+#: lib/poptALL.c:443
 #, fuzzy
 msgid "read <FILE:...> instead of default file(s)"
 msgstr "læs <fil:...> i stedet for standard makrofil(er)"
 
-#: lib/poptALL.c:439
+#: lib/poptALL.c:444 lib/poptALL.c:448
 msgid "<FILE:...>"
 msgstr ""
 
-#: lib/poptALL.c:441 lib/poptQV.c:317
+#: lib/poptALL.c:447
+#, fuzzy
+msgid "read <FILE:...> instead of default POPT file(s)"
+msgstr "læs <fil:...> i stedet for standard makrofil(er)"
+
+#: lib/poptALL.c:452 lib/poptQV.c:317
 #, fuzzy
 msgid "specify target platform"
 msgstr "gennemtving målplatform"
 
-#: lib/poptALL.c:449 lib/poptALL.c:474
+#: lib/poptALL.c:460 lib/poptALL.c:485
 msgid "disable use of libio(3) API"
 msgstr "undlad at benytte libio(3)-API"
 
-#: lib/poptALL.c:455
+#: lib/poptALL.c:466
 #, fuzzy
 msgid "send stdout to CMD"
 msgstr "send standard-ud til <kmd>"
 
-#: lib/poptALL.c:456
+#: lib/poptALL.c:467
 msgid "CMD"
 msgstr ""
 
-#: lib/poptALL.c:458
+#: lib/poptALL.c:469
 #, fuzzy
 msgid "use ROOT as top level directory"
 msgstr "brug <katalog> som topniveau-katalog"
 
-#: lib/poptALL.c:459
+#: lib/poptALL.c:470
 msgid "ROOT"
 msgstr ""
 
-#: lib/poptALL.c:462
+#: lib/poptALL.c:473
 msgid "display known query tags"
 msgstr "vis kendte forespørgselsmærker"
 
-#: lib/poptALL.c:464
+#: lib/poptALL.c:475
 msgid "provide less detailed output"
 msgstr "medtag mindre detaljerede oplysninger"
 
-#: lib/poptALL.c:466
+#: lib/poptALL.c:477
 msgid "display final rpmrc and macro configuration"
 msgstr "vis den endelige rpmrc og makrokonfiguration"
 
-#: lib/poptALL.c:468
+#: lib/poptALL.c:479
 msgid "provide more detailed output"
 msgstr "medtag mere detaljerede oplysninger"
 
-#: lib/poptALL.c:470
+#: lib/poptALL.c:481
 msgid "print the version of rpm being used"
 msgstr "vis versionen af rpm som benyttes"
 
-#: lib/poptALL.c:481
+#: lib/poptALL.c:492
 msgid "select cryptography implementation"
 msgstr ""
 
-#: lib/poptALL.c:482
+#: lib/poptALL.c:493
 msgid "CRYPTO"
 msgstr ""
 
-#: lib/poptALL.c:485
+#: lib/poptALL.c:496
 msgid "debug argv collections"
 msgstr ""
 
-#: lib/poptALL.c:487
+#: lib/poptALL.c:498
 msgid "debug cpio payloads"
 msgstr ""
 
-#: lib/poptALL.c:489
+#: lib/poptALL.c:500
 #, fuzzy
 msgid "debug WebDAV data stream"
 msgstr "aflus protokol-datastrøm"
 
-#: lib/poptALL.c:493
+#: lib/poptALL.c:504
 msgid "debug payload file state machine"
 msgstr ""
 
-#: lib/poptALL.c:495
+#: lib/poptALL.c:506
 msgid "use threads for file state machine"
 msgstr ""
 
-#: lib/poptALL.c:497
+#: lib/poptALL.c:508
 #, fuzzy
 msgid "debug FTP/HTTP data stream"
 msgstr "aflus protokol-datastrøm"
 
-#: lib/poptALL.c:506
+#: lib/poptALL.c:517
 #, fuzzy
 msgid "debug option/argument processing"
 msgstr "Intern fejl i parameterfortolkningen (%d) :-(\n"
 
-#: lib/poptALL.c:511
+#: lib/poptALL.c:522
 msgid "debug package state machine"
 msgstr ""
 
-#: lib/poptALL.c:513
+#: lib/poptALL.c:524
 msgid "use threads for package state machine"
 msgstr ""
 
-#: lib/poptALL.c:527
+#: lib/poptALL.c:538
 msgid "debug rpmio I/O"
 msgstr "aflus rpmio I/O"
 
-#: lib/poptALL.c:547
+#: lib/poptALL.c:558
 msgid "debug tar payloads"
 msgstr ""
 
-#: lib/poptALL.c:551
+#: lib/poptALL.c:562
 msgid "debug URL cache handling"
 msgstr "aflus URL-bufferhåndtering"
 
-#: lib/poptALL.c:703
+#: lib/poptALL.c:731
 #, c-format
 msgid "%s: option table misconfigured (%d)\n"
 msgstr ""
@@ -3595,96 +3612,96 @@ msgstr "Signaturfyld : %d\n"
 msgid "Unable to get lock on db %s, retrying... (%d)\n"
 msgstr ""
 
-#: rpmio/macro.c:271
+#: rpmio/macro.c:272
 #, c-format
 msgid "======================== active %d empty %d\n"
 msgstr "======================== aktiv %d tom %d\n"
 
-#: rpmio/macro.c:456
+#: rpmio/macro.c:457
 #, c-format
 msgid "%3d>%*s(empty)"
 msgstr "%3d>%*s(tom)"
 
-#: rpmio/macro.c:499
+#: rpmio/macro.c:500
 #, c-format
 msgid "%3d<%*s(empty)\n"
 msgstr "%3d<%*s(tom)\n"
 
-#: rpmio/macro.c:728 rpmio/macro.c:766
+#: rpmio/macro.c:729 rpmio/macro.c:767
 #, c-format
 msgid "Macro %%%s has unterminated body\n"
 msgstr "Makroen %%%s har et uafsluttet indhold (body)\n"
 
-#: rpmio/macro.c:787
+#: rpmio/macro.c:788
 #, c-format
 msgid "Macro %%%s has illegal name (%%define)\n"
 msgstr "Makroen %%%s har et ugyldig navn (%%define)\n"
 
-#: rpmio/macro.c:793
+#: rpmio/macro.c:794
 #, c-format
 msgid "Macro %%%s has unterminated opts\n"
 msgstr "Makroen %%%s har uafsluttede parametre\n"
 
-#: rpmio/macro.c:798
+#: rpmio/macro.c:799
 #, c-format
 msgid "Macro %%%s has empty body\n"
 msgstr "Makroen %%%s har intet indhold\n"
 
-#: rpmio/macro.c:804
+#: rpmio/macro.c:805
 #, c-format
 msgid "Macro %%%s failed to expand\n"
 msgstr "Makroen %%%s kunne ikke udfoldes\n"
 
-#: rpmio/macro.c:844
+#: rpmio/macro.c:845
 #, c-format
 msgid "Macro %%%s has illegal name (%%undefine)\n"
 msgstr "Makroen %%%s har ugyldigt navn (%%undefine)\n"
 
-#: rpmio/macro.c:960
+#: rpmio/macro.c:961
 #, c-format
 msgid "Macro %%%s (%s) was not used below level %d\n"
 msgstr "Makro %%%s (%s) blev ikke brugt under niveau %d\n"
 
-#: rpmio/macro.c:1088
+#: rpmio/macro.c:1089
 #, c-format
 msgid "Unknown option %c in %s(%s)\n"
 msgstr "Ukendt tilvalg %c i %s(%s)\n"
 
-#: rpmio/macro.c:1347
+#: rpmio/macro.c:1348
 #, c-format
 msgid "Recursion depth(%d) greater than max(%d)\n"
 msgstr "Rekursionsdybde(%d) overskrider maks(%d)\n"
 
-#: rpmio/macro.c:1421 rpmio/macro.c:1438
+#: rpmio/macro.c:1422 rpmio/macro.c:1439
 #, c-format
 msgid "Unterminated %c: %s\n"
 msgstr "Uafsluttet %c: %s\n"
 
-#: rpmio/macro.c:1483
+#: rpmio/macro.c:1484
 #, c-format
 msgid "A %% is followed by an unparseable macro\n"
 msgstr "Et %% efterfølges af en makro, der ikke kan tolkes\n"
 
-#: rpmio/macro.c:1668
+#: rpmio/macro.c:1682
 #, c-format
 msgid "Macro %%%.*s not found, skipping\n"
 msgstr "Makroen %%%.*s blev ikke fundet, overspringer\n"
 
-#: rpmio/macro.c:2026
+#: rpmio/macro.c:2040
 msgid "Macro expansion too big for target buffer\n"
 msgstr ""
 
-#: rpmio/macro.c:2060
+#: rpmio/macro.c:2074
 #, c-format
 msgid "Macro '%s' is readonly and cannot be changed.\n"
 msgstr ""
 
-#: rpmio/macro.c:2309 rpmio/macro.c:2315
+#: rpmio/macro.c:2324 rpmio/macro.c:2330
 #, c-format
 msgid "File %s: %s\n"
 msgstr "Fil %s: %s\n"
 
-#: rpmio/macro.c:2318
+#: rpmio/macro.c:2333
 #, c-format
 msgid "File %s is smaller than %u bytes\n"
 msgstr "Filen %s er mindre end %u byte\n"
@@ -3780,27 +3797,27 @@ msgstr "fejl: "
 msgid "warning: "
 msgstr "advarsel: "
 
-#: rpmio/rpmlua.c:518
+#: rpmio/rpmlua.c:552
 #, fuzzy, c-format
 msgid "invalid syntax in Lua scriptlet: %s\n"
 msgstr "- understøttes ikke for strenge\n"
 
-#: rpmio/rpmlua.c:534
+#: rpmio/rpmlua.c:568
 #, fuzzy, c-format
 msgid "invalid syntax in Lua script: %s\n"
 msgstr "- understøttes ikke for strenge\n"
 
-#: rpmio/rpmlua.c:539 rpmio/rpmlua.c:558
+#: rpmio/rpmlua.c:573 rpmio/rpmlua.c:592
 #, fuzzy, c-format
 msgid "Lua script failed: %s\n"
 msgstr "%s: Fwrite mislykkedes: %s\n"
 
-#: rpmio/rpmlua.c:553
+#: rpmio/rpmlua.c:587
 #, fuzzy, c-format
 msgid "invalid syntax in Lua file: %s\n"
 msgstr "ugyldigt pakkenummer: %s\n"
 
-#: rpmio/rpmlua.c:768
+#: rpmio/rpmlua.c:802
 #, fuzzy, c-format
 msgid "lua hook failed: %s\n"
 msgstr "%s mislykkedes\n"

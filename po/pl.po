@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 5.0\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2008-01-13 13:46-0500\n"
+"POT-Creation-Date: 2008-01-22 13:58-0500\n"
 "PO-Revision-Date: 2007-05-22 00:13+0200\n"
 "Last-Translator: Jakub Bogusz <qboosh@pld-linux.org>\n"
 "Language-Team: Polish <translation-team-pl@lists.sourceforge.net>\n"
@@ -111,7 +111,7 @@ msgstr "Opcje pomocy:"
 msgid "%s: %s\n"
 msgstr "%s: %s\n"
 
-#: rpmqv.c:163 lib/poptALL.c:179
+#: rpmqv.c:163 lib/poptALL.c:184
 #, c-format
 msgid "%s ("
 msgstr ""
@@ -224,9 +224,10 @@ msgstr ""
 "usuwaniu pakietów"
 
 #: rpmqv.c:635
+#, fuzzy
 msgid ""
 "--nodeps may only be specified during package building, rebuilding, "
-"recompilation, installation,erasure, and verification"
+"recompilation, installation, erasure, and verification"
 msgstr ""
 "--nodeps mo¿na u¿yæ tylko w trakcie budowania, przebudowywania, "
 "rekompilacji, instalacji, usuwania lub sprawdzania pakietów"
@@ -479,92 +480,92 @@ msgstr "niedozwolony _docdir_fmt: %s\n"
 msgid "File listed twice: %s\n"
 msgstr "Plik podany dwukrotnie: %s\n"
 
-#: build/files.c:1529
+#: build/files.c:1531
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr "Dowi±zanie symboliczne wskazuje na BuildRoot: %s -> %s\n"
 
-#: build/files.c:1816
+#: build/files.c:1819
 #, c-format
 msgid "File doesn't match prefix (%s): %s\n"
 msgstr "Plik nie zgadza siê z prefiksem (%s): %s\n"
 
-#: build/files.c:1842
+#: build/files.c:1845
 #, fuzzy, c-format
 msgid "Optional file not found: %s\n"
 msgstr "Nie znaleziono pliku: %s\n"
 
-#: build/files.c:1845
+#: build/files.c:1848
 #, c-format
 msgid "File not found: %s\n"
 msgstr "Nie znaleziono pliku: %s\n"
 
-#: build/files.c:2063
+#: build/files.c:2066
 #, c-format
 msgid "%s: can't load unknown tag (%d).\n"
 msgstr "%s: nie mo¿na za³adowaæ nieznanego tagu (%d).\n"
 
-#: build/files.c:2069
+#: build/files.c:2072
 #, c-format
 msgid "%s: public key read failed.\n"
 msgstr "%s: odczyt klucza publicznego nie powiód³ siê.\n"
 
-#: build/files.c:2073 lib/rpmchecksig.c:746
+#: build/files.c:2076 lib/rpmchecksig.c:746
 #, c-format
 msgid "%s: not an armored public key.\n"
 msgstr "%s: nie jest opakowanym kluczem publicznym.\n"
 
-#: build/files.c:2080
+#: build/files.c:2083
 #, c-format
 msgid "%s: *.te policy read failed.\n"
 msgstr "%s: odczyt polityki *.te nie powiód³ siê.\n"
 
-#: build/files.c:2136
+#: build/files.c:2139
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "Plik musi siê zaczynaæ od \"/\": %s\n"
 
-#: build/files.c:2160
+#: build/files.c:2163
 #, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "Glob niedozwolony: %s\n"
 
-#: build/files.c:2175
+#: build/files.c:2178
 #, fuzzy, c-format
 msgid "Optional file not found by glob: %s\n"
 msgstr "Nie znaleziono pliku poprzez glob: %s\n"
 
-#: build/files.c:2179
+#: build/files.c:2182
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Nie znaleziono pliku poprzez glob: %s\n"
 
-#: build/files.c:2243
+#: build/files.c:2246
 #, c-format
 msgid "Could not open %%files file %s: %s\n"
 msgstr "Nie mo¿na otworzyæ pliku %s dla %%files: %s\n"
 
-#: build/files.c:2254 build/pack.c:156
+#: build/files.c:2257 build/pack.c:156
 #, c-format
 msgid "line: %s\n"
 msgstr "linia: %s\n"
 
-#: build/files.c:2739
+#: build/files.c:2742
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "B³êdny plik: %s: %s\n"
 
-#: build/files.c:2761 build/parsePrep.c:53
+#: build/files.c:2764 build/parsePrep.c:53
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "B³êdny u¿ytkownik/grupa: %s\n"
 
-#: build/files.c:2806
+#: build/files.c:2809
 #, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "Szukanie niespakietowanych plików: %s\n"
 
-#: build/files.c:2821
+#: build/files.c:2824
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
@@ -573,7 +574,7 @@ msgstr ""
 "Znaleziono zainstalowane (ale niespakietowane) pliki:\n"
 "%s"
 
-#: build/files.c:2853
+#: build/files.c:2856
 #, fuzzy, c-format
 msgid "Processing files: %s\n"
 msgstr "Przetwarzanie plików: %s-%s-%s\n"
@@ -730,12 +731,12 @@ msgstr "Nie mo¿na zapisaæ danych do %s: %s\n"
 msgid "Wrote: %s\n"
 msgstr "Zapisano: %s\n"
 
-#: build/pack.c:1053
+#: build/pack.c:1057
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr "Nie mo¿na wygenerowaæ wyj¶ciowej nazwy dla pakietu %s: %s\n"
 
-#: build/pack.c:1071
+#: build/pack.c:1075
 #, c-format
 msgid "cannot create %s: %s\n"
 msgstr "nie mo¿na utworzyæ %s: %s\n"
@@ -1129,161 +1130,171 @@ msgstr "Nie znaleziono kompatybilnych architektur do budowania\n"
 msgid "Package has no %%description: %s\n"
 msgstr "Pakiet nie ma %%description: %s\n"
 
-#: build/poptBT.c:142
+#: build/poptBT.c:140
 #, c-format
 msgid "build through %prep (unpack sources and apply patches) from <specfile>"
 msgstr "buduj poprzez %prep (rozpakuj ¼ród³a i na³ó¿ ³aty) z <pliku spec>"
 
-#: build/poptBT.c:143 build/poptBT.c:146 build/poptBT.c:149 build/poptBT.c:152
-#: build/poptBT.c:155 build/poptBT.c:158 build/poptBT.c:161 build/poptBT.c:165
-#: build/poptBT.c:169
+#: build/poptBT.c:141 build/poptBT.c:144 build/poptBT.c:147 build/poptBT.c:150
+#: build/poptBT.c:153 build/poptBT.c:156 build/poptBT.c:159 build/poptBT.c:163
+#: build/poptBT.c:167
 msgid "<specfile>"
 msgstr "<plik spec>"
 
-#: build/poptBT.c:145
+#: build/poptBT.c:143
 msgid "build through %build (%prep, then compile) from <specfile>"
 msgstr "buduj poprzez %build (%prep oraz kompilacja) z <pliku spec>"
 
-#: build/poptBT.c:148
+#: build/poptBT.c:146
 msgid "build through %install (%prep, %build, then install) from <specfile>"
 msgstr "buduj poprzez %install (%prep, %build oraz instalacja) z <pliku spec>"
 
-#: build/poptBT.c:151
+#: build/poptBT.c:149
 #, c-format
 msgid "verify %files section from <specfile>"
 msgstr "weryfikacja sekcji %files z <pliku spec>"
 
-#: build/poptBT.c:154
+#: build/poptBT.c:152
 msgid "build source and binary packages from <specfile>"
 msgstr "buduj pakiet ¼ród³owy i binarny z <pliku spec>"
 
-#: build/poptBT.c:157
+#: build/poptBT.c:155
 msgid "build binary package only from <specfile>"
 msgstr "buduj tylko pakiet binarny z <pliku spec>"
 
-#: build/poptBT.c:160
+#: build/poptBT.c:158
 msgid "build source package only from <specfile>"
 msgstr "buduj tylko pakiet ¼ród³owy z <pliku spec>"
 
-#: build/poptBT.c:164
+#: build/poptBT.c:162
 #, fuzzy
 msgid "track versions of sources from <specfile>"
 msgstr "weryfikacja sekcji %files z <pliku spec>"
 
-#: build/poptBT.c:168
+#: build/poptBT.c:166
 msgid "fetch missing source and patch files"
 msgstr ""
 
-#: build/poptBT.c:173
+#: build/poptBT.c:171
 #, c-format
 msgid "build through %prep (unpack sources and apply patches) from <tarball>"
 msgstr "buduj poprzez %prep (rozpakuj ¼ród³a i na³ó¿ ³aty) z <tarballa>"
 
-#: build/poptBT.c:174 build/poptBT.c:177 build/poptBT.c:180 build/poptBT.c:183
-#: build/poptBT.c:186 build/poptBT.c:189 build/poptBT.c:192
+#: build/poptBT.c:172 build/poptBT.c:175 build/poptBT.c:178 build/poptBT.c:181
+#: build/poptBT.c:184 build/poptBT.c:187 build/poptBT.c:190
 msgid "<tarball>"
 msgstr "<tarball>"
 
-#: build/poptBT.c:176
+#: build/poptBT.c:174
 msgid "build through %build (%prep, then compile) from <tarball>"
 msgstr "buduj poprzez %build (%prep oraz kompilacja) z <tarballa>"
 
-#: build/poptBT.c:179
+#: build/poptBT.c:177
 msgid "build through %install (%prep, %build, then install) from <tarball>"
 msgstr "buduj poprzez %install (%prep, %build oraz instalacja) z <tarballa>"
 
-#: build/poptBT.c:182
+#: build/poptBT.c:180
 #, c-format
 msgid "verify %files section from <tarball>"
 msgstr "weryfikacja sekcji %files z <tarballa>"
 
-#: build/poptBT.c:185
+#: build/poptBT.c:183
 msgid "build source and binary packages from <tarball>"
 msgstr "buduj pakiet ¼ród³owy i binarny z <tarballa>"
 
-#: build/poptBT.c:188
+#: build/poptBT.c:186
 msgid "build binary package only from <tarball>"
 msgstr "buduj tylko pakiet binarny z <tarballa>"
 
-#: build/poptBT.c:191
+#: build/poptBT.c:189
 msgid "build source package only from <tarball>"
 msgstr "buduj tylko pakiet ¼ród³owy z <tarballa>"
 
-#: build/poptBT.c:195
+#: build/poptBT.c:193
 msgid "build binary package from <source package>"
 msgstr "buduj pakiet binarny z <pakietu ¼ród³owego>"
 
-#: build/poptBT.c:196 build/poptBT.c:199
+#: build/poptBT.c:194 build/poptBT.c:197
 msgid "<source package>"
 msgstr "<pakiet ¼ród³owy>"
 
-#: build/poptBT.c:198
+#: build/poptBT.c:196
 msgid ""
 "build through %install (%prep, %build, then install) from <source package>"
 msgstr ""
 "buduj poprzez %install (%prep, %build oraz instalacja) z <pakietu ¼ród³owego>"
 
-#: build/poptBT.c:202
+#: build/poptBT.c:200
 msgid "remove build tree when done"
 msgstr "usuñ budowane drzewo po skoñczeniu"
 
-#: build/poptBT.c:204
-msgid "debug file state machine"
-msgstr "¶led¼ maszynê stanów plików"
-
-#: build/poptBT.c:206
+#: build/poptBT.c:202
 msgid "do not execute any stages of the build"
 msgstr "nie wykonuj ¿adnych etapów budowania"
 
-#: build/poptBT.c:208
+#: build/poptBT.c:204
 msgid "do not verify build dependencies"
 msgstr "nie sprawdzaj zale¿no¶ci budowania pakietu"
 
-#: build/poptBT.c:211 lib/poptALL.c:444 lib/poptI.c:342 lib/poptQV.c:406
+#: build/poptBT.c:206
+msgid "disable automagic Provides: extraction"
+msgstr ""
+
+#: build/poptBT.c:208
+msgid "disable automagic Requires: extraction"
+msgstr ""
+
+#: build/poptBT.c:210
+msgid "disable tags forbidden by LSB"
+msgstr ""
+
+#: build/poptBT.c:213 lib/poptALL.c:455 lib/poptI.c:342 lib/poptQV.c:406
 #: lib/poptQV.c:415 lib/poptQV.c:457
 msgid "don't verify package digest(s)"
 msgstr "nie sprawdzaj skrótów pakietu"
 
-#: build/poptBT.c:213 lib/poptALL.c:446 lib/poptI.c:344 lib/poptQV.c:409
+#: build/poptBT.c:215 lib/poptALL.c:457 lib/poptI.c:344 lib/poptQV.c:409
 #: lib/poptQV.c:417 lib/poptQV.c:460
 msgid "don't verify database header(s) when retrieved"
 msgstr "nie sprawdzaj nag³ówków bazy danych przy odczycie"
 
-#: build/poptBT.c:215 lib/poptALL.c:452 lib/poptI.c:346 lib/poptQV.c:412
+#: build/poptBT.c:217 lib/poptALL.c:463 lib/poptI.c:346 lib/poptQV.c:412
 #: lib/poptQV.c:419 lib/poptQV.c:462
 msgid "don't verify package signature(s)"
 msgstr "nie sprawdzaj sygnatur pakietu"
 
-#: build/poptBT.c:218
-msgid "do not accept i18N msgstr's from specfile"
+#: build/poptBT.c:220
+#, fuzzy
+msgid "do not accept i18n msgstr's from specfile"
 msgstr "nie akceptuj wpisów I18N z pliku spec"
 
-#: build/poptBT.c:220
+#: build/poptBT.c:222
 msgid "remove sources when done"
 msgstr "usuñ ¼ród³a po zakoñczeniu"
 
-#: build/poptBT.c:222
+#: build/poptBT.c:224
 msgid "remove specfile when done"
 msgstr "usuñ speca po zakoñczeniu"
 
-#: build/poptBT.c:224
+#: build/poptBT.c:226
 msgid "skip straight to specified stage (only for c,i)"
 msgstr "przejd¼ od razu do podanego etapu (tylko dla c,i)"
 
-#: build/poptBT.c:226
+#: build/poptBT.c:228
 msgid "generate PGP/GPG signature"
 msgstr "generuj sygnaturê PGP/GPG"
 
-#: build/poptBT.c:228
+#: build/poptBT.c:230
 msgid "override target platform"
 msgstr "wymu¶ platformê docelow±"
 
-#: build/poptBT.c:228 lib/poptALL.c:441 lib/poptQV.c:317
+#: build/poptBT.c:230 lib/poptALL.c:452 lib/poptQV.c:317
 msgid "CPU-VENDOR-OS"
 msgstr "CPU-PRODUCENT-OS"
 
-#: build/poptBT.c:230
-msgid "lookup i18N strings in specfile catalog"
+#: build/poptBT.c:232
+#, fuzzy
+msgid "look up i18n strings in specfile catalog"
 msgstr "wyszukaj wpisy I18N w katalogu pliku spec"
 
 #: build/spec.c:291
@@ -1326,7 +1337,8 @@ msgid "Bad magic"
 msgstr "B³êdny magic"
 
 #: lib/cpio.c:234
-msgid "Bad/unreadable  header"
+#, fuzzy
+msgid "Bad/unreadable header"
 msgstr "B³êdny/nieczytelny nag³ówek"
 
 #: lib/cpio.c:256
@@ -1580,218 +1592,223 @@ msgstr ""
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: Fread nie powiod³o siê: %s\n"
 
-#: lib/poptALL.c:359
+#: lib/poptALL.c:364
 msgid "FTS_COMFOLLOW: follow command line symlinks"
 msgstr "FTS_COMFOLLOW: pod±¿aj za dowi±zaniami z linii poleceñ"
 
-#: lib/poptALL.c:361
+#: lib/poptALL.c:366
 msgid "FTS_LOGICAL: logical walk"
 msgstr "FTS_LOGICAL: przechod¼ logicznie"
 
-#: lib/poptALL.c:363
+#: lib/poptALL.c:368
 msgid "FTS_NOCHDIR: don't change directories"
 msgstr "FTS_NOCHDIR: nie zmieniaj katalogów"
 
-#: lib/poptALL.c:365
+#: lib/poptALL.c:370
 msgid "FTS_NOSTAT: don't get stat info"
 msgstr "FTS_NOSTAT: nie odczytuj informacji stat"
 
-#: lib/poptALL.c:367
+#: lib/poptALL.c:372
 msgid "FTS_PHYSICAL: physical walk"
 msgstr "FTS_PHYSICAL: przechod¼ fizycznie"
 
-#: lib/poptALL.c:369
+#: lib/poptALL.c:374
 msgid "FTS_SEEDOT: return dot and dot-dot"
 msgstr "FTS_SEEDOT: zwracaj kropkê i kropkê-kropkê"
 
-#: lib/poptALL.c:371
+#: lib/poptALL.c:376
 msgid "FTS_XDEV: don't cross devices"
 msgstr "FTS_XDEV: nie przechod¼ miêdzy urz±dzeniami"
 
-#: lib/poptALL.c:373
+#: lib/poptALL.c:378
 msgid "FTS_WHITEOUT: return whiteout information"
 msgstr "FTS_WHITEOUT: zwróæ informacje o whiteout"
 
-#: lib/poptALL.c:383 lib/poptI.c:210 lib/poptQV.c:287 lib/poptQV.c:334
+#: lib/poptALL.c:388 lib/poptI.c:210 lib/poptQV.c:287 lib/poptQV.c:334
 msgid "add suggested packages to transaction"
 msgstr "dodaj sugerowane pakiety do transakcji"
 
-#: lib/poptALL.c:386 lib/poptI.c:213
+#: lib/poptALL.c:391 lib/poptI.c:213
 msgid "use anaconda \"presentation order\""
 msgstr "u¿yj porz±dku wy¶wietlania anacondy"
 
-#: lib/poptALL.c:389 lib/poptI.c:216
+#: lib/poptALL.c:394 lib/poptI.c:216
 msgid "print dependency loops as warning"
 msgstr "wypisuj pêtle zale¿no¶ci jako ostrze¿enie"
 
-#: lib/poptALL.c:392 lib/poptI.c:219
+#: lib/poptALL.c:397 lib/poptI.c:219
 msgid "do not suggest missing dependency resolution(s)"
 msgstr "nie sugeruj sposobu(ów) spe³nienia brakuj±cych zale¿no¶ci"
 
-#: lib/poptALL.c:395 lib/poptI.c:222
+#: lib/poptALL.c:400 lib/poptI.c:222
 msgid "do not check added package conflicts"
 msgstr "nie sprawdzaj dodanych konfliktów pakietów"
 
-#: lib/poptALL.c:398 lib/poptI.c:225
+#: lib/poptALL.c:403 lib/poptI.c:225
 msgid "ignore added package requires on symlink targets"
 msgstr ""
 "ignoruj dodane wymagania pakietów bazuj±ce na elementach wskazywanych przez "
 "dowi±zania symboliczne"
 
-#: lib/poptALL.c:401 lib/poptI.c:228
+#: lib/poptALL.c:406 lib/poptI.c:228
 msgid "ignore added package obsoletes"
 msgstr "ignoruj dodane pakiety przestarza³e"
 
-#: lib/poptALL.c:404 lib/poptI.c:231
+#: lib/poptALL.c:409 lib/poptI.c:231
 msgid "ignore added package requires on file parent directory"
 msgstr "ignoruj dodane wymagania pakietów bazuj±ce na katalogu rodzicu"
 
-#: lib/poptALL.c:407 lib/poptI.c:234
+#: lib/poptALL.c:412 lib/poptI.c:234
 msgid "do not check added package requires"
 msgstr "nie sprawdzaj dodanych wymogów pakietów"
 
-#: lib/poptALL.c:410 lib/poptI.c:237
+#: lib/poptALL.c:415 lib/poptI.c:237
 msgid "ignore added package upgrades"
 msgstr "ignoruj dodane aktualizacje pakietów"
 
-#: lib/poptALL.c:426
+#: lib/poptALL.c:431
 msgid "predefine MACRO with value EXPR"
 msgstr "predefiniuj MAKRO z warto¶ci± WYR"
 
-#: lib/poptALL.c:427 lib/poptALL.c:430
+#: lib/poptALL.c:432 lib/poptALL.c:435
 msgid "'MACRO EXPR'"
 msgstr "'MAKRO WYR'"
 
-#: lib/poptALL.c:429
+#: lib/poptALL.c:434
 msgid "define MACRO with value EXPR"
 msgstr "definiuj MAKRO z warto¶ci± WYR"
 
-#: lib/poptALL.c:432
+#: lib/poptALL.c:437
 msgid "undefine MACRO"
 msgstr ""
 
-#: lib/poptALL.c:433
+#: lib/poptALL.c:438
 #, fuzzy
 msgid "'MACRO'"
 msgstr "'MAKRO WYR'"
 
-#: lib/poptALL.c:435
+#: lib/poptALL.c:440
 msgid "print macro expansion of EXPR"
 msgstr "wy¶wietl rozwiniêcie makr z WYR"
 
-#: lib/poptALL.c:436
+#: lib/poptALL.c:441
 msgid "'EXPR'"
 msgstr "'WYR'"
 
-#: lib/poptALL.c:438
+#: lib/poptALL.c:443
 msgid "read <FILE:...> instead of default file(s)"
 msgstr "czytaj <PLIK:...> zamiast domy¶lnego pliku(ów)"
 
-#: lib/poptALL.c:439
+#: lib/poptALL.c:444 lib/poptALL.c:448
 msgid "<FILE:...>"
 msgstr "<PLIK:...>"
 
-#: lib/poptALL.c:441 lib/poptQV.c:317
+#: lib/poptALL.c:447
+#, fuzzy
+msgid "read <FILE:...> instead of default POPT file(s)"
+msgstr "czytaj <PLIK:...> zamiast domy¶lnego pliku(ów)"
+
+#: lib/poptALL.c:452 lib/poptQV.c:317
 msgid "specify target platform"
 msgstr "okre¶l platformê docelow±"
 
-#: lib/poptALL.c:449 lib/poptALL.c:474
+#: lib/poptALL.c:460 lib/poptALL.c:485
 msgid "disable use of libio(3) API"
 msgstr "wy³±cz u¿ywanie API libio(3)"
 
-#: lib/poptALL.c:455
+#: lib/poptALL.c:466
 msgid "send stdout to CMD"
 msgstr "przeka¿ standardowe wyj¶cie do POLECENIA"
 
-#: lib/poptALL.c:456
+#: lib/poptALL.c:467
 msgid "CMD"
 msgstr "POLECENIE"
 
-#: lib/poptALL.c:458
+#: lib/poptALL.c:469
 msgid "use ROOT as top level directory"
 msgstr "u¿yj KAGALOGu jako katalogu najwy¿szego poziomu"
 
-#: lib/poptALL.c:459
+#: lib/poptALL.c:470
 msgid "ROOT"
 msgstr "KATALOG"
 
-#: lib/poptALL.c:462
+#: lib/poptALL.c:473
 msgid "display known query tags"
 msgstr "wy¶wietl znane etykiety zapytañ"
 
-#: lib/poptALL.c:464
+#: lib/poptALL.c:475
 msgid "provide less detailed output"
 msgstr "u¿ywaj mniej szczegó³owego wyj¶cia"
 
-#: lib/poptALL.c:466
+#: lib/poptALL.c:477
 msgid "display final rpmrc and macro configuration"
 msgstr "wy¶wietl ostateczn± konfiguracjê rpmrc i makr"
 
-#: lib/poptALL.c:468
+#: lib/poptALL.c:479
 msgid "provide more detailed output"
 msgstr "u¿ywaj bardziej szczegó³owego wyj¶cia"
 
-#: lib/poptALL.c:470
+#: lib/poptALL.c:481
 msgid "print the version of rpm being used"
 msgstr "wy¶wietl wersjê u¿ywanego rpm-a"
 
-#: lib/poptALL.c:481
+#: lib/poptALL.c:492
 msgid "select cryptography implementation"
 msgstr ""
 
-#: lib/poptALL.c:482
+#: lib/poptALL.c:493
 msgid "CRYPTO"
 msgstr ""
 
-#: lib/poptALL.c:485
+#: lib/poptALL.c:496
 msgid "debug argv collections"
 msgstr "¶led¼ zbiory argv"
 
-#: lib/poptALL.c:487
+#: lib/poptALL.c:498
 msgid "debug cpio payloads"
 msgstr "¶led¼ dane cpio"
 
-#: lib/poptALL.c:489
+#: lib/poptALL.c:500
 msgid "debug WebDAV data stream"
 msgstr "¶led¼ strumieñ danych WebDAV"
 
-#: lib/poptALL.c:493
+#: lib/poptALL.c:504
 msgid "debug payload file state machine"
 msgstr "¶led¼ maszynê stanu danych pliku"
 
-#: lib/poptALL.c:495
+#: lib/poptALL.c:506
 msgid "use threads for file state machine"
 msgstr "u¿yj w±tków dla maszyny stanu plików"
 
-#: lib/poptALL.c:497
+#: lib/poptALL.c:508
 msgid "debug FTP/HTTP data stream"
 msgstr "¶led¼ strumieñ danych FTP/HTTP"
 
-#: lib/poptALL.c:506
+#: lib/poptALL.c:517
 msgid "debug option/argument processing"
 msgstr "¶led¼ przetwarzanie opcji/argumentów"
 
-#: lib/poptALL.c:511
+#: lib/poptALL.c:522
 msgid "debug package state machine"
 msgstr "¶led¼ maszynê stanu pakietu"
 
-#: lib/poptALL.c:513
+#: lib/poptALL.c:524
 msgid "use threads for package state machine"
 msgstr "u¿yj w±tków dla maszyny stanu pakietów"
 
-#: lib/poptALL.c:527
+#: lib/poptALL.c:538
 msgid "debug rpmio I/O"
 msgstr "¶led¼ wej¶cie/wyj¶cie rpmio"
 
-#: lib/poptALL.c:547
+#: lib/poptALL.c:558
 msgid "debug tar payloads"
 msgstr "¶led¼ dane tar"
 
-#: lib/poptALL.c:551
+#: lib/poptALL.c:562
 msgid "debug URL cache handling"
 msgstr "¶led¼ obs³ugê buforowania URL-i"
 
-#: lib/poptALL.c:703
+#: lib/poptALL.c:731
 #, c-format
 msgid "%s: option table misconfigured (%d)\n"
 msgstr "%s: tabela opcji b³êdnie skonfigurowana (%d)\n"
@@ -3509,96 +3526,96 @@ msgstr "Sygnatura: NIEZNANA (%d)\n"
 msgid "Unable to get lock on db %s, retrying... (%d)\n"
 msgstr "Nie mo¿na uzyskaæ blokady na db %s, ponawianie próby... (%d)\n"
 
-#: rpmio/macro.c:271
+#: rpmio/macro.c:272
 #, c-format
 msgid "======================== active %d empty %d\n"
 msgstr "======================== aktywny %d pusty %d\n"
 
-#: rpmio/macro.c:456
+#: rpmio/macro.c:457
 #, c-format
 msgid "%3d>%*s(empty)"
 msgstr "%3d>%*s(pusty)"
 
-#: rpmio/macro.c:499
+#: rpmio/macro.c:500
 #, c-format
 msgid "%3d<%*s(empty)\n"
 msgstr "%3d<%*s(pusty)\n"
 
-#: rpmio/macro.c:728 rpmio/macro.c:766
+#: rpmio/macro.c:729 rpmio/macro.c:767
 #, c-format
 msgid "Macro %%%s has unterminated body\n"
 msgstr "Makro %%%s ma nie zakoñczone cia³o\n"
 
-#: rpmio/macro.c:787
+#: rpmio/macro.c:788
 #, c-format
 msgid "Macro %%%s has illegal name (%%define)\n"
 msgstr "Makro %%%s ma niedozwolon± nazwê (%%define)\n"
 
-#: rpmio/macro.c:793
+#: rpmio/macro.c:794
 #, c-format
 msgid "Macro %%%s has unterminated opts\n"
 msgstr "Makro %%%s ma nie zakoñczone opcje\n"
 
-#: rpmio/macro.c:798
+#: rpmio/macro.c:799
 #, c-format
 msgid "Macro %%%s has empty body\n"
 msgstr "Makro %%%s ma puste cia³o\n"
 
-#: rpmio/macro.c:804
+#: rpmio/macro.c:805
 #, c-format
 msgid "Macro %%%s failed to expand\n"
 msgstr "Rozwiniêcie makra %%%s nie powiod³o siê\n"
 
-#: rpmio/macro.c:844
+#: rpmio/macro.c:845
 #, c-format
 msgid "Macro %%%s has illegal name (%%undefine)\n"
 msgstr "Makro %%%s ma niedozwolon± nazwê (%%undefine)\n"
 
-#: rpmio/macro.c:960
+#: rpmio/macro.c:961
 #, c-format
 msgid "Macro %%%s (%s) was not used below level %d\n"
 msgstr "Makro %%%s (%s) nie by³o u¿yte poni¿ej poziomu %d\n"
 
-#: rpmio/macro.c:1088
+#: rpmio/macro.c:1089
 #, c-format
 msgid "Unknown option %c in %s(%s)\n"
 msgstr "Nieznana opcja %c w %s(%s)\n"
 
-#: rpmio/macro.c:1347
+#: rpmio/macro.c:1348
 #, c-format
 msgid "Recursion depth(%d) greater than max(%d)\n"
 msgstr "G³êboko¶æ rekursji(%d) wiêksza ni¿ maksymalna(%d)\n"
 
-#: rpmio/macro.c:1421 rpmio/macro.c:1438
+#: rpmio/macro.c:1422 rpmio/macro.c:1439
 #, c-format
 msgid "Unterminated %c: %s\n"
 msgstr "Niezakoñczone %c: %s\n"
 
-#: rpmio/macro.c:1483
+#: rpmio/macro.c:1484
 #, c-format
 msgid "A %% is followed by an unparseable macro\n"
 msgstr "Napotkano nieprzetwarzalne makro po %%\n"
 
-#: rpmio/macro.c:1668
+#: rpmio/macro.c:1682
 #, c-format
 msgid "Macro %%%.*s not found, skipping\n"
 msgstr "Nie znaleziono makra %%%.*s, makro pominiête\n"
 
-#: rpmio/macro.c:2026
+#: rpmio/macro.c:2040
 msgid "Macro expansion too big for target buffer\n"
 msgstr "Rozwiniêcie makra zbyt du¿e dla docelowego bufora\n"
 
-#: rpmio/macro.c:2060
+#: rpmio/macro.c:2074
 #, c-format
 msgid "Macro '%s' is readonly and cannot be changed.\n"
 msgstr "Makro '%s' jest makrem tylko do odczytu i nie mo¿e byæ zmienione.\n"
 
-#: rpmio/macro.c:2309 rpmio/macro.c:2315
+#: rpmio/macro.c:2324 rpmio/macro.c:2330
 #, c-format
 msgid "File %s: %s\n"
 msgstr "Plik %s: %s\n"
 
-#: rpmio/macro.c:2318
+#: rpmio/macro.c:2333
 #, c-format
 msgid "File %s is smaller than %u bytes\n"
 msgstr "Plik %s jest mniejszy ni¿ %u bajtów\n"
@@ -3691,27 +3708,27 @@ msgstr "b³±d: "
 msgid "warning: "
 msgstr "ostrze¿enie: "
 
-#: rpmio/rpmlua.c:518
+#: rpmio/rpmlua.c:552
 #, fuzzy, c-format
 msgid "invalid syntax in Lua scriptlet: %s\n"
 msgstr "b³êdna sk³adnia w skrypcie lua: %s\n"
 
-#: rpmio/rpmlua.c:534
+#: rpmio/rpmlua.c:568
 #, fuzzy, c-format
 msgid "invalid syntax in Lua script: %s\n"
 msgstr "b³êdna sk³adnia w skrypcie lua: %s\n"
 
-#: rpmio/rpmlua.c:539 rpmio/rpmlua.c:558
+#: rpmio/rpmlua.c:573 rpmio/rpmlua.c:592
 #, fuzzy, c-format
 msgid "Lua script failed: %s\n"
 msgstr "skrypt lua nie powiód³ siê: %s\n"
 
-#: rpmio/rpmlua.c:553
+#: rpmio/rpmlua.c:587
 #, fuzzy, c-format
 msgid "invalid syntax in Lua file: %s\n"
 msgstr "b³êdna sk³adnia w pliku lua: %s\n"
 
-#: rpmio/rpmlua.c:768
+#: rpmio/rpmlua.c:802
 #, c-format
 msgid "lua hook failed: %s\n"
 msgstr "wywo³anie lua nie powiod³o siê: %s\n"
@@ -3869,6 +3886,9 @@ msgstr "wypisz zbiór zale¿no¶ci Requires:"
 #: tools/rpmdeps.c:211
 msgid "check Requires: against Provides: for dependency closure"
 msgstr "sprawd¼ Requires: wzglêdem Provides: dla dope³nienia zale¿no¶ci"
+
+#~ msgid "debug file state machine"
+#~ msgstr "¶led¼ maszynê stanów plików"
 
 #~ msgid "RPM version %s\n"
 #~ msgstr "RPM wersja %s\n"

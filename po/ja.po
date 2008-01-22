@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 5.0\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2008-01-13 13:46-0500\n"
+"POT-Creation-Date: 2008-01-22 13:58-0500\n"
 "PO-Revision-Date: 2005-04-04 22:30+1000\n"
 "Last-Translator: SEKINE Tatsuo <tsekine@sdri.co.jp>\n"
 "Language-Team: Japanese <translation-team-ja@lists.sourceforge.net>\n"
@@ -112,7 +112,7 @@ msgstr "署名オプション:"
 msgid "%s: %s\n"
 msgstr "%s: %s\n"
 
-#: rpmqv.c:163 lib/poptALL.c:179
+#: rpmqv.c:163 lib/poptALL.c:184
 #, c-format
 msgid "%s ("
 msgstr ""
@@ -227,9 +227,10 @@ msgstr ""
 "できます。"
 
 #: rpmqv.c:635
+#, fuzzy
 msgid ""
 "--nodeps may only be specified during package building, rebuilding, "
-"recompilation, installation,erasure, and verification"
+"recompilation, installation, erasure, and verification"
 msgstr ""
 "--nodeps はパッケージ作成/リビルド/リコンパイル/インストール/削除/検証時のみ"
 "指定できます。"
@@ -481,92 +482,92 @@ msgstr ""
 msgid "File listed twice: %s\n"
 msgstr "ファイルが2回表記されています: %s\n"
 
-#: build/files.c:1529
+#: build/files.c:1531
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr "シンボリックリンクが BuildRoot を指しています: %s -> %s\n"
 
-#: build/files.c:1816
+#: build/files.c:1819
 #, c-format
 msgid "File doesn't match prefix (%s): %s\n"
 msgstr "ファイルは prefix (%s) と一致しません: %s\n"
 
-#: build/files.c:1842
+#: build/files.c:1845
 #, fuzzy, c-format
 msgid "Optional file not found: %s\n"
 msgstr "ファイルが見つかりません: %s\n"
 
-#: build/files.c:1845
+#: build/files.c:1848
 #, c-format
 msgid "File not found: %s\n"
 msgstr "ファイルが見つかりません: %s\n"
 
-#: build/files.c:2063
+#: build/files.c:2066
 #, c-format
 msgid "%s: can't load unknown tag (%d).\n"
 msgstr "%s: 不明なタグ (%d) を読み込めませんでした。\n"
 
-#: build/files.c:2069
+#: build/files.c:2072
 #, c-format
 msgid "%s: public key read failed.\n"
 msgstr "%s: 公開鍵の読み込みに失敗しました。\n"
 
-#: build/files.c:2073 lib/rpmchecksig.c:746
+#: build/files.c:2076 lib/rpmchecksig.c:746
 #, c-format
 msgid "%s: not an armored public key.\n"
 msgstr "%s: ASCII形式の公開鍵ではありません。\n"
 
-#: build/files.c:2080
+#: build/files.c:2083
 #, c-format
 msgid "%s: *.te policy read failed.\n"
 msgstr "%s: *.te ポリシの読み込みに失敗しました。\n"
 
-#: build/files.c:2136
+#: build/files.c:2139
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "ファイルは先頭に \"/\" が必要です: %s\n"
 
-#: build/files.c:2160
+#: build/files.c:2163
 #, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "Glob は許可されていません: %s\n"
 
-#: build/files.c:2175
+#: build/files.c:2178
 #, fuzzy, c-format
 msgid "Optional file not found by glob: %s\n"
 msgstr "ファイルが見つかりません (by glob): %s\n"
 
-#: build/files.c:2179
+#: build/files.c:2182
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "ファイルが見つかりません (by glob): %s\n"
 
-#: build/files.c:2243
+#: build/files.c:2246
 #, c-format
 msgid "Could not open %%files file %s: %s\n"
 msgstr "%%files のファイル %s をオープンできません: %s\\n\n"
 
-#: build/files.c:2254 build/pack.c:156
+#: build/files.c:2257 build/pack.c:156
 #, c-format
 msgid "line: %s\n"
 msgstr "%s行目: \n"
 
-#: build/files.c:2739
+#: build/files.c:2742
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "不正なファイル: %s: %s\n"
 
-#: build/files.c:2761 build/parsePrep.c:53
+#: build/files.c:2764 build/parsePrep.c:53
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "不正な所有者/グループ: %s\n"
 
-#: build/files.c:2806
+#: build/files.c:2809
 #, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "伸張ファイルの検査中: %s\n"
 
-#: build/files.c:2821
+#: build/files.c:2824
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
@@ -575,7 +576,7 @@ msgstr ""
 "インストール済み(ただし未伸張)ファイルが見つかりました:\n"
 "%s"
 
-#: build/files.c:2853
+#: build/files.c:2856
 #, fuzzy, c-format
 msgid "Processing files: %s\n"
 msgstr "ファイルの処理中: %s-%s-%s\n"
@@ -732,12 +733,12 @@ msgstr "%s への Payload 書き込みに失敗: %s\n"
 msgid "Wrote: %s\n"
 msgstr "書き込み完了: %s\n"
 
-#: build/pack.c:1053
+#: build/pack.c:1057
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr "パッケージ %s の出力ファイル名を生成できませんでした: %s\n"
 
-#: build/pack.c:1071
+#: build/pack.c:1075
 #, c-format
 msgid "cannot create %s: %s\n"
 msgstr "%s を作成できません: %s\n"
@@ -1131,160 +1132,170 @@ msgstr "作成(build)可能な互換アーキテクチャはありません\n"
 msgid "Package has no %%description: %s\n"
 msgstr "パッケージには %%description がありません: %s\n"
 
-#: build/poptBT.c:142
+#: build/poptBT.c:140
 #, c-format
 msgid "build through %prep (unpack sources and apply patches) from <specfile>"
 msgstr "<specfile> の %prep (ソース展開と patch の適用) まで実行"
 
-#: build/poptBT.c:143 build/poptBT.c:146 build/poptBT.c:149 build/poptBT.c:152
-#: build/poptBT.c:155 build/poptBT.c:158 build/poptBT.c:161 build/poptBT.c:165
-#: build/poptBT.c:169
+#: build/poptBT.c:141 build/poptBT.c:144 build/poptBT.c:147 build/poptBT.c:150
+#: build/poptBT.c:153 build/poptBT.c:156 build/poptBT.c:159 build/poptBT.c:163
+#: build/poptBT.c:167
 msgid "<specfile>"
 msgstr "<specfile>"
 
-#: build/poptBT.c:145
+#: build/poptBT.c:143
 msgid "build through %build (%prep, then compile) from <specfile>"
 msgstr "<specfile> の %build (%prep とコンパイル) まで実行"
 
-#: build/poptBT.c:148
+#: build/poptBT.c:146
 msgid "build through %install (%prep, %build, then install) from <specfile>"
 msgstr "<specfile> の %install (%prep, %build, インストール) まで実行"
 
-#: build/poptBT.c:151
+#: build/poptBT.c:149
 #, c-format
 msgid "verify %files section from <specfile>"
 msgstr "<specfile> の %files セクションを検証"
 
-#: build/poptBT.c:154
+#: build/poptBT.c:152
 msgid "build source and binary packages from <specfile>"
 msgstr "<specfile> を元に、バイナリ/ソースパッケージ作成"
 
-#: build/poptBT.c:157
+#: build/poptBT.c:155
 msgid "build binary package only from <specfile>"
 msgstr "<specfile> を元に、バイナリパッケージのみ作成"
 
-#: build/poptBT.c:160
+#: build/poptBT.c:158
 msgid "build source package only from <specfile>"
 msgstr "<specfile> を元に、ソースパッケージのみ作成"
 
-#: build/poptBT.c:164
+#: build/poptBT.c:162
 #, fuzzy
 msgid "track versions of sources from <specfile>"
 msgstr "<specfile> の %files セクションを検証"
 
-#: build/poptBT.c:168
+#: build/poptBT.c:166
 msgid "fetch missing source and patch files"
 msgstr ""
 
-#: build/poptBT.c:173
+#: build/poptBT.c:171
 #, c-format
 msgid "build through %prep (unpack sources and apply patches) from <tarball>"
 msgstr "<tarball> から %prep (ソース展開とパッチ適用) まで実行"
 
-#: build/poptBT.c:174 build/poptBT.c:177 build/poptBT.c:180 build/poptBT.c:183
-#: build/poptBT.c:186 build/poptBT.c:189 build/poptBT.c:192
+#: build/poptBT.c:172 build/poptBT.c:175 build/poptBT.c:178 build/poptBT.c:181
+#: build/poptBT.c:184 build/poptBT.c:187 build/poptBT.c:190
 msgid "<tarball>"
 msgstr "<tarball>"
 
-#: build/poptBT.c:176
+#: build/poptBT.c:174
 msgid "build through %build (%prep, then compile) from <tarball>"
 msgstr "<tarball> から %build (%prep とコンパイル) まで実行"
 
-#: build/poptBT.c:179
+#: build/poptBT.c:177
 msgid "build through %install (%prep, %build, then install) from <tarball>"
 msgstr "<tarball> から %install (%prep, %build, インストール) まで実行"
 
-#: build/poptBT.c:182
+#: build/poptBT.c:180
 #, c-format
 msgid "verify %files section from <tarball>"
 msgstr "<tarball> から %files セクションを検証"
 
-#: build/poptBT.c:185
+#: build/poptBT.c:183
 msgid "build source and binary packages from <tarball>"
 msgstr "<tarball> を元に、バイナリ/ソースパッケージを作成"
 
-#: build/poptBT.c:188
+#: build/poptBT.c:186
 msgid "build binary package only from <tarball>"
 msgstr "<tarball> を元に、バイナリパッケージのみを作成"
 
-#: build/poptBT.c:191
+#: build/poptBT.c:189
 msgid "build source package only from <tarball>"
 msgstr "<tarball> を元に、ソースパッケージのみを作成"
 
-#: build/poptBT.c:195
+#: build/poptBT.c:193
 msgid "build binary package from <source package>"
 msgstr "<source package> を元にバイナリパッケージを作成"
 
-#: build/poptBT.c:196 build/poptBT.c:199
+#: build/poptBT.c:194 build/poptBT.c:197
 msgid "<source package>"
 msgstr "<source package>"
 
-#: build/poptBT.c:198
+#: build/poptBT.c:196
 msgid ""
 "build through %install (%prep, %build, then install) from <source package>"
 msgstr "<source package> から %install (%prep, %build, インストール) まで実行"
 
-#: build/poptBT.c:202
+#: build/poptBT.c:200
 msgid "remove build tree when done"
 msgstr "パッケージ作成後ツリーを削除"
 
-#: build/poptBT.c:204
-msgid "debug file state machine"
-msgstr "ファイル状態マシーンのデバッグ"
-
-#: build/poptBT.c:206
+#: build/poptBT.c:202
 msgid "do not execute any stages of the build"
 msgstr "ビルドのどの段階も実行しない"
 
-#: build/poptBT.c:208
+#: build/poptBT.c:204
 msgid "do not verify build dependencies"
 msgstr "ビルド依存性を検証しない"
 
-#: build/poptBT.c:211 lib/poptALL.c:444 lib/poptI.c:342 lib/poptQV.c:406
+#: build/poptBT.c:206
+msgid "disable automagic Provides: extraction"
+msgstr ""
+
+#: build/poptBT.c:208
+msgid "disable automagic Requires: extraction"
+msgstr ""
+
+#: build/poptBT.c:210
+msgid "disable tags forbidden by LSB"
+msgstr ""
+
+#: build/poptBT.c:213 lib/poptALL.c:455 lib/poptI.c:342 lib/poptQV.c:406
 #: lib/poptQV.c:415 lib/poptQV.c:457
 msgid "don't verify package digest(s)"
 msgstr "パッケージダイジェストの検証をしません。"
 
-#: build/poptBT.c:213 lib/poptALL.c:446 lib/poptI.c:344 lib/poptQV.c:409
+#: build/poptBT.c:215 lib/poptALL.c:457 lib/poptI.c:344 lib/poptQV.c:409
 #: lib/poptQV.c:417 lib/poptQV.c:460
 msgid "don't verify database header(s) when retrieved"
 msgstr "取得したデータベースヘッダを検証しません。"
 
-#: build/poptBT.c:215 lib/poptALL.c:452 lib/poptI.c:346 lib/poptQV.c:412
+#: build/poptBT.c:217 lib/poptALL.c:463 lib/poptI.c:346 lib/poptQV.c:412
 #: lib/poptQV.c:419 lib/poptQV.c:462
 msgid "don't verify package signature(s)"
 msgstr "パッケージ署名の検証をしません。"
 
-#: build/poptBT.c:218
-msgid "do not accept i18N msgstr's from specfile"
+#: build/poptBT.c:220
+#, fuzzy
+msgid "do not accept i18n msgstr's from specfile"
 msgstr "specfile から i18N msgstr を受け付けない"
 
-#: build/poptBT.c:220
+#: build/poptBT.c:222
 msgid "remove sources when done"
 msgstr "終了後ソースを削除します。"
 
-#: build/poptBT.c:222
+#: build/poptBT.c:224
 msgid "remove specfile when done"
 msgstr "終了時に spec ファイルを削除"
 
-#: build/poptBT.c:224
+#: build/poptBT.c:226
 msgid "skip straight to specified stage (only for c,i)"
 msgstr "指定した過程までスキップします (c, i でのみ有効)"
 
-#: build/poptBT.c:226
+#: build/poptBT.c:228
 msgid "generate PGP/GPG signature"
 msgstr "PGP/GPG 署名を生成します。"
 
-#: build/poptBT.c:228
+#: build/poptBT.c:230
 msgid "override target platform"
 msgstr "ターゲットプラットフォームを強制指定"
 
-#: build/poptBT.c:228 lib/poptALL.c:441 lib/poptQV.c:317
+#: build/poptBT.c:230 lib/poptALL.c:452 lib/poptQV.c:317
 msgid "CPU-VENDOR-OS"
 msgstr ""
 
-#: build/poptBT.c:230
-msgid "lookup i18N strings in specfile catalog"
+#: build/poptBT.c:232
+#, fuzzy
+msgid "look up i18n strings in specfile catalog"
 msgstr "specfile カタログから i18N 文字列を検索する"
 
 #: build/spec.c:291
@@ -1327,7 +1338,8 @@ msgid "Bad magic"
 msgstr "不正なマジック"
 
 #: lib/cpio.c:234
-msgid "Bad/unreadable  header"
+#, fuzzy
+msgid "Bad/unreadable header"
 msgstr "不正な/不可読なヘッダ"
 
 #: lib/cpio.c:256
@@ -1596,222 +1608,227 @@ msgstr ""
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: Fread に失敗しました: %s\n"
 
-#: lib/poptALL.c:359
+#: lib/poptALL.c:364
 msgid "FTS_COMFOLLOW: follow command line symlinks"
 msgstr "FTS_COMFOLLOW: コマンドラインのシンボリックリンクを追いかけます"
 
-#: lib/poptALL.c:361
+#: lib/poptALL.c:366
 msgid "FTS_LOGICAL: logical walk"
 msgstr "FTS_LOGICAL: 論理探索"
 
-#: lib/poptALL.c:363
+#: lib/poptALL.c:368
 msgid "FTS_NOCHDIR: don't change directories"
 msgstr "FTS_NOCHDIR: ディレクトリを変更しません。"
 
-#: lib/poptALL.c:365
+#: lib/poptALL.c:370
 msgid "FTS_NOSTAT: don't get stat info"
 msgstr "FTS_NOSTAT: ステータス情報を取得しません。"
 
-#: lib/poptALL.c:367
+#: lib/poptALL.c:372
 msgid "FTS_PHYSICAL: physical walk"
 msgstr "FTS_PHYSICAL: 物理探索"
 
-#: lib/poptALL.c:369
+#: lib/poptALL.c:374
 msgid "FTS_SEEDOT: return dot and dot-dot"
 msgstr "FTS_SEEDOT: ドット(.)とドットドット(..)を返します。"
 
-#: lib/poptALL.c:371
+#: lib/poptALL.c:376
 msgid "FTS_XDEV: don't cross devices"
 msgstr "FTS_XDEV: 他のファイルシステムを探索しません。"
 
-#: lib/poptALL.c:373
+#: lib/poptALL.c:378
 msgid "FTS_WHITEOUT: return whiteout information"
 msgstr "FTS_WHITEOUT: 修正された情報を返します。"
 
-#: lib/poptALL.c:383 lib/poptI.c:210 lib/poptQV.c:287 lib/poptQV.c:334
+#: lib/poptALL.c:388 lib/poptI.c:210 lib/poptQV.c:287 lib/poptQV.c:334
 msgid "add suggested packages to transaction"
 msgstr "トランザクションに提案パッケージを追加します。"
 
-#: lib/poptALL.c:386 lib/poptI.c:213
+#: lib/poptALL.c:391 lib/poptI.c:213
 msgid "use anaconda \"presentation order\""
 msgstr "anaconda の \"presentation order\" を使う"
 
-#: lib/poptALL.c:389 lib/poptI.c:216
+#: lib/poptALL.c:394 lib/poptI.c:216
 msgid "print dependency loops as warning"
 msgstr "依存のループを警告として表示します。"
 
-#: lib/poptALL.c:392 lib/poptI.c:219
+#: lib/poptALL.c:397 lib/poptI.c:219
 msgid "do not suggest missing dependency resolution(s)"
 msgstr "不足する依存関係の解決を提案しません。"
 
-#: lib/poptALL.c:395 lib/poptI.c:222
+#: lib/poptALL.c:400 lib/poptI.c:222
 #, fuzzy
 msgid "do not check added package conflicts"
 msgstr "パッケージ指定のスクリプトを実行しません。"
 
-#: lib/poptALL.c:398 lib/poptI.c:225
+#: lib/poptALL.c:403 lib/poptI.c:225
 msgid "ignore added package requires on symlink targets"
 msgstr ""
 
-#: lib/poptALL.c:401 lib/poptI.c:228
+#: lib/poptALL.c:406 lib/poptI.c:228
 msgid "ignore added package obsoletes"
 msgstr ""
 
-#: lib/poptALL.c:404 lib/poptI.c:231
+#: lib/poptALL.c:409 lib/poptI.c:231
 #, fuzzy
 msgid "ignore added package requires on file parent directory"
 msgstr "削除されたパッケージを、サブディレクトリに名前を変えて保存します。"
 
-#: lib/poptALL.c:407 lib/poptI.c:234
+#: lib/poptALL.c:412 lib/poptI.c:234
 #, fuzzy
 msgid "do not check added package requires"
 msgstr "パッケージ指定のスクリプトを実行しません。"
 
-#: lib/poptALL.c:410 lib/poptI.c:237
+#: lib/poptALL.c:415 lib/poptI.c:237
 #, fuzzy
 msgid "ignore added package upgrades"
 msgstr "%s を提供するパッケージは存在しません。\n"
 
-#: lib/poptALL.c:426
+#: lib/poptALL.c:431
 msgid "predefine MACRO with value EXPR"
 msgstr "値 EXPR を持つマクロを予め定義します。"
 
-#: lib/poptALL.c:427 lib/poptALL.c:430
+#: lib/poptALL.c:432 lib/poptALL.c:435
 msgid "'MACRO EXPR'"
 msgstr "'MACRO EXPR'"
 
-#: lib/poptALL.c:429
+#: lib/poptALL.c:434
 msgid "define MACRO with value EXPR"
 msgstr "値 EXPR を持つ MACRO を定義します。"
 
-#: lib/poptALL.c:432
+#: lib/poptALL.c:437
 msgid "undefine MACRO"
 msgstr ""
 
-#: lib/poptALL.c:433
+#: lib/poptALL.c:438
 #, fuzzy
 msgid "'MACRO'"
 msgstr "'MACRO EXPR'"
 
-#: lib/poptALL.c:435
+#: lib/poptALL.c:440
 msgid "print macro expansion of EXPR"
 msgstr "EXPR のマクロを展開した結果を表示します。"
 
-#: lib/poptALL.c:436
+#: lib/poptALL.c:441
 msgid "'EXPR'"
 msgstr "'EXPR'"
 
-#: lib/poptALL.c:438
+#: lib/poptALL.c:443
 msgid "read <FILE:...> instead of default file(s)"
 msgstr "デフォルトファイルの代わりに <FILE:...> を読み込みます。"
 
-#: lib/poptALL.c:439
+#: lib/poptALL.c:444 lib/poptALL.c:448
 msgid "<FILE:...>"
 msgstr "<FILE:...>"
 
-#: lib/poptALL.c:441 lib/poptQV.c:317
+#: lib/poptALL.c:447
+#, fuzzy
+msgid "read <FILE:...> instead of default POPT file(s)"
+msgstr "デフォルトファイルの代わりに <FILE:...> を読み込みます。"
+
+#: lib/poptALL.c:452 lib/poptQV.c:317
 #, fuzzy
 msgid "specify target platform"
 msgstr "ターゲットプラットフォームを強制指定"
 
-#: lib/poptALL.c:449 lib/poptALL.c:474
+#: lib/poptALL.c:460 lib/poptALL.c:485
 msgid "disable use of libio(3) API"
 msgstr "libio(3) API の使用を無効にします。"
 
-#: lib/poptALL.c:455
+#: lib/poptALL.c:466
 msgid "send stdout to CMD"
 msgstr "標準出力を CMD に送信します。"
 
-#: lib/poptALL.c:456
+#: lib/poptALL.c:467
 msgid "CMD"
 msgstr "CMD"
 
-#: lib/poptALL.c:458
+#: lib/poptALL.c:469
 msgid "use ROOT as top level directory"
 msgstr "ROOT をトップディレクトリとして使用します。"
 
-#: lib/poptALL.c:459
+#: lib/poptALL.c:470
 msgid "ROOT"
 msgstr "ROOT"
 
-#: lib/poptALL.c:462
+#: lib/poptALL.c:473
 msgid "display known query tags"
 msgstr "全問い合わせタグを表示します。"
 
-#: lib/poptALL.c:464
+#: lib/poptALL.c:475
 msgid "provide less detailed output"
 msgstr "詳細でない出力を提供します。"
 
-#: lib/poptALL.c:466
+#: lib/poptALL.c:477
 msgid "display final rpmrc and macro configuration"
 msgstr "最終的な rpmrc とマクロの設定を表示します。"
 
-#: lib/poptALL.c:468
+#: lib/poptALL.c:479
 msgid "provide more detailed output"
 msgstr "より詳細な出力を提供します。"
 
-#: lib/poptALL.c:470
+#: lib/poptALL.c:481
 msgid "print the version of rpm being used"
 msgstr "使用している rpm のバージョンを表示します。"
 
-#: lib/poptALL.c:481
+#: lib/poptALL.c:492
 msgid "select cryptography implementation"
 msgstr ""
 
-#: lib/poptALL.c:482
+#: lib/poptALL.c:493
 msgid "CRYPTO"
 msgstr ""
 
-#: lib/poptALL.c:485
+#: lib/poptALL.c:496
 msgid "debug argv collections"
 msgstr "argv 収集のデバッグ"
 
-#: lib/poptALL.c:487
+#: lib/poptALL.c:498
 msgid "debug cpio payloads"
 msgstr ""
 
-#: lib/poptALL.c:489
+#: lib/poptALL.c:500
 msgid "debug WebDAV data stream"
 msgstr "WebDAV プロトコルデータストリームのデバッグ"
 
-#: lib/poptALL.c:493
+#: lib/poptALL.c:504
 msgid "debug payload file state machine"
 msgstr "ペイロードのファイル状態マシンのデバッグ"
 
-#: lib/poptALL.c:495
+#: lib/poptALL.c:506
 msgid "use threads for file state machine"
 msgstr "ファイル状態マシンにスレッドを利用する"
 
-#: lib/poptALL.c:497
+#: lib/poptALL.c:508
 msgid "debug FTP/HTTP data stream"
 msgstr "FTP/HTTP プロトコルデータストリームのデバッグ"
 
-#: lib/poptALL.c:506
+#: lib/poptALL.c:517
 msgid "debug option/argument processing"
 msgstr "オプション/引数処理中のデバッグ"
 
-#: lib/poptALL.c:511
+#: lib/poptALL.c:522
 msgid "debug package state machine"
 msgstr "パッケージ状態マシンのデバッグ"
 
-#: lib/poptALL.c:513
+#: lib/poptALL.c:524
 msgid "use threads for package state machine"
 msgstr "パッケージ状態マシンにスレッドを利用する"
 
-#: lib/poptALL.c:527
+#: lib/poptALL.c:538
 msgid "debug rpmio I/O"
 msgstr "rpmio 入出力のデバッグ"
 
-#: lib/poptALL.c:547
+#: lib/poptALL.c:558
 #, fuzzy
 msgid "debug tar payloads"
 msgstr "argv 収集のデバッグ"
 
-#: lib/poptALL.c:551
+#: lib/poptALL.c:562
 msgid "debug URL cache handling"
 msgstr "URL キャッシュハンドリングのデバッグ"
 
-#: lib/poptALL.c:703
+#: lib/poptALL.c:731
 #, c-format
 msgid "%s: option table misconfigured (%d)\n"
 msgstr "%s: オプションテーブルの設定が正しくありません (%d)\n"
@@ -3552,96 +3569,96 @@ msgstr "署名: 未知(%d)\n"
 msgid "Unable to get lock on db %s, retrying... (%d)\n"
 msgstr ""
 
-#: rpmio/macro.c:271
+#: rpmio/macro.c:272
 #, c-format
 msgid "======================== active %d empty %d\n"
 msgstr "======================== 有効 %d 空 %d\n"
 
-#: rpmio/macro.c:456
+#: rpmio/macro.c:457
 #, c-format
 msgid "%3d>%*s(empty)"
 msgstr "%3d>%*s(空)"
 
-#: rpmio/macro.c:499
+#: rpmio/macro.c:500
 #, c-format
 msgid "%3d<%*s(empty)\n"
 msgstr "%3d<%*s(空)\n"
 
-#: rpmio/macro.c:728 rpmio/macro.c:766
+#: rpmio/macro.c:729 rpmio/macro.c:767
 #, c-format
 msgid "Macro %%%s has unterminated body\n"
 msgstr "マクロ %%%s はボディが終端していません。\n"
 
-#: rpmio/macro.c:787
+#: rpmio/macro.c:788
 #, c-format
 msgid "Macro %%%s has illegal name (%%define)\n"
 msgstr "マクロ %%%s は不正な名前です (%%define)\n"
 
-#: rpmio/macro.c:793
+#: rpmio/macro.c:794
 #, c-format
 msgid "Macro %%%s has unterminated opts\n"
 msgstr "マクロ %%%s はオプションが終端されていません。\n"
 
-#: rpmio/macro.c:798
+#: rpmio/macro.c:799
 #, c-format
 msgid "Macro %%%s has empty body\n"
 msgstr "マクロ %%%s のボディは空です。\n"
 
-#: rpmio/macro.c:804
+#: rpmio/macro.c:805
 #, c-format
 msgid "Macro %%%s failed to expand\n"
 msgstr "マクロ %%%s の展開に失敗しました。\n"
 
-#: rpmio/macro.c:844
+#: rpmio/macro.c:845
 #, c-format
 msgid "Macro %%%s has illegal name (%%undefine)\n"
 msgstr "マクロ %%%s は不正な名前です (%%undefine)\n"
 
-#: rpmio/macro.c:960
+#: rpmio/macro.c:961
 #, c-format
 msgid "Macro %%%s (%s) was not used below level %d\n"
 msgstr "マクロ %%%s (%s) はレベル %d 未満で使用されませんでした。\n"
 
-#: rpmio/macro.c:1088
+#: rpmio/macro.c:1089
 #, c-format
 msgid "Unknown option %c in %s(%s)\n"
 msgstr "不明なオプション %c (%s(%s)中に)\n"
 
-#: rpmio/macro.c:1347
+#: rpmio/macro.c:1348
 #, c-format
 msgid "Recursion depth(%d) greater than max(%d)\n"
 msgstr "再帰の深さ (%d) が最大値 (%d) より大きくなっています。\n"
 
-#: rpmio/macro.c:1421 rpmio/macro.c:1438
+#: rpmio/macro.c:1422 rpmio/macro.c:1439
 #, c-format
 msgid "Unterminated %c: %s\n"
 msgstr "終端されていない %c: %s\n"
 
-#: rpmio/macro.c:1483
+#: rpmio/macro.c:1484
 #, c-format
 msgid "A %% is followed by an unparseable macro\n"
 msgstr "%% の後ろに構文解析できないマクロが続いています。\n"
 
-#: rpmio/macro.c:1668
+#: rpmio/macro.c:1682
 #, c-format
 msgid "Macro %%%.*s not found, skipping\n"
 msgstr "マクロ %%%.*s は見つかりません。スキップします。\n"
 
-#: rpmio/macro.c:2026
+#: rpmio/macro.c:2040
 msgid "Macro expansion too big for target buffer\n"
 msgstr ""
 
-#: rpmio/macro.c:2060
+#: rpmio/macro.c:2074
 #, c-format
 msgid "Macro '%s' is readonly and cannot be changed.\n"
 msgstr ""
 
-#: rpmio/macro.c:2309 rpmio/macro.c:2315
+#: rpmio/macro.c:2324 rpmio/macro.c:2330
 #, c-format
 msgid "File %s: %s\n"
 msgstr "ファイル %s: %s\n"
 
-#: rpmio/macro.c:2318
+#: rpmio/macro.c:2333
 #, c-format
 msgid "File %s is smaller than %u bytes\n"
 msgstr "ファイル %s は %u バイトより小さくなっています。\n"
@@ -3737,27 +3754,27 @@ msgstr "エラー: "
 msgid "warning: "
 msgstr "警告: "
 
-#: rpmio/rpmlua.c:518
+#: rpmio/rpmlua.c:552
 #, fuzzy, c-format
 msgid "invalid syntax in Lua scriptlet: %s\n"
 msgstr "旧来の構文はサポートされません: %s\n"
 
-#: rpmio/rpmlua.c:534
+#: rpmio/rpmlua.c:568
 #, fuzzy, c-format
 msgid "invalid syntax in Lua script: %s\n"
 msgstr "旧来の構文はサポートされません: %s\n"
 
-#: rpmio/rpmlua.c:539 rpmio/rpmlua.c:558
+#: rpmio/rpmlua.c:573 rpmio/rpmlua.c:592
 #, fuzzy, c-format
 msgid "Lua script failed: %s\n"
 msgstr "%s: Fwrite に失敗しました: %s\n"
 
-#: rpmio/rpmlua.c:553
+#: rpmio/rpmlua.c:587
 #, fuzzy, c-format
 msgid "invalid syntax in Lua file: %s\n"
 msgstr "無効なパッケージ番号: %s\n"
 
-#: rpmio/rpmlua.c:768
+#: rpmio/rpmlua.c:802
 #, fuzzy, c-format
 msgid "lua hook failed: %s\n"
 msgstr "%s: 失敗: %s\n"
@@ -3917,6 +3934,9 @@ msgstr ""
 #: tools/rpmdeps.c:211
 msgid "check Requires: against Provides: for dependency closure"
 msgstr ""
+
+#~ msgid "debug file state machine"
+#~ msgstr "ファイル状態マシーンのデバッグ"
 
 #~ msgid "RPM version %s\n"
 #~ msgstr "RPM バージョン %s\n"
