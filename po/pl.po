@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 5.0\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2008-01-13 14:35-0500\n"
+"POT-Creation-Date: 2008-01-22 10:43-0500\n"
 "PO-Revision-Date: 2007-05-22 00:13+0200\n"
 "Last-Translator: Jakub Bogusz <qboosh@pld-linux.org>\n"
 "Language-Team: Polish <translation-team-pl@lists.sourceforge.net>\n"
@@ -224,9 +224,10 @@ msgstr ""
 "usuwaniu pakietów"
 
 #: rpmqv.c:635
+#, fuzzy
 msgid ""
 "--nodeps may only be specified during package building, rebuilding, "
-"recompilation, installation,erasure, and verification"
+"recompilation, installation, erasure, and verification"
 msgstr ""
 "--nodeps mo¿na u¿yæ tylko w trakcie budowania, przebudowywania, "
 "rekompilacji, instalacji, usuwania lub sprawdzania pakietów"
@@ -1228,62 +1229,60 @@ msgid "remove build tree when done"
 msgstr "usuñ budowane drzewo po skoñczeniu"
 
 #: build/poptBT.c:204
-msgid "debug file state machine"
-msgstr "¶led¼ maszynê stanów plików"
-
-#: build/poptBT.c:206
 msgid "do not execute any stages of the build"
 msgstr "nie wykonuj ¿adnych etapów budowania"
 
-#: build/poptBT.c:208
+#: build/poptBT.c:206
 msgid "do not verify build dependencies"
 msgstr "nie sprawdzaj zale¿no¶ci budowania pakietu"
 
-#: build/poptBT.c:211 lib/poptALL.c:444 lib/poptI.c:342 lib/poptQV.c:406
+#: build/poptBT.c:209 lib/poptALL.c:444 lib/poptI.c:342 lib/poptQV.c:406
 #: lib/poptQV.c:415 lib/poptQV.c:457
 msgid "don't verify package digest(s)"
 msgstr "nie sprawdzaj skrótów pakietu"
 
-#: build/poptBT.c:213 lib/poptALL.c:446 lib/poptI.c:344 lib/poptQV.c:409
+#: build/poptBT.c:211 lib/poptALL.c:446 lib/poptI.c:344 lib/poptQV.c:409
 #: lib/poptQV.c:417 lib/poptQV.c:460
 msgid "don't verify database header(s) when retrieved"
 msgstr "nie sprawdzaj nag³ówków bazy danych przy odczycie"
 
-#: build/poptBT.c:215 lib/poptALL.c:452 lib/poptI.c:346 lib/poptQV.c:412
+#: build/poptBT.c:213 lib/poptALL.c:452 lib/poptI.c:346 lib/poptQV.c:412
 #: lib/poptQV.c:419 lib/poptQV.c:462
 msgid "don't verify package signature(s)"
 msgstr "nie sprawdzaj sygnatur pakietu"
 
-#: build/poptBT.c:218
-msgid "do not accept i18N msgstr's from specfile"
+#: build/poptBT.c:216
+#, fuzzy
+msgid "do not accept i18n msgstr's from specfile"
 msgstr "nie akceptuj wpisów I18N z pliku spec"
 
-#: build/poptBT.c:220
+#: build/poptBT.c:218
 msgid "remove sources when done"
 msgstr "usuñ ¼ród³a po zakoñczeniu"
 
-#: build/poptBT.c:222
+#: build/poptBT.c:220
 msgid "remove specfile when done"
 msgstr "usuñ speca po zakoñczeniu"
 
-#: build/poptBT.c:224
+#: build/poptBT.c:222
 msgid "skip straight to specified stage (only for c,i)"
 msgstr "przejd¼ od razu do podanego etapu (tylko dla c,i)"
 
-#: build/poptBT.c:226
+#: build/poptBT.c:224
 msgid "generate PGP/GPG signature"
 msgstr "generuj sygnaturê PGP/GPG"
 
-#: build/poptBT.c:228
+#: build/poptBT.c:226
 msgid "override target platform"
 msgstr "wymu¶ platformê docelow±"
 
-#: build/poptBT.c:228 lib/poptALL.c:441 lib/poptQV.c:317
+#: build/poptBT.c:226 lib/poptALL.c:441 lib/poptQV.c:317
 msgid "CPU-VENDOR-OS"
 msgstr "CPU-PRODUCENT-OS"
 
-#: build/poptBT.c:230
-msgid "lookup i18N strings in specfile catalog"
+#: build/poptBT.c:228
+#, fuzzy
+msgid "look up i18n strings in specfile catalog"
 msgstr "wyszukaj wpisy I18N w katalogu pliku spec"
 
 #: build/spec.c:291
@@ -1326,7 +1325,8 @@ msgid "Bad magic"
 msgstr "B³êdny magic"
 
 #: lib/cpio.c:234
-msgid "Bad/unreadable  header"
+#, fuzzy
+msgid "Bad/unreadable header"
 msgstr "B³êdny/nieczytelny nag³ówek"
 
 #: lib/cpio.c:256
@@ -1515,42 +1515,42 @@ msgstr "%6d 0x%04x %s %s\n"
 msgid "file %s is on an unknown device\n"
 msgstr "plik %s jest na nieznanym urz±dzeniu\n"
 
-#: lib/fsm.c:780
+#: lib/fsm.c:781
 #, c-format
 msgid "user %s does not exist - using root\n"
 msgstr "u¿ytkownik %s nie istnieje - u¿yto konta root\n"
 
-#: lib/fsm.c:794
+#: lib/fsm.c:795
 #, c-format
 msgid "group %s does not exist - using root\n"
 msgstr "grupa %s nie istnieje - u¿yto grupy root\n"
 
-#: lib/fsm.c:1689
+#: lib/fsm.c:1690
 #, c-format
 msgid "archive file %s was not found in header file list\n"
 msgstr "plik archiwum %s nie znaleziony na li¶cie plików w nag³ówku\n"
 
-#: lib/fsm.c:1833 lib/fsm.c:1953
+#: lib/fsm.c:1834 lib/fsm.c:1954
 #, c-format
 msgid "%s saved as %s\n"
 msgstr "%s zapisano jako %s\n"
 
-#: lib/fsm.c:1980
+#: lib/fsm.c:1981
 #, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "%s rmdir %s nie powiod³o siê: katalog nie jest pusty\n"
 
-#: lib/fsm.c:1986
+#: lib/fsm.c:1987
 #, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "%s rmdir %s nie powiod³o siê: %s\n"
 
-#: lib/fsm.c:2001
+#: lib/fsm.c:2002
 #, c-format
 msgid " %s: unlink of %s failed: %s\n"
 msgstr " %s: unlink %s nie powiod³o siê: %s\n"
 
-#: lib/fsm.c:2026
+#: lib/fsm.c:2027
 #, c-format
 msgid "%s created as %s\n"
 msgstr "%s utworzony jako %s\n"
@@ -2683,7 +2683,7 @@ msgstr "Szukanie  %s: %s\n"
 msgid "Failed to find %s:\n"
 msgstr "Nie uda³o siê odnale¼æ %s:\n"
 
-#: lib/rpmgi.c:99 lib/rpminstall.c:121 lib/rpmrollback.c:162 lib/rpmts.c:412
+#: lib/rpmgi.c:99 lib/rpminstall.c:121 lib/rpmrollback.c:162 lib/rpmts.c:647
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "otwarcie %s nie powiod³o siê: %s\n"
@@ -2927,32 +2927,32 @@ msgstr "%s:  b³êdne okre¶lenie typu %s w linii numer %d\n"
 msgid "%s:  invalid context %s on line number %d\n"
 msgstr "%s:  nieprawid³owy kontekst %s w lini numer %d\n"
 
-#: lib/rpmts.c:133
+#: lib/rpmts.c:138
 #, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "nie mo¿na otworzyæ bazy danych Packages w %s\n"
 
-#: lib/rpmts.c:201
+#: lib/rpmts.c:206
 #, c-format
 msgid "extra '(' in package label: %s\n"
 msgstr "dodatkowe '(' w etykiecie pakietu: %s\n"
 
-#: lib/rpmts.c:219
+#: lib/rpmts.c:224
 #, c-format
 msgid "missing '(' in package label: %s\n"
 msgstr "brak '(' w etykiecie pakietu: %s\n"
 
-#: lib/rpmts.c:227
+#: lib/rpmts.c:232
 #, c-format
 msgid "missing ')' in package label: %s\n"
 msgstr "brak ')' w etykiecie pakietu: %s\n"
 
-#: lib/rpmts.c:289
+#: lib/rpmts.c:524
 #, c-format
 msgid "cannot open Solve database in %s\n"
 msgstr "nie mo¿na otworzyæ bazy danych Solve w %s\n"
 
-#: lib/rpmts.c:402
+#: lib/rpmts.c:637
 #, c-format
 msgid "incorrect solve path format: %s\n"
 msgstr "niepoprawny format ¶cie¿ki rozwik³ania: %s\n"
@@ -3509,96 +3509,96 @@ msgstr "Sygnatura: NIEZNANA (%d)\n"
 msgid "Unable to get lock on db %s, retrying... (%d)\n"
 msgstr "Nie mo¿na uzyskaæ blokady na db %s, ponawianie próby... (%d)\n"
 
-#: rpmio/macro.c:271
+#: rpmio/macro.c:272
 #, c-format
 msgid "======================== active %d empty %d\n"
 msgstr "======================== aktywny %d pusty %d\n"
 
-#: rpmio/macro.c:454
+#: rpmio/macro.c:457
 #, c-format
 msgid "%3d>%*s(empty)"
 msgstr "%3d>%*s(pusty)"
 
-#: rpmio/macro.c:497
+#: rpmio/macro.c:500
 #, c-format
 msgid "%3d<%*s(empty)\n"
 msgstr "%3d<%*s(pusty)\n"
 
-#: rpmio/macro.c:726 rpmio/macro.c:764
+#: rpmio/macro.c:729 rpmio/macro.c:767
 #, c-format
 msgid "Macro %%%s has unterminated body\n"
 msgstr "Makro %%%s ma nie zakoñczone cia³o\n"
 
-#: rpmio/macro.c:785
+#: rpmio/macro.c:788
 #, c-format
 msgid "Macro %%%s has illegal name (%%define)\n"
 msgstr "Makro %%%s ma niedozwolon± nazwê (%%define)\n"
 
-#: rpmio/macro.c:791
+#: rpmio/macro.c:794
 #, c-format
 msgid "Macro %%%s has unterminated opts\n"
 msgstr "Makro %%%s ma nie zakoñczone opcje\n"
 
-#: rpmio/macro.c:796
+#: rpmio/macro.c:799
 #, c-format
 msgid "Macro %%%s has empty body\n"
 msgstr "Makro %%%s ma puste cia³o\n"
 
-#: rpmio/macro.c:802
+#: rpmio/macro.c:805
 #, c-format
 msgid "Macro %%%s failed to expand\n"
 msgstr "Rozwiniêcie makra %%%s nie powiod³o siê\n"
 
-#: rpmio/macro.c:842
+#: rpmio/macro.c:845
 #, c-format
 msgid "Macro %%%s has illegal name (%%undefine)\n"
 msgstr "Makro %%%s ma niedozwolon± nazwê (%%undefine)\n"
 
-#: rpmio/macro.c:958
+#: rpmio/macro.c:961
 #, c-format
 msgid "Macro %%%s (%s) was not used below level %d\n"
 msgstr "Makro %%%s (%s) nie by³o u¿yte poni¿ej poziomu %d\n"
 
-#: rpmio/macro.c:1086
+#: rpmio/macro.c:1089
 #, c-format
 msgid "Unknown option %c in %s(%s)\n"
 msgstr "Nieznana opcja %c w %s(%s)\n"
 
-#: rpmio/macro.c:1341
+#: rpmio/macro.c:1348
 #, c-format
 msgid "Recursion depth(%d) greater than max(%d)\n"
 msgstr "G³êboko¶æ rekursji(%d) wiêksza ni¿ maksymalna(%d)\n"
 
-#: rpmio/macro.c:1415 rpmio/macro.c:1432
+#: rpmio/macro.c:1422 rpmio/macro.c:1439
 #, c-format
 msgid "Unterminated %c: %s\n"
 msgstr "Niezakoñczone %c: %s\n"
 
-#: rpmio/macro.c:1477
+#: rpmio/macro.c:1484
 #, c-format
 msgid "A %% is followed by an unparseable macro\n"
 msgstr "Napotkano nieprzetwarzalne makro po %%\n"
 
-#: rpmio/macro.c:1662
+#: rpmio/macro.c:1682
 #, c-format
 msgid "Macro %%%.*s not found, skipping\n"
 msgstr "Nie znaleziono makra %%%.*s, makro pominiête\n"
 
-#: rpmio/macro.c:2020
+#: rpmio/macro.c:2040
 msgid "Macro expansion too big for target buffer\n"
 msgstr "Rozwiniêcie makra zbyt du¿e dla docelowego bufora\n"
 
-#: rpmio/macro.c:2054
+#: rpmio/macro.c:2074
 #, c-format
 msgid "Macro '%s' is readonly and cannot be changed.\n"
 msgstr "Makro '%s' jest makrem tylko do odczytu i nie mo¿e byæ zmienione.\n"
 
-#: rpmio/macro.c:2303 rpmio/macro.c:2309
+#: rpmio/macro.c:2323 rpmio/macro.c:2329
 #, c-format
 msgid "File %s: %s\n"
 msgstr "Plik %s: %s\n"
 
-#: rpmio/macro.c:2312
+#: rpmio/macro.c:2332
 #, c-format
 msgid "File %s is smaller than %u bytes\n"
 msgstr "Plik %s jest mniejszy ni¿ %u bajtów\n"
@@ -3869,6 +3869,9 @@ msgstr "wypisz zbiór zale¿no¶ci Requires:"
 #: tools/rpmdeps.c:211
 msgid "check Requires: against Provides: for dependency closure"
 msgstr "sprawd¼ Requires: wzglêdem Provides: dla dope³nienia zale¿no¶ci"
+
+#~ msgid "debug file state machine"
+#~ msgstr "¶led¼ maszynê stanów plików"
 
 #~ msgid "RPM version %s\n"
 #~ msgstr "RPM wersja %s\n"

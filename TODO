@@ -40,5 +40,6 @@
 	as interest, noone replied when I asked repeatedly. Alternatively,
 	just doing the port to rpm-5.0.0 is likely not hard at all.
 
+   - XAR internal needs proper automake for "make dist" functionality.
 
 

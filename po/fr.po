@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.2\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2008-01-13 14:35-0500\n"
+"POT-Creation-Date: 2008-01-22 10:43-0500\n"
 "PO-Revision-Date: 2004-04-10 08:00-0500\n"
 "Last-Translator: Michel Robitaille <robitail@IRO.UMontreal.CA>\n"
 "Language-Team: French <traduc@traduc.org>\n"
@@ -240,9 +240,10 @@ msgstr ""
 "lors de l'installation ou la désinstallation d'un package"
 
 #: rpmqv.c:635
+#, fuzzy
 msgid ""
 "--nodeps may only be specified during package building, rebuilding, "
-"recompilation, installation,erasure, and verification"
+"recompilation, installation, erasure, and verification"
 msgstr ""
 "--nodeps peut seulement être spécifiée lors de la génération, la re-"
 "génération, la recompilation, l'installation ou la désinstallation et la "
@@ -1256,63 +1257,61 @@ msgid "remove build tree when done"
 msgstr "enlever l'arborescence de génération lorsque complété"
 
 #: build/poptBT.c:204
-msgid "debug file state machine"
-msgstr "fichier de mise au point de la machine d'états"
-
-#: build/poptBT.c:206
 msgid "do not execute any stages of the build"
 msgstr "ne pas exclure aucune des étages de la génération"
 
-#: build/poptBT.c:208
+#: build/poptBT.c:206
 msgid "do not verify build dependencies"
 msgstr "ne pas vérifier les dépendances de génération"
 
-#: build/poptBT.c:211 lib/poptALL.c:444 lib/poptI.c:342 lib/poptQV.c:406
+#: build/poptBT.c:209 lib/poptALL.c:444 lib/poptI.c:342 lib/poptQV.c:406
 #: lib/poptQV.c:415 lib/poptQV.c:457
 msgid "don't verify package digest(s)"
 msgstr "ne pas vérifier le « digest » du package"
 
-#: build/poptBT.c:213 lib/poptALL.c:446 lib/poptI.c:344 lib/poptQV.c:409
+#: build/poptBT.c:211 lib/poptALL.c:446 lib/poptI.c:344 lib/poptQV.c:409
 #: lib/poptQV.c:417 lib/poptQV.c:460
 msgid "don't verify database header(s) when retrieved"
 msgstr "ne pas vérifier les en-têtes de la base de données lorsque récupérés"
 
-#: build/poptBT.c:215 lib/poptALL.c:452 lib/poptI.c:346 lib/poptQV.c:412
+#: build/poptBT.c:213 lib/poptALL.c:452 lib/poptI.c:346 lib/poptQV.c:412
 #: lib/poptQV.c:419 lib/poptQV.c:462
 msgid "don't verify package signature(s)"
 msgstr "ne pas vérifier la signature des packages"
 
-#: build/poptBT.c:218
-msgid "do not accept i18N msgstr's from specfile"
+#: build/poptBT.c:216
+#, fuzzy
+msgid "do not accept i18n msgstr's from specfile"
 msgstr ""
 "ne pas accepter les chaîne msgstr i18N à partir du fichier de spécifications"
 
-#: build/poptBT.c:220
+#: build/poptBT.c:218
 msgid "remove sources when done"
 msgstr "enlever les sources lorsque complété"
 
-#: build/poptBT.c:222
+#: build/poptBT.c:220
 msgid "remove specfile when done"
 msgstr "enlever le fichier de spécifications lorsque complété"
 
-#: build/poptBT.c:224
+#: build/poptBT.c:222
 msgid "skip straight to specified stage (only for c,i)"
 msgstr "passer immédiatement à l'étape spécifiée (seulement pour c,i)"
 
-#: build/poptBT.c:226
+#: build/poptBT.c:224
 msgid "generate PGP/GPG signature"
 msgstr "générer la signature PGP/GPG"
 
-#: build/poptBT.c:228
+#: build/poptBT.c:226
 msgid "override target platform"
 msgstr "écraser la plate-forme cible"
 
-#: build/poptBT.c:228 lib/poptALL.c:441 lib/poptQV.c:317
+#: build/poptBT.c:226 lib/poptALL.c:441 lib/poptQV.c:317
 msgid "CPU-VENDOR-OS"
 msgstr ""
 
-#: build/poptBT.c:230
-msgid "lookup i18N strings in specfile catalog"
+#: build/poptBT.c:228
+#, fuzzy
+msgid "look up i18n strings in specfile catalog"
 msgstr ""
 "recherche des chaînes i18N dans le catalogue du fichier des spécifications"
 
@@ -1356,7 +1355,8 @@ msgid "Bad magic"
 msgstr "mauvais nombre magique"
 
 #: lib/cpio.c:234
-msgid "Bad/unreadable  header"
+#, fuzzy
+msgid "Bad/unreadable header"
 msgstr "en-tête erronés/non lisible"
 
 #: lib/cpio.c:256
@@ -1553,44 +1553,44 @@ msgstr "%5d 0x%04x %s %s\n"
 msgid "file %s is on an unknown device\n"
 msgstr "fichier %s est sur un périphérique inconnu\n"
 
-#: lib/fsm.c:780
+#: lib/fsm.c:781
 #, c-format
 msgid "user %s does not exist - using root\n"
 msgstr "usager %s n'existe pas - on utilise root\n"
 
-#: lib/fsm.c:794
+#: lib/fsm.c:795
 #, c-format
 msgid "group %s does not exist - using root\n"
 msgstr "groupe %s n'existe pas - utilise root\n"
 
-#: lib/fsm.c:1689
+#: lib/fsm.c:1690
 #, c-format
 msgid "archive file %s was not found in header file list\n"
 msgstr ""
 "fichier d'archive %s n'a pas été repéré dans l'en-tête du fichier de la "
 "liste\n"
 
-#: lib/fsm.c:1833 lib/fsm.c:1953
+#: lib/fsm.c:1834 lib/fsm.c:1954
 #, c-format
 msgid "%s saved as %s\n"
 msgstr "%s sauvegardé sous %s\n"
 
-#: lib/fsm.c:1980
+#: lib/fsm.c:1981
 #, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "%s rmdir de %s a échoué: le répertoire n'est pas vide\n"
 
-#: lib/fsm.c:1986
+#: lib/fsm.c:1987
 #, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "%s rmdir de %s a échoué: %s\n"
 
-#: lib/fsm.c:2001
+#: lib/fsm.c:2002
 #, fuzzy, c-format
 msgid " %s: unlink of %s failed: %s\n"
 msgstr "%s unlink de %s a échoué: %s\n"
 
-#: lib/fsm.c:2026
+#: lib/fsm.c:2027
 #, c-format
 msgid "%s created as %s\n"
 msgstr "%s a été créé sous %s\n"
@@ -2775,7 +2775,7 @@ msgstr "Repérage de %s: %s\n"
 msgid "Failed to find %s:\n"
 msgstr "Échec de repérage de %s\n"
 
-#: lib/rpmgi.c:99 lib/rpminstall.c:121 lib/rpmrollback.c:162 lib/rpmts.c:412
+#: lib/rpmgi.c:99 lib/rpminstall.c:121 lib/rpmrollback.c:162 lib/rpmts.c:647
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "ouverture de %s a échoué: %s\n"
@@ -3025,32 +3025,32 @@ msgstr ""
 msgid "%s:  invalid context %s on line number %d\n"
 msgstr ""
 
-#: lib/rpmts.c:133
+#: lib/rpmts.c:138
 #, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "ne peut ouvrir la base de données des packages dans %s\n"
 
-#: lib/rpmts.c:201
+#: lib/rpmts.c:206
 #, fuzzy, c-format
 msgid "extra '(' in package label: %s\n"
 msgstr "numéro de package invalide: %s\n"
 
-#: lib/rpmts.c:219
+#: lib/rpmts.c:224
 #, fuzzy, c-format
 msgid "missing '(' in package label: %s\n"
 msgstr "'(' manquante dans %s %s\n"
 
-#: lib/rpmts.c:227
+#: lib/rpmts.c:232
 #, fuzzy, c-format
 msgid "missing ')' in package label: %s\n"
 msgstr "numéro de package invalide: %s\n"
 
-#: lib/rpmts.c:289
+#: lib/rpmts.c:524
 #, c-format
 msgid "cannot open Solve database in %s\n"
 msgstr "ne peut faire la résolution de la base de données dans %s\n"
 
-#: lib/rpmts.c:402
+#: lib/rpmts.c:637
 #, fuzzy, c-format
 msgid "incorrect solve path format: %s\n"
 msgstr "format incorrect: %s\n"
@@ -3628,96 +3628,96 @@ msgstr "Signature: INCONNUE (%d)\n"
 msgid "Unable to get lock on db %s, retrying... (%d)\n"
 msgstr ""
 
-#: rpmio/macro.c:271
+#: rpmio/macro.c:272
 #, c-format
 msgid "======================== active %d empty %d\n"
 msgstr "======================== actif %d vide %d\n"
 
-#: rpmio/macro.c:454
+#: rpmio/macro.c:457
 #, c-format
 msgid "%3d>%*s(empty)"
 msgstr "%3d>%*s(vide)"
 
-#: rpmio/macro.c:497
+#: rpmio/macro.c:500
 #, c-format
 msgid "%3d<%*s(empty)\n"
 msgstr "%3d<%*s(vide)\n"
 
-#: rpmio/macro.c:726 rpmio/macro.c:764
+#: rpmio/macro.c:729 rpmio/macro.c:767
 #, c-format
 msgid "Macro %%%s has unterminated body\n"
 msgstr "Macro %%%s a un corps non complet\n"
 
-#: rpmio/macro.c:785
+#: rpmio/macro.c:788
 #, c-format
 msgid "Macro %%%s has illegal name (%%define)\n"
 msgstr "Macro %%%s a un nom illégal (%%define)\n"
 
-#: rpmio/macro.c:791
+#: rpmio/macro.c:794
 #, c-format
 msgid "Macro %%%s has unterminated opts\n"
 msgstr "Macro %%%s a une options incomplète\n"
 
-#: rpmio/macro.c:796
+#: rpmio/macro.c:799
 #, c-format
 msgid "Macro %%%s has empty body\n"
 msgstr "Macro %%%s a un corps vide\n"
 
-#: rpmio/macro.c:802
+#: rpmio/macro.c:805
 #, c-format
 msgid "Macro %%%s failed to expand\n"
 msgstr "L'expansion de la macron %%%s a échoué\n"
 
-#: rpmio/macro.c:842
+#: rpmio/macro.c:845
 #, c-format
 msgid "Macro %%%s has illegal name (%%undefine)\n"
 msgstr "Macro %%%s a un nom illégal (%%undefine)\n"
 
-#: rpmio/macro.c:958
+#: rpmio/macro.c:961
 #, c-format
 msgid "Macro %%%s (%s) was not used below level %d\n"
 msgstr "Macro %%%s (%s) n'a pas été utilisé sous le niveau %d\n"
 
-#: rpmio/macro.c:1086
+#: rpmio/macro.c:1089
 #, c-format
 msgid "Unknown option %c in %s(%s)\n"
 msgstr "Option inconnue %c dans %s(%s)\n"
 
-#: rpmio/macro.c:1341
+#: rpmio/macro.c:1348
 #, c-format
 msgid "Recursion depth(%d) greater than max(%d)\n"
 msgstr "Profondeur de la récursion(%d) plus grand que le maximum (%d)\n"
 
-#: rpmio/macro.c:1415 rpmio/macro.c:1432
+#: rpmio/macro.c:1422 rpmio/macro.c:1439
 #, c-format
 msgid "Unterminated %c: %s\n"
 msgstr "%c non complété: %s\n"
 
-#: rpmio/macro.c:1477
+#: rpmio/macro.c:1484
 #, c-format
 msgid "A %% is followed by an unparseable macro\n"
 msgstr "Un %% est suivi par une macro non analysable syntaxiquement\n"
 
-#: rpmio/macro.c:1662
+#: rpmio/macro.c:1682
 #, c-format
 msgid "Macro %%%.*s not found, skipping\n"
 msgstr "Macro %%%.*s n'a pas été repéré, excamoté\n"
 
-#: rpmio/macro.c:2020
+#: rpmio/macro.c:2040
 msgid "Macro expansion too big for target buffer\n"
 msgstr ""
 
-#: rpmio/macro.c:2054
+#: rpmio/macro.c:2074
 #, c-format
 msgid "Macro '%s' is readonly and cannot be changed.\n"
 msgstr ""
 
-#: rpmio/macro.c:2303 rpmio/macro.c:2309
+#: rpmio/macro.c:2323 rpmio/macro.c:2329
 #, c-format
 msgid "File %s: %s\n"
 msgstr "Fichier %s: %s\n"
 
-#: rpmio/macro.c:2312
+#: rpmio/macro.c:2332
 #, c-format
 msgid "File %s is smaller than %u bytes\n"
 msgstr "Fichier %s est plus petit que %u octets\n"
@@ -3992,6 +3992,9 @@ msgstr ""
 #: tools/rpmdeps.c:211
 msgid "check Requires: against Provides: for dependency closure"
 msgstr ""
+
+#~ msgid "debug file state machine"
+#~ msgstr "fichier de mise au point de la machine d'états"
 
 #~ msgid "Failed to open tar pipe: %m\n"
 #~ msgstr "Échec d'ouverture d'un pipe « tar »: %m\n"

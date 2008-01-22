@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 5.0\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2008-01-13 14:35-0500\n"
+"POT-Creation-Date: 2008-01-22 10:43-0500\n"
 "PO-Revision-Date: 2005-04-04 22:30+1000\n"
 "Last-Translator: SEKINE Tatsuo <tsekine@sdri.co.jp>\n"
 "Language-Team: Japanese <translation-team-ja@lists.sourceforge.net>\n"
@@ -227,9 +227,10 @@ msgstr ""
 "できます。"
 
 #: rpmqv.c:635
+#, fuzzy
 msgid ""
 "--nodeps may only be specified during package building, rebuilding, "
-"recompilation, installation,erasure, and verification"
+"recompilation, installation, erasure, and verification"
 msgstr ""
 "--nodeps はパッケージ作成/リビルド/リコンパイル/インストール/削除/検証時のみ"
 "指定できます。"
@@ -1229,62 +1230,60 @@ msgid "remove build tree when done"
 msgstr "パッケージ作成後ツリーを削除"
 
 #: build/poptBT.c:204
-msgid "debug file state machine"
-msgstr "ファイル状態マシーンのデバッグ"
-
-#: build/poptBT.c:206
 msgid "do not execute any stages of the build"
 msgstr "ビルドのどの段階も実行しない"
 
-#: build/poptBT.c:208
+#: build/poptBT.c:206
 msgid "do not verify build dependencies"
 msgstr "ビルド依存性を検証しない"
 
-#: build/poptBT.c:211 lib/poptALL.c:444 lib/poptI.c:342 lib/poptQV.c:406
+#: build/poptBT.c:209 lib/poptALL.c:444 lib/poptI.c:342 lib/poptQV.c:406
 #: lib/poptQV.c:415 lib/poptQV.c:457
 msgid "don't verify package digest(s)"
 msgstr "パッケージダイジェストの検証をしません。"
 
-#: build/poptBT.c:213 lib/poptALL.c:446 lib/poptI.c:344 lib/poptQV.c:409
+#: build/poptBT.c:211 lib/poptALL.c:446 lib/poptI.c:344 lib/poptQV.c:409
 #: lib/poptQV.c:417 lib/poptQV.c:460
 msgid "don't verify database header(s) when retrieved"
 msgstr "取得したデータベースヘッダを検証しません。"
 
-#: build/poptBT.c:215 lib/poptALL.c:452 lib/poptI.c:346 lib/poptQV.c:412
+#: build/poptBT.c:213 lib/poptALL.c:452 lib/poptI.c:346 lib/poptQV.c:412
 #: lib/poptQV.c:419 lib/poptQV.c:462
 msgid "don't verify package signature(s)"
 msgstr "パッケージ署名の検証をしません。"
 
-#: build/poptBT.c:218
-msgid "do not accept i18N msgstr's from specfile"
+#: build/poptBT.c:216
+#, fuzzy
+msgid "do not accept i18n msgstr's from specfile"
 msgstr "specfile から i18N msgstr を受け付けない"
 
-#: build/poptBT.c:220
+#: build/poptBT.c:218
 msgid "remove sources when done"
 msgstr "終了後ソースを削除します。"
 
-#: build/poptBT.c:222
+#: build/poptBT.c:220
 msgid "remove specfile when done"
 msgstr "終了時に spec ファイルを削除"
 
-#: build/poptBT.c:224
+#: build/poptBT.c:222
 msgid "skip straight to specified stage (only for c,i)"
 msgstr "指定した過程までスキップします (c, i でのみ有効)"
 
-#: build/poptBT.c:226
+#: build/poptBT.c:224
 msgid "generate PGP/GPG signature"
 msgstr "PGP/GPG 署名を生成します。"
 
-#: build/poptBT.c:228
+#: build/poptBT.c:226
 msgid "override target platform"
 msgstr "ターゲットプラットフォームを強制指定"
 
-#: build/poptBT.c:228 lib/poptALL.c:441 lib/poptQV.c:317
+#: build/poptBT.c:226 lib/poptALL.c:441 lib/poptQV.c:317
 msgid "CPU-VENDOR-OS"
 msgstr ""
 
-#: build/poptBT.c:230
-msgid "lookup i18N strings in specfile catalog"
+#: build/poptBT.c:228
+#, fuzzy
+msgid "look up i18n strings in specfile catalog"
 msgstr "specfile カタログから i18N 文字列を検索する"
 
 #: build/spec.c:291
@@ -1327,7 +1326,8 @@ msgid "Bad magic"
 msgstr "不正なマジック"
 
 #: lib/cpio.c:234
-msgid "Bad/unreadable  header"
+#, fuzzy
+msgid "Bad/unreadable header"
 msgstr "不正な/不可読なヘッダ"
 
 #: lib/cpio.c:256
@@ -1531,42 +1531,42 @@ msgstr "%5d 0x%04x %s %s\n"
 msgid "file %s is on an unknown device\n"
 msgstr "ファイル %s は不明なデバイス上にあります。\n"
 
-#: lib/fsm.c:780
+#: lib/fsm.c:781
 #, c-format
 msgid "user %s does not exist - using root\n"
 msgstr "ユーザ %s は存在しません - root を使用します\n"
 
-#: lib/fsm.c:794
+#: lib/fsm.c:795
 #, c-format
 msgid "group %s does not exist - using root\n"
 msgstr "グループ %s は存在しません - root を使用します\n"
 
-#: lib/fsm.c:1689
+#: lib/fsm.c:1690
 #, c-format
 msgid "archive file %s was not found in header file list\n"
 msgstr "アーカイブファイル %s がヘッダファイルリストにありません。\n"
 
-#: lib/fsm.c:1833 lib/fsm.c:1953
+#: lib/fsm.c:1834 lib/fsm.c:1954
 #, c-format
 msgid "%s saved as %s\n"
 msgstr "%s は %s として保存されした。\n"
 
-#: lib/fsm.c:1980
+#: lib/fsm.c:1981
 #, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "%s %s の rmdir に失敗: ディレクトリが空ではありません。\n"
 
-#: lib/fsm.c:1986
+#: lib/fsm.c:1987
 #, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "%s %s の rmdir に失敗: %s\n"
 
-#: lib/fsm.c:2001
+#: lib/fsm.c:2002
 #, fuzzy, c-format
 msgid " %s: unlink of %s failed: %s\n"
 msgstr "%s %s の unlink に失敗: %s\n"
 
-#: lib/fsm.c:2026
+#: lib/fsm.c:2027
 #, c-format
 msgid "%s created as %s\n"
 msgstr "%s は %s として作成されました。\n"
@@ -2712,7 +2712,7 @@ msgstr "ファイル %s: %s\n"
 msgid "Failed to find %s:\n"
 msgstr "%s の読み込みに失敗: %s。\n"
 
-#: lib/rpmgi.c:99 lib/rpminstall.c:121 lib/rpmrollback.c:162 lib/rpmts.c:412
+#: lib/rpmgi.c:99 lib/rpminstall.c:121 lib/rpmrollback.c:162 lib/rpmts.c:647
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "%s のオープンに失敗: %s\n"
@@ -2964,32 +2964,32 @@ msgstr "%s:  不正なタイプ指定 %s (%d 行目)\n"
 msgid "%s:  invalid context %s on line number %d\n"
 msgstr "%s: 不正なコンテキスト %s (%d 行目)\n"
 
-#: lib/rpmts.c:133
+#: lib/rpmts.c:138
 #, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "%s にある Package データベースをオープンできません。\n"
 
-#: lib/rpmts.c:201
+#: lib/rpmts.c:206
 #, c-format
 msgid "extra '(' in package label: %s\n"
 msgstr "パッケージラベル中に余分な「(」があります: %s\n"
 
-#: lib/rpmts.c:219
+#: lib/rpmts.c:224
 #, c-format
 msgid "missing '(' in package label: %s\n"
 msgstr "パッケージラベル中に「(」がありません: %s\n"
 
-#: lib/rpmts.c:227
+#: lib/rpmts.c:232
 #, c-format
 msgid "missing ')' in package label: %s\n"
 msgstr "パッケージラベル中に「)」がありません: %s\n"
 
-#: lib/rpmts.c:289
+#: lib/rpmts.c:524
 #, c-format
 msgid "cannot open Solve database in %s\n"
 msgstr "%s にある Solve データベースをオープンできません。\n"
 
-#: lib/rpmts.c:402
+#: lib/rpmts.c:637
 #, fuzzy, c-format
 msgid "incorrect solve path format: %s\n"
 msgstr "不正なフォーマット: %s\n"
@@ -3552,96 +3552,96 @@ msgstr "署名: 未知(%d)\n"
 msgid "Unable to get lock on db %s, retrying... (%d)\n"
 msgstr ""
 
-#: rpmio/macro.c:271
+#: rpmio/macro.c:272
 #, c-format
 msgid "======================== active %d empty %d\n"
 msgstr "======================== 有効 %d 空 %d\n"
 
-#: rpmio/macro.c:454
+#: rpmio/macro.c:457
 #, c-format
 msgid "%3d>%*s(empty)"
 msgstr "%3d>%*s(空)"
 
-#: rpmio/macro.c:497
+#: rpmio/macro.c:500
 #, c-format
 msgid "%3d<%*s(empty)\n"
 msgstr "%3d<%*s(空)\n"
 
-#: rpmio/macro.c:726 rpmio/macro.c:764
+#: rpmio/macro.c:729 rpmio/macro.c:767
 #, c-format
 msgid "Macro %%%s has unterminated body\n"
 msgstr "マクロ %%%s はボディが終端していません。\n"
 
-#: rpmio/macro.c:785
+#: rpmio/macro.c:788
 #, c-format
 msgid "Macro %%%s has illegal name (%%define)\n"
 msgstr "マクロ %%%s は不正な名前です (%%define)\n"
 
-#: rpmio/macro.c:791
+#: rpmio/macro.c:794
 #, c-format
 msgid "Macro %%%s has unterminated opts\n"
 msgstr "マクロ %%%s はオプションが終端されていません。\n"
 
-#: rpmio/macro.c:796
+#: rpmio/macro.c:799
 #, c-format
 msgid "Macro %%%s has empty body\n"
 msgstr "マクロ %%%s のボディは空です。\n"
 
-#: rpmio/macro.c:802
+#: rpmio/macro.c:805
 #, c-format
 msgid "Macro %%%s failed to expand\n"
 msgstr "マクロ %%%s の展開に失敗しました。\n"
 
-#: rpmio/macro.c:842
+#: rpmio/macro.c:845
 #, c-format
 msgid "Macro %%%s has illegal name (%%undefine)\n"
 msgstr "マクロ %%%s は不正な名前です (%%undefine)\n"
 
-#: rpmio/macro.c:958
+#: rpmio/macro.c:961
 #, c-format
 msgid "Macro %%%s (%s) was not used below level %d\n"
 msgstr "マクロ %%%s (%s) はレベル %d 未満で使用されませんでした。\n"
 
-#: rpmio/macro.c:1086
+#: rpmio/macro.c:1089
 #, c-format
 msgid "Unknown option %c in %s(%s)\n"
 msgstr "不明なオプション %c (%s(%s)中に)\n"
 
-#: rpmio/macro.c:1341
+#: rpmio/macro.c:1348
 #, c-format
 msgid "Recursion depth(%d) greater than max(%d)\n"
 msgstr "再帰の深さ (%d) が最大値 (%d) より大きくなっています。\n"
 
-#: rpmio/macro.c:1415 rpmio/macro.c:1432
+#: rpmio/macro.c:1422 rpmio/macro.c:1439
 #, c-format
 msgid "Unterminated %c: %s\n"
 msgstr "終端されていない %c: %s\n"
 
-#: rpmio/macro.c:1477
+#: rpmio/macro.c:1484
 #, c-format
 msgid "A %% is followed by an unparseable macro\n"
 msgstr "%% の後ろに構文解析できないマクロが続いています。\n"
 
-#: rpmio/macro.c:1662
+#: rpmio/macro.c:1682
 #, c-format
 msgid "Macro %%%.*s not found, skipping\n"
 msgstr "マクロ %%%.*s は見つかりません。スキップします。\n"
 
-#: rpmio/macro.c:2020
+#: rpmio/macro.c:2040
 msgid "Macro expansion too big for target buffer\n"
 msgstr ""
 
-#: rpmio/macro.c:2054
+#: rpmio/macro.c:2074
 #, c-format
 msgid "Macro '%s' is readonly and cannot be changed.\n"
 msgstr ""
 
-#: rpmio/macro.c:2303 rpmio/macro.c:2309
+#: rpmio/macro.c:2323 rpmio/macro.c:2329
 #, c-format
 msgid "File %s: %s\n"
 msgstr "ファイル %s: %s\n"
 
-#: rpmio/macro.c:2312
+#: rpmio/macro.c:2332
 #, c-format
 msgid "File %s is smaller than %u bytes\n"
 msgstr "ファイル %s は %u バイトより小さくなっています。\n"
@@ -3917,6 +3917,9 @@ msgstr ""
 #: tools/rpmdeps.c:211
 msgid "check Requires: against Provides: for dependency closure"
 msgstr ""
+
+#~ msgid "debug file state machine"
+#~ msgstr "ファイル状態マシーンのデバッグ"
 
 #~ msgid "RPM version %s\n"
 #~ msgstr "RPM バージョン %s\n"

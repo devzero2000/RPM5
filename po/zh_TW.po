@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.4.9\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2008-01-13 14:35-0500\n"
+"POT-Creation-Date: 2008-01-22 10:43-0500\n"
 "PO-Revision-Date: 2007-12-29 21:21+0800\n"
 "Last-Translator: Wei-Lun Chao <chaoweilun@gmail.com>\n"
 "Language-Team: Chinese (traditional) <zh-l10n@linux.org.tw>\n"
@@ -214,9 +214,10 @@ msgid ""
 msgstr "與觸發停用有關的選項只能在套件安裝和清除時指定"
 
 #: rpmqv.c:635
+#, fuzzy
 msgid ""
 "--nodeps may only be specified during package building, rebuilding, "
-"recompilation, installation,erasure, and verification"
+"recompilation, installation, erasure, and verification"
 msgstr "--nodeps 選項只能在套件的組建、重建、重編譯、安裝、清除和校驗時指定"
 
 #: rpmqv.c:640
@@ -1211,62 +1212,60 @@ msgid "remove build tree when done"
 msgstr "完成後移除組建目錄樹"
 
 #: build/poptBT.c:204
-msgid "debug file state machine"
-msgstr "除錯檔案狀態機器"
-
-#: build/poptBT.c:206
 msgid "do not execute any stages of the build"
 msgstr "不執行組建程序裡的任何步驟"
 
-#: build/poptBT.c:208
+#: build/poptBT.c:206
 msgid "do not verify build dependencies"
 msgstr "不校驗組建相依關係"
 
-#: build/poptBT.c:211 lib/poptALL.c:444 lib/poptI.c:342 lib/poptQV.c:406
+#: build/poptBT.c:209 lib/poptALL.c:444 lib/poptI.c:342 lib/poptQV.c:406
 #: lib/poptQV.c:415 lib/poptQV.c:457
 msgid "don't verify package digest(s)"
 msgstr "不校驗套件摘要"
 
-#: build/poptBT.c:213 lib/poptALL.c:446 lib/poptI.c:344 lib/poptQV.c:409
+#: build/poptBT.c:211 lib/poptALL.c:446 lib/poptI.c:344 lib/poptQV.c:409
 #: lib/poptQV.c:417 lib/poptQV.c:460
 msgid "don't verify database header(s) when retrieved"
 msgstr "取回時不驗證資料庫表頭"
 
-#: build/poptBT.c:215 lib/poptALL.c:452 lib/poptI.c:346 lib/poptQV.c:412
+#: build/poptBT.c:213 lib/poptALL.c:452 lib/poptI.c:346 lib/poptQV.c:412
 #: lib/poptQV.c:419 lib/poptQV.c:462
 msgid "don't verify package signature(s)"
 msgstr "不校驗套件簽章"
 
-#: build/poptBT.c:218
-msgid "do not accept i18N msgstr's from specfile"
+#: build/poptBT.c:216
+#, fuzzy
+msgid "do not accept i18n msgstr's from specfile"
 msgstr "不接受來自規格檔的 i18N msgstr"
 
-#: build/poptBT.c:220
+#: build/poptBT.c:218
 msgid "remove sources when done"
 msgstr "完成後移除原始碼檔案"
 
-#: build/poptBT.c:222
+#: build/poptBT.c:220
 msgid "remove specfile when done"
 msgstr "完成後移除規格檔案"
 
-#: build/poptBT.c:224
+#: build/poptBT.c:222
 msgid "skip straight to specified stage (only for c,i)"
 msgstr "直接跳到指定的階段 (只有用於 c,i)"
 
-#: build/poptBT.c:226
+#: build/poptBT.c:224
 msgid "generate PGP/GPG signature"
 msgstr "產生 PGP/GPG 簽章"
 
-#: build/poptBT.c:228
+#: build/poptBT.c:226
 msgid "override target platform"
 msgstr "無視目標平臺"
 
-#: build/poptBT.c:228 lib/poptALL.c:441 lib/poptQV.c:317
+#: build/poptBT.c:226 lib/poptALL.c:441 lib/poptQV.c:317
 msgid "CPU-VENDOR-OS"
 msgstr "CPU-VENDOR-OS"
 
-#: build/poptBT.c:230
-msgid "lookup i18N strings in specfile catalog"
+#: build/poptBT.c:228
+#, fuzzy
+msgid "look up i18n strings in specfile catalog"
 msgstr "在規格檔目錄中查找 i18N 字串"
 
 #: build/spec.c:291
@@ -1309,7 +1308,8 @@ msgid "Bad magic"
 msgstr "不當的魔法數字"
 
 #: lib/cpio.c:234
-msgid "Bad/unreadable  header"
+#, fuzzy
+msgid "Bad/unreadable header"
 msgstr "損壞或無法讀取的表頭"
 
 #: lib/cpio.c:256
@@ -1498,42 +1498,42 @@ msgstr "%5d 0x%04x %s %s\n"
 msgid "file %s is on an unknown device\n"
 msgstr "檔案 %s 位於一個不明的裝置上\n"
 
-#: lib/fsm.c:780
+#: lib/fsm.c:781
 #, c-format
 msgid "user %s does not exist - using root\n"
 msgstr "使用者 %s 不存在 - 現使用 root 代替\n"
 
-#: lib/fsm.c:794
+#: lib/fsm.c:795
 #, c-format
 msgid "group %s does not exist - using root\n"
 msgstr "使用者群組 %s 不存在 - 現使用 root 代替\n"
 
-#: lib/fsm.c:1689
+#: lib/fsm.c:1690
 #, c-format
 msgid "archive file %s was not found in header file list\n"
 msgstr "保存檔案 %s 在檔案清單表頭中找不到\n"
 
-#: lib/fsm.c:1833 lib/fsm.c:1953
+#: lib/fsm.c:1834 lib/fsm.c:1954
 #, c-format
 msgid "%s saved as %s\n"
 msgstr "%s 已被另存為 %s\n"
 
-#: lib/fsm.c:1980
+#: lib/fsm.c:1981
 #, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "%s 移除目錄 %s 失敗：目錄非空\n"
 
-#: lib/fsm.c:1986
+#: lib/fsm.c:1987
 #, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "%s 移除目錄 %s 失敗：%s\n"
 
-#: lib/fsm.c:2001
+#: lib/fsm.c:2002
 #, c-format
 msgid " %s: unlink of %s failed: %s\n"
 msgstr " %s：取消 %s 的連結時失敗：%s\n"
 
-#: lib/fsm.c:2026
+#: lib/fsm.c:2027
 #, c-format
 msgid "%s created as %s\n"
 msgstr "%s 如同 %s 而建立\n"
@@ -2658,7 +2658,7 @@ msgstr "正在尋找 %s：%s\n"
 msgid "Failed to find %s:\n"
 msgstr "尋找 %s 時失敗：\n"
 
-#: lib/rpmgi.c:99 lib/rpminstall.c:121 lib/rpmrollback.c:162 lib/rpmts.c:412
+#: lib/rpmgi.c:99 lib/rpminstall.c:121 lib/rpmrollback.c:162 lib/rpmts.c:647
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "開啟 %s 失敗：%s\n"
@@ -2899,32 +2899,32 @@ msgstr "%s： 指定了不正確的類型 %s 於第 %d 列處。\n"
 msgid "%s:  invalid context %s on line number %d\n"
 msgstr "%s:  無效的上下文 %s 於列數 %d\n"
 
-#: lib/rpmts.c:133
+#: lib/rpmts.c:138
 #, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "無法開啟套件資料庫 %s\n"
 
-#: lib/rpmts.c:201
+#: lib/rpmts.c:206
 #, c-format
 msgid "extra '(' in package label: %s\n"
 msgstr "額外的「(」存在於套件標籤中：%s\n"
 
-#: lib/rpmts.c:219
+#: lib/rpmts.c:224
 #, c-format
 msgid "missing '(' in package label: %s\n"
 msgstr "丟失的「(」存在於套件標籤中：%s\n"
 
-#: lib/rpmts.c:227
+#: lib/rpmts.c:232
 #, c-format
 msgid "missing ')' in package label: %s\n"
 msgstr "丟失的「)」存在於套件標籤中：%s\n"
 
-#: lib/rpmts.c:289
+#: lib/rpmts.c:524
 #, c-format
 msgid "cannot open Solve database in %s\n"
 msgstr "無法開啟解析資料庫於 %s\n"
 
-#: lib/rpmts.c:402
+#: lib/rpmts.c:637
 #, c-format
 msgid "incorrect solve path format: %s\n"
 msgstr "不正確的路徑解析格式：%s\n"
@@ -3480,96 +3480,96 @@ msgstr "簽章：不明 (%d)\n"
 msgid "Unable to get lock on db %s, retrying... (%d)\n"
 msgstr "無法取得資料庫 %s 的鎖定，重試中…(%d)\n"
 
-#: rpmio/macro.c:271
+#: rpmio/macro.c:272
 #, c-format
 msgid "======================== active %d empty %d\n"
 msgstr "======================== 作用中 %d 清空 %d\n"
 
-#: rpmio/macro.c:454
+#: rpmio/macro.c:457
 #, c-format
 msgid "%3d>%*s(empty)"
 msgstr "%3d>%*s(清空)"
 
-#: rpmio/macro.c:497
+#: rpmio/macro.c:500
 #, c-format
 msgid "%3d<%*s(empty)\n"
 msgstr "%3d<%*s(清空)\n"
 
-#: rpmio/macro.c:726 rpmio/macro.c:764
+#: rpmio/macro.c:729 rpmio/macro.c:767
 #, c-format
 msgid "Macro %%%s has unterminated body\n"
 msgstr "巨集 %%%s 具有未終結的主體\n"
 
-#: rpmio/macro.c:785
+#: rpmio/macro.c:788
 #, c-format
 msgid "Macro %%%s has illegal name (%%define)\n"
 msgstr "巨集 %%%s 具有不合法的名稱 (%%define)\n"
 
-#: rpmio/macro.c:791
+#: rpmio/macro.c:794
 #, c-format
 msgid "Macro %%%s has unterminated opts\n"
 msgstr "巨集 %%%s 具有未終結的選項\n"
 
-#: rpmio/macro.c:796
+#: rpmio/macro.c:799
 #, c-format
 msgid "Macro %%%s has empty body\n"
 msgstr "巨集 %%%s 具有清空的主體\n"
 
-#: rpmio/macro.c:802
+#: rpmio/macro.c:805
 #, c-format
 msgid "Macro %%%s failed to expand\n"
 msgstr "巨集 %%%s 展開時失敗\n"
 
-#: rpmio/macro.c:842
+#: rpmio/macro.c:845
 #, c-format
 msgid "Macro %%%s has illegal name (%%undefine)\n"
 msgstr "巨集 %%%s 具有不合法的名稱 (%%undefine)\n"
 
-#: rpmio/macro.c:958
+#: rpmio/macro.c:961
 #, c-format
 msgid "Macro %%%s (%s) was not used below level %d\n"
 msgstr "巨集 %%%s (%s) 在等級 %d 之下未被使用\n"
 
-#: rpmio/macro.c:1086
+#: rpmio/macro.c:1089
 #, c-format
 msgid "Unknown option %c in %s(%s)\n"
 msgstr "在 %2$s(%3$s) 中有不明的選項 %1$c\n"
 
-#: rpmio/macro.c:1341
+#: rpmio/macro.c:1348
 #, c-format
 msgid "Recursion depth(%d) greater than max(%d)\n"
 msgstr "遞迴深度(%d)大於最大值(%d)\n"
 
-#: rpmio/macro.c:1415 rpmio/macro.c:1432
+#: rpmio/macro.c:1422 rpmio/macro.c:1439
 #, c-format
 msgid "Unterminated %c: %s\n"
 msgstr "未終結的 %c: %s\n"
 
-#: rpmio/macro.c:1477
+#: rpmio/macro.c:1484
 #, c-format
 msgid "A %% is followed by an unparseable macro\n"
 msgstr "在無法解析的巨集之後跟著一個 %%\n"
 
-#: rpmio/macro.c:1662
+#: rpmio/macro.c:1682
 #, c-format
 msgid "Macro %%%.*s not found, skipping\n"
 msgstr "找不到巨集 %%%.*s，跳過\n"
 
-#: rpmio/macro.c:2020
+#: rpmio/macro.c:2040
 msgid "Macro expansion too big for target buffer\n"
 msgstr "對於目標緩衝區的巨集展開太大\n"
 
-#: rpmio/macro.c:2054
+#: rpmio/macro.c:2074
 #, c-format
 msgid "Macro '%s' is readonly and cannot be changed.\n"
 msgstr "巨集「%s」是唯讀而無法變更。\n"
 
-#: rpmio/macro.c:2303 rpmio/macro.c:2309
+#: rpmio/macro.c:2323 rpmio/macro.c:2329
 #, c-format
 msgid "File %s: %s\n"
 msgstr "檔案 %s: %s\n"
 
-#: rpmio/macro.c:2312
+#: rpmio/macro.c:2332
 #, c-format
 msgid "File %s is smaller than %u bytes\n"
 msgstr "檔案 %s 小於 %u 位元組\n"
@@ -3840,6 +3840,9 @@ msgstr "印出 Requires: 的相依性集合"
 #: tools/rpmdeps.c:211
 msgid "check Requires: against Provides: for dependency closure"
 msgstr "檢查 Requires: 針對 Provides: 以結束相依性"
+
+#~ msgid "debug file state machine"
+#~ msgstr "除錯檔案狀態機器"
 
 #~ msgid "Failed to open tar pipe: %m\n"
 #~ msgstr "無法開啟打包管道：%m\n"
