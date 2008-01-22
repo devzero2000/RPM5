@@ -15,18 +15,16 @@
 Summary: The RPM package management system.
 Name: rpm
 Version: @VERSION@
-Release: 0.2
+Release: 0.1
 Group: System Environment/Base
 URL: http://rpm5.org
-Source: http://rpm5.org/files/rpm/rpm-5.0/rpm-%{version}.tar.gz
+Source0: http://rpm5.org/files/rpm/rpm-5.0/rpm-%{version}.tar.gz
+Source1: cpu-os-macros.tar.gz
 License: LGPL
-%ifos linux
-Prereq: fileutils shadow-utils
-%endif
+Requires: fileutils shadow-utils
 Requires: getconf(GNU_LIBPTHREAD_VERSION) = NPTL
 
 # XXX necessary only to drag in /usr/lib/libelf.a, otherwise internal elfutils.
-BuildRequires: rpm >= 4.4.7
 BuildRequires: elfutils-libelf
 BuildRequires: elfutils-devel
 BuildRequires: zlib-devel
@@ -166,19 +164,42 @@ WITH_PERL="--with-perl"
 WITH_PERL="--without-perl"
 %endif
 
-%ifos linux
-CFLAGS="$RPM_OPT_FLAGS"; export CFLAGS
-./configure --prefix=%{_prefix} --sysconfdir=/etc \
-	--localstatedir=/var --infodir='${prefix}%{__share}/info' \
+./configure \
+        --verbose \
+        --prefix=/usr \
+	--sysconfdir=/etc \
+	--localstatedir=/var \
+	--infodir='${prefix}%{__share}/info' \
 	--mandir='${prefix}%{__share}/man' \
-	$WITH_PYTHON $WITH_PERL --enable-posixmutexes --without-javaglue
-%else
-export CPPFLAGS=-I%{_prefix}/include 
-CFLAGS="$RPM_OPT_FLAGS" ./configure --prefix=%{_prefix} $WITH_PYTHON $WITH_PERL \
-	--without-javaglue
-%endif
+        --with-db=internal \
+        --with-db-tools-integrated \
+        --with-zlib=internal \
+        --with-file=internal \
+        --with-lua=internal \
+        --with-sqlite=external \
+        --with-beecrypt=external \
+        --with-nss=external \
+        --with-neon=external \
+        --with-xar=internal \
+        --with-bzip2=external \
+        --with-popt=external \
+        --with-keyutils=external \
+        --with-libelf \
+        --with-selinux \
+	$WITH_PYTHON \
+	$WITH_PERL \
+        --with-db-tools-integrated \
+        --with-build-extlibdep \
+        --with-build-maxextlibdep \
+        --enable-build-pic \
+        --enable-build-pie \
+        --enable-build-versionscript \
+        --enable-build-warnings \
+        --enable-build-debug
 
-make -C zlib || :
+make -C zlib clean || :
+make -C lua clean || :
+make -C python clean || :
 
 make %{?_smp_mflags}
 
@@ -199,8 +220,6 @@ mkdir -p $RPM_BUILD_ROOT$installarchlib
 
 make DESTDIR="$RPM_BUILD_ROOT" install
 
-%ifos linux
-
 mkdir -p $RPM_BUILD_ROOT/etc/rpm
 
 mkdir -p $RPM_BUILD_ROOT/var/spool/repackage
@@ -213,8 +232,31 @@ for dbi in \
 do
     touch $RPM_BUILD_ROOT/var/lib/rpm/$dbi
 done
-
-%endif
+( cd $RPM_BUILD_ROOT/%{_rpmhome}
+  tar xzf %{SOURCE1}
+  # XXX assume ix86 platforms for the moment
+   rm -rf ./alpha-linux
+   rm -rf ./alphaev5-linux
+   rm -rf ./alphaev56-linux
+   rm -rf ./alphaev6-linux
+   rm -rf ./alphaev67-linux
+   rm -rf ./alphapca56-linux
+   rm -rf ./amd64-linux
+   rm -rf ./ia32e-linux
+   rm -rf ./ia64-linux
+   rm -rf ./ppc-linux
+   rm -rf ./ppc64-linux
+   rm -rf ./ppc64iseries-linux
+   rm -rf ./ppc64pseries-linux
+   rm -rf ./ppciseries-linux
+   rm -rf ./ppcpseries-linux
+   rm -rf ./s390-linux
+   rm -rf ./s390x-linux
+   rm -rf ./sparc-linux
+   rm -rf ./sparc64-linux
+   rm -rf ./sparcv9-linux
+   rm -rf ./x86_64-linux
+)
 
 %find_lang rpm
 
@@ -232,6 +274,9 @@ gzip -9n apidocs/man/man*/* || :
   rm -rf .%{_mandir}/pl/man8/rpmcache.8*
   rm -rf .%{_mandir}/pl/man8/rpmgraph.8*
   rm -rf .%{_mandir}/{fr,ko}
+  rm -rf .%{_bindir}/xar
+  rm -rf .%{_includedir}/xar
+  rm -rf .%{_libdir}/libxar*
 %if %{with_python_subpackage}
   rm -f .%{_libdir}/python%{with_python_version}/site-packages/*.{a,la}
   rm -f .%{_libdir}/python%{with_python_version}/site-packages/rpm/*.{a,la}
@@ -246,41 +291,31 @@ gzip -9n apidocs/man/man*/* || :
 %clean
 rm -rf $RPM_BUILD_ROOT
 
-%ifos linux
 %pre
 /usr/sbin/groupadd -g 37 @RPMGROUP@				> /dev/null 2>&1
 /usr/sbin/useradd  -r -d /var/lib/rpm -u 37 -g 37 @RPMUSER@ -s /sbin/nologin	> /dev/null 2>&1
 exit 0
-%endif
 
 %post
-%ifos linux
 /sbin/ldconfig
 
 # Establish correct rpmdb ownership.
 /bin/chown @RPMUSER@:@RPMGROUP@ /var/lib/rpm/[A-Z]*
 
-%endif
 exit 0
 
-%ifos linux
 %postun
 /sbin/ldconfig
 if [ $1 = 0 ]; then
     /usr/sbin/userdel @RPMUSER@
     /usr/sbin/groupdel @RPMGROUP@
 fi
-exit 0
 
 %post devel -p /sbin/ldconfig
 %postun devel -p /sbin/ldconfig
 
-%endif
-
-%ifos linux
 %define	rpmattr		%attr(0755, @RPMUSER@, @RPMGROUP@)
 %define	rpmdbattr %attr(0644, @RPMUSER@, @RPMGROUP@) %verify(not md5 size mtime) %ghost %config(missingok,noreplace)
-%endif
 
 %files
 %pubkey pubkeys/JBJ-GPG-KEY
@@ -300,17 +335,17 @@ exit 0
 %rpmattr	%{_rpmhome}/magic.mgc
 %rpmattr	%{_rpmhome}/magic.mime
 %rpmattr	%{_rpmhome}/magic.mime.mgc
+%rpmattr	%{_rpmhome}/rpm2cpio
+%rpmattr	%{_rpmhome}/vcheck
 
 %files common -f rpm.lang
 %doc CHANGES doc/manual/[a-z]*
 %rpmattr	%{_bindir}/rpm2cpio
 %rpmattr	%{_bindir}/gendiff
-%ifos linux
 %dir			/etc/rpm
 %attr(0755, @RPMUSER@, @RPMGROUP@)	%dir /var/lib/rpm
 %rpmdbattr		/var/lib/rpm/*
 %attr(0755, @RPMUSER@, @RPMGROUP@)	%dir /var/spool/repackage
-%endif
 
 %attr(0755, @RPMUSER@, @RPMGROUP@)	%dir %{_usrlibrpm}
 %ifarch i386 i486 i586 i686 athlon pentium3 pentium4
@@ -400,6 +435,7 @@ exit 0
 %rpmattr	%{_rpmhome}/brp-*
 %rpmattr	%{_rpmhome}/check-files
 %rpmattr	%{_rpmhome}/cross-build
+%rpmattr	%{_rpmhome}/debugedit
 %rpmattr	%{_rpmhome}/find-debuginfo.sh
 %rpmattr	%{_rpmhome}/find-lang.sh
 %rpmattr	%{_rpmhome}/find-prov.pl
@@ -442,8 +478,8 @@ exit 0
 %if %{with_perl_subpackage}
 %files perl
 %{_libdir}/perl5/site_perl/*/*/auto/RPM
-%{_libdir}/perl5/site_perl/*/*/RPM.*
-%{_mandir}/man3/RPM.*
+%{_libdir}/perl5/site_perl/5.*/*-linux-*/RPM*
+%{_mandir}/man3/RPM*
 %endif
 
 %files devel
@@ -472,34 +508,5 @@ exit 0
 %{_libdir}/pkgconfig/rpm.pc
 
 %changelog
-* Sun Jun 17 2007 Jeff Johnson <jbj@rpm5.org> 5.0-0.2
-- jbj: re-add /usr/bin/rpmbuild for now, poptBT option wiring needs fixing.
-- jbj: pass -F fnum to patch (#243720).
-- jbj: refactor _free() from rpmlib.h -> rpmio.h.
-- jbj: add _rpmhome macro, revector helper paths through _rpmhome.
-- jbj: hack a version into magic install path. better needs to be done.
-- jbj: start consistent versionlibdir usage in all Makefile.am files.
-- jbj: populate /usr/lib/rpm/@VERSION@/ instead of foo-@VERSION@ files.
-- jbj: move gendiff into the scripts directory.
-- jbj: don't include perl/CVS with "make dist".
-- jbj: remove rpmbuild and rpmb helper for now.
-
-* Fri Jun 15 2007 Jeff Johnson <jbj@rpm5.org> 5.0-0.1
-- rse: provide portability fallbacks for sighold(3), sigrelse(3) and sigpause(3)
-- rse: allow RPM to build again even if iconv(3) is not available
-- rse: provide --with-db-{largefile,rpc,mutex} options for flexibly building DB
-- rse: portability: replace hard-coded -ldl (Linux) for Lua with Autoconf checks
-- rse: added devtool/devtool.conf build environment helper
-- rse: pruned tree from third-party libraries (except for zlib, db and lua)
-- goeran: updated "sv" translation.
-- rse: cleaned up the "autogen.sh" scripts.
-- jbj: skip packages/headers with unverifiable signatures.
-- update README to point to new rpm5.org home.
-- upgrade to file-4.21 (CVE-2007-2026, CVE-2007-2799).
-- build against rpm5.org cvs,
-- fix: swap PART_INSTALL and PART_CLEAN automagic cleanup.
-- keys: add Getpass stub vector.
-- solaris: add clearenv stub.
-- fix: avoid accessing freed memory.
-- start rpm-5.0 development.
-
+* Tue Jan 22 2008 Jeff Johnson <jbj@rpm5.org> - 5.1-0.1
+- resurect rpm.spec.

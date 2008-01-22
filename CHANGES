@@ -1,4 +1,5 @@
 5.0.0 -> 5.1a1:
+    - jbj: resurrect rpm.spec.in.
     - jbj: fix: permit %{lua:...} to recurse.
     - rse: allow to compile without <langinfo.h> and its nl_langinfo(3)
     - rse: provide RPM Lua function posix.glob(<pattern>)
