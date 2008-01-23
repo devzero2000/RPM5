@@ -275,7 +275,7 @@ Spec s;
 #if RPM_VERSION_CODE >= RPM_VERSION(4,4,9)
 	if (parseSpec(ts, args.specfile, NULL, 0, NULL, NULL, 1, 1, 0) != 0) {
 #else
-	if (parseSpec(ts, args.specfile, NULL, NULL, 0, NULL, NULL, 1, 1) != 0) {
+	if (parseSpec(ts, args.specfile, NULL, NULL, 1, NULL, NULL, 1, 1) != 0) {
 #endif
 		return EXIT_FAILURE;
 	}
@@ -283,14 +283,16 @@ Spec s;
 	s = rpmtsSpec(ts);
 
 	// here starts the code for builder
-	Header h = s->sourceHeader;
-	const char *name, *version, *release;
+	const char *name = NULL, *version = NULL, *release = NULL;
 
+	if (s->sourceHeader == NULL) {
 #if RPM_VERSION_CODE >= RPM_VERSION(4,4,9)
-	initSourceHeader(s, NULL);
+		initSourceHeader(s, NULL);
 #else
-	initSourceHeader(s);
+		initSourceHeader(s);
 #endif
+	}
+	Header h = s->sourceHeader;
 
 	if (
 		headerGetEntryMinMemory(h, RPMTAG_NAME, NULL, (void *)&name, NULL) == 0 ||
