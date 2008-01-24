@@ -20,8 +20,6 @@
   - distributing per-platform configuration needs to be done. At a minimum,
 	the cpu-os.macros.tar.gz file needs distributing with the rpm tarball.
 
-  - decide on whether rpmbuild --lsb should be included (or not).
-
    - 2-4 applications are having trouble compiling against rpm-5.0.0, largely
 	(my guess) because header.h has been removed. A stub to retrofit
 	could be done, but then the question will become headerGetEntry
