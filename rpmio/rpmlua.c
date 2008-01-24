@@ -987,6 +987,14 @@ static int rpm_verbose(lua_State *L)
     return 1;
 }
 
+static int rpm_debug(lua_State *L)
+	/*@globals internalState @*/
+	/*@modifies L, internalState @*/
+{
+    lua_pushboolean(L, rpmIsDebug());
+    return 1;
+}
+
 static int rpm_slurp(lua_State *L)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies L, fileSystem, internalState @*/
@@ -1063,6 +1071,7 @@ static const luaL_reg rpmlib[] = {
     {"source", rpm_source},
     {"load", rpm_load},
     {"verbose", rpm_verbose},
+    {"debug", rpm_debug},
     {"slurp", rpm_slurp},
     {"sleep", rpm_sleep},
     {"realpath", rpm_realpath},
