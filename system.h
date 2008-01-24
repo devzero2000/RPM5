@@ -726,6 +726,18 @@ static inline const char *rcsid(const char *p) { \
 #endif
 
 /**
+ * makedev() on QNX takes three parameters
+ * the additional one (first place) specifies the node for QNET
+ * as this applic is not QNET aware, we can set it to 'local node'
+ */
+#if defined(__QNXNTO__)
+#include <sys/netmgr.h>
+#define Makedev(x,y)   makedev(ND_LOCAL_NODE,(x),(y))
+#else
+#define Makedev(x,y)   makedev((x),(y))
+#endif
+
+/**
  * Mark --initdb and --verifydb for destruction.
  */
 #define	SUPPORT_INITDB		1
