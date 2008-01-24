@@ -22,24 +22,10 @@
 
   - decide on whether rpmbuild --lsb should be included (or not).
 
-  - pkgioRead() has a cosmetic error message if/when called after end-of-header
-	(or equivalent EOF) condition. The current fix is mapping return to
-	RPMRC_NOTFOUND, but RPMRC_OK with 0 length EOF read may be necessary.
-
-	...
-        /* XXX Handle EOF's as RPMRC_NOTFOUND, not RPMRC_FAIL, returns. */
-        if (xx == 0)
-            rc = RPMRC_NOTFOUND;
-        else
-	...
-
    - 2-4 applications are having trouble compiling against rpm-5.0.0, largely
 	(my guess) because header.h has been removed. A stub to retrofit
 	could be done, but then the question will become headerGetEntry
 	(and other) symbols. Which also could be retrofit'ed if there
 	as interest, noone replied when I asked repeatedly. Alternatively,
 	just doing the port to rpm-5.0.0 is likely not hard at all.
-
-   - XAR internal needs proper automake for "make dist" functionality.
-
 
