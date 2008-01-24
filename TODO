@@ -136,6 +136,11 @@
     - jbj: use txar to convert RPMv3 -> rpmv4 (headerReload needs adding).
     - jbj: configure --parentdirs/--noparentdirs win persistent run-time macro
 	and stop discussing in public.
+    - jbj: permit building w/o changelogs. instead use a header extension to
+	pull changelogs from a URL, with a default of
+		file:///usr/share/doc/N-V/Changelog
+	Use YAML for extra credit.
+
 
 
   RPM 5.2 ROADMAP ISSUES
