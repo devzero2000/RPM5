@@ -701,7 +701,7 @@ PyObject * rpmReadHeaders (FD_t fd)
 	{   const char item[] = "Header";
 	    const char * msg = NULL;
 	    rpmRC rc = rpmpkgRead(item, fd, &h, &msg);
-	    if (rc != RPMRC_OK)
+	    if (rc != RPMRC_OK && rc != RPMRC_NOTFOUND)
 		rpmlog(RPMLOG_ERR, "%s: %s: %s\n", "rpmpkgRead", item, msg);
 	    msg = _free(msg);
 	}
