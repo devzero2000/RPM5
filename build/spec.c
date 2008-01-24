@@ -122,8 +122,8 @@ Package newPackage(Spec spec)
     p->header = headerNew();
     p->ds = NULL;
 
-    p->autoProv = 1;
-    p->autoReq = 1;
+    p->autoProv = ((_rpmbuildFlags & 0x1) != 0);
+    p->autoReq = ((_rpmbuildFlags & 0x2) != 0);
     
 #if 0    
     p->reqProv = NULL;

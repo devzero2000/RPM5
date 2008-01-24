@@ -1504,6 +1504,7 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 	xx = headerPut(h, he, 0);
 	he->append = 0;
 
+if (!(_rpmbuildFlags & 4)) {
 	ui32 = dalgo;
 	he->tag = RPMTAG_FILEDIGESTALGOS;
 	he->t = RPM_UINT32_TYPE;
@@ -1512,6 +1513,7 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 	he->append = 1;
 	xx = headerPut(h, he, 0);
 	he->append = 0;
+}
       }
 	
 	buf[0] = '\0';
@@ -1570,6 +1572,7 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 	he->append = 0;
 	
 	/* Add file security context to package. */
+if (!(_rpmbuildFlags & 4))
 	{
 	    static char *nocon = "";
 /*@-moduncon@*/

@@ -1,4 +1,5 @@
 5.0.0 -> 5.0.1:
+    - jbj: proof-of-concept rpmbuild --lsb implementation.
     - mej: catch EOF returned as RPMRC_NOTFOUND correctly.
     - jbj: fix: permit %{lua:...} to recurse.
     - jbj: unbreak rpm-python, preserve existing symbol in released versions.

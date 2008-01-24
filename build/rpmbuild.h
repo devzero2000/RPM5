@@ -84,6 +84,9 @@ typedef enum rpmParseState_e {
 #define STRIP_TRAILINGSPACE (1 << 0)
 #define STRIP_COMMENTS      (1 << 1)
 
+/*@unchecked@*/
+extern int _rpmbuildFlags;
+
 #ifdef __cplusplus
 extern "C" {
 #endif

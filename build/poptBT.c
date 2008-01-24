@@ -47,10 +47,8 @@ struct rpmBuildArguments_s         rpmBTArgs;
 #define	POPT_TP			0x7470
 #define	POPT_TS			0x7473
 
-/*@-redecl@*/
 /*@unchecked@*/
-extern int _fsm_debug;
-/*@=redecl@*/
+int _rpmbuildFlags = 3;
 
 /*@-exportlocal@*/
 /*@unchecked@*/
@@ -204,6 +202,12 @@ struct poptOption rpmBuildPoptTable[] = {
 	N_("do not execute any stages of the build"), NULL },
  { "nodeps", '\0', 0, NULL, RPMCLI_POPT_NODEPS,
 	N_("do not verify build dependencies"), NULL },
+ { "noautoprov", '\0', POPT_BIT_CLR|POPT_ARGFLAG_DOC_HIDDEN, &_rpmbuildFlags, 1,
+	N_("disable automagic Provides: extraction"), NULL },
+ { "noautoreq", '\0', POPT_BIT_CLR|POPT_ARGFLAG_DOC_HIDDEN, &_rpmbuildFlags, 2,
+	N_("disable automagic Requires: extraction"), NULL },
+ { "notinlsb", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN, &_rpmbuildFlags, 4,
+	N_("disable tags forbidden by LSB"), NULL },
 
  { "nodigest", '\0', POPT_ARGFLAG_DOC_HIDDEN, NULL, RPMCLI_POPT_NODIGEST,
         N_("don't verify package digest(s)"), NULL },
