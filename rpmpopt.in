@@ -241,7 +241,7 @@ rpmbuild alias --buildroot	--define '.buildroot !#:+' \
 	--POPTargs=$"DIRECTORY"
 
 rpmbuild alias --lsb --noautoreq --noautoprov \
-	--target=i486 --define '_use_internal_dependency_generator 0' \
+	--define '_use_internal_dependency_generator 0' \
 	--notinlsb
 
 # \endverbatim
