@@ -1036,7 +1036,7 @@ rpmRC packageBinaries(Spec spec)
 	he->c = 1;
 	xx = headerPut(pkg->header, he, 0);
 
-if (!(_rpmbuildFlags)) {
+if (!(_rpmbuildFlags & 4)) {
 	if (spec->sourcePkgId != NULL) {
 	    he->tag = RPMTAG_SOURCEPKGID;
 	    he->t = RPM_BIN_TYPE;
