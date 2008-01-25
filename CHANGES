@@ -1,4 +1,6 @@
 5.0.0 -> 5.0.1:
+    - jbj: include <pthread.h> everywhere.
+    - jbj: rpmsq.h doesn't need pthread condvar/mutex any more.
     - jbj: QNX does not have insque/remque.
     - jbj: QNX does not have d_off.
     - jbj: proof-of-concept rpmbuild --lsb implementation.

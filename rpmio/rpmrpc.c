@@ -4,10 +4,6 @@
 
 #include "system.h"
 
-#if defined(HAVE_PTHREAD_H) && !defined(__LCLINT__)
-#include <pthread.h>
-#endif
-
 #include "rpmio_internal.h"
 #include "rpmmacro.h"
 

@@ -192,8 +192,6 @@ static	void __remque(struct qelem * elem)
 
 #if defined(HAVE_PTHREAD_H)
 
-#include <pthread.h>
-
 # if !defined(__QNX__)
 /* XXX suggested in bugzilla #159024 */
 #if PTHREAD_MUTEX_DEFAULT != PTHREAD_MUTEX_NORMAL
