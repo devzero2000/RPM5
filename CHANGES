@@ -1,4 +1,5 @@
 5.0.0 -> 5.1a1:
+    - jbj: QNX does not have insque/remque.
     - jbj: QNX does not have d_off.
     - rse: add RPM Lua function rpm.debug() to complement rpm.verbose()
     - mej: catch EOF returned as RPMRC_NOTFOUND correctly.

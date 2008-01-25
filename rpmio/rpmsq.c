@@ -22,9 +22,9 @@ extern void (*sigset(int sig, void (*disp)(int)))(int)
 	/*@globals errno, systemState @*/;
 
 struct qelem;
-extern	void insque(struct qelem * __elem, struct qelem * __prev)
+extern	void __insque(struct qelem * __elem, struct qelem * __prev)
 	/*@modifies  __elem, __prev @*/;
-extern	void remque(struct qelem * __elem)
+extern	void __remque(struct qelem * __elem)
 	/*@modifies  __elem @*/;
 
 extern pthread_t pthread_self(void)
@@ -118,7 +118,9 @@ extern int pthread_cond_signal(pthread_cond_t *cond)
 #endif
 
 #include <signal.h>
-#include <sys/signal.h>
+#if !defined(__QNX__)
+#  include <sys/signal.h>
+#endif
 #include <sys/wait.h>
 #include <search.h>
 
@@ -165,35 +167,39 @@ static int __RPM_sigpause(int sig)
 #endif
 
 /* portability fallback for insque(3)/remque(3) */
-#if defined(__CYGWIN__) || defined(__MINGW32__)
+#if defined(__CYGWIN__) || defined(__MINGW32__) || defined(__QNX__)
 struct qelem {
   struct qelem *q_forw;
   struct qelem *q_back;
 };
 
-static	void insque(struct qelem * elem, struct qelem * pred)
+static void __insque(struct qelem * elem, struct qelem * pred)
 {
   elem -> q_forw = pred -> q_forw;
   pred -> q_forw -> q_back = elem;
   elem -> q_back = pred;
   pred -> q_forw = elem;
 }
+#define	insque(_e, _p)	__insque((_e), (_p))
 
-static	void remque(struct qelem * elem)
+static	void __remque(struct qelem * elem)
 {
   elem -> q_forw -> q_back = elem -> q_back;
   elem -> q_back -> q_forw = elem -> q_forw;
 }
+#define	remque(_e)	__remque(_e)
 #endif
 
 #if defined(HAVE_PTHREAD_H)
 
 #include <pthread.h>
 
+# if !defined(__QNX__)
 /* XXX suggested in bugzilla #159024 */
-#if PTHREAD_MUTEX_DEFAULT != PTHREAD_MUTEX_NORMAL
-  #error RPM expects PTHREAD_MUTEX_DEFAULT == PTHREAD_MUTEX_NORMAL
-#endif
+#  if PTHREAD_MUTEX_DEFAULT != PTHREAD_MUTEX_NORMAL
+#    error RPM expects PTHREAD_MUTEX_DEFAULT == PTHREAD_MUTEX_NORMAL
+#  endif
+# endif
 
 #ifndef PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP
 /*@unchecked@*/
