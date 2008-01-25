@@ -1211,6 +1211,26 @@ doFoo(MacroBuf mb, int negate, const char * f, size_t fn,
         char *cp;
         if ((cp = getenv(buf)) != NULL)
             b = cp;
+    } else if (STREQ("shrink", f, fn)) {
+        /* shrink body by removing all leading and trailing whitespaces and
+           reducing intermediate whitespaces to a single space character */
+        int i, j, k, was_space = 0;
+        for (i = 0, j = 0, k = strlen(buf); i < k; ) {
+            if (xisspace((int)(buf[i]))) {
+                was_space = 1;
+                i++;
+                continue;
+            }
+            else if (was_space) {
+                was_space = 0;
+                if (j > 0) /* remove leading blanks at all */
+                    buf[j++] = ' ';
+                /* fallthrough */
+            }
+            buf[j++] = buf[i++];
+        }
+        buf[j] = '\0';
+        b = buf;
     } else if (STREQ("suffix", f, fn)) {
 	if ((b = strrchr(buf, '.')) != NULL)
 	    b++;
@@ -1606,6 +1626,7 @@ expandMacro(MacroBuf mb)
 	    STREQ("dirname", f, fn) ||
 	    STREQ("realpath", f, fn) ||
 	    STREQ("getenv", f, fn) ||
+	    STREQ("shrink", f, fn) ||
 	    STREQ("suffix", f, fn) ||
 	    STREQ("expand", f, fn) ||
 	    STREQ("verbose", f, fn) ||

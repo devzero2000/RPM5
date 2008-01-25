@@ -1,4 +1,5 @@
 5.0.0 -> 5.1a1:
+    - rse: provide %{shrink:<body>} macro for removing leading+trailing and removing intermediate whitespaces
     - rse: allow sub-shell and Lua independent speedy lookup of environment variables via %{getenv:<name>} in macros
     - jbj: QNX needs defines for fts.c.
     - rse: upgrade from Lua 5.1.2 to Lua 5.1.3 (external and internal)
