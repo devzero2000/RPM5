@@ -1207,6 +1207,10 @@ doFoo(MacroBuf mb, int negate, const char * f, size_t fn,
                 b = buf;
             }
         }
+    } else if (STREQ("getenv", f, fn)) {
+        char *cp;
+        if ((cp = getenv(buf)) != NULL)
+            b = cp;
     } else if (STREQ("suffix", f, fn)) {
 	if ((b = strrchr(buf, '.')) != NULL)
 	    b++;
@@ -1601,6 +1605,7 @@ expandMacro(MacroBuf mb)
 	if (STREQ("basename", f, fn) ||
 	    STREQ("dirname", f, fn) ||
 	    STREQ("realpath", f, fn) ||
+	    STREQ("getenv", f, fn) ||
 	    STREQ("suffix", f, fn) ||
 	    STREQ("expand", f, fn) ||
 	    STREQ("verbose", f, fn) ||
