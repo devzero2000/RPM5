@@ -5,10 +5,6 @@
 
 #include "system.h"
 
-#if defined(HAVE_PTHREAD_H) && !defined(__LCLINT__)
-#include <pthread.h>
-#endif
-
 #ifdef WITH_NEON
 
 #include "ne_alloc.h"

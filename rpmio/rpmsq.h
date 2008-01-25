@@ -46,10 +46,6 @@ struct rpmsqElem {
     int pipes[2];		/*!< Parent/child interlock. */
 /*@shared@*/
     void * id;			/*!< Blocking thread id (pthread_t). */
-#if defined(HAVE_PTHREAD_H)
-    pthread_mutex_t mutex;	/*!< Signal delivery to thread condvar. */
-    pthread_cond_t cond;
-#endif
 };
 #endif
 
