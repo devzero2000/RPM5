@@ -1,4 +1,5 @@
 5.0.0 -> 5.1a1:
+    - rse: upgrade from Lua 5.1.2 to Lua 5.1.3 (external and internal)
     - jbj: include <pthread.h> everywhere.
     - jbj: rpmsq.h doesn't need pthread condvar/mutex any more.
     - jbj: QNX does not have insque/remque.
