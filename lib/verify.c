@@ -301,6 +301,7 @@ static int verifyHeader(QVA_t qva, const rpmts ts, rpmfi fi)
 
 	rc = rpmVerifyFile(ts, fi, &verifyResult, omitMask);
 	if (rc) {
+	    if (qva->qva_mode != 'v')	/* XXX no output w verify(...) probe. */
 	    if (!(fflags & (RPMFILE_MISSINGOK|RPMFILE_GHOST)) || rpmIsVerbose()) {
 		sprintf(te, _("missing   %c %s"),
 			((fflags & RPMFILE_CONFIG)	? 'c' :
@@ -323,8 +324,10 @@ static int verifyHeader(QVA_t qva, const rpmts ts, rpmfi fi)
 	    /*@observer@*/ static const char *const aok = ".";
 	    /*@observer@*/ static const char *const unknown = "?";
 
-	    ec = 1;
+	    if (!ec)
+		ec = (verifyResult != 0);
 
+	    if (qva->qva_mode != 'v') {	/* XXX no output w verify(...) probe. */
 #define	_verify(_RPMVERIFY_F, _C)	\
 	((verifyResult & _RPMVERIFY_F) ? _C : aok)
 #define	_verifylink(_RPMVERIFY_F, _C)	\
@@ -334,21 +337,21 @@ static int verifyHeader(QVA_t qva, const rpmts ts, rpmfi fi)
 	((verifyResult & RPMVERIFY_READFAIL) ? unknown : \
 	 (verifyResult & _RPMVERIFY_F) ? _C : aok)
 	
-	    digest = _verifyfile(RPMVERIFY_FDIGEST, "5");
-	    size = _verify(RPMVERIFY_FILESIZE, "S");
-	    link = _verifylink(RPMVERIFY_LINKTO, "L");
-	    mtime = _verify(RPMVERIFY_MTIME, "T");
-	    rdev = _verify(RPMVERIFY_RDEV, "D");
-	    user = _verify(RPMVERIFY_USER, "U");
-	    group = _verify(RPMVERIFY_GROUP, "G");
-	    mode = _verify(RPMVERIFY_MODE, "M");
+		digest = _verifyfile(RPMVERIFY_FDIGEST, "5");
+		size = _verify(RPMVERIFY_FILESIZE, "S");
+		link = _verifylink(RPMVERIFY_LINKTO, "L");
+		mtime = _verify(RPMVERIFY_MTIME, "T");
+		rdev = _verify(RPMVERIFY_RDEV, "D");
+		user = _verify(RPMVERIFY_USER, "U");
+		group = _verify(RPMVERIFY_GROUP, "G");
+		mode = _verify(RPMVERIFY_MODE, "M");
 
 #undef _verifyfile
 #undef _verifylink
 #undef _verify
 
-	    sprintf(te, "%s%s%s%s%s%s%s%s  %c %s",
-		size, mode, digest, rdev, link, user, group, mtime,
+		sprintf(te, "%s%s%s%s%s%s%s%s  %c %s",
+		    size, mode, digest, rdev, link, user, group, mtime,
 			((fflags & RPMFILE_CONFIG)	? 'c' :
 			 (fflags & RPMFILE_DOC)	? 'd' :
 			 (fflags & RPMFILE_GHOST)	? 'g' :
@@ -356,9 +359,11 @@ static int verifyHeader(QVA_t qva, const rpmts ts, rpmfi fi)
 			 (fflags & RPMFILE_PUBKEY)	? 'P' :
 			 (fflags & RPMFILE_README)	? 'r' : ' '),
 			rpmfiFN(fi));
-	    te += strlen(te);
+		te += strlen(te);
+	    }
 	}
 
+	if (qva->qva_mode != 'v')	/* XXX no output w verify(...) probe. */
 	if (te > t) {
 	    *te++ = '\n';
 	    *te = '\0';

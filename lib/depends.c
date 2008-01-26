@@ -848,6 +848,7 @@ retry:
     if (NSType == RPMNS_TYPE_VERIFY) {
 	QVA_t qva = memset(alloca(sizeof(*qva)), 0, sizeof(*qva));
 
+	qva->qva_mode = 'v';
 	qva->qva_flags = VERIFY_ALL & ~(VERIFY_DEPS|VERIFY_SCRIPT);
 	rc = 0;		/* assume success */
 	if (rpmtsGetRdb(ts) != NULL) {
@@ -856,7 +857,6 @@ retry:
 		if (!rpmdsAnyMatchesDep(h, dep, _rpmds_nopromote))
 		    continue;
 		xx = (showVerifyPackage(qva, ts, h) ? 1 : 0);
-fprintf(stderr, "==> xx %d\n", xx);
 		if (xx)
 		    rc = 1;
 	    }
