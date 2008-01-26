@@ -1609,6 +1609,11 @@ if (!(_rpmbuildFlags & 4))
     xx = headerPut(h, he, 0);
     he->append = 0;
 	
+if (_rpmbuildFlags & 4) {
+(void) rpmlibNeedsFeature(h, "PayloadFilesHavePrefix", "4.0-1");
+(void) rpmlibNeedsFeature(h, "CompressedFileNames", "3.0.4-1");
+}
+	
     compressFilelist(h);
 
   { int scareMem = 0;
