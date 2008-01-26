@@ -1,4 +1,5 @@
 5.0.0 -> 5.1a1:
+    - jbj: stub in RPMTAG_FILESTAT and RPMTAG_STAT extensions, w-i-p.
     - jbj: re-add PayloadFilesHavePrefix/CompressedFileNames w --lsb.
     - rse: provide %{shrink:<body>} macro for removing leading+trailing and removing intermediate whitespaces
     - rse: allow sub-shell and Lua independent speedy lookup of environment variables via %{getenv:<name>} in macros

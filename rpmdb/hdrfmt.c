@@ -1659,6 +1659,49 @@ static int origpathsTag(Header h, HE_t he)
     return _fnTag(h, he);
 }
 
+static int filestatTag(Header h, HE_t he)
+	/*@modifies he @*/
+{
+    rpmTagData paths = { .ptr = NULL };
+    /* _dev */
+    rpmTagData _ino = { .ptr = NULL };
+    rpmTagData _mode = { .ptr = NULL };
+    /* _nlink */
+    /* _uid */
+    /* _gid */
+    rpmTagData _rdev = { .ptr = NULL };
+    rpmTagData _size = { .ptr = NULL };
+    /* _blksize */
+    /* _blocks */
+    /* _atime */
+    rpmTagData _mtime = { .ptr = NULL };
+    /* st_ctime */
+    int rc;
+
+    he->tag = RPMTAG_BASENAMES;
+    if ((rc = _fnTag(h, he)) != 0 || he->c == 0)
+	goto exit;
+
+exit:
+    paths.ptr = _free(paths.ptr);
+    _ino.ptr = _free(_ino.ptr);
+    _mode.ptr = _free(_mode.ptr);
+    _rdev.ptr = _free(_rdev.ptr);
+    _size.ptr = _free(_size.ptr);
+    _mtime.ptr = _free(_mtime.ptr);
+    return rc;
+}
+
+static int diskstatTag(Header h, HE_t he)
+	/*@modifies he @*/
+{
+    int rc;
+
+    he->tag = RPMTAG_BASENAMES;
+    rc = _fnTag(h, he);
+    return rc;
+}
+
 /*@-type@*/ /* FIX: cast? */
 static struct headerSprintfExtension_s _headerCompoundFormats[] = {
     { HEADER_EXT_TAG, "RPMTAG_CHANGELOGNAME",
@@ -1687,6 +1730,10 @@ static struct headerSprintfExtension_s _headerCompoundFormats[] = {
 	{ .tagFunction = filepathsTag } },
     { HEADER_EXT_TAG, "RPMTAG_ORIGPATHS",
 	{ .tagFunction = origpathsTag } },
+    { HEADER_EXT_TAG, "RPMTAG_FILESTAT",
+	{ .tagFunction = filestatTag } },
+    { HEADER_EXT_TAG, "RPMTAG_STAT",
+	{ .tagFunction = diskstatTag } },
     { HEADER_EXT_FORMAT, "armor",
 	{ .fmtFunction = armorFormat } },
     { HEADER_EXT_FORMAT, "base64",
