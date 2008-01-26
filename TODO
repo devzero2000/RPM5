@@ -140,6 +140,8 @@
 	pull changelogs from a URL, with a default of
 		file:///usr/share/doc/N-V/Changelog
 	Use YAML for extra credit.
+    - jbj: verify(...) probe likely needs to supply _SOME_ information for
+	failure cases, at least with -vv.
 
 
 
