@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 5.0\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2008-01-22 10:43-0500\n"
+"POT-Creation-Date: 2008-01-26 03:22-0500\n"
 "PO-Revision-Date: 2004-02-29 07:48+0500\n"
 "Last-Translator: Arnaldo Carvalho de Melo <acme@conectiva.com.br>\n"
 "Language-Team: Brazilian Portuguese\n"
@@ -509,106 +509,106 @@ msgstr ""
 msgid "File listed twice: %s\n"
 msgstr "No consegui ler o arquivo spec de %s\n"
 
-#: build/files.c:1529
+#: build/files.c:1531
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr ""
 
 # , c-format
-#: build/files.c:1816
+#: build/files.c:1824
 #, fuzzy, c-format
 msgid "File doesn't match prefix (%s): %s\n"
 msgstr "No consegui ler o arquivo spec de %s\n"
 
-#: build/files.c:1842
+#: build/files.c:1850
 #, fuzzy, c-format
 msgid "Optional file not found: %s\n"
 msgstr "no foi passado pacote para desinstalao"
 
-#: build/files.c:1845
+#: build/files.c:1853
 #, fuzzy, c-format
 msgid "File not found: %s\n"
 msgstr "no foi passado pacote para desinstalao"
 
-#: build/files.c:2063
+#: build/files.c:2071
 #, c-format
 msgid "%s: can't load unknown tag (%d).\n"
 msgstr ""
 
 # , c-format
-#: build/files.c:2069
+#: build/files.c:2077
 #, fuzzy, c-format
 msgid "%s: public key read failed.\n"
 msgstr "No consegui abrir: %s\n"
 
-#: build/files.c:2073 lib/rpmchecksig.c:746
+#: build/files.c:2081 lib/rpmchecksig.c:746
 #, c-format
 msgid "%s: not an armored public key.\n"
 msgstr ""
 
 # , c-format
-#: build/files.c:2080
+#: build/files.c:2088
 #, fuzzy, c-format
 msgid "%s: *.te policy read failed.\n"
 msgstr "No consegui abrir: %s\n"
 
-#: build/files.c:2136
+#: build/files.c:2144
 #, fuzzy, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "argumentos para o --dbpath devem comear com uma /"
 
 # , c-format
-#: build/files.c:2160
+#: build/files.c:2168
 #, fuzzy, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "No consegui abrir: %s\n"
 
-#: build/files.c:2175
+#: build/files.c:2183
 #, fuzzy, c-format
 msgid "Optional file not found by glob: %s\n"
 msgstr "no foi passado pacote para desinstalao"
 
-#: build/files.c:2179
+#: build/files.c:2187
 #, fuzzy, c-format
 msgid "File not found by glob: %s\n"
 msgstr "no foi passado pacote para desinstalao"
 
 # , c-format
-#: build/files.c:2243
+#: build/files.c:2251
 #, fuzzy, c-format
 msgid "Could not open %%files file %s: %s\n"
 msgstr "No consegui abrir: %s\n"
 
 # , c-format
-#: build/files.c:2254 build/pack.c:156
+#: build/files.c:2262 build/pack.c:156
 #, fuzzy, c-format
 msgid "line: %s\n"
 msgstr "No consegui ler o arquivo spec de %s\n"
 
 # , c-format
-#: build/files.c:2739
+#: build/files.c:2747
 #, fuzzy, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "No consegui ler o arquivo spec de %s\n"
 
-#: build/files.c:2761 build/parsePrep.c:53
+#: build/files.c:2769 build/parsePrep.c:53
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr ""
 
-#: build/files.c:2806
+#: build/files.c:2814
 #, fuzzy, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "instale pacote"
 
-#: build/files.c:2821
+#: build/files.c:2829
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
 "%s"
 msgstr ""
 
-#: build/files.c:2853
+#: build/files.c:2861
 #, fuzzy, c-format
 msgid "Processing files: %s\n"
 msgstr "Construo falhou.\n"
@@ -788,13 +788,13 @@ msgstr "No consegui abrir: %s\n"
 msgid "Wrote: %s\n"
 msgstr ""
 
-#: build/pack.c:1053
+#: build/pack.c:1057
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr ""
 
 # , c-format
-#: build/pack.c:1071
+#: build/pack.c:1075
 #, fuzzy, c-format
 msgid "cannot create %s: %s\n"
 msgstr "No consegui abrir: %s\n"
@@ -1235,173 +1235,185 @@ msgstr "%s no pode ser construido nesta arquitetura\n"
 msgid "Package has no %%description: %s\n"
 msgstr "no foi passado pacote para desinstalao"
 
-#: build/poptBT.c:142
+#: build/poptBT.c:140
 #, fuzzy, c-format
 msgid "build through %prep (unpack sources and apply patches) from <specfile>"
 msgstr "prep (descompacte fontes e aplique patches)"
 
-#: build/poptBT.c:143 build/poptBT.c:146 build/poptBT.c:149 build/poptBT.c:152
-#: build/poptBT.c:155 build/poptBT.c:158 build/poptBT.c:161 build/poptBT.c:165
-#: build/poptBT.c:169
+#: build/poptBT.c:141 build/poptBT.c:144 build/poptBT.c:147 build/poptBT.c:150
+#: build/poptBT.c:153 build/poptBT.c:156 build/poptBT.c:159 build/poptBT.c:163
+#: build/poptBT.c:167
 msgid "<specfile>"
 msgstr ""
 
-#: build/poptBT.c:145
+#: build/poptBT.c:143
 msgid "build through %build (%prep, then compile) from <specfile>"
 msgstr ""
 
-#: build/poptBT.c:148
+#: build/poptBT.c:146
 #, fuzzy
 msgid "build through %install (%prep, %build, then install) from <specfile>"
 msgstr "instale pacote"
 
-#: build/poptBT.c:151
+#: build/poptBT.c:149
 #, fuzzy, c-format
 msgid "verify %files section from <specfile>"
 msgstr "pesquise o pacote ao qual <arquivo> pertence"
 
-#: build/poptBT.c:154
+#: build/poptBT.c:152
 #, fuzzy
 msgid "build source and binary packages from <specfile>"
 msgstr "pesquise o pacote ao qual <arquivo> pertence"
 
-#: build/poptBT.c:157
+#: build/poptBT.c:155
 #, fuzzy
 msgid "build binary package only from <specfile>"
 msgstr "pesquise o pacote ao qual <arquivo> pertence"
 
-#: build/poptBT.c:160
+#: build/poptBT.c:158
 #, fuzzy
 msgid "build source package only from <specfile>"
 msgstr "pesquise o pacote ao qual <arquivo> pertence"
 
-#: build/poptBT.c:164
+#: build/poptBT.c:162
 #, fuzzy
 msgid "track versions of sources from <specfile>"
 msgstr "pesquise o pacote ao qual <arquivo> pertence"
 
-#: build/poptBT.c:168
+#: build/poptBT.c:166
 msgid "fetch missing source and patch files"
 msgstr ""
 
-#: build/poptBT.c:173
+#: build/poptBT.c:171
 #, fuzzy, c-format
 msgid "build through %prep (unpack sources and apply patches) from <tarball>"
 msgstr "prep (descompacte fontes e aplique patches)"
 
-#: build/poptBT.c:174 build/poptBT.c:177 build/poptBT.c:180 build/poptBT.c:183
-#: build/poptBT.c:186 build/poptBT.c:189 build/poptBT.c:192
+#: build/poptBT.c:172 build/poptBT.c:175 build/poptBT.c:178 build/poptBT.c:181
+#: build/poptBT.c:184 build/poptBT.c:187 build/poptBT.c:190
 msgid "<tarball>"
 msgstr ""
 
-#: build/poptBT.c:176
+#: build/poptBT.c:174
 msgid "build through %build (%prep, then compile) from <tarball>"
 msgstr ""
 
-#: build/poptBT.c:179
+#: build/poptBT.c:177
 msgid "build through %install (%prep, %build, then install) from <tarball>"
 msgstr ""
 
-#: build/poptBT.c:182
+#: build/poptBT.c:180
 #, fuzzy, c-format
 msgid "verify %files section from <tarball>"
 msgstr "pesquise o pacote ao qual <arquivo> pertence"
 
-#: build/poptBT.c:185
+#: build/poptBT.c:183
 #, fuzzy
 msgid "build source and binary packages from <tarball>"
 msgstr "pesquise o pacote ao qual <arquivo> pertence"
 
-#: build/poptBT.c:188
+#: build/poptBT.c:186
 #, fuzzy
 msgid "build binary package only from <tarball>"
 msgstr "pesquise o pacote ao qual <arquivo> pertence"
 
-#: build/poptBT.c:191
+#: build/poptBT.c:189
 #, fuzzy
 msgid "build source package only from <tarball>"
 msgstr "pesquise o pacote ao qual <arquivo> pertence"
 
-#: build/poptBT.c:195
+#: build/poptBT.c:193
 #, fuzzy
 msgid "build binary package from <source package>"
 msgstr "pacote binrio (prep, compile, instale, pacote)"
 
-#: build/poptBT.c:196 build/poptBT.c:199
+#: build/poptBT.c:194 build/poptBT.c:197
 #, fuzzy
 msgid "<source package>"
 msgstr "pesquise todos os pacotes"
 
-#: build/poptBT.c:198
+#: build/poptBT.c:196
 #, fuzzy
 msgid ""
 "build through %install (%prep, %build, then install) from <source package>"
 msgstr "instale pacote"
 
-#: build/poptBT.c:202
+#: build/poptBT.c:200
 msgid "remove build tree when done"
 msgstr "remova a rvore de construo quando terminar"
 
-#: build/poptBT.c:204
+#: build/poptBT.c:202
 #, fuzzy
 msgid "do not execute any stages of the build"
 msgstr "no execute nenhum estgio"
 
-#: build/poptBT.c:206
+#: build/poptBT.c:204
 #, fuzzy
 msgid "do not verify build dependencies"
 msgstr "no verifique as dependncias do pacote"
 
-#: build/poptBT.c:209 lib/poptALL.c:444 lib/poptI.c:342 lib/poptQV.c:406
+#: build/poptBT.c:206
+msgid "disable automagic Provides: extraction"
+msgstr ""
+
+#: build/poptBT.c:208
+msgid "disable automagic Requires: extraction"
+msgstr ""
+
+#: build/poptBT.c:210
+msgid "disable tags forbidden by LSB"
+msgstr ""
+
+#: build/poptBT.c:213 lib/poptALL.c:444 lib/poptI.c:342 lib/poptQV.c:406
 #: lib/poptQV.c:415 lib/poptQV.c:457
 #, fuzzy
 msgid "don't verify package digest(s)"
 msgstr "no verifique as dependncias do pacote"
 
-#: build/poptBT.c:211 lib/poptALL.c:446 lib/poptI.c:344 lib/poptQV.c:409
+#: build/poptBT.c:215 lib/poptALL.c:446 lib/poptI.c:344 lib/poptQV.c:409
 #: lib/poptQV.c:417 lib/poptQV.c:460
 #, fuzzy
 msgid "don't verify database header(s) when retrieved"
 msgstr "no verifique a arquitetura do pacote"
 
-#: build/poptBT.c:213 lib/poptALL.c:452 lib/poptI.c:346 lib/poptQV.c:412
+#: build/poptBT.c:217 lib/poptALL.c:452 lib/poptI.c:346 lib/poptQV.c:412
 #: lib/poptQV.c:419 lib/poptQV.c:462
 #, fuzzy
 msgid "don't verify package signature(s)"
 msgstr "verifique a assinatura do pacote"
 
-#: build/poptBT.c:216
+#: build/poptBT.c:220
 msgid "do not accept i18n msgstr's from specfile"
 msgstr ""
 
-#: build/poptBT.c:218
+#: build/poptBT.c:222
 #, fuzzy
 msgid "remove sources when done"
 msgstr "remova a rvore de construo quando terminar"
 
-#: build/poptBT.c:220
+#: build/poptBT.c:224
 #, fuzzy
 msgid "remove specfile when done"
 msgstr "remova a rvore de construo quando terminar"
 
-#: build/poptBT.c:222
+#: build/poptBT.c:226
 msgid "skip straight to specified stage (only for c,i)"
 msgstr "pule direto para o estgio especificado (somente para c,i)"
 
-#: build/poptBT.c:224
+#: build/poptBT.c:228
 #, fuzzy
 msgid "generate PGP/GPG signature"
 msgstr "gere assinatura PGP"
 
-#: build/poptBT.c:226
+#: build/poptBT.c:230
 msgid "override target platform"
 msgstr ""
 
-#: build/poptBT.c:226 lib/poptALL.c:441 lib/poptQV.c:317
+#: build/poptBT.c:230 lib/poptALL.c:441 lib/poptQV.c:317
 msgid "CPU-VENDOR-OS"
 msgstr ""
 
-#: build/poptBT.c:228
+#: build/poptBT.c:232
 #, fuzzy
 msgid "look up i18n strings in specfile catalog"
 msgstr "pesquise o pacote ao qual <arquivo> pertence"
@@ -3871,19 +3883,19 @@ msgstr "No consegui ler o arquivo spec de %s\n"
 msgid "File %s is smaller than %u bytes\n"
 msgstr ""
 
-#: rpmio/rpmdav.c:729
+#: rpmio/rpmdav.c:725
 msgid "Authorization Required"
 msgstr ""
 
-#: rpmio/rpmdav.c:731
+#: rpmio/rpmdav.c:727
 msgid "Redirect"
 msgstr ""
 
-#: rpmio/rpmdav.c:733
+#: rpmio/rpmdav.c:729
 msgid "Server Error"
 msgstr ""
 
-#: rpmio/rpmdav.c:735
+#: rpmio/rpmdav.c:731
 msgid "Unknown Error"
 msgstr ""
 

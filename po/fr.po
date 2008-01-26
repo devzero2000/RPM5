@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.2\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2008-01-22 10:43-0500\n"
+"POT-Creation-Date: 2008-01-26 03:22-0500\n"
 "PO-Revision-Date: 2004-04-10 08:00-0500\n"
 "Last-Translator: Michel Robitaille <robitail@IRO.UMontreal.CA>\n"
 "Language-Team: French <traduc@traduc.org>\n"
@@ -498,92 +498,92 @@ msgstr ""
 msgid "File listed twice: %s\n"
 msgstr "Fichier apparaissant deux fois: %s\n"
 
-#: build/files.c:1529
+#: build/files.c:1531
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr "points de liens symboliques vers Buildroot: %s -> %s\n"
 
-#: build/files.c:1816
+#: build/files.c:1824
 #, c-format
 msgid "File doesn't match prefix (%s): %s\n"
 msgstr "Le préfixe du fichier ne concorde pas (%s): %s\n"
 
-#: build/files.c:1842
+#: build/files.c:1850
 #, fuzzy, c-format
 msgid "Optional file not found: %s\n"
 msgstr "Fichier non repéré: %s\n"
 
-#: build/files.c:1845
+#: build/files.c:1853
 #, c-format
 msgid "File not found: %s\n"
 msgstr "Fichier non repéré: %s\n"
 
-#: build/files.c:2063
+#: build/files.c:2071
 #, c-format
 msgid "%s: can't load unknown tag (%d).\n"
 msgstr ""
 
-#: build/files.c:2069
+#: build/files.c:2077
 #, c-format
 msgid "%s: public key read failed.\n"
 msgstr "%s: lecture de la clé publique a échoué.\n"
 
-#: build/files.c:2073 lib/rpmchecksig.c:746
+#: build/files.c:2081 lib/rpmchecksig.c:746
 #, c-format
 msgid "%s: not an armored public key.\n"
 msgstr "%s: n'est pas une clé publique armée.\n"
 
-#: build/files.c:2080
+#: build/files.c:2088
 #, fuzzy, c-format
 msgid "%s: *.te policy read failed.\n"
 msgstr "%s: lecture de la clé publique a échoué.\n"
 
-#: build/files.c:2136
+#: build/files.c:2144
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "Le fichier a besoin des caractères \"/\" de tête: %s\n"
 
-#: build/files.c:2160
+#: build/files.c:2168
 #, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "Glob est interdit: %s\n"
 
-#: build/files.c:2175
+#: build/files.c:2183
 #, fuzzy, c-format
 msgid "Optional file not found by glob: %s\n"
 msgstr "Fichier non repéré par glob: %s\n"
 
-#: build/files.c:2179
+#: build/files.c:2187
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Fichier non repéré par glob: %s\n"
 
-#: build/files.c:2243
+#: build/files.c:2251
 #, c-format
 msgid "Could not open %%files file %s: %s\n"
 msgstr "Ne peut ouvrir les fichiers %% fichier %s: %s\n"
 
-#: build/files.c:2254 build/pack.c:156
+#: build/files.c:2262 build/pack.c:156
 #, c-format
 msgid "line: %s\n"
 msgstr "ligne: %s\n"
 
-#: build/files.c:2739
+#: build/files.c:2747
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "Mauvais fichier: %s: %s\n"
 
-#: build/files.c:2761 build/parsePrep.c:53
+#: build/files.c:2769 build/parsePrep.c:53
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "Mauvais propriétaire/groupe: %s\n"
 
-#: build/files.c:2806
+#: build/files.c:2814
 #, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "Vérification pour le dépaquetage des fichiers: %s\n"
 
-#: build/files.c:2821
+#: build/files.c:2829
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
@@ -592,7 +592,7 @@ msgstr ""
 "Installé (mais pas dépaqueté) fichiers repérés:\n"
 "%s"
 
-#: build/files.c:2853
+#: build/files.c:2861
 #, fuzzy, c-format
 msgid "Processing files: %s\n"
 msgstr "Traitement des fichier: %s-%s-%s\n"
@@ -749,12 +749,12 @@ msgstr "Incapable d'écrire la charge vers %s: %s\n"
 msgid "Wrote: %s\n"
 msgstr "A écrit: %s\n"
 
-#: build/pack.c:1053
+#: build/pack.c:1057
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr "Ne peut générer le nom du fichier de sortie pour le package %s: %s\n"
 
-#: build/pack.c:1071
+#: build/pack.c:1075
 #, c-format
 msgid "cannot create %s: %s\n"
 msgstr "ne peut créer %s: %s\n"
@@ -1149,167 +1149,179 @@ msgstr "Aucune architecture compatible n'a été repéré pour la construction\n
 msgid "Package has no %%description: %s\n"
 msgstr "Le package n'a pas de %%description: %s\n"
 
-#: build/poptBT.c:142
+#: build/poptBT.c:140
 #, c-format
 msgid "build through %prep (unpack sources and apply patches) from <specfile>"
 msgstr ""
 "construit à travers %prep (dépaqueter les sources et appliquer les "
 "correctifs) à partir du <fichier_spec>"
 
-#: build/poptBT.c:143 build/poptBT.c:146 build/poptBT.c:149 build/poptBT.c:152
-#: build/poptBT.c:155 build/poptBT.c:158 build/poptBT.c:161 build/poptBT.c:165
-#: build/poptBT.c:169
+#: build/poptBT.c:141 build/poptBT.c:144 build/poptBT.c:147 build/poptBT.c:150
+#: build/poptBT.c:153 build/poptBT.c:156 build/poptBT.c:159 build/poptBT.c:163
+#: build/poptBT.c:167
 msgid "<specfile>"
 msgstr "<fichier_spec>"
 
-#: build/poptBT.c:145
+#: build/poptBT.c:143
 msgid "build through %build (%prep, then compile) from <specfile>"
 msgstr "généré à partir de %build (%prep, puis compiler) du fichier <specfile>"
 
-#: build/poptBT.c:148
+#: build/poptBT.c:146
 msgid "build through %install (%prep, %build, then install) from <specfile>"
 msgstr ""
 "généré à parti de %install (%prep, %build puis installer) du fichier "
 "<specfile>"
 
-#: build/poptBT.c:151
+#: build/poptBT.c:149
 #, c-format
 msgid "verify %files section from <specfile>"
 msgstr "vérifier la section %fichiers à partir du <fichier_spec>"
 
-#: build/poptBT.c:154
+#: build/poptBT.c:152
 msgid "build source and binary packages from <specfile>"
 msgstr "générer les packages source et binaire à partir du <fichier_spec>"
 
-#: build/poptBT.c:157
+#: build/poptBT.c:155
 msgid "build binary package only from <specfile>"
 msgstr "générer le package binaire à partir du <fichier_spec>"
 
-#: build/poptBT.c:160
+#: build/poptBT.c:158
 msgid "build source package only from <specfile>"
 msgstr "générer le package source seulement à partir du <fichier_spec>"
 
-#: build/poptBT.c:164
+#: build/poptBT.c:162
 #, fuzzy
 msgid "track versions of sources from <specfile>"
 msgstr "vérifier la section %fichiers à partir du <fichier_spec>"
 
-#: build/poptBT.c:168
+#: build/poptBT.c:166
 msgid "fetch missing source and patch files"
 msgstr ""
 
-#: build/poptBT.c:173
+#: build/poptBT.c:171
 #, c-format
 msgid "build through %prep (unpack sources and apply patches) from <tarball>"
 msgstr ""
 "générer à travers %prep (dépaqueter les sources et appliquer les correctifs "
 "à partir de <tarball>"
 
-#: build/poptBT.c:174 build/poptBT.c:177 build/poptBT.c:180 build/poptBT.c:183
-#: build/poptBT.c:186 build/poptBT.c:189 build/poptBT.c:192
+#: build/poptBT.c:172 build/poptBT.c:175 build/poptBT.c:178 build/poptBT.c:181
+#: build/poptBT.c:184 build/poptBT.c:187 build/poptBT.c:190
 msgid "<tarball>"
 msgstr "<tarball>"
 
-#: build/poptBT.c:176
+#: build/poptBT.c:174
 msgid "build through %build (%prep, then compile) from <tarball>"
 msgstr "générer à travers %build (%prep puis compiler) à partir de <tarball>"
 
-#: build/poptBT.c:179
+#: build/poptBT.c:177
 msgid "build through %install (%prep, %build, then install) from <tarball>"
 msgstr ""
 "générer à travers %install (%prep, %build puis installer) à partir de "
 "<tarball>"
 
-#: build/poptBT.c:182
+#: build/poptBT.c:180
 #, c-format
 msgid "verify %files section from <tarball>"
 msgstr "vérifier la section des %fichiers à partir de <tarball>"
 
-#: build/poptBT.c:185
+#: build/poptBT.c:183
 msgid "build source and binary packages from <tarball>"
 msgstr "générer les packages sources et binaires à partir de <tarball>"
 
-#: build/poptBT.c:188
+#: build/poptBT.c:186
 msgid "build binary package only from <tarball>"
 msgstr "générer les packages binaires seulement à partir de <tarball>"
 
-#: build/poptBT.c:191
+#: build/poptBT.c:189
 msgid "build source package only from <tarball>"
 msgstr "générer les packages sources seulement à partir de <tarball>"
 
-#: build/poptBT.c:195
+#: build/poptBT.c:193
 msgid "build binary package from <source package>"
 msgstr "générer les packages sources seulement à partir de <package source>"
 
-#: build/poptBT.c:196 build/poptBT.c:199
+#: build/poptBT.c:194 build/poptBT.c:197
 msgid "<source package>"
 msgstr "<package source>"
 
-#: build/poptBT.c:198
+#: build/poptBT.c:196
 msgid ""
 "build through %install (%prep, %build, then install) from <source package>"
 msgstr ""
 "générer à travers %install (%prep, %build puis intaller) à partir de "
 "<package source>"
 
-#: build/poptBT.c:202
+#: build/poptBT.c:200
 msgid "remove build tree when done"
 msgstr "enlever l'arborescence de génération lorsque complété"
 
-#: build/poptBT.c:204
+#: build/poptBT.c:202
 msgid "do not execute any stages of the build"
 msgstr "ne pas exclure aucune des étages de la génération"
 
-#: build/poptBT.c:206
+#: build/poptBT.c:204
 msgid "do not verify build dependencies"
 msgstr "ne pas vérifier les dépendances de génération"
 
-#: build/poptBT.c:209 lib/poptALL.c:444 lib/poptI.c:342 lib/poptQV.c:406
+#: build/poptBT.c:206
+msgid "disable automagic Provides: extraction"
+msgstr ""
+
+#: build/poptBT.c:208
+msgid "disable automagic Requires: extraction"
+msgstr ""
+
+#: build/poptBT.c:210
+msgid "disable tags forbidden by LSB"
+msgstr ""
+
+#: build/poptBT.c:213 lib/poptALL.c:444 lib/poptI.c:342 lib/poptQV.c:406
 #: lib/poptQV.c:415 lib/poptQV.c:457
 msgid "don't verify package digest(s)"
 msgstr "ne pas vérifier le « digest » du package"
 
-#: build/poptBT.c:211 lib/poptALL.c:446 lib/poptI.c:344 lib/poptQV.c:409
+#: build/poptBT.c:215 lib/poptALL.c:446 lib/poptI.c:344 lib/poptQV.c:409
 #: lib/poptQV.c:417 lib/poptQV.c:460
 msgid "don't verify database header(s) when retrieved"
 msgstr "ne pas vérifier les en-têtes de la base de données lorsque récupérés"
 
-#: build/poptBT.c:213 lib/poptALL.c:452 lib/poptI.c:346 lib/poptQV.c:412
+#: build/poptBT.c:217 lib/poptALL.c:452 lib/poptI.c:346 lib/poptQV.c:412
 #: lib/poptQV.c:419 lib/poptQV.c:462
 msgid "don't verify package signature(s)"
 msgstr "ne pas vérifier la signature des packages"
 
-#: build/poptBT.c:216
+#: build/poptBT.c:220
 #, fuzzy
 msgid "do not accept i18n msgstr's from specfile"
 msgstr ""
 "ne pas accepter les chaîne msgstr i18N à partir du fichier de spécifications"
 
-#: build/poptBT.c:218
+#: build/poptBT.c:222
 msgid "remove sources when done"
 msgstr "enlever les sources lorsque complété"
 
-#: build/poptBT.c:220
+#: build/poptBT.c:224
 msgid "remove specfile when done"
 msgstr "enlever le fichier de spécifications lorsque complété"
 
-#: build/poptBT.c:222
+#: build/poptBT.c:226
 msgid "skip straight to specified stage (only for c,i)"
 msgstr "passer immédiatement à l'étape spécifiée (seulement pour c,i)"
 
-#: build/poptBT.c:224
+#: build/poptBT.c:228
 msgid "generate PGP/GPG signature"
 msgstr "générer la signature PGP/GPG"
 
-#: build/poptBT.c:226
+#: build/poptBT.c:230
 msgid "override target platform"
 msgstr "écraser la plate-forme cible"
 
-#: build/poptBT.c:226 lib/poptALL.c:441 lib/poptQV.c:317
+#: build/poptBT.c:230 lib/poptALL.c:441 lib/poptQV.c:317
 msgid "CPU-VENDOR-OS"
 msgstr ""
 
-#: build/poptBT.c:228
+#: build/poptBT.c:232
 #, fuzzy
 msgid "look up i18n strings in specfile catalog"
 msgstr ""
@@ -3722,20 +3734,20 @@ msgstr "Fichier %s: %s\n"
 msgid "File %s is smaller than %u bytes\n"
 msgstr "Fichier %s est plus petit que %u octets\n"
 
-#: rpmio/rpmdav.c:729
+#: rpmio/rpmdav.c:725
 msgid "Authorization Required"
 msgstr ""
 
-#: rpmio/rpmdav.c:731
+#: rpmio/rpmdav.c:727
 msgid "Redirect"
 msgstr ""
 
-#: rpmio/rpmdav.c:733
+#: rpmio/rpmdav.c:729
 #, fuzzy
 msgid "Server Error"
 msgstr "ERREUR d'E/S du serveur"
 
-#: rpmio/rpmdav.c:735
+#: rpmio/rpmdav.c:731
 #, fuzzy
 msgid "Unknown Error"
 msgstr "(pas d'erreur)"

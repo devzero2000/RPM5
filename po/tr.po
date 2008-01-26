@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.1\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2008-01-22 10:43-0500\n"
+"POT-Creation-Date: 2008-01-26 03:22-0500\n"
 "PO-Revision-Date: 2003-12-31 09:08+0300\n"
 "Last-Translator: Nilgün Belma Bugüner <nilgun@superonline.com>\n"
 "Language-Team: Turkish <gnu-tr-u12a@lists.sourceforge.net>\n"
@@ -479,92 +479,92 @@ msgstr ""
 msgid "File listed twice: %s\n"
 msgstr "Dosya iki kere gösterildi: %s\n"
 
-#: build/files.c:1529
+#: build/files.c:1531
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr "Sembolik bağ BuildRoot gösteriyor: %s -> %s\n"
 
-#: build/files.c:1816
+#: build/files.c:1824
 #, c-format
 msgid "File doesn't match prefix (%s): %s\n"
 msgstr "Dosya önek (%s) ile uyumsuz: %s\n"
 
-#: build/files.c:1842
+#: build/files.c:1850
 #, fuzzy, c-format
 msgid "Optional file not found: %s\n"
 msgstr "Dosya bulunamadı: %s\n"
 
-#: build/files.c:1845
+#: build/files.c:1853
 #, c-format
 msgid "File not found: %s\n"
 msgstr "Dosya bulunamadı: %s\n"
 
-#: build/files.c:2063
+#: build/files.c:2071
 #, c-format
 msgid "%s: can't load unknown tag (%d).\n"
 msgstr ""
 
-#: build/files.c:2069
+#: build/files.c:2077
 #, fuzzy, c-format
 msgid "%s: public key read failed.\n"
 msgstr "%s: import read başarısız.\n"
 
-#: build/files.c:2073 lib/rpmchecksig.c:746
+#: build/files.c:2081 lib/rpmchecksig.c:746
 #, c-format
 msgid "%s: not an armored public key.\n"
 msgstr "%s: bir zırhlı genel anahtar değil.\n"
 
-#: build/files.c:2080
+#: build/files.c:2088
 #, fuzzy, c-format
 msgid "%s: *.te policy read failed.\n"
 msgstr "%s: import read başarısız.\n"
 
-#: build/files.c:2136
+#: build/files.c:2144
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "Dosya \"/\" ile içermeli: %s\n"
 
-#: build/files.c:2160
+#: build/files.c:2168
 #, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "Glob yasak: %s\n"
 
-#: build/files.c:2175
+#: build/files.c:2183
 #, fuzzy, c-format
 msgid "Optional file not found by glob: %s\n"
 msgstr "Dosya glob tarafından bulunamadı: %s\n"
 
-#: build/files.c:2179
+#: build/files.c:2187
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Dosya glob tarafından bulunamadı: %s\n"
 
-#: build/files.c:2243
+#: build/files.c:2251
 #, c-format
 msgid "Could not open %%files file %s: %s\n"
 msgstr "%%files dosya %s dosyasında açılamadı: %s\n"
 
-#: build/files.c:2254 build/pack.c:156
+#: build/files.c:2262 build/pack.c:156
 #, c-format
 msgid "line: %s\n"
 msgstr "satır: %s\n"
 
-#: build/files.c:2739
+#: build/files.c:2747
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "Dosya hatalı: %s: %s\n"
 
-#: build/files.c:2761 build/parsePrep.c:53
+#: build/files.c:2769 build/parsePrep.c:53
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "Kullanıcı/grup hatalı: %s\n"
 
-#: build/files.c:2806
+#: build/files.c:2814
 #, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "Paketlenmemiş dosyalar için bakılıyor: %s\n"
 
-#: build/files.c:2821
+#: build/files.c:2829
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
@@ -573,7 +573,7 @@ msgstr ""
 "Kurulu (ama paketlenmemiş) dosyalar var:\n"
 "%s"
 
-#: build/files.c:2853
+#: build/files.c:2861
 #, fuzzy, c-format
 msgid "Processing files: %s\n"
 msgstr "İşlenen dosyalar: %s-%s-%s\n"
@@ -730,12 +730,12 @@ msgstr "%s'e payload yazılamadı: %s\n"
 msgid "Wrote: %s\n"
 msgstr "Yazıldı: %s\n"
 
-#: build/pack.c:1053
+#: build/pack.c:1057
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr "%s paketi için çıktı dosya adı üretilemedi: %s\n"
 
-#: build/pack.c:1071
+#: build/pack.c:1075
 #, c-format
 msgid "cannot create %s: %s\n"
 msgstr "%s dosyası oluşturulamıyor: %s\n"
@@ -1130,168 +1130,180 @@ msgstr "Kurgulamak için uyumlu mimari yok\n"
 msgid "Package has no %%description: %s\n"
 msgstr "Paket %%description içermiyor: %s\n"
 
-#: build/poptBT.c:142
+#: build/poptBT.c:140
 #, c-format
 msgid "build through %prep (unpack sources and apply patches) from <specfile>"
 msgstr ""
 "<specfile>dan  %prep adımı sayesinde oluşturulur (kaynak paketi açılır ve "
 "yamalar uygulanır)"
 
-#: build/poptBT.c:143 build/poptBT.c:146 build/poptBT.c:149 build/poptBT.c:152
-#: build/poptBT.c:155 build/poptBT.c:158 build/poptBT.c:161 build/poptBT.c:165
-#: build/poptBT.c:169
+#: build/poptBT.c:141 build/poptBT.c:144 build/poptBT.c:147 build/poptBT.c:150
+#: build/poptBT.c:153 build/poptBT.c:156 build/poptBT.c:159 build/poptBT.c:163
+#: build/poptBT.c:167
 msgid "<specfile>"
 msgstr "<specfile>"
 
-#: build/poptBT.c:145
+#: build/poptBT.c:143
 msgid "build through %build (%prep, then compile) from <specfile>"
 msgstr ""
 "<specfile>dan %build adımı sayesinde oluşturulur (%prep, sonra da derlenir)"
 
-#: build/poptBT.c:148
+#: build/poptBT.c:146
 msgid "build through %install (%prep, %build, then install) from <specfile>"
 msgstr ""
 "<specfile>dan %install adımı sayesinde oluşturulur (%prep, %build, sonra da "
 "kurulum)"
 
-#: build/poptBT.c:151
+#: build/poptBT.c:149
 #, c-format
 msgid "verify %files section from <specfile>"
 msgstr "<specfile>dan %files bölümünü doğrular"
 
-#: build/poptBT.c:154
+#: build/poptBT.c:152
 msgid "build source and binary packages from <specfile>"
 msgstr "kaynak ve çalıştırılabilir paketleri <specfile> dosyasından oluşturur"
 
-#: build/poptBT.c:157
+#: build/poptBT.c:155
 msgid "build binary package only from <specfile>"
 msgstr "çalıştırılabilir paketi sadece <specfile> dosyasından oluşturur"
 
-#: build/poptBT.c:160
+#: build/poptBT.c:158
 msgid "build source package only from <specfile>"
 msgstr "kaynak paketi sadece <specfile> dosyasından oluşturur"
 
-#: build/poptBT.c:164
+#: build/poptBT.c:162
 #, fuzzy
 msgid "track versions of sources from <specfile>"
 msgstr "<specfile>dan %files bölümünü doğrular"
 
-#: build/poptBT.c:168
+#: build/poptBT.c:166
 msgid "fetch missing source and patch files"
 msgstr ""
 
-#: build/poptBT.c:173
+#: build/poptBT.c:171
 #, c-format
 msgid "build through %prep (unpack sources and apply patches) from <tarball>"
 msgstr ""
 "<tarball>dan %prep adımı sayesinde oluşturulur (kaynak paketi açılır ve "
 "yamalar uygulanır)"
 
-#: build/poptBT.c:174 build/poptBT.c:177 build/poptBT.c:180 build/poptBT.c:183
-#: build/poptBT.c:186 build/poptBT.c:189 build/poptBT.c:192
+#: build/poptBT.c:172 build/poptBT.c:175 build/poptBT.c:178 build/poptBT.c:181
+#: build/poptBT.c:184 build/poptBT.c:187 build/poptBT.c:190
 msgid "<tarball>"
 msgstr "<tarball>"
 
-#: build/poptBT.c:176
+#: build/poptBT.c:174
 msgid "build through %build (%prep, then compile) from <tarball>"
 msgstr ""
 "<tarball>dan %build adımı sayesinde oluşturulur (%prep, sonra da derleme)"
 
-#: build/poptBT.c:179
+#: build/poptBT.c:177
 msgid "build through %install (%prep, %build, then install) from <tarball>"
 msgstr ""
 "<tarball>dan %install adımı sayesinde oluşturulur (%prep, %build, sonra da "
 "kurulur)"
 
-#: build/poptBT.c:182
+#: build/poptBT.c:180
 #, c-format
 msgid "verify %files section from <tarball>"
 msgstr "<tarball>dan %files bölümünü doğrular"
 
-#: build/poptBT.c:185
+#: build/poptBT.c:183
 msgid "build source and binary packages from <tarball>"
 msgstr "kaynak ve çalıştırılabilir paketleri <tarball>dan oluşturur"
 
-#: build/poptBT.c:188
+#: build/poptBT.c:186
 msgid "build binary package only from <tarball>"
 msgstr "çalıştırılabilir paketi sadece <tarball>dan oluşturur"
 
-#: build/poptBT.c:191
+#: build/poptBT.c:189
 msgid "build source package only from <tarball>"
 msgstr "kaynak paketi sadece <tarball>dan oluşturur"
 
-#: build/poptBT.c:195
+#: build/poptBT.c:193
 msgid "build binary package from <source package>"
 msgstr "çalıştırılabilir paketi <kaynak paketi>nden oluşturur"
 
-#: build/poptBT.c:196 build/poptBT.c:199
+#: build/poptBT.c:194 build/poptBT.c:197
 msgid "<source package>"
 msgstr "<kaynak paketi>"
 
-#: build/poptBT.c:198
+#: build/poptBT.c:196
 msgid ""
 "build through %install (%prep, %build, then install) from <source package>"
 msgstr ""
 "<kaynak paketi>nden %install adımı sayesinde oluşturulur (%prep, %build, "
 "sonra da kurulur)"
 
-#: build/poptBT.c:202
+#: build/poptBT.c:200
 msgid "remove build tree when done"
 msgstr "işlem sonunda paket oluşturma ağacını siler"
 
-#: build/poptBT.c:204
+#: build/poptBT.c:202
 msgid "do not execute any stages of the build"
 msgstr "oluşumun hiçbir adımı icra edilmez"
 
-#: build/poptBT.c:206
+#: build/poptBT.c:204
 msgid "do not verify build dependencies"
 msgstr "kurgulama bağımlılıklarını doğrulanmaz"
 
-#: build/poptBT.c:209 lib/poptALL.c:444 lib/poptI.c:342 lib/poptQV.c:406
+#: build/poptBT.c:206
+msgid "disable automagic Provides: extraction"
+msgstr ""
+
+#: build/poptBT.c:208
+msgid "disable automagic Requires: extraction"
+msgstr ""
+
+#: build/poptBT.c:210
+msgid "disable tags forbidden by LSB"
+msgstr ""
+
+#: build/poptBT.c:213 lib/poptALL.c:444 lib/poptI.c:342 lib/poptQV.c:406
 #: lib/poptQV.c:415 lib/poptQV.c:457
 msgid "don't verify package digest(s)"
 msgstr "paket özetleri doğrulanmaz"
 
-#: build/poptBT.c:211 lib/poptALL.c:446 lib/poptI.c:344 lib/poptQV.c:409
+#: build/poptBT.c:215 lib/poptALL.c:446 lib/poptI.c:344 lib/poptQV.c:409
 #: lib/poptQV.c:417 lib/poptQV.c:460
 msgid "don't verify database header(s) when retrieved"
 msgstr "alırken veritabanı başlıkları doğrulanmaz"
 
-#: build/poptBT.c:213 lib/poptALL.c:452 lib/poptI.c:346 lib/poptQV.c:412
+#: build/poptBT.c:217 lib/poptALL.c:452 lib/poptI.c:346 lib/poptQV.c:412
 #: lib/poptQV.c:419 lib/poptQV.c:462
 msgid "don't verify package signature(s)"
 msgstr "paket imzasını doğrular"
 
-#: build/poptBT.c:216
+#: build/poptBT.c:220
 #, fuzzy
 msgid "do not accept i18n msgstr's from specfile"
 msgstr "spec dosyası içindeki i18n msgstr'leri kabul edilmez"
 
-#: build/poptBT.c:218
+#: build/poptBT.c:222
 msgid "remove sources when done"
 msgstr "işlem sonunda kaynakları siler"
 
-#: build/poptBT.c:220
+#: build/poptBT.c:224
 msgid "remove specfile when done"
 msgstr "işlem sonunda spec dosyasını siler"
 
-#: build/poptBT.c:222
+#: build/poptBT.c:226
 msgid "skip straight to specified stage (only for c,i)"
 msgstr "doğrudan belirtilen adıma atlar (sadece c ve i için)"
 
-#: build/poptBT.c:224
+#: build/poptBT.c:228
 msgid "generate PGP/GPG signature"
 msgstr "PGP/GPG imzası üretir"
 
-#: build/poptBT.c:226
+#: build/poptBT.c:230
 msgid "override target platform"
 msgstr "hedef platforma zorlar"
 
-#: build/poptBT.c:226 lib/poptALL.c:441 lib/poptQV.c:317
+#: build/poptBT.c:230 lib/poptALL.c:441 lib/poptQV.c:317
 msgid "CPU-VENDOR-OS"
 msgstr ""
 
-#: build/poptBT.c:228
+#: build/poptBT.c:232
 #, fuzzy
 msgid "look up i18n strings in specfile catalog"
 msgstr "spec dosyasındaki i18n iletilerine bakar"
@@ -3663,20 +3675,20 @@ msgstr "%s dosyası: %s\n"
 msgid "File %s is smaller than %u bytes\n"
 msgstr "%s dosyası %u bayttan küçük\n"
 
-#: rpmio/rpmdav.c:729
+#: rpmio/rpmdav.c:725
 msgid "Authorization Required"
 msgstr ""
 
-#: rpmio/rpmdav.c:731
+#: rpmio/rpmdav.c:727
 msgid "Redirect"
 msgstr ""
 
-#: rpmio/rpmdav.c:733
+#: rpmio/rpmdav.c:729
 #, fuzzy
 msgid "Server Error"
 msgstr "Sunucu G/Ç hatası"
 
-#: rpmio/rpmdav.c:735
+#: rpmio/rpmdav.c:731
 #, fuzzy
 msgid "Unknown Error"
 msgstr "(hata yok)"
