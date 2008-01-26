@@ -285,13 +285,11 @@ Spec s;
 	// here starts the code for builder
 	const char *name = NULL, *version = NULL, *release = NULL;
 
-	if (s->sourceHeader == NULL) {
 #if RPM_VERSION_CODE >= RPM_VERSION(4,4,9)
-		initSourceHeader(s, NULL);
+	initSourceHeader(s, NULL);
 #else
-		initSourceHeader(s);
+	initSourceHeader(s);
 #endif
-	}
 	Header h = s->sourceHeader;
 
 	if (
