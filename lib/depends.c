@@ -845,6 +845,30 @@ retry:
 	goto exit;
     }
 
+    if (NSType == RPMNS_TYPE_VERIFY) {
+	QVA_t qva = memset(alloca(sizeof(*qva)), 0, sizeof(*qva));
+
+	qva->qva_flags = VERIFY_ALL & ~(VERIFY_DEPS|VERIFY_SCRIPT);
+	rc = 0;		/* assume success */
+	if (rpmtsGetRdb(ts) != NULL) {
+	    mi = rpmtsInitIterator(ts, RPMTAG_PROVIDENAME, Name, 0);
+	    while ((h = rpmdbNextIterator(mi)) != NULL) {
+		if (!rpmdsAnyMatchesDep(h, dep, _rpmds_nopromote))
+		    continue;
+		xx = (showVerifyPackage(qva, ts, h) ? 1 : 0);
+fprintf(stderr, "==> xx %d\n", xx);
+		if (xx)
+		    rc = 1;
+	    }
+	    mi = rpmdbFreeIterator(mi);
+	}
+
+	if (Flags & RPMSENSE_MISSINGOK)
+	    goto unsatisfied;
+	rpmdsNotify(dep, _("(verify probe)"), rc);
+	goto exit;
+    }
+
     if (NSType == RPMNS_TYPE_GNUPG) {
 	const char * EVR = rpmdsEVR(dep);
 	if (!(EVR && *EVR)) {

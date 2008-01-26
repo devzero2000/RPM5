@@ -90,6 +90,7 @@ static struct _rpmnsProbes_s {
     { "sanitycheck",	RPMNS_TYPE_SANITY },
     { "vcheck",		RPMNS_TYPE_VCHECK },
     { "signature",	RPMNS_TYPE_SIGNATURE },
+    { "verify",		RPMNS_TYPE_VERIFY },
     { "exists",		RPMNS_TYPE_ACCESS },
     { "executable",	RPMNS_TYPE_ACCESS },
     { "readable",	RPMNS_TYPE_ACCESS },
@@ -208,6 +209,7 @@ int rpmnsParse(const char * str, rpmns ns)
     case RPMNS_TYPE_SANITY:
     case RPMNS_TYPE_VCHECK:
     case RPMNS_TYPE_SIGNATURE:
+    case RPMNS_TYPE_VERIFY:
 	ns->NS = ns->str;
 	if (ns->NS[0] == '!')
 	    ns->NS++;

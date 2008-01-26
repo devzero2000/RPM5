@@ -1,4 +1,5 @@
 5.0.0 -> 5.1a1:
+    - jbj: add verify(N) = E:V-R runtime dependency probe. more to do ...
     - jbj: stub in RPMTAG_FILESTAT and RPMTAG_STAT extensions, w-i-p.
     - jbj: re-add PayloadFilesHavePrefix/CompressedFileNames w --lsb.
     - rse: provide %{shrink:<body>} macro for removing leading+trailing and removing intermediate whitespaces
