@@ -852,14 +852,14 @@ retry:
 	qva->qva_flags = VERIFY_ALL & ~(VERIFY_DEPS|VERIFY_SCRIPT);
 	rc = 0;		/* assume success */
 	if (rpmtsGetRdb(ts) != NULL) {
-	    if (Name[0] == '*')			/* -Va probe */
+	    if (!strcmp(Name, "*"))			/* -Va probe */
 		mi = rpmtsInitIterator(ts, RPMDBI_PACKAGES, NULL, 0);
 	    else if (Name[0] == '/')		/* -Vf probe */
 		mi = rpmtsInitIterator(ts, RPMTAG_BASENAMES, Name, 0);
 	    else				/* -V probe */
 		mi = rpmtsInitIterator(ts, RPMTAG_PROVIDENAME, Name, 0);
 	    while ((h = rpmdbNextIterator(mi)) != NULL) {
-		if (!(Name[0] == '/' || Name[0] == '*'))
+		if (!(Name[0] == '/' || !strcmp(Name, "*")))
 		if (!rpmdsAnyMatchesDep(h, dep, _rpmds_nopromote))
 		    continue;
 		xx = (showVerifyPackage(qva, ts, h) ? 1 : 0);
