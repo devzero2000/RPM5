@@ -142,6 +142,10 @@
 	Use YAML for extra credit.
     - jbj: verify(...) probe likely needs to supply _SOME_ information for
 	failure cases, at least with -vv.
+    - jbj: verify(...) with prelinking likely needs more "stuff" in QVA_t:
+D: rpmdb: read h#     512 Header V3 DSA signature: OK, key ID 1ac70ce6
+prelink: Couldn't write file to standard output: Broken pipe
+
 
 
 
