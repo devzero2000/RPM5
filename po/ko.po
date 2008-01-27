@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 5.0\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2008-01-22 13:58-0500\n"
+"POT-Creation-Date: 2008-01-27 12:31-0500\n"
 "PO-Revision-Date: 2002-03-04 17:17+0900\n"
 "Last-Translator: Jong-Hoon Ryu <redhat4u@netian.com>\n"
 "Language-Team: GNU Translation project <ko@li.org>\n"
@@ -473,94 +473,94 @@ msgstr "파일 목록이 중복됨: %s\n"
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr "BuildRoot에 심볼릭링크함: %s -> %s\n"
 
-#: build/files.c:1819
+#: build/files.c:1824
 #, c-format
 msgid "File doesn't match prefix (%s): %s\n"
 msgstr "파일이 prefix (%s)와 일치하지 않음: %s\n"
 
-#: build/files.c:1845
+#: build/files.c:1850
 #, fuzzy, c-format
 msgid "Optional file not found: %s\n"
 msgstr "파일을 찾을 수 없음: %s\n"
 
-#: build/files.c:1848
+#: build/files.c:1853
 #, c-format
 msgid "File not found: %s\n"
 msgstr "파일을 찾을 수 없음: %s\n"
 
-#: build/files.c:2066
+#: build/files.c:2071
 #, c-format
 msgid "%s: can't load unknown tag (%d).\n"
 msgstr ""
 
-#: build/files.c:2072
+#: build/files.c:2077
 #, fuzzy, c-format
 msgid "%s: public key read failed.\n"
 msgstr "%s: readLead이 실패했습니다\n"
 
-#: build/files.c:2076 lib/rpmchecksig.c:746
+#: build/files.c:2081 lib/rpmchecksig.c:746
 #, c-format
 msgid "%s: not an armored public key.\n"
 msgstr ""
 
-#: build/files.c:2083
+#: build/files.c:2088
 #, fuzzy, c-format
 msgid "%s: *.te policy read failed.\n"
 msgstr "%s: readLead이 실패했습니다\n"
 
-#: build/files.c:2139
+#: build/files.c:2144
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "파일은 \"/\" 로 시작해야함: %s\n"
 
-#: build/files.c:2163
+#: build/files.c:2168
 #, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "Glob을 사용할 수 없음: %s\n"
 
-#: build/files.c:2178
+#: build/files.c:2183
 #, fuzzy, c-format
 msgid "Optional file not found by glob: %s\n"
 msgstr "glob으로 파일을 찾을 수 없음: %s\n"
 
-#: build/files.c:2182
+#: build/files.c:2187
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "glob으로 파일을 찾을 수 없음: %s\n"
 
-#: build/files.c:2246
+#: build/files.c:2251
 #, c-format
 msgid "Could not open %%files file %s: %s\n"
 msgstr "%s 파일의 %%files를 열 수 없음: %s\n"
 
-#: build/files.c:2257 build/pack.c:156
+#: build/files.c:2262 build/pack.c:156
 #, c-format
 msgid "line: %s\n"
 msgstr "행: %s\n"
 
-#: build/files.c:2742
+#: build/files.c:2747
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "잘못된 파일: %s: %s\n"
 
-#: build/files.c:2764 build/parsePrep.c:53
+#: build/files.c:2769 build/parsePrep.c:53
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "잘못된 소유자/그룹: %s\n"
 
-#: build/files.c:2809
+#: build/files.c:2814
 #, fuzzy, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "아카이브를 푸는데 실패함%s%s: %s\n"
 
-#: build/files.c:2824
+#: build/files.c:2829
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
 "%s"
 msgstr ""
 
-#: build/files.c:2856
+#: build/files.c:2861
 #, fuzzy, c-format
 msgid "Processing files: %s\n"
 msgstr "파일 처리 중: %s-%s-%s\n"
@@ -1413,95 +1413,100 @@ msgstr "%s: %-45s 예 (rpmrc이 제공함)\n"
 msgid "(signature probe)"
 msgstr "%s: %-45s 예 (rpmrc이 제공함)\n"
 
-#: lib/depends.c:866
+#: lib/depends.c:874
+#, fuzzy
+msgid "(verify probe)"
+msgstr "%s: %-45s 예 (rpmrc이 제공함)\n"
+
+#: lib/depends.c:896
 #, fuzzy
 msgid "(gnupg probe)"
 msgstr "%s: %-45s 예 (rpmrc이 제공함)\n"
 
-#: lib/depends.c:879
+#: lib/depends.c:909
 #, fuzzy
 msgid "(macro probe)"
 msgstr "%s: %-45s 예 (rpmrc이 제공함)\n"
 
-#: lib/depends.c:907
+#: lib/depends.c:937
 #, fuzzy
 msgid "(envvar probe)"
 msgstr "%s: %-45s 예 (rpmrc이 제공함)\n"
 
-#: lib/depends.c:934
+#: lib/depends.c:964
 #, fuzzy
 msgid "(running probe)"
 msgstr "%s: %-45s 예 (rpmrc이 제공함)\n"
 
-#: lib/depends.c:956
+#: lib/depends.c:986
 #, fuzzy
 msgid "(sanity probe)"
 msgstr "%s: %-45s 예 (rpmrc이 제공함)\n"
 
-#: lib/depends.c:977
+#: lib/depends.c:1007
 #, fuzzy
 msgid "(vcheck probe)"
 msgstr "%s: %-45s 예 (rpmrc이 제공함)\n"
 
-#: lib/depends.c:998
+#: lib/depends.c:1028
 #, fuzzy
 msgid "(sysinfo provides)"
 msgstr "%s: %-45s 예 (rpmlib이 제공함)\n"
 
-#: lib/depends.c:1017
+#: lib/depends.c:1047
 #, fuzzy
 msgid "(rpmlib provides)"
 msgstr "%s: %-45s 예 (rpmlib이 제공함)\n"
 
-#: lib/depends.c:1032
+#: lib/depends.c:1062
 #, fuzzy
 msgid "(cpuinfo provides)"
 msgstr "%s: %-45s 예 (rpmlib이 제공함)\n"
 
-#: lib/depends.c:1047
+#: lib/depends.c:1077
 #, fuzzy
 msgid "(getconf provides)"
 msgstr "%s: %-45s 예 (rpmlib이 제공함)\n"
 
-#: lib/depends.c:1062
+#: lib/depends.c:1092
 #, fuzzy
 msgid "(uname provides)"
 msgstr "%s: %-45s 예 (제공이 추가됨)\n"
 
-#: lib/depends.c:1094
+#: lib/depends.c:1124
 #, fuzzy
 msgid "(soname provides)"
 msgstr "%s: %-45s 예 (제공이 추가됨)\n"
 
-#: lib/depends.c:1122
+#: lib/depends.c:1152
 #, fuzzy
 msgid "(db files)"
 msgstr "잘못된 db 파일 %s\n"
 
-#: lib/depends.c:1134
+#: lib/depends.c:1164
 #, fuzzy
 msgid "(db provides)"
 msgstr "%s: %-45s 예 (db가 제공함)\n"
 
-#: lib/depends.c:1164
+#: lib/depends.c:1194
 msgid "(hint skipped)"
 msgstr ""
 
-#: lib/depends.c:1591
+#: lib/depends.c:1621
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr "다음과 관련된 패키지 이름을 무시합니다 [%d]\t%s -> %s\n"
 
-#: lib/depends.c:1714
+#: lib/depends.c:1744
 #, fuzzy, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "tsort 관계에서 %s-%s-%s \"%s\"(을)를 삭제합니다.\n"
 
-#: lib/depends.c:2288
+#: lib/depends.c:2318
 msgid "LOOP:\n"
 msgstr "루프(LOOP):\n"
 
-#: lib/depends.c:2324
+#: lib/depends.c:2354
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""
@@ -3063,12 +3068,12 @@ msgstr ""
 msgid "Invalid number of transaction elements.\n"
 msgstr ""
 
-#: lib/verify.c:305
+#: lib/verify.c:306
 #, fuzzy, c-format
 msgid "missing   %c %s"
 msgstr "다음을 찾을 수 없음    %s"
 
-#: lib/verify.c:431
+#: lib/verify.c:436
 #, fuzzy, c-format
 msgid "Unsatisfied dependencies for %s:\n"
 msgstr "%s-%s-%s에 의존성 문제 발생: "
@@ -3166,63 +3171,63 @@ msgstr "(부적합한 타입)"
 msgid "(not an OpenPGP signature)"
 msgstr "어떠한 PGP 서명도 검사하지 않습니다"
 
-#: rpmdb/hdrfmt.c:2300
+#: rpmdb/hdrfmt.c:2347
 msgid "missing { after %"
 msgstr "'%' 뒤에 '{' 가 없습니다"
 
-#: rpmdb/hdrfmt.c:2334
+#: rpmdb/hdrfmt.c:2381
 msgid "missing } after %{"
 msgstr "'%{' 뒤에 '}' 가 없습니다"
 
-#: rpmdb/hdrfmt.c:2350
+#: rpmdb/hdrfmt.c:2397
 msgid "empty tag format"
 msgstr "태그 형식이 비어있습니다"
 
-#: rpmdb/hdrfmt.c:2362
+#: rpmdb/hdrfmt.c:2409
 msgid "empty tag name"
 msgstr "태그 이름이 비어있습니다"
 
-#: rpmdb/hdrfmt.c:2371
+#: rpmdb/hdrfmt.c:2418
 msgid "unknown tag"
 msgstr "알 수 없는 태그 입니다"
 
-#: rpmdb/hdrfmt.c:2401
+#: rpmdb/hdrfmt.c:2448
 msgid "] expected at end of array"
 msgstr "배열의 끝부분에 ']' 가 와야합니다"
 
-#: rpmdb/hdrfmt.c:2418
+#: rpmdb/hdrfmt.c:2465
 msgid "unexpected ]"
 msgstr "불필요한 ']' 가 있습니다"
 
-#: rpmdb/hdrfmt.c:2433
+#: rpmdb/hdrfmt.c:2480
 msgid "unexpected }"
 msgstr "불필요한 '}' 가 있습니다"
 
-#: rpmdb/hdrfmt.c:2511
+#: rpmdb/hdrfmt.c:2558
 msgid "? expected in expression"
 msgstr "표현식에 '?' 가 와야합니다"
 
-#: rpmdb/hdrfmt.c:2518
+#: rpmdb/hdrfmt.c:2565
 msgid "{ expected after ? in expression"
 msgstr "표현식의 '?' 뒤에 '{' 가 와야합니다"
 
-#: rpmdb/hdrfmt.c:2530 rpmdb/hdrfmt.c:2570
+#: rpmdb/hdrfmt.c:2577 rpmdb/hdrfmt.c:2617
 msgid "} expected in expression"
 msgstr "표현식에 '}' 가 와야합니다"
 
-#: rpmdb/hdrfmt.c:2538
+#: rpmdb/hdrfmt.c:2585
 msgid ": expected following ? subexpression"
 msgstr "'?' 하부표현식(subexpression) 뒤에 ':' 이 와야합니다"
 
-#: rpmdb/hdrfmt.c:2556
+#: rpmdb/hdrfmt.c:2603
 msgid "{ expected after : in expression"
 msgstr "표현식의 ':' 뒤에 '{' 가 와야합니다"
 
-#: rpmdb/hdrfmt.c:2578
+#: rpmdb/hdrfmt.c:2625
 msgid "| expected at end of expression"
 msgstr "표현식의 끝부분에 '|' 가 와야합니다"
 
-#: rpmdb/hdrfmt.c:2871
+#: rpmdb/hdrfmt.c:2918
 msgid "array iterator used with different sized arrays"
 msgstr ""
 
@@ -3669,59 +3674,59 @@ msgstr "매크로 %%%s (%s)는 레벨 %d 이하에서는 사용할 수 없습니다\n"
 msgid "Unknown option %c in %s(%s)\n"
 msgstr "%2$s(%3$s)에 알 수 없는 옵션 %1$c(이)가 있습니다\n"
 
-#: rpmio/macro.c:1348
+#: rpmio/macro.c:1372
 #, c-format
 msgid "Recursion depth(%d) greater than max(%d)\n"
 msgstr "반복 횟수(%d)가 최대치(%d) 보다 큽니다\n"
 
-#: rpmio/macro.c:1422 rpmio/macro.c:1439
+#: rpmio/macro.c:1446 rpmio/macro.c:1463
 #, c-format
 msgid "Unterminated %c: %s\n"
 msgstr "%c(이)가 종료되지 않음: %s\n"
 
-#: rpmio/macro.c:1484
+#: rpmio/macro.c:1508
 #, c-format
 msgid "A %% is followed by an unparseable macro\n"
 msgstr "'%%' 다음에 처리할 수 없는(unparseable) 매크로가 있습니다\n"
 
-#: rpmio/macro.c:1682
+#: rpmio/macro.c:1708
 #, c-format
 msgid "Macro %%%.*s not found, skipping\n"
 msgstr "매크로 %%%.*s를 찾을 수 없습니다, 생략합니다\n"
 
-#: rpmio/macro.c:2040
+#: rpmio/macro.c:2066
 msgid "Macro expansion too big for target buffer\n"
 msgstr ""
 
-#: rpmio/macro.c:2074
+#: rpmio/macro.c:2100
 #, c-format
 msgid "Macro '%s' is readonly and cannot be changed.\n"
 msgstr ""
 
-#: rpmio/macro.c:2324 rpmio/macro.c:2330
+#: rpmio/macro.c:2350 rpmio/macro.c:2356
 #, c-format
 msgid "File %s: %s\n"
 msgstr "%s 파일: %s\n"
 
-#: rpmio/macro.c:2333
+#: rpmio/macro.c:2359
 #, c-format
 msgid "File %s is smaller than %u bytes\n"
 msgstr "%s 파일이 %u 바이트 보다 적습니다\n"
 
-#: rpmio/rpmdav.c:729
+#: rpmio/rpmdav.c:725
 msgid "Authorization Required"
 msgstr ""
 
-#: rpmio/rpmdav.c:731
+#: rpmio/rpmdav.c:727
 msgid "Redirect"
 msgstr ""
 
-#: rpmio/rpmdav.c:733
+#: rpmio/rpmdav.c:729
 #, fuzzy
 msgid "Server Error"
 msgstr "서버 입/출력 오류입니다"
 
-#: rpmio/rpmdav.c:735
+#: rpmio/rpmdav.c:731
 #, fuzzy
 msgid "Unknown Error"
 msgstr "(오류 없음)"

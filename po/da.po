@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 5.0\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2008-01-22 13:58-0500\n"
+"POT-Creation-Date: 2008-01-27 12:31-0500\n"
 "PO-Revision-Date: 2001-04-05 23:03GMT\n"
 "Last-Translator: Claus Hindsgaul <claus_h@image.dk>\n"
 "Language-Team: Danish <dansk@klid.dk>\n"
@@ -474,94 +474,94 @@ msgstr "Fil angivet to gange: %s\n"
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr "Symbolsk lænke peger på BuildRoot: %s -> %s\n"
 
-#: build/files.c:1819
+#: build/files.c:1824
 #, c-format
 msgid "File doesn't match prefix (%s): %s\n"
 msgstr "Fil passer ikke til præfiks (%s): %s\n"
 
-#: build/files.c:1845
+#: build/files.c:1850
 #, fuzzy, c-format
 msgid "Optional file not found: %s\n"
 msgstr "Fil ikke fundet: %s\n"
 
-#: build/files.c:1848
+#: build/files.c:1853
 #, c-format
 msgid "File not found: %s\n"
 msgstr "Fil ikke fundet: %s\n"
 
-#: build/files.c:2066
+#: build/files.c:2071
 #, c-format
 msgid "%s: can't load unknown tag (%d).\n"
 msgstr ""
 
-#: build/files.c:2072
+#: build/files.c:2077
 #, fuzzy, c-format
 msgid "%s: public key read failed.\n"
 msgstr "%s: readLead mislykkedes\n"
 
-#: build/files.c:2076 lib/rpmchecksig.c:746
+#: build/files.c:2081 lib/rpmchecksig.c:746
 #, c-format
 msgid "%s: not an armored public key.\n"
 msgstr ""
 
-#: build/files.c:2083
+#: build/files.c:2088
 #, fuzzy, c-format
 msgid "%s: *.te policy read failed.\n"
 msgstr "%s: readLead mislykkedes\n"
 
-#: build/files.c:2139
+#: build/files.c:2144
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "Fil kræver foranstillet \"/\": %s\n"
 
-#: build/files.c:2163
+#: build/files.c:2168
 #, fuzzy, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "linie %d: Filnavn ikke tilladt: %s\n"
 
-#: build/files.c:2178
+#: build/files.c:2183
 #, fuzzy, c-format
 msgid "Optional file not found by glob: %s\n"
 msgstr "Fil ikke fundet med glob: %s\n"
 
-#: build/files.c:2182
+#: build/files.c:2187
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Fil ikke fundet med glob: %s\n"
 
-#: build/files.c:2246
+#: build/files.c:2251
 #, c-format
 msgid "Could not open %%files file %s: %s\n"
 msgstr "Kunne ikke åbne '%%files'-fil %s: %s\n"
 
-#: build/files.c:2257 build/pack.c:156
+#: build/files.c:2262 build/pack.c:156
 #, c-format
 msgid "line: %s\n"
 msgstr "linie: %s\n"
 
-#: build/files.c:2742
+#: build/files.c:2747
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "Ugyldig fil: %s: %s\n"
 
-#: build/files.c:2764 build/parsePrep.c:53
+#: build/files.c:2769 build/parsePrep.c:53
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "Ugyldig ejer/gruppe: %s\n"
 
-#: build/files.c:2809
+#: build/files.c:2814
 #, fuzzy, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "udpakning af arkiv mislykkedes%s%s: %s\n"
 
-#: build/files.c:2824
+#: build/files.c:2829
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
 "%s"
 msgstr ""
 
-#: build/files.c:2856
+#: build/files.c:2861
 #, fuzzy, c-format
 msgid "Processing files: %s\n"
 msgstr "Gennemløber filer: %s-%s-%s\n"
@@ -1422,95 +1422,100 @@ msgstr "%s: %-45s JA (rpmrc tilfører)\n"
 msgid "(signature probe)"
 msgstr "%s: %-45s JA (rpmrc tilfører)\n"
 
-#: lib/depends.c:866
+#: lib/depends.c:874
+#, fuzzy
+msgid "(verify probe)"
+msgstr "%s: %-45s JA (rpmrc tilfører)\n"
+
+#: lib/depends.c:896
 #, fuzzy
 msgid "(gnupg probe)"
 msgstr "%s: %-45s JA (rpmrc tilfører)\n"
 
-#: lib/depends.c:879
+#: lib/depends.c:909
 #, fuzzy
 msgid "(macro probe)"
 msgstr "%s: %-45s JA (rpmrc tilfører)\n"
 
-#: lib/depends.c:907
+#: lib/depends.c:937
 #, fuzzy
 msgid "(envvar probe)"
 msgstr "%s: %-45s JA (rpmrc tilfører)\n"
 
-#: lib/depends.c:934
+#: lib/depends.c:964
 #, fuzzy
 msgid "(running probe)"
 msgstr "%s: %-45s JA (rpmrc tilfører)\n"
 
-#: lib/depends.c:956
+#: lib/depends.c:986
 #, fuzzy
 msgid "(sanity probe)"
 msgstr "%s: %-45s JA (rpmrc tilfører)\n"
 
-#: lib/depends.c:977
+#: lib/depends.c:1007
 #, fuzzy
 msgid "(vcheck probe)"
 msgstr "%s: %-45s JA (rpmrc tilfører)\n"
 
-#: lib/depends.c:998
+#: lib/depends.c:1028
 #, fuzzy
 msgid "(sysinfo provides)"
 msgstr "%s: %-45s JA (rpmlib tilfører)\n"
 
-#: lib/depends.c:1017
+#: lib/depends.c:1047
 #, fuzzy
 msgid "(rpmlib provides)"
 msgstr "%s: %-45s JA (rpmlib tilfører)\n"
 
-#: lib/depends.c:1032
+#: lib/depends.c:1062
 #, fuzzy
 msgid "(cpuinfo provides)"
 msgstr "%s: %-45s JA (rpmlib tilfører)\n"
 
-#: lib/depends.c:1047
+#: lib/depends.c:1077
 #, fuzzy
 msgid "(getconf provides)"
 msgstr "%s: %-45s JA (rpmlib tilfører)\n"
 
-#: lib/depends.c:1062
+#: lib/depends.c:1092
 #, fuzzy
 msgid "(uname provides)"
 msgstr "%s: %-45s JA (tilføjede 'provide')\n"
 
-#: lib/depends.c:1094
+#: lib/depends.c:1124
 #, fuzzy
 msgid "(soname provides)"
 msgstr "%s: %-45s JA (tilføjede 'provide')\n"
 
-#: lib/depends.c:1122
+#: lib/depends.c:1152
 #, fuzzy
 msgid "(db files)"
 msgstr "ugyldig db-fil %s\n"
 
-#: lib/depends.c:1134
+#: lib/depends.c:1164
 #, fuzzy
 msgid "(db provides)"
 msgstr "%s: %-45s JA (db tilfører)\n"
 
-#: lib/depends.c:1164
+#: lib/depends.c:1194
 msgid "(hint skipped)"
 msgstr ""
 
-#: lib/depends.c:1591
+#: lib/depends.c:1621
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr ""
 
-#: lib/depends.c:1714
+#: lib/depends.c:1744
 #, fuzzy, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "fjerne %s-%s-%s \"%s\" fra tsort-relationer.\n"
 
-#: lib/depends.c:2288
+#: lib/depends.c:2318
 msgid "LOOP:\n"
 msgstr "LØKKE:\n"
 
-#: lib/depends.c:2324
+#: lib/depends.c:2354
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""
@@ -3069,12 +3074,12 @@ msgstr ""
 msgid "Invalid number of transaction elements.\n"
 msgstr ""
 
-#: lib/verify.c:305
+#: lib/verify.c:306
 #, fuzzy, c-format
 msgid "missing   %c %s"
 msgstr "manglende  %s"
 
-#: lib/verify.c:431
+#: lib/verify.c:436
 #, fuzzy, c-format
 msgid "Unsatisfied dependencies for %s:\n"
 msgstr "Ikke-tilfredsstillede afhængighedskrav for %s-%s-%s: "
@@ -3171,63 +3176,63 @@ msgstr ""
 msgid "(not an OpenPGP signature)"
 msgstr "overspring eventuelle PGP-signaturer"
 
-#: rpmdb/hdrfmt.c:2300
+#: rpmdb/hdrfmt.c:2347
 msgid "missing { after %"
 msgstr "manglende { efter %"
 
-#: rpmdb/hdrfmt.c:2334
+#: rpmdb/hdrfmt.c:2381
 msgid "missing } after %{"
 msgstr "manglende } efter %{"
 
-#: rpmdb/hdrfmt.c:2350
+#: rpmdb/hdrfmt.c:2397
 msgid "empty tag format"
 msgstr "tomt mærkeformat"
 
-#: rpmdb/hdrfmt.c:2362
+#: rpmdb/hdrfmt.c:2409
 msgid "empty tag name"
 msgstr "tomt mærkenavn"
 
-#: rpmdb/hdrfmt.c:2371
+#: rpmdb/hdrfmt.c:2418
 msgid "unknown tag"
 msgstr "ukendt mærke"
 
-#: rpmdb/hdrfmt.c:2401
+#: rpmdb/hdrfmt.c:2448
 msgid "] expected at end of array"
 msgstr "] forventet ved slutningen af tabel"
 
-#: rpmdb/hdrfmt.c:2418
+#: rpmdb/hdrfmt.c:2465
 msgid "unexpected ]"
 msgstr "uventet ]"
 
-#: rpmdb/hdrfmt.c:2433
+#: rpmdb/hdrfmt.c:2480
 msgid "unexpected }"
 msgstr "uventet }"
 
-#: rpmdb/hdrfmt.c:2511
+#: rpmdb/hdrfmt.c:2558
 msgid "? expected in expression"
 msgstr "? forventet i udtryk"
 
-#: rpmdb/hdrfmt.c:2518
+#: rpmdb/hdrfmt.c:2565
 msgid "{ expected after ? in expression"
 msgstr "{ forventet efter ? i udtryk"
 
-#: rpmdb/hdrfmt.c:2530 rpmdb/hdrfmt.c:2570
+#: rpmdb/hdrfmt.c:2577 rpmdb/hdrfmt.c:2617
 msgid "} expected in expression"
 msgstr "} forventet i udtryk"
 
-#: rpmdb/hdrfmt.c:2538
+#: rpmdb/hdrfmt.c:2585
 msgid ": expected following ? subexpression"
 msgstr ": forventet efter ?-underudtryk"
 
-#: rpmdb/hdrfmt.c:2556
+#: rpmdb/hdrfmt.c:2603
 msgid "{ expected after : in expression"
 msgstr "{ forventet efter : i udtryk"
 
-#: rpmdb/hdrfmt.c:2578
+#: rpmdb/hdrfmt.c:2625
 msgid "| expected at end of expression"
 msgstr "| forventet ved slutningen af udtryk"
 
-#: rpmdb/hdrfmt.c:2871
+#: rpmdb/hdrfmt.c:2918
 msgid "array iterator used with different sized arrays"
 msgstr ""
 
@@ -3667,59 +3672,59 @@ msgstr "Makro %%%s (%s) blev ikke brugt under niveau %d\n"
 msgid "Unknown option %c in %s(%s)\n"
 msgstr "Ukendt tilvalg %c i %s(%s)\n"
 
-#: rpmio/macro.c:1348
+#: rpmio/macro.c:1372
 #, c-format
 msgid "Recursion depth(%d) greater than max(%d)\n"
 msgstr "Rekursionsdybde(%d) overskrider maks(%d)\n"
 
-#: rpmio/macro.c:1422 rpmio/macro.c:1439
+#: rpmio/macro.c:1446 rpmio/macro.c:1463
 #, c-format
 msgid "Unterminated %c: %s\n"
 msgstr "Uafsluttet %c: %s\n"
 
-#: rpmio/macro.c:1484
+#: rpmio/macro.c:1508
 #, c-format
 msgid "A %% is followed by an unparseable macro\n"
 msgstr "Et %% efterfølges af en makro, der ikke kan tolkes\n"
 
-#: rpmio/macro.c:1682
+#: rpmio/macro.c:1708
 #, c-format
 msgid "Macro %%%.*s not found, skipping\n"
 msgstr "Makroen %%%.*s blev ikke fundet, overspringer\n"
 
-#: rpmio/macro.c:2040
+#: rpmio/macro.c:2066
 msgid "Macro expansion too big for target buffer\n"
 msgstr ""
 
-#: rpmio/macro.c:2074
+#: rpmio/macro.c:2100
 #, c-format
 msgid "Macro '%s' is readonly and cannot be changed.\n"
 msgstr ""
 
-#: rpmio/macro.c:2324 rpmio/macro.c:2330
+#: rpmio/macro.c:2350 rpmio/macro.c:2356
 #, c-format
 msgid "File %s: %s\n"
 msgstr "Fil %s: %s\n"
 
-#: rpmio/macro.c:2333
+#: rpmio/macro.c:2359
 #, c-format
 msgid "File %s is smaller than %u bytes\n"
 msgstr "Filen %s er mindre end %u byte\n"
 
-#: rpmio/rpmdav.c:729
+#: rpmio/rpmdav.c:725
 msgid "Authorization Required"
 msgstr ""
 
-#: rpmio/rpmdav.c:731
+#: rpmio/rpmdav.c:727
 msgid "Redirect"
 msgstr ""
 
-#: rpmio/rpmdav.c:733
+#: rpmio/rpmdav.c:729
 #, fuzzy
 msgid "Server Error"
 msgstr "I/O-fejl for server"
 
-#: rpmio/rpmdav.c:735
+#: rpmio/rpmdav.c:731
 #, fuzzy
 msgid "Unknown Error"
 msgstr "(ingen fejl)"
