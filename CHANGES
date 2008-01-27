@@ -1,4 +1,5 @@
 5.0.0 -> 5.0.1:
+    - jbj: updated nl.po (Translation Project).
     - jbj: resurrect rpm.spec.in.
     - jbj: automake for xar internal.
     - jbj: re-add PayloadFilesHavePrefix/CompressedFileNames w --lsb.
