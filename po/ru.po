@@ -2912,7 +2912,7 @@ msgstr "(установлен)"
 #: lib/rpmps.c:308
 #, c-format
 msgid "%s conflicts with %s%s"
-msgstr "%s конфликтует с%s%s"
+msgstr "%s конфликтует с %s%s"
 
 #: lib/rpmps.c:314
 #, fuzzy, c-format

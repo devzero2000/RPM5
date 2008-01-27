@@ -1,4 +1,5 @@
 5.0.0 -> 5.1a1:
+    - rpm.org: Missing space in russian translation (mdvbz#36974).
     - rpm.org: Quote find-debuginfo builddir to avoid whitespace issues.
     - jbj: generailize to verify(*) => -Va and verify(/path) => -Vf /path.
     - jbj: fix: no output performing verify(...) probe.
