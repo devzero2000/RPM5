@@ -1,4 +1,5 @@
 5.0.0 -> 5.1a1:
+    - jbj: use RPM_OS_NTOQNX as manifest constant.
     - jbj: updated nl.po (Translation Project).
     - rpm.org: Missing space in russian translation (mdvbz#36974).
     - rpm.org: Quote find-debuginfo builddir to avoid whitespace issues.

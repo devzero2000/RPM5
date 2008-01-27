@@ -114,7 +114,7 @@ static char sccsid[] = "@(#)fts.c	8.6 (Berkeley) 8/14/94";
 #   define __fxstat64(_stat_ver, _fd, _sbp)     fstat((_fd), (_sbp))
 #   define _D_EXACT_NAMLEN(d) ((d)->d_namlen)
 #endif
-#if defined(RPM_OS_QNX)
+#if defined(RPM_OS_NTOQNX)
 #   define __errno_location()  (&errno)
 #   define stat64              stat
 #   define _STAT_VER           0
