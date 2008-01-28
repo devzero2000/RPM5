@@ -42,7 +42,7 @@ LZMA SDK    [4] internal  4.27    4.32    http://www.7-zip.org/sdk.html
 File/magic  [5] optional  4.0     4.23    ftp://ftp.astron.com/pub/file/
 GNU gettext     optional  0.16    0.17    http://www.gnu.org/software/gettext/
 GNU iconv       optional  1.11    1.11    http://www.gnu.org/software/libiconv/
-PCRE            optional  7.0     7.5     http://www.pcre.org/
+PCRE            optional  7.0     7.6     http://www.pcre.org/
 UUID            optional  1.6.0   1.6.0   http://www.ossp.org/pkg/lib/uuid/
 XAR         [6] optional  1.5.2   1.5.2   http://code.google.com/p/xar/
 DMalloc         optional  5       5.5.2   http://dmalloc.com/
