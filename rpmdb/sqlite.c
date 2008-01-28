@@ -1195,7 +1195,7 @@ assert(dbi->dbi_rpmtag == RPMDBI_PACKAGES);
 	    scp->keys = xcalloc(scp->nkeys, sizeof(*scp->keys));
 	    for (ix = 0; ix < scp->nkeys; ix++) {
 		scp->keys[ix] = xmalloc(sizeof(*scp->keys[0]));
-		scp->keys[ix]->size = (u_int32_t) scp->avlen[ix+1];
+		scp->keys[ix]->size = (uint32_t) scp->avlen[ix+1];
 		scp->keys[ix]->data = xmalloc(scp->keys[ix]->size);
 		memcpy(scp->keys[ix]->data, scp->av[ix+1], scp->avlen[ix+1]);
 	    }
@@ -1274,7 +1274,7 @@ assert(scp->nr == 1);
 	    scp->ldata = _free(scp->ldata);
 	}
 
-	data->size = (u_int32_t) scp->avlen[1];
+	data->size = (uint32_t) scp->avlen[1];
         data->data = xmalloc(data->size);
 	if (! (data->flags & DB_DBT_MALLOC) )
 	    scp->ldata = data->data;
