@@ -1248,7 +1248,7 @@ exit:
  * @param depName	dependency name to filter (or NULL)
  * @param tscolor	color bits for transaction set (0 disables)
  * @param adding	dependency is from added package set?
- * @return		0 no problems found
+ * @return		0 = deps ok, 1 = dep problems, 2 = error
  */
 static int checkPackageDeps(rpmts ts, const char * pkgNEVRA,
 		/*@null@*/ rpmds requires,
@@ -1264,12 +1264,13 @@ static int checkPackageDeps(rpmts ts, const char * pkgNEVRA,
     rpmps ps = rpmtsProblems(ts);
     uint32_t dscolor;
     const char * Name;
+    int terminate = 2;		/* XXX terminate if rc >= terminate */
     int rc;
     int ourrc = 0;
 
     requires = rpmdsInit(requires);
     if (requires != NULL)
-    while (!ourrc && rpmdsNext(requires) >= 0) {
+    while (ourrc < terminate && rpmdsNext(requires) >= 0) {
 
 	if ((Name = rpmdsN(requires)) == NULL)
 	    continue;	/* XXX can't happen */
@@ -1299,17 +1300,18 @@ static int checkPackageDeps(rpmts ts, const char * pkgNEVRA,
 	    rpmdsProblem(ps, pkgNEVRA, requires, suggestedKeys, adding);
 
 	}
+	    ourrc = 1;
 	    /*@switchbreak@*/ break;
 	case 2:		/* something went wrong! */
 	default:
-	    ourrc = 1;
+	    ourrc = 2;
 	    /*@switchbreak@*/ break;
 	}
     }
 
     conflicts = rpmdsInit(conflicts);
     if (conflicts != NULL)
-    while (!ourrc && rpmdsNext(conflicts) >= 0) {
+    while (ourrc < terminate && rpmdsNext(conflicts) >= 0) {
 
 	if ((Name = rpmdsN(conflicts)) == NULL)
 	    continue;	/* XXX can't happen */
@@ -1329,19 +1331,20 @@ static int checkPackageDeps(rpmts ts, const char * pkgNEVRA,
 	switch (rc) {
 	case 0:		/* conflicts exist. */
 	    rpmdsProblem(ps, pkgNEVRA, conflicts, NULL, adding);
+	    ourrc = 1;
 	    /*@switchbreak@*/ break;
 	case 1:		/* conflicts don't exist. */
 	    /*@switchbreak@*/ break;
 	case 2:		/* something went wrong! */
 	default:
-	    ourrc = 1;
+	    ourrc = 2;
 	    /*@switchbreak@*/ break;
 	}
     }
 
     dirnames = rpmdsInit(dirnames);
     if (dirnames != NULL)
-    while (!ourrc && rpmdsNext(dirnames) >= 0) {
+    while (ourrc < terminate && rpmdsNext(dirnames) >= 0) {
 
 	if ((Name = rpmdsN(dirnames)) == NULL)
 	    continue;	/* XXX can't happen */
@@ -1371,17 +1374,18 @@ static int checkPackageDeps(rpmts ts, const char * pkgNEVRA,
 	    rpmdsProblem(ps, pkgNEVRA, dirnames, suggestedKeys, adding);
 
 	}
+	    ourrc = 1;
 	    /*@switchbreak@*/ break;
 	case 2:		/* something went wrong! */
 	default:
-	    ourrc = 1;
+	    ourrc = 2;
 	    /*@switchbreak@*/ break;
 	}
     }
 
     linktos = rpmdsInit(linktos);
     if (linktos != NULL)
-    while (!ourrc && rpmdsNext(linktos) >= 0) {
+    while (ourrc < terminate && rpmdsNext(linktos) >= 0) {
 
 	if ((Name = rpmdsN(linktos)) == NULL)
 	    continue;	/* XXX can't happen */
@@ -1413,10 +1417,11 @@ static int checkPackageDeps(rpmts ts, const char * pkgNEVRA,
 	    rpmdsProblem(ps, pkgNEVRA, linktos, suggestedKeys, adding);
 
 	}
+	    ourrc = 1;
 	    /*@switchbreak@*/ break;
 	case 2:		/* something went wrong! */
 	default:
-	    ourrc = 1;
+	    ourrc = 2;
 	    /*@switchbreak@*/ break;
 	}
     }
@@ -1445,11 +1450,12 @@ static int checkPackageSet(rpmts ts, const char * depName,
     uint32_t tscolor = rpmtsColor(ts);
     int scareMem = 0;
     Header h;
-    int ec = 0;
+    int terminate = 2;		/* XXX terminate if rc >= terminate */
+    int ourrc = 0;
 
     (void) rpmdbPruneIterator(mi,
 		ts->removedPackages, ts->numRemovedPackages, 1);
-    while ((h = rpmdbNextIterator(mi)) != NULL) {
+    while (ourrc < terminate && (h = rpmdbNextIterator(mi)) != NULL) {
 	rpmds requires = NULL;
 	rpmds conflicts = NULL;
 	rpmds dirnames = NULL;
@@ -1457,8 +1463,14 @@ static int checkPackageSet(rpmts ts, const char * depName,
 	int rc;
 
 	he->tag = RPMTAG_NVRA;
-	rc = headerGet(h, he, 0);
-assert(he->p.str != NULL);
+	rc = (headerGet(h, he, 0) ? 0 : 2);
+	if (rc > ourrc)
+	    ourrc = rc;
+	if (ourrc >= terminate) {
+	    he->p.str = _free(he->p.str);
+	    break;
+	}
+
 	if (!(depFlags & RPMDEPS_FLAG_NOREQUIRES))
 	    requires = rpmdsNew(h, RPMTAG_REQUIRENAME, scareMem);
 	if (!(depFlags & RPMDEPS_FLAG_NOCONFLICTS))
@@ -1483,14 +1495,12 @@ assert(he->p.str != NULL);
 	requires = rpmdsFree(requires);
 	he->p.str = _free(he->p.str);
 
-	if (rc) {
-	    ec = 1;
-	    break;
-	}
+	if (rc > ourrc)
+	    ourrc = rc;
     }
     mi = rpmdbFreeIterator(mi);
 
-    return ec;
+    return ourrc;
 }
 
 /**
@@ -2434,16 +2444,18 @@ int rpmtsCheck(rpmts ts)
     rpmtsi pi = NULL; rpmte p;
     int closeatexit = 0;
     int xx;
-    int rc;
+    int terminate = 2;		/* XXX terminate if rc >= terminate */
+    int rc = 0;
 
     (void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_CHECK), 0);
 
     /* Do lazy, readonly, open of rpm database. */
     if (rpmtsGetRdb(ts) == NULL && rpmtsDBMode(ts) != -1) {
-	if ((rc = rpmtsOpenDB(ts, rpmtsDBMode(ts))) != 0)
-	    goto exit;
-	closeatexit = 1;
+	rc = (rpmtsOpenDB(ts, rpmtsDBMode(ts)) ? 2 : 0);
+	closeatexit = (rc == 0);
     }
+    if (rc >= terminate)
+	goto exit;
 
     ts->probs = rpmpsFree(ts->probs);
     ts->probs = rpmpsCreate();
@@ -2455,7 +2467,7 @@ int rpmtsCheck(rpmts ts)
      * are satisfied.
      */
     pi = rpmtsiInit(ts);
-    while ((p = rpmtsiNext(pi, TR_ADDED)) != NULL) {
+    while (rc < terminate && (p = rpmtsiNext(pi, TR_ADDED)) != NULL) {
 	rpmds provides, requires, conflicts, dirnames, linktos;
 
 /*@-nullpass@*/	/* FIX: rpmts{A,O} can return null. */
@@ -2480,14 +2492,13 @@ int rpmtsCheck(rpmts ts)
 	rc = checkPackageDeps(ts, rpmteNEVRA(p),
 			requires, conflicts, dirnames, linktos,
 			NULL, tscolor, 1);
-	if (rc)
-	    goto exit;
+	if (rc >= terminate)
+	    break;
 
-	rc = 0;
 	provides = rpmteDS(p, RPMTAG_PROVIDENAME);
 	provides = rpmdsInit(provides);
 	if (provides != NULL)
-	while (rpmdsNext(provides) >= 0) {
+	while (rc < terminate && rpmdsNext(provides) >= 0) {
 	    depName = _free(depName);
 	    depName = xstrdup(rpmdsN(provides));
 
@@ -2496,29 +2507,27 @@ int rpmtsCheck(rpmts ts)
 		const char * EVR = rpmdsEVR(provides);
 		if (rpmdsNegateRC(provides, 0))
 		    EVR = NULL;
-		rc = envPut(depName, EVR);
-		if (!rc)
-		    /*@innercontinue@*/ continue;
-		/*@innerbreak@*/ break;
-	    }
+		if (envPut(depName, EVR));
+		    rc = 2;
+	    } else
 #endif
 
 	    /* Adding: check provides key against conflicts matches. */
-	    if (!checkDependentConflicts(ts, depName))
-		/*@innercontinue@*/ continue;
-	    rc = 1;
-	    /*@innerbreak@*/ break;
+	    if (checkDependentConflicts(ts, depName))
+		rc = 1;
 	}
-	if (rc)
-	    goto exit;
+	if (rc >= terminate)
+	    break;
     }
     pi = rpmtsiFree(pi);
+    if (rc >= terminate)
+	goto exit;
 
     /*
      * Look at the removed packages and make sure they aren't critical.
      */
     pi = rpmtsiInit(ts);
-    while ((p = rpmtsiNext(pi, TR_REMOVED)) != NULL) {
+    while (rc < terminate && (p = rpmtsiNext(pi, TR_REMOVED)) != NULL) {
 	rpmds provides;
 	rpmfi fi;
 
@@ -2527,39 +2536,35 @@ int rpmtsCheck(rpmts ts)
 		rpmteNEVR(p), rpmteA(p), rpmteO(p), rpmteColor(p));
 /*@=nullpass@*/
 
-	rc = 0;
 	provides = rpmteDS(p, RPMTAG_PROVIDENAME);
 	provides = rpmdsInit(provides);
 	if (provides != NULL)
-	while (rpmdsNext(provides) >= 0) {
+	while (rc < terminate && rpmdsNext(provides) >= 0) {
 	    depName = _free(depName);
 	    depName = xstrdup(rpmdsN(provides));
 
 	    /* Erasing: check provides against requiredby matches. */
-	    if (!checkDependentPackages(ts, depName))
-		/*@innercontinue@*/ continue;
-	    rc = 1;
-	    /*@innerbreak@*/ break;
+	    if (checkDependentPackages(ts, depName))
+		rc = 1;
 	}
-	if (rc)
-	    goto exit;
+	if (rc >= terminate)
+	    break;
 
-	rc = 0;
 	fi = rpmteFI(p, RPMTAG_BASENAMES);
 	fi = rpmfiInit(fi, 0);
-	while (rpmfiNext(fi) >= 0) {
+	while (rc < terminate && rpmfiNext(fi) >= 0) {
 	    depName = _free(depName);
 	    depName = xstrdup(rpmfiFN(fi));
 	    /* Erasing: check filename against requiredby matches. */
-	    if (!checkDependentPackages(ts, depName))
-		/*@innercontinue@*/ continue;
-	    rc = 1;
-	    /*@innerbreak@*/ break;
+	    if (checkDependentPackages(ts, depName))
+		rc = 1;
 	}
-	if (rc)
-	    goto exit;
+	if (rc >= terminate)
+	    break;
     }
     pi = rpmtsiFree(pi);
+    if (rc >= terminate)
+	goto exit;
 
     /*
      * Make sure transaction dependencies are satisfied.
@@ -2573,11 +2578,9 @@ int rpmtsCheck(rpmts ts)
 	int adding = 2;
 	tscolor = 0;	/* XXX no coloring for transaction dependencies. */
 	rc = checkPackageDeps(ts, tsNEVRA, R, C, D, L, dep, tscolor, adding);
-	if (rc)
-	    goto exit;
     }
-
-    rc = 0;
+    if (rc >= terminate)
+	goto exit;
 
 exit:
     mi = rpmdbFreeIterator(mi);

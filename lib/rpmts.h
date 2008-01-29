@@ -330,7 +330,7 @@ extern "C" {
  * the resolution was successfully attempted for all packages in the set.
  *
  * @param ts		transaction set
- * @return		0 on success
+ * @return		0 = deps ok, 1 = dep problems, 2 = error
  */
 int rpmtsCheck(rpmts ts)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
