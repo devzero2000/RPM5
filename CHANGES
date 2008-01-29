@@ -1,4 +1,5 @@
 5.0.0 -> 5.0.1:
+    - jbj: replace sr.po from translation project.
     - rse: fix Autoconf procedure by running python(1) based checks only under --with-python
     - jbj: fix: rpmtsCheck() needs to return 1 when problems exist.
     - jbj: use RPM_OS_NTOQNX as manifest constant.

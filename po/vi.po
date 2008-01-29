@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.2\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2008-01-26 03:22-0500\n"
+"POT-Creation-Date: 2008-01-29 09:26-0500\n"
 "PO-Revision-Date: 2006-04-18 18:16+0930\n"
 "Last-Translator: Ngô Trần Thủy <ngotranthuy@gmail.com>\n"
 "Language-Team: Vietnamese <gnomevi-list@lists.sourceforge.net>\n"
@@ -1487,21 +1487,21 @@ msgstr "(db provides)"
 msgid "(hint skipped)"
 msgstr ""
 
-#: lib/depends.c:1591
+#: lib/depends.c:1601
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr "bỏ quan (các) sự liên quan tên gói [%d]\t%s -> %s\n"
 
-#: lib/depends.c:1714
+#: lib/depends.c:1724
 #, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "gỡ bỏ %s \"%s\" từ các mối quan hệ tsort.\n"
 
-#: lib/depends.c:2288
+#: lib/depends.c:2298
 msgid "LOOP:\n"
 msgstr "LOOP:\n"
 
-#: lib/depends.c:2324
+#: lib/depends.c:2334
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr "rpmts Yêu cầu thất bại, %d các yếu tố còn lại\n"

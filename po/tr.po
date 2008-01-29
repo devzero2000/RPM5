@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.1\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2008-01-26 03:22-0500\n"
+"POT-Creation-Date: 2008-01-29 09:26-0500\n"
 "PO-Revision-Date: 2003-12-31 09:08+0300\n"
 "Last-Translator: Nilgün Belma Bugüner <nilgun@superonline.com>\n"
 "Language-Team: Turkish <gnu-tr-u12a@lists.sourceforge.net>\n"
@@ -1499,21 +1499,21 @@ msgstr "(db sağlar)"
 msgid "(hint skipped)"
 msgstr ""
 
-#: lib/depends.c:1591
+#: lib/depends.c:1601
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr "Paket ismi ilişkileri [%d]\t%s -> %s yoksayılıyor\n"
 
-#: lib/depends.c:1714
+#: lib/depends.c:1724
 #, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "tsort bağıntılarından %s \"%s\" kaldırılıyor.\n"
 
-#: lib/depends.c:2288
+#: lib/depends.c:2298
 msgid "LOOP:\n"
 msgstr "ÇEVRİM:\n"
 
-#: lib/depends.c:2324
+#: lib/depends.c:2334
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr "rpmtsOrder başarısız, %d eleman kaldı\n"

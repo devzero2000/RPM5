@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 5.0\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2008-01-26 03:22-0500\n"
+"POT-Creation-Date: 2008-01-29 09:26-0500\n"
 "PO-Revision-Date: 2004-02-29 07:48+0500\n"
 "Last-Translator: Arnaldo Carvalho de Melo <acme@conectiva.com.br>\n"
 "Language-Team: Brazilian Portuguese\n"
@@ -1603,22 +1603,22 @@ msgstr ""
 msgid "(hint skipped)"
 msgstr ""
 
-#: lib/depends.c:1591
+#: lib/depends.c:1601
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr ""
 
 # , c-format
-#: lib/depends.c:1714
+#: lib/depends.c:1724
 #, fuzzy, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "No consegui abrir: %s\n"
 
-#: lib/depends.c:2288
+#: lib/depends.c:2298
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:2324
+#: lib/depends.c:2334
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""
