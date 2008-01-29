@@ -1,3 +1,5 @@
+5.0.1 -> 5.0.2:
+
 5.0.0 -> 5.0.1:
     - jbj: replace sr.po from translation project.
     - rse: fix Autoconf procedure by running python(1) based checks only under --with-python
