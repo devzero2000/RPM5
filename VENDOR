@@ -421,6 +421,15 @@
                      from a temporary location (under $RPM_BUILD_ROOT).
      ________________________________________________________________________
 
+     Change:         support-rpmlua-option
+     Purpose:        Support the regular CLI option --rpmlua to
+                     on-the-fly override hard-coded path of the Autoconf option
+                     --path-rpmlua.
+     Reason:         OpenPKG uses a rather complex --with-path-rpmlua option
+                     during built-time and hence one also needs to be able
+                     to override this on the command line.
+     ________________________________________________________________________
+
   o  Name:           RPM4DARWIN
      Vendor:         RPM for Darwin (Mac OS X) <http://rpm4darwin.sourceforge.net/>
      Representative: Anders F. Bjorklund <afb@users.sourceforge.net> <afb@rpm5.org>

@@ -169,6 +169,13 @@ extern int _rpmio_debug;
 /*@unchecked@*/
 static int rpmcliInitialized = -1;
 
+#if defined(RPM_VENDOR_OPENPKG) /* support-rpmlua-option */
+#ifdef WITH_LUA
+/*@unchecked@*/
+extern const char *rpmluaFiles;
+#endif
+#endif
+
 #if defined(RPM_VENDOR_OPENPKG) /* support-rpmpopt-option */
 /*@unchecked@*/
 static char *rpmpoptfiles = RPMPOPTFILES;
@@ -442,6 +449,13 @@ struct poptOption rpmcliAllPoptTable[] = {
  { "macros", '\0', POPT_ARG_STRING, &rpmMacrofiles, 0,
 	N_("read <FILE:...> instead of default file(s)"),
 	N_("<FILE:...>") },
+#if defined(RPM_VENDOR_OPENPKG) /* support-rpmlua-option */
+#ifdef WITH_LUA
+ { "rpmlua", '\0', POPT_ARG_STRING, &rpmluaFiles, 0,
+	N_("read <FILE:...> instead of default RPM Lua file(s)"),
+	N_("<FILE:...>") },
+#endif
+#endif
 #if defined(RPM_VENDOR_OPENPKG) /* support-rpmpopt-option */
  { "rpmpopt", '\0', POPT_ARG_STRING, NULL, 0,
 	N_("read <FILE:...> instead of default POPT file(s)"),
