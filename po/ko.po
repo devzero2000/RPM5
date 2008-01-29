@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 5.0\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2008-01-27 12:31-0500\n"
+"POT-Creation-Date: 2008-01-29 09:38-0500\n"
 "PO-Revision-Date: 2002-03-04 17:17+0900\n"
 "Last-Translator: Jong-Hoon Ryu <redhat4u@netian.com>\n"
 "Language-Team: GNU Translation project <ko@li.org>\n"
@@ -1492,21 +1492,21 @@ msgstr "%s: %-45s 예 (db가 제공함)\n"
 msgid "(hint skipped)"
 msgstr ""
 
-#: lib/depends.c:1621
+#: lib/depends.c:1631
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr "다음과 관련된 패키지 이름을 무시합니다 [%d]\t%s -> %s\n"
 
-#: lib/depends.c:1744
+#: lib/depends.c:1754
 #, fuzzy, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "tsort 관계에서 %s-%s-%s \"%s\"(을)를 삭제합니다.\n"
 
-#: lib/depends.c:2318
+#: lib/depends.c:2328
 msgid "LOOP:\n"
 msgstr "루프(LOOP):\n"
 
-#: lib/depends.c:2354
+#: lib/depends.c:2364
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.4.9\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2008-01-27 12:31-0500\n"
+"POT-Creation-Date: 2008-01-29 09:38-0500\n"
 "PO-Revision-Date: 2007-12-29 21:21+0800\n"
 "Last-Translator: Wei-Lun Chao <chaoweilun@gmail.com>\n"
 "Language-Team: Chinese (traditional) <zh-l10n@linux.org.tw>\n"
@@ -1466,21 +1466,21 @@ msgstr "(資料庫提供)"
 msgid "(hint skipped)"
 msgstr "(提示略過)"
 
-#: lib/depends.c:1621
+#: lib/depends.c:1631
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr "忽略套件名稱關聯 [%d]\t%s -> %s\n"
 
-#: lib/depends.c:1744
+#: lib/depends.c:1754
 #, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "從樹狀排列關係移除 %s「%s」。\n"
 
-#: lib/depends.c:2318
+#: lib/depends.c:2328
 msgid "LOOP:\n"
 msgstr "迴圈：\n"
 
-#: lib/depends.c:2354
+#: lib/depends.c:2364
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr "rpmtsOrder 失敗，剩下 %d 個元件\n"

@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 5.0\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2008-01-27 12:31-0500\n"
+"POT-Creation-Date: 2008-01-29 09:38-0500\n"
 "PO-Revision-Date: 2005-04-04 22:30+1000\n"
 "Last-Translator: SEKINE Tatsuo <tsekine@sdri.co.jp>\n"
 "Language-Team: Japanese <translation-team-ja@lists.sourceforge.net>\n"
@@ -1499,21 +1499,21 @@ msgstr "(provides データベース"
 msgid "(hint skipped)"
 msgstr ""
 
-#: lib/depends.c:1621
+#: lib/depends.c:1631
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr "パッケージ名の関係を無視します [%d]\t%s → %s\n"
 
-#: lib/depends.c:1744
+#: lib/depends.c:1754
 #, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "tsort 関係から %s \"%s\" を削除します。\n"
 
-#: lib/depends.c:2318
+#: lib/depends.c:2328
 msgid "LOOP:\n"
 msgstr "ループ:\n"
 
-#: lib/depends.c:2354
+#: lib/depends.c:2364
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr "rpmtsOrder に失敗, 残り %d 個\n"

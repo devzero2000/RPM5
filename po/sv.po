@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 5.0\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2008-01-27 12:31-0500\n"
+"POT-Creation-Date: 2008-01-29 09:38-0500\n"
 "PO-Revision-Date: 2007-10-01 15:34+0200\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <tp-sv@listor.tp-sv.se>\n"
@@ -1483,21 +1483,21 @@ msgstr "(db tillhandahåller)"
 msgid "(hint skipped)"
 msgstr "(tips hoppades över)"
 
-#: lib/depends.c:1621
+#: lib/depends.c:1631
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr "ignorera paketnamnsrelation(er) [%d]\t%s -> %s\n"
 
-#: lib/depends.c:1744
+#: lib/depends.c:1754
 #, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "tar bort %s \"%s\" från tsort-relationer.\n"
 
-#: lib/depends.c:2318
+#: lib/depends.c:2328
 msgid "LOOP:\n"
 msgstr "LOOP:\n"
 
-#: lib/depends.c:2354
+#: lib/depends.c:2364
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr "rpmtsOrder misslyckades, %d element återstår\n"
