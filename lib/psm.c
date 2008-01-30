@@ -1553,6 +1553,9 @@ static int populateInstallHeader(const rpmts ts, const rpmte te, rpmfi fi)
     uint32_t installTime = (uint32_t) time(NULL);
     int fc = rpmfiFC(fi);
     int xx = 1;
+#if defined(RPM_VENDOR_OPENPKG) /* additional-tag-installtime1st */
+    HE_t he_te;
+#endif
 
 assert(fi->h != NULL);
     if (fi->fstates != NULL && fc > 0) {
@@ -1568,6 +1571,42 @@ assert(fi->h != NULL);
     he->p.ui32p = &installTime;
     he->c = 1;
     xx = headerPut(fi->h, he, 0);
+
+#if defined(RPM_VENDOR_OPENPKG) /* additional-tag-installtime1st */
+    he_te = memset(alloca(sizeof(*he_te)), 0, sizeof(*he_te));
+    he_te->tag = RPMTAG_NAME;
+    if (headerGet(rpmteHeader(te), he_te, 0)) {
+        const char *name = he_te->p.str;
+        if (name != NULL) {
+            rpmts ts;
+            if ((ts = rpmtsCreate()) != NULL) {
+                rpmdbMatchIterator mi;
+                Header h_db;
+                HE_t he_db;
+                uint32_t installTime1st;
+
+                rpmtsOpenDB(ts, O_RDONLY);
+                he_db = memset(alloca(sizeof(*he_db)), 0, sizeof(*he_db));
+                mi = rpmtsInitIterator(ts, RPMTAG_PROVIDENAME, name, 0);
+                installTime1st = installTime;
+                while ((h_db = rpmdbNextIterator(mi)) != NULL) {
+                    he_db->tag = RPMTAG_INSTALLTIME1ST;
+                    if (headerGet(h_db, he_db, 0))
+                        if (installTime1st > *(he_db->p.ui32p))
+                            installTime1st = *(he_db->p.ui32p);
+                }
+                mi = rpmdbFreeIterator(mi);
+                ts = rpmtsFree(ts);
+
+                he->tag = RPMTAG_INSTALLTIME1ST;
+                he->t = RPM_UINT32_TYPE;
+                he->p.ui32p = &installTime1st;
+                he->c = 1;
+                xx = headerPut(fi->h, he, 0);
+            }
+        }
+    }
+#endif
 
     he->tag = RPMTAG_INSTALLCOLOR;
     he->t = RPM_UINT32_TYPE;

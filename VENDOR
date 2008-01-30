@@ -429,6 +429,18 @@
                      during built-time and hence one also needs to be able
                      to override this on the command line.
      ________________________________________________________________________
+     
+     Change:         additional-tag-installtime1st
+     Purpose:        Support the tag "INSTALLTIME1ST" which shows the
+                     first/initial "INSTALLTIME" of a package, even after
+                     multiple package updates.
+     Reason:         For multiple reasons (update frontends, etc) it is
+                     interesting to know when a particular package was
+                     installed the _first_ time, even if the current
+                     package version is already the Nth update and hence
+                     shows a later "install time". The formula used is:
+                     INSTALLTIME1ST_new = min([INSTALLTIME1ST_old], CURRENTTIME)
+     ________________________________________________________________________
 
   o  Name:           RPM4DARWIN
      Vendor:         RPM for Darwin (Mac OS X) <http://rpm4darwin.sourceforge.net/>
