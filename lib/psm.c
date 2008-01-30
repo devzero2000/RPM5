@@ -1551,6 +1551,7 @@ static int populateInstallHeader(const rpmts ts, const rpmte te, rpmfi fi)
     uint32_t tscolor = rpmtsColor(ts);
     uint32_t tecolor = rpmteColor(te);
     uint32_t installTime = (uint32_t) time(NULL);
+    uint32_t originTime = rpmteOriginTime(te);
     int fc = rpmfiFC(fi);
     int xx = 1;
 #if defined(RPM_VENDOR_OPENPKG) /* additional-tag-installtime1st */
@@ -1569,6 +1570,15 @@ assert(fi->h != NULL);
     he->tag = RPMTAG_INSTALLTIME;
     he->t = RPM_UINT32_TYPE;
     he->p.ui32p = &installTime;
+    he->c = 1;
+    xx = headerPut(fi->h, he, 0);
+
+    /* Propagate the time that the package was first installed. */
+    if (originTime == 0)
+	originTime = rpmtsGetTid(ts);
+    he->tag = tagValue("Installtime1st");
+    he->t = RPM_UINT32_TYPE;
+    he->p.ui32p = &originTime;
     he->c = 1;
     xx = headerPut(fi->h, he, 0);
 

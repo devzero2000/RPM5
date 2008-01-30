@@ -431,6 +431,15 @@ assert(lastx >= 0 && lastx < ts->orderCount);
 	/* Chain through upgrade flink. */
 	xx = rpmteChain(p, q, oh, "Upgrades");
 
+	/* Snarf the original install time from older package(s). */
+	he->tag = tagValue("Installtime1st");
+	xx = headerGet(h, he, 0);
+	if (xx && he->p.ui32p != NULL) {
+	    if (p->originTime == 0 || p->originTime > he->p.ui32p[0])
+		p->originTime = he->p.ui32p[0];
+	    he->p.ptr = _free(he->p.ptr);
+	}
+
 /*@-nullptrarith@*/
 	rpmlog(RPMLOG_DEBUG, D_("   upgrade erases %s\n"), rpmteNEVRA(q));
 /*@=nullptrarith@*/

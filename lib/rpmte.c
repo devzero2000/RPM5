@@ -181,6 +181,7 @@ assert(he->p.str != NULL);
     p->replaced = NULL;
 
     p->pkgFileSize = 0;
+    p->originTime = 0;
 
     p->PRCO = rpmdsNewPRCO(h);
 
@@ -325,6 +326,11 @@ uint32_t rpmteSetColor(rpmte te, uint32_t color)
 uint32_t rpmtePkgFileSize(rpmte te)
 {
     return (te != NULL ? te->pkgFileSize : 0);
+}
+
+uint32_t rpmteOriginTime(rpmte te)
+{
+    return (te != NULL ? te->originTime : 0);
 }
 
 int rpmteDepth(rpmte te)
