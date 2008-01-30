@@ -28,7 +28,7 @@ RPM_LDADD = \
 
 EXTRA_DIST = genpgp.sh getdate.y librpm.vers tpgp.c
 
-EXTRA_PROGRAMS = tpgp
+EXTRA_PROGRAMS = tpgp tsbt
 
 pkgincdir = $(pkgincludedir)$(WITH_PATH_VERSIONED_SUFFIX)
 pkginc_HEADERS = \
@@ -134,3 +134,5 @@ tpgp.c: genpgp.h
 genpgp.h: genpgp.sh
 	-sh ./genpgp.sh > genpgp.h
 
+tsbt_SOURCES = tsbt.c
+tsbt_LDADD = $(RPM_LDADD)

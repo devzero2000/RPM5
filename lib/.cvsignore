@@ -6,6 +6,7 @@ genpgp.h
 getdate.c
 rpmversion.h
 tpgp
+tsbt
 .libs
 *.la
 *.lcd
