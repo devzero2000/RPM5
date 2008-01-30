@@ -306,6 +306,30 @@ int rpmcliInstallRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 /*@=evalorder@*/
 }
 
+static rpmRC rpmcliEraseElement(rpmts ts, const char * arg)
+{
+    rpmdbMatchIterator mi;
+    Header h;
+    rpmRC rc = RPMRC_OK;
+    int xx;
+
+    mi = rpmtsInitIterator(ts, RPMDBI_LABEL, arg, 0);
+    if (mi == NULL)
+	return RPMRC_NOTFOUND;
+
+    while ((h = rpmdbNextIterator(mi)) != NULL) {
+	unsigned int recOffset = rpmdbGetIteratorOffset(mi);
+
+	if (recOffset == 0) {	/* XXX can't happen. */
+	    rc = RPMRC_FAIL;
+	    break;
+	}
+	xx = rpmtsAddEraseElement(ts, h, recOffset);
+    }
+    mi = rpmdbFreeIterator(mi);
+
+    return 0;
+}
 
 /** @todo Generalize --freshen policies. */
 int rpmcliInstall(rpmts ts, QVA_t ia, const char ** argv)
@@ -420,6 +444,20 @@ if (fileURL[0] == '=') {
 	    continue;
 	}
 	fn = rpmgiHdrPath(gi);
+	/* === Check for erasures within install transaction. */
+	if (fn[0] == '-') {
+	    switch (rpmcliEraseElement(ts, &fn[1])) {
+	    case RPMRC_OK:
+		break;
+	    case RPMRC_NOTFOUND:
+	    default:
+		rpmlog(RPMLOG_ERR, _("package %s cannot be erased\n"), &fn[1]);
+		numFailed++;
+		goto exit;
+		/*@notreached@*/ break;
+	    }
+	    continue;
+	}
 
 	/* === Check for relocatable package. */
 	if (relocations) {
