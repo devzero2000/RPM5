@@ -995,6 +995,9 @@ grabArgs(MacroBuf mb, const MacroEntry me, /*@returned@*/ const char * se,
     int argc = 0;
     const char **argv;
     int c;
+#ifdef __GLIBC__
+    char *posixly_correct;
+#endif
 
     /* Copy macro name as argv[0], save beginning of args.  */
     buf[0] = '\0';
@@ -1080,6 +1083,29 @@ grabArgs(MacroBuf mb, const MacroEntry me, /*@returned@*/ const char * se,
 
     opts = me->opts;
 
+#ifdef __GLIBC__
+    /*
+     *  Ensure option parsing is done without allowing option/argument permutations
+     *  to avoid accidentally picking up and complaining about unknown options.
+     *
+     *  Required standard POSIX getopt(3) behavior:
+     *  $ rpm --define '%foo() <%*>' --eval '%{foo bar %(echo -n "quux") baz}'
+     *  <bar quux baz>
+     *
+     *  Unexpected non-standard Linux GLIBC getopt(3) behavior:
+     *  $ rpm --define '%foo() <%*>' --eval '%{foo bar %(echo -n "quux") baz}'
+     *  foo: invalid option -- n
+     *  error: Unknown option ? in foo()
+     *  <%*>
+     *
+     *  Fixed standard POSIX getopt(3) behavior also under Linux GLIBC:
+     *  $ POSIXLY_CORRECT=1 rpm --define '%foo() <%*>' --eval '%{foo bar %(echo -n "quux") baz}'
+     *  <bar quux baz>
+     */
+    posixly_correct = getenv("POSIXLY_CORRECT");
+    setenv("POSIXLY_CORRECT", "1", 1);
+#endif
+
     /* Define option macros. */
 /*@-nullstate@*/ /* FIX: argv[] can be NULL */
     while((c = getopt(argc, (char **)argv, opts)) != -1)
@@ -1105,6 +1131,13 @@ grabArgs(MacroBuf mb, const MacroEntry me, /*@returned@*/ const char * se,
 	}
 	be = b; /* reuse the space */
     }
+
+#ifdef __GLIBC__
+    if (posixly_correct != NULL)
+        setenv("POSIXLY_CORRECT", posixly_correct, 1);
+    else
+        unsetenv("POSIXLY_CORRECT");
+#endif
 
     /* Add arg count as macro. */
     sprintf(aname, "%d", (argc - optind));

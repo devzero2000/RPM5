@@ -1,4 +1,5 @@
 5.0.0 -> 5.1a1:
+    - rse: ensure macro option parsing is done correctly also under GLIBC by not allowing option/argument permutations
     - jbj: retrieve old originTime earlier to include identical package replace.
     - jbj: fix: functional "-N-V-R.A" erasures-within-upgrade transactions.
     - jbj: fix: retrieve originTime from old, not new, header.
