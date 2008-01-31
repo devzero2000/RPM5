@@ -432,7 +432,7 @@ assert(lastx >= 0 && lastx < ts->orderCount);
 	xx = rpmteChain(p, q, oh, "Upgrades");
 
 	/* Snarf the original install time from older package(s). */
-	he->tag = tagValue("Installtime1st");
+	he->tag = RPMTAG_ORIGINTIME;
 	xx = headerGet(h, he, 0);
 	if (xx && he->p.ui32p != NULL) {
 	    if (p->originTime == 0 || p->originTime > he->p.ui32p[0])

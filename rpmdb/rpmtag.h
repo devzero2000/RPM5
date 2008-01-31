@@ -412,7 +412,7 @@ enum rpmTag_e {
     RPMTAG_SANITYCHECKPROG	= 1206, /* s */
     RPMTAG_FILESTAT		= 1207, /* s[] stat(2) from metadata extension*/
     RPMTAG_STAT			= 1208, /* s[] stat(2) from disk extension */
-    RPMTAG_INSTALLTIME1ST	= 1209,	/* i */
+    RPMTAG_ORIGINTIME		= 1209,	/* i */
 
 /*@-enummemuse@*/
     RPMTAG_FIRSTFREE_TAG	/*!< internal */

@@ -1,6 +1,6 @@
 5.0.0 -> 5.1a1:
     - jbj: permit "-N-V-R.A" erasure args within install/upgrade transactions.
-    - jbj: propagate the time a package was first installed through upgrades.
+    - jbj: propagate the time a package was first installed through upgrades (available via tag "ORIGINTIME").
     - jbj: replace sr.po from translation project.
     - jbj: fix: rpmtsCheck() needs to return 1 when problems exist.
     - rse: (again) replace u_int32_t with uint32_t to be consistent across the code base
