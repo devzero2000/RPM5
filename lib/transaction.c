@@ -861,9 +861,6 @@ static void skipFiles(const rpmts ts, rpmfi fi)
 
 /*@-dependenttrans@*/
     if (netsharedPaths) freeSplitString(netsharedPaths);
-#ifdef	DYING	/* XXX freeFi will deal with this later. */
-    fi->flangs = _free(fi->flangs);
-#endif
     if (languages) freeSplitString((char **)languages);
 /*@=dependenttrans@*/
 }
