@@ -203,7 +203,8 @@ static rpmRC rpmgiLoadReadHeader(rpmgi gi)
 	const char * fn;	/* XXX gi->hdrPath? */
 
 	fn = gi->argv[gi->i];
-	if (!(gi->flags & RPMGI_NOHEADER)) {
+	/* XXX Skip +bing -bang =boom special arguments. */
+	if (strchr("-+=", *fn) == NULL && !(gi->flags & RPMGI_NOHEADER)) {
 	    h = rpmgiReadHeader(gi, fn);
 	    if (h != NULL)
 		rpmrc = RPMRC_OK;

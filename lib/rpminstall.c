@@ -436,26 +436,28 @@ if (fileURL[0] == '=') {
 /*@=mods@*/
     rc = rpmgiSetArgs(gi, argv, ftsOpts, _giFlags);
     while (rpmgiNext(gi) == RPMRC_OK) {
-	Header h = rpmgiHeader(gi);
-	const char * fn;
+	const char * fn = rpmgiHdrPath(gi);
+	Header h;
 
-	if (h == NULL) {
-	    numFailed++;
-	    continue;
-	}
-	fn = rpmgiHdrPath(gi);
 	/* === Check for erasures within install transaction. */
 	if (fn[0] == '-') {
 	    switch (rpmcliEraseElement(ts, &fn[1])) {
 	    case RPMRC_OK:
+		numRPMS++;	/* XXX multiple erasures? */
 		break;
 	    case RPMRC_NOTFOUND:
 	    default:
 		rpmlog(RPMLOG_ERR, _("package %s cannot be erased\n"), &fn[1]);
-		numFailed++;
+		numFailed++;	/* XXX multiple erasures? */
 		goto exit;
 		/*@notreached@*/ break;
 	    }
+	    continue;
+	}
+
+	h = rpmgiHeader(gi);
+	if (h == NULL) {
+	    numFailed++;
 	    continue;
 	}
 
