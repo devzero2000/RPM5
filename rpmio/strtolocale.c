@@ -3,7 +3,9 @@
  */
 
 #include "system.h"
+#ifdef HAVE_LANGINFO_H
 #include <langinfo.h>
+#endif
 #ifdef HAVE_ICONV
 #include <iconv.h>
 #endif
@@ -24,7 +26,11 @@ const char * xstrtolocale(const char *str)
     const char *src;
 
     if (locale_encoding == NULL) {
+#ifdef HAVE_LANGINFO_H
 	const char *encoding = nl_langinfo(CODESET);
+#else
+	const char *encoding = "char";
+#endif
 	locale_encoding = xmalloc(strlen(encoding) + 11);
 	sprintf(locale_encoding, "%s//TRANSLIT", encoding);
 	locale_encoding_is_utf8 = strcasecmp(encoding, "UTF-8") == 0;
