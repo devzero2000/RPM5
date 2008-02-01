@@ -1,4 +1,5 @@
 5.0.0 -> 5.1a1:
+    - jbj: pedantic identification of Foo (not foo) syscalls in --fsmdebug spew.
     - jbj: fix: --rollback PSM_INIT changes added fstates before initialize.
     - rse: ensure macro option parsing is done correctly also under GLIBC by not allowing option/argument permutations
     - jbj: retrieve old originTime earlier to include identical package replace.
