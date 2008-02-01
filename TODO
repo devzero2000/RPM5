@@ -27,3 +27,5 @@
 	as interest, noone replied when I asked repeatedly. Alternatively,
 	just doing the port to rpm-5.0.0 is likely not hard at all.
 
+   - smart (and perhaps other python apps) may need archscore method
+	restored. rpmPlatformScore() is functionally equivalent replacement.
