@@ -193,7 +193,7 @@ enum rpmTag_e {
     RPMTAG_DESCRIPTION		= 1005,	/* s{} */
     RPMTAG_BUILDTIME		= 1006,	/* i */
     RPMTAG_BUILDHOST		= 1007,	/* s */
-    RPMTAG_INSTALLTIME		= 1008,	/* i */
+    RPMTAG_INSTALLTIME		= 1008,	/* i[] */
     RPMTAG_SIZE			= 1009,	/* i */
     RPMTAG_DISTRIBUTION		= 1010,	/* s */
     RPMTAG_VENDOR		= 1011,	/* s */
@@ -326,8 +326,8 @@ enum rpmTag_e {
     RPMTAG_PAYLOADCOMPRESSOR	= 1125,	/* s */
     RPMTAG_PAYLOADFLAGS		= 1126,	/* s */
     RPMTAG_INSTALLCOLOR		= 1127, /* i transaction color when installed */
-    RPMTAG_INSTALLTID		= 1128,	/* i */
-    RPMTAG_REMOVETID		= 1129,	/* i */
+    RPMTAG_INSTALLTID		= 1128,	/* i[] */
+    RPMTAG_REMOVETID		= 1129,	/* i[] */
 /*@-enummemuse@*/
     RPMTAG_SHA1RHN		= 1130, /* internal - obsolete */
 /*@=enummemuse@*/
@@ -412,8 +412,8 @@ enum rpmTag_e {
     RPMTAG_SANITYCHECKPROG	= 1206, /* s */
     RPMTAG_FILESTAT		= 1207, /* s[] stat(2) from metadata extension*/
     RPMTAG_STAT			= 1208, /* s[] stat(2) from disk extension */
-    RPMTAG_ORIGINTID		= 1209,	/* i */
-    RPMTAG_ORIGINTIME		= 1210,	/* i */
+    RPMTAG_ORIGINTID		= 1209,	/* i[] */
+    RPMTAG_ORIGINTIME		= 1210,	/* i[] */
 
 /*@-enummemuse@*/
     RPMTAG_FIRSTFREE_TAG	/*!< internal */

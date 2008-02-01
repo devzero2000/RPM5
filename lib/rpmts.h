@@ -290,7 +290,7 @@ struct rpmts_s {
 /*@null@*/
     FD_t scriptFd;		/*!< Scriptlet stdout/stderr. */
     int delta;			/*!< Delta for reallocation. */
-    uint32_t tid;			/*!< Transaction id. */
+    uint32_t tid[2];			/*!< Transaction id. */
 
     uint32_t color;		/*!< Transaction color bits. */
     uint32_t prefcolor;		/*!< Preferred file color. */
@@ -1117,7 +1117,7 @@ int rpmtsPrint(/*@null@*/ rpmts ts, /*@null@*/ FILE * fp)
 	/*@globals fileSystem @*/
 	/*@modifies ts, *fp, fileSystem @*/
 {
-    int tid = rpmtsGetTid(ts);
+    uint32_t tid = rpmtsGetTid(ts);
     time_t ttid = tid;
     rpmtsi tsi;
     rpmte te;

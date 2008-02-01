@@ -418,19 +418,27 @@ assert(p != NULL);
 	if (tscolor && hcolor && ohcolor && !(hcolor & ohcolor))
 	    continue;
 
-	/* Snarf the original install time from older package(s). */
+	/* Snarf the original install tid & time from older package(s). */
 	he->tag = RPMTAG_ORIGINTID;
 	xx = headerGet(oh, he, 0);
 	if (xx && he->p.ui32p != NULL) {
-	    if (p->originTid == 0 || p->originTid > he->p.ui32p[0])
-		p->originTid = he->p.ui32p[0];
+	    if (p->originTid[0] == 0 || p->originTid[0] > he->p.ui32p[0]
+	     || (he->c > 1 && p->originTid[0] == he->p.ui32p[0] && p->originTid[1] > he->p.ui32p[1]))
+	    {
+		p->originTid[0] = he->p.ui32p[0];
+		p->originTid[1] = (he->c > 1 ? he->p.ui32p[1] : 0);
+	    }
 	    he->p.ptr = _free(he->p.ptr);
 	}
 	he->tag = RPMTAG_ORIGINTIME;
 	xx = headerGet(oh, he, 0);
 	if (xx && he->p.ui32p != NULL) {
-	    if (p->originTime == 0 || p->originTime > he->p.ui32p[0])
-		p->originTime = he->p.ui32p[0];
+	    if (p->originTime[0] == 0 || p->originTime[0] > he->p.ui32p[0]
+	     || (he->c > 1 && p->originTime[0] == he->p.ui32p[0] && p->originTime[1] > he->p.ui32p[1]))
+	    {
+		p->originTime[0] = he->p.ui32p[0];
+		p->originTime[1] = (he->c > 1 ? he->p.ui32p[1] : 0);
+	    }
 	    he->p.ptr = _free(he->p.ptr);
 	}
 

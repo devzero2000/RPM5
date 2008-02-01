@@ -2830,11 +2830,13 @@ memset(data, 0, sizeof(*data));
 #ifdef	DYING
     /* Add remove transaction id to header. */
     if (rid != 0 && rid != -1) {
-	uint32_t tid = rid;
+	uint32_t tid[2];
+	tid[0] = rid;
+	tid[1] = 0;
 	he->tag = RPMTAG_REMOVETID;
 	he->t = RPM_UINT32_TYPE;
-	he->p.ui32p = &tid;
-	he->c = 1;
+	he->p.ui32p = tid;
+	he->c = 2;
 	xx = headerPut(h, he, 0);
     }
 #endif
@@ -3142,11 +3144,13 @@ memset(data, 0, sizeof(*data));
     xx = headerDel(h, he, 0);
 #endif
     if (iid != 0 && iid != -1) {
-	uint32_t tid = iid;
+	uint32_t tid[2];
+	tid[0] = iid;
+	tid[1] = 0;
 	he->tag = RPMTAG_INSTALLTID;
 	he->t = RPM_UINT32_TYPE;
-	he->p.ui32p = &tid;
-	he->c = 1;
+	he->p.ui32p = tid;
+	he->c = 2;
 	if (!headerIsEntry(h, he->tag))
 /*@-compmempass@*/
 	   xx = headerPut(h, he, 0);

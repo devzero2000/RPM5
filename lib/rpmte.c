@@ -181,8 +181,8 @@ assert(he->p.str != NULL);
     p->replaced = NULL;
 
     p->pkgFileSize = 0;
-    p->originTid = 0;
-    p->originTime = 0;
+    memset(p->originTid, 0, sizeof(p->originTid));
+    memset(p->originTime, 0, sizeof(p->originTime));
 
     p->PRCO = rpmdsNewPRCO(h);
 
@@ -329,14 +329,14 @@ uint32_t rpmtePkgFileSize(rpmte te)
     return (te != NULL ? te->pkgFileSize : 0);
 }
 
-uint32_t rpmteOriginTid(rpmte te)
+uint32_t * rpmteOriginTid(rpmte te)
 {
-    return (te != NULL ? te->originTid : 0);
+    return te->originTid;
 }
 
-uint32_t rpmteOriginTime(rpmte te)
+uint32_t * rpmteOriginTime(rpmte te)
 {
-    return (te != NULL ? te->originTime : 0);
+    return te->originTime;
 }
 
 int rpmteDepth(rpmte te)

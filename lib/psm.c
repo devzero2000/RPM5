@@ -1550,33 +1550,44 @@ static int populateInstallHeader(const rpmts ts, const rpmte te, rpmfi fi)
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     uint32_t tscolor = rpmtsColor(ts);
     uint32_t tecolor = rpmteColor(te);
-    uint32_t installTime = (uint32_t) time(NULL);
-    uint32_t originTid = rpmteOriginTid(te);
-    uint32_t originTime = rpmteOriginTime(te);
+    uint32_t * uip;
+    uint32_t installTime[2];
+    uint32_t originTime[2];
+    uint32_t originTid[2];
     int xx = 1;
 
 assert(fi->h != NULL);
 
+    {	struct timeval tv;
+	xx = gettimeofday(&tv, NULL);
+	installTime[0] = (uint32_t) tv.tv_sec;
+	installTime[1] = (uint32_t) tv.tv_usec;
+    }
     he->tag = RPMTAG_INSTALLTIME;
     he->t = RPM_UINT32_TYPE;
-    he->p.ui32p = &installTime;
-    he->c = 1;
+    he->p.ui32p = &installTime[0];
+    he->c = 2;
     xx = headerPut(fi->h, he, 0);
 
-    /* Propagate the time that the package was first installed. */
-    if (originTid == 0)
-	originTid = rpmtsGetTid(ts);
-    he->tag = RPMTAG_ORIGINTID;
-    he->t = RPM_UINT32_TYPE;
-    he->p.ui32p = &originTid;
-    he->c = 1;
-    xx = headerPut(fi->h, he, 0);
-    if (originTime == 0)
-	originTime = installTime;
+    /* Propagate the tid & time that the package was first installed. */
+    if ((uip = rpmteOriginTime(te)) != NULL)
+	memcpy(originTime, uip, sizeof(originTime));
+    if (originTime[0] == 0)
+	memcpy(originTime, installTime, sizeof(originTime));
     he->tag = RPMTAG_ORIGINTIME;
     he->t = RPM_UINT32_TYPE;
-    he->p.ui32p = &originTime;
-    he->c = 1;
+    he->p.ui32p = originTime;
+    he->c = 2;
+    xx = headerPut(fi->h, he, 0);
+
+    if ((uip = rpmteOriginTid(te)) != NULL)
+	memcpy(originTid, uip, sizeof(originTid));
+    if (originTid[0] == 0)
+	memcpy(originTid, ts->tid, sizeof(originTid));
+    he->tag = RPMTAG_ORIGINTID;
+    he->t = RPM_UINT32_TYPE;
+    he->p.ui32p = originTid;
+    he->c = 2;
     xx = headerPut(fi->h, he, 0);
 
     he->tag = RPMTAG_INSTALLCOLOR;

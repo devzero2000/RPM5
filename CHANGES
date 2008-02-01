@@ -1,4 +1,6 @@
 5.0.0 -> 5.1a1:
+    - jbj: use struct timeval timestamp for INSTALL{TID,TIME} and ORIGIN{TID,TIME}.
+	Note: TID.usec field is always 0 atm.
     - rse: add new RPM macro "%{uuid:[<version>[, <ns>, <data>]]}" for generating UUIDs of version 1, 3, 4 or 5
     - rse: add new C API function rpmuuidMake() for generating UUIDs of version 1, 3, 4 or 5
     - rse: provide both ORIGINTIME (based on INSTALLTIME) and ORIGINTID (based on INSTALLTID)

@@ -886,7 +886,7 @@ uint32_t rpmtsGetTid(rpmts ts)
 {
     uint32_t tid = 0;	/* XXX -1 is time(2) error return. */
     if (ts != NULL) {
-	tid = ts->tid;
+	tid = ts->tid[0];
     }
     return tid;
 }
@@ -895,8 +895,9 @@ uint32_t rpmtsSetTid(rpmts ts, uint32_t tid)
 {
     uint32_t otid = 0;	/* XXX -1 is time(2) error return. */
     if (ts != NULL) {
-	otid = ts->tid;
-	ts->tid = tid;
+	otid = ts->tid[0];
+	ts->tid[0] = tid;
+	ts->tid[1] = 0;
     }
     return otid;
 }
@@ -1309,7 +1310,11 @@ rpmts rpmtsCreate(void)
     ts->dbmode = O_RDONLY;
 
     ts->scriptFd = NULL;
-    ts->tid = (uint32_t) time(NULL);
+    {   struct timeval tv;
+	xx = gettimeofday(&tv, NULL);
+	ts->tid[0] = (uint32_t) tv.tv_sec;
+        ts->tid[1] = (uint32_t) tv.tv_usec;
+    }
     ts->delta = 5;
 
     ts->color = rpmExpandNumeric("%{?_transaction_color}");
