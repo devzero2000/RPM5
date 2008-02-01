@@ -15,7 +15,7 @@
     - jbj: updated nl.po (Translation Project).
     - rpm.org: Missing space in russian translation (mdvbz#36974).
     - rpm.org: Quote find-debuginfo builddir to avoid whitespace issues.
-    - jbj: generailize to verify(*) => -Va and verify(/path) => -Vf /path.
+    - jbj: generalize to verify(*) => -Va and verify(/path) => -Vf /path.
     - jbj: fix: no output performing verify(...) probe.
     - jbj: fix: insure valid exit code for verify(...) probe.
     - jbj: add verify(N) = E:V-R runtime dependency probe. more to do ...
