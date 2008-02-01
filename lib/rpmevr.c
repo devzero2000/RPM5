@@ -55,6 +55,19 @@ int rpmEVRcmp(const char * a, const char * b)
 	while (*b && !(xisdigit(*b) || xisrpmalpha(*b))) b++;
 
 	/* Digit string comparison? */
+#if defined(RPM_VENDOR_OPENPKG) /* support-wildcards-in-EVR-comparison */
+        if (a[0] == '*') {
+            ae = a + 1;
+            if ((be = strchr(b, a[1])) == NULL)
+                be = b;
+        }
+        else if (b[0] == '*') {
+            be = b + 1;
+            if ((ae = strchr(a, b[1])) == NULL)
+                ae = a;
+        }
+        else
+#endif
 	if (xisdigit(*a) || xisdigit(*b)) {
 	    /* Discard leading zeroes. */
 	    while (a[0] == '0' && xisdigit(a[1])) a++;
