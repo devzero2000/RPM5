@@ -148,6 +148,7 @@ struct rpmte_s {
     struct rpmChainLink_s flink;/*!< Forward link info to installed element. */
     int linkFailed;		/*!< Did the linked element upgrade succeed? */
     int done;			/*!< Has the element been installed/erased? */
+    uint32_t originTid;		/*!< Time of transaction that package was first installed. */
     uint32_t originTime;	/*!< Time that package was first installed. */
 
     int installed;		/*!< Was the header installed? */
@@ -340,6 +341,14 @@ void rpmteSetDBInstance(rpmte te, unsigned int instance)
  * @return		size in bytes of package file.
  */
 uint32_t rpmtePkgFileSize(rpmte te)
+	/*@*/;
+
+/** \ingroup rpmte
+ * Retrieve transaction start time that package was first installed.
+ * @param te		transaction element
+ * @return		origin time
+ */
+uint32_t rpmteOriginTid(rpmte te)
 	/*@*/;
 
 /** \ingroup rpmte

@@ -1551,6 +1551,7 @@ static int populateInstallHeader(const rpmts ts, const rpmte te, rpmfi fi)
     uint32_t tscolor = rpmtsColor(ts);
     uint32_t tecolor = rpmteColor(te);
     uint32_t installTime = (uint32_t) time(NULL);
+    uint32_t originTid = rpmteOriginTid(te);
     uint32_t originTime = rpmteOriginTime(te);
     int xx = 1;
 
@@ -1563,8 +1564,15 @@ assert(fi->h != NULL);
     xx = headerPut(fi->h, he, 0);
 
     /* Propagate the time that the package was first installed. */
+    if (originTid == 0)
+	originTid = rpmtsGetTid(ts);
+    he->tag = RPMTAG_ORIGINTID;
+    he->t = RPM_UINT32_TYPE;
+    he->p.ui32p = &originTid;
+    he->c = 1;
+    xx = headerPut(fi->h, he, 0);
     if (originTime == 0)
-	originTime = rpmtsGetTid(ts);
+	originTime = installTime;
     he->tag = RPMTAG_ORIGINTIME;
     he->t = RPM_UINT32_TYPE;
     he->p.ui32p = &originTime;
