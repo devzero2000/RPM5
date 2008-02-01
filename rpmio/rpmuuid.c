@@ -62,7 +62,7 @@ int rpmuuidMake(int version, const char *ns, const char *data, char *buf_str, un
     else if (version == 4)
         rc = uuid_make(uuid, UUID_MAKE_V4);
     else if (version == 5)
-        rc = uuid_make(uuid, UUID_MAKE_V3, uuid_ns, data);
+        rc = uuid_make(uuid, UUID_MAKE_V5, uuid_ns, data);
     if (rc != UUID_RC_OK) {
         uuid_destroy(uuid);
         if (uuid_ns != NULL)
