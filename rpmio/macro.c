@@ -1329,6 +1329,41 @@ doFoo(MacroBuf mb, int negate, const char * f, size_t fn,
 #else
         (void) mktemp(b);
 #endif
+    } else if (STREQ("uuid", f, fn)) {
+        int uuid_version;
+        const char *uuid_ns;
+        const char *uuid_data;
+        char *cp;
+        size_t n;
+
+        uuid_version = 1;
+        uuid_ns = NULL;
+        uuid_data = NULL;
+        cp = buf;
+        if ((n = strspn(cp, " \t\n")) > 0)
+            cp += n;
+        if ((n = strcspn(cp, " \t\n")) > 0) {
+            uuid_version = (int)strtol(cp, (char **)NULL, 10);
+            cp += n;
+            if ((n = strspn(cp, " \t\n")) > 0)
+                cp += n;
+            if ((n = strcspn(cp, " \t\n")) > 0) {
+                uuid_ns = cp;
+                cp += n;
+                *cp++ = '\0';
+                if ((n = strspn(cp, " \t\n")) > 0)
+                    cp += n;
+                if ((n = strcspn(cp, " \t\n")) > 0) {
+                    uuid_data = cp;
+                    cp += n;
+                    *cp++ = '\0';
+                }
+            }
+        }
+        if (rpmuuidMake(uuid_version, uuid_ns, uuid_data, buf, NULL))
+            rpmlog(RPMLOG_ERR, "failed to create UUID\n");
+        else
+            b = buf;
     } else if (STREQ("S", f, fn)) {
 	for (b = buf; (c = (int)*b) && xisdigit(c);)
 	    b++;
@@ -1665,6 +1700,7 @@ expandMacro(MacroBuf mb)
 	    STREQ("verbose", f, fn) ||
 	    STREQ("uncompress", f, fn) ||
 	    STREQ("mkstemp", f, fn) ||
+	    STREQ("uuid", f, fn) ||
 	    STREQ("url2path", f, fn) ||
 	    STREQ("u2p", f, fn) ||
 	    STREQ("S", f, fn) ||
