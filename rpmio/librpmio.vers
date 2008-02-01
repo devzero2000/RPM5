@@ -320,6 +320,7 @@ LIBRPMIO_0
     rpmxarPull;
     rpmxarSwapBuf;
     XrpmxarUnlink;
+    rpmuuidMake;
     Stat;
     _Stat;
     stripTrailingBlanksStringBuf;
