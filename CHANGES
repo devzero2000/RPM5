@@ -1,4 +1,5 @@
 5.0.0 -> 5.1a1:
+    - jbj: mire.c: add STANDALONE test exerciser.
     - jbj: use struct timeval timestamp for INSTALL{TID,TIME} and ORIGIN{TID,TIME}.
 	Note: TID.usec field is always 0 atm.
     - rse: add new RPM macro "%{uuid:[<version>[, <ns>, <data>]]}" for generating UUIDs of version 1, 3, 4 or 5

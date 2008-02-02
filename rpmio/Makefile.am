@@ -6,7 +6,7 @@ LINT = splint
 
 EXTRA_DIST = gengpg.sh tdir.c tfts.c tget.c thkp.c tput.c tglob.c tinv.c tkey.c trpmio.c lookup3.c tpw.c librpmio.vers
 
-EXTRA_PROGRAMS = tdir tfts tget thkp tmacro tput tglob tinv tkey tmagic trpmio tsw dumpasn1 lookup3 tpw
+EXTRA_PROGRAMS = tdir tfts tget tglob thkp tinv tkey tmacro tmagic tmire tput tpw trpmio tsw dumpasn1 lookup3
 
 AM_CPPFLAGS = \
 	-I$(srcdir) \
@@ -104,8 +104,23 @@ tfts_LDADD = $(RPM_LDADD)
 tget_SOURCES = tget.c
 tget_LDADD = $(RPM_LDADD)
 
+tglob_SOURCES = tglob.c
+tglob_LDADD = $(RPM_LDADD)
+
 thkp_SOURCES = thkp.c
 thkp_LDADD = $(RPM_LDADD)
+
+tinv_SOURCES = tinv.c
+tinv_LDADD = $(RPM_LDADD)
+
+tkey_SOURCES = gengpg.h tkey.c rpmgc.c rpmnss.c rpmssl.c
+tkey_CFLAGS  = $(CFLAGS)
+tkey_LDADD = $(RPM_LDADD) -lgcrypt
+gengpg.h:
+	-sh ./gengpg.sh > gengpg.h
+
+tmire_SOURCES = tmire.c
+tmire_LDADD = $(RPM_LDADD)
 
 tmacro_SOURCES =
 tmacro_LDADD = tmacro.o $(RPM_LDADD)
@@ -115,27 +130,19 @@ tmacro.o:  macro.c
 tmagic_SOURCES = tmagic.c
 tmagic_LDADD = $(RPM_LDADD)
 
+tmire_SOURCES =
+tmire_LDADD = tmire.o $(RPM_LDADD)
+tmire.o:  mire.c
+	$(COMPILE) -DSTANDALONE -o $@ -c $<
+
 tput_SOURCES = tput.c
 tput_LDADD = $(RPM_LDADD)
 
-tglob_SOURCES = tglob.c
-tglob_LDADD = $(RPM_LDADD)
-
-tinv_SOURCES = tinv.c
-tinv_LDADD = $(RPM_LDADD)
-
-tkey_SOURCES = gengpg.h tkey.c rpmgc.c rpmnss.c rpmssl.c
-tkey_CFLAGS  = $(CFLAGS)
-tkey_LDADD = $(RPM_LDADD) -lgcrypt
-
-gengpg.h:
-	-sh ./gengpg.sh > gengpg.h
+tpw_SOURCES = tpw.c
+tpw_LDFLAGS = $(RPM_LDADD)
 
 trpmio_SOURCES = trpmio.c
 trpmio_LDADD = $(RPM_LDADD)
-
-tpw_SOURCES = tpw.c
-tpw_LDFLAGS = $(RPM_LDADD)
 
 tsw_SOURCES = tsw.c
 tsw_LDFLAGS = $(RPM_LDADD)
