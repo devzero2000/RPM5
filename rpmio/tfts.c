@@ -4,30 +4,17 @@
 #include <rpmio_internal.h>
 #include <rpmmacro.h>
 #include <rpmcb.h>
+#include <mire.h>
+#include <argv.h>
 #include <popt.h>
 
 #include "debug.h"
 
+static const char * pattern = ".*\\.rpm$";
+static miRE mire = NULL;
+
 /*@unchecked@*/
 static int _fts_debug = 0;
-
-#if 0
-#define HTTPSPATH	"https://localhost/rawhide/test/"
-#define HTTPPATH	"http://localhost/rawhide/test/"
-#else
-#define HTTPSPATH	"https://localhost/rawhide/"
-#define HTTPPATH	"http://localhost/rawhide/"
-#endif
-#define FTPPATH         "ftp://localhost/pub/rawhide/packages/test"
-#define DIRPATH         "/var/ftp/pub/rawhide/packages/test"
-#if 0
-static char * httpspath = HTTPSPATH;
-#endif
-static char * httppath = HTTPPATH;
-#if 0
-static char * ftppath = FTPPATH;
-static char * dirpath = DIRPATH;
-#endif
 
 static int ndirs = 0;
 static int nfiles = 0;
@@ -60,6 +47,7 @@ static const char * ftsInfoStr(int fts_info) {
 
 static int ftsPrint(FTS * ftsp, FTSENT * fts)
 {
+    int xx;
 
     if (_fts_debug)
 	fprintf(stderr, "FTS_%s\t%*s %s\n", ftsInfoStr(fts->fts_info),
@@ -73,6 +61,8 @@ static int ftsPrint(FTS * ftsp, FTSENT * fts)
     case FTS_DP:	/* postorder directory */
 	break;
     case FTS_F:		/* regular file */
+	if (mire)
+	    xx = mireRegexec(mire, fts->fts_accpath);
 	nfiles++;
 	break;
     case FTS_NS:	/* stat(2) failed */
@@ -96,24 +86,22 @@ static int ftsPrint(FTS * ftsp, FTSENT * fts)
 
 static int ftsOpts = 0;
 
-static void ftsWalk(const char * path)
+static int ftsWalk(ARGV_t av)
 {
-    const char * ftsSet[2];
     FTS * ftsp;
     FTSENT * fts;
     int xx;
 
-
-    ftsSet[0] = path;
-    ftsSet[1] = NULL;
-
     ndirs = nfiles = 0;
-    ftsp = Fts_open((char *const *)ftsSet, ftsOpts, NULL);
+    ftsp = Fts_open((char *const *)av, ftsOpts, NULL);
     while((fts = Fts_read(ftsp)) != NULL)
 	xx = ftsPrint(ftsp, fts);
     xx = Fts_close(ftsp);
-fprintf(stderr, "===== (%d/%d) dirs/files in %s\n", ndirs, nfiles, path);
 
+fprintf(stderr, "===== (%d/%d) dirs/files in:\n", ndirs, nfiles);
+    argvPrint(NULL, av, NULL);
+
+    return 0;
 }
 
 static struct poptOption optionsTable[] = {
@@ -151,9 +139,14 @@ int
 main(int argc, char *argv[])
 {
     poptContext optCon = poptGetContext(argv[0], argc, argv, optionsTable, 0);
+    ARGV_t av = NULL;
+    int ac = 0;
     int rc;
+    int xx;
 
     while ((rc = poptGetNextOpt(optCon)) > 0) {
+	const char * optArg = poptGetOptArg(optCon);
+	optArg = _free(optArg);
 	switch (rc) {
 	case 'v':
 	    rpmIncreaseVerbosity();
@@ -166,19 +159,37 @@ main(int argc, char *argv[])
     if (ftsOpts == 0)
 	ftsOpts = (FTS_COMFOLLOW | FTS_LOGICAL | FTS_NOSTAT);
 
+    if (_fts_debug) {
+	rpmIncreaseVerbosity();
+	rpmIncreaseVerbosity();
 _av_debug = -1;
 _ftp_debug = -1;
 _dav_debug = 1;
-#if 0
-    ftsWalk(dirpath);
-    ftsWalk(ftppath);
-#endif
-    ftsWalk(httppath);
-#if 0
-    ftsWalk(httpspath);
-#endif
+_mire_debug = 1;
+    }
+
+
+    av = poptGetArgs(optCon);
+    ac = argvCount(av);
+    if (ac < 1) {
+	poptPrintUsage(optCon, stderr, 0);
+	goto exit;
+    }
+
+    if (pattern) {
+	mire = mireNew(RPMMIRE_REGEX, 0);
+	if ((xx = mireRegcomp(mire, pattern)) != 0)
+	    goto exit;;
+    }
+
+    ftsWalk(av);
+
+exit:
+    mire = mireFree(mire);
 
 /*@i@*/ urlFreeCache();
+
+    optCon = poptFreeContext(optCon);
 
     return 0;
 }
