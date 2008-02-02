@@ -2,7 +2,12 @@
 
 #include <rpmio.h>
 #include <rpmmacro.h>
+#include <argv.h>
+#include <mire.h>
 #include <rpmcb.h>
+
+#include <rpmdb.h>
+
 #include <rpmgi.h>
 #include <rpmcli.h>
 
@@ -12,12 +17,10 @@
 
 #include "debug.h"
 
-static const char * gitagstr = "packages";
+static const char * gitagstr = NULL;
 static const char * gikeystr = NULL;
 static rpmtransFlags transFlags = 0;
-#ifdef	DYING
-static rpmgiFlags giFlags = 0;
-#endif
+static rpmdepFlags depFlags = 0;
 
 static const char * queryFormat = NULL;
 static const char * defaultQueryFormat =
@@ -40,6 +43,63 @@ static const char * rpmgiPathOrQF(const rpmgi gi)
     }
 
     return val;
+}
+
+static rpmRC rpmcliEraseElement(rpmts ts, const char * arg)
+{
+    rpmdbMatchIterator mi;
+    Header h;
+    rpmRC rc = RPMRC_OK;
+    int xx;
+
+    mi = rpmtsInitIterator(ts, RPMDBI_LABEL, arg, 0);
+    if (mi == NULL)
+	return RPMRC_NOTFOUND;
+
+    while ((h = rpmdbNextIterator(mi)) != NULL) {
+	unsigned int recOffset = rpmdbGetIteratorOffset(mi);
+
+	if (recOffset == 0) {	/* XXX can't happen. */
+	    rc = RPMRC_FAIL;
+	    break;
+	}
+	xx = rpmtsAddEraseElement(ts, h, recOffset);
+    }
+    mi = rpmdbFreeIterator(mi);
+
+    return 0;
+}
+
+static const char * rpmcliInstallElementPath(rpmts ts, const char * arg)
+{
+    static const char * pkgpat = "-[^-]*-[^-]*.[^.]*.rpm$";
+    const char * mirePattern = rpmExpand(&arg[1], pkgpat, NULL);
+    miRE mire = mireNew(RPMMIRE_REGEX, 0);
+    const char * fn = NULL;
+    ARGV_t av = NULL;
+    int ac = 0;
+    int xx = mireRegcomp(mire, mirePattern);
+    int i;
+
+    /* Get list of candidate package paths. */
+    /* XXX note the added "-*.rpm" to force globbing on '-' boundaries. */
+    fn = rpmGetPath("%{?_rpmgi_prefix:%{?_rpmgi_prefix}/}", arg, "-*.rpm", NULL);
+    xx = rpmGlob(fn, &ac, &av);
+    fn = _free(fn);
+
+    /* Filter out glibc <-> glibc-common confusions. */
+    for (i = 0; i < ac; i++) {
+	if (mireRegexec(mire, av[i]))
+	    continue;
+	fn = xstrdup(av[0]);
+	break;
+    }
+
+    av = argvFree(av);
+    mire = mireFree(mire);
+    mirePattern = _free(mirePattern);
+
+    return fn;
 }
 
 static struct poptOption optionsTable[] = {
@@ -86,9 +146,12 @@ main(int argc, char *const argv[])
     poptContext optCon;
     rpmts ts = NULL;
     rpmVSFlags vsflags;
+    int numRPMS = 0;
+    int numFailed = 0;
     rpmgi gi = NULL;
-    int gitag = RPMDBI_PACKAGES;
-    const char ** av;
+    int gitag = RPMDBI_ARGLIST;
+    const char * fn = NULL;
+    ARGV_t av;
     int ac;
     int rc = 0;
 
@@ -107,10 +170,13 @@ main(int argc, char *const argv[])
 	}
     }
 
+    av = poptGetArgs(optCon);
+
     /* XXX ftswalk segfault with no args. */
 
     ts = rpmtsCreate();
     (void) rpmtsSetFlags(ts, transFlags);
+    (void) rpmtsSetDFlags(ts, depFlags);
 
     vsflags = rpmExpandNumeric("%{?_vsflags_query}");
     if (rpmcliQueryFlags & VERIFY_DIGEST)
@@ -121,25 +187,70 @@ main(int argc, char *const argv[])
 	vsflags |= RPMVSF_NOHDRCHK;
     (void) rpmtsSetVSFlags(ts, vsflags);
 
-    {   uint32_t tid = (uint32_t) time(NULL);
-	(void) rpmtsSetTid(ts, tid);
-    }
-
     gi = rpmgiNew(ts, gitag, gikeystr, 0);
 
-    av = poptGetArgs(optCon);
     (void) rpmgiSetArgs(gi, av, ftsOpts, giFlags);
+
+#if defined(REFERENCE_FORNOW)
+if (fileURL[0] == '=') {
+    rpmds this = rpmdsSingle(RPMTAG_REQUIRENAME, fileURL+1, NULL, 0);
+
+    xx = rpmtsSolve(ts, this, NULL);
+    if (ts->suggests && ts->nsuggests > 0) {
+	fileURL = _free(fileURL);
+	fileURL = ts->suggests[0];
+	ts->suggests[0] = NULL;
+	while (ts->nsuggests-- > 0) {
+	    if (ts->suggests[ts->nsuggests] == NULL)
+		continue;
+	    ts->suggests[ts->nsuggests] = _free(ts->suggests[ts->nsuggests]);
+	}
+	ts->suggests = _free(ts->suggests);
+	rpmlog(RPMLOG_DEBUG, D_("Adding goal: %s\n"), fileURL);
+	pkgURL[pkgx] = fileURL;
+	fileURL = NULL;
+	pkgx++;
+    }
+    this = rpmdsFree(this);
+} else
+#endif
 
     ac = 0;
     while (rpmgiNext(gi) == RPMRC_OK) {
+
+	fn = _free(fn);
+	fn = xstrdup(rpmgiHdrPath(gi));
+
+	/* === Check for "+bing" lookaside paths within install transaction. */
+	if (fn[0] == '+') {
+	    const char * nfn = rpmcliInstallElementPath(ts, &fn[1]);
+	    fn = _free(fn);
+	    fn = nfn;
+	}
+
+	/* === Check for "-bang" erasures within install transaction. */
+	if (fn[0] == '-') {
+	    switch (rpmcliEraseElement(ts, &fn[1])) {
+	    case RPMRC_OK:
+		numRPMS++;	/* XXX multiple erasures? */
+		break;
+	    case RPMRC_NOTFOUND:
+	    default:
+		rpmlog(RPMLOG_ERR, _("package %s cannot be erased\n"), &fn[1]);
+		numFailed++;	/* XXX multiple erasures? */
+		break;
+	    }
+	    continue;
+	}
+
 	if (!(giFlags & RPMGI_TSADD)) {
 	    const char * arg = rpmgiPathOrQF(gi);
-
-	    fprintf(stdout, "%5d %s\n", ac, arg);
-	    arg = _free(arg);
+	    fprintf(stdout, "%5d %s\n", ac, fn);
+	    fn = _free(arg);
 	}
 	ac++;
     }
+    fn = _free(fn);
 
     if (giFlags & RPMGI_TSORDER) {
 	rpmtsi tsi;

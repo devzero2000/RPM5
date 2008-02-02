@@ -17,6 +17,7 @@
 #include "rpmte.h"		/* XXX rpmtsPrint() */
 
 #include "manifest.h"
+#define	_RPMGI_INTERNAL		/* XXX "+bing" args need gi->h. */
 #include "rpmgi.h"
 #include "debug.h"
 
@@ -331,6 +332,38 @@ static rpmRC rpmcliEraseElement(rpmts ts, const char * arg)
     return 0;
 }
 
+static const char * rpmcliInstallElementPath(rpmts ts, const char * arg)
+{
+    static const char * pkgpat = "-[^-]*-[^-]*.[^.]*.rpm$";
+    const char * mirePattern = rpmExpand(&arg[1], pkgpat, NULL);
+    miRE mire = mireNew(RPMMIRE_REGEX, 0);
+    const char * fn = NULL;
+    ARGV_t av = NULL;
+    int ac = 0;
+    int xx = mireRegcomp(mire, mirePattern);
+    int i;
+
+    /* Get list of candidate package paths. */
+    /* XXX note the added "-*.rpm" to force globbing on '-' boundaries. */
+    fn = rpmGetPath("%{?_rpmgi_prefix:%{?_rpmgi_prefix}/}", arg, "-*.rpm", NULL);
+    xx = rpmGlob(fn, &ac, &av);
+    fn = _free(fn);
+
+    /* Filter out glibc <-> glibc-common confusions. */
+    for (i = 0; i < ac; i++) {
+	if (mireRegexec(mire, av[i]))
+	    continue;
+	fn = xstrdup(av[0]);
+	break;
+    }
+
+    av = argvFree(av);
+    mire = mireFree(mire);
+    mirePattern = _free(mirePattern);
+
+    return fn;
+}
+
 /** @todo Generalize --freshen policies. */
 int rpmcliInstall(rpmts ts, QVA_t ia, const char ** argv)
 {
@@ -400,35 +433,12 @@ int rpmcliInstall(rpmts ts, QVA_t ia, const char ** argv)
 	    relocations = NULL;
     }
 
-#if defined(REFERENCE_FORNOW)
-if (fileURL[0] == '=') {
-    rpmds this = rpmdsSingle(RPMTAG_REQUIRENAME, fileURL+1, NULL, 0);
-
-    xx = rpmtsSolve(ts, this, NULL);
-    if (ts->suggests && ts->nsuggests > 0) {
-	fileURL = _free(fileURL);
-	fileURL = ts->suggests[0];
-	ts->suggests[0] = NULL;
-	while (ts->nsuggests-- > 0) {
-	    if (ts->suggests[ts->nsuggests] == NULL)
-		continue;
-	    ts->suggests[ts->nsuggests] = _free(ts->suggests[ts->nsuggests]);
-	}
-	ts->suggests = _free(ts->suggests);
-	rpmlog(RPMLOG_DEBUG, D_("Adding goal: %s\n"), fileURL);
-	pkgURL[pkgx] = fileURL;
-	fileURL = NULL;
-	pkgx++;
-    }
-    this = rpmdsFree(this);
-} else
-#endif
-
  {	/* start-of-transaction-build */
     int tag = (ia->qva_source == RPMQV_FTSWALK)
 	? RPMDBI_FTSWALK : RPMDBI_ARGLIST;
     rpmgi gi = rpmgiNew(ts, tag, NULL, 0);
     rpmgiFlags _giFlags = RPMGI_NONE;
+    const char * fn = NULL;;
 
 /*@-mods@*/
     if (ftsOpts == 0)
@@ -436,10 +446,24 @@ if (fileURL[0] == '=') {
 /*@=mods@*/
     rc = rpmgiSetArgs(gi, argv, ftsOpts, _giFlags);
     while (rpmgiNext(gi) == RPMRC_OK) {
-	const char * fn = rpmgiHdrPath(gi);
 	Header h;
 
-	/* === Check for erasures within install transaction. */
+	fn = _free(fn);
+	fn = xstrdup(rpmgiHdrPath(gi));
+
+        /* === Check for "+bing" lookaside paths within install transaction. */
+        if (fn[0] == '+') {
+	    const char * nfn = rpmcliInstallElementPath(ts, &fn[1]);
+	    fn = _free(fn);
+	    fn = nfn;
+	    /* XXX hack into rpmgi innards for now ... */
+	    h = rpmgiReadHeader(gi, fn);
+	    if (h)
+		gi->h = headerLink(h);
+	    h = headerFree(h);
+        }
+
+	/* === Check for "-bang" erasures within install transaction. */
 	if (fn[0] == '-') {
 	    switch (rpmcliEraseElement(ts, &fn[1])) {
 	    case RPMRC_OK:
@@ -518,6 +542,7 @@ assert(xx != 0 && he->p.str != NULL);
 	numRPMS++;
     }
 
+    fn = _free(fn);
     gi = rpmgiFree(gi);
 
  }	/* end-of-transaction-build */

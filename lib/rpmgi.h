@@ -217,6 +217,17 @@ rpmRC rpmgiSetArgs(/*@null@*/ rpmgi gi, /*@null@*/ ARGV_t argv,
 	/*@globals internalState @*/
 	/*@modifies gi, internalState @*/;
 
+/**
+ * Return header from package.
+ * @param gi		generalized iterator
+ * @param path		file path
+ * @return		header (NULL on failure)
+ */
+/*@null@*/
+Header rpmgiReadHeader(rpmgi gi, const char * path)
+	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
+	/*@modifies gi, rpmGlobalMacroContext, h_errno, internalState @*/;
+
 /*@}*/
 
 #ifdef __cplusplus

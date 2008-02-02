@@ -125,16 +125,7 @@ static rpmRC rpmgiLoadManifest(rpmgi gi, const char * path)
     return rpmrc;
 }
 
-/**
- * Return header from package.
- * @param gi		generalized iterator
- * @param path		file path
- * @return		header (NULL on failure)
- */
-/*@null@*/
-static Header rpmgiReadHeader(rpmgi gi, const char * path)
-	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
-	/*@modifies gi, rpmGlobalMacroContext, h_errno, internalState @*/
+Header rpmgiReadHeader(rpmgi gi, const char * path)
 {
     FD_t fd = rpmgiOpen(path, "r%{?_rpmgio}");
     Header h = NULL;
