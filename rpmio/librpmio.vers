@@ -341,6 +341,7 @@ LIBRPMIO_0
     _url_cache;
     _url_count;
     _url_debug;
+    urlFreeCache;
     urlGetFile;
     _url_iobuf_size;
     urlIsURL;
