@@ -4,14 +4,27 @@
 #include <rpmio_internal.h>
 #include <rpmmacro.h>
 #include <rpmcb.h>
+#include <rpmmg.h>
 #include <mire.h>
 #include <argv.h>
 #include <popt.h>
 
 #include "debug.h"
 
-static const char * pattern = ".*\\.rpm$";
+static int mireMode = RPMMIRE_REGEX;
+static int mireTag = 0;
+static const char * mirePattern = NULL;
 static miRE mire = NULL;
+static int mireNExecs = 0;
+static int mireNMatches = 0;
+static int mireNFails = 0;
+
+static const char * mgFile = NULL;
+static int mgFlags = 0;
+static rpmmg mg = NULL;
+static int mgNFiles = 0;
+static int mgNMatches = 0;
+static int mgNFails = 0;
 
 /*@unchecked@*/
 static int _fts_debug = 0;
@@ -61,9 +74,28 @@ static int ftsPrint(FTS * ftsp, FTSENT * fts)
     case FTS_DP:	/* postorder directory */
 	break;
     case FTS_F:		/* regular file */
-	if (mire)
-	    xx = mireRegexec(mire, fts->fts_accpath);
 	nfiles++;
+	if (mire) {
+	    mireNExecs++;
+	    xx = mireRegexec(mire, fts->fts_accpath);
+	    if (xx == 0) {
+		fprintf(stdout, " mire: %s\n", fts->fts_accpath);
+		mireNMatches++;
+	    } else {
+		mireNFails++;
+	    }
+	}
+	if (mg) {
+	    const char * s = rpmmgFile(mg, fts->fts_accpath);
+	    mgNFiles++;
+	    if (s != NULL) {
+		fprintf(stdout, "magic: %s: %s\n", fts->fts_accpath, s);
+		mgNMatches++;
+	    } else {
+		mgNFails++;
+	    }
+	    s = _free(s);
+	}
 	break;
     case FTS_NS:	/* stat(2) failed */
     case FTS_DNR:	/* unreadable directory */
@@ -105,7 +137,8 @@ fprintf(stderr, "===== (%d/%d) dirs/files in:\n", ndirs, nfiles);
 }
 
 static struct poptOption optionsTable[] = {
- { "ftsdebug", 'd', POPT_ARG_VAL,	&_fts_debug, -1,	NULL, NULL },
+ { "pattern", '\0', POPT_ARG_STRING,	&mirePattern, 0,	NULL, NULL },
+ { "magic", '\0', POPT_ARG_STRING,	&mgFile, 0,	NULL, NULL },
 
  { "comfollow", '\0', POPT_BIT_SET,	&ftsOpts, FTS_COMFOLLOW,
 	N_("follow command line symlinks"), NULL },
@@ -124,12 +157,23 @@ static struct poptOption optionsTable[] = {
  { "whiteout", '\0', POPT_BIT_SET,	&ftsOpts, FTS_WHITEOUT,
 	N_("return whiteout information"), NULL },
 
+ { "avdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_av_debug, -1,
+	N_("debug protocol data stream"), NULL},
+ { "davdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_dav_debug, -1,
+	N_("debug protocol data stream"), NULL},
+ { "ftsdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_fts_debug, -1,
+	N_("debug protocol data stream"), NULL},
  { "ftpdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_ftp_debug, -1,
+	N_("debug protocol data stream"), NULL},
+ { "mgdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmmg_debug, -1,
+	N_("debug protocol data stream"), NULL},
+ { "miredebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_mire_debug, -1,
 	N_("debug protocol data stream"), NULL},
  { "rpmiodebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmio_debug, -1,
 	N_("debug rpmio I/O"), NULL},
  { "urldebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_url_debug, -1,
 	N_("debug URL cache handling"), NULL},
+
  { "verbose", 'v', 0, 0, 'v',				NULL, NULL },
   POPT_AUTOHELP
   POPT_TABLEEND
@@ -146,7 +190,6 @@ main(int argc, char *argv[])
 
     while ((rc = poptGetNextOpt(optCon)) > 0) {
 	const char * optArg = poptGetOptArg(optCon);
-	optArg = _free(optArg);
 	switch (rc) {
 	case 'v':
 	    rpmIncreaseVerbosity();
@@ -154,6 +197,7 @@ main(int argc, char *argv[])
 	default:
             /*@switchbreak@*/ break;
 	}
+	optArg = _free(optArg);
     }
 
     if (ftsOpts == 0)
@@ -163,11 +207,11 @@ main(int argc, char *argv[])
 	rpmIncreaseVerbosity();
 	rpmIncreaseVerbosity();
 _av_debug = -1;
-_ftp_debug = -1;
 _dav_debug = 1;
+_ftp_debug = -1;
+_rpmmg_debug = 1;
 _mire_debug = 1;
     }
-
 
     av = poptGetArgs(optCon);
     ac = argvCount(av);
@@ -176,15 +220,18 @@ _mire_debug = 1;
 	goto exit;
     }
 
-    if (pattern) {
-	mire = mireNew(RPMMIRE_REGEX, 0);
-	if ((xx = mireRegcomp(mire, pattern)) != 0)
+    if (mirePattern) {
+	mire = mireNew(mireMode, mireTag);
+	if ((xx = mireRegcomp(mire, mirePattern)) != 0)
 	    goto exit;;
     }
+
+    mg = rpmmgNew(mgFile, mgFlags);
 
     ftsWalk(av);
 
 exit:
+    mg = rpmmgFree(mg);
     mire = mireFree(mire);
 
 /*@i@*/ urlFreeCache();
