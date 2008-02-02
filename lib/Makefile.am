@@ -28,7 +28,7 @@ RPM_LDADD = \
 
 EXTRA_DIST = genpgp.sh getdate.y librpm.vers tpgp.c
 
-EXTRA_PROGRAMS = tpgp tsbt
+EXTRA_PROGRAMS = tgi tpgp tsbt
 
 pkgincdir = $(pkgincludedir)$(WITH_PATH_VERSIONED_SUFFIX)
 pkginc_HEADERS = \
@@ -125,6 +125,9 @@ sources:
 .PHONY:	lint
 lint:
 	$(LINT) $(DEFS) $(INCLUDES) $(librpm_la_SOURCES)
+
+tgi_SOURCES = tgi.c
+tgi_LDADD = $(RPM_LDADD)
 
 tpgp_SOURCES = genpgp.h tpgp.c
 tpgp_LDADD = $(RPM_LDADD)
