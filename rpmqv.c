@@ -160,7 +160,7 @@ static void printVersion(FILE * fp)
 	/*@globals rpmEVR, fileSystem @*/
 	/*@modifies *fp, fileSystem @*/
 {
-    fprintf(fp, _("%s (" RPM_NAME ") %s\n"), __progname, rpmEVR);
+    fprintf(fp, "%s (" RPM_NAME ") %s\n", __progname, rpmEVR);
     if (rpmIsVerbose())
 	fprintf(fp, "rpmlib 0x%08x,0x%08x,0x%08x\n",
 	    rpmlibVersion(), rpmlibTimestamp(), rpmlibVendor());
