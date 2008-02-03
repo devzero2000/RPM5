@@ -332,14 +332,71 @@ static rpmRC rpmcliEraseElement(rpmts ts, const char * arg)
     return 0;
 }
 
+static const char * rpmcliWalkFirst(ARGV_t av, miRE mire)
+{
+    /* XXX use global ftsOpts? */
+    int _ftsOpts = (FTS_COMFOLLOW | FTS_LOGICAL | FTS_NOSTAT);
+    FTS * ftsp = Fts_open((char *const *)av, _ftsOpts, NULL);
+    FTSENT * fts;
+    const char * fn = NULL;
+    int xx;
+
+    if (ftsp != NULL)
+    while((fts = Fts_read(ftsp)) != NULL) {
+	switch (fts->fts_info) {
+	/* No-op conditions. */
+	case FTS_D:		/* preorder directory */
+	case FTS_DP:		/* postorder directory */
+	case FTS_DOT:		/* dot or dot-dot */
+	    continue;
+	    /*@notreached@*/ break;
+	case FTS_F:		/* regular file */
+	    if (mireRegexec(mire, fts->fts_accpath))
+		continue;
+	    break;
+	/* Error conditions. */
+	case FTS_NS:		/* stat(2) failed */
+	case FTS_DNR:		/* unreadable directory */
+	case FTS_ERR:		/* error; errno is set */
+	case FTS_DC:		/* directory that causes cycles */
+	case FTS_DEFAULT:	/* none of the above */
+	case FTS_INIT:		/* initialized only */
+	case FTS_NSOK:		/* no stat(2) requested */
+	case FTS_SL:		/* symbolic link */
+	case FTS_SLNONE:	/* symbolic link without target */
+	case FTS_W:		/* whiteout object */
+	default:
+	    goto exit;
+	    /*@notreached@*/ break;
+	}
+
+	/* Stop on first file that matches. */
+	fn = xstrdup(fts->fts_accpath);
+	break;
+    }
+
+exit:
+    xx = Fts_close(ftsp);
+    return fn;
+}
+
 static const char * rpmcliInstallElementPath(rpmts ts, const char * arg)
 {
+#ifdef GLOB_ONLY
     /* XXX note the added "-*.rpm" to force globbing on '-' boundaries. */
     const char * fn = rpmGetPath(
 	"%{?_rpmgi_pattern_glob:%{_rpmgi_pattern_glob ", arg, "}}"
 	"%{!?_rpmgi_pattern_glob:", arg, "-*-*.*.rpm}",
 	NULL
     );
+#else
+    /* Create a glob pattern to match repository directories. */
+    const char * fn = rpmGetPath(
+	"%{?_rpmgi_pattern_glob}"
+	"%{!?_rpmgi_pattern_glob:.}", "/",
+	NULL
+    );
+#endif
     const char * mirePattern = rpmExpand(
         "%{?_rpmgi_pattern_regex:%{_rpmgi_pattern_regex ", arg, "}}"
         "%{!?_rpmgi_pattern_regex:", arg, "-[^-]+-[^-]+\\.[^.]+\\.rpm$}",
@@ -349,19 +406,26 @@ static const char * rpmcliInstallElementPath(rpmts ts, const char * arg)
     ARGV_t av = NULL;
     int ac = 0;
     int xx = mireRegcomp(mire, mirePattern);
-    int i;
 
-    /* Get list of candidate package paths. */
+    /* Get explicit list of candidate repository directories. */
     xx = rpmGlob(fn, &ac, &av);
     fn = _free(fn);
 
     /* Filter out glibc <-> glibc-common confusions. */
-    for (i = 0; i < ac; i++) {
-	if (mireRegexec(mire, av[i]))
-	    continue;
-	fn = xstrdup(av[0]);
-	break;
+#ifdef	GLOB_ONLY
+    {	int i;
+	for (i = 0; i < ac; i++) {
+	    if (mireRegexec(mire, av[i]))
+		continue;
+	    /* Stop on first file that matches. */
+	    fn = xstrdup(av[0]);
+	    break;
+	}
     }
+#else
+    /* Walk (possibly multi-root'd) directories, until 1st match is found. */
+    fn = rpmcliWalkFirst(av, mire);
+#endif
 
     av = argvFree(av);
     mire = mireFree(mire);
