@@ -979,6 +979,11 @@ print (t)\
 # Permit network access? (".fdio" prohibits network access)
 %_rpmgio	.fdio
 
+#
+# Pattern matching for installation via "+N-V-R.A" CLI arguments
+%_rpmgi_pattern_glob()    %{_rpmdir}/%1-*-*.*.rpm
+%_rpmgi_pattern_regex()   ^.+/%1-[^-]+-[^-]+\\.[^.]+\\.rpm$
+
 #==============================================================================
 # ---- Run-time probe dependency macros.
 
