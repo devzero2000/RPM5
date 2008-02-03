@@ -1,9 +1,51 @@
 
-  RPM 5
-  =====
+  NEWS
+  ====
 
   This is a list of the major changes between RPM 4 and RPM 5.
   For more details please see the CHANGES file.
+
+  New in RPM 5.1
+  --------------
+
+  o Major Bufixes:
+    - .spec:  fix PGP clearsign signature() verification by correctly skipping RFC2440 "dash-escapes"
+    - macro:  permit %{lua:...} to recurse.
+    - macro:  fix line-continuation handling in macro definition parsing
+
+  o New Features:
+    - .spec:  verify(N) = E:V-R, verify(*) and verify(/path) runtime dependency probes
+    - CLI     new RPM CLI options --noautoreq/--noautoprov
+    - CLI:    "+N-V-R.A" path-to-repository expansions with -i/-U
+    - CLI:    "-N-V-R.A" erasure args within install/upgrade transactions
+    - CLI:    proof-of-concept "rpmbuild --lsb" implementation
+    - build:  new Autoconf option --with-path-rpmlua and RPM CLI option --rpmlua for configuring RPM Lua init script path
+    - macro:  OSSP uuid support via RPM Lua functions uuid.generate() and uuid.describe()
+    - macro:  new "%{uuid:[<version>[, <ns>, <data>]]}" for generating UUIDs of version 1, 3, 4 or 5
+    - macro:  new %{getenv:<name>} to lookup environment variables
+    - macro:  new %{shrink:<body>} macro for removing leading+trailing and removing intermediate whitespaces
+    - macro:  new RPM Lua function posix.glob(<pattern>)
+    - macro:  new RPM Lua function rpm.realpath(<path>) to complement RPM macro %{realpath:<path>}
+    - macro:  new RPM Lua function rpm.sleep()
+    - macro:  new RPM Lua function rpm.slurp() for slurping in the whole content of a file or an URL
+    - macro:  new RPM Lua function util.textwrap() for auto-wrapping junks of larger text messages
+    - macro:  unconditionally provide RPM Lua functions posix.{setenv,unsetenv}
+    - rpmdb:  new tags ORIGIN{TID,TIME} which record the first INSTALL{TID,TIME} of a package
+    - rpmlib: function rpmuuidMake() for generating UUIDs of version 1, 3, 4 or 5
+    - rpmlib: permit opt-in network access using %_rpmgio macro.
+
+  o Upgrades:
+    - macro:  upgraded from Lua 5.1.2 to 5.1.3
+    - macro:  upgraded RPM Lua extension lrexlib from ancient version 1.1x to version 2.2
+
+  o Incompatibilities:
+    - rpmdb:  use "struct timeval" timestamp for INSTALL{TID,TIME} and ORIGIN{TID,TIME}
+
+  o Portability:
+    - build:  QNX platform support
+
+  New in RPM 5.0
+  --------------
 
   o Project Environment:
     The official RPM code base was relocated from rpm.org to rpm5.org
