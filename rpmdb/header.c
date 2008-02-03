@@ -1433,12 +1433,13 @@ headerFindI18NString(Header h, indexEntry entry)
  * Retrieve tag data from header.
  * @param h		header
  * @param he		tag container
- * @param minMem	string pointers reference header memory?
+ * @param flags		headerGet flags
  * @return		1 on success, 0 on not found
  */
-static int intGetEntry(Header h, HE_t he, int minMem)
+static int intGetEntry(Header h, HE_t he, int flags)
 	/*@modifies he @*/
 {
+    int minMem = 0;
     indexEntry entry;
     int rc;
 
@@ -1455,13 +1456,16 @@ static int intGetEntry(Header h, HE_t he, int minMem)
 
     switch (entry->info.type) {
     case RPM_I18NSTRING_TYPE:
-	rc = 1;
-	he->t = RPM_STRING_TYPE;
-	he->c = 1;
+	if (!(flags & HEADERGET_NOI18NSTRING)) {
+	    rc = 1;
+	    he->t = RPM_STRING_TYPE;
+	    he->c = 1;
 /*@-dependenttrans@*/
-	he->p.str = headerFindI18NString(h, entry);
+	    he->p.str = headerFindI18NString(h, entry);
 /*@=dependenttrans@*/
-	break;
+	    break;
+	}
+	/*@fallthrough@*/
     default:
 	rc = copyEntry(entry, he, minMem);
 	break;
@@ -2032,7 +2036,7 @@ int headerGet(Header h, HE_t he, unsigned int flags)
 	rc = ext->u.tagFunction(h, he);
 	rc = (rc == 0);		/* XXX invert extension return. */
     } else
-	rc = intGetEntry(h, he, 0);
+	rc = intGetEntry(h, he, flags);
 
     if (rc)
 	rc = rpmheRealloc(he);

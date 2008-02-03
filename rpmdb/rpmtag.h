@@ -726,6 +726,7 @@ char * headerSprintf(Header h, const char * fmt,
 int headerGet(Header h, HE_t he, unsigned int flags)
 	/*@modifies he @*/;
 #define	HEADERGET_NOEXTENSION	(1 << 0) /*!< Extension search disabler. */
+#define	HEADERGET_NOI18NSTRING	(1 << 1) /*!< Return i18n strings as argv. */
 
 /** \ingroup header
  * Add or append tag container to header.
