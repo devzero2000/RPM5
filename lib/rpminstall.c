@@ -334,7 +334,7 @@ static rpmRC rpmcliEraseElement(rpmts ts, const char * arg)
 
 static const char * rpmcliInstallElementPath(rpmts ts, const char * arg)
 {
-    static const char * pkgpat = "-[^-]*-[^-]*.[^.]*.rpm$";
+    static const char * pkgpat = "-[^-]+-[^-]+\\.[^.]+\\.rpm$";
     const char * mirePattern = rpmExpand(&arg[1], pkgpat, NULL);
     miRE mire = mireNew(RPMMIRE_REGEX, 0);
     const char * fn = NULL;
