@@ -85,6 +85,9 @@ to perform useful operations. The current list is
 				cat <file>		# if not compressed
 				gzip -dc <file>		# if gzip'ed
 				bzip2 -dc <file>	# if bzip'ed
+				unzip -qq <file>	# if zip'ed
+				lzop -dc <file>		# if LZO compressed
+				lzma -dc <file>		# if LZMA compressed
 	%{expand:...}	like eval, expand ... to <body> and (re-)expand <body>
 
 	%{basename:...}	the trailing portion of ... with directory path removed
