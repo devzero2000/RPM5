@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.1\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2008-01-29 09:38-0500\n"
+"POT-Creation-Date: 2008-02-04 11:02-0500\n"
 "PO-Revision-Date: 2003-12-31 09:08+0300\n"
 "Last-Translator: Nilgün Belma Bugüner <nilgun@superonline.com>\n"
 "Language-Team: Turkish <gnu-tr-u12a@lists.sourceforge.net>\n"
@@ -106,11 +106,6 @@ msgstr "Tüm rpm kipleri için ortak seçenekler:"
 #, c-format
 msgid "%s: %s\n"
 msgstr "dosya %s: %s\n"
-
-#: rpmqv.c:163 lib/poptALL.c:184
-#, c-format
-msgid "%s ("
-msgstr ""
 
 #: rpmqv.c:482 rpmqv.c:488 rpmqv.c:494 rpmqv.c:531
 msgid "only one major mode may be specified"
@@ -705,7 +700,7 @@ msgstr "İmza başlığı tekrar yüklenemedi\n"
 msgid "Could not open %s: %s\n"
 msgstr "%s açılamadı: %s\n"
 
-#: build/pack.c:820 lib/psm.c:1935
+#: build/pack.c:820 lib/psm.c:1982
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr "Paket yazılamadı: %s\n"
@@ -725,7 +720,7 @@ msgstr "%s'den payload okunamadı: %s\n"
 msgid "Unable to write payload to %s: %s\n"
 msgstr "%s'e payload yazılamadı: %s\n"
 
-#: build/pack.c:929 lib/psm.c:2229
+#: build/pack.c:929 lib/psm.c:2279
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "Yazıldı: %s\n"
@@ -1259,17 +1254,17 @@ msgstr ""
 msgid "disable tags forbidden by LSB"
 msgstr ""
 
-#: build/poptBT.c:213 lib/poptALL.c:455 lib/poptI.c:342 lib/poptQV.c:406
+#: build/poptBT.c:213 lib/poptALL.c:469 lib/poptI.c:342 lib/poptQV.c:406
 #: lib/poptQV.c:415 lib/poptQV.c:457
 msgid "don't verify package digest(s)"
 msgstr "paket özetleri doğrulanmaz"
 
-#: build/poptBT.c:215 lib/poptALL.c:457 lib/poptI.c:344 lib/poptQV.c:409
+#: build/poptBT.c:215 lib/poptALL.c:471 lib/poptI.c:344 lib/poptQV.c:409
 #: lib/poptQV.c:417 lib/poptQV.c:460
 msgid "don't verify database header(s) when retrieved"
 msgstr "alırken veritabanı başlıkları doğrulanmaz"
 
-#: build/poptBT.c:217 lib/poptALL.c:463 lib/poptI.c:346 lib/poptQV.c:412
+#: build/poptBT.c:217 lib/poptALL.c:477 lib/poptI.c:346 lib/poptQV.c:412
 #: lib/poptQV.c:419 lib/poptQV.c:462
 msgid "don't verify package signature(s)"
 msgstr "paket imzasını doğrular"
@@ -1299,7 +1294,7 @@ msgstr "PGP/GPG imzası üretir"
 msgid "override target platform"
 msgstr "hedef platforma zorlar"
 
-#: build/poptBT.c:230 lib/poptALL.c:452 lib/poptQV.c:317
+#: build/poptBT.c:230 lib/poptALL.c:466 lib/poptQV.c:317
 msgid "CPU-VENDOR-OS"
 msgstr ""
 
@@ -1391,134 +1386,134 @@ msgstr "%s paketi zaten ekli, %s ile yer değiştiriliyor\n"
 msgid "package %s was already added, replacing with %s\n"
 msgstr "%s paketi zaten ekli, %s ile yer değiştiriliyor\n"
 
-#: lib/depends.c:638
+#: lib/depends.c:662
 msgid "(cached)"
 msgstr "(arabellekli)"
 
-#: lib/depends.c:654
+#: lib/depends.c:678
 #, fuzzy
 msgid "(function probe)"
 msgstr "(bilinmeyen tür)"
 
-#: lib/depends.c:673
+#: lib/depends.c:697
 msgid "(user lookup)"
 msgstr ""
 
-#: lib/depends.c:690
+#: lib/depends.c:714
 msgid "(group lookup)"
 msgstr ""
 
-#: lib/depends.c:699
+#: lib/depends.c:723
 #, fuzzy
 msgid "(access probe)"
 msgstr "(önlem eklendi)"
 
-#: lib/depends.c:721
+#: lib/depends.c:745
 #, fuzzy
 msgid "(mtab probe)"
 msgstr "(db sağlar)"
 
-#: lib/depends.c:778
+#: lib/depends.c:802
 msgid "(diskspace probe)"
 msgstr ""
 
-#: lib/depends.c:820
+#: lib/depends.c:844
 #, fuzzy
 msgid "(digest probe)"
 msgstr "(önlem eklendi)"
 
-#: lib/depends.c:844
+#: lib/depends.c:868
 #, fuzzy
 msgid "(signature probe)"
 msgstr "İmza seçenekleri:"
 
-#: lib/depends.c:874
+#: lib/depends.c:898
 #, fuzzy
 msgid "(verify probe)"
 msgstr "(bilinmeyen tür)"
 
-#: lib/depends.c:896
+#: lib/depends.c:920
 msgid "(gnupg probe)"
 msgstr ""
 
-#: lib/depends.c:909
+#: lib/depends.c:933
 #, fuzzy
 msgid "(macro probe)"
 msgstr "(rpmrc sağlar)"
 
-#: lib/depends.c:937
+#: lib/depends.c:961
 msgid "(envvar probe)"
 msgstr ""
 
-#: lib/depends.c:964
+#: lib/depends.c:988
 #, fuzzy
 msgid "(running probe)"
 msgstr "(bilinmeyen tür)"
 
-#: lib/depends.c:986
+#: lib/depends.c:1010
 msgid "(sanity probe)"
 msgstr ""
 
-#: lib/depends.c:1007
+#: lib/depends.c:1031
 msgid "(vcheck probe)"
 msgstr ""
 
-#: lib/depends.c:1028
+#: lib/depends.c:1052
 #, fuzzy
 msgid "(sysinfo provides)"
 msgstr "(db sağlar)"
 
-#: lib/depends.c:1047
+#: lib/depends.c:1071
 msgid "(rpmlib provides)"
 msgstr "(rpmlib sağlar)"
 
-#: lib/depends.c:1062
+#: lib/depends.c:1086
 #, fuzzy
 msgid "(cpuinfo provides)"
 msgstr "(rpmlib sağlar)"
 
-#: lib/depends.c:1077
+#: lib/depends.c:1101
 #, fuzzy
 msgid "(getconf provides)"
 msgstr "(db sağlar)"
 
-#: lib/depends.c:1092
+#: lib/depends.c:1116
 #, fuzzy
 msgid "(uname provides)"
 msgstr "(önlem eklendi)"
 
-#: lib/depends.c:1124
+#: lib/depends.c:1148
 #, fuzzy
 msgid "(soname provides)"
 msgstr "(önlem eklendi)"
 
-#: lib/depends.c:1152
+#: lib/depends.c:1176
 msgid "(db files)"
 msgstr "(db dosyaları)"
 
-#: lib/depends.c:1164
+#: lib/depends.c:1188
 msgid "(db provides)"
 msgstr "(db sağlar)"
 
-#: lib/depends.c:1194
+#: lib/depends.c:1218
 msgid "(hint skipped)"
 msgstr ""
 
-#: lib/depends.c:1631
+#: lib/depends.c:1655
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr "Paket ismi ilişkileri [%d]\t%s -> %s yoksayılıyor\n"
 
-#: lib/depends.c:1754
+#: lib/depends.c:1778
 #, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "tsort bağıntılarından %s \"%s\" kaldırılıyor.\n"
 
-#: lib/depends.c:2328
+#: lib/depends.c:2352
 msgid "LOOP:\n"
 msgstr "ÇEVRİM:\n"
 
-#: lib/depends.c:2364
+#: lib/depends.c:2388
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr "rpmtsOrder başarısız, %d eleman kaldı\n"
@@ -1618,239 +1613,249 @@ msgstr ""
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: Fread başarısız: %s\n"
 
-#: lib/poptALL.c:364
+#: lib/poptALL.c:191
+#, c-format
+msgid "%s ("
+msgstr ""
+
+#: lib/poptALL.c:371
 #, fuzzy
 msgid "FTS_COMFOLLOW: follow command line symlinks"
 msgstr "komut satırındaki sembolik bağlar izlenir"
 
-#: lib/poptALL.c:366
+#: lib/poptALL.c:373
 #, fuzzy
 msgid "FTS_LOGICAL: logical walk"
 msgstr "mantıksal yürüyüş"
 
-#: lib/poptALL.c:368
+#: lib/poptALL.c:375
 #, fuzzy
 msgid "FTS_NOCHDIR: don't change directories"
 msgstr "dizinler değiştirilmez"
 
-#: lib/poptALL.c:370
+#: lib/poptALL.c:377
 #, fuzzy
 msgid "FTS_NOSTAT: don't get stat info"
 msgstr "stat bilgisi alınmaz"
 
-#: lib/poptALL.c:372
+#: lib/poptALL.c:379
 #, fuzzy
 msgid "FTS_PHYSICAL: physical walk"
 msgstr "fiziksel yürüyüş"
 
-#: lib/poptALL.c:374
+#: lib/poptALL.c:381
 #, fuzzy
 msgid "FTS_SEEDOT: return dot and dot-dot"
 msgstr "nokta ve nokta-nokta döner"
 
-#: lib/poptALL.c:376
+#: lib/poptALL.c:383
 #, fuzzy
 msgid "FTS_XDEV: don't cross devices"
 msgstr "aygıtları çaprazlamaz"
 
-#: lib/poptALL.c:378
+#: lib/poptALL.c:385
 #, fuzzy
 msgid "FTS_WHITEOUT: return whiteout information"
 msgstr "boşluksuz bilgi döner"
 
-#: lib/poptALL.c:388 lib/poptI.c:210 lib/poptQV.c:287 lib/poptQV.c:334
+#: lib/poptALL.c:395 lib/poptI.c:210 lib/poptQV.c:287 lib/poptQV.c:334
 msgid "add suggested packages to transaction"
 msgstr "önerilen paketleri veri olarak ekler"
 
-#: lib/poptALL.c:391 lib/poptI.c:213
+#: lib/poptALL.c:398 lib/poptI.c:213
 msgid "use anaconda \"presentation order\""
 msgstr ""
 
-#: lib/poptALL.c:394 lib/poptI.c:216
+#: lib/poptALL.c:401 lib/poptI.c:216
 msgid "print dependency loops as warning"
 msgstr ""
 
-#: lib/poptALL.c:397 lib/poptI.c:219
+#: lib/poptALL.c:404 lib/poptI.c:219
 msgid "do not suggest missing dependency resolution(s)"
 msgstr "eksik bağımlılık çözümlerini önermez"
 
-#: lib/poptALL.c:400 lib/poptI.c:222
+#: lib/poptALL.c:407 lib/poptI.c:222
 #, fuzzy
 msgid "do not check added package conflicts"
 msgstr "pakete özgü hiçbir betik çalıştırılmaz"
 
-#: lib/poptALL.c:403 lib/poptI.c:225
+#: lib/poptALL.c:410 lib/poptI.c:225
 msgid "ignore added package requires on symlink targets"
 msgstr ""
 
-#: lib/poptALL.c:406 lib/poptI.c:228
+#: lib/poptALL.c:413 lib/poptI.c:228
 msgid "ignore added package obsoletes"
 msgstr ""
 
-#: lib/poptALL.c:409 lib/poptI.c:231
+#: lib/poptALL.c:416 lib/poptI.c:231
 #, fuzzy
 msgid "ignore added package requires on file parent directory"
 msgstr ""
 "ismi değiştirilerek alt dizine kaydedilmek suretiyle silinen dosyaları saklar"
 
-#: lib/poptALL.c:412 lib/poptI.c:234
+#: lib/poptALL.c:419 lib/poptI.c:234
 #, fuzzy
 msgid "do not check added package requires"
 msgstr "paket betikleri çalıştırılmaz"
 
-#: lib/poptALL.c:415 lib/poptI.c:237
+#: lib/poptALL.c:422 lib/poptI.c:237
 #, fuzzy
 msgid "ignore added package upgrades"
 msgstr "%s sağlayan paket yok\n"
 
-#: lib/poptALL.c:431
+#: lib/poptALL.c:438
 msgid "predefine MACRO with value EXPR"
 msgstr "İFADE değerli önceden tanımlı MAKRO"
 
-#: lib/poptALL.c:432 lib/poptALL.c:435
+#: lib/poptALL.c:439 lib/poptALL.c:442
 msgid "'MACRO EXPR'"
 msgstr "'MAKRO İFADE'"
 
-#: lib/poptALL.c:434
+#: lib/poptALL.c:441
 msgid "define MACRO with value EXPR"
 msgstr "İFADE değeriyle tanımlı MAKRO"
 
-#: lib/poptALL.c:437
+#: lib/poptALL.c:444
 msgid "undefine MACRO"
 msgstr ""
 
-#: lib/poptALL.c:438
+#: lib/poptALL.c:445
 #, fuzzy
 msgid "'MACRO'"
 msgstr "'MAKRO İFADE'"
 
-#: lib/poptALL.c:440
+#: lib/poptALL.c:447
 msgid "print macro expansion of EXPR"
 msgstr "İFADEnin makro açılımını basar"
 
-#: lib/poptALL.c:441
+#: lib/poptALL.c:448
 msgid "'EXPR'"
 msgstr "'İFADE'"
 
-#: lib/poptALL.c:443
+#: lib/poptALL.c:450
 msgid "read <FILE:...> instead of default file(s)"
 msgstr "öntanımlı dosyalar yerine <DOSYA:...> okunur"
 
-#: lib/poptALL.c:444 lib/poptALL.c:448
+#: lib/poptALL.c:451 lib/poptALL.c:456 lib/poptALL.c:462
 msgid "<FILE:...>"
 msgstr "<DOSYA:...>"
 
-#: lib/poptALL.c:447
+#: lib/poptALL.c:455
+#, fuzzy
+msgid "read <FILE:...> instead of default RPM Lua file(s)"
+msgstr "öntanımlı dosyalar yerine <DOSYA:...> okunur"
+
+#: lib/poptALL.c:461
 #, fuzzy
 msgid "read <FILE:...> instead of default POPT file(s)"
 msgstr "öntanımlı dosyalar yerine <DOSYA:...> okunur"
 
-#: lib/poptALL.c:452 lib/poptQV.c:317
+#: lib/poptALL.c:466 lib/poptQV.c:317
 #, fuzzy
 msgid "specify target platform"
 msgstr "hedef platforma zorlar"
 
-#: lib/poptALL.c:460 lib/poptALL.c:485
+#: lib/poptALL.c:474 lib/poptALL.c:499
 msgid "disable use of libio(3) API"
 msgstr "libio(3) API kullanımını iptal eder"
 
-#: lib/poptALL.c:466
+#: lib/poptALL.c:480
 msgid "send stdout to CMD"
 msgstr "standart çıktıyı KOMUTa gönderir"
 
-#: lib/poptALL.c:467
+#: lib/poptALL.c:481
 msgid "CMD"
 msgstr "KOMUT"
 
-#: lib/poptALL.c:469
+#: lib/poptALL.c:483
 msgid "use ROOT as top level directory"
 msgstr "Üst düzey dizin olarak KÖK kullanılır"
 
-#: lib/poptALL.c:470
+#: lib/poptALL.c:484
 msgid "ROOT"
 msgstr "KÖK"
 
-#: lib/poptALL.c:473
+#: lib/poptALL.c:487
 msgid "display known query tags"
 msgstr "bilinen sorgulama etiketlerini gösterir"
 
-#: lib/poptALL.c:475
+#: lib/poptALL.c:489
 msgid "provide less detailed output"
 msgstr "daha az ayrıntılı çıktı sağlar"
 
-#: lib/poptALL.c:477
+#: lib/poptALL.c:491
 msgid "display final rpmrc and macro configuration"
 msgstr "son rpmrc ve makro yapılandırmasını gösterir"
 
-#: lib/poptALL.c:479
+#: lib/poptALL.c:493
 msgid "provide more detailed output"
 msgstr "daha ayrıntılı çıktı sağlar"
 
-#: lib/poptALL.c:481
+#: lib/poptALL.c:495
 msgid "print the version of rpm being used"
 msgstr "Kullanılan RPM sürümünü verir"
 
-#: lib/poptALL.c:492
+#: lib/poptALL.c:506
 msgid "select cryptography implementation"
 msgstr ""
 
-#: lib/poptALL.c:493
+#: lib/poptALL.c:507
 msgid "CRYPTO"
 msgstr ""
 
-#: lib/poptALL.c:496
+#: lib/poptALL.c:510
 msgid "debug argv collections"
 msgstr ""
 
-#: lib/poptALL.c:498
+#: lib/poptALL.c:512
 msgid "debug cpio payloads"
 msgstr ""
 
-#: lib/poptALL.c:500
+#: lib/poptALL.c:514
 #, fuzzy
 msgid "debug WebDAV data stream"
 msgstr "protokol veri akışında hata kontrolu"
 
-#: lib/poptALL.c:504
+#: lib/poptALL.c:518
 msgid "debug payload file state machine"
 msgstr "payload dosyası durum motoru hata kontrolü"
 
-#: lib/poptALL.c:506
+#: lib/poptALL.c:520
 #, fuzzy
 msgid "use threads for file state machine"
 msgstr "payload dosyası durum motoru hata kontrolü"
 
-#: lib/poptALL.c:508
+#: lib/poptALL.c:522
 #, fuzzy
 msgid "debug FTP/HTTP data stream"
 msgstr "protokol veri akışında hata kontrolu"
 
-#: lib/poptALL.c:517
+#: lib/poptALL.c:531
 msgid "debug option/argument processing"
 msgstr "hata ayıklama seçenek/argümanı işleme"
 
-#: lib/poptALL.c:522
+#: lib/poptALL.c:536
 msgid "debug package state machine"
 msgstr "hata ayıklama paketi durum motoru"
 
-#: lib/poptALL.c:524
+#: lib/poptALL.c:538
 #, fuzzy
 msgid "use threads for package state machine"
 msgstr "hata ayıklama paketi durum motoru"
 
-#: lib/poptALL.c:538
+#: lib/poptALL.c:552
 msgid "debug rpmio I/O"
 msgstr "rpmio G/Ç hata kontrolu"
 
-#: lib/poptALL.c:558
+#: lib/poptALL.c:572
 msgid "debug tar payloads"
 msgstr ""
 
-#: lib/poptALL.c:562
+#: lib/poptALL.c:576
 msgid "debug URL cache handling"
 msgstr "URL arabellek kullanımı hata kontrolu"
 
-#: lib/poptALL.c:731
+#: lib/poptALL.c:745
 #, c-format
 msgid "%s: option table misconfigured (%d)\n"
 msgstr "%s: seçenek tablosu yanlış yapılandırılmış (%d)\n"
@@ -2411,30 +2416,30 @@ msgstr "%s(%s-%s-%s) betik başarısız, çıkış durumu %d\n"
 msgid "%s(%s) scriptlet failed, exit status %d\n"
 msgstr "%s(%s-%s-%s) betik başarısız, çıkış durumu %d\n"
 
-#: lib/psm.c:1840
+#: lib/psm.c:1887
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s\n"
 msgstr "%s: %s betik başarısız (%d), %s atlanıyor\n"
 
-#: lib/psm.c:1948
+#: lib/psm.c:1995
 msgid "Unable to reload signature header\n"
 msgstr "İmza başlığı yeniden yüklenemiyor\n"
 
-#: lib/psm.c:2058
+#: lib/psm.c:2105
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "arşiv paketi açılırken başarısız%s%s: %s\n"
 
-#: lib/psm.c:2059
+#: lib/psm.c:2106
 msgid " on file "
 msgstr " dosyada "
 
-#: lib/psm.c:2237
+#: lib/psm.c:2287
 #, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "%s, %s dosyasında başarısız oldu: %s\n"
 
-#: lib/psm.c:2240
+#: lib/psm.c:2290
 #, c-format
 msgid "%s failed: %s\n"
 msgstr "%s başarısız: %s\n"
@@ -2532,7 +2537,7 @@ msgstr "geçersiz paket numarası: %s\n"
 msgid "record %u could not be read\n"
 msgstr "%u. kayıt okunamadı\n"
 
-#: lib/query.c:688 lib/query.c:694 lib/rpminstall.c:574
+#: lib/query.c:688 lib/query.c:694 lib/rpminstall.c:709
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "%s paketi kurulu değil\n"
@@ -2761,83 +2766,88 @@ msgstr "%s aranıyor: %s\n"
 msgid "Failed to find %s:\n"
 msgstr "%s bulunamadı:\n"
 
-#: lib/rpmgi.c:99 lib/rpminstall.c:121 lib/rpmrollback.c:162 lib/rpmts.c:412
+#: lib/rpmgi.c:99 lib/rpminstall.c:122 lib/rpmrollback.c:162 lib/rpmts.c:412
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "%s açılamadı: %s\n"
 
-#: lib/rpmgi.c:430
+#: lib/rpmgi.c:422
 #, fuzzy, c-format
 msgid "unknown tag: \"%s\"\n"
 msgstr "bilinmeyen etiket"
 
-#: lib/rpmgi.c:778 lib/rpminstall.c:608
+#: lib/rpmgi.c:770 lib/rpminstall.c:743
 msgid "Failed dependencies:\n"
 msgstr "bu bağımlılıklar gerekli:\n"
 
-#: lib/rpmgi.c:783 lib/rpminstall.c:276
+#: lib/rpmgi.c:775 lib/rpminstall.c:277
 msgid "    Suggested resolutions:\n"
 msgstr "        Önerilen çözümler:\n"
 
-#: lib/rpminstall.c:188
+#: lib/rpminstall.c:189
 msgid "Preparing..."
 msgstr "Hazırlanıyor..."
 
-#: lib/rpminstall.c:190
+#: lib/rpminstall.c:191
 msgid "Preparing packages for installation..."
 msgstr "Kurulacak paketler hazırlanıyor..."
 
-#: lib/rpminstall.c:208
+#: lib/rpminstall.c:209
 msgid "Repackaging..."
 msgstr "Yeniden paketleniyor..."
 
-#: lib/rpminstall.c:210
+#: lib/rpminstall.c:211
 msgid "Repackaging erased files..."
 msgstr "Silinen dosyalar yeniden paketleniyor..."
 
-#: lib/rpminstall.c:229
+#: lib/rpminstall.c:230
 msgid "Upgrading..."
 msgstr "Üst sürüme güncelleniyor..."
 
-#: lib/rpminstall.c:231
+#: lib/rpminstall.c:232
 msgid "Upgrading packages..."
 msgstr "Paketler üst sürüme güncelleniyor..."
 
-#: lib/rpminstall.c:290
+#: lib/rpminstall.c:291
 #, fuzzy
 msgid "Failed dependencies"
 msgstr "bu bağımlılıklar gerekli:\n"
 
-#: lib/rpminstall.c:297
+#: lib/rpminstall.c:298
 msgid "Ordering problems"
 msgstr ""
 
-#: lib/rpminstall.c:304
+#: lib/rpminstall.c:305
 #, fuzzy
 msgid "Install/Erase problems"
 msgstr "Kurma/Güncelleme/Kaldırma seçenekleri:"
 
-#: lib/rpminstall.c:436
+#: lib/rpminstall.c:544
+#, fuzzy, c-format
+msgid "package %s cannot be erased\n"
+msgstr "%s paketi kurulu değil\n"
+
+#: lib/rpminstall.c:570
 #, fuzzy, c-format
 msgid "package %s is not relocatable\n"
 msgstr "%s paketi yeniden konumlandırılamaz\n"
 
-#: lib/rpminstall.c:583
+#: lib/rpminstall.c:718
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" birden fazla paketi tanımlıyor\n"
 
-#: lib/rpminstall.c:652
+#: lib/rpminstall.c:787
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "%s açılamadı: %s\n"
 
-#: lib/rpminstall.c:658
+#: lib/rpminstall.c:793
 #, c-format
 msgid "Installing %s\n"
 msgstr "%s kuruluyor\n"
 
-#: lib/rpminstall.c:668
+#: lib/rpminstall.c:803
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s yüklenemedi\n"
@@ -3034,17 +3044,17 @@ msgstr "%s içindeki Solve veritabanı açılamıyor\n"
 msgid "incorrect solve path format: %s\n"
 msgstr "biçem yanlış: %s\n"
 
-#: lib/transaction.c:979
+#: lib/transaction.c:976
 #, fuzzy, c-format
 msgid "rpmdb erase failed. NEVRA: %s\n"
 msgstr "%s / %s dizinin silinmesi başarısız: %s\n"
 
-#: lib/transaction.c:997
+#: lib/transaction.c:994
 #, fuzzy, c-format
 msgid "Rollback to %-24.24s (0x%08x)\n"
 msgstr "(+%d/-%d) den %-24.24s (0x%08x) e doğru paketler geri toplanıyor:\n"
 
-#: lib/transaction.c:1144
+#: lib/transaction.c:1141
 msgid "Invalid number of transaction elements.\n"
 msgstr ""
 
@@ -3410,7 +3420,7 @@ msgid "no dbpath has been set\n"
 msgstr "belirtilmiş bir dbpath değeri yok\n"
 
 #: rpmdb/rpmdb.c:1466 rpmdb/rpmdb.c:1613 rpmdb/rpmdb.c:1669 rpmdb/rpmdb.c:2576
-#: rpmdb/rpmdb.c:2726 rpmdb/rpmdb.c:3522
+#: rpmdb/rpmdb.c:2726 rpmdb/rpmdb.c:3526
 #, c-format
 msgid "error(%d) getting \"%s\" records from %s index\n"
 msgstr "hata(%d): \"%s\" kayıt %s indeksinden alınırken\n"
@@ -3443,81 +3453,81 @@ msgstr "rpmdb: bozuk başlık #%u alındı -- atlanıyor.\n"
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: 0x%x de başlık okunamadı\n"
 
-#: rpmdb/rpmdb.c:2896
+#: rpmdb/rpmdb.c:2898
 #, c-format
 msgid "error(%d) setting header #%d record for %s removal\n"
 msgstr "hata(%1$d) kaldırılan %3$s için  %2$d. başlık kaydı ayarlanırken\n"
 
-#: rpmdb/rpmdb.c:3046
+#: rpmdb/rpmdb.c:3048
 #, c-format
 msgid "error(%d) setting \"%s\" records from %s index\n"
 msgstr "hata(%1$d): %3$s indisindeki \"%2$s\" kaydı ayarlanırken\n"
 
-#: rpmdb/rpmdb.c:3067
+#: rpmdb/rpmdb.c:3069
 #, c-format
 msgid "error(%d) storing record \"%s\" into %s\n"
 msgstr "hata(%d): \"%s\" kaydı %s içine yazılırken\n"
 
-#: rpmdb/rpmdb.c:3077
+#: rpmdb/rpmdb.c:3079
 #, c-format
 msgid "error(%d) removing record \"%s\" from %s\n"
 msgstr "hata(%d) \"%s\" kaydı %s dosyasından silinirken\n"
 
-#: rpmdb/rpmdb.c:3252
+#: rpmdb/rpmdb.c:3256
 #, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr "yeni paket örneğini tutma hatası(%d)\n"
 
-#: rpmdb/rpmdb.c:3326
+#: rpmdb/rpmdb.c:3330
 msgid "rpmdbAdd: skipping"
 msgstr "rpmdbAdd: atlanıyor"
 
-#: rpmdb/rpmdb.c:3541
+#: rpmdb/rpmdb.c:3545
 #, c-format
 msgid "error(%d) storing record %s into %s\n"
 msgstr "hata(%d): %s kayıt %s içine yazılıyor\n"
 
-#: rpmdb/rpmdb.c:3967
+#: rpmdb/rpmdb.c:3971
 #, c-format
 msgid "temporary database %s already exists\n"
 msgstr "geçici veritabanı %s zaten mevcut\n"
 
-#: rpmdb/rpmdb.c:3975
+#: rpmdb/rpmdb.c:3979
 #, c-format
 msgid "creating directory %s: %s\n"
 msgstr "%s dizini oluşturuluyor: %s\n"
 
-#: rpmdb/rpmdb.c:4022
+#: rpmdb/rpmdb.c:4026
 #, c-format
 msgid "header #%u in the database is bad -- skipping.\n"
 msgstr "veritabanındaki %u. başlık hatalı -- atlanıyor\n"
 
-#: rpmdb/rpmdb.c:4030
+#: rpmdb/rpmdb.c:4034
 #, fuzzy, c-format
 msgid "header #%u in the database is SRPM -- skipping.\n"
 msgstr "veritabanındaki %u. başlık hatalı -- atlanıyor\n"
 
-#: rpmdb/rpmdb.c:4070
+#: rpmdb/rpmdb.c:4074
 #, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "kayıt özgün olarak %u e eklenemedi\n"
 
-#: rpmdb/rpmdb.c:4084
+#: rpmdb/rpmdb.c:4088
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 "veritabanı yeniden oluşturulamadı: mevcut veritabanı değişmeden\n"
 "yerinde bırakıldı\n"
 
-#: rpmdb/rpmdb.c:4096
+#: rpmdb/rpmdb.c:4100
 msgid "failed to replace old database with new database!\n"
 msgstr "eski veritabanının yenisiyle değiştirilirmesi başarısız!\n"
 
-#: rpmdb/rpmdb.c:4098
+#: rpmdb/rpmdb.c:4102
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "kurtarmak için %s içindeki dosyalar %s deki dosyalarla değiştiriliyor"
 
-#: rpmdb/rpmdb.c:4110
+#: rpmdb/rpmdb.c:4114
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "%s dizininin silinmesi başarısız: %s\n"
@@ -3591,96 +3601,101 @@ msgstr "İmza: BİLİNMİYOR (%d)\n"
 msgid "Unable to get lock on db %s, retrying... (%d)\n"
 msgstr ""
 
-#: rpmio/macro.c:272
+#: rpmio/macro.c:273
 #, c-format
 msgid "======================== active %d empty %d\n"
 msgstr "======================== %d etkin %d boş\n"
 
-#: rpmio/macro.c:457
+#: rpmio/macro.c:458
 #, c-format
 msgid "%3d>%*s(empty)"
 msgstr "%3d>%*s(boş)"
 
-#: rpmio/macro.c:500
+#: rpmio/macro.c:501
 #, c-format
 msgid "%3d<%*s(empty)\n"
 msgstr "%3d<%*s(boş)\n"
 
-#: rpmio/macro.c:729 rpmio/macro.c:767
+#: rpmio/macro.c:730 rpmio/macro.c:768
 #, c-format
 msgid "Macro %%%s has unterminated body\n"
 msgstr "%%%s makrosunun gövdesi sonlandırılmamış\n"
 
-#: rpmio/macro.c:788
+#: rpmio/macro.c:789
 #, c-format
 msgid "Macro %%%s has illegal name (%%define)\n"
 msgstr "%%%s makrosunun ismi kuraldışı (%%define)\n"
 
-#: rpmio/macro.c:794
+#: rpmio/macro.c:795
 #, c-format
 msgid "Macro %%%s has unterminated opts\n"
 msgstr "%%%s makrosunu seçenekleri sonlandırılmamış\n"
 
-#: rpmio/macro.c:799
+#: rpmio/macro.c:800
 #, c-format
 msgid "Macro %%%s has empty body\n"
 msgstr "%%%s makrosu boş\n"
 
-#: rpmio/macro.c:805
+#: rpmio/macro.c:806
 #, c-format
 msgid "Macro %%%s failed to expand\n"
 msgstr "%%%s makrosu genişletmede başarısız\n"
 
-#: rpmio/macro.c:845
+#: rpmio/macro.c:846
 #, c-format
 msgid "Macro %%%s has illegal name (%%undefine)\n"
 msgstr "%%%s makrosunun ismi kuraldışı (%%define)\n"
 
-#: rpmio/macro.c:961
+#: rpmio/macro.c:962
 #, c-format
 msgid "Macro %%%s (%s) was not used below level %d\n"
 msgstr "%%%s (%s) makrosu %d seviyenin altında kullanılmadı\n"
 
-#: rpmio/macro.c:1089
+#: rpmio/macro.c:1116
 #, c-format
 msgid "Unknown option %c in %s(%s)\n"
 msgstr "%c seçeneği %s(%s) de anlaşılamadı\n"
 
-#: rpmio/macro.c:1372
+#: rpmio/macro.c:1441
 #, c-format
 msgid "Recursion depth(%d) greater than max(%d)\n"
 msgstr "Yineleme derinliği(%d) mümkün miktardan(%d) büyük\n"
 
-#: rpmio/macro.c:1446 rpmio/macro.c:1463
+#: rpmio/macro.c:1515 rpmio/macro.c:1532
 #, c-format
 msgid "Unterminated %c: %s\n"
 msgstr "%c sonlandırılmamış: %s\n"
 
-#: rpmio/macro.c:1508
+#: rpmio/macro.c:1577
 #, c-format
 msgid "A %% is followed by an unparseable macro\n"
 msgstr "Bir ayrıştırılamayan makro tarafından bir %% izlendi\n"
 
-#: rpmio/macro.c:1708
+#: rpmio/macro.c:1595
+#, fuzzy, c-format
+msgid "%s: load macros failed\n"
+msgstr "%s: readLead başarısız\n"
+
+#: rpmio/macro.c:1781
 #, c-format
 msgid "Macro %%%.*s not found, skipping\n"
 msgstr "%%%.*s makrosu bulunamadı, atlanıyor\n"
 
-#: rpmio/macro.c:2066
+#: rpmio/macro.c:2139
 msgid "Macro expansion too big for target buffer\n"
 msgstr ""
 
-#: rpmio/macro.c:2100
+#: rpmio/macro.c:2173
 #, c-format
 msgid "Macro '%s' is readonly and cannot be changed.\n"
 msgstr ""
 
-#: rpmio/macro.c:2350 rpmio/macro.c:2356
+#: rpmio/macro.c:2423 rpmio/macro.c:2429
 #, c-format
 msgid "File %s: %s\n"
 msgstr "%s dosyası: %s\n"
 
-#: rpmio/macro.c:2359
+#: rpmio/macro.c:2432
 #, c-format
 msgid "File %s is smaller than %u bytes\n"
 msgstr "%s dosyası %u bayttan küçük\n"
@@ -3776,27 +3791,27 @@ msgstr "hata: "
 msgid "warning: "
 msgstr "uyarı: "
 
-#: rpmio/rpmlua.c:552
+#: rpmio/rpmlua.c:561
 #, c-format
 msgid "invalid syntax in Lua scriptlet: %s\n"
 msgstr ""
 
-#: rpmio/rpmlua.c:568
+#: rpmio/rpmlua.c:577
 #, fuzzy, c-format
 msgid "invalid syntax in Lua script: %s\n"
 msgstr "geçersiz paket numarası: %s\n"
 
-#: rpmio/rpmlua.c:573 rpmio/rpmlua.c:592
+#: rpmio/rpmlua.c:582 rpmio/rpmlua.c:601
 #, fuzzy, c-format
 msgid "Lua script failed: %s\n"
 msgstr "%s: Fwrite başarısız: %s\n"
 
-#: rpmio/rpmlua.c:587
+#: rpmio/rpmlua.c:596
 #, fuzzy, c-format
 msgid "invalid syntax in Lua file: %s\n"
 msgstr "geçersiz paket numarası: %s\n"
 
-#: rpmio/rpmlua.c:802
+#: rpmio/rpmlua.c:811
 #, fuzzy, c-format
 msgid "lua hook failed: %s\n"
 msgstr "%s başarısız: %s\n"
@@ -4540,9 +4555,6 @@ msgstr ""
 
 #, fuzzy
 #~ msgid "%s: base64 encode failed.\n"
-#~ msgstr "%s: readLead başarısız\n"
-
-#~ msgid "%s: readLead failed\n"
 #~ msgstr "%s: readLead başarısız\n"
 
 #, fuzzy
