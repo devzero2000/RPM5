@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.1\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2008-01-29 09:26-0500\n"
+"POT-Creation-Date: 2008-02-04 11:05-0500\n"
 "PO-Revision-Date: 2003-12-31 09:08+0300\n"
 "Last-Translator: Nilgün Belma Bugüner <nilgun@superonline.com>\n"
 "Language-Team: Turkish <gnu-tr-u12a@lists.sourceforge.net>\n"
@@ -106,11 +106,6 @@ msgstr "Tüm rpm kipleri için ortak seçenekler:"
 #, c-format
 msgid "%s: %s\n"
 msgstr "dosya %s: %s\n"
-
-#: rpmqv.c:163 lib/poptALL.c:179
-#, c-format
-msgid "%s ("
-msgstr ""
 
 #: rpmqv.c:482 rpmqv.c:488 rpmqv.c:494 rpmqv.c:531
 msgid "only one major mode may be specified"
@@ -705,7 +700,7 @@ msgstr "İmza başlığı tekrar yüklenemedi\n"
 msgid "Could not open %s: %s\n"
 msgstr "%s açılamadı: %s\n"
 
-#: build/pack.c:820 lib/psm.c:1935
+#: build/pack.c:820 lib/psm.c:1954
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr "Paket yazılamadı: %s\n"
@@ -725,7 +720,7 @@ msgstr "%s'den payload okunamadı: %s\n"
 msgid "Unable to write payload to %s: %s\n"
 msgstr "%s'e payload yazılamadı: %s\n"
 
-#: build/pack.c:929 lib/psm.c:2229
+#: build/pack.c:929 lib/psm.c:2251
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "Yazıldı: %s\n"
@@ -1613,6 +1608,11 @@ msgstr ""
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: Fread başarısız: %s\n"
 
+#: lib/poptALL.c:179
+#, c-format
+msgid "%s ("
+msgstr ""
+
 #: lib/poptALL.c:359
 #, fuzzy
 msgid "FTS_COMFOLLOW: follow command line symlinks"
@@ -2401,30 +2401,30 @@ msgstr "%s(%s-%s-%s) betik başarısız, çıkış durumu %d\n"
 msgid "%s(%s) scriptlet failed, exit status %d\n"
 msgstr "%s(%s-%s-%s) betik başarısız, çıkış durumu %d\n"
 
-#: lib/psm.c:1840
+#: lib/psm.c:1859
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s\n"
 msgstr "%s: %s betik başarısız (%d), %s atlanıyor\n"
 
-#: lib/psm.c:1948
+#: lib/psm.c:1967
 msgid "Unable to reload signature header\n"
 msgstr "İmza başlığı yeniden yüklenemiyor\n"
 
-#: lib/psm.c:2058
+#: lib/psm.c:2077
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "arşiv paketi açılırken başarısız%s%s: %s\n"
 
-#: lib/psm.c:2059
+#: lib/psm.c:2078
 msgid " on file "
 msgstr " dosyada "
 
-#: lib/psm.c:2237
+#: lib/psm.c:2259
 #, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "%s, %s dosyasında başarısız oldu: %s\n"
 
-#: lib/psm.c:2240
+#: lib/psm.c:2262
 #, c-format
 msgid "%s failed: %s\n"
 msgstr "%s başarısız: %s\n"
@@ -3024,17 +3024,17 @@ msgstr "%s içindeki Solve veritabanı açılamıyor\n"
 msgid "incorrect solve path format: %s\n"
 msgstr "biçem yanlış: %s\n"
 
-#: lib/transaction.c:979
+#: lib/transaction.c:976
 #, fuzzy, c-format
 msgid "rpmdb erase failed. NEVRA: %s\n"
 msgstr "%s / %s dizinin silinmesi başarısız: %s\n"
 
-#: lib/transaction.c:997
+#: lib/transaction.c:994
 #, fuzzy, c-format
 msgid "Rollback to %-24.24s (0x%08x)\n"
 msgstr "(+%d/-%d) den %-24.24s (0x%08x) e doğru paketler geri toplanıyor:\n"
 
-#: lib/transaction.c:1144
+#: lib/transaction.c:1141
 msgid "Invalid number of transaction elements.\n"
 msgstr ""
 
@@ -3631,46 +3631,46 @@ msgstr "%%%s makrosunun ismi kuraldışı (%%define)\n"
 msgid "Macro %%%s (%s) was not used below level %d\n"
 msgstr "%%%s (%s) makrosu %d seviyenin altında kullanılmadı\n"
 
-#: rpmio/macro.c:1089
+#: rpmio/macro.c:1115
 #, c-format
 msgid "Unknown option %c in %s(%s)\n"
 msgstr "%c seçeneği %s(%s) de anlaşılamadı\n"
 
-#: rpmio/macro.c:1348
+#: rpmio/macro.c:1381
 #, c-format
 msgid "Recursion depth(%d) greater than max(%d)\n"
 msgstr "Yineleme derinliği(%d) mümkün miktardan(%d) büyük\n"
 
-#: rpmio/macro.c:1422 rpmio/macro.c:1439
+#: rpmio/macro.c:1455 rpmio/macro.c:1472
 #, c-format
 msgid "Unterminated %c: %s\n"
 msgstr "%c sonlandırılmamış: %s\n"
 
-#: rpmio/macro.c:1484
+#: rpmio/macro.c:1517
 #, c-format
 msgid "A %% is followed by an unparseable macro\n"
 msgstr "Bir ayrıştırılamayan makro tarafından bir %% izlendi\n"
 
-#: rpmio/macro.c:1682
+#: rpmio/macro.c:1715
 #, c-format
 msgid "Macro %%%.*s not found, skipping\n"
 msgstr "%%%.*s makrosu bulunamadı, atlanıyor\n"
 
-#: rpmio/macro.c:2040
+#: rpmio/macro.c:2073
 msgid "Macro expansion too big for target buffer\n"
 msgstr ""
 
-#: rpmio/macro.c:2074
+#: rpmio/macro.c:2107
 #, c-format
 msgid "Macro '%s' is readonly and cannot be changed.\n"
 msgstr ""
 
-#: rpmio/macro.c:2323 rpmio/macro.c:2329
+#: rpmio/macro.c:2356 rpmio/macro.c:2362
 #, c-format
 msgid "File %s: %s\n"
 msgstr "%s dosyası: %s\n"
 
-#: rpmio/macro.c:2332
+#: rpmio/macro.c:2365
 #, c-format
 msgid "File %s is smaller than %u bytes\n"
 msgstr "%s dosyası %u bayttan küçük\n"

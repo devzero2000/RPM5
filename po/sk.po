@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 5.0\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2008-01-29 09:26-0500\n"
+"POT-Creation-Date: 2008-02-04 11:05-0500\n"
 "PO-Revision-Date: 1999-04-08 21:37+02:00\n"
 "Last-Translator: Stanislav Meduna <stano@eunet.sk>\n"
 "Language-Team: Slovak <sk-i18n@rak.isternet.sk>\n"
@@ -101,11 +101,6 @@ msgstr "Veµkos» podpisu:   %d\n"
 #, fuzzy, c-format
 msgid "%s: %s\n"
 msgstr "súbor %s: %s\n"
-
-#: rpmqv.c:163 lib/poptALL.c:179
-#, c-format
-msgid "%s ("
-msgstr ""
 
 #: rpmqv.c:482 rpmqv.c:488 rpmqv.c:494 rpmqv.c:531
 msgid "only one major mode may be specified"
@@ -711,7 +706,7 @@ msgstr "Nie je mo¾né preèíta» ikonu: %s"
 msgid "Could not open %s: %s\n"
 msgstr "Otvorenie %s zlyhalo\n"
 
-#: build/pack.c:820 lib/psm.c:1935
+#: build/pack.c:820 lib/psm.c:1954
 #, fuzzy, c-format
 msgid "Unable to write package: %s\n"
 msgstr "Nie je mo¾né zapísa» balík: %s"
@@ -731,7 +726,7 @@ msgstr "Nie je mo¾né preèíta» ikonu: %s"
 msgid "Unable to write payload to %s: %s\n"
 msgstr "Nie je mo¾né zapísa» balík: %s"
 
-#: build/pack.c:929 lib/psm.c:2229
+#: build/pack.c:929 lib/psm.c:2251
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "Zapísané: %s\n"
@@ -1630,6 +1625,11 @@ msgstr ""
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: readLead zlyhalo\n"
 
+#: lib/poptALL.c:179
+#, c-format
+msgid "%s ("
+msgstr ""
+
 #: lib/poptALL.c:359
 msgid "FTS_COMFOLLOW: follow command line symlinks"
 msgstr ""
@@ -2457,31 +2457,31 @@ msgstr "vykonanie skriptu zlyhalo"
 msgid "%s(%s) scriptlet failed, exit status %d\n"
 msgstr "vykonanie skriptu zlyhalo"
 
-#: lib/psm.c:1840
+#: lib/psm.c:1859
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s\n"
 msgstr ""
 
-#: lib/psm.c:1948
+#: lib/psm.c:1967
 #, fuzzy
 msgid "Unable to reload signature header\n"
 msgstr "Nie je mo¾né preèíta» ikonu: %s"
 
-#: lib/psm.c:2058
+#: lib/psm.c:2077
 #, fuzzy, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "rozbalenie archívu zlyhalo%s%s: %s"
 
-#: lib/psm.c:2059
+#: lib/psm.c:2078
 msgid " on file "
 msgstr " pre súbor "
 
-#: lib/psm.c:2237
+#: lib/psm.c:2259
 #, fuzzy, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "nepodarilo sa otvori» %s: %s"
 
-#: lib/psm.c:2240
+#: lib/psm.c:2262
 #, fuzzy, c-format
 msgid "%s failed: %s\n"
 msgstr "%s zlyhalo"
@@ -3080,17 +3080,17 @@ msgstr "nie je mo¾né otvori» %s/packages.rpm\n"
 msgid "incorrect solve path format: %s\n"
 msgstr "chyba formátu: %s\n"
 
-#: lib/transaction.c:979
+#: lib/transaction.c:976
 #, fuzzy, c-format
 msgid "rpmdb erase failed. NEVRA: %s\n"
 msgstr "rmdir %s zlyhalo: %s"
 
-#: lib/transaction.c:997
+#: lib/transaction.c:994
 #, c-format
 msgid "Rollback to %-24.24s (0x%08x)\n"
 msgstr ""
 
-#: lib/transaction.c:1144
+#: lib/transaction.c:1141
 msgid "Invalid number of transaction elements.\n"
 msgstr ""
 
@@ -3692,46 +3692,46 @@ msgstr "Makro %%%s obsahuje chybný názov (%%undefine)"
 msgid "Macro %%%s (%s) was not used below level %d\n"
 msgstr "Makro %%%s (%s) nebolo pou¾ité pod úrovòou %d "
 
-#: rpmio/macro.c:1089
+#: rpmio/macro.c:1115
 #, fuzzy, c-format
 msgid "Unknown option %c in %s(%s)\n"
 msgstr "Neznáma voµba %c v %s(%s)"
 
-#: rpmio/macro.c:1348
+#: rpmio/macro.c:1381
 #, fuzzy, c-format
 msgid "Recursion depth(%d) greater than max(%d)\n"
 msgstr "Håbka rekurzie (%d) väè¹ia ako maximálna (%d)"
 
-#: rpmio/macro.c:1422 rpmio/macro.c:1439
+#: rpmio/macro.c:1455 rpmio/macro.c:1472
 #, fuzzy, c-format
 msgid "Unterminated %c: %s\n"
 msgstr "Neukonèené %c: %s"
 
-#: rpmio/macro.c:1484
+#: rpmio/macro.c:1517
 #, c-format
 msgid "A %% is followed by an unparseable macro\n"
 msgstr ""
 
-#: rpmio/macro.c:1682
+#: rpmio/macro.c:1715
 #, fuzzy, c-format
 msgid "Macro %%%.*s not found, skipping\n"
 msgstr "balík %%%.*s nebol nájdený, vynecháva sa"
 
-#: rpmio/macro.c:2040
+#: rpmio/macro.c:2073
 msgid "Macro expansion too big for target buffer\n"
 msgstr ""
 
-#: rpmio/macro.c:2074
+#: rpmio/macro.c:2107
 #, c-format
 msgid "Macro '%s' is readonly and cannot be changed.\n"
 msgstr ""
 
-#: rpmio/macro.c:2323 rpmio/macro.c:2329
+#: rpmio/macro.c:2356 rpmio/macro.c:2362
 #, fuzzy, c-format
 msgid "File %s: %s\n"
 msgstr "Súbor %s: %s"
 
-#: rpmio/macro.c:2332
+#: rpmio/macro.c:2365
 #, fuzzy, c-format
 msgid "File %s is smaller than %u bytes\n"
 msgstr "Súbor %s je men¹í ako %d bajtov"

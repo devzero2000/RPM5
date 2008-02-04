@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.4.9\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2008-01-29 09:26-0500\n"
+"POT-Creation-Date: 2008-02-04 11:05-0500\n"
 "PO-Revision-Date: 2008-01-03 01:41+0100\n"
 "Last-Translator: Helder Correia <helder.pereira.correia@gmail.com>\n"
 "Language-Team: Portuguese <translation-team-pt@lists.sourceforge.net>\n"
@@ -105,11 +105,6 @@ msgstr "Opções de assinatura:"
 #, c-format
 msgid "%s: %s\n"
 msgstr "%s: %s\n"
-
-#: rpmqv.c:163 lib/poptALL.c:179
-#, c-format
-msgid "%s ("
-msgstr ""
 
 #: rpmqv.c:482 rpmqv.c:488 rpmqv.c:494 rpmqv.c:531
 msgid "only one major mode may be specified"
@@ -704,7 +699,7 @@ msgstr "Não é possível reler o cabeçalho do assinatura.\n"
 msgid "Could not open %s: %s\n"
 msgstr "Não consigo aceder ao %s: %s\n"
 
-#: build/pack.c:820 lib/psm.c:1935
+#: build/pack.c:820 lib/psm.c:1954
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr "Não é possível gravar o pacote: %s\n"
@@ -724,7 +719,7 @@ msgstr "Não é possível ler o conteúdo de %s: %s\n"
 msgid "Unable to write payload to %s: %s\n"
 msgstr "Não é possível escrever o conteúdo de %s: %s\n"
 
-#: build/pack.c:929 lib/psm.c:2229
+#: build/pack.c:929 lib/psm.c:2251
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "Gravei: %s\n"
@@ -1598,6 +1593,11 @@ msgstr ""
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: O fread falhou: %s\n"
 
+#: lib/poptALL.c:179
+#, c-format
+msgid "%s ("
+msgstr ""
+
 #: lib/poptALL.c:359
 msgid "FTS_COMFOLLOW: follow command line symlinks"
 msgstr "FTS_COMFOLLOW: seguir ligações simbólicas de linha de comandos"
@@ -2355,30 +2355,30 @@ msgstr "%s(%s-%s-%s.%s) 'scriptlet' falhou, sinal %d\n"
 msgid "%s(%s) scriptlet failed, exit status %d\n"
 msgstr "%s(%s-%s-%s.%s) 'scriptlet' falhou, estado de saída %d\n"
 
-#: lib/psm.c:1840
+#: lib/psm.c:1859
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s\n"
 msgstr "%s: %s 'scriptlet' falhou (%d), a ignorar %s\n"
 
-#: lib/psm.c:1948
+#: lib/psm.c:1967
 msgid "Unable to reload signature header\n"
 msgstr "Não é possível recarregar cabeçalho de assinatura\n"
 
-#: lib/psm.c:2058
+#: lib/psm.c:2077
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "a abertura do pacote falhou%s%s: %s\n"
 
-#: lib/psm.c:2059
+#: lib/psm.c:2078
 msgid " on file "
 msgstr " no ficheiro "
 
-#: lib/psm.c:2237
+#: lib/psm.c:2259
 #, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "%s falhou no ficheiro %s: %s\n"
 
-#: lib/psm.c:2240
+#: lib/psm.c:2262
 #, c-format
 msgid "%s failed: %s\n"
 msgstr "%s falhou: %s\n"
@@ -2984,17 +2984,17 @@ msgstr "impossível abrir a base de dados Solve em %s\n"
 msgid "incorrect solve path format: %s\n"
 msgstr "formato de caminho Solve incorrecto: %s\n"
 
-#: lib/transaction.c:979
+#: lib/transaction.c:976
 #, c-format
 msgid "rpmdb erase failed. NEVRA: %s\n"
 msgstr "rpmdb erase falhou. NEVRA: %s\n"
 
-#: lib/transaction.c:997
+#: lib/transaction.c:994
 #, c-format
 msgid "Rollback to %-24.24s (0x%08x)\n"
 msgstr "Recuar até %-24.24s (0x%08x)\n"
 
-#: lib/transaction.c:1144
+#: lib/transaction.c:1141
 msgid "Invalid number of transaction elements.\n"
 msgstr "Número inválida de elementos de transacção.\n"
 
@@ -3588,46 +3588,46 @@ msgstr "A macro %%%s tem um nome ilegal (%%undefine)\n"
 msgid "Macro %%%s (%s) was not used below level %d\n"
 msgstr "A macro %%%s (%s) não foi usada abaixo do nível %d\n"
 
-#: rpmio/macro.c:1089
+#: rpmio/macro.c:1115
 #, c-format
 msgid "Unknown option %c in %s(%s)\n"
 msgstr "Opção desconhecida %c em %s(%s)\n"
 
-#: rpmio/macro.c:1348
+#: rpmio/macro.c:1381
 #, c-format
 msgid "Recursion depth(%d) greater than max(%d)\n"
 msgstr "Nível de recursividade(%d) maior que o máximo(%d)\n"
 
-#: rpmio/macro.c:1422 rpmio/macro.c:1439
+#: rpmio/macro.c:1455 rpmio/macro.c:1472
 #, c-format
 msgid "Unterminated %c: %s\n"
 msgstr "%c não terminado: %s\n"
 
-#: rpmio/macro.c:1484
+#: rpmio/macro.c:1517
 #, c-format
 msgid "A %% is followed by an unparseable macro\n"
 msgstr "Segue-se uma macro impossível de analisar ao %%\n"
 
-#: rpmio/macro.c:1682
+#: rpmio/macro.c:1715
 #, c-format
 msgid "Macro %%%.*s not found, skipping\n"
 msgstr "A macro %%%.*s não foi encontrada, por isso foi ignorada\n"
 
-#: rpmio/macro.c:2040
+#: rpmio/macro.c:2073
 msgid "Macro expansion too big for target buffer\n"
 msgstr "Expansão de 'macro' demasiado grande para 'buffer' alvo\n"
 
-#: rpmio/macro.c:2074
+#: rpmio/macro.c:2107
 #, c-format
 msgid "Macro '%s' is readonly and cannot be changed.\n"
 msgstr "'Macro' '%s' apenas pode ser lida e não alterada.\n"
 
-#: rpmio/macro.c:2323 rpmio/macro.c:2329
+#: rpmio/macro.c:2356 rpmio/macro.c:2362
 #, c-format
 msgid "File %s: %s\n"
 msgstr "Ficheiro %s: %s\n"
 
-#: rpmio/macro.c:2332
+#: rpmio/macro.c:2365
 #, c-format
 msgid "File %s is smaller than %u bytes\n"
 msgstr "O ficheiro %s tem menos de %u bytes\n"

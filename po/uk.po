@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 5.0\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2008-01-29 09:26-0500\n"
+"POT-Creation-Date: 2008-02-04 11:05-0500\n"
 "PO-Revision-Date: 2004-05-17 14:17+0200\n"
 "Last-Translator: Maxim Dziumanenko <mvd@mylinux.com.ua>\n"
 "Language-Team: Ukrainian <uk@li.org>\n"
@@ -106,11 +106,6 @@ msgstr "Загальні параметри для всіх режимів rpm:"
 #, c-format
 msgid "%s: %s\n"
 msgstr "%s: %s\n"
-
-#: rpmqv.c:163 lib/poptALL.c:179
-#, c-format
-msgid "%s ("
-msgstr ""
 
 #: rpmqv.c:482 rpmqv.c:488 rpmqv.c:494 rpmqv.c:531
 msgid "only one major mode may be specified"
@@ -706,7 +701,7 @@ msgstr "Неможливо перезавантажити заголовок п�
 msgid "Could not open %s: %s\n"
 msgstr "Не вдається відкрити %s: %s\n"
 
-#: build/pack.c:820 lib/psm.c:1935
+#: build/pack.c:820 lib/psm.c:1954
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr "Не вдається записати пакет: %s\n"
@@ -726,7 +721,7 @@ msgstr "Неможливо прочитати вміст з %s: %s\n"
 msgid "Unable to write payload to %s: %s\n"
 msgstr "Неможливо записати вміст з %s: %s\n"
 
-#: build/pack.c:929 lib/psm.c:2229
+#: build/pack.c:929 lib/psm.c:2251
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "Записано: %s\n"
@@ -1615,6 +1610,11 @@ msgstr ""
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: помилка у Fread: %s\n"
 
+#: lib/poptALL.c:179
+#, c-format
+msgid "%s ("
+msgstr ""
+
 #: lib/poptALL.c:359
 #, fuzzy
 msgid "FTS_COMFOLLOW: follow command line symlinks"
@@ -2397,30 +2397,30 @@ msgstr "%s(%s-%s-%s) помилка сценарію, код завершенн�
 msgid "%s(%s) scriptlet failed, exit status %d\n"
 msgstr "%s(%s-%s-%s) помилка сценарію, код завершення %d\n"
 
-#: lib/psm.c:1840
+#: lib/psm.c:1859
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s\n"
 msgstr "%s: %s помилка сценарію, (%d), пропущено %s\n"
 
-#: lib/psm.c:1948
+#: lib/psm.c:1967
 msgid "Unable to reload signature header\n"
 msgstr "Неможливо перезавантажити заголовок підпису\n"
 
-#: lib/psm.c:2058
+#: lib/psm.c:2077
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "помилка розпаковування архіву%s%s: %s\n"
 
-#: lib/psm.c:2059
+#: lib/psm.c:2078
 msgid " on file "
 msgstr " на файлі "
 
-#: lib/psm.c:2237
+#: lib/psm.c:2259
 #, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "%s помилка на файлі %s: %s\n"
 
-#: lib/psm.c:2240
+#: lib/psm.c:2262
 #, c-format
 msgid "%s failed: %s\n"
 msgstr "%s помилка: %s\n"
@@ -3019,17 +3019,17 @@ msgstr "неможливо відкрити базу даних розв'яза�
 msgid "incorrect solve path format: %s\n"
 msgstr "неправильний формат: %s\n"
 
-#: lib/transaction.c:979
+#: lib/transaction.c:976
 #, fuzzy, c-format
 msgid "rpmdb erase failed. NEVRA: %s\n"
 msgstr "%s помилка видалення каталогу %s: %s\n"
 
-#: lib/transaction.c:997
+#: lib/transaction.c:994
 #, fuzzy, c-format
 msgid "Rollback to %-24.24s (0x%08x)\n"
 msgstr "Повернути стан пакетів (+%d/-%d) до %-24.24s (0x%08x):\n"
 
-#: lib/transaction.c:1144
+#: lib/transaction.c:1141
 msgid "Invalid number of transaction elements.\n"
 msgstr ""
 
@@ -3626,46 +3626,46 @@ msgstr "Макрос %%%s має неправильну назву (%%undefine)\
 msgid "Macro %%%s (%s) was not used below level %d\n"
 msgstr "Макрос %%%s (%s) не було використано нижче рівня %d\n"
 
-#: rpmio/macro.c:1089
+#: rpmio/macro.c:1115
 #, c-format
 msgid "Unknown option %c in %s(%s)\n"
 msgstr "Невідомий параметр %c у %s(%s)\n"
 
-#: rpmio/macro.c:1348
+#: rpmio/macro.c:1381
 #, c-format
 msgid "Recursion depth(%d) greater than max(%d)\n"
 msgstr "Глибина рекурсії(%d) перевищує межу(%d)\n"
 
-#: rpmio/macro.c:1422 rpmio/macro.c:1439
+#: rpmio/macro.c:1455 rpmio/macro.c:1472
 #, c-format
 msgid "Unterminated %c: %s\n"
 msgstr "Незавершена %c: %s\n"
 
-#: rpmio/macro.c:1484
+#: rpmio/macro.c:1517
 #, c-format
 msgid "A %% is followed by an unparseable macro\n"
 msgstr "Незрозумілий макрос після %%\n"
 
-#: rpmio/macro.c:1682
+#: rpmio/macro.c:1715
 #, c-format
 msgid "Macro %%%.*s not found, skipping\n"
 msgstr "Макрос %%%.*s не існує, пропущено\n"
 
-#: rpmio/macro.c:2040
+#: rpmio/macro.c:2073
 msgid "Macro expansion too big for target buffer\n"
 msgstr ""
 
-#: rpmio/macro.c:2074
+#: rpmio/macro.c:2107
 #, c-format
 msgid "Macro '%s' is readonly and cannot be changed.\n"
 msgstr ""
 
-#: rpmio/macro.c:2323 rpmio/macro.c:2329
+#: rpmio/macro.c:2356 rpmio/macro.c:2362
 #, c-format
 msgid "File %s: %s\n"
 msgstr "Файл %s: %s\n"
 
-#: rpmio/macro.c:2332
+#: rpmio/macro.c:2365
 #, c-format
 msgid "File %s is smaller than %u bytes\n"
 msgstr "Довжина файла %s менше за %u байт\n"

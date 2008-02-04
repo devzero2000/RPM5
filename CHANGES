@@ -1,4 +1,5 @@
 5.0.1 -> 5.0.2:
+    - jbj: updated sv.po (Translation Project).
     - jbj: fix: permit #%patchN comments by forcing single line expansion.
     - jbj: document newer macro builtins (%{@foo:...}, %{uuid:...}, and %{lua:...} todo).
     - jbj: fix: poldek in PLD needs replacement for headerGetRawEntry().
