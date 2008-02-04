@@ -1,4 +1,5 @@
 5.0.1 -> 5.0.2:
+    - jbj: document newer macro builtins (%{@foo:...}, %{uuid:...}, and %{lua:...} todo).
     - jbj: fix: poldek in PLD needs replacement for headerGetRawEntry().
     - rse: ensure macro option parsing is done correctly also under GLIBC by not allowing option/argument permutations
     - jbj: pedantic identification of Foo (not foo) syscalls in --fsmdebug spew.
