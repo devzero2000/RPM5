@@ -5,8 +5,8 @@
 #include <rpmmg.h>
 
 #include <rpmio_internal.h>
-#include <rpmmessages.h>
 #include <rpmmacro.h>
+#include <rpmcb.h>
 #include <popt.h>
 
 #include "debug.h"
