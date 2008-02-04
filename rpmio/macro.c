@@ -1838,7 +1838,7 @@ int rpmSecuritySaneFile(const char *filename)
     uid_t uid;
 
     if (stat(filename, &sb) == -1)
-        return (errno == ENOENT ? 1 : 0);
+        return 1;
     uid = getuid();
     if (sb.st_uid != uid)
         return 0;
