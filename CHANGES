@@ -1,4 +1,5 @@
 5.0.0 -> 5.1a1:
+    - jbj: document newer macro builtins (%{@foo:...}, %{uuid:...}, and %{lua:...} todo).
     - jbj: fix: poldek in PLD needs replacement for headerGetRawEntry().
     - jbj: add rpmcliWalkFirst() to search (possibly multiple) dirs.
     - rse: add _rpmgi_pattern_{glob,regex} macros for "+N" arg-to-path rewrite.

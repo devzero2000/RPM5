@@ -69,10 +69,12 @@ to perform useful operations. The current list is
 	%trace		toggle print of debugging information before/after
 			expansion
 	%dump		print the active (i.e. non-covered) macro table
+	%{load:...}	load macros from a ... file
 
 	%{echo:...}	print ... to stderr
 	%{warn:...}	print ... to stderr
 	%{error:...}	print ... to stderr and return BADSPEC
+	%{verbose:...}	expand ... argument iff --verbose has been specified
  
 	%define ...	define a macro
 	%undefine ...	undefine a macro
@@ -84,6 +86,17 @@ to perform useful operations. The current list is
 				gzip -dc <file>		# if gzip'ed
 				bzip2 -dc <file>	# if bzip'ed
 	%{expand:...}	like eval, expand ... to <body> and (re-)expand <body>
+
+	%{basename:...}	the trailing portion of ... with directory path removed
+	%{dirname:...}	the leading directory path of the ... argument
+	%{realpath:...}	the canonicalized path of the ... argument
+	%{getenv:...}	the value of the ...  envvar
+	%{shrink:...}	trim from ends, horten intermediate, whitespace in ...
+	%{suffix:...}	the trailing part after '.' of the ... argument
+	%{url2path:...}	skip "scheme://user:pass@host:port" of a ... URI
+	%{u2p:...}	same as %{url2path:...}
+
+	%{mkstemp:...}	a temporary file from ... template (see mkstemp(3))
 
 	%{S:...}	expand ... to <source> file name
 	%{P:...}	expand ... to <patch> file name
