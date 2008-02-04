@@ -186,18 +186,20 @@ int argvAdd(/*@out@*/ ARGV_t * argvp, ARGstr_t val)
     return 0;
 }
 
-int argvAppend(/*@out@*/ ARGV_t * argvp, const ARGV_t av)
+int argvAppend(/*@out@*/ ARGV_t * argvp, ARGV_t av)
 {
-    ARGV_t argv = *argvp;
-    int argc = argvCount(argv);
     int ac = argvCount(av);
-    int i;
 
-    argv = xrealloc(argv, (argc + ac + 1) * sizeof(*argv));
-    for (i = 0; i < ac; i++)
-	argv[argc + i] = xstrdup(av[i]);
-    argv[argc + ac] = NULL;
-    *argvp = argv;
+    if (av != NULL && ac > 0) {
+	ARGV_t argv = *argvp;
+	int argc = argvCount(argv);
+
+	argv = xrealloc(argv, (argc + ac + 1) * sizeof(*argv));
+	while (*av++)
+	    argv[argc++] = xstrdup(av[-1]);
+	argv[argc] = NULL;
+	*argvp = argv;
+    }
     return 0;
 }
 

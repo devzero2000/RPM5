@@ -182,7 +182,7 @@ int argvAdd(/*@out@*/ ARGV_t * argvp, ARGstr_t val)
  * @param av		argv array to append
  * @return		0 always
  */
-int argvAppend(/*@out@*/ ARGV_t * argvp, const ARGV_t av)
+int argvAppend(/*@out@*/ ARGV_t * argvp, ARGV_t av)
 	/*@modifies *argvp @*/;
 
 /**

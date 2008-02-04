@@ -335,10 +335,12 @@ static rpmRC rpmcliEraseElement(rpmts ts, const char * arg)
 static const char * rpmcliWalkFirst(ARGV_t av, miRE mire)
 {
     /* XXX use global ftsOpts? */
-    int _ftsOpts = (FTS_COMFOLLOW | FTS_LOGICAL | FTS_NOSTAT);
+    /* XXX changing FTS_LOGICAL to FTS_PHYSICAL prevents symlink follow. */
+    int _ftsOpts = (FTS_COMFOLLOW | FTS_LOGICAL | FTS_NOSTAT | FTS_NOCHDIR);
     FTS * ftsp = Fts_open((char *const *)av, _ftsOpts, NULL);
     FTSENT * fts;
     const char * fn = NULL;
+    int fts_level = 1;
     int xx;
 
     if (ftsp != NULL)
@@ -347,6 +349,10 @@ static const char * rpmcliWalkFirst(ARGV_t av, miRE mire)
 	/* No-op conditions. */
 	case FTS_D:		/* preorder directory */
 	case FTS_DP:		/* postorder directory */
+	    /* XXX Don't recurse downwards, all elements should be files. */
+	    if (fts_level > 0 && fts->fts_level >= fts_level)
+		Fts_set(ftsp, fts, FTS_SKIP);
+	    /*@fallthrough@*/
 	case FTS_DOT:		/* dot or dot-dot */
 	    continue;
 	    /*@notreached@*/ break;
@@ -382,52 +388,54 @@ exit:
 
 static const char * rpmcliInstallElementPath(rpmts ts, const char * arg)
 {
-#ifdef GLOB_ONLY
-    /* XXX note the added "-*.rpm" to force globbing on '-' boundaries. */
-    const char * fn = rpmGetPath(
-	"%{?_rpmgi_pattern_glob:%{_rpmgi_pattern_glob ", arg, "}}"
-	"%{!?_rpmgi_pattern_glob:", arg, "-*-*.*.rpm}",
-	NULL
-    );
-#else
-    /* Create a glob pattern to match repository directories. */
-    const char * fn = rpmGetPath(
+    /* A glob pattern list to match repository directories. */
+    const char * fn = rpmExpand(
 	"%{?_rpmgi_pattern_glob}"
-	"%{!?_rpmgi_pattern_glob:.}", "/",
+	"%{!?_rpmgi_pattern_glob:.}",
 	NULL
     );
-#endif
+    /* A regex pattern list to match candidate *.rpm files. */
     const char * mirePattern = rpmExpand(
         "%{?_rpmgi_pattern_regex:%{_rpmgi_pattern_regex ", arg, "}}"
         "%{!?_rpmgi_pattern_regex:", arg, "-[^-]+-[^-]+\\.[^.]+\\.rpm$}",
         NULL
     );
     miRE mire = mireNew(RPMMIRE_REGEX, 0);
+    ARGV_t dav = NULL;
+    int dac = 0;
     ARGV_t av = NULL;
-    int ac = 0;
     int xx = mireRegcomp(mire, mirePattern);
+    int i;
 
-    /* Get explicit list of candidate repository directories. */
-    xx = rpmGlob(fn, &ac, &av);
+    /* Get list of candidate repository patterns. */
+    xx = argvSplit(&dav, fn, ":");
     fn = _free(fn);
+    if (xx || dav == NULL)
+	goto exit;
 
-    /* Filter out glibc <-> glibc-common confusions. */
-#ifdef	GLOB_ONLY
-    {	int i;
-	for (i = 0; i < ac; i++) {
-	    if (mireRegexec(mire, av[i]))
-		continue;
-	    /* Stop on first file that matches. */
-	    fn = xstrdup(av[0]);
-	    break;
-	}
+    dac = argvCount(dav);
+    for (i = 0; i < dac; i++) {
+	ARGV_t nav = NULL;
+	int nac = 0;
+
+	/* Insure only directory paths are matched. */
+	fn = rpmGetPath(dav[i], "/", NULL);
+	xx = rpmGlob(fn, &nac, &nav);
+
+	/* Append matches to list of repository directories. */
+	if (nac > 0 && nav != NULL)
+	    xx = argvAppend(&av, nav);
+	nav = argvFree(nav);
+	nac = 0;
+	fn = _free(fn);
     }
-#else
+
     /* Walk (possibly multi-root'd) directories, until 1st match is found. */
     fn = rpmcliWalkFirst(av, mire);
-#endif
 
+exit:
     av = argvFree(av);
+    dav = argvFree(dav);
     mire = mireFree(mire);
     mirePattern = _free(mirePattern);
 
@@ -523,7 +531,15 @@ int rpmcliInstall(rpmts ts, QVA_t ia, const char ** argv)
 
         /* === Check for "+bing" lookaside paths within install transaction. */
         if (fn[0] == '+') {
-	    const char * nfn = rpmcliInstallElementPath(ts, &fn[1]);
+	    const char * nfn;
+	    addMacro(NULL, "NEVRA", NULL, &fn[1], RMIL_GLOBAL);
+	    nfn = rpmcliInstallElementPath(ts, &fn[1]);
+	    delMacro(NULL, "NEVRA");
+	    if (nfn == NULL) {
+		rpmlog(RPMLOG_ERR, _("package \"%s\" cannot be found\n"), fn);
+		numFailed++;	/* XXX multiple erasures? */
+		continue;
+	    }
 	    fn = _free(fn);
 	    fn = nfn;
 	    /* XXX hack into rpmgi innards for now ... */
@@ -541,7 +557,7 @@ int rpmcliInstall(rpmts ts, QVA_t ia, const char ** argv)
 		break;
 	    case RPMRC_NOTFOUND:
 	    default:
-		rpmlog(RPMLOG_ERR, _("package %s cannot be erased\n"), &fn[1]);
+		rpmlog(RPMLOG_ERR, _("package \"%s\" cannot be erased\n"), fn);
 		numFailed++;	/* XXX multiple erasures? */
 		goto exit;
 		/*@notreached@*/ break;

@@ -1,6 +1,10 @@
 5.0.0 -> 5.1a1:
-    - jbj: include rpmuuid.h to remove warning.
-    - jbj: add %{!?load:...} syntax, display error if %{load:...} fails.
+    - jbj: "+bing" -- handle no *.rpm package found condition correctly.
+    - jbj: "+bing" -- limit Fts(3) recursion to target directory traversal only.
+    - jbj: "+bing" -- define "%NEVRA bing" on-the-fly for use by glob patterns.
+    - jbj: "+bing" -- permit colon separated glob directory patterns.
+    - jbj: macro.c: include rpmuuid.h to remove warning.
+    - jbj: macro.c: add %{!?load:...} syntax, display error if %{load:...} fails.
     - jbj: updated sv.po (Translation Project).
     - jbj: fix: permit #%patchN comments by forcing single line expansion.
     - jbj: document newer macro builtins (%{@foo:...}, %{uuid:...}, and %{lua:...} todo).
