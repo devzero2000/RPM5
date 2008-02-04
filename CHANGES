@@ -1,4 +1,6 @@
 5.0.0 -> 5.1a1:
+    - jbj: include rpmuuid.h to remove warning.
+    - jbj: add %{!?load:...} syntax, display error if %{load:...} fails.
     - jbj: updated sv.po (Translation Project).
     - jbj: fix: permit #%patchN comments by forcing single line expansion.
     - jbj: document newer macro builtins (%{@foo:...}, %{uuid:...}, and %{lua:...} todo).

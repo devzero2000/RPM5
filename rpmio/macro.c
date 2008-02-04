@@ -64,6 +64,7 @@ const char * rpmMacrofiles = MACROFILES;
 #define	_RPMLUA_INTERNAL	/* XXX lua->printbuf access */
 #include <rpmlua.h>
 #endif
+#include <rpmuuid.h>
 
 #endif
 
@@ -1589,6 +1590,9 @@ expandMacro(MacroBuf mb)
 		    int xx;
 		    mfn[gn] = '\0';
 		    xx = rpmLoadMacroFile(NULL, mfn);
+		    /* Print failure iff %{load:...} or %{!?load:...} */
+		    if (xx != 0 && chkexist == negate)
+			rpmlog(RPMLOG_ERR, _("%s: load macros failed\n"), mfn);
 		}
 		s = se;
 		continue;
@@ -2259,6 +2263,7 @@ static void expand_macrosfile_macro(const char *file_name, const char *buf, size
 int
 rpmLoadMacroFile(MacroContext mc, const char * fn)
 {
+    /* XXX TODO: teach rdcl() to read through a URI, eliminate ".fpio". */
     FD_t fd = Fopen(fn, "r.fpio");
     size_t bufn = _macro_BUFSIZ;
     char *buf = alloca(bufn);
