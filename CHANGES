@@ -1,4 +1,5 @@
 5.0.0 -> 5.1a1:
+    - rse: ensure that RPM Lua function util.rsplit("", ...) returns an empty table
     - jbj: "+bing" -- handle no *.rpm package found condition correctly.
     - jbj: "+bing" -- limit Fts(3) recursion to target directory traversal only.
     - jbj: "+bing" -- define "%NEVRA bing" on-the-fly for use by glob patterns.
