@@ -119,9 +119,6 @@ tkey_LDADD = $(RPM_LDADD) -lgcrypt
 gengpg.h:
 	-sh ./gengpg.sh > gengpg.h
 
-tmire_SOURCES = tmire.c
-tmire_LDADD = $(RPM_LDADD)
-
 tmacro_SOURCES =
 tmacro_LDADD = tmacro.o $(RPM_LDADD)
 tmacro.o:  macro.c
