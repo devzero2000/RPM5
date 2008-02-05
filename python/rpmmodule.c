@@ -50,6 +50,22 @@ typedef int Py_ssize_t;
 #endif
 
 /**
+ *  */
+static PyObject * archScore(PyObject * self, PyObject * args, PyObject * kwds)
+{
+    char * arch;
+    int score;
+    char * kwlist[] = {"arch", NULL};
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "s", kwlist, &arch))
+	return NULL;
+
+    score = rpmPlatformScore(arch, NULL, 0);
+
+    return Py_BuildValue("i", score);
+}
+
+/**
  */
 static PyObject * signalsCaught(PyObject * self, PyObject * check)
 {
@@ -178,6 +194,9 @@ static PyMethodDef rpmModuleMethods[] = {
 	NULL },
     { "getMacros", (PyCFunction) rpmmacro_GetMacros, METH_VARARGS|METH_KEYWORDS,
 	NULL },
+
+    { "archscore", (PyCFunction) archScore, METH_VARARGS|METH_KEYWORDS,
+        NULL },
 
     { "signalsCaught", (PyCFunction) signalsCaught, METH_O,
 	NULL },
