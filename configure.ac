@@ -909,6 +909,13 @@ dnl ##
 
 AC_MSG_HEADER([THIRD-PARTY LIBRARIES (2/2)])
 
+dnl # POPT
+RPM_CHECK_LIB(
+    [POPT], [popt],
+    [popt], [poptGetContext], [popt.h],
+    [yes,external], [],
+    [], [AC_MSG_ERROR([mandatory POPT library not found])])
+
 dnl # ZLib
 RPM_CHECK_LIB(
     [ZLib], [zlib],
@@ -971,13 +978,6 @@ RPM_CHECK_LIB(
           AC_DEFINE(HAVE_MAGIC_H, 1, [Define to 1 if you have <magic.h>])
       fi
     ], [])
-
-dnl # POPT
-RPM_CHECK_LIB(
-    [POPT], [popt],
-    [popt], [poptGetContext], [popt.h],
-    [yes,external], [],
-    [], [AC_MSG_ERROR([mandatory POPT library not found])])
 
 dnl # Berkeley-DB & SQLite
 DBLIBSRCS=""
@@ -1084,7 +1084,7 @@ RPM_CHECK_LIB(
 dnl # OSSP uuid
 RPM_CHECK_LIB(
     [OSSP uuid], [uuid],
-    [uuid], [uuid_import], [uuid.h],
+    [ossp-uuid uuid], [uuid_import], [uuid.h],
     [no,external:none], [],
     [ dnl # enable OSSP uuid native API support for embedded Lua
       if test ".$WITH_LUA" = .yes; then
