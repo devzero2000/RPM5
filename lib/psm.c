@@ -1493,10 +1493,6 @@ static int populateInstallHeader(const rpmts ts, const rpmte te, rpmfi fi)
     int xx = 1;
 
 assert(fi->h != NULL);
-    if (fi->fstates != NULL && fc > 0)
-	xx = headerAddEntry(fi->h, RPMTAG_FILESTATES, RPM_CHAR_TYPE,
-				fi->fstates, fc);
-assert(xx);
 
     xx = headerAddEntry(fi->h, RPMTAG_INSTALLTIME, RPM_INT32_TYPE,
 			&installTime, 1);
@@ -1522,6 +1518,28 @@ assert(xx);
     /* XXX Don't clobber forward/backward upgrade chain on rollbacks */
     if (rpmtsType(ts) != RPMTRANS_TYPE_ROLLBACK)
 	xx = hSaveBlinks(fi->h, &te->blink);
+
+    return 0;
+}
+
+
+/**
+ * Add fi->states to an install header.
+ * @param ts		transaction set
+ * @param te		transaction element
+ * @param fi		file info set
+ * @return		0 always
+ */
+static int postPopulateInstallHeader(const rpmts ts, const rpmte te, rpmfi fi)
+	/*@modifies fi @*/
+{
+    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    int fc = rpmfiFC(fi);
+    int xx = 1;
+
+    if (fi->fstates != NULL && fc > 0) {
+	xx = headerAddEntry(fi->h, RPMTAG_FILESTATES, RPM_CHAR_TYPE, fi->fstates, fc);
+    }
 
     return 0;
 }
@@ -2041,6 +2059,9 @@ assert(psm->te != NULL);
 		rc = rpmpsmNext(psm, PSM_RPMDB_REMOVE);
 		if (rc) break;
 	    }
+
+	    /* Add fi->fstates to install header. */
+	    xx = postPopulateInstallHeader(ts, psm->te, fi);
 
 	    rc = rpmpsmNext(psm, PSM_RPMDB_ADD);
 	    if (rc) break;

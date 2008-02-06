@@ -1,4 +1,5 @@
 4.4.9 -> 4.5:
+    - glen: backport from 5.0: --rollback PSM_INIT changes added fstates before initialize.
     - proyvind: add back SOURCEPACKAGE tag for Mandriva to allow packages to be rebuilt on older releases
     - proyvind: add back rpm v3 format support for Mandriva
     - proyvind: rename rpmcliImportPubkey() -> rpmtsImportPubkey() (from and for rpm.org compatibility)
