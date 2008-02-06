@@ -1,4 +1,5 @@
 5.0.0 -> 5.1a1:
+    - afb: workaround for "uuid_t" type conflict, between <unistd.h> and "uuid.h"
     - jbj: fix: python: re-add rpm.archscore() for smart depsolving usage.
     - jbj: test for POPT earlier to avoid popt being blamed for neon configure failures.
     - jbj: add --with-uuid=external, --with-pcre=external to devtool "system".
