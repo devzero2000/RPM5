@@ -3481,29 +3481,31 @@ DBGIO(fd, (stderr, "==> Fdopen(%p,\"%s\") returns fd %p %s\n", ofd, fmode, (fd ?
     /*@-refcounttrans -retalias@*/ return fd; /*@=refcounttrans =retalias@*/
 }
 
-FD_t Fopen(const char *path, const char *fmode)
+FD_t Fopen(const char *path, const char *_fmode)
 {
+    const char * fmode = rpmExpand(_fmode, NULL);
     char stdio[20], other[20];
     const char *end = NULL;
     mode_t perms = 0666;
     int flags = 0;
-    FD_t fd;
+    FD_t fd = NULL;
 
     if (path == NULL || fmode == NULL)
-	return NULL;
+	goto exit;
 
     stdio[0] = '\0';
     cvtfmode(fmode, stdio, sizeof(stdio), other, sizeof(other), &end, &flags);
     if (stdio[0] == '\0')
-	return NULL;
+	goto exit;
 
     if (end == NULL || !strcmp(end, "fdio")) {
 if (_rpmio_debug)
-fprintf(stderr, "*** Fopen fdio path %s fmode %s\n", path, fmode);
+fprintf(stderr, "*** Fopen(%s, %s) fdio\n", path, fmode);
 	fd = fdOpen(path, flags, perms);
 	if (fdFileno(fd) < 0) {
 	    if (fd) (void) fdClose(fd);
-	    return NULL;
+	    fd = NULL;
+	    goto exit;
 	}
     } else {
 	FILE *fp;
@@ -3523,15 +3525,20 @@ fprintf(stderr, "*** Fopen fdio path %s fmode %s\n", path, fmode);
 	case URL_IS_FTP:
 	case URL_IS_UNKNOWN:
 if (_rpmio_debug)
-fprintf(stderr, "*** Fopen ufdio path %s fmode %s\n", path, fmode);
+fprintf(stderr, "*** Fopen(%s, %s) ufdio\n", path, fmode);
 	    fd = ufdOpen(path, flags, perms);
-	    if (fd == NULL || !(fdFileno(fd) >= 0 || fd->req != NULL))
-		return fd;
+	    if (fd == NULL || !(fdFileno(fd) >= 0 || fd->req != NULL)) {
+		if (fd) (void) fdClose(fd);
+		fd = NULL;
+		goto exit;
+	    }
 	    break;
 	default:
 if (_rpmio_debug)
-fprintf(stderr, "*** Fopen WTFO path %s fmode %s\n", path, fmode);
-	    return NULL;
+fprintf(stderr, "*** Fopen(%s, %s) WTFO\n", path, fmode);
+	    if (fd) (void) fdClose(fd);
+	    fd = NULL;
+	    goto exit;
 	    /*@notreached@*/ break;
 	}
 
@@ -3541,12 +3548,14 @@ fprintf(stderr, "*** Fopen WTFO path %s fmode %s\n", path, fmode);
 	    /*@+voidabstract@*/
 	    fdPush(fd, fpio, fp, fileno(fp));	/* Push fpio onto stack */
 	    /*@=voidabstract@*/
-	    return fd;
+	    goto exit;
 	}
     }
 
     if (fd)
 	fd = Fdopen(fd, fmode);
+exit:
+    fmode = _free(fmode);
     return fd;
 }
 

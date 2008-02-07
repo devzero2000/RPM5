@@ -23,10 +23,10 @@ myLDADD = \
 	$(top_builddir)/misc/librpmmisc.la \
 	@LTLIBINTL@
 
-bin_PROGRAMS =		rpm2cpio
+bin_PROGRAMS =		rpm2cpio rpmcache
 
 pkglibdir =		@USRLIBRPM@
-pkglib_PROGRAMS =	rpmcache rpmcmp rpmdeps rpmdigest @WITH_LIBELF_DEBUGEDIT@
+pkglib_PROGRAMS =	rpmcmp rpmdeps rpmdigest @WITH_LIBELF_DEBUGEDIT@
 
 debugedit_SOURCES =	debugedit.c hashtab.c
 debugedit_LDADD =	$(myLDADD)

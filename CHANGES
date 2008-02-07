@@ -1,4 +1,6 @@
 5.0.0 -> 5.1a1:
+    - jbj: install rpmcache in bindir, not pkglibdir.
+    - jbj: fix: Fopen: heh, I swear I had a rpmExpand() on fmode somewhen ...
     - jbj: rpm.spec: nuke the xar.1 man page.
     - jbj: rpmrpc: split stat(2) prints so valgrind can detect uninitialized.
     - jbj: rpmcache: fix: don't check fo ".i386" suffix if name is too short.
