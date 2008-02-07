@@ -1430,6 +1430,12 @@ done \
 # same thing for arm
 %arm    arm armv3 armv3l armv3b armv4 armv4l armv4b armv5 armv5l armv5b armv5te armv5tel armv5teb xscale armv6 armv6l
 
+# same for alpha
+%alpha  alpha alphaev56 alphaev6 alphaev67
+
+# and sparc
+%sparc sun4 sun4m sun4c sun4d sparc sparcv8 sparcv9 sparc64 scparcv9b sparcv9v sparc9v2
+
 #------------------------------------------------------------------------
 # Use in %install to generate locale specific file lists. For example,
 #
