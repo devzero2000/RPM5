@@ -168,13 +168,13 @@ fprintf(stderr, "    cpioHeaderRead(%p, %p)\n", fsm, st);
     GET_NUM_FIELD(hdr.devMajor, major);
     GET_NUM_FIELD(hdr.devMinor, minor);
     /*@-shiftimplementation@*/
-    st->st_dev = makedev(major, minor);
+    st->st_dev = Makedev(major, minor);
     /*@=shiftimplementation@*/
 
     GET_NUM_FIELD(hdr.rdevMajor, major);
     GET_NUM_FIELD(hdr.rdevMinor, minor);
     /*@-shiftimplementation@*/
-    st->st_rdev = makedev(major, minor);
+    st->st_rdev = Makedev(major, minor);
     /*@=shiftimplementation@*/
 
     GET_NUM_FIELD(hdr.namesize, nameSize);

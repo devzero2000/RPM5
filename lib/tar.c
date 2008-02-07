@@ -221,7 +221,7 @@ fprintf(stderr, "\tmemcmp(\"%s\", \"%s\", %u)\n", hdrchecksum, checksum, (unsign
     major = strntoul(hdr->devMajor, NULL, 8, sizeof(hdr->devMajor));
     minor = strntoul(hdr->devMinor, NULL, 8, sizeof(hdr->devMinor));
     /*@-shiftimplementation@*/
-    st->st_dev = makedev(major, minor);
+    st->st_dev = Makedev(major, minor);
     /*@=shiftimplementation@*/
     st->st_rdev = st->st_dev;		/* XXX compat? */
 
