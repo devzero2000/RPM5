@@ -3,22 +3,12 @@
 #include <rpmio_internal.h>
 #include <rpmmacro.h>
 #include <rpmcb.h>
+#include <argv.h>
 #include <popt.h>
 
 #include "debug.h"
 
 static int _debug = 0;
-
-int noNeon;
-
-#define	HTTPSPATH	"https://localhost/test.txt"
-#define	HTTPPATH	"http://localhost/test.txt"
-#define	FTPPATH		"ftp://localhost/test.txt"
-#define	DIRPATH		"/var/ftp/test.txt"
-static char * httpspath = HTTPSPATH;
-static char * httppath = HTTPPATH;
-static char * ftppath = FTPPATH;
-static char * dirpath = DIRPATH;
 
 static void readFile(const char * path)
 {
@@ -39,15 +29,19 @@ fprintf(stderr, "===== %s\n", path);
 
 static struct poptOption optionsTable[] = {
  { "debug", 'd', POPT_ARG_VAL,	&_debug, -1,		NULL, NULL },
+
+ { "avdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_av_debug, -1,
+	N_("debug protocol data stream"), NULL},
+ { "davdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_dav_debug, -1,
+	N_("debug protocol data stream"), NULL},
  { "ftpdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_ftp_debug, -1,
 	N_("debug protocol data stream"), NULL},
- { "noneon", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &noNeon, 1,
-	N_("disable use of libneon for HTTP"), NULL},
  { "rpmiodebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmio_debug, -1,
 	N_("debug rpmio I/O"), NULL},
  { "urldebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_url_debug, -1,
 	N_("debug URL cache handling"), NULL},
  { "verbose", 'v', 0, 0, 'v',				NULL, NULL },
+
   POPT_AUTOHELP
   POPT_TABLEEND
 };
@@ -56,9 +50,13 @@ int
 main(int argc, char *argv[])
 {
     poptContext optCon = poptGetContext(argv[0], argc, argv, optionsTable, 0);
+    ARGV_t av = NULL;
+    int ac;
+    const char * fn;
     int rc;
 
     while ((rc = poptGetNextOpt(optCon)) > 0) {
+	const char * optArg = poptGetOptArg(optCon);
 	switch (rc) {
 	case 'v':
 	    rpmIncreaseVerbosity();
@@ -66,36 +64,32 @@ main(int argc, char *argv[])
 	default:
             /*@switchbreak@*/ break;
 	}
+	optArg = _free(optArg);
     }
 
     if (_debug) {
 	rpmIncreaseVerbosity();
 	rpmIncreaseVerbosity();
+_av_debug = -1;
+_dav_debug = 1;
+_ftp_debug = -1;
     }
 
-_av_debug = -1;
-_ftp_debug = -1;
-_dav_debug = 1;
-#if 1
-    readFile(dirpath);
-#endif
-#if 1
-    readFile(ftppath);
-    readFile(ftppath);
-    readFile(ftppath);
-#endif
-#if 1
-    readFile(httppath);
-    readFile(httppath);
-    readFile(httppath);
-#endif
-#if 1
-    readFile(httpspath);
-    readFile(httpspath);
-    readFile(httpspath);
-#endif
+    av = poptGetArgs(optCon);
+    ac = argvCount(av);
+    if (ac < 1) {
+	poptPrintUsage(optCon, stderr, 0);
+	goto exit;
+    }
+
+    while ((fn = *av++) != NULL)
+	readFile(fn);
+
+exit:
 
 /*@i@*/ urlFreeCache();
+
+    optCon = poptFreeContext(optCon);
 
     return 0;
 }

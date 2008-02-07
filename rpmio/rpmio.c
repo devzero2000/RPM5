@@ -3357,6 +3357,7 @@ static inline void cvtfmode (const char *m,
 	}
 	break;
     }
+    if (c == '\0') 	m--;	/* one too far */
 
     *stdio = *other = '\0';
     if (end != NULL)
@@ -3483,15 +3484,16 @@ DBGIO(fd, (stderr, "==> Fdopen(%p,\"%s\") returns fd %p %s\n", ofd, fmode, (fd ?
 
 FD_t Fopen(const char *path, const char *_fmode)
 {
-    const char * fmode = rpmExpand(_fmode, NULL);
+    const char * fmode;
     char stdio[20], other[20];
     const char *end = NULL;
     mode_t perms = 0666;
     int flags = 0;
     FD_t fd = NULL;
 
-    if (path == NULL || fmode == NULL)
+    if (path == NULL || _fmode == NULL)
 	goto exit;
+    fmode = rpmExpand(_fmode, NULL);
 
     stdio[0] = '\0';
     cvtfmode(fmode, stdio, sizeof(stdio), other, sizeof(other), &end, &flags);

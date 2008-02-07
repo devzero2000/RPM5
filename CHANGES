@@ -1,4 +1,6 @@
 5.0.0 -> 5.1a1:
+    - jbj: rpmio: fix: cvtfmode access beyond end-of-string with "r" fmode.
+    - jbj: rpmio: rescuscitate tget.c.
     - jbj: fix: (again) rpmtsCheck() needs to return 1 when problems exist.
     - jbj: install rpmcache in bindir, not pkglibdir.
     - jbj: fix: Fopen: heh, I swear I had a rpmExpand() on fmode somewhen ...
