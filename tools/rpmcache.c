@@ -24,7 +24,7 @@ const char *__progname;
 static int _debug = 0;
 
 /* XXX should be flag in ts */
-static int noCache = 0;
+static int noCache = -1;
 
 static ARGV_t ftsSet;
 
@@ -202,6 +202,7 @@ static rpmRC cacheStashLatest(rpmgi gi, Header h)
     struct stat sb, * st;
     int ec = -1;	/* assume not found */
     int i = 0;
+    int xx;
 
     rpmlog(RPMLOG_DEBUG, "============== %s\n", fts->fts_accpath);
 
@@ -252,8 +253,11 @@ static rpmRC cacheStashLatest(rpmgi gi, Header h)
     items[i] = newItem();
     items[i]->path = xstrdup(fts->fts_path);
     st = fts->fts_statp;
-    if (st == NULL && Stat(fts->fts_accpath, &sb) == 0)
+    if (st == NULL || ((long)st & 0xffff0000) == 0L) {
 	st = &sb;
+	memset(st, 0, sizeof(*st));
+	xx = Stat(fts->fts_accpath, &sb);
+    }
 
     if (st != NULL) {
 	items[i]->size = st->st_size;
@@ -516,6 +520,8 @@ static struct poptOption optionsTable[] = {
  { "nolegacy", '\0', POPT_BIT_SET,      &vsflags, RPMVSF_NEEDPAYLOAD,
 	N_("don't verify header+payload signature"), NULL },
 
+ { "cache", '\0', POPT_ARG_VAL,   &noCache, 0,
+	N_("update cache database"), NULL },
  { "nocache", '\0', POPT_ARG_VAL,   &noCache, -1,
 	N_("don't update cache database, only print package paths"), NULL },
 
@@ -535,15 +541,14 @@ static struct poptOption optionsTable[] = {
 int
 main(int argc, char *argv[])
 {
+    poptContext optCon = rpmcliInit(argc, argv, optionsTable);
     rpmts ts = NULL;
     rpmgi gi = NULL;
-    poptContext optCon;
     const char * s;
     int ec = 1;
     rpmRC rpmrc;
     int xx;
 
-    optCon = rpmcliInit(argc, argv, optionsTable);
     if (optCon == NULL)
         exit(EXIT_FAILURE);
 

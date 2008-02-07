@@ -1136,16 +1136,24 @@ static const char * statstr(const struct stat * st,
 		/*@returned@*/ /*@out@*/ char * buf)
 	/*@modifies *buf @*/
 {
-    sprintf(buf,
-	"*** dev %x ino %x mode %0o nlink %d uid %d gid %d rdev %x size %x\n",
-	(unsigned int)st->st_dev,
-	(unsigned int)st->st_ino,
-	(unsigned int)st->st_mode,
-	(unsigned int)st->st_nlink,
-	(unsigned int)st->st_uid,
-	(unsigned int)st->st_gid,
-	(unsigned int)st->st_rdev,
-	(unsigned int)st->st_size);
+    char * t = buf;
+    sprintf(t, "*** dev %x", (unsigned int)st->st_dev);
+	t += strlen(t);
+    sprintf(t, " ino %x", (unsigned int)st->st_ino);
+	t += strlen(t);
+    sprintf(t, " mode %0o", (unsigned int)st->st_mode);
+	t += strlen(t);
+    sprintf(t, " nlink %d", (unsigned int)st->st_nlink);
+	t += strlen(t);
+    sprintf(t, " uid %d", (unsigned int)st->st_uid);
+	t += strlen(t);
+    sprintf(t, " gid %d", (unsigned int)st->st_gid);
+	t += strlen(t);
+    sprintf(t, " rdev %x", (unsigned int)st->st_rdev);
+	t += strlen(t);
+    sprintf(t, " size %x", (unsigned int)st->st_size);
+	t += strlen(t);
+    sprintf(t, "\n");
     return buf;
 }
 

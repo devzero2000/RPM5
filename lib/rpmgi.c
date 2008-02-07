@@ -250,6 +250,8 @@ rpmlog(RPMLOG_DEBUG, "FTS_%s\t%*s %s%s\n", ftsInfoStr(fts->fts_info),
     case FTS_DP:	/* postorder directory */
 	break;
     case FTS_F:		/* regular file */
+	if (fts->fts_namelen <= sizeof(".rpm"))
+	    break;
 	/* Ignore all but *.rpm files. */
 	s = fts->fts_name + fts->fts_namelen + 1 - sizeof(".rpm");
 	if (strcmp(s, ".rpm"))

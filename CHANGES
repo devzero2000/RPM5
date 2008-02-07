@@ -1,4 +1,9 @@
 5.0.0 -> 5.1a1:
+    - jbj: rpm.spec: nuke the xar.1 man page.
+    - jbj: rpmrpc: split stat(2) prints so valgrind can detect uninitialized.
+    - jbj: rpmcache: fix: don't check fo ".i386" suffix if name is too short.
+    - jbj: rpmcache: use file:///, not clunkier file://localhost/, url.
+    - jbj: rpmcache: add --cache opt-in, rather than --nocache opt-out, for now.
     - proyvind: add sparcv9v2 (Niagara 2) architecture
     - proyvind: add arch macros for alpha and sparc
     - afb: workaround for "uuid_t" type conflict, between <unistd.h> and "uuid.h"

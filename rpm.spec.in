@@ -274,6 +274,7 @@ gzip -9n apidocs/man/man*/* || :
   rm -rf .%{_mandir}/pl/man8/rpmcache.8*
   rm -rf .%{_mandir}/pl/man8/rpmgraph.8*
   rm -rf .%{_mandir}/{fr,ko}
+  rm -rf .%{_mandir}/man1/xar.1*
   rm -rf .%{_bindir}/xar
   rm -rf .%{_includedir}/xar
   rm -rf .%{_libdir}/libxar*

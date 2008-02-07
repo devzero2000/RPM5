@@ -1036,8 +1036,8 @@ print (t)\
 #%_bhA           RPMS
 
 #
-# A configuration to build an rpmdb from yum package
-%_bhpath        file://localhost/var/cache/yum
+# A configuration to build an rpmdb from yum package hierarchy
+%_bhpath        file:///var/cache/yum
 %_bhcoll        @(updates)
 %_bhN           @(packages)
 %_bhVR          %{nil}
