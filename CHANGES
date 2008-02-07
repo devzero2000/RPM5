@@ -1,4 +1,5 @@
 5.0.2 -> 5.0.3:
+    - jbj: fix: (again) rpmtsCheck() needs to return 1 when problems exist.
     - rse: add support for QNX by adjusting to its 3-parameter based makedev(2)
     - proyvind: add sparcv9v2 (Niagara 2) architecture
     - proyvind: add arch macros for alpha and sparc
