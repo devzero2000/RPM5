@@ -1,4 +1,5 @@
 5.0.0 -> 5.1a1:
+    - jbj: fix: (again) rpmtsCheck() needs to return 1 when problems exist.
     - jbj: install rpmcache in bindir, not pkglibdir.
     - jbj: fix: Fopen: heh, I swear I had a rpmExpand() on fmode somewhen ...
     - jbj: rpm.spec: nuke the xar.1 man page.
