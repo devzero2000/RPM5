@@ -735,19 +735,7 @@ static inline const char *rcsid(const char *p) { \
  * as this applic is not QNET aware, we can set it to 'local node'
  */
 #if defined(__QNXNTO__)
-#include &lt;sys/netmgr.h&gt;
-#define Makedev(x,y)   makedev(ND_LOCAL_NODE,(x),(y))
-#else
-#define Makedev(x,y)   makedev((x),(y))
-#endif
-
-/**
- * makedev() on QNX takes three parameters
- * the additional one (first place) specifies the node for QNET
- * as this applic is not QNET aware, we can set it to 'local node'
- */
-#if defined(__QNXNTO__)
-#include &lt;sys/netmgr.h&gt;
+#include <sys/netmgr.h>
 #define Makedev(x,y)   makedev(ND_LOCAL_NODE,(x),(y))
 #else
 #define Makedev(x,y)   makedev((x),(y))
