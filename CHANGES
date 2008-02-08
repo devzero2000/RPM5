@@ -1,4 +1,5 @@
 5.0.0 -> 5.1a1:
+    - proyvind: trim multiple slashes from buildroot for check-files script (from Nanar/Olivier Thauvin)
     - proyvind: make rpmdb cpp compliant (from spturtle/Christiaan Welvaart)
     - jbj: "+bing": glob'd directory roots need trailing '/' for DAV URI's.
     - jbj: "+bing": fix: check for glob'd directory roots before traversing.
