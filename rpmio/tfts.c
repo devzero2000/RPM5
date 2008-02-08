@@ -258,7 +258,7 @@ _mire_debug = 1;
 	size_t nb = strlen(dn);
 	dn = rpmExpand(dn, (dn[nb-1] != '/' ? "/" : NULL), NULL);
 	argvAdd(&av, dn);
-	dn = _free(nav[0]);
+	dn = _free(dn);
     }
 
     ftsWalk(av);
