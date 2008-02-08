@@ -8,6 +8,8 @@
 #include <rpmsq.h>
 #define	_RPMTAG_INTERNAL
 #include <rpmtag.h>
+#define _RPMEVR_INTERNAL
+#include <rpmevr.h>
 #include <rpmdb.h>
 #include <rpmcli.h>	/* XXX for rpmCheckSig */
 
@@ -401,6 +403,7 @@ void init_rpm(void)
     REGISTER_ENUM(RPMSENSE_GREATER);
     REGISTER_ENUM(RPMSENSE_EQUAL);
     REGISTER_ENUM(RPMSENSE_NOTEQUAL);
+    REGISTER_ENUM(RPMSENSE_FIND_REQUIRES);
 
     REGISTER_ENUM(RPMDEPS_FLAG_NOUPGRADE);
     REGISTER_ENUM(RPMDEPS_FLAG_NOREQUIRES);
