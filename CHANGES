@@ -1,4 +1,5 @@
 5.0.0 -> 5.1a1:
+    - jbj: tweak up tdir debugging spew, add a Fts(3) stopwatch, append pesky /.
     - jbj: tweak up tfts debugging spew, add a Fts(3) stopwatch, append pesky /.
     - jbj: rpmsw: add rpmswPrint to display stopwtch results.
     - jbj: rpmdav: fix: check the pesky trailing '/' on collections correctly.

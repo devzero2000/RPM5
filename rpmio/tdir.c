@@ -10,30 +10,43 @@
 
 static int _debug = 0;
 
-static void printDir(const char * path)
+static void printDir(struct dirent * dp, int nentry)
 {
-    struct dirent * dp;
-    DIR * dir;
-    int xx;
-    int i;
-
-fprintf(stderr, "===== %s\n", path);
-    dir = Opendir(path);
-    i = 0;
-    while ((dp = Readdir(dir)) != NULL) {
-fprintf(stderr, "%5d (%x,%x) %x %x %s\n", i++,
-(unsigned) dp->d_ino,
+    if (rpmIsDebug()) {
+	unsigned d_off = 0;
 #if !(defined(hpux) || defined(__hpux) || defined(sun) || defined(RPM_OS_AIX)) && \
     !defined(__APPLE__) && !defined(__FreeBSD_kernel__) && !defined(__FreeBSD__) && !defined(__NetBSD__) && !defined(__DragonFly__)
-(unsigned) dp->d_off,
-#else
-(unsigned)0,
+	d_off = (unsigned) dp->d_off,
 #endif
-(unsigned) dp->d_reclen,
-(unsigned) dp->d_type,
-dp->d_name);
+	fprintf(stderr, "%5d (0x%08x,0x%08x) 0x%04x ", nentry,
+		(unsigned) dp->d_ino, d_off, (unsigned) dp->d_reclen);
     }
+    if (rpmIsVerbose()) {
+	if (!rpmIsDebug())
+	    fprintf(stderr, "\t");
+	fprintf(stderr, "%s%s\n", dp->d_name,
+	    (dp->d_type == 0x04 ? "/" : ""));
+    }
+}
+
+static void dirWalk(const char * dn)
+{
+    rpmop op = memset(alloca(sizeof(*op)), 0, sizeof(*op));
+    struct dirent * dp;
+    DIR * dir;
+    int nentries;
+    int xx;
+
+    xx = rpmswEnter(op, 0);
+    nentries = 0;
+    dir = Opendir(dn);
+    while ((dp = Readdir(dir)) != NULL)
+	printDir(dp, nentries++);
     xx = Closedir(dir);
+    xx = rpmswExit(op, nentries);
+
+fprintf(stderr, "===== %s: %d entries\n", dn, nentries);
+    rpmswPrint("opendir:", op);
 }
 
 static struct poptOption optionsTable[] = {
@@ -90,9 +103,11 @@ _ftp_debug = -1;
 	goto exit;
     }
 
+    /* XXX Add pesky trailing '/' to http:// URI's */
     while ((dn = *av++) != NULL) {
-	dn = rpmGetPath(dn, "/", NULL);
-	printDir(dn);
+	size_t nb = strlen(dn);
+	dn = rpmExpand(dn, (dn[nb-1] != '/' ? "/" : NULL), NULL);
+	dirWalk(dn);
 	dn = _free(dn);
     }
 

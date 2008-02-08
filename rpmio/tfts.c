@@ -135,8 +135,8 @@ static int ftsWalk(ARGV_t av)
     FTSENT * fts;
     int xx;
 
-    ndirs = nfiles = 0;
     xx = rpmswEnter(op, 0);
+    ndirs = nfiles = 0;
     ftsp = Fts_open((char *const *)av, ftsOpts, NULL);
     while((fts = Fts_read(ftsp)) != NULL)
 	xx = ftsPrint(ftsp, fts);
@@ -205,9 +205,9 @@ main(int argc, char *argv[])
     ARGV_t av = NULL;
     int ac = 0;
     ARGV_t dav;
+    const char * dn;
     int rc;
     int xx;
-    int i;
 
     while ((rc = poptGetNextOpt(optCon)) > 0) {
 	const char * optArg = poptGetOptArg(optCon);
@@ -241,17 +241,6 @@ _mire_debug = 1;
 	goto exit;
     }
 
-    /* XXX Add trailing '/' to http:// URI's */
-    for (i = 0; i < ac; i++) {
-	const char * dn = dav[i];
-	size_t nb = strlen(dn);
-	const char *nav[2];
-	nav[0] = rpmExpand(dn, (dn[nb-1] != '/' ? "/" : NULL), NULL);
-	nav[1] = NULL;
-	argvAppend(&av, nav);
-	nav[0] = _free(nav[0]);
-    }
-
     if (mirePattern) {
 	mire = mireNew(mireMode, mireTag);
 	if ((xx = mireRegcomp(mire, mirePattern)) != 0)
@@ -260,6 +249,14 @@ _mire_debug = 1;
 
     if (mgFile) {
 	mg = rpmmgNew(mgFile, mgFlags);
+    }
+
+    /* XXX Add pesky trailing '/' to http:// URI's */
+    while ((dn = *dav++) != NULL) {
+	size_t nb = strlen(dn);
+	dn = rpmExpand(dn, (dn[nb-1] != '/' ? "/" : NULL), NULL);
+	argvAdd(&av, dn);
+	dn = _free(nav[0]);
     }
 
     ftsWalk(av);
