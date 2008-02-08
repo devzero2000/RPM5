@@ -63,8 +63,10 @@ extern void CRYPTO_mem_leaks(void * ptr);
 #define _RPMDAV_INTERNAL
 #include <rpmdav.h>
 
-#include "argv.h"
-#include "ugid.h"
+#include <rpmhash.h>
+#include <argv.h>
+#include <ugid.h>
+
 #include "debug.h"
 
 /* Should http OPTIONS be run only once? */
@@ -1469,12 +1471,9 @@ static const char * statstr(const struct stat * st,
     return buf;
 }
 
-/*@unchecked@*/
-static unsigned int dav_st_ino = 0xdead0000;
-
 int davStat(const char * path, /*@out@*/ struct stat *st)
-	/*@globals dav_st_ino, fileSystem, internalState @*/
-	/*@modifies *st, dav_st_ino, fileSystem, internalState @*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies *st, fileSystem, internalState @*/
 {
     struct fetch_context_s * ctx = NULL;
     char buf[1024];
@@ -1507,9 +1506,10 @@ fprintf(stderr, "==> %s fetch_create_context ctx %p\n", "davStat", ctx);
 	st->st_mode |= 0644;
     }
 
-    /* XXX fts(3) needs/uses st_ino, make something up for now. */
+    /* XXX Fts(3) needs/uses st_ino. */
+    /* Hash the path to generate a st_ino analogue. */
     if (st->st_ino == 0)
-	st->st_ino = dav_st_ino++;
+	st->st_ino = hashFunctionString(0, path, 0);
 
 exit:
 if (_dav_debug < 0)
@@ -1519,8 +1519,8 @@ fprintf(stderr, "*** davStat(%s) rc %d\n%s", path, rc, statstr(st, buf));
 }
 
 int davLstat(const char * path, /*@out@*/ struct stat *st)
-	/*@globals dav_st_ino, fileSystem, internalState @*/
-	/*@modifies *st, dav_st_ino, fileSystem, internalState @*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies *st, fileSystem, internalState @*/
 {
     struct fetch_context_s * ctx = NULL;
     char buf[1024];
@@ -1552,9 +1552,11 @@ int davLstat(const char * path, /*@out@*/ struct stat *st)
 	st->st_mode |= 0644;
     }
 
-    /* XXX fts(3) needs/uses st_ino, make something up for now. */
+    /* XXX fts(3) needs/uses st_ino. */
+    /* Hash the path to generate a st_ino analogue. */
     if (st->st_ino == 0)
-	st->st_ino = dav_st_ino++;
+	st->st_ino = hashFunctionString(0, path, 0);
+
 if (_dav_debug < 0)
 fprintf(stderr, "*** davLstat(%s) rc %d\n%s\n", path, rc, statstr(st, buf));
 exit:
@@ -1673,7 +1675,9 @@ struct dirent * avReaddir(DIR * dir)
 
     /* XXX glob(3) uses REAL_DIR_ENTRY(dp) test on d_ino */
 /*@-type@*/
-    dp->d_ino = i + 1;		/* W2DO? */
+    /* Hash the name (starting with parent hash) for a d_ino analogue. */
+    dp->d_ino = hashFunctionString(avdir->filepos, dp->d_name, 0);
+
 #if !defined(__DragonFly__) && !defined(__CYGWIN__)
     dp->d_reclen = 0;		/* W2DO? */
 #endif
@@ -1724,7 +1728,8 @@ fprintf(stderr, "*** avOpendir(%s)\n", path);
     avdir->allocation = nb;
     avdir->size = ac;
     avdir->offset = -1;
-    avdir->filepos = 0;
+    /* Hash the directory path for a d_ino analogue. */
+    avdir->filepos = hashFunctionString(0, path, 0);
 
 #if defined(HAVE_PTHREAD_H)
 /*@-moduncon -noeffectuncon -nullpass @*/
@@ -1795,7 +1800,8 @@ struct dirent * davReaddir(DIR * dir)
 
     /* XXX glob(3) uses REAL_DIR_ENTRY(dp) test on d_ino */
 /*@-type@*/
-    dp->d_ino = i + 1;		/* W2DO? */
+    /* Hash the name (starting with parent hash) for a d_ino analogue. */
+    dp->d_ino = hashFunctionString(avdir->filepos, dp->d_name, 0);
 #if !defined(__DragonFly__) && !defined(__CYGWIN__)
     dp->d_reclen = 0;		/* W2DO? */
 #endif
@@ -1876,7 +1882,8 @@ fprintf(stderr, "*** davOpendir(%s)\n", path);
     avdir->allocation = nb;
     avdir->size = ac;
     avdir->offset = -1;
-    avdir->filepos = 0;
+    /* Hash the directory path for a d_ino analogue. */
+    avdir->filepos = hashFunctionString(0, path, 0);
 
 #if defined(HAVE_PTHREAD_H)
 /*@-moduncon -noeffectuncon -nullpass @*/

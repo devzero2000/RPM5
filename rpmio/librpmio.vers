@@ -114,6 +114,8 @@ LIBRPMIO_0
     _Glob_pattern_p;
     gnameToGid;
     gzdio;
+    hashEqualityString;
+    hashFunctionString;
     htAddEntry;
     htCreate;
     htFree;

@@ -67,15 +67,14 @@ hashBucket findEntry(hashTable ht, const void * key)
     return b;
 }
 
-/**
- * Return hash value of a string.
- * @param h		hash initial value
- * @param data		data on which to calculate hash value
- * @param size		size of data in bytes
- * @return		hash value
- */
-static uint32_t hashFunctionString(uint32_t h, const void * data, size_t size)
-	/*@*/
+int hashEqualityString(const void * key1, const void * key2)
+{
+    const char *k1 = (const char *)key1;
+    const char *k2 = (const char *)key2;
+    return strcmp(k1, k2);
+}
+
+uint32_t hashFunctionString(uint32_t h, const void * data, size_t size)
 {
     const char *key = data;
 
@@ -140,20 +139,6 @@ static uint32_t hashFunctionString(uint32_t h, const void * data, size_t size)
     }
 
     return h;
-}
-
-/**
- * Compare two hash table entries for equality.
- * @param key1          entry 1
- * @param key2          entry 2
- * @return		0 if entries are equal
- */
-static int hashEqualityString(const void * key1, const void * key2)
-	/*@*/
-{
-    const char *k1 = (const char *)key1;
-    const char *k2 = (const char *)key2;
-    return strcmp(k1, k2);
 }
 
 hashTable htCreate(int numBuckets, size_t keySize, int freeData,

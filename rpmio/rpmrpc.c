@@ -4,13 +4,15 @@
 
 #include "system.h"
 
-#include "rpmio_internal.h"
-#include "rpmmacro.h"
+#include <rpmio_internal.h>
+#include <rpmmacro.h>
 
 #define	_RPMDAV_INTERNAL
-#include "rpmdav.h"
+#include <rpmdav.h>
 
-#include "ugid.h"
+#include <rpmhash.h>
+#include <ugid.h>
+
 #include "debug.h"
 
 /*@access DIR @*/
@@ -1157,20 +1159,20 @@ static const char * statstr(const struct stat * st,
     return buf;
 }
 
-/*@unchecked@*/
-static int ftp_st_ino = 0xdead0000;
-
 /* FIXME: borked for path with trailing '/' */
 static int ftpStat(const char * path, /*@out@*/ struct stat *st)
-	/*@globals ftp_st_ino, h_errno, fileSystem, internalState @*/
-	/*@modifies *st, ftp_st_ino, fileSystem, internalState @*/
+	/*@globals h_errno, fileSystem, internalState @*/
+	/*@modifies *st, fileSystem, internalState @*/
 {
     char buf[1024];
     int rc;
     rc = ftpNLST(path, DO_FTP_STAT, st, NULL, 0);
-    /* XXX fts(3) needs/uses st_ino, make something up for now. */
+
+    /* XXX fts(3) needs/uses st_ino. */
+    /* Hash the path to generate a st_ino analogue. */
     if (st->st_ino == 0)
-	st->st_ino = ftp_st_ino++;
+	st->st_ino = hashFunctionString(0, path, 0);
+
 if (_ftp_debug)
 fprintf(stderr, "*** ftpStat(%s) rc %d\n%s", path, rc, statstr(st, buf));
     return rc;
@@ -1178,15 +1180,18 @@ fprintf(stderr, "*** ftpStat(%s) rc %d\n%s", path, rc, statstr(st, buf));
 
 /* FIXME: borked for path with trailing '/' */
 static int ftpLstat(const char * path, /*@out@*/ struct stat *st)
-	/*@globals ftp_st_ino, h_errno, fileSystem, internalState @*/
-	/*@modifies *st, ftp_st_ino, fileSystem, internalState @*/
+	/*@globals h_errno, fileSystem, internalState @*/
+	/*@modifies *st, fileSystem, internalState @*/
 {
     char buf[1024];
     int rc;
     rc = ftpNLST(path, DO_FTP_LSTAT, st, NULL, 0);
-    /* XXX fts(3) needs/uses st_ino, make something up for now. */
+
+    /* XXX fts(3) needs/uses st_ino. */
+    /* Hash the path to generate a st_ino analogue. */
     if (st->st_ino == 0)
-	st->st_ino = ftp_st_ino++;
+	st->st_ino = hashFunctionString(0, path, 0);
+
 if (_ftp_debug)
 fprintf(stderr, "*** ftpLstat(%s) rc %d\n%s\n", path, rc, statstr(st, buf));
     return rc;
@@ -1272,7 +1277,8 @@ fprintf(stderr, "*** ftpOpendir(%s)\n", path);
     avdir->allocation = nb;
     avdir->size = ac;
     avdir->offset = -1;
-    avdir->filepos = 0;
+    /* Hash the directory path for a d_ino analogue. */
+    avdir->filepos = hashFunctionString(0, path, 0);
 
 #if defined(HAVE_PTHREAD_H)
 /*@-moduncon -noeffectuncon@*/

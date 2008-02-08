@@ -15,6 +15,24 @@ extern "C" {
 #endif
 
 /**
+ * Compare two hash table entries for equality.
+ * @param key1          entry 1
+ * @param key2          entry 2
+ * @return		0 if entries are equal
+ */
+typedef int (*hashEqualityType) (const void * key1, const void * key2)
+	/*@*/;
+
+/**
+ * Compare two hash table entries for equality.
+ * @param key1          entry 1
+ * @param key2          entry 2
+ * @return		0 if entries are equal
+ */
+int hashEqualityString(const void * key1, const void * key2)
+	/*@*/;
+
+/**
  * Return hash value.
  * @param h		hash initial value
  * @param data		data on which to calculate hash value
@@ -25,12 +43,13 @@ typedef uint32_t (*hashFunctionType) (uint32_t h, const void * data, size_t size
 	/*@*/;
 
 /**
- * Compare two hash table entries for equality.
- * @param key1          entry 1
- * @param key2          entry 2
- * @return		0 if entries are equal
+ * Return hash value of a string.
+ * @param h		hash initial value
+ * @param data		data on which to calculate hash value
+ * @param size		size of data in bytes (0 will use strlen(data))
+ * @return		hash value
  */
-typedef int (*hashEqualityType) (const void * key1, const void * key2)
+uint32_t hashFunctionString(uint32_t h, const void * data, size_t size)
 	/*@*/;
 
 /**
