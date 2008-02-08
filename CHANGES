@@ -1,4 +1,5 @@
 5.0.0 -> 5.1a1:
+    - proyvind: python: add back RPMSENSE_FIND_REQUIRES, needed by rpmlint
     - jbj: use hashFunctionString on URI path for st->st_ino/dp->d_ino values.
     - jbj: rpmhash: expose hash{Equality,Function}String routines.
     - jbj: tweak up tdir debugging spew, add a Fts(3) stopwatch, append pesky /.
