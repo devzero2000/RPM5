@@ -16,22 +16,32 @@ fprintf(stderr, "*** glob_error(%p,%d) path %s\n", epath, eerrno, epath);
     return 1;
 }
 
-static void printGlob(const char * path)
+static int printGlob(const char * path)
 {
-    glob_t gl;
+    rpmop op = memset(alloca(sizeof(*op)), 0, sizeof(*op));
+    glob_t gl = { .gl_pathc = 0, .gl_pathv = NULL, .gl_offs = 0 };
     int rc;
-    int i;
+    int xx;
 
 fprintf(stderr, "===== %s\n", path);
+    xx = rpmswEnter(op, 0);
     gl.gl_pathc = 0;
     gl.gl_pathv = NULL;
     gl.gl_offs = 0;
     rc = Glob(path, 0, my_Glob_error, &gl);
+    if (rc != 0) {
 fprintf(stderr, "*** Glob rc %d\n", rc);
-    if (rc == 0)
-    for (i = 0; i < gl.gl_pathc; i++)
-	fprintf(stderr, "%5d %s\n", i, gl.gl_pathv[i]);
+    } else
+    if (rpmIsVerbose()) {
+	int i;
+	for (i = 0; i < gl.gl_pathc; i++)
+	    fprintf(stderr, "%5d %s\n", i, gl.gl_pathv[i]);
+    }
     Globfree(&gl);
+    xx = rpmswExit(op, 0);
+
+    rpmswPrint("glob:", op);
+    return rc;
 }
 
 static struct poptOption optionsTable[] = {
@@ -60,6 +70,7 @@ main(int argc, char *argv[])
     int ac;
     const char * dn;
     int rc;
+    int xx;
 
     while ((rc = poptGetNextOpt(optCon)) > 0) {
 	const char * optArg = poptGetOptArg(optCon);
@@ -79,6 +90,8 @@ main(int argc, char *argv[])
 _av_debug = -1;
 _dav_debug = -1;
 _ftp_debug = -1;
+_url_debug = -1;
+_rpmio_debug = -1;
     }
 
     av = poptGetArgs(optCon);
@@ -88,9 +101,8 @@ _ftp_debug = -1;
 	goto exit;
     }
 
-    while ((dn = *av++) != NULL) {
-	printGlob(dn);
-    }
+    while ((dn = *av++) != NULL)
+	xx = printGlob(dn);
 
 exit:
 

@@ -1,4 +1,5 @@
 5.0.0 -> 5.1a1:
+    - jbj: tweak up tglob debugging spew, add a Glob(3) stopwatch.
     - jbj: tweak up tget debugging spew, trick in a Stat(2) on path,
 	add Stat(2)/Fread(3) stopwatches, display same as "ls -island" output.
     - proyvind: python: add back RPMSENSE_FIND_REQUIRES, needed by rpmlint
