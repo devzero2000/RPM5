@@ -1,4 +1,5 @@
 5.0.0 -> 5.1a1:
+    - jbj: rpmio: rescuscitate tglob.c.
     - jbj: rpmio: rescuscitate tdir.c.
     - jbj: rpmio: fix: cvtfmode access beyond end-of-string with "r" fmode.
     - jbj: rpmio: rescuscitate tget.c.

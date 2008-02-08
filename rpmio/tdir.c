@@ -61,7 +61,6 @@ main(int argc, char *argv[])
     ARGV_t av = NULL;
     int ac;
     const char * dn;
-
     int rc;
 
     while ((rc = poptGetNextOpt(optCon)) > 0) {
