@@ -67,6 +67,10 @@ extern void CRYPTO_mem_leaks(void * ptr);
 #include "ugid.h"
 #include "debug.h"
 
+/* Should http OPTIONS be run only once? */
+/* XXX TODO: determine precisely when OPTIONS need to be run. */
+int _dav_nooptions = 0;
+
 /*@access DIR @*/
 /*@access FD_t @*/
 /*@access urlinfo @*/
@@ -337,6 +341,9 @@ static int davConnect(urlinfo u)
     if (!(u->urltype == URL_IS_HTTP || u->urltype == URL_IS_HTTPS))
 	return 0;
 
+    if (_dav_nooptions && u->allow & RPMURL_SERVER_OPTIONSDONE)
+	return 0;
+
     /* HACK: where should server capabilities be read? */
     (void) urlPath(u->url, &path);
     /* HACK: perhaps capture Allow: tag, look for PUT permitted. */
@@ -344,6 +351,7 @@ static int davConnect(urlinfo u)
     rc = ne_options(u->sess, path, u->capabilities);
     switch (rc) {
     case NE_OK:
+	u->allow |= RPMURL_SERVER_OPTIONSDONE;
     {	ne_server_capabilities *cap = u->capabilities;
 	if (cap->dav_class1)
 	    u->allow |= RPMURL_SERVER_HASDAVCLASS1;
@@ -1821,7 +1829,7 @@ DIR * davOpendir(const char * path)
 
     /* HACK: glob does not pass dirs with trailing '/' */
     nb = strlen(path)+1;
-    if (path[nb-1] != '/') {
+    if (path[nb-2] != '/') {
 	char * npath = alloca(nb+1);
 	*npath = '\0';
 	(void) stpcpy( stpcpy(npath, path), "/");

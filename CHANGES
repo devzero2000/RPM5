@@ -1,4 +1,8 @@
 5.0.0 -> 5.1a1:
+    - jbj: tweak up tfts debugging spew, add a Fts(3) stopwatch, append pesky /.
+    - jbj: rpmsw: add rpmswPrint to display stopwtch results.
+    - jbj: rpmdav: fix: check the pesky trailing '/' on collections correctly.
+    - jbj: rpmdav: add _dav_noption OPTIONS disabler, cache 1st result from URI.
     - proyvind: trim multiple slashes from buildroot for check-files script (from Nanar/Olivier Thauvin)
     - proyvind: make rpmdb cpp compliant (from spturtle/Christiaan Welvaart)
     - jbj: "+bing": glob'd directory roots need trailing '/' for DAV URI's.

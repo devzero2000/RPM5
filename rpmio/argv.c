@@ -22,7 +22,7 @@ void argvPrint(const char * msg, ARGV_t argv, FILE * fp)
 
     if (argv)
     for (av = argv; *av; av++)
-	fprintf(fp, "%s\n", *av);
+	fprintf(fp, "\t%s\n", *av);
 
 }
 

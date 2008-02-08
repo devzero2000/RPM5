@@ -109,6 +109,15 @@ rpmtime_t rpmswAdd(/*@null@*/ rpmop to, /*@null@*/ rpmop from)
 rpmtime_t rpmswSub(rpmop to, rpmop from)
 	/*@modifies to @*/;
 
+/** \ingroup rpmio
+ * Print operation statistics.
+ * @param name			operation name
+ * @param op			operation statistics
+ */
+void rpmswPrint(const char * name, /*@null@*/ rpmop op)
+        /*@globals fileSystem @*/
+        /*@modifies fileSystem @*/;
+
 #ifdef __cplusplus
 }
 #endif

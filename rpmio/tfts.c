@@ -7,6 +7,7 @@
 #include <rpmmg.h>
 #include <mire.h>
 #include <argv.h>
+#include <rpmsw.h>
 #include <popt.h>
 
 #include "debug.h"
@@ -26,8 +27,9 @@ static int mgNFiles = 0;
 static int mgNMatches = 0;
 static int mgNFails = 0;
 
-/*@unchecked@*/
 static int _fts_debug = 0;
+
+extern int _dav_nooptions;
 
 static int ndirs = 0;
 static int nfiles = 0;
@@ -62,7 +64,7 @@ static int ftsPrint(FTS * ftsp, FTSENT * fts)
 {
     int xx;
 
-    if (_fts_debug)
+    if (rpmIsDebug())
 	fprintf(stderr, "FTS_%s\t%*s %s\n", ftsInfoStr(fts->fts_info),
 		indent * (fts->fts_level < 0 ? 0 : fts->fts_level), "",
 		fts->fts_name);
@@ -70,16 +72,24 @@ static int ftsPrint(FTS * ftsp, FTSENT * fts)
     switch (fts->fts_info) {
     case FTS_D:		/* preorder directory */
 	ndirs++;
+	if (rpmIsVerbose() && !rpmIsDebug()) {
+	    size_t nb = strlen(fts->fts_path);
+	    /* Add trailing '/' if not present. */
+	    fprintf(stderr, "%s%s\n", fts->fts_path,
+		(fts->fts_path[nb-1] != '/' ? "/" : ""));
+	}
 	break;
     case FTS_DP:	/* postorder directory */
 	break;
     case FTS_F:		/* regular file */
 	nfiles++;
+	if (rpmIsVerbose() && !rpmIsDebug())
+	    fprintf(stderr, "%s\n", fts->fts_path);
 	if (mire) {
 	    mireNExecs++;
-	    xx = mireRegexec(mire, fts->fts_accpath);
+	    xx = mireRegexec(mire, fts->fts_path);
 	    if (xx == 0) {
-		fprintf(stdout, " mire: %s\n", fts->fts_accpath);
+		fprintf(stdout, " mire: %s\n", fts->fts_path);
 		mireNMatches++;
 	    } else {
 		mireNFails++;
@@ -89,7 +99,7 @@ static int ftsPrint(FTS * ftsp, FTSENT * fts)
 	    const char * s = rpmmgFile(mg, fts->fts_accpath);
 	    mgNFiles++;
 	    if (s != NULL) {
-		fprintf(stdout, "magic: %s: %s\n", fts->fts_accpath, s);
+		fprintf(stdout, "magic: %s: %s\n", fts->fts_path, s);
 		mgNMatches++;
 	    } else {
 		mgNFails++;
@@ -120,18 +130,22 @@ static int ftsOpts = 0;
 
 static int ftsWalk(ARGV_t av)
 {
+    rpmop op = memset(alloca(sizeof(*op)), 0, sizeof(*op));
     FTS * ftsp;
     FTSENT * fts;
     int xx;
 
     ndirs = nfiles = 0;
+    xx = rpmswEnter(op, 0);
     ftsp = Fts_open((char *const *)av, ftsOpts, NULL);
     while((fts = Fts_read(ftsp)) != NULL)
 	xx = ftsPrint(ftsp, fts);
     xx = Fts_close(ftsp);
+    xx = rpmswExit(op, ndirs);
 
 fprintf(stderr, "===== (%d/%d) dirs/files in:\n", ndirs, nfiles);
     argvPrint(NULL, av, NULL);
+    rpmswPrint("fts:", op);
 
     return 0;
 }
@@ -156,6 +170,11 @@ static struct poptOption optionsTable[] = {
 	N_("don't cross devices"), NULL },
  { "whiteout", '\0', POPT_BIT_SET,	&ftsOpts, FTS_WHITEOUT,
 	N_("return whiteout information"), NULL },
+
+ { "options", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_dav_nooptions, 0,
+	N_("always send http OPTIONS"), NULL},
+ { "nooptions", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_dav_nooptions, -1,
+	N_("use cached http OPTIONS"), NULL},
 
  { "avdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_av_debug, -1,
 	N_("debug protocol data stream"), NULL},
@@ -185,8 +204,10 @@ main(int argc, char *argv[])
     poptContext optCon = poptGetContext(argv[0], argc, argv, optionsTable, 0);
     ARGV_t av = NULL;
     int ac = 0;
+    ARGV_t dav;
     int rc;
     int xx;
+    int i;
 
     while ((rc = poptGetNextOpt(optCon)) > 0) {
 	const char * optArg = poptGetOptArg(optCon);
@@ -213,11 +234,22 @@ _rpmmg_debug = 1;
 _mire_debug = 1;
     }
 
-    av = poptGetArgs(optCon);
-    ac = argvCount(av);
+    dav = poptGetArgs(optCon);
+    ac = argvCount(dav);
     if (ac < 1) {
 	poptPrintUsage(optCon, stderr, 0);
 	goto exit;
+    }
+
+    /* XXX Add trailing '/' to http:// URI's */
+    for (i = 0; i < ac; i++) {
+	const char * dn = dav[i];
+	size_t nb = strlen(dn);
+	const char *nav[2];
+	nav[0] = rpmExpand(dn, (dn[nb-1] != '/' ? "/" : NULL), NULL);
+	nav[1] = NULL;
+	argvAppend(&av, nav);
+	nav[0] = _free(nav[0]);
     }
 
     if (mirePattern) {
@@ -235,6 +267,8 @@ _mire_debug = 1;
 exit:
     mg = rpmmgFree(mg);
     mire = mireFree(mire);
+
+    av = argvFree(av);
 
 /*@i@*/ urlFreeCache();
 

@@ -41,6 +41,7 @@ LIBRPMIO_0
     davClose;
     davClosedir;
     _dav_debug;
+    _dav_nooptions;
     davLstat;
     davmagicdir;
     davMkdir;
@@ -310,6 +311,7 @@ LIBRPMIO_0
     rpmswExit;
     rpmswInit;
     rpmswNow;
+    rpmswPrint;
     rpmswSub;
     rpmUndefineMacro;
     rpmxarFree;
