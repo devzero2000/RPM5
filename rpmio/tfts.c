@@ -226,7 +226,9 @@ _mire_debug = 1;
 	    goto exit;;
     }
 
-    mg = rpmmgNew(mgFile, mgFlags);
+    if (mgFile) {
+	mg = rpmmgNew(mgFile, mgFlags);
+    }
 
     ftsWalk(av);
 

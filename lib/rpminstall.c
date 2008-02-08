@@ -116,7 +116,7 @@ void * rpmShowProgress(/*@null@*/ const void * arg,
     case RPMCALLBACK_INST_OPEN_FILE:
 	if (filename == NULL || filename[0] == '\0')
 	    return NULL;
-	fd = Fopen(filename, "r.fdio");
+	fd = Fopen(filename, "r%{?_rpmgio}");
 	/*@-type@*/ /* FIX: still necessary? */
 	if (fd == NULL || Ferror(fd)) {
 	    rpmlog(RPMLOG_ERR, _("open of %s failed: %s\n"), filename,
@@ -336,7 +336,8 @@ static const char * rpmcliWalkFirst(ARGV_t av, miRE mire)
 {
     /* XXX use global ftsOpts? */
     /* XXX changing FTS_LOGICAL to FTS_PHYSICAL prevents symlink follow. */
-    int _ftsOpts = (FTS_COMFOLLOW | FTS_LOGICAL | FTS_NOSTAT | FTS_NOCHDIR);
+    /* XXX FTS_NOCHDIR is automatically assumed for URI's */
+    int _ftsOpts = (FTS_COMFOLLOW | FTS_LOGICAL | FTS_NOSTAT);
     FTS * ftsp = NULL;
     FTSENT * fts;
     const char * fn = NULL;
@@ -423,6 +424,14 @@ static const char * rpmcliInstallElementPath(rpmts ts, const char * arg)
 	/* Insure only directory paths are matched. */
 	fn = rpmGetPath(dav[i], "/", NULL);
 	xx = rpmGlob(fn, &nac, &nav);
+
+	/* Insure that final directory paths have trailing '/' */
+	if (nav != NULL)
+	for (i = 0; i < nac; i++) {
+	    char * t = rpmExpand(nav[i], "/", NULL);
+	    nav[i] = _free(nav[i]);
+	    nav[i] = t;
+	}
 
 	/* Append matches to list of repository directories. */
 	if (nac > 0 && nav != NULL)
@@ -800,7 +809,7 @@ int rpmInstallSource(rpmts ts, const char * arg,
     FD_t fd;
     int rc;
 
-    fd = Fopen(arg, "r.fdio");
+    fd = Fopen(arg, "r%{?_rpmgio}");
     if (fd == NULL || Ferror(fd)) {
 	rpmlog(RPMLOG_ERR, _("cannot open %s: %s\n"), arg, Fstrerror(fd));
 	if (fd != NULL) (void) Fclose(fd);

@@ -1,4 +1,5 @@
 5.0.0 -> 5.1a1:
+    - jbj: "+bing": glob'd directory roots need trailing '/' for DAV URI's.
     - jbj: "+bing": fix: check for glob'd directory roots before traversing.
     - jbj: rpmio: rescuscitate tglob.c.
     - jbj: rpmio: rescuscitate tdir.c.
