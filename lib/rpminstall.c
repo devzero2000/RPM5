@@ -337,12 +337,14 @@ static const char * rpmcliWalkFirst(ARGV_t av, miRE mire)
     /* XXX use global ftsOpts? */
     /* XXX changing FTS_LOGICAL to FTS_PHYSICAL prevents symlink follow. */
     int _ftsOpts = (FTS_COMFOLLOW | FTS_LOGICAL | FTS_NOSTAT | FTS_NOCHDIR);
-    FTS * ftsp = Fts_open((char *const *)av, _ftsOpts, NULL);
+    FTS * ftsp = NULL;
     FTSENT * fts;
     const char * fn = NULL;
     int fts_level = 1;
     int xx;
 
+    if (av != NULL && av[0] != NULL)
+	ftsp = Fts_open((char *const *)av, _ftsOpts, NULL);
     if (ftsp != NULL)
     while((fts = Fts_read(ftsp)) != NULL) {
 	switch (fts->fts_info) {

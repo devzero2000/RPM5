@@ -1,4 +1,5 @@
 5.0.0 -> 5.1a1:
+    - jbj: "+bing": fix: check for glob'd directory roots before traversing.
     - jbj: rpmio: rescuscitate tglob.c.
     - jbj: rpmio: rescuscitate tdir.c.
     - jbj: rpmio: fix: cvtfmode access beyond end-of-string with "r" fmode.
