@@ -352,7 +352,8 @@ static void integrity_check(const char *progname, enum modes progmode_num)
 
     /* final result handling */
     if (rc != INTEGRITY_OK) {
-        sleep(4);
+        if (isatty(STDIN_FILENO) || isatty(STDOUT_FILENO))
+            sleep(4);
         if (rc == INTEGRITY_ERROR)
             exit(42);
     }
