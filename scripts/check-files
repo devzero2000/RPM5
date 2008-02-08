@@ -6,7 +6,7 @@
 #
 # filon@pld.org.pl
 
-RPM_BUILD_ROOT="$1"
+RPM_BUILD_ROOT=`echo $1 | sed 's://*:/:g'`
 
 if [ ! -d "$RPM_BUILD_ROOT" ] ; then
 	cat > /dev/null
@@ -17,8 +17,8 @@ fi
 FILES_DISK=`mktemp $TMPDIR/rpmXXXXXX`
 FILES_RPM=`mktemp $TMPDIR/rpmXXXXXX`
 
-find $RPM_BUILD_ROOT -type f -o -type l | LC_ALL=C sort > $FILES_DISK
-LC_ALL=C sort > $FILES_RPM
+find $RPM_BUILD_ROOT -type f -o -type l | sed 's://*:/:g' | LC_ALL=C sort > $FILES_DISK
+sed 's://*:/:g' | LC_ALL=C sort -u > $FILES_RPM
 
 diff "$FILES_DISK" "$FILES_RPM" | grep "^< " | cut -c3- | sed -e "s#^$RPM_BUILD_ROOT#   #g"
 
