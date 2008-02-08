@@ -94,6 +94,8 @@ main(int argc, char *argv[])
 _av_debug = -1;
 _dav_debug = -1;
 _ftp_debug = -1;
+_url_debug = -1;
+_rpmio_debug = -1;
     }
 
     av = poptGetArgs(optCon);

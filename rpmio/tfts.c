@@ -228,8 +228,10 @@ main(int argc, char *argv[])
 	rpmIncreaseVerbosity();
 	rpmIncreaseVerbosity();
 _av_debug = -1;
-_dav_debug = 1;
+_dav_debug = -1;
 _ftp_debug = -1;
+_url_debug = -1;
+_rpmio_debug = -1;
 _rpmmg_debug = 1;
 _mire_debug = 1;
     }

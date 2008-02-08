@@ -1,8 +1,11 @@
 5.0.0 -> 5.1a1:
+    - jbj: tweak up tget debugging spew, trick in a Stat(2) on path,
+	add Stat(2)/Fread(3) stopwatches, display same as "ls -island" output.
     - proyvind: python: add back RPMSENSE_FIND_REQUIRES, needed by rpmlint
     - jbj: use hashFunctionString on URI path for st->st_ino/dp->d_ino values.
     - jbj: rpmhash: expose hash{Equality,Function}String routines.
-    - jbj: tweak up tdir debugging spew, add a Fts(3) stopwatch, append pesky /.
+    - jbj: tweak up tdir debugging spew, add a Opendir(3) stopwatch,
+	append pesky /.
     - jbj: tweak up tfts debugging spew, add a Fts(3) stopwatch, append pesky /.
     - jbj: rpmsw: add rpmswPrint to display stopwtch results.
     - jbj: rpmdav: fix: check the pesky trailing '/' on collections correctly.
