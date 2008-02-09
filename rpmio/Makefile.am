@@ -4,14 +4,9 @@ AUTOMAKE_OPTIONS = 1.4 foreign
 
 LINT = splint
 
-EXTRA_DIST = gengpg.sh thkp.c tput.c tinv.c tkey.c trpmio.c lookup3.c tpw.c librpmio.vers
+EXTRA_DIST = gengpg.sh tdir.c tfts.c tget.c thkp.c tput.c tglob.c tinv.c tkey.c trpmio.c lookup3.c tpw.c librpmio.vers
 
-EXTRA_PROGRAMS = thkp tinv tkey tmacro tmagic tmire tput tpw trpmio tsw dumpasn1 lookup3
-
-noinst_PROGRAMS = tdir tfts tget tglob
-noinst_SCRIPTS = testit.sh
-
-TESTS = testit.sh
+EXTRA_PROGRAMS = tdir tfts tget tglob thkp tinv tkey tmacro tmagic tmire tput tpw trpmio tsw dumpasn1 lookup3
 
 AM_CPPFLAGS = \
 	-I$(srcdir) \
