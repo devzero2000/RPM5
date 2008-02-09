@@ -4,9 +4,9 @@ AUTOMAKE_OPTIONS = 1.4 foreign
 
 LINT = splint
 
-EXTRA_DIST = gengpg.sh thkp.c tput.c tinv.c tkey.c trpmio.c lookup3.c tpw.c librpmio.vers
+EXTRA_DIST = gengpg.sh thkp.c thtml.c tinv.c tkey.c tput.c trpmio.c lookup3.c tpw.c librpmio.vers
 
-EXTRA_PROGRAMS = thkp tinv tkey tmacro tmagic tmire tput tpw trpmio tsw dumpasn1 lookup3
+EXTRA_PROGRAMS = thkp thtml tinv tkey tmacro tmagic tmire tput tpw trpmio tsw dumpasn1 lookup3
 
 noinst_PROGRAMS = tdir tfts tget tglob
 noinst_SCRIPTS = testit.sh
@@ -117,6 +117,10 @@ tglob_LDADD = $(RPMIO_LDADD)
 
 thkp_SOURCES = thkp.c
 thkp_LDADD = $(RPMIO_LDADD)
+
+thtml_SOURCES = thtml.c
+thtml_CFLAGS = $(CFLAGS) -I/usr/include/libxml2/
+thtml_LDADD = $(RPMIO_LDADD)
 
 tinv_SOURCES = tinv.c
 tinv_LDADD = $(RPMIO_LDADD)
