@@ -4,9 +4,14 @@ AUTOMAKE_OPTIONS = 1.4 foreign
 
 LINT = splint
 
-EXTRA_DIST = gengpg.sh tdir.c tfts.c tget.c thkp.c tput.c tglob.c tinv.c tkey.c trpmio.c lookup3.c tpw.c librpmio.vers
+EXTRA_DIST = gengpg.sh thkp.c tput.c tinv.c tkey.c trpmio.c lookup3.c tpw.c librpmio.vers
 
-EXTRA_PROGRAMS = tdir tfts tget tglob thkp tinv tkey tmacro tmagic tmire tput tpw trpmio tsw dumpasn1 lookup3
+EXTRA_PROGRAMS = thkp tinv tkey tmacro tmagic tmire tput tpw trpmio tsw dumpasn1 lookup3
+
+noinst_PROGRAMS = tdir tfts tget tglob
+noinst_SCRIPTS = testit.sh
+
+TESTS = testit.sh
 
 AM_CPPFLAGS = \
 	-I$(srcdir) \
@@ -22,13 +27,16 @@ AM_CPPFLAGS = \
 	@WITH_FILE_CPPFLAGS@ \
 	@WITH_XAR_CPPFLAGS@
 
+RPMIO_LDADD = \
+	$(top_builddir)/rpmio/librpmio.la \
+	$(top_builddir)/misc/librpmmisc.la \
+	@LTLIBINTL@
+
 RPM_LDADD = \
 	$(top_builddir)/build/librpmbuild.la \
 	$(top_builddir)/lib/librpm.la \
 	$(top_builddir)/rpmdb/librpmdb.la \
-	$(top_builddir)/rpmio/librpmio.la \
-	$(top_builddir)/misc/librpmmisc.la \
-	@LTLIBINTL@
+	$(RPMIO_LDADD)
 
 pkgincdir = $(pkgincludedir)$(WITH_PATH_VERSIONED_SUFFIX)
 pkginc_HEADERS = \
@@ -96,26 +104,26 @@ lint:
 	$(LINT) $(DEFS) $(INCLUDES) $(librpmio_la_SOURCES)
 
 tdir_SOURCES = tdir.c
-tdir_LDADD = $(RPM_LDADD)
+tdir_LDADD = $(RPMIO_LDADD)
 
 tfts_SOURCES = tfts.c
-tfts_LDADD = $(RPM_LDADD)
+tfts_LDADD = $(RPMIO_LDADD)
 
 tget_SOURCES = tget.c
-tget_LDADD = $(RPM_LDADD)
+tget_LDADD = $(RPMIO_LDADD)
 
 tglob_SOURCES = tglob.c
-tglob_LDADD = $(RPM_LDADD)
+tglob_LDADD = $(RPMIO_LDADD)
 
 thkp_SOURCES = thkp.c
-thkp_LDADD = $(RPM_LDADD)
+thkp_LDADD = $(RPMIO_LDADD)
 
 tinv_SOURCES = tinv.c
-tinv_LDADD = $(RPM_LDADD)
+tinv_LDADD = $(RPMIO_LDADD)
 
 tkey_SOURCES = gengpg.h tkey.c rpmgc.c rpmnss.c rpmssl.c
 tkey_CFLAGS  = $(CFLAGS)
-tkey_LDADD = $(RPM_LDADD) -lgcrypt
+tkey_LDADD = $(RPMIO_LDADD) -lgcrypt
 gengpg.h:
 	-sh ./gengpg.sh > gengpg.h
 
@@ -125,28 +133,28 @@ tmacro.o:  macro.c
 	$(COMPILE) -DDEBUG_MACROS -o $@ -c $<
 
 tmagic_SOURCES = tmagic.c
-tmagic_LDADD = $(RPM_LDADD)
+tmagic_LDADD = $(RPMIO_LDADD)
 
 tmire_SOURCES =
-tmire_LDADD = tmire.o $(RPM_LDADD)
+tmire_LDADD = tmire.o $(RPMIO_LDADD)
 tmire.o:  mire.c
 	$(COMPILE) -DSTANDALONE -o $@ -c $<
 
 tput_SOURCES = tput.c
-tput_LDADD = $(RPM_LDADD)
+tput_LDADD = $(RPMIO_LDADD)
 
 tpw_SOURCES = tpw.c
-tpw_LDFLAGS = $(RPM_LDADD)
+tpw_LDFLAGS = $(RPMIO_LDADD)
 
 trpmio_SOURCES = trpmio.c
-trpmio_LDADD = $(RPM_LDADD)
+trpmio_LDADD = $(RPMIO_LDADD)
 
 tsw_SOURCES = tsw.c
-tsw_LDFLAGS = $(RPM_LDADD)
+tsw_LDFLAGS = $(RPMIO_LDADD)
 
 dumpasn1_SOURCES = dumpasn1.c
 
 lookup3_SOURCES = lookup3.c
 lookup3_CFLAGS	= $(CFLAGS) -D_JLU3_SELFTEST
-lookup3_LDADD = $(RPM_LDADD)
+lookup3_LDADD = $(RPMIO_LDADD)
 

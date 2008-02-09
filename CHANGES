@@ -1,4 +1,5 @@
 5.0.0 -> 5.1a1:
+    - jbj: rpmio: test programs link only -lrpmio -lrpmmisc.
     - jbj: map tdir/tglob/tfts errors into exit codes.
     - jbj: dav{Stat,LStat,Opendir) return ENOENT with malformed URI (including
 	no pesky trailing /).
