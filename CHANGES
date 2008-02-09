@@ -1,4 +1,6 @@
 5.0.0 -> 5.1a1:
+    - jbj: pemit %{___NVRA} to parameterize the displayed NVRA while installing.
+    - jbj: create %___NVRA to split external <-> internal package names.
     - rpm.org: Mass convert (back) to rpmTag as it's usable everywhere now
     - rpm.org: Use rpmSigTag enum for signature tags everywhere, more or less..
     - jbj: import a modified copy of testHTML.c from libxml2.

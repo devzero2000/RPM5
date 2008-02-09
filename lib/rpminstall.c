@@ -103,7 +103,7 @@ void * rpmShowProgress(/*@null@*/ const void * arg,
 /*@-abstract -castexpose @*/
     Header h = (Header) arg;
 /*@=abstract =castexpose @*/
-    char * s;
+    const char * s;
     int flags = (int) ((long)data);
     void * rc = NULL;
 /*@-abstract -assignexpose @*/
@@ -158,11 +158,12 @@ void * rpmShowProgress(/*@null@*/ const void * arg,
 	    (void) fflush(stdout);
 	    s = _free(s);
 	} else {
-	    s = headerSprintf(h, "%{NAME}-%{VERSION}-%{RELEASE}",
-				  NULL, rpmHeaderFormats, NULL);
+	    char * t = rpmExpand("%{?___NVRA}%{!?___NVRA:%%{NAME}-%%{VERSION}-%%{RELEASE}}", NULL);
+	    s = headerSprintf(h, t, NULL, rpmHeaderFormats, NULL);
 	    fprintf(stdout, "%s\n", s);
 	    (void) fflush(stdout);
 	    s = _free(s);
+	    t = _free(t);
 	}
 	break;
 
@@ -251,7 +252,7 @@ void * rpmShowProgress(/*@null@*/ const void * arg,
     }
 
     return rc;
-}	
+}
 
 int rpmcliInstallProblems(rpmts ts, const char * msg, int rc)
 	/*@globals fileSystem @*/
@@ -491,10 +492,10 @@ int rpmcliInstall(rpmts ts, QVA_t ia, const char ** argv)
     if (rpmExpandNumeric("%{?_rollback_transaction_on_failure}")) {
 	if (ia->arbtid) {
 	    time_t ttid = (time_t)ia->arbtid;
-	    rpmlog(RPMLOG_DEBUG, D_("Autorollback Goal: %-24.24s (0x%08x)\n"), 
+	    rpmlog(RPMLOG_DEBUG, D_("Autorollback Goal: %-24.24s (0x%08x)\n"),
 		ctime(&ttid), ia->arbtid);
 	    rpmtsSetARBGoal(ts, ia->arbtid);
-	}	
+	}
     }
 
     if (ia->installInterfaceFlags & INSTALL_UPGRADE)
@@ -711,10 +712,10 @@ int rpmErase(rpmts ts, QVA_t ia, const char ** argv)
     if (rpmExpandNumeric("%{?_rollback_transaction_on_failure}")) {
 	if (ia->arbtid) {
 	    time_t ttid = (time_t)ia->arbtid;
-	    rpmlog(RPMLOG_DEBUG, D_("Autorollback Goal: %-24.24s (0x%08x)\n"), 
+	    rpmlog(RPMLOG_DEBUG, D_("Autorollback Goal: %-24.24s (0x%08x)\n"),
 		ctime(&ttid), ia->arbtid);
 	    rpmtsSetARBGoal(ts, ia->arbtid);
-	}	
+	}
     }
 
 #ifdef	NOTYET	/* XXX no callbacks on erase yet */
@@ -787,7 +788,7 @@ int rpmErase(rpmts ts, QVA_t ia, const char ** argv)
 	/* Drop added/available package indices and dependency sets. */
 	rpmtsClean(ts);
 
-	numPackages = rpmtsRun(ts, NULL, 
+	numPackages = rpmtsRun(ts, NULL,
 		ia->probFilter & (RPMPROB_FILTER_DISKSPACE|RPMPROB_FILTER_DISKNODES));
 	ps = rpmtsProblems(ts);
 	if (rpmpsNumProblems(ps) > 0)
