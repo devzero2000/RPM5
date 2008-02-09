@@ -239,7 +239,12 @@ LIBRPMIO_0
     rpmInitMacros;
     _rpmio_debug;
     rpmioAccess;
+    rpmioAllPoptTable;
     rpmioClean;
+    rpmioFini;
+    rpmioFtsOpts;
+    rpmioFtsPoptTable;
+    rpmioInit;
     rpmioMkpath;
     rpmioSlurp;
     rpmLoadMacroFile;

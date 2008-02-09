@@ -9,6 +9,7 @@
 #include <rpmmacro.h>
 #include <rpmcb.h>
 #include <rpmmg.h>
+#include <rpmsw.h>
 #include <rpmurl.h>
 #include <argv.h>
 #include <fts.h>

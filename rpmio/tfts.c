@@ -2,13 +2,7 @@
 #include <fts.h>
 
 #include <rpmio_internal.h>
-#include <rpmmacro.h>
-#include <rpmcb.h>
-#include <rpmmg.h>
-#include <mire.h>
-#include <argv.h>
-#include <rpmsw.h>
-#include <popt.h>
+#include <poptIO.h>
 
 #include "debug.h"
 
@@ -126,7 +120,7 @@ static int ftsPrint(FTS * ftsp, FTSENT * fts)
     return 0;
 }
 
-static int ftsOpts = 0;
+extern int rpmioFtsOpts;
 
 static int ftsWalk(ARGV_t av)
 {
@@ -138,7 +132,7 @@ static int ftsWalk(ARGV_t av)
 
     xx = rpmswEnter(op, 0);
     ndirs = nfiles = 0;
-    if ((ftsp = Fts_open((char *const *)av, ftsOpts, NULL)) == NULL)
+    if ((ftsp = Fts_open((char *const *)av, rpmioFtsOpts, NULL)) == NULL)
 	goto exit;
     while((fts = Fts_read(ftsp)) != NULL)
 	xx = ftsPrint(ftsp, fts);
@@ -158,46 +152,19 @@ static struct poptOption optionsTable[] = {
  { "pattern", '\0', POPT_ARG_STRING,	&mirePattern, 0,	NULL, NULL },
  { "magic", '\0', POPT_ARG_STRING,	&mgFile, 0,	NULL, NULL },
 
- { "comfollow", '\0', POPT_BIT_SET,	&ftsOpts, FTS_COMFOLLOW,
-	N_("follow command line symlinks"), NULL },
- { "logical", '\0', POPT_BIT_SET,	&ftsOpts, FTS_LOGICAL,
-	N_("logical walk"), NULL },
- { "nochdir", '\0', POPT_BIT_SET,	&ftsOpts, FTS_NOCHDIR,
-	N_("don't change directories"), NULL },
- { "nostat", '\0', POPT_BIT_SET,	&ftsOpts, FTS_NOSTAT,
-	N_("don't get stat info"), NULL },
- { "physical", '\0', POPT_BIT_SET,	&ftsOpts, FTS_PHYSICAL,
-	N_("physical walk"), NULL },
- { "seedot", '\0', POPT_BIT_SET,	&ftsOpts, FTS_SEEDOT,
-	N_("return dot and dot-dot"), NULL },
- { "xdev", '\0', POPT_BIT_SET,		&ftsOpts, FTS_XDEV,
-	N_("don't cross devices"), NULL },
- { "whiteout", '\0', POPT_BIT_SET,	&ftsOpts, FTS_WHITEOUT,
-	N_("return whiteout information"), NULL },
-
  { "options", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_dav_nooptions, 0,
 	N_("always send http OPTIONS"), NULL},
  { "nooptions", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_dav_nooptions, -1,
 	N_("use cached http OPTIONS"), NULL},
 
- { "avdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_av_debug, -1,
-	N_("debug protocol data stream"), NULL},
- { "davdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_dav_debug, -1,
-	N_("debug protocol data stream"), NULL},
- { "ftsdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_fts_debug, -1,
-	N_("debug protocol data stream"), NULL},
- { "ftpdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_ftp_debug, -1,
-	N_("debug protocol data stream"), NULL},
- { "mgdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmmg_debug, -1,
-	N_("debug protocol data stream"), NULL},
- { "miredebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_mire_debug, -1,
-	N_("debug protocol data stream"), NULL},
- { "rpmiodebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmio_debug, -1,
-	N_("debug rpmio I/O"), NULL},
- { "urldebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_url_debug, -1,
-	N_("debug URL cache handling"), NULL},
+ { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmioFtsPoptTable, 0,
+	N_("Options for Fts(3):"),
+	NULL },
 
- { "verbose", 'v', 0, 0, 'v',				NULL, NULL },
+ { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmioAllPoptTable, 0,
+	N_("Common options for all rpmio executables:"),
+	NULL },
+
   POPT_AUTOHELP
   POPT_TABLEEND
 };
@@ -211,26 +178,11 @@ main(int argc, char *argv[])
     ARGV_t dav;
     const char * dn;
     int rc;
-    int xx;
 
-    while ((rc = poptGetNextOpt(optCon)) > 0) {
-	const char * optArg = poptGetOptArg(optCon);
-	switch (rc) {
-	case 'v':
-	    rpmIncreaseVerbosity();
-	    /*@switchbreak@*/ break;
-	default:
-            /*@switchbreak@*/ break;
-	}
-	optArg = _free(optArg);
-    }
-
-    if (ftsOpts == 0)
-	ftsOpts = (FTS_COMFOLLOW | FTS_LOGICAL | FTS_NOSTAT);
+    if (rpmioFtsOpts == 0)
+	rpmioFtsOpts = (FTS_COMFOLLOW | FTS_LOGICAL | FTS_NOSTAT);
 
     if (_fts_debug) {
-	rpmIncreaseVerbosity();
-	rpmIncreaseVerbosity();
 _av_debug = -1;
 _dav_debug = -1;
 _ftp_debug = -1;
@@ -274,9 +226,7 @@ exit:
 
     av = argvFree(av);
 
-/*@i@*/ urlFreeCache();
-
-    optCon = poptFreeContext(optCon);
+    optCon = rpmioFini(optCon);
 
     return rc;
 }

@@ -1,10 +1,7 @@
 #include "system.h"
 
 #include <rpmio_internal.h>
-#include <rpmmacro.h>
-#include <rpmcb.h>
-#include <argv.h>
-#include <popt.h>
+#include <poptIO.h>
 
 #include "debug.h"
 
@@ -47,17 +44,10 @@ fprintf(stderr, "*** Glob rc %d\n", rc);
 static struct poptOption optionsTable[] = {
  { "debug", 'd', POPT_ARG_VAL,	&_debug, -1,		NULL, NULL },
 
- { "avdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_av_debug, -1,
-	N_("debug protocol data stream"), NULL},
- { "davdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_dav_debug, -1,
-	N_("debug protocol data stream"), NULL},
- { "ftpdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_ftp_debug, -1,
-	N_("debug protocol data stream"), NULL},
- { "rpmiodebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmio_debug, -1,
-	N_("debug rpmio I/O"), NULL},
- { "urldebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_url_debug, -1,
-	N_("debug URL cache handling"), NULL},
- { "verbose", 'v', 0, 0, 'v',				NULL, NULL },
+ { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmioAllPoptTable, 0,
+	N_("Common options for all rpmio executables:"),
+	NULL },
+
   POPT_AUTOHELP
   POPT_TABLEEND
 };
@@ -65,28 +55,13 @@ static struct poptOption optionsTable[] = {
 int
 main(int argc, char *argv[])
 {
-    poptContext optCon = poptGetContext(argv[0], argc, argv, optionsTable, 0);
+    poptContext optCon = rpmioInit(argc, argv, optionsTable);
     ARGV_t av;
     int ac;
     const char * dn;
     int rc;
-    int xx;
-
-    while ((rc = poptGetNextOpt(optCon)) > 0) {
-	const char * optArg = poptGetOptArg(optCon);
-	switch (rc) {
-	case 'v':
-	    rpmIncreaseVerbosity();
-	    /*@switchbreak@*/ break;
-	default:
-            /*@switchbreak@*/ break;
-	}
-	optArg = _free(optArg);
-    }
 
     if (_debug) {
-	rpmIncreaseVerbosity();
-	rpmIncreaseVerbosity();
 _av_debug = -1;
 _dav_debug = -1;
 _ftp_debug = -1;
@@ -107,9 +82,7 @@ _rpmio_debug = -1;
 
 exit:
 
-/*@i@*/ urlFreeCache();
-
-    optCon = poptFreeContext(optCon);
+    optCon = rpmioFini(optCon);
 
     return rc;
 }
