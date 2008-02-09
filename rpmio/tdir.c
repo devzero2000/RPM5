@@ -29,24 +29,29 @@ static void printDir(struct dirent * dp, int nentry)
     }
 }
 
-static void dirWalk(const char * dn)
+static int dirWalk(const char * dn)
 {
     rpmop op = memset(alloca(sizeof(*op)), 0, sizeof(*op));
     struct dirent * dp;
     DIR * dir;
     int nentries;
+    int rc = 1;
     int xx;
 
     xx = rpmswEnter(op, 0);
     nentries = 0;
-    dir = Opendir(dn);
+    if ((dir = Opendir(dn)) == NULL)
+	goto exit;
     while ((dp = Readdir(dir)) != NULL)
 	printDir(dp, nentries++);
-    xx = Closedir(dir);
+    rc = Closedir(dir);
+
+exit:
     xx = rpmswExit(op, nentries);
 
 fprintf(stderr, "===== %s: %d entries\n", dn, nentries);
     rpmswPrint("opendir:", op);
+    return rc;
 }
 
 static struct poptOption optionsTable[] = {
@@ -106,10 +111,11 @@ _rpmio_debug = -1;
     }
 
     /* XXX Add pesky trailing '/' to http:// URI's */
-    while ((dn = *av++) != NULL) {
+    rc = 0;
+    while (rc == 0 && (dn = *av++) != NULL) {
 	size_t nb = strlen(dn);
 	dn = rpmExpand(dn, (dn[nb-1] != '/' ? "/" : NULL), NULL);
-	dirWalk(dn);
+	rc = dirWalk(dn);
 	dn = _free(dn);
     }
 
@@ -119,5 +125,5 @@ exit:
 
     optCon = poptFreeContext(optCon);
 
-    return 0;
+    return rc;
 }

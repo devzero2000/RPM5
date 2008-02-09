@@ -133,21 +133,25 @@ static int ftsWalk(ARGV_t av)
     rpmop op = memset(alloca(sizeof(*op)), 0, sizeof(*op));
     FTS * ftsp;
     FTSENT * fts;
+    int rc = 1;
     int xx;
 
     xx = rpmswEnter(op, 0);
     ndirs = nfiles = 0;
-    ftsp = Fts_open((char *const *)av, ftsOpts, NULL);
+    if ((ftsp = Fts_open((char *const *)av, ftsOpts, NULL)) == NULL)
+	goto exit;
     while((fts = Fts_read(ftsp)) != NULL)
 	xx = ftsPrint(ftsp, fts);
-    xx = Fts_close(ftsp);
+    rc = Fts_close(ftsp);
+
+exit:
     xx = rpmswExit(op, ndirs);
 
 fprintf(stderr, "===== (%d/%d) dirs/files in:\n", ndirs, nfiles);
     argvPrint(NULL, av, NULL);
     rpmswPrint("fts:", op);
 
-    return 0;
+    return rc;
 }
 
 static struct poptOption optionsTable[] = {
@@ -240,12 +244,13 @@ _mire_debug = 1;
     ac = argvCount(dav);
     if (ac < 1) {
 	poptPrintUsage(optCon, stderr, 0);
+	rc = 1;
 	goto exit;
     }
 
     if (mirePattern) {
 	mire = mireNew(mireMode, mireTag);
-	if ((xx = mireRegcomp(mire, mirePattern)) != 0)
+	if ((rc = mireRegcomp(mire, mirePattern)) != 0)
 	    goto exit;;
     }
 
@@ -261,7 +266,7 @@ _mire_debug = 1;
 	dn = _free(dn);
     }
 
-    ftsWalk(av);
+    rc = ftsWalk(av);
 
 exit:
     mg = rpmmgFree(mg);
@@ -273,5 +278,5 @@ exit:
 
     optCon = poptFreeContext(optCon);
 
-    return 0;
+    return rc;
 }

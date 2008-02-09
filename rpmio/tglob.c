@@ -101,8 +101,9 @@ _rpmio_debug = -1;
 	goto exit;
     }
 
-    while ((dn = *av++) != NULL)
-	xx = printGlob(dn);
+    rc = 0;
+    while (rc == 0 && (dn = *av++) != NULL)
+	rc = printGlob(dn);
 
 exit:
 
@@ -110,5 +111,5 @@ exit:
 
     optCon = poptFreeContext(optCon);
 
-    return 0;
+    return rc;
 }

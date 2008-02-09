@@ -179,8 +179,9 @@ _rpmio_debug = -1;
 	goto exit;
     }
 
-    while ((fn = *av++) != NULL)
-	xx = readFile(fn);
+    rc = 0;
+    while (rc == 0 && (fn = *av++) != NULL)
+	rc = readFile(fn);
 
 exit:
 
@@ -188,5 +189,5 @@ exit:
 
     optCon = poptFreeContext(optCon);
 
-    return 0;
+    return rc;
 }
