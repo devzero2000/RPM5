@@ -895,7 +895,10 @@ static int davHEAD(urlinfo u, struct stat *st)
     const char *value = NULL;
     int rc;
 
-    st->st_mode = S_IFREG;
+    /* XXX HACK: URI's with pesky trailing '/' are directories. */
+    {	size_t nb = strlen(u->url);
+	st->st_mode = (u->url[nb-1] == '/' ? S_IFDIR : S_IFREG);
+    }
     st->st_blksize = 4 * 1024;	/* HACK correct for linux ext */
     st->st_size = -1;
     st->st_atime = -1;
@@ -1479,11 +1482,13 @@ int davStat(const char * path, /*@out@*/ struct stat *st)
     char buf[1024];
     int rc = -1;
 
-/* HACK: neon really wants collections with trailing '/' */
+    if (path == NULL || *path == '\0') {
+	errno = ENOENT;
+	goto exit;
+    }
     ctx = fetch_create_context(path, st);
     if (ctx == NULL) {
-fprintf(stderr, "==> %s fetch_create_context ctx %p\n", "davStat", ctx);
-/* HACK: errno = ??? */
+	errno = ENOENT;		/* Note: ctx is NULL iff urlSplit() fails. */
 	goto exit;
     }
     rc = davNLST(ctx);
@@ -1526,10 +1531,13 @@ int davLstat(const char * path, /*@out@*/ struct stat *st)
     char buf[1024];
     int rc = -1;
 
-/* HACK: neon really wants collections with trailing '/' */
+    if (path == NULL || *path == '\0') {
+	errno = ENOENT;
+	goto exit;
+    }
     ctx = fetch_create_context(path, st);
     if (ctx == NULL) {
-/* HACK: errno = ??? */
+	errno = ENOENT;		/* Note: ctx is NULL iff urlSplit() fails. */
 	goto exit;
     }
     rc = davNLST(ctx);
@@ -1824,6 +1832,7 @@ fprintf(stderr, "*** davReaddir(%p) %p \"%s\"\n", (void *)avdir, dp, dp->d_name)
 DIR * davOpendir(const char * path)
 {
     struct fetch_context_s * ctx;
+    struct stat sb, *st = &sb; /* XXX HACK: davHEAD needs ctx->st. */
     DAVDIR avdir;
     struct dirent * dp;
     size_t nb;
@@ -1833,22 +1842,20 @@ DIR * davOpendir(const char * path)
     int ac, nac;
     int rc;
 
-    /* HACK: glob does not pass dirs with trailing '/' */
-    nb = strlen(path)+1;
-    if (path[nb-2] != '/') {
-	char * npath = alloca(nb+1);
-	*npath = '\0';
-	(void) stpcpy( stpcpy(npath, path), "/");
-	path = npath;
-    }
-
 if (_dav_debug < 0)
 fprintf(stderr, "*** davOpendir(%s)\n", path);
 
+    /* Note: all URI's need pesky trailing '/' */
+    if (path == NULL || *path == '\0' || path[strlen(path)-1] != '/') {
+	errno = ENOENT;
+	return NULL;
+    }
+
     /* Load DAV collection into argv. */
-    ctx = fetch_create_context(path, NULL);
+    /* XXX HACK: davHEAD needs ctx->st. */
+    ctx = fetch_create_context(path, st);
     if (ctx == NULL) {
-/* HACK: errno = ??? */
+	errno = ENOENT;		/* Note: ctx is NULL iff urlSplit() fails. */
 	return NULL;
     }
     rc = davNLST(ctx);

@@ -1,4 +1,8 @@
 5.0.0 -> 5.1a1:
+    - jbj: dav{Stat,LStat,Opendir) return ENOENT with malformed URI (including
+	no pesky trailing /).
+    - jbj: rpmdav: fix: supply davOpendir->davHEAD a statbuf to avoid tdir/tfts
+	segfaults on plain http. (only . and .. in directory).
     - jbj: tie tget/tdir/tglob/tfts to a rpmio "make check". much more to do ...
     - jbj: tweak up tglob debugging spew, add a Glob(3) stopwatch.
     - jbj: tweak up tget debugging spew, trick in a Stat(2) on path,
