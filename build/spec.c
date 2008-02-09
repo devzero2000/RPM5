@@ -262,7 +262,7 @@ int specSourceFlags(SpecSource source)
     return source->flags;
 }
 
-int parseNoSource(Spec spec, const char * field, int tag)
+int parseNoSource(Spec spec, const char * field, rpmTag tag)
 {
     const char *f, *fe;
     const char *name;
@@ -306,7 +306,7 @@ int parseNoSource(Spec spec, const char * field, int tag)
     return 0;
 }
 
-int addSource(Spec spec, /*@unused@*/ Package pkg, const char *field, int tag)
+int addSource(Spec spec, /*@unused@*/ Package pkg, const char *field, rpmTag tag)
 {
     struct Source *p;
     int flag = 0;

@@ -336,17 +336,17 @@ static void hdr_dealloc(hdrObject * s)
 
 /** \ingroup py_c
  */
-long tagNumFromPyObject (PyObject *item)
+rpmTag tagNumFromPyObject (PyObject *item)
 {
     char * str;
 
     if (PyInt_Check(item)) {
-	return PyInt_AsLong(item);
+	return (rpmTag) PyInt_AsLong(item);
     } else if (PyString_Check(item) || PyUnicode_Check(item)) {
 	str = PyString_AsString(item);
 	return tagValue(str);
     }
-    return -1;
+    return (rpmTag)0xffffffff;
 }
 
 /** \ingroup py_c
@@ -355,7 +355,7 @@ static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
 	/*@*/
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
-    uint32_t tag = 0xffffffff;
+    rpmTag tag = (rpmTag)0xffffffff;
     int i;
     PyObject * o, * metao;
     int forceArray = 0;
@@ -367,7 +367,7 @@ static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
     else
 	tag = tagNumFromPyObject (item);
 
-    if (tag == 0xffffffff && (PyString_Check(item) || PyUnicode_Check(item))) {
+    if (tag == (rpmTag)0xffffffff && (PyString_Check(item) || PyUnicode_Check(item))) {
 	const struct headerSprintfExtension_s * extensions = rpmHeaderFormats;
 	char * str;
 	/* if we still don't have the tag, go looking for the header
@@ -388,7 +388,7 @@ static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
     if (ext) {
         ext->u.tagFunction(s->h, he);
     } else {
-        if (tag == 0xffffffff) {
+        if (tag == (rpmTag)0xffffffff) {
             PyErr_SetString(PyExc_KeyError, "unknown header tag");
             return NULL;
         }

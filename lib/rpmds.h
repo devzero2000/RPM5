@@ -691,7 +691,7 @@ int rpmdsNegateRC(const rpmds ds, int rc)
 const char * rpmdsTagName(/*@null@*/ const rpmds ds)
 	/*@*/
 {
-    int tagN = rpmdsTagN(ds);
+    rpmTag tagN = rpmdsTagN(ds);
 
     switch (tagN) {
     case RPMTAG_PROVIDENAME:	return "Provides";	/*@notreached@*/ break;
@@ -700,6 +700,7 @@ const char * rpmdsTagName(/*@null@*/ const rpmds ds)
     case RPMTAG_OBSOLETENAME:	return "Obsoletes";	/*@notreached@*/ break;
     case RPMTAG_TRIGGERNAME:	return "Triggers";	/*@notreached@*/ break;
     case RPMTAG_DIRNAMES:	return "Dirnames";	/*@notreached@*/ break;
+    default:	break;
     }
     return tagName(tagN);
 }

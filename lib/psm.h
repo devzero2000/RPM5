@@ -91,8 +91,8 @@ struct rpmpsm_s {
     const char * pkgfn;		/*!< Repackage file name. */
 /*@only@*/ /*@null@*/
     int *sstates;		/*!< Scriptlet states and return codes. */
-    int scriptTag;		/*!< Scriptlet data tag. */
-    int progTag;		/*!< Scriptlet interpreter tag. */
+    rpmTag scriptTag;		/*!< Scriptlet data tag. */
+    rpmTag progTag;		/*!< Scriptlet interpreter tag. */
     int npkgs_installed;	/*!< No. of installed instances. */
     int scriptArg;		/*!< Scriptlet package arg. */
     int sense;			/*!< One of RPMSENSE_TRIGGER{PREIN,IN,UN,POSTUN}. */

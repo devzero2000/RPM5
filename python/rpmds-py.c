@@ -154,8 +154,8 @@ rpmds_iternext(rpmdsObject * s)
     if (rpmdsNext(s->ds) >= 0) {
 	const char * N = rpmdsN(s->ds);
 	const char * EVR = rpmdsEVR(s->ds);
-	int tagN = rpmdsTagN(s->ds);
-	int Flags = rpmdsFlags(s->ds);
+	rpmTag tagN = rpmdsTagN(s->ds);
+	rpmsenseFlags Flags = rpmdsFlags(s->ds);
 
 /*@-branchstate@*/
 	if (N != NULL) N = xstrdup(N);
@@ -661,8 +661,8 @@ static int rpmds_init(rpmdsObject * s, PyObject *args, PyObject *kwds)
 {
     hdrObject * ho = NULL;
     PyObject * to = NULL;
-    int tagN = RPMTAG_REQUIRENAME;
-    int flags = 0;
+    rpmTag tagN = RPMTAG_REQUIRENAME;
+    rpmsenseFlags flags = 0;
     char * kwlist[] = {"header", "tag", "flags", NULL};
 
 if (_rpmds_debug < 0)
@@ -674,7 +674,7 @@ fprintf(stderr, "*** rpmds_init(%p,%p,%p)\n", s, args, kwds);
 
     if (to != NULL) {
 	tagN = tagNumFromPyObject(to);
-	if (tagN == -1) {
+	if (tagN == (rpmTag)0xffffffff) {
 	    PyErr_SetString(PyExc_KeyError, "unknown header tag");
 	    return -1;
 	}
@@ -810,10 +810,10 @@ rpmdsObject *
 rpmds_Single(/*@unused@*/ PyObject * s, PyObject * args, PyObject * kwds)
 {
     PyObject * to = NULL;
-    int tagN = RPMTAG_PROVIDENAME;
+    rpmTag tagN = RPMTAG_PROVIDENAME;
     const char * N;
     const char * EVR = NULL;
-    int Flags = 0;
+    rpmsenseFlags Flags = 0;
     char * kwlist[] = {"to", "name", "evr", "flags", NULL};
 
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "Os|si:Single", kwlist,
@@ -822,7 +822,7 @@ rpmds_Single(/*@unused@*/ PyObject * s, PyObject * args, PyObject * kwds)
 
     if (to != NULL) {
 	tagN = tagNumFromPyObject(to);
-	if (tagN == -1) {
+	if (tagN == (rpmTag)0xffffffff) {
 	    PyErr_SetString(PyExc_KeyError, "unknown header tag");
 	    return NULL;
 	}
@@ -847,7 +847,7 @@ hdr_dsFromHeader(PyObject * s, PyObject * args, PyObject * kwds)
 
     if (to != NULL) {
 	tagN = tagNumFromPyObject(to);
-	if (tagN == -1) {
+	if (tagN == (rpmTag)0xffffffff) {
 	    PyErr_SetString(PyExc_KeyError, "unknown header tag");
 	    return NULL;
 	}

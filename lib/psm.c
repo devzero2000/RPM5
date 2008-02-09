@@ -433,7 +433,7 @@ static char * SCRIPT_PATH = "PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/X11R6/bin";
  * @param tag		scriptlet tag
  * @return		name of scriptlet
  */
-static /*@observer@*/ const char * tag2sln(int tag)
+static /*@observer@*/ const char * tag2sln(rpmTag tag)
 	/*@*/
 {
     switch (tag) {
@@ -449,6 +449,7 @@ static /*@observer@*/ const char * tag2sln(int tag)
     case RPMTAG_TRIGGERPOSTUN:	return "%triggerpostun";
     case RPMTAG_VERIFYSCRIPT:	return "%verify";
     case RPMTAG_SANITYCHECK:	return "%sanitycheck";
+    default:	break;
     }
     return "%unknownscript";
 }
@@ -458,7 +459,7 @@ static /*@observer@*/ const char * tag2sln(int tag)
  * @param tag		scriptlet tag
  * @return		id of scriptlet
  */
-static rpmScriptID tag2slx(int tag)
+static rpmScriptID tag2slx(rpmTag tag)
 	/*@*/
 {
     switch (tag) {
@@ -474,6 +475,7 @@ static rpmScriptID tag2slx(int tag)
     case RPMTAG_TRIGGERPOSTUN:	return RPMSCRIPT_TRIGGERPOSTUN;
     case RPMTAG_VERIFYSCRIPT:	return RPMSCRIPT_VERIFY;
     case RPMTAG_SANITYCHECK:	return RPMSCRIPT_SANITYCHECK;
+    default:	break;
     }
     return RPMSCRIPT_UNKNOWN;
 }

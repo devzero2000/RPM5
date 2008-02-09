@@ -197,7 +197,7 @@ static int addFileToTag(Spec spec, const char * file, Header h, rpmTag tag)
 
 /**
  */
-static int addFileToArrayTag(Spec spec, const char *file, Header h, int tag)
+static int addFileToArrayTag(Spec spec, const char *file, Header h, rpmTag tag)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies h, rpmGlobalMacroContext, fileSystem, internalState  @*/
 {
@@ -985,7 +985,7 @@ if (!(_rpmbuildFlags & 4)) {
 }
 
 /*@unchecked@*/
-static uint32_t copyTags[] = {
+static rpmTag copyTags[] = {
     RPMTAG_CHANGELOGTIME,
     RPMTAG_CHANGELOGNAME,
     RPMTAG_CHANGELOGTEXT,

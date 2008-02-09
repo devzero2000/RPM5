@@ -516,7 +516,7 @@ rpmgi rpmgiNew(rpmts ts, int tag, const void * keyp, size_t keylen)
 
     gi->ts = rpmtsLink(ts, "rpmgiNew");
     gi->tsOrder = rpmtsOrder;
-    gi->tag = tag;
+    gi->tag = (rpmTag) tag;
 /*@-assignexpose@*/
     gi->keyp = keyp;
 /*@=assignexpose@*/

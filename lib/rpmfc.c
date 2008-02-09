@@ -286,11 +286,14 @@ static char * rpmfcFileDep(/*@returned@*/ char * buf, int ix,
 	/*@requires maxSet(buf) >= 0 @*/
 	/*@ensures maxRead(buf) == 0 @*/
 {
-    uint32_t tagN = rpmdsTagN(ds);
+    rpmTag tagN = rpmdsTagN(ds);
     char deptype = 'X';
 
     buf[0] = '\0';
     switch (tagN) {
+    default:
+assert(0);
+	/*@notreached@*/ break;
     case RPMTAG_PROVIDENAME:
 	deptype = 'P';
 	break;
@@ -1239,7 +1242,8 @@ static rpmRC rpmfcGenerateDependsHelper(const Spec spec, Package pkg, rpmfi fi)
 	appendLineStringBuf(sb_stdin, rpmfiFN(fi));
 
     for (dm = DepMsgs; dm->msg != NULL; dm++) {
-	int tag, tagflags;
+	rpmTag tag;
+	rpmsenseFlags tagflags;
 	char * s;
 	int xx;
 

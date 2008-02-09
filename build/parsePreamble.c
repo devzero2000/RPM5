@@ -483,7 +483,7 @@ exit:
     return rc;
 }
 
-spectag stashSt(Spec spec, Header h, int tag, const char * lang)
+spectag stashSt(Spec spec, Header h, rpmTag tag, const char * lang)
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     spectag t = NULL;

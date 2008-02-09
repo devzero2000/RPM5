@@ -37,7 +37,7 @@ Header hdrGetHeader(hdrObject * h)
 
 /** \ingroup py_c
  */
-long tagNumFromPyObject (PyObject *item)
+rpmTag tagNumFromPyObject (PyObject *item)
 	/*@*/;
 
 /** \ingroup py_c
