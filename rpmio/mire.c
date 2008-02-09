@@ -3,6 +3,10 @@
  */
 #include "system.h"
 
+#ifdef	WITH_PCRE
+#include <pcre.h>
+#endif
+
 #include <rpmio.h>	/* XXX _free */
 #include <rpmlog.h>
 #define	_MIRE_INTERNAL
@@ -29,9 +33,20 @@ fprintf(stderr, "--> mireClean(%p)\n", mire);
 	mire->preg = _free(mire->preg);
 	/*@=voidabstract =usereleased @*/
     }
+    if (mire->pcre != NULL) {
+#ifdef	WITH_PCRE
+	pcre_free(mire->pcre);
+#endif
+	mire->pcre = NULL;
+    }
+    mire->errmsg = NULL;
+    mire->erroff = 0;
+    mire->errcode = 0;
     mire->fnflags = 0;
     mire->cflags = 0;
     mire->eflags = 0;
+    mire->coptions = 0;
+    mire->eoptions = 0;
     mire->notmatch = 0;
     return 0;
 }
@@ -110,6 +125,18 @@ int mireRegexec(miRE mire, const char * val)
 	    rc = -1;
 	}
 	break;
+#ifdef	WITH_PCRE
+    case RPMMIRE_PCRE:
+	rc = pcre_exec(mire->pcre, NULL, val, (int)strlen(val), 0,
+		mire->eoptions, NULL, 0);
+	if (rc && rc != PCRE_ERROR_NOMATCH) {
+	    rpmlog(RPMLOG_ERR, _("%s: pcre_exec failed: return %d\n"), rc);
+	    rc = -1;
+	}
+#else
+	rc = -1;
+#endif
+	break;
     case RPMMIRE_GLOB:
 	rc = fnmatch(mire->pattern, val, mire->fnflags);
 	if (rc && rc != FNM_NOMATCH)
@@ -136,6 +163,22 @@ int mireRegcomp(miRE mire, const char * pattern)
     switch (mire->mode) {
     case RPMMIRE_DEFAULT:
     case RPMMIRE_STRCMP:
+	break;
+#ifdef	WITH_PCRE
+    case RPMMIRE_PCRE:
+	if (mire->coptions == 0)
+	    mire->coptions = 0;		/* XXX defaults? */
+	mire->pcre = pcre_compile2(mire->pattern, mire->coptions,
+		&mire->errcode, &mire->errmsg, &mire->erroff, NULL);
+	if (mire->pcre == NULL) {
+	    rpmlog(RPMLOG_ERR,
+		_("%s: pcre_compile2 failed: %s(%d) at offset %d\n"),
+		mire->pattern, mire->errmsg, mire->errcode, mire->erroff);
+	    rc = -1;
+	}
+#else
+	rc = -1;
+#endif
 	break;
     case RPMMIRE_REGEX:
 	mire->preg = xcalloc(1, sizeof(*mire->preg));

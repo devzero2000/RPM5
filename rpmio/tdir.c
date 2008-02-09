@@ -5,8 +5,6 @@
 
 #include "debug.h"
 
-static int _debug = 0;
-
 static void printDir(struct dirent * dp, int nentry)
 {
     if (rpmIsDebug()) {
@@ -52,7 +50,6 @@ fprintf(stderr, "===== %s: %d entries\n", dn, nentries);
 }
 
 static struct poptOption optionsTable[] = {
- { "debug", 'd', POPT_ARG_VAL,	&_debug, -1,		NULL, NULL },
 
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmioAllPoptTable, 0,
 	N_("Common options for all rpmio executables:"),
@@ -71,7 +68,7 @@ main(int argc, char *argv[])
     const char * dn;
     int rc;
 
-    if (_debug) {
+    if (__debug) {
 _av_debug = -1;
 _dav_debug = -1;
 _ftp_debug = -1;

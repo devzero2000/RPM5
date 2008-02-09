@@ -21,8 +21,6 @@ static int mgNFiles = 0;
 static int mgNMatches = 0;
 static int mgNFails = 0;
 
-static int _fts_debug = 0;
-
 extern int _dav_nooptions;
 
 static int ndirs = 0;
@@ -182,7 +180,7 @@ main(int argc, char *argv[])
     if (rpmioFtsOpts == 0)
 	rpmioFtsOpts = (FTS_COMFOLLOW | FTS_LOGICAL | FTS_NOSTAT);
 
-    if (_fts_debug) {
+    if (__debug) {
 _av_debug = -1;
 _dav_debug = -1;
 _ftp_debug = -1;

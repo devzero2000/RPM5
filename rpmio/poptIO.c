@@ -33,7 +33,7 @@ const char *__progname;
 #define	POPT_CRYPTO		-993
 
 /*@unchecked@*/
-static int _debug = 0;
+int __debug = 0;
 
 #ifdef	NOTYET
 /*@unchecked@*/
@@ -255,7 +255,7 @@ struct poptOption rpmioAllPoptTable[] = {
         rpmioAllArgCallback, 0, NULL, NULL },
 /*@=type@*/
 
- { "debug", 'd', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_debug, -1,
+ { "debug", 'd', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &__debug, -1,
         NULL, NULL },
 
  { "define", 'D', POPT_ARG_STRING, NULL, 'D',
@@ -528,7 +528,7 @@ rpmioInit(int argc, char *const argv[], struct poptOption * optionsTable)
     /* Read rpm configuration (if not already read). */
     rpmioConfigured();
 
-    if (_debug) {
+    if (__debug) {
 	rpmIncreaseVerbosity();
 	rpmIncreaseVerbosity();
     }

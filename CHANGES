@@ -1,4 +1,7 @@
 5.0.0 -> 5.1a1:
+    - jbj: mire: add RPMMIRE_PCRE for the pcre(3) inclined.
+    - jbj: tweak up tmire with rpmioAllPoptTable.
+    - jbj: rpmio: add global __debug to use common rpmioAllPopt --debug option.
     - jbj: use poptIO with rpmio noinst_PROGRAMS.
     - jbj: rpmio: clone poptIO.[ch] from poptALL.c for rpmio noinst_PROGRAMS.
     - jbj: rpmcli: remove duplicate nolibio entry in poptALL.c

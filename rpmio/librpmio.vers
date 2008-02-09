@@ -57,6 +57,7 @@ LIBRPMIO_0
     davStat;
     davUnlink;
     davWrite;
+    __debug;
     delMacro;
     expandMacros;
     Fclose;

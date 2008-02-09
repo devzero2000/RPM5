@@ -1,18 +1,16 @@
 #include "system.h"
 
 #define _MIRE_INTERNAL
-#include <rpmio.h>
-#include <rpmcb.h>
-#include <argv.h>
-#include <mire.h>
-#include <popt.h>
+#include <poptIO.h>
 
 #include "debug.h"
 
-static int _debug = 0;
-
 static struct poptOption optionsTable[] = {
- { "debug", 'd', POPT_ARG_VAL,	&_debug, -1,		NULL, NULL },
+
+ { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmioAllPoptTable, 0,
+	N_("Common options for all rpmio executables:"),
+	NULL },
+
   POPT_AUTOHELP
   POPT_TABLEEND
 };
@@ -20,7 +18,7 @@ static struct poptOption optionsTable[] = {
 int
 main(int argc, char *argv[])
 {
-    poptContext optCon = poptGetContext(argv[0], argc, argv, optionsTable, 0);
+    poptContext optCon = rpmioInit(argc, argv, optionsTable);
     miRE mire = NULL;
     ARGV_t av = NULL;
     int ac = 0;
@@ -28,23 +26,7 @@ main(int argc, char *argv[])
     int xx;
     int i;
 
-    while ((rc = poptGetNextOpt(optCon)) > 0) {
-        const char * optArg = poptGetOptArg(optCon);
-        optArg = _free(optArg);
-	switch (rc) {
-	case 'v':
-	    rpmIncreaseVerbosity();
-	    /*@switchbreak@*/ break;
-	default:
-	    poptPrintUsage(optCon, stderr, 0);
-	    goto exit;
-            /*@switchbreak@*/ break;
-	}
-    }
-
-    if (_debug) {
-	rpmIncreaseVerbosity();
-	rpmIncreaseVerbosity();
+    if (__debug) {
 _mire_debug = 1;
     }
 

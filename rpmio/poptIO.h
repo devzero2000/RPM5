@@ -16,6 +16,9 @@
 #include <mire.h>
 #include <popt.h>
 
+/*@unchecked@*/
+extern int __debug;	/* XXX I know I'm gonna regret __debug ... */
+
 #ifdef __cplusplus
 extern "C" {
 #endif

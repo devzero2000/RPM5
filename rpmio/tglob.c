@@ -5,8 +5,6 @@
 
 #include "debug.h"
 
-static int _debug = 0;
-
 static int my_Glob_error(const char *epath, int eerrno)
 {
 fprintf(stderr, "*** glob_error(%p,%d) path %s\n", epath, eerrno, epath);
@@ -42,7 +40,7 @@ fprintf(stderr, "*** Glob rc %d\n", rc);
 }
 
 static struct poptOption optionsTable[] = {
- { "debug", 'd', POPT_ARG_VAL,	&_debug, -1,		NULL, NULL },
+ { "debug", 'd', POPT_ARG_VAL,	&__debug, -1,		NULL, NULL },
 
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmioAllPoptTable, 0,
 	N_("Common options for all rpmio executables:"),
@@ -61,7 +59,7 @@ main(int argc, char *argv[])
     const char * dn;
     int rc;
 
-    if (_debug) {
+    if (__debug) {
 _av_debug = -1;
 _dav_debug = -1;
 _ftp_debug = -1;

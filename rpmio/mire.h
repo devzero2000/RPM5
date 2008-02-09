@@ -44,10 +44,11 @@ typedef /*@abstract@*/ /*@refcounted@*/ struct miRE_s * miRE;
  * Tag value pattern match mode.
  */
 typedef enum rpmMireMode_e {
-    RPMMIRE_DEFAULT	= 0,	/*!< regex with \., .* and ^...$ added */
-    RPMMIRE_STRCMP	= 1,	/*!< strings  using strcmp(3) */
-    RPMMIRE_REGEX	= 2,	/*!< regex(7) patterns through regcomp(3) */
-    RPMMIRE_GLOB	= 3	/*!< glob(7) patterns through fnmatch(3) */
+    RPMMIRE_DEFAULT	= 0,	/*!< posix regex with \., .* and ^...$ added */
+    RPMMIRE_STRCMP	= 1,	/*!< strings using strcmp(3) */
+    RPMMIRE_REGEX	= 2,	/*!< posix regex(7) patterns using regcomp(3) */
+    RPMMIRE_GLOB	= 3,	/*!< glob(7) patterns using fnmatch(3) */
+    RPMMIRE_PCRE	= 4	/*!< pcre patterns using pcre_compile2(3) */
 } rpmMireMode;
 
 #if defined(_MIRE_INTERNAL)
@@ -59,9 +60,15 @@ struct miRE_s {
     const char *pattern;	/*!< pattern string */
 /*@only@*/ /*@relnull@*/
     regex_t *preg;		/*!< regex compiled pattern buffer */
+    void *pcre;			/*!< pcre comiled pattern buffer. */
+    const char * errmsg;	/*!< pcre error message. */
+    int erroff;			/*!< pcre error offset. */
+    int errcode;		/*!< pcre error code. */
     int	fnflags;	/*!< fnmatch(3) flags (0 uses FNM_PATHNAME|FNM_PERIOD)*/
     int	cflags;		/*!< regcomp(3) flags (0 uses REG_EXTENDED|REG_NOSUB) */
     int	eflags;		/*!< regexec(3) flags */
+    int coptions;	/*!< pcre_compile2(3) options. */
+    int eoptions;	/*!< pcre_exec(3) options. */
     int notmatch;		/*!< non-zero: negative match, like "grep -v" */
     int tag;			/*!< sort identifier (e.g. an rpmTag) */
 /*@refs@*/
