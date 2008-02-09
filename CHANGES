@@ -1,4 +1,6 @@
 5.0.0 -> 5.1a1:
+    - jbj: rpmio: clone poptIO.[ch] from poptALL.c for rpmio noinst_PROGRAMS.
+    - jbj: rpmcli: remove duplicate nolibio entry in poptALL.c
     - jbj: pemit %{___NVRA} to parameterize the displayed NVRA while installing.
     - jbj: create %___NVRA to split external <-> internal package names.
     - rpm.org: Mass convert (back) to rpmTag as it's usable everywhere now

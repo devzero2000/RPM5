@@ -40,11 +40,12 @@ RPM_LDADD = \
 
 pkgincdir = $(pkgincludedir)$(WITH_PATH_VERSIONED_SUFFIX)
 pkginc_HEADERS = \
-	argv.h envvar.h fts.h mire.h rpmbc.h rpmcb.h rpmdav.h rpmhash.h \
-	rpmio.h rpmio-stub.h rpmlog.h rpmmacro.h rpmmg.h rpmnss.h rpmpgp.h \
-	rpmsq.h rpmssl.h rpmsw.h rpmurl.h rpmxar.h stringbuf.h ugid.h rpmuuid.h
+	argv.h envvar.h fts.h mire.h rpmbc.h rpmcb.h rpmdav.h \
+	rpmhash.h rpmio.h rpmio-stub.h rpmlog.h rpmmacro.h rpmmg.h \
+	rpmnss.h rpmpgp.h rpmsq.h rpmssl.h rpmsw.h rpmurl.h rpmxar.h \
+	stringbuf.h ugid.h rpmuuid.h
 noinst_HEADERS = \
-	md2.h md4.h rmd128.h rmd160.h rmd256.h rmd320.h sha224.h \
+	md2.h md4.h poptIO.h rmd128.h rmd160.h rmd256.h rmd320.h sha224.h \
 	salsa10.h salsa20.h tiger.h \
 	LzmaDecode.h rpmhook.h rpmio_internal.h rpmlua.h
 
@@ -52,7 +53,7 @@ usrlibdir = $(libdir)
 usrlib_LTLIBRARIES = librpmio.la
 librpmio_la_SOURCES = \
 	argv.c digest.c fts.c getpass.c macro.c mire.c mount.c \
-	md2.c md4.c rmd128.c rmd160.c rmd256.c rmd320.c sha224.c \
+	md2.c md4.c poptIO.c rmd128.c rmd160.c rmd256.c rmd320.c sha224.c \
 	salsa10.c salsa20.c tiger.c LzmaDecode.c \
 	rpmbc.c rpmdav.c rpmhash.c rpmhook.c rpmio.c rpmio-stub.c \
 	rpmlog.c rpmlua.c rpmmalloc.c rpmmg.c rpmnss.c rpmpgp.c \
