@@ -51,7 +51,7 @@ int rpmTempFile(/*@null@*/ const char * prefix,
  * @return		0 on success, -1 on failure
  */
 int rpmAddSignature(Header sigh, const char * file,
-		    uint32_t sigTag, /*@null@*/ const char * passPhrase)
+		    rpmSigTag sigTag, /*@null@*/ const char * passPhrase)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies sigh, sigTag, rpmGlobalMacroContext, fileSystem, internalState @*/;
 

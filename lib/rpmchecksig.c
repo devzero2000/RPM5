@@ -139,7 +139,7 @@ exit:
  * @retval signid	signer fingerprint
  * @return		0 on success
  */
-static int getSignid(Header sigh, int sigtag, unsigned char * signid)
+static int getSignid(Header sigh, rpmSigTag sigtag, unsigned char * signid)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies *signid, fileSystem, internalState @*/
 {
@@ -147,7 +147,7 @@ static int getSignid(Header sigh, int sigtag, unsigned char * signid)
     int rc = 1;
     int xx;
 
-    he->tag = sigtag;
+    he->tag = (rpmTag) sigtag;
     xx = headerGet(sigh, he, 0);
     if (xx && he->p.ptr != NULL) {
 	pgpDig dig = pgpDigNew(0);

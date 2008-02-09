@@ -143,7 +143,7 @@ errxit:
  * @param passPhrase	private key pass phrase
  * @return		0 on success, 1 on failure
  */
-static int makeGPGSignature(const char * file, uint32_t * sigTagp,
+static int makeGPGSignature(const char * file, rpmSigTag * sigTagp,
 		/*@out@*/ uint8_t ** pktp, /*@out@*/ uint32_t * pktlenp,
 		/*@null@*/ const char * passPhrase)
 	/*@globals rpmGlobalMacroContext, h_errno,
@@ -304,7 +304,7 @@ assert(0);	/* XXX never happens. */
  * @return		0 on success, -1 on failure
  */
 /*@-mustmod@*/ /* sigh is modified */
-static int makeHDRSignature(Header sigh, const char * file, uint32_t sigTag,
+static int makeHDRSignature(Header sigh, const char * file, rpmSigTag sigTag,
 		/*@null@*/ const char * passPhrase)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies sigh, sigTag, rpmGlobalMacroContext, fileSystem, internalState @*/
@@ -321,6 +321,9 @@ static int makeHDRSignature(Header sigh, const char * file, uint32_t sigTag,
     int xx;
 
     switch (sigTag) {
+    default:
+assert(0);	/* XXX never happens. */
+	/*@notreached@*/ break;
     case RPMSIGTAG_SIZE:
     case RPMSIGTAG_MD5:
     case RPMSIGTAG_PGP5:	/* XXX legacy */
@@ -432,7 +435,7 @@ exit:
 }
 /*@=mustmod@*/
 
-int rpmAddSignature(Header sigh, const char * file, uint32_t sigTag,
+int rpmAddSignature(Header sigh, const char * file, rpmSigTag sigTag,
 		const char * passPhrase)
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
@@ -742,7 +745,7 @@ verifyRSASignature(pgpDig dig, /*@out@*/ char * t,
 #ifdef	NOTYET
     uint32_t siglen = pgpGetSiglen(dig);
 #endif
-    uint32_t sigtag = pgpGetSigtag(dig);
+    rpmSigTag sigtag = pgpGetSigtag(dig);
     pgpDigParams sigp = pgpGetSignature(dig);
     rpmRC res = RPMRC_OK;
     int xx;
@@ -868,7 +871,7 @@ verifyDSASignature(pgpDig dig, /*@out@*/ char * t,
 #ifdef	NOTYET
     uint32_t siglen = pgpGetSiglen(dig);
 #endif
-    uint32_t sigtag = pgpGetSigtag(dig);
+    rpmSigTag sigtag = pgpGetSigtag(dig);
     pgpDigParams sigp = pgpGetSignature(dig);
     rpmRC res;
     int xx;
@@ -954,7 +957,7 @@ rpmVerifySignature(void * _dig, char * result)
     pgpDig dig = _dig;
     const void * sig = pgpGetSig(dig);
     uint32_t siglen = pgpGetSiglen(dig);
-    uint32_t sigtag = pgpGetSigtag(dig);
+    rpmSigTag sigtag = pgpGetSigtag(dig);
     rpmRC res;
 
     if (dig == NULL || sig == NULL || siglen == 0) {
