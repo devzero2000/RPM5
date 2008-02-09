@@ -8,7 +8,7 @@
 
 : ${DIFF:=diff -p}
 
-find $1 \( -name "*$2" -o -name ".*$2" \) -print |
+find $1 \( -name "*$2" -o -name ".*$2" \) -print | sort |
 while read f; do
     U=-u
     [ "`basename $f`" = "ChangeLog$2" ] && U=-U0
