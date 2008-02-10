@@ -9,6 +9,7 @@ Makefile.in
 *.lcd
 *.lo
 gengpg.h
+rpmgrep
 tdigest
 tdir
 tfts
