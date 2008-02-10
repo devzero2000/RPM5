@@ -1,4 +1,5 @@
 5.0.0 -> 5.1a1:
+    - jbj: rpmio: use tmire.c, not -DSTANDALONE, so librpmio doesnt rebuild.
     - jbj: rpmio: add tmire to noinst_PROGRAMS.
     - jbj: rpmio: add --regex/--pcre/--fnmatch/--strcmp tmire match options
     - jbj: mire: add RPMMIRE_PCRE for the pcre(3) inclined.

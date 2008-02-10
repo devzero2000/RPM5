@@ -140,10 +140,8 @@ tmacro.o:  macro.c
 tmagic_SOURCES = tmagic.c
 tmagic_LDADD = $(RPMIO_LDADD)
 
-tmire_SOURCES =
-tmire_LDADD = tmire.o $(RPMIO_LDADD)
-tmire.o:  mire.c
-	$(COMPILE) -DSTANDALONE -o $@ -c $<
+tmire_SOURCES = tmire.c
+tmire_LDADD = $(RPMIO_LDADD)
 
 tput_SOURCES = tput.c
 tput_LDADD = $(RPMIO_LDADD)
