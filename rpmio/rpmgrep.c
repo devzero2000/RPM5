@@ -40,6 +40,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "system.h"
 
 #include <rpmio.h>
+#include <argv.h>
 #include <pcre.h>
 
 #ifdef SUPPORT_LIBZ
@@ -290,8 +291,8 @@ Arguments:
 Returns:    pointer to the last byte of the line
 */
 
-static char *
-end_of_line(char *p, char *endptr, int *lenptr)
+static const char *
+end_of_line(const char *p, const char *endptr, int *lenptr)
 {
     switch(endlinetype) {
     default:      /* Just in case */
@@ -431,8 +432,8 @@ Arguments:
 Returns:    pointer to the start of the previous line
 */
 
-static char *
-previous_line(char *p, char *startptr)
+static const char *
+previous_line(const char *p, char *startptr)
 {
     switch(endlinetype) {
     default:      /* Just in case */
@@ -461,7 +462,7 @@ previous_line(char *p, char *startptr)
     
       while (p > startptr) {
         register int c;
-        char *pp = p - 1;
+        const char *pp = p - 1;
     
         if (utf8) {
           int extra = 0;
@@ -529,14 +530,14 @@ Arguments:
 Returns:            nothing
 */
 
-static void do_after_lines(int lastmatchnumber, char *lastmatchrestart,
+static void do_after_lines(int lastmatchnumber, const char *lastmatchrestart,
   char *endptr, char *printname)
 {
     if (after_context > 0 && lastmatchnumber > 0) {
       int count = 0;
       while (lastmatchrestart < endptr && count++ < after_context) {
         int ellength;
-        char *pp = lastmatchrestart;
+        const char *pp = lastmatchrestart;
         if (printname != NULL) fprintf(stdout, "%s-", printname);
         if (number) fprintf(stdout, "%d-", lastmatchnumber++);
         pp = end_of_line(pp, endptr, &ellength);
@@ -581,7 +582,7 @@ pcregrep(void *handle, int frtype, char *printname)
     int count = 0;
     int filepos = 0;
     int offsets[99];
-    char *lastmatchrestart = NULL;
+    const char *lastmatchrestart = NULL;
     char buffer[3*MBUFTHIRD];
     char *ptr = buffer;
     char *endptr;
@@ -636,7 +637,7 @@ pcregrep(void *handle, int frtype, char *printname)
       int mrc = 0;
       BOOL match = FALSE;
       char *matchptr = ptr;
-      char *t = ptr;
+      const char *t = ptr;
       size_t length, linelength;
     
       /* At this point, ptr is at the start of a line. We need to find the length
@@ -793,7 +794,7 @@ pcregrep(void *handle, int frtype, char *printname)
           if (after_context > 0 && lastmatchnumber > 0) {
             int ellength;
             int linecount = 0;
-            char *p = lastmatchrestart;
+            const char *p = lastmatchrestart;
     
             while (p < ptr && linecount < after_context) {
               p = end_of_line(p, ptr, &ellength);
@@ -805,7 +806,7 @@ pcregrep(void *handle, int frtype, char *printname)
             each line's data using fwrite() in case there are binary zeroes. */
     
             while (lastmatchrestart < p) {
-              char *pp = lastmatchrestart;
+              const char *pp = lastmatchrestart;
               if (printname != NULL) fprintf(stdout, "%s-", printname);
               if (number) fprintf(stdout, "%d-", lastmatchnumber++);
               pp = end_of_line(pp, endptr, &ellength);
@@ -828,7 +829,7 @@ pcregrep(void *handle, int frtype, char *printname)
     
           if (before_context > 0) {
             int linecount = 0;
-            char *p = ptr;
+            const char *p = ptr;
     
             while (p > buffer && (lastmatchnumber == 0 || p > lastmatchrestart) &&
                    linecount < before_context)
@@ -842,7 +843,7 @@ pcregrep(void *handle, int frtype, char *printname)
     
             while (p < ptr) {
               int ellength;
-              char *pp = p;
+              const char *pp = p;
               if (printname != NULL) fprintf(stdout, "%s-", printname);
               if (number) fprintf(stdout, "%d-", linenumber - linecount--);
               pp = end_of_line(pp, endptr, &ellength);
@@ -868,7 +869,7 @@ pcregrep(void *handle, int frtype, char *printname)
     
           if (multiline) {
             int ellength;
-            char *endmatch = ptr;
+            const char *endmatch = ptr;
             if (!invert) {
               endmatch += offsets[1];
               t = ptr;
@@ -928,7 +929,7 @@ pcregrep(void *handle, int frtype, char *printname)
     
       if (multiline && invert && match) {
         int ellength;
-        char *endmatch = ptr + offsets[1];
+        const char *endmatch = ptr + offsets[1];
         t = ptr;
         while (t < endmatch) {
           t = end_of_line(t, endptr, &ellength);
@@ -1419,7 +1420,7 @@ Returns:         TRUE on success, FALSE after an error
 */
 
 static BOOL
-compile_single_pattern(char *pattern, int options, char *filename, int count)
+compile_single_pattern(const char *pattern, int options, char *filename, int count)
 {
     char buffer[MBUFTHIRD + 16];
     const char *error;
@@ -1479,14 +1480,14 @@ Returns:         TRUE on success, FALSE after an error
 */
 
 static BOOL
-compile_pattern(char *pattern, int options, char *filename, int count)
+compile_pattern(const char *pattern, int options, char *filename, int count)
 {
     if ((process_options & PO_FIXED_STRINGS) != 0) {
-      char *eop = pattern + strlen(pattern);
+      const char *eop = pattern + strlen(pattern);
       char buffer[MBUFTHIRD];
       for(;;) {
         int ellength;
-        char *p = end_of_line(pattern, eop, &ellength);
+        const char *p = end_of_line(pattern, eop, &ellength);
         if (ellength == 0)
           return compile_single_pattern(pattern, options, filename, count);
         sprintf(buffer, "%.*s", (int)(p - pattern - ellength), pattern);
@@ -1510,13 +1511,14 @@ main(int argc, char **argv)
     int i, j;
     int rc = 1;
     int pcre_options = 0;
-    int cmd_pattern_count = 0;
     int hint_count = 0;
     int errptr;
     BOOL only_one_at_top;
-    char *patterns[MAX_PATTERN_COUNT];
+    ARGV_t patterns = NULL;
+    int npatterns = 0;
     const char *locale_from = "--locale";
     const char *error;
+    int xx;
     
     /* Set the default line ending value from the default in the PCRE library;
     "lf", "cr", "crlf", and "any" are supported. Anything else is treated as "lf".
@@ -1694,12 +1696,7 @@ main(int argc, char **argv)
       multiple times to create a list of patterns. */
     
       if (op->type == OP_PATLIST) {
-        if (cmd_pattern_count >= MAX_PATTERN_COUNT) {
-          fprintf(stderr, "pcregrep: Too many command-line patterns (max %d)\n",
-            MAX_PATTERN_COUNT);
-          return 2;
-        }
-        patterns[cmd_pattern_count++] = option_data;
+	xx = argvAdd(&patterns, option_data);
       }
     
       /* Otherwise, deal with single string or numeric data values. */
@@ -1858,24 +1855,26 @@ main(int argc, char **argv)
     
     if (pattern_list == NULL || hints_list == NULL) {
       fprintf(stderr, "pcregrep: malloc failed\n");
-      goto EXIT2;
+      goto errorexit;
     }
     
     /* If no patterns were provided by -e, and there is no file provided by -f,
     the first argument is the one and only pattern, and it must exist. */
     
-    if (cmd_pattern_count == 0 && pattern_filename == NULL) {
+    npatterns = argvCount(patterns);
+    if (npatterns == 0 && pattern_filename == NULL) {
       if (i >= argc) return usage(2);
-      patterns[cmd_pattern_count++] = argv[i++];
+	xx = argvAdd(&patterns, argv[i++]);
     }
     
     /* Compile the patterns that were provided on the command line, either by
     multiple uses of -e or as a single unkeyed pattern. */
     
-    for (j = 0; j < cmd_pattern_count; j++) {
+    npatterns = argvCount(patterns);
+    for (j = 0; j < npatterns; j++) {
       if (!compile_pattern(patterns[j], pcre_options, NULL,
-           (j == 0 && cmd_pattern_count == 1)? 0 : j + 1))
-        goto EXIT2;
+           (j == 0 && npatterns == 1)? 0 : j + 1))
+        goto errorexit;
     }
     
     /* Compile the regular expressions that are provided in a file. */
@@ -1894,7 +1893,7 @@ main(int argc, char **argv)
         if (f == NULL) {
           fprintf(stderr, "pcregrep: Failed to open %s: %s\n", pattern_filename,
             strerror(errno));
-          goto EXIT2;
+          goto errorexit;
         }
         filename = pattern_filename;
       }
@@ -1906,7 +1905,7 @@ main(int argc, char **argv)
         linenumber++;
         if (buffer[0] == 0) continue;   /* Skip blank lines */
         if (!compile_pattern(buffer, pcre_options, filename, linenumber))
-          goto EXIT2;
+          goto errorexit;
       }
     
       if (f != stdin) fclose(f);
@@ -1920,7 +1919,7 @@ main(int argc, char **argv)
         char s[16];
         if (pattern_count == 1) s[0] = 0; else sprintf(s, " number %d", j);
         fprintf(stderr, "pcregrep: Error while studying regex%s: %s\n", s, error);
-        goto EXIT2;
+        goto errorexit;
       }
       hint_count++;
     }
@@ -1933,7 +1932,7 @@ main(int argc, char **argv)
       if (exclude_compiled == NULL) {
         fprintf(stderr, "pcregrep: Error in 'exclude' regex at offset %d: %s\n",
           errptr, error);
-        goto EXIT2;
+        goto errorexit;
       }
     }
     
@@ -1943,7 +1942,7 @@ main(int argc, char **argv)
       if (include_compiled == NULL) {
         fprintf(stderr, "pcregrep: Error in 'include' regex at offset %d: %s\n",
           errptr, error);
-        goto EXIT2;
+        goto errorexit;
       }
     }
     
@@ -1951,7 +1950,7 @@ main(int argc, char **argv)
     
     if (i >= argc) {
       rc = pcregrep(stdin, FR_PLAIN, (filenames > FN_DEFAULT)? stdin_name : NULL);
-      goto EXIT;
+      goto exit;
     }
     
     /* Otherwise, work through the remaining arguments as files or directories.
@@ -1968,7 +1967,7 @@ main(int argc, char **argv)
         else if (frc == 0 && rc == 1) rc = 0;
     }
     
-EXIT:
+exit:
     if (pattern_list != NULL) {
       for (i = 0; i < pattern_count; i++) free(pattern_list[i]);
       free(pattern_list);
@@ -1977,9 +1976,12 @@ EXIT:
       for (i = 0; i < hint_count; i++) free(hints_list[i]);
       free(hints_list);
     }
+
+    patterns = argvFree(patterns);
+
     return rc;
     
-EXIT2:
+errorexit:
     rc = 2;
-    goto EXIT;
+    goto exit;
 }
