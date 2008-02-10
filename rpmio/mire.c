@@ -39,6 +39,12 @@ fprintf(stderr, "--> mireClean(%p)\n", mire);
 #endif
 	mire->pcre = NULL;
     }
+    if (mire->hints != NULL) {
+#ifdef	WITH_PCRE
+	pcre_free(mire->hints);
+#endif
+	mire->hints = NULL;
+    }
     mire->errmsg = NULL;
     mire->erroff = 0;
     mire->errcode = 0;

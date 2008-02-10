@@ -40,6 +40,10 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "system.h"
 
 #include <rpmio.h>
+
+#define _MIRE_INTERNAL
+#include <mire.h>
+
 #include <argv.h>
 #include <pcre.h>
 
@@ -122,8 +126,7 @@ static char *locale = NULL;
 static const unsigned char *pcretables = NULL;
 
 static int  pattern_count = 0;
-static pcre **pattern_list = NULL;
-static pcre_extra **hints_list = NULL;
+static miRE pattern_list = NULL;
 
 static char *include_pattern = NULL;
 static char *exclude_pattern = NULL;
@@ -681,8 +684,10 @@ pcregrep(void *handle, int frtype, char *printname)
           if (gettimeofday(&start_time, &dummy) != 0)
                   perror("bad gettimeofday");
     
-          for (i = 0; i < jfriedl_XR; i++)
-              match = (pcre_exec(pattern_list[0], hints_list[0], ptr, length, 0, 0, offsets, 99) >= 0);
+          for (i = 0; i < jfriedl_XR; i++) {
+              miRE mire = pattern_list;
+              match = (pcre_exec(mire->pcre, mire->hints, ptr, length, 0, 0, offsets, 99) >= 0);
+          }
     
           if (gettimeofday(&end_time, &dummy) != 0)
                   perror("bad gettimeofday");
@@ -705,7 +710,8 @@ pcregrep(void *handle, int frtype, char *printname)
       the final newline in the subject string. */
     
       for (i = 0; i < pattern_count; i++) {
-        mrc = pcre_exec(pattern_list[i], hints_list[i], matchptr, length, 0, 0,
+        miRE mire = pattern_list + i;
+        mrc = pcre_exec(mire->pcre, mire->hints, matchptr, length, 0, 0,
           offsets, 99);
         if (mrc >= 0) { match = TRUE; break; }
         if (mrc != PCRE_ERROR_NOMATCH) {
@@ -1422,6 +1428,7 @@ Returns:         TRUE on success, FALSE after an error
 static BOOL
 compile_single_pattern(const char *pattern, int options, char *filename, int count)
 {
+    miRE mire;
     char buffer[MBUFTHIRD + 16];
     const char *error;
     int errptr;
@@ -1431,12 +1438,12 @@ compile_single_pattern(const char *pattern, int options, char *filename, int cou
         (filename == NULL)? "command-line " : "", MAX_PATTERN_COUNT);
       return FALSE;
     }
+    mire = pattern_list + pattern_count;
     
     sprintf(buffer, "%s%.*s%s", prefix[process_options], MBUFTHIRD, pattern,
       suffix[process_options]);
-    pattern_list[pattern_count] =
-      pcre_compile(buffer, options, &error, &errptr, pcretables);
-    if (pattern_list[pattern_count] != NULL) {
+    mire->pcre = pcre_compile(buffer, options, &error, &errptr, pcretables);
+    if (mire->pcre != NULL) {
       pattern_count++;
       return TRUE;
     }
@@ -1503,6 +1510,57 @@ compile_pattern(const char *pattern, int options, char *filename, int count)
 *                Main program                    *
 *************************************************/
 
+/**
+ * Destroy compiled patterns.
+ * @param mire		pattern array
+ * @param nre		no of patterns in array
+ * @return		NULL always 
+ */
+/*@-onlytrans@*/	/* XXX miRE array, not refcounted. */
+/*@null@*/
+static void * mireFreeAll(/*@only@*/ /*@null@*/ miRE mire, int nre)
+	/*@modifies mire@*/
+{
+    if (mire != NULL) {
+	int i;
+	for (i = 0; i < nre; i++)
+	    (void) mireClean(mire + i);
+	mire = _free(mire);
+    }
+    return NULL;
+}
+/*@=onlytrans@*/
+
+/**
+ * Append pattern to array.
+ * @param mode		type of pattern match
+ * @param tag		identifier (like an rpmTag)
+ * @param pattern	pattern to compile
+ * @retval *mi_rep	platform pattern array
+ * @retval *mi_nrep	no. of patterns in array
+ */
+/*@-onlytrans@*/	/* XXX miRE array, not refcounted. */
+/*@null@*/
+static int mireAppend(rpmMireMode mode, int tag, const char * pattern,
+		miRE * mi_rep, int * mi_nrep)
+	/*@modifies *mi_rep, *mi_nrep @*/
+{
+    miRE mire;
+
+    mire = (*mi_rep);
+/*@-refcounttrans@*/
+    mire = xrealloc(mire, ((*mi_nrep) + 1) * sizeof(*mire));
+/*@=refcounttrans@*/
+    (*mi_rep) = mire;
+    mire += (*mi_nrep);
+    (*mi_nrep)++;
+    memset(mire, 0, sizeof(*mire));
+    mire->mode = mode;
+    mire->tag = tag;
+    return mireRegcomp(mire, pattern);
+}
+/*@=onlytrans@*/
+
 /* Returns 0 if something matched, 1 if nothing matched, 2 after an error. */
 
 int
@@ -1511,7 +1569,6 @@ main(int argc, char **argv)
     int i, j;
     int rc = 1;
     int pcre_options = 0;
-    int hint_count = 0;
     int errptr;
     BOOL only_one_at_top;
     ARGV_t patterns = NULL;
@@ -1849,18 +1906,10 @@ main(int argc, char **argv)
     #endif
     
     /* Get memory to store the pattern and hints lists. */
-    
-    pattern_list = (pcre **)malloc(MAX_PATTERN_COUNT * sizeof(pcre *));
-    hints_list = (pcre_extra **)malloc(MAX_PATTERN_COUNT * sizeof(pcre_extra *));
-    
-    if (pattern_list == NULL || hints_list == NULL) {
-      fprintf(stderr, "pcregrep: malloc failed\n");
-      goto errorexit;
-    }
+    pattern_list = xcalloc(MAX_PATTERN_COUNT, sizeof(*pattern_list));
     
     /* If no patterns were provided by -e, and there is no file provided by -f,
     the first argument is the one and only pattern, and it must exist. */
-    
     npatterns = argvCount(patterns);
     if (npatterns == 0 && pattern_filename == NULL) {
       if (i >= argc) return usage(2);
@@ -1869,7 +1918,6 @@ main(int argc, char **argv)
     
     /* Compile the patterns that were provided on the command line, either by
     multiple uses of -e or as a single unkeyed pattern. */
-    
     npatterns = argvCount(patterns);
     for (j = 0; j < npatterns; j++) {
       if (!compile_pattern(patterns[j], pcre_options, NULL,
@@ -1878,7 +1926,6 @@ main(int argc, char **argv)
     }
     
     /* Compile the regular expressions that are provided in a file. */
-    
     if (pattern_filename != NULL) {
       int linenumber = 0;
       FILE *f;
@@ -1912,16 +1959,15 @@ main(int argc, char **argv)
     }
     
     /* Study the regular expressions, as we will be running them many times */
-    
     for (j = 0; j < pattern_count; j++) {
-      hints_list[j] = pcre_study(pattern_list[j], 0, &error);
+      miRE mire = pattern_list + j;
+      mire->hints = pcre_study(mire->pcre, 0, &error);
       if (error != NULL) {
         char s[16];
         if (pattern_count == 1) s[0] = 0; else sprintf(s, " number %d", j);
         fprintf(stderr, "pcregrep: Error while studying regex%s: %s\n", s, error);
         goto errorexit;
       }
-      hint_count++;
     }
     
     /* If there are include or exclude patterns, compile them. */
@@ -1968,14 +2014,7 @@ main(int argc, char **argv)
     }
     
 exit:
-    if (pattern_list != NULL) {
-      for (i = 0; i < pattern_count; i++) free(pattern_list[i]);
-      free(pattern_list);
-    }
-    if (hints_list != NULL) {
-      for (i = 0; i < hint_count; i++) free(hints_list[i]);
-      free(hints_list);
-    }
+    pattern_list = mireFreeAll(pattern_list, pattern_count);
 
     patterns = argvFree(patterns);
 

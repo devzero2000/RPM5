@@ -60,7 +60,8 @@ struct miRE_s {
     const char *pattern;	/*!< pattern string */
 /*@only@*/ /*@relnull@*/
     regex_t *preg;		/*!< regex compiled pattern buffer */
-    void *pcre;			/*!< pcre comiled pattern buffer. */
+    void *pcre;			/*!< pcre compiled pattern buffer. */
+    void *hints;		/*!< pcre compiled pattern hints buffer. */
     const char * errmsg;	/*!< pcre error message. */
     int erroff;			/*!< pcre error offset. */
     int errcode;		/*!< pcre error code. */
