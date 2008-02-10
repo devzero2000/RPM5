@@ -131,18 +131,17 @@ int mireRegexec(miRE mire, const char * val, size_t vallen)
 	    rc = -1;
 	}
 	break;
-#ifdef	WITH_PCRE
     case RPMMIRE_PCRE:
+#ifdef	WITH_PCRE
 	if (vallen == 0)
 	    vallen = strlen(val);
 	rc = pcre_exec(mire->pcre, mire->hints, val, vallen, 0,
 		mire->eoptions, mire->offsets, mire->noffsets);
-	if (rc && rc != PCRE_ERROR_NOMATCH) {
-	    rpmlog(RPMLOG_ERR, _("%s: pcre_exec failed: return %d\n"), rc);
-	    rc = -1;
+	if (rc < 0 && rc != PCRE_ERROR_NOMATCH) {
+	    rpmlog(RPMLOG_ERR, _("pcre_exec failed: return %d\n"), rc);
 	}
 #else
-	rc = -1;
+	rc = -99;
 #endif
 	break;
     case RPMMIRE_GLOB:
@@ -157,7 +156,7 @@ int mireRegexec(miRE mire, const char * val, size_t vallen)
 
 /*@-modfilesys@*/
 if (_mire_debug)
-fprintf(stderr, "--> mireRegexec(%p, \"%s\", %u) rc %d\n", mire, val, (unsigned)vallen, rc);
+fprintf(stderr, "--> mireRegexec(%p, %p[%u]) rc %d mode %d\t\"%.*s\"\n", mire, val, (unsigned)vallen, rc, mire->mode, vallen, val);
 /*@=modfilesys@*/
     return rc;
 }
@@ -172,20 +171,23 @@ int mireRegcomp(miRE mire, const char * pattern)
     case RPMMIRE_DEFAULT:
     case RPMMIRE_STRCMP:
 	break;
-#ifdef	WITH_PCRE
     case RPMMIRE_PCRE:
+#ifdef	WITH_PCRE
 	if (mire->coptions == 0)
 	    mire->coptions = 0;		/* XXX defaults? */
+	mire->errcode = 0;
+	mire->errmsg = NULL;
+	mire->erroff = 0;
 	mire->pcre = pcre_compile2(mire->pattern, mire->coptions,
 		&mire->errcode, &mire->errmsg, &mire->erroff, mire->table);
 	if (mire->pcre == NULL) {
 	    rpmlog(RPMLOG_ERR,
-		_("%s: pcre_compile2 failed: %s(%d) at offset %d\n"),
-		mire->pattern, mire->errmsg, mire->errcode, mire->erroff);
+		_("pcre_compile2 failed: %s(%d) at offset %d of \"%s\"\n"),
+		mire->errmsg, mire->errcode, mire->erroff, mire->pattern);
 	    rc = -1;
 	}
 #else
-	rc = -1;
+	rc = -99;
 #endif
 	break;
     case RPMMIRE_REGEX:
