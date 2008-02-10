@@ -11,3 +11,15 @@ tsbt
 *.la
 *.lcd
 *.lo
+.gnupg
+DSA.pem
+DSA.pub
+DSA.pubpem
+DSA.sig
+DSA.sigpem
+RSA.pem
+RSA.pub
+RSA.pubpem
+RSA.sig
+RSA.sigpem
+plaintext
