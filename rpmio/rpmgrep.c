@@ -152,75 +152,6 @@ static BOOL quiet = FALSE;
 static BOOL silent = FALSE;
 static BOOL utf8 = FALSE;
 
-/* Structure for options and list of them */
-
-enum { OP_NODATA, OP_STRING, OP_OP_STRING, OP_NUMBER, OP_OP_NUMBER,
-       OP_PATLIST };
-
-typedef struct option_item {
-  int type;
-  int one_char;
-  void *dataptr;
-  const char *long_name;
-  const char *help_text;
-} option_item;
-
-/* Options without a single-letter equivalent get a negative value. This can be
-used to identify them. */
-
-#define N_COLOUR    (-1)
-#define N_EXCLUDE   (-2)
-#define N_HELP      (-3)
-#define N_INCLUDE   (-4)
-#define N_LABEL     (-5)
-#define N_LOCALE    (-6)
-#define N_NULL      (-7)
-#define N_LOFFSETS  (-8)
-#define N_FOFFSETS  (-9)
-
-static option_item optionlist[] = {
-  { OP_NODATA,    N_NULL,   NULL,              "",              "  terminate options" },
-  { OP_NODATA,    N_HELP,   NULL,              "help",          "display this help and exit" },
-  { OP_NUMBER,    'A',      &after_context,    "after-context=number", "set number of following context lines" },
-  { OP_NUMBER,    'B',      &before_context,   "before-context=number", "set number of prior context lines" },
-  { OP_OP_STRING, N_COLOUR, &colour_option,    "color=option",  "matched text color option" },
-  { OP_NUMBER,    'C',      &both_context,     "context=number", "set number of context lines, before & after" },
-  { OP_NODATA,    'c',      NULL,              "count",         "print only a count of matching lines per FILE" },
-  { OP_OP_STRING, N_COLOUR, &colour_option,    "colour=option", "matched text colour option" },
-  { OP_STRING,    'D',      &DEE_option,       "devices=action","how to handle devices, FIFOs, and sockets" },
-  { OP_STRING,    'd',      &dee_option,       "directories=action", "how to handle directories" },
-  { OP_PATLIST,   'e',      NULL,              "regex(p)",      "specify pattern (may be used more than once)" },
-  { OP_NODATA,    'F',      NULL,              "fixed_strings", "patterns are sets of newline-separated strings" },
-  { OP_STRING,    'f',      &pattern_filename, "file=path",     "read patterns from file" },
-  { OP_NODATA,    N_FOFFSETS, NULL,            "file-offsets",  "output file offsets, not text" },
-  { OP_NODATA,    'H',      NULL,              "with-filename", "force the prefixing filename on output" },
-  { OP_NODATA,    'h',      NULL,              "no-filename",   "suppress the prefixing filename on output" },
-  { OP_NODATA,    'i',      NULL,              "ignore-case",   "ignore case distinctions" },
-  { OP_NODATA,    'l',      NULL,              "files-with-matches", "print only FILE names containing matches" },
-  { OP_NODATA,    'L',      NULL,              "files-without-match","print only FILE names not containing matches" },
-  { OP_STRING,    N_LABEL,  &stdin_name,       "label=name",    "set name for standard input" },
-  { OP_NODATA,    N_LOFFSETS, NULL,            "line-offsets",  "output line numbers and offsets, not text" },
-  { OP_STRING,    N_LOCALE, &locale,           "locale=locale", "use the named locale" },
-  { OP_NODATA,    'M',      NULL,              "multiline",     "run in multiline mode" },
-  { OP_STRING,    'N',      &newline,          "newline=type",  "set newline type (CR, LF, CRLF, ANYCRLF or ANY)" },
-  { OP_NODATA,    'n',      NULL,              "line-number",   "print line number with output lines" },
-  { OP_NODATA,    'o',      NULL,              "only-matching", "show only the part of the line that matched" },
-  { OP_NODATA,    'q',      NULL,              "quiet",         "suppress output, just set return code" },
-  { OP_NODATA,    'r',      NULL,              "recursive",     "recursively scan sub-directories" },
-  { OP_STRING,    N_EXCLUDE,&exclude_pattern,  "exclude=pattern","exclude matching files when recursing" },
-  { OP_STRING,    N_INCLUDE,&include_pattern,  "include=pattern","include matching files when recursing" },
-#ifdef JFRIEDL_DEBUG
-  { OP_OP_NUMBER, 'S',      &S_arg,            "jeffS",         "replace matched (sub)string with X" },
-#endif
-  { OP_NODATA,    's',      NULL,              "no-messages",   "suppress error messages" },
-  { OP_NODATA,    'u',      NULL,              "utf-8",         "use UTF-8 mode" },
-  { OP_NODATA,    'V',      NULL,              "version",       "print version information and exit" },
-  { OP_NODATA,    'v',      NULL,              "invert-match",  "select non-matching lines" },
-  { OP_NODATA,    'w',      NULL,              "word-regex(p)", "force patterns to match only as words"  },
-  { OP_NODATA,    'x',      NULL,              "line-regex(p)", "force patterns to match only whole lines" },
-  { OP_NODATA,    0,        NULL,               NULL,            NULL }
-};
-
 /* Tables for prefixing and suffixing patterns, according to the -w, -x, and -F
 options. These set the 1, 2, and 4 bits in process_options, respectively. Note
 that the combination of -w and -x has the same effect as -x on its own, so we
@@ -1270,6 +1201,74 @@ grep_or_recurse(char *pathname, BOOL dir_recurse, BOOL only_one_at_top)
     return rc;	/* Pass back the yield from pcregrep(). */
 }
 
+/* Structure for options and list of them */
+
+enum { OP_NODATA, OP_STRING, OP_OP_STRING, OP_NUMBER, OP_OP_NUMBER,
+       OP_PATLIST };
+
+typedef struct option_item {
+  int type;
+  int one_char;
+  void *dataptr;
+  const char *long_name;
+  const char *help_text;
+} option_item;
+
+/* Options without a single-letter equivalent get a negative value. This can be
+used to identify them. */
+
+#define N_COLOUR    (-1)
+#define N_EXCLUDE   (-2)
+#define N_HELP      (-3)
+#define N_INCLUDE   (-4)
+#define N_LABEL     (-5)
+#define N_LOCALE    (-6)
+#define N_NULL      (-7)
+#define N_LOFFSETS  (-8)
+#define N_FOFFSETS  (-9)
+
+static option_item optionlist[] = {
+  { OP_NODATA,    N_NULL,   NULL,              "",              "  terminate options" },
+  { OP_NODATA,    N_HELP,   NULL,              "help",          "display this help and exit" },
+  { OP_NUMBER,    'A',      &after_context,    "after-context=number", "set number of following context lines" },
+  { OP_NUMBER,    'B',      &before_context,   "before-context=number", "set number of prior context lines" },
+  { OP_OP_STRING, N_COLOUR, &colour_option,    "color=option",  "matched text color option" },
+  { OP_NUMBER,    'C',      &both_context,     "context=number", "set number of context lines, before & after" },
+  { OP_NODATA,    'c',      NULL,              "count",         "print only a count of matching lines per FILE" },
+  { OP_OP_STRING, N_COLOUR, &colour_option,    "colour=option", "matched text colour option" },
+  { OP_STRING,    'D',      &DEE_option,       "devices=action","how to handle devices, FIFOs, and sockets" },
+  { OP_STRING,    'd',      &dee_option,       "directories=action", "how to handle directories" },
+  { OP_PATLIST,   'e',      NULL,              "regex(p)",      "specify pattern (may be used more than once)" },
+  { OP_NODATA,    'F',      NULL,              "fixed_strings", "patterns are sets of newline-separated strings" },
+  { OP_STRING,    'f',      &pattern_filename, "file=path",     "read patterns from file" },
+  { OP_NODATA,    N_FOFFSETS, NULL,            "file-offsets",  "output file offsets, not text" },
+  { OP_NODATA,    'H',      NULL,              "with-filename", "force the prefixing filename on output" },
+  { OP_NODATA,    'h',      NULL,              "no-filename",   "suppress the prefixing filename on output" },
+  { OP_NODATA,    'i',      NULL,              "ignore-case",   "ignore case distinctions" },
+  { OP_NODATA,    'l',      NULL,              "files-with-matches", "print only FILE names containing matches" },
+  { OP_NODATA,    'L',      NULL,              "files-without-match","print only FILE names not containing matches" },
+  { OP_STRING,    N_LABEL,  &stdin_name,       "label=name",    "set name for standard input" },
+  { OP_NODATA,    N_LOFFSETS, NULL,            "line-offsets",  "output line numbers and offsets, not text" },
+  { OP_STRING,    N_LOCALE, &locale,           "locale=locale", "use the named locale" },
+  { OP_NODATA,    'M',      NULL,              "multiline",     "run in multiline mode" },
+  { OP_STRING,    'N',      &newline,          "newline=type",  "set newline type (CR, LF, CRLF, ANYCRLF or ANY)" },
+  { OP_NODATA,    'n',      NULL,              "line-number",   "print line number with output lines" },
+  { OP_NODATA,    'o',      NULL,              "only-matching", "show only the part of the line that matched" },
+  { OP_NODATA,    'q',      NULL,              "quiet",         "suppress output, just set return code" },
+  { OP_NODATA,    'r',      NULL,              "recursive",     "recursively scan sub-directories" },
+  { OP_STRING,    N_EXCLUDE,&exclude_pattern,  "exclude=pattern","exclude matching files when recursing" },
+  { OP_STRING,    N_INCLUDE,&include_pattern,  "include=pattern","include matching files when recursing" },
+#ifdef JFRIEDL_DEBUG
+  { OP_OP_NUMBER, 'S',      &S_arg,            "jeffS",         "replace matched (sub)string with X" },
+#endif
+  { OP_NODATA,    's',      NULL,              "no-messages",   "suppress error messages" },
+  { OP_NODATA,    'u',      NULL,              "utf-8",         "use UTF-8 mode" },
+  { OP_NODATA,    'V',      NULL,              "version",       "print version information and exit" },
+  { OP_NODATA,    'v',      NULL,              "invert-match",  "select non-matching lines" },
+  { OP_NODATA,    'w',      NULL,              "word-regex(p)", "force patterns to match only as words"  },
+  { OP_NODATA,    'x',      NULL,              "line-regex(p)", "force patterns to match only whole lines" },
+  { OP_NODATA,    0,        NULL,               NULL,            NULL }
+};
 /*************************************************
 *                Usage function                  *
 *************************************************/
