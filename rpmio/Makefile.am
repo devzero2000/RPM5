@@ -6,9 +6,9 @@ LINT = splint
 
 EXTRA_DIST = gengpg.sh thkp.c thtml.c tinv.c tkey.c tput.c trpmio.c lookup3.c tpw.c librpmio.vers
 
-EXTRA_PROGRAMS = thkp thtml tinv tkey tmacro tmagic tmire tput tpw trpmio tsw dumpasn1 lookup3
+EXTRA_PROGRAMS = thkp thtml tinv tkey tmacro tmagic tput tpw trpmio tsw dumpasn1 lookup3
 
-noinst_PROGRAMS = tdir tfts tget tglob
+noinst_PROGRAMS = tdir tfts tget tglob tmire
 noinst_SCRIPTS = testit.sh
 
 TESTS = testit.sh

@@ -1,4 +1,6 @@
 5.0.0 -> 5.1a1:
+    - jbj: rpmio: add tmire to noinst_PROGRAMS.
+    - jbj: rpmio: add --regex/--pcre/--fnmatch/--strcmp tmire match options
     - jbj: mire: add RPMMIRE_PCRE for the pcre(3) inclined.
     - jbj: tweak up tmire with rpmioAllPoptTable.
     - jbj: rpmio: add global __debug to use common rpmioAllPopt --debug option.

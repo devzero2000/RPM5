@@ -216,14 +216,25 @@ fprintf(stderr, "--> mireRegcomp(%p, \"%s\") rc %d\n", mire, pattern, rc);
 
 #if defined(STANDALONE)
 
-#include <rpmcb.h>
-#include <argv.h>
-#include <popt.h>
+#include <poptIO.h>
 
-static int _debug = 0;
+static rpmMireMode mireMode = RPMMIRE_REGEX;
 
 static struct poptOption optionsTable[] = {
- { "debug", 'd', POPT_ARG_VAL,	&_debug, -1,		NULL, NULL },
+
+ { "strcmp", '\0', POPT_ARG_VAL,	&mireMode, RPMMIRE_STRCMP,
+	N_("use strcmp matching"), NULL},
+ { "regex", '\0', POPT_ARG_VAL,		&mireMode, RPMMIRE_REGEX,
+	N_("use regex matching"), NULL},
+ { "fnmatch", '\0', POPT_ARG_VAL,	&mireMode, RPMMIRE_GLOB,
+	N_("use fnmatch matching"), NULL},
+ { "pcre", '\0', POPT_ARG_VAL,		&mireMode, RPMMIRE_PCRE,
+	N_("use pcre matching"), NULL},
+
+ { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmioAllPoptTable, 0,
+	N_("Common options for all rpmio executables:"),
+	NULL },
+
   POPT_AUTOHELP
   POPT_TABLEEND
 };
@@ -231,62 +242,48 @@ static struct poptOption optionsTable[] = {
 int
 main(int argc, char *argv[])
 {
-    poptContext optCon = poptGetContext(argv[0], argc, argv, optionsTable, 0);
+    poptContext optCon = rpmioInit(argc, argv, optionsTable);
     miRE mire = NULL;
     ARGV_t av = NULL;
     int ac = 0;
-    int rc;
+    int rc = 1;
     int xx;
     int i;
 
-    while ((rc = poptGetNextOpt(optCon)) > 0) {
-        const char * optArg = poptGetOptArg(optCon);
-        optArg = _free(optArg);
-	switch (rc) {
-	case 'v':
-	    rpmIncreaseVerbosity();
-	    /*@switchbreak@*/ break;
-	default:
-	    poptPrintUsage(optCon, stderr, 0);
-	    goto exit;
-            /*@switchbreak@*/ break;
-	}
-    }
-
-    if (_debug) {
-	rpmIncreaseVerbosity();
-	rpmIncreaseVerbosity();
+    if (__debug) {
 _mire_debug = 1;
     }
 
     av = poptGetArgs(optCon);
-    ac = argvCount(av);
-    if (ac != 1) {
-	poptPrintUsage(optCon, stderr, 0);
+    if ((ac = argvCount(av)) != 1)
 	goto exit;
-    }
 
-    mire = mireNew(RPMMIRE_REGEX, 0);
-    if ((xx = mireRegcomp(mire, argv[1])) != 0)
+    mire = mireNew(mireMode, 0);
+    if ((rc = mireRegcomp(mire, av[0])) != 0)
 	goto exit;
     
-    xx = argvFgets(&av, NULL);
-    ac = argvCount(av);
+    av = NULL;
+    if ((rc = argvFgets(&av, NULL)) != 0)
+	goto exit;
 
+    rc = 1;	/* assume nomatch failure. */
+    ac = argvCount(av);
+    if (av && *av)
     for (i = 0; i < ac; i++) {
 	xx = mireRegexec(mire, av[i]);
-	if (xx == 0)
+	if (xx == 0) {
 	    fprintf(stdout, "%s\n", av[i]);
+	    rc = 0;
+	}
     }
+    av = argvFree(av);
 
 exit:
     mire = mireFree(mire);
 
-    av = argvFree(av);
+    optCon = rpmioFini(optCon);
 
-    optCon = poptFreeContext(optCon);
-
-    return 0;
+    return rc;
 }
 
 #endif	/* STANDALONE */
