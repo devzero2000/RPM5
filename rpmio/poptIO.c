@@ -93,9 +93,11 @@ extern const char *rpmluaFiles;
 #endif
 #endif
 
+#ifdef	NOTYET
 #if defined(RPM_VENDOR_OPENPKG) /* support-rpmpopt-option */
 /*@unchecked@*/
 static char *rpmpoptfiles = RPMPOPTFILES;
+#endif
 #endif
 
 /**
@@ -391,8 +393,10 @@ rpmioInit(int argc, char *const argv[], struct poptOption * optionsTable)
     char *path_buf, *path, *path_next;
 #endif
     int rc;
+#ifdef	NOTYET
 #if defined(RPM_VENDOR_OPENPKG) /* support-rpmpopt-option */
     int i;
+#endif
 #endif
 
 #if defined(HAVE_MCHECK_H) && defined(HAVE_MTRACE)
