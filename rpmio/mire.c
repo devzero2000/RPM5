@@ -133,8 +133,8 @@ int mireRegexec(miRE mire, const char * val)
 	break;
 #ifdef	WITH_PCRE
     case RPMMIRE_PCRE:
-	rc = pcre_exec(mire->pcre, NULL, val, (int)strlen(val), 0,
-		mire->eoptions, NULL, 0);
+	rc = pcre_exec(mire->pcre, mire->hints, val, (int)strlen(val), 0,
+		mire->eoptions, mire->offsets, mire->noffsets);
 	if (rc && rc != PCRE_ERROR_NOMATCH) {
 	    rpmlog(RPMLOG_ERR, _("%s: pcre_exec failed: return %d\n"), rc);
 	    rc = -1;
@@ -175,7 +175,7 @@ int mireRegcomp(miRE mire, const char * pattern)
 	if (mire->coptions == 0)
 	    mire->coptions = 0;		/* XXX defaults? */
 	mire->pcre = pcre_compile2(mire->pattern, mire->coptions,
-		&mire->errcode, &mire->errmsg, &mire->erroff, NULL);
+		&mire->errcode, &mire->errmsg, &mire->erroff, mire->table);
 	if (mire->pcre == NULL) {
 	    rpmlog(RPMLOG_ERR,
 		_("%s: pcre_compile2 failed: %s(%d) at offset %d\n"),

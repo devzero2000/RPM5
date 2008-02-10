@@ -131,8 +131,8 @@ static miRE pattern_list = NULL;
 static char *include_pattern = NULL;
 static char *exclude_pattern = NULL;
 
-static pcre *include_compiled = NULL;
-static pcre *exclude_compiled = NULL;
+static miRE includeMire = NULL;
+static miRE excludeMire = NULL;
 
 static int after_context = 0;
 static int before_context = 0;
@@ -1085,16 +1085,13 @@ grep_or_recurse(char *pathname, BOOL dir_recurse, BOOL only_one_at_top)
         }
     
         while ((nextfile = readdirectory(dir)) != NULL) {
-          int frc, blen;
+          int frc;
           sprintf(buffer, "%.512s%c%.128s", pathname, sep, nextfile);
-          blen = strlen(buffer);
     
-          if (exclude_compiled != NULL &&
-              pcre_exec(exclude_compiled, NULL, buffer, blen, 0, 0, NULL, 0) >= 0)
+          if (excludeMire && mireRegexec(excludeMire, buffer) != PCRE_ERROR_NOMATCH)
             continue;
     
-          if (include_compiled != NULL &&
-              pcre_exec(include_compiled, NULL, buffer, blen, 0, 0, NULL, 0) < 0)
+          if (includeMire && mireRegexec(includeMire, buffer) == PCRE_ERROR_NOMATCH)
             continue;
     
           frc = grep_or_recurse(buffer, dir_recurse, FALSE);
@@ -1973,9 +1970,11 @@ main(int argc, char **argv)
     /* If there are include or exclude patterns, compile them. */
     
     if (exclude_pattern != NULL) {
-      exclude_compiled = pcre_compile(exclude_pattern, 0, &error, &errptr,
-        pcretables);
-      if (exclude_compiled == NULL) {
+      excludeMire = mireNew(RPMMIRE_PCRE, 0);
+      /* XXX save locale tables for use by pcre_compile2. */
+      excludeMire->table = pcretables;
+      xx = mireRegcomp(excludeMire, exclude_pattern);
+      if (xx) {
         fprintf(stderr, "pcregrep: Error in 'exclude' regex at offset %d: %s\n",
           errptr, error);
         goto errorexit;
@@ -1983,9 +1982,11 @@ main(int argc, char **argv)
     }
     
     if (include_pattern != NULL) {
-      include_compiled = pcre_compile(include_pattern, 0, &error, &errptr,
-        pcretables);
-      if (include_compiled == NULL) {
+      includeMire = mireNew(RPMMIRE_PCRE, 0);
+      /* XXX save locale tables for use by pcre_compile2. */
+      includeMire->table = pcretables;
+      xx = mireRegcomp(includeMire, include_pattern);
+      if (xx) {
         fprintf(stderr, "pcregrep: Error in 'include' regex at offset %d: %s\n",
           errptr, error);
         goto errorexit;
@@ -2014,6 +2015,8 @@ main(int argc, char **argv)
     }
     
 exit:
+    includeMire = mireFree(includeMire);
+    excludeMire = mireFree(excludeMire);
     pattern_list = mireFreeAll(pattern_list, pattern_count);
 
     patterns = argvFree(patterns);

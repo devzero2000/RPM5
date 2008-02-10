@@ -63,6 +63,9 @@ struct miRE_s {
     void *pcre;			/*!< pcre compiled pattern buffer. */
     void *hints;		/*!< pcre compiled pattern hints buffer. */
     const char * errmsg;	/*!< pcre error message. */
+    const unsigned char * table;/*!< pcre locale table. */
+    int * offsets;		/*!< pcre substring offset table. */
+    int noffsets;		/*!< pcre substring offset table count. */
     int erroff;			/*!< pcre error offset. */
     int errcode;		/*!< pcre error code. */
     int	fnflags;	/*!< fnmatch(3) flags (0 uses FNM_PATHNAME|FNM_PERIOD)*/
