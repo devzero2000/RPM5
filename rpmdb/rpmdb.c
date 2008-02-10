@@ -2195,7 +2195,7 @@ static int mireSkip (const rpmdbMatchIterator mi)
 	    case RPM_UINT8_TYPE:
 		for (j = 0; j < (unsigned) he->c; j++) {
 		    sprintf(numbuf, "%u", (unsigned) he->p.ui8p[j]);
-		    rc = mireRegexec(mire, numbuf);
+		    rc = mireRegexec(mire, numbuf, 0);
 		    if ((!rc && !mire->notmatch) || (rc && mire->notmatch))
 			anymatch++;
 		}
@@ -2203,7 +2203,7 @@ static int mireSkip (const rpmdbMatchIterator mi)
 	    case RPM_UINT16_TYPE:
 		for (j = 0; j < (unsigned) he->c; j++) {
 		    sprintf(numbuf, "%u", (unsigned) he->p.ui16p[j]);
-		    rc = mireRegexec(mire, numbuf);
+		    rc = mireRegexec(mire, numbuf, 0);
 		    if ((!rc && !mire->notmatch) || (rc && mire->notmatch))
 			anymatch++;
 		}
@@ -2211,7 +2211,7 @@ static int mireSkip (const rpmdbMatchIterator mi)
 	    case RPM_UINT32_TYPE:
 		for (j = 0; j < (unsigned) he->c; j++) {
 		    sprintf(numbuf, "%u", (unsigned) he->p.ui32p[j]);
-		    rc = mireRegexec(mire, numbuf);
+		    rc = mireRegexec(mire, numbuf, 0);
 		    if ((!rc && !mire->notmatch) || (rc && mire->notmatch))
 			anymatch++;
 		}
@@ -2220,20 +2220,20 @@ static int mireSkip (const rpmdbMatchIterator mi)
 /*@-duplicatequals@*/
 		for (j = 0; j < (unsigned) he->c; j++) {
 		    sprintf(numbuf, "%llu", (unsigned long long)he->p.ui64p[j]);
-		    rc = mireRegexec(mire, numbuf);
+		    rc = mireRegexec(mire, numbuf, 0);
 		    if ((!rc && !mire->notmatch) || (rc && mire->notmatch))
 			anymatch++;
 		}
 /*@=duplicatequals@*/
 		/*@switchbreak@*/ break;
 	    case RPM_STRING_TYPE:
-		rc = mireRegexec(mire, he->p.str);
+		rc = mireRegexec(mire, he->p.str, 0);
 		if ((!rc && !mire->notmatch) || (rc && mire->notmatch))
 		    anymatch++;
 		/*@switchbreak@*/ break;
 	    case RPM_STRING_ARRAY_TYPE:
 		for (j = 0; j < (unsigned) he->c; j++) {
-		    rc = mireRegexec(mire, he->p.argv[j]);
+		    rc = mireRegexec(mire, he->p.argv[j], 0);
 		    if ((!rc && !mire->notmatch) || (rc && mire->notmatch)) {
 			anymatch++;
 			/*@innerbreak@*/ break;
@@ -2242,7 +2242,7 @@ static int mireSkip (const rpmdbMatchIterator mi)
 		/*@switchbreak@*/ break;
 	    case RPM_BIN_TYPE:
 	    {   const char * s = bin2hex(he->p.ptr, he->c);
-		rc = mireRegexec(mire, s);
+		rc = mireRegexec(mire, s, 0);
 		if ((!rc && !mire->notmatch) || (rc && mire->notmatch))
 		    anymatch++;
 		s = _free(s);

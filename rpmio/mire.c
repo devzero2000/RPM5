@@ -108,7 +108,7 @@ miRE mireNew(rpmMireMode mode, int tag)
     return mireLink(mire,"mireNew");
 }
 
-int mireRegexec(miRE mire, const char * val)
+int mireRegexec(miRE mire, const char * val, size_t vallen)
 {
     int rc = 0;
 
@@ -133,7 +133,9 @@ int mireRegexec(miRE mire, const char * val)
 	break;
 #ifdef	WITH_PCRE
     case RPMMIRE_PCRE:
-	rc = pcre_exec(mire->pcre, mire->hints, val, (int)strlen(val), 0,
+	if (vallen == 0)
+	    vallen = strlen(val);
+	rc = pcre_exec(mire->pcre, mire->hints, val, vallen, 0,
 		mire->eoptions, mire->offsets, mire->noffsets);
 	if (rc && rc != PCRE_ERROR_NOMATCH) {
 	    rpmlog(RPMLOG_ERR, _("%s: pcre_exec failed: return %d\n"), rc);
@@ -155,7 +157,7 @@ int mireRegexec(miRE mire, const char * val)
 
 /*@-modfilesys@*/
 if (_mire_debug)
-fprintf(stderr, "--> mireRegexec(%p, \"%s\") rc %d\n", mire, val, rc);
+fprintf(stderr, "--> mireRegexec(%p, \"%s\", %u) rc %d\n", mire, val, (unsigned)vallen, rc);
 /*@=modfilesys@*/
     return rc;
 }

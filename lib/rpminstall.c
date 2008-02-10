@@ -361,7 +361,7 @@ static const char * rpmcliWalkFirst(ARGV_t av, miRE mire)
 	    continue;
 	    /*@notreached@*/ break;
 	case FTS_F:		/* regular file */
-	    if (mireRegexec(mire, fts->fts_accpath))
+	    if (mireRegexec(mire, fts->fts_accpath, 0))
 		continue;
 	    break;
 	/* Error conditions. */

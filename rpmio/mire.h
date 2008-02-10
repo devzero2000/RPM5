@@ -140,9 +140,10 @@ miRE mireNew(rpmMireMode mode, int tag)
  * Execute pattern match.
  * @param mire		pattern container
  * @param val		value to match
+ * @param vallen	length of value string (0 will use strlen)
  * @return		0 if pattern matches, >0 on nomatch, <0 on error
  */
-int mireRegexec(miRE mire, const char * val)
+int mireRegexec(miRE mire, const char * val, size_t vallen)
 	/*@modifies mire @*/;
 
 /**

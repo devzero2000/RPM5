@@ -89,7 +89,7 @@ static const char * rpmcliInstallElementPath(rpmts ts, const char * arg)
 
     /* Filter out glibc <-> glibc-common confusions. */
     for (i = 0; i < ac; i++) {
-	if (mireRegexec(mire, av[i]))
+	if (mireRegexec(mire, av[i], 0))
 	    continue;
 	fn = xstrdup(av[0]);
 	break;

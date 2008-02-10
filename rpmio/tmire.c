@@ -62,7 +62,7 @@ _mire_debug = 1;
     ac = argvCount(av);
     if (av && *av)
     for (i = 0; i < ac; i++) {
-	xx = mireRegexec(mire, av[i]);
+	xx = mireRegexec(mire, av[i], 0);
 	if (xx == 0) {
 	    fprintf(stdout, "%s\n", av[i]);
 	    rc = 0;

@@ -1,4 +1,5 @@
 5.0.0 -> 5.1a1:
+    - jbj: mire: add vallen argument to mireRegexec().
     - jbj: borrow pcregrep.c from pcre-7.6, rename as rpmgrep.c.
     - jbj: rpmio: use tmire.c, not -DSTANDALONE, so librpmio doesnt rebuild.
     - jbj: rpmio: add tmire to noinst_PROGRAMS.

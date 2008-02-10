@@ -1088,10 +1088,10 @@ grep_or_recurse(char *pathname, BOOL dir_recurse, BOOL only_one_at_top)
           int frc;
           sprintf(buffer, "%.512s%c%.128s", pathname, sep, nextfile);
     
-          if (excludeMire && mireRegexec(excludeMire, buffer) != PCRE_ERROR_NOMATCH)
+          if (excludeMire && mireRegexec(excludeMire, buffer, 0) != PCRE_ERROR_NOMATCH)
             continue;
     
-          if (includeMire && mireRegexec(includeMire, buffer) == PCRE_ERROR_NOMATCH)
+          if (includeMire && mireRegexec(includeMire, buffer, 0) == PCRE_ERROR_NOMATCH)
             continue;
     
           frc = grep_or_recurse(buffer, dir_recurse, FALSE);

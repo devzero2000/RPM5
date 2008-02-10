@@ -528,7 +528,7 @@ int rpmPlatformScore(const char * platform, void * mi_re, int mi_nre)
 
     if ((mire = mi_re) != NULL)
     for (i = 0; i < mi_nre; i++) {
-	if (!mireRegexec(mire + i, platform))
+	if (!mireRegexec(mire + i, platform, 0))
 	    return (i + 1);
     }
     return 0;

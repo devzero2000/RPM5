@@ -79,7 +79,7 @@ static int ftsPrint(FTS * ftsp, FTSENT * fts)
 	    fprintf(stderr, "%s\n", fts->fts_path);
 	if (mire) {
 	    mireNExecs++;
-	    xx = mireRegexec(mire, fts->fts_path);
+	    xx = mireRegexec(mire, fts->fts_path, 0);
 	    if (xx == 0) {
 		fprintf(stdout, " mire: %s\n", fts->fts_path);
 		mireNMatches++;
