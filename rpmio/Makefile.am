@@ -4,9 +4,9 @@ AUTOMAKE_OPTIONS = 1.4 foreign
 
 LINT = splint
 
-EXTRA_DIST = gengpg.sh thkp.c thtml.c tinv.c tkey.c tput.c trpmio.c lookup3.c tpw.c librpmio.vers testit.sh
+EXTRA_DIST = gengpg.sh rpmgrep.c thkp.c thtml.c tinv.c tkey.c tput.c trpmio.c lookup3.c tpw.c librpmio.vers testit.sh
 
-EXTRA_PROGRAMS = thkp thtml tinv tkey tmacro tmagic tput tpw trpmio tsw dumpasn1 lookup3
+EXTRA_PROGRAMS = rpmgrep thkp thtml tinv tkey tmacro tmagic tput tpw trpmio tsw dumpasn1 lookup3
 
 check_PROGRAMS = tdir tfts tget tglob tmire
 check_SCRIPTS = testit.sh
@@ -103,6 +103,9 @@ sources:
 .PHONY:	lint
 lint:
 	$(LINT) $(DEFS) $(INCLUDES) $(librpmio_la_SOURCES)
+
+rpmgrep_SOURCES = rpmgrep.c
+rpmgrep_LDADD = $(RPMIO_LDADD)
 
 tdir_SOURCES = tdir.c
 tdir_LDADD = $(RPMIO_LDADD)
