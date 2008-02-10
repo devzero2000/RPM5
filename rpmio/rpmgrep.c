@@ -39,9 +39,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #include "system.h"
 
-#include <rpmio.h>
-
 #define _MIRE_INTERNAL
+#include <rpmio_internal.h>
 #include <mire.h>
 
 #include <argv.h>
@@ -559,7 +558,7 @@ pcregrep(void *handle, int frtype, char *printname)
     char *endptr;
     size_t bufflength;
     BOOL endhyphenpending = FALSE;
-    FILE *in = NULL;                    /* Ensure initialized */
+    FILE *in = NULL;	/* Ensure initialized */
 
 #ifdef SUPPORT_LIBZ
     gzFile ingz = NULL;
@@ -568,7 +567,6 @@ pcregrep(void *handle, int frtype, char *printname)
 #ifdef SUPPORT_LIBBZ2
     BZFILE *inbz2 = NULL;
 #endif
-
 
     /* Do the first read into the start of the buffer and set up the pointer to end
     of what we have. In the case of libz, a non-zipped .gz file will be read as a
@@ -984,7 +982,7 @@ grep_or_recurse(char *pathname, BOOL dir_recurse, BOOL only_one_at_top)
     int frtype;
     int pathlen;
     void *handle;
-    FILE *in = NULL;           /* Ensure initialized */
+    FILE *in = NULL;	/* Ensure initialized */
 
 #ifdef SUPPORT_LIBZ
     gzFile ingz = NULL;
@@ -1022,10 +1020,10 @@ grep_or_recurse(char *pathname, BOOL dir_recurse, BOOL only_one_at_top)
           int frc;
           sprintf(buffer, "%.512s%c%.128s", pathname, sep, nextfile);
 
-          if (excludeMire && mireRegexec(excludeMire, buffer, 0) != PCRE_ERROR_NOMATCH)
+          if (excludeMire && mireRegexec(excludeMire, buffer, 0) >= 0)
             continue;
 
-          if (includeMire && mireRegexec(includeMire, buffer, 0) == PCRE_ERROR_NOMATCH)
+          if (includeMire && mireRegexec(includeMire, buffer, 0) < 0)
             continue;
 
           frc = grep_or_recurse(buffer, dir_recurse, FALSE);
@@ -1309,22 +1307,25 @@ handle_option(int letter, int options)
 /*************************************************
  * Construct printed ordinal.
  *
- * This turns a number into "1st", "3rd", etc.
- * @param n
- * @return
+ * This turns a number into "1st", "3rd", etc display string.
+ * @param n		the number
+ * @return		the number's ordinal display string
  */
 static char *
-ordin(int n)
+ordin(unsigned n)
 {
-    static char buffer[8];
-    char *p = buffer;
-    sprintf(p, "%d", n);
-    while (*p != 0) p++;
-    switch (n%10) {
-    case 1:	strcpy(p, "st"); break;
-    case 2:	strcpy(p, "nd"); break;
-    case 3:	strcpy(p, "rd"); break;
-    default:	strcpy(p, "th"); break;
+    static char buffer[16];
+    buffer[0] = '\0';
+    if (n > 0) {
+	char *p = buffer;
+	sprintf(p, " %u", n);
+	while (*p != '\0') p++;
+	switch (n%10) {
+	case 1:		strcpy(p, "st"); break;
+	case 2:		strcpy(p, "nd"); break;
+	case 3:		strcpy(p, "rd"); break;
+	default:	strcpy(p, "th"); break;
+	}
     }
     return buffer;
 }
@@ -1337,49 +1338,49 @@ ordin(int n)
  *
  * @param pattern	the pattern string
  * @param options	the PCRE options
- * @param filename	the file name, or NULL for a command-line pattern
+ * @param filename	the file name (NULL for a command-line pattern)
  * @param count		pattern index (0 is single pattern)
  * @return		TRUE on success, FALSE after an error
  */
 static BOOL
-compile_single_pattern(const char *pattern, int options, char *filename, int count)
+compile_single_pattern(const char *pattern, int options,
+		/*@null@*/ const char *filename, int count)
 {
     miRE mire;
     char buffer[MBUFTHIRD + 16];
-    const char *error;
-    int errptr;
 
     if (pattern_count >= MAX_PATTERN_COUNT) {
-      fprintf(stderr, "pcregrep: Too many %spatterns (max %d)\n",
-        (filename == NULL)? "command-line " : "", MAX_PATTERN_COUNT);
-      return FALSE;
+	fprintf(stderr, "pcregrep: Too many %spatterns (max %d)\n",
+		(filename == NULL)? "command-line " : "", MAX_PATTERN_COUNT);
+	return FALSE;
     }
     mire = pattern_list + pattern_count;
 
     sprintf(buffer, "%s%.*s%s", prefix[process_options], MBUFTHIRD, pattern,
-      suffix[process_options]);
-    mire->pcre = pcre_compile(buffer, options, &error, &errptr, pcretables);
-    if (mire->pcre != NULL) {
-      pattern_count++;
-      return TRUE;
+	suffix[process_options]);
+    /* XXX initialize mire->mode & mire->tag. */
+    mire->mode = RPMMIRE_PCRE;
+    mire->tag = 0;
+    mire->coptions = options;
+    /* XXX save locale tables for use by pcre_compile2. */
+    mire->table = pcretables;
+    if (!mireRegcomp(mire, buffer)) {
+	pattern_count++;
+	return TRUE;
     }
-
     /* Handle compile errors */
-    errptr -= (int)strlen(prefix[process_options]);
-    if (errptr > (int)strlen(pattern)) errptr = (int)strlen(pattern);
+    mire->erroff -= (int)strlen(prefix[process_options]);
+    if (mire->erroff < 0)
+	mire->erroff = 0;
+    if (mire->erroff > (int)strlen(pattern))
+	mire->erroff = (int)strlen(pattern);
 
-    if (filename == NULL) {
-      if (count == 0)
-        fprintf(stderr, "pcregrep: Error in command-line regex "
-          "at offset %d: %s\n", errptr, error);
-      else
-        fprintf(stderr, "pcregrep: Error in %s command-line regex "
-          "at offset %d: %s\n", ordin(count), errptr, error);
-    } else {
-      fprintf(stderr, "pcregrep: Error in regex in line %d of %s "
-        "at offset %d: %s\n", count, filename, errptr, error);
-    }
-
+    fprintf(stderr, "pcregrep: Error in");
+    if (filename == NULL)
+	fprintf(stderr, "%s command-line", ordin(count));
+    else
+	fprintf(stderr, " file:line %s:%d", filename, count);
+    fprintf(stderr, " regex at offset %d: %s\n", mire->erroff, mire->errmsg);
     return FALSE;
 }
 
@@ -1389,28 +1390,29 @@ compile_single_pattern(const char *pattern, int options, char *filename, int cou
  * When the -F option has been used, each string may be a list of strings,
  * separated by line breaks. They will be matched literally.
  *
- * @param pattern        the pattern string
- * @param options        the PCRE options
- * @param filename       the file name, or NULL for a command-line pattern
+ * @param pattern	the pattern string
+ * @param options	the PCRE options
+ * @param filename	the file name, or NULL for a command-line pattern
  * @param count		pattern index (0 is single pattern)
  * @return		TRUE on success, FALSE after an error
  */
 static BOOL
-compile_pattern(const char *pattern, int options, char *filename, int count)
+compile_pattern(const char *pattern, int options,
+		/*@null@*/ const char *filename, int count)
 {
     if ((process_options & PO_FIXED_STRINGS) != 0) {
-      const char *eop = pattern + strlen(pattern);
-      char buffer[MBUFTHIRD];
-      for(;;) {
-        int ellength;
-        const char *p = end_of_line(pattern, eop, &ellength);
-        if (ellength == 0)
-          return compile_single_pattern(pattern, options, filename, count);
-        sprintf(buffer, "%.*s", (int)(p - pattern - ellength), pattern);
-        pattern = p;
-        if (!compile_single_pattern(buffer, options, filename, count))
-          return FALSE;
-      }
+	const char *eop = pattern + strlen(pattern);
+	char buffer[MBUFTHIRD];
+	for(;;) {
+	    int ellength;
+	    const char *p = end_of_line(pattern, eop, &ellength);
+	    if (ellength == 0)
+		return compile_single_pattern(pattern, options, filename, count);
+	    sprintf(buffer, "%.*s", (int)(p - pattern - ellength), pattern);
+	    pattern = p;
+	    if (!compile_single_pattern(buffer, options, filename, count))
+		return FALSE;
+	}
     }
     else return compile_single_pattern(pattern, options, filename, count);
 }
@@ -1815,35 +1817,35 @@ main(int argc, char **argv)
 
     /* Compile the regular expressions that are provided in a file. */
     if (pattern_filename != NULL) {
-      int linenumber = 0;
-      FILE *f;
-      char *filename;
-      char buffer[MBUFTHIRD];
+	int linenumber = 0;
+	FILE *f;
+	char *filename;
+	char buffer[MBUFTHIRD];
 
-      if (strcmp(pattern_filename, "-") == 0) {
-        f = stdin;
-        filename = stdin_name;
-      } else {
-        f = fopen(pattern_filename, "r");
-        if (f == NULL) {
-          fprintf(stderr, "pcregrep: Failed to open %s: %s\n", pattern_filename,
-            strerror(errno));
-          goto errorexit;
-        }
-        filename = pattern_filename;
-      }
+	if (strcmp(pattern_filename, "-") == 0) {
+	    f = stdin;
+	    filename = stdin_name;
+	} else {
+	    f = fopen(pattern_filename, "r");
+	    if (f == NULL) {
+		fprintf(stderr, "pcregrep: Failed to open %s: %s\n",
+			pattern_filename, strerror(errno));
+		goto errorexit;
+	    }
+	    filename = pattern_filename;
+	}
 
-      while (fgets(buffer, MBUFTHIRD, f) != NULL) {
-        char *s = buffer + (int)strlen(buffer);
-        while (s > buffer && isspace((unsigned char)(s[-1]))) s--;
-        *s = 0;
-        linenumber++;
-        if (buffer[0] == 0) continue;   /* Skip blank lines */
-        if (!compile_pattern(buffer, pcre_options, filename, linenumber))
-          goto errorexit;
-      }
+	while (fgets(buffer, MBUFTHIRD, f) != NULL) {
+	    char *s = buffer + (int)strlen(buffer);
+	    while (s > buffer && isspace((unsigned char)(s[-1]))) s--;
+	    *s = 0;
+	    linenumber++;
+	    if (buffer[0] == 0)	continue;	/* Skip blank lines */
+	    if (!compile_pattern(buffer, pcre_options, filename, linenumber))
+		goto errorexit;
+	}
 
-      if (f != stdin) fclose(f);
+	if (f != stdin) fclose(f);
     }
 
     /* Study the regular expressions, as we will be running them many times */

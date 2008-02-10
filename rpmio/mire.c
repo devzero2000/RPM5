@@ -156,7 +156,7 @@ int mireRegexec(miRE mire, const char * val, size_t vallen)
 
 /*@-modfilesys@*/
 if (_mire_debug)
-fprintf(stderr, "--> mireRegexec(%p, %p[%u]) rc %d mode %d\t\"%.*s\"\n", mire, val, (unsigned)vallen, rc, mire->mode, vallen, val);
+fprintf(stderr, "--> mireRegexec(%p, %p[%u]) rc %d mode %d \"%.*s\"\n", mire, val, (unsigned)vallen, rc, mire->mode, (vallen < 20 ? vallen : 20), val);
 /*@=modfilesys@*/
     return rc;
 }
