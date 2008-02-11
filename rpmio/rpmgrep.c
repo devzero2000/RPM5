@@ -219,17 +219,15 @@ closedirectory(directory_type *dir)
     Closedir(dir);
 }
 
-
 /************* Test for regular file in Unix **********/
 static int
 isregfile(char *filename)
 {
-    struct stat statbuf;
-    if (Stat(filename, &statbuf) < 0)
+    struct stat sb;
+    if (Stat(filename, &sb) < 0)
 	return 1;	/* In the expectation that opening as a file will fail */
-    return (statbuf.st_mode & S_IFMT) == S_IFREG;
+    return (sb.st_mode & S_IFMT) == S_IFREG;
 }
-
 
 /************* Test stdout for being a terminal in Unix **********/
 static BOOL
@@ -1077,7 +1075,7 @@ grep_or_recurse(char *pathname, BOOL dir_recurse, BOOL only_one_at_top)
     } else
 #endif
 
-    /* Otherwise use plain fopen(). The label is so that we can come back here if
+    /* Otherwise use plain Fopen(). The label is so that we can come back here if
     an attempt to read a .bz2 file indicates that it really is a plain file. */
 #ifdef SUPPORT_LIBBZ2
 PLAIN_FILE:
@@ -1492,9 +1490,11 @@ main(int argc, char **argv)
     const char *error;
     int xx;
 
-    /* Set the default line ending value from the default in the PCRE library;
-    "lf", "cr", "crlf", and "any" are supported. Anything else is treated as "lf".
-    */
+    /*
+     * Set the default line ending value from the default in the PCRE library;
+     * "lf", "cr", "crlf", and "any" are supported. Anything else is treated
+     * as "lf".
+     */
     (void)pcre_config(PCRE_CONFIG_NEWLINE, &i);
     switch(i) {
     default:	newline = (char *)"lf";		break;
@@ -1506,408 +1506,445 @@ main(int argc, char **argv)
 
     /* Process the options */
     for (i = 1; i < argc; i++) {
-      option_item *op = NULL;
-      char *option_data = (char *)"";    /* default to keep compiler happy */
-      BOOL longop;
-      BOOL longopwasequals = FALSE;
+	option_item *op = NULL;
+	char *option_data = (char *)"";    /* default to keep compiler happy */
+	BOOL longop;
+	BOOL longopwasequals = FALSE;
 
-      if (argv[i][0] != '-') break;
+	if (argv[i][0] != '-') break;
 
-      /* If we hit an argument that is just "-", it may be a reference to STDIN,
-      but only if we have previously had -e or -f to define the patterns. */
-      if (argv[i][1] == 0) {
-        if (pattern_filename != NULL || pattern_count > 0) break;
-          else exit(usage(2));
-      }
+	/*
+	 * If we hit an argument that is just "-", it may be a reference
+	 * to STDIN, but only if we have previously had -e or -f to define
+	 * the patterns.
+	 */
+	if (argv[i][1] == 0) {
+	    if (pattern_filename != NULL || pattern_count > 0) break;
+		else exit(usage(2));
+	}
 
-      /* Handle a long name option, or -- to terminate the options */
-      if (argv[i][1] == '-') {
-        char *arg = argv[i] + 2;
-        char *argequals = strchr(arg, '=');
+	/* Handle a long name option, or -- to terminate the options */
+	if (argv[i][1] == '-') {
+	    char *arg = argv[i] + 2;
+	    char *argequals = strchr(arg, '=');
 
-        if (*arg == 0) {	/* -- terminates options */
-          i++;
-          break;                /* out of the options-handling loop */
-        }
+	    if (*arg == 0) {	/* -- terminates options */
+		i++;
+		break;                /* out of the options-handling loop */
+	    }
 
-        longop = TRUE;
+	    longop = TRUE;
 
-        /* Some long options have data that follows after =, for example file=name.
-        Some options have variations in the long name spelling: specifically, we
-        allow "regexp" because GNU grep allows it, though I personally go along
-        with Jeffrey Friedl and Larry Wall in preferring "regex" without the "p".
-        These options are entered in the table as "regex(p)". No option is in both
-        these categories, fortunately. */
-        for (op = optionlist; op->one_char != 0; op++) {
-          char *opbra = strchr(op->long_name, '(');
-          char *equals = strchr(op->long_name, '=');
-          if (opbra == NULL) {		/* Not a (p) case */
-            if (equals == NULL) {	/* Not thing=data case */
-              if (strcmp(arg, op->long_name) == 0) break;
-            } else {			/* Special case xxx=data */
-              int oplen = equals - op->long_name;
-              int arglen = (argequals == NULL)? (int)strlen(arg) : argequals - arg;
-              if (oplen == arglen && strncmp(arg, op->long_name, oplen) == 0) {
-                option_data = arg + arglen;
-                if (*option_data == '=') {
-                  option_data++;
-                  longopwasequals = TRUE;
-                }
-                break;
-              }
-            }
-          } else {			/* Special case xxxx(p) */
-            char buff1[24];
-            char buff2[24];
-            int baselen = opbra - op->long_name;
-            sprintf(buff1, "%.*s", baselen, op->long_name);
-            sprintf(buff2, "%s%.*s", buff1,
-              (int)strlen(op->long_name) - baselen - 2, opbra + 1);
-            if (strcmp(arg, buff1) == 0 || strcmp(arg, buff2) == 0)
-              break;
-          }
-        }
+	    /*
+	     * Some long options have data that follows after =, for example
+	     * file=name.  Some options have variations in the long name
+	     * spelling: specifically, we allow "regexp" because GNU grep
+	     * allows it, though I personally go along with Jeffrey Friedl
+	     * and Larry Wall in preferring "regex" without the "p".  These
+	     * options are entered in the table as "regex(p)". No option is
+	     * in both these categories, fortunately.
+	     */
+	    for (op = optionlist; op->one_char != 0; op++) {
+		char *opbra = strchr(op->long_name, '(');
+		char *equals = strchr(op->long_name, '=');
+		if (opbra == NULL) {		/* Not a (p) case */
+		    if (equals == NULL) {	/* Not thing=data case */
+			if (strcmp(arg, op->long_name) == 0) break;
+		    } else {			/* Special case xxx=data */
+			int oplen = equals - op->long_name;
+			int arglen = (argequals == NULL)? (int)strlen(arg) : argequals - arg;
+			if (oplen == arglen && strncmp(arg, op->long_name, oplen) == 0) {
+			    option_data = arg + arglen;
+			    if (*option_data == '=') {
+				option_data++;
+				longopwasequals = TRUE;
+			    }
+			    break;
+			}
+		    }
+		} else {			/* Special case xxxx(p) */
+		    char buff1[24];
+		    char buff2[24];
+		    int baselen = opbra - op->long_name;
+		    sprintf(buff1, "%.*s", baselen, op->long_name);
+		    sprintf(buff2, "%s%.*s", buff1,
+			(int)strlen(op->long_name) - baselen - 2, opbra + 1);
+		    if (strcmp(arg, buff1) == 0 || strcmp(arg, buff2) == 0)
+			break;
+		}
+	    }
 
-        if (op->one_char == 0) {
-          fprintf(stderr, "pcregrep: Unknown option %s\n", argv[i]);
-          exit(usage(2));
-        }
-      }
+	    if (op->one_char == 0) {
+		fprintf(stderr, "pcregrep: Unknown option %s\n", argv[i]);
+		exit(usage(2));
+	    }
+	}
 
-      /* Jeffrey Friedl's debugging harness uses these additional options which
-      are not in the right form for putting in the option table because they use
-      only one hyphen, yet are more than one character long. By putting them
-      separately here, they will not get displayed as part of the help() output,
-      but I don't think Jeffrey will care about that. */
+	/*
+	 * Jeffrey Friedl's debugging harness uses these additional options
+	 * which are not in the right form for putting in the option table
+	 * because they use only one hyphen, yet are more than one character
+	 * long. By putting them separately here, they will not get displayed
+	 * as part of the help() output, but I don't think Jeffrey will care
+	 * about that.
+	 */
 #ifdef JFRIEDL_DEBUG
-      else if (strcmp(argv[i], "-pre") == 0) {
-              jfriedl_prefix = argv[++i];
-              continue;
-      } else if (strcmp(argv[i], "-post") == 0) {
-              jfriedl_postfix = argv[++i];
-              continue;
-      } else if (strcmp(argv[i], "-XT") == 0) {
-              sscanf(argv[++i], "%d", &jfriedl_XT);
-              continue;
-      } else if (strcmp(argv[i], "-XR") == 0) {
-              sscanf(argv[++i], "%d", &jfriedl_XR);
-              continue;
-      }
+	else if (strcmp(argv[i], "-pre") == 0) {
+	    jfriedl_prefix = argv[++i];
+	    continue;
+	} else if (strcmp(argv[i], "-post") == 0) {
+	    jfriedl_postfix = argv[++i];
+	    continue;
+	} else if (strcmp(argv[i], "-XT") == 0) {
+	    sscanf(argv[++i], "%d", &jfriedl_XT);
+	    continue;
+	} else if (strcmp(argv[i], "-XR") == 0) {
+	    sscanf(argv[++i], "%d", &jfriedl_XR);
+	    continue;
+	}
 #endif
 
-      /* One-char options; many that have no data may be in a single argument; we
-      continue till we hit the last one or one that needs data. */
-      else {
-        char *s = argv[i] + 1;
-        longop = FALSE;
-        while (*s != 0) {
-          for (op = optionlist; op->one_char != 0; op++) {
-            if (*s == op->one_char) break;
-	  }
-          if (op->one_char == 0) {
-            fprintf(stderr, "pcregrep: Unknown option letter '%c' in \"%s\"\n",
-              *s, argv[i]);
-            exit(usage(2));
-          }
-          if (op->type != OP_NODATA || s[1] == 0) {
-            option_data = s+1;
-            break;
-          }
-          pcre_options = handle_option(*s++, pcre_options);
-        }
-      }
+	/*
+	 * One-char options; many that have no data may be in a single
+	 * argument; we continue till we hit the last one or one that
+	 * needs data.
+	 */
+	else {
+	    char *s = argv[i] + 1;
+	    longop = FALSE;
+	    while (*s != 0) {
+		for (op = optionlist; op->one_char != 0; op++) {
+		    if (*s == op->one_char) break;
+		}
+		if (op->one_char == 0) {
+		    fprintf(stderr, "pcregrep: Unknown option letter '%c' in \"%s\"\n",
+			*s, argv[i]);
+		    exit(usage(2));
+		}
+		if (op->type != OP_NODATA || s[1] == 0) {
+		    option_data = s+1;
+		    break;
+		}
+		pcre_options = handle_option(*s++, pcre_options);
+	    }
+	}
 
-      /* At this point we should have op pointing to a matched option. If the type
-      is NO_DATA, it means that there is no data, and the option might set
-      something in the PCRE options. */
-      if (op->type == OP_NODATA) {
-        pcre_options = handle_option(op->one_char, pcre_options);
-        continue;
-      }
+	/*
+	 * At this point we should have op pointing to a matched option. If
+	 * the type is NO_DATA, it means that there is no data, and the option
+	 * might set something in the PCRE options.
+	 */
+	if (op->type == OP_NODATA) {
+	    pcre_options = handle_option(op->one_char, pcre_options);
+	    continue;
+	}
 
-      /* If the option type is OP_OP_STRING or OP_OP_NUMBER, it's an option that
-      either has a value or defaults to something. It cannot have data in a
-      separate item. At the moment, the only such options are "colo(u)r" and
-      Jeffrey Friedl's special -S debugging option. */
-      if (*option_data == 0 &&
-          (op->type == OP_OP_STRING || op->type == OP_OP_NUMBER))
-      {
-        switch (op->one_char) {
-        case N_COLOUR:
-          colour_option = (char *)"auto";
-          break;
+	/*
+	 * If the option type is OP_OP_STRING or OP_OP_NUMBER, it's an option
+	 * that either has a value or defaults to something. It cannot have
+	 * data in a separate item. At the moment, the only such options
+	 * are "colo(u)r" and Jeffrey Friedl's special -S debugging option.
+	 */
+	if (*option_data == 0 &&
+		(op->type == OP_OP_STRING || op->type == OP_OP_NUMBER))
+	{
+	    switch (op->one_char) {
+	    case N_COLOUR:
+		colour_option = (char *)"auto";
+		break;
 #ifdef JFRIEDL_DEBUG
-        case 'S':
-          S_arg = 0;
-          break;
+	    case 'S':
+		S_arg = 0;
+		break;
 #endif
-        }
-        continue;
-      }
+	    }
+	    continue;
+	}
 
-      /* Otherwise, find the data string for the option. */
+	/* Otherwise, find the data string for the option. */
+	if (*option_data == 0) {
+	    if (i >= argc - 1 || longopwasequals) {
+		fprintf(stderr, "pcregrep: Data missing after %s\n", argv[i]);
+		exit(usage(2));
+	    }
+	    option_data = argv[++i];
+	}
 
-      if (*option_data == 0) {
-        if (i >= argc - 1 || longopwasequals) {
-          fprintf(stderr, "pcregrep: Data missing after %s\n", argv[i]);
-          exit(usage(2));
-        }
-        option_data = argv[++i];
-      }
+	/*
+	 * If the option type is OP_PATLIST, it's the -e option, which can be
+	 * called multiple times to create a list of patterns.
+	 */
+	if (op->type == OP_PATLIST) {
+	    xx = argvAdd(&patterns, option_data);
+	}
 
-      /* If the option type is OP_PATLIST, it's the -e option, which can be called
-      multiple times to create a list of patterns. */
-      if (op->type == OP_PATLIST) {
-	xx = argvAdd(&patterns, option_data);
-      }
-
-      /* Otherwise, deal with single string or numeric data values. */
-      else if (op->type != OP_NUMBER && op->type != OP_OP_NUMBER) {
-        *((char **)op->dataptr) = option_data;
-      }
-      else {
-        char *endptr;
-        int n = strtoul(option_data, &endptr, 10);
-        if (*endptr != 0) {
-          if (longop) {
-            char *equals = strchr(op->long_name, '=');
-            int nlen = (equals == NULL)? (int)strlen(op->long_name) :
-              equals - op->long_name;
-            fprintf(stderr, "pcregrep: Malformed number \"%s\" after --%.*s\n",
-              option_data, nlen, op->long_name);
-          }
-          else
-            fprintf(stderr, "pcregrep: Malformed number \"%s\" after -%c\n",
-              option_data, op->one_char);
-          exit(usage(2));
-        }
-        *((int *)op->dataptr) = n;
-      }
+	/* Otherwise, deal with single string or numeric data values. */
+	else if (op->type != OP_NUMBER && op->type != OP_OP_NUMBER) {
+	    *((char **)op->dataptr) = option_data;
+	} else {
+	    char *endptr;
+	    int n = strtoul(option_data, &endptr, 10);
+	    if (*endptr != 0) {
+		if (longop) {
+		    char *equals = strchr(op->long_name, '=');
+		    int nlen = (equals == NULL)? (int)strlen(op->long_name) :
+			equals - op->long_name;
+		    fprintf(stderr, "pcregrep: Malformed number \"%s\" after --%.*s\n",
+			option_data, nlen, op->long_name);
+		}
+		else
+		    fprintf(stderr, "pcregrep: Malformed number \"%s\" after -%c\n",
+			option_data, op->one_char);
+		exit(usage(2));
+	    }
+	    *((int *)op->dataptr) = n;
+	}
     }
 
-    /* Options have been decoded. If -C was used, its value is used as a default
-    for -A and -B. */
+    /*
+     * Options have been decoded. If -C was used, its value is used as a default
+     * for -A and -B.
+     */
     if (both_context > 0) {
-      if (after_context == 0) after_context = both_context;
-      if (before_context == 0) before_context = both_context;
+	if (after_context == 0) after_context = both_context;
+	if (before_context == 0) before_context = both_context;
     }
 
-    /* Only one of --only-matching, --file-offsets, or --line-offsets is permitted.
-    However, the latter two set the only_matching flag. */
+    /*
+     * Only one of --only-matching, --file-offsets, or --line-offsets is
+     * permitted.  However, the latter two set the only_matching flag.
+     */
     if ((only_matching && (file_offsets || line_offsets)) ||
-        (file_offsets && line_offsets))
+	    (file_offsets && line_offsets))
     {
-      fprintf(stderr, "pcregrep: Cannot mix --only-matching, --file-offsets "
-        "and/or --line-offsets\n");
-      exit(usage(2));
+	fprintf(stderr, "pcregrep: Cannot mix --only-matching, --file-offsets "
+	    "and/or --line-offsets\n");
+	exit(usage(2));
     }
 
     if (file_offsets || line_offsets) only_matching = TRUE;
 
-    /* If a locale has not been provided as an option, see if the LC_CTYPE or
-    LC_ALL environment variable is set, and if so, use it. */
+    /*
+     * If a locale has not been provided as an option, see if the LC_CTYPE or
+     * LC_ALL environment variable is set, and if so, use it.
+     */
     if (locale == NULL) {
-      locale = getenv("LC_ALL");
-      locale_from = "LCC_ALL";
+	locale = getenv("LC_ALL");
+	locale_from = "LCC_ALL";
     }
 
     if (locale == NULL) {
-      locale = getenv("LC_CTYPE");
-      locale_from = "LC_CTYPE";
+	locale = getenv("LC_CTYPE");
+	locale_from = "LC_CTYPE";
     }
 
-    /* If a locale has been provided, set it, and generate the tables the PCRE
-    needs. Otherwise, pcretables==NULL, which causes the use of default tables. */
+    /*
+     * If a locale has been provided, set it, and generate the tables the PCRE
+     * needs. Otherwise, pcretables==NULL, which causes the use of default
+     * tables.
+     */
     if (locale != NULL) {
-      if (setlocale(LC_CTYPE, locale) == NULL) {
-        fprintf(stderr, "pcregrep: Failed to set locale %s (obtained from %s)\n",
-          locale, locale_from);
-        return 2;
-      }
-      pcretables = pcre_maketables();
+	if (setlocale(LC_CTYPE, locale) == NULL) {
+	    fprintf(stderr, "pcregrep: Failed to set locale %s (obtained from %s)\n",
+		locale, locale_from);
+	    return 2;
+	}
+	pcretables = pcre_maketables();
     }
 
     /* Sort out colouring */
     if (colour_option != NULL && strcmp(colour_option, "never") != 0) {
-      if (strcmp(colour_option, "always") == 0) do_colour = TRUE;
-      else if (strcmp(colour_option, "auto") == 0) do_colour = is_stdout_tty();
-      else {
-        fprintf(stderr, "pcregrep: Unknown colour setting \"%s\"\n",
-          colour_option);
-        return 2;
-      }
-      if (do_colour) {
-        char *cs = getenv("PCREGREP_COLOUR");
-        if (cs == NULL) cs = getenv("PCREGREP_COLOR");
-        if (cs != NULL) colour_string = cs;
-      }
+	if (strcmp(colour_option, "always") == 0)
+	    do_colour = TRUE;
+	else if (strcmp(colour_option, "auto") == 0)
+	    do_colour = is_stdout_tty();
+	else {
+	    fprintf(stderr, "pcregrep: Unknown colour setting \"%s\"\n",
+		colour_option);
+	    return 2;
+	}
+	if (do_colour) {
+	    char *cs = getenv("PCREGREP_COLOUR");
+	    if (cs == NULL) cs = getenv("PCREGREP_COLOR");
+	    if (cs != NULL) colour_string = cs;
+	}
     }
 
     /* Interpret the newline type; the default settings are Unix-like. */
     if (strcmp(newline, "cr") == 0 || strcmp(newline, "CR") == 0) {
-      pcre_options |= PCRE_NEWLINE_CR;
-      endlinetype = EL_CR;
+	pcre_options |= PCRE_NEWLINE_CR;
+	endlinetype = EL_CR;
     }
     else if (strcmp(newline, "lf") == 0 || strcmp(newline, "LF") == 0) {
-      pcre_options |= PCRE_NEWLINE_LF;
-      endlinetype = EL_LF;
+	pcre_options |= PCRE_NEWLINE_LF;
+	endlinetype = EL_LF;
     }
     else if (strcmp(newline, "crlf") == 0 || strcmp(newline, "CRLF") == 0) {
-      pcre_options |= PCRE_NEWLINE_CRLF;
-      endlinetype = EL_CRLF;
+	pcre_options |= PCRE_NEWLINE_CRLF;
+	endlinetype = EL_CRLF;
     }
     else if (strcmp(newline, "any") == 0 || strcmp(newline, "ANY") == 0) {
-      pcre_options |= PCRE_NEWLINE_ANY;
-      endlinetype = EL_ANY;
+	pcre_options |= PCRE_NEWLINE_ANY;
+	endlinetype = EL_ANY;
     }
     else if (strcmp(newline, "anycrlf") == 0 || strcmp(newline, "ANYCRLF") == 0) {
-      pcre_options |= PCRE_NEWLINE_ANYCRLF;
-      endlinetype = EL_ANYCRLF;
+	pcre_options |= PCRE_NEWLINE_ANYCRLF;
+	endlinetype = EL_ANYCRLF;
     }
     else {
-      fprintf(stderr, "pcregrep: Invalid newline specifier \"%s\"\n", newline);
-      return 2;
+	fprintf(stderr, "pcregrep: Invalid newline specifier \"%s\"\n", newline);
+	return 2;
     }
 
     /* Interpret the text values for -d and -D */
     if (dee_option != NULL) {
-      if (strcmp(dee_option, "read") == 0) dee_action = dee_READ;
-      else if (strcmp(dee_option, "recurse") == 0) dee_action = dee_RECURSE;
-      else if (strcmp(dee_option, "skip") == 0) dee_action = dee_SKIP;
-      else {
-        fprintf(stderr, "pcregrep: Invalid value \"%s\" for -d\n", dee_option);
-        return 2;
-      }
+	if (strcmp(dee_option, "read") == 0) dee_action = dee_READ;
+	else if (strcmp(dee_option, "recurse") == 0) dee_action = dee_RECURSE;
+	else if (strcmp(dee_option, "skip") == 0) dee_action = dee_SKIP;
+	else {
+	    fprintf(stderr, "pcregrep: Invalid value \"%s\" for -d\n", dee_option);
+	    return 2;
+	}
     }
 
     if (DEE_option != NULL) {
-      if (strcmp(DEE_option, "read") == 0) DEE_action = DEE_READ;
-      else if (strcmp(DEE_option, "skip") == 0) DEE_action = DEE_SKIP;
-      else {
-        fprintf(stderr, "pcregrep: Invalid value \"%s\" for -D\n", DEE_option);
-        return 2;
-      }
+	if (strcmp(DEE_option, "read") == 0) DEE_action = DEE_READ;
+	else if (strcmp(DEE_option, "skip") == 0) DEE_action = DEE_SKIP;
+	else {
+	    fprintf(stderr, "pcregrep: Invalid value \"%s\" for -D\n", DEE_option);
+	    return 2;
+	}
     }
 
     /* Check the values for Jeffrey Friedl's debugging options. */
 #ifdef JFRIEDL_DEBUG
     if (S_arg > 9) {
-      fprintf(stderr, "pcregrep: bad value for -S option\n");
-      return 2;
+	fprintf(stderr, "pcregrep: bad value for -S option\n");
+	return 2;
     }
     if (jfriedl_XT != 0 || jfriedl_XR != 0) {
-      if (jfriedl_XT == 0) jfriedl_XT = 1;
-      if (jfriedl_XR == 0) jfriedl_XR = 1;
+	if (jfriedl_XT == 0) jfriedl_XT = 1;
+	if (jfriedl_XR == 0) jfriedl_XR = 1;
     }
 #endif
 
     /* Get memory to store the pattern and hints lists. */
     pattern_list = xcalloc(MAX_PATTERN_COUNT, sizeof(*pattern_list));
 
-    /* If no patterns were provided by -e, and there is no file provided by -f,
-    the first argument is the one and only pattern, and it must exist. */
+    /*
+     * If no patterns were provided by -e, and there is no file provided by -f,
+     * the first argument is the one and only pattern, and it must exist.
+     */
     npatterns = argvCount(patterns);
     if (npatterns == 0 && pattern_filename == NULL) {
-      if (i >= argc) return usage(2);
+	if (i >= argc) return usage(2);
 	xx = argvAdd(&patterns, argv[i++]);
     }
 
-    /* Compile the patterns that were provided on the command line, either by
-    multiple uses of -e or as a single unkeyed pattern. */
+    /*
+     * Compile the patterns that were provided on the command line, either by
+     * multiple uses of -e or as a single unkeyed pattern.
+     */
     npatterns = argvCount(patterns);
     for (j = 0; j < npatterns; j++) {
-      if (!compile_pattern(patterns[j], pcre_options, NULL,
-           (j == 0 && npatterns == 1)? 0 : j + 1))
-        goto errorexit;
+	if (!compile_pattern(patterns[j], pcre_options, NULL,
+		 (j == 0 && npatterns == 1)? 0 : j + 1))
+	    goto errorexit;
     }
 
     /* Compile the regular expressions that are provided in a file. */
     if (pattern_filename != NULL) {
 	int linenumber = 0;
-	FILE *f;
-	char *filename;
+	FD_t fd;
+	FILE *fp;
+	char *fn;
 	char buffer[MBUFTHIRD];
 
 	if (strcmp(pattern_filename, "-") == 0) {
-	    f = stdin;
-	    filename = stdin_name;
+	    fp = stdin;
+	    fn = stdin_name;
 	} else {
-	    f = fopen(pattern_filename, "r");
-	    if (f == NULL) {
+	    fd = Fopen(pattern_filename, "r.fpio");
+	    if (fd == NULL) {
 		fprintf(stderr, "pcregrep: Failed to open %s: %s\n",
 			pattern_filename, strerror(errno));
 		goto errorexit;
 	    }
-	    filename = pattern_filename;
+	    fp = fdGetFILE(fd);
+	    fn = pattern_filename;
 	}
 
-	while (fgets(buffer, MBUFTHIRD, f) != NULL) {
-	    char *s = buffer + (int)strlen(buffer);
-	    while (s > buffer && isspace((unsigned char)(s[-1]))) s--;
-	    *s = 0;
+	while (fgets(buffer, MBUFTHIRD, fp) != NULL) {
+	    char *se = buffer + (int)strlen(buffer);
+	    while (se > buffer && xisspace((int)se[-1]))
+		se--;
+	    *se = 0;
 	    linenumber++;
 	    if (buffer[0] == 0)	continue;	/* Skip blank lines */
-	    if (!compile_pattern(buffer, pcre_options, filename, linenumber))
+	    if (!compile_pattern(buffer, pcre_options, fn, linenumber))
 		goto errorexit;
 	}
 
-	if (f != stdin) fclose(f);
+	if (fp != stdin)
+	    Fclose(fd);
     }
 
     /* Study the regular expressions, as we will be running them many times */
     for (j = 0; j < pattern_count; j++) {
-      miRE mire = pattern_list + j;
-      mire->hints = pcre_study(mire->pcre, 0, &error);
-      if (error != NULL) {
-        char s[16];
-        if (pattern_count == 1) s[0] = 0; else sprintf(s, " number %d", j);
-        fprintf(stderr, "pcregrep: Error while studying regex%s: %s\n", s, error);
-        goto errorexit;
-      }
+	miRE mire = pattern_list + j;
+	mire->hints = pcre_study(mire->pcre, 0, &error);
+	if (error != NULL) {
+	    char s[16];
+	    if (pattern_count == 1) s[0] = 0; else sprintf(s, " number %d", j);
+	    fprintf(stderr, "pcregrep: Error while studying regex%s: %s\n", s, error);
+	    goto errorexit;
+	}
     }
 
     /* If there are include or exclude patterns, compile them. */
     if (exclude_pattern != NULL) {
-      excludeMire = mireNew(RPMMIRE_PCRE, 0);
-      /* XXX save locale tables for use by pcre_compile2. */
-      excludeMire->table = pcretables;
-      xx = mireRegcomp(excludeMire, exclude_pattern);
-      if (xx) {
-        fprintf(stderr, "pcregrep: Error in 'exclude' regex at offset %d: %s\n",
-          errptr, error);
-        goto errorexit;
-      }
+	excludeMire = mireNew(RPMMIRE_PCRE, 0);
+	/* XXX save locale tables for use by pcre_compile2. */
+	excludeMire->table = pcretables;
+	xx = mireRegcomp(excludeMire, exclude_pattern);
+	if (xx) {
+	    fprintf(stderr, "pcregrep: Error in 'exclude' regex at offset %d: %s\n",
+		errptr, error);
+	    goto errorexit;
+	}
     }
 
     if (include_pattern != NULL) {
-      includeMire = mireNew(RPMMIRE_PCRE, 0);
-      /* XXX save locale tables for use by pcre_compile2. */
-      includeMire->table = pcretables;
-      xx = mireRegcomp(includeMire, include_pattern);
-      if (xx) {
-        fprintf(stderr, "pcregrep: Error in 'include' regex at offset %d: %s\n",
-          errptr, error);
-        goto errorexit;
-      }
+	includeMire = mireNew(RPMMIRE_PCRE, 0);
+	/* XXX save locale tables for use by pcre_compile2. */
+	includeMire->table = pcretables;
+	xx = mireRegcomp(includeMire, include_pattern);
+	if (xx) {
+	    fprintf(stderr, "pcregrep: Error in 'include' regex at offset %d: %s\n",
+		errptr, error);
+	    goto errorexit;
+	}
     }
 
     /* If there are no further arguments, do the business on stdin and exit. */
     if (i >= argc) {
-      rc = pcregrep(stdin, FR_PLAIN, (filenames > FN_DEFAULT)? stdin_name : NULL);
-      goto exit;
+	rc = pcregrep(stdin, FR_PLAIN, (filenames > FN_DEFAULT)? stdin_name : NULL);
+	goto exit;
     }
 
-    /* Otherwise, work through the remaining arguments as files or directories.
-    Pass in the fact that there is only one argument at top level - this suppresses
-    the file name if the argument is not a directory and filenames are not
-    otherwise forced. */
-    only_one_at_top = i == argc - 1;   /* Catch initial value of i */
+    /*
+     * Otherwise, work through the remaining arguments as files or directories.
+     * Pass in the fact that there is only one argument at top level - this
+     * suppresses the file name if the argument is not a directory and
+     * filenames are not otherwise forced.
+     */
+    only_one_at_top = (i == argc - 1);   /* Catch initial value of i */
 
     for (; i < argc; i++) {
-      int frc = grep_or_recurse(argv[i], dee_action == dee_RECURSE,
-        only_one_at_top);
-      if (frc > 1) rc = frc;
-        else if (frc == 0 && rc == 1) rc = 0;
+	int frc = grep_or_recurse(argv[i], dee_action == dee_RECURSE,
+	    only_one_at_top);
+	if (frc > 1) rc = frc;
+	else if (frc == 0 && rc == 1) rc = 0;
     }
 
 exit:
