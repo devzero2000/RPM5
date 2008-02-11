@@ -414,7 +414,7 @@ end_of_line(const char *p, const char *endptr, int *lenptr)
 static const char *
 previous_line(const char *p, const char *startptr)
 {
-    switch(endlinetype) {
+    switch (endlinetype) {
     default:      /* Just in case */
     case EL_LF:
 	p--;
@@ -566,400 +566,443 @@ pcregrep(void *handle, int frtype, char *printname)
     BZFILE *inbz2 = NULL;
 #endif
 
-    /* Do the first read into the start of the buffer and set up the pointer to end
-    of what we have. In the case of libz, a non-zipped .gz file will be read as a
-    plain file. However, if a .bz2 file isn't actually bzipped, the first read will
-    fail. */
+    /*
+     * Do the first read into the start of the buffer and set up the pointer
+     * to end of what we have. In the case of libz, a non-zipped .gz file will
+     * be read as a plain file. However, if a .bz2 file isn't actually bzipped,
+     * the first read will fail.
+     */
 #ifdef SUPPORT_LIBZ
     if (frtype == FR_LIBZ) {
-      ingz = (gzFile)handle;
-      bufflength = gzread (ingz, buffer, 3*MBUFTHIRD);
+	ingz = (gzFile)handle;
+	bufflength = gzread (ingz, buffer, 3*MBUFTHIRD);
     } else
 #endif
 
 #ifdef SUPPORT_LIBBZ2
     if (frtype == FR_LIBBZ2) {
-      inbz2 = (BZFILE *)handle;
-      bufflength = BZ2_bzread(inbz2, buffer, 3*MBUFTHIRD);
-      if ((int)bufflength < 0) return 2; /* Gotcha: bufflength is size_t; */
+	inbz2 = (BZFILE *)handle;
+	bufflength = BZ2_bzread(inbz2, buffer, 3*MBUFTHIRD);
+	if ((int)bufflength < 0) return 2; /* Gotcha: bufflength is size_t; */
     }                                    /* without the cast it is unsigned. */
     else
 #endif
 
     {
-      in = (FILE *)handle;
-      bufflength = fread(buffer, 1, 3*MBUFTHIRD, in);
+	in = (FILE *)handle;
+	bufflength = fread(buffer, 1, 3*MBUFTHIRD, in);
     }
 
     endptr = buffer + bufflength;
 
-    /* Loop while the current pointer is not at the end of the file. For large
-    files, endptr will be at the end of the buffer when we are in the middle of the
-    file, but ptr will never get there, because as soon as it gets over 2/3 of the
-    way, the buffer is shifted left and re-filled. */
+    /*
+     * Loop while the current pointer is not at the end of the file. For large
+     * files, endptr will be at the end of the buffer when we are in the middle
+     * of the file, but ptr will never get there, because as soon as it gets
+     * over 2/3 of the way, the buffer is shifted left and re-filled.
+     */
     while (ptr < endptr) {
-      int i, endlinelength;
-      int mrc = 0;
-      BOOL match = FALSE;
-      char *matchptr = ptr;
-      const char *t = ptr;
-      size_t length, linelength;
+	int i, endlinelength;
+	int mrc = 0;
+	BOOL match = FALSE;
+	char *matchptr = ptr;
+	const char *t = ptr;
+	size_t length, linelength;
 
-      /* At this point, ptr is at the start of a line. We need to find the length
-      of the subject string to pass to mireRegexec(). In multiline mode, it is the
-      length remainder of the data in the buffer. Otherwise, it is the length of
-      the next line. After matching, we always advance by the length of the next
-      line. In multiline mode the PCRE_FIRSTLINE option is used for compiling, so
-      that any match is constrained to be in the first line. */
-      t = end_of_line(t, endptr, &endlinelength);
-      linelength = t - ptr - endlinelength;
-      length = multiline? (size_t)(endptr - ptr) : linelength;
+	/*
+	 * At this point, ptr is at the start of a line. We need to find the
+	 * length of the subject string to pass to mireRegexec(). In multiline
+	 * mode, it is the length remainder of the data in the buffer.
+	 * Otherwise, it is the length of the next line. After matching, we
+	 * always advance by the length of the next line. In multiline mode
+	 * the PCRE_FIRSTLINE option is used for compiling, so that any match
+	 * is constrained to be in the first line.
+	 */
+	t = end_of_line(t, endptr, &endlinelength);
+	linelength = t - ptr - endlinelength;
+	length = multiline? (size_t)(endptr - ptr) : linelength;
 
-      /* Extra processing for Jeffrey Friedl's debugging. */
+	/* Extra processing for Jeffrey Friedl's debugging. */
 #ifdef JFRIEDL_DEBUG
-      if (jfriedl_XT || jfriedl_XR) {
-          #include <sys/time.h>
-          #include <time.h>
-          struct timeval start_time, end_time;
-          struct timezone dummy;
+	if (jfriedl_XT || jfriedl_XR) {
+	    struct timeval start_time, end_time;
+	    struct timezone dummy;
+	    double delta;
 
-          if (jfriedl_XT) {
-              unsigned long newlen = length * jfriedl_XT + strlen(jfriedl_prefix) + strlen(jfriedl_postfix);
-              const char *orig = ptr;
-              ptr = malloc(newlen + 1);
-              if (!ptr) {
-                      printf("out of memory");
-                      exit(2);
-              }
-              endptr = ptr;
-              strcpy(endptr, jfriedl_prefix); endptr += strlen(jfriedl_prefix);
-              for (i = 0; i < jfriedl_XT; i++) {
-                      strncpy(endptr, orig,  length);
-                      endptr += length;
-              }
-              strcpy(endptr, jfriedl_postfix); endptr += strlen(jfriedl_postfix);
-              length = newlen;
-          }
+	    if (jfriedl_XT) {
+		unsigned long newlen = length * jfriedl_XT + strlen(jfriedl_prefix) + strlen(jfriedl_postfix);
+		const char *orig = ptr;
+		endptr = ptr = xmalloc(newlen + 1);
+		strcpy(endptr, jfriedl_prefix);
+		endptr += strlen(jfriedl_prefix);
+		for (i = 0; i < jfriedl_XT; i++) {
+		    strncpy(endptr, orig,  length);
+		    endptr += length;
+		}
+		strcpy(endptr, jfriedl_postfix);
+		endptr += strlen(jfriedl_postfix);
+		length = newlen;
+	    }
 
-          if (gettimeofday(&start_time, &dummy) != 0)
-                  perror("bad gettimeofday");
+	    if (gettimeofday(&start_time, &dummy) != 0)
+		perror("bad gettimeofday");
 
-          for (i = 0; i < jfriedl_XR; i++) {
-              miRE mire = pattern_list;
-              mire->startoff = 0;	/* XXX needed? */
-              mire->eoptions = 0;	/* XXX needed? */
-              /* XXX save offsets for use by pcre_exec. */
-              mire->offsets = offsets;
-              mire->noffsets = 99;
-              /* XXX WATCHOUT: mireRegexec w length=0 does strlen(matchptr)! */
-              match = ((length > 0 ? mireRegexec(mire, matchptr, length) : PCRE_ERROR_NOMATCH) >= 0);
-          }
+	    for (i = 0; i < jfriedl_XR; i++) {
+		miRE mire = pattern_list;
+		mire->startoff = 0;	/* XXX needed? */
+		mire->eoptions = 0;	/* XXX needed? */
+		/* XXX save offsets for use by pcre_exec. */
+		mire->offsets = offsets;
+		mire->noffsets = 99;
+		/* XXX WATCHOUT: mireRegexec w length=0 does strlen(matchptr)! */
+		match = ((length > 0 ? mireRegexec(mire, matchptr, length) : PCRE_ERROR_NOMATCH) >= 0);
+	    }
 
-          if (gettimeofday(&end_time, &dummy) != 0)
-                  perror("bad gettimeofday");
+	    if (gettimeofday(&end_time, &dummy) != 0)
+		perror("bad gettimeofday");
 
-          double delta = ((end_time.tv_sec + (end_time.tv_usec / 1000000.0))
-                          -
-                          (start_time.tv_sec + (start_time.tv_usec / 1000000.0)));
-
-          printf("%s TIMER[%.4f]\n", match ? "MATCH" : "FAIL", delta);
-          return 0;
-    }
+	    delta = ((end_time.tv_sec + (end_time.tv_usec / 1000000.0))
+		            -
+		    (start_time.tv_sec + (start_time.tv_usec / 1000000.0)));
+	    printf("%s TIMER[%.4f]\n", match ? "MATCH" : "FAIL", delta);
+	    return 0;
+	}
 #endif
 
-      /* We come back here after a match when the -o option (only_matching) is set,
-      in order to find any further matches in the same line. */
+	/*
+	 * We come back here after a match when the -o option (only_matching)
+	 * is set, in order to find any further matches in the same line.
+	 */
 ONLY_MATCHING_RESTART:
 
-      /* Run through all the patterns until one matches. Note that we don't include
-      the final newline in the subject string. */
-      for (i = 0; i < pattern_count; i++) {
-        miRE mire = pattern_list + i;
-        mire->startoff = 0;	/* XXX needed? */
-        mire->eoptions = 0;	/* XXX needed? */
-        /* XXX save offsets for use by pcre_exec. */
-        mire->offsets = offsets;
-        mire->noffsets = 99;
-        /* XXX WATCHOUT: mireRegexec w length=0 does strlen(matchptr)! */
-        mrc = (length > 0 ? mireRegexec(mire, matchptr, length) : PCRE_ERROR_NOMATCH);
-        if (mrc >= 0) { match = TRUE; break; }
-        if (mrc != PCRE_ERROR_NOMATCH) {
-          fprintf(stderr, "pcregrep: mireRegexec() error %d while matching ", mrc);
-          if (pattern_count > 1) fprintf(stderr, "pattern number %d to ", i+1);
-          fprintf(stderr, "this line:\n");
-          fwrite(matchptr, 1, linelength, stderr);  /* In case binary zero included */
-          fprintf(stderr, "\n");
-          if (error_count == 0 &&
-              (mrc == PCRE_ERROR_MATCHLIMIT || mrc == PCRE_ERROR_RECURSIONLIMIT))
-          {
-            fprintf(stderr, "pcregrep: error %d means that a resource limit "
-              "was exceeded\n", mrc);
-            fprintf(stderr, "pcregrep: check your regex for nested unlimited loops\n");
-          }
-          if (error_count++ > 20) {
-            fprintf(stderr, "pcregrep: too many errors - abandoned\n");
-            exit(2);
-          }
-          match = invert;    /* No more matching; don't show the line again */
-          break;
-        }
-      }
+	/*
+	 * Run through all the patterns until one matches. Note that we don't
+	 * include the final newline in the subject string.
+	 */
+	for (i = 0; i < pattern_count; i++) {
+	    miRE mire = pattern_list + i;
+	    mire->startoff = 0;	/* XXX needed? */
+	    mire->eoptions = 0;	/* XXX needed? */
+	    /* XXX save offsets for use by pcre_exec. */
+	    mire->offsets = offsets;
+	    mire->noffsets = 99;
+	    /* XXX WATCHOUT: mireRegexec w length=0 does strlen(matchptr)! */
+	    mrc = (length > 0 ? mireRegexec(mire, matchptr, length) : PCRE_ERROR_NOMATCH);
+	    if (mrc >= 0) { match = TRUE; break; }
+	    if (mrc != PCRE_ERROR_NOMATCH) {
+		fprintf(stderr, "pcregrep: mireRegexec() error %d while matching ", mrc);
+		if (pattern_count > 1) fprintf(stderr, "pattern number %d to ", i+1);
+		fprintf(stderr, "this line:\n");
+		fwrite(matchptr, 1, linelength, stderr);  /* In case binary zero included */
+		fprintf(stderr, "\n");
+		if (error_count == 0 &&
+			(mrc == PCRE_ERROR_MATCHLIMIT || mrc == PCRE_ERROR_RECURSIONLIMIT))
+		{
+		    fprintf(stderr, "pcregrep: error %d means that a resource limit "
+			"was exceeded\n", mrc);
+		    fprintf(stderr, "pcregrep: check your regex for nested unlimited loops\n");
+		}
+		if (error_count++ > 20) {
+		    fprintf(stderr, "pcregrep: too many errors - abandoned\n");
+		    exit(2);
+		}
+		match = invert;    /* No more matching; don't show the line again */
+		break;
+	    }
+	}
 
-      /* If it's a match or a not-match (as required), do what's wanted. */
-      if (match != invert) {
-        BOOL hyphenprinted = FALSE;
+	/* If it's a match or a not-match (as required), do what's wanted. */
+	if (match != invert) {
+	    BOOL hyphenprinted = FALSE;
 
-        /* We've failed if we want a file that doesn't have any matches. */
-        if (filenames == FN_NOMATCH_ONLY) return 1;
+	    /* We've failed if we want a file that doesn't have any matches. */
+	    if (filenames == FN_NOMATCH_ONLY) return 1;
 
-        /* Just count if just counting is wanted. */
-        if (count_only) count++;
+	    /* Just count if just counting is wanted. */
+	    if (count_only) count++;
 
-        /* If all we want is a file name, there is no need to scan any more lines
-        in the file. */
-        else if (filenames == FN_ONLY) {
-          fprintf(stdout, "%s\n", printname);
-          return 0;
-        }
+	    /*
+	     * If all we want is a file name, there is no need to scan any
+	     * more lines in the file.
+	     */
+	    else if (filenames == FN_ONLY) {
+		fprintf(stdout, "%s\n", printname);
+		return 0;
+	    }
 
-        /* Likewise, if all we want is a yes/no answer. */
-        else if (quiet) return 0;
+	    /* Likewise, if all we want is a yes/no answer. */
+	    else if (quiet) return 0;
 
-        /* The --only-matching option prints just the substring that matched, and
-        the --file-offsets and --line-offsets options output offsets for the
-        matching substring (they both force --only-matching). None of these options
-        prints any context. Afterwards, adjust the start and length, and then jump
-        back to look for further matches in the same line. If we are in invert
-        mode, however, nothing is printed - this could be still useful because the
-        return code is set. */
-        else if (only_matching) {
-          if (!invert) {
-            if (printname != NULL) fprintf(stdout, "%s:", printname);
-            if (number) fprintf(stdout, "%d:", linenumber);
-            if (line_offsets)
-              fprintf(stdout, "%d,%d", matchptr + offsets[0] - ptr,
-                offsets[1] - offsets[0]);
-            else if (file_offsets)
-              fprintf(stdout, "%d,%d", filepos + matchptr + offsets[0] - ptr,
-                offsets[1] - offsets[0]);
-            else
-              fwrite(matchptr + offsets[0], 1, offsets[1] - offsets[0], stdout);
-            fprintf(stdout, "\n");
-            matchptr += offsets[1];
-            length -= offsets[1];
-            match = FALSE;
-            goto ONLY_MATCHING_RESTART;
-          }
-        }
+	    /*
+	     * The --only-matching option prints just the substring that
+	     * matched, and the --file-offsets and --line-offsets options
+	     * output offsets for the matching substring (they both force
+	     * --only-matching). None of these options prints any context.
+	     * Afterwards, adjust the start and length, and then jump back
+	     * to look for further matches in the same line. If we are in
+	     * invert mode, however, nothing is printed - this could be
+	     * still useful because the return code is set.
+	     */
+	    else if (only_matching) {
+		if (!invert) {
+		    if (printname != NULL) fprintf(stdout, "%s:", printname);
+		    if (number) fprintf(stdout, "%d:", linenumber);
+		    if (line_offsets)
+			fprintf(stdout, "%d,%d", matchptr + offsets[0] - ptr,
+			    offsets[1] - offsets[0]);
+		    else if (file_offsets)
+			fprintf(stdout, "%d,%d", filepos + matchptr + offsets[0] - ptr,
+			    offsets[1] - offsets[0]);
+		    else
+			fwrite(matchptr + offsets[0], 1, offsets[1] - offsets[0], stdout);
+		    fprintf(stdout, "\n");
+		    matchptr += offsets[1];
+		    length -= offsets[1];
+		    match = FALSE;
+		    goto ONLY_MATCHING_RESTART;
+		}
+	    }
 
-        /* This is the default case when none of the above options is set. We print
-        the matching lines(s), possibly preceded and/or followed by other lines of
-        context. */
-        else {
-          /* See if there is a requirement to print some "after" lines from a
-          previous match. We never print any overlaps. */
-          if (after_context > 0 && lastmatchnumber > 0) {
-            int ellength;
-            int linecount = 0;
-            const char *p = lastmatchrestart;
+	    /*
+	     * This is the default case when none of the above options is set.
+	     * We print the matching lines(s), possibly preceded and/or
+	     * followed by other lines of context.
+	     */
+	    else {
+		/*
+		 * See if there is a requirement to print some "after" lines
+		 * from a previous match. We never print any overlaps.
+		 */
+		if (after_context > 0 && lastmatchnumber > 0) {
+		    int ellength;
+		    int linecount = 0;
+		    const char *p = lastmatchrestart;
 
-            while (p < ptr && linecount < after_context) {
-              p = end_of_line(p, ptr, &ellength);
-              linecount++;
-            }
+		    while (p < ptr && linecount < after_context) {
+			p = end_of_line(p, ptr, &ellength);
+			linecount++;
+		    }
 
-            /* It is important to advance lastmatchrestart during this printing so
-            that it interacts correctly with any "before" printing below. Print
-            each line's data using fwrite() in case there are binary zeroes. */
-            while (lastmatchrestart < p) {
-              const char *pp = lastmatchrestart;
-              if (printname != NULL) fprintf(stdout, "%s-", printname);
-              if (number) fprintf(stdout, "%d-", lastmatchnumber++);
-              pp = end_of_line(pp, endptr, &ellength);
-              fwrite(lastmatchrestart, 1, pp - lastmatchrestart, stdout);
-              lastmatchrestart = pp;
-            }
-            if (lastmatchrestart != ptr) hyphenpending = TRUE;
-          }
+		    /*
+		     * It is important to advance lastmatchrestart during this
+		     * printing so that it interacts correctly with any
+		     * "before" printing below. Print each line's data using
+		     * fwrite() in case there are binary zeroes.
+		     */
+		    while (lastmatchrestart < p) {
+			const char *pp = lastmatchrestart;
+			if (printname != NULL) fprintf(stdout, "%s-", printname);
+			if (number) fprintf(stdout, "%d-", lastmatchnumber++);
+			pp = end_of_line(pp, endptr, &ellength);
+			fwrite(lastmatchrestart, 1, pp - lastmatchrestart, stdout);
+			lastmatchrestart = pp;
+		    }
+		    if (lastmatchrestart != ptr) hyphenpending = TRUE;
+		}
 
-          /* If there were non-contiguous lines printed above, insert hyphens. */
-          if (hyphenpending) {
-            fprintf(stdout, "--\n");
-            hyphenpending = FALSE;
-            hyphenprinted = TRUE;
-          }
+		/* If there were non-contiguous lines printed above, insert hyphens. */
+		if (hyphenpending) {
+		    fprintf(stdout, "--\n");
+		    hyphenpending = FALSE;
+		    hyphenprinted = TRUE;
+		}
 
-          /* See if there is a requirement to print some "before" lines for this
-          match. Again, don't print overlaps. */
-          if (before_context > 0) {
-            int linecount = 0;
-            const char *p = ptr;
+		/*
+		 * See if there is a requirement to print some "before" lines
+		 * for this match. Again, don't print overlaps.
+		 */
+		if (before_context > 0) {
+		    int linecount = 0;
+		    const char *p = ptr;
 
-            while (p > buffer && (lastmatchnumber == 0 || p > lastmatchrestart) &&
-                   linecount < before_context)
-            {
-              linecount++;
-              p = previous_line(p, buffer);
-            }
+		    while (p > buffer && (lastmatchnumber == 0 || p > lastmatchrestart) &&
+			       linecount < before_context)
+		    {
+			linecount++;
+			p = previous_line(p, buffer);
+		    }
 
-            if (lastmatchnumber > 0 && p > lastmatchrestart && !hyphenprinted)
-              fprintf(stdout, "--\n");
+		    if (lastmatchnumber > 0 && p > lastmatchrestart && !hyphenprinted)
+			fprintf(stdout, "--\n");
 
-            while (p < ptr) {
-              int ellength;
-              const char *pp = p;
-              if (printname != NULL) fprintf(stdout, "%s-", printname);
-              if (number) fprintf(stdout, "%d-", linenumber - linecount--);
-              pp = end_of_line(pp, endptr, &ellength);
-              fwrite(p, 1, pp - p, stdout);
-              p = pp;
-            }
-          }
+		    while (p < ptr) {
+			int ellength;
+			const char *pp = p;
+			if (printname != NULL) fprintf(stdout, "%s-", printname);
+			if (number) fprintf(stdout, "%d-", linenumber - linecount--);
+			pp = end_of_line(pp, endptr, &ellength);
+			fwrite(p, 1, pp - p, stdout);
+			p = pp;
+		    }
+		}
 
-          /* Now print the matching line(s); ensure we set hyphenpending at the end
-          of the file if any context lines are being output. */
-          if (after_context > 0 || before_context > 0)
-            endhyphenpending = TRUE;
+		/*
+		 * Now print the matching line(s); ensure we set hyphenpending
+		 * at the end of the file if any context lines are being output.
+		 */
+		if (after_context > 0 || before_context > 0)
+		    endhyphenpending = TRUE;
 
-          if (printname != NULL) fprintf(stdout, "%s:", printname);
-          if (number) fprintf(stdout, "%d:", linenumber);
+		if (printname != NULL) fprintf(stdout, "%s:", printname);
+		if (number) fprintf(stdout, "%d:", linenumber);
 
-          /* In multiline mode, we want to print to the end of the line in which
-          the end of the matched string is found, so we adjust linelength and the
-          line number appropriately, but only when there actually was a match
-          (invert not set). Because the PCRE_FIRSTLINE option is set, the start of
-          the match will always be before the first newline sequence. */
-          if (multiline) {
-            int ellength;
-            const char *endmatch = ptr;
-            if (!invert) {
-              endmatch += offsets[1];
-              t = ptr;
-              while (t < endmatch) {
-                t = end_of_line(t, endptr, &ellength);
-                if (t <= endmatch) linenumber++; else break;
-              }
-            }
-            endmatch = end_of_line(endmatch, endptr, &ellength);
-            linelength = endmatch - ptr - ellength;
-          }
-          /*** NOTE: Use only fwrite() to output the data line, so that binary
-          zeroes are treated as just another data character. */
+		/*
+		 * In multiline mode, we want to print to the end of the line
+		 * in which the end of the matched string is found, so we
+		 * adjust linelength and the line number appropriately, but
+		 * only when there actually was a match (invert not set).
+		 * Because the PCRE_FIRSTLINE option is set, the start of
+		 * the match will always be before the first newline sequence.
+		 * */
+		if (multiline) {
+		    int ellength;
+		    const char *endmatch = ptr;
+		    if (!invert) {
+			endmatch += offsets[1];
+			t = ptr;
+			while (t < endmatch) {
+			    t = end_of_line(t, endptr, &ellength);
+			    if (t <= endmatch) linenumber++; else break;
+			}
+		    }
+		    endmatch = end_of_line(endmatch, endptr, &ellength);
+		    linelength = endmatch - ptr - ellength;
+		}
+		/*
+		 * NOTE: Use only fwrite() to output the data line, so that
+		 * binary zeroes are treated as just another data character.
+		 */
 
-          /* This extra option, for Jeffrey Friedl's debugging requirements,
-          replaces the matched string, or a specific captured string if it exists,
-          with X. When this happens, colouring is ignored. */
+		/*
+		 * This extra option, for Jeffrey Friedl's debugging
+		 * requirements, replaces the matched string, or a specific
+		 * captured string if it exists, with X. When this happens,
+		 * colouring is ignored.
+		 */
 #ifdef JFRIEDL_DEBUG
-          if (S_arg >= 0 && S_arg < mrc) {
-            int first = S_arg * 2;
-            int last  = first + 1;
-            fwrite(ptr, 1, offsets[first], stdout);
-            fprintf(stdout, "X");
-            fwrite(ptr + offsets[last], 1, linelength - offsets[last], stdout);
-          } else
+		if (S_arg >= 0 && S_arg < mrc) {
+		    int first = S_arg * 2;
+		    int last  = first + 1;
+		    fwrite(ptr, 1, offsets[first], stdout);
+		    fprintf(stdout, "X");
+		    fwrite(ptr + offsets[last], 1, linelength - offsets[last], stdout);
+		} else
 #endif
 
-          /* We have to split the line(s) up if colouring. */
-          if (do_colour) {
-            fwrite(ptr, 1, offsets[0], stdout);
-            fprintf(stdout, "%c[%sm", 0x1b, colour_string);
-            fwrite(ptr + offsets[0], 1, offsets[1] - offsets[0], stdout);
-            fprintf(stdout, "%c[00m", 0x1b);
-            fwrite(ptr + offsets[1], 1, (linelength + endlinelength) - offsets[1],
-              stdout);
-          }
-          else fwrite(ptr, 1, linelength + endlinelength, stdout);
-        }
+		/* We have to split the line(s) up if colouring. */
+		if (do_colour) {
+		    fwrite(ptr, 1, offsets[0], stdout);
+		    fprintf(stdout, "%c[%sm", 0x1b, colour_string);
+		    fwrite(ptr + offsets[0], 1, offsets[1] - offsets[0], stdout);
+		    fprintf(stdout, "%c[00m", 0x1b);
+		    fwrite(ptr + offsets[1], 1, (linelength + endlinelength) - offsets[1],
+			stdout);
+		}
+		else fwrite(ptr, 1, linelength + endlinelength, stdout);
+	    }
 
-        /* End of doing what has to be done for a match */
-        rc = 0;    /* Had some success */
+	    /* End of doing what has to be done for a match */
+	    rc = 0;    /* Had some success */
 
-        /* Remember where the last match happened for after_context. We remember
-        where we are about to restart, and that line's number. */
-        lastmatchrestart = ptr + linelength + endlinelength;
-        lastmatchnumber = linenumber + 1;
-      }
+	    /*
+	     * Remember where the last match happened for after_context.
+	     * We remember where we are about to restart, and that line's
+	     * number.
+	     */
+	    lastmatchrestart = ptr + linelength + endlinelength;
+	    lastmatchnumber = linenumber + 1;
+	}
 
-      /* For a match in multiline inverted mode (which of course did not cause
-      anything to be printed), we have to move on to the end of the match before
-      proceeding. */
-      if (multiline && invert && match) {
-        int ellength;
-        const char *endmatch = ptr + offsets[1];
-        t = ptr;
-        while (t < endmatch) {
-          t = end_of_line(t, endptr, &ellength);
-          if (t <= endmatch) linenumber++; else break;
-        }
-        endmatch = end_of_line(endmatch, endptr, &ellength);
-        linelength = endmatch - ptr - ellength;
-      }
+	/*
+	 * For a match in multiline inverted mode (which of course did not
+	 * cause anything to be printed), we have to move on to the end of
+	 * the match before proceeding.
+	 */
+	if (multiline && invert && match) {
+	    int ellength;
+	    const char *endmatch = ptr + offsets[1];
+	    t = ptr;
+	    while (t < endmatch) {
+		t = end_of_line(t, endptr, &ellength);
+		if (t <= endmatch) linenumber++; else break;
+	    }
+	    endmatch = end_of_line(endmatch, endptr, &ellength);
+	    linelength = endmatch - ptr - ellength;
+	}
 
-      /* Advance to after the newline and increment the line number. The file
-      offset to the current line is maintained in filepos. */
-      ptr += linelength + endlinelength;
-      filepos += linelength + endlinelength;
-      linenumber++;
+	/*
+	 * Advance to after the newline and increment the line number. The
+	 * file offset to the current line is maintained in filepos.
+	 */
+	ptr += linelength + endlinelength;
+	filepos += linelength + endlinelength;
+	linenumber++;
 
-      /* If we haven't yet reached the end of the file (the buffer is full), and
-      the current point is in the top 1/3 of the buffer, slide the buffer down by
-      1/3 and refill it. Before we do this, if some unprinted "after" lines are
-      about to be lost, print them. */
-      if (bufflength >= sizeof(buffer) && ptr > buffer + 2*MBUFTHIRD) {
-        if (after_context > 0 &&
-            lastmatchnumber > 0 &&
-            lastmatchrestart < buffer + MBUFTHIRD)
-        {
-          do_after_lines(lastmatchnumber, lastmatchrestart, endptr, printname);
-          lastmatchnumber = 0;
-        }
+	/*
+	 * If we haven't yet reached the end of the file (the buffer is full),
+	 * and the current point is in the top 1/3 of the buffer, slide the
+	 * buffer down by 1/3 and refill it. Before we do this, if some
+	 * unprinted "after" lines are about to be lost, print them.
+	 */
+	if (bufflength >= sizeof(buffer) && ptr > buffer + 2*MBUFTHIRD) {
+	    if (after_context > 0 &&
+		lastmatchnumber > 0 &&
+		lastmatchrestart < buffer + MBUFTHIRD)
+	    {
+		do_after_lines(lastmatchnumber, lastmatchrestart, endptr, printname);
+		lastmatchnumber = 0;
+	    }
 
-        /* Now do the shuffle */
+	    /* Now do the shuffle */
 
-        memmove(buffer, buffer + MBUFTHIRD, 2*MBUFTHIRD);
-        ptr -= MBUFTHIRD;
+	    memmove(buffer, buffer + MBUFTHIRD, 2*MBUFTHIRD);
+	    ptr -= MBUFTHIRD;
 
 #ifdef SUPPORT_LIBZ
-        if (frtype == FR_LIBZ)
-          bufflength = 2*MBUFTHIRD +
-            gzread (ingz, buffer + 2*MBUFTHIRD, MBUFTHIRD);
-        else
+	    if (frtype == FR_LIBZ)
+		bufflength = 2*MBUFTHIRD +
+		gzread (ingz, buffer + 2*MBUFTHIRD, MBUFTHIRD);
+	    else
 #endif
 
 #ifdef SUPPORT_LIBBZ2
-        if (frtype == FR_LIBBZ2)
-          bufflength = 2*MBUFTHIRD +
-            BZ2_bzread(inbz2, buffer + 2*MBUFTHIRD, MBUFTHIRD);
-        else
+	    if (frtype == FR_LIBBZ2)
+		bufflength = 2*MBUFTHIRD +
+		BZ2_bzread(inbz2, buffer + 2*MBUFTHIRD, MBUFTHIRD);
+	    else
 #endif
 
-        bufflength = 2*MBUFTHIRD + fread(buffer + 2*MBUFTHIRD, 1, MBUFTHIRD, in);
+	    bufflength = 2*MBUFTHIRD + fread(buffer + 2*MBUFTHIRD, 1, MBUFTHIRD, in);
 
-        endptr = buffer + bufflength;
+	    endptr = buffer + bufflength;
 
-        /* Adjust any last match point */
-        if (lastmatchnumber > 0) lastmatchrestart -= MBUFTHIRD;
-      }
+	    /* Adjust any last match point */
+	    if (lastmatchnumber > 0) lastmatchrestart -= MBUFTHIRD;
+	}
     }	/* Loop through the whole file */
 
-    /* End of file; print final "after" lines if wanted; do_after_lines sets
-    hyphenpending if it prints something. */
+    /*
+     * End of file; print final "after" lines if wanted; do_after_lines sets
+     * hyphenpending if it prints something.
+     */
     if (!only_matching && !count_only) {
-      do_after_lines(lastmatchnumber, lastmatchrestart, endptr, printname);
-      hyphenpending |= endhyphenpending;
+	do_after_lines(lastmatchnumber, lastmatchrestart, endptr, printname);
+	hyphenpending |= endhyphenpending;
     }
 
-    /* Print the file name if we are looking for those without matches and there
-    were none. If we found a match, we won't have got this far. */
+    /*
+     * Print the file name if we are looking for those without matches and
+     * there were none. If we found a match, we won't have got this far.
+     */
     if (filenames == FN_NOMATCH_ONLY) {
-      fprintf(stdout, "%s\n", printname);
-      return 0;
+	fprintf(stdout, "%s\n", printname);
+	return 0;
     }
 
     /* Print the match count if wanted */
     if (count_only) {
-      if (printname != NULL) fprintf(stdout, "%s:", printname);
-      fprintf(stdout, "%d\n", count);
+	if (printname != NULL) fprintf(stdout, "%s:", printname);
+	fprintf(stdout, "%d\n", count);
     }
 
     return rc;
@@ -998,130 +1041,143 @@ grep_or_recurse(char *pathname, BOOL dir_recurse, BOOL only_one_at_top)
 
     /* If the file name is "-" we scan stdin */
     if (strcmp(pathname, "-") == 0) {
-      return pcregrep(stdin, FR_PLAIN,
-        (filenames > FN_DEFAULT || (filenames == FN_DEFAULT && !only_one_at_top))?
-          stdin_name : NULL);
+	return pcregrep(stdin, FR_PLAIN,
+	    (filenames > FN_DEFAULT || (filenames == FN_DEFAULT && !only_one_at_top))?
+		stdin_name : NULL);
     }
 
-    /* If the file is a directory, skip if skipping or if we are recursing, scan
-    each file within it, subject to any include or exclude patterns that were set.
-    The scanning code is localized so it can be made system-specific. */
+    /*
+     * If the file is a directory, skip if skipping or if we are recursing,
+     * scan each file within it, subject to any include or exclude patterns
+     * that were set.  The scanning code is localized so it can be made
+     * system-specific.
+     */
     if ((sep = isdirectory(pathname)) != 0) {
-      if (dee_action == dee_SKIP) return 1;
-      if (dee_action == dee_RECURSE) {
-        char buffer[1024];
-        char *nextfile;
-        directory_type *dir = opendirectory(pathname);
+	if (dee_action == dee_SKIP) return 1;
+	if (dee_action == dee_RECURSE) {
+	    char buffer[1024];
+	    char *nextfile;
+	    directory_type *dir = opendirectory(pathname);
 
-        if (dir == NULL) {
-          if (!silent)
-            fprintf(stderr, "pcregrep: Failed to open directory %s: %s\n", pathname,
-              strerror(errno));
-          return 2;
-        }
+	    if (dir == NULL) {
+		if (!silent)
+		    fprintf(stderr, "pcregrep: Failed to open directory %s: %s\n", pathname,
+		      strerror(errno));
+		return 2;
+	    }
 
-        while ((nextfile = readdirectory(dir)) != NULL) {
-          int frc;
-          sprintf(buffer, "%.512s%c%.128s", pathname, sep, nextfile);
+	    while ((nextfile = readdirectory(dir)) != NULL) {
+		int frc;
+		sprintf(buffer, "%.512s%c%.128s", pathname, sep, nextfile);
 
-          if (excludeMire && mireRegexec(excludeMire, buffer, 0) >= 0)
-            continue;
+		if (excludeMire && mireRegexec(excludeMire, buffer, 0) >= 0)
+		    continue;
 
-          if (includeMire && mireRegexec(includeMire, buffer, 0) < 0)
-            continue;
+		if (includeMire && mireRegexec(includeMire, buffer, 0) < 0)
+		    continue;
 
-          frc = grep_or_recurse(buffer, dir_recurse, FALSE);
-          if (frc > 1) rc = frc;
-          else if (frc == 0 && rc == 1) rc = 0;
-        }
+		frc = grep_or_recurse(buffer, dir_recurse, FALSE);
+		if (frc > 1) rc = frc;
+		else if (frc == 0 && rc == 1) rc = 0;
+	    }
 
-        closedirectory(dir);
-        return rc;
-      }
+	    closedirectory(dir);
+	    return rc;
+	}
     }
 
-    /* If the file is not a directory and not a regular file, skip it if that's
-    been requested. */
+    /*
+     * If the file is not a directory and not a regular file, skip it if
+     * that's been requested.
+     */
     else if (!isregfile(pathname) && DEE_action == DEE_SKIP) return 1;
 
-    /* Control reaches here if we have a regular file, or if we have a directory
-    and recursion or skipping was not requested, or if we have anything else and
-    skipping was not requested. The scan proceeds. If this is the first and only
-    argument at top level, we don't show the file name, unless we are only showing
-    the file name, or the filename was forced (-H). */
+    /*
+     * Control reaches here if we have a regular file, or if we have a
+     * directory and recursion or skipping was not requested, or if we have
+     * anything else and skipping was not requested. The scan proceeds.
+     * If this is the first and only argument at top level, we don't show
+     * the file name, unless we are only showing the file name, or the
+     * filename was forced (-H).
+     */
     pathlen = strlen(pathname);
 
     /* Open using zlib if it is supported and the file name ends with .gz. */
 #ifdef SUPPORT_LIBZ
     if (pathlen > 3 && strcmp(pathname + pathlen - 3, ".gz") == 0) {
-      ingz = gzopen(pathname, "rb");
-      if (ingz == NULL) {
-        if (!silent)
-          fprintf(stderr, "pcregrep: Failed to open %s: %s\n", pathname,
-            strerror(errno));
-        return 2;
-      }
-      handle = (void *)ingz;
-      frtype = FR_LIBZ;
+	ingz = gzopen(pathname, "rb");
+	if (ingz == NULL) {
+	    if (!silent)
+		fprintf(stderr, "pcregrep: Failed to open %s: %s\n", pathname,
+		    strerror(errno));
+	    return 2;
+	}
+	handle = (void *)ingz;
+	frtype = FR_LIBZ;
     } else
 #endif
 
     /* Otherwise open with bz2lib if it is supported and the name ends with .bz2. */
 #ifdef SUPPORT_LIBBZ2
     if (pathlen > 4 && strcmp(pathname + pathlen - 4, ".bz2") == 0) {
-      inbz2 = BZ2_bzopen(pathname, "rb");
-      handle = (void *)inbz2;
-      frtype = FR_LIBBZ2;
+	inbz2 = BZ2_bzopen(pathname, "rb");
+	handle = (void *)inbz2;
+	frtype = FR_LIBBZ2;
     } else
 #endif
 
-    /* Otherwise use plain Fopen(). The label is so that we can come back here if
-    an attempt to read a .bz2 file indicates that it really is a plain file. */
+    /*
+     * Otherwise use plain Fopen(). The label is so that we can come back
+     * here if an attempt to read a .bz2 file indicates that it really is
+     * a plain file.
+     */
 #ifdef SUPPORT_LIBBZ2
 PLAIN_FILE:
 #endif
     {
-      in = fopen(pathname, "r");
-      handle = (void *)in;
-      frtype = FR_PLAIN;
+	in = fopen(pathname, "r");
+	handle = (void *)in;
+	frtype = FR_PLAIN;
     }
 
     /* All the opening methods return errno when they fail. */
     if (handle == NULL) {
-      if (!silent)
-        fprintf(stderr, "pcregrep: Failed to open %s: %s\n", pathname,
-          strerror(errno));
-      return 2;
+	if (!silent)
+	    fprintf(stderr, "pcregrep: Failed to open %s: %s\n", pathname,
+		strerror(errno));
+	return 2;
     }
 
     /* Now grep the file */
     rc = pcregrep(handle, frtype, (filenames > FN_DEFAULT ||
-      (filenames == FN_DEFAULT && !only_one_at_top))? pathname : NULL);
+	(filenames == FN_DEFAULT && !only_one_at_top))? pathname : NULL);
 
     /* Close in an appropriate manner. */
 #ifdef SUPPORT_LIBZ
     if (frtype == FR_LIBZ)
-      gzclose(ingz);
+	gzclose(ingz);
     else
 #endif
 
-    /* If it is a .bz2 file and the result is 2, it means that the first attempt to
-    read failed. If the error indicates that the file isn't in fact bzipped, try
-    again as a normal file. */
+    /*
+     * If it is a .bz2 file and the result is 2, it means that the first
+     * attempt to read failed. If the error indicates that the file isn't
+     * in fact bzipped, try again as a normal file.
+     */
 #ifdef SUPPORT_LIBBZ2
     if (frtype == FR_LIBBZ2) {
-      if (rc == 2) {
-        int errnum;
-        const char *err = BZ2_bzerror(inbz2, &errnum);
-        if (errnum == BZ_DATA_ERROR_MAGIC) {
-          BZ2_bzclose(inbz2);
-          goto PLAIN_FILE;
-        }
-        else if (!silent)
-          fprintf(stderr, "pcregrep: Failed to read %s using bzlib: %s\n",
-            pathname, err);
-      }
-      BZ2_bzclose(inbz2);
+	if (rc == 2) {
+	    int errnum;
+	    const char *err = BZ2_bzerror(inbz2, &errnum);
+	    if (errnum == BZ_DATA_ERROR_MAGIC) {
+		BZ2_bzclose(inbz2);
+		goto PLAIN_FILE;
+	    }
+	    else if (!silent)
+		fprintf(stderr, "pcregrep: Failed to read %s using bzlib: %s\n",
+		    pathname, err);
+	}
+	BZ2_bzclose(inbz2);
     } else
 #endif
 
