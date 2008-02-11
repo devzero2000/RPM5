@@ -690,7 +690,7 @@ ONLY_MATCHING_RESTART:
 	    mrc = (length > 0 ? mireRegexec(mire, matchptr, length) : PCRE_ERROR_NOMATCH);
 	    if (mrc >= 0) { match = TRUE; break; }
 	    if (mrc != PCRE_ERROR_NOMATCH) {
-		fprintf(stderr, "pcregrep: mireRegexec() error %d while matching ", mrc);
+		fprintf(stderr, "pcregrep: pcre_exec() error %d while matching ", mrc);
 		if (pattern_count > 1) fprintf(stderr, "pattern number %d to ", i+1);
 		fprintf(stderr, "this line:\n");
 		fwrite(matchptr, 1, linelength, stderr);  /* In case binary zero included */

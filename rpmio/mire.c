@@ -137,7 +137,7 @@ int mireRegexec(miRE mire, const char * val, size_t vallen)
 	    vallen = strlen(val);
 	rc = pcre_exec(mire->pcre, mire->hints, val, vallen, mire->startoff,
 		mire->eoptions, mire->offsets, mire->noffsets);
-	if (rc < 0 && rc != PCRE_ERROR_NOMATCH) {
+	if (_mire_debug && rc < 0 && rc != PCRE_ERROR_NOMATCH) {
 	    rpmlog(RPMLOG_ERR, _("pcre_exec failed: return %d\n"), rc);
 	}
 #else
@@ -180,7 +180,7 @@ int mireRegcomp(miRE mire, const char * pattern)
 	mire->erroff = 0;
 	mire->pcre = pcre_compile2(mire->pattern, mire->coptions,
 		&mire->errcode, &mire->errmsg, &mire->erroff, mire->table);
-	if (mire->pcre == NULL) {
+	if (_mire_debug && mire->pcre == NULL) {
 	    rpmlog(RPMLOG_ERR,
 		_("pcre_compile2 failed: %s(%d) at offset %d of \"%s\"\n"),
 		mire->errmsg, mire->errcode, mire->erroff, mire->pattern);

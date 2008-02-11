@@ -8,10 +8,12 @@ EXTRA_DIST = gengpg.sh rpmgrep.c thkp.c thtml.c tinv.c tkey.c tput.c trpmio.c lo
 
 EXTRA_PROGRAMS = rpmgrep thkp thtml tinv tkey tmacro tmagic tput tpw trpmio tsw dumpasn1 lookup3
 
+TESTS =
 check_PROGRAMS = tdir tfts tget tglob tmire
 check_SCRIPTS = testit.sh
+dist_noinst_SCRIPTS =
 
-TESTS = testit.sh
+# TESTS += testit.sh
 
 AM_CPPFLAGS = \
 	-I$(srcdir) \
@@ -104,8 +106,44 @@ sources:
 lint:
 	$(LINT) $(DEFS) $(INCLUDES) $(librpmio_la_SOURCES)
 
+TESTS += RunGrepTest
+dist_noinst_SCRIPTS += RunGrepTest
+check_PROGRAMS += rpmgrep
 rpmgrep_SOURCES = rpmgrep.c
 rpmgrep_LDADD = $(RPMIO_LDADD)
+
+EXTRA_DIST += \
+  testdata/grepinput \
+  testdata/grepinput8 \
+  testdata/grepinputv \
+  testdata/grepinputx \
+  testdata/greplist \
+  testdata/grepoutput \
+  testdata/grepoutput8 \
+  testdata/grepoutputN \
+  testdata/testinput1 \
+  testdata/testinput2 \
+  testdata/testinput3 \
+  testdata/testinput4 \
+  testdata/testinput5 \
+  testdata/testinput6 \
+  testdata/testinput7 \
+  testdata/testinput8 \
+  testdata/testinput9 \
+  testdata/testinput10 \
+  testdata/testoutput1 \
+  testdata/testoutput2 \
+  testdata/testoutput3 \
+  testdata/testoutput4 \
+  testdata/testoutput5 \
+  testdata/testoutput6 \
+  testdata/testoutput7 \
+  testdata/testoutput8 \
+  testdata/testoutput9 \
+  testdata/testoutput10 \
+  testdata/wintestinput3 \
+  testdata/wintestoutput3 \
+  perltest.pl
 
 tdir_SOURCES = tdir.c
 tdir_LDADD = $(RPMIO_LDADD)
