@@ -532,7 +532,7 @@ static void do_after_lines(int lastmatchnumber, const char *lastmatchrestart,
  * will be in the middle third most of the time, so the bottom third is
  * available for "before" context printing.
  *
- * @param  handle	the Fopen'd FILE stream for a normal file
+ * @param  handle	the fopen'd FILE stream for a normal file
  *			the gzFile pointer when reading is via libz
  *			the BZFILE pointer when reading is via libbz2
  * @param frtype	FR_PLAIN, FR_LIBZ, or FR_LIBBZ2
@@ -1029,7 +1029,7 @@ grep_or_recurse(char *pathname, BOOL dir_recurse, BOOL only_one_at_top)
     int frtype;
     int pathlen;
     void *handle;
-    FD_t infd = NULL;	/* Ensure initialized */
+    FILE * infp = NULL;	/* Ensure initialized */
 
 #ifdef SUPPORT_LIBZ
     gzFile ingz = NULL;
@@ -1127,7 +1127,7 @@ grep_or_recurse(char *pathname, BOOL dir_recurse, BOOL only_one_at_top)
 #endif
 
     /*
-     * Otherwise use plain Fopen(). The label is so that we can come back
+     * Otherwise use plain fopen(). The label is so that we can come back
      * here if an attempt to read a .bz2 file indicates that it really is
      * a plain file.
      */
@@ -1135,8 +1135,8 @@ grep_or_recurse(char *pathname, BOOL dir_recurse, BOOL only_one_at_top)
 PLAIN_FILE:
 #endif
     {
-	infd = Fopen(pathname, "r.fpio");
-	handle = (void *)fdGetFILE(infd);
+	infp = fopen(pathname, "r");
+	handle = (void *)infp;
 	frtype = FR_PLAIN;
     }
 
@@ -1181,8 +1181,8 @@ PLAIN_FILE:
     } else
 #endif
 
-    if (infd)
-	Fclose(infd);	/* Normal file close */
+    if (infp)
+	fclose(infp);	/* Normal file close */
 
     return rc;	/* Pass back the yield from pcregrep(). */
 }
@@ -1983,7 +1983,6 @@ main(int argc, char **argv)
     /* Compile the regular expressions that are provided in a file. */
     if (pattern_filename != NULL) {
 	int linenumber = 0;
-	FD_t fd;
 	FILE *fp;
 	char *fn;
 	char buffer[MBUFTHIRD];
@@ -1992,13 +1991,12 @@ main(int argc, char **argv)
 	    fp = stdin;
 	    fn = stdin_name;
 	} else {
-	    fd = Fopen(pattern_filename, "r.fpio");
-	    if (fd == NULL) {
+	    fp = fopen(pattern_filename, "r");
+	    if (fp == NULL) {
 		fprintf(stderr, "pcregrep: Failed to open %s: %s\n",
 			pattern_filename, strerror(errno));
 		goto errorexit;
 	    }
-	    fp = fdGetFILE(fd);
 	    fn = pattern_filename;
 	}
 
@@ -2014,7 +2012,7 @@ main(int argc, char **argv)
 	}
 
 	if (fp != stdin)
-	    Fclose(fd);
+	    fclose(fp);
     }
 
     /* Study the regular expressions, as we will be running them many times */

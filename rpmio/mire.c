@@ -180,11 +180,13 @@ int mireRegcomp(miRE mire, const char * pattern)
 	mire->erroff = 0;
 	mire->pcre = pcre_compile2(mire->pattern, mire->coptions,
 		&mire->errcode, &mire->errmsg, &mire->erroff, mire->table);
-	if (_mire_debug && mire->pcre == NULL) {
-	    rpmlog(RPMLOG_ERR,
-		_("pcre_compile2 failed: %s(%d) at offset %d of \"%s\"\n"),
-		mire->errmsg, mire->errcode, mire->erroff, mire->pattern);
+	if (mire->pcre == NULL) {
+	    if (_mire_debug)
+		rpmlog(RPMLOG_ERR,
+		    _("pcre_compile2 failed: %s(%d) at offset %d of \"%s\"\n"),
+		    mire->errmsg, mire->errcode, mire->erroff, mire->pattern);
 	    rc = -1;
+	    goto exit;	/* XXX HACK: rpmgrep is not expecting mireClean. */
 	}
 #else
 	rc = -99;
@@ -215,6 +217,9 @@ int mireRegcomp(miRE mire, const char * pattern)
     if (rc)
 	(void) mireClean(mire);
 
+#ifdef	WITH_PCRE
+exit:
+#endif
 /*@-modfilesys@*/
 if (_mire_debug)
 fprintf(stderr, "--> mireRegcomp(%p, \"%s\") rc %d\n", mire, pattern, rc);
