@@ -1812,20 +1812,18 @@ main(int argc, char **argv)
 	else if ((opt->argInfo & POPT_ARG_MASK) != POPT_ARG_INT && (opt->argInfo & POPT_ARG_MASK) != OP_OP_NUMBER) {
 	    *((char **)opt->arg) = option_data;
 	} else {
-	    char *endptr;
-	    int n = strtoul(option_data, &endptr, 10);
+	    char *endptr = NULL;
+	    long aLong = strtol(option_data, &endptr, 0);
 	    if (*endptr != 0) {
-		if (longop) {
-		    int nlen = (int)strlen(opt->longName);
-		    fprintf(stderr, "pcregrep: Malformed number \"%s\" after --%.*s\n",
-			option_data, nlen, opt->longName);
-		}
+		if (longop)
+		    fprintf(stderr, "pcregrep: Malformed number \"%s\" after --%s\n",
+			option_data, opt->longName);
 		else
 		    fprintf(stderr, "pcregrep: Malformed number \"%s\" after -%c\n",
 			option_data, opt->shortName);
 		exit(usage(2));
 	    }
-	    *((int *)opt->arg) = n;
+	    poptSaveInt((int *)opt->arg, opt->argInfo, aLong);
 	}
     }
 
