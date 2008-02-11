@@ -72,6 +72,7 @@ struct miRE_s {
     int	cflags;		/*!< regcomp(3) flags (0 uses REG_EXTENDED|REG_NOSUB) */
     int	eflags;		/*!< regexec(3) flags */
     int coptions;	/*!< pcre_compile2(3) options. */
+    int startoff;	/*!< pcre_exec(3) starting offset. */
     int eoptions;	/*!< pcre_exec(3) options. */
     int notmatch;		/*!< non-zero: negative match, like "grep -v" */
     int tag;			/*!< sort identifier (e.g. an rpmTag) */

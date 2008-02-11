@@ -135,7 +135,7 @@ int mireRegexec(miRE mire, const char * val, size_t vallen)
 #ifdef	WITH_PCRE
 	if (vallen == 0)
 	    vallen = strlen(val);
-	rc = pcre_exec(mire->pcre, mire->hints, val, vallen, 0,
+	rc = pcre_exec(mire->pcre, mire->hints, val, vallen, mire->startoff,
 		mire->eoptions, mire->offsets, mire->noffsets);
 	if (rc < 0 && rc != PCRE_ERROR_NOMATCH) {
 	    rpmlog(RPMLOG_ERR, _("pcre_exec failed: return %d\n"), rc);

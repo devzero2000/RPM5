@@ -648,10 +648,13 @@ pcregrep(void *handle, int frtype, char *printname)
 
           for (i = 0; i < jfriedl_XR; i++) {
               miRE mire = pattern_list;
+              mire->startoff = 0;	/* XXX needed? */
+              mire->eoptions = 0;	/* XXX needed? */
               /* XXX save offsets for use by pcre_exec. */
               mire->offsets = offsets;
               mire->noffsets = 99;
-              match = (mireRegexec(mire, ptr, length) >= 0);
+              /* XXX WATCHOUT: mireRegexec w length=0 does strlen(matchptr)! */
+              match = ((length > 0 ? mireRegexec(mire, matchptr, length) : PCRE_ERROR_NOMATCH) >= 0);
           }
 
           if (gettimeofday(&end_time, &dummy) != 0)
@@ -674,10 +677,13 @@ ONLY_MATCHING_RESTART:
       the final newline in the subject string. */
       for (i = 0; i < pattern_count; i++) {
         miRE mire = pattern_list + i;
+        mire->startoff = 0;	/* XXX needed? */
+        mire->eoptions = 0;	/* XXX needed? */
         /* XXX save offsets for use by pcre_exec. */
         mire->offsets = offsets;
         mire->noffsets = 99;
-        mrc = mireRegexec(mire, matchptr, length);
+        /* XXX WATCHOUT: mireRegexec w length=0 does strlen(matchptr)! */
+        mrc = (length > 0 ? mireRegexec(mire, matchptr, length) : PCRE_ERROR_NOMATCH);
         if (mrc >= 0) { match = TRUE; break; }
         if (mrc != PCRE_ERROR_NOMATCH) {
           fprintf(stderr, "pcregrep: mireRegexec() error %d while matching ", mrc);
