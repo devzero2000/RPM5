@@ -1188,16 +1188,14 @@ PLAIN_FILE:
 }
 
 /** Structure for options and list of them */
-enum { OP_NODATA, OP_STRING, OP_OP_STRING, OP_NUMBER, OP_OP_NUMBER,
-       OP_PATLIST };
-
-typedef struct option_item {
-    int type;
-    int one_char;
-    void *dataptr;
-    const char *long_name;
-    const char *help_text;
-} option_item;
+enum {
+    OP_NODATA	= POPT_ARG_NONE,
+    OP_STRING	= POPT_ARG_STRING,
+    OP_OP_STRING	= POPT_ARG_STRING + 16,
+    OP_NUMBER	= POPT_ARG_INT,
+    OP_OP_NUMBER	= POPT_ARG_INT + 16,
+    OP_PATLIST		= POPT_ARG_NONE + 16
+};
 
 /* Options without a single-letter equivalent get a negative value. This can be
 used to identify them. */
@@ -1211,47 +1209,84 @@ used to identify them. */
 #define N_LOFFSETS  (-8)
 #define N_FOFFSETS  (-9)
 
-static option_item optionlist[] = {
-  { OP_NODATA,    N_NULL,   NULL,              "",              "  terminate options" },
-  { OP_NODATA,    N_HELP,   NULL,              "help",          "display this help and exit" },
-  { OP_NUMBER,    'A',      &after_context,    "after-context=number", "set number of following context lines" },
-  { OP_NUMBER,    'B',      &before_context,   "before-context=number", "set number of prior context lines" },
-  { OP_OP_STRING, N_COLOUR, &colour_option,    "color=option",  "matched text color option" },
-  { OP_NUMBER,    'C',      &both_context,     "context=number", "set number of context lines, before & after" },
-  { OP_NODATA,    'c',      NULL,              "count",         "print only a count of matching lines per FILE" },
-  { OP_OP_STRING, N_COLOUR, &colour_option,    "colour=option", "matched text colour option" },
-  { OP_STRING,    'D',      &DEE_option,       "devices=action","how to handle devices, FIFOs, and sockets" },
-  { OP_STRING,    'd',      &dee_option,       "directories=action", "how to handle directories" },
-  { OP_PATLIST,   'e',      NULL,              "regex(p)",      "specify pattern (may be used more than once)" },
-  { OP_NODATA,    'F',      NULL,              "fixed_strings", "patterns are sets of newline-separated strings" },
-  { OP_STRING,    'f',      &pattern_filename, "file=path",     "read patterns from file" },
-  { OP_NODATA,    N_FOFFSETS, NULL,            "file-offsets",  "output file offsets, not text" },
-  { OP_NODATA,    'H',      NULL,              "with-filename", "force the prefixing filename on output" },
-  { OP_NODATA,    'h',      NULL,              "no-filename",   "suppress the prefixing filename on output" },
-  { OP_NODATA,    'i',      NULL,              "ignore-case",   "ignore case distinctions" },
-  { OP_NODATA,    'l',      NULL,              "files-with-matches", "print only FILE names containing matches" },
-  { OP_NODATA,    'L',      NULL,              "files-without-match","print only FILE names not containing matches" },
-  { OP_STRING,    N_LABEL,  &stdin_name,       "label=name",    "set name for standard input" },
-  { OP_NODATA,    N_LOFFSETS, NULL,            "line-offsets",  "output line numbers and offsets, not text" },
-  { OP_STRING,    N_LOCALE, &locale,           "locale=locale", "use the named locale" },
-  { OP_NODATA,    'M',      NULL,              "multiline",     "run in multiline mode" },
-  { OP_STRING,    'N',      &newline,          "newline=type",  "set newline type (CR, LF, CRLF, ANYCRLF or ANY)" },
-  { OP_NODATA,    'n',      NULL,              "line-number",   "print line number with output lines" },
-  { OP_NODATA,    'o',      NULL,              "only-matching", "show only the part of the line that matched" },
-  { OP_NODATA,    'q',      NULL,              "quiet",         "suppress output, just set return code" },
-  { OP_NODATA,    'r',      NULL,              "recursive",     "recursively scan sub-directories" },
-  { OP_STRING,    N_EXCLUDE,&exclude_pattern,  "exclude=pattern","exclude matching files when recursing" },
-  { OP_STRING,    N_INCLUDE,&include_pattern,  "include=pattern","include matching files when recursing" },
+static struct poptOption optionsTable[] = {
+  { "", N_NULL,	POPT_ARG_NONE,	NULL, N_NULL,
+	N_("  terminate options"), NULL },
+  { "help", N_HELP,	POPT_ARG_NONE,	NULL, N_HELP,
+	N_("display this help and exit"), NULL },
+  { "after-context=number", 'A',	POPT_ARG_INT,	&after_context, 0,
+	N_("set number of following context lines"), N_("number") },
+  { "before-context=number", 'B',	POPT_ARG_INT,	&before_context, 0,
+	N_("set number of prior context lines"), N_("number") },
+  { "color=option", N_COLOUR,	OP_OP_STRING,	&colour_option, N_COLOUR,
+	N_("matched text color option"), N_("option") },
+  { "context=number", 'C',	POPT_ARG_INT,	&both_context, 0,
+	N_("set number of context lines, before & after"), N_("number") },
+  { "count", 'c',	POPT_ARG_NONE,	NULL, 0,
+	N_("print only a count of matching lines per FILE"), NULL },
+  { "colour=option", N_COLOUR,	OP_OP_STRING,	&colour_option, N_COLOUR,
+	N_("matched text colour option"), N_("option") },
+  { "devices=action", 'D',	POPT_ARG_STRING,	&DEE_option, 0,
+	N_("how to handle devices, FIFOs, and sockets"), N_("action") },
+  { "directories=action", 'd',	POPT_ARG_STRING,	&dee_option, 0,
+	N_("how to handle directories"), N_("action") },
+  { "regex(p)", 'e',	OP_PATLIST,	NULL, 0,
+	N_("specify pattern (may be used more than once)"), NULL },
+  { "fixed_strings", 'F',	POPT_ARG_NONE,	NULL, 0,
+	N_("patterns are sets of newline-separated strings"), NULL },
+  { "file=path", 'f',	POPT_ARG_STRING,	&pattern_filename, 0,
+	N_("read patterns from file"), N_("path") },
+  { "file-offsets", N_FOFFSETS,	POPT_ARG_NONE,	NULL, N_FOFFSETS,
+	N_("output file offsets, not text"), NULL },
+  { "with-filename", 'H',	POPT_ARG_NONE,	NULL, 0,
+	N_("force the prefixing filename on output"), NULL },
+  { "no-filename", 'h',	POPT_ARG_NONE,	NULL, 0,
+	N_("suppress the prefixing filename on output"), NULL },
+  { "ignore-case", 'i',	POPT_ARG_NONE,	NULL, 0,
+	N_("ignore case distinctions"), NULL },
+  { "files-with-matches", 'l',	POPT_ARG_NONE,	NULL, 0,
+	N_("print only FILE names containing matches"), NULL },
+  { "files-without-match", 'L',	POPT_ARG_NONE,	NULL, 0,
+	N_("print only FILE names not containing matches"), NULL },
+  { "label=name", N_LABEL,	POPT_ARG_STRING,	&stdin_name, N_LABEL,
+	N_("set name for standard input"), N_("name") },
+  { "line-offsets", N_LOFFSETS,	POPT_ARG_NONE,	NULL, N_LOFFSETS,
+	N_("output line numbers and offsets, not text"), NULL },
+  { "locale=locale", N_LOCALE,	POPT_ARG_STRING,	&locale, N_LOCALE,
+	N_("use the named locale"), N_("locale") },
+  { "multiline", 'M',	POPT_ARG_NONE,	NULL, 0,
+	N_("run in multiline mode"), NULL },
+  { "newline=type", 'N',	POPT_ARG_STRING,	&newline, 0,
+	N_("set newline type (CR, LF, CRLF, ANYCRLF or ANY)"), N_("type") },
+  { "line-number", 'n',	POPT_ARG_NONE,	NULL, 0,
+	N_("print line number with output lines"), NULL },
+  { "only-matching", 'o',	POPT_ARG_NONE,	NULL, 0,
+	N_("show only the part of the line that matched"), NULL },
+  { "quiet", 'q',	POPT_ARG_NONE,	NULL, 0,
+	N_("suppress output, just set return code"), NULL },
+  { "recursive", 'r',	POPT_ARG_NONE,	NULL, 0,
+	N_("recursively scan sub-directories"), NULL },
+  { "exclude=pattern", N_EXCLUDE,	POPT_ARG_STRING,	&exclude_pattern, N_EXCLUDE,
+	N_("exclude matching files when recursing"), N_("pattern") },
+  { "include=pattern", N_INCLUDE,	POPT_ARG_STRING,	&include_pattern, N_INCLUDE,
+	N_("include matching files when recursing"), N_("pattern") },
 #ifdef JFRIEDL_DEBUG
-  { OP_OP_NUMBER, 'S',      &S_arg,            "jeffS",         "replace matched (sub)string with X" },
+  { "jeffS", 'S',	OP_OP_NUMBER,	&S_arg, 0,
+	N_("replace matched (sub)string with X"), NULL },
 #endif
-  { OP_NODATA,    's',      NULL,              "no-messages",   "suppress error messages" },
-  { OP_NODATA,    'u',      NULL,              "utf-8",         "use UTF-8 mode" },
-  { OP_NODATA,    'V',      NULL,              "version",       "print version information and exit" },
-  { OP_NODATA,    'v',      NULL,              "invert-match",  "select non-matching lines" },
-  { OP_NODATA,    'w',      NULL,              "word-regex(p)", "force patterns to match only as words"  },
-  { OP_NODATA,    'x',      NULL,              "line-regex(p)", "force patterns to match only whole lines" },
-  { OP_NODATA,    0,        NULL,               NULL,            NULL }
+  { "no-messages", 's',	POPT_ARG_NONE,	NULL, 0,
+	N_("suppress error messages"), NULL },
+  { "utf-8", 'u',	POPT_ARG_NONE,	NULL, 0,
+	N_("use UTF-8 mode"), NULL },
+  { "version", 'V',	POPT_ARG_NONE,	NULL, 0,
+	N_("print version information and exit"), NULL },
+  { "invert-match", 'v',	POPT_ARG_NONE,	NULL, 0,
+	N_("select non-matching lines"), NULL },
+  { "word-regex(p)", 'w',	POPT_ARG_NONE,	NULL, 0,
+	N_("force patterns to match only as words") , NULL },
+  { "line-regex(p)", 'x',	POPT_ARG_NONE,	NULL, 0,
+	N_("force patterns to match only whole lines"), NULL },
+  POPT_TABLEEND
 };
 
 /*************************************************
@@ -1262,10 +1297,10 @@ static option_item optionlist[] = {
 static int
 usage(int rc)
 {
-    option_item *op;
+    struct poptOption *opt = optionsTable;
     fprintf(stderr, "Usage: pcregrep [-");
-    for (op = optionlist; op->one_char != 0; op++) {
-      if (op->one_char > 0) fprintf(stderr, "%c", op->one_char);
+    for (; (opt->longName || opt->shortName || opt->arg); opt++) {
+      if (opt->shortName > 0) fprintf(stderr, "%c", opt->shortName);
     }
     fprintf(stderr, "] [long options] [pattern] [files]\n");
     fprintf(stderr, "Type `pcregrep --help' for more information and the long "
@@ -1279,7 +1314,7 @@ usage(int rc)
 static void
 help(void)
 {
-    option_item *op;
+    struct poptOption *opt = optionsTable;
 
     printf("Usage: pcregrep [OPTION]... [PATTERN] [FILE1 FILE2 ...]\n");
     printf("Search for PATTERN in each FILE or standard input.\n");
@@ -1303,15 +1338,15 @@ help(void)
     printf("Example: pcregrep -i 'hello.*world' menu.h main.c\n\n");
     printf("Options:\n");
 
-    for (op = optionlist; op->one_char != 0; op++)
-      {
-      int n;
-      char s[4];
-      if (op->one_char > 0) sprintf(s, "-%c,", op->one_char); else strcpy(s, "   ");
-      n = 30 - printf("  %s --%s", s, op->long_name);
-      if (n < 1) n = 1;
-      printf("%.*s%s\n", n, "                    ", op->help_text);
-      }
+    for (; (opt->longName || opt->shortName || opt->arg); opt++) {
+	int n;
+	char s[4];
+	if (opt->shortName > 0) sprintf(s, "-%c,", opt->shortName);
+	else strcpy(s, "   ");
+	n = 30 - printf("  %s --%s", s, opt->longName);
+	if (n < 1) n = 1;
+	printf("%.*s%s\n", n, "                    ", opt->descrip);
+    }
 
     printf("\nWhen reading patterns from a file instead of using a command line option,\n");
     printf("trailing white space is removed and blank lines are ignored.\n");
@@ -1563,7 +1598,7 @@ main(int argc, char **argv)
 
     /* Process the options */
     for (i = 1; i < argc; i++) {
-	option_item *op = NULL;
+	struct poptOption *opt = NULL;
 	char *option_data = (char *)"";    /* default to keep compiler happy */
 	BOOL longop;
 	BOOL longopwasequals = FALSE;
@@ -1601,16 +1636,16 @@ main(int argc, char **argv)
 	     * options are entered in the table as "regex(p)". No option is
 	     * in both these categories, fortunately.
 	     */
-	    for (op = optionlist; op->one_char != 0; op++) {
-		char *opbra = strchr(op->long_name, '(');
-		char *equals = strchr(op->long_name, '=');
+	    for (opt = optionsTable; (opt->longName || opt->shortName || opt->arg); opt++) {
+		char *opbra = strchr(opt->longName, '(');
+		char *equals = strchr(opt->longName, '=');
 		if (opbra == NULL) {		/* Not a (p) case */
 		    if (equals == NULL) {	/* Not thing=data case */
-			if (strcmp(arg, op->long_name) == 0) break;
+			if (strcmp(arg, opt->longName) == 0) break;
 		    } else {			/* Special case xxx=data */
-			int oplen = equals - op->long_name;
+			int oplen = equals - opt->longName;
 			int arglen = (argequals == NULL)? (int)strlen(arg) : argequals - arg;
-			if (oplen == arglen && strncmp(arg, op->long_name, oplen) == 0) {
+			if (oplen == arglen && strncmp(arg, opt->longName, oplen) == 0) {
 			    option_data = arg + arglen;
 			    if (*option_data == '=') {
 				option_data++;
@@ -1622,16 +1657,16 @@ main(int argc, char **argv)
 		} else {			/* Special case xxxx(p) */
 		    char buff1[24];
 		    char buff2[24];
-		    int baselen = opbra - op->long_name;
-		    sprintf(buff1, "%.*s", baselen, op->long_name);
+		    int baselen = opbra - opt->longName;
+		    sprintf(buff1, "%.*s", baselen, opt->longName);
 		    sprintf(buff2, "%s%.*s", buff1,
-			(int)strlen(op->long_name) - baselen - 2, opbra + 1);
+			(int)strlen(opt->longName) - baselen - 2, opbra + 1);
 		    if (strcmp(arg, buff1) == 0 || strcmp(arg, buff2) == 0)
 			break;
 		}
 	    }
 
-	    if (op->one_char == 0) {
+	    if (opt->shortName == 0) {
 		fprintf(stderr, "pcregrep: Unknown option %s\n", argv[i]);
 		exit(usage(2));
 	    }
@@ -1670,15 +1705,15 @@ main(int argc, char **argv)
 	    char *s = argv[i] + 1;
 	    longop = FALSE;
 	    while (*s != 0) {
-		for (op = optionlist; op->one_char != 0; op++) {
-		    if (*s == op->one_char) break;
+		for (opt = optionsTable; (opt->longName || opt->shortName || opt->arg); opt++) {
+		    if (*s == opt->shortName) break;
 		}
-		if (op->one_char == 0) {
+		if (opt->shortName == 0) {
 		    fprintf(stderr, "pcregrep: Unknown option letter '%c' in \"%s\"\n",
 			*s, argv[i]);
 		    exit(usage(2));
 		}
-		if (op->type != OP_NODATA || s[1] == 0) {
+		if ((opt->argInfo & POPT_ARG_MASK) != OP_NODATA || s[1] == 0) {
 		    option_data = s+1;
 		    break;
 		}
@@ -1691,8 +1726,8 @@ main(int argc, char **argv)
 	 * the type is NO_DATA, it means that there is no data, and the option
 	 * might set something in the PCRE options.
 	 */
-	if (op->type == OP_NODATA) {
-	    pcre_options = handle_option(op->one_char, pcre_options);
+	if ((opt->argInfo & POPT_ARG_MASK) == OP_NODATA) {
+	    pcre_options = handle_option(opt->shortName, pcre_options);
 	    continue;
 	}
 
@@ -1703,9 +1738,9 @@ main(int argc, char **argv)
 	 * are "colo(u)r" and Jeffrey Friedl's special -S debugging option.
 	 */
 	if (*option_data == 0 &&
-		(op->type == OP_OP_STRING || op->type == OP_OP_NUMBER))
+		((opt->argInfo & POPT_ARG_MASK) == OP_OP_STRING || (opt->argInfo & POPT_ARG_MASK) == OP_OP_NUMBER))
 	{
-	    switch (op->one_char) {
+	    switch (opt->shortName) {
 	    case N_COLOUR:
 		colour_option = (char *)"auto";
 		break;
@@ -1731,30 +1766,30 @@ main(int argc, char **argv)
 	 * If the option type is OP_PATLIST, it's the -e option, which can be
 	 * called multiple times to create a list of patterns.
 	 */
-	if (op->type == OP_PATLIST) {
+	if ((opt->argInfo & POPT_ARG_MASK) == OP_PATLIST) {
 	    xx = argvAdd(&patterns, option_data);
 	}
 
 	/* Otherwise, deal with single string or numeric data values. */
-	else if (op->type != OP_NUMBER && op->type != OP_OP_NUMBER) {
-	    *((char **)op->dataptr) = option_data;
+	else if ((opt->argInfo & POPT_ARG_MASK) != POPT_ARG_INT && (opt->argInfo & POPT_ARG_MASK) != OP_OP_NUMBER) {
+	    *((char **)opt->arg) = option_data;
 	} else {
 	    char *endptr;
 	    int n = strtoul(option_data, &endptr, 10);
 	    if (*endptr != 0) {
 		if (longop) {
-		    char *equals = strchr(op->long_name, '=');
-		    int nlen = (equals == NULL)? (int)strlen(op->long_name) :
-			equals - op->long_name;
+		    char *equals = strchr(opt->longName, '=');
+		    int nlen = (equals == NULL)? (int)strlen(opt->longName) :
+			equals - opt->longName;
 		    fprintf(stderr, "pcregrep: Malformed number \"%s\" after --%.*s\n",
-			option_data, nlen, op->long_name);
+			option_data, nlen, opt->longName);
 		}
 		else
 		    fprintf(stderr, "pcregrep: Malformed number \"%s\" after -%c\n",
-			option_data, op->one_char);
+			option_data, opt->shortName);
 		exit(usage(2));
 	    }
-	    *((int *)op->dataptr) = n;
+	    *((int *)opt->arg) = n;
 	}
     }
 
