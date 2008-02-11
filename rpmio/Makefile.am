@@ -4,9 +4,9 @@ AUTOMAKE_OPTIONS = 1.4 foreign
 
 LINT = splint
 
-EXTRA_DIST = gengpg.sh rpmgrep.c thkp.c thtml.c tinv.c tkey.c tput.c trpmio.c lookup3.c tpw.c librpmio.vers testit.sh
+EXTRA_DIST = gengpg.sh thkp.c thtml.c tinv.c tkey.c tput.c trpmio.c lookup3.c tpw.c librpmio.vers testit.sh
 
-EXTRA_PROGRAMS = rpmgrep thkp thtml tinv tkey tmacro tmagic tput tpw trpmio tsw dumpasn1 lookup3
+EXTRA_PROGRAMS = thkp thtml tinv tkey tmacro tmagic tput tpw trpmio tsw dumpasn1 lookup3
 
 TESTS =
 check_PROGRAMS = tdir tfts tget tglob tmire
@@ -142,8 +142,7 @@ EXTRA_DIST += \
   testdata/testoutput9 \
   testdata/testoutput10 \
   testdata/wintestinput3 \
-  testdata/wintestoutput3 \
-  perltest.pl
+  testdata/wintestoutput3
 
 tdir_SOURCES = tdir.c
 tdir_LDADD = $(RPMIO_LDADD)

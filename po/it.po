@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm-4.2\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2008-02-04 11:02-0500\n"
+"POT-Creation-Date: 2008-02-11 17:18-0500\n"
 "PO-Revision-Date: 2006-05-07 21:25+0200\n"
 "Last-Translator: Stefano Negro <stblack@linux.it>\n"
 "Language-Team: Italian <tp@lists.linux.it>\n"
@@ -111,117 +111,117 @@ msgstr "Opzioni comuni per tutti i modi rpm:"
 msgid "%s: %s\n"
 msgstr "%s: %s\n"
 
-#: rpmqv.c:482 rpmqv.c:488 rpmqv.c:494 rpmqv.c:531
+#: rpmqv.c:483 rpmqv.c:489 rpmqv.c:495 rpmqv.c:532
 msgid "only one major mode may be specified"
 msgstr "è possibile specificare solo un modo principale"
 
-#: rpmqv.c:510
+#: rpmqv.c:511
 msgid "one type of query/verify may be performed at a time"
 msgstr ""
 " è possibile effettuare solo un tipo di interrogazione/verifica alla volta"
 
-#: rpmqv.c:514
+#: rpmqv.c:515
 msgid "unexpected query flags"
 msgstr "flag di interrogazione inaspettati"
 
-#: rpmqv.c:517
+#: rpmqv.c:518
 msgid "unexpected query format"
 msgstr "formato di interrogazione inaspettato"
 
-#: rpmqv.c:520
+#: rpmqv.c:521
 msgid "unexpected query source"
 msgstr "sorgente di interrogazione inaspettata"
 
-#: rpmqv.c:563
+#: rpmqv.c:564
 msgid "only installation, upgrading, rmsource and rmspec may be forced"
 msgstr ""
 "è possibile forzare solo l'installazione, aggiornamento, rmsource e rmspec"
 
-#: rpmqv.c:565
+#: rpmqv.c:566
 msgid "files may only be relocated during package installation"
 msgstr "è possibile rilocare i file solo durante l'installazione dei pacchetti"
 
-#: rpmqv.c:568
+#: rpmqv.c:569
 msgid "cannot use --prefix with --relocate or --excludepath"
 msgstr "impossibile usare --prefix with --relocate oppure --excludepath"
 
-#: rpmqv.c:571
+#: rpmqv.c:572
 msgid ""
 "--relocate and --excludepath may only be used when installing new packages"
 msgstr ""
 "è possibile usare --relocate e --excludepath solo nell'installare nuovi "
 "pacchetti"
 
-#: rpmqv.c:574
+#: rpmqv.c:575
 msgid "--prefix may only be used when installing new packages"
 msgstr "è possibile usare --prefix solo nell'installare nuovi pacchetti"
 
-#: rpmqv.c:577
+#: rpmqv.c:578
 msgid "arguments to --prefix must begin with a /"
 msgstr "gli argomenti di --prefix devono cominciare con un /"
 
-#: rpmqv.c:580
+#: rpmqv.c:581
 msgid "--hash (-h) may only be specified during package installation"
 msgstr ""
 "è possibile specificare --hash (-h) solo durante l'installazione dei "
 "pacchetti"
 
-#: rpmqv.c:584
+#: rpmqv.c:585
 msgid "--percent may only be specified during package installation"
 msgstr ""
 "è possibile specificare --percent solo durante l'installazione dei pacchetti"
 
-#: rpmqv.c:588
+#: rpmqv.c:589
 msgid "--replacepkgs may only be specified during package installation"
 msgstr ""
 "è possibile specificare --replacepkgs solo durante l'installazione dei "
 "pacchetti"
 
-#: rpmqv.c:592
+#: rpmqv.c:593
 msgid "--excludedocs may only be specified during package installation"
 msgstr ""
 "è possibile specificare --excludedocs solo durante l'installazione dei "
 "pacchetti"
 
-#: rpmqv.c:596
+#: rpmqv.c:597
 msgid "--includedocs may only be specified during package installation"
 msgstr ""
 "è possibile specificare --includedocs solo durante l'installazione dei "
 "pacchetti"
 
-#: rpmqv.c:600
+#: rpmqv.c:601
 msgid "only one of --excludedocs and --includedocs may be specified"
 msgstr "solo uno tra --excludedocs e --includedocs può essere specificato"
 
-#: rpmqv.c:604
+#: rpmqv.c:605
 msgid "--ignorearch may only be specified during package installation"
 msgstr ""
 "è possibile specificare --ignorearch solo durante l'installazione dei "
 "pacchetti"
 
-#: rpmqv.c:608
+#: rpmqv.c:609
 msgid "--ignoreos may only be specified during package installation"
 msgstr ""
 "è possibile specificare --ignoreos solo durante l'installazione dei pacchetti"
 
-#: rpmqv.c:612
+#: rpmqv.c:613
 msgid "--allmatches may only be specified during package erasure"
 msgstr ""
 "è possibile specificare --allmatches solo durante la cancellazione dei "
 "pacchetti"
 
-#: rpmqv.c:616
+#: rpmqv.c:617
 msgid "--allfiles may only be specified during package installation"
 msgstr ""
 "è possibile specificare --allfiles solo durante l'installazione dei pacchetti"
 
-#: rpmqv.c:621
+#: rpmqv.c:622
 msgid "--justdb may only be specified during package installation and erasure"
 msgstr ""
 "è possibile specificare --justdb solo durante l'installazione e la "
 "cancellazione dei pacchetti"
 
-#: rpmqv.c:626
+#: rpmqv.c:627
 msgid ""
 "script disabling options may only be specified during package installation "
 "and erasure"
@@ -229,7 +229,7 @@ msgstr ""
 "le opzioni per disabilitare gli script possono essere specificate solo "
 "durante l'installazione e la cancellazione dei pacchetti"
 
-#: rpmqv.c:631
+#: rpmqv.c:632
 msgid ""
 "trigger disabling options may only be specified during package installation "
 "and erasure"
@@ -237,7 +237,7 @@ msgstr ""
 "Le opzioni per disabilitare i trigger possono essere specificato solo "
 "durante l'installazione e la cancellazione dei pacchetti"
 
-#: rpmqv.c:635
+#: rpmqv.c:636
 #, fuzzy
 msgid ""
 "--nodeps may only be specified during package building, rebuilding, "
@@ -246,7 +246,7 @@ msgstr ""
 "è possibile specificare --nodeps solo durante la costruzione, ricostruzione, "
 "ricompilazione, installazione, cancellazione, e verifica del pacchetto"
 
-#: rpmqv.c:640
+#: rpmqv.c:641
 msgid ""
 "--test may only be specified during package installation, erasure, and "
 "building"
@@ -254,7 +254,7 @@ msgstr ""
 "è possibile specificare --test solo durante l' installazione, cancellazione, "
 "e costruzione del pacchetto"
 
-#: rpmqv.c:645
+#: rpmqv.c:646
 msgid ""
 "--root (-r) may only be specified during installation, erasure, querying, "
 "and database rebuilds"
@@ -262,68 +262,68 @@ msgstr ""
 "è possibile specificare --root (-r) solo durante l' installazione, "
 "cancellazione, interrogazione e ricostruzione del database"
 
-#: rpmqv.c:657
+#: rpmqv.c:658
 msgid "arguments to --root (-r) must begin with a /"
 msgstr "gli argomenti di --root (-r) devono iniziare con uno /"
 
-#: rpmqv.c:685
+#: rpmqv.c:686
 #, c-format
 msgid "no files to sign\n"
 msgstr "nessun file da firmare\n"
 
-#: rpmqv.c:690
+#: rpmqv.c:691
 #, c-format
 msgid "cannot access file %s\n"
 msgstr "impossibile accedere al file %s\n"
 
-#: rpmqv.c:702
+#: rpmqv.c:703
 msgid "Enter pass phrase: "
 msgstr "Inserire la pass phrase: "
 
-#: rpmqv.c:704
+#: rpmqv.c:705
 #, c-format
 msgid "Pass phrase check failed\n"
 msgstr "Controllo pass phrase fallito\n"
 
-#: rpmqv.c:708
+#: rpmqv.c:709
 #, c-format
 msgid "Pass phrase is good.\n"
 msgstr "La pass phrase è giusta.\n"
 
-#: rpmqv.c:725
+#: rpmqv.c:726
 #, fuzzy, c-format
 msgid "exec failed\n"
 msgstr "exec fallito\n"
 
-#: rpmqv.c:769
+#: rpmqv.c:770
 msgid "no packages files given for rebuild"
 msgstr "nessun file di pacchetto fornito per la ricostruzione"
 
-#: rpmqv.c:862
+#: rpmqv.c:863
 msgid "no spec files given for build"
 msgstr "nessuno file spec file fornito per la costruzione"
 
-#: rpmqv.c:864
+#: rpmqv.c:865
 msgid "no tar files given for build"
 msgstr "nessun file tar fornito per la costruzione"
 
-#: rpmqv.c:885
+#: rpmqv.c:886
 msgid "no packages given for erase"
 msgstr "nessun pacchetto fornito per la cancellazione"
 
-#: rpmqv.c:929
+#: rpmqv.c:930
 msgid "no packages given for install"
 msgstr "nessun pacchetto fornito per l'installazione"
 
-#: rpmqv.c:949
+#: rpmqv.c:950
 msgid "no arguments given for query"
 msgstr "nessun argomento fornito per l'interrogazione"
 
-#: rpmqv.c:966
+#: rpmqv.c:967
 msgid "no arguments given for verify"
 msgstr "nessun argomento fornito per la verifica"
 
-#: rpmqv.c:981
+#: rpmqv.c:982
 msgid "no arguments given"
 msgstr "nessun argomento fornito"
 
@@ -727,7 +727,7 @@ msgstr "n"
 msgid "Could not open %s: %s\n"
 msgstr "n"
 
-#: build/pack.c:820 lib/psm.c:1982
+#: build/pack.c:820 lib/psm.c:1984
 #, fuzzy, c-format
 msgid "Unable to write package: %s\n"
 msgstr "n"
@@ -747,7 +747,7 @@ msgstr "leggi n"
 msgid "Unable to write payload to %s: %s\n"
 msgstr "n"
 
-#: build/pack.c:929 lib/psm.c:2279
+#: build/pack.c:929 lib/psm.c:2281
 #, fuzzy, c-format
 msgid "Wrote: %s\n"
 msgstr "n"
@@ -1291,7 +1291,7 @@ msgstr ""
 msgid "don't verify database header(s) when retrieved"
 msgstr "database"
 
-#: build/poptBT.c:217 lib/poptALL.c:477 lib/poptI.c:346 lib/poptQV.c:412
+#: build/poptBT.c:217 lib/poptALL.c:473 lib/poptI.c:346 lib/poptQV.c:412
 #: lib/poptQV.c:419 lib/poptQV.c:462
 msgid "don't verify package signature(s)"
 msgstr ""
@@ -1775,112 +1775,112 @@ msgstr "leggi<FILE:...> predefinito file"
 msgid "specify target platform"
 msgstr "Costruzione piattaforme target: %s\n"
 
-#: lib/poptALL.c:474 lib/poptALL.c:499
-msgid "disable use of libio(3) API"
-msgstr ""
-
-#: lib/poptALL.c:480
+#: lib/poptALL.c:476
 #, fuzzy
 msgid "send stdout to CMD"
 msgstr "invio stdout"
 
-#: lib/poptALL.c:481
+#: lib/poptALL.c:477
 msgid "CMD"
 msgstr ""
 
-#: lib/poptALL.c:483
+#: lib/poptALL.c:479
 #, fuzzy
 msgid "use ROOT as top level directory"
 msgstr "directory"
 
-#: lib/poptALL.c:484
+#: lib/poptALL.c:480
 msgid "ROOT"
 msgstr ""
 
-#: lib/poptALL.c:487
+#: lib/poptALL.c:483
 msgid "display known query tags"
 msgstr ""
 
-#: lib/poptALL.c:489
+#: lib/poptALL.c:485
 msgid "provide less detailed output"
 msgstr ""
 
-#: lib/poptALL.c:491
+#: lib/poptALL.c:487
 #, fuzzy
 msgid "display final rpmrc and macro configuration"
 msgstr "e"
 
-#: lib/poptALL.c:493
+#: lib/poptALL.c:489
 msgid "provide more detailed output"
 msgstr ""
 
-#: lib/poptALL.c:495
+#: lib/poptALL.c:491
 #, fuzzy
 msgid "print the version of rpm being used"
 msgstr "print versione rpm"
 
-#: lib/poptALL.c:506
+#: lib/poptALL.c:495
+msgid "disable use of libio(3) API"
+msgstr ""
+
+#: lib/poptALL.c:502
 msgid "select cryptography implementation"
 msgstr ""
 
-#: lib/poptALL.c:507
+#: lib/poptALL.c:503
 msgid "CRYPTO"
 msgstr ""
 
-#: lib/poptALL.c:510
+#: lib/poptALL.c:506
 msgid "debug argv collections"
 msgstr ""
 
-#: lib/poptALL.c:512
+#: lib/poptALL.c:508
 msgid "debug cpio payloads"
 msgstr ""
 
-#: lib/poptALL.c:514
+#: lib/poptALL.c:510
 msgid "debug WebDAV data stream"
 msgstr ""
 
-#: lib/poptALL.c:518
+#: lib/poptALL.c:514
 #, fuzzy
 msgid "debug payload file state machine"
 msgstr "file"
 
-#: lib/poptALL.c:520
+#: lib/poptALL.c:516
 #, fuzzy
 msgid "use threads for file state machine"
 msgstr "file"
 
-#: lib/poptALL.c:522
+#: lib/poptALL.c:518
 msgid "debug FTP/HTTP data stream"
 msgstr ""
 
-#: lib/poptALL.c:531
+#: lib/poptALL.c:527
 msgid "debug option/argument processing"
 msgstr ""
 
-#: lib/poptALL.c:536
+#: lib/poptALL.c:532
 msgid "debug package state machine"
 msgstr ""
 
-#: lib/poptALL.c:538
+#: lib/poptALL.c:534
 #, fuzzy
 msgid "use threads for package state machine"
 msgstr "file"
 
-#: lib/poptALL.c:552
+#: lib/poptALL.c:548
 #, fuzzy
 msgid "debug rpmio I/O"
 msgstr "I"
 
-#: lib/poptALL.c:572
+#: lib/poptALL.c:568
 msgid "debug tar payloads"
 msgstr ""
 
-#: lib/poptALL.c:576
+#: lib/poptALL.c:572
 #, fuzzy
 msgid "debug URL cache handling"
 msgstr "URL"
 
-#: lib/poptALL.c:745
+#: lib/poptALL.c:741
 #, fuzzy, c-format
 msgid "%s: option table misconfigured (%d)\n"
 msgstr "n"
@@ -2442,52 +2442,52 @@ msgstr "n"
 msgid "source package contains no .spec file\n"
 msgstr "sorgente contiene no file n"
 
-#: lib/psm.c:933 lib/rpmfc.c:106
+#: lib/psm.c:935 lib/rpmfc.c:106
 #, fuzzy, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr "n"
 
-#: lib/psm.c:944
+#: lib/psm.c:946
 #, fuzzy, c-format
 msgid "%s(%s) scriptlet failed, waitpid(%d) rc %d: %s\n"
 msgstr "n"
 
-#: lib/psm.c:953
+#: lib/psm.c:955
 #, fuzzy, c-format
 msgid "%s(%s) scriptlet failed, signal %d\n"
 msgstr "stato n"
 
-#: lib/psm.c:959
+#: lib/psm.c:961
 #, fuzzy, c-format
 msgid "%s(%s) scriptlet failed, exit status %d\n"
 msgstr "stato n"
 
-#: lib/psm.c:1887
+#: lib/psm.c:1889
 #, fuzzy, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s\n"
 msgstr "n"
 
-#: lib/psm.c:1995
+#: lib/psm.c:1997
 #, fuzzy
 msgid "Unable to reload signature header\n"
 msgstr "n"
 
-#: lib/psm.c:2105
+#: lib/psm.c:2107
 #, fuzzy, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "archivio n"
 
-#: lib/psm.c:2106
+#: lib/psm.c:2108
 #, fuzzy
 msgid " on file "
 msgstr "acceso file "
 
-#: lib/psm.c:2287
+#: lib/psm.c:2289
 #, fuzzy, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "acceso file n"
 
-#: lib/psm.c:2290
+#: lib/psm.c:2292
 #, fuzzy, c-format
 msgid "%s failed: %s\n"
 msgstr "n"
@@ -2590,7 +2590,7 @@ msgstr "n"
 msgid "record %u could not be read\n"
 msgstr "leggi n"
 
-#: lib/query.c:688 lib/query.c:694 lib/rpminstall.c:709
+#: lib/query.c:688 lib/query.c:694 lib/rpminstall.c:737
 #, fuzzy, c-format
 msgid "package %s is not installed\n"
 msgstr "è n"
@@ -2812,12 +2812,12 @@ msgstr ""
 msgid "failed to write all data to %s\n"
 msgstr "n"
 
-#: lib/rpmfc.c:1273
+#: lib/rpmfc.c:1277
 #, fuzzy, c-format
 msgid "Finding  %s: %s\n"
 msgstr "File n"
 
-#: lib/rpmfc.c:1278 lib/rpmfc.c:1290
+#: lib/rpmfc.c:1282 lib/rpmfc.c:1294
 #, fuzzy, c-format
 msgid "Failed to find %s:\n"
 msgstr "Fallito leggi n"
@@ -2827,86 +2827,91 @@ msgstr "Fallito leggi n"
 msgid "open of %s failed: %s\n"
 msgstr "n"
 
-#: lib/rpmgi.c:422
+#: lib/rpmgi.c:424
 #, fuzzy, c-format
 msgid "unknown tag: \"%s\"\n"
 msgstr "sconosciuto"
 
-#: lib/rpmgi.c:770 lib/rpminstall.c:743
+#: lib/rpmgi.c:772 lib/rpminstall.c:771
 #, fuzzy
 msgid "Failed dependencies:\n"
 msgstr "Fallito n"
 
-#: lib/rpmgi.c:775 lib/rpminstall.c:277
+#: lib/rpmgi.c:777 lib/rpminstall.c:278
 #, fuzzy
 msgid "    Suggested resolutions:\n"
 msgstr "n"
 
-#: lib/rpminstall.c:189
+#: lib/rpminstall.c:190
 msgid "Preparing..."
 msgstr ""
 
-#: lib/rpminstall.c:191
+#: lib/rpminstall.c:192
 #, fuzzy
 msgid "Preparing packages for installation..."
 msgstr "per."
 
-#: lib/rpminstall.c:209
+#: lib/rpminstall.c:210
 msgid "Repackaging..."
 msgstr ""
 
-#: lib/rpminstall.c:211
+#: lib/rpminstall.c:212
 msgid "Repackaging erased files..."
 msgstr ""
 
-#: lib/rpminstall.c:230
+#: lib/rpminstall.c:231
 msgid "Upgrading..."
 msgstr ""
 
-#: lib/rpminstall.c:232
+#: lib/rpminstall.c:233
 msgid "Upgrading packages..."
 msgstr ""
 
-#: lib/rpminstall.c:291
+#: lib/rpminstall.c:292
 #, fuzzy
 msgid "Failed dependencies"
 msgstr "Fallito n"
 
-#: lib/rpminstall.c:298
+#: lib/rpminstall.c:299
 msgid "Ordering problems"
 msgstr ""
 
-#: lib/rpminstall.c:305
+#: lib/rpminstall.c:306
 #, fuzzy
 msgid "Install/Erase problems"
 msgstr "Opzioni di installazione/aggiornamento/eliminazione:"
 
-#: lib/rpminstall.c:544
+#: lib/rpminstall.c:551
 #, fuzzy, c-format
-msgid "package %s cannot be erased\n"
+msgid "package \"%s\" cannot be found\n"
 msgstr "è n"
 
-#: lib/rpminstall.c:570
+#: lib/rpminstall.c:572
+#, fuzzy, c-format
+msgid "package \"%s\" cannot be erased\n"
+msgstr "è n"
+
+#: lib/rpminstall.c:598
 #, fuzzy, c-format
 msgid "package %s is not relocatable\n"
 msgstr "è n"
 
-#: lib/rpminstall.c:718
+#: lib/rpminstall.c:746
 #, fuzzy, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "n"
 
-#: lib/rpminstall.c:787
+#: lib/rpminstall.c:815
 #, fuzzy, c-format
 msgid "cannot open %s: %s\n"
 msgstr "n"
 
-#: lib/rpminstall.c:793
+#: lib/rpminstall.c:821
 #, fuzzy, c-format
 msgid "Installing %s\n"
 msgstr "n"
 
-#: lib/rpminstall.c:803
+#: lib/rpminstall.c:831
 #, fuzzy, c-format
 msgid "%s cannot be installed\n"
 msgstr "n"
@@ -3604,12 +3609,12 @@ msgstr "directory n"
 msgid "error creating temporary file %s\n"
 msgstr "file n"
 
-#: rpmdb/signature.c:190 rpmdb/signature.c:534
+#: rpmdb/signature.c:190 rpmdb/signature.c:537
 #, fuzzy, c-format
 msgid "Could not exec %s: %s\n"
 msgstr "n"
 
-#: rpmdb/signature.c:208 rpmdb/signature.c:548
+#: rpmdb/signature.c:208 rpmdb/signature.c:551
 #, c-format
 msgid "Failed %s(%d) key(0x%lx): %s\n"
 msgstr ""
@@ -3629,37 +3634,37 @@ msgstr "n"
 msgid "unable to read the signature\n"
 msgstr "leggi n"
 
-#: rpmdb/signature.c:600
+#: rpmdb/signature.c:603
 msgid "Header+Payload size: "
 msgstr ""
 
-#: rpmdb/signature.c:637
+#: rpmdb/signature.c:640
 msgid "MD5 digest: "
 msgstr ""
 
-#: rpmdb/signature.c:694
+#: rpmdb/signature.c:697
 msgid "Header SHA1 digest: "
 msgstr ""
 
-#: rpmdb/signature.c:754 rpmdb/signature.c:880
+#: rpmdb/signature.c:757 rpmdb/signature.c:883
 msgid "Header "
 msgstr ""
 
-#: rpmdb/signature.c:810
+#: rpmdb/signature.c:813
 #, fuzzy
 msgid " signature: "
 msgstr "n"
 
-#: rpmdb/signature.c:886
+#: rpmdb/signature.c:889
 msgid " DSA signature: "
 msgstr ""
 
-#: rpmdb/signature.c:961
+#: rpmdb/signature.c:964
 #, fuzzy, c-format
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr "n"
 
-#: rpmdb/signature.c:982
+#: rpmdb/signature.c:985
 #, fuzzy, c-format
 msgid "Signature: UNKNOWN (%u)\n"
 msgstr "n"
@@ -3758,30 +3763,30 @@ msgstr ""
 msgid "Macro '%s' is readonly and cannot be changed.\n"
 msgstr ""
 
-#: rpmio/macro.c:2423 rpmio/macro.c:2429
+#: rpmio/macro.c:2424 rpmio/macro.c:2430
 #, fuzzy, c-format
 msgid "File %s: %s\n"
 msgstr "File n"
 
-#: rpmio/macro.c:2432
+#: rpmio/macro.c:2433
 #, fuzzy, c-format
 msgid "File %s is smaller than %u bytes\n"
 msgstr "File è byte n"
 
-#: rpmio/rpmdav.c:725
+#: rpmio/rpmdav.c:735
 msgid "Authorization Required"
 msgstr ""
 
-#: rpmio/rpmdav.c:727
+#: rpmio/rpmdav.c:737
 msgid "Redirect"
 msgstr ""
 
-#: rpmio/rpmdav.c:729
+#: rpmio/rpmdav.c:739
 #, fuzzy
 msgid "Server Error"
 msgstr "Server I"
 
-#: rpmio/rpmdav.c:731
+#: rpmio/rpmdav.c:741
 #, fuzzy
 msgid "Unknown Error"
 msgstr "no"

@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.2\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2008-02-04 11:02-0500\n"
+"POT-Creation-Date: 2008-02-11 17:18-0500\n"
 "PO-Revision-Date: 2006-04-18 18:16+0930\n"
 "Last-Translator: Ngô Trần Thủy <ngotranthuy@gmail.com>\n"
 "Language-Team: Vietnamese <gnomevi-list@lists.sourceforge.net>\n"
@@ -107,99 +107,99 @@ msgstr "Các lựa chọn chung cho tất cả các chế độ rpm"
 msgid "%s: %s\n"
 msgstr "%s: %s\n"
 
-#: rpmqv.c:482 rpmqv.c:488 rpmqv.c:494 rpmqv.c:531
+#: rpmqv.c:483 rpmqv.c:489 rpmqv.c:495 rpmqv.c:532
 msgid "only one major mode may be specified"
 msgstr "duy nhất một phương thức chính có thể được định rõ"
 
-#: rpmqv.c:510
+#: rpmqv.c:511
 msgid "one type of query/verify may be performed at a time"
 msgstr "một kiểu truy vấn/xác nhận có thể được thi hành tại một thời điểm"
 
-#: rpmqv.c:514
+#: rpmqv.c:515
 msgid "unexpected query flags"
 msgstr "những cờ hiệu truy vấn không mong đợi"
 
-#: rpmqv.c:517
+#: rpmqv.c:518
 msgid "unexpected query format"
 msgstr "định dạng truy vấn không mong đợi"
 
-#: rpmqv.c:520
+#: rpmqv.c:521
 msgid "unexpected query source"
 msgstr "nguồn truy vấn không mong đợi"
 
-#: rpmqv.c:563
+#: rpmqv.c:564
 msgid "only installation, upgrading, rmsource and rmspec may be forced"
 msgstr ""
 "chỉ có sự cài đặt, nâng cấp, gỡ bỏ nguồn và gỡ bỏ đặc tả mới có thể bị bắt "
 "buộc"
 
-#: rpmqv.c:565
+#: rpmqv.c:566
 msgid "files may only be relocated during package installation"
 msgstr "những tập tin có thể chỉ được xây dựng lại trong quá trình cài đặt gói"
 
-#: rpmqv.c:568
+#: rpmqv.c:569
 msgid "cannot use --prefix with --relocate or --excludepath"
 msgstr "không thể dùng --prefix với --relocate hoặc --excludepath"
 
-#: rpmqv.c:571
+#: rpmqv.c:572
 msgid ""
 "--relocate and --excludepath may only be used when installing new packages"
 msgstr ""
 "--relocate và --excludepath có thể chỉ được dùng khi cài đặt những gói mới"
 
-#: rpmqv.c:574
+#: rpmqv.c:575
 msgid "--prefix may only be used when installing new packages"
 msgstr "--prefix có thể chỉ được dùng khi cài đặt những gói mới"
 
-#: rpmqv.c:577
+#: rpmqv.c:578
 msgid "arguments to --prefix must begin with a /"
 msgstr "những đối số của --prefix phải được bắt đầu với a /"
 
-#: rpmqv.c:580
+#: rpmqv.c:581
 msgid "--hash (-h) may only be specified during package installation"
 msgstr "--hash (-h) có thể chỉ được định rõ trong quá trình cài đặt gói"
 
-#: rpmqv.c:584
+#: rpmqv.c:585
 msgid "--percent may only be specified during package installation"
 msgstr "--percent có thể chỉ được định rõ trong quá trình cài đặt gói"
 
-#: rpmqv.c:588
+#: rpmqv.c:589
 msgid "--replacepkgs may only be specified during package installation"
 msgstr "có thể chỉ được định rõ trong quá trình cài đặt gói"
 
-#: rpmqv.c:592
+#: rpmqv.c:593
 msgid "--excludedocs may only be specified during package installation"
 msgstr "--excludedocs có thể chỉ được định rõ trong quá trình cài đặt gói"
 
-#: rpmqv.c:596
+#: rpmqv.c:597
 msgid "--includedocs may only be specified during package installation"
 msgstr "--includedocs có thể chỉ được định rõ trong quá trình cài đặt gói"
 
-#: rpmqv.c:600
+#: rpmqv.c:601
 msgid "only one of --excludedocs and --includedocs may be specified"
 msgstr "chỉ một trong --excludedocs và --includedocs có thể được định rõ"
 
-#: rpmqv.c:604
+#: rpmqv.c:605
 msgid "--ignorearch may only be specified during package installation"
 msgstr "--ignorearch có thể chỉ được định rõ trong quá trình cài đặt gói"
 
-#: rpmqv.c:608
+#: rpmqv.c:609
 msgid "--ignoreos may only be specified during package installation"
 msgstr "--ignoreos có thể chỉ được định rõ trong quá trình cài đặt gói"
 
-#: rpmqv.c:612
+#: rpmqv.c:613
 msgid "--allmatches may only be specified during package erasure"
 msgstr "--allmatches có thể chỉ được định rõ trong quá trình cài đặt gói"
 
-#: rpmqv.c:616
+#: rpmqv.c:617
 msgid "--allfiles may only be specified during package installation"
 msgstr "--allfiles có thể chỉ được định rõ trong quá trình cài đặt gói"
 
-#: rpmqv.c:621
+#: rpmqv.c:622
 msgid "--justdb may only be specified during package installation and erasure"
 msgstr "--justdb có thể chỉ được định rõ trong quá trình cài đặt gói và xóa bỏ"
 
-#: rpmqv.c:626
+#: rpmqv.c:627
 msgid ""
 "script disabling options may only be specified during package installation "
 "and erasure"
@@ -207,7 +207,7 @@ msgstr ""
 "các lựa chọn vô hiệu hóa kịch bản có thể chỉ được định rõ trong quá trình "
 "cài đặt gói và xóa bỏ"
 
-#: rpmqv.c:631
+#: rpmqv.c:632
 msgid ""
 "trigger disabling options may only be specified during package installation "
 "and erasure"
@@ -215,7 +215,7 @@ msgstr ""
 "các lựa chọn vô hiệu hóa khởi sự có thể chỉ được định rõ trong quá trình cài "
 "đặt gói và xóa bỏ"
 
-#: rpmqv.c:635
+#: rpmqv.c:636
 #, fuzzy
 msgid ""
 "--nodeps may only be specified during package building, rebuilding, "
@@ -224,7 +224,7 @@ msgstr ""
 "--nodeps có thể chỉ được định rõ trong quá trình xây dựng, xây dựng lại, "
 "biên dịch lại, cài đặt, xóa bỏ, và sự xác nhận"
 
-#: rpmqv.c:640
+#: rpmqv.c:641
 msgid ""
 "--test may only be specified during package installation, erasure, and "
 "building"
@@ -232,7 +232,7 @@ msgstr ""
 "--test có thể chỉ được định rõ trong quá trình cài đặt gói, xóa bỏ, và xây "
 "dựng"
 
-#: rpmqv.c:645
+#: rpmqv.c:646
 msgid ""
 "--root (-r) may only be specified during installation, erasure, querying, "
 "and database rebuilds"
@@ -240,68 +240,68 @@ msgstr ""
 "--root (-r) có thể chỉ được định rõ trong quá trình cài đặt gói, xóa bỏ, "
 "truy vấn và xây dựng lại những cơ sở dữ liệu"
 
-#: rpmqv.c:657
+#: rpmqv.c:658
 msgid "arguments to --root (-r) must begin with a /"
 msgstr "đối số của --root (-r) phải bắt đầu với a /"
 
-#: rpmqv.c:685
+#: rpmqv.c:686
 #, c-format
 msgid "no files to sign\n"
 msgstr "không có tệp tin nào để đánh dấu\n"
 
-#: rpmqv.c:690
+#: rpmqv.c:691
 #, c-format
 msgid "cannot access file %s\n"
 msgstr "không thể truy cập tệp tin %s\n"
 
-#: rpmqv.c:702
+#: rpmqv.c:703
 msgid "Enter pass phrase: "
 msgstr "Nhập vào nhóm từ vượt qua:"
 
-#: rpmqv.c:704
+#: rpmqv.c:705
 #, c-format
 msgid "Pass phrase check failed\n"
 msgstr "Nhóm từ vượt qua bị sai\n"
 
-#: rpmqv.c:708
+#: rpmqv.c:709
 #, c-format
 msgid "Pass phrase is good.\n"
 msgstr "Nhóm từ vượt qua đúng.\n"
 
-#: rpmqv.c:725
+#: rpmqv.c:726
 #, c-format
 msgid "exec failed\n"
 msgstr "Việc thực thi bị lỗi\n"
 
-#: rpmqv.c:769
+#: rpmqv.c:770
 msgid "no packages files given for rebuild"
 msgstr "không có những gói tin, tập tin xác định nào cho việc xây dựng lại"
 
-#: rpmqv.c:862
+#: rpmqv.c:863
 msgid "no spec files given for build"
 msgstr "không có tập tin đặc tả xác định nào cho việc xây dựng"
 
-#: rpmqv.c:864
+#: rpmqv.c:865
 msgid "no tar files given for build"
 msgstr "không có tập tin tar xác định nào cho việc xây dựng"
 
-#: rpmqv.c:885
+#: rpmqv.c:886
 msgid "no packages given for erase"
 msgstr "không có gói tin xác định nào cho việc xóa bỏ"
 
-#: rpmqv.c:929
+#: rpmqv.c:930
 msgid "no packages given for install"
 msgstr "không có gói tin xác định nào cho việc cài đặt"
 
-#: rpmqv.c:949
+#: rpmqv.c:950
 msgid "no arguments given for query"
 msgstr "không có đối số xác định nào cho việc truy vấn"
 
-#: rpmqv.c:966
+#: rpmqv.c:967
 msgid "no arguments given for verify"
 msgstr "không có đối số xác định nào cho việc xác nhận"
 
-#: rpmqv.c:981
+#: rpmqv.c:982
 msgid "no arguments given"
 msgstr "không có đối số xác định"
 
@@ -699,7 +699,7 @@ msgstr "Không thể nạp lại tiêu đề chữ ký.\n"
 msgid "Could not open %s: %s\n"
 msgstr "Không thể mở %s: %s\n"
 
-#: build/pack.c:820 lib/psm.c:1982
+#: build/pack.c:820 lib/psm.c:1984
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr "Không thể ghi vào gói: %s\n"
@@ -719,7 +719,7 @@ msgstr "Không thể đọc dữ liệu tải về từ %s: %s\n"
 msgid "Unable to write payload to %s: %s\n"
 msgstr "Không thể ghi dữ liệu tải về vào %s: %s\n"
 
-#: build/pack.c:929 lib/psm.c:2279
+#: build/pack.c:929 lib/psm.c:2281
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "Đã ghi: %s\n"
@@ -1254,7 +1254,7 @@ msgstr "không thẩm tra (các) yết thị của gói"
 msgid "don't verify database header(s) when retrieved"
 msgstr "không thẩm tra (các) tiêu đề cơ sở dữ liệu khi tìm được"
 
-#: build/poptBT.c:217 lib/poptALL.c:477 lib/poptI.c:346 lib/poptQV.c:412
+#: build/poptBT.c:217 lib/poptALL.c:473 lib/poptI.c:346 lib/poptQV.c:412
 #: lib/poptQV.c:419 lib/poptQV.c:462
 msgid "don't verify package signature(s)"
 msgstr "không thẩm tra (các) chữ ký gói"
@@ -1742,107 +1742,107 @@ msgstr "đọc <TỆP TIN:...> thay thế các tệp tin mặc định"
 msgid "specify target platform"
 msgstr "ghi đè nền tảng mục tiêu"
 
-#: lib/poptALL.c:474 lib/poptALL.c:499
-msgid "disable use of libio(3) API"
-msgstr "loại trừ quyền sử dụng của libio(3) APT"
-
-#: lib/poptALL.c:480
+#: lib/poptALL.c:476
 msgid "send stdout to CMD"
 msgstr "gửi stdout tới CMD"
 
-#: lib/poptALL.c:481
+#: lib/poptALL.c:477
 msgid "CMD"
 msgstr "CMD"
 
-#: lib/poptALL.c:483
+#: lib/poptALL.c:479
 msgid "use ROOT as top level directory"
 msgstr "sử dụng ROOT như thư mục mức cao nhất"
 
-#: lib/poptALL.c:484
+#: lib/poptALL.c:480
 msgid "ROOT"
 msgstr "ROOT"
 
-#: lib/poptALL.c:487
+#: lib/poptALL.c:483
 msgid "display known query tags"
 msgstr "hiển thị các thẻ ghi truy vấn đã biết"
 
-#: lib/poptALL.c:489
+#: lib/poptALL.c:485
 msgid "provide less detailed output"
 msgstr "cung cấp ít hơn chi tiết tín hiệu ra"
 
-#: lib/poptALL.c:491
+#: lib/poptALL.c:487
 msgid "display final rpmrc and macro configuration"
 msgstr "hiển thị rpmrc cuối cùng và cấu hình macro"
 
-#: lib/poptALL.c:493
+#: lib/poptALL.c:489
 msgid "provide more detailed output"
 msgstr "cung cấp nhiều hơn chi tiết tín hiệu ra"
 
-#: lib/poptALL.c:495
+#: lib/poptALL.c:491
 msgid "print the version of rpm being used"
 msgstr "in phiên bản của rpm đang sử được sử dụng"
 
-#: lib/poptALL.c:506
+#: lib/poptALL.c:495
+msgid "disable use of libio(3) API"
+msgstr "loại trừ quyền sử dụng của libio(3) APT"
+
+#: lib/poptALL.c:502
 msgid "select cryptography implementation"
 msgstr ""
 
-#: lib/poptALL.c:507
+#: lib/poptALL.c:503
 msgid "CRYPTO"
 msgstr ""
 
-#: lib/poptALL.c:510
+#: lib/poptALL.c:506
 msgid "debug argv collections"
 msgstr ""
 
-#: lib/poptALL.c:512
+#: lib/poptALL.c:508
 msgid "debug cpio payloads"
 msgstr ""
 
-#: lib/poptALL.c:514
+#: lib/poptALL.c:510
 #, fuzzy
 msgid "debug WebDAV data stream"
 msgstr "gỡ rối dòng dữ liệu"
 
-#: lib/poptALL.c:518
+#: lib/poptALL.c:514
 msgid "debug payload file state machine"
 msgstr "gỡ rối tệp tin trạng thái máy tải về"
 
-#: lib/poptALL.c:520
+#: lib/poptALL.c:516
 #, fuzzy
 msgid "use threads for file state machine"
 msgstr "gỡ rối tệp tin trạng thái máy tải về"
 
-#: lib/poptALL.c:522
+#: lib/poptALL.c:518
 #, fuzzy
 msgid "debug FTP/HTTP data stream"
 msgstr "gỡ rối dòng dữ liệu"
 
-#: lib/poptALL.c:531
+#: lib/poptALL.c:527
 msgid "debug option/argument processing"
 msgstr "gỡ rối lựa chọn/đối số đang xử lý"
 
-#: lib/poptALL.c:536
+#: lib/poptALL.c:532
 msgid "debug package state machine"
 msgstr "gỡ rối gói tình trạng máy"
 
-#: lib/poptALL.c:538
+#: lib/poptALL.c:534
 #, fuzzy
 msgid "use threads for package state machine"
 msgstr "gỡ rối gói tình trạng máy"
 
-#: lib/poptALL.c:552
+#: lib/poptALL.c:548
 msgid "debug rpmio I/O"
 msgstr "gỡ rối rpmio Nhập/Xuất"
 
-#: lib/poptALL.c:572
+#: lib/poptALL.c:568
 msgid "debug tar payloads"
 msgstr ""
 
-#: lib/poptALL.c:576
+#: lib/poptALL.c:572
 msgid "debug URL cache handling"
 msgstr "gỡ rối URL xử lý bộ nhớ đệm"
 
-#: lib/poptALL.c:745
+#: lib/poptALL.c:741
 #, c-format
 msgid "%s: option table misconfigured (%d)\n"
 msgstr "%s: bảng lựa chọn đã cấu hình sai (%d)\n"
@@ -2381,50 +2381,50 @@ msgstr "không thể ghi vào %%%s %s\n"
 msgid "source package contains no .spec file\n"
 msgstr "gói nguồn không chứa tệp tin đặc tả\n"
 
-#: lib/psm.c:933 lib/rpmfc.c:106
+#: lib/psm.c:935 lib/rpmfc.c:106
 #, fuzzy, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr "Không thể mở %s: %s\n"
 
-#: lib/psm.c:944
+#: lib/psm.c:946
 #, fuzzy, c-format
 msgid "%s(%s) scriptlet failed, waitpid(%d) rc %d: %s\n"
 msgstr " vi kịch bản %s(%s-%s-%s) thất bại, chờ đợi pid(%d) rc %d: %s\n"
 
-#: lib/psm.c:953
+#: lib/psm.c:955
 #, fuzzy, c-format
 msgid "%s(%s) scriptlet failed, signal %d\n"
 msgstr " vi kịch bản %s(%s-%s-%s) thất bại, thoát khỏi các tình trạng %d\n"
 
-#: lib/psm.c:959
+#: lib/psm.c:961
 #, fuzzy, c-format
 msgid "%s(%s) scriptlet failed, exit status %d\n"
 msgstr " vi kịch bản %s(%s-%s-%s) thất bại, thoát khỏi các tình trạng %d\n"
 
-#: lib/psm.c:1887
+#: lib/psm.c:1889
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s\n"
 msgstr "%s: vi kịch bản %s thất bại (%d), bỏ qua %s\n"
 
-#: lib/psm.c:1995
+#: lib/psm.c:1997
 msgid "Unable to reload signature header\n"
 msgstr "không thể tải lại tiêu đề chữ ký\n"
 
-#: lib/psm.c:2105
+#: lib/psm.c:2107
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "mở gói lưu trữ thất bại%s%s: %s\n"
 
-#: lib/psm.c:2106
+#: lib/psm.c:2108
 msgid " on file "
 msgstr "trên tập tin"
 
-#: lib/psm.c:2287
+#: lib/psm.c:2289
 #, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "%s thất bại trên tập tin %s: %s\n"
 
-#: lib/psm.c:2290
+#: lib/psm.c:2292
 #, c-format
 msgid "%s failed: %s\n"
 msgstr "%s thất bại: %s\n"
@@ -2522,7 +2522,7 @@ msgstr "số của gói không có hiệu lực: %s\n"
 msgid "record %u could not be read\n"
 msgstr "ghi chép %u không thể đọc\n"
 
-#: lib/query.c:688 lib/query.c:694 lib/rpminstall.c:709
+#: lib/query.c:688 lib/query.c:694 lib/rpminstall.c:737
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "gói %s không được cài đặt\n"
@@ -2742,12 +2742,12 @@ msgstr ""
 msgid "failed to write all data to %s\n"
 msgstr "Không thể ghi dữ liệu tải về vào %s: %s\n"
 
-#: lib/rpmfc.c:1273
+#: lib/rpmfc.c:1277
 #, fuzzy, c-format
 msgid "Finding  %s: %s\n"
 msgstr "Tệp tin %s: %s\n"
 
-#: lib/rpmfc.c:1278 lib/rpmfc.c:1290
+#: lib/rpmfc.c:1282 lib/rpmfc.c:1294
 #, fuzzy, c-format
 msgid "Failed to find %s:\n"
 msgstr "Thất bại khi đọc %s: %s.\n"
@@ -2757,83 +2757,88 @@ msgstr "Thất bại khi đọc %s: %s.\n"
 msgid "open of %s failed: %s\n"
 msgstr "mở %s thất bại: %s\n"
 
-#: lib/rpmgi.c:422
+#: lib/rpmgi.c:424
 #, fuzzy, c-format
 msgid "unknown tag: \"%s\"\n"
 msgstr "thẻ ghi không xác định"
 
-#: lib/rpmgi.c:770 lib/rpminstall.c:743
+#: lib/rpmgi.c:772 lib/rpminstall.c:771
 msgid "Failed dependencies:\n"
 msgstr "Các phần phụ thuộc thất bại:\n"
 
-#: lib/rpmgi.c:775 lib/rpminstall.c:277
+#: lib/rpmgi.c:777 lib/rpminstall.c:278
 msgid "    Suggested resolutions:\n"
 msgstr "    Các giải pháp đề nghị:\n"
 
-#: lib/rpminstall.c:189
+#: lib/rpminstall.c:190
 msgid "Preparing..."
 msgstr "Đang chuẩn bị..."
 
-#: lib/rpminstall.c:191
+#: lib/rpminstall.c:192
 msgid "Preparing packages for installation..."
 msgstr "Đang chuẩn bị các gói cho việc cài đặt..."
 
-#: lib/rpminstall.c:209
+#: lib/rpminstall.c:210
 msgid "Repackaging..."
 msgstr "Đang đóng gói lại..."
 
-#: lib/rpminstall.c:211
+#: lib/rpminstall.c:212
 msgid "Repackaging erased files..."
 msgstr "Đang đóng gói lại các tệp tin bị xoá..."
 
-#: lib/rpminstall.c:230
+#: lib/rpminstall.c:231
 msgid "Upgrading..."
 msgstr "Đang nâng cấp..."
 
-#: lib/rpminstall.c:232
+#: lib/rpminstall.c:233
 msgid "Upgrading packages..."
 msgstr "Đang nâng cấp các gói..."
 
-#: lib/rpminstall.c:291
+#: lib/rpminstall.c:292
 #, fuzzy
 msgid "Failed dependencies"
 msgstr "Các phần phụ thuộc thất bại:\n"
 
-#: lib/rpminstall.c:298
+#: lib/rpminstall.c:299
 msgid "Ordering problems"
 msgstr ""
 
-#: lib/rpminstall.c:305
+#: lib/rpminstall.c:306
 #, fuzzy
 msgid "Install/Erase problems"
 msgstr "Cài đặt/Nâng cấp/Xóa bỏ các lựa chọn:"
 
-#: lib/rpminstall.c:544
+#: lib/rpminstall.c:551
 #, fuzzy, c-format
-msgid "package %s cannot be erased\n"
+msgid "package \"%s\" cannot be found\n"
 msgstr "gói %s không được cài đặt\n"
 
-#: lib/rpminstall.c:570
+#: lib/rpminstall.c:572
+#, fuzzy, c-format
+msgid "package \"%s\" cannot be erased\n"
+msgstr "gói %s không được cài đặt\n"
+
+#: lib/rpminstall.c:598
 #, fuzzy, c-format
 msgid "package %s is not relocatable\n"
 msgstr "gói %s không thể xây dựng lại\n"
 
-#: lib/rpminstall.c:718
+#: lib/rpminstall.c:746
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" định rõ nhiều gói\n"
 
-#: lib/rpminstall.c:787
+#: lib/rpminstall.c:815
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "không thể mở %s: %s\n"
 
-#: lib/rpminstall.c:793
+#: lib/rpminstall.c:821
 #, c-format
 msgid "Installing %s\n"
 msgstr "Đang cài đặt %s\n"
 
-#: lib/rpminstall.c:803
+#: lib/rpminstall.c:831
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s không thể cài đặt được\n"
@@ -3526,12 +3531,12 @@ msgstr "gỡ bỏ thư mục %s thất bại: %s\n"
 msgid "error creating temporary file %s\n"
 msgstr "lỗi trong khi tạo tệp tin tạm thời %s\n"
 
-#: rpmdb/signature.c:190 rpmdb/signature.c:534
+#: rpmdb/signature.c:190 rpmdb/signature.c:537
 #, c-format
 msgid "Could not exec %s: %s\n"
 msgstr "Không thể thực thi %s: %s\n"
 
-#: rpmdb/signature.c:208 rpmdb/signature.c:548
+#: rpmdb/signature.c:208 rpmdb/signature.c:551
 #, c-format
 msgid "Failed %s(%d) key(0x%lx): %s\n"
 msgstr ""
@@ -3549,38 +3554,38 @@ msgstr "ghi chữ ký gpg thất bại\n"
 msgid "unable to read the signature\n"
 msgstr "không thể đọc chữ ký\n"
 
-#: rpmdb/signature.c:600
+#: rpmdb/signature.c:603
 msgid "Header+Payload size: "
 msgstr "kích cỡ Tiêu đề+Dữ liệu tải về:"
 
-#: rpmdb/signature.c:637
+#: rpmdb/signature.c:640
 msgid "MD5 digest: "
 msgstr "yết thị MD5: "
 
-#: rpmdb/signature.c:694
+#: rpmdb/signature.c:697
 msgid "Header SHA1 digest: "
 msgstr "Tiêu đề yết thị SHA1: "
 
-#: rpmdb/signature.c:754 rpmdb/signature.c:880
+#: rpmdb/signature.c:757 rpmdb/signature.c:883
 msgid "Header "
 msgstr "Tiêu đề "
 
-#: rpmdb/signature.c:810
+#: rpmdb/signature.c:813
 #, fuzzy
 msgid " signature: "
 msgstr "chữ ký V3 DSA: "
 
-#: rpmdb/signature.c:886
+#: rpmdb/signature.c:889
 #, fuzzy
 msgid " DSA signature: "
 msgstr "chữ ký V3 DSA: "
 
-#: rpmdb/signature.c:961
+#: rpmdb/signature.c:964
 #, c-format
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr "Thẩm tra chữ ký: THAM SỐ SAI\n"
 
-#: rpmdb/signature.c:982
+#: rpmdb/signature.c:985
 #, fuzzy, c-format
 msgid "Signature: UNKNOWN (%u)\n"
 msgstr "Chữ ký: KHÔNG RÕ (%d)\n"
@@ -3679,30 +3684,30 @@ msgstr ""
 msgid "Macro '%s' is readonly and cannot be changed.\n"
 msgstr ""
 
-#: rpmio/macro.c:2423 rpmio/macro.c:2429
+#: rpmio/macro.c:2424 rpmio/macro.c:2430
 #, c-format
 msgid "File %s: %s\n"
 msgstr "Tệp tin %s: %s\n"
 
-#: rpmio/macro.c:2432
+#: rpmio/macro.c:2433
 #, c-format
 msgid "File %s is smaller than %u bytes\n"
 msgstr "Tệp tin %s nhỏ hơn %u bytes\n"
 
-#: rpmio/rpmdav.c:725
+#: rpmio/rpmdav.c:735
 msgid "Authorization Required"
 msgstr ""
 
-#: rpmio/rpmdav.c:727
+#: rpmio/rpmdav.c:737
 msgid "Redirect"
 msgstr ""
 
-#: rpmio/rpmdav.c:729
+#: rpmio/rpmdav.c:739
 #, fuzzy
 msgid "Server Error"
 msgstr "Lỗi Nhập/Xuất máy chủ"
 
-#: rpmio/rpmdav.c:731
+#: rpmio/rpmdav.c:741
 #, fuzzy
 msgid "Unknown Error"
 msgstr "(không lỗi)"
