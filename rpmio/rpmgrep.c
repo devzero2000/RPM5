@@ -1205,37 +1205,36 @@ used to identify them. */
 #define N_INCLUDE   (-4)
 #define N_LABEL     (-5)
 #define N_LOCALE    (-6)
-#define N_NULL      (-7)
 #define N_LOFFSETS  (-8)
 #define N_FOFFSETS  (-9)
 
 static struct poptOption optionsTable[] = {
-  { "", N_NULL,	POPT_ARG_NONE,	NULL, N_NULL,
-	N_("  terminate options"), NULL },
+  { "", '\0',	POPT_ARG_NONE,	NULL, 0,
+	N_("terminate options"), NULL },
   { "help", N_HELP,	POPT_ARG_NONE,	NULL, N_HELP,
 	N_("display this help and exit"), NULL },
-  { "after-context=number", 'A',	POPT_ARG_INT,	&after_context, 0,
-	N_("set number of following context lines"), N_("number") },
-  { "before-context=number", 'B',	POPT_ARG_INT,	&before_context, 0,
-	N_("set number of prior context lines"), N_("number") },
-  { "color=option", N_COLOUR,	OP_OP_STRING,	&colour_option, N_COLOUR,
+  { "after-context", 'A',	POPT_ARG_INT,	&after_context, 0,
+	N_("set number of following context lines"), N_("=number") },
+  { "before-context", 'B',	POPT_ARG_INT,	&before_context, 0,
+	N_("set number of prior context lines"), N_("=number") },
+  { "color", N_COLOUR,	OP_OP_STRING,	&colour_option, N_COLOUR,
 	N_("matched text color option"), N_("option") },
-  { "context=number", 'C',	POPT_ARG_INT,	&both_context, 0,
-	N_("set number of context lines, before & after"), N_("number") },
+  { "context", 'C',	POPT_ARG_INT,	&both_context, 0,
+	N_("set number of context lines, before & after"), N_("=number") },
   { "count", 'c',	POPT_ARG_NONE,	NULL, 0,
 	N_("print only a count of matching lines per FILE"), NULL },
-  { "colour=option", N_COLOUR,	OP_OP_STRING,	&colour_option, N_COLOUR,
-	N_("matched text colour option"), N_("option") },
-  { "devices=action", 'D',	POPT_ARG_STRING,	&DEE_option, 0,
-	N_("how to handle devices, FIFOs, and sockets"), N_("action") },
-  { "directories=action", 'd',	POPT_ARG_STRING,	&dee_option, 0,
-	N_("how to handle directories"), N_("action") },
-  { "regex(p)", 'e',	OP_PATLIST,	NULL, 0,
-	N_("specify pattern (may be used more than once)"), NULL },
+  { "colour", N_COLOUR,	OP_OP_STRING,	&colour_option, N_COLOUR,
+	N_("matched text colour option"), N_("=option") },
+  { "devices", 'D',	POPT_ARG_STRING,	&DEE_option, 0,
+	N_("how to handle devices, FIFOs, and sockets"), N_("=action") },
+  { "directories", 'd',	POPT_ARG_STRING,	&dee_option, 0,
+	N_("how to handle directories"), N_("=action") },
+  { "regex", 'e',	OP_PATLIST,	NULL, 0,
+	N_("specify pattern (may be used more than once)"), N_("(p)") },
   { "fixed_strings", 'F',	POPT_ARG_NONE,	NULL, 0,
 	N_("patterns are sets of newline-separated strings"), NULL },
-  { "file=path", 'f',	POPT_ARG_STRING,	&pattern_filename, 0,
-	N_("read patterns from file"), N_("path") },
+  { "file", 'f',	POPT_ARG_STRING,	&pattern_filename, 0,
+	N_("read patterns from file"), N_("=path") },
   { "file-offsets", N_FOFFSETS,	POPT_ARG_NONE,	NULL, N_FOFFSETS,
 	N_("output file offsets, not text"), NULL },
   { "with-filename", 'H',	POPT_ARG_NONE,	NULL, 0,
@@ -1248,16 +1247,16 @@ static struct poptOption optionsTable[] = {
 	N_("print only FILE names containing matches"), NULL },
   { "files-without-match", 'L',	POPT_ARG_NONE,	NULL, 0,
 	N_("print only FILE names not containing matches"), NULL },
-  { "label=name", N_LABEL,	POPT_ARG_STRING,	&stdin_name, N_LABEL,
-	N_("set name for standard input"), N_("name") },
+  { "label", N_LABEL,	POPT_ARG_STRING,	&stdin_name, N_LABEL,
+	N_("set name for standard input"), N_("=name") },
   { "line-offsets", N_LOFFSETS,	POPT_ARG_NONE,	NULL, N_LOFFSETS,
 	N_("output line numbers and offsets, not text"), NULL },
-  { "locale=locale", N_LOCALE,	POPT_ARG_STRING,	&locale, N_LOCALE,
-	N_("use the named locale"), N_("locale") },
+  { "locale", N_LOCALE,	POPT_ARG_STRING,	&locale, N_LOCALE,
+	N_("use the named locale"), N_("=locale") },
   { "multiline", 'M',	POPT_ARG_NONE,	NULL, 0,
 	N_("run in multiline mode"), NULL },
-  { "newline=type", 'N',	POPT_ARG_STRING,	&newline, 0,
-	N_("set newline type (CR, LF, CRLF, ANYCRLF or ANY)"), N_("type") },
+  { "newline", 'N',	POPT_ARG_STRING,	&newline, 0,
+	N_("set newline type (CR, LF, CRLF, ANYCRLF or ANY)"), N_("=type") },
   { "line-number", 'n',	POPT_ARG_NONE,	NULL, 0,
 	N_("print line number with output lines"), NULL },
   { "only-matching", 'o',	POPT_ARG_NONE,	NULL, 0,
@@ -1266,10 +1265,10 @@ static struct poptOption optionsTable[] = {
 	N_("suppress output, just set return code"), NULL },
   { "recursive", 'r',	POPT_ARG_NONE,	NULL, 0,
 	N_("recursively scan sub-directories"), NULL },
-  { "exclude=pattern", N_EXCLUDE,	POPT_ARG_STRING,	&exclude_pattern, N_EXCLUDE,
-	N_("exclude matching files when recursing"), N_("pattern") },
-  { "include=pattern", N_INCLUDE,	POPT_ARG_STRING,	&include_pattern, N_INCLUDE,
-	N_("include matching files when recursing"), N_("pattern") },
+  { "exclude", N_EXCLUDE,	POPT_ARG_STRING,	&exclude_pattern, N_EXCLUDE,
+	N_("exclude matching files when recursing"), N_("=pattern") },
+  { "include", N_INCLUDE,	POPT_ARG_STRING,	&include_pattern, N_INCLUDE,
+	N_("include matching files when recursing"), N_("=pattern") },
 #ifdef JFRIEDL_DEBUG
   { "jeffS", 'S',	OP_OP_NUMBER,	&S_arg, 0,
 	N_("replace matched (sub)string with X"), NULL },
@@ -1282,10 +1281,32 @@ static struct poptOption optionsTable[] = {
 	N_("print version information and exit"), NULL },
   { "invert-match", 'v',	POPT_ARG_NONE,	NULL, 0,
 	N_("select non-matching lines"), NULL },
-  { "word-regex(p)", 'w',	POPT_ARG_NONE,	NULL, 0,
-	N_("force patterns to match only as words") , NULL },
-  { "line-regex(p)", 'x',	POPT_ARG_NONE,	NULL, 0,
-	N_("force patterns to match only whole lines"), NULL },
+  { "word-regex", 'w',	POPT_ARG_NONE,	NULL, 0,
+	N_("force patterns to match only as words") , N_("(p)") },
+  { "line-regex", 'x',	POPT_ARG_NONE,	NULL, 0,
+	N_("force patterns to match only whole lines"), N_("(p)") },
+
+  POPT_AUTOALIAS
+  POPT_AUTOHELP
+
+  { NULL, -1, POPT_ARG_INCLUDE_TABLE, NULL, 0,
+	N_("\
+Usage: rpmgrep [OPTION...] [PATTERN] [FILE1 FILE2 ...]\n\n\
+  Search for PATTERN in each FILE or standard input.\n\
+  PATTERN must be present if neither -e nor -f is used.\n\
+  \"-\" can be used as a file name to mean STDIN.\n\
+  All files are read as plain files, without any interpretation.\n\n\
+Example: pcregrep -i 'hello.*world' menu.h main.c\
+") , NULL },
+
+  { NULL, -1, POPT_ARG_INCLUDE_TABLE, NULL, 0,
+	N_("\
+  When reading patterns from a file instead of using a command line option,\n\
+  trailing white space is removed and blank lines are ignored.\n\
+\n\
+  With no FILEs, read standard input. If fewer than two FILEs given, assume -h.\n\
+") , NULL },
+
   POPT_TABLEEND
 };
 
@@ -1341,9 +1362,15 @@ help(void)
     for (; (opt->longName || opt->shortName || opt->arg); opt++) {
 	int n;
 	char s[4];
+	if ((opt->argInfo & POPT_ARG_MASK) == POPT_ARG_INCLUDE_TABLE)
+	    continue;
 	if (opt->shortName > 0) sprintf(s, "-%c,", opt->shortName);
 	else strcpy(s, "   ");
-	n = 30 - printf("  %s --%s", s, opt->longName);
+	n = 30;
+	n -= printf("  %s --%s", s, opt->longName);
+	if (opt->argDescrip && (strchr("=(", opt->argDescrip[0]) != NULL))
+	    n -= printf("%s", opt->argDescrip);
+
 	if (n < 1) n = 1;
 	printf("%.*s%s\n", n, "                    ", opt->descrip);
     }
@@ -1354,6 +1381,17 @@ help(void)
 
     printf("\nWith no FILEs, read standard input. If fewer than two FILEs given, assume -h.\n");
     printf("Exit status is 0 if any matches, 1 if no matches, and 2 if trouble.\n");
+
+    {	int argc = 1;
+	const char *argv[] = { "rpmgrep", NULL };
+	poptContext optCon = poptGetContext(argv[0], argc, argv, optionsTable, 0);
+	printf("=========================================================\n");
+	poptPrintUsage(optCon, stdout, 0);
+	printf("=========================================================\n");
+	poptPrintHelp(optCon, stdout, 0);
+
+	optCon = poptFreeContext(optCon);
+    }
 }
 
 /*************************************************
@@ -1637,13 +1675,13 @@ main(int argc, char **argv)
 	     * in both these categories, fortunately.
 	     */
 	    for (opt = optionsTable; (opt->longName || opt->shortName || opt->arg); opt++) {
-		char *opbra = strchr(opt->longName, '(');
-		char *equals = strchr(opt->longName, '=');
+		char *opbra = (opt->argDescrip ? strchr(opt->argDescrip, '(') : NULL);
+		char *equals = (opt->argDescrip ? strchr(opt->argDescrip, '=') : NULL);
 		if (opbra == NULL) {		/* Not a (p) case */
 		    if (equals == NULL) {	/* Not thing=data case */
 			if (strcmp(arg, opt->longName) == 0) break;
 		    } else {			/* Special case xxx=data */
-			int oplen = equals - opt->longName;
+			int oplen = strlen(opt->longName);
 			int arglen = (argequals == NULL)? (int)strlen(arg) : argequals - arg;
 			if (oplen == arglen && strncmp(arg, opt->longName, oplen) == 0) {
 			    option_data = arg + arglen;
@@ -1657,10 +1695,10 @@ main(int argc, char **argv)
 		} else {			/* Special case xxxx(p) */
 		    char buff1[24];
 		    char buff2[24];
-		    int baselen = opbra - opt->longName;
+		    int baselen = (int)strlen(opt->longName);
 		    sprintf(buff1, "%.*s", baselen, opt->longName);
-		    sprintf(buff2, "%s%.*s", buff1,
-			(int)strlen(opt->longName) - baselen - 2, opbra + 1);
+		    baselen = (int)strlen(opt->argDescrip);
+		    sprintf(buff2, "%s%.*s", buff1, baselen - 2, opbra + 1);
 		    if (strcmp(arg, buff1) == 0 || strcmp(arg, buff2) == 0)
 			break;
 		}
@@ -1778,9 +1816,7 @@ main(int argc, char **argv)
 	    int n = strtoul(option_data, &endptr, 10);
 	    if (*endptr != 0) {
 		if (longop) {
-		    char *equals = strchr(opt->longName, '=');
-		    int nlen = (equals == NULL)? (int)strlen(opt->longName) :
-			equals - opt->longName;
+		    int nlen = (int)strlen(opt->longName);
 		    fprintf(stderr, "pcregrep: Malformed number \"%s\" after --%.*s\n",
 			option_data, nlen, opt->longName);
 		}
