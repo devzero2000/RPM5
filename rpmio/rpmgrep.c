@@ -532,7 +532,7 @@ static void do_after_lines(int lastmatchnumber, const char *lastmatchrestart,
  * will be in the middle third most of the time, so the bottom third is
  * available for "before" context printing.
  *
- * @param  handle	the fopened FILE stream for a normal file
+ * @param  handle	the Fopen'd FILE stream for a normal file
  *			the gzFile pointer when reading is via libz
  *			the BZFILE pointer when reading is via libbz2
  * @param frtype	FR_PLAIN, FR_LIBZ, or FR_LIBBZ2
@@ -1029,7 +1029,7 @@ grep_or_recurse(char *pathname, BOOL dir_recurse, BOOL only_one_at_top)
     int frtype;
     int pathlen;
     void *handle;
-    FILE *in = NULL;	/* Ensure initialized */
+    FD_t infd = NULL;	/* Ensure initialized */
 
 #ifdef SUPPORT_LIBZ
     gzFile ingz = NULL;
@@ -1135,8 +1135,8 @@ grep_or_recurse(char *pathname, BOOL dir_recurse, BOOL only_one_at_top)
 PLAIN_FILE:
 #endif
     {
-	in = fopen(pathname, "r");
-	handle = (void *)in;
+	infd = Fopen(pathname, "r.fpio");
+	handle = (void *)fdGetFILE(infd);
 	frtype = FR_PLAIN;
     }
 
@@ -1181,7 +1181,8 @@ PLAIN_FILE:
     } else
 #endif
 
-    fclose(in);	/* Normal file close */
+    if (infd)
+	Fclose(infd);	/* Normal file close */
 
     return rc;	/* Pass back the yield from pcregrep(). */
 }
