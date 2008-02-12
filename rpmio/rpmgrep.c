@@ -1208,7 +1208,22 @@ used to identify them. */
 #define N_LOFFSETS  (-8)
 #define N_FOFFSETS  (-9)
 
+#ifdef	NOTYET
+/* XXX forward ref. */
+static void rpmgrepArgCallback(poptContext con,
+                /*@unused@*/ enum poptCallbackReason reason,
+                const struct poptOption * opt, const char * arg,
+                /*@unused@*/ void * data);
+#endif
+
 static struct poptOption optionsTable[] = {
+#ifdef	NOTYET
+/*@-type@*/ /* FIX: cast? */
+ { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA | POPT_CBFLAG_CONTINUE,
+        rpmgrepArgCallback, 0, NULL, NULL },
+/*@=type@*/
+#endif
+
   { "", '\0',	POPT_ARG_NONE,	NULL, 0,
 	N_("terminate options"), NULL },
   { "help", N_HELP,	POPT_ARG_NONE,	NULL, N_HELP,
@@ -1221,7 +1236,7 @@ static struct poptOption optionsTable[] = {
 	N_("matched text color option"), N_("option") },
   { "context", 'C',	POPT_ARG_INT,	&both_context, 0,
 	N_("set number of context lines, before & after"), N_("=number") },
-  { "count", 'c',	POPT_ARG_NONE,	NULL, 0,
+  { "count", 'c',	POPT_ARG_NONE,	NULL, 'c',
 	N_("print only a count of matching lines per FILE"), NULL },
   { "colour", N_COLOUR,	OP_OP_STRING,	&colour_option, N_COLOUR,
 	N_("matched text colour option"), N_("=option") },
@@ -1231,21 +1246,21 @@ static struct poptOption optionsTable[] = {
 	N_("how to handle directories"), N_("=action") },
   { "regex", 'e',	OP_PATLIST,	NULL, 0,
 	N_("specify pattern (may be used more than once)"), N_("(p)") },
-  { "fixed_strings", 'F',	POPT_ARG_NONE,	NULL, 0,
+  { "fixed_strings", 'F',	POPT_ARG_NONE,	NULL, 'F',
 	N_("patterns are sets of newline-separated strings"), NULL },
   { "file", 'f',	POPT_ARG_STRING,	&pattern_filename, 0,
 	N_("read patterns from file"), N_("=path") },
   { "file-offsets", N_FOFFSETS,	POPT_ARG_NONE,	NULL, N_FOFFSETS,
 	N_("output file offsets, not text"), NULL },
-  { "with-filename", 'H',	POPT_ARG_NONE,	NULL, 0,
+  { "with-filename", 'H',	POPT_ARG_NONE,	NULL, 'H',
 	N_("force the prefixing filename on output"), NULL },
-  { "no-filename", 'h',	POPT_ARG_NONE,	NULL, 0,
+  { "no-filename", 'h',	POPT_ARG_NONE,		NULL, 'h',
 	N_("suppress the prefixing filename on output"), NULL },
-  { "ignore-case", 'i',	POPT_ARG_NONE,	NULL, 0,
+  { "ignore-case", 'i',	POPT_ARG_NONE,		NULL, 'i',
 	N_("ignore case distinctions"), NULL },
-  { "files-with-matches", 'l',	POPT_ARG_NONE,	NULL, 0,
+  { "files-with-matches", 'l',	POPT_ARG_NONE,	NULL, 'l',
 	N_("print only FILE names containing matches"), NULL },
-  { "files-without-match", 'L',	POPT_ARG_NONE,	NULL, 0,
+  { "files-without-match", 'L',	POPT_ARG_NONE,	NULL, 'L',
 	N_("print only FILE names not containing matches"), NULL },
   { "label", N_LABEL,	POPT_ARG_STRING,	&stdin_name, N_LABEL,
 	N_("set name for standard input"), N_("=name") },
@@ -1253,17 +1268,17 @@ static struct poptOption optionsTable[] = {
 	N_("output line numbers and offsets, not text"), NULL },
   { "locale", N_LOCALE,	POPT_ARG_STRING,	&locale, N_LOCALE,
 	N_("use the named locale"), N_("=locale") },
-  { "multiline", 'M',	POPT_ARG_NONE,	NULL, 0,
+  { "multiline", 'M',	POPT_ARG_NONE,		NULL, 'M',
 	N_("run in multiline mode"), NULL },
   { "newline", 'N',	POPT_ARG_STRING,	&newline, 0,
 	N_("set newline type (CR, LF, CRLF, ANYCRLF or ANY)"), N_("=type") },
-  { "line-number", 'n',	POPT_ARG_NONE,	NULL, 0,
+  { "line-number", 'n',	POPT_ARG_NONE,		NULL, 'n',
 	N_("print line number with output lines"), NULL },
-  { "only-matching", 'o',	POPT_ARG_NONE,	NULL, 0,
+  { "only-matching", 'o',	POPT_ARG_NONE,	NULL, 'o',
 	N_("show only the part of the line that matched"), NULL },
-  { "quiet", 'q',	POPT_ARG_NONE,	NULL, 0,
+  { "quiet", 'q',	POPT_ARG_NONE,		NULL, 'q',
 	N_("suppress output, just set return code"), NULL },
-  { "recursive", 'r',	POPT_ARG_NONE,	NULL, 0,
+  { "recursive", 'r',	POPT_ARG_NONE,		NULL, 'r',
 	N_("recursively scan sub-directories"), NULL },
   { "exclude", N_EXCLUDE,	POPT_ARG_STRING,	&exclude_pattern, N_EXCLUDE,
 	N_("exclude matching files when recursing"), N_("=pattern") },
@@ -1273,17 +1288,17 @@ static struct poptOption optionsTable[] = {
   { "jeffS", 'S',	OP_OP_NUMBER,	&S_arg, 0,
 	N_("replace matched (sub)string with X"), NULL },
 #endif
-  { "no-messages", 's',	POPT_ARG_NONE,	NULL, 0,
+  { "no-messages", 's',	POPT_ARG_NONE,		NULL, 's',
 	N_("suppress error messages"), NULL },
-  { "utf-8", 'u',	POPT_ARG_NONE,	NULL, 0,
+  { "utf-8", 'u',	POPT_ARG_NONE,		NULL, 'u',
 	N_("use UTF-8 mode"), NULL },
-  { "version", 'V',	POPT_ARG_NONE,	NULL, 0,
+  { "version", 'V',	POPT_ARG_NONE,		NULL, 'V',
 	N_("print version information and exit"), NULL },
-  { "invert-match", 'v',	POPT_ARG_NONE,	NULL, 0,
+  { "invert-match", 'v',	POPT_ARG_NONE,	NULL, 'v',
 	N_("select non-matching lines"), NULL },
-  { "word-regex", 'w',	POPT_ARG_NONE,	NULL, 0,
+  { "word-regex", 'w',	POPT_ARG_NONE,		NULL, 'w',
 	N_("force patterns to match only as words") , N_("(p)") },
-  { "line-regex", 'x',	POPT_ARG_NONE,	NULL, 0,
+  { "line-regex", 'x',	POPT_ARG_NONE,		NULL, 'x',
 	N_("force patterns to match only whole lines"), N_("(p)") },
 
   POPT_AUTOALIAS
@@ -1394,18 +1409,21 @@ help(void)
     }
 }
 
-/*************************************************
- * Handle a single-letter, no data option.
- * @param letter
- * @param options
- * @return
+/**
  */
-static int
-handle_option(int letter, int options)
+static void rpmgrepArgCallback(poptContext con,
+                /*@unused@*/ enum poptCallbackReason reason,
+                const struct poptOption * opt, const char * arg,
+                /*@unused@*/ void * data)
 {
-    switch(letter) {
+    int options = (data ? *(int *)data : 0);
+
+#ifdef	NOTYET
+    /* XXX avoid accidental collisions with POPT_BIT_SET for flags */
+    if (opt->arg == NULL)
+#endif
+    switch (opt->val) {
     case N_FOFFSETS: file_offsets = TRUE; break;
-    case N_HELP: help(); exit(0);
     case N_LOFFSETS: line_offsets = number = TRUE; break;
     case 'c': count_only = TRUE; break;
     case 'F': process_options |= PO_FIXED_STRINGS; break;
@@ -1426,16 +1444,21 @@ handle_option(int letter, int options)
     case 'x': process_options |= PO_LINE_MATCH; break;
 
     case 'V':
-      fprintf(stderr, "pcregrep version %s\n", pcre_version());
-      exit(0);
-      break;
-
+	fprintf(stderr, "pcregrep version %s\n", pcre_version());
+	exit(0);
+	/*@notreached@*/ break;
+    case N_HELP:
+	help();
+	exit(0);
+	/*@notreached@*/ break;
     default:
-      fprintf(stderr, "pcregrep: Unknown option -%c\n", letter);
-      exit(usage(2));
+	fprintf(stderr, "pcregrep: Unknown option -%c\n", opt->val);
+	exit(usage(2));
+	/*@notreached@*/ break;
     }
 
-    return options;
+    if (data)
+	*(int *)data = options;
 }
 
 /*************************************************
@@ -1755,7 +1778,8 @@ main(int argc, char **argv)
 		    option_data = s+1;
 		    break;
 		}
-		pcre_options = handle_option(*s++, pcre_options);
+		rpmgrepArgCallback(NULL, 0, opt, NULL, &pcre_options);
+		s++;
 	    }
 	}
 
@@ -1765,7 +1789,7 @@ main(int argc, char **argv)
 	 * might set something in the PCRE options.
 	 */
 	if ((opt->argInfo & POPT_ARG_MASK) == OP_NODATA) {
-	    pcre_options = handle_option(opt->shortName, pcre_options);
+	    rpmgrepArgCallback(NULL, 0, opt, NULL, &pcre_options);
 	    continue;
 	}
 
