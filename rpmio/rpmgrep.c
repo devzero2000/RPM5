@@ -37,7 +37,10 @@ POSSIBILITY OF SUCH DAMAGE.
 -----------------------------------------------------------------------------
 */
 
+#undef	USE_POPT
+
 #include "system.h"
+const char *__progname;
 
 #define _MIRE_INTERNAL
 #include <rpmio_internal.h>
@@ -186,7 +189,7 @@ although at present the only ones are for Unix, Win32, and for "no support". */
 typedef DIR directory_type;
 
 static int
-isdirectory(char *filename)
+isdirectory(const char *filename)
 {
     struct stat statbuf;
     if (Stat(filename, &statbuf) < 0)
@@ -195,7 +198,7 @@ isdirectory(char *filename)
 }
 
 static directory_type *
-opendirectory(char *filename)
+opendirectory(const char *filename)
 {
     return Opendir(filename);
 }
@@ -221,7 +224,7 @@ closedirectory(directory_type *dir)
 
 /************* Test for regular file in Unix **********/
 static int
-isregfile(char *filename)
+isregfile(const char *filename)
 {
     struct stat sb;
     if (Stat(filename, &sb) < 0)
@@ -505,7 +508,7 @@ previous_line(const char *p, const char *startptr)
  * @param printname		filename for printing
  */
 static void do_after_lines(int lastmatchnumber, const char *lastmatchrestart,
-		char *endptr, char *printname)
+		const char *endptr, const char *printname)
 {
     if (after_context > 0 && lastmatchnumber > 0) {
 	int count = 0;
@@ -542,7 +545,7 @@ static void do_after_lines(int lastmatchnumber, const char *lastmatchrestart,
  * @return		0: at least one match, 1: no match, 2: read error (bz2)
  */
 static int
-pcregrep(void *handle, int frtype, char *printname)
+pcregrep(void *handle, int frtype, const char *printname)
 {
     int rc = 1;
     int linenumber = 1;
@@ -1022,7 +1025,7 @@ ONLY_MATCHING_RESTART:
  * @note file opening failures are suppressed if "silent" is set.
  */
 static int
-grep_or_recurse(char *pathname, BOOL dir_recurse, BOOL only_one_at_top)
+grep_or_recurse(const char *pathname, BOOL dir_recurse, BOOL only_one_at_top)
 {
     int rc = 1;
     int sep;
@@ -1208,7 +1211,7 @@ used to identify them. */
 #define N_LOFFSETS  (-8)
 #define N_FOFFSETS  (-9)
 
-#ifdef	NOTYET
+#ifdef	USE_POPT
 /* XXX forward ref. */
 static void rpmgrepArgCallback(poptContext con,
                 /*@unused@*/ enum poptCallbackReason reason,
@@ -1217,7 +1220,7 @@ static void rpmgrepArgCallback(poptContext con,
 #endif
 
 static struct poptOption optionsTable[] = {
-#ifdef	NOTYET
+#ifdef	USE_POPT
 /*@-type@*/ /* FIX: cast? */
  { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA | POPT_CBFLAG_CONTINUE,
         rpmgrepArgCallback, 0, NULL, NULL },
@@ -1418,9 +1421,11 @@ static void rpmgrepArgCallback(poptContext con,
 {
     int options = (data ? *(int *)data : 0);
 
-#ifdef	NOTYET
+#ifdef	USE_POPT
+#if 0
     /* XXX avoid accidental collisions with POPT_BIT_SET for flags */
     if (opt->arg == NULL)
+#endif
 #endif
     switch (opt->val) {
     case N_FOFFSETS: file_offsets = TRUE; break;
@@ -1452,8 +1457,13 @@ static void rpmgrepArgCallback(poptContext con,
 	exit(0);
 	/*@notreached@*/ break;
     default:
+#if defined(USE_POPT)
+fprintf(stderr, "--> argCallback(%p, %d, %p, %s, %p) -%c/--%s\n", con, reason, opt, arg, data, opt->shortName, opt->longName);
+	exit(1);
+#else
 	fprintf(stderr, "pcregrep: Unknown option -%c\n", opt->val);
 	exit(usage(2));
+#endif
 	/*@notreached@*/ break;
     }
 
@@ -1632,16 +1642,48 @@ static int mireAppend(rpmMireMode mode, int tag, const char * pattern,
 int
 main(int argc, char **argv)
 {
+#if defined(USE_POPT)
+    poptContext optCon;
+#endif
     int i, j;
     int rc = 1;
     int pcre_options = 0;
     int errptr;
     BOOL only_one_at_top;
+    ARGV_t av = NULL;
+    int ac = 0;
     ARGV_t patterns = NULL;
     int npatterns = 0;
     const char *locale_from = "--locale";
     const char *error;
     int xx;
+
+#if defined(HAVE_MCHECK_H) && defined(HAVE_MTRACE)
+    /*@-noeffect@*/
+    mtrace();   /* Trace malloc only if MALLOC_TRACE=mtrace-output-file. */
+    /*@=noeffect@*/
+#endif
+/*@-globs -mods@*/
+    setprogname(argv[0]);       /* Retrofit glibc __progname */
+
+    /* XXX glibc churn sanity */
+    if (__progname == NULL) {
+	if ((__progname = strrchr(argv[0], '/')) != NULL) __progname++;
+	else __progname = argv[0];
+    }
+/*@=globs =mods@*/
+
+    __progname = "pcregrep";	/* XXX HACK in expected name. */
+
+#if defined(ENABLE_NLS) && !defined(__LCLINT__)
+    (void) setlocale(LC_ALL, "" );
+    (void) bindtextdomain(PACKAGE, LOCALEDIR);
+    (void) textdomain(PACKAGE);
+#endif
+
+#if defined(USE_POPT)
+    optCon = poptGetContext(__progname, argc, (const char **)argv, optionsTable, 0);
+#endif
 
     /*
      * Set the default line ending value from the default in the PCRE library;
@@ -1658,6 +1700,7 @@ main(int argc, char **argv)
     }
 
     /* Process the options */
+#if !defined(USE_POPT)
     for (i = 1; i < argc; i++) {
 	struct poptOption *opt = NULL;
 	char *option_data = (char *)"";    /* default to keep compiler happy */
@@ -1850,6 +1893,37 @@ main(int argc, char **argv)
 	    poptSaveInt((int *)opt->arg, opt->argInfo, aLong);
 	}
     }
+    av = (ARGV_t) argv;
+    ac = argc;
+#else	/* USE_POPT */
+    /* Process all options, whine if unknown. */
+    while ((rc = poptGetNextOpt(optCon)) > 0) {
+	const char * optArg = poptGetOptArg(optCon);
+	optArg = _free(optArg);
+	switch (rc) {
+	default:
+/*@-nullpass@*/
+	    fprintf(stderr, _("%s: option table misconfigured (%d)\n"),
+		__progname, rc);
+/*@=nullpass@*/
+	    exit(EXIT_FAILURE);
+
+	    /*@notreached@*/ /*@switchbreak@*/ break;
+        }
+    }
+
+    if (rc < -1) {
+/*@-nullpass@*/
+	fprintf(stderr, "%s: %s: %s\n", __progname,
+		poptBadOption(optCon, POPT_BADOPTION_NOALIAS),
+		poptStrerror(rc));
+/*@=nullpass@*/
+	exit(EXIT_FAILURE);
+    }
+    av = poptGetArgs(optCon);
+    ac = argvCount(av);
+    i = 0;
+#endif	/* USE_POPT */
 
     /*
      * Options have been decoded. If -C was used, its value is used as a default
@@ -1987,8 +2061,9 @@ main(int argc, char **argv)
      */
     npatterns = argvCount(patterns);
     if (npatterns == 0 && pattern_filename == NULL) {
-	if (i >= argc) return usage(2);
-	xx = argvAdd(&patterns, argv[i++]);
+	if (i >= ac) return usage(2);
+	xx = argvAdd(&patterns, av[i]);
+	i++;
     }
 
     /*
@@ -2075,7 +2150,7 @@ main(int argc, char **argv)
     }
 
     /* If there are no further arguments, do the business on stdin and exit. */
-    if (i >= argc) {
+    if (i >= ac) {
 	rc = pcregrep(stdin, FR_PLAIN, (filenames > FN_DEFAULT)? stdin_name : NULL);
 	goto exit;
     }
@@ -2086,10 +2161,10 @@ main(int argc, char **argv)
      * suppresses the file name if the argument is not a directory and
      * filenames are not otherwise forced.
      */
-    only_one_at_top = (i == argc - 1);   /* Catch initial value of i */
+    only_one_at_top = (i == ac - 1);   /* Catch initial value of i */
 
-    for (; i < argc; i++) {
-	int frc = grep_or_recurse(argv[i], dee_action == dee_RECURSE,
+    for (; i < ac; i++) {
+	int frc = grep_or_recurse(av[i], dee_action == dee_RECURSE,
 	    only_one_at_top);
 	if (frc > 1) rc = frc;
 	else if (frc == 0 && rc == 1) rc = 0;
@@ -2101,6 +2176,10 @@ exit:
     pattern_list = mireFreeAll(pattern_list, pattern_count);
 
     patterns = argvFree(patterns);
+
+#if defined(USE_POPT)
+    optCon = poptFreeContext(optCon);
+#endif
 
     return rc;
 
