@@ -140,6 +140,8 @@ static int error_count = 0;
 static int filenames = FN_DEFAULT;
 static int process_options = 0;
 
+static int global_options = 0;
+
 static BOOL count_only = FALSE;
 static BOOL do_colour = FALSE;
 static BOOL file_offsets = FALSE;
@@ -1198,10 +1200,10 @@ PLAIN_FILE:
 enum {
     OP_NODATA	= POPT_ARG_NONE,
     OP_STRING	= POPT_ARG_STRING,
-    OP_OP_STRING	= POPT_ARG_STRING + 16,
+    OP_OP_STRING	= POPT_ARG_STRING + 100,
     OP_NUMBER	= POPT_ARG_INT,
-    OP_OP_NUMBER	= POPT_ARG_INT + 16,
-    OP_PATLIST		= POPT_ARG_NONE + 16
+    OP_OP_NUMBER	= POPT_ARG_INT + 100,
+    OP_PATLIST		= POPT_ARG_NONE + 100
 };
 
 /* Options without a single-letter equivalent get a negative value. This can be
@@ -1235,15 +1237,15 @@ static struct poptOption optionsTable[] = {
 	N_("terminate options"), NULL },
   { "help", N_HELP,	POPT_ARG_NONE,	NULL, N_HELP,
 	N_("display this help and exit"), NULL },
-  { "after-context", 'A',	POPT_ARG_INT,	&after_context, 0,
+  { "after-context", 'A',	POPT_ARG_INT,	&after_context, 'A',
 	N_("set number of following context lines"), N_("=number") },
-  { "before-context", 'B',	POPT_ARG_INT,	&before_context, 0,
+  { "before-context", 'B',	POPT_ARG_INT,	&before_context, 'B',
 	N_("set number of prior context lines"), N_("=number") },
   { "color", N_COLOUR,	OP_OP_STRING,	&colour_option, N_COLOUR,
 	N_("matched text color option"), N_("option") },
-  { "context", 'C',	POPT_ARG_INT,	&both_context, 0,
+  { "context", 'C',	POPT_ARG_INT,	&both_context, 'C',
 	N_("set number of context lines, before & after"), N_("=number") },
-  { "count", 'c',	POPT_ARG_NONE,	NULL, 'c',
+  { "count", 'c',	POPT_ARG_NONE,		NULL, 'c',
 	N_("print only a count of matching lines per FILE"), NULL },
   { "colour", N_COLOUR,	OP_OP_STRING,	&colour_option, N_COLOUR,
 	N_("matched text colour option"), N_("=option") },
@@ -1251,11 +1253,11 @@ static struct poptOption optionsTable[] = {
 	N_("how to handle devices, FIFOs, and sockets"), N_("=action") },
   { "directories", 'd',	POPT_ARG_STRING,	&dee_option, 0,
 	N_("how to handle directories"), N_("=action") },
-  { "regex", 'e',	OP_PATLIST,	NULL, 0,
+  { "regex", 'e',	OP_PATLIST,		NULL, 'e',
 	N_("specify pattern (may be used more than once)"), N_("(p)") },
   { "fixed_strings", 'F',	POPT_ARG_NONE,	NULL, 'F',
 	N_("patterns are sets of newline-separated strings"), NULL },
-  { "file", 'f',	POPT_ARG_STRING,	&pattern_filename, 0,
+  { "file", 'f',	POPT_ARG_STRING,	&pattern_filename, 'f',
 	N_("read patterns from file"), N_("=path") },
   { "file-offsets", N_FOFFSETS,	POPT_ARG_NONE,	NULL, N_FOFFSETS,
 	N_("output file offsets, not text"), NULL },
@@ -1418,6 +1420,13 @@ help(void)
     }
 }
 
+typedef union rpmgrepArg_u {
+    void * ptr;
+    int * intp;
+    long * longp;
+    const char ** argv;
+} rpmgrepArg;
+
 /**
  */
 static void rpmgrepArgCallback(poptContext con,
@@ -1425,7 +1434,7 @@ static void rpmgrepArgCallback(poptContext con,
                 const struct poptOption * opt, const char * arg,
                 /*@unused@*/ void * data)
 {
-    int options = (data ? *(int *)data : 0);
+    rpmgrepArg u = { .ptr = opt->arg };
 
 #ifdef	USE_POPT
 #if 0
@@ -1440,19 +1449,27 @@ static void rpmgrepArgCallback(poptContext con,
     case 'F': process_options |= PO_FIXED_STRINGS; break;
     case 'H': filenames = FN_FORCE; break;
     case 'h': filenames = FN_NONE; break;
-    case 'i': options |= PCRE_CASELESS; break;
+    case 'i': global_options |= PCRE_CASELESS; break;
     case 'l': filenames = FN_ONLY; break;
     case 'L': filenames = FN_NOMATCH_ONLY; break;
-    case 'M': multiline = TRUE; options |= PCRE_MULTILINE|PCRE_FIRSTLINE; break;
+    case 'M': multiline = TRUE; global_options |= PCRE_MULTILINE|PCRE_FIRSTLINE; break;
     case 'n': number = TRUE; break;
     case 'o': only_matching = TRUE; break;
     case 'q': quiet = TRUE; break;
     case 'r': dee_action = dee_RECURSE; break;
     case 's': silent = TRUE; break;
-    case 'u': options |= PCRE_UTF8; utf8 = TRUE; break;
+    case 'u': global_options |= PCRE_UTF8; utf8 = TRUE; break;
     case 'v': invert = TRUE; break;
     case 'w': process_options |= PO_WORD_MATCH; break;
     case 'x': process_options |= PO_LINE_MATCH; break;
+
+    case 'f': u.argv[0] = arg; break;
+    case 'A': u.intp[0] = strtol(arg, NULL, 0); break;
+    case 'B': u.intp[0] = strtol(arg, NULL, 0); break;
+    case 'C': u.intp[0] = strtol(arg, NULL, 0); break;
+    case N_INCLUDE: u.argv[0] = arg; break;
+    case N_EXCLUDE: u.argv[0] = arg; break;
+    case 'e': u.argv[0] = arg; break;
 
     case 'V':
 	fprintf(stderr, _("%s version %s\n"), __progname, pcre_version());
@@ -1472,9 +1489,6 @@ fprintf(stderr, "--> argCallback(%p, %d, %p, %s, %p) -%c/--%s\n", con, reason, o
 #endif
 	/*@notreached@*/ break;
     }
-
-    if (data)
-	*(int *)data = options;
 }
 
 /*************************************************
@@ -1828,7 +1842,7 @@ main(int argc, char **argv)
 		    option_data = s+1;
 		    break;
 		}
-		rpmgrepArgCallback(NULL, 0, opt, NULL, &pcre_options);
+		rpmgrepArgCallback(NULL, 0, opt, NULL, NULL);
 		s++;
 	    }
 	}
@@ -1839,7 +1853,7 @@ main(int argc, char **argv)
 	 * might set something in the PCRE options.
 	 */
 	if ((opt->argInfo & POPT_ARG_MASK) == OP_NODATA) {
-	    rpmgrepArgCallback(NULL, 0, opt, NULL, &pcre_options);
+	    rpmgrepArgCallback(NULL, 0, opt, NULL, NULL);
 	    continue;
 	}
 
@@ -1901,6 +1915,7 @@ main(int argc, char **argv)
 	    poptSaveInt((int *)opt->arg, opt->argInfo, aLong);
 	}
     }
+    pcre_options = global_options;
     av = (ARGV_t) argv;
     ac = argc;
 #else	/* USE_POPT */
@@ -1928,6 +1943,7 @@ main(int argc, char **argv)
 /*@=nullpass@*/
 	exit(EXIT_FAILURE);
     }
+    pcre_options = global_options;
     av = poptGetArgs(optCon);
     ac = argvCount(av);
     i = 0;
