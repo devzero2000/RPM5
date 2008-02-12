@@ -693,20 +693,24 @@ ONLY_MATCHING_RESTART:
 	    mrc = (length > 0 ? mireRegexec(mire, matchptr, length) : PCRE_ERROR_NOMATCH);
 	    if (mrc >= 0) { match = TRUE; break; }
 	    if (mrc != PCRE_ERROR_NOMATCH) {
-		fprintf(stderr, "pcregrep: pcre_exec() error %d while matching ", mrc);
-		if (pattern_count > 1) fprintf(stderr, "pattern number %d to ", i+1);
-		fprintf(stderr, "this line:\n");
+		fprintf(stderr, _("%s: pcre_exec() error %d while matching "), __progname, mrc);
+		if (pattern_count > 1) fprintf(stderr, _("pattern number %d to "), i+1);
+		fprintf(stderr, _("this line:\n"));
 		fwrite(matchptr, 1, linelength, stderr);  /* In case binary zero included */
 		fprintf(stderr, "\n");
 		if (error_count == 0 &&
 			(mrc == PCRE_ERROR_MATCHLIMIT || mrc == PCRE_ERROR_RECURSIONLIMIT))
 		{
-		    fprintf(stderr, "pcregrep: error %d means that a resource limit "
-			"was exceeded\n", mrc);
-		    fprintf(stderr, "pcregrep: check your regex for nested unlimited loops\n");
+		    fprintf(stderr,
+			_("%s: error %d means that a resource limit was exceeded\n"),
+			__progname, mrc);
+		    fprintf(stderr,
+			_("%s: check your regex for nested unlimited loops\n"),
+			__progname);
 		}
 		if (error_count++ > 20) {
-		    fprintf(stderr, "pcregrep: too many errors - abandoned\n");
+		    fprintf(stderr, _("%s: too many errors - abandoned\n"),
+			__progname);
 		    exit(2);
 		}
 		match = invert;    /* No more matching; don't show the line again */
@@ -1064,8 +1068,8 @@ grep_or_recurse(const char *pathname, BOOL dir_recurse, BOOL only_one_at_top)
 
 	    if (dir == NULL) {
 		if (!silent)
-		    fprintf(stderr, "pcregrep: Failed to open directory %s: %s\n", pathname,
-		      strerror(errno));
+		    fprintf(stderr, _("%s: Failed to open directory %s: %s\n"),
+			__progname, pathname, strerror(errno));
 		return 2;
 	    }
 
@@ -1111,8 +1115,8 @@ grep_or_recurse(const char *pathname, BOOL dir_recurse, BOOL only_one_at_top)
 	ingz = gzopen(pathname, "rb");
 	if (ingz == NULL) {
 	    if (!silent)
-		fprintf(stderr, "pcregrep: Failed to open %s: %s\n", pathname,
-		    strerror(errno));
+		fprintf(stderr, _("%s: Failed to open %s: %s\n"),
+			__progname, pathname, strerror(errno));
 	    return 2;
 	}
 	handle = (void *)ingz;
@@ -1146,8 +1150,8 @@ PLAIN_FILE:
     /* All the opening methods return errno when they fail. */
     if (handle == NULL) {
 	if (!silent)
-	    fprintf(stderr, "pcregrep: Failed to open %s: %s\n", pathname,
-		strerror(errno));
+	    fprintf(stderr, _("%s: Failed to open %s: %s\n"),
+		__progname, pathname, strerror(errno));
 	return 2;
     }
 
@@ -1177,8 +1181,8 @@ PLAIN_FILE:
 		goto PLAIN_FILE;
 	    }
 	    else if (!silent)
-		fprintf(stderr, "pcregrep: Failed to read %s using bzlib: %s\n",
-		    pathname, err);
+		fprintf(stderr, _("%s: Failed to read %s using bzlib: %s\n"),
+		    __progname, pathname, err);
 	}
 	BZ2_bzclose(inbz2);
     } else
@@ -1314,7 +1318,7 @@ Usage: rpmgrep [OPTION...] [PATTERN] [FILE1 FILE2 ...]\n\n\
   PATTERN must be present if neither -e nor -f is used.\n\
   \"-\" can be used as a file name to mean STDIN.\n\
   All files are read as plain files, without any interpretation.\n\n\
-Example: pcregrep -i 'hello.*world' menu.h main.c\
+Example: rpmgrep -i 'hello.*world' menu.h main.c\
 ") , NULL },
 
   { NULL, -1, POPT_ARG_INCLUDE_TABLE, NULL, 0,
@@ -1337,13 +1341,14 @@ static int
 usage(int rc)
 {
     struct poptOption *opt = optionsTable;
-    fprintf(stderr, "Usage: pcregrep [-");
+    fprintf(stderr, _("Usage: %s [-"), __progname);
     for (; (opt->longName || opt->shortName || opt->arg); opt++) {
       if (opt->shortName > 0) fprintf(stderr, "%c", opt->shortName);
     }
-    fprintf(stderr, "] [long options] [pattern] [files]\n");
-    fprintf(stderr, "Type `pcregrep --help' for more information and the long "
-      "options.\n");
+    fprintf(stderr, _("] [long options] [pattern] [files]\n"));
+    fprintf(stderr,
+	_("Type `%s --help' for more information and the long options.\n"),
+	__progname);
     return rc;
 }
 
@@ -1355,27 +1360,28 @@ help(void)
 {
     struct poptOption *opt = optionsTable;
 
-    printf("Usage: pcregrep [OPTION]... [PATTERN] [FILE1 FILE2 ...]\n");
-    printf("Search for PATTERN in each FILE or standard input.\n");
-    printf("PATTERN must be present if neither -e nor -f is used.\n");
-    printf("\"-\" can be used as a file name to mean STDIN.\n");
+    printf(_("Usage: %s [OPTION]... [PATTERN] [FILE1 FILE2 ...]\n"),
+	__progname);
+    printf(_("Search for PATTERN in each FILE or standard input.\n"));
+    printf(_("PATTERN must be present if neither -e nor -f is used.\n"));
+    printf(_("\"-\" can be used as a file name to mean STDIN.\n"));
 
 #ifdef SUPPORT_LIBZ
-    printf("Files whose names end in .gz are read using zlib.\n");
+    printf(_("Files whose names end in .gz are read using zlib.\n"));
 #endif
 
 #ifdef SUPPORT_LIBBZ2
-    printf("Files whose names end in .bz2 are read using bzlib2.\n");
+    printf(_("Files whose names end in .bz2 are read using bzlib2.\n"));
 #endif
 
 #if defined SUPPORT_LIBZ || defined SUPPORT_LIBBZ2
-    printf("Other files and the standard input are read as plain files.\n\n");
+    printf(_("Other files and the standard input are read as plain files.\n\n"));
 #else
-    printf("All files are read as plain files, without any interpretation.\n\n");
+    printf(_("All files are read as plain files, without any interpretation.\n\n"));
 #endif
 
-    printf("Example: pcregrep -i 'hello.*world' menu.h main.c\n\n");
-    printf("Options:\n");
+    printf(_("Example: %s -i 'hello.*world' menu.h main.c\n\n"), __progname);
+    printf(_("Options:\n"));
 
     for (; (opt->longName || opt->shortName || opt->arg); opt++) {
 	int n;
@@ -1393,12 +1399,12 @@ help(void)
 	printf("%.*s%s\n", n, "                    ", opt->descrip);
     }
 
-    printf("\nWhen reading patterns from a file instead of using a command line option,\n");
-    printf("trailing white space is removed and blank lines are ignored.\n");
-    printf("There is a maximum of %d patterns.\n", MAX_PATTERN_COUNT);
+    printf(_("\nWhen reading patterns from a file instead of using a command line option,\n"));
+    printf(_("trailing white space is removed and blank lines are ignored.\n"));
+    printf(_("There is a maximum of %d patterns.\n"), MAX_PATTERN_COUNT);
 
-    printf("\nWith no FILEs, read standard input. If fewer than two FILEs given, assume -h.\n");
-    printf("Exit status is 0 if any matches, 1 if no matches, and 2 if trouble.\n");
+    printf(_("\nWith no FILEs, read standard input. If fewer than two FILEs given, assume -h.\n"));
+    printf(_("Exit status is 0 if any matches, 1 if no matches, and 2 if trouble.\n"));
 
     {	int argc = 1;
 	const char *argv[] = { "rpmgrep", NULL };
@@ -1449,7 +1455,7 @@ static void rpmgrepArgCallback(poptContext con,
     case 'x': process_options |= PO_LINE_MATCH; break;
 
     case 'V':
-	fprintf(stderr, "pcregrep version %s\n", pcre_version());
+	fprintf(stderr, _("%s version %s\n"), __progname, pcre_version());
 	exit(0);
 	/*@notreached@*/ break;
     case N_HELP:
@@ -1461,7 +1467,7 @@ static void rpmgrepArgCallback(poptContext con,
 fprintf(stderr, "--> argCallback(%p, %d, %p, %s, %p) -%c/--%s\n", con, reason, opt, arg, data, opt->shortName, opt->longName);
 	exit(1);
 #else
-	fprintf(stderr, "pcregrep: Unknown option -%c\n", opt->val);
+	fprintf(stderr, _("%s: Unknown option -%c\n"), __progname, opt->val);
 	exit(usage(2));
 #endif
 	/*@notreached@*/ break;
@@ -1517,7 +1523,7 @@ compile_single_pattern(const char *pattern, int options,
     char buffer[MBUFTHIRD + 16];
 
     if (pattern_count >= MAX_PATTERN_COUNT) {
-	fprintf(stderr, "pcregrep: Too many %spatterns (max %d)\n",
+	fprintf(stderr, _("%s: Too many %spatterns (max %d)\n"), __progname,
 		(filename == NULL)? "command-line " : "", MAX_PATTERN_COUNT);
 	return FALSE;
     }
@@ -1542,12 +1548,12 @@ compile_single_pattern(const char *pattern, int options,
     if (mire->erroff > (int)strlen(pattern))
 	mire->erroff = (int)strlen(pattern);
 
-    fprintf(stderr, "pcregrep: Error in");
+    fprintf(stderr, _("%s: Error in"), __progname);
     if (filename == NULL)
-	fprintf(stderr, "%s command-line", ordin(count));
+	fprintf(stderr, _("%s command-line"), ordin(count));
     else
-	fprintf(stderr, " file:line %s:%d", filename, count);
-    fprintf(stderr, " regex at offset %d: %s\n", mire->erroff, mire->errmsg);
+	fprintf(stderr, _(" file:line %s:%d"), filename, count);
+    fprintf(stderr, _(" regex at offset %d: %s\n"), mire->erroff, mire->errmsg);
     return FALSE;
 }
 
@@ -1771,7 +1777,8 @@ main(int argc, char **argv)
 	    }
 
 	    if (opt->shortName == 0) {
-		fprintf(stderr, "pcregrep: Unknown option %s\n", argv[i]);
+		fprintf(stderr, _("%s: Unknown option %s\n"),
+			__progname, argv[i]);
 		exit(usage(2));
 	    }
 	}
@@ -1813,8 +1820,8 @@ main(int argc, char **argv)
 		    if (*s == opt->shortName) break;
 		}
 		if (opt->shortName == 0) {
-		    fprintf(stderr, "pcregrep: Unknown option letter '%c' in \"%s\"\n",
-			*s, argv[i]);
+		    fprintf(stderr, _("%s: Unknown option letter '%c' in \"%s\"\n"),
+			__progname, *s, argv[i]);
 		    exit(usage(2));
 		}
 		if ((opt->argInfo & POPT_ARG_MASK) != OP_NODATA || s[1] == 0) {
@@ -1861,7 +1868,8 @@ main(int argc, char **argv)
 	/* Otherwise, find the data string for the option. */
 	if (*option_data == 0) {
 	    if (i >= argc - 1 || longopwasequals) {
-		fprintf(stderr, "pcregrep: Data missing after %s\n", argv[i]);
+		fprintf(stderr, _("%s: Data missing after %s\n"),
+			__progname, argv[i]);
 		exit(usage(2));
 	    }
 	    option_data = argv[++i];
@@ -1883,11 +1891,11 @@ main(int argc, char **argv)
 	    long aLong = strtol(option_data, &endptr, 0);
 	    if (*endptr != 0) {
 		if (longop)
-		    fprintf(stderr, "pcregrep: Malformed number \"%s\" after --%s\n",
-			option_data, opt->longName);
+		    fprintf(stderr, _("%s: Malformed number \"%s\" after --%s\n"),
+			__progname, option_data, opt->longName);
 		else
-		    fprintf(stderr, "pcregrep: Malformed number \"%s\" after -%c\n",
-			option_data, opt->shortName);
+		    fprintf(stderr, _("%s: Malformed number \"%s\" after -%c\n"),
+			__progname, option_data, opt->shortName);
 		exit(usage(2));
 	    }
 	    poptSaveInt((int *)opt->arg, opt->argInfo, aLong);
@@ -1941,8 +1949,7 @@ main(int argc, char **argv)
     if ((only_matching && (file_offsets || line_offsets)) ||
 	    (file_offsets && line_offsets))
     {
-	fprintf(stderr, "pcregrep: Cannot mix --only-matching, --file-offsets "
-	    "and/or --line-offsets\n");
+	fprintf(stderr, _("%s: Cannot mix --only-matching, --file-offsets and/or --line-offsets\n"), __progname);
 	exit(usage(2));
     }
 
@@ -1969,8 +1976,8 @@ main(int argc, char **argv)
      */
     if (locale != NULL) {
 	if (setlocale(LC_CTYPE, locale) == NULL) {
-	    fprintf(stderr, "pcregrep: Failed to set locale %s (obtained from %s)\n",
-		locale, locale_from);
+	    fprintf(stderr, _("%s: Failed to set locale %s (obtained from %s)\n"),
+		__progname, locale, locale_from);
 	    return 2;
 	}
 	pcretables = pcre_maketables();
@@ -1983,8 +1990,8 @@ main(int argc, char **argv)
 	else if (strcmp(colour_option, "auto") == 0)
 	    do_colour = is_stdout_tty();
 	else {
-	    fprintf(stderr, "pcregrep: Unknown colour setting \"%s\"\n",
-		colour_option);
+	    fprintf(stderr, _("%s: Unknown colour setting \"%s\"\n"),
+		__progname, colour_option);
 	    return 2;
 	}
 	if (do_colour) {
@@ -2016,7 +2023,8 @@ main(int argc, char **argv)
 	endlinetype = EL_ANYCRLF;
     }
     else {
-	fprintf(stderr, "pcregrep: Invalid newline specifier \"%s\"\n", newline);
+	fprintf(stderr, _("%s: Invalid newline specifier \"%s\"\n"),
+		__progname, newline);
 	return 2;
     }
 
@@ -2026,7 +2034,8 @@ main(int argc, char **argv)
 	else if (strcmp(dee_option, "recurse") == 0) dee_action = dee_RECURSE;
 	else if (strcmp(dee_option, "skip") == 0) dee_action = dee_SKIP;
 	else {
-	    fprintf(stderr, "pcregrep: Invalid value \"%s\" for -d\n", dee_option);
+	    fprintf(stderr, _("%s: Invalid value \"%s\" for -d\n"),
+		__progname, dee_option);
 	    return 2;
 	}
     }
@@ -2035,7 +2044,8 @@ main(int argc, char **argv)
 	if (strcmp(DEE_option, "read") == 0) DEE_action = DEE_READ;
 	else if (strcmp(DEE_option, "skip") == 0) DEE_action = DEE_SKIP;
 	else {
-	    fprintf(stderr, "pcregrep: Invalid value \"%s\" for -D\n", DEE_option);
+	    fprintf(stderr, _("%s: Invalid value \"%s\" for -D\n"),
+		__progname, DEE_option);
 	    return 2;
 	}
     }
@@ -2043,7 +2053,7 @@ main(int argc, char **argv)
     /* Check the values for Jeffrey Friedl's debugging options. */
 #ifdef JFRIEDL_DEBUG
     if (S_arg > 9) {
-	fprintf(stderr, "pcregrep: bad value for -S option\n");
+	fprintf(stderr, _("%s: bad value for -S option\n"), __progname);
 	return 2;
     }
     if (jfriedl_XT != 0 || jfriedl_XR != 0) {
@@ -2090,8 +2100,8 @@ main(int argc, char **argv)
 	} else {
 	    fp = fopen(pattern_filename, "r");
 	    if (fp == NULL) {
-		fprintf(stderr, "pcregrep: Failed to open %s: %s\n",
-			pattern_filename, strerror(errno));
+		fprintf(stderr, _("%s: Failed to open %s: %s\n"),
+			__progname, pattern_filename, strerror(errno));
 		goto errorexit;
 	    }
 	    fn = pattern_filename;
@@ -2119,7 +2129,8 @@ main(int argc, char **argv)
 	if (error != NULL) {
 	    char s[16];
 	    if (pattern_count == 1) s[0] = 0; else sprintf(s, " number %d", j);
-	    fprintf(stderr, "pcregrep: Error while studying regex%s: %s\n", s, error);
+	    fprintf(stderr, _("%s: Error while studying regex%s: %s\n"),
+		__progname, s, error);
 	    goto errorexit;
 	}
     }
@@ -2131,8 +2142,8 @@ main(int argc, char **argv)
 	excludeMire->table = pcretables;
 	xx = mireRegcomp(excludeMire, exclude_pattern);
 	if (xx) {
-	    fprintf(stderr, "pcregrep: Error in 'exclude' regex at offset %d: %s\n",
-		errptr, error);
+	    fprintf(stderr, _("%s: Error in 'exclude' regex at offset %d: %s\n"),
+		__progname, errptr, error);
 	    goto errorexit;
 	}
     }
@@ -2143,8 +2154,8 @@ main(int argc, char **argv)
 	includeMire->table = pcretables;
 	xx = mireRegcomp(includeMire, include_pattern);
 	if (xx) {
-	    fprintf(stderr, "pcregrep: Error in 'include' regex at offset %d: %s\n",
-		errptr, error);
+	    fprintf(stderr, _("%s: Error in 'include' regex at offset %d: %s\n"),
+		__progname, errptr, error);
 	    goto errorexit;
 	}
     }
