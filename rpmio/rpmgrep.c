@@ -175,97 +175,6 @@ const char utf8_table4[] = {
   3,3,3,3,3,3,3,3,4,4,4,4,5,5,5,5 };
 
 /*************************************************
-*            OS-specific functions               *
-*************************************************/
-
-/* These functions are defined so that they can be made system specific,
-although at present the only ones are for Unix, Win32, and for "no support". */
-
-
-/************* Directory scanning in Unix ***********/
-
-#if defined HAVE_SYS_STAT_H && defined HAVE_DIRENT_H && defined HAVE_SYS_TYPES_H
-
-typedef DIR directory_type;
-
-static int
-isdirectory(const char *filename)
-{
-    struct stat statbuf;
-    if (Stat(filename, &statbuf) < 0)
-	return 0;	/* In the expectation that opening as a file will fail */
-    return ((statbuf.st_mode & S_IFMT) == S_IFDIR)? '/' : 0;
-}
-
-static directory_type *
-opendirectory(const char *filename)
-{
-    return Opendir(filename);
-}
-
-static char *
-readdirectory(directory_type *dir)
-{
-    for (;;) {
-	struct dirent *dent = Readdir(dir);
-	if (dent == NULL)
-	    return NULL;
-	if (strcmp(dent->d_name, ".") != 0 && strcmp(dent->d_name, "..") != 0)
-	    return dent->d_name;
-    }
-    /*@notreached@*/
-}
-
-static void
-closedirectory(directory_type *dir)
-{
-    Closedir(dir);
-}
-
-/************* Test for regular file in Unix **********/
-static int
-isregfile(const char *filename)
-{
-    struct stat sb;
-    if (Stat(filename, &sb) < 0)
-	return 1;	/* In the expectation that opening as a file will fail */
-    return (sb.st_mode & S_IFMT) == S_IFREG;
-}
-
-/************* Test stdout for being a terminal in Unix **********/
-static BOOL
-is_stdout_tty(void)
-{
-    return isatty(fileno(stdout));
-}
-
-#else
-
-typedef void directory_type;
-
-int isdirectory(char *filename) { return 0; }
-directory_type * opendirectory(char *filename) { return (directory_type *)NULL;}
-char * readdirectory(directory_type *dir) { return (char *)NULL;}
-void closedirectory(directory_type *dir) {}
-int isregfile(char *filename) { return 1; } /* Assume all files are regular. */
-static BOOL is_stdout_tty(void) { return FALSE; }
-
-#endif
-
-#ifndef HAVE_STRERROR
-extern int   sys_nerr;
-extern char *sys_errlist[];
-
-char *
-strerror(int n)
-{
-    if (n < 0 || n >= sys_nerr)
-	return "unknown error number";
-    return sys_errlist[n];
-}
-#endif /* HAVE_STRERROR */
-
-/*************************************************
  * Find end of line.
  *
  * The length of the endline sequence that is found is set via lenptr.
@@ -1044,12 +953,14 @@ exit:
 static int
 grep_or_recurse(const char *pathname, BOOL dir_recurse, BOOL only_one_at_top)
 {
+    struct stat sb, *st = &sb;
     int rc = 1;
     int sep;
     int frtype;
     int pathlen;
     void *handle;
     FILE * infp = NULL;	/* Ensure initialized */
+    int xx;
 
 #ifdef SUPPORT_LIBZ
     gzFile ingz = NULL;
@@ -1067,21 +978,24 @@ grep_or_recurse(const char *pathname, BOOL dir_recurse, BOOL only_one_at_top)
 	goto exit;
     }
 
+    xx = Stat(pathname, st);
+    sep = (!xx && S_ISDIR(st->st_mode) ? (int)'/' : 0);
+
     /*
      * If the file is a directory, skip if skipping or if we are recursing,
      * scan each file within it, subject to any include or exclude patterns
      * that were set.  The scanning code is localized so it can be made
      * system-specific.
      */
-    if ((sep = isdirectory(pathname)) != 0) {
+    if (sep != 0) {
 	if (dee_action == dee_SKIP) {
 	    rc = 1;
 	    goto exit;
 	}
 	if (dee_action == dee_RECURSE) {
 	    char buffer[1024];
-	    char *nextfile;
-	    directory_type *dir = opendirectory(pathname);
+	    DIR *dir = Opendir(pathname);
+	    struct dirent *dp;
 
 	    if (dir == NULL) {
 		if (!silent)
@@ -1091,9 +1005,11 @@ grep_or_recurse(const char *pathname, BOOL dir_recurse, BOOL only_one_at_top)
 		goto exit;
 	    }
 
-	    while ((nextfile = readdirectory(dir)) != NULL) {
+	    while ((dp = Readdir(dir)) != NULL) {
 		int frc;
-		sprintf(buffer, "%.512s%c%.128s", pathname, sep, nextfile);
+		if (!strcmp(dp->d_name, ".") || !strcmp(dp->d_name, ".."))
+		    continue;
+		sprintf(buffer, "%.512s%c%.128s", pathname, sep, dp->d_name);
 
 		if (excludeMire && mireRegexec(excludeMire, buffer, 0) >= 0)
 		    continue;
@@ -1106,7 +1022,7 @@ grep_or_recurse(const char *pathname, BOOL dir_recurse, BOOL only_one_at_top)
 		else if (frc == 0 && rc == 1) rc = 0;
 	    }
 
-	    closedirectory(dir);
+	    Closedir(dir);
 	    goto exit;
 	}
     }
@@ -1115,7 +1031,7 @@ grep_or_recurse(const char *pathname, BOOL dir_recurse, BOOL only_one_at_top)
      * If the file is not a directory and not a regular file, skip it if
      * that's been requested.
      */
-    else if (!isregfile(pathname) && DEE_action == DEE_SKIP) {
+    else if ((!xx && !S_ISREG(st->st_mode)) && DEE_action == DEE_SKIP) {
 	rc = 1;
 	goto exit;
     }
@@ -1359,6 +1275,7 @@ static struct poptOption optionsTable[] = {
 	N_("set number of context lines, before & after"), N_("=number") },
   { "count", 'c',	POPT_ARG_NONE,		NULL, 'c',
 	N_("print only a count of matching lines per FILE"), NULL },
+/* XXX HACK: there is a shortName option conflict with -D,--define */
   { "devices", 'D',	POPT_ARG_STRING,	&DEE_option, 0,
 	N_("how to handle devices, FIFOs, and sockets"), N_("=action") },
   { "directories", 'd',	POPT_ARG_STRING,	&dee_option, 0,
@@ -1713,7 +1630,7 @@ _("%s: Cannot mix --only-matching, --file-offsets and/or --line-offsets\n"),
 	if (strcmp(color_option, "always") == 0)
 	    do_colour = TRUE;
 	else if (strcmp(color_option, "auto") == 0)
-	    do_colour = is_stdout_tty();
+	    do_colour = isatty(fileno(stdout));
 	else {
 	    fprintf(stderr, _("%s: Unknown colour setting \"%s\"\n"),
 		__progname, color_option);
