@@ -37,7 +37,7 @@ POSSIBILITY OF SUCH DAMAGE.
 -----------------------------------------------------------------------------
 */
 
-#undef	USE_POPT
+#define	USE_POPT
 
 #include "system.h"
 const char *__progname;
@@ -125,10 +125,10 @@ static const unsigned char *pcretables = NULL;
 static int  pattern_count = 0;
 static miRE pattern_list = NULL;
 
-static char *include_pattern = NULL;
-static char *exclude_pattern = NULL;
-
+static const char *include_pattern = NULL;
 static miRE includeMire = NULL;
+
+static const char *exclude_pattern = NULL;
 static miRE excludeMire = NULL;
 
 static int after_context = 0;
@@ -141,6 +141,8 @@ static int filenames = FN_DEFAULT;
 static int process_options = 0;
 
 static int global_options = 0;
+static ARGV_t patterns = NULL;
+static int npatterns = 0;
 
 static BOOL count_only = FALSE;
 static BOOL do_colour = FALSE;
@@ -588,9 +590,12 @@ pcregrep(void *handle, int frtype, const char *printname)
     if (frtype == FR_LIBBZ2) {
 	inbz2 = (BZFILE *)handle;
 	bufflength = BZ2_bzread(inbz2, buffer, 3*MBUFTHIRD);
-	if ((int)bufflength < 0) return 2; /* Gotcha: bufflength is size_t; */
-    }                                    /* without the cast it is unsigned. */
-    else
+	/* Gotcha: bufflength is size_t; without the cast it is unsigned. */
+	if ((int)bufflength < 0) {
+	    rc = 2;
+	    goto exit;
+	}
+    } else
 #endif
 
     {
@@ -670,7 +675,8 @@ pcregrep(void *handle, int frtype, const char *printname)
 		            -
 		    (start_time.tv_sec + (start_time.tv_usec / 1000000.0)));
 	    printf("%s TIMER[%.4f]\n", match ? "MATCH" : "FAIL", delta);
-	    return 0;
+	    rc = 0;
+	    goto exit;
 	}
 #endif
 
@@ -725,7 +731,10 @@ ONLY_MATCHING_RESTART:
 	    BOOL hyphenprinted = FALSE;
 
 	    /* We've failed if we want a file that doesn't have any matches. */
-	    if (filenames == FN_NOMATCH_ONLY) return 1;
+	    if (filenames == FN_NOMATCH_ONLY) {
+		rc = 1;
+		goto exit;
+	    }
 
 	    /* Just count if just counting is wanted. */
 	    if (count_only) count++;
@@ -736,11 +745,15 @@ ONLY_MATCHING_RESTART:
 	     */
 	    else if (filenames == FN_ONLY) {
 		fprintf(stdout, "%s\n", printname);
-		return 0;
+		rc = 0;
+		goto exit;
 	    }
 
 	    /* Likewise, if all we want is a yes/no answer. */
-	    else if (quiet) return 0;
+	    else if (quiet) {
+		rc = 0;
+		goto exit;
+	    }
 
 	    /*
 	     * The --only-matching option prints just the substring that
@@ -1005,7 +1018,8 @@ ONLY_MATCHING_RESTART:
      */
     if (filenames == FN_NOMATCH_ONLY) {
 	fprintf(stdout, "%s\n", printname);
-	return 0;
+	rc = 0;
+	goto exit;
     }
 
     /* Print the match count if wanted */
@@ -1014,6 +1028,7 @@ ONLY_MATCHING_RESTART:
 	fprintf(stdout, "%d\n", count);
     }
 
+exit:
     return rc;
 }
 
@@ -1050,9 +1065,10 @@ grep_or_recurse(const char *pathname, BOOL dir_recurse, BOOL only_one_at_top)
 
     /* If the file name is "-" we scan stdin */
     if (strcmp(pathname, "-") == 0) {
-	return pcregrep(stdin, FR_PLAIN,
+	rc = pcregrep(stdin, FR_PLAIN,
 	    (filenames > FN_DEFAULT || (filenames == FN_DEFAULT && !only_one_at_top))?
 		stdin_name : NULL);
+	goto exit;
     }
 
     /*
@@ -1062,7 +1078,10 @@ grep_or_recurse(const char *pathname, BOOL dir_recurse, BOOL only_one_at_top)
      * system-specific.
      */
     if ((sep = isdirectory(pathname)) != 0) {
-	if (dee_action == dee_SKIP) return 1;
+	if (dee_action == dee_SKIP) {
+	    rc = 1;
+	    goto exit;
+	}
 	if (dee_action == dee_RECURSE) {
 	    char buffer[1024];
 	    char *nextfile;
@@ -1072,7 +1091,8 @@ grep_or_recurse(const char *pathname, BOOL dir_recurse, BOOL only_one_at_top)
 		if (!silent)
 		    fprintf(stderr, _("%s: Failed to open directory %s: %s\n"),
 			__progname, pathname, strerror(errno));
-		return 2;
+		rc = 2;
+		goto exit;
 	    }
 
 	    while ((nextfile = readdirectory(dir)) != NULL) {
@@ -1091,7 +1111,7 @@ grep_or_recurse(const char *pathname, BOOL dir_recurse, BOOL only_one_at_top)
 	    }
 
 	    closedirectory(dir);
-	    return rc;
+	    goto exit;
 	}
     }
 
@@ -1099,7 +1119,10 @@ grep_or_recurse(const char *pathname, BOOL dir_recurse, BOOL only_one_at_top)
      * If the file is not a directory and not a regular file, skip it if
      * that's been requested.
      */
-    else if (!isregfile(pathname) && DEE_action == DEE_SKIP) return 1;
+    else if (!isregfile(pathname) && DEE_action == DEE_SKIP) {
+	rc = 1;
+	goto exit;
+    }
 
     /*
      * Control reaches here if we have a regular file, or if we have a
@@ -1119,7 +1142,8 @@ grep_or_recurse(const char *pathname, BOOL dir_recurse, BOOL only_one_at_top)
 	    if (!silent)
 		fprintf(stderr, _("%s: Failed to open %s: %s\n"),
 			__progname, pathname, strerror(errno));
-	    return 2;
+	    rc = 2;
+	    goto exit;
 	}
 	handle = (void *)ingz;
 	frtype = FR_LIBZ;
@@ -1154,7 +1178,8 @@ PLAIN_FILE:
 	if (!silent)
 	    fprintf(stderr, _("%s: Failed to open %s: %s\n"),
 		__progname, pathname, strerror(errno));
-	return 2;
+	rc = 2;
+	goto exit;
     }
 
     /* Now grep the file */
@@ -1193,6 +1218,7 @@ PLAIN_FILE:
     if (infp)
 	fclose(infp);	/* Normal file close */
 
+exit:
     return rc;	/* Pass back the yield from pcregrep(). */
 }
 
@@ -1435,6 +1461,7 @@ static void rpmgrepArgCallback(poptContext con,
                 /*@unused@*/ void * data)
 {
     rpmgrepArg u = { .ptr = opt->arg };
+    int xx;
 
 #ifdef	USE_POPT
 #if 0
@@ -1467,9 +1494,16 @@ static void rpmgrepArgCallback(poptContext con,
     case 'A': u.intp[0] = strtol(arg, NULL, 0); break;
     case 'B': u.intp[0] = strtol(arg, NULL, 0); break;
     case 'C': u.intp[0] = strtol(arg, NULL, 0); break;
-    case N_INCLUDE: u.argv[0] = arg; break;
-    case N_EXCLUDE: u.argv[0] = arg; break;
-    case 'e': u.argv[0] = arg; break;
+    case N_INCLUDE:
+	include_pattern = arg;
+	break;
+    case N_EXCLUDE:
+	exclude_pattern = arg;
+	break;
+
+    case 'e':
+	xx = poptSaveString(&patterns, opt->argInfo, arg);
+	break;
 
     case 'V':
 	fprintf(stderr, _("%s version %s\n"), __progname, pcre_version());
@@ -1672,8 +1706,6 @@ main(int argc, char **argv)
     BOOL only_one_at_top;
     ARGV_t av = NULL;
     int ac = 0;
-    ARGV_t patterns = NULL;
-    int npatterns = 0;
     const char *locale_from = "--locale";
     const char *error;
     int xx;
@@ -1894,7 +1926,7 @@ main(int argc, char **argv)
 	 * called multiple times to create a list of patterns.
 	 */
 	if ((opt->argInfo & POPT_ARG_MASK) == OP_PATLIST) {
-	    xx = argvAdd(&patterns, option_data);
+	    rpmgrepArgCallback(NULL, 0, opt, option_data, NULL);
 	}
 
 	/* Otherwise, deal with single string or numeric data values. */
@@ -1947,6 +1979,7 @@ main(int argc, char **argv)
     av = poptGetArgs(optCon);
     ac = argvCount(av);
     i = 0;
+    rc = 1;
 #endif	/* USE_POPT */
 
     /*
@@ -2088,7 +2121,7 @@ main(int argc, char **argv)
     npatterns = argvCount(patterns);
     if (npatterns == 0 && pattern_filename == NULL) {
 	if (i >= ac) return usage(2);
-	xx = argvAdd(&patterns, av[i]);
+	xx = poptSaveString(&patterns, POPT_ARG_ARGV, av[i]);
 	i++;
     }
 
