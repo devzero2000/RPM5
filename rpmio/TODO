@@ -15,7 +15,7 @@ Testing pcregrep
 pcregrep version 7.3 2007-08-28
 pcregrep: Failed to open binary: No such file or directory
 --- ./testdata/grepoutput	2008-02-11 16:47:00.000000000 -0500
-+++ testtry	2008-02-13 09:51:33.000000000 -0500
++++ testtry	2008-02-13 11:41:47.000000000 -0500
 @@ -328,8 +328,6 @@
  ./testdata/grepinputx
  RC=0
@@ -36,15 +36,6 @@ pcregrep: Failed to open binary: No such file or directory
  ---------------------------- Test 45 ------------------------------
  pcregrep: Error in 2nd command-line regex at offset 9: missing )
  ---------------------------- Test 46 ------------------------------
-@@ -389,7 +383,7 @@
- ---------------------------- Test 50 ------------------------------
- over the lazy dog.
- ---------------------------- Test 51 ------------------------------
--fox [1;31mjumps[00m
-+option type (101) not implemented in popt
- ---------------------------- Test 52 ------------------------------
- 36972,6
- 36990,4
 FAIL: RunGrepTest
 ===================================
 1 of 1 tests failed

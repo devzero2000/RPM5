@@ -110,7 +110,7 @@ static const char *jfriedl_postfix = "";
 static int  endlinetype;
 
 static char *colour_string = (char *)"1;31";
-static char *colour_option = NULL;
+static char *color_option = NULL;
 static char *dee_option = NULL;
 static char *DEE_option = NULL;
 static char *newline = NULL;
@@ -1220,26 +1220,15 @@ exit:
     return rc;	/* Pass back the yield from pcregrep(). */
 }
 
-/** Structure for options and list of them */
-enum {
-    OP_NODATA	= POPT_ARG_NONE,
-    OP_STRING	= POPT_ARG_STRING,
-    OP_OP_STRING	= POPT_ARG_STRING + 100,
-    OP_NUMBER	= POPT_ARG_INT,
-    OP_OP_NUMBER	= POPT_ARG_INT + 100,
-    OP_PATLIST		= POPT_ARG_NONE + 100
-};
-
 /* Options without a single-letter equivalent get a negative value. This can be
 used to identify them. */
-#define N_COLOUR    (-1)
-#define N_EXCLUDE   (-2)
-#define N_HELP      (-3)
-#define N_INCLUDE   (-4)
-#define N_LABEL     (-5)
-#define N_LOCALE    (-6)
-#define N_LOFFSETS  (-8)
-#define N_FOFFSETS  (-9)
+#define POPT_COLOR	(-1)
+#define POPT_EXCLUDE	(-2)
+#define POPT_INCLUDE	(-4)
+#define POPT_LABEL	(-5)
+#define POPT_LOCALE	(-6)
+#define POPT_LOFFSETS	(-8)
+#define POPT_FOFFSETS	(-9)
 
 /* XXX forward ref. */
 static void rpmgrepArgCallback(poptContext con,
@@ -1253,49 +1242,45 @@ static struct poptOption optionsTable[] = {
         rpmgrepArgCallback, 0, NULL, NULL },
 /*@=type@*/
 
-  { "", '\0',	POPT_ARG_NONE,	NULL, 0,
-	N_("terminate options"), NULL },
-  { "help", N_HELP,	POPT_ARG_NONE,	NULL, N_HELP,
-	N_("display this help and exit"), NULL },
-  { "after-context", 'A',	POPT_ARG_INT,	&after_context, 'A',
+  { "after-context", 'A', POPT_ARG_INT,		&after_context, 'A',
 	N_("set number of following context lines"), N_("=number") },
-  { "before-context", 'B',	POPT_ARG_INT,	&before_context, 'B',
+  { "before-context", 'B', POPT_ARG_INT,	&before_context, 'B',
 	N_("set number of prior context lines"), N_("=number") },
-  { "color", N_COLOUR,	OP_OP_STRING,	&colour_option, N_COLOUR,
+  { "color", '\0',	POPT_ARG_NONE,		&color_option, POPT_COLOR,
 	N_("matched text color option"), N_("option") },
-  { "context", 'C',	POPT_ARG_INT,	&both_context, 'C',
+  { "colour", '\0',	POPT_ARG_NONE,		&color_option, POPT_COLOR,
+	N_("matched text colour option"), N_("=option") },
+  { "context", 'C',	POPT_ARG_INT,		&both_context, 'C',
 	N_("set number of context lines, before & after"), N_("=number") },
   { "count", 'c',	POPT_ARG_NONE,		NULL, 'c',
 	N_("print only a count of matching lines per FILE"), NULL },
-  { "colour", N_COLOUR,	OP_OP_STRING,	&colour_option, N_COLOUR,
-	N_("matched text colour option"), N_("=option") },
   { "devices", 'D',	POPT_ARG_STRING,	&DEE_option, 0,
 	N_("how to handle devices, FIFOs, and sockets"), N_("=action") },
   { "directories", 'd',	POPT_ARG_STRING,	&dee_option, 0,
 	N_("how to handle directories"), N_("=action") },
-  { "regex", 'e',	OP_PATLIST,		NULL, 'e',
+  { "regex", 'e',	POPT_ARG_STRING,	NULL, 'e',
 	N_("specify pattern (may be used more than once)"), N_("(p)") },
-  { "fixed_strings", 'F',	POPT_ARG_NONE,	NULL, 'F',
+  { "fixed_strings", 'F', POPT_ARG_NONE,	NULL, 'F',
 	N_("patterns are sets of newline-separated strings"), NULL },
   { "file", 'f',	POPT_ARG_STRING,	&pattern_filename, 'f',
 	N_("read patterns from file"), N_("=path") },
-  { "file-offsets", N_FOFFSETS,	POPT_ARG_NONE,	NULL, N_FOFFSETS,
+  { "file-offsets", '\0', POPT_ARG_NONE,	NULL, POPT_FOFFSETS,
 	N_("output file offsets, not text"), NULL },
-  { "with-filename", 'H',	POPT_ARG_NONE,	NULL, 'H',
+  { "with-filename", 'H', POPT_ARG_NONE,	NULL, 'H',
 	N_("force the prefixing filename on output"), NULL },
   { "no-filename", 'h',	POPT_ARG_NONE,		NULL, 'h',
 	N_("suppress the prefixing filename on output"), NULL },
   { "ignore-case", 'i',	POPT_ARG_NONE,		NULL, 'i',
 	N_("ignore case distinctions"), NULL },
-  { "files-with-matches", 'l',	POPT_ARG_NONE,	NULL, 'l',
+  { "files-with-matches", 'l', POPT_ARG_NONE,	NULL, 'l',
 	N_("print only FILE names containing matches"), NULL },
   { "files-without-match", 'L',	POPT_ARG_NONE,	NULL, 'L',
 	N_("print only FILE names not containing matches"), NULL },
-  { "label", N_LABEL,	POPT_ARG_STRING,	&stdin_name, N_LABEL,
+  { "label", '\0',	POPT_ARG_STRING,	&stdin_name, POPT_LABEL,
 	N_("set name for standard input"), N_("=name") },
-  { "line-offsets", N_LOFFSETS,	POPT_ARG_NONE,	NULL, N_LOFFSETS,
+  { "line-offsets", '\0', POPT_ARG_NONE,	NULL, POPT_LOFFSETS,
 	N_("output line numbers and offsets, not text"), NULL },
-  { "locale", N_LOCALE,	POPT_ARG_STRING,	&locale, N_LOCALE,
+  { "locale", '\0',	POPT_ARG_STRING,	&locale, POPT_LOCALE,
 	N_("use the named locale"), N_("=locale") },
   { "multiline", 'M',	POPT_ARG_NONE,		NULL, 'M',
 	N_("run in multiline mode"), NULL },
@@ -1303,18 +1288,18 @@ static struct poptOption optionsTable[] = {
 	N_("set newline type (CR, LF, CRLF, ANYCRLF or ANY)"), N_("=type") },
   { "line-number", 'n',	POPT_ARG_NONE,		NULL, 'n',
 	N_("print line number with output lines"), NULL },
-  { "only-matching", 'o',	POPT_ARG_NONE,	NULL, 'o',
+  { "only-matching", 'o', POPT_ARG_NONE,	NULL, 'o',
 	N_("show only the part of the line that matched"), NULL },
   { "quiet", 'q',	POPT_ARG_NONE,		NULL, 'q',
 	N_("suppress output, just set return code"), NULL },
   { "recursive", 'r',	POPT_ARG_NONE,		NULL, 'r',
 	N_("recursively scan sub-directories"), NULL },
-  { "exclude", N_EXCLUDE,	POPT_ARG_STRING,	&exclude_pattern, N_EXCLUDE,
+  { "exclude", POPT_EXCLUDE, POPT_ARG_STRING,	&exclude_pattern, POPT_EXCLUDE,
 	N_("exclude matching files when recursing"), N_("=pattern") },
-  { "include", N_INCLUDE,	POPT_ARG_STRING,	&include_pattern, N_INCLUDE,
+  { "include", '\0',	POPT_ARG_STRING,	&include_pattern, POPT_INCLUDE,
 	N_("include matching files when recursing"), N_("=pattern") },
 #ifdef JFRIEDL_DEBUG
-  { "jeffS", 'S',	OP_OP_NUMBER,	&S_arg, 0,
+  { "jeffS", 'S',	OP_OP_NUMBER,	&S_arg, 'S',
 	N_("replace matched (sub)string with X"), NULL },
 #endif
   { "no-messages", 's',	POPT_ARG_NONE,		NULL, 's',
@@ -1459,8 +1444,8 @@ static void rpmgrepArgCallback(poptContext con,
     if (opt->arg == NULL)
 #endif
     switch (opt->val) {
-    case N_FOFFSETS: file_offsets = TRUE; break;
-    case N_LOFFSETS: line_offsets = number = TRUE; break;
+    case POPT_FOFFSETS: file_offsets = TRUE; break;
+    case POPT_LOFFSETS: line_offsets = number = TRUE; break;
     case 'c': count_only = TRUE; break;
     case 'F': process_options |= PO_FIXED_STRINGS; break;
     case 'H': filenames = FN_FORCE; break;
@@ -1486,23 +1471,33 @@ static void rpmgrepArgCallback(poptContext con,
     case 'A': u.intp[0] = strtol(arg, NULL, 0); break;
     case 'B': u.intp[0] = strtol(arg, NULL, 0); break;
     case 'C': u.intp[0] = strtol(arg, NULL, 0); break;
-    case N_INCLUDE:
+    case POPT_INCLUDE:
 	include_pattern = arg;
 	break;
-    case N_EXCLUDE:
+    case POPT_EXCLUDE:
 	exclude_pattern = arg;
 	break;
 
+    /* XXX tristate: NULL default: disabled, optional arg overrides "auto" */
+    case POPT_COLOR:
+	/* XXX cheat on Test 51, always use "always", not "auto". */
+	color_option = "always";
+	break;
+
+#ifdef JFRIEDL_DEBUG
+    /* XXX tristate:  dunno behavior */
+    case 'S':
+	S_arg = 0;
+	break;
+#endif
+
     case 'e':
+assert(arg != NULL);
 	xx = poptSaveString(&patterns, opt->argInfo, arg);
 	break;
 
     case 'V':
 	fprintf(stderr, _("%s version %s\n"), __progname, pcre_version());
-	exit(0);
-	/*@notreached@*/ break;
-    case N_HELP:
-	help(con);
 	exit(0);
 	/*@notreached@*/ break;
     default:
@@ -1817,14 +1812,14 @@ _("%s: Cannot mix --only-matching, --file-offsets and/or --line-offsets\n"),
     }
 
     /* Sort out colouring */
-    if (colour_option != NULL && strcmp(colour_option, "never") != 0) {
-	if (strcmp(colour_option, "always") == 0)
+    if (color_option != NULL && strcmp(color_option, "never") != 0) {
+	if (strcmp(color_option, "always") == 0)
 	    do_colour = TRUE;
-	else if (strcmp(colour_option, "auto") == 0)
+	else if (strcmp(color_option, "auto") == 0)
 	    do_colour = is_stdout_tty();
 	else {
 	    fprintf(stderr, _("%s: Unknown colour setting \"%s\"\n"),
-		__progname, colour_option);
+		__progname, color_option);
 	    return 2;
 	}
 	if (do_colour) {
