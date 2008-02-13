@@ -51,6 +51,7 @@ const char *__progname;
 #endif
 
 #define _MIRE_INTERNAL
+#include <rpmio_internal.h>	/* XXX fdGetFILE */
 #include <poptIO.h>
 
 #include "debug.h"
@@ -959,6 +960,7 @@ grep_or_recurse(const char *pathname, BOOL dir_recurse, BOOL only_one_at_top)
     int frtype;
     int pathlen;
     void *handle;
+    FD_t infd = NULL;
     FILE * infp = NULL;	/* Ensure initialized */
     int xx;
 
@@ -1079,8 +1081,16 @@ grep_or_recurse(const char *pathname, BOOL dir_recurse, BOOL only_one_at_top)
 #ifdef SUPPORT_LIBBZ2
 PLAIN_FILE:
 #endif
-    {
-	infp = fopen(pathname, "r");
+    {	/* XXX .fpio is needed because of fread(3) usage. */
+	infd = Fopen(pathname, "r.fpio");
+	if (infd == NULL || Ferror(infd) || (infp = fdGetFILE(infd)) == NULL) {
+	    fprintf(stderr, _("%s: Failed to open %s: %s\n"),
+			__progname, pathname, Fstrerror(infd));
+	    if (infd) Fclose(infd);
+	    infd = NULL;
+	    rc = 2;
+	    goto exit;
+	}
 	handle = (void *)infp;
 	frtype = FR_PLAIN;
     }
@@ -1127,8 +1137,10 @@ PLAIN_FILE:
     } else
 #endif
 
-    if (infp)
-	fclose(infp);	/* Normal file close */
+    if (infd) {
+	Fclose(infd);
+	infd = NULL;
+    }
 
 exit:
     return rc;	/* Pass back the yield from pcregrep(). */
@@ -1732,6 +1744,7 @@ _("%s: Cannot mix --only-matching, --file-offsets and/or --line-offsets\n"),
     /* Compile the regular expressions that are provided in a file. */
     if (pattern_filename != NULL) {
 	int linenumber = 0;
+	FD_t fd = NULL;
 	FILE *fp;
 	char *fn;
 	char buffer[MBUFTHIRD];
@@ -1740,10 +1753,13 @@ _("%s: Cannot mix --only-matching, --file-offsets and/or --line-offsets\n"),
 	    fp = stdin;
 	    fn = stdin_name;
 	} else {
-	    fp = fopen(pattern_filename, "r");
-	    if (fp == NULL) {
+	    /* XXX .fpio is needed because of fgets(3) usage. */
+	    fd = Fopen(pattern_filename, "r.fpio");
+	    if (fd == NULL || Ferror(fd) || (fp = fdGetFILE(fd)) == NULL) {
 		fprintf(stderr, _("%s: Failed to open %s: %s\n"),
-			__progname, pattern_filename, strerror(errno));
+			__progname, pattern_filename, Fstrerror(fd));
+		if (fd) Fclose(fd);
+		fd = NULL;
 		goto errorexit;
 	    }
 	    fn = pattern_filename;
@@ -1760,8 +1776,10 @@ _("%s: Cannot mix --only-matching, --file-offsets and/or --line-offsets\n"),
 		goto errorexit;
 	}
 
-	if (fp != stdin)
-	    fclose(fp);
+	if (fd) {
+	    Fclose(fd);
+	    fd = NULL;
+	}
     }
 
     /* Study the regular expressions, as we will be running them many times */
