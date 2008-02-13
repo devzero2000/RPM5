@@ -305,7 +305,7 @@ struct poptOption rpmioAllPoptTable[] = {
  { "verbose", 'v', 0, NULL, 'v',
 	N_("provide more detailed output"), NULL},
  { "version", '\0', 0, NULL, POPT_SHOWVERSION,
-	N_("print the version of rpm being used"), NULL },
+	N_("print the version"), NULL },
 
 #if defined(HAVE_LIBIO_H) && defined(_G_IO_IO_FILE_VERSION)
  { "nolibio", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &noLibio, 1,
