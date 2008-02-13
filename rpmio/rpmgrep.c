@@ -469,7 +469,7 @@ pcregrep(void *handle, int frtype, const char *printname)
     char *endptr;
     size_t bufflength;
     BOOL endhyphenpending = FALSE;
-    FILE *in = NULL;	/* Ensure initialized */
+    FD_t infd = NULL;
 
 #ifdef SUPPORT_LIBZ
     gzFile ingz = NULL;
@@ -505,8 +505,8 @@ pcregrep(void *handle, int frtype, const char *printname)
 #endif
 
     {
-	in = (FILE *)handle;
-	bufflength = fread(buffer, 1, 3*MBUFTHIRD, in);
+	infd = (FD_t)handle;
+	bufflength = Fread(buffer, 1, 3*MBUFTHIRD, infd);
     }
 
     endptr = buffer + bufflength;
@@ -900,7 +900,7 @@ ONLY_MATCHING_RESTART:
 	    else
 #endif
 
-	    bufflength = 2*MBUFTHIRD + fread(buffer + 2*MBUFTHIRD, 1, MBUFTHIRD, in);
+	    bufflength = 2*MBUFTHIRD + Fread(buffer + 2*MBUFTHIRD, 1, MBUFTHIRD, infd);
 
 	    endptr = buffer + bufflength;
 
@@ -961,7 +961,6 @@ grep_or_recurse(const char *pathname, BOOL dir_recurse, BOOL only_one_at_top)
     int pathlen;
     void *handle;
     FD_t infd = NULL;
-    FILE * infp = NULL;	/* Ensure initialized */
     int xx;
 
 #ifdef SUPPORT_LIBZ
@@ -1081,9 +1080,9 @@ grep_or_recurse(const char *pathname, BOOL dir_recurse, BOOL only_one_at_top)
 #ifdef SUPPORT_LIBBZ2
 PLAIN_FILE:
 #endif
-    {	/* XXX .fpio is needed because of fread(3) usage. */
-	infd = Fopen(pathname, "r.fpio");
-	if (infd == NULL || Ferror(infd) || (infp = fdGetFILE(infd)) == NULL) {
+    {
+	infd = Fopen(pathname, "r.ufdio");
+	if (infd == NULL || Ferror(infd)) {
 	    fprintf(stderr, _("%s: Failed to open %s: %s\n"),
 			__progname, pathname, Fstrerror(infd));
 	    if (infd) Fclose(infd);
@@ -1091,7 +1090,7 @@ PLAIN_FILE:
 	    rc = 2;
 	    goto exit;
 	}
-	handle = (void *)infp;
+	handle = (void *)infd;
 	frtype = FR_PLAIN;
     }
 
