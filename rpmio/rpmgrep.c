@@ -37,8 +37,6 @@ POSSIBILITY OF SUCH DAMAGE.
 -----------------------------------------------------------------------------
 */
 
-#define	USE_POPT
-
 #include "system.h"
 const char *__progname;
 
@@ -1243,21 +1241,17 @@ used to identify them. */
 #define N_LOFFSETS  (-8)
 #define N_FOFFSETS  (-9)
 
-#ifdef	USE_POPT
 /* XXX forward ref. */
 static void rpmgrepArgCallback(poptContext con,
                 /*@unused@*/ enum poptCallbackReason reason,
                 const struct poptOption * opt, const char * arg,
                 /*@unused@*/ void * data);
-#endif
 
 static struct poptOption optionsTable[] = {
-#ifdef	USE_POPT
 /*@-type@*/ /* FIX: cast? */
  { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA | POPT_CBFLAG_CONTINUE,
         rpmgrepArgCallback, 0, NULL, NULL },
 /*@=type@*/
-#endif
 
   { "", '\0',	POPT_ARG_NONE,	NULL, 0,
 	N_("terminate options"), NULL },
@@ -1366,8 +1360,9 @@ Example: rpmgrep -i 'hello.*world' menu.h main.c\
  * @return			return code
  */
 static int
-usage(int rc)
+usage(poptContext optCon, int rc)
 {
+#ifdef	DYING
     struct poptOption *opt = optionsTable;
     fprintf(stderr, _("Usage: %s [-"), __progname);
     for (; (opt->longName || opt->shortName || opt->arg); opt++) {
@@ -1377,6 +1372,9 @@ usage(int rc)
     fprintf(stderr,
 	_("Type `%s --help' for more information and the long options.\n"),
 	__progname);
+#else
+    poptPrintUsage(optCon, stdout, 0);
+#endif
     return rc;
 }
 
@@ -1384,8 +1382,9 @@ usage(int rc)
  * Help function.
  */
 static void
-help(void)
+help(poptContext optCon)
 {
+#ifdef	DYING
     struct poptOption *opt = optionsTable;
 
     printf(_("Usage: %s [OPTION]... [PATTERN] [FILE1 FILE2 ...]\n"),
@@ -1433,17 +1432,9 @@ help(void)
 
     printf(_("\nWith no FILEs, read standard input. If fewer than two FILEs given, assume -h.\n"));
     printf(_("Exit status is 0 if any matches, 1 if no matches, and 2 if trouble.\n"));
-
-    {	int argc = 1;
-	const char *argv[] = { "rpmgrep", NULL };
-	poptContext optCon = poptGetContext(argv[0], argc, argv, optionsTable, 0);
-	printf("=========================================================\n");
-	poptPrintUsage(optCon, stdout, 0);
-	printf("=========================================================\n");
-	poptPrintHelp(optCon, stdout, 0);
-
-	optCon = poptFreeContext(optCon);
-    }
+#else
+    poptPrintHelp(optCon, stdout, 0);
+#endif
 }
 
 typedef union rpmgrepArg_u {
@@ -1463,11 +1454,9 @@ static void rpmgrepArgCallback(poptContext con,
     rpmgrepArg u = { .ptr = opt->arg };
     int xx;
 
-#ifdef	USE_POPT
 #if 0
     /* XXX avoid accidental collisions with POPT_BIT_SET for flags */
     if (opt->arg == NULL)
-#endif
 #endif
     switch (opt->val) {
     case N_FOFFSETS: file_offsets = TRUE; break;
@@ -1479,7 +1468,10 @@ static void rpmgrepArgCallback(poptContext con,
     case 'i': global_options |= PCRE_CASELESS; break;
     case 'l': filenames = FN_ONLY; break;
     case 'L': filenames = FN_NOMATCH_ONLY; break;
-    case 'M': multiline = TRUE; global_options |= PCRE_MULTILINE|PCRE_FIRSTLINE; break;
+    case 'M':
+	multiline = TRUE;
+	global_options |= PCRE_MULTILINE|PCRE_FIRSTLINE;
+	break;
     case 'n': number = TRUE; break;
     case 'o': only_matching = TRUE; break;
     case 'q': quiet = TRUE; break;
@@ -1510,17 +1502,12 @@ static void rpmgrepArgCallback(poptContext con,
 	exit(0);
 	/*@notreached@*/ break;
     case N_HELP:
-	help();
+	help(con);
 	exit(0);
 	/*@notreached@*/ break;
     default:
-#if defined(USE_POPT)
-fprintf(stderr, "--> argCallback(%p, %d, %p, %s, %p) -%c/--%s\n", con, reason, opt, arg, data, opt->shortName, opt->longName);
-	exit(1);
-#else
 	fprintf(stderr, _("%s: Unknown option -%c\n"), __progname, opt->val);
-	exit(usage(2));
-#endif
+	exit(usage(con, 2));
 	/*@notreached@*/ break;
     }
 }
@@ -1696,9 +1683,7 @@ static int mireAppend(rpmMireMode mode, int tag, const char * pattern,
 int
 main(int argc, char **argv)
 {
-#if defined(USE_POPT)
     poptContext optCon;
-#endif
     int i, j;
     int rc = 1;
     int pcre_options = 0;
@@ -1733,9 +1718,7 @@ main(int argc, char **argv)
     (void) textdomain(PACKAGE);
 #endif
 
-#if defined(USE_POPT)
     optCon = poptGetContext(__progname, argc, (const char **)argv, optionsTable, 0);
-#endif
 
     /*
      * Set the default line ending value from the default in the PCRE library;
@@ -1743,7 +1726,7 @@ main(int argc, char **argv)
      * as "lf".
      */
     (void)pcre_config(PCRE_CONFIG_NEWLINE, &i);
-    switch(i) {
+    switch (i) {
     default:	newline = (char *)"lf";		break;
     case '\r':	newline = (char *)"cr";		break;
     case ('\r' << 8) | '\n': newline = (char *)"crlf"; break;
@@ -1751,206 +1734,6 @@ main(int argc, char **argv)
     case -2:	newline = (char *)"anycrlf";	break;
     }
 
-    /* Process the options */
-#if !defined(USE_POPT)
-    for (i = 1; i < argc; i++) {
-	struct poptOption *opt = NULL;
-	char *option_data = (char *)"";    /* default to keep compiler happy */
-	BOOL longop;
-	BOOL longopwasequals = FALSE;
-
-	if (argv[i][0] != '-') break;
-
-	/*
-	 * If we hit an argument that is just "-", it may be a reference
-	 * to STDIN, but only if we have previously had -e or -f to define
-	 * the patterns.
-	 */
-	if (argv[i][1] == 0) {
-	    if (pattern_filename != NULL || pattern_count > 0) break;
-		else exit(usage(2));
-	}
-
-	/* Handle a long name option, or -- to terminate the options */
-	if (argv[i][1] == '-') {
-	    char *arg = argv[i] + 2;
-	    char *argequals = strchr(arg, '=');
-
-	    if (*arg == 0) {	/* -- terminates options */
-		i++;
-		break;                /* out of the options-handling loop */
-	    }
-
-	    longop = TRUE;
-
-	    /*
-	     * Some long options have data that follows after =, for example
-	     * file=name.  Some options have variations in the long name
-	     * spelling: specifically, we allow "regexp" because GNU grep
-	     * allows it, though I personally go along with Jeffrey Friedl
-	     * and Larry Wall in preferring "regex" without the "p".  These
-	     * options are entered in the table as "regex(p)". No option is
-	     * in both these categories, fortunately.
-	     */
-	    for (opt = optionsTable; (opt->longName || opt->shortName || opt->arg); opt++) {
-		char *opbra = (opt->argDescrip ? strchr(opt->argDescrip, '(') : NULL);
-		char *equals = (opt->argDescrip ? strchr(opt->argDescrip, '=') : NULL);
-		if (opbra == NULL) {		/* Not a (p) case */
-		    if (equals == NULL) {	/* Not thing=data case */
-			if (strcmp(arg, opt->longName) == 0) break;
-		    } else {			/* Special case xxx=data */
-			int oplen = strlen(opt->longName);
-			int arglen = (argequals == NULL)? (int)strlen(arg) : argequals - arg;
-			if (oplen == arglen && strncmp(arg, opt->longName, oplen) == 0) {
-			    option_data = arg + arglen;
-			    if (*option_data == '=') {
-				option_data++;
-				longopwasequals = TRUE;
-			    }
-			    break;
-			}
-		    }
-		} else {			/* Special case xxxx(p) */
-		    char buff1[24];
-		    char buff2[24];
-		    int baselen = (int)strlen(opt->longName);
-		    sprintf(buff1, "%.*s", baselen, opt->longName);
-		    baselen = (int)strlen(opt->argDescrip);
-		    sprintf(buff2, "%s%.*s", buff1, baselen - 2, opbra + 1);
-		    if (strcmp(arg, buff1) == 0 || strcmp(arg, buff2) == 0)
-			break;
-		}
-	    }
-
-	    if (opt->shortName == 0) {
-		fprintf(stderr, _("%s: Unknown option %s\n"),
-			__progname, argv[i]);
-		exit(usage(2));
-	    }
-	}
-
-	/*
-	 * Jeffrey Friedl's debugging harness uses these additional options
-	 * which are not in the right form for putting in the option table
-	 * because they use only one hyphen, yet are more than one character
-	 * long. By putting them separately here, they will not get displayed
-	 * as part of the help() output, but I don't think Jeffrey will care
-	 * about that.
-	 */
-#ifdef JFRIEDL_DEBUG
-	else if (strcmp(argv[i], "-pre") == 0) {
-	    jfriedl_prefix = argv[++i];
-	    continue;
-	} else if (strcmp(argv[i], "-post") == 0) {
-	    jfriedl_postfix = argv[++i];
-	    continue;
-	} else if (strcmp(argv[i], "-XT") == 0) {
-	    sscanf(argv[++i], "%d", &jfriedl_XT);
-	    continue;
-	} else if (strcmp(argv[i], "-XR") == 0) {
-	    sscanf(argv[++i], "%d", &jfriedl_XR);
-	    continue;
-	}
-#endif
-
-	/*
-	 * One-char options; many that have no data may be in a single
-	 * argument; we continue till we hit the last one or one that
-	 * needs data.
-	 */
-	else {
-	    char *s = argv[i] + 1;
-	    longop = FALSE;
-	    while (*s != 0) {
-		for (opt = optionsTable; (opt->longName || opt->shortName || opt->arg); opt++) {
-		    if (*s == opt->shortName) break;
-		}
-		if (opt->shortName == 0) {
-		    fprintf(stderr, _("%s: Unknown option letter '%c' in \"%s\"\n"),
-			__progname, *s, argv[i]);
-		    exit(usage(2));
-		}
-		if ((opt->argInfo & POPT_ARG_MASK) != OP_NODATA || s[1] == 0) {
-		    option_data = s+1;
-		    break;
-		}
-		rpmgrepArgCallback(NULL, 0, opt, NULL, NULL);
-		s++;
-	    }
-	}
-
-	/*
-	 * At this point we should have op pointing to a matched option. If
-	 * the type is NO_DATA, it means that there is no data, and the option
-	 * might set something in the PCRE options.
-	 */
-	if ((opt->argInfo & POPT_ARG_MASK) == OP_NODATA) {
-	    rpmgrepArgCallback(NULL, 0, opt, NULL, NULL);
-	    continue;
-	}
-
-	/*
-	 * If the option type is OP_OP_STRING or OP_OP_NUMBER, it's an option
-	 * that either has a value or defaults to something. It cannot have
-	 * data in a separate item. At the moment, the only such options
-	 * are "colo(u)r" and Jeffrey Friedl's special -S debugging option.
-	 */
-	if (*option_data == 0 &&
-		((opt->argInfo & POPT_ARG_MASK) == OP_OP_STRING || (opt->argInfo & POPT_ARG_MASK) == OP_OP_NUMBER))
-	{
-	    switch (opt->shortName) {
-	    case N_COLOUR:
-		colour_option = (char *)"auto";
-		break;
-#ifdef JFRIEDL_DEBUG
-	    case 'S':
-		S_arg = 0;
-		break;
-#endif
-	    }
-	    continue;
-	}
-
-	/* Otherwise, find the data string for the option. */
-	if (*option_data == 0) {
-	    if (i >= argc - 1 || longopwasequals) {
-		fprintf(stderr, _("%s: Data missing after %s\n"),
-			__progname, argv[i]);
-		exit(usage(2));
-	    }
-	    option_data = argv[++i];
-	}
-
-	/*
-	 * If the option type is OP_PATLIST, it's the -e option, which can be
-	 * called multiple times to create a list of patterns.
-	 */
-	if ((opt->argInfo & POPT_ARG_MASK) == OP_PATLIST) {
-	    rpmgrepArgCallback(NULL, 0, opt, option_data, NULL);
-	}
-
-	/* Otherwise, deal with single string or numeric data values. */
-	else if ((opt->argInfo & POPT_ARG_MASK) != POPT_ARG_INT && (opt->argInfo & POPT_ARG_MASK) != OP_OP_NUMBER) {
-	    *((char **)opt->arg) = option_data;
-	} else {
-	    char *endptr = NULL;
-	    long aLong = strtol(option_data, &endptr, 0);
-	    if (*endptr != 0) {
-		if (longop)
-		    fprintf(stderr, _("%s: Malformed number \"%s\" after --%s\n"),
-			__progname, option_data, opt->longName);
-		else
-		    fprintf(stderr, _("%s: Malformed number \"%s\" after -%c\n"),
-			__progname, option_data, opt->shortName);
-		exit(usage(2));
-	    }
-	    poptSaveInt((int *)opt->arg, opt->argInfo, aLong);
-	}
-    }
-    pcre_options = global_options;
-    av = (ARGV_t) argv;
-    ac = argc;
-#else	/* USE_POPT */
     /* Process all options, whine if unknown. */
     while ((rc = poptGetNextOpt(optCon)) > 0) {
 	const char * optArg = poptGetOptArg(optCon);
@@ -1980,7 +1763,6 @@ main(int argc, char **argv)
     ac = argvCount(av);
     i = 0;
     rc = 1;
-#endif	/* USE_POPT */
 
     /*
      * Options have been decoded. If -C was used, its value is used as a default
@@ -1998,8 +1780,10 @@ main(int argc, char **argv)
     if ((only_matching && (file_offsets || line_offsets)) ||
 	    (file_offsets && line_offsets))
     {
-	fprintf(stderr, _("%s: Cannot mix --only-matching, --file-offsets and/or --line-offsets\n"), __progname);
-	exit(usage(2));
+	fprintf(stderr,
+_("%s: Cannot mix --only-matching, --file-offsets and/or --line-offsets\n"),
+		__progname);
+	exit(usage(optCon, 2));
     }
 
     if (file_offsets || line_offsets) only_matching = TRUE;
@@ -2120,7 +1904,7 @@ main(int argc, char **argv)
      */
     npatterns = argvCount(patterns);
     if (npatterns == 0 && pattern_filename == NULL) {
-	if (i >= ac) return usage(2);
+	if (i >= ac) return usage(optCon, 2);
 	xx = poptSaveString(&patterns, POPT_ARG_ARGV, av[i]);
 	i++;
     }
@@ -2237,9 +2021,7 @@ exit:
 
     patterns = argvFree(patterns);
 
-#if defined(USE_POPT)
     optCon = poptFreeContext(optCon);
-#endif
 
     return rc;
 
