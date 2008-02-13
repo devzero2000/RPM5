@@ -1,13 +1,13 @@
 .TH PCREGREP 1
 .SH NAME
-pcregrep - a grep with Perl-compatible regular expressions.
+rpmgrep - a grep with Perl-compatible regular expressions.
 .SH SYNOPSIS
-.B pcregrep [options] [long options] [pattern] [path1 path2 ...]
+.B rpmgrep [options] [long options] [pattern] [path1 path2 ...]
 .
 .SH DESCRIPTION
 .rs
 .sp
-\fBpcregrep\fP searches files for character patterns, in the same way as other
+\fBrpmgrep\fP searches files for character patterns, in the same way as other
 grep commands do, but it uses the PCRE regular expression library to support
 patterns that are compatible with the regular expressions of Perl 5. See
 .\" HREF
@@ -19,7 +19,7 @@ that PCRE supports.
 Patterns, whether supplied on the command line or in a separate file, are given
 without delimiters. For example:
 .sp
-  pcregrep Thursday /etc/motd
+  rpmgrep Thursday /etc/motd
 .sp
 If you attempt to use delimiters (for example, by surrounding a pattern with
 slashes, as is common in Perl scripts), they are interpreted as part of the
@@ -33,16 +33,16 @@ Conversely, when one or both of these options are used to specify patterns, all
 arguments are treated as path names. At least one of \fB-e\fP, \fB-f\fP, or an
 argument pattern must be provided.
 .P
-If no files are specified, \fBpcregrep\fP reads the standard input. The
+If no files are specified, \fBrpmgrep\fP reads the standard input. The
 standard input can also be referenced by a name consisting of a single hyphen.
 For example:
 .sp
-  pcregrep some-pattern /file1 - /file3
+  rpmgrep some-pattern /file1 - /file3
 .sp
 By default, each line that matches a pattern is copied to the standard
 output, and if there is more than one file, the file name is output at the
 start of each line, followed by a colon. However, there are options that can
-change how \fBpcregrep\fP behaves. In particular, the \fB-M\fP option makes it
+change how \fBrpmgrep\fP behaves. In particular, the \fB-M\fP option makes it
 possible to search for patterns that span line boundaries. What defines a line
 boundary is controlled by the \fB-N\fP (\fB--newline\fP) option.
 .P
@@ -62,13 +62,13 @@ line. However, patterns that follow the one that matched are not tried on the
 earlier part of the line.
 .P
 If the \fBLC_ALL\fP or \fBLC_CTYPE\fP environment variable is set,
-\fBpcregrep\fP uses the value to set a locale when calling the PCRE library.
+\fBrpmgrep\fP uses the value to set a locale when calling the PCRE library.
 The \fB--locale\fP option can be used to override this.
 .
 .SH "SUPPORT FOR COMPRESSED FILES"
 .rs
 .sp
-It is possible to compile \fBpcregrep\fP so that it uses \fBlibz\fP or
+It is possible to compile \fBrpmgrep\fP so that it uses \fBlibz\fP or
 \fBlibbz2\fP to read files whose names end in \fB.gz\fP or \fB.bz2\fP,
 respectively. You can find out whether your binary has support for one or both
 of these file types by running it with the \fB--help\fP option. If the
@@ -88,7 +88,7 @@ Output \fInumber\fP lines of context after each matching line. If filenames
 and/or line numbers are being output, a hyphen separator is used instead of a
 colon for the context lines. A line containing "--" is output between each
 group of lines, unless they are in fact contiguous in the input file. The value
-of \fInumber\fP is expected to be relatively small. However, \fBpcregrep\fP
+of \fInumber\fP is expected to be relatively small. However, \fBrpmgrep\fP
 guarantees to have up to 8K of following text available for context output.
 .TP
 \fB-B\fP \fInumber\fP, \fB--before-context=\fP\fInumber\fP
@@ -96,7 +96,7 @@ Output \fInumber\fP lines of context before each matching line. If filenames
 and/or line numbers are being output, a hyphen separator is used instead of a
 colon for the context lines. A line containing "--" is output between each
 group of lines, unless they are in fact contiguous in the input file. The value
-of \fInumber\fP is expected to be relatively small. However, \fBpcregrep\fP
+of \fInumber\fP is expected to be relatively small. However, \fBrpmgrep\fP
 guarantees to have up to 8K of preceding text available for context output.
 .TP
 \fB-C\fP \fInumber\fP, \fB--context=\fP\fInumber\fP
@@ -150,13 +150,13 @@ patterns are matched first, followed by the patterns from the file, independent
 of the order in which these options are specified. Note that multiple use of
 \fB-e\fP is not the same as a single pattern with alternatives. For example,
 X|Y finds the first character in a line that is X or Y, whereas if the two
-patterns are given separately, \fBpcregrep\fP finds X if it is present, even if
+patterns are given separately, \fBrpmgrep\fP finds X if it is present, even if
 it follows Y in the line. It finds Y only if there is no X in the line. This
 really matters only if you are using \fB-o\fP to show the part(s) of the line
 that matched.
 .TP
 \fB--exclude\fP=\fIpattern\fP
-When \fBpcregrep\fP is searching the files in a directory as a consequence of
+When \fBrpmgrep\fP is searching the files in a directory as a consequence of
 the \fB-r\fP (recursive search) option, any files whose names match the pattern
 are excluded. The pattern is a PCRE regular expression. If a file name matches
 both \fB--include\fP and \fB--exclude\fP, it is excluded. There is no short
@@ -211,7 +211,7 @@ type support, and then exit.
 Ignore upper/lower case distinctions during comparisons.
 .TP
 \fB--include\fP=\fIpattern\fP
-When \fBpcregrep\fP is searching the files in a directory as a consequence of
+When \fBrpmgrep\fP is searching the files in a directory as a consequence of
 the \fB-r\fP (recursive search) option, only those files whose names match the
 pattern are included. The pattern is a PCRE regular expression. If a file name
 matches both \fB--include\fP and \fB--exclude\fP, it is excluded. There is no
@@ -254,8 +254,8 @@ may usefully contain literal newline characters and internal occurrences of ^
 and $ characters. The output for any one match may consist of more than one
 line. When this option is set, the PCRE library is called in "multiline" mode.
 There is a limit to the number of lines that can be matched, imposed by the way
-that \fBpcregrep\fP buffers the input file as it scans it. However,
-\fBpcregrep\fP ensures that at least 8K characters or the rest of the document
+that \fBrpmgrep\fP buffers the input file as it scans it. However,
+\fBrpmgrep\fP ensures that at least 8K characters or the rest of the document
 (whichever is the shorter) are available for forward matching, and similarly
 the previous 8K characters (or all the previous characters, if fewer than 8K)
 are guaranteed to be available for lookbehind assertions.
@@ -272,12 +272,12 @@ PS (paragraph separator, U+2029).
 .sp
 When the PCRE library is built, a default line-ending sequence is specified.
 This is normally the standard sequence for the operating system. Unless
-otherwise specified by this option, \fBpcregrep\fP uses the library's default.
+otherwise specified by this option, \fBrpmgrep\fP uses the library's default.
 The possible values for this option are CR, LF, CRLF, ANYCRLF, or ANY. This
-makes it possible to use \fBpcregrep\fP on files that have come from other
+makes it possible to use \fBrpmgrep\fP on files that have come from other
 environments without having to modify their line endings. If the data that is
 being scanned does not agree with the convention set by this option,
-\fBpcregrep\fP may behave in strange ways.
+\fBrpmgrep\fP may behave in strange ways.
 .TP
 \fB-n\fP, \fB--line-number\fP
 Precede each output line by its line number in the file, followed by a colon
@@ -316,7 +316,7 @@ with UTF-8 support. Both patterns and subject lines must be valid strings of
 UTF-8 characters.
 .TP
 \fB-V\fP, \fB--version\fP
-Write the version numbers of \fBpcregrep\fP and the PCRE library that is being
+Write the version numbers of \fBrpmgrep\fP and the PCRE library that is being
 used to the standard error stream.
 .TP
 \fB-v\fP, \fB--invert-match\fP
@@ -346,9 +346,9 @@ by the \fB--locale\fP option. If no locale is set, the PCRE library's default
 .SH "NEWLINES"
 .rs
 .sp
-The \fB-N\fP (\fB--newline\fP) option allows \fBpcregrep\fP to scan files with
+The \fB-N\fP (\fB--newline\fP) option allows \fBrpmgrep\fP to scan files with
 different newline conventions from the default. However, the setting of this
-option does not affect the way in which \fBpcregrep\fP writes information to
+option does not affect the way in which \fBrpmgrep\fP writes information to
 the standard error and output streams. It uses the string "\en" in C
 \fBprintf()\fP calls to indicate newlines, relying on the C I/O library to
 convert this to an appropriate sequence if the output is sent to a file.
@@ -357,11 +357,11 @@ convert this to an appropriate sequence if the output is sent to a file.
 .SH "OPTIONS COMPATIBILITY"
 .rs
 .sp
-The majority of short and long forms of \fBpcregrep\fP's options are the same
+The majority of short and long forms of \fBrpmgrep\fP's options are the same
 as in the GNU \fBgrep\fP program. Any long option of the form
 \fB--xxx-regexp\fP (GNU terminology) is also available as \fB--xxx-regex\fP
 (PCRE terminology). However, the \fB--locale\fP, \fB-M\fP, \fB--multiline\fP,
-\fB-u\fP, and \fB--utf-8\fP options are specific to \fBpcregrep\fP.
+\fB-u\fP, and \fB--utf-8\fP options are specific to \fBrpmgrep\fP.
 .
 .
 .SH "OPTIONS WITH DATA"
@@ -399,9 +399,9 @@ It is possible to supply a regular expression that takes a very long time to
 fail to match certain lines. Such patterns normally involve nested indefinite
 repeats, for example: (a+)*\ed when matched against a line of a's with no final
 digit. The PCRE matching function has a resource limit that causes it to abort
-in these circumstances. If this happens, \fBpcregrep\fP outputs an error
+in these circumstances. If this happens, \fBrpmgrep\fP outputs an error
 message and the line that caused the problem to the standard error stream. If
-there are more than 20 such errors, \fBpcregrep\fP gives up.
+there are more than 20 such errors, \fBrpmgrep\fP gives up.
 .
 .
 .SH DIAGNOSTICS

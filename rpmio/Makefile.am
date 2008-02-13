@@ -8,6 +8,9 @@ EXTRA_DIST = gengpg.sh thkp.c thtml.c tinv.c tkey.c tput.c trpmio.c lookup3.c tp
 
 EXTRA_PROGRAMS = thkp thtml tinv tkey tmacro tmagic tput tpw trpmio tsw dumpasn1 lookup3
 
+bin_PROGRAMS =
+man_MANS =
+
 TESTS =
 check_PROGRAMS = tdir tfts tget tglob tmire
 check_SCRIPTS = testit.sh
@@ -108,7 +111,9 @@ lint:
 
 TESTS += RunGrepTest
 dist_noinst_SCRIPTS += RunGrepTest
-check_PROGRAMS += rpmgrep
+bin_PROGRAMS += rpmgrep
+man_MANS +=	rpmgrep.1
+
 rpmgrep_SOURCES = rpmgrep.c
 rpmgrep_LDADD = $(RPMIO_LDADD)
 

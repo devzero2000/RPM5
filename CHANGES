@@ -1,4 +1,5 @@
 5.0.0 -> 5.1a1:
+    - jbj: rpmgrep: install in bindir with man page.
     - rpm-maint: fix: limit exit codes to 254 to keep xargs happy.
     - jbj: mire: add vallen argument to mireRegexec().
     - jbj: borrow pcregrep.c from pcre-7.6, rename as rpmgrep.c.
