@@ -76,9 +76,6 @@ typedef int BOOL;
  */
 enum { FN_NONE, FN_DEFAULT, FN_ONLY, FN_NOMATCH_ONLY, FN_FORCE };
 
-/** File reading styles */
-enum { FR_PLAIN, FR_LIBZ, FR_LIBBZ2 };
-
 /** Actions for the -d and -D options */
 enum { dee_READ, dee_SKIP, dee_RECURSE };
 enum { DEE_READ, DEE_SKIP };
@@ -455,7 +452,7 @@ static void do_after_lines(int lastmatchnumber, const char *lastmatchrestart,
  * @return		0: at least one match, 1: no match, 2: read error (bz2)
  */
 static int
-pcregrep(void *handle, int frtype, const char *printname)
+pcregrep(FD_t fd, const char *printname)
 {
     int rc = 1;
     int linenumber = 1;
@@ -469,46 +466,8 @@ pcregrep(void *handle, int frtype, const char *printname)
     char *endptr;
     size_t bufflength;
     BOOL endhyphenpending = FALSE;
-    FD_t infd = NULL;
 
-#ifdef SUPPORT_LIBZ
-    gzFile ingz = NULL;
-#endif
-
-#ifdef SUPPORT_LIBBZ2
-    BZFILE *inbz2 = NULL;
-#endif
-
-    /*
-     * Do the first read into the start of the buffer and set up the pointer
-     * to end of what we have. In the case of libz, a non-zipped .gz file will
-     * be read as a plain file. However, if a .bz2 file isn't actually bzipped,
-     * the first read will fail.
-     */
-#ifdef SUPPORT_LIBZ
-    if (frtype == FR_LIBZ) {
-	ingz = (gzFile)handle;
-	bufflength = gzread (ingz, buffer, 3*MBUFTHIRD);
-    } else
-#endif
-
-#ifdef SUPPORT_LIBBZ2
-    if (frtype == FR_LIBBZ2) {
-	inbz2 = (BZFILE *)handle;
-	bufflength = BZ2_bzread(inbz2, buffer, 3*MBUFTHIRD);
-	/* Gotcha: bufflength is size_t; without the cast it is unsigned. */
-	if ((int)bufflength < 0) {
-	    rc = 2;
-	    goto exit;
-	}
-    } else
-#endif
-
-    {
-	infd = (FD_t)handle;
-	bufflength = Fread(buffer, 1, 3*MBUFTHIRD, infd);
-    }
-
+    bufflength = Fread(buffer, 1, 3*MBUFTHIRD, fd);
     endptr = buffer + bufflength;
 
     /*
@@ -886,22 +845,8 @@ ONLY_MATCHING_RESTART:
 	    memmove(buffer, buffer + MBUFTHIRD, 2*MBUFTHIRD);
 	    ptr -= MBUFTHIRD;
 
-#ifdef SUPPORT_LIBZ
-	    if (frtype == FR_LIBZ)
-		bufflength = 2*MBUFTHIRD +
-		gzread (ingz, buffer + 2*MBUFTHIRD, MBUFTHIRD);
-	    else
-#endif
-
-#ifdef SUPPORT_LIBBZ2
-	    if (frtype == FR_LIBBZ2)
-		bufflength = 2*MBUFTHIRD +
-		BZ2_bzread(inbz2, buffer + 2*MBUFTHIRD, MBUFTHIRD);
-	    else
-#endif
-
-	    bufflength = 2*MBUFTHIRD + Fread(buffer + 2*MBUFTHIRD, 1, MBUFTHIRD, infd);
-
+	    bufflength = 2*MBUFTHIRD;
+	    bufflength += Fread(buffer + bufflength, 1, MBUFTHIRD, fd);
 	    endptr = buffer + bufflength;
 
 	    /* Adjust any last match point */
@@ -957,27 +902,14 @@ grep_or_recurse(const char *pathname, BOOL dir_recurse, BOOL only_one_at_top)
     struct stat sb, *st = &sb;
     int rc = 1;
     int sep;
-    int frtype;
     int pathlen;
-    void *handle;
-    FD_t infd = NULL;
+    FD_t fd = NULL;
+    const char * fmode = "r.ufdio";
     int xx;
 
-#ifdef SUPPORT_LIBZ
-    gzFile ingz = NULL;
-#endif
-
-#ifdef SUPPORT_LIBBZ2
-    BZFILE *inbz2 = NULL;
-#endif
-
     /* If the file name is "-" we scan stdin */
-    if (strcmp(pathname, "-") == 0) {
-	rc = pcregrep(stdin, FR_PLAIN,
-	    (filenames > FN_DEFAULT || (filenames == FN_DEFAULT && !only_one_at_top))?
-		stdin_name : NULL);
-	goto exit;
-    }
+    if (!strcmp(pathname, "-"))
+	goto openthestream;
 
     xx = Stat(pathname, st);
     sep = (!xx && S_ISDIR(st->st_mode) ? (int)'/' : 0);
@@ -1048,97 +980,43 @@ grep_or_recurse(const char *pathname, BOOL dir_recurse, BOOL only_one_at_top)
     pathlen = strlen(pathname);
 
     /* Open using zlib if it is supported and the file name ends with .gz. */
-#ifdef SUPPORT_LIBZ
     if (pathlen > 3 && strcmp(pathname + pathlen - 3, ".gz") == 0) {
-	ingz = gzopen(pathname, "rb");
-	if (ingz == NULL) {
-	    if (!silent)
-		fprintf(stderr, _("%s: Failed to open %s: %s\n"),
-			__progname, pathname, strerror(errno));
-	    rc = 2;
-	    goto exit;
-	}
-	handle = (void *)ingz;
-	frtype = FR_LIBZ;
+	fmode = "r.gzdio";
     } else
-#endif
 
     /* Otherwise open with bz2lib if it is supported and the name ends with .bz2. */
-#ifdef SUPPORT_LIBBZ2
     if (pathlen > 4 && strcmp(pathname + pathlen - 4, ".bz2") == 0) {
-	inbz2 = BZ2_bzopen(pathname, "rb");
-	handle = (void *)inbz2;
-	frtype = FR_LIBBZ2;
+	fmode = "r.bzdio";
     } else
-#endif
 
     /*
      * Otherwise use plain fopen(). The label is so that we can come back
      * here if an attempt to read a .bz2 file indicates that it really is
      * a plain file.
      */
-#ifdef SUPPORT_LIBBZ2
-PLAIN_FILE:
-#endif
     {
-	infd = Fopen(pathname, "r.ufdio");
-	if (infd == NULL || Ferror(infd)) {
-	    fprintf(stderr, _("%s: Failed to open %s: %s\n"),
-			__progname, pathname, Fstrerror(infd));
-	    if (infd) Fclose(infd);
-	    infd = NULL;
-	    rc = 2;
-	    goto exit;
-	}
-	handle = (void *)infd;
-	frtype = FR_PLAIN;
+	fmode = "r.ufdio";
     }
 
-    /* All the opening methods return errno when they fail. */
-    if (handle == NULL) {
-	if (!silent)
-	    fprintf(stderr, _("%s: Failed to open %s: %s\n"),
-		__progname, pathname, strerror(errno));
+    /* Open the stream. */
+openthestream:
+    fd = Fopen(pathname, fmode);
+    if (fd == NULL || Ferror(fd)) {
+	fprintf(stderr, _("%s: Failed to open %s: %s\n"),
+			__progname, pathname, Fstrerror(fd));
+	if (fd) Fclose(fd);
+	fd = NULL;
 	rc = 2;
 	goto exit;
     }
 
     /* Now grep the file */
-    rc = pcregrep(handle, frtype, (filenames > FN_DEFAULT ||
+    rc = pcregrep(fd, (filenames > FN_DEFAULT ||
 	(filenames == FN_DEFAULT && !only_one_at_top))? pathname : NULL);
 
-    /* Close in an appropriate manner. */
-#ifdef SUPPORT_LIBZ
-    if (frtype == FR_LIBZ)
-	gzclose(ingz);
-    else
-#endif
-
-    /*
-     * If it is a .bz2 file and the result is 2, it means that the first
-     * attempt to read failed. If the error indicates that the file isn't
-     * in fact bzipped, try again as a normal file.
-     */
-#ifdef SUPPORT_LIBBZ2
-    if (frtype == FR_LIBBZ2) {
-	if (rc == 2) {
-	    int errnum;
-	    const char *err = BZ2_bzerror(inbz2, &errnum);
-	    if (errnum == BZ_DATA_ERROR_MAGIC) {
-		BZ2_bzclose(inbz2);
-		goto PLAIN_FILE;
-	    }
-	    else if (!silent)
-		fprintf(stderr, _("%s: Failed to read %s using bzlib: %s\n"),
-		    __progname, pathname, err);
-	}
-	BZ2_bzclose(inbz2);
-    } else
-#endif
-
-    if (infd) {
-	Fclose(infd);
-	infd = NULL;
+    if (fd) {
+	Fclose(fd);
+	fd = NULL;
     }
 
 exit:
@@ -1821,7 +1699,7 @@ _("%s: Cannot mix --only-matching, --file-offsets and/or --line-offsets\n"),
 
     /* If there are no further arguments, do the business on stdin and exit. */
     if (i >= ac) {
-	rc = pcregrep(stdin, FR_PLAIN, (filenames > FN_DEFAULT)? stdin_name : NULL);
+	rc = grep_or_recurse("-", 0, 1);
 	goto exit;
     }
 
