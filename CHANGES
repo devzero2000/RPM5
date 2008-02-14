@@ -1,4 +1,6 @@
 5.0.0 -> 5.1a1:
+    - jbj: rpmgrep: collapse option booleans into a grepFlags bit set.
+    - jbj: rpmgrep: fix last 2 "make check" failures.
     - jbj: rpmgrep: install in bindir with man page.
     - rpm-maint: fix: limit exit codes to 254 to keep xargs happy.
     - jbj: mire: add vallen argument to mireRegexec().

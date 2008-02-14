@@ -100,11 +100,6 @@ enum { FN_NONE, FN_DEFAULT, FN_ONLY, FN_NOMATCH_ONLY, FN_FORCE };
 enum { dee_READ, dee_SKIP, dee_RECURSE };
 enum { DEE_READ, DEE_SKIP };
 
-/** Actions for special processing options (flag bits) */
-#define PO_WORD_MATCH     0x0001
-#define PO_LINE_MATCH     0x0002
-#define PO_FIXED_STRINGS  0x0004
-
 /** Line ending types */
 enum { EL_LF, EL_CR, EL_CRLF, EL_ANY, EL_ANYCRLF };
 
@@ -130,7 +125,7 @@ static char *color_option = NULL;
 static char *dee_option = NULL;
 static char *DEE_option = NULL;
 static char *newline = NULL;
-static char *pattern_filename = NULL;
+static const char *pattern_filename = NULL;
 static char *stdin_name = (char *)"(standard input)";
 static char *locale = NULL;
 
@@ -152,28 +147,42 @@ static int dee_action = dee_READ;
 static int DEE_action = DEE_READ;
 static int error_count = 0;
 static int filenames = FN_DEFAULT;
-static int process_options = 0;
 
-static int global_options = 0;
 static ARGV_t patterns = NULL;
 static int npatterns = 0;
 
-static BOOL count_only = FALSE;
-static BOOL do_colour = FALSE;
-static BOOL file_offsets = FALSE;
 static BOOL hyphenpending = FALSE;
-static BOOL invert = FALSE;
-static BOOL line_offsets = FALSE;
-static BOOL multiline = FALSE;
-static BOOL number = FALSE;
-static BOOL only_matching = FALSE;
-static BOOL quiet = FALSE;
-static BOOL silent = FALSE;
-static BOOL utf8 = FALSE;
+
+#define	_GFB(n)	((1 << (n)) | 0x40000000)
+#define GF_ISSET(_FLAG)    (grepFlags & ((GREP_FLAGS_##_FLAG) & ~0x40000000))
+
+enum grepFlags_e {
+    GREP_FLAGS_NONE		= 0,
+
+/* XXX WATCHOUT: the next 3 bits are also used as an index, do not change!!! */
+    GREP_FLAGS_WORD_MATCH	= _GFB( 0), /*!< -w,--word-regex ... */
+    GREP_FLAGS_LINE_MATCH	= _GFB( 1), /*!< -x,--line-regex ... */
+    GREP_FLAGS_FIXED_STRINGS	= _GFB( 2), /*!< -F,--fixed-strings ... */
+
+    GREP_FLAGS_COUNT		= _GFB( 3), /*!< -c,--count ... */
+    GREP_FLAGS_COLOR		= _GFB( 4), /*!< --color ... */
+    GREP_FLAGS_FOFFSETS		= _GFB( 5), /*!< --file-offsets ... */
+    GREP_FLAGS_LOFFSETS		= _GFB( 6), /*!< --line-offsets ... */
+    GREP_FLAGS_LNUMBER		= _GFB( 7), /*!< -n,--line-number ... */
+    GREP_FLAGS_MULTILINE	= _GFB( 8), /*!< -M,--multiline ... */
+    GREP_FLAGS_ONLY_MATCHING	= _GFB( 9), /*!< -o,--only-matching ... */
+    GREP_FLAGS_INVERT		= _GFB(10), /*!< -v,--invert ... */
+    GREP_FLAGS_QUIET		= _GFB(11), /*!< -q,--quiet ... */
+    GREP_FLAGS_SILENT		= _GFB(12), /*!< -s,--no-messages ... */
+    GREP_FLAGS_UTF8		= _GFB(13), /*!< -u,--utf8 ... */
+    GREP_FLAGS_CASELESS		= _GFB(14), /*!< -i,--ignore-case ... */
+};
+
+static enum grepFlags_e grepFlags = GREP_FLAGS_NONE;
 
 /**
  * Tables for prefixing and suffixing patterns, according to the -w, -x, and -F
- * options. These set the 1, 2, and 4 bits in process_options, respectively.
+ * options. These set the 1, 2, and 4 bits in grepFlags, respectively.
  * Note that the combination of -w and -x has the same effect as -x on its own,
  * so we can treat them as the same.
  */
@@ -184,9 +193,9 @@ static const char *suffix[] = {
   "", "\\b", ")$",   ")$",   "\\E", "\\E\\b", "\\E)$",   "\\E)$" };
 
 /** UTF-8 tables - used only when the newline setting is "any". */
-const int utf8_table3[] = { 0xff, 0x1f, 0x0f, 0x07, 0x03, 0x01};
+static const int utf8_table3[] = { 0xff, 0x1f, 0x0f, 0x07, 0x03, 0x01};
 
-const char utf8_table4[] = {
+static const char utf8_table4[] = {
   1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
   1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
   2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,
@@ -246,7 +255,7 @@ end_of_line(const char *p, const char *endptr, int *lenptr)
 	    int extra = 0;
 	    register int c = *((unsigned char *)p);
 
-	    if (utf8 && c >= 0xc0) {
+	    if (GF_ISSET(UTF8) && c >= 0xc0) {
 		int gcii, gcss;
 		extra = utf8_table4[c & 0x3f];  /* No. of additional bytes */
 		gcss = 6*extra;
@@ -285,7 +294,7 @@ end_of_line(const char *p, const char *endptr, int *lenptr)
 	    int extra = 0;
 	    register int c = *((unsigned char *)p);
 
-	    if (utf8 && c >= 0xc0) {
+	    if (GF_ISSET(UTF8) && c >= 0xc0) {
 		int gcii, gcss;
 		extra = utf8_table4[c & 0x3f];  /* No. of additional bytes */
 		gcss = 6*extra;
@@ -314,7 +323,7 @@ end_of_line(const char *p, const char *endptr, int *lenptr)
 		return p;
 
 	    case 0x85:    /* NEL */
-		*lenptr = utf8? 2 : 1;
+		*lenptr = GF_ISSET(UTF8) ? 2 : 1;
 		return p;
 
 	    case 0x2028:  /* LS */
@@ -367,13 +376,13 @@ previous_line(const char *p, const char *startptr)
     case EL_ANY:
     case EL_ANYCRLF:
 	if (*(--p) == '\n' && p > startptr && p[-1] == '\r') p--;
-	if (utf8) while ((*p & 0xc0) == 0x80) p--;
+	if (GF_ISSET(UTF8)) while ((*p & 0xc0) == 0x80) p--;
 
 	while (p > startptr) {
 	    const char *pp = p - 1;
 	    register int c;
 
-	    if (utf8) {
+	    if (GF_ISSET(UTF8)) {
 		int extra = 0;
 		while ((*pp & 0xc0) == 0x80) pp--;
 		c = *((unsigned char *)pp);
@@ -443,7 +452,7 @@ static void do_after_lines(int lastmatchnumber, const char *lastmatchrestart,
 	    const char *pp = lastmatchrestart;
 	    int ellength;
 	    if (printname != NULL) fprintf(stdout, "%s-", printname);
-	    if (number) fprintf(stdout, "%d-", lastmatchnumber++);
+	    if (GF_ISSET(LNUMBER)) fprintf(stdout, "%d-", lastmatchnumber++);
 	    pp = end_of_line(pp, endptr, &ellength);
 	    fwrite(lastmatchrestart, 1, pp - lastmatchrestart, stdout);
 	    lastmatchrestart = pp;
@@ -486,6 +495,7 @@ pcregrep(FD_t fd, const char *printname)
     char *endptr;
     size_t bufflength;
     BOOL endhyphenpending = FALSE;
+    BOOL invert = (GF_ISSET(INVERT) ? TRUE : FALSE);
 
     bufflength = Fread(buffer, 1, 3*MBUFTHIRD, fd);
     endptr = buffer + bufflength;
@@ -515,7 +525,7 @@ pcregrep(FD_t fd, const char *printname)
 	 */
 	t = end_of_line(t, endptr, &endlinelength);
 	linelength = t - ptr - endlinelength;
-	length = multiline? (size_t)(endptr - ptr) : linelength;
+	length = GF_ISSET(MULTILINE) ? (size_t)(endptr - ptr) : linelength;
 
 	/* Extra processing for Jeffrey Friedl's debugging. */
 #ifdef JFRIEDL_DEBUG
@@ -566,7 +576,7 @@ pcregrep(FD_t fd, const char *printname)
 #endif
 
 	/*
-	 * We come back here after a match when the -o option (only_matching)
+	 * We come back here after a match when the -o,--only-matching option
 	 * is set, in order to find any further matches in the same line.
 	 */
 ONLY_MATCHING_RESTART:
@@ -622,7 +632,7 @@ ONLY_MATCHING_RESTART:
 	    }
 
 	    /* Just count if just counting is wanted. */
-	    if (count_only) count++;
+	    if (GF_ISSET(COUNT)) count++;
 
 	    /*
 	     * If all we want is a file name, there is no need to scan any
@@ -635,7 +645,7 @@ ONLY_MATCHING_RESTART:
 	    }
 
 	    /* Likewise, if all we want is a yes/no answer. */
-	    else if (quiet) {
+	    else if (GF_ISSET(QUIET)) {
 		rc = 0;
 		goto exit;
 	    }
@@ -650,14 +660,14 @@ ONLY_MATCHING_RESTART:
 	     * invert mode, however, nothing is printed - this could be
 	     * still useful because the return code is set.
 	     */
-	    else if (only_matching) {
-		if (!invert) {
+	    else if (GF_ISSET(ONLY_MATCHING)) {
+		if (!GF_ISSET(INVERT)) {
 		    if (printname != NULL) fprintf(stdout, "%s:", printname);
-		    if (number) fprintf(stdout, "%d:", linenumber);
-		    if (line_offsets)
+		    if (GF_ISSET(LNUMBER)) fprintf(stdout, "%d:", linenumber);
+		    if (GF_ISSET(LOFFSETS))
 			fprintf(stdout, "%d,%d", matchptr + offsets[0] - ptr,
 			    offsets[1] - offsets[0]);
-		    else if (file_offsets)
+		    else if (GF_ISSET(FOFFSETS))
 			fprintf(stdout, "%d,%d", filepos + matchptr + offsets[0] - ptr,
 			    offsets[1] - offsets[0]);
 		    else
@@ -699,7 +709,7 @@ ONLY_MATCHING_RESTART:
 		    while (lastmatchrestart < p) {
 			const char *pp = lastmatchrestart;
 			if (printname != NULL) fprintf(stdout, "%s-", printname);
-			if (number) fprintf(stdout, "%d-", lastmatchnumber++);
+			if (GF_ISSET(LNUMBER)) fprintf(stdout, "%d-", lastmatchnumber++);
 			pp = end_of_line(pp, endptr, &ellength);
 			fwrite(lastmatchrestart, 1, pp - lastmatchrestart, stdout);
 			lastmatchrestart = pp;
@@ -736,7 +746,7 @@ ONLY_MATCHING_RESTART:
 			int ellength;
 			const char *pp = p;
 			if (printname != NULL) fprintf(stdout, "%s-", printname);
-			if (number) fprintf(stdout, "%d-", linenumber - linecount--);
+			if (GF_ISSET(LNUMBER)) fprintf(stdout, "%d-", linenumber - linecount--);
 			pp = end_of_line(pp, endptr, &ellength);
 			fwrite(p, 1, pp - p, stdout);
 			p = pp;
@@ -751,7 +761,7 @@ ONLY_MATCHING_RESTART:
 		    endhyphenpending = TRUE;
 
 		if (printname != NULL) fprintf(stdout, "%s:", printname);
-		if (number) fprintf(stdout, "%d:", linenumber);
+		if (GF_ISSET(LNUMBER)) fprintf(stdout, "%d:", linenumber);
 
 		/*
 		 * In multiline mode, we want to print to the end of the line
@@ -761,10 +771,10 @@ ONLY_MATCHING_RESTART:
 		 * Because the PCRE_FIRSTLINE option is set, the start of
 		 * the match will always be before the first newline sequence.
 		 * */
-		if (multiline) {
+		if (GF_ISSET(MULTILINE)) {
 		    int ellength;
 		    const char *endmatch = ptr;
-		    if (!invert) {
+		    if (!GF_ISSET(INVERT)) {
 			endmatch += offsets[1];
 			t = ptr;
 			while (t < endmatch) {
@@ -797,7 +807,7 @@ ONLY_MATCHING_RESTART:
 #endif
 
 		/* We have to split the line(s) up if colouring. */
-		if (do_colour) {
+		if (GF_ISSET(COLOR)) {
 		    fwrite(ptr, 1, offsets[0], stdout);
 		    fprintf(stdout, "%c[%sm", 0x1b, colour_string);
 		    fwrite(ptr + offsets[0], 1, offsets[1] - offsets[0], stdout);
@@ -825,7 +835,7 @@ ONLY_MATCHING_RESTART:
 	 * cause anything to be printed), we have to move on to the end of
 	 * the match before proceeding.
 	 */
-	if (multiline && invert && match) {
+	if (GF_ISSET(MULTILINE) && GF_ISSET(INVERT) && match) {
 	    int ellength;
 	    const char *endmatch = ptr + offsets[1];
 	    t = ptr;
@@ -878,7 +888,7 @@ ONLY_MATCHING_RESTART:
      * End of file; print final "after" lines if wanted; do_after_lines sets
      * hyphenpending if it prints something.
      */
-    if (!only_matching && !count_only) {
+    if (!GF_ISSET(ONLY_MATCHING) && !GF_ISSET(COUNT)) {
 	do_after_lines(lastmatchnumber, lastmatchrestart, endptr, printname);
 	hyphenpending |= endhyphenpending;
     }
@@ -894,7 +904,7 @@ ONLY_MATCHING_RESTART:
     }
 
     /* Print the match count if wanted */
-    if (count_only) {
+    if (GF_ISSET(COUNT)) {
 	if (printname != NULL) fprintf(stdout, "%s:", printname);
 	fprintf(stdout, "%d\n", count);
     }
@@ -951,7 +961,7 @@ grep_or_recurse(const char *pathname, BOOL dir_recurse, BOOL only_one_at_top)
 	    struct dirent *dp;
 
 	    if (dir == NULL) {
-		if (!silent)
+		if (!GF_ISSET(SILENT))
 		    fprintf(stderr, _("%s: Failed to open directory %s: %s\n"),
 			__progname, pathname, strerror(errno));
 		rc = 2;
@@ -1074,26 +1084,23 @@ used to identify them. */
 #define POPT_INCLUDE	(-4)
 #define POPT_LABEL	(-5)
 #define POPT_LOCALE	(-6)
-#define POPT_LOFFSETS	(-8)
-#define POPT_FOFFSETS	(-9)
 
 /**
  */
-typedef union rpmgrepArg_u {
+typedef union grepArg_u {
     void * ptr;
     int * intp;
-    long * longp;
-    const char ** argv;
-} rpmgrepArg;
+    const char ** strp;
+} grepArg;
 
 /**
  */
-static void rpmgrepArgCallback(poptContext con,
+static void grepArgCallback(poptContext con,
                 /*@unused@*/ enum poptCallbackReason reason,
                 const struct poptOption * opt, const char * arg,
                 /*@unused@*/ void * data)
 {
-    rpmgrepArg u = { .ptr = opt->arg };
+    grepArg u = { .ptr = opt->arg };
     int xx;
 
 #if 0
@@ -1101,38 +1108,49 @@ static void rpmgrepArgCallback(poptContext con,
     if (opt->arg == NULL)
 #endif
     switch (opt->val) {
-    case POPT_FOFFSETS: file_offsets = TRUE; break;
-    case POPT_LOFFSETS: line_offsets = number = TRUE; break;
-    case 'c': count_only = TRUE; break;
-    case 'F': process_options |= PO_FIXED_STRINGS; break;
+#ifndef	NOTYET
+    case GREP_FLAGS_FOFFSETS: grepFlags |= GREP_FLAGS_FOFFSETS; break;
+    case (GREP_FLAGS_LOFFSETS|GREP_FLAGS_LNUMBER):
+	grepFlags |= (GREP_FLAGS_LOFFSETS|GREP_FLAGS_LNUMBER);
+	break;
+    case GREP_FLAGS_COUNT: grepFlags |= GREP_FLAGS_COUNT; break;
+    case GREP_FLAGS_FIXED_STRINGS: grepFlags |= GREP_FLAGS_FIXED_STRINGS; break;
+#endif
     case 'H': filenames = FN_FORCE; break;
     case 'h': filenames = FN_NONE; break;
-    case 'i': global_options |= PCRE_CASELESS; break;
+#ifndef	NOTYET
+    case GREP_FLAGS_CASELESS: grepFlags |= GREP_FLAGS_CASELESS; break;
+#endif
     case 'l': filenames = FN_ONLY; break;
     case 'L': filenames = FN_NOMATCH_ONLY; break;
-    case 'M':
-	multiline = TRUE;
-	global_options |= PCRE_MULTILINE|PCRE_FIRSTLINE;
-	break;
-    case 'n': number = TRUE; break;
-    case 'o': only_matching = TRUE; break;
-    case 'q': quiet = TRUE; break;
+#ifndef	NOTYET
+    case GREP_FLAGS_MULTILINE: grepFlags |= GREP_FLAGS_MULTILINE; break;
+    case GREP_FLAGS_LNUMBER: grepFlags |= GREP_FLAGS_LNUMBER; break;
+    case GREP_FLAGS_ONLY_MATCHING: grepFlags |= GREP_FLAGS_ONLY_MATCHING; break;
+    case GREP_FLAGS_QUIET: grepFlags |= GREP_FLAGS_QUIET; break;
+#endif
     case 'r': dee_action = dee_RECURSE; break;
-    case 's': silent = TRUE; break;
-    case 'u': global_options |= PCRE_UTF8; utf8 = TRUE; break;
-    case 'v': invert = TRUE; break;
-    case 'w': process_options |= PO_WORD_MATCH; break;
-    case 'x': process_options |= PO_LINE_MATCH; break;
+#ifndef	NOTYET
+    case GREP_FLAGS_SILENT: grepFlags |= GREP_FLAGS_SILENT; break;
+    case GREP_FLAGS_UTF8: grepFlags |= GREP_FLAGS_UTF8; break;
+    case GREP_FLAGS_INVERT: grepFlags |= GREP_FLAGS_INVERT; break;
+    case GREP_FLAGS_WORD_MATCH: grepFlags |= GREP_FLAGS_WORD_MATCH; break;
+    case GREP_FLAGS_LINE_MATCH: grepFlags |= GREP_FLAGS_LINE_MATCH; break;
+#endif
 
-    case 'f': u.argv[0] = arg; break;
+    case 'f':
+	pattern_filename = xstrdup(arg);
+	break;
     case 'A': u.intp[0] = strtol(arg, NULL, 0); break;
     case 'B': u.intp[0] = strtol(arg, NULL, 0); break;
     case 'C': u.intp[0] = strtol(arg, NULL, 0); break;
     case POPT_INCLUDE:
-	include_pattern = arg;
+assert(arg != NULL);
+	include_pattern = xstrdup(arg);
 	break;
     case POPT_EXCLUDE:
-	exclude_pattern = arg;
+assert(arg != NULL);
+	exclude_pattern = xstrdup(arg);
 	break;
 
     /* XXX tristate: NULL default: disabled, optional arg overrides "auto" */
@@ -1169,7 +1187,7 @@ assert(arg != NULL);
 static struct poptOption optionsTable[] = {
 /*@-type@*/ /* FIX: cast? */
  { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA | POPT_CBFLAG_CONTINUE,
-        rpmgrepArgCallback, 0, NULL, NULL },
+        grepArgCallback, 0, NULL, NULL },
 /*@=type@*/
 
   { "after-context", 'A', POPT_ARG_INT,		&after_context, 'A',
@@ -1182,8 +1200,13 @@ static struct poptOption optionsTable[] = {
 	N_("matched text colour option"), N_("=option") },
   { "context", 'C',	POPT_ARG_INT,		&both_context, 'C',
 	N_("set number of context lines, before & after"), N_("=number") },
-  { "count", 'c',	POPT_ARG_NONE,		NULL, 'c',
+#ifdef	NOTYET
+  { "count", 'c', POPT_BIT_SET,		&grepFlags, GREP_FLAGS_COUNT,
 	N_("print only a count of matching lines per FILE"), NULL },
+#else
+  { "count", 'c', POPT_ARG_NONE,		NULL, GREP_FLAGS_COUNT,
+	N_("print only a count of matching lines per FILE"), NULL },
+#endif
 /* XXX HACK: there is a shortName option conflict with -D,--define */
   { "devices", 'D',	POPT_ARG_STRING,	&DEE_option, 0,
 	N_("how to handle devices, FIFOs, and sockets"), N_("=action") },
@@ -1191,62 +1214,133 @@ static struct poptOption optionsTable[] = {
 	N_("how to handle directories"), N_("=action") },
   { "regex", 'e',	POPT_ARG_STRING,	NULL, 'e',
 	N_("specify pattern (may be used more than once)"), N_("(p)") },
-  { "fixed_strings", 'F', POPT_ARG_NONE,	NULL, 'F',
+#ifdef	NOTYET
+  { "fixed_strings", 'F', POPT_BIT_SET,	&grepFlags, GREP_FLAGS_FIXED_STRINGS,
 	N_("patterns are sets of newline-separated strings"), NULL },
+#else
+  { "fixed_strings", 'F', POPT_ARG_NONE,	NULL, GREP_FLAGS_FIXED_STRINGS,
+	N_("patterns are sets of newline-separated strings"), NULL },
+#endif
+#ifdef	NOTYET
   { "file", 'f',	POPT_ARG_STRING,	&pattern_filename, 'f',
 	N_("read patterns from file"), N_("=path") },
-  { "file-offsets", '\0', POPT_ARG_NONE,	NULL, POPT_FOFFSETS,
+#else
+  { "file", 'f',	POPT_ARG_STRING,		NULL, 'f',
+	N_("read patterns from file"), N_("=path") },
+#endif
+#ifdef	NOTYET
+  { "file-offsets", '\0', POPT_BIT_SET,	&grepFlags, GREP_FLAGS_FOFFSETS,
 	N_("output file offsets, not text"), NULL },
+#else
+  { "file-offsets", '\0', POPT_ARG_NONE,	NULL, GREP_FLAGS_FOFFSETS,
+	N_("output file offsets, not text"), NULL },
+#endif
   { "with-filename", 'H', POPT_ARG_NONE,	NULL, 'H',
 	N_("force the prefixing filename on output"), NULL },
   { "no-filename", 'h',	POPT_ARG_NONE,		NULL, 'h',
 	N_("suppress the prefixing filename on output"), NULL },
-  { "ignore-case", 'i',	POPT_ARG_NONE,		NULL, 'i',
+#ifdef	NOTYET
+  { "ignore-case", 'i',	POPT_SET_BIT,	&grepFlags, GREP_FLAGS_CASELESS,
 	N_("ignore case distinctions"), NULL },
+#else
+  { "ignore-case", 'i',	POPT_ARG_NONE,		NULL, GREP_FLAGS_CASELESS,
+	N_("ignore case distinctions"), NULL },
+#endif
   { "files-with-matches", 'l', POPT_ARG_NONE,	NULL, 'l',
 	N_("print only FILE names containing matches"), NULL },
   { "files-without-match", 'L',	POPT_ARG_NONE,	NULL, 'L',
 	N_("print only FILE names not containing matches"), NULL },
   { "label", '\0',	POPT_ARG_STRING,	&stdin_name, POPT_LABEL,
 	N_("set name for standard input"), N_("=name") },
-  { "line-offsets", '\0', POPT_ARG_NONE,	NULL, POPT_LOFFSETS,
+#ifdef	NOTYET
+  { "line-offsets", '\0', POPT_BIT_SET,	&grepFlags, (GREP_FLAGS_LOFFSETS|GREP_FLAGS_LNUMBER),
 	N_("output line numbers and offsets, not text"), NULL },
+#else
+  { "line-offsets", '\0', POPT_ARG_NONE,	NULL, (GREP_FLAGS_LOFFSETS|GREP_FLAGS_LNUMBER),
+	N_("output line numbers and offsets, not text"), NULL },
+#endif
   { "locale", '\0',	POPT_ARG_STRING,	&locale, POPT_LOCALE,
 	N_("use the named locale"), N_("=locale") },
-  { "multiline", 'M',	POPT_ARG_NONE,		NULL, 'M',
+  { "multiline", 'M',	POPT_ARG_NONE,		NULL, GREP_FLAGS_MULTILINE,
 	N_("run in multiline mode"), NULL },
   { "newline", 'N',	POPT_ARG_STRING,	&newline, 0,
 	N_("set newline type (CR, LF, CRLF, ANYCRLF or ANY)"), N_("=type") },
-  { "line-number", 'n',	POPT_ARG_NONE,		NULL, 'n',
+#ifdef	NOTYET
+  { "line-number", 'n',	POPT_BIT_SET,	&grepFlags, GREP_FLAGS_LNUMBER,
 	N_("print line number with output lines"), NULL },
-  { "only-matching", 'o', POPT_ARG_NONE,	NULL, 'o',
+#else
+  { "line-number", 'n',	POPT_ARG_NONE,	NULL, GREP_FLAGS_LNUMBER,
+	N_("print line number with output lines"), NULL },
+#endif
+#ifdef	NOTYET
+  { "only-matching", 'o', POPT_BIT_SET,	&grepFlags, GREP_FLAGS_ONLY_MATCHING,
 	N_("show only the part of the line that matched"), NULL },
+#else
+  { "only-matching", 'o', POPT_ARG_NONE,	NULL, GREP_FLAGS_ONLY_MATCHING,
+	N_("show only the part of the line that matched"), NULL },
+#endif
 /* XXX HACK: there is a longName option conflict with --quiet */
-  { "quiet", 'q',	POPT_ARG_NONE,		NULL, 'q',
+#ifdef	NOTYET
+  { "quiet", 'q', POPT_BIT_SET,		&grepFlags, GREP_FLAGS_QUIET,
 	N_("suppress output, just set return code"), NULL },
+#else
+  { "quiet", 'q', POPT_ARG_NONE,		NULL, GREP_FLAGS_QUIET,
+	N_("suppress output, just set return code"), NULL },
+#endif
   { "recursive", 'r',	POPT_ARG_NONE,		NULL, 'r',
 	N_("recursively scan sub-directories"), NULL },
-  { "exclude", POPT_EXCLUDE, POPT_ARG_STRING,	&exclude_pattern, POPT_EXCLUDE,
+#ifdef	NOTYET
+  { "exclude", '\0', POPT_ARG_STRING,	&exclude_pattern, 0,
 	N_("exclude matching files when recursing"), N_("=pattern") },
-  { "include", '\0',	POPT_ARG_STRING,	&include_pattern, POPT_INCLUDE,
+  { "include", '\0', POPT_ARG_STRING,	&include_pattern, 0,
 	N_("include matching files when recursing"), N_("=pattern") },
+#else
+  { "exclude", '\0', POPT_ARG_STRING,		NULL, POPT_EXCLUDE,
+	N_("exclude matching files when recursing"), N_("=pattern") },
+  { "include", '\0', POPT_ARG_STRING,		NULL, POPT_INCLUDE,
+	N_("include matching files when recursing"), N_("=pattern") },
+#endif
 #ifdef JFRIEDL_DEBUG
   { "jeffS", 'S',	OP_OP_NUMBER,	&S_arg, 'S',
 	N_("replace matched (sub)string with X"), NULL },
 #endif
-  { "no-messages", 's',	POPT_ARG_NONE,		NULL, 's',
+#ifdef	NOTYET
+  { "no-messages", 's',	POPT_BIT_SET,	&grepFlags, GREP_FLAGS_SILENT,
 	N_("suppress error messages"), NULL },
-  { "utf-8", 'u',	POPT_ARG_NONE,		NULL, 'u',
+  { "silent", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN, &grepFlags, GREP_FLAGS_SILENT,
+	N_("suppress error messages"), NULL },
+#else
+  { "no-messages", 's',	POPT_ARG_NONE,		NULL, GREP_FLAGS_SILENT,
+	N_("suppress error messages"), NULL },
+  { "silent", '\0', POPT_ARG_NONE|POPT_ARGFLAG_DOC_HIDDEN, NULL, GREP_FLAGS_SILENT,
+	N_("suppress error messages"), NULL },
+#endif
+  { "utf-8", 'u',	POPT_ARG_NONE,		NULL, GREP_FLAGS_UTF8,
 	N_("use UTF-8 mode"), NULL },
   { "version", 'V',	POPT_ARG_NONE,		NULL, 'V',
 	N_("print version information and exit"), NULL },
 /* XXX HACK: there is a shortName option conflict with -v, --verbose */
-  { "invert-match", 'v',	POPT_ARG_NONE,	NULL, 'v',
+#ifdef	NOTYET
+  { "invert-match", 'v', POPT_BIT_SET,	&grepFlags, GREP_FLAGS_INVERT,
 	N_("select non-matching lines"), NULL },
-  { "word-regex", 'w',	POPT_ARG_NONE,		NULL, 'w',
+#else
+  { "invert-match", 'v', POPT_ARG_NONE,		NULL, GREP_FLAGS_INVERT,
+	N_("select non-matching lines"), NULL },
+#endif
+#ifdef	NOTYET
+  { "word-regex", 'w', POPT_BIT_SET,	&grepFlags, GREP_FLAGS_WORD_MATCH,
 	N_("force patterns to match only as words") , N_("(p)") },
-  { "line-regex", 'x',	POPT_ARG_NONE,		NULL, 'x',
+#else
+  { "word-regex", 'w',	POPT_ARG_NONE,		NULL, GREP_FLAGS_WORD_MATCH,
+	N_("force patterns to match only as words") , N_("(p)") },
+#endif
+#ifdef	NOTYET
+  { "line-regex", 'x', POPT_BIT_SET,	&grepFlags, GREP_FLAGS_LINE_MATCH,
 	N_("force patterns to match only whole lines"), N_("(p)") },
+#else
+  { "line-regex", 'x',	POPT_ARG_NONE,		NULL, GREP_FLAGS_LINE_MATCH,
+	N_("force patterns to match only whole lines"), N_("(p)") },
+#endif
 
   POPT_AUTOALIAS
 
@@ -1328,8 +1422,8 @@ compile_single_pattern(const char *pattern, int options,
     }
     mire = pattern_list + pattern_count;
 
-    sprintf(buffer, "%s%.*s%s", prefix[process_options], MBUFTHIRD, pattern,
-	suffix[process_options]);
+    sprintf(buffer, "%s%.*s%s", prefix[grepFlags & 0x7], MBUFTHIRD, pattern,
+	suffix[grepFlags & 0x7]);
     /* XXX initialize mire->mode & mire->tag. */
     mire->mode = RPMMIRE_PCRE;
     mire->tag = 0;
@@ -1341,7 +1435,7 @@ compile_single_pattern(const char *pattern, int options,
 	return TRUE;
     }
     /* Handle compile errors */
-    mire->erroff -= (int)strlen(prefix[process_options]);
+    mire->erroff -= (int)strlen(prefix[grepFlags & 0x7]);
     if (mire->erroff < 0)
 	mire->erroff = 0;
     if (mire->erroff > (int)strlen(pattern))
@@ -1372,7 +1466,7 @@ static BOOL
 compile_pattern(const char *pattern, int options,
 		/*@null@*/ const char *filename, int count)
 {
-    if ((process_options & PO_FIXED_STRINGS) != 0) {
+    if (GF_ISSET(FIXED_STRINGS) != 0) {
 	const char *eop = pattern + strlen(pattern);
 	char buffer[MBUFTHIRD];
 	for(;;) {
@@ -1478,7 +1572,12 @@ main(int argc, char **argv)
     case -2:	newline = (char *)"anycrlf";	break;
     }
 
-    pcre_options = global_options;
+    if (GF_ISSET(CASELESS))
+	pcre_options |= PCRE_CASELESS;
+    if (GF_ISSET(MULTILINE))
+	pcre_options |= PCRE_MULTILINE|PCRE_FIRSTLINE;
+    if (GF_ISSET(UTF8))
+	pcre_options |= PCRE_UTF8;
     av = poptGetArgs(optCon);
     ac = argvCount(av);
     i = 0;
@@ -1495,10 +1594,10 @@ main(int argc, char **argv)
 
     /*
      * Only one of --only-matching, --file-offsets, or --line-offsets is
-     * permitted.  However, the latter two set the only_matching flag.
+     * permitted.  However, the latter two imply the --only-matching option.
      */
-    if ((only_matching && (file_offsets || line_offsets)) ||
-	    (file_offsets && line_offsets))
+    if (((GF_ISSET(FOFFSETS) || GF_ISSET(LOFFSETS)) && GF_ISSET(ONLY_MATCHING))
+     ||  (GF_ISSET(FOFFSETS) && GF_ISSET(LOFFSETS)))
     {
 	fprintf(stderr,
 _("%s: Cannot mix --only-matching, --file-offsets and/or --line-offsets\n"),
@@ -1506,7 +1605,8 @@ _("%s: Cannot mix --only-matching, --file-offsets and/or --line-offsets\n"),
 	exit(usage(optCon, 2));
     }
 
-    if (file_offsets || line_offsets) only_matching = TRUE;
+    if (GF_ISSET(FOFFSETS) || GF_ISSET(LOFFSETS))
+	grepFlags |= GREP_FLAGS_ONLY_MATCHING;
 
     /*
      * If a locale has not been provided as an option, see if the LC_CTYPE or
@@ -1539,15 +1639,18 @@ _("%s: Cannot mix --only-matching, --file-offsets and/or --line-offsets\n"),
     /* Sort out colouring */
     if (color_option != NULL && strcmp(color_option, "never") != 0) {
 	if (strcmp(color_option, "always") == 0)
-	    do_colour = TRUE;
-	else if (strcmp(color_option, "auto") == 0)
-	    do_colour = isatty(fileno(stdout));
-	else {
+	    grepFlags |= GREP_FLAGS_COLOR;
+	else if (strcmp(color_option, "auto") == 0) {
+	    if (isatty(fileno(stdout)))
+		grepFlags |= GREP_FLAGS_COLOR;
+	    else
+		grepFlags &= ~GREP_FLAGS_COLOR;
+	} else {
 	    fprintf(stderr, _("%s: Unknown colour setting \"%s\"\n"),
 		__progname, color_option);
 	    return 2;
 	}
-	if (do_colour) {
+	if (GF_ISSET(COLOR)) {
 	    char *cs = getenv("PCREGREP_COLOUR");
 	    if (cs == NULL) cs = getenv("PCREGREP_COLOR");
 	    if (cs != NULL) colour_string = cs;
@@ -1645,7 +1748,7 @@ _("%s: Cannot mix --only-matching, --file-offsets and/or --line-offsets\n"),
 	int linenumber = 0;
 	FD_t fd = NULL;
 	FILE *fp;
-	char *fn;
+	const char *fn;
 	char buffer[MBUFTHIRD];
 
 	if (strcmp(pattern_filename, "-") == 0) {
@@ -1731,7 +1834,7 @@ _("%s: Cannot mix --only-matching, --file-offsets and/or --line-offsets\n"),
      * suppresses the file name if the argument is not a directory and
      * filenames are not otherwise forced.
      */
-    only_one_at_top = (i == ac - 1);   /* Catch initial value of i */
+    only_one_at_top = (i == ac -1);	/* Catch initial value of i */
 
     for (; i < ac; i++) {
 	int frc = grep_or_recurse(av[i], dee_action == dee_RECURSE,
@@ -1746,6 +1849,10 @@ exit:
     pattern_list = mireFreeAll(pattern_list, pattern_count);
 
     patterns = argvFree(patterns);
+
+    exclude_pattern = _free(exclude_pattern);
+    include_pattern = _free(include_pattern);
+    pattern_filename = _free(pattern_filename);
 
     optCon = rpmioFini(optCon);
 
