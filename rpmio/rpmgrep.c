@@ -97,8 +97,8 @@ static int poptSaveString(const char ***argvp, unsigned int argInfo, const char 
 enum { FN_NONE, FN_DEFAULT, FN_ONLY, FN_NOMATCH_ONLY, FN_FORCE };
 
 /** Actions for the -d and -D options */
-enum { dee_READ, dee_SKIP, dee_RECURSE };
-enum { DEE_READ, DEE_SKIP };
+enum { dee_READ=1, dee_SKIP, dee_RECURSE };
+enum { DEE_READ=1, DEE_SKIP };
 
 /** Line ending types */
 enum { EL_LF, EL_CR, EL_CRLF, EL_ANY, EL_ANYCRLF };
@@ -1106,16 +1106,6 @@ static void grepArgCallback(poptContext con,
     /* XXX avoid accidental collisions with POPT_BIT_SET for flags */
     if (opt->arg == NULL)
     switch (opt->val) {
-#ifndef	NOTYET
-    case 'H': filenames = FN_FORCE; break;
-    case 'h': filenames = FN_NONE; break;
-#endif
-    case 'l': filenames = FN_ONLY; break;
-    case 'L': filenames = FN_NOMATCH_ONLY; break;
-#ifndef	NOTYET
-    case 'r': dee_action = dee_RECURSE; break;
-#endif
-
     case 'f':
 assert(arg != NULL);
 	pattern_filename = xstrdup(arg);
@@ -1141,6 +1131,11 @@ assert(arg != NULL);
     case POPT_LABEL:
 assert(arg != NULL);
 	stdin_name = xstrdup(arg);
+	break;
+
+    case POPT_LOCALE:
+assert(arg != NULL);
+	locale = xstrdup(arg);
 	break;
 
 #ifdef JFRIEDL_DEBUG
@@ -1204,29 +1199,27 @@ static struct poptOption optionsTable[] = {
 #endif
   { "file-offsets", '\0', POPT_BIT_SET,	&grepFlags, GREP_FLAGS_FOFFSETS,
 	N_("output file offsets, not text"), NULL },
-#ifdef	NOTYET
   { "with-filename", 'H', POPT_ARG_VAL,	&filenames, FN_FORCE,
 	N_("force the prefixing filename on output"), NULL },
   { "no-filename", 'h',	POPT_ARG_VAL,	&filenames, FN_NONE,
 	N_("suppress the prefixing filename on output"), NULL },
-#else
-  { "with-filename", 'H', POPT_ARG_NONE,	NULL, 'H',
-	N_("force the prefixing filename on output"), NULL },
-  { "no-filename", 'h',	POPT_ARG_NONE,		NULL, 'h',
-	N_("suppress the prefixing filename on output"), NULL },
-#endif
   { "ignore-case", 'i',	POPT_BIT_SET,	&grepFlags, GREP_FLAGS_CASELESS,
 	N_("ignore case distinctions"), NULL },
-  { "files-with-matches", 'l', POPT_ARG_NONE,	NULL, 'l',
+  { "files-with-matches", 'l', POPT_ARG_VAL,	&filenames, FN_ONLY,
 	N_("print only FILE names containing matches"), NULL },
-  { "files-without-match", 'L',	POPT_ARG_NONE,	NULL, 'L',
+  { "files-without-match", 'L',	POPT_ARG_VAL,	&filenames, FN_NOMATCH_ONLY,
 	N_("print only FILE names not containing matches"), NULL },
   { "label", '\0',	POPT_ARG_STRING,	&stdin_name, POPT_LABEL,
 	N_("set name for standard input"), N_("=name") },
   { "line-offsets", '\0', POPT_BIT_SET,	&grepFlags, (GREP_FLAGS_LOFFSETS|GREP_FLAGS_LNUMBER),
 	N_("output line numbers and offsets, not text"), NULL },
+#ifdef	NOTYET
   { "locale", '\0',	POPT_ARG_STRING,	&locale, POPT_LOCALE,
 	N_("use the named locale"), N_("=locale") },
+#else
+  { "locale", '\0',	POPT_ARG_NONE,		NULL, POPT_LOCALE,
+	N_("use the named locale"), N_("=locale") },
+#endif
   { "multiline", 'M', POPT_BIT_SET,	&grepFlags, GREP_FLAGS_MULTILINE,
 	N_("run in multiline mode"), NULL },
   { "newline", 'N',	POPT_ARG_STRING,	&newline, 0,
@@ -1238,13 +1231,8 @@ static struct poptOption optionsTable[] = {
 /* XXX HACK: there is a longName option conflict with --quiet */
   { "quiet", 'q', POPT_BIT_SET,		&grepFlags, GREP_FLAGS_QUIET,
 	N_("suppress output, just set return code"), NULL },
-#ifdef	NOTYET
   { "recursive", 'r',	POPT_ARG_VAL,		&dee_action, dee_RECURSE,
 	N_("recursively scan sub-directories"), NULL },
-#else
-  { "recursive", 'r',	POPT_ARG_NONE,		NULL, 'r',
-	N_("recursively scan sub-directories"), NULL },
-#endif
 #ifdef	NOTYET
   { "exclude", '\0', POPT_ARG_STRING,	&exclude_pattern, 0,
 	N_("exclude matching files when recursing"), N_("=pattern") },
@@ -1482,10 +1470,8 @@ main(int argc, char **argv)
     int rc = 1;
     int pcre_options = 0;
     int errptr;
-    BOOL only_one_at_top;
     ARGV_t av = NULL;
     int ac = 0;
-    const char *locale_from = "--locale";
     const char *error;
     int xx;
 
@@ -1521,10 +1507,7 @@ main(int argc, char **argv)
     i = 0;
     rc = 1;
 
-    /*
-     * Options have been decoded. If -C was used, its value is used as a default
-     * for -A and -B.
-     */
+    /* If -C was used, its value is used as a default for -A and -B.  */
     if (both_context > 0) {
 	if (after_context == 0) after_context = both_context;
 	if (before_context == 0) before_context = both_context;
@@ -1546,32 +1529,37 @@ _("%s: Cannot mix --only-matching, --file-offsets and/or --line-offsets\n"),
     if (GF_ISSET(FOFFSETS) || GF_ISSET(LOFFSETS))
 	grepFlags |= GREP_FLAGS_ONLY_MATCHING;
 
-    /*
-     * If a locale has not been provided as an option, see if the LC_CTYPE or
-     * LC_ALL environment variable is set, and if so, use it.
-     */
-    if (locale == NULL) {
-	locale = getenv("LC_ALL");
-	locale_from = "LCC_ALL";
-    }
-
-    if (locale == NULL) {
-	locale = getenv("LC_CTYPE");
-	locale_from = "LC_CTYPE";
-    }
-
-    /*
-     * If a locale has been provided, set it, and generate the tables the PCRE
-     * needs. Otherwise, pcretables==NULL, which causes the use of default
-     * tables.
-     */
-    if (locale != NULL) {
-	if (setlocale(LC_CTYPE, locale) == NULL) {
-	    fprintf(stderr, _("%s: Failed to set locale %s (obtained from %s)\n"),
-		__progname, locale, locale_from);
-	    return 2;
+    /* Compile locale-specific PCRE tables. */
+    {   const char * locale_from;
+	if (locale)
+	    locale_from = "--locale";
+	else {
+	    /*
+	     * If a locale has not been provided as an option, see if the
+	     * LC_CTYPE or LC_ALL environment variable is set, and if so,
+	     * use it.
+	     */
+	    if ((locale = getenv("LC_ALL")) != NULL)
+		locale_from = "LCC_ALL";
+	    else if ((locale = getenv("LC_CTYPE")) != NULL)
+		locale_from = "LC_CTYPE";
+	    if (locale)
+		locale = xstrdup(locale);
 	}
-	pcretables = pcre_maketables();
+
+	/*
+	 * If a locale has been provided, set it, and generate the tables PCRE
+	 * needs. Otherwise, pcretables == NULL, which uses default tables.
+	 */
+	if (locale != NULL) {
+	    if (setlocale(LC_CTYPE, locale) == NULL) {
+	 	fprintf(stderr,
+			_("%s: Failed to set locale %s (obtained from %s)\n"),
+			__progname, locale, locale_from);
+		return 2;
+	    }
+	    pcretables = pcre_maketables();
+	}
     }
 
     /* Sort out colouring */
@@ -1772,13 +1760,14 @@ _("%s: Cannot mix --only-matching, --file-offsets and/or --line-offsets\n"),
      * suppresses the file name if the argument is not a directory and
      * filenames are not otherwise forced.
      */
-    only_one_at_top = (i == ac -1);	/* Catch initial value of i */
+    {	BOOL only_one_at_top = (i == ac -1);	/* Catch initial value of i */
 
-    for (; i < ac; i++) {
-	int frc = grep_or_recurse(av[i], dee_action == dee_RECURSE,
-	    only_one_at_top);
-	if (frc > 1) rc = frc;
-	else if (frc == 0 && rc == 1) rc = 0;
+	for (; i < ac; i++) {
+	    int frc = grep_or_recurse(av[i], dee_action == dee_RECURSE,
+			only_one_at_top);
+	    if (frc > 1) rc = frc;
+	    else if (frc == 0 && rc == 1) rc = 0;
+	}
     }
 
 exit:
@@ -1791,6 +1780,7 @@ exit:
     color_option = _free(color_option);
     exclude_pattern = _free(exclude_pattern);
     include_pattern = _free(include_pattern);
+    locale = _free(locale);
     pattern_filename = _free(pattern_filename);
     stdin_name = _free(stdin_name);
 
