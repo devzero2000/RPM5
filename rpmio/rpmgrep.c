@@ -69,6 +69,26 @@ typedef int BOOL;
 #define MBUFTHIRD 8192
 #endif
 
+#if !defined(POPT_ARG_ARGV)
+#define POPT_ARG_ARGV 0
+static int poptSaveString(const char ***argvp, unsigned int argInfo, const char * val)
+{
+    ARGV_t argv;
+    int argc = 0;
+    if (argvp == NULL)
+	return -1;
+    if (*argvp)
+    while ((*argvp)[argc] != NULL)
+	argc++;
+    *argvp = xrealloc(*argvp, (argc + 1 + 1) * sizeof(**argvp));
+    if ((argv = *argvp) != NULL) {
+	argv[argc++] = xstrdup(val);
+	argv[argc  ] = NULL;
+    }
+    return 0;
+}
+#endif
+
 /**
  * Values for the "filenames" variable, which specifies options for file name
  * output. The order is important; it is assumed that a file name is wanted for
@@ -1400,6 +1420,7 @@ static void * mireFreeAll(/*@only@*/ /*@null@*/ miRE mire, int nre)
  */
 /*@-onlytrans@*/	/* XXX miRE array, not refcounted. */
 /*@null@*/
+#if 0
 static int mireAppend(rpmMireMode mode, int tag, const char * pattern,
 		miRE * mi_rep, int * mi_nrep)
 	/*@modifies *mi_rep, *mi_nrep @*/
@@ -1418,6 +1439,7 @@ static int mireAppend(rpmMireMode mode, int tag, const char * pattern,
     mire->tag = tag;
     return mireRegcomp(mire, pattern);
 }
+#endif
 /*@=onlytrans@*/
 
 /*************************************************
