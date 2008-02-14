@@ -38,7 +38,7 @@ fi
 # Check for the availability of UTF-8 support
 #./pcretest -C | ./pcregrep "No UTF-8 support" >/dev/null
 #utf8=$?
-utf8=0
+utf8=1
 
 echo "---------------------------- Test 1 ------------------------------" >testtry
 (cd $srcdir; $valgrind $pcregrep PATTERN ./testdata/grepinput) >>testtry

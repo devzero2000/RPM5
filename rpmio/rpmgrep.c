@@ -1032,7 +1032,8 @@ grep_or_recurse(const char *pathname, BOOL dir_recurse, BOOL only_one_at_top)
 openthestream:
     fd = Fopen(pathname, fmode);
     if (fd == NULL || Ferror(fd)) {
-	fprintf(stderr, _("%s: Failed to open %s: %s\n"),
+	if (!GF_ISSET(SILENT))
+	    fprintf(stderr, _("%s: Failed to open %s: %s\n"),
 			__progname, pathname, Fstrerror(fd));
 	if (fd) Fclose(fd);
 	fd = NULL;
@@ -1084,6 +1085,7 @@ used to identify them. */
 #define POPT_INCLUDE	(-4)
 #define POPT_LABEL	(-5)
 #define POPT_LOCALE	(-6)
+#define	POPT_NEWLINE	(-7)
 
 /**
  */
@@ -1138,6 +1140,11 @@ assert(arg != NULL);
 	locale = xstrdup(arg);
 	break;
 
+    case POPT_NEWLINE:
+assert(arg != NULL);
+	newline = xstrdup(arg);
+	break;
+
 #ifdef JFRIEDL_DEBUG
     /* XXX tristate:  dunno behavior */
     case 'S':
@@ -1173,9 +1180,9 @@ static struct poptOption optionsTable[] = {
 	N_("set number of following context lines"), N_("=number") },
   { "before-context", 'B', POPT_ARG_INT,	&before_context, 'B',
 	N_("set number of prior context lines"), N_("=number") },
-  { "color", '\0',	POPT_ARG_NONE,		NULL, POPT_COLOR,
+  { "color", '\0',	POPT_ARG_STRING,	NULL, POPT_COLOR,
 	N_("matched text color option"), N_("option") },
-  { "colour", '\0',	POPT_ARG_NONE,		NULL, POPT_COLOR,
+  { "colour", '\0',	POPT_ARG_STRING,	NULL, POPT_COLOR,
 	N_("matched text colour option"), N_("=option") },
   { "context", 'C',	POPT_ARG_INT,		&both_context, 'C',
 	N_("set number of context lines, before & after"), N_("=number") },
@@ -1222,8 +1229,13 @@ static struct poptOption optionsTable[] = {
 #endif
   { "multiline", 'M', POPT_BIT_SET,	&grepFlags, GREP_FLAGS_MULTILINE,
 	N_("run in multiline mode"), NULL },
+#ifdef	NOTYET
   { "newline", 'N',	POPT_ARG_STRING,	&newline, 0,
 	N_("set newline type (CR, LF, CRLF, ANYCRLF or ANY)"), N_("=type") },
+#else
+  { "newline", 'N',	POPT_ARG_STRING,	NULL, POPT_NEWLINE,
+	N_("set newline type (CR, LF, CRLF, ANYCRLF or ANY)"), N_("=type") },
+#endif
   { "line-number", 'n',	POPT_BIT_SET,	&grepFlags, GREP_FLAGS_LNUMBER,
 	N_("print line number with output lines"), NULL },
   { "only-matching", 'o', POPT_BIT_SET,	&grepFlags, GREP_FLAGS_ONLY_MATCHING,
@@ -1483,13 +1495,15 @@ main(int argc, char **argv)
      * "lf", "cr", "crlf", and "any" are supported. Anything else is treated
      * as "lf".
      */
-    (void)pcre_config(PCRE_CONFIG_NEWLINE, &i);
-    switch (i) {
-    default:	newline = (char *)"lf";		break;
-    case '\r':	newline = (char *)"cr";		break;
-    case ('\r' << 8) | '\n': newline = (char *)"crlf"; break;
-    case -1:	newline = (char *)"any";	break;
-    case -2:	newline = (char *)"anycrlf";	break;
+    if (newline == NULL) {
+	(void)pcre_config(PCRE_CONFIG_NEWLINE, &i);
+	switch (i) {
+	default:	newline = xstrdup("lf");		break;
+	case '\r':	newline = xstrdup("cr");		break;
+	case ('\r' << 8) | '\n': newline = xstrdup("crlf"); break;
+	case -1:	newline = xstrdup("any");	break;
+	case -2:	newline = xstrdup("anycrlf");	break;
+	}
     }
 
     if (stdin_name == NULL)
@@ -1556,7 +1570,8 @@ _("%s: Cannot mix --only-matching, --file-offsets and/or --line-offsets\n"),
 	 	fprintf(stderr,
 			_("%s: Failed to set locale %s (obtained from %s)\n"),
 			__progname, locale, locale_from);
-		return 2;
+		rc = 2;
+		goto exit;
 	    }
 	    pcretables = pcre_maketables();
 	}
@@ -1574,7 +1589,7 @@ _("%s: Cannot mix --only-matching, --file-offsets and/or --line-offsets\n"),
 	} else {
 	    fprintf(stderr, _("%s: Unknown colour setting \"%s\"\n"),
 		__progname, color_option);
-	    return 2;
+	    goto errexit;
 	}
 	if (GF_ISSET(COLOR)) {
 	    char *cs = getenv("PCREGREP_COLOUR");
@@ -1584,30 +1599,25 @@ _("%s: Cannot mix --only-matching, --file-offsets and/or --line-offsets\n"),
     }
 
     /* Interpret the newline type; the default settings are Unix-like. */
-    if (strcmp(newline, "cr") == 0 || strcmp(newline, "CR") == 0) {
+    if (!strcasecmp(newline, "cr")) {
 	pcre_options |= PCRE_NEWLINE_CR;
 	endlinetype = EL_CR;
-    }
-    else if (strcmp(newline, "lf") == 0 || strcmp(newline, "LF") == 0) {
+    } else if (!strcasecmp(newline, "lf")) {
 	pcre_options |= PCRE_NEWLINE_LF;
 	endlinetype = EL_LF;
-    }
-    else if (strcmp(newline, "crlf") == 0 || strcmp(newline, "CRLF") == 0) {
+    } else if (!strcasecmp(newline, "crlf")) {
 	pcre_options |= PCRE_NEWLINE_CRLF;
 	endlinetype = EL_CRLF;
-    }
-    else if (strcmp(newline, "any") == 0 || strcmp(newline, "ANY") == 0) {
+    } else if (!strcasecmp(newline, "any")) {
 	pcre_options |= PCRE_NEWLINE_ANY;
 	endlinetype = EL_ANY;
-    }
-    else if (strcmp(newline, "anycrlf") == 0 || strcmp(newline, "ANYCRLF") == 0) {
+    } else if (!strcasecmp(newline, "anycrlf")) {
 	pcre_options |= PCRE_NEWLINE_ANYCRLF;
 	endlinetype = EL_ANYCRLF;
-    }
-    else {
+    } else {
 	fprintf(stderr, _("%s: Invalid newline specifier \"%s\"\n"),
 		__progname, newline);
-	return 2;
+	goto errexit;
     }
 
     /* Interpret the text values for -d and -D */
@@ -1618,7 +1628,7 @@ _("%s: Cannot mix --only-matching, --file-offsets and/or --line-offsets\n"),
 	else {
 	    fprintf(stderr, _("%s: Invalid value \"%s\" for -d\n"),
 		__progname, dee_option);
-	    return 2;
+	    goto errexit;
 	}
     }
 
@@ -1628,7 +1638,7 @@ _("%s: Cannot mix --only-matching, --file-offsets and/or --line-offsets\n"),
 	else {
 	    fprintf(stderr, _("%s: Invalid value \"%s\" for -D\n"),
 		__progname, DEE_option);
-	    return 2;
+	    goto errexit;
 	}
     }
 
@@ -1636,7 +1646,7 @@ _("%s: Cannot mix --only-matching, --file-offsets and/or --line-offsets\n"),
 #ifdef JFRIEDL_DEBUG
     if (S_arg > 9) {
 	fprintf(stderr, _("%s: bad value for -S option\n"), __progname);
-	return 2;
+	goto errexit;
     }
     if (jfriedl_XT != 0 || jfriedl_XR != 0) {
 	if (jfriedl_XT == 0) jfriedl_XT = 1;
@@ -1666,7 +1676,7 @@ _("%s: Cannot mix --only-matching, --file-offsets and/or --line-offsets\n"),
     for (j = 0; j < npatterns; j++) {
 	if (!compile_pattern(patterns[j], pcre_options, NULL,
 		 (j == 0 && npatterns == 1)? 0 : j + 1))
-	    goto errorexit;
+	    goto errexit;
     }
 
     /* Compile the regular expressions that are provided in a file. */
@@ -1688,7 +1698,7 @@ _("%s: Cannot mix --only-matching, --file-offsets and/or --line-offsets\n"),
 			__progname, pattern_filename, Fstrerror(fd));
 		if (fd) Fclose(fd);
 		fd = NULL;
-		goto errorexit;
+		goto errexit;
 	    }
 	    fn = pattern_filename;
 	}
@@ -1701,7 +1711,7 @@ _("%s: Cannot mix --only-matching, --file-offsets and/or --line-offsets\n"),
 	    linenumber++;
 	    if (buffer[0] == 0)	continue;	/* Skip blank lines */
 	    if (!compile_pattern(buffer, pcre_options, fn, linenumber))
-		goto errorexit;
+		goto errexit;
 	}
 
 	if (fd) {
@@ -1719,7 +1729,7 @@ _("%s: Cannot mix --only-matching, --file-offsets and/or --line-offsets\n"),
 	    if (pattern_count == 1) s[0] = 0; else sprintf(s, " number %d", j);
 	    fprintf(stderr, _("%s: Error while studying regex%s: %s\n"),
 		__progname, s, error);
-	    goto errorexit;
+	    goto errexit;
 	}
     }
 
@@ -1732,7 +1742,7 @@ _("%s: Cannot mix --only-matching, --file-offsets and/or --line-offsets\n"),
 	if (xx) {
 	    fprintf(stderr, _("%s: Error in 'exclude' regex at offset %d: %s\n"),
 		__progname, errptr, error);
-	    goto errorexit;
+	    goto errexit;
 	}
     }
 
@@ -1744,7 +1754,7 @@ _("%s: Cannot mix --only-matching, --file-offsets and/or --line-offsets\n"),
 	if (xx) {
 	    fprintf(stderr, _("%s: Error in 'include' regex at offset %d: %s\n"),
 		__progname, errptr, error);
-	    goto errorexit;
+	    goto errexit;
 	}
     }
 
@@ -1781,6 +1791,7 @@ exit:
     exclude_pattern = _free(exclude_pattern);
     include_pattern = _free(include_pattern);
     locale = _free(locale);
+    newline = _free(newline);
     pattern_filename = _free(pattern_filename);
     stdin_name = _free(stdin_name);
 
@@ -1788,7 +1799,7 @@ exit:
 
     return rc;
 
-errorexit:
+errexit:
     rc = 2;
     goto exit;
 }
