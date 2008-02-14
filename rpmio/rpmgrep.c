@@ -120,14 +120,14 @@ static const char *jfriedl_postfix = "";
 
 static int  endlinetype;
 
-static char *colour_string = (char *)"1;31";
-static char *color_option = NULL;
-static char *dee_option = NULL;
-static char *DEE_option = NULL;
-static char *newline = NULL;
+static const char *colour_string = (char *)"1;31";
+static const char *color_option = NULL;
+static const char *dee_option = NULL;
+static const char *DEE_option = NULL;
+static const char *newline = NULL;
 static const char *pattern_filename = NULL;
-static char *stdin_name = (char *)"(standard input)";
-static char *locale = NULL;
+static const char *stdin_name = NULL;
+static const char *locale = NULL;
 
 static const unsigned char *pcretables = NULL;
 
@@ -1103,42 +1103,21 @@ static void grepArgCallback(poptContext con,
     grepArg u = { .ptr = opt->arg };
     int xx;
 
-#if 0
     /* XXX avoid accidental collisions with POPT_BIT_SET for flags */
     if (opt->arg == NULL)
-#endif
     switch (opt->val) {
 #ifndef	NOTYET
-    case GREP_FLAGS_FOFFSETS: grepFlags |= GREP_FLAGS_FOFFSETS; break;
-    case (GREP_FLAGS_LOFFSETS|GREP_FLAGS_LNUMBER):
-	grepFlags |= (GREP_FLAGS_LOFFSETS|GREP_FLAGS_LNUMBER);
-	break;
-    case GREP_FLAGS_COUNT: grepFlags |= GREP_FLAGS_COUNT; break;
-    case GREP_FLAGS_FIXED_STRINGS: grepFlags |= GREP_FLAGS_FIXED_STRINGS; break;
-#endif
     case 'H': filenames = FN_FORCE; break;
     case 'h': filenames = FN_NONE; break;
-#ifndef	NOTYET
-    case GREP_FLAGS_CASELESS: grepFlags |= GREP_FLAGS_CASELESS; break;
 #endif
     case 'l': filenames = FN_ONLY; break;
     case 'L': filenames = FN_NOMATCH_ONLY; break;
 #ifndef	NOTYET
-    case GREP_FLAGS_MULTILINE: grepFlags |= GREP_FLAGS_MULTILINE; break;
-    case GREP_FLAGS_LNUMBER: grepFlags |= GREP_FLAGS_LNUMBER; break;
-    case GREP_FLAGS_ONLY_MATCHING: grepFlags |= GREP_FLAGS_ONLY_MATCHING; break;
-    case GREP_FLAGS_QUIET: grepFlags |= GREP_FLAGS_QUIET; break;
-#endif
     case 'r': dee_action = dee_RECURSE; break;
-#ifndef	NOTYET
-    case GREP_FLAGS_SILENT: grepFlags |= GREP_FLAGS_SILENT; break;
-    case GREP_FLAGS_UTF8: grepFlags |= GREP_FLAGS_UTF8; break;
-    case GREP_FLAGS_INVERT: grepFlags |= GREP_FLAGS_INVERT; break;
-    case GREP_FLAGS_WORD_MATCH: grepFlags |= GREP_FLAGS_WORD_MATCH; break;
-    case GREP_FLAGS_LINE_MATCH: grepFlags |= GREP_FLAGS_LINE_MATCH; break;
 #endif
 
     case 'f':
+assert(arg != NULL);
 	pattern_filename = xstrdup(arg);
 	break;
     case 'A': u.intp[0] = strtol(arg, NULL, 0); break;
@@ -1155,8 +1134,13 @@ assert(arg != NULL);
 
     /* XXX tristate: NULL default: disabled, optional arg overrides "auto" */
     case POPT_COLOR:
-	/* XXX cheat on Test 51, always use "always", not "auto". */
-	color_option = "always";
+assert(arg != NULL);
+	color_option = xstrdup(arg);
+	break;
+
+    case POPT_LABEL:
+assert(arg != NULL);
+	stdin_name = xstrdup(arg);
 	break;
 
 #ifdef JFRIEDL_DEBUG
@@ -1194,19 +1178,14 @@ static struct poptOption optionsTable[] = {
 	N_("set number of following context lines"), N_("=number") },
   { "before-context", 'B', POPT_ARG_INT,	&before_context, 'B',
 	N_("set number of prior context lines"), N_("=number") },
-  { "color", '\0',	POPT_ARG_NONE,		&color_option, POPT_COLOR,
+  { "color", '\0',	POPT_ARG_NONE,		NULL, POPT_COLOR,
 	N_("matched text color option"), N_("option") },
-  { "colour", '\0',	POPT_ARG_NONE,		&color_option, POPT_COLOR,
+  { "colour", '\0',	POPT_ARG_NONE,		NULL, POPT_COLOR,
 	N_("matched text colour option"), N_("=option") },
   { "context", 'C',	POPT_ARG_INT,		&both_context, 'C',
 	N_("set number of context lines, before & after"), N_("=number") },
-#ifdef	NOTYET
   { "count", 'c', POPT_BIT_SET,		&grepFlags, GREP_FLAGS_COUNT,
 	N_("print only a count of matching lines per FILE"), NULL },
-#else
-  { "count", 'c', POPT_ARG_NONE,		NULL, GREP_FLAGS_COUNT,
-	N_("print only a count of matching lines per FILE"), NULL },
-#endif
 /* XXX HACK: there is a shortName option conflict with -D,--define */
   { "devices", 'D',	POPT_ARG_STRING,	&DEE_option, 0,
 	N_("how to handle devices, FIFOs, and sockets"), N_("=action") },
@@ -1214,13 +1193,8 @@ static struct poptOption optionsTable[] = {
 	N_("how to handle directories"), N_("=action") },
   { "regex", 'e',	POPT_ARG_STRING,	NULL, 'e',
 	N_("specify pattern (may be used more than once)"), N_("(p)") },
-#ifdef	NOTYET
   { "fixed_strings", 'F', POPT_BIT_SET,	&grepFlags, GREP_FLAGS_FIXED_STRINGS,
 	N_("patterns are sets of newline-separated strings"), NULL },
-#else
-  { "fixed_strings", 'F', POPT_ARG_NONE,	NULL, GREP_FLAGS_FIXED_STRINGS,
-	N_("patterns are sets of newline-separated strings"), NULL },
-#endif
 #ifdef	NOTYET
   { "file", 'f',	POPT_ARG_STRING,	&pattern_filename, 'f',
 	N_("read patterns from file"), N_("=path") },
@@ -1228,67 +1202,49 @@ static struct poptOption optionsTable[] = {
   { "file", 'f',	POPT_ARG_STRING,		NULL, 'f',
 	N_("read patterns from file"), N_("=path") },
 #endif
-#ifdef	NOTYET
   { "file-offsets", '\0', POPT_BIT_SET,	&grepFlags, GREP_FLAGS_FOFFSETS,
 	N_("output file offsets, not text"), NULL },
+#ifdef	NOTYET
+  { "with-filename", 'H', POPT_ARG_VAL,	&filenames, FN_FORCE,
+	N_("force the prefixing filename on output"), NULL },
+  { "no-filename", 'h',	POPT_ARG_VAL,	&filenames, FN_NONE,
+	N_("suppress the prefixing filename on output"), NULL },
 #else
-  { "file-offsets", '\0', POPT_ARG_NONE,	NULL, GREP_FLAGS_FOFFSETS,
-	N_("output file offsets, not text"), NULL },
-#endif
   { "with-filename", 'H', POPT_ARG_NONE,	NULL, 'H',
 	N_("force the prefixing filename on output"), NULL },
   { "no-filename", 'h',	POPT_ARG_NONE,		NULL, 'h',
 	N_("suppress the prefixing filename on output"), NULL },
-#ifdef	NOTYET
-  { "ignore-case", 'i',	POPT_SET_BIT,	&grepFlags, GREP_FLAGS_CASELESS,
-	N_("ignore case distinctions"), NULL },
-#else
-  { "ignore-case", 'i',	POPT_ARG_NONE,		NULL, GREP_FLAGS_CASELESS,
-	N_("ignore case distinctions"), NULL },
 #endif
+  { "ignore-case", 'i',	POPT_BIT_SET,	&grepFlags, GREP_FLAGS_CASELESS,
+	N_("ignore case distinctions"), NULL },
   { "files-with-matches", 'l', POPT_ARG_NONE,	NULL, 'l',
 	N_("print only FILE names containing matches"), NULL },
   { "files-without-match", 'L',	POPT_ARG_NONE,	NULL, 'L',
 	N_("print only FILE names not containing matches"), NULL },
   { "label", '\0',	POPT_ARG_STRING,	&stdin_name, POPT_LABEL,
 	N_("set name for standard input"), N_("=name") },
-#ifdef	NOTYET
   { "line-offsets", '\0', POPT_BIT_SET,	&grepFlags, (GREP_FLAGS_LOFFSETS|GREP_FLAGS_LNUMBER),
 	N_("output line numbers and offsets, not text"), NULL },
-#else
-  { "line-offsets", '\0', POPT_ARG_NONE,	NULL, (GREP_FLAGS_LOFFSETS|GREP_FLAGS_LNUMBER),
-	N_("output line numbers and offsets, not text"), NULL },
-#endif
   { "locale", '\0',	POPT_ARG_STRING,	&locale, POPT_LOCALE,
 	N_("use the named locale"), N_("=locale") },
-  { "multiline", 'M',	POPT_ARG_NONE,		NULL, GREP_FLAGS_MULTILINE,
+  { "multiline", 'M', POPT_BIT_SET,	&grepFlags, GREP_FLAGS_MULTILINE,
 	N_("run in multiline mode"), NULL },
   { "newline", 'N',	POPT_ARG_STRING,	&newline, 0,
 	N_("set newline type (CR, LF, CRLF, ANYCRLF or ANY)"), N_("=type") },
-#ifdef	NOTYET
   { "line-number", 'n',	POPT_BIT_SET,	&grepFlags, GREP_FLAGS_LNUMBER,
 	N_("print line number with output lines"), NULL },
-#else
-  { "line-number", 'n',	POPT_ARG_NONE,	NULL, GREP_FLAGS_LNUMBER,
-	N_("print line number with output lines"), NULL },
-#endif
-#ifdef	NOTYET
   { "only-matching", 'o', POPT_BIT_SET,	&grepFlags, GREP_FLAGS_ONLY_MATCHING,
 	N_("show only the part of the line that matched"), NULL },
-#else
-  { "only-matching", 'o', POPT_ARG_NONE,	NULL, GREP_FLAGS_ONLY_MATCHING,
-	N_("show only the part of the line that matched"), NULL },
-#endif
 /* XXX HACK: there is a longName option conflict with --quiet */
-#ifdef	NOTYET
   { "quiet", 'q', POPT_BIT_SET,		&grepFlags, GREP_FLAGS_QUIET,
 	N_("suppress output, just set return code"), NULL },
+#ifdef	NOTYET
+  { "recursive", 'r',	POPT_ARG_VAL,		&dee_action, dee_RECURSE,
+	N_("recursively scan sub-directories"), NULL },
 #else
-  { "quiet", 'q', POPT_ARG_NONE,		NULL, GREP_FLAGS_QUIET,
-	N_("suppress output, just set return code"), NULL },
-#endif
   { "recursive", 'r',	POPT_ARG_NONE,		NULL, 'r',
 	N_("recursively scan sub-directories"), NULL },
+#endif
 #ifdef	NOTYET
   { "exclude", '\0', POPT_ARG_STRING,	&exclude_pattern, 0,
 	N_("exclude matching files when recursing"), N_("=pattern") },
@@ -1304,43 +1260,21 @@ static struct poptOption optionsTable[] = {
   { "jeffS", 'S',	OP_OP_NUMBER,	&S_arg, 'S',
 	N_("replace matched (sub)string with X"), NULL },
 #endif
-#ifdef	NOTYET
   { "no-messages", 's',	POPT_BIT_SET,	&grepFlags, GREP_FLAGS_SILENT,
 	N_("suppress error messages"), NULL },
   { "silent", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN, &grepFlags, GREP_FLAGS_SILENT,
 	N_("suppress error messages"), NULL },
-#else
-  { "no-messages", 's',	POPT_ARG_NONE,		NULL, GREP_FLAGS_SILENT,
-	N_("suppress error messages"), NULL },
-  { "silent", '\0', POPT_ARG_NONE|POPT_ARGFLAG_DOC_HIDDEN, NULL, GREP_FLAGS_SILENT,
-	N_("suppress error messages"), NULL },
-#endif
-  { "utf-8", 'u',	POPT_ARG_NONE,		NULL, GREP_FLAGS_UTF8,
+  { "utf-8", 'u',	POPT_BIT_SET,	&grepFlags, GREP_FLAGS_UTF8,
 	N_("use UTF-8 mode"), NULL },
   { "version", 'V',	POPT_ARG_NONE,		NULL, 'V',
 	N_("print version information and exit"), NULL },
 /* XXX HACK: there is a shortName option conflict with -v, --verbose */
-#ifdef	NOTYET
   { "invert-match", 'v', POPT_BIT_SET,	&grepFlags, GREP_FLAGS_INVERT,
 	N_("select non-matching lines"), NULL },
-#else
-  { "invert-match", 'v', POPT_ARG_NONE,		NULL, GREP_FLAGS_INVERT,
-	N_("select non-matching lines"), NULL },
-#endif
-#ifdef	NOTYET
   { "word-regex", 'w', POPT_BIT_SET,	&grepFlags, GREP_FLAGS_WORD_MATCH,
 	N_("force patterns to match only as words") , N_("(p)") },
-#else
-  { "word-regex", 'w',	POPT_ARG_NONE,		NULL, GREP_FLAGS_WORD_MATCH,
-	N_("force patterns to match only as words") , N_("(p)") },
-#endif
-#ifdef	NOTYET
   { "line-regex", 'x', POPT_BIT_SET,	&grepFlags, GREP_FLAGS_LINE_MATCH,
 	N_("force patterns to match only whole lines"), N_("(p)") },
-#else
-  { "line-regex", 'x',	POPT_ARG_NONE,		NULL, GREP_FLAGS_LINE_MATCH,
-	N_("force patterns to match only whole lines"), N_("(p)") },
-#endif
 
   POPT_AUTOALIAS
 
@@ -1572,12 +1506,16 @@ main(int argc, char **argv)
     case -2:	newline = (char *)"anycrlf";	break;
     }
 
+    if (stdin_name == NULL)
+	stdin_name = xstrdup("(standard input)");
+
     if (GF_ISSET(CASELESS))
 	pcre_options |= PCRE_CASELESS;
     if (GF_ISSET(MULTILINE))
 	pcre_options |= PCRE_MULTILINE|PCRE_FIRSTLINE;
     if (GF_ISSET(UTF8))
 	pcre_options |= PCRE_UTF8;
+
     av = poptGetArgs(optCon);
     ac = argvCount(av);
     i = 0;
@@ -1850,9 +1788,11 @@ exit:
 
     patterns = argvFree(patterns);
 
+    color_option = _free(color_option);
     exclude_pattern = _free(exclude_pattern);
     include_pattern = _free(include_pattern);
     pattern_filename = _free(pattern_filename);
+    stdin_name = _free(stdin_name);
 
     optCon = rpmioFini(optCon);
 
