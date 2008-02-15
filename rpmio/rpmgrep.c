@@ -1054,30 +1054,6 @@ exit:
     return rc;	/* Pass back the yield from pcregrep(). */
 }
 
-/*************************************************
- * Usage function.
- * @param rc			return code
- * @return			return code
- */
-static int
-usage(poptContext optCon, int rc)
-{
-#ifdef	DYING	/* XXX popt needs better than poptSetOtherOptionHelp() */
-    struct poptOption *opt = optionsTable;
-    fprintf(stderr, _("Usage: %s [-"), __progname);
-    for (; (opt->longName || opt->shortName || opt->arg); opt++) {
-      if (opt->shortName > 0) fprintf(stderr, "%c", opt->shortName);
-    }
-    fprintf(stderr, _("] [long options] [pattern] [files]\n"));
-    fprintf(stderr,
-	_("Type `%s --help' for more information and the long options.\n"),
-	__progname);
-#else
-    poptPrintUsage(optCon, stdout, 0);
-#endif
-    return rc;
-}
-
 /* Options without a single-letter equivalent get a negative value. This can be
 used to identify them. */
 #define POPT_COLOR	(-1)
@@ -1089,20 +1065,11 @@ used to identify them. */
 
 /**
  */
-typedef union grepArg_u {
-    void * ptr;
-    int * intp;
-    const char ** strp;
-} grepArg;
-
-/**
- */
 static void grepArgCallback(poptContext con,
                 /*@unused@*/ enum poptCallbackReason reason,
                 const struct poptOption * opt, const char * arg,
                 /*@unused@*/ void * data)
 {
-    grepArg u = { .ptr = opt->arg };
     int xx;
 
     /* XXX avoid accidental collisions with POPT_BIT_SET for flags */
@@ -1112,9 +1079,6 @@ static void grepArgCallback(poptContext con,
 assert(arg != NULL);
 	pattern_filename = xstrdup(arg);
 	break;
-    case 'A': u.intp[0] = strtol(arg, NULL, 0); break;
-    case 'B': u.intp[0] = strtol(arg, NULL, 0); break;
-    case 'C': u.intp[0] = strtol(arg, NULL, 0); break;
     case POPT_INCLUDE:
 assert(arg != NULL);
 	include_pattern = xstrdup(arg);
@@ -1123,18 +1087,15 @@ assert(arg != NULL);
 assert(arg != NULL);
 	exclude_pattern = xstrdup(arg);
 	break;
-
-    /* XXX tristate: NULL default: disabled, optional arg overrides "auto" */
     case POPT_COLOR:
+    /* XXX tristate: NULL default: disabled, optional arg overrides "auto" */
 assert(arg != NULL);
 	color_option = xstrdup(arg);
 	break;
-
     case POPT_LABEL:
 assert(arg != NULL);
 	stdin_name = xstrdup(arg);
 	break;
-
     case POPT_LOCALE:
 assert(arg != NULL);
 	locale = xstrdup(arg);
@@ -1163,7 +1124,8 @@ assert(arg != NULL);
 	/*@notreached@*/ break;
     default:
 	fprintf(stderr, _("%s: Unknown option -%c\n"), __progname, opt->val);
-	exit(usage(con, 2));
+	poptPrintUsage(con, stderr, 0);
+	exit(2);
 	/*@notreached@*/ break;
     }
 }
@@ -1176,16 +1138,17 @@ static struct poptOption optionsTable[] = {
         grepArgCallback, 0, NULL, NULL },
 /*@=type@*/
 
-  { "after-context", 'A', POPT_ARG_INT,		&after_context, 'A',
+  { "after-context", 'A', POPT_ARG_INT,		&after_context, 0,
 	N_("set number of following context lines"), N_("=number") },
-  { "before-context", 'B', POPT_ARG_INT,	&before_context, 'B',
+  { "before-context", 'B', POPT_ARG_INT,	&before_context, 0,
 	N_("set number of prior context lines"), N_("=number") },
+  { "context", 'C',	POPT_ARG_INT,		&both_context, 0,
+	N_("set number of context lines, before & after"), N_("=number") },
+
   { "color", '\0',	POPT_ARG_STRING,	NULL, POPT_COLOR,
 	N_("matched text color option"), N_("option") },
   { "colour", '\0',	POPT_ARG_STRING,	NULL, POPT_COLOR,
 	N_("matched text colour option"), N_("=option") },
-  { "context", 'C',	POPT_ARG_INT,		&both_context, 'C',
-	N_("set number of context lines, before & after"), N_("=number") },
   { "count", 'c', POPT_BIT_SET,		&grepFlags, GREP_FLAGS_COUNT,
 	N_("print only a count of matching lines per FILE"), NULL },
 /* XXX HACK: there is a shortName option conflict with -D,--define */
@@ -1197,13 +1160,8 @@ static struct poptOption optionsTable[] = {
 	N_("specify pattern (may be used more than once)"), N_("(p)") },
   { "fixed_strings", 'F', POPT_BIT_SET,	&grepFlags, GREP_FLAGS_FIXED_STRINGS,
 	N_("patterns are sets of newline-separated strings"), NULL },
-#ifdef	NOTYET
-  { "file", 'f',	POPT_ARG_STRING,	&pattern_filename, 'f',
-	N_("read patterns from file"), N_("=path") },
-#else
   { "file", 'f',	POPT_ARG_STRING,		NULL, 'f',
 	N_("read patterns from file"), N_("=path") },
-#endif
   { "file-offsets", '\0', POPT_BIT_SET,	&grepFlags, GREP_FLAGS_FOFFSETS,
 	N_("output file offsets, not text"), NULL },
   { "with-filename", 'H', POPT_ARG_VAL,	&filenames, FN_FORCE,
@@ -1220,22 +1178,12 @@ static struct poptOption optionsTable[] = {
 	N_("set name for standard input"), N_("=name") },
   { "line-offsets", '\0', POPT_BIT_SET,	&grepFlags, (GREP_FLAGS_LOFFSETS|GREP_FLAGS_LNUMBER),
 	N_("output line numbers and offsets, not text"), NULL },
-#ifdef	NOTYET
-  { "locale", '\0',	POPT_ARG_STRING,	&locale, POPT_LOCALE,
-	N_("use the named locale"), N_("=locale") },
-#else
   { "locale", '\0',	POPT_ARG_NONE,		NULL, POPT_LOCALE,
 	N_("use the named locale"), N_("=locale") },
-#endif
   { "multiline", 'M', POPT_BIT_SET,	&grepFlags, GREP_FLAGS_MULTILINE,
 	N_("run in multiline mode"), NULL },
-#ifdef	NOTYET
-  { "newline", 'N',	POPT_ARG_STRING,	&newline, 0,
-	N_("set newline type (CR, LF, CRLF, ANYCRLF or ANY)"), N_("=type") },
-#else
   { "newline", 'N',	POPT_ARG_STRING,	NULL, POPT_NEWLINE,
 	N_("set newline type (CR, LF, CRLF, ANYCRLF or ANY)"), N_("=type") },
-#endif
   { "line-number", 'n',	POPT_BIT_SET,	&grepFlags, GREP_FLAGS_LNUMBER,
 	N_("print line number with output lines"), NULL },
   { "only-matching", 'o', POPT_BIT_SET,	&grepFlags, GREP_FLAGS_ONLY_MATCHING,
@@ -1245,17 +1193,10 @@ static struct poptOption optionsTable[] = {
 	N_("suppress output, just set return code"), NULL },
   { "recursive", 'r',	POPT_ARG_VAL,		&dee_action, dee_RECURSE,
 	N_("recursively scan sub-directories"), NULL },
-#ifdef	NOTYET
-  { "exclude", '\0', POPT_ARG_STRING,	&exclude_pattern, 0,
-	N_("exclude matching files when recursing"), N_("=pattern") },
-  { "include", '\0', POPT_ARG_STRING,	&include_pattern, 0,
-	N_("include matching files when recursing"), N_("=pattern") },
-#else
   { "exclude", '\0', POPT_ARG_STRING,		NULL, POPT_EXCLUDE,
 	N_("exclude matching files when recursing"), N_("=pattern") },
   { "include", '\0', POPT_ARG_STRING,		NULL, POPT_INCLUDE,
 	N_("include matching files when recursing"), N_("=pattern") },
-#endif
 #ifdef JFRIEDL_DEBUG
   { "jeffS", 'S',	OP_OP_NUMBER,	&S_arg, 'S',
 	N_("replace matched (sub)string with X"), NULL },
@@ -1537,7 +1478,8 @@ main(int argc, char **argv)
 	fprintf(stderr,
 _("%s: Cannot mix --only-matching, --file-offsets and/or --line-offsets\n"),
 		__progname);
-	exit(usage(optCon, 2));
+	poptPrintUsage(optCon, stderr, 0);
+	goto errxit;
     }
 
     if (GF_ISSET(FOFFSETS) || GF_ISSET(LOFFSETS))
@@ -1589,7 +1531,7 @@ _("%s: Cannot mix --only-matching, --file-offsets and/or --line-offsets\n"),
 	} else {
 	    fprintf(stderr, _("%s: Unknown colour setting \"%s\"\n"),
 		__progname, color_option);
-	    goto errexit;
+	    goto errxit;
 	}
 	if (GF_ISSET(COLOR)) {
 	    char *cs = getenv("PCREGREP_COLOUR");
@@ -1617,7 +1559,7 @@ _("%s: Cannot mix --only-matching, --file-offsets and/or --line-offsets\n"),
     } else {
 	fprintf(stderr, _("%s: Invalid newline specifier \"%s\"\n"),
 		__progname, newline);
-	goto errexit;
+	goto errxit;
     }
 
     /* Interpret the text values for -d and -D */
@@ -1628,7 +1570,7 @@ _("%s: Cannot mix --only-matching, --file-offsets and/or --line-offsets\n"),
 	else {
 	    fprintf(stderr, _("%s: Invalid value \"%s\" for -d\n"),
 		__progname, dee_option);
-	    goto errexit;
+	    goto errxit;
 	}
     }
 
@@ -1638,7 +1580,7 @@ _("%s: Cannot mix --only-matching, --file-offsets and/or --line-offsets\n"),
 	else {
 	    fprintf(stderr, _("%s: Invalid value \"%s\" for -D\n"),
 		__progname, DEE_option);
-	    goto errexit;
+	    goto errxit;
 	}
     }
 
@@ -1646,7 +1588,7 @@ _("%s: Cannot mix --only-matching, --file-offsets and/or --line-offsets\n"),
 #ifdef JFRIEDL_DEBUG
     if (S_arg > 9) {
 	fprintf(stderr, _("%s: bad value for -S option\n"), __progname);
-	goto errexit;
+	goto errxit;
     }
     if (jfriedl_XT != 0 || jfriedl_XR != 0) {
 	if (jfriedl_XT == 0) jfriedl_XT = 1;
@@ -1663,7 +1605,10 @@ _("%s: Cannot mix --only-matching, --file-offsets and/or --line-offsets\n"),
      */
     npatterns = argvCount(patterns);
     if (npatterns == 0 && pattern_filename == NULL) {
-	if (i >= ac) return usage(optCon, 2);
+	if (i >= ac) {
+	    poptPrintUsage(optCon, stderr, 0);
+	    goto errxit;
+	}
 	xx = poptSaveString(&patterns, POPT_ARG_ARGV, av[i]);
 	i++;
     }
@@ -1676,7 +1621,7 @@ _("%s: Cannot mix --only-matching, --file-offsets and/or --line-offsets\n"),
     for (j = 0; j < npatterns; j++) {
 	if (!compile_pattern(patterns[j], pcre_options, NULL,
 		 (j == 0 && npatterns == 1)? 0 : j + 1))
-	    goto errexit;
+	    goto errxit;
     }
 
     /* Compile the regular expressions that are provided in a file. */
@@ -1698,7 +1643,7 @@ _("%s: Cannot mix --only-matching, --file-offsets and/or --line-offsets\n"),
 			__progname, pattern_filename, Fstrerror(fd));
 		if (fd) Fclose(fd);
 		fd = NULL;
-		goto errexit;
+		goto errxit;
 	    }
 	    fn = pattern_filename;
 	}
@@ -1711,7 +1656,7 @@ _("%s: Cannot mix --only-matching, --file-offsets and/or --line-offsets\n"),
 	    linenumber++;
 	    if (buffer[0] == 0)	continue;	/* Skip blank lines */
 	    if (!compile_pattern(buffer, pcre_options, fn, linenumber))
-		goto errexit;
+		goto errxit;
 	}
 
 	if (fd) {
@@ -1729,7 +1674,7 @@ _("%s: Cannot mix --only-matching, --file-offsets and/or --line-offsets\n"),
 	    if (pattern_count == 1) s[0] = 0; else sprintf(s, " number %d", j);
 	    fprintf(stderr, _("%s: Error while studying regex%s: %s\n"),
 		__progname, s, error);
-	    goto errexit;
+	    goto errxit;
 	}
     }
 
@@ -1742,7 +1687,7 @@ _("%s: Cannot mix --only-matching, --file-offsets and/or --line-offsets\n"),
 	if (xx) {
 	    fprintf(stderr, _("%s: Error in 'exclude' regex at offset %d: %s\n"),
 		__progname, errptr, error);
-	    goto errexit;
+	    goto errxit;
 	}
     }
 
@@ -1754,7 +1699,7 @@ _("%s: Cannot mix --only-matching, --file-offsets and/or --line-offsets\n"),
 	if (xx) {
 	    fprintf(stderr, _("%s: Error in 'include' regex at offset %d: %s\n"),
 		__progname, errptr, error);
-	    goto errexit;
+	    goto errxit;
 	}
     }
 
@@ -1799,7 +1744,7 @@ exit:
 
     return rc;
 
-errexit:
+errxit:
     rc = 2;
     goto exit;
 }
