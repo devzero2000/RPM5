@@ -378,36 +378,6 @@ static int parseCVOG(const char * str, CVOG_t *cvogp)
 }
 
 /**
- * Append pattern to array.
- * @param mode		type of pattern match
- * @param tag		identifier (like an rpmTag)
- * @param pattern	pattern to compile
- * @retval *mi_rep	platform pattern array
- * @retval *mi_nrep	no. of patterns in array
- */
-/*@-onlytrans@*/	/* XXX miRE array, not refcounted. */
-/*@null@*/
-static int mireAppend(rpmMireMode mode, int tag, const char * pattern,
-		miRE * mi_rep, int * mi_nrep)
-	/*@modifies *mi_rep, *mi_nrep @*/
-{
-    miRE mire;
-
-    mire = (*mi_rep);
-/*@-refcounttrans@*/
-    mire = xrealloc(mire, ((*mi_nrep) + 1) * sizeof(*mire));
-/*@=refcounttrans@*/
-    (*mi_rep) = mire;
-    mire += (*mi_nrep);
-    (*mi_nrep)++;
-    memset(mire, 0, sizeof(*mire));
-    mire->mode = mode;
-    mire->tag = tag;
-    return mireRegcomp(mire, pattern);
-}
-/*@=onlytrans@*/
-
-/**
  * Read and configure /etc/rpm/platform patterns.
  * @param platform	path to platform patterns
  * @return		RPMRC_OK on success
@@ -452,7 +422,7 @@ static rpmRC rpmPlatform(const char * platform)
 	    while (--t > p && xisspace(*t))
 		*t = '\0';
 	    if (t > p)
-		xx = mireAppend(RPMMIRE_REGEX, 0, p, &mi_re, &mi_nre);
+		xx = mireAppend(RPMMIRE_REGEX, 0, p, NULL, &mi_re, &mi_nre);
 	    continue;
 	}
 
@@ -470,7 +440,7 @@ static rpmRC rpmPlatform(const char * platform)
 		(cvog && *cvog->gnu ? "-" : NULL),
 		(cvog ? cvog->gnu : NULL), NULL);
 #endif
-	xx = mireAppend(RPMMIRE_STRCMP, 0, p, &mi_re, &mi_nre);
+	xx = mireAppend(RPMMIRE_STRCMP, 0, p, NULL, &mi_re, &mi_nre);
 	p = _free(p);
 	
 	init_platform++;

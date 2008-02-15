@@ -240,6 +240,24 @@ fprintf(stderr, "--> mireRegcomp(%p, \"%s\") rc %d\n", mire, pattern, rc);
     return rc;
 }
 
+/*@-onlytrans@*/	/* XXX miRE array, not refcounted. */
+int mireAppend(rpmMireMode mode, int tag, const char * pattern,
+		const unsigned char * table, miRE * mirep, int * nmirep)
+{
+/*@-refcounttrans@*/
+    miRE mire = xrealloc((*mirep), ((*nmirep) + 1) * sizeof(*mire));
+/*@=refcounttrans@*/
+
+    (*mirep) = mire;
+    mire += (*nmirep)++;
+    memset(mire, 0, sizeof(*mire));
+    mire->mode = mode;
+    mire->tag = tag;
+    mire->table = table;
+    return mireRegcomp(mire, pattern);
+}
+/*@=onlytrans@*/
+
 int mireApply(miRE mire, int nmire, const char *s, size_t slen, int rc)
 {
     int i;

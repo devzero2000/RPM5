@@ -168,6 +168,21 @@ int mireRegcomp(miRE mire, const char * pattern)
 	/*@modifies mire @*/;
 
 /**
+ * Append pattern to array.
+ * @param mode		type of pattern match
+ * @param tag		identifier (like an rpmTag)
+ * @param pattern	pattern to compile
+ * @param table		(PCRE) locale table to use (NULL uses default table)
+ * @retval *mirep	pattern array
+ * @retval *nmirep	no. of patterns in array
+ */
+/*@null@*/
+int mireAppend(rpmMireMode mode, int tag, const char * pattern,
+		/*@null@*/ const unsigned char * table,
+		miRE * mirep, int * nmirep)
+	/*@modifies *mirep, *nmirep @*/;
+
+/**
  * Apply array of patterns to a string.
  * @param mire		compiled pattern array
  * @param nmire		no. of patterns in array
