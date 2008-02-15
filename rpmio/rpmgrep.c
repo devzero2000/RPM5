@@ -835,6 +835,36 @@ exit:
     return rc;
 }
 
+/**
+ * Apply array of patterns to a string.
+ * @param mire		compiled pattern array
+ * @param nmire		no. of patterns in array
+ * @param s		string to apply against
+ * @param len		length of string (0 will use strlen(s)
+ * @param rc		-1 == excluding, +1 == including, 0 == single pattern
+ * @return		termination condition
+ */
+static int mireApply(miRE mire, int nmire, const char *s, int len, int rc)
+{
+    int i;
+
+    if (mire)
+    for (i = 0; i < nmire; mire++, i++) {
+	int xx = mireRegexec(mire, s, len);
+
+	/* Check if excluding or including condition applies. */
+	if (rc < 0 && xx < 0)
+	    continue;	/* excluding: continue on negative matches. */
+	if (rc > 0 && xx >= 0)
+	    continue;	/* including: continue on positive matches. */
+	/* Save 1st found termination condition and exit. */
+	rc = xx;
+	break;
+    }
+    return rc;
+   
+}
+
 /*************************************************
  * Grep a file or recurse into a directory.
  *
@@ -894,12 +924,15 @@ grep_or_recurse(const char *pathname, BOOL dir_recurse, BOOL only_one_at_top)
 		int frc;
 		if (!strcmp(dp->d_name, ".") || !strcmp(dp->d_name, ".."))
 		    continue;
-		sprintf(buffer, "%.512s%c%.128s", pathname, sep, dp->d_name);
 
-		if (excludeMire && mireRegexec(excludeMire, buffer, 0) >= 0)
+		xx = snprintf(buffer, sizeof(buffer), "%.512s%c%.128s",
+			pathname, sep, dp->d_name);
+		buffer[sizeof(buffer)-1] = '\0';
+
+		if (mireApply(excludeMire, nexcludes, buffer, 0, -1) >= 0)
 		    continue;
 
-		if (includeMire && mireRegexec(includeMire, buffer, 0) < 0)
+		if (mireApply(includeMire, nincludes, buffer, 0, +1) < 0)
 		    continue;
 
 		frc = grep_or_recurse(buffer, dir_recurse, FALSE);
@@ -1627,8 +1660,8 @@ _("%s: Cannot mix --only-matching, --file-offsets and/or --line-offsets\n"),
 	const char * error;
 	mire->hints = pcre_study(mire->pcre, 0, &error);
 	if (error != NULL) {
-	    char s[16];
-	    if (pattern_count == 1) s[0] = 0; else sprintf(s, " number %d", j);
+	    char s[32];
+	    if (pattern_count == 1) s[0] = '\0'; else sprintf(s, " number %d", j);
 	    fprintf(stderr, _("%s: Error while studying regex%s: %s\n"),
 		__progname, s, error);
 	    goto errxit;
