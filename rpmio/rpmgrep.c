@@ -92,20 +92,23 @@ static const char *newline = NULL;
 
 static const char *color_string = NULL;
 static const char *color_option = NULL;
-static const char *pattern_filename = NULL;
+static ARGV_t pattern_filenames = NULL;
 static const char *stdin_name = NULL;
 
 static const char *locale = NULL;
 static const unsigned char *pcretables = NULL;
 
-static int  pattern_count = 0;
+static ARGV_t patterns = NULL;
 static miRE pattern_list = NULL;
+static int  pattern_count = 0;
 
-static const char *include_pattern = NULL;
-static miRE includeMire = NULL;
-
-static const char *exclude_pattern = NULL;
+static ARGV_t exclude_patterns = NULL;
 static miRE excludeMire = NULL;
+static int nexcludes = 0;
+
+static ARGV_t include_patterns = NULL;
+static miRE includeMire = NULL;
+static int nincludes = 0;
 
 static int after_context = 0;
 static int before_context = 0;
@@ -130,8 +133,6 @@ static int error_count = 0;
  */
 enum { FN_NONE, FN_DEFAULT, FN_ONLY, FN_NOMATCH_ONLY, FN_FORCE };
 static int filenames = FN_DEFAULT;
-
-static ARGV_t patterns = NULL;
 
 #define	_GFB(n)	((1 << (n)) | 0x40000000)
 #define GF_ISSET(_FLAG)    (grepFlags & ((GREP_FLAGS_##_FLAG) & ~0x40000000))
@@ -975,184 +976,55 @@ exit:
     return rc;	/* Pass back the yield from pcregrep(). */
 }
 
-/* Options without a single-letter equivalent get a negative value. This can be
-used to identify them. */
-#define POPT_COLOR	(-1)
-#define POPT_EXCLUDE	(-2)
-#define POPT_INCLUDE	(-4)
-#define POPT_LABEL	(-5)
-#define POPT_LOCALE	(-6)
-#define	POPT_NEWLINE	(-7)
-
 /**
+ * Destroy compiled patterns.
+ * @param mire		pattern array
+ * @param nre		no of patterns in array
+ * @return		NULL always
  */
-static void grepArgCallback(poptContext con,
-                /*@unused@*/ enum poptCallbackReason reason,
-                const struct poptOption * opt, const char * arg,
-                /*@unused@*/ void * data)
+/*@-onlytrans@*/	/* XXX miRE array, not refcounted. */
+/*@null@*/
+static void * mireFreeAll(/*@only@*/ /*@null@*/ miRE mire, int nre)
+	/*@modifies mire@*/
 {
-    int xx;
-
-    /* XXX avoid accidental collisions with POPT_BIT_SET for flags */
-    if (opt->arg == NULL)
-    switch (opt->val) {
-    case 'f':
-assert(arg != NULL);
-	pattern_filename = xstrdup(arg);
-	break;
-    case POPT_INCLUDE:
-assert(arg != NULL);
-	include_pattern = xstrdup(arg);
-	break;
-    case POPT_EXCLUDE:
-assert(arg != NULL);
-	exclude_pattern = xstrdup(arg);
-	break;
-    case POPT_COLOR:
-    /* XXX tristate: NULL default: disabled, optional arg overrides "auto" */
-assert(arg != NULL);
-	color_option = xstrdup(arg);
-	break;
-    case POPT_LABEL:
-assert(arg != NULL);
-	stdin_name = xstrdup(arg);
-	break;
-    case POPT_LOCALE:
-assert(arg != NULL);
-	locale = xstrdup(arg);
-	break;
-    case POPT_NEWLINE:
-assert(arg != NULL);
-	newline = xstrdup(arg);
-	break;
-
-    case 'e':
-assert(arg != NULL);
-	xx = poptSaveString(&patterns, opt->argInfo, arg);
-	break;
-
-    case 'V':
-	fprintf(stderr, _("%s version %s\n"), __progname, pcre_version());
-	exit(0);
-	/*@notreached@*/ break;
-    default:
-	fprintf(stderr, _("%s: Unknown option -%c\n"), __progname, opt->val);
-	poptPrintUsage(con, stderr, 0);
-	exit(2);
-	/*@notreached@*/ break;
+    if (mire != NULL) {
+	int i;
+	for (i = 0; i < nre; i++)
+	    (void) mireClean(mire + i);
+	mire = _free(mire);
     }
+    return NULL;
 }
+/*@=onlytrans@*/
 
 /**
+ * Append pattern to array.
+ * @param mode		type of pattern match
+ * @param tag		identifier (like an rpmTag)
+ * @param pattern	pattern to compile
+ * @retval *mirep	pattern array
+ * @retval *nmirep	no. of patterns in array
  */
-static struct poptOption optionsTable[] = {
-/*@-type@*/ /* FIX: cast? */
- { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA | POPT_CBFLAG_CONTINUE,
-        grepArgCallback, 0, NULL, NULL },
-/*@=type@*/
+/*@-onlytrans@*/	/* XXX miRE array, not refcounted. */
+/*@null@*/
+static int mireAppend(rpmMireMode mode, int tag, const char * pattern,
+		miRE * mirep, int * nmirep)
+	/*@modifies *mirep, *nmirep @*/
+{
+/*@-refcounttrans@*/
+    miRE mire = xrealloc((*mirep), ((*nmirep) + 1) * sizeof(*mire));
+/*@=refcounttrans@*/
 
-  { "after-context", 'A', POPT_ARG_INT,		&after_context, 0,
-	N_("set number of following context lines"), N_("=number") },
-  { "before-context", 'B', POPT_ARG_INT,	&before_context, 0,
-	N_("set number of prior context lines"), N_("=number") },
-  { "context", 'C', POPT_ARG_INT,		&both_context, 0,
-	N_("set number of context lines, before & after"), N_("=number") },
-  { "color", '\0', POPT_ARG_STRING,		NULL, POPT_COLOR,
-	N_("matched text color option"), N_("=option") },
-  { "colour", '\0', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN, NULL, POPT_COLOR,
-	N_("matched text colour option"), N_("=option") },
-  { "count", 'c', POPT_BIT_SET,		&grepFlags, GREP_FLAGS_COUNT,
-	N_("print only a count of matching lines per FILE"), NULL },
-/* XXX HACK: there is a shortName option conflict with -D,--define */
-  { "devices", 'D', POPT_ARG_STRING,		&DEE_option, 0,
-	N_("how to handle devices, FIFOs, and sockets"), N_("=action") },
-  { "directories", 'd',	POPT_ARG_STRING,	&dee_option, 0,
-	N_("how to handle directories"), N_("=action") },
-  { "regex", 'e', POPT_ARG_STRING,		NULL, 'e',
-	N_("specify pattern (may be used more than once)"), N_("(p)") },
-  { "fixed_strings", 'F', POPT_BIT_SET,	&grepFlags, GREP_FLAGS_FIXED_STRINGS,
-	N_("patterns are sets of newline-separated strings"), NULL },
-  { "file", 'f', POPT_ARG_STRING,		NULL, 'f',
-	N_("read patterns from file"), N_("=path") },
-  { "file-offsets", '\0', POPT_BIT_SET,	&grepFlags, GREP_FLAGS_FOFFSETS,
-	N_("output file offsets, not text"), NULL },
-  { "with-filename", 'H', POPT_ARG_VAL,	&filenames, FN_FORCE,
-	N_("force the prefixing filename on output"), NULL },
-  { "no-filename", 'h',	POPT_ARG_VAL,	&filenames, FN_NONE,
-	N_("suppress the prefixing filename on output"), NULL },
-  { "ignore-case", 'i',	POPT_BIT_SET,	&grepFlags, GREP_FLAGS_CASELESS,
-	N_("ignore case distinctions"), NULL },
-  { "files-with-matches", 'l', POPT_ARG_VAL,	&filenames, FN_ONLY,
-	N_("print only FILE names containing matches"), NULL },
-  { "files-without-match", 'L',	POPT_ARG_VAL,	&filenames, FN_NOMATCH_ONLY,
-	N_("print only FILE names not containing matches"), NULL },
-  { "label", '\0', POPT_ARG_STRING,		NULL, POPT_LABEL,
-	N_("set name for standard input"), N_("=name") },
-  { "line-offsets", '\0', POPT_BIT_SET,	&grepFlags, (GREP_FLAGS_LOFFSETS|GREP_FLAGS_LNUMBER),
-	N_("output line numbers and offsets, not text"), NULL },
-  { "locale", '\0', POPT_ARG_STRING,		NULL, POPT_LOCALE,
-	N_("use the named locale"), N_("=locale") },
-  { "multiline", 'M', POPT_BIT_SET,	&grepFlags, GREP_FLAGS_MULTILINE,
-	N_("run in multiline mode"), NULL },
-  { "newline", 'N',	POPT_ARG_STRING,	NULL, POPT_NEWLINE,
-	N_("set newline type (CR, LF, CRLF, ANYCRLF or ANY)"), N_("=type") },
-  { "line-number", 'n',	POPT_BIT_SET,	&grepFlags, GREP_FLAGS_LNUMBER,
-	N_("print line number with output lines"), NULL },
-  { "only-matching", 'o', POPT_BIT_SET,	&grepFlags, GREP_FLAGS_ONLY_MATCHING,
-	N_("show only the part of the line that matched"), NULL },
-/* XXX HACK: there is a longName option conflict with --quiet */
-  { "quiet", 'q', POPT_BIT_SET,		&grepFlags, GREP_FLAGS_QUIET,
-	N_("suppress output, just set return code"), NULL },
-  { "recursive", 'r',	POPT_ARG_VAL,		&dee_action, dee_RECURSE,
-	N_("recursively scan sub-directories"), NULL },
-  { "exclude", '\0', POPT_ARG_STRING,		NULL, POPT_EXCLUDE,
-	N_("exclude matching files when recursing"), N_("=pattern") },
-  { "include", '\0', POPT_ARG_STRING,		NULL, POPT_INCLUDE,
-	N_("include matching files when recursing"), N_("=pattern") },
-  { "no-messages", 's',	POPT_BIT_SET,	&grepFlags, GREP_FLAGS_SILENT,
-	N_("suppress error messages"), NULL },
-  { "silent", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN, &grepFlags, GREP_FLAGS_SILENT,
-	N_("suppress error messages"), NULL },
-  { "utf-8", 'u',	POPT_BIT_SET,	&grepFlags, GREP_FLAGS_UTF8,
-	N_("use UTF-8 mode"), NULL },
-  { "version", 'V',	POPT_ARG_NONE,		NULL, 'V',
-	N_("print version information and exit"), NULL },
-/* XXX HACK: there is a shortName option conflict with -v, --verbose */
-  { "invert-match", 'v', POPT_BIT_SET,	&grepFlags, GREP_FLAGS_INVERT,
-	N_("select non-matching lines"), NULL },
-  { "word-regex", 'w', POPT_BIT_SET,	&grepFlags, GREP_FLAGS_WORD_MATCH,
-	N_("force patterns to match only as words") , N_("(p)") },
-  { "line-regex", 'x', POPT_BIT_SET,	&grepFlags, GREP_FLAGS_LINE_MATCH,
-	N_("force patterns to match only whole lines"), N_("(p)") },
-
-  POPT_AUTOALIAS
-
- { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmioAllPoptTable, 0,
-	N_("Common options for all rpmio executables:"),
-	NULL },
-
-  POPT_AUTOHELP
-
-  { NULL, -1, POPT_ARG_INCLUDE_TABLE, NULL, 0,
-	N_("\
-Usage: rpmgrep [OPTION...] [PATTERN] [FILE1 FILE2 ...]\n\n\
-  Search for PATTERN in each FILE or standard input.\n\
-  PATTERN must be present if neither -e nor -f is used.\n\
-  \"-\" can be used as a file name to mean STDIN.\n\
-  All files are read as plain files, without any interpretation.\n\n\
-Example: rpmgrep -i 'hello.*world' menu.h main.c\
-") , NULL },
-
-  { NULL, -1, POPT_ARG_INCLUDE_TABLE, NULL, 0,
-	N_("\
-  When reading patterns from a file instead of using a command line option,\n\
-  trailing white space is removed and blank lines are ignored.\n\
-\n\
-  With no FILEs, read standard input. If fewer than two FILEs given, assume -h.\n\
-") , NULL },
-
-  POPT_TABLEEND
-};
+    (*mirep) = mire;
+    mire += (*nmirep)++;
+    memset(mire, 0, sizeof(*mire));
+    mire->mode = mode;
+    mire->tag = tag;
+    /* XXX save locale tables for use by pcre_compile2. */
+    mire->table = pcretables;
+    return mireRegcomp(mire, pattern);
+}
+/*@=onlytrans@*/
 
 /*************************************************
  * Construct printed ordinal.
@@ -1268,57 +1140,276 @@ compile_pattern(const char *pattern, int options,
 }
 
 /**
- * Destroy compiled patterns.
- * @param mire		pattern array
- * @param nre		no of patterns in array
- * @return		NULL always
+ * Load patterns from string array.
+ * @param patterns	patterns to compile
+ * @param patname	pattern display name
+ * @retval *mirep	pattern array
+ * @retval *nmirep	no. of patterns in array
+ * @return		0 on success
  */
-/*@-onlytrans@*/	/* XXX miRE array, not refcounted. */
-/*@null@*/
-static void * mireFreeAll(/*@only@*/ /*@null@*/ miRE mire, int nre)
-	/*@modifies mire@*/
+static int mireLoadPatterns(/*@null@*/ ARGV_t patterns, const char * patname,
+		miRE * mirep, int * nmirep)
+	/*@modifies *mirep, *nmirep @*/
 {
-    if (mire != NULL) {
-	int i;
-	for (i = 0; i < nre; i++)
-	    (void) mireClean(mire + i);
-	mire = _free(mire);
+    const char *pattern;
+    int rc = -1;	/* assume failure */
+    int xx;
+
+    if (patterns != NULL)	/* note rc=0 return with no patterns to load. */
+    while ((pattern = *patterns++) != NULL) {
+	/* XXX pcre_options is not used. should it be? */
+	/* XXX more realloc's than necessary. */
+	xx = mireAppend(RPMMIRE_PCRE, 0, pattern, mirep, nmirep);
+	if (xx) {
+	    miRE mire = (*mirep) + ((*nmirep) - 1);
+	    fprintf(stderr, _("%s: Error in '%s' regex at offset %d: %s\n"),
+			__progname, patname, mire->erroff, mire->errmsg);
+	    goto exit;
+	}
     }
-    return NULL;
+    rc = 0;
+
+exit:
+    return rc;
 }
-/*@=onlytrans@*/
 
 /**
- * Append pattern to array.
- * @param mode		type of pattern match
- * @param tag		identifier (like an rpmTag)
- * @param pattern	pattern to compile
- * @retval *mi_rep	platform pattern array
- * @retval *mi_nrep	no. of patterns in array
+ * Load patterns from files.
+ * @param files		array of file names
+ * @param pcre_options	PCRE options to use
+ * @return		0 on success
  */
-/*@-onlytrans@*/	/* XXX miRE array, not refcounted. */
-/*@null@*/
-#if 0
-static int mireAppend(rpmMireMode mode, int tag, const char * pattern,
-		miRE * mi_rep, int * mi_nrep)
-	/*@modifies *mi_rep, *mi_nrep @*/
+static int mireLoadFiles(/*@null@*/ ARGV_t files, int pcre_options)
 {
-    miRE mire;
+    const char *fn;
+    int rc = -1;	/* assume failure */
 
-    mire = (*mi_rep);
-/*@-refcounttrans@*/
-    mire = xrealloc(mire, ((*mi_nrep) + 1) * sizeof(*mire));
-/*@=refcounttrans@*/
-    (*mi_rep) = mire;
-    mire += (*mi_nrep);
-    (*mi_nrep)++;
-    memset(mire, 0, sizeof(*mire));
-    mire->mode = mode;
-    mire->tag = tag;
-    return mireRegcomp(mire, pattern);
+    if (files != NULL)	/* note rc=0 return with no files to load. */
+    while ((fn = *files++) != NULL) {
+	char buffer[MBUFTHIRD];
+	int linenumber;
+	FD_t fd = NULL;
+	FILE *fp;
+
+	if (strcmp(fn, "-") == 0) {
+	    fd = NULL;
+	    fp = stdin;
+	    fn = stdin_name;	/* XXX use the stdin display name */
+	} else {
+	    /* XXX .fpio is needed because of fgets(3) usage. */
+	    fd = Fopen(fn, "r.fpio");
+	    if (fd == NULL || Ferror(fd) || (fp = fdGetFILE(fd)) == NULL) {
+		fprintf(stderr, _("%s: Failed to open %s: %s\n"),
+				__progname, fn, Fstrerror(fd));
+		if (fd) Fclose(fd);
+		fd = NULL;
+		fp = NULL;
+		goto exit;
+	    }
+	}
+
+	linenumber = 0;
+	while (fgets(buffer, MBUFTHIRD, fp) != NULL) {
+	    char *se = buffer + (int)strlen(buffer);
+	    while (se > buffer && xisspace((int)se[-1]))
+		se--;
+	    *se = '\0';
+	    linenumber++;
+	    if (buffer[0] == '\0')	continue;	/* Skip blank lines */
+	    if (!compile_pattern(buffer, pcre_options, fn, linenumber))
+		goto exit;
+	}
+
+	if (fd) {
+	    Fclose(fd);
+	    fd = NULL;
+	}
+    }
+    rc = 0;
+
+exit:
+    return rc;
 }
-#endif
-/*@=onlytrans@*/
+
+/* Options without a single-letter equivalent get a negative value. This can be
+used to identify them. */
+#define POPT_COLOR	(-1)
+#define POPT_EXCLUDE	(-2)
+#define POPT_INCLUDE	(-4)
+#define POPT_LABEL	(-5)
+#define POPT_LOCALE	(-6)
+#define	POPT_NEWLINE	(-7)
+
+/**
+ */
+static void grepArgCallback(poptContext con,
+                /*@unused@*/ enum poptCallbackReason reason,
+                const struct poptOption * opt, const char * arg,
+                /*@unused@*/ void * data)
+{
+    int xx;
+
+    /* XXX avoid accidental collisions with POPT_BIT_SET for flags */
+    if (opt->arg == NULL)
+    switch (opt->val) {
+    case POPT_COLOR:
+    /* XXX tristate: NULL default: disabled, optional arg overrides "auto" */
+assert(arg != NULL);
+	color_option = xstrdup(arg);
+	break;
+    case POPT_LABEL:
+assert(arg != NULL);
+	stdin_name = xstrdup(arg);
+	break;
+    case POPT_LOCALE:
+assert(arg != NULL);
+	locale = xstrdup(arg);
+	break;
+    case POPT_NEWLINE:
+assert(arg != NULL);
+	newline = xstrdup(arg);
+	break;
+
+    case 'f':
+assert(arg != NULL);
+	xx = poptSaveString(&pattern_filenames, opt->argInfo, arg);
+	break;
+    case POPT_INCLUDE:
+assert(arg != NULL);
+	xx = poptSaveString(&include_patterns, opt->argInfo, arg);
+	break;
+    case POPT_EXCLUDE:
+assert(arg != NULL);
+	xx = poptSaveString(&exclude_patterns, opt->argInfo, arg);
+	break;
+    case 'e':
+assert(arg != NULL);
+	xx = poptSaveString(&patterns, opt->argInfo, arg);
+	break;
+
+    case 'V':
+	fprintf(stderr, _("%s version %s\n"), __progname, pcre_version());
+	exit(0);
+	/*@notreached@*/ break;
+    default:
+	fprintf(stderr, _("%s: Unknown option -%c\n"), __progname, opt->val);
+	poptPrintUsage(con, stderr, 0);
+	exit(2);
+	/*@notreached@*/ break;
+    }
+}
+
+/**
+ */
+static struct poptOption optionsTable[] = {
+/*@-type@*/ /* FIX: cast? */
+ { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA | POPT_CBFLAG_CONTINUE,
+        grepArgCallback, 0, NULL, NULL },
+/*@=type@*/
+
+  { "after-context", 'A', POPT_ARG_INT,		&after_context, 0,
+	N_("set number of following context lines"), N_("=number") },
+  { "before-context", 'B', POPT_ARG_INT,	&before_context, 0,
+	N_("set number of prior context lines"), N_("=number") },
+  { "context", 'C', POPT_ARG_INT,		&both_context, 0,
+	N_("set number of context lines, before & after"), N_("=number") },
+  { "count", 'c', POPT_BIT_SET,		&grepFlags, GREP_FLAGS_COUNT,
+	N_("print only a count of matching lines per FILE"), NULL },
+  { "color", '\0', POPT_ARG_STRING,		NULL, POPT_COLOR,
+	N_("matched text color option=(auto|always|never)"), N_("=option") },
+  { "colour", '\0', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN, NULL, POPT_COLOR,
+	N_("matched text colour option=(auto|always|never)"), N_("=option") },
+/* XXX HACK: there is a shortName option conflict with -D,--define */
+  { "devices", 'D', POPT_ARG_STRING,		&DEE_option, 0,
+	N_("device, FIFO, or socket action (read|skip)"), N_("=action") },
+  { "directories", 'd',	POPT_ARG_STRING,	&dee_option, 0,
+	N_("directory action (read|skip|recurse)"), N_("=action") },
+  { "regex", 'e', POPT_ARG_STRING,		NULL, 'e',
+	N_("specify pattern (may be used more than once)"), N_("(p)") },
+  { "fixed_strings", 'F', POPT_BIT_SET,	&grepFlags, GREP_FLAGS_FIXED_STRINGS,
+	N_("patterns are sets of newline-separated strings"), NULL },
+  { "file", 'f', POPT_ARG_STRING,		NULL, 'f',
+	N_("read patterns from file"), N_("=path") },
+  { "file-offsets", '\0', POPT_BIT_SET,	&grepFlags, GREP_FLAGS_FOFFSETS,
+	N_("output file offsets, not text"), NULL },
+  { "with-filename", 'H', POPT_ARG_VAL,	&filenames, FN_FORCE,
+	N_("force the prefixing filename on output"), NULL },
+  { "no-filename", 'h',	POPT_ARG_VAL,	&filenames, FN_NONE,
+	N_("suppress the prefixing filename on output"), NULL },
+  { "ignore-case", 'i',	POPT_BIT_SET,	&grepFlags, GREP_FLAGS_CASELESS,
+	N_("ignore case distinctions"), NULL },
+  { "files-with-matches", 'l', POPT_ARG_VAL,	&filenames, FN_ONLY,
+	N_("print only FILE names containing matches"), NULL },
+  { "files-without-match", 'L',	POPT_ARG_VAL,	&filenames, FN_NOMATCH_ONLY,
+	N_("print only FILE names not containing matches"), NULL },
+  { "label", '\0', POPT_ARG_STRING,		NULL, POPT_LABEL,
+	N_("set name for standard input"), N_("=name") },
+  { "line-offsets", '\0', POPT_BIT_SET,	&grepFlags, (GREP_FLAGS_LOFFSETS|GREP_FLAGS_LNUMBER),
+	N_("output line numbers and offsets, not text"), NULL },
+  { "locale", '\0', POPT_ARG_STRING,		NULL, POPT_LOCALE,
+	N_("use the named locale"), N_("=locale") },
+  { "multiline", 'M', POPT_BIT_SET,	&grepFlags, GREP_FLAGS_MULTILINE,
+	N_("run in multiline mode"), NULL },
+  { "newline", 'N',	POPT_ARG_STRING,	NULL, POPT_NEWLINE,
+	N_("set newline type (CR|LF|CRLF|ANYCRLF|ANY)"), N_("=type") },
+  { "line-number", 'n',	POPT_BIT_SET,	&grepFlags, GREP_FLAGS_LNUMBER,
+	N_("print line number with output lines"), NULL },
+  { "only-matching", 'o', POPT_BIT_SET,	&grepFlags, GREP_FLAGS_ONLY_MATCHING,
+	N_("show only the part of the line that matched"), NULL },
+/* XXX HACK: there is a longName option conflict with --quiet */
+  { "quiet", 'q', POPT_BIT_SET,		&grepFlags, GREP_FLAGS_QUIET,
+	N_("suppress output, just set return code"), NULL },
+  { "recursive", 'r',	POPT_ARG_VAL,		&dee_action, dee_RECURSE,
+	N_("recursively scan sub-directories"), NULL },
+  { "exclude", '\0', POPT_ARG_STRING,		NULL, POPT_EXCLUDE,
+	N_("exclude matching files when recursing"), N_("=pattern") },
+  { "include", '\0', POPT_ARG_STRING,		NULL, POPT_INCLUDE,
+	N_("include matching files when recursing"), N_("=pattern") },
+  { "no-messages", 's',	POPT_BIT_SET,	&grepFlags, GREP_FLAGS_SILENT,
+	N_("suppress error messages"), NULL },
+  { "silent", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN, &grepFlags, GREP_FLAGS_SILENT,
+	N_("suppress error messages"), NULL },
+  { "utf-8", 'u',	POPT_BIT_SET,	&grepFlags, GREP_FLAGS_UTF8,
+	N_("use UTF-8 mode"), NULL },
+/* XXX HACK: there is a longName option conflict with --version */
+  { "version", 'V',	POPT_ARG_NONE,		NULL, 'V',
+	N_("print version information and exit"), NULL },
+/* XXX HACK: there is a shortName option conflict with -v, --verbose */
+  { "invert-match", 'v', POPT_BIT_SET,	&grepFlags, GREP_FLAGS_INVERT,
+	N_("select non-matching lines"), NULL },
+  { "word-regex", 'w', POPT_BIT_SET,	&grepFlags, GREP_FLAGS_WORD_MATCH,
+	N_("force patterns to match only as words") , N_("(p)") },
+  { "line-regex", 'x', POPT_BIT_SET,	&grepFlags, GREP_FLAGS_LINE_MATCH,
+	N_("force patterns to match only whole lines"), N_("(p)") },
+
+  POPT_AUTOALIAS
+
+ { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmioAllPoptTable, 0,
+	N_("Common options for all rpmio executables:"),
+	NULL },
+
+  POPT_AUTOHELP
+
+  { NULL, -1, POPT_ARG_INCLUDE_TABLE, NULL, 0,
+	N_("\
+Usage: rpmgrep [OPTION...] [PATTERN] [FILE1 FILE2 ...]\n\n\
+  Search for PATTERN in each FILE or standard input.\n\
+  PATTERN must be present if neither -e nor -f is used.\n\
+  \"-\" can be used as a file name to mean STDIN.\n\
+  All files are read as plain files, without any interpretation.\n\n\
+Example: rpmgrep -i 'hello.*world' menu.h main.c\
+") , NULL },
+
+  { NULL, -1, POPT_ARG_INCLUDE_TABLE, NULL, 0,
+	N_("\
+  When reading patterns from a file instead of using a command line option,\n\
+  trailing white space is removed and blank lines are ignored.\n\
+\n\
+  With no FILEs, read standard input. If fewer than two FILEs given, assume -h.\n\
+") , NULL },
+
+  POPT_TABLEEND
+};
 
 /*************************************************
  * Main program.
@@ -1505,7 +1596,7 @@ _("%s: Cannot mix --only-matching, --file-offsets and/or --line-offsets\n"),
 	 * If no patterns were provided by -e, and no file was provided by -f,
 	 * the first argument is the one and only pattern, and it must exist.
 	 */
-	if (npatterns == 0 && pattern_filename == NULL) {
+	if (npatterns == 0 && pattern_filenames == NULL) {
 	    if (i >= ac) {
 		poptPrintUsage(optCon, stderr, 0);
 		goto errxit;
@@ -1526,46 +1617,9 @@ _("%s: Cannot mix --only-matching, --file-offsets and/or --line-offsets\n"),
 	}
     }
 
-    /* Compile the regular expressions that are provided in a file. */
-    if (pattern_filename != NULL) {
-	int linenumber = 0;
-	FD_t fd = NULL;
-	FILE *fp;
-	const char *fn;
-	char buffer[MBUFTHIRD];
-
-	if (strcmp(pattern_filename, "-") == 0) {
-	    fp = stdin;
-	    fn = stdin_name;
-	} else {
-	    /* XXX .fpio is needed because of fgets(3) usage. */
-	    fd = Fopen(pattern_filename, "r.fpio");
-	    if (fd == NULL || Ferror(fd) || (fp = fdGetFILE(fd)) == NULL) {
-		fprintf(stderr, _("%s: Failed to open %s: %s\n"),
-			__progname, pattern_filename, Fstrerror(fd));
-		if (fd) Fclose(fd);
-		fd = NULL;
-		goto errxit;
-	    }
-	    fn = pattern_filename;
-	}
-
-	while (fgets(buffer, MBUFTHIRD, fp) != NULL) {
-	    char *se = buffer + (int)strlen(buffer);
-	    while (se > buffer && xisspace((int)se[-1]))
-		se--;
-	    *se = 0;
-	    linenumber++;
-	    if (buffer[0] == 0)	continue;	/* Skip blank lines */
-	    if (!compile_pattern(buffer, pcre_options, fn, linenumber))
-		goto errxit;
-	}
-
-	if (fd) {
-	    Fclose(fd);
-	    fd = NULL;
-	}
-    }
+    /* Compile the regular expressions that are provided from file(s). */
+    if (mireLoadFiles(pattern_filenames, pcre_options))
+	goto errxit;
 
     /* Study the regular expressions, as we will be running them many times */
     for (j = 0; j < pattern_count; j++) {
@@ -1582,29 +1636,10 @@ _("%s: Cannot mix --only-matching, --file-offsets and/or --line-offsets\n"),
     }
 
     /* If there are include or exclude patterns, compile them. */
-    if (exclude_pattern != NULL) {
-	excludeMire = mireNew(RPMMIRE_PCRE, 0);
-	/* XXX save locale tables for use by pcre_compile2. */
-	excludeMire->table = pcretables;
-	xx = mireRegcomp(excludeMire, exclude_pattern);
-	if (xx) {
-	    fprintf(stderr, _("%s: Error in 'exclude' regex at offset %d: %s\n"),
-		__progname, excludeMire->erroff, excludeMire->errmsg);
-	    goto errxit;
-	}
-    }
-
-    if (include_pattern != NULL) {
-	includeMire = mireNew(RPMMIRE_PCRE, 0);
-	/* XXX save locale tables for use by pcre_compile2. */
-	includeMire->table = pcretables;
-	xx = mireRegcomp(includeMire, include_pattern);
-	if (xx) {
-	    fprintf(stderr, _("%s: Error in 'include' regex at offset %d: %s\n"),
-		__progname, includeMire->erroff, includeMire->errmsg);
-	    goto errxit;
-	}
-    }
+    if (mireLoadPatterns(exclude_patterns, "exclude", &excludeMire, &nexcludes))
+	goto errxit;
+    if (mireLoadPatterns(include_patterns, "include", &includeMire, &nincludes))
+	goto errxit;
 
     /* If there are no further arguments, do the business on stdin and exit. */
     if (i >= ac) {
@@ -1630,16 +1665,19 @@ _("%s: Cannot mix --only-matching, --file-offsets and/or --line-offsets\n"),
 exit:
     includeMire = mireFree(includeMire);
     excludeMire = mireFree(excludeMire);
-    pattern_list = mireFreeAll(pattern_list, pattern_count);
 
+    pattern_list = mireFreeAll(pattern_list, pattern_count);
     patterns = argvFree(patterns);
+    excludeMire = mireFreeAll(excludeMire, nexcludes);
+    exclude_patterns = argvFree(exclude_patterns);
+    includeMire = mireFreeAll(includeMire, nincludes);
+    include_patterns = argvFree(include_patterns);
+
+    pattern_filenames = argvFree(pattern_filenames);
 
     color_option = _free(color_option);
-    exclude_pattern = _free(exclude_pattern);
-    include_pattern = _free(include_pattern);
     locale = _free(locale);
     newline = _free(newline);
-    pattern_filename = _free(pattern_filename);
     stdin_name = _free(stdin_name);
 
     optCon = rpmioFini(optCon);
