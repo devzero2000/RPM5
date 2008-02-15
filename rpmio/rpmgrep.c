@@ -85,17 +85,6 @@ static int poptSaveString(const char ***argvp, unsigned int argInfo, const char 
 *               Global variables                 *
 *************************************************/
 
-/* Jeffrey Friedl has some debugging requirements that are not part of the
-regular code. */
-
-#ifdef JFRIEDL_DEBUG
-static int S_arg = -1;
-static unsigned int jfriedl_XR = 0; /* repeat regex attempt this many times */
-static unsigned int jfriedl_XT = 0; /* replicate text this many times */
-static const char *jfriedl_prefix = "";
-static const char *jfriedl_postfix = "";
-#endif
-
 /** Line ending types */
 enum { EL_LF, EL_CR, EL_CRLF, EL_ANY, EL_ANYCRLF };
 static int  endlinetype;
@@ -516,54 +505,6 @@ pcregrep(FD_t fd, const char *printname)
 	linelength = t - ptr - endlinelength;
 	length = GF_ISSET(MULTILINE) ? (size_t)(endptr - ptr) : linelength;
 
-	/* Extra processing for Jeffrey Friedl's debugging. */
-#ifdef JFRIEDL_DEBUG
-	if (jfriedl_XT || jfriedl_XR) {
-	    struct timeval start_time, end_time;
-	    struct timezone dummy;
-	    double delta;
-
-	    if (jfriedl_XT) {
-		unsigned long newlen = length * jfriedl_XT + strlen(jfriedl_prefix) + strlen(jfriedl_postfix);
-		const char *orig = ptr;
-		endptr = ptr = xmalloc(newlen + 1);
-		strcpy(endptr, jfriedl_prefix);
-		endptr += strlen(jfriedl_prefix);
-		for (i = 0; i < jfriedl_XT; i++) {
-		    strncpy(endptr, orig,  length);
-		    endptr += length;
-		}
-		strcpy(endptr, jfriedl_postfix);
-		endptr += strlen(jfriedl_postfix);
-		length = newlen;
-	    }
-
-	    if (gettimeofday(&start_time, &dummy) != 0)
-		perror("bad gettimeofday");
-
-	    for (i = 0; i < jfriedl_XR; i++) {
-		miRE mire = pattern_list;
-		mire->startoff = 0;	/* XXX needed? */
-		mire->eoptions = 0;	/* XXX needed? */
-		/* XXX save offsets for use by pcre_exec. */
-		mire->offsets = offsets;
-		mire->noffsets = 99;
-		/* XXX WATCHOUT: mireRegexec w length=0 does strlen(matchptr)! */
-		match = ((length > 0 ? mireRegexec(mire, matchptr, length) : PCRE_ERROR_NOMATCH) >= 0);
-	    }
-
-	    if (gettimeofday(&end_time, &dummy) != 0)
-		perror("bad gettimeofday");
-
-	    delta = ((end_time.tv_sec + (end_time.tv_usec / 1000000.0))
-		            -
-		    (start_time.tv_sec + (start_time.tv_usec / 1000000.0)));
-	    printf("%s TIMER[%.4f]\n", match ? "MATCH" : "FAIL", delta);
-	    rc = 0;
-	    goto exit;
-	}
-#endif
-
 	/*
 	 * We come back here after a match when the -o,--only-matching option
 	 * is set, in order to find any further matches in the same line.
@@ -778,22 +719,6 @@ ONLY_MATCHING_RESTART:
 		 * NOTE: Use only fwrite() to output the data line, so that
 		 * binary zeroes are treated as just another data character.
 		 */
-
-		/*
-		 * This extra option, for Jeffrey Friedl's debugging
-		 * requirements, replaces the matched string, or a specific
-		 * captured string if it exists, with X. When this happens,
-		 * coloring is ignored.
-		 */
-#ifdef JFRIEDL_DEBUG
-		if (S_arg >= 0 && S_arg < mrc) {
-		    int first = S_arg * 2;
-		    int last  = first + 1;
-		    fwrite(ptr, 1, offsets[first], stdout);
-		    fprintf(stdout, "X");
-		    fwrite(ptr + offsets[last], 1, linelength - offsets[last], stdout);
-		} else
-#endif
 
 		/* We have to split the line(s) up if coloring. */
 		if (GF_ISSET(COLOR)) {
@@ -1101,13 +1026,6 @@ assert(arg != NULL);
 	newline = xstrdup(arg);
 	break;
 
-#ifdef JFRIEDL_DEBUG
-    /* XXX tristate:  dunno behavior */
-    case 'S':
-	S_arg = 0;
-	break;
-#endif
-
     case 'e':
 assert(arg != NULL);
 	xx = poptSaveString(&patterns, opt->argInfo, arg);
@@ -1191,10 +1109,6 @@ static struct poptOption optionsTable[] = {
 	N_("exclude matching files when recursing"), N_("=pattern") },
   { "include", '\0', POPT_ARG_STRING,		NULL, POPT_INCLUDE,
 	N_("include matching files when recursing"), N_("=pattern") },
-#ifdef JFRIEDL_DEBUG
-  { "jeffS", 'S',	OP_OP_NUMBER,	&S_arg, 'S',
-	N_("replace matched (sub)string with X"), NULL },
-#endif
   { "no-messages", 's',	POPT_BIT_SET,	&grepFlags, GREP_FLAGS_SILENT,
 	N_("suppress error messages"), NULL },
   { "silent", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN, &grepFlags, GREP_FLAGS_SILENT,
@@ -1415,10 +1329,8 @@ main(int argc, char **argv)
 {
     poptContext optCon;
     int pcre_options = 0;
-    int errptr;
     ARGV_t av = NULL;
     int ac = 0;
-    const char *error;
     int rc = 1;		/* assume not found. */
     int i = 0;
     int j;
@@ -1580,18 +1492,6 @@ _("%s: Cannot mix --only-matching, --file-offsets and/or --line-offsets\n"),
 	}
     }
 
-    /* Check the values for Jeffrey Friedl's debugging options. */
-#ifdef JFRIEDL_DEBUG
-    if (S_arg > 9) {
-	fprintf(stderr, _("%s: bad value for -S option\n"), __progname);
-	goto errxit;
-    }
-    if (jfriedl_XT != 0 || jfriedl_XR != 0) {
-	if (jfriedl_XT == 0) jfriedl_XT = 1;
-	if (jfriedl_XR == 0) jfriedl_XR = 1;
-    }
-#endif
-
     /* Get memory to store the pattern and hints lists. */
     pattern_list = xcalloc(MAX_PATTERN_COUNT, sizeof(*pattern_list));
 
@@ -1670,6 +1570,7 @@ _("%s: Cannot mix --only-matching, --file-offsets and/or --line-offsets\n"),
     /* Study the regular expressions, as we will be running them many times */
     for (j = 0; j < pattern_count; j++) {
 	miRE mire = pattern_list + j;
+	const char * error;
 	mire->hints = pcre_study(mire->pcre, 0, &error);
 	if (error != NULL) {
 	    char s[16];
@@ -1688,7 +1589,7 @@ _("%s: Cannot mix --only-matching, --file-offsets and/or --line-offsets\n"),
 	xx = mireRegcomp(excludeMire, exclude_pattern);
 	if (xx) {
 	    fprintf(stderr, _("%s: Error in 'exclude' regex at offset %d: %s\n"),
-		__progname, errptr, error);
+		__progname, excludeMire->erroff, excludeMire->errmsg);
 	    goto errxit;
 	}
     }
@@ -1700,7 +1601,7 @@ _("%s: Cannot mix --only-matching, --file-offsets and/or --line-offsets\n"),
 	xx = mireRegcomp(includeMire, include_pattern);
 	if (xx) {
 	    fprintf(stderr, _("%s: Error in 'include' regex at offset %d: %s\n"),
-		__progname, errptr, error);
+		__progname, includeMire->erroff, includeMire->errmsg);
 	    goto errxit;
 	}
     }
