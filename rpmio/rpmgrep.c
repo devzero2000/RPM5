@@ -62,7 +62,6 @@ typedef int BOOL;
 #endif
 
 #if !defined(POPT_ARG_ARGV)
-#define POPT_ARG_ARGV 0
 static int poptSaveString(const char ***argvp, unsigned int argInfo, const char * val)
 {
     ARGV_t argv;
@@ -1284,7 +1283,9 @@ static void grepArgCallback(poptContext con,
                 const struct poptOption * opt, const char * arg,
                 /*@unused@*/ void * data)
 {
+#if !defined(POPT_ARG_ARGV)
     int xx;
+#endif
 
     /* XXX avoid accidental collisions with POPT_BIT_SET for flags */
     if (opt->arg == NULL)
@@ -1307,6 +1308,7 @@ assert(arg != NULL);
 	newline = xstrdup(arg);
 	break;
 
+#if !defined(POPT_ARG_ARGV)
     case 'f':
 assert(arg != NULL);
 	xx = poptSaveString(&pattern_filenames, opt->argInfo, arg);
@@ -1323,6 +1325,7 @@ assert(arg != NULL);
 assert(arg != NULL);
 	xx = poptSaveString(&patterns, opt->argInfo, arg);
 	break;
+#endif
 
     case 'V':
 	fprintf(stderr, _("%s version %s\n"), __progname, pcre_version());
@@ -1361,12 +1364,22 @@ static struct poptOption optionsTable[] = {
 	N_("device, FIFO, or socket action (read|skip)"), N_("=action") },
   { "directories", 'd',	POPT_ARG_STRING,	&dee_option, 0,
 	N_("directory action (read|skip|recurse)"), N_("=action") },
+#if defined(POPT_ARG_ARGV)
+  { "regex", 'e', POPT_ARG_ARGV,		&patterns, 0,
+	N_("specify pattern (may be used more than once)"), N_("(p)") },
+#else
   { "regex", 'e', POPT_ARG_STRING,		NULL, 'e',
 	N_("specify pattern (may be used more than once)"), N_("(p)") },
+#endif
   { "fixed_strings", 'F', POPT_BIT_SET,	&grepFlags, GREP_FLAGS_FIXED_STRINGS,
 	N_("patterns are sets of newline-separated strings"), NULL },
+#if defined(POPT_ARG_ARGV)
+  { "file", 'f', POPT_ARG_ARGV,		&pattern_filenames, 0,
+	N_("read patterns from file"), N_("=path") },
+#else
   { "file", 'f', POPT_ARG_STRING,		NULL, 'f',
 	N_("read patterns from file"), N_("=path") },
+#endif
   { "file-offsets", '\0', POPT_BIT_SET,	&grepFlags, GREP_FLAGS_FOFFSETS,
 	N_("output file offsets, not text"), NULL },
   { "with-filename", 'H', POPT_ARG_VAL,	&filenames, FN_FORCE,
@@ -1398,10 +1411,17 @@ static struct poptOption optionsTable[] = {
 	N_("suppress output, just set return code"), NULL },
   { "recursive", 'r',	POPT_ARG_VAL,		&dee_action, dee_RECURSE,
 	N_("recursively scan sub-directories"), NULL },
+#if defined(POPT_ARG_ARGV)
+  { "exclude", '\0', POPT_ARG_ARGV,		&exclude_patterns, 0,
+	N_("exclude matching files when recursing"), N_("=pattern") },
+  { "include", '\0', POPT_ARG_ARGV,		&include_patterns, 0,
+	N_("include matching files when recursing"), N_("=pattern") },
+#else
   { "exclude", '\0', POPT_ARG_STRING,		NULL, POPT_EXCLUDE,
 	N_("exclude matching files when recursing"), N_("=pattern") },
   { "include", '\0', POPT_ARG_STRING,		NULL, POPT_INCLUDE,
 	N_("include matching files when recursing"), N_("=pattern") },
+#endif
   { "no-messages", 's',	POPT_BIT_SET,	&grepFlags, GREP_FLAGS_SILENT,
 	N_("suppress error messages"), NULL },
   { "silent", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN, &grepFlags, GREP_FLAGS_SILENT,
@@ -1628,6 +1648,11 @@ _("%s: Cannot mix --only-matching, --file-offsets and/or --line-offsets\n"),
      * the first argument is the one and only pattern, and it must exist.
      */
     {	int npatterns = argvCount(patterns);
+#if defined(POPT_ARG_ARGV)
+	unsigned int argInfo = POPT_ARG_ARGV;
+#else
+	unsigned int argInfo = 0;
+#endif
 
 	/*
 	 * If no patterns were provided by -e, and no file was provided by -f,
@@ -1638,7 +1663,7 @@ _("%s: Cannot mix --only-matching, --file-offsets and/or --line-offsets\n"),
 		poptPrintUsage(optCon, stderr, 0);
 		goto errxit;
 	    }
-	    xx = poptSaveString(&patterns, POPT_ARG_ARGV, av[i]);
+	    xx = poptSaveString(&patterns, argInfo, av[i]);
 	    i++;
 	}
 
