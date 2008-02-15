@@ -62,7 +62,7 @@ typedef int BOOL;
 #endif
 
 #if !defined(POPT_ARG_ARGV)
-static int poptSaveString(const char ***argvp, unsigned int argInfo, const char * val)
+static int _poptSaveString(const char ***argvp, unsigned int argInfo, const char * val)
 {
     ARGV_t argv;
     int argc = 0;
@@ -167,19 +167,24 @@ static enum grepFlags_e grepFlags = GREP_FLAGS_NONE;
  * so we can treat them as the same.
  */
 static const char *prefix[] = {
-  "", "\\b", "^(?:", "^(?:", "\\Q", "\\b\\Q", "^(?:\\Q", "^(?:\\Q" };
+    "", "\\b", "^(?:", "^(?:", "\\Q", "\\b\\Q", "^(?:\\Q", "^(?:\\Q"
+};
 
 static const char *suffix[] = {
-  "", "\\b", ")$",   ")$",   "\\E", "\\E\\b", "\\E)$",   "\\E)$" };
+    "", "\\b", ")$",   ")$",   "\\E", "\\E\\b", "\\E)$",   "\\E)$"
+};
 
 /** UTF-8 tables - used only when the newline setting is "any". */
-static const int utf8_table3[] = { 0xff, 0x1f, 0x0f, 0x07, 0x03, 0x01};
+static const int utf8_table3[] = {
+    0xff, 0x1f, 0x0f, 0x07, 0x03, 0x01
+};
 
 static const char utf8_table4[] = {
-  1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
-  1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
-  2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,
-  3,3,3,3,3,3,3,3,4,4,4,4,5,5,5,5 };
+    1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+    1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+    2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,
+    3,3,3,3,3,3,3,3,4,4,4,4,5,5,5,5
+};
 
 /*************************************************
  * Find end of line.
@@ -194,7 +199,7 @@ static const char utf8_table4[] = {
  * @return		pointer to the last byte of the line
 */
 static const char *
-end_of_line(const char *p, const char *endptr, int *lenptr)
+end_of_line(const char *p, const char *endptr, size_t *lenptr)
 {
     switch(endlinetype) {
     default:	/* Just in case */
@@ -429,7 +434,7 @@ static void do_after_lines(int lastmatchnumber, const char *lastmatchrestart,
     int count = 0;
     while (lastmatchrestart < endptr && count++ < after_context) {
 	const char *pp = lastmatchrestart;
-	int ellength;
+	size_t ellength;
 	if (printname != NULL) fprintf(stdout, "%s-", printname);
 	if (GF_ISSET(LNUMBER)) fprintf(stdout, "%d-", lastmatchnumber++);
 	pp = end_of_line(pp, endptr, &ellength);
@@ -485,12 +490,13 @@ pcregrep(FD_t fd, const char *printname)
      * over 2/3 of the way, the buffer is shifted left and re-filled.
      */
     while (ptr < endptr) {
-	int i, endlinelength;
+	int i;
 	int mrc = 0;
 	BOOL match = FALSE;
 	char *matchptr = ptr;
 	const char *t = ptr;
 	size_t length, linelength;
+	size_t endlinelength;
 
 	/*
 	 * At this point, ptr is at the start of a line. We need to find the
@@ -621,7 +627,7 @@ ONLY_MATCHING_RESTART:
 		 * from a previous match. We never print any overlaps.
 		 */
 		if (after_context > 0 && lastmatchnumber > 0) {
-		    int ellength;
+		    size_t ellength;
 		    int linecount = 0;
 		    const char *p = lastmatchrestart;
 
@@ -673,7 +679,7 @@ ONLY_MATCHING_RESTART:
 			fprintf(stdout, "--\n");
 
 		    while (p < ptr) {
-			int ellength;
+			size_t ellength;
 			const char *pp = p;
 			if (printname != NULL) fprintf(stdout, "%s-", printname);
 			if (GF_ISSET(LNUMBER)) fprintf(stdout, "%d-", linenumber - linecount--);
@@ -702,7 +708,7 @@ ONLY_MATCHING_RESTART:
 		 * the match will always be before the first newline sequence.
 		 * */
 		if (GF_ISSET(MULTILINE)) {
-		    int ellength;
+		    size_t ellength;
 		    const char *endmatch = ptr;
 		    if (!GF_ISSET(INVERT)) {
 			endmatch += offsets[1];
@@ -750,7 +756,7 @@ ONLY_MATCHING_RESTART:
 	 * the match before proceeding.
 	 */
 	if (GF_ISSET(MULTILINE) && GF_ISSET(INVERT) && match) {
-	    int ellength;
+	    size_t ellength;
 	    const char *endmatch = ptr + offsets[1];
 	    t = ptr;
 	    while (t < endmatch) {
@@ -1082,7 +1088,7 @@ compile_pattern(const char *pattern, int options,
 	const char *eop = pattern + strlen(pattern);
 	char buffer[MBUFTHIRD];
 	for(;;) {
-	    int ellength;
+	    size_t ellength;
 	    const char *p = end_of_line(pattern, eop, &ellength);
 	    if (ellength == 0)
 		return compile_single_pattern(pattern, options, filename, count);
@@ -1167,29 +1173,26 @@ static void grepArgCallback(poptContext con,
                 const struct poptOption * opt, const char * arg,
                 /*@unused@*/ void * data)
 {
-#if !defined(POPT_ARG_ARGV)
-    int xx;
-#endif
-
     /* XXX avoid accidental collisions with POPT_BIT_SET for flags */
     if (opt->arg == NULL)
     switch (opt->val) {
 #if !defined(POPT_ARG_ARGV)
+	int xx;
     case 'f':
 assert(arg != NULL);
-	xx = poptSaveString(&pattern_filenames, opt->argInfo, arg);
+	xx = _poptSaveString(&pattern_filenames, opt->argInfo, arg);
 	break;
     case POPT_INCLUDE:
 assert(arg != NULL);
-	xx = poptSaveString(&include_patterns, opt->argInfo, arg);
+	xx = _poptSaveString(&include_patterns, opt->argInfo, arg);
 	break;
     case POPT_EXCLUDE:
 assert(arg != NULL);
-	xx = poptSaveString(&exclude_patterns, opt->argInfo, arg);
+	xx = _poptSaveString(&exclude_patterns, opt->argInfo, arg);
 	break;
     case 'e':
 assert(arg != NULL);
-	xx = poptSaveString(&patterns, opt->argInfo, arg);
+	xx = _poptSaveString(&patterns, opt->argInfo, arg);
 	break;
 #endif
 
@@ -1351,8 +1354,8 @@ main(int argc, char **argv)
     int pcre_options = 0;
     ARGV_t av = NULL;
     int ac = 0;
+    int i = 0;		/* assume av[0] is 1st argument. */
     int rc = 1;		/* assume not found. */
-    int i = 0;
     int j;
     int xx;
 
@@ -1365,8 +1368,9 @@ main(int argc, char **argv)
      * as "lf".
      */
     if (newline == NULL) {
-	(void)pcre_config(PCRE_CONFIG_NEWLINE, &i);
-	switch (i) {
+	int val;
+	xx = pcre_config(PCRE_CONFIG_NEWLINE, &val);
+	switch (val) {
 	default:	newline = xstrdup("lf");		break;
 	case '\r':	newline = xstrdup("cr");		break;
 	case ('\r' << 8) | '\n': newline = xstrdup("crlf"); break;
@@ -1380,8 +1384,6 @@ main(int argc, char **argv)
 
     av = poptGetArgs(optCon);
     ac = argvCount(av);
-    i = 0;
-    rc = 1;
 
     /* If -C was used, its value is used as a default for -A and -B.  */
     if (both_context > 0) {
@@ -1520,11 +1522,6 @@ _("%s: Cannot mix --only-matching, --file-offsets and/or --line-offsets\n"),
      * the first argument is the one and only pattern, and it must exist.
      */
     {	int npatterns = argvCount(patterns);
-#if defined(POPT_ARG_ARGV)
-	unsigned int argInfo = POPT_ARG_ARGV;
-#else
-	unsigned int argInfo = 0;
-#endif
 
 	/*
 	 * If no patterns were provided by -e, and no file was provided by -f,
@@ -1535,7 +1532,11 @@ _("%s: Cannot mix --only-matching, --file-offsets and/or --line-offsets\n"),
 		poptPrintUsage(optCon, stderr, 0);
 		goto errxit;
 	    }
-	    xx = poptSaveString(&patterns, argInfo, av[i]);
+#if defined(POPT_ARG_ARGV)
+	    xx = poptSaveString(&patterns, POPT_ARG_ARGV, av[i]);
+#else
+	    xx = _poptSaveString(&patterns, 0, av[i]);
+#endif
 	    i++;
 	}
 
