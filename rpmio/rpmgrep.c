@@ -1269,12 +1269,10 @@ exit:
 
 /* Options without a single-letter equivalent get a negative value. This can be
 used to identify them. */
-#define POPT_COLOR	(-1)
+#if !defined(POPT_ARG_ARGV)
 #define POPT_EXCLUDE	(-2)
 #define POPT_INCLUDE	(-4)
-#define POPT_LABEL	(-5)
-#define POPT_LOCALE	(-6)
-#define	POPT_NEWLINE	(-7)
+#endif
 
 /**
  */
@@ -1290,24 +1288,6 @@ static void grepArgCallback(poptContext con,
     /* XXX avoid accidental collisions with POPT_BIT_SET for flags */
     if (opt->arg == NULL)
     switch (opt->val) {
-    case POPT_COLOR:
-    /* XXX tristate: NULL default: disabled, optional arg overrides "auto" */
-assert(arg != NULL);
-	color_option = xstrdup(arg);
-	break;
-    case POPT_LABEL:
-assert(arg != NULL);
-	stdin_name = xstrdup(arg);
-	break;
-    case POPT_LOCALE:
-assert(arg != NULL);
-	locale = xstrdup(arg);
-	break;
-    case POPT_NEWLINE:
-assert(arg != NULL);
-	newline = xstrdup(arg);
-	break;
-
 #if !defined(POPT_ARG_ARGV)
     case 'f':
 assert(arg != NULL);
@@ -1328,7 +1308,7 @@ assert(arg != NULL);
 #endif
 
     case 'V':
-	fprintf(stderr, _("%s version %s\n"), __progname, pcre_version());
+	fprintf(stderr, _("%s %s (PCRE version %s)\n"), __progname, VERSION, pcre_version());
 	exit(0);
 	/*@notreached@*/ break;
     default:
@@ -1355,10 +1335,10 @@ static struct poptOption optionsTable[] = {
 	N_("set number of context lines, before & after"), N_("=number") },
   { "count", 'c', POPT_BIT_SET,		&grepFlags, GREP_FLAGS_COUNT,
 	N_("print only a count of matching lines per FILE"), NULL },
-  { "color", '\0', POPT_ARG_STRING,		NULL, POPT_COLOR,
-	N_("matched text color option=(auto|always|never)"), N_("=option") },
-  { "colour", '\0', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN, NULL, POPT_COLOR,
-	N_("matched text colour option=(auto|always|never)"), N_("=option") },
+  { "color", '\0', POPT_ARG_STRING,		&color_option, 0,
+	N_("matched text color option (auto|always|never)"), N_("=option") },
+  { "colour", '\0', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN, &color_option, 0,
+	N_("matched text colour option (auto|always|never)"), N_("=option") },
 /* XXX HACK: there is a shortName option conflict with -D,--define */
   { "devices", 'D', POPT_ARG_STRING,		&DEE_option, 0,
 	N_("device, FIFO, or socket action (read|skip)"), N_("=action") },
@@ -1375,10 +1355,12 @@ static struct poptOption optionsTable[] = {
 	N_("patterns are sets of newline-separated strings"), NULL },
 #if defined(POPT_ARG_ARGV)
   { "file", 'f', POPT_ARG_ARGV,		&pattern_filenames, 0,
-	N_("read patterns from file"), N_("=path") },
+	N_("read patterns from file (may be used more than once)"),
+	N_("=path") },
 #else
   { "file", 'f', POPT_ARG_STRING,		NULL, 'f',
-	N_("read patterns from file"), N_("=path") },
+	N_("read patterns from file (may be used more than once)"),
+	N_("=path") },
 #endif
   { "file-offsets", '\0', POPT_BIT_SET,	&grepFlags, GREP_FLAGS_FOFFSETS,
 	N_("output file offsets, not text"), NULL },
@@ -1392,15 +1374,15 @@ static struct poptOption optionsTable[] = {
 	N_("print only FILE names containing matches"), NULL },
   { "files-without-match", 'L',	POPT_ARG_VAL,	&filenames, FN_NOMATCH_ONLY,
 	N_("print only FILE names not containing matches"), NULL },
-  { "label", '\0', POPT_ARG_STRING,		NULL, POPT_LABEL,
+  { "label", '\0', POPT_ARG_STRING,		&stdin_name, 0,
 	N_("set name for standard input"), N_("=name") },
   { "line-offsets", '\0', POPT_BIT_SET,	&grepFlags, (GREP_FLAGS_LOFFSETS|GREP_FLAGS_LNUMBER),
 	N_("output line numbers and offsets, not text"), NULL },
-  { "locale", '\0', POPT_ARG_STRING,		NULL, POPT_LOCALE,
+  { "locale", '\0', POPT_ARG_STRING,		&locale, 0,
 	N_("use the named locale"), N_("=locale") },
   { "multiline", 'M', POPT_BIT_SET,	&grepFlags, GREP_FLAGS_MULTILINE,
 	N_("run in multiline mode"), NULL },
-  { "newline", 'N',	POPT_ARG_STRING,	NULL, POPT_NEWLINE,
+  { "newline", 'N',	POPT_ARG_STRING,	&newline, 0,
 	N_("set newline type (CR|LF|CRLF|ANYCRLF|ANY)"), N_("=type") },
   { "line-number", 'n',	POPT_BIT_SET,	&grepFlags, GREP_FLAGS_LNUMBER,
 	N_("print line number with output lines"), NULL },
@@ -1413,14 +1395,18 @@ static struct poptOption optionsTable[] = {
 	N_("recursively scan sub-directories"), NULL },
 #if defined(POPT_ARG_ARGV)
   { "exclude", '\0', POPT_ARG_ARGV,		&exclude_patterns, 0,
-	N_("exclude matching files when recursing"), N_("=pattern") },
+	N_("exclude matching files when recursing (may be used more than once)"),
+	N_("=pattern") },
   { "include", '\0', POPT_ARG_ARGV,		&include_patterns, 0,
-	N_("include matching files when recursing"), N_("=pattern") },
+	N_("include matching files when recursing (may be used more than once)"),
+	N_("=pattern") },
 #else
   { "exclude", '\0', POPT_ARG_STRING,		NULL, POPT_EXCLUDE,
-	N_("exclude matching files when recursing"), N_("=pattern") },
+	N_("exclude matching files when recursing (may be used more than once)"),
+	N_("=pattern") },
   { "include", '\0', POPT_ARG_STRING,		NULL, POPT_INCLUDE,
-	N_("include matching files when recursing"), N_("=pattern") },
+	N_("include matching files when recursing (may be used more than once)"),
+	N_("=pattern") },
 #endif
   { "no-messages", 's',	POPT_BIT_SET,	&grepFlags, GREP_FLAGS_SILENT,
 	N_("suppress error messages"), NULL },
