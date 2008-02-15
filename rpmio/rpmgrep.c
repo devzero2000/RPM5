@@ -1107,7 +1107,7 @@ compile_pattern(const char *pattern, int options,
  * @param pcre_options	PCRE options to use
  * @return		0 on success
  */
-static int mireLoadFiles(/*@null@*/ ARGV_t files, int pcre_options)
+static int mireLoadPatternFiles(/*@null@*/ ARGV_t files, int pcre_options)
 {
     const char *fn;
     int rc = -1;	/* assume failure */
@@ -1151,6 +1151,38 @@ static int mireLoadFiles(/*@null@*/ ARGV_t files, int pcre_options)
 	if (fd) {
 	    Fclose(fd);
 	    fd = NULL;
+	}
+    }
+    rc = 0;
+
+exit:
+    return rc;
+}
+
+/**
+ * Study PCRE patterns (if any).
+ * @param mire		pattern container
+ * @param nmires	no. of patterns in container
+ * @return		0 on success
+ */
+static int mireStudy(miRE mire, int nmires)
+{
+    int rc = -1;	/* assume failure */
+    int j;
+
+    /* Study the PCRE regex's, as we will be running them many times */
+    if (mire)		/* note rc=0 return with no mire's. */
+    for (j = 0; j < nmires; mire++, j++) {
+	const char * error;
+	if (mire->mode != RPMMIRE_PCRE)
+	    continue;
+	mire->hints = pcre_study(mire->pcre, 0, &error);
+	if (error != NULL) {
+	    char s[32];
+	    if (nmires == 1) s[0] = '\0'; else sprintf(s, " number %d", j);
+	    fprintf(stderr, _("%s: Error while studying regex%s: %s\n"),
+		__progname, s, error);
+	    goto exit;
 	}
     }
     rc = 0;
@@ -1553,22 +1585,12 @@ _("%s: Cannot mix --only-matching, --file-offsets and/or --line-offsets\n"),
     }
 
     /* Compile the regular expressions that are provided from file(s). */
-    if (mireLoadFiles(pattern_filenames, pcre_options))
+    if (mireLoadPatternFiles(pattern_filenames, pcre_options))
 	goto errxit;
 
     /* Study the regular expressions, as we will be running them many times */
-    for (j = 0; j < pattern_count; j++) {
-	miRE mire = pattern_list + j;
-	const char * error;
-	mire->hints = pcre_study(mire->pcre, 0, &error);
-	if (error != NULL) {
-	    char s[32];
-	    if (pattern_count == 1) s[0] = '\0'; else sprintf(s, " number %d", j);
-	    fprintf(stderr, _("%s: Error while studying regex%s: %s\n"),
-		__progname, s, error);
-	    goto errxit;
-	}
-    }
+    if (mireStudy(pattern_list, pattern_count))
+	goto errxit;
 
     /* If there are include or exclude patterns, compile them. */
     if (mireLoadPatterns(RPMMIRE_PCRE, 0, exclude_patterns, NULL,
