@@ -378,27 +378,6 @@ static int parseCVOG(const char * str, CVOG_t *cvogp)
 }
 
 /**
- * Destroy platform patterns.
- * @param mire		platform pattern array
- * @param nre		no of patterns in array
- * @return		NULL always 
- */
-/*@-onlytrans@*/	/* XXX miRE array, not refcounted. */
-/*@null@*/
-static void * mireFreeAll(/*@only@*/ /*@null@*/ miRE mire, int nre)
-	/*@modifies mire@*/
-{
-    if (mire != NULL) {
-	int i;
-	for (i = 0; i < nre; i++)
-	    (void) mireClean(mire + i);
-	mire = _free(mire);
-    }
-    return NULL;
-}
-/*@=onlytrans@*/
-
-/**
  * Append pattern to array.
  * @param mode		type of pattern match
  * @param tag		identifier (like an rpmTag)

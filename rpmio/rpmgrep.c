@@ -835,36 +835,6 @@ exit:
 }
 
 /**
- * Apply array of patterns to a string.
- * @param mire		compiled pattern array
- * @param nmire		no. of patterns in array
- * @param s		string to apply against
- * @param len		length of string (0 will use strlen(s)
- * @param rc		-1 == excluding, +1 == including, 0 == single pattern
- * @return		termination condition
- */
-static int mireApply(miRE mire, int nmire, const char *s, int len, int rc)
-{
-    int i;
-
-    if (mire)
-    for (i = 0; i < nmire; mire++, i++) {
-	int xx = mireRegexec(mire, s, len);
-
-	/* Check if excluding or including condition applies. */
-	if (rc < 0 && xx < 0)
-	    continue;	/* excluding: continue on negative matches. */
-	if (rc > 0 && xx >= 0)
-	    continue;	/* including: continue on positive matches. */
-	/* Save 1st found termination condition and exit. */
-	rc = xx;
-	break;
-    }
-    return rc;
-   
-}
-
-/**
  * Check file name for a suffix.
  * @param fn		file name
  * @param suffix	suffix
@@ -1011,27 +981,6 @@ openthestream:
 exit:
     return rc;	/* Pass back the yield from pcregrep(). */
 }
-
-/**
- * Destroy compiled patterns.
- * @param mire		pattern array
- * @param nre		no of patterns in array
- * @return		NULL always
- */
-/*@-onlytrans@*/	/* XXX miRE array, not refcounted. */
-/*@null@*/
-static void * mireFreeAll(/*@only@*/ /*@null@*/ miRE mire, int nre)
-	/*@modifies mire@*/
-{
-    if (mire != NULL) {
-	int i;
-	for (i = 0; i < nre; i++)
-	    (void) mireClean(mire + i);
-	mire = _free(mire);
-    }
-    return NULL;
-}
-/*@=onlytrans@*/
 
 /**
  * Append pattern to array.

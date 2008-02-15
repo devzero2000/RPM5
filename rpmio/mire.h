@@ -128,6 +128,16 @@ miRE mireFree(/*@killref@*/ /*@only@*/ /*@null@*/ miRE mire)
 	/*@modifies mire @*/;
 
 /**
+ * Destroy compiled patterns.
+ * @param mire		pattern array
+ * @param nre		no of patterns in array
+ * @return		NULL always
+ */
+/*@null@*/
+void * mireFreeAll(/*@only@*/ /*@null@*/ miRE mire, int nmire)
+	/*@modifies mire @*/;
+
+/**
  * Create pattern container.
  * @param mode		type of pattern match
  * @param tag		identifier (e.g. an rpmTag)
@@ -156,6 +166,18 @@ int mireRegexec(miRE mire, const char * val, size_t vallen)
  */
 int mireRegcomp(miRE mire, const char * pattern)
 	/*@modifies mire @*/;
+
+/**
+ * Apply array of patterns to a string.
+ * @param mire		compiled pattern array
+ * @param nmire		no. of patterns in array
+ * @param s		string to apply against
+ * @param slen		length of string (0 will use strlen(s))
+ * @param rc		-1 == excluding, +1 == including, 0 == single pattern
+ * @return		termination condition
+ */
+int mireApply(miRE mire, int nmire, const char *s, size_t slen, int rc)
+	/*@modifies mire@*/;
 
 #ifdef __cplusplus
 }

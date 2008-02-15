@@ -100,6 +100,19 @@ miRE mireFree(miRE mire)
     return NULL;
 }
 
+/*@-onlytrans@*/	/* XXX miRE array, not refcounted. */
+void * mireFreeAll(miRE mire, int nmire)
+{
+    if (mire != NULL) {
+	int i;
+	for (i = 0; i < nmire; i++)
+	    (void) mireClean(mire + i);
+	mire = _free(mire);
+    }
+    return NULL;
+}
+/*@=onlytrans@*/
+
 miRE mireNew(rpmMireMode mode, int tag)
 {
     miRE mire = xcalloc(1, sizeof(*mire));
@@ -224,5 +237,28 @@ exit:
 if (_mire_debug)
 fprintf(stderr, "--> mireRegcomp(%p, \"%s\") rc %d\n", mire, pattern, rc);
 /*@=modfilesys@*/
+    return rc;
+}
+
+int mireApply(miRE mire, int nmire, const char *s, size_t slen, int rc)
+{
+    int i;
+
+    if (slen == 0)
+	slen = strlen(s);
+
+    if (mire)
+    for (i = 0; i < nmire; mire++, i++) {
+	int xx = mireRegexec(mire, s, slen);
+
+	/* Check if excluding or including condition applies. */
+	if (rc < 0 && xx < 0)
+	    continue;	/* excluding: continue on negative matches. */
+	if (rc > 0 && xx >= 0)
+	    continue;	/* including: continue on positive matches. */
+	/* Save 1st found termination condition and exit. */
+	rc = xx;
+	break;
+    }
     return rc;
 }
