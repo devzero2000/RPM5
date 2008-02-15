@@ -865,6 +865,19 @@ static int mireApply(miRE mire, int nmire, const char *s, int len, int rc)
    
 }
 
+/**
+ * Check file name for a suffix.
+ * @param fn		file name
+ * @param suffix	suffix
+ * @return		1 if file name ends with suffix
+ */
+static int chkSuffix(const char * fn, const char * suffix)
+{
+    size_t flen = strlen(fn);
+    size_t slen = strlen(suffix);
+    return (flen > slen && !strcmp(fn + flen - slen, suffix));
+}
+
 /*************************************************
  * Grep a file or recurse into a directory.
  *
@@ -886,7 +899,7 @@ grep_or_recurse(const char *pathname, BOOL dir_recurse, BOOL only_one_at_top)
     int sep;
     int pathlen;
     FD_t fd = NULL;
-    const char * fmode = "r.ufdio";
+    const char * fmode;
     int xx;
 
     /* If the file name is "-" we scan stdin */
@@ -964,24 +977,15 @@ grep_or_recurse(const char *pathname, BOOL dir_recurse, BOOL only_one_at_top)
      */
     pathlen = strlen(pathname);
 
-    /* Open using zlib if it is supported and the file name ends with .gz. */
-    if (pathlen > 3 && strcmp(pathname + pathlen - 3, ".gz") == 0) {
-	fmode = "r.gzdio";
-    } else
-
-    /* Otherwise open with bz2lib if it is supported and the name ends with .bz2. */
-    if (pathlen > 4 && strcmp(pathname + pathlen - 4, ".bz2") == 0) {
-	fmode = "r.bzdio";
-    } else
-
-    /*
-     * Otherwise use plain fopen(). The label is so that we can come back
-     * here if an attempt to read a .bz2 file indicates that it really is
-     * a plain file.
-     */
-    {
+    /* Identify how to Fopen the file from the suffix. */
+    if (chkSuffix(pathname, ".gz"))
+	fmode = "r.gzdio";	/* Open with zlib decompression. */
+    else if (chkSuffix(pathname, ".bz2"))
+	fmode = "r.bzdio";	/* Open with bzip2 decompression. */
+    else if (chkSuffix(pathname, ".lzma"))
+	fmode = "r.lzdio";	/* Open with lzma decompression. */
+    else
 	fmode = "r.ufdio";
-    }
 
     /* Open the stream. */
 openthestream:

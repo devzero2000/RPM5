@@ -1,4 +1,5 @@
 5.0.0 -> 5.1a1:
+    - jbj: rpmgrep: attempt LZMA decompress with ".lzma" suffix.
     - jbj: rpmgrep: apply multiple --include/--exclude patterns to paths.
     - jbj: rpmgrep: permit multiple --file, --exclude, and --include options.
     - jbj: rpmgrep: collapse option booleans into a grepFlags bit set.
