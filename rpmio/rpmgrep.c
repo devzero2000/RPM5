@@ -1096,41 +1096,6 @@ compile_pattern(const char *pattern, int options,
 }
 
 /**
- * Load patterns from string array.
- * @param patterns	patterns to compile
- * @param patname	pattern display name
- * @retval *mirep	pattern array
- * @retval *nmirep	no. of patterns in array
- * @return		0 on success
- */
-static int mireLoadPatterns(/*@null@*/ ARGV_t patterns, const char * patname,
-		/*@null@*/ const unsigned char * table,
-		miRE * mirep, int * nmirep)
-	/*@modifies *mirep, *nmirep @*/
-{
-    const char *pattern;
-    int rc = -1;	/* assume failure */
-    int xx;
-
-    if (patterns != NULL)	/* note rc=0 return with no patterns to load. */
-    while ((pattern = *patterns++) != NULL) {
-	/* XXX pcre_options is not used. should it be? */
-	/* XXX more realloc's than necessary. */
-	xx = mireAppend(RPMMIRE_PCRE, 0, pattern, table, mirep, nmirep);
-	if (xx) {
-	    miRE mire = (*mirep) + ((*nmirep) - 1);
-	    fprintf(stderr, _("%s: Error in '%s' regex at offset %d: %s\n"),
-			__progname, patname, mire->erroff, mire->errmsg);
-	    goto exit;
-	}
-    }
-    rc = 0;
-
-exit:
-    return rc;
-}
-
-/**
  * Load patterns from files.
  * @param files		array of file names
  * @param pcre_options	PCRE options to use
@@ -1605,12 +1570,22 @@ _("%s: Cannot mix --only-matching, --file-offsets and/or --line-offsets\n"),
     }
 
     /* If there are include or exclude patterns, compile them. */
-    if (mireLoadPatterns(exclude_patterns, "exclude", NULL,
-			&excludeMire, &nexcludes))
+    if (mireLoadPatterns(RPMMIRE_PCRE, 0, exclude_patterns, NULL,
+		&excludeMire, &nexcludes))
+    {
+	miRE mire = excludeMire + (nexcludes - 1);
+	fprintf(stderr, _("%s: Error in 'exclude' regex at offset %d: %s\n"),
+			__progname, mire->erroff, mire->errmsg);
 	goto errxit;
-    if (mireLoadPatterns(include_patterns, "include", NULL,
-			&includeMire, &nincludes))
+    }
+    if (mireLoadPatterns(RPMMIRE_PCRE, 0, include_patterns, NULL,
+		&includeMire, &nincludes))
+    {
+	miRE mire = includeMire + (nincludes - 1);
+	fprintf(stderr, _("%s: Error in 'include' regex at offset %d: %s\n"),
+			__progname, mire->erroff, mire->errmsg);
 	goto errxit;
+    }
 
     /* If there are no further arguments, do the business on stdin and exit. */
     if (i >= ac) {

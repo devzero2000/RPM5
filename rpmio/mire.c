@@ -258,6 +258,28 @@ int mireAppend(rpmMireMode mode, int tag, const char * pattern,
 }
 /*@=onlytrans@*/
 
+int mireLoadPatterns(rpmMireMode mode, int tag, const char ** patterns,
+		const unsigned char * table, miRE * mirep, int * nmirep)
+{
+    const char *pattern;
+    int rc = -1;	/* assume failure */
+
+    if (patterns != NULL)	/* note rc=0 return with no patterns to load. */
+    while ((pattern = *patterns++) != NULL) {
+	/* XXX pcre_options is not used. should it be? */
+	/* XXX more realloc's than necessary. */
+	int xx = mireAppend(mode, tag, pattern, table, mirep, nmirep);
+	if (xx) {
+	    rc = xx;
+	    goto exit;
+	}
+    }
+    rc = 0;
+
+exit:
+    return rc;
+}
+
 int mireApply(miRE mire, int nmire, const char *s, size_t slen, int rc)
 {
     int i;

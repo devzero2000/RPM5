@@ -140,6 +140,7 @@ LIBRPMIO_0
     mireClean;
     mireFree;
     mireFreeAll;
+    mireLoadPatterns;
     mireNew;
     mireRegexec;
     mireRegcomp;

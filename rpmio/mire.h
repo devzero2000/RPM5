@@ -183,6 +183,22 @@ int mireAppend(rpmMireMode mode, int tag, const char * pattern,
 	/*@modifies *mirep, *nmirep @*/;
 
 /**
+ * Load patterns from string array.
+ * @param mode		type of pattern match
+ * @param tag		identifier (like an rpmTag)
+ * @param patterns	patterns to compile
+ * @param table		(PCRE) locale table to use (NULL uses default table)
+ * @retval *mirep	pattern array
+ * @retval *nmirep	no. of patterns in array
+ * @return		0 on success
+ */
+int mireLoadPatterns(rpmMireMode mode, int tag,
+		/*@null@*/ const char ** patterns,
+		/*@null@*/ const unsigned char * table,
+		miRE * mirep, int * nmirep)
+	/*@modifies *mirep, *nmirep @*/;
+
+/**
  * Apply array of patterns to a string.
  * @param mire		compiled pattern array
  * @param nmire		no. of patterns in array
