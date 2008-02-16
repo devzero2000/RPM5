@@ -1373,7 +1373,7 @@ static int headerMatchLocale(const char *td, const char *l, const char *le)
     for (fe = l; fe < le && *fe != '_'; fe++)
 	{};
     if (fe < le && !strncmp(td, l, (fe - l)))
-	return 1;
+	return 2;
 
     return 0;
 }
@@ -1405,7 +1405,7 @@ headerFindI18NString(Header h, indexEntry entry)
 
     for (l = lang; *l != '\0'; l = le) {
 	const char *td;
-	char *ed;
+	char *ed, *ed_weak = NULL;
 	uint32_t langNum;
 
 	while (*l && *l == ':')			/* skip leading colons */
@@ -1418,12 +1418,13 @@ headerFindI18NString(Header h, indexEntry entry)
 	/* For each entry in the header ... */
 	for (langNum = 0, td = table->data, ed = entry->data;
 	     langNum < entry->info.count;
-	     langNum++, td += strlen(td) + 1, ed += strlen(ed) + 1) {
-
-		if (headerMatchLocale(td, l, le))
-		    return ed;
-
+	     langNum++, td += strlen(td) + 1, ed += strlen(ed) + 1)
+	{
+		int match = headerMatchLocale(td, l, le);
+		if (match == 1) return ed;
+		else if (match == 2) ed_weak = ed;
 	}
+	if (ed_weak) return ed_weak;
     }
 
     return entry->data;

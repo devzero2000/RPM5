@@ -1,4 +1,5 @@
 5.0.0 -> 5.1a1:
+    - rpm.org: Improve header i18n locale matching.
     - jbj: url: parse ?query#fragment from URI's.
     - jbj: mire: add mireLoadPatterns() routine.
     - jbj: mire: add mireAppend() routine.
