@@ -43,6 +43,10 @@ struct urlinfo_s {
 /*@owned@*/ /*@null@*/
     const char * portstr;	/*!< URI port string. */
 /*@owned@*/ /*@null@*/
+    const char * query;		/*!< URI ?query. */
+/*@owned@*/ /*@null@*/
+    const char * fragment;	/*!< URI #fragment. */
+/*@owned@*/ /*@null@*/
     const char * proxyu;	/*!< FTP: proxy user */
 /*@owned@*/ /*@null@*/
     const char * proxyh;	/*!< FTP/HTTP: proxy host */

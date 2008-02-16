@@ -1,4 +1,5 @@
 5.0.0 -> 5.1a1:
+    - jbj: url: parse ?query#fragment from URI's.
     - jbj: mire: add mireLoadPatterns() routine.
     - jbj: mire: add mireAppend() routine.
     - jbj: mire: add mireApply() and mireFreeAll() routines.

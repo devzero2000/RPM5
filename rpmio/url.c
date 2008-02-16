@@ -145,6 +145,8 @@ URLDBGREFS(0, (stderr, "--> url %p -- %d %s at %s:%u\n", u, u->nrefs, msg, file,
     u->password = _free((void *)u->password);
     u->host = _free((void *)u->host);
     u->portstr = _free((void *)u->portstr);
+    u->query = _free(u->query);
+    u->fragment = _free(u->fragment);
     u->proxyu = _free((void *)u->proxyu);
     u->proxyh = _free((void *)u->proxyh);
 
@@ -409,7 +411,7 @@ urltype urlPath(const char * url, const char ** pathp)
  * Split URL into components. The URL can look like
  *	scheme://user:password@host:port/path
   * or as in RFC2732 for IPv6 address
-  *    service://user:password@[ip:v6:ad:dr:es:s]:port/path
+  *    service://user:password@[ip:v6:ad:dr:es:s]:port/path?query#fragment
  */
 /*@-modfilesys@*/
 int urlSplit(const char * url, urlinfo *uret)
@@ -423,7 +425,7 @@ int urlSplit(const char * url, urlinfo *uret)
     if ((u = urlNew("urlSplit")) == NULL)
 	return -1;
 
-    if ((se = s = myurl = xstrdup(url)) == NULL) {
+    if ((myurl = xstrdup(url)) == NULL) {
 	u = urlFree(u, "urlSplit (error #1)");
 	return -1;
     }
@@ -431,6 +433,16 @@ int urlSplit(const char * url, urlinfo *uret)
     u->url = xstrdup(url);
     u->urltype = urlIsURL(url);
 
+    if ((se = strrchr(myurl, '#')) != NULL) {
+	*se++ = '\0';
+	u->fragment = xstrdup(se);
+    }
+    if ((se = strrchr(myurl, '?')) != NULL) {
+	*se++ = '\0';
+	u->query = xstrdup(se);
+    }
+
+    se = s = myurl;
     while (1) {
 	/* Point to end of next item */
 	while (*se && *se != '/') se++;
@@ -465,11 +477,10 @@ int urlSplit(const char * url, urlinfo *uret)
 
     /* Look for ...host:port or [v6addr]:port*/
     fe = f = s;
-    if (strchr(fe, '[') && strchr(fe, ']'))
-    {
-	    fe = strchr(f, ']');
-	    *f++ = '\0';
-	    *fe++ = '\0';
+    if (strchr(fe, '[') && strchr(fe, ']')) {
+	fe = strchr(f, ']');
+	*f++ = '\0';
+	*fe++ = '\0';
     }
     while (*fe && *fe != ':') fe++;
     if (*fe == ':') {
