@@ -6,7 +6,7 @@ LINT = splint
 
 EXTRA_DIST = tdir.c tfts.c tget.c tglob.c thkp.c thtml.c tinv.c tkey.c tmire.c tput.c trpmio.c tsw.c ttar.c lookup3.c tpw.c librpmio.vers testit.sh rpmgrep.1
 
-EXTRA_PROGRAMS = tdir tfts tget thkp thtml tinv tkey tmacro tmagic tmire tput tpw trpmio tsw ttar dumpasn1 lookup3
+EXTRA_PROGRAMS = tdir tfts tget tglob thkp thtml tinv tkey tmacro tmagic tmire tput tpw trpmio tsw ttar dumpasn1 lookup3
 
 bin_PROGRAMS =
 man_MANS =

@@ -130,6 +130,10 @@ lint:
 		`make -s sources -C rpmio` \
 		`make -s sources -C file/src`
 
+.PHONY: updatepo
+updatepo:
+	rsync -Lrtvz  translationproject.org::tp/latest/rpm/  po
+
 CVSTAG = r$(subst .,-,$(VERSION))
 
 pkgsrcdir = @PKGSRCDIR@

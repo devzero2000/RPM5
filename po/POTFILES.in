@@ -78,9 +78,11 @@ rpmio/lookup3.c
 rpmio/macro.c
 rpmio/md2.c
 rpmio/md4.c
+rpmio/poptIO.c
 rpmio/rmd128.c
 rpmio/rmd160.c
 rpmio/rpmdav.c
+rpmio/rpmgrep.c
 rpmio/rpmhash.c
 rpmio/rpmhook.c
 rpmio/rpmio.c

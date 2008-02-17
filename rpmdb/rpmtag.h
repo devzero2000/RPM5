@@ -619,7 +619,7 @@ void tagClean(/*@null@*/ headerTagIndices _rpmTags)
  * @return		NULL always
  */
 /*@null@*/
-tagStore_t tagStoreFree(/*@only@*/ tagStore_t dbiTags, size_t dbiNTags)
+tagStore_t tagStoreFree(/*@only@*//*@null@*/tagStore_t dbiTags, size_t dbiNTags)
 	/*@modifies dbiTags @*/;
 
 #if defined(_RPMTAG_INTERNAL)

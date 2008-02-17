@@ -1,4 +1,8 @@
 5.0.0 -> 5.1a1:
+    - jbj: rpmio: tglob added to EXTRA_PROGRAMS.
+    - jbj: add rpmgrep.c and poptIO.c to PO and doxygen file lists.
+    - jbj: sync translations (Translation Project).
+    - jbj: add "make updatepo" to simplify PO file maintenance.
     - rpm.org: Improve header i18n locale matching.
     - jbj: url: parse ?query#fragment from URI's.
     - jbj: mire: add mireLoadPatterns() routine.
