@@ -1045,8 +1045,8 @@ static int rpm_sleep(lua_State *L)
 }
 
 static int rpm_realpath(lua_State *L)
-    /*@globals fileSystem, internalState @*/
-    /*@modifies L, fileSystem, internalState @*/
+    /*@globals internalState @*/
+    /*@modifies L, internalState @*/
 {
     const char *pn;
     char rp_buf[PATH_MAX];

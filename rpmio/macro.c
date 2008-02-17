@@ -1104,7 +1104,7 @@ grabArgs(MacroBuf mb, const MacroEntry me, /*@returned@*/ const char * se,
      *  <bar quux baz>
      */
     posixly_correct = getenv("POSIXLY_CORRECT");
-    setenv("POSIXLY_CORRECT", "1", 1);
+    (void) setenv("POSIXLY_CORRECT", "1", 1);
 #endif
 
     /* Define option macros. */
@@ -1135,9 +1135,9 @@ grabArgs(MacroBuf mb, const MacroEntry me, /*@returned@*/ const char * se,
 
 #ifdef __GLIBC__
     if (posixly_correct != NULL)
-        setenv("POSIXLY_CORRECT", posixly_correct, 1);
+        (void) setenv("POSIXLY_CORRECT", posixly_correct, 1);
     else
-        unsetenv("POSIXLY_CORRECT");
+        (void) unsetenv("POSIXLY_CORRECT");
 #endif
 
     /* Add arg count as macro. */
@@ -1249,7 +1249,7 @@ doFoo(MacroBuf mb, int negate, const char * f, size_t fn,
         /* shrink body by removing all leading and trailing whitespaces and
            reducing intermediate whitespaces to a single space character */
         int i, j, k, was_space = 0;
-        for (i = 0, j = 0, k = strlen(buf); i < k; ) {
+        for (i = 0, j = 0, k = (int)strlen(buf); i < k; ) {
             if (xisspace((int)(buf[i]))) {
                 was_space = 1;
                 i++;

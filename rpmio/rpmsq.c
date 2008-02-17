@@ -242,15 +242,17 @@ static void *__tid2vp(pthread_t tid)
 
 #else
 
+/*@-macromatchname@*/
 #define	DO_LOCK() (0)
 #define	DO_UNLOCK() (0)
-#define	INIT_LOCK() ((void)0)
+#define	INIT_LOCK()
 #define	ADD_REF(__tbl)	/*@-noeffect@*/ (0) /*@=noeffect@*/
 #define	SUB_REF(__tbl)	/*@-noeffect@*/ (0) /*@=noeffect@*/
-#define	CLEANUP_HANDLER(__handler, __arg, __oldtypeptr) ((void)0)
-#define	CLEANUP_RESET(__execute, __oldtype) ((void)0)
+#define	CLEANUP_HANDLER(__handler, __arg, __oldtypeptr)
+#define	CLEANUP_RESET(__execute, __oldtype)
 
 #define	SAME_THREAD(_a, _b)	(42)
+/*@=macromatchname@*/
 
 #define ME() __pid2vp(getpid())
 /*@shared@*/
@@ -425,8 +427,9 @@ int rpmsqEnable(int signum, /*@null@*/ rpmsqAction_t handler)
     struct sigaction sa;
     rpmsig tbl;
     int ret = -1;
+    int xx;
 
-    (void) DO_LOCK ();
+    xx = DO_LOCK ();
     if (rpmsqQueue->id == NULL)
 	rpmsqQueue->id = ME();
     for (tbl = rpmsigTbl; tbl->signum >= 0; tbl++) {
@@ -450,7 +453,7 @@ int rpmsqEnable(int signum, /*@null@*/ rpmsqAction_t handler)
 		sa.sa_sigaction = (void *) (handler != NULL ? handler : tbl->handler);
 #endif
 		if (sigaction(tbl->signum, &sa, &tbl->oact) < 0) {
-		    (void)SUB_REF(tbl);
+		    xx = SUB_REF(tbl);
 		    break;
 		}
 		tbl->active = 1;		/* XXX just in case */
@@ -468,7 +471,7 @@ int rpmsqEnable(int signum, /*@null@*/ rpmsqAction_t handler)
 	ret = tbl->active;
 	break;
     }
-    (void) DO_UNLOCK ();
+    xx = DO_UNLOCK ();
     return ret;
 }
 
@@ -680,19 +683,20 @@ sigchld_cancel (void *arg)
 {
     pid_t child = *(pid_t *) arg;
     pid_t result;
+    int xx;
 
-    (void) kill(child, SIGKILL);
+    xx = kill(child, SIGKILL);
 
     do {
 	result = waitpid(child, NULL, 0);
     } while (result == (pid_t)-1 && errno == EINTR);
 
-    (void) DO_LOCK ();
+    xx = DO_LOCK ();
     if (SUB_REF (rpmsigTbl_sigchld) == 0) {
-	(void) rpmsqEnable(-SIGQUIT, NULL);
-	(void) rpmsqEnable(-SIGINT, NULL);
+	xx = rpmsqEnable(-SIGQUIT, NULL);
+	xx = rpmsqEnable(-SIGINT, NULL);
     }
-    (void) DO_UNLOCK ();
+    xx = DO_UNLOCK ();
 }
 #endif
 
@@ -712,28 +716,29 @@ rpmsqExecve (const char ** argv)
     pid_t result;
     sigset_t newMask, oldMask;
     rpmsq sq = memset(alloca(sizeof(*sq)), 0, sizeof(*sq));
+    int xx;
 
 #ifndef PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP
 	INIT_LOCK ();
 #endif
 
-    (void) DO_LOCK ();
+    xx = DO_LOCK ();
     if (ADD_REF (rpmsigTbl_sigchld) == 0) {
 	if (rpmsqEnable(SIGINT, NULL) < 0) {
-	    (void) SUB_REF (rpmsigTbl_sigchld);
+	    xx = SUB_REF (rpmsigTbl_sigchld);
 	    goto out;
 	}
 	if (rpmsqEnable(SIGQUIT, NULL) < 0) {
-	    (void) SUB_REF (rpmsigTbl_sigchld);
+	    xx = SUB_REF (rpmsigTbl_sigchld);
 	    goto out_restore_sigint;
 	}
     }
-    (void) DO_UNLOCK ();
+    xx = DO_UNLOCK ();
 
     (void) sigemptyset (&newMask);
     (void) sigaddset (&newMask, SIGCHLD);
     if (sigprocmask (SIG_BLOCK, &newMask, &oldMask) < 0) {
-	(void) DO_LOCK ();
+	xx = DO_LOCK ();
 	if (SUB_REF (rpmsigTbl_sigchld) == 0)
 	    goto out_restore_sigquit_and_sigint;
 	goto out;
@@ -768,7 +773,7 @@ rpmsqExecve (const char ** argv)
 
     CLEANUP_RESET(0, oldtype);
 
-    (void) DO_LOCK ();
+    xx = DO_LOCK ();
     if ((SUB_REF (rpmsigTbl_sigchld) == 0 &&
         (rpmsqEnable(-SIGINT, NULL) < 0 || rpmsqEnable (-SIGQUIT, NULL) < 0))
       || sigprocmask (SIG_SETMASK, &oldMask, NULL) != 0)
@@ -778,10 +783,10 @@ rpmsqExecve (const char ** argv)
     goto out;
 
 out_restore_sigquit_and_sigint:
-    (void) rpmsqEnable(-SIGQUIT, NULL);
+    xx = rpmsqEnable(-SIGQUIT, NULL);
 out_restore_sigint:
-    (void) rpmsqEnable(-SIGINT, NULL);
+    xx = rpmsqEnable(-SIGINT, NULL);
 out:
-    (void) DO_UNLOCK ();
+    xx = DO_UNLOCK ();
     return status;
 }

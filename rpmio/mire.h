@@ -62,7 +62,9 @@ struct miRE_s {
     regex_t *preg;		/*!< regex compiled pattern buffer */
     void *pcre;			/*!< pcre compiled pattern buffer. */
     void *hints;		/*!< pcre compiled pattern hints buffer. */
+/*@shared@*/ /*@relnull@*/
     const char * errmsg;	/*!< pcre error message. */
+/*@shared@*/ /*@relnull@*/
     const unsigned char * table;/*!< pcre locale table. */
     int * offsets;		/*!< pcre substring offset table. */
     int noffsets;		/*!< pcre substring offset table count. */

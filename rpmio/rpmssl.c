@@ -226,8 +226,7 @@ int rpmsslVerifyDSA(pgpDig dig)
 static
 int rpmsslMpiItem(const char * pre, pgpDig dig, int itemno,
 		const uint8_t * p, /*@null@*/ const uint8_t * pend)
-	/*@globals fileSystem @*/
-	/*@modifies dig, fileSystem @*/
+	/*@modifies dig @*/
 {
 #if defined(WITH_SSL)
     rpmssl ssl = dig->impl;

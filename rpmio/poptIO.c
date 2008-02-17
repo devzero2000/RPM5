@@ -44,16 +44,7 @@ extern int _tar_debug;
 #endif
 
 /*@unchecked@*/
-extern int _mire_debug;
-
-/*@unchecked@*/
-extern int _rpmmg_debug;
-
-/*@unchecked@*/
 extern int _rpmsq_debug;
-
-/*@unchecked@*/
-extern int _xar_debug;
 
 /*@unchecked@*/
 extern int noLibio;
@@ -67,21 +58,6 @@ const char * rpmioRootDir = "/";
 
 /*@observer@*/ /*@unchecked@*/
 const char *rpmioEVR = VERSION;
-
-/*@-exportheadervar@*/
-/*@unchecked@*/
-extern int _ftp_debug;
-/*@unchecked@*/
-extern int _av_debug;
-/*@unchecked@*/
-extern int _dav_debug;
-
-/*@unchecked@*/
-extern int noLibio;
-
-/*@unchecked@*/
-extern int _rpmio_debug;
-/*@=exportheadervar@*/
 
 /*@unchecked@*/
 static int rpmioInitialized = -1;
@@ -104,17 +80,15 @@ static char *rpmpoptfiles = RPMPOPTFILES;
  * Display rpm version.
  */
 static void printVersion(FILE * fp)
-	/*@globals rpmEVR, fileSystem @*/
+	/*@globals rpmioEVR, fileSystem @*/
 	/*@modifies *fp, fileSystem @*/
 {
     fprintf(fp, _("%s (" RPM_NAME ") %s\n"), __progname, rpmioEVR);
 }
 
 void rpmioConfigured(void)
-	/*@globals rpmioInitialized, rpmCLIMacroContext, rpmGlobalMacroContext,
-		h_errno, fileSystem, internalState @*/
-	/*@modifies rpmioInitialized, rpmCLIMacroContext, rpmGlobalMacroContext,
-		fileSystem, internalState @*/
+	/*@globals rpmioInitialized @*/
+	/*@modifies rpmioInitialized @*/
 {
 
     if (rpmioInitialized < 0) {
@@ -131,10 +105,12 @@ static void rpmioAllArgCallback(poptContext con,
                 /*@unused@*/ enum poptCallbackReason reason,
                 const struct poptOption * opt, const char * arg,
                 /*@unused@*/ const void * data)
-	/*@globals rpmioTargets, rpmioQueryFlags, rpmCLIMacroContext,
-		rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies con, rpmioTargets, rpmioQueryFlags, rpmCLIMacroContext,
-		rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@globals pgpImplVecs,
+ 		rpmCLIMacroContext, rpmGlobalMacroContext, h_errno,
+		fileSystem, internalState @*/
+	/*@modifies con, pgpImplVecs,
+ 		rpmCLIMacroContext, rpmGlobalMacroContext,
+		fileSystem, internalState @*/
 {
 
     /* XXX avoid accidental collisions with POPT_BIT_SET for flags */
@@ -150,7 +126,7 @@ static void rpmioAllArgCallback(poptContext con,
     {	char *s, *t;
 	/* XXX Convert '-' in macro name to underscore, skip leading %. */
 	s = t = xstrdup(arg);
-	while (*t && !xisspace(*t)) {
+	while (*t && !xisspace((int)*t)) {
 	    if (*t == '-') *t = '_';
 	    t++;
 	}
@@ -168,7 +144,7 @@ static void rpmioAllArgCallback(poptContext con,
     {	char *s, *t;
 	/* XXX Convert '-' in macro name to underscore, skip leading %. */
 	s = t = xstrdup(arg);
-	while (*t && !xisspace(*t)) {
+	while (*t && !xisspace((int)*t)) {
 	    if (*t == '-') *t = '_';
 	    t++;
 	}
@@ -260,13 +236,13 @@ struct poptOption rpmioAllPoptTable[] = {
  { "debug", 'd', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &__debug, -1,
         NULL, NULL },
 
- { "define", 'D', POPT_ARG_STRING, NULL, 'D',
+ { "define", 'D', POPT_ARG_STRING, NULL, (int)'D',
 	N_("define MACRO with value EXPR"),
 	N_("'MACRO EXPR'") },
  { "undefine", '\0', POPT_ARG_STRING, NULL, POPT_UNDEFINE,
 	N_("undefine MACRO"),
 	N_("'MACRO'") },
- { "eval", 'E', POPT_ARG_STRING, NULL, 'E',
+ { "eval", 'E', POPT_ARG_STRING, NULL, (int)'E',
 	N_("print macro expansion of EXPR"),
 	N_("'EXPR'") },
 
@@ -300,9 +276,9 @@ struct poptOption rpmioAllPoptTable[] = {
 	N_("use ROOT as top level directory"),
 	N_("ROOT") },
 
- { "quiet", '\0', 0, NULL, 'q',
+ { "quiet", '\0', 0, NULL, (int)'q',
 	N_("provide less detailed output"), NULL},
- { "verbose", 'v', 0, NULL, 'v',
+ { "verbose", 'v', 0, NULL, (int)'v',
 	N_("provide more detailed output"), NULL},
  { "version", '\0', 0, NULL, POPT_SHOWVERSION,
 	N_("print the version"), NULL },
@@ -507,7 +483,9 @@ rpmioInit(int argc, char *const argv[], struct poptOption * optionsTable)
     /* Process all options, whine if unknown. */
     while ((rc = poptGetNextOpt(optCon)) > 0) {
 	const char * optArg = poptGetOptArg(optCon);
+/*@-dependenttrans -modobserver -observertrans @*/
 	optArg = _free(optArg);
+/*@=dependenttrans =modobserver =observertrans @*/
 	switch (rc) {
 	default:
 /*@-nullpass@*/

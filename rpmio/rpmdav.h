@@ -215,22 +215,22 @@ struct dirent * davReaddir(DIR * dir)
  */
 /*@null@*/
 DIR * davOpendir(const char * path)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies fileSystem, internalState @*/;
+	/*@globals errno, fileSystem, internalState @*/
+	/*@modifies errno, fileSystem, internalState @*/;
 
 /**
  * stat(2) clone.
  */
 int davStat(const char * path, /*@out@*/ struct stat * st)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies *st, fileSystem, internalState @*/;
+	/*@globals errno, fileSystem, internalState @*/
+	/*@modifies *st, errno, fileSystem, internalState @*/;
 
 /**
  * lstat(2) clone.
  */
 int davLstat(const char * path, /*@out@*/ struct stat * st)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies *st, fileSystem, internalState @*/;
+	/*@globals errno, fileSystem, internalState @*/
+	/*@modifies *st, errno, fileSystem, internalState @*/;
 
 #ifdef __cplusplus
 }

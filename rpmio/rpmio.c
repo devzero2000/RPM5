@@ -3493,7 +3493,9 @@ FD_t Fopen(const char *path, const char *_fmode)
 
     if (path == NULL || _fmode == NULL)
 	goto exit;
+/*@-mods@*/
     fmode = rpmExpand(_fmode, NULL);
+/*@=mods@*/
 
     stdio[0] = '\0';
     cvtfmode(fmode, stdio, sizeof(stdio), other, sizeof(other), &end, &flags);

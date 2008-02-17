@@ -51,10 +51,8 @@ extern const char * rpmioRootDir;
 /*@null@*/
 poptContext
 rpmioInit(int argc, char *const argv[], struct poptOption * optionsTable)
-	/*@globals rpmCLIMacroContext, rpmGlobalMacroContext, h_errno, stderr, 
-		fileSystem, internalState @*/
-	/*@modifies rpmCLIMacroContext, rpmGlobalMacroContext, stderr, 
-		fileSystem, internalState @*/;
+	/*@globals stderr, fileSystem, internalState @*/
+	/*@modifies stderr, fileSystem, internalState @*/;
 
 /**
  * Make sure that rpm configuration has been read.
@@ -62,10 +60,8 @@ rpmioInit(int argc, char *const argv[], struct poptOption * optionsTable)
  */
 /*@mayexit@*/
 void rpmioConfigured(void)
-	/*@globals rpmCLIMacroContext,
-		rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies rpmCLIMacroContext, rpmGlobalMacroContext,
-		fileSystem, internalState @*/;
+	/*@globals internalState @*/
+	/*@modifies internalState @*/;
 
 /**
  * Destroy most everything needed by an rpm CLI executable context.

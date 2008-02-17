@@ -5,10 +5,6 @@
 #include "system.h"
 #include <rpmio.h>
 
-#if defined(__LCLINT__)
-#define	__i386__
-#endif
-
 #define	_RPMPGP_INTERNAL
 #if defined(WITH_NSS)
 #define	_RPMNSS_INTERNAL
@@ -258,8 +254,7 @@ SECKEYPublicKey * rpmnssNewDSAKey(void)
 static
 int rpmnssMpiItem(const char * pre, pgpDig dig, int itemno,
 		const uint8_t * p, /*@null@*/ const uint8_t * pend)
-	/*@globals fileSystem @*/
-	/*@modifies dig, fileSystem @*/
+	/*@modifies dig @*/
 {
 #if defined(WITH_NSS)
     rpmnss nss = dig->impl;

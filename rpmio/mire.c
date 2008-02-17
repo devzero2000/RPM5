@@ -148,7 +148,7 @@ int mireRegexec(miRE mire, const char * val, size_t vallen)
 #ifdef	WITH_PCRE
 	if (vallen == 0)
 	    vallen = strlen(val);
-	rc = pcre_exec(mire->pcre, mire->hints, val, vallen, mire->startoff,
+	rc = pcre_exec(mire->pcre, mire->hints, val, (int)vallen, mire->startoff,
 		mire->eoptions, mire->offsets, mire->noffsets);
 	if (_mire_debug && rc < 0 && rc != PCRE_ERROR_NOMATCH) {
 	    rpmlog(RPMLOG_ERR, _("pcre_exec failed: return %d\n"), rc);
@@ -169,7 +169,7 @@ int mireRegexec(miRE mire, const char * val, size_t vallen)
 
 /*@-modfilesys@*/
 if (_mire_debug)
-fprintf(stderr, "--> mireRegexec(%p, %p[%u]) rc %d mode %d \"%.*s\"\n", mire, val, (unsigned)vallen, rc, mire->mode, (vallen < 20 ? vallen : 20), val);
+fprintf(stderr, "--> mireRegexec(%p, %p[%u]) rc %d mode %d \"%.*s\"\n", mire, val, (unsigned)vallen, rc, mire->mode, (int)(vallen < 20 ? vallen : 20), val);
 /*@=modfilesys@*/
     return rc;
 }
@@ -253,7 +253,9 @@ int mireAppend(rpmMireMode mode, int tag, const char * pattern,
     memset(mire, 0, sizeof(*mire));
     mire->mode = mode;
     mire->tag = tag;
+/*@-assignexpose -temptrans @*/
     mire->table = table;
+/*@=assignexpose =temptrans @*/
     return mireRegcomp(mire, pattern);
 }
 /*@=onlytrans@*/
