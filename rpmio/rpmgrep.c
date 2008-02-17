@@ -38,7 +38,10 @@ POSSIBILITY OF SUCH DAMAGE.
 */
 
 #include "system.h"
-const char *__progname;
+/*@-readonlytrans@*/
+/*@unchecked@*/
+const char * __progname = "pcregrep";	/* XXX HACK in expected name. */
+/*@=readonlytrans@*/
 
 #include <pcre.h>
 
@@ -47,6 +50,8 @@ const char *__progname;
 #include <poptIO.h>
 
 #include "debug.h"
+
+/*@access miRE @*/
 
 #define FALSE 0
 #define TRUE 1
@@ -63,6 +68,7 @@ typedef int BOOL;
 
 #if !defined(POPT_ARG_ARGV)
 static int _poptSaveString(const char ***argvp, unsigned int argInfo, const char * val)
+	/*@*/
 {
     ARGV_t argv;
     int argc = 0;
@@ -86,43 +92,68 @@ static int _poptSaveString(const char ***argvp, unsigned int argInfo, const char
 
 /** Line ending types */
 enum { EL_LF, EL_CR, EL_CRLF, EL_ANY, EL_ANYCRLF };
+/*@unchecked@*/
 static int  endlinetype;
+/*@unchecked@*/ /*@only@*/ /*@null@*/
 static const char *newline = NULL;
 
+/*@unchecked@*/ /*@only@*/ /*@null@*/
 static const char *color_string = NULL;
+/*@unchecked@*/ /*@only@*/ /*@null@*/
 static const char *color_option = NULL;
+/*@unchecked@*/ /*@only@*/ /*@null@*/
 static ARGV_t pattern_filenames = NULL;
+/*@unchecked@*/ /*@only@*/ /*@null@*/
 static const char *stdin_name = NULL;
 
+/*@unchecked@*/ /*@only@*/ /*@null@*/
 static const char *locale = NULL;
+/*@unchecked@*/ /*@only@*/ /*@null@*/
 static const unsigned char *pcretables = NULL;
 
+/*@unchecked@*/ /*@only@*/ /*@null@*/
 static ARGV_t patterns = NULL;
+/*@unchecked@*/ /*@only@*/ /*@null@*/
 static miRE pattern_list = NULL;
+/*@unchecked@*/
 static int  pattern_count = 0;
 
+/*@unchecked@*/ /*@only@*/ /*@null@*/
 static ARGV_t exclude_patterns = NULL;
+/*@unchecked@*/ /*@only@*/ /*@null@*/
 static miRE excludeMire = NULL;
+/*@unchecked@*/
 static int nexcludes = 0;
 
+/*@unchecked@*/ /*@only@*/ /*@null@*/
 static ARGV_t include_patterns = NULL;
+/*@unchecked@*/ /*@only@*/ /*@null@*/
 static miRE includeMire = NULL;
+/*@unchecked@*/
 static int nincludes = 0;
 
+/*@unchecked@*/
 static int after_context = 0;
+/*@unchecked@*/
 static int before_context = 0;
+/*@unchecked@*/
 static int both_context = 0;
 
 /** Actions for the -d option */
 enum { dee_READ=1, dee_SKIP, dee_RECURSE };
+/*@unchecked@*/
 static int dee_action = dee_READ;
+/*@unchecked@*/ /*@null@*/
 static const char *dee_option = NULL;
 
 /** Actions for the -D option */
 enum { DEE_READ=1, DEE_SKIP };
+/*@unchecked@*/
 static int DEE_action = DEE_READ;
+/*@unchecked@*/ /*@null@*/
 static const char *DEE_option = NULL;
 
+/*@unchecked@*/
 static int error_count = 0;
 
 /**
@@ -131,6 +162,7 @@ static int error_count = 0;
  * all values greater than FN_DEFAULT.
  */
 enum { FN_NONE, FN_DEFAULT, FN_ONLY, FN_NOMATCH_ONLY, FN_FORCE };
+/*@unchecked@*/
 static int filenames = FN_DEFAULT;
 
 #define	_GFB(n)	((1 << (n)) | 0x40000000)
@@ -158,6 +190,7 @@ enum grepFlags_e {
     GREP_FLAGS_CASELESS		= _GFB(14), /*!< -i,--ignore-case ... */
 };
 
+/*@unchecked@*/
 static enum grepFlags_e grepFlags = GREP_FLAGS_NONE;
 
 /**
@@ -166,19 +199,23 @@ static enum grepFlags_e grepFlags = GREP_FLAGS_NONE;
  * Note that the combination of -w and -x has the same effect as -x on its own,
  * so we can treat them as the same.
  */
+/*@unchecked@*/ /*@observer@*/
 static const char *prefix[] = {
     "", "\\b", "^(?:", "^(?:", "\\Q", "\\b\\Q", "^(?:\\Q", "^(?:\\Q"
 };
 
+/*@unchecked@*/ /*@observer@*/
 static const char *suffix[] = {
     "", "\\b", ")$",   ")$",   "\\E", "\\E\\b", "\\E)$",   "\\E)$"
 };
 
 /** UTF-8 tables - used only when the newline setting is "any". */
+/*@unchecked@*/ /*@observer@*/
 static const int utf8_table3[] = {
     0xff, 0x1f, 0x0f, 0x07, 0x03, 0x01
 };
 
+/*@unchecked@*/ /*@observer@*/
 static const char utf8_table4[] = {
     1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
     1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
@@ -198,8 +235,10 @@ static const char utf8_table4[] = {
  * @retval *lenptr	length of the eol sequence
  * @return		pointer to the last byte of the line
 */
+/*@observer@*/
 static const char *
-end_of_line(const char *p, const char *endptr, size_t *lenptr)
+end_of_line(const char *p, const char *endptr, /*@out@*/ size_t *lenptr)
+	/*@modifies *lenptr @*/
 {
     switch(endlinetype) {
     default:	/* Just in case */
@@ -211,6 +250,7 @@ end_of_line(const char *p, const char *endptr, size_t *lenptr)
 	}
 	*lenptr = 0;
 	return endptr;
+	/*@notreached@*/ break;
 
     case EL_CR:
 	while (p < endptr && *p != '\r') p++;
@@ -220,6 +260,7 @@ end_of_line(const char *p, const char *endptr, size_t *lenptr)
 	}
 	*lenptr = 0;
 	return endptr;
+	/*@notreached@*/ break;
 
     case EL_CRLF:
 	for (;;) {
@@ -233,7 +274,7 @@ end_of_line(const char *p, const char *endptr, size_t *lenptr)
 		return p + 1;
 	    }
 	}
-	break;
+	/*@notreached@*/ break;
 
     case EL_ANYCRLF:
 	while (p < endptr) {
@@ -257,6 +298,7 @@ end_of_line(const char *p, const char *endptr, size_t *lenptr)
 	    case 0x0a:    /* LF */
 		*lenptr = 1;
 		return p;
+		/*@notreached@*/ /*@switchbreak@*/ break;
 
 	    case 0x0d:    /* CR */
 		if (p < endptr && *p == 0x0a) {
@@ -265,14 +307,16 @@ end_of_line(const char *p, const char *endptr, size_t *lenptr)
 		}
 		else *lenptr = 1;
 		return p;
+		/*@notreached@*/ /*@switchbreak@*/ break;
 
 	    default:
-		break;
+		/*@switchbreak@*/ break;
 		}
 	}   /* End of loop for ANYCRLF case */
 
 	*lenptr = 0;  /* Must have hit the end */
 	return endptr;
+	/*@notreached@*/ break;
 
     case EL_ANY:
 	while (p < endptr) {
@@ -298,6 +342,7 @@ end_of_line(const char *p, const char *endptr, size_t *lenptr)
 	    case 0x0c:    /* FF */
 		*lenptr = 1;
 		return p;
+		/*@notreached@*/ /*@switchbreak@*/ break;
 
 	    case 0x0d:    /* CR */
 		if (p < endptr && *p == 0x0a) {
@@ -306,24 +351,29 @@ end_of_line(const char *p, const char *endptr, size_t *lenptr)
 		}
 		else *lenptr = 1;
 		return p;
+		/*@notreached@*/ /*@switchbreak@*/ break;
 
 	    case 0x85:    /* NEL */
 		*lenptr = GF_ISSET(UTF8) ? 2 : 1;
 		return p;
+		/*@notreached@*/ /*@switchbreak@*/ break;
 
 	    case 0x2028:  /* LS */
 	    case 0x2029:  /* PS */
 		*lenptr = 3;
 		return p;
+		/*@notreached@*/ /*@switchbreak@*/ break;
 
 	    default:
-		break;
+		/*@switchbreak@*/ break;
 	    }
 	}   /* End of loop for ANY case */
 
 	*lenptr = 0;  /* Must have hit the end */
 	return endptr;
+	/*@notreached@*/ break;
     }	/* End of overall switch */
+    /*@notreached@*/
 }
 
 /*************************************************
@@ -335,8 +385,10 @@ end_of_line(const char *p, const char *endptr, size_t *lenptr)
  * @param startptr	start of available data
  * @return 		pointer to the start of the previous line
  */
+/*@observer@*/
 static const char *
 previous_line(const char *p, const char *startptr)
+	/*@*/
 {
     switch (endlinetype) {
     default:      /* Just in case */
@@ -344,11 +396,13 @@ previous_line(const char *p, const char *startptr)
 	p--;
 	while (p > startptr && p[-1] != '\n') p--;
 	return p;
+	/*@notreached@*/ break;
 
     case EL_CR:
 	p--;
 	while (p > startptr && p[-1] != '\n') p--;
 	return p;
+	/*@notreached@*/ break;
 
     case EL_CRLF:
 	for (;;) {
@@ -356,7 +410,8 @@ previous_line(const char *p, const char *startptr)
 	    while (p > startptr && p[-1] != '\n') p--;
 	    if (p <= startptr + 1 || p[-2] == '\r') return p;
 	}
-	return p;   /* But control should never get here */
+	/*@notreached@*/ return p;   /* But control should never get here */
+	/*@notreached@*/ break;
 
     case EL_ANY:
     case EL_ANYCRLF:
@@ -389,9 +444,10 @@ previous_line(const char *p, const char *startptr)
 		case 0x0a:    /* LF */
 		case 0x0d:    /* CR */
 		    return p;
+		    /*@notreached@*/ /*@switchbreak@*/ break;
 
 		default:
-		    break;
+		    /*@switchbreak@*/ break;
 		}
 	    } else {
 		switch (c) {
@@ -403,9 +459,10 @@ previous_line(const char *p, const char *startptr)
 		case 0x2028:  /* LS */
 		case 0x2029:  /* PS */
 		    return p;
+		    /*@notreached@*/ /*@switchbreak@*/ break;
 
 		default:
-		    break;
+		    /*@switchbreak@*/ break;
 		}
 	    }
 
@@ -413,7 +470,9 @@ previous_line(const char *p, const char *startptr)
 	}	/* End of loop for ANY case */
 
 	return startptr;  /* Hit start of data */
+	/*@notreached@*/ break;
     }	/* End of overall switch */
+    /*@notreached@*/
 }
 
 /*************************************************
@@ -426,10 +485,12 @@ previous_line(const char *p, const char *startptr)
  * @param lastmatchnumber	the number of the last matching line, plus one
  * @param lastmatchrestart	where we restarted after the last match
  * @param endptr		end of available data
- * @param printname		filename for printing
+ * @param printname		filename for printing (or NULL)
  */
 static void do_after_lines(int lastmatchnumber, const char *lastmatchrestart,
-		const char *endptr, const char *printname)
+		const char *endptr, /*@null@*/ const char *printname)
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/
 {
     int count = 0;
     while (lastmatchrestart < endptr && count++ < after_context) {
@@ -438,7 +499,7 @@ static void do_after_lines(int lastmatchnumber, const char *lastmatchrestart,
 	if (printname != NULL) fprintf(stdout, "%s-", printname);
 	if (GF_ISSET(LNUMBER)) fprintf(stdout, "%d-", lastmatchnumber++);
 	pp = end_of_line(pp, endptr, &ellength);
-	fwrite(lastmatchrestart, 1, pp - lastmatchrestart, stdout);
+	(void)fwrite(lastmatchrestart, 1, pp - lastmatchrestart, stdout);
 	lastmatchrestart = pp;
     }
 }
@@ -464,6 +525,8 @@ static void do_after_lines(int lastmatchnumber, const char *lastmatchrestart,
  */
 static int
 pcregrep(FD_t fd, const char *printname)
+	/*@globals error_count, pattern_list, fileSystem @*/
+	/*@modifies fd, error_count, pattern_list, fileSystem @*/
 {
     int rc = 1;
     int linenumber = 1;
@@ -528,14 +591,16 @@ ONLY_MATCHING_RESTART:
 	    /* XXX save offsets for use by pcre_exec. */
 	    mire->offsets = offsets;
 	    mire->noffsets = 99;
+/*@-onlytrans@*/
 	    /* XXX WATCHOUT: mireRegexec w length=0 does strlen(matchptr)! */
 	    mrc = (length > 0 ? mireRegexec(mire, matchptr, length) : PCRE_ERROR_NOMATCH);
-	    if (mrc >= 0) { match = TRUE; break; }
+/*@=onlytrans@*/
+	    if (mrc >= 0) { match = TRUE; /*@innerbreak@*/ break; }
 	    if (mrc != PCRE_ERROR_NOMATCH) {
 		fprintf(stderr, _("%s: pcre_exec() error %d while matching "), __progname, mrc);
 		if (pattern_count > 1) fprintf(stderr, _("pattern number %d to "), i+1);
 		fprintf(stderr, _("this line:\n"));
-		fwrite(matchptr, 1, linelength, stderr);  /* In case binary zero included */
+		(void)fwrite(matchptr, 1, linelength, stderr);  /* In case binary zero included */
 		fprintf(stderr, "\n");
 		if (error_count == 0 &&
 			(mrc == PCRE_ERROR_MATCHLIMIT || mrc == PCRE_ERROR_RECURSIONLIMIT))
@@ -550,10 +615,12 @@ ONLY_MATCHING_RESTART:
 		if (error_count++ > 20) {
 		    fprintf(stderr, _("%s: too many errors - abandoned\n"),
 			__progname);
+/*@-exitarg@*/
 		    exit(2);
+/*@=exitarg@*/
 		}
 		match = invert;    /* No more matching; don't show the line again */
-		break;
+		/*@innerbreak@*/ break;
 	    }
 	}
 
@@ -575,7 +642,7 @@ ONLY_MATCHING_RESTART:
 	     * more lines in the file.
 	     */
 	    else if (filenames == FN_ONLY) {
-		fprintf(stdout, "%s\n", printname);
+		if (printname != NULL) fprintf(stdout, "%s\n", printname);
 		rc = 0;
 		goto exit;
 	    }
@@ -607,7 +674,7 @@ ONLY_MATCHING_RESTART:
 			fprintf(stdout, "%d,%d", filepos + matchptr + offsets[0] - ptr,
 			    offsets[1] - offsets[0]);
 		    else
-			fwrite(matchptr + offsets[0], 1, offsets[1] - offsets[0], stdout);
+			(void)fwrite(matchptr + offsets[0], 1, offsets[1] - offsets[0], stdout);
 		    fprintf(stdout, "\n");
 		    matchptr += offsets[1];
 		    length -= offsets[1];
@@ -647,7 +714,7 @@ ONLY_MATCHING_RESTART:
 			if (printname != NULL) fprintf(stdout, "%s-", printname);
 			if (GF_ISSET(LNUMBER)) fprintf(stdout, "%d-", lastmatchnumber++);
 			pp = end_of_line(pp, endptr, &ellength);
-			fwrite(lastmatchrestart, 1, pp - lastmatchrestart, stdout);
+			(void)fwrite(lastmatchrestart, 1, pp - lastmatchrestart, stdout);
 			lastmatchrestart = pp;
 		    }
 		    if (lastmatchrestart != ptr) hyphenpending = TRUE;
@@ -684,7 +751,7 @@ ONLY_MATCHING_RESTART:
 			if (printname != NULL) fprintf(stdout, "%s-", printname);
 			if (GF_ISSET(LNUMBER)) fprintf(stdout, "%d-", linenumber - linecount--);
 			pp = end_of_line(pp, endptr, &ellength);
-			fwrite(p, 1, pp - p, stdout);
+			(void)fwrite(p, 1, pp - p, stdout);
 			p = pp;
 		    }
 		}
@@ -715,7 +782,7 @@ ONLY_MATCHING_RESTART:
 			t = ptr;
 			while (t < endmatch) {
 			    t = end_of_line(t, endptr, &ellength);
-			    if (t <= endmatch) linenumber++; else break;
+			    if (t <= endmatch) linenumber++; else /*@innerbreak@*/ break;
 			}
 		    }
 		    endmatch = end_of_line(endmatch, endptr, &ellength);
@@ -728,14 +795,14 @@ ONLY_MATCHING_RESTART:
 
 		/* We have to split the line(s) up if coloring. */
 		if (GF_ISSET(COLOR)) {
-		    fwrite(ptr, 1, offsets[0], stdout);
+		    (void)fwrite(ptr, 1, offsets[0], stdout);
 		    fprintf(stdout, "%c[%sm", 0x1b, color_string);
-		    fwrite(ptr + offsets[0], 1, offsets[1] - offsets[0], stdout);
+		    (void)fwrite(ptr + offsets[0], 1, offsets[1] - offsets[0], stdout);
 		    fprintf(stdout, "%c[00m", 0x1b);
-		    fwrite(ptr + offsets[1], 1, (linelength + endlinelength) - offsets[1],
+		    (void)fwrite(ptr + offsets[1], 1, (linelength + endlinelength) - offsets[1],
 			stdout);
 		}
-		else fwrite(ptr, 1, linelength + endlinelength, stdout);
+		else (void)fwrite(ptr, 1, linelength + endlinelength, stdout);
 	    }
 
 	    /* End of doing what has to be done for a match */
@@ -761,7 +828,7 @@ ONLY_MATCHING_RESTART:
 	    t = ptr;
 	    while (t < endmatch) {
 		t = end_of_line(t, endptr, &ellength);
-		if (t <= endmatch) linenumber++; else break;
+		if (t <= endmatch) linenumber++; else /*@innerbreak@*/ break;
 	    }
 	    endmatch = end_of_line(endmatch, endptr, &ellength);
 	    linelength = endmatch - ptr - ellength;
@@ -825,7 +892,7 @@ ONLY_MATCHING_RESTART:
      * there were none. If we found a match, we won't have got this far.
      */
     if (filenames == FN_NOMATCH_ONLY) {
-	fprintf(stdout, "%s\n", printname);
+	if (printname != NULL) fprintf(stdout, "%s\n", printname);
 	rc = 0;
 	goto exit;
     }
@@ -847,6 +914,7 @@ exit:
  * @return		1 if file name ends with suffix
  */
 static int chkSuffix(const char * fn, const char * suffix)
+	/*@*/
 {
     size_t flen = strlen(fn);
     size_t slen = strlen(suffix);
@@ -868,11 +936,13 @@ static int chkSuffix(const char * fn, const char * suffix)
  */
 static int
 grep_or_recurse(const char *pathname, BOOL dir_recurse, BOOL only_one_at_top)
+	/*@globals h_errno, fileSystem, internalState @*/
+	/*@modifies h_errno, fileSystem, internalState @*/
 {
     struct stat sb, *st = &sb;
     int rc = 1;
     int sep;
-    int pathlen;
+    size_t pathlen;
     FD_t fd = NULL;
     const char * fmode;
     int xx;
@@ -917,18 +987,20 @@ grep_or_recurse(const char *pathname, BOOL dir_recurse, BOOL only_one_at_top)
 			pathname, sep, dp->d_name);
 		buffer[sizeof(buffer)-1] = '\0';
 
+/*@-onlytrans@*/
 		if (mireApply(excludeMire, nexcludes, buffer, 0, -1) >= 0)
 		    continue;
 
 		if (mireApply(includeMire, nincludes, buffer, 0, +1) < 0)
 		    continue;
+/*@=onlytrans@*/
 
 		frc = grep_or_recurse(buffer, dir_recurse, FALSE);
 		if (frc > 1) rc = frc;
 		else if (frc == 0 && rc == 1) rc = 0;
 	    }
 
-	    Closedir(dir);
+	    (void) Closedir(dir);
 	    goto exit;
 	}
     }
@@ -969,7 +1041,7 @@ openthestream:
 	if (!GF_ISSET(SILENT))
 	    fprintf(stderr, _("%s: Failed to open %s: %s\n"),
 			__progname, pathname, Fstrerror(fd));
-	if (fd) Fclose(fd);
+	if (fd != NULL) (void) Fclose(fd);
 	fd = NULL;
 	rc = 2;
 	goto exit;
@@ -979,8 +1051,8 @@ openthestream:
     rc = pcregrep(fd, (filenames > FN_DEFAULT ||
 	(filenames == FN_DEFAULT && !only_one_at_top))? pathname : NULL);
 
-    if (fd) {
-	Fclose(fd);
+    if (fd != NULL) {
+	(void) Fclose(fd);
 	fd = NULL;
     }
 
@@ -995,8 +1067,10 @@ exit:
  * @param n		the number
  * @return		the number's ordinal display string
  */
-static char *
+/*@observer@*/
+static const char *
 ordin(unsigned n)
+	/*@*/
 {
     static char buffer[16];
     buffer[0] = '\0';
@@ -1029,6 +1103,8 @@ ordin(unsigned n)
 static BOOL
 compile_single_pattern(const char *pattern, int options,
 		/*@null@*/ const char *filename, int count)
+	/*@globals pattern_list, pattern_count, fileSystem @*/
+	/*@modifies pattern_list, pattern_count, fileSystem @*/
 {
     miRE mire;
     char buffer[MBUFTHIRD + 16];
@@ -1047,11 +1123,13 @@ compile_single_pattern(const char *pattern, int options,
     mire->tag = 0;
     mire->coptions = options;
     /* XXX save locale tables for use by pcre_compile2. */
+/*@-onlytrans@*/
     mire->table = pcretables;
     if (!mireRegcomp(mire, buffer)) {
 	pattern_count++;
 	return TRUE;
     }
+/*@=onlytrans@*/
     /* Handle compile errors */
     mire->erroff -= (int)strlen(prefix[grepFlags & 0x7]);
     if (mire->erroff < 0)
@@ -1083,6 +1161,8 @@ compile_single_pattern(const char *pattern, int options,
 static BOOL
 compile_pattern(const char *pattern, int options,
 		/*@null@*/ const char *filename, int count)
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/
 {
     if (GF_ISSET(FIXED_STRINGS) != 0) {
 	const char *eop = pattern + strlen(pattern);
@@ -1108,6 +1188,8 @@ compile_pattern(const char *pattern, int options,
  * @return		0 on success
  */
 static int mireLoadPatternFiles(/*@null@*/ ARGV_t files, int pcre_options)
+	/*@globals h_errno, fileSystem, internalState @*/
+	/*@modifies h_errno, fileSystem, internalState @*/
 {
     const char *fn;
     int rc = -1;	/* assume failure */
@@ -1129,7 +1211,7 @@ static int mireLoadPatternFiles(/*@null@*/ ARGV_t files, int pcre_options)
 	    if (fd == NULL || Ferror(fd) || (fp = fdGetFILE(fd)) == NULL) {
 		fprintf(stderr, _("%s: Failed to open %s: %s\n"),
 				__progname, fn, Fstrerror(fd));
-		if (fd) Fclose(fd);
+		if (fd != NULL) (void) Fclose(fd);
 		fd = NULL;
 		fp = NULL;
 		goto exit;
@@ -1143,13 +1225,14 @@ static int mireLoadPatternFiles(/*@null@*/ ARGV_t files, int pcre_options)
 		se--;
 	    *se = '\0';
 	    linenumber++;
-	    if (buffer[0] == '\0')	continue;	/* Skip blank lines */
+	    /* Skip blank lines */
+	    if (buffer[0] == '\0')	/*@innercontinue@*/ continue;
 	    if (!compile_pattern(buffer, pcre_options, fn, linenumber))
 		goto exit;
 	}
 
-	if (fd) {
-	    Fclose(fd);
+	if (fd != NULL) {
+	    (void) Fclose(fd);
 	    fd = NULL;
 	}
     }
@@ -1166,6 +1249,8 @@ exit:
  * @return		0 on success
  */
 static int mireStudy(miRE mire, int nmires)
+	/*@globals fileSystem @*/
+	/*@modifies mire->hints, fileSystem @*/
 {
     int rc = -1;	/* assume failure */
     int j;
@@ -1202,8 +1287,10 @@ used to identify them. */
  */
 static void grepArgCallback(poptContext con,
                 /*@unused@*/ enum poptCallbackReason reason,
-                const struct poptOption * opt, const char * arg,
+                const struct poptOption * opt, /*@unused@*/ const char * arg,
                 /*@unused@*/ void * data)
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/
 {
     /* XXX avoid accidental collisions with POPT_BIT_SET for flags */
     if (opt->arg == NULL)
@@ -1235,13 +1322,16 @@ assert(arg != NULL);
     default:
 	fprintf(stderr, _("%s: Unknown option -%c\n"), __progname, opt->val);
 	poptPrintUsage(con, stderr, 0);
+/*@-exitarg@*/
 	exit(2);
+/*@=exitarg@*/
 	/*@notreached@*/ break;
     }
 }
 
 /**
  */
+/*@unchecked@*/
 static struct poptOption optionsTable[] = {
 /*@-type@*/ /* FIX: cast? */
  { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA | POPT_CBFLAG_CONTINUE,
@@ -1381,8 +1471,22 @@ Example: rpmgrep -i 'hello.*world' menu.h main.c\
  */
 int
 main(int argc, char **argv)
+	/*@globals after_context, before_context,
+		color_option, color_string, DEE_action, dee_action,
+ 		endlinetype, exclude_patterns, excludeMire, grepFlags,
+		include_patterns, includeMire, locale, newline,
+		patterns, pattern_count, pattern_filenames, pattern_list,
+		pcretables, stdin_name,
+ 		rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies after_context, before_context,
+		color_option, color_string, DEE_action, dee_action,
+ 		endlinetype, exclude_patterns, excludeMire, grepFlags,
+		include_patterns, includeMire, locale, newline,
+		patterns, pattern_count, pattern_filenames, pattern_list,
+		pcretables, stdin_name,
+ 		rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 {
-    poptContext optCon;
+    poptContext optCon = rpmioInit(argc, argv, optionsTable);
     int pcre_options = 0;
     ARGV_t av = NULL;
     int ac = 0;
@@ -1390,9 +1494,6 @@ main(int argc, char **argv)
     int rc = 1;		/* assume not found. */
     int j;
     int xx;
-
-    __progname = "pcregrep";	/* XXX HACK in expected name. */
-    optCon = rpmioInit(argc, argv, optionsTable);
 
     /*
      * Set the default line ending value from the default in the PCRE library;
@@ -1450,10 +1551,12 @@ _("%s: Cannot mix --only-matching, --file-offsets and/or --line-offsets\n"),
 	     * LC_CTYPE or LC_ALL environment variable is set, and if so,
 	     * use it.
 	     */
+/*@-dependenttrans -observertrans@*/
 	    if ((locale = getenv("LC_ALL")) != NULL)
 		locale_from = "LCC_ALL";
 	    else if ((locale = getenv("LC_CTYPE")) != NULL)
 		locale_from = "LC_CTYPE";
+/*@=dependenttrans =observertrans@*/
 	    if (locale)
 		locale = xstrdup(locale);
 	}
@@ -1540,9 +1643,13 @@ _("%s: Cannot mix --only-matching, --file-offsets and/or --line-offsets\n"),
 	    goto errxit;
 	}
 	if (GF_ISSET(COLOR)) {
+/*@-dependenttrans -observertrans@*/
 	    char *cs = getenv("PCREGREP_COLOUR");
 	    if (cs == NULL) cs = getenv("PCREGREP_COLOR");
 	    color_string = (cs ? cs : "1;31");
+/*@=dependenttrans =observertrans@*/
+	    if (color_string)
+		color_string = xstrdup(color_string);
 	}
     }
 
@@ -1589,8 +1696,10 @@ _("%s: Cannot mix --only-matching, --file-offsets and/or --line-offsets\n"),
 	goto errxit;
 
     /* Study the regular expressions, as we will be running them many times */
+/*@-onlytrans@*/
     if (mireStudy(pattern_list, pattern_count))
 	goto errxit;
+/*@=onlytrans@*/
 
     /* If there are include or exclude patterns, compile them. */
     if (mireLoadPatterns(RPMMIRE_PCRE, 0, exclude_patterns, NULL,
@@ -1632,9 +1741,7 @@ _("%s: Cannot mix --only-matching, --file-offsets and/or --line-offsets\n"),
     }
 
 exit:
-    includeMire = mireFree(includeMire);
-    excludeMire = mireFree(excludeMire);
-
+/*@-statictrans@*/
     pattern_list = mireFreeAll(pattern_list, pattern_count);
     patterns = argvFree(patterns);
     excludeMire = mireFreeAll(excludeMire, nexcludes);
@@ -1644,10 +1751,14 @@ exit:
 
     pattern_filenames = argvFree(pattern_filenames);
 
+/*@-observertrans@*/
     color_option = _free(color_option);
+    color_string = _free(color_string);
     locale = _free(locale);
     newline = _free(newline);
     stdin_name = _free(stdin_name);
+/*@=observertrans@*/
+/*@=statictrans@*/
 
     optCon = rpmioFini(optCon);
 

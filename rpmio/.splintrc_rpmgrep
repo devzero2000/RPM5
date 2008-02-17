@@ -1,0 +1,73 @@
+-I. -I.. -I../file/src -I../xar/include -I/usr/include/neon -I../lua -I../lua/local -I/usr/include/beecrypt -I/usr/include/nss3 -I/usr/include/nspr4 -I../zlib -DHAVE_CONFIG_H -D_GNU_SOURCE -D__STDC__=1 -DHAVE_NEON_NE_GET_RESPONSE_HEADER
+
+#+partial
++forcehints
+
+-warnposix
+
++unixlib
+
+-unrecogcomments	# XXX ignore doxygen markings
+
++strict			# lclint level
+
+# --- in progress
+-branchstate
+-bufferoverflowhigh
+-shiftnegative		# 1 lzdReadOpen
+
+-assignexpose		# 1
++charint		# 18
+-compdef		# 4
+-compmempass		# 1
+-constuse		# 1 EXIT_FAILURE
+-evalorderuncon		# 3
+-globstate		# 1
+-moduncon		# 4
+-modobserver		# 3
+-nullderef		# 3
+-nullpass		# 6
+-nullptrarith		# 6
+-nullstate		# 3
+-shiftimplementation
+
+# --- +partial artifacts
+-declundef
+-exportheadervar
+-exportlocal
+
+-enummemuse
+-fcnuse
+-typeuse
+-varuse
+
+# --- not-yet at strict level
+-bitwisesigned		# 236
+-elseifcomplete		# 43
+-exportconst		# 322
+-exportfcn		# 534
+-exporttype		# 116
+-exportvar		# 50
+-fielduse		# 65
+-forblock		# tedious
+-ifblock		# tedious
+-namechecks		# 929 tedious ANSI compliance checks
+-ptrarith		# 271
+
+-compdestroy		# 102
+-mustdefine		# 68
+-sys-dir-errors
+
+-strictops		# 105
+-whileblock		# tedious
+
+# --- not-yet at checks level
++enumint		# 239
+-mustfree		# 336
+-predboolptr		# 261
+-usedef			# 51
+
+# --- not-yet at standard level
+-boolops		# 165
++boolint		# 299
++ignorequals		# 708

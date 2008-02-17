@@ -209,7 +209,8 @@ int mireLoadPatterns(rpmMireMode mode, int tag,
  * @param rc		-1 == excluding, +1 == including, 0 == single pattern
  * @return		termination condition
  */
-int mireApply(miRE mire, int nmire, const char *s, size_t slen, int rc)
+int mireApply(/*@null@*/ miRE mire, int nmire,
+		const char *s, size_t slen, int rc)
 	/*@modifies mire@*/;
 
 #ifdef __cplusplus

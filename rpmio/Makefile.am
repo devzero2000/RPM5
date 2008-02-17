@@ -107,6 +107,10 @@ sources:
 lint:
 	$(LINT) $(DEFS) $(INCLUDES) $(librpmio_la_SOURCES)
 
+.PHONY:	lint_rpmgrep
+lint_rpmgrep:
+	$(LINT) -f .splintrc_rpmgrep $(DEFS) $(INCLUDES) rpmgrep.c
+
 TESTS += RunGrepTest
 dist_noinst_SCRIPTS += RunGrepTest
 bin_PROGRAMS += rpmgrep
