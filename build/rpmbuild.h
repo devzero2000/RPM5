@@ -184,6 +184,7 @@ extern uint32_t * getBuildTime(void)
 int readLine(Spec spec, int strip)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies spec->fileStack, spec->readStack, spec->line, spec->lineNum,
+		spec->lbufPtr,
 		spec->nextline, spec->nextpeekc, spec->lbuf, spec->sl,
 		rpmGlobalMacroContext, fileSystem, internalState  @*/;
 
@@ -208,7 +209,7 @@ void handleComments(char * s)
  * @return		next parser state
  */
 rpmParseState isPart(Spec spec)
-	/*@*/;
+	/*@modifies spec->foo, spec->nfoo @*/;
 
 /** \ingroup rpmbuild
  * Parse a number.
@@ -240,7 +241,7 @@ void addChangelogEntry(Header h, time_t time, const char * name,
 int parseBuildInstallClean(Spec spec, rpmParseState parsePart)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies spec->build, spec->install, spec->check, spec->clean,
-		spec->macros,
+		spec->macros, spec->foo, spec->nfoo, spec->lbufPtr,
 		spec->fileStack, spec->readStack, spec->line, spec->lineNum,
 		spec->nextline, spec->nextpeekc, spec->lbuf, spec->sl,
 		rpmGlobalMacroContext, fileSystem, internalState @*/;
@@ -253,6 +254,7 @@ int parseBuildInstallClean(Spec spec, rpmParseState parsePart)
 int parseChangelog(Spec spec)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies spec->fileStack, spec->readStack, spec->line, spec->lineNum,
+		spec->foo, spec->nfoo, spec->lbufPtr,
 		spec->nextline, spec->nextpeekc, spec->lbuf, spec->sl,
 		spec->packages->header,
 		rpmGlobalMacroContext, fileSystem, internalState @*/;
@@ -265,6 +267,7 @@ int parseChangelog(Spec spec)
 int parseDescription(Spec spec)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies spec->packages,
+		spec->foo, spec->nfoo, spec->lbufPtr,
 		spec->fileStack, spec->readStack, spec->line, spec->lineNum,
 		spec->nextline, spec->nextpeekc, spec->lbuf, spec->sl,
 		spec->st,
@@ -278,6 +281,7 @@ int parseDescription(Spec spec)
 int parseFiles(Spec spec)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies spec->packages,
+		spec->foo, spec->nfoo, spec->lbufPtr,
 		spec->fileStack, spec->readStack, spec->line, spec->lineNum,
 		spec->nextline, spec->nextpeekc, spec->lbuf, spec->sl,
 		rpmGlobalMacroContext, fileSystem, internalState @*/;
@@ -292,6 +296,7 @@ int parsePreamble(Spec spec, int initialPackage)
 	/*@globals rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState @*/
 	/*@modifies spec->packages,
+		spec->foo, spec->nfoo, spec->lbufPtr,
 		spec->fileStack, spec->readStack, spec->line, spec->lineNum,
 		spec->buildSubdir,
 		spec->macros, spec->st,
@@ -309,6 +314,7 @@ int parsePreamble(Spec spec, int initialPackage)
 int parsePrep(Spec spec, int verify)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies spec->prep, spec->buildSubdir, spec->macros,
+		spec->foo, spec->nfoo, spec->lbufPtr,
 		spec->fileStack, spec->readStack, spec->line, spec->lineNum,
 		spec->nextline, spec->nextpeekc, spec->lbuf, spec->sl,
 		spec->packages->header,
@@ -337,6 +343,7 @@ rpmRC parseRCPOT(Spec spec, Package pkg, const char * field, rpmTag tagN,
 int parseScript(Spec spec, int parsePart)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies spec->packages,
+		spec->foo, spec->nfoo, spec->lbufPtr,
 		spec->fileStack, spec->readStack, spec->line, spec->lineNum,
 		spec->nextline, spec->nextpeekc, spec->lbuf, spec->sl,
 		rpmGlobalMacroContext, fileSystem, internalState  @*/;

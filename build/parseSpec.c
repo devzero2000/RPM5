@@ -12,6 +12,7 @@
 #include "rpmts.h"
 #include "debug.h"
 
+/*@access headerTagIndices @*/
 /*@access FD_t @*/	/* compared with NULL */
 
 /**
@@ -155,7 +156,7 @@ static void forceIncludeFile(Spec spec, const char * fileName)
 /**
  */
 static int restoreFirstChar(Spec spec)
-	/*@*/
+	/*@modifies spec->nextline, spec->nextpeekc @*/
 {
     /* Restore 1st char in (possible) next line */
     if (spec->nextline != NULL && spec->nextpeekc != '\0') {
@@ -172,6 +173,7 @@ static int copyNextLineFromOFI(Spec spec, OFI_t * ofi)
 	/*@globals rpmGlobalMacroContext, h_errno,
 		fileSystem @*/
 	/*@modifies spec->nextline, spec->nextpeekc, spec->lbuf, spec->line,
+		spec->lbufPtr,
 		ofi->readPtr,
 		rpmGlobalMacroContext, fileSystem @*/
 {
@@ -244,6 +246,7 @@ static int copyNextLineFromOFI(Spec spec, OFI_t * ofi)
 /**
  */
 static int copyNextLineFinish(Spec spec, int strip)
+	/*@modifies spec->line, spec->nextline, spec->nextpeekc @*/
 {
     char *last;
     char ch;
@@ -275,7 +278,9 @@ static int copyNextLineFinish(Spec spec, int strip)
 /**
  */
 static int readLineFromOFI(Spec spec, OFI_t *ofi)
-	/*@modifies spec, ofi @*/
+	/*@globals h_errno, fileSystem @*/
+	/*@modifies ofi, spec->fileStack, spec->lineNum, spec->sl,
+ 		fileSystem @*/
 {
 retry:
     /* Make sure the current file is open */
@@ -306,7 +311,9 @@ retry:
 	    spec->fileStack = ofi->next;
 	    (void) Fclose(ofi->fd);
 	    ofi->fileName = _free(ofi->fileName);
+/*@-temptrans@*/
 	    ofi = _free(ofi);
+/*@=temptrans@*/
 
 	    /* only on last file do we signal EOF to caller */
 	    ofi = spec->fileStack;
@@ -354,7 +361,7 @@ int readLine(Spec spec, int strip)
       }
     }
 
-    copyNextLineFinish(spec, strip);
+    (void) copyNextLineFinish(spec, strip);
 
     s = spec->line;
     SKIPSPACE(s);

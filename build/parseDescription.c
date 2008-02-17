@@ -31,7 +31,7 @@ int parseDescription(Spec spec)
 	/*@globals name, lang @*/
 	/*@modifies name, lang @*/
 {
-    rpmParseState nextPart = RPMRC_FAIL;	/* assume error */
+    rpmParseState nextPart = (rpmParseState) RPMRC_FAIL; /* assume error */
     StringBuf sb;
     int flag = PART_SUBNAME;
     Package pkg;
@@ -101,7 +101,7 @@ int parseDescription(Spec spec)
 	nextPart = PART_NONE;
     } else {
 	if (rc) {
-	    nextPart = RPMRC_FAIL;
+	    nextPart = (rpmParseState) RPMRC_FAIL;
 	    goto exit;
 	}
 	while ((nextPart = isPart(spec)) == PART_NONE) {
@@ -113,7 +113,7 @@ int parseDescription(Spec spec)
 		break;
 	    }
 	    if (rc) {
-		nextPart = RPMRC_FAIL;
+		nextPart = (rpmParseState) RPMRC_FAIL;
 		goto exit;
 	    }
 	}

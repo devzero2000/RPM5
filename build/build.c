@@ -165,7 +165,7 @@ rpmRC doScript(Spec spec, int what, const char *name, StringBuf sb, int test)
 	    if (xstrcasecmp(spec->foo[i].str, "track"))
 		continue;
 	    sb = spec->foo[i].val;
-	    break;
+	    /*@loopbreak@*/ break;
 	}
 	mTemplate = "%{__spec_track_template}";
 	mPost = "%{__spec_track_post}";

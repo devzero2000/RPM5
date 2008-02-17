@@ -117,6 +117,7 @@ struct Spec_s {
 
 /*@owned@*/
     struct OpenFileInfo * fileStack;
+/*@owned@*/
     char *lbuf;
     size_t lbuf_len;
 /*@dependent@*/
@@ -180,7 +181,7 @@ struct Spec_s {
     StringBuf clean;		/*!< %clean scriptlet. */
 
     size_t nfoo;
-/*@only@*/ /*@null@*/
+/*@only@*/ /*@relnull@*/
     tagStore_t foo;
 
 /*@owned@*/
@@ -242,7 +243,7 @@ extern "C" {
  * @return spec		spec file control structure
  */
 /*@only@*/ Spec newSpec(void)
-	/*@globals rpmGlobalMacroContext @*/
+	/*@globals rpmGlobalMacroContext, h_errno @*/
 	/*@modifies rpmGlobalMacroContext @*/;
 
 /** \ingroup rpmbuild

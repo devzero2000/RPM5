@@ -390,7 +390,7 @@ int parseScript(Spec spec, int parsePart)
 	    }
 	}
     }
-    rc = nextPart;
+    rc = (rpmRC) nextPart;
     
 exit:
     sb = freeStringBuf(sb);
