@@ -14,6 +14,9 @@
 # undef _FILE_OFFSET_BITS
 # define _FILE_OFFSET_BITS 32
 #endif
+#if defined(__LCLINT__)
+typedef long long loff_t;
+#endif
 #include <gelf.h>
 
 #if !defined(DT_GNU_PRELINKED)

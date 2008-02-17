@@ -413,7 +413,7 @@ assert(0);	/* XXX never happens. */
 
 	if (makeGPGSignature(fn, &sigTag, &pkt, &pktlen, passPhrase))
 	    goto exit;
-	he->tag = sigTag;
+	he->tag = (rpmTag) sigTag;
 	he->t = RPM_BIN_TYPE;
 	he->p.ptr = pkt;
 	he->c = pktlen;
@@ -453,7 +453,7 @@ assert(0);	/* XXX never happens. */
 	if (Stat(file, &st) != 0)
 	    break;
 	pktlen = st.st_size;
-	he->tag = sigTag;
+	he->tag = (rpmTag) sigTag;
 	he->t = RPM_UINT32_TYPE;
 	he->p.ui32p = &pktlen;
 	he->c = 1;
@@ -469,7 +469,7 @@ assert(0);	/* XXX never happens. */
 	pkt = memset(alloca(pktlen), 0, pktlen);
 	if (dodigest(PGPHASHALGO_MD5, file, (unsigned char *)pkt, 0, NULL))
 	    break;
-	he->tag = sigTag;
+	he->tag = (rpmTag) sigTag;
 	he->t = RPM_BIN_TYPE;
 	he->p.ptr = pkt;
 	he->c = pktlen;

@@ -48,6 +48,12 @@
 
 #include "debug.h"
 
+#if defined(__LCLINT__)
+#define	UINT32_T	u_int32_t
+#else
+#define	UINT32_T	uint32_t
+#endif
+
 /*@access rpmdb @*/
 /*@access dbiIndex @*/
 
@@ -1195,7 +1201,7 @@ assert(dbi->dbi_rpmtag == RPMDBI_PACKAGES);
 	    scp->keys = xcalloc(scp->nkeys, sizeof(*scp->keys));
 	    for (ix = 0; ix < scp->nkeys; ix++) {
 		scp->keys[ix] = xmalloc(sizeof(*scp->keys[0]));
-		scp->keys[ix]->size = (uint32_t) scp->avlen[ix+1];
+		scp->keys[ix]->size = (UINT32_T) scp->avlen[ix+1];
 		scp->keys[ix]->data = xmalloc(scp->keys[ix]->size);
 		memcpy(scp->keys[ix]->data, scp->av[ix+1], scp->avlen[ix+1]);
 	    }
@@ -1274,7 +1280,7 @@ assert(scp->nr == 1);
 	    scp->ldata = _free(scp->ldata);
 	}
 
-	data->size = (uint32_t) scp->avlen[1];
+	data->size = (UINT32_T) scp->avlen[1];
         data->data = xmalloc(data->size);
 	if (! (data->flags & DB_DBT_MALLOC) )
 	    scp->ldata = data->data;
