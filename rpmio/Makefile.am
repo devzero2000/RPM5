@@ -4,9 +4,9 @@ AUTOMAKE_OPTIONS = 1.4 foreign
 
 LINT = splint
 
-EXTRA_DIST = tdir.c tfts.c tget.c tglob.c thkp.c thtml.c tinv.c tkey.c tmire.c tput.c trpmio.c lookup3.c tpw.c librpmio.vers testit.sh
+EXTRA_DIST = tdir.c tfts.c tget.c tglob.c thkp.c thtml.c tinv.c tkey.c tmire.c tput.c trpmio.c tsw.c ttar.c lookup3.c tpw.c librpmio.vers testit.sh
 
-EXTRA_PROGRAMS = tdir tfts tget thkp thtml tinv tkey tmacro tmagic tmire tput tpw trpmio tsw dumpasn1 lookup3
+EXTRA_PROGRAMS = tdir tfts tget thkp thtml tinv tkey tmacro tmagic tmire tput tpw trpmio tsw ttar dumpasn1 lookup3
 
 bin_PROGRAMS =
 man_MANS =
@@ -197,6 +197,9 @@ trpmio_LDADD = $(RPMIO_LDADD)
 
 tsw_SOURCES = tsw.c
 tsw_LDFLAGS = $(RPMIO_LDADD)
+
+ttar_SOURCES = ttar.c
+ttar_LDFLAGS = $(RPM_LDADD)
 
 dumpasn1_SOURCES = dumpasn1.c
 
