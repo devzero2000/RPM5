@@ -14,6 +14,9 @@
 # define _FILE_OFFSET_BITS 32
 #endif
 
+#if defined(__LCLINT__)
+typedef	long long loff_t;
+#endif
 #include <gelf.h>
 /*
  * On Solaris, gelf.h included libelf.h, which #undef'ed the gettext

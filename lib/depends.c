@@ -873,7 +873,7 @@ retry:
 	QVA_t qva = memset(alloca(sizeof(*qva)), 0, sizeof(*qva));
 
 	qva->qva_mode = 'v';
-	qva->qva_flags = VERIFY_ALL & ~(VERIFY_DEPS|VERIFY_SCRIPT);
+	qva->qva_flags = (int)(VERIFY_ALL & ~(VERIFY_DEPS|VERIFY_SCRIPT));
 	rc = 0;		/* assume success */
 	if (rpmtsGetRdb(ts) != NULL) {
 	    if (!strcmp(Name, "*"))			/* -Va probe */

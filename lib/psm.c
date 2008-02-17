@@ -1629,7 +1629,8 @@ assert(fi->h != NULL);
  * @param fi		file info set
  * @return		0 always
  */
-static int postPopulateInstallHeader(const rpmts ts, const rpmte te, rpmfi fi)
+static int postPopulateInstallHeader(/*@unused@*/ const rpmts ts,
+		/*@unused@*/ const rpmte te, rpmfi fi)
 	/*@modifies fi @*/
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));

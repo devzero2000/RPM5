@@ -291,6 +291,7 @@ char * rpmProblemGetAltNEVR(rpmProblem prob)
  * @return		a generic data string
  * @todo		needs a better name
  */
+/*@null@*/ /*@exposed@*/
 char * rpmProblemGetStr(rpmProblem prob)
 	/*@*/;
 

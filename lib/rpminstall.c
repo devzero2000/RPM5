@@ -23,6 +23,7 @@
 
 /*@access FD_t @*/	/* XXX void * arg */
 /*@access rpmts @*/	/* XXX ts->suggests */
+/*@access rpmgi @*/	/* XXX gi->h */
 /*@access fnpyKey @*/	/* XXX cast */
 
 /*@unchecked@*/
@@ -309,6 +310,8 @@ int rpmcliInstallRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 }
 
 static rpmRC rpmcliEraseElement(rpmts ts, const char * arg)
+	/*@globals fileSystem @*/
+	/*@modifies ts, fileSystem @*/
 {
     rpmdbMatchIterator mi;
     Header h;
@@ -334,6 +337,8 @@ static rpmRC rpmcliEraseElement(rpmts ts, const char * arg)
 }
 
 static const char * rpmcliWalkFirst(ARGV_t av, miRE mire)
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/
 {
     /* XXX use global ftsOpts? */
     /* XXX changing FTS_LOGICAL to FTS_PHYSICAL prevents symlink follow. */
@@ -355,15 +360,15 @@ static const char * rpmcliWalkFirst(ARGV_t av, miRE mire)
 	case FTS_DP:		/* postorder directory */
 	    /* XXX Don't recurse downwards, all elements should be files. */
 	    if (fts_level > 0 && fts->fts_level >= fts_level)
-		Fts_set(ftsp, fts, FTS_SKIP);
+		xx = Fts_set(ftsp, fts, FTS_SKIP);
 	    /*@fallthrough@*/
 	case FTS_DOT:		/* dot or dot-dot */
 	    continue;
-	    /*@notreached@*/ break;
+	    /*@notreached@*/ /*@switchbreak@*/ break;
 	case FTS_F:		/* regular file */
 	    if (mireRegexec(mire, fts->fts_accpath, 0))
 		continue;
-	    break;
+	    /*@switchbreak@*/ break;
 	/* Error conditions. */
 	case FTS_NS:		/* stat(2) failed */
 	case FTS_DNR:		/* unreadable directory */
@@ -377,7 +382,7 @@ static const char * rpmcliWalkFirst(ARGV_t av, miRE mire)
 	case FTS_W:		/* whiteout object */
 	default:
 	    goto exit;
-	    /*@notreached@*/ break;
+	    /*@notreached@*/ /*@switchbreak@*/ break;
 	}
 
 	/* Stop on first file that matches. */
@@ -390,7 +395,10 @@ exit:
     return fn;
 }
 
-static const char * rpmcliInstallElementPath(rpmts ts, const char * arg)
+static const char * rpmcliInstallElementPath(/*@unused@*/ rpmts ts,
+		const char * arg)
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/
 {
     /* A glob pattern list to match repository directories. */
     const char * fn = rpmExpand(
@@ -566,13 +574,13 @@ int rpmcliInstall(rpmts ts, QVA_t ia, const char ** argv)
 	    switch (rpmcliEraseElement(ts, &fn[1])) {
 	    case RPMRC_OK:
 		numRPMS++;	/* XXX multiple erasures? */
-		break;
+		/*@switchbreak@*/ break;
 	    case RPMRC_NOTFOUND:
 	    default:
 		rpmlog(RPMLOG_ERR, _("package \"%s\" cannot be erased\n"), fn);
 		numFailed++;	/* XXX multiple erasures? */
 		goto exit;
-		/*@notreached@*/ break;
+		/*@notreached@*/ /*@switchbreak@*/ break;
 	    }
 	    continue;
 	}

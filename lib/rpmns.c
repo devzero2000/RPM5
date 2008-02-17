@@ -18,10 +18,13 @@
 #include <rpmcb.h>
 #include <rpmdb.h>
 #include <rpmps.h>
-#define	_RPMTS_INTERNAL		/* XXX ts->pkpkt */
+#define	_RPMTS_INTERNAL		/* XXX ts->pkpkt, ts->pkpktlen */
 #include <rpmts.h>
 
 #include "debug.h"
+
+/*@access rpmts @*/
+/*@access pgpDigParams @*/
 
 /*@unchecked@*/
 int _rpmns_debug = 0;
@@ -259,7 +262,7 @@ static inline unsigned char nibble(char c)
 }
 
 rpmRC rpmnsProbeSignature(void * _ts, const char * fn, const char * sigfn,
-		const char * pubfn, const char * pubid, int flags)
+		const char * pubfn, const char * pubid, /*@unused@*/ int flags)
 {
     rpmts ts = _ts;
     pgpDig dig = rpmtsDig(ts);
@@ -348,7 +351,7 @@ fprintf(stderr, "==> pgpFindPubkey ret %d\n", xx);
 
 	/* At least 8 hex digits please. */
 	for (i = 0, s = pubid; *s && isxdigit(*s); s++, i++)
-	    ;
+	    {};
 	if (!(*s == '\0' && i > 8 && (i%2) == 0))
 	    goto exit;
 

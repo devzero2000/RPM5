@@ -132,7 +132,8 @@ rpmRC rpmnsProbeSignature(void * _ts, const char * fn,
 		/*@null@*/ const char * pubfn,
 		/*@null@*/ const char * pubid,
 		int flags)
-	/*@*/;
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/;
 
 #ifdef __cplusplus
 }
