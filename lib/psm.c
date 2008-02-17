@@ -2103,11 +2103,13 @@ assert(psm->te != NULL);
 	    xx = rpmpsmNext(psm, PSM_NOTIFY);
 
 	    if (rc) {
+		const char * msg = cpioStrerror(rc);
 		rpmlog(RPMLOG_ERR,
 			_("unpacking of archive failed%s%s: %s\n"),
 			(psm->failedFile != NULL ? _(" on file ") : ""),
 			(psm->failedFile != NULL ? psm->failedFile : ""),
-			cpioStrerror(rc));
+			msg);
+		msg = _free(msg);
 		rc = RPMRC_FAIL;
 
 		/* XXX notify callback on error. */
@@ -2284,13 +2286,15 @@ assert(psm->te != NULL);
 	}
 
 	if (rc) {
+	    const char * msg = cpioStrerror(rc);
 	    if (psm->failedFile)
 		rpmlog(RPMLOG_ERR,
 			_("%s failed on file %s: %s\n"),
-			psm->stepName, psm->failedFile, cpioStrerror(rc));
+			psm->stepName, psm->failedFile, msg);
 	    else
 		rpmlog(RPMLOG_ERR, _("%s failed: %s\n"),
-			psm->stepName, cpioStrerror(rc));
+			psm->stepName, msg);
+	    msg = _free(msg);
 
 	    /* XXX notify callback on error. */
 	    psm->what = RPMCALLBACK_CPIO_ERROR;

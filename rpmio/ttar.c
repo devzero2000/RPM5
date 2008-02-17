@@ -27,7 +27,7 @@ static int rpmFSM(rpmts ts, const char * fn, int mapflags)
     int rc = 0;
     int xx;
 
-fprintf(stderr, "--> %s(%p, \"%s\", 0x%x)\n", __FUNCTION__, ts, fn, mapflags);
+fprintf(stderr, "--> rpmFSM(%p, \"%s\", 0x%x)\n", ts, fn, mapflags);
 
     if (fn != NULL) {
 
@@ -56,9 +56,11 @@ fprintf(stderr, "--> %s(%p, \"%s\", 0x%x)\n", __FUNCTION__, ts, fn, mapflags);
 
 	    xx = Fclose(psm->cfd);
 
-	    if (rc != 0 || psm->failedFile != NULL)
-		fprintf(stderr, "%s: %s: %s\n", fn, cpioStrerror(rc), psm->failedFile);
-
+	    if (rc != 0 || psm->failedFile != NULL) {
+		const char * msg = cpioStrerror(rc);
+		fprintf(stderr, "%s: %s: %s\n", fn, msg, psm->failedFile);
+		msg = _free(msg);
+	    }
 	}
 
 	psm = rpmpsmFree(psm);

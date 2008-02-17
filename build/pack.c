@@ -87,13 +87,14 @@ static rpmRC cpio_doio(FD_t fdo, /*@unused@*/ Header h, CSA_t csa,
     if (rc == RPMRC_OK && xx) rc = RPMRC_FAIL;
 
     if (rc) {
+	const char * msg = cpioStrerror(rc);
 	if (failedFile)
 	    rpmlog(RPMLOG_ERR, _("create archive failed on file %s: %s\n"),
-		failedFile, cpioStrerror(rc));
+		failedFile, msg);
 	else
-	    rpmlog(RPMLOG_ERR, _("create archive failed: %s\n"),
-		cpioStrerror(rc));
-      rc = RPMRC_FAIL;
+	    rpmlog(RPMLOG_ERR, _("create archive failed: %s\n"), msg);
+	msg = _free(msg);
+	rc = RPMRC_FAIL;
     }
 
     failedFile = _free(failedFile);

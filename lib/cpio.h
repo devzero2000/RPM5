@@ -136,9 +136,10 @@ int cpioHeaderRead(FSM_t fsm, struct stat * st)
 /** \ingroup payload
  * Return formatted error message on payload handling failure.
  * @param rc		error code
- * @return		formatted error string
+ * @return		(malloc'd) formatted error string
  */
-/*@observer@*/ const char * cpioStrerror(int rc)
+/*@only@*/
+char * cpioStrerror(int rc)
 	/*@*/;
 
 #ifdef __cplusplus

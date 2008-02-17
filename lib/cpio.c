@@ -217,9 +217,9 @@ fprintf(stderr, "\t     %06o%3d (%4d,%4d)%10d %s\n\t-> %s\n",
     return rc;
 }
 
-const char * cpioStrerror(int rc)
+char * cpioStrerror(int rc)
 {
-    static char msg[256];
+    char msg[256];
     char *s;
     int l, myerrno = errno;
 
@@ -274,5 +274,5 @@ const char * cpioStrerror(int rc)
 	l -= strlen(s);
 	if (l > 0) strncat(msg, strerror(myerrno), l);
     }
-    return msg;
+    return xstrdup(msg);
 }
