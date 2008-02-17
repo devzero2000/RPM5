@@ -1361,10 +1361,12 @@ doFoo(MacroBuf mb, int negate, const char * f, size_t fn,
                 }
             }
         }
+/*@-nullpass@*/	/* FIX: uuid_ns may be NULL */
         if (rpmuuidMake(uuid_version, uuid_ns, uuid_data, buf, NULL))
             rpmlog(RPMLOG_ERR, "failed to create UUID\n");
         else
             b = buf;
+/*@=nullpass@*/
     } else if (STREQ("S", f, fn)) {
 	for (b = buf; (c = (int)*b) && xisdigit(c);)
 	    b++;

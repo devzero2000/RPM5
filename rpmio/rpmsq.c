@@ -209,7 +209,8 @@ static pthread_mutex_t rpmsigTbl_lock = PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP;
 /*@=type@*/
 #endif
 
-#define	DO_LOCK()	pthread_mutex_lock(&rpmsigTbl_lock);
+/*@-macromatchname@*/
+#define	DO_LOCK()	/*@-retvalint@*/pthread_mutex_lock(&rpmsigTbl_lock)/*@=retvalint@*/;
 #define	DO_UNLOCK()	pthread_mutex_unlock(&rpmsigTbl_lock);
 #define	INIT_LOCK()	\
     {	pthread_mutexattr_t attr; \
@@ -229,6 +230,7 @@ static pthread_mutex_t rpmsigTbl_lock = PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP;
     (void) pthread_setcanceltype ((__oldtype), &(__oldtype));
 
 #define	SAME_THREAD(_a, _b)	pthread_equal(((pthread_t)_a), ((pthread_t)_b))
+/*@-macromatchname@*/
 
 #define ME() __tid2vp(pthread_self())
 /*@shared@*/

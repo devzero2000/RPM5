@@ -14,7 +14,7 @@ extern "C" {
  * @retval buf_buf	buffer of at least 16 bytes (UUID_LEN_BIN) to store UUID in binary representation
  * @return		0 on success, 1 on failure
  */
-int rpmuuidMake(int version, /*@null@*/ const char *ns,
+int rpmuuidMake(int version, const char *ns,
 		/*@null@*/ const char *data,
 		/*@out@*/ char *buf_str,
 		/*@out@*/ /*@null@*/ unsigned char *buf_bin)

@@ -73,9 +73,9 @@ int rpmuuidMake(int version, const char *ns, const char *data, char *buf_str, un
     else if (version == 5)
         rc = uuid_make(uuid, UUID_MAKE_V5, uuid_ns, data);
     if (rc != UUID_RC_OK) {
-        uuid_destroy(uuid);
+        (void) uuid_destroy(uuid);
         if (uuid_ns != NULL)
-            uuid_destroy(uuid_ns);
+            (void) uuid_destroy(uuid_ns);
         rpmlog(RPMLOG_ERR, "failed to make UUID object: %s\n", uuid_error(rc));
         return 1;
     }
@@ -85,9 +85,9 @@ int rpmuuidMake(int version, const char *ns, const char *data, char *buf_str, un
         result_ptr = buf_str;
         result_len = UUID_LEN_STR+1;
         if ((rc = uuid_export(uuid, UUID_FMT_STR, &result_ptr, &result_len)) != UUID_RC_OK) {
-            uuid_destroy(uuid);
+            (void) uuid_destroy(uuid);
             if (uuid_ns != NULL)
-                uuid_destroy(uuid_ns);
+                (void) uuid_destroy(uuid_ns);
             rpmlog(RPMLOG_ERR, "failed to export UUID object as string representation: %s\n", uuid_error(rc));
             return 1;
         }
@@ -96,18 +96,18 @@ int rpmuuidMake(int version, const char *ns, const char *data, char *buf_str, un
         result_ptr = (char *)buf_bin;
         result_len = UUID_LEN_BIN;
         if ((rc = uuid_export(uuid, UUID_FMT_BIN, &result_ptr, &result_len)) != UUID_RC_OK) {
-            uuid_destroy(uuid);
+            (void) uuid_destroy(uuid);
             if (uuid_ns != NULL)
-                uuid_destroy(uuid_ns);
+                (void) uuid_destroy(uuid_ns);
             rpmlog(RPMLOG_ERR, "failed to export UUID object as binary representation: %s\n", uuid_error(rc));
             return 1;
         }
     }
 
     /*  destroy UUID object(s)  */
-    uuid_destroy(uuid);
+    (void) uuid_destroy(uuid);
     if (uuid_ns != NULL)
-        uuid_destroy(uuid_ns);
+        (void) uuid_destroy(uuid_ns);
 
     /* indicate success */
     return 0;

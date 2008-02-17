@@ -9,6 +9,9 @@
 #include <rpmsw.h>
 
 #if defined(_RPMNSS_INTERNAL)
+#if defined(__LCLINT__)
+#define	__i386__
+#endif
 #include <nss.h>
 #include <sechash.h>
 #include <keyhi.h>

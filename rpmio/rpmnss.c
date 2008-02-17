@@ -149,8 +149,7 @@ static
 int rpmnssMpiSet(const char * pre, int lbits,
 		/*@out@*/ void * dest, const uint8_t * p,
 		/*@null@*/ const uint8_t * pend)
-	/*@globals fileSystem @*/
-	/*@modifies *dest, fileSystem @*/
+	/*@modifies *dest @*/
 {
     unsigned int mbits = pgpMpiBits(p);
     unsigned int nbits;
@@ -168,12 +167,14 @@ int rpmnssMpiSet(const char * pre, int lbits,
     nbytes = ((nbits + 7) >> 3);
     ix = ((nbits - mbits) >> 3);
 
+/*@-modfilesystem @*/
 if (_pgp_debug)
 fprintf(stderr, "*** mbits %u nbits %u nbytes %u ix %u\n", mbits, nbits, nbytes, ix);
     if (ix > 0) memset(t, (int)'\0', ix);
     memcpy(t+ix, p+2, nbytes-ix);
 if (_pgp_debug && _pgp_print)
 fprintf(stderr, "\t %s %s", pre, pgpHexStr(dest, nbytes));
+/*@=modfilesystem @*/
     return 0;
 }
 

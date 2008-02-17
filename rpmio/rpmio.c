@@ -3890,7 +3890,7 @@ exit:
     return rc;
 }
 
-#if defined(WITH_NSS)
+#if defined(WITH_NSS) && !defined(__LCLINT__)	/* XXX TODO: add nssDestroy */
 /*@-exportheader@*/
 extern void NSS_Shutdown(void);
 /*@=exportheader@*/
@@ -3904,7 +3904,7 @@ void rpmioClean(void)
 #if defined(WITH_NEON)
     davDestroy();
 #endif
-#if defined(WITH_NSS)
+#if defined(WITH_NSS) && !defined(__LCLINT__)
     (void) NSS_Shutdown();
 #endif
     urlFreeCache();
