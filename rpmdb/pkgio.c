@@ -1328,9 +1328,18 @@ fprintf(stderr, "--> rpmReadHeader(%p, %p, %p)\n", fd, hdrp, msg);
     ei = NULL;	/* XXX will be freed with header */
 
     /* Save the opened path as the header origin. */
+    /* XXX TODO: push the Realpath() underneath fdGetOPath(). */
     origin = fdGetOPath(fd);
-    if (origin != NULL)
-	(void) headerSetOrigin(h, origin);
+    if (origin != NULL) {
+	const char * lpath = NULL;
+	int ut = urlPath(origin, &lpath);
+	if (lpath && *lpath != '/') {
+	    char * rpath = Realpath(origin, NULL);
+	    (void) headerSetOrigin(h, rpath);
+	    rpath = _free(rpath);
+	} else
+	    (void) headerSetOrigin(h, origin);
+    }
     
 exit:
     if (hdrp && h && rc == RPMRC_OK)

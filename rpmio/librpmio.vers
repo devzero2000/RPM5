@@ -49,6 +49,7 @@ LIBRPMIO_0
     davOpendir;
     davRead;
     davReaddir;
+    davRealpath;
     davRename;
     davReq;
     davResp;
@@ -208,6 +209,8 @@ LIBRPMIO_0
     _Readdir;
     Readlink;
     _Readlink;
+    Realpath;
+    _Realpath;
     Rename;
     _Rename;
     _RequestPass;

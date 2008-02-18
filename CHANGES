@@ -1,4 +1,7 @@
 5.0.0 -> 5.1a1:
+    - jbj: use Realpath(3) so that RPMTAG_PACKAGEORIGIN has absolute path.
+    - jbj: rpmio: add Realpath(3).
+    - jbj: fix: header ext for PACKAGEORIGIN needs xstrdup.
     - jbj: use header ext to permit %{PACKAGEORIGIN} for -qp to show *.rpm path.
     - jbj: mire: make mireClean mode specific. PCRE additions aren't initialized
     - jbj: doxygen: make a pass removing many warnings ...

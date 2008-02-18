@@ -219,6 +219,13 @@ DIR * davOpendir(const char * path)
 	/*@modifies errno, fileSystem, internalState @*/;
 
 /**
+ * realpath(3) clone.
+ */
+char * davRealpath(const char * path, /*@out@*/ /*@null@*/ char * resolved_path)
+	/*@globals errno, fileSystem @*/
+	/*@modifies *resolved_path, errno, fileSystem @*/;
+
+/**
  * stat(2) clone.
  */
 int davStat(const char * path, /*@out@*/ struct stat * st)

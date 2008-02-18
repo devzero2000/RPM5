@@ -1473,12 +1473,14 @@ static int pkgoriginTag(Header h, HE_t he)
 	/*@modifies he, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 {
-    int rc;
+    const char * origin;
 
     he->tag = RPMTAG_PACKAGEORIGIN;
-    if (!headerGet(h, he, HEADERGET_NOEXTENSION)) {
+    if (!headerGet(h, he, HEADERGET_NOEXTENSION)
+     && (origin = headerGetOrigin(h)) != NULL)
+    {
 	he->t = RPM_STRING_TYPE;
-	he->p.str = headerGetOrigin(h);
+	he->p.str = xstrdup(origin);
 	he->c = 1;
 	he->freeData = 1;
     }
