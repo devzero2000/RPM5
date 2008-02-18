@@ -315,5 +315,8 @@ Spec s;
 		ps = ps->next;
 	}
 
+	const char *arch = rpmExpand("%{_target_cpu}", NULL);
+	printf("m _target_cpu %s\n", arch);
+
 	return(0);
 }
