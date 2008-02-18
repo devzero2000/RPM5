@@ -1,4 +1,5 @@
 5.0.0 -> 5.1a1:
+    - jbj: use header ext to permit %{PACKAGEORIGIN} for -qp to show *.rpm path.
     - jbj: mire: make mireClean mode specific. PCRE additions aren't initialized
     - jbj: doxygen: make a pass removing many warnings ...
     - jbj: rpmio: tglob added to EXTRA_PROGRAMS.

@@ -1461,6 +1461,32 @@ static int dbinstanceTag(Header h, HE_t he)
 /*@=globuse@*/
 
 /**
+ * Retrieve package origin from header.
+ * @param h		header
+ * @retval *he		tag container
+ * @return		0 on success
+ */
+/*@-globuse@*/
+static int pkgoriginTag(Header h, HE_t he)
+	/*@globals rpmGlobalMacroContext, h_errno,
+		fileSystem, internalState @*/
+	/*@modifies he, rpmGlobalMacroContext,
+		fileSystem, internalState @*/
+{
+    int rc;
+
+    he->tag = RPMTAG_PACKAGEORIGIN;
+    if (!headerGet(h, he, HEADERGET_NOEXTENSION)) {
+	he->t = RPM_STRING_TYPE;
+	he->p.str = headerGetOrigin(h);
+	he->c = 1;
+	he->freeData = 1;
+    }
+    return 0;
+}
+/*@=globuse@*/
+
+/**
  * Return (malloc'd) header name-version-release.arch string.
  * @param h		header
  * @return		name-version-release.arch string
@@ -1722,6 +1748,8 @@ static struct headerSprintfExtension_s _headerCompoundFormats[] = {
 	{ .tagFunction = triggertypeTag } },
     { HEADER_EXT_TAG, "RPMTAG_DBINSTANCE",
 	{ .tagFunction = dbinstanceTag } },
+    { HEADER_EXT_TAG, "RPMTAG_PACKAGEORIGIN",
+	{ .tagFunction = pkgoriginTag } },
     { HEADER_EXT_TAG, "RPMTAG_NVRA",
 	{ .tagFunction = nvraTag } },
     { HEADER_EXT_TAG, "RPMTAG_FILENAMES",
