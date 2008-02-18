@@ -249,6 +249,8 @@ LIBRPMIO_0
     rpmioAccess;
     rpmioAllPoptTable;
     rpmioClean;
+    rpmioDigestHashAlgo;
+    rpmioDigestPoptTable;
     rpmioFini;
     rpmioFtsOpts;
     rpmioFtsPoptTable;

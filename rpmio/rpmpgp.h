@@ -410,6 +410,7 @@ extern struct pgpValTbl_s pgpCompressionTbl[];
  * @todo Add SHA256.
  */
 typedef enum pgpHashAlgo_e {
+    PGPHASHALGO_NONE		=  0,
     PGPHASHALGO_MD5		=  1,	/*!< MD5 */
     PGPHASHALGO_SHA1		=  2,	/*!< SHA-1 */
     PGPHASHALGO_RIPEMD160	=  3,	/*!< RIPEMD-160 */
@@ -1118,16 +1119,6 @@ extern struct pgpValTbl_s pgpArmorKeyTbl[];
 typedef enum rpmDigestFlags_e {
     RPMDIGEST_NONE	= 0
 } rpmDigestFlags;
-
-/** \ingroup rpmpgp
- */
-/*@unchecked@*/
-extern pgpHashAlgo rpmDigestHashAlgo;
-
-/** \ingroup rpmpgp
- */
-/*@unchecked@*/ /*@observer@*/
-extern struct poptOption rpmDigestPoptTable[];
 
 /*@-fcnuse@*/
 #ifdef __cplusplus

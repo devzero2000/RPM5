@@ -87,6 +87,53 @@ static char *rpmpoptfiles = RPMPOPTFILES;
 #endif
 #endif
 
+pgpHashAlgo rpmioDigestHashAlgo = PGPHASHALGO_NONE;
+
+/**
+ * Digest options using popt.
+ */
+struct poptOption rpmioDigestPoptTable[] = {
+ { "md2", '\0', POPT_ARG_VAL, 	&rpmioDigestHashAlgo, PGPHASHALGO_MD2,
+	NULL, NULL },
+ { "md4", '\0', POPT_ARG_VAL, 	&rpmioDigestHashAlgo, PGPHASHALGO_MD4,
+	NULL, NULL },
+ { "md5", '\0', POPT_ARG_VAL, 	&rpmioDigestHashAlgo, PGPHASHALGO_MD5,
+	NULL, NULL },
+ { "sha1",'\0', POPT_ARG_VAL, 	&rpmioDigestHashAlgo, PGPHASHALGO_SHA1,
+	NULL, NULL },
+ { "sha224",'\0', POPT_ARG_VAL, &rpmioDigestHashAlgo, PGPHASHALGO_SHA224,
+	NULL, NULL },
+ { "sha256",'\0', POPT_ARG_VAL, &rpmioDigestHashAlgo, PGPHASHALGO_SHA256,
+	NULL, NULL },
+ { "sha384",'\0', POPT_ARG_VAL, &rpmioDigestHashAlgo, PGPHASHALGO_SHA384,
+	NULL, NULL },
+ { "sha512",'\0', POPT_ARG_VAL, &rpmioDigestHashAlgo, PGPHASHALGO_SHA512,
+	NULL, NULL },
+ { "salsa10",'\0', POPT_ARG_VAL,&rpmioDigestHashAlgo, PGPHASHALGO_SALSA10,
+	NULL, NULL },
+ { "salsa20",'\0', POPT_ARG_VAL,&rpmioDigestHashAlgo, PGPHASHALGO_SALSA20,
+	NULL, NULL },
+ { "rmd128",'\0', POPT_ARG_VAL,	&rpmioDigestHashAlgo, PGPHASHALGO_RIPEMD128,
+	NULL, NULL },
+ { "rmd160",'\0', POPT_ARG_VAL,	&rpmioDigestHashAlgo, PGPHASHALGO_RIPEMD160,
+	NULL, NULL },
+ { "rmd256",'\0', POPT_ARG_VAL,	&rpmioDigestHashAlgo, PGPHASHALGO_RIPEMD256,
+	NULL, NULL },
+ { "rmd320",'\0', POPT_ARG_VAL,	&rpmioDigestHashAlgo, PGPHASHALGO_RIPEMD320,
+	NULL, NULL },
+ { "tiger",'\0', POPT_ARG_VAL,	&rpmioDigestHashAlgo, PGPHASHALGO_TIGER192,
+	NULL, NULL },
+ { "crc32",'\0', POPT_ARG_VAL,	&rpmioDigestHashAlgo, PGPHASHALGO_CRC32,
+	NULL, NULL },
+ { "crc64",'\0', POPT_ARG_VAL,	&rpmioDigestHashAlgo, PGPHASHALGO_CRC64,
+	NULL, NULL },
+ { "adler32",'\0', POPT_ARG_VAL,&rpmioDigestHashAlgo, PGPHASHALGO_ADLER32,
+	NULL, NULL },
+ { "jlu32",'\0', POPT_ARG_VAL,	&rpmioDigestHashAlgo, PGPHASHALGO_JLU32,
+	NULL, NULL },
+    POPT_TABLEEND
+};
+
 /**
  * Display rpm version.
  */

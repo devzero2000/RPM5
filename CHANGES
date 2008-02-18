@@ -1,4 +1,6 @@
 5.0.0 -> 5.1a1:
+    - jbj: refactor digest algorithm popt tables into poptIO.[ch].
+    - jbj: move rpmdigest tools/ -> rpmio/ for "make check" purposes.
     - jbj: use Realpath(3) so that RPMTAG_PACKAGEORIGIN has absolute path.
     - jbj: rpmio: add Realpath(3).
     - jbj: fix: header ext for PACKAGEORIGIN needs xstrdup.

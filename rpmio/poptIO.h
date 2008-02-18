@@ -9,6 +9,7 @@
 #include <rpmmacro.h>
 #include <rpmcb.h>
 #include <rpmmg.h>
+#include <rpmpgp.h>
 #include <rpmsw.h>
 #include <rpmurl.h>
 #include <argv.h>
@@ -24,6 +25,17 @@ extern "C" {
 #endif
 
 /** \ingroup rpmio
+ */
+/*@unchecked@*/
+extern pgpHashAlgo rpmioDigestHashAlgo;
+
+/** \ingroup rpmio
+ * Popt option table for options to select digest algorithm.
+ */
+/*@unchecked@*/ /*@observer@*/
+extern struct poptOption		rpmioDigestPoptTable[];
+
+/** \ingroup rpmio
  * Popt option table for options shared by all modes and executables.
  */
 /*@unchecked@*/
@@ -32,6 +44,9 @@ extern struct poptOption		rpmioAllPoptTable[];
 /*@unchecked@*/
 extern int rpmioFtsOpts;
 
+/** \ingroup rpmio
+ * Popt option table for options to set Fts(3) options.
+ */
 /*@unchecked@*/
 extern struct poptOption		rpmioFtsPoptTable[];
 

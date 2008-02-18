@@ -26,7 +26,7 @@ myLDADD = \
 bin_PROGRAMS =		rpm2cpio rpmcache
 
 pkglibdir =		@USRLIBRPM@
-pkglib_PROGRAMS =	rpmcmp rpmdeps rpmdigest @WITH_LIBELF_DEBUGEDIT@
+pkglib_PROGRAMS =	rpmcmp rpmdeps @WITH_LIBELF_DEBUGEDIT@
 
 debugedit_SOURCES =	debugedit.c hashtab.c
 debugedit_LDADD =	$(myLDADD)
@@ -39,9 +39,6 @@ rpmcmp_LDADD =		$(myLDADD)
 
 rpmdeps_SOURCES =	rpmdeps.c
 rpmdeps_LDADD =		$(myLDADD)
-
-rpmdigest_SOURCES =	rpmdigest.c
-rpmdigest_LDADD =	$(myLDADD)
 
 ##
 ## Traditional rpm2cpio

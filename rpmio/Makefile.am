@@ -8,7 +8,7 @@ EXTRA_DIST = tdir.c tfts.c tget.c tglob.c thkp.c thtml.c tinv.c tkey.c tmire.c t
 
 EXTRA_PROGRAMS = tdir tfts tget tglob thkp thtml tinv tkey tmacro tmagic tmire tput tpw trpmio tsw ttar dumpasn1 lookup3
 
-bin_PROGRAMS =
+bin_PROGRAMS = rpmdigest
 man_MANS =
 
 TESTS =
@@ -150,6 +150,9 @@ EXTRA_DIST += \
   testdata/testoutput10 \
   testdata/wintestinput3 \
   testdata/wintestoutput3
+
+rpmdigest_SOURCES = rpmdigest.c
+rpmdigest_LDADD = $(RPMIO_LDADD)
 
 tdir_SOURCES = tdir.c
 tdir_LDADD = $(RPMIO_LDADD)
