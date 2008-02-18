@@ -2,7 +2,7 @@
 #define	H_SIGNATURE
 
 /** \ingroup signature
- * \file lib/signature.h
+ * \file rpmdb/signature.h
  * Generate and verify rpm package signatures.
  */
 

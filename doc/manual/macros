@@ -6,7 +6,7 @@ argc/argv processing on white space separated tokens to the next newline.
 During macro expansion, both flags and arguments are available as macros
 which are deleted at the end of macro expansion.  Macros can be used
 (almost) anywhere in a spec file, and, in particular, in "included file
-lists" (i.e. those read in using %files -f <file>).  In addition, macros
+lists" (i.e. those read in using %files -f FILE).  In addition, macros
 can be nested, hiding the previous definition for the duration of the
 expansion of the macro which contains nested macros.
 
@@ -15,10 +15,10 @@ expansion of the macro which contains nested macros.
 To define a macro use:
 
 \verbatim
-	%define <name>[(opts)] <body>
+	%define NAME[(OPTS)] BODY
 \endverbatim
 
-All whitespace surrounding <body> is removed.  Name may be composed
+All whitespace surrounding BODY is removed.  Name may be composed
 of alphanumeric characters, and the character `_' and must be at least
 3 characters in length. A macro without an (opts) field is "simple" in that
 only recursive macro expansion is performed. A parameterized macro contains
@@ -80,15 +80,15 @@ to perform useful operations. The current list is
 	%undefine ...	undefine a macro
 	%global ...	define a macro whose body is available in global context
 
-	%{uncompress:...} expand ... to <file> and test to see if <file> is
+	%{uncompress:...} expand ... to FILE and test to see if FILE is
 			compressed.  The expansion is
-				cat <file>		# if not compressed
-				gzip -dc <file>		# if gzip'ed
-				bzip2 -dc <file>	# if bzip'ed
-				unzip -qq <file>	# if zip'ed
-				lzop -dc <file>		# if LZO compressed
-				lzma -dc <file>		# if LZMA compressed
-	%{expand:...}	like eval, expand ... to <body> and (re-)expand <body>
+				cat FILE		# if not compressed
+				gzip -dc FILE		# if gzip'ed
+				bzip2 -dc FILE		# if bzip'ed
+				unzip -qq FILE		# if zip'ed
+				lzop -dc FILE		# if LZO compressed
+				lzma -dc FILE		# if LZMA compressed
+	%{expand:...}	like eval, expand ... to BODY and (re-)expand BODY
 
 	%{basename:...}	the trailing portion of ... with directory path removed
 	%{dirname:...}	the leading directory path of the ... argument
@@ -101,9 +101,9 @@ to perform useful operations. The current list is
 
 	%{mkstemp:...}	a temporary file from ... template (see mkstemp(3))
 
-	%{S:...}	expand ... to <source> file name
-	%{P:...}	expand ... to <patch> file name
-	%{F:...}	expand ... to <file> file name
+	%{S:...}	expand ... to SOURCE file name
+	%{P:...}	expand ... to PATCH file name
+	%{F:...}	expand ... to FILE file name
 \endverbatim
 
 Macros may also be automatically included from /usr/lib/rpm/macros.
@@ -154,19 +154,19 @@ There are two "private" helper macros:
 To use a macro, write:
 
 \verbatim
-	%<name> ...
+	%NAME ...
 \endverbatim
 
 or
 
 \verbatim
-	%{<name>}
+	%{NAME}
 \endverbatim
 
 The %{...} form allows you to place the expansion adjacent to other text.
-The %<name> form, if a parameterized macro, will do argc/argv processing
+The %NAME form, if a parameterized macro, will do argc/argv processing
 of the rest of the line as described above.  Normally you will likely want
-to invoke a parameterized macro by using the %<name> form so that
+to invoke a parameterized macro by using the %NAME form so that
 parameters are expanded properly.
 
 Example:
@@ -202,7 +202,7 @@ relied upon.
 Evaluating a macro can be difficult outside of an rpm execution context. If
 you wish to see the expanded value of a macro, you may use the option
 \verbatim
-	--eval '<macro expression>'
+	--eval '%MACRO'
 \endverbatim
 that will read rpm config files and print the macro expansion on stdout.
 

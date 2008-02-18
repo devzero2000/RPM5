@@ -67,6 +67,7 @@ static rpmRC checkOwners(const char * urlfn)
  * @param reverse	include -R?
  * @param removeEmpties	include -E?
  * @param fuzz		include -F?
+ * @param subdir	sub-directory (i.e patch -d argument);
  * @return		expanded %patch macro (NULL on error)
  */
 /*@observer@*/

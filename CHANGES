@@ -1,4 +1,5 @@
 5.0.0 -> 5.1a1:
+    - jbj: doxygen: make a pass removing many warnings ...
     - jbj: rpmio: tglob added to EXTRA_PROGRAMS.
     - jbj: add rpmgrep.c and poptIO.c to PO and doxygen file lists.
     - jbj: sync translations (Translation Project).

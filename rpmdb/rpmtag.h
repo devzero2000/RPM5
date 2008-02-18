@@ -831,6 +831,7 @@ size_t headerSizeof(/*@null@*/ Header h)
 	/*@modifies h @*/;
 
 /** \ingroup header
+ * headerUnload.
  * @param h		header
  * @retval *lenp	no. bytes in unloaded header blob
  * @return		unloaded header blob (NULL on error)
@@ -841,7 +842,8 @@ void * headerUnload(Header h, /*@out@*/ /*@null@*/ size_t * lenp)
 
 /** \ingroup header
  * Convert header to on-disk representation, and then reload.
- * This is used to insure that all header data is in one chunk.
+ * This is used to insure that all header data is in a single
+ * contiguous memory allocation.
  * @param h		header (with pointers)
  * @param tag		region tag
  * @return		on-disk header (with offsets)
@@ -968,7 +970,7 @@ uint32_t headerGetInstance(/*@null@*/ Header h)
 /** \ingroup header
  * Store header instance (e.g path or URL).
  * @param h		header
- * @param origin	new header instance
+ * @param instance	new header instance
  * @return		0 always
  */
 uint32_t headerSetInstance(/*@null@*/ Header h, uint32_t instance)

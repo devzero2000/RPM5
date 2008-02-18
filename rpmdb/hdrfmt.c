@@ -1,5 +1,5 @@
 /** \ingroup header
- * \file rpmdb/formats.c
+ * \file rpmdb/hdrfmt.c
  */
 
 #include "system.h"

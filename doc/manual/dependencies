@@ -300,9 +300,9 @@ The second, --requires, shows the other packages that a package requires
 to be installed, along with any version number checking.
 
 There are also two new ways to search for packages. Running a query with 
---whatrequires <item> queries all of the packages that require <item>. 
-Similarly, running --whatprovides <item> queries all of the packages that 
-provide the <item> virtual package. Note that querying for package that 
+--whatrequires ITEM queries all of the packages that require ITEM. 
+Similarly, running --whatprovides ITEM queries all of the packages that 
+provide the ITEM virtual package. Note that querying for package that 
 provides "python" will not return anything, as python is a package, not
 a virtual package.
 
@@ -337,8 +337,8 @@ A simple (but possibly not adequate) scheme to achieve this is:
 
 \verbatim
 	Name: foo
-	Version: <the "root version" of the source code>
-	Release: <release instance>.<branch>
+	Version: VERSION	# i.e. the upstream version
+	Release: RELEASE.BRANCH
 \endverbatim
 
 where the release instance is something like YYYMMMDD or some linear
@@ -349,9 +349,9 @@ Another alternative scheme might be:
 
 \verbatim
 	Name: foo
-	Epoch: <branch>
-	Version: <the branch specific version of the code>
-	Release: <release instance>
+	Epoch: BRANCH
+	Version: VERSION
+	Release: RELEASE
 \endverbatim
 
 \subsection dependencies_build Build dependencies

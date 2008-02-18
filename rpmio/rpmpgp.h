@@ -1441,7 +1441,7 @@ char * pgpArmorWrap(int atype, const unsigned char * s, size_t ns)
 	/*@*/;
 
 /** \ingroup rpmpgp
- * Convert a hash algorithm <name> to the internal PGPHASHALGO_<name> number
+ * Convert a hash algorithm "foo" to the internal PGPHASHALGO_FOO number.
  * @param name		name of hash algorithm
  * @param name_len		length of name or 0 for strlen(name)
  * @return		PGPHASHALGO_<name> or -1 in case of error
@@ -1545,7 +1545,6 @@ uint32_t pgpGetSigtag(const pgpDig dig)
 /** \ingroup rpmpgp
  * Get signature tag type.
  * @param dig		signature parameters container
- * @param ts		transaction set
  * @return		signature tag type
  */
 uint32_t pgpGetSigtype(const pgpDig dig)
@@ -1595,7 +1594,7 @@ void * pgpStatsAccumulator(pgpDig dig, int opx)
  * Set find pubkey vector.
  * @param dig		signature parameters container
  * @param findPubkey	routine to find a pubkey.
- * @param ts		argument to (*findPubkey) (ts)
+ * @param _ts		argument to (*findPubkey) (ts, ...)
  * @return		0 always
  */
 int pgpSetFindPubkey(pgpDig dig,
@@ -1614,6 +1613,7 @@ int pgpFindPubkey(pgpDig dig)
 /** \ingroup rpmpgp
  * Is buffer at beginning of an OpenPGP packet?
  * @param p		buffer
+ * @retval *tagp	OpenPGP tag
  * @return		1 if an OpenPGP packet, 0 otherwise
  */
 /*@unused@*/ static inline

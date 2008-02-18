@@ -11,7 +11,7 @@
 extern int _rpmfi_debug;
 /*@=exportlocal@*/
 
-/** \rpmfi
+/** \ingroup rpmfi
  * File types.
  * These are the file types used internally by rpm. The file
  * type is determined by applying stat(2) macros like S_ISDIR to

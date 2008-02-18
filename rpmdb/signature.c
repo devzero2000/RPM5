@@ -1,5 +1,5 @@
 /** \ingroup signature
- * \file lib/signature.c
+ * \file rpmdb/signature.c
  */
 
 #include "system.h"

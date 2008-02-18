@@ -67,12 +67,14 @@ static int sharedCmp(const void * one, const void * two)
 }
 
 /**
+ * handleInstInstalledFiles.
  * @param ts		transaction set
  * @param p		current transaction element
  * @param fi		file info set
  * @param shared	shared file info
  * @param sharedCount	no. of shared elements
  * @param reportConflicts
+ * @return		0 on success
  *
  * XXX only ts->{probs,rpmdb} modified
  */

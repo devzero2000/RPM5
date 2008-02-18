@@ -303,7 +303,7 @@ int parseNoSource(Spec spec, const char * field, rpmTag tag)
 
     }
 
-    return 0;
+    return RPMRC_OK;
 }
 
 int addSource(Spec spec, /*@unused@*/ Package pkg, const char *field, rpmTag tag)
@@ -398,7 +398,7 @@ assert(mdir != NULL);
 	body = _free(body);
     }
     
-    return 0;
+    return RPMRC_OK;
 }
 
 /**

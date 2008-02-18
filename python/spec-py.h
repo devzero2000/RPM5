@@ -7,9 +7,6 @@
  * \file python/spec-py.h
  */
 
-/** \name Type: _rpm.spec */
-/*@{*/
-
 /** \ingroup py_c
  */
 typedef struct specObject_s {
@@ -28,13 +25,13 @@ extern PyTypeObject spec_Type;
 extern "C" {
 #endif
 
-/** \ingroup _rpm.spec
+/**
  */
 /*@null@*/
 Spec specFromSpec(specObject * spec)
 /*@*/;
 
-/** \ingroup _rpm.spec
+/**
  */
 /*@null@*/
 specObject * spec_Wrap(Spec spec)
@@ -43,7 +40,5 @@ specObject * spec_Wrap(Spec spec)
 #ifdef __cplusplus      
 }
 #endif
-
-/*@}*/
 
 #endif /* H_SPEC_PY */

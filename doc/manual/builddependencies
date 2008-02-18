@@ -39,7 +39,7 @@ while building gnorpm using InDependence:
 
 \verbatim
 Aside:	The dep perl wrapper is a "pig" only because it's exec'ing
-		rpm -qf <filename>
+		rpm -qf FILE
         in order to turn filenames into package names. There are easier/faster
 	ways to get this information...
 
@@ -51,7 +51,7 @@ Aside:	The dep perl wrapper is a "pig" only because it's exec'ing
 	Patches cheerfully accepted :-)
 \endverbatim
 
-Here's what's in yyy (<packagename>::<filename> format):
+Here's what's in yyy (PACKAGE::FILE format):
 
 \verbatim
 	ORBit-devel-0.4.95-2::/usr/bin/orbit-config 

@@ -62,6 +62,7 @@ static int _print_pkts = 0;
  * Write (with unload) header to file handle.
  * @param fd		file handle
  * @param h		header
+ * @retval *msg		failure msg
  * @return		RPMRC_OK on success
  */
 static
@@ -871,7 +872,7 @@ exit:
  * header-only digest or signature to verify the blob. If found,
  * the digest or signature is verified.
  *
- * @param ts		transaction set
+ * @param dig		signature parameters container
  * @param uh		unloaded header blob
  * @param uc		no. of bytes in blob (or 0 to disable)
  * @retval *msg		signature verification msg
@@ -1214,7 +1215,6 @@ static rpmRC ckHeader(/*@unused@*/ FD_t fd, const void * ptr,
 
 /** 
  * Return checked and loaded header.
- * @param dig		signature parameters container
  * @param fd		file handle
  * @retval hdrp		address of header (or NULL)
  * @retval *msg		verification error message (or NULL)

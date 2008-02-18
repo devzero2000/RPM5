@@ -1084,6 +1084,13 @@ exit:
 }
 /*@=moduncon@*/
 
+/**
+ * Return handle for an index database.
+ * @param rpmdb         rpm database
+ * @param rpmtag        rpm tag
+ * @retval *dbip	index database handle
+ * @return              0 on success
+ */
 static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 	/*@globals rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState @*/
