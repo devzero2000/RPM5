@@ -92,7 +92,7 @@ struct _FD_s {
     FDSTAT_t	stats;		/* I/O statistics */
 
     int		ndigests;
-#define	FDDIGEST_MAX	4
+#define	FDDIGEST_MAX	32
     struct _FDDIGEST_s	digests[FDDIGEST_MAX];
 
     int		ftpFileDoneNeeded; /* ufdio: (FTP) */

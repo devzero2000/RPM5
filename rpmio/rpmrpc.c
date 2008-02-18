@@ -1922,7 +1922,7 @@ fprintf(stderr, "*** Realpath(%s, %s)\n", path, resolved_path);
 	 * the result.
 	 */
 	if ((t = realpath(".", dn)) != NULL) {
-	    rpath = rpmGetPath(t, "/", lpath, NULL);
+	    rpath = (char *) rpmGetPath(t, "/", lpath, NULL);
 	    /* XXX preserve the pesky trailing '/' */
 	    if (lpath[strlen(lpath)-1] == '/') {
 		char * s = rpath;

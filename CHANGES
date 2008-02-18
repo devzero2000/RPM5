@@ -1,4 +1,6 @@
 5.0.0 -> 5.1a1:
+    - jbj: rpmio: increase no. of digests from 4 => 32 for rpmdigest --all.
+    - jbj: rpmio: ops, actually add rpmdigest.c.
     - jbj: refactor digest algorithm popt tables into poptIO.[ch].
     - jbj: move rpmdigest tools/ -> rpmio/ for "make check" purposes.
     - jbj: use Realpath(3) so that RPMTAG_PACKAGEORIGIN has absolute path.
