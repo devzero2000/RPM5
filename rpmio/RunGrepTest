@@ -8,7 +8,50 @@
 LC_ALL=C
 export LC_ALL
 
+# If PCRE has been built in a directory other than the source directory, and
+# this test is being run from "make check" as usual, then $(srcdir) will be
+# set. If not, set it to the current directory. We then arrange to run the
+# pcregrep command in the source directory so that the file names that appear
+# in the output are always the same.
+
+if [ -z "$srcdir" -o ! -d "$srcdir/testdata" ] ; then
+  srcdir=.
+fi
+
+# Check for the availability of UTF-8 support
+#./pcretest -C | ./pcregrep "No UTF-8 support" >/dev/null
+#utf8=$?
+utf8=1
+
 pcregrep=`pwd`/rpmgrep
+
+rpmdigest=`pwd`/rpmdigest
+
+genvfypat() {
+  gen="$1"; shift
+  vfy="$1"; shift
+  pat="$1"; shift
+  tfn=`mktemp`
+  $gen $pat > $tfn
+  $vfy --status -c $tfn
+  if [ $? != 0 ] ; then exit 1; fi
+   rm -f $tfn
+}
+
+if [ -x $rpmdigest ]; then
+  echo "Testing rpmdigest features"
+
+  echo "---------------------------- Test D1 ------------------------------" >testtry
+  pats="$rpmdigest $srcdir/testdata/[a-z]*"
+  for i in md5 sha1 sha224 sha256 sha384 sha512; do
+    sumgen="`which ${i}sum`" || continue
+    [ -x "$sumgen" ] || continue;
+    genvfypat "$rpmdigest --${i}" "$sumgen" "$pats"
+    genvfypat "$sumgen" "$rpmdigest --${i}" "$pats"
+  done
+else
+  echo "Skipping rpmdigest tests: $rpmdigest is not executable"
+fi
 
 echo " "
 echo "Testing pcregrep"
@@ -25,20 +68,9 @@ while [ $# -gt 0 ] ; do
   shift
 done
 
-# If PCRE has been built in a directory other than the source directory, and
-# this test is being run from "make check" as usual, then $(srcdir) will be
-# set. If not, set it to the current directory. We then arrange to run the
-# pcregrep command in the source directory so that the file names that appear
-# in the output are always the same.
+echo "---------------------------- Test 1 ------------------------------" >testtry
+(cd $srcdir; $valgrind $pcregrep PATTERN ./testdata/grepinput) >>testtry
 
-if [ -z "$srcdir" -o ! -d "$srcdir/testdata" ] ; then
-  srcdir=.
-fi
-
-# Check for the availability of UTF-8 support
-#./pcretest -C | ./pcregrep "No UTF-8 support" >/dev/null
-#utf8=$?
-utf8=1
 
 echo "---------------------------- Test 1 ------------------------------" >testtry
 (cd $srcdir; $valgrind $pcregrep PATTERN ./testdata/grepinput) >>testtry

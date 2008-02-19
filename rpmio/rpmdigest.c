@@ -41,16 +41,18 @@ static rpmdc dc = &_dc;
 static int rpmdcPrintFile(rpmdc dc, int algo, const char * algoName)
 {
     static int asAscii = 1;
+    int rc = 0;
 
     fdFiniDigest(dc->fd, algo, &dc->digest, &dc->digestlen, asAscii);
 assert(dc->digest != NULL);
     if (dc->manifests) {
 	const char * msg = "OK";
-	if (strcmp(dc->digest, dc->digests[dc->ix])) {
+	if ((rc = strcmp(dc->digest, dc->digests[dc->ix])) != 0) {
 	    msg = "FAILED";
 	    dc->nfails++;
 	}
-	fprintf(stdout, "%s: %s\n", dc->fn, msg);
+	if (rc || !F_ISSET(dc, STATUS))
+	    fprintf(stdout, "%s: %s\n", dc->fn, msg);
     } else {
 	if (!F_ISSET(dc, STATUS)) {
 	    if (algoName) fprintf(stdout, "%s:", algoName);
@@ -60,15 +62,19 @@ assert(dc->digest != NULL);
 	}
 	dc->digest = _free(dc->digest);
     }
-    return 0;
+    return rc;
 }
 
 static int rpmdcFiniFile(rpmdc dc)
 {
+    int rc = 0;
+    int xx;
+
     switch (dc->algo) {
     default:
     {	int algo = (dc->manifests ? dc->algos->vals[dc->ix] : dc->algo);
-	rpmdcPrintFile(dc, algo, NULL);
+	xx = rpmdcPrintFile(dc, algo, NULL);
+	if (xx) rc = xx;
     }	break;
     case 256:		/* --all digests requested. */
       {	struct poptOption * opt = rpmioDigestPoptTable;
@@ -80,13 +86,14 @@ static int rpmdcFiniFile(rpmdc dc)
 	    dc->algo = opt->val;
 	    if (!(dc->algo > 0 && dc->algo < 256))
 		continue;
-	    rpmdcPrintFile(dc, dc->algo, opt->longName);
+	    xx = rpmdcPrintFile(dc, dc->algo, opt->longName);
+	    if (xx) rc = xx;
 	}
       }	break;
     }
     Fclose(dc->fd);
     dc->fd = NULL;
-    return 0;
+    return rc;
 }
 
 static int rpmdcCalcFile(rpmdc dc)
@@ -277,7 +284,7 @@ main(int argc, char *argv[])
     }
     dc->ix = 0;
 
-    if (av != NULL);
+    if (av != NULL)
     while ((dc->fn = *av++) != NULL) {
 	/* XXX TODO: instantiate verify digests for all identical paths. */
 	xx = rpmdcInitFile(dc);

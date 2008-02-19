@@ -1496,6 +1496,8 @@ main(int argc, char **argv)
     int j;
     int xx;
 
+    __progname = "pcregrep";	/* XXX HACK in expected name. */
+
     /*
      * Set the default line ending value from the default in the PCRE library;
      * "lf", "cr", "crlf", and "any" are supported. Anything else is treated
