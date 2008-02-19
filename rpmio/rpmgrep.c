@@ -1595,8 +1595,8 @@ _("%s: Cannot mix --only-matching, --file-offsets and/or --line-offsets\n"),
 	endlinetype = EL_CR;
     } else if (!strcasecmp(newline, "lf")) {
 #if defined(PCRE_NEWLINE_LF)
-#endif
 	pcre_options |= PCRE_NEWLINE_LF;
+#endif
 	endlinetype = EL_LF;
     } else if (!strcasecmp(newline, "crlf")) {
 #if defined(PCRE_NEWLINE_CRLF)
