@@ -1584,32 +1584,37 @@ _("%s: Cannot mix --only-matching, --file-offsets and/or --line-offsets\n"),
     if (GF_ISSET(UTF8))
 	pcre_options |= PCRE_UTF8;
 
-    /* XXX pcre-6.6 doesn't define these bits. */
-#if defined(PCRE_NEWLINE_CR)
     /* Interpret the newline type; the default settings are Unix-like. */
     if (!strcasecmp(newline, "cr")) {
+#if defined(PCRE_NEWLINE_CR)
 	pcre_options |= PCRE_NEWLINE_CR;
+#endif
 	endlinetype = EL_CR;
     } else if (!strcasecmp(newline, "lf")) {
+#if defined(PCRE_NEWLINE_LF)
+#endif
 	pcre_options |= PCRE_NEWLINE_LF;
 	endlinetype = EL_LF;
     } else if (!strcasecmp(newline, "crlf")) {
+#if defined(PCRE_NEWLINE_CRLF)
 	pcre_options |= PCRE_NEWLINE_CRLF;
+#endif
 	endlinetype = EL_CRLF;
     } else if (!strcasecmp(newline, "any")) {
+#if defined(PCRE_NEWLINE_ANY)
 	pcre_options |= PCRE_NEWLINE_ANY;
+#endif
 	endlinetype = EL_ANY;
     } else if (!strcasecmp(newline, "anycrlf")) {
+#if defined(PCRE_NEWLINE_ANYCRLF)
 	pcre_options |= PCRE_NEWLINE_ANYCRLF;
+#endif
 	endlinetype = EL_ANYCRLF;
     } else {
 	fprintf(stderr, _("%s: Invalid newline specifier \"%s\"\n"),
 		__progname, newline);
 	goto errxit;
     }
-#else
-    endlinetype = EL_LF;
-#endif
 
     /* Interpret the text values for -d and -D */
     if (dee_option != NULL) {
