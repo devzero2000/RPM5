@@ -1,4 +1,5 @@
 5.0.0 -> 5.1a1:
+    - jbj: fix: avoid {pre,post}trans scrareMem assert failure.
     - jbj: rpmio: add self-consistent rpmdigest --all verify test.
     - jbj: rpmdigest: do algo name -> number with optionsTable instead.
     - jbj: rpmio: add rpmdigest checks, fix some obvious deficiencies.
