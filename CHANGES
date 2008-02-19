@@ -1,4 +1,6 @@
 5.0.0 -> 5.1a1:
+    - jbj: rpmio: add self-consistent rpmdigest --all verify test.
+    - jbj: rpmdigest: do algo name -> number with optionsTable instead.
     - jbj: rpmio: add rpmdigest checks, fix some obvious deficiencies.
     - rpm.org: make find-lang --with-gnome picks up omf files (rhbz#251400)
     - jbj: rpmdigest: add digest verification from manifests a la coreutils.

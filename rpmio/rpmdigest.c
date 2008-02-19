@@ -67,15 +67,15 @@ assert(dc->digest != NULL);
 
 static int rpmdcFiniFile(rpmdc dc)
 {
+    int algo = (dc->manifests ? dc->algos->vals[dc->ix] : dc->algo);
     int rc = 0;
     int xx;
 
-    switch (dc->algo) {
+    switch (algo) {
     default:
-    {	int algo = (dc->manifests ? dc->algos->vals[dc->ix] : dc->algo);
 	xx = rpmdcPrintFile(dc, algo, NULL);
 	if (xx) rc = xx;
-    }	break;
+	break;
     case 256:		/* --all digests requested. */
       {	struct poptOption * opt = rpmioDigestPoptTable;
 	for (; (opt->longName || opt->shortName || opt->arg) ; opt++) {
@@ -98,44 +98,53 @@ static int rpmdcFiniFile(rpmdc dc)
 
 static int rpmdcCalcFile(rpmdc dc)
 {
-    do
-	dc->nb = Fread(dc->buf, sizeof(dc->buf[0]), sizeof(dc->buf), dc->fd);
-    while (dc->nb > 0);
+    int rc = 0;
 
-    return 0;
+    do {
+	dc->nb = Fread(dc->buf, sizeof(dc->buf[0]), sizeof(dc->buf), dc->fd);
+	if (Ferror(dc->fd)) {
+	    rc = 2;
+	    break;
+	}
+    } while (dc->nb > 0);
+
+    return rc;
 }
 
 static int rpmdcInitFile(rpmdc dc)
 {
-    int rc = -1;	/* assume failure */
+    int algo = (dc->manifests ? dc->algos->vals[dc->ix] : dc->algo);
+    int rc = 0;
 
+    /* XXX Stat(2) to insure files only? */
     dc->fd = Fopen(dc->fn, "r.ufdio");
     if (dc->fd == NULL || Ferror(dc->fd)) {
 	fprintf(stderr, _("open of %s failed: %s\n"), dc->fn, Fstrerror(dc->fd));
 	if (dc->fd != NULL) Fclose(dc->fd);
 	dc->fd = NULL;
+	rc = 2;
 	goto exit;
     }
 
     switch (dc->algo) {
     default:
-    {	int algo = (dc->manifests ? dc->algos->vals[dc->ix] : dc->algo);
 	/* XXX TODO: instantiate verify digests for all identical paths. */
 	fdInitDigest(dc->fd, algo, 0);
-    }	break;
+	break;
     case 256:		/* --all digests requested. */
       {	struct poptOption * opt = rpmioDigestPoptTable;
 	for (; (opt->longName || opt->shortName || opt->arg) ; opt++) {
 	    if ((opt->argInfo & POPT_ARG_MASK) != POPT_ARG_VAL)
 		continue;
-	    dc->algo = opt->val;
-	    if (!(dc->algo > 0 && dc->algo < 256))
+	    if (opt->longName == NULL)
 		continue;
-	    fdInitDigest(dc->fd, dc->algo, 0);
+	    if (!(opt->val > 0 && opt->val < 256))
+		continue;
+	    algo = opt->val;
+	    fdInitDigest(dc->fd, algo, 0);
 	}
       }	break;
     }
-    rc = 0;
 
 exit:
     return rc;
@@ -171,6 +180,7 @@ static int rpmdcLoadManifests(rpmdc dc)
 	while (fgets(buf, sizeof(buf), fp) != NULL) {
 	    const char * dname, * digest, * path;
 	    char *se = buf + (int)strlen(buf);
+	    int algo;
 	    int c, xx;
 
 	    while (se > buf && xisspace((int)se[-1]))
@@ -200,10 +210,26 @@ static int rpmdcLoadManifests(rpmdc dc)
 		/*@switchbreak@*/ break;
 	    }
 
+	    /* Map name to algorithm number. */
+	    if (dname) {
+		struct poptOption * opt = rpmioDigestPoptTable;
+		for (; (opt->longName || opt->shortName || opt->arg) ; opt++) {
+		    if ((opt->argInfo & POPT_ARG_MASK) != POPT_ARG_VAL)
+			continue;
+		    if (opt->longName == NULL)
+			continue;
+		    if (!(opt->val > 0 && opt->val < 256))
+			continue;
+		    if (strcmp(opt->longName, dname))
+			continue;
+		    algo = opt->val;
+		    break;
+		}
+	    } else
+		algo = dc->algo;
+
 	    /* Save {algo, digest, path} for processing. */
-	    c = (dname ? pgpHashAlgoStringToNumber(dname, 0) : -1);
-	    if (!(c > 0 && c < 256)) c = dc->algo;
-	    xx = argiAdd(&dc->algos, -1, c);
+	    xx = argiAdd(&dc->algos, -1, algo);
 	    xx = argvAdd(&dc->digests, digest);
 	    xx = argvAdd(&dc->paths, path);
 	}
@@ -287,9 +313,11 @@ main(int argc, char *argv[])
     if (av != NULL)
     while ((dc->fn = *av++) != NULL) {
 	/* XXX TODO: instantiate verify digests for all identical paths. */
-	xx = rpmdcInitFile(dc);
-	if (dc->fd) {
-	    xx = rpmdcCalcFile(dc);
+	if ((xx = rpmdcInitFile(dc)) != 0) {
+	    rc = xx;
+	} else {
+	    if ((xx = rpmdcCalcFile(dc)) != 0)
+		rc = xx;
 	    if ((xx = rpmdcFiniFile(dc)) != 0)
 		rc = xx;
 	}
