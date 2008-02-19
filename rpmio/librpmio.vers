@@ -203,6 +203,7 @@ LIBRPMIO_0
     pgpTagTbl;
     print_expand_trace;
     print_macro_trace;
+    __progname;
     prpsoffsets32;
     prpsoffsets64;
     Readdir;

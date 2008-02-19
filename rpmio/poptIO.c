@@ -4,7 +4,6 @@
  */
 
 #include "system.h"
-const char *__progname;
 
 #include <poptIO.h>
 
@@ -27,6 +26,9 @@ const char *__progname;
 #endif
 
 #include "debug.h"
+
+#undef	__progname	/* XXX lose glibc baggage for now */
+const char *__progname;
 
 #define POPT_SHOWVERSION	-999
 #define POPT_UNDEFINE		-994

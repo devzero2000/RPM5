@@ -1,54 +1,75 @@
 #include "system.h"
+#undef	__progname	/* XXX lose glibc baggage for now */
+/*@unchecked@*/
+extern const char * __progname;
+
 #include <rpmio_internal.h>
 #include <poptIO.h>
 #include "debug.h"
 
-static int initDigests(FD_t fd, pgpHashAlgo algo)
-{
-    switch (algo) {
-    default:
-	fdInitDigest(fd, algo, 0);
-	break;
-    case 256:		/* --all digests requested. */
-      {	struct poptOption * opt = rpmioDigestPoptTable;
-	for (; (opt->longName || opt->shortName || opt->arg) ; opt++) {
-	    if ((opt->argInfo & POPT_ARG_MASK) != POPT_ARG_VAL)
-		continue;
-	    algo = opt->val;
-	    if (!(algo > 0 && algo < 256))
-		continue;
-	    fdInitDigest(fd, algo, 0);
-	}
-      }	break;
-    }
-    return 0;
-}
+typedef struct rpmdc_s * rpmdc;
 
-static int printDigest(FD_t fd, pgpHashAlgo algo, const char * algoName)
+#define _DFB(n) ((1 << (n)) | 0x40000000)
+#define F_ISSET(_dc, _FLAG) ((_dc)->flags & ((RPMDC_FLAGS_##_FLAG) & ~0x40000000))
+
+enum dcFlags_e {
+    RPMDC_FLAGS_BINARY	= _DFB( 0),	/*!< -b,--binary ... */
+    RPMDC_FLAGS_WARN	= _DFB( 1),	/*!< -w,--warn ... */
+    RPMDC_FLAGS_STATUS	= _DFB( 2)	/*!<    --status ... */
+};
+
+struct rpmdc_s {
+    enum dcFlags_e flags;
+    int algo;			/*!< default digest algorithm. */
+    const char * digest;
+    size_t digestlen;
+    const char * fn;
+    FD_t fd;
+    ARGV_t manifests;		/*!< array of file manifests to verify. */
+    ARGI_t algos;		/*!< array of file digest algorithms. */
+    ARGV_t digests;		/*!< array of file digests. */
+    ARGV_t paths;		/*!< array of file paths. */
+    unsigned char buf[BUFSIZ];
+    ssize_t nb;
+    int ix;
+    int nfails;
+};
+
+static struct rpmdc_s _dc;
+static rpmdc dc = &_dc;
+
+static int rpmdcPrintFile(rpmdc dc, int algo, const char * algoName)
 {
-    const char * digest = NULL;
-    size_t digestlen = 0;
     static int asAscii = 1;
 
-    fdFiniDigest(fd, algo, &digest, &digestlen, asAscii);
-    if (digest) {
-	const char * fn = fdGetOPath(fd);
-	if (algoName)
-	    fprintf(stdout, "%s:\t", algoName);
-	fprintf(stdout, "%s     %s\n", digest, fn);
-	fflush(stdout);
-	digest = _free(digest);
+    fdFiniDigest(dc->fd, algo, &dc->digest, &dc->digestlen, asAscii);
+assert(dc->digest != NULL);
+    if (dc->manifests) {
+	const char * msg = "OK";
+	if (strcmp(dc->digest, dc->digests[dc->ix])) {
+	    msg = "FAILED";
+	    dc->nfails++;
+	}
+	fprintf(stdout, "%s: %s\n", dc->fn, msg);
+    } else {
+	if (!F_ISSET(dc, STATUS)) {
+	    if (algoName) fprintf(stdout, "%s:", algoName);
+	    fprintf(stdout, "%s %c%s\n", dc->digest,
+		(F_ISSET(dc, BINARY) ? '*' : ' '), dc->fn);
+	    fflush(stdout);
+	}
+	dc->digest = _free(dc->digest);
     }
     return 0;
 }
 
-static int finiDigests(FD_t fd, pgpHashAlgo algo)
+static int rpmdcFiniFile(rpmdc dc)
 {
-    
-    switch (algo) {
+    switch (dc->algo) {
     default:
-	printDigest(fd, algo, NULL);
-	break;
+    {	int algo = (dc->manifests ? dc->algos->vals[dc->ix] : dc->algo);
+	rpmdcPrintFile(dc, algo, NULL);
+    }	break;
     case 256:		/* --all digests requested. */
       {	struct poptOption * opt = rpmioDigestPoptTable;
 	for (; (opt->longName || opt->shortName || opt->arg) ; opt++) {
@@ -56,21 +77,175 @@ static int finiDigests(FD_t fd, pgpHashAlgo algo)
 		continue;
 	    if (opt->arg != (void *)&rpmioDigestHashAlgo)
 		continue;
-	    algo = opt->val;
-	    if (!(algo > 0 && algo < 256))
+	    dc->algo = opt->val;
+	    if (!(dc->algo > 0 && dc->algo < 256))
 		continue;
-	    printDigest(fd, algo, opt->longName);
+	    rpmdcPrintFile(dc, dc->algo, opt->longName);
 	}
       }	break;
     }
+    Fclose(dc->fd);
+    dc->fd = NULL;
     return 0;
 }
 
+static int rpmdcCalcFile(rpmdc dc)
+{
+    do
+	dc->nb = Fread(dc->buf, sizeof(dc->buf[0]), sizeof(dc->buf), dc->fd);
+    while (dc->nb > 0);
+
+    return 0;
+}
+
+static int rpmdcInitFile(rpmdc dc)
+{
+    int rc = -1;	/* assume failure */
+
+    dc->fd = Fopen(dc->fn, "r.ufdio");
+    if (dc->fd == NULL || Ferror(dc->fd)) {
+	fprintf(stderr, _("open of %s failed: %s\n"), dc->fn, Fstrerror(dc->fd));
+	if (dc->fd != NULL) Fclose(dc->fd);
+	dc->fd = NULL;
+	goto exit;
+    }
+
+    switch (dc->algo) {
+    default:
+    {	int algo = (dc->manifests ? dc->algos->vals[dc->ix] : dc->algo);
+	/* XXX TODO: instantiate verify digests for all identical paths. */
+	fdInitDigest(dc->fd, algo, 0);
+    }	break;
+    case 256:		/* --all digests requested. */
+      {	struct poptOption * opt = rpmioDigestPoptTable;
+	for (; (opt->longName || opt->shortName || opt->arg) ; opt++) {
+	    if ((opt->argInfo & POPT_ARG_MASK) != POPT_ARG_VAL)
+		continue;
+	    dc->algo = opt->val;
+	    if (!(dc->algo > 0 && dc->algo < 256))
+		continue;
+	    fdInitDigest(dc->fd, dc->algo, 0);
+	}
+      }	break;
+    }
+    rc = 0;
+
+exit:
+    return rc;
+}
+
+static int rpmdcLoadManifests(rpmdc dc)
+	/*@globals h_errno, fileSystem, internalState @*/
+	/*@modifies h_errno, fileSystem, internalState @*/
+{
+    int rc = -1;	/* assume failure */
+
+    if (dc->manifests != NULL)	/* note rc=0 return with no files to load. */
+    while ((dc->fn = *dc->manifests++) != NULL) {
+	char buf[BUFSIZ];
+	FILE *fp;
+
+	if (strcmp(dc->fn, "-") == 0) {
+	    dc->fd = NULL;
+	    fp = stdin;
+	} else {
+	    /* XXX .fpio is needed because of fgets(3) usage. */
+	    dc->fd = Fopen(dc->fn, "r.fpio");
+	    if (dc->fd == NULL || Ferror(dc->fd) || (fp = fdGetFILE(dc->fd)) == NULL) {
+		fprintf(stderr, _("%s: Failed to open %s: %s\n"),
+				__progname, dc->fn, Fstrerror(dc->fd));
+		if (dc->fd != NULL) (void) Fclose(dc->fd);
+		dc->fd = NULL;
+		fp = NULL;
+		goto exit;
+	    }
+	}
+
+	while (fgets(buf, sizeof(buf), fp) != NULL) {
+	    const char * dname, * digest, * path;
+	    char *se = buf + (int)strlen(buf);
+	    int c, xx;
+
+	    while (se > buf && xisspace((int)se[-1]))
+		se--;
+	    *se = '\0';
+
+	    /* Skip blank lines */
+	    if (buf[0] == '\0')	/*@innercontinue@*/ continue;
+	    /* Skip comment lines */
+	    if (buf[0] == '#')	/*@innercontinue@*/ continue;
+
+	    dname = NULL; path = NULL;
+	    for (digest = se = buf; (c = (int)*se) != 0; se++)
+	    switch (c) {
+	    default:
+		/*@switchbreak@*/ break;
+	    case ':':
+		*se++ = '\0';
+		dname = digest;
+		digest = se;
+		/*@switchbreak@*/ break;
+	    case ' ':
+		se[0] = '\0';	/* loop will terminate */
+		if (se[1] == ' ' || se[1] == '*')
+		    se[1] = '\0';
+		path = se + 2;
+		/*@switchbreak@*/ break;
+	    }
+
+	    /* Save {algo, digest, path} for processing. */
+	    c = (dname ? pgpHashAlgoStringToNumber(dname, 0) : -1);
+	    if (!(c > 0 && c < 256)) c = dc->algo;
+	    xx = argiAdd(&dc->algos, -1, c);
+	    xx = argvAdd(&dc->digests, digest);
+	    xx = argvAdd(&dc->paths, path);
+	}
+
+	if (dc->fd != NULL) {
+	    (void) Fclose(dc->fd);
+	    dc->fd = NULL;
+	}
+    }
+    rc = 0;
+
+exit:
+    return rc;
+}
+
 static struct poptOption optionsTable[] = {
+  { "binary", 'b', POPT_BIT_SET,	&_dc.flags, RPMDC_FLAGS_BINARY,
+	N_("read in binary mode"), NULL },
+  { "check", 'c', POPT_ARG_ARGV,	&_dc.manifests, 0,
+	N_("read digests from MANIFEST file and verify (may be used more than once)"),
+	N_("MANIFEST") },
+  { "text", 't', POPT_BIT_CLR,		&_dc.flags, RPMDC_FLAGS_BINARY,
+	N_("read in text mode (default)"), NULL },
+
+#ifdef	NOTYET		/* XXX todo for popt-1.15 */
+  { NULL, -1, POPT_ARG_INCLUDE_TABLE, NULL, 0,
+        N_("\
+The following two options are useful only when verifying digests:\
+"), NULL },
+#endif
+
+  { "status", '\0', POPT_BIT_SET,	&_dc.flags, RPMDC_FLAGS_STATUS,
+	N_("no output when verifying"), NULL },
+  { "warn", 'w', POPT_BIT_SET,		&_dc.flags, RPMDC_FLAGS_WARN,
+	N_("warn about improperly formatted checksum lines"), NULL },
+
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmioDigestPoptTable, 0,
-	N_("Digest options:"), NULL },
+	N_("Available digests:"), NULL },
+
   POPT_AUTOALIAS
   POPT_AUTOHELP
+
+  { NULL, -1, POPT_ARG_INCLUDE_TABLE, NULL, 0,
+        N_("\
+When checking, the input should be a former output of this program.  The\n\
+default mode is to print a line with digest, a character indicating type\n\
+(`*' for binary, ` ' for text), and name for each FILE.\n\
+"), NULL },
+
   POPT_TABLEEND
 };
 
@@ -78,34 +253,53 @@ int
 main(int argc, char *argv[])
 {
     poptContext optCon = rpmioInit(argc, argv, optionsTable);
-    const char ** args;
-    const char * fn;
+    ARGV_t av;
+    int ac;
     int rc = 0;
+    int xx;
 
     if ((int)rpmioDigestHashAlgo < 0)
 	rpmioDigestHashAlgo = PGPHASHALGO_MD5;
 
-    if ((args = poptGetArgs(optCon)) != NULL)
-    while ((fn = *args++) != NULL) {
-	FD_t fd;
-	unsigned char buf[BUFSIZ];
-	ssize_t nb;
+    dc->algo = rpmioDigestHashAlgo;
 
-	fd = Fopen(fn, "r");
-	if (fd == NULL || Ferror(fd)) {
-	    fprintf(stderr, _("cannot open %s: %s\n"), fn, Fstrerror(fd));
-	    if (fd) Fclose(fd);
-	    rc++;
-	    continue;
+    av = poptGetArgs(optCon);
+    ac = argvCount(av);
+
+    if (dc->manifests != NULL) {
+	if (ac != 0) {
+	    poptPrintUsage(optCon, stderr, 0);
+	    rc = 2;
+	    goto exit;
 	}
-
-	initDigests(fd, rpmioDigestHashAlgo);
-	while ((nb = Fread(buf, 1, sizeof(buf), fd)) > 0)
-	    ;
-	finiDigests(fd, rpmioDigestHashAlgo);
-
-	Fclose(fd);
+	xx = rpmdcLoadManifests(dc);
+	av = dc->paths;
     }
+    dc->ix = 0;
+
+    if (av != NULL);
+    while ((dc->fn = *av++) != NULL) {
+	/* XXX TODO: instantiate verify digests for all identical paths. */
+	xx = rpmdcInitFile(dc);
+	if (dc->fd) {
+	    xx = rpmdcCalcFile(dc);
+	    if ((xx = rpmdcFiniFile(dc)) != 0)
+		rc = xx;
+	}
+	dc->ix++;
+    }
+
+exit:
+    if (dc->nfails)
+	fprintf(stderr, "%s: WARNING: %d of %d computed checksums did NOT match\n",
+		__progname, dc->nfails, dc->ix);
+
+#ifdef	NOTYET
+    dc->manifests = argvFree(dc->manifests);
+#endif
+    dc->algos = argiFree(dc->algos);
+    dc->digests = argvFree(dc->digests);
+    dc->paths = argvFree(dc->paths);
 
     optCon = rpmioFini(optCon);
 
