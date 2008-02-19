@@ -694,10 +694,9 @@ int rpmErase(rpmts ts, QVA_t ia, const char ** argv)
     int count;
     const char ** arg;
     int numFailed = 0;
-    int stopUninstall = 0;
-    int numPackages = 0;
+    int numRPMS = 0;
     rpmVSFlags vsflags, ovsflags;
-    rpmps ps;
+    int rc;
 
     if (argv == NULL) return 0;
 
@@ -758,55 +757,32 @@ int rpmErase(rpmts ts, QVA_t ia, const char ** argv)
 		}
 		if (recOffset) {
 		    (void) rpmtsAddEraseElement(ts, h, recOffset);
-		    numPackages++;
+		    numRPMS++;
 		}
 	    }
 	}
 	mi = rpmdbFreeIterator(mi);
     }
 
-    if (numFailed) goto exit;
+    if (numFailed == 0 && numRPMS > 0) {
+	if (!(ia->installInterfaceFlags & INSTALL_NODEPS)
+	 && (rc = rpmcliInstallCheck(ts)) != 0)
+	    numFailed = numRPMS;
 
-    if (!(ia->installInterfaceFlags & INSTALL_NODEPS)) {
-
-	if (rpmtsCheck(ts)) {
-	    numFailed = numPackages;
-	    stopUninstall = 1;
-	}
-
-	ps = rpmtsProblems(ts);
-	if (!stopUninstall && rpmpsNumProblems(ps) > 0) {
-	    rpmlog(RPMLOG_ERR, _("Failed dependencies:\n"));
-	    rpmpsPrint(NULL, ps);
-	    numFailed += numPackages;
-	    stopUninstall = 1;
-	}
-	ps = rpmpsFree(ps);
-    }
-
-    if (!stopUninstall && !(ia->installInterfaceFlags & INSTALL_NOORDER)) {
-	if (rpmtsOrder(ts)) {
-	    numFailed += numPackages;
-	    stopUninstall = 1;
-	}
-    }
-
-    if (numPackages > 0 && !stopUninstall) {
+	if (numFailed == 0
+	 && !(ia->installInterfaceFlags & INSTALL_NOORDER)
+	 && (rc = rpmcliInstallOrder(ts)) != 0)
+	    numFailed = numRPMS;
 
 	/* Drop added/available package indices and dependency sets. */
 	rpmtsClean(ts);
 
-	numPackages = rpmtsRun(ts, NULL,
-		ia->probFilter & (RPMPROB_FILTER_DISKSPACE|RPMPROB_FILTER_DISKNODES));
-	ps = rpmtsProblems(ts);
-	if (rpmpsNumProblems(ps) > 0)
-	    rpmpsPrint(NULL, ps);
-	numFailed += numPackages;
-	stopUninstall = 1;
-	ps = rpmpsFree(ps);
+	if (numFailed == 0
+	 && (rc = rpmcliInstallRun(ts, NULL, ia->probFilter & (RPMPROB_FILTER_DISKSPACE|RPMPROB_FILTER_DISKNODES))) != 0)
+	    numFailed += (rc < 0 ? numRPMS : rc);
+
     }
 
-exit:
     rpmtsEmpty(ts);
 
     return numFailed;

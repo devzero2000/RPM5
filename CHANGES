@@ -1,4 +1,6 @@
 5.0.0 -> 5.1a1:
+    - jbj: refactor rpmcliErase to use same code as rpmtsInstall.
+    - jbj: fix: rpmtsCheck non-zero return prevents --erase.
     - jbj: fix: avoid {pre,post}trans scrareMem assert failure.
     - jbj: rpmio: add self-consistent rpmdigest --all verify test.
     - jbj: rpmdigest: do algo name -> number with optionsTable instead.
