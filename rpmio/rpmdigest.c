@@ -213,6 +213,7 @@ static int rpmdcLoadManifests(rpmdc dc)
 	    /* Map name to algorithm number. */
 	    if (dname) {
 		struct poptOption * opt = rpmioDigestPoptTable;
+		algo = -1;
 		for (; (opt->longName || opt->shortName || opt->arg) ; opt++) {
 		    if ((opt->argInfo & POPT_ARG_MASK) != POPT_ARG_VAL)
 			continue;
@@ -224,6 +225,12 @@ static int rpmdcLoadManifests(rpmdc dc)
 			continue;
 		    algo = opt->val;
 		    break;
+		}
+		if (algo == -1) {
+		    fprintf(stderr, _("%s: Unknown digest name \"%s\"\n"),
+				__progname, dname);
+		    rc = 2;
+		    goto exit;
 		}
 	    } else
 		algo = dc->algo;
