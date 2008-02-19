@@ -1332,7 +1332,8 @@ rpmlog(RPMLOG_DEBUG, D_("sanity checking %d elements\n"), rpmtsNElements(ts));
 	    }
 
 	    if (rpmteFd(p) != NULL) {
-		fi = rpmfiNew(ts, p->h, RPMTAG_BASENAMES, 1);
+		int scareMem = 0;
+		fi = rpmfiNew(ts, p->h, RPMTAG_BASENAMES, scareMem);
 		if (fi != NULL) {	/* XXX can't happen */
 		    fi->te = p;
 		    p->fi = fi;
@@ -1915,7 +1916,8 @@ assert(psm != NULL);
 
 /*@-nullpass@*/
 	    if (rpmteFd(p) != NULL) {
-	    	p->fi = rpmfiNew(ts, p->h, RPMTAG_BASENAMES, 1);
+		int scareMem = 0;
+	    	p->fi = rpmfiNew(ts, p->h, RPMTAG_BASENAMES, scareMem);
 	    	if (p->fi != NULL)	/* XXX can't happen */
 	    	    p->fi->te = p;
 /*@-compdef -usereleased@*/	/* p->fi->te undefined */
