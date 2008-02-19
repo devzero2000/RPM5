@@ -1,4 +1,5 @@
 5.0.0 -> 5.1a1:
+    - rpm.org: make find-lang --with-gnome picks up omf files (rhbz#251400)
     - jbj: rpmdigest: add digest verification from manifests a la coreutils.
     - jbj: rpmio: increase no. of digests from 4 => 32 for rpmdigest --all.
     - jbj: rpmio: ops, actually add rpmdigest.c.
