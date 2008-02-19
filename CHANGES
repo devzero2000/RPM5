@@ -1,4 +1,6 @@
 5.0.2 -> 5.0.3:
+    - jbj: refactor rpmcliErase to use same code as rpmtsInstall.
+    - jbj: fix: rpmtsCheck non-zero return prevents --erase.
     - jbj: fix: avoid {pre,post}trans scrareMem assert failure.
     - rpm.org: make find-lang --with-gnome picks up omf files (rhbz#251400) 
     - proyvind: python: add back RPMSENSE_FIND_REQUIRES, needed by rpmlint
