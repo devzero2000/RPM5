@@ -1501,7 +1501,7 @@ main(int argc, char **argv)
      * as "lf".
      */
     if (newline == NULL) {
-	int val;
+	int val = 0;
 	xx = pcre_config(PCRE_CONFIG_NEWLINE, &val);
 	switch (val) {
 	default:	newline = xstrdup("lf");		break;
@@ -1584,6 +1584,8 @@ _("%s: Cannot mix --only-matching, --file-offsets and/or --line-offsets\n"),
     if (GF_ISSET(UTF8))
 	pcre_options |= PCRE_UTF8;
 
+    /* XXX pcre-6.6 doesn't define these bits. */
+#if defined(PCRE_NEWLINE_CR)
     /* Interpret the newline type; the default settings are Unix-like. */
     if (!strcasecmp(newline, "cr")) {
 	pcre_options |= PCRE_NEWLINE_CR;
@@ -1605,6 +1607,9 @@ _("%s: Cannot mix --only-matching, --file-offsets and/or --line-offsets\n"),
 		__progname, newline);
 	goto errxit;
     }
+#else
+    endlinetype = EL_LF;
+#endif
 
     /* Interpret the text values for -d and -D */
     if (dee_option != NULL) {
