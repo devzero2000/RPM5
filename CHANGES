@@ -1,4 +1,5 @@
 5.0.0 -> 5.1a1:
+    - proyvind: add some extra functionality to gendiff (ancient Mandriva patch by Chmouel Boudjnah)
     - pixel: do check free size when bavail is 0
     - jbj: add variadic checks, remove warnings.
     - jbj: refactor rpmcliErase to use same code as rpmtsInstall.
