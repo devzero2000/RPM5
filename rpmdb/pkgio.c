@@ -1333,6 +1333,7 @@ fprintf(stderr, "--> rpmReadHeader(%p, %p, %p)\n", fd, hdrp, msg);
     if (origin != NULL) {
 	const char * lpath = NULL;
 	int ut = urlPath(origin, &lpath);
+	ut = ut;	/* XXX keep gcc quiet. */
 	if (lpath && *lpath != '/') {
 	    char * rpath = Realpath(origin, NULL);
 	    (void) headerSetOrigin(h, rpath);

@@ -1469,8 +1469,8 @@ if (key->size == 0) key->size++;	/* XXX "/" fixup. */
 	rc = dbiGet(dbi, dbcursor, key, data, DB_SET);
 	if (rc > 0) {
 	    rpmlog(RPMLOG_ERR,
-		_("error(%d) getting \"%s\" records from %s index\n"),
-		rc, key->data, tagName(dbi->dbi_rpmtag));
+		_("error(%d) getting records from %s index\n"),
+		rc, tagName(dbi->dbi_rpmtag));
 	}
 
 if (rc == 0)
@@ -1616,8 +1616,8 @@ key->size = (UINT32_T) strlen(name);
 	rc = 0;
     } else {			/* error */
 	rpmlog(RPMLOG_ERR,
-		_("error(%d) getting \"%s\" records from %s index\n"),
-		rc, key->data, tagName(dbi->dbi_rpmtag));
+		_("error(%d) getting records from %s index\n"),
+		rc, tagName(dbi->dbi_rpmtag));
 	rc = -1;
     }
 
@@ -1672,8 +1672,8 @@ key->size = (UINT32_T) strlen(name);
 	return RPMRC_NOTFOUND;
     } else {			/* error */
 	rpmlog(RPMLOG_ERR,
-		_("error(%d) getting \"%s\" records from %s index\n"),
-		rc, key->data, tagName(dbi->dbi_rpmtag));
+		_("error(%d) getting records from %s index\n"),
+		rc, tagName(dbi->dbi_rpmtag));
 	return RPMRC_FAIL;
     }
 
@@ -2579,8 +2579,8 @@ static int rpmdbGrowIterator(/*@null@*/ rpmdbMatchIterator mi, int fpNum,
     if (rc) {			/* error/not found */
 	if (rc != DB_NOTFOUND)
 	    rpmlog(RPMLOG_ERR,
-		_("error(%d) getting \"%s\" records from %s index\n"),
-		rc, key->data, tagName(dbi->dbi_rpmtag));
+		_("error(%d) getting records from %s index\n"),
+		rc, tagName(dbi->dbi_rpmtag));
 #ifdef	SQLITE_HACK
 	xx = dbiCclose(dbi, dbcursor, 0);
 	dbcursor = NULL;
@@ -2729,8 +2729,8 @@ if (key->data && key->size == 0) key->size++;	/* XXX "/" fixup. */
 /*@=nullstate@*/
 	    if (rc > 0) {
 		rpmlog(RPMLOG_ERR,
-			_("error(%d) getting \"%s\" records from %s index\n"),
-			rc, (key->data ? key->data : "???"), tagName(dbi->dbi_rpmtag));
+			_("error(%d) getting records from %s index\n"),
+			rc, tagName(dbi->dbi_rpmtag));
 	    }
 
 	    /* Join keys need to be native endian internally. */
@@ -3051,8 +3051,8 @@ if (key->size == 0) key->size++;	/* XXX "/" fixup. */
 		    /*@innercontinue@*/ continue;
 		} else {			/* error */
 		    rpmlog(RPMLOG_ERR,
-			_("error(%d) setting \"%s\" records from %s index\n"),
-			rc, key->data, dbiBN);
+			_("error(%d) getting records from %s index\n"),
+			rc, dbiBN);
 		    ret += 1;
 		    /*@innercontinue@*/ continue;
 		}
@@ -3072,8 +3072,8 @@ if (key->size == 0) key->size++;	/* XXX "/" fixup. */
 		    rc = dbiPut(dbi, dbcursor, key, data, DB_KEYLAST);
 		    if (rc) {
 			rpmlog(RPMLOG_ERR,
-				_("error(%d) storing record \"%s\" into %s\n"),
-				rc, key->data, dbiBN);
+				_("error(%d) storing record into %s\n"),
+				rc, dbiBN);
 			ret += 1;
 		    }
 		    data->data = _free(data->data);
@@ -3082,8 +3082,8 @@ if (key->size == 0) key->size++;	/* XXX "/" fixup. */
 		    rc = dbiDel(dbi, dbcursor, key, data, 0);
 		    if (rc) {
 			rpmlog(RPMLOG_ERR,
-				_("error(%d) removing record \"%s\" from %s\n"),
-				rc, key->data, dbiBN);
+				_("error(%d) removing record from %s\n"),
+				rc, dbiBN);
 			ret += 1;
 		    }
 		}
@@ -3529,8 +3529,8 @@ if (key->size == 0) key->size++;	/* XXX "/" fixup. */
 			(void) dbt2set(dbi, data, &set);
 		} else if (rc != DB_NOTFOUND) {	/* error */
 		    rpmlog(RPMLOG_ERR,
-			_("error(%d) getting \"%s\" records from %s index\n"),
-			rc, key->data, dbiBN);
+			_("error(%d) getting records from %s index\n"),
+			rc, dbiBN);
 		    ret += 1;
 		    /*@innercontinue@*/ continue;
 		}
@@ -3548,8 +3548,8 @@ if (key->size == 0) key->size++;	/* XXX "/" fixup. */
 
 		if (rc) {
 		    rpmlog(RPMLOG_ERR,
-				_("error(%d) storing record %s into %s\n"),
-				rc, key->data, dbiBN);
+				_("error(%d) storing record into %s\n"),
+				rc, dbiBN);
 		    ret += 1;
 		}
 /*@-unqualifiedtrans@*/

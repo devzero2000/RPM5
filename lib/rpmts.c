@@ -198,7 +198,7 @@ rpmdbMatchIterator rpmtsInitIterator(const rpmts ts, rpmTag rpmtag,
 	    case '(':
 		/* XXX Fail if nested parens. */
 		if (level++ != 0) {
-		    rpmlog(RPMLOG_ERR, _("extra '(' in package label: %s\n"), keyp);
+		    rpmlog(RPMLOG_ERR, _("extra '(' in package label: %s\n"), (char *)keyp);
 		    return NULL;
 		}
 		/* Parse explicit epoch. */
@@ -216,7 +216,7 @@ rpmdbMatchIterator rpmtsInitIterator(const rpmts ts, rpmTag rpmtag,
 	    case ')':
 		/* XXX Fail if nested parens. */
 		if (--level != 0) {
-		    rpmlog(RPMLOG_ERR, _("missing '(' in package label: %s\n"), keyp);
+		    rpmlog(RPMLOG_ERR, _("missing '(' in package label: %s\n"), (char *)keyp);
 		    return NULL;
 		}
 		/* Don't copy trailing ')' */
@@ -224,7 +224,7 @@ rpmdbMatchIterator rpmtsInitIterator(const rpmts ts, rpmTag rpmtag,
 	    }
 	}
 	if (level) {
-	    rpmlog(RPMLOG_ERR, _("missing ')' in package label: %s\n"), keyp);
+	    rpmlog(RPMLOG_ERR, _("missing ')' in package label: %s\n"), (char *)keyp);
 	    return NULL;
 	}
 	*t = '\0';

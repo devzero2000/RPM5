@@ -227,6 +227,10 @@ int isCompressed(const char * file, /*@out@*/ rpmCompressedMagic * compressed)
  * @return		macro expansion (malloc'ed)
  */
 char * rpmExpand(/*@null@*/ const char * arg, ...)
+#if defined(__GNUC__) && __GNUC__ >= 4
+	/* issue a warning if the list is not  NULL-terminated */
+	__attribute__((sentinel))
+#endif
 	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
 	/*@modifies rpmGlobalMacroContext, internalState @*/;
 
@@ -246,6 +250,10 @@ char * rpmCleanPath(/*@returned@*/ /*@null@*/ char * path)
  */
 /*@-redecl@*/ /* LCL: shrug */
 const char * rpmGetPath(/*@null@*/ const char * path, ...)
+#if defined(__GNUC__) && __GNUC__ >= 4
+	/* issue a warning if the list is not  NULL-terminated */
+	 __attribute__((sentinel))
+#endif
 	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
 	/*@modifies rpmGlobalMacroContext, internalState @*/;
 /*@=redecl@*/

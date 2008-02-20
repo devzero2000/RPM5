@@ -279,6 +279,10 @@ int rpmlogSetMask (int mask)
  * Generate a log message using FMT string and option arguments.
  */
 /*@mayexit@*/ /*@printflike@*/ void rpmlog (int code, const char *fmt, ...)
+#if defined(__GNUC__) && __GNUC__ >= 2
+	/* issue a warning if the format string doesn't match arguments */
+	__attribute__((format (printf, 2, 3)))
+#endif
 	/*@*/;
 
 /*@-exportlocal@*/
