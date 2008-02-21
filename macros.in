@@ -1428,7 +1428,7 @@ done \
 %alpha  alpha alphaev56 alphaev6 alphaev67
 
 # and sparc
-%sparc sun4 sun4m sun4c sun4d sparc sparcv8 sparcv9 sparc64 sparc64v scparcv9b sparcv9v sparc9v2
+%sparc sun4 sun4m sun4c sun4d sparc sparcv8 sparcv9 sparc64 sparc64v scparcv9b sparcv9v sparcv9v2
 
 #------------------------------------------------------------------------
 # Use in %install to generate locale specific file lists. For example,
