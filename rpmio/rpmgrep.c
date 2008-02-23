@@ -41,7 +41,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #undef	__progname	/* XXX lose glibc baggage for now */
 /*@-readonlytrans@*/
 /*@unchecked@*/
-const char * __progname = "pcregrep";	/* XXX HACK in expected name. */
+extern const char *__progname;
 /*@=readonlytrans@*/
 
 #include <pcre.h>
