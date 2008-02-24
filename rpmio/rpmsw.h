@@ -37,6 +37,37 @@ struct rpmop_s {
     rpmtime_t		usecs;	/*!< Number of ticks. */
 };
 
+/*@unchecked@*/
+extern int _rpmsw_stats;
+
+/** \ingroup rpmio
+ * Indices for timestamps.
+ */
+typedef	enum rpmswOpX_e {
+    RPMSW_OP_TOTAL		=  0,
+    RPMSW_OP_CHECK		=  1,
+    RPMSW_OP_ORDER		=  2,
+    RPMSW_OP_FINGERPRINT	=  3,
+    RPMSW_OP_REPACKAGE		=  4,
+    RPMSW_OP_INSTALL		=  5,
+    RPMSW_OP_ERASE		=  6,
+    RPMSW_OP_SCRIPTLETS		=  7,
+    RPMSW_OP_COMPRESS		=  8,
+    RPMSW_OP_UNCOMPRESS		=  9,
+    RPMSW_OP_DIGEST		= 10,
+    RPMSW_OP_SIGNATURE		= 11,
+    RPMSW_OP_DBADD		= 12,
+    RPMSW_OP_DBREMOVE		= 13,
+    RPMSW_OP_DBGET		= 14,
+    RPMSW_OP_DBPUT		= 15,
+    RPMSW_OP_DBDEL		= 16,
+    RPMSW_OP_READHDR		= 17,
+    RPMSW_OP_HDRLOAD		= 18,
+    RPMSW_OP_HDRGET		= 19,
+    RPMSW_OP_DEBUG		= 20,
+    RPMSW_OP_MAX		= 20
+} rpmswOpX;
+
 #ifdef __cplusplus
 extern "C" {
 #endif

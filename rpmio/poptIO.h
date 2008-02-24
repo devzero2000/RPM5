@@ -26,6 +26,7 @@ extern "C" {
 
 /** \ingroup rpmio
  */
+
 /*@unchecked@*/
 extern pgpHashAlgo rpmioDigestHashAlgo;
 

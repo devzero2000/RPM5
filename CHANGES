@@ -1,4 +1,6 @@
 5.0.0 -> 5.1a1:
+    - jbj: rpmdigest: add --stats benchmark insturmentation.
+    - jbj: rpmio: add common --stats option.
     - proyvind: add some extra functionality to gendiff (ancient Mandriva patch by Chmouel Boudjnah)
     - pixel: do check free size when bavail is 0
     - jbj: add variadic checks, remove warnings.

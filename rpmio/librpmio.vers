@@ -324,6 +324,7 @@ LIBRPMIO_0
     rpmsqThreadEqual;
     rpmsqWait;
     rpmsslImplVecs;
+    _rpmsw_stats;
     rpmswAdd;
     rpmswDiff;
     rpmswEnter;

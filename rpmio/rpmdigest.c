@@ -37,6 +37,10 @@ struct rpmdc_s {
 static struct rpmdc_s _dc;
 static rpmdc dc = &_dc;
 
+static struct rpmop_s dc_totalops;
+static struct rpmop_s dc_readops;
+static struct rpmop_s dc_digestops;
+
 static int rpmdcPrintFile(rpmdc dc, int algo, const char * algoName)
 {
     static int asAscii = 1;
@@ -90,6 +94,8 @@ static int rpmdcFiniFile(rpmdc dc)
 	}
       }	break;
     }
+    (void) rpmswAdd(&dc_readops, fdstat_op(dc->fd, FDSTAT_READ));
+    (void) rpmswAdd(&dc_digestops, fdstat_op(dc->fd, FDSTAT_DIGEST));
     Fclose(dc->fd);
     dc->fd = NULL;
     return rc;
@@ -338,6 +344,10 @@ The following two options are useful only when verifying digests:\
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmioDigestPoptTable, 0,
 	N_("Available digests:"), NULL },
 
+ { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmioAllPoptTable, 0,
+	N_("Common options for all rpmio executables:"),
+	NULL },
+
   POPT_AUTOALIAS
   POPT_AUTOHELP
 
@@ -379,6 +389,8 @@ main(int argc, char *argv[])
     }
     dc->ix = 0;
 
+    rpmswEnter(&dc_totalops, -1);
+
     if (av != NULL)
     while ((dc->fn = *av++) != NULL) {
 	/* XXX TODO: instantiate verify digests for all identical paths. */
@@ -397,6 +409,13 @@ exit:
     if (dc->nfails)
 	fprintf(stderr, "%s: WARNING: %d of %d computed checksums did NOT match\n",
 		__progname, dc->nfails, dc->ix);
+
+    rpmswExit(&dc_totalops, 0);
+    if (_rpmsw_stats) {
+	rpmswPrint(" total:", &dc_totalops);
+	rpmswPrint("  read:", &dc_readops);
+	rpmswPrint("digest:", &dc_digestops);
+    }
 
 #ifdef	NOTYET
     dc->manifests = argvFree(dc->manifests);

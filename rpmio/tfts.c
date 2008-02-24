@@ -141,7 +141,8 @@ exit:
 
 fprintf(stderr, "===== (%d/%d) dirs/files in:\n", ndirs, nfiles);
     argvPrint(NULL, av, NULL);
-    rpmswPrint("fts:", op);
+    if (_rpmsw_stats)
+	rpmswPrint("fts:", op);
 
     return rc;
 }

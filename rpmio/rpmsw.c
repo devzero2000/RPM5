@@ -16,6 +16,9 @@ extern int nanosleep(const struct timespec *__requested_time,
 #endif
 
 /*@unchecked@*/
+int _rpmsw_stats = 0;
+
+/*@unchecked@*/
 static rpmtime_t rpmsw_overhead = 0;
 
 /*@unchecked@*/

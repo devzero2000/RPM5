@@ -111,8 +111,10 @@ fprintf(stderr, "===== %s\n", path);
     xx = rpmswExit(gop, len);
 
 exit:
-    rpmswPrint("stat:", sop);
-    rpmswPrint(" get:", gop);
+    if (_rpmsw_stats) {
+	rpmswPrint("stat:", sop);
+	rpmswPrint(" get:", gop);
+    }
     return rc;
 }
 

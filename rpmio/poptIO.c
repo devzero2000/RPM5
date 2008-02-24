@@ -382,9 +382,9 @@ struct poptOption rpmioAllPoptTable[] = {
 #ifdef	NOTYET
  { "tardebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_tar_debug, -1,
 	N_("debug tar payloads"), NULL},
- { "stats", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmts_stats, -1,
-	NULL, NULL},
 #endif
+ { "stats", '\0', POPT_ARG_VAL,				&_rpmsw_stats, -1,
+	N_("display operation statistics"), NULL},
  { "urldebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_url_debug, -1,
 	N_("debug URL cache handling"), NULL},
 
