@@ -38,7 +38,6 @@ POSSIBILITY OF SUCH DAMAGE.
 */
 
 #include "system.h"
-#undef	__progname	/* XXX lose glibc baggage for now */
 /*@-readonlytrans@*/
 /*@unchecked@*/
 extern const char *__progname;

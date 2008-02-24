@@ -27,7 +27,6 @@
 
 #include "debug.h"
 
-#undef	__progname	/* XXX lose glibc baggage for now */
 const char *__progname;
 
 #define POPT_SHOWVERSION	-999
