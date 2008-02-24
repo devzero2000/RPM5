@@ -193,6 +193,12 @@ enum grepFlags_e {
 /*@unchecked@*/
 static enum grepFlags_e grepFlags = GREP_FLAGS_NONE;
 
+/*@unchecked@*/
+static struct rpmop_s grep_totalops;
+/*@unchecked@*/
+static struct rpmop_s grep_readops;
+
+
 /**
  * Tables for prefixing and suffixing patterns, according to the -w, -x, and -F
  * options. These set the 1, 2, and 4 bits in grepFlags, respectively.
@@ -1052,6 +1058,7 @@ openthestream:
 	(filenames == FN_DEFAULT && !only_one_at_top))? pathname : NULL);
 
     if (fd != NULL) {
+	(void) rpmswAdd(&grep_readops, fdstat_op(fd, FDSTAT_READ));
 	(void) Fclose(fd);
 	fd = NULL;
     }
@@ -1232,6 +1239,7 @@ static int mireLoadPatternFiles(/*@null@*/ ARGV_t files, int pcre_options)
 	}
 
 	if (fd != NULL) {
+	    (void) rpmswAdd(&grep_readops, fdstat_op(fd, FDSTAT_READ));
 	    (void) Fclose(fd);
 	    fd = NULL;
 	}
@@ -1494,6 +1502,8 @@ main(int argc, char **argv)
     int rc = 1;		/* assume not found. */
     int j;
     int xx;
+
+    rpmswEnter(&grep_totalops, -1);
 
     __progname = "pcregrep";	/* XXX HACK in expected name. */
 
@@ -1771,6 +1781,12 @@ exit:
     stdin_name = _free(stdin_name);
 /*@=observertrans@*/
 /*@=statictrans@*/
+
+    rpmswExit(&grep_totalops, 0);
+    if (_rpmsw_stats) {
+	rpmswPrint(" total:", &grep_totalops);
+	rpmswPrint("  read:", &grep_readops);
+    }
 
     optCon = rpmioFini(optCon);
 

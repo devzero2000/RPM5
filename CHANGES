@@ -1,4 +1,5 @@
 5.0.0 -> 5.1a1:
+    - jbj: rpmgrep: add --stats benchmark insturmentatian (patterns soonishly).
     - jbj: rpmdigest: add --stats benchmark insturmentation.
     - jbj: rpmio: add common --stats option.
     - proyvind: add some extra functionality to gendiff (ancient Mandriva patch by Chmouel Boudjnah)

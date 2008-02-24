@@ -370,6 +370,8 @@ main(int argc, char *argv[])
     int rc = 0;
     int xx;
 
+    rpmswEnter(&dc_totalops, -1);
+
     if ((int)rpmioDigestHashAlgo < 0)
 	rpmioDigestHashAlgo = PGPHASHALGO_MD5;
 
@@ -388,8 +390,6 @@ main(int argc, char *argv[])
 	av = dc->paths;
     }
     dc->ix = 0;
-
-    rpmswEnter(&dc_totalops, -1);
 
     if (av != NULL)
     while ((dc->fn = *av++) != NULL) {
@@ -410,19 +410,19 @@ exit:
 	fprintf(stderr, "%s: WARNING: %d of %d computed checksums did NOT match\n",
 		__progname, dc->nfails, dc->ix);
 
-    rpmswExit(&dc_totalops, 0);
-    if (_rpmsw_stats) {
-	rpmswPrint(" total:", &dc_totalops);
-	rpmswPrint("  read:", &dc_readops);
-	rpmswPrint("digest:", &dc_digestops);
-    }
-
 #ifdef	NOTYET
     dc->manifests = argvFree(dc->manifests);
 #endif
     dc->algos = argiFree(dc->algos);
     dc->digests = argvFree(dc->digests);
     dc->paths = argvFree(dc->paths);
+
+    rpmswExit(&dc_totalops, 0);
+    if (_rpmsw_stats) {
+	rpmswPrint(" total:", &dc_totalops);
+	rpmswPrint("  read:", &dc_readops);
+	rpmswPrint("digest:", &dc_digestops);
+    }
 
     optCon = rpmioFini(optCon);
 
