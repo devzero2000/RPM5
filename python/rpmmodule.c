@@ -56,13 +56,16 @@ typedef int Py_ssize_t;
 static PyObject * archScore(PyObject * self, PyObject * args, PyObject * kwds)
 {
     char * arch;
+    char * platform;
     int score;
     char * kwlist[] = {"arch", NULL};
 
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "s", kwlist, &arch))
 	return NULL;
 
-    score = 0; /* TODO */
+    platform = rpmExpand(arch, "-", "%{_vendor}", "-", "%{_os}", NULL);
+    score = rpmPlatformScore(platform, NULL, 0);
+    platform = _free(platform);
 
     return Py_BuildValue("i", score);
 }
