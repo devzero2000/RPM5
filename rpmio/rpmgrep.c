@@ -43,6 +43,9 @@ POSSIBILITY OF SUCH DAMAGE.
 extern const char *__progname;
 /*@=readonlytrans@*/
 
+/* XXX Get rid of the pugly #ifdef's */
+#if defined(WITH_PCRE) && defined(HAVE_PCRE_H)
+
 #include <pcre.h>
 
 #define _MIRE_INTERNAL
@@ -1796,3 +1799,11 @@ errxit:
     rc = 2;
     goto exit;
 }
+#else
+int
+main(int argc, char **argv)
+{
+    fprintf(stderr, "PCRE support not available\n");
+    return 2;
+}
+#endif	/* WITH_PCRE */
