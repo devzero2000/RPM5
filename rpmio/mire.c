@@ -156,13 +156,22 @@ int mireSetCOptions(miRE mire, rpmMireMode mode, int tag, int options,
 
 int mireSetEOptions(miRE mire, int * offsets, int noffsets)
 {
+    int rc = 0;
     if (mire->mode == RPMMIRE_PCRE) {
 	mire->startoff = 0;
 	mire->eoptions = 0;
 	mire->offsets = offsets;
 	mire->noffsets = noffsets;
-    }
-    return 0;
+    } else
+    if (mire->mode == RPMMIRE_REGEX) {
+	mire->startoff = 0;
+	mire->eoptions = 0;
+	mire->offsets = offsets;
+	mire->noffsets = noffsets;
+    } else
+	rc = -1;
+
+    return rc;
 }
 
 int mireSetGOptions(const char * newline)
@@ -340,7 +349,9 @@ int mireRegexec(miRE mire, const char * val, size_t vallen)
 	    }
 	}
 /*@-nullpass@*/
-	rc = regexec(mire->preg, val, 0, NULL, mire->eflags);
+	/* XXX HACK: PCRE returns 2/3 of array, POSIX dimensions regmatch_t. */
+	rc = regexec(mire->preg, val,
+		mire->noffsets/3, (regmatch_t *)mire->offsets, mire->eflags);
 /*@=nullpass@*/
 	switch (rc) {
 	case 0:			rc = 0;	/*@innerbreak@*/ break;

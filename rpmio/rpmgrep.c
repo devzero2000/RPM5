@@ -671,8 +671,6 @@ ONLY_MATCHING_RESTART:
 	     * still useful because the return code is set.
 	     */
 	    else if (GF_ISSET(ONLY_MATCHING)) {
-		/* XXX HACK: only RPMMIRE_PCRE sets offsets. */
-		if (grepMode == RPMMIRE_PCRE)
 		if (!GF_ISSET(INVERT)) {
 		    if (printname != NULL) fprintf(stdout, "%s:", printname);
 		    if (GF_ISSET(LNUMBER)) fprintf(stdout, "%d:", linenumber);
@@ -783,8 +781,6 @@ ONLY_MATCHING_RESTART:
 		 * Because the PCRE_FIRSTLINE option is set, the start of
 		 * the match will always be before the first newline sequence.
 		 * */
-		/* XXX HACK: only RPMMIRE_PCRE sets offsets. */
-		if (grepMode == RPMMIRE_PCRE)
 		if (GF_ISSET(MULTILINE)) {
 		    size_t ellength;
 		    const char *endmatch = ptr;
@@ -805,8 +801,6 @@ ONLY_MATCHING_RESTART:
 		 */
 
 		/* We have to split the line(s) up if coloring. */
-		/* XXX HACK: only RPMMIRE_PCRE sets offsets. */
-	      if (grepMode == RPMMIRE_PCRE) {
 		if (GF_ISSET(COLOR)) {
 		    (void)fwrite(ptr, 1, offsets[0], stdout);
 		    fprintf(stdout, "%c[%sm", 0x1b, color_string);
@@ -816,7 +810,6 @@ ONLY_MATCHING_RESTART:
 			stdout);
 		}
 		else (void)fwrite(ptr, 1, linelength + endlinelength, stdout);
-	      }
 	    }
 
 	    /* End of doing what has to be done for a match */
@@ -836,8 +829,6 @@ ONLY_MATCHING_RESTART:
 	 * cause anything to be printed), we have to move on to the end of
 	 * the match before proceeding.
 	 */
-	/* XXX HACK: only RPMMIRE_PCRE sets offsets. */
-	if (grepMode == RPMMIRE_PCRE)
 	if (GF_ISSET(MULTILINE) && GF_ISSET(INVERT) && match) {
 	    size_t ellength;
 	    const char *endmatch = ptr + offsets[1];
