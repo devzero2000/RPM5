@@ -217,6 +217,16 @@ int mireApply(/*@null@*/ miRE mire, int nmire,
 		const char *s, size_t slen, int rc)
 	/*@modifies mire@*/;
 
+/**
+ * Study PCRE patterns (if any).
+ * @param mire		pattern container
+ * @param nmires	no. of patterns in container
+ * @return		0 on success
+ */
+int mireStudy(miRE mire, int nmires)
+	/*@globals fileSystem @*/
+	/*@modifies mire->hints, fileSystem @*/;
+
 #ifdef __cplusplus
 }
 #endif

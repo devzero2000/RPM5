@@ -146,6 +146,7 @@ LIBRPMIO_0
     mireNew;
     mireRegexec;
     mireRegcomp;
+    mireStudy;
     Mkdir;
     _Mkdir;
     Mkfifo;

@@ -32,19 +32,9 @@ fprintf(stderr, "--> mireClean(%p)\n", mire);
 	    /*@=voidabstract =usereleased @*/
 	}
     }
-    if (mire->mode == RPMMIRE_PCRE) {
-	if (mire->pcre != NULL) {
-#ifdef	WITH_PCRE
-	    pcre_free(mire->pcre);
-#endif
-	    mire->pcre = NULL;
-	}
-	if (mire->hints != NULL) {
-#ifdef	WITH_PCRE
-	    pcre_free(mire->hints);
-#endif
-	    mire->hints = NULL;
-	}
+    if (mire->mode == RPMMIRE_PCRE) {	/* TODO: (*pcre_free)(_p) override */
+	mire->pcre = _free(mire->pcre);
+	mire->hints = _free(mire->hints);
     }
     mire->errmsg = NULL;
     mire->erroff = 0;
@@ -303,5 +293,33 @@ int mireApply(miRE mire, int nmire, const char *s, size_t slen, int rc)
 	rc = xx;
 	break;
     }
+    return rc;
+}
+
+int mireStudy(miRE mire, int nmires)
+{
+    int rc = -1;	/* assume failure */
+    int j;
+
+    /* Study the PCRE regex's, as we will be running them many times */
+    if (mire)		/* note rc=0 return with no mire's. */
+    for (j = 0; j < nmires; mire++, j++) {
+	const char * error;
+	if (mire->mode != RPMMIRE_PCRE)
+	    continue;
+#if defined(WITH_PCRE)
+	mire->hints = pcre_study(mire->pcre, 0, &error);
+	if (error != NULL) {
+	    char s[32];
+	    if (nmires == 1) s[0] = '\0'; else sprintf(s, " number %d", j);
+	    rpmlog(RPMLOG_ERR, _("%s: Error while studying regex%s: %s\n"),
+		__progname, s, error);
+	    goto exit;
+	}
+#endif
+    }
+    rc = 0;
+
+exit:
     return rc;
 }

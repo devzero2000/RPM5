@@ -1259,42 +1259,6 @@ exit:
     return rc;
 }
 
-/**
- * Study PCRE patterns (if any).
- * @param mire		pattern container
- * @param nmires	no. of patterns in container
- * @return		0 on success
- */
-static int mireStudy(miRE mire, int nmires)
-	/*@globals fileSystem @*/
-	/*@modifies mire->hints, fileSystem @*/
-{
-    int rc = -1;	/* assume failure */
-    int j;
-
-    /* Study the PCRE regex's, as we will be running them many times */
-    if (mire)		/* note rc=0 return with no mire's. */
-    for (j = 0; j < nmires; mire++, j++) {
-	const char * error;
-	if (mire->mode != grepMode)
-	    continue;
-#if defined(WITH_PCRE)
-	mire->hints = pcre_study(mire->pcre, 0, &error);
-	if (error != NULL) {
-	    char s[32];
-	    if (nmires == 1) s[0] = '\0'; else sprintf(s, " number %d", j);
-	    fprintf(stderr, _("%s: Error while studying regex%s: %s\n"),
-		__progname, s, error);
-	    goto exit;
-	}
-#endif
-    }
-    rc = 0;
-
-exit:
-    return rc;
-}
-
 /* Options without a single-letter equivalent get a negative value. This can be
 used to identify them. */
 #if !defined(POPT_ARG_ARGV)
