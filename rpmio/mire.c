@@ -27,23 +27,27 @@ if (_mire_debug)
 fprintf(stderr, "--> mireClean(%p)\n", mire);
 /*@=modfilesys@*/
     mire->pattern = _free(mire->pattern);
-    if (mire->preg != NULL) {
-	regfree(mire->preg);
-	/*@+voidabstract -usereleased @*/ /* LCL: regfree has bogus only */
-	mire->preg = _free(mire->preg);
-	/*@=voidabstract =usereleased @*/
+    if (mire->mode == RPMMIRE_REGEX) {
+	if (mire->preg != NULL) {
+	    regfree(mire->preg);
+	    /*@+voidabstract -usereleased @*/ /* LCL: regfree has bogus only */
+	    mire->preg = _free(mire->preg);
+	    /*@=voidabstract =usereleased @*/
+	}
     }
-    if (mire->pcre != NULL) {
+    if (mire->mode == RPMMIRE_PCRE) {
+	if (mire->pcre != NULL) {
 #ifdef	WITH_PCRE
-	pcre_free(mire->pcre);
+	    pcre_free(mire->pcre);
 #endif
-	mire->pcre = NULL;
-    }
-    if (mire->hints != NULL) {
+	    mire->pcre = NULL;
+	}
+	if (mire->hints != NULL) {
 #ifdef	WITH_PCRE
-	pcre_free(mire->hints);
+	    pcre_free(mire->hints);
 #endif
-	mire->hints = NULL;
+	    mire->hints = NULL;
+	}
     }
     mire->errmsg = NULL;
     mire->erroff = 0;
