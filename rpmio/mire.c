@@ -331,6 +331,14 @@ int mireRegexec(miRE mire, const char * val, size_t vallen)
 	break;
     case RPMMIRE_DEFAULT:
     case RPMMIRE_REGEX:
+	/* XXX rpmgrep: ensure that the string is NUL terminated. */
+	if (vallen > 0) {
+	    if (val[vallen] != '\0') {
+		char * t = strncpy(alloca(vallen+1), val, vallen);
+		t[vallen] = '\0';
+		val = t;
+	    }
+	}
 /*@-nullpass@*/
 	rc = regexec(mire->preg, val, 0, NULL, mire->eflags);
 /*@=nullpass@*/
