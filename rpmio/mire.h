@@ -25,6 +25,11 @@ extern int _mire_debug;
 
 /**
  */
+/*@unchecked@*/ /*@null@*/
+extern const unsigned char * _mirePCREtables;
+
+/**
+ */
 typedef /*@abstract@*/ /*@refcounted@*/ struct miRE_s * miRE;
 
 /**
@@ -163,6 +168,15 @@ miRE mireNew(rpmMireMode mode, int tag)
  */
 int mireSetOptions(miRE mire, rpmMireMode mode, int tag, int options,
 		/*@null@*/ const unsigned char * table)
+	/*@modifies mire @*/;
+
+/**
+ * Compile locale-specific PCRE tables.
+ * @param mire		pattern container
+ * @param locale	locale string (NULL uses usual envvar's)
+ * @return		0 on success
+ */
+int mireSetLocale(miRE mire, /*@null@*/ const char * locale)
 	/*@modifies mire @*/;
 
 /**

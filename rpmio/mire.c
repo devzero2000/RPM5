@@ -16,6 +16,9 @@
 /*@unchecked@*/
 int _mire_debug = 0;
 
+/*@unchecked@*/
+const unsigned char * _mirePCREtables = NULL;
+
 int mireClean(miRE mire)
 {
     if (mire == NULL) return 0;
@@ -142,6 +145,59 @@ int mireSetOptions(miRE mire, rpmMireMode mode, int tag, int options,
 /*@=assignexpose =temptrans @*/
 	break;
     }
+    return rc;
+}
+
+int mireSetLocale(/*@unused@*/ /*@null@*/ miRE mire,
+		/*@null@*/ const char * locale)
+{
+    const char * locale_from;
+    int rc = -1;	/* assume failure */
+
+    /* XXX TODO: --locale jiggery-pokery should be done env LC_ALL=C rpmgrep */
+    if (locale == NULL) {
+	if (locale)
+	    locale_from = "--locale";
+	else {
+	    /*
+	     * If a locale has not been provided as an option, see if the
+	     * LC_CTYPE or LC_ALL environment variable is set, and if so,
+	     * use it.
+	     */
+/*@-dependenttrans -observertrans@*/
+	    if ((locale = getenv("LC_ALL")) != NULL)
+		locale_from = "LC_ALL";
+	    else if ((locale = getenv("LC_CTYPE")) != NULL)
+		locale_from = "LC_CTYPE";
+/*@=dependenttrans =observertrans@*/
+	    if (locale)
+		locale = xstrdup(locale);
+	}
+    }
+
+    /*
+    * If a locale has been provided, set it, and generate the tables PCRE
+    * needs. Otherwise, _mirePCREtables == NULL, which uses default tables.
+    */
+    if (locale != NULL) {
+	const char * olocale = setlocale(LC_CTYPE, locale);
+	if (olocale == NULL) {
+ 	    fprintf(stderr,
+		_("%s: Failed to set locale %s (obtained from %s)\n"),
+		__progname, locale, locale_from);
+	    goto exit;
+	}
+#if defined(WITH_PCRE)
+	_mirePCREtables = pcre_maketables();
+#ifdef	NOTYET
+	if (setlocale(LC_CTYPE, olocale) == NULL)
+	    goto exit;
+#endif
+#endif
+    }
+    rc = 0;
+
+exit:
     return rc;
 }
 
