@@ -19,6 +19,12 @@ int _mire_debug = 0;
 /*@unchecked@*/
 const unsigned char * _mirePCREtables = NULL;
 
+/*@unchecked@*/
+mireEL_t _mireEL = EL_LF;
+
+/*@unchecked@*/
+int _mireGOptions = 0;
+
 int mireClean(miRE mire)
 {
     if (mire == NULL) return 0;
@@ -148,7 +154,7 @@ int mireSetCOptions(miRE mire, rpmMireMode mode, int tag, int options,
     return rc;
 }
 
-int mireSetEOptions(miRE mire, int offsets, int noffsets)
+int mireSetEOptions(miRE mire, int * offsets, int noffsets)
 {
     if (mire->mode == RPMMIRE_PCRE) {
 	mire->startoff = 0;
@@ -157,6 +163,43 @@ int mireSetEOptions(miRE mire, int offsets, int noffsets)
 	mire->noffsets = noffsets;
     }
     return 0;
+}
+
+int mireSetGOptions(const char * newline)
+{
+    int rc = 0;
+
+    /* Interpret the newline type; the default settings are Unix-like. */
+    if (!strcasecmp(newline, "cr")) {
+#if defined(PCRE_NEWLINE_CR)
+	_mireGOptions |= PCRE_NEWLINE_CR;
+#endif
+	_mireEL = EL_CR;
+    } else if (!strcasecmp(newline, "lf")) {
+#if defined(PCRE_NEWLINE_LF)
+	_mireGOptions |= PCRE_NEWLINE_LF;
+#endif
+	_mireEL = EL_LF;
+    } else if (!strcasecmp(newline, "crlf")) {
+#if defined(PCRE_NEWLINE_CRLF)
+	_mireGOptions |= PCRE_NEWLINE_CRLF;
+#endif
+	_mireEL = EL_CRLF;
+    } else if (!strcasecmp(newline, "any")) {
+#if defined(PCRE_NEWLINE_ANY)
+	_mireGOptions |= PCRE_NEWLINE_ANY;
+#endif
+	_mireEL = EL_ANY;
+    } else if (!strcasecmp(newline, "anycrlf")) {
+#if defined(PCRE_NEWLINE_ANYCRLF)
+	_mireGOptions |= PCRE_NEWLINE_ANYCRLF;
+#endif
+	_mireEL = EL_ANYCRLF;
+    } else {
+	rc = -1;
+    }
+
+    return rc;
 }
 
 int mireSetLocale(/*@unused@*/ /*@null@*/ miRE mire,

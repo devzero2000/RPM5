@@ -28,6 +28,15 @@ extern int _mire_debug;
 /*@unchecked@*/ /*@null@*/
 extern const unsigned char * _mirePCREtables;
 
+/** Line ending types */
+typedef enum mireEL_e { EL_LF, EL_CR, EL_CRLF, EL_ANY, EL_ANYCRLF } mireEL_t;
+
+/*@unchecked@*/
+extern mireEL_t _mireEL;
+
+/*@unchecked@*/
+extern int _mireGOptions;
+
 /**
  */
 typedef /*@abstract@*/ /*@refcounted@*/ struct miRE_s * miRE;
@@ -174,12 +183,21 @@ int mireSetCOptions(miRE mire, rpmMireMode mode, int tag, int options,
 /**
  * Initialize pattern execute options (PCRE only).
  * @param mire		pattern container
- * @param offsets	(PCRE only) string offset array
+ * @param *offsets	(PCRE only) string offset(s)
  * @param noffsets	(PCRE only) no. of string offsets
  * @return		0 on success
  */
-int mireSetEOptions(miRE mire, int offsets, int noffsets)
+int mireSetEOptions(miRE mire, int * offsets, int noffsets)
 	/*@modifies mire @*/;
+
+/**
+ * Initialize pattern global options (PCRE only).
+ * @param newline	newline ending identifier
+ * @return		0 on success
+ */
+int mireSetGOptions(const char * newline)
+	/*globals _mireGOptions */
+	/*@modifies _mireGOptions @*/;
 
 /**
  * Compile locale-specific PCRE tables.

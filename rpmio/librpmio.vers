@@ -140,8 +140,10 @@ LIBRPMIO_0
     mireAppend;
     mireApply;
     mireClean;
+    _mireEL;
     mireFree;
     mireFreeAll;
+    _mireGOptions;
     mireLoadPatterns;
     mireNew;
     _mirePCREtables;
@@ -149,6 +151,7 @@ LIBRPMIO_0
     mireRegcomp;
     mireSetCOptions;
     mireSetEOptions;
+    mireSetGOptions;
     mireSetLocale;
     mireStudy;
     Mkdir;

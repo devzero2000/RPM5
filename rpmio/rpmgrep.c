@@ -88,10 +88,6 @@ static int _poptSaveString(const char ***argvp, unsigned int argInfo, const char
 *               Global variables                 *
 *************************************************/
 
-/** Line ending types */
-enum { EL_LF, EL_CR, EL_CRLF, EL_ANY, EL_ANYCRLF };
-/*@unchecked@*/
-static int  endlinetype;
 /*@unchecked@*/ /*@only@*/ /*@null@*/
 static const char *newline = NULL;
 
@@ -249,7 +245,7 @@ static const char *
 end_of_line(const char *p, const char *endptr, /*@out@*/ size_t *lenptr)
 	/*@modifies *lenptr @*/
 {
-    switch(endlinetype) {
+    switch(_mireEL) {
     default:	/* Just in case */
     case EL_LF:
 	while (p < endptr && *p != '\n') p++;
@@ -399,7 +395,7 @@ static const char *
 previous_line(const char *p, const char *startptr)
 	/*@*/
 {
-    switch (endlinetype) {
+    switch (_mireEL) {
     default:      /* Just in case */
     case EL_LF:
 	p--;
@@ -448,7 +444,7 @@ previous_line(const char *p, const char *startptr)
 	    } else
 		c = *((unsigned char *)pp);
 
-	    if (endlinetype == EL_ANYCRLF) {
+	    if (_mireEL == EL_ANYCRLF) {
 		switch (c) {
 		case 0x0a:    /* LF */
 		case 0x0d:    /* CR */
@@ -1197,10 +1193,10 @@ compile_pattern(const char *pattern, int options,
 /**
  * Load patterns from files.
  * @param files		array of file names
- * @param pcre_options	PCRE options to use
+ * @param _mireGOptions	PCRE options to use
  * @return		0 on success
  */
-static int mireLoadPatternFiles(/*@null@*/ ARGV_t files, int pcre_options)
+static int mireLoadPatternFiles(/*@null@*/ ARGV_t files, int _mireGOptions)
 	/*@globals h_errno, fileSystem, internalState @*/
 	/*@modifies h_errno, fileSystem, internalState @*/
 {
@@ -1240,7 +1236,7 @@ static int mireLoadPatternFiles(/*@null@*/ ARGV_t files, int pcre_options)
 	    linenumber++;
 	    /* Skip blank lines */
 	    if (buffer[0] == '\0')	/*@innercontinue@*/ continue;
-	    if (!compile_pattern(buffer, pcre_options, fn, linenumber))
+	    if (!compile_pattern(buffer, _mireGOptions, fn, linenumber))
 		goto exit;
 	}
 
@@ -1458,21 +1454,20 @@ int
 main(int argc, char **argv)
 	/*@globals after_context, before_context,
 		color_option, color_string, DEE_action, dee_action,
- 		endlinetype, exclude_patterns, excludeMire, grepFlags,
+ 		_mireEL, exclude_patterns, excludeMire, grepFlags,
 		include_patterns, includeMire, locale, newline,
 		patterns, pattern_count, pattern_filenames, pattern_list,
 		_mirePCREtables, stdin_name,
  		rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies after_context, before_context,
 		color_option, color_string, DEE_action, dee_action,
- 		endlinetype, exclude_patterns, excludeMire, grepFlags,
+ 		_mireEL, exclude_patterns, excludeMire, grepFlags,
 		include_patterns, includeMire, locale, newline,
 		patterns, pattern_count, pattern_filenames, pattern_list,
 		_mirePCREtables, stdin_name,
  		rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 {
     poptContext optCon = rpmioInit(argc, argv, optionsTable);
-    int pcre_options = 0;
     ARGV_t av = NULL;
     int ac = 0;
     int i = 0;		/* assume av[0] is 1st argument. */
@@ -1539,44 +1534,19 @@ _("%s: Cannot mix --only-matching, --file-offsets and/or --line-offsets\n"),
     /* Initialize PCRE pattern options. */
 #if defined(PCRE_CASELESS)
     if (GF_ISSET(CASELESS))
-	pcre_options |= PCRE_CASELESS;
+	_mireGOptions |= PCRE_CASELESS;
 #endif
 #if defined(PCRE_MULTILINE)
     if (GF_ISSET(MULTILINE))
-	pcre_options |= PCRE_MULTILINE|PCRE_FIRSTLINE;
+	_mireGOptions |= PCRE_MULTILINE|PCRE_FIRSTLINE;
 #endif
 #if defined(PCRE_UTF8)
     if (GF_ISSET(UTF8))
-	pcre_options |= PCRE_UTF8;
+	_mireGOptions |= PCRE_UTF8;
 #endif
 
     /* Interpret the newline type; the default settings are Unix-like. */
-    if (!strcasecmp(newline, "cr")) {
-#if defined(PCRE_NEWLINE_CR)
-	pcre_options |= PCRE_NEWLINE_CR;
-#endif
-	endlinetype = EL_CR;
-    } else if (!strcasecmp(newline, "lf")) {
-#if defined(PCRE_NEWLINE_LF)
-	pcre_options |= PCRE_NEWLINE_LF;
-#endif
-	endlinetype = EL_LF;
-    } else if (!strcasecmp(newline, "crlf")) {
-#if defined(PCRE_NEWLINE_CRLF)
-	pcre_options |= PCRE_NEWLINE_CRLF;
-#endif
-	endlinetype = EL_CRLF;
-    } else if (!strcasecmp(newline, "any")) {
-#if defined(PCRE_NEWLINE_ANY)
-	pcre_options |= PCRE_NEWLINE_ANY;
-#endif
-	endlinetype = EL_ANY;
-    } else if (!strcasecmp(newline, "anycrlf")) {
-#if defined(PCRE_NEWLINE_ANYCRLF)
-	pcre_options |= PCRE_NEWLINE_ANYCRLF;
-#endif
-	endlinetype = EL_ANYCRLF;
-    } else {
+    if ((xx = mireSetGOptions(newline)) != 0) {
 	fprintf(stderr, _("%s: Invalid newline specifier \"%s\"\n"),
 		__progname, newline);
 	goto errxit;
@@ -1661,14 +1631,14 @@ _("%s: Cannot mix --only-matching, --file-offsets and/or --line-offsets\n"),
 	 */
 	npatterns = argvCount(patterns);
 	for (j = 0; j < npatterns; j++) {
-	    if (!compile_pattern(patterns[j], pcre_options, NULL,
+	    if (!compile_pattern(patterns[j], _mireGOptions, NULL,
 			(j == 0 && npatterns == 1)? 0 : j + 1))
 		goto errxit;
 	}
     }
 
     /* Compile the regular expressions that are provided from file(s). */
-    if (mireLoadPatternFiles(pattern_filenames, pcre_options))
+    if (mireLoadPatternFiles(pattern_filenames, _mireGOptions))
 	goto errxit;
 
     /* Study the regular expressions, as we will be running them many times */
