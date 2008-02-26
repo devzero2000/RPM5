@@ -43,10 +43,9 @@ POSSIBILITY OF SUCH DAMAGE.
 extern const char *__progname;
 /*@=readonlytrans@*/
 
-/* XXX Get rid of the pugly #ifdef's */
 #if defined(WITH_PCRE) && defined(HAVE_PCRE_H)
-
 #include <pcre.h>
+#endif
 
 #define _MIRE_INTERNAL
 #include <rpmio_internal.h>	/* XXX fdGetFILE */
@@ -195,6 +194,13 @@ enum grepFlags_e {
 
 /*@unchecked@*/
 static enum grepFlags_e grepFlags = GREP_FLAGS_NONE;
+
+#if defined(WITH_PCRE)
+/*@unchecked@*/
+static rpmMireMode grepMode = RPMMIRE_PCRE;
+#else
+static rpmMireMode grepMode = RPMMIRE_REGEX;
+#endif
 
 /*@unchecked@*/
 static struct rpmop_s grep_totalops;
@@ -600,6 +606,7 @@ ONLY_MATCHING_RESTART:
 	    /* XXX save offsets for use by pcre_exec. */
 	    mire->offsets = offsets;
 	    mire->noffsets = 99;
+#if defined(WITH_PCRE)	/* XXX HACK: broken functionality without PCRE. */
 /*@-onlytrans@*/
 	    /* XXX WATCHOUT: mireRegexec w length=0 does strlen(matchptr)! */
 	    mrc = (length > 0 ? mireRegexec(mire, matchptr, length) : PCRE_ERROR_NOMATCH);
@@ -611,6 +618,7 @@ ONLY_MATCHING_RESTART:
 		fprintf(stderr, _("this line:\n"));
 		(void)fwrite(matchptr, 1, linelength, stderr);  /* In case binary zero included */
 		fprintf(stderr, "\n");
+#if defined(PCRE_ERROR_MATCHLIMIT)
 		if (error_count == 0 &&
 			(mrc == PCRE_ERROR_MATCHLIMIT || mrc == PCRE_ERROR_RECURSIONLIMIT))
 		{
@@ -621,6 +629,7 @@ ONLY_MATCHING_RESTART:
 			_("%s: check your regex for nested unlimited loops\n"),
 			__progname);
 		}
+#endif
 		if (error_count++ > 20) {
 		    fprintf(stderr, _("%s: too many errors - abandoned\n"),
 			__progname);
@@ -631,6 +640,7 @@ ONLY_MATCHING_RESTART:
 		match = invert;    /* No more matching; don't show the line again */
 		/*@innerbreak@*/ break;
 	    }
+#endif	/* WITH_PCRE broken! */
 	}
 
 	/* If it's a match or a not-match (as required), do what's wanted. */
@@ -1129,7 +1139,7 @@ compile_single_pattern(const char *pattern, int options,
     sprintf(buffer, "%s%.*s%s", prefix[grepFlags & 0x7], MBUFTHIRD, pattern,
 	suffix[grepFlags & 0x7]);
     /* XXX initialize mire->mode & mire->tag. */
-    mire->mode = RPMMIRE_PCRE;
+    mire->mode = grepMode;
     mire->tag = 0;
     mire->coptions = options;
     /* XXX save locale tables for use by pcre_compile2. */
@@ -1270,8 +1280,9 @@ static int mireStudy(miRE mire, int nmires)
     if (mire)		/* note rc=0 return with no mire's. */
     for (j = 0; j < nmires; mire++, j++) {
 	const char * error;
-	if (mire->mode != RPMMIRE_PCRE)
+	if (mire->mode != grepMode)
 	    continue;
+#if defined(WITH_PCRE)
 	mire->hints = pcre_study(mire->pcre, 0, &error);
 	if (error != NULL) {
 	    char s[32];
@@ -1280,6 +1291,7 @@ static int mireStudy(miRE mire, int nmires)
 		__progname, s, error);
 	    goto exit;
 	}
+#endif
     }
     rc = 0;
 
@@ -1327,7 +1339,11 @@ assert(arg != NULL);
 #endif
 
     case 'V':
+#if defined(WITH_PCRE)
 	fprintf(stderr, _("%s %s (PCRE version %s)\n"), __progname, VERSION, pcre_version());
+#else
+	fprintf(stderr, _("%s %s (without PCRE)\n"), __progname, VERSION);
+#endif
 	exit(0);
 	/*@notreached@*/ break;
     default:
@@ -1517,7 +1533,9 @@ main(int argc, char **argv)
      */
     if (newline == NULL) {
 	int val = 0;
+#if defined(PCRE_CONFIG_NEWLINE)
 	xx = pcre_config(PCRE_CONFIG_NEWLINE, &val);
+#endif
 	switch (val) {
 	default:	newline = xstrdup("lf");		break;
 	case '\r':	newline = xstrdup("cr");		break;
@@ -1587,17 +1605,25 @@ _("%s: Cannot mix --only-matching, --file-offsets and/or --line-offsets\n"),
 			__progname, locale, locale_from);
 		goto errxit;
 	    }
+#if defined(WITH_PCRE)
 	    pcretables = pcre_maketables();
+#endif
 	}
     }
 
     /* Initialize PCRE pattern options. */
+#if defined(PCRE_CASELESS)
     if (GF_ISSET(CASELESS))
 	pcre_options |= PCRE_CASELESS;
+#endif
+#if defined(PCRE_MULTILINE)
     if (GF_ISSET(MULTILINE))
 	pcre_options |= PCRE_MULTILINE|PCRE_FIRSTLINE;
+#endif
+#if defined(PCRE_UTF8)
     if (GF_ISSET(UTF8))
 	pcre_options |= PCRE_UTF8;
+#endif
 
     /* Interpret the newline type; the default settings are Unix-like. */
     if (!strcasecmp(newline, "cr")) {
@@ -1727,7 +1753,7 @@ _("%s: Cannot mix --only-matching, --file-offsets and/or --line-offsets\n"),
 /*@=onlytrans@*/
 
     /* If there are include or exclude patterns, compile them. */
-    if (mireLoadPatterns(RPMMIRE_PCRE, 0, exclude_patterns, NULL,
+    if (mireLoadPatterns(grepMode, 0, exclude_patterns, NULL,
 		&excludeMire, &nexcludes))
     {
 	miRE mire = excludeMire + (nexcludes - 1);
@@ -1735,7 +1761,7 @@ _("%s: Cannot mix --only-matching, --file-offsets and/or --line-offsets\n"),
 			__progname, mire->erroff, mire->errmsg);
 	goto errxit;
     }
-    if (mireLoadPatterns(RPMMIRE_PCRE, 0, include_patterns, NULL,
+    if (mireLoadPatterns(grepMode, 0, include_patterns, NULL,
 		&includeMire, &nincludes))
     {
 	miRE mire = includeMire + (nincludes - 1);
@@ -1799,11 +1825,3 @@ errxit:
     rc = 2;
     goto exit;
 }
-#else
-int
-main(int argc, char **argv)
-{
-    fprintf(stderr, "PCRE support not available\n");
-    return 2;
-}
-#endif	/* WITH_PCRE */
