@@ -147,20 +147,22 @@ void * mireFreeAll(/*@only@*/ /*@null@*/ miRE mire, int nmire)
  * Create pattern container.
  * @param mode		type of pattern match
  * @param tag		identifier (e.g. an rpmTag)
- * @return		NULL always
+ * @return		new pattern container (NULL on error)
  */
 /*@null@*/
 miRE mireNew(rpmMireMode mode, int tag)
 	/*@*/;
 
 /**
- * Execute pattern match.
- * @param mire		pattern container
- * @param val		value to match
- * @param vallen	length of value string (0 will use strlen)
- * @return		0 if pattern matches, >0 on nomatch, <0 on error
+ * Initialize pattern container (PCRE only).
+ * @param mode		type of pattern match
+ * @param tag		identifier (e.g. an rpmTag)
+ * @param options	pattern options
+ * @param table		(PCRE only) locale tables
+ * @return		0 on success
  */
-int mireRegexec(miRE mire, const char * val, size_t vallen)
+int mireSetOptions(miRE mire, rpmMireMode mode, int tag, int options,
+		/*@null@*/ const unsigned char * table)
 	/*@modifies mire @*/;
 
 /**
@@ -171,6 +173,16 @@ int mireRegexec(miRE mire, const char * val, size_t vallen)
  * @return		0 on success
  */
 int mireRegcomp(miRE mire, const char * pattern)
+	/*@modifies mire @*/;
+
+/**
+ * Execute pattern match.
+ * @param mire		pattern container
+ * @param val		value to match
+ * @param vallen	length of value string (0 will use strlen)
+ * @return		0 if pattern matches, >0 on nomatch, <0 on error
+ */
+int mireRegexec(miRE mire, const char * val, size_t vallen)
 	/*@modifies mire @*/;
 
 /**

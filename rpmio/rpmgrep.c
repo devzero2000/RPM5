@@ -1124,6 +1124,7 @@ compile_single_pattern(const char *pattern, int options,
 {
     miRE mire;
     char buffer[MBUFTHIRD + 16];
+    int xx;
 
     if (pattern_count >= MAX_PATTERN_COUNT) {
 	fprintf(stderr, _("%s: Too many %spatterns (max %d)\n"), __progname,
@@ -1134,13 +1135,11 @@ compile_single_pattern(const char *pattern, int options,
 
     sprintf(buffer, "%s%.*s%s", prefix[grepFlags & 0x7], MBUFTHIRD, pattern,
 	suffix[grepFlags & 0x7]);
-    /* XXX initialize mire->mode & mire->tag. */
-    mire->mode = grepMode;
-    mire->tag = 0;
-    mire->coptions = options;
-    /* XXX save locale tables for use by pcre_compile2. */
+
 /*@-onlytrans@*/
-    mire->table = pcretables;
+    /* XXX initialize mire->{mode,tag,options,table}. */
+    xx = mireSetOptions(mire, grepMode, 0, options, pcretables);
+
     if (!mireRegcomp(mire, buffer)) {
 	pattern_count++;
 	return TRUE;
@@ -1252,6 +1251,63 @@ static int mireLoadPatternFiles(/*@null@*/ ARGV_t files, int pcre_options)
 	    (void) Fclose(fd);
 	    fd = NULL;
 	}
+    }
+    rc = 0;
+
+exit:
+    return rc;
+}
+
+
+/**
+ * Compile locale-specific PCRE tables.
+ * @return		0 on success
+ */
+static int mireLocale(miRE mire, /*@null@*/ const char * locale)
+{
+    const char * locale_from;
+    int rc = -1;	/* assume failure */
+
+    /* XXX TODO: --locale jiggery-pokery should be done env LC_ALL=C rpmgrep */
+    if (locale == NULL) {
+	if (locale)
+	    locale_from = "--locale";
+	else {
+	    /*
+	     * If a locale has not been provided as an option, see if the
+	     * LC_CTYPE or LC_ALL environment variable is set, and if so,
+	     * use it.
+	     */
+/*@-dependenttrans -observertrans@*/
+	    if ((locale = getenv("LC_ALL")) != NULL)
+		locale_from = "LC_ALL";
+	    else if ((locale = getenv("LC_CTYPE")) != NULL)
+		locale_from = "LC_CTYPE";
+/*@=dependenttrans =observertrans@*/
+	    if (locale)
+		locale = xstrdup(locale);
+	}
+    }
+
+    /*
+    * If a locale has been provided, set it, and generate the tables PCRE
+    * needs. Otherwise, pcretables == NULL, which uses default tables.
+    */
+    if (locale != NULL) {
+	const char * olocale = setlocale(LC_CTYPE, locale);
+	if (olocale == NULL) {
+ 	    fprintf(stderr,
+		_("%s: Failed to set locale %s (obtained from %s)\n"),
+		__progname, locale, locale_from);
+	    goto exit;
+	}
+#if defined(WITH_PCRE)
+	pcretables = pcre_maketables();
+#ifdef	NOTYET
+	if (setlocale(LC_CTYPE, olocale) == NULL)
+	    goto exit;
+#endif
+#endif
     }
     rc = 0;
 
@@ -1376,6 +1432,7 @@ static struct poptOption optionsTable[] = {
 	N_("set name for standard input"), N_("=name") },
   { "line-offsets", '\0', POPT_BIT_SET,	&grepFlags, (GREP_FLAGS_LOFFSETS|GREP_FLAGS_LNUMBER),
 	N_("output line numbers and offsets, not text"), NULL },
+  /* XXX TODO: --locale jiggery-pokery should be done env LC_ALL=C rpmgrep */
   { "locale", '\0', POPT_ARG_STRING,		&locale, 0,
 	N_("use the named locale"), N_("=locale") },
   { "multiline", 'M', POPT_BIT_SET,	&grepFlags, GREP_FLAGS_MULTILINE,
@@ -1535,40 +1592,9 @@ _("%s: Cannot mix --only-matching, --file-offsets and/or --line-offsets\n"),
 	grepFlags |= GREP_FLAGS_ONLY_MATCHING;
 
     /* Compile locale-specific PCRE tables. */
-    {   const char * locale_from;
-	if (locale)
-	    locale_from = "--locale";
-	else {
-	    /*
-	     * If a locale has not been provided as an option, see if the
-	     * LC_CTYPE or LC_ALL environment variable is set, and if so,
-	     * use it.
-	     */
-/*@-dependenttrans -observertrans@*/
-	    if ((locale = getenv("LC_ALL")) != NULL)
-		locale_from = "LCC_ALL";
-	    else if ((locale = getenv("LC_CTYPE")) != NULL)
-		locale_from = "LC_CTYPE";
-/*@=dependenttrans =observertrans@*/
-	    if (locale)
-		locale = xstrdup(locale);
-	}
-
-	/*
-	 * If a locale has been provided, set it, and generate the tables PCRE
-	 * needs. Otherwise, pcretables == NULL, which uses default tables.
-	 */
-	if (locale != NULL) {
-	    if (setlocale(LC_CTYPE, locale) == NULL) {
-	 	fprintf(stderr,
-			_("%s: Failed to set locale %s (obtained from %s)\n"),
-			__progname, locale, locale_from);
-		goto errxit;
-	    }
-#if defined(WITH_PCRE)
-	    pcretables = pcre_maketables();
-#endif
-	}
+    xx = mireLocale(NULL, locale);
+    if (xx) {
+	goto errxit;
     }
 
     /* Initialize PCRE pattern options. */

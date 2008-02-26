@@ -112,56 +112,24 @@ miRE mireNew(rpmMireMode mode, int tag)
     return mireLink(mire,"mireNew");
 }
 
-int mireRegexec(miRE mire, const char * val, size_t vallen)
+int mireSetOptions(miRE mire, rpmMireMode mode, int tag, int options,
+		const unsigned char * table)
 {
-    int rc = 0;
-
+    int rc = -1;	/* assume failure */
+    mire->mode = mode;
+    mire->tag = tag;
     switch (mire->mode) {
-    case RPMMIRE_STRCMP:
-	rc = strcmp(mire->pattern, val);
-	if (rc) rc = 1;
-	break;
     case RPMMIRE_DEFAULT:
+    case RPMMIRE_STRCMP:
+    case RPMMIRE_GLOB:
     case RPMMIRE_REGEX:
-/*@-nullpass@*/
-	rc = regexec(mire->preg, val, 0, NULL, mire->eflags);
-/*@=nullpass@*/
-	if (rc && rc != REG_NOMATCH) {
-	    char msg[256];
-	    (void) regerror(rc, mire->preg, msg, sizeof(msg)-1);
-	    msg[sizeof(msg)-1] = '\0';
-	    rpmlog(RPMLOG_ERR, _("%s: regexec failed: %s\n"),
-			mire->pattern, msg);
-	    rc = -1;
-	}
 	break;
     case RPMMIRE_PCRE:
-#ifdef	WITH_PCRE
-	if (vallen == 0)
-	    vallen = strlen(val);
-	rc = pcre_exec(mire->pcre, mire->hints, val, (int)vallen, mire->startoff,
-		mire->eoptions, mire->offsets, mire->noffsets);
-	if (_mire_debug && rc < 0 && rc != PCRE_ERROR_NOMATCH) {
-	    rpmlog(RPMLOG_ERR, _("pcre_exec failed: return %d\n"), rc);
-	}
-#else
-	rc = -99;
-#endif
-	break;
-    case RPMMIRE_GLOB:
-	rc = fnmatch(mire->pattern, val, mire->fnflags);
-	if (rc && rc != FNM_NOMATCH)
-	    rc = -1;
-	break;
-    default:
-	rc = -1;
+	mire->coptions = options;
+	mire->table = table;
+	rc = 0;
 	break;
     }
-
-/*@-modfilesys@*/
-if (_mire_debug)
-fprintf(stderr, "--> mireRegexec(%p, %p[%u]) rc %d mode %d \"%.*s\"\n", mire, val, (unsigned)vallen, rc, mire->mode, (int)(vallen < 20 ? vallen : 20), val);
-/*@=modfilesys@*/
     return rc;
 }
 
@@ -227,6 +195,59 @@ exit:
 /*@-modfilesys@*/
 if (_mire_debug)
 fprintf(stderr, "--> mireRegcomp(%p, \"%s\") rc %d\n", mire, pattern, rc);
+/*@=modfilesys@*/
+    return rc;
+}
+
+int mireRegexec(miRE mire, const char * val, size_t vallen)
+{
+    int rc = 0;
+
+    switch (mire->mode) {
+    case RPMMIRE_STRCMP:
+	rc = strcmp(mire->pattern, val);
+	if (rc) rc = 1;
+	break;
+    case RPMMIRE_DEFAULT:
+    case RPMMIRE_REGEX:
+/*@-nullpass@*/
+	rc = regexec(mire->preg, val, 0, NULL, mire->eflags);
+/*@=nullpass@*/
+	if (rc && rc != REG_NOMATCH) {
+	    char msg[256];
+	    (void) regerror(rc, mire->preg, msg, sizeof(msg)-1);
+	    msg[sizeof(msg)-1] = '\0';
+	    rpmlog(RPMLOG_ERR, _("%s: regexec failed: %s\n"),
+			mire->pattern, msg);
+	    rc = -1;
+	}
+	break;
+    case RPMMIRE_PCRE:
+#ifdef	WITH_PCRE
+	if (vallen == 0)
+	    vallen = strlen(val);
+	rc = pcre_exec(mire->pcre, mire->hints, val, (int)vallen, mire->startoff,
+		mire->eoptions, mire->offsets, mire->noffsets);
+	if (_mire_debug && rc < 0 && rc != PCRE_ERROR_NOMATCH) {
+	    rpmlog(RPMLOG_ERR, _("pcre_exec failed: return %d\n"), rc);
+	}
+#else
+	rc = -99;
+#endif
+	break;
+    case RPMMIRE_GLOB:
+	rc = fnmatch(mire->pattern, val, mire->fnflags);
+	if (rc && rc != FNM_NOMATCH)
+	    rc = -1;
+	break;
+    default:
+	rc = -1;
+	break;
+    }
+
+/*@-modfilesys@*/
+if (_mire_debug)
+fprintf(stderr, "--> mireRegexec(%p, %p[%u]) rc %d mode %d \"%.*s\"\n", mire, val, (unsigned)vallen, rc, mire->mode, (int)(vallen < 20 ? vallen : 20), val);
 /*@=modfilesys@*/
     return rc;
 }
