@@ -193,9 +193,12 @@ int mireSetEOptions(miRE mire, int * offsets, int noffsets)
 /**
  * Initialize pattern global options (PCRE only).
  * @param newline	newline ending identifier
+ * @param caseless	should case be ignored?
+ * @param multline	are multiline matches permitted?
+ * @param utf8		assume utf8 matching?
  * @return		0 on success
  */
-int mireSetGOptions(const char * newline)
+int mireSetGOptions(const char * newline, int caseless, int multiline, int utf8)
 	/*globals _mireGOptions */
 	/*@modifies _mireGOptions @*/;
 

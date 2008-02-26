@@ -1529,22 +1529,9 @@ _("%s: Cannot mix --only-matching, --file-offsets and/or --line-offsets\n"),
     if ((xx = mireSetLocale(NULL, locale)) != 0)
 	goto errxit;
 
-    /* Initialize PCRE pattern options. */
-#if defined(PCRE_CASELESS)
-    if (GF_ISSET(CASELESS))
-	_mireGOptions |= PCRE_CASELESS;
-#endif
-#if defined(PCRE_MULTILINE)
-    if (GF_ISSET(MULTILINE))
-	_mireGOptions |= PCRE_MULTILINE|PCRE_FIRSTLINE;
-#endif
-#if defined(PCRE_UTF8)
-    if (GF_ISSET(UTF8))
-	_mireGOptions |= PCRE_UTF8;
-#endif
-
+    /* Initialize global pattern options. */
     /* Interpret the newline type; the default settings are Unix-like. */
-    if ((xx = mireSetGOptions(newline)) != 0) {
+    if ((xx = mireSetGOptions(newline, GF_ISSET(CASELESS), GF_ISSET(MULTILINE), GF_ISSET(UTF8))) != 0) {
 	fprintf(stderr, _("%s: Invalid newline specifier \"%s\"\n"),
 		__progname, newline);
 	goto errxit;

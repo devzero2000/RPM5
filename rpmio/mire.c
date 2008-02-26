@@ -25,6 +25,9 @@ mireEL_t _mireEL = EL_LF;
 /*@unchecked@*/
 int _mireGOptions = 0;
 
+/*@unchecked@*/
+static int _mirePOptions = 0;
+
 int mireClean(miRE mire)
 {
     if (mire == NULL) return 0;
@@ -174,9 +177,41 @@ int mireSetEOptions(miRE mire, int * offsets, int noffsets)
     return rc;
 }
 
-int mireSetGOptions(const char * newline)
+int mireSetGOptions(const char * newline, int caseless, int multiline, int utf8)
 {
     int rc = 0;
+
+    if (caseless) {
+#if defined(PCRE_CASELESS)
+	_mireGOptions |= PCRE_CASELESS;
+#endif
+	_mirePOptions |= REG_ICASE;
+    } else {
+#if defined(PCRE_CASELESS)
+	_mireGOptions &= ~PCRE_CASELESS;
+#endif
+	_mirePOptions &= ~REG_ICASE;
+    }
+
+    if (multiline) {
+#if defined(PCRE_MULTILINE)
+	_mireGOptions |= PCRE_MULTILINE|PCRE_FIRSTLINE;
+#endif
+    } else {
+#if defined(PCRE_MULTILINE)
+	_mireGOptions &= ~(PCRE_MULTILINE|PCRE_FIRSTLINE);
+#endif
+    }
+
+    if (utf8) {
+#if defined(PCRE_UTF8)
+	_mireGOptions |= PCRE_UTF8;
+#endif
+    } else {
+#if defined(PCRE_UTF8)
+	_mireGOptions &= ~PCRE_UTF8;
+#endif
+    }
 
     /* Interpret the newline type; the default settings are Unix-like. */
     if (!strcasecmp(newline, "cr")) {
@@ -296,7 +331,9 @@ int mireRegcomp(miRE mire, const char * pattern)
     case RPMMIRE_REGEX:
 	mire->preg = xcalloc(1, sizeof(*mire->preg));
 	if (mire->cflags == 0)
-	    mire->cflags = (REG_EXTENDED | REG_NOSUB);
+	    mire->cflags = REG_EXTENDED;
+	if (_mirePOptions)
+	    mire->cflags |= _mirePOptions;
 	rc = regcomp(mire->preg, mire->pattern, mire->cflags);
 	if (rc) {
 	    char msg[256];
