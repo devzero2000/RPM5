@@ -596,13 +596,12 @@ ONLY_MATCHING_RESTART:
 	    /* Set sub-string offset array. */
 	    xx = mireSetEOptions(mire, offsets, 99);
 
-#if defined(WITH_PCRE)	/* XXX HACK: broken functionality without PCRE. */
 /*@-onlytrans@*/
 	    /* XXX WATCHOUT: mireRegexec w length=0 does strlen(matchptr)! */
-	    mrc = (length > 0 ? mireRegexec(mire, matchptr, length) : PCRE_ERROR_NOMATCH);
+	    mrc = (length > 0 ? mireRegexec(mire, matchptr, length) : -1);
 /*@=onlytrans@*/
 	    if (mrc >= 0) { match = TRUE; /*@innerbreak@*/ break; }
-	    if (mrc != PCRE_ERROR_NOMATCH) {
+	    if (mrc < -1) {	/* XXX -1 == NOMATCH, otherwise error. */
 		fprintf(stderr, _("%s: pcre_exec() error %d while matching "), __progname, mrc);
 		if (pattern_count > 1) fprintf(stderr, _("pattern number %d to "), i+1);
 		fprintf(stderr, _("this line:\n"));
@@ -630,7 +629,6 @@ ONLY_MATCHING_RESTART:
 		match = invert;    /* No more matching; don't show the line again */
 		/*@innerbreak@*/ break;
 	    }
-#endif	/* WITH_PCRE broken! */
 	}
 
 	/* If it's a match or a not-match (as required), do what's wanted. */

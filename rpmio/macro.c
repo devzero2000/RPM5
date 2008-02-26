@@ -298,7 +298,7 @@ rpmGetMacroEntries(MacroContext mc, miRE mire, int used,
 	if (used == 0 && me->used != 0)
 	    continue;
 #if !defined(DEBUG_MACROS)	/* XXX preserve standalone build */
-	if (mire != NULL && mireRegexec(mire, me->name, 0))
+	if (mire != NULL && mireRegexec(mire, me->name, 0) < 0)
 	    continue;
 #endif
 	av[ac++] = dupMacroEntry(me);

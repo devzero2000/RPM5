@@ -63,7 +63,7 @@ _mire_debug = 1;
     if (av && *av)
     for (i = 0; i < ac; i++) {
 	xx = mireRegexec(mire, av[i], 0);
-	if (xx == 0) {
+	if (xx >= 0) {
 	    fprintf(stdout, "%s\n", av[i]);
 	    rc = 0;
 	}

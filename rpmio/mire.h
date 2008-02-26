@@ -223,7 +223,7 @@ int mireRegcomp(miRE mire, const char * pattern)
  * @param mire		pattern container
  * @param val		value to match
  * @param vallen	length of value string (0 will use strlen)
- * @return		0 if pattern matches, >0 on nomatch, <0 on error
+ * @return		>=0 if pattern matches, -1 on nomatch, else error
  */
 int mireRegexec(miRE mire, const char * val, size_t vallen)
 	/*@modifies mire @*/;

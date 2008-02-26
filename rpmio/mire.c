@@ -327,20 +327,25 @@ int mireRegexec(miRE mire, const char * val, size_t vallen)
     case RPMMIRE_STRCMP:
 	/* XXX strcasecmp? strncmp? */
 	rc = strcmp(mire->pattern, val);
-	if (rc) rc = 1;
+	if (rc) rc = -1;
 	break;
     case RPMMIRE_DEFAULT:
     case RPMMIRE_REGEX:
 /*@-nullpass@*/
 	rc = regexec(mire->preg, val, 0, NULL, mire->eflags);
 /*@=nullpass@*/
-	if (rc && rc != REG_NOMATCH) {
-	    char msg[256];
+	switch (rc) {
+	case 0:			rc = 0;	/*@innerbreak@*/ break;
+	case REG_NOMATCH:	rc = -1;/*@innerbreak@*/ break;
+	default:
+	  { char msg[256];
 	    (void) regerror(rc, mire->preg, msg, sizeof(msg)-1);
 	    msg[sizeof(msg)-1] = '\0';
-	    rpmlog(RPMLOG_ERR, _("%s: regexec failed: %s\n"),
-			mire->pattern, msg);
-	    rc = -1;
+	    rpmlog(RPMLOG_ERR, _("%s: regexec failed: %s(%d)\n"),
+			mire->pattern, msg, rc);
+	    if (rc < 0) rc -= 1;	/* XXX ensure -1 is nomatch. */
+	    if (rc > 0)	rc = -(rc+1);	/* XXX ensure errors are negative. */
+	  } /*@innerbreak@*/ break;
 	}
 	break;
     case RPMMIRE_PCRE:
@@ -349,8 +354,13 @@ int mireRegexec(miRE mire, const char * val, size_t vallen)
 	    vallen = strlen(val);
 	rc = pcre_exec(mire->pcre, mire->hints, val, (int)vallen, mire->startoff,
 		mire->eoptions, mire->offsets, mire->noffsets);
-	if (_mire_debug && rc < 0 && rc != PCRE_ERROR_NOMATCH) {
-	    rpmlog(RPMLOG_ERR, _("pcre_exec failed: return %d\n"), rc);
+	switch (rc) {
+	case 0:				rc = 0;	/*@innerbreak@*/ break;
+	case PCRE_ERROR_NOMATCH:	rc = -1;/*@innerbreak@*/ break;
+	default:
+	    if (_mire_debug && rc < 0)
+		rpmlog(RPMLOG_ERR, _("pcre_exec failed: return %d\n"), rc);
+	    /*@innerbreak@*/ break;
 	}
 #else
 	rc = -99;
@@ -358,8 +368,16 @@ int mireRegexec(miRE mire, const char * val, size_t vallen)
 	break;
     case RPMMIRE_GLOB:
 	rc = fnmatch(mire->pattern, val, mire->fnflags);
-	if (rc && rc != FNM_NOMATCH)
-	    rc = -1;
+	switch (rc) {
+	case 0:			rc = 0;	/*@innerbreak@*/ break;
+	case FNM_NOMATCH:	rc = -1;/*@innerbreak@*/ break;
+	default:
+	    if (_mire_debug)
+		rpmlog(RPMLOG_ERR, _("fnmatch failed: return %d\n"), rc);
+	    if (rc < 0) rc -= 1;	/* XXX ensure -1 is nomatch. */
+	    if (rc > 0)	rc = -(rc+1);	/* XXX ensure errors are negative. */
+	    /*@innerbreak@*/ break;
+	}
 	break;
     default:
 	rc = -1;
