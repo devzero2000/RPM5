@@ -115,19 +115,31 @@ miRE mireNew(rpmMireMode mode, int tag)
 int mireSetOptions(miRE mire, rpmMireMode mode, int tag, int options,
 		const unsigned char * table)
 {
-    int rc = -1;	/* assume failure */
+    int rc = 0;
     mire->mode = mode;
     mire->tag = tag;
     switch (mire->mode) {
     case RPMMIRE_DEFAULT:
+	break;
     case RPMMIRE_STRCMP:
+	/* XXX strcasecmp? */
+	break;
     case RPMMIRE_GLOB:
+	if (options == 0)
+	    options = FNM_PATHNAME | FNM_PERIOD;
+	mire->fnflags = options;
+	break;
     case RPMMIRE_REGEX:
+	if (options == 0)
+	    options = (REG_EXTENDED | REG_NOSUB);
+	mire->cflags = options;
 	break;
     case RPMMIRE_PCRE:
+	/* XXX check default compile options? */
 	mire->coptions = options;
+/*@-assignexpose -temptrans @*/
 	mire->table = table;
-	rc = 0;
+/*@=assignexpose =temptrans @*/
 	break;
     }
     return rc;
@@ -145,8 +157,6 @@ int mireRegcomp(miRE mire, const char * pattern)
 	break;
     case RPMMIRE_PCRE:
 #ifdef	WITH_PCRE
-	if (mire->coptions == 0)
-	    mire->coptions = 0;		/* XXX defaults? */
 	mire->errcode = 0;
 	mire->errmsg = NULL;
 	mire->erroff = 0;
@@ -205,6 +215,7 @@ int mireRegexec(miRE mire, const char * val, size_t vallen)
 
     switch (mire->mode) {
     case RPMMIRE_STRCMP:
+	/* XXX strcasecmp? strncmp? */
 	rc = strcmp(mire->pattern, val);
 	if (rc) rc = 1;
 	break;
@@ -259,15 +270,12 @@ int mireAppend(rpmMireMode mode, int tag, const char * pattern,
 /*@-refcounttrans@*/
     miRE mire = xrealloc((*mirep), ((*nmirep) + 1) * sizeof(*mire));
 /*@=refcounttrans@*/
+    int xx;
 
     (*mirep) = mire;
     mire += (*nmirep)++;
     memset(mire, 0, sizeof(*mire));
-    mire->mode = mode;
-    mire->tag = tag;
-/*@-assignexpose -temptrans @*/
-    mire->table = table;
-/*@=assignexpose =temptrans @*/
+    xx = mireSetOptions(mire, mode, tag, 0, table);
     return mireRegcomp(mire, pattern);
 }
 /*@=onlytrans@*/

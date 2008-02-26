@@ -1131,11 +1131,11 @@ compile_single_pattern(const char *pattern, int options,
 		(filename == NULL)? "command-line " : "", MAX_PATTERN_COUNT);
 	return FALSE;
     }
-    mire = pattern_list + pattern_count;
 
     sprintf(buffer, "%s%.*s%s", prefix[grepFlags & 0x7], MBUFTHIRD, pattern,
 	suffix[grepFlags & 0x7]);
 
+    mire = pattern_list + pattern_count;
 /*@-onlytrans@*/
     /* XXX initialize mire->{mode,tag,options,table}. */
     xx = mireSetOptions(mire, grepMode, 0, options, pcretables);

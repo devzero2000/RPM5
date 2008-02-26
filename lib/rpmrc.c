@@ -421,8 +421,10 @@ static rpmRC rpmPlatform(const char * platform)
 	    char * t = p + strlen(p);
 	    while (--t > p && xisspace(*t))
 		*t = '\0';
-	    if (t > p)
+	    if (t > p) {
 		xx = mireAppend(RPMMIRE_REGEX, 0, p, NULL, &mi_re, &mi_nre);
+		xx = mireSetOptions(mi_re, RPMMIRE_REGEX, 0, 0, NULL);
+	    }
 	    continue;
 	}
 
@@ -441,6 +443,7 @@ static rpmRC rpmPlatform(const char * platform)
 		(cvog ? cvog->gnu : NULL), NULL);
 #endif
 	xx = mireAppend(RPMMIRE_STRCMP, 0, p, NULL, &mi_re, &mi_nre);
+	xx = mireSetOptions(mi_re, RPMMIRE_STRCMP, 0, 0, NULL);
 	p = _free(p);
 	
 	init_platform++;

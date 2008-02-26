@@ -154,7 +154,7 @@ miRE mireNew(rpmMireMode mode, int tag)
 	/*@*/;
 
 /**
- * Initialize pattern container (PCRE only).
+ * Initialize pattern container.
  * @param mode		type of pattern match
  * @param tag		identifier (e.g. an rpmTag)
  * @param options	pattern options
