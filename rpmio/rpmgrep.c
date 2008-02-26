@@ -595,11 +595,11 @@ ONLY_MATCHING_RESTART:
 	 */
 	for (i = 0; i < pattern_count; i++) {
 	    miRE mire = pattern_list + i;
-	    mire->startoff = 0;	/* XXX needed? */
-	    mire->eoptions = 0;	/* XXX needed? */
-	    /* XXX save offsets for use by pcre_exec. */
-	    mire->offsets = offsets;
-	    mire->noffsets = 99;
+	    int xx;
+
+	    /* Set sub-string offset array. */
+	    xx = mireSetEOptions(mire, offsets, 99);
+
 #if defined(WITH_PCRE)	/* XXX HACK: broken functionality without PCRE. */
 /*@-onlytrans@*/
 	    /* XXX WATCHOUT: mireRegexec w length=0 does strlen(matchptr)! */
@@ -1136,7 +1136,7 @@ compile_single_pattern(const char *pattern, int options,
     mire = pattern_list + pattern_count;
 /*@-onlytrans@*/
     /* XXX initialize mire->{mode,tag,options,table}. */
-    xx = mireSetOptions(mire, grepMode, 0, options, _mirePCREtables);
+    xx = mireSetCOptions(mire, grepMode, 0, options, _mirePCREtables);
 
     if (!mireRegcomp(mire, buffer)) {
 	pattern_count++;

@@ -115,7 +115,7 @@ miRE mireNew(rpmMireMode mode, int tag)
     return mireLink(mire,"mireNew");
 }
 
-int mireSetOptions(miRE mire, rpmMireMode mode, int tag, int options,
+int mireSetCOptions(miRE mire, rpmMireMode mode, int tag, int options,
 		const unsigned char * table)
 {
     int rc = 0;
@@ -146,6 +146,17 @@ int mireSetOptions(miRE mire, rpmMireMode mode, int tag, int options,
 	break;
     }
     return rc;
+}
+
+int mireSetEOptions(miRE mire, int offsets, int noffsets)
+{
+    if (mire->mode == RPMMIRE_PCRE) {
+	mire->startoff = 0;
+	mire->eoptions = 0;
+	mire->offsets = offsets;
+	mire->noffsets = noffsets;
+    }
+    return 0;
 }
 
 int mireSetLocale(/*@unused@*/ /*@null@*/ miRE mire,
@@ -331,7 +342,7 @@ int mireAppend(rpmMireMode mode, int tag, const char * pattern,
     (*mirep) = mire;
     mire += (*nmirep)++;
     memset(mire, 0, sizeof(*mire));
-    xx = mireSetOptions(mire, mode, tag, 0, table);
+    xx = mireSetCOptions(mire, mode, tag, 0, table);
     return mireRegcomp(mire, pattern);
 }
 /*@=onlytrans@*/

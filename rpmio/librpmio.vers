@@ -147,8 +147,9 @@ LIBRPMIO_0
     _mirePCREtables;
     mireRegexec;
     mireRegcomp;
+    mireSetCOptions;
+    mireSetEOptions;
     mireSetLocale;
-    mireSetOptions;
     mireStudy;
     Mkdir;
     _Mkdir;

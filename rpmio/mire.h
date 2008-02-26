@@ -159,15 +159,26 @@ miRE mireNew(rpmMireMode mode, int tag)
 	/*@*/;
 
 /**
- * Initialize pattern container.
+ * Initialize pattern compile options.
+ * @param mire		pattern container
  * @param mode		type of pattern match
  * @param tag		identifier (e.g. an rpmTag)
  * @param options	pattern options
  * @param table		(PCRE only) locale tables
  * @return		0 on success
  */
-int mireSetOptions(miRE mire, rpmMireMode mode, int tag, int options,
+int mireSetCOptions(miRE mire, rpmMireMode mode, int tag, int options,
 		/*@null@*/ const unsigned char * table)
+	/*@modifies mire @*/;
+
+/**
+ * Initialize pattern execute options (PCRE only).
+ * @param mire		pattern container
+ * @param offsets	(PCRE only) string offset array
+ * @param noffsets	(PCRE only) no. of string offsets
+ * @return		0 on success
+ */
+int mireSetEOptions(miRE mire, int offsets, int noffsets)
 	/*@modifies mire @*/;
 
 /**
