@@ -43,10 +43,6 @@ POSSIBILITY OF SUCH DAMAGE.
 extern const char *__progname;
 /*@=readonlytrans@*/
 
-#if defined(WITH_PCRE) && defined(HAVE_PCRE_H)
-#include <pcre.h>
-#endif
-
 #define _MIRE_INTERNAL
 #include <rpmio_internal.h>	/* XXX fdGetFILE */
 #include <poptIO.h>

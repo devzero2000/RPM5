@@ -3,12 +3,9 @@
  */
 #include "system.h"
 
-#ifdef	WITH_PCRE
-#include <pcre.h>
-#endif
-
 #include <rpmio.h>	/* XXX _free */
 #include <rpmlog.h>
+
 #define	_MIRE_INTERNAL
 #include <mire.h>
 
