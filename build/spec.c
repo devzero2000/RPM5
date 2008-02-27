@@ -545,19 +545,7 @@ Spec freeSpec(Spec spec)
     spec->rootURL = _free(spec->rootURL);
     spec->specFile = _free(spec->specFile);
 
-#ifdef	DEAD
-  { struct OpenFileInfo *ofi;
-    while (spec->fileStack) {
-	ofi = spec->fileStack;
-	spec->fileStack = ofi->next;
-	ofi->next = NULL;
-	ofi->fileName = _free(ofi->fileName);
-	ofi = _free(ofi);
-    }
-  }
-#else
     closeSpec(spec);
-#endif
 
     while (spec->readStack) {
 	rl = spec->readStack;
