@@ -23,10 +23,16 @@ const unsigned char * _mirePCREtables = NULL;
 mireEL_t _mireEL = EL_LF;
 
 /*@unchecked@*/
-int _mireGOptions = 0;
+int _mireSTRINGoptions = 0;
 
 /*@unchecked@*/
-static int _mirePOptions = 0;
+int _mireGLOBoptions = FNM_PATHNAME | FNM_PERIOD;
+
+/*@unchecked@*/
+int _mireREGEXoptions = REG_EXTENDED;
+
+/*@unchecked@*/
+int _mirePCREoptions = 0;
 
 int mireClean(miRE mire)
 {
@@ -138,15 +144,17 @@ int mireSetCOptions(miRE mire, rpmMireMode mode, int tag, int options,
 	break;
     case RPMMIRE_GLOB:
 	if (options == 0)
-	    options = FNM_PATHNAME | FNM_PERIOD;
+	    options = _mireGLOBoptions;
 	mire->fnflags = options;
 	break;
     case RPMMIRE_REGEX:
 	if (options == 0)
-	    options = (REG_EXTENDED | REG_NOSUB);
+	    options = _mireREGEXoptions;
 	mire->cflags = options;
 	break;
     case RPMMIRE_PCRE:
+	if (options == 0)
+	    options = _mirePCREoptions;
 	/* XXX check default compile options? */
 	mire->coptions = options;
 /*@-assignexpose -temptrans @*/
@@ -183,60 +191,85 @@ int mireSetGOptions(const char * newline, int caseless, int multiline, int utf8)
 
     if (caseless) {
 #if defined(PCRE_CASELESS)
-	_mireGOptions |= PCRE_CASELESS;
+	_mirePCREoptions |= PCRE_CASELESS;
 #endif
-	_mirePOptions |= REG_ICASE;
+	_mireREGEXoptions |= REG_ICASE;
+#if defined(FNM_CASEFOLD)
+	_mireGLOBoptions |= FNM_CASEFOLD;
+#endif
     } else {
 #if defined(PCRE_CASELESS)
-	_mireGOptions &= ~PCRE_CASELESS;
+	_mirePCREoptions &= ~PCRE_CASELESS;
 #endif
-	_mirePOptions &= ~REG_ICASE;
+	_mireREGEXoptions &= ~REG_ICASE;
+#if defined(FNM_CASEFOLD)
+	_mireGLOBoptions &= ~FNM_CASEFOLD;
+#endif
     }
 
     if (multiline) {
 #if defined(PCRE_MULTILINE)
-	_mireGOptions |= PCRE_MULTILINE|PCRE_FIRSTLINE;
+	_mirePCREoptions |= PCRE_MULTILINE|PCRE_FIRSTLINE;
 #endif
     } else {
 #if defined(PCRE_MULTILINE)
-	_mireGOptions &= ~(PCRE_MULTILINE|PCRE_FIRSTLINE);
+	_mirePCREoptions &= ~(PCRE_MULTILINE|PCRE_FIRSTLINE);
 #endif
     }
 
     if (utf8) {
 #if defined(PCRE_UTF8)
-	_mireGOptions |= PCRE_UTF8;
+	_mirePCREoptions |= PCRE_UTF8;
 #endif
     } else {
 #if defined(PCRE_UTF8)
-	_mireGOptions &= ~PCRE_UTF8;
+	_mirePCREoptions &= ~PCRE_UTF8;
 #endif
+    }
+
+    /*
+     * Set the default line ending value from the default in the PCRE library;
+     * "lf", "cr", "crlf", and "any" are supported. Anything else is treated
+     * as "lf".
+     */
+    if (newline == NULL) {
+	int val = 0;
+#if defined(PCRE_CONFIG_NEWLINE)
+	int xx = pcre_config(PCRE_CONFIG_NEWLINE, &val);
+#endif
+	switch (val) {
+	default:	newline = "lf";		break;
+	case '\r':	newline = "cr";		break;
+	case ('\r' << 8) | '\n': newline = "crlf"; break;
+	case -1:	newline = "any";	break;
+	case -2:	newline = "anycrlf";	break;
+	}
     }
 
     /* Interpret the newline type; the default settings are Unix-like. */
     if (!strcasecmp(newline, "cr")) {
 #if defined(PCRE_NEWLINE_CR)
-	_mireGOptions |= PCRE_NEWLINE_CR;
+	_mirePCREoptions |= PCRE_NEWLINE_CR;
 #endif
 	_mireEL = EL_CR;
     } else if (!strcasecmp(newline, "lf")) {
 #if defined(PCRE_NEWLINE_LF)
-	_mireGOptions |= PCRE_NEWLINE_LF;
+	_mirePCREoptions |= PCRE_NEWLINE_LF;
 #endif
 	_mireEL = EL_LF;
     } else if (!strcasecmp(newline, "crlf")) {
 #if defined(PCRE_NEWLINE_CRLF)
-	_mireGOptions |= PCRE_NEWLINE_CRLF;
+	_mirePCREoptions |= PCRE_NEWLINE_CRLF;
 #endif
 	_mireEL = EL_CRLF;
     } else if (!strcasecmp(newline, "any")) {
 #if defined(PCRE_NEWLINE_ANY)
-	_mireGOptions |= PCRE_NEWLINE_ANY;
+	_mirePCREoptions |= PCRE_NEWLINE_ANY;
 #endif
 	_mireEL = EL_ANY;
     } else if (!strcasecmp(newline, "anycrlf")) {
 #if defined(PCRE_NEWLINE_ANYCRLF)
-	_mireGOptions |= PCRE_NEWLINE_ANYCRLF;
+	_mirePCREoptions |= PCRE_NEWLINE_ANYCRLF;
 #endif
 	_mireEL = EL_ANYCRLF;
     } else {
@@ -331,9 +364,7 @@ int mireRegcomp(miRE mire, const char * pattern)
     case RPMMIRE_REGEX:
 	mire->preg = xcalloc(1, sizeof(*mire->preg));
 	if (mire->cflags == 0)
-	    mire->cflags = REG_EXTENDED;
-	if (_mirePOptions)
-	    mire->cflags |= _mirePOptions;
+	    mire->cflags = _mireREGEXoptions;
 	rc = regcomp(mire->preg, mire->pattern, mire->cflags);
 	if (rc) {
 	    char msg[256];
@@ -345,7 +376,7 @@ int mireRegcomp(miRE mire, const char * pattern)
 	break;
     case RPMMIRE_GLOB:
 	if (mire->fnflags == 0)
-	    mire->fnflags = FNM_PATHNAME | FNM_PERIOD;
+	    mire->fnflags = _mireGLOBoptions;
 	break;
     default:
 	rc = -1;

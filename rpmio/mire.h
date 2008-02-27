@@ -34,9 +34,21 @@ typedef enum mireEL_e { EL_LF, EL_CR, EL_CRLF, EL_ANY, EL_ANYCRLF } mireEL_t;
 /*@unchecked@*/
 extern mireEL_t _mireEL;
 
+/** STRING default: 0 */
 /*@unchecked@*/
-extern int _mireGOptions;
+extern int _mireSTRINGoptions;
 
+/** GLOB default: FNM_PATHNAME | FNM_PERIOD */
+/*@unchecked@*/
+extern int _mireGLOBoptions;
+
+/** REGEX default: REG_EXTENDED */
+/*@unchecked@*/
+extern int _mireREGEXoptions;
+
+/** PCRE default: 0 */
+/*@unchecked@*/
+extern int _mirePCREoptions;
 /**
  */
 typedef /*@abstract@*/ /*@refcounted@*/ struct miRE_s * miRE;
@@ -172,7 +184,7 @@ miRE mireNew(rpmMireMode mode, int tag)
  * @param mire		pattern container
  * @param mode		type of pattern match
  * @param tag		identifier (e.g. an rpmTag)
- * @param options	pattern options
+ * @param options	pattern options (0 uses default options)
  * @param table		(PCRE only) locale tables
  * @return		0 on success
  */

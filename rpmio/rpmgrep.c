@@ -1103,13 +1103,12 @@ ordin(unsigned n)
  * Otherwise it's called for each supplied pattern.
  *
  * @param pattern	the pattern string
- * @param options	the PCRE options
  * @param filename	the file name (NULL for a command-line pattern)
  * @param count		pattern index (0 is single pattern)
  * @return		TRUE on success, FALSE after an error
  */
 static BOOL
-compile_single_pattern(const char *pattern, int options,
+compile_single_pattern(const char *pattern,
 		/*@null@*/ const char *filename, int count)
 	/*@globals pattern_list, pattern_count, fileSystem @*/
 	/*@modifies pattern_list, pattern_count, fileSystem @*/
@@ -1130,7 +1129,7 @@ compile_single_pattern(const char *pattern, int options,
     mire = pattern_list + pattern_count;
 /*@-onlytrans@*/
     /* XXX initialize mire->{mode,tag,options,table}. */
-    xx = mireSetCOptions(mire, grepMode, 0, options, _mirePCREtables);
+    xx = mireSetCOptions(mire, grepMode, 0, 0, _mirePCREtables);
 
     if (!mireRegcomp(mire, buffer)) {
 	pattern_count++;
@@ -1160,14 +1159,12 @@ compile_single_pattern(const char *pattern, int options,
  * separated by line breaks. They will be matched literally.
  *
  * @param pattern	the pattern string
- * @param options	the PCRE options
  * @param filename	the file name, or NULL for a command-line pattern
  * @param count		pattern index (0 is single pattern)
  * @return		TRUE on success, FALSE after an error
  */
 static BOOL
-compile_pattern(const char *pattern, int options,
-		/*@null@*/ const char *filename, int count)
+compile_pattern(const char *pattern, /*@null@*/ const char *filename, int count)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
 {
@@ -1178,23 +1175,22 @@ compile_pattern(const char *pattern, int options,
 	    size_t ellength;
 	    const char *p = end_of_line(pattern, eop, &ellength);
 	    if (ellength == 0)
-		return compile_single_pattern(pattern, options, filename, count);
+		return compile_single_pattern(pattern, filename, count);
 	    sprintf(buffer, "%.*s", (int)(p - pattern - ellength), pattern);
 	    pattern = p;
-	    if (!compile_single_pattern(buffer, options, filename, count))
+	    if (!compile_single_pattern(buffer, filename, count))
 		return FALSE;
 	}
     }
-    else return compile_single_pattern(pattern, options, filename, count);
+    else return compile_single_pattern(pattern, filename, count);
 }
 
 /**
  * Load patterns from files.
  * @param files		array of file names
- * @param _mireGOptions	PCRE options to use
  * @return		0 on success
  */
-static int mireLoadPatternFiles(/*@null@*/ ARGV_t files, int _mireGOptions)
+static int mireLoadPatternFiles(/*@null@*/ ARGV_t files)
 	/*@globals h_errno, fileSystem, internalState @*/
 	/*@modifies h_errno, fileSystem, internalState @*/
 {
@@ -1234,7 +1230,7 @@ static int mireLoadPatternFiles(/*@null@*/ ARGV_t files, int _mireGOptions)
 	    linenumber++;
 	    /* Skip blank lines */
 	    if (buffer[0] == '\0')	/*@innercontinue@*/ continue;
-	    if (!compile_pattern(buffer, _mireGOptions, fn, linenumber))
+	    if (!compile_pattern(buffer, fn, linenumber))
 		goto exit;
 	}
 
@@ -1477,24 +1473,6 @@ main(int argc, char **argv)
 
     __progname = "pcregrep";	/* XXX HACK in expected name. */
 
-    /*
-     * Set the default line ending value from the default in the PCRE library;
-     * "lf", "cr", "crlf", and "any" are supported. Anything else is treated
-     * as "lf".
-     */
-    if (newline == NULL) {
-	int val = 0;
-#if defined(PCRE_CONFIG_NEWLINE)
-	xx = pcre_config(PCRE_CONFIG_NEWLINE, &val);
-#endif
-	switch (val) {
-	default:	newline = xstrdup("lf");		break;
-	case '\r':	newline = xstrdup("cr");		break;
-	case ('\r' << 8) | '\n': newline = xstrdup("crlf"); break;
-	case -1:	newline = xstrdup("any");	break;
-	case -2:	newline = xstrdup("anycrlf");	break;
-	}
-    }
 
     if (stdin_name == NULL)
 	stdin_name = xstrdup("(standard input)");
@@ -1616,14 +1594,14 @@ _("%s: Cannot mix --only-matching, --file-offsets and/or --line-offsets\n"),
 	 */
 	npatterns = argvCount(patterns);
 	for (j = 0; j < npatterns; j++) {
-	    if (!compile_pattern(patterns[j], _mireGOptions, NULL,
+	    if (!compile_pattern(patterns[j], NULL,
 			(j == 0 && npatterns == 1)? 0 : j + 1))
 		goto errxit;
 	}
     }
 
     /* Compile the regular expressions that are provided from file(s). */
-    if (mireLoadPatternFiles(pattern_filenames, _mireGOptions))
+    if (mireLoadPatternFiles(pattern_filenames))
 	goto errxit;
 
     /* Study the regular expressions, as we will be running them many times */
