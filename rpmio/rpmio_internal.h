@@ -100,7 +100,7 @@ struct _FD_s {
 };
 /*@access FD_t@*/
 
-#define	FDSANE(fd)	assert(fd && fd->magic == FDMAGIC)
+#define	FDSANE(fd)	assert(fd != NULL && fd->magic == FDMAGIC)
 
 /*@-redecl@*/
 /*@unchecked@*/
@@ -444,13 +444,13 @@ void fdstat_print(/*@null@*/ FD_t fd, const char * msg, FILE * fp)
 	if (op->count <= 0) continue;
 	switch (opx) {
 	case FDSTAT_READ:
-	    if (msg) fprintf(fp, "%s:", msg);
+	    if (msg != NULL) fprintf(fp, "%s:", msg);
 	    fprintf(fp, "%8d reads, %8lu total bytes in %d.%06d secs\n",
 		op->count, (unsigned long)op->bytes,
 		(int)(op->usecs/usec_scale), (int)(op->usecs%usec_scale));
 	    /*@switchbreak@*/ break;
 	case FDSTAT_WRITE:
-	    if (msg) fprintf(fp, "%s:", msg);
+	    if (msg != NULL) fprintf(fp, "%s:", msg);
 	    fprintf(fp, "%8d writes, %8lu total bytes in %d.%06d secs\n",
 		op->count, (unsigned long)op->bytes,
 		(int)(op->usecs/usec_scale), (int)(op->usecs%usec_scale));
@@ -585,8 +585,8 @@ void fdFiniDigest(FD_t fd, pgpHashAlgo hashalgo,
 	break;
     }
     if (i < 0) {
-	if (datap) *(void **)datap = NULL;
-	if (lenp) *lenp = 0;
+	if (datap != NULL) *(void **)datap = NULL;
+	if (lenp != NULL) *lenp = 0;
     }
 
     fd->ndigests = imax;

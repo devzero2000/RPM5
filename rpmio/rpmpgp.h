@@ -1654,7 +1654,7 @@ int pgpIsPkt(const uint8_t * p, /*@null@*/ pgpTag * tagp)
 	rc = 0;
 	break;
     }
-    if (tagp)
+    if (tagp != NULL)
 	*tagp = tag;
     return rc;
 }
@@ -1722,8 +1722,8 @@ int rpmDigestUpdate(/*@null@*/ DIGEST_CTX ctx, const void * data, size_t len)
  * 1 0* (64-bit count of bits processed, MSB-first)
  *
  * @param ctx		digest context
- * @retval datap	address of returned digest
- * @retval lenp		address of digest length
+ * @retval *datap	digest
+ * @retval *lenp	no. bytes of digest
  * @param asAscii	return digest as ascii string?
  * @return		0 on success
  */

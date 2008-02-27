@@ -171,13 +171,17 @@ int mireSetEOptions(miRE mire, int * offsets, int noffsets)
     if (mire->mode == RPMMIRE_PCRE) {
 	mire->startoff = 0;
 	mire->eoptions = 0;
+/*@-assignexpose@*/
 	mire->offsets = offsets;
+/*@=assignexpose@*/
 	mire->noffsets = noffsets;
     } else
     if (mire->mode == RPMMIRE_REGEX) {
 	mire->startoff = 0;
 	mire->eoptions = 0;
+/*@-assignexpose@*/
 	mire->offsets = offsets;
+/*@=assignexpose@*/
 	mire->noffsets = noffsets;
     } else
 	rc = -1;
@@ -235,12 +239,16 @@ int mireSetGOptions(const char * newline, int caseless, int multiline, int utf8)
     if (newline == NULL) {
 	int val = 0;
 #if defined(PCRE_CONFIG_NEWLINE)
+/*@-modunconnomods@*/
 	int xx = pcre_config(PCRE_CONFIG_NEWLINE, &val);
+/*@=modunconnomods@*/
 #endif
 	switch (val) {
 	default:	newline = "lf";		break;
 	case '\r':	newline = "cr";		break;
+/*@-shiftimplementation@*/
 	case ('\r' << 8) | '\n': newline = "crlf"; break;
+/*@=shiftimplementation@*/
 	case -1:	newline = "any";	break;
 	case -2:	newline = "anycrlf";	break;
 	}
@@ -279,8 +287,7 @@ int mireSetGOptions(const char * newline, int caseless, int multiline, int utf8)
     return rc;
 }
 
-int mireSetLocale(/*@unused@*/ /*@null@*/ miRE mire,
-		/*@null@*/ const char * locale)
+int mireSetLocale(/*@unused@*/ miRE mire, const char * locale)
 {
     const char * locale_from;
     int rc = -1;	/* assume failure */
@@ -313,13 +320,17 @@ int mireSetLocale(/*@unused@*/ /*@null@*/ miRE mire,
     if (locale != NULL) {
 	const char * olocale = setlocale(LC_CTYPE, locale);
 	if (olocale == NULL) {
+/*@-modfilesys@*/
  	    fprintf(stderr,
 		_("%s: Failed to set locale %s (obtained from %s)\n"),
 		__progname, locale, locale_from);
+/*@=modfilesys@*/
 	    goto exit;
 	}
 #if defined(WITH_PCRE)
+/*@-evalorderuncon -onlytrans @*/
 	_mirePCREtables = pcre_maketables();
+/*@=evalorderuncon =onlytrans @*/
 #ifdef	NOTYET
 	if (setlocale(LC_CTYPE, olocale) == NULL)
 	    goto exit;

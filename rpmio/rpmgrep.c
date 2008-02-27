@@ -38,10 +38,6 @@ POSSIBILITY OF SUCH DAMAGE.
 */
 
 #include "system.h"
-/*@-readonlytrans@*/
-/*@unchecked@*/
-extern const char *__progname;
-/*@=readonlytrans@*/
 
 #define _MIRE_INTERNAL
 #include <rpmio_internal.h>	/* XXX fdGetFILE */
@@ -51,10 +47,9 @@ extern const char *__progname;
 
 /*@access miRE @*/
 
-#define FALSE 0
-#define TRUE 1
-
-typedef int BOOL;
+typedef unsigned BOOL;
+#define FALSE	((BOOL)0)
+#define TRUE	((BOOL)1)
 
 #define MAX_PATTERN_COUNT 100
 
@@ -103,23 +98,23 @@ static const char *stdin_name = NULL;
 /*@unchecked@*/ /*@only@*/ /*@null@*/
 static const char *locale = NULL;
 
-/*@unchecked@*/ /*@only@*/ /*@null@*/
+/*@unchecked@*/ /*@only@*/ /*@relnull@*/
 static ARGV_t patterns = NULL;
-/*@unchecked@*/ /*@only@*/ /*@null@*/
+/*@unchecked@*/ /*@only@*/ /*@relnull@*/
 static miRE pattern_list = NULL;
 /*@unchecked@*/
 static int  pattern_count = 0;
 
 /*@unchecked@*/ /*@only@*/ /*@null@*/
 static ARGV_t exclude_patterns = NULL;
-/*@unchecked@*/ /*@only@*/ /*@null@*/
+/*@unchecked@*/ /*@only@*/ /*@relnull@*/
 static miRE excludeMire = NULL;
 /*@unchecked@*/
 static int nexcludes = 0;
 
 /*@unchecked@*/ /*@only@*/ /*@null@*/
 static ARGV_t include_patterns = NULL;
-/*@unchecked@*/ /*@only@*/ /*@null@*/
+/*@unchecked@*/ /*@only@*/ /*@relnull@*/
 static miRE includeMire = NULL;
 /*@unchecked@*/
 static int nincludes = 0;
@@ -132,16 +127,16 @@ static int before_context = 0;
 static int both_context = 0;
 
 /** Actions for the -d option */
-enum { dee_READ=1, dee_SKIP, dee_RECURSE };
+enum dee_e { dee_READ=1, dee_SKIP, dee_RECURSE };
 /*@unchecked@*/
-static int dee_action = dee_READ;
+static enum dee_e dee_action = dee_READ;
 /*@unchecked@*/ /*@null@*/
 static const char *dee_option = NULL;
 
 /** Actions for the -D option */
-enum { DEE_READ=1, DEE_SKIP };
+enum DEE_e { DEE_READ=1, DEE_SKIP };
 /*@unchecked@*/
-static int DEE_action = DEE_READ;
+static enum DEE_e DEE_action = DEE_READ;
 /*@unchecked@*/ /*@null@*/
 static const char *DEE_option = NULL;
 
@@ -153,12 +148,12 @@ static int error_count = 0;
  * output. The order is important; it is assumed that a file name is wanted for
  * all values greater than FN_DEFAULT.
  */
-enum { FN_NONE, FN_DEFAULT, FN_ONLY, FN_NOMATCH_ONLY, FN_FORCE };
+enum FN_e { FN_NONE, FN_DEFAULT, FN_ONLY, FN_NOMATCH_ONLY, FN_FORCE };
 /*@unchecked@*/
-static int filenames = FN_DEFAULT;
+static enum FN_e filenames = FN_DEFAULT;
 
-#define	_GFB(n)	((1 << (n)) | 0x40000000)
-#define GF_ISSET(_FLAG)    (grepFlags & ((GREP_FLAGS_##_FLAG) & ~0x40000000))
+#define	_GFB(n)	((1U << (n)) | 0x40000000)
+#define GF_ISSET(_FLAG) ((grepFlags & ((GREP_FLAGS_##_FLAG) & ~0x40000000)) != GREP_FLAGS_NONE)
 
 enum grepFlags_e {
     GREP_FLAGS_NONE		= 0,
@@ -216,10 +211,11 @@ static const char *suffix[] = {
 
 /** UTF-8 tables - used only when the newline setting is "any". */
 /*@unchecked@*/ /*@observer@*/
-static const int utf8_table3[] = {
+static const unsigned utf8_table3[] = {
     0xff, 0x1f, 0x0f, 0x07, 0x03, 0x01
 };
 
+/*@+charint@*/
 /*@unchecked@*/ /*@observer@*/
 static const char utf8_table4[] = {
     1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
@@ -227,6 +223,7 @@ static const char utf8_table4[] = {
     2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,
     3,3,3,3,3,3,3,3,4,4,4,4,5,5,5,5
 };
+/*@=charint@*/
 
 /*************************************************
  * Find end of line.
@@ -283,17 +280,17 @@ end_of_line(const char *p, const char *endptr, /*@out@*/ size_t *lenptr)
 
     case EL_ANYCRLF:
 	while (p < endptr) {
-	    int extra = 0;
-	    register int c = *((unsigned char *)p);
+	    size_t extra = 0;
+	    unsigned int c = (unsigned)*((unsigned char *)p);
 
 	    if (GF_ISSET(UTF8) && c >= 0xc0) {
-		int gcii, gcss;
-		extra = utf8_table4[c & 0x3f];  /* No. of additional bytes */
+		size_t gcii, gcss;
+		extra = (size_t)utf8_table4[c & 0x3f];  /* No. of additional bytes */
 		gcss = 6*extra;
 		c = (c & utf8_table3[extra]) << gcss;
 		for (gcii = 1; gcii <= extra; gcii++) {
 		    gcss -= 6;
-		    c |= (p[gcii] & 0x3f) << gcss;
+		    c |= ((unsigned)p[gcii] & 0x3f) << gcss;
 		}
 	    }
 
@@ -306,7 +303,7 @@ end_of_line(const char *p, const char *endptr, /*@out@*/ size_t *lenptr)
 		/*@notreached@*/ /*@switchbreak@*/ break;
 
 	    case 0x0d:    /* CR */
-		if (p < endptr && *p == 0x0a) {
+		if (p < endptr && (unsigned)*p == 0x0a) {
 		    *lenptr = 2;
 		    p++;
 		}
@@ -325,17 +322,17 @@ end_of_line(const char *p, const char *endptr, /*@out@*/ size_t *lenptr)
 
     case EL_ANY:
 	while (p < endptr) {
-	    int extra = 0;
-	    register int c = *((unsigned char *)p);
+	    size_t extra = 0;
+	    unsigned int c = (unsigned)*((unsigned char *)p);
 
 	    if (GF_ISSET(UTF8) && c >= 0xc0) {
-		int gcii, gcss;
-		extra = utf8_table4[c & 0x3f];  /* No. of additional bytes */
+		size_t gcii, gcss;
+		extra = (size_t)utf8_table4[c & 0x3f];  /* No. of additional bytes */
 		gcss = 6*extra;
 		c = (c & utf8_table3[extra]) << gcss;
 		for (gcii = 1; gcii <= extra; gcii++) {
 		    gcss -= 6;
-		    c |= (p[gcii] & 0x3f) << gcss;
+		    c |= ((unsigned)p[gcii] & 0x3f) << gcss;
 		}
 	    }
 
@@ -350,7 +347,7 @@ end_of_line(const char *p, const char *endptr, /*@out@*/ size_t *lenptr)
 		/*@notreached@*/ /*@switchbreak@*/ break;
 
 	    case 0x0d:    /* CR */
-		if (p < endptr && *p == 0x0a) {
+		if (p < endptr && (unsigned)*p == 0x0a) {
 		    *lenptr = 2;
 		    p++;
 		}
@@ -421,28 +418,28 @@ previous_line(const char *p, const char *startptr)
     case EL_ANY:
     case EL_ANYCRLF:
 	if (*(--p) == '\n' && p > startptr && p[-1] == '\r') p--;
-	if (GF_ISSET(UTF8)) while ((*p & 0xc0) == 0x80) p--;
+	if (GF_ISSET(UTF8)) while ((((unsigned)*p) & 0xc0) == 0x80) p--;
 
 	while (p > startptr) {
 	    const char *pp = p - 1;
-	    register int c;
+	    unsigned int c;
 
 	    if (GF_ISSET(UTF8)) {
-		int extra = 0;
-		while ((*pp & 0xc0) == 0x80) pp--;
-		c = *((unsigned char *)pp);
+		size_t extra = 0;
+		while ((((unsigned)*pp) & 0xc0) == 0x80) pp--;
+		c = (unsigned)*((unsigned char *)pp);
 		if (c >= 0xc0) {
-		    int gcii, gcss;
-		    extra = utf8_table4[c & 0x3f]; /* No. of additional bytes */
+		    size_t gcii, gcss;
+		    extra = (size_t)utf8_table4[c & 0x3f]; /* No. of additional bytes */
 		    gcss = 6*extra;
 		    c = (c & utf8_table3[extra]) << gcss;
 		    for (gcii = 1; gcii <= extra; gcii++) {
 			gcss -= 6;
-			c |= (pp[gcii] & 0x3f) << gcss;
+			c |= ((unsigned)pp[gcii] & 0x3f) << gcss;
 		    }
 		}
 	    } else
-		c = *((unsigned char *)pp);
+		c = (unsigned)*((unsigned char *)pp);
 
 	    if (_mireEL == EL_ANYCRLF) {
 		switch (c) {
@@ -593,10 +590,10 @@ ONLY_MATCHING_RESTART:
 	    miRE mire = pattern_list + i;
 	    int xx;
 
+/*@-onlytrans@*/
 	    /* Set sub-string offset array. */
 	    xx = mireSetEOptions(mire, offsets, 99);
 
-/*@-onlytrans@*/
 	    /* XXX WATCHOUT: mireRegexec w length=0 does strlen(matchptr)! */
 	    mrc = (length > 0 ? mireRegexec(mire, matchptr, length) : -1);
 /*@=onlytrans@*/
@@ -700,7 +697,9 @@ ONLY_MATCHING_RESTART:
 		 * See if there is a requirement to print some "after" lines
 		 * from a previous match. We never print any overlaps.
 		 */
-		if (after_context > 0 && lastmatchnumber > 0) {
+		if (after_context > 0
+		 && lastmatchnumber > 0 && lastmatchrestart != NULL)
+		{
 		    size_t ellength;
 		    int linecount = 0;
 		    const char *p = lastmatchrestart;
@@ -801,7 +800,7 @@ ONLY_MATCHING_RESTART:
 		 */
 
 		/* We have to split the line(s) up if coloring. */
-		if (GF_ISSET(COLOR)) {
+		if (GF_ISSET(COLOR) && color_string != NULL) {
 		    (void)fwrite(ptr, 1, offsets[0], stdout);
 		    fprintf(stdout, "%c[%sm", 0x1b, color_string);
 		    (void)fwrite(ptr + offsets[0], 1, offsets[1] - offsets[0], stdout);
@@ -857,10 +856,12 @@ ONLY_MATCHING_RESTART:
 	 */
 	if (bufflength >= sizeof(buffer) && ptr > buffer + 2*MBUFTHIRD) {
 	    if (after_context > 0 &&
-		lastmatchnumber > 0 &&
+		lastmatchnumber > 0 && lastmatchrestart != NULL &&
 		lastmatchrestart < buffer + MBUFTHIRD)
 	    {
-		if (after_context > 0 && lastmatchnumber > 0) {
+		if (after_context > 0
+		 && lastmatchnumber > 0 && lastmatchrestart != NULL)
+		{
 		    do_after_lines(lastmatchnumber, lastmatchrestart,
 				endptr, printname);
 		    hyphenpending = TRUE;
@@ -870,15 +871,18 @@ ONLY_MATCHING_RESTART:
 
 	    /* Now do the shuffle */
 
+/*@-modobserver@*/	/* XXX buffer <=> t aliasing */
 	    memmove(buffer, buffer + MBUFTHIRD, 2*MBUFTHIRD);
 	    ptr -= MBUFTHIRD;
 
 	    bufflength = 2*MBUFTHIRD;
 	    bufflength += Fread(buffer + bufflength, 1, MBUFTHIRD, fd);
 	    endptr = buffer + bufflength;
+/*@=modobserver@*/
 
 	    /* Adjust any last match point */
-	    if (lastmatchnumber > 0) lastmatchrestart -= MBUFTHIRD;
+	    if (lastmatchnumber > 0 && lastmatchrestart != NULL)
+		lastmatchrestart -= MBUFTHIRD;
 	}
     }	/* Loop through the whole file */
 
@@ -887,7 +891,9 @@ ONLY_MATCHING_RESTART:
      * hyphenpending if it prints something.
      */
     if (!GF_ISSET(ONLY_MATCHING) && !GF_ISSET(COUNT)) {
-	if (after_context > 0 && lastmatchnumber > 0) {
+	if (after_context > 0
+	 && lastmatchnumber > 0 && lastmatchrestart != NULL)
+	{
 	    do_after_lines(lastmatchnumber, lastmatchrestart, endptr, printname);
 	    hyphenpending = TRUE;
 	}
@@ -1123,8 +1129,8 @@ compile_single_pattern(const char *pattern,
 	return FALSE;
     }
 
-    sprintf(buffer, "%s%.*s%s", prefix[grepFlags & 0x7], MBUFTHIRD, pattern,
-	suffix[grepFlags & 0x7]);
+    sprintf(buffer, "%s%.*s%s", prefix[(int)(grepFlags & 0x7)],
+	MBUFTHIRD, pattern, suffix[(int)(grepFlags & 0x7)]);
 
     mire = pattern_list + pattern_count;
 /*@-onlytrans@*/
@@ -1137,7 +1143,7 @@ compile_single_pattern(const char *pattern,
     }
 /*@=onlytrans@*/
     /* Handle compile errors */
-    mire->erroff -= (int)strlen(prefix[grepFlags & 0x7]);
+    mire->erroff -= (int)strlen(prefix[(int)(grepFlags & 0x7)]);
     if (mire->erroff < 0)
 	mire->erroff = 0;
     if (mire->erroff > (int)strlen(pattern))
@@ -1287,7 +1293,9 @@ assert(arg != NULL);
 
     case 'V':
 #if defined(WITH_PCRE)
+/*@-evalorderuncon -moduncon @*/
 	fprintf(stderr, _("%s %s (PCRE version %s)\n"), __progname, VERSION, pcre_version());
+/*@=evalorderuncon =moduncon @*/
 #else
 	fprintf(stderr, _("%s %s (without PCRE)\n"), __progname, VERSION);
 #endif
@@ -1305,6 +1313,7 @@ assert(arg != NULL);
 
 /**
  */
+/*@+enumint@*/
 /*@unchecked@*/
 static struct poptOption optionsTable[] = {
 /*@-type@*/ /* FIX: cast? */
@@ -1401,7 +1410,7 @@ static struct poptOption optionsTable[] = {
   { "utf-8", 'u',	POPT_BIT_SET,	&grepFlags, GREP_FLAGS_UTF8,
 	N_("use UTF-8 mode"), NULL },
 /* XXX HACK: there is a longName option conflict with --version */
-  { "version", 'V',	POPT_ARG_NONE,		NULL, 'V',
+  { "version", 'V',	POPT_ARG_NONE,		NULL, (int)'V',
 	N_("print version information and exit"), NULL },
 /* XXX HACK: there is a shortName option conflict with -v, --verbose */
   { "invert-match", 'v', POPT_BIT_SET,	&grepFlags, GREP_FLAGS_INVERT,
@@ -1419,7 +1428,7 @@ static struct poptOption optionsTable[] = {
 
   POPT_AUTOHELP
 
-  { NULL, -1, POPT_ARG_INCLUDE_TABLE, NULL, 0,
+  { NULL, (char)-1, POPT_ARG_INCLUDE_TABLE, NULL, 0,
 	N_("\
 Usage: rpmgrep [OPTION...] [PATTERN] [FILE1 FILE2 ...]\n\n\
   Search for PATTERN in each FILE or standard input.\n\
@@ -1429,7 +1438,7 @@ Usage: rpmgrep [OPTION...] [PATTERN] [FILE1 FILE2 ...]\n\n\
 Example: rpmgrep -i 'hello.*world' menu.h main.c\
 ") , NULL },
 
-  { NULL, -1, POPT_ARG_INCLUDE_TABLE, NULL, 0,
+  { NULL, (char)-1, POPT_ARG_INCLUDE_TABLE, NULL, 0,
 	N_("\
   When reading patterns from a file instead of using a command line option,\n\
   trailing white space is removed and blank lines are ignored.\n\
@@ -1439,6 +1448,7 @@ Example: rpmgrep -i 'hello.*world' menu.h main.c\
 
   POPT_TABLEEND
 };
+/*@=enumint@*/
 
 /*************************************************
  * Main program.
@@ -1446,19 +1456,19 @@ Example: rpmgrep -i 'hello.*world' menu.h main.c\
  */
 int
 main(int argc, char **argv)
-	/*@globals after_context, before_context,
+	/*@globals __assert_program_name, after_context, before_context,
 		color_option, color_string, DEE_action, dee_action,
- 		_mireEL, exclude_patterns, excludeMire, grepFlags,
+ 		exclude_patterns, excludeMire, grepFlags,
 		include_patterns, includeMire, locale, newline,
 		patterns, pattern_count, pattern_filenames, pattern_list,
-		_mirePCREtables, stdin_name,
+		stdin_name,
  		rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies after_context, before_context,
+	/*@modifies __assert_program_name, after_context, before_context,
 		color_option, color_string, DEE_action, dee_action,
- 		_mireEL, exclude_patterns, excludeMire, grepFlags,
+ 		exclude_patterns, excludeMire, grepFlags,
 		include_patterns, includeMire, locale, newline,
 		patterns, pattern_count, pattern_filenames, pattern_list,
-		_mirePCREtables, stdin_name,
+		stdin_name,
  		rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 {
     poptContext optCon = rpmioInit(argc, argv, optionsTable);
@@ -1469,9 +1479,11 @@ main(int argc, char **argv)
     int j;
     int xx;
 
-    rpmswEnter(&grep_totalops, -1);
+    xx = rpmswEnter(&grep_totalops, -1);
 
+/*@-observertrans -readonlytrans@*/
     __progname = "pcregrep";	/* XXX HACK in expected name. */
+/*@=observertrans =readonlytrans@*/
 
 
     if (stdin_name == NULL)
@@ -1509,9 +1521,13 @@ _("%s: Cannot mix --only-matching, --file-offsets and/or --line-offsets\n"),
 
     /* Initialize global pattern options. */
     /* Interpret the newline type; the default settings are Unix-like. */
-    if ((xx = mireSetGOptions(newline, GF_ISSET(CASELESS), GF_ISSET(MULTILINE), GF_ISSET(UTF8))) != 0) {
+/*@-moduncon@*/	/* LCL: something fishy. */
+    xx = mireSetGOptions(newline, GF_ISSET(CASELESS), GF_ISSET(MULTILINE),
+		GF_ISSET(UTF8));
+/*@=moduncon@*/
+    if (xx != 0) {
 	fprintf(stderr, _("%s: Invalid newline specifier \"%s\"\n"),
-		__progname, newline);
+		__progname, (newline != NULL ? newline : "lf"));
 	goto errxit;
     }
 
@@ -1552,13 +1568,9 @@ _("%s: Cannot mix --only-matching, --file-offsets and/or --line-offsets\n"),
 	    goto errxit;
 	}
 	if (GF_ISSET(COLOR)) {
-/*@-dependenttrans -observertrans@*/
 	    char *cs = getenv("PCREGREP_COLOUR");
 	    if (cs == NULL) cs = getenv("PCREGREP_COLOR");
-	    color_string = (cs ? cs : "1;31");
-/*@=dependenttrans =observertrans@*/
-	    if (color_string)
-		color_string = xstrdup(color_string);
+	    color_string = xstrdup(cs != NULL ? cs : "1;31");
 	}
     }
 
@@ -1576,7 +1588,7 @@ _("%s: Cannot mix --only-matching, --file-offsets and/or --line-offsets\n"),
 	 * the first argument is the one and only pattern, and it must exist.
 	 */
 	if (npatterns == 0 && pattern_filenames == NULL) {
-	    if (i >= ac) {
+	    if (av == NULL|| i >= ac) {
 		poptPrintUsage(optCon, stderr, 0);
 		goto errxit;
 	    }
@@ -1593,6 +1605,7 @@ _("%s: Cannot mix --only-matching, --file-offsets and/or --line-offsets\n"),
 	 * by multiple uses of -e or as a single unkeyed pattern.
 	 */
 	npatterns = argvCount(patterns);
+	if (patterns != NULL)
 	for (j = 0; j < npatterns; j++) {
 	    if (!compile_pattern(patterns[j], NULL,
 			(j == 0 && npatterns == 1)? 0 : j + 1))
@@ -1611,22 +1624,30 @@ _("%s: Cannot mix --only-matching, --file-offsets and/or --line-offsets\n"),
 /*@=onlytrans@*/
 
     /* If there are include or exclude patterns, compile them. */
+/*@-compmempass@*/
     if (mireLoadPatterns(grepMode, 0, exclude_patterns, NULL,
 		&excludeMire, &nexcludes))
     {
+/*@-nullptrarith@*/
 	miRE mire = excludeMire + (nexcludes - 1);
+/*@=nullptrarith@*/
 	fprintf(stderr, _("%s: Error in 'exclude' regex at offset %d: %s\n"),
 			__progname, mire->erroff, mire->errmsg);
 	goto errxit;
     }
+/*@=compmempass@*/
+/*@-compmempass@*/
     if (mireLoadPatterns(grepMode, 0, include_patterns, NULL,
 		&includeMire, &nincludes))
     {
+/*@-nullptrarith@*/
 	miRE mire = includeMire + (nincludes - 1);
+/*@=nullptrarith@*/
 	fprintf(stderr, _("%s: Error in 'include' regex at offset %d: %s\n"),
 			__progname, mire->erroff, mire->errmsg);
 	goto errxit;
     }
+/*@=compmempass@*/
 
     /* If there are no further arguments, do the business on stdin and exit. */
     if (i >= ac) {
@@ -1641,6 +1662,7 @@ _("%s: Cannot mix --only-matching, --file-offsets and/or --line-offsets\n"),
      */
     {	BOOL only_one_at_top = (i == ac -1);	/* Catch initial value of i */
 
+	if (av != NULL)
 	for (; i < ac; i++) {
 	    int frc = grep_or_recurse(av[i], dee_action == dee_RECURSE,
 			only_one_at_top);
@@ -1669,7 +1691,7 @@ exit:
 /*@=observertrans@*/
 /*@=statictrans@*/
 
-    rpmswExit(&grep_totalops, 0);
+    xx = rpmswExit(&grep_totalops, 0);
     if (_rpmsw_stats) {
 	rpmswPrint(" total:", &grep_totalops);
 	rpmswPrint("  read:", &grep_readops);

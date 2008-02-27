@@ -222,8 +222,7 @@ DIR * davOpendir(const char * path)
  * realpath(3) clone.
  */
 char * davRealpath(const char * path, /*@out@*/ /*@null@*/ char * resolved_path)
-	/*@globals errno, fileSystem @*/
-	/*@modifies *resolved_path, errno, fileSystem @*/;
+	/*@modifies *resolved_path @*/;
 
 /**
  * stat(2) clone.

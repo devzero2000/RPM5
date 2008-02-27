@@ -554,8 +554,8 @@ int Closedir(/*@only@*/ DIR * dir)
  * realpath(3) clone.
  */
 char * Realpath(const char * path, /*@out@*/ /*@null@*/ char * resolved_path)
-	/*@globals errno, fileSystem @*/
-	/*@modifies *resolved_path, errno, fileSystem @*/;
+	/*@globals errno, fileSystem, internalState @*/
+	/*@modifies *resolved_path, errno, fileSystem, internalState @*/;
 
 /**
  * lseek(2) clone.

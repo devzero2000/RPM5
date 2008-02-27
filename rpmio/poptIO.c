@@ -48,6 +48,7 @@ extern int _tar_debug;
 extern int _rpmsq_debug;
 
 /*@-exportheadervar@*/
+/*@-redecl@*/
 /*@unchecked@*/
 extern int _av_debug;
 /*@unchecked@*/
@@ -60,6 +61,7 @@ extern int noLibio;
 extern int _rpmio_debug;
 /*@unchecked@*/
 extern int _xar_debug;
+/*@=redecl@*/
 /*@=exportheadervar@*/
 
 /*@unchecked@*/ /*@null@*/

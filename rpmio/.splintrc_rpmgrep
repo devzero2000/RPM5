@@ -14,35 +14,22 @@
 # --- in progress
 -branchstate
 -bufferoverflowhigh
--shiftnegative		# 1 lzdReadOpen
 
--assignexpose		# 1
-+charint		# 18
--compdef		# 4
--compmempass		# 1
+-compdef		# 1
 -constuse		# 1 EXIT_FAILURE
--evalorderuncon		# 3
--globstate		# 1
--moduncon		# 4
--modobserver		# 3
--nullderef		# 3
--nullpass		# 6
--nullptrarith		# 6
--nullstate		# 3
--shiftimplementation
+-globstate		# 9
+-nullptrarith		# 1
 
 # --- +partial artifacts
--declundef
--exportheadervar
--exportlocal
+-declundef	# 268
 
--enummemuse
--fcnuse
--typeuse
--varuse
+-enummemuse	# 206
+-fcnuse		# 148
+-typeuse	# 11
+-varuse		# 36
 
 # --- not-yet at strict level
--bitwisesigned		# 236
+-bitwisesigned		# 3
 -elseifcomplete		# 43
 -exportconst		# 322
 -exportfcn		# 534
@@ -51,23 +38,20 @@
 -fielduse		# 65
 -forblock		# tedious
 -ifblock		# tedious
--namechecks		# 929 tedious ANSI compliance checks
--ptrarith		# 271
+-namechecks		# 599 tedious ANSI compliance checks
+-ptrarith		# 45
 
--compdestroy		# 102
--mustdefine		# 68
+-mustdefine		# 2
 -sys-dir-errors
 
--strictops		# 105
+-strictops		# 21
 -whileblock		# tedious
 
 # --- not-yet at checks level
-+enumint		# 239
--mustfree		# 336
--predboolptr		# 261
--usedef			# 51
++enumint		# 11
+-mustfree		# 18
+-usedef			# 7
 
 # --- not-yet at standard level
--boolops		# 165
-+boolint		# 299
-+ignorequals		# 708
++boolint		# 45
++ignorequals		# 68

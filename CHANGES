@@ -1,4 +1,5 @@
 5.0.0 -> 5.1a1:
+    - jbj: rpmio: splint fiddles.
     - rpm.org: Rip ancient, unused setperms + unsetgid make targets.
     - rpm.org: Add %{sources} and %{patches} macros to build.
     - rpm.org: Remove some ancient dead code.

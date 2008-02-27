@@ -1353,7 +1353,8 @@ fprintf(stderr, "*** ftpOpendir(%s)\n", path);
 /*@=kepttrans@*/
 }
 
-static char * ftpRealpath(const char * path, char * resolved_path)
+static char * ftpRealpath(const char * path, /*@null@*/ char * resolved_path)
+	/*@*/
 {
 assert(resolved_path == NULL);	/* XXX no POSIXly broken realpath(3) here. */
     /* XXX TODO: handle redirects. For now, just dupe the path. */
@@ -1870,11 +1871,13 @@ char * Realpath(const char * path, /*@null@*/ char * resolved_path)
     char * rpath;
 
 if (_rpmio_debug)
-fprintf(stderr, "*** Realpath(%s, %s)\n", path, resolved_path);
+fprintf(stderr, "*** Realpath(%s, %s)\n", path, (resolved_path ? resolved_path : "NULL"));
+/*@-nullpass@*/
     /* XXX if POSIXly broken realpath(3) is desired, do that. */
     /* XXX note: preserves current rpmlib realpath(3) usage cases. */
     if (path == NULL || resolved_path != NULL)
 	return realpath(path, resolved_path);
+/*@=nullpass@*/
 
     switch (ut) {
     case URL_IS_FTP:
@@ -1885,7 +1888,7 @@ fprintf(stderr, "*** Realpath(%s, %s)\n", path, resolved_path);
     case URL_IS_HKP:
 #ifdef WITH_NEON
 	return davRealpath(path, resolved_path);
-	/*@notreached@*/
+	/*@notreached@*/ break;
 #endif
 	/*@fallthrough@*/
     default:
@@ -1898,7 +1901,7 @@ fprintf(stderr, "*** Realpath(%s, %s)\n", path, resolved_path);
 #else
 	lpath = NULL;
 #endif
-	/*@notreached@*/ break;
+	break;
     case URL_IS_PATH:		/* XXX note: file:/// prefix is dropped. */
     case URL_IS_UNKNOWN:
 	path = lpath;
@@ -1906,7 +1909,9 @@ fprintf(stderr, "*** Realpath(%s, %s)\n", path, resolved_path);
     }
 
     if (lpath == NULL || *lpath == '/')
+/*@-nullpass@*/	/* XXX glibc extension */
 	rpath = realpath(lpath, resolved_path);
+/*@=nullpass@*/
     else {
 	char * t;
 #if defined(__GLIBC__)
@@ -1922,6 +1927,7 @@ fprintf(stderr, "*** Realpath(%s, %s)\n", path, resolved_path);
 	 * the result.
 	 */
 	if ((t = realpath(".", dn)) != NULL) {
+/*@-mods@*/	/* XXX no rpmGlobalMacroContext mods please. */
 	    rpath = (char *) rpmGetPath(t, "/", lpath, NULL);
 	    /* XXX preserve the pesky trailing '/' */
 	    if (lpath[strlen(lpath)-1] == '/') {
@@ -1929,6 +1935,7 @@ fprintf(stderr, "*** Realpath(%s, %s)\n", path, resolved_path);
 		rpath = rpmExpand(s, "/", NULL);
 		s = _free(s);
 	    }
+/*@=mods@*/
 	} else
 	    rpath = NULL;
 #if defined(__GLIBC)

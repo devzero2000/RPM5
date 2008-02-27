@@ -25,7 +25,7 @@ extern int _mire_debug;
 
 /**
  */
-/*@unchecked@*/ /*@null@*/
+/*@unchecked@*/ /*@null@*/ /*@shared@*/
 extern const unsigned char * _mirePCREtables;
 
 /** Line ending types */
@@ -90,12 +90,15 @@ struct miRE_s {
     const char *pattern;	/*!< pattern string */
 /*@only@*/ /*@relnull@*/
     regex_t *preg;		/*!< regex compiled pattern buffer */
+/*@only@*/ /*@relnull@*/
     void *pcre;			/*!< pcre compiled pattern buffer. */
+/*@only@*/ /*@relnull@*/
     void *hints;		/*!< pcre compiled pattern hints buffer. */
 /*@shared@*/ /*@relnull@*/
     const char * errmsg;	/*!< pcre error message. */
 /*@shared@*/ /*@relnull@*/
     const unsigned char * table;/*!< pcre locale table. */
+/*@kept@*/
     int * offsets;		/*!< pcre substring offset table. */
     int noffsets;		/*!< pcre substring offset table count. */
     int erroff;			/*!< pcre error offset. */
@@ -199,7 +202,7 @@ int mireSetCOptions(miRE mire, rpmMireMode mode, int tag, int options,
  * @param noffsets	(PCRE only) no. of string offsets
  * @return		0 on success
  */
-int mireSetEOptions(miRE mire, int * offsets, int noffsets)
+int mireSetEOptions(miRE mire, /*@out@*/ /*@kept@*/ int * offsets, int noffsets)
 	/*@modifies mire @*/;
 
 /**
@@ -210,9 +213,10 @@ int mireSetEOptions(miRE mire, int * offsets, int noffsets)
  * @param utf8		assume utf8 matching?
  * @return		0 on success
  */
-int mireSetGOptions(const char * newline, int caseless, int multiline, int utf8)
-	/*globals _mireGOptions */
-	/*@modifies _mireGOptions @*/;
+int mireSetGOptions(/*@null@*/ const char * newline,
+		int caseless, int multiline, int utf8)
+	/*globals _mireGLOBoptions, _mireREGEXoptions, _mirePCREoptions */
+	/*modifies _mireGLOBoptions, _mireREGEXoptions, _mirePCREoptions */;
 
 /**
  * Compile locale-specific PCRE tables.
@@ -220,8 +224,9 @@ int mireSetGOptions(const char * newline, int caseless, int multiline, int utf8)
  * @param locale	locale string (NULL uses usual envvar's)
  * @return		0 on success
  */
-int mireSetLocale(miRE mire, /*@null@*/ const char * locale)
-	/*@modifies mire @*/;
+int mireSetLocale(/*@null@*/ miRE mire, /*@null@*/ const char * locale)
+	/*@globals _mirePCREtables, internalState @*/
+	/*@modifies mire, _mirePCREtables, internalState @*/;
 
 /**
  * Compile pattern match.
@@ -294,8 +299,7 @@ int mireApply(/*@null@*/ miRE mire, int nmire,
  * @return		0 on success
  */
 int mireStudy(miRE mire, int nmires)
-	/*@globals fileSystem @*/
-	/*@modifies mire->hints, fileSystem @*/;
+	/*@modifies mire @*/;
 
 #ifdef __cplusplus
 }
