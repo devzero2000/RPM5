@@ -25,7 +25,6 @@ static int checkSpec(rpmts ts, Header h)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, h, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
-    rpmps ps;
     int rc;
 
     if (!headerIsEntry(h, RPMTAG_REQUIRENAME)
@@ -34,15 +33,7 @@ static int checkSpec(rpmts ts, Header h)
 
     rc = rpmtsAddInstallElement(ts, h, NULL, 0, NULL);
 
-    rc = rpmtsCheck(ts);
-
-    ps = rpmtsProblems(ts);
-    if (rc == 0 && rpmpsNumProblems(ps) > 0) {
-	rpmlog(RPMLOG_ERR, _("Failed build dependencies:\n"));
-	rpmpsPrint(NULL, ps);
-	rc = 1;
-    }
-    ps = rpmpsFree(ps);
+    rc = rpmcliInstallProblems(ts, _("Failed build dependencies"), rpmtsCheck(ts));
 
     /* XXX nuke the added package. */
     rpmtsClean(ts);
