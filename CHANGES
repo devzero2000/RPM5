@@ -1,4 +1,5 @@
 5.0.0 -> 5.1a1:
+    - rpm.org: Rip ancient, unused setperms + unsetgid make targets.
     - rpm.org: Add %{sources} and %{patches} macros to build.
     - rpm.org: Remove some ancient dead code.
     - jbj: fix: eliminate librpmdb->librpm from dosetenv, use setenv(3) instead.
