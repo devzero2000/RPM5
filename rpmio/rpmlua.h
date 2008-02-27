@@ -43,6 +43,10 @@ struct rpmluav_s {
 typedef /*@abstract@*/ struct rpmlua_s * rpmlua;
 typedef /*@abstract@*/ struct rpmluav_s * rpmluav;
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /*@-exportlocal@*/
 /*@only@*/ /*@exposed@*/ /*@relnull@*/
 rpmlua rpmluaGetGlobalState(void)
@@ -146,5 +150,9 @@ int rpmluavKeyIsNum(rpmluav var)
 	/*@*/;
 int rpmluavValueIsNum(rpmluav var)
 	/*@*/;
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* RPMLUA_H */
