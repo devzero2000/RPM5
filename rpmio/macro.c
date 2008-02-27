@@ -22,6 +22,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include <popt.h>
+
 #define rpmlog fprintf
 #define RPMLOG_ERR stderr
 #undef	_
@@ -34,6 +36,7 @@
 #define	xisalnum(_c)		isalnum(_c)
 #define	xisalpha(_c)		isalpha(_c)
 #define	xisdigit(_c)		isdigit(_c)
+#define	xisspace(_c)		isspace(_c)
 
 typedef	FILE * FD_t;
 #define Fopen(_path, _fmode)	fopen(_path, "r");
@@ -985,20 +988,19 @@ freeArgs(MacroBuf mb)
 /*@dependent@*/ static const char *
 grabArgs(MacroBuf mb, const MacroEntry me, /*@returned@*/ const char * se,
 		const char * lastc)
-	/*@globals rpmGlobalMacroContext, internalState @*/
-	/*@modifies mb, rpmGlobalMacroContext, internalState @*/
+	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@modifies mb, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
+    poptContext optCon;
+    struct poptOption *optTbl;
     size_t bufn = _macro_BUFSIZ;
     char *buf = alloca(bufn);
     char *b, *be;
     char aname[16];
-    const char *opts, *o;
+    const char *opts;
     int argc = 0;
     const char **argv;
     int c;
-#ifdef __GLIBC__
-    char *posixly_correct;
-#endif
 
     /* Copy macro name as argv[0], save beginning of args.  */
     buf[0] = '\0';
@@ -1059,107 +1061,79 @@ grabArgs(MacroBuf mb, const MacroEntry me, /*@returned@*/ const char * se,
     /* assert(b == be);  */
     argv[argc] = NULL;
 
-    /* Citation from glibc/posix/getopt.c:
-     *    Index in ARGV of the next element to be scanned.
-     *    This is used for communication to and from the caller
-     *    and for communication between successive calls to `getopt'.
-     *
-     *    On entry to `getopt', zero means this is the first call; initialize.
-     *
-     *    When `getopt' returns -1, this is the index of the first of the
-     *    non-option elements that the caller should itself scan.
-     *
-     *    Otherwise, `optind' communicates from one call to the next
-     *    how much of ARGV has been scanned so far.
-     */
-    /* 1003.2 says this must be 1 before any call.  */
+    /* Count the number of short options. */
+    for (c = 0, opts = me->opts; *opts != '\0'; opts++)
+	if (*opts != ':') c++;
+    /* Set up popt option table. */
+    optTbl = xcalloc(sizeof(*optTbl), (c + 1));
+    for (c = 0, opts = me->opts; *opts != '\0'; opts++) {
+	if (*opts == ':') continue;
+	optTbl[c].shortName = opts[0];
+	optTbl[c].val = (int) opts[0];
+	if (opts[1] == ':')
+	    optTbl[c].argInfo = POPT_ARG_STRING;
+	c++;
+    }
 
-#ifdef __GLIBC__
-    /*@-mods@*/
-    optind = 0;		/* XXX but posix != glibc */
-    /*@=mods@*/
-#else
-    optind = 1;
-#endif
-
-    opts = me->opts;
-
-#ifdef __GLIBC__
-    /*
-     *  Ensure option parsing is done without allowing option/argument permutations
-     *  to avoid accidentally picking up and complaining about unknown options.
-     *
-     *  Required standard POSIX getopt(3) behavior:
-     *  $ rpm --define '%foo() <%*>' --eval '%{foo bar %(echo -n "quux") baz}'
-     *  <bar quux baz>
-     *
-     *  Unexpected non-standard Linux GLIBC getopt(3) behavior:
-     *  $ rpm --define '%foo() <%*>' --eval '%{foo bar %(echo -n "quux") baz}'
-     *  foo: invalid option -- n
-     *  error: Unknown option ? in foo()
-     *  <%*>
-     *
-     *  Fixed standard POSIX getopt(3) behavior also under Linux GLIBC:
-     *  $ POSIXLY_CORRECT=1 rpm --define '%foo() <%*>' --eval '%{foo bar %(echo -n "quux") baz}'
-     *  <bar quux baz>
-     */
-    posixly_correct = getenv("POSIXLY_CORRECT");
-    (void) setenv("POSIXLY_CORRECT", "1", 1);
-#endif
-
-    /* Define option macros. */
-/*@-nullstate@*/ /* FIX: argv[] can be NULL */
-    while((c = getopt(argc, (char **)argv, opts)) != -1)
+    /* Parse the options, defining option macros. */
+/*@-nullstate@*/
+    optCon = poptGetContext(argv[0], argc, argv, optTbl, POPT_CONTEXT_NO_EXEC);
 /*@=nullstate@*/
-    {
-	if (c == (int) '?' || (o = strchr(opts, c)) == NULL) {
-	    rpmlog(RPMLOG_ERR, _("Unknown option %c in %s(%s)\n"),
-			(char)c, me->name, opts);
-	    return se;
-	}
+    while ((c = poptGetNextOpt(optCon)) > 0) {
+	const char * optArg = poptGetOptArg(optCon);
 	*be++ = '-';
 	*be++ = (char) c;
-	if (o[1] == ':') {
+	if (optArg != NULL) {
 	    *be++ = ' ';
-	    be = stpcpy(be, optarg);
+	    be = stpcpy(be, optArg);
 	}
 	*be++ = '\0';
 	aname[0] = '-'; aname[1] = (char)c; aname[2] = '\0';
 	addMacro(mb->mc, aname, NULL, b, mb->depth);
-	if (o[1] == ':') {
+	if (optArg != NULL) {
 	    aname[0] = '-'; aname[1] = (char)c; aname[2] = '*'; aname[3] = '\0';
-	    addMacro(mb->mc, aname, NULL, optarg, mb->depth);
+	    addMacro(mb->mc, aname, NULL, optArg, mb->depth);
 	}
 	be = b; /* reuse the space */
+/*@-dependenttrans -modobserver -observertrans @*/
+	optArg = _free(optArg);
+/*@=dependenttrans =modobserver =observertrans @*/
+    }
+    if (c < -1) {
+	rpmlog(RPMLOG_ERR, _("Unknown option in macro %s(%s): %s: %s\n"),
+		me->name, me->opts,
+		poptBadOption(optCon, POPT_BADOPTION_NOALIAS), poptStrerror(c));
+	goto exit;
     }
 
-#ifdef __GLIBC__
-    if (posixly_correct != NULL)
-        (void) setenv("POSIXLY_CORRECT", posixly_correct, 1);
-    else
-        (void) unsetenv("POSIXLY_CORRECT");
-#endif
-
+    argv = poptGetArgs(optCon);
+    argc = 0;
+    if (argv != NULL)
+    for (c = 0; argv[c] != NULL; c++)
+	argc++;
+    
     /* Add arg count as macro. */
-    sprintf(aname, "%d", (argc - optind));
+    sprintf(aname, "%d", argc);
     addMacro(mb->mc, "#", NULL, aname, mb->depth);
 
     /* Add macro for each arg. Concatenate args for %*. */
     if (be) {
 	*be = '\0';
-	for (c = optind; c < argc; c++) {
-	    sprintf(aname, "%d", (c - optind + 1));
+	if (argv != NULL)
+	for (c = 0; c < argc; c++) {
+	    sprintf(aname, "%d", (c + 1));
 	    addMacro(mb->mc, aname, NULL, argv[c], mb->depth);
 	    if (be != b) *be++ = ' '; /* Add space between args */
-/*@-nullpass@*/ /* FIX: argv[] can be NULL */
 	    be = stpcpy(be, argv[c]);
-/*@=nullpass@*/
 	}
     }
 
     /* Add unexpanded args as macro. */
     addMacro(mb->mc, "*", NULL, b, mb->depth);
 
+exit:
+    optCon = poptFreeContext(optCon);
+    optTbl = _free(optTbl);
     return se;
 }
 

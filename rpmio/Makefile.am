@@ -35,11 +35,11 @@ RPMIO_LDADD = \
 	$(top_builddir)/misc/librpmmisc.la \
 	@LTLIBINTL@
 
-RPM_LDADD = \
-	$(top_builddir)/build/librpmbuild.la \
-	$(top_builddir)/lib/librpm.la \
-	$(top_builddir)/rpmdb/librpmdb.la \
-	$(RPMIO_LDADD)
+#RPM_LDADD = \
+#	$(top_builddir)/build/librpmbuild.la \
+#	$(top_builddir)/lib/librpm.la \
+#	$(top_builddir)/rpmdb/librpmdb.la \
+#	$(RPMIO_LDADD)
 
 pkgincdir = $(pkgincludedir)$(WITH_PATH_VERSIONED_SUFFIX)
 pkginc_HEADERS = \
@@ -183,7 +183,7 @@ gengpg.h:
 	-sh ./gengpg.sh > gengpg.h
 
 tmacro_SOURCES =
-tmacro_LDADD = tmacro.o $(RPM_LDADD)
+tmacro_LDADD = tmacro.o $(RPMIO_LDADD)
 tmacro.o:  macro.c
 	$(COMPILE) -DDEBUG_MACROS -o $@ -c $<
 
