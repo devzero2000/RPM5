@@ -1,4 +1,5 @@
 5.0.2 -> 5.0.3:
+    - jbj: fix: eliminate librpmdb->librpm from dosetenv, use setenv(3) instead.
     - jbj: fix: rpmtsCheck non-zero return doesn't print failed build deps.
     - proyvind: add some extra functionality to gendiff (ancient Mandriva patch by Chmouel Boudjnah)
     - pixel: do check free size when bavail is 0
