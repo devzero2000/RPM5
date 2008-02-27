@@ -60,6 +60,7 @@ void freeSplitString( /*@only@*/ char ** list)
 
 /**
  * Like the libc function, but malloc()'s the space needed.
+ * @deprecated Use setenv(3) instead.
  * @param name		variable name
  * @param value		variable value
  * @param overwrite	should an existing variable be changed?
@@ -71,6 +72,7 @@ int dosetenv(const char * name, const char * value, int overwrite)
 
 /**
  * Like the libc function, but malloc()'s the space needed.
+ * @deprecated Use setenv(3) instead.
  * @param str		"name=value" string
  * @return		0 on success
  */

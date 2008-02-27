@@ -1,4 +1,5 @@
 5.0.0 -> 5.1a1:
+    - jbj: fix: eliminate librpmdb->librpm from dosetenv, use setenv(3) instead.
     - jbj: fix: rpmtsCheck non-zero return doesn't print failed build deps.
     - jbj: handle mireRegexec return change internal to rpm code.
     - jbj: mire: change mireRegexec() return: >=0 match, -1 nomatch, else error.

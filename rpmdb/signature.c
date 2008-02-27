@@ -16,7 +16,6 @@
 #include <rpmmacro.h>	/* XXX for rpmGetPath() */
 #include "rpmdb.h"
 
-#include "misc.h"	/* XXX for dosetenv() */
 #include "legacy.h"	/* XXX for mdbinfile() */
 #include <pkgio.h>
 #include "signature.h"
@@ -179,7 +178,7 @@ static int makeGPGSignature(const char * file, rpmSigTag * sigTagp,
 	(void) close(inpipe[1]);
 
 	if (gpg_path && *gpg_path != '\0')
-	    (void) dosetenv("GNUPGHOME", gpg_path, 1);
+	    (void) setenv("GNUPGHOME", gpg_path, 1);
 
 	unsetenv("MALLOC_CHECK_");
 	cmd = rpmExpand("%{?__gpg_sign_cmd}", NULL);
@@ -527,7 +526,7 @@ int rpmCheckPassPhrase(const char * passPhrase)
 	{   const char *gpg_path = rpmExpand("%{?_gpg_path}", NULL);
 
 	    if (gpg_path && *gpg_path != '\0')
-  		(void) dosetenv("GNUPGHOME", gpg_path, 1);
+  		(void) setenv("GNUPGHOME", gpg_path, 1);
 
 	    cmd = rpmExpand("%{?__gpg_check_password_cmd}", NULL);
 	    rc = poptParseArgvString(cmd, NULL, (const char ***)&av);
