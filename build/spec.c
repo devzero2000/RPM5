@@ -11,6 +11,8 @@
 #include "rpmfi.h"
 #include "rpmts.h"
 
+#include "rpmlua.h"
+
 #include "debug.h"
 
 /*@-redecl@*/
@@ -395,6 +397,19 @@ assert(mdir != NULL);
 	sprintf(buf, "%sURL%d",
 		(flag & RPMFILE_PATCH) ? "PATCH" : "SOURCE", num);
 	addMacro(spec->macros, buf, NULL, p->fullSource, RMIL_SPEC);
+#ifdef WITH_LUA
+    {	rpmlua lua = NULL; /* global state */
+	const char * what = (flag & RPMFILE_PATCH) ? "patches" : "sources";
+	rpmluav var = rpmluavNew();
+
+	rpmluaPushTable(lua, what);
+	rpmluavSetListMode(var, 1);
+	rpmluavSetValue(var, RPMLUAV_STRING, body);
+	rpmluaSetVar(lua, var);
+	var = rpmluavFree(var);
+	rpmluaPop(lua);
+    }
+#endif
 	body = _free(body);
     }
     
@@ -582,6 +597,13 @@ Spec freeSpec(Spec spec)
 
     spec->passPhrase = _free(spec->passPhrase);
     spec->cookie = _free(spec->cookie);
+
+#ifdef WITH_LUA
+    {	rpmlua lua = NULL; /* global state */
+	rpmluaDelVar(lua, "patches");
+	rpmluaDelVar(lua, "sources");	
+    }
+#endif
 
     spec->sources = freeSources(spec->sources);
     spec->packages = freePackages(spec->packages);
