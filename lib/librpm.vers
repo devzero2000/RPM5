@@ -63,7 +63,6 @@ LIBRPM_0
     rpmcliFtsPoptTable;
     rpmcliHashesCurrent;
     rpmcliHashesTotal;
-    rpmcliImportPubkey;
     rpmcliInit;
     rpmcliInstall;
     rpmcliInstallCheck;
@@ -351,6 +350,7 @@ LIBRPM_0
     rpmtsGetType;
     rpmtsGoal;
     rpmtsiNext;
+    rpmtsImportPubkey;
     rpmtsInitDB;
     rpmtsInitDSI;
     rpmtsInitIterator;
