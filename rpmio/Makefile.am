@@ -4,9 +4,9 @@ AUTOMAKE_OPTIONS = 1.4 foreign
 
 LINT = splint
 
-EXTRA_DIST = tdir.c tfts.c tget.c tglob.c thkp.c thtml.c tinv.c tkey.c tmire.c tput.c trpmio.c tsw.c ttar.c lookup3.c tpw.c librpmio.vers testit.sh rpmgrep.1
+EXTRA_DIST = ar.c tdeb.c tdir.c tfts.c tget.c tglob.c thkp.c thtml.c tinv.c tkey.c tmire.c tput.c trpmio.c tsw.c ttar.c lookup3.c tpw.c librpmio.vers testit.sh rpmgrep.1
 
-EXTRA_PROGRAMS = tdir tfts tget tglob thkp thtml tinv tkey tmacro tmagic tmire tput tpw trpmio tsw ttar dumpasn1 lookup3
+EXTRA_PROGRAMS = tdeb tdir tfts tget tglob thkp thtml tinv tkey tmacro tmagic tmire tput tpw trpmio tsw ttar dumpasn1 lookup3
 
 bin_PROGRAMS = rpmdigest
 man_MANS =
@@ -35,11 +35,11 @@ RPMIO_LDADD = \
 	$(top_builddir)/misc/librpmmisc.la \
 	@LTLIBINTL@
 
-#RPM_LDADD = \
-#	$(top_builddir)/build/librpmbuild.la \
-#	$(top_builddir)/lib/librpm.la \
-#	$(top_builddir)/rpmdb/librpmdb.la \
-#	$(RPMIO_LDADD)
+RPM_LDADD = \
+	$(top_builddir)/build/librpmbuild.la \
+	$(top_builddir)/lib/librpm.la \
+	$(top_builddir)/rpmdb/librpmdb.la \
+	$(RPMIO_LDADD)
 
 pkgincdir = $(pkgincludedir)$(WITH_PATH_VERSIONED_SUFFIX)
 pkginc_HEADERS = \
@@ -48,7 +48,7 @@ pkginc_HEADERS = \
 	rpmnss.h rpmpgp.h rpmsq.h rpmssl.h rpmsw.h rpmurl.h rpmxar.h \
 	stringbuf.h ugid.h rpmuuid.h
 noinst_HEADERS = \
-	md2.h md4.h poptIO.h rmd128.h rmd160.h rmd256.h rmd320.h sha224.h \
+	ar.h md2.h md4.h poptIO.h rmd128.h rmd160.h rmd256.h rmd320.h sha224.h \
 	salsa10.h salsa20.h tiger.h \
 	LzmaDecode.h rpmhook.h rpmio_internal.h rpmlua.h
 
@@ -153,6 +153,9 @@ EXTRA_DIST += \
 
 rpmdigest_SOURCES = rpmdigest.c
 rpmdigest_LDADD = $(RPMIO_LDADD)
+
+tdeb_SOURCES = tdeb.c ar.c
+tdeb_LDFLAGS = $(RPM_LDADD)
 
 tdir_SOURCES = tdir.c
 tdir_LDADD = $(RPMIO_LDADD)

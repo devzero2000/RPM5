@@ -8,11 +8,15 @@ Makefile.in
 *.la
 *.lcd
 *.lo
+dumpasn1
 gengpg.h
+lookup3
+rpmdigest
 rpmgrep
 teststderr
 testtry
 tdigest
+tdeb
 tdir
 tfts
 tget
@@ -27,6 +31,5 @@ tpw
 tput
 tring
 trpmio
-dumpasn1
-lookup3
 tsw
+ttar
