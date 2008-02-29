@@ -33,18 +33,11 @@ fprintf(stderr, "--> rpmFSM(%p, \"%s\", 0x%x)\n", ts, fn, mapflags);
 
 	fi = rpmfiNew(ts, NULL, RPMTAG_BASENAMES, 0);
 
-	fi->fsm->headerRead = &arHeaderRead;
-	fi->fsm->headerWrite = &arHeaderWrite;
-	fi->fsm->trailerWrite = &arTrailerWrite;
-	fi->fsm->blksize = 1;	/* XXX AR_BLOCKSIZE? */
-
 	psm = rpmpsmNew(ts, NULL, fi);
 
 	ioflags = (mapflags & CPIO_PAYLOAD_CREATE) ? "w.ufdio" : "r.ufdio";
 	psm->cfd = Fopen(fn, ioflags);
 	if (psm->cfd != NULL && !Ferror(psm->cfd)) {
-char buf[BUFSIZ];
-Fread(buf, 1, sizeof(AR_MAGIC)-1, psm->cfd);
 
 	    fi->mapflags |= mapflags;
 	    fsmmode = (mapflags & CPIO_PAYLOAD_CREATE) ? FSM_PKGBUILD : FSM_PKGINSTALL;

@@ -5,7 +5,7 @@
 
 #include "system.h"
 
-#include <rpmio.h>
+#include <rpmio_internal.h>	/* XXX fdGetCpioPos AR_MAGIC */
 #include <rpmlib.h>
 
 #include "ar.h"
@@ -93,6 +93,11 @@ int arHeaderRead(void * _fsm, struct stat * st)
 if (_ar_debug)
 fprintf(stderr, "    arHeaderRead(%p, %p)\n", fsm, st);
 
+    /* XXX Read AR_MAGIC to beginning of ar(1) archive. */
+    if (fdGetCpioPos(fsm->cfd) == 0) {
+	(void) arRead(fsm, fsm->wrbuf, sizeof(AR_MAGIC)-1);
+    }
+
 top:
     rc = arRead(fsm, hdr, sizeof(*hdr));
     if (rc <= 0)	return -rc;
@@ -179,31 +184,41 @@ int arHeaderWrite(void * _fsm, struct stat * st)
 {
     FSM_t fsm = _fsm;
     arHeader hdr = (arHeader) fsm->rdbuf;
+    size_t nb;
     int rc = 0;
 
 if (_ar_debug)
 fprintf(stderr, "    arHeaderWrite(%p, %p)\n", fsm, st);
 
-    memset(hdr, 0, sizeof(*hdr));
+    /* XXX Write AR_MAGIC to beginning of ar(1) archive. */
+    if (fdGetCpioPos(fsm->cfd) == 0) {
+	(void) arWrite(fsm, AR_MAGIC, sizeof(AR_MAGIC)-1);
+    }
 
-    memset(hdr->name, ' ', sizeof(*hdr->name));
-    strncpy(hdr->name, fsm->path, sizeof(hdr->name));
+    memset(hdr, ' ', sizeof(*hdr));
 
-    sprintf(hdr->mtime, "%011o", (unsigned) (st->st_mtime & 037777777777));
-    sprintf(hdr->uid, "%06o", (unsigned int)(st->st_uid & 07777777));
-    sprintf(hdr->gid, "%06o", (unsigned int)(st->st_gid & 07777777));
+    nb = strlen(fsm->path);
+    if (nb >= sizeof(hdr->name))
+	nb = sizeof(hdr->name)-1;
+    strncpy(hdr->name, fsm->path, nb);
+    hdr->name[nb] = '/';
 
-    sprintf(hdr->mode, "%07o", (unsigned int)(st->st_mode & 00007777));
-    sprintf(hdr->filesize, "%011o", (unsigned) (st->st_size & 037777777777));
+    sprintf(hdr->mtime, "%-12d", (unsigned) (st->st_mtime & 037777777777));
+    sprintf(hdr->uid, "%-6d", (unsigned int)(st->st_uid & 07777777));
+    sprintf(hdr->gid, "%-6d", (unsigned int)(st->st_gid & 07777777));
+
+    sprintf(hdr->mode, "%-8o", (unsigned int)(st->st_mode & 07777777));
+    sprintf(hdr->filesize, "%-10d", (unsigned) (st->st_size & 037777777777));
 
     strncpy(hdr->marker, AR_MARKER, sizeof(AR_MARKER)-1);
+
+rc = sizeof(*hdr);
+if (_ar_debug)
+fprintf(stderr, "==> %p[%u] \"%.*s\"\n", hdr, (unsigned)rc, (int)sizeof(*hdr), (char *)hdr);
 
     rc = arWrite(fsm, hdr, sizeof(*hdr));
     if (rc < 0)	return -rc;
     rc = 0;
-
-    /* XXX Padding is unnecessary but shouldn't hurt. */
-    rc = _fsmNext(fsm, FSM_PAD);
 
     return rc;
 }
@@ -215,6 +230,8 @@ int arTrailerWrite(void * _fsm)
 
 if (_ar_debug)
 fprintf(stderr, "    arTrailerWrite(%p)\n", fsm);
+
+    rc = _fsmNext(fsm, FSM_PAD);
 
     return rc;
 }

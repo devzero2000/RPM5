@@ -1,4 +1,5 @@
 5.0.0 -> 5.1a1:
+    - jbj: permit ar(1) payloads (file names are truncated atm).
     - jbj: rpmmg: fix: avoid false failure using <pcreposix.h>.
     - jbj: macro: use popt rather than getopt(3), get rid of POSIXLY_CORRECT.
     - jbj: rpmio: splint fiddles.

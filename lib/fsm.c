@@ -12,6 +12,7 @@
 
 #include "cpio.h"
 #include "tar.h"
+#include "ar.h"
 
 #define	_RPMFI_INTERNAL
 #include "fsm.h"
@@ -549,7 +550,17 @@ fprintf(stderr, "\ttar vectors set\n");
 	    fsm->headerWrite = &tarHeaderWrite;
 	    fsm->trailerWrite = &tarTrailerWrite;
 	    fsm->blksize = TAR_BLOCK_SIZE;
-	} else  {
+	} else
+	if (afmt != NULL && !strcmp(afmt, "ar")) {
+if (_fsm_debug < 0)
+fprintf(stderr, "\tar vectors set\n");
+	    _fsmNext = &fsmNext;
+	    fsm->headerRead = &arHeaderRead;
+	    fsm->headerWrite = &arHeaderWrite;
+	    fsm->trailerWrite = &arTrailerWrite;
+	    fsm->blksize = 2;
+	} else
+	{
 if (_fsm_debug < 0)
 fprintf(stderr, "\tcpio vectors set\n");
 	    fsm->headerRead = &cpioHeaderRead;
@@ -2372,7 +2383,10 @@ if (!(fsmGetFi(fsm)->mapflags & CPIO_PAYLOAD_EXTRACT)) {
     case FSM_PAD:
 	left = (fsm->blksize - (fdGetCpioPos(fsm->cfd) % fsm->blksize)) % fsm->blksize;
 	if (left) {
-	    memset(fsm->rdbuf, 0, left);
+	    if (fsm->blksize == 2)
+		fsm->rdbuf[0] = '\n';	/* XXX ar(1) pads with '\n' */
+	    else
+		memset(fsm->rdbuf, 0, left);
 	    /* XXX DWRITE uses rdnb for I/O length. */
 	    fsm->rdnb = left;
 	    (void) fsmNext(fsm, FSM_DWRITE);

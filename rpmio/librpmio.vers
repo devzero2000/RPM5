@@ -6,6 +6,10 @@ LIBRPMIO_0
     _Access;
     addMacro;
     appendStringBufAux;
+    _ar_debug;
+    arHeaderRead;
+    arHeaderWrite;
+    arTrailerWrite;
     argiAdd;
     argiCount;
     argiData;
@@ -62,6 +66,7 @@ LIBRPMIO_0
     __debug;
     delMacro;
     expandMacros;
+    _fsmNext;
     Fclose;
     _Fclose;
     Fcntl;
