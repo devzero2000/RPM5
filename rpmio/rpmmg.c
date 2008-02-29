@@ -70,9 +70,12 @@ const char * rpmmgFile(rpmmg mg, const char *fn)
 #if defined(HAVE_MAGIC_H)
     if (mg->ms) {
 	t = magic_file(mg->ms, fn);
+	/* XXX HACK: libmagic compiled without <pcreposix.h> spews here. */
 	if (t == NULL) {
-	    rpmlog(RPMLOG_ERR, _("magic_file(ms, %s) failed: %s\n"),
-		(fn ? fn : "(nil)"), magic_error(mg->ms));
+	    const char * msg = magic_error(mg->ms);
+	    if (strstr(msg, "regexec error 17, (match failed)") == NULL)
+		rpmlog(RPMLOG_ERR, _("magic_file(ms, %s) failed: %s\n"),
+			(fn ? fn : "(nil)"), msg);
 	}
     }
 #endif
@@ -92,9 +95,12 @@ const char * rpmmgBuffer(rpmmg mg, const char * b, size_t nb)
 #if defined(HAVE_MAGIC_H)
     if (mg->ms) {
 	t = magic_buffer(mg->ms, b, nb);
+	/* XXX HACK: libmagic compiled without <pcreposix.h> spews here. */
 	if (t == NULL) {
-	    rpmlog(RPMLOG_ERR, _("magic_buffer(ms, %p[%u]) failed: %s\n"),
-		b, (unsigned)nb, magic_error(mg->ms));
+	    const char * msg = magic_error(mg->ms);
+	    if (strstr(msg, "regexec error 17, (match failed)") == NULL)
+		rpmlog(RPMLOG_ERR, _("magic_buffer(ms, %p[%u]) failed: %s\n"),
+			b, (unsigned)nb, msg);
 	}
     }
 #endif
