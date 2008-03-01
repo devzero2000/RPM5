@@ -6,6 +6,7 @@
 
 #include <rpmio_internal.h>
 #include <rpmmacro.h>
+#include <argv.h>
 
 #define	_RPMDAV_INTERNAL
 #include <rpmdav.h>
@@ -943,6 +944,64 @@ static /*@only@*/ char * ftpBuf = NULL;
 	
 #define alloca_strdup(_s)       strcpy(alloca(strlen(_s)+1), (_s))
 
+/* =============================================================== */
+struct ftp_context_s {
+    const char *uri;
+/*@refcounted@*/
+    urlinfo u;
+    int ac;
+    int nalloced;
+    ARGV_t av;
+/*@null@*/ /*@shared@*/
+    struct stat *st;
+    mode_t * modes;
+    size_t * sizes;
+    time_t * mtimes;
+};
+
+/*@null@*/
+static void *ftp_destroy_context(/*@only@*/ /*@null@*/ struct ftp_context_s *ctx)
+	/*@globals internalState @*/
+	/*@modifies ctx, internalState @*/
+{
+    if (ctx == NULL)
+	return NULL;
+    if (ctx->av != NULL)
+	ctx->av = argvFree(ctx->av);
+    ctx->modes = _free(ctx->modes);
+    ctx->sizes = _free(ctx->sizes);
+    ctx->mtimes = _free(ctx->mtimes);
+    ctx->u = urlFree(ctx->u, "ftp_destroy_context");
+    ctx->uri = _free(ctx->uri);
+    memset(ctx, 0, sizeof(*ctx));
+    ctx = _free(ctx);
+    return NULL;
+}
+
+/*@null@*/
+static void *ftp_create_context(const char *uri, /*@null@*/ struct stat *st)
+	/*@globals internalState @*/
+	/*@modifies *st, internalState @*/
+{
+    struct ftp_context_s * ctx;
+    urlinfo u;
+
+/*@-globs@*/	/* FIX: h_errno annoyance. */
+    if (urlSplit(uri, &u))
+	return NULL;
+/*@=globs@*/
+
+    ctx = xcalloc(1, sizeof(*ctx));
+    ctx->uri = xstrdup(uri);
+    ctx->u = urlLink(u, "ftp_create_context");
+/*@-temptrans@*/	/* XXX note the assignment */
+    if ((ctx->st = st) != NULL)
+	memset(ctx->st, 0, sizeof(*ctx->st));
+/*@=temptrans@*/
+    return ctx;
+}
+/* =============================================================== */
+
 static int ftpNLST(const char * url, ftpSysCall_t ftpSysCall,
 		/*@out@*/ /*@null@*/ struct stat * st,
 		/*@out@*/ /*@null@*/ char * rlbuf, size_t rlbufsiz)
@@ -1214,32 +1273,31 @@ static DIR * ftpOpendir(const char * path)
 	/*@modifies fileSystem, internalState @*/
 {
     AVDIR avdir;
-    struct dirent * dp;
-    size_t nb;
+    struct ftp_context_s * ctx;
+    struct stat * st = NULL;
     const char * s, * sb, * se;
-    const char ** av;
-    unsigned char * dt;
-    char * t;
-    int ac;
+    int nac;
     int c;
     int rc;
 
 if (_ftp_debug)
 fprintf(stderr, "*** ftpOpendir(%s)\n", path);
+
+    /* Load FTP collection into argv. */
+    ctx = ftp_create_context(path, st);
+    if (ctx == NULL) {
+        errno = ENOENT;         /* Note: ctx is NULL iff urlSplit() fails. */
+        return NULL;
+    }
+
     rc = ftpNLST(path, DO_FTP_GLOB, NULL, NULL, 0);
     if (rc)
 	return NULL;
 
-    /*
-     * ftpBuf now contains absolute paths, newline terminated.
-     * Calculate the number of bytes to hold the directory info.
-     */
-    nb = sizeof(".") + sizeof("..");
-    ac = 2;
+    nac = 0;
     sb = NULL;
     s = se = ftpBuf;
-    while ((c = (int) *se) != (int) '\0') {
-	se++;
+    while ((c = (int) *se++) != (int) '\0') {
 	switch (c) {
 	case '/':
 	    sb = se;
@@ -1249,8 +1307,7 @@ fprintf(stderr, "*** ftpOpendir(%s)\n", path);
 		for (sb = se; sb > s && sb[-1] != ' '; sb--)
 		    {};
 	    }
-	    ac++;
-	    nb += (se - sb);
+	    nac++;
 
 	    if (*se == '\n') se++;
 	    sb = NULL;
@@ -1261,36 +1318,10 @@ fprintf(stderr, "*** ftpOpendir(%s)\n", path);
 	}
     }
 
-    nb += sizeof(*avdir) + sizeof(*dp) + ((ac + 1) * sizeof(*av)) + (ac + 1);
-    avdir = xcalloc(1, nb);
-    /*@-abstract@*/
-    dp = (struct dirent *) (avdir + 1);
-    av = (const char **) (dp + 1);
-    dt = (unsigned char *) (av + (ac + 1));
-    t = (char *) (dt + ac + 1);
-    /*@=abstract@*/
+    ctx->av = xcalloc(nac+1, sizeof(*ctx->av));
+    ctx->modes = xcalloc(nac, sizeof(*ctx->modes));
 
-    avdir->fd = avmagicdir;
-/*@-usereleased@*/
-    avdir->data = (char *) dp;
-/*@=usereleased@*/
-    avdir->allocation = nb;
-    avdir->size = ac;
-    avdir->offset = -1;
-    /* Hash the directory path for a d_ino analogue. */
-    avdir->filepos = hashFunctionString(0, path, 0);
-
-#if defined(HAVE_PTHREAD_H)
-/*@-moduncon -noeffectuncon@*/
-    (void) pthread_mutex_init(&avdir->lock, NULL);
-/*@=moduncon =noeffectuncon@*/
-#endif
-
-    ac = 0;
-    /*@-dependenttrans -unrecog@*/
-    dt[ac] = (unsigned char)DT_DIR; av[ac++] = t; t = stpcpy(t, ".");	t++;
-    dt[ac] = (unsigned char)DT_DIR; av[ac++] = t; t = stpcpy(t, "..");	t++;
-    /*@=dependenttrans =unrecog@*/
+    nac = 0;
     sb = NULL;
     s = se = ftpBuf;
     while ((c = (int) *se) != (int) '\0') {
@@ -1300,44 +1331,27 @@ fprintf(stderr, "*** ftpOpendir(%s)\n", path);
 	    sb = se;
 	    /*@switchbreak@*/ break;
 	case '\r':
-	    /*@-dependenttrans@*/
-	    av[ac] = t;
-	    /*@=dependenttrans@*/
 	    if (sb == NULL) {
+		ctx->modes[nac] = (*s == 'd' ? 0755 : 0644);
 		/*@-unrecog@*/
 		switch(*s) {
-		case 'p':
-		    dt[ac] = (unsigned char) DT_FIFO;
-		    /*@innerbreak@*/ break;
-		case 'c':
-		    dt[ac] = (unsigned char) DT_CHR;
-		    /*@innerbreak@*/ break;
-		case 'd':
-		    dt[ac] = (unsigned char) DT_DIR;
-		    /*@innerbreak@*/ break;
-		case 'b':
-		    dt[ac] = (unsigned char) DT_BLK;
-		    /*@innerbreak@*/ break;
-		case '-':
-		    dt[ac] = (unsigned char) DT_REG;
-		    /*@innerbreak@*/ break;
-		case 'l':
-		    dt[ac] = (unsigned char) DT_LNK;
-		    /*@innerbreak@*/ break;
-		case 's':
-		    dt[ac] = (unsigned char) DT_SOCK;
-		    /*@innerbreak@*/ break;
-		default:
-		    dt[ac] = (unsigned char) DT_UNKNOWN;
-		    /*@innerbreak@*/ break;
+		case 'p': ctx->modes[nac] |= S_IFIFO; /*@innerbreak@*/ break;
+		case 'c': ctx->modes[nac] |= S_IFCHR; /*@innerbreak@*/ break;
+		case 'd': ctx->modes[nac] |= S_IFDIR; /*@innerbreak@*/ break;
+		case 'b': ctx->modes[nac] |= S_IFBLK; /*@innerbreak@*/ break;
+		case '-': ctx->modes[nac] |= S_IFREG; /*@innerbreak@*/ break;
+		case 'l': ctx->modes[nac] |= S_IFLNK; /*@innerbreak@*/ break;
+		case 's': ctx->modes[nac] |= S_IFSOCK; /*@innerbreak@*/ break;
+		default:  ctx->modes[nac] |= S_IFREG; /*@innerbreak@*/ break;
 		}
 		/*@=unrecog@*/
 		for (sb = se; sb > s && sb[-1] != ' '; sb--)
 		    {};
 	    }
-	    ac++;
-	    t = stpncpy(t, sb, (se - sb));
-	    t[-1] = '\0';
+	    /*@-dependenttrans@*/
+	    ctx->av[nac] = strndup(sb, (se-sb-1));
+	    /*@=dependenttrans@*/
+	    nac++;
 	    if (*se == '\n') se++;
 	    sb = NULL;
 	    s = se;
@@ -1346,7 +1360,10 @@ fprintf(stderr, "*** ftpOpendir(%s)\n", path);
 	    /*@switchbreak@*/ break;
 	}
     }
-    av[ac] = NULL;
+
+    avdir = avOpendir(path, ctx->av, ctx->modes);
+
+    ctx = ftp_destroy_context(ctx);
 
 /*@-kepttrans@*/
     return (DIR *) avdir;
