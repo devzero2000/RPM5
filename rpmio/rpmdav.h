@@ -101,7 +101,7 @@ DIR * avOpendir(const char * path)
 
 /**
  * Send a http request.
- * @param ctrl		
+ * @param ctrl		connection stream
  * @param httpCmd	http command
  * @param httpArg	http command argument (NULL if none)
  * @returns		0 on success
@@ -112,8 +112,8 @@ int davReq(FD_t ctrl, const char * httpCmd, /*@null@*/ const char * httpArg)
 
 /**
  * Read a http response.
- * @param u
- * @param cntl		
+ * @param u		URL container
+ * @param ctrl		connection stream
  * @retval *str		error msg		
  * @returns		0 on success
  */
@@ -124,6 +124,12 @@ int davResp(urlinfo u, FD_t ctrl, /*@out@*/ /*@null@*/ char *const * str)
 /*@=exportlocal@*/
 
 /**
+ * Open a URL.
+ * @param url
+ * @param flags
+ * @param mode
+ * @retval *uret
+ * @return
  */
 /*@null@*/
 FD_t davOpen(const char * url, /*@unused@*/ int flags,
@@ -219,12 +225,6 @@ DIR * davOpendir(const char * path)
 	/*@modifies errno, fileSystem, internalState @*/;
 
 /**
- * realpath(3) clone.
- */
-char * davRealpath(const char * path, /*@out@*/ /*@null@*/ char * resolved_path)
-	/*@modifies *resolved_path @*/;
-
-/**
  * stat(2) clone.
  */
 int davStat(const char * path, /*@out@*/ struct stat * st)
@@ -237,6 +237,12 @@ int davStat(const char * path, /*@out@*/ struct stat * st)
 int davLstat(const char * path, /*@out@*/ struct stat * st)
 	/*@globals errno, fileSystem, internalState @*/
 	/*@modifies *st, errno, fileSystem, internalState @*/;
+
+/**
+ * realpath(3) clone.
+ */
+char * davRealpath(const char * path, /*@out@*/ /*@null@*/ char * resolved_path)
+	/*@modifies *resolved_path @*/;
 
 #ifdef __cplusplus
 }

@@ -583,6 +583,8 @@ INPUT                  = @top_srcdir@/Doxyheader \
                          @top_srcdir@/rpmdb/sqlite.c \
                          @top_srcdir@/rpmdb/tagname.c \
                          @top_srcdir@/rpmdb/tagtbl.c \
+                         @top_srcdir@/rpmio/ar.c \
+                         @top_srcdir@/rpmio/ar.h \
                          @top_srcdir@/rpmio/argv.c \
                          @top_srcdir@/rpmio/argv.h \
                          @top_srcdir@/rpmio/digest.c \
@@ -592,30 +594,49 @@ INPUT                  = @top_srcdir@/Doxyheader \
                          @top_srcdir@/rpmio/lookup3.c \
                          @top_srcdir@/rpmio/macro.c \
                          @top_srcdir@/rpmio/poptIO.c \
+                         @top_srcdir@/rpmio/rpmbc.c \
+                         @top_srcdir@/rpmio/rpmbc.h \
                          @top_srcdir@/rpmio/rpmcb.h \
+                         @top_srcdir@/rpmio/rpmdav.c \
+                         @top_srcdir@/rpmio/rpmdav.h \
+                         @top_srcdir@/rpmio/rpmgc.c \
+                         @top_srcdir@/rpmio/rpmgc.h \
                          @top_srcdir@/rpmio/rpmgrep.c \
                          @top_srcdir@/rpmio/rpmhash.c \
                          @top_srcdir@/rpmio/rpmhash.h \
+                         @top_srcdir@/rpmio/rpmhook.c \
+                         @top_srcdir@/rpmio/rpmhook.h \
                          @top_srcdir@/rpmio/rpmio.c \
                          @top_srcdir@/rpmio/rpmio.h \
                          @top_srcdir@/rpmio/rpmio_internal.h \
                          @top_srcdir@/rpmio/rpmlog.c \
                          @top_srcdir@/rpmio/rpmlog.h \
+                         @top_srcdir@/rpmio/rpmlua.c \
+                         @top_srcdir@/rpmio/rpmlua.h \
                          @top_srcdir@/rpmio/rpmmacro.h \
                          @top_srcdir@/rpmio/rpmmalloc.c \
                          @top_srcdir@/rpmio/rpmmg.c \
                          @top_srcdir@/rpmio/rpmmg.h \
+                         @top_srcdir@/rpmio/rpmnss.c \
+                         @top_srcdir@/rpmio/rpmnss.h \
                          @top_srcdir@/rpmio/rpmpgp.c \
                          @top_srcdir@/rpmio/rpmpgp.h \
                          @top_srcdir@/rpmio/rpmrpc.c \
                          @top_srcdir@/rpmio/rpmsq.c \
                          @top_srcdir@/rpmio/rpmsq.h \
+                         @top_srcdir@/rpmio/rpmssl.c \
+                         @top_srcdir@/rpmio/rpmssl.h \
                          @top_srcdir@/rpmio/rpmsw.c \
                          @top_srcdir@/rpmio/rpmsw.h \
                          @top_srcdir@/rpmio/rpmurl.h \
+                         @top_srcdir@/rpmio/rpmuuid.c \
+                         @top_srcdir@/rpmio/rpmuuid.h \
+                         @top_srcdir@/rpmio/rpmxar.c \
+                         @top_srcdir@/rpmio/rpmxar.h \
                          @top_srcdir@/rpmio/strcasecmp.c \
-                         @top_srcdir@/rpmio/stringbuf.h \
                          @top_srcdir@/rpmio/stringbuf.c \
+                         @top_srcdir@/rpmio/stringbuf.h \
+                         @top_srcdir@/rpmio/strtolocale.c \
                          @top_srcdir@/rpmio/ugid.c \
                          @top_srcdir@/rpmio/ugid.h \
                          @top_srcdir@/rpmio/url.c \
