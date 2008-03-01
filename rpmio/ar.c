@@ -246,10 +246,13 @@ fprintf(stderr, "    arHeaderWrite(%p, %p)\n", fsm, st);
 
     nb = strlen(fsm->path);
     if (nb >= sizeof(hdr->name)) {
-	static int lmtaboff = 0;
+	const char * t = fsm->lmtab + fsm->lmtaboff;
+	const char * te = strchr(t, '\n');
 	/* GNU: on "/123": Write "/123" offset for long member name. */
-	/* XXX HACK: truncate long member names until fsm->lmtab is loaded. */
-	hdr->name[sprintf(hdr->name, "_%u_/", lmtaboff++)] = ' ';
+	nb = snprintf(hdr->name, sizeof(hdr->name)-1, "/%u", fsm->lmtaboff);
+	hdr->name[nb] = ' ';
+	if (te != NULL)
+	    fsm->lmtaboff += (te - t) + 1;
     } else {
 	strncpy(hdr->name, fsm->path, nb);
 	hdr->name[nb] = '/';

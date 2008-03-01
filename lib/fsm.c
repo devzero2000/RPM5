@@ -530,6 +530,57 @@ FSM_t freeFSM(FSM_t fsm)
     return _free(fsm);
 }
 
+static int arSetup(FSM_t fsm, const rpmfi fi)
+	/*@modifies fsm @*/
+{
+    const char * path;
+    char * t;
+    size_t lmtablen = 0;
+    size_t nb;
+    int ix;
+
+    /* Calculate size of ar(1) long member table. */
+    for (ix = 0; ix < fi->fc; ix++) {
+#ifdef	NOTYET
+	if (fi->apath) {
+	    const char * apath = NULL;
+	    (void) urlPath(fi->apath[ix], &apath);
+	    path = apath + fi->striplen;
+	} else
+#endif
+	    path = fi->bnl[ix];
+	if ((nb = strlen(path)) < 15)
+	    continue;
+	lmtablen += nb + 1;	/* trailing \n */
+    }
+
+    /* Anything to do? */
+    if (lmtablen == 0)
+	return 0;
+
+    /* Create and load ar(1) long member table. */
+    fsm->lmtab = t = xmalloc(lmtablen + 1);	/* trailing \0 */
+    fsm->lmtablen = lmtablen;
+    fsm->lmtaboff = 0;
+    for (ix = 0; ix < fi->fc; ix++) {
+#ifdef	NOTYET
+	if (fi->apath) {
+	    const char * apath = NULL;
+	    (void) urlPath(fi->apath[ix], &apath);
+	    path = apath + fi->striplen;
+	} else
+#endif
+	    path = fi->bnl[ix];
+	if ((nb = strlen(path)) < 15)
+	    continue;
+	t = stpcpy(t, path);
+	*t++ = '\n';
+    }
+    *t = '\0';
+    
+    return 0;
+}
+
 int fsmSetup(FSM_t fsm, fileStage goal, const char * afmt,
 		const rpmts ts, const rpmfi fi, FD_t cfd,
 		unsigned int * archiveSize, const char ** failedFile)
@@ -559,6 +610,7 @@ fprintf(stderr, "\tar vectors set\n");
 	    fsm->headerWrite = &arHeaderWrite;
 	    fsm->trailerWrite = &arTrailerWrite;
 	    fsm->blksize = 2;
+	    (void) arSetup(fsm, fi);
 	} else
 	{
 if (_fsm_debug < 0)
