@@ -111,16 +111,45 @@ fprintf(stderr, "==> %p[%u] \"%.*s\"\n", hdr, (unsigned)rc, (int)sizeof(*hdr), (
 
     st->st_size = strntoul(hdr->filesize, NULL, 10, sizeof(hdr->filesize));
 
-    /* GNU: on "//":	Ignore long file names for now. */
-    /* GNU: on "/":	Skip symbols (if any) */
-    if (hdr->name[0] == '/' && (hdr->name[1] == '/' || hdr->name[1] == ' ')) {
-	rc = arRead(fsm, fsm->wrbuf, st->st_size);
-	if (rc <= 0)	return -rc;
-	goto top;
-    }
+    /* Special ar(1) members. */
+    if (hdr->name[0] == '/') {
+	/* GNU: on "//":	Save long member names. */
+	if (hdr->name[1] == '/' && hdr->name[2] == ' ') {
+	    char * t;
+	    int i;
 
-    /* Read file name. */
-    if (fsm->path == NULL && hdr->name[0] != ' ') {
+	    rc = arRead(fsm, fsm->wrbuf, st->st_size);
+	    if (rc <= 0)	return -rc;
+
+	    fsm->wrbuf[rc] = '\0';
+	    fsm->lmtab = t = xstrdup(fsm->wrbuf);
+	    fsm->lmtablen = rc;
+	    fsm->lmtaboff = 0;
+
+	    for (i = 1; i < fsm->lmtablen; i++) {
+		t++;
+		if (t[0] != '\n') continue;
+		t[0] = '\0';
+		/* GNU: trailing '/' to permit file names with trailing ' '. */
+		if (t[-1] == '/') t[-1] = '\0';
+	    }
+	    goto top;
+	}
+	/* GNU: on "/":	Skip symbols (if any) */
+	if (hdr->name[1] == ' ') {
+	    rc = arRead(fsm, fsm->wrbuf, st->st_size);
+	    if (rc <= 0)	return -rc;
+	    goto top;
+	}
+	/* GNU: on "/123": Substitute long member name. */
+	if (xisdigit(hdr->name[1])) {
+	    char * te = NULL;
+	    int i = strntoul(&hdr->name[1], &te, 10, sizeof(hdr->name)-2);
+	    if (*te == ' ' && fsm->lmtab != NULL && i < fsm->lmtablen)
+		fsm->path = xstrdup(fsm->lmtab + i);
+	}
+    } else
+    if (hdr->name[0] != ' ') {	/* Short member name. */
 	size_t nb = sizeof(hdr->name);
 	char t[sizeof(hdr->name)+1];
 	memcpy(t, hdr->name, nb);
@@ -231,7 +260,7 @@ int arTrailerWrite(void * _fsm)
 if (_ar_debug)
 fprintf(stderr, "    arTrailerWrite(%p)\n", fsm);
 
-    rc = _fsmNext(fsm, FSM_PAD);
+    rc = _fsmNext(fsm, FSM_PAD);	/* XXX likely unnecessary. */
 
     return rc;
 }

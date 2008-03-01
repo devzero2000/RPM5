@@ -624,6 +624,7 @@ fprintf(stderr, "--> fsmTeardown(%p)\n", fsm);
     if (!rc)
 	rc = fsmUNSAFE(fsm, FSM_DESTROY);
 
+    fsm->lmtab = _free(fsm->lmtab);
     fsm->iter = mapFreeIterator(fsm->iter);
     if (fsm->cfd != NULL) {
 	fsm->cfd = fdFree(fsm->cfd, "persist (fsm)");

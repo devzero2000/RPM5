@@ -207,9 +207,16 @@ struct fsm_s {
     struct stat osb;		/*!< Original file stat(2) info. */
 
     unsigned blksize;		/*!< Archive block size. */
-    int (*headerRead) (FSM_t fsm, struct stat *st);
-    int (*headerWrite) (FSM_t fsm, struct stat *st);
-    int (*trailerWrite) (FSM_t fsm);
+    int (*headerRead) (FSM_t fsm, struct stat *st)
+	/*@modifies fsm, st @*/;
+    int (*headerWrite) (FSM_t fsm, struct stat *st)
+	/*@modifies fsm, st @*/;
+    int (*trailerWrite) (FSM_t fsm)
+	/*@modifies fsm, st @*/;
+
+    char * lmtab;		/*!< ar(1) long member name table. */
+    size_t lmtablen;		/*!< ar(1) no. bytes in lmtab. */
+    size_t lmtaboff;		/*!< ar(1) current offset in lmtab. */
 };
 
 #ifdef __cplusplus
