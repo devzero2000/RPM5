@@ -1,4 +1,5 @@
 5.0.0 -> 5.1a1:
+    - jbj: rpmdav: refactor davOpendir et al on top of avOpendir.
     - jbj: handle (GNU-style) ar(1) long member names.
     - jbj: permit ar(1) payloads (file names are truncated atm).
     - jbj: rpmmg: fix: avoid false failure using <pcreposix.h>.

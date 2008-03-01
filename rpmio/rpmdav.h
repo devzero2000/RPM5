@@ -48,12 +48,6 @@ typedef DIR *			DAVDIR;
 extern int avmagicdir;
 #define ISAVMAGIC(_dir) (!memcmp((_dir), &avmagicdir, sizeof(avmagicdir)))
 
-/**
- */
-/*@unchecked@*/
-extern int davmagicdir;
-#define ISDAVMAGIC(_dir) (!memcmp((_dir), &davmagicdir, sizeof(davmagicdir)))
-
 #ifdef __cplusplus
 extern "C" {
 #endif

@@ -1778,88 +1778,22 @@ fprintf(stderr, "*** avOpendir(%s, %p)\n", path, av);
 #ifdef WITH_NEON
 
 /* =============================================================== */
-/*@unchecked@*/
-int davmagicdir = 0x8440291;
-
 int davClosedir(/*@only@*/ DIR * dir)
 {
-    DAVDIR avdir = (DAVDIR)dir;
-
-if (_dav_debug < 0)
-fprintf(stderr, "*** davClosedir(%p)\n", avdir);
-
-#if defined(HAVE_PTHREAD_H)
-/*@-moduncon -noeffectuncon @*/
-    (void) pthread_mutex_destroy(&avdir->lock);
-/*@=moduncon =noeffectuncon @*/
-#endif
-
-    avdir = _free(avdir);
-    return 0;
+    return avClosedir(dir);
 }
 
 struct dirent * davReaddir(DIR * dir)
 {
-    DAVDIR avdir = (DAVDIR)dir;
-    struct dirent * dp;
-    const char ** av;
-    unsigned char * dt;
-    int ac;
-    int i;
-
-    if (avdir == NULL || !ISDAVMAGIC(avdir) || avdir->data == NULL) {
-	/* XXX TODO: EBADF errno. */
-	return NULL;
-    }
-
-    dp = (struct dirent *) avdir->data;
-    av = (const char **) (dp + 1);
-    ac = (int)avdir->size;
-    dt = (unsigned char *) (av + (ac + 1));
-    i = avdir->offset + 1;
-
-    if (i < 0 || i >= ac || av[i] == NULL)
-	return NULL;
-
-    avdir->offset = i;
-
-    /* XXX glob(3) uses REAL_DIR_ENTRY(dp) test on d_ino */
-/*@-type@*/
-    /* Hash the name (starting with parent hash) for a d_ino analogue. */
-    dp->d_ino = hashFunctionString(avdir->filepos, dp->d_name, 0);
-#if !defined(__DragonFly__) && !defined(__CYGWIN__)
-    dp->d_reclen = 0;		/* W2DO? */
-#endif
-
-#if !(defined(hpux) || defined(__hpux) || defined(sun) || defined(RPM_OS_AIX) || defined(__CYGWIN__))
-#if !defined(__APPLE__) && !defined(__FreeBSD_kernel__) && !defined(__FreeBSD__) && !defined(__NetBSD__) && !defined(__DragonFly__)
-    dp->d_off = 0;		/* W2DO? */
-#endif
-    dp->d_type = dt[i];
-#endif
-/*@=type@*/
-
-    strncpy(dp->d_name, av[i], sizeof(dp->d_name));
-if (_dav_debug < 0)
-fprintf(stderr, "*** davReaddir(%p) %p \"%s\"\n", (void *)avdir, dp, dp->d_name);
-
-    return dp;
+    return avReaddir(dir);
 }
 
 DIR * davOpendir(const char * path)
 {
+    AVDIR avdir;
     struct fetch_context_s * ctx;
     struct stat sb, *st = &sb; /* XXX HACK: davHEAD needs ctx->st. */
-    const char ** av;
     int rc;
-
-    DAVDIR avdir;
-    struct dirent * dp;
-    size_t nb;
-    const char ** nav;
-    unsigned char * dt;
-    char * t;
-    int ac, nac;
 
 if (_dav_debug < 0)
 fprintf(stderr, "*** davOpendir(%s)\n", path);
@@ -1883,58 +1817,7 @@ fprintf(stderr, "*** davOpendir(%s)\n", path);
 	return NULL;
     }
 
-    av = ctx->av;
-    nb = 0;
-    ac = 0;
-    if (av != NULL)
-    while (av[ac] != NULL)
-	nb += strlen(av[ac++]) + 1;
-    ac += 2;	/* for "." and ".." */
-    nb += sizeof(".") + sizeof("..");
-
-    nb += sizeof(*avdir) + sizeof(*dp) + ((ac + 1) * sizeof(*av)) + (ac + 1);
-    avdir = xcalloc(1, nb);
-    /*@-abstract@*/
-    dp = (struct dirent *) (avdir + 1);
-    nav = (const char **) (dp + 1);
-    dt = (unsigned char *) (nav + (ac + 1));
-    t = (char *) (dt + ac + 1);
-    /*@=abstract@*/
-
-    avdir->fd = davmagicdir;
-/*@-usereleased@*/
-    avdir->data = (char *) dp;
-/*@=usereleased@*/
-    avdir->allocation = nb;
-    avdir->size = ac;
-    avdir->offset = -1;
-    /* Hash the directory path for a d_ino analogue. */
-    avdir->filepos = hashFunctionString(0, path, 0);
-
-#if defined(HAVE_PTHREAD_H)
-/*@-moduncon -noeffectuncon -nullpass @*/
-    (void) pthread_mutex_init(&avdir->lock, NULL);
-/*@=moduncon =noeffectuncon =nullpass @*/
-#endif
-
-    nac = 0;
-/*@-dependenttrans -unrecog@*/
-    dt[nac] = (unsigned char)DT_DIR; nav[nac++] = t; t = stpcpy(t, ".");  t++;
-    dt[nac] = (unsigned char)DT_DIR; nav[nac++] = t; t = stpcpy(t, ".."); t++;
-/*@=dependenttrans =unrecog@*/
-
-    /* Append av strings to DIR elements. */
-    ac = 0;
-    if (av != NULL)
-    while (av[ac] != NULL) {
-	nav[nac] = t;
-	dt[nac] = (unsigned char) (S_ISDIR(ctx->modes[ac]) ? DT_DIR : DT_REG);
-	t = stpcpy(t, av[ac]);
-	ac++;
-	t++;
-	nac++;
-    }
-    nav[nac] = NULL;
+    avdir = avOpendir(path, ctx->av, ctx->modes);
 
     ctx = fetch_destroy_context(ctx);
 

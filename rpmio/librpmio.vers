@@ -48,7 +48,6 @@ LIBRPMIO_0
     _dav_debug;
     _dav_nooptions;
     davLstat;
-    davmagicdir;
     davMkdir;
     davOpen;
     davOpendir;
