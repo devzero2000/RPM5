@@ -180,8 +180,8 @@ static int cpioStrCmp(const void * a, const void * b)
     (void) urlPath(aurl, &afn);
     (void) urlPath(burl, &bfn);
 
-    /* XXX Some 4+ year old rpm packages have basename only in payloads. */
 #ifdef	VERY_OLD_BUGGY_RPM_PACKAGES
+    /* XXX Some rpm-2.4 packages from 1997 have basename only in payloads. */
     if (strchr(afn, '/') == NULL)
 	bfn = strrchr(bfn, '/') + 1;
 #endif
@@ -190,7 +190,7 @@ static int cpioStrCmp(const void * a, const void * b)
     if (afn[0] == '.' && afn[1] == '/')	afn += 2;
     if (bfn[0] == '.' && bfn[1] == '/')	bfn += 2;
 
-    /* If either path is absolute, make it relative. */
+    /* If either path is absolute, make it relative to '/'. */
     if (afn[0] == '/')	afn += 1;
     if (bfn[0] == '/')	bfn += 1;
 

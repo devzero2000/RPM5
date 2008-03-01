@@ -54,9 +54,10 @@ static int strntoul(const char *str, /*@out@*/char **endptr, int base, int num)
     return ret;
 }
 
-static ssize_t arRead(FSM_t fsm, void * buf, size_t count)
-	/*@modifies fsm, *buf @*/
+static ssize_t arRead(void * _fsm, void * buf, size_t count)
+	/*@modifies _fsm, *buf @*/
 {
+    FSM_t fsm = _fsm;
     char * t = buf;
     size_t nb = 0;
 
@@ -111,9 +112,9 @@ fprintf(stderr, "==> %p[%u] \"%.*s\"\n", hdr, (unsigned)rc, (int)sizeof(*hdr), (
 
     st->st_size = strntoul(hdr->filesize, NULL, 10, sizeof(hdr->filesize));
 
-    /* Special ar(1) members. */
+    /* Special ar(1) archive members. */
     if (hdr->name[0] == '/') {
-	/* GNU: on "//":	Save long member names. */
+	/* GNU: on "//":	Read long member name string table. */
 	if (hdr->name[1] == '/' && hdr->name[2] == ' ') {
 	    char * t;
 	    int i;
@@ -135,13 +136,13 @@ fprintf(stderr, "==> %p[%u] \"%.*s\"\n", hdr, (unsigned)rc, (int)sizeof(*hdr), (
 	    }
 	    goto top;
 	}
-	/* GNU: on "/":	Skip symbols (if any) */
+	/* GNU: on "/":	Skip symbol table. */
 	if (hdr->name[1] == ' ') {
 	    rc = arRead(fsm, fsm->wrbuf, st->st_size);
 	    if (rc <= 0)	return -rc;
 	    goto top;
 	}
-	/* GNU: on "/123": Substitute long member name. */
+	/* GNU: on "/123": Read "123" offset to substitute long member name. */
 	if (xisdigit(hdr->name[1])) {
 	    char * te = NULL;
 	    int i = strntoul(&hdr->name[1], &te, 10, sizeof(hdr->name)-2);
@@ -181,9 +182,10 @@ fprintf(stderr, "\t     %06o%3d (%4d,%4d)%12d %s\n",
     return rc;
 }
 
-static ssize_t arWrite(FSM_t fsm, const void *buf, size_t count)
-	/*@modifies fsm @*/
+static ssize_t arWrite(void * _fsm, const void *buf, size_t count)
+	/*@modifies _fsm @*/
 {
+    FSM_t fsm = _fsm;
     const char * s = buf;
     size_t nb = 0;
 
@@ -219,25 +221,46 @@ int arHeaderWrite(void * _fsm, struct stat * st)
 if (_ar_debug)
 fprintf(stderr, "    arHeaderWrite(%p, %p)\n", fsm, st);
 
-    /* XXX Write AR_MAGIC to beginning of ar(1) archive. */
+    /* At beginning of ar(1) archive, write magic and long member table. */
     if (fdGetCpioPos(fsm->cfd) == 0) {
+	/* Write ar(1) magic. */
 	(void) arWrite(fsm, AR_MAGIC, sizeof(AR_MAGIC)-1);
+	/* GNU: on "//":	Write long member name string table. */
+	if (fsm->lmtab != NULL) {
+	    memset(hdr, ' ', sizeof(*hdr));
+	    hdr->name[0] = '/';
+	    hdr->name[1] = '/';
+	    sprintf(hdr->filesize, "%-10d", (unsigned) (fsm->lmtablen & 037777777777));
+	    strncpy(hdr->marker, AR_MARKER, sizeof(AR_MARKER)-1);
+
+	    rc = arWrite(fsm, hdr, sizeof(*hdr));
+	    if (rc < 0)	return -rc;
+	    rc = arWrite(fsm, fsm->lmtab, fsm->lmtablen);
+	    if (rc < 0)	return -rc;
+	    rc = _fsmNext(fsm, FSM_PAD);
+	    if (rc < 0)	return -rc;
+	}
     }
 
     memset(hdr, ' ', sizeof(*hdr));
 
     nb = strlen(fsm->path);
-    if (nb >= sizeof(hdr->name))
-	nb = sizeof(hdr->name)-1;
-    strncpy(hdr->name, fsm->path, nb);
-    hdr->name[nb] = '/';
+    if (nb >= sizeof(hdr->name)) {
+	static int lmtaboff = 0;
+	/* GNU: on "/123": Write "/123" offset for long member name. */
+	/* XXX HACK: truncate long member names until fsm->lmtab is loaded. */
+	hdr->name[sprintf(hdr->name, "_%u_/", lmtaboff++)] = ' ';
+    } else {
+	strncpy(hdr->name, fsm->path, nb);
+	hdr->name[nb] = '/';
+    }
 
-    sprintf(hdr->mtime, "%-12d", (unsigned) (st->st_mtime & 037777777777));
-    sprintf(hdr->uid, "%-6d", (unsigned int)(st->st_uid & 07777777));
-    sprintf(hdr->gid, "%-6d", (unsigned int)(st->st_gid & 07777777));
+    sprintf(hdr->mtime, "%-12u", (unsigned) (st->st_mtime & 037777777777));
+    sprintf(hdr->uid, "%-6u", (unsigned int)(st->st_uid & 07777777));
+    sprintf(hdr->gid, "%-6u", (unsigned int)(st->st_gid & 07777777));
 
     sprintf(hdr->mode, "%-8o", (unsigned int)(st->st_mode & 07777777));
-    sprintf(hdr->filesize, "%-10d", (unsigned) (st->st_size & 037777777777));
+    sprintf(hdr->filesize, "%-10u", (unsigned) (st->st_size & 037777777777));
 
     strncpy(hdr->marker, AR_MARKER, sizeof(AR_MARKER)-1);
 
