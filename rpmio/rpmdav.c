@@ -1705,27 +1705,33 @@ fprintf(stderr, "*** avReaddir(%p) %p \"%s\"\n", (void *)avdir, dp, dp->d_name);
     return dp;
 }
 
-DIR * avOpendir(const char * path)
+DIR * avOpendir(const char * path, const char ** av, mode_t * modes)
 {
     AVDIR avdir;
     struct dirent * dp;
-    size_t nb = 0;
-    const char ** av;
+    size_t nb;
+    const char ** nav;
     unsigned char * dt;
     char * t;
-    int ac;
+    int ac, nac;
 
 if (_av_debug)
-fprintf(stderr, "*** avOpendir(%s)\n", path);
-    nb = sizeof(".") + sizeof("..");
-    ac = 2;
+fprintf(stderr, "*** avOpendir(%s, %p)\n", path, av);
+
+    nb = 0;
+    ac = 0;
+    if (av != NULL)
+    while (av[ac] != NULL)
+	nb += strlen(av[ac++]) + 1;
+    ac += 2;	/* for "." and ".." */
+    nb += sizeof(".") + sizeof("..");
 
     nb += sizeof(*avdir) + sizeof(*dp) + ((ac + 1) * sizeof(*av)) + (ac + 1);
     avdir = xcalloc(1, nb);
 /*@-abstract@*/
     dp = (struct dirent *) (avdir + 1);
-    av = (const char **) (dp + 1);
-    dt = (unsigned char *) (av + (ac + 1));
+    nav = (const char **) (dp + 1);
+    dt = (unsigned char *) (nav + (ac + 1));
     t = (char *) (dt + ac + 1);
 /*@=abstract@*/
 
@@ -1745,13 +1751,24 @@ fprintf(stderr, "*** avOpendir(%s)\n", path);
 /*@=moduncon =noeffectuncon =nullpass @*/
 #endif
 
-    ac = 0;
+    nac = 0;
     /*@-dependenttrans -unrecog@*/
-    dt[ac] = (unsigned char)DT_DIR; av[ac++] = t; t = stpcpy(t, ".");	t++;
-    dt[ac] = (unsigned char)DT_DIR; av[ac++] = t; t = stpcpy(t, "..");	t++;
+    dt[nac] = (unsigned char)DT_DIR; nav[nac++] = t; t = stpcpy(t, "."); t++;
+    dt[nac] = (unsigned char)DT_DIR; nav[nac++] = t; t = stpcpy(t, ".."); t++;
     /*@=dependenttrans =unrecog@*/
 
-    av[ac] = NULL;
+    /* Append av strings to DIR elements. */
+    ac = 0;
+    if (av != NULL)
+    while (av[ac] != NULL) {
+	nav[nac] = t;
+	dt[nac] = (unsigned char) (modes && S_ISDIR(modes[ac]) ? DT_DIR : DT_REG);
+	t = stpcpy(t, av[ac]);
+	t++;	/* trailing \0 */
+	ac++;
+	nac++;
+    }
+    nav[nac] = NULL;
 
 /*@-kepttrans@*/
     return (DIR *) avdir;
@@ -1833,14 +1850,16 @@ DIR * davOpendir(const char * path)
 {
     struct fetch_context_s * ctx;
     struct stat sb, *st = &sb; /* XXX HACK: davHEAD needs ctx->st. */
+    const char ** av;
+    int rc;
+
     DAVDIR avdir;
     struct dirent * dp;
     size_t nb;
-    const char ** av, ** nav;
+    const char ** nav;
     unsigned char * dt;
     char * t;
     int ac, nac;
-    int rc;
 
 if (_dav_debug < 0)
 fprintf(stderr, "*** davOpendir(%s)\n", path);
@@ -1864,9 +1883,9 @@ fprintf(stderr, "*** davOpendir(%s)\n", path);
 	return NULL;
     }
 
+    av = ctx->av;
     nb = 0;
     ac = 0;
-    av = ctx->av;
     if (av != NULL)
     while (av[ac] != NULL)
 	nb += strlen(av[ac++]) + 1;
@@ -1904,7 +1923,7 @@ fprintf(stderr, "*** davOpendir(%s)\n", path);
     dt[nac] = (unsigned char)DT_DIR; nav[nac++] = t; t = stpcpy(t, ".."); t++;
 /*@=dependenttrans =unrecog@*/
 
-    /* Copy DAV items into DIR elments. */
+    /* Append av strings to DIR elements. */
     ac = 0;
     if (av != NULL)
     while (av[ac] != NULL) {

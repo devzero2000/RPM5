@@ -90,12 +90,15 @@ struct dirent * avReaddir(DIR * dir)
 	/*@modifies fileSystem @*/;
 
 /**
- * Create an argv directory from URL collection.
- * @param path		URL for collection path
+ * Create an argv directory from an argv array.
+ * @param path		directory path
+ * @param av		argv array
+ * @param modes		element modes (NULL will use pesky trailing '/')
  * @return 		argv DIR
  */
 /*@null@*/
-DIR * avOpendir(const char * path)
+DIR * avOpendir(const char * path,
+		/*@null@*/ const char ** av, /*@null@*/ mode_t * modes)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
 
