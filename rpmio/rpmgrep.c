@@ -89,8 +89,6 @@ static const char *newline = NULL;
 /*@unchecked@*/ /*@only@*/ /*@null@*/
 static const char *color_string = NULL;
 /*@unchecked@*/ /*@only@*/ /*@null@*/
-static const char *color_option = NULL;
-/*@unchecked@*/ /*@only@*/ /*@null@*/
 static ARGV_t pattern_filenames = NULL;
 /*@unchecked@*/ /*@only@*/ /*@null@*/
 static const char *stdin_name = NULL;
@@ -130,15 +128,11 @@ static int both_context = 0;
 enum dee_e { dee_READ=1, dee_SKIP, dee_RECURSE };
 /*@unchecked@*/
 static enum dee_e dee_action = dee_READ;
-/*@unchecked@*/ /*@null@*/
-static const char *dee_option = NULL;
 
 /** Actions for the -D option */
 enum DEE_e { DEE_READ=1, DEE_SKIP };
 /*@unchecked@*/
 static enum DEE_e DEE_action = DEE_READ;
-/*@unchecked@*/ /*@null@*/
-static const char *DEE_option = NULL;
 
 /*@unchecked@*/
 static int error_count = 0;
@@ -191,7 +185,6 @@ static rpmMireMode grepMode = RPMMIRE_REGEX;
 static struct rpmop_s grep_totalops;
 /*@unchecked@*/
 static struct rpmop_s grep_readops;
-
 
 /**
  * Tables for prefixing and suffixing patterns, according to the -w, -x, and -F
@@ -538,8 +531,8 @@ pcregrep(FD_t fd, const char *printname)
     int offsets[99];
     const char *lastmatchrestart = NULL;
     char buffer[3*MBUFTHIRD];
-    char *ptr = buffer;
-    char *endptr;
+    const char *ptr = buffer;
+    const char *endptr;
     size_t bufflength;
     static BOOL hyphenpending = FALSE;
     BOOL endhyphenpending = FALSE;
@@ -558,7 +551,7 @@ pcregrep(FD_t fd, const char *printname)
 	int i;
 	int mrc = 0;
 	BOOL match = FALSE;
-	char *matchptr = ptr;
+	const char *matchptr = ptr;
 	const char *t = ptr;
 	size_t length, linelength;
 	size_t endlinelength;
@@ -954,18 +947,19 @@ grep_or_recurse(const char *pathname, BOOL dir_recurse, BOOL only_one_at_top)
 {
     struct stat sb, *st = &sb;
     int rc = 1;
-    int sep;
     size_t pathlen;
     FD_t fd = NULL;
-    const char * fmode;
+    const char * fmode = "r.ufdio";
     int xx;
 
     /* If the file name is "-" we scan stdin */
-    if (!strcmp(pathname, "-"))
+    if (!strcmp(pathname, "-")) {
+	fd = fdDup(STDIN_FILENO);
 	goto openthestream;
+    }
 
-    xx = Stat(pathname, st);
-    sep = (!xx && S_ISDIR(st->st_mode) ? (int)'/' : 0);
+    if ((xx = Stat(pathname, st)) != 0)
+	goto openthestream;	/* XXX exit with Strerror(3) message. */
 
     /*
      * If the file is a directory, skip if skipping or if we are recursing,
@@ -973,13 +967,16 @@ grep_or_recurse(const char *pathname, BOOL dir_recurse, BOOL only_one_at_top)
      * that were set.  The scanning code is localized so it can be made
      * system-specific.
      */
-    if (sep != 0) {
-	if (dee_action == dee_SKIP) {
-	    rc = 1;
-	    goto exit;
-	}
-	if (dee_action == dee_RECURSE) {
-	    char buffer[1024];
+    if (S_ISDIR(st->st_mode))
+    switch (dee_action) {
+    case dee_READ:
+	break;
+    case dee_SKIP:
+	rc = 1;
+	goto exit;
+	/*@notreached@*/ break;
+    case dee_RECURSE:
+	{   char buffer[1024];
 	    DIR *dir = Opendir(pathname);
 	    struct dirent *dp;
 
@@ -992,7 +989,8 @@ grep_or_recurse(const char *pathname, BOOL dir_recurse, BOOL only_one_at_top)
 	    }
 
 	    while ((dp = Readdir(dir)) != NULL) {
-		int frc;
+		char sep = '/';
+
 		if (!strcmp(dp->d_name, ".") || !strcmp(dp->d_name, ".."))
 		    continue;
 
@@ -1008,21 +1006,20 @@ grep_or_recurse(const char *pathname, BOOL dir_recurse, BOOL only_one_at_top)
 		    continue;
 /*@=onlytrans@*/
 
-		frc = grep_or_recurse(buffer, dir_recurse, FALSE);
-		if (frc > 1) rc = frc;
-		else if (frc == 0 && rc == 1) rc = 0;
+		xx = grep_or_recurse(buffer, dir_recurse, FALSE);
+		if (xx > 1) rc = xx;
+		else if (xx == 0 && rc == 1) rc = 0;
 	    }
-
-	    (void) Closedir(dir);
+	    xx = Closedir(dir);
 	    goto exit;
-	}
+	} /*@notreached@*/ break;
     }
 
     /*
      * If the file is not a directory and not a regular file, skip it if
      * that's been requested.
      */
-    else if ((!xx && !S_ISREG(st->st_mode)) && DEE_action == DEE_SKIP) {
+    else if (!S_ISREG(st->st_mode) && DEE_action == DEE_SKIP) {
 	rc = 1;
 	goto exit;
     }
@@ -1048,14 +1045,12 @@ grep_or_recurse(const char *pathname, BOOL dir_recurse, BOOL only_one_at_top)
 	fmode = "r.ufdio";
 
     /* Open the stream. */
-openthestream:
     fd = Fopen(pathname, fmode);
+openthestream:
     if (fd == NULL || Ferror(fd)) {
 	if (!GF_ISSET(SILENT))
 	    fprintf(stderr, _("%s: Failed to open %s: %s\n"),
 			__progname, pathname, Fstrerror(fd));
-	if (fd != NULL) (void) Fclose(fd);
-	fd = NULL;
 	rc = 2;
 	goto exit;
     }
@@ -1064,13 +1059,12 @@ openthestream:
     rc = pcregrep(fd, (filenames > FN_DEFAULT ||
 	(filenames == FN_DEFAULT && !only_one_at_top))? pathname : NULL);
 
-    if (fd != NULL) {
+    if (fd != NULL)
 	(void) rpmswAdd(&grep_readops, fdstat_op(fd, FDSTAT_READ));
-	(void) Fclose(fd);
-	fd = NULL;
-    }
 
 exit:
+    if (fd != NULL)
+	xx = Fclose(fd);
     return rc;	/* Pass back the yield from pcregrep(). */
 }
 
@@ -1291,6 +1285,51 @@ assert(arg != NULL);
 	break;
 #endif
 
+    case 'd':
+	if (!strcmp(arg, "read")) dee_action = dee_READ;
+	else if (!strcmp(arg, "recurse")) dee_action = dee_RECURSE;
+	else if (!strcmp(arg, "skip")) dee_action = dee_SKIP;
+	else {
+	    fprintf(stderr, _("%s: Invalid value \"%s\" for -d\n"),
+		__progname, arg);
+	    exit(2);
+	    /*@notreached@*/
+	}
+	break;
+    case 'D':
+	if (!strcmp(arg, "read")) DEE_action = DEE_READ;
+	else if (!strcmp(arg, "skip")) DEE_action = DEE_SKIP;
+	else {
+	    fprintf(stderr, _("%s: Invalid value \"%s\" for -D\n"),
+		__progname, arg);
+	    exit(2);
+	    /*@notreached@*/
+	}
+	break;
+    case 'C':
+	if (!strcmp(arg, "never"))
+	    grepFlags &= ~GREP_FLAGS_COLOR;
+	else if (!strcmp(arg, "always"))
+	    grepFlags |= GREP_FLAGS_COLOR;
+	else if (!strcmp(arg, "auto")) {
+	    if (isatty(fileno(stdout)))
+		grepFlags |= GREP_FLAGS_COLOR;
+	    else
+		grepFlags &= ~GREP_FLAGS_COLOR;
+	} else {
+	    fprintf(stderr, _("%s: Unknown color setting \"%s\"\n"),
+		__progname, arg);
+	    exit(2);
+	    /*@notreached@*/
+	}
+	color_string = _free(color_string);
+	if (GF_ISSET(COLOR)) {
+	    char *cs = getenv("PCREGREP_COLOUR");
+	    if (cs == NULL) cs = getenv("PCREGREP_COLOR");
+	    color_string = xstrdup(cs != NULL ? cs : "1;31");
+	}
+	break;
+
     case 'V':
 #if defined(WITH_PCRE)
 /*@-evalorderuncon -moduncon @*/
@@ -1329,14 +1368,14 @@ static struct poptOption optionsTable[] = {
 	N_("set number of context lines, before & after"), N_("=number") },
   { "count", 'c', POPT_BIT_SET,		&grepFlags, GREP_FLAGS_COUNT,
 	N_("print only a count of matching lines per FILE"), NULL },
-  { "color", '\0', POPT_ARG_STRING,		&color_option, 0,
+  { "color", '\0', POPT_ARG_STRING,		NULL, (int)'C',
 	N_("matched text color option (auto|always|never)"), N_("=option") },
-  { "colour", '\0', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN, &color_option, 0,
+  { "colour", '\0', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN, NULL, (int)'C',
 	N_("matched text colour option (auto|always|never)"), N_("=option") },
 /* XXX HACK: there is a shortName option conflict with -D,--define */
-  { "devices", 'D', POPT_ARG_STRING,		&DEE_option, 0,
+  { "devices", 'D', POPT_ARG_STRING,		NULL, (int)'D',
 	N_("device, FIFO, or socket action (read|skip)"), N_("=action") },
-  { "directories", 'd',	POPT_ARG_STRING,	&dee_option, 0,
+  { "directories", 'd',	POPT_ARG_STRING,	NULL, (int)'d',
 	N_("directory action (read|skip|recurse)"), N_("=action") },
 #if defined(POPT_ARG_ARGV)
   { "regex", 'e', POPT_ARG_ARGV,		&patterns, 0,
@@ -1531,49 +1570,6 @@ _("%s: Cannot mix --only-matching, --file-offsets and/or --line-offsets\n"),
 	goto errxit;
     }
 
-    /* Interpret the text values for -d and -D */
-    if (dee_option != NULL) {
-	if (strcmp(dee_option, "read") == 0) dee_action = dee_READ;
-	else if (strcmp(dee_option, "recurse") == 0) dee_action = dee_RECURSE;
-	else if (strcmp(dee_option, "skip") == 0) dee_action = dee_SKIP;
-	else {
-	    fprintf(stderr, _("%s: Invalid value \"%s\" for -d\n"),
-		__progname, dee_option);
-	    goto errxit;
-	}
-    }
-
-    if (DEE_option != NULL) {
-	if (strcmp(DEE_option, "read") == 0) DEE_action = DEE_READ;
-	else if (strcmp(DEE_option, "skip") == 0) DEE_action = DEE_SKIP;
-	else {
-	    fprintf(stderr, _("%s: Invalid value \"%s\" for -D\n"),
-		__progname, DEE_option);
-	    goto errxit;
-	}
-    }
-
-    /* Sort out coloring */
-    if (color_option != NULL && strcmp(color_option, "never") != 0) {
-	if (strcmp(color_option, "always") == 0)
-	    grepFlags |= GREP_FLAGS_COLOR;
-	else if (strcmp(color_option, "auto") == 0) {
-	    if (isatty(fileno(stdout)))
-		grepFlags |= GREP_FLAGS_COLOR;
-	    else
-		grepFlags &= ~GREP_FLAGS_COLOR;
-	} else {
-	    fprintf(stderr, _("%s: Unknown color setting \"%s\"\n"),
-		__progname, color_option);
-	    goto errxit;
-	}
-	if (GF_ISSET(COLOR)) {
-	    char *cs = getenv("PCREGREP_COLOUR");
-	    if (cs == NULL) cs = getenv("PCREGREP_COLOR");
-	    color_string = xstrdup(cs != NULL ? cs : "1;31");
-	}
-    }
-
     /* Get memory to store the pattern and hints lists. */
     pattern_list = xcalloc(MAX_PATTERN_COUNT, sizeof(*pattern_list));
 
@@ -1683,7 +1679,6 @@ exit:
     pattern_filenames = argvFree(pattern_filenames);
 
 /*@-observertrans@*/
-    color_option = _free(color_option);
     color_string = _free(color_string);
     locale = _free(locale);
     newline = _free(newline);
