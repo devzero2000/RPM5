@@ -88,11 +88,6 @@ typedef /*@abstract@*/ /*@refcounted@*/ struct rpmds_s * rpmds;
  */
 typedef struct rpmPRCO_s * rpmPRCO;
 
-/** \ingroup rpmfi
- * File info tag sets from a header, so that a header can be discarded early.
- */
-typedef /*@abstract@*/ /*@refcounted@*/ struct rpmfi_s * rpmfi;
-
 /** \ingroup rpmte
  * An element of a transaction set, i.e. a TR_ADDED or TR_REMOVED package.
  */

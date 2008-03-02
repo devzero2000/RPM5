@@ -8,10 +8,9 @@
 #include <rpmcb.h>		/* XXX fnpyKey */
 #include <rpmlib.h>
 
-#include "rpmal.h"
 #define	_RPMDS_INTERNAL
-#include "rpmds.h"
-#include "rpmfi.h"
+#include <rpmds.h>
+#include <rpmal.h>
 
 #include "debug.h"
 

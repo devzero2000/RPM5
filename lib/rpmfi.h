@@ -89,6 +89,11 @@ typedef enum fileAction_e {
     FA_SKIPCOLOR	/*!< ... untouched, state "wrong color". */
 } fileAction;
 
+/** \ingroup rpmfi
+ * File info tag sets from a header, so that a header can be discarded early.
+ */
+typedef /*@abstract@*/ /*@refcounted@*/ struct rpmfi_s * rpmfi;
+
 #if defined(_RPMFI_INTERNAL)
 #include <fsm.h>
 
@@ -632,14 +637,14 @@ rpmfi rpmfiFree(/*@killref@*/ /*@only@*/ /*@null@*/ rpmfi fi)
 
 /**
  * Create and load a file info set.
- * @param ts		transaction set (NULL skips path relocation)
+ * @param _ts		transaction set (NULL skips path relocation)
  * @param h		header
  * @param tagN		RPMTAG_BASENAMES
  * @param flags		scareMem(0x1), nofilter(0x2)
  * @return		new file info set
  */
 /*@null@*/
-rpmfi rpmfiNew(/*@null@*/ const rpmts ts, Header h, rpmTag tagN, int flags)
+rpmfi rpmfiNew(/*@null@*/ const void * _ts, Header h, rpmTag tagN, int flags)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, h, rpmGlobalMacroContext, fileSystem, internalState @*/;
 

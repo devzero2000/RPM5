@@ -101,6 +101,7 @@ typedef enum fileStage_e {
  */
 typedef /*@abstract@*/ struct fsmIterator_s * FSMI_t;
 
+#if defined(_RPMFSM_INTERNAL)
 /** \ingroup payload
  * Keeps track of the set of all hard links to a file in an archive.
  */
@@ -128,6 +129,7 @@ struct fsmIterator_s {
     int isave;			/*!< last returned iterator index. */
     int i;			/*!< iterator index. */
 };
+#endif
 
 /** \ingroup payload
  * File name and stat information.
@@ -270,16 +272,16 @@ extern "C" {
  * @param fsm		file state machine
  * @param goal
  * @param afmt		archive format (NULL uses cpio)
- * @param ts		transaction set
- * @param fi		transaction element file info
+ * @param _ts		transaction set
+ * @param _fi		transaction element file info
  * @param cfd		payload descriptor
  * @retval archiveSize	pointer to archive size
  * @retval failedFile	pointer to first file name that failed.
  * @return		0 on success
  */
 int fsmSetup(FSM_t fsm, fileStage goal, /*@null@*/ const char * afmt,
-		const rpmts ts,
-		const rpmfi fi,
+		const void * _ts,
+		const void * _fi,
 		FD_t cfd,
 		/*@out@*/ unsigned int * archiveSize,
 		/*@out@*/ const char ** failedFile)
@@ -296,6 +298,7 @@ int fsmTeardown(FSM_t fsm)
 	/*@globals h_errno, fileSystem, internalState @*/
 	/*@modifies fsm, fileSystem, internalState @*/;
 
+#if defined(_RPMFSM_INTERNAL)
 /*@-exportlocal@*/
 /**
  * Retrieve transaction set from file state machine iterator.
@@ -312,6 +315,7 @@ rpmts fsmGetTs(const FSM_t fsm)
  */
 rpmfi fsmGetFi(/*@partial@*/ const FSM_t fsm)
 	/*@*/;
+#endif
 
 /**
  * Map next file path and action.

@@ -23,7 +23,7 @@
 /*@access pgpDig @*/
 /*@access pgpDigParams @*/
 /*@access Header @*/		/* XXX compared with NULL */
-/*@access FD_t @*/		/* XXX stealing digests */
+/*@access FD_t @*/		/* XXX void * */
 
 /*@unchecked@*/
 static int _print_pkts = 0;

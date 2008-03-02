@@ -6,6 +6,7 @@
  * Structures used for an "rpmte" transaction element.
  */
 #include <argv.h>
+#include <rpmfi.h>
 
 /**
  */

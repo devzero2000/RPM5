@@ -6,6 +6,8 @@
  * Structures used for managing added/available package lists.
  */
 
+#include <rpmfi.h>
+
 /*@-exportlocal@*/
 /*@unchecked@*/
 extern int _rpmal_debug;

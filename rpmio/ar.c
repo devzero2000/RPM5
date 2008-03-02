@@ -12,11 +12,7 @@
 #include <ugid.h>
 
 /* XXX no <rpmlib.h> here */
-typedef /*@abstract@*/ /*@refcounted@*/ struct rpmts_s * rpmts;
-typedef /*@abstract@*/ /*@refcounted@*/ struct rpmfi_s * rpmfi;
-
 #include "../rpmdb/rpmtag.h"
-#include "../lib/rpmfi.h"
 #include "../lib/fsm.h"
 
 #include "debug.h"
