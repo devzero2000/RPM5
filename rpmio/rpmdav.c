@@ -244,12 +244,24 @@ fprintf(stderr, "*** avOpendir(%s, %p)\n", path, av);
     ac = 0;
     if (av != NULL)
     while (av[ac] != NULL) {
-	nav[nac] = t;
-	dt[nac] = (unsigned char) (modes && S_ISDIR(modes[ac]) ? DT_DIR : DT_REG);
-	t = stpcpy(t, av[ac]);
+	if (modes != NULL)
+	    switch (modes[ac] & S_IFMT) {
+	    case S_IFIFO: dt[nac]=(unsigned char)DT_FIFO;/*@switchbreak@*/break;
+	    case S_IFCHR: dt[nac]=(unsigned char)DT_CHR; /*@switchbreak@*/break;
+	    case S_IFDIR: dt[nac]=(unsigned char)DT_DIR; /*@switchbreak@*/break;
+	    case S_IFBLK: dt[nac]=(unsigned char)DT_BLK; /*@switchbreak@*/break;
+	    case S_IFREG: dt[nac]=(unsigned char)DT_REG; /*@switchbreak@*/break;
+	    case S_IFLNK: dt[nac]=(unsigned char)DT_LNK; /*@switchbreak@*/break;
+/*@-unrecog@*/
+	    case S_IFSOCK:dt[nac]=(unsigned char)DT_SOCK;/*@switchbreak@*/break;
+/*@=unrecog@*/
+	    default:	  dt[nac]=(unsigned char)DT_UNKNOWN;/*@switchbreak@*/break;
+	    }
+	else
+	    dt[nac] = (unsigned char)DT_UNKNOWN;
+	nav[nac++] = t;
+	t = stpcpy(t, av[ac++]);
 	t++;	/* trailing \0 */
-	ac++;
-	nac++;
     }
     nav[nac] = NULL;
 
