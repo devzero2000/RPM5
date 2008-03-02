@@ -1290,15 +1290,7 @@ fprintf(stderr, "*** ftpOpendir(%s)\n", path);
 		for (sb = se; sb > s && sb[-1] != ' '; sb--)
 		    {};
 	    }
-	    /*@-unrecog@*/
-#ifdef HAVE_STRNDUP
-	    ctx->av[nac] = strndup(sb, (se-sb-1));
-#else
-	    ctx->av[nac] = xmalloc((se-sb-1)+1);
-	    strncpy((char *)ctx->av[nac], sb, (se-sb-1));
-#endif
-	    /*@=unrecog@*/
-	    nac++;
+	    ctx->av[nac++] = strncpy(xcalloc(1, (se-sb-1)+1), sb, (se-sb-1));
 	    if (*se == '\n') se++;
 	    sb = NULL;
 	    s = se;
