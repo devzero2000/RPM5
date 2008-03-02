@@ -62,6 +62,8 @@ extern int avmagicdir;
 /**
  */
 struct avContext_s {
+/*@relnull@*/ /*@dependent@*/
+    void ** resrock;
     const char *uri;
 /*@refcounted@*/
     urlinfo u;

@@ -97,7 +97,7 @@ void * avContextDestroy(avContext ctx)
     ctx->mtimes = _free(ctx->mtimes);
     ctx->u = urlFree(ctx->u, "avContextDestroy");
     ctx->uri = _free(ctx->uri);
-    memset(ctx, 0, sizeof(*ctx));
+    memset(ctx, 0, sizeof(*ctx));	/* trash & burn */
     ctx = _free(ctx);
     return NULL;
 }
@@ -722,64 +722,6 @@ static void *fetch_create_item(/*@unused@*/ void *userdata, /*@unused@*/ const c
 }
 
 /* =============================================================== */
-struct fetch_context_s {
-/*@relnull@*/ /*@dependent@*/
-    struct fetch_resource_s **resrock;
-    const char *uri;
-    unsigned int include_target; /* Include resource at href */
-/*@refcounted@*/
-    urlinfo u;
-    int ac;
-    int nalloced;
-    ARGV_t av;
-/*@null@*/ /*@shared@*/
-    struct stat *st;
-    mode_t * modes;
-    size_t * sizes;
-    time_t * mtimes;
-};
-
-/*@null@*/
-static void *fetch_destroy_context(/*@only@*/ /*@null@*/ struct fetch_context_s *ctx)
-	/*@globals internalState @*/
-	/*@modifies ctx, internalState @*/
-{
-    if (ctx == NULL)
-	return NULL;
-    if (ctx->av != NULL)
-	ctx->av = argvFree(ctx->av);
-    ctx->modes = _free(ctx->modes);
-    ctx->sizes = _free(ctx->sizes);
-    ctx->mtimes = _free(ctx->mtimes);
-    ctx->u = urlFree(ctx->u, "fetch_destroy_context");
-    ctx->uri = _free(ctx->uri);
-    memset(ctx, 0, sizeof(*ctx));
-    ctx = _free(ctx);
-    return NULL;
-}
-
-/*@null@*/
-static void *fetch_create_context(const char *uri, /*@null@*/ struct stat *st)
-	/*@globals internalState @*/
-	/*@modifies *st, internalState @*/
-{
-    struct fetch_context_s * ctx;
-    urlinfo u;
-
-/*@-globs@*/	/* FIX: h_errno annoyance. */
-    if (urlSplit(uri, &u))
-	return NULL;
-/*@=globs@*/
-
-    ctx = ne_calloc(sizeof(*ctx));
-    ctx->uri = xstrdup(uri);
-    ctx->u = urlLink(u, "fetch_create_context");
-/*@-temptrans@*/	/* XXX note the assignment */
-    if ((ctx->st = st) != NULL)
-	memset(ctx->st, 0, sizeof(*ctx->st));
-/*@=temptrans@*/
-    return ctx;
-}
 
 /*@-readonlytrans@*/
 /*@unchecked@*/ /*@observer@*/
@@ -862,7 +804,7 @@ static void fetch_results(void *userdata, void *uarg,
 #endif
 	/*@*/
 {
-    struct fetch_context_s *ctx = userdata;
+    avContext ctx = userdata;
     struct fetch_resource_s *current, *previous, *newres;
     const char *clength, *modtime, *isexec;
     const char *checkin, *checkout;
@@ -884,7 +826,7 @@ static void fetch_results(void *userdata, void *uarg,
 if (_dav_debug < 0)
 fprintf(stderr, "==> %s in uri %s\n", path, ctx->uri);
 
-    if (ne_path_compare(ctx->uri, path) == 0 && !ctx->include_target) {
+    if (ne_path_compare(ctx->uri, path) == 0) {
 	/* This is the target URI */
 if (_dav_debug < 0)
 fprintf(stderr, "==> %s skipping target resource.\n", path);
@@ -952,6 +894,7 @@ fprintf(stderr, "==> %s skipping target resource.\n", path);
 	newres->is_vcr = 0;
     }
 
+    current = *(struct fetch_resource_s **)ctx->resrock;
     for (current = *ctx->resrock, previous = NULL; current != NULL;
 	previous = current, current = current->next)
     {
@@ -963,21 +906,19 @@ fprintf(stderr, "==> %s skipping target resource.\n", path);
 	previous->next = newres;
     } else {
 /*@-dependenttrans @*/
-	*ctx->resrock = newres;
+        *(struct fetch_resource_s **)ctx->resrock = newres;
 /*@=dependenttrans @*/
     }
     newres->next = current;
 }
 
-static int davFetch(const urlinfo u, struct fetch_context_s * ctx)
+static int davFetch(const urlinfo u, avContext ctx)
 	/*@globals internalState @*/
 	/*@modifies ctx, internalState @*/
 {
     const char * path = NULL;
     int depth = 1;					/* XXX passed arg? */
-    unsigned int include_target = 0;			/* XXX passed arg? */
     struct fetch_resource_s * resitem = NULL;
-    struct fetch_resource_s ** resrock = &resitem;	/* XXX passed arg? */
     ne_propfind_handler *pfh;
     struct fetch_resource_s *current, *next;
     mode_t st_mode;
@@ -989,8 +930,7 @@ static int davFetch(const urlinfo u, struct fetch_context_s * ctx)
 
     /* HACK: need to set RPMURL_SERVER_HASRANGE in u->allow here. */
 
-    ctx->resrock = resrock;
-    ctx->include_target = include_target;
+    ctx->resrock = (void **) &resitem;
 
     ne_xml_push_handler(ne_propfind_get_parser(pfh),
                         fetch_startelm, NULL, NULL, pfh);
@@ -1137,7 +1077,7 @@ exit:
     return rc;
 }
 
-static int davNLST(struct fetch_context_s * ctx)
+static int davNLST(avContext ctx)
 	/*@globals internalState @*/
 	/*@modifies ctx, internalState @*/
 {
@@ -1662,7 +1602,7 @@ int davStat(const char * path, /*@out@*/ struct stat *st)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies *st, fileSystem, internalState @*/
 {
-    struct fetch_context_s * ctx = NULL;
+    avContext ctx = NULL;
     char buf[1024];
     int rc = -1;
 
@@ -1670,7 +1610,7 @@ int davStat(const char * path, /*@out@*/ struct stat *st)
 	errno = ENOENT;
 	goto exit;
     }
-    ctx = fetch_create_context(path, st);
+    ctx = avContextCreate(path, st);
     if (ctx == NULL) {
 	errno = ENOENT;		/* Note: ctx is NULL iff urlSplit() fails. */
 	goto exit;
@@ -1703,7 +1643,7 @@ int davStat(const char * path, /*@out@*/ struct stat *st)
 exit:
 if (_dav_debug < 0)
 fprintf(stderr, "*** davStat(%s) rc %d\n%s", path, rc, statstr(st, buf));
-    ctx = fetch_destroy_context(ctx);
+    ctx = avContextDestroy(ctx);
     return rc;
 }
 
@@ -1711,7 +1651,7 @@ int davLstat(const char * path, /*@out@*/ struct stat *st)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies *st, fileSystem, internalState @*/
 {
-    struct fetch_context_s * ctx = NULL;
+    avContext ctx = NULL;
     char buf[1024];
     int rc = -1;
 
@@ -1719,7 +1659,7 @@ int davLstat(const char * path, /*@out@*/ struct stat *st)
 	errno = ENOENT;
 	goto exit;
     }
-    ctx = fetch_create_context(path, st);
+    ctx = avContextCreate(path, st);
     if (ctx == NULL) {
 	errno = ENOENT;		/* Note: ctx is NULL iff urlSplit() fails. */
 	goto exit;
@@ -1752,7 +1692,7 @@ int davLstat(const char * path, /*@out@*/ struct stat *st)
 if (_dav_debug < 0)
 fprintf(stderr, "*** davLstat(%s) rc %d\n%s\n", path, rc, statstr(st, buf));
 exit:
-    ctx = fetch_destroy_context(ctx);
+    ctx = avContextDestroy(ctx);
     return rc;
 }
 
@@ -1838,7 +1778,7 @@ struct dirent * davReaddir(DIR * dir)
 DIR * davOpendir(const char * path)
 {
     AVDIR avdir;
-    struct fetch_context_s * ctx;
+    avContext ctx;
     struct stat sb, *st = &sb; /* XXX HACK: davHEAD needs ctx->st. */
     int rc;
 
@@ -1853,7 +1793,7 @@ fprintf(stderr, "*** davOpendir(%s)\n", path);
 
     /* Load DAV collection into argv. */
     /* XXX HACK: davHEAD needs ctx->st. */
-    ctx = fetch_create_context(path, st);
+    ctx = avContextCreate(path, st);
     if (ctx == NULL) {
 	errno = ENOENT;		/* Note: ctx is NULL iff urlSplit() fails. */
 	return NULL;
@@ -1866,7 +1806,7 @@ fprintf(stderr, "*** davOpendir(%s)\n", path);
 
     avdir = (AVDIR) avOpendir(path, ctx->av, ctx->modes);
 
-    ctx = fetch_destroy_context(ctx);
+    ctx = avContextDestroy(ctx);
 
 /*@-kepttrans@*/
     return (DIR *) avdir;
