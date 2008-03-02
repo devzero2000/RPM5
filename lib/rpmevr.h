@@ -22,9 +22,6 @@ typedef	/*@abstract@*/ struct EVR_s * EVR_t;
 /**
  * Dependency Attributes.
  */
-typedef	enum evrFlags_e rpmsenseFlags;
-typedef	enum evrFlags_e evrFlags;
-
 /*@-matchfields@*/
 enum evrFlags_e {
 #if defined(_RPMEVR_INTERNAL)
@@ -69,8 +66,10 @@ enum evrFlags_e {
     RPMSENSE_PACKAGE	= (1 << 30),
     RPMSENSE_SCRIPT_SANITYCHECK = (1 << 31) /*!< %sanitycheck dependency. */
 #endif
-};
+} evrFlags;
 /*@=matchfields@*/
+
+typedef enum evrFlags_e rpmsenseFlags;
 
 #define	RPMSENSE_SENSEMASK	0x0e	 /* Mask to get senses, ie serial, */
                                          /* less, greater, equal.          */
