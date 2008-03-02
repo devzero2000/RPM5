@@ -17,7 +17,6 @@
 #include "debug.h"
 
 /*@access rpmpsm @*/	/* XXX for %verifyscript through rpmpsmStage() */
-/*@access rpmProblem @*/
 
 #define S_ISDEV(m) (S_ISBLK((m)) || S_ISCHR((m)))
 
@@ -409,17 +408,17 @@ static int verifyDependencies(/*@unused@*/ QVA_t qva, rpmts ts,
 	const char * altNEVR;
 	const char * pkgNEVR = NULL;
 	rpmpsi psi;
-	rpmProblem p;
+	rpmProblem prob;
 	char * t, * te;
 	int nb = 512;
 
 	psi = rpmpsInitIterator(ps);
 	while (rpmpsNextIterator(psi) >= 0) {
-	    p = rpmpsProblem(psi);
+	    prob = rpmpsProblem(psi);
 	    if (pkgNEVR == NULL)
-		pkgNEVR = rpmProblemGetPkgNEVR(p);
+		pkgNEVR = rpmProblemGetPkgNEVR(prob);
 
-	    altNEVR = rpmProblemGetAltNEVR(p);
+	    altNEVR = rpmProblemGetAltNEVR(prob);
 	    if (altNEVR[0] == 'R' && altNEVR[1] == ' ')
 		nb += sizeof("\tRequires: ")-1;
 	    if (altNEVR[0] == 'C' && altNEVR[1] == ' ')
@@ -436,9 +435,10 @@ static int verifyDependencies(/*@unused@*/ QVA_t qva, rpmts ts,
 
 	psi = rpmpsInitIterator(ps);
 	while (rpmpsNextIterator(psi) >= 0) {
-	    p = rpmpsProblem(psi);
+	    prob = rpmpsProblem(psi);
 
-	    altNEVR = (p->altNEVR ? p->altNEVR : "? ?altNEVR?");
+	    if ((altNEVR = rpmProblemGetAltNEVR(prob)) == NULL)
+		altNEVR = "? ?altNEVR?";
 	    if (altNEVR[0] == 'R' && altNEVR[1] == ' ')
 		te = stpcpy(te, "\tRequires: ");
 	    if (altNEVR[0] == 'C' && altNEVR[1] == ' ')
