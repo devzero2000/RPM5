@@ -1,4 +1,5 @@
 5.0.2 -> 5.0.3:
+    - proyvind: add rpm 4 API compatibility wrapper (urpmi & apt-get succesfully ported with this so far \o/)
     - afb: python: backport fix for rpm.archscore() and add rpm.platformscore().
     - jbj: fix: eliminate librpmdb->librpm from dosetenv, use setenv(3) instead.
     - jbj: fix: rpmtsCheck non-zero return doesn't print failed build deps.
