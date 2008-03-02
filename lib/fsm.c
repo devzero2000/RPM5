@@ -10,13 +10,13 @@
 #include <rpmtag.h>
 #include <rpmlib.h>
 
-#include "cpio.h"
-#include "tar.h"
-#include "ar.h"
-
 #define	_RPMFI_INTERNAL
 #include "fsm.h"
 #define	fsmUNSAFE	fsmStage
+
+#include "cpio.h"
+#include "tar.h"
+#include "ar.h"
 
 #include "rpmte.h"
 #include "rpmts.h"

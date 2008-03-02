@@ -264,16 +264,6 @@ struct rpmRelocation_s {
 int rpmVersionCompare(Header first, Header second)
 	/*@*/;
 
-/** \ingroup payload
- * Iterator across package file info, forward on install, backward on erase.
- */
-typedef /*@abstract@*/ struct fsmIterator_s * FSMI_t;
-
-/** \ingroup payload
- * File state machine data.
- */
-typedef /*@abstract@*/ struct fsm_s * FSM_t;
-
 /** \ingroup rpmts
  * Package state machine data.
  */

@@ -14,8 +14,6 @@
 /* XXX no <rpmlib.h> here */
 typedef /*@abstract@*/ /*@refcounted@*/ struct rpmts_s * rpmts;
 typedef /*@abstract@*/ /*@refcounted@*/ struct rpmfi_s * rpmfi;
-typedef /*@abstract@*/ struct fsmIterator_s * FSMI_t;
-typedef /*@abstract@*/ struct fsm_s * FSM_t;
 
 #include "../rpmdb/rpmtag.h"
 #include "../lib/rpmfi.h"

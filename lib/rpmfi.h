@@ -90,6 +90,8 @@ typedef enum fileAction_e {
 } fileAction;
 
 #if defined(_RPMFI_INTERNAL)
+#include <fsm.h>
+
 #define XFA_SKIPPING(_a)	\
     ((_a) == FA_SKIP || (_a) == FA_SKIPNSTATE || (_a) == FA_SKIPNETSHARED || (_a) == FA_SKIPCOLOR)
 

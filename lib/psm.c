@@ -13,7 +13,6 @@
 #include <rpmtag.h>
 #include <rpmlib.h>
 
-#include "cpio.h"
 #define	_RPMFI_INTERNAL
 #include "fsm.h"		/* XXX CPIO_FOO/FSM_FOO constants */
 #define	_RPMSQ_INTERNAL

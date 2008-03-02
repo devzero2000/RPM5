@@ -12,7 +12,6 @@
 #include <rpmio.h>
 #include <rpmlib.h>
 
-#include "cpio.h"
 #include "fsm.h"
 
 #include "debug.h"

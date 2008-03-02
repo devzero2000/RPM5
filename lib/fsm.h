@@ -6,6 +6,11 @@
  * File state machine to handle a payload within an rpm package.
  */
 
+/** \ingroup payload
+ * File state machine data.
+ */
+typedef /*@abstract@*/ struct fsm_s * FSM_t;
+
 #include "cpio.h"
 #include "rpmfi.h"	/* XXX fileAction typedef */
 
@@ -90,6 +95,11 @@ typedef enum fileStage_e {
 #undef	_fi
 #undef	_fs
 #undef	_fd
+
+/** \ingroup payload
+ * Iterator across package file info, forward on install, backward on erase.
+ */
+typedef /*@abstract@*/ struct fsmIterator_s * FSMI_t;
 
 /** \ingroup payload
  * Keeps track of the set of all hard links to a file in an archive.
