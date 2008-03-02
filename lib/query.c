@@ -12,7 +12,6 @@
 #endif
 
 #include <rpmio.h>
-#define	_RPMTAG_INTERNAL
 #include <rpmtag.h>
 #include <rpmcli.h>
 
@@ -26,8 +25,6 @@
 #include "misc.h"	/* XXX for currentDirectory() */
 
 #include "debug.h"
-
-/*@access headerSprintfExtension@*/	/* XXX cast, increment */
 
 /**
  */
