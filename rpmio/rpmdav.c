@@ -122,6 +122,35 @@ void * avContextCreate(const char *uri, struct stat *st)
     return ctx;
 }
 
+int avContextAdd(avContext ctx, const char * path,
+		mode_t mode, size_t size, time_t mtime)
+{
+    int xx;
+
+if (_av_debug < 0)
+fprintf(stderr, "*** avContextAdd(%p,\"%s\", %06o, 0x%x, 0x%x)\n", ctx, path, mode, (unsigned)size, (unsigned)mtime);
+
+    xx = argvAdd(&ctx->av, path);
+
+    while (ctx->ac >= ctx->nalloced) {
+	if (ctx->nalloced <= 0)
+	    ctx->nalloced = 1;
+	ctx->nalloced *= 2;
+	ctx->modes = xrealloc(ctx->modes,
+				(sizeof(*ctx->modes) * ctx->nalloced));
+	ctx->sizes = xrealloc(ctx->sizes,
+				(sizeof(*ctx->sizes) * ctx->nalloced));
+	ctx->mtimes = xrealloc(ctx->mtimes,
+				(sizeof(*ctx->mtimes) * ctx->nalloced));
+    }
+
+    ctx->modes[ctx->ac] = mode;
+    ctx->sizes[ctx->ac] = size;
+    ctx->mtimes[ctx->ac] = mtime;
+    ctx->ac++;
+    return 0;
+}
+
 int avClosedir(/*@only@*/ DIR * dir)
 {
     AVDIR avdir = (AVDIR)dir;
@@ -967,23 +996,6 @@ static int davFetch(const urlinfo u, avContext ctx)
 	val = ne_path_unescape(val);
 /*@=nullpass@*/
 
-	xx = argvAdd(&ctx->av, val);
-if (_dav_debug < 0)
-fprintf(stderr, "*** argvAdd(%p,\"%s\")\n", &ctx->av, val);
-	ne_free(val);
-
-	while (ctx->ac >= ctx->nalloced) {
-	    if (ctx->nalloced <= 0)
-		ctx->nalloced = 1;
-	    ctx->nalloced *= 2;
-	    ctx->modes = xrealloc(ctx->modes,
-				(sizeof(*ctx->modes) * ctx->nalloced));
-	    ctx->sizes = xrealloc(ctx->sizes,
-				(sizeof(*ctx->sizes) * ctx->nalloced));
-	    ctx->mtimes = xrealloc(ctx->mtimes,
-				(sizeof(*ctx->mtimes) * ctx->nalloced));
-	}
-
 	switch (current->type) {
 	case resr_normal:
 	    st_mode = S_IFREG;
@@ -997,10 +1009,9 @@ fprintf(stderr, "*** argvAdd(%p,\"%s\")\n", &ctx->av, val);
 	    st_mode = 0;
 	    /*@switchbreak@*/ break;
 	}
-	ctx->modes[ctx->ac] = st_mode;
-	ctx->sizes[ctx->ac] = current->size;
-	ctx->mtimes[ctx->ac] = current->modtime;
-	ctx->ac++;
+
+	xx = avContextAdd(ctx, val, st_mode, current->size, current->modtime);
+	ne_free(val);
 
 	current = fetch_destroy_item(current);
     }

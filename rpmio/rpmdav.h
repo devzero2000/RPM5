@@ -92,6 +92,13 @@ void * avContextCreate(const char *uri, /*@null@*/ struct stat *st)
         /*@modifies *st, internalState @*/;
 
 /**
+ */
+int avContextAdd(avContext ctx, const char * path,
+		mode_t mode, size_t size, time_t mtime)
+        /*@globals internalState @*/
+        /*@modifies ctx, internalState @*/;
+
+/**
  * Close an argv directory.
  * @param dir		argv DIR
  * @return 		0 always
