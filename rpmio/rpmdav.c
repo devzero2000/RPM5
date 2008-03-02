@@ -128,7 +128,7 @@ int avContextAdd(avContext ctx, const char * path,
     int xx;
 
 if (_av_debug < 0)
-fprintf(stderr, "*** avContextAdd(%p,\"%s\", %06o, 0x%x, 0x%x)\n", ctx, path, mode, (unsigned)size, (unsigned)mtime);
+fprintf(stderr, "*** avContextAdd(%p,\"%s\", %06o, 0x%x, 0x%x)\n", ctx, path, (unsigned)mode, (unsigned)size, (unsigned)mtime);
 
     xx = argvAdd(&ctx->av, path);
 
