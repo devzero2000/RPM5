@@ -6,6 +6,7 @@
 #undef Mkdir
 #undef Stat
 
+#include "rpmio.h"
 #include "rpmcb.h"		/* XXX fnpyKey */
 
 #define _RPMEVR_INTERNAL

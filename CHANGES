@@ -1,4 +1,6 @@
 5.0.0 -> 5.1a1:
+    - jbj: perl: fix: include rpmio.h before rpmlib.h (for rpmRC returns).
+    - jbj: start creating I/O State Machine(IOSM) in rpmio/iosm.c.
     - jbj: verify.c: use rpmProblemGetAltNEVR() to make rpmProblem opaque.
     - jbj: fsm: use rpmfi iterators in several loops.
     - jbj: rpmfi: add rpmfiSetHeader() so verify.c doesn't need _RPMFI_INTERNAL.

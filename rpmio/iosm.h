@@ -1,96 +1,97 @@
-#ifndef H_FSM
-#define H_FSM
+#ifndef H_IOSM
+#define H_IOSM
 
 /** \ingroup payload
- * \file lib/fsm.h
- * File state machine to handle a payload within an rpm package.
+ * \file rpmio/iosm.h
+ * File state machine to handle archive I/O and system call's.
  */
 
 /** \ingroup payload
  * File state machine data.
  */
-typedef /*@abstract@*/ struct fsm_s * FSM_t;
+typedef /*@abstract@*/ struct iosm_s * IOSM_t;
 
 #include "cpio.h"
-#include "rpmfi.h"	/* XXX fileAction typedef */
+
+typedef	int iosmAction;
 
 /*@-exportlocal@*/
 /*@unchecked@*/
-extern int _fsm_debug;
+extern int _iosm_debug;
 /*@=exportlocal@*/
 
 /**
  */
-#define	FSM_VERBOSE	0x8000
-#define	FSM_INTERNAL	0x4000
-#define	FSM_SYSCALL	0x2000
-#define	FSM_DEAD	0x1000
+#define	IOSM_VERBOSE	0x8000
+#define	IOSM_INTERNAL	0x4000
+#define	IOSM_SYSCALL	0x2000
+#define	IOSM_DEAD	0x1000
 
-#define	_fv(_a)		((_a) | FSM_VERBOSE)
-#define	_fi(_a)		((_a) | FSM_INTERNAL)
-#define	_fs(_a)		((_a) | (FSM_INTERNAL | FSM_SYSCALL))
-#define	_fd(_a)		((_a) | (FSM_INTERNAL | FSM_DEAD))
+#define	_fv(_a)		((_a) | IOSM_VERBOSE)
+#define	_fi(_a)		((_a) | IOSM_INTERNAL)
+#define	_fs(_a)		((_a) | (IOSM_INTERNAL | IOSM_SYSCALL))
+#define	_fd(_a)		((_a) | (IOSM_INTERNAL | IOSM_DEAD))
 
-typedef enum fileStage_e {
-    FSM_UNKNOWN =   0,
-    FSM_INIT	=  _fd(1),
-    FSM_PRE	=  _fd(2),
-    FSM_PROCESS	=  _fv(3),
-    FSM_POST	=  _fd(4),
-    FSM_UNDO	=  5,
-    FSM_FINI	=  6,
+typedef enum iosmStage_e {
+    IOSM_UNKNOWN =   0,
+    IOSM_INIT	=  _fd(1),
+    IOSM_PRE	=  _fd(2),
+    IOSM_PROCESS=  _fv(3),
+    IOSM_POST	=  _fd(4),
+    IOSM_UNDO	=  5,
+    IOSM_FINI	=  6,
 
-    FSM_PKGINSTALL	= _fd(7),
-    FSM_PKGERASE	= _fd(8),
-    FSM_PKGBUILD	= _fd(9),
-    FSM_PKGCOMMIT	= _fd(10),
-    FSM_PKGUNDO		= _fd(11),
+    IOSM_PKGINSTALL	= _fd(7),
+    IOSM_PKGERASE	= _fd(8),
+    IOSM_PKGBUILD	= _fd(9),
+    IOSM_PKGCOMMIT	= _fd(10),
+    IOSM_PKGUNDO	= _fd(11),
 
-    FSM_CREATE	=  _fd(17),
-    FSM_MAP	=  _fd(18),
-    FSM_MKDIRS	=  _fi(19),
-    FSM_RMDIRS	=  _fi(20),
-    FSM_MKLINKS	=  _fi(21),
-    FSM_NOTIFY	=  _fd(22),
-    FSM_DESTROY	=  _fd(23),
-    FSM_VERIFY	=  _fd(24),
-    FSM_COMMIT	=  _fd(25),
+    IOSM_CREATE	=  _fd(17),
+    IOSM_MAP	=  _fd(18),
+    IOSM_MKDIRS	=  _fi(19),
+    IOSM_RMDIRS	=  _fi(20),
+    IOSM_MKLINKS=  _fi(21),
+    IOSM_NOTIFY	=  _fd(22),
+    IOSM_DESTROY=  _fd(23),
+    IOSM_VERIFY	=  _fd(24),
+    IOSM_COMMIT	=  _fd(25),
 
-    FSM_UNLINK	=  _fs(33),
-    FSM_RENAME	=  _fs(34),
-    FSM_MKDIR	=  _fs(35),
-    FSM_RMDIR	=  _fs(36),
-    FSM_LSETFCON=  _fs(39),
-    FSM_CHOWN	=  _fs(40),
-    FSM_LCHOWN	=  _fs(41),
-    FSM_CHMOD	=  _fs(42),
-    FSM_UTIME	=  _fs(43),
-    FSM_SYMLINK	=  _fs(44),
-    FSM_LINK	=  _fs(45),
-    FSM_MKFIFO	=  _fs(46),
-    FSM_MKNOD	=  _fs(47),
-    FSM_LSTAT	=  _fs(48),
-    FSM_STAT	=  _fs(49),
-    FSM_READLINK=  _fs(50),
-    FSM_CHROOT	=  _fs(51),
+    IOSM_UNLINK	=  _fs(33),
+    IOSM_RENAME	=  _fs(34),
+    IOSM_MKDIR	=  _fs(35),
+    IOSM_RMDIR	=  _fs(36),
+    IOSM_LSETFCON= _fs(39),
+    IOSM_CHOWN	=  _fs(40),
+    IOSM_LCHOWN	=  _fs(41),
+    IOSM_CHMOD	=  _fs(42),
+    IOSM_UTIME	=  _fs(43),
+    IOSM_SYMLINK=  _fs(44),
+    IOSM_LINK	=  _fs(45),
+    IOSM_MKFIFO	=  _fs(46),
+    IOSM_MKNOD	=  _fs(47),
+    IOSM_LSTAT	=  _fs(48),
+    IOSM_STAT	=  _fs(49),
+    IOSM_READLINK= _fs(50),
+    IOSM_CHROOT	=  _fs(51),
 
-    FSM_NEXT	=  _fd(65),
-    FSM_EAT	=  _fd(66),
-    FSM_POS	=  _fd(67),
-    FSM_PAD	=  _fd(68),
-    FSM_TRAILER	=  _fd(69),
-    FSM_HREAD	=  _fd(70),
-    FSM_HWRITE	=  _fd(71),
-    FSM_DREAD	=  _fs(72),
-    FSM_DWRITE	=  _fs(73),
+    IOSM_NEXT	=  _fd(65),
+    IOSM_EAT	=  _fd(66),
+    IOSM_POS	=  _fd(67),
+    IOSM_PAD	=  _fd(68),
+    IOSM_TRAILER=  _fd(69),
+    IOSM_HREAD	=  _fd(70),
+    IOSM_HWRITE	=  _fd(71),
+    IOSM_DREAD	=  _fs(72),
+    IOSM_DWRITE	=  _fs(73),
 
-    FSM_ROPEN	=  _fs(129),
-    FSM_READ	=  _fs(130),
-    FSM_RCLOSE	=  _fs(131),
-    FSM_WOPEN	=  _fs(132),
-    FSM_WRITE	=  _fs(133),
-    FSM_WCLOSE	=  _fs(134)
-} fileStage;
+    IOSM_ROPEN	=  _fs(129),
+    IOSM_READ	=  _fs(130),
+    IOSM_RCLOSE	=  _fs(131),
+    IOSM_WOPEN	=  _fs(132),
+    IOSM_WRITE	=  _fs(133),
+    IOSM_WCLOSE	=  _fs(134)
+} iosmStage;
 #undef	_fv
 #undef	_fi
 #undef	_fs
@@ -99,9 +100,9 @@ typedef enum fileStage_e {
 /** \ingroup payload
  * Iterator across package file info, forward on install, backward on erase.
  */
-typedef /*@abstract@*/ struct fsmIterator_s * FSMI_t;
+typedef /*@abstract@*/ struct iosmIterator_s * IOSMI_t;
 
-#if defined(_RPMFSM_INTERNAL)
+#if defined(_RPMIOSM_INTERNAL)
 /** \ingroup payload
  * Keeps track of the set of all hard links to a file in an archive.
  */
@@ -122,9 +123,9 @@ struct hardLink_s {
 /** \ingroup payload
  * Iterator across package file info, forward on install, backward on erase.
  */
-struct fsmIterator_s {
-    rpmts ts;			/*!< transaction set. */
-    rpmfi fi;			/*!< transaction element file info. */
+struct iosmIterator_s {
+    void * ts;			/*!< transaction set. */
+    void * fi;			/*!< transaction element file info. */
     int reverse;		/*!< reversed traversal? */
     int isave;			/*!< last returned iterator index. */
     int i;			/*!< iterator index. */
@@ -134,7 +135,7 @@ struct fsmIterator_s {
 /** \ingroup payload
  * File name and stat information.
  */
-struct fsm_s {
+struct iosm_s {
 /*@owned@*/ /*@relnull@*/
     const char * path;		/*!< Current file name. */
 /*@owned@*/ /*@relnull@*/
@@ -161,7 +162,7 @@ struct fsm_s {
     size_t wrlen;		/*!< write: Number of bytes requested.*/
     size_t wrnb;		/*!< write: Number of bytes returned. */
 /*@only@*/ /*@null@*/
-    FSMI_t iter;		/*!< File iterator. */
+    IOSMI_t iter;		/*!< File iterator. */
     int ix;			/*!< Current file iterator index. */
 /*@only@*/ /*@relnull@*/
     struct hardLink_s * links;	/*!< Pending hard linked file(s). */
@@ -211,20 +212,20 @@ struct fsm_s {
     const char * fcontext;	/*!< File security context (NULL disables). */
     
     unsigned fflags;		/*!< File flags. */
-    fileAction action;		/*!< File disposition. */
-    fileStage goal;		/*!< Package state machine goal. */
-    fileStage stage;		/*!< External file stage. */
-    fileStage nstage;		/*!< Next file stage. */
+    iosmAction action;		/*!< File disposition. */
+    iosmStage goal;		/*!< Package state machine goal. */
+    iosmStage stage;		/*!< External file stage. */
+    iosmStage nstage;		/*!< Next file stage. */
     struct stat sb;		/*!< Current file stat(2) info. */
     struct stat osb;		/*!< Original file stat(2) info. */
 
     unsigned blksize;		/*!< Archive block size. */
-    int (*headerRead) (void * _fsm, struct stat *st)
-	/*@modifies _fsm, st @*/;
-    int (*headerWrite) (void * _fsm, struct stat *st)
-	/*@modifies _fsm, st @*/;
-    int (*trailerWrite) (void * _fsm)
-	/*@modifies fsm @*/;
+    int (*headerRead) (void * _iosm, struct stat *st)
+	/*@modifies _iosm, st @*/;
+    int (*headerWrite) (void * _iosm, struct stat *st)
+	/*@modifies _iosm, st @*/;
+    int (*trailerWrite) (void * _iosm)
+	/*@modifies _iosm @*/;
 
     char * lmtab;		/*!< ar(1) long member name table. */
     size_t lmtablen;		/*!< ar(1) no. bytes in lmtab. */
@@ -241,35 +242,35 @@ extern "C" {
  * @param a		file stage
  * @return		formatted string
  */
-/*@observer@*/ const char * fileStageString(fileStage a)	/*@*/;
+/*@observer@*/ const char * iosmStageString(iosmStage a)	/*@*/;
 
 /**
  * Return formatted string representation of file disposition.
  * @param a		file dispostion
  * @return		formatted string
  */
-/*@observer@*/ const char * fileActionString(fileAction a)	/*@*/;
+/*@observer@*/ const char * iosmActionString(iosmAction a)	/*@*/;
 /*@=exportlocal@*/
 
 /**
- * Create file state machine instance.
- * @return		file state machine
+ * Create I/O state machine instance.
+ * @return		I/O state machine
  */
-/*@only@*/ FSM_t newFSM(void)
+/*@only@*/ IOSM_t newIOSM(void)
 	/*@*/;
 
 /**
- * Destroy file state machine instance.
- * @param fsm		file state machine
+ * Destroy I/O state machine instance.
+ * @param iosm		I/O state machine
  * @return		always NULL
  */
-/*@null@*/ FSM_t freeFSM(/*@only@*/ /*@null@*/ FSM_t fsm)
+/*@null@*/ IOSM_t freeIOSM(/*@only@*/ /*@null@*/ IOSM_t iosm)
 	/*@globals fileSystem @*/
-	/*@modifies fsm, fileSystem @*/;
+	/*@modifies iosm, fileSystem @*/;
 
 /**
- * Load external data into file state machine.
- * @param fsm		file state machine
+ * Load external data into I/O state machine.
+ * @param iosm		I/O state machine
  * @param goal
  * @param afmt		archive format (NULL uses cpio)
  * @param _ts		transaction set
@@ -279,83 +280,83 @@ extern "C" {
  * @retval failedFile	pointer to first file name that failed.
  * @return		0 on success
  */
-int fsmSetup(FSM_t fsm, fileStage goal, /*@null@*/ const char * afmt,
+int iosmSetup(IOSM_t iosm, iosmStage goal, /*@null@*/ const char * afmt,
 		const void * _ts,
 		const void * _fi,
 		FD_t cfd,
 		/*@out@*/ unsigned int * archiveSize,
 		/*@out@*/ const char ** failedFile)
 	/*@globals h_errno, fileSystem, internalState @*/
-	/*@modifies fsm, ts, fi, *archiveSize, *failedFile,
+	/*@modifies iosm, ts, fi, *archiveSize, *failedFile,
 		fileSystem, internalState @*/;
 
 /**
- * Clean file state machine.
- * @param fsm		file state machine
+ * Clean I/O state machine.
+ * @param iosm		I/O state machine
  * @return		0 on success
  */
-int fsmTeardown(FSM_t fsm)
+int iosmTeardown(IOSM_t iosm)
 	/*@globals h_errno, fileSystem, internalState @*/
-	/*@modifies fsm, fileSystem, internalState @*/;
+	/*@modifies iosm, fileSystem, internalState @*/;
 
-#if defined(_RPMFSM_INTERNAL)
+#if defined(_RPMIOSM_INTERNAL)
 /*@-exportlocal@*/
 /**
- * Retrieve transaction set from file state machine iterator.
- * @param fsm		file state machine
+ * Retrieve transaction set from I/O state machine iterator.
+ * @param iosm		I/O state machine
  * @return		transaction set
  */
-rpmts fsmGetTs(const FSM_t fsm)
+void * iosmGetTs(const IOSM_t iosm)
 	/*@*/;
 
 /**
- * Retrieve transaction element file info from file state machine iterator.
- * @param fsm		file state machine
+ * Retrieve transaction element file info from I/O state machine iterator.
+ * @param iosm		I/O state machine
  * @return		transaction element file info
  */
-rpmfi fsmGetFi(/*@partial@*/ const FSM_t fsm)
+void * iosmGetFi(/*@partial@*/ const IOSM_t iosm)
 	/*@*/;
 #endif
 
 /**
  * Map next file path and action.
- * @param fsm		file state machine
+ * @param iosm		I/O state machine
  */
-int fsmMapPath(FSM_t fsm)
-	/*@modifies fsm @*/;
+int iosmMapPath(IOSM_t iosm)
+	/*@modifies iosm @*/;
 
 /**
  * Map file stat(2) info.
- * @param fsm		file state machine
+ * @param iosm		I/O state machine
  */
-int fsmMapAttrs(FSM_t fsm)
-	/*@modifies fsm @*/;
+int iosmMapAttrs(IOSM_t iosm)
+	/*@modifies iosm @*/;
 /*@=exportlocal@*/
 
 /**
  * File state machine driver.
- * @param fsm		file state machine
- * @param nstage		next stage
+ * @param iosm		I/O state machine
+ * @param nstage	next stage
  * @return		0 on success
  */
-int fsmNext(FSM_t fsm, fileStage nstage)
+int iosmNext(IOSM_t iosm, iosmStage nstage)
 	/*@globals errno, h_errno, fileSystem, internalState @*/
-	/*@modifies fsm, errno, fileSystem, internalState @*/;
+	/*@modifies iosm, errno, fileSystem, internalState @*/;
 
 /**
  * File state machine driver.
- * @param fsm		file state machine
+ * @param iosm		I/O state machine
  * @param stage		next stage
  * @return		0 on success
  */
 /*@-exportlocal@*/
-int fsmStage(/*@partial@*/ FSM_t fsm, fileStage stage)
+int XiosmStage(/*@partial@*/ IOSM_t iosm, iosmStage stage)
 	/*@globals errno, h_errno, fileSystem, internalState @*/
-	/*@modifies fsm, errno, fileSystem, internalState @*/;
+	/*@modifies iosm, errno, fileSystem, internalState @*/;
 /*@=exportlocal@*/
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif	/* H_FSM */
+#endif	/* H_IOSM */

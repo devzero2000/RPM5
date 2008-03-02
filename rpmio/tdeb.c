@@ -9,7 +9,7 @@
 #include "cpio.h"		/* XXX cpioStrerror */
 #include "ar.h"
 
-#include "fsm.h"                /* XXX CPIO_FOO/FSM_FOO constants */
+#include "iosm.h"                /* XXX CPIO_FOO/FSM_FOO constants */
 
 #define	_RPMSQ_INTERNAL
 #include "psm.h"
@@ -18,7 +18,7 @@
 
 #include "debug.h"
 
-static int rpmFSM(rpmts ts, const char * fn, int mapflags)
+static int rpmIOSM(rpmts ts, const char * fn, int mapflags)
 {
     rpmpsm psm;
     rpmfi fi;
@@ -27,7 +27,7 @@ static int rpmFSM(rpmts ts, const char * fn, int mapflags)
     int rc = 0;
     int xx;
 
-fprintf(stderr, "--> rpmFSM(%p, \"%s\", 0x%x)\n", ts, fn, mapflags);
+fprintf(stderr, "--> rpmIOSM(%p, \"%s\", 0x%x)\n", ts, fn, mapflags);
 
     if (fn != NULL) {
 
@@ -40,14 +40,14 @@ fprintf(stderr, "--> rpmFSM(%p, \"%s\", 0x%x)\n", ts, fn, mapflags);
 	if (psm->cfd != NULL && !Ferror(psm->cfd)) {
 
 	    fi->mapflags |= mapflags;
-	    fsmmode = (mapflags & CPIO_PAYLOAD_CREATE) ? FSM_PKGBUILD : FSM_PKGINSTALL;
-	    rc = fsmSetup(fi->fsm, fsmmode, "ar", ts, fi,
+	    fsmmode = (mapflags & CPIO_PAYLOAD_CREATE) ? IOSM_PKGBUILD : IOSM_PKGINSTALL;
+	    rc = iosmSetup(fi->fsm, fsmmode, "ar", ts, fi,
 			psm->cfd, NULL, &psm->failedFile);
 	    (void) rpmswAdd(rpmtsOp(ts, RPMTS_OP_UNCOMPRESS),
 			fdstat_op(psm->cfd, FDSTAT_READ));
 	    (void) rpmswAdd(rpmtsOp(ts, RPMTS_OP_DIGEST),
 		fdstat_op(psm->cfd, FDSTAT_DIGEST));
-	    xx = fsmTeardown(fi->fsm);
+	    xx = iosmTeardown(fi->fsm);
 
 	    xx = Fclose(psm->cfd);
 
@@ -75,17 +75,17 @@ static const char * arfn = NULL;
 
 static int rpmarCreate(rpmts ts, QVA_t ia, const char ** av)
 {
-    return rpmFSM(ts, (arfn ? arfn : "-"), CPIO_PAYLOAD_CREATE);
+    return rpmIOSM(ts, (arfn ? arfn : "-"), CPIO_PAYLOAD_CREATE);
 }
 
 static int rpmarExtract(rpmts ts, QVA_t ia, const char ** av)
 {
-    return rpmFSM(ts, (arfn ? arfn : "-"), CPIO_PAYLOAD_EXTRACT);
+    return rpmIOSM(ts, (arfn ? arfn : "-"), CPIO_PAYLOAD_EXTRACT);
 }
 
 static int rpmarList(rpmts ts, QVA_t ia, const char ** av)
 {
-    return rpmFSM(ts, (arfn ? arfn : "-"), CPIO_PAYLOAD_LIST);
+    return rpmIOSM(ts, (arfn ? arfn : "-"), CPIO_PAYLOAD_LIST);
 }
 
 static struct poptOption optionsTable[] = {
@@ -124,8 +124,8 @@ main(int argc, char *const argv[])
 
     ts = rpmtsCreate();
 
-_fsmNext = &fsmNext;
-_fsm_debug = -1;
+_fsmNext = &iosmNext;
+_iosm_debug = -1;
 _ar_debug = 1;
 rpmIncreaseVerbosity();
 rpmIncreaseVerbosity();

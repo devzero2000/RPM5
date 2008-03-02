@@ -6,8 +6,8 @@
 #undef Mkdir
 #undef Stat
 
-#include "rpmlib.h"
 #include "rpmio.h"
+#include "rpmlib.h"
 #include "rpmcli.h"
 #include "stringbuf.h"
 #include "rpmmacro.h"

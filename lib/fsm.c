@@ -591,8 +591,8 @@ int fsmSetup(FSM_t fsm, fileStage goal, const char * afmt,
 		const void * _ts, const void * _fi, FD_t cfd,
 		unsigned int * archiveSize, const char ** failedFile)
 {
-    const rpmts ts = _ts;
-    const rpmfi fi = _fi;
+    const rpmts ts = (const rpmts) _ts;
+    const rpmfi fi = (const rpmfi) _fi;
     size_t pos = 0;
     int rc, ec = 0;
 
