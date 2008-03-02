@@ -29,6 +29,7 @@ LIBRPMIO_0
     argvStrcasecmp;
     _av_debug;
     avClosedir;
+    avContextAdd;
     avContextCreate;
     avContextDestroy;
     avmagicdir;
