@@ -1153,6 +1153,15 @@ dColors[j] |= fColors[i];
     return h;
 }
 
+int rpmfiSetHeader(rpmfi fi, Header h)
+{
+    if (fi->h != NULL)
+	fi->h = headerFree(fi->h);
+    if (h != NULL)
+	fi->h = headerLink(h);
+    return 0;
+}
+
 rpmfi rpmfiFree(rpmfi fi)
 {
     if (fi == NULL) return NULL;

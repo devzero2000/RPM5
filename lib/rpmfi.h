@@ -610,6 +610,15 @@ rpmfi rpmfiInitD(/*@null@*/ rpmfi fi, int dx)
 	/*@modifies fi @*/;
 
 /**
+ * Link a header to a file info set.
+ * @param fi		file info set
+ * @param h		header
+ * @return		0 always
+ */
+int rpmfiSetHeader(rpmfi fi, /*@null@*/ Header h)
+	/*@modifies fi @*/;
+
+/**
  * Destroy a file info set.
  * @param fi		file info set
  * @return		NULL always

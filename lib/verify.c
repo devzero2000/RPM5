@@ -6,7 +6,6 @@
 #include "system.h"
 
 #include <rpmio.h>
-#define	_RPMFI_INTERNAL
 #define	_RPMPS_INTERNAL	/* XXX rpmps needs iterator. */
 #include <rpmcli.h>
 
@@ -17,7 +16,6 @@
 #include "ugid.h"
 #include "debug.h"
 
-/*@access rpmfi @*/
 /*@access rpmpsm @*/	/* XXX for %verifyscript through rpmpsmStage() */
 /*@access rpmProblem @*/
 
@@ -496,13 +494,12 @@ int showVerifyPackage(QVA_t qva, rpmts ts, Header h)
 	{
 	    FD_t fdo = fdDup(STDOUT_FILENO);
 
-/* XXX hackery to assert(!scaremem) in rpmfiNew. */
-if (fi->h == NULL) fi->h = headerLink(h);
+	    rc = rpmfiSetHeader(fi, h);
 	    if ((rc = rpmVerifyScript(qva, ts, fi, fdo)) != 0)
 		ec = rc;
 	    if (fdo != NULL)
 		rc = Fclose(fdo);
-fi->h = headerFree(fi->h);
+	    rc = rpmfiSetHeader(fi, NULL);
 	}
 
 	fi = rpmfiFree(fi);

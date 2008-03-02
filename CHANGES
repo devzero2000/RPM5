@@ -1,4 +1,6 @@
 5.0.0 -> 5.1a1:
+    - jbj: fsm: use rpmfi iterators in several loops.
+    - jbj: rpmfi: add rpmfiSetHeader() so verify.c doesn't need _RPMFI_INTERNAL.
     - jbj: rpmdav: refactor davOpendir et al on top of avOpendir.
     - jbj: handle (GNU-style) ar(1) long member names.
     - jbj: permit ar(1) payloads (file names are truncated atm).

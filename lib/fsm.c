@@ -210,11 +210,12 @@ static int mapFind(/*@null@*/ FSMI_t iter, const char * fsmPath)
 
     if (iter) {
 	const rpmfi fi = iter->fi;
-	if (fi && fi->fc > 0 && fi->apath && fsmPath && *fsmPath) {
+	int fc = rpmfiFC(fi);
+	if (fi && fc > 0 && fi->apath && fsmPath && *fsmPath) {
 	    const char ** p = NULL;
 
 	    if (fi->apath != NULL)
-		p = bsearch(&fsmPath, fi->apath, fi->fc, sizeof(fsmPath),
+		p = bsearch(&fsmPath, fi->apath, fc, sizeof(fsmPath),
 			cpioStrCmp);
 	    if (p) {
 		iter->i = p - fi->apath;
@@ -297,11 +298,14 @@ void * dnlInitIterator(/*@special@*/ const FSM_t fsm,
 	dnli->active = xcalloc(fi->dc, sizeof(*dnli->active));
 
 	/* Identify parent directories not skipped. */
-	for (i = 0; i < fi->fc; i++)
+	if ((fi = rpmfiInit(fi, 0)) != NULL)
+	while ((i = rpmfiNext(fi)) >= 0) {
             if (!XFA_SKIPPING(fi->actions[i])) dnli->active[fi->dil[i]] = 1;
+	}
 
 	/* Exclude parent directories that are explicitly included. */
-	for (i = 0; i < fi->fc; i++) {
+	if ((fi = rpmfiInit(fi, 0)) != NULL)
+	while ((i = rpmfiNext(fi)) >= 0) {
 	    int dil;
 	    size_t dnlen, bnlen;
 
@@ -530,17 +534,17 @@ FSM_t freeFSM(FSM_t fsm)
     return _free(fsm);
 }
 
-static int arSetup(FSM_t fsm, const rpmfi fi)
+static int arSetup(FSM_t fsm, rpmfi fi)
 	/*@modifies fsm @*/
 {
     const char * path;
     char * t;
     size_t lmtablen = 0;
     size_t nb;
-    int ix;
 
     /* Calculate size of ar(1) long member table. */
-    for (ix = 0; ix < fi->fc; ix++) {
+    if ((fi = rpmfiInit(fi, 0)) != NULL)
+    while (rpmfiNext(fi) >= 0) {
 #ifdef	NOTYET
 	if (fi->apath) {
 	    const char * apath = NULL;
@@ -548,7 +552,7 @@ static int arSetup(FSM_t fsm, const rpmfi fi)
 	    path = apath + fi->striplen;
 	} else
 #endif
-	    path = fi->bnl[ix];
+	    path = rpmfiBN(fi);
 	if ((nb = strlen(path)) < 15)
 	    continue;
 	lmtablen += nb + 1;	/* trailing \n */
@@ -562,7 +566,8 @@ static int arSetup(FSM_t fsm, const rpmfi fi)
     fsm->lmtab = t = xmalloc(lmtablen + 1);	/* trailing \0 */
     fsm->lmtablen = lmtablen;
     fsm->lmtaboff = 0;
-    for (ix = 0; ix < fi->fc; ix++) {
+    if ((fi = rpmfiInit(fi, 0)) != NULL)
+    while (rpmfiNext(fi) >= 0) {
 #ifdef	NOTYET
 	if (fi->apath) {
 	    const char * apath = NULL;
@@ -570,7 +575,7 @@ static int arSetup(FSM_t fsm, const rpmfi fi)
 	    path = apath + fi->striplen;
 	} else
 #endif
-	    path = fi->bnl[ix];
+	    path = rpmfiBN(fi);
 	if ((nb = strlen(path)) < 15)
 	    continue;
 	t = stpcpy(t, path);
