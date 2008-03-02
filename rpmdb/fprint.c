@@ -4,6 +4,7 @@
 
 #include "system.h"
 
+#include <rpmio.h>	/* XXX rpmRC codes. */
 #include <rpmmacro.h>	/* XXX for rpmCleanPath */
 #include <rpmdb.h>
 

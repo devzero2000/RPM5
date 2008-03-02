@@ -55,7 +55,8 @@ static char sccsid[] = "@(#)merge.c	8.2 (Berkeley) 2/14/94";
 
 #include "system.h"
 
-#include "rpmdb.h"
+#include <rpmio.h>	/* XXX rpmRC returns. */
+#include <rpmdb.h>
 
 #include "debug.h"
 
