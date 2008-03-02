@@ -36,7 +36,7 @@ assert(pw != NULL);
 
 char * _RequestPass(/*@unused@*/ const char * prompt)
 {
-/*@relnull@*/
+/*@only@*/ /*@relnull@*/
     static char * password = NULL;
 #if defined(HAVE_KEYUTILS_H)
     const char * foo = "user rpm:yyyy spoon";
@@ -45,7 +45,7 @@ char * _RequestPass(/*@unused@*/ const char * prompt)
     key_serial_t dest = 0;
     key_serial_t key = 0;
 
-    if (password) {
+    if (password != NULL) {
 	free(password);
 	password = NULL;
     }

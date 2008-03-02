@@ -293,10 +293,10 @@ spectag stashSt(Spec spec, Header h, rpmTag tag, const char * lang)
  * @return		0 on success
  */
 int addSource(Spec spec, Package pkg, const char * field, rpmTag tag)
-	/*@globals rpmGlobalMacroContext, h_errno @*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem @*/
 	/*@modifies spec->sources, spec->numSources,
 		spec->st, spec->macros,
-		rpmGlobalMacroContext @*/;
+		rpmGlobalMacroContext, fileSystem @*/;
 
 /** \ingroup rpmbuild
  * parseNoSource.

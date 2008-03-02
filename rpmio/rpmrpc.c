@@ -6,8 +6,8 @@
 
 #include <rpmio_internal.h>
 #include <rpmmacro.h>
-#include <argv.h>
 
+#define	_RPMAV_INTERNAL
 #define	_RPMDAV_INTERNAL
 #include <rpmdav.h>
 
@@ -944,64 +944,6 @@ static /*@only@*/ char * ftpBuf = NULL;
 	
 #define alloca_strdup(_s)       strcpy(alloca(strlen(_s)+1), (_s))
 
-/* =============================================================== */
-struct ftp_context_s {
-    const char *uri;
-/*@refcounted@*/
-    urlinfo u;
-    int ac;
-    int nalloced;
-    ARGV_t av;
-/*@null@*/ /*@shared@*/
-    struct stat *st;
-    mode_t * modes;
-    size_t * sizes;
-    time_t * mtimes;
-};
-
-/*@null@*/
-static void *ftp_destroy_context(/*@only@*/ /*@null@*/ struct ftp_context_s *ctx)
-	/*@globals internalState @*/
-	/*@modifies ctx, internalState @*/
-{
-    if (ctx == NULL)
-	return NULL;
-    if (ctx->av != NULL)
-	ctx->av = argvFree(ctx->av);
-    ctx->modes = _free(ctx->modes);
-    ctx->sizes = _free(ctx->sizes);
-    ctx->mtimes = _free(ctx->mtimes);
-    ctx->u = urlFree(ctx->u, "ftp_destroy_context");
-    ctx->uri = _free(ctx->uri);
-    memset(ctx, 0, sizeof(*ctx));
-    ctx = _free(ctx);
-    return NULL;
-}
-
-/*@null@*/
-static void *ftp_create_context(const char *uri, /*@null@*/ struct stat *st)
-	/*@globals internalState @*/
-	/*@modifies *st, internalState @*/
-{
-    struct ftp_context_s * ctx;
-    urlinfo u;
-
-/*@-globs@*/	/* FIX: h_errno annoyance. */
-    if (urlSplit(uri, &u))
-	return NULL;
-/*@=globs@*/
-
-    ctx = xcalloc(1, sizeof(*ctx));
-    ctx->uri = xstrdup(uri);
-    ctx->u = urlLink(u, "ftp_create_context");
-/*@-temptrans@*/	/* XXX note the assignment */
-    if ((ctx->st = st) != NULL)
-	memset(ctx->st, 0, sizeof(*ctx->st));
-/*@=temptrans@*/
-    return ctx;
-}
-/* =============================================================== */
-
 static int ftpNLST(const char * url, ftpSysCall_t ftpSysCall,
 		/*@out@*/ /*@null@*/ struct stat * st,
 		/*@out@*/ /*@null@*/ char * rlbuf, size_t rlbufsiz)
@@ -1269,11 +1211,11 @@ fprintf(stderr, "*** ftpReadlink(%s) rc %d\n", path, rc);
 
 /*@null@*/
 static DIR * ftpOpendir(const char * path)
-	/*@globals h_errno, fileSystem, internalState @*/
-	/*@modifies fileSystem, internalState @*/
+	/*@globals h_errno, errno, fileSystem, internalState @*/
+	/*@modifies errno, fileSystem, internalState @*/
 {
     AVDIR avdir;
-    struct ftp_context_s * ctx;
+    avContext ctx;
     struct stat * st = NULL;
     const char * s, * sb, * se;
     int nac;
@@ -1284,7 +1226,7 @@ if (_ftp_debug)
 fprintf(stderr, "*** ftpOpendir(%s)\n", path);
 
     /* Load FTP collection into argv. */
-    ctx = ftp_create_context(path, st);
+    ctx = avContextCreate(path, st);
     if (ctx == NULL) {
         errno = ENOENT;         /* Note: ctx is NULL iff urlSplit() fails. */
         return NULL;
@@ -1348,9 +1290,9 @@ fprintf(stderr, "*** ftpOpendir(%s)\n", path);
 		for (sb = se; sb > s && sb[-1] != ' '; sb--)
 		    {};
 	    }
-	    /*@-dependenttrans@*/
+	    /*@-unrecog@*/
 	    ctx->av[nac] = strndup(sb, (se-sb-1));
-	    /*@=dependenttrans@*/
+	    /*@=unrecog@*/
 	    nac++;
 	    if (*se == '\n') se++;
 	    sb = NULL;
@@ -1361,9 +1303,9 @@ fprintf(stderr, "*** ftpOpendir(%s)\n", path);
 	}
     }
 
-    avdir = avOpendir(path, ctx->av, ctx->modes);
+    avdir = (AVDIR) avOpendir(path, ctx->av, ctx->modes);
 
-    ctx = ftp_destroy_context(ctx);
+    ctx = avContextDestroy(ctx);
 
 /*@-kepttrans@*/
     return (DIR *) avdir;

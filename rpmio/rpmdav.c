@@ -60,12 +60,12 @@ extern void CRYPTO_mem_leaks(void * ptr);
 
 #include <rpmio_internal.h>
 
+#include <rpmhash.h>
+#include <ugid.h>
+
+#define _RPMAV_INTERNAL
 #define _RPMDAV_INTERNAL
 #include <rpmdav.h>
-
-#include <rpmhash.h>
-#include <argv.h>
-#include <ugid.h>
 
 #include "debug.h"
 
@@ -85,8 +85,180 @@ int _dav_nooptions = 0;
 /*@unchecked@*/
 static int httpTimeoutSecs = TIMEOUT_SECS;
 
-#ifdef WITH_NEON
+/* =============================================================== */
+void * avContextDestroy(avContext ctx)
+{
+    if (ctx == NULL)
+	return NULL;
+    if (ctx->av != NULL)
+	ctx->av = argvFree(ctx->av);
+    ctx->modes = _free(ctx->modes);
+    ctx->sizes = _free(ctx->sizes);
+    ctx->mtimes = _free(ctx->mtimes);
+    ctx->u = urlFree(ctx->u, "avContextDestroy");
+    ctx->uri = _free(ctx->uri);
+    memset(ctx, 0, sizeof(*ctx));
+    ctx = _free(ctx);
+    return NULL;
+}
 
+void * avContextCreate(const char *uri, struct stat *st)
+{
+    avContext ctx;
+    urlinfo u;
+
+/*@-globs@*/	/* FIX: h_errno annoyance. */
+    if (urlSplit(uri, &u))
+	return NULL;
+/*@=globs@*/
+
+    ctx = xcalloc(1, sizeof(*ctx));
+    ctx->uri = xstrdup(uri);
+    ctx->u = urlLink(u, "avContextCreate");
+/*@-temptrans@*/	/* XXX note the assignment */
+    if ((ctx->st = st) != NULL)
+	memset(ctx->st, 0, sizeof(*ctx->st));
+/*@=temptrans@*/
+    return ctx;
+}
+
+int avClosedir(/*@only@*/ DIR * dir)
+{
+    AVDIR avdir = (AVDIR)dir;
+
+if (_av_debug)
+fprintf(stderr, "*** avClosedir(%p)\n", avdir);
+
+#if defined(HAVE_PTHREAD_H)
+/*@-moduncon -noeffectuncon @*/
+    (void) pthread_mutex_destroy(&avdir->lock);
+/*@=moduncon =noeffectuncon @*/
+#endif
+
+    avdir = _free(avdir);
+    return 0;
+}
+
+struct dirent * avReaddir(DIR * dir)
+{
+    AVDIR avdir = (AVDIR)dir;
+    struct dirent * dp;
+    const char ** av;
+    unsigned char * dt;
+    int ac;
+    int i;
+
+    if (avdir == NULL || !ISAVMAGIC(avdir) || avdir->data == NULL) {
+	/* XXX TODO: EBADF errno. */
+	return NULL;
+    }
+
+    dp = (struct dirent *) avdir->data;
+    av = (const char **) (dp + 1);
+    ac = (int)avdir->size;
+    dt = (unsigned char *) (av + (ac + 1));
+    i = avdir->offset + 1;
+
+    if (i < 0 || i >= ac || av[i] == NULL)
+	return NULL;
+
+    avdir->offset = i;
+
+    /* XXX glob(3) uses REAL_DIR_ENTRY(dp) test on d_ino */
+/*@-type@*/
+    /* Hash the name (starting with parent hash) for a d_ino analogue. */
+    dp->d_ino = hashFunctionString(avdir->filepos, dp->d_name, 0);
+
+#if !defined(__DragonFly__) && !defined(__CYGWIN__)
+    dp->d_reclen = 0;		/* W2DO? */
+#endif
+
+#if !(defined(hpux) || defined(__hpux) || defined(sun) || defined(RPM_OS_AIX) || defined(__CYGWIN__) || defined(__QNXNTO__))
+#if !defined(__APPLE__) && !defined(__FreeBSD_kernel__) && !defined(__FreeBSD__) && !defined(__NetBSD__) && !defined(__DragonFly__)
+    dp->d_off = 0;		/* W2DO? */
+#endif
+    dp->d_type = dt[i];
+#endif
+/*@=type@*/
+
+    strncpy(dp->d_name, av[i], sizeof(dp->d_name));
+if (_av_debug)
+fprintf(stderr, "*** avReaddir(%p) %p \"%s\"\n", (void *)avdir, dp, dp->d_name);
+
+    return dp;
+}
+
+DIR * avOpendir(const char * path, const char ** av, mode_t * modes)
+{
+    AVDIR avdir;
+    struct dirent * dp;
+    size_t nb;
+    const char ** nav;
+    unsigned char * dt;
+    char * t;
+    int ac, nac;
+
+if (_av_debug)
+fprintf(stderr, "*** avOpendir(%s, %p)\n", path, av);
+
+    nb = 0;
+    ac = 0;
+    if (av != NULL)
+    while (av[ac] != NULL)
+	nb += strlen(av[ac++]) + 1;
+    ac += 2;	/* for "." and ".." */
+    nb += sizeof(".") + sizeof("..");
+
+    nb += sizeof(*avdir) + sizeof(*dp) + ((ac + 1) * sizeof(*av)) + (ac + 1);
+    avdir = xcalloc(1, nb);
+/*@-abstract@*/
+    dp = (struct dirent *) (avdir + 1);
+    nav = (const char **) (dp + 1);
+    dt = (unsigned char *) (nav + (ac + 1));
+    t = (char *) (dt + ac + 1);
+/*@=abstract@*/
+
+    avdir->fd = avmagicdir;
+/*@-usereleased@*/
+    avdir->data = (char *) dp;
+/*@=usereleased@*/
+    avdir->allocation = nb;
+    avdir->size = ac;
+    avdir->offset = -1;
+    /* Hash the directory path for a d_ino analogue. */
+    avdir->filepos = hashFunctionString(0, path, 0);
+
+#if defined(HAVE_PTHREAD_H)
+/*@-moduncon -noeffectuncon -nullpass @*/
+    (void) pthread_mutex_init(&avdir->lock, NULL);
+/*@=moduncon =noeffectuncon =nullpass @*/
+#endif
+
+    nac = 0;
+    /*@-dependenttrans -unrecog@*/
+    dt[nac] = (unsigned char)DT_DIR; nav[nac++] = t; t = stpcpy(t, "."); t++;
+    dt[nac] = (unsigned char)DT_DIR; nav[nac++] = t; t = stpcpy(t, ".."); t++;
+    /*@=dependenttrans =unrecog@*/
+
+    /* Append av strings to DIR elements. */
+    ac = 0;
+    if (av != NULL)
+    while (av[ac] != NULL) {
+	nav[nac] = t;
+	dt[nac] = (unsigned char) (modes && S_ISDIR(modes[ac]) ? DT_DIR : DT_REG);
+	t = stpcpy(t, av[ac]);
+	t++;	/* trailing \0 */
+	ac++;
+	nac++;
+    }
+    nav[nac] = NULL;
+
+/*@-kepttrans@*/
+    return (DIR *) avdir;
+/*@=kepttrans@*/
+}
+
+#ifdef WITH_NEON
 /* =============================================================== */
 void davDestroy(void)
 {
@@ -1639,144 +1811,7 @@ exit:
 /*@=nullstate@*/
 #endif
 
-int avClosedir(/*@only@*/ DIR * dir)
-{
-    AVDIR avdir = (AVDIR)dir;
-
-if (_av_debug)
-fprintf(stderr, "*** avClosedir(%p)\n", avdir);
-
-#if defined(HAVE_PTHREAD_H)
-/*@-moduncon -noeffectuncon @*/
-    (void) pthread_mutex_destroy(&avdir->lock);
-/*@=moduncon =noeffectuncon @*/
-#endif
-
-    avdir = _free(avdir);
-    return 0;
-}
-
-struct dirent * avReaddir(DIR * dir)
-{
-    AVDIR avdir = (AVDIR)dir;
-    struct dirent * dp;
-    const char ** av;
-    unsigned char * dt;
-    int ac;
-    int i;
-
-    if (avdir == NULL || !ISAVMAGIC(avdir) || avdir->data == NULL) {
-	/* XXX TODO: EBADF errno. */
-	return NULL;
-    }
-
-    dp = (struct dirent *) avdir->data;
-    av = (const char **) (dp + 1);
-    ac = (int)avdir->size;
-    dt = (unsigned char *) (av + (ac + 1));
-    i = avdir->offset + 1;
-
-    if (i < 0 || i >= ac || av[i] == NULL)
-	return NULL;
-
-    avdir->offset = i;
-
-    /* XXX glob(3) uses REAL_DIR_ENTRY(dp) test on d_ino */
-/*@-type@*/
-    /* Hash the name (starting with parent hash) for a d_ino analogue. */
-    dp->d_ino = hashFunctionString(avdir->filepos, dp->d_name, 0);
-
-#if !defined(__DragonFly__) && !defined(__CYGWIN__)
-    dp->d_reclen = 0;		/* W2DO? */
-#endif
-
-#if !(defined(hpux) || defined(__hpux) || defined(sun) || defined(RPM_OS_AIX) || defined(__CYGWIN__) || defined(__QNXNTO__))
-#if !defined(__APPLE__) && !defined(__FreeBSD_kernel__) && !defined(__FreeBSD__) && !defined(__NetBSD__) && !defined(__DragonFly__)
-    dp->d_off = 0;		/* W2DO? */
-#endif
-    dp->d_type = dt[i];
-#endif
-/*@=type@*/
-
-    strncpy(dp->d_name, av[i], sizeof(dp->d_name));
-if (_av_debug)
-fprintf(stderr, "*** avReaddir(%p) %p \"%s\"\n", (void *)avdir, dp, dp->d_name);
-
-    return dp;
-}
-
-DIR * avOpendir(const char * path, const char ** av, mode_t * modes)
-{
-    AVDIR avdir;
-    struct dirent * dp;
-    size_t nb;
-    const char ** nav;
-    unsigned char * dt;
-    char * t;
-    int ac, nac;
-
-if (_av_debug)
-fprintf(stderr, "*** avOpendir(%s, %p)\n", path, av);
-
-    nb = 0;
-    ac = 0;
-    if (av != NULL)
-    while (av[ac] != NULL)
-	nb += strlen(av[ac++]) + 1;
-    ac += 2;	/* for "." and ".." */
-    nb += sizeof(".") + sizeof("..");
-
-    nb += sizeof(*avdir) + sizeof(*dp) + ((ac + 1) * sizeof(*av)) + (ac + 1);
-    avdir = xcalloc(1, nb);
-/*@-abstract@*/
-    dp = (struct dirent *) (avdir + 1);
-    nav = (const char **) (dp + 1);
-    dt = (unsigned char *) (nav + (ac + 1));
-    t = (char *) (dt + ac + 1);
-/*@=abstract@*/
-
-    avdir->fd = avmagicdir;
-/*@-usereleased@*/
-    avdir->data = (char *) dp;
-/*@=usereleased@*/
-    avdir->allocation = nb;
-    avdir->size = ac;
-    avdir->offset = -1;
-    /* Hash the directory path for a d_ino analogue. */
-    avdir->filepos = hashFunctionString(0, path, 0);
-
-#if defined(HAVE_PTHREAD_H)
-/*@-moduncon -noeffectuncon -nullpass @*/
-    (void) pthread_mutex_init(&avdir->lock, NULL);
-/*@=moduncon =noeffectuncon =nullpass @*/
-#endif
-
-    nac = 0;
-    /*@-dependenttrans -unrecog@*/
-    dt[nac] = (unsigned char)DT_DIR; nav[nac++] = t; t = stpcpy(t, "."); t++;
-    dt[nac] = (unsigned char)DT_DIR; nav[nac++] = t; t = stpcpy(t, ".."); t++;
-    /*@=dependenttrans =unrecog@*/
-
-    /* Append av strings to DIR elements. */
-    ac = 0;
-    if (av != NULL)
-    while (av[ac] != NULL) {
-	nav[nac] = t;
-	dt[nac] = (unsigned char) (modes && S_ISDIR(modes[ac]) ? DT_DIR : DT_REG);
-	t = stpcpy(t, av[ac]);
-	t++;	/* trailing \0 */
-	ac++;
-	nac++;
-    }
-    nav[nac] = NULL;
-
-/*@-kepttrans@*/
-    return (DIR *) avdir;
-/*@=kepttrans@*/
-}
-
 #ifdef WITH_NEON
-
 /* =============================================================== */
 int davClosedir(/*@only@*/ DIR * dir)
 {
@@ -1817,7 +1852,7 @@ fprintf(stderr, "*** davOpendir(%s)\n", path);
 	return NULL;
     }
 
-    avdir = avOpendir(path, ctx->av, ctx->modes);
+    avdir = (AVDIR) avOpendir(path, ctx->av, ctx->modes);
 
     ctx = fetch_destroy_context(ctx);
 

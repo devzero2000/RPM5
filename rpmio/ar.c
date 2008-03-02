@@ -5,12 +5,21 @@
 
 #include "system.h"
 
-#include <rpmio_internal.h>	/* XXX fdGetCpioPos AR_MAGIC */
-#include <rpmlib.h>
+#include <rpmio_internal.h>	/* XXX fdGetCpioPos writing AR_MAGIC */
 
-#include "ar.h"
-#include "fsm.h"
-#include "ugid.h"
+#include <ar.h>
+#include <rpmmacro.h>
+#include <ugid.h>
+
+/* XXX no <rpmlib.h> here */
+typedef /*@abstract@*/ /*@refcounted@*/ struct rpmts_s * rpmts;
+typedef /*@abstract@*/ /*@refcounted@*/ struct rpmfi_s * rpmfi;
+typedef /*@abstract@*/ struct fsmIterator_s * FSMI_t;
+typedef /*@abstract@*/ struct fsm_s * FSM_t;
+
+#include "../rpmdb/rpmtag.h"
+#include "../lib/rpmfi.h"
+#include "../lib/fsm.h"
 
 #include "debug.h"
 
@@ -22,18 +31,21 @@ int _ar_debug = 0;
 /**
  *  * Vector to fsmNext.
  *   */
+/*@-redecl@*/
 int (*_fsmNext) (void * _fsm, int nstage)
         /*@modifies _fsm @*/;
+/*@=redecl@*/
 
 /**
  * Convert string to unsigned integer (with buffer size check).
  * @param str		input string
- * @retval endptr	address of 1st character not processed
+ * @retval *endptr	1st character not processed
  * @param base		numerical conversion base
  * @param num		max no. of bytes to read
  * @return		converted integer
  */
-static int strntoul(const char *str, /*@out@*/char **endptr, int base, int num)
+static int strntoul(const char *str, /*@null@*/ /*@out@*/char **endptr,
+		int base, size_t num)
 	/*@modifies *endptr @*/
 {
     char * buf, * end;
@@ -55,7 +67,8 @@ static int strntoul(const char *str, /*@out@*/char **endptr, int base, int num)
 }
 
 static ssize_t arRead(void * _fsm, void * buf, size_t count)
-	/*@modifies _fsm, *buf @*/
+	/*@globals fileSystem @*/
+	/*@modifies _fsm, *buf, fileSystem @*/
 {
     FSM_t fsm = _fsm;
     char * t = buf;
@@ -85,7 +98,7 @@ fprintf(stderr, "          arRead(%p, %p[%u])\n", fsm, buf, (unsigned)count);
 }
 
 int arHeaderRead(void * _fsm, struct stat * st)
-	/*@modifies fsm, *st @*/
+	/*@modifies _fsm, *st @*/
 {
     FSM_t fsm = _fsm;
     arHeader hdr = (arHeader) fsm->wrbuf;
@@ -101,7 +114,7 @@ fprintf(stderr, "    arHeaderRead(%p, %p)\n", fsm, st);
 
 top:
     rc = arRead(fsm, hdr, sizeof(*hdr));
-    if (rc <= 0)	return -rc;
+    if (rc <= 0)	return (int) -rc;
 if (_ar_debug)
 fprintf(stderr, "==> %p[%u] \"%.*s\"\n", hdr, (unsigned)rc, (int)sizeof(*hdr), (char *)hdr);
     rc = 0;
@@ -117,10 +130,10 @@ fprintf(stderr, "==> %p[%u] \"%.*s\"\n", hdr, (unsigned)rc, (int)sizeof(*hdr), (
 	/* GNU: on "//":	Read long member name string table. */
 	if (hdr->name[1] == '/' && hdr->name[2] == ' ') {
 	    char * t;
-	    int i;
+	    size_t i;
 
 	    rc = arRead(fsm, fsm->wrbuf, st->st_size);
-	    if (rc <= 0)	return -rc;
+	    if (rc <= 0)	return (int) -rc;
 
 	    fsm->wrbuf[rc] = '\0';
 	    fsm->lmtab = t = xstrdup(fsm->wrbuf);
@@ -139,14 +152,14 @@ fprintf(stderr, "==> %p[%u] \"%.*s\"\n", hdr, (unsigned)rc, (int)sizeof(*hdr), (
 	/* GNU: on "/":	Skip symbol table. */
 	if (hdr->name[1] == ' ') {
 	    rc = arRead(fsm, fsm->wrbuf, st->st_size);
-	    if (rc <= 0)	return -rc;
+	    if (rc <= 0)	return (int) -rc;
 	    goto top;
 	}
 	/* GNU: on "/123": Read "123" offset to substitute long member name. */
-	if (xisdigit(hdr->name[1])) {
+	if (xisdigit((int)hdr->name[1])) {
 	    char * te = NULL;
 	    int i = strntoul(&hdr->name[1], &te, 10, sizeof(hdr->name)-2);
-	    if (*te == ' ' && fsm->lmtab != NULL && i < fsm->lmtablen)
+	    if (*te == ' ' && fsm->lmtab != NULL && i < (int)fsm->lmtablen)
 		fsm->path = xstrdup(fsm->lmtab + i);
 	}
     } else
@@ -179,11 +192,12 @@ fprintf(stderr, "\t     %06o%3d (%4d,%4d)%12d %s\n",
                 (int)st->st_uid, (int)st->st_gid, (int)st->st_size,
                 (fsm->path ? fsm->path : ""));
 
-    return rc;
+    return (int) rc;
 }
 
 static ssize_t arWrite(void * _fsm, const void *buf, size_t count)
-	/*@modifies _fsm @*/
+	/*@globals fileSystem @*/
+	/*@modifies _fsm, fileSystem @*/
 {
     FSM_t fsm = _fsm;
     const char * s = buf;
@@ -227,29 +241,29 @@ fprintf(stderr, "    arHeaderWrite(%p, %p)\n", fsm, st);
 	(void) arWrite(fsm, AR_MAGIC, sizeof(AR_MAGIC)-1);
 	/* GNU: on "//":	Write long member name string table. */
 	if (fsm->lmtab != NULL) {
-	    memset(hdr, ' ', sizeof(*hdr));
+	    memset(hdr, (int) ' ', sizeof(*hdr));
 	    hdr->name[0] = '/';
 	    hdr->name[1] = '/';
 	    sprintf(hdr->filesize, "%-10d", (unsigned) (fsm->lmtablen & 037777777777));
 	    strncpy(hdr->marker, AR_MARKER, sizeof(AR_MARKER)-1);
 
-	    rc = arWrite(fsm, hdr, sizeof(*hdr));
+	    rc = (int) arWrite(fsm, hdr, sizeof(*hdr));
 	    if (rc < 0)	return -rc;
-	    rc = arWrite(fsm, fsm->lmtab, fsm->lmtablen);
+	    rc = (int) arWrite(fsm, fsm->lmtab, fsm->lmtablen);
 	    if (rc < 0)	return -rc;
 	    rc = _fsmNext(fsm, FSM_PAD);
 	    if (rc < 0)	return -rc;
 	}
     }
 
-    memset(hdr, ' ', sizeof(*hdr));
+    memset(hdr, (int)' ', sizeof(*hdr));
 
     nb = strlen(fsm->path);
     if (nb >= sizeof(hdr->name)) {
 	const char * t = fsm->lmtab + fsm->lmtaboff;
 	const char * te = strchr(t, '\n');
 	/* GNU: on "/123": Write "/123" offset for long member name. */
-	nb = snprintf(hdr->name, sizeof(hdr->name)-1, "/%u", fsm->lmtaboff);
+	nb = snprintf(hdr->name, sizeof(hdr->name)-1, "/%u", (unsigned)fsm->lmtaboff);
 	hdr->name[nb] = ' ';
 	if (te != NULL)
 	    fsm->lmtaboff += (te - t) + 1;
@@ -267,11 +281,11 @@ fprintf(stderr, "    arHeaderWrite(%p, %p)\n", fsm, st);
 
     strncpy(hdr->marker, AR_MARKER, sizeof(AR_MARKER)-1);
 
-rc = sizeof(*hdr);
+rc = (int) sizeof(*hdr);
 if (_ar_debug)
 fprintf(stderr, "==> %p[%u] \"%.*s\"\n", hdr, (unsigned)rc, (int)sizeof(*hdr), (char *)hdr);
 
-    rc = arWrite(fsm, hdr, sizeof(*hdr));
+    rc = (int) arWrite(fsm, hdr, sizeof(*hdr));
     if (rc < 0)	return -rc;
     rc = 0;
 

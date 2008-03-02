@@ -212,7 +212,7 @@ struct fsm_s {
     int (*headerWrite) (FSM_t fsm, struct stat *st)
 	/*@modifies fsm, st @*/;
     int (*trailerWrite) (FSM_t fsm)
-	/*@modifies fsm, st @*/;
+	/*@modifies fsm @*/;
 
     char * lmtab;		/*!< ar(1) long member name table. */
     size_t lmtablen;		/*!< ar(1) no. bytes in lmtab. */

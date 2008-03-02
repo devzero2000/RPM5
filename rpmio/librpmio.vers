@@ -27,8 +27,10 @@ LIBRPMIO_0
     argvSort;
     argvSplit;
     argvStrcasecmp;
-    avClosedir;
     _av_debug;
+    avClosedir;
+    avContextCreate;
+    avContextDestroy;
     avmagicdir;
     avOpendir;
     avReaddir;

@@ -5,6 +5,8 @@
  * \file rpmio/rpmdav.h
  */
 
+#include <argv.h>
+
 #if defined(_RPMDAV_INTERNAL)
 struct __dirstream {
     int fd;			/* File descriptor.  */
@@ -42,27 +44,50 @@ typedef DIR *			DAVDIR;
 #endif
 
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+#if defined(_RPMAV_INTERNAL)
+/**
+ */
+typedef struct avContext_s * avContext;
+
 /**
  */
 /*@unchecked@*/
 extern int avmagicdir;
 #define ISAVMAGIC(_dir) (!memcmp((_dir), &avmagicdir, sizeof(avmagicdir)))
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+/**
+ */
+struct avContext_s {
+    const char *uri;
+/*@refcounted@*/
+    urlinfo u;
+    int ac;
+    int nalloced;
+    ARGV_t av;
+/*@null@*/ /*@shared@*/
+    struct stat *st;
+    mode_t * modes;
+    size_t * sizes;
+    time_t * mtimes;
+};
 
 /**
  */
-int davFree(urlinfo u)
-	/*@globals internalState @*/
-	/*@modifies u, internalState @*/;
+/*@null@*/
+void * avContextDestroy(/*@only@*/ /*@null@*/ avContext ctx)
+        /*@globals internalState @*/
+        /*@modifies ctx, internalState @*/;
 
 /**
  */
-void davDestroy(void)
-	/*@globals internalState @*/
-	/*@modifies internalState @*/;
+/*@null@*/
+void * avContextCreate(const char *uri, /*@null@*/ struct stat *st)
+        /*@globals internalState @*/
+        /*@modifies *st, internalState @*/;
 
 /**
  * Close an argv directory.
@@ -95,6 +120,19 @@ DIR * avOpendir(const char * path,
 		/*@null@*/ const char ** av, /*@null@*/ mode_t * modes)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
+#endif
+
+/**
+ */
+int davFree(urlinfo u)
+	/*@globals internalState @*/
+	/*@modifies u, internalState @*/;
+
+/**
+ */
+void davDestroy(void)
+	/*@globals internalState @*/
+	/*@modifies internalState @*/;
 
 /**
  * Send a http request.

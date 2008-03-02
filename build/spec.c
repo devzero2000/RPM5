@@ -22,8 +22,7 @@ extern int specedit;
 #define SKIPWHITE(_x)	{while(*(_x) && (xisspace(*_x) || *(_x) == ',')) (_x)++;}
 #define SKIPNONWHITE(_x){while(*(_x) &&!(xisspace(*_x) || *(_x) == ',')) (_x)++;}
 
-/*@access Header @*/	/* compared with NULL */
-/*@access rpmfi @*/	/* compared with NULL */
+/*@access rpmluav @*/
 
 /**
  * @param p		trigger entry chain
@@ -177,7 +176,7 @@ Package freePackage(Package pkg)
     pkg->ds = rpmdsFree(pkg->ds);
     pkg->fileList = freeStringBuf(pkg->fileList);
     pkg->fileFile = _free(pkg->fileFile);
-    if (pkg->cpioList) {
+    if (pkg->cpioList != NULL) {
 	rpmfi fi = pkg->cpioList;
 	pkg->cpioList = NULL;
 	fi = rpmfiFree(fi);
@@ -406,7 +405,9 @@ assert(mdir != NULL);
 	rpmluavSetListMode(var, 1);
 	rpmluavSetValue(var, RPMLUAV_STRING, body);
 	rpmluaSetVar(lua, var);
-	var = rpmluavFree(var);
+/*@-moduncon@*/
+	var = (rpmluav) rpmluavFree(var);
+/*@=moduncon@*/
 	rpmluaPop(lua);
     }
 #endif
@@ -575,7 +576,7 @@ Spec freeSpec(Spec spec)
     spec->sourcePkgId = _free(spec->sourcePkgId);
     spec->sourceHeader = headerFree(spec->sourceHeader);
 
-    if (spec->sourceCpioList) {
+    if (spec->sourceCpioList != NULL) {
 	rpmfi fi = spec->sourceCpioList;
 	spec->sourceCpioList = NULL;
 	fi = rpmfiFree(fi);

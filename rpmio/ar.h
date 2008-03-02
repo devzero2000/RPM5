@@ -44,7 +44,7 @@ extern int (*_fsmNext) (void * _fsm, int nstage)
  * @return		0 on success
  */
 int arTrailerWrite(void * _fsm)
-	/*@globals h_errno, fileSystem, internalState @*/
+	/*@globals fileSystem, internalState @*/
 	/*@modifies _fsm, fileSystem, internalState @*/;
 
 /**
@@ -54,7 +54,7 @@ int arTrailerWrite(void * _fsm)
  * @return		0 on success
  */
 int arHeaderWrite(void * _fsm, struct stat * st)
-	/*@globals h_errno, fileSystem, internalState @*/
+	/*@globals fileSystem, internalState @*/
 	/*@modifies _fsm, fileSystem, internalState @*/;
 
 /**
@@ -64,7 +64,7 @@ int arHeaderWrite(void * _fsm, struct stat * st)
  * @return		0 on success
  */
 int arHeaderRead(void * _fsm, struct stat * st)
-	/*@globals h_errno, fileSystem, internalState @*/
+	/*@globals fileSystem, internalState @*/
 	/*@modifies _fsm, *st, fileSystem, internalState @*/;
 
 #ifdef __cplusplus

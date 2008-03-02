@@ -108,9 +108,9 @@ static int rpm_inet_aton(const char *cp, struct in_addr *inp)
 #undef	fdClose
 #define	fdClose	__fdClose
 
+#include <ugid.h>
+#include <rpmcb.h>
 #include <rpmdav.h>
-#include "ugid.h"
-#include "rpmcb.h"
 
 #include "debug.h"
 
