@@ -859,13 +859,8 @@ vfs_parse_ls_lga (char * p, /*@out@*/ struct stat * st,
 	char *t;
 
 	if (filename){
-#ifdef HACK
-	    t = g_strndup (p_copy + column_ptr [idx], column_ptr [idx2] - column_ptr [idx] - 1);
-#else
-	    int nb = column_ptr [idx2] - column_ptr [idx] - 1;
-	    t = xmalloc(nb+1);
-	    strncpy(t, p_copy + column_ptr [idx], nb);
-#endif
+	    size_t nb = column_ptr [idx2] - column_ptr [idx] - 1;
+	    t = strncpy(xcalloc(1, nb+1), p_copy + column_ptr [idx], nb);
 	    *filename = t;
 	}
 	if (linkname){
