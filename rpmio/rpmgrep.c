@@ -1259,8 +1259,8 @@ static void grepArgCallback(poptContext con,
                 /*@unused@*/ enum poptCallbackReason reason,
                 const struct poptOption * opt, /*@unused@*/ const char * arg,
                 /*@unused@*/ void * data)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/
+	/*@globals color_string, dee_action, DEE_action, grepFlags, fileSystem @*/
+	/*@modifies color_string, dee_action, DEE_action, grepFlags, fileSystem @*/
 {
     /* XXX avoid accidental collisions with POPT_BIT_SET for flags */
     if (opt->arg == NULL)
@@ -1292,7 +1292,7 @@ assert(arg != NULL);
 	else {
 	    fprintf(stderr, _("%s: Invalid value \"%s\" for -d\n"),
 		__progname, arg);
-	    exit(2);
+	    /*@-exitarg@*/ exit(2); /*@=exitarg@*/
 	    /*@notreached@*/
 	}
 	break;
@@ -1302,7 +1302,7 @@ assert(arg != NULL);
 	else {
 	    fprintf(stderr, _("%s: Invalid value \"%s\" for -D\n"),
 		__progname, arg);
-	    exit(2);
+	    /*@-exitarg@*/ exit(2); /*@=exitarg@*/
 	    /*@notreached@*/
 	}
 	break;
@@ -1319,7 +1319,7 @@ assert(arg != NULL);
 	} else {
 	    fprintf(stderr, _("%s: Unknown color setting \"%s\"\n"),
 		__progname, arg);
-	    exit(2);
+	    /*@-exitarg@*/ exit(2); /*@=exitarg@*/
 	    /*@notreached@*/
 	}
 	color_string = _free(color_string);
@@ -1343,9 +1343,7 @@ assert(arg != NULL);
     default:
 	fprintf(stderr, _("%s: Unknown option -%c\n"), __progname, opt->val);
 	poptPrintUsage(con, stderr, 0);
-/*@-exitarg@*/
-	exit(2);
-/*@=exitarg@*/
+	/*@-exitarg@*/ exit(2); /*@=exitarg@*/
 	/*@notreached@*/ break;
     }
 }
@@ -1496,14 +1494,14 @@ Example: rpmgrep -i 'hello.*world' menu.h main.c\
 int
 main(int argc, char **argv)
 	/*@globals __assert_program_name, after_context, before_context,
-		color_option, color_string, DEE_action, dee_action,
+		color_string, dee_action,
  		exclude_patterns, excludeMire, grepFlags,
 		include_patterns, includeMire, locale, newline,
 		patterns, pattern_count, pattern_filenames, pattern_list,
 		stdin_name,
  		rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies __assert_program_name, after_context, before_context,
-		color_option, color_string, DEE_action, dee_action,
+		color_string, dee_action,
  		exclude_patterns, excludeMire, grepFlags,
 		include_patterns, includeMire, locale, newline,
 		patterns, pattern_count, pattern_filenames, pattern_list,
