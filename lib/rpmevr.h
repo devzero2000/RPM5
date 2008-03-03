@@ -69,7 +69,7 @@ typedef enum evrFlags_e {
 } evrFlags;
 /*@=matchfields@*/
 
-typedef	enum evrFlags_e rpmsenseFlags;
+typedef enum evrFlags_e rpmsenseFlags;
 
 #define	RPMSENSE_SENSEMASK	0x0e	 /* Mask to get senses, ie serial, */
                                          /* less, greater, equal.          */
