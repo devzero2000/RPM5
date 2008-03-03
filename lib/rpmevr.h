@@ -66,10 +66,11 @@ enum evrFlags_e {
     RPMSENSE_PACKAGE	= (1 << 30),
     RPMSENSE_SCRIPT_SANITYCHECK = (1 << 31) /*!< %sanitycheck dependency. */
 #endif
-} evrFlags;
+};
 /*@=matchfields@*/
 
-typedef enum evrFlags_e rpmsenseFlags;
+typedef	enum evrFlags_e rpmsenseFlags;
+typedef	enum evrFlags_e evrFlags;
 
 #define	RPMSENSE_SENSEMASK	0x0e	 /* Mask to get senses, ie serial, */
                                          /* less, greater, equal.          */
