@@ -66,7 +66,7 @@ typedef enum evrFlags_e {
     RPMSENSE_PACKAGE	= (1 << 30),
     RPMSENSE_SCRIPT_SANITYCHECK = (1 << 31) /*!< %sanitycheck dependency. */
 #endif
-};
+} evrFlags;
 /*@=matchfields@*/
 
 typedef	enum evrFlags_e rpmsenseFlags;
