@@ -1,4 +1,5 @@
 5.0.0 -> 5.1a1:
+    - jbj: fsm: simplify fsm.c => rpmte.h dependency.
     - jbj: perl: fix: include rpmio.h before rpmlib.h (for rpmRC returns).
     - jbj: start creating I/O State Machine(IOSM) in rpmio/iosm.c.
     - jbj: verify.c: use rpmProblemGetAltNEVR() to make rpmProblem opaque.

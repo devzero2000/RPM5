@@ -25,9 +25,12 @@ typedef /*@abstract@*/ struct rpmte_s * rpmte;
 
 typedef /*@abstract@*/ /*@refcounted@*/ struct rpmds_s * rpmds;
 typedef struct rpmRelocation_s * rpmRelocation;
-typedef /*@abstract@*/ void * alKey;
 typedef iosmMapFlags cpioMapFlags;
+#undef	_USE_RPMTE
+#if defined(_USE_RPMTE)
+typedef /*@abstract@*/ void * alKey;
 #include "rpmte.h"
+#endif
 
 typedef /*@abstract@*/ /*@refcounted@*/ struct rpmdb_s * rpmdb;
 typedef /*@abstract@*/ struct rpmdbMatchIterator_s * rpmdbMatchIterator;
@@ -145,10 +148,11 @@ static /*@null@*/ void * mapFreeIterator(/*@only@*//*@null@*/ void * p)
  * Create file info iterator.
  * @param ts		transaction set
  * @param fi		transaction element file info
+ * @param reverse	iterate in reverse order?
  * @return		file info iterator
  */
 static void *
-mapInitIterator(rpmts ts, rpmfi fi)
+mapInitIterator(rpmts ts, rpmfi fi, int reverse)
 	/*@modifies ts, fi @*/
 {
     IOSMI_t iter = NULL;
@@ -156,7 +160,7 @@ mapInitIterator(rpmts ts, rpmfi fi)
     iter = xcalloc(1, sizeof(*iter));
     iter->ts = rpmtsLink(ts, "mapIterator");
     iter->fi = rpmfiLink(fi, "mapIterator");
-    iter->reverse = (rpmteType(fi->te) == TR_REMOVED && fi->action != FA_COPYOUT);
+    iter->reverse = reverse;
     iter->i = (iter->reverse ? (fi->fc - 1) : 0);
     iter->isave = iter->i;
     return iter;
@@ -610,6 +614,11 @@ int iosmSetup(IOSM_t iosm, iosmStage goal, const char * afmt,
 {
     const rpmts ts = (const rpmts) _ts;
     const rpmfi fi = (const rpmfi) _fi;
+#if defined(_USE_RPMTE)
+    int reverse = (rpmteType(fi->te) == TR_REMOVED && fi->action != FA_COPYOUT);
+#else
+    int reverse = 0;	/* XXX HACK: devise alternative means */
+#endif
     size_t pos = 0;
     int rc, ec = 0;
 
@@ -652,7 +661,7 @@ fprintf(stderr, "\tcpio vectors set\n");
 	pos = fdGetCpioPos(iosm->cfd);
 	fdSetCpioPos(iosm->cfd, 0);
     }
-    iosm->iter = mapInitIterator(ts, fi);
+    iosm->iter = mapInitIterator(ts, fi, reverse);
 
     if (iosm->goal == IOSM_PKGINSTALL || iosm->goal == IOSM_PKGBUILD) {
 	void * ptr;
@@ -743,6 +752,11 @@ static int iosmMapFContext(IOSM_t iosm)
 int iosmMapPath(IOSM_t iosm)
 {
     rpmfi fi = iosmGetFi(iosm);	/* XXX const except for fstates */
+#if defined(_USE_RPMTE)
+    int teAdding = (rpmteType(fi->te) == TR_ADDED);
+#else
+    int teAdding = 1;	/* XXX HACK: devise alternative means */
+#endif
     int rc = 0;
     int i;
 
@@ -774,44 +788,37 @@ int iosmMapPath(IOSM_t iosm)
 	    break;
 	case FA_COPYIN:
 	case FA_CREATE:
-assert(rpmteType(fi->te) == TR_ADDED);
+assert(teAdding);
 	    break;
 
 	case FA_SKIPNSTATE:
-	    if (fi->fstates && rpmteType(fi->te) == TR_ADDED)
+	    if (fi->fstates && teAdding)
 		fi->fstates[i] = RPMFILE_STATE_NOTINSTALLED;
 	    break;
 
 	case FA_SKIPNETSHARED:
-	    if (fi->fstates && rpmteType(fi->te) == TR_ADDED)
+	    if (fi->fstates && teAdding)
 		fi->fstates[i] = RPMFILE_STATE_NETSHARED;
 	    break;
 
 	case FA_SKIPCOLOR:
-	    if (fi->fstates && rpmteType(fi->te) == TR_ADDED)
+	    if (fi->fstates && teAdding)
 		fi->fstates[i] = RPMFILE_STATE_WRONGCOLOR;
 	    break;
 
 	case FA_BACKUP:
 	    if (!(iosm->fflags & RPMFILE_GHOST)) /* XXX Don't if %ghost file. */
-	    switch (rpmteType(fi->te)) {
-	    case TR_ADDED:
-		iosm->osuffix = SUFFIX_RPMORIG;
-		/*@innerbreak@*/ break;
-	    case TR_REMOVED:
-		iosm->osuffix = SUFFIX_RPMSAVE;
-		/*@innerbreak@*/ break;
-	    }
+		iosm->osuffix = (teAdding ? SUFFIX_RPMORIG : SUFFIX_RPMSAVE);
 	    break;
 
 	case FA_ALTNAME:
-assert(rpmteType(fi->te) == TR_ADDED);
+assert(teAdding);
 	    if (!(iosm->fflags & RPMFILE_GHOST)) /* XXX Don't if %ghost file. */
 		iosm->nsuffix = SUFFIX_RPMNEW;
 	    break;
 
 	case FA_SAVE:
-assert(rpmteType(fi->te) == TR_ADDED);
+assert(teAdding);
 	    if (!(iosm->fflags & RPMFILE_GHOST)) /* XXX Don't if %ghost file. */
 		iosm->osuffix = SUFFIX_RPMSAVE;
 	    break;
@@ -2441,7 +2448,7 @@ if (!(fi->mapflags & IOSM_PAYLOAD_EXTRACT)) {
     case IOSM_NEXT:
 	rc = iosmUNSAFE(iosm, IOSM_HREAD);
 	if (rc) break;
-	if (!strcmp(iosm->path, IOSM_TRAILER)) { /* Detect end-of-payload. */
+	if (!strcmp(iosm->path, CPIO_TRAILER)) { /* Detect end-of-payload. */
 	    iosm->path = _free(iosm->path);
 	    rc = IOSMERR_HDR_TRAILER;
 	}

@@ -21,7 +21,10 @@
 #include "ar.h"
 #endif
 
+#define	_USE_RPMTE
+#if defined(_USE_RPMTE)
 #include "rpmte.h"
+#endif
 #include "rpmts.h"
 #include "rpmsq.h"
 
@@ -130,10 +133,11 @@ static /*@null@*/ void * mapFreeIterator(/*@only@*//*@null@*/ void * p)
  * Create file info iterator.
  * @param ts		transaction set
  * @param fi		transaction element file info
+ * @param reverse	iterate in reverse order?
  * @return		file info iterator
  */
 static void *
-mapInitIterator(rpmts ts, rpmfi fi)
+mapInitIterator(rpmts ts, rpmfi fi, int reverse)
 	/*@modifies ts, fi @*/
 {
     FSMI_t iter = NULL;
@@ -141,7 +145,7 @@ mapInitIterator(rpmts ts, rpmfi fi)
     iter = xcalloc(1, sizeof(*iter));
     iter->ts = rpmtsLink(ts, "mapIterator");
     iter->fi = rpmfiLink(fi, "mapIterator");
-    iter->reverse = (rpmteType(fi->te) == TR_REMOVED && fi->action != FA_COPYOUT);
+    iter->reverse = reverse;
     iter->i = (iter->reverse ? (fi->fc - 1) : 0);
     iter->isave = iter->i;
     return iter;
@@ -537,6 +541,7 @@ FSM_t freeFSM(FSM_t fsm)
     return _free(fsm);
 }
 
+#if defined(SUPPORT_AR_PAYLOADS)
 static int arSetup(FSM_t fsm, rpmfi fi)
 	/*@modifies fsm @*/
 {
@@ -588,6 +593,7 @@ static int arSetup(FSM_t fsm, rpmfi fi)
     
     return 0;
 }
+#endif
 
 int fsmSetup(FSM_t fsm, fileStage goal, const char * afmt,
 		const void * _ts, const void * _fi, FD_t cfd,
@@ -595,6 +601,11 @@ int fsmSetup(FSM_t fsm, fileStage goal, const char * afmt,
 {
     const rpmts ts = (const rpmts) _ts;
     const rpmfi fi = (const rpmfi) _fi;
+#if defined(_USE_RPMTE)
+    int reverse = (rpmteType(fi->te) == TR_REMOVED && fi->action != FA_COPYOUT);
+#else
+    int reverse = 0;	/* XXX HACK: devise alternative means */
+#endif
     size_t pos = 0;
     int rc, ec = 0;
 
@@ -640,7 +651,7 @@ fprintf(stderr, "\tcpio vectors set\n");
 	pos = fdGetCpioPos(fsm->cfd);
 	fdSetCpioPos(fsm->cfd, 0);
     }
-    fsm->iter = mapInitIterator(ts, fi);
+    fsm->iter = mapInitIterator(ts, fi, reverse);
 
     if (fsm->goal == FSM_PKGINSTALL || fsm->goal == FSM_PKGBUILD) {
 	void * ptr;
@@ -731,6 +742,11 @@ static int fsmMapFContext(FSM_t fsm)
 int fsmMapPath(FSM_t fsm)
 {
     rpmfi fi = fsmGetFi(fsm);	/* XXX const except for fstates */
+#if defined(_USE_RPMTE)
+    int teAdding = (rpmteType(fi->te) == TR_ADDED);
+#else
+    int teAdding = 1;	/* XXX HACK: devise alternative means */
+#endif
     int rc = 0;
     int i;
 
@@ -762,44 +778,37 @@ int fsmMapPath(FSM_t fsm)
 	    break;
 	case FA_COPYIN:
 	case FA_CREATE:
-assert(rpmteType(fi->te) == TR_ADDED);
+assert(teAdding);
 	    break;
 
 	case FA_SKIPNSTATE:
-	    if (fi->fstates && rpmteType(fi->te) == TR_ADDED)
+	    if (fi->fstates && teAdding)
 		fi->fstates[i] = RPMFILE_STATE_NOTINSTALLED;
 	    break;
 
 	case FA_SKIPNETSHARED:
-	    if (fi->fstates && rpmteType(fi->te) == TR_ADDED)
+	    if (fi->fstates && teAdding)
 		fi->fstates[i] = RPMFILE_STATE_NETSHARED;
 	    break;
 
 	case FA_SKIPCOLOR:
-	    if (fi->fstates && rpmteType(fi->te) == TR_ADDED)
+	    if (fi->fstates && teAdding)
 		fi->fstates[i] = RPMFILE_STATE_WRONGCOLOR;
 	    break;
 
 	case FA_BACKUP:
 	    if (!(fsm->fflags & RPMFILE_GHOST)) /* XXX Don't if %ghost file. */
-	    switch (rpmteType(fi->te)) {
-	    case TR_ADDED:
-		fsm->osuffix = SUFFIX_RPMORIG;
-		/*@innerbreak@*/ break;
-	    case TR_REMOVED:
-		fsm->osuffix = SUFFIX_RPMSAVE;
-		/*@innerbreak@*/ break;
-	    }
+		fsm->osuffix = (teAdding ? SUFFIX_RPMORIG : SUFFIX_RPMSAVE);
 	    break;
 
 	case FA_ALTNAME:
-assert(rpmteType(fi->te) == TR_ADDED);
+assert(teAdding);
 	    if (!(fsm->fflags & RPMFILE_GHOST)) /* XXX Don't if %ghost file. */
 		fsm->nsuffix = SUFFIX_RPMNEW;
 	    break;
 
 	case FA_SAVE:
-assert(rpmteType(fi->te) == TR_ADDED);
+assert(teAdding);
 	    if (!(fsm->fflags & RPMFILE_GHOST)) /* XXX Don't if %ghost file. */
 		fsm->osuffix = SUFFIX_RPMSAVE;
 	    break;
