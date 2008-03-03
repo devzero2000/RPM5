@@ -334,6 +334,12 @@ int iosmMapAttrs(IOSM_t iosm)
 /*@=exportlocal@*/
 
 /**
+ * Vector to iosmNext.
+ */
+extern int (*_iosmNext) (void * _iosm, int nstage)
+	/*@modifies _iosm @*/;
+
+/**
  * File state machine driver.
  * @param iosm		I/O state machine
  * @param nstage	next stage

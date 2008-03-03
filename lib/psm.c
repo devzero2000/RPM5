@@ -2449,7 +2449,10 @@ psm->te->h = headerFree(psm->te->h);
 	payload_format = he->p.str;
 	if (!xx || payload_format == NULL
 	 || !(!strcmp(payload_format, "tar") || !strcmp(payload_format, "ustar"))
-	 || !(!strcmp(payload_format, "ar")))
+#if defined(SUPPORT_AR_PAYLOADS)
+	 || !(!strcmp(payload_format, "ar"))
+#endif
+	   )
 	{
 	    payload_format = _free(payload_format);
 	    payload_format = xstrdup("cpio");

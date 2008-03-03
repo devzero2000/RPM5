@@ -1,22 +1,16 @@
 /** \ingroup payload
- * \file lib/cpio.c
- *  Handle cpio payloads within rpm packages.
- *
- * \warning FIXME: We don't translate between cpio and system mode bits! These
- * should both be the same, but really odd things are going to happen if
- * that's not true!
+ * \file rpmio/cpio.c
+ *  Handle cpio(1) archives.
  */
 
 #include "system.h"
 
 #include <rpmio.h>
-#include <rpmlib.h>
-
-#include "fsm.h"
+#include <iosm.h>
 
 #include "debug.h"
 
-/*@access FSM_t @*/
+/*@access IOSM_t @*/
 
 /*@unchecked@*/
 int _cpio_debug = 0;
@@ -56,44 +50,44 @@ static int strntoul(const char *str, /*@out@*/char **endptr, int base, size_t nu
 	sprintf(space, "%8.8lx", (unsigned long) (val)); \
 	memcpy(phys, space, 8)
 
-int cpioTrailerWrite(void * _fsm)
+int cpioTrailerWrite(void * _iosm)
 {
-    FSM_t fsm = _fsm;
+    IOSM_t iosm = _iosm;
     struct cpioCrcPhysicalHeader * hdr =
-	(struct cpioCrcPhysicalHeader *)fsm->rdbuf;
+	(struct cpioCrcPhysicalHeader *)iosm->rdbuf;
     int rc;
 
     memset(hdr, '0', PHYS_HDR_SIZE);
     memcpy(hdr->magic, CPIO_NEWC_MAGIC, sizeof(hdr->magic));
     memcpy(hdr->nlink, "00000001", 8);
     memcpy(hdr->namesize, "0000000b", 8);
-    memcpy(fsm->rdbuf + PHYS_HDR_SIZE, CPIO_TRAILER, sizeof(CPIO_TRAILER));
+    memcpy(iosm->rdbuf + PHYS_HDR_SIZE, CPIO_TRAILER, sizeof(CPIO_TRAILER));
 
     /* XXX DWRITE uses rdnb for I/O length. */
-    fsm->rdnb = PHYS_HDR_SIZE + sizeof(CPIO_TRAILER);
-    rc = fsmNext(fsm, FSM_DWRITE);
+    iosm->rdnb = PHYS_HDR_SIZE + sizeof(CPIO_TRAILER);
+    rc = iosmNext(iosm, IOSM_DWRITE);
 
     /*
      * GNU cpio pads to 512 bytes here, but we don't. This may matter for
      * tape device(s) and/or concatenated cpio archives. <shrug>
      */
     if (!rc)
-	rc = fsmNext(fsm, FSM_PAD);
+	rc = iosmNext(iosm, IOSM_PAD);
 
     return rc;
 }
 
-int cpioHeaderWrite(void * _fsm, struct stat * st)
+int cpioHeaderWrite(void * _iosm, struct stat * st)
 {
-    FSM_t fsm = _fsm;
-    struct cpioCrcPhysicalHeader * hdr = (struct cpioCrcPhysicalHeader *)fsm->rdbuf;
+    IOSM_t iosm = _iosm;
+    struct cpioCrcPhysicalHeader * hdr = (struct cpioCrcPhysicalHeader *)iosm->rdbuf;
     char field[64];
     size_t len;
     dev_t dev;
     int rc = 0;
 
 if (_cpio_debug)
-fprintf(stderr, "    cpioHeaderWrite(%p, %p)\n", fsm, st);
+fprintf(stderr, "    cpioHeaderWrite(%p, %p)\n", iosm, st);
 
     memcpy(hdr->magic, CPIO_NEWC_MAGIC, sizeof(hdr->magic));
     SET_NUM_FIELD(hdr->inode, st->st_ino, field);
@@ -109,35 +103,35 @@ fprintf(stderr, "    cpioHeaderWrite(%p, %p)\n", fsm, st);
     dev = major((unsigned)st->st_rdev); SET_NUM_FIELD(hdr->rdevMajor, dev, field);
     dev = minor((unsigned)st->st_rdev); SET_NUM_FIELD(hdr->rdevMinor, dev, field);
 
-    len = strlen(fsm->path) + 1; SET_NUM_FIELD(hdr->namesize, len, field);
+    len = strlen(iosm->path) + 1; SET_NUM_FIELD(hdr->namesize, len, field);
     memcpy(hdr->checksum, "00000000", 8);
-    memcpy(fsm->rdbuf + PHYS_HDR_SIZE, fsm->path, len);
+    memcpy(iosm->rdbuf + PHYS_HDR_SIZE, iosm->path, len);
 
     /* XXX DWRITE uses rdnb for I/O length. */
-    fsm->rdnb = PHYS_HDR_SIZE + len;
-    rc = fsmNext(fsm, FSM_DWRITE);
-    if (!rc && fsm->rdnb != fsm->wrnb)
+    iosm->rdnb = PHYS_HDR_SIZE + len;
+    rc = iosmNext(iosm, IOSM_DWRITE);
+    if (!rc && iosm->rdnb != iosm->wrnb)
 	rc = CPIOERR_WRITE_FAILED;
     if (!rc)
-	rc = fsmNext(fsm, FSM_PAD);
+	rc = iosmNext(iosm, IOSM_PAD);
 
     if (!rc && S_ISLNK(st->st_mode)) {
-assert(fsm->lpath != NULL);
-	fsm->rdnb = strlen(fsm->lpath);
-	memcpy(fsm->rdbuf, fsm->lpath, fsm->rdnb);
-	rc = fsmNext(fsm, FSM_DWRITE);
-	if (!rc && fsm->rdnb != fsm->wrnb)
+assert(iosm->lpath != NULL);
+	iosm->rdnb = strlen(iosm->lpath);
+	memcpy(iosm->rdbuf, iosm->lpath, iosm->rdnb);
+	rc = iosmNext(iosm, IOSM_DWRITE);
+	if (!rc && iosm->rdnb != iosm->wrnb)
 	    rc = CPIOERR_WRITE_FAILED;
 	if (!rc)
-	    rc = fsmNext(fsm, FSM_PAD);
+	    rc = iosmNext(iosm, IOSM_PAD);
     }
 
     return rc;
 }
 
-int cpioHeaderRead(void * _fsm, struct stat * st)
+int cpioHeaderRead(void * _iosm, struct stat * st)
 {
-    FSM_t fsm = _fsm;
+    IOSM_t iosm = _iosm;
     struct cpioCrcPhysicalHeader hdr;
     int nameSize;
     char * end;
@@ -145,14 +139,14 @@ int cpioHeaderRead(void * _fsm, struct stat * st)
     int rc = 0;
 
 if (_cpio_debug)
-fprintf(stderr, "    cpioHeaderRead(%p, %p)\n", fsm, st);
+fprintf(stderr, "    cpioHeaderRead(%p, %p)\n", iosm, st);
 
-    fsm->wrlen = PHYS_HDR_SIZE;
-    rc = fsmNext(fsm, FSM_DREAD);
-    if (!rc && fsm->rdnb != fsm->wrlen)
+    iosm->wrlen = PHYS_HDR_SIZE;
+    rc = iosmNext(iosm, IOSM_DREAD);
+    if (!rc && iosm->rdnb != iosm->wrlen)
 	rc = CPIOERR_READ_FAILED;
     if (rc) return rc;
-    memcpy(&hdr, fsm->wrbuf, fsm->rdnb);
+    memcpy(&hdr, iosm->wrbuf, iosm->rdnb);
 
     if (strncmp(CPIO_CRC_MAGIC, hdr.magic, sizeof(CPIO_CRC_MAGIC)-1) &&
 	strncmp(CPIO_NEWC_MAGIC, hdr.magic, sizeof(CPIO_NEWC_MAGIC)-1))
@@ -179,41 +173,41 @@ fprintf(stderr, "    cpioHeaderRead(%p, %p)\n", fsm, st);
     /*@=shiftimplementation@*/
 
     GET_NUM_FIELD(hdr.namesize, nameSize);
-    if (nameSize >= fsm->wrsize)
+    if (nameSize >= iosm->wrsize)
 	return CPIOERR_BAD_HEADER;
 
     {	char * t = xmalloc(nameSize + 1);
-	fsm->wrlen = nameSize;
-	rc = fsmNext(fsm, FSM_DREAD);
-	if (!rc && fsm->rdnb != fsm->wrlen)
+	iosm->wrlen = nameSize;
+	rc = iosmNext(iosm, IOSM_DREAD);
+	if (!rc && iosm->rdnb != iosm->wrlen)
 	    rc = CPIOERR_BAD_HEADER;
 	if (rc) {
 	    t = _free(t);
-	    fsm->path = NULL;
+	    iosm->path = NULL;
 	    return rc;
 	}
-	memcpy(t, fsm->wrbuf, fsm->rdnb);
+	memcpy(t, iosm->wrbuf, iosm->rdnb);
 	t[nameSize] = '\0';
-	fsm->path = t;
+	iosm->path = t;
     }
 
     if (S_ISLNK(st->st_mode)) {
-	rc = fsmNext(fsm, FSM_POS);
+	rc = iosmNext(iosm, IOSM_POS);
 	if (rc) return rc;
-	fsm->wrlen = st->st_size;
-	rc = fsmNext(fsm, FSM_DREAD);
-	if (!rc && fsm->rdnb != fsm->wrlen)
+	iosm->wrlen = st->st_size;
+	rc = iosmNext(iosm, IOSM_DREAD);
+	if (!rc && iosm->rdnb != iosm->wrlen)
 	    rc = CPIOERR_READ_FAILED;
 	if (rc) return rc;
-	fsm->wrbuf[st->st_size] = '\0';
-	fsm->lpath = xstrdup(fsm->wrbuf);
+	iosm->wrbuf[st->st_size] = '\0';
+	iosm->lpath = xstrdup(iosm->wrbuf);
     }
 
 if (_cpio_debug)
 fprintf(stderr, "\t     %06o%3d (%4d,%4d)%10d %s\n\t-> %s\n",
                 (unsigned)st->st_mode, (int)st->st_nlink,
                 (int)st->st_uid, (int)st->st_gid, (int)st->st_size,
-                (fsm->path ? fsm->path : ""), (fsm->lpath ? fsm->lpath : ""));
+                (iosm->path ? iosm->path : ""), (iosm->lpath ? iosm->lpath : ""));
 
     return rc;
 }

@@ -17,7 +17,9 @@
 
 #include "cpio.h"
 #include "tar.h"
+#if defined(SUPPORT_AR_PAYLOADS)
 #include "ar.h"
+#endif
 
 #include "rpmte.h"
 #include "rpmts.h"
@@ -610,6 +612,7 @@ fprintf(stderr, "\ttar vectors set\n");
 	    fsm->trailerWrite = &tarTrailerWrite;
 	    fsm->blksize = TAR_BLOCK_SIZE;
 	} else
+#if defined(SUPPORT_AR_PAYLOADS)
 	if (afmt != NULL && !strcmp(afmt, "ar")) {
 if (_fsm_debug < 0)
 fprintf(stderr, "\tar vectors set\n");
@@ -620,6 +623,7 @@ fprintf(stderr, "\tar vectors set\n");
 	    fsm->blksize = 2;
 	    (void) arSetup(fsm, fi);
 	} else
+#endif
 	{
 if (_fsm_debug < 0)
 fprintf(stderr, "\tcpio vectors set\n");

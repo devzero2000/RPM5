@@ -644,12 +644,14 @@ rpmRC writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
 		/* XXX addition to header is too late to be displayed/sorted. */
 		/* Add prereq on rpm version that understands tar payloads */
 		(void) rpmlibNeedsFeature(h, "PayloadIsUstar", "4.4.4-1");
-	    } else
+	    }
+#if defined(SUPPORT_AR_PAYLOADS)
 	    if (!strcmp(payload_format, "ar")) {
 		/* XXX addition to header is too late to be displayed/sorted. */
 		/* Add prereq on rpm version that understands tar payloads */
 		(void) rpmlibNeedsFeature(h, "PayloadIsAr", "5.1-1");
 	    }
+#endif
 
 	    he->tag = RPMTAG_PAYLOADFORMAT;
 	    he->t = RPM_STRING_TYPE;

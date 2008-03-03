@@ -33,12 +33,6 @@ extern "C" {
 #endif
 
 /**
- * Vector to fsmNext.
- */
-extern int (*_fsmNext) (void * _fsm, int nstage)
-	/*@modifies _fsm @*/;
-
-/**
  * Write ar(1) trailer.
  * @retval _fsm		file path and stat info
  * @return		0 on success

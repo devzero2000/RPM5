@@ -6,10 +6,10 @@
 #include <rpmcli.h>
 #include <rpmts.h>
 
-#include "cpio.h"		/* XXX cpioStrerror */
-#include "ar.h"
+#include <cpio.h>		/* XXX cpioStrerror */
+#include <ar.h>
 
-#include "iosm.h"                /* XXX CPIO_FOO/FSM_FOO constants */
+#include <iosm.h>                /* XXX CPIO_FOO/FSM_FOO constants */
 
 #define	_RPMSQ_INTERNAL
 #include "psm.h"
@@ -124,7 +124,7 @@ main(int argc, char *const argv[])
 
     ts = rpmtsCreate();
 
-_fsmNext = &iosmNext;
+_iosmNext = &iosmNext;
 _iosm_debug = -1;
 _ar_debug = 1;
 rpmIncreaseVerbosity();

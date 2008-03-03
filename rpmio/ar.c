@@ -10,25 +10,14 @@
 #include <ar.h>
 #include <rpmmacro.h>
 #include <ugid.h>
-
-/* XXX no <rpmlib.h> here */
-#include "../rpmdb/rpmtag.h"
-#include "../lib/fsm.h"
+#include <iosm.h>
 
 #include "debug.h"
 
-/*@access FSM_t @*/
+/*@access IOSM_t @*/
 
 /*@unchecked@*/
 int _ar_debug = 0;
-
-/**
- *  * Vector to fsmNext.
- *   */
-/*@-redecl@*/
-int (*_fsmNext) (void * _fsm, int nstage)
-        /*@modifies _fsm @*/;
-/*@=redecl@*/
 
 /**
  * Convert string to unsigned integer (with buffer size check).
@@ -60,54 +49,54 @@ static int strntoul(const char *str, /*@null@*/ /*@out@*/char **endptr,
     return ret;
 }
 
-static ssize_t arRead(void * _fsm, void * buf, size_t count)
+static ssize_t arRead(void * _iosm, void * buf, size_t count)
 	/*@globals fileSystem @*/
-	/*@modifies _fsm, *buf, fileSystem @*/
+	/*@modifies _iosm, *buf, fileSystem @*/
 {
-    FSM_t fsm = _fsm;
+    IOSM_t iosm = _iosm;
     char * t = buf;
     size_t nb = 0;
 
 if (_ar_debug)
-fprintf(stderr, "          arRead(%p, %p[%u])\n", fsm, buf, (unsigned)count);
+fprintf(stderr, "          arRead(%p, %p[%u])\n", iosm, buf, (unsigned)count);
 
     while (count > 0) {
 	size_t rc;
 
 	/* Read next ar block. */
-	fsm->wrlen = count;
-	rc = _fsmNext(fsm, FSM_DREAD);
-	if (!rc && fsm->rdnb != fsm->wrlen)
+	iosm->wrlen = count;
+	rc = _iosmNext(iosm, IOSM_DREAD);
+	if (!rc && iosm->rdnb != iosm->wrlen)
 	    rc = CPIOERR_READ_FAILED;
 	if (rc) return -rc;
 
 	/* Append to buffer. */
-	rc = (count > fsm->rdnb ? fsm->rdnb : count);
-	if (buf != fsm->wrbuf)
-	     memcpy(t + nb, fsm->wrbuf, rc);
+	rc = (count > iosm->rdnb ? iosm->rdnb : count);
+	if (buf != iosm->wrbuf)
+	     memcpy(t + nb, iosm->wrbuf, rc);
 	nb += rc;
 	count -= rc;
     }
     return nb;
 }
 
-int arHeaderRead(void * _fsm, struct stat * st)
-	/*@modifies _fsm, *st @*/
+int arHeaderRead(void * _iosm, struct stat * st)
+	/*@modifies _iosm, *st @*/
 {
-    FSM_t fsm = _fsm;
-    arHeader hdr = (arHeader) fsm->wrbuf;
+    IOSM_t iosm = _iosm;
+    arHeader hdr = (arHeader) iosm->wrbuf;
     ssize_t rc = 0;
 
 if (_ar_debug)
-fprintf(stderr, "    arHeaderRead(%p, %p)\n", fsm, st);
+fprintf(stderr, "    arHeaderRead(%p, %p)\n", iosm, st);
 
     /* XXX Read AR_MAGIC to beginning of ar(1) archive. */
-    if (fdGetCpioPos(fsm->cfd) == 0) {
-	(void) arRead(fsm, fsm->wrbuf, sizeof(AR_MAGIC)-1);
+    if (fdGetCpioPos(iosm->cfd) == 0) {
+	(void) arRead(iosm, iosm->wrbuf, sizeof(AR_MAGIC)-1);
     }
 
 top:
-    rc = arRead(fsm, hdr, sizeof(*hdr));
+    rc = arRead(iosm, hdr, sizeof(*hdr));
     if (rc <= 0)	return (int) -rc;
 if (_ar_debug)
 fprintf(stderr, "==> %p[%u] \"%.*s\"\n", hdr, (unsigned)rc, (int)sizeof(*hdr), (char *)hdr);
@@ -126,15 +115,15 @@ fprintf(stderr, "==> %p[%u] \"%.*s\"\n", hdr, (unsigned)rc, (int)sizeof(*hdr), (
 	    char * t;
 	    size_t i;
 
-	    rc = arRead(fsm, fsm->wrbuf, st->st_size);
+	    rc = arRead(iosm, iosm->wrbuf, st->st_size);
 	    if (rc <= 0)	return (int) -rc;
 
-	    fsm->wrbuf[rc] = '\0';
-	    fsm->lmtab = t = xstrdup(fsm->wrbuf);
-	    fsm->lmtablen = rc;
-	    fsm->lmtaboff = 0;
+	    iosm->wrbuf[rc] = '\0';
+	    iosm->lmtab = t = xstrdup(iosm->wrbuf);
+	    iosm->lmtablen = rc;
+	    iosm->lmtaboff = 0;
 
-	    for (i = 1; i < fsm->lmtablen; i++) {
+	    for (i = 1; i < iosm->lmtablen; i++) {
 		t++;
 		if (t[0] != '\n') continue;
 		t[0] = '\0';
@@ -145,7 +134,7 @@ fprintf(stderr, "==> %p[%u] \"%.*s\"\n", hdr, (unsigned)rc, (int)sizeof(*hdr), (
 	}
 	/* GNU: on "/":	Skip symbol table. */
 	if (hdr->name[1] == ' ') {
-	    rc = arRead(fsm, fsm->wrbuf, st->st_size);
+	    rc = arRead(iosm, iosm->wrbuf, st->st_size);
 	    if (rc <= 0)	return (int) -rc;
 	    goto top;
 	}
@@ -153,8 +142,8 @@ fprintf(stderr, "==> %p[%u] \"%.*s\"\n", hdr, (unsigned)rc, (int)sizeof(*hdr), (
 	if (xisdigit((int)hdr->name[1])) {
 	    char * te = NULL;
 	    int i = strntoul(&hdr->name[1], &te, 10, sizeof(hdr->name)-2);
-	    if (*te == ' ' && fsm->lmtab != NULL && i < (int)fsm->lmtablen)
-		fsm->path = xstrdup(fsm->lmtab + i);
+	    if (*te == ' ' && iosm->lmtab != NULL && i < (int)iosm->lmtablen)
+		iosm->path = xstrdup(iosm->lmtab + i);
 	}
     } else
     if (hdr->name[0] != ' ') {	/* Short member name. */
@@ -167,7 +156,7 @@ fprintf(stderr, "==> %p[%u] \"%.*s\"\n", hdr, (unsigned)rc, (int)sizeof(*hdr), (
 	/* GNU: trailing '/' to permit file names with trailing ' '. */
 	if (nb > 0 && t[nb - 1] == '/')
 	    t[--nb] = '\0';
-	fsm->path = xstrdup(t);
+	iosm->path = xstrdup(t);
     }
 
     st->st_mtime = strntoul(hdr->mtime, NULL, 10, sizeof(hdr->mtime));
@@ -184,85 +173,85 @@ if (_ar_debug)
 fprintf(stderr, "\t     %06o%3d (%4d,%4d)%12d %s\n",
                 (unsigned)st->st_mode, (int)st->st_nlink,
                 (int)st->st_uid, (int)st->st_gid, (int)st->st_size,
-                (fsm->path ? fsm->path : ""));
+                (iosm->path ? iosm->path : ""));
 
     return (int) rc;
 }
 
-static ssize_t arWrite(void * _fsm, const void *buf, size_t count)
+static ssize_t arWrite(void * _iosm, const void *buf, size_t count)
 	/*@globals fileSystem @*/
-	/*@modifies _fsm, fileSystem @*/
+	/*@modifies _iosm, fileSystem @*/
 {
-    FSM_t fsm = _fsm;
+    IOSM_t iosm = _iosm;
     const char * s = buf;
     size_t nb = 0;
 
 if (_ar_debug)
-fprintf(stderr, "    arWrite(%p, %p[%u])\n", fsm, buf, (unsigned)count);
+fprintf(stderr, "    arWrite(%p, %p[%u])\n", iosm, buf, (unsigned)count);
 
     while (count > 0) {
 	size_t rc;
 
 	/* XXX DWRITE uses rdnb for I/O length. */
-	fsm->rdnb = count;
-	if (s != fsm->rdbuf)
-	    memmove(fsm->rdbuf, s + nb, fsm->rdnb);
+	iosm->rdnb = count;
+	if (s != iosm->rdbuf)
+	    memmove(iosm->rdbuf, s + nb, iosm->rdnb);
 
-	rc = _fsmNext(fsm, FSM_DWRITE);
-	if (!rc && fsm->rdnb != fsm->wrnb)
+	rc = _iosmNext(iosm, IOSM_DWRITE);
+	if (!rc && iosm->rdnb != iosm->wrnb)
 		rc = CPIOERR_WRITE_FAILED;
 	if (rc) return -rc;
 
-	nb += fsm->rdnb;
-	count -= fsm->rdnb;
+	nb += iosm->rdnb;
+	count -= iosm->rdnb;
     }
     return nb;
 }
 
-int arHeaderWrite(void * _fsm, struct stat * st)
+int arHeaderWrite(void * _iosm, struct stat * st)
 {
-    FSM_t fsm = _fsm;
-    arHeader hdr = (arHeader) fsm->rdbuf;
+    IOSM_t iosm = _iosm;
+    arHeader hdr = (arHeader) iosm->rdbuf;
     size_t nb;
     int rc = 0;
 
 if (_ar_debug)
-fprintf(stderr, "    arHeaderWrite(%p, %p)\n", fsm, st);
+fprintf(stderr, "    arHeaderWrite(%p, %p)\n", iosm, st);
 
     /* At beginning of ar(1) archive, write magic and long member table. */
-    if (fdGetCpioPos(fsm->cfd) == 0) {
+    if (fdGetCpioPos(iosm->cfd) == 0) {
 	/* Write ar(1) magic. */
-	(void) arWrite(fsm, AR_MAGIC, sizeof(AR_MAGIC)-1);
+	(void) arWrite(iosm, AR_MAGIC, sizeof(AR_MAGIC)-1);
 	/* GNU: on "//":	Write long member name string table. */
-	if (fsm->lmtab != NULL) {
+	if (iosm->lmtab != NULL) {
 	    memset(hdr, (int) ' ', sizeof(*hdr));
 	    hdr->name[0] = '/';
 	    hdr->name[1] = '/';
-	    sprintf(hdr->filesize, "%-10d", (unsigned) (fsm->lmtablen & 037777777777));
+	    sprintf(hdr->filesize, "%-10d", (unsigned) (iosm->lmtablen & 037777777777));
 	    strncpy(hdr->marker, AR_MARKER, sizeof(AR_MARKER)-1);
 
-	    rc = (int) arWrite(fsm, hdr, sizeof(*hdr));
+	    rc = (int) arWrite(iosm, hdr, sizeof(*hdr));
 	    if (rc < 0)	return -rc;
-	    rc = (int) arWrite(fsm, fsm->lmtab, fsm->lmtablen);
+	    rc = (int) arWrite(iosm, iosm->lmtab, iosm->lmtablen);
 	    if (rc < 0)	return -rc;
-	    rc = _fsmNext(fsm, FSM_PAD);
+	    rc = _iosmNext(iosm, IOSM_PAD);
 	    if (rc < 0)	return -rc;
 	}
     }
 
     memset(hdr, (int)' ', sizeof(*hdr));
 
-    nb = strlen(fsm->path);
+    nb = strlen(iosm->path);
     if (nb >= sizeof(hdr->name)) {
-	const char * t = fsm->lmtab + fsm->lmtaboff;
+	const char * t = iosm->lmtab + iosm->lmtaboff;
 	const char * te = strchr(t, '\n');
 	/* GNU: on "/123": Write "/123" offset for long member name. */
-	nb = snprintf(hdr->name, sizeof(hdr->name)-1, "/%u", (unsigned)fsm->lmtaboff);
+	nb = snprintf(hdr->name, sizeof(hdr->name)-1, "/%u", (unsigned)iosm->lmtaboff);
 	hdr->name[nb] = ' ';
 	if (te != NULL)
-	    fsm->lmtaboff += (te - t) + 1;
+	    iosm->lmtaboff += (te - t) + 1;
     } else {
-	strncpy(hdr->name, fsm->path, nb);
+	strncpy(hdr->name, iosm->path, nb);
 	hdr->name[nb] = '/';
     }
 
@@ -279,22 +268,22 @@ rc = (int) sizeof(*hdr);
 if (_ar_debug)
 fprintf(stderr, "==> %p[%u] \"%.*s\"\n", hdr, (unsigned)rc, (int)sizeof(*hdr), (char *)hdr);
 
-    rc = (int) arWrite(fsm, hdr, sizeof(*hdr));
+    rc = (int) arWrite(iosm, hdr, sizeof(*hdr));
     if (rc < 0)	return -rc;
     rc = 0;
 
     return rc;
 }
 
-int arTrailerWrite(void * _fsm)
+int arTrailerWrite(void * _iosm)
 {
-    FSM_t fsm = _fsm;
+    IOSM_t iosm = _iosm;
     int rc = 0;
 
 if (_ar_debug)
-fprintf(stderr, "    arTrailerWrite(%p)\n", fsm);
+fprintf(stderr, "    arTrailerWrite(%p)\n", iosm);
 
-    rc = _fsmNext(fsm, FSM_PAD);	/* XXX likely unnecessary. */
+    rc = _iosmNext(iosm, IOSM_PAD);	/* XXX likely unnecessary. */
 
     return rc;
 }

@@ -752,4 +752,9 @@ static inline const char *rcsid(const char *p) { \
  */
 #undef SUPPORT_IMPLICIT_TAG_DATA_TYPES	/* XXX postpone to rpm-5.1 */
 
+/**
+ * Permit ar(1) payloads. Disabled while rpmio/iosm.c is under development.
+ */
+#undef	SUPPORT_AR_PAYLOADS
+
 #endif	/* H_SYSTEM */

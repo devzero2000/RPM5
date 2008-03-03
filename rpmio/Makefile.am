@@ -4,7 +4,7 @@ AUTOMAKE_OPTIONS = 1.4 foreign
 
 LINT = splint
 
-EXTRA_DIST = cpio.c iosm.c tar.c tdeb.c tdir.c tfts.c tget.c tglob.c thkp.c thtml.c tinv.c tkey.c tmire.c tput.c trpmio.c tsw.c ttar.c lookup3.c tpw.c librpmio.vers testit.sh rpmgrep.1
+EXTRA_DIST = ar.c cpio.c iosm.c tar.c tdeb.c tdir.c tfts.c tget.c tglob.c thkp.c thtml.c tinv.c tkey.c tmire.c tput.c trpmio.c tsw.c ttar.c lookup3.c tpw.c librpmio.vers testit.sh rpmgrep.1
 
 EXTRA_PROGRAMS = tdeb tdir tfts tget tglob thkp thtml tinv tkey tmacro tmagic tmire tput tpw trpmio tsw ttar dumpasn1 lookup3
 
@@ -43,19 +43,19 @@ RPM_LDADD = \
 
 pkgincdir = $(pkgincludedir)$(WITH_PATH_VERSIONED_SUFFIX)
 pkginc_HEADERS = \
-	ar.h argv.h envvar.h fts.h mire.h rpmbc.h rpmcb.h rpmdav.h \
+	argv.h envvar.h fts.h mire.h rpmbc.h rpmcb.h rpmdav.h \
 	rpmhash.h rpmio.h rpmio-stub.h rpmlog.h rpmmacro.h rpmmg.h \
 	rpmnss.h rpmpgp.h rpmsq.h rpmssl.h rpmsw.h rpmurl.h rpmxar.h \
 	stringbuf.h ugid.h rpmuuid.h
 noinst_HEADERS = \
-	cpio.h iosm.h md2.h md4.h poptIO.h rmd128.h rmd160.h rmd256.h rmd320.h sha224.h \
+	ar.h cpio.h iosm.h md2.h md4.h poptIO.h rmd128.h rmd160.h rmd256.h rmd320.h sha224.h \
 	salsa10.h salsa20.h tar.h tiger.h \
 	LzmaDecode.h rpmhook.h rpmio_internal.h rpmlua.h
 
 usrlibdir = $(libdir)
 usrlib_LTLIBRARIES = librpmio.la
 librpmio_la_SOURCES = \
-	ar.c argv.c digest.c fts.c getpass.c macro.c mire.c mount.c \
+	argv.c digest.c fts.c getpass.c macro.c mire.c mount.c \
 	md2.c md4.c poptIO.c rmd128.c rmd160.c rmd256.c rmd320.c sha224.c \
 	salsa10.c salsa20.c tiger.c LzmaDecode.c \
 	rpmbc.c rpmdav.c rpmhash.c rpmhook.c rpmio.c rpmio-stub.c \
@@ -154,7 +154,7 @@ EXTRA_DIST += \
 rpmdigest_SOURCES = rpmdigest.c
 rpmdigest_LDADD = $(RPMIO_LDADD)
 
-tdeb_SOURCES = tdeb.c iosm.c cpio.c tar.c
+tdeb_SOURCES = tdeb.c iosm.c ar.c cpio.c tar.c
 tdeb_LDFLAGS = $(RPM_LDADD)
 
 tdir_SOURCES = tdir.c

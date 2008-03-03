@@ -7,8 +7,12 @@
 
 #include <rpmio_internal.h>	/* XXX urlPath, fdGetCpioPos */
 #include <rpmcb.h>		/* XXX fnpyKey */
+#include <ugid.h>		/* XXX unameToUid() and gnameToGid() */
+
 #include <rpmtag.h>
-#include <rpmlib.h>
+
+typedef /*@abstract@*/ /*@refcounted@*/ struct rpmts_s * rpmts;
+typedef /*@abstract@*/ struct rpmte_s * rpmte;
 
 #define	_RPMFI_INTERNAL
 #define	_RPMIOSM_INTERNAL
@@ -19,11 +23,17 @@
 #include "tar.h"
 #include "ar.h"
 
+typedef /*@abstract@*/ /*@refcounted@*/ struct rpmds_s * rpmds;
+typedef struct rpmRelocation_s * rpmRelocation;
+typedef /*@abstract@*/ void * alKey;
 #include "rpmte.h"
+
+typedef /*@abstract@*/ /*@refcounted@*/ struct rpmdb_s * rpmdb;
+typedef /*@abstract@*/ struct rpmdbMatchIterator_s * rpmdbMatchIterator;
+typedef struct rpmPRCO_s * rpmPRCO;
+typedef struct Spec_s * Spec;
 #include "rpmts.h"
 #include "rpmsq.h"
-
-#include "ugid.h"		/* XXX unameToUid() and gnameToGid() */
 
 #include "debug.h"
 
@@ -50,7 +60,13 @@ int _iosm_threads = 0;
 int strict_erasures = 0;
 /*@=exportlocal =exportheadervar@*/
 
-void * iosmGetTs(const IOSM_t iosm) {
+/*@-redecl@*/
+int (*_iosmNext) (void * _iosm, int nstage)
+        /*@modifies _iosm @*/ = &iosmNext;
+/*@=redecl@*/
+
+void * iosmGetTs(const IOSM_t iosm)
+{
     const IOSMI_t iter = iosm->iter;
     /*@-compdef -refcounttrans -retexpose -usereleased @*/
     return (iter ? iter->ts : NULL);
@@ -613,7 +629,6 @@ fprintf(stderr, "\ttar vectors set\n");
 	if (afmt != NULL && !strcmp(afmt, "ar")) {
 if (_iosm_debug < 0)
 fprintf(stderr, "\tar vectors set\n");
-	    _fsmNext = &iosmNext;
 	    iosm->headerRead = &arHeaderRead;
 	    iosm->headerWrite = &arHeaderWrite;
 	    iosm->trailerWrite = &arTrailerWrite;

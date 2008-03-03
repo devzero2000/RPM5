@@ -2,8 +2,8 @@
 #define H_TAR
 
 /** \ingroup payload
- * \file lib/tar.h
- *  Structures used to handle tar payloads within rpm packages.
+ * \file rpmio/tar.h
+ * Structures used for tar(1) archives.
  */
 
 typedef	struct tarHeader_s * tarHeader;
