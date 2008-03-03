@@ -7,7 +7,6 @@
  */
 
 #include "rpmps.h"
-#include "rpmfi.h"
 #include "rpmsw.h"
 #include "rpmsx.h"
 #include <rpmpgp.h>		/* XXX pgpVSFlags */
@@ -844,11 +843,11 @@ int rpmtsInitDSI(const rpmts ts)
  * @param fileSize	file size
  * @param prevSize	previous file size (if upgrading)
  * @param fixupSize	size difference (if
- * @param action	file disposition
+ * @param _action	file disposition
  */
 void rpmtsUpdateDSI(const rpmts ts, dev_t dev,
 		uint32_t fileSize, uint32_t prevSize, uint32_t fixupSize,
-		fileAction action)
+		int _action)
 	/*@modifies ts @*/;
 
 /** \ingroup rpmts

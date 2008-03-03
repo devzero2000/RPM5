@@ -9,12 +9,14 @@
 #include <rpmcb.h>		/* XXX fnpyKey */
 #include <ugid.h>		/* XXX unameToUid() and gnameToGid() */
 
+#include <rpmsq.h>		/* XXX rpmsqJoin()/rpmsqThread() */
+#include <rpmsw.h>		/* XXX rpmswAdd() */
+
 #include <rpmtag.h>
 
 typedef /*@abstract@*/ /*@refcounted@*/ struct rpmts_s * rpmts;
 typedef /*@abstract@*/ struct rpmte_s * rpmte;
 
-#define	_RPMFI_INTERNAL
 #define	_RPMIOSM_INTERNAL
 #include "iosm.h"
 #define	iosmUNSAFE	XiosmStage
@@ -23,21 +25,31 @@ typedef /*@abstract@*/ struct rpmte_s * rpmte;
 #include "tar.h"
 #include "ar.h"
 
+typedef iosmMapFlags cpioMapFlags;
+#define	_USE_RPMFI
+#if defined(_USE_RPMFI)
+#define	_RPMFI_INTERNAL
+#include <rpmfi.h>
+#endif
+
 typedef /*@abstract@*/ /*@refcounted@*/ struct rpmds_s * rpmds;
 typedef struct rpmRelocation_s * rpmRelocation;
-typedef iosmMapFlags cpioMapFlags;
 #undef	_USE_RPMTE
 #if defined(_USE_RPMTE)
 typedef /*@abstract@*/ void * alKey;
 #include "rpmte.h"
 #endif
 
+#include <rpmsx.h>		/* XXX rpmsx rpmsxFContext rpmsxFree */
+
 typedef /*@abstract@*/ /*@refcounted@*/ struct rpmdb_s * rpmdb;
 typedef /*@abstract@*/ struct rpmdbMatchIterator_s * rpmdbMatchIterator;
 typedef struct rpmPRCO_s * rpmPRCO;
 typedef struct Spec_s * Spec;
+#undef	_USE_RPMTS
+#if defined(_USE_RPMTS)
 #include "rpmts.h"
-#include "rpmsq.h"
+#endif
 
 #include "debug.h"
 
@@ -69,6 +81,7 @@ int (*_iosmNext) (void * _iosm, int nstage)
         /*@modifies _iosm @*/ = &iosmNext;
 /*@=redecl@*/
 
+#if defined(_USE_RPMTS)
 void * iosmGetTs(const IOSM_t iosm)
 {
     const IOSMI_t iter = iosm->iter;
@@ -76,6 +89,7 @@ void * iosmGetTs(const IOSM_t iosm)
     return (iter ? iter->ts : NULL);
     /*@=compdef =refcounttrans =retexpose =usereleased @*/
 }
+#endif
 
 void * iosmGetFi(const IOSM_t iosm)
 {
@@ -136,9 +150,11 @@ static /*@null@*/ void * mapFreeIterator(/*@only@*//*@null@*/ void * p)
 {
     IOSMI_t iter = p;
     if (iter) {
+#if defined(_USE_RPMTS)
 /*@-internalglobs@*/ /* XXX rpmswExit() */
 	iter->ts = rpmtsFree(iter->ts);
 /*@=internalglobs@*/
+#endif
 	iter->fi = rpmfiUnlink(iter->fi, "mapIterator");
     }
     return _free(p);
@@ -146,19 +162,21 @@ static /*@null@*/ void * mapFreeIterator(/*@only@*//*@null@*/ void * p)
 
 /** \ingroup payload
  * Create file info iterator.
- * @param ts		transaction set
+ * @param _ts		transaction set
  * @param fi		transaction element file info
  * @param reverse	iterate in reverse order?
  * @return		file info iterator
  */
 static void *
-mapInitIterator(rpmts ts, rpmfi fi, int reverse)
+mapInitIterator(void * _ts, rpmfi fi, int reverse)
 	/*@modifies ts, fi @*/
 {
     IOSMI_t iter = NULL;
 
     iter = xcalloc(1, sizeof(*iter));
-    iter->ts = rpmtsLink(ts, "mapIterator");
+#if defined(_USE_RPMTS)
+    iter->ts = rpmtsLink(_ts, "mapIterator");
+#endif
     iter->fi = rpmfiLink(fi, "mapIterator");
     iter->reverse = reverse;
     iter->i = (iter->reverse ? (fi->fc - 1) : 0);
@@ -612,7 +630,9 @@ int iosmSetup(IOSM_t iosm, iosmStage goal, const char * afmt,
 		const void * _ts, const void * _fi, FD_t cfd,
 		unsigned int * archiveSize, const char ** failedFile)
 {
+#if defined(_USE_RPMTS)
     const rpmts ts = (const rpmts) _ts;
+#endif
     const rpmfi fi = (const rpmfi) _fi;
 #if defined(_USE_RPMTE)
     int reverse = (rpmteType(fi->te) == TR_REMOVED && fi->action != FA_COPYOUT);
@@ -624,7 +644,7 @@ int iosmSetup(IOSM_t iosm, iosmStage goal, const char * afmt,
 
 /*@+voidabstract -nullpass@*/
 if (_iosm_debug < 0)
-fprintf(stderr, "--> iosmSetup(%p, 0x%x, \"%s\", %p, %p, %p, %p, %p)\n", iosm, goal, afmt, (void *)ts, fi, cfd, archiveSize, failedFile);
+fprintf(stderr, "--> iosmSetup(%p, 0x%x, \"%s\", %p, %p, %p, %p, %p)\n", iosm, goal, afmt, (void *)_ts, _fi, cfd, archiveSize, failedFile);
 /*@=voidabstract =nullpass@*/
 
     if (iosm->headerRead == NULL) {
@@ -661,13 +681,14 @@ fprintf(stderr, "\tcpio vectors set\n");
 	pos = fdGetCpioPos(iosm->cfd);
 	fdSetCpioPos(iosm->cfd, 0);
     }
-    iosm->iter = mapInitIterator(ts, fi, reverse);
+    iosm->iter = mapInitIterator((void *)_ts, fi, reverse);
 
     if (iosm->goal == IOSM_PKGINSTALL || iosm->goal == IOSM_PKGBUILD) {
-	void * ptr;
 	fi->archivePos = 0;
-	ptr = rpmtsNotify(ts, fi->te,
+#if defined(_USE_RPMTS)
+	(void) rpmtsNotify(ts, fi->te,
 		RPMCALLBACK_INST_START, fi->archivePos, fi->archiveSize);
+#endif
     }
 
     /*@-assignexpose@*/
@@ -681,8 +702,16 @@ fprintf(stderr, "\tcpio vectors set\n");
 
     memset(iosm->sufbuf, 0, sizeof(iosm->sufbuf));
     if (iosm->goal == IOSM_PKGINSTALL) {
-	if (ts && rpmtsGetTid(ts) != -1)
-	    sprintf(iosm->sufbuf, ";%08x", (unsigned)rpmtsGetTid(ts));
+	uint32_t tid;
+#if defined(_USE_RPMTS)
+	tid = (ts != NULL ? rpmtsGetTid(ts) : 0);
+#else
+	static time_t now = 0;
+	if (now == 0) now = time(NULL);
+	tid = (uint32_t) now;
+#endif
+	if (tid > 0 && tid < 0xffffffff)
+	    sprintf(iosm->sufbuf, ";%08x", (unsigned)tid);
     }
 
     ec = iosm->rc = 0;
@@ -722,6 +751,7 @@ fprintf(stderr, "--> iosmTeardown(%p)\n", iosm);
 static int iosmMapFContext(IOSM_t iosm)
 	/*@modifies iosm @*/
 {
+#if defined(_USE_RPMTS)
     rpmts ts = iosmGetTs(iosm);
     rpmfi fi = iosmGetFi(iosm);
 
@@ -746,6 +776,9 @@ static int iosmMapFContext(IOSM_t iosm)
 	}
 /*@=moduncon@*/
     }
+#else
+    iosm->fcontext = NULL;
+#endif
     return 0;
 }
 
@@ -910,12 +943,20 @@ int iosmMapAttrs(IOSM_t iosm)
 	if (iosm->mapFlags & IOSM_MAP_GID)
 	    st->st_gid = gid;
 
-	{   rpmts ts = iosmGetTs(iosm);
+	{
+#if defined(_USE_RPMTS)
+	    rpmts ts = iosmGetTs(iosm);
+	    int nofdigests =
+		(ts != NULL && !(rpmtsFlags(ts) & RPMTRANS_FLAG_NOFDIGESTS))
+			? 0 : 1;
+#else
+	    int nofdigests = 1;
+#endif
 
 	    /*
 	     * Set file digest (if not disabled).
 	     */
-	    if (ts != NULL && !(rpmtsFlags(ts) & RPMTRANS_FLAG_NOFDIGESTS)) {
+	    if (!nofdigests) {
 		iosm->fdigestalgo = fi->digestalgo;
 		iosm->fdigest = (fi->fdigests ? fi->fdigests[i] : NULL);
 		iosm->digestlen = fi->digestlen;
@@ -1396,15 +1437,17 @@ static int iosmMkdirs(/*@special@*/ /*@partial@*/ IOSM_t iosm)
     int dc = dnlCount(dnli);
     int rc = 0;
     int i;
+#if defined(_USE_RPMTS)
 /*@-compdef@*/
     rpmts ts = iosmGetTs(iosm);
 /*@=compdef@*/
-    rpmsx sx = NULL;
-
     /* XXX Set file contexts on non-packaged dirs iff selinux enabled. */
-    if (ts != NULL && rpmtsSELinuxEnabled(ts) == 1 &&
-      !(rpmtsFlags(ts) & RPMTRANS_FLAG_NOCONTEXTS))
-	sx = rpmtsREContext(ts);
+    rpmsx sx = (ts != NULL && rpmtsSELinuxEnabled(ts) == 1 &&
+		!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOCONTEXTS))
+	? rpmtsREContext(ts) : NULL;
+#else
+    rpmsx sx = NULL;
+#endif
 
     iosm->path = NULL;
 
@@ -1715,12 +1758,16 @@ int XiosmStage(IOSM_t iosm, iosmStage stage)
 
 	break;
     case IOSM_CREATE:
+#if defined(_USE_RPMTS)
 	{   rpmts ts = iosmGetTs(iosm);
 #define	_tsmask	(RPMTRANS_FLAG_PKGCOMMIT | RPMTRANS_FLAG_COMMIT)
 	    iosm->commit = ((ts && (rpmtsFlags(ts) & _tsmask) &&
 			iosm->goal != IOSM_PKGCOMMIT) ? 0 : 1);
 #undef _tsmask
 	}
+#else
+	iosm->commit = 1;
+#endif
 	iosm->path = _free(iosm->path);
 	iosm->lpath = _free(iosm->lpath);
 	iosm->opath = _free(iosm->opath);
@@ -1994,14 +2041,14 @@ assert(iosm->lpath != NULL);
 	break;
     case IOSM_NOTIFY:		/* XXX move from iosm to psm -> tsm */
 	if (iosm->goal == IOSM_PKGINSTALL || iosm->goal == IOSM_PKGBUILD) {
-	    rpmts ts = iosmGetTs(iosm);
 	    rpmfi fi = iosmGetFi(iosm);
-	    void * ptr;
 	    uint64_t archivePos = fdGetCpioPos(iosm->cfd);
 	    if (archivePos > fi->archivePos) {
 		fi->archivePos = archivePos;
-		ptr = rpmtsNotify(ts, fi->te, RPMCALLBACK_INST_PROGRESS,
+#if defined(_USE_RPMTS)
+		(void) rpmtsNotify(iosmGetTs(iosm), fi->te,RPMCALLBACK_INST_PROGRESS,
 			fi->archivePos, fi->archiveSize);
+#endif
 	    }
 	}
 	break;
@@ -2540,8 +2587,10 @@ if (!(fi->mapflags & IOSM_PAYLOAD_EXTRACT)) {
 	if (iosm->rfd != NULL) {
 	    if (_iosm_debug && (stage & IOSM_SYSCALL))
 		rpmlog(RPMLOG_DEBUG, " %8s (%p)\n", cur, iosm->rfd);
+#if defined(_USE_RPMTS)
 	    (void) rpmswAdd(rpmtsOp(iosmGetTs(iosm), RPMTS_OP_DIGEST),
 			fdstat_op(iosm->rfd, FDSTAT_DIGEST));
+#endif
 	    (void) Fclose(iosm->rfd);
 	    errno = saveerrno;
 	}
@@ -2570,8 +2619,10 @@ if (!(fi->mapflags & IOSM_PAYLOAD_EXTRACT)) {
 	if (iosm->wfd != NULL) {
 	    if (_iosm_debug && (stage & IOSM_SYSCALL))
 		rpmlog(RPMLOG_DEBUG, " %8s (%p)\n", cur, iosm->wfd);
+#if defined(_USE_RPMTS)
 	    (void) rpmswAdd(rpmtsOp(iosmGetTs(iosm), RPMTS_OP_DIGEST),
 			fdstat_op(iosm->wfd, FDSTAT_DIGEST));
+#endif
 	    (void) Fclose(iosm->wfd);
 	    errno = saveerrno;
 	}
