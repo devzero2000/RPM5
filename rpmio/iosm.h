@@ -11,14 +11,71 @@
  */
 typedef /*@abstract@*/ struct iosm_s * IOSM_t;
 
-#include "cpio.h"
-
 typedef	int iosmAction;
 
 /*@-exportlocal@*/
 /*@unchecked@*/
 extern int _iosm_debug;
 /*@=exportlocal@*/
+
+/** \ingroup payload
+ */
+typedef enum iosmMapFlags_e {
+    IOSM_MAP_PATH	= (1 <<  0),
+    IOSM_MAP_MODE	= (1 <<  1),
+    IOSM_MAP_UID	= (1 <<  2),
+    IOSM_MAP_GID	= (1 <<  3),
+    IOSM_FOLLOW_SYMLINKS= (1 <<  4), /*!< only for building. */
+    IOSM_MAP_ABSOLUTE	= (1 <<  5),
+    IOSM_MAP_ADDDOT	= (1 <<  6),
+    IOSM_ALL_HARDLINKS	= (1 <<  7), /*!< fail if hardlinks are missing. */
+    IOSM_MAP_TYPE	= (1 <<  8), /*!< only for building. */
+    IOSM_SBIT_CHECK	= (1 <<  9),
+    IOSM_PAYLOAD_LIST	= (1 << 10),
+    IOSM_PAYLOAD_EXTRACT= (1 << 11),
+    IOSM_PAYLOAD_CREATE	= (1 << 12)
+} iosmMapFlags;
+
+/** \ingroup payload
+ * @note IOSM_CHECK_ERRNO bit is set only if errno is valid.
+ */
+#define IOSMERR_CHECK_ERRNO	0x00008000
+
+/** \ingroup payload
+ */
+enum iosmErrorReturns {
+	IOSMERR_BAD_MAGIC	= (2			),
+	IOSMERR_BAD_HEADER	= (3			),
+	IOSMERR_OPEN_FAILED	= (4    | IOSMERR_CHECK_ERRNO),
+	IOSMERR_CHMOD_FAILED	= (5    | IOSMERR_CHECK_ERRNO),
+	IOSMERR_CHOWN_FAILED	= (6    | IOSMERR_CHECK_ERRNO),
+	IOSMERR_WRITE_FAILED	= (7    | IOSMERR_CHECK_ERRNO),
+	IOSMERR_UTIME_FAILED	= (8    | IOSMERR_CHECK_ERRNO),
+	IOSMERR_UNLINK_FAILED	= (9    | IOSMERR_CHECK_ERRNO),
+
+	IOSMERR_RENAME_FAILED	= (10   | IOSMERR_CHECK_ERRNO),
+	IOSMERR_SYMLINK_FAILED	= (11   | IOSMERR_CHECK_ERRNO),
+	IOSMERR_STAT_FAILED	= (12   | IOSMERR_CHECK_ERRNO),
+	IOSMERR_LSTAT_FAILED	= (13   | IOSMERR_CHECK_ERRNO),
+	IOSMERR_MKDIR_FAILED	= (14   | IOSMERR_CHECK_ERRNO),
+	IOSMERR_RMDIR_FAILED	= (15   | IOSMERR_CHECK_ERRNO),
+	IOSMERR_MKNOD_FAILED	= (16   | IOSMERR_CHECK_ERRNO),
+	IOSMERR_MKFIFO_FAILED	= (17   | IOSMERR_CHECK_ERRNO),
+	IOSMERR_LINK_FAILED	= (18   | IOSMERR_CHECK_ERRNO),
+	IOSMERR_READLINK_FAILED	= (19   | IOSMERR_CHECK_ERRNO),
+	IOSMERR_READ_FAILED	= (20   | IOSMERR_CHECK_ERRNO),
+	IOSMERR_COPY_FAILED	= (21   | IOSMERR_CHECK_ERRNO),
+	IOSMERR_LSETFCON_FAILED	= (22   | IOSMERR_CHECK_ERRNO),
+	IOSMERR_HDR_SIZE	= (23			),
+	IOSMERR_HDR_TRAILER	= (24			),
+	IOSMERR_UNKNOWN_FILETYPE= (25			),
+	IOSMERR_MISSING_HARDLINK= (26			),
+	IOSMERR_DIGEST_MISMATCH	= (27			),
+	IOSMERR_INTERNAL	= (28			),
+	IOSMERR_UNMAPPED_FILE	= (29			),
+	IOSMERR_ENOENT		= (30			),
+	IOSMERR_ENOTEMPTY	= (31			)
+};
 
 /**
  */
@@ -197,7 +254,7 @@ struct iosm_s {
     int rc;			/*!< External file stage return code. */
     int commit;			/*!< Commit synchronously? */
     int repackaged;		/*!< Is payload repackaged? */
-    cpioMapFlags mapFlags;	/*!< Bit(s) to control mapping. */
+    iosmMapFlags mapFlags;	/*!< Bit(s) to control mapping. */
     int fdigestalgo;		/*!< Digest algorithm (~= PGPHASHALGO_MD5) */
     int digestlen;		/*!< No. of bytes in binary digest (~= 16) */
 /*@shared@*/ /*@relnull@*/
@@ -251,6 +308,15 @@ extern "C" {
  */
 /*@observer@*/ const char * iosmActionString(iosmAction a)	/*@*/;
 /*@=exportlocal@*/
+
+/** \ingroup payload
+ * Return formatted error message on payload handling failure.
+ * @param rc		error code
+ * @return		(malloc'd) formatted error string
+ */
+/*@only@*/
+char * iosmStrerror(int rc)
+	/*@*/;
 
 /**
  * Create I/O state machine instance.

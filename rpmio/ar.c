@@ -67,7 +67,7 @@ fprintf(stderr, "          arRead(%p, %p[%u])\n", iosm, buf, (unsigned)count);
 	iosm->wrlen = count;
 	rc = _iosmNext(iosm, IOSM_DREAD);
 	if (!rc && iosm->rdnb != iosm->wrlen)
-	    rc = CPIOERR_READ_FAILED;
+	    rc = IOSMERR_READ_FAILED;
 	if (rc) return -rc;
 
 	/* Append to buffer. */
@@ -104,7 +104,7 @@ fprintf(stderr, "==> %p[%u] \"%.*s\"\n", hdr, (unsigned)rc, (int)sizeof(*hdr), (
 
     /* Verify header marker. */
     if (strncmp(hdr->marker, AR_MARKER, sizeof(AR_MARKER)-1))
-	return CPIOERR_BAD_MAGIC;
+	return IOSMERR_BAD_MAGIC;
 
     st->st_size = strntoul(hdr->filesize, NULL, 10, sizeof(hdr->filesize));
 
@@ -199,7 +199,7 @@ fprintf(stderr, "    arWrite(%p, %p[%u])\n", iosm, buf, (unsigned)count);
 
 	rc = _iosmNext(iosm, IOSM_DWRITE);
 	if (!rc && iosm->rdnb != iosm->wrnb)
-		rc = CPIOERR_WRITE_FAILED;
+		rc = IOSMERR_WRITE_FAILED;
 	if (rc) return -rc;
 
 	nb += iosm->rdnb;

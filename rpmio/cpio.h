@@ -6,65 +6,6 @@
  *  Structures used for cpio(1) archives.
  */
 
-/** \ingroup payload
- * @note CPIO_CHECK_ERRNO bit is set only if errno is valid.
- */
-#define CPIOERR_CHECK_ERRNO	0x00008000
-
-/** \ingroup payload
- */
-enum cpioErrorReturns {
-	CPIOERR_BAD_MAGIC	= (2			),
-	CPIOERR_BAD_HEADER	= (3			),
-	CPIOERR_OPEN_FAILED	= (4    | CPIOERR_CHECK_ERRNO),
-	CPIOERR_CHMOD_FAILED	= (5    | CPIOERR_CHECK_ERRNO),
-	CPIOERR_CHOWN_FAILED	= (6    | CPIOERR_CHECK_ERRNO),
-	CPIOERR_WRITE_FAILED	= (7    | CPIOERR_CHECK_ERRNO),
-	CPIOERR_UTIME_FAILED	= (8    | CPIOERR_CHECK_ERRNO),
-	CPIOERR_UNLINK_FAILED	= (9    | CPIOERR_CHECK_ERRNO),
-
-	CPIOERR_RENAME_FAILED	= (10   | CPIOERR_CHECK_ERRNO),
-	CPIOERR_SYMLINK_FAILED	= (11   | CPIOERR_CHECK_ERRNO),
-	CPIOERR_STAT_FAILED	= (12   | CPIOERR_CHECK_ERRNO),
-	CPIOERR_LSTAT_FAILED	= (13   | CPIOERR_CHECK_ERRNO),
-	CPIOERR_MKDIR_FAILED	= (14   | CPIOERR_CHECK_ERRNO),
-	CPIOERR_RMDIR_FAILED	= (15   | CPIOERR_CHECK_ERRNO),
-	CPIOERR_MKNOD_FAILED	= (16   | CPIOERR_CHECK_ERRNO),
-	CPIOERR_MKFIFO_FAILED	= (17   | CPIOERR_CHECK_ERRNO),
-	CPIOERR_LINK_FAILED	= (18   | CPIOERR_CHECK_ERRNO),
-	CPIOERR_READLINK_FAILED	= (19   | CPIOERR_CHECK_ERRNO),
-	CPIOERR_READ_FAILED	= (20   | CPIOERR_CHECK_ERRNO),
-	CPIOERR_COPY_FAILED	= (21   | CPIOERR_CHECK_ERRNO),
-	CPIOERR_LSETFCON_FAILED	= (22   | CPIOERR_CHECK_ERRNO),
-	CPIOERR_HDR_SIZE	= (23			),
-	CPIOERR_HDR_TRAILER	= (24			),
-	CPIOERR_UNKNOWN_FILETYPE= (25			),
-	CPIOERR_MISSING_HARDLINK= (26			),
-	CPIOERR_DIGEST_MISMATCH	= (27			),
-	CPIOERR_INTERNAL	= (28			),
-	CPIOERR_UNMAPPED_FILE	= (29			),
-	CPIOERR_ENOENT		= (30			),
-	CPIOERR_ENOTEMPTY	= (31			)
-};
-
-/** \ingroup payload
- */
-typedef enum cpioMapFlags_e {
-    CPIO_MAP_PATH	= (1 <<  0),
-    CPIO_MAP_MODE	= (1 <<  1),
-    CPIO_MAP_UID	= (1 <<  2),
-    CPIO_MAP_GID	= (1 <<  3),
-    CPIO_FOLLOW_SYMLINKS= (1 <<  4), /*!< only for building. */
-    CPIO_MAP_ABSOLUTE	= (1 <<  5),
-    CPIO_MAP_ADDDOT	= (1 <<  6),
-    CPIO_ALL_HARDLINKS	= (1 <<  7), /*!< fail if hardlinks are missing. */
-    CPIO_MAP_TYPE	= (1 <<  8), /*!< only for building. */
-    CPIO_SBIT_CHECK	= (1 <<  9),
-    CPIO_PAYLOAD_LIST	= (1 << 10),
-    CPIO_PAYLOAD_EXTRACT= (1 << 11),
-    CPIO_PAYLOAD_CREATE	= (1 << 12)
-} cpioMapFlags;
-
 #define CPIO_NEWC_MAGIC	"070701"
 #define CPIO_CRC_MAGIC	"070702"
 #define CPIO_TRAILER	"TRAILER!!!"
@@ -126,15 +67,6 @@ int cpioHeaderWrite(void * _fsm, struct stat * st)
 int cpioHeaderRead(void * _fsm, struct stat * st)
 	/*@globals h_errno, fileSystem, internalState @*/
 	/*@modifies _fsm, *st, fileSystem, internalState @*/;
-
-/** \ingroup payload
- * Return formatted error message on payload handling failure.
- * @param rc		error code
- * @return		(malloc'd) formatted error string
- */
-/*@only@*/
-char * cpioStrerror(int rc)
-	/*@*/;
 
 #ifdef __cplusplus
 }

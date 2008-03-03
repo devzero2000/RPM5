@@ -6,6 +6,7 @@
 #include "system.h"
 
 #include <rpmio.h>
+#include <cpio.h>
 #include <iosm.h>
 
 #include "debug.h"
@@ -45,7 +46,7 @@ static int strntoul(const char *str, /*@out@*/char **endptr, int base, size_t nu
 
 #define GET_NUM_FIELD(phys, log) \
 	log = strntoul(phys, &end, 16, sizeof(phys)); \
-	if ( (end - phys) != sizeof(phys) ) return CPIOERR_BAD_HEADER;
+	if ( (end - phys) != sizeof(phys) ) return IOSMERR_BAD_HEADER;
 #define SET_NUM_FIELD(phys, val, space) \
 	sprintf(space, "%8.8lx", (unsigned long) (val)); \
 	memcpy(phys, space, 8)
@@ -111,7 +112,7 @@ fprintf(stderr, "    cpioHeaderWrite(%p, %p)\n", iosm, st);
     iosm->rdnb = PHYS_HDR_SIZE + len;
     rc = iosmNext(iosm, IOSM_DWRITE);
     if (!rc && iosm->rdnb != iosm->wrnb)
-	rc = CPIOERR_WRITE_FAILED;
+	rc = IOSMERR_WRITE_FAILED;
     if (!rc)
 	rc = iosmNext(iosm, IOSM_PAD);
 
@@ -121,7 +122,7 @@ assert(iosm->lpath != NULL);
 	memcpy(iosm->rdbuf, iosm->lpath, iosm->rdnb);
 	rc = iosmNext(iosm, IOSM_DWRITE);
 	if (!rc && iosm->rdnb != iosm->wrnb)
-	    rc = CPIOERR_WRITE_FAILED;
+	    rc = IOSMERR_WRITE_FAILED;
 	if (!rc)
 	    rc = iosmNext(iosm, IOSM_PAD);
     }
@@ -144,13 +145,13 @@ fprintf(stderr, "    cpioHeaderRead(%p, %p)\n", iosm, st);
     iosm->wrlen = PHYS_HDR_SIZE;
     rc = iosmNext(iosm, IOSM_DREAD);
     if (!rc && iosm->rdnb != iosm->wrlen)
-	rc = CPIOERR_READ_FAILED;
+	rc = IOSMERR_READ_FAILED;
     if (rc) return rc;
     memcpy(&hdr, iosm->wrbuf, iosm->rdnb);
 
     if (strncmp(CPIO_CRC_MAGIC, hdr.magic, sizeof(CPIO_CRC_MAGIC)-1) &&
 	strncmp(CPIO_NEWC_MAGIC, hdr.magic, sizeof(CPIO_NEWC_MAGIC)-1))
-	return CPIOERR_BAD_MAGIC;
+	return IOSMERR_BAD_MAGIC;
 
     GET_NUM_FIELD(hdr.inode, st->st_ino);
     GET_NUM_FIELD(hdr.mode, st->st_mode);
@@ -174,13 +175,13 @@ fprintf(stderr, "    cpioHeaderRead(%p, %p)\n", iosm, st);
 
     GET_NUM_FIELD(hdr.namesize, nameSize);
     if (nameSize >= iosm->wrsize)
-	return CPIOERR_BAD_HEADER;
+	return IOSMERR_BAD_HEADER;
 
     {	char * t = xmalloc(nameSize + 1);
 	iosm->wrlen = nameSize;
 	rc = iosmNext(iosm, IOSM_DREAD);
 	if (!rc && iosm->rdnb != iosm->wrlen)
-	    rc = CPIOERR_BAD_HEADER;
+	    rc = IOSMERR_BAD_HEADER;
 	if (rc) {
 	    t = _free(t);
 	    iosm->path = NULL;
@@ -197,7 +198,7 @@ fprintf(stderr, "    cpioHeaderRead(%p, %p)\n", iosm, st);
 	iosm->wrlen = st->st_size;
 	rc = iosmNext(iosm, IOSM_DREAD);
 	if (!rc && iosm->rdnb != iosm->wrlen)
-	    rc = CPIOERR_READ_FAILED;
+	    rc = IOSMERR_READ_FAILED;
 	if (rc) return rc;
 	iosm->wrbuf[st->st_size] = '\0';
 	iosm->lpath = xstrdup(iosm->wrbuf);
@@ -210,64 +211,4 @@ fprintf(stderr, "\t     %06o%3d (%4d,%4d)%10d %s\n\t-> %s\n",
                 (iosm->path ? iosm->path : ""), (iosm->lpath ? iosm->lpath : ""));
 
     return rc;
-}
-
-char * cpioStrerror(int rc)
-{
-    char msg[256];
-    char *s;
-    int l, myerrno = errno;
-
-    strcpy(msg, "cpio: ");
-    switch (rc) {
-    default:
-	s = msg + strlen(msg);
-	sprintf(s, _("(error 0x%x)"), (unsigned)rc);
-	s = NULL;
-	break;
-    case CPIOERR_BAD_MAGIC:	s = _("Bad magic");		break;
-    case CPIOERR_BAD_HEADER:	s = _("Bad/unreadable header");	break;
-
-    case CPIOERR_OPEN_FAILED:	s = "open";	break;
-    case CPIOERR_CHMOD_FAILED:	s = "chmod";	break;
-    case CPIOERR_CHOWN_FAILED:	s = "chown";	break;
-    case CPIOERR_WRITE_FAILED:	s = "write";	break;
-    case CPIOERR_UTIME_FAILED:	s = "utime";	break;
-    case CPIOERR_UNLINK_FAILED:	s = "unlink";	break;
-    case CPIOERR_RENAME_FAILED:	s = "rename";	break;
-    case CPIOERR_SYMLINK_FAILED: s = "symlink";	break;
-    case CPIOERR_STAT_FAILED:	s = "stat";	break;
-    case CPIOERR_LSTAT_FAILED:	s = "lstat";	break;
-    case CPIOERR_MKDIR_FAILED:	s = "mkdir";	break;
-    case CPIOERR_RMDIR_FAILED:	s = "rmdir";	break;
-    case CPIOERR_MKNOD_FAILED:	s = "mknod";	break;
-    case CPIOERR_MKFIFO_FAILED:	s = "mkfifo";	break;
-    case CPIOERR_LINK_FAILED:	s = "link";	break;
-    case CPIOERR_READLINK_FAILED: s = "readlink";	break;
-    case CPIOERR_READ_FAILED:	s = "read";	break;
-    case CPIOERR_COPY_FAILED:	s = "copy";	break;
-    case CPIOERR_LSETFCON_FAILED: s = "lsetfilecon";	break;
-
-    case CPIOERR_HDR_SIZE:	s = _("Header size too big");	break;
-    case CPIOERR_UNKNOWN_FILETYPE: s = _("Unknown file type");	break;
-    case CPIOERR_MISSING_HARDLINK: s = _("Missing hard link(s)"); break;
-    case CPIOERR_DIGEST_MISMATCH: s = _("File digest mismatch");	break;
-    case CPIOERR_INTERNAL:	s = _("Internal error");	break;
-    case CPIOERR_UNMAPPED_FILE:	s = _("Archive file not in header"); break;
-    case CPIOERR_ENOENT:	s = strerror(ENOENT); break;
-    case CPIOERR_ENOTEMPTY:	s = strerror(ENOTEMPTY); break;
-    }
-
-    l = sizeof(msg) - strlen(msg) - 1;
-    if (s != NULL) {
-	if (l > 0) strncat(msg, s, l);
-	l -= strlen(s);
-    }
-    if ((rc & CPIOERR_CHECK_ERRNO) && myerrno) {
-	s = _(" failed - ");
-	if (l > 0) strncat(msg, s, l);
-	l -= strlen(s);
-	if (l > 0) strncat(msg, strerror(myerrno), l);
-    }
-    return xstrdup(msg);
 }

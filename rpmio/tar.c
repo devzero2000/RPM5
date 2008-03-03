@@ -72,7 +72,7 @@ static int tarHeaderReadName(void * _iosm, int len, /*@out@*/ const char ** fnp)
 	iosm->wrlen = TAR_BLOCK_SIZE;
 	rc = _iosmNext(iosm, IOSM_DREAD);
 	if (!rc && iosm->rdnb != iosm->wrlen)
-		rc = CPIOERR_READ_FAILED;
+		rc = IOSMERR_READ_FAILED;
 	if (rc) break;
 
 	/* Append to name. */
@@ -108,13 +108,13 @@ top:
 	iosm->wrlen = TAR_BLOCK_SIZE;
 	rc = _iosmNext(iosm, IOSM_DREAD);
 	if (!rc && iosm->rdnb != iosm->wrlen)
-	    rc = CPIOERR_READ_FAILED;
+	    rc = IOSMERR_READ_FAILED;
 	if (rc) return rc;
 
 	/* Look for end-of-archive, i.e. 2 (or more) zero blocks. */
 	if (hdr->name[0] == '\0' && hdr->checksum[0] == '\0') {
 	    if (++zblk == 2)
-		return CPIOERR_HDR_TRAILER;
+		return IOSMERR_HDR_TRAILER;
 	}
     } while (zblk > 0);
 
@@ -136,7 +136,7 @@ top:
 	    sum += (' ' - hdr->checksum[i]);
 fprintf(stderr, "\tsum %ld\n", sum);
 	if (sum != 0)
-	    return CPIOERR_BAD_HEADER;
+	    return IOSMERR_BAD_HEADER;
 #else
 	memset(checksum, ' ', sizeof(checksum));
 	sprintf(checksum, "%06o", (unsigned) (sum & 07777777));
@@ -144,14 +144,14 @@ if (_tar_debug)
 fprintf(stderr, "\tmemcmp(\"%s\", \"%s\", %u)\n", hdrchecksum, checksum, (unsigned)sizeof(hdrchecksum));
 	if (memcmp(hdrchecksum, checksum, sizeof(hdrchecksum)))
 	    if (!nochksum)
-		return CPIOERR_BAD_HEADER;
+		return IOSMERR_BAD_HEADER;
 #endif
 
     }
 
     /* Verify header magic. */
     if (strncmp(hdr->magic, TAR_MAGIC, sizeof(TAR_MAGIC)-1))
-	return CPIOERR_BAD_MAGIC;
+	return IOSMERR_BAD_MAGIC;
 
     st->st_size = strntoul(hdr->filesize, NULL, 8, sizeof(hdr->filesize));
 
@@ -281,7 +281,7 @@ fprintf(stderr, "\ttarHeaderWriteName(%p, %s) nb %d\n", iosm, path, nb);
 	memmove(iosm->rdbuf, s, iosm->rdnb);
 	rc = _iosmNext(iosm, IOSM_DWRITE);
 	if (!rc && iosm->rdnb != iosm->wrnb)
-		rc = CPIOERR_WRITE_FAILED;
+		rc = IOSMERR_WRITE_FAILED;
 
 	if (rc) break;
 	s += iosm->rdnb;
@@ -336,7 +336,7 @@ fprintf(stderr, "\thdrchksum \"%s\"\n", hdr->checksum);
     iosm->rdnb = TAR_BLOCK_SIZE;
     rc = _iosmNext(iosm, IOSM_DWRITE);
     if (!rc && iosm->rdnb != iosm->wrnb)
-	rc = CPIOERR_WRITE_FAILED;
+	rc = IOSMERR_WRITE_FAILED;
 
     return rc;
 }
