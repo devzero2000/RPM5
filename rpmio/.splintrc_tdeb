@@ -1,0 +1,66 @@
+-I. -I.. -I../file/src -I../xar/include -I/usr/include/neon -I../lua -I../lua/local -I/usr/include/beecrypt -I/usr/include/nss3 -I/usr/include/nspr4 -I../zlib -DHAVE_CONFIG_H -D_GNU_SOURCE -D__STDC__=1 -DHAVE_NEON_NE_GET_RESPONSE_HEADER
+
+#+partial
++forcehints
+
+-warnposix
+
++unixlib
+
+-unrecogcomments	# XXX ignore doxygen markings
+
++strict			# lclint level
+
+# --- in progress
+-branchstate
+-bufferoverflowhigh
+
+-boolops		# 30
+-compdestroy		# 5
+-mustmod		# BUG
+-predboolptr		# 56
+-redef			# 8
+
+-onlytrans		# 2
+
+-exportlocal
+
+-compdef		# 3
+-globstate		# 3
+
+# --- +partial artifacts
+-declundef	# 515
+
+-enummemuse	# 574
+-fcnuse		# 341
+-typeuse	# 18
+-varuse		# 15
+
+# --- not-yet at strict level
+-bitwisesigned		# 65
+-elseifcomplete		# 10
+-exportconst		# 786
+-exportfcn		# 462
+-exporttype		# 120
+-exportvar		# 74
+-fielduse		# 247
+-forblock		# tedious
+-ifblock		# tedious
+-namechecks		# 599 tedious ANSI compliance checks
+-ptrarith		# 37
+
+-mustdefine		# 3
+-sys-dir-errors
+
+-strictops		# 21
+-whileblock		# tedious
+
+# --- not-yet at checks level
++enumint		# 11
+-mustfree		# 18
+-usedef			# 7
+
+# --- not-yet at standard level
++boolint		# 145
++ignorequals		# 27
++matchanyintegral	# 49
