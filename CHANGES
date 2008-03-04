@@ -1,3 +1,6 @@
+5.0.3 -> 5.0.4:
+    - proyvind: add rpmfiBuildFNames() to rpm4 compatibility wrapper (needed by rpmstats)
+
 5.0.2 -> 5.0.3:
     - proyvind: add rpm 4 API compatibility wrapper (urpmi & apt-get succesfully ported with this so far \o/)
     - afb: python: backport fix for rpm.archscore() and add rpm.platformscore().

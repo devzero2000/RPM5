@@ -102,6 +102,82 @@ inline int headerGetRawEntry(Header h, int_32 tag, hTYP_t type, void * p, hCNT_t
 	return rc;
 }
 
+#define xmalloc(_size)          (malloc(_size) ? : vmefail(_size))
+
+inline void rpmfiBuildFNames(Header h, rpmTag tagN, const char *** fnp, int * fcp) {
+	HE_t he = (HE_s*)memset(alloca(sizeof(*he)), 0, sizeof(*he));
+
+	rpmTag dirNameTag = 0;
+	rpmTag dirIndexesTag = 0;
+	rpmTagData baseNames;
+	rpmTagData dirNames;
+	rpmTagData dirIndexes;
+	rpmTagData fileNames;
+	rpmTagCount count;
+	size_t size;
+	char * t;
+	unsigned i;
+	int xx;
+
+	if (tagN == RPMTAG_BASENAMES) {
+		dirNameTag = RPMTAG_DIRNAMES;
+		dirIndexesTag = RPMTAG_DIRINDEXES;
+	} else if (tagN == RPMTAG_ORIGBASENAMES) {
+		dirNameTag = RPMTAG_ORIGDIRNAMES;
+		dirIndexesTag = RPMTAG_ORIGDIRINDEXES;
+	} else {
+		if (fnp) *fnp = NULL;
+		if (fcp) *fcp = 0;
+		return;
+	}
+	
+	he->tag = tagN;
+	xx = headerGet(h, he, 0);
+	baseNames.argv = he->p.argv;
+	count = he->c;
+	
+	if (!xx) {
+		if (fnp) *fnp = NULL;
+		if (fcp) *fcp = 0;
+		return;         /* no file list */
+	}
+	
+	he->tag = dirNameTag;
+	xx = headerGet(h, he, 0);
+	dirNames.argv = he->p.argv;
+	
+	he->tag = dirIndexesTag;
+	xx = headerGet(h, he, 0);
+	dirIndexes.ui32p = he->p.ui32p;
+	count = he->c;
+
+	size = sizeof(*fileNames.argv) * count;
+	for (i = 0; i < (unsigned)count; i++) {
+		const char * dn = NULL;
+		(void) urlPath(dirNames.argv[dirIndexes.ui32p[i]], &dn);
+		size += strlen(baseNames.argv[i]) + strlen(dn) + 1;
+	}
+
+	fileNames.argv = xmalloc(size);
+	t = (char *)&fileNames.argv[count];
+	for (i = 0; i < (unsigned)count; i++) {
+		const char * dn = NULL;
+		(void) urlPath(dirNames.argv[dirIndexes.ui32p[i]], &dn);
+		fileNames.argv[i] = t;
+		t = stpcpy( stpcpy(t, dn), baseNames.argv[i]);
+		*t++ = '\0';
+	}
+	baseNames.ptr = _free(baseNames.ptr);
+	dirNames.ptr = _free(dirNames.ptr);
+	dirIndexes.ptr = _free(dirIndexes.ptr);
+
+	if (fnp)
+		*fnp = fileNames.argv;
+	else
+		fileNames.ptr = _free(fileNames.ptr);
+	if (fcp) *fcp = count;
+}
+
 static inline int headerAddEntry(Header h, int_32 tag, int_32 type, const void * p, int_32 c) {
 	HE_t he = (HE_s*)memset(alloca(sizeof(*he)), 0, sizeof(*he));
 
