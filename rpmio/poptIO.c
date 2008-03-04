@@ -50,7 +50,11 @@ extern int _rpmsq_debug;
 /*@-exportheadervar@*/
 /*@-redecl@*/
 /*@unchecked@*/
+extern int _ar_debug;
+/*@unchecked@*/
 extern int _av_debug;
+/*@unchecked@*/
+extern int _cpio_debug;
 /*@unchecked@*/
 extern int _dav_debug;
 /*@unchecked@*/
@@ -61,6 +65,8 @@ extern int _iosm_debug;
 extern int noLibio;
 /*@unchecked@*/
 extern int _rpmio_debug;
+/*@unchecked@*/
+extern int _tar_debug;
 /*@unchecked@*/
 extern int _xar_debug;
 /*@=redecl@*/
@@ -359,12 +365,12 @@ struct poptOption rpmioAllPoptTable[] = {
         N_("select cryptography implementation"),
 	N_("CRYPTO") },
 
+ { "ardebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_ar_debug, -1,
+	N_("debug ar archives"), NULL},
  { "avdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_av_debug, -1,
 	N_("debug argv collections"), NULL},
-#ifdef	NOTYET
  { "cpiodebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_cpio_debug, -1,
-	N_("debug cpio payloads"), NULL},
-#endif
+	N_("debug cpio archives"), NULL},
  { "davdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_dav_debug, -1,
 	N_("debug WebDAV data stream"), NULL},
  { "ftpdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_ftp_debug, -1,
@@ -384,11 +390,9 @@ struct poptOption rpmioAllPoptTable[] = {
  { "rpmsqdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmsq_debug, -1,
 	NULL, NULL},
  { "xardebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_xar_debug, -1,
-	NULL, NULL},
-#ifdef	NOTYET
+	N_("debug xar archives"), NULL},
  { "tardebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_tar_debug, -1,
-	N_("debug tar payloads"), NULL},
-#endif
+	N_("debug tar archives"), NULL},
  { "stats", '\0', POPT_ARG_VAL,				&_rpmsw_stats, -1,
 	N_("display operation statistics"), NULL},
  { "urldebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_url_debug, -1,

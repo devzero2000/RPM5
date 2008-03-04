@@ -7,11 +7,9 @@
 const char *__progname;
 
 #include <rpmio.h>
-#include <rpmcli.h>
-#include <fs.h>			/* XXX rpmFreeFilesystems() */
-#include <rpmns.h>		/* XXX rpmnsClean() */
 #include <fts.h>
 #include <mire.h>
+#include <poptIO.h>
 
 #define _RPMPGP_INTERNAL
 #if defined(WITH_BEECRYPT)
@@ -30,6 +28,10 @@ const char *__progname;
 #define _RPMSSL_INTERNAL
 #include <rpmssl.h>
 #endif
+
+#include <rpmcli.h>
+#include <fs.h>			/* XXX rpmFreeFilesystems() */
+#include <rpmns.h>		/* XXX rpmnsClean() */
 
 #include "debug.h"
 
@@ -54,9 +56,6 @@ static int _debug = 0;
 extern int _rpmds_nopromote;
 
 /*@unchecked@*/
-extern int _cpio_debug;
-
-/*@unchecked@*/
 extern int _fps_debug;
 
 /*@unchecked@*/
@@ -67,9 +66,6 @@ extern int _fsm_threads;
 
 /*@unchecked@*/
 extern int _hdr_debug;
-
-/*@unchecked@*/
-extern int _mire_debug;
 
 /*@unchecked@*/
 extern int _print_pkts;
@@ -100,9 +96,6 @@ extern int _rpmfi_debug;
 extern int _rpmgi_debug;
 
 /*@unchecked@*/
-extern int _rpmmg_debug;
-
-/*@unchecked@*/
 extern int _rpmps_debug;
 
 /*@unchecked@*/
@@ -121,9 +114,6 @@ extern int _rpmts_debug;
 extern int _rpmwf_debug;
 
 /*@unchecked@*/
-extern int _xar_debug;
-
-/*@unchecked@*/
 extern int _rpmts_macros;
 
 /*@unchecked@*/
@@ -131,13 +121,6 @@ extern int _rpmts_stats;
 
 /*@unchecked@*/
 extern int _hdr_stats;
-
-/*@unchecked@*/
-extern int _tar_debug;
-
-/*@unchecked@*/
-extern int noLibio;
-/*@=exportheadervar@*/
 
 /*@unchecked@*/ /*@null@*/
 const char * rpmcliPipeOutput = NULL;
@@ -150,21 +133,6 @@ rpmQueryFlags rpmcliQueryFlags;
 
 /*@unchecked@*/ /*@null@*/
 const char * rpmcliTargets = NULL;
-
-/*@-exportheadervar@*/
-/*@unchecked@*/
-extern int _ftp_debug;
-/*@unchecked@*/
-extern int _av_debug;
-/*@unchecked@*/
-extern int _dav_debug;
-
-/*@unchecked@*/
-extern int noLibio;
-
-/*@unchecked@*/
-extern int _rpmio_debug;
-/*@=exportheadervar@*/
 
 /*@unchecked@*/
 static int rpmcliInitialized = -1;
@@ -490,11 +458,6 @@ struct poptOption rpmcliAllPoptTable[] = {
  { "version", '\0', 0, NULL, POPT_SHOWVERSION,
 	N_("print the version"), NULL },
 
-#if defined(HAVE_LIBIO_H) && defined(_G_IO_IO_FILE_VERSION)
- { "nolibio", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &noLibio, 1,
-       N_("disable use of libio(3) API"), NULL},
-#endif
-
  { "promoteepoch", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmds_nopromote, 0,
 	NULL, NULL},
 
@@ -502,30 +465,16 @@ struct poptOption rpmcliAllPoptTable[] = {
         N_("select cryptography implementation"),
 	N_("CRYPTO") },
 
- { "avdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_av_debug, -1,
-	N_("debug argv collections"), NULL},
- { "cpiodebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_cpio_debug, -1,
-	N_("debug cpio payloads"), NULL},
- { "davdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_dav_debug, -1,
-	N_("debug WebDAV data stream"), NULL},
  { "fpsdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_fps_debug, -1,
 	NULL, NULL},
  { "fsmdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_fsm_debug, -1,
 	N_("debug payload file state machine"), NULL},
  { "fsmthreads", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_fsm_threads, -1,
 	N_("use threads for file state machine"), NULL},
- { "ftpdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_ftp_debug, -1,
-	N_("debug FTP/HTTP data stream"), NULL},
  { "hdrdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_hdr_debug, -1,
 	NULL, NULL},
  { "macrosused", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmts_macros, -1,
 	NULL, NULL},
- { "miredebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_mire_debug, -1,
-	NULL, NULL},
-#ifdef	DYING
- { "poptdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_popt_debug, -1,
-	N_("debug option/argument processing"), NULL},
-#endif
  { "prtpkts", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_print_pkts, -1,
 	NULL, NULL},
  { "psmdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_psm_debug, -1,
@@ -544,15 +493,9 @@ struct poptOption rpmcliAllPoptTable[] = {
 	NULL, NULL},
  { "rpmgidebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmgi_debug, -1,
 	NULL, NULL},
- { "rpmiodebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmio_debug, -1,
-	N_("debug rpmio I/O"), NULL},
- { "rpmmgdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmmg_debug, -1,
-	NULL, NULL},
  { "rpmnsdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmns_debug, -1,
 	NULL, NULL},
  { "rpmpsdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmps_debug, -1,
-	NULL, NULL},
- { "rpmsqdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmsq_debug, -1,
 	NULL, NULL},
  { "rpmsxdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmsx_debug, -1,
 	NULL, NULL},
@@ -562,14 +505,11 @@ struct poptOption rpmcliAllPoptTable[] = {
 	NULL, NULL},
  { "rpmwfdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmwf_debug, -1,
 	NULL, NULL},
- { "xardebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_xar_debug, -1,
-	NULL, NULL},
- { "tardebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_tar_debug, -1,
-	N_("debug tar payloads"), NULL},
  { "stats", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmts_stats, -1,
 	NULL, NULL},
- { "urldebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_url_debug, -1,
-	N_("debug URL cache handling"), NULL},
+
+ { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmioAllPoptTable, 0,
+        NULL, NULL },
 
    POPT_TABLEEND
 };
