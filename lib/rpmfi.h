@@ -95,7 +95,6 @@ typedef enum fileAction_e {
 typedef /*@abstract@*/ /*@refcounted@*/ struct rpmfi_s * rpmfi;
 
 #if defined(_RPMFI_INTERNAL)
-#include <fsm.h>
 
 #define XFA_SKIPPING(_a)	\
     ((_a) == FA_SKIP || (_a) == FA_SKIPNSTATE || (_a) == FA_SKIPNETSHARED || (_a) == FA_SKIPCOLOR)
@@ -179,7 +178,7 @@ struct rpmfi_s {
 
 /*=============================*/
 /*@dependent@*/ /*@relnull@*/
-    rpmte te;
+    void * te;
 
 /*-----------------------------*/
     uid_t uid;			/*!< File uid (default). */
@@ -231,7 +230,7 @@ struct rpmfi_s {
 /*@owned@*/ /*@null@*/
     int * fmapflags;
 /*@owned@*/
-    FSM_t fsm;			/*!< File state machine data. */
+    void * fsm;			/*!< File state machine data. */
     uint32_t color;		/*!< Color bit(s) from file color union. */
 
     int isSource;		/*!< Is this a SRPM? */
@@ -253,6 +252,7 @@ struct rpmfi_s {
 extern "C" {
 #endif
 
+#if !defined(_RPMFI_NOMETHODS)
 /** \name RPMFI */
 /*@{*/
 
@@ -646,7 +646,7 @@ rpmfi rpmfiFree(/*@killref@*/ /*@only@*/ /*@null@*/ rpmfi fi)
 /*@null@*/
 rpmfi rpmfiNew(/*@null@*/ const void * _ts, Header h, rpmTag tagN, int flags)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies ts, h, rpmGlobalMacroContext, fileSystem, internalState @*/;
+	/*@modifies _ts, h, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /**
  * Retrieve file classes from header.
@@ -756,6 +756,7 @@ const char * rpmfiTypeString(rpmfi fi)
 /*@=redef@*/
 
 /*@}*/
+#endif	/* _RPMFI_NOMETHODS */
 
 #ifdef __cplusplus
 }

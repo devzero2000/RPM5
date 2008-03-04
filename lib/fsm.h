@@ -224,7 +224,7 @@ struct fsm_s {
     int (*headerWrite) (void * _fsm, struct stat *st)
 	/*@modifies _fsm, st @*/;
     int (*trailerWrite) (void * _fsm)
-	/*@modifies fsm @*/;
+	/*@modifies _fsm @*/;
 
     char * lmtab;		/*!< ar(1) long member name table. */
     size_t lmtablen;		/*!< ar(1) no. bytes in lmtab. */
@@ -269,7 +269,7 @@ extern "C" {
 
 /**
  * Load external data into file state machine.
- * @param fsm		file state machine
+ * @param _fsm		file state machine
  * @param goal
  * @param afmt		archive format (NULL uses cpio)
  * @param _ts		transaction set
@@ -279,24 +279,24 @@ extern "C" {
  * @retval failedFile	pointer to first file name that failed.
  * @return		0 on success
  */
-int fsmSetup(FSM_t fsm, fileStage goal, /*@null@*/ const char * afmt,
+int fsmSetup(void * _fsm, fileStage goal, /*@null@*/ const char * afmt,
 		const void * _ts,
 		const void * _fi,
 		FD_t cfd,
 		/*@out@*/ unsigned int * archiveSize,
 		/*@out@*/ const char ** failedFile)
 	/*@globals h_errno, fileSystem, internalState @*/
-	/*@modifies fsm, ts, fi, *archiveSize, *failedFile,
+	/*@modifies _fsm, _ts, _fi, *archiveSize, *failedFile,
 		fileSystem, internalState @*/;
 
 /**
  * Clean file state machine.
- * @param fsm		file state machine
+ * @param _fsm		file state machine
  * @return		0 on success
  */
-int fsmTeardown(FSM_t fsm)
+int fsmTeardown(void * _fsm)
 	/*@globals h_errno, fileSystem, internalState @*/
-	/*@modifies fsm, fileSystem, internalState @*/;
+	/*@modifies _fsm, fileSystem, internalState @*/;
 
 #if defined(_RPMFSM_INTERNAL)
 /*@-exportlocal@*/

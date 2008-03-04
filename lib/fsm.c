@@ -595,10 +595,11 @@ static int arSetup(FSM_t fsm, rpmfi fi)
 }
 #endif
 
-int fsmSetup(FSM_t fsm, fileStage goal, const char * afmt,
+int fsmSetup(void * _fsm, fileStage goal, const char * afmt,
 		const void * _ts, const void * _fi, FD_t cfd,
 		unsigned int * archiveSize, const char ** failedFile)
 {
+    FSM_t fsm = _fsm;
     const rpmts ts = (const rpmts) _ts;
     const rpmfi fi = (const rpmfi) _fi;
 #if defined(_USE_RPMTE)
@@ -690,8 +691,9 @@ fprintf(stderr, "\tcpio vectors set\n");
 /*@=nullstate@*/
 }
 
-int fsmTeardown(FSM_t fsm)
+int fsmTeardown(void * _fsm)
 {
+    FSM_t fsm = _fsm;
     int rc = fsm->rc;
 
 if (_fsm_debug < 0)

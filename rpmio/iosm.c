@@ -12,7 +12,7 @@
 #include <rpmsq.h>		/* XXX rpmsqJoin()/rpmsqThread() */
 #include <rpmsw.h>		/* XXX rpmswAdd() */
 
-#include <rpmtag.h>
+#include "../rpmdb/rpmtag.h"
 
 typedef /*@abstract@*/ /*@refcounted@*/ struct rpmts_s * rpmts;
 typedef /*@abstract@*/ struct rpmte_s * rpmte;
@@ -26,11 +26,9 @@ typedef /*@abstract@*/ struct rpmte_s * rpmte;
 #include "ar.h"
 
 typedef iosmMapFlags cpioMapFlags;
-#define	_USE_RPMFI
-#if defined(_USE_RPMFI)
 #define	_RPMFI_INTERNAL
-#include <rpmfi.h>
-#endif
+#define	_RPMFI_NOMETHODS
+#include "../lib/rpmfi.h"
 
 typedef /*@abstract@*/ /*@refcounted@*/ struct rpmds_s * rpmds;
 typedef struct rpmRelocation_s * rpmRelocation;
@@ -40,7 +38,7 @@ typedef /*@abstract@*/ void * alKey;
 #include "rpmte.h"
 #endif
 
-#include <rpmsx.h>		/* XXX rpmsx rpmsxFContext rpmsxFree */
+#include "../lib/rpmsx.h"		/* XXX rpmsx rpmsxFContext rpmsxFree */
 
 typedef /*@abstract@*/ /*@refcounted@*/ struct rpmdb_s * rpmdb;
 typedef /*@abstract@*/ struct rpmdbMatchIterator_s * rpmdbMatchIterator;
@@ -145,8 +143,7 @@ const char * iosmFsPath(/*@special@*/ /*@null@*/ const IOSM_t iosm,
  * @retval		NULL always
  */
 static /*@null@*/ void * mapFreeIterator(/*@only@*//*@null@*/ void * p)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/
+	/*@modifies p @*/
 {
     IOSMI_t iter = p;
     if (iter) {
@@ -155,7 +152,11 @@ static /*@null@*/ void * mapFreeIterator(/*@only@*//*@null@*/ void * p)
 	iter->ts = rpmtsFree(iter->ts);
 /*@=internalglobs@*/
 #endif
+#if !defined(_RPMFI_NOMETHODS)
 	iter->fi = rpmfiUnlink(iter->fi, "mapIterator");
+#endif
+	iter->fi = NULL;
+
     }
     return _free(p);
 }
@@ -168,8 +169,8 @@ static /*@null@*/ void * mapFreeIterator(/*@only@*//*@null@*/ void * p)
  * @return		file info iterator
  */
 static void *
-mapInitIterator(void * _ts, rpmfi fi, int reverse)
-	/*@modifies ts, fi @*/
+mapInitIterator(/*@unused@*/ void * _ts, rpmfi fi, int reverse)
+	/*@modifies _ts, fi @*/
 {
     IOSMI_t iter = NULL;
 
@@ -177,7 +178,11 @@ mapInitIterator(void * _ts, rpmfi fi, int reverse)
 #if defined(_USE_RPMTS)
     iter->ts = rpmtsLink(_ts, "mapIterator");
 #endif
+#if !defined(_RPMFI_NOMETHODS)
     iter->fi = rpmfiLink(fi, "mapIterator");
+#else
+/*@i@*/ iter->fi = fi;
+#endif
     iter->reverse = reverse;
     iter->i = (iter->reverse ? (fi->fc - 1) : 0);
     iter->isave = iter->i;
@@ -250,7 +255,11 @@ static int mapFind(/*@null@*/ IOSMI_t iter, const char * iosmPath)
 
     if (iter) {
 	const rpmfi fi = iter->fi;
+#if !defined(_RPMFI_NOMETHODS)
 	int fc = rpmfiFC(fi);
+#else
+	int fc = (fi ? fi->fc : 0);
+#endif
 	if (fi && fc > 0 && fi->apath && iosmPath && *iosmPath) {
 	    const char ** p = NULL;
 
@@ -338,14 +347,25 @@ void * dnlInitIterator(/*@special@*/ const IOSM_t iosm,
 	dnli->active = xcalloc(fi->dc, sizeof(*dnli->active));
 
 	/* Identify parent directories not skipped. */
+#if !defined(_RPMFI_NOMETHODS)
 	if ((fi = rpmfiInit(fi, 0)) != NULL)
-	while ((i = rpmfiNext(fi)) >= 0) {
-            if (!XFA_SKIPPING(fi->actions[i])) dnli->active[fi->dil[i]] = 1;
+	while ((i = rpmfiNext(fi)) >= 0)
+#else
+	for (i = 0; i < fi->fc; i++)
+#endif
+	{
+            if (!XFA_SKIPPING(fi->actions[i]))
+		dnli->active[fi->dil[i]] = (char)1;
 	}
 
 	/* Exclude parent directories that are explicitly included. */
+#if !defined(_RPMFI_NOMETHODS)
 	if ((fi = rpmfiInit(fi, 0)) != NULL)
-	while ((i = rpmfiNext(fi)) >= 0) {
+	while ((i = rpmfiNext(fi)) >= 0)
+#else
+	for (i = 0; i < fi->fc; i++)
+#endif
+	{
 	    int dil;
 	    size_t dnlen, bnlen;
 
@@ -372,7 +392,7 @@ void * dnlInitIterator(/*@special@*/ const IOSM_t iosm,
 		if (dnl[dnlen+bnlen] != '/' || dnl[dnlen+bnlen+1] != '\0')
 		    /*@innercontinue@*/ continue;
 		/* This directory is included in the package. */
-		dnli->active[j] = 0;
+		dnli->active[j] = (char)0;
 		/*@innerbreak@*/ break;
 	    }
 	}
@@ -583,8 +603,15 @@ static int arSetup(IOSM_t iosm, rpmfi fi)
     size_t nb;
 
     /* Calculate size of ar(1) long member table. */
+#if !defined(_RPMFI_NOMETHODS)
     if ((fi = rpmfiInit(fi, 0)) != NULL)
-    while (rpmfiNext(fi) >= 0) {
+    while (rpmfiNext(fi) >= 0)
+#else
+    int i;
+    if (fi != NULL)
+    for (i = 0; i < fi->fc; i++)
+#endif
+    {
 #ifdef	NOTYET
 	if (fi->apath) {
 	    const char * apath = NULL;
@@ -592,7 +619,11 @@ static int arSetup(IOSM_t iosm, rpmfi fi)
 	    path = apath + fi->striplen;
 	} else
 #endif
+#if !defined(_RPMFI_NOMETHODS)
 	    path = rpmfiBN(fi);
+#else
+	    path = fi->bnl[i];
+#endif
 	if ((nb = strlen(path)) < 15)
 	    continue;
 	lmtablen += nb + 1;	/* trailing \n */
@@ -606,8 +637,14 @@ static int arSetup(IOSM_t iosm, rpmfi fi)
     iosm->lmtab = t = xmalloc(lmtablen + 1);	/* trailing \0 */
     iosm->lmtablen = lmtablen;
     iosm->lmtaboff = 0;
+#if !defined(_RPMFI_NOMETHODS)
     if ((fi = rpmfiInit(fi, 0)) != NULL)
-    while (rpmfiNext(fi) >= 0) {
+    while (rpmfiNext(fi) >= 0)
+#else
+    if (fi != NULL)
+    for (i = 0; i < fi->fc; i++)
+#endif
+    {
 #ifdef	NOTYET
 	if (fi->apath) {
 	    const char * apath = NULL;
@@ -615,7 +652,11 @@ static int arSetup(IOSM_t iosm, rpmfi fi)
 	    path = apath + fi->striplen;
 	} else
 #endif
+#if !defined(_RPMFI_NOMETHODS)
 	    path = rpmfiBN(fi);
+#else
+	    path = fi->bnl[i];
+#endif
 	if ((nb = strlen(path)) < 15)
 	    continue;
 	t = stpcpy(t, path);
@@ -627,13 +668,12 @@ static int arSetup(IOSM_t iosm, rpmfi fi)
 }
 
 int iosmSetup(IOSM_t iosm, iosmStage goal, const char * afmt,
-		const void * _ts, const void * _fi, FD_t cfd,
+		const void * _ts, const rpmfi fi, FD_t cfd,
 		unsigned int * archiveSize, const char ** failedFile)
 {
 #if defined(_USE_RPMTS)
     const rpmts ts = (const rpmts) _ts;
 #endif
-    const rpmfi fi = (const rpmfi) _fi;
 #if defined(_USE_RPMTE)
     int reverse = (rpmteType(fi->te) == TR_REMOVED && fi->action != FA_COPYOUT);
 #else
@@ -681,7 +721,7 @@ fprintf(stderr, "\tcpio vectors set\n");
 	pos = fdGetCpioPos(iosm->cfd);
 	fdSetCpioPos(iosm->cfd, 0);
     }
-    iosm->iter = mapInitIterator((void *)_ts, fi, reverse);
+/*@i@*/    iosm->iter = mapInitIterator((void *)_ts, fi, reverse);
 
     if (iosm->goal == IOSM_PKGINSTALL || iosm->goal == IOSM_PKGBUILD) {
 	fi->archivePos = 0;
@@ -1610,7 +1650,7 @@ int XiosmStage(IOSM_t iosm, iosmStage stage)
 
 #define	_fafilter(_a)	\
     (!((_a) == FA_CREATE || (_a) == FA_ERASE || (_a) == FA_COPYIN || (_a) == FA_COPYOUT) \
-	? fileActionString(_a) : "")
+	? iosmActionString(_a) : "")
 
     if (stage & IOSM_DEAD) {
 	/* do nothing */
@@ -1845,7 +1885,6 @@ if (!(fi->mapflags & IOSM_PAYLOAD_EXTRACT)) {
 
 	/* On non-install, mode must be known so that dirs don't get suffix. */
 	if (iosm->goal != IOSM_PKGINSTALL) {
-	    rpmfi fi = iosmGetFi(iosm);
 	    st->st_mode = fi->fmodes[iosm->ix];
 	}
 }
@@ -2110,7 +2149,6 @@ assert(iosm->lpath != NULL);
 	/* Remove erased files. */
 	if (iosm->goal == IOSM_PKGERASE) {
 	    if (iosm->action == FA_ERASE) {
-		rpmfi fi = iosmGetFi(iosm);
 		if (S_ISDIR(st->st_mode)) {
 		    rc = iosmNext(iosm, IOSM_RMDIR);
 		    if (!rc) break;
@@ -2124,14 +2162,14 @@ assert(iosm->lpath != NULL);
 			/* XXX common error message. */
 			rpmlog(
 			    (strict_erasures ? RPMLOG_ERR : RPMLOG_DEBUG),
-			    _("%s rmdir of %s failed: Directory not empty\n"), 
-				rpmfiTypeString(fi), iosm->path);
+			    _("rmdir of %s failed: Directory not empty\n"), 
+				iosm->path);
 			/*@innerbreak@*/ break;
 		    default:
 			rpmlog(
 			    (strict_erasures ? RPMLOG_ERR : RPMLOG_DEBUG),
-				_("%s rmdir of %s failed: %s\n"),
-				rpmfiTypeString(fi), iosm->path, strerror(errno));
+				_("rmdir of %s failed: %s\n"),
+				iosm->path, strerror(errno));
 			/*@innerbreak@*/ break;
 		    }
 		} else {
@@ -2145,8 +2183,8 @@ assert(iosm->lpath != NULL);
 		    default:
 			rpmlog(
 			    (strict_erasures ? RPMLOG_ERR : RPMLOG_DEBUG),
-				_(" %s: unlink of %s failed: %s\n"),
-				rpmfiTypeString(fi), iosm->path, strerror(errno));
+				_("unlink of %s failed: %s\n"),
+				iosm->path, strerror(errno));
 			/*@innerbreak@*/ break;
 		    }
 		}
@@ -2197,7 +2235,6 @@ if (!(fi->mapflags & IOSM_PAYLOAD_EXTRACT)) {
 		    rc = iosmNext(iosm, IOSM_CHMOD);
 		if (!rc) {
 		    time_t mtime = st->st_mtime;
-		    rpmfi fi = iosmGetFi(iosm);
 		    if (fi->fmtimes)
 			st->st_mtime = fi->fmtimes[iosm->ix];
 		    rc = iosmNext(iosm, IOSM_UTIME);

@@ -284,6 +284,7 @@ struct iosm_s {
     int (*trailerWrite) (void * _iosm)
 	/*@modifies _iosm @*/;
 
+/*@null@*/
     char * lmtab;		/*!< ar(1) long member name table. */
     size_t lmtablen;		/*!< ar(1) no. bytes in lmtab. */
     size_t lmtaboff;		/*!< ar(1) current offset in lmtab. */
@@ -331,8 +332,7 @@ char * iosmStrerror(int rc)
  * @return		always NULL
  */
 /*@null@*/ IOSM_t freeIOSM(/*@only@*/ /*@null@*/ IOSM_t iosm)
-	/*@globals fileSystem @*/
-	/*@modifies iosm, fileSystem @*/;
+	/*@modifies iosm @*/;
 
 /**
  * Load external data into I/O state machine.
@@ -340,7 +340,7 @@ char * iosmStrerror(int rc)
  * @param goal
  * @param afmt		archive format (NULL uses cpio)
  * @param _ts		transaction set
- * @param _fi		transaction element file info
+ * @param fi		transaction element file info
  * @param cfd		payload descriptor
  * @retval archiveSize	pointer to archive size
  * @retval failedFile	pointer to first file name that failed.
@@ -348,12 +348,12 @@ char * iosmStrerror(int rc)
  */
 int iosmSetup(IOSM_t iosm, iosmStage goal, /*@null@*/ const char * afmt,
 		const void * _ts,
-		const void * _fi,
+		const rpmfi fi,
 		FD_t cfd,
-		/*@out@*/ unsigned int * archiveSize,
-		/*@out@*/ const char ** failedFile)
+		/*@out@*/ /*@null@*/ unsigned int * archiveSize,
+		/*@out@*/ /*@null@*/ const char ** failedFile)
 	/*@globals h_errno, fileSystem, internalState @*/
-	/*@modifies iosm, ts, fi, *archiveSize, *failedFile,
+	/*@modifies iosm, _ts, fi, *archiveSize, *failedFile,
 		fileSystem, internalState @*/;
 
 /**

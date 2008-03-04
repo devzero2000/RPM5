@@ -58,7 +58,7 @@ int cpioTrailerWrite(void * _iosm)
 	(struct cpioCrcPhysicalHeader *)iosm->rdbuf;
     int rc;
 
-    memset(hdr, '0', PHYS_HDR_SIZE);
+    memset(hdr, (int)'0', PHYS_HDR_SIZE);
     memcpy(hdr->magic, CPIO_NEWC_MAGIC, sizeof(hdr->magic));
     memcpy(hdr->nlink, "00000001", 8);
     memcpy(hdr->namesize, "0000000b", 8);

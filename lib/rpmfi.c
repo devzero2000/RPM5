@@ -1304,7 +1304,7 @@ assert(scareMem == 0);		/* XXX always allocate memory */
     if (fi->fsm == NULL)
 	fi->fsm = newFSM();
 
-    fi->fsm->repackaged = (headerIsEntry(h, RPMTAG_REMOVETID) ? 1 : 0);
+    ((FSM_t)fi->fsm)->repackaged = (headerIsEntry(h, RPMTAG_REMOVETID) ? 1 : 0);
 
     /* 0 means unknown */
     he->tag = RPMTAG_ARCHIVESIZE;

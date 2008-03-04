@@ -54,29 +54,29 @@ extern "C" {
  * @retval _fsm		file path and stat info
  * @return		0 on success
  */
-int tarTrailerWrite(void * _fsm)
-	/*@globals h_errno, fileSystem, internalState @*/
-	/*@modifies _fsm, fileSystem, internalState @*/;
+int tarTrailerWrite(void * _iosm)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies _iosm, fileSystem, internalState @*/;
 
 /**
  * Write tar header to payload.
- * @retval _fsm		file path and stat info
+ * @retval _iosm	file path and stat info
  * @param st
  * @return		0 on success
  */
-int tarHeaderWrite(void * _fsm, struct stat * st)
-	/*@globals h_errno, fileSystem, internalState @*/
-	/*@modifies _fsm, fileSystem, internalState @*/;
+int tarHeaderWrite(void * _iosm, struct stat * st)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies _iosm, fileSystem, internalState @*/;
 
 /**
  * Read tar header from payload.
- * @retval _fsm		file path and stat info
+ * @retval _iosm	file path and stat info
  * @retval st
  * @return		0 on success
  */
-int tarHeaderRead(void * _fsm, struct stat * st)
-	/*@globals h_errno, fileSystem, internalState @*/
-	/*@modifies _fsm, *st, fileSystem, internalState @*/;
+int tarHeaderRead(void * _iosm, struct stat * st)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies _iosm, *st, fileSystem, internalState @*/;
 
 #ifdef __cplusplus
 }

@@ -3589,9 +3589,11 @@ exit:
 
 /* XXX transaction.c */
 /*@-compmempass@*/
-int rpmdbFindFpList(rpmdb db, fingerPrint * fpList, dbiIndexSet * matchList, 
+int rpmdbFindFpList(void * _db, fingerPrint * fpList, void * _matchList, 
 		    int numItems, unsigned int exclude)
 {
+    rpmdb db = _db;
+    dbiIndexSet * matchList = _matchList;
 DBT * key;
 DBT * data;
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));

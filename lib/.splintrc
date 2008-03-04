@@ -38,6 +38,10 @@
 -redecl		# 38
 -usereleased
 
+-abstract
+-castexpose
++voidabstract
+
 -dependenttrans
 -kepttrans
 -observertrans

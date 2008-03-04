@@ -58,8 +58,8 @@ static int strntoul(const char *str, /*@out@*/char **endptr, int base, int num)
  * @return		0 on success
  */
 static int tarHeaderReadName(void * _iosm, int len, /*@out@*/ const char ** fnp)
-	/*@globals h_errno, fileSystem, internalState @*/
-	/*@modifies iosm, *fnp, fileSystem, internalState @*/
+	/*@globals internalState @*/
+	/*@modifies _iosm, *fnp, internalState @*/
 {
     IOSM_t iosm = _iosm;
     char * t;
@@ -89,7 +89,7 @@ static int tarHeaderReadName(void * _iosm, int len, /*@out@*/ const char ** fnp)
 }
 
 int tarHeaderRead(void * _iosm, struct stat * st)
-	/*@modifies iosm, *st @*/
+	/*@modifies _iosm, *st @*/
 {
     IOSM_t iosm = _iosm;
     tarHeader hdr = (tarHeader) iosm->wrbuf;
@@ -126,10 +126,10 @@ top:
 	int i;
 
 	memcpy(hdrchecksum, hdr->checksum, sizeof(hdrchecksum));
-	memset(hdr->checksum, ' ', sizeof(hdr->checksum));
+	memset(hdr->checksum, (int)' ', sizeof(hdr->checksum));
 
 	for (i = 0; i < TAR_BLOCK_SIZE; i++)
-	    sum += *hp++;
+	    sum += (long)*hp++;
 
 #if 0
 	for (i = 0; i < sizeof(hdr->checksum) - 1; i++)
@@ -138,7 +138,7 @@ fprintf(stderr, "\tsum %ld\n", sum);
 	if (sum != 0)
 	    return IOSMERR_BAD_HEADER;
 #else
-	memset(checksum, ' ', sizeof(checksum));
+	memset(checksum, (int)' ', sizeof(checksum));
 	sprintf(checksum, "%06o", (unsigned) (sum & 07777777));
 if (_tar_debug)
 fprintf(stderr, "\tmemcmp(\"%s\", \"%s\", %u)\n", hdrchecksum, checksum, (unsigned)sizeof(hdrchecksum));
@@ -262,8 +262,8 @@ fprintf(stderr, "\t     %06o%3d (%4d,%4d)%10d %s\n\t-> %s\n",
  * @return		0 on success
  */
 static int tarHeaderWriteName(void * _iosm, const char * path)
-	/*@globals h_errno, fileSystem, internalState @*/
-	/*@modifies iosm, fileSystem, internalState @*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies _iosm, fileSystem, internalState @*/
 {
     IOSM_t iosm = _iosm;
     const char * s = path;
@@ -302,8 +302,8 @@ fprintf(stderr, "\ttarHeaderWriteName(%p, %s) nb %d\n", iosm, path, nb);
  * @return		0 on success
  */
 static int tarHeaderWriteBlock(void * _iosm, struct stat * st, tarHeader hdr)
-	/*@globals h_errno, fileSystem, internalState @*/
-	/*@modifies iosm, hdr, fileSystem, internalState @*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies _iosm, hdr, fileSystem, internalState @*/
 {
     IOSM_t iosm = _iosm;
     int rc;
@@ -324,9 +324,9 @@ fprintf(stderr, "\t     %06o%3d (%4d,%4d)%10d %s\n",
 	long sum = 0;
 	int i;
 
-	memset(hdr->checksum, ' ', sizeof(hdr->checksum));
+	memset(hdr->checksum, (int)' ', sizeof(hdr->checksum));
 	for (i = 0; i < TAR_BLOCK_SIZE; i++)
-	    sum += *hp++;
+	    sum += (long) *hp++;
 	sprintf(hdr->checksum, "%06o", (unsigned)(sum & 07777777));
 if (_tar_debug)
 fprintf(stderr, "\thdrchksum \"%s\"\n", hdr->checksum);

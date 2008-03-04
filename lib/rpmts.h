@@ -509,7 +509,7 @@ rpmRC rpmtsFindPubkey(rpmts ts, /*@null@*/ void * _dig)
  */
 rpmRC rpmtsImportPubkey(const rpmts ts,
 		const unsigned char * pkt, ssize_t pktlen)
-	/*@globals RPMVERSION, rpmGlobalMacroContext, h_errno,
+	/*@globals rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState @*/
 	/*@modifies ts, rpmGlobalMacroContext,
 		fileSystem, internalState @*/;

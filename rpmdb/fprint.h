@@ -70,18 +70,18 @@ extern "C" {
 
 /** \ingroup rpmdb
  * Find fingerprint matches in database.
- * @param db		rpm database
+ * @param _db		rpm database
  * @param fpList	fingerprint array
- * @retval matchList	returned fingerprint matches
+ * @retval _matchList	returned fingerprint matches
  * @param numItems	number of fingerprint items
  * @param exclude	excluded header instance (0 to disable)
  * @return		0 always
  */
-int rpmdbFindFpList(/*@null@*/ rpmdb db, fingerPrint  * fpList,
-		/*@out@*/ dbiIndexSet * matchList, int numItems,
+int rpmdbFindFpList(/*@null@*/ void * _db, fingerPrint * fpList,
+		/*@out@*/ void * _matchList, int numItems,
 		unsigned int exclude)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies db, *matchList, rpmGlobalMacroContext,
+	/*@modifies _db, _matchList, rpmGlobalMacroContext,
 		fileSystem, internalState @*/;
 
 /* Be carefull with the memory... assert(*fullName == '/' || !scareMem) */

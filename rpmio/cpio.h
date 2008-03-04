@@ -41,32 +41,32 @@ extern "C" {
 
 /**
  * Write cpio trailer.
- * @retval _fsm		file path and stat info
+ * @retval _iosm	file path and stat info
  * @return		0 on success
  */
-int cpioTrailerWrite(void * _fsm)
+int cpioTrailerWrite(void * _iosm)
 	/*@globals h_errno, fileSystem, internalState @*/
-	/*@modifies _fsm, fileSystem, internalState @*/;
+	/*@modifies _iosm, fileSystem, internalState @*/;
 
 /**
  * Write cpio header.
- * @retval _fsm		file path and stat info
+ * @retval _iosm	file path and stat info
  * @param st
  * @return		0 on success
  */
-int cpioHeaderWrite(void * _fsm, struct stat * st)
+int cpioHeaderWrite(void * _iosm, struct stat * st)
 	/*@globals h_errno, fileSystem, internalState @*/
-	/*@modifies _fsm, fileSystem, internalState @*/;
+	/*@modifies _iosm, fileSystem, internalState @*/;
 
 /**
  * Read cpio header.
- * @retval _fsm		file path and stat info
+ * @retval _iosm	file path and stat info
  * @retval st
  * @return		0 on success
  */
-int cpioHeaderRead(void * _fsm, struct stat * st)
+int cpioHeaderRead(void * _iosm, struct stat * st)
 	/*@globals h_errno, fileSystem, internalState @*/
-	/*@modifies _fsm, *st, fileSystem, internalState @*/;
+	/*@modifies _iosm, *st, fileSystem, internalState @*/;
 
 #ifdef __cplusplus
 }

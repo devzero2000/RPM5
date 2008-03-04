@@ -243,8 +243,11 @@ fprintf(stderr, "    arHeaderWrite(%p, %p)\n", iosm, st);
 
     nb = strlen(iosm->path);
     if (nb >= sizeof(hdr->name)) {
-	const char * t = iosm->lmtab + iosm->lmtaboff;
-	const char * te = strchr(t, '\n');
+	const char * t;
+	const char * te;
+assert(iosm->lmtab != NULL);
+	t = iosm->lmtab + iosm->lmtaboff;
+	te = strchr(t, '\n');
 	/* GNU: on "/123": Write "/123" offset for long member name. */
 	nb = snprintf(hdr->name, sizeof(hdr->name)-1, "/%u", (unsigned)iosm->lmtaboff);
 	hdr->name[nb] = ' ';

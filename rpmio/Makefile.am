@@ -111,6 +111,10 @@ lint:
 lint_rpmgrep:
 	$(LINT) -f .splintrc_rpmgrep $(DEFS) $(INCLUDES) rpmgrep.c
 
+.PHONY:	lint_tdeb
+lint_tdeb:
+	$(LINT) -f .splintrc_tdeb $(DEFS) $(INCLUDES) tdeb.c iosm.c ar.c cpio.c tar.c
+
 TESTS += RunGrepTest
 dist_noinst_SCRIPTS += RunGrepTest
 bin_PROGRAMS += rpmgrep

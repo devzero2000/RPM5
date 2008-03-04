@@ -246,9 +246,9 @@ rpmRC rpmInstallSourcePackage(rpmts ts, void * _fd,
     }
 
 assert(fi->h != NULL);
-assert(fi->te->h == NULL);	/* XXX headerFree side effect */
+assert(((rpmte)fi->te)->h == NULL);	/* XXX headerFree side effect */
     (void) rpmteSetHeader(fi->te, fi->h);
-    fi->te->fd = fdLink(fd, "installSourcePackage");
+    ((rpmte)fi->te)->fd = fdLink(fd, "installSourcePackage");
 
     (void) headerMacrosLoad(fi->h);
 
@@ -407,9 +407,9 @@ exit:
 
     if (fi != NULL) {
 	(void) rpmteSetHeader(fi->te, NULL);
-	if (fi->te->fd != NULL)
-	    (void) Fclose(fi->te->fd);
-	fi->te->fd = NULL;
+	if (((rpmte)fi->te)->fd != NULL)
+	    (void) Fclose(((rpmte)fi->te)->fd);
+	((rpmte)fi->te)->fd = NULL;
 	fi->te = NULL;
 #if 0
 	fi = rpmfiFree(fi);
@@ -1687,10 +1687,7 @@ rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
     int xx;
 
 /* XXX hackery to assert(!scaremem) in rpmfiNew. */
-if (fi->h == NULL && fi->te && fi->te->h != NULL) fi->h = headerLink(fi->te->h);
-#if 0
-assert(fi->h != NULL);	/* XXX install/verify have fi->h, erasures doesn't. */
-#endif
+if (fi->h == NULL && fi->te && ((rpmte)fi->te)->h != NULL) fi->h = headerLink(((rpmte)fi->te)->h);
 
     switch (stage) {
     case PSM_UNKNOWN:

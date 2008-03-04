@@ -1624,9 +1624,9 @@ if (_rpmbuildFlags & 4) {
     if (fi == NULL) return;		/* XXX can't happen */
 
 /*@-onlytrans@*/
-    fi->te = xcalloc(1, sizeof(*fi->te));
+    fi->te = xcalloc(1, sizeof(*((rpmte)fi->te)));
 /*@=onlytrans@*/
-    fi->te->type = TR_ADDED;
+    ((rpmte)fi->te)->type = TR_ADDED;
 
     fi->dnl = _free(fi->dnl);
     fi->bnl = _free(fi->bnl);

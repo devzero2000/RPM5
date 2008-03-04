@@ -61,7 +61,7 @@ static int strntoul(const char *str, /*@out@*/char **endptr, int base, int num)
  */
 static int tarHeaderReadName(void * _fsm, int len, /*@out@*/ const char ** fnp)
 	/*@globals h_errno, fileSystem, internalState @*/
-	/*@modifies fsm, *fnp, fileSystem, internalState @*/
+	/*@modifies _fsm, *fnp, fileSystem, internalState @*/
 {
     FSM_t fsm = _fsm;
     char * t;
@@ -91,7 +91,7 @@ static int tarHeaderReadName(void * _fsm, int len, /*@out@*/ const char ** fnp)
 }
 
 int tarHeaderRead(void * _fsm, struct stat * st)
-	/*@modifies fsm, *st @*/
+	/*@modifies _fsm, *st @*/
 {
     FSM_t fsm = _fsm;
     tarHeader hdr = (tarHeader) fsm->wrbuf;
@@ -265,7 +265,7 @@ fprintf(stderr, "\t     %06o%3d (%4d,%4d)%10d %s\n\t-> %s\n",
  */
 static int tarHeaderWriteName(void * _fsm, const char * path)
 	/*@globals h_errno, fileSystem, internalState @*/
-	/*@modifies fsm, fileSystem, internalState @*/
+	/*@modifies _fsm, fileSystem, internalState @*/
 {
     FSM_t fsm = _fsm;
     const char * s = path;
@@ -305,7 +305,7 @@ fprintf(stderr, "\ttarHeaderWriteName(%p, %s) nb %d\n", fsm, path, nb);
  */
 static int tarHeaderWriteBlock(void * _fsm, struct stat * st, tarHeader hdr)
 	/*@globals h_errno, fileSystem, internalState @*/
-	/*@modifies fsm, hdr, fileSystem, internalState @*/
+	/*@modifies _fsm, hdr, fileSystem, internalState @*/
 {
     FSM_t fsm = _fsm;
     int rc;

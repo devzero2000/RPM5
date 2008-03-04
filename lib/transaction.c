@@ -6,25 +6,29 @@
 
 #include <rpmio.h>
 #include <rpmmacro.h>	/* XXX for rpmExpand */
+#include "fprint.h"
+
+#define	_RPMDB_INTERNAL	/* XXX for dbiIndexFoo() */
+#include <rpmdb.h>
 #include <rpmtag.h>
+#include "legacy.h"	/* XXX dodigest */
+
+#include <rpmlib.h>
+#define	_RPMFI_INTERNAL
+#include "fsm.h"
+#include <rpmfi.h>
 
 #define	_RPMTS_INTERNAL
 #define	_RPMTE_INTERNAL
-#define	_RPMFI_INTERNAL
 #include "rpmcli.h"	/* IDTX prototypes */
 
 #define	_RPMSQ_INTERNAL
 #include "psm.h"
 
-#define	_RPMDB_INTERNAL	/* XXX for dbiIndexFoo() */
-#include "rpmdb.h"
-
 #include "rpmds.h"
 
 #include "rpmlock.h"
 
-#include "fprint.h"
-#include "legacy.h"	/* XXX dodigest */
 #include "misc.h" /* XXX (free)splitString, currentDirectory */
 
 #include "debug.h"

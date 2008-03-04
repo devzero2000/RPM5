@@ -34,32 +34,32 @@ extern "C" {
 
 /**
  * Write ar(1) trailer.
- * @retval _fsm		file path and stat info
+ * @retval _iosm	file path and stat info
  * @return		0 on success
  */
-int arTrailerWrite(void * _fsm)
+int arTrailerWrite(void * _iosm)
 	/*@globals fileSystem, internalState @*/
-	/*@modifies _fsm, fileSystem, internalState @*/;
+	/*@modifies _iosm, fileSystem, internalState @*/;
 
 /**
  * Write ar(1) header.
- * @retval _fsm		file path and stat info
+ * @retval _iosm		file path and stat info
  * @param st
  * @return		0 on success
  */
-int arHeaderWrite(void * _fsm, struct stat * st)
+int arHeaderWrite(void * _iosm, struct stat * st)
 	/*@globals fileSystem, internalState @*/
-	/*@modifies _fsm, fileSystem, internalState @*/;
+	/*@modifies _iosm, fileSystem, internalState @*/;
 
 /**
  * Read ar(1) header.
- * @retval _fsm		file path and stat info
+ * @retval _iosm	file path and stat info
  * @retval st
  * @return		0 on success
  */
-int arHeaderRead(void * _fsm, struct stat * st)
+int arHeaderRead(void * _iosm, struct stat * st)
 	/*@globals fileSystem, internalState @*/
-	/*@modifies _fsm, *st, fileSystem, internalState @*/;
+	/*@modifies _iosm, *st, fileSystem, internalState @*/;
 
 #ifdef __cplusplus
 }
