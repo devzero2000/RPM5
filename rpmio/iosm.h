@@ -6,6 +6,8 @@
  * File state machine to handle archive I/O and system call's.
  */
 
+#include <rpmsw.h>
+
 /** \ingroup payload
  * File state machine data.
  */
@@ -254,6 +256,10 @@ struct iosm_s {
     int rc;			/*!< External file stage return code. */
     int commit;			/*!< Commit synchronously? */
     int repackaged;		/*!< Is payload repackaged? */
+    int strict_erasures;	/*!< Are Rmdir/Unlink failures errors? */
+    int multithreaded;		/*!< Run stages on their own thread? */
+    int adding;			/*!< Is the rpmte element type TR_ADDED? */
+    int debug;			/*!< Print detailed operations? */
     iosmMapFlags mapFlags;	/*!< Bit(s) to control mapping. */
     int fdigestalgo;		/*!< Digest algorithm (~= PGPHASHALGO_MD5) */
     int digestlen;		/*!< No. of bytes in binary digest (~= 16) */
@@ -288,6 +294,8 @@ struct iosm_s {
     char * lmtab;		/*!< ar(1) long member name table. */
     size_t lmtablen;		/*!< ar(1) no. bytes in lmtab. */
     size_t lmtaboff;		/*!< ar(1) current offset in lmtab. */
+
+    struct rpmop_s op_digest;	/*!< RPMSW_OP_DIGEST accumulator. */
 };
 
 #ifdef __cplusplus

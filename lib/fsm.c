@@ -51,10 +51,6 @@ int _fsm_debug = _FSM_DEBUG;
 int _fsm_threads = 0;
 /*@=exportheadervar@*/
 
-/* XXX Failure to remove is not (yet) cause for failure. */
-/*@unchecked@*/
-static int strict_erasures = 0;
-
 /**
  * Retrieve transaction set from file state machine iterator.
  * @param fsm		file state machine
@@ -144,19 +140,17 @@ static /*@null@*/ void * mapFreeIterator(/*@only@*//*@null@*/ void * p)
 
 /** \ingroup payload
  * Create file info iterator.
- * @param ts		transaction set
  * @param fi		transaction element file info
  * @param reverse	iterate in reverse order?
  * @return		file info iterator
  */
 static void *
-mapInitIterator(rpmts ts, rpmfi fi, int reverse)
+mapInitIterator(rpmfi fi, int reverse)
 	/*@modifies ts, fi @*/
 {
     FSMI_t iter = NULL;
 
     iter = xcalloc(1, sizeof(*iter));
-    iter->ts = rpmtsLink(ts, "mapIterator");
     iter->fi = rpmfiLink(fi, "mapIterator");
     iter->reverse = reverse;
     iter->i = (iter->reverse ? (fi->fc - 1) : 0);
@@ -425,7 +419,7 @@ int fsmNext(IOSM_t fsm, iosmFileStage nstage)
 {
     fsm->nstage = nstage;
 #if defined(HAVE_PTHREAD_H)
-    if (_fsm_threads)
+    if (fsm->multithreaded)
 	return rpmsqJoin( rpmsqThread(fsmThread, fsm) );
 #endif
     return fsmStage(fsm, fsm->nstage);
@@ -617,20 +611,26 @@ int fsmSetup(void * _fsm, iosmFileStage goal, const char * afmt,
     const rpmfi fi = (const rpmfi) _fi;
 #if defined(_USE_RPMTE)
     int reverse = (rpmteType(fi->te) == TR_REMOVED && fi->action != FA_COPYOUT);
+    int adding = (rpmteType(fi->te) == TR_ADDED);
 #else
     int reverse = 0;	/* XXX HACK: devise alternative means */
+    int adding = 1;	/* XXX HACK: devise alternative means */
 #endif
     size_t pos = 0;
     int rc, ec = 0;
 
+    fsm->debug = _fsm_debug;
+    fsm->multithreaded = _fsm_threads;
+    fsm->adding = adding;
+
 /*@+voidabstract -nullpass@*/
-if (_fsm_debug < 0)
+if (fsm->debug < 0)
 fprintf(stderr, "--> fsmSetup(%p, 0x%x, \"%s\", %p, %p, %p, %p, %p)\n", fsm, goal, afmt, (void *)ts, fi, cfd, archiveSize, failedFile);
 /*@=voidabstract =nullpass@*/
 
     if (fsm->headerRead == NULL) {
 	if (afmt != NULL && (!strcmp(afmt, "tar") || !strcmp(afmt, "ustar"))) {
-if (_fsm_debug < 0)
+if (fsm->debug < 0)
 fprintf(stderr, "\ttar vectors set\n");
 	    fsm->headerRead = &tarHeaderRead;
 	    fsm->headerWrite = &tarHeaderWrite;
@@ -639,7 +639,7 @@ fprintf(stderr, "\ttar vectors set\n");
 	} else
 #if defined(SUPPORT_AR_PAYLOADS)
 	if (afmt != NULL && !strcmp(afmt, "ar")) {
-if (_fsm_debug < 0)
+if (fsm->debug < 0)
 fprintf(stderr, "\tar vectors set\n");
 	    _fsmNext = &fsmNext;
 	    fsm->headerRead = &arHeaderRead;
@@ -650,7 +650,7 @@ fprintf(stderr, "\tar vectors set\n");
 	} else
 #endif
 	{
-if (_fsm_debug < 0)
+if (fsm->debug < 0)
 fprintf(stderr, "\tcpio vectors set\n");
 	    fsm->headerRead = &cpioHeaderRead;
 	    fsm->headerWrite = &cpioHeaderWrite;
@@ -665,7 +665,8 @@ fprintf(stderr, "\tcpio vectors set\n");
 	pos = fdGetCpioPos(fsm->cfd);
 	fdSetCpioPos(fsm->cfd, 0);
     }
-    fsm->iter = mapInitIterator(ts, fi, reverse);
+    fsm->iter = mapInitIterator(fi, reverse);
+    fsm->iter->ts = rpmtsLink(ts, "mapIterator");
 
     if (fsm->goal == IOSM_PKGINSTALL || fsm->goal == IOSM_PKGBUILD) {
 	void * ptr;
@@ -709,12 +710,16 @@ int fsmTeardown(void * _fsm)
     IOSM_t fsm = _fsm;
     int rc = fsm->rc;
 
-if (_fsm_debug < 0)
+if (fsm->debug < 0)
 fprintf(stderr, "--> fsmTeardown(%p)\n", fsm);
     if (!rc)
 	rc = fsmUNSAFE(fsm, IOSM_DESTROY);
 
+	(void) rpmswAdd(rpmtsOp(fsmGetTs(fsm), RPMTS_OP_DIGEST),
+			&fsm->op_digest);
+
     fsm->lmtab = _free(fsm->lmtab);
+    fsm->iter->ts = rpmtsFree(fsm->iter->ts);
     fsm->iter = mapFreeIterator(fsm->iter);
     if (fsm->cfd != NULL) {
 	fsm->cfd = fdFree(fsm->cfd, "persist (fsm)");
@@ -757,11 +762,7 @@ static int fsmMapFContext(IOSM_t fsm)
 int fsmMapPath(IOSM_t fsm)
 {
     rpmfi fi = fsmGetFi(fsm);	/* XXX const except for fstates */
-#if defined(_USE_RPMTE)
-    int teAdding = (rpmteType(fi->te) == TR_ADDED);
-#else
-    int teAdding = 1;	/* XXX HACK: devise alternative means */
-#endif
+    int teAdding = fsm->adding;
     int rc = 0;
     int i;
 
@@ -1576,7 +1577,7 @@ int fsmStage(IOSM_t fsm, iosmFileStage stage)
     if (stage & IOSM_DEAD) {
 	/* do nothing */
     } else if (stage & IOSM_INTERNAL) {
-	if (_fsm_debug && !(stage & IOSM_SYSCALL))
+	if (fsm->debug && !(stage & IOSM_SYSCALL))
 	    rpmlog(RPMLOG_DEBUG, " %8s %06o%3d (%4d,%4d)%12lu %s %s\n",
 		cur,
 		(unsigned)st->st_mode, (int)st->st_nlink,
@@ -1588,7 +1589,7 @@ int fsmStage(IOSM_t fsm, iosmFileStage stage)
 	if (fsm->path)
 	    (void) urlPath(fsm->path, &apath);
 	fsm->stage = stage;
-	if (_fsm_debug || !(stage & IOSM_VERBOSE))
+	if (fsm->debug || !(stage & IOSM_VERBOSE))
 	    rpmlog(RPMLOG_DEBUG, "%-8s  %06o%3d (%4d,%4d)%12lu %s %s\n",
 		cur,
 		(unsigned)st->st_mode, (int)st->st_nlink,
@@ -2076,13 +2077,13 @@ assert(fsm->lpath != NULL);
 
 			/* XXX common error message. */
 			rpmlog(
-			    (strict_erasures ? RPMLOG_ERR : RPMLOG_DEBUG),
+			    (fsm->strict_erasures ? RPMLOG_ERR : RPMLOG_DEBUG),
 			    _("%s rmdir of %s failed: Directory not empty\n"), 
 				rpmfiTypeString(fi), fsm->path);
 			/*@innerbreak@*/ break;
 		    default:
 			rpmlog(
-			    (strict_erasures ? RPMLOG_ERR : RPMLOG_DEBUG),
+			    (fsm->strict_erasures ? RPMLOG_ERR : RPMLOG_DEBUG),
 				_("%s rmdir of %s failed: %s\n"),
 				rpmfiTypeString(fi), fsm->path, strerror(errno));
 			/*@innerbreak@*/ break;
@@ -2097,7 +2098,7 @@ assert(fsm->lpath != NULL);
 			/*@fallthrough@*/
 		    default:
 			rpmlog(
-			    (strict_erasures ? RPMLOG_ERR : RPMLOG_DEBUG),
+			    (fsm->strict_erasures ? RPMLOG_ERR : RPMLOG_DEBUG),
 				_(" %s: unlink of %s failed: %s\n"),
 				rpmfiTypeString(fi), fsm->path, strerror(errno));
 			/*@innerbreak@*/ break;
@@ -2105,7 +2106,7 @@ assert(fsm->lpath != NULL);
 		}
 	    }
 	    /* XXX Failure to remove is not (yet) cause for failure. */
-	    if (!strict_erasures) rc = 0;
+	    if (!fsm->strict_erasures) rc = 0;
 	    break;
 	}
 
@@ -2291,33 +2292,13 @@ if (!(fsmGetFi(fsm)->mapflags & IOSM_PAYLOAD_EXTRACT)) {
 
     case IOSM_ROPEN:
     case IOSM_READ:
-	rc = iosmStage(fsm, stage);
-	break;
     case IOSM_RCLOSE:
-	if (fsm->rfd != NULL) {
-	    if (_fsm_debug && (stage & IOSM_SYSCALL))
-		rpmlog(RPMLOG_DEBUG, " %8s (%p)\n", cur, fsm->rfd);
-	    (void) rpmswAdd(rpmtsOp(fsmGetTs(fsm), RPMTS_OP_DIGEST),
-			fdstat_op(fsm->rfd, FDSTAT_DIGEST));
-	    (void) Fclose(fsm->rfd);
-	    errno = saveerrno;
-	}
-	fsm->rfd = NULL;
+	rc = iosmStage(fsm, stage);
 	break;
     case IOSM_WOPEN:
     case IOSM_WRITE:
-	rc = iosmStage(fsm, stage);
-	break;
     case IOSM_WCLOSE:
-	if (fsm->wfd != NULL) {
-	    if (_fsm_debug && (stage & IOSM_SYSCALL))
-		rpmlog(RPMLOG_DEBUG, " %8s (%p)\n", cur, fsm->wfd);
-	    (void) rpmswAdd(rpmtsOp(fsmGetTs(fsm), RPMTS_OP_DIGEST),
-			fdstat_op(fsm->wfd, FDSTAT_DIGEST));
-	    (void) Fclose(fsm->wfd);
-	    errno = saveerrno;
-	}
-	fsm->wfd = NULL;
+	rc = iosmStage(fsm, stage);
 	break;
 
     default:

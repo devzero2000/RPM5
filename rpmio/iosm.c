@@ -71,12 +71,6 @@ int _iosm_debug = _IOSM_DEBUG;
 int _iosm_threads = 0;
 /*@=exportheadervar@*/
 
-/* XXX Failure to remove is not (yet) cause for failure. */
-/*@-exportlocal -exportheadervar@*/
-/*@unchecked@*/
-static int strict_erasures = 0;
-/*@=exportlocal =exportheadervar@*/
-
 /*@-redecl@*/
 int (*_iosmNext) (void * _iosm, int nstage)
         /*@modifies _iosm @*/ = &iosmNext;
@@ -150,37 +144,27 @@ static /*@null@*/ void * mapFreeIterator(/*@only@*//*@null@*/ void * p)
 {
     IOSMI_t iter = p;
     if (iter) {
-#if defined(_USE_RPMTS)
-/*@-internalglobs@*/ /* XXX rpmswExit() */
-	iter->ts = rpmtsFree(iter->ts);
-/*@=internalglobs@*/
-#endif
 #if !defined(_RPMFI_NOMETHODS)
 	iter->fi = rpmfiUnlink(iter->fi, "mapIterator");
 #endif
 	iter->fi = NULL;
-
     }
     return _free(p);
 }
 
 /** \ingroup payload
  * Create file info iterator.
- * @param _ts		transaction set
  * @param fi		transaction element file info
  * @param reverse	iterate in reverse order?
  * @return		file info iterator
  */
 static void *
-mapInitIterator(/*@unused@*/ void * _ts, rpmfi fi, int reverse)
+mapInitIterator(rpmfi fi, int reverse)
 	/*@modifies _ts, fi @*/
 {
     IOSMI_t iter = NULL;
 
     iter = xcalloc(1, sizeof(*iter));
-#if defined(_USE_RPMTS)
-    iter->ts = rpmtsLink(_ts, "mapIterator");
-#endif
 #if !defined(_RPMFI_NOMETHODS)
     iter->fi = rpmfiLink(fi, "mapIterator");
 #else
@@ -468,7 +452,7 @@ int iosmNext(IOSM_t iosm, iosmFileStage nstage)
 {
     iosm->nstage = nstage;
 #if defined(HAVE_PTHREAD_H)
-    if (_iosm_threads)
+    if (iosm->multithreaded)
 	return rpmsqJoin( rpmsqThread(iosmThread, iosm) );
 #endif
     return iosmStage(iosm, iosm->nstage);
@@ -680,20 +664,26 @@ int iosmSetup(IOSM_t iosm, iosmFileStage goal, const char * afmt,
 /*@i@*/ const rpmfi fi = (const rpmfi) _fi;
 #if defined(_USE_RPMTE)
     int reverse = (rpmteType(fi->te) == TR_REMOVED && fi->action != FA_COPYOUT);
+    int adding = (rpmteType(fi->te) == TR_ADDED);
 #else
     int reverse = 0;	/* XXX HACK: devise alternative means */
+    int adding = 1;	/* XXX HACK: devise alternative means */
 #endif
     size_t pos = 0;
     int rc, ec = 0;
 
+    iosm->debug = _iosm_debug;
+    iosm->multithreaded = _iosm_threads;
+    iosm->adding = adding;
+
 /*@+voidabstract -nullpass@*/
-if (_iosm_debug < 0)
+if (iosm->debug < 0)
 fprintf(stderr, "--> iosmSetup(%p, 0x%x, \"%s\", %p, %p, %p, %p, %p)\n", iosm, goal, afmt, (void *)_ts, _fi, cfd, archiveSize, failedFile);
 /*@=voidabstract =nullpass@*/
 
     if (iosm->headerRead == NULL) {
 	if (afmt != NULL && (!strcmp(afmt, "tar") || !strcmp(afmt, "ustar"))) {
-if (_iosm_debug < 0)
+if (iosm->debug < 0)
 fprintf(stderr, "\ttar vectors set\n");
 	    iosm->headerRead = &tarHeaderRead;
 	    iosm->headerWrite = &tarHeaderWrite;
@@ -701,7 +691,7 @@ fprintf(stderr, "\ttar vectors set\n");
 	    iosm->blksize = TAR_BLOCK_SIZE;
 	} else
 	if (afmt != NULL && !strcmp(afmt, "ar")) {
-if (_iosm_debug < 0)
+if (iosm->debug < 0)
 fprintf(stderr, "\tar vectors set\n");
 	    iosm->headerRead = &arHeaderRead;
 	    iosm->headerWrite = &arHeaderWrite;
@@ -710,7 +700,7 @@ fprintf(stderr, "\tar vectors set\n");
 	    (void) arSetup(iosm, fi);
 	} else
 	{
-if (_iosm_debug < 0)
+if (iosm->debug < 0)
 fprintf(stderr, "\tcpio vectors set\n");
 	    iosm->headerRead = &cpioHeaderRead;
 	    iosm->headerWrite = &cpioHeaderWrite;
@@ -725,7 +715,12 @@ fprintf(stderr, "\tcpio vectors set\n");
 	pos = fdGetCpioPos(iosm->cfd);
 	fdSetCpioPos(iosm->cfd, 0);
     }
-/*@i@*/    iosm->iter = mapInitIterator((void *)_ts, fi, reverse);
+    iosm->iter = mapInitIterator(fi, reverse);
+#if defined(_USE_RPMTS)
+    iter->ts = rpmtsLink(_ts, "mapIterator");
+#else
+    iosm->iter->ts = _ts;
+#endif
 
     if (iosm->goal == IOSM_PKGINSTALL || iosm->goal == IOSM_PKGBUILD) {
 	fi->archivePos = 0;
@@ -777,12 +772,20 @@ int iosmTeardown(IOSM_t iosm)
 {
     int rc = iosm->rc;
 
-if (_iosm_debug < 0)
+if (iosm->debug < 0)
 fprintf(stderr, "--> iosmTeardown(%p)\n", iosm);
     if (!rc)
 	rc = iosmUNSAFE(iosm, IOSM_DESTROY);
 
     iosm->lmtab = _free(iosm->lmtab);
+
+#if defined(_USE_RPMTS)
+    (void) rpmswAdd(rpmtsOp(iosmGetTs(iosm), RPMTS_OP_DIGEST),
+			&iosm->op_digest);
+    iosm->iter->ts = rpmtsFree(iter->ts);
+#else
+    iosm->iter->ts = NULL;
+#endif
     iosm->iter = mapFreeIterator(iosm->iter);
     if (iosm->cfd != NULL) {
 	iosm->cfd = fdFree(iosm->cfd, "persist (iosm)");
@@ -829,11 +832,7 @@ static int iosmMapFContext(IOSM_t iosm)
 int iosmMapPath(IOSM_t iosm)
 {
     rpmfi fi = iosmGetFi(iosm);	/* XXX const except for fstates */
-#if defined(_USE_RPMTE)
-    int teAdding = (rpmteType(fi->te) == TR_ADDED);
-#else
-    int teAdding = 1;	/* XXX HACK: devise alternative means */
-#endif
+    int teAdding = iosm->adding;
     int rc = 0;
     int i;
 
@@ -1665,7 +1664,7 @@ int iosmStage(IOSM_t iosm, iosmFileStage stage)
     if (stage & IOSM_DEAD) {
 	/* do nothing */
     } else if (stage & IOSM_INTERNAL) {
-	if (_iosm_debug && !(stage & IOSM_SYSCALL))
+	if (iosm->debug && !(stage & IOSM_SYSCALL))
 	    rpmlog(RPMLOG_DEBUG, " %8s %06o%3d (%4d,%4d)%12lu %s %s\n",
 		cur,
 		(unsigned)st->st_mode, (int)st->st_nlink,
@@ -1677,7 +1676,7 @@ int iosmStage(IOSM_t iosm, iosmFileStage stage)
 	if (iosm->path)
 	    (void) urlPath(iosm->path, &apath);
 	iosm->stage = stage;
-	if (_iosm_debug || !(stage & IOSM_VERBOSE))
+	if (iosm->debug || !(stage & IOSM_VERBOSE))
 	    rpmlog(RPMLOG_DEBUG, "%-8s  %06o%3d (%4d,%4d)%12lu %s %s\n",
 		cur,
 		(unsigned)st->st_mode, (int)st->st_nlink,
@@ -2171,13 +2170,13 @@ assert(iosm->lpath != NULL);
 
 			/* XXX common error message. */
 			rpmlog(
-			    (strict_erasures ? RPMLOG_ERR : RPMLOG_DEBUG),
+			    (iosm->strict_erasures ? RPMLOG_ERR : RPMLOG_DEBUG),
 			    _("rmdir of %s failed: Directory not empty\n"), 
 				iosm->path);
 			/*@innerbreak@*/ break;
 		    default:
 			rpmlog(
-			    (strict_erasures ? RPMLOG_ERR : RPMLOG_DEBUG),
+			    (iosm->strict_erasures ? RPMLOG_ERR : RPMLOG_DEBUG),
 				_("rmdir of %s failed: %s\n"),
 				iosm->path, strerror(errno));
 			/*@innerbreak@*/ break;
@@ -2192,7 +2191,7 @@ assert(iosm->lpath != NULL);
 			/*@fallthrough@*/
 		    default:
 			rpmlog(
-			    (strict_erasures ? RPMLOG_ERR : RPMLOG_DEBUG),
+			    (iosm->strict_erasures ? RPMLOG_ERR : RPMLOG_DEBUG),
 				_("unlink of %s failed: %s\n"),
 				iosm->path, strerror(errno));
 			/*@innerbreak@*/ break;
@@ -2200,7 +2199,7 @@ assert(iosm->lpath != NULL);
 		}
 	    }
 	    /* XXX Failure to remove is not (yet) cause for failure. */
-	    if (!strict_erasures) rc = 0;
+	    if (!iosm->strict_erasures) rc = 0;
 	    break;
 	}
 
@@ -2363,7 +2362,7 @@ if (!(fi->mapflags & IOSM_PAYLOAD_EXTRACT)) {
 	    }
 	}
 	rc = Unlink(iosm->path);
-	if (_iosm_debug && (stage & IOSM_SYSCALL))
+	if (iosm->debug && (stage & IOSM_SYSCALL))
 	    rpmlog(RPMLOG_DEBUG, " %8s (%s) %s\n", cur,
 		iosm->path, (rc < 0 ? strerror(errno) : ""));
 	if (rc < 0)
@@ -2394,14 +2393,14 @@ if (!(fi->mapflags & IOSM_PAYLOAD_EXTRACT)) {
 	    if (!rc) rc = Rename(iosm->opath, iosm->path);
 	}
 #endif
-	if (_iosm_debug && (stage & IOSM_SYSCALL))
+	if (iosm->debug && (stage & IOSM_SYSCALL))
 	    rpmlog(RPMLOG_DEBUG, " %8s (%s, %s) %s\n", cur,
 		iosm->opath, iosm->path, (rc < 0 ? strerror(errno) : ""));
 	if (rc < 0)	rc = IOSMERR_RENAME_FAILED;
 	break;
     case IOSM_MKDIR:
 	rc = Mkdir(iosm->path, (st->st_mode & 07777));
-	if (_iosm_debug && (stage & IOSM_SYSCALL))
+	if (iosm->debug && (stage & IOSM_SYSCALL))
 	    rpmlog(RPMLOG_DEBUG, " %8s (%s, 0%04o) %s\n", cur,
 		iosm->path, (unsigned)(st->st_mode & 07777),
 		(rc < 0 ? strerror(errno) : ""));
@@ -2409,7 +2408,7 @@ if (!(fi->mapflags & IOSM_PAYLOAD_EXTRACT)) {
 	break;
     case IOSM_RMDIR:
 	rc = Rmdir(iosm->path);
-	if (_iosm_debug && (stage & IOSM_SYSCALL))
+	if (iosm->debug && (stage & IOSM_SYSCALL))
 	    rpmlog(RPMLOG_DEBUG, " %8s (%s) %s\n", cur,
 		iosm->path, (rc < 0 ? strerror(errno) : ""));
 	if (rc < 0)
@@ -2426,7 +2425,7 @@ if (!(fi->mapflags & IOSM_PAYLOAD_EXTRACT)) {
 	    break;
 	(void) urlPath(iosm->path, &iosmpath);	/* XXX iosm->path */
 	rc = lsetfilecon(iosmpath, (security_context_t)iosm->fcontext);
-	if (_iosm_debug && (stage & IOSM_SYSCALL))
+	if (iosm->debug && (stage & IOSM_SYSCALL))
 	    rpmlog(RPMLOG_DEBUG, " %8s (%s, %s) %s\n", cur,
 		iosm->path, iosm->fcontext,
 		(rc < 0 ? strerror(errno) : ""));
@@ -2434,7 +2433,7 @@ if (!(fi->mapflags & IOSM_PAYLOAD_EXTRACT)) {
       }	break;
     case IOSM_CHOWN:
 	rc = Chown(iosm->path, st->st_uid, st->st_gid);
-	if (_iosm_debug && (stage & IOSM_SYSCALL))
+	if (iosm->debug && (stage & IOSM_SYSCALL))
 	    rpmlog(RPMLOG_DEBUG, " %8s (%s, %d, %d) %s\n", cur,
 		iosm->path, (int)st->st_uid, (int)st->st_gid,
 		(rc < 0 ? strerror(errno) : ""));
@@ -2443,7 +2442,7 @@ if (!(fi->mapflags & IOSM_PAYLOAD_EXTRACT)) {
     case IOSM_LCHOWN:
 #if ! CHOWN_FOLLOWS_SYMLINK
 	rc = Lchown(iosm->path, st->st_uid, st->st_gid);
-	if (_iosm_debug && (stage & IOSM_SYSCALL))
+	if (iosm->debug && (stage & IOSM_SYSCALL))
 	    rpmlog(RPMLOG_DEBUG, " %8s (%s, %d, %d) %s\n", cur,
 		iosm->path, (int)st->st_uid, (int)st->st_gid,
 		(rc < 0 ? strerror(errno) : ""));
@@ -2452,7 +2451,7 @@ if (!(fi->mapflags & IOSM_PAYLOAD_EXTRACT)) {
 	break;
     case IOSM_CHMOD:
 	rc = Chmod(iosm->path, (st->st_mode & 07777));
-	if (_iosm_debug && (stage & IOSM_SYSCALL))
+	if (iosm->debug && (stage & IOSM_SYSCALL))
 	    rpmlog(RPMLOG_DEBUG, " %8s (%s, 0%04o) %s\n", cur,
 		iosm->path, (unsigned)(st->st_mode & 07777),
 		(rc < 0 ? strerror(errno) : ""));
@@ -2463,7 +2462,7 @@ if (!(fi->mapflags & IOSM_PAYLOAD_EXTRACT)) {
 	    stamp.actime = st->st_mtime;
 	    stamp.modtime = st->st_mtime;
 	    rc = Utime(iosm->path, &stamp);
-	    if (_iosm_debug && (stage & IOSM_SYSCALL))
+	    if (iosm->debug && (stage & IOSM_SYSCALL))
 		rpmlog(RPMLOG_DEBUG, " %8s (%s, 0x%x) %s\n", cur,
 			iosm->path, (unsigned)st->st_mtime,
 			(rc < 0 ? strerror(errno) : ""));
@@ -2472,21 +2471,21 @@ if (!(fi->mapflags & IOSM_PAYLOAD_EXTRACT)) {
 	break;
     case IOSM_SYMLINK:
 	rc = Symlink(iosm->lpath, iosm->path);
-	if (_iosm_debug && (stage & IOSM_SYSCALL))
+	if (iosm->debug && (stage & IOSM_SYSCALL))
 	    rpmlog(RPMLOG_DEBUG, " %8s (%s, %s) %s\n", cur,
 		iosm->lpath, iosm->path, (rc < 0 ? strerror(errno) : ""));
 	if (rc < 0)	rc = IOSMERR_SYMLINK_FAILED;
 	break;
     case IOSM_LINK:
 	rc = Link(iosm->opath, iosm->path);
-	if (_iosm_debug && (stage & IOSM_SYSCALL))
+	if (iosm->debug && (stage & IOSM_SYSCALL))
 	    rpmlog(RPMLOG_DEBUG, " %8s (%s, %s) %s\n", cur,
 		iosm->opath, iosm->path, (rc < 0 ? strerror(errno) : ""));
 	if (rc < 0)	rc = IOSMERR_LINK_FAILED;
 	break;
     case IOSM_MKFIFO:
 	rc = Mkfifo(iosm->path, (st->st_mode & 07777));
-	if (_iosm_debug && (stage & IOSM_SYSCALL))
+	if (iosm->debug && (stage & IOSM_SYSCALL))
 	    rpmlog(RPMLOG_DEBUG, " %8s (%s, 0%04o) %s\n", cur,
 		iosm->path, (unsigned)(st->st_mode & 07777),
 		(rc < 0 ? strerror(errno) : ""));
@@ -2496,7 +2495,7 @@ if (!(fi->mapflags & IOSM_PAYLOAD_EXTRACT)) {
 	/*@-unrecog -portability @*/ /* FIX: check S_IFIFO or dev != 0 */
 	rc = Mknod(iosm->path, (st->st_mode & ~07777), st->st_rdev);
 	/*@=unrecog =portability @*/
-	if (_iosm_debug && (stage & IOSM_SYSCALL))
+	if (iosm->debug && (stage & IOSM_SYSCALL))
 	    rpmlog(RPMLOG_DEBUG, " %8s (%s, 0%o, 0x%x) %s\n", cur,
 		iosm->path, (unsigned)(st->st_mode & ~07777),
 		(unsigned)st->st_rdev,
@@ -2505,7 +2504,7 @@ if (!(fi->mapflags & IOSM_PAYLOAD_EXTRACT)) {
 	break;
     case IOSM_LSTAT:
 	rc = Lstat(iosm->path, ost);
-	if (_iosm_debug && (stage & IOSM_SYSCALL) && rc && errno != ENOENT)
+	if (iosm->debug && (stage & IOSM_SYSCALL) && rc && errno != ENOENT)
 	    rpmlog(RPMLOG_DEBUG, " %8s (%s, ost) %s\n", cur,
 		iosm->path, (rc < 0 ? strerror(errno) : ""));
 	if (rc < 0) {
@@ -2515,7 +2514,7 @@ if (!(fi->mapflags & IOSM_PAYLOAD_EXTRACT)) {
 	break;
     case IOSM_STAT:
 	rc = Stat(iosm->path, ost);
-	if (_iosm_debug && (stage & IOSM_SYSCALL) && rc && errno != ENOENT)
+	if (iosm->debug && (stage & IOSM_SYSCALL) && rc && errno != ENOENT)
 	    rpmlog(RPMLOG_DEBUG, " %8s (%s, ost) %s\n", cur,
 		iosm->path, (rc < 0 ? strerror(errno) : ""));
 	if (rc < 0) {
@@ -2526,7 +2525,7 @@ if (!(fi->mapflags & IOSM_PAYLOAD_EXTRACT)) {
     case IOSM_READLINK:
 	/* XXX NUL terminated result in iosm->rdbuf, len in iosm->rdnb. */
 	rc = Readlink(iosm->path, iosm->rdbuf, iosm->rdsize - 1);
-	if (_iosm_debug && (stage & IOSM_SYSCALL))
+	if (iosm->debug && (stage & IOSM_SYSCALL))
 	    rpmlog(RPMLOG_DEBUG, " %8s (%s, rdbuf, %d) %s\n", cur,
 		iosm->path, (int)(iosm->rdsize -1), (rc < 0 ? strerror(errno) : ""));
 	if (rc < 0)	rc = IOSMERR_READLINK_FAILED;
@@ -2589,7 +2588,7 @@ if (!(fi->mapflags & IOSM_PAYLOAD_EXTRACT)) {
 	break;
     case IOSM_DREAD:
 	iosm->rdnb = Fread(iosm->wrbuf, sizeof(*iosm->wrbuf), iosm->wrlen, iosm->cfd);
-	if (_iosm_debug && (stage & IOSM_SYSCALL))
+	if (iosm->debug && (stage & IOSM_SYSCALL))
 	    rpmlog(RPMLOG_DEBUG, " %8s (%s, %d, cfd)\trdnb %d\n",
 		cur, (iosm->wrbuf == iosm->wrb ? "wrbuf" : "mmap"),
 		(int)iosm->wrlen, (int)iosm->rdnb);
@@ -2600,7 +2599,7 @@ if (!(fi->mapflags & IOSM_PAYLOAD_EXTRACT)) {
 	break;
     case IOSM_DWRITE:
 	iosm->wrnb = Fwrite(iosm->rdbuf, sizeof(*iosm->rdbuf), iosm->rdnb, iosm->cfd);
-	if (_iosm_debug && (stage & IOSM_SYSCALL))
+	if (iosm->debug && (stage & IOSM_SYSCALL))
 	    rpmlog(RPMLOG_DEBUG, " %8s (%s, %d, cfd)\twrnb %d\n",
 		cur, (iosm->rdbuf == iosm->rdb ? "rdbuf" : "mmap"),
 		(int)iosm->rdnb, (int)iosm->wrnb);
@@ -2618,13 +2617,13 @@ if (!(fi->mapflags & IOSM_PAYLOAD_EXTRACT)) {
 	    rc = IOSMERR_OPEN_FAILED;
 	    break;
 	}
-	if (_iosm_debug && (stage & IOSM_SYSCALL))
+	if (iosm->debug && (stage & IOSM_SYSCALL))
 	    rpmlog(RPMLOG_DEBUG, " %8s (%s, \"r\") rfd %p rdbuf %p\n", cur,
 		iosm->path, iosm->rfd, iosm->rdbuf);
 	break;
     case IOSM_READ:
 	iosm->rdnb = Fread(iosm->rdbuf, sizeof(*iosm->rdbuf), iosm->rdlen, iosm->rfd);
-	if (_iosm_debug && (stage & IOSM_SYSCALL))
+	if (iosm->debug && (stage & IOSM_SYSCALL))
 	    rpmlog(RPMLOG_DEBUG, " %8s (rdbuf, %d, rfd)\trdnb %d\n",
 		cur, (int)iosm->rdlen, (int)iosm->rdnb);
 	if (iosm->rdnb != iosm->rdlen || Ferror(iosm->rfd))
@@ -2632,12 +2631,10 @@ if (!(fi->mapflags & IOSM_PAYLOAD_EXTRACT)) {
 	break;
     case IOSM_RCLOSE:
 	if (iosm->rfd != NULL) {
-	    if (_iosm_debug && (stage & IOSM_SYSCALL))
+	    if (iosm->debug && (stage & IOSM_SYSCALL))
 		rpmlog(RPMLOG_DEBUG, " %8s (%p)\n", cur, iosm->rfd);
-#if defined(_USE_RPMTS)
-	    (void) rpmswAdd(rpmtsOp(iosmGetTs(iosm), RPMTS_OP_DIGEST),
+	    (void) rpmswAdd(&iosm->op_digest,
 			fdstat_op(iosm->rfd, FDSTAT_DIGEST));
-#endif
 	    (void) Fclose(iosm->rfd);
 	    errno = saveerrno;
 	}
@@ -2650,13 +2647,13 @@ if (!(fi->mapflags & IOSM_PAYLOAD_EXTRACT)) {
 	    iosm->wfd = NULL;
 	    rc = IOSMERR_OPEN_FAILED;
 	}
-	if (_iosm_debug && (stage & IOSM_SYSCALL))
+	if (iosm->debug && (stage & IOSM_SYSCALL))
 	    rpmlog(RPMLOG_DEBUG, " %8s (%s, \"w\") wfd %p wrbuf %p\n", cur,
 		iosm->path, iosm->wfd, iosm->wrbuf);
 	break;
     case IOSM_WRITE:
 	iosm->wrnb = Fwrite(iosm->wrbuf, sizeof(*iosm->wrbuf), iosm->rdnb, iosm->wfd);
-	if (_iosm_debug && (stage & IOSM_SYSCALL))
+	if (iosm->debug && (stage & IOSM_SYSCALL))
 	    rpmlog(RPMLOG_DEBUG, " %8s (wrbuf, %d, wfd)\twrnb %d\n",
 		cur, (int)iosm->rdnb, (int)iosm->wrnb);
 	if (iosm->rdnb != iosm->wrnb || Ferror(iosm->wfd))
@@ -2664,12 +2661,10 @@ if (!(fi->mapflags & IOSM_PAYLOAD_EXTRACT)) {
 	break;
     case IOSM_WCLOSE:
 	if (iosm->wfd != NULL) {
-	    if (_iosm_debug && (stage & IOSM_SYSCALL))
+	    if (iosm->debug && (stage & IOSM_SYSCALL))
 		rpmlog(RPMLOG_DEBUG, " %8s (%p)\n", cur, iosm->wfd);
-#if defined(_USE_RPMTS)
-	    (void) rpmswAdd(rpmtsOp(iosmGetTs(iosm), RPMTS_OP_DIGEST),
+	    (void) rpmswAdd(&iosm->op_digest,
 			fdstat_op(iosm->wfd, FDSTAT_DIGEST));
-#endif
 	    (void) Fclose(iosm->wfd);
 	    errno = saveerrno;
 	}
