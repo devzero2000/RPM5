@@ -142,6 +142,7 @@ LIBRPMIO_0
     _iosmNext;
     iosmNext;
     iosmSetup;
+    iosmStage;
     iosmStrerror;
     iosmTeardown;
     isCompressed;

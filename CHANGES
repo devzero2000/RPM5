@@ -1,4 +1,5 @@
 5.0.0 -> 5.1a1:
+    - jbj: pass low-level stateless operations from fsmStage -> iosmStage.
     - jbj: chain poptcliAllPoptTable -> rpmioAllPoptTable, start removing dupes.
     - jbj: fsm: simplify fsm.c => rpmte.h dependency.
     - jbj: perl: fix: include rpmio.h before rpmlib.h (for rpmRC returns).

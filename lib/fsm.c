@@ -1567,7 +1567,6 @@ int fsmStage(IOSM_t fsm, iosmFileStage stage)
     struct stat * ost = &fsm->osb;
     int saveerrno = errno;
     int rc = fsm->rc;
-    size_t left;
     int i;
 
 #define	_fafilter(_a)	\
@@ -2259,281 +2258,40 @@ if (!(fsmGetFi(fsm)->mapflags & IOSM_PAYLOAD_EXTRACT)) {
 	/*@notreached@*/ break;
 
     case IOSM_UNLINK:
-	/* XXX Remove setuid/setgid bits on possibly hard linked files. */
-	if (fsm->mapFlags & IOSM_SBIT_CHECK) {
-	    struct stat stb;
-	    if (Lstat(fsm->path, &stb) == 0 && S_ISREG(stb.st_mode) && (stb.st_mode & 06000) != 0) {
-		/* XXX rc = fsmNext(fsm, IOSM_CHMOD); instead */
-		(void)Chmod(fsm->path, stb.st_mode & 0777);
-	    }
-	}
-	rc = Unlink(fsm->path);
-	if (_fsm_debug && (stage & IOSM_SYSCALL))
-	    rpmlog(RPMLOG_DEBUG, " %8s (%s) %s\n", cur,
-		fsm->path, (rc < 0 ? strerror(errno) : ""));
-	if (rc < 0)
-	    rc = (errno == ENOENT ? IOSMERR_ENOENT : IOSMERR_UNLINK_FAILED);
-	break;
     case IOSM_RENAME:
-	/* XXX Remove setuid/setgid bits on possibly hard linked files. */
-	if (fsm->mapFlags & IOSM_SBIT_CHECK) {
-	    struct stat stb;
-	    if (Lstat(fsm->path, &stb) == 0 && S_ISREG(stb.st_mode) && (stb.st_mode & 06000) != 0) {
-		/* XXX rc = fsmNext(fsm, IOSM_CHMOD); instead */
-		(void)Chmod(fsm->path, stb.st_mode & 0777);
-	    }
-	}
-	rc = Rename(fsm->opath, fsm->path);
-	/* XXX Repackaged payloads may be missing files. */
-	if (fsm->repackaged)
-	    rc = 0;
-#if defined(ETXTBSY)
-	if (rc && errno == ETXTBSY) {
-	    char * path = alloca(strlen(fsm->path) + sizeof("-RPMDELETE"));
-	    (void) stpcpy( stpcpy(path, fsm->path), "-RPMDELETE");
-	    /*
-	     * XXX HP-UX (and other os'es) don't permit rename to busy
-	     * XXX files.
-	     */
-	    rc = Rename(fsm->path, path);
-	    if (!rc) rc = Rename(fsm->opath, fsm->path);
-	}
-#endif
-	if (_fsm_debug && (stage & IOSM_SYSCALL))
-	    rpmlog(RPMLOG_DEBUG, " %8s (%s, %s) %s\n", cur,
-		fsm->opath, fsm->path, (rc < 0 ? strerror(errno) : ""));
-	if (rc < 0)	rc = IOSMERR_RENAME_FAILED;
-	break;
     case IOSM_MKDIR:
-	rc = Mkdir(fsm->path, (st->st_mode & 07777));
-	if (_fsm_debug && (stage & IOSM_SYSCALL))
-	    rpmlog(RPMLOG_DEBUG, " %8s (%s, 0%04o) %s\n", cur,
-		fsm->path, (unsigned)(st->st_mode & 07777),
-		(rc < 0 ? strerror(errno) : ""));
-	if (rc < 0)	rc = IOSMERR_MKDIR_FAILED;
-	break;
     case IOSM_RMDIR:
-	rc = Rmdir(fsm->path);
-	if (_fsm_debug && (stage & IOSM_SYSCALL))
-	    rpmlog(RPMLOG_DEBUG, " %8s (%s) %s\n", cur,
-		fsm->path, (rc < 0 ? strerror(errno) : ""));
-	if (rc < 0)
-	    switch (errno) {
-	    case ENOENT:        rc = IOSMERR_ENOENT;    /*@switchbreak@*/ break;
-	    case ENOTEMPTY:     rc = IOSMERR_ENOTEMPTY; /*@switchbreak@*/ break;
-	    default:            rc = IOSMERR_RMDIR_FAILED; /*@switchbreak@*/ break;
-	    }
-	break;
     case IOSM_LSETFCON:
-      {	const char * fsmpath = NULL;
-	if (fsm->fcontext == NULL || *fsm->fcontext == '\0'
-	 || !strcmp(fsm->fcontext, "<<none>>"))
-	    break;
-	(void) urlPath(fsm->path, &fsmpath);	/* XXX fsm->path */
-	rc = lsetfilecon(fsmpath, (security_context_t)fsm->fcontext);
-	if (_fsm_debug && (stage & IOSM_SYSCALL))
-	    rpmlog(RPMLOG_DEBUG, " %8s (%s, %s) %s\n", cur,
-		fsm->path, fsm->fcontext,
-		(rc < 0 ? strerror(errno) : ""));
-	if (rc < 0) rc = (errno == EOPNOTSUPP ? 0 : IOSMERR_LSETFCON_FAILED);
-      }	break;
     case IOSM_CHOWN:
-	rc = Chown(fsm->path, st->st_uid, st->st_gid);
-	if (_fsm_debug && (stage & IOSM_SYSCALL))
-	    rpmlog(RPMLOG_DEBUG, " %8s (%s, %d, %d) %s\n", cur,
-		fsm->path, (int)st->st_uid, (int)st->st_gid,
-		(rc < 0 ? strerror(errno) : ""));
-	if (rc < 0)	rc = IOSMERR_CHOWN_FAILED;
-	break;
     case IOSM_LCHOWN:
-#if ! CHOWN_FOLLOWS_SYMLINK
-	rc = Lchown(fsm->path, st->st_uid, st->st_gid);
-	if (_fsm_debug && (stage & IOSM_SYSCALL))
-	    rpmlog(RPMLOG_DEBUG, " %8s (%s, %d, %d) %s\n", cur,
-		fsm->path, (int)st->st_uid, (int)st->st_gid,
-		(rc < 0 ? strerror(errno) : ""));
-	if (rc < 0)	rc = IOSMERR_CHOWN_FAILED;
-#endif
-	break;
     case IOSM_CHMOD:
-	rc = Chmod(fsm->path, (st->st_mode & 07777));
-	if (_fsm_debug && (stage & IOSM_SYSCALL))
-	    rpmlog(RPMLOG_DEBUG, " %8s (%s, 0%04o) %s\n", cur,
-		fsm->path, (unsigned)(st->st_mode & 07777),
-		(rc < 0 ? strerror(errno) : ""));
-	if (rc < 0)	rc = IOSMERR_CHMOD_FAILED;
-	break;
     case IOSM_UTIME:
-	{   struct utimbuf stamp;
-	    stamp.actime = st->st_mtime;
-	    stamp.modtime = st->st_mtime;
-	    rc = Utime(fsm->path, &stamp);
-	    if (_fsm_debug && (stage & IOSM_SYSCALL))
-		rpmlog(RPMLOG_DEBUG, " %8s (%s, 0x%x) %s\n", cur,
-			fsm->path, (unsigned)st->st_mtime,
-			(rc < 0 ? strerror(errno) : ""));
-	    if (rc < 0)	rc = IOSMERR_UTIME_FAILED;
-	}
-	break;
     case IOSM_SYMLINK:
-	rc = Symlink(fsm->lpath, fsm->path);
-	if (_fsm_debug && (stage & IOSM_SYSCALL))
-	    rpmlog(RPMLOG_DEBUG, " %8s (%s, %s) %s\n", cur,
-		fsm->lpath, fsm->path, (rc < 0 ? strerror(errno) : ""));
-	if (rc < 0)	rc = IOSMERR_SYMLINK_FAILED;
-	break;
     case IOSM_LINK:
-	rc = Link(fsm->opath, fsm->path);
-	if (_fsm_debug && (stage & IOSM_SYSCALL))
-	    rpmlog(RPMLOG_DEBUG, " %8s (%s, %s) %s\n", cur,
-		fsm->opath, fsm->path, (rc < 0 ? strerror(errno) : ""));
-	if (rc < 0)	rc = IOSMERR_LINK_FAILED;
-	break;
     case IOSM_MKFIFO:
-	rc = Mkfifo(fsm->path, (st->st_mode & 07777));
-	if (_fsm_debug && (stage & IOSM_SYSCALL))
-	    rpmlog(RPMLOG_DEBUG, " %8s (%s, 0%04o) %s\n", cur,
-		fsm->path, (unsigned)(st->st_mode & 07777),
-		(rc < 0 ? strerror(errno) : ""));
-	if (rc < 0)	rc = IOSMERR_MKFIFO_FAILED;
-	break;
     case IOSM_MKNOD:
-	/*@-unrecog -portability @*/ /* FIX: check S_IFIFO or dev != 0 */
-	rc = Mknod(fsm->path, (st->st_mode & ~07777), st->st_rdev);
-	/*@=unrecog =portability @*/
-	if (_fsm_debug && (stage & IOSM_SYSCALL))
-	    rpmlog(RPMLOG_DEBUG, " %8s (%s, 0%o, 0x%x) %s\n", cur,
-		fsm->path, (unsigned)(st->st_mode & ~07777),
-		(unsigned)st->st_rdev,
-		(rc < 0 ? strerror(errno) : ""));
-	if (rc < 0)	rc = IOSMERR_MKNOD_FAILED;
-	break;
     case IOSM_LSTAT:
-	rc = Lstat(fsm->path, ost);
-	if (_fsm_debug && (stage & IOSM_SYSCALL) && rc && errno != ENOENT)
-	    rpmlog(RPMLOG_DEBUG, " %8s (%s, ost) %s\n", cur,
-		fsm->path, (rc < 0 ? strerror(errno) : ""));
-	if (rc < 0) {
-	    rc = (errno == ENOENT ? IOSMERR_ENOENT : IOSMERR_LSTAT_FAILED);
-	    memset(ost, 0, sizeof(*ost));	/* XXX s390x hackery */
-	}
-	break;
     case IOSM_STAT:
-	rc = Stat(fsm->path, ost);
-	if (_fsm_debug && (stage & IOSM_SYSCALL) && rc && errno != ENOENT)
-	    rpmlog(RPMLOG_DEBUG, " %8s (%s, ost) %s\n", cur,
-		fsm->path, (rc < 0 ? strerror(errno) : ""));
-	if (rc < 0) {
-	    rc = (errno == ENOENT ? IOSMERR_ENOENT : IOSMERR_STAT_FAILED);
-	    memset(ost, 0, sizeof(*ost));	/* XXX s390x hackery */
-	}
-	break;
     case IOSM_READLINK:
-	/* XXX NUL terminated result in fsm->rdbuf, len in fsm->rdnb. */
-	rc = Readlink(fsm->path, fsm->rdbuf, fsm->rdsize - 1);
-	if (_fsm_debug && (stage & IOSM_SYSCALL))
-	    rpmlog(RPMLOG_DEBUG, " %8s (%s, rdbuf, %d) %s\n", cur,
-		fsm->path, (int)(fsm->rdsize -1), (rc < 0 ? strerror(errno) : ""));
-	if (rc < 0)	rc = IOSMERR_READLINK_FAILED;
-	else {
-	    fsm->rdnb = rc;
-	    fsm->rdbuf[fsm->rdnb] = '\0';
-	    rc = 0;
-	}
-	break;
     case IOSM_CHROOT:
+	rc = iosmStage(fsm, stage);
 	break;
 
     case IOSM_NEXT:
-	rc = fsmUNSAFE(fsm, IOSM_HREAD);
-	if (rc) break;
-	if (!strcmp(fsm->path, CPIO_TRAILER)) { /* Detect end-of-payload. */
-	    fsm->path = _free(fsm->path);
-	    rc = IOSMERR_HDR_TRAILER;
-	}
-	if (!rc)
-	    rc = fsmNext(fsm, IOSM_POS);
-	break;
     case IOSM_EAT:
-	for (left = st->st_size; left > 0; left -= fsm->rdnb) {
-	    fsm->wrlen = (left > fsm->wrsize ? fsm->wrsize : left);
-	    rc = fsmNext(fsm, IOSM_DREAD);
-	    if (rc)
-		/*@loopbreak@*/ break;
-	}
-	break;
     case IOSM_POS:
-	left = (fsm->blksize - (fdGetCpioPos(fsm->cfd) % fsm->blksize)) % fsm->blksize;
-	if (left) {
-	    fsm->wrlen = left;
-	    (void) fsmNext(fsm, IOSM_DREAD);
-	}
-	break;
     case IOSM_PAD:
-	left = (fsm->blksize - (fdGetCpioPos(fsm->cfd) % fsm->blksize)) % fsm->blksize;
-	if (left) {
-	    if (fsm->blksize == 2)
-		fsm->rdbuf[0] = '\n';	/* XXX ar(1) pads with '\n' */
-	    else
-		memset(fsm->rdbuf, 0, left);
-	    /* XXX DWRITE uses rdnb for I/O length. */
-	    fsm->rdnb = left;
-	    (void) fsmNext(fsm, IOSM_DWRITE);
-	}
-	break;
     case IOSM_TRAILER:
-	rc = (*fsm->trailerWrite) (fsm);	/* Write payload trailer. */
-	break;
     case IOSM_HREAD:
-	rc = fsmNext(fsm, IOSM_POS);
-	if (!rc)
-	    rc = (*fsm->headerRead) (fsm, st);	/* Read next payload header. */
-	break;
     case IOSM_HWRITE:
-	rc = (*fsm->headerWrite) (fsm, st);	/* Write next payload header. */
-	break;
     case IOSM_DREAD:
-	fsm->rdnb = Fread(fsm->wrbuf, sizeof(*fsm->wrbuf), fsm->wrlen, fsm->cfd);
-	if (_fsm_debug && (stage & IOSM_SYSCALL))
-	    rpmlog(RPMLOG_DEBUG, " %8s (%s, %d, cfd)\trdnb %d\n",
-		cur, (fsm->wrbuf == fsm->wrb ? "wrbuf" : "mmap"),
-		(int)fsm->wrlen, (int)fsm->rdnb);
-	if (fsm->rdnb != fsm->wrlen || Ferror(fsm->cfd))
-	    rc = IOSMERR_READ_FAILED;
-	if (fsm->rdnb > 0)
-	    fdSetCpioPos(fsm->cfd, fdGetCpioPos(fsm->cfd) + fsm->rdnb);
-	break;
     case IOSM_DWRITE:
-	fsm->wrnb = Fwrite(fsm->rdbuf, sizeof(*fsm->rdbuf), fsm->rdnb, fsm->cfd);
-	if (_fsm_debug && (stage & IOSM_SYSCALL))
-	    rpmlog(RPMLOG_DEBUG, " %8s (%s, %d, cfd)\twrnb %d\n",
-		cur, (fsm->rdbuf == fsm->rdb ? "rdbuf" : "mmap"),
-		(int)fsm->rdnb, (int)fsm->wrnb);
-	if (fsm->rdnb != fsm->wrnb || Ferror(fsm->cfd))
-	    rc = IOSMERR_WRITE_FAILED;
-	if (fsm->wrnb > 0)
-	    fdSetCpioPos(fsm->cfd, fdGetCpioPos(fsm->cfd) + fsm->wrnb);
+	rc = iosmStage(fsm, stage);
 	break;
 
     case IOSM_ROPEN:
-	fsm->rfd = Fopen(fsm->path, "r.fdio");
-	if (fsm->rfd == NULL || Ferror(fsm->rfd)) {
-	    if (fsm->rfd != NULL)	(void) fsmNext(fsm, IOSM_RCLOSE);
-	    fsm->rfd = NULL;
-	    rc = IOSMERR_OPEN_FAILED;
-	    break;
-	}
-	if (_fsm_debug && (stage & IOSM_SYSCALL))
-	    rpmlog(RPMLOG_DEBUG, " %8s (%s, \"r\") rfd %p rdbuf %p\n", cur,
-		fsm->path, fsm->rfd, fsm->rdbuf);
-	break;
     case IOSM_READ:
-	fsm->rdnb = Fread(fsm->rdbuf, sizeof(*fsm->rdbuf), fsm->rdlen, fsm->rfd);
-	if (_fsm_debug && (stage & IOSM_SYSCALL))
-	    rpmlog(RPMLOG_DEBUG, " %8s (rdbuf, %d, rfd)\trdnb %d\n",
-		cur, (int)fsm->rdlen, (int)fsm->rdnb);
-	if (fsm->rdnb != fsm->rdlen || Ferror(fsm->rfd))
-	    rc = IOSMERR_READ_FAILED;
+	rc = iosmStage(fsm, stage);
 	break;
     case IOSM_RCLOSE:
 	if (fsm->rfd != NULL) {
@@ -2547,23 +2305,8 @@ if (!(fsmGetFi(fsm)->mapflags & IOSM_PAYLOAD_EXTRACT)) {
 	fsm->rfd = NULL;
 	break;
     case IOSM_WOPEN:
-	fsm->wfd = Fopen(fsm->path, "w.fdio");
-	if (fsm->wfd == NULL || Ferror(fsm->wfd)) {
-	    if (fsm->wfd != NULL)	(void) fsmNext(fsm, IOSM_WCLOSE);
-	    fsm->wfd = NULL;
-	    rc = IOSMERR_OPEN_FAILED;
-	}
-	if (_fsm_debug && (stage & IOSM_SYSCALL))
-	    rpmlog(RPMLOG_DEBUG, " %8s (%s, \"w\") wfd %p wrbuf %p\n", cur,
-		fsm->path, fsm->wfd, fsm->wrbuf);
-	break;
     case IOSM_WRITE:
-	fsm->wrnb = Fwrite(fsm->wrbuf, sizeof(*fsm->wrbuf), fsm->rdnb, fsm->wfd);
-	if (_fsm_debug && (stage & IOSM_SYSCALL))
-	    rpmlog(RPMLOG_DEBUG, " %8s (wrbuf, %d, wfd)\twrnb %d\n",
-		cur, (int)fsm->rdnb, (int)fsm->wrnb);
-	if (fsm->rdnb != fsm->wrnb || Ferror(fsm->wfd))
-	    rc = IOSMERR_WRITE_FAILED;
+	rc = iosmStage(fsm, stage);
 	break;
     case IOSM_WCLOSE:
 	if (fsm->wfd != NULL) {
