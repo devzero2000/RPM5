@@ -12,7 +12,7 @@
 #include <rpmbuild.h>
 #include "signature.h"		/* XXX rpmTempFile */
 
-#include "cpio.h"
+#include "iosm.h"
 #include "fsm.h"
 
 #include "buildio.h"
@@ -87,7 +87,7 @@ static rpmRC cpio_doio(FD_t fdo, /*@unused@*/ Header h, CSA_t csa,
     if (rc == RPMRC_OK && xx) rc = RPMRC_FAIL;
 
     if (rc) {
-	const char * msg = cpioStrerror(rc);
+	const char * msg = iosmStrerror(rc);
 	if (failedFile)
 	    rpmlog(RPMLOG_ERR, _("create archive failed on file %s: %s\n"),
 		failedFile, msg);

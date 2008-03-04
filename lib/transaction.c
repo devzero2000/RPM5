@@ -14,6 +14,7 @@
 #include "legacy.h"	/* XXX dodigest */
 
 #include <rpmlib.h>
+#include "iosm.h"
 #define	_RPMFI_INTERNAL
 #include "fsm.h"
 #include <rpmfi.h>
@@ -160,10 +161,10 @@ assert(he->p.str != NULL);
 	    continue;
 
 	/* Remove setuid/setgid bits on other (possibly hardlinked) files. */
-	if (!(fi->mapflags & CPIO_SBIT_CHECK)) {
+	if (!(fi->mapflags & IOSM_SBIT_CHECK)) {
 	    uint16_t omode = rpmfiFMode(otherFi);
 	    if (S_ISREG(omode) && (omode & 06000) != 0)
-		fi->mapflags |= CPIO_SBIT_CHECK;
+		fi->mapflags |= IOSM_SBIT_CHECK;
 	}
 
 	if (((FFlags | oFFlags) & RPMFILE_GHOST))
@@ -1685,17 +1686,17 @@ rpmlog(RPMLOG_DEBUG, D_("computing file dispositions\n"));
 
 		(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_REPACKAGE), 0);
 
-	/* XXX TR_REMOVED needs CPIO_MAP_{ABSOLUTE,ADDDOT} CPIO_ALL_HARDLINKS */
-		fi->mapflags |= CPIO_MAP_ABSOLUTE;
-		fi->mapflags |= CPIO_MAP_ADDDOT;
-		fi->mapflags |= CPIO_ALL_HARDLINKS;
+	/* XXX TR_REMOVED needs IOSM_MAP_{ABSOLUTE,ADDDOT} IOSM_ALL_HARDLINKS */
+		fi->mapflags |= IOSM_MAP_ABSOLUTE;
+		fi->mapflags |= IOSM_MAP_ADDDOT;
+		fi->mapflags |= IOSM_ALL_HARDLINKS;
 		psm = rpmpsmNew(ts, p, fi);
 assert(psm != NULL);
 		xx = rpmpsmStage(psm, PSM_PKGSAVE);
 		psm = rpmpsmFree(psm);
-		fi->mapflags &= ~CPIO_MAP_ABSOLUTE;
-		fi->mapflags &= ~CPIO_MAP_ADDDOT;
-		fi->mapflags &= ~CPIO_ALL_HARDLINKS;
+		fi->mapflags &= ~IOSM_MAP_ABSOLUTE;
+		fi->mapflags &= ~IOSM_MAP_ADDDOT;
+		fi->mapflags &= ~IOSM_ALL_HARDLINKS;
 
 		(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_REPACKAGE), 0);
 
@@ -1804,8 +1805,8 @@ assert(psm != NULL);
 			fi->fstates = fstates;
 			fi->actions = _free(fi->actions);
 			fi->actions = actions;
-			if (mapflags & CPIO_SBIT_CHECK)
-			    fi->mapflags |= CPIO_SBIT_CHECK;
+			if (mapflags & IOSM_SBIT_CHECK)
+			    fi->mapflags |= IOSM_SBIT_CHECK;
 			p->fi = fi;
 		    }
 		}

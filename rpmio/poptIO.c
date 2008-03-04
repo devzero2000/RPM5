@@ -56,6 +56,8 @@ extern int _dav_debug;
 /*@unchecked@*/
 extern int _ftp_debug;
 /*@unchecked@*/
+extern int _iosm_debug;
+/*@unchecked@*/
 extern int noLibio;
 /*@unchecked@*/
 extern int _rpmio_debug;
@@ -367,6 +369,8 @@ struct poptOption rpmioAllPoptTable[] = {
 	N_("debug WebDAV data stream"), NULL},
  { "ftpdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_ftp_debug, -1,
 	N_("debug FTP/HTTP data stream"), NULL},
+ { "iosmdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_iosm_debug, -1,
+	N_("debug I/O state machine"), NULL},
  { "miredebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_mire_debug, -1,
 	NULL, NULL},
 #ifdef	DYING

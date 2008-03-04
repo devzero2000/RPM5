@@ -46,6 +46,10 @@ LIBRPMIO_0
     _Chroot;
     Closedir;
     _Closedir;
+    _cpio_debug;
+    cpioHeaderRead;
+    cpioHeaderWrite;
+    cpioTrailerWrite;
     davClose;
     davClosedir;
     _dav_debug;
@@ -132,6 +136,12 @@ LIBRPMIO_0
     htGetEntry;
     htHasEntry;
     _init;
+    _iosm_debug;
+    _iosmNext;
+    iosmNext;
+    iosmSetup;
+    iosmStrerror;
+    iosmTeardown;
     isCompressed;
     Lchown;
     _Lchown;
@@ -367,6 +377,10 @@ LIBRPMIO_0
     truncStringBuf;
     Symlink;
     _Symlink;
+    _tar_debug;
+    tarHeaderRead;
+    tarHeaderWrite;
+    tarTrailerWrite;
     ufdClose;
     ufdCopy;
     ufdGetFile;

@@ -10,6 +10,7 @@
 #include <rpmtag.h>
 #include <rpmlib.h>
 
+#include "iosm.h"
 #define	_RPMFI_INTERNAL
 #define	_RPMFSM_INTERNAL
 #include "fsm.h"
@@ -827,7 +828,7 @@ assert(teAdding);
 	    break;
 	}
 
-	if ((fsm->mapFlags & CPIO_MAP_PATH) || fsm->nsuffix) {
+	if ((fsm->mapFlags & IOSM_MAP_PATH) || fsm->nsuffix) {
 	    const struct stat * st = &fsm->sb;
 	    fsm->path = _free(fsm->path);
 	    fsm->path = fsmFsPath(fsm, st, fsm->subdir,
@@ -887,9 +888,9 @@ int fsmMapAttrs(FSM_t fsm)
 #endif
 	}
 
-	if (fsm->mapFlags & CPIO_MAP_MODE)
+	if (fsm->mapFlags & IOSM_MAP_MODE)
 	    st->st_mode = (st->st_mode & S_IFMT) | (finalMode & ~S_IFMT);
-	if (fsm->mapFlags & CPIO_MAP_TYPE) {
+	if (fsm->mapFlags & IOSM_MAP_TYPE) {
 	    st->st_mode = (st->st_mode & ~S_IFMT) | (finalMode & S_IFMT);
 	    if ((S_ISCHR(st->st_mode) || S_ISBLK(st->st_mode))
 	    && st->st_nlink == 0)
@@ -897,9 +898,9 @@ int fsmMapAttrs(FSM_t fsm)
 	    st->st_rdev = finalRdev;
 	    st->st_mtime = finalMtime;
 	}
-	if (fsm->mapFlags & CPIO_MAP_UID)
+	if (fsm->mapFlags & IOSM_MAP_UID)
 	    st->st_uid = uid;
-	if (fsm->mapFlags & CPIO_MAP_GID)
+	if (fsm->mapFlags & IOSM_MAP_GID)
 	    st->st_gid = gid;
 
 	{   rpmts ts = fsmGetTs(fsm);
@@ -975,16 +976,16 @@ static int extractRegular(/*@special@*/ FSM_t fsm)
 	fdFiniDigest(fsm->wfd, fsm->fdigestalgo, &digest, NULL, asAscii);
 
 	if (digest == NULL) {
-	    rc = CPIOERR_DIGEST_MISMATCH;
+	    rc = IOSMERR_DIGEST_MISMATCH;
 	    goto exit;
 	}
 
 	if (fsm->digest != NULL) {
 	    if (memcmp(digest, fsm->digest, fsm->digestlen))
-		rc = CPIOERR_DIGEST_MISMATCH;
+		rc = IOSMERR_DIGEST_MISMATCH;
 	} else {
 	    if (strcmp(digest, fsm->fdigest))
-		rc = CPIOERR_DIGEST_MISMATCH;
+		rc = IOSMERR_DIGEST_MISMATCH;
 	}
 	digest = _free(digest);
     }
@@ -1031,15 +1032,15 @@ static int writeFile(/*@special@*/ /*@partial@*/ FSM_t fsm, int writeData)
 	fsm->lpath = xstrdup(fsm->rdbuf);	/* XXX save readlink return. */
     }
 
-    if (fsm->mapFlags & CPIO_MAP_ABSOLUTE) {
+    if (fsm->mapFlags & IOSM_MAP_ABSOLUTE) {
 	int nb = strlen(fsm->dirName) + strlen(fsm->baseName) + sizeof(".");
 	char * t = alloca(nb);
 	*t = '\0';
 	fsm->path = t;
-	if (fsm->mapFlags & CPIO_MAP_ADDDOT)
+	if (fsm->mapFlags & IOSM_MAP_ADDDOT)
 	    *t++ = '.';
 	t = stpcpy( stpcpy(t, fsm->dirName), fsm->baseName);
-    } else if (fsm->mapFlags & CPIO_MAP_PATH) {
+    } else if (fsm->mapFlags & IOSM_MAP_PATH) {
 	rpmfi fi = fsmGetFi(fsm);
 	if (fi->apath) {
 	    const char * apath = NULL;
@@ -1245,7 +1246,7 @@ static int fsmMakeLinks(/*@special@*/ /*@partial@*/ FSM_t fsm)
 
 	rc = fsmUNSAFE(fsm, FSM_VERIFY);
 	if (!rc) continue;
-	if (!(rc == CPIOERR_ENOENT)) break;
+	if (!(rc == IOSMERR_ENOENT)) break;
 
 	/* XXX link(fsm->opath, fsm->path) */
 	rc = fsmNext(fsm, FSM_LINK);
@@ -1452,7 +1453,7 @@ static int fsmMkdirs(/*@special@*/ /*@partial@*/ FSM_t fsm)
 	    if (rc == 0 && S_ISDIR(ost->st_mode)) {
 		/* Move pre-existing path marker forward. */
 		fsm->dnlx[dc] = (te - dn);
-	    } else if (rc == CPIOERR_ENOENT) {
+	    } else if (rc == IOSMERR_ENOENT) {
 		rpmfi fi = fsmGetFi(fsm);
 		*te = '\0';
 		st->st_mode = S_IFDIR | (fi->dperms & 07777);
@@ -1519,9 +1520,9 @@ static int fsmStat(/*@special@*/ /*@partial@*/ FSM_t fsm)
 
     if (fsm->path != NULL) {
 	int saveernno = errno;
-	rc = fsmUNSAFE(fsm, (!(fsm->mapFlags & CPIO_FOLLOW_SYMLINKS)
+	rc = fsmUNSAFE(fsm, (!(fsm->mapFlags & IOSM_FOLLOW_SYMLINKS)
 			? FSM_LSTAT : FSM_STAT));
-	if (rc == CPIOERR_ENOENT) {
+	if (rc == IOSMERR_ENOENT) {
 	    errno = saveerrno;
 	    rc = 0;
 	    fsm->exists = 0;
@@ -1595,7 +1596,7 @@ int fsmStage(FSM_t fsm, fileStage stage)
 	    rc = fsmUNSAFE(fsm, FSM_INIT);
 
 	    /* Exit on end-of-payload. */
-	    if (rc == CPIOERR_HDR_TRAILER) {
+	    if (rc == IOSMERR_HDR_TRAILER) {
 		rc = 0;
 		/*@loopbreak@*/ break;
 	    }
@@ -1630,7 +1631,7 @@ int fsmStage(FSM_t fsm, fileStage stage)
 	    rc = fsmUNSAFE(fsm, FSM_INIT);
 
 	    /* Exit on end-of-payload. */
-	    if (rc == CPIOERR_HDR_TRAILER) {
+	    if (rc == IOSMERR_HDR_TRAILER) {
 		rc = 0;
 		/*@loopbreak@*/ break;
 	    }
@@ -1646,7 +1647,7 @@ int fsmStage(FSM_t fsm, fileStage stage)
 	    rc = fsmUNSAFE(fsm, FSM_INIT);
 
 	    /* Exit on end-of-payload. */
-	    if (rc == CPIOERR_HDR_TRAILER) {
+	    if (rc == IOSMERR_HDR_TRAILER) {
 		rc = 0;
 		/*@loopbreak@*/ break;
 	    }
@@ -1673,7 +1674,7 @@ int fsmStage(FSM_t fsm, fileStage stage)
 	}
 
 	/* Flush partial sets of hard linked files. */
-	if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) {
+	if (!(fsm->mapFlags & IOSM_ALL_HARDLINKS)) {
 	    int nlink, j;
 	    while ((fsm->li = fsm->links) != NULL) {
 		fsm->links = fsm->li->next;
@@ -1767,9 +1768,9 @@ int fsmStage(FSM_t fsm, fileStage stage)
 	fsm->ix = ((fsm->goal == FSM_PKGINSTALL)
 		? mapFind(fsm->iter, fsm->path) : mapNextIterator(fsm->iter));
 
-if (!(fsmGetFi(fsm)->mapflags & CPIO_PAYLOAD_LIST)) {
+if (!(fsmGetFi(fsm)->mapflags & IOSM_PAYLOAD_LIST)) {
 	/* Detect end-of-loop and/or mapping error. */
-if (!(fsmGetFi(fsm)->mapflags & CPIO_PAYLOAD_EXTRACT)) {
+if (!(fsmGetFi(fsm)->mapflags & IOSM_PAYLOAD_EXTRACT)) {
 	if (fsm->ix < 0) {
 	    if (fsm->goal == FSM_PKGINSTALL) {
 #if 0
@@ -1779,9 +1780,9 @@ if (!(fsmGetFi(fsm)->mapflags & CPIO_PAYLOAD_EXTRACT)) {
 #endif
 		if (fsm->failedFile && *fsm->failedFile == NULL)
 		    *fsm->failedFile = xstrdup(fsm->path);
-		rc = CPIOERR_UNMAPPED_FILE;
+		rc = IOSMERR_UNMAPPED_FILE;
 	    } else {
-		rc = CPIOERR_HDR_TRAILER;
+		rc = IOSMERR_HDR_TRAILER;
 	    }
 	    break;
 	}
@@ -1805,9 +1806,9 @@ if (!(fsmGetFi(fsm)->mapflags & CPIO_PAYLOAD_EXTRACT)) {
 	if (fsm->path != NULL &&
 	    !(fsm->goal == FSM_PKGINSTALL && S_ISREG(st->st_mode)))
 	{
-	    rc = fsmUNSAFE(fsm, (!(fsm->mapFlags & CPIO_FOLLOW_SYMLINKS)
+	    rc = fsmUNSAFE(fsm, (!(fsm->mapFlags & IOSM_FOLLOW_SYMLINKS)
 			? FSM_LSTAT : FSM_STAT));
-	    if (rc == CPIOERR_ENOENT) {
+	    if (rc == IOSMERR_ENOENT) {
 		errno = saveerrno;
 		rc = 0;
 		fsm->exists = 0;
@@ -1838,7 +1839,7 @@ if (!(fsmGetFi(fsm)->mapflags & CPIO_PAYLOAD_EXTRACT)) {
 		fsm->postpone = saveHardLink(fsm);
 	    /*@=evalorder@*/
 	}
-if (fsmGetFi(fsm)->mapflags & CPIO_PAYLOAD_LIST) fsm->postpone = 1;
+if (fsmGetFi(fsm)->mapflags & IOSM_PAYLOAD_LIST) fsm->postpone = 1;
 	break;
     case FSM_PRE:
 	break;
@@ -1868,7 +1869,7 @@ if (fsmGetFi(fsm)->mapflags & CPIO_PAYLOAD_LIST) fsm->postpone = 1;
 	    if (!S_ISDIR(st->st_mode) && st->st_nlink > 1) {
 		struct hardLink_s * li, * prev;
 
-if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
+if (!(fsm->mapFlags & IOSM_ALL_HARDLINKS)) break;
 		rc = writeLinkedFile(fsm);
 		if (rc) break;	/* W2DO? */
 
@@ -1928,12 +1929,12 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	    /*@-dependenttrans@*/
 	    fsm->path = path;
 	    /*@=dependenttrans@*/
-	    if (!(rc == CPIOERR_ENOENT)) return rc;
+	    if (!(rc == IOSMERR_ENOENT)) return rc;
 	    rc = extractRegular(fsm);
 	} else if (S_ISDIR(st->st_mode)) {
 	    mode_t st_mode = st->st_mode;
 	    rc = fsmUNSAFE(fsm, FSM_VERIFY);
-	    if (rc == CPIOERR_ENOENT) {
+	    if (rc == IOSMERR_ENOENT) {
 		st->st_mode &= ~07777; 		/* XXX abuse st->st_mode */
 		st->st_mode |=  00700;
 		rc = fsmNext(fsm, FSM_MKDIR);
@@ -1943,13 +1944,13 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 assert(fsm->lpath != NULL);
 	    /*@=dependenttrans@*/
 	    rc = fsmUNSAFE(fsm, FSM_VERIFY);
-	    if (rc == CPIOERR_ENOENT)
+	    if (rc == IOSMERR_ENOENT)
 		rc = fsmNext(fsm, FSM_SYMLINK);
 	} else if (S_ISFIFO(st->st_mode)) {
 	    mode_t st_mode = st->st_mode;
 	    /* This mimics cpio S_ISSOCK() behavior but probably isnt' right */
 	    rc = fsmUNSAFE(fsm, FSM_VERIFY);
-	    if (rc == CPIOERR_ENOENT) {
+	    if (rc == IOSMERR_ENOENT) {
 		st->st_mode = 0000;		/* XXX abuse st->st_mode */
 		rc = fsmNext(fsm, FSM_MKFIFO);
 		st->st_mode = st_mode;		/* XXX restore st->st_mode */
@@ -1959,7 +1960,7 @@ assert(fsm->lpath != NULL);
     /*@-unrecog@*/ S_ISSOCK(st->st_mode) /*@=unrecog@*/)
 	{
 	    rc = fsmUNSAFE(fsm, FSM_VERIFY);
-	    if (rc == CPIOERR_ENOENT)
+	    if (rc == IOSMERR_ENOENT)
 		rc = fsmNext(fsm, FSM_MKNOD);
 	} else {
 	    /* XXX Repackaged payloads may be missing files. */
@@ -1968,7 +1969,7 @@ assert(fsm->lpath != NULL);
 
 	    /* XXX Special case /dev/log, which shouldn't be packaged anyways */
 	    if (!IS_DEV_LOG(fsm->path))
-		rc = CPIOERR_UNKNOWN_FILETYPE;
+		rc = IOSMERR_UNKNOWN_FILETYPE;
 	}
 	if (!S_ISDIR(st->st_mode) && st->st_nlink > 1) {
 	    fsm->li->createdPath = fsm->li->linkIndex;
@@ -2056,8 +2057,8 @@ assert(fsm->lpath != NULL);
 		    rc = fsmNext(fsm, FSM_RMDIR);
 		    if (!rc) break;
 		    switch (rc) {
-		    case CPIOERR_ENOENT: /* XXX rmdir("/") linux 2.2.x kernel hack */
-		    case CPIOERR_ENOTEMPTY:
+		    case IOSMERR_ENOENT: /* XXX rmdir("/") linux 2.2.x kernel hack */
+		    case IOSMERR_ENOTEMPTY:
 	/* XXX make sure that build side permits %missingok on directories. */
 			if (fsm->fflags & RPMFILE_MISSINGOK)
 			    /*@innerbreak@*/ break;
@@ -2079,7 +2080,7 @@ assert(fsm->lpath != NULL);
 		    rc = fsmNext(fsm, FSM_UNLINK);
 		    if (!rc) break;
 		    switch (rc) {
-		    case CPIOERR_ENOENT:
+		    case IOSMERR_ENOENT:
 			if (fsm->fflags & RPMFILE_MISSINGOK)
 			    /*@innerbreak@*/ break;
 			/*@fallthrough@*/
@@ -2098,7 +2099,7 @@ assert(fsm->lpath != NULL);
 	}
 
 	/* XXX Special case /dev/log, which shouldn't be packaged anyways */
-if (!(fsmGetFi(fsm)->mapflags & CPIO_PAYLOAD_EXTRACT)) {
+if (!(fsmGetFi(fsm)->mapflags & IOSM_PAYLOAD_EXTRACT)) {
 	if (!S_ISSOCK(st->st_mode) && !IS_DEV_LOG(fsm->path)) {
 	    /* Rename temporary to final file name. */
 	    if (!S_ISDIR(st->st_mode) &&
@@ -2167,7 +2168,7 @@ if (!(fsmGetFi(fsm)->mapflags & CPIO_PAYLOAD_EXTRACT)) {
 		for (i = 0 ; i < fsm->li->linksLeft; i++) {
 		    if (fsm->li->filex[i] < 0)
 			/*@innercontinue@*/ continue;
-		    rc = CPIOERR_MISSING_HARDLINK;
+		    rc = IOSMERR_MISSING_HARDLINK;
 		    if (fsm->failedFile && *fsm->failedFile == NULL) {
 			fsm->ix = fsm->li->filex[i];
 			if (!fsmNext(fsm, FSM_MAP)) {
@@ -2179,9 +2180,9 @@ if (!(fsmGetFi(fsm)->mapflags & CPIO_PAYLOAD_EXTRACT)) {
 		}
 	    }
 	    if (fsm->goal == FSM_PKGBUILD &&
-		(fsm->mapFlags & CPIO_ALL_HARDLINKS))
+		(fsm->mapFlags & IOSM_ALL_HARDLINKS))
 	    {
-		rc = CPIOERR_MISSING_HARDLINK;
+		rc = IOSMERR_MISSING_HARDLINK;
             }
 	    fsm->li = freeHardLink(fsm->li);
 	}
@@ -2192,7 +2193,7 @@ if (!(fsmGetFi(fsm)->mapflags & CPIO_PAYLOAD_EXTRACT)) {
 	break;
     case FSM_VERIFY:
 	if (fsm->diskchecked && !fsm->exists) {
-	    rc = CPIOERR_ENOENT;
+	    rc = IOSMERR_ENOENT;
 	    break;
 	}
 	if (S_ISREG(st->st_mode)) {
@@ -2208,16 +2209,16 @@ if (!(fsmGetFi(fsm)->mapflags & CPIO_PAYLOAD_EXTRACT)) {
 	    if (!rc)
 		    (void) fsmNext(fsm, FSM_UNLINK);
 	    else
-		    rc = CPIOERR_UNLINK_FAILED;
+		    rc = IOSMERR_UNLINK_FAILED;
 	    fsm->path = fsm->opath;
 	    fsm->opath = NULL;
-	    return (rc ? rc : CPIOERR_ENOENT);	/* XXX HACK */
+	    return (rc ? rc : IOSMERR_ENOENT);	/* XXX HACK */
 	    /*@notreached@*/ break;
 	} else if (S_ISDIR(st->st_mode)) {
 	    if (S_ISDIR(ost->st_mode))		return 0;
 	    if (S_ISLNK(ost->st_mode)) {
 		rc = fsmUNSAFE(fsm, FSM_STAT);
-		if (rc == CPIOERR_ENOENT) rc = 0;
+		if (rc == IOSMERR_ENOENT) rc = 0;
 		if (rc) break;
 		errno = saveerrno;
 		if (S_ISDIR(ost->st_mode))	return 0;
@@ -2241,13 +2242,13 @@ if (!(fsmGetFi(fsm)->mapflags & CPIO_PAYLOAD_EXTRACT)) {
 	    /* XXX shouldn't do this with commit/undo. */
 	rc = 0;
 	if (fsm->stage == FSM_PROCESS) rc = fsmNext(fsm, FSM_UNLINK);
-	if (rc == 0)	rc = CPIOERR_ENOENT;
-	return (rc ? rc : CPIOERR_ENOENT);	/* XXX HACK */
+	if (rc == 0)	rc = IOSMERR_ENOENT;
+	return (rc ? rc : IOSMERR_ENOENT);	/* XXX HACK */
 	/*@notreached@*/ break;
 
     case FSM_UNLINK:
 	/* XXX Remove setuid/setgid bits on possibly hard linked files. */
-	if (fsm->mapFlags & CPIO_SBIT_CHECK) {
+	if (fsm->mapFlags & IOSM_SBIT_CHECK) {
 	    struct stat stb;
 	    if (Lstat(fsm->path, &stb) == 0 && S_ISREG(stb.st_mode) && (stb.st_mode & 06000) != 0) {
 		/* XXX rc = fsmNext(fsm, FSM_CHMOD); instead */
@@ -2259,11 +2260,11 @@ if (!(fsmGetFi(fsm)->mapflags & CPIO_PAYLOAD_EXTRACT)) {
 	    rpmlog(RPMLOG_DEBUG, " %8s (%s) %s\n", cur,
 		fsm->path, (rc < 0 ? strerror(errno) : ""));
 	if (rc < 0)
-	    rc = (errno == ENOENT ? CPIOERR_ENOENT : CPIOERR_UNLINK_FAILED);
+	    rc = (errno == ENOENT ? IOSMERR_ENOENT : IOSMERR_UNLINK_FAILED);
 	break;
     case FSM_RENAME:
 	/* XXX Remove setuid/setgid bits on possibly hard linked files. */
-	if (fsm->mapFlags & CPIO_SBIT_CHECK) {
+	if (fsm->mapFlags & IOSM_SBIT_CHECK) {
 	    struct stat stb;
 	    if (Lstat(fsm->path, &stb) == 0 && S_ISREG(stb.st_mode) && (stb.st_mode & 06000) != 0) {
 		/* XXX rc = fsmNext(fsm, FSM_CHMOD); instead */
@@ -2289,7 +2290,7 @@ if (!(fsmGetFi(fsm)->mapflags & CPIO_PAYLOAD_EXTRACT)) {
 	if (_fsm_debug && (stage & FSM_SYSCALL))
 	    rpmlog(RPMLOG_DEBUG, " %8s (%s, %s) %s\n", cur,
 		fsm->opath, fsm->path, (rc < 0 ? strerror(errno) : ""));
-	if (rc < 0)	rc = CPIOERR_RENAME_FAILED;
+	if (rc < 0)	rc = IOSMERR_RENAME_FAILED;
 	break;
     case FSM_MKDIR:
 	rc = Mkdir(fsm->path, (st->st_mode & 07777));
@@ -2297,7 +2298,7 @@ if (!(fsmGetFi(fsm)->mapflags & CPIO_PAYLOAD_EXTRACT)) {
 	    rpmlog(RPMLOG_DEBUG, " %8s (%s, 0%04o) %s\n", cur,
 		fsm->path, (unsigned)(st->st_mode & 07777),
 		(rc < 0 ? strerror(errno) : ""));
-	if (rc < 0)	rc = CPIOERR_MKDIR_FAILED;
+	if (rc < 0)	rc = IOSMERR_MKDIR_FAILED;
 	break;
     case FSM_RMDIR:
 	rc = Rmdir(fsm->path);
@@ -2306,9 +2307,9 @@ if (!(fsmGetFi(fsm)->mapflags & CPIO_PAYLOAD_EXTRACT)) {
 		fsm->path, (rc < 0 ? strerror(errno) : ""));
 	if (rc < 0)
 	    switch (errno) {
-	    case ENOENT:        rc = CPIOERR_ENOENT;    /*@switchbreak@*/ break;
-	    case ENOTEMPTY:     rc = CPIOERR_ENOTEMPTY; /*@switchbreak@*/ break;
-	    default:            rc = CPIOERR_RMDIR_FAILED; /*@switchbreak@*/ break;
+	    case ENOENT:        rc = IOSMERR_ENOENT;    /*@switchbreak@*/ break;
+	    case ENOTEMPTY:     rc = IOSMERR_ENOTEMPTY; /*@switchbreak@*/ break;
+	    default:            rc = IOSMERR_RMDIR_FAILED; /*@switchbreak@*/ break;
 	    }
 	break;
     case FSM_LSETFCON:
@@ -2322,7 +2323,7 @@ if (!(fsmGetFi(fsm)->mapflags & CPIO_PAYLOAD_EXTRACT)) {
 	    rpmlog(RPMLOG_DEBUG, " %8s (%s, %s) %s\n", cur,
 		fsm->path, fsm->fcontext,
 		(rc < 0 ? strerror(errno) : ""));
-	if (rc < 0) rc = (errno == EOPNOTSUPP ? 0 : CPIOERR_LSETFCON_FAILED);
+	if (rc < 0) rc = (errno == EOPNOTSUPP ? 0 : IOSMERR_LSETFCON_FAILED);
       }	break;
     case FSM_CHOWN:
 	rc = Chown(fsm->path, st->st_uid, st->st_gid);
@@ -2330,7 +2331,7 @@ if (!(fsmGetFi(fsm)->mapflags & CPIO_PAYLOAD_EXTRACT)) {
 	    rpmlog(RPMLOG_DEBUG, " %8s (%s, %d, %d) %s\n", cur,
 		fsm->path, (int)st->st_uid, (int)st->st_gid,
 		(rc < 0 ? strerror(errno) : ""));
-	if (rc < 0)	rc = CPIOERR_CHOWN_FAILED;
+	if (rc < 0)	rc = IOSMERR_CHOWN_FAILED;
 	break;
     case FSM_LCHOWN:
 #if ! CHOWN_FOLLOWS_SYMLINK
@@ -2339,7 +2340,7 @@ if (!(fsmGetFi(fsm)->mapflags & CPIO_PAYLOAD_EXTRACT)) {
 	    rpmlog(RPMLOG_DEBUG, " %8s (%s, %d, %d) %s\n", cur,
 		fsm->path, (int)st->st_uid, (int)st->st_gid,
 		(rc < 0 ? strerror(errno) : ""));
-	if (rc < 0)	rc = CPIOERR_CHOWN_FAILED;
+	if (rc < 0)	rc = IOSMERR_CHOWN_FAILED;
 #endif
 	break;
     case FSM_CHMOD:
@@ -2348,7 +2349,7 @@ if (!(fsmGetFi(fsm)->mapflags & CPIO_PAYLOAD_EXTRACT)) {
 	    rpmlog(RPMLOG_DEBUG, " %8s (%s, 0%04o) %s\n", cur,
 		fsm->path, (unsigned)(st->st_mode & 07777),
 		(rc < 0 ? strerror(errno) : ""));
-	if (rc < 0)	rc = CPIOERR_CHMOD_FAILED;
+	if (rc < 0)	rc = IOSMERR_CHMOD_FAILED;
 	break;
     case FSM_UTIME:
 	{   struct utimbuf stamp;
@@ -2359,7 +2360,7 @@ if (!(fsmGetFi(fsm)->mapflags & CPIO_PAYLOAD_EXTRACT)) {
 		rpmlog(RPMLOG_DEBUG, " %8s (%s, 0x%x) %s\n", cur,
 			fsm->path, (unsigned)st->st_mtime,
 			(rc < 0 ? strerror(errno) : ""));
-	    if (rc < 0)	rc = CPIOERR_UTIME_FAILED;
+	    if (rc < 0)	rc = IOSMERR_UTIME_FAILED;
 	}
 	break;
     case FSM_SYMLINK:
@@ -2367,14 +2368,14 @@ if (!(fsmGetFi(fsm)->mapflags & CPIO_PAYLOAD_EXTRACT)) {
 	if (_fsm_debug && (stage & FSM_SYSCALL))
 	    rpmlog(RPMLOG_DEBUG, " %8s (%s, %s) %s\n", cur,
 		fsm->lpath, fsm->path, (rc < 0 ? strerror(errno) : ""));
-	if (rc < 0)	rc = CPIOERR_SYMLINK_FAILED;
+	if (rc < 0)	rc = IOSMERR_SYMLINK_FAILED;
 	break;
     case FSM_LINK:
 	rc = Link(fsm->opath, fsm->path);
 	if (_fsm_debug && (stage & FSM_SYSCALL))
 	    rpmlog(RPMLOG_DEBUG, " %8s (%s, %s) %s\n", cur,
 		fsm->opath, fsm->path, (rc < 0 ? strerror(errno) : ""));
-	if (rc < 0)	rc = CPIOERR_LINK_FAILED;
+	if (rc < 0)	rc = IOSMERR_LINK_FAILED;
 	break;
     case FSM_MKFIFO:
 	rc = Mkfifo(fsm->path, (st->st_mode & 07777));
@@ -2382,7 +2383,7 @@ if (!(fsmGetFi(fsm)->mapflags & CPIO_PAYLOAD_EXTRACT)) {
 	    rpmlog(RPMLOG_DEBUG, " %8s (%s, 0%04o) %s\n", cur,
 		fsm->path, (unsigned)(st->st_mode & 07777),
 		(rc < 0 ? strerror(errno) : ""));
-	if (rc < 0)	rc = CPIOERR_MKFIFO_FAILED;
+	if (rc < 0)	rc = IOSMERR_MKFIFO_FAILED;
 	break;
     case FSM_MKNOD:
 	/*@-unrecog -portability @*/ /* FIX: check S_IFIFO or dev != 0 */
@@ -2393,7 +2394,7 @@ if (!(fsmGetFi(fsm)->mapflags & CPIO_PAYLOAD_EXTRACT)) {
 		fsm->path, (unsigned)(st->st_mode & ~07777),
 		(unsigned)st->st_rdev,
 		(rc < 0 ? strerror(errno) : ""));
-	if (rc < 0)	rc = CPIOERR_MKNOD_FAILED;
+	if (rc < 0)	rc = IOSMERR_MKNOD_FAILED;
 	break;
     case FSM_LSTAT:
 	rc = Lstat(fsm->path, ost);
@@ -2401,7 +2402,7 @@ if (!(fsmGetFi(fsm)->mapflags & CPIO_PAYLOAD_EXTRACT)) {
 	    rpmlog(RPMLOG_DEBUG, " %8s (%s, ost) %s\n", cur,
 		fsm->path, (rc < 0 ? strerror(errno) : ""));
 	if (rc < 0) {
-	    rc = (errno == ENOENT ? CPIOERR_ENOENT : CPIOERR_LSTAT_FAILED);
+	    rc = (errno == ENOENT ? IOSMERR_ENOENT : IOSMERR_LSTAT_FAILED);
 	    memset(ost, 0, sizeof(*ost));	/* XXX s390x hackery */
 	}
 	break;
@@ -2411,7 +2412,7 @@ if (!(fsmGetFi(fsm)->mapflags & CPIO_PAYLOAD_EXTRACT)) {
 	    rpmlog(RPMLOG_DEBUG, " %8s (%s, ost) %s\n", cur,
 		fsm->path, (rc < 0 ? strerror(errno) : ""));
 	if (rc < 0) {
-	    rc = (errno == ENOENT ? CPIOERR_ENOENT : CPIOERR_STAT_FAILED);
+	    rc = (errno == ENOENT ? IOSMERR_ENOENT : IOSMERR_STAT_FAILED);
 	    memset(ost, 0, sizeof(*ost));	/* XXX s390x hackery */
 	}
 	break;
@@ -2421,7 +2422,7 @@ if (!(fsmGetFi(fsm)->mapflags & CPIO_PAYLOAD_EXTRACT)) {
 	if (_fsm_debug && (stage & FSM_SYSCALL))
 	    rpmlog(RPMLOG_DEBUG, " %8s (%s, rdbuf, %d) %s\n", cur,
 		fsm->path, (int)(fsm->rdsize -1), (rc < 0 ? strerror(errno) : ""));
-	if (rc < 0)	rc = CPIOERR_READLINK_FAILED;
+	if (rc < 0)	rc = IOSMERR_READLINK_FAILED;
 	else {
 	    fsm->rdnb = rc;
 	    fsm->rdbuf[fsm->rdnb] = '\0';
@@ -2436,7 +2437,7 @@ if (!(fsmGetFi(fsm)->mapflags & CPIO_PAYLOAD_EXTRACT)) {
 	if (rc) break;
 	if (!strcmp(fsm->path, CPIO_TRAILER)) { /* Detect end-of-payload. */
 	    fsm->path = _free(fsm->path);
-	    rc = CPIOERR_HDR_TRAILER;
+	    rc = IOSMERR_HDR_TRAILER;
 	}
 	if (!rc)
 	    rc = fsmNext(fsm, FSM_POS);
@@ -2486,7 +2487,7 @@ if (!(fsmGetFi(fsm)->mapflags & CPIO_PAYLOAD_EXTRACT)) {
 		cur, (fsm->wrbuf == fsm->wrb ? "wrbuf" : "mmap"),
 		(int)fsm->wrlen, (int)fsm->rdnb);
 	if (fsm->rdnb != fsm->wrlen || Ferror(fsm->cfd))
-	    rc = CPIOERR_READ_FAILED;
+	    rc = IOSMERR_READ_FAILED;
 	if (fsm->rdnb > 0)
 	    fdSetCpioPos(fsm->cfd, fdGetCpioPos(fsm->cfd) + fsm->rdnb);
 	break;
@@ -2497,7 +2498,7 @@ if (!(fsmGetFi(fsm)->mapflags & CPIO_PAYLOAD_EXTRACT)) {
 		cur, (fsm->rdbuf == fsm->rdb ? "rdbuf" : "mmap"),
 		(int)fsm->rdnb, (int)fsm->wrnb);
 	if (fsm->rdnb != fsm->wrnb || Ferror(fsm->cfd))
-	    rc = CPIOERR_WRITE_FAILED;
+	    rc = IOSMERR_WRITE_FAILED;
 	if (fsm->wrnb > 0)
 	    fdSetCpioPos(fsm->cfd, fdGetCpioPos(fsm->cfd) + fsm->wrnb);
 	break;
@@ -2507,7 +2508,7 @@ if (!(fsmGetFi(fsm)->mapflags & CPIO_PAYLOAD_EXTRACT)) {
 	if (fsm->rfd == NULL || Ferror(fsm->rfd)) {
 	    if (fsm->rfd != NULL)	(void) fsmNext(fsm, FSM_RCLOSE);
 	    fsm->rfd = NULL;
-	    rc = CPIOERR_OPEN_FAILED;
+	    rc = IOSMERR_OPEN_FAILED;
 	    break;
 	}
 	if (_fsm_debug && (stage & FSM_SYSCALL))
@@ -2520,7 +2521,7 @@ if (!(fsmGetFi(fsm)->mapflags & CPIO_PAYLOAD_EXTRACT)) {
 	    rpmlog(RPMLOG_DEBUG, " %8s (rdbuf, %d, rfd)\trdnb %d\n",
 		cur, (int)fsm->rdlen, (int)fsm->rdnb);
 	if (fsm->rdnb != fsm->rdlen || Ferror(fsm->rfd))
-	    rc = CPIOERR_READ_FAILED;
+	    rc = IOSMERR_READ_FAILED;
 	break;
     case FSM_RCLOSE:
 	if (fsm->rfd != NULL) {
@@ -2538,7 +2539,7 @@ if (!(fsmGetFi(fsm)->mapflags & CPIO_PAYLOAD_EXTRACT)) {
 	if (fsm->wfd == NULL || Ferror(fsm->wfd)) {
 	    if (fsm->wfd != NULL)	(void) fsmNext(fsm, FSM_WCLOSE);
 	    fsm->wfd = NULL;
-	    rc = CPIOERR_OPEN_FAILED;
+	    rc = IOSMERR_OPEN_FAILED;
 	}
 	if (_fsm_debug && (stage & FSM_SYSCALL))
 	    rpmlog(RPMLOG_DEBUG, " %8s (%s, \"w\") wfd %p wrbuf %p\n", cur,
@@ -2550,7 +2551,7 @@ if (!(fsmGetFi(fsm)->mapflags & CPIO_PAYLOAD_EXTRACT)) {
 	    rpmlog(RPMLOG_DEBUG, " %8s (wrbuf, %d, wfd)\twrnb %d\n",
 		cur, (int)fsm->rdnb, (int)fsm->wrnb);
 	if (fsm->rdnb != fsm->wrnb || Ferror(fsm->wfd))
-	    rc = CPIOERR_WRITE_FAILED;
+	    rc = IOSMERR_WRITE_FAILED;
 	break;
     case FSM_WCLOSE:
 	if (fsm->wfd != NULL) {
@@ -2569,7 +2570,7 @@ if (!(fsmGetFi(fsm)->mapflags & CPIO_PAYLOAD_EXTRACT)) {
     }
 
     if (!(stage & FSM_INTERNAL)) {
-	fsm->rc = (rc == CPIOERR_HDR_TRAILER ? 0 : rc);
+	fsm->rc = (rc == IOSMERR_HDR_TRAILER ? 0 : rc);
     }
     return rc;
 }

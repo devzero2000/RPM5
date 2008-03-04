@@ -11,7 +11,6 @@
  */
 typedef /*@abstract@*/ struct fsm_s * FSM_t;
 
-#include "cpio.h"
 #include "rpmfi.h"	/* XXX fileAction typedef */
 
 /*@-exportlocal@*/
@@ -196,7 +195,7 @@ struct fsm_s {
     int rc;			/*!< External file stage return code. */
     int commit;			/*!< Commit synchronously? */
     int repackaged;		/*!< Is payload repackaged? */
-    cpioMapFlags mapFlags;	/*!< Bit(s) to control mapping. */
+    iosmMapFlags mapFlags;	/*!< Bit(s) to control mapping. */
     int fdigestalgo;		/*!< Digest algorithm (~= PGPHASHALGO_MD5) */
     int digestlen;		/*!< No. of bytes in binary digest (~= 16) */
 /*@shared@*/ /*@relnull@*/

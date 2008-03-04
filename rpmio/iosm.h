@@ -340,7 +340,7 @@ char * iosmStrerror(int rc)
  * @param goal
  * @param afmt		archive format (NULL uses cpio)
  * @param _ts		transaction set
- * @param fi		transaction element file info
+ * @param _fi		transaction element file info
  * @param cfd		payload descriptor
  * @retval archiveSize	pointer to archive size
  * @retval failedFile	pointer to first file name that failed.
@@ -348,12 +348,12 @@ char * iosmStrerror(int rc)
  */
 int iosmSetup(IOSM_t iosm, iosmStage goal, /*@null@*/ const char * afmt,
 		const void * _ts,
-		const rpmfi fi,
+		const void * _fi,
 		FD_t cfd,
 		/*@out@*/ /*@null@*/ unsigned int * archiveSize,
 		/*@out@*/ /*@null@*/ const char ** failedFile)
 	/*@globals h_errno, fileSystem, internalState @*/
-	/*@modifies iosm, _ts, fi, *archiveSize, *failedFile,
+	/*@modifies iosm, _ts, _fi, *archiveSize, *failedFile,
 		fileSystem, internalState @*/;
 
 /**

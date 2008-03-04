@@ -38,7 +38,10 @@ typedef /*@abstract@*/ void * alKey;
 #include "rpmte.h"
 #endif
 
+#undef	_USE_RPMSX
+#if defined(_USE_RPMSX)
 #include "../lib/rpmsx.h"		/* XXX rpmsx rpmsxFContext rpmsxFree */
+#endif
 
 typedef /*@abstract@*/ /*@refcounted@*/ struct rpmdb_s * rpmdb;
 typedef /*@abstract@*/ struct rpmdbMatchIterator_s * rpmdbMatchIterator;
@@ -214,7 +217,7 @@ static int mapNextIterator(/*@null@*/ void * a)
 
 /** \ingroup payload
  */
-static int cpioStrCmp(const void * a, const void * b)
+static int iosmStrCmp(const void * a, const void * b)
 	/*@*/
 {
     const char * aurl = *(const char **)a;
@@ -265,7 +268,7 @@ static int mapFind(/*@null@*/ IOSMI_t iter, const char * iosmPath)
 
 	    if (fi->apath != NULL)
 		p = bsearch(&iosmPath, fi->apath, fc, sizeof(iosmPath),
-			cpioStrCmp);
+			iosmStrCmp);
 	    if (p) {
 		iter->i = p - fi->apath;
 		ix = mapNextIterator(iter);
@@ -668,12 +671,13 @@ static int arSetup(IOSM_t iosm, rpmfi fi)
 }
 
 int iosmSetup(IOSM_t iosm, iosmStage goal, const char * afmt,
-		const void * _ts, const rpmfi fi, FD_t cfd,
+		const void * _ts, const void * _fi, FD_t cfd,
 		unsigned int * archiveSize, const char ** failedFile)
 {
 #if defined(_USE_RPMTS)
     const rpmts ts = (const rpmts) _ts;
 #endif
+/*@i@*/ const rpmfi fi = (const rpmfi) _fi;
 #if defined(_USE_RPMTE)
     int reverse = (rpmteType(fi->te) == TR_REMOVED && fi->action != FA_COPYOUT);
 #else
@@ -1477,6 +1481,7 @@ static int iosmMkdirs(/*@special@*/ /*@partial@*/ IOSM_t iosm)
     int dc = dnlCount(dnli);
     int rc = 0;
     int i;
+#if defined(_USE_RPMSX)
 #if defined(_USE_RPMTS)
 /*@-compdef@*/
     rpmts ts = iosmGetTs(iosm);
@@ -1487,6 +1492,7 @@ static int iosmMkdirs(/*@special@*/ /*@partial@*/ IOSM_t iosm)
 	? rpmtsREContext(ts) : NULL;
 #else
     rpmsx sx = NULL;
+#endif
 #endif
 
     iosm->path = NULL;
@@ -1549,12 +1555,14 @@ static int iosmMkdirs(/*@special@*/ /*@partial@*/ IOSM_t iosm)
 		st->st_mode = S_IFDIR | (fi->dperms & 07777);
 		rc = iosmNext(iosm, IOSM_MKDIR);
 		if (!rc) {
+#if defined(_USE_RPMSX)
 		    /* XXX FIXME? only new dir will have context set. */
 		    /* Get file security context from patterns. */
 		    if (sx != NULL) {
 			iosm->fcontext = rpmsxFContext(sx, iosm->path, st->st_mode);
 			rc = iosmNext(iosm, IOSM_LSETFCON);
 		    }
+#endif
 		    if (iosm->fcontext == NULL)
 			rpmlog(RPMLOG_DEBUG,
 			    D_("%s directory created with perms %04o, no context.\n"),
@@ -1586,7 +1594,9 @@ static int iosmMkdirs(/*@special@*/ /*@partial@*/ IOSM_t iosm)
 /*@=compdef@*/
     }
     dnli = dnlFreeIterator(dnli);
+#if defined(_USE_RPMSX)
     sx = rpmsxFree(sx);
+#endif
     /*@=observertrans =dependenttrans@*/
 
     iosm->path = path;

@@ -17,12 +17,11 @@
 #include <rpmio_internal.h>	/* XXX fdGetFp */
 #include <fts.h>
 
+#include "iosm.h"
 #define	_RPMTAG_INTERNAL	/* XXX rpmTags->aTags */
 #define	_RPMFI_INTERNAL
 #define	_RPMTE_INTERNAL
 #include <rpmbuild.h>
-
-#include "cpio.h"
 
 #include "argv.h"
 #include "rpmfc.h"
@@ -1707,10 +1706,10 @@ if (_rpmbuildFlags & 4) {
 	    continue;
 	}
 	fi->actions[i] = FA_COPYOUT;
-	fi->fmapflags[i] = CPIO_MAP_PATH |
-		CPIO_MAP_TYPE | CPIO_MAP_MODE | CPIO_MAP_UID | CPIO_MAP_GID;
+	fi->fmapflags[i] = IOSM_MAP_PATH |
+		IOSM_MAP_TYPE | IOSM_MAP_MODE | IOSM_MAP_UID | IOSM_MAP_GID;
 	if (isSrc)
-	    fi->fmapflags[i] |= CPIO_FOLLOW_SYMLINKS;
+	    fi->fmapflags[i] |= IOSM_FOLLOW_SYMLINKS;
 
     }
     /*@-compdef@*/

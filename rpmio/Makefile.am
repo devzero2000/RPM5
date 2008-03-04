@@ -4,7 +4,7 @@ AUTOMAKE_OPTIONS = 1.4 foreign
 
 LINT = splint
 
-EXTRA_DIST = ar.c cpio.c iosm.c tar.c tdeb.c tdir.c tfts.c tget.c tglob.c thkp.c thtml.c tinv.c tkey.c tmire.c tput.c trpmio.c tsw.c ttar.c lookup3.c tpw.c librpmio.vers testit.sh rpmgrep.1
+EXTRA_DIST = tdeb.c tdir.c tfts.c tget.c tglob.c thkp.c thtml.c tinv.c tkey.c tmire.c tput.c trpmio.c tsw.c ttar.c lookup3.c tpw.c librpmio.vers testit.sh rpmgrep.1
 
 EXTRA_PROGRAMS = tdeb tdir tfts tget tglob thkp thtml tinv tkey tmacro tmagic tmire tput tpw trpmio tsw ttar dumpasn1 lookup3
 
@@ -55,13 +55,13 @@ noinst_HEADERS = \
 usrlibdir = $(libdir)
 usrlib_LTLIBRARIES = librpmio.la
 librpmio_la_SOURCES = \
-	argv.c digest.c fts.c getpass.c macro.c mire.c mount.c \
+	ar.c argv.c cpio.c digest.c fts.c getpass.c iosm.c macro.c mire.c mount.c \
 	md2.c md4.c poptIO.c rmd128.c rmd160.c rmd256.c rmd320.c sha224.c \
 	salsa10.c salsa20.c tiger.c LzmaDecode.c \
 	rpmbc.c rpmdav.c rpmhash.c rpmhook.c rpmio.c rpmio-stub.c \
 	rpmlog.c rpmlua.c rpmmalloc.c rpmmg.c rpmnss.c rpmpgp.c \
 	rpmrpc.c rpmsq.c rpmssl.c rpmsw.c rpmxar.c \
-	strcasecmp.c stringbuf.c strtolocale.c url.c ugid.c rpmuuid.c
+	strcasecmp.c stringbuf.c strtolocale.c tar.c url.c ugid.c rpmuuid.c
 librpmio_la_LDFLAGS = -release $(LT_CURRENT).$(LT_REVISION)
 if HAVE_LD_VERSION_SCRIPT
 librpmio_la_LDFLAGS += -Wl,--version-script=$(srcdir)/librpmio.vers
@@ -158,7 +158,7 @@ EXTRA_DIST += \
 rpmdigest_SOURCES = rpmdigest.c
 rpmdigest_LDADD = $(RPMIO_LDADD)
 
-tdeb_SOURCES = tdeb.c iosm.c ar.c cpio.c tar.c
+tdeb_SOURCES = tdeb.c
 tdeb_LDFLAGS = $(RPM_LDADD)
 
 tdir_SOURCES = tdir.c

@@ -10,6 +10,7 @@
 #include <rpmurl.h>	/* XXX urlGetPath */
 #include <rpmlib.h>
 
+#include "iosm.h"
 #define	_RPMFI_INTERNAL
 #include "fsm.h"	/* XXX newFSM() */
 #include "legacy.h"	/* XXX dodigest */
@@ -1362,9 +1363,9 @@ assert(scareMem == 0);		/* XXX always allocate memory */
 if (fi->actions == NULL)
 	fi->actions = xcalloc(fi->fc, sizeof(*fi->actions));
 
-    /* XXX TR_REMOVED needs CPIO_MAP_{ABSOLUTE,ADDDOT} CPIO_ALL_HARDLINKS */
+    /* XXX TR_REMOVED needs IOSM_MAP_{ABSOLUTE,ADDDOT} IOSM_ALL_HARDLINKS */
     fi->mapflags =
-		CPIO_MAP_PATH | CPIO_MAP_MODE | CPIO_MAP_UID | CPIO_MAP_GID;
+		IOSM_MAP_PATH | IOSM_MAP_MODE | IOSM_MAP_UID | IOSM_MAP_GID;
 
     _fdupedata(h, RPMTAG_FILELINKTOS, fi->flinks);
     _fdupedata(h, RPMTAG_FILELANGS, fi->flangs);

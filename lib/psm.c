@@ -13,6 +13,7 @@
 #include <rpmtag.h>
 #include <rpmlib.h>
 
+#include "iosm.h"
 #define	_RPMFI_INTERNAL
 #include "fsm.h"		/* XXX CPIO_FOO/FSM_FOO constants */
 #define	_RPMSQ_INTERNAL
@@ -266,7 +267,7 @@ assert(((rpmte)fi->te)->h == NULL);	/* XXX headerFree side effect */
 
     /* XXX FIXME: don't do per-file mapping, force global flags. */
     fi->fmapflags = _free(fi->fmapflags);
-    fi->mapflags = CPIO_MAP_PATH | CPIO_MAP_MODE | CPIO_MAP_UID | CPIO_MAP_GID;
+    fi->mapflags = IOSM_MAP_PATH | IOSM_MAP_MODE | IOSM_MAP_UID | IOSM_MAP_GID;
 
     fi->uid = getuid();
     fi->gid = getgid();
@@ -1775,7 +1776,7 @@ assert(psm->mi == NULL);
 	    fi->striplen = (xx && he->p.str ? strlen(he->p.str) + 1 : 1);
 	    he->p.ptr = _free(he->p.ptr);
 	    fi->mapflags =
-		CPIO_MAP_PATH | CPIO_MAP_MODE | CPIO_MAP_UID | CPIO_MAP_GID | (fi->mapflags & CPIO_SBIT_CHECK);
+		IOSM_MAP_PATH | IOSM_MAP_MODE | IOSM_MAP_UID | IOSM_MAP_GID | (fi->mapflags & IOSM_SBIT_CHECK);
 	
 	    if (headerIsEntry(fi->h, RPMTAG_ORIGBASENAMES))
 		he->tag = RPMTAG_ORIGPATHS;
@@ -2100,7 +2101,7 @@ assert(psm->te != NULL);
 	    xx = rpmpsmNext(psm, PSM_NOTIFY);
 
 	    if (rc) {
-		const char * msg = cpioStrerror(rc);
+		const char * msg = iosmStrerror(rc);
 		rpmlog(RPMLOG_ERR,
 			_("unpacking of archive failed%s%s: %s\n"),
 			(psm->failedFile != NULL ? _(" on file ") : ""),
@@ -2283,7 +2284,7 @@ assert(psm->te != NULL);
 	}
 
 	if (rc) {
-	    const char * msg = cpioStrerror(rc);
+	    const char * msg = iosmStrerror(rc);
 	    if (psm->failedFile)
 		rpmlog(RPMLOG_ERR,
 			_("%s failed on file %s: %s\n"),
