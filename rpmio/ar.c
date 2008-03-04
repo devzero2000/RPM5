@@ -99,7 +99,7 @@ top:
     rc = arRead(iosm, hdr, sizeof(*hdr));
     if (rc <= 0)	return (int) -rc;
 if (_ar_debug)
-fprintf(stderr, "==> %p[%u] \"%.*s\"\n", hdr, (unsigned)rc, (int)sizeof(*hdr), (char *)hdr);
+fprintf(stderr, "==> %p[%u] \"%.*s\"\n", hdr, (unsigned)rc, (int)sizeof(*hdr)-2, (char *)hdr);
     rc = 0;
 
     /* Verify header marker. */

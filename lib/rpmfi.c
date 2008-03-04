@@ -10,7 +10,6 @@
 #include <rpmurl.h>	/* XXX urlGetPath */
 #include <rpmlib.h>
 
-#include "iosm.h"
 #define	_RPMFI_INTERNAL
 #include "fsm.h"	/* XXX newFSM() */
 #include "legacy.h"	/* XXX dodigest */

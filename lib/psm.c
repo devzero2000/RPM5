@@ -13,9 +13,9 @@
 #include <rpmtag.h>
 #include <rpmlib.h>
 
-#include "iosm.h"
 #define	_RPMFI_INTERNAL
-#include "fsm.h"		/* XXX CPIO_FOO/FSM_FOO constants */
+#include "rpmfi.h"
+#include "fsm.h"		/* XXX CPIO_FOO/IOSM_FOO constants */
 #define	_RPMSQ_INTERNAL
 #include "psm.h"
 
@@ -2076,7 +2076,7 @@ assert(psm->te != NULL);
 		break;
 	    }
 
-	    rc = fsmSetup(fi->fsm, FSM_PKGINSTALL, psm->payload_format, ts, fi,
+	    rc = fsmSetup(fi->fsm, IOSM_PKGINSTALL, psm->payload_format, ts, fi,
 			psm->cfd, NULL, &psm->failedFile);
 	    (void) rpmswAdd(rpmtsOp(ts, RPMTS_OP_UNCOMPRESS),
 			fdstat_op(psm->cfd, FDSTAT_READ));
@@ -2131,7 +2131,7 @@ assert(psm->te != NULL);
 	    xx = rpmpsmNext(psm, PSM_NOTIFY);
 
 	    if (fc > 0) {
-		rc = fsmSetup(fi->fsm, FSM_PKGERASE, psm->payload_format, ts, fi,
+		rc = fsmSetup(fi->fsm, IOSM_PKGERASE, psm->payload_format, ts, fi,
 			NULL, NULL, &psm->failedFile);
 		xx = fsmTeardown(fi->fsm);
 	    }
@@ -2162,7 +2162,7 @@ assert(psm->te != NULL);
 		break;
 	    }
 
-	    rc = fsmSetup(fi->fsm, FSM_PKGBUILD, psm->payload_format, ts, fi,
+	    rc = fsmSetup(fi->fsm, IOSM_PKGBUILD, psm->payload_format, ts, fi,
 			psm->cfd, NULL, &psm->failedFile);
 	    (void) rpmswAdd(rpmtsOp(ts, RPMTS_OP_COMPRESS),
 			fdstat_op(psm->cfd, FDSTAT_WRITE));
@@ -2357,7 +2357,7 @@ psm->te->h = headerFree(psm->te->h);
 	if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_PKGCOMMIT)) break;
 	if (rpmtsFlags(ts) & RPMTRANS_FLAG_APPLYONLY) break;
 
-	rc = fsmSetup(fi->fsm, FSM_PKGCOMMIT, psm->payload_format, ts, fi,
+	rc = fsmSetup(fi->fsm, IOSM_PKGCOMMIT, psm->payload_format, ts, fi,
 			NULL, NULL, &psm->failedFile);
 	xx = fsmTeardown(fi->fsm);
 	break;

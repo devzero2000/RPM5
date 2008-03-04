@@ -106,6 +106,7 @@ static int rpmarCreate(rpmts ts, /*@unused@*/ const char ** av)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
+fprintf(stderr, "--> rpmarCreate(%p, %p) \"%s\"\n", ts, av, arfn);
     return rpmIOSM(ts, (arfn ? arfn : "-"), IOSM_PAYLOAD_CREATE);
 }
 
@@ -113,6 +114,7 @@ static int rpmarExtract(rpmts ts, /*@unused@*/ const char ** av)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
+fprintf(stderr, "--> rpmarExtract(%p, %p) \"%s\"\n", ts, av, arfn);
     return rpmIOSM(ts, (arfn ? arfn : "-"), IOSM_PAYLOAD_EXTRACT);
 }
 
@@ -120,6 +122,7 @@ static int rpmarList(rpmts ts, /*@unused@*/ const char ** av)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
+fprintf(stderr, "--> rpmarList(%p, %p) \"%s\"\n", ts, av, arfn);
     return rpmIOSM(ts, (arfn ? arfn : "-"), IOSM_PAYLOAD_LIST);
 }
 
@@ -168,7 +171,6 @@ _iosm_debug = -1;
 _ar_debug = 1;
 rpmIncreaseVerbosity();
 rpmIncreaseVerbosity();
-    if (av != NULL)
     switch (armode) {
     default:
 	break;

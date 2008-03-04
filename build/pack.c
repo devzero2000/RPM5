@@ -12,7 +12,7 @@
 #include <rpmbuild.h>
 #include "signature.h"		/* XXX rpmTempFile */
 
-#include "iosm.h"
+#include "rpmfi.h"
 #include "fsm.h"
 
 #include "buildio.h"
@@ -78,7 +78,7 @@ static rpmRC cpio_doio(FD_t fdo, /*@unused@*/ Header h, CSA_t csa,
     if (cfd == NULL)
 	return RPMRC_FAIL;
 
-    xx = fsmSetup(fi->fsm, FSM_PKGBUILD, payload_format, ts, fi, cfd,
+    xx = fsmSetup(fi->fsm, IOSM_PKGBUILD, payload_format, ts, fi, cfd,
 		&csa->cpioArchiveSize, &failedFile);
     if (xx)
 	rc = RPMRC_FAIL;

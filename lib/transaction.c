@@ -14,10 +14,9 @@
 #include "legacy.h"	/* XXX dodigest */
 
 #include <rpmlib.h>
-#include "iosm.h"
 #define	_RPMFI_INTERNAL
-#include "fsm.h"
 #include <rpmfi.h>
+#include "fsm.h"
 
 #define	_RPMTS_INTERNAL
 #define	_RPMTE_INTERNAL

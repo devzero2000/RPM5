@@ -137,6 +137,8 @@ LIBRPMIO_0
     htHasEntry;
     _init;
     _iosm_debug;
+    iosmFileActionString;
+    iosmFileStageString;
     _iosmNext;
     iosmNext;
     iosmSetup;

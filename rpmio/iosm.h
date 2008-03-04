@@ -11,7 +11,7 @@
  */
 typedef /*@abstract@*/ struct iosm_s * IOSM_t;
 
-typedef	int iosmAction;
+typedef	int iosmFileAction;
 
 /*@-exportlocal@*/
 /*@unchecked@*/
@@ -89,7 +89,7 @@ enum iosmErrorReturns {
 #define	_fs(_a)		((_a) | (IOSM_INTERNAL | IOSM_SYSCALL))
 #define	_fd(_a)		((_a) | (IOSM_INTERNAL | IOSM_DEAD))
 
-typedef enum iosmStage_e {
+typedef enum iosmFileStage_e {
     IOSM_UNKNOWN =   0,
     IOSM_INIT	=  _fd(1),
     IOSM_PRE	=  _fd(2),
@@ -148,7 +148,7 @@ typedef enum iosmStage_e {
     IOSM_WOPEN	=  _fs(132),
     IOSM_WRITE	=  _fs(133),
     IOSM_WCLOSE	=  _fs(134)
-} iosmStage;
+} iosmFileStage;
 #undef	_fv
 #undef	_fi
 #undef	_fs
@@ -269,10 +269,10 @@ struct iosm_s {
     const char * fcontext;	/*!< File security context (NULL disables). */
     
     unsigned fflags;		/*!< File flags. */
-    iosmAction action;		/*!< File disposition. */
-    iosmStage goal;		/*!< Package state machine goal. */
-    iosmStage stage;		/*!< External file stage. */
-    iosmStage nstage;		/*!< Next file stage. */
+    iosmFileAction action;	/*!< File disposition. */
+    iosmFileStage goal;		/*!< Package state machine goal. */
+    iosmFileStage stage;	/*!< External file stage. */
+    iosmFileStage nstage;	/*!< Next file stage. */
     struct stat sb;		/*!< Current file stat(2) info. */
     struct stat osb;		/*!< Original file stat(2) info. */
 
@@ -300,14 +300,14 @@ extern "C" {
  * @param a		file stage
  * @return		formatted string
  */
-/*@observer@*/ const char * iosmStageString(iosmStage a)	/*@*/;
+/*@observer@*/ const char * iosmFileStageString(iosmFileStage a)	/*@*/;
 
 /**
  * Return formatted string representation of file disposition.
  * @param a		file dispostion
  * @return		formatted string
  */
-/*@observer@*/ const char * iosmActionString(iosmAction a)	/*@*/;
+/*@observer@*/ const char * iosmFileActionString(iosmFileAction a)	/*@*/;
 /*@=exportlocal@*/
 
 /** \ingroup payload
@@ -346,7 +346,7 @@ char * iosmStrerror(int rc)
  * @retval failedFile	pointer to first file name that failed.
  * @return		0 on success
  */
-int iosmSetup(IOSM_t iosm, iosmStage goal, /*@null@*/ const char * afmt,
+int iosmSetup(IOSM_t iosm, iosmFileStage goal, /*@null@*/ const char * afmt,
 		const void * _ts,
 		const void * _fi,
 		FD_t cfd,
@@ -411,7 +411,7 @@ extern int (*_iosmNext) (void * _iosm, int nstage)
  * @param nstage	next stage
  * @return		0 on success
  */
-int iosmNext(IOSM_t iosm, iosmStage nstage)
+int iosmNext(IOSM_t iosm, iosmFileStage nstage)
 	/*@globals errno, h_errno, fileSystem, internalState @*/
 	/*@modifies iosm, errno, fileSystem, internalState @*/;
 
@@ -422,7 +422,7 @@ int iosmNext(IOSM_t iosm, iosmStage nstage)
  * @return		0 on success
  */
 /*@-exportlocal@*/
-int XiosmStage(/*@partial@*/ IOSM_t iosm, iosmStage stage)
+int iosmStage(/*@partial@*/ IOSM_t iosm, iosmFileStage stage)
 	/*@globals errno, h_errno, fileSystem, internalState @*/
 	/*@modifies iosm, errno, fileSystem, internalState @*/;
 /*@=exportlocal@*/

@@ -19,7 +19,7 @@ typedef /*@abstract@*/ struct rpmte_s * rpmte;
 
 #define	_RPMIOSM_INTERNAL
 #include "iosm.h"
-#define	iosmUNSAFE	XiosmStage
+#define	iosmUNSAFE	iosmStage
 
 #include "cpio.h"
 #include "tar.h"
@@ -457,12 +457,12 @@ static void * iosmThread(void * arg)
 {
     IOSM_t iosm = arg;
 /*@-unqualifiedtrans@*/
-    return ((void *) ((long)XiosmStage(iosm, iosm->nstage)));
+    return ((void *) ((long)iosmStage(iosm, iosm->nstage)));
 /*@=unqualifiedtrans@*/
 }
 #endif
 
-int iosmNext(IOSM_t iosm, iosmStage nstage)
+int iosmNext(IOSM_t iosm, iosmFileStage nstage)
 	/*@globals h_errno, fileSystem, internalState @*/
 	/*@modifies iosm, fileSystem, internalState @*/
 {
@@ -471,7 +471,7 @@ int iosmNext(IOSM_t iosm, iosmStage nstage)
     if (_iosm_threads)
 	return rpmsqJoin( rpmsqThread(iosmThread, iosm) );
 #endif
-    return XiosmStage(iosm, iosm->nstage);
+    return iosmStage(iosm, iosm->nstage);
 }
 
 /** \ingroup payload
@@ -670,7 +670,7 @@ static int arSetup(IOSM_t iosm, rpmfi fi)
     return 0;
 }
 
-int iosmSetup(IOSM_t iosm, iosmStage goal, const char * afmt,
+int iosmSetup(IOSM_t iosm, iosmFileStage goal, const char * afmt,
 		const void * _ts, const void * _fi, FD_t cfd,
 		unsigned int * archiveSize, const char ** failedFile)
 {
@@ -1644,13 +1644,13 @@ static int iosmStat(/*@special@*/ /*@partial@*/ IOSM_t iosm)
 	 (_x)[sizeof("/dev/log")-1] == ';'))
 
 /*@-compmempass@*/
-int XiosmStage(IOSM_t iosm, iosmStage stage)
+int iosmStage(IOSM_t iosm, iosmFileStage stage)
 {
 #ifdef	UNUSED
-    iosmStage prevStage = iosm->stage;
-    const char * const prev = iosmStageString(prevStage);
+    iosmFileStage prevStage = iosm->stage;
+    const char * const prev = iosmFileStageString(prevStage);
 #endif
-    const char * const cur = iosmStageString(stage);
+    const char * const cur = iosmFileStageString(stage);
     struct stat * st = &iosm->sb;
     struct stat * ost = &iosm->osb;
     int saveerrno = errno;
@@ -1660,7 +1660,7 @@ int XiosmStage(IOSM_t iosm, iosmStage stage)
 
 #define	_fafilter(_a)	\
     (!((_a) == FA_CREATE || (_a) == FA_ERASE || (_a) == FA_COPYIN || (_a) == FA_COPYOUT) \
-	? iosmActionString(_a) : "")
+	? iosmFileActionString(_a) : "")
 
     if (stage & IOSM_DEAD) {
 	/* do nothing */
@@ -2687,7 +2687,7 @@ if (!(fi->mapflags & IOSM_PAYLOAD_EXTRACT)) {
 }
 /*@=compmempass@*/
 
-/*@observer@*/ const char * iosmActionString(iosmAction a)
+/*@observer@*/ const char * iosmFileActionString(iosmFileAction a)
 {
     switch (a) {
     case FA_UNKNOWN:	return "unknown";
@@ -2707,7 +2707,7 @@ if (!(fi->mapflags & IOSM_PAYLOAD_EXTRACT)) {
     /*@notreached@*/
 }
 
-/*@observer@*/ const char * iosmStageString(iosmStage a) {
+/*@observer@*/ const char * iosmFileStageString(iosmFileStage a) {
     switch(a) {
     case IOSM_UNKNOWN:	return "unknown";
 
