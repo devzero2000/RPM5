@@ -53,7 +53,7 @@ int _fsm_threads = 0;
 /* XXX Failure to remove is not (yet) cause for failure. */
 /*@-exportlocal -exportheadervar@*/
 /*@unchecked@*/
-int strict_erasures = 0;
+static int strict_erasures = 0;
 /*@=exportlocal =exportheadervar@*/
 
 rpmts fsmGetTs(const FSM_t fsm) {
