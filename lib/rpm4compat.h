@@ -43,9 +43,9 @@
 #define _RPMPS_INTERNAL
 #define _RPMEVR_INTERNAL
 #define _RPMTAG_INTERNAL
+#include <rpm/rpmio.h>
 #include <rpm/rpmlib.h>
 #include <rpm/rpmevr.h>
-#include <rpm/rpmio.h>
 #include <rpm/pkgio.h>
 #include <rpm/rpmcb.h>
 #include <rpm/rpmts.h>
