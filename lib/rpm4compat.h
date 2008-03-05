@@ -31,6 +31,7 @@
 #include <rpm/rpmts.h>
 #include <rpm/rpmmacro.h>
 #include <rpm/rpmpgp.h>
+#include <rpm/rpmurl.h>
 
 enum hMagic {
 	HEADER_MAGIC_NO             = 0,
@@ -102,11 +103,36 @@ inline int headerGetRawEntry(Header h, int_32 tag, hTYP_t type, void * p, hCNT_t
 	return rc;
 }
 
-inline void rpmfiBuildFNames(Header h, rpmTag tagN, const char *** fnp, int * fcp) {
+inline void *vmefail(size_t size)
+{
+	fprintf(stderr, ("memory alloc (%u bytes) returned NULL.\n"), (unsigned)size);
+	exit(EXIT_FAILURE);
+	return NULL;
+}
+
+inline void * xmalloc (size_t size)
+{
+	register void *value;
+	if (size == 0) size++;
+	value = malloc (size);
+	if (value == 0)
+		value = vmefail(size);
+	return value;
+}
+
+#if !defined(EXIT_FAILURE)
+#define	EXIT_FAILURE	1
+#endif
+
+#if !defined(HAVE_STPCPY)
+char * stpcpy(char * dest, const char * src);
+#endif
+
+inline void rpmfiBuildFNames(Header h, rpmTag tagN, const char *** fnp, rpmTagCount * fcp) {
 	HE_t he = (HE_s*)memset(alloca(sizeof(*he)), 0, sizeof(*he));
 
-	rpmTag dirNameTag = 0;
-	rpmTag dirIndexesTag = 0;
+	rpmTag dirNameTag = (rpmTag)0;
+	rpmTag dirIndexesTag = (rpmTag)0;
 	rpmTagData baseNames;
 	rpmTagData dirNames;
 	rpmTagData dirIndexes;
@@ -156,7 +182,7 @@ inline void rpmfiBuildFNames(Header h, rpmTag tagN, const char *** fnp, int * fc
 		size += strlen(baseNames.argv[i]) + strlen(dn) + 1;
 	}
 
-	fileNames.argv = (malloc(size) ? : vmefail(size));
+	fileNames.argv = (const char**)xmalloc(size);
 	t = (char *)&fileNames.argv[count];
 	for (i = 0; i < (unsigned)count; i++) {
 		const char * dn = NULL;
