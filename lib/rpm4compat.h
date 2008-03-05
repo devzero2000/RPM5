@@ -105,7 +105,7 @@ static inline int headerGetEntry(Header h, int_32 tag, hTYP_t type, void ** p, h
 }
 
 
-inline int headerGetRawEntry(Header h, int_32 tag, hTYP_t type, void * p, hCNT_t c) {
+static inline int headerGetRawEntry(Header h, int_32 tag, hTYP_t type, void * p, hCNT_t c) {
 	HE_t he = (HE_s*)memset(alloca(sizeof(*he)), 0, sizeof(*he));
 	int rc;
 
@@ -130,7 +130,7 @@ extern char *stpcpy (char *__restrict __dest, __const char *__restrict __src)
 	__THROW __nonnull ((1, 2));
 #endif
 
-inline void rpmfiBuildFNames(Header h, rpmTag tagN, const char *** fnp, rpmTagCount * fcp) {
+static inline void rpmfiBuildFNames(Header h, rpmTag tagN, const char *** fnp, rpmTagCount * fcp) {
 	HE_t he = (HE_s*)memset(alloca(sizeof(*he)), 0, sizeof(*he));
 
 	rpmTag dirNameTag = (rpmTag)0;
@@ -221,7 +221,7 @@ static inline int headerRemoveEntry(Header h, int_32 tag) {
 	return headerDel(h, he, 0);
 }
 
-inline int headerModifyEntry(Header h, int_32 tag, int_32 type, const void * p, int_32 c) {
+static inline int headerModifyEntry(Header h, int_32 tag, int_32 type, const void * p, int_32 c) {
 	HE_t he = (HE_s*)memset(alloca(sizeof(*he)), 0, sizeof(*he));
 
 	he->tag = (rpmTag)tag;
@@ -247,7 +247,7 @@ static inline HeaderIterator headerInitIterator(Header h){
 	return headerInit(h);
 }
 
-inline void * headerFreeData(const void * data, rpmTagType type) {
+static inline void * headerFreeData(const void * data, rpmTagType type) {
 	if (data)
 		free((void *)data);
 	return NULL;
@@ -282,7 +282,7 @@ static inline Header headerRead(void * _fd, enum hMagic magicp) {
 	return h;
 }
 
-inline int rpmMachineScore(int type, const char * name) {
+static inline int rpmMachineScore(int type, const char * name) {
 	char * platform = rpmExpand(name, "-%{_real_vendor}-%{_target_os}%{?_gnu}", NULL);
 	int score = rpmPlatformScore(platform, NULL, 0);
 
@@ -293,7 +293,7 @@ inline int rpmMachineScore(int type, const char * name) {
 #ifdef __cplusplus
 }
 
-inline rpmds rpmdsSingle(rpmTag tagN, const char * N, const char * EVR, int_32 Flags){
+static inline rpmds rpmdsSingle(rpmTag tagN, const char * N, const char * EVR, int_32 Flags){
 	return rpmdsSingle(tagN, N, EVR, (evrFlags)Flags);
 }
 
@@ -305,7 +305,7 @@ typedef void * (*rpmCallbackFunction_old)
 		 fnpyKey key,
 		 rpmCallbackData data);
 
-inline int rpmtsSetNotifyCallback(rpmts ts, rpmCallbackFunction_old notify, rpmCallbackData notifyData){
+static inline int rpmtsSetNotifyCallback(rpmts ts, rpmCallbackFunction_old notify, rpmCallbackData notifyData){
 	return rpmtsSetNotifyCallback(ts, (rpmCallbackFunction)notify, notifyData);
 }
 #endif
