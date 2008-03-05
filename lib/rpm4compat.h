@@ -294,18 +294,6 @@ static inline int rpmMachineScore(int type, const char * name) {
 static inline rpmds rpmdsSingle(rpmTag tagN, const char * N, const char * EVR, int_32 Flags){
 	return rpmdsSingle(tagN, N, EVR, (evrFlags)Flags);
 }
-
-typedef void * (*rpmCallbackFunction_old)
-		(const void * h,
-		 const rpmCallbackType what,
-		 const unsigned long long amount,
-		 const unsigned long long total,
-		 fnpyKey key,
-		 rpmCallbackData data);
-
-static inline int rpmtsSetNotifyCallback(rpmts ts, rpmCallbackFunction_old notify, rpmCallbackData notifyData){
-	return rpmtsSetNotifyCallback(ts, (rpmCallbackFunction)notify, notifyData);
-}
 #endif
 
 #endif /* rpm4compat.h */
