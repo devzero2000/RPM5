@@ -125,11 +125,6 @@ static inline int headerGetRawEntry(Header h, int_32 tag, hTYP_t type, void * p,
 	return rc;
 }
 
-#if !defined(HAVE_STPCPY)
-extern char *stpcpy (char *__restrict __dest, __const char *__restrict __src)
-	__THROW __nonnull ((1, 2));
-#endif
-
 static inline void rpmfiBuildFNames(Header h, rpmTag tagN, const char *** fnp, rpmTagCount * fcp) {
 	HE_t he = (HE_s*)memset(alloca(sizeof(*he)), 0, sizeof(*he));
 
@@ -190,7 +185,10 @@ static inline void rpmfiBuildFNames(Header h, rpmTag tagN, const char *** fnp, r
 		const char * dn = NULL;
 		(void) urlPath(dirNames.argv[dirIndexes.ui32p[i]], &dn);
 		fileNames.argv[i] = t;
-		t = stpcpy( stpcpy(t, dn), baseNames.argv[i]);
+		strcpy(t, dn);
+		t += strlen(t);
+		t = strcpy(t, baseNames.argv[i]);
+		t += strlen(t);
 		*t++ = '\0';
 	}
 	baseNames.ptr = _free(baseNames.ptr);
