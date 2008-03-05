@@ -103,32 +103,6 @@ inline int headerGetRawEntry(Header h, int_32 tag, hTYP_t type, void * p, hCNT_t
 	return rc;
 }
 
-inline void *vmefail(size_t size)
-{
-	fprintf(stderr, ("memory alloc (%u bytes) returned NULL.\n"), (unsigned)size);
-	exit(EXIT_FAILURE);
-	return NULL;
-}
-
-inline void * xmalloc (size_t size)
-{
-	register void *value;
-	if (size == 0) size++;
-	value = malloc (size);
-	if (value == 0)
-		value = vmefail(size);
-	return value;
-}
-
-#if !defined(EXIT_FAILURE)
-#define	EXIT_FAILURE	1
-#endif
-
-#if !defined(HAVE_STPCPY)
-extern char *stpcpy (char *__restrict __dest, __const char *__restrict __src)
-	__THROW __nonnull ((1, 2));
-#endif
-
 inline void rpmfiBuildFNames(Header h, rpmTag tagN, const char *** fnp, rpmTagCount * fcp) {
 	HE_t he = (HE_s*)memset(alloca(sizeof(*he)), 0, sizeof(*he));
 
@@ -183,13 +157,13 @@ inline void rpmfiBuildFNames(Header h, rpmTag tagN, const char *** fnp, rpmTagCo
 		size += strlen(baseNames.argv[i]) + strlen(dn) + 1;
 	}
 
-	fileNames.argv = (const char**)xmalloc(size);
+	fileNames.argv = (const char**)malloc(size);
 	t = (char *)&fileNames.argv[count];
 	for (i = 0; i < (unsigned)count; i++) {
 		const char * dn = NULL;
 		(void) urlPath(dirNames.argv[dirIndexes.ui32p[i]], &dn);
 		fileNames.argv[i] = t;
-		t = stpcpy( stpcpy(t, dn), baseNames.argv[i]);
+		t = strcpy( strcpy(t, dn), baseNames.argv[i]);
 		*t++ = '\0';
 	}
 	baseNames.ptr = _free(baseNames.ptr);
