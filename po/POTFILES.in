@@ -22,7 +22,6 @@ build/parseSpec.c
 build/poptBT.c
 build/reqprov.c
 build/spec.c
-rpmio/cpio.c
 lib/depends.c
 lib/formats.c
 lib/fs.c
@@ -52,7 +51,6 @@ lib/rpmrollback.c
 lib/rpmsx.c
 lib/rpmte.c
 lib/rpmts.c
-rpmio/tar.c
 lib/transaction.c
 lib/verify.c
 rpmdb/db3.c
@@ -71,6 +69,7 @@ rpmdb/signature.c
 rpmdb/sqlite.c
 rpmdb/tagname.c
 rpmio/argv.c
+rpmio/cpio.c
 rpmio/digest.c
 rpmio/fts.c
 rpmio/getpass.c
@@ -98,6 +97,7 @@ rpmio/sha224.c
 rpmio/strcasecmp.c
 rpmio/stringbuf.c
 rpmio/strtolocale.c
+rpmio/tar.c
 rpmio/tiger.c
 rpmio/ugid.c
 rpmio/url.c
