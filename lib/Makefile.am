@@ -47,7 +47,7 @@ librpm_la_SOURCES = \
 	rpmal.c rpmchecksig.c rpmdpkg.c rpmds.c rpmevr.c rpmfc.c \
 	rpmfi.c rpmgi.c rpminstall.c rpmrollback.c rpmversion.c \
 	rpmlock.c rpmns.c rpmps.c rpmrc.c rpmsx.c rpmte.c rpmts.c \
-	transaction.c verify.c tar.c rpmluaext.c rpm4compat.h
+	transaction.c verify.c tar.c rpmluaext.c
 librpm_la_LDFLAGS = -release $(LT_CURRENT).$(LT_REVISION)
 if HAVE_LD_VERSION_SCRIPT
 librpm_la_LDFLAGS += -Wl,--version-script=$(srcdir)/librpm.vers
