@@ -102,8 +102,6 @@ inline int headerGetRawEntry(Header h, int_32 tag, hTYP_t type, void * p, hCNT_t
 	return rc;
 }
 
-#define xmalloc(_size)          (malloc(_size) ? : vmefail(_size))
-
 inline void rpmfiBuildFNames(Header h, rpmTag tagN, const char *** fnp, int * fcp) {
 	HE_t he = (HE_s*)memset(alloca(sizeof(*he)), 0, sizeof(*he));
 
@@ -158,7 +156,7 @@ inline void rpmfiBuildFNames(Header h, rpmTag tagN, const char *** fnp, int * fc
 		size += strlen(baseNames.argv[i]) + strlen(dn) + 1;
 	}
 
-	fileNames.argv = xmalloc(size);
+	fileNames.argv = (malloc(size) ? : vmefail(size));
 	t = (char *)&fileNames.argv[count];
 	for (i = 0; i < (unsigned)count; i++) {
 		const char * dn = NULL;
