@@ -125,7 +125,8 @@ inline void * xmalloc (size_t size)
 #endif
 
 #if !defined(HAVE_STPCPY)
-char * stpcpy(char * dest, const char * src);
+extern char *stpcpy (char *__restrict __dest, __const char *__restrict __src)
+	__THROW __nonnull ((1, 2));
 #endif
 
 inline void rpmfiBuildFNames(Header h, rpmTag tagN, const char *** fnp, rpmTagCount * fcp) {
