@@ -46,6 +46,8 @@ typedef	uint32_t *	hCNT_t;
 typedef	uint32_t	int_32;
 typedef	uint32_t	uint_32;
 typedef	uint16_t	uint_16;
+typedef	uint16_t	int_16;
+typedef	uint8_t		int_8;
 typedef	uint8_t		byte;
 
 typedef	union hRET_s {
