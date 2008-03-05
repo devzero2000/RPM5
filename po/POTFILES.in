@@ -22,7 +22,7 @@ build/parseSpec.c
 build/poptBT.c
 build/reqprov.c
 build/spec.c
-lib/cpio.c
+rpmio/cpio.c
 lib/depends.c
 lib/formats.c
 lib/fs.c
@@ -52,7 +52,7 @@ lib/rpmrollback.c
 lib/rpmsx.c
 lib/rpmte.c
 lib/rpmts.c
-lib/tar.c
+rpmio/tar.c
 lib/transaction.c
 lib/verify.c
 rpmdb/db3.c
