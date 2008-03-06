@@ -288,6 +288,10 @@ static inline int rpmMachineScore(int type, const char * name) {
 	return score;
 }
 
+static inline rpmRC rpmtsImportPubkey(const rpmts ts, const unsigned char * pkt, ssize_t pktlen) {
+	return rpmcliImportPubkey(ts, pkt, pktlen);
+}
+
 #ifdef __cplusplus
 }
 
