@@ -288,7 +288,7 @@ static inline int rpmMachineScore(int type, const char * name) {
 	return score;
 }
 
-rpmRC rpmcliImportPubkey(const rpmts ts, const unsigned char * pkt, ssize_t pktlen) {
+static inline rpmRC rpmcliImportPubkey(const rpmts ts, const unsigned char * pkt, ssize_t pktlen) {
 	return rpmtsImportPubkey(ts, pkt, pktlen);
 }
 
