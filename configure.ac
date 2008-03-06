@@ -970,11 +970,13 @@ RPM_CHECK_LIB(
     ], [ AC_MSG_WARN([No Neon library found, using unsupported configuration]) ])
 
 dnl # File (magic)
+WITH_FILE_INTERNAL=false
 RPM_CHECK_LIB(
     [File (magic)], [file],
     [magic], [magic_open], [magic.h],
     [yes,external:internal:none], [file:src:src],
     [ if test ".$RPM_CHECK_LIB_LOCATION" = .internal; then
+          WITH_FILE_INTERNAL=true
           AC_DEFINE(HAVE_MAGIC_H, 1, [Define to 1 if you have <magic.h>])
       fi
     ], [])
@@ -1364,6 +1366,20 @@ AC_SUBST(PKGSRCDIR)
 AC_MSG_RESULT([$PKGSRCDIR])
 PKGSRCDIR_MACRO=`echo "$PKGSRCDIR" | sed -e "s;^${varprefix}/;%{_var}/;" -e "s;^${usrprefix}/;%{_usr}/;"`
 AC_SUBST(PKGSRCDIR_MACRO)
+
+dnl # determine RPM magic file path
+AC_MSG_CHECKING([for RPM magic file])
+MAGIC_MACRO=`echo "${prefix}/share/file/magic"`
+if $WITH_FILE_INTERNAL; then
+    MAGIC_MACRO="%{_rpmhome}/magic"
+fi
+AC_ARG_WITH(
+    [path-magic],
+    AS_HELP_STRING([--with-path-magic=ARG], [build with RPM magic file path (or macro)]),
+    [MAGIC_MACRO="$withval"]
+)
+AC_MSG_RESULT([$MAGIC_MACRO])
+AC_SUBST(MAGIC_MACRO)
 
 dnl # determine RPM locale directory path
 AC_MSG_CHECKING([for RPM locale directory])
