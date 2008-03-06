@@ -262,8 +262,7 @@ static void vrpmlog (unsigned code, const char *fmt, va_list ap)
 	    recs = xrealloc(recs, (nrecs+2) * sizeof(*recs));
 	recs[nrecs].code = rec.code;
 	recs[nrecs].pri = rec.pri;
-	recs[nrecs].message = xrealloc(msgbuf, strlen(msgbuf)+1);
-	msgbuf = NULL;		/* XXX don't free at exit. */
+	recs[nrecs].message = xstrdup(msgbuf);
 	recs[nrecs+1].code = 0;
 	recs[nrecs].pri = 0;
 	recs[nrecs+1].message = NULL;
