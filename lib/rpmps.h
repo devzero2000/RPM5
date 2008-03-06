@@ -300,7 +300,7 @@ char * rpmProblemGetStr(rpmProblem prob)
  * @return		a generic pointer/long attribute
  * @todo		needs a better name
  */
-unsigned long long rpmProblemGetLong(rpmProblem prob)
+uint64_t rpmProblemGetLong(rpmProblem prob)
 	/*@*/;
 
 /**
