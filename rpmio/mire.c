@@ -240,7 +240,7 @@ int mireSetGOptions(const char * newline, int caseless, int multiline, int utf8)
 	int val = 0;
 #if defined(PCRE_CONFIG_NEWLINE)
 /*@-modunconnomods@*/
-	int xx = pcre_config(PCRE_CONFIG_NEWLINE, &val);
+	(void)pcre_config(PCRE_CONFIG_NEWLINE, &val);
 /*@=modunconnomods@*/
 #endif
 	switch (val) {
