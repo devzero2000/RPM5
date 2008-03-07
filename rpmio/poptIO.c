@@ -36,14 +36,6 @@ const char *__progname;
 /*@unchecked@*/
 int __debug = 0;
 
-#ifdef	NOTYET
-/*@unchecked@*/
-extern int _cpio_debug;
-
-/*@unchecked@*/
-extern int _tar_debug;
-#endif
-
 /*@unchecked@*/
 extern int _rpmsq_debug;
 
@@ -84,6 +76,7 @@ const char *rpmioEVR = VERSION;
 /*@unchecked@*/
 static int rpmioInitialized = -1;
 
+#ifdef	NOTYET
 #if defined(RPM_VENDOR_OPENPKG) /* support-rpmlua-option */
 #ifdef WITH_LUA
 /*@unchecked@*/
@@ -91,7 +84,6 @@ extern const char *rpmluaFiles;
 #endif
 #endif
 
-#ifdef	NOTYET
 #if defined(RPM_VENDOR_OPENPKG) /* support-rpmpopt-option */
 /*@unchecked@*/
 static char *rpmpoptfiles = RPMPOPTFILES;
@@ -195,6 +187,7 @@ static void rpmioAllArgCallback(poptContext con,
     case 'v':
 	rpmIncreaseVerbosity();
 	break;
+#ifdef	NOTYET
     case 'D':
     {	char *s, *t;
 	/* XXX Convert '-' in macro name to underscore, skip leading %. */
@@ -266,6 +259,7 @@ static void rpmioAllArgCallback(poptContext con,
 	    val = _free(val);
 	}
 	break;
+#endif	/* NOTYET */
     case POPT_SHOWVERSION:
 	printVersion(stdout);
 /*@i@*/	con = rpmioFini(con);
@@ -309,6 +303,7 @@ struct poptOption rpmioAllPoptTable[] = {
  { "debug", 'd', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &__debug, -1,
         NULL, NULL },
 
+#ifdef	NOTYET
  { "define", 'D', POPT_ARG_STRING, NULL, (int)'D',
 	N_("define MACRO with value EXPR"),
 	N_("'MACRO EXPR'") },
@@ -329,7 +324,6 @@ struct poptOption rpmioAllPoptTable[] = {
 	N_("<FILE:...>") },
 #endif
 #endif
-#ifdef	NOTYET
 #if defined(RPM_VENDOR_OPENPKG) /* support-rpmpopt-option */
  { "rpmpopt", '\0', POPT_ARG_STRING, NULL, 0,
 	N_("read <FILE:...> instead of default POPT file(s)"),
@@ -361,9 +355,11 @@ struct poptOption rpmioAllPoptTable[] = {
        N_("disable use of libio(3) API"), NULL},
 #endif
 
+#ifdef	NOTYET
  { "usecrypto",'\0', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN, NULL, POPT_CRYPTO,
         N_("select cryptography implementation"),
 	N_("CRYPTO") },
+#endif
 
  { "ardebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_ar_debug, -1,
 	N_("debug ar archives"), NULL},
@@ -379,10 +375,6 @@ struct poptOption rpmioAllPoptTable[] = {
 	N_("debug I/O state machine"), NULL},
  { "miredebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_mire_debug, -1,
 	NULL, NULL},
-#ifdef	DYING
- { "poptdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_popt_debug, -1,
-	N_("debug option/argument processing"), NULL},
-#endif
  { "rpmiodebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmio_debug, -1,
 	N_("debug rpmio I/O"), NULL},
  { "rpmmgdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmmg_debug, -1,

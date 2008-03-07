@@ -4,11 +4,30 @@
  */
 
 #include "system.h"
+const char *__progname;
 
 #include <rpmio.h>
 #include <fts.h>
 #include <mire.h>
 #include <poptIO.h>
+
+#define _RPMPGP_INTERNAL
+#if defined(WITH_BEECRYPT)
+#define _RPMBC_INTERNAL
+#include <rpmbc.h>
+#endif
+#if defined(WITH_GCRYPT)
+#define _RPMGC_INTERNAL
+#include <rpmgc.h>
+#endif
+#if defined(WITH_NSS)
+#define _RPMNSS_INTERNAL
+#include <rpmnss.h>
+#endif
+#if defined(WITH_SSL)
+#define _RPMSSL_INTERNAL
+#include <rpmssl.h>
+#endif
 
 #include <rpmcli.h>
 #include <fs.h>			/* XXX rpmFreeFilesystems() */
@@ -20,6 +39,17 @@
 #define POPT_SHOWRC		-998
 #define POPT_QUERYTAGS		-997
 #define POPT_PREDEFINE		-996
+#ifdef  DEAD	/* XXX remember the previous definition however. */
+#define POPT_RCFILE		-995
+#endif
+#define POPT_UNDEFINE		-994
+#define	POPT_CRYPTO		-993
+
+/*@access headerTagIndices @*/		/* XXX rpmcliFini */
+/*@access headerTagTableEntry @*/	/* XXX rpmcliFini */
+
+/*@unchecked@*/
+static int _debug = 0;
 
 /*@-exportheadervar@*/
 /*@unchecked@*/
@@ -92,12 +122,6 @@ extern int _rpmts_stats;
 /*@unchecked@*/
 extern int _hdr_stats;
 
-/*@unchecked@*/ /*@null@*/
-const char * rpmcliPipeOutput = NULL;
-
-/*@unchecked@*/
-const char * rpmcliRootDir = "/";
-
 /*@unchecked@*/
 rpmQueryFlags rpmcliQueryFlags;
 
@@ -149,7 +173,6 @@ void rpmcliConfigured(void)
 	}
 	rpmcliInitialized = rpmReadConfigFiles(NULL, t);
 	t = _free(t);
-	rpmioConfigured();	/* XXX does nothing atm */
     }
     if (rpmcliInitialized)
 	exit(EXIT_FAILURE);
@@ -173,20 +196,93 @@ static void rpmcliAllArgCallback(poptContext con,
     case POPT_PREDEFINE:
 	(void) rpmDefineMacro(NULL, arg, RMIL_CMDLINE);
 	break;
-
+    case 'D':
+    {	char *s, *t;
+	/* XXX Convert '-' in macro name to underscore, skip leading %. */
+	s = t = xstrdup(arg);
+	while (*t && !xisspace(*t)) {
+	    if (*t == '-') *t = '_';
+	    t++;
+	}
+	t = s;
+	if (*t == '%') t++;
+	rpmcliConfigured();
+/*@-type@*/
+	/* XXX adding macro to global context isn't Right Thing Todo. */
+	(void) rpmDefineMacro(NULL, t, RMIL_CMDLINE);
+	(void) rpmDefineMacro(rpmCLIMacroContext, t, RMIL_CMDLINE);
+/*@=type@*/
+	s = _free(s);
+    }	break;
+    case POPT_UNDEFINE:
+    {	char *s, *t;
+	/* XXX Convert '-' in macro name to underscore, skip leading %. */
+	s = t = xstrdup(arg);
+	while (*t && !xisspace(*t)) {
+	    if (*t == '-') *t = '_';
+	    t++;
+	}
+	t = s;
+	if (*t == '%') t++;
+/*@-type@*/
+	rpmcliConfigured();
+	(void) rpmUndefineMacro(NULL, t);
+	(void) rpmUndefineMacro(rpmCLIMacroContext, t);
+/*@=type@*/
+	s = _free(s);
+    }	break;
+    case POPT_CRYPTO:
+	rpmcliConfigured();
+	{   const char *val = rpmExpand(arg, NULL);
+#if defined(WITH_BEECRYPT)
+	    if (!xstrcasecmp(val, "beecrypt") || !xstrcasecmp(val, "bc"))
+		pgpImplVecs = &rpmbcImplVecs;
+#endif
+#if defined(WITH_GCRYPT)
+	    if (!xstrcasecmp(val, "gcrypt") || !xstrcasecmp(val, "gc"))
+		pgpImplVecs = &rpmgcImplVecs;
+#endif
+#if defined(WITH_NSS)
+	    if (!xstrcasecmp(val, "NSS"))
+		pgpImplVecs = &rpmnssImplVecs;
+#endif
+#if defined(WITH_SSL)
+	    if (!xstrcasecmp(val, "OpenSSL") || !xstrcasecmp(val, "ssl"))
+		pgpImplVecs = &rpmsslImplVecs;
+#endif
+	    val = _free(val);
+	}
+	break;
+    case 'E':
+	rpmcliConfigured();
+	{   const char *val = rpmExpand(arg, NULL);
+#if defined(RPM_VENDOR_OPENPKG) /* no-extra-terminating-newline-on-eval */
+            size_t val_len;
+            val_len = strlen(val);
+            if (val[val_len - 1] == '\n')
+                fwrite(val, val_len, 1, stdout);
+            else
+#endif
+	    fprintf(stdout, "%s\n", val);
+	    val = _free(val);
+	}
+	break;
+    case POPT_SHOWVERSION:
+	printVersion(stdout);
+/*@i@*/	con = rpmcliFini(con);
+	exit(EXIT_SUCCESS);
+	/*@notreached@*/ break;
     case POPT_SHOWRC:
 	rpmcliConfigured();
 	(void) rpmShowRC(stdout);
 /*@i@*/	con = rpmcliFini(con);
 	exit(EXIT_SUCCESS);
 	/*@notreached@*/ break;
-
     case POPT_QUERYTAGS:
 	rpmDisplayQueryTags(NULL, NULL, NULL);
 /*@i@*/	con = rpmcliFini(con);
 	exit(EXIT_SUCCESS);
 	/*@notreached@*/ break;
-
     case RPMCLI_POPT_NODIGEST:
 	rpmcliQueryFlags |= VERIFY_DIGEST;
 	pgpDigVSFlags |= _RPMVSF_NODIGESTS;
@@ -215,12 +311,6 @@ static void rpmcliAllArgCallback(poptContext con,
 /*@=modobserver @*/
 	}
 	break;
-
-    case POPT_SHOWVERSION:
-	printVersion(stdout);
-/*@i@*/	con = rpmcliFini(con);
-	exit(EXIT_SUCCESS);
-	/*@notreached@*/ break;
     }
 }
 
@@ -269,10 +359,32 @@ struct poptOption rpmcliAllPoptTable[] = {
         rpmcliAllArgCallback, 0, NULL, NULL },
 /*@=type@*/
 
+ { "debug", 'd', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_debug, -1,
+        NULL, NULL },
+
  { "predefine", '\0', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN, NULL, POPT_PREDEFINE,
 	N_("predefine MACRO with value EXPR"),
 	N_("'MACRO EXPR'") },
 
+ { "define", 'D', POPT_ARG_STRING, NULL, 'D',
+	N_("define MACRO with value EXPR"),
+	N_("'MACRO EXPR'") },
+ { "undefine", '\0', POPT_ARG_STRING, NULL, POPT_UNDEFINE,
+	N_("undefine MACRO"),
+	N_("'MACRO'") },
+ { "eval", 'E', POPT_ARG_STRING, NULL, 'E',
+	N_("print macro expansion of EXPR"),
+	N_("'EXPR'") },
+ { "macros", '\0', POPT_ARG_STRING, &rpmMacrofiles, 0,
+	N_("read <FILE:...> instead of default file(s)"),
+	N_("<FILE:...>") },
+#if defined(RPM_VENDOR_OPENPKG) /* support-rpmlua-option */
+#ifdef WITH_LUA
+ { "rpmlua", '\0', POPT_ARG_STRING, &rpmluaFiles, 0,
+	N_("read <FILE:...> instead of default RPM Lua file(s)"),
+	N_("<FILE:...>") },
+#endif
+#endif
 #if defined(RPM_VENDOR_OPENPKG) /* support-rpmpopt-option */
  { "rpmpopt", '\0', POPT_ARG_STRING, NULL, 0,
 	N_("read <FILE:...> instead of default POPT file(s)"),
@@ -293,12 +405,15 @@ struct poptOption rpmcliAllPoptTable[] = {
         N_("display known query tags"), NULL },
  { "showrc", '\0', 0, NULL, POPT_SHOWRC,
 	N_("display macro and configuration values"), NULL },
- /* XXX don't display --version option twice. */
  { "version", '\0', POPT_ARGFLAG_DOC_HIDDEN, NULL, POPT_SHOWVERSION,
 	N_("print the version"), NULL },
 
  { "promoteepoch", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmds_nopromote, 0,
 	NULL, NULL},
+
+ { "usecrypto",'\0', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN, NULL, POPT_CRYPTO,
+        N_("select cryptography implementation"),
+	N_("CRYPTO") },
 
  { "fpsdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_fps_debug, -1,
 	NULL, NULL},
@@ -344,7 +459,7 @@ struct poptOption rpmcliAllPoptTable[] = {
 	NULL, NULL},
 
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmioAllPoptTable, 0,
-        NULL, NULL },
+	NULL, NULL},
 
    POPT_TABLEEND
 };
@@ -353,6 +468,13 @@ struct poptOption rpmcliAllPoptTable[] = {
 poptContext
 rpmcliFini(poptContext optCon)
 {
+    /* XXX this should be done in the rpmioClean() wrapper. */
+    /* keeps memory leak checkers quiet */
+    rpmFreeMacros(NULL);
+/*@i@*/	rpmFreeMacros(rpmCLIMacroContext);
+
+    rpmioClean();
+
     rpmnsClean();
 
     rpmFreeRpmrc();
@@ -364,7 +486,15 @@ rpmcliFini(poptContext optCon)
 
     tagClean(NULL);	/* Free header tag indices. */
 
-    return rpmioFini(optCon);
+    optCon = poptFreeContext(optCon);
+
+#if defined(HAVE_MCHECK_H) && defined(HAVE_MTRACE)
+    /*@-noeffect@*/
+    muntrace();   /* Trace malloc only if MALLOC_TRACE=mtrace-output-file. */
+    /*@=noeffect@*/
+#endif
+
+    return NULL;
 }
 
 static inline int checkfd(const char * devnull, int fdno, int flags)
@@ -437,14 +567,14 @@ rpmcliInit(int argc, char *const argv[], struct poptOption * optionsTable)
     /* read all RPM POPT configuration files */
 #if defined(RPM_VENDOR_OPENPKG) /* support-rpmpopt-option */
     for (i = 1; i < argc; i++) {
-        if (strcmp(argv[i], "--rpmpopt") == 0 && i+1 < argc) {
-            rpmpoptfiles = argv[i+1];
-            break;
-        }
-        else if (strncmp(argv[i], "--rpmpopt=", 10) == 0) {
-            rpmpoptfiles = argv[i]+10;
-            break;
-        }
+	if (strcmp(argv[i], "--rpmpopt") == 0 && i+1 < argc) {
+	    rpmpoptfiles = argv[i+1];
+	    break;
+	}
+	else if (strncmp(argv[i], "--rpmpopt=", 10) == 0) {
+	    rpmpoptfiles = argv[i]+10;
+	    break;
+	}
     }
     path_buf = xstrdup(rpmpoptfiles);
 #else
@@ -469,17 +599,17 @@ rpmcliInit(int argc, char *const argv[], struct poptOption * optionsTable)
 
         /* work-off each resulting file from the path element */
         for (i = 0; i < ac; i++) {
-            const char *fn = av[i];
+	    const char *fn = av[i];
 #if defined(RPM_VENDOR_OPENPKG) /* security-sanity-check-rpmpopt-and-rpmmacros */
-            if (fn[0] == '@' /* attention */) {
-                fn++;
-                if (!rpmSecuritySaneFile(fn)) {
-                    rpmlog(RPMLOG_WARNING, "existing POPT configuration file \"%s\" considered INSECURE -- not loaded\n", fn);
-                    continue;
-                }
-            }
+	    if (fn[0] == '@' /* attention */) {
+		fn++;
+		if (!rpmSecuritySaneFile(fn)) {
+		    rpmlog(RPMLOG_WARNING, "existing POPT configuration file \"%s\" considered INSECURE -- not loaded\n", fn);
+		    continue;
+		}
+	    }
 #endif
-            (void)poptReadConfigFile(optCon, fn);
+	    (void)poptReadConfigFile(optCon, fn);
             av[i] = _free(av[i]);
         }
         av = _free(av);
@@ -518,6 +648,11 @@ rpmcliInit(int argc, char *const argv[], struct poptOption * optionsTable)
 
     /* Read rpm configuration (if not already read). */
     rpmcliConfigured();
+
+    if (_debug) {
+	rpmIncreaseVerbosity();
+	rpmIncreaseVerbosity();
+    }
 
     /* Initialize header stat collection. */
 /*@-mods@*/

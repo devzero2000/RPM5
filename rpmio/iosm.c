@@ -72,8 +72,8 @@ int _iosm_threads = 0;
 /*@=exportheadervar@*/
 
 /*@-redecl@*/
-int (*_iosmNext) (void * _iosm, int nstage)
-        /*@modifies _iosm @*/ = &iosmNext;
+int (*_iosmNext) (IOSM_t iosm, iosmFileStage nstage)
+        /*@modifies iosm @*/ = &iosmNext;
 /*@=redecl@*/
 
 #if defined(_USE_RPMTS)
@@ -719,7 +719,7 @@ fprintf(stderr, "\tcpio vectors set\n");
 #if defined(_USE_RPMTS)
     iter->ts = rpmtsLink(_ts, "mapIterator");
 #else
-    iosm->iter->ts = _ts;
+    iosm->iter->ts = (void *)_ts;
 #endif
 
     if (iosm->goal == IOSM_PKGINSTALL || iosm->goal == IOSM_PKGBUILD) {
