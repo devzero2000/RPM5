@@ -24,9 +24,6 @@
  */
 
 #define __FBSDID(_s)	
-#define	HAVE_GETOPT_LONG	1
-#define	HAVE_DECL_OPTARG	1
-#define	HAVE_DECL_OPTIND	1
 #define BSDTAR_VERSION_STRING "2.4.12"
 
 #define ARCHIVE_STAT_CTIME_NANOS(st)    (st)->st_ctim.tv_nsec
@@ -66,20 +63,7 @@ struct archive_entry;
 #include "system.h"
 __FBSDID("$FreeBSD: src/usr.bin/tar/bsdtar.c,v 1.79 2008/01/22 07:23:44 kientzle Exp $");
 
-#ifdef HAVE_GETOPT_LONG
 #include <getopt.h>
-#else
-struct option {
-	const char *name;
-	int has_arg;
-	int *flag;
-	int val;
-};
-#define	no_argument 0
-#define	required_argument 1
-#endif
-
-typedef	struct option * poptOption;
 
 #ifdef HAVE_LANGINFO_H
 #include <langinfo.h>
@@ -91,17 +75,10 @@ typedef	struct option * poptOption;
 #include <paths.h>
 #endif
 
+#include <popt.h>
 #include "rpmtar.h"
 
 #include "debug.h"
-
-#if !HAVE_DECL_OPTARG
-extern int optarg;
-#endif
-
-#if !HAVE_DECL_OPTIND
-extern int optind;
-#endif
 
 /*
  * Per POSIX.1-1988, tar defaults to reading/writing archives to/from
@@ -114,6 +91,9 @@ extern int optind;
 #ifndef _PATH_DEFTAPE
 #define	_PATH_DEFTAPE "/dev/tape"
 #endif
+
+/*@unchecked@*/
+static int _debug;
 
 /*@unchecked@*/
 static struct bsdtar		bsdtar_storage;
@@ -284,23 +264,23 @@ cleanup_exclusions(struct bsdtar *bsdtar)
 void	tar_mode_c(struct bsdtar *bsdtar)
 	/*@globals fileSystem @*/
 	/*@modifies bsdtar, fileSystem @*/
-{	return;	}
+{ fprintf(stderr, "==> tar_mode_c: %s\n", (bsdtar->filename ?: "")); return; }
 void	tar_mode_r(struct bsdtar *bsdtar)
 	/*@globals fileSystem @*/
 	/*@modifies bsdtar, fileSystem @*/
-{	return;	}
+{ fprintf(stderr, "==> tar_mode_r: %s\n", (bsdtar->filename ?: "")); return; }
 void	tar_mode_t(struct bsdtar *bsdtar)
 	/*@globals fileSystem @*/
 	/*@modifies bsdtar, fileSystem @*/
-{	return;	}
+{ fprintf(stderr, "==> tar_mode_t: %s\n", (bsdtar->filename ?: "")); return; }
 void	tar_mode_u(struct bsdtar *bsdtar)
 	/*@globals fileSystem @*/
 	/*@modifies bsdtar, fileSystem @*/
-{	return;	}
+{ fprintf(stderr, "==> tar_mode_u: %s\n", (bsdtar->filename ?: "")); return; }
 void	tar_mode_x(struct bsdtar *bsdtar)
 	/*@globals fileSystem @*/
 	/*@modifies bsdtar, fileSystem @*/
-{	return;	}
+{ fprintf(stderr, "==> tar_mode_x: %s\n", (bsdtar->filename ?: "")); return; }
 
 /*==============================================================*/
 
@@ -384,11 +364,7 @@ usage(struct bsdtar *bsdtar)
 	fprintf(stderr, "  List:    %s -tf <archive-filename>\n", p);
 	fprintf(stderr, "  Extract: %s -xf <archive-filename>\n", p);
 	fprintf(stderr, "  Create:  %s -cf <archive-filename> [filenames...]\n", p);
-#ifdef HAVE_GETOPT_LONG
 	fprintf(stderr, "  Help:    %s --help\n", p);
-#else
-	fprintf(stderr, "  Help:    %s -h\n", p);
-#endif
 	exit(EXIT_FAILURE);
 }
 
@@ -417,11 +393,9 @@ static const char *long_help_msg =
 	"  <file>, <dir>  add these items to archive\n"
 	"  -z, -j  Compress archive with gzip/bzip2\n"
 	"  --format {ustar|pax|cpio|shar}  Select archive format\n"
-#ifdef HAVE_GETOPT_LONG
 	"  --exclude <pattern>  Skip files that match pattern\n"
-#else
+/* XXX HAVE_GETOPT_LONG deprived. */
 	"  -W exclude=<pattern>  Skip files that match pattern\n"
-#endif
 	"  -C <dir>  Change to <dir> before processing remaining files\n"
 	"  @<archive>  Add entries from <archive> to output\n"
 	"List: %p -t [options] [<patterns>]\n"
@@ -540,41 +514,48 @@ static char option_o = 0;
 /*@unchecked@*/
 static char possible_help_request = 0;
 
-static void bsdtarArgCallback(struct bsdtar * bsdtar, int opt)
-	/*@modifies bsdtar @*/
+static void bsdtarArgCallback(/*@unused@*/ poptContext con,
+                /*@unused@*/ enum poptCallbackReason reason,
+                const struct poptOption * opt, const char * arg,
+                void * data)
+	/*@modifies *data @*/
 {
+	struct bsdtar * bsdtar = data;
+	int val = opt->val;
 	int t;
 
-	switch (opt) {
+if (_debug)
+fprintf(stderr, "--> bsdtarArgCallback(%p, %d, %p, %p, %p) val %d\n", con, reason, opt, arg, data, val);
+	switch (val) {
 	case 'B': /* GNU tar */
 		/* libarchive doesn't need this; just ignore it. */
 		/*@switchbreak@*/ break;
 	case 'b': /* SUSv2 */
-		t = atoi(optarg);
+		t = atoi(arg);
 		if (t <= 0 || t > 1024)
 			bsdtar_errc(bsdtar, 1, 0,
 			    "Argument to -b is out of range (1..1024)");
 		bsdtar->bytes_per_block = 512 * t;
 		/*@switchbreak@*/ break;
 	case 'C': /* GNU tar */
-		set_chdir(bsdtar, optarg);
+		set_chdir(bsdtar, arg);
 		/*@switchbreak@*/ break;
 	case 'c': /* SUSv2 */
-		set_mode(bsdtar, opt);
+		set_mode(bsdtar, val);
 		/*@switchbreak@*/ break;
 	case OPTION_CHECK_LINKS: /* GNU tar */
 		bsdtar->option_warn_links = 1;
 		/*@switchbreak@*/ break;
 	case OPTION_EXCLUDE: /* GNU tar */
-		if (exclude(bsdtar, optarg))
+		if (exclude(bsdtar, arg))
 			bsdtar_errc(bsdtar, 1, 0,
-			    "Couldn't exclude %s\n", optarg);
+			    "Couldn't exclude %s\n", arg);
 		/*@switchbreak@*/ break;
 	case OPTION_FORMAT: /* GNU tar, others */
-		bsdtar->create_format = optarg;
+		bsdtar->create_format = arg;
 		/*@switchbreak@*/ break;
 	case 'f': /* SUSv2 */
-		bsdtar->filename = optarg;
+		bsdtar->filename = arg;
 		if (strcmp(bsdtar->filename, "-") == 0)
 			bsdtar->filename = NULL;
 		/*@switchbreak@*/ break;
@@ -604,7 +585,7 @@ static void bsdtarArgCallback(struct bsdtar * bsdtar, int opt)
 		 * permissions without having to create those
 		 * permissions on disk.
 		 */
-		bsdtar->names_from_file = optarg;
+		bsdtar->names_from_file = arg;
 		/*@switchbreak@*/ break;
 	case OPTION_INCLUDE:
 		/*
@@ -612,18 +593,18 @@ static void bsdtarArgCallback(struct bsdtar * bsdtar, int opt)
 		 * noone else needs this to filter entries
 		 * when transforming archives.
 		 */
-		if (include(bsdtar, optarg))
+		if (include(bsdtar, arg))
 			bsdtar_errc(bsdtar, 1, 0,
 			    "Failed to add %s to inclusion list",
-			    optarg);
+			    arg);
 		/*@switchbreak@*/ break;
 	case 'j': /* GNU tar */
 #if HAVE_LIBBZ2
 		if (bsdtar->create_compression != '\0')
 			bsdtar_errc(bsdtar, 1, 0,
-			    "Can't specify both -%c and -%c", opt,
+			    "Can't specify both -%c and -%c", val,
 			    bsdtar->create_compression);
-		bsdtar->create_compression = opt;
+		bsdtar->create_compression = val;
 #else
 		bsdtar_warnc(bsdtar, 0, "-j compression not supported by this version of bsdtar");
 		usage(bsdtar);
@@ -653,28 +634,28 @@ static void bsdtarArgCallback(struct bsdtar * bsdtar, int opt)
 	 * TODO: Add corresponding "older" options to reverse these.
 	 */
 	case OPTION_NEWER_CTIME: /* GNU tar */
-		bsdtar->newer_ctime_sec = get_date(optarg);
+		bsdtar->newer_ctime_sec = get_date(arg);
 		/*@switchbreak@*/ break;
 	case OPTION_NEWER_CTIME_THAN:
 		{
 			struct stat st;
-			if (stat(optarg, &st) != 0)
+			if (stat(arg, &st) != 0)
 				bsdtar_errc(bsdtar, 1, 0,
-				    "Can't open file %s", optarg);
+				    "Can't open file %s", arg);
 			bsdtar->newer_ctime_sec = st.st_ctime;
 			bsdtar->newer_ctime_nsec =
 			    ARCHIVE_STAT_CTIME_NANOS(&st);
 		}
 		/*@switchbreak@*/ break;
 	case OPTION_NEWER_MTIME: /* GNU tar */
-		bsdtar->newer_mtime_sec = get_date(optarg);
+		bsdtar->newer_mtime_sec = get_date(arg);
 		/*@switchbreak@*/ break;
 	case OPTION_NEWER_MTIME_THAN:
 		{
 			struct stat st;
-			if (stat(optarg, &st) != 0)
+			if (stat(arg, &st) != 0)
 				bsdtar_errc(bsdtar, 1, 0,
-				    "Can't open file %s", optarg);
+				    "Can't open file %s", arg);
 			bsdtar->newer_mtime_sec = st.st_mtime;
 			bsdtar->newer_mtime_nsec =
 			    ARCHIVE_STAT_MTIME_NANOS(&st);
@@ -729,16 +710,16 @@ static void bsdtarArgCallback(struct bsdtar * bsdtar, int opt)
 		bsdtar->create_format = "pax";
 		/*@switchbreak@*/ break;
 	case 'r': /* SUSv2 */
-		set_mode(bsdtar, opt);
+		set_mode(bsdtar, val);
 		/*@switchbreak@*/ break;
 	case OPTION_STRIP_COMPONENTS: /* GNU tar 1.15 */
-		bsdtar->strip_components = atoi(optarg);
+		bsdtar->strip_components = atoi(arg);
 		/*@switchbreak@*/ break;
 	case 'T': /* GNU tar */
-		bsdtar->names_from_file = optarg;
+		bsdtar->names_from_file = arg;
 		/*@switchbreak@*/ break;
 	case 't': /* SUSv2 */
-		set_mode(bsdtar, opt);
+		set_mode(bsdtar, val);
 		bsdtar->verbose++;
 		/*@switchbreak@*/ break;
 	case OPTION_TOTALS: /* GNU tar */
@@ -749,7 +730,7 @@ static void bsdtarArgCallback(struct bsdtar * bsdtar, int opt)
 		bsdtar->option_unlink_first = 1;
 		/*@switchbreak@*/ break;
 	case 'u': /* SUSv2 */
-		set_mode(bsdtar, opt);
+		set_mode(bsdtar, val);
 		/*@switchbreak@*/ break;
 	case 'v': /* SUSv2 */
 		bsdtar->verbose++;
@@ -769,21 +750,21 @@ static void bsdtarArgCallback(struct bsdtar * bsdtar, int opt)
 		bsdtar->option_interactive = 1;
 		/*@switchbreak@*/ break;
 	case 'X': /* GNU tar */
-		if (exclude_from_file(bsdtar, optarg))
+		if (exclude_from_file(bsdtar, arg))
 			bsdtar_errc(bsdtar, 1, 0,
 			    "failed to process exclusions from file %s",
-			    optarg);
+			    arg);
 		/*@switchbreak@*/ break;
 	case 'x': /* SUSv2 */
-		set_mode(bsdtar, opt);
+		set_mode(bsdtar, val);
 		/*@switchbreak@*/ break;
 	case 'y': /* FreeBSD version of GNU tar */
 #if HAVE_LIBBZ2
 		if (bsdtar->create_compression != '\0')
 			bsdtar_errc(bsdtar, 1, 0,
-			    "Can't specify both -%c and -%c", opt,
+			    "Can't specify both -%c and -%c", val,
 			    bsdtar->create_compression);
-		bsdtar->create_compression = opt;
+		bsdtar->create_compression = val;
 #else
 		bsdtar_warnc(bsdtar, 0, "-y compression not supported by this version of bsdtar");
 		usage(bsdtar);
@@ -792,24 +773,24 @@ static void bsdtarArgCallback(struct bsdtar * bsdtar, int opt)
 	case 'Z': /* GNU tar */
 		if (bsdtar->create_compression != '\0')
 			bsdtar_errc(bsdtar, 1, 0,
-			    "Can't specify both -%c and -%c", opt,
+			    "Can't specify both -%c and -%c", val,
 			    bsdtar->create_compression);
-		bsdtar->create_compression = opt;
+		bsdtar->create_compression = val;
 		/*@switchbreak@*/ break;
 	case 'z': /* GNU tar, star, many others */
 #if HAVE_LIBZ
 		if (bsdtar->create_compression != '\0')
 			bsdtar_errc(bsdtar, 1, 0,
-			    "Can't specify both -%c and -%c", opt,
+			    "Can't specify both -%c and -%c", val,
 			    bsdtar->create_compression);
-		bsdtar->create_compression = opt;
+		bsdtar->create_compression = val;
 #else
 		bsdtar_warnc(bsdtar, 0, "-z compression not supported by this version of bsdtar");
 		usage(bsdtar);
 #endif
 		/*@switchbreak@*/ break;
 	case OPTION_USE_COMPRESS_PROGRAM:
-		bsdtar->compress_program = optarg;
+		bsdtar->compress_program = arg;
 		/*@switchbreak@*/ break;
 	default:
 		usage(bsdtar);
@@ -881,14 +862,21 @@ static const struct option tar_longopts[] = {
 };
 /*@=nullassign =readonlytrans @*/
 
+static struct poptOption optionsTable[] = {
+    POPT_AUTOALIAS
+    POPT_AUTOHELP
+    POPT_TABLEEND
+};
+
 static int
 bsdtar_getopt(struct bsdtar *bsdtar, const char *optstring,
-		poptOption *poption)
+		struct poptOption **poption)
 	/*@globals optarg, fileSystem @*/
 	/*@modifies *poption, optarg, fileSystem @*/
 {
 	char *p, *q;
-	poptOption option;
+	static struct poptOption _popt;
+	const struct option * option = NULL;
 	int opt;
 	int option_index;
 	size_t option_length;
@@ -896,15 +884,22 @@ bsdtar_getopt(struct bsdtar *bsdtar, const char *optstring,
 	option_index = -1;
 	*poption = NULL;
 
+	memset(&_popt, 0, sizeof(_popt));
 /*@-moduncon@*/
-#ifdef HAVE_GETOPT_LONG
 	opt = getopt_long(bsdtar->argc, bsdtar->argv, optstring,
 	    tar_longopts, &option_index);
 	if (option_index > -1)
-		*poption = (poptOption) tar_longopts + option_index;
-#else
-	opt = getopt(bsdtar->argc, bsdtar->argv, optstring);
-#endif
+		option = tar_longopts + option_index;
+	else {
+		static struct option _option;
+		_option.name = NULL;
+		_option.has_arg = (optarg ? required_argument : no_argument);
+		_option.flag = NULL;
+		_option.val = opt;
+		option = &_option;
+	}
+if (_debug)
+fprintf(stderr, "--> getopt_long: 0x%x %p\n", opt, option);
 /*@=moduncon@*/
 
 	/* Support long options through -W longopt=value */
@@ -918,7 +913,7 @@ bsdtar_getopt(struct bsdtar *bsdtar, const char *optstring,
 			option_length = strlen(p);
 			optarg = NULL;
 		}
-		option = (poptOption) tar_longopts;
+		option = tar_longopts;
 		while (option->name != NULL &&
 		    (strlen(option->name) < option_length ||
 		    strncmp(p, option->name, option_length) != 0 )) {
@@ -926,29 +921,29 @@ bsdtar_getopt(struct bsdtar *bsdtar, const char *optstring,
 		}
 
 		if (option->name != NULL) {
-			*poption = option;
-			opt = option->val;
+			const struct option * o = option;
+			opt = o->val;
 
 			/* If the first match was exact, we're done. */
-			if (strncmp(p, option->name, strlen(option->name)) == 0) {
-				while (option->name != NULL)
-					option++;
+			if (!strncmp(p, o->name, strlen(o->name))) {
+				while (o->name != NULL)
+					o++;
 			} else {
 				/* Check if there's another match. */
-				option++;
-				while (option->name != NULL &&
-				    (strlen(option->name) < option_length ||
-				    strncmp(p, option->name, option_length) != 0)) {
-					option++;
+				o++;
+				while (o->name != NULL &&
+				    (strlen(o->name) < option_length ||
+				    strncmp(p, o->name, option_length))) {
+					o++;
 				}
 			}
-			if (option->name != NULL)
+			if (o->name != NULL)
 				bsdtar_errc(bsdtar, 1, 0,
 				    "Ambiguous option %s "
 				    "(matches both %s and %s)",
-				    p, (*poption)->name, option->name);
+				    p, option->name, o->name);
 
-			if ((*poption)->has_arg == required_argument
+			if (option->has_arg == required_argument
 			    && optarg == NULL)
 				bsdtar_errc(bsdtar, 1, 0,
 				    "Option \"%s\" requires argument", p);
@@ -956,7 +951,19 @@ bsdtar_getopt(struct bsdtar *bsdtar, const char *optstring,
 			opt = '?';
 			/* TODO: Set up a fake 'struct option' for
 			 * error reporting... ? ? ? */
+			option = NULL;
 		}
+	}
+
+	if (option != NULL) {
+		_popt.longName = option->name;
+		_popt.shortName = (option->val > (int)' ' ? option->val : 0);
+		_popt.argInfo = (option->has_arg ? POPT_ARG_STRING : POPT_ARG_NONE);
+		_popt.arg = NULL;
+		_popt.val = option->val;
+		_popt.descrip = NULL;
+		_popt.argDescrip = NULL;
+		*poption = &_popt;
 	}
 
 /*@-globstate@*/
@@ -984,6 +991,7 @@ main(int argc, char **argv)
 	/*@modifies argc, *argv, optarg, fileSystem @*/
 {
 	struct bsdtar		*bsdtar = &bsdtar_storage;
+	poptContext optCon;
 	poptOption		option;
 	int			opt;
 	char			buff[16];
@@ -1045,6 +1053,8 @@ main(int argc, char **argv)
 	bsdtar->argv = argv;
 	bsdtar->argc = argc;
 
+	optCon = poptGetContext(bsdtar->progname, argc, (const char **)argv, optionsTable, 0);
+
 	/* Process all remaining arguments now. */
 	/*
 	 * Comments following each option indicate where that option
@@ -1053,7 +1063,7 @@ main(int argc, char **argv)
 	 * implements that option.
 	 */
 	while ((opt = bsdtar_getopt(bsdtar, tar_opts, &option)) != -1) {
-		bsdtarArgCallback(bsdtar, opt);
+		bsdtarArgCallback(optCon, 0, option, optarg, bsdtar);
 	}
 
 	/*
@@ -1153,6 +1163,9 @@ main(int argc, char **argv)
 	if (bsdtar->return_value != 0)
 		bsdtar_warnc(bsdtar, 0,
 		    "Error exit delayed from previous errors.");
+
+	optCon = poptFreeContext(optCon);
+
 /*@-globstate@*/
 	return (bsdtar->return_value);
 /*@=globstate@*/
