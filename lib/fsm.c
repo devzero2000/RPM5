@@ -875,7 +875,7 @@ int fsmMapAttrs(IOSM_t fsm)
 #endif
 	if (fi->fuser && unameToUid(fi->fuser[i], &uid)) {
 #if defined(RPM_VENDOR_OPENPKG) /* no-owner-group-on-srpm-install */
-	    if (headerIsEntry(fi->h, RPMTAG_SOURCERPM) != 0) {
+	  if (fi->isSource) {
 #endif
 	    if (fsm->goal == IOSM_PKGINSTALL)
 		rpmlog(RPMLOG_WARNING,
@@ -883,13 +883,13 @@ int fsmMapAttrs(IOSM_t fsm)
 	    uid = 0;
 	    finalMode &= ~S_ISUID;      /* turn off suid bit */
 #if defined(RPM_VENDOR_OPENPKG) /* no-owner-group-on-srpm-install */
-	    }
+	  }
 #endif
 	}
 
 	if (fi->fgroup && gnameToGid(fi->fgroup[i], &gid)) {
 #if defined(RPM_VENDOR_OPENPKG) /* no-owner-group-on-srpm-install */
-	    if (headerIsEntry(fi->h, RPMTAG_SOURCERPM) != 0) {
+	  if (fi->isSource) {
 #endif
 	    if (fsm->goal == IOSM_PKGINSTALL)
 		rpmlog(RPMLOG_WARNING,
@@ -897,7 +897,7 @@ int fsmMapAttrs(IOSM_t fsm)
 	    gid = 0;
 	    finalMode &= ~S_ISGID;	/* turn off sgid bit */
 #if defined(RPM_VENDOR_OPENPKG) /* no-owner-group-on-srpm-install */
-	    }
+	  }
 #endif
 	}
 
