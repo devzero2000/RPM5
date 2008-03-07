@@ -282,6 +282,7 @@ LIBRPMIO_0
     rpmioAccess;
     rpmioAllPoptTable;
     rpmioClean;
+    rpmioConfigured;
     rpmioDigestHashAlgo;
     rpmioDigestPoptTable;
     rpmioFini;
@@ -289,6 +290,8 @@ LIBRPMIO_0
     rpmioFtsPoptTable;
     rpmioInit;
     rpmioMkpath;
+    rpmioPipeOutput;
+    rpmioRootDir;
     rpmioSlurp;
     rpmLoadMacroFile;
     rpmLoadMacros;

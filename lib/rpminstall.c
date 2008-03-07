@@ -5,6 +5,7 @@
 #include "system.h"
 
 #include <rpmio.h>
+#include <poptIO.h>
 #include <rpmtag.h>
 #define	_RPMTS_INTERNAL		/* XXX ts->suggests */
 #include <rpmcli.h>
@@ -539,10 +540,10 @@ int rpmcliInstall(rpmts ts, QVA_t ia, const char ** argv)
     const char * fn = NULL;;
 
 /*@-mods@*/
-    if (ftsOpts == 0)
-	ftsOpts = (FTS_COMFOLLOW | FTS_LOGICAL | FTS_NOSTAT);
+    if (rpmioFtsOpts == 0)
+	rpmioFtsOpts = (FTS_COMFOLLOW | FTS_LOGICAL | FTS_NOSTAT);
 /*@=mods@*/
-    rc = rpmgiSetArgs(gi, argv, ftsOpts, _giFlags);
+    rc = rpmgiSetArgs(gi, argv, rpmioFtsOpts, _giFlags);
     while (rpmgiNext(gi) == RPMRC_OK) {
 	Header h;
 

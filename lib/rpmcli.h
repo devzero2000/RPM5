@@ -34,22 +34,10 @@ extern "C" {
 extern struct poptOption		rpmcliAllPoptTable[];
 
 /*@unchecked@*/
-extern int ftsOpts;
-
-/*@unchecked@*/
-extern struct poptOption		rpmcliFtsPoptTable[];
-
-/*@unchecked@*/
 extern int global_depFlags;
 
 /*@unchecked@*/
 extern struct poptOption		rpmcliDepFlagsPoptTable[];
-
-/*@unchecked@*/ /*@observer@*/ /*@null@*/
-extern const char * rpmcliPipeOutput;
-
-/*@unchecked@*/ /*@observer@*/ /*@null@*/
-extern const char * rpmcliRootDir;
 
 /*@unchecked@*/ /*@observer@*/ /*@null@*/
 extern const char * rpmcliTargets;
@@ -349,9 +337,9 @@ int showQueryPackage(QVA_t qva, rpmts ts, Header h)
  * @return		0 on success, else no. of failures
  */
 int rpmcliArgIter(rpmts ts, QVA_t qva, /*@null@*/ ARGV_t argv)
-	/*@globals ftsOpts, rpmGlobalMacroContext, h_errno,
+	/*@globals rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState @*/
-	/*@modifies ts, qva, ftsOpts, rpmGlobalMacroContext,
+	/*@modifies ts, qva, rpmGlobalMacroContext,
 		fileSystem, internalState @*/;
 
 /** \ingroup rpmcli

@@ -9,6 +9,7 @@ const char *__progname;
 #include <fts.h>
 
 #include <rpmio.h>
+#include <poptIO.h>
 #include <rpmcli.h>
 
 #define	_RPMGI_INTERNAL
@@ -525,7 +526,7 @@ static struct poptOption optionsTable[] = {
  { "nocache", '\0', POPT_ARG_VAL,   &noCache, -1,
 	N_("don't update cache database, only print package paths"), NULL },
 
- { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmcliFtsPoptTable, 0,
+ { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmioFtsPoptTable, 0,
         N_("File tree walk options:"),
         NULL },
 
@@ -585,15 +586,15 @@ main(int argc, char *argv[])
 
     gi = rpmgiNew(ts, RPMDBI_FTSWALK, NULL, 0);
 
-    if (ftsOpts == 0)
-	ftsOpts = (FTS_COMFOLLOW | FTS_LOGICAL | FTS_NOSTAT);
+    if (rpmioFtsOpts == 0)
+	rpmioFtsOpts = (FTS_COMFOLLOW | FTS_LOGICAL | FTS_NOSTAT);
 
     if (noCache)
-	ftsOpts |= FTS_NOSTAT;
+	rpmioFtsOpts |= FTS_NOSTAT;
     else
-	ftsOpts &= ~FTS_NOSTAT;
+	rpmioFtsOpts &= ~FTS_NOSTAT;
 
-    xx = rpmgiSetArgs(gi, ftsSet, ftsOpts, giFlags);
+    xx = rpmgiSetArgs(gi, ftsSet, rpmioFtsOpts, giFlags);
 
     gi->walkPathFilter = cacheWalkPathFilter;
     gi->stash = cacheStashLatest;

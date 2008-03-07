@@ -1,4 +1,5 @@
 5.0.0 -> 5.1a1:
+    - jbj: fix: --eval was expanding twice (dueling poptIO <-> poptALL tables.)
     - afb: avoid using the freed (realloced) value of msg for logging callback.
     - afb: configure the path to the magic file, avoids external file assert().
     - afb: silence automake warnings about using variables with special meaning.

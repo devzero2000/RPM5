@@ -18,6 +18,7 @@ extern const char *__progname;
 #endif
 
 #include <rpmio.h>
+#include <poptIO.h>
 #include <rpmcli.h>
 #include <rpmbuild.h>
 
@@ -105,7 +106,7 @@ static struct poptOption optionsTable[] = {
 #endif	/* IAM_RPMQV */
 
 #ifdef	IAM_RPMQV
- { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmcliFtsPoptTable, 0,
+ { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmioFtsPoptTable, 0,
         N_("File tree walk options (with --ftswalk):"),
         NULL },
 #endif	/* IAM_RPMQV */
@@ -642,19 +643,19 @@ int main(int argc, const char ** argv)
 		 "erasure, and building"));
 #endif	/* IAM_RPMEIU */
 
-    if (rpmcliRootDir && rpmcliRootDir[1] && (bigMode & ~MODES_FOR_ROOT))
+    if (rpmioRootDir && rpmioRootDir[1] && (bigMode & ~MODES_FOR_ROOT))
 	argerror(_("--root (-r) may only be specified during "
 		 "installation, erasure, querying, and "
 		 "database rebuilds"));
 
-    if (rpmcliRootDir) {
-	switch (urlIsURL(rpmcliRootDir)) {
+    if (rpmioRootDir) {
+	switch (urlIsURL(rpmioRootDir)) {
 	default:
 	    if (bigMode & MODES_FOR_ROOT)
 		break;
 	    /*@fallthrough@*/
 	case URL_IS_UNKNOWN:
-	    if (rpmcliRootDir[0] != '/')
+	    if (rpmioRootDir[0] != '/')
 		argerror(_("arguments to --root (-r) must begin with a /"));
 	    break;
 	}
@@ -715,14 +716,14 @@ int main(int argc, const char ** argv)
     /*@=branchstate@*/
 #endif	/* IAM_RPMBT || IAM_RPMK */
 
-    if (rpmcliPipeOutput) {
+    if (rpmioPipeOutput) {
 	(void) pipe(p);
 
 	if (!(pipeChild = fork())) {
 	    (void) close(p[1]);
 	    (void) dup2(p[0], STDIN_FILENO);
 	    (void) close(p[0]);
-	    (void) execl("/bin/sh", "/bin/sh", "-c", rpmcliPipeOutput, NULL);
+	    (void) execl("/bin/sh", "/bin/sh", "-c", rpmioPipeOutput, NULL);
 	    fprintf(stderr, _("exec failed\n"));
 	}
 
@@ -732,7 +733,7 @@ int main(int argc, const char ** argv)
     }
 	
     ts = rpmtsCreate();
-    (void) rpmtsSetRootDir(ts, rpmcliRootDir);
+    (void) rpmtsSetRootDir(ts, rpmioRootDir);
     switch (bigMode) {
 #ifdef	IAM_RPMDB
     case MODE_INITDB:
@@ -785,7 +786,7 @@ int main(int argc, const char ** argv)
 	    ba->cookie = NULL;
 	    ec = rpmInstallSource(ts, pkg, &specFile, &ba->cookie);
 	    if (ec == 0) {
-		ba->rootdir = rpmcliRootDir;
+		ba->rootdir = rpmioRootDir;
 		ba->passPhrase = passPhrase;
 		ec = build(ts, specFile, ba, NULL);
 	    }
@@ -866,7 +867,7 @@ int main(int argc, const char ** argv)
 	}
 
 	while ((pkg = poptGetArg(optCon))) {
-	    ba->rootdir = rpmcliRootDir;
+	    ba->rootdir = rpmioRootDir;
 	    ba->passPhrase = passPhrase;
 	    ba->cookie = NULL;
 	    ec = build(ts, pkg, ba, NULL);

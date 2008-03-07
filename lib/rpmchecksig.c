@@ -6,6 +6,7 @@
 #include "system.h"
 
 #include <rpmio_internal.h>
+#include <poptIO.h>
 #include <rpmbc.h>		/* XXX beecrypt base64 */
 #include <rpmtag.h>
 #include <rpmcli.h>
@@ -202,10 +203,10 @@ static int rpmReSign(/*@unused@*/ rpmts ts,
 
     gi = rpmgiNew(ts, tag, NULL, 0);
 /*@-mods@*/
-    if (ftsOpts == 0)
-	ftsOpts = (FTS_COMFOLLOW | FTS_LOGICAL | FTS_NOSTAT);
+    if (rpmioFtsOpts == 0)
+	rpmioFtsOpts = (FTS_COMFOLLOW | FTS_LOGICAL | FTS_NOSTAT);
 /*@=mods@*/
-    rc = rpmgiSetArgs(gi, argv, ftsOpts, (_giFlags|RPMGI_NOHEADER));
+    rc = rpmgiSetArgs(gi, argv, rpmioFtsOpts, (_giFlags|RPMGI_NOHEADER));
 
     while (rpmgiNext(gi) == RPMRC_OK) {
 	const char * fn = rpmgiHdrPath(gi);
@@ -1141,10 +1142,10 @@ int rpmcliSign(rpmts ts, QVA_t qva, const char ** argv)
     rpmRC rc;
 
 /*@-mods@*/
-    if (ftsOpts == 0)
-	ftsOpts = (FTS_COMFOLLOW | FTS_LOGICAL | FTS_NOSTAT);
+    if (rpmioFtsOpts == 0)
+	rpmioFtsOpts = (FTS_COMFOLLOW | FTS_LOGICAL | FTS_NOSTAT);
 /*@=mods@*/
-    rc = rpmgiSetArgs(gi, argv, ftsOpts, (_giFlags|RPMGI_NOHEADER));
+    rc = rpmgiSetArgs(gi, argv, rpmioFtsOpts, (_giFlags|RPMGI_NOHEADER));
     while (rpmgiNext(gi) == RPMRC_OK) {
 	const char * fn = rpmgiHdrPath(gi);
 	FD_t fd;

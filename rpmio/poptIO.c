@@ -319,7 +319,6 @@ struct poptOption rpmioAllPoptTable[] = {
 	N_("print macro expansion of EXPR"),
 	N_("'EXPR'") },
 
-#ifdef	NOTYET
  { "macros", '\0', POPT_ARG_STRING, &rpmMacrofiles, 0,
 	N_("read <FILE:...> instead of default file(s)"),
 	N_("<FILE:...>") },
@@ -330,6 +329,7 @@ struct poptOption rpmioAllPoptTable[] = {
 	N_("<FILE:...>") },
 #endif
 #endif
+#ifdef	NOTYET
 #if defined(RPM_VENDOR_OPENPKG) /* support-rpmpopt-option */
  { "rpmpopt", '\0', POPT_ARG_STRING, NULL, 0,
 	N_("read <FILE:...> instead of default POPT file(s)"),

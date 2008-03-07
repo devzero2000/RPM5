@@ -59,7 +59,6 @@ LIBRPM_0
     rpmcliConfigured;
     rpmcliDepFlagsPoptTable;
     rpmcliFini;
-    rpmcliFtsPoptTable;
     rpmcliHashesCurrent;
     rpmcliHashesTotal;
     rpmcliImportPubkey;
@@ -71,13 +70,11 @@ LIBRPM_0
     rpmcliInstallRun;
     rpmcliInstallSuggests;
     rpmcliPackagesTotal;
-    rpmcliPipeOutput;
     rpmcliProgressCurrent;
     rpmcliProgressTotal;
     rpmcliQuery;
     rpmcliQueryFlags;
     rpmcliRcfile;
-    rpmcliRootDir;
     rpmcliShowMatches;
     rpmcliSign;
     rpmcliTargets;

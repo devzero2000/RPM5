@@ -12,6 +12,7 @@
 #endif
 
 #include <rpmio.h>
+#include <poptIO.h>
 #include <rpmtag.h>
 #include <rpmcli.h>
 
@@ -706,7 +707,7 @@ int rpmcliArgIter(rpmts ts, QVA_t qva, ARGV_t argv)
     switch (qva->qva_source) {
     case RPMQV_ALL:
 	qva->qva_gi = rpmgiNew(ts, RPMDBI_PACKAGES, NULL, 0);
-	qva->qva_rc = rpmgiSetArgs(qva->qva_gi, argv, ftsOpts, RPMGI_NONE);
+	qva->qva_rc = rpmgiSetArgs(qva->qva_gi, argv, rpmioFtsOpts, RPMGI_NONE);
 
 	if (rpmgiGetFlags(qva->qva_gi) & RPMGI_TSADD)	/* Load the ts with headers. */
 	while ((rpmrc = rpmgiNext(qva->qva_gi)) == RPMRC_OK)
@@ -721,7 +722,7 @@ int rpmcliArgIter(rpmts ts, QVA_t qva, ARGV_t argv)
 	break;
     case RPMQV_RPM:
 	qva->qva_gi = rpmgiNew(ts, RPMDBI_ARGLIST, NULL, 0);
-	qva->qva_rc = rpmgiSetArgs(qva->qva_gi, argv, ftsOpts, giFlags);
+	qva->qva_rc = rpmgiSetArgs(qva->qva_gi, argv, rpmioFtsOpts, giFlags);
 
 	if (rpmgiGetFlags(qva->qva_gi) & RPMGI_TSADD)	/* Load the ts with headers. */
 	while ((rpmrc = rpmgiNext(qva->qva_gi)) == RPMRC_OK)
@@ -736,7 +737,7 @@ int rpmcliArgIter(rpmts ts, QVA_t qva, ARGV_t argv)
 	break;
     case RPMQV_HDLIST:
 	qva->qva_gi = rpmgiNew(ts, RPMDBI_HDLIST, NULL, 0);
-	qva->qva_rc = rpmgiSetArgs(qva->qva_gi, argv, ftsOpts, giFlags);
+	qva->qva_rc = rpmgiSetArgs(qva->qva_gi, argv, rpmioFtsOpts, giFlags);
 
 	if (rpmgiGetFlags(qva->qva_gi) & RPMGI_TSADD)	/* Load the ts with headers. */
 	while ((rpmrc = rpmgiNext(qva->qva_gi)) == RPMRC_OK)
@@ -750,10 +751,10 @@ int rpmcliArgIter(rpmts ts, QVA_t qva, ARGV_t argv)
 	rpmtsEmpty(ts);
 	break;
     case RPMQV_FTSWALK:
-	if (ftsOpts == 0)
-	    ftsOpts = (FTS_COMFOLLOW | FTS_LOGICAL | FTS_NOSTAT);
+	if (rpmioFtsOpts == 0)
+	    rpmioFtsOpts = (FTS_COMFOLLOW | FTS_LOGICAL | FTS_NOSTAT);
 	qva->qva_gi = rpmgiNew(ts, RPMDBI_FTSWALK, NULL, 0);
-	qva->qva_rc = rpmgiSetArgs(qva->qva_gi, argv, ftsOpts, giFlags);
+	qva->qva_rc = rpmgiSetArgs(qva->qva_gi, argv, rpmioFtsOpts, giFlags);
 
 	if (rpmgiGetFlags(qva->qva_gi) & RPMGI_TSADD)	/* Load the ts with headers. */
 	while ((rpmrc = rpmgiNext(qva->qva_gi)) == RPMRC_OK)
@@ -769,7 +770,7 @@ int rpmcliArgIter(rpmts ts, QVA_t qva, ARGV_t argv)
     default:
       if (giFlags & RPMGI_TSADD) {
 	qva->qva_gi = rpmgiNew(ts, RPMDBI_LABEL, NULL, 0);
-	qva->qva_rc = rpmgiSetArgs(qva->qva_gi, argv, ftsOpts,
+	qva->qva_rc = rpmgiSetArgs(qva->qva_gi, argv, rpmioFtsOpts,
 		(giFlags | (RPMGI_NOGLOB               )));
 	if (rpmgiGetFlags(qva->qva_gi) & RPMGI_TSADD)	/* Load the ts with headers. */
 	while ((rpmrc = rpmgiNext(qva->qva_gi)) == RPMRC_OK)
@@ -783,7 +784,7 @@ int rpmcliArgIter(rpmts ts, QVA_t qva, ARGV_t argv)
 	rpmtsEmpty(ts);
       } else {
 	qva->qva_gi = rpmgiNew(ts, RPMDBI_ARGLIST, NULL, 0);
-	qva->qva_rc = rpmgiSetArgs(qva->qva_gi, argv, ftsOpts,
+	qva->qva_rc = rpmgiSetArgs(qva->qva_gi, argv, rpmioFtsOpts,
 		(giFlags | (RPMGI_NOGLOB|RPMGI_NOHEADER)));
 	while ((rpmrc = rpmgiNext(qva->qva_gi)) == RPMRC_OK) {
 	    const char * path;
