@@ -25,7 +25,6 @@
  * $FreeBSD: src/usr.bin/tar/bsdtar.h,v 1.29 2008/01/02 00:21:27 kientzle Exp $
  */
 
-#include "bsdtar_platform.h"
 #include <stdio.h>
 
 #define	DEFAULT_BYTES_PER_BLOCK	(20*512)

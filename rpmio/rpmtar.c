@@ -23,6 +23,43 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#define __FBSDID(_s)	
+#define	HAVE_GETOPT_LONG	1
+#define	HAVE_DECL_OPTARG	1
+#define	HAVE_DECL_OPTIND	1
+#define BSDTAR_VERSION_STRING "2.4.12"
+
+#define ARCHIVE_STAT_CTIME_NANOS(st)    (st)->st_ctim.tv_nsec
+#define ARCHIVE_STAT_MTIME_NANOS(st)    (st)->st_mtim.tv_nsec
+
+struct archive_entry;
+#define	archive_version()	BSDTAR_VERSION_STRING
+/* Default: Do not try to set owner/group. */
+#define ARCHIVE_EXTRACT_OWNER   (1)
+/* Default: Do obey umask, do not restore SUID/SGID/SVTX bits. */
+#define ARCHIVE_EXTRACT_PERM    (2)
+/* Default: Do not restore mtime/atime. */
+#define ARCHIVE_EXTRACT_TIME    (4)
+/* Default: Replace existing files. */
+#define ARCHIVE_EXTRACT_NO_OVERWRITE (8)
+/* Default: Try create first, unlink only if create fails with EEXIST. */
+#define ARCHIVE_EXTRACT_UNLINK  (16)
+/* Default: Do not restore ACLs. */
+#define ARCHIVE_EXTRACT_ACL     (32)
+/* Default: Do not restore fflags. */
+#define ARCHIVE_EXTRACT_FFLAGS  (64)
+/* Default: Do not restore xattrs. */
+#define ARCHIVE_EXTRACT_XATTR   (128)
+/* Default: Do not try to guard against extracts redirected by symlinks. */
+/* Note: With ARCHIVE_EXTRACT_UNLINK, will remove any intermediate symlink. */
+#define ARCHIVE_EXTRACT_SECURE_SYMLINKS (256)
+/* Default: Do not reject entries with '..' as path elements. */
+#define ARCHIVE_EXTRACT_SECURE_NODOTDOT (512)
+/* Default: Create parent directories as needed. */
+#define ARCHIVE_EXTRACT_NO_AUTODIR (1024)
+/* Default: Overwrite files, even if one on disk is newer. */
+#define ARCHIVE_EXTRACT_NO_OVERWRITE_NEWER (2048)
+
 #include "system.h"
 __FBSDID("$FreeBSD: src/usr.bin/tar/bsdtar.c,v 1.79 2008/01/22 07:23:44 kientzle Exp $");
 
@@ -51,7 +88,7 @@ struct option {
 #include <zlib.h>
 #endif
 
-#include "bsdtar.h"
+#include "rpmtar.h"
 
 #include "debug.h"
 
@@ -75,9 +112,192 @@ extern int optind;
 #define	_PATH_DEFTAPE "/dev/tape"
 #endif
 
+
+/*==============================================================*/
 /* External function to parse a date/time string (from getdate.y) */
-time_t get_date(const char *)
-	/*@*/;
+static
+time_t get_date(const char *p)
+{
+    return time(NULL);
+}
+
+static void
+bsdtar_vwarnc(struct bsdtar *bsdtar, int code, const char *fmt, va_list ap)
+	/*@globals fileSystem @*/
+	/*@modifies ap, fileSystem @*/
+{
+	fprintf(stderr, "%s: ", bsdtar->progname);
+	vfprintf(stderr, fmt, ap);
+	if (code != 0)
+		fprintf(stderr, ": %s", strerror(code));
+	fprintf(stderr, "\n");
+}
+
+void
+bsdtar_warnc(struct bsdtar *bsdtar, int code, const char *fmt, ...)
+{
+	va_list ap;
+
+	va_start(ap, fmt);
+	bsdtar_vwarnc(bsdtar, code, fmt, ap);
+	va_end(ap);
+}
+
+void
+bsdtar_errc(struct bsdtar *bsdtar, int eval, int code, const char *fmt, ...)
+{
+	va_list ap;
+
+	va_start(ap, fmt);
+	bsdtar_vwarnc(bsdtar, code, fmt, ap);
+	va_end(ap);
+	exit(eval);
+}
+
+/*-
+ * The logic here for -C <dir> attempts to avoid
+ * chdir() as long as possible.  For example:
+ * "-C /foo -C /bar file"          needs chdir("/bar") but not chdir("/foo")
+ * "-C /foo -C bar file"           needs chdir("/foo/bar")
+ * "-C /foo -C bar /file1"         does not need chdir()
+ * "-C /foo -C bar /file1 file2"   needs chdir("/foo/bar") before file2
+ *
+ * The only correct way to handle this is to record a "pending" chdir
+ * request and combine multiple requests intelligently until we
+ * need to process a non-absolute file.  set_chdir() adds the new dir
+ * to the pending list; do_chdir() actually executes any pending chdir.
+ *
+ * This way, programs that build tar command lines don't have to worry
+ * about -C with non-existent directories; such requests will only
+ * fail if the directory must be accessed.
+ */
+void
+set_chdir(struct bsdtar *bsdtar, const char *newdir)
+{
+	if (newdir[0] == '/') {
+		/* The -C /foo -C /bar case; dump first one. */
+		free(bsdtar->pending_chdir);
+		bsdtar->pending_chdir = NULL;
+	}
+	if (bsdtar->pending_chdir == NULL)
+		/* Easy case: no previously-saved dir. */
+		bsdtar->pending_chdir = strdup(newdir);
+	else {
+		/* The -C /foo -C bar case; concatenate */
+		char *old_pending = bsdtar->pending_chdir;
+		size_t old_len = strlen(old_pending);
+		bsdtar->pending_chdir = malloc(old_len + strlen(newdir) + 2);
+		if (old_pending[old_len - 1] == '/')
+			old_pending[old_len - 1] = '\0';
+		if (bsdtar->pending_chdir != NULL)
+			sprintf(bsdtar->pending_chdir, "%s/%s",
+			    old_pending, newdir);
+		free(old_pending);
+	}
+	if (bsdtar->pending_chdir == NULL)
+		bsdtar_errc(bsdtar, 1, errno, "No memory");
+}
+
+/*
+ * The matching logic here needs to be re-thought.  I started out to
+ * try to mimic gtar's matching logic, but it's not entirely
+ * consistent.  In particular 'tar -t' and 'tar -x' interpret patterns
+ * on the command line as anchored, but --exclude doesn't.
+ */
+
+/*
+ * Utility functions to manage exclusion/inclusion patterns
+ */
+
+int
+exclude(struct bsdtar *bsdtar, const char *pattern)
+{
+#ifdef	NOTYET
+	struct matching *matching;
+
+	if (bsdtar->matching == NULL)
+		initialize_matching(bsdtar);
+	matching = bsdtar->matching;
+	add_pattern(bsdtar, &(matching->exclusions), pattern);
+	matching->exclusions_count++;
+#endif
+	return (0);
+}
+
+int
+exclude_from_file(struct bsdtar *bsdtar, const char *pathname)
+{
+#ifdef	NOTYET
+	return (process_lines(bsdtar, pathname, &exclude));
+#else
+	return (0);
+#endif
+}
+
+int
+include(struct bsdtar *bsdtar, const char *pattern)
+{
+#ifdef	NOTYET
+	struct matching *matching;
+
+	if (bsdtar->matching == NULL)
+		initialize_matching(bsdtar);
+	matching = bsdtar->matching;
+	add_pattern(bsdtar, &(matching->inclusions), pattern);
+	matching->inclusions_count++;
+	matching->inclusions_unmatched_count++;
+#endif
+	return (0);
+}
+
+void
+cleanup_exclusions(struct bsdtar *bsdtar)
+{
+#ifdef	NOTYET
+	struct match *p, *q;
+
+	if (bsdtar->matching) {
+		p = bsdtar->matching->inclusions;
+		while (p != NULL) {
+			q = p;
+			p = p->next;
+			free(q);
+		}
+		p = bsdtar->matching->exclusions;
+		while (p != NULL) {
+			q = p;
+			p = p->next;
+			free(q);
+		}
+		free(bsdtar->matching);
+	}
+#endif
+}
+
+/*==============================================================*/
+
+void	tar_mode_c(struct bsdtar *bsdtar)
+	/*@globals fileSystem @*/
+	/*@modifies bsdtar, fileSystem @*/
+{	return;	}
+void	tar_mode_r(struct bsdtar *bsdtar)
+	/*@globals fileSystem @*/
+	/*@modifies bsdtar, fileSystem @*/
+{	return;	}
+void	tar_mode_t(struct bsdtar *bsdtar)
+	/*@globals fileSystem @*/
+	/*@modifies bsdtar, fileSystem @*/
+{	return;	}
+void	tar_mode_u(struct bsdtar *bsdtar)
+	/*@globals fileSystem @*/
+	/*@modifies bsdtar, fileSystem @*/
+{	return;	}
+void	tar_mode_x(struct bsdtar *bsdtar)
+	/*@globals fileSystem @*/
+	/*@modifies bsdtar, fileSystem @*/
+{	return;	}
+
+/*==============================================================*/
 
 /*-
  * Convert traditional tar arguments into new-style.
@@ -96,7 +316,7 @@ time_t get_date(const char *)
  * It is used to determine which option letters have trailing arguments.
  */
 /*@null@*/
-char **
+static char **
 rewrite_argv(struct bsdtar *bsdtar, int *argc, char **src_argv,
 		const char *optstring)
 	/*@globals fileSystem @*/
