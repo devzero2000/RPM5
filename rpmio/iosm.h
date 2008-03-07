@@ -38,6 +38,7 @@ typedef enum iosmMapFlags_e {
     IOSM_PAYLOAD_CREATE	= (1 << 12)
 } iosmMapFlags;
 
+#if defined(_IOSM_INTERNAL)
 /** \ingroup payload
  * @note IOSM_CHECK_ERRNO bit is set only if errno is valid.
  */
@@ -45,7 +46,7 @@ typedef enum iosmMapFlags_e {
 
 /** \ingroup payload
  */
-enum iosmErrorReturns {
+enum iosmErrorReturns_e {
 	IOSMERR_BAD_MAGIC	= (2			),
 	IOSMERR_BAD_HEADER	= (3			),
 	IOSMERR_OPEN_FAILED	= (4    | IOSMERR_CHECK_ERRNO),
@@ -78,6 +79,7 @@ enum iosmErrorReturns {
 	IOSMERR_ENOENT		= (30			),
 	IOSMERR_ENOTEMPTY	= (31			)
 };
+#endif
 
 /**
  */
@@ -156,12 +158,12 @@ typedef enum iosmFileStage_e {
 #undef	_fs
 #undef	_fd
 
+#if defined(_IOSM_INTERNAL)
 /** \ingroup payload
  * Iterator across package file info, forward on install, backward on erase.
  */
 typedef /*@abstract@*/ struct iosmIterator_s * IOSMI_t;
 
-#if defined(_RPMIOSM_INTERNAL)
 /** \ingroup payload
  * Keeps track of the set of all hard links to a file in an archive.
  */
@@ -189,7 +191,6 @@ struct iosmIterator_s {
     int isave;			/*!< last returned iterator index. */
     int i;			/*!< iterator index. */
 };
-#endif
 
 /** \ingroup payload
  * File name and stat information.
@@ -297,6 +298,7 @@ struct iosm_s {
 
     struct rpmop_s op_digest;	/*!< RPMSW_OP_DIGEST accumulator. */
 };
+#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -327,6 +329,7 @@ extern "C" {
 char * iosmStrerror(int rc)
 	/*@*/;
 
+#if defined(_IOSM_INTERNAL)
 /**
  * Create I/O state machine instance.
  * @return		I/O state machine
@@ -341,6 +344,7 @@ char * iosmStrerror(int rc)
  */
 /*@null@*/ IOSM_t freeIOSM(/*@only@*/ /*@null@*/ IOSM_t iosm)
 	/*@modifies iosm @*/;
+#endif
 
 /**
  * Load external data into I/O state machine.
@@ -373,7 +377,7 @@ int iosmTeardown(IOSM_t iosm)
 	/*@globals h_errno, fileSystem, internalState @*/
 	/*@modifies iosm, fileSystem, internalState @*/;
 
-#if defined(_RPMIOSM_INTERNAL)
+#if defined(_IOSM_INTERNAL)
 /*@-exportlocal@*/
 /**
  * Retrieve transaction set from I/O state machine iterator.
@@ -390,7 +394,6 @@ void * iosmGetTs(const IOSM_t iosm)
  */
 void * iosmGetFi(/*@partial@*/ const IOSM_t iosm)
 	/*@*/;
-#endif
 
 /**
  * Map next file path and action.
@@ -412,6 +415,7 @@ int iosmMapAttrs(IOSM_t iosm)
  */
 extern int (*_iosmNext) (IOSM_t iosm, iosmFileStage nstage)
 	/*@modifies iosm @*/;
+#endif
 
 /**
  * File state machine driver.

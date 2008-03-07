@@ -7,6 +7,7 @@
 
 #include <rpmio.h>
 #include <cpio.h>
+#define	_IOSM_INTERNAL
 #include <iosm.h>
 
 #include "debug.h"

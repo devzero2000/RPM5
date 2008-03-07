@@ -13,8 +13,8 @@
 #define	_RPMFI_INTERNAL
 #include "rpmfi.h"
 
-#define	_RPMIOSM_INTERNAL
-#include "fsm.h"
+#define	_IOSM_INTERNAL
+#include <fsm.h>
 #define	fsmUNSAFE	fsmStage
 
 #if defined(SUPPORT_AR_PAYLOADS)

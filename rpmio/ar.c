@@ -7,9 +7,10 @@
 
 #include <rpmio_internal.h>	/* XXX fdGetCpioPos writing AR_MAGIC */
 
-#include <ar.h>
 #include <rpmmacro.h>
 #include <ugid.h>
+#include <ar.h>
+#define	_IOSM_INTERNAL
 #include <iosm.h>
 
 #include "debug.h"

@@ -17,8 +17,8 @@
 typedef /*@abstract@*/ /*@refcounted@*/ struct rpmts_s * rpmts;
 typedef /*@abstract@*/ struct rpmte_s * rpmte;
 
-#define	_RPMIOSM_INTERNAL
-#include "iosm.h"
+#define	_IOSM_INTERNAL
+#include <iosm.h>
 #define	iosmUNSAFE	iosmStage
 
 #include "cpio.h"

@@ -7,8 +7,9 @@
 
 #include <rpmio.h>
 #include <ugid.h>
-#include <iosm.h>
 #include <tar.h>
+#define	_IOSM_INTERNAL
+#include <iosm.h>
 
 #include "debug.h"
 
