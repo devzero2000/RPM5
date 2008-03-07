@@ -11,24 +11,6 @@ const char *__progname;
 #include <mire.h>
 #include <poptIO.h>
 
-#define _RPMPGP_INTERNAL
-#if defined(WITH_BEECRYPT)
-#define _RPMBC_INTERNAL
-#include <rpmbc.h>
-#endif
-#if defined(WITH_GCRYPT)
-#define _RPMGC_INTERNAL
-#include <rpmgc.h>
-#endif
-#if defined(WITH_NSS)
-#define _RPMNSS_INTERNAL
-#include <rpmnss.h>
-#endif
-#if defined(WITH_SSL)
-#define _RPMSSL_INTERNAL
-#include <rpmssl.h>
-#endif
-
 #include <rpmcli.h>
 #include <fs.h>			/* XXX rpmFreeFilesystems() */
 #include <rpmns.h>		/* XXX rpmnsClean() */
@@ -39,11 +21,7 @@ const char *__progname;
 #define POPT_SHOWRC		-998
 #define POPT_QUERYTAGS		-997
 #define POPT_PREDEFINE		-996
-#ifdef  DEAD	/* XXX remember the previous definition however. */
-#define POPT_RCFILE		-995
-#endif
 #define POPT_UNDEFINE		-994
-#define	POPT_CRYPTO		-993
 
 /*@access headerTagIndices @*/		/* XXX rpmcliFini */
 /*@access headerTagTableEntry @*/	/* XXX rpmcliFini */
@@ -231,28 +209,6 @@ static void rpmcliAllArgCallback(poptContext con,
 /*@=type@*/
 	s = _free(s);
     }	break;
-    case POPT_CRYPTO:
-	rpmcliConfigured();
-	{   const char *val = rpmExpand(arg, NULL);
-#if defined(WITH_BEECRYPT)
-	    if (!xstrcasecmp(val, "beecrypt") || !xstrcasecmp(val, "bc"))
-		pgpImplVecs = &rpmbcImplVecs;
-#endif
-#if defined(WITH_GCRYPT)
-	    if (!xstrcasecmp(val, "gcrypt") || !xstrcasecmp(val, "gc"))
-		pgpImplVecs = &rpmgcImplVecs;
-#endif
-#if defined(WITH_NSS)
-	    if (!xstrcasecmp(val, "NSS"))
-		pgpImplVecs = &rpmnssImplVecs;
-#endif
-#if defined(WITH_SSL)
-	    if (!xstrcasecmp(val, "OpenSSL") || !xstrcasecmp(val, "ssl"))
-		pgpImplVecs = &rpmsslImplVecs;
-#endif
-	    val = _free(val);
-	}
-	break;
     case 'E':
 	rpmcliConfigured();
 	{   const char *val = rpmExpand(arg, NULL);
@@ -410,10 +366,6 @@ struct poptOption rpmcliAllPoptTable[] = {
 
  { "promoteepoch", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmds_nopromote, 0,
 	NULL, NULL},
-
- { "usecrypto",'\0', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN, NULL, POPT_CRYPTO,
-        N_("select cryptography implementation"),
-	N_("CRYPTO") },
 
  { "fpsdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_fps_debug, -1,
 	NULL, NULL},

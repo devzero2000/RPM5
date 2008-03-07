@@ -1,4 +1,5 @@
 5.0.0 -> 5.1a1:
+    - jbj: poptIO: move --usecrypto from poptALL.
     - jbj: poptIO: fix: leave macro handling in poptALL.c for now.
     - jbj: iosm: fix: don't call headerIsEntry().
     - jbj: fix: --eval was expanding twice (dueling poptIO <-> poptALL tables.)

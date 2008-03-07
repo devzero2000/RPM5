@@ -223,9 +223,29 @@ static void rpmioAllArgCallback(poptContext con,
 /*@=type@*/
 	s = _free(s);
     }	break;
-    case POPT_CRYPTO:
+    case 'E':
 	rpmioConfigured();
 	{   const char *val = rpmExpand(arg, NULL);
+#if defined(RPM_VENDOR_OPENPKG) /* no-extra-terminating-newline-on-eval */
+            size_t val_len;
+            val_len = strlen(val);
+            if (val[val_len - 1] == '\n')
+                fwrite(val, val_len, 1, stdout);
+            else
+#endif
+	    fprintf(stdout, "%s\n", val);
+	    val = _free(val);
+	}
+	break;
+#endif	/* NOTYET */
+    case POPT_CRYPTO:
+	{   const char *val = rpmExpand(arg, NULL);
+#ifdef	NOTYET
+	    rpmioConfigured();
+	    val = rpmExpand(arg, NULL);
+#else
+	    val = xstrdup(arg);
+#endif	/* NOTYET */
 #if defined(WITH_BEECRYPT)
 	    if (!xstrcasecmp(val, "beecrypt") || !xstrcasecmp(val, "bc"))
 		pgpImplVecs = &rpmbcImplVecs;
@@ -245,21 +265,6 @@ static void rpmioAllArgCallback(poptContext con,
 	    val = _free(val);
 	}
 	break;
-    case 'E':
-	rpmioConfigured();
-	{   const char *val = rpmExpand(arg, NULL);
-#if defined(RPM_VENDOR_OPENPKG) /* no-extra-terminating-newline-on-eval */
-            size_t val_len;
-            val_len = strlen(val);
-            if (val[val_len - 1] == '\n')
-                fwrite(val, val_len, 1, stdout);
-            else
-#endif
-	    fprintf(stdout, "%s\n", val);
-	    val = _free(val);
-	}
-	break;
-#endif	/* NOTYET */
     case POPT_SHOWVERSION:
 	printVersion(stdout);
 /*@i@*/	con = rpmioFini(con);
@@ -355,11 +360,9 @@ struct poptOption rpmioAllPoptTable[] = {
        N_("disable use of libio(3) API"), NULL},
 #endif
 
-#ifdef	NOTYET
  { "usecrypto",'\0', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN, NULL, POPT_CRYPTO,
         N_("select cryptography implementation"),
 	N_("CRYPTO") },
-#endif
 
  { "ardebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_ar_debug, -1,
 	N_("debug ar archives"), NULL},
