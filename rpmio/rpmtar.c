@@ -67,9 +67,6 @@ __FBSDID("$FreeBSD: src/usr.bin/tar/bsdtar.c,v 1.79 2008/01/22 07:23:44 kientzle
 #ifdef HAVE_LANGINFO_H
 #include <langinfo.h>
 #endif
-#ifdef HAVE_LOCALE_H
-#include <locale.h>
-#endif
 #ifdef HAVE_PATHS_H
 #include <paths.h>
 #endif
@@ -302,39 +299,35 @@ cleanup_exclusions(struct bsdtar *bsdtar)
 
 /*==============================================================*/
 
-static int rpmIOSM(rpmts ts, const char * fn, int mapflags)
+static int rpmIOSM(struct bsdtar * bsdtar, int mapflags)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/
 {
-    rpmpsm psm;
-    rpmfi fi;
-    const char * ioflags;
-    int fsmmode;
+    const char * fn = (bsdtar->filename ? bsdtar->filename : "-");
     int rc = 0;
-    int xx;
 
-fprintf(stderr, "--> rpmIOSM(%p, \"%s\", 0x%x)\n", ts, fn, mapflags);
+fprintf(stderr, "--> rpmIOSM(%p, 0x%x) fn \"%s\"\n", bsdtar, mapflags, fn);
 
     if (fn != NULL) {
+	rpmts ts = rpmtsCreate();
+	rpmfi fi = rpmfiNew(ts, NULL, RPMTAG_BASENAMES, 0);
+	rpmpsm psm = rpmpsmNew(ts, NULL, fi);
+	const char * ioflags = (mapflags & IOSM_PAYLOAD_CREATE)
+			? "w.ufdio" : "r.ufdio";
 
-	fi = rpmfiNew(ts, NULL, RPMTAG_BASENAMES, 0);
-assert(fi != NULL);
-
-	psm = rpmpsmNew(ts, NULL, fi);
-assert(psm != NULL);
-
-	ioflags = (mapflags & IOSM_PAYLOAD_CREATE) ? "w.ufdio" : "r.ufdio";
 	psm->cfd = Fopen(fn, ioflags);
 	if (psm->cfd != NULL && !Ferror(psm->cfd)) {
+	    int fsmmode = (mapflags & IOSM_PAYLOAD_CREATE)
+			? IOSM_PKGBUILD : IOSM_PKGINSTALL;
+	    int xx;
 
 	    fi->mapflags |= mapflags;
-	    fsmmode = (mapflags & IOSM_PAYLOAD_CREATE) ? IOSM_PKGBUILD : IOSM_PKGINSTALL;
 	    rc = iosmSetup(fi->fsm, fsmmode, "tar", ts, fi,
 			psm->cfd, NULL, &psm->failedFile);
 	    (void) rpmswAdd(rpmtsOp(ts, RPMTS_OP_UNCOMPRESS),
 			fdstat_op(psm->cfd, FDSTAT_READ));
 	    (void) rpmswAdd(rpmtsOp(ts, RPMTS_OP_DIGEST),
-		fdstat_op(psm->cfd, FDSTAT_DIGEST));
+			fdstat_op(psm->cfd, FDSTAT_DIGEST));
 	    xx = iosmTeardown(fi->fsm);
 
 	    xx = Fclose(psm->cfd);
@@ -348,8 +341,8 @@ assert(psm != NULL);
 	}
 
 	psm = rpmpsmFree(psm);
-
 	fi = rpmfiFree(fi);
+	ts = rpmtsFree(ts);
     }
 
     return rc;
@@ -360,7 +353,8 @@ assert(psm != NULL);
 int tar_mode_c(struct bsdtar *bsdtar)
 	/*@globals fileSystem @*/
 	/*@modifies bsdtar, fileSystem @*/
-{ fprintf(stderr, "==> tar_mode_c: %s\n", (bsdtar->filename ?: "")); return 0; }
+{   return rpmIOSM(bsdtar, IOSM_PAYLOAD_CREATE); }
+
 int tar_mode_r(struct bsdtar *bsdtar)
 	/*@globals fileSystem @*/
 	/*@modifies bsdtar, fileSystem @*/
@@ -369,21 +363,17 @@ int tar_mode_r(struct bsdtar *bsdtar)
 int tar_mode_t(struct bsdtar *bsdtar)
 	/*@globals fileSystem @*/
 	/*@modifies bsdtar, fileSystem @*/
-{
-    rpmts ts = rpmtsCreate();
-    int rc = rpmIOSM(ts, (bsdtar->filename ?: "-"), IOSM_PAYLOAD_LIST);
-    ts = rpmtsFree(ts);
-    return rc;
-}
+{   return rpmIOSM(bsdtar, IOSM_PAYLOAD_LIST); }
 
 int tar_mode_u(struct bsdtar *bsdtar)
 	/*@globals fileSystem @*/
 	/*@modifies bsdtar, fileSystem @*/
 { fprintf(stderr, "==> tar_mode_u: %s\n", (bsdtar->filename ?: "")); return 0; }
+
 int tar_mode_x(struct bsdtar *bsdtar)
 	/*@globals fileSystem @*/
 	/*@modifies bsdtar, fileSystem @*/
-{ fprintf(stderr, "==> tar_mode_x: %s\n", (bsdtar->filename ?: "")); return 0; }
+{   return rpmIOSM(bsdtar, IOSM_PAYLOAD_EXTRACT); }
 
 /*==============================================================*/
 
@@ -436,7 +426,7 @@ rewrite_argv(struct bsdtar *bsdtar, int *argc, char **src_argv,
 	    if (p[1] != ':')	/* No arg required, done. */
 		/*@innerbreak@*/ break;
 	    if (*src_argv == NULL)	/* No arg available? Error. */
-		bsdtar_errc(bsdtar, 1, 0, "Option %c requires an argument",
+		bsdtar_errc(bsdtar, 1, 0, _("Option %c requires an argument"),
 				    *src);
 	    *dest_argv++ = *src_argv++;
 	    /*@innerbreak@*/ break;
@@ -502,7 +492,7 @@ set_mode(struct bsdtar *bsdtar, char opt)
 	/*@modifies bsdtar, fileSystem @*/
 {
     if (bsdtar->mode != '\0' && bsdtar->mode != opt)
-	bsdtar_errc(bsdtar, 1, 0, "Can't specify both -%c and -%c",
+	bsdtar_errc(bsdtar, 1, 0, _("Can't specify both -%c and -%c"),
 		opt, bsdtar->mode);
     bsdtar->mode = opt;
 }
@@ -550,7 +540,7 @@ fprintf(stderr, "--> bsdtarArgCallback(%p, %d, %p, %p, %p) val %d\n", con, reaso
 	break;
     case OPTION_EXCLUDE: /* GNU tar */
 	if (exclude(bsdtar, arg))
-	    bsdtar_errc(bsdtar, 1, 0, "Couldn't exclude %s\n", arg);
+	    bsdtar_errc(bsdtar, 1, 0, _("Couldn't exclude %s"), arg);
 	break;
     case OPTION_FORMAT: /* GNU tar, others */
 	bsdtar->create_format = arg;
@@ -593,11 +583,12 @@ fprintf(stderr, "--> bsdtarArgCallback(%p, %d, %p, %p, %p) val %d\n", con, reaso
     case 'j': /* GNU tar */
 #if HAVE_LIBBZ2
 	if (bsdtar->create_compression != '\0')
-	    bsdtar_errc(bsdtar, 1, 0, "Can't specify both -%c and -%c", val,
+	    bsdtar_errc(bsdtar, 1, 0, _("Can't specify both -%c and -%c"), val,
 			    bsdtar->create_compression);
 	bsdtar->create_compression = val;
 #else
-	bsdtar_warnc(bsdtar, 0, "-j compression not supported by this version of rpmtar");
+	bsdtar_warnc(bsdtar, 0,
+		_("-j compression not supported by this version of rpmtar"));
 	poptPrintUsage(con, stderr, 0);
 	exit(EXIT_FAILURE);
 #endif
@@ -631,7 +622,7 @@ fprintf(stderr, "--> bsdtarArgCallback(%p, %d, %p, %p, %p) val %d\n", con, reaso
     case OPTION_NEWER_CTIME_THAN:
     {	struct stat st;
 	if (stat(arg, &st) != 0)
-	    bsdtar_errc(bsdtar, 1, 0, "Can't open file %s", arg);
+	    bsdtar_errc(bsdtar, 1, 0, _("Can't open file %s"), arg);
 	bsdtar->newer_ctime_sec = st.st_ctime;
 	bsdtar->newer_ctime_nsec = ARCHIVE_STAT_CTIME_NANOS(&st);
     }	break;
@@ -641,7 +632,7 @@ fprintf(stderr, "--> bsdtarArgCallback(%p, %d, %p, %p, %p) val %d\n", con, reaso
     case OPTION_NEWER_MTIME_THAN:
     {	struct stat st;
 	if (stat(arg, &st) != 0)
-	    bsdtar_errc(bsdtar, 1, 0, "Can't open file %s", arg);
+	    bsdtar_errc(bsdtar, 1, 0, _("Can't open file %s"), arg);
 	bsdtar->newer_mtime_sec = st.st_mtime;
 	bsdtar->newer_mtime_nsec = ARCHIVE_STAT_MTIME_NANOS(&st);
     }	break;
@@ -746,29 +737,31 @@ fprintf(stderr, "--> bsdtarArgCallback(%p, %d, %p, %p, %p) val %d\n", con, reaso
     case 'y': /* FreeBSD version of GNU tar */
 #if HAVE_LIBBZ2
 	if (bsdtar->create_compression != '\0')
-	    bsdtar_errc(bsdtar, 1, 0, "Can't specify both -%c and -%c", val,
+	    bsdtar_errc(bsdtar, 1, 0, _("Can't specify both -%c and -%c"), val,
 			    bsdtar->create_compression);
 	bsdtar->create_compression = val;
 #else
-	bsdtar_warnc(bsdtar, 0, "-y compression not supported by this version of rpmtar");
+	bsdtar_warnc(bsdtar, 0,
+		_("-y compression not supported by this version of rpmtar"));
 	poptPrintUsage(con, stderr, 0);
 	exit(EXIT_FAILURE);
 #endif
 	break;
     case 'Z': /* GNU tar */
 	if (bsdtar->create_compression != '\0')
-	    bsdtar_errc(bsdtar, 1, 0, "Can't specify both -%c and -%c", val,
+	    bsdtar_errc(bsdtar, 1, 0, _("Can't specify both -%c and -%c"), val,
 			    bsdtar->create_compression);
 	bsdtar->create_compression = val;
 	break;
     case 'z': /* GNU tar, star, many others */
 #if HAVE_LIBZ
 	if (bsdtar->create_compression != '\0')
-	    bsdtar_errc(bsdtar, 1, 0, "Can't specify both -%c and -%c", val,
+	    bsdtar_errc(bsdtar, 1, 0, _("Can't specify both -%c and -%c"), val,
 			    bsdtar->create_compression);
 	bsdtar->create_compression = val;
 #else
-	bsdtar_warnc(bsdtar, 0, "-z compression not supported by this version of rpmtar");
+	bsdtar_warnc(bsdtar, 0,
+		_("-z compression not supported by this version of rpmtar"));
 	poptPrintUsage(con, stderr, 0);
 	exit(EXIT_FAILURE);
 #endif
@@ -998,7 +991,7 @@ tar_opt_W(struct bsdtar *bsdtar, const char * arg)
 			p, option->name, o->name);
 
 	if (option->has_arg == required_argument && arg == NULL)
-	    bsdtar_errc(bsdtar, 1, 0, "Option \"%s\" requires argument", p);
+	    bsdtar_errc(bsdtar, 1, 0, _("Option \"%s\" requires argument"), p);
     } else {
 	opt = '?';
 	/* TODO: Set up a fake 'struct option' for
@@ -1018,7 +1011,7 @@ only_mode(struct bsdtar *bsdtar, const char *opt, const char *valid_modes)
 	/*@modifies fileSystem @*/
 {
     if (strchr(valid_modes, bsdtar->mode) == NULL)
-	bsdtar_errc(bsdtar, 1, 0, "Option %s is not permitted in mode -%c",
+	bsdtar_errc(bsdtar, 1, 0, _("Option %s is not permitted in mode -%c"),
 		    opt, bsdtar->mode);
 }
 
@@ -1034,7 +1027,7 @@ main(int argc, char **argv)
     int xx;
 
     if (setlocale(LC_ALL, "") == NULL)
-	bsdtar_warnc(bsdtar, 0, "Failed to set default locale");
+	bsdtar_warnc(bsdtar, 0, _("Failed to set default locale"));
 
     /* Rewrite traditional-style tar arguments, if used. */
     argv = rewrite_argv(bsdtar, &argc, argv, tar_opts);
@@ -1049,7 +1042,7 @@ main(int argc, char **argv)
 /*@=dependenttrans =modobserver =observertrans @*/
 	switch (rc) {
 	default:
-	    bsdtar_errc(bsdtar, 1, 0, "Option table misconfigured");
+	    bsdtar_errc(bsdtar, 1, 0, _("Option table misconfigured"));
 	    /*@notreached@*/ /*@switchbreak@*/ break;
 	}
     }
@@ -1061,7 +1054,7 @@ main(int argc, char **argv)
     /* A mode is required. */
     if (bsdtar->mode == '\0') {
 	poptPrintUsage(optCon, stderr, 0);
-	bsdtar_errc(bsdtar, 1, 0, "Must specify one of -c, -r, -t, -u, -x");
+	bsdtar_errc(bsdtar, 1, 0, _("Must specify one of -c, -r, -t, -u, -x"));
     }
 
     /* Check boolean options only permitted in certain modes. */
@@ -1102,7 +1095,7 @@ main(int argc, char **argv)
 
     /* Check other parameters only permitted in certain modes. */
     if (bsdtar->create_compression == 'Z' && bsdtar->mode == 'c') {
-	bsdtar_warnc(bsdtar, 0, ".Z compression not supported");
+	bsdtar_warnc(bsdtar, 0, _(".Z compression not supported"));
 	poptPrintUsage(optCon, stderr, 0);
 	exit(EXIT_FAILURE);
     }
@@ -1172,7 +1165,7 @@ rpmIncreaseVerbosity();
 
     cleanup_exclusions(bsdtar);
     if (bsdtar->return_value != 0)
-	bsdtar_warnc(bsdtar, 0, "Error exit delayed from previous errors.");
+	bsdtar_warnc(bsdtar, 0, _("Error exit delayed from previous errors."));
 
     optCon = poptFreeContext(optCon);
 
