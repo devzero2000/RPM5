@@ -23,8 +23,6 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#define	_USE_POPT
-
 #define __FBSDID(_s)	
 #define BSDTAR_VERSION_STRING "2.4.12"
 
@@ -66,12 +64,8 @@ struct archive_entry;
 #include "system.h"
 __FBSDID("$FreeBSD: src/usr.bin/tar/bsdtar.c,v 1.79 2008/01/22 07:23:44 kientzle Exp $");
 
-#if defined(_USE_POPT)
 #include <rpmio.h>
 #include <argv.h>
-#else
-#include <getopt.h>
-#endif
 
 #ifdef HAVE_LANGINFO_H
 #include <langinfo.h>
@@ -373,101 +367,6 @@ rewrite_argv(struct bsdtar *bsdtar, int *argc, char **src_argv,
 	return (new_argv);
 }
 
-void
-usage(struct bsdtar *bsdtar)
-{
-	const char	*p;
-
-	p = bsdtar->progname;
-
-	fprintf(stderr, "Usage:\n");
-	fprintf(stderr, "  List:    %s -tf <archive-filename>\n", p);
-	fprintf(stderr, "  Extract: %s -xf <archive-filename>\n", p);
-	fprintf(stderr, "  Create:  %s -cf <archive-filename> [filenames...]\n", p);
-	fprintf(stderr, "  Help:    %s --help\n", p);
-	exit(EXIT_FAILURE);
-}
-
-static void
-version(void)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/
-
-{
-	printf("bsdtar %s - %s\n",
-	    BSDTAR_VERSION_STRING,
-	    archive_version());
-	exit(EXIT_FAILURE);
-}
-
-#if !defined(_USE_POPT)
-/*@unchecked@*/ /*@observer@*/
-static const char *long_help_msg =
-	"First option must be a mode specifier:\n"
-	"  -c Create  -r Add/Replace  -t List  -u Update  -x Extract\n"
-	"Common Options:\n"
-	"  -b #  Use # 512-byte records per I/O block\n"
-	"  -f FILE  Location of archive (default " _PATH_DEFTAPE ")\n"
-	"  -v    Verbose\n"
-	"  -w    Interactive\n"
-	"Create: %p -c [options] [FILE | DIR | @ARCHIVE | -C DIR ]\n"
-	"  FILE, DIR  add these items to archive\n"
-	"  -z, -j  Compress archive with gzip/bzip2\n"
-	"  --format {ustar|pax|cpio|shar}  Select archive format\n"
-	"  --exclude PATTERN  Skip files that match pattern\n"
-/* XXX HAVE_GETOPT_LONG deprived. */
-	"  -W exclude=PATTERN  Skip files that match pattern\n"
-	"  -C DIR  Change to DIR before processing remaining files\n"
-	"  @ARCHIVE  Add entries from <archive> to output\n"
-	"List: %p -t [options] [PATTERN ...]\n"
-	"  PATTERN ...  If specified, list only entries that match\n"
-	"Extract: %p -x [options] [PATTERN ...]\n"
-	"  PATTERN ...  If specified, extract only entries that match\n"
-	"  -k    Keep (don't overwrite) existing files\n"
-	"  -m    Don't restore modification times\n"
-	"  -O    Write entries to stdout, don't restore to disk\n"
-	"  -p    Restore permissions (including ACLs, owner, file flags)\n";
-
-
-/*
- * Note that the word 'bsdtar' will always appear in the first line
- * of output.
- *
- * In particular, /bin/sh scripts that need to test for the presence
- * of bsdtar can use the following template:
- *
- * if (tar --help 2>&1 | grep bsdtar >/dev/null 2>&1 ) then \
- *          echo bsdtar; else echo not bsdtar; fi
- */
-static void
-long_help(struct bsdtar *bsdtar)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/
-{
-	const char	*prog;
-	const char	*p;
-
-	prog = bsdtar->progname;
-
-	fflush(stderr);
-
-	p = (strcmp(prog,"bsdtar") != 0) ? "(bsdtar)" : "";
-	printf("%s%s: manipulate archive files\n", prog, p);
-
-	for (p = long_help_msg; *p != '\0'; p++) {
-		if (*p == '%') {
-			if (p[1] == 'p') {
-				fputs(prog, stdout);
-				p++;
-			} else
-				putchar('%');
-		} else
-			putchar(*p);
-	}
-	version();
-}
-#endif
-
 /*
  * The leading '+' here forces the GNU version of getopt() (as well as
  * both the GNU and BSD versions of getopt_long) to stop at the first
@@ -497,9 +396,6 @@ enum {
 	OPTION_EXCLUDE,
 	OPTION_FAST_READ,
 	OPTION_FORMAT,
-#if !defined(_USE_POPT)
-	OPTION_HELP,
-#endif
 	OPTION_INCLUDE,
 	OPTION_NEWER_CTIME,
 	OPTION_NEWER_CTIME_THAN,
@@ -531,11 +427,6 @@ set_mode(struct bsdtar *bsdtar, char opt)
 /*@unchecked@*/
 static char option_o = 0;
 
-#if !defined(_USE_POPT)
-/*@unchecked@*/
-static char possible_help_request = 0;
-#endif
-
 static void bsdtarArgCallback(/*@unused@*/ poptContext con,
                 /*@unused@*/ enum poptCallbackReason reason,
                 const struct poptOption * opt, const char * arg,
@@ -554,10 +445,9 @@ fprintf(stderr, "--> bsdtarArgCallback(%p, %d, %p, %p, %p) val %d\n", con, reaso
 	 * no such comment, then I don't know of anyone else who
 	 * implements that option.
 	 */
-#if defined(_USE_POPT)
+
 	/* XXX avoid accidental collisions with POPT_BIT_SET for flags */
 	if (opt->arg == NULL)
-#endif
 	switch (val) {
 	case 'B': /* GNU tar */
 		/* libarchive doesn't need this; just ignore it. */
@@ -594,17 +484,7 @@ fprintf(stderr, "--> bsdtarArgCallback(%p, %d, %p, %p, %p) val %d\n", con, reaso
 		break;
 	case 'h': /* Linux Standards Base, gtar; synonym for -L */
 		bsdtar->symlink_mode = 'L';
-#if !defined(_USE_POPT)
-		/* Hack: -h by itself is the "help" command. */
-		possible_help_request = 1;
-#endif
 		break;
-#if !defined(_USE_POPT)
-	case OPTION_HELP: /* GNU tar, others */
-		long_help(bsdtar);
-		exit(EXIT_SUCCESS);
-		/*@notreached@*/ break;
-#endif
 	case 'I': /* GNU tar */
 		/*
 		 * TODO: Allow 'names' to come from an archive,
@@ -637,8 +517,9 @@ fprintf(stderr, "--> bsdtarArgCallback(%p, %d, %p, %p, %p) val %d\n", con, reaso
 			    bsdtar->create_compression);
 		bsdtar->create_compression = val;
 #else
-		bsdtar_warnc(bsdtar, 0, "-j compression not supported by this version of bsdtar");
-		usage(bsdtar);
+		bsdtar_warnc(bsdtar, 0, "-j compression not supported by this version of rpmtar");
+		poptPrintUsage(con, stderr, 0);
+		exit(EXIT_FAILURE);
 #endif
 		break;
 	case 'k': /* GNU tar */
@@ -759,7 +640,9 @@ fprintf(stderr, "--> bsdtarArgCallback(%p, %d, %p, %p, %p) val %d\n", con, reaso
 		bsdtar->verbose++;
 		break;
 	case OPTION_VERSION: /* GNU convention */
-		version();
+		printf("%s %s (libarchive %s)\n", bsdtar->progname,
+			BSDTAR_VERSION_STRING, archive_version());
+		exit(EXIT_FAILURE);
 		break;
 #if 0
 	/*
@@ -789,8 +672,9 @@ fprintf(stderr, "--> bsdtarArgCallback(%p, %d, %p, %p, %p) val %d\n", con, reaso
 			    bsdtar->create_compression);
 		bsdtar->create_compression = val;
 #else
-		bsdtar_warnc(bsdtar, 0, "-y compression not supported by this version of bsdtar");
-		usage(bsdtar);
+		bsdtar_warnc(bsdtar, 0, "-y compression not supported by this version of rpmtar");
+		poptPrintUsage(con, stderr, 0);
+		exit(EXIT_FAILURE);
 #endif
 		break;
 	case 'Z': /* GNU tar */
@@ -808,85 +692,20 @@ fprintf(stderr, "--> bsdtarArgCallback(%p, %d, %p, %p, %p) val %d\n", con, reaso
 			    bsdtar->create_compression);
 		bsdtar->create_compression = val;
 #else
-		bsdtar_warnc(bsdtar, 0, "-z compression not supported by this version of bsdtar");
-		usage(bsdtar);
+		bsdtar_warnc(bsdtar, 0, "-z compression not supported by this version of rpmtar");
+		poptPrintUsage(con, stderr, 0);
+		exit(EXIT_FAILURE);
 #endif
 		break;
 	case OPTION_USE_COMPRESS_PROGRAM:
 		bsdtar->compress_program = arg;
 		break;
 	default:
-		usage(bsdtar);
+		poptPrintUsage(con, stderr, 0);
+		exit(EXIT_FAILURE);
 		break;
 	}
 }
-
-#if !defined(_USE_POPT)
-/*
- * If you add anything, be very careful to keep this list properly
- * sorted, as the -W logic relies on it.
- */
-/*@-nullassign -readonlytrans @*/
-/*@unchecked@*/ /*@observer@*/
-static const struct option tar_longopts[] = {
-	{ "absolute-paths",     no_argument,       NULL, 'P' },
-	{ "append",             no_argument,       NULL, 'r' },
-	{ "block-size",         required_argument, NULL, 'b' },
-	{ "bunzip2",            no_argument,       NULL, 'j' },
-	{ "bzip",               no_argument,       NULL, 'j' },
-	{ "bzip2",              no_argument,       NULL, 'j' },
-	{ "cd",                 required_argument, NULL, 'C' },
-	{ "check-links",        no_argument,       NULL, OPTION_CHECK_LINKS },
-	{ "confirmation",       no_argument,       NULL, 'w' },
-	{ "create",             no_argument,       NULL, 'c' },
-	{ "dereference",	no_argument,	   NULL, 'L' },
-	{ "directory",          required_argument, NULL, 'C' },
-	{ "exclude",            required_argument, NULL, OPTION_EXCLUDE },
-	{ "exclude-from",       required_argument, NULL, 'X' },
-	{ "extract",            no_argument,       NULL, 'x' },
-	{ "fast-read",          no_argument,       NULL, OPTION_FAST_READ },
-	{ "file",               required_argument, NULL, 'f' },
-	{ "files-from",         required_argument, NULL, 'T' },
-	{ "format",             required_argument, NULL, OPTION_FORMAT },
-	{ "gunzip",             no_argument,       NULL, 'z' },
-	{ "gzip",               no_argument,       NULL, 'z' },
-	{ "help",               no_argument,       NULL, OPTION_HELP },
-	{ "include",            required_argument, NULL, OPTION_INCLUDE },
-	{ "interactive",        no_argument,       NULL, 'w' },
-	{ "keep-old-files",     no_argument,       NULL, 'k' },
-	{ "list",               no_argument,       NULL, 't' },
-	{ "modification-time",  no_argument,       NULL, 'm' },
-	{ "newer",		required_argument, NULL, OPTION_NEWER_CTIME },
-	{ "newer-ctime",	required_argument, NULL, OPTION_NEWER_CTIME },
-	{ "newer-ctime-than",	required_argument, NULL, OPTION_NEWER_CTIME_THAN },
-	{ "newer-mtime",	required_argument, NULL, OPTION_NEWER_MTIME },
-	{ "newer-mtime-than",	required_argument, NULL, OPTION_NEWER_MTIME_THAN },
-	{ "newer-than",		required_argument, NULL, OPTION_NEWER_CTIME_THAN },
-	{ "nodump",             no_argument,       NULL, OPTION_NODUMP },
-	{ "norecurse",          no_argument,       NULL, 'n' },
-	{ "no-recursion",       no_argument,       NULL, 'n' },
-	{ "no-same-owner",	no_argument,	   NULL, OPTION_NO_SAME_OWNER },
-	{ "no-same-permissions",no_argument,	   NULL, OPTION_NO_SAME_PERMISSIONS },
-	{ "null",		no_argument,	   NULL, OPTION_NULL },
-	{ "one-file-system",	no_argument,	   NULL, OPTION_ONE_FILE_SYSTEM },
-	{ "posix",		no_argument,	   NULL, OPTION_POSIX },
-	{ "preserve-permissions", no_argument,     NULL, 'p' },
-	{ "read-full-blocks",	no_argument,	   NULL, 'B' },
-	{ "same-permissions",   no_argument,       NULL, 'p' },
-	{ "strip-components",	required_argument, NULL, OPTION_STRIP_COMPONENTS },
-	{ "to-stdout",          no_argument,       NULL, 'O' },
-	{ "totals",		no_argument,       NULL, OPTION_TOTALS },
-	{ "unlink",		no_argument,       NULL, 'U' },
-	{ "unlink-first",	no_argument,       NULL, 'U' },
-	{ "update",             no_argument,       NULL, 'u' },
-	{ "use-compress-program",
-				required_argument, NULL, OPTION_USE_COMPRESS_PROGRAM },
-	{ "verbose",            no_argument,       NULL, 'v' },
-	{ "version",            no_argument,       NULL, OPTION_VERSION },
-	{ NULL, 0, NULL, 0 }
-};
-/*@=nullassign =readonlytrans @*/
-#endif
 
 static struct poptOption optionsTable[] = {
 /*@-type@*/ /* FIX: cast? */
@@ -936,15 +755,11 @@ static struct poptOption optionsTable[] = {
 	N_("Uncompress archive using gzip"), NULL },
   { "gzip",'z',			POPT_ARG_NONE,	NULL, 'z',
 	N_("Compress archive using gzip"), NULL },
-{ NULL,'H',		POPT_ARG_NONE,	NULL, 'H',
+  { NULL,'H',		POPT_ARG_NONE,	NULL, 'H',
 	NULL, NULL },
-{ NULL,'h',	POPT_ARG_NONE|POPT_ARGFLAG_DOC_HIDDEN,	NULL, 'h',
+  { NULL,'h',	POPT_ARG_NONE|POPT_ARGFLAG_DOC_HIDDEN,	NULL, 'h',
 	N_("Follow symlinks; archive/dump the files they point to"), NULL },
-#if !defined(_USE_POPT)
-  { "help",'\0',		POPT_ARG_NONE,	NULL, OPTION_HELP,
-	NULL, NULL },
-#endif
-{ NULL,'I',	POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN,	NULL, 'I',
+  { NULL,'I',	POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN,	NULL, 'I',
 	N_("Get names to extract/create from FILE"), N_("FILE") },
   { "include",'\0',		POPT_ARG_STRING,NULL, OPTION_INCLUDE,
 	N_("Add files that match PATTERN"), N_("PATTERN") },
@@ -952,7 +767,7 @@ static struct poptOption optionsTable[] = {
 	N_("Interactive"), NULL },
   { "keep-old-files",'k',	POPT_ARG_NONE,	NULL, 'k',
 	N_("Keep (don't overwrite) existing files"), NULL },
-{ "check-links",'l',		POPT_ARG_NONE,	NULL, 'l',
+  { "check-links",'l',		POPT_ARG_NONE,	NULL, 'l',
 	N_("Warn if not all links are included"), NULL },
   { "list",'t',			POPT_ARG_NONE,	NULL, 't',
 	N_("List the contents of an archive"), NULL },
@@ -982,7 +797,7 @@ static struct poptOption optionsTable[] = {
 	N_("Apply the user's umask when extracting permissions"), NULL },
   { "null",'\0', 		POPT_ARG_NONE,	NULL, OPTION_NULL,
 	N_("-T reads null-terminated names, disable -C"), NULL },
-{ NULL,'o',		POPT_ARG_NONE,	NULL, 'o',
+  { NULL,'o',	POPT_ARG_NONE|POPT_ARGFLAG_DOC_HIDDEN,	NULL, 'o',
 	N_("Creating: same as --old-archive; Extracting: same as --no-same-owner"), NULL },
   { "one-file-system",'\0', 	POPT_ARG_NONE,	NULL, OPTION_ONE_FILE_SYSTEM,
 	N_("Do not cross mount points"), NULL },
@@ -1012,15 +827,15 @@ static struct poptOption optionsTable[] = {
 	N_("Verbose"), NULL },
   { "version",'\0',		POPT_ARG_NONE,	NULL, OPTION_VERSION,
 	N_("Print program version"), NULL },
-#if 0
-{ NULL,'W',		POPT_ARG_STRING,	NULL, 'W',
+#ifdef	NOTYET	/* XXX TODO: does popt need -W longName=value option? */
+  { NULL,'W',		POPT_ARG_STRING,	NULL, 'W',
 	NULL, NULL },
 #endif
-{ NULL,'y',	POPT_ARG_NONE|POPT_ARGFLAG_DOC_HIDDEN,	NULL, 'y',
+  { NULL,'y',	POPT_ARG_NONE|POPT_ARGFLAG_DOC_HIDDEN,	NULL, 'y',
 	N_("Compress archive using bzip2"), NULL },
-{ "uncompress",'Z',	POPT_ARG_NONE|POPT_ARGFLAG_DOC_HIDDEN,	NULL, 'Z',
+  { "uncompress",'Z',	POPT_ARG_NONE|POPT_ARGFLAG_DOC_HIDDEN,	NULL, 'Z',
 	N_("Filter the archive through compress"), NULL },
-{ "compress",'Z',	POPT_ARG_NONE|POPT_ARGFLAG_DOC_HIDDEN,	NULL, 'Z',
+  { "compress",'Z',	POPT_ARG_NONE|POPT_ARGFLAG_DOC_HIDDEN,	NULL, 'Z',
 	N_("Filter the archive through compress"), NULL },
     POPT_AUTOALIAS
     POPT_AUTOHELP
@@ -1054,7 +869,7 @@ static struct poptOption optionsTable[] = {
     POPT_TABLEEND
 };
 
-#if !defined(_USE_POPT)
+#ifdef	REFERENCE	/* XXX TODO: does popt need -W longName=value option? */
 static const struct option *
 tar_opt_W(struct bsdtar *bsdtar, const char * arg)
 	/*@globals fileSystem @*/
@@ -1116,57 +931,6 @@ tar_opt_W(struct bsdtar *bsdtar, const char * arg)
 	}
 	return option;
 }
-
-static int
-bsdtar_getopt(struct bsdtar *bsdtar, const char *optstring,
-		struct poptOption **poption)
-	/*@globals optarg, fileSystem @*/
-	/*@modifies *poption, optarg, fileSystem @*/
-{
-	static struct poptOption _popt;
-	const struct option * option = NULL;
-	int opt;
-	int option_index = -1;
-
-	memset(&_popt, 0, sizeof(_popt));
-	*poption = NULL;
-
-/*@-moduncon@*/
-	opt = getopt_long(bsdtar->argc, bsdtar->argv, optstring,
-	    tar_longopts, &option_index);
-	if (option_index > -1)
-		option = tar_longopts + option_index;
-	else {
-		static struct option _option;
-		_option.name = NULL;
-		_option.has_arg = (optarg ? required_argument : no_argument);
-		_option.flag = NULL;
-		_option.val = opt;
-		option = &_option;
-	}
-if (_debug)
-fprintf(stderr, "--> getopt_long: 0x%x %p\n", opt, option);
-/*@=moduncon@*/
-
-	/* Support long options through -W longopt=value */
-	if (opt == 'W' && (option = tar_opt_W(bsdtar, optarg)) == NULL)
-		opt = '?';
-
-	if (option != NULL) {
-		_popt.longName = option->name;
-		_popt.shortName = (option->val > (int)' ' ? option->val : 0);
-		_popt.argInfo = (option->has_arg ? POPT_ARG_STRING : POPT_ARG_NONE);
-		_popt.arg = NULL;
-		_popt.val = option->val;
-		_popt.descrip = NULL;
-		_popt.argDescrip = NULL;
-		*poption = &_popt;
-	}
-
-/*@-globstate@*/
-	return (opt);
-/*@=globstate@*/
-}
 #endif
 
 /*
@@ -1185,18 +949,13 @@ only_mode(struct bsdtar *bsdtar, const char *opt, const char *valid_modes)
 
 int
 main(int argc, char **argv)
-	/*@globals optarg, fileSystem @*/
-	/*@modifies argc, *argv, optarg, fileSystem @*/
+	/*@globals fileSystem @*/
+	/*@modifies argc, *argv, fileSystem @*/
 {
-	struct bsdtar		*bsdtar = &bsdtar_storage;
+	struct bsdtar *bsdtar = &bsdtar_storage;
 	poptContext optCon;
-	char			buff[16];
-#if defined(_USE_POPT)
+	char buff[16];
 	int rc;
-#else
-	poptOption		option;
-	int			opt;
-#endif
 
 	if (setlocale(LC_ALL, "") == NULL)
 		bsdtar_warnc(bsdtar, 0, "Failed to set default locale");
@@ -1206,41 +965,20 @@ main(int argc, char **argv)
 
 	optCon = poptGetContext(bsdtar->progname, argc, (const char **)argv, optionsTable, 0);
 
-#if defined(_USE_POPT)
-    /* Process all options, whine if unknown. */
-    while ((rc = poptGetNextOpt(optCon)) > 0) {
-        const char * optArg = poptGetOptArg(optCon);
+	/* Process all options, whine if unknown. */
+	while ((rc = poptGetNextOpt(optCon)) > 0) {
+		const char * optArg = poptGetOptArg(optCon);
 /*@-dependenttrans -modobserver -observertrans @*/
-        optArg = _free(optArg);
+		optArg = _free(optArg);
 /*@=dependenttrans =modobserver =observertrans @*/
-        switch (rc) {
-        default:
-/*@-nullpass@*/
-            fprintf(stderr, _("%s: option table misconfigured (%d)\n"),
-                __progname, rc);
-/*@=nullpass@*/
-            exit(EXIT_FAILURE);
-            /*@notreached@*/ /*@switchbreak@*/ break;
-        }
-    }
-    bsdtar->argv = (char **) poptGetArgs(optCon);
-    bsdtar->argc = argvCount((ARGV_t)bsdtar->argv);
-#else
-	bsdtar->argv = argv;
-	bsdtar->argc = argc;
-
-	/* Process all options now. */
-	while ((opt = bsdtar_getopt(bsdtar, tar_opts, &option)) != -1) {
-		bsdtarArgCallback(optCon, 0, option, optarg, bsdtar);
+		switch (rc) {
+		default:
+			bsdtar_errc(bsdtar, 1, 0, "Option table misconfigured");
+			/*@notreached@*/ /*@switchbreak@*/ break;
+		}
 	}
-	bsdtar->argc -= optind;
-	bsdtar->argv += optind;
-	/* If no "real" mode was specified, treat -h as --help. */
-	if ((bsdtar->mode == '\0') && possible_help_request) {
-		long_help(bsdtar);
-		exit(EXIT_SUCCESS);
-	}
-#endif
+	bsdtar->argv = (char **) poptGetArgs(optCon);
+	bsdtar->argc = argvCount((ARGV_t)bsdtar->argv);
 
 	/*
 	 * Sanity-check options.
@@ -1248,9 +986,7 @@ main(int argc, char **argv)
 
 	/* A mode is required. */
 	if (bsdtar->mode == '\0') {
-#if defined(_USE_POPT)
 		poptPrintUsage(optCon, stderr, 0);
-#endif
 		bsdtar_errc(bsdtar, 1, 0,
 		    "Must specify one of -c, -r, -t, -u, -x");
 	}
@@ -1295,7 +1031,8 @@ main(int argc, char **argv)
 	/* Check other parameters only permitted in certain modes. */
 	if (bsdtar->create_compression == 'Z' && bsdtar->mode == 'c') {
 		bsdtar_warnc(bsdtar, 0, ".Z compression not supported");
-		usage(bsdtar);
+		poptPrintUsage(optCon, stderr, 0);
+		exit(EXIT_FAILURE);
 	}
 	if (bsdtar->create_compression != '\0') {
 		strcpy(buff, "-?");
