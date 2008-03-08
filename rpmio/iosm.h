@@ -261,6 +261,8 @@ struct iosm_s {
     int multithreaded;		/*!< Run stages on their own thread? */
     int adding;			/*!< Is the rpmte element type TR_ADDED? */
     int debug;			/*!< Print detailed operations? */
+    int nofdigests;		/*!< Disable file digests? */
+    int nofcontexts;		/*!< Disable file conexts? */
     iosmMapFlags mapFlags;	/*!< Bit(s) to control mapping. */
     int fdigestalgo;		/*!< Digest algorithm (~= PGPHASHALGO_MD5) */
     int digestlen;		/*!< No. of bytes in binary digest (~= 16) */

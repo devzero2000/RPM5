@@ -1,4 +1,6 @@
 5.0.0 -> 5.1a1:
+    - jbj: iosm: add iosm->{nofdigests,nofcontexts} to avoid rpmts access.
+    - jbj: iosm: increase rdbuf/wrbuf size to 128K.
     - jbj: iosm: better fix: use fi->isSource. use IOSM_MAP_{UID,GID} not yet...
     - jbj: poptIO: move --usecrypto from poptALL.
     - jbj: poptIO: fix: leave macro handling in poptALL.c for now.

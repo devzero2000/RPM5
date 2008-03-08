@@ -667,6 +667,15 @@ fprintf(stderr, "\tcpio vectors set\n");
     }
     fsm->iter = mapInitIterator(fi, reverse);
     fsm->iter->ts = rpmtsLink(ts, "mapIterator");
+    fsm->nofcontexts = (ts != NULL && rpmtsSELinuxEnabled(ts) == 1 &&
+	!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOCONTEXTS));
+    fsm->nofdigests =
+	(ts != NULL && !(rpmtsFlags(ts) & RPMTRANS_FLAG_NOFDIGESTS))
+			? 0 : 1;
+#define	_tsmask	(RPMTRANS_FLAG_PKGCOMMIT | RPMTRANS_FLAG_COMMIT)
+    fsm->commit = ((ts && (rpmtsFlags(ts) & _tsmask) &&
+			fsm->goal != IOSM_PKGCOMMIT) ? 0 : 1);
+#undef _tsmask
 
     if (fsm->goal == IOSM_PKGINSTALL || fsm->goal == IOSM_PKGBUILD) {
 	void * ptr;
@@ -732,16 +741,13 @@ fprintf(stderr, "--> fsmTeardown(%p)\n", fsm);
 static int fsmMapFContext(IOSM_t fsm)
 	/*@modifies fsm @*/
 {
-    rpmts ts = fsmGetTs(fsm);
     rpmfi fi = fsmGetFi(fsm);
 
     /*
      * Find file security context (if not disabled).
      */
     fsm->fcontext = NULL;
-    if (ts != NULL && rpmtsSELinuxEnabled(ts) == 1 &&
-	!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOCONTEXTS))
-    {
+    if (!fsm->nofcontexts) {
 	security_context_t scon = NULL;
 
 /*@-moduncon@*/
@@ -916,24 +922,20 @@ int fsmMapAttrs(IOSM_t fsm)
 	if (fsm->mapFlags & IOSM_MAP_GID)
 	    st->st_gid = gid;
 
-	{   rpmts ts = fsmGetTs(fsm);
-
-	    /*
-	     * Set file digest (if not disabled).
-	     */
-	    if (ts != NULL && !(rpmtsFlags(ts) & RPMTRANS_FLAG_NOFDIGESTS)) {
-		fsm->fdigestalgo = fi->digestalgo;
-		fsm->fdigest = (fi->fdigests ? fi->fdigests[i] : NULL);
-		fsm->digestlen = fi->digestlen;
-		fsm->digest = (fi->digests ? (fi->digests + (fsm->digestlen * i)) : NULL);
-	    } else {
-		fsm->fdigestalgo = 0;
-		fsm->fdigest = NULL;
-		fsm->digestlen = 0;
-		fsm->digest = NULL;
-	    }
+	/*
+	 * Set file digest (if not disabled).
+	 */
+	if (!fsm->nofdigests) {
+	    fsm->fdigestalgo = fi->digestalgo;
+	    fsm->fdigest = (fi->fdigests ? fi->fdigests[i] : NULL);
+	    fsm->digestlen = fi->digestlen;
+	    fsm->digest = (fi->digests ? (fi->digests + (fsm->digestlen * i)) : NULL);
+	} else {
+	    fsm->fdigestalgo = 0;
+	    fsm->fdigest = NULL;
+	    fsm->digestlen = 0;
+	    fsm->digest = NULL;
 	}
-
     }
     return 0;
 }
@@ -1402,15 +1404,8 @@ static int fsmMkdirs(/*@special@*/ /*@partial@*/ IOSM_t fsm)
     int dc = dnlCount(dnli);
     int rc = 0;
     int i;
-/*@-compdef@*/
-    rpmts ts = fsmGetTs(fsm);
-/*@=compdef@*/
-    rpmsx sx = NULL;
-
     /* XXX Set file contexts on non-packaged dirs iff selinux enabled. */
-    if (ts != NULL && rpmtsSELinuxEnabled(ts) == 1 &&
-      !(rpmtsFlags(ts) & RPMTRANS_FLAG_NOCONTEXTS))
-	sx = rpmtsREContext(ts);
+    rpmsx sx = (!fsm->nofcontexts ? rpmtsREContext(fsmGetTs(fsm)) : NULL);
 
     fsm->path = NULL;
 
@@ -1720,12 +1715,6 @@ int fsmStage(IOSM_t fsm, iosmFileStage stage)
 
 	break;
     case IOSM_CREATE:
-	{   rpmts ts = fsmGetTs(fsm);
-#define	_tsmask	(RPMTRANS_FLAG_PKGCOMMIT | RPMTRANS_FLAG_COMMIT)
-	    fsm->commit = ((ts && (rpmtsFlags(ts) & _tsmask) &&
-			fsm->goal != IOSM_PKGCOMMIT) ? 0 : 1);
-#undef _tsmask
-	}
 	fsm->path = _free(fsm->path);
 	fsm->lpath = _free(fsm->lpath);
 	fsm->opath = _free(fsm->opath);
@@ -1738,9 +1727,9 @@ int fsmStage(IOSM_t fsm, iosmFileStage stage)
 	fsm->rdbuf = fsm->rdb = _free(fsm->rdb);
 	fsm->wrbuf = fsm->wrb = _free(fsm->wrb);
 	if (fsm->goal == IOSM_PKGINSTALL || fsm->goal == IOSM_PKGBUILD) {
-	    fsm->rdsize = 8 * BUFSIZ;
+	    fsm->rdsize = 16 * BUFSIZ;
 	    fsm->rdbuf = fsm->rdb = xmalloc(fsm->rdsize);
-	    fsm->wrsize = 8 * BUFSIZ;
+	    fsm->wrsize = 16 * BUFSIZ;
 	    fsm->wrbuf = fsm->wrb = xmalloc(fsm->wrsize);
 	}
 

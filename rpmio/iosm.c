@@ -718,8 +718,20 @@ fprintf(stderr, "\tcpio vectors set\n");
     iosm->iter = mapInitIterator(fi, reverse);
 #if defined(_USE_RPMTS)
     iter->ts = rpmtsLink(_ts, "mapIterator");
+    iosm->nofcontexts = (ts != NULL && rpmtsSELinuxEnabled(ts) == 1 &&
+	!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOCONTEXTS));
+    iosm->nofdigests =
+	(ts != NULL && !(rpmtsFlags(ts) & RPMTRANS_FLAG_NOFDIGESTS))
+			? 0 : 1;
+#define	_tsmask	(RPMTRANS_FLAG_PKGCOMMIT | RPMTRANS_FLAG_COMMIT)
+    iosm->commit = ((ts && (rpmtsFlags(ts) & _tsmask) &&
+			iosm->goal != IOSM_PKGCOMMIT) ? 0 : 1);
+#undef _tsmask
 #else
     iosm->iter->ts = (void *)_ts;
+    iosm->nofcontexts = 1;
+    iosm->nofdigests = 1;
+    iosm->commit = 1;
 #endif
 
     if (iosm->goal == IOSM_PKGINSTALL || iosm->goal == IOSM_PKGBUILD) {
@@ -798,17 +810,13 @@ fprintf(stderr, "--> iosmTeardown(%p)\n", iosm);
 static int iosmMapFContext(IOSM_t iosm)
 	/*@modifies iosm @*/
 {
-#if defined(_USE_RPMTS)
-    rpmts ts = iosmGetTs(iosm);
     rpmfi fi = iosmGetFi(iosm);
 
     /*
      * Find file security context (if not disabled).
      */
     iosm->fcontext = NULL;
-    if (ts != NULL && rpmtsSELinuxEnabled(ts) == 1 &&
-	!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOCONTEXTS))
-    {
+    if (!iosm->nofcontexts) {
 	security_context_t scon = NULL;
 
 /*@-moduncon@*/
@@ -823,9 +831,6 @@ static int iosmMapFContext(IOSM_t iosm)
 	}
 /*@=moduncon@*/
     }
-#else
-    iosm->fcontext = NULL;
-#endif
     return 0;
 }
 
@@ -986,32 +991,20 @@ int iosmMapAttrs(IOSM_t iosm)
 	if (iosm->mapFlags & IOSM_MAP_GID)
 	    st->st_gid = gid;
 
-	{
-#if defined(_USE_RPMTS)
-	    rpmts ts = iosmGetTs(iosm);
-	    int nofdigests =
-		(ts != NULL && !(rpmtsFlags(ts) & RPMTRANS_FLAG_NOFDIGESTS))
-			? 0 : 1;
-#else
-	    int nofdigests = 1;
-#endif
-
-	    /*
-	     * Set file digest (if not disabled).
-	     */
-	    if (!nofdigests) {
-		iosm->fdigestalgo = fi->digestalgo;
-		iosm->fdigest = (fi->fdigests ? fi->fdigests[i] : NULL);
-		iosm->digestlen = fi->digestlen;
-		iosm->digest = (fi->digests ? (fi->digests + (iosm->digestlen * i)) : NULL);
-	    } else {
-		iosm->fdigestalgo = 0;
-		iosm->fdigest = NULL;
-		iosm->digestlen = 0;
-		iosm->digest = NULL;
-	    }
+	/*
+	 * Set file digest (if not disabled).
+	 */
+	if (!iosm->nofdigests) {
+	    iosm->fdigestalgo = fi->digestalgo;
+	    iosm->fdigest = (fi->fdigests ? fi->fdigests[i] : NULL);
+	    iosm->digestlen = fi->digestlen;
+	    iosm->digest = (fi->digests ? (fi->digests + (iosm->digestlen * i)) : NULL);
+	} else {
+	    iosm->fdigestalgo = 0;
+	    iosm->fdigest = NULL;
+	    iosm->digestlen = 0;
+	    iosm->digest = NULL;
 	}
-
     }
     return 0;
 }
@@ -1482,13 +1475,8 @@ static int iosmMkdirs(/*@special@*/ /*@partial@*/ IOSM_t iosm)
     int i;
 #if defined(_USE_RPMSX)
 #if defined(_USE_RPMTS)
-/*@-compdef@*/
-    rpmts ts = iosmGetTs(iosm);
-/*@=compdef@*/
     /* XXX Set file contexts on non-packaged dirs iff selinux enabled. */
-    rpmsx sx = (ts != NULL && rpmtsSELinuxEnabled(ts) == 1 &&
-		!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOCONTEXTS))
-	? rpmtsREContext(ts) : NULL;
+    rpmsx sx = (!iosm->nofcontexts ? rpmtsREContext(iosmGetTs(iosm)) : NULL);
 #else
     rpmsx sx = NULL;
 #endif
@@ -1807,16 +1795,6 @@ int iosmStage(IOSM_t iosm, iosmFileStage stage)
 
 	break;
     case IOSM_CREATE:
-#if defined(_USE_RPMTS)
-	{   rpmts ts = iosmGetTs(iosm);
-#define	_tsmask	(RPMTRANS_FLAG_PKGCOMMIT | RPMTRANS_FLAG_COMMIT)
-	    iosm->commit = ((ts && (rpmtsFlags(ts) & _tsmask) &&
-			iosm->goal != IOSM_PKGCOMMIT) ? 0 : 1);
-#undef _tsmask
-	}
-#else
-	iosm->commit = 1;
-#endif
 	iosm->path = _free(iosm->path);
 	iosm->lpath = _free(iosm->lpath);
 	iosm->opath = _free(iosm->opath);
@@ -1829,9 +1807,9 @@ int iosmStage(IOSM_t iosm, iosmFileStage stage)
 	iosm->rdbuf = iosm->rdb = _free(iosm->rdb);
 	iosm->wrbuf = iosm->wrb = _free(iosm->wrb);
 	if (iosm->goal == IOSM_PKGINSTALL || iosm->goal == IOSM_PKGBUILD) {
-	    iosm->rdsize = 8 * BUFSIZ;
+	    iosm->rdsize = 16 * BUFSIZ;
 	    iosm->rdbuf = iosm->rdb = xmalloc(iosm->rdsize);
-	    iosm->wrsize = 8 * BUFSIZ;
+	    iosm->wrsize = 16 * BUFSIZ;
 	    iosm->wrbuf = iosm->wrb = xmalloc(iosm->wrsize);
 	}
 
