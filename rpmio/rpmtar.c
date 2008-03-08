@@ -23,6 +23,8 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#define	_USE_POPT
+
 #define __FBSDID(_s)	
 #define BSDTAR_VERSION_STRING "2.4.12"
 
@@ -64,7 +66,12 @@ struct archive_entry;
 #include "system.h"
 __FBSDID("$FreeBSD: src/usr.bin/tar/bsdtar.c,v 1.79 2008/01/22 07:23:44 kientzle Exp $");
 
+#if defined(_USE_POPT)
+#include <rpmio.h>
+#include <argv.h>
+#else
 #include <getopt.h>
+#endif
 
 #ifdef HAVE_LANGINFO_H
 #include <langinfo.h>
@@ -94,7 +101,7 @@ __FBSDID("$FreeBSD: src/usr.bin/tar/bsdtar.c,v 1.79 2008/01/22 07:23:44 kientzle
 #endif
 
 /*@unchecked@*/
-static int _debug;
+static int _debug = 1;
 
 /* A basic set of security flags to request from libarchive. */
 #define	SECURITY					\
@@ -541,6 +548,10 @@ fprintf(stderr, "--> bsdtarArgCallback(%p, %d, %p, %p, %p) val %d\n", con, reaso
 	 * no such comment, then I don't know of anyone else who
 	 * implements that option.
 	 */
+#if defined(_USE_POPT)
+	/* XXX avoid accidental collisions with POPT_BIT_SET for flags */
+	if (opt->arg == NULL)
+#endif
 	switch (val) {
 	case 'B': /* GNU tar */
 		/* libarchive doesn't need this; just ignore it. */
@@ -743,7 +754,7 @@ fprintf(stderr, "--> bsdtarArgCallback(%p, %d, %p, %p, %p) val %d\n", con, reaso
 	case OPTION_VERSION: /* GNU convention */
 		version();
 		break;
-#if 0
+#if defined(_USE_POPT)
 	/*
 	 * The -W longopt feature is handled inside of
 	 * bsdtar_getop(), so -W is not available here.
@@ -869,6 +880,11 @@ static const struct option tar_longopts[] = {
 /*@=nullassign =readonlytrans @*/
 
 static struct poptOption optionsTable[] = {
+/*@-type@*/ /* FIX: cast? */
+ { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA | POPT_CBFLAG_CONTINUE,
+        bsdtarArgCallback, 0, (const char *)&bsdtar_storage, NULL },
+/*@=type@*/
+
   { "absolute-paths",'P',	POPT_ARG_NONE,	NULL, 'P',
 	NULL, NULL },
   { "append",'r',		POPT_ARG_NONE,	NULL, 'r',
@@ -911,13 +927,21 @@ static struct poptOption optionsTable[] = {
 	NULL, NULL },
   { "gzip",'z',			POPT_ARG_NONE,	NULL, 'z',
 	NULL, NULL },
+{ NULL,'H',		POPT_ARG_NONE,	NULL, 'H',
+	NULL, NULL },
+{ NULL,'h',		POPT_ARG_NONE,	NULL, 'h',
+	NULL, NULL },
   { "help",'\0',		POPT_ARG_NONE,	NULL, OPTION_HELP,
+	NULL, NULL },
+{ NULL,'I',		POPT_ARG_STRING,	NULL, 'I',
 	NULL, NULL },
   { "include",'\0',		POPT_ARG_STRING,NULL, OPTION_INCLUDE,
 	NULL, NULL },
   { "interactive",'w',		POPT_ARG_NONE,	NULL, 'w',
 	NULL, NULL },
   { "keep-old-files",'k',	POPT_ARG_NONE,	NULL, 'k',
+	NULL, NULL },
+{ NULL,'l',		POPT_ARG_NONE,	NULL, 'l',
 	NULL, NULL },
   { "list",'t',			POPT_ARG_NONE,	NULL, 't',
 	NULL, NULL },
@@ -947,6 +971,8 @@ static struct poptOption optionsTable[] = {
 	NULL, NULL },
   { "null",'\0', 		POPT_ARG_NONE,	NULL, OPTION_NULL,
 	NULL, NULL },
+{ NULL,'o',		POPT_ARG_NONE,	NULL, 'o',
+	NULL, NULL },
   { "one-file-system",'\0', 	POPT_ARG_NONE,	NULL, OPTION_ONE_FILE_SYSTEM,
 	NULL, NULL },
   { "posix",'\0', 		POPT_ARG_NONE,	NULL, OPTION_POSIX,
@@ -975,11 +1001,18 @@ static struct poptOption optionsTable[] = {
 	NULL, NULL },
   { "version",'\0',		POPT_ARG_NONE,	NULL, OPTION_VERSION,
 	NULL, NULL },
+{ NULL,'W',		POPT_ARG_STRING,	NULL, 'W',
+	NULL, NULL },
+{ NULL,'y',		POPT_ARG_NONE,	NULL, 'y',
+	NULL, NULL },
+{ NULL,'Z',		POPT_ARG_NONE,	NULL, 'Z',
+	NULL, NULL },
     POPT_AUTOALIAS
     POPT_AUTOHELP
     POPT_TABLEEND
 };
 
+#if !defined(_USE_POPT)
 static int
 bsdtar_getopt(struct bsdtar *bsdtar, const char *optstring,
 		struct poptOption **poption)
@@ -1082,6 +1115,7 @@ fprintf(stderr, "--> getopt_long: 0x%x %p\n", opt, option);
 	return (opt);
 /*@=globstate@*/
 }
+#endif
 
 /*
  * Verify that the mode is correct.
@@ -1104,9 +1138,13 @@ main(int argc, char **argv)
 {
 	struct bsdtar		*bsdtar = &bsdtar_storage;
 	poptContext optCon;
+	char			buff[16];
+#if defined(_USE_POPT)
+	int rc;
+#else
 	poptOption		option;
 	int			opt;
-	char			buff[16];
+#endif
 
 	if (setlocale(LC_ALL, "") == NULL)
 		bsdtar_warnc(bsdtar, 0, "Failed to set default locale");
@@ -1114,15 +1152,38 @@ main(int argc, char **argv)
 	/* Rewrite traditional-style tar arguments, if used. */
 	argv = rewrite_argv(bsdtar, &argc, argv, tar_opts);
 
+	optCon = poptGetContext(bsdtar->progname, argc, (const char **)argv, optionsTable, 0);
+
+#if defined(_USE_POPT)
+    /* Process all options, whine if unknown. */
+    while ((rc = poptGetNextOpt(optCon)) > 0) {
+        const char * optArg = poptGetOptArg(optCon);
+/*@-dependenttrans -modobserver -observertrans @*/
+        optArg = _free(optArg);
+/*@=dependenttrans =modobserver =observertrans @*/
+        switch (rc) {
+        default:
+/*@-nullpass@*/
+            fprintf(stderr, _("%s: option table misconfigured (%d)\n"),
+                __progname, rc);
+/*@=nullpass@*/
+            exit(EXIT_FAILURE);
+            /*@notreached@*/ /*@switchbreak@*/ break;
+        }
+    }
+    bsdtar->argv = (char **) poptGetArgs(optCon);
+    bsdtar->argc = argvCount((ARGV_t)bsdtar->argv);
+#else
 	bsdtar->argv = argv;
 	bsdtar->argc = argc;
 
-	optCon = poptGetContext(bsdtar->progname, argc, (const char **)argv, optionsTable, 0);
-
-	/* Process all remaining arguments now. */
+	/* Process all options now. */
 	while ((opt = bsdtar_getopt(bsdtar, tar_opts, &option)) != -1) {
 		bsdtarArgCallback(optCon, 0, option, optarg, bsdtar);
 	}
+	bsdtar->argc -= optind;
+	bsdtar->argv += optind;
+#endif
 
 	/*
 	 * Sanity-check options.
@@ -1218,11 +1279,8 @@ main(int argc, char **argv)
 		if ((bsdtar->filename = getenv("TAPE")) == NULL)
 			bsdtar->filename = _PATH_DEFTAPE;
 	} else
-	if (bsdtar->filename[0] == '-' && bsdtar->filname[1] == '\0')
+	if (bsdtar->filename[0] == '-' && bsdtar->filename[1] == '\0')
 		bsdtar->filename = NULL;
-
-	bsdtar->argc -= optind;
-	bsdtar->argv += optind;
 
 	switch(bsdtar->mode) {
 	case 'c':
