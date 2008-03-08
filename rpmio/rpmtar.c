@@ -34,6 +34,7 @@
 
 struct archive_entry;
 #define	archive_version()	BSDTAR_VERSION_STRING
+
 /* Default: Do not try to set owner/group. */
 #define ARCHIVE_EXTRACT_OWNER   (1)
 /* Default: Do obey umask, do not restore SUID/SGID/SVTX bits. */
@@ -84,19 +85,31 @@ __FBSDID("$FreeBSD: src/usr.bin/tar/bsdtar.c,v 1.79 2008/01/22 07:23:44 kientzle
  * Per POSIX.1-1988, tar defaults to reading/writing archives to/from
  * the default tape device for the system.  Pick something reasonable here.
  */
-#ifdef __linux
+#if defined(__linux__)
 #define	_PATH_DEFTAPE "/dev/st0"
 #endif
 
-#ifndef _PATH_DEFTAPE
+#if !defined(_PATH_DEFTAPE)
 #define	_PATH_DEFTAPE "/dev/tape"
 #endif
 
 /*@unchecked@*/
 static int _debug;
 
+/* A basic set of security flags to request from libarchive. */
+#define	SECURITY					\
+	(ARCHIVE_EXTRACT_SECURE_SYMLINKS		\
+	 | ARCHIVE_EXTRACT_SECURE_NODOTDOT)
+
 /*@unchecked@*/
-static struct bsdtar		bsdtar_storage;
+static struct bsdtar bsdtar_storage = {
+	.progname = "bsdtar",	/* Need bsdtar->progname for bsdtar_warnc. */
+	.fd = -1,		/* Mark as "unused" */
+	/* Default: preserve mod time on extract */
+	/* Default: Perform basic security checks. */
+	.extract_flags = ARCHIVE_EXTRACT_TIME | SECURITY,
+
+};
 
 /*==============================================================*/
 /* External function to parse a date/time string (from getdate.y) */
@@ -504,13 +517,9 @@ set_mode(struct bsdtar *bsdtar, char opt)
 	bsdtar->mode = opt;
 }
 
-/* A basic set of security flags to request from libarchive. */
-#define	SECURITY					\
-	(ARCHIVE_EXTRACT_SECURE_SYMLINKS		\
-	 | ARCHIVE_EXTRACT_SECURE_NODOTDOT)
-
 /*@unchecked@*/
 static char option_o = 0;
+
 /*@unchecked@*/
 static char possible_help_request = 0;
 
@@ -526,54 +535,58 @@ static void bsdtarArgCallback(/*@unused@*/ poptContext con,
 
 if (_debug)
 fprintf(stderr, "--> bsdtarArgCallback(%p, %d, %p, %p, %p) val %d\n", con, reason, opt, arg, data, val);
+	/*
+	 * Comments following each option indicate where that option
+	 * originated:  SUSv2, POSIX, GNU tar, star, etc.  If there's
+	 * no such comment, then I don't know of anyone else who
+	 * implements that option.
+	 */
 	switch (val) {
 	case 'B': /* GNU tar */
 		/* libarchive doesn't need this; just ignore it. */
-		/*@switchbreak@*/ break;
+		break;
 	case 'b': /* SUSv2 */
 		t = atoi(arg);
 		if (t <= 0 || t > 1024)
 			bsdtar_errc(bsdtar, 1, 0,
 			    "Argument to -b is out of range (1..1024)");
 		bsdtar->bytes_per_block = 512 * t;
-		/*@switchbreak@*/ break;
+		break;
 	case 'C': /* GNU tar */
 		set_chdir(bsdtar, arg);
-		/*@switchbreak@*/ break;
+		break;
 	case 'c': /* SUSv2 */
 		set_mode(bsdtar, val);
-		/*@switchbreak@*/ break;
+		break;
 	case OPTION_CHECK_LINKS: /* GNU tar */
 		bsdtar->option_warn_links = 1;
-		/*@switchbreak@*/ break;
+		break;
 	case OPTION_EXCLUDE: /* GNU tar */
 		if (exclude(bsdtar, arg))
 			bsdtar_errc(bsdtar, 1, 0,
 			    "Couldn't exclude %s\n", arg);
-		/*@switchbreak@*/ break;
+		break;
 	case OPTION_FORMAT: /* GNU tar, others */
 		bsdtar->create_format = arg;
-		/*@switchbreak@*/ break;
+		break;
 	case 'f': /* SUSv2 */
 		bsdtar->filename = arg;
-		if (strcmp(bsdtar->filename, "-") == 0)
-			bsdtar->filename = NULL;
-		/*@switchbreak@*/ break;
+		break;
 	case OPTION_FAST_READ: /* GNU tar */
 		bsdtar->option_fast_read = 1;
-		/*@switchbreak@*/ break;
+		break;
 	case 'H': /* BSD convention */
 		bsdtar->symlink_mode = 'H';
-		/*@switchbreak@*/ break;
+		break;
 	case 'h': /* Linux Standards Base, gtar; synonym for -L */
 		bsdtar->symlink_mode = 'L';
 		/* Hack: -h by itself is the "help" command. */
 		possible_help_request = 1;
-		/*@switchbreak@*/ break;
+		break;
 	case OPTION_HELP: /* GNU tar, others */
 		long_help(bsdtar);
-		exit(0);
-		/*@notreached@*/ /*@switchbreak@*/ break;
+		exit(EXIT_SUCCESS);
+		/*@notreached@*/ break;
 	case 'I': /* GNU tar */
 		/*
 		 * TODO: Allow 'names' to come from an archive,
@@ -586,7 +599,7 @@ fprintf(stderr, "--> bsdtarArgCallback(%p, %d, %p, %p, %p) val %d\n", con, reaso
 		 * permissions on disk.
 		 */
 		bsdtar->names_from_file = arg;
-		/*@switchbreak@*/ break;
+		break;
 	case OPTION_INCLUDE:
 		/*
 		 * Noone else has the @archive extension, so
@@ -597,7 +610,7 @@ fprintf(stderr, "--> bsdtarArgCallback(%p, %d, %p, %p, %p) val %d\n", con, reaso
 			bsdtar_errc(bsdtar, 1, 0,
 			    "Failed to add %s to inclusion list",
 			    arg);
-		/*@switchbreak@*/ break;
+		break;
 	case 'j': /* GNU tar */
 #if HAVE_LIBBZ2
 		if (bsdtar->create_compression != '\0')
@@ -609,23 +622,23 @@ fprintf(stderr, "--> bsdtarArgCallback(%p, %d, %p, %p, %p) val %d\n", con, reaso
 		bsdtar_warnc(bsdtar, 0, "-j compression not supported by this version of bsdtar");
 		usage(bsdtar);
 #endif
-		/*@switchbreak@*/ break;
+		break;
 	case 'k': /* GNU tar */
 		bsdtar->extract_flags |= ARCHIVE_EXTRACT_NO_OVERWRITE;
-		/*@switchbreak@*/ break;
+		break;
 	case 'L': /* BSD convention */
 		bsdtar->symlink_mode = 'L';
-		/*@switchbreak@*/ break;
+		break;
         case 'l': /* SUSv2 and GNU tar beginning with 1.16 */
 		/* GNU tar 1.13  used -l for --one-file-system */
 		bsdtar->option_warn_links = 1;
-		/*@switchbreak@*/ break;
+		break;
 	case 'm': /* SUSv2 */
 		bsdtar->extract_flags &= ~ARCHIVE_EXTRACT_TIME;
-		/*@switchbreak@*/ break;
+		break;
 	case 'n': /* GNU tar */
 		bsdtar->option_no_subdirs = 1;
-		/*@switchbreak@*/ break;
+		break;
         /*
 	 * Selecting files by time:
 	 *    --newer-?time='date' Only files newer than 'date'
@@ -635,56 +648,48 @@ fprintf(stderr, "--> bsdtarArgCallback(%p, %d, %p, %p, %p) val %d\n", con, reaso
 	 */
 	case OPTION_NEWER_CTIME: /* GNU tar */
 		bsdtar->newer_ctime_sec = get_date(arg);
-		/*@switchbreak@*/ break;
+		break;
 	case OPTION_NEWER_CTIME_THAN:
-		{
-			struct stat st;
-			if (stat(arg, &st) != 0)
-				bsdtar_errc(bsdtar, 1, 0,
-				    "Can't open file %s", arg);
-			bsdtar->newer_ctime_sec = st.st_ctime;
-			bsdtar->newer_ctime_nsec =
-			    ARCHIVE_STAT_CTIME_NANOS(&st);
-		}
-		/*@switchbreak@*/ break;
+	{	struct stat st;
+		if (stat(arg, &st) != 0)
+			bsdtar_errc(bsdtar, 1, 0, "Can't open file %s", arg);
+		bsdtar->newer_ctime_sec = st.st_ctime;
+		bsdtar->newer_ctime_nsec = ARCHIVE_STAT_CTIME_NANOS(&st);
+	}	break;
 	case OPTION_NEWER_MTIME: /* GNU tar */
 		bsdtar->newer_mtime_sec = get_date(arg);
-		/*@switchbreak@*/ break;
+		break;
 	case OPTION_NEWER_MTIME_THAN:
-		{
-			struct stat st;
-			if (stat(arg, &st) != 0)
-				bsdtar_errc(bsdtar, 1, 0,
-				    "Can't open file %s", arg);
-			bsdtar->newer_mtime_sec = st.st_mtime;
-			bsdtar->newer_mtime_nsec =
-			    ARCHIVE_STAT_MTIME_NANOS(&st);
-		}
-		/*@switchbreak@*/ break;
+	{	struct stat st;
+		if (stat(arg, &st) != 0)
+			bsdtar_errc(bsdtar, 1, 0, "Can't open file %s", arg);
+		bsdtar->newer_mtime_sec = st.st_mtime;
+		bsdtar->newer_mtime_nsec = ARCHIVE_STAT_MTIME_NANOS(&st);
+	}	break;
 	case OPTION_NODUMP: /* star */
 		bsdtar->option_honor_nodump = 1;
-		/*@switchbreak@*/ break;
+		break;
 	case OPTION_NO_SAME_OWNER: /* GNU tar */
 		bsdtar->extract_flags &= ~ARCHIVE_EXTRACT_OWNER;
-		/*@switchbreak@*/ break;
+		break;
 	case OPTION_NO_SAME_PERMISSIONS: /* GNU tar */
 		bsdtar->extract_flags &= ~ARCHIVE_EXTRACT_PERM;
 		bsdtar->extract_flags &= ~ARCHIVE_EXTRACT_ACL;
 		bsdtar->extract_flags &= ~ARCHIVE_EXTRACT_XATTR;
 		bsdtar->extract_flags &= ~ARCHIVE_EXTRACT_FFLAGS;
-		/*@switchbreak@*/ break;
+		break;
 	case OPTION_NULL: /* GNU tar */
 		bsdtar->option_null++;
-		/*@switchbreak@*/ break;
+		break;
 	case 'O': /* GNU tar */
 		bsdtar->option_stdout = 1;
-		/*@switchbreak@*/ break;
+		break;
 	case 'o': /* SUSv2 and GNU conflict here, but not fatally */
 		option_o = 1; /* Record it and resolve it later. */
-		/*@switchbreak@*/ break;
+		break;
 	case OPTION_ONE_FILE_SYSTEM: /* GNU tar */
 		bsdtar->option_dont_traverse_mounts = 1;
-		/*@switchbreak@*/ break;
+		break;
 #if 0
 	/*
 	 * The common BSD -P option is not necessary, since
@@ -694,70 +699,70 @@ fprintf(stderr, "--> bsdtarArgCallback(%p, %d, %p, %p, %p) val %d\n", con, reaso
 	 */
 	case 'P': /* BSD convention */
 		/* Default behavior, no option necessary. */
-		/*@switchbreak@*/ break;
+		break;
 #endif
 	case 'P': /* GNU tar */
 		bsdtar->extract_flags &= ~SECURITY;
 		bsdtar->option_absolute_paths = 1;
-		/*@switchbreak@*/ break;
+		break;
 	case 'p': /* GNU tar, star */
 		bsdtar->extract_flags |= ARCHIVE_EXTRACT_PERM;
 		bsdtar->extract_flags |= ARCHIVE_EXTRACT_ACL;
 		bsdtar->extract_flags |= ARCHIVE_EXTRACT_XATTR;
 		bsdtar->extract_flags |= ARCHIVE_EXTRACT_FFLAGS;
-		/*@switchbreak@*/ break;
+		break;
 	case OPTION_POSIX: /* GNU tar */
 		bsdtar->create_format = "pax";
-		/*@switchbreak@*/ break;
+		break;
 	case 'r': /* SUSv2 */
 		set_mode(bsdtar, val);
-		/*@switchbreak@*/ break;
+		break;
 	case OPTION_STRIP_COMPONENTS: /* GNU tar 1.15 */
 		bsdtar->strip_components = atoi(arg);
-		/*@switchbreak@*/ break;
+		break;
 	case 'T': /* GNU tar */
 		bsdtar->names_from_file = arg;
-		/*@switchbreak@*/ break;
+		break;
 	case 't': /* SUSv2 */
 		set_mode(bsdtar, val);
 		bsdtar->verbose++;
-		/*@switchbreak@*/ break;
+		break;
 	case OPTION_TOTALS: /* GNU tar */
 		bsdtar->option_totals++;
-		/*@switchbreak@*/ break;
+		break;
 	case 'U': /* GNU tar */
 		bsdtar->extract_flags |= ARCHIVE_EXTRACT_UNLINK;
 		bsdtar->option_unlink_first = 1;
-		/*@switchbreak@*/ break;
+		break;
 	case 'u': /* SUSv2 */
 		set_mode(bsdtar, val);
-		/*@switchbreak@*/ break;
+		break;
 	case 'v': /* SUSv2 */
 		bsdtar->verbose++;
-		/*@switchbreak@*/ break;
+		break;
 	case OPTION_VERSION: /* GNU convention */
 		version();
-		/*@switchbreak@*/ break;
+		break;
 #if 0
 	/*
 	 * The -W longopt feature is handled inside of
 	 * bsdtar_getop(), so -W is not available here.
 	 */
 	case 'W': /* Obscure, but useful GNU convention. */
-		/*@switchbreak@*/ break;
+		break;
 #endif
 	case 'w': /* SUSv2 */
 		bsdtar->option_interactive = 1;
-		/*@switchbreak@*/ break;
+		break;
 	case 'X': /* GNU tar */
 		if (exclude_from_file(bsdtar, arg))
 			bsdtar_errc(bsdtar, 1, 0,
 			    "failed to process exclusions from file %s",
 			    arg);
-		/*@switchbreak@*/ break;
+		break;
 	case 'x': /* SUSv2 */
 		set_mode(bsdtar, val);
-		/*@switchbreak@*/ break;
+		break;
 	case 'y': /* FreeBSD version of GNU tar */
 #if HAVE_LIBBZ2
 		if (bsdtar->create_compression != '\0')
@@ -769,14 +774,14 @@ fprintf(stderr, "--> bsdtarArgCallback(%p, %d, %p, %p, %p) val %d\n", con, reaso
 		bsdtar_warnc(bsdtar, 0, "-y compression not supported by this version of bsdtar");
 		usage(bsdtar);
 #endif
-		/*@switchbreak@*/ break;
+		break;
 	case 'Z': /* GNU tar */
 		if (bsdtar->create_compression != '\0')
 			bsdtar_errc(bsdtar, 1, 0,
 			    "Can't specify both -%c and -%c", val,
 			    bsdtar->create_compression);
 		bsdtar->create_compression = val;
-		/*@switchbreak@*/ break;
+		break;
 	case 'z': /* GNU tar, star, many others */
 #if HAVE_LIBZ
 		if (bsdtar->create_compression != '\0')
@@ -788,12 +793,13 @@ fprintf(stderr, "--> bsdtarArgCallback(%p, %d, %p, %p, %p) val %d\n", con, reaso
 		bsdtar_warnc(bsdtar, 0, "-z compression not supported by this version of bsdtar");
 		usage(bsdtar);
 #endif
-		/*@switchbreak@*/ break;
+		break;
 	case OPTION_USE_COMPRESS_PROGRAM:
 		bsdtar->compress_program = arg;
-		/*@switchbreak@*/ break;
+		break;
 	default:
 		usage(bsdtar);
+		break;
 	}
 }
 
@@ -1102,56 +1108,8 @@ main(int argc, char **argv)
 	int			opt;
 	char			buff[16];
 
-	/*
-	 * Use a pointer for consistency, but stack-allocated storage
-	 * for ease of cleanup.
-	 */
-	memset(bsdtar, 0, sizeof(*bsdtar));
-	bsdtar->fd = -1; /* Mark as "unused" */
-
-	/* Need bsdtar->progname before calling bsdtar_warnc. */
-	if (*argv == NULL)
-		bsdtar->progname = "bsdtar";
-	else {
-/*@-modobserver@*/
-		bsdtar->progname = strrchr(*argv, '/');
-		if (bsdtar->progname != NULL)
-			bsdtar->progname++;
-		else
-			bsdtar->progname = *argv;
-/*@=modobserver@*/
-	}
-
 	if (setlocale(LC_ALL, "") == NULL)
 		bsdtar_warnc(bsdtar, 0, "Failed to set default locale");
-#if defined(HAVE_NL_LANGINFO) && defined(HAVE_D_MD_ORDER)
-	bsdtar->day_first = (*nl_langinfo(D_MD_ORDER) == 'd');
-#endif
-
-	/* Look up uid of current user for future reference */
-	bsdtar->user_uid = geteuid();
-
-	/* Default: open tape drive. */
-	bsdtar->filename = getenv("TAPE");
-	if (bsdtar->filename == NULL)
-		bsdtar->filename = _PATH_DEFTAPE;
-
-	/* Default: preserve mod time on extract */
-	bsdtar->extract_flags = ARCHIVE_EXTRACT_TIME;
-
-	/* Default: Perform basic security checks. */
-	bsdtar->extract_flags |= SECURITY;
-
-	/* Defaults for root user: */
-	if (bsdtar->user_uid == 0) {
-		/* --same-owner */
-		bsdtar->extract_flags |= ARCHIVE_EXTRACT_OWNER;
-		/* -p */
-		bsdtar->extract_flags |= ARCHIVE_EXTRACT_PERM;
-		bsdtar->extract_flags |= ARCHIVE_EXTRACT_ACL;
-		bsdtar->extract_flags |= ARCHIVE_EXTRACT_XATTR;
-		bsdtar->extract_flags |= ARCHIVE_EXTRACT_FFLAGS;
-	}
 
 	/* Rewrite traditional-style tar arguments, if used. */
 	argv = rewrite_argv(bsdtar, &argc, argv, tar_opts);
@@ -1162,12 +1120,6 @@ main(int argc, char **argv)
 	optCon = poptGetContext(bsdtar->progname, argc, (const char **)argv, optionsTable, 0);
 
 	/* Process all remaining arguments now. */
-	/*
-	 * Comments following each option indicate where that option
-	 * originated:  SUSv2, POSIX, GNU tar, star, etc.  If there's
-	 * no such comment, then I don't know of anyone else who
-	 * implements that option.
-	 */
 	while ((opt = bsdtar_getopt(bsdtar, tar_opts, &option)) != -1) {
 		bsdtarArgCallback(optCon, 0, option, optarg, bsdtar);
 	}
@@ -1179,7 +1131,7 @@ main(int argc, char **argv)
 	/* If no "real" mode was specified, treat -h as --help. */
 	if ((bsdtar->mode == '\0') && possible_help_request) {
 		long_help(bsdtar);
-		exit(0);
+		exit(EXIT_SUCCESS);
 	}
 
 	/* Otherwise, a mode is required. */
@@ -1243,6 +1195,31 @@ main(int argc, char **argv)
 	}
 	if (bsdtar->strip_components != 0)
 		only_mode(bsdtar, "--strip-components", "xt");
+
+	/* Look up uid of current user. */
+	/* Defaults for root user: */
+	bsdtar->user_uid = geteuid();
+	if (bsdtar->user_uid == 0) {
+		/* --same-owner */
+		bsdtar->extract_flags |= ARCHIVE_EXTRACT_OWNER;
+		/* -p */
+		bsdtar->extract_flags |= ARCHIVE_EXTRACT_PERM;
+		bsdtar->extract_flags |= ARCHIVE_EXTRACT_ACL;
+		bsdtar->extract_flags |= ARCHIVE_EXTRACT_XATTR;
+		bsdtar->extract_flags |= ARCHIVE_EXTRACT_FFLAGS;
+	}
+
+#if defined(HAVE_NL_LANGINFO) && defined(HAVE_D_MD_ORDER)
+	bsdtar->day_first = (*nl_langinfo(D_MD_ORDER) == 'd');
+#endif
+
+	/* Default: open tape drive. */
+	if (bsdtar->filename == NULL) {
+		if ((bsdtar->filename = getenv("TAPE")) == NULL)
+			bsdtar->filename = _PATH_DEFTAPE;
+	} else
+	if (bsdtar->filename[0] == '-' && bsdtar->filname[1] == '\0')
+		bsdtar->filename = NULL;
 
 	bsdtar->argc -= optind;
 	bsdtar->argv += optind;
