@@ -110,7 +110,7 @@ static int _debug = 1;
 
 /*@unchecked@*/
 static struct bsdtar bsdtar_storage = {
-	.progname = "bsdtar",	/* Need bsdtar->progname for bsdtar_warnc. */
+	.progname = "rpmtar",	/* Need bsdtar->progname for bsdtar_warnc. */
 	.fd = -1,		/* Mark as "unused" */
 	/* Default: preserve mod time on extract */
 	/* Default: Perform basic security checks. */
@@ -160,7 +160,7 @@ bsdtar_errc(struct bsdtar *bsdtar, int eval, int code, const char *fmt, ...)
 }
 
 /*-
- * The logic here for -C <dir> attempts to avoid
+ * The logic here for -C DIR attempts to avoid
  * chdir() as long as possible.  For example:
  * "-C /foo -C /bar file"          needs chdir("/bar") but not chdir("/foo")
  * "-C /foo -C bar file"           needs chdir("/foo/bar")
@@ -400,28 +400,29 @@ version(void)
 	exit(EXIT_FAILURE);
 }
 
+#if !defined(_USE_POPT)
 /*@unchecked@*/ /*@observer@*/
 static const char *long_help_msg =
 	"First option must be a mode specifier:\n"
 	"  -c Create  -r Add/Replace  -t List  -u Update  -x Extract\n"
 	"Common Options:\n"
 	"  -b #  Use # 512-byte records per I/O block\n"
-	"  -f <filename>  Location of archive (default " _PATH_DEFTAPE ")\n"
+	"  -f FILE  Location of archive (default " _PATH_DEFTAPE ")\n"
 	"  -v    Verbose\n"
 	"  -w    Interactive\n"
-	"Create: %p -c [options] [<file> | <dir> | @<archive> | -C <dir> ]\n"
-	"  <file>, <dir>  add these items to archive\n"
+	"Create: %p -c [options] [FILE | DIR | @ARCHIVE | -C DIR ]\n"
+	"  FILE, DIR  add these items to archive\n"
 	"  -z, -j  Compress archive with gzip/bzip2\n"
 	"  --format {ustar|pax|cpio|shar}  Select archive format\n"
-	"  --exclude <pattern>  Skip files that match pattern\n"
+	"  --exclude PATTERN  Skip files that match pattern\n"
 /* XXX HAVE_GETOPT_LONG deprived. */
-	"  -W exclude=<pattern>  Skip files that match pattern\n"
-	"  -C <dir>  Change to <dir> before processing remaining files\n"
-	"  @<archive>  Add entries from <archive> to output\n"
-	"List: %p -t [options] [<patterns>]\n"
-	"  <patterns>  If specified, list only entries that match\n"
-	"Extract: %p -x [options] [<patterns>]\n"
-	"  <patterns>  If specified, extract only entries that match\n"
+	"  -W exclude=PATTERN  Skip files that match pattern\n"
+	"  -C DIR  Change to DIR before processing remaining files\n"
+	"  @ARCHIVE  Add entries from <archive> to output\n"
+	"List: %p -t [options] [PATTERN ...]\n"
+	"  PATTERN ...  If specified, list only entries that match\n"
+	"Extract: %p -x [options] [PATTERN ...]\n"
+	"  PATTERN ...  If specified, extract only entries that match\n"
 	"  -k    Keep (don't overwrite) existing files\n"
 	"  -m    Don't restore modification times\n"
 	"  -O    Write entries to stdout, don't restore to disk\n"
@@ -465,6 +466,7 @@ long_help(struct bsdtar *bsdtar)
 	}
 	version();
 }
+#endif
 
 /*
  * The leading '+' here forces the GNU version of getopt() (as well as
@@ -495,7 +497,9 @@ enum {
 	OPTION_EXCLUDE,
 	OPTION_FAST_READ,
 	OPTION_FORMAT,
+#if !defined(_USE_POPT)
 	OPTION_HELP,
+#endif
 	OPTION_INCLUDE,
 	OPTION_NEWER_CTIME,
 	OPTION_NEWER_CTIME_THAN,
@@ -527,8 +531,10 @@ set_mode(struct bsdtar *bsdtar, char opt)
 /*@unchecked@*/
 static char option_o = 0;
 
+#if !defined(_USE_POPT)
 /*@unchecked@*/
 static char possible_help_request = 0;
+#endif
 
 static void bsdtarArgCallback(/*@unused@*/ poptContext con,
                 /*@unused@*/ enum poptCallbackReason reason,
@@ -569,9 +575,6 @@ fprintf(stderr, "--> bsdtarArgCallback(%p, %d, %p, %p, %p) val %d\n", con, reaso
 	case 'c': /* SUSv2 */
 		set_mode(bsdtar, val);
 		break;
-	case OPTION_CHECK_LINKS: /* GNU tar */
-		bsdtar->option_warn_links = 1;
-		break;
 	case OPTION_EXCLUDE: /* GNU tar */
 		if (exclude(bsdtar, arg))
 			bsdtar_errc(bsdtar, 1, 0,
@@ -591,13 +594,17 @@ fprintf(stderr, "--> bsdtarArgCallback(%p, %d, %p, %p, %p) val %d\n", con, reaso
 		break;
 	case 'h': /* Linux Standards Base, gtar; synonym for -L */
 		bsdtar->symlink_mode = 'L';
+#if !defined(_USE_POPT)
 		/* Hack: -h by itself is the "help" command. */
 		possible_help_request = 1;
+#endif
 		break;
+#if !defined(_USE_POPT)
 	case OPTION_HELP: /* GNU tar, others */
 		long_help(bsdtar);
 		exit(EXIT_SUCCESS);
 		/*@notreached@*/ break;
+#endif
 	case 'I': /* GNU tar */
 		/*
 		 * TODO: Allow 'names' to come from an archive,
@@ -754,7 +761,7 @@ fprintf(stderr, "--> bsdtarArgCallback(%p, %d, %p, %p, %p) val %d\n", con, reaso
 	case OPTION_VERSION: /* GNU convention */
 		version();
 		break;
-#if defined(_USE_POPT)
+#if 0
 	/*
 	 * The -W longopt feature is handled inside of
 	 * bsdtar_getop(), so -W is not available here.
@@ -814,6 +821,7 @@ fprintf(stderr, "--> bsdtarArgCallback(%p, %d, %p, %p, %p) val %d\n", con, reaso
 	}
 }
 
+#if !defined(_USE_POPT)
 /*
  * If you add anything, be very careful to keep this list properly
  * sorted, as the -W logic relies on it.
@@ -878,6 +886,7 @@ static const struct option tar_longopts[] = {
 	{ NULL, 0, NULL, 0 }
 };
 /*@=nullassign =readonlytrans @*/
+#endif
 
 static struct poptOption optionsTable[] = {
 /*@-type@*/ /* FIX: cast? */
@@ -886,150 +895,242 @@ static struct poptOption optionsTable[] = {
 /*@=type@*/
 
   { "absolute-paths",'P',	POPT_ARG_NONE,	NULL, 'P',
-	NULL, NULL },
+	N_("Don't strip leading `/'s from paths"), NULL },
   { "append",'r',		POPT_ARG_NONE,	NULL, 'r',
-	NULL, NULL },
+	N_("Append files to the end of an archive"), NULL },
   { "block-size",'b',		POPT_ARG_STRING, NULL, 'b',
-	NULL, NULL },
-  { "bunzip2",'j',		POPT_ARG_NONE,	NULL, 'j',
-	NULL, NULL },
-  { "bzip",'j',			POPT_ARG_NONE,	NULL, 'j',
-	NULL, NULL },
+	N_("Use # 512-byte records per I/O block"), N_("#") },
+  { "bunzip2",'j',	POPT_ARG_NONE|POPT_ARGFLAG_DOC_HIDDEN,	NULL, 'j',
+	N_("Uncompress archive using bzip2"), NULL },
+  { "bzip",'j',		POPT_ARG_NONE|POPT_ARGFLAG_DOC_HIDDEN,	NULL, 'j',
+	N_("Compress archive using bzip2"), NULL },
   { "bzip2",'j',		POPT_ARG_NONE,	NULL, 'j',
-	NULL, NULL },
+	N_("Compress archive using bzip2"), NULL },
   { "cd",'C',			POPT_ARG_STRING,NULL, 'C',
-	NULL, NULL },
-  { "check-links",'\0',		POPT_ARG_NONE,	NULL, OPTION_CHECK_LINKS,
-	NULL, NULL },
-  { "confirmation",'w',		POPT_ARG_NONE,	NULL, 'w',
-	NULL, NULL },
+	N_("Change to DIR before processing remaining files"), N_("DIR") },
+  { "confirmation",'w',	 POPT_ARG_NONE|POPT_ARGFLAG_DOC_HIDDEN,	NULL, 'w',
+	N_("Interactive"), NULL },
   { "create",'c',		POPT_ARG_NONE,	NULL, 'c',
-	NULL, NULL },
+	N_("Create a new archive"), NULL },
   { "dereference",'L', 		POPT_ARG_NONE,  NULL, 'L',
-	NULL, NULL },
-  { "directory",'C',		POPT_ARG_STRING,NULL, 'C',
-	NULL, NULL },
+	N_("Follow symlinks; archive/dump the files they point to"), NULL },
+  { "directory",'C', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN,	NULL, 'C',
+	N_("Change to DIR before processing remaining files"), N_("DIR") },
   { "exclude",'\0',		POPT_ARG_STRING,NULL, OPTION_EXCLUDE,
-	NULL, NULL },
+	N_("Skip files that match PATTERN"), N_("PATTERN") },
   { "exclude-from",'X',		POPT_ARG_STRING,NULL, 'X',
-	NULL, NULL },
+	N_("Exclude patterns listed in FILE"), N_("FILE") },
   { "extract",'x',		POPT_ARG_NONE,	NULL, 'x',
-	NULL, NULL },
+	N_("Extract files from an archive"), NULL },
+  { "get",'x',	POPT_ARG_NONE|POPT_ARGFLAG_DOC_HIDDEN,	NULL, 'x',
+	N_("Extract files from an archive"), NULL },
   { "fast-read",'\0',		POPT_ARG_NONE,	NULL, OPTION_FAST_READ,
 	NULL, NULL },
   { "file",'f',			POPT_ARG_STRING,NULL, 'f',
-	NULL, NULL },
+	N_("Location of archive"), N_("FILE") },
   { "files-from",'T',		POPT_ARG_STRING,NULL, 'T',
-	NULL, NULL },
+	N_("Get names to extract/create from FILE"), N_("FILE") },
   { "format",'\0',		POPT_ARG_STRING,NULL, OPTION_FORMAT,
-	NULL, NULL },
-  { "gunzip",'z',		POPT_ARG_NONE,	NULL, 'z',
-	NULL, NULL },
+	N_("Select archive format"), N_("{ustar|pax|cpio|shar}") },
+  { "gunzip",'z',	POPT_ARG_NONE|POPT_ARGFLAG_DOC_HIDDEN,	NULL, 'z',
+	N_("Uncompress archive using gzip"), NULL },
   { "gzip",'z',			POPT_ARG_NONE,	NULL, 'z',
-	NULL, NULL },
+	N_("Compress archive using gzip"), NULL },
 { NULL,'H',		POPT_ARG_NONE,	NULL, 'H',
 	NULL, NULL },
-{ NULL,'h',		POPT_ARG_NONE,	NULL, 'h',
-	NULL, NULL },
+{ NULL,'h',	POPT_ARG_NONE|POPT_ARGFLAG_DOC_HIDDEN,	NULL, 'h',
+	N_("Follow symlinks; archive/dump the files they point to"), NULL },
+#if !defined(_USE_POPT)
   { "help",'\0',		POPT_ARG_NONE,	NULL, OPTION_HELP,
 	NULL, NULL },
-{ NULL,'I',		POPT_ARG_STRING,	NULL, 'I',
-	NULL, NULL },
+#endif
+{ NULL,'I',	POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN,	NULL, 'I',
+	N_("Get names to extract/create from FILE"), N_("FILE") },
   { "include",'\0',		POPT_ARG_STRING,NULL, OPTION_INCLUDE,
-	NULL, NULL },
+	N_("Add files that match PATTERN"), N_("PATTERN") },
   { "interactive",'w',		POPT_ARG_NONE,	NULL, 'w',
-	NULL, NULL },
+	N_("Interactive"), NULL },
   { "keep-old-files",'k',	POPT_ARG_NONE,	NULL, 'k',
-	NULL, NULL },
-{ NULL,'l',		POPT_ARG_NONE,	NULL, 'l',
-	NULL, NULL },
+	N_("Keep (don't overwrite) existing files"), NULL },
+{ "check-links",'l',		POPT_ARG_NONE,	NULL, 'l',
+	N_("Warn if not all links are included"), NULL },
   { "list",'t',			POPT_ARG_NONE,	NULL, 't',
-	NULL, NULL },
+	N_("List the contents of an archive"), NULL },
   { "modification-time",'m',	POPT_ARG_NONE,	NULL, 'm',
-	NULL, NULL },
+	N_("Don't restore modification times"), NULL },
   { "newer",'\0', 		POPT_ARG_STRING,NULL, OPTION_NEWER_CTIME,
-	NULL, NULL },
+	NULL, N_("DATE") },
   { "newer-ctime",'\0', 	POPT_ARG_STRING,NULL, OPTION_NEWER_CTIME,
-	NULL, NULL },
+	NULL, N_("DATE") },
   { "newer-ctime-than",'\0', 	POPT_ARG_STRING,NULL, OPTION_NEWER_CTIME_THAN,
-	NULL, NULL },
+	NULL, N_("DATE") },
   { "newer-mtime",'\0', 	POPT_ARG_STRING,NULL, OPTION_NEWER_MTIME,
-	NULL, NULL },
+	N_("Compare date and time when data changed only"), N_("DATE") },
   { "newer-mtime-than",'\0', 	POPT_ARG_STRING,NULL, OPTION_NEWER_MTIME_THAN,
-	NULL, NULL },
+	NULL, N_("DATE") },
   { "newer-than",'\0', 		POPT_ARG_STRING,NULL, OPTION_NEWER_CTIME_THAN,
-	NULL, NULL },
+	NULL, N_("DATE") },
   { "nodump",'\0',		POPT_ARG_NONE,	NULL, OPTION_NODUMP,
-	NULL, NULL },
-  { "norecurse",'n',		POPT_ARG_NONE,	NULL, 'n',
-	NULL, NULL },
-  { "no-recursion",'n',		POPT_ARG_NONE,	NULL, 'n',
-	NULL, NULL },
+	N_("Skip files marked with nodump flag"), NULL },
+  { "norecurse",'n',	 POPT_ARG_NONE,	NULL, 'n',
+	N_("Avoid descending automatically in directories"), NULL },
+  { "no-recursion",'n',	 POPT_ARG_NONE|POPT_ARGFLAG_DOC_HIDDEN,	NULL, 'n',
+	N_("Avoid descending automatically in directories"), NULL },
   { "no-same-owner",'\0', 	POPT_ARG_NONE,	NULL, OPTION_NO_SAME_OWNER,
-	NULL, NULL },
+	N_("Extract files as yourself"), NULL },
   { "no-same-permissions",'\0',	POPT_ARG_NONE,	NULL, OPTION_NO_SAME_PERMISSIONS,
-	NULL, NULL },
+	N_("Apply the user's umask when extracting permissions"), NULL },
   { "null",'\0', 		POPT_ARG_NONE,	NULL, OPTION_NULL,
-	NULL, NULL },
+	N_("-T reads null-terminated names, disable -C"), NULL },
 { NULL,'o',		POPT_ARG_NONE,	NULL, 'o',
-	NULL, NULL },
+	N_("Creating: same as --old-archive; Extracting: same as --no-same-owner"), NULL },
   { "one-file-system",'\0', 	POPT_ARG_NONE,	NULL, OPTION_ONE_FILE_SYSTEM,
-	NULL, NULL },
+	N_("Do not cross mount points"), NULL },
   { "posix",'\0', 		POPT_ARG_NONE,	NULL, OPTION_POSIX,
-	NULL, NULL },
-  { "preserve-permissions",'p',	POPT_ARG_NONE,	NULL, 'p',
-	NULL, NULL },
+	N_("Same as --format=pax"), NULL },
+  { "preserve-permissions",'p',	POPT_ARG_NONE|POPT_ARGFLAG_DOC_HIDDEN, NULL,'p',
+	N_("Restore permissions (including ACLs, owner, file flags)"), NULL },
   { "read-full-blocks",'B', 	POPT_ARG_NONE,	NULL, 'B',
-	NULL, NULL },
+	N_("Reblock while reading (for 4.2BSD pipes)"), NULL },
   { "same-permissions",'p',	POPT_ARG_NONE,	NULL, 'p',
-	NULL, NULL },
+	N_("Restore permissions (including ACLs, owner, file flags)"), NULL },
   { "strip-components",'\0', 	POPT_ARG_STRING,NULL, OPTION_STRIP_COMPONENTS,
-	NULL, NULL },
+	N_("Strip # leading components from file names on extraction"), N_("#") },
   { "to-stdout",'O',		POPT_ARG_NONE,	NULL, 'O',
-	NULL, NULL },
+	N_("Write entries to stdout, don't restore to disk"), NULL },
   { "totals",'\0', 		POPT_ARG_NONE,	NULL, OPTION_TOTALS,
-	NULL, NULL },
+	N_("Print total bytes after processing the archive"), NULL },
   { "unlink",'U', 		POPT_ARG_NONE,	NULL, 'U',
-	NULL, NULL },
-  { "unlink-first",'U', 	POPT_ARG_NONE,	NULL, 'U',
-	NULL, NULL },
+	N_("Remove file(s) & re-create; don't overwrite"), NULL },
+  { "unlink-first",'U',  POPT_ARG_NONE|POPT_ARGFLAG_DOC_HIDDEN,	NULL, 'U',
+	N_("Remove file(s) & re-create; don't overwrite"), NULL },
   { "update",'u',		POPT_ARG_NONE,	NULL, 'u',
-	NULL, NULL },
+	N_("Only append files newer than copy in archive"), NULL },
   { "use-compress-program",'\0',POPT_ARG_STRING,NULL, OPTION_USE_COMPRESS_PROGRAM,
-	NULL, NULL },
+	N_("Filter archive through PROGRAM (must accept -d)"), N_("PROGRAM") },
   { "verbose",'v',		POPT_ARG_NONE,	NULL, 'v',
-	NULL, NULL },
+	N_("Verbose"), NULL },
   { "version",'\0',		POPT_ARG_NONE,	NULL, OPTION_VERSION,
-	NULL, NULL },
+	N_("Print program version"), NULL },
+#if 0
 { NULL,'W',		POPT_ARG_STRING,	NULL, 'W',
 	NULL, NULL },
-{ NULL,'y',		POPT_ARG_NONE,	NULL, 'y',
-	NULL, NULL },
-{ NULL,'Z',		POPT_ARG_NONE,	NULL, 'Z',
-	NULL, NULL },
+#endif
+{ NULL,'y',	POPT_ARG_NONE|POPT_ARGFLAG_DOC_HIDDEN,	NULL, 'y',
+	N_("Compress archive using bzip2"), NULL },
+{ "uncompress",'Z',	POPT_ARG_NONE|POPT_ARGFLAG_DOC_HIDDEN,	NULL, 'Z',
+	N_("Filter the archive through compress"), NULL },
+{ "compress",'Z',	POPT_ARG_NONE|POPT_ARGFLAG_DOC_HIDDEN,	NULL, 'Z',
+	N_("Filter the archive through compress"), NULL },
     POPT_AUTOALIAS
     POPT_AUTOHELP
+
+  { NULL, (char)-1, POPT_ARG_INCLUDE_TABLE, NULL, 0,
+	N_("\
+  First option must be a mode specifier:\n\
+    -c Create  -r Add/Replace  -t List  -u Update  -x Extract\n\
+  Common Options:\n\
+    -b #     Use # 512-byte records per I/O block\n\
+    -f FILE  Location of archive (default " _PATH_DEFTAPE ")\n\
+    -v       Verbose\n\
+    -w       Interactive\n\
+  Create: rpmtar -c [options] [FILE | DIR | @ARCHIVE | -C DIR ]\n\
+    FILE, DIR  add these items to archive\n\
+    -z, -j  Compress archive with gzip/bzip2\n\
+    --format {ustar|pax|cpio|shar}  Select archive format\n\
+    --exclude PATTERN  Skip files that match pattern\n\
+    -C DIR  Change to DIR before processing remaining files\n\
+    @ARCHIVE  Add entries from ARCHIVE to output\n\
+  List: rpmtar -t [options] [PATTERN ...]\n\
+    PATTERN ...  If specified, list only entries that match\n\
+  Extract: rpmtar -x [options] [PATTERN ...]\n\
+    PATTERN ...  If specified, extract only entries that match\n\
+    -k    Keep (don't overwrite) existing files\n\
+    -m    Don't restore modification times\n\
+    -O    Write entries to stdout, don't restore to disk\n\
+    -p    Restore permissions (including ACLs, owner, file flags)\n\
+") , NULL },
+
     POPT_TABLEEND
 };
 
 #if !defined(_USE_POPT)
+static const struct option *
+tar_opt_W(struct bsdtar *bsdtar, const char * arg)
+	/*@globals fileSystem @*/
+	/*@modifies bsdtar, fileSystem @*/
+{
+	const char *p, *q;
+	const struct option * option = NULL;
+	int opt;
+	size_t option_length;
+
+	/* Support long options through -W longopt=value */
+	p = arg;
+	q = strchr(arg, '=');
+	if (q != NULL) {
+		option_length = (size_t)(q - p);
+		arg = q + 1;
+	} else {
+		option_length = strlen(p);
+		arg = NULL;
+	}
+	option = tar_longopts;
+	while (option->name != NULL &&
+	    (strlen(option->name) < option_length ||
+	    strncmp(p, option->name, option_length) != 0 )) {
+		option++;
+	}
+
+	if (option->name != NULL) {
+		const struct option * o = option;
+		opt = o->val;
+
+		/* If the first match was exact, we're done. */
+		if (!strncmp(p, o->name, strlen(o->name))) {
+			while (o->name != NULL)
+				o++;
+		} else {
+			/* Check if there's another match. */
+			o++;
+			while (o->name != NULL &&
+			    (strlen(o->name) < option_length ||
+			    strncmp(p, o->name, option_length))) {
+				o++;
+			}
+		}
+		if (o->name != NULL)
+			bsdtar_errc(bsdtar, 1, 0,
+			    "Ambiguous option %s "
+			    "(matches both %s and %s)",
+			    p, option->name, o->name);
+
+		if (option->has_arg == required_argument && arg == NULL)
+			bsdtar_errc(bsdtar, 1, 0,
+			    "Option \"%s\" requires argument", p);
+	} else {
+		opt = '?';
+		/* TODO: Set up a fake 'struct option' for
+		 * error reporting... ? ? ? */
+		option = NULL;
+	}
+	return option;
+}
+
 static int
 bsdtar_getopt(struct bsdtar *bsdtar, const char *optstring,
 		struct poptOption **poption)
 	/*@globals optarg, fileSystem @*/
 	/*@modifies *poption, optarg, fileSystem @*/
 {
-	char *p, *q;
 	static struct poptOption _popt;
 	const struct option * option = NULL;
 	int opt;
-	int option_index;
-	size_t option_length;
-
-	option_index = -1;
-	*poption = NULL;
+	int option_index = -1;
 
 	memset(&_popt, 0, sizeof(_popt));
+	*poption = NULL;
+
 /*@-moduncon@*/
 	opt = getopt_long(bsdtar->argc, bsdtar->argv, optstring,
 	    tar_longopts, &option_index);
@@ -1048,57 +1149,8 @@ fprintf(stderr, "--> getopt_long: 0x%x %p\n", opt, option);
 /*@=moduncon@*/
 
 	/* Support long options through -W longopt=value */
-	if (opt == 'W') {
-		p = optarg;
-		q = strchr(optarg, '=');
-		if (q != NULL) {
-			option_length = (size_t)(q - p);
-			optarg = q + 1;
-		} else {
-			option_length = strlen(p);
-			optarg = NULL;
-		}
-		option = tar_longopts;
-		while (option->name != NULL &&
-		    (strlen(option->name) < option_length ||
-		    strncmp(p, option->name, option_length) != 0 )) {
-			option++;
-		}
-
-		if (option->name != NULL) {
-			const struct option * o = option;
-			opt = o->val;
-
-			/* If the first match was exact, we're done. */
-			if (!strncmp(p, o->name, strlen(o->name))) {
-				while (o->name != NULL)
-					o++;
-			} else {
-				/* Check if there's another match. */
-				o++;
-				while (o->name != NULL &&
-				    (strlen(o->name) < option_length ||
-				    strncmp(p, o->name, option_length))) {
-					o++;
-				}
-			}
-			if (o->name != NULL)
-				bsdtar_errc(bsdtar, 1, 0,
-				    "Ambiguous option %s "
-				    "(matches both %s and %s)",
-				    p, option->name, o->name);
-
-			if (option->has_arg == required_argument
-			    && optarg == NULL)
-				bsdtar_errc(bsdtar, 1, 0,
-				    "Option \"%s\" requires argument", p);
-		} else {
-			opt = '?';
-			/* TODO: Set up a fake 'struct option' for
-			 * error reporting... ? ? ? */
-			option = NULL;
-		}
-	}
+	if (opt == 'W' && (option = tar_opt_W(bsdtar, optarg)) == NULL)
+		opt = '?';
 
 	if (option != NULL) {
 		_popt.longName = option->name;
@@ -1183,22 +1235,25 @@ main(int argc, char **argv)
 	}
 	bsdtar->argc -= optind;
 	bsdtar->argv += optind;
+	/* If no "real" mode was specified, treat -h as --help. */
+	if ((bsdtar->mode == '\0') && possible_help_request) {
+		long_help(bsdtar);
+		exit(EXIT_SUCCESS);
+	}
 #endif
 
 	/*
 	 * Sanity-check options.
 	 */
 
-	/* If no "real" mode was specified, treat -h as --help. */
-	if ((bsdtar->mode == '\0') && possible_help_request) {
-		long_help(bsdtar);
-		exit(EXIT_SUCCESS);
-	}
-
-	/* Otherwise, a mode is required. */
-	if (bsdtar->mode == '\0')
+	/* A mode is required. */
+	if (bsdtar->mode == '\0') {
+#if defined(_USE_POPT)
+		poptPrintUsage(optCon, stderr, 0);
+#endif
 		bsdtar_errc(bsdtar, 1, 0,
 		    "Must specify one of -c, -r, -t, -u, -x");
+	}
 
 	/* Check boolean options only permitted in certain modes. */
 	if (bsdtar->option_dont_traverse_mounts)
