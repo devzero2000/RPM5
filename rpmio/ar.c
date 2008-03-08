@@ -171,9 +171,9 @@ fprintf(stderr, "==> %p[%u] \"%.*s\"\n", hdr, (unsigned)rc, (int)sizeof(*hdr)-2,
     st->st_nlink = 1;
 
 if (_ar_debug)
-fprintf(stderr, "\t     %06o%3d (%4d,%4d)%12d %s\n",
+fprintf(stderr, "\t     %06o%3d (%4d,%4d)%12lu %s\n",
                 (unsigned)st->st_mode, (int)st->st_nlink,
-                (int)st->st_uid, (int)st->st_gid, (int)st->st_size,
+                (int)st->st_uid, (int)st->st_gid, (unsigned long)st->st_size,
                 (iosm->path ? iosm->path : ""));
 
     return (int) rc;

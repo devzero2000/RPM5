@@ -38,74 +38,73 @@
  * functions.
  */
 struct bsdtar {
-	/* Options */
+    /* Options */
 /*@observer@*/ /*@null@*/
-	const char	 *filename; /* -f filename */
+    const char *filename;	/*!< -f filename */
 /*@observer@*/ /*@null@*/
-	const char	 *create_format; /* -F format */
+    const char *create_format;	/*!< -F format */
 /*@null@*/
-	char		 *pending_chdir; /* -C dir */
+    char *pending_chdir;	/*!< -C dir */
 /*@null@*/
-	const char	 *names_from_file; /* -T file */
-	time_t		  newer_ctime_sec; /* --newer/--newer-than */
-	long		  newer_ctime_nsec; /* --newer/--newer-than */
-	time_t		  newer_mtime_sec; /* --newer-mtime */
-	long		  newer_mtime_nsec; /* --newer-mtime-than */
-	int		  bytes_per_block; /* -b block_size */
-	int		  verbose;   /* -v */
-	int		  extract_flags; /* Flags for extract operation */
-	int		  strip_components; /* Remove this many leading dirs */
-	char		  mode; /* Program mode: 'c', 't', 'r', 'u', 'x' */
-	char		  symlink_mode; /* H or L, per BSD conventions */
-	char		  create_compression; /* j, y, or z */
+    const char *names_from_file;/*!< -T file */
+    time_t newer_ctime_sec;	/*!< --newer/--newer-than */
+    long newer_ctime_nsec;	/*!< --newer/--newer-than */
+    time_t newer_mtime_sec;	/*!< --newer-mtime */
+    long newer_mtime_nsec;	/*!< --newer-mtime-than */
+    int bytes_per_block;	/*!< -b block_size */
+    int verbose;		/*!< -v */
+    int extract_flags;		/*!< Flags for extract operation */
+    int strip_components;	/*!< Remove this many leading dirs */
+    char mode;			/*!< Program mode: 'c', 't', 'r', 'u', 'x' */
+    char symlink_mode;			/*!< H or L, per BSD conventions */
+    char create_compression;		/*!< j, y, or z */
 /*@observer@*/ /*@null@*/
-	const char	 *compress_program;
-	char		  option_absolute_paths; /* -P */
-	char		  option_dont_traverse_mounts; /* --one-file-system */
-	char		  option_fast_read; /* --fast-read */
-	char		  option_honor_nodump; /* --nodump */
-	char		  option_interactive; /* -w */
-	char		  option_no_owner; /* -o */
-	char		  option_no_subdirs; /* -n */
-	char		  option_null; /* --null */
-	char		  option_stdout; /* -O */
-	char		  option_totals; /* --totals */
-	char		  option_unlink_first; /* -U */
-	char		  option_warn_links; /* --check-links */
-	char		  day_first; /* show day before month in -tv output */
+    const char *compress_program;
+    char option_absolute_paths;		/*!< -P */
+    char option_dont_traverse_mounts;	/*!< --one-file-system */
+    char option_fast_read;		/*!< --fast-read */
+    char option_honor_nodump;		/*!< --nodump */
+    char option_interactive;		/*!< -w */
+    char option_no_owner;		/*!< -o */
+    char option_no_subdirs;		/*!< -n */
+    char option_null;			/*!< --null */
+    char option_stdout;			/*!< -O */
+    char option_totals;			/*!< --totals */
+    char option_unlink_first;		/*!< -U */
+    char option_warn_links;		/*!< --check-links */
+    char day_first;		/*!< show day before month in -tv output */
 
-	/* If >= 0, then close this when done. */
-	int		  fd;
+    int	fd;		/*!< If fd >= 0, then close this when done. */
 
-	/* Miscellaneous state information */
-	struct archive	 *archive;
+    /* Miscellaneous state information */
+    struct archive *archive;
 /*@observer@*/
-	const char	 *progname;
-	int		  argc;
+    const char *progname;
+    int argc;
 /*@null@*/
-	char		**argv;
-	size_t		  gs_width; /* For 'list_item' in read.c */
-	size_t		  u_width; /* for 'list_item' in read.c */
-	uid_t		  user_uid; /* UID running this program */
-	int		  return_value; /* Value returned by main() */
-	char		  warned_lead_slash; /* Already displayed warning */
-	char		  next_line_is_dir; /* Used for -C parsing in -cT */
+    char **argv;
+    size_t gs_width;		/*!< For 'list_item' in read.c */
+    size_t u_width;		/*!< for 'list_item' in read.c */
+    uid_t user_uid;		/*!< UID running this program */
+    int	 return_value;		/*!< Value returned by main() */
+    char warned_lead_slash;	/*!< Already displayed warning */
+    char next_line_is_dir;	/*!< Used for -C parsing in -cT */
 
-	/*
-	 * Data for various subsystems.  Full definitions are located in
-	 * the file where they are used.
-	 */
+    /*
+     * Data for various subsystems.  Full definitions are located in
+     * the file where they are used.
+     */
 /*@null@*/
-	struct archive_dir	*archive_dir;	/* for write.c */
+    struct archive_dir *archive_dir;	/* for write.c */
 /*@null@*/
-	struct name_cache	*gname_cache;	/* for write.c */
+    struct name_cache *gname_cache;	/* for write.c */
 /*@null@*/
-	struct links_cache	*links_cache;	/* for write.c */
+    struct links_cache *links_cache;	/* for write.c */
 /*@null@*/
-	struct matching		*matching;	/* for matching.c */
-	struct security		*security;	/* for read.c */
+    struct matching *matching;		/* for matching.c */
+    struct security *security;		/* for read.c */
 /*@null@*/
-	struct name_cache	*uname_cache;	/* for write.c */
+    struct name_cache *uname_cache;	/* for write.c */
 };
 
 void	bsdtar_errc(struct bsdtar *bsdtar, int eval, int code,
@@ -149,26 +148,23 @@ void	safe_fprintf(FILE *f, const char *fmt, ...)
 void	set_chdir(struct bsdtar *bsdtar, const char *newdir)
 	/*@globals fileSystem @*/
 	/*@modifies bsdtar, fileSystem @*/;
-void	tar_mode_c(struct bsdtar *bsdtar)
+int	tar_mode_c(struct bsdtar *bsdtar)
 	/*@globals fileSystem @*/
 	/*@modifies bsdtar, fileSystem @*/;
-void	tar_mode_r(struct bsdtar *bsdtar)
+int	tar_mode_r(struct bsdtar *bsdtar)
 	/*@globals fileSystem @*/
 	/*@modifies bsdtar, fileSystem @*/;
-void	tar_mode_t(struct bsdtar *bsdtar)
+int	tar_mode_t(struct bsdtar *bsdtar)
 	/*@globals fileSystem @*/
 	/*@modifies bsdtar, fileSystem @*/;
-void	tar_mode_u(struct bsdtar *bsdtar)
+int	tar_mode_u(struct bsdtar *bsdtar)
 	/*@globals fileSystem @*/
 	/*@modifies bsdtar, fileSystem @*/;
-void	tar_mode_x(struct bsdtar *bsdtar)
+int	tar_mode_x(struct bsdtar *bsdtar)
 	/*@globals fileSystem @*/
 	/*@modifies bsdtar, fileSystem @*/;
 int	unmatched_inclusions(struct bsdtar *bsdtar)
 	/*@*/;
-void	usage(struct bsdtar *bsdtar)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/;
 int	yes(const char *fmt, ...)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;

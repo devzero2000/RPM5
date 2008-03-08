@@ -248,9 +248,9 @@ fprintf(stderr, "\tmemcmp(\"%s\", \"%s\", %u)\n", hdrchecksum, checksum, (unsign
     }
 
 if (_tar_debug)
-fprintf(stderr, "\t     %06o%3d (%4d,%4d)%10d %s\n\t-> %s\n",
+fprintf(stderr, "\t     %06o%3d (%4d,%4d)%12lu %s\n\t-> %s\n",
                 (unsigned)st->st_mode, (int)st->st_nlink,
-                (int)st->st_uid, (int)st->st_gid, (int)st->st_size,
+                (int)st->st_uid, (int)st->st_gid, (unsigned long)st->st_size,
                 (iosm->path ? iosm->path : ""), (iosm->lpath ? iosm->lpath : ""));
 
     return rc;
@@ -312,9 +312,9 @@ static int tarHeaderWriteBlock(void * _iosm, struct stat * st, tarHeader hdr)
 if (_tar_debug)
 fprintf(stderr, "\ttarHeaderWriteBlock(%p, %p) type %c\n", iosm, hdr, hdr->typeflag);
 if (_tar_debug)
-fprintf(stderr, "\t     %06o%3d (%4d,%4d)%10d %s\n",
+fprintf(stderr, "\t     %06o%3d (%4d,%4d)%12lu %s\n",
                 (unsigned)st->st_mode, (int)st->st_nlink,
-                (int)st->st_uid, (int)st->st_gid, (int)st->st_size,
+                (int)st->st_uid, (int)st->st_gid, (unsigned long)st->st_size,
                 (iosm->path ? iosm->path : ""));
 
 

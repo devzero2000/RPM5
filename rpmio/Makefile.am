@@ -159,7 +159,7 @@ rpmdigest_SOURCES = rpmdigest.c
 rpmdigest_LDADD = $(RPMIO_LDADD_COMMON)
 
 rpmtar_SOURCES = rpmtar.c
-rpmtar_LDADD = $(RPMIO_LDADD_COMMON)
+rpmtar_LDADD = $(RPM_LDADD_COMMON)
 
 tdeb_SOURCES = tdeb.c
 tdeb_LDFLAGS = $(RPM_LDADD_COMMON)

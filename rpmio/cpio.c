@@ -206,9 +206,9 @@ fprintf(stderr, "    cpioHeaderRead(%p, %p)\n", iosm, st);
     }
 
 if (_cpio_debug)
-fprintf(stderr, "\t     %06o%3d (%4d,%4d)%10d %s\n\t-> %s\n",
+fprintf(stderr, "\t     %06o%3d (%4d,%4d)%12lu %s\n\t-> %s\n",
                 (unsigned)st->st_mode, (int)st->st_nlink,
-                (int)st->st_uid, (int)st->st_gid, (int)st->st_size,
+                (int)st->st_uid, (int)st->st_gid, (unsigned long)st->st_size,
                 (iosm->path ? iosm->path : ""), (iosm->lpath ? iosm->lpath : ""));
 
     return rc;

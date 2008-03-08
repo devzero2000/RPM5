@@ -34,9 +34,7 @@ typedef /*@abstract@*/ /*@refcounted@*/ struct rpmpsm_s * rpmpsm;
 #include "debug.h"
 
 /*@access FD_t @*/
-
 /*@access rpmpsm @*/
-
 /*@access IOSM_t @*/
 /*@access rpmfi @*/
 
