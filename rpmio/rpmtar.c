@@ -23,6 +23,8 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#define	USE_POPT
+
 #define __FBSDID(_s)	
 #define BSDTAR_VERSION_STRING "2.4.12"
 
@@ -125,19 +127,61 @@ typedef /*@abstract@*/ /*@refcounted@*/ struct rpmpsm_s * rpmpsm;
 /*@unchecked@*/
 static int _debug = 1;
 
-/* A basic set of security flags to request from libarchive. */
-#define	SECURITY					\
-	(ARCHIVE_EXTRACT_SECURE_SYMLINKS		\
-	 | ARCHIVE_EXTRACT_SECURE_NODOTDOT)
+/* Extraction flags. */
+enum xFlags_e {
+    XFLAGS_NONE			= 0,
+#define	_XFSET(_FLAG)	((ARCHIVE_EXTRACT_##_FLAG) | 0x40000000)
+#define	_XFCLR(n)	((n) & ~0x40000000)
+    XFLAGS_OWNER		= _XFSET(OWNER),
+    XFLAGS_PERM			= _XFSET(PERM),
+    XFLAGS_TIME			= _XFSET(TIME),
+    XFLAGS_NO_OVERWRITE		= _XFSET(NO_OVERWRITE),
+    XFLAGS_UNLINK		= _XFSET(UNLINK),
+    XFLAGS_ACL			= _XFSET(ACL),
+    XFLAGS_FFLAGS		= _XFSET(FFLAGS),
+    XFLAGS_XATTR		= _XFSET(XATTR),
+    XFLAGS_SECURE_SYMLINKS	= _XFSET(SECURE_SYMLINKS),
+    XFLAGS_SECURE_NODOTDOT	= _XFSET(SECURE_NODOTDOT),
+    XFLAGS_NO_AUTODIR		= _XFSET(NO_AUTODIR),
+    XFLAGS_NO_OVERWRITE_NEWER	= _XFSET(NO_OVERWRITE_NEWER),
+
+    /* A basic set of security flags to request from libarchive. */
+    XFLAGS_SECURITY	= (XFLAGS_SECURE_SYMLINKS | XFLAGS_SECURE_NODOTDOT),
+
+    /* Bits that flip with -P and -p. */
+    XFLAGS_ALLPERMS = (XFLAGS_PERM | XFLAGS_ACL | XFLAGS_XATTR | XFLAGS_FFLAGS)
+};
+
+/* Default: Preserve mod time on extract */
+/* Default: Perform basic security checks. */
+/*@unchecked@*/
+static enum xFlags_e xFlags = (XFLAGS_TIME | XFLAGS_SECURITY);
+
+#define _QFB(n) ((1U << (n)) | 0x40000000)
+#define QF_ISSET(_FLAG) ((qFlags & ((QFLAGS_##_FLAG) & ~0x40000000)) != QFLAGS_NONE)
+enum qFlags_e {
+    QFLAGS_NONE			= 0,
+    QFLAGS_FAST_READ		= _QFB( 1),
+    QFLAGS_HONOR_NODUMP		= _QFB( 2),
+    QFLAGS_STDOUT		= _QFB( 3),
+    QFLAGS_NO_OWNER		= _QFB( 4),
+    QFLAGS_WARN_LINKS		= _QFB( 5),
+    QFLAGS_NO_SUBDIRS		= _QFB( 6),
+    QFLAGS_NULSEP		= _QFB( 7),
+    QFLAGS_XDEV			= _QFB( 8),
+    QFLAGS_ABSPATHS		= _QFB( 9),
+    QFLAGS_TOTALS		= _QFB(10),
+    QFLAGS_INTERACTIVE		= _QFB(11),
+    QFLAGS_UNLINK		= _QFB(12),
+};
 
 /*@unchecked@*/
-static struct bsdtar bsdtar_storage = {
+static enum qFlags_e qFlags = QFLAGS_NONE;
+
+/*@unchecked@*/
+static struct bsdtar _bsdtar = {
     .progname = "rpmtar",	/* Need bsdtar->progname for bsdtar_warnc. */
     .fd = -1,		/* Mark as "unused" */
-    /* Default: preserve mod time on extract */
-    /* Default: Perform basic security checks. */
-    .extract_flags = ARCHIVE_EXTRACT_TIME | SECURITY,
-
 };
 
 /*==============================================================*/
@@ -477,7 +521,7 @@ enum {
     OPTION_NODUMP,
     OPTION_NO_SAME_OWNER,
     OPTION_NO_SAME_PERMISSIONS,
-    OPTION_NULL,
+    OPTION_NULSEP,
     OPTION_ONE_FILE_SYSTEM,
     OPTION_POSIX,
     OPTION_STRIP_COMPONENTS,
@@ -496,9 +540,6 @@ set_mode(struct bsdtar *bsdtar, char opt)
 		opt, bsdtar->mode);
     bsdtar->mode = opt;
 }
-
-/*@unchecked@*/
-static char option_o = 0;
 
 static void bsdtarArgCallback(/*@unused@*/ poptContext con,
                 /*@unused@*/ enum poptCallbackReason reason,
@@ -542,21 +583,7 @@ fprintf(stderr, "--> bsdtarArgCallback(%p, %d, %p, %p, %p) val %d\n", con, reaso
 	if (exclude(bsdtar, arg))
 	    bsdtar_errc(bsdtar, 1, 0, _("Couldn't exclude %s"), arg);
 	break;
-    case OPTION_FORMAT: /* GNU tar, others */
-	bsdtar->create_format = arg;
-	break;
-    case 'f': /* SUSv2 */
-	bsdtar->filename = arg;
-	break;
-    case OPTION_FAST_READ: /* GNU tar */
-	bsdtar->option_fast_read = 1;
-	break;
-    case 'H': /* BSD convention */
-	bsdtar->symlink_mode = 'H';
-	break;
-    case 'h': /* Linux Standards Base, gtar; synonym for -L */
-	bsdtar->symlink_mode = 'L';
-	break;
+#ifndef USE_POPT
     case 'I': /* GNU tar */
 	/*
 	 * TODO: Allow 'names' to come from an archive,
@@ -570,6 +597,7 @@ fprintf(stderr, "--> bsdtarArgCallback(%p, %d, %p, %p, %p) val %d\n", con, reaso
 	 */
 	bsdtar->names_from_file = arg;
 	break;
+#endif
     case OPTION_INCLUDE:
 	/*
 	 * Noone else has the @archive extension, so
@@ -593,22 +621,12 @@ fprintf(stderr, "--> bsdtarArgCallback(%p, %d, %p, %p, %p) val %d\n", con, reaso
 	exit(EXIT_FAILURE);
 #endif
 	break;
-    case 'k': /* GNU tar */
-	bsdtar->extract_flags |= ARCHIVE_EXTRACT_NO_OVERWRITE;
-	break;
-    case 'L': /* BSD convention */
-	bsdtar->symlink_mode = 'L';
-	break;
+#ifndef USE_POPT
     case 'l': /* SUSv2 and GNU tar beginning with 1.16 */
 	/* GNU tar 1.13  used -l for --one-file-system */
-	bsdtar->option_warn_links = 1;
+	qFlags |= QFLAGS_WARN_LINKS;
 	break;
-    case 'm': /* SUSv2 */
-	bsdtar->extract_flags &= ~ARCHIVE_EXTRACT_TIME;
-	break;
-    case 'n': /* GNU tar */
-	bsdtar->option_no_subdirs = 1;
-	break;
+#endif
     /*
      * Selecting files by time:
      *    --newer-?time='date' Only files newer than 'date'
@@ -636,30 +654,11 @@ fprintf(stderr, "--> bsdtarArgCallback(%p, %d, %p, %p, %p) val %d\n", con, reaso
 	bsdtar->newer_mtime_sec = st.st_mtime;
 	bsdtar->newer_mtime_nsec = ARCHIVE_STAT_MTIME_NANOS(&st);
     }	break;
-    case OPTION_NODUMP: /* star */
-	bsdtar->option_honor_nodump = 1;
-	break;
-    case OPTION_NO_SAME_OWNER: /* GNU tar */
-	bsdtar->extract_flags &= ~ARCHIVE_EXTRACT_OWNER;
-	break;
-    case OPTION_NO_SAME_PERMISSIONS: /* GNU tar */
-	bsdtar->extract_flags &= ~ARCHIVE_EXTRACT_PERM;
-	bsdtar->extract_flags &= ~ARCHIVE_EXTRACT_ACL;
-	bsdtar->extract_flags &= ~ARCHIVE_EXTRACT_XATTR;
-	bsdtar->extract_flags &= ~ARCHIVE_EXTRACT_FFLAGS;
-	break;
-    case OPTION_NULL: /* GNU tar */
-	bsdtar->option_null++;
-	break;
-    case 'O': /* GNU tar */
-	bsdtar->option_stdout = 1;
-	break;
+#ifndef USE_POPT
     case 'o': /* SUSv2 and GNU conflict here, but not fatally */
-	option_o = 1; /* Record it and resolve it later. */
+	aFlags |= QFLAGS_NO_OWNER;	/* Record it and resolve it later. */
 	break;
-    case OPTION_ONE_FILE_SYSTEM: /* GNU tar */
-	bsdtar->option_dont_traverse_mounts = 1;
-	break;
+#endif
 #if 0
     /*
      * The common BSD -P option is not necessary, since
@@ -672,14 +671,8 @@ fprintf(stderr, "--> bsdtarArgCallback(%p, %d, %p, %p, %p) val %d\n", con, reaso
 	break;
 #endif
     case 'P': /* GNU tar */
-	bsdtar->extract_flags &= ~SECURITY;
-	bsdtar->option_absolute_paths = 1;
-	break;
-    case 'p': /* GNU tar, star */
-	bsdtar->extract_flags |= ARCHIVE_EXTRACT_PERM;
-	bsdtar->extract_flags |= ARCHIVE_EXTRACT_ACL;
-	bsdtar->extract_flags |= ARCHIVE_EXTRACT_XATTR;
-	bsdtar->extract_flags |= ARCHIVE_EXTRACT_FFLAGS;
+	xFlags &= ~XFLAGS_SECURITY;
+	qFlags |= QFLAGS_ABSPATHS;
 	break;
     case OPTION_POSIX: /* GNU tar */
 	bsdtar->create_format = "pax";
@@ -687,22 +680,18 @@ fprintf(stderr, "--> bsdtarArgCallback(%p, %d, %p, %p, %p) val %d\n", con, reaso
     case 'r': /* SUSv2 */
 	set_mode(bsdtar, val);
 	break;
+#ifndef USE_POPT
     case OPTION_STRIP_COMPONENTS: /* GNU tar 1.15 */
 	bsdtar->strip_components = atoi(arg);
 	break;
-    case 'T': /* GNU tar */
-	bsdtar->names_from_file = arg;
-	break;
+#endif
     case 't': /* SUSv2 */
 	set_mode(bsdtar, val);
 	bsdtar->verbose++;
 	break;
-    case OPTION_TOTALS: /* GNU tar */
-	bsdtar->option_totals++;
-	break;
     case 'U': /* GNU tar */
-	bsdtar->extract_flags |= ARCHIVE_EXTRACT_UNLINK;
-	bsdtar->option_unlink_first = 1;
+	xFlags |= XFLAGS_UNLINK;
+	qFlags |= QFLAGS_UNLINK;
 	break;
     case 'u': /* SUSv2 */
 	set_mode(bsdtar, val);
@@ -723,9 +712,6 @@ fprintf(stderr, "--> bsdtarArgCallback(%p, %d, %p, %p, %p) val %d\n", con, reaso
     case 'W': /* Obscure, but useful GNU convention. */
 	break;
 #endif
-    case 'w': /* SUSv2 */
-	bsdtar->option_interactive = 1;
-	break;
     case 'X': /* GNU tar */
 	if (exclude_from_file(bsdtar, arg))
 	    bsdtar_errc(bsdtar, 1, 0,
@@ -766,9 +752,6 @@ fprintf(stderr, "--> bsdtarArgCallback(%p, %d, %p, %p, %p) val %d\n", con, reaso
 	exit(EXIT_FAILURE);
 #endif
 	break;
-    case OPTION_USE_COMPRESS_PROGRAM:
-	bsdtar->compress_program = arg;
-	break;
     default:
 	poptPrintUsage(con, stderr, 0);
 	exit(EXIT_FAILURE);
@@ -779,7 +762,7 @@ fprintf(stderr, "--> bsdtarArgCallback(%p, %d, %p, %p, %p) val %d\n", con, reaso
 static struct poptOption optionsTable[] = {
 /*@-type@*/ /* FIX: cast? */
  { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA | POPT_CBFLAG_CONTINUE,
-        bsdtarArgCallback, 0, (const char *)&bsdtar_storage, NULL },
+        bsdtarArgCallback, 0, (const char *)&_bsdtar, NULL },
 /*@=type@*/
 
   { "absolute-paths",'P',	POPT_ARG_NONE,	NULL, 'P',
@@ -796,11 +779,12 @@ static struct poptOption optionsTable[] = {
 	N_("Compress archive using bzip2"), NULL },
   { "cd",'C',			POPT_ARG_STRING,NULL, 'C',
 	N_("Change to DIR before processing remaining files"), N_("DIR") },
-  { "confirmation",'w',	 POPT_ARG_NONE|POPT_ARGFLAG_DOC_HIDDEN,	NULL, 'w',
+  { "confirmation",'w', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN, &qFlags, QFLAGS_INTERACTIVE,
 	N_("Interactive"), NULL },
   { "create",'c',		POPT_ARG_NONE,	NULL, 'c',
 	N_("Create a new archive"), NULL },
-  { "dereference",'L', 		POPT_ARG_NONE,  NULL, 'L',
+
+  { "dereference",'L', 	POPT_ARG_VAL,		&_bsdtar.symlink_mode, 'L',
 	N_("Follow symlinks; archive/dump the files they point to"), NULL },
   { "directory",'C', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN,	NULL, 'C',
 	N_("Change to DIR before processing remaining files"), N_("DIR") },
@@ -812,35 +796,35 @@ static struct poptOption optionsTable[] = {
 	N_("Extract files from an archive"), NULL },
   { "get",'x',	POPT_ARG_NONE|POPT_ARGFLAG_DOC_HIDDEN,	NULL, 'x',
 	N_("Extract files from an archive"), NULL },
-  { "fast-read",'\0',		POPT_ARG_NONE,	NULL, OPTION_FAST_READ,
+  { "fast-read",'\0',	POPT_BIT_SET,		&qFlags, QFLAGS_FAST_READ,
 	NULL, NULL },
-  { "file",'f',			POPT_ARG_STRING,NULL, 'f',
+  { "file",'f',		POPT_ARG_STRING,	&_bsdtar.filename, 0,
 	N_("Location of archive"), N_("FILE") },
-  { "files-from",'T',		POPT_ARG_STRING,NULL, 'T',
+  { "files-from",'T',	POPT_ARG_STRING,	&_bsdtar.names_from_file, 0,
 	N_("Get names to extract/create from FILE"), N_("FILE") },
-  { "format",'\0',		POPT_ARG_STRING,NULL, OPTION_FORMAT,
+  { "format",'\0',	POPT_ARG_STRING,	&_bsdtar.create_format, 0,
 	N_("Select archive format"), N_("{ustar|pax|cpio|shar}") },
   { "gunzip",'z',	POPT_ARG_NONE|POPT_ARGFLAG_DOC_HIDDEN,	NULL, 'z',
 	N_("Uncompress archive using gzip"), NULL },
-  { "gzip",'z',			POPT_ARG_NONE,	NULL, 'z',
+  { "gzip",'z',		POPT_ARG_NONE,		NULL, 'z',
 	N_("Compress archive using gzip"), NULL },
-  { NULL,'H',		POPT_ARG_NONE,	NULL, 'H',
+  { NULL,'H',		POPT_ARG_VAL,		&_bsdtar.symlink_mode, 'H',
 	NULL, NULL },
-  { NULL,'h',	POPT_ARG_NONE|POPT_ARGFLAG_DOC_HIDDEN,	NULL, 'h',
+  { NULL,'h', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_bsdtar.symlink_mode, 'L',
 	N_("Follow symlinks; archive/dump the files they point to"), NULL },
-  { NULL,'I',	POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN,	NULL, 'I',
+  { NULL,'I',POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN, &_bsdtar.names_from_file, 0,
 	N_("Get names to extract/create from FILE"), N_("FILE") },
-  { "include",'\0',		POPT_ARG_STRING,NULL, OPTION_INCLUDE,
+  { "include",'\0',	POPT_ARG_STRING,	NULL, OPTION_INCLUDE,
 	N_("Add files that match PATTERN"), N_("PATTERN") },
-  { "interactive",'w',		POPT_ARG_NONE,	NULL, 'w',
+  { "interactive",'w',	POPT_BIT_SET,		&qFlags, QFLAGS_INTERACTIVE,
 	N_("Interactive"), NULL },
-  { "keep-old-files",'k',	POPT_ARG_NONE,	NULL, 'k',
+  { "keep-old-files",'k', POPT_BIT_SET,		&xFlags, XFLAGS_NO_OVERWRITE,
 	N_("Keep (don't overwrite) existing files"), NULL },
-  { "check-links",'l',		POPT_ARG_NONE,	NULL, 'l',
+  { "check-links",'l',	POPT_BIT_SET,		&qFlags, QFLAGS_WARN_LINKS,
 	N_("Warn if not all links are included"), NULL },
   { "list",'t',			POPT_ARG_NONE,	NULL, 't',
 	N_("List the contents of an archive"), NULL },
-  { "modification-time",'m',	POPT_ARG_NONE,	NULL, 'm',
+  { "modification-time",'m', POPT_BIT_CLR,	&xFlags, XFLAGS_TIME,
 	N_("Don't restore modification times"), NULL },
   { "newer",'\0', 		POPT_ARG_STRING,NULL, OPTION_NEWER_CTIME,
 	NULL, N_("DATE") },
@@ -854,35 +838,35 @@ static struct poptOption optionsTable[] = {
 	NULL, N_("DATE") },
   { "newer-than",'\0', 		POPT_ARG_STRING,NULL, OPTION_NEWER_CTIME_THAN,
 	NULL, N_("DATE") },
-  { "nodump",'\0',		POPT_ARG_NONE,	NULL, OPTION_NODUMP,
+  { "nodump",'\0',	POPT_BIT_SET,		&qFlags, QFLAGS_HONOR_NODUMP,
 	N_("Skip files marked with nodump flag"), NULL },
-  { "norecurse",'n',	 POPT_ARG_NONE,	NULL, 'n',
+  { "norecurse",'n',	POPT_BIT_SET,		&qFlags, QFLAGS_NO_SUBDIRS,
 	N_("Avoid descending automatically in directories"), NULL },
-  { "no-recursion",'n',	 POPT_ARG_NONE|POPT_ARGFLAG_DOC_HIDDEN,	NULL, 'n',
+  { "no-recursion",'n',	POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,&qFlags, QFLAGS_NO_SUBDIRS,
 	N_("Avoid descending automatically in directories"), NULL },
-  { "no-same-owner",'\0', 	POPT_ARG_NONE,	NULL, OPTION_NO_SAME_OWNER,
+  { "no-same-owner",'\0', POPT_BIT_CLR,		&xFlags, XFLAGS_OWNER,
 	N_("Extract files as yourself"), NULL },
-  { "no-same-permissions",'\0',	POPT_ARG_NONE,	NULL, OPTION_NO_SAME_PERMISSIONS,
+  { "no-same-permissions",'\0',	POPT_BIT_CLR,	&xFlags, XFLAGS_ALLPERMS,
 	N_("Apply the user's umask when extracting permissions"), NULL },
-  { "null",'\0', 		POPT_ARG_NONE,	NULL, OPTION_NULL,
-	N_("-T reads null-terminated names, disable -C"), NULL },
-  { NULL,'o',	POPT_ARG_NONE|POPT_ARGFLAG_DOC_HIDDEN,	NULL, 'o',
+  { "null",'\0', 	POPT_BIT_SET,		&qFlags, QFLAGS_NULSEP,
+	N_("-T reads nul-terminated names, disable -C"), NULL },
+  { NULL,'o',	POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN, &qFlags, QFLAGS_NO_OWNER,
 	N_("Creating: same as --old-archive; Extracting: same as --no-same-owner"), NULL },
-  { "one-file-system",'\0', 	POPT_ARG_NONE,	NULL, OPTION_ONE_FILE_SYSTEM,
+  { "one-file-system",'\0',  POPT_BIT_SET,	&qFlags, QFLAGS_XDEV,
 	N_("Do not cross mount points"), NULL },
   { "posix",'\0', 		POPT_ARG_NONE,	NULL, OPTION_POSIX,
 	N_("Same as --format=pax"), NULL },
-  { "preserve-permissions",'p',	POPT_ARG_NONE|POPT_ARGFLAG_DOC_HIDDEN, NULL,'p',
+  { "preserve-permissions",'p',	POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN, &xFlags, XFLAGS_ALLPERMS,
 	N_("Restore permissions (including ACLs, owner, file flags)"), NULL },
   { "read-full-blocks",'B', 	POPT_ARG_NONE,	NULL, 'B',
 	N_("Reblock while reading (for 4.2BSD pipes)"), NULL },
-  { "same-permissions",'p',	POPT_ARG_NONE,	NULL, 'p',
+  { "same-permissions",'p', POPT_BIT_SET,	&xFlags, XFLAGS_ALLPERMS,
 	N_("Restore permissions (including ACLs, owner, file flags)"), NULL },
-  { "strip-components",'\0', 	POPT_ARG_STRING,NULL, OPTION_STRIP_COMPONENTS,
+  { "strip-components",'\0', POPT_ARG_INT,	&_bsdtar.strip_components, 0,
 	N_("Strip # leading components from file names on extraction"), N_("#") },
-  { "to-stdout",'O',		POPT_ARG_NONE,	NULL, 'O',
+  { "to-stdout",'O',	POPT_BIT_SET,		&qFlags, QFLAGS_STDOUT,
 	N_("Write entries to stdout, don't restore to disk"), NULL },
-  { "totals",'\0', 		POPT_ARG_NONE,	NULL, OPTION_TOTALS,
+  { "totals",'\0', 	POPT_BIT_SET,		&qFlags, QFLAGS_TOTALS,
 	N_("Print total bytes after processing the archive"), NULL },
   { "unlink",'U', 		POPT_ARG_NONE,	NULL, 'U',
 	N_("Remove file(s) & re-create; don't overwrite"), NULL },
@@ -890,7 +874,7 @@ static struct poptOption optionsTable[] = {
 	N_("Remove file(s) & re-create; don't overwrite"), NULL },
   { "update",'u',		POPT_ARG_NONE,	NULL, 'u',
 	N_("Only append files newer than copy in archive"), NULL },
-  { "use-compress-program",'\0',POPT_ARG_STRING,NULL, OPTION_USE_COMPRESS_PROGRAM,
+  { "use-compress-program",'\0',POPT_ARG_STRING, &_bsdtar.compress_program, 0,
 	N_("Filter archive through PROGRAM (must accept -d)"), N_("PROGRAM") },
   { "verbose",'v',		POPT_ARG_NONE,	NULL, 'v',
 	N_("Verbose"), NULL },
@@ -1021,7 +1005,7 @@ main(int argc, char **argv)
 	/*@modifies argc, *argv, fileSystem @*/
 {
     poptContext optCon;
-    struct bsdtar *bsdtar = &bsdtar_storage;
+    struct bsdtar *bsdtar = &_bsdtar;
     char buff[16];
     int rc;
     int xx;
@@ -1031,6 +1015,13 @@ main(int argc, char **argv)
 
     /* Rewrite traditional-style tar arguments, if used. */
     argv = rewrite_argv(bsdtar, &argc, argv, tar_opts);
+
+    /* Look up uid of current user. */
+    bsdtar->user_uid = geteuid();
+
+    /* Defaults for root user: --same-owner -p */
+    if (bsdtar->user_uid == 0)
+	xFlags |= (XFLAGS_OWNER | XFLAGS_ALLPERMS);
 
     optCon = poptGetContext(bsdtar->progname, argc, (const char **)argv, optionsTable, 0);
 
@@ -1058,13 +1049,19 @@ main(int argc, char **argv)
     }
 
     /* Check boolean options only permitted in certain modes. */
-    if (bsdtar->option_dont_traverse_mounts)
+    if (QF_ISSET(XDEV)) {
 	only_mode(bsdtar, "--one-file-system", "cru");
-    if (bsdtar->option_fast_read)
+	bsdtar->option_dont_traverse_mounts = 1;
+    }
+    if (QF_ISSET(FAST_READ)) {
 	only_mode(bsdtar, "--fast-read", "xt");
-    if (bsdtar->option_honor_nodump)
+	bsdtar->option_fast_read = 1;
+    }
+    if (QF_ISSET(HONOR_NODUMP)) {
 	only_mode(bsdtar, "--nodump", "cru");
-    if (option_o > 0) {
+	bsdtar->option_honor_nodump = 1;
+    }
+    if (QF_ISSET(NO_OWNER)) {
 	switch (bsdtar->mode) {
 	case 'c':
 	    /*
@@ -1072,26 +1069,35 @@ main(int argc, char **argv)
 	     * closest thing supported by libarchive.
 	     */
 	    bsdtar->create_format = "ustar";
+	    qFlags &= ~QFLAGS_NO_OWNER;
 	    /* TODO: bsdtar->create_format = "v7"; */
 	    break;
 	case 'x':
 	    /* POSIX-compatible behavior. */
 	    bsdtar->option_no_owner = 1;
-	    bsdtar->extract_flags &= ~ARCHIVE_EXTRACT_OWNER;
+	    xFlags &= ~XFLAGS_OWNER;
 	    break;
 	default:
 	    only_mode(bsdtar, "-o", "xc");
 	    break;
 	}
     }
-    if (bsdtar->option_no_subdirs)
+    if (QF_ISSET(NO_SUBDIRS)) {
 	only_mode(bsdtar, "-n", "cru");
-    if (bsdtar->option_stdout)
+	bsdtar->option_no_subdirs = 1;
+    }
+    if (QF_ISSET(STDOUT)) {
 	only_mode(bsdtar, "-O", "xt");
-    if (bsdtar->option_unlink_first)
+	bsdtar->option_stdout = 1;
+    }
+    if (QF_ISSET(UNLINK)) {
 	only_mode(bsdtar, "-U", "x");
-    if (bsdtar->option_warn_links)
+	bsdtar->option_unlink_first = 1;
+    }
+    if (QF_ISSET(WARN_LINKS)) {
 	only_mode(bsdtar, "--check-links", "cr");
+	bsdtar->option_warn_links = 1;
+    }
 
     /* Check other parameters only permitted in certain modes. */
     if (bsdtar->create_compression == 'Z' && bsdtar->mode == 'c') {
@@ -1114,16 +1120,17 @@ main(int argc, char **argv)
     if (bsdtar->strip_components != 0)
 	only_mode(bsdtar, "--strip-components", "xt");
 
-    /* Look up uid of current user. */
-    /* Defaults for root user: */
-    bsdtar->user_uid = geteuid();
-    if (bsdtar->user_uid == 0) {
-	bsdtar->extract_flags |= ARCHIVE_EXTRACT_OWNER;	/* --same-owner */
-	bsdtar->extract_flags |= ARCHIVE_EXTRACT_PERM;	/* -p */
-	bsdtar->extract_flags |= ARCHIVE_EXTRACT_ACL;
-	bsdtar->extract_flags |= ARCHIVE_EXTRACT_XATTR;
-	bsdtar->extract_flags |= ARCHIVE_EXTRACT_FFLAGS;
-    }
+    if (QF_ISSET(NULSEP))
+	bsdtar->option_null = 1;
+    if (QF_ISSET(ABSPATHS))
+	bsdtar->option_absolute_paths = 1;
+    if (QF_ISSET(TOTALS))
+	bsdtar->option_totals = 1;
+    if (QF_ISSET(INTERACTIVE))
+	bsdtar->option_interactive = 1;
+
+    /* Set the extract flags. */
+    bsdtar->extract_flags = _XFCLR(xFlags);
 
 #if defined(HAVE_NL_LANGINFO) && defined(HAVE_D_MD_ORDER)
     bsdtar->day_first = (*nl_langinfo(D_MD_ORDER) == 'd');
