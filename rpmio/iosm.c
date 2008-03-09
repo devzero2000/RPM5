@@ -717,9 +717,15 @@ fprintf(stderr, "\tcpio vectors set\n");
     }
     iosm->iter = mapInitIterator(fi, reverse);
 #if defined(_USE_RPMTS)
-    iter->ts = rpmtsLink(_ts, "mapIterator");
+    iosm->iter->ts = rpmtsLink(ts, "mapIterator");
     iosm->nofcontexts = (ts != NULL && rpmtsSELinuxEnabled(ts) == 1 &&
 	!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOCONTEXTS));
+#if defined(_USE_RPMSX)
+    /* XXX Set file contexts on non-packaged dirs iff selinux enabled. */
+    iosm->iter->sx = (!iosm->nofcontexts ? rpmtsREContext(ts) : NULL);
+#else
+    iosm->iter->sx = NULL;
+#endif
     iosm->nofdigests =
 	(ts != NULL && !(rpmtsFlags(ts) & RPMTRANS_FLAG_NOFDIGESTS))
 			? 0 : 1;
@@ -729,6 +735,7 @@ fprintf(stderr, "\tcpio vectors set\n");
 #undef _tsmask
 #else
     iosm->iter->ts = (void *)_ts;
+    iosm->iter->sx = NULL;
     iosm->nofcontexts = 1;
     iosm->nofdigests = 1;
     iosm->commit = 1;
@@ -792,10 +799,14 @@ fprintf(stderr, "--> iosmTeardown(%p)\n", iosm);
     iosm->lmtab = _free(iosm->lmtab);
 
 #if defined(_USE_RPMTS)
+#if defined(_USE_RPMSX)
+    iosm->iter->sx = rpmsxFree(sx);
+#endif
     (void) rpmswAdd(rpmtsOp(iosmGetTs(iosm), RPMTS_OP_DIGEST),
 			&iosm->op_digest);
     iosm->iter->ts = rpmtsFree(iter->ts);
 #else
+    iosm->iter->sx = NULL;
     iosm->iter->ts = NULL;
 #endif
     iosm->iter = mapFreeIterator(iosm->iter);
@@ -1473,14 +1484,6 @@ static int iosmMkdirs(/*@special@*/ /*@partial@*/ IOSM_t iosm)
     int dc = dnlCount(dnli);
     int rc = 0;
     int i;
-#if defined(_USE_RPMSX)
-#if defined(_USE_RPMTS)
-    /* XXX Set file contexts on non-packaged dirs iff selinux enabled. */
-    rpmsx sx = (!iosm->nofcontexts ? rpmtsREContext(iosmGetTs(iosm)) : NULL);
-#else
-    rpmsx sx = NULL;
-#endif
-#endif
 
     iosm->path = NULL;
 
@@ -1545,8 +1548,9 @@ static int iosmMkdirs(/*@special@*/ /*@partial@*/ IOSM_t iosm)
 #if defined(_USE_RPMSX)
 		    /* XXX FIXME? only new dir will have context set. */
 		    /* Get file security context from patterns. */
-		    if (sx != NULL) {
-			iosm->fcontext = rpmsxFContext(sx, iosm->path, st->st_mode);
+		    if (iosm->iter->sx != NULL) {
+			iosm->fcontext = rpmsxFContext(iosm->iter->sx,
+				iosm->path, st->st_mode);
 			rc = iosmNext(iosm, IOSM_LSETFCON);
 		    }
 #endif
@@ -1581,9 +1585,6 @@ static int iosmMkdirs(/*@special@*/ /*@partial@*/ IOSM_t iosm)
 /*@=compdef@*/
     }
     dnli = dnlFreeIterator(dnli);
-#if defined(_USE_RPMSX)
-    sx = rpmsxFree(sx);
-#endif
     /*@=observertrans =dependenttrans@*/
 
     iosm->path = path;

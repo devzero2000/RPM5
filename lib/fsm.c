@@ -130,10 +130,11 @@ static /*@null@*/ void * mapFreeIterator(/*@only@*//*@null@*/ void * p)
 {
     FSMI_t iter = p;
     if (iter) {
+	iter->fi = rpmfiUnlink(iter->fi, "mapIterator");
+	iter->sx = rpmsxFree(iter->sx);
 /*@-internalglobs@*/ /* XXX rpmswExit() */
 	iter->ts = rpmtsFree(iter->ts);
 /*@=internalglobs@*/
-	iter->fi = rpmfiUnlink(iter->fi, "mapIterator");
     }
     return _free(p);
 }
@@ -669,6 +670,8 @@ fprintf(stderr, "\tcpio vectors set\n");
     fsm->iter->ts = rpmtsLink(ts, "mapIterator");
     fsm->nofcontexts = (ts != NULL && rpmtsSELinuxEnabled(ts) == 1 &&
 	!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOCONTEXTS));
+    /* XXX Set file contexts on non-packaged dirs iff selinux enabled. */
+    fsm->iter->sx = (!fsm->nofcontexts ? rpmtsREContext(ts) : NULL);
     fsm->nofdigests =
 	(ts != NULL && !(rpmtsFlags(ts) & RPMTRANS_FLAG_NOFDIGESTS))
 			? 0 : 1;
@@ -728,6 +731,7 @@ fprintf(stderr, "--> fsmTeardown(%p)\n", fsm);
 			&fsm->op_digest);
 
     fsm->lmtab = _free(fsm->lmtab);
+    fsm->iter->sx = rpmsxFree(fsm->iter->sx);
     fsm->iter->ts = rpmtsFree(fsm->iter->ts);
     fsm->iter = mapFreeIterator(fsm->iter);
     if (fsm->cfd != NULL) {
@@ -1404,8 +1408,6 @@ static int fsmMkdirs(/*@special@*/ /*@partial@*/ IOSM_t fsm)
     int dc = dnlCount(dnli);
     int rc = 0;
     int i;
-    /* XXX Set file contexts on non-packaged dirs iff selinux enabled. */
-    rpmsx sx = (!fsm->nofcontexts ? rpmtsREContext(fsmGetTs(fsm)) : NULL);
 
     fsm->path = NULL;
 
@@ -1469,8 +1471,9 @@ static int fsmMkdirs(/*@special@*/ /*@partial@*/ IOSM_t fsm)
 		if (!rc) {
 		    /* XXX FIXME? only new dir will have context set. */
 		    /* Get file security context from patterns. */
-		    if (sx != NULL) {
-			fsm->fcontext = rpmsxFContext(sx, fsm->path, st->st_mode);
+		    if (fsm->iter->sx != NULL) {
+			fsm->fcontext = rpmsxFContext(fsm->iter->sx,
+				fsm->path, st->st_mode);
 			rc = fsmNext(fsm, IOSM_LSETFCON);
 		    }
 		    if (fsm->fcontext == NULL)
@@ -1504,7 +1507,6 @@ static int fsmMkdirs(/*@special@*/ /*@partial@*/ IOSM_t fsm)
 /*@=compdef@*/
     }
     dnli = dnlFreeIterator(dnli);
-    sx = rpmsxFree(sx);
     /*@=observertrans =dependenttrans@*/
 
     fsm->path = path;
