@@ -160,7 +160,7 @@ static /*@null@*/ void * mapFreeIterator(/*@only@*//*@null@*/ void * p)
  */
 static void *
 mapInitIterator(rpmfi fi, int reverse)
-	/*@modifies _ts, fi @*/
+	/*@modifies fi @*/
 {
     IOSMI_t iter = NULL;
 
@@ -188,11 +188,10 @@ static int mapNextIterator(/*@null@*/ void * a)
     int i = -1;
 
     if (iter) {
-	const rpmfi fi = iter->fi;
 	if (iter->reverse) {
 	    if (iter->i >= 0)	i = iter->i--;
 	} else {
-    	    if (iter->i < fi->fc)	i = iter->i++;
+    	    if (iter->i < (int) ((rpmfi)iter->fi)->fc)	i = iter->i++;
 	}
 	iter->isave = i;
     }
@@ -241,11 +240,13 @@ static int mapFind(/*@null@*/ IOSMI_t iter, const char * iosmPath)
     int ix = -1;
 
     if (iter) {
+/*@-onlytrans@*/
 	const rpmfi fi = iter->fi;
+/*@=onlytrans@*/
 #if !defined(_RPMFI_NOMETHODS)
-	int fc = rpmfiFC(fi);
+	size_t fc = rpmfiFC(fi);
 #else
-	int fc = (fi ? fi->fc : 0);
+	size_t fc = (fi ? fi->fc : 0);
 #endif
 	if (fi && fc > 0 && fi->apath && iosmPath && *iosmPath) {
 	    const char ** p = NULL;
@@ -294,7 +295,7 @@ static /*@null@*/ void * dnlFreeIterator(/*@only@*//*@null@*/ const void * a)
 static inline int dnlCount(/*@null@*/ const DNLI_t dnli)
 	/*@*/
 {
-    return (dnli ? dnli->fi->dc : 0);
+    return (int) (dnli ? dnli->fi->dc : 0);
 }
 
 /** \ingroup payload
@@ -328,7 +329,7 @@ void * dnlInitIterator(/*@special@*/ const IOSM_t iosm,
     dnli = xcalloc(1, sizeof(*dnli));
     dnli->fi = fi;
     dnli->reverse = reverse;
-    dnli->i = (reverse ? fi->dc : 0);
+    dnli->i = (int) (reverse ? fi->dc : 0);
 
     if (fi->dc) {
 	dnli->active = xcalloc(fi->dc, sizeof(*dnli->active));
@@ -338,7 +339,7 @@ void * dnlInitIterator(/*@special@*/ const IOSM_t iosm,
 	if ((fi = rpmfiInit(fi, 0)) != NULL)
 	while ((i = rpmfiNext(fi)) >= 0)
 #else
-	for (i = 0; i < fi->fc; i++)
+	for (i = 0; i < (int)fi->fc; i++)
 #endif
 	{
             if (!XFA_SKIPPING(fi->actions[i]))
@@ -350,10 +351,10 @@ void * dnlInitIterator(/*@special@*/ const IOSM_t iosm,
 	if ((fi = rpmfiInit(fi, 0)) != NULL)
 	while ((i = rpmfiNext(fi)) >= 0)
 #else
-	for (i = 0; i < fi->fc; i++)
+	for (i = 0; i < (int)fi->fc; i++)
 #endif
 	{
-	    int dil;
+	    uint32_t dil;
 	    size_t dnlen, bnlen;
 
 	    if (!S_ISDIR(fi->fmodes[i]))
@@ -363,10 +364,10 @@ void * dnlInitIterator(/*@special@*/ const IOSM_t iosm,
 	    dnlen = strlen(fi->dnl[dil]);
 	    bnlen = strlen(fi->bnl[i]);
 
-	    for (j = 0; j < fi->dc; j++) {
+	    for (j = 0; j < (int)fi->dc; j++) {
 		size_t jlen;
 
-		if (!dnli->active[j] || j == dil)
+		if (!dnli->active[j] || j == (int)dil)
 		    /*@innercontinue@*/ continue;
 		(void) urlPath(fi->dnl[j], &dnl);
 		jlen = strlen(dnl);
@@ -387,7 +388,7 @@ void * dnlInitIterator(/*@special@*/ const IOSM_t iosm,
 	/* Print only once per package. */
 	if (!reverse) {
 	    j = 0;
-	    for (i = 0; i < fi->dc; i++) {
+	    for (i = 0; i < (int)fi->dc; i++) {
 		if (!dnli->active[i]) continue;
 		if (j == 0) {
 		    j = 1;
@@ -423,9 +424,9 @@ const char * dnlNextIterator(/*@null@*/ DNLI_t dnli)
 	if (dnli->active)
 	do {
 	    i = (!dnli->reverse ? dnli->i++ : --dnli->i);
-	} while (i >= 0 && i < fi->dc && !dnli->active[i]);
+	} while (i >= 0 && i < (int)fi->dc && !dnli->active[i]);
 
-	if (i >= 0 && i < fi->dc)
+	if (i >= 0 && i < (int)fi->dc)
 	    dn = fi->dnl[i];
 	else
 	    i = -1;
@@ -486,7 +487,7 @@ static int saveHardLink(/*@special@*/ /*@partial@*/ IOSM_t iosm)
 	iosm->li = xcalloc(1, sizeof(*iosm->li));
 	iosm->li->next = NULL;
 	iosm->li->sb = *st;	/* structure assignment */
-	iosm->li->nlink = st->st_nlink;
+	iosm->li->nlink = (int) st->st_nlink;
 	iosm->li->linkIndex = iosm->ix;
 	iosm->li->createdPath = -1;
 
@@ -495,7 +496,7 @@ static int saveHardLink(/*@special@*/ /*@partial@*/ IOSM_t iosm)
 	iosm->li->nsuffix = xcalloc(st->st_nlink, sizeof(*iosm->li->nsuffix));
 
 	if (iosm->goal == IOSM_PKGBUILD)
-	    iosm->li->linksLeft = st->st_nlink;
+	    iosm->li->linksLeft = (int) st->st_nlink;
 	if (iosm->goal == IOSM_PKGINSTALL)
 	    iosm->li->linksLeft = 0;
 
@@ -518,7 +519,7 @@ static int saveHardLink(/*@special@*/ /*@partial@*/ IOSM_t iosm)
     if (iosm->goal != IOSM_PKGINSTALL)
 	return 0;
 
-    if (!(st->st_size || iosm->li->linksLeft == st->st_nlink))
+    if (!(st->st_size || iosm->li->linksLeft == (int) st->st_nlink))
 	return 1;
 
     /* Here come the bits, time to choose a non-skipped file name. */
@@ -596,7 +597,7 @@ static int arSetup(IOSM_t iosm, rpmfi fi)
 #else
     int i;
     if (fi != NULL)
-    for (i = 0; i < fi->fc; i++)
+    for (i = 0; i < (int)fi->fc; i++)
 #endif
     {
 #ifdef	NOTYET
@@ -629,7 +630,7 @@ static int arSetup(IOSM_t iosm, rpmfi fi)
     while (rpmfiNext(fi) >= 0)
 #else
     if (fi != NULL)
-    for (i = 0; i < fi->fc; i++)
+    for (i = 0; i < (int)fi->fc; i++)
 #endif
     {
 #ifdef	NOTYET
@@ -715,7 +716,9 @@ fprintf(stderr, "\tcpio vectors set\n");
 	pos = fdGetCpioPos(iosm->cfd);
 	fdSetCpioPos(iosm->cfd, 0);
     }
+/*@-mods@*/	/* WTF? */
     iosm->iter = mapInitIterator(fi, reverse);
+/*@=mods@*/
 #if defined(_USE_RPMTS)
     iosm->iter->ts = rpmtsLink(ts, "mapIterator");
     iosm->nofcontexts = (ts != NULL && rpmtsSELinuxEnabled(ts) == 1 &&
@@ -734,7 +737,9 @@ fprintf(stderr, "\tcpio vectors set\n");
 			iosm->goal != IOSM_PKGCOMMIT) ? 0 : 1);
 #undef _tsmask
 #else
+/*@-assignexpose -temptrans @*/
     iosm->iter->ts = (void *)_ts;
+/*@=assignexpose =temptrans @*/
     iosm->iter->sx = NULL;
     iosm->nofcontexts = 1;
     iosm->nofdigests = 1;
@@ -837,7 +842,7 @@ static int iosmMapFContext(IOSM_t iosm)
 	    int i = iosm->ix;
 
 	    /* Get file security context from package. */
-	    if (fi && i >= 0 && i < fi->fc)
+	    if (fi && i >= 0 && i < (int)fi->fc)
 		iosm->fcontext = (fi->fcontexts ? fi->fcontexts[i] : NULL);
 	}
 /*@=moduncon@*/
@@ -850,7 +855,7 @@ int iosmMapPath(IOSM_t iosm)
     rpmfi fi = iosmGetFi(iosm);	/* XXX const except for fstates */
     int teAdding = iosm->adding;
     int rc = 0;
-    int i;
+    int i = iosm->ix;
 
     iosm->osuffix = NULL;
     iosm->nsuffix = NULL;
@@ -858,8 +863,7 @@ int iosmMapPath(IOSM_t iosm)
     iosm->action = FA_UNKNOWN;
     iosm->mapFlags = fi->mapflags;
 
-    i = iosm->ix;
-    if (fi && i >= 0 && i < fi->fc) {
+    if (fi && i >= 0 && i < (int)fi->fc) {
 
 	iosm->astriplen = fi->astriplen;
 	iosm->action = (fi->actions ? fi->actions[i] : fi->action);
@@ -943,7 +947,7 @@ int iosmMapAttrs(IOSM_t iosm)
     rpmfi fi = iosmGetFi(iosm);
     int i = iosm->ix;
 
-    if (fi && i >= 0 && i < fi->fc) {
+    if (fi && i >= 0 && i < (int)fi->fc) {
 	mode_t perms = (S_ISDIR(st->st_mode) ? fi->dperms : fi->fperms);
 	mode_t finalMode = (fi->fmodes ? fi->fmodes[i] : perms);
 	dev_t finalRdev = (fi->frdevs ? fi->frdevs[i] : 0);
@@ -1032,7 +1036,7 @@ static int extractRegular(/*@special@*/ IOSM_t iosm)
 	/*@modifies iosm, fileSystem, internalState @*/
 {
     const struct stat * st = &iosm->sb;
-    int left = st->st_size;
+    size_t left = (size_t) st->st_size;
     int rc = 0;
     int xx;
 
@@ -1128,7 +1132,7 @@ static int writeFile(/*@special@*/ /*@partial@*/ IOSM_t iosm, int writeData)
     }
 
     if (iosm->mapFlags & IOSM_MAP_ABSOLUTE) {
-	int nb = strlen(iosm->dirName) + strlen(iosm->baseName) + sizeof(".");
+	size_t nb=strlen(iosm->dirName) + strlen(iosm->baseName) + sizeof(".");
 	char * t = alloca(nb);
 	*t = '\0';
 	iosm->path = t;
@@ -1199,13 +1203,12 @@ static int writeFile(/*@special@*/ /*@partial@*/ IOSM_t iosm, int writeData)
 
 #if defined(HAVE_MMAP)
 	if (mapped != (void *)-1) {
-	    xx = msync(mapped, nmapped, MS_ASYNC);
+/* XXX splint misses size_t 2nd arg. */
+/*@i@*/	    xx = msync(mapped, nmapped, MS_ASYNC);
 #if defined(HAVE_MADVISE) && defined(MADV_DONTNEED)
 	    xx = madvise(mapped, nmapped, MADV_DONTNEED);
 #endif
-/*@-noeffect@*/
 	    xx = munmap(mapped, nmapped);
-/*@=noeffect@*/
 	    iosm->rdbuf = rdbuf;
 	} else
 #endif
@@ -1433,7 +1436,7 @@ static int iosmRmdirs(/*@special@*/ /*@partial@*/ IOSM_t iosm)
 	char * te;
 
 	dc = dnlIndex(dnli);
-	if (iosm->dnlx[dc] < 1 || iosm->dnlx[dc] >= dnlen)
+	if (iosm->dnlx[dc] < 1 || (size_t)iosm->dnlx[dc] >= dnlen)
 	    continue;
 
 	/* Copy to avoid const on iosm->path. */
@@ -1483,7 +1486,7 @@ static int iosmMkdirs(/*@special@*/ /*@partial@*/ IOSM_t iosm)
     char * dn = iosm->rdbuf;
     int dc = dnlCount(dnli);
     int rc = 0;
-    int i;
+    size_t i;
 
     iosm->path = NULL;
 
@@ -1497,7 +1500,7 @@ static int iosmMkdirs(/*@special@*/ /*@partial@*/ IOSM_t iosm)
 
 	dc = dnlIndex(dnli);
 	if (dc < 0) continue;
-	iosm->dnlx[dc] = dnlen;
+	iosm->dnlx[dc] = (unsigned short) dnlen;
 	if (dnlen <= 1)
 	    continue;
 
@@ -2071,7 +2074,7 @@ assert(iosm->lpath != NULL);
 	    rpmfi fi = iosmGetFi(iosm);
 	    uint64_t archivePos = fdGetCpioPos(iosm->cfd);
 	    if (archivePos > fi->archivePos) {
-		fi->archivePos = archivePos;
+		fi->archivePos = (uint64_t) archivePos;
 #if defined(_USE_RPMTS)
 		(void) rpmtsNotify(iosmGetTs(iosm), fi->te,RPMCALLBACK_INST_PROGRESS,
 			fi->archivePos, fi->archiveSize);

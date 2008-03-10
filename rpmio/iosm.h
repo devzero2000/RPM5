@@ -223,7 +223,7 @@ struct iosm_s {
     size_t wrsize;		/*!< write: Buffer allocated size. */
     size_t wrlen;		/*!< write: Number of bytes requested.*/
     size_t wrnb;		/*!< write: Number of bytes returned. */
-/*@only@*/ /*@null@*/
+/*@only@*/ /*@relnull@*/
     IOSMI_t iter;		/*!< File iterator. */
     int ix;			/*!< Current file iterator index. */
 /*@only@*/ /*@relnull@*/
@@ -246,16 +246,16 @@ struct iosm_s {
     const char * suffix;	/*!< Current file suffix. */
     char sufbuf[64];	/* XXX eliminate */
 /*@only@*/ /*@null@*/
-    short * dnlx;		/*!< Last dirpath verified indexes. */
+    unsigned short * dnlx;	/*!< Last dirpath verified indexes. */
 /*@only@*/ /*@null@*/
     char * ldn;			/*!< Last dirpath verified. */
-    int ldnlen;			/*!< Last dirpath current length. */
-    int ldnalloc;		/*!< Last dirpath allocated length. */
+    size_t ldnlen;		/*!< Last dirpath current length. */
+    size_t ldnalloc;		/*!< Last dirpath allocated length. */
     int postpone;		/*!< Skip remaining stages? */
     int diskchecked;		/*!< Has stat(2) been performed? */
     int exists;			/*!< Does current file exist on disk? */
     int mkdirsdone;		/*!< Have "orphan" dirs been created? */
-    int astriplen;		/*!< Length of buildroot prefix. */
+    size_t astriplen;		/*!< Length of buildroot prefix. */
     int rc;			/*!< External file stage return code. */
     int commit;			/*!< Commit synchronously? */
     int repackaged;		/*!< Is payload repackaged? */
@@ -266,8 +266,8 @@ struct iosm_s {
     int nofdigests;		/*!< Disable file digests? */
     int nofcontexts;		/*!< Disable file conexts? */
     iosmMapFlags mapFlags;	/*!< Bit(s) to control mapping. */
-    int fdigestalgo;		/*!< Digest algorithm (~= PGPHASHALGO_MD5) */
-    int digestlen;		/*!< No. of bytes in binary digest (~= 16) */
+    uint32_t fdigestalgo;		/*!< Digest algorithm (~= PGPHASHALGO_MD5) */
+    uint32_t digestlen;		/*!< No. of bytes in binary digest (~= 16) */
 /*@shared@*/ /*@relnull@*/
     const char * dirName;	/*!< File directory name. */
 /*@shared@*/ /*@relnull@*/
@@ -279,7 +279,7 @@ struct iosm_s {
 /*@dependent@*/ /*@observer@*/ /*@null@*/
     const char * fcontext;	/*!< File security context (NULL disables). */
     
-    unsigned fflags;		/*!< File flags. */
+    uint32_t fflags;		/*!< File flags. */
     iosmFileAction action;	/*!< File disposition. */
     iosmFileStage goal;		/*!< Package state machine goal. */
     iosmFileStage stage;	/*!< External file stage. */
