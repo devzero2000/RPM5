@@ -356,7 +356,7 @@ static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     rpmTag tag = (rpmTag)0xffffffff;
-    int i;
+    uint32_t i;
     PyObject * o, * metao;
     int forceArray = 0;
     const struct headerSprintfExtension_s * ext = NULL;
@@ -629,7 +629,7 @@ Header hdrGetHeader(hdrObject * s)
 
 /**
  */
-PyObject * hdrLoad(PyObject * self, PyObject * args, PyObject * kwds)
+PyObject * hdrLoad(UNUSED(PyObject * self), PyObject * args, PyObject * kwds)
 {
     hdrObject * hdr;
     char * copy = NULL;
@@ -713,7 +713,8 @@ PyObject * rpmReadHeaders (FD_t fd)
 
 /**
  */
-PyObject * rpmHeaderFromFD(PyObject * self, PyObject * args, PyObject * kwds)
+PyObject * rpmHeaderFromFD(UNUSED(PyObject * self), PyObject * args,
+		PyObject * kwds)
 {
     FD_t fd;
     int fileno;
@@ -733,7 +734,8 @@ PyObject * rpmHeaderFromFD(PyObject * self, PyObject * args, PyObject * kwds)
 
 /**
  */
-PyObject * rpmHeaderFromFile(PyObject * self, PyObject * args, PyObject *kwds)
+PyObject * rpmHeaderFromFile(UNUSED(PyObject * self), PyObject * args,
+		PyObject *kwds)
 {
     char * filespec;
     FD_t fd;
@@ -759,7 +761,8 @@ PyObject * rpmHeaderFromFile(PyObject * self, PyObject * args, PyObject *kwds)
 /**
  */
 PyObject *
-rpmSingleHeaderFromFD(PyObject * self, PyObject * args, PyObject * kwds)
+rpmSingleHeaderFromFD(UNUSED(PyObject * self), PyObject * args,
+		PyObject * kwds)
 {
     FD_t fd;
     int fileno;
@@ -810,7 +813,8 @@ rpmSingleHeaderFromFD(PyObject * self, PyObject * args, PyObject * kwds)
 
 /**
  */
-PyObject * versionCompare (PyObject * self, PyObject * args, PyObject * kwds)
+PyObject * versionCompare (UNUSED(PyObject * self), PyObject * args,
+		PyObject * kwds)
 {
     hdrObject * h1, * h2;
     char * kwlist[] = {"version0", "version1", NULL};
@@ -822,7 +826,7 @@ PyObject * versionCompare (PyObject * self, PyObject * args, PyObject * kwds)
     return Py_BuildValue("i", hdr_compare(h1, h2));
 }
 
-PyObject * labelCompare (PyObject * self, PyObject * args)
+PyObject * labelCompare (UNUSED(PyObject * self), PyObject * args)
 {
     EVR_t A = memset(alloca(sizeof(*A)), 0, sizeof(*A));
     EVR_t B = memset(alloca(sizeof(*B)), 0, sizeof(*B));

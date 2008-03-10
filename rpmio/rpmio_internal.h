@@ -358,7 +358,7 @@ void fdPush(FD_t fd, FDIO_t io, void * fp, int fdno)
 	/*@modifies fd @*/
 {
     FDSANE(fd);
-    if (fd->nfps >= (sizeof(fd->fps)/sizeof(fd->fps[0]) - 1))
+    if (fd->nfps >= (int)(sizeof(fd->fps)/sizeof(fd->fps[0]) - 1))
 	return;
     fd->nfps++;
     fdSetIo(fd, io);
@@ -388,7 +388,7 @@ rpmop fdstat_op(/*@null@*/ FD_t fd, fdOpX opx)
 {
     rpmop op = NULL;
 
-    if (fd != NULL && fd->stats != NULL && opx >= 0 && opx < FDSTAT_MAX)
+    if (fd != NULL && fd->stats != NULL && (int)opx >= 0 && opx < FDSTAT_MAX)
         op = fd->stats->ops + opx;
     return op;
 }

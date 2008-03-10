@@ -28,7 +28,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * and GNU Library Public License along with this program;
- * if not, write to the Free Software Foundation, Inc., 
+ * if not, write to the Free Software Foundation, Inc.,
  * 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
  */
@@ -62,7 +62,7 @@ static int _debug = 0;
 
 /* Define the things normally in a header... */
 struct _sql_db_s;	typedef struct _sql_db_s	SQL_DB;
-struct _sql_dbcursor_s;	typedef struct _sql_dbcursor_s *SCP_t; 
+struct _sql_dbcursor_s;	typedef struct _sql_dbcursor_s *SCP_t;
 
 struct _sql_db_s {
     sqlite3 * db;		/* Database pointer */
@@ -128,7 +128,7 @@ static void enterChroot(dbiIndex dbi)
 	/*@globals sqlCwd, sqlInRoot, internalState @*/
 	/*@modifies sqlCwd, sqlInRoot, internalState @*/
 {
-    char * currDir = NULL; 
+    char * currDir = NULL;
     int xx;
 
     if ((dbi->dbi_root[0] == '/' && dbi->dbi_root[1] == '\0') || dbi->dbi_rpmdb->db_chrootDone || sqlInRoot)
@@ -221,7 +221,7 @@ if (!_debug) return;
 	dbg_scp(dbcursor);
 }
 
-/*@only@*/ 
+/*@only@*/
 static SCP_t scpResetKeys(/*@only@*/ SCP_t scp)
 	/*@modifies scp @*/
 {
@@ -243,7 +243,7 @@ dbg_scp(scp);
     return scp;
 }
 
-/*@only@*/ 
+/*@only@*/
 static SCP_t scpResetAv(/*@only@*/ SCP_t scp)
 	/*@modifies scp @*/
 {
@@ -282,7 +282,7 @@ dbg_scp(scp);
     return scp;
 }
 
-/*@only@*/ 
+/*@only@*/
 static SCP_t scpReset(/*@only@*/ SCP_t scp)
 	/*@modifies scp @*/
 {
@@ -365,7 +365,7 @@ static int sql_step(dbiIndex dbi, SCP_t scp)
     /* XXX scp->nc = need = scp->nalloc = 0 case forces + 1 here */
     if (!scp->ac && !need && !scp->nalloc)
 	need++;
-   
+
     if (scp->ac + need >= scp->nalloc) {
 	/* XXX +4 is bogus, was +1 */
 	scp->nalloc = 2 * scp->nalloc + need + 4;
@@ -482,7 +482,7 @@ assert(scp->ac <= scp->nalloc);
 	    /*@switchbreak@*/ break;
 	case SQLITE_ERROR:
 	    fprintf(stderr, "sqlite3_step: ERROR %d -- %s\n", rc, scp->cmd);
-	    fprintf(stderr, "              %s (%d)\n", 
+	    fprintf(stderr, "              %s (%d)\n",
 			sqlite3_errmsg(((SQL_DB*)dbi->dbi_db)->db), sqlite3_errcode(((SQL_DB*)dbi->dbi_db)->db));
 /*@-nullpass@*/
 	    fprintf(stderr, "              cwd '%s'\n", getcwd(NULL,0));
@@ -579,7 +579,8 @@ if (swapped == 1)
     return rc;
 }
 
-static int sql_bind_data(dbiIndex dbi, SCP_t scp, int pos, DBT * data)
+static int sql_bind_data(/*@unused@*/ UNUSED(dbiIndex dbi), SCP_t scp,
+		int pos, DBT * data)
 	/*@modifies scp @*/
 {
     int rc;
@@ -802,13 +803,13 @@ exit:
     return rc;
 }
 
-/**   
+/**
  * Close database cursor.
  * @param dbi           index database handle
  * @param dbcursor      database cursor
  * @param flags         (unused)
  * @return              0 on success
- */   
+ */
 static int sql_cclose (dbiIndex dbi, /*@only@*/ DBC * dbcursor,
 		unsigned int flags)
 	/*@globals fileSystem, internalState @*/
@@ -903,12 +904,12 @@ static int sql_open(rpmdb rpmdb, rpmTag rpmtag, /*@out@*/ dbiIndex * dbip)
 /*@-nestedextern -shadow @*/
     extern struct _dbiVec sqlitevec;
 /*@=nestedextern -shadow @*/
-   
+
     const char * urlfn = NULL;
     const char * root;
     const char * home;
     const char * dbhome;
-    const char * dbfile;  
+    const char * dbfile;
     const char * dbfname;
     const char * sql_errcode;
     mode_t umask_safed = 0002;
@@ -917,7 +918,7 @@ static int sql_open(rpmdb rpmdb, rpmTag rpmtag, /*@out@*/ dbiIndex * dbip)
     size_t len;
     int rc = 0;
     int xx;
-    
+
     if (dbip)
 	*dbip = NULL;
 
@@ -936,10 +937,10 @@ static int sql_open(rpmdb rpmdb, rpmTag rpmtag, /*@out@*/ dbiIndex * dbip)
      */
     root = rpmdb->db_root;
     home = rpmdb->db_home;
-    
+
     dbi->dbi_root = root;
     dbi->dbi_home = home;
-      
+
     dbfile = tagName(dbi->dbi_rpmtag);
 
 enterChroot(dbi);
@@ -960,7 +961,7 @@ enterChroot(dbi);
     }
 
     dbi->dbi_mode = O_RDWR;
-       
+
     /*
      * Either the root or directory components may be a URL. Concatenate,
      * convert the URL to a path, and add the name of the file.
@@ -970,11 +971,11 @@ enterChroot(dbi);
     /*@=mods@*/
     (void) urlPath(urlfn, &dbhome);
 
-    /* 
+    /*
      * Create the /var/lib/rpm directory if it doesn't exist (root only).
      */
     (void) rpmioMkpath(dbhome, 0755, getuid(), getgid());
-       
+
     if (dbi->dbi_eflags & DB_PRIVATE)
         dbfname = xstrdup(":memory:");
     else
@@ -985,7 +986,7 @@ enterChroot(dbi);
 
     /* Open the Database */
     sqldb = xcalloc(1, sizeof(*sqldb));
-       
+
     sql_errcode = NULL;
     if (dbi->dbi_perms)
         /* mask-out permission bits which are not requested (security) */
@@ -1023,14 +1024,14 @@ enterChroot(dbi);
     } else {
 	(void) sql_close(dbi, 0);
     }
- 
+
     urlfn = _free(urlfn);
     dbfname = _free(dbfname);
 
 /*@-usereleased@*/
 leaveChroot(dbi);
 /*@=usereleased@*/
-   
+
     return rc;
 }
 
@@ -1040,7 +1041,7 @@ leaveChroot(dbi);
  * @param flags         (unused)
  * @return              0 on success
  */
-static int sql_sync (dbiIndex dbi, unsigned int flags)
+static int sql_sync (dbiIndex dbi, /*@unused@*/ UNUSED(unsigned int flags))
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/
 {
@@ -1061,7 +1062,8 @@ leaveChroot(dbi);
  * @param flags		DB_WRITECURSOR or 0
  * @return		0 on success
  */
-static int sql_copen (dbiIndex dbi, /*@null@*/ DB_TXN * txnid,
+static int sql_copen (dbiIndex dbi,
+		/*@unused@*/ /*@null@*/ UNUSED(DB_TXN * txnid),
 		/*@out@*/ DBC ** dbcp, unsigned int flags)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies dbi, *txnid, *dbcp, fileSystem, internalState @*/
@@ -1085,14 +1087,14 @@ enterChroot(dbi);
 	/*@-kepttrans -nullstate @*/ (void) sql_cclose(dbi, dbcursor, 0); /*@=kepttrans =nullstate @*/
 
 leaveChroot(dbi);
-     
+
     return rc;
 }
 
 /**
  * Delete (key,data) pair(s) using db->del or dbcursor->c_del.
  * @param dbi           index database handle
- * @param dbcursor      database cursor (NULL will use db->del)   
+ * @param dbcursor      database cursor (NULL will use db->del)
  * @param key           delete key value/length/flags
  * @param data          delete data value/length/flags
  * @param flags         (unused)
@@ -1173,7 +1175,7 @@ fprintf(stderr, "\tcget(%s) scp %p rc %d flags %d av %p\n",
         if ( key->size == 0) {
 	    scp->all = 1;
 
-/* 
+/*
  * The only condition not dealt with is if there are multiple identical keys.  This can lead
  * to later iteration confusion.  (It may return the same value for the multiple keys.)
  */
@@ -1358,7 +1360,7 @@ leaveChroot(dbi);
 
 /**
  * Is database byte swapped?
- * @param dbi           index database handle   
+ * @param dbi           index database handle
  * @return              0 no
  */
 static int sql_byteswapped (dbiIndex dbi)
@@ -1416,9 +1418,10 @@ leaveChroot(dbi);
  * @param flags         DB_CREATE or 0
  * @return              0 on success
  */
-static int sql_associate (dbiIndex dbi, dbiIndex dbisecondary,
-		int (*callback) (DB *, const DBT *, const DBT *, DBT *),
-		unsigned int flags)
+static int sql_associate (/*@unused@*/ UNUSED(dbiIndex dbi),
+		/*@unused@*/ UNUSED(dbiIndex dbisecondary),
+    /*@unused@*/UNUSED(int (*callback) (DB *, const DBT *, const DBT *, DBT *)),
+		/*@unused@*/ UNUSED(unsigned int flags))
 	/*@*/
 {
 if (_debug)
@@ -1434,8 +1437,10 @@ fprintf(stderr, "*** sql_associate:\n");
  * @param flags         DB_JOIN_NOSORT or 0
  * @return              0 on success
  */
-static int sql_join (dbiIndex dbi, DBC ** curslist, /*@out@*/ DBC ** dbcp,
-		unsigned int flags)
+static int sql_join (/*@unused@*/ UNUSED(dbiIndex dbi),
+		/*@unused@*/ UNUSED(DBC ** curslist),
+		/*@unused@*/ /*@out@*/ UNUSED(DBC ** dbcp),
+		/*@unused@*/ UNUSED(unsigned int flags))
 	/*@globals fileSystem @*/
 	/*@modifies dbi, *dbcp, fileSystem @*/
 {
@@ -1445,15 +1450,17 @@ fprintf(stderr, "*** sql_join:\n");
 }
 
 /**
- * Duplicate a database cursor.   
+ * Duplicate a database cursor.
  * @param dbi           index database handle
  * @param dbcursor      database cursor
  * @retval dbcp         address of new database cursor
  * @param flags         DB_POSITION for same position, 0 for uninitialized
  * @return              0 on success
  */
-static int sql_cdup (dbiIndex dbi, DBC * dbcursor, /*@out@*/ DBC ** dbcp,
-		unsigned int flags)
+static int sql_cdup (/*@unused@*/ UNUSED(dbiIndex dbi),
+		/*@unused@*/ UNUSED(DBC * dbcursor),
+		/*@unused@*/ /*@out@*/ UNUSED(DBC ** dbcp),
+		/*@unused@*/ UNUSED(unsigned int flags))
 	/*@globals fileSystem @*/
 	/*@modifies dbi, *dbcp, fileSystem @*/
 {
@@ -1468,12 +1475,16 @@ fprintf(stderr, "*** sql_cdup:\n");
  * @param dbcursor      database cursor
  * @param key           secondary retrieve key value/length/flags
  * @param pkey          primary retrieve key value/length/flags
- * @param data          primary retrieve data value/length/flags 
+ * @param data          primary retrieve data value/length/flags
  * @param flags         DB_NEXT, DB_SET, or 0
  * @return              0 on success
  */
-static int sql_cpget (dbiIndex dbi, /*@null@*/ DBC * dbcursor,
-		DBT * key, DBT * pkey, DBT * data, unsigned int flags)
+static int sql_cpget (/*@unused@*/ UNUSED(dbiIndex dbi),
+		/*@unused@*/ /*@null@*/ UNUSED(DBC * dbcursor),
+		/*@unused@*/ UNUSED(DBT * key),
+		/*@unused@*/ UNUSED(DBT * pkey),
+		/*@unused@*/ UNUSED(DBT * data),
+		/*@unused@*/ UNUSED(unsigned int flags))
 	/*@globals fileSystem @*/
 	/*@modifies *dbcursor, *key, *pkey, *data, fileSystem @*/
 {
@@ -1490,9 +1501,10 @@ fprintf(stderr, "*** sql_cpget:\n");
  * @param flags         (unused)
  * @return              0 on success
  */
-static int sql_ccount (dbiIndex dbi, /*@unused@*/ DBC * dbcursor,   
-		/*@unused@*/ /*@out@*/ unsigned int * countp,
-		/*@unused@*/ unsigned int flags)
+static int sql_ccount (/*@unused@*/ UNUSED(dbiIndex dbi),
+		/*@unused@*/ UNUSED(DBC * dbcursor),
+		/*@unused@*/ /*@out@*/ UNUSED(unsigned int * countp),
+		/*@unused@*/ UNUSED(unsigned int flags))
 	/*@globals fileSystem @*/
 	/*@modifies *dbcursor, fileSystem @*/
 {
@@ -1507,7 +1519,7 @@ fprintf(stderr, "*** sql_ccount:\n");
  * @param flags         retrieve statistics that don't require traversal?
  * @return              0 on success
  */
-static int sql_stat (dbiIndex dbi, unsigned int flags)
+static int sql_stat (dbiIndex dbi, /*@unused@*/ UNUSED(unsigned int flags))
 	/*@globals fileSystem, internalState @*/
 	/*@modifies dbi, fileSystem, internalState @*/
 {
@@ -1562,15 +1574,15 @@ leaveChroot(dbi);
 /* db_bytewapped, stat */
 /*@observer@*/ /*@unchecked@*/
 struct _dbiVec sqlitevec = {
-    0, 0, 0, 
-    sql_open, 
+    0, 0, 0,
+    sql_open,
     sql_close,
-    sql_sync,  
-    sql_associate,  
+    sql_sync,
+    sql_associate,
     sql_join,
     sql_copen,
     sql_cclose,
-    sql_cdup, 
+    sql_cdup,
     sql_cdel,
     sql_cget,
     sql_cpget,

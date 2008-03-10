@@ -323,7 +323,7 @@ int rpmsxParse(rpmsx sx, const char * fn)
     char * context;
     char * anchored_regex;
     int items;
-    int len;
+    size_t len;
     int lineno;
     int pass;
     int regerr;

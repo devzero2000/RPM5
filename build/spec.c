@@ -203,7 +203,7 @@ Package freePackages(Package packages)
 
 /**
  */
-static inline /*@owned@*/ struct Source *findSource(Spec spec, int num, int flag)
+static inline /*@owned@*/ struct Source *findSource(Spec spec, uint32_t num, int flag)
 	/*@*/
 {
     struct Source *p;
@@ -307,7 +307,8 @@ int parseNoSource(Spec spec, const char * field, rpmTag tag)
     return RPMRC_OK;
 }
 
-int addSource(Spec spec, /*@unused@*/ Package pkg, const char *field, rpmTag tag)
+int addSource(Spec spec, /*@unused@*/ UNUSED(Package pkg),
+		const char *field, rpmTag tag)
 {
     struct Source *p;
     int flag = 0;

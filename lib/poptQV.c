@@ -38,10 +38,11 @@ int specedit = 0;
 #define POPT_QUERYBYSOURCEPKGID	-1040
 
 /* ========== Query/Verify/Signature source args */
-static void rpmQVSourceArgCallback( /*@unused@*/ poptContext con,
-		/*@unused@*/ enum poptCallbackReason reason,
-		const struct poptOption * opt, /*@unused@*/ const char * arg, 
-		/*@unused@*/ const void * data)
+static void rpmQVSourceArgCallback( /*@unused@*/ UNUSED(poptContext con),
+		/*@unused@*/ UNUSED(enum poptCallbackReason reason),
+		const struct poptOption * opt,
+		/*@unused@*/ UNUSED(const char * arg),
+		/*@unused@*/ UNUSED(const void * data))
 	/*@globals rpmQVKArgs @*/
 	/*@modifies rpmQVKArgs @*/
 {
@@ -65,11 +66,11 @@ static void rpmQVSourceArgCallback( /*@unused@*/ poptContext con,
     case 'f': qva->qva_source |= RPMQV_PATH; qva->qva_sourceCount++; break;
     case 'g': qva->qva_source |= RPMQV_GROUP; qva->qva_sourceCount++; break;
     case 'p': qva->qva_source |= RPMQV_RPM; qva->qva_sourceCount++; break;
-    case POPT_WHATNEEDS: qva->qva_source |= RPMQV_WHATNEEDS; 
+    case POPT_WHATNEEDS: qva->qva_source |= RPMQV_WHATNEEDS;
 				qva->qva_sourceCount++; break;
-    case POPT_WHATPROVIDES: qva->qva_source |= RPMQV_WHATPROVIDES; 
+    case POPT_WHATPROVIDES: qva->qva_source |= RPMQV_WHATPROVIDES;
 				qva->qva_sourceCount++; break;
-    case POPT_WHATREQUIRES: qva->qva_source |= RPMQV_WHATREQUIRES; 
+    case POPT_WHATREQUIRES: qva->qva_source |= RPMQV_WHATREQUIRES;
 				qva->qva_sourceCount++; break;
     case POPT_TRIGGEREDBY: qva->qva_source |= RPMQV_TRIGGEREDBY;
 				qva->qva_sourceCount++; break;
@@ -99,7 +100,7 @@ static void rpmQVSourceArgCallback( /*@unused@*/ poptContext con,
 	qva->qva_sourceCount++;
 	break;
     case POPT_QUERYBYNUMBER:
-	qva->qva_source |= RPMQV_DBOFFSET; 
+	qva->qva_source |= RPMQV_DBOFFSET;
 	qva->qva_sourceCount++;
 	break;
     }
@@ -111,7 +112,7 @@ static void rpmQVSourceArgCallback( /*@unused@*/ poptContext con,
 /*@unchecked@*/
 struct poptOption rpmQVSourcePoptTable[] = {
 /*@-type@*/ /* FIX: cast? */
- { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA, 
+ { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA,
 	rpmQVSourceArgCallback, 0, NULL, NULL },
 /*@=type@*/
  { "all", 'a', 0, NULL, 'a',
@@ -149,17 +150,17 @@ struct poptOption rpmQVSourcePoptTable[] = {
 	N_("query source metadata from spec file parse"), N_("<spec>") },
  { "tid", '\0', POPT_ARGFLAG_DOC_HIDDEN, NULL, POPT_QUERYBYTID,
 	N_("query/verify package(s) from install transaction"), "TID" },
- { "triggeredby", '\0', 0, NULL, POPT_TRIGGEREDBY, 
+ { "triggeredby", '\0', 0, NULL, POPT_TRIGGEREDBY,
 	N_("query the package(s) triggered by the package"), "PACKAGE" },
  { "verify", 'V', POPT_ARGFLAG_DOC_HIDDEN, NULL, 'V',
 	N_("rpm verify mode"), NULL },
- { "whatrequires", '\0', 0, NULL, POPT_WHATREQUIRES, 
+ { "whatrequires", '\0', 0, NULL, POPT_WHATREQUIRES,
 	N_("query/verify the package(s) which require a dependency"), "CAPABILITY" },
- { "whatneeds", '\0', POPT_ARGFLAG_DOC_HIDDEN, NULL, POPT_WHATNEEDS, 
+ { "whatneeds", '\0', POPT_ARGFLAG_DOC_HIDDEN, NULL, POPT_WHATNEEDS,
 	N_("query/verify the package(s) which require any contained provide"),
 	"CAPABILITY" },
 
- { "whatprovides", '\0', 0, NULL, POPT_WHATPROVIDES, 
+ { "whatprovides", '\0', 0, NULL, POPT_WHATPROVIDES,
 	N_("query/verify the package(s) which provide a dependency"), "CAPABILITY" },
 
  { "transaction", 'T', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN, &giFlags, (RPMGI_TSADD|RPMGI_TSORDER),
@@ -180,9 +181,9 @@ struct poptOption rpmQVSourcePoptTable[] = {
 /* ========== Query specific popt args */
 
 static void queryArgCallback(poptContext con,
-		/*@unused@*/enum poptCallbackReason reason,
-		const struct poptOption * opt, const char * arg, 
-		/*@unused@*/ const void * data)
+		/*@unused@*/ UNUSED(enum poptCallbackReason reason),
+		const struct poptOption * opt, const char * arg,
+		/*@unused@*/ UNUSED(const void * data))
 	/*@globals rpmQVKArgs @*/
 	/*@modifies con, rpmQVKArgs @*/
 {
@@ -266,7 +267,7 @@ static void queryArgCallback(poptContext con,
 /*@unchecked@*/
 struct poptOption rpmQueryPoptTable[] = {
 /*@-type@*/ /* FIX: cast? */
- { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA | POPT_CBFLAG_CONTINUE, 
+ { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA | POPT_CBFLAG_CONTINUE,
 	queryArgCallback, 0, NULL, NULL },
 /*@=type@*/
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmQVSourcePoptTable, 0,
@@ -305,7 +306,7 @@ struct poptOption rpmQueryPoptTable[] = {
         N_("skip %%readme files"), NULL },
 #endif
 
- { "qf", '\0', POPT_ARG_STRING | POPT_ARGFLAG_DOC_HIDDEN, 0, 
+ { "qf", '\0', POPT_ARG_STRING | POPT_ARGFLAG_DOC_HIDDEN, 0,
 	POPT_QUERYFORMAT, NULL, NULL },
  { "queryformat", '\0', POPT_ARG_STRING, 0, POPT_QUERYFORMAT,
 	N_("use the following query format"), N_("QUERYFORMAT") },
@@ -323,7 +324,7 @@ struct poptOption rpmQueryPoptTable[] = {
  */
 struct poptOption rpmVerifyPoptTable[] = {
 /*@-type@*/ /* FIX: cast? */
- { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA | POPT_CBFLAG_CONTINUE, 
+ { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA | POPT_CBFLAG_CONTINUE,
 	queryArgCallback, 0, NULL, NULL },
 /*@=type@*/
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmQVSourcePoptTable, 0,

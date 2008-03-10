@@ -48,10 +48,10 @@ static void argerror(const char * desc)
 
 /**
  */
-static void installArgCallback( /*@unused@*/ poptContext con,
-		/*@unused@*/ enum poptCallbackReason reason,
+static void installArgCallback(/*@unused@*/ UNUSED(poptContext con),
+		/*@unused@*/ UNUSED(enum poptCallbackReason reason),
 		const struct poptOption * opt, const char * arg,
-		/*@unused@*/ const void * data)
+		/*@unused@*/ UNUSED(const void * data))
 	/*@globals rpmIArgs, stderr, fileSystem @*/
 	/*@modifies rpmIArgs, stderr, fileSystem @*/
 {

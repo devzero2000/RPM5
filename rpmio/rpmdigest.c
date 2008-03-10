@@ -19,7 +19,7 @@ enum dcFlags_e {
 
 struct rpmdc_s {
     enum dcFlags_e flags;
-    int algo;			/*!< default digest algorithm. */
+    uint32_t algo;		/*!< default digest algorithm. */
     const char * digest;
     size_t digestlen;
     const char * fn;
@@ -70,7 +70,7 @@ assert(dc->digest != NULL);
 
 static int rpmdcFiniFile(rpmdc dc)
 {
-    int algo = (dc->manifests ? dc->algos->vals[dc->ix] : dc->algo);
+    uint32_t algo = (dc->manifests ? dc->algos->vals[dc->ix] : dc->algo);
     int rc = 0;
     int xx;
 
@@ -118,7 +118,7 @@ static int rpmdcCalcFile(rpmdc dc)
 
 static int rpmdcInitFile(rpmdc dc)
 {
-    int algo = (dc->manifests ? dc->algos->vals[dc->ix] : dc->algo);
+    uint32_t algo = (dc->manifests ? dc->algos->vals[dc->ix] : dc->algo);
     int rc = 0;
 
     /* XXX Stat(2) to insure files only? */

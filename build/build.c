@@ -110,7 +110,7 @@ rpmRC doScript(Spec spec, int what, const char *name, StringBuf sb, int test)
     pid_t child;
     int status;
     rpmRC rc;
-    int i;
+    size_t i;
     
     switch (what) {
     case RPMBUILD_PREP:

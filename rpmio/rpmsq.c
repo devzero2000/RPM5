@@ -372,8 +372,8 @@ static struct rpmsig_s {
 };
 /*@=fullinitblock@*/
 
-void rpmsqAction(int signum,
-		/*@unused@*/ void * info, /*@unused@*/ void * context)
+void rpmsqAction(int signum, /*@unused@*/ UNUSED(void * info),
+		/*@unused@*/ UNUSED(void * context))
 {
     int save = errno;
     rpmsig tbl;

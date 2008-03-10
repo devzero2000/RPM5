@@ -84,7 +84,7 @@ static void freeItems(void) {
     nitems = 0;
 }
 
-static int ftsCachePrint(/*@unused@*/ rpmts ts, FILE * fp)
+static int ftsCachePrint(/*@unused@*/ UNUSED(rpmts ts), FILE * fp)
 {
     int rc = 0;
     int i;
@@ -433,7 +433,7 @@ static rpmRC cacheWalkPathFilter(rpmgi gi)
  * @param ts		transaction set
  * @param argv		package names to match
  */
-static void initGlobs(/*@unused@*/ rpmts ts, const char ** argv)
+static void initGlobs(/*@unused@*/ UNUSED(rpmts ts), const char ** argv)
 {
     char buf[BUFSIZ];
     int i;

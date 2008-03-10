@@ -97,7 +97,7 @@ static int tagLoadIndex(headerTagTableEntry ** ipp, size_t * np,
 	ip[n] = tte;
 	n++;
     }
-assert(n == rpmTagTableSize);
+assert(n == (size_t)rpmTagTableSize);
 /*@=dependenttrans@*/ /*@=observertrans@*/ /*@=castexpose@*/ /*@=mods@*/ /*@=modobserver@*/
 
     if (n > 1)

@@ -310,7 +310,7 @@ static int sugcmp(const void * a, const void * b)
     return strcmp(astr, bstr);
 }
 
-int rpmtsSolve(rpmts ts, rpmds ds, /*@unused@*/ const void * data)
+int rpmtsSolve(rpmts ts, rpmds ds, /*@unused@*/ UNUSED(const void * data))
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     const char * errstr;
@@ -689,12 +689,12 @@ rpmts rpmtsFree(rpmts ts)
     return NULL;
 }
 
-rpmVSFlags rpmtsVSFlags(/*@unused@*/rpmts ts)
+rpmVSFlags rpmtsVSFlags(/*@unused@*/ UNUSED(rpmts ts))
 {
     return pgpDigVSFlags;
 }
 
-rpmVSFlags rpmtsSetVSFlags(/*@unused@*/rpmts ts, rpmVSFlags vsflags)
+rpmVSFlags rpmtsSetVSFlags(/*@unused@*/ UNUSED(rpmts ts), rpmVSFlags vsflags)
 {
     rpmVSFlags ovsflags;
     ovsflags = pgpDigVSFlags;
@@ -914,7 +914,7 @@ int rpmtsInitDSI(const rpmts ts)
     rpmDiskSpaceInfo dsi;
     struct stat sb;
     int rc;
-    int i;
+    size_t i;
 
     if (rpmtsFilterFlags(ts) & RPMPROB_FILTER_DISKSPACE)
 	return 0;
@@ -1011,8 +1011,8 @@ int rpmtsInitDSI(const rpmts ts)
 #if !defined(ST_RDONLY)
 #define	ST_RDONLY	1
 #endif
-	rpmlog(RPMLOG_DEBUG, "%5d 0x%08x %8u %12ld %12ld %s %s\n",
-		i, (unsigned) dsi->dev, (unsigned) dsi->f_bsize,
+	rpmlog(RPMLOG_DEBUG, "%5u 0x%08x %8u %12ld %12ld %s %s\n",
+		(unsigned)i, (unsigned) dsi->dev, (unsigned) dsi->f_bsize,
 		(signed long) dsi->f_bavail, (signed long) dsi->f_favail,
 		((dsi->f_flag & ST_RDONLY) ? "ro" : "rw"),
 		ts->filesystems[i]);
@@ -1076,7 +1076,7 @@ void rpmtsCheckDSIProblems(const rpmts ts, const rpmte te)
     rpmDiskSpaceInfo dsi;
     rpmps ps;
     int fc;
-    int i;
+    size_t i;
 
     if (ts->filesystems == NULL || ts->filesystemCount == 0)
 	return;

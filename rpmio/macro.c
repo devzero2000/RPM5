@@ -1189,7 +1189,7 @@ doFoo(MacroBuf mb, int negate, const char * f, size_t fn,
     }
     if (fn > 5 && STREQ("patch", f, 5) && xisdigit((int)f[5])) {
 	/* Skip leading zeros */
-	for (c = 5; c < fn-1 && f[c] == '0' && xisdigit((int)f[c+1]);)
+	for (c = 5; c < (int)(fn-1) && f[c] == '0' && xisdigit((int)f[c+1]);)
 	    c++;
 	b = buf;
 	be = stpncpy( stpcpy(b, "%patch -P "), f+c, fn-c);
@@ -1960,7 +1960,8 @@ int rpmGlob(const char * patterns, int * argcPtr, const char *** argvPtr)
     const char * t;
 #endif
     size_t maxb, nb;
-    int i, j;
+    size_t i;
+    int j;
     int rc;
 
     rc = XpoptParseArgvString(patterns, &ac, &av);
@@ -2073,8 +2074,8 @@ exit:
     if (rc || argvPtr == NULL) {
 /*@-dependenttrans -unqualifiedtrans@*/
 	if (argv != NULL)
-	for (i = 0; i < argc; i++)
-	    argv[i] = _free(argv[i]);
+	for (j = 0; j < argc; j++)
+	    argv[j] = _free(argv[j]);
 	argv = _free(argv);
 /*@=dependenttrans =unqualifiedtrans@*/
     }
@@ -2402,10 +2403,10 @@ int isCompressed(const char * file, rpmCompressedMagic * compressed)
 	return 1;
     }
     nb = Fread(magic, sizeof(magic[0]), sizeof(magic), fd);
-    if (nb < 0) {
+    if (nb < (ssize_t)0) {
 	rpmlog(RPMLOG_ERR, _("File %s: %s\n"), file, Fstrerror(fd));
 	rc = 1;
-    } else if (nb < sizeof(magic)) {
+    } else if (nb < (ssize_t)sizeof(magic)) {
 	rpmlog(RPMLOG_ERR, _("File %s is smaller than %u bytes\n"),
 		file, (unsigned)sizeof(magic));
 	rc = 0;

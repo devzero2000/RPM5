@@ -181,7 +181,7 @@ static int parseBits(const char * s, const tokenBits tokbits,
 		break;
 	    for (tb = tokbits; tb->name; tb++) {
 		if (tb->name != NULL &&
-		    strlen(tb->name) == (se-s) && !strncmp(tb->name, s, (se-s)))
+		    strlen(tb->name) == (size_t)(se-s) && !strncmp(tb->name, s, (se-s)))
 		    /*@innerbreak@*/ break;
 	    }
 	    if (tb->name == NULL)

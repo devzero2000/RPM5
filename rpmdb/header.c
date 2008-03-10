@@ -1928,7 +1928,8 @@ HeaderIterator headerInit(Header h)
     return hi;
 }
 
-int headerNext(HeaderIterator hi, HE_t he, /*@unused@*/ unsigned int flags)
+int headerNext(HeaderIterator hi, HE_t he,
+		/*@unused@*/ UNUSED(unsigned int flags))
 {
     void * sw;
     Header h = hi->h;
@@ -2063,7 +2064,7 @@ fprintf(stderr, "==> %s(%u) %u %p[%u] free %u rc %d\n", name, (unsigned) he->tag
     return rc;
 }
 
-int headerPut(Header h, HE_t he, /*@unused@*/ unsigned int flags)
+int headerPut(Header h, HE_t he, /*@unused@*/ UNUSED(unsigned int flags))
 {
     int rc;
 
@@ -2082,13 +2083,13 @@ int headerPut(Header h, HE_t he, /*@unused@*/ unsigned int flags)
     return rc;
 }
 
-int headerDel(Header h, HE_t he, /*@unused@*/ unsigned int flags)
+int headerDel(Header h, HE_t he, /*@unused@*/ UNUSED(unsigned int flags))
 	/*@modifies h @*/
 {
     return headerRemoveEntry(h, he->tag);
 }
 
-int headerMod(Header h, HE_t he, /*@unused@*/ unsigned int flags)
+int headerMod(Header h, HE_t he, /*@unused@*/ UNUSED(unsigned int flags))
 	/*@modifies h @*/
 {
 

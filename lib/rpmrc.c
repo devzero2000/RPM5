@@ -874,7 +874,8 @@ static int rpmReadRC(void)
     return rc;
 }
 
-int rpmReadConfigFiles(/*@unused@*/ const char * file, const char * target)
+int rpmReadConfigFiles(/*@unused@*/ UNUSED(const char * file),
+		const char * target)
 	/*@globals configTarget @*/
 	/*@modifies configTarget @*/
 {

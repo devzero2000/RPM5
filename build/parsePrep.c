@@ -71,7 +71,7 @@ static rpmRC checkOwners(const char * urlfn)
  * @return		expanded %patch macro (NULL on error)
  */
 /*@observer@*/
-static char *doPatch(Spec spec, int c, int strip, const char *db,
+static char *doPatch(Spec spec, uint32_t c, int strip, const char *db,
 		     int reverse, int removeEmpties, int fuzz, const char *subdir)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/
@@ -201,7 +201,7 @@ static char *doPatch(Spec spec, int c, int strip, const char *db,
  * @return		expanded %setup macro (NULL on error)
  */
 /*@observer@*/
-static const char *doUntar(Spec spec, int c, int quietly)
+static const char *doUntar(Spec spec, uint32_t c, int quietly)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/
 {
@@ -399,7 +399,7 @@ static int doSetupMacro(Spec spec, char *line)
     if (arg < -1) {
 	rpmlog(RPMLOG_ERR, _("line %d: Bad %%setup option %s: %s\n"),
 		 spec->lineNum,
-		 poptBadOption(optCon, POPT_BADOPTION_NOALIAS), 
+		 poptBadOption(optCon, POPT_BADOPTION_NOALIAS),
 		 poptStrerror(arg));
 	before = freeStringBuf(before);
 	after = freeStringBuf(after);
@@ -420,7 +420,7 @@ static int doSetupMacro(Spec spec, char *line)
 	spec->buildSubdir = xstrdup(buf);
     }
     addMacro(spec->macros, "buildsubdir", NULL, spec->buildSubdir, RMIL_SPEC);
-    
+
     optCon = poptFreeContext(optCon);
     argv = _free(argv);
 
@@ -433,7 +433,7 @@ static int doSetupMacro(Spec spec, char *line)
 	appendLineStringBuf(spec->prep, buf);
 	buildDirURL = _free(buildDirURL);
     }
-    
+
     /* delete any old sources */
     if (!leaveDirs) {
 	sprintf(buf, "rm -rf '%s'", spec->buildSubdir);
@@ -474,7 +474,7 @@ static int doSetupMacro(Spec spec, char *line)
 	    return RPMRC_FAIL;
 	appendLineStringBuf(spec->prep, chptr);
     }
-    
+
     appendStringBuf(spec->prep, getStringBuf(after));
     after = freeStringBuf(after);
 
@@ -492,7 +492,7 @@ static int doSetupMacro(Spec spec, char *line)
 	    fix = _free(fix);
 	}
     }
-    
+
     return 0;
 }
 
@@ -529,7 +529,7 @@ static rpmRC doPatchMacro(Spec spec, char *line)
     } else {
 	strcpy(buf, line);
     }
-    
+
     /*@-internalglobs@*/	/* FIX: strtok has state */
     for (bp = buf; (s = strtok(bp, " \t\n")) != NULL;) {
 	if (bp) {	/* remove 1st token (%patch) */
@@ -632,12 +632,13 @@ static rpmRC doPatchMacro(Spec spec, char *line)
 	    return RPMRC_FAIL;
 	appendLineStringBuf(spec->prep, s);
     }
-    
+
     return RPMRC_OK;
 }
 #endif
 
-static void prepFetchVerbose(/*@unused@*/ struct Source *sp, /*@unused@*/ struct stat *st)
+static void prepFetchVerbose(/*@unused@*/ UNUSED(struct Source *sp),
+		/*@unused@*/ UNUSED(struct stat *st))
 	/*@*/
 {
 #if defined(RPM_VENDOR_OPENPKG) /* explicit-source-fetch-cli-option */
@@ -717,7 +718,7 @@ static int prepFetch(Spec spec)
 
     ec = 0;
     for (sp = spec->sources; sp != NULL; sp = sp->next) {
-    
+
 #if defined(RPM_VENDOR_OPENPKG) /* splitted-source-directory */
 	Smacro = "%{?_specdir}/";
 #endif
@@ -842,9 +843,9 @@ int parsePrep(Spec spec, int verify)
 	if (rc)
 	    return RPMRC_FAIL;
     }
-    
+
     sb = newStringBuf();
-    
+
     while ((nextPart = isPart(spec)) == PART_NONE) {
 	/* Need to expand the macros inline.  That way we  */
 	/* can give good line number information on error. */

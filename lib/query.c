@@ -235,7 +235,7 @@ int showQueryPackage(QVA_t qva, rpmts ts, Header h)
 	    size_t dlen = 0;
 	    const unsigned char * digest = rpmfiDigest(fi, &dalgo, &dlen);
 	    char * p;
-	    int j;
+	    size_t j;
 	    fdigest = p = xcalloc(1, ((2 * dlen) + 1));
 	    for (j = 0; j < dlen; j++) {
 		unsigned k = *digest++;

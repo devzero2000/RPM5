@@ -181,7 +181,7 @@ const char * pgpMpiHex(const uint8_t *p)
  * @return		0 on success
  */
 static
-int pgpMpiSet(const char * pre, int lbits,
+int pgpMpiSet(const char * pre, unsigned int lbits,
 		/*@out@*/ void * dest, const uint8_t * p,
 		/*@null@*/ const uint8_t * pend)
 	/*@globals fileSystem @*/

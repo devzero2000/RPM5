@@ -58,7 +58,8 @@ static int strntoul(const char *str, /*@out@*/char **endptr, int base, int num)
  * @retval *fnp		long file/link name
  * @return		0 on success
  */
-static int tarHeaderReadName(void * _iosm, int len, /*@out@*/ const char ** fnp)
+static int tarHeaderReadName(void * _iosm, size_t len,
+		/*@out@*/ const char ** fnp)
 	/*@globals internalState @*/
 	/*@modifies _iosm, *fnp, internalState @*/
 {
@@ -351,7 +352,7 @@ int tarHeaderWrite(void * _iosm, struct stat * st)
     char * t;
     dev_t dev;
     int rc = 0;
-    int len;
+    size_t len;
 
 if (_tar_debug)
 fprintf(stderr, "    tarHeaderWrite(%p, %p)\n", iosm, st);

@@ -721,6 +721,11 @@ static inline const char *rcsid(const char *p) { \
 }
 #endif
 
+#if !defined(__GNUC__) && !defined(__attribute__)
+#define __attribute__(x) 
+#endif
+#define UNUSED(x) x __attribute__((__unused__))
+
 #if defined(HAVE_SEARCH_H)
 #include <search.h>
 #endif

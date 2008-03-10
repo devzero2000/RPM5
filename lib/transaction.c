@@ -657,7 +657,8 @@ static void skipFiles(const rpmts ts, rpmfi fi)
     char ** netsharedPaths = NULL;
     const char ** languages;
     const char * dn, * bn;
-    int dnlen, bnlen, ix;
+    size_t dnlen, bnlen;
+    int ix;
     const char * s;
     int * drc;
     char * dff;
@@ -1524,7 +1525,7 @@ rpmlog(RPMLOG_DEBUG, D_("computing file dispositions\n"));
 	     * Take care not to mark files as replaced in packages that will
 	     * have been removed before we will get here.
 	     */
-	    for (j = 0; j < dbiIndexSetCount(matches[i]); j++) {
+	    for (j = 0; j < (int)dbiIndexSetCount(matches[i]); j++) {
 		int ro;
 		ro = dbiIndexRecordOffset(matches[i], j);
 		knownBad = 0;
@@ -1843,7 +1844,7 @@ assert(psm != NULL);
 
 	    /* If linked element install failed, then don't erase. */
 	    if (p->linkFailed == 0) {
-		if ((xx != rpmpsmStage(psm, PSM_PKGERASE)) != 0) {
+		if ((xx = rpmpsmStage(psm, PSM_PKGERASE)) != 0) {
 		    ourrc++;
 		} else
 		    p->done = 1;

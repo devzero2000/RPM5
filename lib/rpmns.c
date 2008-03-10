@@ -262,7 +262,8 @@ static inline unsigned char nibble(char c)
 }
 
 rpmRC rpmnsProbeSignature(void * _ts, const char * fn, const char * sigfn,
-		const char * pubfn, const char * pubid, /*@unused@*/ int flags)
+		const char * pubfn, const char * pubid,
+		/*@unused@*/ UNUSED(int flags))
 {
     rpmts ts = _ts;
     pgpDig dig = rpmtsDig(ts);
@@ -347,7 +348,7 @@ fprintf(stderr, "==> pgpFindPubkey ret %d\n", xx);
 	size_t ns = strlen(pubid);
 	const char * s;
 	char * t;
-	int i;
+	size_t i;
 
 	/* At least 8 hex digits please. */
 	for (i = 0, s = pubid; *s && isxdigit(*s); s++, i++)

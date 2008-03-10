@@ -146,7 +146,7 @@ static int alGetSize(/*@null@*/ const rpmal al)
 }
 #endif
 
-static inline alNum alKey2Num(/*@unused@*/ /*@null@*/ const rpmal al,
+static inline alNum alKey2Num(/*@unused@*/ /*@null@*/ UNUSED(const rpmal al),
 		/*@null@*/ alKey pkgKey)
 	/*@*/
 {
@@ -157,7 +157,7 @@ static inline alNum alKey2Num(/*@unused@*/ /*@null@*/ const rpmal al,
     /*@=nullret =temptrans =retalias @*/
 }
 
-static inline alKey alNum2Key(/*@unused@*/ /*@null@*/ const rpmal al,
+static inline alKey alNum2Key(/*@unused@*/ /*@null@*/ UNUSED(const rpmal al),
 		/*@null@*/ alNum pkgNum)
 	/*@*/
 {

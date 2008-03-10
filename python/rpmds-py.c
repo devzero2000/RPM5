@@ -192,7 +192,8 @@ rpmds_Next(rpmdsObject * s)
 
 /*@null@*/
 static PyObject *
-rpmds_Debug(/*@unused@*/ rpmdsObject * s, PyObject * args, PyObject * kwds)
+rpmds_Debug(/*@unused@*/ UNUSED(rpmdsObject * s), PyObject * args,
+		PyObject * kwds)
 	/*@globals _Py_NoneStruct @*/
 	/*@modifies _Py_NoneStruct @*/
 {
@@ -399,7 +400,7 @@ rpmds_Search(rpmdsObject * s, PyObject * args, PyObject * kwds)
 }
 
 static PyObject *
-rpmds_Cpuinfo(rpmdsObject * s)
+rpmds_Cpuinfo(UNUSED(rpmdsObject * s))
 	/*@*/
 {
     rpmds ds = NULL;
@@ -412,7 +413,7 @@ rpmds_Cpuinfo(rpmdsObject * s)
 }
 
 static PyObject *
-rpmds_Rpmlib(rpmdsObject * s)
+rpmds_Rpmlib(UNUSED(rpmdsObject * s))
 	/*@*/
 {
     rpmds ds = NULL;
@@ -425,7 +426,7 @@ rpmds_Rpmlib(rpmdsObject * s)
 }
 
 static PyObject *
-rpmds_Sysinfo(rpmdsObject * s)
+rpmds_Sysinfo(UNUSED(rpmdsObject * s))
 	/*@*/
 {
     rpmPRCO PRCO = rpmdsNewPRCO(NULL);
@@ -441,7 +442,7 @@ rpmds_Sysinfo(rpmdsObject * s)
 }
 
 static PyObject *
-rpmds_Getconf(rpmdsObject * s)
+rpmds_Getconf(UNUSED(rpmdsObject * s))
 	/*@*/
 {
     rpmds ds = NULL;
@@ -454,7 +455,7 @@ rpmds_Getconf(rpmdsObject * s)
 }
 
 static PyObject *
-rpmds_Ldconfig(rpmdsObject * s)
+rpmds_Ldconfig(UNUSED(rpmdsObject * s))
 	/*@*/
 {
     rpmPRCO PRCO = rpmdsNewPRCO(NULL);
@@ -470,7 +471,7 @@ rpmds_Ldconfig(rpmdsObject * s)
 }
 
 static PyObject *
-rpmds_Uname(rpmdsObject * s)
+rpmds_Uname(UNUSED(rpmdsObject * s))
 	/*@*/
 {
     rpmds ds = NULL;
@@ -596,7 +597,7 @@ rpmds_dealloc(rpmdsObject * s)
 }
 
 static int
-rpmds_print(rpmdsObject * s, FILE * fp, /*@unused@*/ int flags)
+rpmds_print(rpmdsObject * s, FILE * fp, /*@unused@*/ UNUSED(int flags))
 	/*@globals fileSystem @*/
 	/*@modifies s, fp, fileSystem @*/
 {
@@ -807,7 +808,7 @@ rpmds_Wrap(rpmds ds)
 
 
 rpmdsObject *
-rpmds_Single(/*@unused@*/ PyObject * s, PyObject * args, PyObject * kwds)
+rpmds_Single(/*@unused@*/ UNUSED(PyObject * s), PyObject * args, PyObject * kwds)
 {
     PyObject * to = NULL;
     rpmTag tagN = RPMTAG_PROVIDENAME;

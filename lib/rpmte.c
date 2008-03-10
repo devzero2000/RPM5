@@ -119,7 +119,7 @@ assert(he->p.str != NULL);
     if (he->p.ui8p != NULL) {
 	static const char hex[] = "0123456789abcdef";
 	char * t;
-	int i;
+	uint32_t i;
 
 	p->pkgid = t = xmalloc((2*he->c) + 1);
 	for (i = 0 ; i < he->c; i++) {
@@ -584,7 +584,7 @@ void rpmteColorDS(rpmte te, rpmTag tag)
 	    if (mydt != deptype)
 		/*@innercontinue@*/ continue;
 	    ix &= 0x00ffffff;
-assert (ix < Count);
+assert ((int)ix < Count);
 	    colors[ix] |= val;
 	    refs[ix]++;
 	}
@@ -629,7 +629,7 @@ assert(he->p.str != NULL);
     if (xx && he->p.ui8p != NULL) {
 	static const char hex[] = "0123456789abcdef";
 	char * t;
-	int i;
+	uint32_t i;
 
 	blinkPkgid = t = xmalloc((2*he->c) + 1);
 	for (i = 0 ; i < he->c; i++) {

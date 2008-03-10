@@ -273,7 +273,7 @@ static void timeCheck(int tc, Header h)
     uint32_t currentTime = time(NULL);
     uint32_t * mtime;
     int xx;
-    int i;
+    size_t i;
 
     he->tag = RPMTAG_FILEMTIMES;
     xx = headerGet(h, he, 0);
@@ -343,7 +343,7 @@ static rpmRC parseForVerify(char * buf, FileList fl)
     } else
 	return RPMRC_OK;
 
-    for (pe = p; (pe-p) < strlen(name); pe++)
+    for (pe = p; (size_t)(pe-p) < strlen(name); pe++)
 	*pe = ' ';
 
     SKIPSPACE(pe);
@@ -430,7 +430,7 @@ static rpmRC parseForDev(char * buf, FileList fl)
     if ((p = strstr(buf, (name = "%dev"))) == NULL)
 	return RPMRC_OK;
 
-    for (pe = p; (pe-p) < strlen(name); pe++)
+    for (pe = p; (size_t)(pe-p) < strlen(name); pe++)
 	*pe = ' ';
     SKIPSPACE(pe);
 
@@ -473,7 +473,7 @@ static rpmRC parseForDev(char * buf, FileList fl)
     if (*pe == '\0') {
 	fl->devmajor = atoi(p);
 	/*@-unsignedcompare @*/	/* LCL: ge is ok */
-	if (!(fl->devmajor >= 0 && fl->devmajor < 256)) {
+	if (!((int)fl->devmajor >= 0 && (int)fl->devmajor < 256)) {
 	    errstr = "devmajor";
 	    goto exit;
 	}
@@ -539,7 +539,7 @@ static rpmRC parseForAttr(char * buf, FileList fl)
     } else
 	return RPMRC_OK;
 
-    for (pe = p; (pe-p) < strlen(name); pe++)
+    for (pe = p; (size_t)(pe-p) < strlen(name); pe++)
 	*pe = ' ';
 
     SKIPSPACE(pe);
@@ -661,7 +661,7 @@ static rpmRC parseForConfig(char * buf, FileList fl)
     fl->currentFlags |= RPMFILE_CONFIG;
 
     /* Erase "%config" token. */
-    for (pe = p; (pe-p) < strlen(name); pe++)
+    for (pe = p; (size_t)(pe-p) < strlen(name); pe++)
 	*pe = ' ';
     SKIPSPACE(pe);
     if (*pe != '(')
@@ -730,7 +730,7 @@ static rpmRC parseForLang(char * buf, FileList fl)
 
   while ((p = strstr(buf, (name = "%lang"))) != NULL) {
 
-    for (pe = p; (pe-p) < strlen(name); pe++)
+    for (pe = p; (size_t)(pe-p) < strlen(name); pe++)
 	*pe = ' ';
     SKIPSPACE(pe);
 
@@ -888,8 +888,8 @@ VFA_t virtualFileAttributes[] = {
  * @retval *fileName	file name
  * @return		RPMRC_OK on success
  */
-static rpmRC parseForSimple(/*@unused@*/Spec spec, Package pkg, char * buf,
-			  FileList fl, /*@out@*/ const char ** fileName)
+static rpmRC parseForSimple(/*@unused@*/ UNUSED(Spec spec), Package pkg,
+		char * buf, FileList fl, /*@out@*/ const char ** fileName)
 	/*@globals rpmGlobalMacroContext, h_errno @*/
 	/*@modifies buf, fl->processingFailed, *fileName,
 		fl->currentFlags,
@@ -2120,7 +2120,7 @@ exit:
  * @param fileURL
  * @return		RPMRC_OK on success
  */
-static rpmRC processBinaryFile(/*@unused@*/ Package pkg, FileList fl,
+static rpmRC processBinaryFile(/*@unused@*/ UNUSED(Package pkg), FileList fl,
 		const char * fileURL)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies *fl, fl->processingFailed,
@@ -2497,7 +2497,7 @@ int initSourceHeader(Spec spec, StringBuf *sfp)
     struct Source *srcPtr;
     static rpmTag classTag = 0xffffffff;
     int xx;
-    int i;
+    size_t i;
 
     if (classTag == 0xffffffff)
 	classTag = tagValue("Class");

@@ -155,7 +155,8 @@ rpmfi_InitD(rpmfiObject * s)
 
 /*@null@*/
 static PyObject *
-rpmfi_Debug(/*@unused@*/ rpmfiObject * s, PyObject * args, PyObject * kwds)
+rpmfi_Debug(/*@unused@*/ UNUSED(rpmfiObject * s), PyObject * args,
+		PyObject * kwds)
 	/*@globals _Py_NoneStruct @*/
 	/*@modifies _Py_NoneStruct @*/
 {
@@ -267,7 +268,7 @@ rpmfi_MD5(rpmfiObject * s)
     const unsigned char * digest;
     const char * fdigest;
     char * t;
-    int i;
+    size_t i;
 
     digest = rpmfiDigest(s->fi, &dalgo, &dlen);
     if (digest == NULL || dlen == 0)
@@ -420,7 +421,7 @@ rpmfi_dealloc(/*@only@*/ /*@null@*/ rpmfiObject * s)
 }
 
 static int
-rpmfi_print(rpmfiObject * s, FILE * fp, /*@unused@*/ int flags)
+rpmfi_print(rpmfiObject * s, FILE * fp, /*@unused@*/ UNUSED(int flags))
 	/*@globals fileSystem @*/
 	/*@modifies s, fp, fileSystem @*/
 {
@@ -644,7 +645,7 @@ hdr_fiFromHeader(PyObject * s, PyObject * args, PyObject * kwds)
 
     if (to != NULL) {
 	tagN = tagNumFromPyObject(to);
-	if (tagN == -1) {
+	if (tagN == (rpmTag)-1) {
 	    PyErr_SetString(PyExc_KeyError, "unknown header tag");
 	    return NULL;
 	}

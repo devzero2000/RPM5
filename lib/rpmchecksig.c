@@ -36,7 +36,7 @@ int _print_pkts = 0;
  */
 static int manageFile(/*@out@*/ FD_t *fdp,
 		/*@null@*/ /*@out@*/ const char **fnp,
-		int flags, /*@unused@*/ int rc)
+		int flags, /*@unused@*/ UNUSED(int rc))
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies *fdp, *fnp, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
@@ -109,7 +109,7 @@ static int copyFile(FD_t *sfdp, const char **sfnp,
 
     while ((count = Fread(buf, sizeof(buf[0]), sizeof(buf), *sfdp)) > 0)
     {
-	if (Fwrite(buf, sizeof(buf[0]), count, *tfdp) != count) {
+	if (Fwrite(buf, sizeof(buf[0]), count, *tfdp) != (size_t)count) {
 	    rpmlog(RPMLOG_ERR, _("%s: Fwrite failed: %s\n"), *tfnp,
 		Fstrerror(*tfdp));
 	    goto exit;
@@ -701,7 +701,7 @@ exit:
  * @return		0 on success
  */
 static int rpmcliImportPubkeys(const rpmts ts,
-		/*@unused@*/ QVA_t qva,
+		/*@unused@*/ UNUSED(QVA_t qva),
 		/*@null@*/ const char ** argv)
 	/*@globals RPMVERSION, rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState @*/

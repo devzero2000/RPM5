@@ -167,9 +167,9 @@ void rpmioConfigured(void)
 /**
  */
 static void rpmioAllArgCallback(poptContext con,
-                /*@unused@*/ enum poptCallbackReason reason,
+                /*@unused@*/ UNUSED(enum poptCallbackReason reason),
                 const struct poptOption * opt, const char * arg,
-                /*@unused@*/ const void * data)
+                /*@unused@*/ UNUSED(const void * data))
 	/*@globals pgpImplVecs,
  		rpmCLIMacroContext, rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState @*/

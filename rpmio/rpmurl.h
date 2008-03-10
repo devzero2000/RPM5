@@ -20,7 +20,7 @@ typedef enum urltype_e {
     URL_IS_HKP		= 6	/*!< hkp://... */
 } urltype;
 
-#define	URLMAGIC	0xd00b1ed0
+#define	URLMAGIC	0xd00b1ed0U
 #define	URLSANE(u)	assert(u && u->magic == URLMAGIC)
 
 typedef /*@abstract@*/ /*@refcounted@*/ struct urlinfo_s * urlinfo;
@@ -88,7 +88,7 @@ typedef enum {
 #define	RPMURL_SERVER_OPTIONSDONE	( 1 << 8)
 
 #define	RPMURL_SERVER_HASDAV	(RPMURL_SERVER_HASDAVCLASS1|RPMURL_SERVER_HASDAVCLASS2|RPMURL_SERVER_HASDAVEXEC)
-    int magic;
+    unsigned magic;
 };
 
 #ifdef __cplusplus

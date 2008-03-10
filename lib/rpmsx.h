@@ -55,7 +55,7 @@ struct rpmsxp_s {
 struct rpmsxs_s {
 /*@only@*/ /*@relnull@*/
     const char * stem;
-    int len;
+    size_t len;
 };
 
 /**

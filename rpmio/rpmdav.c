@@ -740,9 +740,9 @@ static void *fetch_destroy_list(/*@only@*/ struct fetch_resource_s *res)
 #endif
 
 #if WITH_NEON_MIN_VERSION >= 0x002600
-static void *fetch_create_item(/*@unused@*/ void *userdata, /*@unused@*/ const ne_uri *uri)
+static void *fetch_create_item(/*@unused@*/ UNUSED(void *userdata), /*@unused@*/ UNUSED(const ne_uri *uri))
 #else
-static void *fetch_create_item(/*@unused@*/ void *userdata, /*@unused@*/ const char *uri)
+static void *fetch_create_item(/*@unused@*/ UNUSED(void *userdata), /*@unused@*/ UNUSED(const char *uri))
 #endif
         /*@*/
 {
@@ -778,7 +778,7 @@ static const struct ne_xml_idmap fetch_idmap[] = {
 
 static int fetch_startelm(void *userdata, int parent,
 		const char *nspace, const char *name,
-		/*@unused@*/ const char **atts)
+		/*@unused@*/ UNUSED(const char **atts))
 	/*@*/
 {
     ne_propfind_handler *pfh = userdata;
@@ -1441,7 +1441,7 @@ assert(fd->req != NULL);
 #endif
 
     /* HACK: stupid error impedence matching. */
-    rc = (xx == 0 ? count : -1);
+    rc = (xx == 0 ? (ssize_t)count : -1);
 
 if (_dav_debug < 0)
 fprintf(stderr, "*** davWrite(%p,%p,0x%x) rc 0x%x\n", cookie, buf, (unsigned)count, (unsigned)rc);
@@ -1453,7 +1453,7 @@ hexdump(buf, count);
     return rc;
 }
 
-int davSeek(void * cookie, /*@unused@*/ _libio_pos_t pos, int whence)
+int davSeek(void * cookie, /*@unused@*/ UNUSED(_libio_pos_t pos), int whence)
 {
 if (_dav_debug < 0)
 fprintf(stderr, "*** davSeek(%p,pos,%d)\n", cookie, whence);

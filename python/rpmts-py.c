@@ -1703,7 +1703,8 @@ PyTypeObject rpmts_Type = {
  */
 /* XXX: This should use the same code as rpmts_init */
 rpmtsObject *
-rpmts_Create(/*@unused@*/ PyObject * self, PyObject * args, PyObject * kwds)
+rpmts_Create(/*@unused@*/ UNUSED(PyObject * self), PyObject * args,
+		PyObject * kwds)
 {
     rpmtsObject * o;
     char * rootDir = "/";

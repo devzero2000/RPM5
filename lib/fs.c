@@ -280,8 +280,9 @@ int rpmGetFilesystemList(const char *** listptr, uint32_t * num)
     return 0;
 }
 
-int rpmGetFilesystemUsage(const char ** fileList, uint32_t * fssizes, int numFiles,
-			  uint64_t ** usagesPtr, /*@unused@*/ int flags)
+int rpmGetFilesystemUsage(const char ** fileList, uint32_t * fssizes,
+		int numFiles, uint64_t ** usagesPtr,
+		/*@unused@*/ UNUSED(int flags))
 {
     uint64_t * usages;
     int i, len, j;
@@ -349,7 +350,7 @@ int rpmGetFilesystemUsage(const char ** fileList, uint32_t * fssizes, int numFil
 		    *chptr-- = '\0';
 	    }
 
-	    if (lastDev != sb.st_dev) {
+	    if (lastDev != (int)sb.st_dev) {
 		for (j = 0; j < numFilesystems; j++)
 		    if (filesystems && filesystems[j].dev == sb.st_dev)
 			/*@innerbreak@*/ break;

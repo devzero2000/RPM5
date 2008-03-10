@@ -64,7 +64,8 @@
 
 /*@null@*/
 static PyObject *
-rpmte_Debug(/*@unused@*/ rpmteObject * s, PyObject * args, PyObject * kwds)
+rpmte_Debug(/*@unused@*/ UNUSED(rpmteObject * s), PyObject * args,
+		PyObject * kwds)
 	/*@globals _Py_NoneStruct @*/
 	/*@modifies _Py_NoneStruct @*/
 {
@@ -276,7 +277,7 @@ rpmte_DS(rpmteObject * s, PyObject * args, PyObject * kwds)
 	return NULL;
 
     tag = tagNumFromPyObject(TagN);
-    if (tag == -1) {
+    if (tag == (rpmTag)-1) {
 	PyErr_SetString(PyExc_TypeError, "unknown tag type");
 	return NULL;
     }
@@ -304,7 +305,7 @@ rpmte_FI(rpmteObject * s, PyObject * args, PyObject * kwds)
 	return NULL;
 
     tag = tagNumFromPyObject(TagN);
-    if (tag == -1) {
+    if (tag == (rpmTag)-1) {
 	PyErr_SetString(PyExc_TypeError, "unknown tag type");
 	return NULL;
     }
@@ -395,7 +396,7 @@ static struct PyMethodDef rpmte_methods[] = {
 /* ---------- */
 
 static int
-rpmte_print(rpmteObject * s, FILE * fp, /*@unused@*/ int flags)
+rpmte_print(rpmteObject * s, FILE * fp, /*@unused@*/ UNUSED(int flags))
 	/*@globals fileSystem @*/
 	/*@modifies fp, fileSystem @*/
 {

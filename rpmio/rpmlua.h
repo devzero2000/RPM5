@@ -16,8 +16,8 @@ struct rpmlua_s {
     lua_State *L;
     int pushsize;
     int storeprint;
-    int printbufsize;
-    int printbufused;
+    size_t printbufsize;
+    size_t printbufused;
 /*@relnull@*/
     char *printbuf;
 };

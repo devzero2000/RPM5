@@ -255,7 +255,7 @@ int pgpPrtSubType(const uint8_t * h, size_t hlen, pgpSigType sigtype)
 {
     const uint8_t * p = h;
     unsigned plen;
-    int i;
+    unsigned i;
 
     while (hlen > 0) {
 	i = pgpLen(p, &plen);
@@ -641,7 +641,8 @@ static const uint8_t * pgpPrtPubkeyParams(const pgpPkt pp, uint8_t pubkey_algo,
     return p;
 }
 
-static const uint8_t * pgpPrtSeckeyParams(const pgpPkt pp, /*@unused@*/ uint8_t pubkey_algo,
+static const uint8_t * pgpPrtSeckeyParams(const pgpPkt pp,
+		/*@unused@*/ UNUSED(uint8_t pubkey_algo),
 		/*@returned@*/ const uint8_t *p)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
@@ -979,7 +980,7 @@ int pgpPrtPkt(const uint8_t * pkt, size_t pleft)
 	break;
     }
 
-    return (rc ? -1 : pp->pktlen);
+    return (rc ? -1 : (int)pp->pktlen);
 }
 
 /*@unchecked@*/
@@ -1087,7 +1088,7 @@ pgpDig pgpDigFree(pgpDig dig)
     return NULL;
 }
 
-pgpDig pgpDigNew(/*@unused@*/ pgpVSFlags vsflags)
+pgpDig pgpDigNew(/*@unused@*/ UNUSED(pgpVSFlags vsflags))
 {
     pgpDig dig = xcalloc(1, sizeof(*dig));
     dig->vsflags = pgpDigVSFlags;

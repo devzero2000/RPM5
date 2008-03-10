@@ -49,7 +49,7 @@ static int pgpStashKeyid(pgpDig dig)
     pgpDigParams sigp = pgpGetSignature(dig);
     const void * sig = pgpGetSig(dig);
     unsigned int keyid;
-    int i;
+    unsigned int i;
 
     if (sig == NULL || dig == NULL || sigp == NULL)
 	return 0;

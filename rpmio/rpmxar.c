@@ -245,7 +245,7 @@ assert(xar != NULL);
 
     rc = xar->bsize - xar->bx;
     if (rc > 0) {
-	if (count < rc) rc = count;
+	if (count < (size_t)rc) rc = count;
 assert(xar->b != NULL);
 	memmove(buf, &xar->b[xar->bx], rc);
 	xar->bx += rc;

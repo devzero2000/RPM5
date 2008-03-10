@@ -124,7 +124,7 @@ static int matchTok(const char *token, const char *line)
 	SKIPNONSPACE(be);
 	if (be == b)
 	    break;
-	if (toklen != (be-b) || xstrncasecmp(token, b, (be-b)))
+	if (toklen != (size_t)(be-b) || xstrncasecmp(token, b, (be-b)))
 	    continue;
 	rc = 1;
 	break;

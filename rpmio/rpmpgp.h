@@ -1149,7 +1149,7 @@ unsigned int pgpGrab(const uint8_t * s, size_t nbytes)
  * @return		no. of bytes in length prefix
  */
 /*@unused@*/ static inline
-int pgpLen(const uint8_t * s, /*@out@*/ unsigned int * lenp)
+unsigned int pgpLen(const uint8_t * s, /*@out@*/ unsigned int * lenp)
 	/*@modifies *lenp @*/
 {
     if (*s < 192) {
@@ -1278,7 +1278,7 @@ int pgpValTok(pgpValTbl vs, const char * s, const char * se)
 {
     do {
 	size_t vlen = strlen(vs->str);
-	if (vlen <= (se-s) && !strncmp(s, vs->str, vlen))
+	if (vlen <= (size_t)(se-s) && !strncmp(s, vs->str, vlen))
 	    break;
     } while ((++vs)->val != -1);
     return vs->val;

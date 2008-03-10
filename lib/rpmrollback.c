@@ -106,7 +106,7 @@ IDTX IDTXload(rpmts ts, rpmTag tag, uint32_t rbtid)
 	tid = (he->p.ui32p ? he->p.ui32p[0] : 0);
 	he->p.ptr = _free(he->p.ptr);
 
-	if (tid == 0 || tid == -1)
+	if (tid == 0 || tid == 0xffffffff)
 	    continue;
 
 	/* Don't bother with headers installed prior to the rollback goal. */

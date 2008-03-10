@@ -563,7 +563,7 @@ static int set2dbt(dbiIndex dbi, DBT * data, dbiIndexSet set)
     switch (dbi->dbi_jlen) {
     default:
     case 2*sizeof(uint32_t):
-	for (i = 0; i < set->count; i++) {
+	for (i = 0; i < (unsigned)set->count; i++) {
 	    union _dbswap hdrNum, tagNum;
 
 	    memset(&hdrNum, 0, sizeof(hdrNum));
@@ -581,7 +581,7 @@ static int set2dbt(dbiIndex dbi, DBT * data, dbiIndexSet set)
 	}
 	break;
     case 1*sizeof(uint32_t):
-	for (i = 0; i < set->count; i++) {
+	for (i = 0; i < (unsigned)set->count; i++) {
 	    union _dbswap hdrNum;
 
 	    memset(&hdrNum, 0, sizeof(hdrNum));
@@ -804,7 +804,8 @@ int rpmdbCheckSignals(void)
  * @retval *oldMask	previous sigset
  * @return		0 on success
  */
-static int blockSignals(/*@unused@*/ rpmdb db, /*@out@*/ sigset_t * oldMask)
+static int blockSignals(/*@unused@*/ UNUSED(rpmdb db),
+		/*@out@*/ sigset_t * oldMask)
 	/*@globals fileSystem @*/
 	/*@modifies *oldMask, fileSystem @*/
 {
@@ -827,7 +828,7 @@ static int blockSignals(/*@unused@*/ rpmdb db, /*@out@*/ sigset_t * oldMask)
  * @return		0 on success
  */
 /*@mayexit@*/
-static int unblockSignals(/*@unused@*/ rpmdb db, sigset_t * oldMask)
+static int unblockSignals(/*@unused@*/ UNUSED(rpmdb db), sigset_t * oldMask)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/
 {
@@ -864,7 +865,7 @@ static inline /*@null@*/ const char * queryHeader(Header h, const char * qfmt)
  * @param adding	adding an rpmdb header?
  * @return		0 on success
  */
-static int rpmdbExportInfo(/*@unused@*/ rpmdb db, Header h, int adding)
+static int rpmdbExportInfo(/*@unused@*/ UNUSED(rpmdb db), Header h, int adding)
 	/*@globals headerCompoundFormats, rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState @*/
 	/*@modifies h, rpmGlobalMacroContext,
@@ -958,7 +959,7 @@ int rpmdbOpenAll(rpmdb db)
 
 int rpmdbBlockDBI(rpmdb db, int rpmtag)
 {
-    int tagn = (rpmtag >= 0 ? rpmtag : -rpmtag);
+    rpmTag tagn = (rpmTag)(rpmtag >= 0 ? rpmtag : -rpmtag);
     size_t dbix;
 
     if (db == NULL || db->_dbi == NULL)
@@ -984,7 +985,7 @@ int rpmdbCloseDBI(rpmdb db, int rpmtag)
 
     if (db->db_tags != NULL)
     for (dbix = 0; dbix < db->db_ndbi; dbix++) {
-	if (db->db_tags[dbix].tag != rpmtag)
+	if (db->db_tags[dbix].tag != (rpmTag)rpmtag)
 	    continue;
 	if (db->_dbi[dbix] != NULL) {
 	    int xx;
@@ -1654,7 +1655,7 @@ static rpmRC dbiFindMatches(dbiIndex dbi, DBC * dbcursor,
 {
     int gotMatches = 0;
     int rc;
-    int i;
+    unsigned i;
 
 /*@-temptrans@*/
 key->data = (void *) name;
@@ -2799,8 +2800,8 @@ assert(keylen == sizeof(k->ui));		/* xxx programmer error */
 }
 
 /* XXX psm.c */
-int rpmdbRemove(rpmdb db, /*@unused@*/ int rid, unsigned int hdrNum,
-		/*@unused@*/ rpmts ts)
+int rpmdbRemove(rpmdb db, /*@unused@*/ UNUSED(int rid), unsigned int hdrNum,
+		/*@unused@*/ UNUSED(rpmts ts))
 {
 DBC * dbcursor = NULL;
 DBT * key = alloca(sizeof(*key));
@@ -2936,7 +2937,7 @@ if (dbiByteSwapped(dbi) == 1)
 
 	    printed = 0;
 	    xx = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, DB_WRITECURSOR);
-	    for (i = 0; i < (unsigned) he->c; i++) {
+	    for (i = 0; i < (int) he->c; i++) {
 		dbiIndexSet set;
 		int stringvalued;
 
@@ -3392,7 +3393,7 @@ data->size = 0;
 	    printed = 0;
 	    xx = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, DB_WRITECURSOR);
 
-	    for (i = 0; i < (unsigned) he->c; i++) {
+	    for (i = 0; i < (int) he->c; i++) {
 		dbiIndexSet set;
 		int stringvalued;
 
@@ -3803,7 +3804,7 @@ static int rpmdbRemoveDatabase(const char * prefix,
 
 static int rpmdbMoveDatabase(const char * prefix,
 		const char * olddbpath, int _olddbapi,
-		const char * newdbpath, /*@unused@*/ int _newdbapi,
+		const char * newdbpath, /*@unused@*/ UNUSED(int _newdbapi),
 		/*@null@*/ const tagStore_t dbiTags, size_t dbiNTags)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/

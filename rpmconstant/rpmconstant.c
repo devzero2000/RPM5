@@ -68,7 +68,7 @@ const char * rpmconstPrefix(rpmconst c)
 const char * rpmconstName(rpmconst c, int stripprefix)
 {
     const char * name;
-    int len;
+    size_t len;
     name = rpmConstantName(c->constant);
     if (stripprefix && name && rpmConstantListPrefix(c->list)) {
         len = strlen(rpmConstantListPrefix(c->list));

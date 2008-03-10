@@ -2052,7 +2052,7 @@ static headerSprintfArgs hsaInit(/*@returned@*/ headerSprintfArgs hsa)
 
     if (hsa != NULL) {
 	hsa->i = 0;
-	if (tag != NULL && tag->tagno == -2)
+	if (tag != NULL && tag->tagno == (rpmTag)-2)
 	    hsa->hi = headerInit(hsa->h);
     }
 /*@-nullret@*/
@@ -3163,8 +3163,8 @@ fprintf(stderr, "==> headerSprintf(%p, \"%s\", %p, %p, %p)\n", h, fmt, tags, ext
 	(hsa->format->type == PTOK_ARRAY
 	    ? &hsa->format->u.array.format->u.tag :
 	NULL));
-    isxml = (tag != NULL && tag->tagno == -2 && tag->type != NULL && !strcmp(tag->type, "xml"));
-    isyaml = (tag != NULL && tag->tagno == -2 && tag->type != NULL && !strcmp(tag->type, "yaml"));
+    isxml = (tag != NULL && tag->tagno == (rpmTag)-2 && tag->type != NULL && !strcmp(tag->type, "xml"));
+    isyaml = (tag != NULL && tag->tagno == (rpmTag)-2 && tag->type != NULL && !strcmp(tag->type, "yaml"));
 
     if (isxml) {
 	need = sizeof("<rpmHeader>\n") - 1;

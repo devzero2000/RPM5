@@ -146,7 +146,7 @@ int rpmnssVerifyDSA(pgpDig dig)
  * @return		0 on success
  */
 static
-int rpmnssMpiSet(const char * pre, int lbits,
+int rpmnssMpiSet(const char * pre, unsigned int lbits,
 		/*@out@*/ void * dest, const uint8_t * p,
 		/*@null@*/ const uint8_t * pend)
 	/*@modifies *dest @*/

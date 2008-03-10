@@ -287,7 +287,7 @@ int mireSetGOptions(const char * newline, int caseless, int multiline, int utf8)
     return rc;
 }
 
-int mireSetLocale(/*@unused@*/ miRE mire, const char * locale)
+int mireSetLocale(/*@unused@*/ UNUSED(miRE mire), const char * locale)
 {
     const char * locale_from;
     int rc = -1;	/* assume failure */

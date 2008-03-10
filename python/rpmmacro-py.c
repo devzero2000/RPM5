@@ -27,7 +27,8 @@
 /**
  */
 PyObject *
-rpmmacro_AddMacro(/*@unused@*/ PyObject * self, PyObject * args, PyObject * kwds)
+rpmmacro_AddMacro(/*@unused@*/ UNUSED(PyObject * self), PyObject * args,
+		PyObject * kwds)
 {
     char * name, * val;
     char * kwlist[] = {"name", "value", NULL};
@@ -45,7 +46,8 @@ rpmmacro_AddMacro(/*@unused@*/ PyObject * self, PyObject * args, PyObject * kwds
 /**
  */
 PyObject *
-rpmmacro_DelMacro(/*@unused@*/ PyObject * self, PyObject * args, PyObject * kwds)
+rpmmacro_DelMacro(/*@unused@*/ UNUSED(PyObject * self), PyObject * args,
+		PyObject * kwds)
 {
     char * name;
     char * kwlist[] = {"name", NULL};
@@ -62,7 +64,8 @@ rpmmacro_DelMacro(/*@unused@*/ PyObject * self, PyObject * args, PyObject * kwds
 /**
  */
 PyObject *
-rpmmacro_ExpandMacro(/*@unused@*/PyObject * self, PyObject * args, PyObject * kwds)
+rpmmacro_ExpandMacro(/*@unused@*/ UNUSED(PyObject * self), PyObject * args,
+		PyObject * kwds)
 {
     char * macro;
     char * kwlist[] = {"macro", NULL};
@@ -76,7 +79,8 @@ rpmmacro_ExpandMacro(/*@unused@*/PyObject * self, PyObject * args, PyObject * kw
 /**
  */
 PyObject *
-rpmmacro_GetMacros(/*@unused@*/ PyObject * self, PyObject * args, PyObject * kwds)
+rpmmacro_GetMacros(/*@unused@*/ UNUSED(PyObject * self), PyObject * args,
+		PyObject * kwds)
 {
     char * kwlist[] = { NULL };
     PyObject * mdict;

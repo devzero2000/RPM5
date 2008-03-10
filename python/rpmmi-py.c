@@ -162,7 +162,7 @@ rpmmi_Pattern(rpmmiObject * s, PyObject * args, PyObject * kwds)
 	    &TagN, &type, &pattern))
 	return NULL;
 
-    if ((tag = tagNumFromPyObject (TagN)) == -1) {
+    if ((tag = tagNumFromPyObject (TagN)) == (rpmTag)-1) {
 	PyErr_SetString(PyExc_TypeError, "unknown tag type");
 	return NULL;
     }

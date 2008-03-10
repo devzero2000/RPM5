@@ -135,7 +135,7 @@ int cpioHeaderRead(void * _iosm, struct stat * st)
 {
     IOSM_t iosm = _iosm;
     struct cpioCrcPhysicalHeader hdr;
-    int nameSize;
+    size_t nameSize;
     char * end;
     int major, minor;
     int rc = 0;

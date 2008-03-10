@@ -1,4 +1,5 @@
 5.0.0 -> 5.1a1:
+    - jbj: enable gcc -W warnings, fix most of the no-brainers.
     - jbj: iosm: init file contexts during setup, not with missing dirs.
     - jbj: iosm: add iosm->{nofdigests,nofcontexts} to avoid rpmts access.
     - jbj: iosm: increase rdbuf/wrbuf size to 128K.

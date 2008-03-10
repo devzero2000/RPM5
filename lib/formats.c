@@ -31,7 +31,7 @@
  * @retval *he		tag container
  * @return		0 on success
  */
-static int fsnamesTag( /*@unused@*/ Header h, HE_t he)
+static int fsnamesTag( /*@unused@*/ UNUSED(Header h), HE_t he)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies he, fileSystem, internalState @*/
 {

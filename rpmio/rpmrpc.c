@@ -21,7 +21,7 @@
 /*@access urlinfo @*/
 
 /* =============================================================== */
-static int ftpMkdir(const char * path, /*@unused@*/ mode_t mode)
+static int ftpMkdir(const char * path, /*@unused@*/ UNUSED(mode_t mode))
 	/*@globals h_errno, fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/
 {
@@ -1073,7 +1073,7 @@ static int ftpNLST(const char * url, ftpSysCall_t ftpSysCall,
 		    /*@innerbreak@*/ break;
 	    }
 
-	    if (nbn != (ne - n))	/* Same name length? */
+	    if (nbn != (size_t)(ne - n))	/* Same name length? */
 		/*@innercontinue@*/ continue;
 	    if (strncmp(n, bn, nbn))	/* Same name? */
 		/*@innercontinue@*/ continue;
@@ -1697,7 +1697,8 @@ int Glob_pattern_p (const char * pattern, int quote)
     return (0);
 }
 
-int Glob_error(/*@unused@*/const char * epath, /*@unused@*/ int eerrno)
+int Glob_error(/*@unused@*/ UNUSED(const char * epath),
+		/*@unused@*/ UNUSED(int eerrno))
 {
     return 1;
 }

@@ -278,8 +278,10 @@ DBGIO(fd, (stderr, "==> fdDup(%d) fd %p %s\n", fdno, (fd ? fd : NULL), fdbg(fd))
     /*@-refcounttrans@*/ return fd; /*@=refcounttrans@*/
 }
 
-static inline /*@unused@*/ int fdSeekNot(void * cookie,
-		/*@unused@*/ _libio_pos_t pos,  /*@unused@*/ int whence)
+static inline /*@unused@*/
+int fdSeekNot(void * cookie,
+		/*@unused@*/ UNUSED(_libio_pos_t pos),
+		/*@unused@*/ UNUSED(int whence))
 	/*@*/
 {
     FD_t fd = c2f(cookie);
@@ -417,7 +419,7 @@ static ssize_t fdRead(void * cookie, /*@out@*/ char * buf, size_t count)
     /* HACK: flimsy wiring for davRead */
     if (fd->req != NULL) {
 #ifdef WITH_NEON
-	rc = davRead(fd, buf, (count > fd->bytesRemain ? fd->bytesRemain : count));
+	rc = davRead(fd, buf, (count > (size_t)fd->bytesRemain ? (size_t)fd->bytesRemain : count));
 #else
 	rc = -1;
 #endif
@@ -427,12 +429,12 @@ static ssize_t fdRead(void * cookie, /*@out@*/ char * buf, size_t count)
     } else
     if (fd->xar != NULL) {
 #ifdef WITH_XAR
-	rc = xarRead(fd, buf, (count > fd->bytesRemain ? fd->bytesRemain : count));
+	rc = xarRead(fd, buf, (count > (size_t)fd->bytesRemain ? (size_t)fd->bytesRemain : count));
 #else
 	rc = -1;
 #endif
     } else
-	rc = read(fdFileno(fd), buf, (count > fd->bytesRemain ? fd->bytesRemain : count));
+	rc = read(fdFileno(fd), buf, (count > (size_t)fd->bytesRemain ? (size_t)fd->bytesRemain : count));
     fdstat_exit(fd, FDSTAT_READ, rc);
 
     if (fd->ndigests && rc > 0) fdUpdateDigests(fd, (void *)buf, rc);
@@ -460,12 +462,12 @@ static ssize_t fdWrite(void * cookie, const char * buf, size_t count)
     /* HACK: flimsy wiring for davWrite */
     if (fd->req != NULL)
 #ifdef WITH_NEON
-	rc = davWrite(fd, buf, (count > fd->bytesRemain ? fd->bytesRemain : count));
+	rc = davWrite(fd, buf, (count > (size_t)fd->bytesRemain ? (size_t)fd->bytesRemain : count));
 #else
 	rc = -1;
 #endif
     else
-	rc = write(fdno, buf, (count > fd->bytesRemain ? fd->bytesRemain : count));
+	rc = write(fdno, buf, (count > (size_t)fd->bytesRemain ? (size_t)fd->bytesRemain : count));
     fdstat_exit(fd, FDSTAT_WRITE, rc);
 
 DBGIO(fd, (stderr, "==>\tfdWrite(%p,%p,%ld) rc %ld %s\n", cookie, buf, (long)count, (long)rc, fdbg(fd)));
@@ -1479,7 +1481,7 @@ int ftpReq(FD_t data, const char * ftpCmd, const char * ftpArg)
 
 if (_ftp_debug)
 fprintf(stderr, "-> %s", cmd);
-    if (fdWrite(u->ctrl, cmd, cmdlen) != cmdlen) {
+    if ((size_t)fdWrite(u->ctrl, cmd, cmdlen) != cmdlen) {
 	rc = FTPERR_SERVER_IO_ERROR;
 	goto errxit;
     }
@@ -2662,8 +2664,8 @@ static ssize_t bzdWrite(void * cookie, const char * buf, size_t count)
 }
 /*@=globuse@*/
 
-static inline int bzdSeek(void * cookie, /*@unused@*/ _libio_pos_t pos,
-			/*@unused@*/ int whence)
+static inline int bzdSeek(void * cookie, /*@unused@*/ UNUSED(_libio_pos_t pos),
+			/*@unused@*/ UNUSED(int whence))
 	/*@*/
 {
     FD_t fd = c2f(cookie);
@@ -3017,8 +3019,8 @@ static ssize_t lzdWrite(void * cookie, const char * buf, size_t count)
 }
 /*@=globuse@*/
 
-static inline int lzdSeek(void * cookie, /*@unused@*/ _libio_pos_t pos,
-			/*@unused@*/ int whence)
+static inline int lzdSeek(void * cookie, /*@unused@*/ UNUSED(_libio_pos_t pos),
+			/*@unused@*/ UNUSED(int whence))
 	/*@*/
 {
     FD_t fd = c2f(cookie);
@@ -3862,11 +3864,11 @@ int rpmioSlurp(const char * fn, uint8_t ** bp, ssize_t * blenp)
 	b = xmalloc(blen+1);
 	b[0] = (uint8_t) '\0';
 	nb = Fread(b, sizeof(*b), blen, fd);
-	if (Ferror(fd) || (size > 0 && nb != blen)) {
+	if (Ferror(fd) || (size > 0 && (ssize_t)nb != blen)) {
 	    rc = 1;
 	    goto exit;
 	}
-	if (blen == blenmax && nb < blen) {
+	if (blen == blenmax && (ssize_t)nb < blen) {
 	    blen = nb;
 	    b = xrealloc(b, blen+1);
 	}

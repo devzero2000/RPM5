@@ -1634,7 +1634,7 @@ static int iosmStat(/*@special@*/ /*@partial@*/ IOSM_t iosm)
 /*@-compmempass@*/
 int iosmStage(IOSM_t iosm, iosmFileStage stage)
 {
-#ifdef	UNUSED
+#ifdef	NOTUSED
     iosmFileStage prevStage = iosm->stage;
     const char * const prev = iosmFileStageString(prevStage);
 #endif

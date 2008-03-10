@@ -163,7 +163,7 @@ static int buildForTarget(rpmts ts, const char * arg, BTA_t ba)
 	se = stpcpy(se, "_sourcedir ");
 	(void) urlPath(arg, &s);
 	if (*s != '/') {
-	    if (getcwd(se, nb - sizeof("_sourcedir ")) > 0)
+	    if (getcwd(se, nb - sizeof("_sourcedir ")) != NULL)
 		se += strlen(se);
 	    else
 		se = stpcpy(se, ".");
@@ -177,7 +177,7 @@ static int buildForTarget(rpmts ts, const char * arg, BTA_t ba)
 	specut = urlPath(arg, &s);
 	se = buf; *se = '\0';
 	if (*s != '/') {
-	    if (getcwd(se, nb - sizeof("_sourcedir ")) > 0)
+	    if (getcwd(se, nb - sizeof("_sourcedir ")) != NULL)
 		se += strlen(se);
 	    else
 		se = stpcpy(se, ".");

@@ -10,7 +10,8 @@
 #include "rpmbuild.h"
 #include "debug.h"
 
-int addReqProv(/*@unused@*/ Spec spec, Header h, /*@unused@*/ rpmTag tagN,
+int addReqProv(/*@unused@*/ UNUSED(Spec spec), Header h,
+		/*@unused@*/ UNUSED(rpmTag tagN),
 		const char * N, const char * EVR, rpmsenseFlags Flags,
 		uint32_t index)
 {
@@ -23,7 +24,7 @@ int addReqProv(/*@unused@*/ Spec spec, Header h, /*@unused@*/ rpmTag tagN,
     int len;
     rpmsenseFlags extra = RPMSENSE_ANY;
     int xx;
-    
+
     if (Flags & RPMSENSE_PROVIDES) {
 	nametag = RPMTAG_PROVIDENAME;
 	versiontag = RPMTAG_PROVIDEVERSION;
@@ -54,7 +55,7 @@ int addReqProv(/*@unused@*/ Spec spec, Header h, /*@unused@*/ rpmTag tagN,
 
     if (EVR == NULL)
 	EVR = "";
-    
+
     /* Check for duplicate dependencies. */
     he->tag = nametag;
     xx = headerGet(h, he, 0);
@@ -85,7 +86,7 @@ int addReqProv(/*@unused@*/ Spec spec, Header h, /*@unused@*/ rpmTag tagN,
 	    if (strcmp(names[len], N))
 		continue;
 	    if (flagtag && versions != NULL &&
-		(strcmp(versions[len], EVR) || flags[len] != Flags))
+		(strcmp(versions[len], EVR) || (rpmsenseFlags)flags[len] != Flags))
 		continue;
 	    if (indextag && indexes != NULL && indexes[len] != index)
 		continue;

@@ -184,7 +184,8 @@ fingerPrint fpLookup(fingerPrintCache cache, const char * dirName,
     return doLookup(cache, dirName, baseName, scareMem);
 }
 
-uint32_t fpHashFunction(uint32_t h, const void * data, /*@unused@*/ size_t size)
+uint32_t fpHashFunction(uint32_t h, const void * data,
+		/*@unused@*/ UNUSED(size_t size))
 {
     const fingerPrint * fp = data;
     const char * chptr = fp->baseName;
@@ -237,7 +238,7 @@ void fpLookupList(fingerPrintCache cache, const char ** dirNames,
     }
 }
 
-#ifdef	UNUSED
+#ifdef	NOTUSED
 /**
  * Return finger prints of all file names in header.
  * @warning: scareMem is assumed!
@@ -247,7 +248,7 @@ void fpLookupList(fingerPrintCache cache, const char ** dirNames,
  */
 static
 void fpLookupHeader(fingerPrintCache cache, Header h, fingerPrint * fpList)
-	/*@modifies h, cache, *fpList @*/;
+	/*@modifies h, cache, *fpList @*/
 {
     rpmTagData he_p = { .ptr = NULL };
     HE_s he_s = { .tag = 0, .t = 0, .p = &he_p, .c = 0, .freeData = 0 };
