@@ -129,7 +129,7 @@ fprintf(stderr, "    tarHeaderRead(%p, %p)\n", iosm, st);
 
 top:
     do {
-	/* Read next tar block. */
+	/* Read next header. */
 	rc = tarRead(_iosm, hdr, TAR_BLOCK_SIZE);
 	if (rc < 0) return (int) -rc;
 
@@ -167,6 +167,7 @@ fprintf(stderr, "\tmemcmp(\"%s\", \"%s\", %u)\n", hdrchecksum, checksum, (unsign
     if (strncmp(hdr->magic, TAR_MAGIC, sizeof(TAR_MAGIC)-1))
 	return IOSMERR_BAD_MAGIC;
 
+    /* Convert header to stat(2). */
     st->st_size = strntoul(hdr->filesize, NULL, 8, sizeof(hdr->filesize));
 
     st->st_nlink = 1;
@@ -259,6 +260,8 @@ fprintf(stderr, "\tmemcmp(\"%s\", \"%s\", %u)\n", hdrchecksum, checksum, (unsign
 	t[nb] = '\0';
 	iosm->lpath = t;
     }
+
+    rc = 0;
 
 if (_tar_debug)
 fprintf(stderr, "\t     %06o%3d (%4d,%4d)%12lu %s\n\t-> %s\n",
@@ -402,14 +405,14 @@ fprintf(stderr, "    tarHeaderWrite(%p, %p)\n", iosm, st);
 	if (nb > sizeof(hdr->name)) {
 	    memset(hdr, 0, sizeof(*hdr));
 	    strcpy(hdr->linkname, llname);
-	sprintf(hdr->mode, "%07o", 0);
-	sprintf(hdr->uid, "%07o", 0);
-	sprintf(hdr->gid, "%07o", 0);
+	    sprintf(hdr->mode, "%07o", 0);
+	    sprintf(hdr->uid, "%07o", 0);
+	    sprintf(hdr->gid, "%07o", 0);
 	    sprintf(hdr->filesize, "%011o", (unsigned) (nb & 037777777777));
-	sprintf(hdr->mtime, "%011o", 0);
+	    sprintf(hdr->mtime, "%011o", 0);
 	    hdr->typeflag = 'K';
-	strncpy(hdr->uname, "root", sizeof(hdr->uname));
-	strncpy(hdr->gname, "root", sizeof(hdr->gname));
+	    strncpy(hdr->uname, "root", sizeof(hdr->uname));
+	    strncpy(hdr->gname, "root", sizeof(hdr->gname));
 	    rc = tarHeaderWriteBlock(iosm, st, hdr);
 	    if (rc < 0) return (int) -rc;
 	    rc = tarHeaderWriteName(iosm, iosm->lpath);
@@ -482,8 +485,7 @@ fprintf(stderr, "    tarTrailerWrite(%p)\n", iosm);
 
     /* Pad up to 20 blocks (10Kb) of zeroes. */
     iosm->blksize *= 20;
-    if (!rc)
-	rc = _iosmNext(iosm, IOSM_PAD);
+    rc = _iosmNext(iosm, IOSM_PAD);
     iosm->blksize /= 20;
 
     return rc;

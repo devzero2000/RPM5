@@ -6,9 +6,11 @@
  * Structures used for tar(1) archives.
  */
 
+/**
+ */
 typedef	struct tarHeader_s * tarHeader;
 
-/* Tar file constants  */
+/* Tar file constants */
 # define TAR_MAGIC          "ustar"	/* ustar and a null */
 # define TAR_VERSION        "  "	/* Be compatable with GNU tar format */
 
@@ -50,13 +52,14 @@ extern "C" {
 #endif
 
 /**
- * Write cpio trailer to payload.
- * @retval _fsm		file path and stat info
+ * Read tar header from payload.
+ * @retval _iosm	file path and stat info
+ * @retval st
  * @return		0 on success
  */
-int tarTrailerWrite(void * _iosm)
+int tarHeaderRead(void * _iosm, struct stat * st)
 	/*@globals fileSystem, internalState @*/
-	/*@modifies _iosm, fileSystem, internalState @*/;
+	/*@modifies _iosm, *st, fileSystem, internalState @*/;
 
 /**
  * Write tar header to payload.
@@ -69,14 +72,13 @@ int tarHeaderWrite(void * _iosm, struct stat * st)
 	/*@modifies _iosm, fileSystem, internalState @*/;
 
 /**
- * Read tar header from payload.
- * @retval _iosm	file path and stat info
- * @retval st
+ * Write cpio trailer to payload.
+ * @retval _fsm		file path and stat info
  * @return		0 on success
  */
-int tarHeaderRead(void * _iosm, struct stat * st)
+int tarTrailerWrite(void * _iosm)
 	/*@globals fileSystem, internalState @*/
-	/*@modifies _iosm, *st, fileSystem, internalState @*/;
+	/*@modifies _iosm, fileSystem, internalState @*/;
 
 #ifdef __cplusplus
 }

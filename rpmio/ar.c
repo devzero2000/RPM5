@@ -98,7 +98,7 @@ fprintf(stderr, "    arHeaderRead(%p, %p)\n", iosm, st);
 
 top:
     rc = arRead(iosm, hdr, sizeof(*hdr));
-    if (rc <= 0)	return (int) -rc;
+    if (rc <= 0) return (int) -rc;
 if (_ar_debug)
 fprintf(stderr, "==> %p[%u] \"%.*s\"\n", hdr, (unsigned)rc, (int)sizeof(*hdr)-2, (char *)hdr);
     rc = 0;
@@ -117,7 +117,7 @@ fprintf(stderr, "==> %p[%u] \"%.*s\"\n", hdr, (unsigned)rc, (int)sizeof(*hdr)-2,
 	    size_t i;
 
 	    rc = arRead(iosm, iosm->wrbuf, st->st_size);
-	    if (rc <= 0)	return (int) -rc;
+	    if (rc <= 0) return (int) -rc;
 
 	    iosm->wrbuf[rc] = '\0';
 	    iosm->lmtab = t = xstrdup(iosm->wrbuf);
@@ -136,7 +136,7 @@ fprintf(stderr, "==> %p[%u] \"%.*s\"\n", hdr, (unsigned)rc, (int)sizeof(*hdr)-2,
 	/* GNU: on "/":	Skip symbol table. */
 	if (hdr->name[1] == ' ') {
 	    rc = arRead(iosm, iosm->wrbuf, st->st_size);
-	    if (rc <= 0)	return (int) -rc;
+	    if (rc <= 0) return (int) -rc;
 	    goto top;
 	}
 	/* GNU: on "/123": Read "123" offset to substitute long member name. */
@@ -169,6 +169,7 @@ fprintf(stderr, "==> %p[%u] \"%.*s\"\n", hdr, (unsigned)rc, (int)sizeof(*hdr)-2,
     st->st_mode = strntoul(hdr->mode, NULL, 8, sizeof(hdr->mode));
 
     st->st_nlink = 1;
+    rc = 0;
 
 if (_ar_debug)
 fprintf(stderr, "\t     %06o%3d (%4d,%4d)%12lu %s\n",
@@ -214,7 +215,7 @@ int arHeaderWrite(void * _iosm, struct stat * st)
     IOSM_t iosm = _iosm;
     arHeader hdr = (arHeader) iosm->rdbuf;
     size_t nb;
-    int rc = 0;
+    ssize_t rc = 0;
 
 if (_ar_debug)
 fprintf(stderr, "    arHeaderWrite(%p, %p)\n", iosm, st);
@@ -222,7 +223,8 @@ fprintf(stderr, "    arHeaderWrite(%p, %p)\n", iosm, st);
     /* At beginning of ar(1) archive, write magic and long member table. */
     if (fdGetCpioPos(iosm->cfd) == 0) {
 	/* Write ar(1) magic. */
-	(void) arWrite(iosm, AR_MAGIC, sizeof(AR_MAGIC)-1);
+	rc = arWrite(iosm, AR_MAGIC, sizeof(AR_MAGIC)-1);
+	if (rc < 0) return (int) -rc;
 	/* GNU: on "//":	Write long member name string table. */
 	if (iosm->lmtab != NULL) {
 	    memset(hdr, (int) ' ', sizeof(*hdr));
@@ -231,14 +233,15 @@ fprintf(stderr, "    arHeaderWrite(%p, %p)\n", iosm, st);
 	    sprintf(hdr->filesize, "%-10d", (unsigned) (iosm->lmtablen & 037777777777));
 	    strncpy(hdr->marker, AR_MARKER, sizeof(AR_MARKER)-1);
 
-	    rc = (int) arWrite(iosm, hdr, sizeof(*hdr));
-	    if (rc < 0)	return -rc;
-	    rc = (int) arWrite(iosm, iosm->lmtab, iosm->lmtablen);
-	    if (rc < 0)	return -rc;
+	    rc = arWrite(iosm, hdr, sizeof(*hdr));
+	    if (rc < 0)	return (int) -rc;
+	    rc = arWrite(iosm, iosm->lmtab, iosm->lmtablen);
+	    if (rc < 0)	return (int) -rc;
 	    rc = _iosmNext(iosm, IOSM_PAD);
-	    if (rc < 0)	return -rc;
+	    if (rc)	return rc;
 	}
     }
+    rc = 0;
 
     memset(hdr, (int)' ', sizeof(*hdr));
 
@@ -272,8 +275,8 @@ rc = (int) sizeof(*hdr);
 if (_ar_debug)
 fprintf(stderr, "==> %p[%u] \"%.*s\"\n", hdr, (unsigned)rc, (int)sizeof(*hdr), (char *)hdr);
 
-    rc = (int) arWrite(iosm, hdr, sizeof(*hdr));
-    if (rc < 0)	return -rc;
+    rc = arWrite(iosm, hdr, sizeof(*hdr));
+    if (rc < 0)	return (int) -rc;
     rc = 0;
 
     return rc;

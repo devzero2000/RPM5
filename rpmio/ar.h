@@ -6,6 +6,8 @@
  *  Structures used for ar(1) archives.
  */
 
+/*
+ */
 typedef	struct arHeader_s * arHeader;
 
 /* ar(1) file constants  */
@@ -33,13 +35,14 @@ extern "C" {
 #endif
 
 /**
- * Write ar(1) trailer.
+ * Read ar(1) header.
  * @retval _iosm	file path and stat info
+ * @retval st
  * @return		0 on success
  */
-int arTrailerWrite(void * _iosm)
+int arHeaderRead(void * _iosm, struct stat * st)
 	/*@globals fileSystem, internalState @*/
-	/*@modifies _iosm, fileSystem, internalState @*/;
+	/*@modifies _iosm, *st, fileSystem, internalState @*/;
 
 /**
  * Write ar(1) header.
@@ -52,14 +55,13 @@ int arHeaderWrite(void * _iosm, struct stat * st)
 	/*@modifies _iosm, fileSystem, internalState @*/;
 
 /**
- * Read ar(1) header.
+ * Write ar(1) trailer.
  * @retval _iosm	file path and stat info
- * @retval st
  * @return		0 on success
  */
-int arHeaderRead(void * _iosm, struct stat * st)
+int arTrailerWrite(void * _iosm)
 	/*@globals fileSystem, internalState @*/
-	/*@modifies _iosm, *st, fileSystem, internalState @*/;
+	/*@modifies _iosm, fileSystem, internalState @*/;
 
 #ifdef __cplusplus
 }

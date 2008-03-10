@@ -6,14 +6,21 @@
  *  Structures used for cpio(1) archives.
  */
 
+/**
+ */
+typedef struct cpioCrcPhysicalHeader_s * cpioHeader;
+
+/* Cpio file constants */
 #define CPIO_NEWC_MAGIC	"070701"
 #define CPIO_CRC_MAGIC	"070702"
 #define CPIO_TRAILER	"TRAILER!!!"
 
+#define	PHYS_HDR_SIZE	110		/* Don't depend on sizeof(struct) */
+
 /** \ingroup payload
  * Cpio archive header information.
  */
-struct cpioCrcPhysicalHeader {
+struct cpioCrcPhysicalHeader_s {
     char magic[6];
     char inode[8];
     char mode[8];
@@ -30,8 +37,6 @@ struct cpioCrcPhysicalHeader {
     char checksum[8];			/* ignored !! */
 };
 
-#define	PHYS_HDR_SIZE	110		/* Don't depend on sizeof(struct) */
-
 /*@unchecked@*/
 extern int _cpio_debug;
 
@@ -40,13 +45,14 @@ extern "C" {
 #endif
 
 /**
- * Write cpio trailer.
+ * Read cpio header.
  * @retval _iosm	file path and stat info
+ * @retval st
  * @return		0 on success
  */
-int cpioTrailerWrite(void * _iosm)
-	/*@globals h_errno, fileSystem, internalState @*/
-	/*@modifies _iosm, fileSystem, internalState @*/;
+int cpioHeaderRead(void * _iosm, struct stat * st)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies _iosm, *st, fileSystem, internalState @*/;
 
 /**
  * Write cpio header.
@@ -55,18 +61,17 @@ int cpioTrailerWrite(void * _iosm)
  * @return		0 on success
  */
 int cpioHeaderWrite(void * _iosm, struct stat * st)
-	/*@globals h_errno, fileSystem, internalState @*/
+	/*@globals fileSystem, internalState @*/
 	/*@modifies _iosm, fileSystem, internalState @*/;
 
 /**
- * Read cpio header.
+ * Write cpio trailer.
  * @retval _iosm	file path and stat info
- * @retval st
  * @return		0 on success
  */
-int cpioHeaderRead(void * _iosm, struct stat * st)
-	/*@globals h_errno, fileSystem, internalState @*/
-	/*@modifies _iosm, *st, fileSystem, internalState @*/;
+int cpioTrailerWrite(void * _iosm)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies _iosm, fileSystem, internalState @*/;
 
 #ifdef __cplusplus
 }

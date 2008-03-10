@@ -2074,7 +2074,7 @@ assert(iosm->lpath != NULL);
 	    rpmfi fi = iosmGetFi(iosm);
 	    uint64_t archivePos = fdGetCpioPos(iosm->cfd);
 	    if (archivePos > fi->archivePos) {
-		fi->archivePos = (uint64_t) archivePos;
+		fi->archivePos = (unsigned long long) archivePos;
 #if defined(_USE_RPMTS)
 		(void) rpmtsNotify(iosmGetTs(iosm), fi->te,RPMCALLBACK_INST_PROGRESS,
 			fi->archivePos, fi->archiveSize);

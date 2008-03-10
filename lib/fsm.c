@@ -1993,7 +1993,7 @@ assert(fsm->lpath != NULL);
 	    void * ptr;
 	    uint64_t archivePos = fdGetCpioPos(fsm->cfd);
 	    if (archivePos > fi->archivePos) {
-		fi->archivePos = (uint64_t) archivePos;
+		fi->archivePos = (unsigned long long) archivePos;
 		ptr = rpmtsNotify(ts, fi->te, RPMCALLBACK_INST_PROGRESS,
 			fi->archivePos, fi->archiveSize);
 	    }

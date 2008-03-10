@@ -1,4 +1,5 @@
 5.0.0 -> 5.1a1:
+    - jbj: make sure cpio/tar/ar are as similar as possible.
     - jbj: keep tar.c parallel to ar.c coding conventions. cpio.c next.
     - jbj: clean up most rpmio gcc -W warnings.
     - jbj: clean up iosm/fsm gcc -W warnings.
