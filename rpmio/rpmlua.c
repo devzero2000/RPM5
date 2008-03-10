@@ -934,7 +934,7 @@ static int rpm_print (lua_State *L)
 	    return luaL_error(L, "`tostring' must return a string to `print'");
 	if (lua->storeprint) {
 	    size_t sl = lua_strlen(L, -1);
-	    if (lua->printbufused+sl+1 > lua->printbufsize) {
+	    if ((size_t)(lua->printbufused+sl+1) > lua->printbufsize) {
 		lua->printbufsize += sl+512;
 		lua->printbuf = xrealloc(lua->printbuf, lua->printbufsize);
 	    }
@@ -952,7 +952,7 @@ static int rpm_print (lua_State *L)
     if (!lua->storeprint) {
 	(void) fputs("\n", stdout);
     } else {
-	if (lua->printbufused+1 > lua->printbufsize) {
+	if ((size_t)(lua->printbufused+1) > lua->printbufsize) {
 	    lua->printbufsize += 512;
 	    lua->printbuf = xrealloc(lua->printbuf, lua->printbufsize);
 	}

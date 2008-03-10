@@ -1,4 +1,6 @@
 5.0.0 -> 5.1a1:
+    - jbj: keep tar.c parallel to ar.c coding conventions. cpio.c next.
+    - jbj: clean up most rpmio gcc -W warnings.
     - jbj: clean up iosm/fsm gcc -W warnings.
     - jbj: enable gcc -W warnings, fix most of the no-brainers.
     - jbj: iosm: init file contexts during setup, not with missing dirs.

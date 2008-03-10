@@ -36,9 +36,6 @@ const char *__progname;
 /*@unchecked@*/
 int __debug = 0;
 
-/*@unchecked@*/
-extern int _rpmsq_debug;
-
 /*@-exportheadervar@*/
 /*@-redecl@*/
 /*@unchecked@*/
@@ -57,6 +54,8 @@ extern int _iosm_debug;
 extern int noLibio;
 /*@unchecked@*/
 extern int _rpmio_debug;
+/*@unchecked@*/
+extern int _rpmsq_debug;
 /*@unchecked@*/
 extern int _tar_debug;
 /*@unchecked@*/
@@ -171,10 +170,10 @@ static void rpmioAllArgCallback(poptContext con,
                 const struct poptOption * opt, const char * arg,
                 /*@unused@*/ UNUSED(const void * data))
 	/*@globals pgpImplVecs,
- 		rpmCLIMacroContext, rpmGlobalMacroContext, h_errno,
+ 		rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState @*/
 	/*@modifies con, pgpImplVecs,
- 		rpmCLIMacroContext, rpmGlobalMacroContext,
+ 		rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 {
 

@@ -289,7 +289,7 @@ int fdSeekNot(void * cookie,
     return -2;
 }
 
-#ifdef UNUSED
+#ifdef NOTUSED
 FILE *fdFdopen(void * cookie, const char *fmode)
 {
     FD_t fd = c2f(cookie);

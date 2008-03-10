@@ -24,12 +24,13 @@ static int nochksum = 0;
 /**
  * Convert string to unsigned integer (with buffer size check).
  * @param str		input string
- * @retval endptr	address of 1st character not processed
+ * @retval *endptr	1st character not processed
  * @param base		numerical conversion base
  * @param num		max no. of bytes to read
  * @return		converted integer
  */
-static int strntoul(const char *str, /*@out@*/char **endptr, int base, int num)
+static int strntoul(const char *str, /*@null@*/ /*@out@*/char **endptr,
+		int base, size_t num)
 	/*@modifies *endptr @*/
 	/*@requires maxSet(endptr) >= 0 @*/
 {
@@ -51,42 +52,64 @@ static int strntoul(const char *str, /*@out@*/char **endptr, int base, int num)
     return ret;
 }
 
+static ssize_t tarRead(void * _iosm, void * buf, size_t count)
+	/*@globals fileSystem @*/
+	/*@modifies _iosm, *buf, fileSystem @*/
+{
+    IOSM_t iosm = _iosm;
+    char * t = buf;
+    size_t nb = 0;
+
+if (_tar_debug)
+fprintf(stderr, "         tarRead(%p, %p[%u])\n", iosm, buf, (unsigned)count);
+
+    while (count > 0) {
+	size_t rc;
+
+	/* Read next tar block. */
+	iosm->wrlen = count;
+	rc = _iosmNext(iosm, IOSM_DREAD);
+	if (!rc && iosm->rdnb != iosm->wrlen)
+	    rc = IOSMERR_READ_FAILED;
+	if (rc) return -rc;
+
+	/* Append to buffer. */
+	rc = (count > iosm->rdnb ? iosm->rdnb : count);
+	if (buf != iosm->wrbuf)
+	     memcpy(t + nb, iosm->wrbuf, rc);
+	nb += rc;
+	count -= rc;
+    }
+    return nb;
+}
+
 /**
  * Read long file/link name from tar archive.
  * @param _iosm		file state machine
  * @param len		no. bytes of name
  * @retval *fnp		long file/link name
- * @return		0 on success
+ * @return		no. bytes read (rc < 0 on error)
  */
-static int tarHeaderReadName(void * _iosm, size_t len,
+static ssize_t tarHeaderReadName(void * _iosm, size_t len,
 		/*@out@*/ const char ** fnp)
-	/*@globals internalState @*/
-	/*@modifies _iosm, *fnp, internalState @*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies _iosm, *fnp, fileSystem, internalState @*/
 {
     IOSM_t iosm = _iosm;
-    char * t;
-    int nb;
-    int rc = 0;
+    size_t nb = len + 1;
+    char * t = xmalloc(nb);
+    ssize_t rc = tarRead(iosm, t, nb);
 
-    *fnp = t = xmalloc(len + 1);
-    while (len > 0) {
-	/* Read next tar block. */
-	iosm->wrlen = TAR_BLOCK_SIZE;
-	rc = _iosmNext(iosm, IOSM_DREAD);
-	if (!rc && iosm->rdnb != iosm->wrlen)
-		rc = IOSMERR_READ_FAILED;
-	if (rc) break;
+    if (rc > 0)		/* success */
+	t[rc] = '\0';
+     else		/* failure */
+	t = _free(t);
+    if (fnp != NULL)
+	*fnp = t;
 
-	/* Append to name. */
-	nb = (len > iosm->rdnb ? iosm->rdnb : len);
-	memcpy(t, iosm->wrbuf, nb);
-	t += nb;
-	len -= nb;
-    }
-    *t = '\0';
+if (_tar_debug)
+fprintf(stderr, "\ttarHeaderReadName(%p, %u, %p) rc 0x%x\n", _iosm, (unsigned)len, fnp, (unsigned)rc);
 
-    if (rc)
-	*fnp = _free(*fnp);
     return rc;
 }
 
@@ -96,9 +119,9 @@ int tarHeaderRead(void * _iosm, struct stat * st)
     IOSM_t iosm = _iosm;
     tarHeader hdr = (tarHeader) iosm->wrbuf;
     char * t;
-    int nb;
+    size_t nb;
     int major, minor;
-    int rc = 0;
+    ssize_t rc = 0;
     int zblk = 0;
 
 if (_tar_debug)
@@ -107,11 +130,8 @@ fprintf(stderr, "    tarHeaderRead(%p, %p)\n", iosm, st);
 top:
     do {
 	/* Read next tar block. */
-	iosm->wrlen = TAR_BLOCK_SIZE;
-	rc = _iosmNext(iosm, IOSM_DREAD);
-	if (!rc && iosm->rdnb != iosm->wrlen)
-	    rc = IOSMERR_READ_FAILED;
-	if (rc) return rc;
+	rc = tarRead(_iosm, hdr, TAR_BLOCK_SIZE);
+	if (rc < 0) return (int) -rc;
 
 	/* Look for end-of-archive, i.e. 2 (or more) zero blocks. */
 	if (hdr->name[0] == '\0' && hdr->checksum[0] == '\0') {
@@ -133,13 +153,6 @@ top:
 	for (i = 0; i < TAR_BLOCK_SIZE; i++)
 	    sum += (long)*hp++;
 
-#if 0
-	for (i = 0; i < sizeof(hdr->checksum) - 1; i++)
-	    sum += (' ' - hdr->checksum[i]);
-fprintf(stderr, "\tsum %ld\n", sum);
-	if (sum != 0)
-	    return IOSMERR_BAD_HEADER;
-#else
 	memset(checksum, (int)' ', sizeof(checksum));
 	sprintf(checksum, "%06o", (unsigned) (sum & 07777777));
 if (_tar_debug)
@@ -147,7 +160,6 @@ fprintf(stderr, "\tmemcmp(\"%s\", \"%s\", %u)\n", hdrchecksum, checksum, (unsign
 	if (memcmp(hdrchecksum, checksum, sizeof(hdrchecksum)))
 	    if (!nochksum)
 		return IOSMERR_BAD_HEADER;
-#endif
 
     }
 
@@ -205,12 +217,12 @@ fprintf(stderr, "\tmemcmp(\"%s\", \"%s\", %u)\n", hdrchecksum, checksum, (unsign
 #endif
     case 'K':		/* GNU long (>100 chars) link name */
 	rc = tarHeaderReadName(iosm, st->st_size, &iosm->lpath);
-	if (rc) return rc;
+	if (rc < 0) return (int) -rc;
 	goto top;
 	/*@notreached@*/ break;
     case 'L':		/* GNU long (>100 chars) file name */
 	rc = tarHeaderReadName(iosm, st->st_size, &iosm->path);
-	if (rc) return rc;
+	if (rc < 0) return (int) -rc;
 	goto top;
 	/*@notreached@*/ break;
     }
@@ -254,44 +266,58 @@ fprintf(stderr, "\t     %06o%3d (%4d,%4d)%12lu %s\n\t-> %s\n",
                 (int)st->st_uid, (int)st->st_gid, (unsigned long)st->st_size,
                 (iosm->path ? iosm->path : ""), (iosm->lpath ? iosm->lpath : ""));
 
-    return rc;
+    return (int) rc;
+}
+
+static ssize_t tarWrite(void * _iosm, const void *buf, size_t count)
+	/*@globals fileSystem @*/
+	/*@modifies _iosm, fileSystem @*/
+{
+    IOSM_t iosm = _iosm;
+    const char * s = buf;
+    size_t nb = 0;
+
+if (_tar_debug)
+fprintf(stderr, "   tarWrite(%p, %p[%u])\n", iosm, buf, (unsigned)count);
+
+    while (count > 0) {
+	size_t rc;
+
+	/* XXX DWRITE uses rdnb for I/O length. */
+	iosm->rdnb = count;
+	if (s != iosm->rdbuf)
+	    memmove(iosm->rdbuf, s + nb, iosm->rdnb);
+
+	rc = _iosmNext(iosm, IOSM_DWRITE);
+	if (!rc && iosm->rdnb != iosm->wrnb)
+		rc = IOSMERR_WRITE_FAILED;
+	if (rc) return -rc;
+
+	nb += iosm->rdnb;
+	count -= iosm->rdnb;
+    }
+    return nb;
 }
 
 /**
  * Write long file/link name into tar archive.
  * @param _iosm		file state machine
  * @param path		long file/link name
- * @return		0 on success
+ * @return		no. bytes written (rc < 0 on error)
  */
-static int tarHeaderWriteName(void * _iosm, const char * path)
+static ssize_t tarHeaderWriteName(void * _iosm, const char * path)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies _iosm, fileSystem, internalState @*/
 {
-    IOSM_t iosm = _iosm;
-    const char * s = path;
-    int nb = strlen(s);
-    int rc = 0;
+    ssize_t rc = tarWrite(_iosm, path, strlen(path));
 
-if (_tar_debug)
-fprintf(stderr, "\ttarHeaderWriteName(%p, %s) nb %d\n", iosm, path, nb);
-
-    while (nb > 0) {
-	memset(iosm->rdbuf, 0, TAR_BLOCK_SIZE);
-
-	/* XXX DWRITE uses rdnb for I/O length. */
-	iosm->rdnb = (nb < TAR_BLOCK_SIZE) ? nb : TAR_BLOCK_SIZE;
-	memmove(iosm->rdbuf, s, iosm->rdnb);
-	rc = _iosmNext(iosm, IOSM_DWRITE);
-	if (!rc && iosm->rdnb != iosm->wrnb)
-		rc = IOSMERR_WRITE_FAILED;
-
-	if (rc) break;
-	s += iosm->rdnb;
-	nb -= iosm->rdnb;
+    if (rc >= 0) {
+	rc = _iosmNext(_iosm, IOSM_PAD);
+	if (rc) rc = -rc;
     }
 
-    if (!rc)
-	rc = _iosmNext(iosm, IOSM_PAD);
+if (_tar_debug)
+fprintf(stderr, "\ttarHeaderWriteName(%p, %s) rc 0x%x\n", _iosm, path, (unsigned)rc);
 
     return rc;
 }
@@ -301,14 +327,14 @@ fprintf(stderr, "\ttarHeaderWriteName(%p, %s) nb %d\n", iosm, path, nb);
  * @param _iosm		file state machine
  * @param st		file info
  * @param hdr		tar header block
- * @return		0 on success
+ * @return		no. bytes written (rc < 0 on error)
  */
-static int tarHeaderWriteBlock(void * _iosm, struct stat * st, tarHeader hdr)
+static ssize_t tarHeaderWriteBlock(void * _iosm, struct stat * st, tarHeader hdr)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies _iosm, hdr, fileSystem, internalState @*/
 {
     IOSM_t iosm = _iosm;
-    int rc;
+    ssize_t rc;
 
 if (_tar_debug)
 fprintf(stderr, "\ttarHeaderWriteBlock(%p, %p) type %c\n", iosm, hdr, hdr->typeflag);
@@ -334,11 +360,7 @@ if (_tar_debug)
 fprintf(stderr, "\thdrchksum \"%s\"\n", hdr->checksum);
     }
 
-    /* XXX DWRITE uses rdnb for I/O length. */
-    iosm->rdnb = TAR_BLOCK_SIZE;
-    rc = _iosmNext(iosm, IOSM_DWRITE);
-    if (!rc && iosm->rdnb != iosm->wrnb)
-	rc = IOSMERR_WRITE_FAILED;
+    rc = tarWrite(_iosm, hdr, TAR_BLOCK_SIZE);
 
     return rc;
 }
@@ -351,47 +373,47 @@ int tarHeaderWrite(void * _iosm, struct stat * st)
     tarHeader hdr = (tarHeader) iosm->rdbuf;
     char * t;
     dev_t dev;
-    int rc = 0;
-    size_t len;
+    size_t nb;
+    ssize_t rc = 0;
 
 if (_tar_debug)
 fprintf(stderr, "    tarHeaderWrite(%p, %p)\n", iosm, st);
 
-    len = strlen(iosm->path);
-    if (len > sizeof(hdr->name)) {
+    nb = strlen(iosm->path);
+    if (nb > sizeof(hdr->name)) {
 	memset(hdr, 0, sizeof(*hdr));
 	strcpy(hdr->name, llname);
 	sprintf(hdr->mode, "%07o", 0);
 	sprintf(hdr->uid, "%07o", 0);
 	sprintf(hdr->gid, "%07o", 0);
-	sprintf(hdr->filesize, "%011o", (unsigned) (len & 037777777777));
+	sprintf(hdr->filesize, "%011o", (unsigned) (nb & 037777777777));
 	sprintf(hdr->mtime, "%011o", 0);
 	hdr->typeflag = 'L';
 	strncpy(hdr->uname, "root", sizeof(hdr->uname));
 	strncpy(hdr->gname, "root", sizeof(hdr->gname));
 	rc = tarHeaderWriteBlock(iosm, st, hdr);
-	if (rc) return rc;
+	if (rc < 0) return (int) -rc;
 	rc = tarHeaderWriteName(iosm, iosm->path);
-	if (rc) return rc;
+	if (rc < 0) return (int) -rc;
     }
 
     if (iosm->lpath && iosm->lpath[0] != '0') {
-	len = strlen(iosm->lpath);
-	if (len > sizeof(hdr->name)) {
+	nb = strlen(iosm->lpath);
+	if (nb > sizeof(hdr->name)) {
 	    memset(hdr, 0, sizeof(*hdr));
 	    strcpy(hdr->linkname, llname);
 	sprintf(hdr->mode, "%07o", 0);
 	sprintf(hdr->uid, "%07o", 0);
 	sprintf(hdr->gid, "%07o", 0);
-	    sprintf(hdr->filesize, "%011o", (unsigned) (len & 037777777777));
+	    sprintf(hdr->filesize, "%011o", (unsigned) (nb & 037777777777));
 	sprintf(hdr->mtime, "%011o", 0);
 	    hdr->typeflag = 'K';
 	strncpy(hdr->uname, "root", sizeof(hdr->uname));
 	strncpy(hdr->gname, "root", sizeof(hdr->gname));
 	    rc = tarHeaderWriteBlock(iosm, st, hdr);
-	    if (rc) return rc;
+	    if (rc < 0) return (int) -rc;
 	    rc = tarHeaderWriteName(iosm, iosm->lpath);
-	    if (rc) return rc;
+	    if (rc < 0) return (int) -rc;
 	}
     }
 
@@ -442,12 +464,12 @@ fprintf(stderr, "    tarHeaderWrite(%p, %p)\n", iosm, st);
     sprintf(hdr->devMinor, "%07o", (unsigned) (dev & 07777777));
 
     rc = tarHeaderWriteBlock(iosm, st, hdr);
+    if (rc < 0) return (int) -rc;
 
     /* XXX Padding is unnecessary but shouldn't hurt. */
-    if (!rc)
-	rc = _iosmNext(iosm, IOSM_PAD);
+    rc = _iosmNext(iosm, IOSM_PAD);
 
-    return rc;
+    return (int) rc;
 }
 
 int tarTrailerWrite(void * _iosm)
