@@ -21,6 +21,7 @@
 -globuse
 -internalglobs
 -mustmod		# BUG
+-nullptrarith
 -predboolptr		# 56
 -redef			# 8
 -retalias

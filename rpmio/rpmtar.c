@@ -229,6 +229,88 @@ bsdtar_errc(struct bsdtar *bsdtar, int eval, int code, const char *fmt, ...)
     exit(eval);
 }
 
+/*@-usereleased@*/
+/*
+ * Read lines from file and do something with each one.  If option_null
+ * is set, lines are terminated with zero bytes; otherwise, they're
+ * terminated with newlines.
+ *
+ * This uses a self-sizing buffer to handle arbitrarily-long lines.
+ * If the "process" function returns non-zero for any line, this
+ * function will return non-zero after attempting to process all
+ * remaining lines.
+ */
+int
+process_lines(struct bsdtar *bsdtar, const char *pathname,
+    int (*process)(struct bsdtar *, const char *))
+{
+    FILE *f;
+    char *buff, *buff_end, *line_start, *line_end, *p;
+    size_t buff_length, bytes_read, bytes_wanted;
+    int separator;
+    int ret;
+
+    separator = (int) (bsdtar->option_null != (char)0 ? '\0' : '\n');
+    ret = 0;
+
+    if (strcmp(pathname, "-") == 0)
+	f = stdin;
+    else
+	f = fopen(pathname, "r");
+    if (f == NULL)
+	bsdtar_errc(bsdtar, 1, errno, "Couldn't open %s", pathname);
+assert(f != NULL);
+    buff_length = BUFSIZ;
+    buff = xmalloc(buff_length);
+assert(buff != NULL);
+    line_start = line_end = buff_end = buff;
+    for (;;) {
+	/* Get some more data into the buffer. */
+	bytes_wanted = buff + buff_length - buff_end;
+	bytes_read = fread(buff_end, 1, bytes_wanted, f);
+	buff_end += bytes_read;
+	/* Process all complete lines in the buffer. */
+	while (line_end < buff_end) {
+	    if (*line_end == (char)separator) {
+		*line_end = '\0';
+		if ((*process)(bsdtar, line_start) != 0)
+		    ret = -1;
+		line_start = line_end + 1;
+		line_end = line_start;
+	    } else
+		line_end++;
+	}
+	if (feof(f))
+	    break;
+	if (ferror(f))
+	    bsdtar_errc(bsdtar, 1, errno, "Can't read %s", pathname);
+	if (line_start > buff) {
+	    /* Move a leftover fractional line to the beginning. */
+	    memmove(buff, line_start, buff_end - line_start);
+	    buff_end -= line_start - buff;
+	    line_end -= line_start - buff;
+	    line_start = buff;
+	} else {
+	    /* Line is too big; enlarge the buffer. */
+	    p = xrealloc(buff, buff_length *= 2);
+	    buff_end = p + (buff_end - buff);
+	    line_end = p + (line_end - buff);
+	    line_start = buff = p;
+	}
+    }
+    /* At end-of-file, handle the final line. */
+    if (line_end > line_start) {
+	*line_end = '\0';
+	if ((*process)(bsdtar, line_start) != 0)
+	    ret = -1;
+    }
+    free(buff);
+    if (f != stdin)
+	(void) fclose(f);
+    return (ret);
+}
+/*@=usereleased@*/
+
 /*-
  * The logic here for -C DIR attempts to avoid
  * chdir() as long as possible.  For example:
@@ -269,6 +351,55 @@ set_chdir(struct bsdtar *bsdtar, const char *newdir)
     }
 }
 
+/*==============================================================*/
+struct match {
+	struct match	 *next;
+	int		  matches;
+	char		  pattern[1];
+};
+
+struct matching {
+	struct match	 *exclusions;
+	int		  exclusions_count;
+	struct match	 *inclusions;
+	int		  inclusions_count;
+	int		  inclusions_unmatched_count;
+};
+
+static void
+add_pattern(/*@unused@*/ UNUSED(struct bsdtar *bsdtar), struct match **list, const char *pattern)
+	/*@globals fileSystem @*/
+	/*@modifies *list, fileSystem @*/
+{
+    struct match *match;
+
+    match = xmalloc(sizeof(*match) + strlen(pattern) + 1);
+    if (pattern[0] == '/')
+	pattern++;
+/*@-mayaliasunique@*/
+    strcpy(match->pattern, pattern);
+/*@=mayaliasunique@*/
+    /* Both "foo/" and "foo" should match "foo/bar". */
+    if (match->pattern[strlen(match->pattern)-1] == '/')
+	match->pattern[strlen(match->pattern)-1] = '\0';
+/*@-compmempass -unqualifiedtrans@*/
+    match->next = *list;
+    *list = match;
+    match->matches = 0;
+    return;
+/*@=compmempass =unqualifiedtrans@*/
+}
+
+static void
+initialize_matching(struct bsdtar *bsdtar)
+	/*@globals fileSystem @*/
+	/*@modifies bsdtar, fileSystem @*/
+{
+    bsdtar->matching = xmalloc(sizeof(*bsdtar->matching));
+    memset(bsdtar->matching, 0, sizeof(*bsdtar->matching));
+}
+
+/*==============================================================*/
 /*
  * The matching logic here needs to be re-thought.  I started out to
  * try to mimic gtar's matching logic, but it's not entirely
@@ -281,50 +412,43 @@ set_chdir(struct bsdtar *bsdtar, const char *newdir)
  */
 
 int
-exclude(/*@unused@*/ struct bsdtar *bsdtar, /*@unused@*/ const char *pattern)
+exclude(struct bsdtar *bsdtar, const char *pattern)
 {
-#ifdef	NOTYET
     struct matching *matching;
 
     if (bsdtar->matching == NULL)
 	initialize_matching(bsdtar);
     matching = bsdtar->matching;
+assert(matching != NULL);
     add_pattern(bsdtar, &(matching->exclusions), pattern);
     matching->exclusions_count++;
-#endif
-	return 0;
+    return 0;
 }
 
 int
 exclude_from_file(/*@unused@*/ struct bsdtar *bsdtar, /*@unused@*/ const char *pathname)
 {
-#ifdef	NOTYET
     return process_lines(bsdtar, pathname, &exclude);
-#else
-    return 0;
-#endif
 }
 
 int
-include(/*@unused@*/ struct bsdtar *bsdtar, /*@unused@*/ const char *pattern)
+include(struct bsdtar *bsdtar, const char *pattern)
 {
-#ifdef	NOTYET
     struct matching *matching;
 
     if (bsdtar->matching == NULL)
 	initialize_matching(bsdtar);
     matching = bsdtar->matching;
+assert(matching != NULL);
     add_pattern(bsdtar, &(matching->inclusions), pattern);
     matching->inclusions_count++;
     matching->inclusions_unmatched_count++;
-#endif
     return 0;
 }
 
 void
-cleanup_exclusions(/*@unused@*/ struct bsdtar *bsdtar)
+cleanup_exclusions(struct bsdtar *bsdtar)
 {
-#ifdef	NOTYET
     struct match *p, *q;
 
     if (bsdtar->matching) {
@@ -342,7 +466,6 @@ cleanup_exclusions(/*@unused@*/ struct bsdtar *bsdtar)
 	}
 	bsdtar->matching = _free(bsdtar->matching);
     }
-#endif
 }
 
 /*==============================================================*/
