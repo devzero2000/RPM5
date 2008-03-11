@@ -3,14 +3,14 @@
 #   configure the requirements
 AMV="automake (GNU automake) 1.10"
 ACV="autoconf (GNU Autoconf) 2.61"
-LTV="libtoolize (GNU libtool) 1.5.24"
+LTV="libtoolize (GNU libtool) 2.2"
 GTT="gettextize (GNU gettext-tools) 0.17"
 USAGE="
 To build RPM from plain CVS sources the following
 installed developer tools are mandatory:
     GNU automake  1.10
     GNU autoconf  2.61
-    GNU libtool   1.5.24
+    GNU libtool   2.2
     GNU gettext   0.17
 "
 
@@ -48,7 +48,7 @@ echo "<=== xar"
 echo "===> rpm"
 rm -rf autom4te.cache || true
 echo "---> generate files via GNU libtool (libtoolize)"
-libtoolize --copy --force
+libtoolize --quiet --copy --force --install
 echo "---> generate files via GNU gettext (autopoint)"
 autopoint --force
 echo "---> generate files via GNU autoconf (aclocal, autoheader)"
