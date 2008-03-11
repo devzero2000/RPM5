@@ -17,11 +17,17 @@
 
 -boolops		# 30
 -compdestroy		# 5
+-exportheader
+-globuse
+-internalglobs
 -mustmod		# BUG
 -predboolptr		# 56
 -redef			# 8
+-retalias
+-whileempty
 
 -onlytrans		# 2
+-temptrans
 
 -exportlocal
 

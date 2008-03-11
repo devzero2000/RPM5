@@ -4,9 +4,9 @@ AUTOMAKE_OPTIONS = 1.4 foreign
 
 LINT = splint
 
-EXTRA_DIST = getdate.y rpmtar.c rpmtar.h tdeb.c tdir.c tfts.c tget.c tglob.c thkp.c thtml.c tinv.c tkey.c tmire.c tput.c trpmio.c tsw.c ttar.c lookup3.c tpw.c librpmio.vers testit.sh rpmgrep.1
+EXTRA_DIST = getdate.y rpmtar.c rpmtar.h tdir.c tfts.c tget.c tglob.c thkp.c thtml.c tinv.c tkey.c tmire.c tput.c trpmio.c tsw.c lookup3.c tpw.c librpmio.vers testit.sh rpmgrep.1
 
-EXTRA_PROGRAMS = rpmtar tdeb tdir tfts tget tglob thkp thtml tinv tkey tmacro tmagic tmire tput tpw trpmio tsw ttar dumpasn1 lookup3
+EXTRA_PROGRAMS = rpmtar tdir tfts tget tglob thkp thtml tinv tkey tmacro tmagic tmire tput tpw trpmio tsw dumpasn1 lookup3
 
 bin_PROGRAMS = rpmdigest
 man_MANS =
@@ -141,13 +141,13 @@ sources:
 lint:
 	$(LINT) $(DEFS) $(INCLUDES) $(librpmio_la_SOURCES)
 
+.PHONY:	lint_rpmtar
+lint_rpmtar:
+	$(LINT) -f .splintrc_rpmtar $(DEFS) $(INCLUDES) rpmtar.c
+
 .PHONY:	lint_rpmgrep
 lint_rpmgrep:
 	$(LINT) -f .splintrc_rpmgrep $(DEFS) $(INCLUDES) rpmgrep.c
-
-.PHONY:	lint_tdeb
-lint_tdeb:
-	$(LINT) -f .splintrc_tdeb $(DEFS) $(INCLUDES) tdeb.c iosm.c ar.c cpio.c tar.c
 
 TESTS += RunGrepTest
 dist_noinst_SCRIPTS += RunGrepTest
@@ -194,9 +194,6 @@ rpmdigest_LDADD = $(RPMIO_LDADD_COMMON)
 
 rpmtar_SOURCES = rpmtar.c
 rpmtar_LDADD = $(RPM_LDADD_COMMON)
-
-tdeb_SOURCES = tdeb.c
-tdeb_LDFLAGS = $(RPM_LDADD_COMMON)
 
 tdir_SOURCES = tdir.c
 tdir_LDADD = $(RPMIO_LDADD_COMMON)
@@ -248,9 +245,6 @@ trpmio_LDADD = $(RPMIO_LDADD_COMMON)
 
 tsw_SOURCES = tsw.c
 tsw_LDFLAGS = $(RPMIO_LDADD_COMMON)
-
-ttar_SOURCES = ttar.c
-ttar_LDFLAGS = $(RPM_LDADD_COMMON)
 
 dumpasn1_SOURCES = dumpasn1.c
 

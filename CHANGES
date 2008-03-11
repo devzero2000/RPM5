@@ -1,4 +1,6 @@
 5.0.0 -> 5.1a1:
+    - jbj: rpmtar: splint annotations.
+    - jbj: rpmtar: nuke ttar.c/tdeb.c prototypes for rpmtar.
     - jbj: rpmtar: abuse --format {ar,cpio,tar,ustar} as a selector for now.
     - jbj: rpmtar: lash in -z/-j/-y/-Z compression options using popt.
     - jbj: rpmtar: add stoopid file suffix detector for gzip/bzip2/lzma detect.

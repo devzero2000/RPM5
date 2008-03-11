@@ -28,8 +28,13 @@
 #define __FBSDID(_s)	
 #define BSDTAR_VERSION_STRING "2.4.12"
 
+#if defined(__LCLINT__)
+#define ARCHIVE_STAT_CTIME_NANOS(st)    0
+#define ARCHIVE_STAT_MTIME_NANOS(st)    0
+#else
 #define ARCHIVE_STAT_CTIME_NANOS(st)    (st)->st_ctim.tv_nsec
 #define ARCHIVE_STAT_MTIME_NANOS(st)    (st)->st_mtim.tv_nsec
+#endif
 
 #define	HAVE_LIBZ		1
 #define	HAVE_LIBBZ2		1
@@ -178,11 +183,13 @@ enum qFlags_e {
 /*@unchecked@*/
 static enum qFlags_e qFlags = QFLAGS_NONE;
 
+/*@-fullinitblock@*/
 /*@unchecked@*/
 static struct bsdtar _bsdtar = {
     .progname = "rpmtar",	/* Need bsdtar->progname for bsdtar_warnc. */
     .fd = -1,		/* Mark as "unused" */
 };
+/*@=fullinitblock@*/
 
 /*==============================================================*/
 /* External function to parse a date/time string (from getdate.y) */
@@ -195,7 +202,7 @@ bsdtar_vwarnc(struct bsdtar *bsdtar, int code, const char *fmt, va_list ap)
 	/*@modifies ap, fileSystem @*/
 {
     fprintf(stderr, "%s: ", bsdtar->progname);
-    vfprintf(stderr, fmt, ap);
+    (void) vfprintf(stderr, fmt, ap);
     if (code != 0)
 	fprintf(stderr, ": %s", strerror(code));
     fprintf(stderr, "\n");
@@ -274,7 +281,7 @@ set_chdir(struct bsdtar *bsdtar, const char *newdir)
  */
 
 int
-exclude(struct bsdtar *bsdtar, const char *pattern)
+exclude(/*@unused@*/ struct bsdtar *bsdtar, /*@unused@*/ const char *pattern)
 {
 #ifdef	NOTYET
     struct matching *matching;
@@ -285,21 +292,21 @@ exclude(struct bsdtar *bsdtar, const char *pattern)
     add_pattern(bsdtar, &(matching->exclusions), pattern);
     matching->exclusions_count++;
 #endif
-	return (0);
+	return 0;
 }
 
 int
-exclude_from_file(struct bsdtar *bsdtar, const char *pathname)
+exclude_from_file(/*@unused@*/ struct bsdtar *bsdtar, /*@unused@*/ const char *pathname)
 {
 #ifdef	NOTYET
-    return (process_lines(bsdtar, pathname, &exclude));
+    return process_lines(bsdtar, pathname, &exclude);
 #else
-    return (0);
+    return 0;
 #endif
 }
 
 int
-include(struct bsdtar *bsdtar, const char *pattern)
+include(/*@unused@*/ struct bsdtar *bsdtar, /*@unused@*/ const char *pattern)
 {
 #ifdef	NOTYET
     struct matching *matching;
@@ -311,11 +318,11 @@ include(struct bsdtar *bsdtar, const char *pattern)
     matching->inclusions_count++;
     matching->inclusions_unmatched_count++;
 #endif
-    return (0);
+    return 0;
 }
 
 void
-cleanup_exclusions(struct bsdtar *bsdtar)
+cleanup_exclusions(/*@unused@*/ struct bsdtar *bsdtar)
 {
 #ifdef	NOTYET
     struct match *p, *q;
@@ -360,13 +367,27 @@ static int rpmIOSM(struct bsdtar * bsdtar, int mapflags)
     const char * fn = (bsdtar->filename ? bsdtar->filename : "-");
     int rc = 0;
 
+    switch (bsdtar->mode) {
+    case 'c':
+    case 'r':
+    case 'u':
+	fprintf(stderr, "==> tar_mode_%c: %s\n", (char) bsdtar->mode, fn);
+	return 0;
+	/*@notreached@*/ break;
+    case 't':
+    case 'x':
+	break;
+    }
+
 if (_debug)
 fprintf(stderr, "--> rpmIOSM(%p, 0x%x) fn \"%s\"\n", bsdtar, mapflags, fn);
 
     if (fn != NULL) {
 	rpmts ts = rpmtsCreate();
 	rpmfi fi = rpmfiNew(ts, NULL, RPMTAG_BASENAMES, 0);
+/*@-nullpass@*/
 	rpmpsm psm = rpmpsmNew(ts, NULL, fi);
+/*@=nullpass@*/
 	const char * fmode;
 	char zmode = (char) bsdtar->create_compression;
 	const char * aformat = bsdtar->create_format;
@@ -393,12 +414,14 @@ fprintf(stderr, "--> rpmIOSM(%p, 0x%x) fn \"%s\"\n", bsdtar, mapflags, fn);
 	else
 	    fmode = "r.ufdio";
 
+assert(psm != NULL);
 	psm->cfd = Fopen(fn, fmode);
 	if (psm->cfd != NULL && !Ferror(psm->cfd)) {
 	    int fsmmode = (mapflags & IOSM_PAYLOAD_CREATE)
 			? IOSM_PKGBUILD : IOSM_PKGINSTALL;
 	    int xx;
 
+assert(fi != NULL);
 	    fi->mapflags |= mapflags;
 	    rc = iosmSetup(fi->fsm, fsmmode, aformat, ts, fi,
 			psm->cfd, NULL, &psm->failedFile);
@@ -428,34 +451,42 @@ fprintf(stderr, "--> rpmIOSM(%p, 0x%x) fn \"%s\"\n", bsdtar, mapflags, fn);
 
 /*==============================================================*/
 
+/*@-globs -mods @*/
 int tar_mode_c(struct bsdtar *bsdtar)
 	/*@globals fileSystem @*/
 	/*@modifies bsdtar, fileSystem @*/
-#ifdef	NOTYET
-{   return rpmIOSM(bsdtar, IOSM_PAYLOAD_CREATE); }
-#else
-{ fprintf(stderr, "==> tar_mode_c: %s\n", (bsdtar->filename ?: "")); return 0; }
-#endif
+{
+    return rpmIOSM(bsdtar, IOSM_PAYLOAD_CREATE);	/* XXX hack */
+}
 
 int tar_mode_r(struct bsdtar *bsdtar)
 	/*@globals fileSystem @*/
 	/*@modifies bsdtar, fileSystem @*/
-{ fprintf(stderr, "==> tar_mode_r: %s\n", (bsdtar->filename ?: "")); return 0; }
+{
+    return rpmIOSM(bsdtar, IOSM_PAYLOAD_CREATE);	/* XXX hack */
+}
 
 int tar_mode_t(struct bsdtar *bsdtar)
 	/*@globals fileSystem @*/
 	/*@modifies bsdtar, fileSystem @*/
-{   return rpmIOSM(bsdtar, IOSM_PAYLOAD_LIST); }
+{
+    return rpmIOSM(bsdtar, IOSM_PAYLOAD_LIST);
+}
 
 int tar_mode_u(struct bsdtar *bsdtar)
 	/*@globals fileSystem @*/
 	/*@modifies bsdtar, fileSystem @*/
-{ fprintf(stderr, "==> tar_mode_u: %s\n", (bsdtar->filename ?: "")); return 0; }
+{
+    return rpmIOSM(bsdtar, IOSM_PAYLOAD_CREATE);	/* XXX hack */
+}
 
 int tar_mode_x(struct bsdtar *bsdtar)
 	/*@globals fileSystem @*/
 	/*@modifies bsdtar, fileSystem @*/
-{   return rpmIOSM(bsdtar, IOSM_PAYLOAD_EXTRACT); }
+{
+    return rpmIOSM(bsdtar, IOSM_PAYLOAD_EXTRACT);
+}
+/*@=globs =mods @*/
 
 /*==============================================================*/
 
@@ -573,24 +604,27 @@ set_mode(struct bsdtar *bsdtar, char opt)
 	/*@globals fileSystem @*/
 	/*@modifies bsdtar, fileSystem @*/
 {
-    if (bsdtar->mode != '\0' && bsdtar->mode != opt)
+    if (bsdtar->mode != (int) '\0' && bsdtar->mode != (int) opt)
 	bsdtar_errc(bsdtar, 1, 0, _("Can't specify both -%c and -%c"),
 		opt, bsdtar->mode);
-    bsdtar->mode = opt;
+    bsdtar->mode = (int) opt;
 }
 
 static void bsdtarArgCallback(/*@unused@*/ poptContext con,
                 /*@unused@*/ enum poptCallbackReason reason,
                 const struct poptOption * opt, const char * arg,
                 void * data)
-	/*@modifies *data @*/
+	/*@globals _bsdtar, qFlags, xFlags, fileSystem @*/
+	/*@modifies data, _bsdtar, qFlags, xFlags, fileSystem @*/
 {
     struct bsdtar * bsdtar = data;
     int val = opt->val;
     int t;
 
+/*@+voidabstract@*/
 if (_debug)
-fprintf(stderr, "--> bsdtarArgCallback(%p, %d, %p, %p, %p) val %d\n", con, reason, opt, arg, data, val);
+fprintf(stderr, "--> bsdtarArgCallback(%p, %d, %p, %p, %p) val %d\n", (void *)con, reason, opt, arg, data, val);
+/*@=voidabstract@*/
     /*
      * Comments following each option indicate where that option
      * originated:  SUSv2, POSIX, GNU tar, star, etc.  If there's
@@ -615,7 +649,7 @@ fprintf(stderr, "--> bsdtarArgCallback(%p, %d, %p, %p, %p) val %d\n", con, reaso
 	set_chdir(bsdtar, arg);
 	break;
     case 'c': /* SUSv2 */
-	set_mode(bsdtar, val);
+	set_mode(bsdtar, (char) val);
 	break;
     case OPTION_EXCLUDE: /* GNU tar */
 	if (exclude(bsdtar, arg))
@@ -718,7 +752,7 @@ fprintf(stderr, "--> bsdtarArgCallback(%p, %d, %p, %p, %p) val %d\n", con, reaso
 	bsdtar->create_format = "pax";
 	break;
     case 'r': /* SUSv2 */
-	set_mode(bsdtar, val);
+	set_mode(bsdtar, (char) val);
 	break;
 #ifndef USE_POPT
     case OPTION_STRIP_COMPONENTS: /* GNU tar 1.15 */
@@ -726,7 +760,7 @@ fprintf(stderr, "--> bsdtarArgCallback(%p, %d, %p, %p, %p) val %d\n", con, reaso
 	break;
 #endif
     case 't': /* SUSv2 */
-	set_mode(bsdtar, val);
+	set_mode(bsdtar, (char) val);
 	bsdtar->verbose++;
 	break;
     case 'U': /* GNU tar */
@@ -734,7 +768,7 @@ fprintf(stderr, "--> bsdtarArgCallback(%p, %d, %p, %p, %p) val %d\n", con, reaso
 	qFlags |= QFLAGS_UNLINK;
 	break;
     case 'u': /* SUSv2 */
-	set_mode(bsdtar, val);
+	set_mode(bsdtar, (char) val);
 	break;
     case 'v': /* SUSv2 */
 	bsdtar->verbose++;
@@ -743,7 +777,7 @@ fprintf(stderr, "--> bsdtarArgCallback(%p, %d, %p, %p, %p) val %d\n", con, reaso
 	printf("%s %s (libarchive %s)\n", bsdtar->progname,
 			BSDTAR_VERSION_STRING, archive_version());
 	exit(EXIT_FAILURE);
-	break;
+	/*@notreached@*/ break;
 #if 0
     /*
      * The -W longopt feature is handled inside of
@@ -758,7 +792,7 @@ fprintf(stderr, "--> bsdtarArgCallback(%p, %d, %p, %p, %p) val %d\n", con, reaso
 		    "failed to process exclusions from file %s", arg);
 	break;
     case 'x': /* SUSv2 */
-	set_mode(bsdtar, val);
+	set_mode(bsdtar, (char) val);
 	break;
 #ifdef	DYING
     case 'y': /* FreeBSD version of GNU tar */
@@ -797,10 +831,12 @@ fprintf(stderr, "--> bsdtarArgCallback(%p, %d, %p, %p, %p) val %d\n", con, reaso
     default:
 	poptPrintUsage(con, stderr, 0);
 	exit(EXIT_FAILURE);
-	break;
+	/*@notreached@*/ break;
     }
 }
 
+/*@+charint@*/
+/*@unchecked@*/
 static struct poptOption optionsTable[] = {
 /*@-type@*/ /* FIX: cast? */
  { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA | POPT_CBFLAG_CONTINUE,
@@ -963,6 +999,7 @@ static struct poptOption optionsTable[] = {
 
     POPT_TABLEEND
 };
+/*@=charint@*/
 
 #ifdef	REFERENCE	/* XXX TODO: does popt need -W longName=value option? */
 static const struct option *
@@ -1043,8 +1080,8 @@ only_mode(struct bsdtar *bsdtar, const char *opt, const char *valid_modes)
 
 int
 main(int argc, char **argv)
-	/*@globals fileSystem @*/
-	/*@modifies argc, *argv, fileSystem @*/
+	/*@globals _bsdtar, qFlags, xFlags, fileSystem @*/
+	/*@modifies argc, *argv, _bsdtar, qFlags, xFlags, fileSystem @*/
 {
     poptContext optCon;
     struct bsdtar *bsdtar = &_bsdtar;
@@ -1057,6 +1094,7 @@ main(int argc, char **argv)
 
     /* Rewrite traditional-style tar arguments, if used. */
     argv = rewrite_argv(bsdtar, &argc, argv, tar_opts);
+assert(argv != NULL);
 
     /* Look up uid of current user. */
     bsdtar->user_uid = geteuid();
@@ -1079,13 +1117,15 @@ main(int argc, char **argv)
 	    /*@notreached@*/ /*@switchbreak@*/ break;
 	}
     }
+/*@-dependenttrans -observertrans@*/
     bsdtar->argv = (char **) poptGetArgs(optCon);
+/*@=dependenttrans =observertrans@*/
     bsdtar->argc = argvCount((ARGV_t)bsdtar->argv);
 
     /* Sanity-check options. */
 
     /* A mode is required. */
-    if (bsdtar->mode == '\0') {
+    if (bsdtar->mode == (int)'\0') {
 	poptPrintUsage(optCon, stderr, 0);
 	bsdtar_errc(bsdtar, 1, 0, _("Must specify one of -c, -r, -t, -u, -x"));
     }
@@ -1093,15 +1133,15 @@ main(int argc, char **argv)
     /* Check boolean options only permitted in certain modes. */
     if (QF_ISSET(XDEV)) {
 	only_mode(bsdtar, "--one-file-system", "cru");
-	bsdtar->option_dont_traverse_mounts = 1;
+	bsdtar->option_dont_traverse_mounts = (char)1;
     }
     if (QF_ISSET(FAST_READ)) {
 	only_mode(bsdtar, "--fast-read", "xt");
-	bsdtar->option_fast_read = 1;
+	bsdtar->option_fast_read = (char)1;
     }
     if (QF_ISSET(HONOR_NODUMP)) {
 	only_mode(bsdtar, "--nodump", "cru");
-	bsdtar->option_honor_nodump = 1;
+	bsdtar->option_honor_nodump = (char)1;
     }
     if (QF_ISSET(NO_OWNER)) {
 	switch (bsdtar->mode) {
@@ -1116,7 +1156,7 @@ main(int argc, char **argv)
 	    break;
 	case 'x':
 	    /* POSIX-compatible behavior. */
-	    bsdtar->option_no_owner = 1;
+	    bsdtar->option_no_owner = (char)1;
 	    xFlags &= ~XFLAGS_OWNER;
 	    break;
 	default:
@@ -1126,52 +1166,52 @@ main(int argc, char **argv)
     }
     if (QF_ISSET(NO_SUBDIRS)) {
 	only_mode(bsdtar, "-n", "cru");
-	bsdtar->option_no_subdirs = 1;
+	bsdtar->option_no_subdirs = (char)1;
     }
     if (QF_ISSET(STDOUT)) {
 	only_mode(bsdtar, "-O", "xt");
-	bsdtar->option_stdout = 1;
+	bsdtar->option_stdout = (char)1;
     }
     if (QF_ISSET(UNLINK)) {
 	only_mode(bsdtar, "-U", "x");
-	bsdtar->option_unlink_first = 1;
+	bsdtar->option_unlink_first = (char)1;
     }
     if (QF_ISSET(WARN_LINKS)) {
 	only_mode(bsdtar, "--check-links", "cr");
-	bsdtar->option_warn_links = 1;
+	bsdtar->option_warn_links = (char)1;
     }
 
     /* Check other parameters only permitted in certain modes. */
-    if (bsdtar->create_compression == 'Z' && bsdtar->mode == 'c') {
+    if (bsdtar->create_compression == (int)'Z' && bsdtar->mode == (int)'c') {
 	bsdtar_warnc(bsdtar, 0, _(".Z compression not supported"));
 	poptPrintUsage(optCon, stderr, 0);
 	exit(EXIT_FAILURE);
     }
-    if (bsdtar->create_compression != '\0') {
+    if (bsdtar->create_compression != (int)'\0') {
 	strcpy(buff, "-?");
-	buff[1] = bsdtar->create_compression;
+	buff[1] = (char) bsdtar->create_compression;
 	only_mode(bsdtar, buff, "cxt");
     }
 #ifdef	NOTYET
     if (bsdtar->create_format != NULL)
 	only_mode(bsdtar, "--format", "c");
 #endif
-    if (bsdtar->symlink_mode != '\0') {
+    if (bsdtar->symlink_mode != (int)'\0') {
 	strcpy(buff, "-?");
-	buff[1] = bsdtar->symlink_mode;
+	buff[1] = (char)bsdtar->symlink_mode;
 	only_mode(bsdtar, buff, "cru");
     }
     if (bsdtar->strip_components != 0)
 	only_mode(bsdtar, "--strip-components", "xt");
 
     if (QF_ISSET(NULSEP))
-	bsdtar->option_null = 1;
+	bsdtar->option_null = (char)1;
     if (QF_ISSET(ABSPATHS))
-	bsdtar->option_absolute_paths = 1;
+	bsdtar->option_absolute_paths = (char)1;
     if (QF_ISSET(TOTALS))
-	bsdtar->option_totals = 1;
+	bsdtar->option_totals = (char)1;
     if (QF_ISSET(INTERACTIVE))
-	bsdtar->option_interactive = 1;
+	bsdtar->option_interactive = (char)1;
 
     /* Set the extract flags. */
     bsdtar->extract_flags = _XFCLR(xFlags);
@@ -1188,6 +1228,7 @@ main(int argc, char **argv)
     if (bsdtar->filename[0] == '-' && bsdtar->filename[1] == '\0')
 	    bsdtar->filename = NULL;
 
+/*@-mods@*/
 _iosmNext = &iosmNext;
 _iosm_debug = -1;
 _ar_debug = 1;
@@ -1195,6 +1236,7 @@ _cpio_debug = 1;
 _tar_debug = 1;
 rpmIncreaseVerbosity();
 rpmIncreaseVerbosity();
+/*@=mods@*/
 
     switch(bsdtar->mode) {
     case 'c':
