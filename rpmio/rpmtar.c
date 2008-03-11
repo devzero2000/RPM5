@@ -360,6 +360,7 @@ static int rpmIOSM(struct bsdtar * bsdtar, int mapflags)
     const char * fn = (bsdtar->filename ? bsdtar->filename : "-");
     int rc = 0;
 
+if (_debug)
 fprintf(stderr, "--> rpmIOSM(%p, 0x%x) fn \"%s\"\n", bsdtar, mapflags, fn);
 
     if (fn != NULL) {
@@ -367,11 +368,12 @@ fprintf(stderr, "--> rpmIOSM(%p, 0x%x) fn \"%s\"\n", bsdtar, mapflags, fn);
 	rpmfi fi = rpmfiNew(ts, NULL, RPMTAG_BASENAMES, 0);
 	rpmpsm psm = rpmpsmNew(ts, NULL, fi);
 	const char * fmode;
+	char zmode = (char) bsdtar->create_compression;
 
 	/* Identify how to Fopen the file from the suffix. */
-	if (chkSuffix(fn, ".gz"))
+	if (zmode == 'z' || zmode == 'Z' || chkSuffix(fn, ".gz"))
 	    fmode = "r.gzdio";      /* Open with zlib decompression. */
-	else if (chkSuffix(fn, ".bz2"))
+	else if (zmode == 'j' || zmode == 'y' || chkSuffix(fn, ".bz2"))
 	    fmode = "r.bzdio";      /* Open with bzip2 decompression. */
 	else if (chkSuffix(fn, ".lzma"))
 	    fmode = "r.lzdio";      /* Open with lzma decompression. */
@@ -631,6 +633,7 @@ fprintf(stderr, "--> bsdtarArgCallback(%p, %d, %p, %p, %p) val %d\n", con, reaso
 	    bsdtar_errc(bsdtar, 1, 0,
 			    "Failed to add %s to inclusion list", arg);
 		break;
+#ifdef	DYING
     case 'j': /* GNU tar */
 #if HAVE_LIBBZ2
 	if (bsdtar->create_compression != '\0')
@@ -644,6 +647,7 @@ fprintf(stderr, "--> bsdtarArgCallback(%p, %d, %p, %p, %p) val %d\n", con, reaso
 	exit(EXIT_FAILURE);
 #endif
 	break;
+#endif
 #ifndef USE_POPT
     case 'l': /* SUSv2 and GNU tar beginning with 1.16 */
 	/* GNU tar 1.13  used -l for --one-file-system */
@@ -743,6 +747,7 @@ fprintf(stderr, "--> bsdtarArgCallback(%p, %d, %p, %p, %p) val %d\n", con, reaso
     case 'x': /* SUSv2 */
 	set_mode(bsdtar, val);
 	break;
+#ifdef	DYING
     case 'y': /* FreeBSD version of GNU tar */
 #if HAVE_LIBBZ2
 	if (bsdtar->create_compression != '\0')
@@ -775,6 +780,7 @@ fprintf(stderr, "--> bsdtarArgCallback(%p, %d, %p, %p, %p) val %d\n", con, reaso
 	exit(EXIT_FAILURE);
 #endif
 	break;
+#endif
     default:
 	poptPrintUsage(con, stderr, 0);
 	exit(EXIT_FAILURE);
@@ -794,11 +800,11 @@ static struct poptOption optionsTable[] = {
 	N_("Append files to the end of an archive"), NULL },
   { "block-size",'b',		POPT_ARG_STRING, NULL, 'b',
 	N_("Use # 512-byte records per I/O block"), N_("#") },
-  { "bunzip2",'j',	POPT_ARG_NONE|POPT_ARGFLAG_DOC_HIDDEN,	NULL, 'j',
+  { "bunzip2",'j', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_bsdtar.create_compression, 'j',
 	N_("Uncompress archive using bzip2"), NULL },
-  { "bzip",'j',		POPT_ARG_NONE|POPT_ARGFLAG_DOC_HIDDEN,	NULL, 'j',
+  { "bzip",'j', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_bsdtar.create_compression, 'j',
 	N_("Compress archive using bzip2"), NULL },
-  { "bzip2",'j',		POPT_ARG_NONE,	NULL, 'j',
+  { "bzip2",'j',	POPT_ARG_VAL,	&_bsdtar.create_compression, 'j',
 	N_("Compress archive using bzip2"), NULL },
   { "cd",'C',			POPT_ARG_STRING,NULL, 'C',
 	N_("Change to DIR before processing remaining files"), N_("DIR") },
@@ -827,9 +833,9 @@ static struct poptOption optionsTable[] = {
 	N_("Get names to extract/create from FILE"), N_("FILE") },
   { "format",'\0',	POPT_ARG_STRING,	&_bsdtar.create_format, 0,
 	N_("Select archive format"), N_("{ustar|pax|cpio|shar}") },
-  { "gunzip",'z',	POPT_ARG_NONE|POPT_ARGFLAG_DOC_HIDDEN,	NULL, 'z',
+  { "gunzip",'z', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	&_bsdtar.create_compression, 'z',
 	N_("Uncompress archive using gzip"), NULL },
-  { "gzip",'z',		POPT_ARG_NONE,		NULL, 'z',
+  { "gzip",'z', POPT_ARG_VAL,		&_bsdtar.create_compression, 'z',
 	N_("Compress archive using gzip"), NULL },
   { NULL,'H',		POPT_ARG_VAL,		&_bsdtar.symlink_mode, 'H',
 	NULL, NULL },
@@ -907,11 +913,11 @@ static struct poptOption optionsTable[] = {
   { NULL,'W',		POPT_ARG_STRING,	NULL, 'W',
 	NULL, NULL },
 #endif
-  { NULL,'y',	POPT_ARG_NONE|POPT_ARGFLAG_DOC_HIDDEN,	NULL, 'y',
+  { NULL,'y', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_bsdtar.create_compression, 'y',
 	N_("Compress archive using bzip2"), NULL },
-  { "uncompress",'Z',	POPT_ARG_NONE|POPT_ARGFLAG_DOC_HIDDEN,	NULL, 'Z',
+  { "uncompress",'Z', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_bsdtar.create_compression, 'Z',
 	N_("Filter the archive through compress"), NULL },
-  { "compress",'Z',	POPT_ARG_NONE|POPT_ARGFLAG_DOC_HIDDEN,	NULL, 'Z',
+  { "compress",'Z', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_bsdtar.create_compression, 'Z',
 	N_("Filter the archive through compress"), NULL },
     POPT_AUTOALIAS
     POPT_AUTOHELP
