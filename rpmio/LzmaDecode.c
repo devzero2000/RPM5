@@ -126,7 +126,7 @@ StopCompilingDueBUG
 int LzmaDecodeProperties(CLzmaProperties *propsRes, const unsigned char *propsData, int size)
 {
   unsigned char prop0;
-  if (size < LZMA_PROPERTIES_SIZE)
+  if (size < (int)LZMA_PROPERTIES_SIZE)
     return LZMA_RESULT_DATA_ERROR;
   prop0 = propsData[0];
   if (prop0 >= (unsigned char)(9 * 5 * 5))
