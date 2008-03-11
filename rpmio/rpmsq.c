@@ -647,6 +647,8 @@ void * rpmsqThread(void * (*start) (void * arg), void * arg)
     ret = pthread_create(&pth, NULL, start, arg);
     return (ret == 0 ? (void *)pth : NULL);
 #else
+    (void) start;
+    (void) arg; 
     return NULL;
 #endif
 }
@@ -659,6 +661,7 @@ int rpmsqJoin(void * thread)
 	return EINVAL;
     return pthread_join(pth, NULL);
 #else
+    (void) thread;
     return EINVAL;
 #endif
 }
@@ -670,6 +673,7 @@ int rpmsqThreadEqual(void * thread)
     pthread_t t2 = pthread_self();
     return pthread_equal(t1, t2);
 #else
+    (void) thread;
     return 0;
 #endif
 }

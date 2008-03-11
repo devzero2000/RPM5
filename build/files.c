@@ -1588,14 +1588,16 @@ if (!(_rpmbuildFlags & 4))
 	    he->append = 0;
 
 /*@-modobserver@*/	/* observer nocon not modified. */
-	    if (scon != nocon)
+	    if (scon != nocon) {
 		freecon(scon);
+	    }
 /*@=modobserver@*/
 	}
     }
 /*@-moduncon -noeffectuncon @*/
-    if (sxfn != NULL && *sxfn != '\0')
+    if (sxfn != NULL && *sxfn != '\0') {
 	matchpathcon_fini();
+    }
 /*@=moduncon =noeffectuncon @*/
     sxfn = _free(sxfn);
 
@@ -1660,7 +1662,7 @@ if (_rpmbuildFlags & 4) {
 
     /* Make the cpio list */
     if (fi->dil != NULL)	/* XXX can't happen */
-    for (i = 0, flp = fl->fileList; i < fi->fc; i++, flp++) {
+    for (i = 0, flp = fl->fileList; (unsigned)i < fi->fc; i++, flp++) {
 	char * b;
 
 	/* Skip (possible) duplicate file entries, use last entry info. */
