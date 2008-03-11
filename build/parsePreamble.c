@@ -449,7 +449,7 @@ static int doIcon(Spec spec, Header h)
     }
     if (nb >= iconsize) {
 	rpmlog(RPMLOG_ERR, _("Icon %s is too big (max. %d bytes)\n"),
-		fn, iconsize);
+		fn, (int)iconsize);
 	goto exit;
     }
 

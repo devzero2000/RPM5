@@ -285,7 +285,7 @@ fprintf(stderr, "==> check(%s, %s, %s, %s)\n", fn, sigfn, pubfn, pubid);
 	xx = pgpReadPkts(_sigfn, &sigpkt, &sigpktlen);
 	if (xx != PGPARMOR_SIGNATURE) {
 if (_rpmns_debug)
-fprintf(stderr, "==> pgpReadPkts(%s) SIG %p[%u] ret %d\n", _sigfn, sigpkt, sigpktlen, xx);
+fprintf(stderr, "==> pgpReadPkts(%s) SIG %p[%u] ret %d\n", _sigfn, sigpkt, (unsigned int)sigpktlen, xx);
 	    _sigfn = _free(_sigfn);
 	    goto exit;
 	}
@@ -295,7 +295,7 @@ fprintf(stderr, "==> pgpReadPkts(%s) SIG %p[%u] ret %d\n", _sigfn, sigpkt, sigpk
 	xx = pgpReadPkts(_sigfn, &sigpkt, &sigpktlen);
 	if (xx != PGPARMOR_SIGNATURE) {
 if (_rpmns_debug)
-fprintf(stderr, "==> pgpReadPkts(%s) SIG %p[%u] ret %d\n", _sigfn, sigpkt, sigpktlen, xx);
+fprintf(stderr, "==> pgpReadPkts(%s) SIG %p[%u] ret %d\n", _sigfn, sigpkt, (unsigned int)sigpktlen, xx);
 	    _sigfn = _free(_sigfn);
 	    goto exit;
 	}
@@ -304,7 +304,7 @@ fprintf(stderr, "==> pgpReadPkts(%s) SIG %p[%u] ret %d\n", _sigfn, sigpkt, sigpk
     xx = pgpPrtPkts((uint8_t *)sigpkt, sigpktlen, dig, printing);
     if (xx) {
 if (_rpmns_debug)
-fprintf(stderr, "==> pgpPrtPkts SIG %p[%u] ret %d\n", sigpkt, sigpktlen, xx);
+fprintf(stderr, "==> pgpPrtPkts SIG %p[%u] ret %d\n", sigpkt, (unsigned int)sigpktlen, xx);
 	goto exit;
     }
 
@@ -322,7 +322,7 @@ fprintf(stderr, "==> unverifiable V%d\n", sigp->version);
 	xx = pgpReadPkts(_pubfn, &ts->pkpkt, &ts->pkpktlen);
 	if (xx != PGPARMOR_PUBKEY) {
 if (_rpmns_debug)
-fprintf(stderr, "==> pgpReadPkts(%s) PUB %p[%u] ret %d\n", _pubfn, ts->pkpkt, ts->pkpktlen, xx);
+fprintf(stderr, "==> pgpReadPkts(%s) PUB %p[%u] ret %d\n", _pubfn, ts->pkpkt, (unsigned int)ts->pkpktlen, xx);
 	    _pubfn = _free(_pubfn);
 	    goto exit;
 	}
@@ -330,7 +330,7 @@ fprintf(stderr, "==> pgpReadPkts(%s) PUB %p[%u] ret %d\n", _pubfn, ts->pkpkt, ts
 	xx = pgpPrtPkts((uint8_t *)ts->pkpkt, ts->pkpktlen, dig, printing);
 	if (xx) {
 if (_rpmns_debug)
-fprintf(stderr, "==> pgpPrtPkts PUB %p[%u] ret %d\n", ts->pkpkt, ts->pkpktlen, xx);
+fprintf(stderr, "==> pgpPrtPkts PUB %p[%u] ret %d\n", ts->pkpkt, (unsigned int)ts->pkpktlen, xx);
 	    goto exit;
 	}
     } else {
@@ -413,7 +413,7 @@ pgpGrab(pubp->signid, 4), pgpGrab(pubp->signid+4, 4));
 
 	if (!(_rc == 0 && b != NULL && blen > 0)) {
 if (_rpmns_debug)
-fprintf(stderr, "==> rpmioSlurp(%s) MSG %p[%u] ret %d\n", _fn, b, blen, _rc);
+fprintf(stderr, "==> rpmioSlurp(%s) MSG %p[%u] ret %d\n", _fn, b, (unsigned int)blen, _rc);
 	    b = _free(b);
 	    _fn = _free(_fn);
 	    goto exit;
