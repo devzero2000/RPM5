@@ -369,6 +369,19 @@ fprintf(stderr, "--> rpmIOSM(%p, 0x%x) fn \"%s\"\n", bsdtar, mapflags, fn);
 	rpmpsm psm = rpmpsmNew(ts, NULL, fi);
 	const char * fmode;
 	char zmode = (char) bsdtar->create_compression;
+	const char * aformat = bsdtar->create_format;
+
+	/* Identify the requested formt: { ar, tar/ustar, cpio } for now. */
+	if (aformat != NULL) {
+	    if (!(!strcmp(aformat, "ar") || !strcmp(aformat, "cpio")
+	     ||   !strcmp(aformat, "tar")|| !strcmp(aformat, "ustar")))
+	    {
+		bsdtar_errc(bsdtar, 1, 0,
+		    _("Option %s %s is not permitted in mode -%c"),
+		    "--format", aformat, bsdtar->mode);
+	    }
+	} else
+	    aformat = "tar";
 
 	/* Identify how to Fopen the file from the suffix. */
 	if (zmode == 'z' || zmode == 'Z' || chkSuffix(fn, ".gz"))
@@ -387,7 +400,7 @@ fprintf(stderr, "--> rpmIOSM(%p, 0x%x) fn \"%s\"\n", bsdtar, mapflags, fn);
 	    int xx;
 
 	    fi->mapflags |= mapflags;
-	    rc = iosmSetup(fi->fsm, fsmmode, "tar", ts, fi,
+	    rc = iosmSetup(fi->fsm, fsmmode, aformat, ts, fi,
 			psm->cfd, NULL, &psm->failedFile);
 	    (void) rpmswAdd(rpmtsOp(ts, RPMTS_OP_UNCOMPRESS),
 			fdstat_op(psm->cfd, FDSTAT_READ));
@@ -1139,8 +1152,10 @@ main(int argc, char **argv)
 	buff[1] = bsdtar->create_compression;
 	only_mode(bsdtar, buff, "cxt");
     }
+#ifdef	NOTYET
     if (bsdtar->create_format != NULL)
 	only_mode(bsdtar, "--format", "c");
+#endif
     if (bsdtar->symlink_mode != '\0') {
 	strcpy(buff, "-?");
 	buff[1] = bsdtar->symlink_mode;
