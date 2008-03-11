@@ -725,7 +725,7 @@ static void *fetch_destroy_item(/*@only@*/ struct fetch_resource_s *res)
     return NULL;
 }
 
-#ifdef	UNUSED
+#ifdef	NOTUSED
 /*@null@*/
 static void *fetch_destroy_list(/*@only@*/ struct fetch_resource_s *res)
 	/*@modifies res @*/
