@@ -734,7 +734,7 @@ static void skipFiles(const rpmts ts, rpmfi fi)
 	 * they do need to take package relocations into account).
 	 */
 	for (nsp = netsharedPaths; nsp && *nsp; nsp++) {
-	    int len;
+	    size_t len;
 
 	    len = strlen(*nsp);
 	    if (dnlen >= len) {
