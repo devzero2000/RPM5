@@ -3,6 +3,8 @@
  *  Handle ustar archives.
  */
 
+#undef JBJ_WRITEPAD
+
 #include "system.h"
 
 #include <rpmio.h>
@@ -52,6 +54,10 @@ static int strntoul(const char *str, /*@null@*/ /*@out@*/char **endptr,
     return ret;
 }
 
+/* Translate archive read/write ssize_t return for iosmStage(). */
+#define	_IOSMRC(_rc)	\
+	if ((_rc) <= 0)	return ((_rc) ? (int) -rc : IOSMERR_HDR_TRAILER)
+
 static ssize_t tarRead(void * _iosm, void * buf, size_t count)
 	/*@globals fileSystem @*/
 	/*@modifies _iosm, *buf, fileSystem @*/
@@ -61,7 +67,7 @@ static ssize_t tarRead(void * _iosm, void * buf, size_t count)
     size_t nb = 0;
 
 if (_tar_debug)
-fprintf(stderr, "         tarRead(%p, %p[%u])\n", iosm, buf, (unsigned)count);
+fprintf(stderr, "\ttarRead(%p, %p[%u])\n", iosm, buf, (unsigned)count);
 
     while (count > 0) {
 	size_t rc;
@@ -102,7 +108,7 @@ static ssize_t tarHeaderReadName(void * _iosm, size_t len,
 
     if (rc > 0)		/* success */
 	t[rc] = '\0';
-     else		/* failure */
+     else		/* failure or EOF */
 	t = _free(t);
     if (fnp != NULL)
 	*fnp = t;
@@ -125,13 +131,13 @@ int tarHeaderRead(void * _iosm, struct stat * st)
     int zblk = 0;
 
 if (_tar_debug)
-fprintf(stderr, "    tarHeaderRead(%p, %p)\n", iosm, st);
+fprintf(stderr, "  tarHeaderRead(%p, %p)\n", iosm, st);
 
 top:
     do {
 	/* Read next header. */
 	rc = tarRead(_iosm, hdr, TAR_BLOCK_SIZE);
-	if (rc < 0) return (int) -rc;
+	_IOSMRC(rc);
 
 	/* Look for end-of-archive, i.e. 2 (or more) zero blocks. */
 	if (hdr->name[0] == '\0' && hdr->checksum[0] == '\0') {
@@ -218,12 +224,12 @@ fprintf(stderr, "\tmemcmp(\"%s\", \"%s\", %u)\n", hdrchecksum, checksum, (unsign
 #endif
     case 'K':		/* GNU long (>100 chars) link name */
 	rc = tarHeaderReadName(iosm, st->st_size, &iosm->lpath);
-	if (rc < 0) return (int) -rc;
+	_IOSMRC(rc);
 	goto top;
 	/*@notreached@*/ break;
     case 'L':		/* GNU long (>100 chars) file name */
 	rc = tarHeaderReadName(iosm, st->st_size, &iosm->path);
-	if (rc < 0) return (int) -rc;
+	_IOSMRC(rc);
 	goto top;
 	/*@notreached@*/ break;
     }
@@ -279,12 +285,12 @@ static ssize_t tarWrite(void * _iosm, const void *buf, size_t count)
     IOSM_t iosm = _iosm;
     const char * s = buf;
     size_t nb = 0;
+    size_t rc;
 
 if (_tar_debug)
-fprintf(stderr, "   tarWrite(%p, %p[%u])\n", iosm, buf, (unsigned)count);
+fprintf(stderr, "\t   tarWrite(%p, %p[%u])\n", iosm, buf, (unsigned)count);
 
     while (count > 0) {
-	size_t rc;
 
 	/* XXX DWRITE uses rdnb for I/O length. */
 	iosm->rdnb = count;
@@ -299,6 +305,12 @@ fprintf(stderr, "   tarWrite(%p, %p[%u])\n", iosm, buf, (unsigned)count);
 	nb += iosm->rdnb;
 	count -= iosm->rdnb;
     }
+
+#if defined(JBJ_WRITEPAD)
+    /* Pad to next block boundary. */
+    if ((rc = _iosmNext(iosm, IOSM_PAD)) != 0) return rc;
+#endif
+
     return nb;
 }
 
@@ -314,10 +326,12 @@ static ssize_t tarHeaderWriteName(void * _iosm, const char * path)
 {
     ssize_t rc = tarWrite(_iosm, path, strlen(path));
 
+#if !defined(JBJ_WRITEPAD)
     if (rc >= 0) {
 	rc = _iosmNext(_iosm, IOSM_PAD);
 	if (rc) rc = -rc;
     }
+#endif
 
 if (_tar_debug)
 fprintf(stderr, "\ttarHeaderWriteName(%p, %s) rc 0x%x\n", _iosm, path, (unsigned)rc);
@@ -395,9 +409,9 @@ fprintf(stderr, "    tarHeaderWrite(%p, %p)\n", iosm, st);
 	strncpy(hdr->uname, "root", sizeof(hdr->uname));
 	strncpy(hdr->gname, "root", sizeof(hdr->gname));
 	rc = tarHeaderWriteBlock(iosm, st, hdr);
-	if (rc < 0) return (int) -rc;
+	_IOSMRC(rc);
 	rc = tarHeaderWriteName(iosm, iosm->path);
-	if (rc < 0) return (int) -rc;
+	_IOSMRC(rc);
     }
 
     if (iosm->lpath && iosm->lpath[0] != '0') {
@@ -414,9 +428,9 @@ fprintf(stderr, "    tarHeaderWrite(%p, %p)\n", iosm, st);
 	    strncpy(hdr->uname, "root", sizeof(hdr->uname));
 	    strncpy(hdr->gname, "root", sizeof(hdr->gname));
 	    rc = tarHeaderWriteBlock(iosm, st, hdr);
-	    if (rc < 0) return (int) -rc;
+	    _IOSMRC(rc);
 	    rc = tarHeaderWriteName(iosm, iosm->lpath);
-	    if (rc < 0) return (int) -rc;
+	    _IOSMRC(rc);
 	}
     }
 
@@ -467,10 +481,13 @@ fprintf(stderr, "    tarHeaderWrite(%p, %p)\n", iosm, st);
     sprintf(hdr->devMinor, "%07o", (unsigned) (dev & 07777777));
 
     rc = tarHeaderWriteBlock(iosm, st, hdr);
-    if (rc < 0) return (int) -rc;
+    _IOSMRC(rc);
+    rc = 0;
 
+#if !defined(JBJ_WRITEPAD)
     /* XXX Padding is unnecessary but shouldn't hurt. */
     rc = _iosmNext(iosm, IOSM_PAD);
+#endif
 
     return (int) rc;
 }
@@ -478,15 +495,22 @@ fprintf(stderr, "    tarHeaderWrite(%p, %p)\n", iosm, st);
 int tarTrailerWrite(void * _iosm)
 {
     IOSM_t iosm = _iosm;
-    int rc = 0;
+    ssize_t rc = 0;
 
 if (_tar_debug)
 fprintf(stderr, "    tarTrailerWrite(%p)\n", iosm);
 
     /* Pad up to 20 blocks (10Kb) of zeroes. */
     iosm->blksize *= 20;
+#if defined(JBJ_WRITEPAD)
+    rc = tarWrite(iosm, NULL, 0);	/* XXX _iosmNext(iosm, IOSM_PAD) */
+#else
     rc = _iosmNext(iosm, IOSM_PAD);
+#endif
     iosm->blksize /= 20;
+#if defined(JBJ_WRITEPAD)
+    _IOSMRC(rc);
+#endif
 
-    return rc;
+    return (int) -rc;
 }

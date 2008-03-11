@@ -1,4 +1,10 @@
 5.0.0 -> 5.1a1:
+    - jbj: mark write padding for possible refactoring to common code.
+    - jbj: ar: verify archive magic.
+    - jbj: ar: arSetup is only needed when creating archives. read EOF is wonky.
+    - jbj: verify that cpio/tar payloads can be created and installed.
+    - jbj: psm: fix: adding ar payloads broke install payload detection.
+    - jbj: use _IOSMRC macro to ensure read/write rc are handled consistently.
     - jbj: make sure cpio/tar/ar are as similar as possible.
     - jbj: keep tar.c parallel to ar.c coding conventions. cpio.c next.
     - jbj: clean up most rpmio gcc -W warnings.

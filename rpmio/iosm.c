@@ -682,6 +682,7 @@ if (iosm->debug < 0)
 fprintf(stderr, "--> iosmSetup(%p, 0x%x, \"%s\", %p, %p, %p, %p, %p)\n", iosm, goal, afmt, (void *)_ts, _fi, cfd, archiveSize, failedFile);
 /*@=voidabstract =nullpass@*/
 
+    _iosmNext = &iosmNext;
     if (iosm->headerRead == NULL) {
 	if (afmt != NULL && (!strcmp(afmt, "tar") || !strcmp(afmt, "ustar"))) {
 if (iosm->debug < 0)
@@ -698,7 +699,8 @@ fprintf(stderr, "\tar vectors set\n");
 	    iosm->headerWrite = &arHeaderWrite;
 	    iosm->trailerWrite = &arTrailerWrite;
 	    iosm->blksize = 2;
-	    (void) arSetup(iosm, fi);
+	    if (goal == IOSM_PKGBUILD || goal == IOSM_PKGERASE)
+		(void) arSetup(iosm, fi);
 	} else
 	{
 if (iosm->debug < 0)

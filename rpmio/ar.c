@@ -3,6 +3,8 @@
  *  Handle ar(1) archives.
  */
 
+#undef	JBJ_WRITEPAD
+
 #include "system.h"
 
 #include <rpmio_internal.h>	/* XXX fdGetCpioPos writing AR_MAGIC */
@@ -50,6 +52,10 @@ static int strntoul(const char *str, /*@null@*/ /*@out@*/char **endptr,
     return ret;
 }
 
+/* Translate archive read/write ssize_t return for iosmStage(). */
+#define	_IOSMRC(_rc)	\
+	if ((_rc) <= 0)	return ((_rc) ? (int) -rc : IOSMERR_HDR_TRAILER)
+
 static ssize_t arRead(void * _iosm, void * buf, size_t count)
 	/*@globals fileSystem @*/
 	/*@modifies _iosm, *buf, fileSystem @*/
@@ -57,18 +63,20 @@ static ssize_t arRead(void * _iosm, void * buf, size_t count)
     IOSM_t iosm = _iosm;
     char * t = buf;
     size_t nb = 0;
+    size_t rc;
 
 if (_ar_debug)
-fprintf(stderr, "          arRead(%p, %p[%u])\n", iosm, buf, (unsigned)count);
+fprintf(stderr, "\t  arRead(%p, %p[%u])\n", iosm, buf, (unsigned)count);
 
     while (count > 0) {
-	size_t rc;
 
 	/* Read next ar block. */
 	iosm->wrlen = count;
 	rc = _iosmNext(iosm, IOSM_DREAD);
-	if (!rc && iosm->rdnb != iosm->wrlen)
+	if (!rc && iosm->rdnb != iosm->wrlen) {
+	    if (iosm->rdnb == 0) return -IOSMERR_HDR_TRAILER;	/* EOF */
 	    rc = IOSMERR_READ_FAILED;
+	}
 	if (rc) return -rc;
 
 	/* Append to buffer. */
@@ -93,15 +101,23 @@ fprintf(stderr, "    arHeaderRead(%p, %p)\n", iosm, st);
 
     /* XXX Read AR_MAGIC to beginning of ar(1) archive. */
     if (fdGetCpioPos(iosm->cfd) == 0) {
-	(void) arRead(iosm, iosm->wrbuf, sizeof(AR_MAGIC)-1);
+	rc = arRead(iosm, iosm->wrbuf, sizeof(AR_MAGIC)-1);
+	_IOSMRC(rc);
+
+	/* Verify archive magic. */
+	if (strncmp(iosm->wrbuf, AR_MAGIC, sizeof(AR_MAGIC)-1))
+	    return IOSMERR_BAD_MAGIC;
     }
 
 top:
+    /* Make sure block aligned. */
+    rc = _iosmNext(iosm, IOSM_POS);
+    if (rc) return (int) rc;
+
     rc = arRead(iosm, hdr, sizeof(*hdr));
-    if (rc <= 0) return (int) -rc;
+    _IOSMRC(rc);
 if (_ar_debug)
 fprintf(stderr, "==> %p[%u] \"%.*s\"\n", hdr, (unsigned)rc, (int)sizeof(*hdr)-2, (char *)hdr);
-    rc = 0;
 
     /* Verify header marker. */
     if (strncmp(hdr->marker, AR_MARKER, sizeof(AR_MARKER)-1))
@@ -117,7 +133,7 @@ fprintf(stderr, "==> %p[%u] \"%.*s\"\n", hdr, (unsigned)rc, (int)sizeof(*hdr)-2,
 	    size_t i;
 
 	    rc = arRead(iosm, iosm->wrbuf, st->st_size);
-	    if (rc <= 0) return (int) -rc;
+	    _IOSMRC(rc);
 
 	    iosm->wrbuf[rc] = '\0';
 	    iosm->lmtab = t = xstrdup(iosm->wrbuf);
@@ -136,7 +152,7 @@ fprintf(stderr, "==> %p[%u] \"%.*s\"\n", hdr, (unsigned)rc, (int)sizeof(*hdr)-2,
 	/* GNU: on "/":	Skip symbol table. */
 	if (hdr->name[1] == ' ') {
 	    rc = arRead(iosm, iosm->wrbuf, st->st_size);
-	    if (rc <= 0) return (int) -rc;
+	    _IOSMRC(rc);
 	    goto top;
 	}
 	/* GNU: on "/123": Read "123" offset to substitute long member name. */
@@ -187,12 +203,12 @@ static ssize_t arWrite(void * _iosm, const void *buf, size_t count)
     IOSM_t iosm = _iosm;
     const char * s = buf;
     size_t nb = 0;
+    size_t rc;
 
 if (_ar_debug)
-fprintf(stderr, "    arWrite(%p, %p[%u])\n", iosm, buf, (unsigned)count);
+fprintf(stderr, "\tarWrite(%p, %p[%u])\n", iosm, buf, (unsigned)count);
 
     while (count > 0) {
-	size_t rc;
 
 	/* XXX DWRITE uses rdnb for I/O length. */
 	iosm->rdnb = count;
@@ -207,6 +223,12 @@ fprintf(stderr, "    arWrite(%p, %p[%u])\n", iosm, buf, (unsigned)count);
 	nb += iosm->rdnb;
 	count -= iosm->rdnb;
     }
+
+#if defined(JBJ_WRITEPAD)
+    /* Pad to next block boundary. */
+    if ((rc = _iosmNext(iosm, IOSM_PAD)) != 0) return -rc;
+#endif
+
     return nb;
 }
 
@@ -224,7 +246,7 @@ fprintf(stderr, "    arHeaderWrite(%p, %p)\n", iosm, st);
     if (fdGetCpioPos(iosm->cfd) == 0) {
 	/* Write ar(1) magic. */
 	rc = arWrite(iosm, AR_MAGIC, sizeof(AR_MAGIC)-1);
-	if (rc < 0) return (int) -rc;
+	_IOSMRC(rc);
 	/* GNU: on "//":	Write long member name string table. */
 	if (iosm->lmtab != NULL) {
 	    memset(hdr, (int) ' ', sizeof(*hdr));
@@ -234,14 +256,15 @@ fprintf(stderr, "    arHeaderWrite(%p, %p)\n", iosm, st);
 	    strncpy(hdr->marker, AR_MARKER, sizeof(AR_MARKER)-1);
 
 	    rc = arWrite(iosm, hdr, sizeof(*hdr));
-	    if (rc < 0)	return (int) -rc;
+	    _IOSMRC(rc);
 	    rc = arWrite(iosm, iosm->lmtab, iosm->lmtablen);
-	    if (rc < 0)	return (int) -rc;
+	    _IOSMRC(rc);
+#if !defined(JBJ_WRITEPAD)
 	    rc = _iosmNext(iosm, IOSM_PAD);
-	    if (rc)	return rc;
+	    if (rc) return rc;
+#endif
 	}
     }
-    rc = 0;
 
     memset(hdr, (int)' ', sizeof(*hdr));
 
@@ -276,7 +299,7 @@ if (_ar_debug)
 fprintf(stderr, "==> %p[%u] \"%.*s\"\n", hdr, (unsigned)rc, (int)sizeof(*hdr), (char *)hdr);
 
     rc = arWrite(iosm, hdr, sizeof(*hdr));
-    if (rc < 0)	return (int) -rc;
+    _IOSMRC(rc);
     rc = 0;
 
     return rc;
@@ -285,12 +308,17 @@ fprintf(stderr, "==> %p[%u] \"%.*s\"\n", hdr, (unsigned)rc, (int)sizeof(*hdr), (
 int arTrailerWrite(void * _iosm)
 {
     IOSM_t iosm = _iosm;
-    int rc = 0;
+    size_t rc = 0;
 
 if (_ar_debug)
 fprintf(stderr, "    arTrailerWrite(%p)\n", iosm);
 
+#if defined(JBJ_WRITEPAD)
+    rc = arWrite(iosm, NULL, 0);	/* XXX _iosmNext(iosm, IOSM_PAD) */
+    _IOSMRC(rc);
+#else
     rc = _iosmNext(iosm, IOSM_PAD);	/* XXX likely unnecessary. */
+#endif
 
-    return rc;
+    return (int) rc;
 }

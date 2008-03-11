@@ -2445,12 +2445,12 @@ psm->te->h = headerFree(psm->te->h);
 	he->tag = RPMTAG_PAYLOADFORMAT;
 	xx = headerGet(fi->h, he, 0);
 	payload_format = he->p.str;
-	if (!xx || payload_format == NULL
-	 || !(!strcmp(payload_format, "tar") || !strcmp(payload_format, "ustar"))
+	if (!xx || payload_format == NULL || !(
+	  !strcmp(payload_format, "tar") || !strcmp(payload_format, "ustar")
 #if defined(SUPPORT_AR_PAYLOADS)
-	 || !(!strcmp(payload_format, "ar"))
+	 || !strcmp(payload_format, "ar")
 #endif
-	   )
+	   ))
 	{
 	    payload_format = _free(payload_format);
 	    payload_format = xstrdup("cpio");

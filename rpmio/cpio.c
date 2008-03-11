@@ -2,6 +2,7 @@
  * \file rpmio/cpio.c
  *  Handle cpio(1) archives.
  */
+#undef	JBJ_WRITEPAD
 
 #include "system.h"
 
@@ -49,12 +50,9 @@ static int strntoul(const char *str, /*@null@*/ /*@out@*/char **endptr,
     return ret;
 }
 
-#define GET_NUM_FIELD(phys, log) \
-	log = strntoul(phys, &end, 16, sizeof(phys)); \
-	if ( (end - phys) != sizeof(phys) ) return IOSMERR_BAD_HEADER;
-#define SET_NUM_FIELD(phys, val, space) \
-	sprintf(space, "%8.8lx", (unsigned long) (val)); \
-	memcpy(phys, space, 8)
+/* Translate archive read/write ssize_t return for iosmStage(). */
+#define	_IOSMRC(_rc)	\
+	if ((_rc) <= 0)	return ((_rc) ? (int) -rc : IOSMERR_HDR_TRAILER)
 
 static ssize_t cpioRead(void * _iosm, void * buf, size_t count)
 	/*@globals fileSystem @*/
@@ -63,12 +61,12 @@ static ssize_t cpioRead(void * _iosm, void * buf, size_t count)
     IOSM_t iosm = _iosm;
     char * t = buf;
     size_t nb = 0;
+    size_t rc;
 
 if (_cpio_debug)
 fprintf(stderr, "          cpioRead(%p, %p[%u])\n", iosm, buf, (unsigned)count);
 
     while (count > 0) {
-	size_t rc;
 
 	/* Read next cpio block. */
 	iosm->wrlen = count;
@@ -87,6 +85,13 @@ fprintf(stderr, "          cpioRead(%p, %p[%u])\n", iosm, buf, (unsigned)count);
     return nb;
 }
 
+#define GET_NUM_FIELD(phys, log) \
+	log = strntoul(phys, &end, 16, sizeof(phys)); \
+	if ( (end - phys) != sizeof(phys) ) return IOSMERR_BAD_HEADER;
+#define SET_NUM_FIELD(phys, val, space) \
+	sprintf(space, "%8.8lx", (unsigned long) (val)); \
+	memcpy(phys, space, 8)
+
 int cpioHeaderRead(void * _iosm, struct stat * st)
 {
     IOSM_t iosm = _iosm;
@@ -102,7 +107,7 @@ fprintf(stderr, "    cpioHeaderRead(%p, %p)\n", iosm, st);
 
     /* Read next header. */
     rc = cpioRead(iosm, hdr, PHYS_HDR_SIZE);
-    if (rc < 0) return (int) -rc;
+    _IOSMRC(rc);
 
     /* Verify header magic. */
     if (strncmp(CPIO_CRC_MAGIC, hdr->magic, sizeof(CPIO_CRC_MAGIC)-1) &&
@@ -140,24 +145,26 @@ fprintf(stderr, "    cpioHeaderRead(%p, %p)\n", iosm, st);
 	if (rc < 0) {
 	    t = _free(t);
 	    iosm->path = NULL;
-	    rc = IOSMERR_BAD_HEADER;
-	    return (int) rc;
 	}
+	_IOSMRC(rc);
 	t[nb] = '\0';
 	iosm->path = t;
     }
 
     /* Read link name. */
     if (S_ISLNK(st->st_mode)) {
+
+	/* Make sure block aligned. */
 	rc = _iosmNext(iosm, IOSM_POS);
-	if (rc) return (int) rc;
+	if (rc) return (int) -rc;
+
 	nb = (size_t) st->st_size;
 	rc = cpioRead(iosm, t, nb);
 	if (rc < 0) {
 	    t = _free(t);
 	    iosm->lpath = NULL;
-	    return (int) -rc;
 	}
+	_IOSMRC(rc);
 	t[nb] = '\0';
 	iosm->lpath = t;
     }
@@ -180,12 +187,12 @@ static ssize_t cpioWrite(void * _iosm, const void *buf, size_t count)
     IOSM_t iosm = _iosm;
     const char * s = buf;
     size_t nb = 0;
+    size_t rc;
 
 if (_cpio_debug)
-fprintf(stderr, "  cpioWrite(%p, %p[%u])\n", iosm, buf, (unsigned)count);
+fprintf(stderr, "\t  cpioWrite(%p, %p[%u])\n", iosm, buf, (unsigned)count);
 
     while (count > 0) {
-	size_t rc;
 
 	/* XXX DWRITE uses rdnb for I/O length. */
 	iosm->rdnb = count;
@@ -200,6 +207,12 @@ fprintf(stderr, "  cpioWrite(%p, %p[%u])\n", iosm, buf, (unsigned)count);
 	nb += iosm->rdnb;
 	count -= iosm->rdnb;
     }
+
+#if defined(JBJ_WRITEPAD)
+    /* Pad to next block boundary. */
+    if ((rc = _iosmNext(iosm, IOSM_PAD)) != 0) return -rc;
+#endif
+
     return nb;
 }
 
@@ -236,19 +249,23 @@ fprintf(stderr, "    cpioHeaderWrite(%p, %p)\n", iosm, st);
     memcpy(iosm->rdbuf + PHYS_HDR_SIZE, iosm->path, nb);
     nb += PHYS_HDR_SIZE;
     rc = cpioWrite(iosm, hdr, nb);
-    if (rc < 0)	return (int) -rc;
+    _IOSMRC(rc);
 
     if (S_ISLNK(st->st_mode)) {
 assert(iosm->lpath != NULL);
+#if !defined(JBJ_WRITEPAD)
 	rc = _iosmNext(iosm, IOSM_PAD);
 	if (rc) return (int) rc;
+#endif
 
 	nb = strlen(iosm->lpath);
 	rc = cpioWrite(iosm, iosm->lpath, nb);
-	if (rc < 0)	return (int) -rc;
+	_IOSMRC(rc);
     }
 
+#if !defined(JBJ_WRITEPAD)
     rc = _iosmNext(iosm, IOSM_PAD);
+#endif
 
     return (int) rc;
 }
@@ -274,13 +291,16 @@ fprintf(stderr, "   cpioTrailerWrite(%p)\n", iosm);
     nb += PHYS_HDR_SIZE;
 
     rc = cpioWrite(iosm, hdr, nb);
-    if (rc < 0)	return (int) -rc;
+    _IOSMRC(rc);
 
     /*
      * GNU cpio pads to 512 bytes here, but we don't. This may matter for
      * tape device(s) and/or concatenated cpio archives. <shrug>
      */
+#if !defined(JBJ_WRITEPAD)
     rc = _iosmNext(iosm, IOSM_PAD);
+#endif
+    rc = 0;
 
     return (int) rc;
 }
