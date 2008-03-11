@@ -3,7 +3,6 @@
 Makefile
 Makefile.in
 genpgp.h
-getdate.c
 rpmversion.h
 tpgp
 tsbt

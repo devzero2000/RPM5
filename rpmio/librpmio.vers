@@ -114,6 +114,7 @@ LIBRPMIO_0
     Fts_set;
     Fwrite;
     _Fwrite;
+    get_date;
     Getpass;
     _GetPass;
     getStringBuf;

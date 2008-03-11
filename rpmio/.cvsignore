@@ -10,6 +10,7 @@ Makefile.in
 *.lo
 dumpasn1
 gengpg.h
+getdate.c
 lookup3
 rpmdigest
 rpmgrep

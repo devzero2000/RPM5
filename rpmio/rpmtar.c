@@ -186,11 +186,8 @@ static struct bsdtar _bsdtar = {
 
 /*==============================================================*/
 /* External function to parse a date/time string (from getdate.y) */
-static
-time_t get_date(const char *p)
-{
-    return time(NULL);
-}
+extern time_t get_date(UNUSED(const char *p))
+	/*@*/;
 
 static void
 bsdtar_vwarnc(struct bsdtar *bsdtar, int code, const char *fmt, va_list ap)
@@ -342,6 +339,19 @@ cleanup_exclusions(struct bsdtar *bsdtar)
 }
 
 /*==============================================================*/
+/**
+ * Check file name for a suffix.
+ * @param fn		file name
+ * @param suffix	suffix
+ * @return		1 if file name ends with suffix
+ */
+static int chkSuffix(const char * fn, const char * suffix)
+	/*@*/
+{
+    size_t flen = strlen(fn);
+    size_t slen = strlen(suffix);
+    return (flen > slen && !strcmp(fn + flen - slen, suffix));
+}
 
 static int rpmIOSM(struct bsdtar * bsdtar, int mapflags)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
@@ -356,10 +366,19 @@ fprintf(stderr, "--> rpmIOSM(%p, 0x%x) fn \"%s\"\n", bsdtar, mapflags, fn);
 	rpmts ts = rpmtsCreate();
 	rpmfi fi = rpmfiNew(ts, NULL, RPMTAG_BASENAMES, 0);
 	rpmpsm psm = rpmpsmNew(ts, NULL, fi);
-	const char * ioflags = (mapflags & IOSM_PAYLOAD_CREATE)
-			? "w.ufdio" : "r.ufdio";
+	const char * fmode;
 
-	psm->cfd = Fopen(fn, ioflags);
+	/* Identify how to Fopen the file from the suffix. */
+	if (chkSuffix(fn, ".gz"))
+	    fmode = "r.gzdio";      /* Open with zlib decompression. */
+	else if (chkSuffix(fn, ".bz2"))
+	    fmode = "r.bzdio";      /* Open with bzip2 decompression. */
+	else if (chkSuffix(fn, ".lzma"))
+	    fmode = "r.lzdio";      /* Open with lzma decompression. */
+	else
+	    fmode = "r.ufdio";
+
+	psm->cfd = Fopen(fn, fmode);
 	if (psm->cfd != NULL && !Ferror(psm->cfd)) {
 	    int fsmmode = (mapflags & IOSM_PAYLOAD_CREATE)
 			? IOSM_PKGBUILD : IOSM_PKGINSTALL;
@@ -397,7 +416,11 @@ fprintf(stderr, "--> rpmIOSM(%p, 0x%x) fn \"%s\"\n", bsdtar, mapflags, fn);
 int tar_mode_c(struct bsdtar *bsdtar)
 	/*@globals fileSystem @*/
 	/*@modifies bsdtar, fileSystem @*/
+#ifdef	NOTYET
 {   return rpmIOSM(bsdtar, IOSM_PAYLOAD_CREATE); }
+#else
+{ fprintf(stderr, "==> tar_mode_c: %s\n", (bsdtar->filename ?: "")); return 0; }
+#endif
 
 int tar_mode_r(struct bsdtar *bsdtar)
 	/*@globals fileSystem @*/

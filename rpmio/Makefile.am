@@ -4,7 +4,7 @@ AUTOMAKE_OPTIONS = 1.4 foreign
 
 LINT = splint
 
-EXTRA_DIST = rpmtar.c rpmtar.h tdeb.c tdir.c tfts.c tget.c tglob.c thkp.c thtml.c tinv.c tkey.c tmire.c tput.c trpmio.c tsw.c ttar.c lookup3.c tpw.c librpmio.vers testit.sh rpmgrep.1
+EXTRA_DIST = getdate.y rpmtar.c rpmtar.h tdeb.c tdir.c tfts.c tget.c tglob.c thkp.c thtml.c tinv.c tkey.c tmire.c tput.c trpmio.c tsw.c ttar.c lookup3.c tpw.c librpmio.vers testit.sh rpmgrep.1
 
 EXTRA_PROGRAMS = rpmtar tdeb tdir tfts tget tglob thkp thtml tinv tkey tmacro tmagic tmire tput tpw trpmio tsw ttar dumpasn1 lookup3
 
@@ -55,7 +55,8 @@ noinst_HEADERS = \
 usrlibdir = $(libdir)
 usrlib_LTLIBRARIES = librpmio.la
 librpmio_la_SOURCES = \
-	ar.c argv.c cpio.c digest.c fts.c getpass.c iosm.c macro.c mire.c mount.c \
+	ar.c argv.c cpio.c digest.c fts.c getdate.c getpass.c \
+	iosm.c macro.c mire.c mount.c \
 	md2.c md4.c poptIO.c rmd128.c rmd160.c rmd256.c rmd320.c sha224.c \
 	salsa10.c salsa20.c tiger.c LzmaDecode.c \
 	rpmbc.c rpmdav.c rpmhash.c rpmhook.c rpmio.c rpmio-stub.c \
@@ -93,6 +94,39 @@ if WITH_PATH_VERSIONED
 	    fi; \
 	done
 endif
+
+getdate.c: getdate.y
+	@echo expect 10 shift/reduce conflicts
+	$(YACC) $(srcdir)/getdate.y
+	-@if test -f y.tab.c; then \
+	 { echo "/*@-globstate -statictrans -unqualifiedtrans -noparams @*/";\
+	   echo "/*@-retvalint -usedef -varuse -nullderef -nullassign @*/";\
+	   echo "/*@-readonlytrans -modunconnomods -compdef -noeffectuncon @*/";\
+	   echo "/*@-globs -evalorderuncon -modobserveruncon -modnomods @*/";\
+	   echo "/*@-noeffect -branchstate -sizeoftype -usereleased @*/";\
+	   echo "/*@unused@*/";\
+	   sed	-e 's,y.tab.c,getdate.c,' y.tab.c \
+		-e 's,^YYSTYPE ,static &,' \
+		-e 's,^short ,static &,' \
+		-e 's,^const short ,static &,' \
+		-e 's,^int yydebug,/*@unused@*/ static &,' \
+		-e 's,^int ,static &,' ;\
+	   echo "/*@=noeffect =branchstate =sizeoftype =usereleased @*/";\
+	   echo "/*@=globs =evalorderuncon =modobserveruncon =modnomods @*/";\
+	   echo "/*@=readonlytrans =modunconnomods =compdef =noeffectuncon @*/";\
+	   echo "/*@=retvalint =usedef =varuse =nullderef =nullassign @*/";\
+	   echo "/*@=globstate =statictrans =unqualifiedtrans =noparams @*/";\
+	 } > getdate.c ;\
+	   rm -f y.tab.c; \
+	else \
+	   if test -f getdate.tab.c ; then \
+	       mv getdate.tab.c getdate.c ; \
+	   else \
+	       echo '*** Unable to create getdate.c' ;\
+	   fi ;\
+	fi
+
+BUILT_SOURCES = getdate.c # rpmio.lcd
 
 #BUILT_SOURCES = rpmio.lcd
 

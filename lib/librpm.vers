@@ -26,7 +26,6 @@ LIBRPM_0
     fsmTeardown;
     _fsm_threads;
     ftsOpts;
-    get_date;
     giFlags;
     global_depFlags;
     IDTXfree;

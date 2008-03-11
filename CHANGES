@@ -1,4 +1,7 @@
 5.0.0 -> 5.1a1:
+    - jbj: rpmtar: add stoopid file suffix detector for gzip/bzip2/lzma detect.
+    - jbj: rpmtar: abandon rpmtar -cvf for now, noop tar_mode_c().
+    - jbj: rpmtar: move getdate.y lib -> rpmio for rpmtar linkage.
     - jbj: mark write padding for possible refactoring to common code.
     - jbj: ar: verify archive magic.
     - jbj: ar: arSetup is only needed when creating archives. read EOF is wonky.
