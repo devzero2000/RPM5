@@ -1,4 +1,5 @@
 5.0.0 -> 5.1a1:
+    - jbj: rpmtar: use (if built) rpmtar feeble tests in "make check".
     - jbj: rpmtar: splint annotations.
     - jbj: rpmtar: nuke ttar.c/tdeb.c prototypes for rpmtar.
     - jbj: rpmtar: abuse --format {ar,cpio,tar,ustar} as a selector for now.

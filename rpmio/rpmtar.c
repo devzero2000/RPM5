@@ -622,7 +622,7 @@ static void bsdtarArgCallback(/*@unused@*/ poptContext con,
     int t;
 
 /*@+voidabstract@*/
-if (_debug)
+if (_debug < 0)
 fprintf(stderr, "--> bsdtarArgCallback(%p, %d, %p, %p, %p) val %d\n", (void *)con, reason, opt, arg, data, val);
 /*@=voidabstract@*/
     /*
@@ -1231,9 +1231,11 @@ assert(argv != NULL);
 /*@-mods@*/
 _iosmNext = &iosmNext;
 _iosm_debug = -1;
+#ifdef	DYING
 _ar_debug = 1;
 _cpio_debug = 1;
 _tar_debug = 1;
+#endif
 rpmIncreaseVerbosity();
 rpmIncreaseVerbosity();
 /*@=mods@*/

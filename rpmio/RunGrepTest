@@ -25,6 +25,7 @@ utf8=1
 
 pcregrep=`pwd`/rpmgrep
 
+rpmtar=`pwd`/rpmtar
 rpmdigest=`pwd`/rpmdigest
 
 genvfypat() {
@@ -37,6 +38,35 @@ genvfypat() {
   if [ $? != 0 ] ; then exit 1; fi
    rm -f $tfn
 }
+
+if [ -x $rpmtar ]; then
+  echo "Testing rpmtar features"
+
+  echo "---------------------------- Test T1 ------------------------------" >testtry
+
+  rm -f a.*
+  cd testdata
+  ar qf ../a.a g* t* w* >& /dev/null
+  cd ..
+  gzip -c a.a > a.a.gz
+  bzip2 -c a.a > a.a.bz2
+
+  find ./testdata | cpio -o > a.cpio 2>/dev/null
+  gzip -c a.cpio > a.cpio.gz
+  bzip2 -c a.cpio > a.cpio.bz2
+
+  tar cf a.tar ./testdata
+  gzip -c a.tar > a.tar.gz
+  bzip2 -c a.tar > a.tar.bz2
+
+  for i in a.a*;    do $rpmtar --format ar -tf $i 2>&1   | grep -v '^D:'; done
+  for i in a.cpio*; do $rpmtar --format cpio -tf $i 2>&1 | grep -v '^D:'; done
+  for i in a.tar*;  do $rpmtar --format tar -tf $i 2>&1  | grep -v '^D:'; done
+
+  rm -f a.*
+else
+  echo "Skipping rpmtar tests: $rpmtar is not executable"
+fi
 
 if [ -x $rpmdigest ]; then
   echo "Testing rpmdigest features"
