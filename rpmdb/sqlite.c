@@ -58,7 +58,7 @@
 /*@access dbiIndex @*/
 
 /* XXX retrofit the *BSD typedef for the deprived. */
-#if defined(__QNXNTO__))
+#if defined(__QNXNTO__)
 typedef u_int32_t       uint32_t;
 #endif
 
