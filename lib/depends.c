@@ -587,7 +587,7 @@ static int unsatisfiedDepend(rpmts ts, rpmds dep, int adding)
 #endif
     int rc;
     int xx;
-    int retries = 10;
+    int retries = 20;
 
     if ((Name = rpmdsN(dep)) == NULL)
 	return 0;	/* XXX can't happen */
