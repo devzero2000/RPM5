@@ -26,7 +26,7 @@
 #define	USE_POPT
 
 #define __FBSDID(_s)	
-#define BSDTAR_VERSION_STRING "2.4.12"
+#define BSDTAR_VERSION_STRING "2.4.13"
 
 #if defined(__LCLINT__)
 #define ARCHIVE_STAT_CTIME_NANOS(st)    0
