@@ -235,6 +235,9 @@ static inline int headerNextIterator(HeaderIterator hi, hTAG_t tag, hTYP_t type,
 	HE_t he = (HE_s*)memset(alloca(sizeof(*he)), 0, sizeof(*he));
 	
 	he->tag = *(rpmTag*)tag;
+	(void) type;
+	(void) p;
+	(void) c;
 	return headerNext(hi, he, 0);
 }
 
@@ -255,6 +258,7 @@ static inline void * headerFreeData(const void * data, rpmTagType type) {
 static inline int headerWrite(void * _fd, Header h, enum hMagic magicp) {
 	const char item[] = "Header";
 	const char * msg = NULL;
+	(void) magicp;
 	rpmRC rc = rpmpkgWrite(item, (FD_t)_fd, h, &msg);
 	if (rc != RPMRC_OK) {
 		rpmlog(RPMLOG_ERR, "%s: %s: %s\n", "headerWrite", item, msg);
@@ -268,6 +272,7 @@ static inline Header headerRead(void * _fd, enum hMagic magicp) {
 	const char item[] = "Header";
 	Header h = NULL;
 	const char * msg = NULL;
+	(void) magicp;
 	rpmRC rc = rpmpkgRead(item, (FD_t)_fd, &h, &msg);
 	switch (rc) {
 		default:
