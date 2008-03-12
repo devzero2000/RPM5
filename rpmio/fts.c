@@ -613,7 +613,7 @@ name:		t = sp->fts_path + NAPPEND(p->fts_parent);
  * reasons.
  */
 int
-Fts_set(/*@unused@*/ UNUSED(FTS * sp), FTSENT * p, int instr)
+Fts_set(/*@unused@*/ FTS * sp, FTSENT * p, int instr)
 {
 	if (instr != 0 && instr != FTS_AGAIN && instr != FTS_FOLLOW &&
 	    instr != FTS_NOINSTR && instr != FTS_SKIP) {

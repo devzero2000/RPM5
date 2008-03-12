@@ -185,7 +185,7 @@ fingerPrint fpLookup(fingerPrintCache cache, const char * dirName,
 }
 
 uint32_t fpHashFunction(uint32_t h, const void * data,
-		/*@unused@*/ UNUSED(size_t size))
+		/*@unused@*/ size_t size)
 {
     const fingerPrint * fp = data;
     const char * chptr = fp->baseName;

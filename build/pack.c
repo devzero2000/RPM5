@@ -53,7 +53,7 @@ static inline int genSourceRpmName(Spec spec)
 /**
  * @todo Create transaction set *much* earlier.
  */
-static rpmRC cpio_doio(FD_t fdo, /*@unused@*/ UNUSED(Header h), CSA_t csa,
+static rpmRC cpio_doio(FD_t fdo, /*@unused@*/ Header h, CSA_t csa,
 		const char * payload_format, const char * fmodeMacro)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies fdo, csa, rpmGlobalMacroContext,

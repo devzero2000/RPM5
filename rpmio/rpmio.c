@@ -280,8 +280,8 @@ DBGIO(fd, (stderr, "==> fdDup(%d) fd %p %s\n", fdno, (fd ? fd : NULL), fdbg(fd))
 
 static inline /*@unused@*/
 int fdSeekNot(void * cookie,
-		/*@unused@*/ UNUSED(_libio_pos_t pos),
-		/*@unused@*/ UNUSED(int whence))
+		/*@unused@*/ _libio_pos_t pos,
+		/*@unused@*/ int whence)
 	/*@*/
 {
     FD_t fd = c2f(cookie);
@@ -2664,8 +2664,8 @@ static ssize_t bzdWrite(void * cookie, const char * buf, size_t count)
 }
 /*@=globuse@*/
 
-static inline int bzdSeek(void * cookie, /*@unused@*/ UNUSED(_libio_pos_t pos),
-			/*@unused@*/ UNUSED(int whence))
+static inline int bzdSeek(void * cookie, /*@unused@*/ _libio_pos_t pos,
+			/*@unused@*/ int whence)
 	/*@*/
 {
     FD_t fd = c2f(cookie);
@@ -3019,8 +3019,8 @@ static ssize_t lzdWrite(void * cookie, const char * buf, size_t count)
 }
 /*@=globuse@*/
 
-static inline int lzdSeek(void * cookie, /*@unused@*/ UNUSED(_libio_pos_t pos),
-			/*@unused@*/ UNUSED(int whence))
+static inline int lzdSeek(void * cookie, /*@unused@*/ _libio_pos_t pos,
+			/*@unused@*/ int whence)
 	/*@*/
 {
     FD_t fd = c2f(cookie);

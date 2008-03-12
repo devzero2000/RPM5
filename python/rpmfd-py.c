@@ -89,7 +89,7 @@ static int closeCallback(FILE * f)
  */
 /*@null@*/
 static PyObject *
-rpmfd_Debug(/*@unused@*/ UNUSED(rpmfdObject * s), PyObject * args,
+rpmfd_Debug(/*@unused@*/ rpmfdObject * s, PyObject * args,
 		PyObject * kwds)
 	/*@globals _Py_NoneStruct @*/
 	/*@modifies _Py_NoneStruct @*/
@@ -107,7 +107,7 @@ rpmfd_Debug(/*@unused@*/ UNUSED(rpmfdObject * s), PyObject * args,
  */
 /*@null@*/
 static PyObject *
-rpmfd_Fopen(/*@unused@*/ UNUSED(PyObject * s), PyObject * args, PyObject * kwds)
+rpmfd_Fopen(/*@unused@*/ PyObject * s, PyObject * args, PyObject * kwds)
 	/*@globals fdhead, fdtail @*/
 	/*@modifies fdhead, fdtail @*/
 {

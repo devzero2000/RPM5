@@ -263,7 +263,7 @@ static inline unsigned char nibble(char c)
 
 rpmRC rpmnsProbeSignature(void * _ts, const char * fn, const char * sigfn,
 		const char * pubfn, const char * pubid,
-		/*@unused@*/ UNUSED(int flags))
+		/*@unused@*/ int flags)
 {
     rpmts ts = _ts;
     pgpDig dig = rpmtsDig(ts);

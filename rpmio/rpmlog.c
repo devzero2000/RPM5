@@ -90,9 +90,9 @@ void rpmlogClose (void)
     nrecs = 0;
 }
 
-void rpmlogOpen (/*@unused@*/ UNUSED(const char *ident),
-		/*@unused@*/ UNUSED(int option),
-		/*@unused@*/ UNUSED(int facility))
+void rpmlogOpen (/*@unused@*/ const char *ident,
+		/*@unused@*/ int option,
+		/*@unused@*/ int facility)
 {
 }
 

@@ -63,7 +63,7 @@ fprintf(stderr, "*** rpmps_iternext(%p) ps %p psi %p\n", s, s->ps, s->psi);
 
 /*@null@*/
 static PyObject *
-rpmps_Debug(/*@unused@*/ UNUSED(rpmpsObject * s), PyObject * args,
+rpmps_Debug(/*@unused@*/ rpmpsObject * s, PyObject * args,
 		PyObject * kwds)
 	/*@globals _Py_NoneStruct @*/
 	/*@modifies _Py_NoneStruct @*/

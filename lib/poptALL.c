@@ -159,9 +159,9 @@ void rpmcliConfigured(void)
 /**
  */
 static void rpmcliAllArgCallback(poptContext con,
-                /*@unused@*/ UNUSED(enum poptCallbackReason reason),
+                /*@unused@*/ enum poptCallbackReason reason,
                 const struct poptOption * opt, const char * arg,
-                /*@unused@*/ UNUSED(const void * data))
+                /*@unused@*/ const void * data)
 	/*@globals rpmcliTargets, rpmcliQueryFlags, rpmCLIMacroContext,
 		rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies con, rpmcliTargets, rpmcliQueryFlags, rpmCLIMacroContext,

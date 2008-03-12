@@ -153,7 +153,7 @@ static const char * dbiModeFlags =
 
 
 /*@-globuse -mustmod @*/	/* FIX: rpmError not annotated yet. */
-static int cvtdberr(/*@unused@*/ UNUSED(dbiIndex dbi), const char * msg,
+static int cvtdberr(/*@unused@*/ dbiIndex dbi, const char * msg,
 		int error, int printit)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
@@ -201,7 +201,7 @@ static const char * mapTagName(rpmdb rpmdb, dbiIndex dbi)
 
 static int db_fini(dbiIndex dbi, const char * dbhome,
 		/*@null@*/ const char * dbfile,
-		/*@unused@*/ /*@null@*/ UNUSED(const char * dbsubfile))
+		/*@unused@*/ /*@null@*/ const char * dbsubfile)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
 {
@@ -243,7 +243,7 @@ static int db_fini(dbiIndex dbi, const char * dbhome,
     return rc;
 }
 
-static int db3_fsync_disable(/*@unused@*/ UNUSED(int fd))
+static int db3_fsync_disable(/*@unused@*/ int fd)
 	/*@*/
 {
     return 0;
@@ -258,8 +258,8 @@ static int db3_fsync_disable(/*@unused@*/ UNUSED(int fd))
  * @param flags		0 or DB_MUTEX_PROCESS_ONLY
  * @return		
  */
-static int db3is_alive(/*@unused@*/ UNUSED(DB_ENV *dbenv), pid_t pid,
-		/*@unused@*/ UNUSED(db_threadid_t tid),
+static int db3is_alive(/*@unused@*/ DB_ENV *dbenv, pid_t pid,
+		/*@unused@*/ db_threadid_t tid,
 		uint32_t flags)
 	/*@*/
 {
@@ -279,7 +279,7 @@ static int db3is_alive(/*@unused@*/ UNUSED(DB_ENV *dbenv), pid_t pid,
 /*@-moduncon@*/ /* FIX: annotate db3 methods */
 static int db_init(dbiIndex dbi, const char * dbhome,
 		/*@null@*/ const char * dbfile,
-		/*@unused@*/ /*@null@*/ UNUSED(const char * dbsubfile),
+		/*@unused@*/ /*@null@*/ const char * dbsubfile,
 		/*@out@*/ DB_ENV ** dbenvp)
 	/*@globals rpmGlobalMacroContext, h_errno,
 		fileSystem @*/
@@ -624,7 +624,7 @@ static int db3cdup(dbiIndex dbi, DBC * dbcursor, DBC ** dbcp,
 
 /*@-mustmod@*/
 static int db3cclose(dbiIndex dbi, /*@only@*/ /*@null@*/ DBC * dbcursor,
-		/*@unused@*/ UNUSED(unsigned int flags))
+		/*@unused@*/ unsigned int flags)
 	/*@globals fileSystem @*/
 	/*@modifies dbi, fileSystem @*/
 {
@@ -675,7 +675,7 @@ static int db3copen(dbiIndex dbi, DB_TXN * txnid,
 }
 
 static int db3cput(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data,
-		/*@unused@*/ UNUSED(unsigned int flags))
+		/*@unused@*/ unsigned int flags)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
 {

@@ -45,7 +45,7 @@ spec_dealloc(specObject * s)
 }
 
 static int
-spec_print(UNUSED(specObject * s))
+spec_print(specObject * s)
 {
     return 0;
 }

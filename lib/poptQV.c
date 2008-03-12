@@ -38,11 +38,11 @@ int specedit = 0;
 #define POPT_QUERYBYSOURCEPKGID	-1040
 
 /* ========== Query/Verify/Signature source args */
-static void rpmQVSourceArgCallback( /*@unused@*/ UNUSED(poptContext con),
-		/*@unused@*/ UNUSED(enum poptCallbackReason reason),
+static void rpmQVSourceArgCallback( /*@unused@*/ poptContext con,
+		/*@unused@*/ enum poptCallbackReason reason,
 		const struct poptOption * opt,
-		/*@unused@*/ UNUSED(const char * arg),
-		/*@unused@*/ UNUSED(const void * data))
+		/*@unused@*/ const char * arg,
+		/*@unused@*/ const void * data)
 	/*@globals rpmQVKArgs @*/
 	/*@modifies rpmQVKArgs @*/
 {
@@ -181,9 +181,9 @@ struct poptOption rpmQVSourcePoptTable[] = {
 /* ========== Query specific popt args */
 
 static void queryArgCallback(poptContext con,
-		/*@unused@*/ UNUSED(enum poptCallbackReason reason),
+		/*@unused@*/ enum poptCallbackReason reason,
 		const struct poptOption * opt, const char * arg,
-		/*@unused@*/ UNUSED(const void * data))
+		/*@unused@*/ const void * data)
 	/*@globals rpmQVKArgs @*/
 	/*@modifies con, rpmQVKArgs @*/
 {

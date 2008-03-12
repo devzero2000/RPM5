@@ -64,7 +64,7 @@
 
 /*@null@*/
 static PyObject *
-rpmte_Debug(/*@unused@*/ UNUSED(rpmteObject * s), PyObject * args,
+rpmte_Debug(/*@unused@*/ rpmteObject * s, PyObject * args,
 		PyObject * kwds)
 	/*@globals _Py_NoneStruct @*/
 	/*@modifies _Py_NoneStruct @*/
@@ -396,7 +396,7 @@ static struct PyMethodDef rpmte_methods[] = {
 /* ---------- */
 
 static int
-rpmte_print(rpmteObject * s, FILE * fp, /*@unused@*/ UNUSED(int flags))
+rpmte_print(rpmteObject * s, FILE * fp, /*@unused@*/ int flags)
 	/*@globals fileSystem @*/
 	/*@modifies fp, fileSystem @*/
 {

@@ -637,8 +637,8 @@ static rpmRC doPatchMacro(Spec spec, char *line)
 }
 #endif
 
-static void prepFetchVerbose(/*@unused@*/ UNUSED(struct Source *sp),
-		/*@unused@*/ UNUSED(struct stat *st))
+static void prepFetchVerbose(/*@unused@*/ struct Source *sp,
+		/*@unused@*/ struct stat *st)
 	/*@*/
 {
 #if defined(RPM_VENDOR_OPENPKG) /* explicit-source-fetch-cli-option */

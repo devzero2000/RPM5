@@ -629,7 +629,7 @@ Header hdrGetHeader(hdrObject * s)
 
 /**
  */
-PyObject * hdrLoad(UNUSED(PyObject * self), PyObject * args, PyObject * kwds)
+PyObject * hdrLoad(PyObject * self, PyObject * args, PyObject * kwds)
 {
     hdrObject * hdr;
     char * copy = NULL;
@@ -713,7 +713,7 @@ PyObject * rpmReadHeaders (FD_t fd)
 
 /**
  */
-PyObject * rpmHeaderFromFD(UNUSED(PyObject * self), PyObject * args,
+PyObject * rpmHeaderFromFD(PyObject * self, PyObject * args,
 		PyObject * kwds)
 {
     FD_t fd;
@@ -734,7 +734,7 @@ PyObject * rpmHeaderFromFD(UNUSED(PyObject * self), PyObject * args,
 
 /**
  */
-PyObject * rpmHeaderFromFile(UNUSED(PyObject * self), PyObject * args,
+PyObject * rpmHeaderFromFile(PyObject * self, PyObject * args,
 		PyObject *kwds)
 {
     char * filespec;
@@ -761,7 +761,7 @@ PyObject * rpmHeaderFromFile(UNUSED(PyObject * self), PyObject * args,
 /**
  */
 PyObject *
-rpmSingleHeaderFromFD(UNUSED(PyObject * self), PyObject * args,
+rpmSingleHeaderFromFD(PyObject * self, PyObject * args,
 		PyObject * kwds)
 {
     FD_t fd;
@@ -813,7 +813,7 @@ rpmSingleHeaderFromFD(UNUSED(PyObject * self), PyObject * args,
 
 /**
  */
-PyObject * versionCompare (UNUSED(PyObject * self), PyObject * args,
+PyObject * versionCompare (PyObject * self, PyObject * args,
 		PyObject * kwds)
 {
     hdrObject * h1, * h2;
@@ -826,7 +826,7 @@ PyObject * versionCompare (UNUSED(PyObject * self), PyObject * args,
     return Py_BuildValue("i", hdr_compare(h1, h2));
 }
 
-PyObject * labelCompare (UNUSED(PyObject * self), PyObject * args)
+PyObject * labelCompare (PyObject * self, PyObject * args)
 {
     EVR_t A = memset(alloca(sizeof(*A)), 0, sizeof(*A));
     EVR_t B = memset(alloca(sizeof(*B)), 0, sizeof(*B));

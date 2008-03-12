@@ -396,7 +396,7 @@ exit:
     return fn;
 }
 
-static const char * rpmcliInstallElementPath(/*@unused@*/ UNUSED(rpmts ts),
+static const char * rpmcliInstallElementPath(/*@unused@*/ rpmts ts,
 		const char * arg)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/

@@ -888,7 +888,7 @@ VFA_t virtualFileAttributes[] = {
  * @retval *fileName	file name
  * @return		RPMRC_OK on success
  */
-static rpmRC parseForSimple(/*@unused@*/ UNUSED(Spec spec), Package pkg,
+static rpmRC parseForSimple(/*@unused@*/ Spec spec, Package pkg,
 		char * buf, FileList fl, /*@out@*/ const char ** fileName)
 	/*@globals rpmGlobalMacroContext, h_errno @*/
 	/*@modifies buf, fl->processingFailed, *fileName,
@@ -2122,7 +2122,7 @@ exit:
  * @param fileURL
  * @return		RPMRC_OK on success
  */
-static rpmRC processBinaryFile(/*@unused@*/ UNUSED(Package pkg), FileList fl,
+static rpmRC processBinaryFile(/*@unused@*/ Package pkg, FileList fl,
 		const char * fileURL)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies *fl, fl->processingFailed,

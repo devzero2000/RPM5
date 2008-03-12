@@ -310,7 +310,7 @@ static int sugcmp(const void * a, const void * b)
     return strcmp(astr, bstr);
 }
 
-int rpmtsSolve(rpmts ts, rpmds ds, /*@unused@*/ UNUSED(const void * data))
+int rpmtsSolve(rpmts ts, rpmds ds, /*@unused@*/ const void * data)
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     const char * errstr;
@@ -689,12 +689,12 @@ rpmts rpmtsFree(rpmts ts)
     return NULL;
 }
 
-rpmVSFlags rpmtsVSFlags(/*@unused@*/ UNUSED(rpmts ts))
+rpmVSFlags rpmtsVSFlags(/*@unused@*/ rpmts ts)
 {
     return pgpDigVSFlags;
 }
 
-rpmVSFlags rpmtsSetVSFlags(/*@unused@*/ UNUSED(rpmts ts), rpmVSFlags vsflags)
+rpmVSFlags rpmtsSetVSFlags(/*@unused@*/ rpmts ts, rpmVSFlags vsflags)
 {
     rpmVSFlags ovsflags;
     ovsflags = pgpDigVSFlags;

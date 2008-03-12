@@ -155,7 +155,7 @@ rpmfi_InitD(rpmfiObject * s)
 
 /*@null@*/
 static PyObject *
-rpmfi_Debug(/*@unused@*/ UNUSED(rpmfiObject * s), PyObject * args,
+rpmfi_Debug(/*@unused@*/ rpmfiObject * s, PyObject * args,
 		PyObject * kwds)
 	/*@globals _Py_NoneStruct @*/
 	/*@modifies _Py_NoneStruct @*/
@@ -421,7 +421,7 @@ rpmfi_dealloc(/*@only@*/ /*@null@*/ rpmfiObject * s)
 }
 
 static int
-rpmfi_print(rpmfiObject * s, FILE * fp, /*@unused@*/ UNUSED(int flags))
+rpmfi_print(rpmfiObject * s, FILE * fp, /*@unused@*/ int flags)
 	/*@globals fileSystem @*/
 	/*@modifies s, fp, fileSystem @*/
 {

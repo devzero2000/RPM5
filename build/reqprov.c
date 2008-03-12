@@ -10,8 +10,8 @@
 #include "rpmbuild.h"
 #include "debug.h"
 
-int addReqProv(/*@unused@*/ UNUSED(Spec spec), Header h,
-		/*@unused@*/ UNUSED(rpmTag tagN),
+int addReqProv(/*@unused@*/ Spec spec, Header h,
+		/*@unused@*/ rpmTag tagN,
 		const char * N, const char * EVR, rpmsenseFlags Flags,
 		uint32_t index)
 {

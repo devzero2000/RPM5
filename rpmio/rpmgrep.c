@@ -1256,9 +1256,9 @@ used to identify them. */
 /**
  */
 static void grepArgCallback(poptContext con,
-                /*@unused@*/ UNUSED(enum poptCallbackReason reason),
+                /*@unused@*/ enum poptCallbackReason reason,
                 const struct poptOption * opt, const char * arg,
-                /*@unused@*/ UNUSED(void * data))
+                /*@unused@*/ void * data)
 	/*@globals color_string, dee_action, DEE_action, grepFlags, fileSystem @*/
 	/*@modifies color_string, dee_action, DEE_action, grepFlags, fileSystem @*/
 {

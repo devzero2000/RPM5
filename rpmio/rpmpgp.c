@@ -642,7 +642,7 @@ static const uint8_t * pgpPrtPubkeyParams(const pgpPkt pp, uint8_t pubkey_algo,
 }
 
 static const uint8_t * pgpPrtSeckeyParams(const pgpPkt pp,
-		/*@unused@*/ UNUSED(uint8_t pubkey_algo),
+		/*@unused@*/ uint8_t pubkey_algo,
 		/*@returned@*/ const uint8_t *p)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
@@ -1088,7 +1088,7 @@ pgpDig pgpDigFree(pgpDig dig)
     return NULL;
 }
 
-pgpDig pgpDigNew(/*@unused@*/ UNUSED(pgpVSFlags vsflags))
+pgpDig pgpDigNew(/*@unused@*/ pgpVSFlags vsflags)
 {
     pgpDig dig = xcalloc(1, sizeof(*dig));
     dig->vsflags = pgpDigVSFlags;

@@ -34,7 +34,7 @@ assert(pw != NULL);
 /*@=observertrans =statictrans@*/
 }
 
-char * _RequestPass(/*@unused@*/ UNUSED(const char * prompt))
+char * _RequestPass(/*@unused@*/ const char * prompt)
 {
 /*@only@*/ /*@relnull@*/
     static char * password = NULL;

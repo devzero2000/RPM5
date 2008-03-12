@@ -809,8 +809,7 @@ int rpmdbCheckSignals(void)
  * @retval *oldMask	previous sigset
  * @return		0 on success
  */
-static int blockSignals(/*@unused@*/ UNUSED(rpmdb db),
-		/*@out@*/ sigset_t * oldMask)
+static int blockSignals(/*@unused@*/ rpmdb db, /*@out@*/ sigset_t * oldMask)
 	/*@globals fileSystem @*/
 	/*@modifies *oldMask, fileSystem @*/
 {
@@ -833,7 +832,7 @@ static int blockSignals(/*@unused@*/ UNUSED(rpmdb db),
  * @return		0 on success
  */
 /*@mayexit@*/
-static int unblockSignals(/*@unused@*/ UNUSED(rpmdb db), sigset_t * oldMask)
+static int unblockSignals(/*@unused@*/ rpmdb db, sigset_t * oldMask)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/
 {
@@ -870,7 +869,7 @@ static inline /*@null@*/ const char * queryHeader(Header h, const char * qfmt)
  * @param adding	adding an rpmdb header?
  * @return		0 on success
  */
-static int rpmdbExportInfo(/*@unused@*/ UNUSED(rpmdb db), Header h, int adding)
+static int rpmdbExportInfo(/*@unused@*/ rpmdb db, Header h, int adding)
 	/*@globals headerCompoundFormats, rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState @*/
 	/*@modifies h, rpmGlobalMacroContext,
@@ -2805,8 +2804,8 @@ assert(keylen == sizeof(k->ui));		/* xxx programmer error */
 }
 
 /* XXX psm.c */
-int rpmdbRemove(rpmdb db, /*@unused@*/ UNUSED(int rid), unsigned int hdrNum,
-		/*@unused@*/ UNUSED(rpmts ts))
+int rpmdbRemove(rpmdb db, /*@unused@*/ int rid, unsigned int hdrNum,
+		/*@unused@*/ rpmts ts)
 {
 DBC * dbcursor = NULL;
 DBT * key = alloca(sizeof(*key));
@@ -3809,7 +3808,7 @@ static int rpmdbRemoveDatabase(const char * prefix,
 
 static int rpmdbMoveDatabase(const char * prefix,
 		const char * olddbpath, int _olddbapi,
-		const char * newdbpath, /*@unused@*/ UNUSED(int _newdbapi),
+		const char * newdbpath, /*@unused@*/ int _newdbapi,
 		/*@null@*/ const tagStore_t dbiTags, size_t dbiNTags)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/

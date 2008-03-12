@@ -307,7 +307,7 @@ int parseNoSource(Spec spec, const char * field, rpmTag tag)
     return RPMRC_OK;
 }
 
-int addSource(Spec spec, /*@unused@*/ UNUSED(Package pkg),
+int addSource(Spec spec, /*@unused@*/ Package pkg,
 		const char *field, rpmTag tag)
 {
     struct Source *p;

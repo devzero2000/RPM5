@@ -36,7 +36,7 @@ int _print_pkts = 0;
  */
 static int manageFile(/*@out@*/ FD_t *fdp,
 		/*@null@*/ /*@out@*/ const char **fnp,
-		int flags, /*@unused@*/ UNUSED(int rc))
+		int flags, /*@unused@*/ int rc)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies *fdp, *fnp, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
@@ -701,7 +701,7 @@ exit:
  * @return		0 on success
  */
 static int rpmcliImportPubkeys(const rpmts ts,
-		/*@unused@*/ UNUSED(QVA_t qva),
+		/*@unused@*/ QVA_t qva,
 		/*@null@*/ const char ** argv)
 	/*@globals RPMVERSION, rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState @*/

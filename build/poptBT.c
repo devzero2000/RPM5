@@ -63,11 +63,11 @@ static int useCatalog = 0;
 
 /**
  */
-static void buildArgCallback( /*@unused@*/ UNUSED(poptContext con),
-		/*@unused@*/ UNUSED(enum poptCallbackReason reason),
+static void buildArgCallback( /*@unused@*/ poptContext con,
+		/*@unused@*/ enum poptCallbackReason reason,
 		const struct poptOption * opt,
-		/*@unused@*/ UNUSED(const char * arg),
-		/*@unused@*/ UNUSED(const void * data))
+		/*@unused@*/ const char * arg,
+		/*@unused@*/ const void * data)
 {
     BTA_t rba = &rpmBTArgs;
 

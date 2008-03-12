@@ -53,7 +53,7 @@ typedef int Py_ssize_t;
 
 /**
  *  */
-static PyObject * archScore(UNUSED(PyObject * self), PyObject * args,
+static PyObject * archScore(PyObject * s, PyObject * args,
 		PyObject * kwds)
 {
     char * arch;
@@ -73,7 +73,7 @@ static PyObject * archScore(UNUSED(PyObject * self), PyObject * args,
 
 /**
  *  */
-static PyObject * platformScore(UNUSED(PyObject * self), PyObject * args,
+static PyObject * platformScore(PyObject * s, PyObject * args,
 		PyObject * kwds)
 {
     char * platform;
@@ -90,7 +90,7 @@ static PyObject * platformScore(UNUSED(PyObject * self), PyObject * args,
 
 /**
  */
-static PyObject * signalsCaught(UNUSED(PyObject * self), PyObject * check)
+static PyObject * signalsCaught(PyObject * s, PyObject * check)
 {
     PyObject *caught, *o;
     Py_ssize_t llen;
@@ -123,7 +123,7 @@ static PyObject * signalsCaught(UNUSED(PyObject * self), PyObject * check)
 
 /**
  */
-static PyObject * checkSignals(UNUSED(PyObject * self), PyObject * args)
+static PyObject * checkSignals(PyObject * s, PyObject * args)
 {
     if (!PyArg_ParseTuple(args, ":checkSignals")) return NULL;
     rpmdbCheckSignals();
@@ -133,7 +133,7 @@ static PyObject * checkSignals(UNUSED(PyObject * self), PyObject * args)
 
 /**
  */
-static PyObject * setLogFile (UNUSED(PyObject * self), PyObject * args,
+static PyObject * setLogFile (PyObject * s, PyObject * args,
 		PyObject *kwds)
 {
     PyObject * fop = NULL;
@@ -160,7 +160,7 @@ static PyObject * setLogFile (UNUSED(PyObject * self), PyObject * args,
 /**
  */
 static PyObject *
-setVerbosity (UNUSED(PyObject * self), PyObject * args, PyObject *kwds)
+setVerbosity (PyObject * s, PyObject * args, PyObject *kwds)
 {
     int level;
     char * kwlist[] = {"level", NULL};
@@ -177,7 +177,7 @@ setVerbosity (UNUSED(PyObject * self), PyObject * args, PyObject *kwds)
 /**
  */
 static PyObject *
-setEpochPromote (UNUSED(PyObject * self), PyObject * args, PyObject * kwds)
+setEpochPromote (PyObject * s, PyObject * args, PyObject * kwds)
 {
     char * kwlist[] = {"promote", NULL};
 
@@ -191,7 +191,7 @@ setEpochPromote (UNUSED(PyObject * self), PyObject * args, PyObject * kwds)
 
 /**
  */
-static PyObject * setStats (UNUSED(PyObject * self), PyObject * args,
+static PyObject * setStats (PyObject * s, PyObject * args,
 		PyObject * kwds)
 {
     char * kwlist[] = {"stats", NULL};

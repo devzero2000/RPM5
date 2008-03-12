@@ -151,7 +151,7 @@ int headerMacrosUnload(Header h)
 }
 /*@=globs =mods =incondefs@*/
 
-int headerNEVRA(Header h, const char **np, /*@unused@*/ UNUSED(const char **ep),
+int headerNEVRA(Header h, const char **np, /*@unused@*/ const char **ep,
 		const char **vp, const char **rp, const char **ap)
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));

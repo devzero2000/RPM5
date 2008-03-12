@@ -218,7 +218,7 @@ int rpmVerifyFile(const rpmts ts, const rpmfi fi,
  * @param scriptFd      file handle to use for stderr (or NULL)
  * @return              0 on success
  */
-static int rpmVerifyScript(/*@unused@*/ UNUSED(QVA_t qva), rpmts ts,
+static int rpmVerifyScript(/*@unused@*/ QVA_t qva, rpmts ts,
 		rpmfi fi, /*@null@*/ FD_t scriptFd)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, fi, scriptFd, rpmGlobalMacroContext,
@@ -381,7 +381,7 @@ static int verifyHeader(QVA_t qva, const rpmts ts, rpmfi fi)
  * @param h		header
  * @return		number of problems found (0 for no problems)
  */
-static int verifyDependencies(/*@unused@*/ UNUSED(QVA_t qva), rpmts ts,
+static int verifyDependencies(/*@unused@*/ QVA_t qva, rpmts ts,
 		Header h)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, h, rpmGlobalMacroContext, fileSystem, internalState @*/

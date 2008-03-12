@@ -1197,8 +1197,8 @@ assert(ptr != NULL);
  * @retval *msg		failure msg
  * @return		rpmRC return code
  */
-static rpmRC ckHeader(/*@unused@*/ UNUSED(FD_t fd), const void * ptr,
-		/*@unused@*/ UNUSED(const char ** msg))
+static rpmRC ckHeader(/*@unused@*/ FD_t fd, const void * ptr,
+		/*@unused@*/ const char ** msg)
 	/*@globals fileSystem @*/
 	/*@modifies ptr, fileSystem @*/
 {

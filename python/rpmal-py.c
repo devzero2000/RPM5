@@ -16,7 +16,7 @@
 
 /*@null@*/
 static PyObject *
-rpmal_Debug(/*@unused@*/ UNUSED(rpmalObject * s), PyObject * args,
+rpmal_Debug(/*@unused@*/ rpmalObject * s, PyObject * args,
 		PyObject * kwds)
 	/*@globals _Py_NoneStruct @*/
 	/*@modifies _Py_NoneStruct @*/

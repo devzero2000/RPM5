@@ -177,7 +177,7 @@ rpmfts_debug("rpmfts_step", s);
 /*@{*/
 /*@null@*/
 static PyObject *
-rpmfts_Debug(/*@unused@*/ UNUSED(rpmftsObject * s), PyObject * args,
+rpmfts_Debug(/*@unused@*/ rpmftsObject * s, PyObject * args,
 		PyObject * kwds)
 	/*@globals _Py_NoneStruct @*/
 	/*@modifies _Py_NoneStruct @*/
@@ -517,7 +517,7 @@ static int rpmfts_traverse(rpmftsObject * s, visitproc visit, void * arg)
 }
 
 static int rpmfts_print(rpmftsObject * s,  FILE * fp,
-		/*@unused@*/ UNUSED(int flags))
+		/*@unused@*/ int flags)
 	/*@globals fileSystem @*/
 	/*@modifies fp, fileSystem @*/
 {

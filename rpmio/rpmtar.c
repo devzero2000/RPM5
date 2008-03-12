@@ -193,7 +193,7 @@ static struct bsdtar _bsdtar = {
 
 /*==============================================================*/
 /* External function to parse a date/time string (from getdate.y) */
-extern time_t get_date(UNUSED(const char *p))
+extern time_t get_date(const char *p)
 	/*@*/;
 
 static void
@@ -367,7 +367,7 @@ struct matching {
 };
 
 static void
-add_pattern(/*@unused@*/ UNUSED(struct bsdtar *bsdtar), struct match **list, const char *pattern)
+add_pattern(/*@unused@*/ struct bsdtar *bsdtar, struct match **list, const char *pattern)
 	/*@globals fileSystem @*/
 	/*@modifies *list, fileSystem @*/
 {

@@ -584,7 +584,7 @@ if (swapped == 1)
     return rc;
 }
 
-static int sql_bind_data(/*@unused@*/ UNUSED(dbiIndex dbi), SCP_t scp,
+static int sql_bind_data(/*@unused@*/ dbiIndex dbi, SCP_t scp,
 		int pos, DBT * data)
 	/*@modifies scp @*/
 {
@@ -854,7 +854,7 @@ leaveChroot(dbi);
  * @param flags         (unused)
  * @return              0 on success
  */
-static int sql_close(/*@only@*/ dbiIndex dbi, UNUSED(unsigned int flags))
+static int sql_close(/*@only@*/ dbiIndex dbi, unsigned int flags)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies dbi, fileSystem, internalState @*/
 {
@@ -1046,7 +1046,7 @@ leaveChroot(dbi);
  * @param flags         (unused)
  * @return              0 on success
  */
-static int sql_sync (dbiIndex dbi, /*@unused@*/ UNUSED(unsigned int flags))
+static int sql_sync (dbiIndex dbi, /*@unused@*/ unsigned int flags)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/
 {
@@ -1068,7 +1068,7 @@ leaveChroot(dbi);
  * @return		0 on success
  */
 static int sql_copen (dbiIndex dbi,
-		/*@unused@*/ /*@null@*/ UNUSED(DB_TXN * txnid),
+		/*@unused@*/ /*@null@*/ DB_TXN * txnid,
 		/*@out@*/ DBC ** dbcp, unsigned int flags)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies dbi, *txnid, *dbcp, fileSystem, internalState @*/
@@ -1423,10 +1423,10 @@ leaveChroot(dbi);
  * @param flags         DB_CREATE or 0
  * @return              0 on success
  */
-static int sql_associate (/*@unused@*/ UNUSED(dbiIndex dbi),
-		/*@unused@*/ UNUSED(dbiIndex dbisecondary),
-    /*@unused@*/UNUSED(int (*callback) (DB *, const DBT *, const DBT *, DBT *)),
-		/*@unused@*/ UNUSED(unsigned int flags))
+static int sql_associate (/*@unused@*/ dbiIndex dbi,
+		/*@unused@*/ dbiIndex dbisecondary,
+    /*@unused@*/int (*callback) (DB *, const DBT *, const DBT *, DBT *),
+		/*@unused@*/ unsigned int flags)
 	/*@*/
 {
 if (_debug)
@@ -1442,10 +1442,10 @@ fprintf(stderr, "*** sql_associate:\n");
  * @param flags         DB_JOIN_NOSORT or 0
  * @return              0 on success
  */
-static int sql_join (/*@unused@*/ UNUSED(dbiIndex dbi),
-		/*@unused@*/ UNUSED(DBC ** curslist),
-		/*@unused@*/ /*@out@*/ UNUSED(DBC ** dbcp),
-		/*@unused@*/ UNUSED(unsigned int flags))
+static int sql_join (/*@unused@*/ dbiIndex dbi,
+		/*@unused@*/ DBC ** curslist,
+		/*@unused@*/ /*@out@*/ DBC ** dbcp,
+		/*@unused@*/ unsigned int flags)
 	/*@globals fileSystem @*/
 	/*@modifies dbi, *dbcp, fileSystem @*/
 {
@@ -1462,10 +1462,10 @@ fprintf(stderr, "*** sql_join:\n");
  * @param flags         DB_POSITION for same position, 0 for uninitialized
  * @return              0 on success
  */
-static int sql_cdup (/*@unused@*/ UNUSED(dbiIndex dbi),
-		/*@unused@*/ UNUSED(DBC * dbcursor),
-		/*@unused@*/ /*@out@*/ UNUSED(DBC ** dbcp),
-		/*@unused@*/ UNUSED(unsigned int flags))
+static int sql_cdup (/*@unused@*/ dbiIndex dbi,
+		/*@unused@*/ DBC * dbcursor,
+		/*@unused@*/ /*@out@*/ DBC ** dbcp,
+		/*@unused@*/ unsigned int flags)
 	/*@globals fileSystem @*/
 	/*@modifies dbi, *dbcp, fileSystem @*/
 {
@@ -1484,12 +1484,12 @@ fprintf(stderr, "*** sql_cdup:\n");
  * @param flags         DB_NEXT, DB_SET, or 0
  * @return              0 on success
  */
-static int sql_cpget (/*@unused@*/ UNUSED(dbiIndex dbi),
-		/*@unused@*/ /*@null@*/ UNUSED(DBC * dbcursor),
-		/*@unused@*/ UNUSED(DBT * key),
-		/*@unused@*/ UNUSED(DBT * pkey),
-		/*@unused@*/ UNUSED(DBT * data),
-		/*@unused@*/ UNUSED(unsigned int flags))
+static int sql_cpget (/*@unused@*/ dbiIndex dbi,
+		/*@unused@*/ /*@null@*/ DBC * dbcursor,
+		/*@unused@*/ DBT * key,
+		/*@unused@*/ DBT * pkey,
+		/*@unused@*/ DBT * data,
+		/*@unused@*/ unsigned int flags)
 	/*@globals fileSystem @*/
 	/*@modifies *dbcursor, *key, *pkey, *data, fileSystem @*/
 {
@@ -1506,10 +1506,10 @@ fprintf(stderr, "*** sql_cpget:\n");
  * @param flags         (unused)
  * @return              0 on success
  */
-static int sql_ccount (/*@unused@*/ UNUSED(dbiIndex dbi),
-		/*@unused@*/ UNUSED(DBC * dbcursor),
-		/*@unused@*/ /*@out@*/ UNUSED(unsigned int * countp),
-		/*@unused@*/ UNUSED(unsigned int flags))
+static int sql_ccount (/*@unused@*/ dbiIndex dbi,
+		/*@unused@*/ DBC * dbcursor,
+		/*@unused@*/ /*@out@*/ unsigned int * countp,
+		/*@unused@*/ unsigned int flags)
 	/*@globals fileSystem @*/
 	/*@modifies *dbcursor, fileSystem @*/
 {
@@ -1524,7 +1524,7 @@ fprintf(stderr, "*** sql_ccount:\n");
  * @param flags         retrieve statistics that don't require traversal?
  * @return              0 on success
  */
-static int sql_stat (dbiIndex dbi, /*@unused@*/ UNUSED(unsigned int flags))
+static int sql_stat (dbiIndex dbi, /*@unused@*/ unsigned int flags)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies dbi, fileSystem, internalState @*/
 {
