@@ -38,6 +38,11 @@ extern void rpmtsCleanDig(void * ts)
 
 #include "debug.h"
 
+/* XXX retrofit the *BSD typedef for the deprived. */
+#if defined(__QNXNTO__)
+typedef	u_int32_t	uint32_t;
+#endif
+
 /*@access dbiIndexSet@*/
 /*@access dbiIndexItem@*/
 /*@access miRE@*/
