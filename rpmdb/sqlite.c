@@ -854,7 +854,7 @@ leaveChroot(dbi);
  * @param flags         (unused)
  * @return              0 on success
  */
-static int sql_close(/*@only@*/ dbiIndex dbi, unsigned int flags)
+static int sql_close(/*@only@*/ dbiIndex dbi, UNUSED(unsigned int flags))
 	/*@globals fileSystem, internalState @*/
 	/*@modifies dbi, fileSystem, internalState @*/
 {

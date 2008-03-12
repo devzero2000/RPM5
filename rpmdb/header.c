@@ -281,7 +281,7 @@ size_t headerSizeof(Header h)
 	type = entry->info.type;
 	if (typeSizes[type] > 1) {
 	    diff = typeSizes[type] - (size % typeSizes[type]);
-	    if (diff != typeSizes[type]) {
+	    if ((int)diff != typeSizes[type]) {
 		size += diff;
 		pad += diff;
 	    }
@@ -444,7 +444,7 @@ assert(ie.info.offset >= 0);	/* XXX insurance */
 	type = ie.info.type;
 	if (typeSizes[type] > 1) {
 	    size_t diff = typeSizes[type] - (dl % typeSizes[type]);
-	    if (diff != typeSizes[type]) {
+	    if ((int)diff != typeSizes[type]) {
 		dl += diff;
 		if (ieprev.info.type == RPM_I18NSTRING_TYPE)
 		    ieprev.length += diff;
@@ -581,7 +581,7 @@ assert(entry->info.offset <= 0);	/* XXX insurance */
 		type = entry->info.type;
 		if (typeSizes[type] > 1) {
 		    size_t diff = typeSizes[type] - (dl % typeSizes[type]);
-		    if (diff != typeSizes[type]) {
+		    if ((int)diff != typeSizes[type]) {
 			drlen += diff;
 			pad += diff;
 			dl += diff;
@@ -606,7 +606,7 @@ assert(entry->info.offset <= 0);	/* XXX insurance */
 	type = entry->info.type;
 	if (typeSizes[type] > 1) {
 	    size_t diff = typeSizes[type] - (dl % typeSizes[type]);
-	    if (diff != typeSizes[type]) {
+	    if ((int)diff != typeSizes[type]) {
 		driplen += diff;
 		pad += diff;
 		dl += diff;
@@ -722,9 +722,9 @@ assert(entry->info.offset <= 0);	/* XXX insurance */
 	/* Alignment */
 	type = entry->info.type;
 	if (typeSizes[type] > 1) {
-	    unsigned diff;
+	    size_t diff;
 	    diff = typeSizes[type] - ((te - dataStart) % typeSizes[type]);
-	    if (diff != typeSizes[type]) {
+	    if ((int)diff != typeSizes[type]) {
 		memset(te, 0, diff);
 		te += diff;
 		pad += diff;
@@ -1354,7 +1354,7 @@ static int headerMatchLocale(const char *td, const char *l, const char *le)
 #endif
 
     /* First try a complete match. */
-    if (strlen(td) == (le-l) && !strncmp(td, l, (le - l)))
+    if (strlen(td) == (size_t)(le - l) && !strncmp(td, l, (size_t)(le - l)))
 	return 1;
 
     /* Next, try stripping optional dialect and matching.  */

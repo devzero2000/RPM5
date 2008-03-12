@@ -128,7 +128,7 @@ rpmop rpmtsOp(rpmts ts, rpmtsOpX opx)
 {
     rpmop op = NULL;
 
-    if (ts != NULL && opx >= 0 && opx < RPMTS_OP_MAX)
+    if (ts != NULL && (int)opx >= 0 && (int)opx < RPMTS_OP_MAX)
 	op = ts->ops + opx;
 /*@-usereleased -compdef @*/
     return op;
@@ -940,7 +940,7 @@ fprintf(stderr, "--> headerCheck(%p, %p[%u], %p)\n", dig, uh, (unsigned) uc, msg
 /*@=sizeoftype@*/
 
     /* Is the offset within the data area? */
-    if (entry->info.offset >= (unsigned) dl) {
+    if (entry->info.offset >= (int) dl) {
 	(void) snprintf(buf, sizeof(buf),
 		_("region offset: BAD, tag %u type %u offset %d count %u"),
 		(unsigned) entry->info.tag, (unsigned) entry->info.type,
