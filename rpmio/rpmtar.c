@@ -426,7 +426,7 @@ assert(matching != NULL);
 }
 
 int
-exclude_from_file(/*@unused@*/ struct bsdtar *bsdtar, /*@unused@*/ const char *pathname)
+exclude_from_file(struct bsdtar *bsdtar, const char *pathname)
 {
     return process_lines(bsdtar, pathname, &exclude);
 }
