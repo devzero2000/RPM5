@@ -39,7 +39,7 @@ static const char *rpmnsArches[] = {
     "x86_64", "amd64", "ia32e",
     "alpha", "alphaev5", "alphaev56", "alphapca56", "alphaev6", "alphaev67",
     "sparc", "sun4", "sun4m", "sun4c", "sun4d", "sparcv8",
-    "sparcv9", "sparcv9v", "sparcv9v2",
+    "sparcv9", "sparcv9b", "sparcv9v", "sparcv9v2",
     "sparc64", "sun4u", "sparc64v",
     "mips", "mipsel", "IP",
     "ppc", "ppciseries", "ppcpseries",
@@ -51,7 +51,7 @@ static const char *rpmnsArches[] = {
     "armv5teb", "armv5tel", "armv5tejl",
     "armv6l",
     "s390", "i370", "s390x",
-    "sh", "xtensa",
+    "sh", "sh3", "sh4", "sh4a", "xtensa",
     "noarch", "fat",
     NULL,
 };

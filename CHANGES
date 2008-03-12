@@ -1,4 +1,5 @@
 5.0.0 -> 5.1a1:
+    - jbj: add random arch name feelgood fluffiness (#432496).
     - jbj: prepare for Fedorable dependency loops (#437041).
     - rse: upgraded from GNU libtool 1.5.x to 2.2
     - jbj: rpmtar: use (if built) rpmtar feeble tests in "make check".
