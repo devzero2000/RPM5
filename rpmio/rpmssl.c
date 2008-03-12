@@ -128,6 +128,9 @@ int rpmsslSetRSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
 /*@=type@*/
     return memcmp(signhash16, sigp->signhash16, sizeof(sigp->signhash16));
 #else
+    ctx = ctx;		/* XXX keep gcc happy. */
+    dig = dig;
+    sigp = sigp;
     return 1;
 #endif	/* WITH_SSL */
 }
@@ -187,6 +190,7 @@ int rpmsslVerifyRSA(pgpDig dig)
 
     return rc;
 #else
+    dig = dig;		/* XXX keep gcc happy. */
     return 0;
 #endif	/* WITH_SSL */
 }
@@ -219,6 +223,7 @@ int rpmsslVerifyDSA(pgpDig dig)
 
     return rc;
 #else
+    dig = dig;		/* XXX keep gcc happy. */
     return 0;
 #endif	/* WITH_SSL */
 }
@@ -277,6 +282,11 @@ assert(0);
 /*@=moduncon@*/
     return rc;
 #else
+    dig = dig;		/* XXX keep gcc happy. */
+    pre = pre;
+    itemno = itemno;
+    p = p;
+    pend = pend;
     return 1;
 #endif	/* WITH_SSL */
 }
@@ -305,6 +315,8 @@ void rpmsslClean(void * impl)
 	    ssl->c = NULL;
 	}
     }
+#else
+    impl = impl;		/* XXX keep gcc happy. */
 #endif	/* WITH_SSL */
 }
 
@@ -317,6 +329,8 @@ void * rpmsslFree(/*@only@*/ void * impl)
     if (ssl != NULL) {
 	ssl = _free(ssl);
     }
+#else
+    impl = impl;		/* XXX keep gcc happy. */
 #endif	/* WITH_SSL */
     return NULL;
 }
