@@ -116,7 +116,7 @@ static rpmRC markReplacedFiles(const rpmpsm psm)
     rpmdbMatchIterator mi;
     Header h;
     int * offsets;
-    unsigned int prev;
+    uint32_t prev;
     int num;
     int xx;
 
@@ -294,7 +294,7 @@ assert(((rpmte)fi->te)->h == NULL);	/* XXX headerFree side effect */
     fi->astriplen = 0;
     fi->striplen = 0;
 
-    for (i = 0; i < fi->fc; i++)
+    for (i = 0; i < (int)fi->fc; i++)
 	fi->actions[i] = FA_CREATE;
 
     i = fi->fc;
@@ -305,13 +305,13 @@ assert(((rpmte)fi->te)->h == NULL);	/* XXX headerFree side effect */
 	fi->apath = he->p.argv;
 
 	if (headerIsEntry(fi->h, RPMTAG_COOKIE))
-	    for (i = 0; i < fi->fc; i++)
+	    for (i = 0; i < (int)fi->fc; i++)
 		if (fi->fflags[i] & RPMFILE_SPECFILE) break;
     }
 
-    if (i == fi->fc) {
+    if (i == (int)fi->fc) {
 	/* Find the spec file by name. */
-	for (i = 0; i < fi->fc; i++) {
+	for (i = 0; i < (int)fi->fc; i++) {
 	    const char * t = fi->apath[i];
 	    t += strlen(fi->apath[i]) - 5;
 	    if (!strcmp(t, ".spec")) break;
@@ -351,7 +351,7 @@ assert(((rpmte)fi->te)->h == NULL);	/* XXX headerFree side effect */
 #endif
 
     /* Build dnl/dil with {_sourcedir, _specdir} as values. */
-    if (i < fi->fc) {
+    if (i < (int)fi->fc) {
 	size_t speclen = strlen(_specdir) + 2;
 	size_t sourcelen = strlen(_sourcedir) + 2;
 	char * t;

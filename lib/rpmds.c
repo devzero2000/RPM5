@@ -326,7 +326,7 @@ assert(scareMem == 0);		/* XXX always allocate memory */
 	if (tagN == RPMTAG_DIRNAMES) {
 	    char * t;
 	    size_t len;
-	    int i;
+	    unsigned i;
 	    /* XXX Dirnames always have trailing '/', trim that here. */
 	    for (i = 0; i < Count; i++) {
 		(void) urlPath(N[i], (const char **)&t);
@@ -342,7 +342,7 @@ assert(scareMem == 0);		/* XXX always allocate memory */
 	if (tagN == RPMTAG_FILELINKTOS) {
 	    /* XXX Construct the absolute path of the target symlink(s). */
 	    const char ** av = xcalloc(Count+1, sizeof(*av));
-	    int i;
+	    unsigned i;
 
 	    for (i = 0; i < Count; i++) {
 		if (N[i] == NULL || *N[i] == '\0')
@@ -640,7 +640,7 @@ const char * rpmdsDNEVR(const rpmds ds)
 {
     const char * DNEVR = NULL;
 
-    if (ds != NULL && ds->i >= 0 && ds->i < ds->Count) {
+    if (ds != NULL && ds->i >= 0 && ds->i < (int)ds->Count) {
 	if (ds->DNEVR != NULL)
 	    DNEVR = ds->DNEVR;
     }
@@ -651,7 +651,7 @@ const char * rpmdsN(const rpmds ds)
 {
     const char * N = NULL;
 
-    if (ds != NULL && ds->i >= 0 && ds->i < ds->Count) {
+    if (ds != NULL && ds->i >= 0 && ds->i < (int)ds->Count) {
 /*@-globs -mods @*/	/* FIX: correct annotations for ds->ns shadow */
 	N = (ds->ns.N ? ds->ns.N : rpmdsNewN(ds));
 /*@=globs =mods @*/
@@ -663,7 +663,7 @@ const char * rpmdsEVR(const rpmds ds)
 {
     const char * EVR = NULL;
 
-    if (ds != NULL && ds->i >= 0 && ds->i < ds->Count) {
+    if (ds != NULL && ds->i >= 0 && ds->i < (int)ds->Count) {
 	if (ds->EVR != NULL)
 	    EVR = ds->EVR[ds->i];
     }
@@ -674,7 +674,7 @@ evrFlags rpmdsFlags(const rpmds ds)
 {
     evrFlags Flags = 0;
 
-    if (ds != NULL && ds->i >= 0 && ds->i < ds->Count) {
+    if (ds != NULL && ds->i >= 0 && ds->i < (int)ds->Count) {
 	if (ds->Flags != NULL)
 	    Flags = ds->Flags[ds->i];
     }
@@ -772,7 +772,7 @@ uint32_t rpmdsColor(const rpmds ds)
 {
     uint32_t Color = 0;
 
-    if (ds != NULL && ds->i >= 0 && ds->i < ds->Count) {
+    if (ds != NULL && ds->i >= 0 && ds->i < (int)ds->Count) {
 	if (ds->Color != NULL)
 	    Color = ds->Color[ds->i];
     }
@@ -789,7 +789,7 @@ uint32_t rpmdsSetColor(const rpmds ds, uint32_t color)
     if (ds->Color == NULL && ds->Count > 0)	/* XXX lazy malloc */
 	ds->Color = xcalloc(ds->Count, sizeof(*ds->Color));
 
-    if (ds->i >= 0 && ds->i < ds->Count) {
+    if (ds->i >= 0 && ds->i < (int)ds->Count) {
 	if (ds->Color != NULL) {
 	    ocolor = ds->Color[ds->i];
 	    ds->Color[ds->i] = color;
@@ -802,7 +802,7 @@ uint32_t rpmdsRefs(const rpmds ds)
 {
     uint32_t Refs = 0;
 
-    if (ds != NULL && ds->i >= 0 && ds->i < ds->Count) {
+    if (ds != NULL && ds->i >= 0 && ds->i < (int)ds->Count) {
 	if (ds->Refs != NULL)
 	    Refs = ds->Refs[ds->i];
     }
@@ -819,7 +819,7 @@ uint32_t rpmdsSetRefs(const rpmds ds, uint32_t refs)
     if (ds->Refs == NULL && ds->Count > 0)	/* XXX lazy malloc */
 	ds->Refs = xcalloc(ds->Count, sizeof(*ds->Refs));
 
-    if (ds->i >= 0 && ds->i < ds->Count) {
+    if (ds->i >= 0 && ds->i < (int)ds->Count) {
 	if (ds->Refs != NULL) {
 	    orefs = ds->Refs[ds->i];
 	    ds->Refs[ds->i] = refs;
@@ -832,7 +832,7 @@ int32_t rpmdsResult(const rpmds ds)
 {
     int32_t result = 0;
 
-    if (ds != NULL && ds->i >= 0 && ds->i < ds->Count) {
+    if (ds != NULL && ds->i >= 0 && ds->i < (int)ds->Count) {
 	if (ds->Result != NULL)
 	    result = ds->Result[ds->i];
     }
@@ -849,7 +849,7 @@ int32_t rpmdsSetResult(const rpmds ds, int32_t result)
     if (ds->Result == NULL && ds->Count > 0)	/* XXX lazy malloc */
 	ds->Result = xcalloc(ds->Count, sizeof(*ds->Result));
 
-    if (ds->i >= 0 && ds->i < ds->Count) {
+    if (ds->i >= 0 && ds->i < (int)ds->Count) {
 	if (ds->Result != NULL) {
 	    oresult = ds->Result[ds->i];
 	    ds->Result[ds->i] = result;
@@ -860,7 +860,7 @@ int32_t rpmdsSetResult(const rpmds ds, int32_t result)
 
 void rpmdsNotify(rpmds ds, const char * where, int rc)
 {
-    if (!(ds != NULL && ds->i >= 0 && ds->i < ds->Count))
+    if (!(ds != NULL && ds->i >= 0 && ds->i < (int)ds->Count))
 	return;
     if (!(ds->Type != NULL && ds->DNEVR != NULL))
 	return;
@@ -877,7 +877,7 @@ int rpmdsNext(/*@null@*/ rpmds ds)
     int i = -1;
 
     if (ds != NULL && ++ds->i >= 0) {
-	if (ds->i < ds->Count) {
+	if (ds->i < (int)ds->Count) {
 	    char t[2];
 	    i = ds->i;
 	    ds->DNEVR = _free(ds->DNEVR);
@@ -1029,7 +1029,7 @@ save = ods->i;
 	/*
 	 * Insert new entry.
 	 */
-	for (j = ds->Count; j > ds->u; j--)
+	for (j = ds->Count; j > (int)ds->u; j--)
 	    ds->N[j] = ds->N[j-1];
 	ds->N[ds->u] = ods->N[ods->i];
 	N = rpmdsDupArgv(ds->N, ds->Count+1);
@@ -1041,7 +1041,7 @@ save = ods->i;
 assert(ods->EVR != NULL);
 assert(ods->Flags != NULL);
 
-	for (j = ds->Count; j > ds->u; j--)
+	for (j = ds->Count; j > (int)ds->u; j--)
 	    ds->EVR[j] = ds->EVR[j-1];
 	ds->EVR[ds->u] = ods->EVR[ods->i];
 	EVR = rpmdsDupArgv(ds->EVR, ds->Count+1);
@@ -1096,9 +1096,9 @@ int rpmdsSearch(rpmds ds, rpmds ods)
 	    while (l > 0 && !strcmp(ods->N[ods->i], ds->N[l-1]))
 		l--;
 	    /* Set u to 1st member of set that does not contain N. */
-	    if (u >= ds->Count || strcmp(ods->N[ods->i], ds->N[u]))
+	    if (u >= (int)ds->Count || strcmp(ods->N[ods->i], ds->N[u]))
 		u = i;
-	    while (++u < ds->Count) {
+	    while (++u < (int)ds->Count) {
 		if (strcmp(ods->N[ods->i], ds->N[u]))
 		    /*@innerbreak@*/ break;
 	    }
@@ -2945,7 +2945,7 @@ fprintf(stderr, "*** rpmdsELF(%s, %d, %p, %p)\n", fn, flags, (void *)add, contex
 	case SHT_DYNAMIC:
 	    data = NULL;
 	    while ((data = elf_getdata (scn, data)) != NULL) {
-		for (cnt = 0; cnt < (shdr->sh_size / shdr->sh_entsize); ++cnt) {
+		for (cnt = 0; cnt < (int)(shdr->sh_size / shdr->sh_entsize); ++cnt) {
 		    dyn = gelf_getdyn (data, cnt, &dyn_mem);
 		    if (dyn == NULL)
 			/*@innerbreak@*/ break;

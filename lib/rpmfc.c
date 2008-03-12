@@ -552,10 +552,10 @@ void rpmfcPrint(const char * msg, rpmfc fc, FILE * fp)
     int ndx;
     int cx;
     int dx;
-    int fx;
+    size_t fx;
 
-int nprovides;
-int nrequires;
+unsigned nprovides;
+unsigned nrequires;
 
     if (fp == NULL) fp = stderr;
 
@@ -1188,7 +1188,7 @@ static void printDeps(Header h)
     int bingo = 0;
 
     for (dm = DepMsgs; dm->msg != NULL; dm++) {
-	if (dm->ntag != -1) {
+	if ((int)dm->ntag != -1) {
 	    ds = rpmdsFree(ds);
 	    ds = rpmdsNew(h, dm->ntag, flags);
 	}
@@ -1532,12 +1532,12 @@ assert(EVR != NULL);
     he->t = RPM_UINT32_TYPE;
     he->p.ui32p = argiData(fc->fcolor);
     he->c = argiCount(fc->fcolor);
-assert(ac == he->c);
+assert(ac == (int)he->c);
     if (he->p.ptr != NULL && he->c > 0) {
 	uint32_t * fcolors = he->p.ui32p;
 
 	/* XXX Make sure only primary (i.e. Elf32/Elf64) colors are added. */
-	for (i = 0; i < he->c; i++)
+	for (i = 0; i < (int)he->c; i++)
 	    fcolors[i] &= 0x0f;
 
 	xx = headerPut(pkg->header, he, 0);
@@ -1557,7 +1557,7 @@ assert(ac == he->c);
     he->t = RPM_UINT32_TYPE;
     he->p.ui32p = argiData(fc->fcdictx);
     he->c = argiCount(fc->fcdictx);
-assert(ac == he->c);
+assert(ac == (int)he->c);
     if (he->p.ptr != NULL && he->c > 0) {
 	xx = headerPut(pkg->header, he, 0);
     }
@@ -1627,7 +1627,7 @@ assert(he->p.ptr != NULL);
     he->t = RPM_UINT32_TYPE;
     he->p.ui32p = argiData(fc->fddictx);
     he->c = argiCount(fc->fddictx);
-assert(ac == he->c);
+assert(ac == (int)he->c);
     if (he->p.ptr != NULL) {
 	xx = headerPut(pkg->header, he, 0);
     }
@@ -1636,7 +1636,7 @@ assert(ac == he->c);
     he->t = RPM_UINT32_TYPE;
     he->p.ui32p = argiData(fc->fddictn);
     he->c = argiCount(fc->fddictn);
-assert(ac == he->c);
+assert(ac == (int)he->c);
     if (he->p.ptr != NULL) {
 	xx = headerPut(pkg->header, he, 0);
     }
@@ -1645,7 +1645,7 @@ assert(ac == he->c);
 
 if (fc != NULL && _rpmfc_debug) {
 char msg[BUFSIZ];
-sprintf(msg, "final: files %d cdict[%d] %d%% ddictx[%d]", fc->nfiles, argvCount(fc->cdict), ((100 * fc->fknown)/fc->nfiles), argiCount(fc->ddictx));
+sprintf(msg, "final: files %u cdict[%d] %u%% ddictx[%d]", fc->nfiles, argvCount(fc->cdict), ((100 * fc->fknown)/fc->nfiles), argiCount(fc->ddictx));
 rpmfcPrint(msg, fc, NULL);
 }
 

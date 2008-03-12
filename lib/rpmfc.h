@@ -70,10 +70,10 @@ enum FCOLOR_e {
 /**
  */
 struct rpmfc_s {
-    int nfiles;		/*!< no. of files */
-    int fknown;		/*!< no. of classified files */
-    int fwhite;		/*!< no. of "white" files */
-    int ix;		/*!< current file index */
+    size_t nfiles;	/*!< no. of files */
+    size_t fknown;	/*!< no. of classified files */
+    size_t fwhite;	/*!< no. of "white" files */
+    size_t ix;		/*!< current file index */
     int skipProv;	/*!< Don't auto-generate Provides:? */
     int skipReq;	/*!< Don't auto-generate Requires:? */
     int tracked;	/*!< Versioned Provides: tracking dependency added? */

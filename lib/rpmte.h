@@ -77,10 +77,10 @@ typedef struct sharedFileInfo_s *		sharedFileInfo;
  * Replaced file cross reference.
  */
 struct sharedFileInfo_s {
-    int pkgFileNum;
-    int otherFileNum;
-    int otherPkg;
-    int isRemoved;
+    uint32_t pkgFileNum;
+    uint32_t otherFileNum;
+    uint32_t otherPkg;
+    uint32_t isRemoved;
 };
 
 /** \ingroup rpmte

@@ -398,7 +398,7 @@ int rpmRollback(rpmts ts, QVA_t ia, const char ** argv)
     int vsflags, ovsflags;
     int numAdded;
     int numRemoved;
-    int _unsafe_rollbacks = 0;
+    unsigned int _unsafe_rollbacks = 0;
     rpmtransFlags transFlags = ia->transFlags;
     rpmdepFlags depFlags = ia->depFlags;
     int xx;
@@ -582,7 +582,7 @@ assert(ip->done || ia->no_rollback_links);
 	    if (!(ip->done || ia->no_rollback_links)) {
 		numRemoved++;
 
-		if (_unsafe_rollbacks)
+		if (_unsafe_rollbacks != 0)
 		    rpmcliPackagesTotal++;
 
 		if (!(ia->installInterfaceFlags & ifmask))

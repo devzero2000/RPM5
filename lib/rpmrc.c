@@ -84,7 +84,7 @@ typedef struct tableType_s {
 /*@-fullinitblock@*/
 /*@unchecked@*/
 static struct tableType_s tables[RPM_MACHTABLE_COUNT] = {
-    { "arch", 1, 0 },
+    { "arch", 1, 0  },
     { "os", 1, 0 },
     { "buildarch", 0, 1 },
     { "buildos", 0, 1 }

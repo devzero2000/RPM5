@@ -37,6 +37,7 @@
 /*@access FD_t @*/	/* XXX void ptr args */
 /*@access FSMI_t @*/
 /*@access IOSM_t @*/
+/*@access IOSMI_t @*/
 
 /*@access rpmfi @*/
 
@@ -147,7 +148,7 @@ static /*@null@*/ void * mapFreeIterator(/*@only@*//*@null@*/ void * p)
  */
 static void *
 mapInitIterator(rpmfi fi, int reverse)
-	/*@modifies ts, fi @*/
+	/*@modifies fi @*/
 {
     FSMI_t iter = NULL;
 

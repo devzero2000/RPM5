@@ -79,7 +79,7 @@ int rpmfiSetFX(rpmfi fi, int fx)
 {
     int i = -1;
 
-    if (fi != NULL && fx >= 0 && fx < fi->fc) {
+    if (fi != NULL && fx >= 0 && fx < (int)fi->fc) {
 	i = fi->i;
 	fi->i = fx;
 	fi->j = fi->dil[fi->i];
@@ -96,7 +96,7 @@ int rpmfiSetDX(rpmfi fi, int dx)
 {
     int j = -1;
 
-    if (fi != NULL && dx >= 0 && dx < fi->dc) {
+    if (fi != NULL && dx >= 0 && dx < (int)fi->dc) {
 	j = fi->j;
 	fi->j = dx;
     }
@@ -112,7 +112,7 @@ const char * rpmfiBN(rpmfi fi)
 {
     const char * BN = NULL;
 
-    if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
+    if (fi != NULL && fi->i >= 0 && fi->i < (int)fi->fc) {
 	if (fi->bnl != NULL)
 	    BN = fi->bnl[fi->i];
     }
@@ -123,7 +123,7 @@ const char * rpmfiDN(rpmfi fi)
 {
     const char * DN = NULL;
 
-    if (fi != NULL && fi->j >= 0 && fi->j < fi->dc) {
+    if (fi != NULL && fi->j >= 0 && fi->j < (int)fi->dc) {
 	if (fi->dnl != NULL)
 	    DN = fi->dnl[fi->j];
     }
@@ -134,7 +134,7 @@ const char * rpmfiFN(rpmfi fi)
 {
     const char * FN = "";
 
-    if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
+    if (fi != NULL && fi->i >= 0 && fi->i < (int)fi->fc) {
 	const char *dn;
 	char * t;
 	if (fi->fn == NULL)
@@ -152,7 +152,7 @@ uint32_t rpmfiFFlags(rpmfi fi)
 {
     uint32_t FFlags = 0;
 
-    if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
+    if (fi != NULL && fi->i >= 0 && fi->i < (int)fi->fc) {
 	if (fi->fflags != NULL)
 	    FFlags = fi->fflags[fi->i];
     }
@@ -163,7 +163,7 @@ uint32_t rpmfiSetFFlags(rpmfi fi, uint32_t FFlags)
 {
     uint32_t oFFlags = 0;
 
-    if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
+    if (fi != NULL && fi->i >= 0 && fi->i < (int)fi->fc) {
 	if (fi->fflags != NULL && fi->h == NULL) {
 	    oFFlags = fi->fflags[fi->i];
 	    *((uint32_t *)(fi->fflags + fi->i)) = FFlags;
@@ -176,7 +176,7 @@ uint32_t rpmfiVFlags(rpmfi fi)
 {
     uint32_t VFlags = 0;
 
-    if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
+    if (fi != NULL && fi->i >= 0 && fi->i < (int)fi->fc) {
 	if (fi->vflags != NULL)
 	    VFlags = fi->vflags[fi->i];
     }
@@ -187,7 +187,7 @@ uint32_t rpmfiSetVFlags(rpmfi fi, uint32_t VFlags)
 {
     uint32_t oVFlags = 0;
 
-    if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
+    if (fi != NULL && fi->i >= 0 && fi->i < (int)fi->fc) {
 	if (fi->vflags != NULL && fi->h == NULL) {
 	    oVFlags = fi->vflags[fi->i];
 	    *((uint32_t *)(fi->vflags + fi->i)) = VFlags;
@@ -200,7 +200,7 @@ uint16_t rpmfiFMode(rpmfi fi)
 {
     uint16_t fmode = 0;
 
-    if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
+    if (fi != NULL && fi->i >= 0 && fi->i < (int)fi->fc) {
 	if (fi->fmodes != NULL)
 	    fmode = fi->fmodes[fi->i];
     }
@@ -211,7 +211,7 @@ rpmfileState rpmfiFState(rpmfi fi)
 {
     rpmfileState fstate = RPMFILE_STATE_MISSING;
 
-    if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
+    if (fi != NULL && fi->i >= 0 && fi->i < (int)fi->fc) {
 	if (fi->fstates != NULL)
 	    fstate = fi->fstates[fi->i];
     }
@@ -222,7 +222,7 @@ rpmfileState rpmfiSetFState(rpmfi fi, rpmfileState fstate)
 {
     uint32_t ofstate = 0;
 
-    if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
+    if (fi != NULL && fi->i >= 0 && fi->i < (int)fi->fc) {
 	if (fi->fstates != NULL) {
 	    ofstate = fi->fstates[fi->i];
 	    fi->fstates[fi->i] = fstate;
@@ -235,7 +235,7 @@ const unsigned char * rpmfiDigest(rpmfi fi, int * algop, size_t * lenp)
 {
     unsigned char * digest = NULL;
 
-    if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
+    if (fi != NULL && fi->i >= 0 && fi->i < (int)fi->fc) {
 	if (fi->digests != NULL) {
 	    digest = fi->digests + (fi->digestlen * fi->i);
 	    if (algop != NULL)
@@ -252,7 +252,7 @@ const char * rpmfiFLink(rpmfi fi)
 {
     const char * flink = NULL;
 
-    if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
+    if (fi != NULL && fi->i >= 0 && fi->i < (int)fi->fc) {
 	if (fi->flinks != NULL)
 	    flink = fi->flinks[fi->i];
     }
@@ -263,7 +263,7 @@ uint32_t rpmfiFSize(rpmfi fi)
 {
     uint32_t fsize = 0;
 
-    if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
+    if (fi != NULL && fi->i >= 0 && fi->i < (int)fi->fc) {
 	if (fi->fsizes != NULL)
 	    fsize = fi->fsizes[fi->i];
     }
@@ -274,7 +274,7 @@ uint16_t rpmfiFRdev(rpmfi fi)
 {
     uint16_t frdev = 0;
 
-    if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
+    if (fi != NULL && fi->i >= 0 && fi->i < (int)fi->fc) {
 	if (fi->frdevs != NULL)
 	    frdev = fi->frdevs[fi->i];
     }
@@ -285,7 +285,7 @@ uint32_t rpmfiFInode(rpmfi fi)
 {
     uint32_t finode = 0;
 
-    if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
+    if (fi != NULL && fi->i >= 0 && fi->i < (int)fi->fc) {
 	if (fi->finodes != NULL)
 	    finode = fi->finodes[fi->i];
     }
@@ -306,7 +306,7 @@ uint32_t rpmfiFColor(rpmfi fi)
 {
     uint32_t fcolor = 0;
 
-    if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
+    if (fi != NULL && fi->i >= 0 && fi->i < (int)fi->fc) {
 	if (fi->fcolors != NULL)
 	    /* XXX ignore all but lsnibble for now. */
 	    fcolor = (fi->fcolors[fi->i] & 0x0f);
@@ -317,11 +317,10 @@ uint32_t rpmfiFColor(rpmfi fi)
 const char * rpmfiFClass(rpmfi fi)
 {
     const char * fclass = NULL;
-    int cdictx;
 
-    if (fi != NULL && fi->fcdictx != NULL && fi->i >= 0 && fi->i < fi->fc) {
-	cdictx = fi->fcdictx[fi->i];
-	if (fi->cdict != NULL && cdictx >= 0 && cdictx < fi->ncdict)
+    if (fi != NULL && fi->fcdictx != NULL && fi->i >= 0 && fi->i < (int)fi->fc) {
+	int cdictx = fi->fcdictx[fi->i];
+	if (fi->cdict != NULL && cdictx >= 0 && cdictx < (int)fi->ncdict)
 	    fclass = fi->cdict[cdictx];
     }
     return fclass;
@@ -331,7 +330,7 @@ const char * rpmfiFContext(rpmfi fi)
 {
     const char * fcontext = NULL;
 
-    if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
+    if (fi != NULL && fi->i >= 0 && fi->i < (int)fi->fc) {
 	if (fi->fcontexts != NULL)
 	    fcontext = fi->fcontexts[fi->i];
     }
@@ -344,12 +343,12 @@ uint32_t rpmfiFDepends(rpmfi fi, const uint32_t ** fddictp)
     int fddictn = 0;
     const uint32_t * fddict = NULL;
 
-    if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
+    if (fi != NULL && fi->i >= 0 && fi->i < (int)fi->fc) {
 	if (fi->fddictn != NULL)
 	    fddictn = fi->fddictn[fi->i];
 	if (fddictn > 0 && fi->fddictx != NULL)
 	    fddictx = fi->fddictx[fi->i];
-	if (fi->ddict != NULL && fddictx >= 0 && (fddictx+fddictn) <= fi->nddict)
+	if (fi->ddict != NULL && fddictx >= 0 && (fddictx+fddictn) <= (int)fi->nddict)
 	    fddict = fi->ddict + fddictx;
     }
 /*@-dependenttrans -onlytrans @*/
@@ -363,14 +362,14 @@ uint32_t rpmfiFNlink(rpmfi fi)
 {
     uint32_t nlink = 0;
 
-    if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
+    if (fi != NULL && fi->i >= 0 && fi->i < (int)fi->fc) {
 	/* XXX rpm-2.3.12 has not RPMTAG_FILEINODES */
 	if (fi->finodes && fi->frdevs) {
 	    uint32_t finode = fi->finodes[fi->i];
 	    uint16_t frdev = fi->frdevs[fi->i];
 	    int j;
 
-	    for (j = 0; j < fi->fc; j++) {
+	    for (j = 0; j < (int)fi->fc; j++) {
 		if (fi->frdevs[j] == frdev && fi->finodes[j] == finode)
 		    nlink++;
 	    }
@@ -383,7 +382,7 @@ uint32_t rpmfiFMtime(rpmfi fi)
 {
     uint32_t fmtime = 0;
 
-    if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
+    if (fi != NULL && fi->i >= 0 && fi->i < (int)fi->fc) {
 	if (fi->fmtimes != NULL)
 	    fmtime = fi->fmtimes[fi->i];
     }
@@ -395,7 +394,7 @@ const char * rpmfiFUser(rpmfi fi)
     const char * fuser = NULL;
 
     /* XXX add support for ancient RPMTAG_FILEUIDS? */
-    if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
+    if (fi != NULL && fi->i >= 0 && fi->i < (int)fi->fc) {
 	if (fi->fuser != NULL)
 	    fuser = fi->fuser[fi->i];
     }
@@ -407,7 +406,7 @@ const char * rpmfiFGroup(rpmfi fi)
     const char * fgroup = NULL;
 
     /* XXX add support for ancient RPMTAG_FILEGIDS? */
-    if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
+    if (fi != NULL && fi->i >= 0 && fi->i < (int)fi->fc) {
 	if (fi->fgroup != NULL)
 	    fgroup = fi->fgroup[fi->i];
     }
@@ -419,7 +418,7 @@ int rpmfiNext(rpmfi fi)
     int i = -1;
 
     if (fi != NULL && ++fi->i >= 0) {
-	if (fi->i < fi->fc) {
+	if (fi->i < (int)fi->fc) {
 	    i = fi->i;
 	    if (fi->dil != NULL)
 		fi->j = fi->dil[fi->i];
@@ -439,7 +438,7 @@ fprintf(stderr, "*** fi %p\t%s[%d] %s%s\n", fi, (fi->Type ? fi->Type : "?Type?")
 rpmfi rpmfiInit(rpmfi fi, int fx)
 {
     if (fi != NULL) {
-	if (fx >= 0 && fx < fi->fc) {
+	if (fx >= 0 && fx < (int)fi->fc) {
 	    fi->i = fx - 1;
 	    fi->j = -1;
 	}
@@ -455,7 +454,7 @@ int rpmfiNextD(rpmfi fi)
     int j = -1;
 
     if (fi != NULL && ++fi->j >= 0) {
-	if (fi->j < fi->dc)
+	if (fi->j < (int)fi->dc)
 	    j = fi->j;
 	else
 	    fi->j = -1;
@@ -473,7 +472,7 @@ fprintf(stderr, "*** fi %p\t%s[%d]\n", fi, (fi->Type ? fi->Type : "?Type?"), j);
 rpmfi rpmfiInitD(rpmfi fi, int dx)
 {
     if (fi != NULL) {
-	if (dx >= 0 && dx < fi->fc)
+	if (dx >= 0 && dx < (int)fi->fc)
 	    fi->j = dx - 1;
 	else
 	    fi = NULL;
@@ -705,11 +704,11 @@ Header relocateFileList(const rpmts ts, rpmfi fi,
     uint16_t * fModes = NULL;
     Header h;
     int nrelocated = 0;
-    int fileAlloced = 0;
+    size_t fileAlloced = 0;
     char * fn = NULL;
     int haveRelocatedFile = 0;
     int reldel = 0;
-    int len;
+    size_t len;
     int i, j;
     int xx;
 
@@ -910,7 +909,7 @@ assert(p != NULL);
 
     for (i = fileCount - 1; i >= 0; i--) {
 	rpmFileTypes ft;
-	int fnlen;
+	size_t fnlen;
 
 	len = reldel +
 		strlen(dirNames[dirIndexes[i]]) + strlen(baseNames[i]) + 1;
@@ -925,7 +924,7 @@ assert(fn != NULL);		/* XXX can't happen */
 
 if (fColors != NULL) {
 /* XXX pkgs may not have unique dirNames, so color all dirNames that match. */
-for (j = 0; j < dirCount; j++) {
+for (j = 0; j < (int)dirCount; j++) {
 if (strcmp(dirNames[dirIndexes[i]], dirNames[j])) /*@innercontinue@*/ continue;
 dColors[j] |= fColors[i];
 }
@@ -968,7 +967,7 @@ dColors[j] |= fColors[i];
 	if (relocations[j].newPath == NULL) {
 	    if (ft == XDIR) {
 		/* Start with the parent, looking for directory to exclude. */
-		for (j = dirIndexes[i]; j < dirCount; j++) {
+		for (j = dirIndexes[i]; j < (int)dirCount; j++) {
 		    len = strlen(dirNames[j]) - 1;
 		    while (len > 0 && dirNames[j][len-1] == '/') len--;
 		    if (fnlen != len)
@@ -1009,7 +1008,7 @@ dColors[j] |= fColors[i];
 	}
 
 	/* Does this directory already exist in the directory list? */
-	for (j = 0; j < dirCount; j++) {
+	for (j = 0; j < (int)dirCount; j++) {
 	    if (fnlen != strlen(dirNames[j]))
 		/*@innercontinue@*/ continue;
 	    if (strncmp(fn, dirNames[j], fnlen))
@@ -1017,7 +1016,7 @@ dColors[j] |= fColors[i];
 	    /*@innerbreak@*/ break;
 	}
 	
-	if (j < dirCount) {
+	if (j < (int)dirCount) {
 	    dirIndexes[i] = j;
 	    continue;
 	}
@@ -1028,7 +1027,7 @@ dColors[j] |= fColors[i];
 
 	    haveRelocatedFile = 1;
 	    newDirList = xmalloc((dirCount + 1) * sizeof(*newDirList));
-	    for (j = 0; j < dirCount; j++)
+	    for (j = 0; j < (int)dirCount; j++)
 		newDirList[j] = alloca_strdup(dirNames[j]);
 	    dirNames = _free(dirNames);
 	    dirNames = newDirList;
@@ -1342,7 +1341,7 @@ assert(scareMem == 0);		/* XXX always allocate memory */
     _fdupedata(h, RPMTAG_FILECOLORS, fi->fcolors);
     fi->color = 0;
     if (fi->fcolors != NULL)
-    for (i = 0; i < fi->fc; i++)
+    for (i = 0; i < (int)fi->fc; i++)
 	fi->color |= fi->fcolors[i];
     _fdupedata(h, RPMTAG_CLASSDICT, fi->cdict);
     fi->ncdict = he->c;
@@ -1375,9 +1374,9 @@ if (fi->actions == NULL)
     fi->fdigestalgos = NULL;
     _fdupedata(h, RPMTAG_FILEDIGESTALGOS, fi->fdigestalgos);
     if (fi->fdigestalgos) {
-	int dalgo = 0;
+	uint32_t dalgo = 0;
 	/* XXX Insure that all algorithms are either 0 or constant. */
-	for (i = 0; i < fi->fc; i++) {
+	for (i = 0; i < (int)fi->fc; i++) {
 	    if (fi->fdigestalgos[i] == 0)
 		continue;
 	    if (dalgo == 0)
@@ -1404,7 +1403,7 @@ assert(dalgo == fi->fdigestalgos[i]);
     if (fi->fdigests) {
 	t = xmalloc(fi->fc * fi->digestlen);
 	fi->digests = t;
-	for (i = 0; i < fi->fc; i++) {
+	for (i = 0; i < (int)fi->fc; i++) {
 	    const char * fdigests;
 	    int j;
 
@@ -1414,7 +1413,7 @@ assert(dalgo == fi->fdigestalgos[i]);
 		t += fi->digestlen;
 		continue;
 	    }
-	    for (j = 0; j < fi->digestlen; j++, t++, fdigests += 2)
+	    for (j = 0; j < (int)fi->digestlen; j++, t++, fdigests += 2)
 		*t = (nibble(fdigests[0]) << 4) | nibble(fdigests[1]);
 	}
 	fi->fdigests = _free(fi->fdigests);
@@ -1502,13 +1501,13 @@ if (fi->actions == NULL)
 	fi->dnl = _free(fi->dnl);
 	fi->dc = 4;
 	nb = fi->dc * sizeof(*av);
-	for (i = 0; i < fi->dc; i++)
+	for (i = 0; i < (int)fi->dc; i++)
 	    nb += strlen(av[i]) + sizeof("/");
 
 	fi->dnl = xmalloc(nb);
 	te = (char *) (&fi->dnl[fi->dc]);
 	*te = '\0';
-	for (i = 0; i < fi->dc; i++) {
+	for (i = 0; i < (int)fi->dc; i++) {
 	    fi->dnl[i] = te;
 	    te = stpcpy( stpcpy(te, av[i]), "/");
 	    *te++ = '\0';
@@ -1516,7 +1515,7 @@ if (fi->actions == NULL)
 	av = argvFree(av);
 
 	/* Map basenames to appropriate directories. */
-	for (i = 0; i < fi->fc; i++) {
+	for (i = 0; i < (int)fi->fc; i++) {
 	    if (fi->fflags[i] & RPMFILE_SOURCE)
 		fi->dil[i] = 0;
 	    else if (fi->fflags[i] & RPMFILE_SPECFILE)
@@ -1538,12 +1537,12 @@ if (fi->actions == NULL)
 	fi->h = headerFree(fi->h);
 
     dnlmax = -1;
-    for (i = 0; i < fi->dc; i++) {
+    for (i = 0; i < (int)fi->dc; i++) {
 	if ((len = strlen(fi->dnl[i])) > dnlmax)
 	    dnlmax = len;
     }
     bnlmax = -1;
-    for (i = 0; i < fi->fc; i++) {
+    for (i = 0; i < (int)fi->fc; i++) {
 	if ((len = strlen(fi->bnl[i])) > bnlmax)
 	    bnlmax = len;
     }

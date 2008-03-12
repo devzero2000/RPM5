@@ -1570,7 +1570,7 @@ rpmlog(RPMLOG_DEBUG, D_("computing file dispositions\n"));
 	    beingRemoved = 0;
 	    if (ts->removedPackages != NULL)
 	    for (j = 0; j < ts->numRemovedPackages; j++) {
-		if (ts->removedPackages[j] != shared->otherPkg)
+		if (ts->removedPackages[j] != (int)shared->otherPkg)
 		    /*@innercontinue@*/ continue;
 		beingRemoved = 1;
 		/*@innerbreak@*/ break;

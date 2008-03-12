@@ -996,7 +996,7 @@ int rpmtsInitDSI(const rpmts ts)
 	    dsi->f_favail = sfb.f_favail;
 	else	/* XXX who knows what evil lurks here? */
 	    dsi->f_favail = !(sfb.f_ffree == 0 && sfb.f_files == 0)
-				? sfb.f_ffree : (signed long long)-1;
+				?  (signed long long) sfb.f_ffree : -1;
 #else
 /* FIXME: the statfs struct doesn't have a member to tell how many blocks are
  * available for non-superusers.  f_blocks - f_bfree is probably too big, but
