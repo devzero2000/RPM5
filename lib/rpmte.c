@@ -271,7 +271,7 @@ Header rpmteSetHeader(rpmte te, Header h)
 
 rpmElementType rpmteType(rpmte te)
 {
-    return (te != NULL ? te->type : -1);
+    return (te != NULL ? te->type : (rpmElementType)-1);
 }
 
 const char * rpmteN(rpmte te)
