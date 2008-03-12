@@ -52,6 +52,7 @@
 #include <rpm/rpmmacro.h>
 #include <rpm/rpmpgp.h>
 #include <rpm/rpmurl.h>
+#include <rpm/rpmcli.h>
 
 enum hMagic {
 	HEADER_MAGIC_NO             = 0,
