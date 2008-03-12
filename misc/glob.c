@@ -265,7 +265,7 @@ glob (const char *pattern, int flags,
 	  free (onealt);
 #endif
 
-	  if (pglob->gl_pathc != firstc)
+	  if ((int)pglob->gl_pathc != firstc)
 	    /* We found some entries.  */
 	    return 0;
 	  else if (!(flags & (GLOB_NOCHECK|GLOB_NOMAGIC)))
@@ -637,7 +637,7 @@ glob (const char *pattern, int flags,
       /* We have successfully globbed the preceding directory name.
 	 For each name we found, call glob_in_dir on it and FILENAME,
 	 appending the results to PGLOB.  */
-      for (i = 0; i < dirs.gl_pathc; ++i)
+      for (i = 0; i < (int)dirs.gl_pathc; ++i)
 	{
 	  int old_pathc;
 
@@ -688,7 +688,7 @@ glob (const char *pattern, int flags,
 	 But if we have not found any matching entry and thie GLOB_NOCHECK
 	 flag was set we must return the list consisting of the disrectory
 	 names followed by the filename.  */
-      if (pglob->gl_pathc == oldcount)
+      if ((int)pglob->gl_pathc == oldcount)
 	{
 	  /* No matches.  */
 	  if (flags & GLOB_NOCHECK)
@@ -715,7 +715,7 @@ glob (const char *pattern, int flags,
 		while (pglob->gl_pathc < pglob->gl_offs)
 		  pglob->gl_pathv[pglob->gl_pathc++] = NULL;
 
-	      for (i = 0; i < dirs.gl_pathc; ++i)
+	      for (i = 0; i < (int)dirs.gl_pathc; ++i)
 		{
 		  const char *dir = dirs.gl_pathv[i];
 		  size_t dir_len = strlen (dir);
@@ -777,7 +777,7 @@ glob (const char *pattern, int flags,
 	  /* Stick the directory on the front of each name.  */
 	  int ignore = oldcount;
 
-	  if ((flags & GLOB_DOOFFS) && ignore < pglob->gl_offs)
+	  if ((flags & GLOB_DOOFFS) && ignore < (int)pglob->gl_offs)
 	    ignore = pglob->gl_offs;
 
 	  if (prefix_array (dirname,
@@ -795,7 +795,7 @@ glob (const char *pattern, int flags,
       /* Append slashes to directory names.  */
       int i;
       struct stat st;
-      for (i = oldcount; i < pglob->gl_pathc; ++i)
+      for (i = oldcount; i < (int)pglob->gl_pathc; ++i)
 	if (((flags & GLOB_ALTDIRFUNC)
 	     ? (*pglob->gl_stat) (pglob->gl_pathv[i], &st)
 	     : __stat (pglob->gl_pathv[i], &st)) == 0
@@ -818,7 +818,7 @@ glob (const char *pattern, int flags,
       /* Sort the vector.  */
       int non_sort = oldcount;
 
-      if ((flags & GLOB_DOOFFS) && pglob->gl_offs > oldcount)
+      if ((flags & GLOB_DOOFFS) && (int)pglob->gl_offs > oldcount)
 	non_sort = pglob->gl_offs;
 
       qsort ((__ptr_t) &pglob->gl_pathv[non_sort],
@@ -837,7 +837,7 @@ globfree (glob_t *pglob)
   if (pglob->gl_pathv != NULL)
     {
       register int i;
-      for (i = 0; i < pglob->gl_pathc; ++i)
+      for (i = 0; i < (int)pglob->gl_pathc; ++i)
 	if (pglob->gl_pathv[i] != NULL)
 	  free ((__ptr_t) pglob->gl_pathv[i]);
       free ((__ptr_t) pglob->gl_pathv);
