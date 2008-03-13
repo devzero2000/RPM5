@@ -137,10 +137,6 @@ static int compare(char *, NODE *, FTSENT *)
 	/*@globals h_errno, fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
 
-static int crc(int fd, /*@out@*/ uint32_t * cval, /*@out@*/ uint32_t * clen)
-	/*@globals crc_total @*/
-	/*@modifies *clen, *cval, crc_total @*/;
-
 static int mtreeCWalk(void)
 	/*@globals h_errno, fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
@@ -335,25 +331,49 @@ static const uint32_t crctab[] = {
  * locations to store the crc and the number of bytes read.  It returns 0 on
  * success and 1 on failure.  Errno is set on failure.
  */
-int
-crc(int fd, uint32_t * cval, uint32_t * clen)
+static int
+#ifdef	DYING
+crc(int fdno, /*@out@*/ uint32_t * cval, /*@out@*/ uint32_t * clen)
+	/*@globals crc_total @*/
+	/*@modifies *clen, *cval, crc_total @*/
+#else
+crc(FD_t fd, /*@out@*/ uint32_t * cval, /*@out@*/ uint32_t * clen)
+	/*@globals crc_total @*/
+	/*@modifies *clen, *cval, crc_total @*/
+#endif
 {
-    uint8_t *p;
-    ssize_t nr;
-    uint32_t crc, len;
-    uint8_t buf[16 * 1024];
+    uint32_t crc = 0;
+    uint32_t len = 0;
 
 #define	COMPUTE(var, ch)	(var) = (var) << 8 ^ crctab[(var) >> 24 ^ (ch)]
 
-    crc = len = 0;
     crc_total = ~crc_total;
-    while ((nr = read(fd, buf, sizeof(buf))) > 0)
-	for (len += nr, p = buf; nr--; ++p) {
-	    COMPUTE(crc, *p);
-	    COMPUTE(crc_total, *p);
+
+    {   uint8_t buf[16 * 1024];
+#ifdef	DYING
+	ssize_t nr;
+	while ((nr = read(fdno, buf, sizeof(buf))) > 0) {
+	    uint8_t *p;
+	    for (len += nr, p = buf; nr--; ++p) {
+		COMPUTE(crc, *p);
+		COMPUTE(crc_total, *p);
+	    }
 	}
-    if (nr < 0)
-	return 1;
+	if (nr < 0)
+	    return 1;
+#else
+	size_t nr;
+	while ((nr = Fread(buf, sizeof(buf[0]), sizeof(buf), fd)) != 0) {
+	    uint8_t *p;
+	    for (len += nr, p = buf; nr--; ++p) {
+		COMPUTE(crc, *p);
+		COMPUTE(crc_total, *p);
+	    }
+	}
+	if (Ferror(fd))
+	    return 1;
+#endif
+    }
 
     *clen = len;
 
@@ -1659,9 +1679,6 @@ exit:
     return rc;
 }
 
-#define MTREE_O_FLAGS \
-	(O_RDONLY | O_NOCTTY | O_NONBLOCK | O_NOFOLLOW)
-
 #ifdef	DYING
 #if defined(__linux__)
 
@@ -1674,6 +1691,9 @@ static char *SHA1File(const char *pathname, char *output)
 static char *RMD160File(const char *pathname, char *output)
         /*@globals errno, fileSystem, internalState @*/
         /*@modifies output, errno, fileSystem, internalState @*/;
+
+#define MTREE_O_FLAGS \
+	(O_RDONLY | O_NOCTTY | O_NONBLOCK | O_NOFOLLOW)
 
 /*@unchecked@*/ /*@observer@*/
 static const char hex[] = "0123456789abcdef";
@@ -1822,7 +1842,6 @@ compare(char * name, NODE * s, FTSENT * p)
 {
     uint32_t len, val;
     int label = 0;
-    int fd;
     char *cp, *tab = "";
 
     switch(s->type) {
@@ -1967,33 +1986,44 @@ typeerr:    LABEL;
 	}
     }
     if (s->flags & F_CKSUM) {
-#if defined(__linux__)
-/*@-unrecog@*/
-	fd = open(p->fts_accpath, MTREE_O_FLAGS, 0);
-/*@=unrecog@*/
-#else
-	fd = open(p->fts_accpath, O_RDONLY, 0);
-#endif
-	if (fd  < 0) {
+#ifdef	DYING
+	int fdno = open(p->fts_accpath, O_RDONLY, 0);
+	if (fdno  < 0) {
 	    LABEL;
-	    (void) printf("%scksum: %s: %s\n",
-		    tab, p->fts_accpath, strerror(errno));
-	    tab = "\t";
-	} else if (crc(fd, &val, &len)) {
-	    (void) close(fd);
+	    (void) printf("%scksum: %s: %s\n", tab,
+			p->fts_accpath, strerror(errno));
+	} else if (crc(fdno, &val, &len)) {
 	    LABEL;
-	    (void) printf("%scksum: %s: %s\n",
-		    tab, p->fts_accpath, strerror(errno));
-	    tab = "\t";
+	    (void) printf("%scksum: %s: %s\n", tab,
+			p->fts_accpath, strerror(errno));
 	} else {
-	    (void) close(fd);
 	    if (s->cksum != val) {
-			LABEL;
-			(void) printf("%scksum (%u, %u)\n",
-			    tab, (unsigned) s->cksum, (unsigned) val);
+		LABEL;
+		(void) printf("%scksum (%u, %u)\n", tab,
+				(unsigned) s->cksum, (unsigned) val);
 	    }
-	    tab = "\t";
 	}
+	if (fdno >= 0) (void) close(fdno);
+#else
+	FD_t fd = Fopen(p->fts_accpath, "r.ufdio");
+	if (fd == NULL || Ferror(fd)) {
+	    LABEL;
+	    (void) printf("%scksum: %s: %s\n", tab,
+			p->fts_accpath, Fstrerror(fd));
+	} else if (crc(fd, &val, &len)) {
+	    LABEL;
+	    (void) printf("%scksum: %s: %s\n", tab,
+			p->fts_accpath, Fstrerror(fd));
+	} else {
+	    if (s->cksum != val) {
+		LABEL;
+		(void) printf("%scksum (%u, %u)\n", tab,
+				(unsigned) s->cksum, (unsigned) val);
+	    }
+	}
+	if (fd != NULL) (void) Fclose(fd);
+#endif
+	tab = "\t";
     }
     if (s->flags & F_MD5) {
 	char *new_digest = NULL;
@@ -2252,7 +2282,7 @@ statf(int indent, FTSENT * p)
     struct group *gr;
     struct passwd *pw;
     uint32_t len, val;
-    int fd, offset;
+    int offset;
     char *name, *escaped_name;
 
     escaped_name = xmalloc(p->fts_namelen * 4  +  1);
@@ -2309,14 +2339,17 @@ statf(int indent, FTSENT * p)
 #endif
 	    );
     if (keys & F_CKSUM && S_ISREG(p->fts_statp->st_mode)) {
-#if defined(__linux__)
-	fd = open(p->fts_accpath, MTREE_O_FLAGS, 0);
-#else
-	fd = open(p->fts_accpath, O_RDONLY, 0);
-#endif
-	if (fd < 0 || crc(fd, &val, &len))
+#ifdef	DYING
+	int fdno = open(p->fts_accpath, O_RDONLY, 0);
+	if (fdno < 0 || crc(fdno, &val, &len))
 	    mtree_error("%s: %s", p->fts_accpath, strerror(errno));
-	(void) close(fd);
+	(void) close(fdno);
+#else
+	FD_t fd = Fopen(p->fts_accpath, "r.ufdio");
+	if (fd == NULL || Ferror(fd) || crc(fd, &val, &len))
+	    mtree_error("%s: %s", p->fts_accpath, Fstrerror(fd));
+	if (fd != NULL) (void) Fclose(fd);
+#endif
 	output(indent, &offset, "cksum=%lu", (unsigned long)val);
     }
     if (keys & F_MD5 && S_ISREG(p->fts_statp->st_mode)) {
