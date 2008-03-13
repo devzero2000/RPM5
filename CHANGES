@@ -1,4 +1,5 @@
 5.0.0 -> 5.1a1:
+    - jbj: add rpmmtree (from mtree(8) in OpenBSD).
     - jbj; revert the unhelpful & pugly __attribute__((__unused__)) UNUSED() macro.
     - jbj: add -Wno-missing-field-initializers -Wno-unused-parameter to stop spew.
     - jbj: QNX: retrofit u_int32_t typedef where needed.

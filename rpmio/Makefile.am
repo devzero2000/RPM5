@@ -4,9 +4,9 @@ AUTOMAKE_OPTIONS = 1.4 foreign
 
 LINT = splint
 
-EXTRA_DIST = getdate.y rpmcpio.c rpmcpio.h rpmtar.c rpmtar.h tdir.c tfts.c tget.c tglob.c thkp.c thtml.c tinv.c tkey.c tmire.c tput.c trpmio.c tsw.c lookup3.c tpw.c librpmio.vers testit.sh rpmgrep.1
+EXTRA_DIST = getdate.y rpmcpio.c rpmcpio.h rpmmtree.c rpmtar.c rpmtar.h tdir.c tfts.c tget.c tglob.c thkp.c thtml.c tinv.c tkey.c tmire.c tput.c trpmio.c tsw.c lookup3.c tpw.c librpmio.vers testit.sh rpmgrep.1 rpmmtree.8
 
-EXTRA_PROGRAMS = rpmcpio rpmtar tdir tfts tget tglob thkp thtml tinv tkey tmacro tmagic tmire tput tpw trpmio tsw dumpasn1 lookup3
+EXTRA_PROGRAMS = rpmcpio rpmmtree rpmtar tdir tfts tget tglob thkp thtml tinv tkey tmacro tmagic tmire tput tpw trpmio tsw dumpasn1 lookup3
 
 bin_PROGRAMS = rpmdigest
 man_MANS =
@@ -149,6 +149,10 @@ lint_rpmcpio:
 lint_rpmgrep:
 	$(LINT) -f .splintrc_rpmgrep $(DEFS) $(INCLUDES) rpmgrep.c
 
+.PHONY:	lint_rpmmtree
+lint_rpmmtree:
+	$(LINT) -f .splintrc_rpmmtree $(DEFS) $(INCLUDES) rpmmtree.c
+
 .PHONY:	lint_rpmtar
 lint_rpmtar:
 	$(LINT) -f .splintrc_rpmtar $(DEFS) $(INCLUDES) rpmtar.c
@@ -198,6 +202,9 @@ rpmcpio_LDADD = $(RPM_LDADD_COMMON)
 
 rpmdigest_SOURCES = rpmdigest.c
 rpmdigest_LDADD = $(RPMIO_LDADD_COMMON)
+
+rpmmtree_SOURCES = rpmmtree.c
+rpmmtree_LDADD = $(RPMIO_LDADD_COMMON)
 
 rpmtar_SOURCES = rpmtar.c
 rpmtar_LDADD = $(RPM_LDADD_COMMON)
