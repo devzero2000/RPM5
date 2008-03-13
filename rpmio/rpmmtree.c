@@ -43,6 +43,7 @@ static const char copyright[] =
 #include <stdarg.h>
 #include <fnmatch.h>
 
+#ifdef	DYING
 #if defined(__linux__)
 #include <openssl/md5.h>
 #include <openssl/sha.h>
@@ -52,8 +53,9 @@ static const char copyright[] =
 #include <sha1.h>
 #include <rmd160.h>
 #endif
+#endif
 
-#include <rpmio.h>
+#include <rpmio_internal.h>	/* XXX fdInitDigest() et al */
 #include <fts.h>
 #include <poptIO.h>
 
@@ -1508,7 +1510,159 @@ noparent:    mtree_error("no parent node");
 /*==============================================================*/
 
 #define FILE_BUFFER			0x1000
+typedef struct rpmdc_s * rpmdc;
 
+#define _DFB(n) ((1 << (n)) | 0x40000000)
+#define F_ISSET(_dc, _FLAG) ((_dc)->flags & ((RPMDC_FLAGS_##_FLAG) & ~0x40000000))
+
+enum dcFlags_e {
+    RPMDC_FLAGS_BINARY	= _DFB( 0),	/*!< -b,--binary ... */
+    RPMDC_FLAGS_WARN	= _DFB( 1),	/*!< -w,--warn ... */
+    RPMDC_FLAGS_STATUS	= _DFB( 2)	/*!<    --status ... */
+};
+
+struct rpmdc_s {
+    enum dcFlags_e flags;
+    uint32_t algo;		/*!< default digest algorithm. */
+    const char * digest;
+    size_t digestlen;
+    const char * fn;
+    FD_t fd;
+    ARGV_t manifests;		/*!< array of file manifests to verify. */
+    ARGI_t algos;		/*!< array of file digest algorithms. */
+    ARGV_t digests;		/*!< array of file digests. */
+    ARGV_t paths;		/*!< array of file paths. */
+    unsigned char buf[BUFSIZ];
+    ssize_t nb;
+    int ix;
+    int nfails;
+};
+
+static struct rpmdc_s _dc;
+static rpmdc dc = &_dc;
+
+static struct rpmop_s dc_totalops;
+static struct rpmop_s dc_readops;
+static struct rpmop_s dc_digestops;
+
+static int rpmdcPrintFile(rpmdc dc, int algo, const char * algoName)
+{
+    static int asAscii = 1;
+    int rc = 0;
+
+    fdFiniDigest(dc->fd, algo, &dc->digest, &dc->digestlen, asAscii);
+assert(dc->digest != NULL);
+    if (dc->manifests) {
+	const char * msg = "OK";
+	if ((rc = strcmp(dc->digest, dc->digests[dc->ix])) != 0) {
+	    msg = "FAILED";
+	    dc->nfails++;
+	}
+	if (rc || !F_ISSET(dc, STATUS))
+	    fprintf(stdout, "%s: %s\n", dc->fn, msg);
+    } else {
+	if (!F_ISSET(dc, STATUS)) {
+	    if (algoName) fprintf(stdout, "%s:", algoName);
+	    fprintf(stdout, "%s %c%s\n", dc->digest,
+		(F_ISSET(dc, BINARY) ? '*' : ' '), dc->fn);
+	    fflush(stdout);
+	}
+	dc->digest = _free(dc->digest);
+    }
+    return rc;
+}
+
+static int rpmdcFiniFile(rpmdc dc)
+{
+    uint32_t algo = (dc->manifests ? dc->algos->vals[dc->ix] : dc->algo);
+    int rc = 0;
+    int xx;
+
+    switch (algo) {
+    default:
+	xx = rpmdcPrintFile(dc, algo, NULL);
+	if (xx) rc = xx;
+	break;
+    case 256:		/* --all digests requested. */
+      {	struct poptOption * opt = rpmioDigestPoptTable;
+	for (; (opt->longName || opt->shortName || opt->arg) ; opt++) {
+	    if ((opt->argInfo & POPT_ARG_MASK) != POPT_ARG_VAL)
+		continue;
+	    if (opt->arg != (void *)&rpmioDigestHashAlgo)
+		continue;
+	    dc->algo = opt->val;
+	    if (!(dc->algo > 0 && dc->algo < 256))
+		continue;
+	    xx = rpmdcPrintFile(dc, dc->algo, opt->longName);
+	    if (xx) rc = xx;
+	}
+      }	break;
+    }
+    (void) rpmswAdd(&dc_readops, fdstat_op(dc->fd, FDSTAT_READ));
+    (void) rpmswAdd(&dc_digestops, fdstat_op(dc->fd, FDSTAT_DIGEST));
+    Fclose(dc->fd);
+    dc->fd = NULL;
+    return rc;
+}
+
+static int rpmdcCalcFile(rpmdc dc)
+{
+    int rc = 0;
+
+    do {
+	dc->nb = Fread(dc->buf, sizeof(dc->buf[0]), sizeof(dc->buf), dc->fd);
+	if (Ferror(dc->fd)) {
+	    rc = 2;
+	    break;
+	}
+    } while (dc->nb > 0);
+
+    return rc;
+}
+
+static int rpmdcInitFile(rpmdc dc)
+{
+    uint32_t algo = (dc->manifests ? dc->algos->vals[dc->ix] : dc->algo);
+    int rc = 0;
+
+    /* XXX Stat(2) to insure files only? */
+    dc->fd = Fopen(dc->fn, "r.ufdio");
+    if (dc->fd == NULL || Ferror(dc->fd)) {
+	fprintf(stderr, _("open of %s failed: %s\n"), dc->fn, Fstrerror(dc->fd));
+	if (dc->fd != NULL) Fclose(dc->fd);
+	dc->fd = NULL;
+	rc = 2;
+	goto exit;
+    }
+
+    switch (dc->algo) {
+    default:
+	/* XXX TODO: instantiate verify digests for all identical paths. */
+	fdInitDigest(dc->fd, algo, 0);
+	break;
+    case 256:		/* --all digests requested. */
+      {	struct poptOption * opt = rpmioDigestPoptTable;
+	for (; (opt->longName || opt->shortName || opt->arg) ; opt++) {
+	    if ((opt->argInfo & POPT_ARG_MASK) != POPT_ARG_VAL)
+		continue;
+	    if (opt->longName == NULL)
+		continue;
+	    if (!(opt->val > 0 && opt->val < 256))
+		continue;
+	    algo = opt->val;
+	    fdInitDigest(dc->fd, algo, 0);
+	}
+      }	break;
+    }
+
+exit:
+    return rc;
+}
+
+#define MTREE_O_FLAGS \
+	(O_RDONLY | O_NOCTTY | O_NONBLOCK | O_NOFOLLOW)
+
+#ifdef	DYING
 #if defined(__linux__)
 
 static char *MD5File(const char *pathname, char *output)
@@ -1520,9 +1674,6 @@ static char *SHA1File(const char *pathname, char *output)
 static char *RMD160File(const char *pathname, char *output)
         /*@globals errno, fileSystem, internalState @*/
         /*@modifies output, errno, fileSystem, internalState @*/;
-
-#define MTREE_O_FLAGS \
-	(O_RDONLY | O_NOCTTY | O_NONBLOCK | O_NOFOLLOW)
 
 /*@unchecked@*/ /*@observer@*/
 static const char hex[] = "0123456789abcdef";
@@ -1589,7 +1740,9 @@ HASHFile(SHA1File, SHA_CTX, SHA1_Init, SHA1_Update, SHA1_Final, 20)
 HASHFile(RMD160File, RIPEMD160_CTX,
 	RIPEMD160_Init, RIPEMD160_Update, RIPEMD160_Final, 20)
 /*@=globs =moduncon =noeffectuncon =unrecog @*/
-#endif
+#endif	/* defined(__linux__) */
+
+#endif	/* DYING */
 
 /*==============================================================*/
 
@@ -1843,9 +1996,14 @@ typeerr:    LABEL;
 	}
     }
     if (s->flags & F_MD5) {
-	char *new_digest, buf[33];
+	char *new_digest = NULL;
+#ifdef	DYING
+	char buf[32+1];
 
 	new_digest = MD5File(p->fts_accpath, buf);
+#else
+	errno = EINVAL;		/* XXX hack */
+#endif
 	if (!new_digest) {
 	    LABEL;
 	    printf("%sMD5File: %s: %s\n", tab, p->fts_accpath, strerror(errno));
@@ -1857,9 +2015,14 @@ typeerr:    LABEL;
 	}
     }
     if (s->flags & F_RMD160) {
-	char *new_digest, buf[41];
+	char *new_digest = NULL;
+#ifdef	DYING
+	char buf[40+1];
 
 	new_digest = RMD160File(p->fts_accpath, buf);
+#else
+	errno = EINVAL;		/* XXX hack */
+#endif
 	if (!new_digest) {
 	    LABEL;
 	    printf("%sRMD160File: %s: %s\n", tab, p->fts_accpath, strerror(errno));
@@ -1871,9 +2034,14 @@ typeerr:    LABEL;
 	}
     }
     if (s->flags & F_SHA1) {
-	char *new_digest, buf[41];
+	char *new_digest = NULL;
+#ifdef	DYING
+	char buf[40+1];
 
 	new_digest = SHA1File(p->fts_accpath, buf);
+#else
+	errno = EINVAL;		/* XXX hack */
+#endif
 	if (!new_digest) {
 	    LABEL;
 	    printf("%sSHA1File: %s: %s\n", tab, p->fts_accpath, strerror(errno));
@@ -2152,27 +2320,38 @@ statf(int indent, FTSENT * p)
 	output(indent, &offset, "cksum=%lu", (unsigned long)val);
     }
     if (keys & F_MD5 && S_ISREG(p->fts_statp->st_mode)) {
-	char *md5digest, buf[33];
+	char *md5digest = NULL;
+#ifdef	DYING
+	char buf[32+1];
 
 	md5digest = MD5File(p->fts_accpath,buf);
+#else
+	errno = EINVAL;		/* XXX hack */
+#endif
 	if (!md5digest)
 	    mtree_error("%s: %s", p->fts_accpath, strerror(errno));
 	else
 	    output(indent, &offset, "md5digest=%s", md5digest);
     }
     if (keys & F_RMD160 && S_ISREG(p->fts_statp->st_mode)) {
-	char *rmd160digest, buf[41];
+	char *rmd160digest = NULL;
+#ifdef	DYING
+	char buf[40+1];
 
 	rmd160digest = RMD160File(p->fts_accpath,buf);
+#endif
 	if (!rmd160digest)
 	    mtree_error("%s: %s", p->fts_accpath, strerror(errno));
 	else
 	    output(indent, &offset, "rmd160digest=%s", rmd160digest);
     }
     if (keys & F_SHA1 && S_ISREG(p->fts_statp->st_mode)) {
-	char *sha1digest, buf[41];
+	char *sha1digest = NULL;
+#ifdef	DYING
+	char buf[41];
 
 	sha1digest = SHA1File(p->fts_accpath,buf);
+#endif
 	if (!sha1digest)
 	    mtree_error("%s: %s", p->fts_accpath, strerror(errno));
 	else
