@@ -121,10 +121,6 @@ static uint32_t crc_total = ~0;		/* The crc over a number of files. */
 extern "C" {
 #endif
 
-static int compare(char *, NODE *, FTSENT *)
-	/*@globals h_errno, fileSystem, internalState @*/
-	/*@modifies fileSystem, internalState @*/;
-
 static int mtreeCWalk(void)
 	/*@globals h_errno, fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
@@ -137,17 +133,9 @@ __attribute__ ((format (printf, 1, 2)))
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
 
-/*@observer@*/
-static const char * inotype(mode_t mode)
-	/*@*/;
-
 static unsigned parsekey(char *, /*@out@*/ int *needvaluep)
 	/*@globals fileSystem @*/
 	/*@modifies *needvaluep, fileSystem @*/;
-
-static char *rlink(char *)
-	/*@globals h_errno, fileSystem, internalState @*/
-	/*@modifies fileSystem, internalState @*/;
 
 /*@null@*/
 static NODE *spec(void)
@@ -170,7 +158,7 @@ static int mtreeVWalk(void)
 static int cflag, dflag, eflag, iflag, lflag, nflag, qflag, rflag, sflag, tflag,
     uflag, Uflag;
 
-/*@unchecked@*/
+/*@unchecked@*/ /*@null@*/
 static const char * dir;
 
 /*@unchecked@*/
@@ -321,8 +309,8 @@ static const uint32_t crctab[] = {
  */
 static int
 crc(FD_t fd, /*@out@*/ uint32_t * cval, /*@out@*/ uint32_t * clen)
-	/*@globals crc_total @*/
-	/*@modifies *clen, *cval, crc_total @*/
+	/*@globals crc_total, fileSystem @*/
+	/*@modifies fd, *clen, *cval, crc_total, fileSystem @*/
 {
     uint32_t crc = 0;
     uint32_t len = 0;
@@ -1513,13 +1501,18 @@ enum dcFlags_e {
 struct rpmdc_s {
     enum dcFlags_e flags;
     uint32_t algo;		/*!< default digest algorithm. */
+/*@null@*/
     const char * digest;
     size_t digestlen;
     const char * fn;
     FD_t fd;
+/*@null@*/
     ARGV_t manifests;		/*!< array of file manifests to verify. */
+/*@null@*/
     ARGI_t algos;		/*!< array of file digest algorithms. */
+/*@null@*/
     ARGV_t digests;		/*!< array of file digests. */
+/*@null@*/
     ARGV_t paths;		/*!< array of file paths. */
     unsigned char buf[BUFSIZ];
     ssize_t nb;
@@ -1527,14 +1520,24 @@ struct rpmdc_s {
     int nfails;
 };
 
-static struct rpmdc_s _dc;
-static rpmdc dc = &_dc;
+/*@unchecked@*/
+static struct rpmdc_s __dc;
 
+/*@unchecked@*/
+static rpmdc _dc = &__dc;
+
+/*@unchecked@*/
 static struct rpmop_s dc_totalops;
+
+/*@unchecked@*/
 static struct rpmop_s dc_readops;
+
+/*@unchecked@*/
 static struct rpmop_s dc_digestops;
 
-static int rpmdcPrintFile(rpmdc dc, int algo, const char * algoName)
+static int rpmdcPrintFile(rpmdc dc, uint32_t algo, const char * algoName)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies dc, fileSystem, internalState @*/
 {
     static int asAscii = 1;
     int rc = 0;
@@ -1554,7 +1557,7 @@ assert(dc->digest != NULL);
 	    if (algoName) fprintf(stdout, "%s:", algoName);
 	    fprintf(stdout, "%s %c%s\n", dc->digest,
 		(F_ISSET(dc, BINARY) ? '*' : ' '), dc->fn);
-	    fflush(stdout);
+	    (void) fflush(stdout);
 	}
 	dc->digest = _free(dc->digest);
     }
@@ -1562,6 +1565,8 @@ assert(dc->digest != NULL);
 }
 
 static int rpmdcFiniFile(rpmdc dc)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies dc, fileSystem, internalState @*/
 {
     uint32_t algo = (dc->manifests ? dc->algos->vals[dc->ix] : dc->algo);
     int rc = 0;
@@ -1589,12 +1594,14 @@ static int rpmdcFiniFile(rpmdc dc)
     }
     (void) rpmswAdd(&dc_readops, fdstat_op(dc->fd, FDSTAT_READ));
     (void) rpmswAdd(&dc_digestops, fdstat_op(dc->fd, FDSTAT_DIGEST));
-    Fclose(dc->fd);
+    (void) Fclose(dc->fd);
     dc->fd = NULL;
     return rc;
 }
 
 static int rpmdcCalcFile(rpmdc dc)
+	/*@globals fileSystem @*/
+	/*@modifies dc, fileSystem @*/
 {
     int rc = 0;
 
@@ -1610,6 +1617,8 @@ static int rpmdcCalcFile(rpmdc dc)
 }
 
 static int rpmdcInitFile(rpmdc dc)
+	/*@globals h_errno, fileSystem, internalState @*/
+	/*@modifies dc, fileSystem, internalState @*/
 {
     uint32_t algo = (dc->manifests ? dc->algos->vals[dc->ix] : dc->algo);
     int rc = 0;
@@ -1618,7 +1627,7 @@ static int rpmdcInitFile(rpmdc dc)
     dc->fd = Fopen(dc->fn, "r.ufdio");
     if (dc->fd == NULL || Ferror(dc->fd)) {
 	fprintf(stderr, _("open of %s failed: %s\n"), dc->fn, Fstrerror(dc->fd));
-	if (dc->fd != NULL) Fclose(dc->fd);
+	if (dc->fd != NULL) (void) Fclose(dc->fd);
 	dc->fd = NULL;
 	rc = 2;
 	goto exit;
@@ -1669,8 +1678,9 @@ ftype(unsigned type)
 }
 
 /*@observer@*/
-const char *
+static const char *
 inotype(mode_t mode)
+	/*@*/
 {
     switch(mode & S_IFMT) {
     case S_IFBLK:  return "block";
@@ -1687,8 +1697,11 @@ inotype(mode_t mode)
     /*@notreached@*/
 }
 
-char *
+static char *
 rlink(char * name)
+	/*@globals h_errno, fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/
+
 {
     static char lbuf[MAXPATHLEN];
     int len;
@@ -1721,8 +1734,11 @@ rlink(char * name)
 	}			\
     } while (0)			\
 
-int
+static int
 compare(char * name, NODE * s, FTSENT * p)
+	/*@globals errno, h_errno, fileSystem, internalState @*/
+	/*@modifies errno, fileSystem, internalState @*/
+
 {
     uint32_t len, val;
     int label = 0;
@@ -2140,8 +2156,8 @@ statd(FTS * t, FTSENT * parent,
 
 static void
 statf(int indent, FTSENT * p)
-	/*@globals h_errno, fileSystem, internalState @*/
-	/*@modifies fileSystem, internalState @*/
+	/*@globals errno, h_errno, fileSystem, internalState @*/
+	/*@modifies errno, fileSystem, internalState @*/
 {
     struct group *gr;
     struct passwd *pw;
@@ -2663,8 +2679,10 @@ Usage: mtree [-cdeilnqrtUux] [-f spec] [-K key] [-k key] [-p path] [-s seed]\n\
 
 int
 main(int argc, char *argv[])
-	/*@globals h_errno, fileSystem, internalState @*/
-	/*@modifies fileSystem, internalState @*/
+	/*@globals rpmioFtsOpts, rpmGlobalMacroContext, h_errno,
+		fileSystem, internalState @*/
+	/*@modifies rpmioFtsOpts, rpmGlobalMacroContext,
+		fileSystem, internalState @*/
 {
     poptContext optCon = rpmioInit(argc, argv, optionsTable);
     int rc;
