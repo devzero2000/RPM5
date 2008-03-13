@@ -53,9 +53,9 @@ static const char copyright[] =
 #include <rmd160.h>
 #endif
 
-#include <popt.h>
 #include <rpmio.h>
 #include <fts.h>
+#include <poptIO.h>
 
 /*==============================================================*/
 
@@ -208,13 +208,13 @@ mtree_error(const char *fmt, ...)
 
     va_start(ap, fmt);
     (void) fflush(NULL);
-    (void) fprintf(stderr, "\nmtree: ");
+    (void) fprintf(stderr, "\n%s: ", __progname);
     (void) vfprintf(stderr, fmt, ap);
     va_end (ap);
     (void) fprintf(stderr, "\n");
     if (lineno)
-	(void) fprintf(stderr,
-	    "mtree: failed at line %d of the specification\n", lineno);
+	(void)fprintf(stderr, _("%s: failed at line %d of the specification\n"),
+		__progname, lineno);
     exit(EXIT_FAILURE);
     /*@notreached@*/
 }
@@ -1320,8 +1320,8 @@ set(char * t, NODE * ip)
 	    if ((ip->slink = malloc(strlen(val) + 1)) == NULL)
 		mtree_error("%s", strerror(errno));
 	    if (strunvis(ip->slink, val) == -1) {
-		fprintf(stderr,
-		    "mtree: filename (%s) encoded incorrectly\n", val);
+		fprintf(stderr, _("%s: filename (%s) encoded incorrectly\n"),
+			__progname, val);
 		strcpy(ip->slink, val);
 	    }
 	    /*@switchbreak@*/ break;
@@ -1487,7 +1487,8 @@ noparent:    mtree_error("no parent node");
 	if (strpbrk(p, MAGIC))
 	    centry->flags |= F_MAGIC;
 	if (strunvis(centry->name, p) == -1) {
-	    fprintf(stderr, "mtree: filename (%s) encoded incorrectly\n", p);
+	    fprintf(stderr, _("%s: filename (%s) encoded incorrectly\n"),
+			__progname, p);
 	    strcpy(centry->name, p);
 	}
 	set(NULL, centry);
@@ -2288,8 +2289,8 @@ mtreeCWalk(void)
 	case FTS_DNR:
 	case FTS_ERR:
 	case FTS_NS:
-	    (void) fprintf(stderr, "mtree: %s: %s\n",
-		    p->fts_path, strerror(p->fts_errno));
+	    (void) fprintf(stderr, "%s: %s: %s\n",
+		    __progname, p->fts_path, strerror(p->fts_errno));
 	    /*@switchbreak@*/ break;
 	default:
 	    if (!dflag)
@@ -2301,8 +2302,8 @@ mtreeCWalk(void)
 /*@=noeffectuncon =unrecog@*/
 
     if (sflag && keys & F_CKSUM)
-	(void) fprintf(stderr,
-	    "mtree: %s checksum: %u\n", fullpath, (unsigned)crc_total);
+	(void) fprintf(stderr, _("%s: %s checksum: %u\n"),
+		__progname, fullpath, (unsigned)crc_total);
 
     return 0;
 }
@@ -2412,8 +2413,8 @@ vwalk(void)
 	case FTS_DNR:
 	case FTS_ERR:
 	case FTS_NS:
-	    (void) fprintf(stderr, "mtree: %s: %s\n",
-		    RP(p), strerror(p->fts_errno));
+	    (void) fprintf(stderr, "%s: %s: %s\n",
+			__progname, RP(p), strerror(p->fts_errno));
 	    continue;
 	default:
 	    if (dflag)
@@ -2462,8 +2463,8 @@ extra:
     (void) Fts_close(t);
 /*@=noeffectuncon =unrecog@*/
     if (sflag)
-	(void) fprintf(stderr,
-	    "mtree: %s checksum: %u\n", fullpath, (unsigned) crc_total);
+	(void) fprintf(stderr, "%s: %s checksum: %u\n",
+		__progname, fullpath, (unsigned) crc_total);
     return rval;
 }
 
@@ -2528,7 +2529,7 @@ static void mtreeArgCallback(poptContext con,
 	break;
     case '?':
     default:
-	fprintf(stderr, "%s: Unknown option -%c\n", "mtree", opt->val);
+	fprintf(stderr, _("%s: Unknown option -%c\n"), __progname, opt->val);
 	poptPrintUsage(con, stderr, 0);
 	exit(EXIT_FAILURE);
 	/*@notreached@*/ break;
@@ -2542,39 +2543,46 @@ static struct poptOption optionsTable[] = {
         mtreeArgCallback, 0, NULL, NULL },
 /*@=type@*/
   { "spec",'c', POPT_ARG_VAL,	&cflag, 1,
-	"Print file tree specification to stdout", NULL },
+	N_("Print file tree specification to stdout"), NULL },
   { "dirs",'d', POPT_ARG_VAL,	&dflag, 1,
-	"Directories only", NULL },
+	N_("Directories only"), NULL },
   { "ignore",'e', POPT_ARG_VAL,	&eflag, 1,
-	"Don't complain about files not in the specification", NULL },
+	N_("Don't complain about files not in the specification"), NULL },
   { "file",'f', POPT_ARG_STRING,	NULL, (int)'f',
-	"Read file tree <spec>", "<spec>" },
+	N_("Read file tree <spec>"), "<spec>" },
   { "indent",'i', POPT_ARG_VAL,	&iflag, 1,
-	"Indent sub-directories", NULL },
+	N_("Indent sub-directories"), NULL },
   { "add",'K', POPT_ARG_STRING,	NULL, (int)'K',
-	"Add <key> to specification", "<key>" },
+	N_("Add <key> to specification"), "<key>" },
   { "key",'k', POPT_ARG_STRING,	NULL, (int)'k',
-	"Use \"type\" keywords instead", "<key>" },
+	N_("Use \"type\" keywords instead"), "<key>" },
   { "loose",'l', POPT_ARG_VAL,	&lflag, 1,
-	"Loose permissions check", NULL },
+	N_("Loose permissions check"), NULL },
   { "nocomment",'n', POPT_ARG_VAL,	&nflag, 1,
-	"Don't include sub-directory comments", NULL },
+	N_("Don't include sub-directory comments"), NULL },
   { "path",'p', POPT_ARG_STRING,	&dir, 0,
-	"Use <path> rather than current directory", "<path>" },
+	N_("Use <path> rather than current directory"), "<path>" },
   { "quiet",'q', POPT_ARG_VAL,	&qflag, 1,
-	"Quiet mode", NULL },
+	N_("Quiet mode"), NULL },
   { "remove",'r', POPT_ARG_VAL,	&rflag, 1,
-	"Remove files not in specification", NULL },
+	N_("Remove files not in specification"), NULL },
   { "seed",'s', POPT_ARG_STRING,	NULL, (int)'s',
-	"Display crc for file(s) with <seed>", "<seed>" },
+	N_("Display crc for file(s) with <seed>"), "<seed>" },
   { "touch",'t', POPT_ARG_VAL,	&tflag, 1,
-	"Touch files iff timestamp differs", NULL },
+	N_("Touch files iff timestamp differs"), NULL },
   { "set",'U', POPT_ARG_NONE,	&Uflag, (int)'U',
-	"Modify owner/group/permissions to match specification", NULL },
+	N_("Modify owner/group/permissions to match specification"), NULL },
   { "update",'u', POPT_ARG_VAL,	&uflag, 1,
-	"Same as -U, exit with match status", NULL },
+	N_("Same as -U, exit with match status"), NULL },
   { "xdev",'x', POPT_BIT_SET,	&ftsoptions, FTS_XDEV,
-	"Don't cross mount points", NULL },
+	N_("Don't cross mount points"), NULL },
+
+ { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmioDigestPoptTable, 0,
+	N_("Available digests:"), NULL },
+
+ { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmioAllPoptTable, 0,
+	N_("Common options for all rpmio executables:"),
+	NULL },
 
   POPT_AUTOALIAS
   POPT_AUTOHELP
@@ -2592,7 +2600,7 @@ main(int argc, char *argv[])
 	/*@globals h_errno, fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/
 {
-    poptContext optCon = poptGetContext(argv[0], argc, (const char **)argv, optionsTable, 0);
+    poptContext optCon = rpmioInit(argc, argv, optionsTable);
     int rc;
 
     /* Process all options, whine if unknown. */
@@ -2631,5 +2639,7 @@ main(int argc, char *argv[])
 	    rc = 0;
     }
 
-    exit(rc);
+    optCon = rpmioFini(optCon);
+
+    return rc;
 }
