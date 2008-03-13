@@ -2343,7 +2343,7 @@ mtreeCWalk(void)
 	    __getlogin(), host, fullpath, ctime(&clock));
 
 /*@-observertrans -readonlytrans @*/
-    argv[0] = ".";
+    argv[0] = (dir != NULL ? dir : ".");
 /*@=observertrans =readonlytrans @*/
     argv[1] = NULL;
 /*@-noeffectuncon -unrecog@*/
@@ -2474,7 +2474,7 @@ vwalk(void)
     char *argv[2];
 
 /*@-observertrans -readonlytrans @*/
-    argv[0] = ".";
+    argv[0] = (dir != NULL ? dir : ".");
 /*@=observertrans =readonlytrans @*/
     argv[1] = NULL;
 /*@-noeffectuncon -unrecog@*/
@@ -2705,9 +2705,6 @@ main(int argc, char *argv[])
 	poptPrintUsage(optCon, stderr, 0);
 	exit(EXIT_FAILURE);
     }
-
-    if (dir != NULL && Chdir(dir))
-	mtree_error("%s: %s", dir, strerror(errno));
 
     if ((cflag || sflag) && !getcwd(fullpath, sizeof fullpath))
 	mtree_error("getcwd: %s", strerror(errno));
