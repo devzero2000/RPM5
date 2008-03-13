@@ -43,18 +43,6 @@ static const char copyright[] =
 #include <stdarg.h>
 #include <fnmatch.h>
 
-#ifdef	DYING
-#if defined(__linux__)
-#include <openssl/md5.h>
-#include <openssl/sha.h>
-#include <openssl/ripemd.h>
-#else
-#include <md5.h>
-#include <sha1.h>
-#include <rmd160.h>
-#endif
-#endif
-
 #include <rpmio_internal.h>	/* XXX fdInitDigest() et al */
 #include <fts.h>
 #include <poptIO.h>
@@ -332,15 +320,9 @@ static const uint32_t crctab[] = {
  * success and 1 on failure.  Errno is set on failure.
  */
 static int
-#ifdef	DYING
-crc(int fdno, /*@out@*/ uint32_t * cval, /*@out@*/ uint32_t * clen)
-	/*@globals crc_total @*/
-	/*@modifies *clen, *cval, crc_total @*/
-#else
 crc(FD_t fd, /*@out@*/ uint32_t * cval, /*@out@*/ uint32_t * clen)
 	/*@globals crc_total @*/
 	/*@modifies *clen, *cval, crc_total @*/
-#endif
 {
     uint32_t crc = 0;
     uint32_t len = 0;
@@ -350,18 +332,6 @@ crc(FD_t fd, /*@out@*/ uint32_t * cval, /*@out@*/ uint32_t * clen)
     crc_total = ~crc_total;
 
     {   uint8_t buf[16 * 1024];
-#ifdef	DYING
-	ssize_t nr;
-	while ((nr = read(fdno, buf, sizeof(buf))) > 0) {
-	    uint8_t *p;
-	    for (len += nr, p = buf; nr--; ++p) {
-		COMPUTE(crc, *p);
-		COMPUTE(crc_total, *p);
-	    }
-	}
-	if (nr < 0)
-	    return 1;
-#else
 	size_t nr;
 	while ((nr = Fread(buf, sizeof(buf[0]), sizeof(buf), fd)) != 0) {
 	    uint8_t *p;
@@ -372,7 +342,6 @@ crc(FD_t fd, /*@out@*/ uint32_t * cval, /*@out@*/ uint32_t * clen)
 	}
 	if (Ferror(fd))
 	    return 1;
-#endif
     }
 
     *clen = len;
@@ -1679,91 +1648,6 @@ exit:
     return rc;
 }
 
-#ifdef	DYING
-#if defined(__linux__)
-
-static char *MD5File(const char *pathname, char *output)
-        /*@globals errno, fileSystem, internalState @*/
-        /*@modifies output, errno, fileSystem, internalState @*/;
-static char *SHA1File(const char *pathname, char *output)
-        /*@globals errno, fileSystem, internalState @*/
-        /*@modifies output, errno, fileSystem, internalState @*/;
-static char *RMD160File(const char *pathname, char *output)
-        /*@globals errno, fileSystem, internalState @*/
-        /*@modifies output, errno, fileSystem, internalState @*/;
-
-#define MTREE_O_FLAGS \
-	(O_RDONLY | O_NOCTTY | O_NONBLOCK | O_NOFOLLOW)
-
-/*@unchecked@*/ /*@observer@*/
-static const char hex[] = "0123456789abcdef";
-
-#define HASHFile(F, CTX, Init, Update, Final, N) \
-static char * F(const char *pathname, char *output) \
-{ \
-    CTX c; \
-    unsigned char binary[N]; \
-    struct stat st; \
-    int fd, i; \
-    ssize_t n; \
-    char *buffer, *p; \
-\
-    if (Stat(pathname, &st)) return NULL; \
-    if (!S_ISREG(st.st_mode)) { \
-	errno = EIO; \
-	return NULL; \
-    } \
-\
-    if ((fd = open(pathname, MTREE_O_FLAGS)) < 0) \
-	return NULL; \
-\
-    if (fstat(fd, &st)) { \
-	(void) close(fd); \
-	return NULL; \
-    } \
-    if (!S_ISREG(st.st_mode)) { \
-	(void) close(fd); \
-	errno = EIO; \
-	return NULL; \
-    } \
-\
-    if (!(buffer = malloc(FILE_BUFFER))) { \
-	(void) close(fd); \
-	errno = ENOMEM; \
-	return NULL; \
-    } \
-\
-    /*@-moduncon@*/ (void) Init(&c) /*@=moduncon@*/; \
-    while ((n = read(fd, buffer, FILE_BUFFER)) > 0) \
-	/*@-moduncon@*/ (void) Update(&c, buffer, n) /*@=moduncon@*/; \
-\
-    if (!n) { \
-	/*@-moduncon@*/ (void) Final(binary, &c) /*@=moduncon@*/; \
-	p = output; \
-	for (i = 0; i < N; i++) { \
-		*p++ = hex[(int)binary[i] >> 4]; \
-		*p++ = hex[(int)binary[i] & 0x0f]; \
-	} \
-	*p = '\0'; \
-    } else \
-	output = NULL; \
-\
-    (void) close(fd); \
-    free(buffer); \
-\
-    return output; \
-}
-
-/*@-globs -moduncon -noeffectuncon -unrecog @*/
-HASHFile(MD5File, MD5_CTX, MD5_Init, MD5_Update, MD5_Final, 16)
-HASHFile(SHA1File, SHA_CTX, SHA1_Init, SHA1_Update, SHA1_Final, 20)
-HASHFile(RMD160File, RIPEMD160_CTX,
-	RIPEMD160_Init, RIPEMD160_Update, RIPEMD160_Final, 20)
-/*@=globs =moduncon =noeffectuncon =unrecog @*/
-#endif	/* defined(__linux__) */
-
-#endif	/* DYING */
-
 /*==============================================================*/
 
 /*@observer@*/
@@ -1986,25 +1870,6 @@ typeerr:    LABEL;
 	}
     }
     if (s->flags & F_CKSUM) {
-#ifdef	DYING
-	int fdno = open(p->fts_accpath, O_RDONLY, 0);
-	if (fdno  < 0) {
-	    LABEL;
-	    (void) printf("%scksum: %s: %s\n", tab,
-			p->fts_accpath, strerror(errno));
-	} else if (crc(fdno, &val, &len)) {
-	    LABEL;
-	    (void) printf("%scksum: %s: %s\n", tab,
-			p->fts_accpath, strerror(errno));
-	} else {
-	    if (s->cksum != val) {
-		LABEL;
-		(void) printf("%scksum (%u, %u)\n", tab,
-				(unsigned) s->cksum, (unsigned) val);
-	    }
-	}
-	if (fdno >= 0) (void) close(fdno);
-#else
 	FD_t fd = Fopen(p->fts_accpath, "r.ufdio");
 	if (fd == NULL || Ferror(fd)) {
 	    LABEL;
@@ -2022,7 +1887,6 @@ typeerr:    LABEL;
 	    }
 	}
 	if (fd != NULL) (void) Fclose(fd);
-#endif
 	tab = "\t";
     }
     if (s->flags & F_MD5) {
@@ -2339,17 +2203,10 @@ statf(int indent, FTSENT * p)
 #endif
 	    );
     if (keys & F_CKSUM && S_ISREG(p->fts_statp->st_mode)) {
-#ifdef	DYING
-	int fdno = open(p->fts_accpath, O_RDONLY, 0);
-	if (fdno < 0 || crc(fdno, &val, &len))
-	    mtree_error("%s: %s", p->fts_accpath, strerror(errno));
-	(void) close(fdno);
-#else
 	FD_t fd = Fopen(p->fts_accpath, "r.ufdio");
 	if (fd == NULL || Ferror(fd) || crc(fd, &val, &len))
 	    mtree_error("%s: %s", p->fts_accpath, Fstrerror(fd));
 	if (fd != NULL) (void) Fclose(fd);
-#endif
 	output(indent, &offset, "cksum=%lu", (unsigned long)val);
     }
     if (keys & F_MD5 && S_ISREG(p->fts_statp->st_mode)) {
