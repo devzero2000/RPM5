@@ -154,12 +154,32 @@ static int mtreeVWalk(void)
 
 #include "debug.h"
 
+#if !defined(POPT_ARG_ARGV)
+static int _poptSaveString(const char ***argvp, unsigned int argInfo, const char * val)
+	/*@*/
+{
+    ARGV_t argv;
+    int argc = 0;
+    if (argvp == NULL)
+	return -1;
+    if (*argvp)
+    while ((*argvp)[argc] != NULL)
+	argc++;
+    *argvp = xrealloc(*argvp, (argc + 1 + 1) * sizeof(**argvp));
+    if ((argv = *argvp) != NULL) {
+	argv[argc++] = xstrdup(val);
+	argv[argc  ] = NULL;
+    }
+    return 0;
+}
+#endif
+
 /*@unchecked@*/
 static int cflag, dflag, eflag, iflag, lflag, nflag, qflag, rflag, sflag, tflag,
     uflag, Uflag;
 
 /*@unchecked@*/ /*@null@*/
-static const char * dir;
+static ARGV_t dirs;
 
 /*@unchecked@*/
 static unsigned keys = KEYDEFAULT;
@@ -2333,7 +2353,7 @@ mtreeCWalk(void)
     FTS *t;
     FTSENT *p;
     time_t clock;
-    char *argv[2], host[MAXHOSTNAMELEN];
+    char host[MAXHOSTNAMELEN];
     int indent = 0;
 
     (void) time(&clock);
@@ -2342,12 +2362,8 @@ mtreeCWalk(void)
 	    "#\t   user: %s\n#\tmachine: %s\n#\t   tree: %s\n#\t   date: %s",
 	    __getlogin(), host, fullpath, ctime(&clock));
 
-/*@-observertrans -readonlytrans @*/
-    argv[0] = (dir != NULL ? dir : ".");
-/*@=observertrans =readonlytrans @*/
-    argv[1] = NULL;
 /*@-noeffectuncon -unrecog@*/
-    if ((t = Fts_open(argv, rpmioFtsOpts, dsort)) == NULL)
+    if ((t = Fts_open((char *const *)dirs, rpmioFtsOpts, dsort)) == NULL)
 	mtree_error("Fts_open: %s", strerror(errno));
     while ((p = Fts_read(t))) {
 	if (iflag)
@@ -2471,14 +2487,9 @@ vwalk(void)
     FTSENT *p;
     NODE *ep, *level;
     int specdepth, rval;
-    char *argv[2];
 
-/*@-observertrans -readonlytrans @*/
-    argv[0] = (dir != NULL ? dir : ".");
-/*@=observertrans =readonlytrans @*/
-    argv[1] = NULL;
 /*@-noeffectuncon -unrecog@*/
-    if ((t = Fts_open(argv, rpmioFtsOpts, NULL)) == NULL)
+    if ((t = Fts_open((char *const *)dirs, rpmioFtsOpts, NULL)) == NULL)
 	mtree_error("Fts_open: %s", strerror(errno));
     level = root;
     specdepth = rval = 0;
@@ -2571,8 +2582,8 @@ static void mtreeArgCallback(poptContext con,
                 /*@unused@*/ enum poptCallbackReason reason,
                 const struct poptOption * opt, const char * arg,
                 /*@unused@*/ void * data)
-        /*@globals crc_total, dir, keys, sflag, Uflag, uflag, fileSystem @*/
-        /*@modifies crc_total, dir, keys, sflag, Uflag, uflag, fileSystem @*/
+        /*@globals crc_total, dirs, keys, sflag, Uflag, uflag, fileSystem @*/
+        /*@modifies crc_total, dirs, keys, sflag, Uflag, uflag, fileSystem @*/
 {
     char * p;
 
@@ -2596,9 +2607,12 @@ static void mtreeArgCallback(poptContext con,
 	    if (*p != '\0')
 		keys |= parsekey(p, NULL);
 	break;
+#if !defined(POPT_ARG_ARGV)
     case 'p':
-	dir = arg;
+assert(arg != NULL);
+	(void) _poptSaveString(&dirs, opt->argInfo, arg);
 	break;
+#endif
     case 's':
 	sflag = 1;
 	crc_total = ~strtol(arg, &p, 0);
@@ -2642,8 +2656,13 @@ static struct poptOption optionsTable[] = {
 	N_("Loose permissions check"), NULL },
   { "nocomment",'n', POPT_ARG_VAL,	&nflag, 1,
 	N_("Don't include sub-directory comments"), NULL },
-  { "path",'p', POPT_ARG_STRING,	&dir, 0,
+#if defined(POPT_ARG_ARGV)
+  { "path",'p', POPT_ARG_ARGV,	&dirs, 0,
 	N_("Use <path> rather than current directory"), "<path>" },
+#else
+  { "path",'p', POPT_ARG_STRING,	NULL, 'p',
+	N_("Use <path> rather than current directory"), "<path>" },
+#endif
   { "quiet",'q', POPT_ARG_VAL,	&qflag, 1,
 	N_("Quiet mode"), NULL },
   { "remove",'r', POPT_ARG_VAL,	&rflag, 1,
@@ -2722,6 +2741,8 @@ main(int argc, char *argv[])
 	if (Uflag & (rc == MISMATCHEXIT))
 	    rc = 0;
     }
+
+    dirs = argvFree(dirs);
 
     optCon = rpmioFini(optCon);
 
