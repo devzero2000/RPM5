@@ -96,7 +96,6 @@ int cpioHeaderRead(void * _iosm, struct stat * st)
 {
     IOSM_t iosm = _iosm;
     cpioHeader hdr = (cpioHeader) iosm->wrbuf;
-    char * t;
     size_t nb;
     char * end;
     int major, minor;
@@ -140,42 +139,48 @@ fprintf(stderr, "    cpioHeaderRead(%p, %p)\n", iosm, st);
 	return IOSMERR_BAD_HEADER;
 
     /* Read file name. */
-    {	t = xmalloc(nb + 1);
+    {	char * t = xmalloc(nb + 1);
 	rc = cpioRead(iosm, t, nb);
 	if (rc < 0) {
 	    t = _free(t);
 	    iosm->path = NULL;
+	} else {
+	    _IOSMRC(rc);
+	    t[nb] = '\0';
+	    iosm->path = t;
 	}
-	_IOSMRC(rc);
-	t[nb] = '\0';
-	iosm->path = t;
     }
 
     /* Read link name. */
     if (S_ISLNK(st->st_mode)) {
+	char * t;
 
 	/* Make sure block aligned. */
 	rc = _iosmNext(iosm, IOSM_POS);
 	if (rc) return (int) -rc;
 
 	nb = (size_t) st->st_size;
+	t = xmalloc(nb + 1);
 	rc = cpioRead(iosm, t, nb);
 	if (rc < 0) {
 	    t = _free(t);
 	    iosm->lpath = NULL;
+	} else {
+	    _IOSMRC(rc);
+	    t[nb] = '\0';
+	    iosm->lpath = t;
 	}
-	_IOSMRC(rc);
-	t[nb] = '\0';
-	iosm->lpath = t;
     }
 
     rc = 0;
 
+/*@-usereleased@*/
 if (_cpio_debug)
 fprintf(stderr, "\t     %06o%3d (%4d,%4d)%12lu %s\n\t-> %s\n",
                 (unsigned)st->st_mode, (int)st->st_nlink,
                 (int)st->st_uid, (int)st->st_gid, (unsigned long)st->st_size,
                 (iosm->path ? iosm->path : ""), (iosm->lpath ? iosm->lpath : ""));
+/*@=usereleased@*/
 
     return (int) rc;
 }

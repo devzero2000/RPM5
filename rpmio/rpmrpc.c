@@ -74,6 +74,8 @@ int Mkdir (const char * path, mode_t mode)
     const char * lpath;
     int ut = urlPath(path, &lpath);
 
+if (_rpmio_debug)
+fprintf(stderr, "*** Mkdir(%s, 0%o)\n", path, (unsigned)mode);
     switch (ut) {
     case URL_IS_FTP:
 	return ftpMkdir(path, mode);
@@ -103,6 +105,8 @@ int Chdir (const char * path)
     const char * lpath;
     int ut = urlPath(path, &lpath);
 
+if (_rpmio_debug)
+fprintf(stderr, "*** Chdir(%s)\n", path);
     switch (ut) {
     case URL_IS_FTP:
 	return ftpChdir(path);
@@ -136,6 +140,8 @@ int Rmdir (const char * path)
     const char * lpath;
     int ut = urlPath(path, &lpath);
 
+if (_rpmio_debug)
+fprintf(stderr, "*** Rmdir(%s)\n", path);
     switch (ut) {
     case URL_IS_FTP:
 	return ftpRmdir(path);

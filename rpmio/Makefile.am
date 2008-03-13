@@ -104,6 +104,7 @@ getdate.c: getdate.y
 	   echo "/*@-readonlytrans -modunconnomods -compdef -noeffectuncon @*/";\
 	   echo "/*@-globs -evalorderuncon -modobserveruncon -modnomods @*/";\
 	   echo "/*@-noeffect -branchstate -sizeoftype -usereleased @*/";\
+	   echo "/*@+charint -exportheader +longunsignedintegral -redecl -type -warnlintcomments @*/";\
 	   echo "/*@unused@*/";\
 	   sed	-e 's,y.tab.c,getdate.c,' y.tab.c \
 		-e 's,^YYSTYPE ,static &,' \
@@ -111,6 +112,7 @@ getdate.c: getdate.y
 		-e 's,^const short ,static &,' \
 		-e 's,^int yydebug,/*@unused@*/ static &,' \
 		-e 's,^int ,static &,' ;\
+	   echo "/*@=charint =exportheader =longunsignedintegral =redecl =type =warnlintcomments @*/";\
 	   echo "/*@=noeffect =branchstate =sizeoftype =usereleased @*/";\
 	   echo "/*@=globs =evalorderuncon =modobserveruncon =modnomods @*/";\
 	   echo "/*@=readonlytrans =modunconnomods =compdef =noeffectuncon @*/";\

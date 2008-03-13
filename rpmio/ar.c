@@ -261,7 +261,7 @@ fprintf(stderr, "    arHeaderWrite(%p, %p)\n", iosm, st);
 	    _IOSMRC(rc);
 #if !defined(JBJ_WRITEPAD)
 	    rc = _iosmNext(iosm, IOSM_PAD);
-	    if (rc) return rc;
+	    if (rc) return (int)rc;
 #endif
 	}
     }
@@ -302,7 +302,7 @@ fprintf(stderr, "==> %p[%u] \"%.*s\"\n", hdr, (unsigned)rc, (int)sizeof(*hdr), (
     _IOSMRC(rc);
     rc = 0;
 
-    return rc;
+    return (int) rc;
 }
 
 int arTrailerWrite(void * _iosm)

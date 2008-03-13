@@ -1853,7 +1853,7 @@ static int XpoptDupArgv(int argc, const char **argv,
 	nb += strlen(argv[i]) + 1;
     }
 	
-    dst = malloc(nb);
+    dst = xmalloc(nb);
     if (dst == NULL)			/* XXX can't happen */
 	return POPT_ERROR_MALLOC;
     argv2 = (void *) dst;
@@ -1882,7 +1882,7 @@ static int XpoptParseArgvString(const char * s, int * argcPtr, const char *** ar
     const char * src;
     char quote = '\0';
     int argvAlloced = POPT_ARGV_ARRAY_GROW_DELTA;
-    const char ** argv = malloc(sizeof(*argv) * argvAlloced);
+    const char ** argv = xmalloc(sizeof(*argv) * argvAlloced);
     int argc = 0;
     size_t buflen = strlen(s) + 1;
     char * buf = memset(alloca(buflen), 0, buflen);
