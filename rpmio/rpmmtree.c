@@ -181,9 +181,6 @@ static int mtreeVWalk(void)
 #include "debug.h"
 
 /*@unchecked@*/
-static int ftsoptions = FTS_PHYSICAL;
-
-/*@unchecked@*/
 static int cflag, dflag, eflag, iflag, lflag, nflag, qflag, rflag, sflag, tflag,
     uflag, Uflag;
 
@@ -2265,7 +2262,7 @@ mtreeCWalk(void)
 /*@=observertrans =readonlytrans @*/
     argv[1] = NULL;
 /*@-noeffectuncon -unrecog@*/
-    if ((t = Fts_open(argv, ftsoptions, dsort)) == NULL)
+    if ((t = Fts_open(argv, rpmioFtsOpts, dsort)) == NULL)
 	mtree_error("Fts_open: %s", strerror(errno));
     while ((p = Fts_read(t))) {
 	if (iflag)
@@ -2396,7 +2393,7 @@ vwalk(void)
 /*@=observertrans =readonlytrans @*/
     argv[1] = NULL;
 /*@-noeffectuncon -unrecog@*/
-    if ((t = Fts_open(argv, ftsoptions, NULL)) == NULL)
+    if ((t = Fts_open(argv, rpmioFtsOpts, NULL)) == NULL)
 	mtree_error("Fts_open: %s", strerror(errno));
     level = root;
     specdepth = rval = 0;
@@ -2574,7 +2571,7 @@ static struct poptOption optionsTable[] = {
 	N_("Modify owner/group/permissions to match specification"), NULL },
   { "update",'u', POPT_ARG_VAL,	&uflag, 1,
 	N_("Same as -U, exit with match status"), NULL },
-  { "xdev",'x', POPT_BIT_SET,	&ftsoptions, FTS_XDEV,
+  { "xdev",'x', POPT_BIT_SET,	&rpmioFtsOpts, FTS_XDEV,
 	N_("Don't cross mount points"), NULL },
 
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmioDigestPoptTable, 0,
@@ -2630,6 +2627,9 @@ main(int argc, char *argv[])
 
     if (lflag == 1 && uflag == 1)
 	mtree_error("-l and -u flags are mutually exclusive");
+
+    if ((rpmioFtsOpts & ~FTS_XDEV) == 0)
+	rpmioFtsOpts |= FTS_PHYSICAL;
 
     if (cflag) {
 	rc = mtreeCWalk();
