@@ -1760,9 +1760,11 @@ compare(char * name, NODE * s, FTSENT * p)
 	/*@modifies errno, fileSystem, internalState @*/
 
 {
+    static int asAscii = 1;
     uint32_t len, val;
     int label = 0;
     char *cp, *tab = "";
+    int xx;
 
     switch(s->type) {
     case F_BLOCK:
@@ -1926,61 +1928,88 @@ typeerr:    LABEL;
 	tab = "\t";
     }
     if (s->flags & F_MD5) {
-	char *new_digest = NULL;
-#ifdef	DYING
-	char buf[32+1];
-
-	new_digest = MD5File(p->fts_accpath, buf);
-#else
-	errno = EINVAL;		/* XXX hack */
-#endif
-	if (!new_digest) {
+	rpmdc dc = _dc;
+	dc->fn = p->fts_accpath;
+	dc->algo = PGPHASHALGO_MD5;
+	xx = rpmdcInitFile(dc);
+	xx = rpmdcCalcFile(dc);
+	/* XXX hotwire around rpmdcFini() for now. */
+	fdFiniDigest(dc->fd, dc->algo, &dc->digest, &dc->digestlen, asAscii);
+	if (dc->digest == NULL) {
 	    LABEL;
 	    printf("%sMD5File: %s: %s\n", tab, p->fts_accpath, strerror(errno));
 	    tab = "\t";
-	} else if (strcmp(new_digest, s->md5digest)) {
+	} else if (strcmp(dc->digest, s->md5digest)) {
 	    LABEL;
-	    printf("%sMD5 (%s, %s)\n", tab, s->md5digest, new_digest);
+	    printf("%sMD5 (%s, %s)\n", tab, s->md5digest, dc->digest);
 	    tab = "\t";
 	}
+	if (dc->fd != NULL) {
+	    (void) rpmswAdd(&dc_readops, fdstat_op(dc->fd, FDSTAT_READ));
+	    (void) rpmswAdd(&dc_digestops, fdstat_op(dc->fd, FDSTAT_DIGEST));
+	    Fclose(dc->fd);
+	    dc->fd = NULL;
+	    dc->digest = _free(dc->digest);
+	    dc->digestlen = 0;
+	}
+	dc->algo = 0;
+	dc->fn = NULL;
     }
     if (s->flags & F_RMD160) {
-	char *new_digest = NULL;
-#ifdef	DYING
-	char buf[40+1];
-
-	new_digest = RMD160File(p->fts_accpath, buf);
-#else
-	errno = EINVAL;		/* XXX hack */
-#endif
-	if (!new_digest) {
+	rpmdc dc = _dc;
+	dc->fn = p->fts_accpath;
+	dc->algo = PGPHASHALGO_RIPEMD160;
+	xx = rpmdcInitFile(dc);
+	xx = rpmdcCalcFile(dc);
+	/* XXX hotwire around rpmdcFini() for now. */
+	fdFiniDigest(dc->fd, dc->algo, &dc->digest, &dc->digestlen, asAscii);
+	if (dc->digest == NULL) {
 	    LABEL;
 	    printf("%sRMD160File: %s: %s\n", tab, p->fts_accpath, strerror(errno));
 	    tab = "\t";
-	} else if (strcmp(new_digest, s->rmd160digest)) {
+	} else if (strcmp(dc->digest, s->rmd160digest)) {
 	    LABEL;
-	    printf("%sRMD160 (%s, %s)\n", tab, s->rmd160digest, new_digest);
+	    printf("%sRMD160 (%s, %s)\n", tab, s->rmd160digest, dc->digest);
 	    tab = "\t";
 	}
+	if (dc->fd != NULL) {
+	    (void) rpmswAdd(&dc_readops, fdstat_op(dc->fd, FDSTAT_READ));
+	    (void) rpmswAdd(&dc_digestops, fdstat_op(dc->fd, FDSTAT_DIGEST));
+	    Fclose(dc->fd);
+	    dc->fd = NULL;
+	    dc->digest = _free(dc->digest);
+	    dc->digestlen = 0;
+	}
+	dc->algo = 0;
+	dc->fn = NULL;
     }
     if (s->flags & F_SHA1) {
-	char *new_digest = NULL;
-#ifdef	DYING
-	char buf[40+1];
-
-	new_digest = SHA1File(p->fts_accpath, buf);
-#else
-	errno = EINVAL;		/* XXX hack */
-#endif
-	if (!new_digest) {
+	rpmdc dc = _dc;
+	dc->fn = p->fts_accpath;
+	dc->algo = PGPHASHALGO_SHA1;
+	xx = rpmdcInitFile(dc);
+	xx = rpmdcCalcFile(dc);
+	/* XXX hotwire around rpmdcFini() for now. */
+	fdFiniDigest(dc->fd, dc->algo, &dc->digest, &dc->digestlen, asAscii);
+	if (dc->digest == NULL) {
 	    LABEL;
 	    printf("%sSHA1File: %s: %s\n", tab, p->fts_accpath, strerror(errno));
 	    tab = "\t";
-	} else if (strcmp(new_digest, s->sha1digest)) {
+	} else if (strcmp(dc->digest, s->sha1digest)) {
 	    LABEL;
-	    printf("%sSHA1 (%s, %s)\n", tab, s->sha1digest, new_digest);
+	    printf("%sSHA1 (%s, %s)\n", tab, s->sha1digest, dc->digest);
 	    tab = "\t";
 	}
+	if (dc->fd != NULL) {
+	    (void) rpmswAdd(&dc_readops, fdstat_op(dc->fd, FDSTAT_READ));
+	    (void) rpmswAdd(&dc_digestops, fdstat_op(dc->fd, FDSTAT_DIGEST));
+	    Fclose(dc->fd);
+	    dc->fd = NULL;
+	    dc->digest = _free(dc->digest);
+	    dc->digestlen = 0;
+	}
+	dc->algo = 0;
+	dc->fn = NULL;
     }
     if (s->flags & F_SLINK && strcmp(cp = rlink(name), s->slink)) {
 	LABEL;
@@ -2355,6 +2384,7 @@ mtreeCWalk(void)
     time_t clock;
     char host[MAXHOSTNAMELEN];
     int indent = 0;
+    ARGV_t av;
 
     (void) time(&clock);
     (void) gethostname(host, sizeof(host));
@@ -2362,8 +2392,15 @@ mtreeCWalk(void)
 	    "#\t   user: %s\n#\tmachine: %s\n#\t   tree: %s\n#\t   date: %s",
 	    __getlogin(), host, fullpath, ctime(&clock));
 
+    /* XXX should be done in main(). */
+    if ((av = dirs) == NULL) {
+	av = alloca(2 * sizeof(*av));
+	av[0] = ".";
+	av[1] = NULL;
+    }
+
 /*@-noeffectuncon -unrecog@*/
-    if ((t = Fts_open((char *const *)dirs, rpmioFtsOpts, dsort)) == NULL)
+    if ((t = Fts_open((char *const *)av, rpmioFtsOpts, dsort)) == NULL)
 	mtree_error("Fts_open: %s", strerror(errno));
     while ((p = Fts_read(t))) {
 	if (iflag)
@@ -2487,9 +2524,17 @@ vwalk(void)
     FTSENT *p;
     NODE *ep, *level;
     int specdepth, rval;
+    ARGV_t av;
+
+    /* XXX should be done in main(). */
+    if ((av = dirs) == NULL) {
+	av = alloca(2 * sizeof(*av));
+	av[0] = ".";
+	av[1] = NULL;
+    }
 
 /*@-noeffectuncon -unrecog@*/
-    if ((t = Fts_open((char *const *)dirs, rpmioFtsOpts, NULL)) == NULL)
+    if ((t = Fts_open((char *const *)av, rpmioFtsOpts, NULL)) == NULL)
 	mtree_error("Fts_open: %s", strerror(errno));
     level = root;
     specdepth = rval = 0;
@@ -2734,12 +2779,21 @@ main(int argc, char *argv[])
     if ((rpmioFtsOpts & ~FTS_XDEV) == 0)
 	rpmioFtsOpts |= FTS_PHYSICAL;
 
+    rpmswEnter(&dc_totalops, -1);
+
     if (cflag) {
 	rc = mtreeCWalk();
     } else {
 	rc = mtreeVWalk();
 	if (Uflag & (rc == MISMATCHEXIT))
 	    rc = 0;
+    }
+
+    rpmswExit(&dc_totalops, 0);
+    if (_rpmsw_stats) {
+        rpmswPrint(" total:", &dc_totalops);
+        rpmswPrint("  read:", &dc_readops);
+        rpmswPrint("digest:", &dc_digestops);
     }
 
     dirs = argvFree(dirs);
