@@ -306,7 +306,7 @@ The output file itself should be digested using the
 .Xr sha1 1
 utility.
 Then, periodically,
-.Nm mtree
+.Nm rpmmtree
 and
 .Xr sha1 1
 should be run against the on-line specifications.
@@ -352,8 +352,8 @@ The
 port is based on the OpenBSD
 .Nm mtree-2.7
 version, using
-.Nm popt
+.Xr popt 3
 for option processing, and
-.Nm rpmio
+.Xr rpmio 3
 for digests and remote transport.
 
