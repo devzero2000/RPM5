@@ -1,4 +1,5 @@
 5.0.0 -> 5.1a1:
+    - afb: fix endianness detection when compiling Mac OS X Universal Binaries.
     - jbj: install rpmmtree in bindir, its at least as functional as mtree(8).
     - jbj: add rpmmtree (from mtree(8) in OpenBSD).
     - jbj; revert the unhelpful & pugly __attribute__((__unused__)) UNUSED() macro.

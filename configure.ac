@@ -521,6 +521,20 @@ AM_C_PROTOTYPES
 AC_C_INLINE
 AC_C_BIGENDIAN
 
+dnl # platform-hack: don't trust darwin's configure-time check for endianness
+dnl # configure result is used on platforms not using GCC compile-time macros
+AH_VERBATIM([WORDS_BIGENDIAN],
+[/* Define to 1 if your processor stores words with the most significant byte
+   first (like Motorola and SPARC, unlike Intel and VAX). */
+#if defined(__BIG_ENDIAN__)
+#define WORDS_BIGENDIAN 1
+#elif defined(__LITTLE_ENDIAN__)
+/* #undef WORDS_BIGENDIAN */
+#else
+/* use configure result: */
+#undef WORDS_BIGENDIAN
+#endif])
+
 dnl # standard headers (specific)
 AC_HEADER_STDC
 AC_HEADER_MAJOR
