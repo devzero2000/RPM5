@@ -669,6 +669,7 @@ AC_CHECK_FUNCS([dnl
     strndup strerror strtol strtoul strspn strstr sighold sigrelse sigpause dnl
     sigprocmask sigemptyset sigaddset sigdelset sigsuspend madvise dnl
     __secure_getenv regcomp ftok mkstemp setlocale getpassphrase dnl
+    getmode setmode dnl
 ])
 
 dnl # check for getmntent and alternatives
