@@ -174,6 +174,14 @@ fprintf(stderr, "*** ds %p\t%s[%d]\n", ds, ds->Type, ds->Count);
 	tagEVR = RPMTAG_TRIGGERVERSION;
 	tagF = RPMTAG_TRIGGERFLAGS;
     } else
+    if (ds->tagN == RPMTAG_SUGGESTSNAME) {
+	tagEVR = RPMTAG_SUGGESTSVERSION;
+	tagF = RPMTAG_SUGGESTSFLAGS;
+    } else
+    if (ds->tagN == RPMTAG_ENHANCESNAME) {
+	tagEVR = RPMTAG_ENHANCESVERSION;
+	tagF = RPMTAG_ENHANCESFLAGS;
+    } else
     if (ds->tagN == RPMTAG_DIRNAMES) {
 	tagEVR = 0;
 	tagF = 0;
@@ -273,6 +281,16 @@ assert(scareMem == 0);		/* XXX always allocate memory */
 	Type = "Triggers";
 	tagEVR = RPMTAG_TRIGGERVERSION;
 	tagF = RPMTAG_TRIGGERFLAGS;
+    } else
+    if (tagN == RPMTAG_SUGGESTSNAME) {
+	Type = "Suggests";
+	tagEVR = RPMTAG_SUGGESTSVERSION;
+	tagF = RPMTAG_SUGGESTSFLAGS;
+    } else
+    if (tagN == RPMTAG_ENHANCESNAME) {
+	Type = "Enhances";
+	tagEVR = RPMTAG_ENHANCESVERSION;
+	tagF = RPMTAG_ENHANCESFLAGS;
     } else
     if (tagN == RPMTAG_DIRNAMES) {
 	Type = "Dirnames";
@@ -499,6 +517,12 @@ rpmds rpmdsThis(Header h, rpmTag tagN, evrFlags Flags)
     if (tagN == RPMTAG_TRIGGERNAME) {
 	Type = "Triggers";
     } else
+    if (tagN == RPMTAG_SUGGESTSNAME) {
+    Type = "Suggests";
+    } else
+    if (tagN == RPMTAG_ENHANCESNAME) {
+    Type = "Enhances";
+    } else
     if (tagN == RPMTAG_DIRNAMES) {
 	Type = "Dirnames";
     } else
@@ -583,6 +607,12 @@ rpmds rpmdsSingle(rpmTag tagN, const char * N, const char * EVR, evrFlags Flags)
     } else
     if (tagN == RPMTAG_TRIGGERNAME) {
 	Type = "Triggers";
+    } else
+    if (tagN == RPMTAG_SUGGESTSNAME) {
+    Type = "Suggests";
+    } else
+    if (tagN == RPMTAG_ENHANCESNAME) {
+    Type = "Enhances";
     } else
     if (tagN == RPMTAG_DIRNAMES) {
 	Type = "Dirnames";
