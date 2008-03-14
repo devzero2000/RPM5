@@ -802,6 +802,9 @@ strunvis(char * dst, const char * src)
 
 /*==============================================================*/
 
+/* XXX *BSD systems already have getmode(3) and setmode(3) */
+#if defined(__linux__) || defined(__LCLINT__)
+
 #define	SET_LEN	6		/* initial # of bitcmd struct to malloc */
 #define	SET_LEN_INCR 4		/* # of bitcmd structs to add as needed */
 
@@ -1210,6 +1213,7 @@ apply:	if (!*p)
     return saveset;
 }
 /*@=usereleased@*/
+#endif	/* __linux__ */
 
 /*==============================================================*/
 
@@ -1249,7 +1253,7 @@ set(char * t, NODE * ip)
 #if defined(__linux__)
 	    ip->file_flags = 0;	/* XXX W2DO? */
 #else
-	    {	uint32_t fset, fclr;
+	    {	unsigned long fset, fclr;
 		if (strtofflags(&val, &fset, &fclr))
 		    mtree_error("%s", strerror(errno));
 		ip->file_flags = fset;
