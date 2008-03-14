@@ -54,6 +54,10 @@ static const char copyright[] =
 
 #define	MISMATCHEXIT	2
 
+#if !defined(S_ISTXT) && defined(S_ISVTX)	/* XXX linux != BSD */
+#define	S_ISTXT		S_ISVTX
+#endif
+
 typedef struct _node {
 	struct _node	*parent, *child;	/* up, down */
 	struct _node	*prev, *next;		/* left, right */
@@ -66,36 +70,32 @@ typedef struct _node {
 	char	*slink;				/* symbolic link reference */
 	uid_t	st_uid;				/* uid */
 	gid_t	st_gid;				/* gid */
-#if defined(__linux__)
-#define	MBITS	(S_ISUID|S_ISGID|S_ISVTX|S_IRWXU|S_IRWXG|S_IRWXO)
-#else
 #define	MBITS	(S_ISUID|S_ISGID|S_ISTXT|S_IRWXU|S_IRWXG|S_IRWXO)
-#endif
 	mode_t	st_mode;			/* mode */
 	nlink_t	st_nlink;			/* link count */
 	uint32_t file_flags;			/* file flags */
 
-#define	F_CKSUM		0x000001		/* checksum */
-#define	F_DONE		0x000002		/* directory done */
-#define	F_GID		0x000004		/* gid */
-#define	F_GNAME		0x000008		/* group name */
-#define	F_IGN		0x000010		/* ignore */
-#define	F_MAGIC		0x000020		/* name has magic chars */
-#define	F_MD5		0x000040		/* MD5 digest */
-#define	F_MODE		0x000080		/* mode */
-#define	F_NLINK		0x000100		/* number of links */
-#define F_OPT		0x000200		/* existence optional */
-#define	F_RMD160	0x000400		/* RIPEMD-160 digest */
-#define	F_SHA1		0x000800		/* SHA-1 digest */
-#define	F_SIZE		0x001000		/* size */
-#define	F_SLINK		0x002000		/* link count */
-#define	F_TIME		0x004000		/* modification time */
-#define	F_TYPE		0x008000		/* file type */
-#define	F_UID		0x010000		/* uid */
-#define	F_UNAME		0x020000		/* user name */
-#define	F_VISIT		0x040000		/* file visited */
-#define	F_FLAGS		0x080000		/* file flags */
-#define	F_NOCHANGE	0x100000		/* do not change owner/mode */
+#define	F_CKSUM		0x00000001		/* checksum */
+#define	F_DONE		0x00000002		/* directory done */
+#define	F_GID		0x00000004		/* gid */
+#define	F_GNAME		0x00000008		/* group name */
+#define	F_IGN		0x00000010		/* ignore */
+#define	F_MAGIC		0x00000020		/* name has magic chars */
+#define	F_MD5		0x00000040		/* MD5 digest */
+#define	F_MODE		0x00000080		/* mode */
+#define	F_NLINK		0x00000100		/* number of links */
+#define F_OPT		0x00000200		/* existence optional */
+#define	F_RMD160	0x00000400		/* RIPEMD-160 digest */
+#define	F_SHA1		0x00000800		/* SHA-1 digest */
+#define	F_SIZE		0x00001000		/* size */
+#define	F_SLINK		0x00002000		/* link count */
+#define	F_TIME		0x00004000		/* modification time */
+#define	F_TYPE		0x00008000		/* file type */
+#define	F_UID		0x00010000		/* uid */
+#define	F_UNAME		0x00020000		/* user name */
+#define	F_VISIT		0x00040000		/* file visited */
+#define	F_FLAGS		0x00080000		/* file flags */
+#define	F_NOCHANGE	0x00100000		/* do not change owner/mode */
 	uint32_t flags;				/* items set */
 
 #define	F_BLOCK	0x001				/* block special */
@@ -1034,15 +1034,12 @@ setmode(const char * p)
     BITCMD *set, *saveset, *endset;
     sigset_t sigset, sigoset;
     mode_t mask;
-    int equalopdone, permXbits, setlen;
+    int equalopdone = 0;
+    int permXbits, setlen;
     long perml;
 
     if (!*p)
 	return (NULL);
-
-#if defined(__linux__)
-    equalopdone = 0;
-#endif
 
     /*
      * Get a copy of the mask for the permissions that are mask relative.
@@ -1069,12 +1066,7 @@ setmode(const char * p)
      */
     if (isdigit(*p)) {
 	perml = strtol(p, NULL, 8);
-#if defined(__linux__)
-	if (perml < 0 || (perml & ~(STANDARD_BITS|S_ISVTX)))
-#else
-	if (perml < 0 || (perml & ~(STANDARD_BITS|S_ISTXT)))
-#endif
-	{
+	if (perml < 0 || (perml & ~(STANDARD_BITS|S_ISTXT))) {
 	    free(saveset);
 	    return (NULL);
 	}
@@ -1084,11 +1076,7 @@ setmode(const char * p)
 		free(saveset);
 		return (NULL);
 	    }
-#if defined(__linux__)
-	ADDCMD((int)'=', (int)(STANDARD_BITS|S_ISVTX), perm, (unsigned)mask);
-#else
-	ADDCMD('=', (STANDARD_BITS|S_ISTXT), perm, mask);
-#endif
+	ADDCMD((int)'=', (int)(STANDARD_BITS|S_ISTXT), perm, (unsigned)mask);
 	return (saveset);
     }
 
@@ -1124,11 +1112,7 @@ getop:	if ((op = *p++) != '+' && op != '-' && op != '=') {
 	if (op == '=')
 	    equalopdone = 0;
 
-#if defined(__linux__)
-	who &= ~S_ISVTX;
-#else
 	who &= ~S_ISTXT;
-#endif
 	for (perm = 0, permXbits = 0;; ++p) {
 	    switch (*p) {
 	    case 'r':
@@ -1148,13 +1132,8 @@ getop:	if ((op = *p++) != '+' && op != '-' && op != '=') {
 		 * only "other" bits ignore sticky.
 		 */
 		if (who == 0 || (who & ~S_IRWXO)) {
-#if defined(__linux__)
-		    who |= S_ISVTX;
-		    perm |= S_ISVTX;
-#else
 		    who |= S_ISTXT;
 		    perm |= S_ISTXT;
-#endif
 		}
 		/*@switchbreak@*/ break;
 	    case 'w':
@@ -2382,16 +2361,16 @@ static const char *my_getlogin(void)
     if (s && *s) {
 	return (char *) s;
     } else {
-	struct passwd *p = getpwuid(geteuid());
-	char *ss;
+	struct passwd *pw = getpwuid(geteuid());
+	char *ss = NULL;
 /*@-unrecog@*/
-	if (p && p->pw_name) {
-	    if (asprintf(&ss, "(no controlling terminal) %s", p->pw_name) < 0) {
+	if (pw != NULL && pw->pw_name != NULL) {
+	    if (asprintf(&ss, _("(no controlling terminal) %s"), pw->pw_name) < 0) {
 		perror("asprintf");
 		return NULL;
 	    }
 	} else {
-	    if (asprintf(&ss, "(no controlling terminal) #%d", geteuid()) < 0) {
+	    if (asprintf(&ss, _("(no controlling terminal) #%d"), geteuid()) < 0) {
 		perror("asprintf");
 		return NULL;
 	    }
