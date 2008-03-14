@@ -2277,7 +2277,7 @@ statf(int indent, FTSENT * p)
     if (keys & F_MD5 && S_ISREG(p->fts_statp->st_mode)) {
 	rpmdc dc = _dc;
 	dc->fn = p->fts_accpath;
-	dc->algo = PGPHASHALGO_RIPEMD160;
+	dc->algo = PGPHASHALGO_MD5;
 	xx = rpmdcInitFile(dc);
 	xx = rpmdcCalcFile(dc);
 	/* XXX hotwire around rpmdcFini() for now. */
