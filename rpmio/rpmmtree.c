@@ -2208,13 +2208,13 @@ statf(int indent, FTSENT * p)
 	/*@globals errno, h_errno, fileSystem, internalState @*/
 	/*@modifies errno, fileSystem, internalState @*/
 {
+    static int asAscii = 1;
     struct group *gr;
     struct passwd *pw;
     uint32_t len, val;
     int offset;
-    char *name, *escaped_name;
-
-    escaped_name = xmalloc(p->fts_namelen * 4  +  1);
+    char * escaped_name = xmalloc(p->fts_namelen * 4  +  1);
+    int xx;
 
     (void) strvis(escaped_name, p->fts_name, VIS_WHITE | VIS_OCTAL);
 
@@ -2223,7 +2223,7 @@ statf(int indent, FTSENT * p)
     else
 	offset = printf("%*s    %s", indent, "", escaped_name);
 
-    free(escaped_name);
+    escaped_name = _free(escaped_name);
 
     if (offset > (CWALKINDENTNAMELEN + indent))
 	offset = MAXLINELEN;
@@ -2275,53 +2275,82 @@ statf(int indent, FTSENT * p)
 	output(indent, &offset, "cksum=%lu", (unsigned long)val);
     }
     if (keys & F_MD5 && S_ISREG(p->fts_statp->st_mode)) {
-	char *md5digest = NULL;
-#ifdef	DYING
-	char buf[32+1];
-
-	md5digest = MD5File(p->fts_accpath,buf);
-#else
-	errno = EINVAL;		/* XXX hack */
-#endif
-	if (!md5digest)
+	rpmdc dc = _dc;
+	dc->fn = p->fts_accpath;
+	dc->algo = PGPHASHALGO_RIPEMD160;
+	xx = rpmdcInitFile(dc);
+	xx = rpmdcCalcFile(dc);
+	/* XXX hotwire around rpmdcFini() for now. */
+	fdFiniDigest(dc->fd, dc->algo, &dc->digest, &dc->digestlen, asAscii);
+	if (dc->digest == NULL)
 	    mtree_error("%s: %s", p->fts_accpath, strerror(errno));
 	else
-	    output(indent, &offset, "md5digest=%s", md5digest);
+	    output(indent, &offset, "md5digest=%s", dc->digest);
+	if (dc->fd != NULL) {
+	    (void) rpmswAdd(&dc_readops, fdstat_op(dc->fd, FDSTAT_READ));
+	    (void) rpmswAdd(&dc_digestops, fdstat_op(dc->fd, FDSTAT_DIGEST));
+	    Fclose(dc->fd);
+	    dc->fd = NULL;
+	    dc->digest = _free(dc->digest);
+	    dc->digestlen = 0;
+	}
+	dc->algo = 0;
+	dc->fn = NULL;
     }
     if (keys & F_RMD160 && S_ISREG(p->fts_statp->st_mode)) {
-	char *rmd160digest = NULL;
-#ifdef	DYING
-	char buf[40+1];
-
-	rmd160digest = RMD160File(p->fts_accpath,buf);
-#endif
-	if (!rmd160digest)
+	rpmdc dc = _dc;
+	dc->fn = p->fts_accpath;
+	dc->algo = PGPHASHALGO_RIPEMD160;
+	xx = rpmdcInitFile(dc);
+	xx = rpmdcCalcFile(dc);
+	/* XXX hotwire around rpmdcFini() for now. */
+	fdFiniDigest(dc->fd, dc->algo, &dc->digest, &dc->digestlen, asAscii);
+	if (dc->digest == NULL)
 	    mtree_error("%s: %s", p->fts_accpath, strerror(errno));
 	else
-	    output(indent, &offset, "rmd160digest=%s", rmd160digest);
+	    output(indent, &offset, "rmd160digest=%s", dc->digest);
+	if (dc->fd != NULL) {
+	    (void) rpmswAdd(&dc_readops, fdstat_op(dc->fd, FDSTAT_READ));
+	    (void) rpmswAdd(&dc_digestops, fdstat_op(dc->fd, FDSTAT_DIGEST));
+	    Fclose(dc->fd);
+	    dc->fd = NULL;
+	    dc->digest = _free(dc->digest);
+	    dc->digestlen = 0;
+	}
+	dc->algo = 0;
+	dc->fn = NULL;
     }
     if (keys & F_SHA1 && S_ISREG(p->fts_statp->st_mode)) {
-	char *sha1digest = NULL;
-#ifdef	DYING
-	char buf[41];
-
-	sha1digest = SHA1File(p->fts_accpath,buf);
-#endif
-	if (!sha1digest)
+	rpmdc dc = _dc;
+	dc->fn = p->fts_accpath;
+	dc->algo = PGPHASHALGO_SHA1;
+	xx = rpmdcInitFile(dc);
+	xx = rpmdcCalcFile(dc);
+	/* XXX hotwire around rpmdcFini() for now. */
+	fdFiniDigest(dc->fd, dc->algo, &dc->digest, &dc->digestlen, asAscii);
+	if (dc->digest == NULL)
 	    mtree_error("%s: %s", p->fts_accpath, strerror(errno));
 	else
-	    output(indent, &offset, "sha1digest=%s", sha1digest);
+	    output(indent, &offset, "sha1digest=%s", dc->digest);
+	if (dc->fd != NULL) {
+	    (void) rpmswAdd(&dc_readops, fdstat_op(dc->fd, FDSTAT_READ));
+	    (void) rpmswAdd(&dc_digestops, fdstat_op(dc->fd, FDSTAT_DIGEST));
+	    Fclose(dc->fd);
+	    dc->fd = NULL;
+	    dc->digest = _free(dc->digest);
+	    dc->digestlen = 0;
+	}
+	dc->algo = 0;
+	dc->fn = NULL;
     }
     if (keys & F_SLINK
      && (p->fts_info == FTS_SL || p->fts_info == FTS_SLNONE))
     {
-	name = rlink(p->fts_accpath);
-	escaped_name = malloc(strlen(name) * 4  +  1);
-	if (escaped_name == NULL)
-	    mtree_error("statf: %s", strerror(errno));
+	char * name = rlink(p->fts_accpath);
+	escaped_name = xmalloc(strlen(name) * 4  +  1);
 	(void) strvis(escaped_name, name, VIS_WHITE | VIS_OCTAL);
 	output(indent, &offset, "link=%s", escaped_name);
-	free(escaped_name);
+	escaped_name = _free(escaped_name);
     }
     if (keys & F_FLAGS && !S_ISLNK(p->fts_statp->st_mode)) {
 #if defined(__linux__)
