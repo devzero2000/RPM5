@@ -117,6 +117,12 @@ typedef struct _node {
 /*@unchecked@*/
 static uint32_t crc_total = ~0;		/* The crc over a number of files. */
 
+/*@unchecked@*/
+static int lineno;				/* Current spec line number. */
+
+/*@unchecked@*/ /*@only@*/ /*@null@*/
+static NODE *root;
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -139,12 +145,12 @@ static unsigned parsekey(char *, /*@out@*/ int *needvaluep)
 
 /*@null@*/
 static NODE *spec(void)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies fileSystem, internalState @*/;
+	/*@globals lineno, fileSystem, internalState @*/
+	/*@modifies lineno, fileSystem, internalState @*/;
 
 static int mtreeVWalk(void)
-	/*@globals h_errno, fileSystem @*/
-	/*@modifies fileSystem @*/;
+	/*@globals root, h_errno, fileSystem, internalState @*/
+	/*@modifies root, fileSystem, internalState @*/;
 
 #ifdef __cplusplus
 }
@@ -178,7 +184,7 @@ static int _poptSaveString(const char ***argvp, unsigned int argInfo, const char
 static int cflag, dflag, eflag, iflag, lflag, nflag, qflag, rflag, sflag, tflag,
     uflag, Uflag;
 
-/*@unchecked@*/ /*@null@*/
+/*@unchecked@*/ /*@only@*/ /*@null@*/
 static ARGV_t dirs;
 
 /*@unchecked@*/
@@ -188,9 +194,6 @@ static unsigned keys = KEYDEFAULT;
 static char fullpath[MAXPATHLEN];
 
 /*==============================================================*/
-
-/*@unchecked@*/
-static int lineno;				/* Current spec line number. */
 
 void
 mtree_error(const char *fmt, ...)
@@ -258,7 +261,7 @@ parsekey(char *name, int *needvaluep)
     if (k == NULL)
 	mtree_error("unknown keyword %s", name);
 
-    if (needvaluep)
+    if (needvaluep != NULL)
 	*needvaluep = k->flags & NEEDVALUE ? 1 : 0;
     return k->val;
 }
@@ -402,19 +405,19 @@ crc(FD_t fd, /*@out@*/ uint32_t * cval, /*@out@*/ uint32_t * clen)
  */
 #define	UNVIS_END	1	/* no more characters */
 
-static char *vis(char *dst, int c, int flag, int nextc)
+static char *vis(/*@returned@*/ /*@out@*/ char *dst, int c, int flag, int nextc)
 	/*@modifies dst @*/;
-static int strvis(char *dst, const char *src, int flag)
+static int strvis(/*@out@*/ char *dst, const char *src, int flag)
 	/*@modifies dst @*/;
 #ifdef	NOTUSED
-static int strnvis(char *dst, const char *src, size_t siz, int flag)
+static int strnvis(/*@out@*/ char *dst, const char *src, size_t siz, int flag)
 	/*@modifies dst @*/;
-static int strvisx(char *dst, const char *src, size_t len, int flag)
+static int strvisx(/*@out@*/ char *dst, const char *src, size_t len, int flag)
 	/*@modifies dst @*/;
 #endif
-static int strunvis(char *dst, const char *src)
+static int strunvis(/*@out@*/ char *dst, const char *src)
 	/*@modifies dst @*/;
-static int unvis(char *cp, char c, int *astate, int flag)
+static int unvis(/*@out@*/ char *cp, char c, int *astate, int flag)
 	/*@modifies cp, astate @*/;
 
 #define	isoctal(c) (((unsigned char)(c)) >= '0' && ((unsigned char)(c)) <= '7')
@@ -530,7 +533,7 @@ done:
 int
 strvis(char * dst, const char * src, int flag)
 {
-    register char c;
+    char c;
     char *start;
 
     for (start = dst; (c = *src) != '\0';)
@@ -543,7 +546,7 @@ strvis(char * dst, const char * src, int flag)
 int
 strnvis(char * dst, const char * src, size_t siz, int flag)
 {
-    register char c;
+    char c;
     char *start, *end;
 
     for (start = dst, end = start + siz - 1; (c = *src) && dst < end; ) {
@@ -583,7 +586,7 @@ strnvis(char * dst, const char * src, size_t siz, int flag)
 int
 strvisx(char * dst, const char * src, size_t len, int flag)
 {
-    register char c;
+    char c;
     char *start;
 
     for (start = dst; len > 1; len--) {
@@ -771,7 +774,7 @@ unvis(char *cp, char c, int *astate, int flag)
 int
 strunvis(char * dst, const char * src)
 {
-    register char c;
+    char c;
     char *start = dst;
     int state = 0;
 
@@ -831,11 +834,11 @@ dumpmode(BITCMD *set)
 
 #define	ADDCMD(a, b, c, d)					\
     if (set >= endset) {					\
-	register BITCMD *newset;				\
+	BITCMD *newset;						\
 	setlen += SET_LEN_INCR;					\
 	newset = realloc(saveset, sizeof(*newset) * setlen);	\
-	if (!newset) {						\
-		if (saveset)					\
+	if (newset == NULL) {					\
+		if (saveset != NULL)				\
 			free(saveset);				\
 		saveset = NULL;					\
 		return (NULL);					\
@@ -849,7 +852,7 @@ dumpmode(BITCMD *set)
 #define	STANDARD_BITS	(S_ISUID|S_ISGID|S_IRWXU|S_IRWXG|S_IRWXO)
 
 static BITCMD *
-addcmd(BITCMD *set, int op, int who, int oparg, unsigned mask)
+addcmd(/*@returned@*/ BITCMD *set, int op, int who, int oparg, unsigned mask)
 	/*@modifies set @*/
 {
     switch (op) {
@@ -899,11 +902,11 @@ addcmd(BITCMD *set, int op, int who, int oparg, unsigned mask)
  * compacted, but it's not worth the effort.
  */
 static void
-compress_mode(BITCMD *set)
+compress_mode(/*@out@*/ BITCMD *set)
 	/*@modifies set @*/
 {
-    register BITCMD *nset;
-    register int setbits, clrbits, Xbits, op;
+    BITCMD *nset;
+    int setbits, clrbits, Xbits, op;
 
     for (nset = set;;) {
 	/* Copy over any 'u', 'g' and 'o' commands. */
@@ -958,8 +961,8 @@ static mode_t
 getmode(const void * bbox, mode_t omode)
 	/*@*/
 {
-    register const BITCMD *set;
-    register mode_t clrval, newmode, value;
+    const BITCMD *set;
+    mode_t clrval, newmode, value;
 
     set = (const BITCMD *)bbox;
     newmode = omode;
@@ -1029,8 +1032,8 @@ setmode(const char * p)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
 {
-    register int perm, who;
-    register char op;
+    int perm, who;
+    char op;
     BITCMD *set, *saveset, *endset;
     sigset_t sigset, sigoset;
     mode_t mask;
@@ -1066,7 +1069,10 @@ setmode(const char * p)
      */
     if (isdigit(*p)) {
 	perml = strtol(p, NULL, 8);
-	if (perml < 0 || (perml & ~(STANDARD_BITS|S_ISTXT))) {
+/*@-unrecog@*/
+	if (perml < 0 || (perml & ~(STANDARD_BITS|S_ISTXT)))
+/*@=unrecog@*/
+	{
 	    free(saveset);
 	    return (NULL);
 	}
@@ -1220,7 +1226,7 @@ set(char * t, NODE * ip)
     int value;
     char *ep;
 
-    for (; (kw = strtok(t, "= \t\n")); t = NULL) {
+    for (; (kw = strtok(t, "= \t\n")) != NULL; t = NULL) {
 	ip->flags |= type = parsekey(kw, &value);
 	if (value && (val = strtok(NULL, " \t\n")) == NULL)
 		mtree_error("missing value");
@@ -1366,25 +1372,24 @@ unset(char * t, NODE * ip)
 {
     char *p;
 
-    while ((p = strtok(t, "\n\t ")))
+    while ((p = strtok(t, "\n\t ")) != NULL)
 	ip->flags &= ~parsekey(p, NULL);
 }
 
 NODE *
 spec(void)
-	/*@globals lineno @*/
-	/*@modifies lineno @*/
 {
-    NODE *centry, *last;
+    NODE *centry = NULL;
+    NODE *last = NULL;
     char *p;
-    NODE ginfo, *root;
+    NODE ginfo;
+    NODE *myroot = NULL;
     int c_cur, c_next;
     char buf[2048];
 
-    centry = last = root = NULL;
     memset(&ginfo, 0, sizeof(ginfo));
     c_cur = c_next = 0;
-    for (lineno = 1; fgets(buf, (int)sizeof(buf), stdin);
+    for (lineno = 1; fgets(buf, (int)sizeof(buf), stdin) != NULL;
 	    ++lineno, c_cur = c_next, c_next = 0)
     {
 	/* Skip empty lines. */
@@ -1437,15 +1442,15 @@ spec(void)
 		continue;
 	    }
 
-	if (strchr(p, '/'))
+	if (strchr(p, '/') != NULL)
 	    mtree_error("slash character in file name");
 
 	if (!strcmp(p, "..")) {
 	    /* Don't go up, if haven't gone down. */
-	    if (!root)
+	    if (myroot == NULL)
 		    goto noparent;
 	    if (last->type != F_DIR || last->flags & F_DONE) {
-		if (last == root)
+		if (last == myroot)
 		    goto noparent;
 		last = last->parent;
 	    }
@@ -1459,7 +1464,7 @@ noparent:    mtree_error("no parent node");
 	    mtree_error("%s", strerror(errno));
 	*centry = ginfo;
 #define	MAGIC	"?*["
-	if (strpbrk(p, MAGIC))
+	if (strpbrk(p, MAGIC) != NULL)
 	    centry->flags |= F_MAGIC;
 	if (strunvis(centry->name, p) == -1) {
 	    fprintf(stderr, _("%s: filename (%s) encoded incorrectly\n"),
@@ -1468,9 +1473,9 @@ noparent:    mtree_error("no parent node");
 	}
 	set(NULL, centry);
 
-	if (!root) {
-	    last = root = centry;
-	    root->parent = root;
+	if (root == NULL) {
+	    last = myroot = centry;
+	    myroot->parent = myroot;
 	} else if (last->type == F_DIR && !(last->flags & F_DONE)) {
 	    centry->parent = last;
 	    last = last->child = centry;
@@ -1480,7 +1485,7 @@ noparent:    mtree_error("no parent node");
 	    last = last->next = centry;
 	}
     }
-    return root;
+    return myroot;
 }
 
 /*==============================================================*/
@@ -1503,6 +1508,7 @@ struct rpmdc_s {
 /*@null@*/
     const char * digest;
     size_t digestlen;
+/*@observer@*/
     const char * fn;
     FD_t fd;
 /*@null@*/
@@ -1543,7 +1549,7 @@ static int rpmdcPrintFile(rpmdc dc, uint32_t algo, const char * algoName)
 
     fdFiniDigest(dc->fd, algo, &dc->digest, &dc->digestlen, asAscii);
 assert(dc->digest != NULL);
-    if (dc->manifests) {
+    if (dc->manifests != NULL) {
 	const char * msg = "OK";
 	if ((rc = strcmp(dc->digest, dc->digests[dc->ix])) != 0) {
 	    msg = "FAILED";
@@ -1553,7 +1559,7 @@ assert(dc->digest != NULL);
 	    fprintf(stdout, "%s: %s\n", dc->fn, msg);
     } else {
 	if (!F_ISSET(dc, STATUS)) {
-	    if (algoName) fprintf(stdout, "%s:", algoName);
+	    if (algoName != NULL) fprintf(stdout, "%s:", algoName);
 	    fprintf(stdout, "%s %c%s\n", dc->digest,
 		(F_ISSET(dc, BINARY) ? '*' : ' '), dc->fn);
 	    (void) fflush(stdout);
@@ -1567,7 +1573,7 @@ static int rpmdcFiniFile(rpmdc dc)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies dc, fileSystem, internalState @*/
 {
-    uint32_t algo = (dc->manifests ? dc->algos->vals[dc->ix] : dc->algo);
+    uint32_t algo= (dc->manifests != NULL ? dc->algos->vals[dc->ix] : dc->algo);
     int rc = 0;
     int xx;
 
@@ -1619,7 +1625,7 @@ static int rpmdcInitFile(rpmdc dc)
 	/*@globals h_errno, fileSystem, internalState @*/
 	/*@modifies dc, fileSystem, internalState @*/
 {
-    uint32_t algo = (dc->manifests ? dc->algos->vals[dc->ix] : dc->algo);
+    uint32_t algo= (dc->manifests != NULL ? dc->algos->vals[dc->ix] : dc->algo);
     int rc = 0;
 
     /* XXX Stat(2) to insure files only? */
@@ -1696,7 +1702,8 @@ inotype(mode_t mode)
     /*@notreached@*/
 }
 
-static char *
+/*@observer@*/
+static const char *
 rlink(char * name)
 	/*@globals h_errno, fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/
@@ -1735,8 +1742,8 @@ rlink(char * name)
 
 static int
 compare(char * name, NODE * s, FTSENT * p)
-	/*@globals errno, h_errno, fileSystem, internalState @*/
-	/*@modifies errno, fileSystem, internalState @*/
+	/*@globals _dc, errno, h_errno, fileSystem, internalState @*/
+	/*@modifies _dc, errno, fileSystem, internalState @*/
 
 {
     static int asAscii = 1;
@@ -1906,6 +1913,7 @@ typeerr:    LABEL;
 	if (fd != NULL) (void) Fclose(fd);
 	tab = "\t";
     }
+/*@-mods@*/	/* dc->fn might modify p->fts_accpath */
     if (s->flags & F_MD5) {
 	rpmdc dc = _dc;
 	dc->fn = p->fts_accpath;
@@ -1926,7 +1934,7 @@ typeerr:    LABEL;
 	if (dc->fd != NULL) {
 	    (void) rpmswAdd(&dc_readops, fdstat_op(dc->fd, FDSTAT_READ));
 	    (void) rpmswAdd(&dc_digestops, fdstat_op(dc->fd, FDSTAT_DIGEST));
-	    Fclose(dc->fd);
+	    (void) Fclose(dc->fd);
 	    dc->fd = NULL;
 	    dc->digest = _free(dc->digest);
 	    dc->digestlen = 0;
@@ -1954,7 +1962,7 @@ typeerr:    LABEL;
 	if (dc->fd != NULL) {
 	    (void) rpmswAdd(&dc_readops, fdstat_op(dc->fd, FDSTAT_READ));
 	    (void) rpmswAdd(&dc_digestops, fdstat_op(dc->fd, FDSTAT_DIGEST));
-	    Fclose(dc->fd);
+	    (void) Fclose(dc->fd);
 	    dc->fd = NULL;
 	    dc->digest = _free(dc->digest);
 	    dc->digestlen = 0;
@@ -1982,7 +1990,7 @@ typeerr:    LABEL;
 	if (dc->fd != NULL) {
 	    (void) rpmswAdd(&dc_readops, fdstat_op(dc->fd, FDSTAT_READ));
 	    (void) rpmswAdd(&dc_digestops, fdstat_op(dc->fd, FDSTAT_DIGEST));
-	    Fclose(dc->fd);
+	    (void) Fclose(dc->fd);
 	    dc->fd = NULL;
 	    dc->digest = _free(dc->digest);
 	    dc->digestlen = 0;
@@ -1990,6 +1998,7 @@ typeerr:    LABEL;
 	dc->algo = 0;
 	dc->fn = NULL;
     }
+/*@=mods@*/
     if (s->flags & F_SLINK && strcmp(cp = rlink(name), s->slink)) {
 	LABEL;
 	(void) printf("%slink ref (%s, %s)\n", tab, cp, s->slink);
@@ -2120,7 +2129,7 @@ statd(FTS * t, FTSENT * parent,
     memset(m, 0, sizeof(m));
 
     maxuid = maxgid = maxmode = 0;
-    for (; p; p = p->fts_link) {
+    for (; p != NULL; p = p->fts_link) {
 	if (!dflag || (dflag && S_ISDIR(p->fts_statp->st_mode))) {
 	    smode = p->fts_statp->st_mode & MBITS;
 	    if (smode < MAXMODE && ++m[smode] > maxmode) {
@@ -2184,8 +2193,8 @@ statd(FTS * t, FTSENT * parent,
 
 static void
 statf(int indent, FTSENT * p)
-	/*@globals errno, h_errno, fileSystem, internalState @*/
-	/*@modifies errno, fileSystem, internalState @*/
+	/*@globals _dc, errno, h_errno, fileSystem, internalState @*/
+	/*@modifies _dc, errno, fileSystem, internalState @*/
 {
     static int asAscii = 1;
     struct group *gr;
@@ -2253,6 +2262,7 @@ statf(int indent, FTSENT * p)
 	if (fd != NULL) (void) Fclose(fd);
 	output(indent, &offset, "cksum=%lu", (unsigned long)val);
     }
+/*@-mods@*/	/* dc->fn might modify p->fts_accpath */
     if (keys & F_MD5 && S_ISREG(p->fts_statp->st_mode)) {
 	rpmdc dc = _dc;
 	dc->fn = p->fts_accpath;
@@ -2268,7 +2278,7 @@ statf(int indent, FTSENT * p)
 	if (dc->fd != NULL) {
 	    (void) rpmswAdd(&dc_readops, fdstat_op(dc->fd, FDSTAT_READ));
 	    (void) rpmswAdd(&dc_digestops, fdstat_op(dc->fd, FDSTAT_DIGEST));
-	    Fclose(dc->fd);
+	    (void)Fclose(dc->fd);
 	    dc->fd = NULL;
 	    dc->digest = _free(dc->digest);
 	    dc->digestlen = 0;
@@ -2291,7 +2301,7 @@ statf(int indent, FTSENT * p)
 	if (dc->fd != NULL) {
 	    (void) rpmswAdd(&dc_readops, fdstat_op(dc->fd, FDSTAT_READ));
 	    (void) rpmswAdd(&dc_digestops, fdstat_op(dc->fd, FDSTAT_DIGEST));
-	    Fclose(dc->fd);
+	    (void)Fclose(dc->fd);
 	    dc->fd = NULL;
 	    dc->digest = _free(dc->digest);
 	    dc->digestlen = 0;
@@ -2314,7 +2324,7 @@ statf(int indent, FTSENT * p)
 	if (dc->fd != NULL) {
 	    (void) rpmswAdd(&dc_readops, fdstat_op(dc->fd, FDSTAT_READ));
 	    (void) rpmswAdd(&dc_digestops, fdstat_op(dc->fd, FDSTAT_DIGEST));
-	    Fclose(dc->fd);
+	    (void)Fclose(dc->fd);
 	    dc->fd = NULL;
 	    dc->digest = _free(dc->digest);
 	    dc->digestlen = 0;
@@ -2322,6 +2332,7 @@ statf(int indent, FTSENT * p)
 	dc->algo = 0;
 	dc->fn = NULL;
     }
+/*@=mods@*/
     if (keys & F_SLINK
      && (p->fts_info == FTS_SL || p->fts_info == FTS_SLNONE))
     {
@@ -2410,7 +2421,7 @@ mtreeCWalk(void)
 /*@-noeffectuncon -unrecog@*/
     if ((t = Fts_open((char *const *)av, rpmioFtsOpts, dsort)) == NULL)
 	mtree_error("Fts_open: %s", strerror(errno));
-    while ((p = Fts_read(t))) {
+    while ((p = Fts_read(t)) != NULL) {
 	if (iflag)
 	    indent = p->fts_level * 4;
 	switch(p->fts_info) {
@@ -2451,9 +2462,6 @@ mtreeCWalk(void)
     return 0;
 }
 /*==============================================================*/
-/*@unchecked@*/ /*@null@*/
-static NODE *root;
-
 /*@unchecked@*/
 static char path[MAXPATHLEN];
 
@@ -2465,7 +2473,7 @@ miss(/*@null@*/ NODE * p, char * tail)
     int create;
     char *tp;
 
-    for (; p; p = p->next) {
+    for (; p != NULL; p = p->next) {
 	if ((p->flags & F_OPT) && !(p->flags & F_VISIT))
 	    continue;
 	if (p->type != F_DIR && (dflag || p->flags & F_VISIT))
@@ -2546,13 +2554,13 @@ vwalk(void)
 	mtree_error("Fts_open: %s", strerror(errno));
     level = root;
     specdepth = rval = 0;
-    while ((p = Fts_read(t))) {
+    while ((p = Fts_read(t)) != NULL) {
 	switch(p->fts_info) {
 	case FTS_D:
 	   /*@switchbreak@*/ break;
 	case FTS_DP:
 	    if (specdepth > p->fts_level) {
-		for (level = level->parent; level->prev; level = level->prev);  
+		for (level = level->parent; level->prev != NULL; level = level->prev);  
 		--specdepth;
 	    }
 	    continue;
@@ -2569,7 +2577,7 @@ vwalk(void)
 
 	if (specdepth != p->fts_level)
 	    goto extra;
-	for (ep = level; ep; ep = ep->next)
+	for (ep = level; ep != NULL; ep = ep->next)
 	    if ((ep->flags & F_MAGIC &&
 /*@-moduncon@*/
 		!fnmatch(ep->name, p->fts_name, FNM_PATHNAME)) ||
@@ -2590,7 +2598,7 @@ vwalk(void)
 		/*@innerbreak@*/ break;
 	    }
 
-	if (ep)
+	if (ep != NULL)
 	    continue;
 extra:
 	if (!eflag) {
@@ -2616,8 +2624,6 @@ extra:
 
 int
 mtreeVWalk(void)
-	/*@globals root @*/
-	/*@modifies root @*/
 {
     int rval;
 
@@ -2635,8 +2641,8 @@ static void mtreeArgCallback(poptContext con,
                 /*@unused@*/ enum poptCallbackReason reason,
                 const struct poptOption * opt, const char * arg,
                 /*@unused@*/ void * data)
-        /*@globals crc_total, dirs, keys, sflag, Uflag, uflag, fileSystem @*/
-        /*@modifies crc_total, dirs, keys, sflag, Uflag, uflag, fileSystem @*/
+        /*@globals crc_total, keys, sflag, Uflag, uflag, fileSystem @*/
+        /*@modifies crc_total, keys, sflag, Uflag, uflag, fileSystem @*/
 {
     char * p;
 
@@ -2751,9 +2757,9 @@ Usage: mtree [-cdeilnqrtUux] [-f spec] [-K key] [-k key] [-p path] [-s seed]\n\
 
 int
 main(int argc, char *argv[])
-	/*@globals rpmioFtsOpts, rpmGlobalMacroContext, h_errno,
+	/*@globals dirs,rpmioFtsOpts, rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState @*/
-	/*@modifies rpmioFtsOpts, rpmGlobalMacroContext,
+	/*@modifies dirs,rpmioFtsOpts, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 {
     poptContext optCon = rpmioInit(argc, argv, optionsTable);
@@ -2787,7 +2793,7 @@ main(int argc, char *argv[])
     if ((rpmioFtsOpts & ~FTS_XDEV) == 0)
 	rpmioFtsOpts |= FTS_PHYSICAL;
 
-    rpmswEnter(&dc_totalops, -1);
+    (void) rpmswEnter(&dc_totalops, -1);
 
     if (cflag) {
 	rc = mtreeCWalk();
@@ -2797,7 +2803,7 @@ main(int argc, char *argv[])
 	    rc = 0;
     }
 
-    rpmswExit(&dc_totalops, 0);
+    (void) rpmswExit(&dc_totalops, 0);
     if (_rpmsw_stats) {
         rpmswPrint(" total:", &dc_totalops);
         rpmswPrint("  read:", &dc_readops);

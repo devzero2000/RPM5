@@ -15,61 +15,47 @@
 -branchstate
 -bufferoverflowhigh
 
--compdef	# 18
--enummemuse
--evalorder	# 1
--incondefs	# 3
--matchfields
--moduncon
--nullderef	# 2
--nullpass	# 25
--redecl		# 11
--retalias	# 6
+-compdef	# 1
+-enummemuse	# 218
+-nullderef	# 5
+-nullpass	# 24
 -shiftimplementation	# 11
--typeuse
+-typeuse	# 12
 
 -kepttrans	# 2
--onlytrans	# 1
--statictrans	# 1
--temptrans	# 6
 
--forempty
+-forempty	# 3
 
 # --- +partial artifacts
--declundef
--exportheader
--exportheadervar
--exportlocal
--fcnuse
--varuse
+-declundef	# 271
+-fcnuse		# 154
+-varuse		# 36
 
 # --- not-yet at strict level
--bitwisesigned
--elseifcomplete
--exportconst
--exportfcn
--exporttype
--exportvar
--fielduse
+-bitwisesigned	# 145
+-elseifcomplete	# 7
+-exportconst	# 273
+-exportfcn	# 215
+-exporttype	# 74
+-exportvar	# 52
+-fielduse	# 159
 -forblock		# tedious
 -ifblock		# tedious
 -namechecks		# 929 tedious ANSI compliance checks
--ptrarith
+-ptrarith	# 47
 
--compdestroy
--mustdefine
+-mustdefine	# 6
 -sys-dir-errors
 
--strictops
+-strictops	# 35
 -whileblock		# tedious
 
 # --- not-yet at checks level
-+enumint
--mustfree
--predboolptr
--usedef
++enumint	# 26
+-mustfree	# 36
+-usedef		# 18
 
 # --- not-yet at standard level
--boolops
-+boolint
-+ignorequals
+-boolops	# 15
++boolint	# 102
++ignorequals	# 121
