@@ -1749,7 +1749,8 @@ compare(char * name, NODE * s, FTSENT * p)
     static int asAscii = 1;
     uint32_t len, val;
     int label = 0;
-    char *cp, *tab = "";
+    const char *cp;
+    const char *tab = "";
     int xx;
 
     switch(s->type) {
@@ -2336,7 +2337,7 @@ statf(int indent, FTSENT * p)
     if (keys & F_SLINK
      && (p->fts_info == FTS_SL || p->fts_info == FTS_SLNONE))
     {
-	char * name = rlink(p->fts_accpath);
+	const char * name = rlink(p->fts_accpath);
 	escaped_name = xmalloc(strlen(name) * 4  +  1);
 	(void) strvis(escaped_name, name, VIS_WHITE | VIS_OCTAL);
 	output(indent, &offset, "link=%s", escaped_name);
@@ -2790,7 +2791,11 @@ main(int argc, char *argv[])
     if (lflag == 1 && uflag == 1)
 	mtree_error("-l and -u flags are mutually exclusive");
 
-    if ((rpmioFtsOpts & ~FTS_XDEV) == 0)
+    /*
+     * Either FTS_PHYSICAL or FTS_LOGICAL must be set. Don't follow symlinks
+     * unless explicitly overridden with FTS_LOGICAL.
+     */
+    if ((rpmioFtsOpts & ~(FTS_LOGICAL|FTS_PHYSICAL)) == 0)
 	rpmioFtsOpts |= FTS_PHYSICAL;
 
     (void) rpmswEnter(&dc_totalops, -1);
