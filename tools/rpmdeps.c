@@ -271,7 +271,7 @@ char buf[BUFSIZ];
 	xx = rpmfcApply(fc);
 
 if (_rpmfc_debug) {
-sprintf(buf, "final: files %d cdict[%d] %d%% ddictx[%d]", fc->nfiles, argvCount(fc->cdict), ((100 * fc->fknown)/fc->nfiles), argiCount(fc->ddictx));
+sprintf(buf, "final: files %d cdict[%d] %d%% ddictx[%d]", (int)fc->nfiles, argvCount(fc->cdict), (int)((100 * fc->fknown)/fc->nfiles), argiCount(fc->ddictx));
 rpmfcPrint(buf, fc, NULL);
 }
 	if (print_provides > 0)	print_provides = 0;

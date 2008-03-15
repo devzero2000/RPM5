@@ -572,7 +572,7 @@ assert(fx < fc->fcdictx->nvals);
 assert(fx < fc->fcolor->nvals);
 	fcolor = fc->fcolor->vals[fx];
 
-	fprintf(fp, "%3d %s", fx, fc->fn[fx]);
+	fprintf(fp, "%3d %s", (int)fx, fc->fn[fx]);
 	if (fcolor != RPMFC_BLACK)
 		fprintf(fp, "\t0x%x", fc->fcolor->vals[fx]);
 	else
@@ -1645,7 +1645,7 @@ assert(ac == (int)he->c);
 
 if (fc != NULL && _rpmfc_debug) {
 char msg[BUFSIZ];
-sprintf(msg, "final: files %u cdict[%d] %u%% ddictx[%d]", fc->nfiles, argvCount(fc->cdict), ((100 * fc->fknown)/fc->nfiles), argiCount(fc->ddictx));
+sprintf(msg, "final: files %u cdict[%d] %u%% ddictx[%d]", (unsigned int)fc->nfiles, argvCount(fc->cdict), (unsigned int)((100 * fc->fknown)/fc->nfiles), argiCount(fc->ddictx));
 rpmfcPrint(msg, fc, NULL);
 }
 
