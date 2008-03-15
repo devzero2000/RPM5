@@ -2277,7 +2277,7 @@ statd(FTS * t, FTSENT * parent,
 	if (keys & F_NLINK)
 	    (void) printf(" nlink=1");
 	if (keys & F_FLAGS) {
-#if defined(__linux__)
+#if defined(__linux__) || !defined(NOTYET)
 	    (void) printf(" flags=none");
 #else
 	    const char * fflags = flags_to_string(saveflags);
