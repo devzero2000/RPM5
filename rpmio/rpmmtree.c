@@ -61,79 +61,12 @@ __attribute__ ((format (printf, 1, 2)))
 
 /*==============================================================*/
 
-#define	KEYDEFAULT \
-	(F_GID | F_MODE | F_NLINK | F_SIZE | F_SLINK | F_TIME | F_UID)
+#define	_KFB(n)	(1U << (n))
+#define	_MFB(n)	(_KFB(n) | 0x40000000)
 
-#define	MISMATCHEXIT	2
-
-#if !defined(S_ISTXT) && defined(S_ISVTX)	/* XXX linux != BSD */
-#define	S_ISTXT		S_ISVTX
-#endif
-
-typedef struct _node {
-	struct _node	*parent, *child;	/* up, down */
-	struct _node	*prev, *next;		/* left, right */
-	off_t	st_size;			/* size */
-	struct timespec	st_mtimespec;		/* last modification time */
-	uint32_t cksum;				/* check sum */
-	char	*md5digest;			/* MD5 digest */
-	char	*sha1digest;			/* SHA-1 digest */
-	char	*sha256digest;			/* SHA-256 digest */
-	char	*rmd160digest;			/* RIPEMD-160 digest */
-	char	*slink;				/* symbolic link reference */
-	uid_t	st_uid;				/* uid */
-	gid_t	st_gid;				/* gid */
-#define	MBITS	(S_ISUID|S_ISGID|S_ISTXT|S_IRWXU|S_IRWXG|S_IRWXO)
-	mode_t	st_mode;			/* mode */
-	nlink_t	st_nlink;			/* link count */
-	unsigned long st_flags;			/* file flags */
-
-#define	F_CKSUM		0x00000001		/* checksum */
-#define	F_DONE		0x00000002		/* directory done */
-#define	F_GID		0x00000004		/* gid */
-#define	F_GNAME		0x00000008		/* group name */
-#define	F_IGN		0x00000010		/* ignore */
-#define	F_MAGIC		0x00000020		/* name has magic chars */
-#define	F_MODE		0x00000040		/* mode */
-#define	F_NLINK		0x00000080		/* number of links */
-#define	F_SIZE		0x00000100		/* size */
-#define	F_SLINK		0x00000200		/* link count */
-#define	F_TIME		0x00000400		/* modification time */
-#define	F_TYPE		0x00000800		/* file type */
-#define	F_UID		0x00001000		/* uid */
-#define	F_UNAME		0x00002000		/* user name */
-#define	F_VISIT		0x00004000		/* file visited */
-#define	F_FLAGS		0x00008000		/* file flags */
-#define	F_NOCHANGE	0x00010000		/* do not change owner/mode */
-#define F_OPT		0x00020000		/* existence optional */
-
-#define	F_MD5		0x01000000		/* MD5 digest */
-#define	F_RMD160	0x02000000		/* RIPEMD-160 digest */
-#define	F_SHA1		0x04000000		/* SHA-1 digest */
-#define	F_SHA256	0x08000000		/* SHA-256 digest */
-
-	uint32_t flags;				/* items set */
-
-#define	F_BLOCK	0x001				/* block special */
-#define	F_CHAR	0x002				/* char special */
-#define	F_DIR	0x004				/* directory */
-#define	F_FIFO	0x008				/* fifo */
-#define	F_FILE	0x010				/* regular file */
-#define	F_LINK	0x020				/* symbolic link */
-#define	F_SOCK	0x040				/* socket */
-	uint8_t	type;				/* file type */
-
-	char	name[1];			/* file name (must be last) */
-} NODE;
-
-#define	RP(p)	\
-	((p)->fts_path[0] == '.' && (p)->fts_path[1] == '/' ? \
-	    (p)->fts_path + 2 : (p)->fts_path)
-
-
-#define	_MFB(n)	((1U << (n)) | 0x40000000)
-#define MF_ISSET(_FLAG) ((mtreeFlags & ((MTREE_FLAGS_##_FLAG) & ~0x40000000)) != MTREE_FLAGS_NONE)
-
+/**
+ * Bit field enum for mtree CLI options.
+ */
 enum mtreeFlags_e {
     MTREE_FLAGS_NONE		= 0,
     MTREE_FLAGS_QUIET		= _MFB( 0), /*!< -q,--quiet ... */
@@ -149,7 +82,83 @@ enum mtreeFlags_e {
     MTREE_FLAGS_TOUCH		= _MFB(10), /*!< -t,--touch ... */
     MTREE_FLAGS_UPDATE		= _MFB(11), /*!< -u,--update ... */
     MTREE_FLAGS_MISMATCHOK	= _MFB(12), /*!< -U,--mismatch ... */
+	/* 13-31 unused */
 };
+
+#define MF_ISSET(_FLAG) ((mtreeFlags & ((MTREE_FLAGS_##_FLAG) & ~0x40000000)) != MTREE_FLAGS_NONE)
+
+/**
+ * Bit field enum for mtree keys.
+ */
+enum mtreeKeys_e {
+    MTREE_KEYS_NONE		= 0,
+    MTREE_KEYS_CKSUM		= _KFB( 0),	/*!< checksum */
+    MTREE_KEYS_DONE		= _KFB( 1),	/*!< directory done */
+    MTREE_KEYS_GID		= _KFB( 2),	/*!< gid */
+    MTREE_KEYS_GNAME		= _KFB( 3),	/*!< group name */
+    MTREE_KEYS_IGN		= _KFB( 4),	/*!< ignore */
+    MTREE_KEYS_MAGIC		= _KFB( 5),	/*!< name has magic chars */
+    MTREE_KEYS_MODE		= _KFB( 6),	/*!< mode */
+    MTREE_KEYS_NLINK		= _KFB( 7),	/*!< number of links */
+    MTREE_KEYS_SIZE		= _KFB( 8),	/*!< size */
+    MTREE_KEYS_SLINK		= _KFB( 9),	/*!< link count */
+    MTREE_KEYS_TIME		= _KFB(10),	/*!< modification time */
+    MTREE_KEYS_TYPE		= _KFB(11),	/*!< file type */
+    MTREE_KEYS_UID		= _KFB(12),	/*!< uid */
+    MTREE_KEYS_UNAME		= _KFB(13),	/*!< user name */
+    MTREE_KEYS_VISIT		= _KFB(14),	/*!< file visited */
+    MTREE_KEYS_FLAGS		= _KFB(15),	/*!< file flags */
+    MTREE_KEYS_NOCHANGE		= _KFB(16),	/*!< do not change owner/mode */
+    MTREE_KEYS_OPT		= _KFB(17),	/*!< existence optional */
+	/* 18-23 unused */
+    MTREE_KEYS_MD5		= _KFB(24),	/*!< MD5 digest */
+    MTREE_KEYS_RMD160		= _KFB(25),	/*!< RIPEMD-160 digest */
+    MTREE_KEYS_SHA1		= _KFB(26),	/*!< SHA-1 digest */
+    MTREE_KEYS_SHA256		= _KFB(27),	/*!< SHA-256 digest */
+	/* 28-31 unused */
+};
+
+typedef struct _node {
+    struct _node	*parent, *child;	/*!< up, down */
+    struct _node	*prev, *next;		/*!< left, right */
+    off_t		st_size;		/*!< size */
+    struct timespec	st_mtimespec;		/*!< last modification time */
+    uint32_t		cksum;			/*!< check sum */
+    char		*md5digest;		/*!< MD5 digest */
+    char		*sha1digest;		/*!< SHA-1 digest */
+    char		*sha256digest;		/*!< SHA-256 digest */
+    char		*rmd160digest;		/*!< RIPEMD-160 digest */
+    char		*slink;			/*!< symbolic link reference */
+    uid_t		st_uid;			/*!< uid */
+    gid_t		st_gid;			/*!< gid */
+    mode_t		st_mode;		/*!< mode */
+    nlink_t		st_nlink;		/*!< link count */
+    unsigned long	st_flags;		/*!< file flags */
+
+    enum mtreeKeys_e flags;			/*!< items set */
+
+#define	F_BLOCK	0x001				/*!< block special */
+#define	F_CHAR	0x002				/*!< char special */
+#define	F_DIR	0x004				/*!< directory */
+#define	F_FIFO	0x008				/*!< fifo */
+#define	F_FILE	0x010				/*!< regular file */
+#define	F_LINK	0x020				/*!< symbolic link */
+#define	F_SOCK	0x040				/*!< socket */
+    uint8_t		type;			/*!< file type */
+
+    char		name[1];		/* file name (must be last) */
+} NODE;
+
+#define	KEYDEFAULT \
+    (MTREE_KEYS_GID | MTREE_KEYS_MODE | MTREE_KEYS_NLINK | MTREE_KEYS_SIZE | \
+     MTREE_KEYS_SLINK | MTREE_KEYS_TIME | MTREE_KEYS_UID)
+
+#define	MISMATCHEXIT	2
+
+#if !defined(S_ISTXT) && defined(S_ISVTX)	/* XXX linux != BSD */
+#define	S_ISTXT		S_ISVTX
+#endif
+#define	MBITS	(S_ISUID|S_ISGID|S_ISTXT|S_IRWXU|S_IRWXG|S_IRWXO)
 
 /*@unchecked@*/
 static enum mtreeFlags_e mtreeFlags = MTREE_FLAGS_NONE;
@@ -271,25 +280,25 @@ typedef struct _key {
 /* NB: the following table must be sorted lexically. */
 /*@unchecked@*/ /*@observer@*/
 static KEY keylist[] = {
-	{"cksum",	F_CKSUM,	NEEDVALUE},
-	{"flags",	F_FLAGS,	NEEDVALUE},
-	{"gid",		F_GID,		NEEDVALUE},
-	{"gname",	F_GNAME,	NEEDVALUE},
-	{"ignore",	F_IGN,		0},
-	{"link",	F_SLINK,	NEEDVALUE},
-	{"md5digest",	F_MD5,		NEEDVALUE},
-	{"mode",	F_MODE,		NEEDVALUE},
-	{"nlink",	F_NLINK,	NEEDVALUE},
-	{"nochange",	F_NOCHANGE,	0},
-	{"optional",	F_OPT,		0},
-	{"rmd160digest",F_RMD160,	NEEDVALUE},
-	{"sha1digest",	F_SHA1,		NEEDVALUE},
-	{"sha256digest",F_SHA256,	NEEDVALUE},
-	{"size",	F_SIZE,		NEEDVALUE},
-	{"time",	F_TIME,		NEEDVALUE},
-	{"type",	F_TYPE,		NEEDVALUE},
-	{"uid",		F_UID,		NEEDVALUE},
-	{"uname",	F_UNAME,	NEEDVALUE},
+	{"cksum",	MTREE_KEYS_CKSUM,	NEEDVALUE},
+	{"flags",	MTREE_KEYS_FLAGS,	NEEDVALUE},
+	{"gid",		MTREE_KEYS_GID,		NEEDVALUE},
+	{"gname",	MTREE_KEYS_GNAME,	NEEDVALUE},
+	{"ignore",	MTREE_KEYS_IGN,		0},
+	{"link",	MTREE_KEYS_SLINK,	NEEDVALUE},
+	{"md5digest",	MTREE_KEYS_MD5,		NEEDVALUE},
+	{"mode",	MTREE_KEYS_MODE,	NEEDVALUE},
+	{"nlink",	MTREE_KEYS_NLINK,	NEEDVALUE},
+	{"nochange",	MTREE_KEYS_NOCHANGE,	0},
+	{"optional",	MTREE_KEYS_OPT,		0},
+	{"rmd160digest",MTREE_KEYS_RMD160,	NEEDVALUE},
+	{"sha1digest",	MTREE_KEYS_SHA1,	NEEDVALUE},
+	{"sha256digest",MTREE_KEYS_SHA256,	NEEDVALUE},
+	{"size",	MTREE_KEYS_SIZE,	NEEDVALUE},
+	{"time",	MTREE_KEYS_TIME,	NEEDVALUE},
+	{"type",	MTREE_KEYS_TYPE,	NEEDVALUE},
+	{"uid",		MTREE_KEYS_UID,		NEEDVALUE},
+	{"uname",	MTREE_KEYS_UNAME,	NEEDVALUE},
 };
 
 static int
@@ -1298,7 +1307,7 @@ set(char * t, NODE * ip)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies t, ip, fileSystem, internalState @*/
 {
-    int type;
+    enum mtreeKeys_e type;
     char *kw, *val = NULL;
     struct group *gr;
     struct passwd *pw;
@@ -1311,15 +1320,15 @@ set(char * t, NODE * ip)
 	if (value && (val = strtok(NULL, " \t\n")) == NULL)
 		mtree_error("missing value");
 	switch(type) {
-	case F_CKSUM:
+	case MTREE_KEYS_CKSUM:
 	    ip->cksum = strtoul(val, &ep, 10);
 	    if (*ep != '\0')
 		mtree_error("invalid checksum %s", val);
 	    /*@switchbreak@*/ break;
-	case F_MD5:
+	case MTREE_KEYS_MD5:
 	    ip->md5digest = xstrdup(val);
 	    /*@switchbreak@*/ break;
-	case F_FLAGS:
+	case MTREE_KEYS_FLAGS:
 	    if (!strcmp(val, "none")) {
 		ip->st_flags = 0;
 		/*@switchbreak@*/ break;
@@ -1334,47 +1343,47 @@ set(char * t, NODE * ip)
 	    }
 #endif
 	    /*@switchbreak@*/ break; 
-	case F_GID:
+	case MTREE_KEYS_GID:
 	    ip->st_gid = strtoul(val, &ep, 10);
 	    if (*ep != '\0')
 		mtree_error("invalid gid %s", val);
 	    /*@switchbreak@*/ break;
-	case F_GNAME:
+	case MTREE_KEYS_GNAME:
 	    if ((gr = getgrnam(val)) == NULL)
 	 	mtree_error("unknown group %s", val);
 	    ip->st_gid = gr->gr_gid;
 	    /*@switchbreak@*/ break;
-	case F_IGN:
+	case MTREE_KEYS_IGN:
 	    /* just set flag bit */
 	    /*@switchbreak@*/ break;
-	case F_MODE:
+	case MTREE_KEYS_MODE:
 	    if ((m = setmode(val)) == NULL)
 		mtree_error("invalid file mode %s", val);
 	    ip->st_mode = getmode(m, 0);
 	    free(m);
 	    /*@switchbreak@*/ break;
-	case F_NLINK:
+	case MTREE_KEYS_NLINK:
 	    ip->st_nlink = strtoul(val, &ep, 10);
 	    if (*ep != '\0')
 		mtree_error("invalid link count %s", val);
 	    /*@switchbreak@*/ break;
-	case F_RMD160:
+	case MTREE_KEYS_RMD160:
 	    ip->rmd160digest = xstrdup(val);
 	    /*@switchbreak@*/ break;
-	case F_SHA1:
+	case MTREE_KEYS_SHA1:
 	    ip->sha1digest = xstrdup(val);
 	    /*@switchbreak@*/ break;
-	case F_SHA256:
+	case MTREE_KEYS_SHA256:
 	    ip->sha256digest = xstrdup(val);
 	    /*@switchbreak@*/ break;
-	case F_SIZE:
+	case MTREE_KEYS_SIZE:
 /*@-unrecog@*/
 	    ip->st_size = strtouq(val, &ep, 10);
 /*@=unrecog@*/
 	    if (*ep != '\0')
 		mtree_error("invalid size %s", val);
 	    /*@switchbreak@*/ break;
-	case F_SLINK:
+	case MTREE_KEYS_SLINK:
 	    ip->slink = xmalloc(strlen(val) + 1);
 	    if (strunvis(ip->slink, val) == -1) {
 		fprintf(stderr, _("%s: filename (%s) encoded incorrectly\n"),
@@ -1382,7 +1391,7 @@ set(char * t, NODE * ip)
 		strcpy(ip->slink, val);
 	    }
 	    /*@switchbreak@*/ break;
-	case F_TIME:
+	case MTREE_KEYS_TIME:
 /*@-type@*/
 	    ip->st_mtimespec.tv_sec = strtoul(val, &ep, 10);
 /*@=type@*/
@@ -1395,7 +1404,7 @@ set(char * t, NODE * ip)
 	    if (*ep != '\0')
 		mtree_error("invalid time %s", val);
 	    /*@switchbreak@*/ break;
-	case F_TYPE:
+	case MTREE_KEYS_TYPE:
 	    switch(*val) {
 	    case 'b':
 		if (!strcmp(val, "block"))
@@ -1427,16 +1436,24 @@ set(char * t, NODE * ip)
 		mtree_error("unknown file type %s", val);
 	    }
 	    /*@switchbreak@*/ break;
-	case F_UID:
+	case MTREE_KEYS_UID:
 	    ip->st_uid = strtoul(val, &ep, 10);
 	    if (*ep != '\0')
 		mtree_error("invalid uid %s", val);
 	    /*@switchbreak@*/ break;
-	case F_UNAME:
+	case MTREE_KEYS_UNAME:
 	    if ((pw = getpwnam(val)) == NULL)
 	 	mtree_error("unknown user %s", val);
 	    ip->st_uid = pw->pw_uid;
 	    /*@switchbreak@*/ break;
+	case MTREE_KEYS_NONE:
+	case MTREE_KEYS_DONE:
+	case MTREE_KEYS_MAGIC:
+	case MTREE_KEYS_VISIT:
+	case MTREE_KEYS_NOCHANGE:
+	case MTREE_KEYS_OPT:
+	    ip->flags &= ~type;		/* XXX clean up "can't happen" cruft? */
+	    /*@notreached@*/ /*@switchbreak@*/ break;
 	}
     }
 }
@@ -1451,6 +1468,8 @@ unset(char * t, NODE * ip)
     while ((p = strtok(t, "\n\t ")) != NULL)
 	ip->flags &= ~parsekey(p, NULL);
 }
+
+#define KF_ISSET(_keys, _KEY) ((_keys) & (MTREE_KEYS_##_KEY))
 
 NODE *
 mtreeSpec(rpmfts fts)
@@ -1524,13 +1543,13 @@ mtreeSpec(rpmfts fts)
 	if (!strcmp(p, "..")) {
 	    /* Don't go up, if haven't gone down. */
 	    if (myroot == NULL)
-		    goto noparent;
-	    if (last->type != F_DIR || last->flags & F_DONE) {
+		goto noparent;
+	    if (last->type != F_DIR || KF_ISSET(last->flags, DONE)) {
 		if (last == myroot)
 		    goto noparent;
 		last = last->parent;
 	    }
-	    last->flags |= F_DONE;
+	    last->flags |= MTREE_KEYS_DONE;
 	    continue;
 
 noparent:    mtree_error("no parent node");
@@ -1541,7 +1560,7 @@ noparent:    mtree_error("no parent node");
 	*centry = ginfo;
 #define	MAGIC	"?*["
 	if (strpbrk(p, MAGIC) != NULL)
-	    centry->flags |= F_MAGIC;
+	    centry->flags |= MTREE_KEYS_MAGIC;
 	if (strunvis(centry->name, p) == -1) {
 	    fprintf(stderr, _("%s: filename (%s) encoded incorrectly\n"),
 			__progname, p);
@@ -1552,7 +1571,7 @@ noparent:    mtree_error("no parent node");
 	if (fts->root == NULL) {
 	    last = myroot = centry;
 	    myroot->parent = myroot;
-	} else if (last->type == F_DIR && !(last->flags & F_DONE)) {
+	} else if (last->type == F_DIR && !KF_ISSET(last->flags, DONE)) {
 	    centry->parent = last;
 	    last = last->child = centry;
 	} else {
@@ -1780,7 +1799,7 @@ inotype(mode_t mode)
 
 /*@observer@*/
 static const char *
-rlink(char * name)
+rlink(const char * name)
 	/*@globals h_errno, fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/
 
@@ -1794,10 +1813,12 @@ rlink(char * name)
     return lbuf;
 }
 
+#define	SKIPDOTSLASH(_f) ((_f)[0] == '.' && (_f)[1] == '/' ? (_f) + 2 : (_f))
+
 #define	COMPAREINDENTNAMELEN	8
 #define	LABEL 			\
     if (!label++) {		 \
-	len = printf("%s: ", RP(p)); \
+	len = printf("%s: ", SKIPDOTSLASH(p->fts_path)); \
 	if (len > COMPAREINDENTNAMELEN) { \
 	    tab = "\t"; 	\
 	    (void) printf("\n"); \
@@ -1817,12 +1838,15 @@ rlink(char * name)
     } while (0)			\
 
 static int
-compare(char * name, NODE * s, FTSENT * p)
+compare(const char * name, NODE *const s, FTSENT *const p)
 	/*@globals _dc, errno, h_errno, fileSystem, internalState @*/
 	/*@modifies _dc, errno, fileSystem, internalState @*/
 
 {
     static int asAscii = 1;
+    const char * fts_accpath = p->fts_accpath;
+    struct stat *const st = p->fts_statp;
+    enum mtreeKeys_e keys = s->flags;
     uint32_t len, val;
     int label = 0;
     const char *cp;
@@ -1831,46 +1855,47 @@ compare(char * name, NODE * s, FTSENT * p)
 
     switch(s->type) {
     case F_BLOCK:
-	if (!S_ISBLK(p->fts_statp->st_mode))
+	if (!S_ISBLK(st->st_mode))
 	    goto typeerr;
 	break;
     case F_CHAR:
-	if (!S_ISCHR(p->fts_statp->st_mode))
+	if (!S_ISCHR(st->st_mode))
 	    goto typeerr;
 	break;
     case F_DIR:
-	if (!S_ISDIR(p->fts_statp->st_mode))
+	if (!S_ISDIR(st->st_mode))
 	    goto typeerr;
 	break;
     case F_FIFO:
-	if (!S_ISFIFO(p->fts_statp->st_mode))
+	if (!S_ISFIFO(st->st_mode))
 	    goto typeerr;
 	break;
     case F_FILE:
-	if (!S_ISREG(p->fts_statp->st_mode))
+	if (!S_ISREG(st->st_mode))
 	    goto typeerr;
 	break;
     case F_LINK:
-	if (!S_ISLNK(p->fts_statp->st_mode))
+	if (!S_ISLNK(st->st_mode))
 	    goto typeerr;
 	break;
     case F_SOCK:
 /*@-unrecog@*/
-	if (!S_ISSOCK(p->fts_statp->st_mode)) {
+	if (!S_ISSOCK(st->st_mode)) {
 typeerr:    LABEL;
 	    (void) printf("\ttype (%s, %s)\n",
-		    ftype((unsigned)s->type), inotype(p->fts_statp->st_mode));
+		    ftype((unsigned)s->type), inotype(st->st_mode));
 	}
 /*@=unrecog@*/
 	break;
     }
+
     /* Set the uid/gid first, then set the mode. */
-    if (s->flags & (F_UID | F_UNAME) && s->st_uid != p->fts_statp->st_uid) {
+    if ((KF_ISSET(keys, UID) || KF_ISSET(keys, UNAME)) && s->st_uid != st->st_uid) {
 	LABEL;
 	(void) printf("%suser (%u, %u", tab,
-		(unsigned)s->st_uid, (unsigned)p->fts_statp->st_uid);
+		(unsigned)s->st_uid, (unsigned)st->st_uid);
 	if (MF_ISSET(UPDATE)) {
-	    if (Chown(p->fts_accpath, s->st_uid, -1))
+	    if (Chown(fts_accpath, s->st_uid, -1))
 		(void) printf(", not modified: %s)\n", strerror(errno));
 	    else
 		(void) printf(", modified)\n");
@@ -1878,12 +1903,12 @@ typeerr:    LABEL;
 	    (void) printf(")\n");
 	tab = "\t";
     }
-    if (s->flags & (F_GID | F_GNAME) && s->st_gid != p->fts_statp->st_gid) {
+    if ((KF_ISSET(keys, GID) || KF_ISSET(keys, GNAME)) && s->st_gid != st->st_gid) {
 	LABEL;
 	(void) printf("%sgid (%u, %u", tab,
-		(unsigned)s->st_gid, (unsigned)p->fts_statp->st_gid);
+		(unsigned)s->st_gid, (unsigned)st->st_gid);
 	if (MF_ISSET(UPDATE)) {
-	    if (Chown(p->fts_accpath, -1, s->st_gid))
+	    if (Chown(fts_accpath, -1, s->st_gid))
 		(void) printf(", not modified: %s)\n", strerror(errno));
 	    else
 		(void) printf(", modified)\n");
@@ -1891,10 +1916,10 @@ typeerr:    LABEL;
 	    (void) printf(")\n");
 	tab = "\t";
     }
-    if (s->flags & F_MODE && s->st_mode != (p->fts_statp->st_mode & MBITS)) {
+    if (KF_ISSET(keys, MODE) && s->st_mode != (st->st_mode & MBITS)) {
 	if (MF_ISSET(LOOSE)) {
 	    mode_t tmode = s->st_mode;
-	    mode_t mode = (p->fts_statp->st_mode & MBITS);
+	    mode_t mode = (st->st_mode & MBITS);
 
 	    /*
 	    * if none of the suid/sgid/etc bits are set,
@@ -1908,9 +1933,9 @@ typeerr:    LABEL;
 	}
 	LABEL;
 	(void) printf("%spermissions (%#o, %#o", tab,
-		(unsigned)s->st_mode, (unsigned)(p->fts_statp->st_mode & MBITS));
+		(unsigned)s->st_mode, (unsigned)(st->st_mode & MBITS));
 	if (MF_ISSET(UPDATE)) {
-	    if (Chmod(p->fts_accpath, s->st_mode))
+	    if (Chmod(fts_accpath, s->st_mode))
 		(void) printf(", not modified: %s)\n", strerror(errno));
 	    else
 		(void) printf(", modified)\n");
@@ -1920,18 +1945,18 @@ typeerr:    LABEL;
  	skip:
 	    ;
     }
-    if (s->flags & F_NLINK && s->type != F_DIR &&
-        s->st_nlink != p->fts_statp->st_nlink)
+    if (KF_ISSET(keys, NLINK) && s->type != F_DIR &&
+        s->st_nlink != st->st_nlink)
     {
 	LABEL;
 	(void) printf("%slink count (%u, %u)\n", tab,
-		(unsigned)s->st_nlink, (unsigned)p->fts_statp->st_nlink);
+		(unsigned)s->st_nlink, (unsigned)st->st_nlink);
 	tab = "\t";
     }
-    if (s->flags & F_SIZE && s->st_size != p->fts_statp->st_size) {
+    if (KF_ISSET(keys, SIZE) && s->st_size != st->st_size) {
 	LABEL;
 	(void) printf("%ssize (%lu, %lu)\n", tab,
-		(unsigned long)s->st_size, (unsigned long)p->fts_statp->st_size);
+		(unsigned long)s->st_size, (unsigned long)st->st_size);
 	tab = "\t";
     }
     /*
@@ -1942,16 +1967,16 @@ typeerr:    LABEL;
      *
      * Doesn't display microsecond differences.
      */
-    if (s->flags & F_TIME) {
+    if (KF_ISSET(keys, TIME)) {
 	struct timeval tv[2];
 
 /*@-noeffectuncon -unrecog@*/
 	TIMESPEC_TO_TIMEVAL(&tv[0], &s->st_mtimespec);
 #if defined(__linux__)
-	tv[1].tv_sec = (long)p->fts_statp->st_mtime;
+	tv[1].tv_sec = (long)st->st_mtime;
 	tv[1].tv_usec = 0;
 #else
-	TIMESPEC_TO_TIMEVAL(&tv[1], &p->fts_statp->st_mtimespec);
+	TIMESPEC_TO_TIMEVAL(&tv[1], &st->st_mtimespec);
 #endif
 /*@=noeffectuncon =unrecog@*/
 	if (tv[0].tv_sec != tv[1].tv_sec || tv[0].tv_usec != tv[1].tv_usec) {
@@ -1961,7 +1986,7 @@ typeerr:    LABEL;
 	    (void) printf("%.24s", ctime(&tv[1].tv_sec));
 	    if (MF_ISSET(TOUCH)) {
 		tv[1] = tv[0];
-		if (Utimes(p->fts_accpath, tv))
+		if (Utimes(fts_accpath, tv))
 		    (void) printf(", not modified: %s)\n", strerror(errno));
 		else  
 		    (void) printf(", modified)\n");  
@@ -1970,16 +1995,16 @@ typeerr:    LABEL;
 	    tab = "\t";   
 	}
     }
-    if (s->flags & F_CKSUM) {
-	FD_t fd = Fopen(p->fts_accpath, "r.ufdio");
+    if (KF_ISSET(keys, CKSUM)) {
+	FD_t fd = Fopen(fts_accpath, "r.ufdio");
 	if (fd == NULL || Ferror(fd)) {
 	    LABEL;
 	    (void) printf("%scksum: %s: %s\n", tab,
-			p->fts_accpath, Fstrerror(fd));
+			fts_accpath, Fstrerror(fd));
 	} else if (crc(fd, &val, &len)) {
 	    LABEL;
 	    (void) printf("%scksum: %s: %s\n", tab,
-			p->fts_accpath, Fstrerror(fd));
+			fts_accpath, Fstrerror(fd));
 	} else {
 	    if (s->cksum != val) {
 		LABEL;
@@ -1990,10 +2015,10 @@ typeerr:    LABEL;
 	if (fd != NULL) (void) Fclose(fd);
 	tab = "\t";
     }
-/*@-mods@*/	/* dc->fn might modify p->fts_accpath */
-    if (s->flags & F_MD5) {
+/*@-mods@*/	/* dc->fn might modify fts_accpath */
+    if (KF_ISSET(keys, MD5)) {
 	rpmdc dc = _dc;
-	dc->fn = p->fts_accpath;
+	dc->fn = fts_accpath;
 	dc->algo = PGPHASHALGO_MD5;
 	xx = rpmdcInitFile(dc);
 	xx = rpmdcCalcFile(dc);
@@ -2001,7 +2026,7 @@ typeerr:    LABEL;
 	fdFiniDigest(dc->fd, dc->algo, &dc->digest, &dc->digestlen, asAscii);
 	if (dc->digest == NULL) {
 	    LABEL;
-	    printf("%sMD5File: %s: %s\n", tab, p->fts_accpath, strerror(errno));
+	    printf("%sMD5File: %s: %s\n", tab, fts_accpath, strerror(errno));
 	    tab = "\t";
 	} else if (strcmp(dc->digest, s->md5digest)) {
 	    LABEL;
@@ -2019,9 +2044,9 @@ typeerr:    LABEL;
 	dc->algo = 0;
 	dc->fn = NULL;
     }
-    if (s->flags & F_RMD160) {
+    if (KF_ISSET(keys, RMD160)) {
 	rpmdc dc = _dc;
-	dc->fn = p->fts_accpath;
+	dc->fn = fts_accpath;
 	dc->algo = PGPHASHALGO_RIPEMD160;
 	xx = rpmdcInitFile(dc);
 	xx = rpmdcCalcFile(dc);
@@ -2029,7 +2054,7 @@ typeerr:    LABEL;
 	fdFiniDigest(dc->fd, dc->algo, &dc->digest, &dc->digestlen, asAscii);
 	if (dc->digest == NULL) {
 	    LABEL;
-	    printf("%sRMD160File: %s: %s\n", tab, p->fts_accpath, strerror(errno));
+	    printf("%sRMD160File: %s: %s\n", tab, fts_accpath, strerror(errno));
 	    tab = "\t";
 	} else if (strcmp(dc->digest, s->rmd160digest)) {
 	    LABEL;
@@ -2047,9 +2072,9 @@ typeerr:    LABEL;
 	dc->algo = 0;
 	dc->fn = NULL;
     }
-    if (s->flags & F_SHA1) {
+    if (KF_ISSET(keys, SHA1)) {
 	rpmdc dc = _dc;
-	dc->fn = p->fts_accpath;
+	dc->fn = fts_accpath;
 	dc->algo = PGPHASHALGO_SHA1;
 	xx = rpmdcInitFile(dc);
 	xx = rpmdcCalcFile(dc);
@@ -2057,7 +2082,7 @@ typeerr:    LABEL;
 	fdFiniDigest(dc->fd, dc->algo, &dc->digest, &dc->digestlen, asAscii);
 	if (dc->digest == NULL) {
 	    LABEL;
-	    printf("%sSHA1File: %s: %s\n", tab, p->fts_accpath, strerror(errno));
+	    printf("%sSHA1File: %s: %s\n", tab, fts_accpath, strerror(errno));
 	    tab = "\t";
 	} else if (strcmp(dc->digest, s->sha1digest)) {
 	    LABEL;
@@ -2075,9 +2100,9 @@ typeerr:    LABEL;
 	dc->algo = 0;
 	dc->fn = NULL;
     }
-    if (s->flags & F_SHA256) {
+    if (KF_ISSET(keys, SHA256)) {
 	rpmdc dc = _dc;
-	dc->fn = p->fts_accpath;
+	dc->fn = fts_accpath;
 	dc->algo = PGPHASHALGO_SHA256;
 	xx = rpmdcInitFile(dc);
 	xx = rpmdcCalcFile(dc);
@@ -2085,7 +2110,7 @@ typeerr:    LABEL;
 	fdFiniDigest(dc->fd, dc->algo, &dc->digest, &dc->digestlen, asAscii);
 	if (dc->digest == NULL) {
 	    LABEL;
-	    printf("%sSHA256File: %s: %s\n", tab, p->fts_accpath, strerror(errno));
+	    printf("%sSHA256File: %s: %s\n", tab, fts_accpath, strerror(errno));
 	    tab = "\t";
 	} else if (strcmp(dc->digest, s->sha1digest)) {
 	    LABEL;
@@ -2104,20 +2129,20 @@ typeerr:    LABEL;
 	dc->fn = NULL;
     }
 /*@=mods@*/
-    if (s->flags & F_SLINK && strcmp(cp = rlink(name), s->slink)) {
+    if (KF_ISSET(keys, SLINK) && strcmp(cp = rlink(name), s->slink)) {
 	LABEL;
 	(void) printf("%slink ref (%s, %s)\n", tab, cp, s->slink);
     }
 #if !defined(__linux__)
-    if (s->flags & F_FLAGS && s->st_flags != p->fts_statp->st_flags) {
+    if (KF_ISSET(keys, FLAGS) && s->st_flags != st->st_flags) {
 	char *db_flags = NULL;
 	char *cur_flags = NULL;
 
 	if ((db_flags = fflagstostr(s->st_flags)) == NULL ||
-	    (cur_flags = fflagstostr(p->fts_statp->st_flags)) == NULL)
+	    (cur_flags = fflagstostr(st->st_flags)) == NULL)
 	{
 	    LABEL;
-	    (void) printf("%sflags: %s %s\n", tab, p->fts_accpath, strerror(errno));
+	    (void) printf("%sflags: %s %s\n", tab, fts_accpath, strerror(errno));
 	    tab = "\t";
 	    if (db_flags != NULL)
 		free(db_flags);
@@ -2132,7 +2157,7 @@ typeerr:    LABEL;
 			(*cur_flags == '\0') ?  "-" : cur_flags);
 	    tab = "\t";
 	    if (MF_ISSET(UPDATE)) {
-		if (chflags(p->fts_accpath, s->st_flags))
+		if (chflags(fts_accpath, s->st_flags))
 		    (void) printf(", not modified: %s)\n", strerror(errno));
 		else	
 		    (void) printf(", modified)\n");
@@ -2195,22 +2220,19 @@ mtreeVisitD(rpmfts fts)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fts, fileSystem, internalState @*/
 {
-    unsigned keys = fts->keys;
-    FTS * t = fts->t;
-    FTSENT * parent = fts->p;
+    enum mtreeKeys_e keys = fts->keys;
+    const FTSENT *const parent = fts->p;
     uid_t * puid = &fts->uid;
     gid_t * pgid = &fts->gid;
     mode_t * pmode = &fts->mode;
     unsigned long *pflags = &fts->fflags;
-    FTSENT *p;
+    const FTSENT * p;
     gid_t sgid;
     uid_t suid;
     mode_t smode;
 #ifdef	NOTYET
     unsigned long sflags;
 #endif
-    struct group *gr;
-    struct passwd *pw;
     gid_t savegid = *pgid;
     uid_t saveuid = *puid;
     mode_t savemode = *pmode;
@@ -2228,9 +2250,10 @@ mtreeVisitD(rpmfts fts)
     static int first = 1;
 
 /*@-unrecog@*/
-    if ((p = Fts_children(t, 0)) == NULL) {
+    if ((p = Fts_children(fts->t, 0)) == NULL) {
 	if (errno)
-	    mtree_error("%s: %s", RP(parent), strerror(errno));
+	    mtree_error("%s: %s", SKIPDOTSLASH(parent->fts_path),
+			strerror(errno));
 	return 1;
     }
 /*@=unrecog@*/
@@ -2241,18 +2264,20 @@ mtreeVisitD(rpmfts fts)
     memset(f, 0, sizeof(f));
 
     for (; p != NULL; p = p->fts_link) {
-	if (!MF_ISSET(DIRSONLY) || (MF_ISSET(DIRSONLY) && S_ISDIR(p->fts_statp->st_mode))) {
-	    smode = p->fts_statp->st_mode & MBITS;
+	struct stat *const st = p->fts_statp;
+	if (!MF_ISSET(DIRSONLY) || (MF_ISSET(DIRSONLY) && S_ISDIR(st->st_mode)))
+	{
+	    smode = st->st_mode & MBITS;
 	    if (smode < MAXMODE && ++m[smode] > maxmode) {
 		savemode = smode;
 		maxmode = m[smode];
 	    }
-	    sgid = p->fts_statp->st_gid;
+	    sgid = st->st_gid;
 	    if (sgid < MAXGID && ++g[sgid] > maxgid) {
 		savegid = sgid;
 		maxgid = g[sgid];
 	    }
-	    suid = p->fts_statp->st_uid;
+	    suid = st->st_uid;
 	    if (suid < MAXUID && ++u[suid] > maxuid) {
 		saveuid = suid;
 		maxuid = u[suid];
@@ -2265,7 +2290,7 @@ mtreeVisitD(rpmfts fts)
 	    * half word of the flags
 	    */
 #define FLAGS2IDX(f) ((f & 0xf) | ((f >> 12) & 0xf0))
-	    sflags = p->fts_statp->st_flags;
+	    sflags = st->st_flags;
 	    if (FLAGS2IDX(sflags) < MAXFLAGS &&
 		++f[FLAGS2IDX(sflags)] > maxflags)
 	    {
@@ -2275,15 +2300,16 @@ mtreeVisitD(rpmfts fts)
 #endif
 	}
     }
+
     /*
      * If the /set record is the same as the last one we do not need to output
      * a new one.  So first we check to see if anything changed.  Note that we
      * always output a /set record for the first directory.
      */
-    if ((((keys & F_UNAME) | (keys & F_UID)) && (*puid != saveuid))
-     || (((keys & F_GNAME) | (keys & F_GID)) && (*pgid != savegid))
-     ||  ((keys & F_MODE) && (*pmode != savemode))
-     ||  ((keys & F_FLAGS) && (*pflags != saveflags))
+    if (((KF_ISSET(keys, UNAME) || KF_ISSET(keys, UID)) && (*puid != saveuid))
+     || ((KF_ISSET(keys, GNAME) || KF_ISSET(keys, GID)) && (*pgid != savegid))
+     ||  (KF_ISSET(keys, MODE) && (*pmode != savemode))
+     ||  (KF_ISSET(keys, FLAGS) && (*pflags != saveflags))
      || first)
     {
 	first = 0;
@@ -2291,7 +2317,8 @@ mtreeVisitD(rpmfts fts)
 	    (void) printf("/set type=dir");
 	else
 	    (void) printf("/set type=file");
-	if (keys & F_UNAME) {
+	if (KF_ISSET(keys, UNAME)) {
+	    struct passwd *pw;
 	    if ((pw = getpwuid(saveuid)) != NULL)
 		(void) printf(" uname=%s", pw->pw_name);
 	    else if (MF_ISSET(WARN))
@@ -2299,9 +2326,10 @@ mtreeVisitD(rpmfts fts)
 	    else
 		mtree_error("could not get uname for uid=%u", saveuid);
 	}
-	if (keys & F_UID)
+	if (KF_ISSET(keys, UID))
 	    (void) printf(" uid=%u", (unsigned)saveuid);
-	if (keys & F_GNAME) {
+	if (KF_ISSET(keys, GNAME)) {
+	    struct group *gr;
 	    if ((gr = getgrgid(savegid)) != NULL)
 		(void) printf(" gname=%s", gr->gr_name);
 	    else if (MF_ISSET(WARN))
@@ -2309,13 +2337,13 @@ mtreeVisitD(rpmfts fts)
 	    else
 		mtree_error("could not get gname for gid=%u", savegid);
 	}
-	if (keys & F_GID)
+	if (KF_ISSET(keys, GID))
 	    (void) printf(" gid=%u", (unsigned)savegid);
-	if (keys & F_MODE)
+	if (KF_ISSET(keys, MODE))
 	    (void) printf(" mode=%#o", (unsigned)savemode);
-	if (keys & F_NLINK)
+	if (KF_ISSET(keys, NLINK))
 	    (void) printf(" nlink=1");
-	if (keys & F_FLAGS) {
+	if (KF_ISSET(keys, FLAGS)) {
 #if defined(__linux__) || !defined(NOTYET)
 	    (void) printf(" flags=none");
 #else
@@ -2339,10 +2367,11 @@ mtreeVisitF(rpmfts fts)
 	/*@modifies _dc, errno, fileSystem, internalState @*/
 {
     static int asAscii = 1;
-    unsigned keys = fts->keys;
+    enum mtreeKeys_e keys = fts->keys;
+    const char * fts_accpath = fts->p->fts_accpath;
+    unsigned short fts_info = fts->p->fts_info;
+    struct stat *const st = fts->p->fts_statp;
     int indent = (MF_ISSET(INDENT) ? fts->p->fts_level * 4 : 0);
-    struct group *gr;
-    struct passwd *pw;
     uint32_t len, val;
     int offset;
     char * escaped_name = xmalloc(fts->p->fts_namelen * 4  +  1);
@@ -2350,7 +2379,7 @@ mtreeVisitF(rpmfts fts)
 
     (void) strvis(escaped_name, fts->p->fts_name, VIS_WHITE | VIS_OCTAL);
 
-    if (MF_ISSET(INDENT) || S_ISDIR(fts->p->fts_statp->st_mode))
+    if (MF_ISSET(INDENT) || S_ISDIR(st->st_mode))
 	offset = printf("%*s%s", indent, "", escaped_name);
     else
 	offset = printf("%*s    %s", indent, "", escaped_name);
@@ -2362,65 +2391,67 @@ mtreeVisitF(rpmfts fts)
     else
 	offset += printf("%*s", (CWALKINDENTNAMELEN + indent) - offset, "");
 
-    if (!S_ISREG(fts->p->fts_statp->st_mode) && !MF_ISSET(DIRSONLY))
-	output(indent, &offset, "type=%s", inotype(fts->p->fts_statp->st_mode));
-    if (fts->p->fts_statp->st_uid != fts->uid) {
-	if (keys & F_UNAME) {
-	    if ((pw = getpwuid(fts->p->fts_statp->st_uid)) != NULL)
+    if (!S_ISREG(st->st_mode) && !MF_ISSET(DIRSONLY))
+	output(indent, &offset, "type=%s", inotype(st->st_mode));
+    if (st->st_uid != fts->uid) {
+	if (KF_ISSET(keys, UNAME)) {
+	    struct passwd *pw;
+	    if ((pw = getpwuid(st->st_uid)) != NULL)
 		output(indent, &offset, "uname=%s", pw->pw_name);
 	    else if (MF_ISSET(WARN))
-		warnx("Could not get uname for uid=%u", fts->p->fts_statp->st_uid);
+		warnx("Could not get uname for uid=%u", st->st_uid);
 	    else
-		mtree_error("could not get uname for uid=%u", fts->p->fts_statp->st_uid);
+		mtree_error("could not get uname for uid=%u", st->st_uid);
 	}
-	if (keys & F_UID)
-	    output(indent, &offset, "uid=%u", fts->p->fts_statp->st_uid);
+	if (KF_ISSET(keys, UID))
+	    output(indent, &offset, "uid=%u", st->st_uid);
     }
-    if (fts->p->fts_statp->st_gid != fts->gid) {
-	if (keys & F_GNAME) {
-	    if ((gr = getgrgid(fts->p->fts_statp->st_gid)) != NULL)
+    if (st->st_gid != fts->gid) {
+	if (KF_ISSET(keys, GNAME)) {
+	    struct group *gr;
+	    if ((gr = getgrgid(st->st_gid)) != NULL)
 		output(indent, &offset, "gname=%s", gr->gr_name);
 	    else if (MF_ISSET(WARN))
-		warnx("Could not get gname for gid=%u", fts->p->fts_statp->st_gid);
+		warnx("Could not get gname for gid=%u", st->st_gid);
 	    else
-		mtree_error("could not get gname for gid=%u", fts->p->fts_statp->st_gid);
+		mtree_error("could not get gname for gid=%u", st->st_gid);
 	}
-	if (keys & F_GID)
-	   output(indent, &offset, "gid=%u", fts->p->fts_statp->st_gid);
+	if (KF_ISSET(keys, GID))
+	   output(indent, &offset, "gid=%u", st->st_gid);
     }
-    if (keys & F_MODE && (fts->p->fts_statp->st_mode & MBITS) != fts->mode)
-	output(indent, &offset, "mode=%#o", fts->p->fts_statp->st_mode & MBITS);
-    if (keys & F_NLINK && fts->p->fts_statp->st_nlink != 1)
-	output(indent, &offset, "nlink=%u", fts->p->fts_statp->st_nlink);
-    if (keys & F_SIZE && S_ISREG(fts->p->fts_statp->st_mode))
-	output(indent, &offset, "size=%lu", (unsigned long)fts->p->fts_statp->st_size);
-    if (keys & F_TIME)
+    if (KF_ISSET(keys, MODE) && (st->st_mode & MBITS) != fts->mode)
+	output(indent, &offset, "mode=%#o", (st->st_mode & MBITS));
+    if (KF_ISSET(keys, NLINK) && st->st_nlink != 1)
+	output(indent, &offset, "nlink=%u", st->st_nlink);
+    if (KF_ISSET(keys, SIZE) && S_ISREG(st->st_mode))
+	output(indent, &offset, "size=%lu", (unsigned long)st->st_size);
+    if (KF_ISSET(keys, TIME))
 	output(indent, &offset, "time=%ld.%ld",
 #if defined(__linux__)
-	    fts->p->fts_statp->st_mtime, 0L
+	    st->st_mtime, 0L
 #else
-	    fts->p->fts_statp->st_mtimespec.tv_sec,
-	    fts->p->fts_statp->st_mtimespec.tv_nsec
+	    st->st_mtimespec.tv_sec,
+	    st->st_mtimespec.tv_nsec
 #endif
 	    );
-    if (keys & F_CKSUM && S_ISREG(fts->p->fts_statp->st_mode)) {
-	FD_t fd = Fopen(fts->p->fts_accpath, "r.ufdio");
+    if (KF_ISSET(keys, CKSUM) && S_ISREG(st->st_mode)) {
+	FD_t fd = Fopen(fts_accpath, "r.ufdio");
 	if (fd == NULL || Ferror(fd) || crc(fd, &val, &len))
-	    mtree_error("%s: %s", fts->p->fts_accpath, Fstrerror(fd));
+	    mtree_error("%s: %s", fts_accpath, Fstrerror(fd));
 	if (fd != NULL) (void) Fclose(fd);
 	output(indent, &offset, "cksum=%lu", (unsigned long)val);
     }
-/*@-mods@*/	/* dc->fn might modify fts->p->fts_accpath */
-    if (keys & F_MD5 && S_ISREG(fts->p->fts_statp->st_mode)) {
+/*@-mods@*/	/* dc->fn might modify fts_accpath */
+    if (KF_ISSET(keys, MD5) && S_ISREG(st->st_mode)) {
 	rpmdc dc = _dc;
-	dc->fn = fts->p->fts_accpath;
+	dc->fn = fts_accpath;
 	dc->algo = PGPHASHALGO_MD5;
 	xx = rpmdcInitFile(dc);
 	xx = rpmdcCalcFile(dc);
 	/* XXX hotwire around rpmdcFini() for now. */
 	fdFiniDigest(dc->fd, dc->algo, &dc->digest, &dc->digestlen, asAscii);
 	if (dc->digest == NULL)
-	    mtree_error("%s: %s", fts->p->fts_accpath, strerror(errno));
+	    mtree_error("%s: %s", fts_accpath, strerror(errno));
 	else
 	    output(indent, &offset, "md5digest=%s", dc->digest);
 	if (dc->fd != NULL) {
@@ -2434,16 +2465,16 @@ mtreeVisitF(rpmfts fts)
 	dc->algo = 0;
 	dc->fn = NULL;
     }
-    if (keys & F_RMD160 && S_ISREG(fts->p->fts_statp->st_mode)) {
+    if (KF_ISSET(keys, RMD160) && S_ISREG(st->st_mode)) {
 	rpmdc dc = _dc;
-	dc->fn = fts->p->fts_accpath;
+	dc->fn = fts_accpath;
 	dc->algo = PGPHASHALGO_RIPEMD160;
 	xx = rpmdcInitFile(dc);
 	xx = rpmdcCalcFile(dc);
 	/* XXX hotwire around rpmdcFini() for now. */
 	fdFiniDigest(dc->fd, dc->algo, &dc->digest, &dc->digestlen, asAscii);
 	if (dc->digest == NULL)
-	    mtree_error("%s: %s", fts->p->fts_accpath, strerror(errno));
+	    mtree_error("%s: %s", fts_accpath, strerror(errno));
 	else
 	    output(indent, &offset, "rmd160digest=%s", dc->digest);
 	if (dc->fd != NULL) {
@@ -2457,16 +2488,16 @@ mtreeVisitF(rpmfts fts)
 	dc->algo = 0;
 	dc->fn = NULL;
     }
-    if (keys & F_SHA1 && S_ISREG(fts->p->fts_statp->st_mode)) {
+    if (KF_ISSET(keys, SHA1) && S_ISREG(st->st_mode)) {
 	rpmdc dc = _dc;
-	dc->fn = fts->p->fts_accpath;
+	dc->fn = fts_accpath;
 	dc->algo = PGPHASHALGO_SHA1;
 	xx = rpmdcInitFile(dc);
 	xx = rpmdcCalcFile(dc);
 	/* XXX hotwire around rpmdcFini() for now. */
 	fdFiniDigest(dc->fd, dc->algo, &dc->digest, &dc->digestlen, asAscii);
 	if (dc->digest == NULL)
-	    mtree_error("%s: %s", fts->p->fts_accpath, strerror(errno));
+	    mtree_error("%s: %s", fts_accpath, strerror(errno));
 	else
 	    output(indent, &offset, "sha1digest=%s", dc->digest);
 	if (dc->fd != NULL) {
@@ -2480,16 +2511,16 @@ mtreeVisitF(rpmfts fts)
 	dc->algo = 0;
 	dc->fn = NULL;
     }
-    if (keys & F_SHA256 && S_ISREG(fts->p->fts_statp->st_mode)) {
+    if (KF_ISSET(keys, SHA256) && S_ISREG(st->st_mode)) {
 	rpmdc dc = _dc;
-	dc->fn = fts->p->fts_accpath;
+	dc->fn = fts_accpath;
 	dc->algo = PGPHASHALGO_SHA256;
 	xx = rpmdcInitFile(dc);
 	xx = rpmdcCalcFile(dc);
 	/* XXX hotwire around rpmdcFini() for now. */
 	fdFiniDigest(dc->fd, dc->algo, &dc->digest, &dc->digestlen, asAscii);
 	if (dc->digest == NULL)
-	    mtree_error("%s: %s", fts->p->fts_accpath, strerror(errno));
+	    mtree_error("%s: %s", fts_accpath, strerror(errno));
 	else
 	    output(indent, &offset, "sha256digest=%s", dc->digest);
 	if (dc->fd != NULL) {
@@ -2504,22 +2535,20 @@ mtreeVisitF(rpmfts fts)
 	dc->fn = NULL;
     }
 /*@=mods@*/
-    if (keys & F_SLINK
-     && (fts->p->fts_info == FTS_SL || fts->p->fts_info == FTS_SLNONE))
+    if (KF_ISSET(keys, SLINK) && (fts_info == FTS_SL || fts_info == FTS_SLNONE))
     {
-	const char * name = rlink(fts->p->fts_accpath);
+	const char * name = rlink(fts_accpath);
 	escaped_name = xmalloc(strlen(name) * 4  +  1);
 	(void) strvis(escaped_name, name, VIS_WHITE | VIS_OCTAL);
 	output(indent, &offset, "link=%s", escaped_name);
 	escaped_name = _free(escaped_name);
     }
-    if (keys & F_FLAGS && !S_ISLNK(fts->p->fts_statp->st_mode)) {
+    if (KF_ISSET(keys, FLAGS) && !S_ISLNK(st->st_mode)) {
 #if defined(__linux__)
 	output(indent, &offset, "flags=none");
 #else
-	char *file_flags;
+	char * file_flags = fflagstostr(st->st_flags);
 
-	file_flags = fflagstostr(fts->p->fts_statp->st_flags);
 	if (file_flags == NULL)
 	    mtree_error("%s", strerror(errno));
 	if (*file_flags != '\0')
@@ -2690,8 +2719,8 @@ mtreeCWalk(rpmfts fts)
 	case FTS_ERR:
 	case FTS_NS:
 	    /* XXX TODO: warnx? */
-	    (void) fprintf(stderr, "%s: %s: %s\n",
-		    __progname, fts->p->fts_path, strerror(fts->p->fts_errno));
+	    (void) fprintf(stderr, "%s: %s: %s\n", __progname,
+			fts->p->fts_path, strerror(fts->p->fts_errno));
 	    /*@switchbreak@*/ break;
 	default:
 	    if (!MF_ISSET(DIRSONLY))
@@ -2703,10 +2732,10 @@ mtreeCWalk(rpmfts fts)
     fts->p = NULL;
     fts->t = NULL;
 
-    if (MF_ISSET(SEEDED) && fts->keys & F_CKSUM)
+    if (MF_ISSET(SEEDED) && KF_ISSET(fts->keys, CKSUM))
 	/* XXX TODO: warnx? */
-	(void) fprintf(stderr, _("%s: %s checksum: %u\n"),
-		__progname, fts->fullpath, (unsigned)fts->crc_total);
+	(void) fprintf(stderr, _("%s: %s checksum: %u\n"), __progname,
+			fts->fullpath, (unsigned)fts->crc_total);
 
     return 0;
 }
@@ -2720,18 +2749,18 @@ mtreeMiss(rpmfts fts, /*@null@*/ NODE * p, char * tail)
     char *tp;
 
     for (; p != NULL; p = p->next) {
-	if ((p->flags & F_OPT) && !(p->flags & F_VISIT))
+	if (KF_ISSET(p->flags, OPT) && !KF_ISSET(p->flags, VISIT))
 	    continue;
-	if (p->type != F_DIR && (MF_ISSET(DIRSONLY) || p->flags & F_VISIT))
+	if (p->type != F_DIR && (MF_ISSET(DIRSONLY) || KF_ISSET(p->flags, VISIT)))
 	    continue;
 	(void) strcpy(tail, p->name);
-	if (!(p->flags & F_VISIT)) {
+	if (!KF_ISSET(p->flags, VISIT)) {
 	    /* Don't print missing message if file exists as a
 	       symbolic link and the -q flag is set. */
 	    struct stat statbuf;
 
 	    if (MF_ISSET(QUIET) && Stat(fts->path, &statbuf) == 0)
-		p->flags |= F_VISIT;
+		p->flags |= MTREE_KEYS_VISIT;
 	    else
 		(void) printf("missing: %s", fts->path);
 	}
@@ -2741,12 +2770,12 @@ mtreeMiss(rpmfts fts, /*@null@*/ NODE * p, char * tail)
 	}
 
 	create = 0;
-	if (!(p->flags & F_VISIT) && MF_ISSET(UPDATE)) {
-	    if (!(p->flags & (F_UID | F_UNAME)))
+	if (!KF_ISSET(p->flags, VISIT) && MF_ISSET(UPDATE)) {
+	    if (!(KF_ISSET(p->flags, UID) || KF_ISSET(p->flags, UNAME)))
 		(void) printf(" (not created: user not specified)");
-	    else if (!(p->flags & (F_GID | F_GNAME)))
+	    else if (!(KF_ISSET(p->flags, GID) || KF_ISSET(p->flags, GNAME)))
 		(void) printf(" (not created: group not specified)");
-	    else if (!(p->flags & F_MODE))
+	    else if (!KF_ISSET(p->flags, MODE))
 		(void) printf(" (not created: mode not specified)");
 	    else if (Mkdir(fts->path, S_IRWXU))
 		(void) printf(" (not created: %s)", strerror(errno));
@@ -2756,7 +2785,7 @@ mtreeMiss(rpmfts fts, /*@null@*/ NODE * p, char * tail)
 	    }
 	}
 
-	if (!(p->flags & F_VISIT))
+	if (!KF_ISSET(p->flags, VISIT))
 	    (void) putchar('\n');
 
 	for (tp = tail; *tp != '\0'; ++tp);
@@ -2808,8 +2837,9 @@ mtreeVWalk(rpmfts fts)
 	case FTS_DNR:
 	case FTS_ERR:
 	case FTS_NS:
-	    (void) fprintf(stderr, "%s: %s: %s\n",
-			__progname, RP(fts->p), strerror(fts->p->fts_errno));
+	    (void) fprintf(stderr, "%s: %s: %s\n", __progname,
+			SKIPDOTSLASH(fts->p->fts_path),
+			strerror(fts->p->fts_errno));
 	    continue;
 	default:
 	    if (MF_ISSET(DIRSONLY))
@@ -2819,17 +2849,17 @@ mtreeVWalk(rpmfts fts)
 	if (specdepth != fts->p->fts_level)
 	    goto extra;
 	for (ep = level; ep != NULL; ep = ep->next)
-	    if ((ep->flags & F_MAGIC &&
+	    if ((KF_ISSET(ep->flags, MAGIC) &&
 /*@-moduncon@*/
 		!fnmatch(ep->name, fts->p->fts_name, FNM_PATHNAME)) ||
 /*@=moduncon@*/
 		!strcmp(ep->name, fts->p->fts_name))
 	    {
-		ep->flags |= F_VISIT;
-		if ((ep->flags & F_NOCHANGE) == 0 &&
+		ep->flags |= MTREE_KEYS_VISIT;
+		if (!KF_ISSET(ep->flags, NOCHANGE) &&
 		    compare(ep->name, ep, fts->p))
 			rval = MISMATCHEXIT;
-		if (ep->flags & F_IGN)
+		if (KF_ISSET(ep->flags, IGN))
 			(void) Fts_set(fts->t, fts->p, FTS_SKIP);
 		else if (ep->child && ep->type == F_DIR &&
 		    fts->p->fts_info == FTS_D) {
@@ -2843,7 +2873,7 @@ mtreeVWalk(rpmfts fts)
 	    continue;
 extra:
 	if (!MF_ISSET(IGNORE)) {
-	    (void) printf("extra: %s", RP(fts->p));
+	    (void) printf("extra: %s", SKIPDOTSLASH(fts->p->fts_path));
 	    if (MF_ISSET(REMOVE)) {
 		if ((S_ISDIR(fts->p->fts_statp->st_mode)
 		    ? Rmdir : Unlink)(fts->p->fts_accpath)) {
@@ -2859,8 +2889,8 @@ extra:
     fts->p = NULL;
     fts->t = NULL;
     if (MF_ISSET(SEEDED))
-	(void) fprintf(stderr, "%s: %s checksum: %u\n",
-		__progname, fts->fullpath, (unsigned) fts->crc_total);
+	(void) fprintf(stderr, "%s: %s checksum: %u\n", __progname,
+			fts->fullpath, (unsigned) fts->crc_total);
     return rval;
 }
 
@@ -2894,7 +2924,7 @@ static void mtreeArgCallback(poptContext con,
 /*@=unrecog@*/
 	break;
     case 'k':
-	_rpmfts->keys = F_TYPE;
+	_rpmfts->keys = MTREE_KEYS_TYPE;
 	while ((p = strsep((char **)&arg, " \t,")) != NULL)
 	    if (*p != '\0')
 		_rpmfts->keys |= parsekey(p, NULL);
@@ -3016,9 +3046,9 @@ Usage: mtree [-cdeilnqrtUux] [-f spec] [-K key] [-k key] [-p path] [-s seed]\n\
 
 int
 main(int argc, char *argv[])
-	/*@globals _rpmfts, rpmGlobalMacroContext, h_errno,
+	/*@globals _rpmfts, mtreeFlags, rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState @*/
-	/*@modifies _rpmfts, rpmGlobalMacroContext,
+	/*@modifies _rpmfts, mtreeFlags, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 {
     poptContext optCon = rpmioInit(argc, argv, optionsTable);
