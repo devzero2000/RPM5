@@ -39,6 +39,7 @@ static const char copyright[] =
 
 #include "system.h"
 
+#include <err.h>		/* XXX warnx (needs to removed). */
 #include <signal.h>
 #include <stdarg.h>
 #include <fnmatch.h>
@@ -63,17 +64,18 @@ typedef struct _node {
 	struct _node	*prev, *next;		/* left, right */
 	off_t	st_size;			/* size */
 	struct timespec	st_mtimespec;		/* last modification time */
-	uint32_t cksum;			/* check sum */
+	uint32_t cksum;				/* check sum */
 	char	*md5digest;			/* MD5 digest */
-	char	*rmd160digest;			/* RIPEMD-160 digest */
 	char	*sha1digest;			/* SHA-1 digest */
+	char	*sha256digest;			/* SHA-256 digest */
+	char	*rmd160digest;			/* RIPEMD-160 digest */
 	char	*slink;				/* symbolic link reference */
 	uid_t	st_uid;				/* uid */
 	gid_t	st_gid;				/* gid */
 #define	MBITS	(S_ISUID|S_ISGID|S_ISTXT|S_IRWXU|S_IRWXG|S_IRWXO)
 	mode_t	st_mode;			/* mode */
 	nlink_t	st_nlink;			/* link count */
-	uint32_t file_flags;			/* file flags */
+	unsigned long st_flags;			/* file flags */
 
 #define	F_CKSUM		0x00000001		/* checksum */
 #define	F_DONE		0x00000002		/* directory done */
@@ -81,21 +83,24 @@ typedef struct _node {
 #define	F_GNAME		0x00000008		/* group name */
 #define	F_IGN		0x00000010		/* ignore */
 #define	F_MAGIC		0x00000020		/* name has magic chars */
-#define	F_MD5		0x00000040		/* MD5 digest */
-#define	F_MODE		0x00000080		/* mode */
-#define	F_NLINK		0x00000100		/* number of links */
-#define F_OPT		0x00000200		/* existence optional */
-#define	F_RMD160	0x00000400		/* RIPEMD-160 digest */
-#define	F_SHA1		0x00000800		/* SHA-1 digest */
-#define	F_SIZE		0x00001000		/* size */
-#define	F_SLINK		0x00002000		/* link count */
-#define	F_TIME		0x00004000		/* modification time */
-#define	F_TYPE		0x00008000		/* file type */
-#define	F_UID		0x00010000		/* uid */
-#define	F_UNAME		0x00020000		/* user name */
-#define	F_VISIT		0x00040000		/* file visited */
-#define	F_FLAGS		0x00080000		/* file flags */
-#define	F_NOCHANGE	0x00100000		/* do not change owner/mode */
+#define	F_MODE		0x00000040		/* mode */
+#define	F_NLINK		0x00000080		/* number of links */
+#define	F_SIZE		0x00000100		/* size */
+#define	F_SLINK		0x00000200		/* link count */
+#define	F_TIME		0x00000400		/* modification time */
+#define	F_TYPE		0x00000800		/* file type */
+#define	F_UID		0x00001000		/* uid */
+#define	F_UNAME		0x00002000		/* user name */
+#define	F_VISIT		0x00004000		/* file visited */
+#define	F_FLAGS		0x00008000		/* file flags */
+#define	F_NOCHANGE	0x00010000		/* do not change owner/mode */
+#define F_OPT		0x00020000		/* existence optional */
+
+#define	F_MD5		0x01000000		/* MD5 digest */
+#define	F_RMD160	0x02000000		/* RIPEMD-160 digest */
+#define	F_SHA1		0x04000000		/* SHA-1 digest */
+#define	F_SHA256	0x08000000		/* SHA-256 digest */
+
 	uint32_t flags;				/* items set */
 
 #define	F_BLOCK	0x001				/* block special */
@@ -182,7 +187,7 @@ static int _poptSaveString(const char ***argvp, unsigned int argInfo, const char
 
 /*@unchecked@*/
 static int cflag, dflag, eflag, iflag, lflag, nflag, qflag, rflag, sflag, tflag,
-    uflag, Uflag;
+    uflag, Uflag, wflag;
 
 /*@unchecked@*/ /*@only@*/ /*@null@*/
 static ARGV_t dirs;
@@ -237,6 +242,7 @@ static KEY keylist[] = {
 	{"optional",	F_OPT,		0},
 	{"rmd160digest",F_RMD160,	NEEDVALUE},
 	{"sha1digest",	F_SHA1,		NEEDVALUE},
+	{"sha256digest",F_SHA256,	NEEDVALUE},
 	{"size",	F_SIZE,		NEEDVALUE},
 	{"time",	F_TIME,		NEEDVALUE},
 	{"type",	F_TYPE,		NEEDVALUE},
@@ -265,6 +271,24 @@ parsekey(char *name, int *needvaluep)
 	*needvaluep = k->flags & NEEDVALUE ? 1 : 0;
     return k->val;
 }
+
+#ifdef	NOTYET
+static char *
+flags_to_string(u_long fflags)
+{
+    char *string;
+
+    string = fflagstostr(fflags);
+    if (string != NULL && *string == '\0') {
+	free(string);
+	string = strdup("none");
+    }
+    if (string == NULL)
+	err(1, NULL);
+
+    return string;
+}
+#endif
 
 /*==============================================================*/
 
@@ -804,6 +828,7 @@ strunvis(char * dst, const char * src)
 
 /* XXX *BSD systems already have getmode(3) and setmode(3) */
 #if defined(__linux__) || defined(__LCLINT__)
+#if !defined(HAVE_GETMODE) || !defined(HAVE_SETMODE)
 
 #define	SET_LEN	6		/* initial # of bitcmd struct to malloc */
 #define	SET_LEN_INCR 4		/* # of bitcmd structs to add as needed */
@@ -820,6 +845,83 @@ typedef struct bitcmd {
 #define	CMD2_OBITS	0x08
 #define	CMD2_UBITS	0x10
 
+#if !defined(HAVE_GETMODE)
+/*
+ * Given the old mode and an array of bitcmd structures, apply the operations
+ * described in the bitcmd structures to the old mode, and return the new mode.
+ * Note that there is no '=' command; a strict assignment is just a '-' (clear
+ * bits) followed by a '+' (set bits).
+ */
+static mode_t
+getmode(const void * bbox, mode_t omode)
+	/*@*/
+{
+    const BITCMD *set;
+    mode_t clrval, newmode, value;
+
+    set = (const BITCMD *)bbox;
+    newmode = omode;
+    for (value = 0;; set++)
+	switch(set->cmd) {
+	/*
+	 * When copying the user, group or other bits around, we "know"
+	 * where the bits are in the mode so that we can do shifts to
+	 * copy them around.  If we don't use shifts, it gets real
+	 * grundgy with lots of single bit checks and bit sets.
+	 */
+	case 'u':
+	    value = (newmode & S_IRWXU) >> 6;
+	    goto common;
+
+	case 'g':
+	    value = (newmode & S_IRWXG) >> 3;
+	    goto common;
+
+	case 'o':
+	    value = newmode & S_IRWXO;
+common:	    if ((set->cmd2 & CMD2_CLR) != '\0') {
+		clrval = (set->cmd2 & CMD2_SET) != '\0' ?  S_IRWXO : value;
+		if ((set->cmd2 & CMD2_UBITS) != '\0')
+		    newmode &= ~((clrval<<6) & set->bits);
+		if ((set->cmd2 & CMD2_GBITS) != '\0')
+		    newmode &= ~((clrval<<3) & set->bits);
+		if ((set->cmd2 & CMD2_OBITS) != '\0')
+		    newmode &= ~(clrval & set->bits);
+	    }
+	    if ((set->cmd2 & CMD2_SET) != '\0') {
+		if ((set->cmd2 & CMD2_UBITS) != '\0')
+		    newmode |= (value<<6) & set->bits;
+		if ((set->cmd2 & CMD2_GBITS) != '\0')
+		    newmode |= (value<<3) & set->bits;
+		if ((set->cmd2 & CMD2_OBITS) != '\0')
+		    newmode |= value & set->bits;
+	    }
+	    /*@switchbreak@*/ break;
+
+	case '+':
+	    newmode |= set->bits;
+	    /*@switchbreak@*/ break;
+
+	case '-':
+	    newmode &= ~set->bits;
+	    /*@switchbreak@*/ break;
+
+	case 'X':
+	    if (omode & (S_IFDIR|S_IXUSR|S_IXGRP|S_IXOTH))
+			newmode |= set->bits;
+	    /*@switchbreak@*/ break;
+
+	case '\0':
+	default:
+#ifdef SETMODE_DEBUG
+	    (void) printf("getmode:%04o -> %04o\n", omode, newmode);
+#endif
+	    return newmode;
+	}
+}
+#endif	/* !defined(HAVE_GETMODE) */
+
+#if !defined(HAVE_SETMODE)
 #ifdef SETMODE_DEBUG
 static void
 dumpmode(BITCMD *set)
@@ -952,80 +1054,6 @@ compress_mode(/*@out@*/ BITCMD *set)
 	    set++;
 	}
     }
-}
-
-/*
- * Given the old mode and an array of bitcmd structures, apply the operations
- * described in the bitcmd structures to the old mode, and return the new mode.
- * Note that there is no '=' command; a strict assignment is just a '-' (clear
- * bits) followed by a '+' (set bits).
- */
-static mode_t
-getmode(const void * bbox, mode_t omode)
-	/*@*/
-{
-    const BITCMD *set;
-    mode_t clrval, newmode, value;
-
-    set = (const BITCMD *)bbox;
-    newmode = omode;
-    for (value = 0;; set++)
-	switch(set->cmd) {
-	/*
-	 * When copying the user, group or other bits around, we "know"
-	 * where the bits are in the mode so that we can do shifts to
-	 * copy them around.  If we don't use shifts, it gets real
-	 * grundgy with lots of single bit checks and bit sets.
-	 */
-	case 'u':
-	    value = (newmode & S_IRWXU) >> 6;
-	    goto common;
-
-	case 'g':
-	    value = (newmode & S_IRWXG) >> 3;
-	    goto common;
-
-	case 'o':
-	    value = newmode & S_IRWXO;
-common:	    if ((set->cmd2 & CMD2_CLR) != '\0') {
-		clrval = (set->cmd2 & CMD2_SET) != '\0' ?  S_IRWXO : value;
-		if ((set->cmd2 & CMD2_UBITS) != '\0')
-		    newmode &= ~((clrval<<6) & set->bits);
-		if ((set->cmd2 & CMD2_GBITS) != '\0')
-		    newmode &= ~((clrval<<3) & set->bits);
-		if ((set->cmd2 & CMD2_OBITS) != '\0')
-		    newmode &= ~(clrval & set->bits);
-	    }
-	    if ((set->cmd2 & CMD2_SET) != '\0') {
-		if ((set->cmd2 & CMD2_UBITS) != '\0')
-		    newmode |= (value<<6) & set->bits;
-		if ((set->cmd2 & CMD2_GBITS) != '\0')
-		    newmode |= (value<<3) & set->bits;
-		if ((set->cmd2 & CMD2_OBITS) != '\0')
-		    newmode |= value & set->bits;
-	    }
-	    /*@switchbreak@*/ break;
-
-	case '+':
-	    newmode |= set->bits;
-	    /*@switchbreak@*/ break;
-
-	case '-':
-	    newmode &= ~set->bits;
-	    /*@switchbreak@*/ break;
-
-	case 'X':
-	    if (omode & (S_IFDIR|S_IXUSR|S_IXGRP|S_IXOTH))
-			newmode |= set->bits;
-	    /*@switchbreak@*/ break;
-
-	case '\0':
-	default:
-#ifdef SETMODE_DEBUG
-	    (void) printf("getmode:%04o -> %04o\n", omode, newmode);
-#endif
-	    return newmode;
-	}
 }
 
 /*@-usereleased@*/
@@ -1213,6 +1241,8 @@ apply:	if (!*p)
     return saveset;
 }
 /*@=usereleased@*/
+#endif	/* !defined(HAVE_SETMODE) */
+#endif	/* !defined(HAVE_GETMODE) || !defined(HAVE_SETMODE) */
 #endif	/* __linux__ */
 
 /*==============================================================*/
@@ -1241,22 +1271,20 @@ set(char * t, NODE * ip)
 		mtree_error("invalid checksum %s", val);
 	    /*@switchbreak@*/ break;
 	case F_MD5:
-	    ip->md5digest = strdup(val);
-	    if (!ip->md5digest)
-		mtree_error("%s", strerror(errno));
+	    ip->md5digest = xstrdup(val);
 	    /*@switchbreak@*/ break;
 	case F_FLAGS:
 	    if (!strcmp(val, "none")) {
-		ip->file_flags = 0;
+		ip->st_flags = 0;
 		/*@switchbreak@*/ break;
 	    }
 #if defined(__linux__)
-	    ip->file_flags = 0;	/* XXX W2DO? */
+	    ip->st_flags = 0;	/* XXX W2DO? */
 #else
 	    {	unsigned long fset, fclr;
 		if (strtofflags(&val, &fset, &fclr))
 		    mtree_error("%s", strerror(errno));
-		ip->file_flags = fset;
+		ip->st_flags = fset;
 	    }
 #endif
 	    /*@switchbreak@*/ break; 
@@ -1285,14 +1313,13 @@ set(char * t, NODE * ip)
 		mtree_error("invalid link count %s", val);
 	    /*@switchbreak@*/ break;
 	case F_RMD160:
-	    ip->rmd160digest = strdup(val);
-	    if (!ip->rmd160digest)
-		mtree_error("%s", strerror(errno));
+	    ip->rmd160digest = xstrdup(val);
 	    /*@switchbreak@*/ break;
 	case F_SHA1:
-	    ip->sha1digest = strdup(val);
-	    if (!ip->sha1digest)
-		mtree_error("%s", strerror(errno));
+	    ip->sha1digest = xstrdup(val);
+	    /*@switchbreak@*/ break;
+	case F_SHA256:
+	    ip->sha256digest = xstrdup(val);
 	    /*@switchbreak@*/ break;
 	case F_SIZE:
 /*@-unrecog@*/
@@ -1302,8 +1329,7 @@ set(char * t, NODE * ip)
 		mtree_error("invalid size %s", val);
 	    /*@switchbreak@*/ break;
 	case F_SLINK:
-	    if ((ip->slink = malloc(strlen(val) + 1)) == NULL)
-		mtree_error("%s", strerror(errno));
+	    ip->slink = xmalloc(strlen(val) + 1);
 	    if (strunvis(ip->slink, val) == -1) {
 		fprintf(stderr, _("%s: filename (%s) encoded incorrectly\n"),
 			__progname, val);
@@ -2003,17 +2029,45 @@ typeerr:    LABEL;
 	dc->algo = 0;
 	dc->fn = NULL;
     }
+    if (s->flags & F_SHA256) {
+	rpmdc dc = _dc;
+	dc->fn = p->fts_accpath;
+	dc->algo = PGPHASHALGO_SHA256;
+	xx = rpmdcInitFile(dc);
+	xx = rpmdcCalcFile(dc);
+	/* XXX hotwire around rpmdcFini() for now. */
+	fdFiniDigest(dc->fd, dc->algo, &dc->digest, &dc->digestlen, asAscii);
+	if (dc->digest == NULL) {
+	    LABEL;
+	    printf("%sSHA256File: %s: %s\n", tab, p->fts_accpath, strerror(errno));
+	    tab = "\t";
+	} else if (strcmp(dc->digest, s->sha1digest)) {
+	    LABEL;
+	    printf("%sSHA256 (%s, %s)\n", tab, s->sha1digest, dc->digest);
+	    tab = "\t";
+	}
+	if (dc->fd != NULL) {
+	    (void) rpmswAdd(&dc_readops, fdstat_op(dc->fd, FDSTAT_READ));
+	    (void) rpmswAdd(&dc_digestops, fdstat_op(dc->fd, FDSTAT_DIGEST));
+	    (void) Fclose(dc->fd);
+	    dc->fd = NULL;
+	    dc->digest = _free(dc->digest);
+	    dc->digestlen = 0;
+	}
+	dc->algo = 0;
+	dc->fn = NULL;
+    }
 /*@=mods@*/
     if (s->flags & F_SLINK && strcmp(cp = rlink(name), s->slink)) {
 	LABEL;
 	(void) printf("%slink ref (%s, %s)\n", tab, cp, s->slink);
     }
 #if !defined(__linux__)
-    if (s->flags & F_FLAGS && s->file_flags != p->fts_statp->st_flags) {
+    if (s->flags & F_FLAGS && s->st_flags != p->fts_statp->st_flags) {
 	char *db_flags = NULL;
 	char *cur_flags = NULL;
 
-	if ((db_flags = fflagstostr(s->file_flags)) == NULL ||
+	if ((db_flags = fflagstostr(s->st_flags)) == NULL ||
 	    (cur_flags = fflagstostr(p->fts_statp->st_flags)) == NULL)
 	{
 	    LABEL;
@@ -2032,7 +2086,7 @@ typeerr:    LABEL;
 			(*cur_flags == '\0') ?  "-" : cur_flags);
 	    tab = "\t";
 	    if (uflag) {
-		if (chflags(p->fts_accpath, s->file_flags))
+		if (chflags(p->fts_accpath, s->st_flags))
 		    (void) printf(", not modified: %s)\n", strerror(errno));
 		else	
 		    (void) printf(", modified)\n");
@@ -2061,6 +2115,9 @@ static uid_t uid;
 
 /*@unchecked@*/
 static mode_t mode;
+
+/*@unchecked@*/
+static unsigned long flags = 0xffffffff;
 
 static int
 dsort(const FTSENT ** a, const FTSENT ** b)
@@ -2096,11 +2153,13 @@ output(int indent, int * offset, const char * fmt, ...)
 #define	MAXGID	5000
 #define	MAXUID	5000
 #define	MAXMODE	MBITS + 1
+#define	MAXFLAGS 256
+#define MAXS 16
 
 static int
 statd(FTS * t, FTSENT * parent,
 		/*@out@*/ uid_t * puid, /*@out@*/ gid_t * pgid,
-		/*@out@*/ mode_t * pmode)
+		/*@out@*/ mode_t * pmode, unsigned long *pflags)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies *t, *puid, *pgid, *pmode, fileSystem, internalState @*/
 {
@@ -2108,17 +2167,25 @@ statd(FTS * t, FTSENT * parent,
     gid_t sgid;
     uid_t suid;
     mode_t smode;
+#ifdef	NOTYET
+    unsigned long sflags;
+#endif
     struct group *gr;
     struct passwd *pw;
     gid_t savegid = *pgid;
     uid_t saveuid = *puid;
     mode_t savemode = *pmode;
-    gid_t maxgid;
-    uid_t maxuid;
-    mode_t maxmode;
+    unsigned long saveflags = *pflags;
+    gid_t maxgid = 0;
+    uid_t maxuid = 0;
+    mode_t maxmode = 0;
+#ifdef	NOTYET
+    unsigned long maxflags = 0;
+#endif
     gid_t g[MAXGID];
     uid_t u[MAXUID];
     mode_t m[MAXMODE];
+    unsigned long f[MAXFLAGS];
     static int first = 1;
 
 /*@-unrecog@*/
@@ -2132,8 +2199,8 @@ statd(FTS * t, FTSENT * parent,
     memset(g, 0, sizeof(g));
     memset(u, 0, sizeof(u));
     memset(m, 0, sizeof(m));
+    memset(f, 0, sizeof(f));
 
-    maxuid = maxgid = maxmode = 0;
     for (; p != NULL; p = p->fts_link) {
 	if (!dflag || (dflag && S_ISDIR(p->fts_statp->st_mode))) {
 	    smode = p->fts_statp->st_mode & MBITS;
@@ -2151,6 +2218,22 @@ statd(FTS * t, FTSENT * parent,
 		saveuid = suid;
 		maxuid = u[suid];
 	    }
+#ifdef	NOTYET
+	    /*
+ 	    * XXX
+ 	    * note that the below will break when file flags
+	    * are extended beyond the first 4 bytes of each
+	    * half word of the flags
+	    */
+#define FLAGS2IDX(f) ((f & 0xf) | ((f >> 12) & 0xf0))
+	    sflags = p->fts_statp->st_flags;
+	    if (FLAGS2IDX(sflags) < MAXFLAGS &&
+		++f[FLAGS2IDX(sflags)] > maxflags)
+	    {
+		saveflags = sflags;
+		maxflags = f[FLAGS2IDX(sflags)];
+ 	    }
+#endif
 	}
     }
     /*
@@ -2161,6 +2244,7 @@ statd(FTS * t, FTSENT * parent,
     if ((((keys & F_UNAME) | (keys & F_UID)) && (*puid != saveuid))
      || (((keys & F_GNAME) | (keys & F_GID)) && (*pgid != savegid))
      ||  ((keys & F_MODE) && (*pmode != savemode))
+     ||  ((keys & F_FLAGS) && (*pflags != saveflags))
      || first)
     {
 	first = 0;
@@ -2171,6 +2255,8 @@ statd(FTS * t, FTSENT * parent,
 	if (keys & F_UNAME) {
 	    if ((pw = getpwuid(saveuid)) != NULL)
 		(void) printf(" uname=%s", pw->pw_name);
+	    else if (wflag)
+		warnx( "Could not get uname for uid=%u", saveuid);
 	    else
 		mtree_error("could not get uname for uid=%u", saveuid);
 	}
@@ -2179,6 +2265,8 @@ statd(FTS * t, FTSENT * parent,
 	if (keys & F_GNAME) {
 	    if ((gr = getgrgid(savegid)) != NULL)
 		(void) printf(" gname=%s", gr->gr_name);
+	    else if (wflag)
+		warnx("Could not get gname for gid=%u", savegid);
 	    else
 		mtree_error("could not get gname for gid=%u", savegid);
 	}
@@ -2188,10 +2276,20 @@ statd(FTS * t, FTSENT * parent,
 	    (void) printf(" mode=%#o", (unsigned)savemode);
 	if (keys & F_NLINK)
 	    (void) printf(" nlink=1");
+	if (keys & F_FLAGS) {
+#if defined(__linux__)
+	    (void) printf(" flags=none");
+#else
+	    const char * fflags = flags_to_string(saveflags);
+	    (void) printf(" flags=%s", fflags);
+	    fflags = _free(fflags);
+#endif
+	}
 	(void) printf("\n");
 	*puid = saveuid;
 	*pgid = savegid;
 	*pmode = savemode;
+	*pflags = saveflags;
     }
     return (0);
 }
@@ -2229,6 +2327,8 @@ statf(int indent, FTSENT * p)
 	if (keys & F_UNAME) {
 	    if ((pw = getpwuid(p->fts_statp->st_uid)) != NULL)
 		output(indent, &offset, "uname=%s", pw->pw_name);
+	    else if (wflag)
+		warnx("Could not get uname for uid=%u", p->fts_statp->st_uid);
 	    else
 		mtree_error("could not get uname for uid=%u", p->fts_statp->st_uid);
 	}
@@ -2239,6 +2339,8 @@ statf(int indent, FTSENT * p)
 	if (keys & F_GNAME) {
 	    if ((gr = getgrgid(p->fts_statp->st_gid)) != NULL)
 		output(indent, &offset, "gname=%s", gr->gr_name);
+	    else if (wflag)
+		warnx("Could not get gname for gid=%u", p->fts_statp->st_gid);
 	    else
 		mtree_error("could not get gname for gid=%u", p->fts_statp->st_gid);
 	}
@@ -2283,7 +2385,7 @@ statf(int indent, FTSENT * p)
 	if (dc->fd != NULL) {
 	    (void) rpmswAdd(&dc_readops, fdstat_op(dc->fd, FDSTAT_READ));
 	    (void) rpmswAdd(&dc_digestops, fdstat_op(dc->fd, FDSTAT_DIGEST));
-	    (void)Fclose(dc->fd);
+	    (void) Fclose(dc->fd);
 	    dc->fd = NULL;
 	    dc->digest = _free(dc->digest);
 	    dc->digestlen = 0;
@@ -2306,7 +2408,7 @@ statf(int indent, FTSENT * p)
 	if (dc->fd != NULL) {
 	    (void) rpmswAdd(&dc_readops, fdstat_op(dc->fd, FDSTAT_READ));
 	    (void) rpmswAdd(&dc_digestops, fdstat_op(dc->fd, FDSTAT_DIGEST));
-	    (void)Fclose(dc->fd);
+	    (void) Fclose(dc->fd);
 	    dc->fd = NULL;
 	    dc->digest = _free(dc->digest);
 	    dc->digestlen = 0;
@@ -2329,7 +2431,30 @@ statf(int indent, FTSENT * p)
 	if (dc->fd != NULL) {
 	    (void) rpmswAdd(&dc_readops, fdstat_op(dc->fd, FDSTAT_READ));
 	    (void) rpmswAdd(&dc_digestops, fdstat_op(dc->fd, FDSTAT_DIGEST));
-	    (void)Fclose(dc->fd);
+	    (void) Fclose(dc->fd);
+	    dc->fd = NULL;
+	    dc->digest = _free(dc->digest);
+	    dc->digestlen = 0;
+	}
+	dc->algo = 0;
+	dc->fn = NULL;
+    }
+    if (keys & F_SHA256 && S_ISREG(p->fts_statp->st_mode)) {
+	rpmdc dc = _dc;
+	dc->fn = p->fts_accpath;
+	dc->algo = PGPHASHALGO_SHA256;
+	xx = rpmdcInitFile(dc);
+	xx = rpmdcCalcFile(dc);
+	/* XXX hotwire around rpmdcFini() for now. */
+	fdFiniDigest(dc->fd, dc->algo, &dc->digest, &dc->digestlen, asAscii);
+	if (dc->digest == NULL)
+	    mtree_error("%s: %s", p->fts_accpath, strerror(errno));
+	else
+	    output(indent, &offset, "sha256digest=%s", dc->digest);
+	if (dc->fd != NULL) {
+	    (void) rpmswAdd(&dc_readops, fdstat_op(dc->fd, FDSTAT_READ));
+	    (void) rpmswAdd(&dc_digestops, fdstat_op(dc->fd, FDSTAT_DIGEST));
+	    (void) Fclose(dc->fd);
 	    dc->fd = NULL;
 	    dc->digest = _free(dc->digest);
 	    dc->digestlen = 0;
@@ -2365,6 +2490,76 @@ statf(int indent, FTSENT * p)
     }
     (void) putchar('\n');
 }
+
+#ifdef	NOTYET
+/*
+ * We're assuming that there won't be a whole lot of excludes,
+ * so it's OK to use a stupid algorithm.
+ */
+struct exclude {
+	LIST_ENTRY(exclude) link;
+	const char *glob;
+	int pathname;
+};
+
+static LIST_HEAD(, exclude) excludes;
+
+void
+init_excludes(void)
+{
+	LIST_INIT(&excludes);
+}
+
+void
+read_excludes_file(const char *name)
+{
+	FILE *fp;
+	char *line, *str;
+	struct exclude *e;
+	size_t len;
+
+	fp = fopen(name, "r");
+	if (fp == 0)
+		err(1, "%s", name);
+
+	while ((line = fgetln(fp, &len)) != 0) {
+		if (line[len - 1] == '\n')
+			len--;
+		if (len == 0)
+			continue;
+
+		str = malloc(len + 1);
+		e = malloc(sizeof *e);
+		if (str == 0 || e == 0)
+			errx(1, "memory allocation error");
+		e->glob = str;
+		memcpy(str, line, len);
+		str[len] = '\0';
+		if (strchr(str, '/'))
+			e->pathname = 1;
+		else
+			e->pathname = 0;
+		LIST_INSERT_HEAD(&excludes, e, link);
+	}
+	fclose(fp);
+}
+
+int
+check_excludes(const char *fname, const char *path)
+{
+	struct exclude *e;
+
+	/* fnmatch(3) has a funny return value convention... */
+#define MATCH(g, n) (fnmatch((g), (n), FNM_PATHNAME) == 0)
+
+	LIST_FOREACH(e, &excludes, link) {
+		if ((e->pathname && MATCH(e->glob, path))
+		    || MATCH(e->glob, fname))
+			return 1;
+	}
+	return 0;
+}
+#endif
 
 #if defined(__linux__)
 /*@null@*/ /*@observer@*/
@@ -2410,11 +2605,13 @@ mtreeCWalk(void)
     int indent = 0;
     ARGV_t av;
 
-    (void) time(&clock);
-    (void) gethostname(host, sizeof(host));
-    (void) printf(
+    if (!nflag) {
+	(void) time(&clock);
+	(void) gethostname(host, sizeof(host));
+	(void) printf(
 	    "#\t   user: %s\n#\tmachine: %s\n#\t   tree: %s\n#\t   date: %s",
 	    __getlogin(), host, fullpath, ctime(&clock));
+    }
 
     /* XXX should be done in main(). */
     if ((av = dirs) == NULL) {
@@ -2423,19 +2620,24 @@ mtreeCWalk(void)
 	av[1] = NULL;
     }
 
-/*@-noeffectuncon -unrecog@*/
     if ((t = Fts_open((char *const *)av, rpmioFtsOpts, dsort)) == NULL)
 	mtree_error("Fts_open: %s", strerror(errno));
     while ((p = Fts_read(t)) != NULL) {
 	if (iflag)
 	    indent = p->fts_level * 4;
+#ifdef	NOTYET
+	if (check_excludes(p->fts_name, p->fts_path)) {
+	    Fts_set(t, p, FTS_SKIP);
+	    continue;
+	}
+#endif
 	switch(p->fts_info) {
 	case FTS_D:
 	    if (!dflag)
 		(void) printf("\n");
 	    if (!nflag)
 		(void) printf("# %s\n", p->fts_path);
-	    (void) statd(t, p, &uid, &gid, &mode);
+	    (void) statd(t, p, &uid, &gid, &mode, &flags);
 	    statf(indent, p);
 	    /*@switchbreak@*/ break;
 	case FTS_DP:
@@ -2448,6 +2650,7 @@ mtreeCWalk(void)
 	case FTS_DNR:
 	case FTS_ERR:
 	case FTS_NS:
+	    /* XXX TODO: warnx? */
 	    (void) fprintf(stderr, "%s: %s: %s\n",
 		    __progname, p->fts_path, strerror(p->fts_errno));
 	    /*@switchbreak@*/ break;
@@ -2458,9 +2661,9 @@ mtreeCWalk(void)
 	}
     }
     (void) Fts_close(t);
-/*@=noeffectuncon =unrecog@*/
 
     if (sflag && keys & F_CKSUM)
+	/* XXX TODO: warnx? */
 	(void) fprintf(stderr, _("%s: %s checksum: %u\n"),
 		__progname, fullpath, (unsigned)crc_total);
 
@@ -2554,7 +2757,6 @@ vwalk(void)
 	av[1] = NULL;
     }
 
-/*@-noeffectuncon -unrecog@*/
     if ((t = Fts_open((char *const *)av, rpmioFtsOpts, NULL)) == NULL)
 	mtree_error("Fts_open: %s", strerror(errno));
     level = root;
@@ -2620,7 +2822,6 @@ extra:
 	(void) Fts_set(t, p, FTS_SKIP);
     }
     (void) Fts_close(t);
-/*@=noeffectuncon =unrecog@*/
     if (sflag)
 	(void) fprintf(stderr, "%s: %s checksum: %u\n",
 		__progname, fullpath, (unsigned) crc_total);
@@ -2654,6 +2855,8 @@ static void mtreeArgCallback(poptContext con,
     /* XXX avoid accidental collisions with POPT_BIT_SET for flags */
     if (opt->arg == NULL)
     switch (opt->val) {
+
+    /* XXX TODO: Mac OS X differs here. */
     case 'f':
 	if (!(freopen(arg, "r", stdin)))
 	    mtree_error("%s: %s", arg, strerror(errno));
@@ -2687,6 +2890,23 @@ assert(arg != NULL);
 	Uflag = 1;
 	uflag = 1;
 	break;
+
+    /* XXX redundant with --logical. */
+    case 'L':
+	rpmioFtsOpts &= ~FTS_PHYSICAL;
+	rpmioFtsOpts |= FTS_LOGICAL;
+	break;
+    /* XXX redundant with --physical. */
+    case 'P':
+	rpmioFtsOpts &= ~FTS_LOGICAL;
+	rpmioFtsOpts |= FTS_PHYSICAL;
+	break;
+#ifdef	NOTYET
+    case 'X':
+	read_excludes_file(arg);
+	break;
+#endif
+
     case '?':
     default:
 	fprintf(stderr, _("%s: Unknown option -%c\n"), __progname, opt->val);
@@ -2702,6 +2922,18 @@ static struct poptOption optionsTable[] = {
  { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA | POPT_CBFLAG_CONTINUE,
         mtreeArgCallback, 0, NULL, NULL },
 /*@=type@*/
+
+    /* XXX redundant with --logical. */
+  { NULL,'L', POPT_ARG_NONE,	NULL, (int)'L',
+	N_("Follow symlinks"), NULL },
+    /* XXX redundant with --physical. */
+  { NULL,'P', POPT_ARG_NONE,	NULL, (int)'P',
+	N_("Don't follow symlinks"), NULL },
+#ifdef	NOTYET
+  { NULL,'X', POPT_ARG_NONE,	NULL, (int)'X',
+	N_("Read fnmatch(3) exclude patterns from <file>"), N_("<file>") },
+#endif
+
   { "spec",'c', POPT_ARG_VAL,	&cflag, 1,
 	N_("Print file tree specification to stdout"), NULL },
   { "dirs",'d', POPT_ARG_VAL,	&dflag, 1,
@@ -2709,38 +2941,44 @@ static struct poptOption optionsTable[] = {
   { "ignore",'e', POPT_ARG_VAL,	&eflag, 1,
 	N_("Don't complain about files not in the specification"), NULL },
   { "file",'f', POPT_ARG_STRING,	NULL, (int)'f',
-	N_("Read file tree <spec>"), "<spec>" },
+	N_("Read file tree <spec>"), N_("<spec>") },
   { "indent",'i', POPT_ARG_VAL,	&iflag, 1,
 	N_("Indent sub-directories"), NULL },
   { "add",'K', POPT_ARG_STRING,	NULL, (int)'K',
-	N_("Add <key> to specification"), "<key>" },
+	N_("Add <key> to specification"), N_("<key>") },
   { "key",'k', POPT_ARG_STRING,	NULL, (int)'k',
-	N_("Use \"type\" keywords instead"), "<key>" },
+	N_("Use \"type\" keywords instead"), N_("<key>") },
   { "loose",'l', POPT_ARG_VAL,	&lflag, 1,
 	N_("Loose permissions check"), NULL },
   { "nocomment",'n', POPT_ARG_VAL,	&nflag, 1,
 	N_("Don't include sub-directory comments"), NULL },
 #if defined(POPT_ARG_ARGV)
   { "path",'p', POPT_ARG_ARGV,	&dirs, 0,
-	N_("Use <path> rather than current directory"), "<path>" },
+	N_("Use <path> rather than current directory"), N_("<path>") },
 #else
   { "path",'p', POPT_ARG_STRING,	NULL, 'p',
-	N_("Use <path> rather than current directory"), "<path>" },
+	N_("Use <path> rather than current directory"), N_("<path>") },
 #endif
   { "quiet",'q', POPT_ARG_VAL,	&qflag, 1,
 	N_("Quiet mode"), NULL },
   { "remove",'r', POPT_ARG_VAL,	&rflag, 1,
 	N_("Remove files not in specification"), NULL },
   { "seed",'s', POPT_ARG_STRING,	NULL, (int)'s',
-	N_("Display crc for file(s) with <seed>"), "<seed>" },
+	N_("Display crc for file(s) with <seed>"), N_("<seed>") },
   { "touch",'t', POPT_ARG_VAL,	&tflag, 1,
 	N_("Touch files iff timestamp differs"), NULL },
   { "set",'U', POPT_ARG_NONE,	&Uflag, (int)'U',
 	N_("Modify owner/group/permissions to match specification"), NULL },
   { "update",'u', POPT_ARG_VAL,	&uflag, 1,
 	N_("Same as -U, exit with match status"), NULL },
-  { "xdev",'x', POPT_BIT_SET,	&rpmioFtsOpts, FTS_XDEV,
+  { NULL,'w', POPT_ARG_VAL,	&wflag, 1,
+	NULL, NULL },
+    /* XXX duplicated with --xdev. */
+  { "xdev",'x', POPT_BIT_SET,  &rpmioFtsOpts, FTS_XDEV,
 	N_("Don't cross mount points"), NULL },
+
+ { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmioFtsPoptTable, 0,
+	N_("Fts(3) traversal options:"), NULL },
 
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmioDigestPoptTable, 0,
 	N_("Available digests:"), NULL },
@@ -2769,6 +3007,10 @@ main(int argc, char *argv[])
 {
     poptContext optCon = rpmioInit(argc, argv, optionsTable);
     int rc;
+
+#ifdef	NOTYET
+    init_excludes();
+#endif
 
     /* Process all options, whine if unknown. */
     while ((rc = poptGetNextOpt(optCon)) > 0) {
@@ -2799,18 +3041,23 @@ main(int argc, char *argv[])
      * Either FTS_PHYSICAL or FTS_LOGICAL must be set. Don't follow symlinks
      * unless explicitly overridden with FTS_LOGICAL.
      */
-    if ((rpmioFtsOpts & ~(FTS_LOGICAL|FTS_PHYSICAL)) == 0)
+    switch (rpmioFtsOpts & (FTS_LOGICAL|FTS_PHYSICAL)) {
+    case (FTS_LOGICAL|FTS_PHYSICAL):
+	mtree_error("-L and -P flags are mutually exclusive");
+	/*@notreached@*/ break;
+    case 0:
 	rpmioFtsOpts |= FTS_PHYSICAL;
+	break;
+    }
 
     (void) rpmswEnter(&dc_totalops, -1);
 
-    if (cflag) {
+    if (cflag)
 	rc = mtreeCWalk();
-    } else {
+    else
 	rc = mtreeVWalk();
-	if (Uflag & (rc == MISMATCHEXIT))
-	    rc = 0;
-    }
+    if (Uflag & (rc == MISMATCHEXIT))
+	rc = 0;
 
     (void) rpmswExit(&dc_totalops, 0);
     if (_rpmsw_stats) {

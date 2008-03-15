@@ -1,4 +1,4 @@
-/*@-realcompare -sizeoftype -protoparammatch @*/
+/*@-realcompare -sizeoftype @*/
 #include "system.h"
 
 #ifdef	WITH_LUA
@@ -30,7 +30,7 @@
 #include "debug.h"
 
 #if !defined(HAVE_VSNPRINTF)
-static inline int vsnprintf(char * buf, /*@unused@*/ int nb,
+static inline int vsnprintf(char * buf, /*@unused@*/ size_t nb,
 			    const char * fmt, va_list ap)
 {
     return vsprintf(buf, fmt, ap);
@@ -332,7 +332,7 @@ static int findkey(lua_State *L, int oper, const char *key, va_list va)
     char buf[BUFSIZ];
     const char *s, *e;
     int ret = 0;
-    (void) vsnprintf(buf, BUFSIZ, key, va);
+    (void) vsnprintf(buf, sizeof(buf), key, va);
     s = e = buf;
     lua_pushvalue(L, LUA_GLOBALSINDEX);
     for (;;) {
@@ -1029,8 +1029,8 @@ static int rpm_slurp(lua_State *L)
 }
 
 static int rpm_sleep(lua_State *L)
-    /*@globals fileSystem, internalState @*/
-    /*@modifies L, fileSystem, internalState @*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies L, fileSystem, internalState @*/
 {
     unsigned sec;
 
@@ -1097,4 +1097,4 @@ static int luaopen_rpm(lua_State *L)
 }
 #endif	/* WITH_LUA */
 
-/*@=realcompare =sizeoftype =protoparammatch @*/
+/*@=realcompare =sizeoftype @*/

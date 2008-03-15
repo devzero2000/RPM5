@@ -2032,7 +2032,6 @@ if (!(iosm->mapFlags & IOSM_ALL_HARDLINKS)) break;
 	    }
 	} else if (S_ISLNK(st->st_mode)) {
 assert(iosm->lpath != NULL);
-	    /*@=dependenttrans@*/
 	    rc = iosmUNSAFE(iosm, IOSM_VERIFY);
 	    if (rc == IOSMERR_ENOENT)
 		rc = iosmNext(iosm, IOSM_SYMLINK);

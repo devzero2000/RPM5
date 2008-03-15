@@ -1,5 +1,4 @@
-/*@-sysunrecog -noeffectuncon -nullpass -sizeoftype -unrecog -usereleased @*/
-/*@-compdef -compmempass -dependenttrans -retalias @*/
+/*@-dependenttrans -nullpass -retalias -usereleased @*/
 /*-
  * Copyright (c) 1990, 1993, 1994
  *	The Regents of the University of California.  All rights reserved.
@@ -207,7 +206,9 @@ Fts_open(char * const * argv, int options,
 
 	/* Options check. */
 	if (options & ~FTS_OPTIONMASK) {
+/*@-sysunrecog@*/
 		__set_errno (EINVAL);
+/*@=sysunrecog@*/
 		return (NULL);
 	}
 
@@ -780,7 +781,9 @@ fts_build(FTS * sp, int type)
 	 */
 	cderrno = 0;
 	if (nlinks || type == BREAD) {
+/*@-unrecog@*/
 		if (fts_safe_changedir(sp, cur, dirfd(dirp), NULL)) {
+/*@=unrecog@*/
 			if (nlinks && type == BREAD)
 				cur->fts_errno = errno;
 			cur->fts_flags |= FTS_DONTCHDIR;
@@ -1232,10 +1235,12 @@ fts_safe_changedir(FTS * sp, FTSENT * p, int fd, const char * path)
 		return (0);
 	if (fd < 0 && (newfd = __open(path, O_RDONLY, 0)) < 0)
 		return (-1);
+/*@-sysunrecog -unrecog @*/
 	if (__fxstat64(_STAT_VER, newfd, &sb)) {
 		ret = -1;
 		goto bail;
 	}
+/*@=sysunrecog =unrecog @*/
 	if (p->fts_dev != sb.st_dev || p->fts_ino != sb.st_ino) {
 		__set_errno (ENOENT);		/* disinformation */
 		ret = -1;
@@ -1249,5 +1254,4 @@ bail:
 	__set_errno (oerrno);
 	return (ret);
 }
-/*@=compdef =compmempass =dependenttrans =retalias @*/
-/*@=sysunrecog =noeffectuncon =nullpass =sizeoftype =unrecog =usereleased @*/
+/*@=dependenttrans =nullpass =retalias =usereleased @*/
