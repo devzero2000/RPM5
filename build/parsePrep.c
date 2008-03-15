@@ -291,10 +291,14 @@ _rpmmg_debug = 0;
 	    t = "%{__lzma} -dc";
 	    break;
 	case COMPRESSED_ZIP:
+#if defined(RPM_VENDOR_OPENPKG) /* use-bsdtar-for-zip-files */
+	    t = "%{__bsdtar} -x -f";
+#else
 	    if (rpmIsVerbose() && !quietly)
 		t = "%{__unzip}";
 	    else
 		t = "%{__unzip} -qq";
+#endif
 	    needtar = 0;
 	    break;
 	}

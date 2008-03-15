@@ -455,6 +455,19 @@
                      or whatever else one can come up.
      ________________________________________________________________________
 
+     Change:         use-bsdtar-for-zip-files
+     Purpose:        Use bsdtar(1) for unpacking ZIP format files.
+     Reason:         OpenPKG uses bsdtar(1) to unpack ZIP format files to
+                     avoid having to bundle the less portable unzip(1)
+                     into the bootstrap package.
+     Hint:           If RPM would use "%__unzip -qq" instead of "%{__unzip} -qq"
+                     one could also use plain macros in OpenPKG to
+                     convert the call to unzip(1) to bsdtar(1). But I
+                     don't wanted to change RPM here as all other macros
+                     are also just for the expansion of the command and
+                     not for the complete command argument line.
+     ________________________________________________________________________
+
   o  Name:           RPM4DARWIN
      Vendor:         RPM for Darwin (Mac OS X) <http://rpm4darwin.sourceforge.net/>
      Representative: Anders F. Bjorklund <afb@users.sourceforge.net> <afb@rpm5.org>
