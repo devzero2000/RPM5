@@ -31,10 +31,17 @@
 #if defined(__LCLINT__)
 #define ARCHIVE_STAT_CTIME_NANOS(st)    0
 #define ARCHIVE_STAT_MTIME_NANOS(st)    0
+#elif defined(__APPLE__) && defined(_POSIX_C_SOURCE)
+#define ARCHIVE_STAT_CTIME_NANOS(st)    (st)->st_ctimensec
+#define ARCHIVE_STAT_MTIME_NANOS(st)    (st)->st_mtimensec
+#elif defined(__APPLE__) && !defined(_POSIX_C_SOURCE)
+#define ARCHIVE_STAT_CTIME_NANOS(st)    (st)->st_ctimespec.tv_nsec
+#define ARCHIVE_STAT_MTIME_NANOS(st)    (st)->st_mtimespec.tv_nsec
 #else
 #define ARCHIVE_STAT_CTIME_NANOS(st)    (st)->st_ctim.tv_nsec
 #define ARCHIVE_STAT_MTIME_NANOS(st)    (st)->st_mtim.tv_nsec
 #endif
+/* XXX: the above struct definitions should be moved to autoconf */
 
 #define	HAVE_LIBZ		1
 #define	HAVE_LIBBZ2		1
