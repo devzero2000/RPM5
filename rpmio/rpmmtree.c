@@ -130,6 +130,30 @@ typedef struct _node {
 	((p)->fts_path[0] == '.' && (p)->fts_path[1] == '/' ? \
 	    (p)->fts_path + 2 : (p)->fts_path)
 
+
+#define	_MFB(n)	((1U << (n)) | 0x40000000)
+#define MF_ISSET(_FLAG) ((mtreeFlags & ((MTREE_FLAGS_##_FLAG) & ~0x40000000)) != MTREE_FLAGS_NONE)
+
+enum mtreeFlags_e {
+    MTREE_FLAGS_NONE		= 0,
+    MTREE_FLAGS_QUIET		= _MFB( 0), /*!< -q,--quiet ... */
+    MTREE_FLAGS_WARN		= _MFB( 1), /*!< -w,--warn ... */
+    MTREE_FLAGS_SPEC		= _MFB( 2), /*!< -c,--spec ... */
+    MTREE_FLAGS_DIRSONLY	= _MFB( 3), /*!< -d,--dirs ... */
+    MTREE_FLAGS_IGNORE		= _MFB( 4), /*!< -e,--ignore ... */
+    MTREE_FLAGS_INDENT		= _MFB( 5), /*!< -i,--indent ... */
+    MTREE_FLAGS_LOOSE		= _MFB( 6), /*!< -l,--loose ... */
+    MTREE_FLAGS_NOCOMMENT	= _MFB( 7), /*!< -n,--nocomment ... */
+    MTREE_FLAGS_REMOVE		= _MFB( 8), /*!< -r,--remove ... */
+    MTREE_FLAGS_SEEDED		= _MFB( 9), /*!< -s,--seed ... */
+    MTREE_FLAGS_TOUCH		= _MFB(10), /*!< -t,--touch ... */
+    MTREE_FLAGS_UPDATE		= _MFB(11), /*!< -u,--update ... */
+    MTREE_FLAGS_MISMATCHOK	= _MFB(12), /*!< -U,--mismatch ... */
+};
+
+/*@unchecked@*/
+static enum mtreeFlags_e mtreeFlags = MTREE_FLAGS_NONE;
+
 typedef struct rpmfts_s * rpmfts;
 
 struct rpmfts_s {
@@ -138,7 +162,7 @@ struct rpmfts_s {
     uid_t uid;
     gid_t gid;
     mode_t mode;
-    unsigned long flags;
+    unsigned long fflags;
     uint32_t crc_total;
     unsigned lineno;
 /*@null@*/
@@ -157,10 +181,6 @@ struct rpmfts_s {
 static struct rpmfts_s __rpmfts;
 /*@unchecked@*/
 static rpmfts _rpmfts = &__rpmfts;;
-
-/*@unchecked@*/
-static int cflag, dflag, eflag, iflag, lflag, nflag, qflag, rflag, sflag, tflag,
-    uflag, Uflag, wflag;
 
 #ifdef __cplusplus
 extern "C" {
@@ -390,7 +410,7 @@ crc(FD_t fd, /*@out@*/ uint32_t * cval, /*@out@*/ uint32_t * clen)
 
 #define	COMPUTE(var, ch)	(var) = (var) << 8 ^ crctab[(var) >> 24 ^ (ch)]
 
-    _rpmfts->crc_total = ~_rpmfts->crc_total;
+    _rpmfts->crc_total ^= 0xffffffff;
 
     {   uint8_t buf[16 * 1024];
 	size_t nr;
@@ -413,8 +433,8 @@ crc(FD_t fd, /*@out@*/ uint32_t * cval, /*@out@*/ uint32_t * clen)
 	COMPUTE(_rpmfts->crc_total, len & 0xff);
     }
 
-    *cval = ~crc;
-    _rpmfts->crc_total = ~_rpmfts->crc_total;
+    *cval = (crc ^ 0xffffffff);
+    _rpmfts->crc_total ^= 0xffffffff;
     return 0;
 }
 
@@ -1849,7 +1869,7 @@ typeerr:    LABEL;
 	LABEL;
 	(void) printf("%suser (%u, %u", tab,
 		(unsigned)s->st_uid, (unsigned)p->fts_statp->st_uid);
-	if (uflag) {
+	if (MF_ISSET(UPDATE)) {
 	    if (Chown(p->fts_accpath, s->st_uid, -1))
 		(void) printf(", not modified: %s)\n", strerror(errno));
 	    else
@@ -1862,7 +1882,7 @@ typeerr:    LABEL;
 	LABEL;
 	(void) printf("%sgid (%u, %u", tab,
 		(unsigned)s->st_gid, (unsigned)p->fts_statp->st_gid);
-	if (uflag) {
+	if (MF_ISSET(UPDATE)) {
 	    if (Chown(p->fts_accpath, -1, s->st_gid))
 		(void) printf(", not modified: %s)\n", strerror(errno));
 	    else
@@ -1872,7 +1892,7 @@ typeerr:    LABEL;
 	tab = "\t";
     }
     if (s->flags & F_MODE && s->st_mode != (p->fts_statp->st_mode & MBITS)) {
-	if (lflag) {
+	if (MF_ISSET(LOOSE)) {
 	    mode_t tmode = s->st_mode;
 	    mode_t mode = (p->fts_statp->st_mode & MBITS);
 
@@ -1889,7 +1909,7 @@ typeerr:    LABEL;
 	LABEL;
 	(void) printf("%spermissions (%#o, %#o", tab,
 		(unsigned)s->st_mode, (unsigned)(p->fts_statp->st_mode & MBITS));
-	if (uflag) {
+	if (MF_ISSET(UPDATE)) {
 	    if (Chmod(p->fts_accpath, s->st_mode))
 		(void) printf(", not modified: %s)\n", strerror(errno));
 	    else
@@ -1939,7 +1959,7 @@ typeerr:    LABEL;
 	    (void) printf("%smodification time (%.24s, ", tab,
 			ctime(&tv[0].tv_sec));
 	    (void) printf("%.24s", ctime(&tv[1].tv_sec));
-	    if (tflag) {
+	    if (MF_ISSET(TOUCH)) {
 		tv[1] = tv[0];
 		if (Utimes(p->fts_accpath, tv))
 		    (void) printf(", not modified: %s)\n", strerror(errno));
@@ -2111,7 +2131,7 @@ typeerr:    LABEL;
 			(*db_flags == '\0') ?  "-" : db_flags,
 			(*cur_flags == '\0') ?  "-" : cur_flags);
 	    tab = "\t";
-	    if (uflag) {
+	    if (MF_ISSET(UPDATE)) {
 		if (chflags(p->fts_accpath, s->st_flags))
 		    (void) printf(", not modified: %s)\n", strerror(errno));
 		else	
@@ -2181,7 +2201,7 @@ mtreeVisitD(rpmfts fts)
     uid_t * puid = &fts->uid;
     gid_t * pgid = &fts->gid;
     mode_t * pmode = &fts->mode;
-    unsigned long *pflags = &fts->flags;
+    unsigned long *pflags = &fts->fflags;
     FTSENT *p;
     gid_t sgid;
     uid_t suid;
@@ -2221,7 +2241,7 @@ mtreeVisitD(rpmfts fts)
     memset(f, 0, sizeof(f));
 
     for (; p != NULL; p = p->fts_link) {
-	if (!dflag || (dflag && S_ISDIR(p->fts_statp->st_mode))) {
+	if (!MF_ISSET(DIRSONLY) || (MF_ISSET(DIRSONLY) && S_ISDIR(p->fts_statp->st_mode))) {
 	    smode = p->fts_statp->st_mode & MBITS;
 	    if (smode < MAXMODE && ++m[smode] > maxmode) {
 		savemode = smode;
@@ -2267,14 +2287,14 @@ mtreeVisitD(rpmfts fts)
      || first)
     {
 	first = 0;
-	if (dflag)
+	if (MF_ISSET(DIRSONLY))
 	    (void) printf("/set type=dir");
 	else
 	    (void) printf("/set type=file");
 	if (keys & F_UNAME) {
 	    if ((pw = getpwuid(saveuid)) != NULL)
 		(void) printf(" uname=%s", pw->pw_name);
-	    else if (wflag)
+	    else if (MF_ISSET(WARN))
 		warnx( "Could not get uname for uid=%u", saveuid);
 	    else
 		mtree_error("could not get uname for uid=%u", saveuid);
@@ -2284,7 +2304,7 @@ mtreeVisitD(rpmfts fts)
 	if (keys & F_GNAME) {
 	    if ((gr = getgrgid(savegid)) != NULL)
 		(void) printf(" gname=%s", gr->gr_name);
-	    else if (wflag)
+	    else if (MF_ISSET(WARN))
 		warnx("Could not get gname for gid=%u", savegid);
 	    else
 		mtree_error("could not get gname for gid=%u", savegid);
@@ -2320,7 +2340,7 @@ mtreeVisitF(rpmfts fts)
 {
     static int asAscii = 1;
     unsigned keys = fts->keys;
-    int indent = (iflag ? fts->p->fts_level * 4 : 0);
+    int indent = (MF_ISSET(INDENT) ? fts->p->fts_level * 4 : 0);
     struct group *gr;
     struct passwd *pw;
     uint32_t len, val;
@@ -2330,7 +2350,7 @@ mtreeVisitF(rpmfts fts)
 
     (void) strvis(escaped_name, fts->p->fts_name, VIS_WHITE | VIS_OCTAL);
 
-    if (iflag || S_ISDIR(fts->p->fts_statp->st_mode))
+    if (MF_ISSET(INDENT) || S_ISDIR(fts->p->fts_statp->st_mode))
 	offset = printf("%*s%s", indent, "", escaped_name);
     else
 	offset = printf("%*s    %s", indent, "", escaped_name);
@@ -2342,13 +2362,13 @@ mtreeVisitF(rpmfts fts)
     else
 	offset += printf("%*s", (CWALKINDENTNAMELEN + indent) - offset, "");
 
-    if (!S_ISREG(fts->p->fts_statp->st_mode) && !dflag)
+    if (!S_ISREG(fts->p->fts_statp->st_mode) && !MF_ISSET(DIRSONLY))
 	output(indent, &offset, "type=%s", inotype(fts->p->fts_statp->st_mode));
     if (fts->p->fts_statp->st_uid != fts->uid) {
 	if (keys & F_UNAME) {
 	    if ((pw = getpwuid(fts->p->fts_statp->st_uid)) != NULL)
 		output(indent, &offset, "uname=%s", pw->pw_name);
-	    else if (wflag)
+	    else if (MF_ISSET(WARN))
 		warnx("Could not get uname for uid=%u", fts->p->fts_statp->st_uid);
 	    else
 		mtree_error("could not get uname for uid=%u", fts->p->fts_statp->st_uid);
@@ -2360,7 +2380,7 @@ mtreeVisitF(rpmfts fts)
 	if (keys & F_GNAME) {
 	    if ((gr = getgrgid(fts->p->fts_statp->st_gid)) != NULL)
 		output(indent, &offset, "gname=%s", gr->gr_name);
-	    else if (wflag)
+	    else if (MF_ISSET(WARN))
 		warnx("Could not get gname for gid=%u", fts->p->fts_statp->st_gid);
 	    else
 		mtree_error("could not get gname for gid=%u", fts->p->fts_statp->st_gid);
@@ -2624,7 +2644,7 @@ mtreeCWalk(rpmfts fts)
     int indent = 0;
     ARGV_t av;
 
-    if (!nflag) {
+    if (!MF_ISSET(NOCOMMENT)) {
 	(void) time(&clock);
 	(void) gethostname(host, sizeof(host));
 	(void) printf(
@@ -2642,7 +2662,7 @@ mtreeCWalk(rpmfts fts)
     if ((fts->t = Fts_open((char *const *)av, fts->ftsoptions, dsort)) == NULL)
 	mtree_error("Fts_open: %s", strerror(errno));
     while ((fts->p = Fts_read(fts->t)) != NULL) {
-	if (iflag)
+	if (MF_ISSET(INDENT))
 	    indent = fts->p->fts_level * 4;
 #ifdef	NOTYET
 	if (check_excludes(fts->p->fts_name, fts->p->fts_path)) {
@@ -2652,18 +2672,18 @@ mtreeCWalk(rpmfts fts)
 #endif
 	switch(fts->p->fts_info) {
 	case FTS_D:
-	    if (!dflag)
+	    if (!MF_ISSET(DIRSONLY))
 		(void) printf("\n");
-	    if (!nflag)
+	    if (!MF_ISSET(NOCOMMENT))
 		(void) printf("# %s\n", fts->p->fts_path);
 	    (void) mtreeVisitD(fts);
 	    mtreeVisitF(fts);
 	    /*@switchbreak@*/ break;
 	case FTS_DP:
-	    if (!nflag && (fts->p->fts_level > 0))
+	    if (!MF_ISSET(NOCOMMENT) && (fts->p->fts_level > 0))
 		(void) printf("%*s# %s\n", indent, "", fts->p->fts_path);
 	    (void) printf("%*s..\n", indent, "");
-	    if (!dflag)
+	    if (!MF_ISSET(DIRSONLY))
 		(void) printf("\n");
 	    /*@switchbreak@*/ break;
 	case FTS_DNR:
@@ -2674,7 +2694,7 @@ mtreeCWalk(rpmfts fts)
 		    __progname, fts->p->fts_path, strerror(fts->p->fts_errno));
 	    /*@switchbreak@*/ break;
 	default:
-	    if (!dflag)
+	    if (!MF_ISSET(DIRSONLY))
 		mtreeVisitF(fts);
 	    /*@switchbreak@*/ break;
 	}
@@ -2683,7 +2703,7 @@ mtreeCWalk(rpmfts fts)
     fts->p = NULL;
     fts->t = NULL;
 
-    if (sflag && fts->keys & F_CKSUM)
+    if (MF_ISSET(SEEDED) && fts->keys & F_CKSUM)
 	/* XXX TODO: warnx? */
 	(void) fprintf(stderr, _("%s: %s checksum: %u\n"),
 		__progname, fts->fullpath, (unsigned)fts->crc_total);
@@ -2702,7 +2722,7 @@ mtreeMiss(rpmfts fts, /*@null@*/ NODE * p, char * tail)
     for (; p != NULL; p = p->next) {
 	if ((p->flags & F_OPT) && !(p->flags & F_VISIT))
 	    continue;
-	if (p->type != F_DIR && (dflag || p->flags & F_VISIT))
+	if (p->type != F_DIR && (MF_ISSET(DIRSONLY) || p->flags & F_VISIT))
 	    continue;
 	(void) strcpy(tail, p->name);
 	if (!(p->flags & F_VISIT)) {
@@ -2710,7 +2730,7 @@ mtreeMiss(rpmfts fts, /*@null@*/ NODE * p, char * tail)
 	       symbolic link and the -q flag is set. */
 	    struct stat statbuf;
 
-	    if (qflag && Stat(fts->path, &statbuf) == 0)
+	    if (MF_ISSET(QUIET) && Stat(fts->path, &statbuf) == 0)
 		p->flags |= F_VISIT;
 	    else
 		(void) printf("missing: %s", fts->path);
@@ -2721,7 +2741,7 @@ mtreeMiss(rpmfts fts, /*@null@*/ NODE * p, char * tail)
 	}
 
 	create = 0;
-	if (!(p->flags & F_VISIT) && uflag) {
+	if (!(p->flags & F_VISIT) && MF_ISSET(UPDATE)) {
 	    if (!(p->flags & (F_UID | F_UNAME)))
 		(void) printf(" (not created: user not specified)");
 	    else if (!(p->flags & (F_GID | F_GNAME)))
@@ -2792,7 +2812,7 @@ mtreeVWalk(rpmfts fts)
 			__progname, RP(fts->p), strerror(fts->p->fts_errno));
 	    continue;
 	default:
-	    if (dflag)
+	    if (MF_ISSET(DIRSONLY))
 		continue;
 	}
 
@@ -2822,9 +2842,9 @@ mtreeVWalk(rpmfts fts)
 	if (ep != NULL)
 	    continue;
 extra:
-	if (!eflag) {
+	if (!MF_ISSET(IGNORE)) {
 	    (void) printf("extra: %s", RP(fts->p));
-	    if (rflag) {
+	    if (MF_ISSET(REMOVE)) {
 		if ((S_ISDIR(fts->p->fts_statp->st_mode)
 		    ? Rmdir : Unlink)(fts->p->fts_accpath)) {
 			(void) printf(", not removed: %s", strerror(errno));
@@ -2838,7 +2858,7 @@ extra:
     (void) Fts_close(fts->t);
     fts->p = NULL;
     fts->t = NULL;
-    if (sflag)
+    if (MF_ISSET(SEEDED))
 	(void) fprintf(stderr, "%s: %s checksum: %u\n",
 		__progname, fts->fullpath, (unsigned) fts->crc_total);
     return rval;
@@ -2852,8 +2872,8 @@ static void mtreeArgCallback(poptContext con,
                 /*@unused@*/ enum poptCallbackReason reason,
                 const struct poptOption * opt, const char * arg,
                 /*@unused@*/ void * data)
-        /*@globals _rpmfts, sflag, Uflag, uflag, rpmioFtsOpts, fileSystem @*/
-        /*@modifies _rpmfts, sflag, Uflag, uflag, rpmioFtsOpts, fileSystem @*/
+        /*@globals _rpmfts, rpmioFtsOpts, fileSystem @*/
+        /*@modifies _rpmfts, rpmioFtsOpts, fileSystem @*/
 {
     char * p;
 
@@ -2885,16 +2905,6 @@ assert(arg != NULL);
 	(void) _poptSaveString(&_rpmfts->paths, opt->argInfo, arg);
 	break;
 #endif
-    case 's':
-	sflag = 1;
-	_rpmfts->crc_total = ~strtol(arg, &p, 0);
-	if (*p != '\0')
-	    mtree_error("illegal seed value -- %s", arg);
-	break;
-    case 'U':
-	Uflag = 1;
-	uflag = 1;
-	break;
 
     /* XXX redundant with --logical. */
     case 'L':
@@ -2939,23 +2949,23 @@ static struct poptOption optionsTable[] = {
 	N_("Read fnmatch(3) exclude patterns from <file>"), N_("<file>") },
 #endif
 
-  { "spec",'c', POPT_ARG_VAL,	&cflag, 1,
+  { "spec",'c', POPT_BIT_SET,		&mtreeFlags, MTREE_FLAGS_SPEC,
 	N_("Print file tree specification to stdout"), NULL },
-  { "dirs",'d', POPT_ARG_VAL,	&dflag, 1,
+  { "dirs",'d', POPT_BIT_SET,		&mtreeFlags, MTREE_FLAGS_DIRSONLY,
 	N_("Directories only"), NULL },
-  { "ignore",'e', POPT_ARG_VAL,	&eflag, 1,
+  { "ignore",'e', POPT_BIT_SET,		&mtreeFlags, MTREE_FLAGS_IGNORE,
 	N_("Don't complain about files not in the specification"), NULL },
   { "file",'f', POPT_ARG_STRING,	NULL, (int)'f',
 	N_("Read file tree <spec>"), N_("<spec>") },
-  { "indent",'i', POPT_ARG_VAL,	&iflag, 1,
+  { "indent",'i', POPT_BIT_SET,		&mtreeFlags, MTREE_FLAGS_INDENT,
 	N_("Indent sub-directories"), NULL },
   { "add",'K', POPT_ARG_STRING,	NULL, (int)'K',
 	N_("Add <key> to specification"), N_("<key>") },
   { "key",'k', POPT_ARG_STRING,	NULL, (int)'k',
 	N_("Use \"type\" keywords instead"), N_("<key>") },
-  { "loose",'l', POPT_ARG_VAL,	&lflag, 1,
+  { "loose",'l', POPT_BIT_SET,		&mtreeFlags, MTREE_FLAGS_LOOSE,
 	N_("Loose permissions check"), NULL },
-  { "nocomment",'n', POPT_ARG_VAL,	&nflag, 1,
+  { "nocomment",'n', POPT_BIT_SET,	&mtreeFlags, MTREE_FLAGS_NOCOMMENT,
 	N_("Don't include sub-directory comments"), NULL },
 #if defined(POPT_ARG_ARGV)
   { "path",'p', POPT_ARG_ARGV,	&__rpmfts.paths, 0,
@@ -2964,20 +2974,21 @@ static struct poptOption optionsTable[] = {
   { "path",'p', POPT_ARG_STRING,	NULL, 'p',
 	N_("Use <path> rather than current directory"), N_("<path>") },
 #endif
-  { "quiet",'q', POPT_ARG_VAL,	&qflag, 1,
+  /* XXX --quiet collides w poptIO */
+  { "quiet",'q', POPT_BIT_SET,		&mtreeFlags, MTREE_FLAGS_QUIET,
 	N_("Quiet mode"), NULL },
-  { "remove",'r', POPT_ARG_VAL,	&rflag, 1,
+  { "remove",'r', POPT_BIT_SET,		&mtreeFlags, MTREE_FLAGS_REMOVE,
 	N_("Remove files not in specification"), NULL },
-  { "seed",'s', POPT_ARG_STRING,	NULL, (int)'s',
+  { "seed",'s', POPT_ARG_INT,		&__rpmfts.crc_total, 0,
 	N_("Display crc for file(s) with <seed>"), N_("<seed>") },
-  { "touch",'t', POPT_ARG_VAL,	&tflag, 1,
+  { "touch",'t', POPT_BIT_SET,		&mtreeFlags, MTREE_FLAGS_TOUCH,
 	N_("Touch files iff timestamp differs"), NULL },
-  { "set",'U', POPT_ARG_NONE,	&Uflag, (int)'U',
-	N_("Modify owner/group/permissions to match specification"), NULL },
-  { "update",'u', POPT_ARG_VAL,	&uflag, 1,
-	N_("Same as -U, exit with match status"), NULL },
-  { NULL,'w', POPT_ARG_VAL,	&wflag, 1,
-	NULL, NULL },
+  { "update",'u', POPT_BIT_SET,		&mtreeFlags, MTREE_FLAGS_UPDATE,
+	N_("Update owner/group/permissions to match specification"), NULL },
+  { "mismatch",'U', POPT_BIT_SET, &mtreeFlags, (MTREE_FLAGS_UPDATE|MTREE_FLAGS_MISMATCHOK),
+	N_("Same as -u, but ignore match status on exit"), NULL },
+  { "warn",'w', POPT_BIT_SET,		&mtreeFlags, MTREE_FLAGS_WARN,
+	N_("Treat missing uid/gid as warning"), NULL },
     /* XXX duplicated with --xdev. */
   { "xdev",'x', POPT_BIT_SET,  &rpmioFtsOpts, FTS_XDEV,
 	N_("Don't cross mount points"), NULL },
@@ -3017,8 +3028,7 @@ main(int argc, char *argv[])
     init_excludes();
 #endif
     _rpmfts->keys = KEYDEFAULT;
-    _rpmfts->flags = 0xffffffff;
-    _rpmfts->crc_total = ~0;
+    _rpmfts->fflags = 0xffffffff;
 
     /* Process all options, whine if unknown. */
     while ((rc = poptGetNextOpt(optCon)) > 0) {
@@ -3039,14 +3049,14 @@ main(int argc, char *argv[])
 	exit(EXIT_FAILURE);
     }
 
-    if (cflag || sflag) {
+    if (MF_ISSET(SPEC) || MF_ISSET(SEEDED)) {
 	char fullpath[MAXPATHLEN];
 	if (!getcwd(fullpath, sizeof fullpath))
 	    mtree_error("getcwd: %s", strerror(errno));
 	_rpmfts->fullpath = xstrdup(fullpath);
     }
 
-    if (lflag == 1 && uflag == 1)
+    if (MF_ISSET(LOOSE) && MF_ISSET(UPDATE))
 	mtree_error("-l and -u flags are mutually exclusive");
 
     /*
@@ -3063,9 +3073,14 @@ main(int argc, char *argv[])
 	break;
     }
 
+    /* XXX prohibits -s 0 invocation */
+    if (_rpmfts->crc_total)
+	mtreeFlags |= MTREE_FLAGS_SEEDED;
+    _rpmfts->crc_total ^= 0xffffffff;
+
     (void) rpmswEnter(&dc_totalops, -1);
 
-    if (cflag)
+    if (MF_ISSET(SPEC))
 	rc = mtreeCWalk(_rpmfts);
     else {
 /*@-evalorder@*/
@@ -3077,7 +3092,7 @@ main(int argc, char *argv[])
 	_rpmfts->path = _free(_rpmfts->path);
     }
 
-    if (Uflag & (rc == MISMATCHEXIT))
+    if (MF_ISSET(MISMATCHOK) && (rc == MISMATCHEXIT))
 	rc = 0;
 
     (void) rpmswExit(&dc_totalops, 0);
