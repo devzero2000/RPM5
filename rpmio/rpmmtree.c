@@ -45,6 +45,7 @@ static const char copyright[] =
 
 #if defined(__linux__)
 #include <sys/queue.h>		/* XXX LIST_ENTRY (needs to be removed) */
+#define	st_mtimespec	st_mtim
 #endif
 
 #include <rpmio_internal.h>	/* XXX fdInitDigest() et al */
@@ -64,7 +65,7 @@ enum mtreeFlags_e {
     MTREE_FLAGS_NONE		= 0,
     MTREE_FLAGS_QUIET		= _MFB( 0), /*!< -q,--quiet ... */
     MTREE_FLAGS_WARN		= _MFB( 1), /*!< -w,--warn ... */
-    MTREE_FLAGS_SPEC		= _MFB( 2), /*!< -c,--spec ... */
+    MTREE_FLAGS_CREATE		= _MFB( 2), /*!< -c,--create ... */
     MTREE_FLAGS_DIRSONLY	= _MFB( 3), /*!< -d,--dirs ... */
     MTREE_FLAGS_IGNORE		= _MFB( 4), /*!< -e,--ignore ... */
     MTREE_FLAGS_INDENT		= _MFB( 5), /*!< -i,--indent ... */
@@ -117,22 +118,23 @@ enum mtreeKeys_e {
 typedef struct _node {
     struct _node	*parent, *child;	/*!< up, down */
     struct _node	*prev, *next;		/*!< left, right */
-    off_t		st_size;		/*!< size */
-    struct timespec	st_mtimespec;		/*!< last modification time */
-    uint32_t		cksum;			/*!< check sum */
+    struct stat		sb;			/*!< parsed stat(2) info */
+    char		*slink;			/*!< symbolic link reference */
+#ifdef	NOTYET
+    ARGI_t		algos;			/*!< digest algorithms */
+    ARGV_t		digests;		/*!< digest strings */
+#else
     char		*md5digest;		/*!< MD5 digest */
     char		*sha1digest;		/*!< SHA-1 digest */
     char		*sha256digest;		/*!< SHA-256 digest */
     char		*rmd160digest;		/*!< RIPEMD-160 digest */
-    char		*slink;			/*!< symbolic link reference */
-    uid_t		st_uid;			/*!< uid */
-    gid_t		st_gid;			/*!< gid */
-    mode_t		st_mode;		/*!< mode */
-    nlink_t		st_nlink;		/*!< link count */
-    unsigned long	st_flags;		/*!< file flags */
+#endif
+
+    uint32_t		cksum;			/*!< check sum */
 
     enum mtreeKeys_e flags;			/*!< items set */
 
+    uint8_t		type;			/*!< file type */
 #define	F_BLOCK	0x001				/*!< block special */
 #define	F_CHAR	0x002				/*!< char special */
 #define	F_DIR	0x004				/*!< directory */
@@ -140,7 +142,6 @@ typedef struct _node {
 #define	F_FILE	0x010				/*!< regular file */
 #define	F_LINK	0x020				/*!< symbolic link */
 #define	F_SOCK	0x040				/*!< socket */
-    uint8_t		type;			/*!< file type */
 
     char		name[1];		/* file name (must be last) */
 } NODE;
@@ -1341,29 +1342,28 @@ set(char * t, NODE * ip)
 	    ip->md5digest = xstrdup(val);
 	    /*@switchbreak@*/ break;
 	case MTREE_KEYS_FLAGS:
+#if defined(__linux__)
+#else
 	    if (!strcmp(val, "none")) {
-		ip->st_flags = 0;
+		ip->sb.st_flags = 0;
 		/*@switchbreak@*/ break;
 	    }
-#if defined(__linux__)
-	    ip->st_flags = 0;	/* XXX W2DO? */
-#else
 	    {	unsigned long fset, fclr;
 		if (strtofflags(&val, &fset, &fclr))
 		    mtree_error("%s", strerror(errno));
-		ip->st_flags = fset;
+		ip->sb.st_flags = fset;
 	    }
 #endif
 	    /*@switchbreak@*/ break; 
 	case MTREE_KEYS_GID:
-	    ip->st_gid = strtoul(val, &ep, 10);
+	    ip->sb.st_gid = strtoul(val, &ep, 10);
 	    if (*ep != '\0')
 		mtree_error("invalid gid %s", val);
 	    /*@switchbreak@*/ break;
 	case MTREE_KEYS_GNAME:
 	    if ((gr = getgrnam(val)) == NULL)
 	 	mtree_error("unknown group %s", val);
-	    ip->st_gid = gr->gr_gid;
+	    ip->sb.st_gid = gr->gr_gid;
 	    /*@switchbreak@*/ break;
 	case MTREE_KEYS_IGN:
 	    /* just set flag bit */
@@ -1371,11 +1371,11 @@ set(char * t, NODE * ip)
 	case MTREE_KEYS_MODE:
 	    if ((m = setmode(val)) == NULL)
 		mtree_error("invalid file mode %s", val);
-	    ip->st_mode = getmode(m, 0);
+	    ip->sb.st_mode = getmode(m, 0);
 	    free(m);
 	    /*@switchbreak@*/ break;
 	case MTREE_KEYS_NLINK:
-	    ip->st_nlink = strtoul(val, &ep, 10);
+	    ip->sb.st_nlink = strtoul(val, &ep, 10);
 	    if (*ep != '\0')
 		mtree_error("invalid link count %s", val);
 	    /*@switchbreak@*/ break;
@@ -1390,7 +1390,7 @@ set(char * t, NODE * ip)
 	    /*@switchbreak@*/ break;
 	case MTREE_KEYS_SIZE:
 /*@-unrecog@*/
-	    ip->st_size = strtouq(val, &ep, 10);
+	    ip->sb.st_size = strtouq(val, &ep, 10);
 /*@=unrecog@*/
 	    if (*ep != '\0')
 		mtree_error("invalid size %s", val);
@@ -1404,17 +1404,23 @@ set(char * t, NODE * ip)
 	    }
 	    /*@switchbreak@*/ break;
 	case MTREE_KEYS_TIME:
-/*@-type@*/
-	    ip->st_mtimespec.tv_sec = strtoul(val, &ep, 10);
-/*@=type@*/
+#if defined(TIMEVAL_TO_TIMESPEC)
+	    ip->sb.st_mtimespec.tv_sec = strtoul(val, &ep, 10);
 	    if (*ep != '.')
 		mtree_error("invalid time %s", val);
 	    val = ep + 1;
-/*@-type@*/
-	    ip->st_mtimespec.tv_nsec = strtoul(val, &ep, 10);
-/*@=type@*/
+	    ip->sb.st_mtimespec.tv_nsec = strtoul(val, &ep, 10);
 	    if (*ep != '\0')
 		mtree_error("invalid time %s", val);
+#else
+	    ip->sb.st_mtime = strtoul(val, &ep, 10);
+	    if (*ep != '.')
+		mtree_error("invalid time %s", val);
+	    val = ep + 1;
+	    (void) strtoul(val, &ep, 10);
+	    if (*ep != '\0')
+		mtree_error("invalid time %s", val);
+#endif
 	    /*@switchbreak@*/ break;
 	case MTREE_KEYS_TYPE:
 	    switch(*val) {
@@ -1449,14 +1455,14 @@ set(char * t, NODE * ip)
 	    }
 	    /*@switchbreak@*/ break;
 	case MTREE_KEYS_UID:
-	    ip->st_uid = strtoul(val, &ep, 10);
+	    ip->sb.st_uid = strtoul(val, &ep, 10);
 	    if (*ep != '\0')
 		mtree_error("invalid uid %s", val);
 	    /*@switchbreak@*/ break;
 	case MTREE_KEYS_UNAME:
 	    if ((pw = getpwnam(val)) == NULL)
 	 	mtree_error("unknown user %s", val);
-	    ip->st_uid = pw->pw_uid;
+	    ip->sb.st_uid = pw->pw_uid;
 	    /*@switchbreak@*/ break;
 	case MTREE_KEYS_NONE:
 	case MTREE_KEYS_DONE:
@@ -1902,12 +1908,12 @@ typeerr:    LABEL;
     }
 
     /* Set the uid/gid first, then set the mode. */
-    if ((KF_ISSET(keys, UID) || KF_ISSET(keys, UNAME)) && s->st_uid != st->st_uid) {
+    if ((KF_ISSET(keys, UID) || KF_ISSET(keys, UNAME)) && s->sb.st_uid != st->st_uid) {
 	LABEL;
 	(void) printf("%suser (%u, %u", tab,
-		(unsigned)s->st_uid, (unsigned)st->st_uid);
+		(unsigned)s->sb.st_uid, (unsigned)st->st_uid);
 	if (MF_ISSET(UPDATE)) {
-	    if (Chown(fts_accpath, s->st_uid, -1))
+	    if (Chown(fts_accpath, s->sb.st_uid, -1))
 		(void) printf(", not modified: %s)\n", strerror(errno));
 	    else
 		(void) printf(", modified)\n");
@@ -1915,12 +1921,12 @@ typeerr:    LABEL;
 	    (void) printf(")\n");
 	tab = "\t";
     }
-    if ((KF_ISSET(keys, GID) || KF_ISSET(keys, GNAME)) && s->st_gid != st->st_gid) {
+    if ((KF_ISSET(keys, GID) || KF_ISSET(keys, GNAME)) && s->sb.st_gid != st->st_gid) {
 	LABEL;
 	(void) printf("%sgid (%u, %u", tab,
-		(unsigned)s->st_gid, (unsigned)st->st_gid);
+		(unsigned)s->sb.st_gid, (unsigned)st->st_gid);
 	if (MF_ISSET(UPDATE)) {
-	    if (Chown(fts_accpath, -1, s->st_gid))
+	    if (Chown(fts_accpath, -1, s->sb.st_gid))
 		(void) printf(", not modified: %s)\n", strerror(errno));
 	    else
 		(void) printf(", modified)\n");
@@ -1928,9 +1934,9 @@ typeerr:    LABEL;
 	    (void) printf(")\n");
 	tab = "\t";
     }
-    if (KF_ISSET(keys, MODE) && s->st_mode != (st->st_mode & MBITS)) {
+    if (KF_ISSET(keys, MODE) && s->sb.st_mode != (st->st_mode & MBITS)) {
 	if (MF_ISSET(LOOSE)) {
-	    mode_t tmode = s->st_mode;
+	    mode_t tmode = s->sb.st_mode;
 	    mode_t mode = (st->st_mode & MBITS);
 
 	    /*
@@ -1945,9 +1951,9 @@ typeerr:    LABEL;
 	}
 	LABEL;
 	(void) printf("%spermissions (%#o, %#o", tab,
-		(unsigned)s->st_mode, (unsigned)(st->st_mode & MBITS));
+		(unsigned)s->sb.st_mode, (unsigned)(st->st_mode & MBITS));
 	if (MF_ISSET(UPDATE)) {
-	    if (Chmod(fts_accpath, s->st_mode))
+	    if (Chmod(fts_accpath, s->sb.st_mode))
 		(void) printf(", not modified: %s)\n", strerror(errno));
 	    else
 		(void) printf(", modified)\n");
@@ -1958,17 +1964,17 @@ typeerr:    LABEL;
 	    ;
     }
     if (KF_ISSET(keys, NLINK) && s->type != F_DIR &&
-        s->st_nlink != st->st_nlink)
+        s->sb.st_nlink != st->st_nlink)
     {
 	LABEL;
 	(void) printf("%slink count (%u, %u)\n", tab,
-		(unsigned)s->st_nlink, (unsigned)st->st_nlink);
+		(unsigned)s->sb.st_nlink, (unsigned)st->st_nlink);
 	tab = "\t";
     }
-    if (KF_ISSET(keys, SIZE) && s->st_size != st->st_size) {
+    if (KF_ISSET(keys, SIZE) && s->sb.st_size != st->st_size) {
 	LABEL;
 	(void) printf("%ssize (%lu, %lu)\n", tab,
-		(unsigned long)s->st_size, (unsigned long)st->st_size);
+		(unsigned long)s->sb.st_size, (unsigned long)st->st_size);
 	tab = "\t";
     }
     /*
@@ -1983,12 +1989,14 @@ typeerr:    LABEL;
 	struct timeval tv[2];
 
 /*@-noeffectuncon -unrecog@*/
-	TIMESPEC_TO_TIMEVAL(&tv[0], &s->st_mtimespec);
-#if defined(__linux__)
-	tv[1].tv_sec = (long)st->st_mtime;
-	tv[1].tv_usec = 0;
-#else
+#if defined(TIMESPEC_TO_TIMEVAL)
+	TIMESPEC_TO_TIMEVAL(&tv[0], &s->sb.st_mtimespec);
 	TIMESPEC_TO_TIMEVAL(&tv[1], &st->st_mtimespec);
+#else
+	tv[0].tv_sec = (long)s->sb.st_mtime;
+	tv[0].tv_usec = 0L;
+	tv[1].tv_sec = (long)st->st_mtime;
+	tv[1].tv_usec = 0L;
 #endif
 /*@=noeffectuncon =unrecog@*/
 	if (tv[0].tv_sec != tv[1].tv_sec || tv[0].tv_usec != tv[1].tv_usec) {
@@ -2441,15 +2449,16 @@ mtreeVisitF(rpmfts fts)
 	output(indent, &offset, "nlink=%u", st->st_nlink);
     if (KF_ISSET(keys, SIZE) && S_ISREG(st->st_mode))
 	output(indent, &offset, "size=%lu", (unsigned long)st->st_size);
-    if (KF_ISSET(keys, TIME))
-	output(indent, &offset, "time=%ld.%ld",
-#if defined(__linux__)
-	    st->st_mtime, 0L
+    if (KF_ISSET(keys, TIME)) {
+	struct timeval tv;
+#if defined(TIMESPEC_TO_TIMEVAL)
+	TIMESPEC_TO_TIMEVAL(&tv, &st->st_mtimespec);
 #else
-	    st->st_mtimespec.tv_sec,
-	    st->st_mtimespec.tv_nsec
+	tv.tv_sec = (long)st->st_mtime;
+	tv.tv_usec = 0L;
 #endif
-	    );
+	output(indent, &offset, "time=%lu.%lu", tv.tv_sec, tv.tv_usec);
+    }
     if (KF_ISSET(keys, CKSUM) && S_ISREG(st->st_mode)) {
 	FD_t fd = Fopen(fts_accpath, "r.ufdio");
 	if (fd == NULL || Ferror(fd) || crc(fd, &val, &len))
@@ -2751,12 +2760,12 @@ mtreeMiss(rpmfts fts, /*@null@*/ NODE * p, char * tail)
 
 	if (!create)
 	    continue;
-	if (Chown(fts->path, p->st_uid, p->st_gid)) {
+	if (Chown(fts->path, p->sb.st_uid, p->sb.st_gid)) {
 	    (void) printf("%s: user/group/mode not modified: %s\n",
 		    fts->path, strerror(errno));
 	    continue;
 	}
-	if (Chmod(fts->path, p->st_mode))
+	if (Chmod(fts->path, p->sb.st_mode))
 	    (void) printf("%s: permissions not set: %s\n",
 		    fts->path, strerror(errno));
     }
@@ -2921,7 +2930,7 @@ static struct poptOption optionsTable[] = {
   { NULL,'X', POPT_ARG_NONE,	NULL, (int)'X',
 	N_("Read fnmatch(3) exclude patterns from <file>"), N_("<file>") },
 
-  { "spec",'c', POPT_BIT_SET,		&mtreeFlags, MTREE_FLAGS_SPEC,
+  { "create",'c', POPT_BIT_SET,		&mtreeFlags, MTREE_FLAGS_CREATE,
 	N_("Print file tree specification to stdout"), NULL },
   { "dirs",'d', POPT_BIT_SET,		&mtreeFlags, MTREE_FLAGS_DIRSONLY,
 	N_("Directories only"), NULL },
@@ -3054,7 +3063,7 @@ main(int argc, char *argv[])
 	exit(EXIT_FAILURE);
     }
 
-    if (MF_ISSET(SPEC) || MF_ISSET(SEEDED)) {
+    if (MF_ISSET(CREATE) || MF_ISSET(SEEDED)) {
 	char fullpath[MAXPATHLEN];
 	if (!getcwd(fullpath, sizeof fullpath))
 	    mtree_error("getcwd: %s", strerror(errno));
@@ -3091,7 +3100,7 @@ main(int argc, char *argv[])
 
     (void) rpmswEnter(&dc_totalops, -1);
 
-    if (MF_ISSET(SPEC)) {
+    if (MF_ISSET(CREATE)) {
 	if (!MF_ISSET(NOCOMMENT)) {
 	    time_t clock;
 	    char host[MAXHOSTNAMELEN];
