@@ -323,8 +323,8 @@ static KEY keylist[] = {
     { "sha256digest",	MTREE_KEYS_DIGEST,	PGPHASHALGO_SHA256 },
     { "sha384digest",	MTREE_KEYS_DIGEST,	PGPHASHALGO_SHA384 },
     { "sha512digest",	MTREE_KEYS_DIGEST,	PGPHASHALGO_SHA512 },
-    { "tiger192digest",	MTREE_KEYS_DIGEST,	PGPHASHALGO_TIGER192 },
     { "size",		MTREE_KEYS_SIZE,	NEEDVALUE },
+    { "tiger192digest",	MTREE_KEYS_DIGEST,	PGPHASHALGO_TIGER192 },
     { "time",		MTREE_KEYS_TIME,	NEEDVALUE },
     { "type",		MTREE_KEYS_TYPE,	NEEDVALUE },
     { "uid",		MTREE_KEYS_UID,		NEEDVALUE },
@@ -1398,7 +1398,7 @@ set(char * t, NODE * ip)
 		mtree_error("invalid link count %s", val);
 	    /*@switchbreak@*/ break;
 	case MTREE_KEYS_DIGEST:
-	    (void) argiAdd(&ip->algos, -1, needvalue);
+	    (void) argiAdd(&ip->algos, -1, (int)needvalue);
 	    (void) argvAdd(&ip->digests, val);
 	    /*@switchbreak@*/ break;
 	case MTREE_KEYS_SIZE:
@@ -2045,14 +2045,12 @@ mtreeVisitD(rpmfts fts)
     unsigned long f[MAXFLAGS];
     static int first = 1;
 
-/*@-unrecog@*/
     if ((p = Fts_children(fts->t, 0)) == NULL) {
 	if (errno)
 	    mtree_error("%s: %s", SKIPDOTSLASH(parent->fts_path),
 			strerror(errno));
 	return 1;
     }
-/*@=unrecog@*/
 
     memset(g, 0, sizeof(g));
     memset(u, 0, sizeof(u));
@@ -2343,16 +2341,12 @@ assert(digest != NULL);
 		    tagname = "rmd128digest";	/*@switchbreak@*/ break;
 		case PGPHASHALGO_CRC32:
 		    tagname = "crc32";		/*@switchbreak@*/ break;
-		    /*@switchbreak@*/ break;
 		case PGPHASHALGO_ADLER32:
 		    tagname = "adler32";	/*@switchbreak@*/ break;
-		    /*@switchbreak@*/ break;
 		case PGPHASHALGO_CRC64:
 		    tagname = "crc64";		/*@switchbreak@*/ break;
-		    /*@switchbreak@*/ break;
 		case PGPHASHALGO_JLU32:
 		    tagname = "jlu32";		/*@switchbreak@*/ break;
-		    /*@switchbreak@*/ break;
 		case PGPHASHALGO_SHA224:
 		    tagname = "sha224digest";	/*@switchbreak@*/ break;
 		case PGPHASHALGO_RIPEMD256:
@@ -2361,13 +2355,10 @@ assert(digest != NULL);
 		    tagname = "rmd320digest";	/*@switchbreak@*/ break;
 		case PGPHASHALGO_SALSA10:
 		    tagname = "salsa10";	/*@switchbreak@*/ break;
-		    /*@switchbreak@*/ break;
 		case PGPHASHALGO_SALSA20:
 		    tagname = "salsa20";	/*@switchbreak@*/ break;
-		    /*@switchbreak@*/ break;
 		default:
-		    tagname = 0;
-		    /*@switchbreak@*/ break;
+		    tagname = NULL;
 		}
 		if (tagname != NULL)
 		    output(indent, &offset, "%s=%s", tagname, digest);
@@ -2726,7 +2717,7 @@ static void mtreeArgCallback(poptContext con,
 	    _rpmfts->keys |= type;
 	    /* XXX dupes can occur */
 	    if (KF_ISSET(_rpmfts->keys, DIGEST) && needvalue)
-		(void) argiAdd(&_rpmfts->algos, -1, needvalue);
+		(void) argiAdd(&_rpmfts->algos, -1, (int)needvalue);
 	}
 /*@=unrecog@*/
 	break;
