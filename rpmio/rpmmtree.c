@@ -107,12 +107,8 @@ enum mtreeKeys_e {
     MTREE_KEYS_FLAGS		= _KFB(15),	/*!< file flags */
     MTREE_KEYS_NOCHANGE		= _KFB(16),	/*!< do not change owner/mode */
     MTREE_KEYS_OPT		= _KFB(17),	/*!< existence optional */
-	/* 18-23 unused */
-    MTREE_KEYS_MD5		= _KFB(24),	/*!< MD5 digest */
-    MTREE_KEYS_RMD160		= _KFB(25),	/*!< RIPEMD-160 digest */
-    MTREE_KEYS_SHA1		= _KFB(26),	/*!< SHA-1 digest */
-    MTREE_KEYS_SHA256		= _KFB(27),	/*!< SHA-256 digest */
-	/* 28-31 unused */
+    MTREE_KEYS_DIGEST		= _KFB(18),	/*!< digest */
+	/* 19-31 unused */
 };
 
 typedef struct _node {
@@ -153,6 +149,9 @@ struct rpmfts_s {
 /*@null@*/
     ARGV_t paths;
     unsigned keys;
+/*@null@*/
+    ARGI_t algos;
+
 /*@null@*/
     const char * fullpath;
 /*@null@*/
@@ -288,32 +287,48 @@ typedef struct _key {
 /*@observer@*/
 	const char *name;		/* key name */
 	unsigned val;			/* value */
-#define	NEEDVALUE	0x01
-	unsigned flags;
+#define	NEEDVALUE	0xffffffff
+	uint32_t flags;
 } KEY;
 
 /* NB: the following table must be sorted lexically. */
 /*@unchecked@*/ /*@observer@*/
 static KEY keylist[] = {
-	{"cksum",	MTREE_KEYS_CKSUM,	NEEDVALUE},
-	{"flags",	MTREE_KEYS_FLAGS,	NEEDVALUE},
-	{"gid",		MTREE_KEYS_GID,		NEEDVALUE},
-	{"gname",	MTREE_KEYS_GNAME,	NEEDVALUE},
-	{"ignore",	MTREE_KEYS_IGN,		0},
-	{"link",	MTREE_KEYS_SLINK,	NEEDVALUE},
-	{"md5digest",	MTREE_KEYS_MD5,		NEEDVALUE},
-	{"mode",	MTREE_KEYS_MODE,	NEEDVALUE},
-	{"nlink",	MTREE_KEYS_NLINK,	NEEDVALUE},
-	{"nochange",	MTREE_KEYS_NOCHANGE,	0},
-	{"optional",	MTREE_KEYS_OPT,		0},
-	{"rmd160digest",MTREE_KEYS_RMD160,	NEEDVALUE},
-	{"sha1digest",	MTREE_KEYS_SHA1,	NEEDVALUE},
-	{"sha256digest",MTREE_KEYS_SHA256,	NEEDVALUE},
-	{"size",	MTREE_KEYS_SIZE,	NEEDVALUE},
-	{"time",	MTREE_KEYS_TIME,	NEEDVALUE},
-	{"type",	MTREE_KEYS_TYPE,	NEEDVALUE},
-	{"uid",		MTREE_KEYS_UID,		NEEDVALUE},
-	{"uname",	MTREE_KEYS_UNAME,	NEEDVALUE},
+    { "adler32",	MTREE_KEYS_DIGEST,	PGPHASHALGO_ADLER32 },
+    { "cksum",		MTREE_KEYS_CKSUM,	NEEDVALUE },
+    { "crc32",		MTREE_KEYS_DIGEST,	PGPHASHALGO_CRC32 },
+    { "crc64",		MTREE_KEYS_DIGEST,	PGPHASHALGO_CRC64 },
+    { "flags",		MTREE_KEYS_FLAGS,	NEEDVALUE },
+    { "gid",		MTREE_KEYS_GID,		NEEDVALUE },
+    { "gname",		MTREE_KEYS_GNAME,	NEEDVALUE },
+    { "haval160digest",	MTREE_KEYS_DIGEST,	PGPHASHALGO_HAVAL_5_160 },
+    { "ignore",		MTREE_KEYS_IGN,		0 },
+    { "jlu32",		MTREE_KEYS_DIGEST,	PGPHASHALGO_JLU32 },
+    { "link",		MTREE_KEYS_SLINK,	NEEDVALUE },
+    { "md2digest",	MTREE_KEYS_DIGEST,	PGPHASHALGO_MD2 },
+    { "md4digest",	MTREE_KEYS_DIGEST,	PGPHASHALGO_MD4 },
+    { "md5digest",	MTREE_KEYS_DIGEST,	PGPHASHALGO_MD5 },
+    { "mode",		MTREE_KEYS_MODE,	NEEDVALUE },
+    { "nlink",		MTREE_KEYS_NLINK,	NEEDVALUE },
+    { "nochange",	MTREE_KEYS_NOCHANGE,	0 },
+    { "optional",	MTREE_KEYS_OPT,		0 },
+    { "rmd128digest",	MTREE_KEYS_DIGEST,	PGPHASHALGO_RIPEMD128 },
+    { "rmd160digest",	MTREE_KEYS_DIGEST,	PGPHASHALGO_RIPEMD160 },
+    { "rmd256digest",	MTREE_KEYS_DIGEST,	PGPHASHALGO_RIPEMD256 },
+    { "rmd320digest",	MTREE_KEYS_DIGEST,	PGPHASHALGO_RIPEMD320 },
+    { "salsa10",	MTREE_KEYS_DIGEST,	PGPHASHALGO_SALSA10 },
+    { "salsa20",	MTREE_KEYS_DIGEST,	PGPHASHALGO_SALSA20 },
+    { "sha1digest",	MTREE_KEYS_DIGEST,	PGPHASHALGO_SHA1 },
+    { "sha224digest",	MTREE_KEYS_DIGEST,	PGPHASHALGO_SHA224 },
+    { "sha256digest",	MTREE_KEYS_DIGEST,	PGPHASHALGO_SHA256 },
+    { "sha384digest",	MTREE_KEYS_DIGEST,	PGPHASHALGO_SHA384 },
+    { "sha512digest",	MTREE_KEYS_DIGEST,	PGPHASHALGO_SHA512 },
+    { "tiger192digest",	MTREE_KEYS_DIGEST,	PGPHASHALGO_TIGER192 },
+    { "size",		MTREE_KEYS_SIZE,	NEEDVALUE },
+    { "time",		MTREE_KEYS_TIME,	NEEDVALUE },
+    { "type",		MTREE_KEYS_TYPE,	NEEDVALUE },
+    { "uid",		MTREE_KEYS_UID,		NEEDVALUE },
+    { "uname",		MTREE_KEYS_UNAME,	NEEDVALUE },
 };
 
 static int
@@ -324,7 +339,7 @@ keycompare(const void * a, const void * b)
 }
 
 static unsigned
-parsekey(char *name, /*@out@*/ int *needvaluep)
+parsekey(char *name, /*@out@*/ uint32_t *needvaluep)
 	/*@globals fileSystem @*/
 	/*@modifies *needvaluep, fileSystem @*/
 
@@ -342,7 +357,7 @@ parsekey(char *name, /*@out@*/ int *needvaluep)
 	mtree_error("unknown keyword %s", name);
 
     if (needvaluep != NULL)
-	*needvaluep = k->flags & NEEDVALUE ? 1 : 0;
+	*needvaluep = k->flags;
     return k->val;
 }
 
@@ -1328,7 +1343,7 @@ set(char * t, NODE * ip)
     char *kw;
 
     for (; (kw = strtok(t, "= \t\n")) != NULL; t = NULL) {
-	int needvalue;
+	uint32_t needvalue;
 	enum mtreeKeys_e type = parsekey(kw, &needvalue);
 	char *val = NULL;
 	char *ep;
@@ -1341,10 +1356,6 @@ set(char * t, NODE * ip)
 	    ip->cksum = strtoul(val, &ep, 10);
 	    if (*ep != '\0')
 		mtree_error("invalid checksum %s", val);
-	    /*@switchbreak@*/ break;
-	case MTREE_KEYS_MD5:
-	    (void) argiAdd(&ip->algos, -1, PGPHASHALGO_MD5);
-	    (void) argvAdd(&ip->digests, val);
 	    /*@switchbreak@*/ break;
 	case MTREE_KEYS_FLAGS:
 #if defined(__linux__)
@@ -1386,16 +1397,8 @@ set(char * t, NODE * ip)
 	    if (*ep != '\0')
 		mtree_error("invalid link count %s", val);
 	    /*@switchbreak@*/ break;
-	case MTREE_KEYS_RMD160:
-	    (void) argiAdd(&ip->algos, -1, PGPHASHALGO_RIPEMD160);
-	    (void) argvAdd(&ip->digests, val);
-	    /*@switchbreak@*/ break;
-	case MTREE_KEYS_SHA1:
-	    (void) argiAdd(&ip->algos, -1, PGPHASHALGO_SHA1);
-	    (void) argvAdd(&ip->digests, val);
-	    /*@switchbreak@*/ break;
-	case MTREE_KEYS_SHA256:
-	    (void) argiAdd(&ip->algos, -1, PGPHASHALGO_SHA256);
+	case MTREE_KEYS_DIGEST:
+	    (void) argiAdd(&ip->algos, -1, needvalue);
 	    (void) argvAdd(&ip->digests, val);
 	    /*@switchbreak@*/ break;
 	case MTREE_KEYS_SIZE:
@@ -2251,20 +2254,9 @@ mtreeVisitF(rpmfts fts)
 
     /* Only files can have digests. */
     if (S_ISREG(st->st_mode)) {
-	ARGI_t algos = NULL;
-
-	/* Mark all digests that need calculating. */
-	if (KF_ISSET(keys, MD5))
-	    (void) argiAdd(&algos, -1, PGPHASHALGO_MD5);
-	if (KF_ISSET(keys, RMD160))
-	    (void) argiAdd(&algos, -1, PGPHASHALGO_RIPEMD160);
-	if (KF_ISSET(keys, SHA1))
-	    (void) argiAdd(&algos, -1, PGPHASHALGO_SHA1);
-	if (KF_ISSET(keys, SHA256))
-	    (void) argiAdd(&algos, -1, PGPHASHALGO_SHA256);
 
 	/* Any digests to calculate? */
-	if (KF_ISSET(keys, CKSUM) || algos != NULL) {
+	if (KF_ISSET(keys, CKSUM) || fts->algos != NULL) {
 	    FD_t fd = Fopen(fts_accpath, "r.ufdio");
 	    uint32_t len, val;
 	    int i;
@@ -2280,9 +2272,9 @@ mtreeVisitF(rpmfts fts)
 	    }
 
 	    /* Setup all digest calculations.  Reversed order is effete ... */
-	    if (algos != NULL)
-	    for (i = algos->nvals; i-- > 0;)
-		fdInitDigest(fd, algos->vals[i], 0);
+	    if (fts->algos != NULL)
+	    for (i = fts->algos->nvals; i-- > 0;)
+		fdInitDigest(fd, fts->algos->vals[i], 0);
 
 	    /* Compute the cksum and digests. */
 	    if (KF_ISSET(keys, CKSUM))
@@ -2309,14 +2301,15 @@ mtreeVisitF(rpmfts fts)
 	    }
 
 	    /* Output all the digests. */
-	    if (algos != NULL)
-	    for (i = 0; i < (int) algos->nvals; i++) {
+	    if (fts->algos != NULL)
+	    for (i = 0; i < (int) fts->algos->nvals; i++) {
 		static int asAscii = 1;
-		uint32_t algo = algos->vals[i];
 		const char * digest = NULL;
 		size_t digestlen = 0;
+		uint32_t algo;
 		const char * tagname;
 
+		algo = fts->algos->vals[i];
 		fdFiniDigest(fd, algo, &digest, &digestlen, asAscii);
 #ifdef	NOTYET	/* XXX can't exit in a library API. */
 assert(digest != NULL);
@@ -2327,50 +2320,57 @@ assert(digest != NULL);
 		tagname = NULL;
 		switch (algo) {
 		case PGPHASHALGO_MD5:
-		    tagname = "md5";	/*@switchbreak@*/ break;
+		    tagname = "md5digest";	/*@switchbreak@*/ break;
 		case PGPHASHALGO_SHA1:
-		    tagname = "sha1";	/*@switchbreak@*/ break;
+		    tagname = "sha1digest";	/*@switchbreak@*/ break;
 		case PGPHASHALGO_RIPEMD160:
-		    tagname = "rmd160";	/*@switchbreak@*/ break;
+		    tagname = "rmd160digest";	/*@switchbreak@*/ break;
 		case PGPHASHALGO_MD2:
-		    tagname = "md2";	/*@switchbreak@*/ break;
+		    tagname = "md2digest";	/*@switchbreak@*/ break;
 		case PGPHASHALGO_TIGER192:
-		    tagname = "tiger192";	/*@switchbreak@*/ break;
+		    tagname = "tiger192digest";	/*@switchbreak@*/ break;
 		case PGPHASHALGO_HAVAL_5_160:
-		    tagname = "haval";	/*@switchbreak@*/ break;
+		    tagname = "haval160digest";	/*@switchbreak@*/ break;
 		case PGPHASHALGO_SHA256:
-		    tagname = "sha256";	/*@switchbreak@*/ break;
+		    tagname = "sha256digest";	/*@switchbreak@*/ break;
 		case PGPHASHALGO_SHA384:
-		    tagname = "sha384";	/*@switchbreak@*/ break;
+		    tagname = "sha384digest";	/*@switchbreak@*/ break;
 		case PGPHASHALGO_SHA512:
-		    tagname = "sha512";	/*@switchbreak@*/ break;
+		    tagname = "sha512digest";	/*@switchbreak@*/ break;
 		case PGPHASHALGO_MD4:
-		    tagname = "md4";	/*@switchbreak@*/ break;
+		    tagname = "md4digest";	/*@switchbreak@*/ break;
 		case PGPHASHALGO_RIPEMD128:
-		    tagname = "rmd128";	/*@switchbreak@*/ break;
+		    tagname = "rmd128digest";	/*@switchbreak@*/ break;
 		case PGPHASHALGO_CRC32:
+		    tagname = "crc32";		/*@switchbreak@*/ break;
 		    /*@switchbreak@*/ break;
 		case PGPHASHALGO_ADLER32:
+		    tagname = "adler32";	/*@switchbreak@*/ break;
 		    /*@switchbreak@*/ break;
 		case PGPHASHALGO_CRC64:
+		    tagname = "crc64";		/*@switchbreak@*/ break;
 		    /*@switchbreak@*/ break;
 		case PGPHASHALGO_JLU32:
+		    tagname = "jlu32";		/*@switchbreak@*/ break;
 		    /*@switchbreak@*/ break;
 		case PGPHASHALGO_SHA224:
-		    tagname = "sha224";	/*@switchbreak@*/ break;
+		    tagname = "sha224digest";	/*@switchbreak@*/ break;
 		case PGPHASHALGO_RIPEMD256:
-		    tagname = "rmd256";	/*@switchbreak@*/ break;
+		    tagname = "rmd256digest";	/*@switchbreak@*/ break;
 		case PGPHASHALGO_RIPEMD320:
-		    tagname = "rmd320";	/*@switchbreak@*/ break;
+		    tagname = "rmd320digest";	/*@switchbreak@*/ break;
 		case PGPHASHALGO_SALSA10:
+		    tagname = "salsa10";	/*@switchbreak@*/ break;
 		    /*@switchbreak@*/ break;
 		case PGPHASHALGO_SALSA20:
+		    tagname = "salsa20";	/*@switchbreak@*/ break;
 		    /*@switchbreak@*/ break;
 		default:
+		    tagname = 0;
 		    /*@switchbreak@*/ break;
 		}
 		if (tagname != NULL)
-		    output(indent, &offset, "%sdigest=%s", tagname, digest);
+		    output(indent, &offset, "%s=%s", tagname, digest);
 		digest = _free(digest);
 		digestlen = 0;
 	    }
@@ -2716,8 +2716,18 @@ static void mtreeArgCallback(poptContext con,
 	/*@fallthrough@*/
     case 'K':
 /*@-unrecog@*/
-	while ((p = strsep((char **)&arg, " \t,")) != NULL)
-	    _rpmfts->keys |= parsekey(p, NULL);
+	while ((p = strsep((char **)&arg, " \t,")) != NULL) {
+	    uint32_t needvalue;
+	    enum mtreeKeys_e type = parsekey(p, &needvalue);
+	    if (type == 0) {
+		/* XXX unknown key error. */
+		continue;
+	    }
+	    _rpmfts->keys |= type;
+	    /* XXX dupes can occur */
+	    if (KF_ISSET(_rpmfts->keys, DIGEST) && needvalue)
+		(void) argiAdd(&_rpmfts->algos, -1, needvalue);
+	}
 /*@=unrecog@*/
 	break;
 #if !defined(POPT_ARG_ARGV)
@@ -2874,7 +2884,7 @@ main(int argc, char *argv[])
 {
     rpmfts fts = _rpmfts;
     poptContext optCon;
-    int rc;
+    int rc = 1;		/* assume failure */
 
     LIST_INIT(&excludes);
     fts->keys = KEYDEFAULT;
@@ -2887,14 +2897,7 @@ main(int argc, char *argv[])
     argv = (char **) poptGetArgs(optCon);
     if (!(argv == NULL || argv[0] == NULL)) {
 	poptPrintUsage(optCon, stderr, 0);
-	exit(EXIT_FAILURE);
-    }
-
-    if (MF_ISSET(CREATE) || MF_ISSET(SEEDED)) {
-	char fullpath[MAXPATHLEN];
-	if (!getcwd(fullpath, sizeof fullpath))
-	    mtree_error("getcwd: %s", strerror(errno));
-	fts->fullpath = xstrdup(fullpath);
+	goto exit;
     }
 
     if (MF_ISSET(LOOSE) && MF_ISSET(UPDATE))
@@ -2914,10 +2917,17 @@ main(int argc, char *argv[])
 	break;
     }
 
-    if (fts->paths == NULL) {
+    if (fts->paths == NULL || fts->paths[0] == NULL) {
+	char fullpath[MAXPATHLEN];
+	if (!getcwd(fullpath, sizeof fullpath))
+	    mtree_error("getcwd: %s", strerror(errno));
+	fts->fullpath = xstrdup(fullpath);
 	fts->paths = xmalloc(2 * sizeof(fts->paths[0]));
 	fts->paths[0] = xstrdup(".");
 	fts->paths[1] = NULL;
+    } else {
+	/* XXX incorrect for multi-root'd trees. */
+	fts->fullpath = xstrdup(fts->paths[0]);
     }
 
     /* XXX prohibits -s 0 invocation */
@@ -2967,6 +2977,7 @@ main(int argc, char *argv[])
         rpmswPrint("digest:", &dc_digestops);
     }
 
+exit:
     fts->paths = argvFree(fts->paths);
     fts->fullpath = _free(fts->fullpath);
     /* XXX TODO: clean excludes */
