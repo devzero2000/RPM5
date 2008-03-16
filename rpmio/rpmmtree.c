@@ -1378,7 +1378,7 @@ set(char * t, NODE * ip)
 	    /*@switchbreak@*/ break;
 	case MTREE_KEYS_GNAME:
 	{   struct group *gr = getgrnam(val);
-	    if (gr == NULL)
+	    if (gr == NULL || gr->gr_name == NULL || gr->gr_name[0] == '\0')
 	 	mtree_error("unknown group %s", val);
 	    ip->sb.st_gid = gr->gr_gid;
 	}   /*@switchbreak@*/ break;
@@ -1474,7 +1474,7 @@ set(char * t, NODE * ip)
 	    /*@switchbreak@*/ break;
 	case MTREE_KEYS_UNAME:
 	{   struct passwd *pw = getpwnam(val);
-	    if (pw == NULL)
+	    if (pw == NULL || pw->pw_name == NULL || pw->pw_name[0] == '\0')
 	 	mtree_error("unknown user %s", val);
 	    ip->sb.st_uid = pw->pw_uid;
 	}   /*@switchbreak@*/ break;
@@ -1544,7 +1544,7 @@ mtreeSpec(rpmfts fts)
 	    continue;
 
 #ifdef DEBUG
-	(void)fprintf(stderr, "line %d: {%s}\n", fts->lineno, p);
+	(void)fprintf(stderr, "line %3d: {%s}\n", fts->lineno, p);
 #endif
 	if (c_cur) {
 	    set(p, centry);
@@ -1859,7 +1859,7 @@ typeerr:    LABEL;
     if (KF_ISSET(keys, TIME)) {
 	struct timeval tv[2];
 
-/*@-noeffectuncon -unrecog@*/
+/*@-noeffectuncon -unrecog @*/
 #if defined(TIMESPEC_TO_TIMEVAL)
 	TIMESPEC_TO_TIMEVAL(&tv[0], &s->sb.st_mtimespec);
 	TIMESPEC_TO_TIMEVAL(&tv[1], &st->st_mtimespec);
@@ -1869,7 +1869,7 @@ typeerr:    LABEL;
 	tv[1].tv_sec = (long)st->st_mtime;
 	tv[1].tv_usec = 0L;
 #endif
-/*@=noeffectuncon =unrecog@*/
+/*@=noeffectuncon =unrecog @*/
 	if (tv[0].tv_sec != tv[1].tv_sec || tv[0].tv_usec != tv[1].tv_usec) {
 	    LABEL;
 	    (void) printf("%smodification time (%.24s, ", tab,
@@ -2112,8 +2112,8 @@ mtreeVisitD(rpmfts fts)
 	else
 	    (void) printf("/set type=file");
 	if (KF_ISSET(keys, UNAME)) {
-	    struct passwd *pw;
-	    if ((pw = getpwuid(saveuid)) != NULL)
+	    struct passwd *pw = getpwuid(saveuid);
+	    if (pw != NULL && pw->pw_name != NULL && pw->pw_name[0] != '\0')
 		(void) printf(" uname=%s", pw->pw_name);
 	    else if (MF_ISSET(WARN))
 		fprintf(stderr, _("%s: Could not get uname for uid=%u\n"),
@@ -2124,8 +2124,8 @@ mtreeVisitD(rpmfts fts)
 	if (KF_ISSET(keys, UID))
 	    (void) printf(" uid=%u", (unsigned)saveuid);
 	if (KF_ISSET(keys, GNAME)) {
-	    struct group *gr;
-	    if ((gr = getgrgid(savegid)) != NULL)
+	    struct group *gr = getgrgid(savegid);
+	    if (gr != NULL && gr->gr_name != NULL && gr->gr_name[0] != '\0')
 		(void) printf(" gname=%s", gr->gr_name);
 	    else if (MF_ISSET(WARN))
 		fprintf(stderr, _("%s: Could not get gname for gid=%u\n"),
@@ -2188,14 +2188,36 @@ mtreeVisitF(rpmfts fts)
     int indent = (MF_ISSET(INDENT) ? fts->p->fts_level * 4 : 0);
     int offset;
 
-    {	char * escname = xmalloc(fts->p->fts_namelen * 4  +  1);
-	(void) strvis(escname, fts->p->fts_name, VIS_WHITE | VIS_OCTAL);
+    {	size_t nb = fts->p->fts_namelen;
+	char * fts_name = fts->p->fts_name;
+	char * escname;
+
+	/* XXX fts(3) (and Fts(3)) have fts_name = "" with pesky trailing '/' */
+	if (nb == 0) {
+	    const char * t = fts->p->fts_path;
+	    const char * te = t + strlen(t);
+
+	    while (te > t && te[-1] == '/')
+		te--;
+	    t = te;
+	    while (t > fts->p->fts_path && t[-1] != '/')
+		t--;
+	    nb = (te - t);
+	    fts_name = strncpy(xmalloc(nb + 1), t, nb);
+	    fts_name[nb] = '\0';
+	}
+	escname = xmalloc(nb * 4  +  1);
+	(void) strvis(escname, fts_name, VIS_WHITE | VIS_OCTAL);
 
 	if (MF_ISSET(INDENT) || S_ISDIR(st->st_mode))
 	    offset = printf("%*s%s", indent, "", escname);
 	else
 	    offset = printf("%*s    %s", indent, "", escname);
 	escname = _free(escname);
+/*@-mods@*/	/* XXX splint is confused by fts_name. */
+	if (fts_name != fts->p->fts_name)
+	    fts_name = _free(fts_name);
+/*@=mods@*/
     }
 
     if (offset > (CWALKINDENTNAMELEN + indent))
@@ -2207,8 +2229,8 @@ mtreeVisitF(rpmfts fts)
 	output(indent, &offset, "type=%s", inotype(st->st_mode));
     if (st->st_uid != fts->uid) {
 	if (KF_ISSET(keys, UNAME)) {
-	    struct passwd *pw;
-	    if ((pw = getpwuid(st->st_uid)) != NULL)
+	    struct passwd *pw = getpwuid(st->st_uid);
+	    if (pw != NULL && pw->pw_name != NULL && pw->pw_name[0] != '\0')
 		output(indent, &offset, "uname=%s", pw->pw_name);
 	    else if (MF_ISSET(WARN))
 		fprintf(stderr, _("%s: Could not get uname for uid=%u\n"),
@@ -2221,8 +2243,8 @@ mtreeVisitF(rpmfts fts)
     }
     if (st->st_gid != fts->gid) {
 	if (KF_ISSET(keys, GNAME)) {
-	    struct group *gr;
-	    if ((gr = getgrgid(st->st_gid)) != NULL)
+	    struct group *gr = getgrgid(st->st_gid);
+	    if (gr != NULL && gr->gr_name != NULL && gr->gr_name[0] != '\0')
 		output(indent, &offset, "gname=%s", gr->gr_name);
 	    else if (MF_ISSET(WARN))
 		fprintf(stderr, _("%s: Could not get gname for gid=%u\n"),
@@ -2402,6 +2424,10 @@ cleanup:
 #endif
     }
     (void) putchar('\n');
+/*@-usereleased@*/	/* XXX splint is confused by fts_name. */
+    return;
+/*@-usereleased@*/
+
 }
 
 /*
@@ -2846,7 +2872,7 @@ static const char *my_getlogin(void)
 	struct passwd *pw = getpwuid(geteuid());
 	char *ss = NULL;
 /*@-unrecog@*/
-	if (pw != NULL && pw->pw_name != NULL) {
+	if (pw != NULL && pw->pw_name != NULL && pw->pw_name[0] != '\0') {
 	    if (asprintf(&ss, _("(no controlling terminal) %s"), pw->pw_name) < 0) {
 		perror("asprintf");
 		return NULL;
