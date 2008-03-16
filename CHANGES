@@ -1,4 +1,5 @@
 5.0.0 -> 5.1a1:
+    - rse: fix macro option/argument parsing (again), this time by using POPT_CONTEXT_POSIXMEHARDER
     - afb: fix endianness detection when compiling Mac OS X Universal Binaries.
     - jbj: install rpmmtree in bindir, its at least as functional as mtree(8).
     - jbj: add rpmmtree (from mtree(8) in OpenBSD).

@@ -1077,7 +1077,7 @@ grabArgs(MacroBuf mb, const MacroEntry me, /*@returned@*/ const char * se,
 
     /* Parse the options, defining option macros. */
 /*@-nullstate@*/
-    optCon = poptGetContext(argv[0], argc, argv, optTbl, POPT_CONTEXT_NO_EXEC);
+    optCon = poptGetContext(argv[0], argc, argv, optTbl, POPT_CONTEXT_NO_EXEC|POPT_CONTEXT_POSIXMEHARDER);
 /*@=nullstate@*/
     while ((c = poptGetNextOpt(optCon)) > 0) {
 	const char * optArg = poptGetOptArg(optCon);
