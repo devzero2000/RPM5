@@ -120,15 +120,8 @@ typedef struct _node {
     struct _node	*prev, *next;		/*!< left, right */
     struct stat		sb;			/*!< parsed stat(2) info */
     char		*slink;			/*!< symbolic link reference */
-#ifdef	NOTYET
     ARGI_t		algos;			/*!< digest algorithms */
     ARGV_t		digests;		/*!< digest strings */
-#else
-    char		*md5digest;		/*!< MD5 digest */
-    char		*sha1digest;		/*!< SHA-1 digest */
-    char		*sha256digest;		/*!< SHA-256 digest */
-    char		*rmd160digest;		/*!< RIPEMD-160 digest */
-#endif
 
     uint32_t		cksum;			/*!< check sum */
 
@@ -231,6 +224,15 @@ struct exclude {
 /*@unchecked@*/
 static LIST_HEAD(, exclude) excludes;
 
+/*@unchecked@*/
+static struct rpmop_s dc_totalops;
+
+/*@unchecked@*/
+static struct rpmop_s dc_readops;
+
+/*@unchecked@*/
+static struct rpmop_s dc_digestops;
+
 /*==============================================================*/
 
 #if !defined(POPT_ARG_ARGV)
@@ -329,6 +331,10 @@ parsekey(char *name, /*@out@*/ int *needvaluep)
 {
     KEY *k, tmp;
 
+    if (needvaluep != NULL)
+	*needvaluep = 0;
+    if (*name == '\0')
+	return 0;
     tmp.name = name;
     k = (KEY *)bsearch(&tmp, keylist, sizeof(keylist) / sizeof(keylist[0]),
 	    sizeof(keylist[0]), keycompare);
@@ -340,12 +346,12 @@ parsekey(char *name, /*@out@*/ int *needvaluep)
     return k->val;
 }
 
-#ifdef	NOTYET
 static const char *
 flags_to_string(u_long fflags)
 	/*@*/
 {
 #if defined(__linux__)
+    fflags = fflags;
     return xstrdup("none");
 #else
     char * string = fflagstostr(fflags);
@@ -356,7 +362,6 @@ flags_to_string(u_long fflags)
     return string;
 #endif
 }
-#endif
 
 /*==============================================================*/
 
@@ -1320,18 +1325,17 @@ set(char * t, NODE * ip)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies t, ip, fileSystem, internalState @*/
 {
-    enum mtreeKeys_e type;
-    char *kw, *val = NULL;
-    struct group *gr;
-    struct passwd *pw;
-    mode_t *m;
-    int value;
-    char *ep;
+    char *kw;
 
     for (; (kw = strtok(t, "= \t\n")) != NULL; t = NULL) {
-	ip->flags |= type = parsekey(kw, &value);
-	if (value && (val = strtok(NULL, " \t\n")) == NULL)
+	int needvalue;
+	enum mtreeKeys_e type = parsekey(kw, &needvalue);
+	char *val = NULL;
+	char *ep;
+
+	if (needvalue && (val = strtok(NULL, " \t\n")) == NULL)
 		mtree_error("missing value");
+	ip->flags |= type;
 	switch(type) {
 	case MTREE_KEYS_CKSUM:
 	    ip->cksum = strtoul(val, &ep, 10);
@@ -1339,7 +1343,8 @@ set(char * t, NODE * ip)
 		mtree_error("invalid checksum %s", val);
 	    /*@switchbreak@*/ break;
 	case MTREE_KEYS_MD5:
-	    ip->md5digest = xstrdup(val);
+	    (void) argiAdd(&ip->algos, -1, PGPHASHALGO_MD5);
+	    (void) argvAdd(&ip->digests, val);
 	    /*@switchbreak@*/ break;
 	case MTREE_KEYS_FLAGS:
 #if defined(__linux__)
@@ -1361,32 +1366,37 @@ set(char * t, NODE * ip)
 		mtree_error("invalid gid %s", val);
 	    /*@switchbreak@*/ break;
 	case MTREE_KEYS_GNAME:
-	    if ((gr = getgrnam(val)) == NULL)
+	{   struct group *gr = getgrnam(val);
+	    if (gr == NULL)
 	 	mtree_error("unknown group %s", val);
 	    ip->sb.st_gid = gr->gr_gid;
-	    /*@switchbreak@*/ break;
+	}   /*@switchbreak@*/ break;
 	case MTREE_KEYS_IGN:
 	    /* just set flag bit */
 	    /*@switchbreak@*/ break;
 	case MTREE_KEYS_MODE:
+	{   mode_t *m;
 	    if ((m = setmode(val)) == NULL)
 		mtree_error("invalid file mode %s", val);
 	    ip->sb.st_mode = getmode(m, 0);
 	    free(m);
-	    /*@switchbreak@*/ break;
+	}   /*@switchbreak@*/ break;
 	case MTREE_KEYS_NLINK:
 	    ip->sb.st_nlink = strtoul(val, &ep, 10);
 	    if (*ep != '\0')
 		mtree_error("invalid link count %s", val);
 	    /*@switchbreak@*/ break;
 	case MTREE_KEYS_RMD160:
-	    ip->rmd160digest = xstrdup(val);
+	    (void) argiAdd(&ip->algos, -1, PGPHASHALGO_RIPEMD160);
+	    (void) argvAdd(&ip->digests, val);
 	    /*@switchbreak@*/ break;
 	case MTREE_KEYS_SHA1:
-	    ip->sha1digest = xstrdup(val);
+	    (void) argiAdd(&ip->algos, -1, PGPHASHALGO_SHA1);
+	    (void) argvAdd(&ip->digests, val);
 	    /*@switchbreak@*/ break;
 	case MTREE_KEYS_SHA256:
-	    ip->sha256digest = xstrdup(val);
+	    (void) argiAdd(&ip->algos, -1, PGPHASHALGO_SHA256);
+	    (void) argvAdd(&ip->digests, val);
 	    /*@switchbreak@*/ break;
 	case MTREE_KEYS_SIZE:
 /*@-unrecog@*/
@@ -1460,10 +1470,11 @@ set(char * t, NODE * ip)
 		mtree_error("invalid uid %s", val);
 	    /*@switchbreak@*/ break;
 	case MTREE_KEYS_UNAME:
-	    if ((pw = getpwnam(val)) == NULL)
+	{   struct passwd *pw = getpwnam(val);
+	    if (pw == NULL)
 	 	mtree_error("unknown user %s", val);
 	    ip->sb.st_uid = pw->pw_uid;
-	    /*@switchbreak@*/ break;
+	}   /*@switchbreak@*/ break;
 	case MTREE_KEYS_NONE:
 	case MTREE_KEYS_DONE:
 	case MTREE_KEYS_MAGIC:
@@ -1603,180 +1614,6 @@ noparent:    mtree_error("no parent node");
 
 /*==============================================================*/
 
-#define FILE_BUFFER			0x1000
-typedef struct rpmdc_s * rpmdc;
-
-#define _DFB(n) ((1 << (n)) | 0x40000000)
-#define F_ISSET(_dc, _FLAG) ((_dc)->flags & ((RPMDC_FLAGS_##_FLAG) & ~0x40000000))
-
-enum dcFlags_e {
-    RPMDC_FLAGS_BINARY	= _DFB( 0),	/*!< -b,--binary ... */
-    RPMDC_FLAGS_WARN	= _DFB( 1),	/*!< -w,--warn ... */
-    RPMDC_FLAGS_STATUS	= _DFB( 2)	/*!<    --status ... */
-};
-
-struct rpmdc_s {
-    enum dcFlags_e flags;
-    uint32_t algo;		/*!< default digest algorithm. */
-/*@null@*/
-    const char * digest;
-    size_t digestlen;
-/*@observer@*/
-    const char * fn;
-    FD_t fd;
-/*@null@*/
-    ARGV_t manifests;		/*!< array of file manifests to verify. */
-/*@null@*/
-    ARGI_t algos;		/*!< array of file digest algorithms. */
-/*@null@*/
-    ARGV_t digests;		/*!< array of file digests. */
-/*@null@*/
-    ARGV_t paths;		/*!< array of file paths. */
-    unsigned char buf[BUFSIZ];
-    ssize_t nb;
-    int ix;
-    int nfails;
-};
-
-/*@unchecked@*/
-static struct rpmdc_s __dc;
-
-/*@unchecked@*/
-static rpmdc _dc = &__dc;
-
-/*@unchecked@*/
-static struct rpmop_s dc_totalops;
-
-/*@unchecked@*/
-static struct rpmop_s dc_readops;
-
-/*@unchecked@*/
-static struct rpmop_s dc_digestops;
-
-static int rpmdcPrintFile(rpmdc dc, uint32_t algo, const char * algoName)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies dc, fileSystem, internalState @*/
-{
-    static int asAscii = 1;
-    int rc = 0;
-
-    fdFiniDigest(dc->fd, algo, &dc->digest, &dc->digestlen, asAscii);
-assert(dc->digest != NULL);
-    if (dc->manifests != NULL) {
-	const char * msg = "OK";
-	if ((rc = strcmp(dc->digest, dc->digests[dc->ix])) != 0) {
-	    msg = "FAILED";
-	    dc->nfails++;
-	}
-	if (rc || !F_ISSET(dc, STATUS))
-	    fprintf(stdout, "%s: %s\n", dc->fn, msg);
-    } else {
-	if (!F_ISSET(dc, STATUS)) {
-	    if (algoName != NULL) fprintf(stdout, "%s:", algoName);
-	    fprintf(stdout, "%s %c%s\n", dc->digest,
-		(F_ISSET(dc, BINARY) ? '*' : ' '), dc->fn);
-	    (void) fflush(stdout);
-	}
-	dc->digest = _free(dc->digest);
-    }
-    return rc;
-}
-
-static int rpmdcFiniFile(rpmdc dc)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies dc, fileSystem, internalState @*/
-{
-    uint32_t algo= (dc->manifests != NULL ? dc->algos->vals[dc->ix] : dc->algo);
-    int rc = 0;
-    int xx;
-
-    switch (algo) {
-    default:
-	xx = rpmdcPrintFile(dc, algo, NULL);
-	if (xx) rc = xx;
-	break;
-    case 256:		/* --all digests requested. */
-      {	struct poptOption * opt = rpmioDigestPoptTable;
-	for (; (opt->longName || opt->shortName || opt->arg) ; opt++) {
-	    if ((opt->argInfo & POPT_ARG_MASK) != POPT_ARG_VAL)
-		continue;
-	    if (opt->arg != (void *)&rpmioDigestHashAlgo)
-		continue;
-	    dc->algo = opt->val;
-	    if (!(dc->algo > 0 && dc->algo < 256))
-		continue;
-	    xx = rpmdcPrintFile(dc, dc->algo, opt->longName);
-	    if (xx) rc = xx;
-	}
-      }	break;
-    }
-    (void) rpmswAdd(&dc_readops, fdstat_op(dc->fd, FDSTAT_READ));
-    (void) rpmswAdd(&dc_digestops, fdstat_op(dc->fd, FDSTAT_DIGEST));
-    (void) Fclose(dc->fd);
-    dc->fd = NULL;
-    return rc;
-}
-
-static int rpmdcCalcFile(rpmdc dc)
-	/*@globals fileSystem @*/
-	/*@modifies dc, fileSystem @*/
-{
-    int rc = 0;
-
-    do {
-	dc->nb = Fread(dc->buf, sizeof(dc->buf[0]), sizeof(dc->buf), dc->fd);
-	if (Ferror(dc->fd)) {
-	    rc = 2;
-	    break;
-	}
-    } while (dc->nb > 0);
-
-    return rc;
-}
-
-static int rpmdcInitFile(rpmdc dc)
-	/*@globals h_errno, fileSystem, internalState @*/
-	/*@modifies dc, fileSystem, internalState @*/
-{
-    uint32_t algo= (dc->manifests != NULL ? dc->algos->vals[dc->ix] : dc->algo);
-    int rc = 0;
-
-    /* XXX Stat(2) to insure files only? */
-    dc->fd = Fopen(dc->fn, "r.ufdio");
-    if (dc->fd == NULL || Ferror(dc->fd)) {
-	fprintf(stderr, _("open of %s failed: %s\n"), dc->fn, Fstrerror(dc->fd));
-	if (dc->fd != NULL) (void) Fclose(dc->fd);
-	dc->fd = NULL;
-	rc = 2;
-	goto exit;
-    }
-
-    switch (dc->algo) {
-    default:
-	/* XXX TODO: instantiate verify digests for all identical paths. */
-	fdInitDigest(dc->fd, algo, 0);
-	break;
-    case 256:		/* --all digests requested. */
-      {	struct poptOption * opt = rpmioDigestPoptTable;
-	for (; (opt->longName || opt->shortName || opt->arg) ; opt++) {
-	    if ((opt->argInfo & POPT_ARG_MASK) != POPT_ARG_VAL)
-		continue;
-	    if (opt->longName == NULL)
-		continue;
-	    if (!(opt->val > 0 && opt->val < 256))
-		continue;
-	    algo = opt->val;
-	    fdInitDigest(dc->fd, algo, 0);
-	}
-      }	break;
-    }
-
-exit:
-    return rc;
-}
-
-/*==============================================================*/
-
 /*@observer@*/
 static const char *
 ftype(unsigned type)
@@ -1836,13 +1673,13 @@ rlink(const char * name)
 #define	COMPAREINDENTNAMELEN	8
 #define	LABEL 			\
     if (!label++) {		 \
-	len = printf("%s: ", SKIPDOTSLASH(p->fts_path)); \
+	int len = printf("%s: ", SKIPDOTSLASH(p->fts_path)); \
 	if (len > COMPAREINDENTNAMELEN) { \
 	    tab = "\t"; 	\
 	    (void) printf("\n"); \
 	} else { 		\
 	    tab = ""; 		\
-	    (void) printf("%*s", COMPAREINDENTNAMELEN - (int)len, ""); \
+	    (void) printf("%*s", COMPAREINDENTNAMELEN - len, ""); \
 	} 			\
     }
 
@@ -1855,21 +1692,52 @@ rlink(const char * name)
 	}			\
     } while (0)			\
 
+/*@observer@*/
+static const char * algo2name(uint32_t algo)
+	/*@*/
+{
+    switch (algo) {
+    case PGPHASHALGO_MD5:          return "MD5";
+    case PGPHASHALGO_SHA1:         return "SHA1";
+    case PGPHASHALGO_RIPEMD160:    return "RIPEMD160";
+    case PGPHASHALGO_MD2:          return "MD2";
+    case PGPHASHALGO_TIGER192:     return "TIGER192";
+    case PGPHASHALGO_HAVAL_5_160:  return "HAVAL-5-160";
+    case PGPHASHALGO_SHA256:       return "SHA256";
+    case PGPHASHALGO_SHA384:       return "SHA384";
+    case PGPHASHALGO_SHA512:       return "SHA512";
+
+    case PGPHASHALGO_MD4:	   return "MD4";
+    case PGPHASHALGO_RIPEMD128:	   return "RIPEMD128";
+    case PGPHASHALGO_CRC32:	   return "CRC32";
+    case PGPHASHALGO_ADLER32:	   return "ADLER32";
+    case PGPHASHALGO_CRC64:	   return "CRC64";
+    case PGPHASHALGO_JLU32:	   return "JLU32";
+    case PGPHASHALGO_SHA224:	   return "SHA224";
+    case PGPHASHALGO_RIPEMD256:	   return "RIPEMD256";
+    case PGPHASHALGO_RIPEMD320:	   return "RIPEMD320";
+    case PGPHASHALGO_SALSA10:	   return "SALSA10";
+    case PGPHASHALGO_SALSA20:	   return "SALSA20";
+
+    default:                       return "Unknown";
+    }
+    /*@notreached@*/
+}
+
 static int
-compare(const char * name, NODE *const s, FTSENT *const p)
-	/*@globals _dc, errno, h_errno, fileSystem, internalState @*/
-	/*@modifies _dc, errno, fileSystem, internalState @*/
+compare(rpmfts fts, NODE *const s)
+	/*@globals errno, h_errno, fileSystem, internalState @*/
+	/*@modifies errno, fileSystem, internalState @*/
 
 {
-    static int asAscii = 1;
+    const char * name = s->name;
+    FTSENT *const p = fts->p;
     const char * fts_accpath = p->fts_accpath;
     struct stat *const st = p->fts_statp;
     enum mtreeKeys_e keys = s->flags;
-    uint32_t len, val;
     int label = 0;
     const char *cp;
     const char *tab = "";
-    int xx;
 
     switch(s->type) {
     case F_BLOCK:
@@ -2015,140 +1883,79 @@ typeerr:    LABEL;
 	    tab = "\t";   
 	}
     }
-    if (KF_ISSET(keys, CKSUM)) {
+
+    /* Any digests to calculate? */
+    if (KF_ISSET(keys, CKSUM) || s->algos != NULL) {
 	FD_t fd = Fopen(fts_accpath, "r.ufdio");
+	uint32_t vlen, val;
+	int i;
+
 	if (fd == NULL || Ferror(fd)) {
 	    LABEL;
-	    (void) printf("%scksum: %s: %s\n", tab,
-			fts_accpath, Fstrerror(fd));
-	} else if (crc(fd, &val, &len)) {
+	    (void) printf("%scksum: %s: %s\n", tab, fts_accpath, Fstrerror(fd));
+	    goto cleanup;
+	}
+
+	/* Setup all digest calculations.  Reversed order is effete ... */
+	if (s->algos != NULL)
+	for (i = s->algos->nvals; i-- > 0;)
+	    fdInitDigest(fd, s->algos->vals[i], 0);
+
+	/* Compute the cksum and digests. */
+	if (KF_ISSET(keys, CKSUM))
+	    i = crc(fd, &val, &vlen);
+	else {
+	    char buffer[16 * 1024];
+	    while (Fread(buffer, sizeof(buffer[0]), sizeof(buffer), fd) > 0)
+		{};
+	    i = (Ferror(fd) ? 1 : 0);
+	}
+	if (i) {
 	    LABEL;
-	    (void) printf("%scksum: %s: %s\n", tab,
-			fts_accpath, Fstrerror(fd));
-	} else {
+	    (void) printf("%scksum: %s: %s\n", tab, fts_accpath, Fstrerror(fd));
+	    goto cleanup;
+	}
+
+	/* Verify cksum. */
+	if (KF_ISSET(keys, CKSUM)) {
 	    if (s->cksum != val) {
 		LABEL;
 		(void) printf("%scksum (%u, %u)\n", tab,
 				(unsigned) s->cksum, (unsigned) val);
+		tab = "\t";
 	    }
 	}
-	if (fd != NULL) (void) Fclose(fd);
-	tab = "\t";
+
+	/* Verify all the digests. */
+	if (s->algos != NULL)
+	for (i = 0; i < (int) s->algos->nvals; i++) {
+	    static int asAscii = 1;
+	    uint32_t algo = s->algos->vals[i];
+	    const char * digest = NULL;
+	    size_t digestlen = 0;
+
+	    fdFiniDigest(fd, algo, &digest, &digestlen, asAscii);
+assert(digest != NULL);
+	    if (strcmp(digest, s->digests[i])) {
+		LABEL;
+		printf("%s%s (%s, %s)\n", tab, algo2name(algo),
+			s->digests[i], digest);
+		tab = "\t";
+	    }
+	    digest = _free(digest);
+	    digestlen = 0;
+	}
+
+	/* Accumulate statistics and clean up. */
+cleanup:
+	if (fd != NULL) {
+	    (void) rpmswAdd(&dc_readops, fdstat_op(fd, FDSTAT_READ));
+	    (void) rpmswAdd(&dc_digestops, fdstat_op(fd, FDSTAT_DIGEST));
+	    (void) Fclose(fd);
+	    fd = NULL;
+	}
     }
-/*@-mods@*/	/* dc->fn might modify fts_accpath */
-    if (KF_ISSET(keys, MD5)) {
-	rpmdc dc = _dc;
-	dc->fn = fts_accpath;
-	dc->algo = PGPHASHALGO_MD5;
-	xx = rpmdcInitFile(dc);
-	xx = rpmdcCalcFile(dc);
-	/* XXX hotwire around rpmdcFini() for now. */
-	fdFiniDigest(dc->fd, dc->algo, &dc->digest, &dc->digestlen, asAscii);
-	if (dc->digest == NULL) {
-	    LABEL;
-	    printf("%sMD5File: %s: %s\n", tab, fts_accpath, strerror(errno));
-	    tab = "\t";
-	} else if (strcmp(dc->digest, s->md5digest)) {
-	    LABEL;
-	    printf("%sMD5 (%s, %s)\n", tab, s->md5digest, dc->digest);
-	    tab = "\t";
-	}
-	if (dc->fd != NULL) {
-	    (void) rpmswAdd(&dc_readops, fdstat_op(dc->fd, FDSTAT_READ));
-	    (void) rpmswAdd(&dc_digestops, fdstat_op(dc->fd, FDSTAT_DIGEST));
-	    (void) Fclose(dc->fd);
-	    dc->fd = NULL;
-	    dc->digest = _free(dc->digest);
-	    dc->digestlen = 0;
-	}
-	dc->algo = 0;
-	dc->fn = NULL;
-    }
-    if (KF_ISSET(keys, RMD160)) {
-	rpmdc dc = _dc;
-	dc->fn = fts_accpath;
-	dc->algo = PGPHASHALGO_RIPEMD160;
-	xx = rpmdcInitFile(dc);
-	xx = rpmdcCalcFile(dc);
-	/* XXX hotwire around rpmdcFini() for now. */
-	fdFiniDigest(dc->fd, dc->algo, &dc->digest, &dc->digestlen, asAscii);
-	if (dc->digest == NULL) {
-	    LABEL;
-	    printf("%sRMD160File: %s: %s\n", tab, fts_accpath, strerror(errno));
-	    tab = "\t";
-	} else if (strcmp(dc->digest, s->rmd160digest)) {
-	    LABEL;
-	    printf("%sRMD160 (%s, %s)\n", tab, s->rmd160digest, dc->digest);
-	    tab = "\t";
-	}
-	if (dc->fd != NULL) {
-	    (void) rpmswAdd(&dc_readops, fdstat_op(dc->fd, FDSTAT_READ));
-	    (void) rpmswAdd(&dc_digestops, fdstat_op(dc->fd, FDSTAT_DIGEST));
-	    (void) Fclose(dc->fd);
-	    dc->fd = NULL;
-	    dc->digest = _free(dc->digest);
-	    dc->digestlen = 0;
-	}
-	dc->algo = 0;
-	dc->fn = NULL;
-    }
-    if (KF_ISSET(keys, SHA1)) {
-	rpmdc dc = _dc;
-	dc->fn = fts_accpath;
-	dc->algo = PGPHASHALGO_SHA1;
-	xx = rpmdcInitFile(dc);
-	xx = rpmdcCalcFile(dc);
-	/* XXX hotwire around rpmdcFini() for now. */
-	fdFiniDigest(dc->fd, dc->algo, &dc->digest, &dc->digestlen, asAscii);
-	if (dc->digest == NULL) {
-	    LABEL;
-	    printf("%sSHA1File: %s: %s\n", tab, fts_accpath, strerror(errno));
-	    tab = "\t";
-	} else if (strcmp(dc->digest, s->sha1digest)) {
-	    LABEL;
-	    printf("%sSHA1 (%s, %s)\n", tab, s->sha1digest, dc->digest);
-	    tab = "\t";
-	}
-	if (dc->fd != NULL) {
-	    (void) rpmswAdd(&dc_readops, fdstat_op(dc->fd, FDSTAT_READ));
-	    (void) rpmswAdd(&dc_digestops, fdstat_op(dc->fd, FDSTAT_DIGEST));
-	    (void) Fclose(dc->fd);
-	    dc->fd = NULL;
-	    dc->digest = _free(dc->digest);
-	    dc->digestlen = 0;
-	}
-	dc->algo = 0;
-	dc->fn = NULL;
-    }
-    if (KF_ISSET(keys, SHA256)) {
-	rpmdc dc = _dc;
-	dc->fn = fts_accpath;
-	dc->algo = PGPHASHALGO_SHA256;
-	xx = rpmdcInitFile(dc);
-	xx = rpmdcCalcFile(dc);
-	/* XXX hotwire around rpmdcFini() for now. */
-	fdFiniDigest(dc->fd, dc->algo, &dc->digest, &dc->digestlen, asAscii);
-	if (dc->digest == NULL) {
-	    LABEL;
-	    printf("%sSHA256File: %s: %s\n", tab, fts_accpath, strerror(errno));
-	    tab = "\t";
-	} else if (strcmp(dc->digest, s->sha1digest)) {
-	    LABEL;
-	    printf("%sSHA256 (%s, %s)\n", tab, s->sha1digest, dc->digest);
-	    tab = "\t";
-	}
-	if (dc->fd != NULL) {
-	    (void) rpmswAdd(&dc_readops, fdstat_op(dc->fd, FDSTAT_READ));
-	    (void) rpmswAdd(&dc_digestops, fdstat_op(dc->fd, FDSTAT_DIGEST));
-	    (void) Fclose(dc->fd);
-	    dc->fd = NULL;
-	    dc->digest = _free(dc->digest);
-	    dc->digestlen = 0;
-	}
-	dc->algo = 0;
-	dc->fn = NULL;
-    }
-/*@=mods@*/
+
     if (KF_ISSET(keys, SLINK) && strcmp(cp = rlink(name), s->slink)) {
 	LABEL;
 	(void) printf("%slink ref (%s, %s)\n", tab, cp, s->slink);
@@ -2194,40 +2001,6 @@ typeerr:    LABEL;
 }
 
 /*==============================================================*/
-
-#define	CWALKINDENTNAMELEN	15
-#define	MAXLINELEN	80
-
-static int
-dsort(const FTSENT ** a, const FTSENT ** b)
-	/*@*/
-{
-    if (S_ISDIR((*a)->fts_statp->st_mode)) {
-	if (!S_ISDIR((*b)->fts_statp->st_mode))
-	    return 1;
-    } else if (S_ISDIR((*b)->fts_statp->st_mode))
-	return -1;
-    return strcmp((*a)->fts_name, (*b)->fts_name);
-}
-
-static void
-output(int indent, int * offset, const char * fmt, ...)
-	/*@globals fileSystem @*/
-	/*@modifies *offset, fileSystem @*/
-{
-    char buf[1024];
-    va_list ap;
-
-    va_start(ap, fmt);
-    (void) vsnprintf(buf, sizeof(buf), fmt, ap);
-    va_end(ap);
-
-    if (*offset + strlen(buf) > MAXLINELEN - 3) {
-	(void)printf(" \\\n%*s", CWALKINDENTNAMELEN + indent, "");
-	*offset = CWALKINDENTNAMELEN + indent;
-    }
-    *offset += printf(" %s", buf) + 1;
-}
 
 #define	MAXGID	5000
 #define	MAXUID	5000
@@ -2366,13 +2139,9 @@ mtreeVisitD(rpmfts fts)
 	if (KF_ISSET(keys, NLINK))
 	    (void) printf(" nlink=1");
 	if (KF_ISSET(keys, FLAGS)) {
-#if defined(__linux__) || !defined(NOTYET)
-	    (void) printf(" flags=none");
-#else
 	    const char * fflags = flags_to_string(saveflags);
 	    (void) printf(" flags=%s", fflags);
 	    fflags = _free(fflags);
-#endif
 	}
 	(void) printf("\n");
 	*puid = saveuid;
@@ -2383,30 +2152,50 @@ mtreeVisitD(rpmfts fts)
     return (0);
 }
 
+#define	CWALKINDENTNAMELEN	15
+#define	MAXLINELEN	80
+
+
+static void
+output(int indent, int * offset, const char * fmt, ...)
+	/*@globals fileSystem @*/
+	/*@modifies *offset, fileSystem @*/
+{
+    char buf[1024];
+    va_list ap;
+
+    va_start(ap, fmt);
+    (void) vsnprintf(buf, sizeof(buf), fmt, ap);
+    va_end(ap);
+
+    if (*offset + strlen(buf) > MAXLINELEN - 3) {
+	(void)printf(" \\\n%*s", CWALKINDENTNAMELEN + indent, "");
+	*offset = CWALKINDENTNAMELEN + indent;
+    }
+    *offset += printf(" %s", buf) + 1;
+}
+
 static void
 mtreeVisitF(rpmfts fts)
-	/*@globals _dc, errno, h_errno, fileSystem, internalState @*/
-	/*@modifies _dc, errno, fileSystem, internalState @*/
+	/*@globals errno, h_errno, fileSystem, internalState @*/
+	/*@modifies errno, fileSystem, internalState @*/
 {
-    static int asAscii = 1;
     enum mtreeKeys_e keys = fts->keys;
     const char * fts_accpath = fts->p->fts_accpath;
     unsigned short fts_info = fts->p->fts_info;
     struct stat *const st = fts->p->fts_statp;
     int indent = (MF_ISSET(INDENT) ? fts->p->fts_level * 4 : 0);
-    uint32_t len, val;
     int offset;
-    char * escaped_name = xmalloc(fts->p->fts_namelen * 4  +  1);
-    int xx;
 
-    (void) strvis(escaped_name, fts->p->fts_name, VIS_WHITE | VIS_OCTAL);
+    {	char * escname = xmalloc(fts->p->fts_namelen * 4  +  1);
+	(void) strvis(escname, fts->p->fts_name, VIS_WHITE | VIS_OCTAL);
 
-    if (MF_ISSET(INDENT) || S_ISDIR(st->st_mode))
-	offset = printf("%*s%s", indent, "", escaped_name);
-    else
-	offset = printf("%*s    %s", indent, "", escaped_name);
-
-    escaped_name = _free(escaped_name);
+	if (MF_ISSET(INDENT) || S_ISDIR(st->st_mode))
+	    offset = printf("%*s%s", indent, "", escname);
+	else
+	    offset = printf("%*s    %s", indent, "", escname);
+	escname = _free(escname);
+    }
 
     if (offset > (CWALKINDENTNAMELEN + indent))
 	offset = MAXLINELEN;
@@ -2459,115 +2248,153 @@ mtreeVisitF(rpmfts fts)
 #endif
 	output(indent, &offset, "time=%lu.%lu", tv.tv_sec, tv.tv_usec);
     }
-    if (KF_ISSET(keys, CKSUM) && S_ISREG(st->st_mode)) {
-	FD_t fd = Fopen(fts_accpath, "r.ufdio");
-	if (fd == NULL || Ferror(fd) || crc(fd, &val, &len))
-	    mtree_error("%s: %s", fts_accpath, Fstrerror(fd));
-	if (fd != NULL) (void) Fclose(fd);
-	output(indent, &offset, "cksum=%lu", (unsigned long)val);
-    }
-/*@-mods@*/	/* dc->fn might modify fts_accpath */
-    if (KF_ISSET(keys, MD5) && S_ISREG(st->st_mode)) {
-	rpmdc dc = _dc;
-	dc->fn = fts_accpath;
-	dc->algo = PGPHASHALGO_MD5;
-	xx = rpmdcInitFile(dc);
-	xx = rpmdcCalcFile(dc);
-	/* XXX hotwire around rpmdcFini() for now. */
-	fdFiniDigest(dc->fd, dc->algo, &dc->digest, &dc->digestlen, asAscii);
-	if (dc->digest == NULL)
-	    mtree_error("%s: %s", fts_accpath, strerror(errno));
-	else
-	    output(indent, &offset, "md5digest=%s", dc->digest);
-	if (dc->fd != NULL) {
-	    (void) rpmswAdd(&dc_readops, fdstat_op(dc->fd, FDSTAT_READ));
-	    (void) rpmswAdd(&dc_digestops, fdstat_op(dc->fd, FDSTAT_DIGEST));
-	    (void) Fclose(dc->fd);
-	    dc->fd = NULL;
-	    dc->digest = _free(dc->digest);
-	    dc->digestlen = 0;
+
+    /* Only files can have digests. */
+    if (S_ISREG(st->st_mode)) {
+	ARGI_t algos = NULL;
+
+	/* Mark all digests that need calculating. */
+	if (KF_ISSET(keys, MD5))
+	    (void) argiAdd(&algos, -1, PGPHASHALGO_MD5);
+	if (KF_ISSET(keys, RMD160))
+	    (void) argiAdd(&algos, -1, PGPHASHALGO_RIPEMD160);
+	if (KF_ISSET(keys, SHA1))
+	    (void) argiAdd(&algos, -1, PGPHASHALGO_SHA1);
+	if (KF_ISSET(keys, SHA256))
+	    (void) argiAdd(&algos, -1, PGPHASHALGO_SHA256);
+
+	/* Any digests to calculate? */
+	if (KF_ISSET(keys, CKSUM) || algos != NULL) {
+	    FD_t fd = Fopen(fts_accpath, "r.ufdio");
+	    uint32_t len, val;
+	    int i;
+
+	    if (fd == NULL || Ferror(fd)) {
+#ifdef	NOTYET	/* XXX can't exit in a library API. */
+		(void) printf("%scksum: %s: %s\n", tab, fts_accpath, Fstrerror(fd));
+		goto cleanup;
+#else
+		mtree_error("%s: %s", fts_accpath, Fstrerror(fd));
+		/*@notreached@*/
+#endif
+	    }
+
+	    /* Setup all digest calculations.  Reversed order is effete ... */
+	    if (algos != NULL)
+	    for (i = algos->nvals; i-- > 0;)
+		fdInitDigest(fd, algos->vals[i], 0);
+
+	    /* Compute the cksum and digests. */
+	    if (KF_ISSET(keys, CKSUM))
+		i = crc(fd, &val, &len);
+	    else {
+		char buffer[16 * 1024];
+		while (Fread(buffer, sizeof(buffer[0]), sizeof(buffer), fd) > 0)
+		    {};
+		i = (Ferror(fd) ? 1 : 0);
+	    }
+	    if (i) {
+#ifdef	NOTYET	/* XXX can't exit in a library API. */
+		(void) printf("%scksum: %s: %s\n", tab, fts_accpath, Fstrerror(fd));
+#else
+		mtree_error("%s: %s", fts_accpath, Fstrerror(fd));
+		/*@notreached@*/
+#endif
+		goto cleanup;
+	    }
+
+	    /* Output cksum. */
+	    if (KF_ISSET(keys, CKSUM)) {
+		output(indent, &offset, "cksum=%lu", (unsigned long)val);
+	    }
+
+	    /* Output all the digests. */
+	    if (algos != NULL)
+	    for (i = 0; i < (int) algos->nvals; i++) {
+		static int asAscii = 1;
+		uint32_t algo = algos->vals[i];
+		const char * digest = NULL;
+		size_t digestlen = 0;
+		const char * tagname;
+
+		fdFiniDigest(fd, algo, &digest, &digestlen, asAscii);
+#ifdef	NOTYET	/* XXX can't exit in a library API. */
+assert(digest != NULL);
+#else
+		if (digest == NULL)
+		    mtree_error("%s: %s", fts_accpath, Fstrerror(fd));
+#endif
+		tagname = NULL;
+		switch (algo) {
+		case PGPHASHALGO_MD5:
+		    tagname = "md5";	/*@switchbreak@*/ break;
+		case PGPHASHALGO_SHA1:
+		    tagname = "sha1";	/*@switchbreak@*/ break;
+		case PGPHASHALGO_RIPEMD160:
+		    tagname = "rmd160";	/*@switchbreak@*/ break;
+		case PGPHASHALGO_MD2:
+		    tagname = "md2";	/*@switchbreak@*/ break;
+		case PGPHASHALGO_TIGER192:
+		    tagname = "tiger192";	/*@switchbreak@*/ break;
+		case PGPHASHALGO_HAVAL_5_160:
+		    tagname = "haval";	/*@switchbreak@*/ break;
+		case PGPHASHALGO_SHA256:
+		    tagname = "sha256";	/*@switchbreak@*/ break;
+		case PGPHASHALGO_SHA384:
+		    tagname = "sha384";	/*@switchbreak@*/ break;
+		case PGPHASHALGO_SHA512:
+		    tagname = "sha512";	/*@switchbreak@*/ break;
+		case PGPHASHALGO_MD4:
+		    tagname = "md4";	/*@switchbreak@*/ break;
+		case PGPHASHALGO_RIPEMD128:
+		    tagname = "rmd128";	/*@switchbreak@*/ break;
+		case PGPHASHALGO_CRC32:
+		    /*@switchbreak@*/ break;
+		case PGPHASHALGO_ADLER32:
+		    /*@switchbreak@*/ break;
+		case PGPHASHALGO_CRC64:
+		    /*@switchbreak@*/ break;
+		case PGPHASHALGO_JLU32:
+		    /*@switchbreak@*/ break;
+		case PGPHASHALGO_SHA224:
+		    tagname = "sha224";	/*@switchbreak@*/ break;
+		case PGPHASHALGO_RIPEMD256:
+		    tagname = "rmd256";	/*@switchbreak@*/ break;
+		case PGPHASHALGO_RIPEMD320:
+		    tagname = "rmd320";	/*@switchbreak@*/ break;
+		case PGPHASHALGO_SALSA10:
+		    /*@switchbreak@*/ break;
+		case PGPHASHALGO_SALSA20:
+		    /*@switchbreak@*/ break;
+		default:
+		    /*@switchbreak@*/ break;
+		}
+		if (tagname != NULL)
+		    output(indent, &offset, "%sdigest=%s", tagname, digest);
+		digest = _free(digest);
+		digestlen = 0;
+	    }
+
+	/* Accumulate statistics and clean up. */
+cleanup:
+	    if (fd != NULL) {
+		(void) rpmswAdd(&dc_readops, fdstat_op(fd, FDSTAT_READ));
+		(void) rpmswAdd(&dc_digestops, fdstat_op(fd, FDSTAT_DIGEST));
+		(void) Fclose(fd);
+		fd = NULL;
+	    }
 	}
-	dc->algo = 0;
-	dc->fn = NULL;
     }
-    if (KF_ISSET(keys, RMD160) && S_ISREG(st->st_mode)) {
-	rpmdc dc = _dc;
-	dc->fn = fts_accpath;
-	dc->algo = PGPHASHALGO_RIPEMD160;
-	xx = rpmdcInitFile(dc);
-	xx = rpmdcCalcFile(dc);
-	/* XXX hotwire around rpmdcFini() for now. */
-	fdFiniDigest(dc->fd, dc->algo, &dc->digest, &dc->digestlen, asAscii);
-	if (dc->digest == NULL)
-	    mtree_error("%s: %s", fts_accpath, strerror(errno));
-	else
-	    output(indent, &offset, "rmd160digest=%s", dc->digest);
-	if (dc->fd != NULL) {
-	    (void) rpmswAdd(&dc_readops, fdstat_op(dc->fd, FDSTAT_READ));
-	    (void) rpmswAdd(&dc_digestops, fdstat_op(dc->fd, FDSTAT_DIGEST));
-	    (void) Fclose(dc->fd);
-	    dc->fd = NULL;
-	    dc->digest = _free(dc->digest);
-	    dc->digestlen = 0;
-	}
-	dc->algo = 0;
-	dc->fn = NULL;
-    }
-    if (KF_ISSET(keys, SHA1) && S_ISREG(st->st_mode)) {
-	rpmdc dc = _dc;
-	dc->fn = fts_accpath;
-	dc->algo = PGPHASHALGO_SHA1;
-	xx = rpmdcInitFile(dc);
-	xx = rpmdcCalcFile(dc);
-	/* XXX hotwire around rpmdcFini() for now. */
-	fdFiniDigest(dc->fd, dc->algo, &dc->digest, &dc->digestlen, asAscii);
-	if (dc->digest == NULL)
-	    mtree_error("%s: %s", fts_accpath, strerror(errno));
-	else
-	    output(indent, &offset, "sha1digest=%s", dc->digest);
-	if (dc->fd != NULL) {
-	    (void) rpmswAdd(&dc_readops, fdstat_op(dc->fd, FDSTAT_READ));
-	    (void) rpmswAdd(&dc_digestops, fdstat_op(dc->fd, FDSTAT_DIGEST));
-	    (void) Fclose(dc->fd);
-	    dc->fd = NULL;
-	    dc->digest = _free(dc->digest);
-	    dc->digestlen = 0;
-	}
-	dc->algo = 0;
-	dc->fn = NULL;
-    }
-    if (KF_ISSET(keys, SHA256) && S_ISREG(st->st_mode)) {
-	rpmdc dc = _dc;
-	dc->fn = fts_accpath;
-	dc->algo = PGPHASHALGO_SHA256;
-	xx = rpmdcInitFile(dc);
-	xx = rpmdcCalcFile(dc);
-	/* XXX hotwire around rpmdcFini() for now. */
-	fdFiniDigest(dc->fd, dc->algo, &dc->digest, &dc->digestlen, asAscii);
-	if (dc->digest == NULL)
-	    mtree_error("%s: %s", fts_accpath, strerror(errno));
-	else
-	    output(indent, &offset, "sha256digest=%s", dc->digest);
-	if (dc->fd != NULL) {
-	    (void) rpmswAdd(&dc_readops, fdstat_op(dc->fd, FDSTAT_READ));
-	    (void) rpmswAdd(&dc_digestops, fdstat_op(dc->fd, FDSTAT_DIGEST));
-	    (void) Fclose(dc->fd);
-	    dc->fd = NULL;
-	    dc->digest = _free(dc->digest);
-	    dc->digestlen = 0;
-	}
-	dc->algo = 0;
-	dc->fn = NULL;
-    }
-/*@=mods@*/
+
     if (KF_ISSET(keys, SLINK) && (fts_info == FTS_SL || fts_info == FTS_SLNONE))
     {
 	const char * name = rlink(fts_accpath);
-	escaped_name = xmalloc(strlen(name) * 4  +  1);
-	(void) strvis(escaped_name, name, VIS_WHITE | VIS_OCTAL);
-	output(indent, &offset, "link=%s", escaped_name);
-	escaped_name = _free(escaped_name);
+	char * escname = xmalloc(strlen(name) * 4  +  1);
+	(void) strvis(escname, name, VIS_WHITE | VIS_OCTAL);
+	output(indent, &offset, "link=%s", escname);
+	escname = _free(escname);
     }
+
     if (KF_ISSET(keys, FLAGS) && !S_ISLNK(st->st_mode)) {
 #if defined(__linux__)
 	output(indent, &offset, "flags=none");
@@ -2653,6 +2480,18 @@ mtreeCheckExcludes(const char *fname, const char *path)
     }
 /*@=predboolptr@*/
     return 0;
+}
+
+static int
+dsort(const FTSENT ** a, const FTSENT ** b)
+	/*@*/
+{
+    if (S_ISDIR((*a)->fts_statp->st_mode)) {
+	if (!S_ISDIR((*b)->fts_statp->st_mode))
+	    return 1;
+    } else if (S_ISDIR((*b)->fts_statp->st_mode))
+	return -1;
+    return strcmp((*a)->fts_name, (*b)->fts_name);
 }
 
 int
@@ -2814,7 +2653,7 @@ mtreeVWalk(rpmfts fts)
 		{
 		    ep->flags |= MTREE_KEYS_VISIT;
 		    if (!KF_ISSET(ep->flags, NOCHANGE) &&
-			compare(ep->name, ep, fts->p))
+			compare(fts, ep))
 			    rval = MISMATCHEXIT;
 		    if (KF_ISSET(ep->flags, IGN))
 			    (void) Fts_set(fts->t, fts->p, FTS_SKIP);
@@ -2866,23 +2705,20 @@ static void mtreeArgCallback(poptContext con,
     if (opt->arg == NULL)
     switch (opt->val) {
 
-    /* XXX TODO: Mac OS X differs here. */
     case 'f':
+	/* XXX TODO: Mac OS X differs here. */
 	if (!(freopen(arg, "r", stdin)))
 	    mtree_error("%s: %s", arg, strerror(errno));
 	break;
+    case 'k':
+	/* XXX fts->keys = KEYDEFAULT in main(), clear default now. */
+	_rpmfts->keys = MTREE_KEYS_TYPE;
+	/*@fallthrough@*/
     case 'K':
 /*@-unrecog@*/
 	while ((p = strsep((char **)&arg, " \t,")) != NULL)
-	    if (*p != '\0')
-		_rpmfts->keys |= parsekey(p, NULL);
+	    _rpmfts->keys |= parsekey(p, NULL);
 /*@=unrecog@*/
-	break;
-    case 'k':
-	_rpmfts->keys = MTREE_KEYS_TYPE;
-	while ((p = strsep((char **)&arg, " \t,")) != NULL)
-	    if (*p != '\0')
-		_rpmfts->keys |= parsekey(p, NULL);
 	break;
 #if !defined(POPT_ARG_ARGV)
     case 'p':
@@ -3037,26 +2873,17 @@ main(int argc, char *argv[])
 		fileSystem, internalState @*/
 {
     rpmfts fts = _rpmfts;
-    poptContext optCon = rpmioInit(argc, argv, optionsTable);
+    poptContext optCon;
     int rc;
 
     LIST_INIT(&excludes);
     fts->keys = KEYDEFAULT;
     fts->fflags = 0xffffffff;
 
-    /* Process all options, whine if unknown. */
-    while ((rc = poptGetNextOpt(optCon)) > 0) {
-        const char * optArg = poptGetOptArg(optCon);
-/*@-dependenttrans -modobserver -observertrans @*/
-	optArg = _free(optArg);
-/*@=dependenttrans =modobserver =observertrans @*/
-        switch (rc) {
-        default:
-	    mtree_error("Option table misconfigured");
-            /*@notreached@*/ /*@switchbreak@*/ break;
-        }
-    }
+    /* Process options. */
+    optCon = rpmioInit(argc, argv, optionsTable);
 
+    /* XXX ./rpmmtree w no args waits for stdin. poptPrintUsage more better. */
     argv = (char **) poptGetArgs(optCon);
     if (!(argv == NULL || argv[0] == NULL)) {
 	poptPrintUsage(optCon, stderr, 0);
