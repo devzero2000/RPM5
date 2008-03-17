@@ -1863,10 +1863,11 @@ typeerr:    LABEL;
 #endif
 /*@=noeffectuncon =unrecog @*/
 	if (tv[0].tv_sec != tv[1].tv_sec || tv[0].tv_usec != tv[1].tv_usec) {
+	    time_t t1 = (time_t)tv[0].tv_sec;
+	    time_t t2 = (time_t)tv[1].tv_sec;
 	    LABEL;
-	    (void) printf(_("%s%s expected %.24s "), tab, "modification time",
-			ctime(&tv[0].tv_sec));
-	    (void) printf(_("found %.24s"), ctime(&tv[1].tv_sec));
+	    (void) printf(_("%s%s expected %.24s "), tab, "modification time", ctime(&t1));
+	    (void) printf(_("found %.24s"), ctime(&t2));
 	    if (MF_ISSET(TOUCH)) {
 		tv[1] = tv[0];
 		if (Utimes(fts_accpath, tv))
@@ -1956,7 +1957,7 @@ cleanup:
 	(void) printf(_("%s%s expected %s found %s\n"), tab, "link_ref",
 		cp, s->slink);
     }
-#if !defined(__linux__)
+#if 0 && !defined(__linux__) /* XXX should be HAVE_ST_FLAGS */
     if (KF_ISSET(keys, FLAGS) && s->st_flags != st->st_flags) {
 	char *fflags;
 
@@ -2651,7 +2652,7 @@ mtreeMiss(rpmfts fts, /*@null@*/ NODE * p, char * tail)
 	if (Chmod(fts->path, p->sb.st_mode))
 	    (void) printf(_("%s: permissions not set: %s\n"),
 		    fts->path, strerror(errno));
-#if !defined(__linux__)		/* XXX should be HAVE_ST_FLAGS */
+#if 0 && !defined(__linux__) /* XXX should be HAVE_ST_FLAGS */
 	if (KF_ISSET(p->flags, FLAGS) && p->st_flags != 0 &&
                     chflags(fts->path, p->st_flags))
                         (void) printf(_("%s: file flags not set: %s\n"),
