@@ -80,7 +80,7 @@ static int rpmluaext_digest(lua_State *L)
 
     /* fetch arguments */
     if (lua_isstring(L, 1)) {
-        if ((algo = pgpHashAlgoStringToNumber(lua_tostring(L, 1), 0)) == -1) {
+        if ((algo = pgpHashAlgoStringToNumber(lua_tostring(L, 1), 0)) == PGPHASHALGO_ERROR) {
             (void)luaL_argerror(L, 1, "digest type");
             return 0;
         }

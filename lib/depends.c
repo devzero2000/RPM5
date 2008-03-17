@@ -814,7 +814,7 @@ retry:
         filename = Name;
         digestHashAlgo = PGPHASHALGO_MD5;
         if ((cp = strchr(filename, ':')) != NULL) {
-            if ((algo = pgpHashAlgoStringToNumber(filename, cp-filename)) != -1) {
+            if ((algo = pgpHashAlgoStringToNumber(filename, cp-filename)) != PGPHASHALGO_ERROR) {
                 digestHashAlgo = algo;
                 filename = cp + 1;
             }

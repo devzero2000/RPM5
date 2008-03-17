@@ -410,6 +410,7 @@ extern struct pgpValTbl_s pgpCompressionTbl[];
  * @todo Add SHA256.
  */
 typedef enum pgpHashAlgo_e {
+    PGPHASHALGO_ERROR		=  -1,
     PGPHASHALGO_NONE		=  0,
     PGPHASHALGO_MD5		=  1,	/*!< MD5 */
     PGPHASHALGO_SHA1		=  2,	/*!< SHA-1 */
@@ -1437,7 +1438,7 @@ char * pgpArmorWrap(int atype, const unsigned char * s, size_t ns)
  * @param name_len		length of name or 0 for strlen(name)
  * @return		PGPHASHALGO_<name> or -1 in case of error
  */
-int pgpHashAlgoStringToNumber(const char *name, size_t name_len)
+pgpHashAlgo pgpHashAlgoStringToNumber(const char *name, size_t name_len)
 	/*@*/;
 
 /**

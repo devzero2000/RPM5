@@ -1481,7 +1481,7 @@ char * pgpArmorWrap(int atype, const unsigned char * s, size_t ns)
 /*@=globstate@*/
 }
 
-int pgpHashAlgoStringToNumber(const char *name, size_t name_len)
+pgpHashAlgo pgpHashAlgoStringToNumber(const char *name, size_t name_len)
 {
     size_t i;
 
@@ -1492,6 +1492,6 @@ int pgpHashAlgoStringToNumber(const char *name, size_t name_len)
     for (i = 0; i < sizeof(pgpHashTbl)/sizeof(pgpHashTbl[0]); i++)
         if (xstrncasecmp(name, pgpHashTbl[i].str, name_len) == 0)
             return pgpHashTbl[i].val;
-    return -1;
+    return PGPHASHALGO_ERROR;
 }
 
