@@ -187,11 +187,9 @@ static int rpmluaext_query_cb(rpmlogRec rec, rpmlogCallbackData data)
         if (msg != NULL) {
             luaL_checktype(L, -1, LUA_TTABLE);
             n = lua_objlen(L, -1);
-            if (n >= 0) {
-                lua_pushinteger(L, n + 1);
-                lua_pushstring(L, rpmlogRecMessage(rec));
-                lua_settable(L, -3);
-            }
+            lua_pushinteger(L, n + 1);
+            lua_pushstring(L, msg);
+            lua_settable(L, -3);
         }
     }
     return 0;
