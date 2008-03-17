@@ -46,6 +46,11 @@
 #include <sys/stat.h>
 #include <dirent.h>
 
+/*@unchecked@*/
+extern int _fts_debug;
+
+/**
+ */
 typedef struct {
 /*@owned@*/ /*@relnull@*/
 	struct _ftsent *fts_cur;	/*!< current node */

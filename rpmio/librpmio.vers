@@ -107,6 +107,7 @@ LIBRPMIO_0
     ftpOpen;
     ftpReq;
     ftpStrerror;
+    _fts_debug;
     Fts_children;
     Fts_close;
     Fts_open;

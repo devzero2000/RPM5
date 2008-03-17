@@ -1607,6 +1607,12 @@ noparent:    mtree_error("no parent node");
 	if (root == NULL) {
 	    last = root = centry;
 	    root->parent = root;
+	    if (fts->root == NULL)
+		fts->root = root;
+	} else if (centry->name[0] == '.' && centry->name[1] == '\0') {
+	    centry->prev = root;
+	    last = root = root->next = centry;
+	    root->parent = root;
 	} else if (last->type == F_DIR && !KF_ISSET(last->flags, DONE)) {
 	    centry->parent = last;
 	    last = last->child = centry;
@@ -1616,7 +1622,7 @@ noparent:    mtree_error("no parent node");
 	    last = last->next = centry;
 	}
     }
-    return root;
+    return fts->root;
 }
 
 /*==============================================================*/
@@ -1760,7 +1766,7 @@ compare(rpmfts fts, NODE *const s)
 /*@-unrecog@*/
 	if (!S_ISSOCK(st->st_mode)) {
 typeerr:    LABEL;
-	    (void) printf(("\ttype expected %s found %s)\n"),
+	    (void) printf(_("\ttype expected %s found %s)\n"),
 		    ftype((unsigned)s->type), inotype(st->st_mode));
 	}
 /*@=unrecog@*/
@@ -2175,25 +2181,17 @@ mtreeVisitF(rpmfts fts)
     int indent = (MF_ISSET(INDENT) ? fts->p->fts_level * 4 : 0);
     int offset;
 
-    {	size_t nb = fts->p->fts_namelen;
-	char * fts_name = fts->p->fts_name;
+    {	const char * fts_name = fts->p->fts_name;
+	size_t fts_namelen = fts->p->fts_namelen;
 	char * escname;
 
 	/* XXX fts(3) (and Fts(3)) have fts_name = "" with pesky trailing '/' */
-	if (nb == 0) {
-	    const char * t = fts->p->fts_path;
-	    const char * te = t + strlen(t);
-
-	    while (te > t && te[-1] == '/')
-		te--;
-	    t = te;
-	    while (t > fts->p->fts_path && t[-1] != '/')
-		t--;
-	    nb = (te - t);
-	    fts_name = strncpy(xmalloc(nb + 1), t, nb);
-	    fts_name[nb] = '\0';
+	if (fts->p->fts_level == 0 && fts_namelen == 0) {
+	    fts_name = ".";
+	    fts_namelen = sizeof(".") - 1;
 	}
-	escname = xmalloc(nb * 4  +  1);
+
+	escname = xmalloc(fts_namelen * 4  +  1);
 	/* XXX TODO: Mac OS X uses VIS_GLOB as well */
 	(void) strvis(escname, fts_name, VIS_WHITE | VIS_OCTAL);
 
@@ -2202,10 +2200,6 @@ mtreeVisitF(rpmfts fts)
 	else
 	    offset = printf("%*s    %s", indent, "", escname);
 	escname = _free(escname);
-/*@-mods@*/	/* XXX splint is confused by fts_name. */
-	if (fts_name != fts->p->fts_name)
-	    fts_name = _free(fts_name);
-/*@=mods@*/
     }
 
     if (offset > (CWALKINDENTNAMELEN + indent))
@@ -2416,10 +2410,6 @@ cleanup:
 #endif
     }
     (void) putchar('\n');
-/*@-usereleased@*/	/* XXX splint is confused by fts_name. */
-    return;
-/*@-usereleased@*/
-
 }
 
 /*
@@ -2664,7 +2654,8 @@ mtreeMiss(rpmfts fts, /*@null@*/ NODE * p, char * tail)
 int
 mtreeVWalk(rpmfts fts)
 {
-    NODE * level = fts->root;
+    NODE * level = NULL;
+    NODE * root = NULL;
     int specdepth = 0;
     int rval = 0;
 
@@ -2672,13 +2663,33 @@ mtreeVWalk(rpmfts fts)
     if (fts->t == NULL)
 	mtree_error("Fts_open: %s", strerror(errno));
     while ((fts->p = Fts_read(fts->t)) != NULL) {
-	if (mtreeCheckExcludes(fts->p->fts_name, fts->p->fts_path)) {
+	const char * fts_name = fts->p->fts_name;
+	size_t fts_namelen = fts->p->fts_namelen;
+
+#if 0
+fprintf(stderr, "==> level %d info 0x%x name %p[%d] \"%s\" accpath \"%s\" path \"%s\"\n", fts->p->fts_level, fts->p->fts_info, fts_name, fts_namelen, fts_name, fts->p->fts_accpath, fts->p->fts_path);
+#endif
+	/* XXX fts(3) (and Fts(3)) have fts_name = "" with pesky trailing '/' */
+	if (fts->p->fts_level == 0 && fts_namelen == 0) {
+	    fts_name = ".";
+	    fts_namelen = sizeof(".") - 1;
+	}
+
+	if (mtreeCheckExcludes(fts_name, fts->p->fts_path)) {
 	    (void) Fts_set(fts->t, fts->p, FTS_SKIP);
 	    continue;
 	}
 	switch(fts->p->fts_info) {
 	case FTS_D:
 	case FTS_SL:
+	    if (fts->p->fts_level == 0) {
+assert(specdepth == 0);
+		if (root == NULL)
+		    level = root = fts->root;
+		else if (root->next != fts->root)
+		    level = root = root->next;
+assert(level == level->parent);
+	    }
 	   /*@switchbreak@*/ break;
 	case FTS_DP:
 	    if (specdepth > fts->p->fts_level) {
@@ -2703,9 +2714,9 @@ mtreeVWalk(rpmfts fts)
 	    for (ep = level; ep != NULL; ep = ep->next)
 		if ((KF_ISSET(ep->flags, MAGIC) &&
 /*@-moduncon@*/
-		    !fnmatch(ep->name, fts->p->fts_name, FNM_PATHNAME)) ||
+		    !fnmatch(ep->name, fts_name, FNM_PATHNAME)) ||
 /*@=moduncon@*/
-		    !strcmp(ep->name, fts->p->fts_name))
+		    !strcmp(ep->name, fts_name))
 		{
 		    ep->flags |= MTREE_KEYS_VISIT;
 		    if (!KF_ISSET(ep->flags, NOCHANGE) &&
@@ -2941,6 +2952,7 @@ main(int argc, char *argv[])
     rpmfts fts = _rpmfts;
     poptContext optCon;
     int rc = 1;		/* assume failure */
+    int i;
 
     LIST_INIT(&excludes);
     fts->keys = KEYDEFAULT;
@@ -2974,16 +2986,56 @@ main(int argc, char *argv[])
     }
 
     if (fts->paths == NULL || fts->paths[0] == NULL) {
-	char fullpath[MAXPATHLEN];
-	if (!getcwd(fullpath, sizeof fullpath))
-	    mtree_error("getcwd: %s", strerror(errno));
-	fts->fullpath = xstrdup(fullpath);
-	fts->paths = xmalloc(2 * sizeof(fts->paths[0]));
+	fts->paths = xcalloc(2, sizeof(fts->paths[0]));
 	fts->paths[0] = xstrdup(".");
-	fts->paths[1] = NULL;
-    } else {
-	/* XXX incorrect for multi-root'd trees. */
-	fts->fullpath = xstrdup(fts->paths[0]);
+    }
+
+    /* Use absolute paths since Chdir(2) is problematic with remote URI's */
+    for (i = 0; fts->paths[i] != NULL; i++) {
+	char fullpath[MAXPATHLEN];
+	struct stat sb;
+	const char * rpath;
+	const char * lpath = NULL;
+	int ut = urlPath(fts->paths[i], &lpath);
+	size_t nb = (size_t)(lpath - fts->paths[i]);
+	int isdir = (lpath[strlen(lpath)-1] == '/');
+	
+	/* Convert to absolute/clean/malloc'd path. */
+	if (lpath[0] != '/') {
+	    /* XXX GLIBC: realpath(path, NULL) return malloc'd */
+	    rpath = Realpath(lpath, NULL);
+	    if (rpath == NULL)
+		rpath = Realpath(lpath, fullpath);
+	    if (rpath == NULL)
+		mtree_error("Realpath(%s): %s", lpath, strerror(errno));
+	    lpath = rpmGetPath(rpath, NULL);
+	    if (rpath != fullpath)	/* XXX GLIBC extension malloc's */
+		rpath = _free(rpath);
+	} else
+	    lpath = rpmGetPath(lpath, NULL);
+
+	/* Reattach the URI to the absolute/clean path. */
+	/* XXX todo: rpmGenPath was confused by file:///path/file URI's. */
+	switch (ut) {
+	case URL_IS_DASH:
+	case URL_IS_UNKNOWN:
+	    rpath = lpath;
+	    lpath = NULL;
+	    /*@switchbreak@*/ break;
+	default:
+	    strncpy(fullpath, fts->paths[i], nb);
+	    fullpath[nb] = '\0';
+	    rpath = rpmGenPath(fullpath, lpath, NULL);
+	    lpath = _free(lpath);
+	    /*@switchbreak@*/ break;
+	}
+
+	/* Add a trailing '/' on directories. */
+	lpath = (isdir || (!Stat(rpath, &sb) && S_ISDIR(sb.st_mode))
+		? "/" : NULL);
+	fts->paths[i] = _free(fts->paths[i]);
+	fts->paths[i] = rpmExpand(rpath, lpath, NULL);
+	fts->fullpath = xstrdup(fts->paths[i]);
     }
 
     /* XXX prohibits -s 0 invocation */
@@ -3002,7 +3054,8 @@ main(int argc, char *argv[])
 	    (void) gethostname(host, sizeof(host));
 	    (void) printf("#\t   user: %s\n", __getlogin());
 	    (void) printf("#\tmachine: %s\n", host);
-	    (void) printf("#\t   tree: %s\n", fts->fullpath);
+	    for (i = 0; fts->paths[i] != NULL; i++)
+		(void) printf("#\t   tree: %s\n", fts->paths[i]);
 	    (void) printf("#\t   date: %s", ctime(&clock));
 	}
 	rc = mtreeCWalk(fts);

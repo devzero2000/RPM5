@@ -154,6 +154,9 @@ static char sccsid[] = "@(#)fts.c	8.6 (Berkeley) 8/14/94";
 #define	ALIGN(p)	(((unsigned long int) (p) + ALIGNBYTES) & ~ALIGNBYTES)
 #endif
 
+/*@unchecked@*/
+int _fts_debug;
+
 /*@only@*/ /*@null@*/
 static FTSENT *	fts_alloc(FTS * sp, const char * name, int namelen)
 	/*@*/;
@@ -203,6 +206,9 @@ Fts_open(char * const * argv, int options,
 	FTSENT *parent = NULL;
 	FTSENT *tmp = NULL;
 	size_t len;
+
+if (_fts_debug)
+fprintf(stderr, "*** Fts_open(%p, 0x%x, %p)\n", argv, options, compar);
 
 	/* Options check. */
 	if (options & ~FTS_OPTIONMASK) {
@@ -366,6 +372,9 @@ Fts_close(FTS * sp)
 	register FTSENT *freep, *p;
 	int saved_errno;
 
+if (_fts_debug)
+fprintf(stderr, "*** Fts_close(%p)\n", sp);
+
 	if (sp == NULL)
 		return 0;
 
@@ -425,6 +434,9 @@ Fts_read(FTS * sp)
 	register int instr;
 	register char *t;
 	int saved_errno;
+
+if (_fts_debug)
+fprintf(stderr, "*** Fts_read(%p)\n", sp);
 
 	/* If finished or unrecoverable error, return NULL. */
 	if (sp == NULL || sp->fts_cur == NULL || ISSET(FTS_STOP))
@@ -616,6 +628,9 @@ name:		t = sp->fts_path + NAPPEND(p->fts_parent);
 int
 Fts_set(/*@unused@*/ FTS * sp, FTSENT * p, int instr)
 {
+if (_fts_debug)
+fprintf(stderr, "*** Fts_set(%p, %p, 0x%x)\n", sp, p, instr);
+
 	if (instr != 0 && instr != FTS_AGAIN && instr != FTS_FOLLOW &&
 	    instr != FTS_NOINSTR && instr != FTS_SKIP) {
 		__set_errno (EINVAL);
@@ -630,6 +645,9 @@ Fts_children(FTS * sp, int instr)
 {
 	register FTSENT *p;
 	int fd;
+
+if (_fts_debug)
+fprintf(stderr, "*** Fts_children(%p, 0x%x)\n", sp, instr);
 
 	if (instr != 0 && instr != FTS_NAMEONLY) {
 		__set_errno (EINVAL);
@@ -1233,6 +1251,15 @@ fts_safe_changedir(FTS * sp, FTSENT * p, int fd, const char * path)
 	newfd = fd;
 	if (ISSET(FTS_NOCHDIR))
 		return (0);
+
+	/* Permit open(2) on file:// prefixed URI paths. */
+	/* XXX todo: use Open(2), which is Chroot(2) path invariant. */
+	/* XXX todo: add Fts(3) options to disable the hackery? */
+	{	const char * lpath = NULL;
+		int ut = urlPath(path, &lpath);
+		if (ut == URL_IS_PATH) path = lpath;
+	}
+
 	if (fd < 0 && (newfd = __open(path, O_RDONLY, 0)) < 0)
 		return (-1);
 /*@-sysunrecog -unrecog @*/
