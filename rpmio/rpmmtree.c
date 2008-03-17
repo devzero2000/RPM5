@@ -172,9 +172,9 @@ static int mtreeCWalk(rpmfts fts)
 	/*@modifies fts, fileSystem, internalState @*/;
 
 /*@null@*/
-static NODE * mtreeSpec(rpmfts fts)
+static NODE * mtreeSpec(rpmfts fts, /*@null@*/ FILE * fp)
 	/*@globals fileSystem, internalState @*/
-	/*@modifies fts, fileSystem, internalState @*/;
+	/*@modifies fts, fp, fileSystem, internalState @*/;
 
 static int mtreeVWalk(rpmfts fts)
 	/*@globals h_errno, fileSystem, internalState @*/
@@ -187,8 +187,8 @@ static int mtreeVWalk(rpmfts fts)
 /*==============================================================*/
 
 static void mtreeMiss(rpmfts fts, /*@null@*/ NODE * p, char * tail)
-	/*@globals h_errno, fileSystem, internalState @*/
-	/*@modifies p, tail, fileSystem, internalState @*/;
+	/*@globals h_errno, errno, fileSystem, internalState @*/
+	/*@modifies p, tail, errno, fileSystem, internalState @*/;
 
 #include "debug.h"
 
@@ -1413,6 +1413,7 @@ set(char * t, NODE * ip)
 	    if (strunvis(ip->slink, val) == -1) {
 		fprintf(stderr, _("%s: filename (%s) encoded incorrectly\n"),
 			__progname, val);
+		/* XXX Mac OS X exits here. */
 		strcpy(ip->slink, val);
 	    }
 	    /*@switchbreak@*/ break;
@@ -1504,19 +1505,22 @@ unset(char * t, NODE * ip)
 #define KF_ISSET(_keys, _KEY) ((_keys) & (MTREE_KEYS_##_KEY))
 
 NODE *
-mtreeSpec(rpmfts fts)
+mtreeSpec(rpmfts fts, FILE * fp)
 {
     NODE *centry = NULL;
     NODE *last = NULL;
     char *p;
     NODE ginfo;
-    NODE *myroot = NULL;
-    int c_cur, c_next;
+    NODE *root = NULL;
+    int c_cur = 0;
+    int c_next = 0;
     char buf[2048];
 
+    if (fp == NULL)
+	fp = stdin;
+
     memset(&ginfo, 0, sizeof(ginfo));
-    c_cur = c_next = 0;
-    for (fts->lineno = 1; fgets(buf, (int)sizeof(buf), stdin) != NULL;
+    for (fts->lineno = 1; fgets(buf, (int)sizeof(buf), fp) != NULL;
 	    ++fts->lineno, c_cur = c_next, c_next = 0)
     {
 	/* Skip empty lines. */
@@ -1540,7 +1544,7 @@ mtreeSpec(rpmfts fts)
 	for (p = buf; *p && isspace(*p); ++p);
 
 	/* If nothing but whitespace or comment char, continue. */
-	if (!*p || *p == '#')
+	if (*p == '\0' || *p == '#')
 	    continue;
 
 #ifdef DEBUG
@@ -1574,10 +1578,10 @@ mtreeSpec(rpmfts fts)
 
 	if (!strcmp(p, "..")) {
 	    /* Don't go up, if haven't gone down. */
-	    if (myroot == NULL)
+	    if (root == NULL)
 		goto noparent;
 	    if (last->type != F_DIR || KF_ISSET(last->flags, DONE)) {
-		if (last == myroot)
+		if (last == root)
 		    goto noparent;
 		last = last->parent;
 	    }
@@ -1587,9 +1591,9 @@ mtreeSpec(rpmfts fts)
 noparent:    mtree_error("no parent node");
 	}
 
-	if ((centry = calloc(1, sizeof(*centry) + strlen(p))) == NULL)
-	    mtree_error("%s", strerror(errno));
-	*centry = ginfo;
+	/* XXX sizeof(*centry) includes room for final '\0' */
+	centry = xcalloc(1, sizeof(*centry) + strlen(p));
+	*centry = ginfo;	/* structure assignment */
 #define	MAGIC	"?*["
 	if (strpbrk(p, MAGIC) != NULL)
 	    centry->flags |= MTREE_KEYS_MAGIC;
@@ -1600,9 +1604,9 @@ noparent:    mtree_error("no parent node");
 	}
 	set(NULL, centry);
 
-	if (fts->root == NULL) {
-	    last = myroot = centry;
-	    myroot->parent = myroot;
+	if (root == NULL) {
+	    last = root = centry;
+	    root->parent = root;
 	} else if (last->type == F_DIR && !KF_ISSET(last->flags, DONE)) {
 	    centry->parent = last;
 	    last = last->child = centry;
@@ -1612,7 +1616,7 @@ noparent:    mtree_error("no parent node");
 	    last = last->next = centry;
 	}
     }
-    return myroot;
+    return root;
 }
 
 /*==============================================================*/
@@ -1675,25 +1679,10 @@ rlink(const char * name)
 
 #define	COMPAREINDENTNAMELEN	8
 #define	LABEL 			\
-    if (!label++) {		 \
-	int len = printf("%s: ", SKIPDOTSLASH(p->fts_path)); \
-	if (len > COMPAREINDENTNAMELEN) { \
-	    tab = "\t"; 	\
-	    (void) printf("\n"); \
-	} else { 		\
-	    tab = ""; 		\
-	    (void) printf("%*s", COMPAREINDENTNAMELEN - len, ""); \
-	} 			\
+    if (!label++) {		\
+	(void) printf(_("%s changed\n"), SKIPDOTSLASH(p->fts_path)); \
+	tab = "\t"; 		\
     }
-
-#define REPLACE_COMMA(x)	\
-    do {			\
-	char *l;		\
-	for (l = x; *l; l++) {	\
-	    if (*l == ',')	\
-		*l = ' ';	\
-	}			\
-    } while (0)			\
 
 /*@observer@*/
 static const char * algo2name(uint32_t algo)
@@ -1771,7 +1760,7 @@ compare(rpmfts fts, NODE *const s)
 /*@-unrecog@*/
 	if (!S_ISSOCK(st->st_mode)) {
 typeerr:    LABEL;
-	    (void) printf("\ttype (%s, %s)\n",
+	    (void) printf(("\ttype expected %s found %s)\n"),
 		    ftype((unsigned)s->type), inotype(st->st_mode));
 	}
 /*@=unrecog@*/
@@ -1781,28 +1770,28 @@ typeerr:    LABEL;
     /* Set the uid/gid first, then set the mode. */
     if ((KF_ISSET(keys, UID) || KF_ISSET(keys, UNAME)) && s->sb.st_uid != st->st_uid) {
 	LABEL;
-	(void) printf("%suser (%u, %u", tab,
-		(unsigned)s->sb.st_uid, (unsigned)st->st_uid);
+	(void) printf(_("%s%s expected %lu found %lu"), tab, "user",
+		(unsigned long)s->sb.st_uid, (unsigned long)st->st_uid);
 	if (MF_ISSET(UPDATE)) {
 	    if (Chown(fts_accpath, s->sb.st_uid, -1))
-		(void) printf(", not modified: %s)\n", strerror(errno));
+		(void) printf(_(" not modified: %s)\n"), strerror(errno));
 	    else
-		(void) printf(", modified)\n");
+		(void) printf(_(" modified)\n"));
 	} else
-	    (void) printf(")\n");
+	    (void) printf("\n");
 	tab = "\t";
     }
     if ((KF_ISSET(keys, GID) || KF_ISSET(keys, GNAME)) && s->sb.st_gid != st->st_gid) {
 	LABEL;
-	(void) printf("%sgid (%u, %u", tab,
-		(unsigned)s->sb.st_gid, (unsigned)st->st_gid);
+	(void) printf(_("%s%s expected %lu found %lu"), tab, "gid",
+		(unsigned long)s->sb.st_gid, (unsigned long)st->st_gid);
 	if (MF_ISSET(UPDATE)) {
 	    if (Chown(fts_accpath, -1, s->sb.st_gid))
-		(void) printf(", not modified: %s)\n", strerror(errno));
+		(void) printf(_(" not modified: %s)\n"), strerror(errno));
 	    else
-		(void) printf(", modified)\n");
+		(void) printf(_(" modified)\n"));
 	} else
-	    (void) printf(")\n");
+	    (void) printf("\n");
 	tab = "\t";
     }
     if (KF_ISSET(keys, MODE) && s->sb.st_mode != (st->st_mode & MBITS)) {
@@ -1821,15 +1810,15 @@ typeerr:    LABEL;
 		    goto skip;
 	}
 	LABEL;
-	(void) printf("%spermissions (%#o, %#o", tab,
+	(void) printf(_("%s%s expected %#o found %#o"), tab, "permissions",
 		(unsigned)s->sb.st_mode, (unsigned)(st->st_mode & MBITS));
 	if (MF_ISSET(UPDATE)) {
 	    if (Chmod(fts_accpath, s->sb.st_mode))
-		(void) printf(", not modified: %s)\n", strerror(errno));
+		(void) printf(_(" not modified: %s)\n"), strerror(errno));
 	    else
-		(void) printf(", modified)\n");
+		(void) printf(_(" modified)\n"));
 	} else
-	    (void) printf(")\n");
+	    (void) printf("\n");
 	tab = "\t";
  	skip:
 	    ;
@@ -1838,14 +1827,17 @@ typeerr:    LABEL;
         s->sb.st_nlink != st->st_nlink)
     {
 	LABEL;
-	(void) printf("%slink count (%u, %u)\n", tab,
-		(unsigned)s->sb.st_nlink, (unsigned)st->st_nlink);
+	(void) printf(_("%s%s expected %lu found %lu)\n"), tab, "link_count",
+		(unsigned long)s->sb.st_nlink, (unsigned long)st->st_nlink);
 	tab = "\t";
     }
     if (KF_ISSET(keys, SIZE) && s->sb.st_size != st->st_size) {
 	LABEL;
-	(void) printf("%ssize (%lu, %lu)\n", tab,
-		(unsigned long)s->sb.st_size, (unsigned long)st->st_size);
+/*@-duplicatequals@*/
+	(void) printf(_("%s%s expected %llu found %llu\n"), tab, "size",
+		(unsigned long long)s->sb.st_size,
+		(unsigned long long)st->st_size);
+/*@=duplicatequals@*/
 	tab = "\t";
     }
     /*
@@ -1872,17 +1864,17 @@ typeerr:    LABEL;
 /*@=noeffectuncon =unrecog @*/
 	if (tv[0].tv_sec != tv[1].tv_sec || tv[0].tv_usec != tv[1].tv_usec) {
 	    LABEL;
-	    (void) printf("%smodification time (%.24s, ", tab,
+	    (void) printf(_("%s%s expected %.24s "), tab, "modification time",
 			ctime(&tv[0].tv_sec));
-	    (void) printf("%.24s", ctime(&tv[1].tv_sec));
+	    (void) printf(_("found %.24s"), ctime(&tv[1].tv_sec));
 	    if (MF_ISSET(TOUCH)) {
 		tv[1] = tv[0];
 		if (Utimes(fts_accpath, tv))
-		    (void) printf(", not modified: %s)\n", strerror(errno));
+		    (void) printf(_(" not modified: %s)\n"), strerror(errno));
 		else  
-		    (void) printf(", modified)\n");  
+		    (void) printf(_(" modified\n"));  
 	    } else
-		(void) printf(")\n");
+		(void) printf("\n");
 	    tab = "\t";   
 	}
     }
@@ -1923,8 +1915,8 @@ typeerr:    LABEL;
 	if (KF_ISSET(keys, CKSUM)) {
 	    if (s->cksum != val) {
 		LABEL;
-		(void) printf("%scksum (%u, %u)\n", tab,
-				(unsigned) s->cksum, (unsigned) val);
+		(void) printf(_("%s%s expected %lu found %lu\n"), tab, "cksum",
+				(unsigned long) s->cksum, (unsigned long) val);
 		tab = "\t";
 	    }
 	}
@@ -1941,7 +1933,7 @@ typeerr:    LABEL;
 assert(digest != NULL);
 	    if (strcmp(digest, s->digests[i])) {
 		LABEL;
-		printf("%s%s (%s, %s)\n", tab, algo2name(algo),
+		printf(_("%s%s expected %s found %s\n"), tab, algo2name(algo),
 			s->digests[i], digest);
 		tab = "\t";
 	    }
@@ -1961,43 +1953,31 @@ cleanup:
 
     if (KF_ISSET(keys, SLINK) && strcmp(cp = rlink(name), s->slink)) {
 	LABEL;
-	(void) printf("%slink ref (%s, %s)\n", tab, cp, s->slink);
+	(void) printf(_("%s%s expected %s found %s\n"), tab, "link_ref",
+		cp, s->slink);
     }
 #if !defined(__linux__)
     if (KF_ISSET(keys, FLAGS) && s->st_flags != st->st_flags) {
-	char *db_flags = NULL;
-	char *cur_flags = NULL;
+	char *fflags;
 
-	if ((db_flags = fflagstostr(s->st_flags)) == NULL ||
-	    (cur_flags = fflagstostr(st->st_flags)) == NULL)
-	{
-	    LABEL;
-	    (void) printf("%sflags: %s %s\n", tab, fts_accpath, strerror(errno));
-	    tab = "\t";
-	    if (db_flags != NULL)
-		free(db_flags);
-	    if (cur_flags != NULL)
-		free(cur_flags);
-	} else {
-	    LABEL;
-	    REPLACE_COMMA(db_flags);
-	    REPLACE_COMMA(cur_flags);
-	    printf("%sflags (%s, %s", tab,
-			(*db_flags == '\0') ?  "-" : db_flags,
-			(*cur_flags == '\0') ?  "-" : cur_flags);
-	    tab = "\t";
-	    if (MF_ISSET(UPDATE)) {
-		if (chflags(fts_accpath, s->st_flags))
-		    (void) printf(", not modified: %s)\n", strerror(errno));
-		else	
-		    (void) printf(", modified)\n");
-	    } else
-		(void) printf(")\n");
-	    tab = "\t"; 
+	LABEL;
+	fflags = fflagstostr(s->sb.st_flags);
+	(void) printf(_("%s%s expected \"%s\""), tab, "flags", fflags);
+	fflags = _free(fflags);
 
-	    free(db_flags);
-	    free(cur_flags);
-	}
+	fflags = fflagstostr(st-st_flags);
+	(void) printf(_(" found \"%s\""), fflags);
+	fflags = _free(fflags);
+
+	if (MF_ISSET(UPDATE)) {
+	    if (chflags(fts_accpath, s->st_flags))
+		(void) printf(" not modified: %s)\n", strerror(errno));
+	    else	
+		(void) printf(" modified)\n");
+	    }
+	} else
+	    (void) printf("\n");
+	tab = "\t"; 
     }
 #endif
     return label;
@@ -2026,7 +2006,7 @@ mtreeVisitD(rpmfts fts)
     gid_t sgid;
     uid_t suid;
     mode_t smode;
-#ifdef	NOTYET
+#if !defined(__linux__)		/* XXX should be HAVE_ST_FLAGS */
     unsigned long sflags;
 #endif
     gid_t savegid = *pgid;
@@ -2036,13 +2016,15 @@ mtreeVisitD(rpmfts fts)
     gid_t maxgid = 0;
     uid_t maxuid = 0;
     mode_t maxmode = 0;
-#ifdef	NOTYET
+#if !defined(__linux__)		/* XXX should be HAVE_ST_FLAGS */
     unsigned long maxflags = 0;
 #endif
     gid_t g[MAXGID];
     uid_t u[MAXUID];
     mode_t m[MAXMODE];
+#if !defined(__linux__)		/* XXX should be HAVE_ST_FLAGS */
     unsigned long f[MAXFLAGS];
+#endif
     static int first = 1;
 
     if ((p = Fts_children(fts->t, 0)) == NULL) {
@@ -2055,7 +2037,9 @@ mtreeVisitD(rpmfts fts)
     memset(g, 0, sizeof(g));
     memset(u, 0, sizeof(u));
     memset(m, 0, sizeof(m));
+#if !defined(__linux__)		/* XXX should be HAVE_ST_FLAGS */
     memset(f, 0, sizeof(f));
+#endif
 
     for (; p != NULL; p = p->fts_link) {
 	struct stat *const st = p->fts_statp;
@@ -2076,7 +2060,7 @@ mtreeVisitD(rpmfts fts)
 		saveuid = suid;
 		maxuid = u[suid];
 	    }
-#ifdef	NOTYET
+#if !defined(__linux__)		/* XXX should be HAVE_ST_FLAGS */
 	    /*
  	    * XXX
  	    * note that the below will break when file flags
@@ -2116,25 +2100,27 @@ mtreeVisitD(rpmfts fts)
 	    if (pw != NULL && pw->pw_name != NULL && pw->pw_name[0] != '\0')
 		(void) printf(" uname=%s", pw->pw_name);
 	    else if (MF_ISSET(WARN))
-		fprintf(stderr, _("%s: Could not get uname for uid=%u\n"),
-			__progname, (unsigned) saveuid);
+		fprintf(stderr, _("%s: Could not get uname for uid=%lu\n"),
+			__progname, (unsigned long) saveuid);
 	    else
-		mtree_error("could not get uname for uid=%u", saveuid);
+		mtree_error("could not get uname for uid=%lu",
+			(unsigned long)saveuid);
 	}
 	if (KF_ISSET(keys, UID))
-	    (void) printf(" uid=%u", (unsigned)saveuid);
+	    (void) printf(" uid=%lu", (unsigned long)saveuid);
 	if (KF_ISSET(keys, GNAME)) {
 	    struct group *gr = getgrgid(savegid);
 	    if (gr != NULL && gr->gr_name != NULL && gr->gr_name[0] != '\0')
 		(void) printf(" gname=%s", gr->gr_name);
 	    else if (MF_ISSET(WARN))
-		fprintf(stderr, _("%s: Could not get gname for gid=%u\n"),
-			__progname, (unsigned) savegid);
+		fprintf(stderr, _("%s: Could not get gname for gid=%lu\n"),
+			__progname, (unsigned long) savegid);
 	    else
-		mtree_error("could not get gname for gid=%u", savegid);
+		mtree_error("could not get gname for gid=%lu",
+			(unsigned long) savegid);
 	}
 	if (KF_ISSET(keys, GID))
-	    (void) printf(" gid=%u", (unsigned)savegid);
+	    (void) printf(" gid=%lu", (unsigned long)savegid);
 	if (KF_ISSET(keys, MODE))
 	    (void) printf(" mode=%#o", (unsigned)savemode);
 	if (KF_ISSET(keys, NLINK))
@@ -2207,6 +2193,7 @@ mtreeVisitF(rpmfts fts)
 	    fts_name[nb] = '\0';
 	}
 	escname = xmalloc(nb * 4  +  1);
+	/* XXX TODO: Mac OS X uses VIS_GLOB as well */
 	(void) strvis(escname, fts_name, VIS_WHITE | VIS_OCTAL);
 
 	if (MF_ISSET(INDENT) || S_ISDIR(st->st_mode))
@@ -2233,10 +2220,11 @@ mtreeVisitF(rpmfts fts)
 	    if (pw != NULL && pw->pw_name != NULL && pw->pw_name[0] != '\0')
 		output(indent, &offset, "uname=%s", pw->pw_name);
 	    else if (MF_ISSET(WARN))
-		fprintf(stderr, _("%s: Could not get uname for uid=%u\n"),
-			__progname, (unsigned) st->st_uid);
+		fprintf(stderr, _("%s: Could not get uname for uid=%lu\n"),
+			__progname, (unsigned long) st->st_uid);
 	    else
-		mtree_error("could not get uname for uid=%u", st->st_uid);
+		mtree_error("could not get uname for uid=%lu",
+			(unsigned long)st->st_uid);
 	}
 	if (KF_ISSET(keys, UID))
 	    output(indent, &offset, "uid=%u", st->st_uid);
@@ -2247,20 +2235,21 @@ mtreeVisitF(rpmfts fts)
 	    if (gr != NULL && gr->gr_name != NULL && gr->gr_name[0] != '\0')
 		output(indent, &offset, "gname=%s", gr->gr_name);
 	    else if (MF_ISSET(WARN))
-		fprintf(stderr, _("%s: Could not get gname for gid=%u\n"),
-			__progname, (unsigned) st->st_gid);
+		fprintf(stderr, _("%s: Could not get gname for gid=%lu\n"),
+			__progname, (unsigned long) st->st_gid);
 	    else
-		mtree_error("Could not get gname for gid=%u", st->st_gid);
+		mtree_error("Could not get gname for gid=%lu",
+			(unsigned long) st->st_gid);
 	}
 	if (KF_ISSET(keys, GID))
-	   output(indent, &offset, "gid=%u", st->st_gid);
+	   output(indent, &offset, "gid=%lu", (unsigned long)st->st_gid);
     }
     if (KF_ISSET(keys, MODE) && (st->st_mode & MBITS) != fts->mode)
 	output(indent, &offset, "mode=%#o", (st->st_mode & MBITS));
     if (KF_ISSET(keys, NLINK) && st->st_nlink != 1)
-	output(indent, &offset, "nlink=%u", st->st_nlink);
+	output(indent, &offset, "nlink=%lu", (unsigned long)st->st_nlink);
     if (KF_ISSET(keys, SIZE) && S_ISREG(st->st_mode))
-	output(indent, &offset, "size=%lu", (unsigned long)st->st_size);
+	output(indent, &offset, "size=%llu", (unsigned long long)st->st_size);
     if (KF_ISSET(keys, TIME)) {
 	struct timeval tv;
 #if defined(TIMESPEC_TO_TIMEVAL)
@@ -2269,7 +2258,9 @@ mtreeVisitF(rpmfts fts)
 	tv.tv_sec = (long)st->st_mtime;
 	tv.tv_usec = 0L;
 #endif
-	output(indent, &offset, "time=%lu.%lu", tv.tv_sec, tv.tv_usec);
+	output(indent, &offset, "time=%lu.%lu",
+		(unsigned long) tv.tv_sec, 
+		(unsigned long) tv.tv_usec);
     }
 
     /* Only files can have digests. */
@@ -2283,7 +2274,8 @@ mtreeVisitF(rpmfts fts)
 
 	    if (fd == NULL || Ferror(fd)) {
 #ifdef	NOTYET	/* XXX can't exit in a library API. */
-		(void) printf("%scksum: %s: %s\n", tab, fts_accpath, Fstrerror(fd));
+		(void) fprintf(stderr, _("%s: %s: cksum: %s\n"),
+			__progname, fts_accpath, Fstrerror(fd));
 		goto cleanup;
 #else
 		mtree_error("%s: %s", fts_accpath, Fstrerror(fd));
@@ -2307,7 +2299,8 @@ mtreeVisitF(rpmfts fts)
 	    }
 	    if (i) {
 #ifdef	NOTYET	/* XXX can't exit in a library API. */
-		(void) printf("%scksum: %s: %s\n", tab, fts_accpath, Fstrerror(fd));
+		(void) fprintf(stderr, _("%s: %s: cksum: %s\n"),
+			__progname, fts_accpath, Fstrerror(fd));
 #else
 		mtree_error("%s: %s", fts_accpath, Fstrerror(fd));
 		/*@notreached@*/
@@ -2412,15 +2405,13 @@ cleanup:
 #if defined(__linux__)
 	output(indent, &offset, "flags=none");
 #else
-	char * file_flags = fflagstostr(st->st_flags);
+	char * fflags = fflagstostr(st->st_flags);
 
-	if (file_flags == NULL)
-	    mtree_error("%s", strerror(errno));
-	if (*file_flags != '\0')
-	    output(indent, &offset, "flags=%s", file_flags);
+	if (fflags != NULL && fflags[0] != '\0')
+	    output(indent, &offset, "flags=%s", fflags);
 	else
 	    output(indent, &offset, "flags=none");
-	free(file_flags);
+	free(fflags);
 #endif
     }
     (void) putchar('\n');
@@ -2514,13 +2505,13 @@ dsort(const FTSENT ** a, const FTSENT ** b)
 int
 mtreeCWalk(rpmfts fts)
 {
-    int indent = 0;
     int rval = 0;
 
     fts->t = Fts_open((char *const *)fts->paths, fts->ftsoptions, dsort);
     if (fts->t == NULL)
 	mtree_error("Fts_open: %s", strerror(errno));
     while ((fts->p = Fts_read(fts->t)) != NULL) {
+	int indent = 0;
 	if (MF_ISSET(INDENT))
 	    indent = fts->p->fts_level * 4;
 	if (mtreeCheckExcludes(fts->p->fts_name, fts->p->fts_path)) {
@@ -2568,8 +2559,10 @@ mtreeMiss(rpmfts fts, /*@null@*/ NODE * p, char * tail)
 {
     int create;
     char *tp;
+    const char *type;
 
     for (; p != NULL; p = p->next) {
+	/* XXX Mac OS X doesn't do this. */
 	if (KF_ISSET(p->flags, OPT) && !KF_ISSET(p->flags, VISIT))
 	    continue;
 	if (p->type != F_DIR && (MF_ISSET(DIRSONLY) || KF_ISSET(p->flags, VISIT)))
@@ -2578,31 +2571,54 @@ mtreeMiss(rpmfts fts, /*@null@*/ NODE * p, char * tail)
 	if (!KF_ISSET(p->flags, VISIT)) {
 	    /* Don't print missing message if file exists as a
 	       symbolic link and the -q flag is set. */
-	    struct stat statbuf;
+	    struct stat sb;
 
-	    if (MF_ISSET(QUIET) && Stat(fts->path, &statbuf) == 0)
+	    if (MF_ISSET(QUIET) && Stat(fts->path, &sb) == 0)
 		p->flags |= MTREE_KEYS_VISIT;
 	    else
-		(void) printf("missing: %s", fts->path);
+		(void) printf(_("missing: %s"), fts->path);
 	}
-	if (p->type != F_DIR) {
+	if (p->type != F_DIR && p->type != F_LINK) {
 	    (void) putchar('\n');
 	    continue;
 	}
 
 	create = 0;
+	type = (p->type == F_LINK ? "symlink" : "directory");
 	if (!KF_ISSET(p->flags, VISIT) && MF_ISSET(UPDATE)) {
-	    if (!(KF_ISSET(p->flags, UID) || KF_ISSET(p->flags, UNAME)))
-		(void) printf(" (not created: user not specified)");
+	    if (!(KF_ISSET(p->flags, UID) && KF_ISSET(p->flags, UNAME)))
+		(void) printf(_(" (%s not created: user not specified)"), type);
 	    else if (!(KF_ISSET(p->flags, GID) || KF_ISSET(p->flags, GNAME)))
-		(void) printf(" (not created: group not specified)");
-	    else if (!KF_ISSET(p->flags, MODE))
-		(void) printf(" (not created: mode not specified)");
+		(void) printf(_(" (%s not created: group not specified))"), type);
+	    else if (p->type == F_LINK) {
+		if (Symlink(p->slink, fts->path))
+		    (void) printf(_(" (%s not created: %s)\n"), type,
+				strerror(errno));
+		else
+		    (void) printf(_(" (%s created)\n"), type);
+		if (lchown(fts->path, p->sb.st_uid, p->sb.st_gid) == -1) {
+		    const char * what;
+		    int serr = errno;
+
+		    if (p->sb.st_uid == (uid_t)-1)
+			what = "group";
+		    else if (lchown(fts->path, (uid_t)-1, p->sb.st_gid) == -1)
+			what = "user & group";
+		    else {
+			what = "user";
+			errno = serr;
+		    }
+		    (void) printf(_("%s: %s not modified: %s\n"),
+				fts->path, what, strerror(errno));
+		}
+		continue;
+	    } else if (!KF_ISSET(p->flags, MODE))
+		(void) printf(_(" (%s not created: mode not specified)"), type);
 	    else if (Mkdir(fts->path, S_IRWXU))
-		(void) printf(" (not created: %s)", strerror(errno));
+		(void) printf(_(" (%s not created: %s)"),type, strerror(errno));
 	    else {
 		create = 1;
-		(void) printf(" (created)");
+		(void) printf(_(" (%s created)"), type);
 	    }
 	}
 
@@ -2617,13 +2633,30 @@ mtreeMiss(rpmfts fts, /*@null@*/ NODE * p, char * tail)
 	if (!create)
 	    continue;
 	if (Chown(fts->path, p->sb.st_uid, p->sb.st_gid)) {
-	    (void) printf("%s: user/group/mode not modified: %s\n",
-		    fts->path, strerror(errno));
+	    const char * what;
+	    int serr = errno;
+
+	    if (p->sb.st_uid == (uid_t)-1)
+		what = "group";
+	    else if (Chown(fts->path, (uid_t)-1, p->sb.st_gid) == -1)
+		what = "user & group";
+	    else {
+		what = "user";
+		errno = serr;
+	    }
+	    (void) printf(_("%s: %s not modified: %s\n"),
+		    fts->path, what, strerror(errno));
 	    continue;
 	}
 	if (Chmod(fts->path, p->sb.st_mode))
-	    (void) printf("%s: permissions not set: %s\n",
+	    (void) printf(_("%s: permissions not set: %s\n"),
 		    fts->path, strerror(errno));
+#if !defined(__linux__)		/* XXX should be HAVE_ST_FLAGS */
+	if (KF_ISSET(p->flags, FLAGS) && p->st_flags != 0 &&
+                    chflags(fts->path, p->st_flags))
+                        (void) printf(_("%s: file flags not set: %s\n"),
+				fts->path, strerror(errno));
+#endif
     }
 }
 
@@ -2638,8 +2671,13 @@ mtreeVWalk(rpmfts fts)
     if (fts->t == NULL)
 	mtree_error("Fts_open: %s", strerror(errno));
     while ((fts->p = Fts_read(fts->t)) != NULL) {
+	if (mtreeCheckExcludes(fts->p->fts_name, fts->p->fts_path)) {
+	    (void) Fts_set(fts->t, fts->p, FTS_SKIP);
+	    continue;
+	}
 	switch(fts->p->fts_info) {
 	case FTS_D:
+	case FTS_SL:
 	   /*@switchbreak@*/ break;
 	case FTS_DP:
 	    if (specdepth > fts->p->fts_level) {
@@ -2687,13 +2725,13 @@ mtreeVWalk(rpmfts fts)
 	}
 
 	if (!MF_ISSET(IGNORE)) {
-	    (void) printf("extra: %s", SKIPDOTSLASH(fts->p->fts_path));
+	    (void) printf("%s extra", SKIPDOTSLASH(fts->p->fts_path));
 	    if (MF_ISSET(REMOVE)) {
 		if ((S_ISDIR(fts->p->fts_statp->st_mode)
 		    ? Rmdir : Unlink)(fts->p->fts_accpath)) {
-			(void) printf(", not removed: %s", strerror(errno));
+			(void) printf(_(", not removed: %s"), strerror(errno));
 		} else
-			(void) printf(", removed");
+			(void) printf(_(", removed"));
 	    }
 	    (void) putchar('\n');
 	}
@@ -2973,19 +3011,20 @@ main(int argc, char *argv[])
 
     } else {
 /*@-evalorder@*/
-	fts->root = mtreeSpec(fts);
+	fts->root = mtreeSpec(fts, NULL);
 /*@=evalorder@*/
 	fts->path = xmalloc(MAXPATHLEN);
+	/* XXX TODO: Mac OS X also does mtree_specpec */
 	rc = mtreeVWalk(fts);
 	mtreeMiss(fts, fts->root, fts->path);
 	fts->path = _free(fts->path);
 	if (MF_ISSET(SEEDED))
 	    (void) fprintf(stderr, _("%s: %s checksum: %u\n"), __progname,
 			fts->fullpath, (unsigned) fts->crc_total);
+	if (MF_ISSET(MISMATCHOK) && (rc == MISMATCHEXIT))
+	    rc = 0;
     }
 
-    if (MF_ISSET(MISMATCHOK) && (rc == MISMATCHEXIT))
-	rc = 0;
 
     (void) rpmswExit(&dc_totalops, 0);
     if (_rpmsw_stats) {
