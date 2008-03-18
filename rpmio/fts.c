@@ -155,7 +155,7 @@ static char sccsid[] = "@(#)fts.c	8.6 (Berkeley) 8/14/94";
 #endif
 
 /*@unchecked@*/
-int _fts_debug;
+int _fts_debug = 0;
 
 /*@only@*/ /*@null@*/
 static FTSENT *	fts_alloc(FTS * sp, const char * name, int namelen)
