@@ -390,6 +390,38 @@ parsekey(char *name, /*@out@*/ uint32_t *needvaluep)
     return k->val;
 }
 
+static /*@observer@*/ /*@null@*/ const char *
+algo2tagname(uint32_t algo)
+	/*@*/
+{
+    const char * tagname = NULL;
+
+    switch (algo) {
+    case PGPHASHALGO_MD5:	tagname = "md5digest";		break;
+    case PGPHASHALGO_SHA1:	tagname = "sha1digest";		break;
+    case PGPHASHALGO_RIPEMD160:	tagname = "rmd160digest";	break;
+    case PGPHASHALGO_MD2:	tagname = "md2digest";		break;
+    case PGPHASHALGO_TIGER192:	tagname = "tiger192digest";	break;
+    case PGPHASHALGO_HAVAL_5_160: tagname = "haval160digest";	break;
+    case PGPHASHALGO_SHA256:	tagname = "sha256digest";	break;
+    case PGPHASHALGO_SHA384:	tagname = "sha384digest";	break;
+    case PGPHASHALGO_SHA512:	tagname = "sha512digest";	break;
+    case PGPHASHALGO_MD4:	tagname = "md4digest";		break;
+    case PGPHASHALGO_RIPEMD128:	tagname = "rmd128digest";	break;
+    case PGPHASHALGO_CRC32:	tagname = "crc32";		break;
+    case PGPHASHALGO_ADLER32:	tagname = "adler32";		break;
+    case PGPHASHALGO_CRC64:	tagname = "crc64";		break;
+    case PGPHASHALGO_JLU32:	tagname = "jlu32";		break;
+    case PGPHASHALGO_SHA224:	tagname = "sha224digest";	break;
+    case PGPHASHALGO_RIPEMD256:	tagname = "rmd256digest";	break;
+    case PGPHASHALGO_RIPEMD320:	tagname = "rmd320digest";	break;
+    case PGPHASHALGO_SALSA10:	tagname = "salsa10";		break;
+    case PGPHASHALGO_SALSA20:	tagname = "salsa20";		break;
+    default:			tagname = NULL;			break;
+    }
+    return tagname;
+}
+
 #if defined(HAVE_ST_FLAGS)
 static const char *
 flags_to_string(u_long fflags)
@@ -1756,16 +1788,18 @@ shownode(NODE *n, enum mtreeKeys_e keys, const char *path)
 	    printf(" uid=%lu", (unsigned long) n->sb.st_uid);
     }
 
-#ifdef	NOTYET
-    if (KF_ISSET(keys, MD5))
-	printf(" md5digest=%s", n->md5digest);
-    if (KF_ISSET(keys, SHA1))
-	printf(" sha1digest=%s", n->sha1digest);
-    if (KF_ISSET(keys, RMD160))
-	printf(" rmd160digest=%s", n->rmd160digest);
-    if (KF_ISSET(keys, SHA256))
-	printf(" sha256digest=%s", n->sha256digest);
-#endif
+    /* Output all the digests. */
+    if (KF_ISSET(keys, DIGEST)) {
+	int i;
+
+	if (n->algos != NULL)
+	for (i = 0; i < (int) n->algos->nvals; i++) {
+	    uint32_t algo = n->algos->vals[i];
+	    const char * tagname = algo2tagname(algo);
+	    if (tagname != NULL)
+		printf(" %s=%s", tagname, n->digests[i]);
+	}
+    }
 
 #if defined(HAVE_ST_FLAGS)
     if (KF_ISSET(keys, FLAGS))
@@ -1851,16 +1885,24 @@ compare_nodes(NODE *n1, NODE *n2, const char *path)
     if (FF(n1, n2, MTREE_KEYS_UNAME, sb.st_uid))
 	differs |= MTREE_KEYS_UNAME;
 
-#ifdef	NOTYET
-    if (FS(n1, n2, MTREE_KEYS_MD5, md5digest))
-	differs |= MTREE_KEYS_MD5;
-    if (FS(n1, n2, MTREE_KEYS_SHA1, sha1digest))
-	differs |= MTREE_KEYS_SHA1;
-    if (FS(n1, n2, MTREE_KEYS_RMD160, rmd160digest))
-	differs |= MTREE_KEYS_RMD160;
-    if (FS(n1, n2, MTREE_KEYS_SHA256, sha256digest))
-	differs |= MTREE_KEYS_SHA256;
-#endif
+    /* Compare all the digests. */
+    if (KF_ISSET(n1->flags, DIGEST) || KF_ISSET(n2->flags, DIGEST)) {
+	if ((KF_ISSET(n1->flags, DIGEST) != KF_ISSET(n2->flags, DIGEST))
+	 || (n1->algos == NULL || n2->algos == NULL)
+	 || (n1->algos->nvals != n2->algos->nvals))
+	    differs |= MTREE_KEYS_DIGEST;
+	else {
+	    int i;
+
+	    for (i = 0; i < (int) n1->algos->nvals; i++) {
+		if ((n1->algos->vals[i] == n2->algos->vals[i])
+		 && !strcmp(n1->digests[i], n2->digests[i]))
+		    continue;
+		differs |= MTREE_KEYS_DIGEST;
+		break;
+	    }
+	}
+    }
 
 #if defined(HAVE_ST_FLAGS)
     if (FF(n1, n2, MTREE_KEYS_FLAGS, sb.st_flags))
@@ -2588,7 +2630,6 @@ mtreeVisitF(rpmfts fts)
 		const char * digest = NULL;
 		size_t digestlen = 0;
 		uint32_t algo;
-		const char * tagname;
 
 		algo = fts->algos->vals[i];
 		fdFiniDigest(fd, algo, &digest, &digestlen, asAscii);
@@ -2598,59 +2639,15 @@ assert(digest != NULL);
 		if (digest == NULL)
 		    mtree_error("%s: %s", fts_accpath, Fstrerror(fd));
 #endif
-		tagname = NULL;
-		switch (algo) {
-		case PGPHASHALGO_MD5:
-		    tagname = "md5digest";	/*@switchbreak@*/ break;
-		case PGPHASHALGO_SHA1:
-		    tagname = "sha1digest";	/*@switchbreak@*/ break;
-		case PGPHASHALGO_RIPEMD160:
-		    tagname = "rmd160digest";	/*@switchbreak@*/ break;
-		case PGPHASHALGO_MD2:
-		    tagname = "md2digest";	/*@switchbreak@*/ break;
-		case PGPHASHALGO_TIGER192:
-		    tagname = "tiger192digest";	/*@switchbreak@*/ break;
-		case PGPHASHALGO_HAVAL_5_160:
-		    tagname = "haval160digest";	/*@switchbreak@*/ break;
-		case PGPHASHALGO_SHA256:
-		    tagname = "sha256digest";	/*@switchbreak@*/ break;
-		case PGPHASHALGO_SHA384:
-		    tagname = "sha384digest";	/*@switchbreak@*/ break;
-		case PGPHASHALGO_SHA512:
-		    tagname = "sha512digest";	/*@switchbreak@*/ break;
-		case PGPHASHALGO_MD4:
-		    tagname = "md4digest";	/*@switchbreak@*/ break;
-		case PGPHASHALGO_RIPEMD128:
-		    tagname = "rmd128digest";	/*@switchbreak@*/ break;
-		case PGPHASHALGO_CRC32:
-		    tagname = "crc32";		/*@switchbreak@*/ break;
-		case PGPHASHALGO_ADLER32:
-		    tagname = "adler32";	/*@switchbreak@*/ break;
-		case PGPHASHALGO_CRC64:
-		    tagname = "crc64";		/*@switchbreak@*/ break;
-		case PGPHASHALGO_JLU32:
-		    tagname = "jlu32";		/*@switchbreak@*/ break;
-		case PGPHASHALGO_SHA224:
-		    tagname = "sha224digest";	/*@switchbreak@*/ break;
-		case PGPHASHALGO_RIPEMD256:
-		    tagname = "rmd256digest";	/*@switchbreak@*/ break;
-		case PGPHASHALGO_RIPEMD320:
-		    tagname = "rmd320digest";	/*@switchbreak@*/ break;
-		case PGPHASHALGO_SALSA10:
-		    tagname = "salsa10";	/*@switchbreak@*/ break;
-		case PGPHASHALGO_SALSA20:
-		    tagname = "salsa20";	/*@switchbreak@*/ break;
-		default:
-		    tagname = NULL;
+		{   const char * tagname = algo2tagname(algo);
+		    if (tagname != NULL)
+			output(indent, &offset, "%s=%s", tagname, digest);
 		}
-		if (tagname != NULL)
-		    output(indent, &offset, "%s=%s", tagname, digest);
 		digest = _free(digest);
 		digestlen = 0;
 	    }
 
-	/* Accumulate statistics and clean up. */
-cleanup:
+cleanup:    /* Accumulate statistics and clean up. */
 	    if (fd != NULL) {
 		(void) rpmswAdd(&dc_readops, fdstat_op(fd, FDSTAT_READ));
 		(void) rpmswAdd(&dc_digestops, fdstat_op(fd, FDSTAT_DIGEST));
