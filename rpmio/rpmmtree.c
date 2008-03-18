@@ -159,10 +159,8 @@ struct rpmfts_s {
 
 /*@dependent@*/ /*@null@*/
     FILE * spec1;
-#ifdef	NOTYET
 /*@dependent@*/ /*@null@*/
     FILE * spec2;
-#endif
 
 /*@null@*/
     const char * fullpath;
@@ -194,14 +192,18 @@ struct rpmfts_s {
 extern "C" {
 #endif
 
-static int mtreeCWalk(rpmfts fts)
-	/*@globals h_errno, fileSystem, internalState @*/
-	/*@modifies fts, fileSystem, internalState @*/;
-
 /*@null@*/
 static NODE * mtreeSpec(rpmfts fts, /*@null@*/ FILE * fp)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fts, fp, fileSystem, internalState @*/;
+
+static int mtreeVSpec(rpmfts fts)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fts, fileSystem, internalState @*/;
+
+static int mtreeCWalk(rpmfts fts)
+	/*@globals h_errno, fileSystem, internalState @*/
+	/*@modifies fts, fileSystem, internalState @*/;
 
 static int mtreeVWalk(rpmfts fts)
 	/*@globals h_errno, fileSystem, internalState @*/
@@ -1686,7 +1688,6 @@ inotype(mode_t mode)
     /*@notreached@*/
 }
 
-#ifdef NOTYET
 /*-
  * Copyright (c) 2003 Poul-Henning Kamp
  * All rights reserved.
@@ -1722,34 +1723,40 @@ inotype(mode_t mode)
 
 static void
 shownode(NODE *n, enum mtreeKeys_e keys, const char *path)
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/
 {
-    printf("%s%s %s", path, n->name, ftype(n->type));
+    printf("%s%s %s", path, n->name, ftype((unsigned)n->type));
     if (KF_ISSET(keys, CKSUM))
-	printf(" cksum=%lu", n->cksum);
+	printf(" cksum=%lu", (unsigned long) n->cksum);
     if (KF_ISSET(keys, GID))
-	printf(" gid=%d", n->sb.st_gid);
+	printf(" gid=%lu", (unsigned long) n->sb.st_gid);
     if (KF_ISSET(keys, GNAME)) {
 	const char * gname = gidToGname(n->sb.st_gid);
 	if (gname != NULL)
 	    printf(" gname=%s", gname);
 	else
-	    printf(" gid=%d", n->sb.st_gid);
+	    printf(" gid=%lu", (unsigned long) n->sb.st_gid);
     }
     if (KF_ISSET(keys, MODE))
-	printf(" mode=%o", n->sb.st_mode);
+	printf(" mode=%o", (unsigned) n->sb.st_mode);
     if (KF_ISSET(keys, NLINK))
-	printf(" nlink=%d", n->sb.st_nlink);
+	printf(" nlink=%lu", (unsigned long) n->sb.st_nlink);
+/*@-duplicatequals@*/
     if (KF_ISSET(keys, SIZE))
-	printf(" size=%jd", (intmax_t)n->sb.st_size);
+	printf(" size=%llu", (unsigned long long)n->sb.st_size);
+/*@=duplicatequals@*/
     if (KF_ISSET(keys, UID))
-	printf(" uid=%d", n->sb.st_uid);
+	printf(" uid=%lu", (unsigned long) n->sb.st_uid);
     if (KF_ISSET(keys, UNAME)) {
 	const char * uname = uidToUname(n->sb.st_uid);
 	if (uname != NULL)
 	    printf(" uname=%s", uname);
 	else
-	    printf(" uid=%d", n->sb.st_uid);
+	    printf(" uid=%lu", (unsigned long) n->sb.st_uid);
     }
+
+#ifdef	NOTYET
     if (KF_ISSET(keys, MD5))
 	printf(" md5digest=%s", n->md5digest);
     if (KF_ISSET(keys, SHA1))
@@ -1758,6 +1765,7 @@ shownode(NODE *n, enum mtreeKeys_e keys, const char *path)
 	printf(" rmd160digest=%s", n->rmd160digest);
     if (KF_ISSET(keys, SHA256))
 	printf(" sha256digest=%s", n->sha256digest);
+#endif
 
 #if defined(HAVE_ST_FLAGS)
     if (KF_ISSET(keys, FLAGS))
@@ -1768,6 +1776,8 @@ shownode(NODE *n, enum mtreeKeys_e keys, const char *path)
 
 static int
 mismatch(NODE *n1, NODE *n2, enum mtreeKeys_e  differ, const char *path)
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/
 {
     enum mtreeKeys_e keys = _rpmfts->keys;
 
@@ -1791,8 +1801,11 @@ mismatch(NODE *n1, NODE *n2, enum mtreeKeys_e  differ, const char *path)
 
 static int
 compare_nodes(NODE *n1, NODE *n2, const char *path)
+	/*@globals fileSystem @*/
+	/*@modifies n1, n2, fileSystem @*/
 {
-	enum mtreeKeys_e differs = MTREE_KEYS_NONE;
+    enum mtreeKeys_e differs = MTREE_KEYS_NONE;
+    int xx;
 	
     if (n1 != NULL && n1->type == F_LINK)
 	n1->flags &= ~MTREE_KEYS_MODE;
@@ -1800,17 +1813,17 @@ compare_nodes(NODE *n1, NODE *n2, const char *path)
 	n2->flags &= ~MTREE_KEYS_MODE;
     if (n1 == NULL && n2 != NULL) {
 	differs = n2->flags;
-	mismatch(n1, n2, differs, path);
+	xx = mismatch(n1, n2, differs, path);
 	return 1;
     }
     if (n1 != NULL && n2 == NULL) {
 	differs = n1->flags;
-	mismatch(n1, n2, differs, path);
+	xx = mismatch(n1, n2, differs, path);
 	return 1;
     }
     if (n1->type != n2->type) {
 	differs = MTREE_KEYS_NONE;	/* XXX unneeded */
-	mismatch(n1, n2, differs, path);
+	xx = mismatch(n1, n2, differs, path);
 	return 1;
     }
     if (FF(n1, n2, MTREE_KEYS_CKSUM, cksum))
@@ -1825,15 +1838,20 @@ compare_nodes(NODE *n1, NODE *n2, const char *path)
 	differs |= MTREE_KEYS_NLINK;
     if (FF(n1, n2, MTREE_KEYS_SIZE, sb.st_size))
 	differs |= MTREE_KEYS_SIZE;
-    if (FS(n1, n2, MTREE_KEYS_SLINK, sb.slink))
+
+    if (FS(n1, n2, MTREE_KEYS_SLINK, slink))
 	differs |= MTREE_KEYS_SLINK;
+
+/*@-type@*/
     if (FM(n1, n2, MTREE_KEYS_TIME, sb.st_mtimespec))
 	differs |= MTREE_KEYS_TIME;
+/*@=type@*/
     if (FF(n1, n2, MTREE_KEYS_UID, sb.st_uid))
 	differs |= MTREE_KEYS_UID;
     if (FF(n1, n2, MTREE_KEYS_UNAME, sb.st_uid))
 	differs |= MTREE_KEYS_UNAME;
 
+#ifdef	NOTYET
     if (FS(n1, n2, MTREE_KEYS_MD5, md5digest))
 	differs |= MTREE_KEYS_MD5;
     if (FS(n1, n2, MTREE_KEYS_SHA1, sha1digest))
@@ -1842,6 +1860,7 @@ compare_nodes(NODE *n1, NODE *n2, const char *path)
 	differs |= MTREE_KEYS_RMD160;
     if (FS(n1, n2, MTREE_KEYS_SHA256, sha256digest))
 	differs |= MTREE_KEYS_SHA256;
+#endif
 
 #if defined(HAVE_ST_FLAGS)
     if (FF(n1, n2, MTREE_KEYS_FLAGS, sb.st_flags))
@@ -1849,14 +1868,16 @@ compare_nodes(NODE *n1, NODE *n2, const char *path)
 #endif
 
     if (differs) {
-	mismatch(n1, n2, differs, path);
+	xx = mismatch(n1, n2, differs, path);
 	return 1;
     }
     return 0;
 }
 
 static int
-walk_in_the_forest(NODE *t1, NODE *t2, const char *path)
+mtreeSWalk(NODE *t1, NODE *t2, const char *path)
+	/*@globals fileSystem @*/
+	/*@modifies t1, t2, fileSystem @*/
 {
     NODE *c1 = (t1 != NULL ? t1->child : NULL);
     NODE *c2 = (t2 != NULL ? t2->child : NULL);
@@ -1887,26 +1908,28 @@ walk_in_the_forest(NODE *t1, NODE *t2, const char *path)
 		}
 	    }
 	}
+/*@-noeffectuncon -unrecog@*/
 	if (c1 == NULL && c2->type == F_DIR) {
 	    asprintf(&np, "%s%s/", path, c2->name);
-	    i = walk_in_the_forest(c1, c2, np);
+	    i = mtreeSWalk(c1, c2, np);
 	    free(np);
 	    i += compare_nodes(c1, c2, path);
 	} else if (c2 == NULL && c1->type == F_DIR) {
 	    asprintf(&np, "%s%s/", path, c1->name);
-	    i = walk_in_the_forest(c1, c2, np);
+	    i = mtreeSWalk(c1, c2, np);
 	    free(np);
 	    i += compare_nodes(c1, c2, path);
 	} else if (c1 == NULL || c2 == NULL) {
 	    i = compare_nodes(c1, c2, path);
 	} else if (c1->type == F_DIR && c2->type == F_DIR) {
 	    asprintf(&np, "%s%s/", path, c1->name);
-	    i = walk_in_the_forest(c1, c2, np);
+	    i = mtreeSWalk(c1, c2, np);
 	    free(np);
 	    i += compare_nodes(c1, c2, path);
 	} else {
 	    i = compare_nodes(c1, c2, path);
 	}
+/*@=noeffectuncon =unrecog@*/
 	r += i;
 	c1 = n1;
 	c2 = n2;
@@ -1915,17 +1938,16 @@ walk_in_the_forest(NODE *t1, NODE *t2, const char *path)
 }
 
 int
-mtree_specspec(FILE *fi, FILE *fj)
+mtreeVSpec(rpmfts fts)
 {
-	NODE * root1 = mtree_readspec(fi);
-	NODE * root2 = mtree_readspec(fj);
-	int rval = walk_in_the_forest(root1, root2, "");
+    NODE * root1 = mtreeSpec(fts, fts->spec1);
+    NODE * root2 = mtreeSpec(fts, fts->spec2);
+    int rval = 0;
 
-	rval += compare_nodes(root1, root2, "");
-	return (rval > 0 ? MISMATCHEXIT : 0);
+    rval = mtreeSWalk(root1, root2, "");
+    rval += compare_nodes(root1, root2, "");
+    return (rval > 0 ? MISMATCHEXIT : 0);
 }
-
-#endif
 
 /*==============================================================*/
 
@@ -3060,11 +3082,9 @@ static void mtreeArgCallback(poptContext con,
 	if (_rpmfts->spec1 == NULL) {
 	    if ((_rpmfts->spec1 = fopen(arg, "r")) != NULL)
 		mtree_error("%s: %s", arg, strerror(errno));
-#ifdef	NOTYET
 	} else if (_rpmfts->spec2 == NULL) {
 	    if ((_rpmfts->spec2 = fopen(arg, "r")) != NULL)
 		mtree_error("%s: %s", arg, strerror(errno));
-#endif
 	} else {
 	    /* XXX error message, too many -f options. */
 	    poptPrintUsage(con, stderr, 0);
@@ -3347,39 +3367,41 @@ main(int argc, char *argv[])
     (void) rpmswEnter(&dc_totalops, -1);
 
     if (MF_ISSET(CREATE)) {
-	if (!MF_ISSET(NOCOMMENT)) {
-	    time_t clock;
-	    char host[MAXHOSTNAMELEN];
+	    if (!MF_ISSET(NOCOMMENT)) {
+		time_t clock;
+		char host[MAXHOSTNAMELEN];
 
-	    (void) time(&clock);
-	    (void) gethostname(host, sizeof(host));
-	    (void) printf("#\t   user: %s\n", __getlogin());
-	    (void) printf("#\tmachine: %s\n", host);
-	    for (i = 0; fts->paths[i] != NULL; i++)
-		(void) printf("#\t   tree: %s\n", fts->paths[i]);
-	    (void) printf("#\t   date: %s", ctime(&clock));
-	}
-	rc = mtreeCWalk(fts);
-	if (MF_ISSET(SEEDED) && KF_ISSET(fts->keys, CKSUM))
-	    (void) fprintf(stderr, _("%s: %s checksum: %u\n"), __progname,
+		(void) time(&clock);
+		(void) gethostname(host, sizeof(host));
+		(void) printf("#\t   user: %s\n", __getlogin());
+		(void) printf("#\tmachine: %s\n", host);
+		for (i = 0; fts->paths[i] != NULL; i++)
+		    (void) printf("#\t   tree: %s\n", fts->paths[i]);
+		(void) printf("#\t   date: %s", ctime(&clock));
+	    }
+	    rc = mtreeCWalk(fts);
+	    if (MF_ISSET(SEEDED) && KF_ISSET(fts->keys, CKSUM))
+		(void) fprintf(stderr, _("%s: %s checksum: %u\n"), __progname,
 			fts->fullpath, (unsigned)fts->crc_total);
 
     } else {
+	if (fts->spec2 != NULL) {
+	    rc = mtreeVSpec(fts);
+	} else {
 /*@-evalorder@*/
-	fts->root = mtreeSpec(fts, fts->spec1);
+	    fts->root = mtreeSpec(fts, fts->spec1);
 /*@=evalorder@*/
-	fts->path = xmalloc(MAXPATHLEN);
-	/* XXX TODO: Mac OS X also does mtree_specpec */
-	rc = mtreeVWalk(fts);
-	mtreeMiss(fts, fts->root, fts->path);
-	fts->path = _free(fts->path);
-	if (MF_ISSET(SEEDED))
-	    (void) fprintf(stderr, _("%s: %s checksum: %u\n"), __progname,
+	    fts->path = xmalloc(MAXPATHLEN);
+	    rc = mtreeVWalk(fts);
+	    mtreeMiss(fts, fts->root, fts->path);
+	    fts->path = _free(fts->path);
+	    if (MF_ISSET(SEEDED))
+		(void) fprintf(stderr, _("%s: %s checksum: %u\n"), __progname,
 			fts->fullpath, (unsigned) fts->crc_total);
-	if (MF_ISSET(MISMATCHOK) && (rc == MISMATCHEXIT))
-	    rc = 0;
+	}
     }
-
+    if (MF_ISSET(MISMATCHOK) && (rc == MISMATCHEXIT))
+	rc = 0;
 
     (void) rpmswExit(&dc_totalops, 0);
     if (_rpmsw_stats) {
@@ -3393,12 +3415,10 @@ exit:
 	(void) fclose(fts->spec1);
 	fts->spec1 = NULL;
     }
-#ifdef	NOTYET
     if (fts->spec2 != NULL && fileno(fts->spec2) > 2) {
 	(void) fclose(fts->spec2);
 	fts->spec2 = NULL;
     }
-#endif
     fts->paths = argvFree(fts->paths);
 #if defined(HAVE_ST_FLAGS)
     fts->f = _free(fts->f);
