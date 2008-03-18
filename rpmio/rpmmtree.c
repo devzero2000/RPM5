@@ -56,6 +56,7 @@ static const char copyright[] =
 
 #include <rpmio_internal.h>	/* XXX fdInitDigest() et al */
 #include <fts.h>
+#include <ugid.h>
 #include <poptIO.h>
 
 #define	_MTREE_INTERNAL
@@ -168,6 +169,21 @@ struct rpmfts_s {
 /*@null@*/
     char * path;
     int ftsoptions;
+
+#if defined(HAVE_ST_FLAGS)
+    size_t maxf;
+/*@null@*/
+    unsigned long * f;
+#endif
+    size_t maxg;
+/*@null@*/
+    gid_t * g;
+    size_t maxm;
+/*@null@*/
+    mode_t * m;
+    size_t maxu;
+/*@null@*/
+    uid_t * u;
 };
 #endif	/* _MTREE_INTERNAL */
 
@@ -1366,8 +1382,7 @@ set(char * t, NODE * ip)
 		mtree_error("invalid checksum %s", val);
 	    /*@switchbreak@*/ break;
 	case MTREE_KEYS_FLAGS:
-#if defined(__linux__)
-#else
+#if defined(HAVE_ST_FLAGS)
 	    if (!strcmp(val, "none")) {
 		ip->sb.st_flags = 0;
 		/*@switchbreak@*/ break;
@@ -1385,11 +1400,9 @@ set(char * t, NODE * ip)
 		mtree_error("invalid gid %s", val);
 	    /*@switchbreak@*/ break;
 	case MTREE_KEYS_GNAME:
-	{   struct group *gr = getgrnam(val);
-	    if (gr == NULL || gr->gr_name == NULL || gr->gr_name[0] == '\0')
+	    if (gnameToGid(val, &ip->sb.st_gid) == -1)
 	 	mtree_error("unknown group %s", val);
-	    ip->sb.st_gid = gr->gr_gid;
-	}   /*@switchbreak@*/ break;
+	    /*@switchbreak@*/ break;
 	case MTREE_KEYS_IGN:
 	    /* just set flag bit */
 	    /*@switchbreak@*/ break;
@@ -1482,11 +1495,9 @@ set(char * t, NODE * ip)
 		mtree_error("invalid uid %s", val);
 	    /*@switchbreak@*/ break;
 	case MTREE_KEYS_UNAME:
-	{   struct passwd *pw = getpwnam(val);
-	    if (pw == NULL || pw->pw_name == NULL || pw->pw_name[0] == '\0')
+	    if (unameToUid(val, &ip->sb.st_uid) == -1)
 	 	mtree_error("unknown user %s", val);
-	    ip->sb.st_uid = pw->pw_uid;
-	}   /*@switchbreak@*/ break;
+	    /*@switchbreak@*/ break;
 	case MTREE_KEYS_NONE:
 	case MTREE_KEYS_DONE:
 	case MTREE_KEYS_MAGIC:
@@ -1718,11 +1729,11 @@ shownode(NODE *n, enum mtreeKeys_e keys, const char *path)
     if (KF_ISSET(keys, GID))
 	printf(" gid=%d", n->sb.st_gid);
     if (KF_ISSET(keys, GNAME)) {
-	struct group *gr = getgrgid(n->sb.st_gid);
-	if (gr == NULL || gr->gr_name == NULL || gr->gr_name[0] == '\0')
-	    printf(" gid=%d", n->sb.st_gid);
+	const char * gname = gidToGname(n->sb.st_gid);
+	if (gname != NULL)
+	    printf(" gname=%s", gname);
 	else
-	    printf(" gname=%s", gr->gr_name);
+	    printf(" gid=%d", n->sb.st_gid);
     }
     if (KF_ISSET(keys, MODE))
 	printf(" mode=%o", n->sb.st_mode);
@@ -1733,11 +1744,11 @@ shownode(NODE *n, enum mtreeKeys_e keys, const char *path)
     if (KF_ISSET(keys, UID))
 	printf(" uid=%d", n->sb.st_uid);
     if (KF_ISSET(keys, UNAME)) {
-	struct passwd *pw = pw = getpwuid(n->sb.st_uid);
-	if (pw == NULL || pw->pw_name == NULL || pw->gr_name[0] == '\0')
-	    printf(" uid=%d", n->sb.st_uid);
+	const char * uname = uidToUname(n->sb.st_uid);
+	if (uname != NULL)
+	    printf(" uname=%s", uname);
 	else
-	    printf(" uname=%s", pw->pw_name);
+	    printf(" uid=%d", n->sb.st_uid);
     }
     if (KF_ISSET(keys, MD5))
 	printf(" md5digest=%s", n->md5digest);
@@ -2245,11 +2256,10 @@ cleanup:
 
 /*==============================================================*/
 
-#define	MAXGID	5000
-#define	MAXUID	5000
-#define	MAXMODE	MBITS + 1
-#define	MAXFLAGS 256
-#define MAXS 16
+#define	_FTSCALLOC(_p, _n)	\
+    if ((_n) > 0) { \
+	(_p) = _free(_p); (_p) = xcalloc((_n), sizeof(*(_p))); \
+    }
 
 static int
 mtreeVisitD(rpmfts fts)
@@ -2261,16 +2271,13 @@ mtreeVisitD(rpmfts fts)
     const FTSENT * p;
     struct stat sb;
     gid_t maxgid = 0;
-    gid_t g[MAXGID];
     uid_t maxuid = 0;
-    uid_t u[MAXUID];
     mode_t maxmode = 0;
-    mode_t m[MAXMODE];
 #if defined(HAVE_ST_FLAGS)
     unsigned long maxflags = 0;
-    unsigned long f[MAXFLAGS];
 #endif
 
+    /* Retrieve all directory members. */
     if ((p = Fts_children(fts->t, 0)) == NULL) {
 	if (errno)
 	    mtree_error("%s: %s", SKIPDOTSLASH(parent->fts_path),
@@ -2279,32 +2286,36 @@ mtreeVisitD(rpmfts fts)
     }
 
     sb = fts->sb;		/* structure assignment */
-    memset(g, 0, sizeof(g));
-    memset(u, 0, sizeof(u));
-    memset(m, 0, sizeof(m));
+    _FTSCALLOC(fts->g, fts->maxg);
+    _FTSCALLOC(fts->m, fts->maxm);
+    _FTSCALLOC(fts->u, fts->maxu);
 #if defined(HAVE_ST_FLAGS)
-    memset(f, 0, sizeof(f));
+    _FTSCALLOC(fts->f, fts->maxf);
 #endif
 
+    /* Find the most common stat(2) settings for the next directory. */
     for (; p != NULL; p = p->fts_link) {
 	struct stat *const st = p->fts_statp;
 
 	if (MF_ISSET(DIRSONLY) || !S_ISDIR(st->st_mode))
 	    continue;
 
+	if (fts->m != NULL)
 	{   mode_t st_mode = st->st_mode & MBITS;
-	    if (st_mode < MAXMODE && ++m[st_mode] > maxmode) {
+	    if (st_mode < fts->maxm && ++fts->m[st_mode] > maxmode) {
 		sb.st_mode = st_mode;
-		maxmode = m[st_mode];
+		maxmode = fts->m[st_mode];
 	    }
 	}
-	if (st->st_gid < MAXGID && ++g[st->st_gid] > maxgid) {
+	if (fts->g != NULL)
+	if (st->st_gid < fts->maxg && ++fts->g[st->st_gid] > maxgid) {
 	    sb.st_gid = st->st_gid;
-	    maxgid = g[st->st_gid];
+	    maxgid = fts->g[st->st_gid];
 	}
-	if (st->st_uid < MAXUID && ++u[st->st_uid] > maxuid) {
+	if (fts->u != NULL)
+	if (st->st_uid < fts->maxu && ++fts->u[st->st_uid] > maxuid) {
 	    sb.st_uid = st->st_uid;
-	    maxuid = u[st->st_uid];
+	    maxuid = fts->u[st->st_uid];
 	}
 #if defined(HAVE_ST_FLAGS)
 	/*
@@ -2314,11 +2325,12 @@ mtreeVisitD(rpmfts fts)
 	 * half word of the flags
 	 */
 #define FLAGS2IDX(f) ((f & 0xf) | ((f >> 12) & 0xf0))
+	if (fts->f != NULL)
 	{   unsigned long st_flags = FLAGS2IDX(st->st_flags);
-	    if (st_flags < MAXFLAGS && ++f[st_flags] > maxflags) {
+	    if (st_flags < fts->maxf && ++fts->f[st_flags] > maxflags) {
 		/* XXX note st->st_flags saved, not FLAGS2IDX(st->st_flags) */
 		sb.st_flags = st->st_flags;
-		maxflags = f[st_flags];
+		maxflags = fts->f[st_flags];
 	    }
  	}
 #endif
@@ -2343,9 +2355,9 @@ mtreeVisitD(rpmfts fts)
 	else
 	    (void) printf("/set type=file");
 	if (KF_ISSET(keys, UNAME)) {
-	    struct passwd *pw = getpwuid(sb.st_uid);
-	    if (pw != NULL && pw->pw_name != NULL && pw->pw_name[0] != '\0')
-		(void) printf(" uname=%s", pw->pw_name);
+	    const char * uname = uidToUname(sb.st_uid);
+	    if (uname != NULL)
+		(void) printf(" uname=%s", uname);
 	    else if (MF_ISSET(WARN))
 		fprintf(stderr, _("%s: Could not get uname for uid=%lu\n"),
 			__progname, (unsigned long) sb.st_uid);
@@ -2356,9 +2368,9 @@ mtreeVisitD(rpmfts fts)
 	if (KF_ISSET(keys, UID))
 	    (void) printf(" uid=%lu", (unsigned long)sb.st_uid);
 	if (KF_ISSET(keys, GNAME)) {
-	    struct group *gr = getgrgid(sb.st_gid);
-	    if (gr != NULL && gr->gr_name != NULL && gr->gr_name[0] != '\0')
-		(void) printf(" gname=%s", gr->gr_name);
+	    const char * gname = gidToGname(sb.st_gid);
+	    if (gname != NULL)
+		(void) printf(" gname=%s", gname);
 	    else if (MF_ISSET(WARN))
 		fprintf(stderr, _("%s: Could not get gname for gid=%lu\n"),
 			__progname, (unsigned long) sb.st_gid);
@@ -2450,9 +2462,9 @@ mtreeVisitF(rpmfts fts)
 	output(indent, &offset, "type=%s", inotype(st->st_mode));
     if (st->st_uid != fts->sb.st_uid) {
 	if (KF_ISSET(keys, UNAME)) {
-	    struct passwd *pw = getpwuid(st->st_uid);
-	    if (pw != NULL && pw->pw_name != NULL && pw->pw_name[0] != '\0')
-		output(indent, &offset, "uname=%s", pw->pw_name);
+	    const char * uname = uidToUname(st->st_uid);
+	    if (uname != NULL)
+		output(indent, &offset, "uname=%s", uname);
 	    else if (MF_ISSET(WARN))
 		fprintf(stderr, _("%s: Could not get uname for uid=%lu\n"),
 			__progname, (unsigned long) st->st_uid);
@@ -2465,9 +2477,9 @@ mtreeVisitF(rpmfts fts)
     }
     if (st->st_gid != fts->sb.st_gid) {
 	if (KF_ISSET(keys, GNAME)) {
-	    struct group *gr = getgrgid(st->st_gid);
-	    if (gr != NULL && gr->gr_name != NULL && gr->gr_name[0] != '\0')
-		output(indent, &offset, "gname=%s", gr->gr_name);
+	    const char * gname = gidToGname(st->st_gid);
+	    if (gname != NULL)
+		output(indent, &offset, "gname=%s", gname);
 	    else if (MF_ISSET(WARN))
 		fprintf(stderr, _("%s: Could not get gname for gid=%lu\n"),
 			__progname, (unsigned long) st->st_gid);
@@ -2636,9 +2648,7 @@ cleanup:
     }
 
     if (KF_ISSET(keys, FLAGS) && !S_ISLNK(st->st_mode)) {
-#if defined(__linux__)
-	output(indent, &offset, "flags=none");
-#else
+#if defined(HAVE_ST_FLAGS)
 	char * fflags = fflagstostr(st->st_flags);
 
 	if (fflags != NULL && fflags[0] != '\0')
@@ -2646,6 +2656,8 @@ cleanup:
 	else
 	    output(indent, &offset, "flags=none");
 	free(fflags);
+#else
+	output(indent, &offset, "flags=none");
 #endif
     }
     (void) putchar('\n');
@@ -3239,7 +3251,11 @@ main(int argc, char *argv[])
 
     LIST_INIT(&excludes);
     fts->keys = KEYDEFAULT;
+    fts->maxg = 5000;
+    fts->maxu = 5000;
+    fts->maxm = (MBITS + 1);
 #if defined(HAVE_ST_FLAGS)
+    fts->maxf = 256;
     fts->sb.st_flags = 0xffffffff;
 #endif
 
@@ -3384,6 +3400,12 @@ exit:
     }
 #endif
     fts->paths = argvFree(fts->paths);
+#if defined(HAVE_ST_FLAGS)
+    fts->f = _free(fts->f);
+#endif
+    fts->g = _free(fts->g);
+    fts->m = _free(fts->m);
+    fts->u = _free(fts->u);
     fts->fullpath = _free(fts->fullpath);
     /* XXX TODO: clean excludes */
 
