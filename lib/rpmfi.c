@@ -6,6 +6,7 @@
 #include "system.h"
 
 #include <rpmio.h>
+#include <ugid.h>
 #include <rpmcb.h>		/* XXX fnpyKey */
 #include <rpmurl.h>	/* XXX urlGetPath */
 #include <rpmlib.h>
@@ -1561,6 +1562,64 @@ fprintf(stderr, "*** fi %p\t%s[%d]\n", fi, Type, (fi ? fi->fc : 0));
     /*@-compdef -nullstate@*/ /* FIX: rpmfi null annotations */
     return rpmfiLink(fi, (fi ? fi->Type : NULL));
     /*@=compdef =nullstate@*/
+}
+
+int rpmfiFStat(rpmfi fi, struct stat * st)
+{
+    int rc = -1;
+
+    if (st != NULL && fi != NULL && fi->i >= 0 && fi->i < (int)fi->fc) {
+	memset(st, 0, sizeof(*st));
+	st->st_dev =
+	st->st_rdev = fi->frdevs[fi->i];
+	st->st_ino = fi->finodes[fi->i];
+	st->st_mode = fi->fmodes[fi->i];
+	st->st_nlink = rpmfiFNlink(fi) + (int)S_ISDIR(st->st_mode);
+	if (unameToUid(fi->fuser[fi->i], &st->st_uid) == -1)
+	    st->st_uid = 0;		/* XXX */
+	if (gnameToGid(fi->fgroup[fi->i], &st->st_gid) == -1)
+	    st->st_gid = 0;		/* XXX */
+	st->st_size = fi->fsizes[fi->i];
+	st->st_blksize = 4 * 1024;	/* XXX */
+	st->st_blocks = (st->st_size + (st->st_blksize - 1)) / st->st_blksize;
+	st->st_atime =
+	st->st_ctime =
+	st->st_mtime = fi->fmtimes[fi->i];
+	rc = 0;
+    }
+    return rc;
+}
+
+int rpmfiStat(rpmfi fi, const char * path, struct stat * st)
+{
+    size_t pathlen = strlen(path);
+    int rc = -1;
+    int i;
+
+    while(pathlen > 0 && path[pathlen-1] == '/')
+	pathlen--;
+
+    fi = rpmfiInit(fi, 0);
+    while ((i = rpmfiNext(fi)) >= 0) {
+	const char * dn;
+	int ut = urlPath(fi->dnl[fi->dil[fi->i]], &dn);
+	size_t fnlen = strlen(dn) + strlen(fi->bnl[fi->i]);
+
+	ut = ut;
+	if (pathlen == fnlen) {
+	    const char * fn = rpmfiDN(fi);
+	    int xx = strncmp(path, fn, fnlen);
+	    fn = _free(fn);
+	    if (xx == 0)
+		return rpmfiFStat(fi, st);
+	}
+    }
+    return rc;
+}
+
+DIR * rpmfiOpendir(rpmfi fi, const char * name)
+{
+    return NULL;
 }
 
 void rpmfiBuildFClasses(Header h,

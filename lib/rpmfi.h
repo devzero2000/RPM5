@@ -649,6 +649,34 @@ rpmfi rpmfiNew(/*@null@*/ const void * _ts, Header h, rpmTag tagN, int flags)
 	/*@modifies _ts, h, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /**
+ * Return current stat(2) data from file info set.
+ * @param fi		file info set
+ * @retval *st		stat(2) data
+ * @return		-1 on error, 0 on success
+ */
+int rpmfiFStat(rpmfi fi, /*@out@*/ struct stat * st)
+	/*@*/;
+
+/**
+ * Return lstat(2) data of path from file info set.
+ * @param fi		file info set
+ * @param path		file path
+ * @retval *st		stat(2) data
+ * @return		-1 on error, 0 on success
+ */
+int rpmfiStat(rpmfi fi, const char * path, /*@out@*/ struct stat * st)
+	/*@modifies fi @*/;
+
+/**
+ * Return directory stream onto file info set.
+ * @param fi		file info set
+ * @param name		directory path
+ * @return		NULL on error
+ */
+DIR * rpmfiOpendir(rpmfi fi, const char * name)
+	/*@modifies fi @*/;
+
+/**
  * Retrieve file classes from header.
  *
  * This function is used to retrieve file classes from the header.
