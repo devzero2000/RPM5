@@ -188,6 +188,10 @@ LIBRPM_0
     rpmfiTypeString;
     rpmfiVFlags;
     rpmfiSetVFlags;
+    rpmfiFStat;
+    rpmfiFStat;
+    rpmfiStat;
+    rpmfiOpendir;
     rpmFLAGS;
     rpmFreeFilesystems;
     rpmFreeRpmrc;
