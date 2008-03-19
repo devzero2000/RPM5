@@ -59,6 +59,17 @@ static const char copyright[] =
 #include <ugid.h>
 #include <poptIO.h>
 
+#undef	_RPMFI_INTERNAL		/* XXX don't enable *.rpm/ containers yet. */
+#if defined(_RPMFI_INTERNAL)
+#define	_RPMAV_INTERNAL
+#include <rpmdav.h>
+#include <rpmtag.h>
+#include <rpmfi.h>
+
+#include <rpmlib.h>		/* XXX for rpmts typedef */
+#include <rpmts.h>
+#endif
+
 #define	_MTREE_INTERNAL
 /*==============================================================*/
 
@@ -182,6 +193,13 @@ struct rpmfts_s {
     size_t maxu;
 /*@null@*/
     uid_t * u;
+
+#if defined(_RPMFI_INTERNAL)
+/*@null@*/
+    rpmts ts;
+/*@null@*/
+    rpmfi fi;
+#endif
 };
 #endif	/* _MTREE_INTERNAL */
 
@@ -1628,8 +1646,10 @@ mtreeSpec(rpmfts fts, FILE * fp)
 		continue;
 	    }
 
+#if !defined(_RPMFI_INTERNAL)	/* XXX *.rpm/ specs include '/' in names. */
 	if (strchr(p, '/') != NULL)
 	    mtree_error("slash character in file name");
+#endif
 
 	if (!strcmp(p, "..")) {
 	    /* Don't go up, if haven't gone down. */
@@ -2796,14 +2816,323 @@ dsort(const FTSENT ** a, const FTSENT ** b)
     return strcmp((*a)->fts_name, (*b)->fts_name);
 }
 
+#if defined(_RPMFI_INTERNAL)
+/**
+ * Check file name for a suffix.
+ * @param fn		file name
+ * @param suffix	suffix
+ * @return		1 if file name ends with suffix
+ */
+static int chkSuffix(const char * fn, const char * suffix)
+	/*@*/
+{
+    size_t flen = strlen(fn);
+    size_t slen = strlen(suffix);
+    return (flen > slen && !strcmp(fn + flen - slen, suffix));
+}
+
+static int _rpmfiStat(const char * path, struct stat * st)
+	/*@*/
+{
+    rpmfts fts = _rpmfts;
+    rpmfi fi = _rpmfts->fi;
+    size_t len = strlen(fts->paths[0]);
+    int rc;
+
+    rc = rpmfiStat(fi, path+len, st);
+
+if (_fts_debug)
+fprintf(stderr, "*** _rpmfiStat(%s, %p) fi %p rc %d\n", path+len, st, fi, rc);
+
+    return rc;
+}
+
+static int _rpmfiClosedir(DIR * dir)
+	/*@*/
+{
+    rpmfi fi = _rpmfts->fi;
+if (_fts_debug)
+fprintf(stderr, "*** _rpmfiClosedir(%p) fi %p\n", dir, fi);
+    return avClosedir(dir);
+}
+
+static /*@null@*/ struct dirent * _rpmfiReaddir(DIR * dir)
+	/*@*/
+{
+    rpmfi fi = _rpmfts->fi;
+    struct dirent * dp = (struct dirent *) avReaddir(dir);
+
+if (_fts_debug)
+fprintf(stderr, "*** _rpmfiReaddir(%p) fi %p %p \"%s\"\n", dir, fi, dp, (dp ? dp->d_name : ""));
+
+    return dp;
+}
+
+static /*@null@*/
+uint8_t * rpmfiParentDirNotWithin(rpmfi fi)
+	/*@*/
+{
+    size_t * dnlens = xmalloc(fi->dc * sizeof(*dnlens));
+    uint8_t * noparent = memset(xmalloc(fi->dc), 1, fi->dc);
+    int i, j;
+
+    for (i = 0; i < (int)fi->dc; i++)
+	dnlens[i] = strlen(fi->dnl[i]);
+
+    /* Mark parent directories that are not contained within same package. */
+    for (i = 0; i < (int)fi->fc; i++) {
+	size_t dnlen, bnlen;
+
+	if (!S_ISDIR(fi->fmodes[i]))
+	    continue;
+
+	dnlen = dnlens[fi->dil[i]];
+	bnlen = strlen(fi->bnl[i]);
+
+	for (j = 0; j < (int)fi->dc; j++) {
+
+	    if (!noparent[j] || j == (int)fi->dil[i])
+		/*@innercontinue@*/ continue;
+	    if (dnlens[j] != (dnlen+bnlen+1))
+		/*@innercontinue@*/ continue;
+	    if (strncmp(fi->dnl[j], fi->dnl[fi->dil[i]], dnlen))
+		/*@innercontinue@*/ continue;
+	    if (strncmp(fi->dnl[j]+dnlen, fi->bnl[i], bnlen))
+		/*@innercontinue@*/ continue;
+	    if (fi->dnl[j][dnlen+bnlen] != '/' || fi->dnl[j][dnlen+bnlen+1] != '\0')
+		/*@innercontinue@*/ continue;
+
+	    /* This parent directory is contained within the package. */
+	    noparent[j] = (uint8_t)0;
+	    /*@innerbreak@*/ break;
+	}
+    }
+    dnlens = _free(dnlens);
+    return noparent;
+}
+
+static /*@null@*/ DIR * _rpmfiOpendir(const char * path)
+	/*@*/
+{
+    rpmfts fts = _rpmfts;
+    rpmfi fi = fts->fi;
+    DIR * dir = NULL;
+
+    if (fts->ts == NULL)
+	fts->ts = rpmtsCreate();
+
+    if (fi == NULL) {
+	const char ** fnames = NULL;
+	uint16_t * fmodes = NULL;
+	char * fn = xstrdup(path);
+	size_t nb = strlen(fn);
+ 	uint8_t * noparent;
+	Header h = NULL;
+	FD_t fd;
+	int i, j;
+	int xx;
+
+	fn[nb-1] = '\0';		/* trim trailing '/' */
+	fd = Fopen(fn, "r.ufdio");
+	xx = rpmReadPackageFile(fts->ts, fd, fn, &h);
+	xx = Fclose(fd);
+	fn = _free(fn);
+
+	fts->fi = fi = rpmfiNew(fts->ts, h, RPMTAG_BASENAMES, 0);
+	h = headerFree(h);
+
+	noparent = rpmfiParentDirNotWithin(fi);
+
+	j = 0;
+	fmodes = xcalloc(fi->fc, sizeof(*fmodes));
+	fi = rpmfiInit(fi, 0);
+	while ((i = rpmfiNext(fi)) >= 0) {
+	    if (!S_ISDIR(fi->fmodes[i]) && !noparent[fi->dil[i]])
+		continue;
+	    xx = argvAdd(&fnames, rpmfiFN(fi));
+	    fmodes[j++] = fi->fmodes[i];
+	}
+	noparent = _free(noparent);
+
+	dir = (DIR *) avOpendir(path, fnames, fmodes);
+
+	fnames = argvFree(fnames);
+	fmodes = _free(fmodes);
+
+    } else {
+	const char * dn = path + strlen(fts->paths[0]);
+
+	dir = rpmfiOpendir(fi, dn);
+
+    }
+
+if (_fts_debug)
+fprintf(stderr, "*** _rpmfiOpendir(%s) dir %p\n", path, dir);
+
+    return dir;
+}
+
+#define ALIGNBYTES      (__alignof__ (long double) - 1)
+#define ALIGN(p)        (((unsigned long int) (p) + ALIGNBYTES) & ~ALIGNBYTES)
+
+static FTSENT *
+fts_alloc(FTS * sp, const char * name, int namelen)
+{
+	register FTSENT *p;
+	size_t len;
+
+	/*
+	 * The file name is a variable length array and no stat structure is
+	 * necessary if the user has set the nostat bit.  Allocate the FTSENT
+	 * structure, the file name and the stat structure in one chunk, but
+	 * be careful that the stat structure is reasonably aligned.  Since the
+	 * fts_name field is declared to be of size 1, the fts_name pointer is
+	 * namelen + 2 before the first possible address of the stat structure.
+	 */
+	len = sizeof(*p) + namelen;
+	if (!(sp->fts_options & FTS_NOSTAT))
+		len += sizeof(*p->fts_statp) + ALIGNBYTES;
+	p = xmalloc(len);
+
+	/* Copy the name and guarantee NUL termination. */
+	memmove(p->fts_name, name, namelen);
+	p->fts_name[namelen] = '\0';
+
+	if (!(sp->fts_options & FTS_NOSTAT))
+		p->fts_statp = (struct stat *)ALIGN(p->fts_name + namelen + 2);
+	p->fts_namelen = namelen;
+	p->fts_path = sp->fts_path;
+	p->fts_errno = 0;
+	p->fts_flags = 0;
+	p->fts_instr = FTS_NOINSTR;
+	p->fts_number = 0;
+	p->fts_pointer = NULL;
+	return (p);
+}
+
+static void _rpmfiSetFts(rpmfts fts)
+	/*@modifies fts @*/
+{
+    char *const * argv = (char *const *) fts->paths;
+    FTS * sp = fts->t;
+#ifdef	NOTYET
+    int (*compar) (const FTSENT **, const FTSENT **) = sp->compar;
+#endif
+	register FTSENT *p, *root;
+	register int nitems;
+	FTSENT *parent = NULL;
+	FTSENT *tmp = NULL;
+	size_t len;
+
+if (_fts_debug)
+fprintf(stderr, "*** _rpmfiSetFts(%p)\n", fts);
+
+    sp->fts_opendir = _rpmfiOpendir;
+    sp->fts_readdir = _rpmfiReaddir;
+    sp->fts_closedir = _rpmfiClosedir;
+    sp->fts_stat = _rpmfiStat;
+    sp->fts_lstat = _rpmfiStat;
+
+	/* Allocate/initialize root's parent. */
+	if (*argv != NULL) {
+		parent = fts_alloc(sp, "", 0);
+		parent->fts_level = FTS_ROOTPARENTLEVEL;
+	}
+
+	/* Allocate/initialize root(s). */
+	for (root = NULL, nitems = 0; *argv != NULL; ++argv, ++nitems) {
+		len = strlen(*argv);
+
+		p = fts_alloc(sp, *argv, (int)len);
+		p->fts_level = FTS_ROOTLEVEL;
+		p->fts_parent = parent;
+		p->fts_accpath = p->fts_name;
+#ifdef	NOTYET
+		p->fts_info = fts_stat(sp, p, ISSET(FTS_COMFOLLOW));
+
+		/* Command-line "." and ".." are real directories. */
+		if (p->fts_info == FTS_DOT)
+			p->fts_info = FTS_D;
+
+#else
+		p->fts_name[len-1] = '\0';
+		{   struct stat * st = p->fts_statp;
+		    int xx = Stat(p->fts_accpath, st);
+		    xx = xx;
+		    st->st_mode &= ~S_IFMT;
+		    st->st_mode |= S_IFDIR;
+		    p->fts_dev = st->st_dev;
+		    p->fts_ino = st->st_ino;
+		    p->fts_nlink = st->st_nlink;
+		}
+		p->fts_name[len-1] = '/';
+		p->fts_info = FTS_D;
+#endif
+
+#ifdef	NOTYET
+		/*
+		 * If comparison routine supplied, traverse in sorted
+		 * order; otherwise traverse in the order specified.
+		 */
+		if (compar) {
+			p->fts_link = root;
+			root = p;
+		} else
+#endif
+		{
+			p->fts_link = NULL;
+			if (root == NULL)
+				tmp = root = p;
+			else {
+				if (tmp != NULL)	/* XXX can't happen */
+					tmp->fts_link = p;
+				tmp = p;
+			}
+		}
+	}
+#ifdef	NOTYET
+	if (compar && nitems > 1)
+		root = fts_sort(sp, root, nitems);
+#endif
+
+	/*
+	 * Allocate a dummy pointer and make fts_read think that we've just
+	 * finished the node before the root(s); set p->fts_info to FTS_INIT
+	 * so that everything about the "current" node is ignored.
+	 */
+    sp->fts_cur = _free(sp->fts_cur);
+	sp->fts_cur = fts_alloc(sp, "", 0);
+	sp->fts_cur->fts_link = root;
+	sp->fts_cur->fts_info = FTS_INIT;
+
+    return;
+}
+#endif
+
 int
 mtreeCWalk(rpmfts fts)
 {
+#if defined(_RPMFI_INTERNAL)
+    int isrpm = chkSuffix(fts->paths[0], ".rpm/");
+#else
+    int isrpm = 0;
+#endif
+    const char * empty = NULL;
+    char *const * paths = (char *const *) (isrpm ? &empty : fts->paths);
+    int ftsoptions = fts->ftsoptions | (isrpm ? (FTS_NOCHDIR|FTS_COMFOLLOW) : 0);
     int rval = 0;
 
-    fts->t = Fts_open((char *const *)fts->paths, fts->ftsoptions, dsort);
+    fts->t = Fts_open(paths, ftsoptions, dsort);
     if (fts->t == NULL)
 	mtree_error("Fts_open: %s", strerror(errno));
+
+#if defined(_RPMFI_INTERNAL)
+    if (isrpm) {
+	fts->keys &= ~MTREE_KEYS_SLINK;		/* XXX no rpmfiReadlink yet. */
+	_rpmfiSetFts(fts);
+    }
+#endif
+
     while ((fts->p = Fts_read(fts->t)) != NULL) {
 	int indent = 0;
 	if (MF_ISSET(INDENT))
@@ -2957,14 +3286,30 @@ mtreeMiss(rpmfts fts, /*@null@*/ NODE * p, char * tail)
 int
 mtreeVWalk(rpmfts fts)
 {
+#if defined(_RPMFI_INTERNAL)
+    int isrpm = chkSuffix(fts->paths[0], ".rpm/");
+#else
+    int isrpm = 0;
+#endif
+    const char * empty = NULL;
+    char *const * paths = (char *const *) (isrpm ? &empty : fts->paths);
+    int ftsoptions = fts->ftsoptions | (isrpm ? (FTS_NOCHDIR|FTS_COMFOLLOW) : 0);
     NODE * level = NULL;
     NODE * root = NULL;
     int specdepth = 0;
     int rval = 0;
 
-    fts->t = Fts_open((char *const *)fts->paths, fts->ftsoptions, NULL);
+    fts->t = Fts_open((char *const *)paths, ftsoptions, NULL);
     if (fts->t == NULL)
 	mtree_error("Fts_open: %s", strerror(errno));
+
+#if defined(_RPMFI_INTERNAL)
+    if (isrpm) {
+	fts->keys &= ~MTREE_KEYS_SLINK;		/* XXX no rpmfiReadlink yet. */
+	_rpmfiSetFts(fts);
+    }
+#endif
+
     while ((fts->p = Fts_read(fts->t)) != NULL) {
 	const char * fts_name = fts->p->fts_name;
 	size_t fts_namelen = fts->p->fts_namelen;
@@ -3275,6 +3620,7 @@ main(int argc, char *argv[])
     fts->maxf = 256;
     fts->sb.st_flags = 0xffffffff;
 #endif
+    __progname = "rpmmtree";
 
     /* Process options. */
     optCon = rpmioInit(argc, argv, optionsTable);
@@ -3354,6 +3700,7 @@ main(int argc, char *argv[])
 	fts->paths[i] = _free(fts->paths[i]);
 	fts->paths[i] = rpmExpand(rpath, lpath, NULL);
 	fts->fullpath = xstrdup(fts->paths[i]);
+	rpath = _free(rpath);
     }
 
     /* XXX prohibits -s 0 invocation */
@@ -3408,6 +3755,11 @@ main(int argc, char *argv[])
     }
 
 exit:
+#if defined(_RPMFI_INTERNAL)
+    fts->ts = rpmtsFree(fts->ts);
+    fts->fi = rpmfiFree(fts->fi);
+    tagClean(NULL);     /* Free header tag indices. */
+#endif
     if (fts->spec1 != NULL && fileno(fts->spec1) > 2) {
 	(void) fclose(fts->spec1);
 	fts->spec1 = NULL;
