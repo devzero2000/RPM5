@@ -1587,6 +1587,7 @@ int rpmfiFStat(rpmfi fi, struct stat * st)
 	st->st_mtime = fi->fmtimes[fi->i];
 	rc = 0;
     }
+
     return rc;
 }
 
@@ -1599,21 +1600,18 @@ int rpmfiStat(rpmfi fi, const char * path, struct stat * st)
     while(pathlen > 0 && path[pathlen-1] == '/')
 	pathlen--;
 
+    /* XXX linear search is pig slow. */
     fi = rpmfiInit(fi, 0);
     while ((i = rpmfiNext(fi)) >= 0) {
-	const char * dn;
-	int ut = urlPath(fi->dnl[fi->dil[fi->i]], &dn);
-	size_t fnlen = strlen(dn) + strlen(fi->bnl[fi->i]);
+	const char * fn = rpmfiFN(fi);
+	size_t fnlen = strlen(fn);
 
-	ut = ut;
-	if (pathlen == fnlen) {
-	    const char * fn = rpmfiDN(fi);
-	    int xx = strncmp(path, fn, fnlen);
-	    fn = _free(fn);
-	    if (xx == 0)
-		return rpmfiFStat(fi, st);
-	}
+	if (pathlen != fnlen || strncmp(path, fn, fnlen))
+	    continue;
+	rc = rpmfiFStat(fi, st);
+	break;
     }
+
     return rc;
 }
 
