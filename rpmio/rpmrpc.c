@@ -1888,7 +1888,7 @@ fprintf(stderr, "*** Realpath(%s, %s)\n", path, (resolved_path ? resolved_path :
 /*@=mods@*/
 	} else
 	    rpath = NULL;
-#if defined(__GLIBC)
+#if defined(__GLIBC__)
 	t = _free(t);
 #endif
     }
