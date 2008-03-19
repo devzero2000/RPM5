@@ -9,6 +9,10 @@
 #include <ugid.h>
 #include <rpmcb.h>		/* XXX fnpyKey */
 #include <rpmurl.h>	/* XXX urlGetPath */
+
+#define	_RPMAV_INTERNAL	/* XXX avOpendir */
+#include <rpmdav.h>
+
 #include <rpmlib.h>
 
 #define	_IOSM_INTERNAL
@@ -1597,11 +1601,13 @@ int rpmfiStat(rpmfi fi, const char * path, struct stat * st)
     int rc = -1;
     int i;
 
-    while(pathlen > 0 && path[pathlen-1] == '/')
+    while (pathlen > 0 && path[pathlen-1] == '/')
 	pathlen--;
 
-    /* XXX linear search is pig slow. */
-    fi = rpmfiInit(fi, 0);
+    /* If not actively iterating, initialize. */
+    if (!(fi != NULL && fi->i >= 0 && fi->i < (int)fi->fc))
+	fi = rpmfiInit(fi, 0);
+
     while ((i = rpmfiNext(fi)) >= 0) {
 	const char * fn = rpmfiFN(fi);
 	size_t fnlen = strlen(fn);
@@ -1612,12 +1618,52 @@ int rpmfiStat(rpmfi fi, const char * path, struct stat * st)
 	break;
     }
 
+if (_rpmfi_debug)
+fprintf(stderr, "*** rpmfiStat(%p, %s, %p) rc %d\n", fi, path, st, rc);
+
     return rc;
 }
 
 DIR * rpmfiOpendir(rpmfi fi, const char * name)
 {
-    return NULL;
+    const char * dn = name;
+    size_t dnlen = strlen(dn);
+    const char ** fnames = NULL;
+    uint16_t * fmodes = NULL;
+    DIR * dir;
+    int xx;
+    int i, j;
+
+    j = 0;
+    fmodes = xcalloc(fi->fc, sizeof(*fmodes));
+
+    /* XXX todo full iteration is pig slow, fi->dil can be used for speedup. */
+    fi = rpmfiInit(fi, 0);
+    while ((i = rpmfiNext(fi)) >= 0) {
+	const char * fn = rpmfiFN(fi);
+	size_t fnlen = strlen(fn);
+
+	if (fnlen <= dnlen)
+	    continue;
+	if (strncmp(dn, fn, dnlen) || fn[dnlen] != '/')
+	    continue;
+
+	/* XXX todo basename, or orphandir/.../basname, needs to be used. */
+	/* Trim the directory part of the name. */
+	xx = argvAdd(&fnames, fn + dnlen + 1);
+	fmodes[j++] = fi->fmodes[i];
+    }
+
+    /* Add "." & ".." to the argv array. */
+    dir = (DIR *) avOpendir(name, fnames, fmodes);
+
+    fnames = argvFree(fnames);
+    fmodes = _free(fmodes);
+
+if (_rpmfi_debug)
+fprintf(stderr, "*** rpmfiOpendir(%p, %s) dir %p\n", fi, name, dir);
+
+    return dir;
 }
 
 void rpmfiBuildFClasses(Header h,
