@@ -3896,6 +3896,9 @@ exit:
 /*@-exportheader@*/
 extern void NSS_Shutdown(void);
 /*@=exportheader@*/
+
+/*@unchecked@*/
+int _rpmnss_init = 0;
 #endif
 
 void rpmioClean(void)
@@ -3907,7 +3910,10 @@ void rpmioClean(void)
     davDestroy();
 #endif
 #if defined(WITH_NSS) && !defined(__LCLINT__)
-    (void) NSS_Shutdown();
+    if (_rpmnss_init) {
+	(void) NSS_Shutdown();
+	_rpmnss_init = 0;
+    }
 #endif
     urlFreeCache();
     rpmlogClose();

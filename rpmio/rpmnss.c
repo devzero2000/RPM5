@@ -26,6 +26,9 @@ extern int _pgp_debug;
 extern int _pgp_print;
 /*@=redecl@*/
 
+/*@unchecked@*/
+extern int _rpmnss_init;
+
 static
 int rpmnssSetRSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
 	/*@modifies ctx, dig @*/
@@ -389,6 +392,7 @@ void * rpmnssInit(void)
     rpmnss nss = xcalloc(1, sizeof(*nss));
 
     (void) NSS_NoDB_Init(NULL);
+    _rpmnss_init = 1;
 
     return (void *) nss;
 #else
