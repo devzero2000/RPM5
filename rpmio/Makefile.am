@@ -4,9 +4,9 @@ AUTOMAKE_OPTIONS = 1.4 foreign
 
 LINT = splint
 
-EXTRA_DIST = getdate.y rpmcpio.c rpmcpio.h rpmmtree.c rpmtar.c rpmtar.h tdir.c tfts.c tget.c tglob.c thkp.c thtml.c tinv.c tkey.c tmire.c tput.c trpmio.c tsw.c lookup3.c tpw.c librpmio.vers testit.sh rpmgrep.1 rpmmtree.8
+EXTRA_DIST = getdate.y rpmcpio.c rpmcpio.h rpmrepo.c rpmmtree.c rpmtar.c rpmtar.h tdir.c tfts.c tget.c tglob.c thkp.c thtml.c tinv.c tkey.c tmire.c tput.c trpmio.c tsw.c lookup3.c tpw.c librpmio.vers testit.sh rpmgrep.1 rpmmtree.8
 
-EXTRA_PROGRAMS = rpmcpio rpmmtree rpmtar tdir tfts tget tglob thkp thtml tinv tkey tmacro tmagic tmire tput tpw trpmio tsw dumpasn1 lookup3
+EXTRA_PROGRAMS = rpmcpio rpmrepo rpmmtree rpmtar tdir tfts tget tglob thkp thtml tinv tkey tmacro tmagic tmire tput tpw trpmio tsw dumpasn1 lookup3
 
 bin_PROGRAMS = rpmdigest # rpmmtree
 man_MANS = # rpmmtree.8
@@ -204,6 +204,9 @@ rpmcpio_LDADD = $(RPM_LDADD_COMMON)
 
 rpmdigest_SOURCES = rpmdigest.c
 rpmdigest_LDADD = $(RPMIO_LDADD_COMMON)
+
+rpmrepo_SOURCES = rpmrepo.c
+rpmrepo_LDADD = $(RPMIO_LDADD_COMMON)
 
 rpmmtree_SOURCES = rpmmtree.c
 rpmmtree_LDADD = $(RPM_LDADD_COMMON)
