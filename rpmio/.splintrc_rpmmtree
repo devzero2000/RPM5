@@ -1,4 +1,4 @@
--I. -I.. -DHAVE_CONFIG_H -D_GNU_SOURCE -D__STDC__=1 -D__linux__
+-I. -I.. -I../rpmdb -I../lib -DHAVE_CONFIG_H -D_GNU_SOURCE -D__STDC__=1 -D__linux__
 
 #+partial
 +forcehints

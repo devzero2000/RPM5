@@ -239,6 +239,11 @@ static void mtreeMiss(rpmfts fts, /*@null@*/ NODE * p, char * tail)
 
 #include "debug.h"
 
+/*@access DIR @*/
+/*@access FD_t @*/
+/*@access rpmfi @*/
+/*@access rpmts @*/
+
 #define MF_ISSET(_FLAG) ((mtreeFlags & ((MTREE_FLAGS_##_FLAG) & ~0x40000000)) != MTREE_FLAGS_NONE)
 
 #define	KEYDEFAULT \
@@ -710,7 +715,7 @@ done:
  *	
  *	Dst must be 4 times the size of src to account for possible
  *	expansion.  The length of dst, not including the trailing NULL,
- *	is returned. 
+ *	is returned.
  *
  *	Strnvis will write no more than siz-1 bytes (and will NULL terminate).
  *	The number of bytes needed to fully encode the string is returned.
@@ -814,7 +819,7 @@ unvis(char *cp, char c, int *astate, int flag)
 	if (*astate == S_OCTAL2 || *astate == S_OCTAL3) {
 	    *astate = S_GROUND;
 	    return (UNVIS_VALID);
-	} 
+	}
 	return (*astate == S_GROUND ? UNVIS_NOCHAR : UNVIS_SYNBAD);
     }
 
@@ -825,7 +830,7 @@ unvis(char *cp, char c, int *astate, int flag)
 	if (c == '\\') {
 	    *astate = S_START;
 	    return (0);
-	} 
+	}
 	*cp = c;
 	return (UNVIS_VALID);
 
@@ -892,7 +897,7 @@ unvis(char *cp, char c, int *astate, int flag)
 	}
 	*astate = S_GROUND;
 	return (UNVIS_SYNBAD);
-		 
+
     case S_META:
 	if (c == '-')
 	    *astate = S_META1;
@@ -903,12 +908,12 @@ unvis(char *cp, char c, int *astate, int flag)
 	    return (UNVIS_SYNBAD);
 	}
 	return (0);
-		 
+
     case S_META1:
 	*astate = S_GROUND;
 	*cp |= c;
 	return (UNVIS_VALID);
-		 
+
     case S_CTRL:
 	if (c == '?')
 	    *cp |= 0177;
@@ -919,15 +924,15 @@ unvis(char *cp, char c, int *astate, int flag)
 
     case S_OCTAL2:	/* second possible octal digit */
 	if (isoctal(c)) {
-	    /* 
-	     * yes - and maybe a third 
+	    /*
+	     * yes - and maybe a third
 	     */
 	    *cp = (*cp << 3) + (c - '0');
 	    *astate = S_OCTAL3;	
 	    return (0);
-	} 
-	/* 
-	 * no - done with current sequence, push back passed char 
+	}
+	/*
+	 * no - done with current sequence, push back passed char
 	 */
 	*astate = S_GROUND;
 	return (UNVIS_VALIDPUSH);
@@ -944,8 +949,8 @@ unvis(char *cp, char c, int *astate, int flag)
 	return (UNVIS_VALIDPUSH);
 			
     default:	
-	/* 
-	 * decoder in unknown state - (probably uninitialized) 
+	/*
+	 * decoder in unknown state - (probably uninitialized)
 	 */
 	*astate = S_GROUND;
 	return (UNVIS_SYNBAD);
@@ -953,7 +958,7 @@ unvis(char *cp, char c, int *astate, int flag)
 }
 
 /*
- * strunvis - decode src into dst 
+ * strunvis - decode src into dst
  *
  *	Number of chars decoded into dst is returned, -1 on error.
  *	Dst is null terminated.
@@ -1445,7 +1450,7 @@ set(char * t, NODE * ip)
 		ip->sb.st_flags = fset;
 	    }
 #endif
-	    /*@switchbreak@*/ break; 
+	    /*@switchbreak@*/ break;
 	case MTREE_KEYS_GID:
 	    ip->sb.st_gid = strtoul(val, &ep, 10);
 	    if (*ep != '\0')
@@ -2226,11 +2231,11 @@ typeerr:    LABEL;
 		tv[1] = tv[0];
 		if (Utimes(fts_accpath, tv))
 		    (void) printf(_(" not modified: %s)\n"), strerror(errno));
-		else  
-		    (void) printf(_(" modified\n"));  
+		else
+		    (void) printf(_(" modified\n"));
 	    } else
 		(void) printf("\n");
-	    tab = "\t";   
+	    tab = "\t";
 	}
     }
 
@@ -2332,7 +2337,7 @@ cleanup:
 	    }
 	} else
 	    (void) printf("\n");
-	tab = "\t"; 
+	tab = "\t";
     }
 #endif
     return label;
@@ -2589,7 +2594,7 @@ mtreeVisitF(rpmfts fts)
 	tv.tv_usec = 0L;
 #endif
 	output(indent, &offset, "time=%lu.%lu",
-		(unsigned long) tv.tv_sec, 
+		(unsigned long) tv.tv_sec,
 		(unsigned long) tv.tv_usec);
     }
 
@@ -2832,7 +2837,8 @@ static int chkSuffix(const char * fn, const char * suffix)
 }
 
 static int _rpmfiStat(const char * path, struct stat * st)
-	/*@*/
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/
 {
     rpmfts fts = _rpmfts;
     rpmfi fi = _rpmfts->fi;
@@ -2847,25 +2853,31 @@ fprintf(stderr, "*** _rpmfiStat(%s, %p) fi %p rc %d\n", path+len, st, fi, rc);
     return rc;
 }
 
-static int _rpmfiClosedir(DIR * dir)
-	/*@*/
+static int _rpmfiClosedir(/*@only@*/ DIR * dir)
+	/*@globals fileSystem @*/
+	/*@modifies dir, fileSystem @*/
 {
     rpmfi fi = _rpmfts->fi;
+
 if (_fts_debug)
 fprintf(stderr, "*** _rpmfiClosedir(%p) fi %p\n", dir, fi);
+
     return avClosedir(dir);
 }
 
 static /*@null@*/ struct dirent * _rpmfiReaddir(DIR * dir)
-	/*@*/
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/
 {
     rpmfi fi = _rpmfts->fi;
     struct dirent * dp = (struct dirent *) avReaddir(dir);
 
 if (_fts_debug)
-fprintf(stderr, "*** _rpmfiReaddir(%p) fi %p %p \"%s\"\n", dir, fi, dp, (dp ? dp->d_name : ""));
+fprintf(stderr, "*** _rpmfiReaddir(%p) fi %p %p \"%s\"\n", dir, fi, dp, (dp != NULL ? dp->d_name : ""));
 
+/*@-dependenttrans@*/
     return dp;
+/*@=dependenttrans@*/
 }
 
 static /*@null@*/
@@ -2911,59 +2923,94 @@ uint8_t * rpmfiParentDirNotWithin(rpmfi fi)
     return noparent;
 }
 
+static Header rpmftsReadHeader(rpmfts fts, const char * path)
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies fts, rpmGlobalMacroContext, fileSystem, internalState @*/
+{
+    FD_t fd = Fopen(path, "r.ufdio");
+    Header h = NULL;
+
+    if (fd != NULL) {
+	/* XXX what if path needs expansion? */
+	rpmRC rpmrc = rpmReadPackageFile(fts->ts, fd, path, &h);
+
+	(void) Fclose(fd);
+
+	switch (rpmrc) {
+	case RPMRC_NOTFOUND:
+	    /* XXX Read a package manifest. Restart ftswalk on success. */
+	case RPMRC_FAIL:
+	default:
+	    h = headerFree(h);
+	    break;
+	case RPMRC_NOTTRUSTED:
+	case RPMRC_NOKEY:
+	case RPMRC_OK:
+	    break;
+	}
+    }
+    return h;
+}
+
+static /*@null@*/ rpmfi rpmftsLoadFileInfo(rpmfts fts, const char * path)
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies fts, rpmGlobalMacroContext, fileSystem, internalState @*/
+{
+    char * fn = xstrdup(path);
+    size_t nb = strlen(fn);
+    Header h = NULL;
+
+    fn[nb-1] = '\0';		/* XXX trim pesky trailing '/' */
+    h = rpmftsReadHeader(fts, fn);
+    fn = _free(fn);
+
+    if (h != NULL) {
+	fts->fi = rpmfiNew(fts->ts, h, RPMTAG_BASENAMES, 0);
+	h = headerFree(h);
+    }
+    return fts->fi;
+}
+
 static /*@null@*/ DIR * _rpmfiOpendir(const char * path)
-	/*@*/
+	/*@globals _rpmfts, rpmGlobalMacroContext, h_errno,
+		fileSystem, internalState @*/
+	/*@modifies _rpmfts, rpmGlobalMacroContext,
+		fileSystem, internalState @*/
 {
     rpmfts fts = _rpmfts;
-    rpmfi fi = fts->fi;
     DIR * dir = NULL;
 
     if (fts->ts == NULL)
 	fts->ts = rpmtsCreate();
 
-    if (fi == NULL) {
+    if (fts->fi == NULL) {
+	rpmfi fi = rpmftsLoadFileInfo(fts, path);
+ 	uint8_t * noparent = rpmfiParentDirNotWithin(fi);
+	uint16_t * fmodes = xcalloc(rpmfiFC(fi)+1, sizeof(*fmodes));
 	const char ** fnames = NULL;
-	uint16_t * fmodes = NULL;
-	char * fn = xstrdup(path);
-	size_t nb = strlen(fn);
- 	uint8_t * noparent;
-	Header h = NULL;
-	FD_t fd;
-	int i, j;
-	int xx;
+	int ac = 0;
+	int i;
 
-	fn[nb-1] = '\0';		/* trim trailing '/' */
-	fd = Fopen(fn, "r.ufdio");
-	xx = rpmReadPackageFile(fts->ts, fd, fn, &h);
-	xx = Fclose(fd);
-	fn = _free(fn);
-
-	fts->fi = fi = rpmfiNew(fts->ts, h, RPMTAG_BASENAMES, 0);
-	h = headerFree(h);
-
-	noparent = rpmfiParentDirNotWithin(fi);
-
-	j = 0;
-	fmodes = xcalloc(fi->fc, sizeof(*fmodes));
+	/* Collect top level files/dirs from the package. */
 	fi = rpmfiInit(fi, 0);
 	while ((i = rpmfiNext(fi)) >= 0) {
+	    int xx;
 	    if (!S_ISDIR(fi->fmodes[i]) && !noparent[fi->dil[i]])
 		continue;
 	    xx = argvAdd(&fnames, rpmfiFN(fi));
-	    fmodes[j++] = fi->fmodes[i];
+	    fmodes[ac++] = fi->fmodes[i];
 	}
-	noparent = _free(noparent);
 
 	dir = (DIR *) avOpendir(path, fnames, fmodes);
 
 	fnames = argvFree(fnames);
 	fmodes = _free(fmodes);
+	noparent = _free(noparent);
 
     } else {
 	const char * dn = path + strlen(fts->paths[0]);
 
-	dir = rpmfiOpendir(fi, dn);
-
+	dir = rpmfiOpendir(fts->fi, dn);
     }
 
 if (_fts_debug)
@@ -2977,6 +3024,7 @@ fprintf(stderr, "*** _rpmfiOpendir(%s) dir %p\n", path, dir);
 
 static FTSENT *
 fts_alloc(FTS * sp, const char * name, int namelen)
+	/*@*/
 {
 	register FTSENT *p;
 	size_t len;
@@ -2990,16 +3038,20 @@ fts_alloc(FTS * sp, const char * name, int namelen)
 	 * namelen + 2 before the first possible address of the stat structure.
 	 */
 	len = sizeof(*p) + namelen;
+/*@-sizeoftype@*/
 	if (!(sp->fts_options & FTS_NOSTAT))
 		len += sizeof(*p->fts_statp) + ALIGNBYTES;
+/*@=sizeoftype@*/
 	p = xmalloc(len);
 
 	/* Copy the name and guarantee NUL termination. */
 	memmove(p->fts_name, name, namelen);
 	p->fts_name[namelen] = '\0';
 
+/*@-sizeoftype@*/
 	if (!(sp->fts_options & FTS_NOSTAT))
 		p->fts_statp = (struct stat *)ALIGN(p->fts_name + namelen + 2);
+/*@=sizeoftype@*/
 	p->fts_namelen = namelen;
 	p->fts_path = sp->fts_path;
 	p->fts_errno = 0;
@@ -3011,7 +3063,8 @@ fts_alloc(FTS * sp, const char * name, int namelen)
 }
 
 static void _rpmfiSetFts(rpmfts fts)
-	/*@modifies fts @*/
+	/*@globals h_errno, fileSystem, internalState @*/
+	/*@modifies fts, fileSystem, internalState @*/
 {
     char *const * argv = (char *const *) fts->paths;
     FTS * sp = fts->t;
@@ -3027,11 +3080,13 @@ static void _rpmfiSetFts(rpmfts fts)
 if (_fts_debug)
 fprintf(stderr, "*** _rpmfiSetFts(%p)\n", fts);
 
+/*@-type@*/
     sp->fts_opendir = _rpmfiOpendir;
     sp->fts_readdir = _rpmfiReaddir;
     sp->fts_closedir = _rpmfiClosedir;
     sp->fts_stat = _rpmfiStat;
     sp->fts_lstat = _rpmfiStat;
+/*@=type@*/
 
 	/* Allocate/initialize root's parent. */
 	if (*argv != NULL) {
@@ -3341,7 +3396,7 @@ assert(level == level->parent);
 	   /*@switchbreak@*/ break;
 	case FTS_DP:
 	    if (specdepth > fts->p->fts_level) {
-		for (level = level->parent; level->prev != NULL; level = level->prev);  
+		for (level = level->parent; level->prev != NULL; level = level->prev);
 		--specdepth;
 	    }
 	    continue;
@@ -3601,15 +3656,17 @@ static const char *my_getlogin(void)
 
 int
 main(int argc, char *argv[])
-	/*@globals _rpmfts, mtreeFlags, excludes, rpmGlobalMacroContext,h_errno,
-		fileSystem, internalState @*/
-	/*@modifies _rpmfts, mtreeFlags, excludes, rpmGlobalMacroContext,
-		fileSystem, internalState @*/
+	/*@globals _rpmfts, mtreeFlags, excludes, __assert_program_name,
+		rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies _rpmfts, mtreeFlags, excludes, __assert_program_name,
+		rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     rpmfts fts = _rpmfts;
     poptContext optCon;
     int rc = 1;		/* assume failure */
     int i;
+
+    __progname = "rpmmtree";
 
     LIST_INIT(&excludes);
     fts->keys = KEYDEFAULT;
@@ -3620,7 +3677,6 @@ main(int argc, char *argv[])
     fts->maxf = 256;
     fts->sb.st_flags = 0xffffffff;
 #endif
-    __progname = "rpmmtree";
 
     /* Process options. */
     optCon = rpmioInit(argc, argv, optionsTable);
