@@ -96,11 +96,62 @@ Description :\n%{DESCRIPTION}\n' \
 rpm	alias --changelog --qf '[* %{CHANGELOGTIME:day} %{CHANGELOGNAME}\n%{CHANGELOGTEXT}\n\n]' \
 	--POPTdesc=$"list change logs for this package"
 
+#==============================================================================
 rpm	alias --xml --qf '[%{*:xml}\n]' \
 	--POPTdesc=$"list metadata in xml"
 rpm	alias --yaml --qf '[%{*:yaml}\n]' \
 	--POPTdesc=$"list metadata in yaml"
+rpm	alias --yum:primary --nosignature --qf '\
+<package type="rpm">\n\
+  <name>%{NAME}</name>\n\
+  <arch>%{ARCH}</arch>\n\
+  <version epoch="%|EPOCH?{%{EPOCH}}:{0}|" ver="%{VERSION}" rel="%{RELEASE}"/>\n\
+  <summary>%{SUMMARY}</summary>\n\
+  <description>%{DESCRIPTION}</description>\n\
+  <packager>%|PACKAGER?{%{PACKAGER}}:{}|</packager>\n\
+  <url>%|URL?{%{URL}}:{}|</url>\n\
+  <time file="XXX" build="%{BUILDTIME}">\n\
+  <size package="%{SIZE}" installed="%{SIZE}" archive="%{ARCHIVESIZE}"/>\n\
+<location href="%{PACKAGEORIGIN}"/>\n\
+  <format>\n\
+    <rpm:license>%{LICENSE}</rpm:license>\n\
+    <rpm:group>%{GROUP}</rpm:group>\n\
+    <rpm:buildhost>%{BUILDHOST}</rpm:buildhost>\n\
+    <rpm:sourcerpm>%{SOURCERPM}</rpm:sourcerpm>\n\
+    <rpm:header-range start="XXX" end="XXX"/>\n\
+%|provideentry?{\
+    <rpm:provides>\n\
+[\
+      %{provideentry}\n\
+]\
+    </rpm:provides>\n\
+}|\
+%|requireentry?{\
+    <rpm:requires>\n\
+[\
+      %{requireentry}\n\
+]\
+    </rpm:requires>\n\
+}|\
+%|conflictentry?{\
+    <rpm:conflicts>\n\
+[\
+      %{conflictentry}\n\
+]\
+    </rpm:conflicts>\n\
+}|\
+%|obsoleteentry?{\
+    <rpm:obsoletes>\n\
+[\
+      %{obsoleteentry}\n\
+]\
+    </rpm:obsoletes>\n\
+}|\
+  </format>\n\
+</package>\n' \
+	--POPTdesc=$"display yum primary.xml markup"
 
+#==============================================================================
 rpm	alias --triggerscripts --qf '\
 [trigger%{TRIGGERTYPE} scriptlet (using %{TRIGGERSCRIPTPROG}) -- %{TRIGGERCONDS}\n\
 %{TRIGGERSCRIPTS}\n]'

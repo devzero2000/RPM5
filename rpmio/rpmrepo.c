@@ -120,34 +120,34 @@ static struct poptOption optionsTable[] = {
 	N_("output more debugging info."), NULL },
 #if defined(POPT_ARG_ARGV)
  { "excludes", 'x', POPT_ARG_ARGV,		&excludes, 0,
-	N_("files to exclude"), NULL },
+	N_("file(s) to exclude"), N_("FILE") },
 #else
  { "excludes", 'x', POPT_ARG_STRING,		NULL, 'x',
-	N_("files to exclude"), NULL },
+	N_("files to exclude"), N_("FILE") },
 #endif
  { "basedir", '\0', POPT_ARG_STRING,		&basedir, 0,
-	N_("files to exclude"), NULL },
+	N_("files to exclude"), N_("DIR") },
  { "baseurl", 'u', POPT_ARG_STRING,		&baseurl, 0,
-	N_("baseurl to append on all files"), NULL },
+	N_("baseurl to append on all files"), N_("BASEURL") },
  { "groupfile", 'g', POPT_ARG_STRING,		&groupfile, 0,
-	N_("path to groupfile to include in metadata"), NULL },
+	N_("path to groupfile to include in metadata"), N_("FILE") },
  { "checksum", 's', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN, &checksum, 0,
 	N_("Deprecated, ignore"), NULL },
- { "noepoch", 'n', POPT_ARG_VAL,		&noepoch, 1,
+ { "noepoch", 'n', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	&noepoch, 1,
 	N_("don't add zero epochs for non-existent epochs "
            "(incompatible with yum and smart but required for "
            "systems with rpm < 4.2.1)"), NULL },
  { "pretty", 'p', POPT_ARG_VAL,			&pretty, 1,
 	N_("make sure all xml generated is formatted"), NULL },
  { "cachedir", 'c', POPT_ARG_STRING,		&cachedir, 0,
-	N_("set path to cache dir"), NULL },
+	N_("set path to cache dir"), N_("DIR") },
  { "checkts", 'C', POPT_ARG_VAL,		&checkts, 1,
 	N_("check timestamps on files vs the metadata to see if we need to update"), NULL },
  { "database", 'd', POPT_ARG_VAL,		&database, 1,
 	N_("create sqlite database files"), NULL },
  { "update", '\0', POPT_ARG_VAL,		&update, 1,
 	N_("use the existing repodata to speed up creation of new"), NULL },
- { "skip-stat", '\0', POPT_ARG_VAL,		&skipstat, 1,
+ { "skip-stat", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	&skipstat, 1,
 	N_("skip the stat() call on a --update, assumes if the file "
 	   "name is the same, then the file is still the same "
 	   "(only use this if you're fairly trusting or gullible)"), NULL },
@@ -155,17 +155,17 @@ static struct poptOption optionsTable[] = {
 	N_("generate split media"), NULL },
 #if defined(POPT_ARG_ARGV)
  { "pkglist", 'i', POPT_ARG_ARGV,		&pkglist, 0,
-	N_("use only the files listed in this file from the directory specified"), NULL },
+	N_("use only the files listed in this file from the directory specified"), N_("FILE") },
 #else
  { "pkglist", 'i', POPT_ARG_STRING,		NULL, 'i',
-	N_("use only the files listed in this file from the directory specified"), NULL },
+	N_("use only the files listed in this file from the directory specified"), N_("FILE") },
 #endif
  { "outputdir", 'o', POPT_ARG_STRING,		&outputdir, 0,
-	N_("<dir> = optional directory to output to"), NULL },
+	N_("<dir> = optional directory to output to"), N_("DIR") },
  { "skip-symlinks", 'S', POPT_ARG_VAL,		&skipsymlinks, 1,
 	N_("ignore symlinks of packages"), NULL },
  { "changelog-limit", '\0', POPT_ARG_INT,	&changeloglimit, 0,
-	N_("only import the last N changelog entries"), NULL },
+	N_("only import the last N changelog entries"), N_("N") },
  { "unique-md-filenames", '\0', POPT_ARG_VAL,	&uniquemdfilenames, 1,
 	N_("include the file's checksum in the filename, helps with proxies"), NULL },
 

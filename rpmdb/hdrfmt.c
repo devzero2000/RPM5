@@ -1730,6 +1730,123 @@ static int diskstatTag(Header h, HE_t he)
     return rc;
 }
 
+static int _entryTag(Header h, HE_t he, rpmTag EVRtag, rpmTag Ftag)
+	/*@modifies he @*/
+{
+    rpmTagData N = { .ptr = NULL };
+    rpmTagData EVR = { .ptr = NULL };
+    rpmTagData F = { .ptr = NULL };
+    size_t nb;
+    uint32_t ac;
+    uint32_t c;
+    uint32_t i;
+    char *t;
+    int rc = 1;		/* assume failure */
+    int xx;
+
+    xx = headerGet(h, he, 0);
+    if (xx == 0) goto exit;
+    N.argv = he->p.argv;
+    c = he->c;
+
+    he->tag = EVRtag;
+    xx = headerGet(h, he, 0);
+    if (xx == 0) goto exit;
+    EVR.argv = he->p.argv;
+
+    he->tag = Ftag;
+    xx = headerGet(h, he, 0);
+    if (xx == 0) goto exit;
+    F.ui32p = he->p.ui32p;
+
+    nb = sizeof(*he->p.argv);
+    ac = 0;
+    for (i = 0; i < c; i++) {
+	if (!(N.argv[i] != NULL && *N.argv[i] != '\0'))
+		continue;
+	ac++;
+	nb += sizeof(*he->p.argv);
+	nb += sizeof("<rpm:entry name=\"\"/>") + strlen(N.argv[i]);
+	if (EVR.argv[i] != NULL && *EVR.argv[i] != '\0') {
+	    nb += sizeof(" flags=\"EQ\" epoch=\"0\" ver=\"\"") - 1;
+	    nb += strlen(EVR.argv[i]);
+	    if (strchr(EVR.argv[i], ':') != NULL)
+		nb -= 2;
+	    if (strchr(EVR.argv[i], '-') != NULL)
+		nb += sizeof(" rel=\"\"") - 2;
+	}
+    }
+
+    he->t = RPM_STRING_ARRAY_TYPE;
+    he->c = ac;
+    he->freeData = 1;
+    he->p.argv = xmalloc(nb);
+    t = (char *) &he->p.argv[he->c + 1];
+    ac = 0;
+    for (i = 0; i < c; i++) {
+	if (!(N.argv[i] != NULL && *N.argv[i] != '\0'))
+		continue;
+	he->p.argv[ac++] = t;
+	t = stpcpy(t, "<rpm:entry");
+	t = stpcpy( stpcpy( stpcpy(t, " name=\""), N.argv[i]), "\"");
+	if (EVR.argv[i] != NULL && *EVR.argv[i] != '\0') {
+	    static char *Fstr[] = { "?0","LT","GT","?3","EQ","LE","GE","?7" };
+	    int Fx = ((F.ui32p[i] >> 1) & 0x7);
+	    const char *E, *V, *R;
+	    char *f, *fe;
+	    t = stpcpy( stpcpy( stpcpy(t, " flags=\""), Fstr[Fx]), "\"");
+	    f = (char *) EVR.argv[i];
+	    for (fe = f; *fe != '\0' && *fe >= '0' && *fe <= '9'; fe++);
+	    if (*fe == ':') { *fe++ = '\0'; E = f; f = fe; } else E = NULL;
+	    V = f;
+	    for (fe = f; *fe != '\0' && *fe != '-'; fe++);
+	    if (*fe == '-') { *fe++ = '\0'; R = fe; } else R = NULL;
+	    t = stpcpy( stpcpy( stpcpy(t, " epoch=\""), (E && *E ? E : "0")), "\"");
+	    t = stpcpy( stpcpy( stpcpy(t, " ver=\""), V), "\"");
+	    if (R != NULL)
+		t = stpcpy( stpcpy( stpcpy(t, " rel=\""), R), "\"");
+	}
+	t = stpcpy(t, "/>");
+	*t++ = '\0';
+    }
+    he->p.argv[he->c] = NULL;
+    rc = 0;
+
+exit:
+    N.argv = _free(N.argv);
+    EVR.argv = _free(EVR.argv);
+    F.argv = _free(F.argv);
+    return rc;
+}
+
+static int PentryTag(Header h, HE_t he)
+	/*@modifies he @*/
+{
+    he->tag = RPMTAG_PROVIDENAME;
+    return _entryTag(h, he, RPMTAG_PROVIDEVERSION, RPMTAG_PROVIDEFLAGS);
+}
+
+static int RentryTag(Header h, HE_t he)
+	/*@modifies he @*/
+{
+    he->tag = RPMTAG_REQUIRENAME;
+    return _entryTag(h, he, RPMTAG_REQUIREVERSION, RPMTAG_REQUIREFLAGS);
+}
+
+static int CentryTag(Header h, HE_t he)
+	/*@modifies he @*/
+{
+    he->tag = RPMTAG_CONFLICTNAME;
+    return _entryTag(h, he, RPMTAG_CONFLICTVERSION, RPMTAG_CONFLICTFLAGS);
+}
+
+static int OentryTag(Header h, HE_t he)
+	/*@modifies he @*/
+{
+    he->tag = RPMTAG_OBSOLETENAME;
+    return _entryTag(h, he, RPMTAG_OBSOLETEVERSION, RPMTAG_OBSOLETEFLAGS);
+}
+
 /*@-type@*/ /* FIX: cast? */
 static struct headerSprintfExtension_s _headerCompoundFormats[] = {
     { HEADER_EXT_TAG, "RPMTAG_CHANGELOGNAME",
@@ -1764,6 +1881,14 @@ static struct headerSprintfExtension_s _headerCompoundFormats[] = {
 	{ .tagFunction = filestatTag } },
     { HEADER_EXT_TAG, "RPMTAG_STAT",
 	{ .tagFunction = diskstatTag } },
+    { HEADER_EXT_TAG, "RPMTAG_PROVIDEENTRY",
+	{ .tagFunction = PentryTag } },
+    { HEADER_EXT_TAG, "RPMTAG_REQUIREENTRY",
+	{ .tagFunction = RentryTag } },
+    { HEADER_EXT_TAG, "RPMTAG_CONFLICTENTRY",
+	{ .tagFunction = CentryTag } },
+    { HEADER_EXT_TAG, "RPMTAG_OBSOLETEENTRY",
+	{ .tagFunction = OentryTag } },
     { HEADER_EXT_FORMAT, "armor",
 	{ .fmtFunction = armorFormat } },
     { HEADER_EXT_FORMAT, "base64",

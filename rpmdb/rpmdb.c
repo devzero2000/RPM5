@@ -2402,6 +2402,12 @@ if (dbiByteSwapped(dbi) == 1)
 	    if (rc || (mi->mi_setx && mi->mi_offset == 0))
 		return NULL;
 /*@=compmempass@*/
+#ifdef	REFERENCE
+if (mi->mi_offset & 0xffff0000) {
+fprintf(stderr, "*** damaged key 0x%x reset to 0\n", mi->mi_offset);
+mi->mi_offset = 0;
+}
+#endif
 	}
 	mi->mi_setx++;
     } while (mi->mi_offset == 0);

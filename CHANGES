@@ -1,4 +1,6 @@
 5.0.0 -> 5.1a1:
+    - jbj: add --yum:primary popt alias to spew a primary.xml approximation.
+    - jbj: add header extensions for primary.xml <rpm:entry> markup.
     - jbj: rpmfi: add 2 getter(s) and an additional (stubbed) iterator method.
     - jbj: rpmmtree: functional multi-rooted specifications and verification.
     - rse: fix macro option/argument parsing (again), this time by using POPT_CONTEXT_POSIXMEHARDER
