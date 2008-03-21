@@ -260,7 +260,7 @@ static void mtreeMiss(rpmfts fts, /*@null@*/ NODE * p, char * tail)
 /*@unchecked@*/
 static struct rpmfts_s __rpmfts;
 /*@unchecked@*/
-static rpmfts _rpmfts = &__rpmfts;;
+static rpmfts _rpmfts = &__rpmfts;
 
 /*@unchecked@*/
 static enum mtreeFlags_e mtreeFlags = MTREE_FLAGS_NONE;
