@@ -255,21 +255,374 @@ static int repoMetaDataGenerator(rpmrepo repo)
     return 0;
 }
 
+/**
+ * Check file name for a suffix.
+ * @param fn            file name
+ * @param suffix        suffix
+ * @return              1 if file name ends with suffix
+ */
+static int chkSuffix(const char * fn, const char * suffix)
+        /*@*/
+{
+    size_t flen = strlen(fn);
+    size_t slen = strlen(suffix);
+    return (flen > slen && !strcmp(fn + flen - slen, suffix));
+}
+
+/*@null@*/
+static const char ** repoGetFileList(rpmrepo repo, const char * directory,
+		const char * ext)
+	/*@*/
+{
+    const char ** files = NULL;
+    char *roots[2];
+    FTS * t;
+    FTSENT * p;
+    int ftsoptions = FTS_PHYSICAL;
+    int xx;
+
+    roots[0] = (char *) directory;	/* XXX no cast */
+    roots[1] = NULL;
+
+    if ((t = Fts_open(roots, ftsoptions, NULL)) == NULL)
+	repo_error(_("Fts_open: %s"), strerror(errno));
+
+    while ((p = Fts_read(t)) != NULL) {
+
+	switch (p->fts_info) {
+	case FTS_D:
+	case FTS_DP:
+	default:
+	    continue;
+	    break;
+	case FTS_SL:
+	    if (repo->skipsymlinks)
+		continue;
+	    break;	/* XXX todo fuss with symlinks */
+	case FTS_F:
+	    if (!chkSuffix(p->fts_accpath, ext))
+		continue;
+	    xx = argvAdd(&files, p->fts_path);
+	    break;
+	}
+    }
+
+    return files;
+}
+
 static int repoCheckTimeStamps(rpmrepo repo)
 	/*@*/
-{   return 0; }
+{
+    int rc = 0;
+
+    if (repo->checkts) {
+	struct stat sb, *st = &sb;
+	const char * basedirectory =
+		rpmGetPath(repo->basedir, "/", repo->directory, NULL);
+	/* XXX check whether repo->directory is relative. */
+	const char ** files = repoGetFileList(repo, basedirectory, ".rpm");
+	const char ** f;
+	if (files != NULL)
+	for (f = files; *f; f++) {
+	    const char * fn =
+		rpmGetPath(basedirectory, "/", *f, NULL);
+	    int xx = rpmioExists(fn, st);
+
+	    if (!xx)
+		fprintf(stderr, _("cannot get to file: %s"), fn);
+	    else if (st->st_ctime > repo->mdtimestamp)
+		rc = 1;
+	    fn = _free(fn);
+	}
+	basedirectory = _free(basedirectory);
+    } else
+	rc = 1;
+
+    return rc;
+}
+
+static int repoOpenMetadataDocs(rpmrepo repo)
+	/*@modifies repo @*/
+{
+    return 0;
+}
+
+static int repoWriteMetadataDocs(rpmrepo repo, const char ** packages)
+	/*@modifies repo @*/
+{
+    return 0;
+}
+
+static int repoCloseMetadataDocs(rpmrepo repo)
+	/*@modifies repo @*/
+{
+    return 0;
+}
 
 static int repoDoPkgMetadata(rpmrepo repo)
 	/*@*/
-{   return 0; }
+{
+    const char ** packages = NULL;
+#ifdef	NOTYET
+        if (repo->update)
+            self._setup_old_metadata_lookup()
+#endif
+
+    if ((packages = repo->pkglist) == NULL)
+	packages = repoGetFileList(repo, repo->package_dir, ".rpm");
+
+#ifdef	NOTYET
+        packages = self.trimRpms(packages)
+#endif
+    repo->pkgcount = argvCount(packages);
+    repoOpenMetadataDocs(repo);
+    repoWriteMetadataDocs(repo, packages);
+    repoCloseMetadataDocs(repo);
+    return 0;
+}
 
 static int repoDoRepoMetadata(rpmrepo repo)
 	/*@*/
-{   return 0; }
+{
+#ifdef	NOTYET
+    def doRepoMetadata(self):
+        """wrapper to generate the repomd.xml file that stores the info on the other files"""
+        repodoc = libxml2.newDoc("1.0")
+        reporoot = repodoc.newChild(None, "repomd", None)
+        repons = reporoot.newNs('http://linux.duke.edu/metadata/repo', None)
+        reporoot.setNs(repons)
+        repopath = rpmGetPath(repo->outputdir, "/", repo->tempdir, NULL);
+        repofilepath = rpmGetPath(repopath, "/", repo->repomdfile, NULL);
+
+        sumtype = repo->sumtype
+        workfiles = [(repo->otherfile, 'other',),
+                     (repo->filelistsfile, 'filelists'),
+                     (repo->primaryfile, 'primary')]
+        repoid='garbageid'
+
+        if repo->database:
+            if not repo->quiet: self.callback.log('Generating sqlite DBs')
+            try:
+                dbversion = str(sqlitecachec.DBVERSION)
+            except AttributeError:
+                dbversion = '9'
+            rp = sqlitecachec.RepodataParserSqlite(repopath, repoid, None)
+
+        for (file, ftype) in workfiles:
+            complete_path = rpmGetPath(repopath, "/", file, NULL);
+
+            zfo = _gzipOpen(complete_path)
+            uncsum = misc.checksum(sumtype, zfo)
+            zfo.close()
+            csum = misc.checksum(sumtype, complete_path)
+	    (void) rpmioExists(complete_path, st)
+            timestamp = os.stat(complete_path)[8]
+
+            db_csums = {}
+            db_compressed_sums = {}
+
+            if repo->database:
+                if repo->verbose:
+                    self.callback.log("Starting %s db creation: %s" % (ftype, time.ctime()))
+
+                if ftype == 'primary':
+                    rp.getPrimary(complete_path, csum)
+
+                elif ftype == 'filelists':
+                    rp.getFilelists(complete_path, csum)
+
+                elif ftype == 'other':
+                    rp.getOtherdata(complete_path, csum)
+
+
+
+                tmp_result_name = '%s.xml.gz.sqlite' % ftype
+                tmp_result_path = rpmGetPath(repopath, "/", tmp_result_name, NULL);
+                good_name = '%s.sqlite' % ftype
+                resultpath = rpmGetPath(repopath, "/", good_name, NULL);
+
+                # rename from silly name to not silly name
+                xx = Rename(tmp_result_path, resultpath);
+                compressed_name = '%s.bz2' % good_name
+                result_compressed = rpmGetPath(repopath, "/", compressed_name, NULL);
+                db_csums[ftype] = misc.checksum(sumtype, resultpath)
+
+                # compress the files
+                bzipFile(resultpath, result_compressed)
+                # csum the compressed file
+                db_compressed_sums[ftype] = misc.checksum(sumtype, result_compressed)
+                # remove the uncompressed file
+                xx = Unlink(resultpath);
+
+                if repo->uniquemdfilenames:
+                    csum_compressed_name = '%s-%s.bz2' % (db_compressed_sums[ftype], good_name)
+                    csum_result_compressed =  rpmGetPath(repopath, "/", csum_compressed_name, NULL);
+                    xx = Rename(result_compressed, csum_result_compressed);
+                    result_compressed = csum_result_compressed
+                    compressed_name = csum_compressed_name
+
+                # timestamp the compressed file
+		(void) rpmioExists(result_compressed, st)
+                db_timestamp = os.stat(result_compressed)[8]
+
+                # add this data as a section to the repomdxml
+                db_data_type = '%s_db' % ftype
+                data = reporoot.newChild(None, 'data', None)
+                data.newProp('type', db_data_type)
+                location = data.newChild(None, 'location', None)
+                if repo->baseurl is not None:
+                    location.newProp('xml:base', repo->baseurl)
+
+                location.newProp('href', rpmGetPath(repo->finaldir, "/", compressed_name, NULL));
+                checksum = data.newChild(None, 'checksum', db_compressed_sums[ftype])
+                checksum.newProp('type', sumtype)
+                db_tstamp = data.newChild(None, 'timestamp', str(db_timestamp))
+                unchecksum = data.newChild(None, 'open-checksum', db_csums[ftype])
+                unchecksum.newProp('type', sumtype)
+                database_version = data.newChild(None, 'database_version', dbversion)
+                if repo->verbose:
+                    self.callback.log("Ending %s db creation: %s" % (ftype, time.ctime()))
+
+
+
+            data = reporoot.newChild(None, 'data', None)
+            data.newProp('type', ftype)
+
+            checksum = data.newChild(None, 'checksum', csum)
+            checksum.newProp('type', sumtype)
+            timestamp = data.newChild(None, 'timestamp', str(timestamp))
+            unchecksum = data.newChild(None, 'open-checksum', uncsum)
+            unchecksum.newProp('type', sumtype)
+            location = data.newChild(None, 'location', None)
+            if repo->baseurl is not None:
+                location.newProp('xml:base', repo->baseurl)
+            if repo->uniquemdfilenames:
+                res_file = '%s-%s.xml.gz' % (csum, ftype)
+                orig_file = rpmGetPath(repopath, "/", file, NULL);
+                dest_file = rpmGetPath(repopath, "/", res_file, NULL);
+                xx = Rename(orig_file, dest_file);
+
+            else:
+                res_file = file
+
+            file = res_file
+
+            location.newProp('href', rpmGetPath(repo->finaldir, "/", file, NULL));
+
+
+        if not repo->quiet and repo->database: self.callback.log('Sqlite DBs complete')
+
+
+        if repo->groupfile is not None:
+            self.addArbitraryMetadata(repo->groupfile, 'group_gz', reporoot)
+            self.addArbitraryMetadata(repo->groupfile, 'group', reporoot, compress=False)
+
+        # save it down
+        try:
+            repodoc.saveFormatFileEnc(repofilepath, 'UTF-8', 1)
+        except:
+            self.callback.errorlog(_('Error saving temp file for repomd.xml: %s') % repofilepath)
+            repo_error("Could not save temp file: %s"), repofilepath);
+
+        del repodoc
+#endif
+    return 0;
+}
 
 static int repoDoFinalMove(rpmrepo repo)
 	/*@*/
-{   return 0; }
+{
+    const char * output_final_dir =
+		rpmGetPath(repo->outputdir, "/", repo->finaldir, NULL);
+    const char * output_old_dir =
+		rpmGetPath(repo->outputdir, "/", repo->olddir, NULL);
+    const char * oldfile;
+    struct stat sb, *st = &sb;
+    int xx;
+
+    if (rpmioExists(output_final_dir, st)) {
+	if ((xx = Rename(output_final_dir, output_old_dir)) != 0)
+	    repo_error(_("Error moving final %s to old dir %s"),
+			output_final_dir, output_old_dir);
+    }
+
+    {	const char * output_temp_dir =
+		rpmGetPath(repo->outputdir, "/", repo->tempdir, NULL);
+	if ((xx = Rename(output_temp_dir, output_final_dir)) != 0) {
+	    xx = Rename(output_old_dir, output_final_dir);
+	    repo_error(_("Error moving final metadata into place"));
+	}
+	output_temp_dir = _free(output_temp_dir);
+    }
+
+  { static const char * files[] =
+	{ "primaryfile", "filelistsfile", "otherfile", "repomdfile", "groupfile", NULL };
+    const char ** filep;
+
+    for (filep = files; *filep != NULL; filep++) {
+	oldfile = rpmGetPath(output_old_dir, "/", *filep, NULL);
+	if (rpmioExists(oldfile, st)) {
+	    if (Unlink(oldfile))
+		repo_error(_("Could not remove old metadata file: %s: %s"),
+			oldfile, strerror(errno));
+	}
+	oldfile = _free(oldfile);
+    }
+  }
+
+  { DIR * dir = Opendir(output_old_dir);
+    struct dirent * dp;
+
+    if (dir != NULL)
+    while ((dp = Readdir(dir)) != NULL) {
+	const char * finalfile;
+
+	if (!strcmp(dp->d_name, ".") || !strcmp(dp->d_name, ".."))
+	    continue;
+
+	finalfile = rpmGetPath(output_final_dir, "/", dp->d_name, NULL);
+	oldfile = rpmGetPath(output_old_dir, "/", dp->d_name, NULL);
+
+	if (!strcmp(dp->d_name, "filelists.sqlite.bz2")
+	 || !strcmp(dp->d_name, "other.sqlite.bz2")
+	 || !strcmp(dp->d_name, "primary.sqlite.bz2"))
+	{
+	    xx = Unlink(oldfile);
+	    oldfile = _free(oldfile);
+	    continue;
+	}
+
+	if (rpmioExists(finalfile, st)) {
+	    if (!S_ISDIR(st->st_mode)) {
+		if ((xx = Unlink(oldfile)) != 0)
+		    repo_error(_("Could not remove old metadata file: %s: %s"),
+				oldfile, strerror(errno));
+	    }
+#ifdef	NOTYET
+	    else {
+		shutil.rmtree(oldfile)
+	    }
+#endif
+	} else {
+	    if ((xx = Rename(oldfile, finalfile)) != 0) {
+		repo_error(_("Could not restore old non-metadata file: %s -> %s: %s"),
+			oldfile, finalfile, strerror(errno));
+	    }
+	}
+	oldfile = _free(oldfile);
+    }
+    xx = Closedir(dir);
+  }
+
+    if ((xx = Rmdir(output_old_dir)) != 0) {
+	repo_error(_("Could not remove old metadata dir: %s: %s"),
+		repo->olddir, strerror(errno));
+    }
+    output_old_dir = _free(output_old_dir);
+    output_final_dir = _free(output_final_dir);
+
+    return 0;
+}
 
 /*==============================================================*/
 
@@ -443,20 +796,14 @@ main(int argc, char *argv[])
 
     repo->directories = poptGetArgs(optCon);
 
-    if (repo->directories == NULL || repo->directories[0] == NULL) {
-	rpmlog(RPMLOG_ERR, _("Must specify a directory to index.\n"));
-	poptPrintUsage(optCon, stderr, 0);
-	goto exit;
-    }
-    if (repo->directories[1] != NULL && !repo->split) {
-	rpmlog(RPMLOG_ERR, _("Only one directory allowed per run.\n"));
-	poptPrintUsage(optCon, stderr, 0);
-	goto exit;
-    }
-    if (repo->split && repo->checkts) {
-	rpmlog(RPMLOG_ERR, _("--split and --checkts options are mutually exclusive\n"));
-	goto exit;
-    }
+    if (repo->directories == NULL || repo->directories[0] == NULL)
+	repo_error(_("Must specify a directory to index."));
+
+    if (repo->directories[1] != NULL && !repo->split)
+	repo_error(_("Only one directory allowed per run."));
+
+    if (repo->split && repo->checkts)
+	repo_error(_("--split and --checkts options are mutually exclusive"));
 
     /* Load the package manifest(s). */
     if (repo->pkglist) {
@@ -470,13 +817,10 @@ main(int argc, char *argv[])
     rc = repoMetaDataGenerator(repo);
     if (!repo->split) {
 	rc = repoCheckTimeStamps(repo);
-#ifdef	NOTYET
-	if (uptodate) {
+	if (rc == 0) {
 	    fprintf(stdout, _("repo is up to date\n"));
-	    rc = 0;
 	    goto exit;
 	}
-#endif
     }
 
     rc = repoDoPkgMetadata(repo);
