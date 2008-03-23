@@ -105,7 +105,7 @@ rpm	alias --yum:primary.xml --qf '\
 <package type="rpm">\n\
   <name>%{NAME:cdata}</name>\n\
   <arch>%{ARCH:cdata}</arch>\n\
-  <version epoch="%|EPOCH?{%{EPOCH}}:{0}|" ver="%{VERSION}" rel="%{RELEASE}"/>\n\
+  <version epoch="%|EPOCH?{%{EPOCH}}:{0}|" ver="%{VERSION:cdata}" rel="%{RELEASE:cdata}"/>\n\
   <checksum type="sha" pkgid="NO">%|HDRID?{%{HDRID}}|</checksum>\n\
   <summary>%{SUMMARY:cdata}</summary>\n\
   <description>%{DESCRIPTION:cdata}</description>\n\
@@ -113,7 +113,7 @@ rpm	alias --yum:primary.xml --qf '\
   <url>%|URL?{%{URL:cdata}}:{}|</url>\n\
   <time file="%{PACKAGETIME}" build="%{BUILDTIME}">\n\
   <size package="%{SIZE}" installed="%{SIZE}" archive="%{ARCHIVESIZE}"/>\n\
-  <location href="%{PACKAGEORIGIN}"/>\n\
+  <location href="%{PACKAGEORIGIN:cdata}"/>\n\
   <format>\n\
 %|license?{\
     <rpm:license>%{LICENSE:cdata}</rpm:license>\n\

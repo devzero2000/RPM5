@@ -206,7 +206,7 @@ rpmdigest_SOURCES = rpmdigest.c
 rpmdigest_LDADD = $(RPMIO_LDADD_COMMON)
 
 rpmrepo_SOURCES = rpmrepo.c
-rpmrepo_LDADD = $(RPMIO_LDADD_COMMON)
+rpmrepo_LDADD = $(RPM_LDADD_COMMON)
 
 rpmmtree_SOURCES = rpmmtree.c
 rpmmtree_LDADD = $(RPM_LDADD_COMMON)

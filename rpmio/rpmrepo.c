@@ -4,8 +4,14 @@
 
 #include "system.h"
 
+#include <rpmio_internal.h>	/* XXX fdInitDigest() et al */
+#include <fts.h>
 #include <argv.h>
 #include <poptIO.h>
+
+#include <rpmtag.h>
+#include <rpmlib.h>		/* XXX for rpmts typedef */
+#include <rpmts.h>
 
 #include "debug.h"
 
@@ -41,10 +47,6 @@ struct rpmrepo_s {
 /*@null@*/
     const char * outputdir;
 
-/*@null@*/
-    ARGV_t filepatterns;
-/*@null@*/
-    ARGV_t dirpatterns;
     int skipsymlinks;
 /*@null@*/
     ARGV_t pkglist;
@@ -77,7 +79,7 @@ struct rpmrepo_s {
     const char * checksum;
 
 /*@null@*/
-    void * ts;
+    rpmts ts;
     int pkgcount;
 /*@null@*/
     ARGV_t files;
@@ -258,7 +260,9 @@ static int repoMetaDataGenerator(rpmrepo repo)
 if (_repo_debug)
 fprintf(stderr, "==> repoMetaDataGenerator(%p)\n", repo);
 
-    repo->ts = NULL;	/* rpmtsCreate() */
+    repo->ts = rpmtsCreate();
+    /* XXX todo wire up usual rpm CLI options. hotwire --nosignature for now */
+    (void) rpmtsSetVSFlags(repo->ts, _RPMVSF_NOSIGNATURES);
     repo->pkgcount = 0;
     repo->files = NULL;
 
@@ -487,15 +491,44 @@ fprintf(stderr, "\trepoOpenMetadataDocs(%p)\n", repo);
     return 0;
 }
 
+
+static Header repoReadHeader(rpmrepo repo, const char * path)
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies repo, rpmGlobalMacroContext, fileSystem, internalState @*/
+{
+    FD_t fd = Fopen(path, "r.ufdio");
+    Header h = NULL;
+
+    if (fd != NULL) {
+	/* XXX what if path needs expansion? */
+	rpmRC rpmrc = rpmReadPackageFile(repo->ts, fd, path, &h);
+
+	(void) Fclose(fd);
+
+	switch (rpmrc) {
+	case RPMRC_NOTFOUND:
+	    /* XXX Read a package manifest. Restart ftswalk on success. */
+	case RPMRC_FAIL:
+	default:
+	    h = headerFree(h);
+	    break;
+	case RPMRC_NOTTRUSTED:
+	case RPMRC_NOKEY:
+	case RPMRC_OK:
+	    break;
+	}
+    }
+    return h;
+}
+
 /*@null@*/
-static void * repoReadPackage(rpmrepo repo, const char * rpmfile,
-		/*@null@*/ const char * pkgpath)
+static Header repoReadPackage(rpmrepo repo, const char * rpmfile)
 	/*@*/
 {
-    void * h = NULL;
+    Header h = NULL;
 
 if (_repo_debug)
-fprintf(stderr, "\trepoReadPackage(%p, %s, %s)\n", repo, rpmfile, pkgpath);
+fprintf(stderr, "\trepoReadPackage(%p, %s)\n", repo, rpmfile);
 
     /*
      * TODO/FIXME
@@ -505,10 +538,7 @@ fprintf(stderr, "\trepoReadPackage(%p, %s, %s)\n", repo, rpmfile, pkgpath);
      * comprised of remote packages.
      */
 
-    if (pkgpath == NULL)
-	pkgpath = repo->package_dir;
-
-    rpmfile = rpmGetPath(pkgpath, "/", rpmfile, NULL);
+    h = repoReadHeader(repo, rpmfile);
 
 #ifdef	NOTYET
         try:
@@ -535,23 +565,112 @@ fprintf(stderr, "\trepoReadPackage(%p, %s, %s)\n", repo, rpmfile, pkgpath);
 		rpmfile);
 #endif
 
-    rpmfile = _free(rpmfile);
-
     return h;
 }
 
-static int repoWriteMetadataDocs(rpmrepo repo, /*@null@*/ const char ** pkglist,
-		/*@null@*/ const char * pkgpath, unsigned current)
+/* XXX todo: wire up popt aliases and bury the --queryformat glop externally. */
+/*@unchecked@*/ /*@observer@*/
+static const char * qfmt_primary = "\
+<package type=\"rpm\">\n\
+  <name>%{NAME:cdata}</name>\n\
+  <arch>%{ARCH:cdata}</arch>\n\
+  <version epoch=\"%|EPOCH?{%{EPOCH}}:{0}|\" ver=\"%{VERSION:cdata}\" rel=\"%{RELEASE:cdata}\"/>\n\
+  <checksum type=\"sha\" pkgid=\"NO\">%|HDRID?{%{HDRID}}|</checksum>\n\
+  <summary>%{SUMMARY:cdata}</summary>\n\
+  <description>%{DESCRIPTION:cdata}</description>\n\
+  <packager>%|PACKAGER?{%{PACKAGER:cdata}}:{}|</packager>\n\
+  <url>%|URL?{%{URL:cdata}}:{}|</url>\n\
+  <time file=\"%{PACKAGETIME}\" build=\"%{BUILDTIME}\">\n\
+  <size package=\"%{SIZE}\" installed=\"%{SIZE}\" archive=\"%{ARCHIVESIZE}\"/>\n\
+  <location href=\"%{PACKAGEORIGIN:cdata}\"/>\n\
+  <format>\n\
+%|license?{\
+    <rpm:license>%{LICENSE:cdata}</rpm:license>\n\
+}:{\
+    <rpm:license/>\n\
+}|\
+%|vendor?{\
+    <rpm:vendor>%{VENDOR:cdata}</rpm:vendor>\n\
+}:{\
+    <rpm:vendor/>\n\
+}|\
+%|group?{\
+    <rpm:group>%{GROUP:cdata}</rpm:group>\n\
+}:{\
+    <rpm:group/>\n\
+}|\
+%|buildhost?{\
+    <rpm:buildhost>%{BUILDHOST:cdata}</rpm:buildhost>\n\
+}:{\
+    <rpm:buildhost/>\n\
+}|\
+%|sourcerpm?{\
+    <rpm:sourcerpm>%{SOURCERPM:cdata}</rpm:sourcerpm>\n\
+}|\
+    <rpm:header-range start=\"%{HEADERSTARTOFF}\" end=\"%{HEADERENDOFF}\"/>\n\
+%|provideentry?{\
+    <rpm:provides>\n\
+[\
+      %{provideentry}\n\
+]\
+    </rpm:provides>\n\
+}:{\
+    <rpm:provides/>\n\
+}|\
+%|requireentry?{\
+    <rpm:requires>\n\
+[\
+      %{requireentry}\n\
+]\
+    </rpm:requires>\n\
+}:{\
+    <rpm:requires/>\n\
+}|\
+%|conflictentry?{\
+    <rpm:conflicts>\n\
+[\
+      %{conflictentry}\n\
+]\
+    </rpm:conflicts>\n\
+}:{\
+    <rpm:conflicts/>\n\
+}|\
+%|obsoleteentry?{\
+    <rpm:obsoletes>\n\
+[\
+      %{obsoleteentry}\n\
+]\
+    </rpm:obsoletes>\n\
+}:{\
+    <rpm:obsoletes/>\n\
+}|\
+%|filesentry1?{\
+[\
+    %{filesentry1}\n\
+]\
+}|\
+  </format>\n\
+</package>";
+
+/*@unchecked@*/ /*@observer@*/
+static const char * qfmt_filelists = NULL;
+
+/*@unchecked@*/ /*@observer@*/
+static const char * qfmt_other = NULL;
+
+static unsigned repoWriteMetadataDocs(rpmrepo repo,
+		/*@null@*/ const char ** pkglist, unsigned current)
 	/*@modifies repo @*/
 {
-    const char * directory = (pkgpath != NULL ? pkgpath : repo->directory);
     const char ** pkg;
 
 if (_repo_debug)
-fprintf(stderr, "\trepoWriteMetadataDocs(%p, %p, %s, %u) directory %s\n", repo, pkglist, pkgpath, current, directory);
+fprintf(stderr, "\trepoWriteMetadataDocs(%p, %p, %u)\n", repo, pkglist, current);
 
     if (pkglist == NULL)
 	pkglist = repo->pkglist;
+
+argvPrint("repo->pkglist", pkglist, NULL);
 
     for (pkg = pkglist; *pkg != NULL; pkg++) {
 	int recycled;
@@ -571,20 +690,73 @@ fprintf(stderr, "\trepoWriteMetadataDocs(%p, %p, %s, %u) directory %s\n", repo, 
             
 	/* otherwise do it individually */
 	if (!recycled) {
-	    void * h;
+	    Header h = repoReadPackage(repo, *pkg);
 
-	    h = repoReadPackage(repo, *pkg, pkgpath);
 	    if (h == NULL) {
 		repo_error(0, _("\nError %s: %s\n"), *pkg, strerror(errno));
 		continue;
 	    }
 
 #ifdef	NOTYET
-	    reldir = (pkgpath != NULL ? pkgpath : rpmGetPath(repo->basedir, "/", directory, NULL));
+	    /* XXX todo: rpmGetPath(mydir, "/", filematrix[mydir], NULL); */
+	    reldir = (pkgpath != NULL ? pkgpath : rpmGetPath(repo->basedir, "/", repo->directory, NULL));
 	    self.primaryfile.write(po.do_primary_xml_dump(reldir, baseurl=repo->baseurl))
 	    self.flfile.write(po.do_filelists_xml_dump())
 	    self.otherfile.write(po.do_other_xml_dump())
 #endif
+	    if (qfmt_primary != NULL) {
+		FD_t fd = repo->fdprimary;
+		const char * qfmt = qfmt_primary;
+		const char * msg = NULL;
+		const char * spew = headerSprintf(h, qfmt, NULL, NULL, &msg);
+		size_t nspew = (spew != NULL ? strlen(spew) : 0);
+		size_t nb = (nspew > 0 ? Fwrite(spew, 1, nspew, fd) : 0);
+		if (spew == NULL)
+		    repo_error(1, _("incorrect format: %s\n"),
+			(msg ? msg : "headerSprintf() msg is AWOL!"));
+		if (nspew != nb)
+		    repo_error(1,
+			_("Fwrite failed: expected write %u != %u bytes: %s\n"),
+			(unsigned)nspew, (unsigned)nb, Fstrerror(fd));
+		spew = _free(spew);
+	    }
+
+	    if (qfmt_filelists != NULL) {
+		FD_t fd = repo->fdfilelists;
+		const char * qfmt = qfmt_filelists;
+		const char * msg = NULL;
+		const char * spew = headerSprintf(h, qfmt, NULL, NULL, &msg);
+		size_t nspew = (spew != NULL ? strlen(spew) : 0);
+		size_t nb = (nspew > 0 ? Fwrite(spew, 1, nspew, fd) : 0);
+		if (spew == NULL)
+		    repo_error(1, _("incorrect format: %s\n"),
+			(msg ? msg : "headerSprintf() msg is AWOL!"));
+		if (nspew != nb)
+		    repo_error(1,
+			_("Fwrite failed: expected write %u != %u bytes: %s\n"),
+			(unsigned)nspew, (unsigned)nb, Fstrerror(fd));
+		spew = _free(spew);
+	    }
+
+	    if (qfmt_other != NULL) {
+		FD_t fd = repo->fdother;
+		const char * qfmt = qfmt_other;
+		const char * msg = NULL;
+		const char * spew = headerSprintf(h, qfmt, NULL, NULL, &msg);
+		size_t nspew = (spew != NULL ? strlen(spew) : 0);
+		size_t nb = (nspew > 0 ? Fwrite(spew, 1, nspew, fd) : 0);
+		if (spew == NULL)
+		    repo_error(1, _("incorrect format: %s\n"),
+			(msg ? msg : "headerSprintf() msg is AWOL!"));
+		if (nspew != nb)
+		    repo_error(1,
+			_("Fwrite failed: expected write %u != %u bytes: %s\n"),
+			(unsigned)nspew, (unsigned)nb, Fstrerror(fd));
+		spew = _free(spew);
+	    }
+
+	    h = headerFree(h);
+
 	} else {
 	    if (repo->verbose)
 		repo_error(0, _("Using data from old metadata for %s"), *pkg);
@@ -602,12 +774,12 @@ fprintf(stderr, "\trepoWriteMetadataDocs(%p, %p, %s, %u) directory %s\n", repo, 
                         outfile.write(output)
                     else {
                         if (repo->verbose)
-                            repo_error(0, _("empty serialize on write to %s in %s"), outfile, pkg);
+                            repo_error(0, _("empty serialize on write to %s in %s"), outfile, *pkg);
 		    }
                     outfile.write('\n')
 		}
 
-                self.oldData.freeNodes(pkg)
+                self.oldData.freeNodes(*pkg)
 #endif
 	}
 
@@ -712,7 +884,8 @@ fprintf(stderr, "==> repoDoPkgMetadata(%p)\n", repo);
     original_basedir = repo->basedir
     for mydir in repo->directories {
 	repo->baseurl = self._getFragmentUrl(repo->baseurl, mediano)
-	current = repoWriteMetadataDocs(filematrix[mydir], mydir, current)
+	/* XXX todo: rpmGetPath(mydir, "/", filematrix[mydir], NULL); */
+	current = repoWriteMetadataDocs(filematrix[mydir], current)
 	mediano++;
     }
     repo->baseurl = self._getFragmentUrl(repo->baseurl, 1)
@@ -731,7 +904,7 @@ fprintf(stderr, "==> repoDoPkgMetadata(%p)\n", repo);
 
     repo->pkgcount = argvCount(packages);
     repoOpenMetadataDocs(repo);
-    repoWriteMetadataDocs(repo, packages, NULL, 0);
+    repoWriteMetadataDocs(repo, packages, 0);
     repoCloseMetadataDocs(repo);
 #endif
 
@@ -1151,16 +1324,8 @@ main(int argc, char *argv[])
     rpmrepo repo = _rpmrepo;
     poptContext optCon;
     int rc = 1;		/* assume failure. */
-    int xx;
 
     __progname = "rpmmrepo";
-
-    xx = argvAdd(&repo->filepatterns, ".*bin\\/.*");
-    xx = argvAdd(&repo->filepatterns, "^\\/etc\\/.*");
-    xx = argvAdd(&repo->filepatterns, "^\\/usr\\/lib\\/sendmail$");
-    xx = argvAdd(&repo->filepatterns, "^\\/usr\\/lib\\/sendmail$");
-    xx = argvAdd(&repo->dirpatterns, ".*bin\\/.*");
-    xx = argvAdd(&repo->dirpatterns, "^\\/etc\\/.*");
 
     /* Process options. */
     optCon = rpmioInit(argc, argv, optionsTable);
@@ -1204,8 +1369,7 @@ main(int argc, char *argv[])
     rc = 0;
 
 exit:
-    repo->filepatterns = argvFree(repo->filepatterns);
-    repo->dirpatterns = argvFree(repo->dirpatterns);
+    repo->ts = rpmtsFree(repo->ts);
 
     optCon = rpmioFini(optCon);
 
