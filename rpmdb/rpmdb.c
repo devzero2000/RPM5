@@ -2147,6 +2147,10 @@ assert(nmire != NULL);
     mire->fnflags = nmire->fnflags;
     mire->tag = nmire->tag;
     mire->notmatch = notmatch;
+    /* XXX todo: permit PCRE patterns to be used. */
+    mire->offsets = NULL;
+    mire->noffsets = 0;
+    mire->nrefs = 0;
 
     if (mi->mi_nre > 1)
 	qsort(mi->mi_re, mi->mi_nre, sizeof(*mi->mi_re), mireCmp);
