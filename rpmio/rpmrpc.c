@@ -262,6 +262,8 @@ int Rename (const char * oldpath, const char * newpath)
     const char *ne = NULL;
     int oldut, newut;
 
+if (_rpmio_debug)
+fprintf(stderr, "*** Rename(%s, %s)\n", oldpath, newpath);
     /* XXX lib/install.c used to rely on this behavior. */
     if (!strcmp(oldpath, newpath)) return 0;
 
@@ -317,6 +319,8 @@ int Link (const char * oldpath, const char * newpath)
     const char *ne = NULL;
     int oldut, newut;
 
+if (_rpmio_debug)
+fprintf(stderr, "*** Link(%s, %s)\n", oldpath, newpath);
     oldut = urlPath(oldpath, &oe);
     switch (oldut) {
     case URL_IS_HTTPS:		/* XXX WRONG WRONG WRONG */
@@ -363,6 +367,8 @@ int Unlink(const char * path) {
     const char * lpath;
     int ut = urlPath(path, &lpath);
 
+if (_rpmio_debug)
+fprintf(stderr, "*** Unlink(%s)\n", path);
     switch (ut) {
     case URL_IS_FTP:
 	return ftpUnlink(path);

@@ -86,9 +86,20 @@ struct rpmrepo_s {
 /*@null@*/
     const char * package_dir;
 
+    uint32_t algo;
+
     FD_t fdprimary;
+/*@null@*/
+    const char *digestprimary;
+    time_t st_ctimeprimary;
     FD_t fdfilelists;
+/*@null@*/
+    const char *digestfilelists;
+    time_t st_ctimefilelists;
     FD_t fdother;
+/*@null@*/
+    const char *digestother;
+    time_t st_ctimeother;
 
 };
 
@@ -101,7 +112,8 @@ static struct rpmrepo_s __rpmrepo = {
     .repomdfile	= "repomd.xml.gz",
     .tempdir	= ".repodata",
     .finaldir	= "repodata",
-    .olddir	= ".olddata"
+    .olddir	= ".olddata",
+    .algo	= PGPHASHALGO_SHA1
 };
 
 /*@unchecked@*/
@@ -128,13 +140,23 @@ static void repoProgress(rpmrepo repo, const char * item,
 		int current, int total)
 	/*@*/
 {
-    fprintf(stdout, "\r%80s\r%d/%d - %s", "", current, total, item);
+    fprintf(stdout, "\r%80s\r%s: %d/%d - %s", "", __progname, current, total, item);
     fflush(stdout);
 }
 
 static int rpmioExists(const char * fn, struct stat * st)
 {
     return (Stat(fn, st) == 0);
+}
+
+static time_t rpmioCtime(const char * fn)
+{
+    struct stat sb;
+    time_t stctime = 0;
+
+    if (rpmioExists(fn, &sb))
+	stctime = sb.st_ctime;
+    return stctime;
 }
 
 /*==============================================================*/
@@ -428,12 +450,15 @@ static FD_t repoSetupPrimary(rpmrepo repo)
     static const char * spew =
 "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
 "<metadata xmlns=\"http://linux.duke.edu/metadata/common\" xmlns:rpm=\"http://linux.duke.edu/metadata/rpm\" packages=\"XXX\">\n";
+    size_t nspew = strlen(spew);
     const char * fn =
 	rpmGetPath(repo->outputdir, "/", repo->tempdir, "/", repo->primaryfile, NULL);
     FD_t fd = Fopen(fn, "w.gzdio");
-    /* XXX todo: fill in repo->pkgcount */
-    size_t nb = Fwrite(spew, 1, strlen(spew), fd);
+    size_t nb;
 
+    fdInitDigest(fd, repo->algo, 0);
+    /* XXX todo: fill in repo->pkgcount */
+    nb = Fwrite(spew, 1, nspew, fd);
 if (_repo_debug)
 fprintf(stderr, "\trepoSetupPrimary(%p) nb %u\n", repo, (unsigned)nb);
 
@@ -447,12 +472,15 @@ static FD_t repoSetupFilelists(rpmrepo repo)
     static const char * spew =
 "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
 "<filelists xmlns=\"http://linux.duke.edu/metadata/filelists\" packages=\"XXX\">\n";
+    size_t nspew = strlen(spew);
     const char * fn =
 	rpmGetPath(repo->outputdir, "/", repo->tempdir, "/", repo->filelistsfile, NULL);
     FD_t fd = Fopen(fn, "w.gzdio");
-    /* XXX todo: fill in repo->pkgcount */
-    size_t nb = Fwrite(spew, 1, strlen(spew), fd);
+    size_t nb;
 
+    fdInitDigest(fd, repo->algo, 0);
+    /* XXX todo: fill in repo->pkgcount */
+    nb = Fwrite(spew, 1, nspew, fd);
 if (_repo_debug)
 fprintf(stderr, "\trepoSetupFilelists(%p) nb %u\n", repo, (unsigned)nb);
 
@@ -466,12 +494,16 @@ static FD_t repoSetupOther(rpmrepo repo)
     static const char * spew =
 "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
 "<otherdata xmlns=\"http://linux.duke.edu/metadata/other\" packages=\"XXX\">\n";
+    size_t nspew = strlen(spew);
     const char * fn =
         rpmGetPath(repo->outputdir, "/", repo->tempdir, "/", repo->otherfile, NULL);
     FD_t fd = Fopen(fn, "w.gzdio");
     /* XXX todo: fill in repo->pkgcount */
-    size_t nb = Fwrite(spew, 1, strlen(spew), fd);
+    size_t nb;
 
+    fdInitDigest(fd, repo->algo, 0);
+    /* XXX todo: fill in repo->pkgcount */
+    nb = Fwrite(spew, 1, nspew, fd);
 if (_repo_debug)
 fprintf(stderr, "\trepoSetupOther(%p) nb %u\n", repo, (unsigned)nb);
 
@@ -819,44 +851,52 @@ argvPrint("repo->pkglist", pkglist, NULL);
 static int repoCloseMetadataDocs(rpmrepo repo)
 	/*@modifies repo @*/
 {
+    static int asAscii = 1;
     const char * spew;
     size_t nspew;
     size_t nb;
     FD_t fd;
+    const char ** digestp;
     int xx;
 
 if (_repo_debug)
 fprintf(stderr, "\trepoCloseMetadataDocs(%p)\n", repo);
 
     if (!repo->quiet)
-	repo_error(0, "");
+	fprintf(stderr, "\n");
 
     /* save them up to the tmp locations */
     if (!repo->quiet)
 	repo_error(0, _("Saving primary.xml metadata"));
 
     fd = repo->fdprimary; repo->fdprimary = NULL;
+    digestp = &repo->digestprimary;
     spew = "</metadata>\n";
     nspew = strlen(spew);
     nb = Fwrite(spew, 1, nspew, fd);
+    fdFiniDigest(fd, repo->algo, digestp, NULL, asAscii);
     xx = Fclose(fd);
 
     if (!repo->quiet)
 	repo_error(0, _("Saving filelists.xml metadata"));
 
     fd = repo->fdfilelists; repo->fdfilelists = NULL;
+    digestp = &repo->digestfilelists;
     spew = "</filelists>\n";
     nspew = strlen(spew);
     nb = Fwrite(spew, 1, nspew, fd);
+    fdFiniDigest(fd, repo->algo, digestp, NULL, asAscii);
     xx = Fclose(fd);
 
     if (!repo->quiet)
 	repo_error(0, _("Saving other.xml metadata"));
 
     fd = repo->fdother; repo->fdother = NULL;
+    digestp = &repo->digestother;
     spew = "</otherdata>\n";
     nspew = strlen(spew);
     nb = Fwrite(spew, 1, nspew, fd);
+    fdFiniDigest(fd, repo->algo, digestp, NULL, asAscii);
     xx = Fclose(fd);
 
     return 0;
@@ -940,8 +980,104 @@ fprintf(stderr, "==> repoDoPkgMetadata(%p)\n", repo);
 static int repoDoRepoMetadata(rpmrepo repo)
 	/*@*/
 {
+    const char * fn;
+    time_t stctime;
+    static const char * spewinit = "\
+<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\
+<repomd xmlns=\"http://linux.duke.edu/metadata/repo\">\n";
+    const char * spewtype;
+    const char * spewdigest;
+    char spewtime[64];
+    const char * spewhref;
+    const char * spew;
+    size_t nspew;
+    size_t nb;
+    const char * repopath =
+		rpmGetPath(repo->outputdir, "/", repo->tempdir, NULL);
+    const char * repofilepath =
+		rpmGetPath(repopath, "/", repo->repomdfile, NULL);
+    FD_t fd;
+
 if (_repo_debug)
 fprintf(stderr, "==> repoDoRepoMetadata(%p)\n", repo);
+
+    fn = rpmGetPath(repo->outputdir, "/", repo->tempdir, "/", repo->otherfile, NULL);
+    repo->st_ctimeother = rpmioCtime(fn);
+    fn = _free(fn);
+    fn = rpmGetPath(repo->outputdir, "/", repo->tempdir, "/", repo->filelistsfile, NULL);
+    repo->st_ctimefilelists = rpmioCtime(fn);
+    fn = _free(fn);
+    fn = rpmGetPath(repo->outputdir, "/", repo->tempdir, "/", repo->primaryfile, NULL);
+    repo->st_ctimeprimary = rpmioCtime(fn);
+    fn = _free(fn);
+
+    fd = Fopen(repofilepath, "w.gzdio");
+    spew = spewinit;
+    nspew = strlen(spew);
+    if (fd)
+	nb = Fwrite(spew, 1, nspew, fd);
+
+    stctime = repo->st_ctimeother;
+    spewtype = "other";
+    spewdigest = repo->digestother;
+    snprintf(spewtime, sizeof(spewtime), "%u", (unsigned)stctime);
+    spewhref = "repodata/other.xml.gz";
+    spew = rpmExpand("\
+  <data type=\"", spewtype, "\">\n\
+    <checksum type=\"sha\">", spewdigest, "</checksum>\n\
+    <timestamp>", spewtime, "</timestamp>\n\
+    <open-checksum type=\"sha\">", spewdigest, "</open-checksum>\n\
+    <location href=\"", spewhref, "\"/>\n\
+  </data>\n", NULL);
+    nspew = strlen(spew);
+    if (fd)
+	nb = Fwrite(spew, 1, nspew, fd);
+    spew = _free(spew);
+
+    stctime = repo->st_ctimefilelists;
+    spewtype = "filelists";
+    spewdigest = repo->digestfilelists;
+    snprintf(spewtime, sizeof(spewtime), "%u", (unsigned)stctime);
+    spewhref = "repodata/filelists.xml.gz";
+    spew = rpmExpand("\
+  <data type=\"", spewtype, "\">\n\
+    <checksum type=\"sha\">", spewdigest, "</checksum>\n\
+    <timestamp>", spewtime, "</timestamp>\n\
+    <open-checksum type=\"sha\">", spewdigest, "</open-checksum>\n\
+    <location href=\"", spewhref, "\"/>\n\
+  </data>\n", NULL);
+    nspew = strlen(spew);
+    if (fd)
+	nb = Fwrite(spew, 1, nspew, fd);
+    spew = _free(spew);
+
+    stctime = repo->st_ctimeprimary;
+    spewtype = "primary";
+    spewdigest = repo->digestprimary;
+    snprintf(spewtime, sizeof(spewtime), "%u", (unsigned)stctime);
+    spewhref = "repodata/primary.xml.gz";
+    spew = rpmExpand("\
+  <data type=\"", spewtype, "\">\n\
+    <checksum type=\"sha\">", spewdigest, "</checksum>\n\
+    <timestamp>", spewtime, "</timestamp>\n\
+    <open-checksum type=\"sha\">", spewdigest, "</open-checksum>\n\
+    <location href=\"", spewhref, "\"/>\n\
+  </data>\n", NULL);
+    nspew = strlen(spew);
+    if (fd)
+	nb = Fwrite(spew, 1, nspew, fd);
+    spew = _free(spew);
+
+    spew = "</repomd>\n";
+    nspew = strlen(spew);
+    if (fd)
+	nb = Fwrite(spew, 1, nspew, fd);
+
+    if (fd)
+	(void) Fclose(fd);
+
+    repopath = _free(repopath);
+    repofilepath = _free(repofilepath);
 
 #ifdef	NOTYET
     def doRepoMetadata(self):
