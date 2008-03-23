@@ -394,23 +394,26 @@ fprintf(stderr, "\trepoSetupOldMetadataLookup(%p)\n", repo);
 #ifdef	NOTYET
     def _setup_old_metadata_lookup(self):
         """sets up the .oldData object for handling the --update call. Speeds up generating updates for new metadata"""
-        #FIXME - this only actually works for single dirs. It will only
-        # function for the first dir passed to --split, not all of them
-        # this needs to be fixed by some magic in readMetadata.py
-        # using opts.pkgdirs as a list, I think.
-        # FIXME - this needs to read the old repomd.xml to figure out where
-        # the files WERE to pass in the right fns.
-        if self.conf.update:
-            #build the paths
+    /*
+     * FIXME - this only actually works for single dirs. It will only
+     * function for the first dir passed to --split, not all of them
+     * this needs to be fixed by some magic in readMetadata.py
+     * using opts.pkgdirs as a list, I think.
+     * FIXME - this needs to read the old repomd.xml to figure out where
+     * the files WERE to pass in the right fns.
+     */
+    if (repo->update) {
+            /* build the paths */
             opts = {
-                'verbose' : self.conf.verbose,
-                'pkgdir'  : os.path.normpath(self.package_dir)
+                'verbose' : repo->verbose,
+                'pkgdir'  : os.path.normpath(repo->package_dir)
             }
-            if self.conf.skip_stat:
+            if (repo->skipstat)
                 opts['do_stat'] = False
 
-            #and scan the old repo
-            self.oldData = readMetadata.MetadataIndex(self.conf.outputdir, opts)
+            /* and scan the old repo */
+            self.oldData = readMetadata.MetadataIndex(repo->outputdir, opts)
+    }
 #endif
     return 0;
 }
@@ -578,7 +581,7 @@ fprintf(stderr, "\trepoWriteMetadataDocs(%p, %p, %s, %u) directory %s\n", repo, 
 
 #ifdef	NOTYET
 	    reldir = (pkgpath != NULL ? pkgpath : rpmGetPath(repo->basedir, "/", directory, NULL));
-	    self.primaryfile.write(po.do_primary_xml_dump(reldir, baseurl=self.conf.baseurl))
+	    self.primaryfile.write(po.do_primary_xml_dump(reldir, baseurl=repo->baseurl))
 	    self.flfile.write(po.do_filelists_xml_dump())
 	    self.otherfile.write(po.do_other_xml_dump())
 #endif
@@ -588,9 +591,9 @@ fprintf(stderr, "\trepoWriteMetadataDocs(%p, %p, %s, %u) directory %s\n", repo, 
 #ifdef	NOTYET
 		(primarynode, filenode, othernode) = nodes    
 
-                for node, outfile in ((primarynode,self.primaryfile),
-                                      (filenode,self.flfile),
-                                      (othernode,self.otherfile))
+                for node, outfile in ((primarynode, repo->fdprimary),
+                                      (filenode,    repo->fdfilelists),
+                                      (othernode,   repo->fdother))
 		{
                     if node is None:
                         break
@@ -680,37 +683,39 @@ fprintf(stderr, "==> repoDoPkgMetadata(%p)\n", repo);
 
     def doPkgMetadata(self):
         """all the heavy lifting for the package metadata"""
-        if len(self.conf.directories) == 1:
+        if (argvCount(repo->directories) == 1) {
             MetaDataGenerator.doPkgMetadata(self)
             return
+	}
 
     if (repo->update)
 	repoSetupOldMetadataLookup(repo)
 
-        filematrix = {}
-        for mydir in self.conf.directories:
-            if os.path.isabs(mydir):
-                thisdir = mydir
-            else:
-                if mydir.startswith('../'):
-                    thisdir = Realpath(mydir, NULL);
-                else:
-                    thisdir = rpmGetPath(repo->basedir, "/", mydir, NULL);
+    filematrix = {}
+    for mydir in repo->directories {
+	if (mydir[0] == '/')
+	    thisdir = mydir;
+	else if (mydir[0] == '.' && mydir[1] == '.' && mydir[2] == '/')
+	    thisdir = Realpath(mydir, NULL);
+	else
+	    thisdir = rpmGetPath(repo->basedir, "/", mydir, NULL);
 
-            filematrix[mydir] = self.getFileList(thisdir, '.rpm')
-            self.trimRpms(filematrix[mydir])
-            self.pkgcount += len(filematrix[mydir])
+	filematrix[mydir] = repoGetFileList(repo, thisdir, '.rpm')
+	self.trimRpms(filematrix[mydir])
+	repo->pkgcount = argvCount(filematrix[mydir]);
+    }
 
-        mediano = 1
-        current = 0
-        repo->baseurl = self._getFragmentUrl(repo->baseurl, mediano)
+    mediano = 1;
+    current = 0;
+    repo->baseurl = self._getFragmentUrl(repo->baseurl, mediano)
     repoOpenMetadataDocs(repo);
-        original_basedir = self.conf.basedir
-        for mydir in repo->directories:
-            repo->baseurl = self._getFragmentUrl(repo->baseurl, mediano)
-            current = self.writeMetadataDocs(filematrix[mydir], mydir, current)
-            mediano += 1
-        repo->baseurl = self._getFragmentUrl(repo->baseurl, 1)
+    original_basedir = repo->basedir
+    for mydir in repo->directories {
+	repo->baseurl = self._getFragmentUrl(repo->baseurl, mediano)
+	current = repoWriteMetadataDocs(filematrix[mydir], mydir, current)
+	mediano++;
+    }
+    repo->baseurl = self._getFragmentUrl(repo->baseurl, 1)
     repoCloseMetadataDocs(repo);
 #else
 
@@ -755,15 +760,16 @@ fprintf(stderr, "==> repoDoRepoMetadata(%p)\n", repo);
                      (repo->primaryfile, 'primary')]
         repoid='garbageid'
 
-        if repo->database:
+        if (repo->database) {
             if (!repo->quiet) repo_error(0, _("Generating sqlite DBs"));
             try:
                 dbversion = str(sqlitecachec.DBVERSION)
             except AttributeError:
                 dbversion = '9'
             rp = sqlitecachec.RepodataParserSqlite(repopath, repoid, None)
+	}
 
-        for (file, ftype) in workfiles:
+        for (file, ftype) in workfiles {
             complete_path = rpmGetPath(repopath, "/", file, NULL);
 
             zfo = _gzipOpen(complete_path)
@@ -776,7 +782,7 @@ fprintf(stderr, "==> repoDoRepoMetadata(%p)\n", repo);
             db_csums = {}
             db_compressed_sums = {}
 
-            if repo->database:
+            if (repo->database) {
                 if (repo->verbose) {
 		    time_t now = time(NULL);
                     repo_error(0, _("Starting %s db creation: %s"),
@@ -785,51 +791,49 @@ fprintf(stderr, "==> repoDoRepoMetadata(%p)\n", repo);
 
                 if ftype == 'primary':
                     rp.getPrimary(complete_path, csum)
-
                 elif ftype == 'filelists':
                     rp.getFilelists(complete_path, csum)
-
                 elif ftype == 'other':
                     rp.getOtherdata(complete_path, csum)
-
-
 
                 tmp_result_name = '%s.xml.gz.sqlite' % ftype
                 tmp_result_path = rpmGetPath(repopath, "/", tmp_result_name, NULL);
                 good_name = '%s.sqlite' % ftype
                 resultpath = rpmGetPath(repopath, "/", good_name, NULL);
 
-                # rename from silly name to not silly name
+                /* rename from silly name to not silly name */
                 xx = Rename(tmp_result_path, resultpath);
                 compressed_name = '%s.bz2' % good_name
                 result_compressed = rpmGetPath(repopath, "/", compressed_name, NULL);
                 db_csums[ftype] = misc.checksum(sumtype, resultpath)
 
-                # compress the files
+                /* compress the files */
                 bzipFile(resultpath, result_compressed)
-                # csum the compressed file
+                /* csum the compressed file */
                 db_compressed_sums[ftype] = misc.checksum(sumtype, result_compressed)
-                # remove the uncompressed file
+                /* remove the uncompressed file */
                 xx = Unlink(resultpath);
 
-                if repo->uniquemdfilenames:
+                if (repo->uniquemdfilenames) {
                     csum_compressed_name = '%s-%s.bz2' % (db_compressed_sums[ftype], good_name)
                     csum_result_compressed =  rpmGetPath(repopath, "/", csum_compressed_name, NULL);
                     xx = Rename(result_compressed, csum_result_compressed);
                     result_compressed = csum_result_compressed
                     compressed_name = csum_compressed_name
+		}
 
-                # timestamp the compressed file
+                /* timestamp the compressed file */
 		(void) rpmioExists(result_compressed, st)
                 db_timestamp = os.stat(result_compressed)[8]
 
-                # add this data as a section to the repomdxml
+                /* add this data as a section to the repomdxml */
                 db_data_type = '%s_db' % ftype
                 data = reporoot.newChild(None, 'data', None)
                 data.newProp('type', db_data_type)
                 location = data.newChild(None, 'location', None)
-                if repo->baseurl is not None:
+                if (repo->baseurl != NULL) {
                     location.newProp('xml:base', repo->baseurl)
+		}
 
                 location.newProp('href', rpmGetPath(repo->finaldir, "/", compressed_name, NULL));
                 checksum = data.newChild(None, 'checksum', db_compressed_sums[ftype])
@@ -839,12 +843,11 @@ fprintf(stderr, "==> repoDoRepoMetadata(%p)\n", repo);
                 unchecksum.newProp('type', sumtype)
                 database_version = data.newChild(None, 'database_version', dbversion)
                 if (repo->verbose) {
-		    time_t now = time(NULL);
+		   time_t now = time(NULL);
                    repo_error(0, _("Ending %s db creation: %s"),
 			ftype, ctime(&now));
 		}
-
-
+	    }
 
             data = reporoot.newChild(None, 'data', None)
             data.newProp('type', ftype)
@@ -855,7 +858,7 @@ fprintf(stderr, "==> repoDoRepoMetadata(%p)\n", repo);
             unchecksum = data.newChild(None, 'open-checksum', uncsum)
             unchecksum.newProp('type', sumtype)
             location = data.newChild(None, 'location', None)
-            if repo->baseurl is not None:
+            if (repo->baseurl != NULL)
                 location.newProp('xml:base', repo->baseurl)
             if (repo->uniquemdfilenames) {
                 res_file = '%s-%s.xml.gz' % (csum, ftype)
@@ -870,9 +873,11 @@ fprintf(stderr, "==> repoDoRepoMetadata(%p)\n", repo);
             file = res_file
 
             location.newProp('href', rpmGetPath(repo->finaldir, "/", file, NULL));
+	}
 
 
-        if (!repo->quiet && repo->database) repo_error(0, _("Sqlite DBs complete"));
+        if (!repo->quiet && repo->database)
+	    repo_error(0, _("Sqlite DBs complete"));
 
 
         if (repo->groupfile != NULL) {
@@ -880,7 +885,7 @@ fprintf(stderr, "==> repoDoRepoMetadata(%p)\n", repo);
             self.addArbitraryMetadata(repo->groupfile, 'group', reporoot, compress=False)
 	}
 
-        # save it down
+        /* save it down */
         try:
             repodoc.saveFormatFileEnc(repofilepath, 'UTF-8', 1)
         except:

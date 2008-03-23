@@ -1730,9 +1730,26 @@ static int diskstatTag(Header h, HE_t he)
     return rc;
 }
 
-static int _entryTag(Header h, HE_t he, rpmTag EVRtag, rpmTag Ftag)
+static int PRCOentrySkip(rpmTag tag, rpmTagData N, rpmTagData EVR, rpmTagData F,
+		uint32_t i)
+	/*@*/
+{
+    int a = -2, b = -2;
+
+    if (N.argv[i] == NULL || *N.argv[i] == '\0')
+	return 1;
+    if (tag == RPMTAG_REQUIRENAME && i > 0
+     && !(a=strcmp(N.argv[i], N.argv[i-1]))
+     && !(b=strcmp(EVR.argv[i], EVR.argv[i-1]))
+     && (F.ui32p[i] & 0x4e) == ((F.ui32p[i-1] & 0x4e)))
+	return 1;
+    return 0;
+}
+
+static int PRCOentryTag(Header h, HE_t he, rpmTag EVRtag, rpmTag Ftag)
 	/*@modifies he @*/
 {
+    rpmTag tag = he->tag;
     rpmTagData N = { .ptr = NULL };
     rpmTagData EVR = { .ptr = NULL };
     rpmTagData F = { .ptr = NULL };
@@ -1762,12 +1779,16 @@ static int _entryTag(Header h, HE_t he, rpmTag EVRtag, rpmTag Ftag)
     nb = sizeof(*he->p.argv);
     ac = 0;
     for (i = 0; i < c; i++) {
-	if (!(N.argv[i] != NULL && *N.argv[i] != '\0'))
-		continue;
+	if (PRCOentrySkip(tag, N, EVR, F, i))
+	    continue;
 	ac++;
 	nb += sizeof(*he->p.argv);
-	nb += sizeof("<rpm:entry name=\"\"/>") + strlen(N.argv[i]);
-	if (EVR.argv[i] != NULL && *EVR.argv[i] != '\0') {
+	nb += sizeof("<rpm:entry name=\"\"/>");
+	if (*N.argv[i] == '/')
+	    nb += xmlstrlen(N.argv[i]);
+	else
+	    nb += strlen(N.argv[i]);
+	if (EVR.argv != NULL && EVR.argv[i] != NULL && *EVR.argv[i] != '\0') {
 	    nb += sizeof(" flags=\"EQ\" epoch=\"0\" ver=\"\"") - 1;
 	    nb += strlen(EVR.argv[i]);
 	    if (strchr(EVR.argv[i], ':') != NULL)
@@ -1775,21 +1796,28 @@ static int _entryTag(Header h, HE_t he, rpmTag EVRtag, rpmTag Ftag)
 	    if (strchr(EVR.argv[i], '-') != NULL)
 		nb += sizeof(" rel=\"\"") - 2;
 	}
+	if (F.ui32p[i] & 0x40)
+	    nb += sizeof(" pre=\"1\"") - 1;
     }
 
     he->t = RPM_STRING_ARRAY_TYPE;
     he->c = ac;
     he->freeData = 1;
-    he->p.argv = xmalloc(nb);
+    he->p.argv = xmalloc(nb + BUFSIZ);	/* XXX hack: leave slop */
     t = (char *) &he->p.argv[he->c + 1];
     ac = 0;
     for (i = 0; i < c; i++) {
-	if (!(N.argv[i] != NULL && *N.argv[i] != '\0'))
-		continue;
+	if (PRCOentrySkip(tag, N, EVR, F, i))
+	    continue;
 	he->p.argv[ac++] = t;
 	t = stpcpy(t, "<rpm:entry");
-	t = stpcpy( stpcpy( stpcpy(t, " name=\""), N.argv[i]), "\"");
-	if (EVR.argv[i] != NULL && *EVR.argv[i] != '\0') {
+	t = stpcpy(t, " name=\"");
+	if (*N.argv[i] == '/') {
+	    t = xmlstrcpy(t, N.argv[i]);	t += strlen(t);
+	} else
+	    t = stpcpy(t, N.argv[i]);
+	t = stpcpy(t, "\"");
+	if (EVR.argv != NULL && EVR.argv[i] != NULL && *EVR.argv[i] != '\0') {
 	    static char *Fstr[] = { "?0","LT","GT","?3","EQ","LE","GE","?7" };
 	    int Fx = ((F.ui32p[i] >> 1) & 0x7);
 	    const char *E, *V, *R;
@@ -1806,6 +1834,8 @@ static int _entryTag(Header h, HE_t he, rpmTag EVRtag, rpmTag Ftag)
 	    if (R != NULL)
 		t = stpcpy( stpcpy( stpcpy(t, " rel=\""), R), "\"");
 	}
+	if (F.ui32p[i] & 0x40)
+	    t = stpcpy(t, " pre=\"1\"");
 	t = stpcpy(t, "/>");
 	*t++ = '\0';
     }
@@ -1815,7 +1845,7 @@ static int _entryTag(Header h, HE_t he, rpmTag EVRtag, rpmTag Ftag)
 exit:
     N.argv = _free(N.argv);
     EVR.argv = _free(EVR.argv);
-    F.argv = _free(F.argv);
+    F.ui32p = _free(F.ui32p);
     return rc;
 }
 
@@ -1823,28 +1853,175 @@ static int PentryTag(Header h, HE_t he)
 	/*@modifies he @*/
 {
     he->tag = RPMTAG_PROVIDENAME;
-    return _entryTag(h, he, RPMTAG_PROVIDEVERSION, RPMTAG_PROVIDEFLAGS);
+    return PRCOentryTag(h, he, RPMTAG_PROVIDEVERSION, RPMTAG_PROVIDEFLAGS);
 }
 
 static int RentryTag(Header h, HE_t he)
 	/*@modifies he @*/
 {
     he->tag = RPMTAG_REQUIRENAME;
-    return _entryTag(h, he, RPMTAG_REQUIREVERSION, RPMTAG_REQUIREFLAGS);
+    return PRCOentryTag(h, he, RPMTAG_REQUIREVERSION, RPMTAG_REQUIREFLAGS);
 }
 
 static int CentryTag(Header h, HE_t he)
 	/*@modifies he @*/
 {
     he->tag = RPMTAG_CONFLICTNAME;
-    return _entryTag(h, he, RPMTAG_CONFLICTVERSION, RPMTAG_CONFLICTFLAGS);
+    return PRCOentryTag(h, he, RPMTAG_CONFLICTVERSION, RPMTAG_CONFLICTFLAGS);
 }
 
 static int OentryTag(Header h, HE_t he)
 	/*@modifies he @*/
 {
     he->tag = RPMTAG_OBSOLETENAME;
-    return _entryTag(h, he, RPMTAG_OBSOLETEVERSION, RPMTAG_OBSOLETEFLAGS);
+    return PRCOentryTag(h, he, RPMTAG_OBSOLETEVERSION, RPMTAG_OBSOLETEFLAGS);
+}
+
+static int FDGentrySkip(rpmTagData DN, rpmTagData BN, rpmTagData DI, uint32_t i)
+	/*@*/
+{
+    const char * dn = DN.argv[DI.ui32p[i]];
+    size_t dnlen = strlen(dn);
+
+    if (strstr(dn, "bin/") != NULL)
+	return 1;
+    if (dnlen >= sizeof("/etc/")-1 && !strncmp(dn, "/etc/", dnlen))
+	return 1;
+    if (!strcmp(dn, "/usr/lib/") && !strcmp(BN.argv[i], "sendmail"))
+	return 1;
+    return 2;
+}
+
+static int FDGentryTag(Header h, HE_t he, int lvl)
+	/*@modifies he @*/
+{
+    rpmTagData BN = { .ptr = NULL };
+    rpmTagData DN = { .ptr = NULL };
+    rpmTagData DI = { .ptr = NULL };
+    rpmTagData FMODES = { .ptr = NULL };
+    rpmTagData FFLAGS = { .ptr = NULL };
+    size_t nb;
+    uint32_t ac;
+    uint32_t c;
+    uint32_t i;
+    char *t;
+    int rc = 1;		/* assume failure */
+    int xx;
+
+    he->tag = RPMTAG_BASENAMES;
+    xx = headerGet(h, he, 0);
+    if (xx == 0) goto exit;
+    BN.argv = he->p.argv;
+    c = he->c;
+
+    he->tag = RPMTAG_DIRNAMES;
+    xx = headerGet(h, he, 0);
+    if (xx == 0) goto exit;
+    DN.argv = he->p.argv;
+
+    he->tag = RPMTAG_DIRINDEXES;
+    xx = headerGet(h, he, 0);
+    if (xx == 0) goto exit;
+    DI.ui32p = he->p.ui32p;
+
+    he->tag = RPMTAG_FILEMODES;
+    xx = headerGet(h, he, 0);
+    if (xx == 0) goto exit;
+    FMODES.ui16p = he->p.ui16p;
+
+    he->tag = RPMTAG_FILEFLAGS;
+    xx = headerGet(h, he, 0);
+    if (xx == 0) goto exit;
+    FFLAGS.ui32p = he->p.ui32p;
+
+    nb = sizeof(*he->p.argv);
+    ac = 0;
+    for (i = 0; i < c; i++) {
+	if (lvl > 0 && FDGentrySkip(DN, BN, DI, i) != lvl)
+	    continue;
+	ac++;
+	nb += sizeof(*he->p.argv);
+	nb += sizeof("<file></file>");
+	nb += xmlstrlen(DN.argv[DI.ui32p[i]]);
+	nb += xmlstrlen(BN.argv[i]);
+	if (FFLAGS.ui32p[i] & 0x40)	/* XXX RPMFILE_GHOST */
+	    nb += sizeof(" type=\"ghost\"") - 1;
+	else if (S_ISDIR(FMODES.ui16p[i]))
+	    nb += sizeof(" type=\"dir\"") - 1;
+    }
+
+    he->t = RPM_STRING_ARRAY_TYPE;
+    he->c = ac;
+    he->freeData = 1;
+    he->p.argv = xmalloc(nb);
+    t = (char *) &he->p.argv[he->c + 1];
+    ac = 0;
+    /* FIXME: Files, then dirs, finally ghosts breaks sort order.  */
+    for (i = 0; i < c; i++) {
+	if (lvl > 0 && FDGentrySkip(DN, BN, DI, i) != lvl)
+	    continue;
+	if (FFLAGS.ui32p[i] & 0x40)	/* XXX RPMFILE_GHOST */
+	    continue;
+	if (S_ISDIR(FMODES.ui16p[i]))
+	    continue;
+	he->p.argv[ac++] = t;
+	t = stpcpy(t, "<file>");
+	t = xmlstrcpy(t, DN.argv[DI.ui32p[i]]); t += strlen(t);
+	t = xmlstrcpy(t, BN.argv[i]);		t += strlen(t);
+	t = stpcpy(t, "</file>");
+	*t++ = '\0';
+    }
+    for (i = 0; i < c; i++) {
+	if (lvl > 0 && FDGentrySkip(DN, BN, DI, i) != lvl)
+	    continue;
+	if (FFLAGS.ui32p[i] & 0x40)	/* XXX RPMFILE_GHOST */
+	    continue;
+	if (!S_ISDIR(FMODES.ui16p[i]))
+	    continue;
+	he->p.argv[ac++] = t;
+	t = stpcpy(t, "<file type=\"dir\">");
+	t = xmlstrcpy(t, DN.argv[DI.ui32p[i]]); t += strlen(t);
+	t = xmlstrcpy(t, BN.argv[i]);		t += strlen(t);
+	t = stpcpy(t, "</file>");
+	*t++ = '\0';
+    }
+    for (i = 0; i < c; i++) {
+	if (lvl > 0 && FDGentrySkip(DN, BN, DI, i) != lvl)
+	    continue;
+	if (!(FFLAGS.ui32p[i] & 0x40))	/* XXX RPMFILE_GHOST */
+	    continue;
+	he->p.argv[ac++] = t;
+	t = stpcpy(t, "<file type=\"ghost\">");
+	t = xmlstrcpy(t, DN.argv[DI.ui32p[i]]); t += strlen(t);
+	t = xmlstrcpy(t, BN.argv[i]);		t += strlen(t);
+	t = stpcpy(t, "</file>");
+	*t++ = '\0';
+    }
+
+    he->p.argv[he->c] = NULL;
+    rc = 0;
+
+exit:
+    BN.argv = _free(BN.argv);
+    DN.argv = _free(DN.argv);
+    DI.ui32p = _free(DI.ui32p);
+    FMODES.ui16p = _free(FMODES.ui16p);
+    FFLAGS.ui32p = _free(FFLAGS.ui32p);
+    return rc;
+}
+
+static int F1entryTag(Header h, HE_t he)
+	/*@modifies he @*/
+{
+    he->tag = RPMTAG_BASENAMES;
+    return FDGentryTag(h, he, 1);
+}
+
+static int F2entryTag(Header h, HE_t he)
+	/*@modifies he @*/
+{
+    he->tag = RPMTAG_BASENAMES;
+    return FDGentryTag(h, he, 2);
 }
 
 /*@-type@*/ /* FIX: cast? */
@@ -1889,6 +2066,10 @@ static struct headerSprintfExtension_s _headerCompoundFormats[] = {
 	{ .tagFunction = CentryTag } },
     { HEADER_EXT_TAG, "RPMTAG_OBSOLETEENTRY",
 	{ .tagFunction = OentryTag } },
+    { HEADER_EXT_TAG, "RPMTAG_FILESENTRY1",
+	{ .tagFunction = F1entryTag } },
+    { HEADER_EXT_TAG, "RPMTAG_FILESENTRY2",
+	{ .tagFunction = F2entryTag } },
     { HEADER_EXT_FORMAT, "armor",
 	{ .fmtFunction = armorFormat } },
     { HEADER_EXT_FORMAT, "base64",

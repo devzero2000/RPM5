@@ -101,23 +101,43 @@ rpm	alias --xml --qf '[%{*:xml}\n]' \
 	--POPTdesc=$"list metadata in xml"
 rpm	alias --yaml --qf '[%{*:yaml}\n]' \
 	--POPTdesc=$"list metadata in yaml"
-rpm	alias --yum:primary --nosignature --qf '\
+rpm	alias --yum:primary.xml --qf '\
 <package type="rpm">\n\
   <name>%{NAME}</name>\n\
   <arch>%{ARCH}</arch>\n\
   <version epoch="%|EPOCH?{%{EPOCH}}:{0}|" ver="%{VERSION}" rel="%{RELEASE}"/>\n\
+  <checksum type="sha" pkgid="NO">%|HDRID?{%{HDRID}}|</checksum>\n\
   <summary>%{SUMMARY}</summary>\n\
   <description>%{DESCRIPTION}</description>\n\
   <packager>%|PACKAGER?{%{PACKAGER}}:{}|</packager>\n\
   <url>%|URL?{%{URL}}:{}|</url>\n\
   <time file="XXX" build="%{BUILDTIME}">\n\
   <size package="%{SIZE}" installed="%{SIZE}" archive="%{ARCHIVESIZE}"/>\n\
-<location href="%{PACKAGEORIGIN}"/>\n\
+  <location href="%{PACKAGEORIGIN}"/>\n\
   <format>\n\
+%|license?{\
     <rpm:license>%{LICENSE}</rpm:license>\n\
+}:{\
+    <rpm:license/>\n\
+}|\
+%|vendor?{\
+    <rpm:vendor>%{VENDOR}</rpm:vendor>\n\
+}:{\
+    <rpm:vendor/>\n\
+}|\
+%|group?{\
     <rpm:group>%{GROUP}</rpm:group>\n\
+}:{\
+    <rpm:group/>\n\
+}|\
+%|buildhost?{\
     <rpm:buildhost>%{BUILDHOST}</rpm:buildhost>\n\
+}:{\
+    <rpm:buildhost/>\n\
+}|\
+%|sourcerpm?{\
     <rpm:sourcerpm>%{SOURCERPM}</rpm:sourcerpm>\n\
+}|\
     <rpm:header-range start="XXX" end="XXX"/>\n\
 %|provideentry?{\
     <rpm:provides>\n\
@@ -146,6 +166,11 @@ rpm	alias --yum:primary --nosignature --qf '\
       %{obsoleteentry}\n\
 ]\
     </rpm:obsoletes>\n\
+}|\
+%|filesentry1?{\
+[\
+    %{filesentry1}\n\
+]\
 }|\
   </format>\n\
 </package>\n' \
