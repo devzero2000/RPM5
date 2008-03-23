@@ -46,6 +46,9 @@ extern int _fsm_threads;
 extern int _hdr_debug;
 
 /*@unchecked@*/
+extern int _pkgio_debug;
+
+/*@unchecked@*/
 extern int _print_pkts;
 
 /*@unchecked@*/
@@ -376,6 +379,8 @@ struct poptOption rpmcliAllPoptTable[] = {
  { "hdrdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_hdr_debug, -1,
 	NULL, NULL},
  { "macrosused", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmts_macros, -1,
+	NULL, NULL},
+ { "pkgiodebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_pkgio_debug, -1,
 	NULL, NULL},
  { "prtpkts", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_print_pkts, -1,
 	NULL, NULL},

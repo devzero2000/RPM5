@@ -98,18 +98,6 @@ rpmRC rpmReadPackageFile(rpmts ts, void * _fd, const char * fn, Header * hdrp)
 
     if (hdrp) *hdrp = NULL;
 
-#ifdef	DYING
-    {	struct stat st;
-	memset(&st, 0, sizeof(st));
-	(void) fstat(Fileno(fd), &st);
-	/* if fd points to a socket, pipe, etc, st.st_size is *always* zero */
-	if (S_ISREG(st.st_mode) && st.st_size < sizeof(*l)) {
-	    rc = RPMRC_NOTFOUND;
-	    goto exit;
-	}
-    }
-#endif
-
 assert(dig != NULL);
     (void) fdSetDig(fd, dig);
 
@@ -193,7 +181,7 @@ assert(dig != NULL);
 	(void) rpmswEnter(op, 0);
     }
 /*@-type@*/	/* XXX arrow access of non-pointer (FDSTAT_t) */
-    nb = -fd->stats->ops[FDSTAT_READ].bytes;
+    nb = fd->stats->ops[FDSTAT_READ].bytes;
     {	const char item[] = "Header";
 	msg = NULL;
 	rc = rpmpkgRead(item, fd, &h, &msg);
@@ -204,7 +192,7 @@ assert(dig != NULL);
 	}
 	msg = _free(msg);
     }
-    nb += fd->stats->ops[FDSTAT_READ].bytes;
+    nb = fd->stats->ops[FDSTAT_READ].bytes - nb;
 /*@=type@*/
     if (opx > 0 && op != NULL) {
 	(void) rpmswExit(op, nb);

@@ -1,4 +1,5 @@
 5.0.0 -> 5.1a1:
+    - jbj: set the values for the blanks while reading a package.
     - jbj: add get/set methods to fill in remaining blanks in XML mark up.
     - jbj: add :cdata format to permit strings to be included in XML CDATA.
     - jbj: add --yum:primary popt alias to spew a primary.xml approximation.

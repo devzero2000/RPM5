@@ -1152,7 +1152,7 @@ uint32_t headerSetStartOff(Header h, uint32_t startoff)
 
 uint32_t headerGetEndOff(Header h)
 {
-    return (h != NULL ? h->startoff : 0);
+    return (h != NULL ? h->endoff : 0);
 }
 
 uint32_t headerSetEndOff(Header h, uint32_t endoff)

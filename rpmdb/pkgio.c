@@ -666,6 +666,7 @@ rpmxar xar = fdGetXAR(fd);
     uint32_t dl;
     uint32_t * ei = NULL;
     entryInfo pe;
+    size_t startoff;
     size_t nb;
     uint32_t ril = 0;
     indexEntry entry = memset(alloca(sizeof(*entry)), 0, sizeof(*entry));
@@ -694,6 +695,7 @@ fprintf(stderr, "--> rdSignature(%p, %p, %p)\n", fd, ptr, msg);
 	    goto exit;
 	}
     }
+    startoff = fd->stats->ops[FDSTAT_READ].bytes;
     if ((xx = (int) timedRead(fd, (void *)block, sizeof(block))) != (int) sizeof(block)) {
 	(void) snprintf(buf, sizeof(buf),
 		_("sigh size(%d): BAD, read returned %d"), (int)sizeof(block), xx);
@@ -849,6 +851,8 @@ assert(entry->info.offset > 0);	/* XXX insurance */
 	}
 	he->p.ptr = _free(he->p.ptr);
     }
+    (void) headerSetStartOff(sigh, startoff);
+    (void) headerSetEndOff(sigh, fd->stats->ops[FDSTAT_READ].bytes);
 
 exit:
     if (sighp && sigh && rc == RPMRC_OK)
@@ -1234,6 +1238,7 @@ rpmxar xar = fdGetXAR(fd);
     uint32_t * ei = NULL;
     size_t uc;
     unsigned char * b;
+    size_t startoff;
     size_t nb;
     Header h = NULL;
     const char * origin = NULL;
@@ -1265,6 +1270,7 @@ fprintf(stderr, "--> rpmReadHeader(%p, %p, %p)\n", fd, hdrp, msg);
 	}
     }
 
+    startoff = fd->stats->ops[FDSTAT_READ].bytes;
     if ((xx = (int) timedRead(fd, (char *)block, sizeof(block))) != (int)sizeof(block)) {
 	/* XXX Handle EOF's as RPMRC_NOTFOUND, not RPMRC_FAIL, returns. */
 	if (xx == 0)
@@ -1341,6 +1347,15 @@ fprintf(stderr, "--> rpmReadHeader(%p, %p, %p)\n", fd, hdrp, msg);
 	} else
 	    (void) headerSetOrigin(h, origin);
     }
+    {	struct stat sb;
+	int saveno = errno;
+	memset(&sb, 0, sizeof(sb));
+	(void) fstat(Fileno(fd), &sb);
+	errno = saveno;
+	(void) headerSetTime(h, (uint32_t)sb.st_mtime);
+    }
+    (void) headerSetStartOff(h, startoff);
+    (void) headerSetEndOff(h, fd->stats->ops[FDSTAT_READ].bytes);
     
 exit:
     if (hdrp && h && rc == RPMRC_OK)

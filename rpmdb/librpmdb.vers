@@ -68,7 +68,7 @@ LIBRPMDB_0
     headerVerifyInfo;
     hGetColor;
     _init;
-    _use_xar;
+    _pkgio_debug;
     prDbiOpenFlags;
     rdbOptions;
     rpmAddSignature;
