@@ -650,13 +650,34 @@ static const char * qfmt_primary = "\
 ]\
 }|\
   </format>\n\
-</package>";
+</package>\n\
+";
 
 /*@unchecked@*/ /*@observer@*/
-static const char * qfmt_filelists = NULL;
+static const char * qfmt_filelists = "\
+<package pkgid=\"%|HDRID?{%{HDRID}}:{XXX}|\" name=\"%{NAME:cdata}\" arch=\"%{ARCH:cdata}\">\n\
+  <version epoch=\"%|EPOCH?{%{EPOCH}}:{0}|\" ver=\"%{VERSION:cdata}\" rel=\"%{RELEASE:cdata}\"/>\n\
+%|filesentry2?{\
+[\
+  %{filesentry2}\n\
+]\
+}|\
+</package>\n\
+";
 
 /*@unchecked@*/ /*@observer@*/
-static const char * qfmt_other = NULL;
+static const char * qfmt_other = "\
+<package pkgid=\"%|HDRID?{%{HDRID}}:{XXX}|\" name=\"%{NAME:cdata}\" arch=\"%{ARCH:cdata}\">\n\
+  <version epoch=\"%|EPOCH?{%{EPOCH}}:{0}|\" ver=\"%{VERSION:cdata}\" rel=\"%{RELEASE:cdata}\"/>\n\
+%|changelogname?{\
+[\
+  <changelog author=\"%{CHANGELOGNAME:cdata}\" date=\"%{CHANGELOGTIME}\">%{CHANGELOGTEXT:cdata}</changelog>\n\
+]\
+}:{\
+  <changelog/>\n\
+}|\
+</package>\n\
+";
 
 static unsigned repoWriteMetadataDocs(rpmrepo repo,
 		/*@null@*/ const char ** pkglist, unsigned current)
@@ -670,6 +691,7 @@ fprintf(stderr, "\trepoWriteMetadataDocs(%p, %p, %u)\n", repo, pkglist, current)
     if (pkglist == NULL)
 	pkglist = repo->pkglist;
 
+if (_repo_debug)
 argvPrint("repo->pkglist", pkglist, NULL);
 
     for (pkg = pkglist; *pkg != NULL; pkg++) {
@@ -798,6 +820,7 @@ static int repoCloseMetadataDocs(rpmrepo repo)
 	/*@modifies repo @*/
 {
     const char * spew;
+    size_t nspew;
     size_t nb;
     FD_t fd;
     int xx;
@@ -810,27 +833,30 @@ fprintf(stderr, "\trepoCloseMetadataDocs(%p)\n", repo);
 
     /* save them up to the tmp locations */
     if (!repo->quiet)
-	repo_error(0, _("Saving Primary metadata"));
+	repo_error(0, _("Saving primary.xml metadata"));
 
     fd = repo->fdprimary; repo->fdprimary = NULL;
-    spew = "\n</metadata>";
-    nb = Fwrite(spew, 1, strlen(spew), fd);
+    spew = "</metadata>\n";
+    nspew = strlen(spew);
+    nb = Fwrite(spew, 1, nspew, fd);
     xx = Fclose(fd);
 
     if (!repo->quiet)
-	repo_error(0, _("Saving file lists metadata"));
+	repo_error(0, _("Saving filelists.xml metadata"));
 
     fd = repo->fdfilelists; repo->fdfilelists = NULL;
-    spew = "\n</filelists>";
-    nb = Fwrite(spew, 1, strlen(spew), fd);
+    spew = "</filelists>\n";
+    nspew = strlen(spew);
+    nb = Fwrite(spew, 1, nspew, fd);
     xx = Fclose(fd);
 
     if (!repo->quiet)
-	repo_error(0, _("Saving other metadata"));
+	repo_error(0, _("Saving other.xml metadata"));
 
     fd = repo->fdother; repo->fdother = NULL;
-    spew = "\n</otherdata>";
-    nb = Fwrite(spew, 1, strlen(spew), fd);
+    spew = "</otherdata>\n";
+    nspew = strlen(spew);
+    nb = Fwrite(spew, 1, nspew, fd);
     xx = Fclose(fd);
 
     return 0;

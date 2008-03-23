@@ -184,6 +184,29 @@ rpm	alias --yum:primary.xml --qf '\
 </package>\n' \
 	--POPTdesc=$"display yum primary.xml markup"
 
+rpm	alias --yum:filelists.xml --qf '\
+<package pkgid="%|HDRID?{%{HDRID}}:{XXX}|" name="%{NAME:cdata}" arch="%{ARCH:cdata}">\n\
+  <version epoch="%|EPOCH?{%{EPOCH}}:{0}|" ver="%{VERSION:cdata}" rel="%{RELEASE:cdata}"/>\n\
+%|filesentry2?{\
+[\
+  %{filesentry2}\n\
+]\
+}|\
+</package>\n' \
+	--POPTdesc=$"display yum filelists.xml markup"
+
+rpm	alias --yum:other.xml --qf '\
+<package pkgid="%|HDRID?{%{HDRID}}:{XXX}|" name="%{NAME:cdata}" arch="%{ARCH:cdata}">\n\
+  <version epoch="%|EPOCH?{%{EPOCH}}:{0}|" ver="%{VERSION:cdata}" rel="%{RELEASE:cdata}"/>\n\
+%|changelogname?{\
+[\
+  <changelog author="%{CHANGELOGNAME:cdata}" date="%{CHANGELOGTIME}">%{CHANGELOGTEXT:cdata}</changelog>\n\
+]\
+}:{\
+  <changelog/>\n\
+}|\
+</package>\n' \
+	--POPTdesc=$"display yum other.xml markup"
 #==============================================================================
 rpm	alias --triggerscripts --qf '\
 [trigger%{TRIGGERTYPE} scriptlet (using %{TRIGGERSCRIPTPROG}) -- %{TRIGGERCONDS}\n\

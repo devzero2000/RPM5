@@ -1,4 +1,6 @@
 5.0.0 -> 5.1a1:
+    - jbj: rpmrepo: populate other.xml, add --yum:other.xml alias.
+    - jbj: rpmrepo: populate filelists.xml, add --yum:filelists.xml alias.
     - jbj: rpmrepo: populate primary.xml.
     - jbj: rpmdb: fix: initialize mireRegexec() pattern match buffers.
     - jbj: set the values for the blanks while reading a package.
