@@ -103,40 +103,40 @@ rpm	alias --yaml --qf '[%{*:yaml}\n]' \
 	--POPTdesc=$"list metadata in yaml"
 rpm	alias --yum:primary.xml --qf '\
 <package type="rpm">\n\
-  <name>%{NAME}</name>\n\
-  <arch>%{ARCH}</arch>\n\
+  <name>%{NAME:cdata}</name>\n\
+  <arch>%{ARCH:cdata}</arch>\n\
   <version epoch="%|EPOCH?{%{EPOCH}}:{0}|" ver="%{VERSION}" rel="%{RELEASE}"/>\n\
   <checksum type="sha" pkgid="NO">%|HDRID?{%{HDRID}}|</checksum>\n\
-  <summary>%{SUMMARY}</summary>\n\
-  <description>%{DESCRIPTION}</description>\n\
-  <packager>%|PACKAGER?{%{PACKAGER}}:{}|</packager>\n\
-  <url>%|URL?{%{URL}}:{}|</url>\n\
+  <summary>%{SUMMARY:cdata}</summary>\n\
+  <description>%{DESCRIPTION:cdata}</description>\n\
+  <packager>%|PACKAGER?{%{PACKAGER:cdata}}:{}|</packager>\n\
+  <url>%|URL?{%{URL:cdata}}:{}|</url>\n\
   <time file="XXX" build="%{BUILDTIME}">\n\
   <size package="%{SIZE}" installed="%{SIZE}" archive="%{ARCHIVESIZE}"/>\n\
   <location href="%{PACKAGEORIGIN}"/>\n\
   <format>\n\
 %|license?{\
-    <rpm:license>%{LICENSE}</rpm:license>\n\
+    <rpm:license>%{LICENSE:cdata}</rpm:license>\n\
 }:{\
     <rpm:license/>\n\
 }|\
 %|vendor?{\
-    <rpm:vendor>%{VENDOR}</rpm:vendor>\n\
+    <rpm:vendor>%{VENDOR:cdata}</rpm:vendor>\n\
 }:{\
     <rpm:vendor/>\n\
 }|\
 %|group?{\
-    <rpm:group>%{GROUP}</rpm:group>\n\
+    <rpm:group>%{GROUP:cdata}</rpm:group>\n\
 }:{\
     <rpm:group/>\n\
 }|\
 %|buildhost?{\
-    <rpm:buildhost>%{BUILDHOST}</rpm:buildhost>\n\
+    <rpm:buildhost>%{BUILDHOST:cdata}</rpm:buildhost>\n\
 }:{\
     <rpm:buildhost/>\n\
 }|\
 %|sourcerpm?{\
-    <rpm:sourcerpm>%{SOURCERPM}</rpm:sourcerpm>\n\
+    <rpm:sourcerpm>%{SOURCERPM:cdata}</rpm:sourcerpm>\n\
 }|\
     <rpm:header-range start="XXX" end="XXX"/>\n\
 %|provideentry?{\

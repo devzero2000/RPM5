@@ -562,6 +562,34 @@ static char * xmlstrcpy(/*@returned@*/ char * t, const char * s)
 }
 
 /**
+ * Encode string for use in XML CDATA.
+ * @param he		tag container
+ * @return		formatted string
+ */
+static /*@only@*/ char * cdataFormat(HE_t he)
+	/*@*/
+{
+    int ix = (he->ix > 0 ? he->ix : 0);
+    char * val;
+
+assert(ix == 0);
+    if (he->t != RPM_STRING_TYPE) {
+	val = xstrdup(_("(not a string)"));
+    } else {
+	size_t nb = xmlstrlen(he->p.str);
+	char * t;
+
+	val = t = xcalloc(1, nb + 1);
+	t = xmlstrcpy(t, he->p.str);	t += strlen(t);
+	*t = '\0';
+    }
+
+/*@-globstate@*/
+    return val;
+/*@=globstate@*/
+}
+
+/**
  * Wrap tag data in simple header xml markup.
  * @param he		tag container
  * @return		formatted string
@@ -2086,6 +2114,8 @@ static struct headerSprintfExtension_s _headerCompoundFormats[] = {
 	{ .fmtFunction = pgpsigFormat } },
     { HEADER_EXT_FORMAT, "triggertype",	
 	{ .fmtFunction = triggertypeFormat } },
+    { HEADER_EXT_FORMAT, "cdata",
+	{ .fmtFunction = cdataFormat } },
     { HEADER_EXT_FORMAT, "xml",
 	{ .fmtFunction = xmlFormat } },
     { HEADER_EXT_FORMAT, "yaml",
