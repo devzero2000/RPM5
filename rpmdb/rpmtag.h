@@ -414,6 +414,9 @@ enum rpmTag_e {
     RPMTAG_STAT			= 1208, /* s[] stat(2) from disk extension */
     RPMTAG_ORIGINTID		= 1209,	/* i[] */
     RPMTAG_ORIGINTIME		= 1210,	/* i[] */
+    RPMTAG_HEADERSTARTOFF	= 1211,	/* i */
+    RPMTAG_HEADERENDOFF		= 1212,	/* i */
+    RPMTAG_PACKAGETIME		= 1213,	/* i */
 
 /*@-enummemuse@*/
     RPMTAG_FIRSTFREE_TAG	/*!< internal */
@@ -960,6 +963,24 @@ int headerSetOrigin(/*@null@*/ Header h, const char * origin)
 	/*@modifies h @*/;
 
 /** \ingroup header
+ * Return header time.
+ * @param h		header
+ * @return		header time
+ */
+/*@observer@*/ /*@null@*/
+uint32_t headerGetTime(/*@null@*/ Header h)
+	/*@*/;
+
+/** \ingroup header
+ * Store header time.
+ * @param h		header
+ * @param origin	new header time
+ * @return		0 always
+ */
+uint32_t headerSetTime(/*@null@*/ Header h, uint32_t time)
+	/*@modifies h @*/;
+
+/** \ingroup header
  * Return header instance (if from rpmdb).
  * @param h		header
  * @return		header instance
@@ -974,6 +995,40 @@ uint32_t headerGetInstance(/*@null@*/ Header h)
  * @return		0 always
  */
 uint32_t headerSetInstance(/*@null@*/ Header h, uint32_t instance)
+	/*@modifies h @*/;
+
+/** \ingroup header
+ * Return header starting byte offset.
+ * @param h		header
+ * @return		header starting byte offset 
+ */
+uint32_t headerGetStartOff(/*@null@*/ Header h)
+	/*@*/;
+
+/** \ingroup header
+ * Store header starting byte offset.
+ * @param h		header
+ * @param startoff	new header starting byte offset
+ * @return		0 always
+ */
+uint32_t headerSetStartOff(/*@null@*/ Header h, uint32_t startoff)
+	/*@modifies h @*/;
+
+/** \ingroup header
+ * Return header ending byte offset.
+ * @param h		header
+ * @return		header ending byte offset 
+ */
+uint32_t headerGetEndOff(/*@null@*/ Header h)
+	/*@*/;
+
+/** \ingroup header
+ * Store header ending byte offset.
+ * @param h		header
+ * @param startoff	new header ending byte offset
+ * @return		0 always
+ */
+uint32_t headerSetEndOff(/*@null@*/ Header h, uint32_t endoff)
 	/*@modifies h @*/;
 
 /** \ingroup header

@@ -111,7 +111,7 @@ rpm	alias --yum:primary.xml --qf '\
   <description>%{DESCRIPTION:cdata}</description>\n\
   <packager>%|PACKAGER?{%{PACKAGER:cdata}}:{}|</packager>\n\
   <url>%|URL?{%{URL:cdata}}:{}|</url>\n\
-  <time file="XXX" build="%{BUILDTIME}">\n\
+  <time file="%{PACKAGETIME}" build="%{BUILDTIME}">\n\
   <size package="%{SIZE}" installed="%{SIZE}" archive="%{ARCHIVESIZE}"/>\n\
   <location href="%{PACKAGEORIGIN}"/>\n\
   <format>\n\
@@ -138,13 +138,15 @@ rpm	alias --yum:primary.xml --qf '\
 %|sourcerpm?{\
     <rpm:sourcerpm>%{SOURCERPM:cdata}</rpm:sourcerpm>\n\
 }|\
-    <rpm:header-range start="XXX" end="XXX"/>\n\
+    <rpm:header-range start="%{HEADERSTARTOFF}" end="%{HEADERENDOFF}"/>\n\
 %|provideentry?{\
     <rpm:provides>\n\
 [\
       %{provideentry}\n\
 ]\
     </rpm:provides>\n\
+}:{\
+    <rpm:provides/>\n\
 }|\
 %|requireentry?{\
     <rpm:requires>\n\
@@ -152,6 +154,8 @@ rpm	alias --yum:primary.xml --qf '\
       %{requireentry}\n\
 ]\
     </rpm:requires>\n\
+}:{\
+    <rpm:requires/>\n\
 }|\
 %|conflictentry?{\
     <rpm:conflicts>\n\
@@ -159,6 +163,8 @@ rpm	alias --yum:primary.xml --qf '\
       %{conflictentry}\n\
 ]\
     </rpm:conflicts>\n\
+}:{\
+    <rpm:conflicts/>\n\
 }|\
 %|obsoleteentry?{\
     <rpm:obsoletes>\n\
@@ -166,6 +172,8 @@ rpm	alias --yum:primary.xml --qf '\
       %{obsoleteentry}\n\
 ]\
     </rpm:obsoletes>\n\
+}:{\
+    <rpm:obsoletes/>\n\
 }|\
 %|filesentry1?{\
 [\

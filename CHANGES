@@ -1,4 +1,5 @@
 5.0.0 -> 5.1a1:
+    - jbj: add get/set methods to fill in remaining blanks in XML mark up.
     - jbj: add :cdata format to permit strings to be included in XML CDATA.
     - jbj: add --yum:primary popt alias to spew a primary.xml approximation.
     - jbj: add header extensions for primary.xml <rpm:entry> markup.

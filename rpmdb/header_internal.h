@@ -87,7 +87,10 @@ struct headerToken_s {
     void * blob;		/*!< Header region blob. */
 /*@only@*/ /*@null@*/
     const char * origin;	/*!< Header origin (e.g. path or URL). */
+    uint32_t time;		/*!< Header time. */
     uint32_t instance;		/*!< Header instance (if from rpmdb). */
+    uint32_t startoff;		/*!< Header starting byte offset in package. */
+    uint32_t endoff;		/*!< Header ending byte offset in package. */
     struct rpmop_s h_loadops;
     struct rpmop_s h_getops;
 /*@owned@*/

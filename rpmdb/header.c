@@ -945,6 +945,8 @@ Header headerLoad(void * uh)
     h->index = xcalloc(h->indexAlloced, sizeof(*h->index));
     h->flags |= HEADERFLAG_SORTED;
     h->nrefs = 0;
+    h->startoff = 0;
+    h->endoff = (uint32_t) pvlen;
     h = headerLink(h);
 
     entry = h->index;
@@ -1121,6 +1123,42 @@ uint32_t headerSetInstance(Header h, uint32_t instance)
 {
     if (h != NULL)
 	h->instance = instance;
+    return 0;
+}
+
+uint32_t headerGetTime(Header h)
+{
+    return (h != NULL ? h->time : 0);
+}
+
+uint32_t headerSetTime(Header h, uint32_t time)
+{
+    if (h != NULL)
+	h->time = time;
+    return 0;
+}
+
+uint32_t headerGetStartOff(Header h)
+{
+    return (h != NULL ? h->startoff : 0);
+}
+
+uint32_t headerSetStartOff(Header h, uint32_t startoff)
+{
+    if (h != NULL)
+	h->startoff = startoff;
+    return 0;
+}
+
+uint32_t headerGetEndOff(Header h)
+{
+    return (h != NULL ? h->startoff : 0);
+}
+
+uint32_t headerSetEndOff(Header h, uint32_t endoff)
+{
+    if (h != NULL)
+	h->endoff = endoff;
     return 0;
 }
 
