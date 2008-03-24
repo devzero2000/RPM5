@@ -67,8 +67,6 @@ struct rpmrepo_s {
     const char * finaldir;
 /*@null@*/
     const char * olddir;
-    const char * markup;
-    const char * suffix;
 
     time_t mdtimestamp;
 
@@ -79,8 +77,6 @@ struct rpmrepo_s {
 
     int changeloglimit;
     int uniquemdfilenames;
-
-    int ftsoptions;
 
 /*@null@*/
     const char * checksum;
@@ -93,7 +89,12 @@ struct rpmrepo_s {
 /*@null@*/
     const char * package_dir;
 
+    int ftsoptions;
     uint32_t algo;
+    int compression;
+    const char * markup;
+    const char * suffix;
+    const char * wmode;
 
     struct rpmrfile_s primary;
     struct rpmrfile_s filelists;
@@ -240,7 +241,6 @@ static struct rpmrepo_s __rpmrepo = {
     .finaldir	= "repodata",
     .olddir	= ".olddata",
     .markup	= "xml",
-    .suffix	= "gz",
     .algo	= PGPHASHALGO_SHA1,
     .primary	= {
 	.type	= "primary",
@@ -363,7 +363,7 @@ fprintf(stderr, "\trepoTestSetupDirs(%p)\n", repo);
     const char ** dirp, ** filep;
     for (dirp = dirs; *dirp != NULL; dirp++) {
 	for (filep = files; *filep != NULL; filep++) {
-	    fn = rpmGetPath(repo->outputdir, "/", *dirp, "/", *filep, ".", repo->markup, ".", repo->suffix, NULL);
+	    fn = rpmGetPath(repo->outputdir, "/", *dirp, "/", *filep, ".", repo->markup, (repo->suffix ? "." : NULL), repo->suffix, NULL);
 	    if (rpmioExists(fn, st)) {
 		if (Access(fn, W_OK))
 		    repo_error(1, _("Path must be writable: %s"), fn);
@@ -574,12 +574,13 @@ static int repoOpenMDFile(rpmrepo repo, rpmrfile rfile)
     const char * spew = rfile->init;
     size_t nspew = strlen(spew);
     const char * fn =
-        rpmGetPath(repo->outputdir, "/", repo->tempdir, "/", rfile->type, ".", repo->markup, ".", repo->suffix, NULL);
+        rpmGetPath(repo->outputdir, "/", repo->tempdir, "/", rfile->type, ".", repo->markup, (repo->suffix ? "." : NULL), repo->suffix, NULL);
     /* XXX todo: fill in repo->pkgcount */
     size_t nb;
 
-    rfile->fd = Fopen(fn, "w.gzdio");
-    fdInitDigest(rfile->fd, repo->algo, 0);
+    rfile->fd = Fopen(fn, repo->wmode);
+    if (repo->algo > 0)
+	fdInitDigest(rfile->fd, repo->algo, 0);
     /* XXX todo: fill in repo->pkgcount */
     nb = Fwrite(spew, 1, nspew, rfile->fd);
 if (_repo_debug)
@@ -791,7 +792,10 @@ static int repoCloseMDFile(rpmrepo repo, rpmrfile rfile)
     if (!repo->quiet)
 	repo_error(0, _("Saving %s.xml metadata"), rfile->type);
     nb = Fwrite(spew, 1, nspew, rfile->fd);
-    fdFiniDigest(rfile->fd, repo->algo, &rfile->digest, NULL, asAscii);
+    if (repo->algo > 0)
+	fdFiniDigest(rfile->fd, repo->algo, &rfile->digest, NULL, asAscii);
+    else
+	rfile->digest = xstrdup("");
     xx = Fclose(rfile->fd);
     rfile->fd = NULL;
     return 0;
@@ -905,6 +909,7 @@ algo2tagname(uint32_t algo)
     const char * tagname = NULL;
 
     switch (algo) {
+    case PGPHASHALGO_NONE:	tagname = "none";	break;
     case PGPHASHALGO_MD5:	tagname = "md5";	break;
     /* XXX todo: should be "sha1" */
     case PGPHASHALGO_SHA1:	tagname = "sha";	break;
@@ -942,7 +947,7 @@ static const char * repoMDExpand(rpmrepo repo, rpmrfile rfile)
     <checksum type=\"", spewalgo, "\">", rfile->digest, "</checksum>\n\
     <timestamp>", spewtime, "</timestamp>\n\
     <open-checksum type=\"",spewalgo,"\">", rfile->digest, "</open-checksum>\n\
-    <location href=\"", repo->finaldir, "/", rfile->type, ".", repo->markup, ".", repo->suffix, "\"/>\n\
+    <location href=\"", repo->finaldir, "/", rfile->type, ".", repo->markup, (repo->suffix ? "." : ""), (repo->suffix ? repo->suffix : ""), "\"/>\n\
   </data>\n", NULL);
 }
 
@@ -956,25 +961,25 @@ static int repoDoRepoMetadata(rpmrepo repo)
     const char * repopath =
 		rpmGetPath(repo->outputdir, "/", repo->tempdir, NULL);
     const char * repofilepath =
-		rpmGetPath(repopath, "/", repo->repomd.type, ".", repo->markup, ".", repo->suffix, NULL);
+		rpmGetPath(repopath, "/", repo->repomd.type, ".", repo->markup, (repo->suffix ? "." : NULL), repo->suffix, NULL);
     FD_t fd;
 
 if (_repo_debug)
 fprintf(stderr, "==> repoDoRepoMetadata(%p)\n", repo);
 
-    fn = rpmGetPath(repo->outputdir, "/", repo->tempdir, "/", repo->other.type, ".", repo->markup, ".", repo->suffix, NULL);
+    fn = rpmGetPath(repo->outputdir, "/", repo->tempdir, "/", repo->other.type, ".", repo->markup, (repo->suffix ? "." : NULL), repo->suffix, NULL);
     repo->other.ctime = rpmioCtime(fn);
     fn = _free(fn);
 
-    fn = rpmGetPath(repo->outputdir, "/", repo->tempdir, "/", repo->filelists.type, ".", repo->markup, ".", repo->suffix, NULL);
+    fn = rpmGetPath(repo->outputdir, "/", repo->tempdir, "/", repo->filelists.type, ".", repo->markup, (repo->suffix ? "." : NULL), repo->suffix, NULL);
     repo->filelists.ctime = rpmioCtime(fn);
     fn = _free(fn);
 
-    fn = rpmGetPath(repo->outputdir, "/", repo->tempdir, "/", repo->primary.type, ".", repo->markup, ".", repo->suffix, NULL);
+    fn = rpmGetPath(repo->outputdir, "/", repo->tempdir, "/", repo->primary.type, ".", repo->markup, (repo->suffix ? "." : NULL), repo->suffix, NULL);
     repo->primary.ctime = rpmioCtime(fn);
     fn = _free(fn);
 
-    fd = Fopen(repofilepath, "w.gzdio");
+    fd = Fopen(repofilepath, repo->wmode);
 assert(fd != NULL);
     spew = init_repomd;
     nspew = strlen(spew);
@@ -1012,13 +1017,13 @@ assert(fd != NULL);
         repons = reporoot.newNs('http://linux.duke.edu/metadata/repo', None)
         reporoot.setNs(repons)
         repopath = rpmGetPath(repo->outputdir, "/", repo->tempdir, NULL);
-        repofilepath = rpmGetPath(repopath, "/", repo->repomd.file, NULL);
+        repofilepath = rpmGetPath(repopath, "/", repo->repomd.type, ".", repo->markup, (repo->suffix ? "." : NULL), repo->suffix, NULL);
 
         sumtype = repo->sumtype
         workfiles = [(repo->other.file, 'other',),
                      (repo->filelists.file, 'filelists'),
                      (repo->primary.file, 'primary')]
-        repoid='garbageid'
+        repoid = "garbageid";
 
         if (repo->database) {
             if (!repo->quiet) repo_error(0, _("Generating sqlite DBs"));
@@ -1191,7 +1196,7 @@ fprintf(stderr, "==> repoDoFinalMove(%p)\n", repo);
     const char ** filep;
 
     for (filep = files; *filep != NULL; filep++) {
-	oldfile = rpmGetPath(output_old_dir, "/", *filep, ".", repo->markup, ".", repo->suffix, NULL);
+	oldfile = rpmGetPath(output_old_dir, "/", *filep, ".", repo->markup, (repo->suffix ? "." : NULL), repo->suffix, NULL);
 	if (rpmioExists(oldfile, st)) {
 	    if (Unlink(oldfile))
 		repo_error(1, _("Could not remove old metadata file: %s: %s"),
@@ -1315,6 +1320,24 @@ assert(arg != NULL);
     }
 }
 
+/*@unchecked@*/
+static int compression = -1;
+
+/*@unchecked@*/ /*@observer@*/
+static struct poptOption repoCompressionPoptTable[] = {
+ { "uncompressed", '\0', POPT_ARG_VAL,		&compression, 0,
+	N_("don't compress"), NULL },
+ { "gzip", 'Z', POPT_ARG_VAL,			&compression, 1,
+	N_("use gzip compression"), NULL },
+ { "bzip2", '\0', POPT_ARG_VAL,			&compression, 2,
+	N_("use bzip2 compression"), NULL },
+#ifdef	NOTYET
+ { "lzma", '\0', POPT_ARG_VAL,			&compression, 3,
+	N_("use lzma compression"), NULL },
+#endif
+    POPT_TABLEEND
+};
+
 /*@unchecked@*/ /*@observer@*/
 static struct poptOption optionsTable[] = {
 /*@-type@*/ /* FIX: cast? */
@@ -1388,6 +1411,9 @@ static struct poptOption optionsTable[] = {
 	N_("print the version"), NULL },
 #endif
 
+ { NULL, '\0', POPT_ARG_INCLUDE_TABLE, repoCompressionPoptTable, 0,
+	N_("Available compressions:"), NULL },
+
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmioDigestPoptTable, 0,
 	N_("Available digests:"), NULL },
 
@@ -1429,7 +1455,31 @@ main(int argc, char *argv[])
         break;
     }
 
-    repo->algo = (rpmioDigestHashAlgo ? rpmioDigestHashAlgo : PGPHASHALGO_SHA1);
+    repo->algo = (rpmioDigestHashAlgo >= 0 ? (rpmioDigestHashAlgo & 0xff)  : PGPHASHALGO_SHA1);
+
+    repo->compression = (compression >= 0 ? compression : 1);
+    switch (repo->compression) {
+    case 0:
+	repo->suffix = NULL;
+	repo->wmode = "w.ufdio";
+	break;
+    default:
+	/*@fallthrough@*/
+    case 1:
+	repo->suffix = "gz";
+	repo->wmode = "w9.gzdio";
+	break;
+    case 2:
+	repo->suffix = "bz2";
+	repo->wmode = "w9.bzdio";
+	break;
+#ifdef	NOTYET
+    case 3:
+	repo->suffix = "lzma";
+	repo->wmode = "w.lzdio";
+	break;
+#endif
+    }
 
     xx = argvAppend(&repo->directories, poptGetArgs(optCon));
 
