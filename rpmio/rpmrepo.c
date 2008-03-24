@@ -80,6 +80,8 @@ struct rpmrepo_s {
     int changeloglimit;
     int uniquemdfilenames;
 
+    int ftsoptions;
+
 /*@null@*/
     const char * checksum;
 
@@ -316,29 +318,22 @@ static time_t rpmioCtime(const char * fn)
 }
 
 /*==============================================================*/
-
-static void repoParseDirectory(rpmrepo repo)
-	/*@modifies repo @*/
+static int repoMkdir(rpmrepo repo, const char * dn)
+	/*@*/
 {
-    const char * relative_dir;
-    char * fn = NULL;
+    const char * dnurl = rpmGetPath(repo->outputdir, "/", dn, NULL);
+    int ut = urlPath(dnurl, &dn);
+    int xx;
 
-if (_repo_debug)
-fprintf(stderr, "\trepoParseDirectory(%p)\n", repo);
-
-assert(repo->directory != NULL);
-    if (repo->directory[0] == '/') {
-	fn = xstrdup(repo->directory);
-	repo->basedir = xstrdup(dirname(fn));
-	relative_dir = basename(fn);
-    } else {
-	repo->basedir = Realpath(repo->basedir, NULL);
-	relative_dir = repo->directory;
-    }
-    repo->package_dir = rpmGetPath(repo->basedir, "/", relative_dir, NULL);
-    if (repo->outputdir == NULL)
-	repo->outputdir = rpmGetPath(repo->basedir, "/", relative_dir, NULL);
-    fn = _free(fn);
+    /* XXX todo: rpmioMkpath doesn't grok URI's */
+    if (ut == URL_IS_UNKNOWN)
+	xx = rpmioMkpath(dn, 0755, (uid_t)-1, (gid_t)-1);
+    else
+	xx = (Mkdir(dnurl, 0755) == 0 || errno == EEXIST ? 0 : -1);
+    if (xx)
+	repo_error(1, _("Cannot create/verify %s: %s"), dnurl, strerror(errno));
+    dnurl = _free(dnurl);
+    return 0;
 }
 
 static void repoTestSetupDirs(rpmrepo repo)
@@ -346,55 +341,31 @@ static void repoTestSetupDirs(rpmrepo repo)
 {
     const char ** directories = repo->directories;
     struct stat sb, *st = &sb;
-    const char * temp_output;
-    const char * temp_final;
+    const char * dn;
     const char * fn;
+    int xx;
 
 if (_repo_debug)
 fprintf(stderr, "\trepoTestSetupDirs(%p)\n", repo);
-    while ((fn = *directories++) != NULL) {
-	const char * testdir;
 
-	if (fn[0] == '/')
-	    testdir = xstrdup(fn);
-	else if (fn[0] == '.' && fn[1] == '.' && fn[2] == '/') {
-	    if ((testdir = Realpath(fn, NULL)) == NULL) {
-		char buf[MAXPATHLEN];
-		if ((testdir = Realpath(fn, buf)) == NULL)
-		    repo_error(1, _("Realpath(%s) failed"), fn);
-		testdir = xstrdup(testdir);
-	    }
-	} else
-	    testdir = rpmGetPath(repo->basedir, "/", fn, NULL);
-
-	if (!rpmioExists(testdir, st))
-	    repo_error(1, _("Directory %s must exist"), testdir);
-
-	if (!S_ISDIR(st->st_mode))
-	    repo_error(1, _("%s must be a directory"), testdir);
-
-	testdir = _free(testdir);
-    }
+    while ((dn = *directories++) != NULL)
+	if (!rpmioExists(dn, st) || !S_ISDIR(st->st_mode))
+	    repo_error(1, _("Directory %s must exist"), dn);
 
     if (Access(repo->outputdir, W_OK))
 	repo_error(1, _("Directory %s must be writable."), repo->outputdir);
 
-    temp_output = rpmGetPath(repo->outputdir, "/", repo->tempdir, NULL);
-    if (rpmioMkpath(temp_output, 0755, (uid_t)-1, (gid_t)-1))
-	repo_error(1, _("Cannot create/verify %s"), temp_output);
+    xx = repoMkdir(repo, repo->tempdir);
+    xx = repoMkdir(repo, repo->finaldir);
 
-    temp_final = rpmGetPath(repo->outputdir, "/", repo->finaldir, NULL);
-    if (rpmioMkpath(temp_final, 0755, (uid_t)-1, (gid_t)-1))
-	repo_error(1, _("Cannot create/verify %s"), temp_final);
-    
-    fn = rpmGetPath(repo->outputdir, "/", repo->olddir, NULL);
-    if (rpmioExists(fn, st))
-	repo_error(1, _("Old data directory exists, please remove: %s"), fn);
-    fn = _free(fn);
+    dn = rpmGetPath(repo->outputdir, "/", repo->olddir, NULL);
+    if (rpmioExists(dn, st))
+	repo_error(1, _("Old data directory exists, please remove: %s"), dn);
+    dn = _free(dn);
 
-  { static const char * dirs[] = { "tempdir", "finaldir", NULL };
+  { static const char * dirs[] = { ".repodata", "repodata", NULL };
     static const char * files[] =
-	{ "primaryfile", "filelistsfile", "otherfile", "repomdfile", NULL };
+	{ "primary.xml.gz", "filelists.xml.gz", "other.xml.gz", "repomd.xml.gz", NULL };
     const char ** dirp, ** filep;
     for (dirp = dirs; *dirp != NULL; dirp++) {
 	for (filep = files; *filep != NULL; filep++) {
@@ -412,21 +383,26 @@ fprintf(stderr, "\trepoTestSetupDirs(%p)\n", repo);
   }
 
     if (repo->groupfile != NULL) {
-	fn = repo->groupfile;
-	if (repo->split || fn[0] != '/')
+	if (repo->split || repo->groupfile[0] != '/') {
 	    fn = rpmGetPath(repo->package_dir, "/", repo->groupfile, NULL);
-	if (!rpmioExists(fn, st))
-	    repo_error(1, _("groupfile %s cannot be found."), fn);
-	repo->groupfile = fn;
+	    repo->groupfile = _free(repo->groupfile);
+	    repo->groupfile = fn;
+	    fn = NULL;
+	}
+	if (!rpmioExists(repo->groupfile, st))
+	    repo_error(1, _("groupfile %s cannot be found."), repo->groupfile);
     }
 
     if (repo->cachedir != NULL) {
-	fn = repo->cachedir;
-	if (fn[0] == '/')
-	    fn = rpmGetPath(repo->outputdir, "/", fn, NULL);
-	if (rpmioMkpath(fn, 0755, (uid_t)-1, (gid_t)-1))
-	    repo_error(1, _("cannot open/write to cache dir %s"), fn);
-	repo->cachedir = fn;
+	if (repo->cachedir[0] != '/') {
+	    dn = rpmGetPath(repo->outputdir, "/", repo->cachedir, NULL);
+	    repo->cachedir = _free(repo->cachedir);
+	    repo->cachedir = dn;
+	    dn = NULL;
+	}
+	/* XXX todo cachedir can't handle URI's */
+	if (rpmioMkpath(repo->cachedir, 0755, (uid_t)-1, (gid_t)-1))
+	    repo_error(1, _("cannot open/write to cache dir %s"), repo->cachedir);
     }
 }
 
@@ -453,7 +429,14 @@ fprintf(stderr, "==> repoMetaDataGenerator(%p)\n", repo);
 	xx = argvAdd(&repo->directories, repo->directory);
     repo->use_cache = (repo->cachedir != NULL);
 
-    repoParseDirectory(repo);
+    /* XXX repoParseDirectory(repo); */
+assert(repo->directories != NULL && repo->directories[0] != NULL);
+    if (repo->basedir == NULL)
+	repo->basedir = xstrdup(repo->directories[0]);
+    repo->package_dir = xstrdup(repo->directories[0]);
+    if (repo->outputdir == NULL)
+	repo->outputdir = xstrdup(repo->directories[0]);
+
     repoTestSetupDirs(repo);
 	
     return 0;
@@ -481,13 +464,12 @@ static const char ** repoGetFileList(rpmrepo repo, const char *roots[],
     const char ** files = NULL;
     FTS * t;
     FTSENT * p;
-    int ftsoptions = FTS_PHYSICAL;
     int xx;
 
 if (_repo_debug)
 fprintf(stderr, "\trepoGetFileList(%p, %p, %s) directory %s\n", repo, roots, ext, roots[0]);
 
-    if ((t = Fts_open((char *const *)roots, ftsoptions, NULL)) == NULL)
+    if ((t = Fts_open((char *const *)roots, repo->ftsoptions, NULL)) == NULL)
 	repo_error(1, _("Fts_open: %s"), strerror(errno));
 
     while ((p = Fts_read(t)) != NULL) {
@@ -540,25 +522,15 @@ fprintf(stderr, "\trepoCheckTimeStamps(%p)\n", repo);
 
     if (repo->checkts) {
 	ARGV_t roots = NULL;
-	const char * basedirectory =
-		rpmGetPath(repo->basedir, "/", repo->directory, NULL);
-	/* XXX check whether repo->directory is relative. */
 	const char ** files;
 	const char ** f;
-	int xx;
 
-	xx = argvAdd(&roots, basedirectory);
-	basedirectory = _free(basedirectory);
-
-	files = repoGetFileList(repo, roots, ".rpm");
+	files = repoGetFileList(repo, repo->directories, ".rpm");
 	if (files != NULL)
 	for (f = files; *f; f++) {
 	    struct stat sb, *st = &sb;
-	    int xx = rpmioExists(*f, st);
-
-	    if (!xx)
+	    if (!rpmioExists(*f, st))
 		repo_error(0, _("cannot get to file: %s"), *f);
-	    /* XXX heh, st->st_ctime appears to be script kiddie derangement. */
 	    else if (st->st_ctime > repo->mdtimestamp)
 		rc = 1;
 	}
@@ -886,7 +858,6 @@ fprintf(stderr, "==> repoDoPkgMetadata(%p)\n", repo);
     xx = repoOpenMDFile(repo, &repo->filelists);
     xx = repoOpenMDFile(repo, &repo->other);
 
-    original_basedir = repo->basedir
     for mydir in repo->directories {
 	repo->baseurl = self._getFragmentUrl(repo->baseurl, mediano)
 	/* XXX todo: rpmGetPath(mydir, "/", filematrix[mydir], NULL); */
@@ -1188,7 +1159,7 @@ fprintf(stderr, "==> repoDoFinalMove(%p)\n", repo);
     }
 
   { static const char * files[] =
-	{ "primaryfile", "filelistsfile", "otherfile", "repomdfile", "groupfile", NULL };
+	{ "primary.xml.gz", "filelists.xml.gz", "other.xml.gz", "repomd.xml.gz", "groupfile", NULL };
     const char ** filep;
 
     for (filep = files; *filep != NULL; filep++) {
@@ -1338,7 +1309,7 @@ static struct poptOption optionsTable[] = {
 	N_("files to exclude"), N_("FILE") },
 #endif
  { "basedir", '\0', POPT_ARG_STRING,		&__rpmrepo.basedir, 0,
-	N_("files to exclude"), N_("DIR") },
+	N_("top level directory"), N_("DIR") },
  { "baseurl", 'u', POPT_ARG_STRING,		&__rpmrepo.baseurl, 0,
 	N_("baseurl to append on all files"), N_("BASEURL") },
  { "groupfile", 'g', POPT_ARG_STRING,		&__rpmrepo.groupfile, 0,
@@ -1412,19 +1383,81 @@ main(int argc, char *argv[])
     rpmrepo repo = _rpmrepo;
     poptContext optCon;
     int rc = 1;		/* assume failure. */
+    int xx;
+    int i;
 
     __progname = "rpmmrepo";
 
     /* Process options. */
     optCon = rpmioInit(argc, argv, optionsTable);
 
-    if (repo->basedir == NULL)
-	repo->basedir = Realpath(".", NULL);
+    repo->ftsoptions = (rpmioFtsOpts ? rpmioFtsOpts : FTS_PHYSICAL);
+    switch (repo->ftsoptions & (FTS_LOGICAL|FTS_PHYSICAL)) {
+    case (FTS_LOGICAL|FTS_PHYSICAL):
+	repo_error(1, "FTS_LOGICAL and FTS_PYSICAL are mutually exclusive");
+        /*@notreached@*/ break;
+    case 0:
+        repo->ftsoptions |= FTS_PHYSICAL;
+        break;
+    }
 
-    repo->directories = poptGetArgs(optCon);
+    xx = argvAppend(&repo->directories, poptGetArgs(optCon));
 
-    if (repo->directories == NULL || repo->directories[0] == NULL)
-	repo_error(1, _("Must specify a directory to index."));
+    if (repo->directories == NULL || repo->directories[0] == NULL) {
+	repo_error(0, _("Must specify a directory to index."));
+	poptPrintUsage(optCon, stderr, 0);
+	goto exit;
+    }
+
+    if (repo->directories != NULL)
+    for (i = 0; repo->directories[i] != NULL; i++) {
+	char fullpath[MAXPATHLEN];
+	struct stat sb;
+	const char * rpath;
+	const char * lpath = NULL;
+	int ut = urlPath(repo->directories[i], &lpath);
+	size_t nb = (size_t)(lpath - repo->directories[i]);
+	int isdir = (lpath[strlen(lpath)-1] == '/');
+	
+	/* Convert to absolute/clean/malloc'd path. */
+	if (lpath[0] != '/') {
+	    /* XXX GLIBC: realpath(path, NULL) return malloc'd */
+	    rpath = Realpath(lpath, NULL);
+	    if (rpath == NULL)
+		rpath = Realpath(lpath, fullpath);
+	    if (rpath == NULL)
+		repo_error(1, _("Realpath(%s): %s"), lpath, strerror(errno));
+	    lpath = rpmGetPath(rpath, NULL);
+	    if (rpath != fullpath)	/* XXX GLIBC extension malloc's */
+		rpath = _free(rpath);
+	} else
+	    lpath = rpmGetPath(lpath, NULL);
+
+	/* Reattach the URI to the absolute/clean path. */
+	/* XXX todo: rpmGenPath was confused by file:///path/file URI's. */
+	switch (ut) {
+	case URL_IS_DASH:
+	case URL_IS_UNKNOWN:
+	    rpath = lpath;
+	    lpath = NULL;
+	    /*@switchbreak@*/ break;
+	default:
+	    strncpy(fullpath, repo->directories[i], nb);
+	    fullpath[nb] = '\0';
+	    rpath = rpmGenPath(fullpath, lpath, NULL);
+	    lpath = _free(lpath);
+	    /*@switchbreak@*/ break;
+	}
+
+	/* Add a trailing '/' on directories. */
+	lpath = (isdir || (!Stat(rpath, &sb) && S_ISDIR(sb.st_mode))
+		? "/" : NULL);
+	repo->directories[i] = _free(repo->directories[i]);
+	repo->directories[i] = rpmExpand(rpath, lpath, NULL);
+	rpath = _free(rpath);
+    }
+if (_repo_debug)
+argvPrint("repo->directories", repo->directories, NULL);
 
     if (repo->directories[1] != NULL && !repo->split)
 	repo_error(1, _("Only one directory allowed per run."));
