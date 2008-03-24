@@ -287,7 +287,7 @@ static inline Header headerRead(void * _fd, enum hMagic magicp) {
 }
 
 static inline int rpmMachineScore(int type, const char * name) {
-	char * platform = rpmExpand(name, "%{_target_vendor}-%{_target_os}%{?_gnu}", NULL);
+	char * platform = rpmExpand(name, "-%{_target_vendor}-%{_target_os}%{?_gnu}", NULL);
 	int score = rpmPlatformScore(platform, NULL, 0);
 
 	_free(platform);
