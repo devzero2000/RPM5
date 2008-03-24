@@ -474,24 +474,20 @@ static int chkSuffix(const char * fn, const char * suffix)
 }
 
 /*@null@*/
-static const char ** repoGetFileList(rpmrepo repo, const char * directory,
+static const char ** repoGetFileList(rpmrepo repo, const char *roots[],
 		const char * ext)
 	/*@*/
 {
     const char ** files = NULL;
-    char *roots[2];
     FTS * t;
     FTSENT * p;
     int ftsoptions = FTS_PHYSICAL;
     int xx;
 
 if (_repo_debug)
-fprintf(stderr, "\trepoGetFileList(%p, %s, %s)\n", repo, directory, ext);
+fprintf(stderr, "\trepoGetFileList(%p, %p, %s) directory %s\n", repo, roots, ext, roots[0]);
 
-    roots[0] = (char *) directory;	/* XXX no cast */
-    roots[1] = NULL;
-
-    if ((t = Fts_open(roots, ftsoptions, NULL)) == NULL)
+    if ((t = Fts_open((char *const *)roots, ftsoptions, NULL)) == NULL)
 	repo_error(1, _("Fts_open: %s"), strerror(errno));
 
     while ((p = Fts_read(t)) != NULL) {
@@ -543,25 +539,31 @@ if (_repo_debug)
 fprintf(stderr, "\trepoCheckTimeStamps(%p)\n", repo);
 
     if (repo->checkts) {
-	struct stat sb, *st = &sb;
+	ARGV_t roots = NULL;
 	const char * basedirectory =
 		rpmGetPath(repo->basedir, "/", repo->directory, NULL);
 	/* XXX check whether repo->directory is relative. */
-	const char ** files = repoGetFileList(repo, basedirectory, ".rpm");
+	const char ** files;
 	const char ** f;
+	int xx;
+
+	xx = argvAdd(&roots, basedirectory);
+	basedirectory = _free(basedirectory);
+
+	files = repoGetFileList(repo, roots, ".rpm");
 	if (files != NULL)
 	for (f = files; *f; f++) {
-	    const char * fn =
-		rpmGetPath(basedirectory, "/", *f, NULL);
-	    int xx = rpmioExists(fn, st);
+	    struct stat sb, *st = &sb;
+	    int xx = rpmioExists(*f, st);
 
 	    if (!xx)
-		fprintf(stderr, _("cannot get to file: %s"), fn);
+		repo_error(0, _("cannot get to file: %s"), *f);
+	    /* XXX heh, st->st_ctime appears to be script kiddie derangement. */
 	    else if (st->st_ctime > repo->mdtimestamp)
 		rc = 1;
-	    fn = _free(fn);
 	}
-	basedirectory = _free(basedirectory);
+	files = argvFree(files);
+	roots = argvFree(roots);
     } else
 	rc = 1;
 
@@ -832,6 +834,7 @@ static int repoCloseMDFile(rpmrepo repo, rpmrfile rfile)
 static int repoDoPkgMetadata(rpmrepo repo)
 	/*@*/
 {
+    ARGV_t roots = NULL;
     const char ** packages = NULL;
     int xx;
 
@@ -860,15 +863,19 @@ fprintf(stderr, "==> repoDoPkgMetadata(%p)\n", repo);
     filematrix = {}
     for mydir in repo->directories {
 	if (mydir[0] == '/')
-	    thisdir = mydir;
+	    thisdir = xstrdup(mydir);
 	else if (mydir[0] == '.' && mydir[1] == '.' && mydir[2] == '/')
 	    thisdir = Realpath(mydir, NULL);
 	else
 	    thisdir = rpmGetPath(repo->basedir, "/", mydir, NULL);
 
-	filematrix[mydir] = repoGetFileList(repo, thisdir, '.rpm')
+	xx = argvAdd(&roots, thisdir);
+	thisdir = _free(thisdir);
+
+	filematrix[mydir] = repoGetFileList(repo, roots, '.rpm')
 	self.trimRpms(filematrix[mydir])
 	repo->pkgcount = argvCount(filematrix[mydir]);
+	roots = argvFree(roots);
     }
 
     mediano = 1;
@@ -899,10 +906,12 @@ fprintf(stderr, "==> repoDoPkgMetadata(%p)\n", repo);
 	repoSetupOldMetadataLookup(repo);
 
     if ((packages = repo->pkglist) == NULL) {
-	packages = repoGetFileList(repo, repo->package_dir, ".rpm");
+	xx = argvAdd(&roots, repo->package_dir);
+	packages = repoGetFileList(repo, roots, ".rpm");
 #ifdef	NOTYET
         packages = self.trimRpms(packages)
 #endif
+	roots = argvFree(roots);
     }
 
     repo->pkgcount = argvCount(packages);
