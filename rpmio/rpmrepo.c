@@ -23,9 +23,7 @@ typedef struct rpmrepo_s * rpmrepo;
 typedef struct rpmrfile_s * rpmrfile;
 
 struct rpmrfile_s {
-    const char * file;
     const char * type;
-    const char * href;
     const char * init;
     const char * qfmt;
     const char * fini;
@@ -69,6 +67,8 @@ struct rpmrepo_s {
     const char * finaldir;
 /*@null@*/
     const char * olddir;
+    const char * markup;
+    const char * suffix;
 
     time_t mdtimestamp;
 
@@ -239,35 +239,29 @@ static struct rpmrepo_s __rpmrepo = {
     .tempdir	= ".repodata",
     .finaldir	= "repodata",
     .olddir	= ".olddata",
+    .markup	= "xml",
+    .suffix	= "gz",
     .algo	= PGPHASHALGO_SHA1,
     .primary	= {
-	.file	= "primary.xml.gz",
 	.type	= "primary",
-	.href	= "repodata/primary.xml.gz",
 	.init	= init_primary,
 	.qfmt	= qfmt_primary,
 	.fini	= fini_primary
     },
     .filelists	= {
-	.file	= "filelists.xml.gz",
 	.type	= "filelists",
-	.href	= "repodata/filelists.xml.gz",
 	.init	= init_filelists,
 	.qfmt	= qfmt_filelists,
 	.fini	= fini_filelists
     },
     .other	= {
-	.file	= "other.xml.gz",
 	.type	= "other",
-	.href	= "repodata/other.xml.gz",
 	.init	= init_other,
 	.qfmt	= qfmt_other,
 	.fini	= fini_other
     },
     .repomd	= {
-	.file	= "repomd.xml.gz",
 	.type	= "repomd",
-	.href	= "repodata/repomd.xml.gz",
 	.init	= init_repomd,
 	.qfmt	= NULL,
 	.fini	= fini_repomd
@@ -365,11 +359,11 @@ fprintf(stderr, "\trepoTestSetupDirs(%p)\n", repo);
 
   { static const char * dirs[] = { ".repodata", "repodata", NULL };
     static const char * files[] =
-	{ "primary.xml.gz", "filelists.xml.gz", "other.xml.gz", "repomd.xml.gz", NULL };
+	{ "primary", "filelists", "other", "repomd", NULL };
     const char ** dirp, ** filep;
     for (dirp = dirs; *dirp != NULL; dirp++) {
 	for (filep = files; *filep != NULL; filep++) {
-	    fn = rpmGetPath(repo->outputdir, "/", *dirp, "/", *filep, NULL);
+	    fn = rpmGetPath(repo->outputdir, "/", *dirp, "/", *filep, ".", repo->markup, ".", repo->suffix, NULL);
 	    if (rpmioExists(fn, st)) {
 		if (Access(fn, W_OK))
 		    repo_error(1, _("Path must be writable: %s"), fn);
@@ -580,7 +574,7 @@ static int repoOpenMDFile(rpmrepo repo, rpmrfile rfile)
     const char * spew = rfile->init;
     size_t nspew = strlen(spew);
     const char * fn =
-        rpmGetPath(repo->outputdir, "/", repo->tempdir, "/", rfile->file, NULL);
+        rpmGetPath(repo->outputdir, "/", repo->tempdir, "/", rfile->type, ".", repo->markup, ".", repo->suffix, NULL);
     /* XXX todo: fill in repo->pkgcount */
     size_t nb;
 
@@ -948,7 +942,7 @@ static const char * repoMDExpand(rpmrepo repo, rpmrfile rfile)
     <checksum type=\"", spewalgo, "\">", rfile->digest, "</checksum>\n\
     <timestamp>", spewtime, "</timestamp>\n\
     <open-checksum type=\"",spewalgo,"\">", rfile->digest, "</open-checksum>\n\
-    <location href=\"", rfile->href, "\"/>\n\
+    <location href=\"", repo->finaldir, "/", rfile->type, ".", repo->markup, ".", repo->suffix, "\"/>\n\
   </data>\n", NULL);
 }
 
@@ -962,21 +956,21 @@ static int repoDoRepoMetadata(rpmrepo repo)
     const char * repopath =
 		rpmGetPath(repo->outputdir, "/", repo->tempdir, NULL);
     const char * repofilepath =
-		rpmGetPath(repopath, "/", repo->repomd.file, NULL);
+		rpmGetPath(repopath, "/", repo->repomd.type, ".", repo->markup, ".", repo->suffix, NULL);
     FD_t fd;
 
 if (_repo_debug)
 fprintf(stderr, "==> repoDoRepoMetadata(%p)\n", repo);
 
-    fn = rpmGetPath(repo->outputdir, "/", repo->tempdir, "/", repo->other.file, NULL);
+    fn = rpmGetPath(repo->outputdir, "/", repo->tempdir, "/", repo->other.type, ".", repo->markup, ".", repo->suffix, NULL);
     repo->other.ctime = rpmioCtime(fn);
     fn = _free(fn);
 
-    fn = rpmGetPath(repo->outputdir, "/", repo->tempdir, "/", repo->filelists.file, NULL);
+    fn = rpmGetPath(repo->outputdir, "/", repo->tempdir, "/", repo->filelists.type, ".", repo->markup, ".", repo->suffix, NULL);
     repo->filelists.ctime = rpmioCtime(fn);
     fn = _free(fn);
 
-    fn = rpmGetPath(repo->outputdir, "/", repo->tempdir, "/", repo->primary.file, NULL);
+    fn = rpmGetPath(repo->outputdir, "/", repo->tempdir, "/", repo->primary.type, ".", repo->markup, ".", repo->suffix, NULL);
     repo->primary.ctime = rpmioCtime(fn);
     fn = _free(fn);
 
@@ -1193,11 +1187,11 @@ fprintf(stderr, "==> repoDoFinalMove(%p)\n", repo);
     }
 
   { static const char * files[] =
-	{ "primary.xml.gz", "filelists.xml.gz", "other.xml.gz", "repomd.xml.gz", "groupfile", NULL };
+	{ "primary", "filelists", "other", "repomd", "group", NULL };
     const char ** filep;
 
     for (filep = files; *filep != NULL; filep++) {
-	oldfile = rpmGetPath(output_old_dir, "/", *filep, NULL);
+	oldfile = rpmGetPath(output_old_dir, "/", *filep, ".", repo->markup, ".", repo->suffix, NULL);
 	if (rpmioExists(oldfile, st)) {
 	    if (Unlink(oldfile))
 		repo_error(1, _("Could not remove old metadata file: %s: %s"),
