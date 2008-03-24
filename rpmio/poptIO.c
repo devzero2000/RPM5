@@ -135,9 +135,9 @@ struct poptOption rpmioDigestPoptTable[] = {
 	N_("ADLER-32 checksum"), NULL },
  { "jlu32",'\0', POPT_ARG_VAL,	&rpmioDigestHashAlgo, PGPHASHALGO_JLU32,
 	N_("lookup3 hash"), NULL },
- { "none",'\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &rpmioDigestHashAlgo, PGPHASHALGO_NONE,
+ { "nodigest",'\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &rpmioDigestHashAlgo, PGPHASHALGO_NONE,
 	N_("no hash algorithm"), NULL },
- { "all",'\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &rpmioDigestHashAlgo, 256,
+ { "alldigests",'\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &rpmioDigestHashAlgo, 256,
 	N_("all hash algorithm(s)"), NULL },
     POPT_TABLEEND
 };
