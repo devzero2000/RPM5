@@ -1,4 +1,5 @@
 5.0.0 -> 5.1a1:
+    - jbj: rpmrepo: unsnarl the data from the methods.
     - jbj: rpmrepo: populate repomd.xml.
     - jbj: rpmrepo: populate other.xml, add --yum:other.xml alias.
     - jbj: rpmrepo: populate filelists.xml, add --yum:filelists.xml alias.

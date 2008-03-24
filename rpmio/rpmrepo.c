@@ -20,6 +20,19 @@
 int _repo_debug;
 
 typedef struct rpmrepo_s * rpmrepo;
+typedef struct rpmrfile_s * rpmrfile;
+
+struct rpmrfile_s {
+    const char * file;
+    const char * type;
+    const char * href;
+    const char * init;
+    const char * qfmt;
+    const char * fini;
+    FD_t fd;
+    const char * digest;
+    time_t ctime;
+};
 
 struct rpmrepo_s {
     int quiet;
@@ -51,14 +64,6 @@ struct rpmrepo_s {
 /*@null@*/
     ARGV_t pkglist;
 /*@null@*/
-    const char * primaryfile;
-/*@null@*/
-    const char * filelistsfile;
-/*@null@*/
-    const char * otherfile;
-/*@null@*/
-    const char * repomdfile;
-/*@null@*/
     const char * tempdir;
 /*@null@*/
     const char * finaldir;
@@ -88,32 +93,183 @@ struct rpmrepo_s {
 
     uint32_t algo;
 
-    FD_t fdprimary;
-/*@null@*/
-    const char *digestprimary;
-    time_t st_ctimeprimary;
-    FD_t fdfilelists;
-/*@null@*/
-    const char *digestfilelists;
-    time_t st_ctimefilelists;
-    FD_t fdother;
-/*@null@*/
-    const char *digestother;
-    time_t st_ctimeother;
+    struct rpmrfile_s primary;
+    struct rpmrfile_s filelists;
+    struct rpmrfile_s other;
+    struct rpmrfile_s repomd;
 
 };
+
+static const char init_primary[] =
+"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+"<metadata xmlns=\"http://linux.duke.edu/metadata/common\" xmlns:rpm=\"http://linux.duke.edu/metadata/rpm\" packages=\"XXX\">\n";
+static const char fini_primary[] = "</metadata>\n";
+
+static const char init_filelists[] =
+"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+"<filelists xmlns=\"http://linux.duke.edu/metadata/filelists\" packages=\"XXX\">\n";
+static const char fini_filelists[] = "</filelists>\n";
+
+static const char init_other[] =
+"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+"<otherdata xmlns=\"http://linux.duke.edu/metadata/other\" packages=\"XXX\">\n";
+static const char fini_other[] = "</otherdata>\n";
+
+static const char init_repomd[] = "\
+<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\
+<repomd xmlns=\"http://linux.duke.edu/metadata/repo\">\n";
+static const char fini_repomd[] = "</repomd>\n";
+
+/* XXX todo: wire up popt aliases and bury the --queryformat glop externally. */
+/*@unchecked@*/ /*@observer@*/
+static const char qfmt_primary[] = "\
+<package type=\"rpm\">\n\
+  <name>%{NAME:cdata}</name>\n\
+  <arch>%{ARCH:cdata}</arch>\n\
+  <version epoch=\"%|EPOCH?{%{EPOCH}}:{0}|\" ver=\"%{VERSION:cdata}\" rel=\"%{RELEASE:cdata}\"/>\n\
+  <checksum type=\"sha\" pkgid=\"NO\">%|HDRID?{%{HDRID}}|</checksum>\n\
+  <summary>%{SUMMARY:cdata}</summary>\n\
+  <description>%{DESCRIPTION:cdata}</description>\n\
+  <packager>%|PACKAGER?{%{PACKAGER:cdata}}:{}|</packager>\n\
+  <url>%|URL?{%{URL:cdata}}:{}|</url>\n\
+  <time file=\"%{PACKAGETIME}\" build=\"%{BUILDTIME}\">\n\
+  <size package=\"%{SIZE}\" installed=\"%{SIZE}\" archive=\"%{ARCHIVESIZE}\"/>\n\
+  <location href=\"%{PACKAGEORIGIN:cdata}\"/>\n\
+  <format>\n\
+%|license?{\
+    <rpm:license>%{LICENSE:cdata}</rpm:license>\n\
+}:{\
+    <rpm:license/>\n\
+}|\
+%|vendor?{\
+    <rpm:vendor>%{VENDOR:cdata}</rpm:vendor>\n\
+}:{\
+    <rpm:vendor/>\n\
+}|\
+%|group?{\
+    <rpm:group>%{GROUP:cdata}</rpm:group>\n\
+}:{\
+    <rpm:group/>\n\
+}|\
+%|buildhost?{\
+    <rpm:buildhost>%{BUILDHOST:cdata}</rpm:buildhost>\n\
+}:{\
+    <rpm:buildhost/>\n\
+}|\
+%|sourcerpm?{\
+    <rpm:sourcerpm>%{SOURCERPM:cdata}</rpm:sourcerpm>\n\
+}|\
+    <rpm:header-range start=\"%{HEADERSTARTOFF}\" end=\"%{HEADERENDOFF}\"/>\n\
+%|provideentry?{\
+    <rpm:provides>\n\
+[\
+      %{provideentry}\n\
+]\
+    </rpm:provides>\n\
+}:{\
+    <rpm:provides/>\n\
+}|\
+%|requireentry?{\
+    <rpm:requires>\n\
+[\
+      %{requireentry}\n\
+]\
+    </rpm:requires>\n\
+}:{\
+    <rpm:requires/>\n\
+}|\
+%|conflictentry?{\
+    <rpm:conflicts>\n\
+[\
+      %{conflictentry}\n\
+]\
+    </rpm:conflicts>\n\
+}:{\
+    <rpm:conflicts/>\n\
+}|\
+%|obsoleteentry?{\
+    <rpm:obsoletes>\n\
+[\
+      %{obsoleteentry}\n\
+]\
+    </rpm:obsoletes>\n\
+}:{\
+    <rpm:obsoletes/>\n\
+}|\
+%|filesentry1?{\
+[\
+    %{filesentry1}\n\
+]\
+}|\
+  </format>\n\
+</package>\n\
+";
+
+/*@unchecked@*/ /*@observer@*/
+static const char qfmt_filelists[] = "\
+<package pkgid=\"%|HDRID?{%{HDRID}}:{XXX}|\" name=\"%{NAME:cdata}\" arch=\"%{ARCH:cdata}\">\n\
+  <version epoch=\"%|EPOCH?{%{EPOCH}}:{0}|\" ver=\"%{VERSION:cdata}\" rel=\"%{RELEASE:cdata}\"/>\n\
+%|filesentry2?{\
+[\
+  %{filesentry2}\n\
+]\
+}|\
+</package>\n\
+";
+
+/*@unchecked@*/ /*@observer@*/
+static const char qfmt_other[] = "\
+<package pkgid=\"%|HDRID?{%{HDRID}}:{XXX}|\" name=\"%{NAME:cdata}\" arch=\"%{ARCH:cdata}\">\n\
+  <version epoch=\"%|EPOCH?{%{EPOCH}}:{0}|\" ver=\"%{VERSION:cdata}\" rel=\"%{RELEASE:cdata}\"/>\n\
+%|changelogname?{\
+[\
+  <changelog author=\"%{CHANGELOGNAME:cdata}\" date=\"%{CHANGELOGTIME}\">%{CHANGELOGTEXT:cdata}</changelog>\n\
+]\
+}:{\
+  <changelog/>\n\
+}|\
+</package>\n\
+";
 
 /*@unchecked@*/
 static struct rpmrepo_s __rpmrepo = {
     .sumtype = "sha", .checksum = "sha", .pretty = 1, .changeloglimit = 10,
-    .primaryfile= "primary.xml.gz",
-    .filelistsfile = "filelists.xml.gz",
-    .otherfile	= "other.xml.gz",
-    .repomdfile	= "repomd.xml.gz",
     .tempdir	= ".repodata",
     .finaldir	= "repodata",
     .olddir	= ".olddata",
-    .algo	= PGPHASHALGO_SHA1
+    .algo	= PGPHASHALGO_SHA1,
+    .primary	= {
+	.file	= "primary.xml.gz",
+	.type	= "primary",
+	.href	= "repodata/primary.xml.gz",
+	.init	= init_primary,
+	.qfmt	= qfmt_primary,
+	.fini	= fini_primary
+    },
+    .filelists	= {
+	.file	= "filelists.xml.gz",
+	.type	= "filelists",
+	.href	= "repodata/filelists.xml.gz",
+	.init	= init_filelists,
+	.qfmt	= qfmt_filelists,
+	.fini	= fini_filelists
+    },
+    .other	= {
+	.file	= "other.xml.gz",
+	.type	= "other",
+	.href	= "repodata/other.xml.gz",
+	.init	= init_other,
+	.qfmt	= qfmt_other,
+	.fini	= fini_other
+    },
+    .repomd	= {
+	.file	= "repomd.xml.gz",
+	.type	= "repomd",
+	.href	= "repodata/repomd.xml.gz",
+	.init	= init_repomd,
+	.qfmt	= NULL,
+	.fini	= fini_repomd
+    }
 };
 
 /*@unchecked@*/
@@ -444,85 +600,26 @@ fprintf(stderr, "\trepoSetupOldMetadataLookup(%p)\n", repo);
     return 0;
 }
 
-static FD_t repoSetupPrimary(rpmrepo repo)
-	/*@*/
-{
-    static const char * spew =
-"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-"<metadata xmlns=\"http://linux.duke.edu/metadata/common\" xmlns:rpm=\"http://linux.duke.edu/metadata/rpm\" packages=\"XXX\">\n";
-    size_t nspew = strlen(spew);
-    const char * fn =
-	rpmGetPath(repo->outputdir, "/", repo->tempdir, "/", repo->primaryfile, NULL);
-    FD_t fd = Fopen(fn, "w.gzdio");
-    size_t nb;
-
-    fdInitDigest(fd, repo->algo, 0);
-    /* XXX todo: fill in repo->pkgcount */
-    nb = Fwrite(spew, 1, nspew, fd);
-if (_repo_debug)
-fprintf(stderr, "\trepoSetupPrimary(%p) nb %u\n", repo, (unsigned)nb);
-
-    fn = _free(fn);
-    return fd;
-}
-
-static FD_t repoSetupFilelists(rpmrepo repo)
-	/*@*/
-{
-    static const char * spew =
-"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-"<filelists xmlns=\"http://linux.duke.edu/metadata/filelists\" packages=\"XXX\">\n";
-    size_t nspew = strlen(spew);
-    const char * fn =
-	rpmGetPath(repo->outputdir, "/", repo->tempdir, "/", repo->filelistsfile, NULL);
-    FD_t fd = Fopen(fn, "w.gzdio");
-    size_t nb;
-
-    fdInitDigest(fd, repo->algo, 0);
-    /* XXX todo: fill in repo->pkgcount */
-    nb = Fwrite(spew, 1, nspew, fd);
-if (_repo_debug)
-fprintf(stderr, "\trepoSetupFilelists(%p) nb %u\n", repo, (unsigned)nb);
-
-    fn = _free(fn);
-    return fd;
-}
-
-static FD_t repoSetupOther(rpmrepo repo)
-	/*@*/
-{
-    static const char * spew =
-"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-"<otherdata xmlns=\"http://linux.duke.edu/metadata/other\" packages=\"XXX\">\n";
-    size_t nspew = strlen(spew);
-    const char * fn =
-        rpmGetPath(repo->outputdir, "/", repo->tempdir, "/", repo->otherfile, NULL);
-    FD_t fd = Fopen(fn, "w.gzdio");
-    /* XXX todo: fill in repo->pkgcount */
-    size_t nb;
-
-    fdInitDigest(fd, repo->algo, 0);
-    /* XXX todo: fill in repo->pkgcount */
-    nb = Fwrite(spew, 1, nspew, fd);
-if (_repo_debug)
-fprintf(stderr, "\trepoSetupOther(%p) nb %u\n", repo, (unsigned)nb);
-
-    fn = _free(fn);
-    return fd;
-}
-
-static int repoOpenMetadataDocs(rpmrepo repo)
+static int repoOpenMDFile(rpmrepo repo, rpmrfile rfile)
 	/*@modifies repo @*/
 {
-if (_repo_debug)
-fprintf(stderr, "\trepoOpenMetadataDocs(%p)\n", repo);
+    const char * spew = rfile->init;
+    size_t nspew = strlen(spew);
+    const char * fn =
+        rpmGetPath(repo->outputdir, "/", repo->tempdir, "/", rfile->file, NULL);
+    /* XXX todo: fill in repo->pkgcount */
+    size_t nb;
 
-    repo->fdprimary = repoSetupPrimary(repo);
-    repo->fdfilelists = repoSetupFilelists(repo);
-    repo->fdother = repoSetupOther(repo);
+    rfile->fd = Fopen(fn, "w.gzdio");
+    fdInitDigest(rfile->fd, repo->algo, 0);
+    /* XXX todo: fill in repo->pkgcount */
+    nb = Fwrite(spew, 1, nspew, rfile->fd);
+if (_repo_debug)
+fprintf(stderr, "\trepoOpenMDFile(%p, %p) %s nb %u\n", repo, rfile, fn, (unsigned)nb);
+
+    fn = _free(fn);
     return 0;
 }
-
 
 static Header repoReadHeader(rpmrepo repo, const char * path)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
@@ -600,116 +697,27 @@ fprintf(stderr, "\trepoReadPackage(%p, %s)\n", repo, rpmfile);
     return h;
 }
 
-/* XXX todo: wire up popt aliases and bury the --queryformat glop externally. */
-/*@unchecked@*/ /*@observer@*/
-static const char * qfmt_primary = "\
-<package type=\"rpm\">\n\
-  <name>%{NAME:cdata}</name>\n\
-  <arch>%{ARCH:cdata}</arch>\n\
-  <version epoch=\"%|EPOCH?{%{EPOCH}}:{0}|\" ver=\"%{VERSION:cdata}\" rel=\"%{RELEASE:cdata}\"/>\n\
-  <checksum type=\"sha\" pkgid=\"NO\">%|HDRID?{%{HDRID}}|</checksum>\n\
-  <summary>%{SUMMARY:cdata}</summary>\n\
-  <description>%{DESCRIPTION:cdata}</description>\n\
-  <packager>%|PACKAGER?{%{PACKAGER:cdata}}:{}|</packager>\n\
-  <url>%|URL?{%{URL:cdata}}:{}|</url>\n\
-  <time file=\"%{PACKAGETIME}\" build=\"%{BUILDTIME}\">\n\
-  <size package=\"%{SIZE}\" installed=\"%{SIZE}\" archive=\"%{ARCHIVESIZE}\"/>\n\
-  <location href=\"%{PACKAGEORIGIN:cdata}\"/>\n\
-  <format>\n\
-%|license?{\
-    <rpm:license>%{LICENSE:cdata}</rpm:license>\n\
-}:{\
-    <rpm:license/>\n\
-}|\
-%|vendor?{\
-    <rpm:vendor>%{VENDOR:cdata}</rpm:vendor>\n\
-}:{\
-    <rpm:vendor/>\n\
-}|\
-%|group?{\
-    <rpm:group>%{GROUP:cdata}</rpm:group>\n\
-}:{\
-    <rpm:group/>\n\
-}|\
-%|buildhost?{\
-    <rpm:buildhost>%{BUILDHOST:cdata}</rpm:buildhost>\n\
-}:{\
-    <rpm:buildhost/>\n\
-}|\
-%|sourcerpm?{\
-    <rpm:sourcerpm>%{SOURCERPM:cdata}</rpm:sourcerpm>\n\
-}|\
-    <rpm:header-range start=\"%{HEADERSTARTOFF}\" end=\"%{HEADERENDOFF}\"/>\n\
-%|provideentry?{\
-    <rpm:provides>\n\
-[\
-      %{provideentry}\n\
-]\
-    </rpm:provides>\n\
-}:{\
-    <rpm:provides/>\n\
-}|\
-%|requireentry?{\
-    <rpm:requires>\n\
-[\
-      %{requireentry}\n\
-]\
-    </rpm:requires>\n\
-}:{\
-    <rpm:requires/>\n\
-}|\
-%|conflictentry?{\
-    <rpm:conflicts>\n\
-[\
-      %{conflictentry}\n\
-]\
-    </rpm:conflicts>\n\
-}:{\
-    <rpm:conflicts/>\n\
-}|\
-%|obsoleteentry?{\
-    <rpm:obsoletes>\n\
-[\
-      %{obsoleteentry}\n\
-]\
-    </rpm:obsoletes>\n\
-}:{\
-    <rpm:obsoletes/>\n\
-}|\
-%|filesentry1?{\
-[\
-    %{filesentry1}\n\
-]\
-}|\
-  </format>\n\
-</package>\n\
-";
+static int repoWriteMDFile(rpmrepo repo, rpmrfile rfile, Header h)
+	/*@modifies repo @*/
+{
+    const char * qfmt = rfile->qfmt;
 
-/*@unchecked@*/ /*@observer@*/
-static const char * qfmt_filelists = "\
-<package pkgid=\"%|HDRID?{%{HDRID}}:{XXX}|\" name=\"%{NAME:cdata}\" arch=\"%{ARCH:cdata}\">\n\
-  <version epoch=\"%|EPOCH?{%{EPOCH}}:{0}|\" ver=\"%{VERSION:cdata}\" rel=\"%{RELEASE:cdata}\"/>\n\
-%|filesentry2?{\
-[\
-  %{filesentry2}\n\
-]\
-}|\
-</package>\n\
-";
-
-/*@unchecked@*/ /*@observer@*/
-static const char * qfmt_other = "\
-<package pkgid=\"%|HDRID?{%{HDRID}}:{XXX}|\" name=\"%{NAME:cdata}\" arch=\"%{ARCH:cdata}\">\n\
-  <version epoch=\"%|EPOCH?{%{EPOCH}}:{0}|\" ver=\"%{VERSION:cdata}\" rel=\"%{RELEASE:cdata}\"/>\n\
-%|changelogname?{\
-[\
-  <changelog author=\"%{CHANGELOGNAME:cdata}\" date=\"%{CHANGELOGTIME}\">%{CHANGELOGTEXT:cdata}</changelog>\n\
-]\
-}:{\
-  <changelog/>\n\
-}|\
-</package>\n\
-";
+    if (qfmt != NULL) {
+	const char * msg = NULL;
+	const char * spew = headerSprintf(h, qfmt, NULL, NULL, &msg);
+	size_t nspew = (spew != NULL ? strlen(spew) : 0);
+	size_t nb = (nspew > 0 ? Fwrite(spew, 1, nspew, rfile->fd) : 0);
+	if (spew == NULL)
+	    repo_error(1, _("incorrect format: %s\n"),
+		(msg ? msg : "headerSprintf() msg is AWOL!"));
+	if (nspew != nb)
+	    repo_error(1,
+		_("Fwrite failed: expected write %u != %u bytes: %s\n"),
+		(unsigned)nspew, (unsigned)nb, Fstrerror(rfile->fd));
+	spew = _free(spew);
+    }
+    return 0;
+}
 
 static unsigned repoWriteMetadataDocs(rpmrepo repo,
 		/*@null@*/ const char ** pkglist, unsigned current)
@@ -728,6 +736,8 @@ argvPrint("repo->pkglist", pkglist, NULL);
 
     for (pkg = pkglist; *pkg != NULL; pkg++) {
 	int recycled;
+	int xx;
+
 	current++;
 	recycled = 0;
 
@@ -758,56 +768,9 @@ argvPrint("repo->pkglist", pkglist, NULL);
 	    self.flfile.write(po.do_filelists_xml_dump())
 	    self.otherfile.write(po.do_other_xml_dump())
 #endif
-	    if (qfmt_primary != NULL) {
-		FD_t fd = repo->fdprimary;
-		const char * qfmt = qfmt_primary;
-		const char * msg = NULL;
-		const char * spew = headerSprintf(h, qfmt, NULL, NULL, &msg);
-		size_t nspew = (spew != NULL ? strlen(spew) : 0);
-		size_t nb = (nspew > 0 ? Fwrite(spew, 1, nspew, fd) : 0);
-		if (spew == NULL)
-		    repo_error(1, _("incorrect format: %s\n"),
-			(msg ? msg : "headerSprintf() msg is AWOL!"));
-		if (nspew != nb)
-		    repo_error(1,
-			_("Fwrite failed: expected write %u != %u bytes: %s\n"),
-			(unsigned)nspew, (unsigned)nb, Fstrerror(fd));
-		spew = _free(spew);
-	    }
-
-	    if (qfmt_filelists != NULL) {
-		FD_t fd = repo->fdfilelists;
-		const char * qfmt = qfmt_filelists;
-		const char * msg = NULL;
-		const char * spew = headerSprintf(h, qfmt, NULL, NULL, &msg);
-		size_t nspew = (spew != NULL ? strlen(spew) : 0);
-		size_t nb = (nspew > 0 ? Fwrite(spew, 1, nspew, fd) : 0);
-		if (spew == NULL)
-		    repo_error(1, _("incorrect format: %s\n"),
-			(msg ? msg : "headerSprintf() msg is AWOL!"));
-		if (nspew != nb)
-		    repo_error(1,
-			_("Fwrite failed: expected write %u != %u bytes: %s\n"),
-			(unsigned)nspew, (unsigned)nb, Fstrerror(fd));
-		spew = _free(spew);
-	    }
-
-	    if (qfmt_other != NULL) {
-		FD_t fd = repo->fdother;
-		const char * qfmt = qfmt_other;
-		const char * msg = NULL;
-		const char * spew = headerSprintf(h, qfmt, NULL, NULL, &msg);
-		size_t nspew = (spew != NULL ? strlen(spew) : 0);
-		size_t nb = (nspew > 0 ? Fwrite(spew, 1, nspew, fd) : 0);
-		if (spew == NULL)
-		    repo_error(1, _("incorrect format: %s\n"),
-			(msg ? msg : "headerSprintf() msg is AWOL!"));
-		if (nspew != nb)
-		    repo_error(1,
-			_("Fwrite failed: expected write %u != %u bytes: %s\n"),
-			(unsigned)nspew, (unsigned)nb, Fstrerror(fd));
-		spew = _free(spew);
-	    }
+	    xx = repoWriteMDFile(repo, &repo->primary, h);
+	    xx = repoWriteMDFile(repo, &repo->filelists, h);
+	    xx = repoWriteMDFile(repo, &repo->other, h);
 
 	    h = headerFree(h);
 
@@ -817,9 +780,9 @@ argvPrint("repo->pkglist", pkglist, NULL);
 #ifdef	NOTYET
 		(primarynode, filenode, othernode) = nodes    
 
-                for node, outfile in ((primarynode, repo->fdprimary),
-                                      (filenode,    repo->fdfilelists),
-                                      (othernode,   repo->fdother))
+                for node, outfile in ((primarynode, repo->primary.fd),
+                                      (filenode,    repo->filelists.fd),
+                                      (othernode,   repo->other.fd))
 		{
                     if node is None:
                         break
@@ -848,57 +811,21 @@ argvPrint("repo->pkglist", pkglist, NULL);
     return current;
 }
 
-static int repoCloseMetadataDocs(rpmrepo repo)
+static int repoCloseMDFile(rpmrepo repo, rpmrfile rfile)
 	/*@modifies repo @*/
 {
     static int asAscii = 1;
-    const char * spew;
-    size_t nspew;
+    const char * spew = rfile->fini;
+    size_t nspew = strlen(spew);
     size_t nb;
-    FD_t fd;
-    const char ** digestp;
     int xx;
 
-if (_repo_debug)
-fprintf(stderr, "\trepoCloseMetadataDocs(%p)\n", repo);
-
     if (!repo->quiet)
-	fprintf(stderr, "\n");
-
-    /* save them up to the tmp locations */
-    if (!repo->quiet)
-	repo_error(0, _("Saving primary.xml metadata"));
-
-    fd = repo->fdprimary; repo->fdprimary = NULL;
-    digestp = &repo->digestprimary;
-    spew = "</metadata>\n";
-    nspew = strlen(spew);
-    nb = Fwrite(spew, 1, nspew, fd);
-    fdFiniDigest(fd, repo->algo, digestp, NULL, asAscii);
-    xx = Fclose(fd);
-
-    if (!repo->quiet)
-	repo_error(0, _("Saving filelists.xml metadata"));
-
-    fd = repo->fdfilelists; repo->fdfilelists = NULL;
-    digestp = &repo->digestfilelists;
-    spew = "</filelists>\n";
-    nspew = strlen(spew);
-    nb = Fwrite(spew, 1, nspew, fd);
-    fdFiniDigest(fd, repo->algo, digestp, NULL, asAscii);
-    xx = Fclose(fd);
-
-    if (!repo->quiet)
-	repo_error(0, _("Saving other.xml metadata"));
-
-    fd = repo->fdother; repo->fdother = NULL;
-    digestp = &repo->digestother;
-    spew = "</otherdata>\n";
-    nspew = strlen(spew);
-    nb = Fwrite(spew, 1, nspew, fd);
-    fdFiniDigest(fd, repo->algo, digestp, NULL, asAscii);
-    xx = Fclose(fd);
-
+	repo_error(0, _("Saving %s.xml metadata"), rfile->type);
+    nb = Fwrite(spew, 1, nspew, rfile->fd);
+    fdFiniDigest(rfile->fd, repo->algo, &rfile->digest, NULL, asAscii);
+    xx = Fclose(rfile->fd);
+    rfile->fd = NULL;
     return 0;
 }
 
@@ -906,6 +833,7 @@ static int repoDoPkgMetadata(rpmrepo repo)
 	/*@*/
 {
     const char ** packages = NULL;
+    int xx;
 
 if (_repo_debug)
 fprintf(stderr, "==> repoDoPkgMetadata(%p)\n", repo);
@@ -946,7 +874,11 @@ fprintf(stderr, "==> repoDoPkgMetadata(%p)\n", repo);
     mediano = 1;
     current = 0;
     repo->baseurl = self._getFragmentUrl(repo->baseurl, mediano)
-    repoOpenMetadataDocs(repo);
+
+    xx = repoOpenMDFile(repo, &repo->primary);
+    xx = repoOpenMDFile(repo, &repo->filelists);
+    xx = repoOpenMDFile(repo, &repo->other);
+
     original_basedir = repo->basedir
     for mydir in repo->directories {
 	repo->baseurl = self._getFragmentUrl(repo->baseurl, mediano)
@@ -955,126 +887,111 @@ fprintf(stderr, "==> repoDoPkgMetadata(%p)\n", repo);
 	mediano++;
     }
     repo->baseurl = self._getFragmentUrl(repo->baseurl, 1)
-    repoCloseMetadataDocs(repo);
+
+    if (!repo->quiet)
+	fprintf(stderr, "\n");
+    xx = repoCloseMDFile(repo, &repo->primary);
+    xx = repoCloseMDFile(repo, &repo->filelists);
+    xx = repoCloseMDFile(repo, &repo->other);
 #else
 
     if (repo->update)
 	repoSetupOldMetadataLookup(repo);
 
-    if ((packages = repo->pkglist) == NULL)
+    if ((packages = repo->pkglist) == NULL) {
 	packages = repoGetFileList(repo, repo->package_dir, ".rpm");
-
 #ifdef	NOTYET
         packages = self.trimRpms(packages)
 #endif
+    }
 
     repo->pkgcount = argvCount(packages);
-    repoOpenMetadataDocs(repo);
+
+    xx = repoOpenMDFile(repo, &repo->primary);
+    xx = repoOpenMDFile(repo, &repo->filelists);
+    xx = repoOpenMDFile(repo, &repo->other);
+
     repoWriteMetadataDocs(repo, packages, 0);
-    repoCloseMetadataDocs(repo);
+
+    if (!repo->quiet)
+	fprintf(stderr, "\n");
+    xx = repoCloseMDFile(repo, &repo->primary);
+    xx = repoCloseMDFile(repo, &repo->filelists);
+    xx = repoCloseMDFile(repo, &repo->other);
+
 #endif
 
     return 0;
+}
+
+static const char * repoMDExpand(rpmrfile rfile)
+	/*@*/
+{
+    char spewtime[64];
+    snprintf(spewtime, sizeof(spewtime), "%u", (unsigned)rfile->ctime);
+    return rpmExpand("\
+  <data type=\"", rfile->type, "\">\n\
+    <checksum type=\"sha\">", rfile->digest, "</checksum>\n\
+    <timestamp>", spewtime, "</timestamp>\n\
+    <open-checksum type=\"sha\">", rfile->digest, "</open-checksum>\n\
+    <location href=\"", rfile->href, "\"/>\n\
+  </data>\n", NULL);
 }
 
 static int repoDoRepoMetadata(rpmrepo repo)
 	/*@*/
 {
     const char * fn;
-    time_t stctime;
-    static const char * spewinit = "\
-<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\
-<repomd xmlns=\"http://linux.duke.edu/metadata/repo\">\n";
-    const char * spewtype;
-    const char * spewdigest;
-    char spewtime[64];
-    const char * spewhref;
     const char * spew;
     size_t nspew;
     size_t nb;
     const char * repopath =
 		rpmGetPath(repo->outputdir, "/", repo->tempdir, NULL);
     const char * repofilepath =
-		rpmGetPath(repopath, "/", repo->repomdfile, NULL);
+		rpmGetPath(repopath, "/", repo->repomd.file, NULL);
     FD_t fd;
 
 if (_repo_debug)
 fprintf(stderr, "==> repoDoRepoMetadata(%p)\n", repo);
 
-    fn = rpmGetPath(repo->outputdir, "/", repo->tempdir, "/", repo->otherfile, NULL);
-    repo->st_ctimeother = rpmioCtime(fn);
+    fn = rpmGetPath(repo->outputdir, "/", repo->tempdir, "/", repo->other.file, NULL);
+    repo->other.ctime = rpmioCtime(fn);
     fn = _free(fn);
-    fn = rpmGetPath(repo->outputdir, "/", repo->tempdir, "/", repo->filelistsfile, NULL);
-    repo->st_ctimefilelists = rpmioCtime(fn);
+
+    fn = rpmGetPath(repo->outputdir, "/", repo->tempdir, "/", repo->filelists.file, NULL);
+    repo->filelists.ctime = rpmioCtime(fn);
     fn = _free(fn);
-    fn = rpmGetPath(repo->outputdir, "/", repo->tempdir, "/", repo->primaryfile, NULL);
-    repo->st_ctimeprimary = rpmioCtime(fn);
+
+    fn = rpmGetPath(repo->outputdir, "/", repo->tempdir, "/", repo->primary.file, NULL);
+    repo->primary.ctime = rpmioCtime(fn);
     fn = _free(fn);
 
     fd = Fopen(repofilepath, "w.gzdio");
-    spew = spewinit;
+assert(fd != NULL);
+    spew = init_repomd;
     nspew = strlen(spew);
-    if (fd)
-	nb = Fwrite(spew, 1, nspew, fd);
+    nb = Fwrite(spew, 1, nspew, fd);
 
-    stctime = repo->st_ctimeother;
-    spewtype = "other";
-    spewdigest = repo->digestother;
-    snprintf(spewtime, sizeof(spewtime), "%u", (unsigned)stctime);
-    spewhref = "repodata/other.xml.gz";
-    spew = rpmExpand("\
-  <data type=\"", spewtype, "\">\n\
-    <checksum type=\"sha\">", spewdigest, "</checksum>\n\
-    <timestamp>", spewtime, "</timestamp>\n\
-    <open-checksum type=\"sha\">", spewdigest, "</open-checksum>\n\
-    <location href=\"", spewhref, "\"/>\n\
-  </data>\n", NULL);
+    spew = repoMDExpand(&repo->other);
     nspew = strlen(spew);
-    if (fd)
-	nb = Fwrite(spew, 1, nspew, fd);
+    nb = Fwrite(spew, 1, nspew, fd);
     spew = _free(spew);
 
-    stctime = repo->st_ctimefilelists;
-    spewtype = "filelists";
-    spewdigest = repo->digestfilelists;
-    snprintf(spewtime, sizeof(spewtime), "%u", (unsigned)stctime);
-    spewhref = "repodata/filelists.xml.gz";
-    spew = rpmExpand("\
-  <data type=\"", spewtype, "\">\n\
-    <checksum type=\"sha\">", spewdigest, "</checksum>\n\
-    <timestamp>", spewtime, "</timestamp>\n\
-    <open-checksum type=\"sha\">", spewdigest, "</open-checksum>\n\
-    <location href=\"", spewhref, "\"/>\n\
-  </data>\n", NULL);
+    spew = repoMDExpand(&repo->filelists);
     nspew = strlen(spew);
-    if (fd)
-	nb = Fwrite(spew, 1, nspew, fd);
+    nb = Fwrite(spew, 1, nspew, fd);
     spew = _free(spew);
 
-    stctime = repo->st_ctimeprimary;
-    spewtype = "primary";
-    spewdigest = repo->digestprimary;
-    snprintf(spewtime, sizeof(spewtime), "%u", (unsigned)stctime);
-    spewhref = "repodata/primary.xml.gz";
-    spew = rpmExpand("\
-  <data type=\"", spewtype, "\">\n\
-    <checksum type=\"sha\">", spewdigest, "</checksum>\n\
-    <timestamp>", spewtime, "</timestamp>\n\
-    <open-checksum type=\"sha\">", spewdigest, "</open-checksum>\n\
-    <location href=\"", spewhref, "\"/>\n\
-  </data>\n", NULL);
+    spew = repoMDExpand(&repo->primary);
     nspew = strlen(spew);
-    if (fd)
-	nb = Fwrite(spew, 1, nspew, fd);
+    nb = Fwrite(spew, 1, nspew, fd);
     spew = _free(spew);
 
-    spew = "</repomd>\n";
+    spew = fini_repomd;
     nspew = strlen(spew);
-    if (fd)
-	nb = Fwrite(spew, 1, nspew, fd);
+    nb = Fwrite(spew, 1, nspew, fd);
 
-    if (fd)
-	(void) Fclose(fd);
+    (void) Fclose(fd);
 
     repopath = _free(repopath);
     repofilepath = _free(repofilepath);
@@ -1087,12 +1004,12 @@ fprintf(stderr, "==> repoDoRepoMetadata(%p)\n", repo);
         repons = reporoot.newNs('http://linux.duke.edu/metadata/repo', None)
         reporoot.setNs(repons)
         repopath = rpmGetPath(repo->outputdir, "/", repo->tempdir, NULL);
-        repofilepath = rpmGetPath(repopath, "/", repo->repomdfile, NULL);
+        repofilepath = rpmGetPath(repopath, "/", repo->repomd.file, NULL);
 
         sumtype = repo->sumtype
-        workfiles = [(repo->otherfile, 'other',),
-                     (repo->filelistsfile, 'filelists'),
-                     (repo->primaryfile, 'primary')]
+        workfiles = [(repo->other.file, 'other',),
+                     (repo->filelists.file, 'filelists'),
+                     (repo->primary.file, 'primary')]
         repoid='garbageid'
 
         if (repo->database) {
