@@ -904,16 +904,50 @@ fprintf(stderr, "==> repoDoPkgMetadata(%p)\n", repo);
     return 0;
 }
 
-static const char * repoMDExpand(rpmrfile rfile)
+static /*@observer@*/ /*@null@*/ const char *
+algo2tagname(uint32_t algo)
 	/*@*/
 {
+    const char * tagname = NULL;
+
+    switch (algo) {
+    case PGPHASHALGO_MD5:	tagname = "md5";	break;
+    /* XXX todo: should be "sha1" */
+    case PGPHASHALGO_SHA1:	tagname = "sha";	break;
+    case PGPHASHALGO_RIPEMD160:	tagname = "rmd160";	break;
+    case PGPHASHALGO_MD2:	tagname = "md2";	break;
+    case PGPHASHALGO_TIGER192:	tagname = "tiger192";	break;
+    case PGPHASHALGO_HAVAL_5_160: tagname = "haval160";	break;
+    case PGPHASHALGO_SHA256:	tagname = "sha256";	break;
+    case PGPHASHALGO_SHA384:	tagname = "sha384";	break;
+    case PGPHASHALGO_SHA512:	tagname = "sha512";	break;
+    case PGPHASHALGO_MD4:	tagname = "md4";	break;
+    case PGPHASHALGO_RIPEMD128:	tagname = "rmd128";	break;
+    case PGPHASHALGO_CRC32:	tagname = "crc32";	break;
+    case PGPHASHALGO_ADLER32:	tagname = "adler32";	break;
+    case PGPHASHALGO_CRC64:	tagname = "crc64";	break;
+    case PGPHASHALGO_JLU32:	tagname = "jlu32";	break;
+    case PGPHASHALGO_SHA224:	tagname = "sha224";	break;
+    case PGPHASHALGO_RIPEMD256:	tagname = "rmd256";	break;
+    case PGPHASHALGO_RIPEMD320:	tagname = "rmd320";	break;
+    case PGPHASHALGO_SALSA10:	tagname = "salsa10";	break;
+    case PGPHASHALGO_SALSA20:	tagname = "salsa20";	break;
+    default:			tagname = NULL;		break;
+    }
+    return tagname;
+}
+
+static const char * repoMDExpand(rpmrepo repo, rpmrfile rfile)
+	/*@*/
+{
+    const char * spewalgo = algo2tagname(repo->algo);
     char spewtime[64];
     snprintf(spewtime, sizeof(spewtime), "%u", (unsigned)rfile->ctime);
     return rpmExpand("\
   <data type=\"", rfile->type, "\">\n\
-    <checksum type=\"sha\">", rfile->digest, "</checksum>\n\
+    <checksum type=\"", spewalgo, "\">", rfile->digest, "</checksum>\n\
     <timestamp>", spewtime, "</timestamp>\n\
-    <open-checksum type=\"sha\">", rfile->digest, "</open-checksum>\n\
+    <open-checksum type=\"",spewalgo,"\">", rfile->digest, "</open-checksum>\n\
     <location href=\"", rfile->href, "\"/>\n\
   </data>\n", NULL);
 }
@@ -952,17 +986,17 @@ assert(fd != NULL);
     nspew = strlen(spew);
     nb = Fwrite(spew, 1, nspew, fd);
 
-    spew = repoMDExpand(&repo->other);
+    spew = repoMDExpand(repo, &repo->other);
     nspew = strlen(spew);
     nb = Fwrite(spew, 1, nspew, fd);
     spew = _free(spew);
 
-    spew = repoMDExpand(&repo->filelists);
+    spew = repoMDExpand(repo, &repo->filelists);
     nspew = strlen(spew);
     nb = Fwrite(spew, 1, nspew, fd);
     spew = _free(spew);
 
-    spew = repoMDExpand(&repo->primary);
+    spew = repoMDExpand(repo, &repo->primary);
     nspew = strlen(spew);
     nb = Fwrite(spew, 1, nspew, fd);
     spew = _free(spew);
@@ -1358,10 +1392,10 @@ static struct poptOption optionsTable[] = {
 #ifdef	NOTYET
  { "version", '\0', 0, NULL, POPT_SHOWVERSION,
 	N_("print the version"), NULL },
+#endif
 
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmioDigestPoptTable, 0,
 	N_("Available digests:"), NULL },
-#endif
 
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmioAllPoptTable, 0,
 	N_("Common options for all rpmio executables:"),
@@ -1400,6 +1434,8 @@ main(int argc, char *argv[])
         repo->ftsoptions |= FTS_PHYSICAL;
         break;
     }
+
+    repo->algo = (rpmioDigestHashAlgo ? rpmioDigestHashAlgo : PGPHASHALGO_SHA1);
 
     xx = argvAppend(&repo->directories, poptGetArgs(optCon));
 
