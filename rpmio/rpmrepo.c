@@ -42,6 +42,11 @@ struct rpmrepo_s {
     miRE excludeMire;
     int nexcludes;
 /*@null@*/
+    ARGV_t include_patterns;
+/*@null@*/
+    miRE includeMire;
+    int nincludes;
+/*@null@*/
     const char * baseurl;
 /*@null@*/
     const char * groupfile;
@@ -476,9 +481,14 @@ fprintf(stderr, "\trepoGetFileList(%p, %p, %s) directory %s\n", repo, roots, ext
 	    if (!chkSuffix(p->fts_name, ext))
 		continue;
 
-	    /* Should this file be excluded? */
+	    /* Should this file be excluded/included? */
+	    /* XXX todo: apply globs to fts_path rather than fts_name? */
+/*@-onlytrans@*/
 	    if (mireApply(repo->excludeMire, repo->nexcludes, p->fts_name, 0, -1) >= 0)
 		continue;
+	    if (mireApply(repo->includeMire, repo->nincludes, p->fts_name, 0, +1) < 0)
+		continue;
+/*@=onlytrans@*/
 
 	    xx = argvAdd(&files, p->fts_path);
 	    break;
@@ -1232,7 +1242,11 @@ static void repoArgCallback(poptContext con,
 assert(arg != NULL);
         xx = _poptSaveString(&repo->exclude_patterns, opt->argInfo, arg);
 	break;
-    case 'i':			/* --pkglist */
+    case 'i':			/* --includes */
+assert(arg != NULL);
+        xx = _poptSaveString(&repo->include_patterns, opt->argInfo, arg);
+	break;
+    case 'l':			/* --pkglist */
 assert(arg != NULL);
         xx = _poptSaveString(&repo->pkglist, opt->argInfo, arg);
 	break;
@@ -1289,6 +1303,13 @@ static struct poptOption optionsTable[] = {
  { "excludes", 'x', POPT_ARG_STRING,		NULL, 'x',
 	N_("glob pattern(s) to exclude"), N_("PATTERN") },
 #endif
+#if defined(POPT_ARG_ARGV)
+ { "includes", 'i', POPT_ARG_ARGV,		&__rpmrepo.include_patterns, 0,
+	N_("glob pattern(s) to include"), N_("PATTERN") },
+#else
+ { "includes", 'i', POPT_ARG_STRING,		NULL, 'i',
+	N_("glob pattern(s) to include"), N_("PATTERN") },
+#endif
  { "basedir", '\0', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmrepo.basedir, 0,
 	N_("top level directory"), N_("DIR") },
  { "baseurl", 'u', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmrepo.baseurl, 0,
@@ -1304,10 +1325,10 @@ static struct poptOption optionsTable[] = {
  { "split", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,		&__rpmrepo.split, 1,
 	N_("generate split media"), NULL },
 #if defined(POPT_ARG_ARGV)
- { "pkglist", 'i', POPT_ARG_ARGV|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmrepo.pkglist, 0,
+ { "pkglist", 'l', POPT_ARG_ARGV|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmrepo.pkglist, 0,
 	N_("use only the files listed in this file from the directory specified"), N_("FILE") },
 #else
- { "pkglist", 'i', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN,	NULL, 'i',
+ { "pkglist", 'l', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN,	NULL, 'l',
 	N_("use only the files listed in this file from the directory specified"), N_("FILE") },
 #endif
  { "outputdir", 'o', POPT_ARG_STRING,		&__rpmrepo.outputdir, 0,
@@ -1462,7 +1483,10 @@ argvPrint("repo->directories", repo->directories, NULL);
     /* Set up mire patterns (no error returns with globs). */
     if (mireLoadPatterns(RPMMIRE_GLOB, 0, repo->exclude_patterns, NULL,
                 &repo->excludeMire, &repo->nexcludes))
-	repo_error(1, _("Error loading glob patterns."));
+	repo_error(1, _("Error loading exclude glob patterns."));
+    if (mireLoadPatterns(RPMMIRE_GLOB, 0, repo->include_patterns, NULL,
+                &repo->includeMire, &repo->nincludes))
+	repo_error(1, _("Error loading include glob patterns."));
 
     /* Load the package manifest(s). */
     if (repo->pkglist) {
@@ -1492,6 +1516,8 @@ exit:
     repo->ts = rpmtsFree(repo->ts);
     repo->excludeMire = mireFreeAll(repo->excludeMire, repo->nexcludes);
     repo->exclude_patterns = argvFree(repo->exclude_patterns);
+    repo->includeMire = mireFreeAll(repo->includeMire, repo->nincludes);
+    repo->include_patterns = argvFree(repo->include_patterns);
 
     optCon = rpmioFini(optCon);
 
