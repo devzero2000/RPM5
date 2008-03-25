@@ -43,7 +43,6 @@ struct rpmrepo_s {
     const char * groupfile;
 /*@null@*/
     const char * sumtype;
-    int noepoch;
     int pretty;
 /*@null@*/
     const char * basedir;
@@ -1299,10 +1298,6 @@ static struct poptOption optionsTable[] = {
 	N_("baseurl to append on all files"), N_("BASEURL") },
  { "groupfile", 'g', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmrepo.groupfile, 0,
 	N_("path to groupfile to include in metadata"), N_("FILE") },
- { "noepoch", 'n', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmrepo.noepoch, 1,
-	N_("don't add zero epochs for non-existent epochs "
-           "(incompatible with yum and smart but required for "
-           "systems with rpm < 4.2.1)"), NULL },
  { "pretty", 'p', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,		&__rpmrepo.pretty, 1,
 	N_("make sure all xml generated is formatted"), NULL },
  { "checkts", 'C', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmrepo.checkts, 1,
