@@ -49,8 +49,6 @@ struct rpmrepo_s {
     const char * basedir;
     int checkts;
     int split;
-    int update;
-    int skipstat;
     int database;
 /*@null@*/
     const char * outputdir;
@@ -531,38 +529,6 @@ fprintf(stderr, "\trepoCheckTimeStamps(%p)\n", repo);
     return rc;
 }
 
-static int repoSetupOldMetadataLookup(rpmrepo repo)
-	/*@modifies repo @*/
-{
-if (_repo_debug)
-fprintf(stderr, "\trepoSetupOldMetadataLookup(%p)\n", repo);
-#ifdef	NOTYET
-    def _setup_old_metadata_lookup(self):
-        """sets up the .oldData object for handling the --update call. Speeds up generating updates for new metadata"""
-    /*
-     * FIXME - this only actually works for single dirs. It will only
-     * function for the first dir passed to --split, not all of them
-     * this needs to be fixed by some magic in readMetadata.py
-     * using opts.pkgdirs as a list, I think.
-     * FIXME - this needs to read the old repomd.xml to figure out where
-     * the files WERE to pass in the right fns.
-     */
-    if (repo->update) {
-            /* build the paths */
-            opts = {
-                'verbose' : repo->verbose,
-                'pkgdir'  : os.path.normpath(repo->package_dir)
-            }
-            if (repo->skipstat)
-                opts['do_stat'] = False
-
-            /* and scan the old repo */
-            self.oldData = readMetadata.MetadataIndex(repo->outputdir, opts)
-    }
-#endif
-    return 0;
-}
-
 static int repoOpenMDFile(rpmrepo repo, rpmrfile rfile)
 	/*@modifies repo @*/
 {
@@ -588,6 +554,9 @@ static int repoOpenMDFile(rpmrepo repo, rpmrfile rfile)
 	nspew += tnb;
 	nb += Fwrite(buf, 1, tnb, rfile->fd);
     }
+    if (nspew != nb)
+	repo_error(1, _("Fwrite failed: expected write %u != %u bytes: %s\n"),
+		(unsigned)nspew, (unsigned)nb, Fstrerror(rfile->fd));
 
 if (_repo_debug)
 fprintf(stderr, "\trepoOpenMDFile(%p, %p) %s nb %u\n", repo, rfile, fn, (unsigned)nb);
@@ -708,70 +677,27 @@ if (_repo_debug)
 argvPrint("repo->pkglist", pkglist, NULL);
 
     for (pkg = pkglist; *pkg != NULL; pkg++) {
-	int recycled;
+	Header h = repoReadPackage(repo, *pkg);
 	int xx;
 
 	current++;
-	recycled = 0;
-
-	/* look to see if we can get the data from the old repodata
-	 * if so write this one out that way
-	 */
-	if (repo->update) {
-#ifdef	NOTYET
-	    /* see if we can pull the nodes from the old repo */
-	    if ((nodes = self.oldData.getNodes(*pkg)) != NULL)
-		recycled = 1;
-#endif
+	if (h == NULL) {
+	    repo_error(0, _("\nError %s: %s\n"), *pkg, strerror(errno));
+	    continue;
 	}
-            
-	/* otherwise do it individually */
-	if (!recycled) {
-	    Header h = repoReadPackage(repo, *pkg);
-
-	    if (h == NULL) {
-		repo_error(0, _("\nError %s: %s\n"), *pkg, strerror(errno));
-		continue;
-	    }
 
 #ifdef	NOTYET
-	    /* XXX todo: rpmGetPath(mydir, "/", filematrix[mydir], NULL); */
-	    reldir = (pkgpath != NULL ? pkgpath : rpmGetPath(repo->basedir, "/", repo->directories[0], NULL));
-	    self.primaryfile.write(po.do_primary_xml_dump(reldir, baseurl=repo->baseurl))
-	    self.flfile.write(po.do_filelists_xml_dump())
-	    self.otherfile.write(po.do_other_xml_dump())
+	/* XXX todo: rpmGetPath(mydir, "/", filematrix[mydir], NULL); */
+	reldir = (pkgpath != NULL ? pkgpath : rpmGetPath(repo->basedir, "/", repo->directories[0], NULL));
+	self.primaryfile.write(po.do_primary_xml_dump(reldir, baseurl=repo->baseurl))
+	self.flfile.write(po.do_filelists_xml_dump())
+	self.otherfile.write(po.do_other_xml_dump())
 #endif
-	    xx = repoWriteMDFile(repo, &repo->primary, h);
-	    xx = repoWriteMDFile(repo, &repo->filelists, h);
-	    xx = repoWriteMDFile(repo, &repo->other, h);
+	xx = repoWriteMDFile(repo, &repo->primary, h);
+	xx = repoWriteMDFile(repo, &repo->filelists, h);
+	xx = repoWriteMDFile(repo, &repo->other, h);
 
-	    h = headerFree(h);
-
-	} else {
-	    if (repo->verbose)
-		repo_error(0, _("Using data from old metadata for %s"), *pkg);
-#ifdef	NOTYET
-		(primarynode, filenode, othernode) = nodes    
-
-                for node, outfile in ((primarynode, repo->primary.fd),
-                                      (filenode,    repo->filelists.fd),
-                                      (othernode,   repo->other.fd))
-		{
-                    if node is None:
-                        break
-                    output = node.serialize('UTF-8', self.conf.pretty)
-                    if output
-                        outfile.write(output)
-                    else {
-                        if (repo->verbose)
-                            repo_error(0, _("empty serialize on write to %s in %s"), outfile, *pkg);
-		    }
-                    outfile.write('\n')
-		}
-
-                self.oldData.freeNodes(*pkg)
-#endif
-	}
+	h = headerFree(h);
 
 	if (!repo->quiet) {
 	    if (repo->verbose)
@@ -833,9 +759,6 @@ fprintf(stderr, "==> repoDoPkgMetadata(%p)\n", repo);
             return
 	}
 
-    if (repo->update)
-	repoSetupOldMetadataLookup(repo)
-
     filematrix = {}
     for mydir in repo->directories {
 	if (mydir[0] == '/')
@@ -876,9 +799,6 @@ fprintf(stderr, "==> repoDoPkgMetadata(%p)\n", repo);
     xx = repoCloseMDFile(repo, &repo->filelists);
     xx = repoCloseMDFile(repo, &repo->other);
 #else
-
-    if (repo->update)
-	repoSetupOldMetadataLookup(repo);
 
     if ((packages = repo->pkglist) == NULL) {
 	xx = argvAdd(&roots, repo->package_dir);
@@ -1395,12 +1315,6 @@ static struct poptOption optionsTable[] = {
 	N_("check timestamps on files vs the metadata to see if we need to update"), NULL },
  { "database", 'd', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmrepo.database, 1,
 	N_("create sqlite database files"), NULL },
- { "update", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmrepo.update, 1,
-	N_("use the existing repodata to speed up creation of new"), NULL },
- { "skip-stat", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmrepo.skipstat, 1,
-	N_("skip the stat() call on a --update, assumes if the file "
-	   "name is the same, then the file is still the same "
-	   "(only use this if you're fairly trusting or gullible)"), NULL },
  { "split", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,		&__rpmrepo.split, 1,
 	N_("generate split media"), NULL },
 #if defined(POPT_ARG_ARGV)
