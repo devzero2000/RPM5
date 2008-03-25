@@ -32,7 +32,7 @@ fi
 
 [ -n "$2" ] && PATCH_PREFIX=$2
 
-find $1 \( -name "*$PATCH_PREFIX" -o -name ".*$PATCH_PREFIX" \) -print | sort
+find $1 \( -name "*$PATCH_PREFIX" -o -name ".*$PATCH_PREFIX" \) -print | sort |
 while read f; do
     U=-u
     [ "`basename $f`" = "ChangeLog$2" ] && U=-U0
