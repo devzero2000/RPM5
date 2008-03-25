@@ -325,12 +325,12 @@ static int repoMkdir(rpmrepo repo, const char * dn)
 }
 
 static const char * repoGetPath(rpmrepo repo, const char * dir,
-		const char * type)
+		const char * type, int compress)
 	/*@*/
 {
     return rpmGetPath(repo->outputdir, "/", dir, "/", type,
 		(repo->markup ? repo->markup : ""),
-		(repo->suffix ? repo->suffix : ""), NULL);
+		(repo->suffix && compress ? repo->suffix : ""), NULL);
 }
 
 static void repoTestSetupDirs(rpmrepo repo)
@@ -369,7 +369,7 @@ fprintf(stderr, "\trepoTestSetupDirs(%p)\n", repo);
     const char ** dirp, ** typep;
     for (dirp = dirs; *dirp != NULL; dirp++) {
 	for (typep = types; *typep != NULL; typep++) {
-	    fn = repoGetPath(repo, *dirp, *typep);
+	    fn = repoGetPath(repo, *dirp, *typep, strcmp(*typep, "repomd"));
 	    if (rpmioExists(fn, st)) {
 		if (Access(fn, W_OK))
 		    repo_error(1, _("Path must be writable: %s"), fn);
@@ -534,7 +534,7 @@ static int repoOpenMDFile(rpmrepo repo, rpmrfile rfile)
 {
     const char * spew = rfile->init;
     size_t nspew = strlen(spew);
-    const char * fn = repoGetPath(repo, repo->tempdir, rfile->type);
+    const char * fn = repoGetPath(repo, repo->tempdir, rfile->type, 1);
     const char * tail;
     size_t nb;
 
@@ -890,20 +890,20 @@ static int repoDoRepoMetadata(rpmrepo repo)
 if (_repo_debug)
 fprintf(stderr, "==> repoDoRepoMetadata(%p)\n", repo);
 
-    fn = repoGetPath(repo, repo->tempdir, repo->other.type);
+    fn = repoGetPath(repo, repo->tempdir, repo->other.type, 1);
     repo->other.ctime = rpmioCtime(fn);
     fn = _free(fn);
 
-    fn = repoGetPath(repo, repo->tempdir, repo->filelists.type);
+    fn = repoGetPath(repo, repo->tempdir, repo->filelists.type, 1);
     repo->filelists.ctime = rpmioCtime(fn);
     fn = _free(fn);
 
-    fn = repoGetPath(repo, repo->tempdir, repo->primary.type);
+    fn = repoGetPath(repo, repo->tempdir, repo->primary.type, 1);
     repo->primary.ctime = rpmioCtime(fn);
     fn = _free(fn);
 
-    fn = repoGetPath(repo, repo->tempdir, rfile->type);
-    fd = Fopen(fn, repo->wmode);
+    fn = repoGetPath(repo, repo->tempdir, rfile->type, 0);
+    fd = Fopen(fn, "w.ufdio"); /* no compression */
 assert(fd != NULL);
     spew = init_repomd;
     nspew = strlen(spew);
@@ -942,7 +942,7 @@ assert(fd != NULL);
         repons = reporoot.newNs("http://linux.duke.edu/metadata/repo", None)
         reporoot.setNs(repons)
         repopath = rpmGetPath(repo->outputdir, "/", repo->tempdir, NULL);
-        fn = repoGetPath(repo, repo->tempdir, repo->repomd.type);
+        fn = repoGetPath(repo, repo->tempdir, repo->repomd.type, 1);
 
         sumtype = repo->sumtype
         repoid = "garbageid";
@@ -960,7 +960,7 @@ assert(fd != NULL);
 	{ "primary", "filelists", "other", NULL };
     const char ** typep;
 	for (typep = types; *typep != NULL; typep++) {
-	    complete_path = repoGetPath(repo, repo->tempdir, *typep);
+	    complete_path = repoGetPath(repo, repo->tempdir, *typep, 1);
 
             zfo = _gzipOpen(complete_path)
             uncsum = misc.checksum(sumtype, zfo)
@@ -1058,17 +1058,17 @@ assert(fd != NULL);
             if (repo->baseurl != NULL)
                 location.newProp('xml:base', repo->baseurl)
             if (repo->uniquemdfilenames) {
-                orig_file = repoGetPath(repo, repo->tempdir, *typep);
+                orig_file = repoGetPath(repo, repo->tempdir, *typep, strcmp(*typep, "repomd"));
                 res_file = rpmExpand(csum, "-", *typep,
 			(repo->markup ? repo->markup : ""),
-			(repo->suffix ? repo->suffix : ""), NULL);
+			(repo->suffix && strcmp(*typep, "repomd") ? repo->suffix : ""), NULL);
                 dest_file = rpmGetPath(repo->outputdir, "/", repo->tempdir, "/", res_file, NULL);
                 xx = Rename(orig_file, dest_file);
 
             } else
                 res_file = rpmExpand(*typep,
 			(repo->markup ? repo->markup : ""),
-			(repo->suffix ? repo->suffix : ""), NULL);
+			(repo->suffix && strcmp(*typep, "repomd") ? repo->suffix : ""), NULL);
 
             location.newProp('href', rpmGetPath(repo->finaldir, "/", res_file, NULL));
 	}
@@ -1089,7 +1089,7 @@ assert(fd != NULL);
             repo_error(0, _("Error saving temp file for %s%s%s: %s"),
 		rfile->type,
 		(repo->markup ? repo->markup : ""),
-		(repo->suffix ? repo->suffix : ""),
+		(repo->suffix && strcmp(*typep, "repomd") ? repo->suffix : ""),
 		fn);
             repo_error(1, _("Could not save temp file: %s"), fn);
 
@@ -1134,7 +1134,7 @@ fprintf(stderr, "==> repoDoFinalMove(%p)\n", repo);
     for (typep = types; *typep != NULL; typep++) {
 	oldfile = rpmGetPath(output_old_dir, "/", *typep,
 		(repo->markup ? repo->markup : ""),
-		(repo->suffix ? repo->suffix : ""), NULL);
+		(repo->suffix && strcmp(*typep, "repomd") ? repo->suffix : ""), NULL);
 	if (rpmioExists(oldfile, st)) {
 	    if (Unlink(oldfile))
 		repo_error(1, _("Could not remove old metadata file: %s: %s"),
