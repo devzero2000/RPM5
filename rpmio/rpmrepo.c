@@ -240,7 +240,7 @@ static struct rpmrepo_s __rpmrepo = {
     .tempdir	= ".repodata",
     .finaldir	= "repodata",
     .olddir	= ".olddata",
-    .markup	= "xml",
+    .markup	= ".xml",
     .algo	= PGPHASHALGO_SHA1,
     .primary	= {
 	.type	= "primary",
@@ -334,8 +334,9 @@ static const char * repoGetPath(rpmrepo repo, const char * dir,
 		const char * type)
 	/*@*/
 {
-    return rpmGetPath(repo->outputdir, "/", dir, "/", type, ".", repo->markup,
-		(repo->suffix ? "." : NULL), repo->suffix, NULL);
+    return rpmGetPath(repo->outputdir, "/", dir, "/", type,
+		(repo->markup ? repo->markup : ""),
+		(repo->suffix ? repo->suffix : ""), NULL);
 }
 
 static void repoTestSetupDirs(rpmrepo repo)
@@ -809,8 +810,9 @@ static int repoCloseMDFile(rpmrepo repo, rpmrfile rfile)
     int xx;
 
     if (!repo->quiet)
-	repo_error(0, _("Saving %s.%s%s%s metadata"), rfile->type, repo->markup,
-		(repo->suffix ? "." : ""), (repo->suffix ? repo->suffix : ""));
+	repo_error(0, _("Saving %s%s%s metadata"), rfile->type,
+		(repo->markup ? repo->markup : ""),
+		(repo->suffix ? repo->suffix : ""));
     nb = Fwrite(spew, 1, nspew, rfile->fd);
     if (repo->algo > 0)
 	fdFiniDigest(rfile->fd, repo->algo, &rfile->digest, NULL, asAscii);
@@ -967,7 +969,7 @@ static const char * repoMDExpand(rpmrepo repo, rpmrfile rfile)
     <checksum type=\"", spewalgo, "\">", rfile->digest, "</checksum>\n\
     <timestamp>", spewtime, "</timestamp>\n\
     <open-checksum type=\"",spewalgo,"\">", rfile->digest, "</open-checksum>\n\
-    <location href=\"", repo->finaldir, "/", rfile->type, ".", repo->markup, (repo->suffix ? "." : ""), (repo->suffix ? repo->suffix : ""), "\"/>\n\
+    <location href=\"", repo->finaldir, "/", rfile->type, (repo->markup ? repo->markup : ""), (repo->suffix ? repo->suffix : ""), "\"/>\n\
   </data>\n", NULL);
 }
 
@@ -1153,12 +1155,16 @@ assert(fd != NULL);
                 location.newProp('xml:base', repo->baseurl)
             if (repo->uniquemdfilenames) {
                 orig_file = repoGetPath(repo, repo->tempdir, *typep);
-                res_file = rpmExpand(csum, "-", *typep, ".", repo->markup, (repo->suffix ? "." : NULL), repo->suffix, NULL);
+                res_file = rpmExpand(csum, "-", *typep,
+			(repo->markup ? repo->markup : ""),
+			(repo->suffix ? repo->suffix : ""), NULL);
                 dest_file = rpmGetPath(repo->outputdir, "/", repo->tempdir, "/", res_file, NULL);
                 xx = Rename(orig_file, dest_file);
 
             } else
-                res_file = rpmExpand(*typep, ".", repo->markup, (repo->suffix ? "." : NULL), repo->suffix, NULL);
+                res_file = rpmExpand(*typep,
+			(repo->markup ? repo->markup : ""),
+			(repo->suffix ? repo->suffix : ""), NULL);
 
             location.newProp('href', rpmGetPath(repo->finaldir, "/", res_file, NULL));
 	}
@@ -1176,9 +1182,11 @@ assert(fd != NULL);
         try:
             repodoc.saveFormatFileEnc(fn, 'UTF-8', 1)
         except:
-            repo_error(0, _("Error saving temp file for %s.%s%s%s: %s"),
-		rfile->type, repo->markup, (repo->suffix ? "." : ""),
-		(repo->suffix ? repo->suffix : ""), fn);
+            repo_error(0, _("Error saving temp file for %s%s%s: %s"),
+		rfile->type,
+		(repo->markup ? repo->markup : ""),
+		(repo->suffix ? repo->suffix : ""),
+		fn);
             repo_error(1, _("Could not save temp file: %s"), fn);
 
         del repodoc
@@ -1215,12 +1223,14 @@ fprintf(stderr, "==> repoDoFinalMove(%p)\n", repo);
 	output_temp_dir = _free(output_temp_dir);
     }
 
-  { static const char * files[] =
+  { static const char * types[] =
 	{ "primary", "filelists", "other", "repomd", "group", NULL };
-    const char ** filep;
+    const char ** typep;
 
-    for (filep = files; *filep != NULL; filep++) {
-	oldfile = rpmGetPath(output_old_dir, "/", *filep, ".", repo->markup, (repo->suffix ? "." : NULL), repo->suffix, NULL);
+    for (typep = types; *typep != NULL; typep++) {
+	oldfile = rpmGetPath(output_old_dir, "/", *typep,
+		(repo->markup ? repo->markup : ""),
+		(repo->suffix ? repo->suffix : ""), NULL);
 	if (rpmioExists(oldfile, st)) {
 	    if (Unlink(oldfile))
 		repo_error(1, _("Could not remove old metadata file: %s: %s"),
@@ -1490,16 +1500,16 @@ main(int argc, char *argv[])
     default:
 	/*@fallthrough@*/
     case 1:
-	repo->suffix = "gz";
+	repo->suffix = ".gz";
 	repo->wmode = "w9.gzdio";
 	break;
     case 2:
-	repo->suffix = "bz2";
+	repo->suffix = ".bz2";
 	repo->wmode = "w9.bzdio";
 	break;
 #ifdef	NOTYET
     case 3:
-	repo->suffix = "lzma";
+	repo->suffix = ".lzma";
 	repo->wmode = "w.lzdio";
 	break;
 #endif
