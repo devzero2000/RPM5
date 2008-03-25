@@ -2317,7 +2317,7 @@ cleanup:
 		cp, s->slink);
     }
 #if defined(HAVE_ST_FLAGS)
-    if (KF_ISSET(keys, FLAGS) && s->st_flags != st->st_flags) {
+    if (KF_ISSET(keys, FLAGS) && s->sb.st_flags != st->st_flags) {
 	char *fflags;
 
 	LABEL;
@@ -2325,17 +2325,17 @@ cleanup:
 	(void) printf(_("%s%s expected \"%s\""), tab, "flags", fflags);
 	fflags = _free(fflags);
 
-	fflags = fflagstostr(st-st_flags);
+	fflags = fflagstostr(st->st_flags);
 	(void) printf(_(" found \"%s\""), fflags);
 	fflags = _free(fflags);
 
 	if (MF_ISSET(UPDATE)) {
-	    if (chflags(fts_accpath, s->st_flags))
+	    if (chflags(fts_accpath, s->sb.st_flags))
 		(void) printf(" not modified: %s)\n", strerror(errno));
 	    else	
 		(void) printf(" modified)\n");
 	    }
-	} else
+	} else {
 	    (void) printf("\n");
 	tab = "\t";
     }
@@ -3330,8 +3330,8 @@ mtreeMiss(rpmfts fts, /*@null@*/ NODE * p, char * tail)
 	    (void) printf(_("%s: permissions not set: %s\n"),
 		    fts->path, strerror(errno));
 #if defined(HAVE_ST_FLAGS)
-	if (KF_ISSET(p->flags, FLAGS) && p->st_flags != 0 &&
-                    chflags(fts->path, p->st_flags))
+	if (KF_ISSET(p->flags, FLAGS) && p->sb.st_flags != 0 &&
+                    chflags(fts->path, p->sb.st_flags))
                         (void) printf(_("%s: file flags not set: %s\n"),
 				fts->path, strerror(errno));
 #endif
