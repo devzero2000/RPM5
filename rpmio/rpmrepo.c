@@ -56,6 +56,7 @@ struct rpmrepo_s {
     int skipsymlinks;
 /*@null@*/
     ARGV_t pkglist;
+
 /*@null@*/
     const char * tempdir;
 /*@null@*/
@@ -66,14 +67,9 @@ struct rpmrepo_s {
     time_t mdtimestamp;
 
 /*@null@*/
-    const char * directory;
-/*@null@*/
     ARGV_t directories;
 
     int uniquemdfilenames;
-
-/*@null@*/
-    const char * checksum;
 
 /*@null@*/
     rpmts ts;
@@ -230,7 +226,7 @@ static const char qfmt_other[] = "\
 
 /*@unchecked@*/
 static struct rpmrepo_s __rpmrepo = {
-    .sumtype = "sha", .checksum = "sha", .pretty = 1,
+    .sumtype = "sha", .pretty = 1,
     .tempdir	= ".repodata",
     .finaldir	= "repodata",
     .olddir	= ".olddata",
@@ -1303,8 +1299,6 @@ static struct poptOption optionsTable[] = {
 	N_("baseurl to append on all files"), N_("BASEURL") },
  { "groupfile", 'g', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmrepo.groupfile, 0,
 	N_("path to groupfile to include in metadata"), N_("FILE") },
- { "checksum", 's', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmrepo.checksum, 0,
-	N_("Deprecated, ignore"), NULL },
  { "noepoch", 'n', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmrepo.noepoch, 1,
 	N_("don't add zero epochs for non-existent epochs "
            "(incompatible with yum and smart but required for "
