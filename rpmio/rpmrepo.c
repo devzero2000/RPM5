@@ -36,6 +36,7 @@ struct rpmrfile_s {
 struct rpmrepo_s {
     int quiet;
     int verbose;
+    int dryrun;
 /*@null@*/
     ARGV_t exclude_patterns;
 /*@null@*/
@@ -316,17 +317,17 @@ static int repoMkdir(rpmrepo repo, const char * dn)
 {
     const char * dnurl = rpmGetPath(repo->outputdir, "/", dn, NULL);
     int ut = urlPath(dnurl, &dn);
-    int xx;
+    int rc = 0;;
 
     /* XXX todo: rpmioMkpath doesn't grok URI's */
     if (ut == URL_IS_UNKNOWN)
-	xx = rpmioMkpath(dn, 0755, (uid_t)-1, (gid_t)-1);
+	rc = rpmioMkpath(dn, 0755, (uid_t)-1, (gid_t)-1);
     else
-	xx = (Mkdir(dnurl, 0755) == 0 || errno == EEXIST ? 0 : -1);
-    if (xx)
-	repo_error(1, _("Cannot create/verify %s: %s"), dnurl, strerror(errno));
+	rc = (Mkdir(dnurl, 0755) == 0 || errno == EEXIST ? 0 : -1);
+    if (rc)
+	repo_error(0, _("Cannot create/verify %s: %s"), dnurl, strerror(errno));
     dnurl = _free(dnurl);
-    return 0;
+    return rc;
 }
 
 static const char * repoGetPath(rpmrepo repo, const char * dir,
@@ -338,34 +339,53 @@ static const char * repoGetPath(rpmrepo repo, const char * dir,
 		(repo->suffix && compress ? repo->suffix : ""), NULL);
 }
 
-static void repoTestSetupDirs(rpmrepo repo)
+static int repoTestSetupDirs(rpmrepo repo)
 	/*@modifies repo @*/
 {
     const char ** directories = repo->directories;
     struct stat sb, *st = &sb;
     const char * dn;
     const char * fn;
+    int rc = 0;
     int xx;
 
 if (_repo_debug)
 fprintf(stderr, "\trepoTestSetupDirs(%p)\n", repo);
 
-    while ((dn = *directories++) != NULL)
-	if (!rpmioExists(dn, st) || !S_ISDIR(st->st_mode))
-	    repo_error(1, _("Directory %s must exist"), dn);
+    while ((dn = *directories++) != NULL) {
+#ifdef	HACKERY
+	if (!rpmioExists(dn, st) || !S_ISDIR(st->st_mode)) {
+	    repo_error(0, _("Directory %s must exist"), dn);
+	    rc = 1;
+	}
+#else
+	if (!rpmioExists(dn, st)) {
+	    repo_error(0, _("Path %s must exist"), dn);
+	    rc = 1;
+	}
+#endif
+    }
 
     /* XXX todo create outputdir if it doesn't exist? */
-    if (!rpmioExists(repo->outputdir, st))
-	repo_error(1, _("Directory %s does not exist."), repo->outputdir);
-    if (Access(repo->outputdir, W_OK))
-	repo_error(1, _("Directory %s must be writable."), repo->outputdir);
+    if (!rpmioExists(repo->outputdir, st)) {
+	repo_error(0, _("Directory %s does not exist."), repo->outputdir);
+	rc = 1;
+    }
+    if (Access(repo->outputdir, W_OK)) {
+	repo_error(0, _("Directory %s must be writable."), repo->outputdir);
+	rc = 1;
+    }
 
-    xx = repoMkdir(repo, repo->tempdir);
-    xx = repoMkdir(repo, repo->finaldir);
+    if ((xx = repoMkdir(repo, repo->tempdir)) != 0)
+	rc = 1;
+    if ((xx = repoMkdir(repo, repo->finaldir)) != 0)
+	rc = 1;
 
     dn = rpmGetPath(repo->outputdir, "/", repo->olddir, NULL);
-    if (rpmioExists(dn, st))
-	repo_error(1, _("Old data directory exists, please remove: %s"), dn);
+    if (rpmioExists(dn, st)) {
+	repo_error(0, _("Old data directory exists, please remove: %s"), dn);
+	rc = 1;
+    }
     dn = _free(dn);
 
   { static const char * dirs[] = { ".repodata", "repodata", NULL };
@@ -376,9 +396,10 @@ fprintf(stderr, "\trepoTestSetupDirs(%p)\n", repo);
 	for (typep = types; *typep != NULL; typep++) {
 	    fn = repoGetPath(repo, *dirp, *typep, strcmp(*typep, "repomd"));
 	    if (rpmioExists(fn, st)) {
-		if (Access(fn, W_OK))
-		    repo_error(1, _("Path must be writable: %s"), fn);
-
+		if (Access(fn, W_OK)) {
+		    repo_error(0, _("Path must be writable: %s"), fn);
+		    rc = 1;
+		} else
 		if (repo->checkts && st->st_ctime > repo->mdtimestamp)
 		    repo->mdtimestamp = st->st_ctime;
 	    }
@@ -387,6 +408,7 @@ fprintf(stderr, "\trepoTestSetupDirs(%p)\n", repo);
     }
   }
 
+#ifdef	HACKERY		/* XXX repo->package_dir needs to go away. */
     if (repo->groupfile != NULL) {
 	if (repo->split || repo->groupfile[0] != '/') {
 	    fn = rpmGetPath(repo->package_dir, "/", repo->groupfile, NULL);
@@ -394,14 +416,20 @@ fprintf(stderr, "\trepoTestSetupDirs(%p)\n", repo);
 	    repo->groupfile = fn;
 	    fn = NULL;
 	}
-	if (!rpmioExists(repo->groupfile, st))
-	    repo_error(1, _("groupfile %s cannot be found."), repo->groupfile);
+	if (!rpmioExists(repo->groupfile, st)) {
+	    repo_error(0, _("groupfile %s cannot be found."), repo->groupfile);
+	    rc = 1;
+	}
     }
+#endif
+    return rc;
 }
 
 static int repoMetaDataGenerator(rpmrepo repo)
 	/*@modifies repo @*/
 {
+    int rc = 0;
+
 if (_repo_debug)
 fprintf(stderr, "==> repoMetaDataGenerator(%p)\n", repo);
 
@@ -411,7 +439,7 @@ fprintf(stderr, "==> repoMetaDataGenerator(%p)\n", repo);
     repo->pkgcount = 0;
     repo->files = NULL;
 
-#ifdef	DYING
+#ifdef	HACKERY
     if (repo->directory == NULL && repo->directories == NULL)
 	repo_error(1, _("No directory given on which to run."));
 
@@ -425,13 +453,15 @@ fprintf(stderr, "==> repoMetaDataGenerator(%p)\n", repo);
 assert(repo->directories != NULL && repo->directories[0] != NULL);
     if (repo->basedir == NULL)
 	repo->basedir = xstrdup(repo->directories[0]);
+#ifdef	HACKERY	/* XXX repo->package_dir needs to go away. */
     repo->package_dir = xstrdup(repo->directories[0]);
+#endif
     if (repo->outputdir == NULL)
 	repo->outputdir = xstrdup(repo->directories[0]);
 
-    repoTestSetupDirs(repo);
+    rc = repoTestSetupDirs(repo);
 	
-    return 0;
+    return rc;
 }
 
 /**
@@ -716,6 +746,7 @@ static int repoCloseMDFile(rpmrepo repo, rpmrfile rfile)
 	/*@modifies repo @*/
 {
     static int asAscii = 1;
+    const char * fn;
     const char * spew = rfile->fini;
     size_t nspew = strlen(spew);
     size_t nb;
@@ -732,13 +763,17 @@ static int repoCloseMDFile(rpmrepo repo, rpmrfile rfile)
 	rfile->digest = xstrdup("");
     xx = Fclose(rfile->fd);
     rfile->fd = NULL;
+
+    fn = repoGetPath(repo, repo->tempdir, rfile->type, 1);
+    rfile->ctime = rpmioCtime(fn);
+    fn = _free(fn);
+
     return 0;
 }
 
 static int repoDoPkgMetadata(rpmrepo repo)
 	/*@*/
 {
-    ARGV_t roots = NULL;
     const char ** packages = NULL;
     int xx;
 
@@ -761,6 +796,7 @@ fprintf(stderr, "==> repoDoPkgMetadata(%p)\n", repo);
             return
 	}
 
+    ARGV_t roots = NULL;
     filematrix = {}
     for mydir in repo->directories {
 	if (mydir[0] == '/')
@@ -803,12 +839,14 @@ fprintf(stderr, "==> repoDoPkgMetadata(%p)\n", repo);
 #else
 
     if ((packages = repo->pkglist) == NULL) {
+#ifdef	HACKERY	/* XXX repo->package_dir needs to go away. */
+	ARGV_t roots = NULL;
 	xx = argvAdd(&roots, repo->package_dir);
 	packages = repoGetFileList(repo, roots, ".rpm");
-#ifdef	NOTYET
-        packages = self.trimRpms(packages)
-#endif
 	roots = argvFree(roots);
+#else
+	packages = repoGetFileList(repo, repo->directories, ".rpm");
+#endif
     }
 
     repo->pkgcount = argvCount(packages);
@@ -891,18 +929,6 @@ static int repoDoRepoMetadata(rpmrepo repo)
 
 if (_repo_debug)
 fprintf(stderr, "==> repoDoRepoMetadata(%p)\n", repo);
-
-    fn = repoGetPath(repo, repo->tempdir, repo->other.type, 1);
-    repo->other.ctime = rpmioCtime(fn);
-    fn = _free(fn);
-
-    fn = repoGetPath(repo, repo->tempdir, repo->filelists.type, 1);
-    repo->filelists.ctime = rpmioCtime(fn);
-    fn = _free(fn);
-
-    fn = repoGetPath(repo, repo->tempdir, repo->primary.type, 1);
-    repo->primary.ctime = rpmioCtime(fn);
-    fn = _free(fn);
 
     fn = repoGetPath(repo, repo->tempdir, rfile->type, 0);
     fd = Fopen(fn, "w.ufdio"); /* no compression */
@@ -1275,10 +1301,8 @@ static struct poptOption repoCompressionPoptTable[] = {
 	N_("use gzip compression"), NULL },
  { "bzip2", '\0', POPT_ARG_VAL,			&compression, 2,
 	N_("use bzip2 compression"), NULL },
-#ifdef	NOTYET
  { "lzma", '\0', POPT_ARG_VAL,			&compression, 3,
 	N_("use lzma compression"), NULL },
-#endif
     POPT_TABLEEND
 };
 
@@ -1296,6 +1320,8 @@ static struct poptOption optionsTable[] = {
 	N_("output nothing except for serious errors"), NULL },
  { "verbose", 'v', 0,				NULL, (int)'v',
 	N_("output more debugging info."), NULL },
+ { "dryrun", '\0', POPT_ARG_VAL,		&__rpmrepo.dryrun, 1,
+	N_("sanity check arguments, don't create metadata"), NULL },
 #if defined(POPT_ARG_ARGV)
  { "excludes", 'x', POPT_ARG_ARGV,		&__rpmrepo.exclude_patterns, 0,
 	N_("glob pattern(s) to exclude"), N_("PATTERN") },
@@ -1371,6 +1397,7 @@ main(int argc, char *argv[])
 {
     rpmrepo repo = _rpmrepo;
     poptContext optCon;
+    int gotfiles = 0;
     int rc = 1;		/* assume failure. */
     int xx;
     int i;
@@ -1408,12 +1435,10 @@ main(int argc, char *argv[])
 	repo->suffix = ".bz2";
 	repo->wmode = "w9.bzdio";
 	break;
-#ifdef	NOTYET
     case 3:
 	repo->suffix = ".lzma";
 	repo->wmode = "w.lzdio";
 	break;
-#endif
     }
 
     xx = argvAppend(&repo->directories, poptGetArgs(optCon));
@@ -1465,8 +1490,10 @@ main(int argc, char *argv[])
 	}
 
 	/* Add a trailing '/' on directories. */
-	lpath = (isdir || (!Stat(rpath, &sb) && S_ISDIR(sb.st_mode))
+	lpath = (isdir || (xx = (!Stat(rpath, &sb) && S_ISDIR(sb.st_mode)))
 		? "/" : NULL);
+	if (!xx)
+	    gotfiles = 1;
 	repo->directories[i] = _free(repo->directories[i]);
 	repo->directories[i] = rpmExpand(rpath, lpath, NULL);
 	rpath = _free(rpath);
@@ -1474,8 +1501,13 @@ main(int argc, char *argv[])
 if (_repo_debug)
 argvPrint("repo->directories", repo->directories, NULL);
 
+#ifdef	HACKERY
     if (repo->directories[1] != NULL && !repo->split)
 	repo_error(1, _("Only one directory allowed per run."));
+#else
+    if (gotfiles && repo->outputdir == NULL)
+	repo_error(1, _("Arguments include files, --outputdir must be specified."));
+#endif
 
     if (repo->split && repo->checkts)
 	repo_error(1, _("--split and --checkts options are mutually exclusive"));
@@ -1498,6 +1530,9 @@ argvPrint("repo->directories", repo->directories, NULL);
     }
 
     rc = repoMetaDataGenerator(repo);
+    if (rc || repo->dryrun)
+	goto exit;
+
     if (!repo->split) {
 	rc = repoCheckTimeStamps(repo);
 	if (rc == 0) {
