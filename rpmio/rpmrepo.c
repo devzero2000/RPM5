@@ -47,24 +47,24 @@ struct rpmrepo_s {
 /*@null@*/
     miRE includeMire;
     int nincludes;
+#ifdef	NOTYET
+/*@null@*/
+    const char * basedir;
 /*@null@*/
     const char * baseurl;
 /*@null@*/
     const char * groupfile;
-/*@null@*/
-    const char * sumtype;
-    int pretty;
-/*@null@*/
-    const char * basedir;
-    int checkts;
+#endif
     int split;
     int database;
+    int pretty;
+    int checkts;
 /*@null@*/
     const char * outputdir;
 
     int skipsymlinks;
 /*@null@*/
-    ARGV_t pkglist;
+    ARGV_t manifests;
 
 /*@null@*/
     const char * tempdir;
@@ -75,20 +75,16 @@ struct rpmrepo_s {
 
     time_t mdtimestamp;
 
-/*@null@*/
-    ARGV_t directories;
-
     int uniquemdfilenames;
 
 /*@null@*/
     rpmts ts;
+/*@null@*/
+    ARGV_t pkglist;
     int pkgcount;
-/*@null@*/
-    ARGV_t files;
-/*@null@*/
-    const char * package_dir;
-    
 
+/*@null@*/
+    ARGV_t directories;
     int ftsoptions;
     uint32_t algo;
     int compression;
@@ -236,7 +232,7 @@ static const char qfmt_other[] = "\
 
 /*@unchecked@*/
 static struct rpmrepo_s __rpmrepo = {
-    .sumtype = "sha", .pretty = 1,
+    .pretty	= 1,
     .tempdir	= ".repodata",
     .finaldir	= "repodata",
     .olddir	= ".olddata",
@@ -292,16 +288,22 @@ static void repoProgress(rpmrepo repo, const char * item,
 		int current, int total)
 	/*@*/
 {
-    fprintf(stdout, "\r%80s\r%s: %d/%d - %s", "", __progname, current, total, item);
+    static size_t ncols = 80 - 1;	/* XXX TIOCGWINSIZ */
+    size_t nb = fprintf(stdout, "\r%s: %d/%d - %s", __progname, current, total, item);
+    if (nb < ncols)
+	fprintf(stderr, "%*s", (ncols - nb), "");
+    ncols = nb;
     fflush(stdout);
 }
 
 static int rpmioExists(const char * fn, struct stat * st)
+	/*@*/
 {
     return (Stat(fn, st) == 0);
 }
 
 static time_t rpmioCtime(const char * fn)
+	/*@*/
 {
     struct stat sb;
     time_t stctime = 0;
@@ -309,6 +311,21 @@ static time_t rpmioCtime(const char * fn)
     if (rpmioExists(fn, &sb))
 	stctime = sb.st_ctime;
     return stctime;
+}
+
+/*@null@*/
+static const char * repoRealpath(const char * lpath)
+	/*@*/
+{
+    /* XXX GLIBC: realpath(path, NULL) return malloc'd */
+    const char *rpath = Realpath(lpath, NULL);
+    if (rpath == NULL) {
+	char fullpath[MAXPATHLEN];
+	rpath = Realpath(lpath, fullpath);
+	if (rpath != NULL)
+	    rpath = xstrdup(rpath);
+    }
+    return rpath;
 }
 
 /*==============================================================*/
@@ -342,7 +359,7 @@ static const char * repoGetPath(rpmrepo repo, const char * dir,
 static int repoTestSetupDirs(rpmrepo repo)
 	/*@modifies repo @*/
 {
-    const char ** directories = repo->directories;
+    const char ** dirs = repo->directories;
     struct stat sb, *st = &sb;
     const char * dn;
     const char * fn;
@@ -352,18 +369,14 @@ static int repoTestSetupDirs(rpmrepo repo)
 if (_repo_debug)
 fprintf(stderr, "\trepoTestSetupDirs(%p)\n", repo);
 
-    while ((dn = *directories++) != NULL) {
-#ifdef	HACKERY
+    /* XXX todo: check repo->pkglist existence? */
+
+    if (dirs != NULL)
+    while ((dn = *dirs++) != NULL) {
 	if (!rpmioExists(dn, st) || !S_ISDIR(st->st_mode)) {
 	    repo_error(0, _("Directory %s must exist"), dn);
 	    rc = 1;
 	}
-#else
-	if (!rpmioExists(dn, st)) {
-	    repo_error(0, _("Path %s must exist"), dn);
-	    rc = 1;
-	}
-#endif
     }
 
     /* XXX todo create outputdir if it doesn't exist? */
@@ -408,7 +421,7 @@ fprintf(stderr, "\trepoTestSetupDirs(%p)\n", repo);
     }
   }
 
-#ifdef	HACKERY		/* XXX repo->package_dir needs to go away. */
+#ifdef	NOTYET		/* XXX repo->package_dir needs to go away. */
     if (repo->groupfile != NULL) {
 	if (repo->split || repo->groupfile[0] != '/') {
 	    fn = rpmGetPath(repo->package_dir, "/", repo->groupfile, NULL);
@@ -436,25 +449,11 @@ fprintf(stderr, "==> repoMetaDataGenerator(%p)\n", repo);
     repo->ts = rpmtsCreate();
     /* XXX todo wire up usual rpm CLI options. hotwire --nosignature for now */
     (void) rpmtsSetVSFlags(repo->ts, _RPMVSF_NOSIGNATURES);
-    repo->pkgcount = 0;
-    repo->files = NULL;
-
-#ifdef	HACKERY
-    if (repo->directory == NULL && repo->directories == NULL)
-	repo_error(1, _("No directory given on which to run."));
-
-    if (repo->directory == NULL)
-	repo->directory = xstrdup(repo->directories[0]);
-    else if (repo->directories == NULL)
-	xx = argvAdd(&repo->directories, repo->directory);
-#endif
 
     /* XXX repoParseDirectory(repo); */
-assert(repo->directories != NULL && repo->directories[0] != NULL);
+#ifdef	NOTYET
     if (repo->basedir == NULL)
 	repo->basedir = xstrdup(repo->directories[0]);
-#ifdef	HACKERY	/* XXX repo->package_dir needs to go away. */
-    repo->package_dir = xstrdup(repo->directories[0]);
 #endif
     if (repo->outputdir == NULL)
 	repo->outputdir = xstrdup(repo->directories[0]);
@@ -540,21 +539,16 @@ if (_repo_debug)
 fprintf(stderr, "\trepoCheckTimeStamps(%p)\n", repo);
 
     if (repo->checkts) {
-	ARGV_t roots = NULL;
-	const char ** files;
-	const char ** f;
+	const char ** pkg;
 
-	files = repoGetFileList(repo, repo->directories, ".rpm");
-	if (files != NULL)
-	for (f = files; *f; f++) {
+	if (repo->pkglist != NULL)
+	for (pkg = repo->pkglist; *pkg; pkg++) {
 	    struct stat sb, *st = &sb;
-	    if (!rpmioExists(*f, st))
-		repo_error(0, _("cannot get to file: %s"), *f);
+	    if (!rpmioExists(*pkg, st))
+		repo_error(0, _("cannot get to file: %s"), *pkg);
 	    else if (st->st_ctime > repo->mdtimestamp)
 		rc = 1;
 	}
-	files = argvFree(files);
-	roots = argvFree(roots);
     } else
 	rc = 1;
 
@@ -697,24 +691,18 @@ static unsigned repoWriteMetadataDocs(rpmrepo repo,
 		/*@null@*/ const char ** pkglist, unsigned current)
 	/*@modifies repo @*/
 {
-    const char ** pkg;
+    const char * pkg;
 
 if (_repo_debug)
 fprintf(stderr, "\trepoWriteMetadataDocs(%p, %p, %u)\n", repo, pkglist, current);
 
-    if (pkglist == NULL)
-	pkglist = repo->pkglist;
-
-if (_repo_debug)
-argvPrint("repo->pkglist", pkglist, NULL);
-
-    for (pkg = pkglist; *pkg != NULL; pkg++) {
-	Header h = repoReadPackage(repo, *pkg);
+    while ((pkg = *pkglist++) != NULL) {
+	Header h = repoReadPackage(repo, pkg);
 	int xx;
 
 	current++;
 	if (h == NULL) {
-	    repo_error(0, _("\nError %s: %s\n"), *pkg, strerror(errno));
+	    repo_error(0, _("\nError %s: %s\n"), pkg, strerror(errno));
 	    continue;
 	}
 
@@ -733,9 +721,9 @@ argvPrint("repo->pkglist", pkglist, NULL);
 
 	if (!repo->quiet) {
 	    if (repo->verbose)
-		repo_error(0, "%d/%d - %s", current, repo->pkgcount, *pkg);
+		repo_error(0, "%d/%d - %s", current, repo->pkgcount, pkg);
 	    else
-		repoProgress(repo, *pkg, current, repo->pkgcount);
+		repoProgress(repo, pkg, current, repo->pkgcount);
 	}
     }
 
@@ -774,7 +762,6 @@ static int repoCloseMDFile(rpmrepo repo, rpmrfile rfile)
 static int repoDoPkgMetadata(rpmrepo repo)
 	/*@*/
 {
-    const char ** packages = NULL;
     int xx;
 
 if (_repo_debug)
@@ -838,24 +825,11 @@ fprintf(stderr, "==> repoDoPkgMetadata(%p)\n", repo);
     xx = repoCloseMDFile(repo, &repo->other);
 #else
 
-    if ((packages = repo->pkglist) == NULL) {
-#ifdef	HACKERY	/* XXX repo->package_dir needs to go away. */
-	ARGV_t roots = NULL;
-	xx = argvAdd(&roots, repo->package_dir);
-	packages = repoGetFileList(repo, roots, ".rpm");
-	roots = argvFree(roots);
-#else
-	packages = repoGetFileList(repo, repo->directories, ".rpm");
-#endif
-    }
-
-    repo->pkgcount = argvCount(packages);
-
     xx = repoOpenMDFile(repo, &repo->primary);
     xx = repoOpenMDFile(repo, &repo->filelists);
     xx = repoOpenMDFile(repo, &repo->other);
 
-    repoWriteMetadataDocs(repo, packages, 0);
+    repoWriteMetadataDocs(repo, repo->pkglist, 0);
 
     if (!repo->quiet)
 	fprintf(stderr, "\n");
@@ -972,7 +946,6 @@ assert(fd != NULL);
         repopath = rpmGetPath(repo->outputdir, "/", repo->tempdir, NULL);
         fn = repoGetPath(repo, repo->tempdir, repo->repomd.type, 1);
 
-        sumtype = repo->sumtype
         repoid = "garbageid";
 
         if (repo->database) {
@@ -991,9 +964,9 @@ assert(fd != NULL);
 	    complete_path = repoGetPath(repo, repo->tempdir, *typep, 1);
 
             zfo = _gzipOpen(complete_path)
-            uncsum = misc.checksum(sumtype, zfo)
+            uncsum = misc.checksum(algo2tagname(repo->algo), zfo)
             zfo.close()
-            csum = misc.checksum(sumtype, complete_path)
+            csum = misc.checksum(algo2tagname(repo->algo), complete_path)
 	    (void) rpmioExists(complete_path, st)
             timestamp = os.stat(complete_path)[8]
 
@@ -1027,12 +1000,12 @@ assert(fd != NULL);
 		    result_compressed =
 			rpmGetPath(repo->outputdir, "/", repo->tempdir, "/",
 				*typep, ".sqlite.bz2", NULL);
-		    db_csums[*typep] = misc.checksum(sumtype, resultpath)
+		    db_csums[*typep] = misc.checksum(algo2tagname(repo->algo), resultpath)
 
 		    /* compress the files */
 		    bzipFile(resultpath, result_compressed)
 		    /* csum the compressed file */
-		    db_compressed_sums[*typep] = misc.checksum(sumtype, result_compressed)
+		    db_compressed_sums[*typep] = misc.checksum(algo2tagname(repo->algo), result_compressed)
 		    /* remove the uncompressed file */
 		    xx = Unlink(resultpath);
 		    resultpath = _free(resultpath);
@@ -1062,10 +1035,10 @@ assert(fd != NULL);
 
                 location.newProp('href', rpmGetPath(repo->finaldir, "/", *typep, ".sqlite.bz2", NULL));
                 checksum = data.newChild(None, 'checksum', db_compressed_sums[*typep])
-                checksum.newProp('type', sumtype)
+                checksum.newProp('type', algo2tagname(repo->algo))
                 db_tstamp = data.newChild(None, 'timestamp', str(db_timestamp))
                 unchecksum = data.newChild(None, 'open-checksum', db_csums[*typep])
-                unchecksum.newProp('type', sumtype)
+                unchecksum.newProp('type', algo2tagname(repo->algo))
                 database_version = data.newChild(None, 'database_version', dbversion)
                 if (repo->verbose) {
 		   time_t now = time(NULL);
@@ -1078,10 +1051,10 @@ assert(fd != NULL);
             data.newProp('type', *typep)
 
             checksum = data.newChild(None, 'checksum', csum)
-            checksum.newProp('type', sumtype)
+            checksum.newProp('type', algo2tagname(repo->algo))
             timestamp = data.newChild(None, 'timestamp', str(timestamp))
             unchecksum = data.newChild(None, 'open-checksum', uncsum)
-            unchecksum.newProp('type', sumtype)
+            unchecksum.newProp('type', algo2tagname(repo->algo))
             location = data.newChild(None, 'location', None)
             if (repo->baseurl != NULL)
                 location.newProp('xml:base', repo->baseurl)
@@ -1274,7 +1247,7 @@ assert(arg != NULL);
 	break;
     case 'l':			/* --pkglist */
 assert(arg != NULL);
-        xx = _poptSaveString(&repo->pkglist, opt->argInfo, arg);
+        xx = _poptSaveString(&repo->manifests, opt->argInfo, arg);
 	break;
 #endif
 
@@ -1324,24 +1297,26 @@ static struct poptOption optionsTable[] = {
 	N_("sanity check arguments, don't create metadata"), NULL },
 #if defined(POPT_ARG_ARGV)
  { "excludes", 'x', POPT_ARG_ARGV,		&__rpmrepo.exclude_patterns, 0,
-	N_("glob pattern(s) to exclude"), N_("PATTERN") },
+	N_("glob PATTERN(s) to exclude"), N_("PATTERN") },
 #else
  { "excludes", 'x', POPT_ARG_STRING,		NULL, 'x',
-	N_("glob pattern(s) to exclude"), N_("PATTERN") },
+	N_("glob PATTERN(s) to exclude"), N_("PATTERN") },
 #endif
 #if defined(POPT_ARG_ARGV)
  { "includes", 'i', POPT_ARG_ARGV,		&__rpmrepo.include_patterns, 0,
-	N_("glob pattern(s) to include"), N_("PATTERN") },
+	N_("glob PATTERN(s) to include"), N_("PATTERN") },
 #else
  { "includes", 'i', POPT_ARG_STRING,		NULL, 'i',
-	N_("glob pattern(s) to include"), N_("PATTERN") },
+	N_("glob PATTERN(s) to include"), N_("PATTERN") },
 #endif
+#ifdef	NOTYET
  { "basedir", '\0', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmrepo.basedir, 0,
 	N_("top level directory"), N_("DIR") },
  { "baseurl", 'u', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmrepo.baseurl, 0,
 	N_("baseurl to append on all files"), N_("BASEURL") },
  { "groupfile", 'g', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmrepo.groupfile, 0,
 	N_("path to groupfile to include in metadata"), N_("FILE") },
+#endif
  { "pretty", 'p', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,		&__rpmrepo.pretty, 1,
 	N_("make sure all xml generated is formatted"), NULL },
  { "checkts", 'C', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmrepo.checkts, 1,
@@ -1351,7 +1326,7 @@ static struct poptOption optionsTable[] = {
  { "split", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,		&__rpmrepo.split, 1,
 	N_("generate split media"), NULL },
 #if defined(POPT_ARG_ARGV)
- { "pkglist", 'l', POPT_ARG_ARGV|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmrepo.pkglist, 0,
+ { "pkglist", 'l', POPT_ARG_ARGV|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmrepo.manifests, 0,
 	N_("use only the files listed in this file from the directory specified"), N_("FILE") },
 #else
  { "pkglist", 'l', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN,	NULL, 'l',
@@ -1397,7 +1372,9 @@ main(int argc, char *argv[])
 {
     rpmrepo repo = _rpmrepo;
     poptContext optCon;
-    int gotfiles = 0;
+    const char ** av = NULL;
+    int ndirs = 0;
+    int nfiles = 0;
     int rc = 1;		/* assume failure. */
     int xx;
     int i;
@@ -1441,35 +1418,29 @@ main(int argc, char *argv[])
 	break;
     }
 
-    xx = argvAppend(&repo->directories, poptGetArgs(optCon));
-
-    if (repo->directories == NULL || repo->directories[0] == NULL) {
-	repo_error(0, _("Must specify a directory to index."));
+    av = poptGetArgs(optCon);
+    if (av == NULL || av[0] == NULL) {
+	repo_error(0, _("Must specify path(s) to index."));
 	poptPrintUsage(optCon, stderr, 0);
 	goto exit;
     }
 
-    if (repo->directories != NULL)
-    for (i = 0; repo->directories[i] != NULL; i++) {
+    if (av != NULL)
+    for (i = 0; av[i] != NULL; i++) {
 	char fullpath[MAXPATHLEN];
 	struct stat sb;
 	const char * rpath;
 	const char * lpath = NULL;
-	int ut = urlPath(repo->directories[i], &lpath);
-	size_t nb = (size_t)(lpath - repo->directories[i]);
+	int ut = urlPath(av[i], &lpath);
+	size_t nb = (size_t)(lpath - av[i]);
 	int isdir = (lpath[strlen(lpath)-1] == '/');
 	
 	/* Convert to absolute/clean/malloc'd path. */
 	if (lpath[0] != '/') {
-	    /* XXX GLIBC: realpath(path, NULL) return malloc'd */
-	    rpath = Realpath(lpath, NULL);
-	    if (rpath == NULL)
-		rpath = Realpath(lpath, fullpath);
-	    if (rpath == NULL)
+	    if ((rpath = repoRealpath(lpath)) == NULL)
 		repo_error(1, _("Realpath(%s): %s"), lpath, strerror(errno));
 	    lpath = rpmGetPath(rpath, NULL);
-	    if (rpath != fullpath)	/* XXX GLIBC extension malloc's */
-		rpath = _free(rpath);
+	    rpath = _free(rpath);
 	} else
 	    lpath = rpmGetPath(lpath, NULL);
 
@@ -1482,7 +1453,8 @@ main(int argc, char *argv[])
 	    lpath = NULL;
 	    /*@switchbreak@*/ break;
 	default:
-	    strncpy(fullpath, repo->directories[i], nb);
+assert(nb < sizeof(fullpath));
+	    strncpy(fullpath, av[i], nb);
 	    fullpath[nb] = '\0';
 	    rpath = rpmGenPath(fullpath, lpath, NULL);
 	    lpath = _free(lpath);
@@ -1490,29 +1462,49 @@ main(int argc, char *argv[])
 	}
 
 	/* Add a trailing '/' on directories. */
-	lpath = (isdir || (xx = (!Stat(rpath, &sb) && S_ISDIR(sb.st_mode)))
+	lpath = (isdir || (!Stat(rpath, &sb) && S_ISDIR(sb.st_mode))
 		? "/" : NULL);
-	if (!xx)
-	    gotfiles = 1;
-	repo->directories[i] = _free(repo->directories[i]);
-	repo->directories[i] = rpmExpand(rpath, lpath, NULL);
+	if (lpath != NULL) {
+	    lpath = rpmExpand(rpath, lpath, NULL);
+	    xx = argvAdd(&repo->directories, lpath);
+	    lpath = _free(lpath);
+	    ndirs++;
+	} else {
+	    xx = argvAdd(&repo->pkglist, rpath);
+	    nfiles++;
+	}
 	rpath = _free(rpath);
     }
-if (_repo_debug)
+
+if (_repo_debug || repo->dryrun)
 argvPrint("repo->directories", repo->directories, NULL);
 
-#ifdef	HACKERY
-    if (repo->directories[1] != NULL && !repo->split)
-	repo_error(1, _("Only one directory allowed per run."));
-#else
-    if (gotfiles && repo->outputdir == NULL)
-	repo_error(1, _("Arguments include files, --outputdir must be specified."));
-#endif
+    /* XXX todo: convert relative -> absolute for repo->outputdir */
+    if (repo->outputdir == NULL) {
+	repo->outputdir = repoRealpath(".");
+	if (repo->outputdir == NULL)
+	    repo_error(1, _("Realpath(%s): %s"), ".", strerror(errno));
+    }
 
     if (repo->split && repo->checkts)
 	repo_error(1, _("--split and --checkts options are mutually exclusive"));
 
-    /* Set up mire patterns (no error returns with globs). */
+#ifdef	NOTYET
+    /* Add manifest(s) contents to rpm list. */
+    if (repo->manifests != NULL) {
+	const char ** av = repo->manifests;
+	const char * fn;
+	/* Load the rpm list from manifest(s). */
+	while ((fn = *av++) != NULL) {
+	    /* XXX todo: parse paths from files. */
+	    /* XXX todo: convert to absolute paths. */
+	    /* XXX todo: check for existence. */
+	    xx = argvAdd(&repo->pkglist, fn);
+	}
+    }
+#endif
+
+    /* Set up mire patterns (no error returns with globs, easy pie). */
     if (mireLoadPatterns(RPMMIRE_GLOB, 0, repo->exclude_patterns, NULL,
                 &repo->excludeMire, &repo->nexcludes))
 	repo_error(1, _("Error loading exclude glob patterns."));
@@ -1520,15 +1512,20 @@ argvPrint("repo->directories", repo->directories, NULL);
                 &repo->includeMire, &repo->nincludes))
 	repo_error(1, _("Error loading include glob patterns."));
 
-    /* Load the package manifest(s). */
-    if (repo->pkglist) {
-	const char ** av = repo->pkglist;
-	const char * fn;
-	while ((fn = *av++) != NULL) {
-	    /* Append packages to todo list. */
-	}
+    /* Load the rpm list from a multi-rooted directory traversal. */
+    if (repo->directories != NULL) {
+	ARGV_t pkglist = repoGetFileList(repo, repo->directories, ".rpm");
+	xx = argvAppend(&repo->pkglist, pkglist);
+	pkglist = argvFree(pkglist);
     }
 
+    /* XXX todo: check for duplicates in repo->pkglist? */
+    xx = argvSort(repo->pkglist, NULL);
+
+if (_repo_debug || repo->dryrun)
+argvPrint("repo->pkglist", repo->pkglist, NULL);
+
+    repo->pkgcount = argvCount(repo->pkglist);
     rc = repoMetaDataGenerator(repo);
     if (rc || repo->dryrun)
 	goto exit;
@@ -1541,14 +1538,18 @@ argvPrint("repo->directories", repo->directories, NULL);
 	}
     }
 
-    rc = repoDoPkgMetadata(repo);
-    rc = repoDoRepoMetadata(repo);
-    rc = repoDoFinalMove(repo);
-
-    rc = 0;
+    if ((rc = repoDoPkgMetadata(repo)) != 0)
+	goto exit;
+    if ((rc = repoDoRepoMetadata(repo)) != 0)
+	goto exit;
+    if ((rc = repoDoFinalMove(repo)) != 0)
+	goto exit;
 
 exit:
     repo->ts = rpmtsFree(repo->ts);
+    repo->pkglist = argvFree(repo->pkglist);
+    repo->directories = argvFree(repo->directories);
+    repo->manifests = argvFree(repo->manifests);
     repo->excludeMire = mireFreeAll(repo->excludeMire, repo->nexcludes);
     repo->exclude_patterns = argvFree(repo->exclude_patterns);
     repo->includeMire = mireFreeAll(repo->includeMire, repo->nincludes);
