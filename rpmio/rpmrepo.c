@@ -330,6 +330,14 @@ static int repoMkdir(rpmrepo repo, const char * dn)
     return 0;
 }
 
+static const char * repoGetPath(rpmrepo repo, const char * dir,
+		const char * type)
+	/*@*/
+{
+    return rpmGetPath(repo->outputdir, "/", dir, "/", type, ".", repo->markup,
+		(repo->suffix ? "." : NULL), repo->suffix, NULL);
+}
+
 static void repoTestSetupDirs(rpmrepo repo)
 	/*@modifies repo @*/
 {
@@ -358,12 +366,12 @@ fprintf(stderr, "\trepoTestSetupDirs(%p)\n", repo);
     dn = _free(dn);
 
   { static const char * dirs[] = { ".repodata", "repodata", NULL };
-    static const char * files[] =
+    static const char * types[] =
 	{ "primary", "filelists", "other", "repomd", NULL };
-    const char ** dirp, ** filep;
+    const char ** dirp, ** typep;
     for (dirp = dirs; *dirp != NULL; dirp++) {
-	for (filep = files; *filep != NULL; filep++) {
-	    fn = rpmGetPath(repo->outputdir, "/", *dirp, "/", *filep, ".", repo->markup, (repo->suffix ? "." : NULL), repo->suffix, NULL);
+	for (typep = types; *typep != NULL; typep++) {
+	    fn = repoGetPath(repo, *dirp, *typep);
 	    if (rpmioExists(fn, st)) {
 		if (Access(fn, W_OK))
 		    repo_error(1, _("Path must be writable: %s"), fn);
@@ -573,9 +581,7 @@ static int repoOpenMDFile(rpmrepo repo, rpmrfile rfile)
 {
     const char * spew = rfile->init;
     size_t nspew = strlen(spew);
-    const char * fn =
-        rpmGetPath(repo->outputdir, "/", repo->tempdir, "/", rfile->type, ".", repo->markup, (repo->suffix ? "." : NULL), repo->suffix, NULL);
-    /* XXX todo: fill in repo->pkgcount */
+    const char * fn = repoGetPath(repo, repo->tempdir, rfile->type);
     size_t nb;
 
     rfile->fd = Fopen(fn, repo->wmode);
@@ -954,32 +960,30 @@ static const char * repoMDExpand(rpmrepo repo, rpmrfile rfile)
 static int repoDoRepoMetadata(rpmrepo repo)
 	/*@*/
 {
+    rpmrfile rfile = &repo->repomd;
     const char * fn;
     const char * spew;
     size_t nspew;
     size_t nb;
-    const char * repopath =
-		rpmGetPath(repo->outputdir, "/", repo->tempdir, NULL);
-    const char * repofilepath =
-		rpmGetPath(repopath, "/", repo->repomd.type, ".", repo->markup, (repo->suffix ? "." : NULL), repo->suffix, NULL);
     FD_t fd;
 
 if (_repo_debug)
 fprintf(stderr, "==> repoDoRepoMetadata(%p)\n", repo);
 
-    fn = rpmGetPath(repo->outputdir, "/", repo->tempdir, "/", repo->other.type, ".", repo->markup, (repo->suffix ? "." : NULL), repo->suffix, NULL);
+    fn = repoGetPath(repo, repo->tempdir, repo->other.type);
     repo->other.ctime = rpmioCtime(fn);
     fn = _free(fn);
 
-    fn = rpmGetPath(repo->outputdir, "/", repo->tempdir, "/", repo->filelists.type, ".", repo->markup, (repo->suffix ? "." : NULL), repo->suffix, NULL);
+    fn = repoGetPath(repo, repo->tempdir, repo->filelists.type);
     repo->filelists.ctime = rpmioCtime(fn);
     fn = _free(fn);
 
-    fn = rpmGetPath(repo->outputdir, "/", repo->tempdir, "/", repo->primary.type, ".", repo->markup, (repo->suffix ? "." : NULL), repo->suffix, NULL);
+    fn = repoGetPath(repo, repo->tempdir, repo->primary.type);
     repo->primary.ctime = rpmioCtime(fn);
     fn = _free(fn);
 
-    fd = Fopen(repofilepath, repo->wmode);
+    fn = repoGetPath(repo, repo->tempdir, rfile->type);
+    fd = Fopen(fn, repo->wmode);
 assert(fd != NULL);
     spew = init_repomd;
     nspew = strlen(spew);
@@ -1006,23 +1010,21 @@ assert(fd != NULL);
 
     (void) Fclose(fd);
 
-    repopath = _free(repopath);
-    repofilepath = _free(repofilepath);
+    fn = _free(fn);
 
 #ifdef	NOTYET
     def doRepoMetadata(self):
         """wrapper to generate the repomd.xml file that stores the info on the other files"""
+    const char * repopath =
+		rpmGetPath(repo->outputdir, "/", repo->tempdir, NULL);
         repodoc = libxml2.newDoc("1.0")
         reporoot = repodoc.newChild(None, "repomd", None)
-        repons = reporoot.newNs('http://linux.duke.edu/metadata/repo', None)
+        repons = reporoot.newNs("http://linux.duke.edu/metadata/repo", None)
         reporoot.setNs(repons)
         repopath = rpmGetPath(repo->outputdir, "/", repo->tempdir, NULL);
-        repofilepath = rpmGetPath(repopath, "/", repo->repomd.type, ".", repo->markup, (repo->suffix ? "." : NULL), repo->suffix, NULL);
+        fn = repoGetPath(repo, repo->tempdir, repo->repomd.type);
 
         sumtype = repo->sumtype
-        workfiles = [(repo->other.file, 'other',),
-                     (repo->filelists.file, 'filelists'),
-                     (repo->primary.file, 'primary')]
         repoid = "garbageid";
 
         if (repo->database) {
@@ -1030,12 +1032,15 @@ assert(fd != NULL);
             try:
                 dbversion = str(sqlitecachec.DBVERSION)
             except AttributeError:
-                dbversion = '9'
+                dbversion = "9"
             rp = sqlitecachec.RepodataParserSqlite(repopath, repoid, None)
 	}
 
-        for (file, ftype) in workfiles {
-            complete_path = rpmGetPath(repopath, "/", file, NULL);
+  { static const char * types[] =
+	{ "primary", "filelists", "other", NULL };
+    const char ** typep;
+	for (typep = types; *typep != NULL; typep++) {
+	    complete_path = repoGetPath(repo, repo->tempdir, *typep);
 
             zfo = _gzipOpen(complete_path)
             uncsum = misc.checksum(sumtype, zfo)
@@ -1051,40 +1056,47 @@ assert(fd != NULL);
                 if (repo->verbose) {
 		    time_t now = time(NULL);
                     repo_error(0, _("Starting %s db creation: %s"),
-			ftype, ctime(&now));
+			*typep, ctime(&now));
 		}
 
-                if ftype == 'primary':
+                if (!strcmp(*typep, "primary"))
                     rp.getPrimary(complete_path, csum)
-                elif ftype == 'filelists':
+                else if (!strcmp(*typep, "filelists"));
                     rp.getFilelists(complete_path, csum)
-                elif ftype == 'other':
+                else if (!strcmp(*typep, "other"))
                     rp.getOtherdata(complete_path, csum)
 
-                tmp_result_name = '%s.xml.gz.sqlite' % ftype
-                tmp_result_path = rpmGetPath(repopath, "/", tmp_result_name, NULL);
-                good_name = '%s.sqlite' % ftype
-                resultpath = rpmGetPath(repopath, "/", good_name, NULL);
+		{   const char *  tmp_result_path =
+			rpmGetPath(repo->outputdir, "/", repo->tempdir, "/",
+				*typep, ".xml.gz.sqlite", NULL);
+		    const char * resultpath =
+			rpmGetPath(repo->outputdir, "/", repo->tempdir, "/",
+				*typep, ".sqlite", NULL);
 
-                /* rename from silly name to not silly name */
-                xx = Rename(tmp_result_path, resultpath);
-                compressed_name = '%s.bz2' % good_name
-                result_compressed = rpmGetPath(repopath, "/", compressed_name, NULL);
-                db_csums[ftype] = misc.checksum(sumtype, resultpath)
+		    /* rename from silly name to not silly name */
+		    xx = Rename(tmp_result_path, resultpath);
+		    tmp_result_path = _free(tmp_result_path);
+		    result_compressed =
+			rpmGetPath(repo->outputdir, "/", repo->tempdir, "/",
+				*typep, ".sqlite.bz2", NULL);
+		    db_csums[*typep] = misc.checksum(sumtype, resultpath)
 
-                /* compress the files */
-                bzipFile(resultpath, result_compressed)
-                /* csum the compressed file */
-                db_compressed_sums[ftype] = misc.checksum(sumtype, result_compressed)
-                /* remove the uncompressed file */
-                xx = Unlink(resultpath);
+		    /* compress the files */
+		    bzipFile(resultpath, result_compressed)
+		    /* csum the compressed file */
+		    db_compressed_sums[*typep] = misc.checksum(sumtype, result_compressed)
+		    /* remove the uncompressed file */
+		    xx = Unlink(resultpath);
+		    resultpath = _free(resultpath);
+		}
 
                 if (repo->uniquemdfilenames) {
-                    csum_compressed_name = '%s-%s.bz2' % (db_compressed_sums[ftype], good_name)
-                    csum_result_compressed =  rpmGetPath(repopath, "/", csum_compressed_name, NULL);
+                    const char * csum_result_compressed =
+			rpmGetPath(repo->outputdir, "/", repo->tempdir, "/",
+				db_compressed_sums[*typep], "-", *typep, ".sqlite.bz2", NULL);
                     xx = Rename(result_compressed, csum_result_compressed);
-                    result_compressed = csum_result_compressed
-                    compressed_name = csum_compressed_name
+		    result_compressed = _free(result_compressed);
+		    result_compressed = csum_result_compressed;
 		}
 
                 /* timestamp the compressed file */
@@ -1092,7 +1104,7 @@ assert(fd != NULL);
                 db_timestamp = os.stat(result_compressed)[8]
 
                 /* add this data as a section to the repomdxml */
-                db_data_type = '%s_db' % ftype
+                db_data_type = rpmExpand(*typep, "_db", NULL);
                 data = reporoot.newChild(None, 'data', None)
                 data.newProp('type', db_data_type)
                 location = data.newChild(None, 'location', None)
@@ -1100,22 +1112,22 @@ assert(fd != NULL);
                     location.newProp('xml:base', repo->baseurl)
 		}
 
-                location.newProp('href', rpmGetPath(repo->finaldir, "/", compressed_name, NULL));
-                checksum = data.newChild(None, 'checksum', db_compressed_sums[ftype])
+                location.newProp('href', rpmGetPath(repo->finaldir, "/", *typep, ".sqlite.bz2", NULL));
+                checksum = data.newChild(None, 'checksum', db_compressed_sums[*typep])
                 checksum.newProp('type', sumtype)
                 db_tstamp = data.newChild(None, 'timestamp', str(db_timestamp))
-                unchecksum = data.newChild(None, 'open-checksum', db_csums[ftype])
+                unchecksum = data.newChild(None, 'open-checksum', db_csums[*typep])
                 unchecksum.newProp('type', sumtype)
                 database_version = data.newChild(None, 'database_version', dbversion)
                 if (repo->verbose) {
 		   time_t now = time(NULL);
                    repo_error(0, _("Ending %s db creation: %s"),
-			ftype, ctime(&now));
+			*typep, ctime(&now));
 		}
 	    }
 
             data = reporoot.newChild(None, 'data', None)
-            data.newProp('type', ftype)
+            data.newProp('type', *typep)
 
             checksum = data.newChild(None, 'checksum', csum)
             checksum.newProp('type', sumtype)
@@ -1126,24 +1138,20 @@ assert(fd != NULL);
             if (repo->baseurl != NULL)
                 location.newProp('xml:base', repo->baseurl)
             if (repo->uniquemdfilenames) {
-                res_file = '%s-%s.xml.gz' % (csum, ftype)
-                orig_file = rpmGetPath(repopath, "/", file, NULL);
-                dest_file = rpmGetPath(repopath, "/", res_file, NULL);
+                orig_file = repoGetPath(repo, repo->tempdir, *typep);
+                res_file = rpmExpand(csum, "-", *typep, ".", repo->markup, (repo->suffix ? "." : NULL), repo->suffix, NULL);
+                dest_file = rpmGetPath(repo->outputdir, "/", repo->tempdir, "/", res_file, NULL);
                 xx = Rename(orig_file, dest_file);
 
             } else
-                res_file = file
-	
+                res_file = rpmExpand(*typep, ".", repo->markup, (repo->suffix ? "." : NULL), repo->suffix, NULL);
 
-            file = res_file
-
-            location.newProp('href', rpmGetPath(repo->finaldir, "/", file, NULL));
+            location.newProp('href', rpmGetPath(repo->finaldir, "/", res_file, NULL));
 	}
-
+  }
 
         if (!repo->quiet && repo->database)
 	    repo_error(0, _("Sqlite DBs complete"));
-
 
         if (repo->groupfile != NULL) {
             self.addArbitraryMetadata(repo->groupfile, 'group_gz', reporoot)
@@ -1152,10 +1160,10 @@ assert(fd != NULL);
 
         /* save it down */
         try:
-            repodoc.saveFormatFileEnc(repofilepath, 'UTF-8', 1)
+            repodoc.saveFormatFileEnc(fn, 'UTF-8', 1)
         except:
-            repo_error(0, _("Error saving temp file for repomd.xml: %s"), repofilepath);
-            repo_error(1, _("Could not save temp file: %s"), repofilepath);
+            repo_error(0, _("Error saving temp file for repomd.xml: %s"), fn);
+            repo_error(1, _("Could not save temp file: %s"), fn);
 
         del repodoc
 #endif
