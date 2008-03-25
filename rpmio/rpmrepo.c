@@ -46,9 +46,6 @@ struct rpmrepo_s {
     int noepoch;
     int pretty;
 /*@null@*/
-    const char * cachedir;
-    int use_cache;
-/*@null@*/
     const char * basedir;
     int checkts;
     int split;
@@ -355,6 +352,9 @@ fprintf(stderr, "\trepoTestSetupDirs(%p)\n", repo);
 	if (!rpmioExists(dn, st) || !S_ISDIR(st->st_mode))
 	    repo_error(1, _("Directory %s must exist"), dn);
 
+    /* XXX todo create outputdir if it doesn't exist? */
+    if (!rpmioExists(repo->outputdir, st))
+	repo_error(1, _("Directory %s does not exist."), repo->outputdir);
     if (Access(repo->outputdir, W_OK))
 	repo_error(1, _("Directory %s must be writable."), repo->outputdir);
 
@@ -395,18 +395,6 @@ fprintf(stderr, "\trepoTestSetupDirs(%p)\n", repo);
 	if (!rpmioExists(repo->groupfile, st))
 	    repo_error(1, _("groupfile %s cannot be found."), repo->groupfile);
     }
-
-    if (repo->cachedir != NULL) {
-	if (repo->cachedir[0] != '/') {
-	    dn = rpmGetPath(repo->outputdir, "/", repo->cachedir, NULL);
-	    repo->cachedir = _free(repo->cachedir);
-	    repo->cachedir = dn;
-	    dn = NULL;
-	}
-	/* XXX todo cachedir can't handle URI's */
-	if (rpmioMkpath(repo->cachedir, 0755, (uid_t)-1, (gid_t)-1))
-	    repo_error(1, _("cannot open/write to cache dir %s"), repo->cachedir);
-    }
 }
 
 static int repoMetaDataGenerator(rpmrepo repo)
@@ -423,6 +411,7 @@ fprintf(stderr, "==> repoMetaDataGenerator(%p)\n", repo);
     repo->pkgcount = 0;
     repo->files = NULL;
 
+#ifdef	DYING
     if (repo->directory == NULL && repo->directories == NULL)
 	repo_error(1, _("No directory given on which to run."));
 
@@ -430,7 +419,7 @@ fprintf(stderr, "==> repoMetaDataGenerator(%p)\n", repo);
 	repo->directory = xstrdup(repo->directories[0]);
     else if (repo->directories == NULL)
 	xx = argvAdd(&repo->directories, repo->directory);
-    repo->use_cache = (repo->cachedir != NULL);
+#endif
 
     /* XXX repoParseDirectory(repo); */
 assert(repo->directories != NULL && repo->directories[0] != NULL);
@@ -669,7 +658,6 @@ fprintf(stderr, "\trepoReadPackage(%p, %s)\n", repo, rpmfile);
      * you can do it
      */
     po.crp_changelog_limit = repo->changeloglimit
-    po.crp_cachedir = repo->cachedir
 
     /*
      * FIXME if we wanted to put in a baseurl-per-package here is where 
@@ -752,7 +740,7 @@ argvPrint("repo->pkglist", pkglist, NULL);
 
 #ifdef	NOTYET
 	    /* XXX todo: rpmGetPath(mydir, "/", filematrix[mydir], NULL); */
-	    reldir = (pkgpath != NULL ? pkgpath : rpmGetPath(repo->basedir, "/", repo->directory, NULL));
+	    reldir = (pkgpath != NULL ? pkgpath : rpmGetPath(repo->basedir, "/", repo->directories[0], NULL));
 	    self.primaryfile.write(po.do_primary_xml_dump(reldir, baseurl=repo->baseurl))
 	    self.flfile.write(po.do_filelists_xml_dump())
 	    self.otherfile.write(po.do_other_xml_dump())
@@ -1387,54 +1375,52 @@ static struct poptOption optionsTable[] = {
  { "verbose", 'v', 0,				NULL, (int)'v',
 	N_("output more debugging info."), NULL },
 #if defined(POPT_ARG_ARGV)
- { "excludes", 'x', POPT_ARG_ARGV,		&__rpmrepo.excludes, 0,
+ { "excludes", 'x', POPT_ARG_ARGV|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmrepo.excludes, 0,
 	N_("file(s) to exclude"), N_("FILE") },
 #else
- { "excludes", 'x', POPT_ARG_STRING,		NULL, 'x',
+ { "excludes", 'x', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN,	NULL, 'x',
 	N_("files to exclude"), N_("FILE") },
 #endif
- { "basedir", '\0', POPT_ARG_STRING,		&__rpmrepo.basedir, 0,
+ { "basedir", '\0', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmrepo.basedir, 0,
 	N_("top level directory"), N_("DIR") },
- { "baseurl", 'u', POPT_ARG_STRING,		&__rpmrepo.baseurl, 0,
+ { "baseurl", 'u', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmrepo.baseurl, 0,
 	N_("baseurl to append on all files"), N_("BASEURL") },
- { "groupfile", 'g', POPT_ARG_STRING,		&__rpmrepo.groupfile, 0,
+ { "groupfile", 'g', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmrepo.groupfile, 0,
 	N_("path to groupfile to include in metadata"), N_("FILE") },
- { "checksum", 's', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN, &__rpmrepo.checksum, 0,
+ { "checksum", 's', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmrepo.checksum, 0,
 	N_("Deprecated, ignore"), NULL },
  { "noepoch", 'n', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmrepo.noepoch, 1,
 	N_("don't add zero epochs for non-existent epochs "
            "(incompatible with yum and smart but required for "
            "systems with rpm < 4.2.1)"), NULL },
- { "pretty", 'p', POPT_ARG_VAL,			&__rpmrepo.pretty, 1,
+ { "pretty", 'p', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,		&__rpmrepo.pretty, 1,
 	N_("make sure all xml generated is formatted"), NULL },
- { "cachedir", 'c', POPT_ARG_STRING,		&__rpmrepo.cachedir, 0,
-	N_("set path to cache dir"), N_("DIR") },
- { "checkts", 'C', POPT_ARG_VAL,		&__rpmrepo.checkts, 1,
+ { "checkts", 'C', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmrepo.checkts, 1,
 	N_("check timestamps on files vs the metadata to see if we need to update"), NULL },
- { "database", 'd', POPT_ARG_VAL,		&__rpmrepo.database, 1,
+ { "database", 'd', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmrepo.database, 1,
 	N_("create sqlite database files"), NULL },
- { "update", '\0', POPT_ARG_VAL,		&__rpmrepo.update, 1,
+ { "update", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmrepo.update, 1,
 	N_("use the existing repodata to speed up creation of new"), NULL },
  { "skip-stat", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmrepo.skipstat, 1,
 	N_("skip the stat() call on a --update, assumes if the file "
 	   "name is the same, then the file is still the same "
 	   "(only use this if you're fairly trusting or gullible)"), NULL },
- { "split", '\0', POPT_ARG_VAL,			&__rpmrepo.split, 1,
+ { "split", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,		&__rpmrepo.split, 1,
 	N_("generate split media"), NULL },
 #if defined(POPT_ARG_ARGV)
- { "pkglist", 'i', POPT_ARG_ARGV,		&__rpmrepo.pkglist, 0,
+ { "pkglist", 'i', POPT_ARG_ARGV|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmrepo.pkglist, 0,
 	N_("use only the files listed in this file from the directory specified"), N_("FILE") },
 #else
- { "pkglist", 'i', POPT_ARG_STRING,		NULL, 'i',
+ { "pkglist", 'i', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN,	NULL, 'i',
 	N_("use only the files listed in this file from the directory specified"), N_("FILE") },
 #endif
  { "outputdir", 'o', POPT_ARG_STRING,		&__rpmrepo.outputdir, 0,
 	N_("<dir> = optional directory to output to"), N_("DIR") },
- { "skip-symlinks", 'S', POPT_ARG_VAL,		&__rpmrepo.skipsymlinks, 1,
+ { "skip-symlinks", 'S', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmrepo.skipsymlinks, 1,
 	N_("ignore symlinks of packages"), NULL },
- { "changelog-limit", '\0', POPT_ARG_INT,	&__rpmrepo.changeloglimit, 0,
+ { "changelog-limit", '\0', POPT_ARG_INT|POPT_ARGFLAG_DOC_HIDDEN, &__rpmrepo.changeloglimit, 0,
 	N_("only import the last N changelog entries"), N_("N") },
- { "unique-md-filenames", '\0', POPT_ARG_VAL,	&__rpmrepo.uniquemdfilenames, 1,
+ { "unique-md-filenames", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &__rpmrepo.uniquemdfilenames, 1,
 	N_("include the file's checksum in the filename, helps with proxies"), NULL },
 
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmioFtsPoptTable, 0,
