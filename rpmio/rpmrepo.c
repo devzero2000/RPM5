@@ -7,6 +7,7 @@
 #include <rpmio_internal.h>	/* XXX fdInitDigest() et al */
 #include <fts.h>
 #include <argv.h>
+#include <mire.h>
 #include <poptIO.h>
 
 #include <rpmtag.h>
@@ -36,7 +37,10 @@ struct rpmrepo_s {
     int quiet;
     int verbose;
 /*@null@*/
-    ARGV_t excludes;
+    ARGV_t exclude_patterns;
+/*@null@*/
+    miRE excludeMire;
+    int nexcludes;
 /*@null@*/
     const char * baseurl;
 /*@null@*/
@@ -77,6 +81,7 @@ struct rpmrepo_s {
     ARGV_t files;
 /*@null@*/
     const char * package_dir;
+    
 
     int ftsoptions;
     uint32_t algo;
@@ -467,22 +472,14 @@ fprintf(stderr, "\trepoGetFileList(%p, %p, %s) directory %s\n", repo, roots, ext
 		continue;
 	    break;	/* XXX todo fuss with symlinks */
 	case FTS_F:
-	    if (!chkSuffix(p->fts_accpath, ext))
+	    /* Is this a *.rpm file? */
+	    if (!chkSuffix(p->fts_name, ext))
 		continue;
-#ifdef NOTYET
-    def trimRpms(self, files):
-        badrpms = []
-        for file in files:
-            for glob in repo->excludes:
-                if fnmatch.fnmatch(file, glob):
-                    if file not in badrpms:
-                        badrpms.append(file)
-        for file in badrpms:
-            if file in files:
-                files.remove(file)
-        return files
 
-#endif
+	    /* Should this file be excluded? */
+	    if (mireApply(repo->excludeMire, repo->nexcludes, p->fts_name, 0, -1) >= 0)
+		continue;
+
 	    xx = argvAdd(&files, p->fts_path);
 	    break;
 	}
@@ -1233,7 +1230,7 @@ static void repoArgCallback(poptContext con,
 	int xx;
     case 'x':			/* --excludes */
 assert(arg != NULL);
-        xx = _poptSaveString(&repo->excludes, opt->argInfo, arg);
+        xx = _poptSaveString(&repo->exclude_patterns, opt->argInfo, arg);
 	break;
     case 'i':			/* --pkglist */
 assert(arg != NULL);
@@ -1286,11 +1283,11 @@ static struct poptOption optionsTable[] = {
  { "verbose", 'v', 0,				NULL, (int)'v',
 	N_("output more debugging info."), NULL },
 #if defined(POPT_ARG_ARGV)
- { "excludes", 'x', POPT_ARG_ARGV|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmrepo.excludes, 0,
-	N_("file(s) to exclude"), N_("FILE") },
+ { "excludes", 'x', POPT_ARG_ARGV,		&__rpmrepo.exclude_patterns, 0,
+	N_("glob pattern(s) to exclude"), N_("PATTERN") },
 #else
- { "excludes", 'x', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN,	NULL, 'x',
-	N_("files to exclude"), N_("FILE") },
+ { "excludes", 'x', POPT_ARG_STRING,		NULL, 'x',
+	N_("glob pattern(s) to exclude"), N_("PATTERN") },
 #endif
  { "basedir", '\0', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmrepo.basedir, 0,
 	N_("top level directory"), N_("DIR") },
@@ -1462,6 +1459,11 @@ argvPrint("repo->directories", repo->directories, NULL);
     if (repo->split && repo->checkts)
 	repo_error(1, _("--split and --checkts options are mutually exclusive"));
 
+    /* Set up mire patterns (no error returns with globs). */
+    if (mireLoadPatterns(RPMMIRE_GLOB, 0, repo->exclude_patterns, NULL,
+                &repo->excludeMire, &repo->nexcludes))
+	repo_error(1, _("Error loading glob patterns."));
+
     /* Load the package manifest(s). */
     if (repo->pkglist) {
 	const char ** av = repo->pkglist;
@@ -1488,6 +1490,8 @@ argvPrint("repo->directories", repo->directories, NULL);
 
 exit:
     repo->ts = rpmtsFree(repo->ts);
+    repo->excludeMire = mireFreeAll(repo->excludeMire, repo->nexcludes);
+    repo->exclude_patterns = argvFree(repo->exclude_patterns);
 
     optCon = rpmioFini(optCon);
 
