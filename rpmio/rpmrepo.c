@@ -72,7 +72,6 @@ struct rpmrepo_s {
 /*@null@*/
     ARGV_t directories;
 
-    int changeloglimit;
     int uniquemdfilenames;
 
 /*@null@*/
@@ -233,7 +232,7 @@ static const char qfmt_other[] = "\
 
 /*@unchecked@*/
 static struct rpmrepo_s __rpmrepo = {
-    .sumtype = "sha", .checksum = "sha", .pretty = 1, .changeloglimit = 10,
+    .sumtype = "sha", .checksum = "sha", .pretty = 1,
     .tempdir	= ".repodata",
     .finaldir	= "repodata",
     .olddir	= ".olddata",
@@ -400,8 +399,6 @@ fprintf(stderr, "\trepoTestSetupDirs(%p)\n", repo);
 static int repoMetaDataGenerator(rpmrepo repo)
 	/*@modifies repo @*/
 {
-    int xx;
-
 if (_repo_debug)
 fprintf(stderr, "==> repoMetaDataGenerator(%p)\n", repo);
 
@@ -657,7 +654,6 @@ fprintf(stderr, "\trepoReadPackage(%p, %s)\n", repo, rpmfile);
      * if we are going to add anything in from outside, here is where
      * you can do it
      */
-    po.crp_changelog_limit = repo->changeloglimit
 
     /*
      * FIXME if we wanted to put in a baseurl-per-package here is where 
@@ -1418,8 +1414,6 @@ static struct poptOption optionsTable[] = {
 	N_("<dir> = optional directory to output to"), N_("DIR") },
  { "skip-symlinks", 'S', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmrepo.skipsymlinks, 1,
 	N_("ignore symlinks of packages"), NULL },
- { "changelog-limit", '\0', POPT_ARG_INT|POPT_ARGFLAG_DOC_HIDDEN, &__rpmrepo.changeloglimit, 0,
-	N_("only import the last N changelog entries"), N_("N") },
  { "unique-md-filenames", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &__rpmrepo.uniquemdfilenames, 1,
 	N_("include the file's checksum in the filename, helps with proxies"), NULL },
 
