@@ -105,17 +105,17 @@ struct rpmrepo_s {
 
 static const char init_primary[] =
 "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-"<metadata xmlns=\"http://linux.duke.edu/metadata/common\" xmlns:rpm=\"http://linux.duke.edu/metadata/rpm\" packages=\"XXX\">\n";
+"<metadata xmlns=\"http://linux.duke.edu/metadata/common\" xmlns:rpm=\"http://linux.duke.edu/metadata/rpm\" packages=\"0\">\n";
 static const char fini_primary[] = "</metadata>\n";
 
 static const char init_filelists[] =
 "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-"<filelists xmlns=\"http://linux.duke.edu/metadata/filelists\" packages=\"XXX\">\n";
+"<filelists xmlns=\"http://linux.duke.edu/metadata/filelists\" packages=\"0\">\n";
 static const char fini_filelists[] = "</filelists>\n";
 
 static const char init_other[] =
 "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-"<otherdata xmlns=\"http://linux.duke.edu/metadata/other\" packages=\"XXX\">\n";
+"<otherdata xmlns=\"http://linux.duke.edu/metadata/other\" packages=\"0\">\n";
 static const char fini_other[] = "</otherdata>\n";
 
 static const char init_repomd[] = "\
@@ -582,13 +582,26 @@ static int repoOpenMDFile(rpmrepo repo, rpmrfile rfile)
     const char * spew = rfile->init;
     size_t nspew = strlen(spew);
     const char * fn = repoGetPath(repo, repo->tempdir, rfile->type);
+    const char * tail;
     size_t nb;
 
     rfile->fd = Fopen(fn, repo->wmode);
     if (repo->algo > 0)
 	fdInitDigest(rfile->fd, repo->algo, 0);
-    /* XXX todo: fill in repo->pkgcount */
+
+    if ((tail = strstr(spew, " packages=\"0\">\n")) != NULL)
+	nspew -= strlen(tail);
+
     nb = Fwrite(spew, 1, nspew, rfile->fd);
+
+    if (tail != NULL) {
+	char buf[64];
+	size_t tnb = snprintf(buf, sizeof(buf), " packages=\"%d\">\n",
+				repo->pkgcount);
+	nspew += tnb;
+	nb += Fwrite(buf, 1, tnb, rfile->fd);
+    }
+
 if (_repo_debug)
 fprintf(stderr, "\trepoOpenMDFile(%p, %p) %s nb %u\n", repo, rfile, fn, (unsigned)nb);
 
@@ -796,7 +809,8 @@ static int repoCloseMDFile(rpmrepo repo, rpmrfile rfile)
     int xx;
 
     if (!repo->quiet)
-	repo_error(0, _("Saving %s.xml metadata"), rfile->type);
+	repo_error(0, _("Saving %s.%s%s%s metadata"), rfile->type, repo->markup,
+		(repo->suffix ? "." : ""), (repo->suffix ? repo->suffix : ""));
     nb = Fwrite(spew, 1, nspew, rfile->fd);
     if (repo->algo > 0)
 	fdFiniDigest(rfile->fd, repo->algo, &rfile->digest, NULL, asAscii);
@@ -1162,7 +1176,9 @@ assert(fd != NULL);
         try:
             repodoc.saveFormatFileEnc(fn, 'UTF-8', 1)
         except:
-            repo_error(0, _("Error saving temp file for repomd.xml: %s"), fn);
+            repo_error(0, _("Error saving temp file for %s.%s%s%s: %s"),
+		rfile->type, repo->markup, (repo->suffix ? "." : ""),
+		(repo->suffix ? repo->suffix : ""), fn);
             repo_error(1, _("Could not save temp file: %s"), fn);
 
         del repodoc
