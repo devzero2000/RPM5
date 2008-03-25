@@ -129,7 +129,7 @@ static const char qfmt_primary[] = "\
   <description>%{DESCRIPTION:cdata}</description>\n\
   <packager>%|PACKAGER?{%{PACKAGER:cdata}}:{}|</packager>\n\
   <url>%|URL?{%{URL:cdata}}:{}|</url>\n\
-  <time file=\"%{PACKAGETIME}\" build=\"%{BUILDTIME}\">\n\
+  <time file=\"%{PACKAGETIME}\" build=\"%{BUILDTIME}\"/>\n\
   <size package=\"%{SIZE}\" installed=\"%{SIZE}\" archive=\"%{ARCHIVESIZE}\"/>\n\
   <location href=\"%{PACKAGEORIGIN:cdata}\"/>\n\
   <format>\n\
