@@ -715,7 +715,7 @@ assert(rfile->fd != NULL);
 	const char ** stmt;
 	int xx;
 	fn = rpmGetPath(repo->outputdir, "/", repo->tempdir, "/",
-		rfile->type, "_db", NULL);
+		rfile->type, ".sqlite", NULL);
 	if ((xx = sqlite3_open(fn, &rfile->sqldb)) != SQLITE_OK)
 	    repo_error(1, "sqlite3_open(%s): %s", fn, sqlite3_errmsg(rfile->sqldb));
 	for (stmt = rfile->schema; *stmt != NULL; stmt++) {
@@ -850,7 +850,7 @@ static int repoCloseMDFile(const rpmrepo repo, rpmrfile rfile)
     if (repo->database && rfile->sqldb != NULL) {
 	int xx;
 	fn = rpmGetPath(repo->outputdir, "/", repo->tempdir, "/",
-		rfile->type, "_db", NULL);
+		rfile->type, ".sqlite", NULL);
 	if ((xx = sqlite3_close(rfile->sqldb)) != SQLITE_OK)
 	    repo_error(1, "sqlite3_close(%s): %s", fn, sqlite3_errmsg(rfile->sqldb));
 	rfile->sqldb = NULL;
