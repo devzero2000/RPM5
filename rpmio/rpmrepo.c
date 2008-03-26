@@ -16,19 +16,28 @@
 
 #include "debug.h"
 
+/*@access FD_t @*/
+/*@access miRE @*/
+
 /*==============================================================*/
 
-int _repo_debug;
+/*@unchecked@*/
+static int _repo_debug;
 
 typedef struct rpmrepo_s * rpmrepo;
 typedef struct rpmrfile_s * rpmrfile;
 
 struct rpmrfile_s {
+/*@observer@*/
     const char * type;
+/*@observer@*/
     const char * init;
+/*@observer@*/
     const char * qfmt;
+/*@observer@*/
     const char * fini;
     FD_t fd;
+/*@null@*/
     const char * digest;
     time_t ctime;
 };
@@ -62,15 +71,15 @@ struct rpmrepo_s {
 /*@null@*/
     const char * outputdir;
 
-    int skipsymlinks;
+    int nofollow;
 /*@null@*/
     ARGV_t manifests;
 
-/*@null@*/
+/*@observer@*/ /*@null@*/
     const char * tempdir;
-/*@null@*/
+/*@observer@*/ /*@null@*/
     const char * finaldir;
-/*@null@*/
+/*@observer@*/ /*@null@*/
     const char * olddir;
 
     time_t mdtimestamp;
@@ -81,15 +90,19 @@ struct rpmrepo_s {
     rpmts ts;
 /*@null@*/
     ARGV_t pkglist;
-    int pkgcount;
+    unsigned current;
+    unsigned pkgcount;
 
 /*@null@*/
     ARGV_t directories;
     int ftsoptions;
     uint32_t algo;
     int compression;
+/*@observer@*/
     const char * markup;
+/*@observer@*/ /*@null@*/
     const char * suffix;
+/*@observer@*/
     const char * wmode;
 
     struct rpmrfile_s primary;
@@ -99,24 +112,32 @@ struct rpmrepo_s {
 
 };
 
+/*@unchecked@*/ /*@observer@*/
 static const char init_primary[] =
 "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
 "<metadata xmlns=\"http://linux.duke.edu/metadata/common\" xmlns:rpm=\"http://linux.duke.edu/metadata/rpm\" packages=\"0\">\n";
+/*@unchecked@*/ /*@observer@*/
 static const char fini_primary[] = "</metadata>\n";
 
+/*@unchecked@*/ /*@observer@*/
 static const char init_filelists[] =
 "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
 "<filelists xmlns=\"http://linux.duke.edu/metadata/filelists\" packages=\"0\">\n";
+/*@unchecked@*/ /*@observer@*/
 static const char fini_filelists[] = "</filelists>\n";
 
+/*@unchecked@*/ /*@observer@*/
 static const char init_other[] =
 "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
 "<otherdata xmlns=\"http://linux.duke.edu/metadata/other\" packages=\"0\">\n";
+/*@unchecked@*/ /*@observer@*/
 static const char fini_other[] = "</otherdata>\n";
 
+/*@unchecked@*/ /*@observer@*/
 static const char init_repomd[] = "\
 <?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\
 <repomd xmlns=\"http://linux.duke.edu/metadata/repo\">\n";
+/*@unchecked@*/ /*@observer@*/
 static const char fini_repomd[] = "</repomd>\n";
 
 /* XXX todo: wire up popt aliases and bury the --queryformat glop externally. */
@@ -230,6 +251,7 @@ static const char qfmt_other[] = "\
 </package>\n\
 ";
 
+/*@-fullinitblock@*/
 /*@unchecked@*/
 static struct rpmrepo_s __rpmrepo = {
     .pretty	= 1,
@@ -263,6 +285,7 @@ static struct rpmrepo_s __rpmrepo = {
 	.fini	= fini_repomd
     }
 };
+/*@=fullinitblock@*/
 
 /*@unchecked@*/
 static rpmrepo _rpmrepo = &__rpmrepo;
@@ -271,6 +294,8 @@ static rpmrepo _rpmrepo = &__rpmrepo;
 /*@exist@*/
 static void
 repo_error(int lvl, const char *fmt, ...)
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/
 {
     va_list ap;
 
@@ -284,26 +309,29 @@ repo_error(int lvl, const char *fmt, ...)
 	exit(EXIT_FAILURE);
 }
 
-static void repoProgress(rpmrepo repo, const char * item,
+static void repoProgress(/*@unused@*/ rpmrepo repo, const char * item,
 		int current, int total)
-	/*@*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/
 {
     static size_t ncols = 80 - 1;	/* XXX TIOCGWINSIZ */
     size_t nb = fprintf(stdout, "\r%s: %d/%d - %s", __progname, current, total, item);
     if (nb < ncols)
-	fprintf(stderr, "%*s", (ncols - nb), "");
+	fprintf(stderr, "%*s", (int)(ncols - nb), "");
     ncols = nb;
-    fflush(stdout);
+    (void) fflush(stdout);
 }
 
-static int rpmioExists(const char * fn, struct stat * st)
-	/*@*/
+static int rpmioExists(const char * fn, /*@out@*/ struct stat * st)
+	/*@globals h_errno, fileSystem, internalState @*/
+	/*@modifies st, fileSystem, internalState @*/
 {
     return (Stat(fn, st) == 0);
 }
 
 static time_t rpmioCtime(const char * fn)
-	/*@*/
+	/*@globals h_errno, fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/
 {
     struct stat sb;
     time_t stctime = 0;
@@ -315,7 +343,8 @@ static time_t rpmioCtime(const char * fn)
 
 /*@null@*/
 static const char * repoRealpath(const char * lpath)
-	/*@*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/
 {
     /* XXX GLIBC: realpath(path, NULL) return malloc'd */
     const char *rpath = Realpath(lpath, NULL);
@@ -330,10 +359,13 @@ static const char * repoRealpath(const char * lpath)
 
 /*==============================================================*/
 static int repoMkdir(rpmrepo repo, const char * dn)
-	/*@*/
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
+	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     const char * dnurl = rpmGetPath(repo->outputdir, "/", dn, NULL);
+/*@-mods@*/
     int ut = urlPath(dnurl, &dn);
+/*@=mods@*/
     int rc = 0;;
 
     /* XXX todo: rpmioMkpath doesn't grok URI's */
@@ -349,30 +381,28 @@ static int repoMkdir(rpmrepo repo, const char * dn)
 
 static const char * repoGetPath(rpmrepo repo, const char * dir,
 		const char * type, int compress)
-	/*@*/
+	/*@globals h_errno, rpmGlobalMacroContext, internalState @*/
+	/*@modifies rpmGlobalMacroContext, internalState @*/
 {
     return rpmGetPath(repo->outputdir, "/", dir, "/", type,
-		(repo->markup ? repo->markup : ""),
-		(repo->suffix && compress ? repo->suffix : ""), NULL);
+		(repo->markup != NULL ? repo->markup : ""),
+		(repo->suffix != NULL && compress ? repo->suffix : ""), NULL);
 }
 
 static int repoTestSetupDirs(rpmrepo repo)
-	/*@modifies repo @*/
+	/*@globals h_errno, rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@modifies repo, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
-    const char ** dirs = repo->directories;
+    const char ** directories = repo->directories;
     struct stat sb, *st = &sb;
     const char * dn;
     const char * fn;
     int rc = 0;
-    int xx;
-
-if (_repo_debug)
-fprintf(stderr, "\trepoTestSetupDirs(%p)\n", repo);
 
     /* XXX todo: check repo->pkglist existence? */
 
-    if (dirs != NULL)
-    while ((dn = *dirs++) != NULL) {
+    if (directories != NULL)
+    while ((dn = *directories++) != NULL) {
 	if (!rpmioExists(dn, st) || !S_ISDIR(st->st_mode)) {
 	    repo_error(0, _("Directory %s must exist"), dn);
 	    rc = 1;
@@ -389,9 +419,8 @@ fprintf(stderr, "\trepoTestSetupDirs(%p)\n", repo);
 	rc = 1;
     }
 
-    if ((xx = repoMkdir(repo, repo->tempdir)) != 0)
-	rc = 1;
-    if ((xx = repoMkdir(repo, repo->finaldir)) != 0)
+    if (repoMkdir(repo, repo->tempdir)
+     || repoMkdir(repo, repo->finaldir))
 	rc = 1;
 
     dn = rpmGetPath(repo->outputdir, "/", repo->olddir, NULL);
@@ -401,7 +430,9 @@ fprintf(stderr, "\trepoTestSetupDirs(%p)\n", repo);
     }
     dn = _free(dn);
 
-  { static const char * dirs[] = { ".repodata", "repodata", NULL };
+  { /*@observer@*/
+    static const char * dirs[] = { ".repodata", "repodata", NULL };
+    /*@observer@*/
     static const char * types[] =
 	{ "primary", "filelists", "other", "repomd", NULL };
     const char ** dirp, ** typep;
@@ -439,12 +470,10 @@ fprintf(stderr, "\trepoTestSetupDirs(%p)\n", repo);
 }
 
 static int repoMetaDataGenerator(rpmrepo repo)
-	/*@modifies repo @*/
+	/*@globals h_errno, rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@modifies repo, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     int rc = 0;
-
-if (_repo_debug)
-fprintf(stderr, "==> repoMetaDataGenerator(%p)\n", repo);
 
     repo->ts = rpmtsCreate();
     /* XXX todo wire up usual rpm CLI options. hotwire --nosignature for now */
@@ -480,73 +509,81 @@ static int chkSuffix(const char * fn, const char * suffix)
 /*@null@*/
 static const char ** repoGetFileList(rpmrepo repo, const char *roots[],
 		const char * ext)
-	/*@*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies repo, fileSystem, internalState @*/
 {
-    const char ** files = NULL;
+    const char ** pkglist = NULL;
     FTS * t;
     FTSENT * p;
     int xx;
-
-if (_repo_debug)
-fprintf(stderr, "\trepoGetFileList(%p, %p, %s) directory %s\n", repo, roots, ext, roots[0]);
 
     if ((t = Fts_open((char *const *)roots, repo->ftsoptions, NULL)) == NULL)
 	repo_error(1, _("Fts_open: %s"), strerror(errno));
 
     while ((p = Fts_read(t)) != NULL) {
+#ifdef	NOTYET
+	const char * fts_name = p->fts_name;
+	size_t fts_namelen = p->fts_namelen;
+
+	/* XXX fts(3) (and Fts(3)) have fts_name = "" with pesky trailing '/' */
+	if (p->fts_level == 0 && fts_namelen == 0) {
+            fts_name = ".";
+            fts_namelen = sizeof(".") - 1;
+	}
+#endif
+
+	/* Should this element be excluded/included? */
+	/* XXX todo: apply globs to fts_path rather than fts_name? */
+/*@-onlytrans@*/
+	if (mireApply(repo->excludeMire, repo->nexcludes, p->fts_name, 0, -1) >= 0)
+	    continue;
+	if (mireApply(repo->includeMire, repo->nincludes, p->fts_name, 0, +1) < 0)
+	    continue;
+/*@=onlytrans@*/
 
 	switch (p->fts_info) {
 	case FTS_D:
 	case FTS_DP:
 	default:
 	    continue;
-	    break;
+	    /*@notreached@*/ /*@switchbreak@*/ break;
 	case FTS_SL:
-	    if (repo->skipsymlinks)
+	    if (repo->nofollow)
 		continue;
-	    break;	/* XXX todo fuss with symlinks */
+	    /* XXX todo: fuss with symlinks */
+	    /*@notreached@*/ /*@switchbreak@*/ break;
 	case FTS_F:
 	    /* Is this a *.rpm file? */
-	    if (!chkSuffix(p->fts_name, ext))
-		continue;
-
-	    /* Should this file be excluded/included? */
-	    /* XXX todo: apply globs to fts_path rather than fts_name? */
-/*@-onlytrans@*/
-	    if (mireApply(repo->excludeMire, repo->nexcludes, p->fts_name, 0, -1) >= 0)
-		continue;
-	    if (mireApply(repo->includeMire, repo->nincludes, p->fts_name, 0, +1) < 0)
-		continue;
-/*@=onlytrans@*/
-
-	    xx = argvAdd(&files, p->fts_path);
-	    break;
+	    if (chkSuffix(p->fts_name, ext))
+		xx = argvAdd(&pkglist, p->fts_path);
+	    /*@switchbreak@*/ break;
 	}
     }
 
-if (_repo_debug)
-argvPrint("files", files, NULL);
+    (void) Fts_close(t);
 
-    return files;
+if (_repo_debug)
+argvPrint("pkglist", pkglist, NULL);
+
+    return pkglist;
 }
 
 static int repoCheckTimeStamps(rpmrepo repo)
-	/*@*/
+	/*@globals h_errno, fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/
 {
     int rc = 0;
-
-if (_repo_debug)
-fprintf(stderr, "\trepoCheckTimeStamps(%p)\n", repo);
 
     if (repo->checkts) {
 	const char ** pkg;
 
 	if (repo->pkglist != NULL)
-	for (pkg = repo->pkglist; *pkg; pkg++) {
+	for (pkg = repo->pkglist; *pkg != NULL ; pkg++) {
 	    struct stat sb, *st = &sb;
-	    if (!rpmioExists(*pkg, st))
+	    if (!rpmioExists(*pkg, st)) {
 		repo_error(0, _("cannot get to file: %s"), *pkg);
-	    else if (st->st_ctime > repo->mdtimestamp)
+		rc = 1;
+	    } else if (st->st_ctime > repo->mdtimestamp)
 		rc = 1;
 	}
     } else
@@ -555,16 +592,36 @@ fprintf(stderr, "\trepoCheckTimeStamps(%p)\n", repo);
     return rc;
 }
 
-static int repoOpenMDFile(rpmrepo repo, rpmrfile rfile)
-	/*@modifies repo @*/
+static int rfileWrite(rpmrfile rfile, /*@only@*/ /*@null@*/ const char * spew)
+	/*@globals fileSystem @*/
+	/*@modifies rfile, fileSystem @*/
+{
+    size_t nspew = (spew != NULL ? strlen(spew) : 0);
+    size_t nb = (nspew > 0 ? Fwrite(spew, 1, nspew, rfile->fd) : 0);
+    int rc = 0;
+    if (nspew != nb) {
+	repo_error(0, _("Fwrite failed: expected write %u != %u bytes: %s\n"),
+		(unsigned)nspew, (unsigned)nb, Fstrerror(rfile->fd));
+	rc = 1;
+    }
+    spew = _free(spew);
+    return rc;
+}
+
+static int repoOpenMDFile(const rpmrepo repo, rpmrfile rfile)
+	/*@globals h_errno, rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@modifies rfile, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     const char * spew = rfile->init;
     size_t nspew = strlen(spew);
     const char * fn = repoGetPath(repo, repo->tempdir, rfile->type, 1);
     const char * tail;
     size_t nb;
+    int rc = 0;
 
     rfile->fd = Fopen(fn, repo->wmode);
+assert(rfile->fd != NULL);
+
     if (repo->algo > 0)
 	fdInitDigest(rfile->fd, repo->algo, 0);
 
@@ -580,21 +637,22 @@ static int repoOpenMDFile(rpmrepo repo, rpmrfile rfile)
 	nspew += tnb;
 	nb += Fwrite(buf, 1, tnb, rfile->fd);
     }
-    if (nspew != nb)
-	repo_error(1, _("Fwrite failed: expected write %u != %u bytes: %s\n"),
+    if (nspew != nb) {
+	repo_error(0, _("Fwrite failed: expected write %u != %u bytes: %s\n"),
 		(unsigned)nspew, (unsigned)nb, Fstrerror(rfile->fd));
-
-if (_repo_debug)
-fprintf(stderr, "\trepoOpenMDFile(%p, %p) %s nb %u\n", repo, rfile, fn, (unsigned)nb);
+	rc = 1;
+    }
 
     fn = _free(fn);
-    return 0;
+
+    return rc;
 }
 
 static Header repoReadHeader(rpmrepo repo, const char * path)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies repo, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
+    /* XXX todo: read the payload and collect the blessed file digest. */
     FD_t fd = Fopen(path, "r.ufdio");
     Header h = NULL;
 
@@ -602,11 +660,11 @@ static Header repoReadHeader(rpmrepo repo, const char * path)
 	/* XXX what if path needs expansion? */
 	rpmRC rpmrc = rpmReadPackageFile(repo->ts, fd, path, &h);
 
+    /* XXX todo: read the payload and collect the blessed file digest. */
 	(void) Fclose(fd);
 
 	switch (rpmrc) {
 	case RPMRC_NOTFOUND:
-	    /* XXX Read a package manifest. Restart ftswalk on success. */
 	case RPMRC_FAIL:
 	default:
 	    h = headerFree(h);
@@ -620,87 +678,36 @@ static Header repoReadHeader(rpmrepo repo, const char * path)
     return h;
 }
 
-/*@null@*/
-static Header repoReadPackage(rpmrepo repo, const char * rpmfile)
-	/*@*/
+static int repoWriteMDFile(/*@unused@*/ rpmrepo repo, rpmrfile rfile, Header h)
+	/*@globals fileSystem @*/
+	/*@modifies rfile, h, fileSystem @*/
 {
-    Header h = NULL;
+    int rc = 0;
 
-if (_repo_debug)
-fprintf(stderr, "\trepoReadPackage(%p, %s)\n", repo, rpmfile);
-
-    /*
-     * TODO/FIXME
-     * consider adding a routine to download the package from a remote location
-     * to a tempdir, operate on it, then use that location as a the baseurl
-     * for the package. That would make it possible to have repos entirely 
-     * comprised of remote packages.
-     */
-
-    h = repoReadHeader(repo, rpmfile);
-
-#ifdef	NOTYET
-        try:
-            po = yumbased.CreateRepoPackage(self.ts, rpmfile)
-        except Errors.MiscError, e:
-            raise MDError, "Unable to open package: %s" % e
-
-    /*
-     * if we are going to add anything in from outside, here is where
-     * you can do it
-     */
-
-    /*
-     * FIXME if we wanted to put in a baseurl-per-package here is where 
-     * we should do it
-     * it would be easy to have a lookup dict in the MetaDataConfig object
-     * and work down from there for the baseurl
-     */
-
-    if po.checksum in (None, ""):
-	repo_error(1, _("No Package ID found for package %s, not going to add it"),
-		rpmfile);
-#endif
-
-    return h;
-}
-
-static int repoWriteMDFile(rpmrepo repo, rpmrfile rfile, Header h)
-	/*@modifies repo @*/
-{
-    const char * qfmt = rfile->qfmt;
-
-    if (qfmt != NULL) {
+    if (rfile->qfmt != NULL) {
 	const char * msg = NULL;
-	const char * spew = headerSprintf(h, qfmt, NULL, NULL, &msg);
-	size_t nspew = (spew != NULL ? strlen(spew) : 0);
-	size_t nb = (nspew > 0 ? Fwrite(spew, 1, nspew, rfile->fd) : 0);
-	if (spew == NULL)
-	    repo_error(1, _("incorrect format: %s\n"),
-		(msg ? msg : "headerSprintf() msg is AWOL!"));
-	if (nspew != nb)
-	    repo_error(1,
-		_("Fwrite failed: expected write %u != %u bytes: %s\n"),
-		(unsigned)nspew, (unsigned)nb, Fstrerror(rfile->fd));
-	spew = _free(spew);
+
+	if (rfileWrite(rfile, headerSprintf(h, rfile->qfmt, NULL, NULL, &msg)))
+	    rc = 1;
+	if (msg != NULL) {
+	    repo_error(0, _("incorrect format: %s\n"), msg);
+	    rc = 1;
+	}
     }
-    return 0;
+    return rc;
 }
 
-static unsigned repoWriteMetadataDocs(rpmrepo repo,
-		/*@null@*/ const char ** pkglist, unsigned current)
-	/*@modifies repo @*/
+static int repoWriteMetadataDocs(rpmrepo repo, /*@null@*/ const char ** pkglist)
+	/*@globals h_errno, rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@modifies repo, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     const char * pkg;
-
-if (_repo_debug)
-fprintf(stderr, "\trepoWriteMetadataDocs(%p, %p, %u)\n", repo, pkglist, current);
+    int rc = 0;
 
     while ((pkg = *pkglist++) != NULL) {
-	Header h = repoReadPackage(repo, pkg);
-	int xx;
+	Header h = repoReadHeader(repo, pkg);
 
-	current++;
+	repo->current++;
 	if (h == NULL) {
 	    repo_error(0, _("\nError %s: %s\n"), pkg, strerror(errno));
 	    continue;
@@ -713,59 +720,62 @@ fprintf(stderr, "\trepoWriteMetadataDocs(%p, %p, %u)\n", repo, pkglist, current)
 	self.flfile.write(po.do_filelists_xml_dump())
 	self.otherfile.write(po.do_other_xml_dump())
 #endif
-	xx = repoWriteMDFile(repo, &repo->primary, h);
-	xx = repoWriteMDFile(repo, &repo->filelists, h);
-	xx = repoWriteMDFile(repo, &repo->other, h);
+	if (repoWriteMDFile(repo, &repo->primary, h)
+	 || repoWriteMDFile(repo, &repo->filelists, h)
+	 || repoWriteMDFile(repo, &repo->other, h))
+	    rc = 1;
 
 	h = headerFree(h);
+	if (rc) break;
 
 	if (!repo->quiet) {
 	    if (repo->verbose)
-		repo_error(0, "%d/%d - %s", current, repo->pkgcount, pkg);
+		repo_error(0, "%d/%d - %s", repo->current, repo->pkgcount, pkg);
 	    else
-		repoProgress(repo, pkg, current, repo->pkgcount);
+		repoProgress(repo, pkg, repo->current, repo->pkgcount);
 	}
     }
-
-    return current;
+    return rc;
 }
 
-static int repoCloseMDFile(rpmrepo repo, rpmrfile rfile)
-	/*@modifies repo @*/
+static int repoCloseMDFile(const rpmrepo repo, rpmrfile rfile)
+	/*@globals h_errno, rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@modifies rfile, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     static int asAscii = 1;
     const char * fn;
-    const char * spew = rfile->fini;
-    size_t nspew = strlen(spew);
-    size_t nb;
-    int xx;
+    int rc = 0;
 
     if (!repo->quiet)
 	repo_error(0, _("Saving %s%s%s metadata"), rfile->type,
-		(repo->markup ? repo->markup : ""),
-		(repo->suffix ? repo->suffix : ""));
-    nb = Fwrite(spew, 1, nspew, rfile->fd);
+		(repo->markup != NULL ? repo->markup : ""),
+		(repo->suffix != NULL ? repo->suffix : ""));
+
+    if (rfileWrite(rfile, xstrdup(rfile->fini)))
+	rc = 1;
+
     if (repo->algo > 0)
 	fdFiniDigest(rfile->fd, repo->algo, &rfile->digest, NULL, asAscii);
     else
 	rfile->digest = xstrdup("");
-    xx = Fclose(rfile->fd);
+
+    (void) Fclose(rfile->fd);
     rfile->fd = NULL;
 
     fn = repoGetPath(repo, repo->tempdir, rfile->type, 1);
     rfile->ctime = rpmioCtime(fn);
     fn = _free(fn);
 
-    return 0;
+    return rc;
 }
 
 static int repoDoPkgMetadata(rpmrepo repo)
-	/*@*/
+	/*@globals h_errno, rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@modifies repo, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
-    int xx;
+    int rc = 0;
 
-if (_repo_debug)
-fprintf(stderr, "==> repoDoPkgMetadata(%p)\n", repo);
+    repo->current = 0;
 
 #ifdef	NOTYET
     def _getFragmentUrl(self, url, fragment):
@@ -803,43 +813,37 @@ fprintf(stderr, "==> repoDoPkgMetadata(%p)\n", repo);
     }
 
     mediano = 1;
-    current = 0;
     repo->baseurl = self._getFragmentUrl(repo->baseurl, mediano)
+#endif
 
-    xx = repoOpenMDFile(repo, &repo->primary);
-    xx = repoOpenMDFile(repo, &repo->filelists);
-    xx = repoOpenMDFile(repo, &repo->other);
+    if (repoOpenMDFile(repo, &repo->primary)
+     || repoOpenMDFile(repo, &repo->filelists)
+     || repoOpenMDFile(repo, &repo->other))
+	rc = 1;
+    if (rc) return rc;
 
+#ifdef	NOTYET
     for mydir in repo->directories {
 	repo->baseurl = self._getFragmentUrl(repo->baseurl, mediano)
 	/* XXX todo: rpmGetPath(mydir, "/", filematrix[mydir], NULL); */
-	current = repoWriteMetadataDocs(filematrix[mydir], current)
+	if (repoWriteMetadataDocs(repo, filematrix[mydir]))
+	    rc = 1;
 	mediano++;
     }
     repo->baseurl = self._getFragmentUrl(repo->baseurl, 1)
-
-    if (!repo->quiet)
-	fprintf(stderr, "\n");
-    xx = repoCloseMDFile(repo, &repo->primary);
-    xx = repoCloseMDFile(repo, &repo->filelists);
-    xx = repoCloseMDFile(repo, &repo->other);
 #else
-
-    xx = repoOpenMDFile(repo, &repo->primary);
-    xx = repoOpenMDFile(repo, &repo->filelists);
-    xx = repoOpenMDFile(repo, &repo->other);
-
-    repoWriteMetadataDocs(repo, repo->pkglist, 0);
-
-    if (!repo->quiet)
-	fprintf(stderr, "\n");
-    xx = repoCloseMDFile(repo, &repo->primary);
-    xx = repoCloseMDFile(repo, &repo->filelists);
-    xx = repoCloseMDFile(repo, &repo->other);
-
+    if (repoWriteMetadataDocs(repo, repo->pkglist))
+	rc = 1;
 #endif
 
-    return 0;
+    if (!repo->quiet)
+	fprintf(stderr, "\n");
+    if (repoCloseMDFile(repo, &repo->primary)
+     || repoCloseMDFile(repo, &repo->filelists)
+     || repoCloseMDFile(repo, &repo->other))
+	rc = 1;
+
+    return rc;
 }
 
 static /*@observer@*/ /*@null@*/ const char *
@@ -877,62 +881,42 @@ algo2tagname(uint32_t algo)
 }
 
 static const char * repoMDExpand(rpmrepo repo, rpmrfile rfile)
-	/*@*/
+	/*@globals h_errno, rpmGlobalMacroContext, internalState @*/
+	/*@modifies rpmGlobalMacroContext, internalState @*/
 {
     const char * spewalgo = algo2tagname(repo->algo);
     char spewtime[64];
-    snprintf(spewtime, sizeof(spewtime), "%u", (unsigned)rfile->ctime);
+    (void) snprintf(spewtime, sizeof(spewtime), "%u", (unsigned)rfile->ctime);
     return rpmExpand("\
   <data type=\"", rfile->type, "\">\n\
     <checksum type=\"", spewalgo, "\">", rfile->digest, "</checksum>\n\
     <timestamp>", spewtime, "</timestamp>\n\
     <open-checksum type=\"",spewalgo,"\">", rfile->digest, "</open-checksum>\n\
-    <location href=\"", repo->finaldir, "/", rfile->type, (repo->markup ? repo->markup : ""), (repo->suffix ? repo->suffix : ""), "\"/>\n\
+    <location href=\"", repo->finaldir, "/", rfile->type, (repo->markup != NULL ? repo->markup : ""), (repo->suffix != NULL ? repo->suffix : ""), "\"/>\n\
   </data>\n", NULL);
 }
 
 static int repoDoRepoMetadata(rpmrepo repo)
-	/*@*/
+	/*@globals h_errno, rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@modifies repo, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     rpmrfile rfile = &repo->repomd;
-    const char * fn;
-    const char * spew;
-    size_t nspew;
-    size_t nb;
-    FD_t fd;
+    const char * fn = repoGetPath(repo, repo->tempdir, rfile->type, 0);
+    int rc = 0;
 
-if (_repo_debug)
-fprintf(stderr, "==> repoDoRepoMetadata(%p)\n", repo);
-
-    fn = repoGetPath(repo, repo->tempdir, rfile->type, 0);
-    fd = Fopen(fn, "w.ufdio"); /* no compression */
-assert(fd != NULL);
-    spew = init_repomd;
-    nspew = strlen(spew);
-    nb = Fwrite(spew, 1, nspew, fd);
-
-    spew = repoMDExpand(repo, &repo->other);
-    nspew = strlen(spew);
-    nb = Fwrite(spew, 1, nspew, fd);
-    spew = _free(spew);
-
-    spew = repoMDExpand(repo, &repo->filelists);
-    nspew = strlen(spew);
-    nb = Fwrite(spew, 1, nspew, fd);
-    spew = _free(spew);
-
-    spew = repoMDExpand(repo, &repo->primary);
-    nspew = strlen(spew);
-    nb = Fwrite(spew, 1, nspew, fd);
-    spew = _free(spew);
-
-    spew = fini_repomd;
-    nspew = strlen(spew);
-    nb = Fwrite(spew, 1, nspew, fd);
-
-    (void) Fclose(fd);
+    if ((rfile->fd = Fopen(fn, "w.ufdio")) != NULL) {	/* no compression */
+	if (rfileWrite(rfile, xstrdup(rfile->init))
+	 || rfileWrite(rfile, repoMDExpand(repo, &repo->other))
+	 || rfileWrite(rfile, repoMDExpand(repo, &repo->filelists))
+	 || rfileWrite(rfile, repoMDExpand(repo, &repo->primary))
+	 || rfileWrite(rfile, xstrdup(rfile->fini)))
+	    rc = 1;
+	(void) Fclose(rfile->fd);
+	rfile->fd = NULL;
+    }
 
     fn = _free(fn);
+    if (rc) return rc;
 
 #ifdef	NOTYET
     def doRepoMetadata(self):
@@ -1096,11 +1080,13 @@ assert(fd != NULL);
 
         del repodoc
 #endif
-    return 0;
+
+    return rc;
 }
 
 static int repoDoFinalMove(rpmrepo repo)
-	/*@*/
+	/*@globals h_errno, rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     const char * output_final_dir =
 		rpmGetPath(repo->outputdir, "/", repo->finaldir, NULL);
@@ -1109,9 +1095,6 @@ static int repoDoFinalMove(rpmrepo repo)
     const char * oldfile;
     struct stat sb, *st = &sb;
     int xx;
-
-if (_repo_debug)
-fprintf(stderr, "==> repoDoFinalMove(%p)\n", repo);
 
     if (rpmioExists(output_final_dir, st)) {
 	if ((xx = Rename(output_final_dir, output_old_dir)) != 0)
@@ -1128,14 +1111,16 @@ fprintf(stderr, "==> repoDoFinalMove(%p)\n", repo);
 	output_temp_dir = _free(output_temp_dir);
     }
 
-  { static const char * types[] =
+  { /*@observer@*/
+    static const char * types[] =
 	{ "primary", "filelists", "other", "repomd", "group", NULL };
     const char ** typep;
 
     for (typep = types; *typep != NULL; typep++) {
 	oldfile = rpmGetPath(output_old_dir, "/", *typep,
-		(repo->markup ? repo->markup : ""),
-		(repo->suffix && strcmp(*typep, "repomd") ? repo->suffix : ""), NULL);
+		(repo->markup != NULL ? repo->markup : ""),
+		(repo->suffix != NULL && strcmp(*typep, "repomd")
+			? repo->suffix : ""), NULL);
 	if (rpmioExists(oldfile, st)) {
 	    if (Unlink(oldfile))
 		repo_error(1, _("Could not remove old metadata file: %s: %s"),
@@ -1185,6 +1170,7 @@ fprintf(stderr, "==> repoDoFinalMove(%p)\n", repo);
 	    }
 	}
 	oldfile = _free(oldfile);
+	finalfile = _free(finalfile);
     }
     xx = Closedir(dir);
   }
@@ -1225,10 +1211,10 @@ static int _poptSaveString(const char ***argvp, unsigned int argInfo, const char
  */
 static void repoArgCallback(poptContext con,
                 /*@unused@*/ enum poptCallbackReason reason,
-                const struct poptOption * opt, const char * arg,
+                const struct poptOption * opt, /*@unused@*/ const char * arg,
                 /*@unused@*/ void * data)
-        /*@globals fileSystem, internalState @*/
-        /*@modifies fileSystem, internalState @*/
+        /*@globals _rpmrepo, fileSystem, internalState @*/
+        /*@modifies _rpmrepo, fileSystem, internalState @*/
 {
     rpmrepo repo = _rpmrepo;
 
@@ -1334,7 +1320,7 @@ static struct poptOption optionsTable[] = {
 #endif
  { "outputdir", 'o', POPT_ARG_STRING,		&__rpmrepo.outputdir, 0,
 	N_("<dir> = optional directory to output to"), N_("DIR") },
- { "skip-symlinks", 'S', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmrepo.skipsymlinks, 1,
+ { "skip-symlinks", 'S', POPT_ARG_VAL,		&__rpmrepo.nofollow, 1,
 	N_("ignore symlinks of packages"), NULL },
  { "unique-md-filenames", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &__rpmrepo.uniquemdfilenames, 1,
 	N_("include the file's checksum in the filename, helps with proxies"), NULL },
@@ -1365,9 +1351,9 @@ static struct poptOption optionsTable[] = {
 
 int
 main(int argc, char *argv[])
-	/*@globals __assert_program_name,
+	/*@globals __assert_program_name, _rpmrepo,
 		rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies __assert_program_name,
+	/*@modifies __assert_program_name, _rpmrepo,
 		rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     rpmrepo repo = _rpmrepo;
@@ -1379,7 +1365,9 @@ main(int argc, char *argv[])
     int xx;
     int i;
 
+/*@-observertrans -readonlytrans @*/
     __progname = "rpmmrepo";
+/*@=observertrans =readonlytrans @*/
 
     /* Process options. */
     optCon = rpmioInit(argc, argv, optionsTable);
@@ -1547,14 +1535,22 @@ argvPrint("repo->pkglist", repo->pkglist, NULL);
 
 exit:
     repo->ts = rpmtsFree(repo->ts);
+    repo->primary.digest = _free(repo->primary.digest);
+    repo->filelists.digest = _free(repo->filelists.digest);
+    repo->other.digest = _free(repo->other.digest);
+    repo->repomd.digest = _free(repo->repomd.digest);
+    repo->outputdir = _free(repo->outputdir);
     repo->pkglist = argvFree(repo->pkglist);
     repo->directories = argvFree(repo->directories);
     repo->manifests = argvFree(repo->manifests);
+/*@-onlytrans -refcounttrans @*/
     repo->excludeMire = mireFreeAll(repo->excludeMire, repo->nexcludes);
-    repo->exclude_patterns = argvFree(repo->exclude_patterns);
     repo->includeMire = mireFreeAll(repo->includeMire, repo->nincludes);
+/*@=onlytrans =refcounttrans @*/
+    repo->exclude_patterns = argvFree(repo->exclude_patterns);
     repo->include_patterns = argvFree(repo->include_patterns);
 
+    tagClean(NULL);
     optCon = rpmioFini(optCon);
 
     return rc;

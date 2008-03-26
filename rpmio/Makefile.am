@@ -155,6 +155,10 @@ lint_rpmgrep:
 lint_rpmmtree:
 	$(LINT) -f .splintrc_rpmmtree $(DEFS) $(INCLUDES) rpmmtree.c
 
+.PHONY:	lint_rpmrepo
+lint_rpmrepo:
+	$(LINT) -f .splintrc_rpmrepo $(DEFS) $(INCLUDES) rpmrepo.c
+
 .PHONY:	lint_rpmtar
 lint_rpmtar:
 	$(LINT) -f .splintrc_rpmtar $(DEFS) $(INCLUDES) rpmtar.c

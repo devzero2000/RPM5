@@ -1,0 +1,58 @@
+-I. -I.. -I../rpmdb -I../lib -DHAVE_CONFIG_H -D_GNU_SOURCE -D__STDC__=1 -D__linux__
+
+#+partial
++forcehints
+
+-warnposix
+
++unixlib
+
+-unrecogcomments	# XXX ignore doxygen markings
+
++strict			# lclint level
+
+# --- in progress
+-branchstate
+-bufferoverflowhigh
+
+-enummemuse	# 531
+-nullderef	# 1
+-nullpass	# 10
+-nullstate	# 7
+-typeuse	# 20
+
+-observertrans	# 1
+
+# --- +partial artifacts
+-declundef	# 271
+-fcnuse		# 154
+-varuse		# 36
+
+# --- not-yet at strict level
+-bitwisesigned	# 145
+-elseifcomplete	# 7
+-exportconst	# 273
+-exportfcn	# 215
+-exporttype	# 74
+-exportvar	# 52
+-fielduse	# 159
+-forblock		# tedious
+-ifblock		# tedious
+-namechecks		# 929 tedious ANSI compliance checks
+-ptrarith	# 47
+
+-mustdefine	# 6
+-sys-dir-errors
+
+-strictops	# 35
+-whileblock		# tedious
+
+# --- not-yet at checks level
++enumint	# 26
+-mustfree	# 36
+-usedef		# 18
+
+# --- not-yet at standard level
+-boolops	# 15
++boolint	# 102
++ignorequals	# 121
