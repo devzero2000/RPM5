@@ -4,6 +4,10 @@
 
 #include "system.h"
 
+#if defined(WITH_SQLITE)
+#include <sqlite3.h>
+#endif
+
 #include <rpmio_internal.h>	/* XXX fdInitDigest() et al */
 #include <fts.h>
 #include <argv.h>
@@ -35,10 +39,13 @@ struct rpmrfile_s {
 /*@observer@*/
     const char * qfmt;
 /*@observer@*/
-    const char * schema;
+    const char ** schema;
 /*@observer@*/
     const char * fini;
     FD_t fd;
+#if defined(WITH_SQLITE)
+    sqlite3 * sqldb;
+#endif
 /*@null@*/
     const char * digest;
     time_t ctime;
@@ -67,7 +74,9 @@ struct rpmrepo_s {
     const char * groupfile;
 #endif
     int split;
+#if defined(WITH_SQLITE)
     int database;
+#endif
     int pretty;
     int checkts;
 /*@null@*/
@@ -254,76 +263,82 @@ static const char qfmt_other[] = "\
 ";
 
 /*@unchecked@*/ /*@observer@*/
-static const char schema_primary[] = "\
-PRAGMA synchronous = 0;\n\
-pragma locking_mode = EXCLUSIVE;\n\
-CREATE TABLE conflicts (  name TEXT,  flags TEXT,  epoch TEXT,  version TEXT,  release TEXT,  pkgKey INTEGER );\n\
-CREATE TABLE db_info (dbversion INTEGER, checksum TEXT);\n\
-CREATE TABLE files (  name TEXT,  type TEXT,  pkgKey INTEGER);\n\
-CREATE TABLE obsoletes (  name TEXT,  flags TEXT,  epoch TEXT,  version TEXT,  release TEXT,  pkgKey INTEGER );\n\
-CREATE TABLE packages (  pkgKey INTEGER PRIMARY KEY,  pkgId TEXT,  name TEXT,  arch TEXT,  version TEXT,  epoch TEXT,  release TEXT,  summary TEXT,  description TEXT,  url TEXT,  time_file INTEGER,  time_build INTEGER,  rpm_license TEXT,  rpm_vendor TEXT,  rpm_group TEXT,  rpm_buildhost TEXT,  rpm_sourcerpm TEXT,  rpm_header_start INTEGER,  rpm_header_end INTEGER,  rpm_packager TEXT,  size_package INTEGER,  size_installed INTEGER,  size_archive INTEGER,  location_href TEXT,  location_base TEXT,  checksum_type TEXT);\n\
-CREATE TABLE provides (  name TEXT,  flags TEXT,  epoch TEXT,  version TEXT,  release TEXT,  pkgKey INTEGER );\n\
-CREATE TABLE requires (  name TEXT,  flags TEXT,  epoch TEXT,  version TEXT,  release TEXT,  pkgKey INTEGER , pre BOOL DEFAULT FALSE);\n\
-CREATE INDEX filenames ON files (name);\n\
-CREATE INDEX packageId ON packages (pkgId);\n\
-CREATE INDEX packagename ON packages (name);\n\
-CREATE INDEX pkgconflicts on conflicts (pkgKey);\n\
-CREATE INDEX pkgobsoletes on obsoletes (pkgKey);\n\
-CREATE INDEX pkgprovides on provides (pkgKey);\n\
-CREATE INDEX pkgrequires on requires (pkgKey);\n\
-CREATE INDEX providesname ON provides (name);\n\
-CREATE INDEX requiresname ON requires (name);\n\
-CREATE TRIGGER removals AFTER DELETE ON packages\n\
+static const char *schema_primary[] = {
+"PRAGMA synchronous = 0;",
+"pragma locking_mode = EXCLUSIVE;",
+"CREATE TABLE conflicts (  name TEXT,  flags TEXT,  epoch TEXT,  version TEXT,  release TEXT,  pkgKey INTEGER );",
+"CREATE TABLE db_info (dbversion INTEGER, checksum TEXT);",
+"CREATE TABLE files (  name TEXT,  type TEXT,  pkgKey INTEGER);",
+"CREATE TABLE obsoletes (  name TEXT,  flags TEXT,  epoch TEXT,  version TEXT,  release TEXT,  pkgKey INTEGER );",
+"CREATE TABLE packages (  pkgKey INTEGER PRIMARY KEY,  pkgId TEXT,  name TEXT,  arch TEXT,  version TEXT,  epoch TEXT,  release TEXT,  summary TEXT,  description TEXT,  url TEXT,  time_file INTEGER,  time_build INTEGER,  rpm_license TEXT,  rpm_vendor TEXT,  rpm_group TEXT,  rpm_buildhost TEXT,  rpm_sourcerpm TEXT,  rpm_header_start INTEGER,  rpm_header_end INTEGER,  rpm_packager TEXT,  size_package INTEGER,  size_installed INTEGER,  size_archive INTEGER,  location_href TEXT,  location_base TEXT,  checksum_type TEXT);",
+"CREATE TABLE provides (  name TEXT,  flags TEXT,  epoch TEXT,  version TEXT,  release TEXT,  pkgKey INTEGER );",
+"CREATE TABLE requires (  name TEXT,  flags TEXT,  epoch TEXT,  version TEXT,  release TEXT,  pkgKey INTEGER , pre BOOL DEFAULT FALSE);",
+"CREATE INDEX filenames ON files (name);",
+"CREATE INDEX packageId ON packages (pkgId);",
+"CREATE INDEX packagename ON packages (name);",
+"CREATE INDEX pkgconflicts on conflicts (pkgKey);",
+"CREATE INDEX pkgobsoletes on obsoletes (pkgKey);",
+"CREATE INDEX pkgprovides on provides (pkgKey);",
+"CREATE INDEX pkgrequires on requires (pkgKey);",
+"CREATE INDEX providesname ON provides (name);",
+"CREATE INDEX requiresname ON requires (name);",
+"CREATE TRIGGER removals AFTER DELETE ON packages\n\
     BEGIN\n\
     DELETE FROM files WHERE pkgKey = old.pkgKey;\n\
     DELETE FROM requires WHERE pkgKey = old.pkgKey;\n\
     DELETE FROM provides WHERE pkgKey = old.pkgKey;\n\
     DELETE FROM conflicts WHERE pkgKey = old.pkgKey;\n\
     DELETE FROM obsoletes WHERE pkgKey = old.pkgKey;\n\
-    END;\n\
-INSERT into db_info values (9, 'direct_create');\n\
-";
+    END;",
+"INSERT into db_info values (9, 'direct_create');",
+    NULL
+};
 /*XXX todo: DBVERSION needs to be set */
 
 /*@unchecked@*/ /*@observer@*/
-static const char schema_filelists[] = "\
-PRAGMA synchronous = 0;\n\
-pragma locking_mode = EXCLUSIVE;\n\
-CREATE TABLE db_info (dbversion INTEGER, checksum TEXT);\n\
-CREATE TABLE filelist (  pkgKey INTEGER,  dirname TEXT,  filenames TEXT,  filetypes TEXT);\n\
-CREATE TABLE packages (  pkgKey INTEGER PRIMARY KEY,  pkgId TEXT);\n\
-CREATE INDEX dirnames ON filelist (dirname);\n\
-CREATE INDEX keyfile ON filelist (pkgKey);\n\
-CREATE INDEX pkgId ON packages (pkgId);\n\
-CREATE TRIGGER remove_filelist AFTER DELETE ON packages\n\
+static const char *schema_filelists[] = {
+"PRAGMA synchronous = 0;",
+"pragma locking_mode = EXCLUSIVE;",
+"CREATE TABLE db_info (dbversion INTEGER, checksum TEXT);",
+"CREATE TABLE filelist (  pkgKey INTEGER,  dirname TEXT,  filenames TEXT,  filetypes TEXT);",
+"CREATE TABLE packages (  pkgKey INTEGER PRIMARY KEY,  pkgId TEXT);",
+"CREATE INDEX dirnames ON filelist (dirname);",
+"CREATE INDEX keyfile ON filelist (pkgKey);",
+"CREATE INDEX pkgId ON packages (pkgId);",
+"CREATE TRIGGER remove_filelist AFTER DELETE ON packages\n\
     BEGIN\n\
     DELETE FROM filelist WHERE pkgKey = old.pkgKey;\n\
-    END;\n\
-INSERT into db_info values (9, 'direct_create');\n\
-";
+    END;",
+"INSERT into db_info values (9, 'direct_create');",
+    NULL
+};
 /*XXX todo: DBVERSION needs to be set */
 
 /*@unchecked@*/ /*@observer@*/
-static const char schema_other[] = "\
-PRAGMA synchronous = 0;\n\
-pragma locking_mode = EXCLUSIVE;\n\
-CREATE TABLE changelog (  pkgKey INTEGER,  author TEXT,  date INTEGER,  changelog TEXT);\n\
-CREATE TABLE db_info (dbversion INTEGER, checksum TEXT);\n\
-CREATE TABLE packages (  pkgKey INTEGER PRIMARY KEY,  pkgId TEXT);\n\
-CREATE INDEX keychange ON changelog (pkgKey);\n\
-CREATE INDEX pkgId ON packages (pkgId);\n\
-CREATE TRIGGER remove_changelogs AFTER DELETE ON packages\n\
+static const char *schema_other[] = {
+"PRAGMA synchronous = 0;",
+"pragma locking_mode = EXCLUSIVE;",
+"CREATE TABLE changelog (  pkgKey INTEGER,  author TEXT,  date INTEGER,  changelog TEXT);",
+"CREATE TABLE db_info (dbversion INTEGER, checksum TEXT);",
+"CREATE TABLE packages (  pkgKey INTEGER PRIMARY KEY,  pkgId TEXT);",
+"CREATE INDEX keychange ON changelog (pkgKey);",
+"CREATE INDEX pkgId ON packages (pkgId);",
+"CREATE TRIGGER remove_changelogs AFTER DELETE ON packages\n\
     BEGIN\n\
     DELETE FROM changelog WHERE pkgKey = old.pkgKey;\n\
-    END;\n\
-INSERT into db_info values (9, 'direct_create');\n\
-";
+    END;",
+"INSERT into db_info values (9, 'direct_create');",
+    NULL
+};
 /*XXX todo: DBVERSION needs to be set */
 
 /*@-fullinitblock@*/
 /*@unchecked@*/
 static struct rpmrepo_s __rpmrepo = {
     .pretty	= 1,
+#if defined(WITH_SQLITE)
+    .database	= 1,
+#endif
     .tempdir	= ".repodata",
     .finaldir	= "repodata",
     .olddir	= ".olddata",
@@ -542,29 +557,6 @@ static int repoTestSetupDirs(rpmrepo repo)
     return rc;
 }
 
-static int repoMetaDataGenerator(rpmrepo repo)
-	/*@globals h_errno, rpmGlobalMacroContext, fileSystem, internalState @*/
-	/*@modifies repo, rpmGlobalMacroContext, fileSystem, internalState @*/
-{
-    int rc = 0;
-
-    repo->ts = rpmtsCreate();
-    /* XXX todo wire up usual rpm CLI options. hotwire --nosignature for now */
-    (void) rpmtsSetVSFlags(repo->ts, _RPMVSF_NOSIGNATURES);
-
-    /* XXX repoParseDirectory(repo); */
-#ifdef	NOTYET
-    if (repo->basedir == NULL)
-	repo->basedir = xstrdup(repo->directories[0]);
-#endif
-    if (repo->outputdir == NULL)
-	repo->outputdir = xstrdup(repo->directories[0]);
-
-    rc = repoTestSetupDirs(repo);
-	
-    return rc;
-}
-
 /**
  * Check file name for a suffix.
  * @param fn            file name
@@ -718,6 +710,25 @@ assert(rfile->fd != NULL);
 
     fn = _free(fn);
 
+#if defined(WITH_SQLITE)
+    if (repo->database) {
+	const char ** stmt;
+	int xx;
+	fn = rpmGetPath(repo->outputdir, "/", repo->tempdir, "/",
+		rfile->type, "_db", NULL);
+	if ((xx = sqlite3_open(fn, &rfile->sqldb)) != SQLITE_OK)
+	    repo_error(1, "sqlite3_open(%s): %s", fn, sqlite3_errmsg(rfile->sqldb));
+	for (stmt = rfile->schema; *stmt != NULL; stmt++) {
+	    char * msg;
+	    xx = sqlite3_exec(rfile->sqldb, *stmt, NULL, NULL, &msg);
+	    if (xx != SQLITE_OK)
+		repo_error(1, "sqlite3_exec(%s, \"%s\"): %s\n", fn, *stmt,
+			(msg ? msg : "failed"));
+	}
+	fn = _free(fn);
+    }
+#endif
+
     return rc;
 }
 
@@ -834,6 +845,18 @@ static int repoCloseMDFile(const rpmrepo repo, rpmrfile rfile)
 
     (void) Fclose(rfile->fd);
     rfile->fd = NULL;
+
+#if defined(WITH_SQLITE)
+    if (repo->database && rfile->sqldb != NULL) {
+	int xx;
+	fn = rpmGetPath(repo->outputdir, "/", repo->tempdir, "/",
+		rfile->type, "_db", NULL);
+	if ((xx = sqlite3_close(rfile->sqldb)) != SQLITE_OK)
+	    repo_error(1, "sqlite3_close(%s): %s", fn, sqlite3_errmsg(rfile->sqldb));
+	rfile->sqldb = NULL;
+	fn = _free(fn);
+    }
+#endif
 
     fn = repoGetPath(repo, repo->tempdir, rfile->type, 1);
     rfile->ctime = rpmioCtime(fn);
@@ -1380,8 +1403,10 @@ static struct poptOption optionsTable[] = {
 	N_("make sure all xml generated is formatted"), NULL },
  { "checkts", 'C', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmrepo.checkts, 1,
 	N_("check timestamps on files vs the metadata to see if we need to update"), NULL },
- { "database", 'd', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmrepo.database, 1,
-	N_("create sqlite database files"), NULL },
+#if defined(WITH_SQLITE)
+ { "database", 'd', POPT_ARG_VAL,		&__rpmrepo.database, 1,
+	N_("create sqlite3 database files"), NULL },
+#endif
  { "split", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN,		&__rpmrepo.split, 1,
 	N_("generate split media"), NULL },
 #if defined(POPT_ARG_ARGV)
@@ -1540,11 +1565,19 @@ assert(nb < sizeof(fullpath));
 if (_repo_debug || repo->dryrun)
 argvPrint("repo->directories", repo->directories, NULL);
 
-    /* XXX todo: convert relative -> absolute for repo->outputdir */
+#ifdef	NOTYET
+    if (repo->basedir == NULL)
+	repo->basedir = xstrdup(repo->directories[0]);
+#endif
+
     if (repo->outputdir == NULL) {
-	repo->outputdir = repoRealpath(".");
-	if (repo->outputdir == NULL)
-	    repo_error(1, _("Realpath(%s): %s"), ".", strerror(errno));
+	if (repo->directories != NULL && repo->directories[0] != NULL)
+	    repo->outputdir = xstrdup(repo->directories[0]);
+	else {
+	    repo->outputdir = repoRealpath(".");
+	    if (repo->outputdir == NULL)
+		repo_error(1, _("Realpath(%s): %s"), ".", strerror(errno));
+	}
     }
 
     if (repo->split && repo->checkts)
@@ -1587,7 +1620,13 @@ if (_repo_debug || repo->dryrun)
 argvPrint("repo->pkglist", repo->pkglist, NULL);
 
     repo->pkgcount = argvCount(repo->pkglist);
-    rc = repoMetaDataGenerator(repo);
+
+    repo->ts = rpmtsCreate();
+    /* XXX todo wire up usual rpm CLI options. hotwire --nosignature for now */
+    (void) rpmtsSetVSFlags(repo->ts, _RPMVSF_NOSIGNATURES);
+
+    rc = repoTestSetupDirs(repo);
+	
     if (rc || repo->dryrun)
 	goto exit;
 
