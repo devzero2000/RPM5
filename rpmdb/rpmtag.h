@@ -967,7 +967,6 @@ int headerSetOrigin(/*@null@*/ Header h, const char * origin)
  * @param h		header
  * @return		header time
  */
-/*@observer@*/ /*@null@*/
 uint32_t headerGetTime(/*@null@*/ Header h)
 	/*@*/;
 

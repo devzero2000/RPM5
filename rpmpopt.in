@@ -101,112 +101,318 @@ rpm	alias --xml --qf '[%{*:xml}\n]' \
 	--POPTdesc=$"list metadata in xml"
 rpm	alias --yaml --qf '[%{*:yaml}\n]' \
 	--POPTdesc=$"list metadata in yaml"
+
+#==============================================================================
 rpm	alias --yum:primary.xml --qf '\
-<package type="rpm">\n\
-  <name>%{NAME:cdata}</name>\n\
-  <arch>%{ARCH:cdata}</arch>\n\
-  <version epoch="%|EPOCH?{%{EPOCH}}:{0}|" ver="%{VERSION:cdata}" rel="%{RELEASE:cdata}"/>\n\
-  <checksum type="sha" pkgid="NO">%|HDRID?{%{HDRID}}|</checksum>\n\
-  <summary>%{SUMMARY:cdata}</summary>\n\
-  <description>%{DESCRIPTION:cdata}</description>\n\
-  <packager>%|PACKAGER?{%{PACKAGER:cdata}}:{}|</packager>\n\
-  <url>%|URL?{%{URL:cdata}}:{}|</url>\n\
-  <time file="%{PACKAGETIME}" build="%{BUILDTIME}"/>\n\
-  <size package="%{SIZE}" installed="%{SIZE}" archive="%{ARCHIVESIZE}"/>\n\
-  <location href="%{PACKAGEORIGIN:cdata}"/>\n\
-  <format>\n\
+<package type="rpm">\
+\n  <name>%{NAME:cdata}</name>\
+\n  <arch>%{ARCH:cdata}</arch>\
+\n  <version epoch="%|EPOCH?{%{EPOCH}}:{0}|" ver="%{VERSION:cdata}" rel="%{RELEASE:cdata}"/>\
+\n  <checksum type="sha" pkgid="NO">%|HDRID?{%{HDRID}}|</checksum>\
+\n  <summary>%{SUMMARY:cdata}</summary>\
+\n  <description>%{DESCRIPTION:cdata}</description>\
+\n  <packager>%|PACKAGER?{%{PACKAGER:cdata}}:{}|</packager>\
+\n  <url>%|URL?{%{URL:cdata}}:{}|</url>\
+\n  <time file="%{PACKAGETIME}" build="%{BUILDTIME}"/>\
+\n  <size package="%{SIZE}" installed="%{SIZE}" archive="%{ARCHIVESIZE}"/>\
+\n  <location href="%{PACKAGEORIGIN:cdata}"/>\
+\n  <format>\
 %|license?{\
-    <rpm:license>%{LICENSE:cdata}</rpm:license>\n\
+\n    <rpm:license>%{LICENSE:cdata}</rpm:license>\
 }:{\
-    <rpm:license/>\n\
+\n    <rpm:license/>\
 }|\
 %|vendor?{\
-    <rpm:vendor>%{VENDOR:cdata}</rpm:vendor>\n\
+\n    <rpm:vendor>%{VENDOR:cdata}</rpm:vendor>\
 }:{\
-    <rpm:vendor/>\n\
+\n    <rpm:vendor/>\
 }|\
 %|group?{\
-    <rpm:group>%{GROUP:cdata}</rpm:group>\n\
+\n    <rpm:group>%{GROUP:cdata}</rpm:group>\
 }:{\
-    <rpm:group/>\n\
+\n    <rpm:group/>\
 }|\
 %|buildhost?{\
-    <rpm:buildhost>%{BUILDHOST:cdata}</rpm:buildhost>\n\
+\n    <rpm:buildhost>%{BUILDHOST:cdata}</rpm:buildhost>\
 }:{\
-    <rpm:buildhost/>\n\
+\n    <rpm:buildhost/>\
 }|\
 %|sourcerpm?{\
-    <rpm:sourcerpm>%{SOURCERPM:cdata}</rpm:sourcerpm>\n\
+\n    <rpm:sourcerpm>%{SOURCERPM:cdata}</rpm:sourcerpm>\
 }|\
-    <rpm:header-range start="%{HEADERSTARTOFF}" end="%{HEADERENDOFF}"/>\n\
-%|provideentry?{\
-    <rpm:provides>\n\
+\n    <rpm:header-range start="%{HEADERSTARTOFF}" end="%{HEADERENDOFF}"/>\
+%|providename?{\
+\n    <rpm:provides>\
 [\
-      %{provideentry}\n\
+\n      %{provideentry}\
 ]\
-    </rpm:provides>\n\
+\n    </rpm:provides>\
 }:{\
-    <rpm:provides/>\n\
+\n    <rpm:provides/>\
+\n}|\
+%|requirename?{\
+\n    <rpm:requires>\
+[\
+\n      %{requireentry}\
+]\
+\n    </rpm:requires>\
+}:{\
+\n    <rpm:requires/>\
 }|\
-%|requireentry?{\
-    <rpm:requires>\n\
+%|conflictname?{\
+\n    <rpm:conflicts>\
 [\
-      %{requireentry}\n\
+\n      %{conflictentry}\
 ]\
-    </rpm:requires>\n\
+\n    </rpm:conflicts>\
 }:{\
-    <rpm:requires/>\n\
+\n    <rpm:conflicts/>\
 }|\
-%|conflictentry?{\
-    <rpm:conflicts>\n\
+%|obsoletename?{\
+\n    <rpm:obsoletes>\
 [\
-      %{conflictentry}\n\
+\n      %{obsoleteentry}\
 ]\
-    </rpm:conflicts>\n\
+\n    </rpm:obsoletes>\
 }:{\
-    <rpm:conflicts/>\n\
-}|\
-%|obsoleteentry?{\
-    <rpm:obsoletes>\n\
-[\
-      %{obsoleteentry}\n\
-]\
-    </rpm:obsoletes>\n\
-}:{\
-    <rpm:obsoletes/>\n\
+\n    <rpm:obsoletes/>\
 }|\
 %|filesentry1?{\
 [\
-    %{filesentry1}\n\
+\n    %{filesentry1}\
 ]\
 }|\
-  </format>\n\
-</package>\n' \
+\n  </format>\
+\n</package>\
+\n' \
 	--POPTdesc=$"display yum primary.xml markup"
 
+rpm	alias --yum:primary.sqlite --qf '\
+INSERT into packages values (\
+XXX\
+, %|HDRID?{%{HDRID}}:{XXX}|\
+, NAME:utf8\
+, ARCH:utf8\
+, VERSION:utf8\
+, %|EPOCH?{%{EPOCH}}:{0}|\
+, RELEASE:utf8\
+, SUMMARY:utf8\
+, DESCRIPTION:utf8\
+, %|URL?{%{URL:cdata}}:{XXX}|\
+, PACKAGETIME\
+, BUILDTIME\
+, %|license?{%{LICENSE:cdata}}:{XXX}|\
+, %|vendor?{%{VENDOR:cdata}}:{XXX}|\
+, %|group?{%{GROUP:cdata}}:{XXX}|\
+, %|buildhost?{%{BUILDHOST:cdata}}:{XXX}|\
+, %|sourcerpm?{%{SOURCERPM:cdata}}:{XXX}|\
+, HEADERSTARTOFF\
+, HEADERENDOFF\
+, %|PACKAGER?{%{PACKAGER:cdata}}:{XXX}|\
+, SIZE\
+, SIZE\
+, ARCHIVESIZE\
+, PACKAGEORIGIN:utf8\
+, XXX\
+, sha\
+);\
+%|providename?{\
+\nINSERT into provides values (\
+%{provideentry}\
+, XXX\
+);\
+}|\
+%|conflictname?{\
+\nINSERT into conflicts values (\
+%{conflictentry}\
+, XXX\
+);\
+}|\
+%|obsoletename?{\
+\nINSERT into obsoletes values (\
+%{conflictentry}\
+, XXX\
+);\
+}|\
+%|requirename?{\
+\nINSERT into requires values (\
+%{requireentry}\
+, XXX\
+);\
+}|\
+\nINSERT into files values (\
+%{requireentry}\
+, XXX\
+);\
+\n'\
+	--POPTdesc=$"display yum primary.sqlite import"
+
+rpm	alias --yum:primary.yaml --qf '\
+Package:\
+\n  Id:          %|HDRID?{%{HDRID}}:{XXX}|\
+\n  Name:        %{NAME:yaml}\
+\n  Arch:        %{ARCH:yaml}\
+\n  Version:     %{VERSION:yaml}\
+\n  Epoch:       %|EPOCH?{%{EPOCH}}:{0}|\
+\n  Release:     %{RELEASE:yaml}\
+\n  Summary:     %{SUMMARY:yaml}\
+\n  Description: %{DESCRIPTION:yaml}\
+\n  Url:         %|URL?{%{URL:yaml}}:{XXX}|\
+\n  Filetime:    %{PACKAGETIME}\
+\n  Buildtime:   %{BUILDTIME}\
+\n  License:     %|license?{%{LICENSE:yaml}}:{XXX}|\
+\n  Vendor:      %|vendor?{%{VENDOR:yaml}}:{XXX}|\
+\n  Group:       %|group?{%{GROUP:yaml}}:{XXX}|\
+\n  Buildhost:   %|buildhost?{%{BUILDHOST:yaml}}:{XXX}|\
+\n  Sourcerpm:   %|sourcerpm?{%{SOURCERPM:yaml}}:{XXX}|\
+\n  Hdrstart:    %{HEADERSTARTOFF}\
+\n  Hdrend:      %{HEADERENDOFF}\
+\n  Packager:    %|PACKAGER?{%{PACKAGER:yaml}}:{XXX}|\
+\n  Packagesize: %{SIZE}\
+\n  Size:        %{SIZE}\
+\n  Archivesize: %{ARCHIVESIZE}\
+\n  Location:    %{PACKAGEORIGIN:yaml}\
+\n  BaseURL:     XXX\
+\n  Idtype:      sha\
+\n  Rpm:\
+%|license?{\
+\n    License: 	 %{LICENSE:yaml}\
+}|\
+%|vendor?{\
+\n    Vendor:    %{VENDOR:yaml}\
+}|\
+%|group?{\
+\n    Group:     %{GROUP:yaml}\
+}|\
+%|buildhost?{\
+\n    Buildhost: %{BUILDHOST:yaml}\
+}|\
+%|sourcerpm?{\
+\n    Sourcerpm: %{SOURCERPM:cdata}\
+}|\
+\n    Hdrstart:  %{HEADERSTARTOFF}\
+\n    Hdrend:    %{HEADERENDOFF}\
+%|provideentry?{\
+\n    Provides:\
+[\
+\n      - %{provideentry}\
+]\
+}|\
+%|requireentry?{\
+\n    Requires:\
+[\
+\n      - %{requireentry}\
+]\
+}|\
+%|conflictentry?{\
+\n    Conflicts:\
+[\
+\n      - %{conflictentry}\
+]\
+}|\
+%|obsoleteentry?{\
+\n    Obsoletes:\
+[\
+\n      - %{obsoleteentry}\
+]\
+}|\
+%|filesentry1?{\
+\n    Files:\
+[\
+\n      - %{filesentry1}\
+]\
+}|\
+\n'\
+	--POPTdesc=$"display yum primary.yaml markup"
+
 rpm	alias --yum:filelists.xml --qf '\
-<package pkgid="%|HDRID?{%{HDRID}}:{XXX}|" name="%{NAME:cdata}" arch="%{ARCH:cdata}">\n\
-  <version epoch="%|EPOCH?{%{EPOCH}}:{0}|" ver="%{VERSION:cdata}" rel="%{RELEASE:cdata}"/>\n\
+<package pkgid="%|HDRID?{%{HDRID}}:{XXX}|" name="%{NAME:cdata}" arch="%{ARCH:cdata}">\
+\n  <version epoch="%|EPOCH?{%{EPOCH}}:{0}|" ver="%{VERSION:cdata}" rel="%{RELEASE:cdata}"/>\
 %|filesentry2?{\
 [\
-  %{filesentry2}\n\
+\n  %{filesentry2}\
 ]\
 }|\
-</package>\n' \
+\n</package>\
+\n' \
 	--POPTdesc=$"display yum filelists.xml markup"
 
+rpm	alias --yum:filelists.sqlite --qf '\
+INSERT into packages values (\
+XXX\
+, %|HDRID?{%{HDRID}}:{XXX}|\
+);\
+\nINSERT into filelist values (\
+XXX\
+, dirname\
+, utils.encodefilenamelist(direc("files"))\
+, utils.encodefiletypelist(direc("types"))\
+)\
+\n' \
+	--POPTdesc=$"display yum filelists.sqlite import"
+
+rpm	alias --yum:filelists.yaml --qf '\
+Filelists:\
+\n  Id:      %|HDRID?{%{HDRID}}:{XXX}|\
+\n  Name:    %{NAME:yaml}\
+\n  Arch:    %{ARCH:yaml}\
+\n  Epoch:   %|EPOCH?{%{EPOCH}}:{0}|\
+\n  Version: %{VERSION:yaml}\
+\n  Release: %{RELEASE:yaml}\
+\n  Files:\
+%|filesentry2?{\
+[\
+\n    - %{filesentry2}\
+]\
+}|\
+\n' \
+	--POPTdesc=$"display yum filelists.yaml markup"
+
 rpm	alias --yum:other.xml --qf '\
-<package pkgid="%|HDRID?{%{HDRID}}:{XXX}|" name="%{NAME:cdata}" arch="%{ARCH:cdata}">\n\
-  <version epoch="%|EPOCH?{%{EPOCH}}:{0}|" ver="%{VERSION:cdata}" rel="%{RELEASE:cdata}"/>\n\
+<package pkgid="%|HDRID?{%{HDRID}}:{XXX}|" name="%{NAME:cdata}" arch="%{ARCH:cdata}">\
+\n  <version epoch="%|EPOCH?{%{EPOCH}}:{0}|" ver="%{VERSION:cdata}" rel="%{RELEASE:cdata}"/>\
 %|changelogname?{\
 [\
-  <changelog author="%{CHANGELOGNAME:cdata}" date="%{CHANGELOGTIME}">%{CHANGELOGTEXT:cdata}</changelog>\n\
+\n  <changelog author="%{CHANGELOGNAME:cdata}" date="%{CHANGELOGTIME}">%{CHANGELOGTEXT:cdata}</changelog>\
 ]\
 }:{\
-  <changelog/>\n\
+\n  <changelog/>\
 }|\
-</package>\n' \
+\n</package>\
+\n' \
 	--POPTdesc=$"display yum other.xml markup"
+
+rpm	alias --yum:other.sqlite --qf '\
+INSERT into packages values (\
+XXX\
+, %|HDRID?{%{HDRID}}:{XXX}|\
+);\
+\nINSERT into changelog (\
+XXX\
+,date\
+,author\
+,changelog\
+)\
+\n' \
+	--POPTdesc=$"display yum other.sqlite import"
+
+rpm	alias --yum:other.yaml --qf '\
+Other:\
+\n  Id:      %|HDRID?{%{HDRID}}:{XXX}|\
+\n  Name:    %{NAME:yaml}\
+\n  Arch:    %{ARCH:yaml}\
+\n  Epoch:   %|EPOCH?{%{EPOCH}}:{0}|\
+\n  Version: %{VERSION:yaml}\
+\n  Release: %{RELEASE:yaml}\
+\n  Changelogs:\
+%|changelogname?{\
+[\
+\n    - <changelog author="%{CHANGELOGNAME:cdata}" date="%{CHANGELOGTIME}">%{CHANGELOGTEXT:cdata}</changelog>\
+]\
+}|\
+\n' \
+	--POPTdesc=$"display yum other.yaml markup"
+
 #==============================================================================
 rpm	alias --triggerscripts --qf '\
 [trigger%{TRIGGERTYPE} scriptlet (using %{TRIGGERSCRIPTPROG}) -- %{TRIGGERCONDS}\n\

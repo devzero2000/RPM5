@@ -16,11 +16,13 @@
 #define RPM_MINOR_VERSION 0
 
 /*@-redecl@*/
+/*@-incondefs@*/
 /*@checked@*/
 extern struct MacroContext_s * rpmGlobalMacroContext;
 
 /*@checked@*/
 extern struct MacroContext_s * rpmCLIMacroContext;
+/*@=incondefs@*/
 
 /*@unchecked@*/ /*@observer@*/
 extern const char * RPMVERSION;
