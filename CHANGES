@@ -1,4 +1,7 @@
 5.0.0 -> 5.1a1:
+    - jbj: rework --yum:primary.sqlite to include quoting.
+    - jbj: add header extensions similar to xml for sql.
+    - jbj: rename the primary.xml et al header extensions, adding "xml".
     - jbj: add :utf8 format conversion, use with :cdata format too.
     - jbj: rpmrepo: unsnarl the data from the methods.
     - jbj: rpmrepo: populate repomd.xml.

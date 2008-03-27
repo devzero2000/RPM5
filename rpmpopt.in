@@ -144,7 +144,7 @@ rpm	alias --yum:primary.xml --qf '\
 %|providename?{\
 \n    <rpm:provides>\
 [\
-\n      %{provideentry}\
+\n      %{providexmlentry}\
 ]\
 \n    </rpm:provides>\
 }:{\
@@ -153,7 +153,7 @@ rpm	alias --yum:primary.xml --qf '\
 %|requirename?{\
 \n    <rpm:requires>\
 [\
-\n      %{requireentry}\
+\n      %{requirexmlentry}\
 ]\
 \n    </rpm:requires>\
 }:{\
@@ -162,7 +162,7 @@ rpm	alias --yum:primary.xml --qf '\
 %|conflictname?{\
 \n    <rpm:conflicts>\
 [\
-\n      %{conflictentry}\
+\n      %{conflictxmlentry}\
 ]\
 \n    </rpm:conflicts>\
 }:{\
@@ -171,15 +171,15 @@ rpm	alias --yum:primary.xml --qf '\
 %|obsoletename?{\
 \n    <rpm:obsoletes>\
 [\
-\n      %{obsoleteentry}\
+\n      %{obsoletexmlentry}\
 ]\
 \n    </rpm:obsoletes>\
 }:{\
 \n    <rpm:obsoletes/>\
 }|\
-%|filesentry1?{\
+%|filesxmlentry1?{\
 [\
-\n    %{filesentry1}\
+\n    %{filesxmlentry1}\
 ]\
 }|\
 \n  </format>\
@@ -187,64 +187,66 @@ rpm	alias --yum:primary.xml --qf '\
 \n' \
 	--POPTdesc=$"display yum primary.xml markup"
 
-rpm	alias --yum:primary.sqlite --qf '\
+rpm	alias --yum:primary.sqlite --qf "\
 INSERT into packages values (\
-XXX\
-, %|HDRID?{%{HDRID}}:{XXX}|\
-, NAME:utf8\
-, ARCH:utf8\
-, VERSION:utf8\
-, %|EPOCH?{%{EPOCH}}:{0}|\
-, RELEASE:utf8\
-, SUMMARY:utf8\
-, DESCRIPTION:utf8\
-, %|URL?{%{URL:cdata}}:{XXX}|\
-, PACKAGETIME\
-, BUILDTIME\
-, %|license?{%{LICENSE:cdata}}:{XXX}|\
-, %|vendor?{%{VENDOR:cdata}}:{XXX}|\
-, %|group?{%{GROUP:cdata}}:{XXX}|\
-, %|buildhost?{%{BUILDHOST:cdata}}:{XXX}|\
-, %|sourcerpm?{%{SOURCERPM:cdata}}:{XXX}|\
-, HEADERSTARTOFF\
-, HEADERENDOFF\
-, %|PACKAGER?{%{PACKAGER:cdata}}:{XXX}|\
-, SIZE\
-, SIZE\
-, ARCHIVESIZE\
-, PACKAGEORIGIN:utf8\
-, XXX\
-, sha\
+'XXX'\
+, '%|HDRID?{%{HDRID}}:{XXX}|'\
+, '%{NAME:utf8}'\
+, '%{ARCH:utf8}'\
+, '%{VERSION:utf8}'\
+, '%|EPOCH?{%{EPOCH}}:{0}|'\
+, '%{RELEASE:utf8}'\
+, 'SUMMARY:utf8'\
+, 'DESCRIPTION:utf8'\
+, '%|URL?{%{URL:utf8}}|'\
+, '%{PACKAGETIME}'\
+, '%{BUILDTIME}'\
+, '%|license?{%{LICENSE:utf8}}|'\
+, '%|vendor?{%{VENDOR:utf8}}|'\
+, '%|group?{%{GROUP:utf8}}|'\
+, '%|buildhost?{%{BUILDHOST:utf8}}|'\
+, '%|sourcerpm?{%{SOURCERPM:utf8}}|'\
+, '%{HEADERSTARTOFF}'\
+, '%{HEADERENDOFF}'\
+, '%|PACKAGER?{%{PACKAGER:utf8}}|'\
+, '%{SIZE}'\
+, '%{SIZE}'\
+, '%{ARCHIVESIZE}'\
+, '%{PACKAGEORIGIN:utf8}'\
+, 'XXX'\
+, 'sha'\
 );\
-%|providename?{\
+%|providename?{[\
 \nINSERT into provides values (\
-%{provideentry}\
-, XXX\
+%{providesqlentry}\
+, 'XXX'\
 );\
-}|\
-%|conflictname?{\
+]}|\
+%|conflictname?{[\
 \nINSERT into conflicts values (\
-%{conflictentry}\
-, XXX\
+%{conflictsqlentry}\
+, 'XXX'\
 );\
-}|\
-%|obsoletename?{\
+]}|\
+%|obsoletename?{[\
 \nINSERT into obsoletes values (\
-%{conflictentry}\
-, XXX\
+%{conflictsqlentry}\
+, 'XXX'\
 );\
-}|\
-%|requirename?{\
+]}|\
+%|requirename?{[\
 \nINSERT into requires values (\
-%{requireentry}\
-, XXX\
+%{requiresqlentry}\
+, 'XXX'\
 );\
-}|\
+]}|\
+%|basenames?{[\
 \nINSERT into files values (\
-%{requireentry}\
-, XXX\
+%{filessqlentry1}\
+, 'XXX'\
 );\
-\n'\
+]}|\
+\n"\
 	--POPTdesc=$"display yum primary.sqlite import"
 
 rpm	alias --yum:primary.yaml --qf '\
@@ -292,34 +294,34 @@ Package:\
 }|\
 \n    Hdrstart:  %{HEADERSTARTOFF}\
 \n    Hdrend:    %{HEADERENDOFF}\
-%|provideentry?{\
+%|providexmlentry?{\
 \n    Provides:\
 [\
-\n      - %{provideentry}\
+\n      - %{providexmlentry}\
 ]\
 }|\
-%|requireentry?{\
+%|requirexmlentry?{\
 \n    Requires:\
 [\
-\n      - %{requireentry}\
+\n      - %{requirexmlentry}\
 ]\
 }|\
-%|conflictentry?{\
+%|conflictxmlentry?{\
 \n    Conflicts:\
 [\
-\n      - %{conflictentry}\
+\n      - %{conflictxmlentry}\
 ]\
 }|\
-%|obsoleteentry?{\
+%|obsoletexmlentry?{\
 \n    Obsoletes:\
 [\
-\n      - %{obsoleteentry}\
+\n      - %{obsoletexmlentry}\
 ]\
 }|\
-%|filesentry1?{\
+%|filesxmlentry1?{\
 \n    Files:\
 [\
-\n      - %{filesentry1}\
+\n      - %{filesxmlentry1}\
 ]\
 }|\
 \n'\
@@ -328,9 +330,9 @@ Package:\
 rpm	alias --yum:filelists.xml --qf '\
 <package pkgid="%|HDRID?{%{HDRID}}:{XXX}|" name="%{NAME:cdata}" arch="%{ARCH:cdata}">\
 \n  <version epoch="%|EPOCH?{%{EPOCH}}:{0}|" ver="%{VERSION:cdata}" rel="%{RELEASE:cdata}"/>\
-%|filesentry2?{\
+%|filesxmlentry2?{\
 [\
-\n  %{filesentry2}\
+\n  %{filesxmlentry2}\
 ]\
 }|\
 \n</package>\
@@ -360,9 +362,9 @@ Filelists:\
 \n  Version: %{VERSION:yaml}\
 \n  Release: %{RELEASE:yaml}\
 \n  Files:\
-%|filesentry2?{\
+%|filesxmlentry2?{\
 [\
-\n    - %{filesentry2}\
+\n    - %{filesxmlentry2}\
 ]\
 }|\
 \n' \
