@@ -762,7 +762,268 @@ static Header repoReadHeader(rpmrepo repo, const char * path)
     return h;
 }
 
-static int repoWriteMDFile(/*@unused@*/ rpmrepo repo, rpmrfile rfile, Header h)
+static int repoSQL(rpmrfile rfile, const char * msg, int rc)
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/
+{
+    if (rc != SQLITE_OK || _repo_debug)
+	repo_error(0, "sqlite3_%s(%s): %s", msg, rfile->type,
+		sqlite3_errmsg(rfile->sqldb));
+    return rc;
+}
+
+
+static int repoSQLprimary(rpmrepo repo, rpmrfile rfile, Header h)
+	/*@globals fileSystem @*/
+	/*@modifies rfile, h, fileSystem @*/
+{
+    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    const char * cmd;
+    sqlite3_stmt * stmt;
+    void (*flag)(void *) = SQLITE_TRANSIENT;
+    const char * tail;
+    const char * qfmt;
+    const char * msg;
+    const char * s;
+    int ns;
+    int loop;
+    int xx;
+
+    cmd = sqlite3_mprintf("INSERT into '%q' values ("
+		" ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,"
+		" ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,"
+		" ?, ?, ?, ?, ?, ?);", "packages");
+
+    xx = repoSQL(rfile, "prepare",
+	sqlite3_prepare(rfile->sqldb, cmd, (int)strlen(cmd), &stmt, &tail));
+
+    xx = repoSQL(rfile, "reset",
+	sqlite3_reset(stmt));
+
+    /*  1: pkgKey INTEGER PRIMARY KEY */
+    xx = repoSQL(rfile, "bind_int",
+	sqlite3_bind_int (stmt,  1, (int) repo->current));
+
+    /*  2: pkgId TEXT */
+    qfmt = "%|HDRID?{%{HDRID}}|";
+    s = headerSprintf(h, qfmt, NULL, NULL, &msg);
+    ns = (s ? strlen(s) : 0);
+    xx = repoSQL(rfile, "bind_text",
+	sqlite3_bind_text(stmt,  2, s, ns, flag));
+    s = _free(s);
+
+    /*  3: name TEXT */
+    qfmt = "%{NAME:utf8}";
+    s = headerSprintf(h, qfmt, NULL, NULL, &msg);
+    ns = (s ? strlen(s) : 0);
+    xx = repoSQL(rfile, "bind_text",
+	sqlite3_bind_text(stmt,  3, s, ns, flag));
+    s = _free(s);
+
+    /*  4: arch TEXT */
+    qfmt = "%{ARCH:utf8}";
+    s = headerSprintf(h, qfmt, NULL, NULL, &msg);
+    ns = (s ? strlen(s) : 0);
+    xx = repoSQL(rfile, "bind_text",
+	sqlite3_bind_text(stmt,  4, s, ns, flag));
+    s = _free(s);
+
+    /*  5: version TEXT */
+    qfmt = "%{VERSION:utf8}";
+    s = headerSprintf(h, qfmt, NULL, NULL, &msg);
+    ns = (s ? strlen(s) : 0);
+    xx = repoSQL(rfile, "bind_text",
+	sqlite3_bind_text(stmt,  5, s, ns, flag));
+    s = _free(s);
+
+    /*  6: epoch TEXT */
+    qfmt = "%|epoch?{%{EPOCH}}:{0}|";
+    s = headerSprintf(h, qfmt, NULL, NULL, &msg);
+    ns = (s ? strlen(s) : 0);
+    xx = repoSQL(rfile, "bind_text",
+	sqlite3_bind_text(stmt,  6, s, ns, flag));
+    s = _free(s);
+
+    /*  7: release TEXT */
+    qfmt = "%{RELEASE:utf8}";
+    s = headerSprintf(h, qfmt, NULL, NULL, &msg);
+    ns = (s ? strlen(s) : 0);
+    xx = repoSQL(rfile, "bind_text",
+	sqlite3_bind_text(stmt,  7, s, ns, flag));
+    s = _free(s);
+
+    /*  8: summary TEXT */
+    qfmt = "%|summary?{%{SUMMARY:utf8}}|";
+    s = headerSprintf(h, qfmt, NULL, NULL, &msg);
+    ns = (s ? strlen(s) : 0);
+    xx = repoSQL(rfile, "bind_text",
+	sqlite3_bind_text(stmt,  8, s, ns, flag));
+    s = _free(s);
+
+    /*  9: description TEXT */
+    qfmt = "%|description?{%{DESCRIPTION:utf8}}|";
+    s = headerSprintf(h, qfmt, NULL, NULL, &msg);
+    ns = (s ? strlen(s) : 0);
+    xx = repoSQL(rfile, "bind_text",
+	sqlite3_bind_text(stmt,  9, s, ns, flag));
+    s = _free(s);
+
+    /* 10: url TEXT */
+    qfmt = "%|url?{%{URL}}|";
+    s = headerSprintf(h, qfmt, NULL, NULL, &msg);
+    ns = (s ? strlen(s) : 0);
+    xx = repoSQL(rfile, "bind_text",
+	sqlite3_bind_text(stmt, 10, s, ns, flag));
+    s = _free(s);
+
+    /* 11: time_file INTEGER */
+    xx = repoSQL(rfile, "bind_int",
+	sqlite3_bind_int (stmt, 11, (int) headerGetTime(h)));
+
+    /* 12: time_build INTEGER */
+    he->tag = RPMTAG_BUILDTIME;
+    xx = headerGet(h, he, 0);
+    xx = repoSQL(rfile, "bind_int",
+	sqlite3_bind_int (stmt, 12, (int) he->p.ui32p[0]));
+    he->p.ptr = _free(he->p.ptr);
+
+    /* 13: rpm_license TEXT */
+    qfmt = "%|license?{%{LICENSE:utf8}}|";
+    s = headerSprintf(h, qfmt, NULL, NULL, &msg);
+    ns = (s ? strlen(s) : 0);
+    if (ns > 0)
+    xx = repoSQL(rfile, "bind_text",
+	sqlite3_bind_text(stmt, 13, s, ns, flag));
+    s = _free(s);
+
+    /* 14: rpm_vendor TEXT */
+    qfmt = "%|vendor?{%{VENDOR:utf8}}|";
+    s = headerSprintf(h, qfmt, NULL, NULL, &msg);
+    ns = (s ? strlen(s) : 0);
+    xx = repoSQL(rfile, "bind_text",
+	sqlite3_bind_text(stmt, 14, s, ns, flag));
+    s = _free(s);
+
+    /* 15: rpm_group TEXT */
+    qfmt = "%|group?{%{GROUP:utf8}}|";
+    s = headerSprintf(h, qfmt, NULL, NULL, &msg);
+    ns = (s ? strlen(s) : 0);
+    xx = repoSQL(rfile, "bind_text",
+	sqlite3_bind_text(stmt, 15, s, ns, flag));
+    s = _free(s);
+
+    /* 16: rpm_buildhost TEXT */
+    qfmt = "%|buildhost?{%{BUILDHOST:utf8}}|";
+    s = headerSprintf(h, qfmt, NULL, NULL, &msg);
+    ns = (s ? strlen(s) : 0);
+    xx = repoSQL(rfile, "bind_text",
+	sqlite3_bind_text(stmt, 16, s, ns, flag));
+    s = _free(s);
+
+    /* 17: rpm_sourcerpm TEXT */
+    qfmt = "%|sourcerpm?{%{SOURCERPM:utf8}}|";
+    s = headerSprintf(h, qfmt, NULL, NULL, &msg);
+    ns = (s ? strlen(s) : 0);
+    xx = repoSQL(rfile, "bind_text",
+	sqlite3_bind_text(stmt, 17, s, ns, flag));
+    s = _free(s);
+
+    /* 18: rpm_header_start INTEGER */
+    xx = repoSQL(rfile, "bind_int",
+	sqlite3_bind_int (stmt, 18, (int) headerGetStartOff(h)));
+
+    /* 19: rpm_header_end INTEGER */
+    xx = repoSQL(rfile, "bind_int",
+	sqlite3_bind_int (stmt, 19, (int) headerGetEndOff(h)));
+
+    /* 20: rpm_packager TEXT */
+    qfmt = "%|packager?{%{PACKAGER:utf8}}|";
+    s = headerSprintf(h, qfmt, NULL, NULL, &msg);
+    ns = (s ? strlen(s) : 0);
+    xx = repoSQL(rfile, "bind_text",
+	sqlite3_bind_text(stmt, 20, s, ns, flag));
+    s = _free(s);
+
+    /* 21: size_package INTEGER */
+    he->tag = RPMTAG_SIZE;
+    xx = headerGet(h, he, 0);
+    xx = repoSQL(rfile, "bind_int",
+	sqlite3_bind_int (stmt, 21, (int) he->p.ui32p[0]));
+    he->p.ptr = _free(he->p.ptr);
+
+    /* 22: size_installed INTEGER */
+    he->tag = RPMTAG_SIZE;
+    xx = headerGet(h, he, 0);
+    xx = repoSQL(rfile, "bind_int",
+	sqlite3_bind_int (stmt, 22, (int) he->p.ui32p[0]));
+    he->p.ptr = _free(he->p.ptr);
+
+    /* 23: size_archive INTEGER */
+    he->tag = RPMTAG_ARCHIVESIZE;
+    xx = headerGet(h, he, 0);
+    xx = repoSQL(rfile, "bind_int",
+	sqlite3_bind_int (stmt, 23, (int) he->p.ui32p[0]));
+    he->p.ptr = _free(he->p.ptr);
+
+    /* 24: location_href TEXT */
+    qfmt = "%|packageorigin?%{PACKAGEORIGIN:utf8}}|";
+    s = headerSprintf(h, qfmt, NULL, NULL, &msg);
+    ns = (s ? strlen(s) : 0);
+    xx = repoSQL(rfile, "bind_text",
+	sqlite3_bind_text(stmt, 24, s, ns, flag));
+    s = _free(s);
+
+    /* 25: location_base TEXT */
+    qfmt = "%|packageorigin?%{PACKAGEORIGIN:utf8}}|";
+    s = headerSprintf(h, qfmt, NULL, NULL, &msg);
+    ns = (s ? strlen(s) : 0);
+    xx = repoSQL(rfile, "bind_text",
+	sqlite3_bind_text(stmt, 25, s, ns, flag));
+    s = _free(s);
+
+    /* 26: checksum_type TEXT */
+    s = xstrdup("sha");
+    ns = (s ? strlen(s) : 0);
+    xx = repoSQL(rfile, "bind_text",
+	sqlite3_bind_text(stmt, 26, s, ns, flag));
+    s = _free(s);
+
+    loop = 1;
+    while (loop) {
+	xx = sqlite3_step(stmt);
+	switch (xx) {
+	default:
+	    xx = repoSQL(rfile, "step", xx);
+	case SQLITE_DONE:
+	    loop = 0;
+	    /*@switchbreak@*/ break;
+	}
+    }
+
+    xx = repoSQL(rfile, "reset",
+	sqlite3_reset(stmt));
+
+    xx = repoSQL(rfile, "finalize",
+	sqlite3_finalize(stmt));
+    
+    return 0;
+}
+
+static int repoSQLfilelists(rpmrepo repo, rpmrfile rfile, Header h)
+	/*@globals fileSystem @*/
+	/*@modifies rfile, h, fileSystem @*/
+{
+    return 0;
+}
+
+static int repoSQLother(rpmrepo repo, rpmrfile rfile, Header h)
+	/*@globals fileSystem @*/
+	/*@modifies rfile, h, fileSystem @*/
+{
+    return 0;
+}
+
+static int repoWriteMDFile(rpmrepo repo, rpmrfile rfile, Header h)
 	/*@globals fileSystem @*/
 	/*@modifies rfile, h, fileSystem @*/
 {
@@ -778,6 +1039,22 @@ static int repoWriteMDFile(/*@unused@*/ rpmrepo repo, rpmrfile rfile, Header h)
 	    rc = 1;
 	}
     }
+
+    if (repo->database) {
+	if (!strcmp(rfile->type, "primary")) {
+	    if (repoSQLprimary(repo, rfile, h))
+		rc = 1;
+	} else
+	if (!strcmp(rfile->type, "filelists")) {
+	    if (repoSQLfilelists(repo, rfile, h))
+		rc = 1;
+	} else
+	if (!strcmp(rfile->type, "other")) {
+	    if (repoSQLother(repo, rfile, h))
+		rc = 1;
+	}
+    }
+
     return rc;
 }
 
