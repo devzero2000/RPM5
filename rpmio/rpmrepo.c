@@ -796,6 +796,24 @@ static int rfileSQLStep(rpmrfile rfile, sqlite3_stmt * stmt)
     return rc;
 }
 
+static int rfileSQLBindInt(rpmrfile rfile, sqlite3_stmt * stmt, int pos,
+		int val)
+{
+    int rc = rfileSQL(rfile, "bind_int",
+	sqlite3_bind_int(stmt, pos, val));
+    return rc;
+}
+
+static int rfileSQLBindText(rpmrfile rfile, sqlite3_stmt * stmt, int pos,
+		const char * s)
+{
+    void (*flag)(void *) = SQLITE_TRANSIENT;
+    size_t ns = (s ? strlen(s) : 0);
+    int rc = rfileSQL(rfile, "bind_text",
+	sqlite3_bind_text(stmt, pos, s, ns, flag));
+    return rc;
+}
+
 static const char * rfileHeaderSprintf(Header h, const char * qfmt)
 {
     const char * msg = NULL;
@@ -808,13 +826,22 @@ static const char * rfileHeaderSprintf(Header h, const char * qfmt)
 static int rfileSQLBindSprintf(rpmrfile rfile, sqlite3_stmt * stmt, int pos,
 		Header h, const char * qfmt)
 {
-    void (*flag)(void *) = SQLITE_TRANSIENT;
     const char * s = rfileHeaderSprintf(h, qfmt);
-    size_t ns = (s ? strlen(s) : 0);
-    int rc = rfileSQL(rfile, "bind_text",
-	sqlite3_bind_text(stmt, pos, s, ns, flag));
-
+    int rc = rfileSQLBindText(rfile, stmt, pos, s);
     s = _free(s);
+    return rc;
+}
+static int rfileSQLBindTagInt(rpmrfile rfile, sqlite3_stmt * stmt, int pos,
+		Header h, rpmTag tag)
+{
+    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    int rc = 1;	/* assume failure. */
+
+    he->tag = tag;
+    if (headerGet(h, he, 0)) {
+	rc = rfileSQLBindInt(rfile, stmt, 23, (int) he->p.ui32p[0]);
+	he->p.ptr = _free(he->p.ptr);
+    }
     return rc;
 }
 
@@ -825,16 +852,10 @@ static int repoSQLprimary(rpmrepo repo, rpmrfile rfile, Header h)
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     const char * cmd;
     sqlite3_stmt * stmt;
-    void (*flag)(void *) = SQLITE_TRANSIENT;
     const char * tail;
     const char * qfmt;
-    const char * s;
-    int ns;
     const char * q;
     int nq;
-    int loop;
-    int pos;
-    int val;
     int xx;
 
     cmd = sqlite3_mprintf("INSERT into '%q' values ("
@@ -849,10 +870,7 @@ static int repoSQLprimary(rpmrepo repo, rpmrfile rfile, Header h)
 	sqlite3_reset(stmt));
 
     /* packages  1: pkgKey INTEGER PRIMARY KEY */
-    pos = 1;
-    val = (int) repo->current;
-    xx = rfileSQL(rfile, "bind_int",
-	sqlite3_bind_int (stmt, pos, val));
+    xx = rfileSQLBindInt(rfile, stmt,  1, (int) repo->current);
 
     /* packages  2: pkgId TEXT */
     xx = rfileSQLBindSprintf(rfile, stmt,  2, h, "%|HDRID?{%{HDRID}}|");
@@ -882,19 +900,10 @@ static int repoSQLprimary(rpmrepo repo, rpmrfile rfile, Header h)
     xx = rfileSQLBindSprintf(rfile, stmt, 10, h, "%|url?{%{URL}}|");
 
     /* packages 11: time_file INTEGER */
-    pos = 11;
-    val = (int) headerGetTime(h);
-    xx = rfileSQL(rfile, "bind_int",
-	sqlite3_bind_int (stmt, pos, val));
+    xx = rfileSQLBindInt(rfile, stmt, 11, (int) headerGetTime(h));
 
     /* packages 12: time_build INTEGER */
-    pos = 12;
-    he->tag = RPMTAG_BUILDTIME;
-    xx = headerGet(h, he, 0);
-    val = (int) he->p.ui32p[0];
-    xx = rfileSQL(rfile, "bind_int",
-	sqlite3_bind_int (stmt, pos, val));
-    he->p.ptr = _free(he->p.ptr);
+    xx = rfileSQLBindTagInt(rfile, stmt, 12, h, RPMTAG_BUILDTIME);
 
     /* packages 13: rpm_license TEXT */
     xx = rfileSQLBindSprintf(rfile, stmt, 13, h, "%|license?{%{LICENSE:utf8}}|");
@@ -912,46 +921,22 @@ static int repoSQLprimary(rpmrepo repo, rpmrfile rfile, Header h)
     xx = rfileSQLBindSprintf(rfile, stmt, 17, h, "%|sourcerpm?{%{SOURCERPM:utf8}}|");
 
     /* packages 18: rpm_header_start INTEGER */
-    pos = 18;
-    val = (int) headerGetStartOff(h);
-    xx = rfileSQL(rfile, "bind_int",
-	sqlite3_bind_int (stmt, pos, val));
+    xx = rfileSQLBindInt(rfile, stmt, 18, (int) headerGetStartOff(h));
 
     /* packages 19: rpm_header_end INTEGER */
-    pos = 19;
-    val = (int) headerGetEndOff(h);
-    xx = rfileSQL(rfile, "bind_int",
-	sqlite3_bind_int (stmt, pos, val));
+    xx = rfileSQLBindInt(rfile, stmt, 19, (int) headerGetEndOff(h));
 
     /* packages 20: rpm_packager TEXT */
     xx = rfileSQLBindSprintf(rfile, stmt, 20, h, "%|packager?{%{PACKAGER:utf8}}|");
 
     /* packages 21: size_package INTEGER */
-    pos = 21;
-    he->tag = RPMTAG_SIZE;
-    xx = headerGet(h, he, 0);
-    val = (int) he->p.ui32p[0];
-    xx = rfileSQL(rfile, "bind_int",
-	sqlite3_bind_int (stmt, pos, val));
-    he->p.ptr = _free(he->p.ptr);
+    xx = rfileSQLBindTagInt(rfile, stmt, 12, h, RPMTAG_SIZE);
 
     /* packages 22: size_installed INTEGER */
-    pos = 22;
-    he->tag = RPMTAG_SIZE;
-    xx = headerGet(h, he, 0);
-    val = (int) he->p.ui32p[0];
-    xx = rfileSQL(rfile, "bind_int",
-	sqlite3_bind_int (stmt, pos, val));
-    he->p.ptr = _free(he->p.ptr);
+    xx = rfileSQLBindTagInt(rfile, stmt, 12, h, RPMTAG_SIZE);
 
     /* packages 23: size_archive INTEGER */
-    pos = 23;
-    he->tag = RPMTAG_ARCHIVESIZE;
-    xx = headerGet(h, he, 0);
-    val = (int) he->p.ui32p[0];
-    xx = rfileSQL(rfile, "bind_int",
-	sqlite3_bind_int (stmt, pos, val));
-    he->p.ptr = _free(he->p.ptr);
+    xx = rfileSQLBindTagInt(rfile, stmt, 12, h, RPMTAG_ARCHIVESIZE);
 
     /* packages 24: location_href TEXT */
     xx = rfileSQLBindSprintf(rfile, stmt, 24, h, "%|packageorigin?{%{PACKAGEORIGIN:utf8}}|");
@@ -960,12 +945,7 @@ static int repoSQLprimary(rpmrepo repo, rpmrfile rfile, Header h)
     xx = rfileSQLBindSprintf(rfile, stmt, 25, h, "%|packageorigin?{%{PACKAGEORIGIN:utf8}}|");
 
     /* packages 26: checksum_type TEXT */
-    pos = 26;
-    s = xstrdup("sha");
-    ns = (s ? strlen(s) : 0);
-    xx = rfileSQL(rfile, "bind_text",
-	sqlite3_bind_text(stmt, pos, s, ns, flag));
-    s = _free(s);
+    xx = rfileSQLBindText(rfile, stmt, 26, "sha");
 
     xx = rfileSQLStep(rfile, stmt);
 
@@ -995,45 +975,27 @@ static int repoSQLprimary(rpmrepo repo, rpmrfile rfile, Header h)
     nq = (q ? strlen(q) : 0);
   if (nq > 0) {
     /* obsoletes  1 name TEXT */
-    pos = 1;
-    s = N;
-    ns = (s ? strlen(s) : 0);
-    xx = rfileSQL(rfile, "bind_text",
-	sqlite3_bind_text(stmt, pos, s, ns, flag));
+    xx = rfileSQLBindText(rfile, stmt, 1, N);
+
     /* obsoletes  2 flags TEXT */
-    pos = 2;
-    s = F;
-    ns = (s ? strlen(s) : 0);
-    xx = rfileSQL(rfile, "bind_text",
-	sqlite3_bind_text(stmt, pos, s, ns, flag));
+    xx = rfileSQLBindText(rfile, stmt, 2, F);
+
     /* obsoletes  3 epoch TEXT */
-    pos = 3;
-    s = E;
-    ns = (s ? strlen(s) : 0);
-    xx = rfileSQL(rfile, "bind_text",
-	sqlite3_bind_text(stmt, pos, s, ns, flag));
+    xx = rfileSQLBindText(rfile, stmt, 3, E);
+
     /* obsoletes  4 version TEXT */
-    pos = 4;
-    s = V;
-    ns = (s ? strlen(s) : 0);
-    xx = rfileSQL(rfile, "bind_text",
-	sqlite3_bind_text(stmt, pos, s, ns, flag));
+    xx = rfileSQLBindText(rfile, stmt, 4, V);
+
     /* obsoletes  5 release TEXT */
-    pos = 5;
-    s = R;
-    ns = (s ? strlen(s) : 0);
-    xx = rfileSQL(rfile, "bind_text",
-	sqlite3_bind_text(stmt, pos, s, ns, flag));
+    xx = rfileSQLBindText(rfile, stmt, 5, R);
+
     /* obsoletes  6 pkgKey INTEGER */
-    pos = 6;
-    val = (int) repo->current;
-    xx = rfileSQL(rfile, "bind_int",
-	sqlite3_bind_int (stmt, pos, val));
+    xx = rfileSQLBindInt(rfile, stmt,  6, (int) repo->current);
 
     xx = rfileSQLStep(rfile, stmt);
 
   }
-  s = _free(s);
+  q = _free(q);
 }
 
     xx = rfileSQL(rfile, "finalize",
@@ -1060,42 +1022,24 @@ static int repoSQLprimary(rpmrepo repo, rpmrfile rfile, Header h)
 
     q = rfileHeaderSprintf(h, qfmt);
     nq = (q ? strlen(q) : 0);
-  if (ns > 0) {
+  if (nq > 0) {
     /* provides  1 name TEXT */
-    pos = 1;
-    s = N;
-    ns = (s ? strlen(s) : 0);
-    xx = rfileSQL(rfile, "bind_text",
-	sqlite3_bind_text(stmt, pos, s, ns, flag));
+    xx = rfileSQLBindText(rfile, stmt, 1, N);
+
     /* provides  2 flags TEXT */
-    pos = 2;
-    s = F;
-    ns = (s ? strlen(s) : 0);
-    xx = rfileSQL(rfile, "bind_text",
-	sqlite3_bind_text(stmt, pos, s, ns, flag));
+    xx = rfileSQLBindText(rfile, stmt, 2, F);
+
     /* provides  3 epoch TEXT */
-    pos = 3;
-    s = E;
-    ns = (s ? strlen(s) : 0);
-    xx = rfileSQL(rfile, "bind_text",
-	sqlite3_bind_text(stmt, pos, s, ns, flag));
+    xx = rfileSQLBindText(rfile, stmt, 3, E);
+
     /* provides  4 version TEXT */
-    pos = 4;
-    s = V;
-    ns = (s ? strlen(s) : 0);
-    xx = rfileSQL(rfile, "bind_text",
-	sqlite3_bind_text(stmt, pos, s, ns, flag));
+    xx = rfileSQLBindText(rfile, stmt, 4, V);
+
     /* provides  5 release TEXT */
-    pos = 5;
-    s = R;
-    ns = (s ? strlen(s) : 0);
-    xx = rfileSQL(rfile, "bind_text",
-	sqlite3_bind_text(stmt, pos, s, ns, flag));
+    xx = rfileSQLBindText(rfile, stmt, 5, R);
+
     /* provides  6 pkgKey INTEGER */
-    pos = 6;
-    val = (int) repo->current;
-    xx = rfileSQL(rfile, "bind_int",
-	sqlite3_bind_int (stmt, pos, val));
+    xx = rfileSQLBindInt(rfile, stmt,  6, (int) repo->current);
 
     xx = rfileSQLStep(rfile, stmt);
 
@@ -1129,40 +1073,22 @@ static int repoSQLprimary(rpmrepo repo, rpmrfile rfile, Header h)
     nq = (q ? strlen(q) : 0);
   if (nq > 0) {
     /* conflicts  1 name TEXT */
-    pos = 1;
-    s = N;
-    ns = (s ? strlen(s) : 0);
-    xx = rfileSQL(rfile, "bind_text",
-	sqlite3_bind_text(stmt, pos, s, ns, flag));
+    xx = rfileSQLBindText(rfile, stmt, 1, N);
+
     /* conflicts  2 flags TEXT */
-    pos = 2;
-    s = F;
-    ns = (s ? strlen(s) : 0);
-    xx = rfileSQL(rfile, "bind_text",
-	sqlite3_bind_text(stmt, pos, s, ns, flag));
+    xx = rfileSQLBindText(rfile, stmt, 2, F);
+
     /* conflicts  3 epoch TEXT */
-    pos = 3;
-    s = E;
-    ns = (s ? strlen(s) : 0);
-    xx = rfileSQL(rfile, "bind_text",
-	sqlite3_bind_text(stmt, pos, s, ns, flag));
+    xx = rfileSQLBindText(rfile, stmt, 3, E);
+
     /* conflicts  4 version TEXT */
-    pos = 4;
-    s = V;
-    ns = (s ? strlen(s) : 0);
-    xx = rfileSQL(rfile, "bind_text",
-	sqlite3_bind_text(stmt, pos, s, ns, flag));
+    xx = rfileSQLBindText(rfile, stmt, 4, V);
+
     /* conflicts  5 release TEXT */
-    pos = 5;
-    s = R;
-    ns = (s ? strlen(s) : 0);
-    xx = rfileSQL(rfile, "bind_text",
-	sqlite3_bind_text(stmt, pos, s, ns, flag));
+    xx = rfileSQLBindText(rfile, stmt, 5, R);
+
     /* conflicts  6 pkgKey INTEGER */
-    pos = 6;
-    val = (int) repo->current;
-    xx = rfileSQL(rfile, "bind_int",
-	sqlite3_bind_int (stmt, pos, val));
+    xx = rfileSQLBindInt(rfile, stmt,  6, (int) repo->current);
 
     xx = rfileSQLStep(rfile, stmt);
 
@@ -1196,45 +1122,25 @@ static int repoSQLprimary(rpmrepo repo, rpmrfile rfile, Header h)
     nq = (q ? strlen(q) : 0);
   if (nq > 0) {
     /* requires  1 name TEXT */
-    pos = 1;
-    s = N;
-    ns = (s ? strlen(s) : 0);
-    xx = rfileSQL(rfile, "bind_text",
-	sqlite3_bind_text(stmt, pos, s, ns, flag));
+    xx = rfileSQLBindText(rfile, stmt, 1, N);
+
     /* requires  2 flags TEXT */
-    pos = 2;
-    s = F;
-    ns = (s ? strlen(s) : 0);
-    xx = rfileSQL(rfile, "bind_text",
-	sqlite3_bind_text(stmt, pos, s, ns, flag));
+    xx = rfileSQLBindText(rfile, stmt, 2, F);
+
     /* requires  3 epoch TEXT */
-    pos = 3;
-    s = E;
-    ns = (s ? strlen(s) : 0);
-    xx = rfileSQL(rfile, "bind_text",
-	sqlite3_bind_text(stmt, pos, s, ns, flag));
+    xx = rfileSQLBindText(rfile, stmt, 3, E);
+
     /* requires  4 version TEXT */
-    pos = 4;
-    s = V;
-    ns = (s ? strlen(s) : 0);
-    xx = rfileSQL(rfile, "bind_text",
-	sqlite3_bind_text(stmt, pos, s, ns, flag));
+    xx = rfileSQLBindText(rfile, stmt, 4, V);
+
     /* requires  5 release TEXT */
-    pos = 5;
-    s = R;
-    ns = (s ? strlen(s) : 0);
-    xx = rfileSQL(rfile, "bind_text",
-	sqlite3_bind_text(stmt, pos, s, ns, flag));
+    xx = rfileSQLBindText(rfile, stmt, 5, R);
+
     /* requires  6 pkgKey INTEGER */
-    pos = 6;
-    val = (int) repo->current;
-    xx = rfileSQL(rfile, "bind_int",
-	sqlite3_bind_int (stmt, pos, val));
+    xx = rfileSQLBindInt(rfile, stmt,  6, (int) repo->current);
+
     /* requires  7 pre BOOL DEFAULT FALSE */
-    pos = 7;
-    val = 0;	/* XXX */
-    xx = rfileSQL(rfile, "bind_int",
-	sqlite3_bind_int (stmt, pos, val));
+    xx = rfileSQLBindInt(rfile, stmt,  7, 0);	/* XXX WRONG */
 
     xx = rfileSQLStep(rfile, stmt);
 
@@ -1264,22 +1170,13 @@ static int repoSQLprimary(rpmrepo repo, rpmrfile rfile, Header h)
     nq = (q ? strlen(q) : 0);
   if (nq > 0) {
     /* files  1 name TEXT */
-    pos = 1;
-    s = FN;
-    ns = (s ? strlen(s) : 0);
-    xx = rfileSQL(rfile, "bind_text",
-	sqlite3_bind_text(stmt, pos, s, ns, flag));
+    xx = rfileSQLBindText(rfile, stmt, 1, FN);
+
     /* files  2 type TEXT */
-    pos = 2;
-    s = FT;
-    ns = (s ? strlen(s) : 0);
-    xx = rfileSQL(rfile, "bind_text",
-	sqlite3_bind_text(stmt, pos, s, ns, flag));
+    xx = rfileSQLBindText(rfile, stmt, 2, FT);
+
     /* files  3 pkgKey INTEGER */
-    pos = 3;
-    val = (int) repo->current;
-    xx = rfileSQL(rfile, "bind_int",
-	sqlite3_bind_int (stmt, pos, val));
+    xx = rfileSQLBindInt(rfile, stmt,  3, (int) repo->current);
 
     xx = rfileSQLStep(rfile, stmt);
 
@@ -1303,16 +1200,10 @@ static int repoSQLfilelists(rpmrepo repo, rpmrfile rfile, Header h)
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     const char * cmd;
     sqlite3_stmt * stmt;
-    void (*flag)(void *) = SQLITE_TRANSIENT;
     const char * tail;
     const char * qfmt;
-    const char * s;
-    int ns;
     const char * q;
     int nq;
-    int loop;
-    int pos;
-    int val;
     int xx;
 
     cmd = sqlite3_mprintf("INSERT into '%q' values (?, ?);", "packages");
@@ -1324,10 +1215,7 @@ static int repoSQLfilelists(rpmrepo repo, rpmrfile rfile, Header h)
 	sqlite3_reset(stmt));
 
     /* packages  1: pkgKey INTEGER PRIMARY KEY */
-    pos = 1;
-    val = (int) repo->current;
-    xx = rfileSQL(rfile, "bind_int",
-	sqlite3_bind_int (stmt, pos, val));
+    xx = rfileSQLBindInt(rfile, stmt,  1, (int) repo->current);
 
     /* packages  2: pkgId TEXT */
     xx = rfileSQLBindSprintf(rfile, stmt,  2, h, "%|HDRID?{%{HDRID}}|");
@@ -1357,28 +1245,16 @@ static int repoSQLfilelists(rpmrepo repo, rpmrfile rfile, Header h)
     nq = (q ? strlen(q) : 0);
   if (nq > 0) {
     /* filelist 1 pkgKey INTEGER */
-    pos = 1;
-    val = (int) repo->current;
-    xx = rfileSQL(rfile, "bind_int",
-	sqlite3_bind_int (stmt, pos, val));
+    xx = rfileSQLBindInt(rfile, stmt,  1, (int) repo->current);
+
     /* filelist 2 dirname TEXT */
-    pos = 1;
-    s = DN;
-    ns = (s ? strlen(s) : 0);
-    xx = rfileSQL(rfile, "bind_text",
-	sqlite3_bind_text(stmt, pos, s, ns, flag));
+    xx = rfileSQLBindText(rfile, stmt, 2, DN);
+
     /* filelist 3 filenames TEXT */
-    pos = 3;
-    s = FN;
-    ns = (s ? strlen(s) : 0);
-    xx = rfileSQL(rfile, "bind_text",
-	sqlite3_bind_text(stmt, pos, s, ns, flag));
+    xx = rfileSQLBindText(rfile, stmt, 3, FN);
+
     /* filelist 4 filetypes TEXT */
-    pos = 4;
-    s = FT;
-    ns = (s ? strlen(s) : 0);
-    xx = rfileSQL(rfile, "bind_text",
-	sqlite3_bind_text(stmt, pos, s, ns, flag));
+    xx = rfileSQLBindText(rfile, stmt, 4, FT);
 
     xx = rfileSQLStep(rfile, stmt);
 
@@ -1402,16 +1278,10 @@ static int repoSQLother(rpmrepo repo, rpmrfile rfile, Header h)
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     const char * cmd;
     sqlite3_stmt * stmt;
-    void (*flag)(void *) = SQLITE_TRANSIENT;
     const char * tail;
     const char * qfmt;
-    const char * s;
-    int ns;
     const char * q;
     int nq;
-    int loop;
-    int pos;
-    int val;
     int xx;
 
     cmd = sqlite3_mprintf("INSERT into '%q' values (?, ?);", "packages");
@@ -1423,10 +1293,7 @@ static int repoSQLother(rpmrepo repo, rpmrfile rfile, Header h)
 	sqlite3_reset(stmt));
 
     /* packages  1: pkgKey INTEGER PRIMARY KEY */
-    pos = 1;
-    val = (int) repo->current;
-    xx = rfileSQL(rfile, "bind_int",
-	sqlite3_bind_int (stmt, pos, val));
+    xx = rfileSQLBindInt(rfile, stmt,  1, (int) repo->current);
 
     /* packages  2: pkgId TEXT */
     xx = rfileSQLBindSprintf(rfile, stmt,  2, h, "%|HDRID?{%{HDRID}}|");
@@ -1456,28 +1323,16 @@ static int repoSQLother(rpmrepo repo, rpmrfile rfile, Header h)
     nq = (q ? strlen(q) : 0);
   if (nq > 0) {
     /* changelog 1 pkgKey INTEGER */
-    pos = 1;
-    val = (int) repo->current;
-    xx = rfileSQL(rfile, "bind_int",
-	sqlite3_bind_int (stmt, pos, val));
+    xx = rfileSQLBindInt(rfile, stmt,  1, (int) repo->current);
 
     /* changelog 2 author TEXT */
-    pos = 2;
-    s = author;
-    ns = (s ? strlen(s) : 0);
-    xx = rfileSQL(rfile, "bind_text",
-	sqlite3_bind_text(stmt, pos, s, ns, flag));
+    xx = rfileSQLBindText(rfile, stmt, 2, author);
+
     /* changelog 3 date INTEGER */
-    pos = 3;
-    val = date;
-    xx = rfileSQL(rfile, "bind_int",
-	sqlite3_bind_int (stmt, pos, val));
+    xx = rfileSQLBindInt(rfile, stmt, 2, date);
+
     /* changelog 4 changelog TEXT */
-    pos = 4;
-    s = changelog;
-    ns = (s ? strlen(s) : 0);
-    xx = rfileSQL(rfile, "bind_text",
-	sqlite3_bind_text(stmt, pos, s, ns, flag));
+    xx = rfileSQLBindText(rfile, stmt, 2, changelog);
 
     xx = rfileSQLStep(rfile, stmt);
 
