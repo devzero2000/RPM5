@@ -772,6 +772,27 @@ static int repoSQL(rpmrfile rfile, const char * msg, int rc)
     return rc;
 }
 
+static const char * repoHeaderSprintf(Header h, const char * qfmt)
+{
+    const char * msg = NULL;
+    const char * s = headerSprintf(h, qfmt, NULL, NULL, &msg);
+    if (s == NULL)
+	repo_error(1, _("headerSprintf(%s): %s"), qfmt, msg);
+    return s;
+}
+
+static int rfileBindSprintf(rpmrfile rfile, sqlite3_stmt * stmt, int pos,
+		Header h, const char * qfmt)
+{
+    void (*flag)(void *) = SQLITE_TRANSIENT;
+    const char * s = repoHeaderSprintf(h, qfmt);
+    size_t ns = (s ? strlen(s) : 0);
+    int rc = repoSQL(rfile, "bind_text",
+	sqlite3_bind_text(stmt, pos, s, ns, flag));
+
+    s = _free(s);
+    return rc;
+}
 
 static int repoSQLprimary(rpmrepo repo, rpmrfile rfile, Header h)
 	/*@globals fileSystem @*/
@@ -783,10 +804,13 @@ static int repoSQLprimary(rpmrepo repo, rpmrfile rfile, Header h)
     void (*flag)(void *) = SQLITE_TRANSIENT;
     const char * tail;
     const char * qfmt;
-    const char * msg;
     const char * s;
     int ns;
+    const char * q;
+    int nq;
     int loop;
+    int pos;
+    int val;
     int xx;
 
     cmd = sqlite3_mprintf("INSERT into '%q' values ("
@@ -800,192 +824,123 @@ static int repoSQLprimary(rpmrepo repo, rpmrfile rfile, Header h)
     xx = repoSQL(rfile, "reset",
 	sqlite3_reset(stmt));
 
-    /*  1: pkgKey INTEGER PRIMARY KEY */
+    /* packages  1: pkgKey INTEGER PRIMARY KEY */
+    pos = 1;
+    val = (int) repo->current;
     xx = repoSQL(rfile, "bind_int",
-	sqlite3_bind_int (stmt,  1, (int) repo->current));
+	sqlite3_bind_int (stmt, pos, val));
 
-    /*  2: pkgId TEXT */
-    qfmt = "%|HDRID?{%{HDRID}}|";
-    s = headerSprintf(h, qfmt, NULL, NULL, &msg);
-    ns = (s ? strlen(s) : 0);
-    xx = repoSQL(rfile, "bind_text",
-	sqlite3_bind_text(stmt,  2, s, ns, flag));
-    s = _free(s);
+    /* packages  2: pkgId TEXT */
+    xx = rfileBindSprintf(rfile, stmt,  2, h, "%|HDRID?{%{HDRID}}|");
 
-    /*  3: name TEXT */
-    qfmt = "%{NAME:utf8}";
-    s = headerSprintf(h, qfmt, NULL, NULL, &msg);
-    ns = (s ? strlen(s) : 0);
-    xx = repoSQL(rfile, "bind_text",
-	sqlite3_bind_text(stmt,  3, s, ns, flag));
-    s = _free(s);
+    /* packages  3: name TEXT */
+    xx = rfileBindSprintf(rfile, stmt,  3, h, "%{NAME:utf8}");
 
-    /*  4: arch TEXT */
-    qfmt = "%{ARCH:utf8}";
-    s = headerSprintf(h, qfmt, NULL, NULL, &msg);
-    ns = (s ? strlen(s) : 0);
-    xx = repoSQL(rfile, "bind_text",
-	sqlite3_bind_text(stmt,  4, s, ns, flag));
-    s = _free(s);
+    /* packages  4: arch TEXT */
+    xx = rfileBindSprintf(rfile, stmt,  4, h, "%{ARCH:utf8}");
 
-    /*  5: version TEXT */
-    qfmt = "%{VERSION:utf8}";
-    s = headerSprintf(h, qfmt, NULL, NULL, &msg);
-    ns = (s ? strlen(s) : 0);
-    xx = repoSQL(rfile, "bind_text",
-	sqlite3_bind_text(stmt,  5, s, ns, flag));
-    s = _free(s);
+    /* packages  5: version TEXT */
+    xx = rfileBindSprintf(rfile, stmt,  5, h, "%{VERSION:utf8}");
 
-    /*  6: epoch TEXT */
-    qfmt = "%|epoch?{%{EPOCH}}:{0}|";
-    s = headerSprintf(h, qfmt, NULL, NULL, &msg);
-    ns = (s ? strlen(s) : 0);
-    xx = repoSQL(rfile, "bind_text",
-	sqlite3_bind_text(stmt,  6, s, ns, flag));
-    s = _free(s);
+    /* packages  6: epoch TEXT */
+    xx = rfileBindSprintf(rfile, stmt,  6, h, "%|epoch?{%{EPOCH}}:{0}|");
 
-    /*  7: release TEXT */
-    qfmt = "%{RELEASE:utf8}";
-    s = headerSprintf(h, qfmt, NULL, NULL, &msg);
-    ns = (s ? strlen(s) : 0);
-    xx = repoSQL(rfile, "bind_text",
-	sqlite3_bind_text(stmt,  7, s, ns, flag));
-    s = _free(s);
+    /* packages  7: release TEXT */
+    xx = rfileBindSprintf(rfile, stmt,  7, h, "%{RELEASE:utf8}");
 
-    /*  8: summary TEXT */
-    qfmt = "%|summary?{%{SUMMARY:utf8}}|";
-    s = headerSprintf(h, qfmt, NULL, NULL, &msg);
-    ns = (s ? strlen(s) : 0);
-    xx = repoSQL(rfile, "bind_text",
-	sqlite3_bind_text(stmt,  8, s, ns, flag));
-    s = _free(s);
+    /* packages  8: summary TEXT */
+    xx = rfileBindSprintf(rfile, stmt,  8, h, "%|summary?{%{SUMMARY:utf8}}|");
 
-    /*  9: description TEXT */
-    qfmt = "%|description?{%{DESCRIPTION:utf8}}|";
-    s = headerSprintf(h, qfmt, NULL, NULL, &msg);
-    ns = (s ? strlen(s) : 0);
-    xx = repoSQL(rfile, "bind_text",
-	sqlite3_bind_text(stmt,  9, s, ns, flag));
-    s = _free(s);
+    /* packages  9: description TEXT */
+    xx = rfileBindSprintf(rfile, stmt,  9, h, "%|description?{%{DESCRIPTION:utf8}}|");
 
-    /* 10: url TEXT */
-    qfmt = "%|url?{%{URL}}|";
-    s = headerSprintf(h, qfmt, NULL, NULL, &msg);
-    ns = (s ? strlen(s) : 0);
-    xx = repoSQL(rfile, "bind_text",
-	sqlite3_bind_text(stmt, 10, s, ns, flag));
-    s = _free(s);
+    /* packages 10: url TEXT */
+    xx = rfileBindSprintf(rfile, stmt, 10, h, "%|url?{%{URL}}|");
 
-    /* 11: time_file INTEGER */
+    /* packages 11: time_file INTEGER */
+    pos = 11;
+    val = (int) headerGetTime(h);
     xx = repoSQL(rfile, "bind_int",
-	sqlite3_bind_int (stmt, 11, (int) headerGetTime(h)));
+	sqlite3_bind_int (stmt, pos, val));
 
-    /* 12: time_build INTEGER */
+    /* packages 12: time_build INTEGER */
+    pos = 12;
     he->tag = RPMTAG_BUILDTIME;
     xx = headerGet(h, he, 0);
+    val = (int) he->p.ui32p[0];
     xx = repoSQL(rfile, "bind_int",
-	sqlite3_bind_int (stmt, 12, (int) he->p.ui32p[0]));
+	sqlite3_bind_int (stmt, pos, val));
     he->p.ptr = _free(he->p.ptr);
 
-    /* 13: rpm_license TEXT */
-    qfmt = "%|license?{%{LICENSE:utf8}}|";
-    s = headerSprintf(h, qfmt, NULL, NULL, &msg);
-    ns = (s ? strlen(s) : 0);
-    if (ns > 0)
-    xx = repoSQL(rfile, "bind_text",
-	sqlite3_bind_text(stmt, 13, s, ns, flag));
-    s = _free(s);
+    /* packages 13: rpm_license TEXT */
+    xx = rfileBindSprintf(rfile, stmt, 13, h, "%|license?{%{LICENSE:utf8}}|");
 
-    /* 14: rpm_vendor TEXT */
-    qfmt = "%|vendor?{%{VENDOR:utf8}}|";
-    s = headerSprintf(h, qfmt, NULL, NULL, &msg);
-    ns = (s ? strlen(s) : 0);
-    xx = repoSQL(rfile, "bind_text",
-	sqlite3_bind_text(stmt, 14, s, ns, flag));
-    s = _free(s);
+    /* packages 14: rpm_vendor TEXT */
+    xx = rfileBindSprintf(rfile, stmt, 14, h, "%|vendor?{%{VENDOR:utf8}}|");
 
-    /* 15: rpm_group TEXT */
-    qfmt = "%|group?{%{GROUP:utf8}}|";
-    s = headerSprintf(h, qfmt, NULL, NULL, &msg);
-    ns = (s ? strlen(s) : 0);
-    xx = repoSQL(rfile, "bind_text",
-	sqlite3_bind_text(stmt, 15, s, ns, flag));
-    s = _free(s);
+    /* packages 15: rpm_group TEXT */
+    xx = rfileBindSprintf(rfile, stmt, 15, h, "%|group?{%{GROUP:utf8}}|");
 
-    /* 16: rpm_buildhost TEXT */
-    qfmt = "%|buildhost?{%{BUILDHOST:utf8}}|";
-    s = headerSprintf(h, qfmt, NULL, NULL, &msg);
-    ns = (s ? strlen(s) : 0);
-    xx = repoSQL(rfile, "bind_text",
-	sqlite3_bind_text(stmt, 16, s, ns, flag));
-    s = _free(s);
+    /* packages 16: rpm_buildhost TEXT */
+    xx = rfileBindSprintf(rfile, stmt, 16, h, "%|buildhost?{%{BUILDHOST:utf8}}|");
 
-    /* 17: rpm_sourcerpm TEXT */
-    qfmt = "%|sourcerpm?{%{SOURCERPM:utf8}}|";
-    s = headerSprintf(h, qfmt, NULL, NULL, &msg);
-    ns = (s ? strlen(s) : 0);
-    xx = repoSQL(rfile, "bind_text",
-	sqlite3_bind_text(stmt, 17, s, ns, flag));
-    s = _free(s);
+    /* packages 17: rpm_sourcerpm TEXT */
+    xx = rfileBindSprintf(rfile, stmt, 17, h, "%|sourcerpm?{%{SOURCERPM:utf8}}|");
 
-    /* 18: rpm_header_start INTEGER */
+    /* packages 18: rpm_header_start INTEGER */
+    pos = 18;
+    val = (int) headerGetStartOff(h);
     xx = repoSQL(rfile, "bind_int",
-	sqlite3_bind_int (stmt, 18, (int) headerGetStartOff(h)));
+	sqlite3_bind_int (stmt, pos, val));
 
-    /* 19: rpm_header_end INTEGER */
+    /* packages 19: rpm_header_end INTEGER */
+    pos = 19;
+    val = (int) headerGetEndOff(h);
     xx = repoSQL(rfile, "bind_int",
-	sqlite3_bind_int (stmt, 19, (int) headerGetEndOff(h)));
+	sqlite3_bind_int (stmt, pos, val));
 
-    /* 20: rpm_packager TEXT */
-    qfmt = "%|packager?{%{PACKAGER:utf8}}|";
-    s = headerSprintf(h, qfmt, NULL, NULL, &msg);
-    ns = (s ? strlen(s) : 0);
-    xx = repoSQL(rfile, "bind_text",
-	sqlite3_bind_text(stmt, 20, s, ns, flag));
-    s = _free(s);
+    /* packages 20: rpm_packager TEXT */
+    xx = rfileBindSprintf(rfile, stmt, 20, h, "%|packager?{%{PACKAGER:utf8}}|");
 
-    /* 21: size_package INTEGER */
+    /* packages 21: size_package INTEGER */
+    pos = 21;
     he->tag = RPMTAG_SIZE;
     xx = headerGet(h, he, 0);
+    val = (int) he->p.ui32p[0];
     xx = repoSQL(rfile, "bind_int",
-	sqlite3_bind_int (stmt, 21, (int) he->p.ui32p[0]));
+	sqlite3_bind_int (stmt, pos, val));
     he->p.ptr = _free(he->p.ptr);
 
-    /* 22: size_installed INTEGER */
+    /* packages 22: size_installed INTEGER */
+    pos = 22;
     he->tag = RPMTAG_SIZE;
     xx = headerGet(h, he, 0);
+    val = (int) he->p.ui32p[0];
     xx = repoSQL(rfile, "bind_int",
-	sqlite3_bind_int (stmt, 22, (int) he->p.ui32p[0]));
+	sqlite3_bind_int (stmt, pos, val));
     he->p.ptr = _free(he->p.ptr);
 
-    /* 23: size_archive INTEGER */
+    /* packages 23: size_archive INTEGER */
+    pos = 23;
     he->tag = RPMTAG_ARCHIVESIZE;
     xx = headerGet(h, he, 0);
+    val = (int) he->p.ui32p[0];
     xx = repoSQL(rfile, "bind_int",
-	sqlite3_bind_int (stmt, 23, (int) he->p.ui32p[0]));
+	sqlite3_bind_int (stmt, pos, val));
     he->p.ptr = _free(he->p.ptr);
 
-    /* 24: location_href TEXT */
-    qfmt = "%|packageorigin?%{PACKAGEORIGIN:utf8}}|";
-    s = headerSprintf(h, qfmt, NULL, NULL, &msg);
-    ns = (s ? strlen(s) : 0);
-    xx = repoSQL(rfile, "bind_text",
-	sqlite3_bind_text(stmt, 24, s, ns, flag));
-    s = _free(s);
+    /* packages 24: location_href TEXT */
+    xx = rfileBindSprintf(rfile, stmt, 24, h, "%|packageorigin?{%{PACKAGEORIGIN:utf8}}|");
 
-    /* 25: location_base TEXT */
-    qfmt = "%|packageorigin?%{PACKAGEORIGIN:utf8}}|";
-    s = headerSprintf(h, qfmt, NULL, NULL, &msg);
-    ns = (s ? strlen(s) : 0);
-    xx = repoSQL(rfile, "bind_text",
-	sqlite3_bind_text(stmt, 25, s, ns, flag));
-    s = _free(s);
+    /* packages 25: location_base TEXT */
+    xx = rfileBindSprintf(rfile, stmt, 25, h, "%|packageorigin?{%{PACKAGEORIGIN:utf8}}|");
 
-    /* 26: checksum_type TEXT */
+    /* packages 26: checksum_type TEXT */
+    pos = 26;
     s = xstrdup("sha");
     ns = (s ? strlen(s) : 0);
     xx = repoSQL(rfile, "bind_text",
-	sqlite3_bind_text(stmt, 26, s, ns, flag));
+	sqlite3_bind_text(stmt, pos, s, ns, flag));
     s = _free(s);
 
     loop = 1;
@@ -994,6 +949,7 @@ static int repoSQLprimary(rpmrepo repo, rpmrfile rfile, Header h)
 	switch (xx) {
 	default:
 	    xx = repoSQL(rfile, "step", xx);
+	    /*@fallthrough@*/
 	case SQLITE_DONE:
 	    loop = 0;
 	    /*@switchbreak@*/ break;
@@ -1005,7 +961,398 @@ static int repoSQLprimary(rpmrepo repo, rpmrfile rfile, Header h)
 
     xx = repoSQL(rfile, "finalize",
 	sqlite3_finalize(stmt));
-    
+
+    sqlite3_free((char *)cmd);
+    cmd = NULL;
+
+    cmd = sqlite3_mprintf("INSERT into '%q' values (?, ?, ?, ?, ?, ?);",
+		"obsoletes");
+
+    xx = repoSQL(rfile, "prepare",
+	sqlite3_prepare(rfile->sqldb, cmd, (int)strlen(cmd), &stmt, &tail));
+
+    xx = repoSQL(rfile, "reset",
+	sqlite3_reset(stmt));
+
+    qfmt = "%|obsoletename?{[%{OBSOLETENAME:utf8}%{OBSOLETEFLAGS:depflags}%{OBSOLETEVERSION:utf8}\n]}|";
+{   const char * N = "N";
+    const char * E = "E";
+    const char * V = "V";
+    const char * R = "R";
+    const char * F = "F";
+
+    q = repoHeaderSprintf(h, qfmt);
+    nq = (q ? strlen(q) : 0);
+  if (nq > 0) {
+    /* obsoletes  1 name TEXT */
+    pos = 1;
+    s = N;
+    ns = (s ? strlen(s) : 0);
+    xx = repoSQL(rfile, "bind_text",
+	sqlite3_bind_text(stmt, pos, s, ns, flag));
+    /* obsoletes  2 flags TEXT */
+    pos = 2;
+    s = F;
+    ns = (s ? strlen(s) : 0);
+    xx = repoSQL(rfile, "bind_text",
+	sqlite3_bind_text(stmt, pos, s, ns, flag));
+    /* obsoletes  3 epoch TEXT */
+    pos = 3;
+    s = E;
+    ns = (s ? strlen(s) : 0);
+    xx = repoSQL(rfile, "bind_text",
+	sqlite3_bind_text(stmt, pos, s, ns, flag));
+    /* obsoletes  4 version TEXT */
+    pos = 4;
+    s = V;
+    ns = (s ? strlen(s) : 0);
+    xx = repoSQL(rfile, "bind_text",
+	sqlite3_bind_text(stmt, pos, s, ns, flag));
+    /* obsoletes  5 release TEXT */
+    pos = 5;
+    s = R;
+    ns = (s ? strlen(s) : 0);
+    xx = repoSQL(rfile, "bind_text",
+	sqlite3_bind_text(stmt, pos, s, ns, flag));
+    /* obsoletes  6 pkgKey INTEGER */
+    pos = 6;
+    val = (int) repo->current;
+    xx = repoSQL(rfile, "bind_int",
+	sqlite3_bind_int (stmt, pos, val));
+
+    loop = 1;
+    while (loop) {
+	xx = sqlite3_step(stmt);
+	switch (xx) {
+	default:
+	    xx = repoSQL(rfile, "step", xx);
+	    /*@fallthrough@*/
+	case SQLITE_DONE:
+	    loop = 0;
+	    /*@switchbreak@*/ break;
+	}
+    }
+
+    xx = repoSQL(rfile, "reset",
+	sqlite3_reset(stmt));
+
+  }
+  s = _free(s);
+}
+
+    xx = repoSQL(rfile, "finalize",
+	sqlite3_finalize(stmt));
+
+    sqlite3_free((char *)cmd);
+    cmd = NULL;
+
+    cmd = sqlite3_mprintf("INSERT into '%q' values (?, ?, ?, ?, ?, ?);",
+		"provides");
+
+    xx = repoSQL(rfile, "prepare",
+	sqlite3_prepare(rfile->sqldb, cmd, (int)strlen(cmd), &stmt, &tail));
+
+    xx = repoSQL(rfile, "reset",
+	sqlite3_reset(stmt));
+
+    qfmt = "%|providename?{[%{PROVIDENAME:utf8}%{PROVIDEFLAGS:depflags}%{PROVIDEVERSION:utf8}\n]}|";
+{   const char * N = "N";
+    const char * E = "E";
+    const char * V = "V";
+    const char * R = "R";
+    const char * F = "F";
+
+    q = repoHeaderSprintf(h, qfmt);
+    nq = (q ? strlen(q) : 0);
+  if (ns > 0) {
+    /* provides  1 name TEXT */
+    pos = 1;
+    s = N;
+    ns = (s ? strlen(s) : 0);
+    xx = repoSQL(rfile, "bind_text",
+	sqlite3_bind_text(stmt, pos, s, ns, flag));
+    /* provides  2 flags TEXT */
+    pos = 2;
+    s = F;
+    ns = (s ? strlen(s) : 0);
+    xx = repoSQL(rfile, "bind_text",
+	sqlite3_bind_text(stmt, pos, s, ns, flag));
+    /* provides  3 epoch TEXT */
+    pos = 3;
+    s = E;
+    ns = (s ? strlen(s) : 0);
+    xx = repoSQL(rfile, "bind_text",
+	sqlite3_bind_text(stmt, pos, s, ns, flag));
+    /* provides  4 version TEXT */
+    pos = 4;
+    s = V;
+    ns = (s ? strlen(s) : 0);
+    xx = repoSQL(rfile, "bind_text",
+	sqlite3_bind_text(stmt, pos, s, ns, flag));
+    /* provides  5 release TEXT */
+    pos = 5;
+    s = R;
+    ns = (s ? strlen(s) : 0);
+    xx = repoSQL(rfile, "bind_text",
+	sqlite3_bind_text(stmt, pos, s, ns, flag));
+    /* provides  6 pkgKey INTEGER */
+    pos = 6;
+    val = (int) repo->current;
+    xx = repoSQL(rfile, "bind_int",
+	sqlite3_bind_int (stmt, pos, val));
+
+    loop = 1;
+    while (loop) {
+	xx = sqlite3_step(stmt);
+	switch (xx) {
+	default:
+	    xx = repoSQL(rfile, "step", xx);
+	    /*@fallthrough@*/
+	case SQLITE_DONE:
+	    loop = 0;
+	    /*@switchbreak@*/ break;
+	}
+    }
+
+    xx = repoSQL(rfile, "reset",
+	sqlite3_reset(stmt));
+
+  }
+  q = _free(q);
+}
+
+    xx = repoSQL(rfile, "finalize",
+	sqlite3_finalize(stmt));
+
+    sqlite3_free((char *)cmd);
+    cmd = NULL;
+
+    cmd = sqlite3_mprintf("INSERT into '%q' values (?, ?, ?, ?, ?, ?);",
+		"provides");
+
+    xx = repoSQL(rfile, "prepare",
+	sqlite3_prepare(rfile->sqldb, cmd, (int)strlen(cmd), &stmt, &tail));
+
+    xx = repoSQL(rfile, "reset",
+	sqlite3_reset(stmt));
+
+    qfmt = "%|conflictname?{[%{CONFLICTNAME:utf8}%{CONFLICTFLAGS:depflags}%{CONFLICTVERSION:utf8}\n]}|";
+{   const char * N = "N";
+    const char * E = "E";
+    const char * V = "V";
+    const char * R = "R";
+    const char * F = "F";
+
+    q = repoHeaderSprintf(h, qfmt);
+    nq = (q ? strlen(q) : 0);
+  if (nq > 0) {
+    /* conflicts  1 name TEXT */
+    pos = 1;
+    s = N;
+    ns = (s ? strlen(s) : 0);
+    xx = repoSQL(rfile, "bind_text",
+	sqlite3_bind_text(stmt, pos, s, ns, flag));
+    /* conflicts  2 flags TEXT */
+    pos = 2;
+    s = F;
+    ns = (s ? strlen(s) : 0);
+    xx = repoSQL(rfile, "bind_text",
+	sqlite3_bind_text(stmt, pos, s, ns, flag));
+    /* conflicts  3 epoch TEXT */
+    pos = 3;
+    s = E;
+    ns = (s ? strlen(s) : 0);
+    xx = repoSQL(rfile, "bind_text",
+	sqlite3_bind_text(stmt, pos, s, ns, flag));
+    /* conflicts  4 version TEXT */
+    pos = 4;
+    s = V;
+    ns = (s ? strlen(s) : 0);
+    xx = repoSQL(rfile, "bind_text",
+	sqlite3_bind_text(stmt, pos, s, ns, flag));
+    /* conflicts  5 release TEXT */
+    pos = 5;
+    s = R;
+    ns = (s ? strlen(s) : 0);
+    xx = repoSQL(rfile, "bind_text",
+	sqlite3_bind_text(stmt, pos, s, ns, flag));
+    /* conflicts  6 pkgKey INTEGER */
+    pos = 6;
+    val = (int) repo->current;
+    xx = repoSQL(rfile, "bind_int",
+	sqlite3_bind_int (stmt, pos, val));
+
+    loop = 1;
+    while (loop) {
+	xx = sqlite3_step(stmt);
+	switch (xx) {
+	default:
+	    xx = repoSQL(rfile, "step", xx);
+	    /*@fallthrough@*/
+	case SQLITE_DONE:
+	    loop = 0;
+	    /*@switchbreak@*/ break;
+	}
+    }
+
+    xx = repoSQL(rfile, "reset",
+	sqlite3_reset(stmt));
+
+  }
+  q = _free(q);
+}
+
+    xx = repoSQL(rfile, "finalize",
+	sqlite3_finalize(stmt));
+
+    sqlite3_free((char *)cmd);
+    cmd = NULL;
+
+    cmd = sqlite3_mprintf("INSERT into '%q' values (?, ?, ?, ?, ?, ?, ?);",
+		"requires");
+
+    xx = repoSQL(rfile, "prepare",
+	sqlite3_prepare(rfile->sqldb, cmd, (int)strlen(cmd), &stmt, &tail));
+
+    xx = repoSQL(rfile, "reset",
+	sqlite3_reset(stmt));
+
+    qfmt = "%|requirename?{[%{REQUIRENAME:utf8}%{REQUIREFLAGS:depflags}%{REQUIREVERSION:utf8}\n]}|";
+{   const char * N = "N";
+    const char * E = "E";
+    const char * V = "V";
+    const char * R = "R";
+    const char * F = "F";
+
+    q = repoHeaderSprintf(h, qfmt);
+    nq = (q ? strlen(q) : 0);
+  if (nq > 0) {
+    /* requires  1 name TEXT */
+    pos = 1;
+    s = N;
+    ns = (s ? strlen(s) : 0);
+    xx = repoSQL(rfile, "bind_text",
+	sqlite3_bind_text(stmt, pos, s, ns, flag));
+    /* requires  2 flags TEXT */
+    pos = 2;
+    s = F;
+    ns = (s ? strlen(s) : 0);
+    xx = repoSQL(rfile, "bind_text",
+	sqlite3_bind_text(stmt, pos, s, ns, flag));
+    /* requires  3 epoch TEXT */
+    pos = 3;
+    s = E;
+    ns = (s ? strlen(s) : 0);
+    xx = repoSQL(rfile, "bind_text",
+	sqlite3_bind_text(stmt, pos, s, ns, flag));
+    /* requires  4 version TEXT */
+    pos = 4;
+    s = V;
+    ns = (s ? strlen(s) : 0);
+    xx = repoSQL(rfile, "bind_text",
+	sqlite3_bind_text(stmt, pos, s, ns, flag));
+    /* requires  5 release TEXT */
+    pos = 5;
+    s = R;
+    ns = (s ? strlen(s) : 0);
+    xx = repoSQL(rfile, "bind_text",
+	sqlite3_bind_text(stmt, pos, s, ns, flag));
+    /* requires  6 pkgKey INTEGER */
+    pos = 6;
+    val = (int) repo->current;
+    xx = repoSQL(rfile, "bind_int",
+	sqlite3_bind_int (stmt, pos, val));
+    /* requires  7 pre BOOL DEFAULT FALSE */
+    pos = 7;
+    val = 0;	/* XXX */
+    xx = repoSQL(rfile, "bind_int",
+	sqlite3_bind_int (stmt, pos, val));
+
+    loop = 1;
+    while (loop) {
+	xx = sqlite3_step(stmt);
+	switch (xx) {
+	default:
+	    xx = repoSQL(rfile, "step", xx);
+	    /*@fallthrough@*/
+	case SQLITE_DONE:
+	    loop = 0;
+	    /*@switchbreak@*/ break;
+	}
+    }
+
+    xx = repoSQL(rfile, "reset",
+	sqlite3_reset(stmt));
+
+  }
+  q = _free(q);
+}
+
+    xx = repoSQL(rfile, "finalize",
+	sqlite3_finalize(stmt));
+
+    sqlite3_free((char *)cmd);
+    cmd = NULL;
+
+    cmd = sqlite3_mprintf("INSERT into '%q' values (?, ?, ?);", "files");
+
+    xx = repoSQL(rfile, "prepare",
+	sqlite3_prepare(rfile->sqldb, cmd, (int)strlen(cmd), &stmt, &tail));
+
+    xx = repoSQL(rfile, "reset",
+	sqlite3_reset(stmt));
+
+    qfmt = "%|basenames?{[%{FILENAMES:utf8}\n]}|";
+{   const char * FN = "FN";
+    const char * FT = "FT";
+
+    q = repoHeaderSprintf(h, qfmt);
+    nq = (q ? strlen(q) : 0);
+  if (nq > 0) {
+    /* files  1 name TEXT */
+    pos = 1;
+    s = FN;
+    ns = (s ? strlen(s) : 0);
+    xx = repoSQL(rfile, "bind_text",
+	sqlite3_bind_text(stmt, pos, s, ns, flag));
+    /* files  2 type TEXT */
+    pos = 2;
+    s = FT;
+    ns = (s ? strlen(s) : 0);
+    xx = repoSQL(rfile, "bind_text",
+	sqlite3_bind_text(stmt, pos, s, ns, flag));
+    /* files  3 pkgKey INTEGER */
+    pos = 3;
+    val = (int) repo->current;
+    xx = repoSQL(rfile, "bind_int",
+	sqlite3_bind_int (stmt, pos, val));
+
+    loop = 1;
+    while (loop) {
+	xx = sqlite3_step(stmt);
+	switch (xx) {
+	default:
+	    xx = repoSQL(rfile, "step", xx);
+	    /*@fallthrough@*/
+	case SQLITE_DONE:
+	    loop = 0;
+	    /*@switchbreak@*/ break;
+	}
+    }
+
+    xx = repoSQL(rfile, "reset",
+	sqlite3_reset(stmt));
+
+  }
+  q = _free(q);
+}
+
+    xx = repoSQL(rfile, "finalize",
+	sqlite3_finalize(stmt));
+
+    sqlite3_free((char *)cmd);
+    cmd = NULL;
+
     return 0;
 }
 
@@ -1013,6 +1360,132 @@ static int repoSQLfilelists(rpmrepo repo, rpmrfile rfile, Header h)
 	/*@globals fileSystem @*/
 	/*@modifies rfile, h, fileSystem @*/
 {
+    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    const char * cmd;
+    sqlite3_stmt * stmt;
+    void (*flag)(void *) = SQLITE_TRANSIENT;
+    const char * tail;
+    const char * qfmt;
+    const char * s;
+    int ns;
+    const char * q;
+    int nq;
+    int loop;
+    int pos;
+    int val;
+    int xx;
+
+    cmd = sqlite3_mprintf("INSERT into '%q' values (?, ?);", "packages");
+
+    xx = repoSQL(rfile, "prepare",
+	sqlite3_prepare(rfile->sqldb, cmd, (int)strlen(cmd), &stmt, &tail));
+
+    xx = repoSQL(rfile, "reset",
+	sqlite3_reset(stmt));
+
+    /* packages  1: pkgKey INTEGER PRIMARY KEY */
+    pos = 1;
+    val = (int) repo->current;
+    xx = repoSQL(rfile, "bind_int",
+	sqlite3_bind_int (stmt, pos, val));
+
+    /* packages  2: pkgId TEXT */
+    pos = 2;
+    qfmt = "%|HDRID?{%{HDRID}}|";
+    s = repoHeaderSprintf(h, qfmt);
+    ns = (s ? strlen(s) : 0);
+    xx = repoSQL(rfile, "bind_text",
+	sqlite3_bind_text(stmt, pos, s, ns, flag));
+    s = _free(s);
+
+    loop = 1;
+    while (loop) {
+	xx = sqlite3_step(stmt);
+	switch (xx) {
+	default:
+	    xx = repoSQL(rfile, "step", xx);
+	    /*@fallthrough@*/
+	case SQLITE_DONE:
+	    loop = 0;
+	    /*@switchbreak@*/ break;
+	}
+    }
+
+    xx = repoSQL(rfile, "reset",
+	sqlite3_reset(stmt));
+
+    xx = repoSQL(rfile, "finalize",
+	sqlite3_finalize(stmt));
+
+    sqlite3_free((char *)cmd);
+    cmd = NULL;
+
+    cmd = sqlite3_mprintf("INSERT into '%q' values (?, ?, ?, ?);", "filelist");
+
+    xx = repoSQL(rfile, "prepare",
+	sqlite3_prepare(rfile->sqldb, cmd, (int)strlen(cmd), &stmt, &tail));
+
+    xx = repoSQL(rfile, "reset",
+	sqlite3_reset(stmt));
+
+    qfmt = "%|basenames?{[%{FILENAMES:utf8}\n]}|";
+{   const char * DN = "DN";
+    const char * FN = "FN";
+    const char * FT = "FT";
+
+    q = repoHeaderSprintf(h, qfmt);
+    nq = (q ? strlen(q) : 0);
+  if (nq > 0) {
+    /* filelist 1 pkgKey INTEGER */
+    pos = 1;
+    val = (int) repo->current;
+    xx = repoSQL(rfile, "bind_int",
+	sqlite3_bind_int (stmt, pos, val));
+    /* filelist 2 dirname TEXT */
+    pos = 1;
+    s = DN;
+    ns = (s ? strlen(s) : 0);
+    xx = repoSQL(rfile, "bind_text",
+	sqlite3_bind_text(stmt, pos, s, ns, flag));
+    /* filelist 3 filenames TEXT */
+    pos = 3;
+    s = FN;
+    ns = (s ? strlen(s) : 0);
+    xx = repoSQL(rfile, "bind_text",
+	sqlite3_bind_text(stmt, pos, s, ns, flag));
+    /* filelist 4 filetypes TEXT */
+    pos = 4;
+    s = FT;
+    ns = (s ? strlen(s) : 0);
+    xx = repoSQL(rfile, "bind_text",
+	sqlite3_bind_text(stmt, pos, s, ns, flag));
+
+    loop = 1;
+    while (loop) {
+	xx = sqlite3_step(stmt);
+	switch (xx) {
+	default:
+	    xx = repoSQL(rfile, "step", xx);
+	    /*@fallthrough@*/
+	case SQLITE_DONE:
+	    loop = 0;
+	    /*@switchbreak@*/ break;
+	}
+    }
+
+    xx = repoSQL(rfile, "reset",
+	sqlite3_reset(stmt));
+
+  }
+  q = _free(q);
+}
+
+    xx = repoSQL(rfile, "finalize",
+	sqlite3_finalize(stmt));
+
+    sqlite3_free((char *)cmd);
+    cmd = NULL;
+
     return 0;
 }
 
@@ -1020,6 +1493,132 @@ static int repoSQLother(rpmrepo repo, rpmrfile rfile, Header h)
 	/*@globals fileSystem @*/
 	/*@modifies rfile, h, fileSystem @*/
 {
+    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    const char * cmd;
+    sqlite3_stmt * stmt;
+    void (*flag)(void *) = SQLITE_TRANSIENT;
+    const char * tail;
+    const char * qfmt;
+    const char * s;
+    int ns;
+    const char * q;
+    int nq;
+    int loop;
+    int pos;
+    int val;
+    int xx;
+
+    cmd = sqlite3_mprintf("INSERT into '%q' values (?, ?);", "packages");
+
+    xx = repoSQL(rfile, "prepare",
+	sqlite3_prepare(rfile->sqldb, cmd, (int)strlen(cmd), &stmt, &tail));
+
+    xx = repoSQL(rfile, "reset",
+	sqlite3_reset(stmt));
+
+    /* packages  1: pkgKey INTEGER PRIMARY KEY */
+    pos = 1;
+    val = (int) repo->current;
+    xx = repoSQL(rfile, "bind_int",
+	sqlite3_bind_int (stmt, pos, val));
+
+    /* packages  2: pkgId TEXT */
+    pos = 2;
+    qfmt = "%|HDRID?{%{HDRID}}|";
+    s = repoHeaderSprintf(h, qfmt);
+    ns = (s ? strlen(s) : 0);
+    xx = repoSQL(rfile, "bind_text",
+	sqlite3_bind_text(stmt, pos, s, ns, flag));
+    s = _free(s);
+
+    loop = 1;
+    while (loop) {
+	xx = sqlite3_step(stmt);
+	switch (xx) {
+	default:
+	    xx = repoSQL(rfile, "step", xx);
+	    /*@fallthrough@*/
+	case SQLITE_DONE:
+	    loop = 0;
+	    /*@switchbreak@*/ break;
+	}
+    }
+
+    xx = repoSQL(rfile, "reset",
+	sqlite3_reset(stmt));
+
+    xx = repoSQL(rfile, "finalize",
+	sqlite3_finalize(stmt));
+
+    sqlite3_free((char *)cmd);
+    cmd = NULL;
+
+    cmd = sqlite3_mprintf("INSERT into '%q' values (?, ?, ?, ?);", "changelog");
+
+    xx = repoSQL(rfile, "prepare",
+	sqlite3_prepare(rfile->sqldb, cmd, (int)strlen(cmd), &stmt, &tail));
+
+    xx = repoSQL(rfile, "reset",
+	sqlite3_reset(stmt));
+
+    qfmt = "%|changelogname?{[%{CHANGELOGNAME:utf8}|%{CHANGELOGTIME}|%{CHANGELOGTEXT}\n]}|";
+{   const char * author = "author";
+    int date = 0;
+    const char * changelog = "changelog";
+
+    q = repoHeaderSprintf(h, qfmt);
+    nq = (q ? strlen(q) : 0);
+  if (nq > 0) {
+    /* changelog 1 pkgKey INTEGER */
+    pos = 1;
+    val = (int) repo->current;
+    xx = repoSQL(rfile, "bind_int",
+	sqlite3_bind_int (stmt, pos, val));
+
+    /* changelog 2 author TEXT */
+    pos = 2;
+    s = author;
+    ns = (s ? strlen(s) : 0);
+    xx = repoSQL(rfile, "bind_text",
+	sqlite3_bind_text(stmt, pos, s, ns, flag));
+    /* changelog 3 date INTEGER */
+    pos = 3;
+    val = date;
+    xx = repoSQL(rfile, "bind_int",
+	sqlite3_bind_int (stmt, pos, val));
+    /* changelog 4 changelog TEXT */
+    pos = 4;
+    s = changelog;
+    ns = (s ? strlen(s) : 0);
+    xx = repoSQL(rfile, "bind_text",
+	sqlite3_bind_text(stmt, pos, s, ns, flag));
+
+    loop = 1;
+    while (loop) {
+	xx = sqlite3_step(stmt);
+	switch (xx) {
+	default:
+	    xx = repoSQL(rfile, "step", xx);
+	    /*@fallthrough@*/
+	case SQLITE_DONE:
+	    loop = 0;
+	    /*@switchbreak@*/ break;
+	}
+    }
+
+    xx = repoSQL(rfile, "reset",
+	sqlite3_reset(stmt));
+
+  }
+  q = _free(q);
+}
+
+    xx = repoSQL(rfile, "finalize",
+	sqlite3_finalize(stmt));
+
+    sqlite3_free((char *)cmd);
+    cmd = NULL;
+
     return 0;
 }
 
@@ -1030,14 +1629,8 @@ static int repoWriteMDFile(rpmrepo repo, rpmrfile rfile, Header h)
     int rc = 0;
 
     if (rfile->qfmt != NULL) {
-	const char * msg = NULL;
-
-	if (rfileWrite(rfile, headerSprintf(h, rfile->qfmt, NULL, NULL, &msg)))
+	if (rfileWrite(rfile, repoHeaderSprintf(h, rfile->qfmt)))
 	    rc = 1;
-	if (msg != NULL) {
-	    repo_error(0, _("incorrect format: %s\n"), msg);
-	    rc = 1;
-	}
     }
 
     if (repo->database) {
