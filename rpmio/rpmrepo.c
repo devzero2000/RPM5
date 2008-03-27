@@ -154,113 +154,113 @@ static const char fini_repomd[] = "</repomd>\n";
 /* XXX todo: wire up popt aliases and bury the --queryformat glop externally. */
 /*@unchecked@*/ /*@observer@*/
 static const char qfmt_primary[] = "\
-<package type=\"rpm\">\n\
-  <name>%{NAME:cdata}</name>\n\
-  <arch>%{ARCH:cdata}</arch>\n\
-  <version epoch=\"%|EPOCH?{%{EPOCH}}:{0}|\" ver=\"%{VERSION:cdata}\" rel=\"%{RELEASE:cdata}\"/>\n\
-  <checksum type=\"sha\" pkgid=\"NO\">%|HDRID?{%{HDRID}}|</checksum>\n\
-  <summary>%{SUMMARY:cdata}</summary>\n\
-  <description>%{DESCRIPTION:cdata}</description>\n\
-  <packager>%|PACKAGER?{%{PACKAGER:cdata}}:{}|</packager>\n\
-  <url>%|URL?{%{URL:cdata}}:{}|</url>\n\
-  <time file=\"%{PACKAGETIME}\" build=\"%{BUILDTIME}\"/>\n\
-  <size package=\"%{SIZE}\" installed=\"%{SIZE}\" archive=\"%{ARCHIVESIZE}\"/>\n\
-  <location href=\"%{PACKAGEORIGIN:cdata}\"/>\n\
-  <format>\n\
+<package type=\"rpm\">\
+\n  <name>%{NAME:cdata}</name>\
+\n  <arch>%{ARCH:cdata}</arch>\
+\n  <version epoch=\"%|EPOCH?{%{EPOCH}}:{0}|\" ver=\"%{VERSION:cdata}\" rel=\"%{RELEASE:cdata}\"/>\
+\n  <checksum type=\"sha\" pkgid=\"NO\">%|HDRID?{%{HDRID}}|</checksum>\
+\n  <summary>%{SUMMARY:cdata}</summary>\
+\n  <description>%{DESCRIPTION:cdata}</description>\
+\n  <packager>%|PACKAGER?{%{PACKAGER:cdata}}:{}|</packager>\
+\n  <url>%|URL?{%{URL:cdata}}:{}|</url>\
+\n  <time file=\"%{PACKAGETIME}\" build=\"%{BUILDTIME}\"/>\
+\n  <size package=\"%{SIZE}\" installed=\"%{SIZE}\" archive=\"%{ARCHIVESIZE}\"/>\
+\n  <location href=\"%{PACKAGEORIGIN:cdata}\"/>\
+\n  <format>\
 %|license?{\
-    <rpm:license>%{LICENSE:cdata}</rpm:license>\n\
+\n    <rpm:license>%{LICENSE:cdata}</rpm:license>\
 }:{\
-    <rpm:license/>\n\
+\n    <rpm:license/>\
 }|\
 %|vendor?{\
-    <rpm:vendor>%{VENDOR:cdata}</rpm:vendor>\n\
+\n    <rpm:vendor>%{VENDOR:cdata}</rpm:vendor>\
 }:{\
-    <rpm:vendor/>\n\
+\n    <rpm:vendor/>\
 }|\
 %|group?{\
-    <rpm:group>%{GROUP:cdata}</rpm:group>\n\
+\n    <rpm:group>%{GROUP:cdata}</rpm:group>\
 }:{\
-    <rpm:group/>\n\
+\n    <rpm:group/>\
 }|\
 %|buildhost?{\
-    <rpm:buildhost>%{BUILDHOST:cdata}</rpm:buildhost>\n\
+\n    <rpm:buildhost>%{BUILDHOST:cdata}</rpm:buildhost>\
 }:{\
-    <rpm:buildhost/>\n\
+\n    <rpm:buildhost/>\
 }|\
 %|sourcerpm?{\
-    <rpm:sourcerpm>%{SOURCERPM:cdata}</rpm:sourcerpm>\n\
+\n    <rpm:sourcerpm>%{SOURCERPM:cdata}</rpm:sourcerpm>\
 }|\
-    <rpm:header-range start=\"%{HEADERSTARTOFF}\" end=\"%{HEADERENDOFF}\"/>\n\
-%|provideentry?{\
-    <rpm:provides>\n\
+\n    <rpm:header-range start=\"%{HEADERSTARTOFF}\" end=\"%{HEADERENDOFF}\"/>\
+%|providexmlentry?{\
+\n    <rpm:provides>\
 [\
-      %{provideentry}\n\
+\n      %{providexmlentry}\
 ]\
-    </rpm:provides>\n\
+\n    </rpm:provides>\
 }:{\
-    <rpm:provides/>\n\
+\n    <rpm:provides/>\
 }|\
-%|requireentry?{\
-    <rpm:requires>\n\
+%|requirexmlentry?{\
+\n    <rpm:requires>\
 [\
-      %{requireentry}\n\
+\n      %{requirexmlentry}\
 ]\
-    </rpm:requires>\n\
+\n    </rpm:requires>\
 }:{\
-    <rpm:requires/>\n\
+\n    <rpm:requires/>\
 }|\
-%|conflictentry?{\
-    <rpm:conflicts>\n\
+%|conflictxmlentry?{\
+\n    <rpm:conflicts>\
 [\
-      %{conflictentry}\n\
+\n      %{conflictxmlentry}\
 ]\
-    </rpm:conflicts>\n\
+\n    </rpm:conflicts>\
 }:{\
-    <rpm:conflicts/>\n\
+\n    <rpm:conflicts/>\
 }|\
-%|obsoleteentry?{\
-    <rpm:obsoletes>\n\
+%|obsoletexmlentry?{\
+\n    <rpm:obsoletes>\
 [\
-      %{obsoleteentry}\n\
+\n      %{obsoletexmlentry}\
 ]\
-    </rpm:obsoletes>\n\
+\n    </rpm:obsoletes>\
 }:{\
-    <rpm:obsoletes/>\n\
+\n    <rpm:obsoletes/>\
 }|\
-%|filesentry1?{\
+%|filesxmlentry1?{\
 [\
-    %{filesentry1}\n\
+\n    %{filesxmlentry1}\
 ]\
 }|\
-  </format>\n\
-</package>\n\
-";
+\n  </format>\
+\n</package>\
+\n";
 
 /*@unchecked@*/ /*@observer@*/
 static const char qfmt_filelists[] = "\
-<package pkgid=\"%|HDRID?{%{HDRID}}:{XXX}|\" name=\"%{NAME:cdata}\" arch=\"%{ARCH:cdata}\">\n\
-  <version epoch=\"%|EPOCH?{%{EPOCH}}:{0}|\" ver=\"%{VERSION:cdata}\" rel=\"%{RELEASE:cdata}\"/>\n\
-%|filesentry2?{\
+<package pkgid=\"%|HDRID?{%{HDRID}}:{XXX}|\" name=\"%{NAME:cdata}\" arch=\"%{ARCH:cdata}\">\
+\n  <version epoch=\"%|EPOCH?{%{EPOCH}}:{0}|\" ver=\"%{VERSION:cdata}\" rel=\"%{RELEASE:cdata}\"/>\
+%|filesxmlentry2?{\
 [\
-  %{filesentry2}\n\
+\n  %{filesxmlentry2}\
 ]\
 }|\
-</package>\n\
-";
+\n</package>\
+\n";
 
 /*@unchecked@*/ /*@observer@*/
 static const char qfmt_other[] = "\
-<package pkgid=\"%|HDRID?{%{HDRID}}:{XXX}|\" name=\"%{NAME:cdata}\" arch=\"%{ARCH:cdata}\">\n\
-  <version epoch=\"%|EPOCH?{%{EPOCH}}:{0}|\" ver=\"%{VERSION:cdata}\" rel=\"%{RELEASE:cdata}\"/>\n\
+<package pkgid=\"%|HDRID?{%{HDRID}}:{XXX}|\" name=\"%{NAME:cdata}\" arch=\"%{ARCH:cdata}\">\
+\n  <version epoch=\"%|EPOCH?{%{EPOCH}}:{0}|\" ver=\"%{VERSION:cdata}\" rel=\"%{RELEASE:cdata}\"/>\
 %|changelogname?{\
 [\
-  <changelog author=\"%{CHANGELOGNAME:cdata}\" date=\"%{CHANGELOGTIME}\">%{CHANGELOGTEXT:cdata}</changelog>\n\
+\n  <changelog author=\"%{CHANGELOGNAME:cdata}\" date=\"%{CHANGELOGTIME}\">%{CHANGELOGTEXT:cdata}</changelog>\
 ]\
 }:{\
-  <changelog/>\n\
+\n  <changelog/>\
 }|\
-</package>\n\
-";
+\n</package>\
+\n";
 
 /*@unchecked@*/ /*@observer@*/
 static const char *schema_primary[] = {
@@ -282,14 +282,14 @@ static const char *schema_primary[] = {
 "CREATE INDEX pkgrequires on requires (pkgKey);",
 "CREATE INDEX providesname ON provides (name);",
 "CREATE INDEX requiresname ON requires (name);",
-"CREATE TRIGGER removals AFTER DELETE ON packages\n\
-    BEGIN\n\
-    DELETE FROM files WHERE pkgKey = old.pkgKey;\n\
-    DELETE FROM requires WHERE pkgKey = old.pkgKey;\n\
-    DELETE FROM provides WHERE pkgKey = old.pkgKey;\n\
-    DELETE FROM conflicts WHERE pkgKey = old.pkgKey;\n\
-    DELETE FROM obsoletes WHERE pkgKey = old.pkgKey;\n\
-    END;",
+"CREATE TRIGGER removals AFTER DELETE ON packages\
+\n    BEGIN\n\
+\n    DELETE FROM files WHERE pkgKey = old.pkgKey;\
+\n    DELETE FROM requires WHERE pkgKey = old.pkgKey;\
+\n    DELETE FROM provides WHERE pkgKey = old.pkgKey;\
+\n    DELETE FROM conflicts WHERE pkgKey = old.pkgKey;\
+\n    DELETE FROM obsoletes WHERE pkgKey = old.pkgKey;\
+\n    END;",
 "INSERT into db_info values (9, 'direct_create');",
     NULL
 };
@@ -305,10 +305,10 @@ static const char *schema_filelists[] = {
 "CREATE INDEX dirnames ON filelist (dirname);",
 "CREATE INDEX keyfile ON filelist (pkgKey);",
 "CREATE INDEX pkgId ON packages (pkgId);",
-"CREATE TRIGGER remove_filelist AFTER DELETE ON packages\n\
-    BEGIN\n\
-    DELETE FROM filelist WHERE pkgKey = old.pkgKey;\n\
-    END;",
+"CREATE TRIGGER remove_filelist AFTER DELETE ON packages\
+\n    BEGIN\
+\n    DELETE FROM filelist WHERE pkgKey = old.pkgKey;\
+\n    END;",
 "INSERT into db_info values (9, 'direct_create');",
     NULL
 };
@@ -323,10 +323,10 @@ static const char *schema_other[] = {
 "CREATE TABLE packages (  pkgKey INTEGER PRIMARY KEY,  pkgId TEXT);",
 "CREATE INDEX keychange ON changelog (pkgKey);",
 "CREATE INDEX pkgId ON packages (pkgId);",
-"CREATE TRIGGER remove_changelogs AFTER DELETE ON packages\n\
-    BEGIN\n\
-    DELETE FROM changelog WHERE pkgKey = old.pkgKey;\n\
-    END;",
+"CREATE TRIGGER remove_changelogs AFTER DELETE ON packages\
+\n    BEGIN\
+\n    DELETE FROM changelog WHERE pkgKey = old.pkgKey;\
+\n    END;",
 "INSERT into db_info values (9, 'direct_create');",
     NULL
 };
