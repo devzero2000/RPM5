@@ -35,13 +35,15 @@ struct rpmrfile_s {
 /*@observer@*/
     const char * type;
 /*@observer@*/
-    const char * init;
+    const char * xml_init;
 /*@observer@*/
-    const char * qfmt;
+    const char * xml_qfmt;
 /*@observer@*/
-    const char ** schema;
+    const char * xml_fini;
 /*@observer@*/
-    const char * fini;
+    const char ** sql_init;
+/*@observer@*/
+    const char * sql_qfmt;
     FD_t fd;
 #if defined(WITH_SQLITE)
     sqlite3 * sqldb;
@@ -124,36 +126,36 @@ struct rpmrepo_s {
 };
 
 /*@unchecked@*/ /*@observer@*/
-static const char init_primary[] =
+static const char primary_xml_init[] =
 "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
 "<metadata xmlns=\"http://linux.duke.edu/metadata/common\" xmlns:rpm=\"http://linux.duke.edu/metadata/rpm\" packages=\"0\">\n";
 /*@unchecked@*/ /*@observer@*/
-static const char fini_primary[] = "</metadata>\n";
+static const char primary_xml_fini[] = "</metadata>\n";
 
 /*@unchecked@*/ /*@observer@*/
-static const char init_filelists[] =
+static const char filelists_xml_init[] =
 "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
 "<filelists xmlns=\"http://linux.duke.edu/metadata/filelists\" packages=\"0\">\n";
 /*@unchecked@*/ /*@observer@*/
-static const char fini_filelists[] = "</filelists>\n";
+static const char filelists_xml_fini[] = "</filelists>\n";
 
 /*@unchecked@*/ /*@observer@*/
-static const char init_other[] =
+static const char other_xml_init[] =
 "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
 "<otherdata xmlns=\"http://linux.duke.edu/metadata/other\" packages=\"0\">\n";
 /*@unchecked@*/ /*@observer@*/
-static const char fini_other[] = "</otherdata>\n";
+static const char other_xml_fini[] = "</otherdata>\n";
 
 /*@unchecked@*/ /*@observer@*/
-static const char init_repomd[] = "\
+static const char repomd_xml_init[] = "\
 <?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\
 <repomd xmlns=\"http://linux.duke.edu/metadata/repo\">\n";
 /*@unchecked@*/ /*@observer@*/
-static const char fini_repomd[] = "</repomd>\n";
+static const char repomd_xml_fini[] = "</repomd>\n";
 
 /* XXX todo: wire up popt aliases and bury the --queryformat glop externally. */
 /*@unchecked@*/ /*@observer@*/
-static const char qfmt_primary[] = "\
+static const char primary_xml_qfmt[] = "\
 <package type=\"rpm\">\
 \n  <name>%{NAME:cdata}</name>\
 \n  <arch>%{ARCH:cdata}</arch>\
@@ -237,7 +239,7 @@ static const char qfmt_primary[] = "\
 \n";
 
 /*@unchecked@*/ /*@observer@*/
-static const char qfmt_filelists[] = "\
+static const char filelists_xml_qfmt[] = "\
 <package pkgid=\"%|HDRID?{%{HDRID}}:{XXX}|\" name=\"%{NAME:cdata}\" arch=\"%{ARCH:cdata}\">\
 \n  <version epoch=\"%|EPOCH?{%{EPOCH}}:{0}|\" ver=\"%{VERSION:cdata}\" rel=\"%{RELEASE:cdata}\"/>\
 %|filesxmlentry2?{\
@@ -249,7 +251,7 @@ static const char qfmt_filelists[] = "\
 \n";
 
 /*@unchecked@*/ /*@observer@*/
-static const char qfmt_other[] = "\
+static const char other_xml_qfmt[] = "\
 <package pkgid=\"%|HDRID?{%{HDRID}}:{XXX}|\" name=\"%{NAME:cdata}\" arch=\"%{ARCH:cdata}\">\
 \n  <version epoch=\"%|EPOCH?{%{EPOCH}}:{0}|\" ver=\"%{VERSION:cdata}\" rel=\"%{RELEASE:cdata}\"/>\
 %|changelogname?{\
@@ -263,7 +265,7 @@ static const char qfmt_other[] = "\
 \n";
 
 /*@unchecked@*/ /*@observer@*/
-static const char *schema_primary[] = {
+static const char *primary_sql_init[] = {
 "PRAGMA synchronous = 0;",
 "pragma locking_mode = EXCLUSIVE;",
 "CREATE TABLE conflicts (  pkgKey INTEGER,  name TEXT,  flags TEXT,  epoch TEXT,  version TEXT,  release TEXT );",
@@ -296,7 +298,7 @@ static const char *schema_primary[] = {
 /*XXX todo: DBVERSION needs to be set */
 
 /*@unchecked@*/ /*@observer@*/
-static const char *schema_filelists[] = {
+static const char *filelists_sql_init[] = {
 "PRAGMA synchronous = 0;",
 "pragma locking_mode = EXCLUSIVE;",
 "CREATE TABLE db_info (dbversion INTEGER, checksum TEXT);",
@@ -315,7 +317,7 @@ static const char *schema_filelists[] = {
 /*XXX todo: DBVERSION needs to be set */
 
 /*@unchecked@*/ /*@observer@*/
-static const char *schema_other[] = {
+static const char *other_sql_init[] = {
 "PRAGMA synchronous = 0;",
 "pragma locking_mode = EXCLUSIVE;",
 "CREATE TABLE changelog (  pkgKey INTEGER,  author TEXT,  date INTEGER,  changelog TEXT);",
@@ -332,6 +334,161 @@ static const char *schema_other[] = {
 };
 /*XXX todo: DBVERSION needs to be set */
 
+/* packages   1 pkgKey INTEGER PRIMARY KEY */
+/* packages   2 pkgId TEXT */
+/* packages   3 name TEXT */
+/* packages   4 arch TEXT */
+/* packages   5 version TEXT */
+/* packages   6 epoch TEXT */
+/* packages   7 release TEXT */
+/* packages   8 summary TEXT */
+/* packages   9 description TEXT */
+/* packages  10 url TEXT */
+/* packages  11 time_file INTEGER */
+/* packages  12 time_build INTEGER */
+/* packages  13 rpm_license TEXT */
+/* packages  14 rpm_vendor TEXT */
+/* packages  15 rpm_group TEXT */
+/* packages  16 rpm_buildhost TEXT */
+/* packages  17 rpm_sourcerpm TEXT */
+/* packages  18 rpm_header_start INTEGER */
+/* packages  19 rpm_header_end INTEGER */
+/* packages  20 rpm_packager TEXT */
+/* packages  21 size_package INTEGER */
+/* packages  22 size_installed INTEGER */
+/* packages  23 size_archive INTEGER */
+/* packages  24 location_href TEXT */
+/* packages  25 location_base TEXT */
+/* packages  26 checksum_type TEXT */
+/* obsoletes  1 pkgKey INTEGER */
+/* obsoletes  2 name TEXT */
+/* obsoletes  3 flags TEXT */
+/* obsoletes  4 epoch TEXT */
+/* obsoletes  5 version TEXT */
+/* obsoletes  6 release TEXT */
+/* provides   1 pkgKey INTEGER */
+/* provides   2 name TEXT */
+/* provides   3 flags TEXT */
+/* provides   4 epoch TEXT */
+/* provides   5 version TEXT */
+/* provides   6 release TEXT */
+/* conflicts  1 pkgKey INTEGER */
+/* conflicts  2 name TEXT */
+/* conflicts  3 flags TEXT */
+/* conflicts  4 epoch TEXT */
+/* conflicts  5 version TEXT */
+/* conflicts  6 release TEXT */
+/* requires   1 pkgKey INTEGER */
+/* requires   2 name TEXT */
+/* requires   3 flags TEXT */
+/* requires   4 epoch TEXT */
+/* requires   5 version TEXT */
+/* requires   6 release TEXT */
+/* files      1 pkgKey INTEGER */
+/* files      2 name TEXT */
+/* files      3 type TEXT */
+
+/*@unchecked@*/ /*@observer@*/
+static const char primary_sql_qfmt[] = "\
+INSERT into packages values (\
+'%{DBINSTANCE}'\
+, '%|HDRID?{%{HDRID}}:{XXX}|'\
+,\n '%{NAME:sqlescape}'\
+, '%{ARCH:sqlescape}'\
+, '%{VERSION:sqlescape}'\
+, '%|EPOCH?{%{EPOCH}}:{0}|'\
+, '%{RELEASE:sqlescape}'\
+,\n '%{SUMMARY:sqlescape}'\
+,\n '%{DESCRIPTION:sqlescape}'\
+,\n '%|URL?{%{URL:sqlescape}}|'\
+, '%{PACKAGETIME}'\
+, '%{BUILDTIME}'\
+, '%|license?{%{LICENSE:sqlescape}}|'\
+,\n '%|vendor?{%{VENDOR:sqlescape}}|'\
+, '%|group?{%{GROUP:sqlescape}}|'\
+,\n '%|buildhost?{%{BUILDHOST:sqlescape}}|'\
+, '%|sourcerpm?{%{SOURCERPM:sqlescape}}|'\
+,\n '%{HEADERSTARTOFF}'\
+, '%{HEADERENDOFF}'\
+, '%|PACKAGER?{%{PACKAGER:sqlescape}}|'\
+, '%{SIZE}'\
+, '%{SIZE}'\
+, '%{ARCHIVESIZE}'\
+,\n '%{PACKAGEORIGIN:sqlescape}'\
+,\n '%{PACKAGEORIGIN:sqlescape}'\
+, 'sha'\
+);\
+%|obsoletename?{[\
+\nINSERT into obsoletes values (\
+%{obsoletesqlentry}\
+);\
+]}|\
+%|providename?{[\
+\nINSERT into provides values (\
+%{providesqlentry}\
+);\
+]}|\
+%|conflictname?{[\
+\nINSERT into conflicts values (\
+%{conflictsqlentry}\
+);\
+]}|\
+%|requirename?{[\
+\nINSERT into requires values (\
+%{requiressqlentry}\
+);\
+]}|\
+%|basenames?{[\
+\nINSERT into files values (\
+%{filessqlentry1}\
+);\
+]}|\
+";
+
+/* packages  1 pkgKey INTEGER PRIMARY KEY */
+/* packages  2 pkgId TEXT */
+/* filelist  1 pkgKey INTEGER */
+/* filelist  2 name TEXT */
+/* filelist  3 type TEXT */
+
+/*@unchecked@*/ /*@observer@*/
+static const char filelists_sql_qfmt[] = "\
+INSERT into packages values (\
+'%{DBINSTANCE}'\
+, '%|HDRID?{%{HDRID}}:{XXX}|'\
+);\
+%|basenames?{[\
+\nINSERT into filelist values (\
+%{filessqlentry2}\
+);\
+]}|\
+";
+
+/* packages  1 pkgKey INTEGER PRIMARY KEY */
+/* packages  2 pkgId TEXT */
+/* changelog 1 pkgKey INTEGER */
+/* changelog 2 author TEXT */
+/* changelog 3 date INTEGER */
+/* changelog 4 changelog TEXT */
+
+/*@unchecked@*/ /*@observer@*/
+static const char other_sql_qfmt[] = "\
+INSERT into packages values (\
+'%{DBINSTANCE}'\
+, '%|HDRID?{%{HDRID}}:{XXX}|'\
+);\
+%|changelogname?{[\
+\nINSERT into changelog values (\
+'XXX'\
+, '%{CHANGELOGNAME:sqlescape}'\
+, '%{CHANGELOGTIME}'\
+, '%{CHANGELOGTEXT:sqlescape}'\
+);\
+]}:{\
+\nINSERT into changelog ('%{DBINSTANCE}', '', '', '');\
+}|\
+";
+
 /*@-fullinitblock@*/
 /*@unchecked@*/
 static struct rpmrepo_s __rpmrepo = {
@@ -346,31 +503,35 @@ static struct rpmrepo_s __rpmrepo = {
     .algo	= PGPHASHALGO_SHA1,
     .primary	= {
 	.type	= "primary",
-	.init	= init_primary,
-	.qfmt	= qfmt_primary,
-	.schema = schema_primary,
-	.fini	= fini_primary
+	.xml_init= primary_xml_init,
+	.xml_qfmt= primary_xml_qfmt,
+	.xml_fini= primary_xml_fini,
+	.sql_init= primary_sql_init,
+	.sql_qfmt= primary_sql_qfmt
     },
     .filelists	= {
 	.type	= "filelists",
-	.init	= init_filelists,
-	.qfmt	= qfmt_filelists,
-	.schema = schema_filelists,
-	.fini	= fini_filelists
+	.xml_init= filelists_xml_init,
+	.xml_qfmt= filelists_xml_qfmt,
+	.xml_fini= filelists_xml_fini,
+	.sql_init= filelists_sql_init,
+	.sql_qfmt= filelists_sql_qfmt
     },
     .other	= {
 	.type	= "other",
-	.init	= init_other,
-	.qfmt	= qfmt_other,
-	.schema = schema_other,
-	.fini	= fini_other
+	.xml_init= other_xml_init,
+	.xml_qfmt= other_xml_qfmt,
+	.xml_fini= other_xml_fini,
+	.sql_init= other_sql_init,
+	.sql_qfmt= other_sql_qfmt
     },
     .repomd	= {
 	.type	= "repomd",
-	.init	= init_repomd,
-	.qfmt	= NULL,
-	.schema = NULL,
-	.fini	= fini_repomd
+	.xml_init= repomd_xml_init,
+	.xml_qfmt= NULL,
+	.xml_fini= repomd_xml_fini,
+	.sql_init= NULL,
+	.sql_qfmt= NULL
     }
 };
 /*@=fullinitblock@*/
@@ -657,7 +818,7 @@ static int repoCheckTimeStamps(rpmrepo repo)
     return rc;
 }
 
-static int rfileWrite(rpmrfile rfile, /*@only@*/ /*@null@*/ const char * spew)
+static int rfileXMLWrite(rpmrfile rfile, /*@only@*/ /*@null@*/ const char * spew)
 	/*@globals fileSystem @*/
 	/*@modifies rfile, fileSystem @*/
 {
@@ -677,7 +838,7 @@ static int repoOpenMDFile(const rpmrepo repo, rpmrfile rfile)
 	/*@globals h_errno, rpmGlobalMacroContext, fileSystem, internalState @*/
 	/*@modifies rfile, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
-    const char * spew = rfile->init;
+    const char * spew = rfile->xml_init;
     size_t nspew = strlen(spew);
     const char * fn = repoGetPath(repo, repo->tempdir, rfile->type, 1);
     const char * tail;
@@ -718,7 +879,7 @@ assert(rfile->fd != NULL);
 		rfile->type, ".sqlite", NULL);
 	if ((xx = sqlite3_open(fn, &rfile->sqldb)) != SQLITE_OK)
 	    repo_error(1, "sqlite3_open(%s): %s", fn, sqlite3_errmsg(rfile->sqldb));
-	for (stmt = rfile->schema; *stmt != NULL; stmt++) {
+	for (stmt = rfile->sql_init; *stmt != NULL; stmt++) {
 	    char * msg;
 	    xx = sqlite3_exec(rfile->sqldb, *stmt, NULL, NULL, &msg);
 	    if (xx != SQLITE_OK)
@@ -762,6 +923,16 @@ static Header repoReadHeader(rpmrepo repo, const char * path)
     return h;
 }
 
+static const char * rfileHeaderSprintf(Header h, const char * qfmt)
+{
+    const char * msg = NULL;
+    const char * s = headerSprintf(h, qfmt, NULL, NULL, &msg);
+    if (s == NULL)
+	repo_error(1, _("headerSprintf(%s): %s"), qfmt, msg);
+    return s;
+}
+
+#if defined(WITH_SQLITE)
 static int rfileSQL(rpmrfile rfile, const char * msg, int rc)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
@@ -794,15 +965,6 @@ static int rfileSQLStep(rpmrfile rfile, sqlite3_stmt * stmt)
 	sqlite3_reset(stmt));
 
     return rc;
-}
-
-static const char * rfileHeaderSprintf(Header h, const char * qfmt)
-{
-    const char * msg = NULL;
-    const char * s = headerSprintf(h, qfmt, NULL, NULL, &msg);
-    if (s == NULL)
-	repo_error(1, _("headerSprintf(%s): %s"), qfmt, msg);
-    return s;
 }
 
 static const char * rfileHeaderSprintfHack(Header h, const char * qfmt)
@@ -843,173 +1005,13 @@ static const char * rfileHeaderSprintfHack(Header h, const char * qfmt)
     return s;
 }
 
-static int repoSQLprimary(rpmrepo repo, rpmrfile rfile, Header h)
+static int rfileSQLWrite(rpmrfile rfile, /*@only@*/ const char * cmd)
 	/*@globals fileSystem @*/
-	/*@modifies rfile, h, fileSystem @*/
+	/*@modifies rfile, fileSystem @*/
 {
-    const char * cmd;
     sqlite3_stmt * stmt;
     const char * tail;
-    const char * qfmt;
     int xx;
-
-    /* packages   1 pkgKey INTEGER PRIMARY KEY */
-    /* packages   2 pkgId TEXT */
-    /* packages   3 name TEXT */
-    /* packages   4 arch TEXT */
-    /* packages   5 version TEXT */
-    /* packages   6 epoch TEXT */
-    /* packages   7 release TEXT */
-    /* packages   8 summary TEXT */
-    /* packages   9 description TEXT */
-    /* packages  10 url TEXT */
-    /* packages  11 time_file INTEGER */
-    /* packages  12 time_build INTEGER */
-    /* packages  13 rpm_license TEXT */
-    /* packages  14 rpm_vendor TEXT */
-    /* packages  15 rpm_group TEXT */
-    /* packages  16 rpm_buildhost TEXT */
-    /* packages  17 rpm_sourcerpm TEXT */
-    /* packages  18 rpm_header_start INTEGER */
-    /* packages  19 rpm_header_end INTEGER */
-    /* packages  20 rpm_packager TEXT */
-    /* packages  21 size_package INTEGER */
-    /* packages  22 size_installed INTEGER */
-    /* packages  23 size_archive INTEGER */
-    /* packages  24 location_href TEXT */
-    /* packages  25 location_base TEXT */
-    /* packages  26 checksum_type TEXT */
-    /* obsoletes  1 pkgKey INTEGER */
-    /* obsoletes  2 name TEXT */
-    /* obsoletes  3 flags TEXT */
-    /* obsoletes  4 epoch TEXT */
-    /* obsoletes  5 version TEXT */
-    /* obsoletes  6 release TEXT */
-    /* provides   1 pkgKey INTEGER */
-    /* provides   2 name TEXT */
-    /* provides   3 flags TEXT */
-    /* provides   4 epoch TEXT */
-    /* provides   5 version TEXT */
-    /* provides   6 release TEXT */
-    /* conflicts  1 pkgKey INTEGER */
-    /* conflicts  2 name TEXT */
-    /* conflicts  3 flags TEXT */
-    /* conflicts  4 epoch TEXT */
-    /* conflicts  5 version TEXT */
-    /* conflicts  6 release TEXT */
-    /* requires   1 pkgKey INTEGER */
-    /* requires   2 name TEXT */
-    /* requires   3 flags TEXT */
-    /* requires   4 epoch TEXT */
-    /* requires   5 version TEXT */
-    /* requires   6 release TEXT */
-    /* files      1 pkgKey INTEGER */
-    /* files      2 name TEXT */
-    /* files      3 type TEXT */
-
-    qfmt = "\
-INSERT into packages values (\
-'%{DBINSTANCE}'\
-, '%|HDRID?{%{HDRID}}:{XXX}|'\
-,\n '%{NAME:sqlescape}'\
-, '%{ARCH:sqlescape}'\
-, '%{VERSION:sqlescape}'\
-, '%|EPOCH?{%{EPOCH}}:{0}|'\
-, '%{RELEASE:sqlescape}'\
-,\n '%{SUMMARY:sqlescape}'\
-,\n '%{DESCRIPTION:sqlescape}'\
-,\n '%|URL?{%{URL:sqlescape}}|'\
-, '%{PACKAGETIME}'\
-, '%{BUILDTIME}'\
-, '%|license?{%{LICENSE:sqlescape}}|'\
-,\n '%|vendor?{%{VENDOR:sqlescape}}|'\
-, '%|group?{%{GROUP:sqlescape}}|'\
-,\n '%|buildhost?{%{BUILDHOST:sqlescape}}|'\
-, '%|sourcerpm?{%{SOURCERPM:sqlescape}}|'\
-,\n '%{HEADERSTARTOFF}'\
-, '%{HEADERENDOFF}'\
-, '%|PACKAGER?{%{PACKAGER:sqlescape}}|'\
-, '%{SIZE}'\
-, '%{SIZE}'\
-, '%{ARCHIVESIZE}'\
-,\n '%{PACKAGEORIGIN:sqlescape}'\
-,\n '%{PACKAGEORIGIN:sqlescape}'\
-, 'sha'\
-);\
-%|obsoletename?{[\
-\nINSERT into obsoletes values (\
-%{obsoletesqlentry}\
-);\
-]}|\
-%|providename?{[\
-\nINSERT into provides values (\
-%{providesqlentry}\
-);\
-]}|\
-%|conflictname?{[\
-\nINSERT into conflicts values (\
-%{conflictsqlentry}\
-);\
-]}|\
-%|requirename?{[\
-\nINSERT into requires values (\
-%{requiressqlentry}\
-);\
-]}|\
-%|basenames?{[\
-\nINSERT into files values (\
-%{filessqlentry1}\
-);\
-]}|\
-";
-
-    cmd = rfileHeaderSprintf(h, qfmt);
-
-    xx = rfileSQL(rfile, "prepare",
-	sqlite3_prepare(rfile->sqldb, cmd, (int)strlen(cmd), &stmt, &tail));
-
-    xx = rfileSQL(rfile, "reset",
-	sqlite3_reset(stmt));
-
-    xx = rfileSQLStep(rfile, stmt);
-
-    xx = rfileSQL(rfile, "finalize",
-	sqlite3_finalize(stmt));
-
-    cmd = _free(cmd);;
-
-    return 0;
-}
-
-static int repoSQLfilelists(rpmrepo repo, rpmrfile rfile, Header h)
-	/*@globals fileSystem @*/
-	/*@modifies rfile, h, fileSystem @*/
-{
-    const char * cmd;
-    sqlite3_stmt * stmt;
-    const char * tail;
-    const char * qfmt;
-    int xx;
-
-    /* packages  1 pkgKey INTEGER PRIMARY KEY */
-    /* packages  2 pkgId TEXT */
-    /* filelist  1 pkgKey INTEGER */
-    /* filelist  2 name TEXT */
-    /* filelist  3 type TEXT */
-
-    qfmt = "\
-INSERT into packages values (\
-'%{DBINSTANCE}'\
-, '%|HDRID?{%{HDRID}}:{XXX}|'\
-);\
-%|basenames?{[\
-\nINSERT into filelist values (\
-%{filessqlentry2}\
-);\
-]}|\
-";
-
-    cmd = rfileHeaderSprintfHack(h, qfmt);
 
     xx = rfileSQL(rfile, "prepare",
 	sqlite3_prepare(rfile->sqldb, cmd, (int)strlen(cmd), &stmt, &tail));
@@ -1026,58 +1028,7 @@ INSERT into packages values (\
 
     return 0;
 }
-
-static int repoSQLother(rpmrepo repo, rpmrfile rfile, Header h)
-	/*@globals fileSystem @*/
-	/*@modifies rfile, h, fileSystem @*/
-{
-    const char * cmd;
-    sqlite3_stmt * stmt;
-    const char * tail;
-    const char * qfmt;
-    int xx;
-
-    /* packages  1 pkgKey INTEGER PRIMARY KEY */
-    /* packages  2 pkgId TEXT */
-    /* changelog 1 pkgKey INTEGER */
-    /* changelog 2 author TEXT */
-    /* changelog 3 date INTEGER */
-    /* changelog 4 changelog TEXT */
-
-    qfmt = "\
-INSERT into packages values (\
-'%{DBINSTANCE}'\
-, '%|HDRID?{%{HDRID}}:{XXX}|'\
-);\
-%|changelogname?{[\
-\nINSERT into changelog values (\
-'XXX'\
-, '%{CHANGELOGNAME:sqlescape}'\
-, '%{CHANGELOGTIME}'\
-, '%{CHANGELOGTEXT:sqlescape}'\
-);\
-]}:{\
-\nINSERT into changelog ('%{DBINSTANCE}', '', '', '');\
-}|\
-";
-
-    cmd = rfileHeaderSprintfHack(h, qfmt);
-
-    xx = rfileSQL(rfile, "prepare",
-	sqlite3_prepare(rfile->sqldb, cmd, (int)strlen(cmd), &stmt, &tail));
-
-    xx = rfileSQL(rfile, "reset",
-	sqlite3_reset(stmt));
-
-    xx = rfileSQLStep(rfile, stmt);
-
-    xx = rfileSQL(rfile, "finalize",
-	sqlite3_finalize(stmt));
-
-    cmd = _free(cmd);
-
-    return 0;
-}
+#endif
 
 static int repoWriteMDFile(rpmrepo repo, rpmrfile rfile, Header h)
 	/*@globals fileSystem @*/
@@ -1085,25 +1036,17 @@ static int repoWriteMDFile(rpmrepo repo, rpmrfile rfile, Header h)
 {
     int rc = 0;
 
-    if (rfile->qfmt != NULL) {
-	if (rfileWrite(rfile, rfileHeaderSprintf(h, rfile->qfmt)))
+    if (rfile->xml_qfmt != NULL) {
+	if (rfileXMLWrite(rfile, rfileHeaderSprintf(h, rfile->xml_qfmt)))
 	    rc = 1;
     }
 
+#if defined(WITH_SQLITE)
     if (repo->database) {
-	if (!strcmp(rfile->type, "primary")) {
-	    if (repoSQLprimary(repo, rfile, h))
-		rc = 1;
-	} else
-	if (!strcmp(rfile->type, "filelists")) {
-	    if (repoSQLfilelists(repo, rfile, h))
-		rc = 1;
-	} else
-	if (!strcmp(rfile->type, "other")) {
-	    if (repoSQLother(repo, rfile, h))
-		rc = 1;
-	}
+	if (rfileSQLWrite(rfile, rfileHeaderSprintfHack(h, rfile->sql_qfmt)))
+	    rc = 1;
     }
+#endif
 
     return rc;
 }
@@ -1163,7 +1106,7 @@ static int repoCloseMDFile(const rpmrepo repo, rpmrfile rfile)
 		(repo->markup != NULL ? repo->markup : ""),
 		(repo->suffix != NULL ? repo->suffix : ""));
 
-    if (rfileWrite(rfile, xstrdup(rfile->fini)))
+    if (rfileXMLWrite(rfile, xstrdup(rfile->xml_fini)))
 	rc = 1;
 
     if (repo->algo > 0)
@@ -1329,11 +1272,11 @@ static int repoDoRepoMetadata(rpmrepo repo)
     int rc = 0;
 
     if ((rfile->fd = Fopen(fn, "w.ufdio")) != NULL) {	/* no compression */
-	if (rfileWrite(rfile, xstrdup(rfile->init))
-	 || rfileWrite(rfile, repoMDExpand(repo, &repo->other))
-	 || rfileWrite(rfile, repoMDExpand(repo, &repo->filelists))
-	 || rfileWrite(rfile, repoMDExpand(repo, &repo->primary))
-	 || rfileWrite(rfile, xstrdup(rfile->fini)))
+	if (rfileXMLWrite(rfile, xstrdup(rfile->xml_init))
+	 || rfileXMLWrite(rfile, repoMDExpand(repo, &repo->other))
+	 || rfileXMLWrite(rfile, repoMDExpand(repo, &repo->filelists))
+	 || rfileXMLWrite(rfile, repoMDExpand(repo, &repo->primary))
+	 || rfileXMLWrite(rfile, xstrdup(rfile->xml_fini)))
 	    rc = 1;
 	(void) Fclose(rfile->fd);
 	rfile->fd = NULL;

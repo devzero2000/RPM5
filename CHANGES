@@ -1,4 +1,6 @@
 5.0.0 -> 5.1a1:
+    - jbj: rpmrepo: be kind to the sqlite3 deprived.
+    - jbj: rpmrepo: cleanly separate SQL representation from execution.
     - jbj: rpmrepo: populate other.sqlite with live data.
     - jbj: rpmrepo: populate filelists.sqlite with live data (w schema hackery).
     - jbj: rpmrepo: populate primary.sqlite with live data.
