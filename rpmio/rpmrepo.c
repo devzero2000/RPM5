@@ -876,25 +876,25 @@ static int repoSQLprimary(rpmrepo repo, rpmrfile rfile, Header h)
     xx = rfileSQLBindSprintf(rfile, stmt,  2, h, "%|HDRID?{%{HDRID}}|");
 
     /* packages  3: name TEXT */
-    xx = rfileSQLBindSprintf(rfile, stmt,  3, h, "%{NAME:utf8}");
+    xx = rfileSQLBindSprintf(rfile, stmt,  3, h, "%{NAME:sqlescape}");
 
     /* packages  4: arch TEXT */
-    xx = rfileSQLBindSprintf(rfile, stmt,  4, h, "%{ARCH:utf8}");
+    xx = rfileSQLBindSprintf(rfile, stmt,  4, h, "%{ARCH:sqlescape}");
 
     /* packages  5: version TEXT */
-    xx = rfileSQLBindSprintf(rfile, stmt,  5, h, "%{VERSION:utf8}");
+    xx = rfileSQLBindSprintf(rfile, stmt,  5, h, "%{VERSION:sqlescape}");
 
     /* packages  6: epoch TEXT */
     xx = rfileSQLBindSprintf(rfile, stmt,  6, h, "%|epoch?{%{EPOCH}}:{0}|");
 
     /* packages  7: release TEXT */
-    xx = rfileSQLBindSprintf(rfile, stmt,  7, h, "%{RELEASE:utf8}");
+    xx = rfileSQLBindSprintf(rfile, stmt,  7, h, "%{RELEASE:sqlescape}");
 
     /* packages  8: summary TEXT */
-    xx = rfileSQLBindSprintf(rfile, stmt,  8, h, "%|summary?{%{SUMMARY:utf8}}|");
+    xx = rfileSQLBindSprintf(rfile, stmt,  8, h, "%|summary?{%{SUMMARY:sqlescape}}|");
 
     /* packages  9: description TEXT */
-    xx = rfileSQLBindSprintf(rfile, stmt,  9, h, "%|description?{%{DESCRIPTION:utf8}}|");
+    xx = rfileSQLBindSprintf(rfile, stmt,  9, h, "%|description?{%{DESCRIPTION:sqlescape}}|");
 
     /* packages 10: url TEXT */
     xx = rfileSQLBindSprintf(rfile, stmt, 10, h, "%|url?{%{URL}}|");
@@ -906,19 +906,19 @@ static int repoSQLprimary(rpmrepo repo, rpmrfile rfile, Header h)
     xx = rfileSQLBindTagInt(rfile, stmt, 12, h, RPMTAG_BUILDTIME);
 
     /* packages 13: rpm_license TEXT */
-    xx = rfileSQLBindSprintf(rfile, stmt, 13, h, "%|license?{%{LICENSE:utf8}}|");
+    xx = rfileSQLBindSprintf(rfile, stmt, 13, h, "%|license?{%{LICENSE:sqlescape}}|");
 
     /* packages 14: rpm_vendor TEXT */
-    xx = rfileSQLBindSprintf(rfile, stmt, 14, h, "%|vendor?{%{VENDOR:utf8}}|");
+    xx = rfileSQLBindSprintf(rfile, stmt, 14, h, "%|vendor?{%{VENDOR:sqlescape}}|");
 
     /* packages 15: rpm_group TEXT */
-    xx = rfileSQLBindSprintf(rfile, stmt, 15, h, "%|group?{%{GROUP:utf8}}|");
+    xx = rfileSQLBindSprintf(rfile, stmt, 15, h, "%|group?{%{GROUP:sqlescape}}|");
 
     /* packages 16: rpm_buildhost TEXT */
-    xx = rfileSQLBindSprintf(rfile, stmt, 16, h, "%|buildhost?{%{BUILDHOST:utf8}}|");
+    xx = rfileSQLBindSprintf(rfile, stmt, 16, h, "%|buildhost?{%{BUILDHOST:sqlescape}}|");
 
     /* packages 17: rpm_sourcerpm TEXT */
-    xx = rfileSQLBindSprintf(rfile, stmt, 17, h, "%|sourcerpm?{%{SOURCERPM:utf8}}|");
+    xx = rfileSQLBindSprintf(rfile, stmt, 17, h, "%|sourcerpm?{%{SOURCERPM:sqlescape}}|");
 
     /* packages 18: rpm_header_start INTEGER */
     xx = rfileSQLBindInt(rfile, stmt, 18, (int) headerGetStartOff(h));
@@ -927,7 +927,7 @@ static int repoSQLprimary(rpmrepo repo, rpmrfile rfile, Header h)
     xx = rfileSQLBindInt(rfile, stmt, 19, (int) headerGetEndOff(h));
 
     /* packages 20: rpm_packager TEXT */
-    xx = rfileSQLBindSprintf(rfile, stmt, 20, h, "%|packager?{%{PACKAGER:utf8}}|");
+    xx = rfileSQLBindSprintf(rfile, stmt, 20, h, "%|packager?{%{PACKAGER:sqlescape}}|");
 
     /* packages 21: size_package INTEGER */
     xx = rfileSQLBindTagInt(rfile, stmt, 12, h, RPMTAG_SIZE);
@@ -939,10 +939,10 @@ static int repoSQLprimary(rpmrepo repo, rpmrfile rfile, Header h)
     xx = rfileSQLBindTagInt(rfile, stmt, 12, h, RPMTAG_ARCHIVESIZE);
 
     /* packages 24: location_href TEXT */
-    xx = rfileSQLBindSprintf(rfile, stmt, 24, h, "%|packageorigin?{%{PACKAGEORIGIN:utf8}}|");
+    xx = rfileSQLBindSprintf(rfile, stmt, 24, h, "%|packageorigin?{%{PACKAGEORIGIN:sqlescape}}|");
 
     /* packages 25: location_base TEXT */
-    xx = rfileSQLBindSprintf(rfile, stmt, 25, h, "%|packageorigin?{%{PACKAGEORIGIN:utf8}}|");
+    xx = rfileSQLBindSprintf(rfile, stmt, 25, h, "%|packageorigin?{%{PACKAGEORIGIN:sqlescape}}|");
 
     /* packages 26: checksum_type TEXT */
     xx = rfileSQLBindText(rfile, stmt, 26, "sha");
@@ -964,7 +964,7 @@ static int repoSQLprimary(rpmrepo repo, rpmrfile rfile, Header h)
     xx = rfileSQL(rfile, "reset",
 	sqlite3_reset(stmt));
 
-    qfmt = "%|obsoletename?{[%{OBSOLETENAME:utf8}%{OBSOLETEFLAGS:depflags}%{OBSOLETEVERSION:utf8}\n]}|";
+    qfmt = "%|obsoletename?{[%{OBSOLETENAME:sqlescape}%{OBSOLETEFLAGS:depflags}%{OBSOLETEVERSION:sqlescape}\n]}|";
 {   const char * N = "N";
     const char * E = "E";
     const char * V = "V";
@@ -1013,7 +1013,7 @@ static int repoSQLprimary(rpmrepo repo, rpmrfile rfile, Header h)
     xx = rfileSQL(rfile, "reset",
 	sqlite3_reset(stmt));
 
-    qfmt = "%|providename?{[%{PROVIDENAME:utf8}%{PROVIDEFLAGS:depflags}%{PROVIDEVERSION:utf8}\n]}|";
+    qfmt = "%|providename?{[%{PROVIDENAME:sqlescape}%{PROVIDEFLAGS:depflags}%{PROVIDEVERSION:sqlescape}\n]}|";
 {   const char * N = "N";
     const char * E = "E";
     const char * V = "V";
@@ -1062,7 +1062,7 @@ static int repoSQLprimary(rpmrepo repo, rpmrfile rfile, Header h)
     xx = rfileSQL(rfile, "reset",
 	sqlite3_reset(stmt));
 
-    qfmt = "%|conflictname?{[%{CONFLICTNAME:utf8}%{CONFLICTFLAGS:depflags}%{CONFLICTVERSION:utf8}\n]}|";
+    qfmt = "%|conflictname?{[%{CONFLICTNAME:sqlescape}%{CONFLICTFLAGS:depflags}%{CONFLICTVERSION:sqlescape}\n]}|";
 {   const char * N = "N";
     const char * E = "E";
     const char * V = "V";
@@ -1111,7 +1111,7 @@ static int repoSQLprimary(rpmrepo repo, rpmrfile rfile, Header h)
     xx = rfileSQL(rfile, "reset",
 	sqlite3_reset(stmt));
 
-    qfmt = "%|requirename?{[%{REQUIRENAME:utf8}%{REQUIREFLAGS:depflags}%{REQUIREVERSION:utf8}\n]}|";
+    qfmt = "%|requirename?{[%{REQUIRENAME:sqlescape}%{REQUIREFLAGS:depflags}%{REQUIREVERSION:sqlescape}\n]}|";
 {   const char * N = "N";
     const char * E = "E";
     const char * V = "V";
@@ -1162,7 +1162,7 @@ static int repoSQLprimary(rpmrepo repo, rpmrfile rfile, Header h)
     xx = rfileSQL(rfile, "reset",
 	sqlite3_reset(stmt));
 
-    qfmt = "%|basenames?{[%{FILENAMES:utf8}\n]}|";
+    qfmt = "%|basenames?{[%{FILENAMES:sqlescape}\n]}|";
 {   const char * FN = "FN";
     const char * FT = "FT";
 
@@ -1236,7 +1236,7 @@ static int repoSQLfilelists(rpmrepo repo, rpmrfile rfile, Header h)
     xx = rfileSQL(rfile, "reset",
 	sqlite3_reset(stmt));
 
-    qfmt = "%|basenames?{[%{FILENAMES:utf8}\n]}|";
+    qfmt = "%|basenames?{[%{FILENAMES:sqlescape}\n]}|";
 {   const char * DN = "DN";
     const char * FN = "FN";
     const char * FT = "FT";
@@ -1314,7 +1314,7 @@ static int repoSQLother(rpmrepo repo, rpmrfile rfile, Header h)
     xx = rfileSQL(rfile, "reset",
 	sqlite3_reset(stmt));
 
-    qfmt = "%|changelogname?{[%{CHANGELOGNAME:utf8}|%{CHANGELOGTIME}|%{CHANGELOGTEXT}\n]}|";
+    qfmt = "%|changelogname?{[%{CHANGELOGNAME:sqlescape}|%{CHANGELOGTIME}|%{CHANGELOGTEXT:sqlescape}\n]}|";
 {   const char * author = "author";
     int date = 0;
     const char * changelog = "changelog";
@@ -1393,6 +1393,7 @@ static int repoWriteMetadataDocs(rpmrepo repo, /*@null@*/ const char ** pkglist)
 	    repo_error(0, _("\nError %s: %s\n"), pkg, strerror(errno));
 	    continue;
 	}
+	(void) headerSetInstance(h, (uint32_t)repo->current);
 
 #ifdef	NOTYET
 	/* XXX todo: rpmGetPath(mydir, "/", filematrix[mydir], NULL); */
