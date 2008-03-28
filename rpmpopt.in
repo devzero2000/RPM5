@@ -237,7 +237,7 @@ INSERT into packages values (\
 );\
 ]}|\
 %|basenames?{[\
-\nINSERT into files values (\
+\nINSERT into files    values (\
 %{filessqlentry1}\
 );\
 ]}|\
@@ -385,14 +385,14 @@ INSERT into packages values (\
 , '%|HDRID?{%{HDRID}}:{XXX}|'\
 );\
 %|changelogname?{[\
-\nINSERT into changelog (\
+\nINSERT into changelog values (\
 'XXX'\
-, '%{CHANGELOGTIME}'\
 , '%{CHANGELOGNAME:sqlescape}'\
+, '%{CHANGELOGTIME}'\
 , '%{CHANGELOGTEXT:sqlescape}'\
 );\
 ]}:{\
-\nINSERT into changelog ('%{DBINSTANCE}', '', '', '');\
+\nINSERT into changelog values ('%{DBINSTANCE}', '', '', '');\
 }|\
 \n" \
 	--POPTdesc=$"display yum other.sqlite import"

@@ -2232,13 +2232,13 @@ static int PRCOsqlTag(Header h, HE_t he, rpmTag EVRtag, rpmTag Ftag)
 	    continue;
 	ac++;
 	nb += sizeof(*he->p.argv);
-	nb += strlen(instance) + sizeof(", '', 'EQ', '0', '', ''");
+	nb += strlen(instance) + sizeof(", '', '', '', '', ''");
 	if (tag == RPMTAG_REQUIRENAME)
 	    nb += sizeof(", ''") - 1;
 	nb += strlen(N.argv[i]);
 	if (EVR.argv != NULL && EVR.argv[i] != NULL && *EVR.argv[i] != '\0') {
-	    nb += sizeof("'', 'EQ', '0', '', ''");
 	    nb += strlen(EVR.argv[i]);
+	    nb += sizeof("EQ0") - 1;
 	}
 #ifdef	NOTNOW
 	if (tag == RPMTAG_REQUIRENAME && (F.ui32p[i] & 0x40))
@@ -2273,10 +2273,11 @@ static int PRCOsqlTag(Header h, HE_t he, rpmTag EVRtag, rpmTag Ftag)
 	    t = stpcpy( stpcpy( stpcpy(t, " ,'"), (E && *E ? E : "0")), "'");
 	    t = stpcpy( stpcpy( stpcpy(t, " ,'"), V), "'");
 	    t = stpcpy( stpcpy( stpcpy(t, " ,'"), (R ? R : "")), "'");
-	}
+	} else
+	    t = stpcpy(t, ", '', '', '', ''");
 #ifdef	NOTNOW
 	if (tag == RPMTAG_REQUIRENAME)
-	    t = stpcpy(stpcpy(stpcpy(t, ",'"),(F.ui32p[i] & 0x40) ? "1" : ""), "'");
+	    t = stpcpy(stpcpy(stpcpy(t, ",'"),(F.ui32p[i] & 0x40) ? "1" : "0"), "'");
 #endif
 	*t++ = '\0';
     }
