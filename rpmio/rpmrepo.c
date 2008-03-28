@@ -823,6 +823,44 @@ static const char * rfileHeaderSprintf(Header h, const char * qfmt)
     return s;
 }
 
+static const char * rfileHeaderSprintfHack(Header h, const char * qfmt)
+{
+    static const char mark[] = "'XXX'";
+    static size_t nmark = sizeof("'XXX'") - 1;
+    const char * msg = NULL;
+    char * s = (char *) headerSprintf(h, qfmt, NULL, NULL, &msg);
+    char * f, * fe;
+    int nsubs = 0;
+
+    if (s == NULL)
+	repo_error(1, _("headerSprintf(%s): %s"), qfmt, msg);
+
+    /* Find & replace 'XXX' with '%{DBINSTANCE}' the hard way. */
+    for (f = s; *f && (fe = strstr(f, "'XXX'")) != NULL; fe += nmark, f = fe)
+	nsubs++;
+
+    if (nsubs > 0) {
+	char instance[64];
+	int xx = snprintf(instance, sizeof(instance), "'%u'",
+		(unsigned) headerGetInstance(h));
+	size_t tlen = strlen(s) + nsubs * ((int)strlen(instance) - (int)nmark);
+	char * t = xmalloc(tlen + 1);
+	char * te = t;
+
+	xx = xx;
+	for (f = s; *f && (fe = strstr(f, mark)) != NULL; fe += nmark, f = fe) {
+	    *fe = '\0';
+	    te = stpcpy( stpcpy(te, f), instance);
+	}
+	if (*f)
+	    te = stpcpy(te, f);
+	s = _free(s);
+	s = t;
+    }
+ 
+    return s;
+}
+
 static int rfileSQLBindSprintf(rpmrfile rfile, sqlite3_stmt * stmt, int pos,
 		Header h, const char * qfmt)
 {
@@ -1275,13 +1313,10 @@ static int repoSQLother(rpmrepo repo, rpmrfile rfile, Header h)
 	/*@globals fileSystem @*/
 	/*@modifies rfile, h, fileSystem @*/
 {
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     const char * cmd;
     sqlite3_stmt * stmt;
     const char * tail;
     const char * qfmt;
-    const char * q;
-    int nq;
     int xx;
 
     cmd = sqlite3_mprintf("INSERT into '%q' values (?, ?);", "packages");
@@ -1306,45 +1341,33 @@ static int repoSQLother(rpmrepo repo, rpmrfile rfile, Header h)
     sqlite3_free((char *)cmd);
     cmd = NULL;
 
-    cmd = sqlite3_mprintf("INSERT into '%q' values (?, ?, ?, ?);", "changelog");
+    /* changelog 1 pkgKey INTEGER */
+    /* changelog 2 author TEXT */
+    /* changelog 3 date INTEGER */
+    /* changelog 4 changelog TEXT */
+    qfmt = "\
+%|changelogname?{[\
+\nINSERT into changelog values (\
+'XXX'\
+, '%{CHANGELOGNAME:sqlescape}'\
+, '%{CHANGELOGTIME}'\
+, '%{CHANGELOGTEXT:sqlescape}'\
+);\
+]}:{\
+\nINSERT into changelog ('%{DBINSTANCE}', '', '', '');\
+}|\
+\n";
+    cmd = rfileHeaderSprintfHack(h, qfmt);
 
     xx = rfileSQL(rfile, "prepare",
 	sqlite3_prepare(rfile->sqldb, cmd, (int)strlen(cmd), &stmt, &tail));
 
-    xx = rfileSQL(rfile, "reset",
-	sqlite3_reset(stmt));
-
-    qfmt = "%|changelogname?{[%{CHANGELOGNAME:sqlescape}|%{CHANGELOGTIME}|%{CHANGELOGTEXT:sqlescape}\n]}|";
-{   const char * author = "author";
-    int date = 0;
-    const char * changelog = "changelog";
-
-    q = rfileHeaderSprintf(h, qfmt);
-    nq = (q ? strlen(q) : 0);
-  if (nq > 0) {
-    /* changelog 1 pkgKey INTEGER */
-    xx = rfileSQLBindInt(rfile, stmt,  1, (int) repo->current);
-
-    /* changelog 2 author TEXT */
-    xx = rfileSQLBindText(rfile, stmt, 2, author);
-
-    /* changelog 3 date INTEGER */
-    xx = rfileSQLBindInt(rfile, stmt, 2, date);
-
-    /* changelog 4 changelog TEXT */
-    xx = rfileSQLBindText(rfile, stmt, 2, changelog);
-
     xx = rfileSQLStep(rfile, stmt);
-
-  }
-  q = _free(q);
-}
 
     xx = rfileSQL(rfile, "finalize",
 	sqlite3_finalize(stmt));
 
-    sqlite3_free((char *)cmd);
-    cmd = NULL;
+    cmd = _free(cmd);
 
     return 0;
 }
