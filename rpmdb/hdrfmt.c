@@ -2263,21 +2263,21 @@ static int PRCOsqlTag(Header h, HE_t he, rpmTag EVRtag, rpmTag Ftag)
 	    int Fx = ((F.ui32p[i] >> 1) & 0x7);
 	    const char *E, *V, *R;
 	    char *f, *fe;
-	    t = stpcpy( stpcpy( stpcpy(t, " ,'"), Fstr[Fx]), "'");
+	    t = stpcpy( stpcpy( stpcpy(t, ", '"), Fstr[Fx]), "'");
 	    f = (char *) EVR.argv[i];
 	    for (fe = f; *fe != '\0' && *fe >= '0' && *fe <= '9'; fe++);
 	    if (*fe == ':') { *fe++ = '\0'; E = f; f = fe; } else E = NULL;
 	    V = f;
 	    for (fe = f; *fe != '\0' && *fe != '-'; fe++);
 	    if (*fe == '-') { *fe++ = '\0'; R = fe; } else R = NULL;
-	    t = stpcpy( stpcpy( stpcpy(t, " ,'"), (E && *E ? E : "0")), "'");
-	    t = stpcpy( stpcpy( stpcpy(t, " ,'"), V), "'");
-	    t = stpcpy( stpcpy( stpcpy(t, " ,'"), (R ? R : "")), "'");
+	    t = stpcpy( stpcpy( stpcpy(t, ", '"), (E && *E ? E : "0")), "'");
+	    t = stpcpy( stpcpy( stpcpy(t, ", '"), V), "'");
+	    t = stpcpy( stpcpy( stpcpy(t, ", '"), (R ? R : "")), "'");
 	} else
 	    t = stpcpy(t, ", '', '', '', ''");
 #ifdef	NOTNOW
 	if (tag == RPMTAG_REQUIRENAME)
-	    t = stpcpy(stpcpy(stpcpy(t, ",'"),(F.ui32p[i] & 0x40) ? "1" : "0"), "'");
+	    t = stpcpy(stpcpy(stpcpy(t, ", '"),(F.ui32p[i] & 0x40) ? "1" : "0"), "'");
 #endif
 	*t++ = '\0';
     }

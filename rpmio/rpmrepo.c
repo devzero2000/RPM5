@@ -300,9 +300,9 @@ static const char *schema_filelists[] = {
 "PRAGMA synchronous = 0;",
 "pragma locking_mode = EXCLUSIVE;",
 "CREATE TABLE db_info (dbversion INTEGER, checksum TEXT);",
-"CREATE TABLE filelist (  pkgKey INTEGER,  dirname TEXT,  filenames TEXT,  filetypes TEXT);",
+"CREATE TABLE filelist (  pkgKey INTEGER,  name TEXT,  type TEXT );",
 "CREATE TABLE packages (  pkgKey INTEGER PRIMARY KEY,  pkgId TEXT);",
-"CREATE INDEX dirnames ON filelist (dirname);",
+"CREATE INDEX filelistnames ON filelist (name);",
 "CREATE INDEX keyfile ON filelist (pkgKey);",
 "CREATE INDEX pkgId ON packages (pkgId);",
 "CREATE TRIGGER remove_filelist AFTER DELETE ON packages\
@@ -796,24 +796,6 @@ static int rfileSQLStep(rpmrfile rfile, sqlite3_stmt * stmt)
     return rc;
 }
 
-static int rfileSQLBindInt(rpmrfile rfile, sqlite3_stmt * stmt, int pos,
-		int val)
-{
-    int rc = rfileSQL(rfile, "bind_int",
-	sqlite3_bind_int(stmt, pos, val));
-    return rc;
-}
-
-static int rfileSQLBindText(rpmrfile rfile, sqlite3_stmt * stmt, int pos,
-		const char * s)
-{
-    void (*flag)(void *) = SQLITE_TRANSIENT;
-    size_t ns = (s ? strlen(s) : 0);
-    int rc = rfileSQL(rfile, "bind_text",
-	sqlite3_bind_text(stmt, pos, s, ns, flag));
-    return rc;
-}
-
 static const char * rfileHeaderSprintf(Header h, const char * qfmt)
 {
     const char * msg = NULL;
@@ -835,7 +817,7 @@ static const char * rfileHeaderSprintfHack(Header h, const char * qfmt)
     if (s == NULL)
 	repo_error(1, _("headerSprintf(%s): %s"), qfmt, msg);
 
-    /* Find & replace 'XXX' with '%{DBINSTANCE}' the hard way. */
+    /* XXX Find & replace 'XXX' with '%{DBINSTANCE}' the hard way. */
     for (f = s; *f && (fe = strstr(f, "'XXX'")) != NULL; fe += nmark, f = fe)
 	nsubs++;
 
@@ -861,147 +843,122 @@ static const char * rfileHeaderSprintfHack(Header h, const char * qfmt)
     return s;
 }
 
-static int rfileSQLBindSprintf(rpmrfile rfile, sqlite3_stmt * stmt, int pos,
-		Header h, const char * qfmt)
-{
-    const char * s = rfileHeaderSprintf(h, qfmt);
-    int rc = rfileSQLBindText(rfile, stmt, pos, s);
-    s = _free(s);
-    return rc;
-}
-static int rfileSQLBindTagInt(rpmrfile rfile, sqlite3_stmt * stmt, int pos,
-		Header h, rpmTag tag)
-{
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
-    int rc = 1;	/* assume failure. */
-
-    he->tag = tag;
-    if (headerGet(h, he, 0)) {
-	rc = rfileSQLBindInt(rfile, stmt, 23, (int) he->p.ui32p[0]);
-	he->p.ptr = _free(he->p.ptr);
-    }
-    return rc;
-}
-
 static int repoSQLprimary(rpmrepo repo, rpmrfile rfile, Header h)
 	/*@globals fileSystem @*/
 	/*@modifies rfile, h, fileSystem @*/
 {
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     const char * cmd;
     sqlite3_stmt * stmt;
     const char * tail;
     const char * qfmt;
     int xx;
 
-    cmd = sqlite3_mprintf("INSERT into '%q' values ("
-		" ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,"
-		" ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,"
-		" ?, ?, ?, ?, ?, ?);", "packages");
-
-    xx = rfileSQL(rfile, "prepare",
-	sqlite3_prepare(rfile->sqldb, cmd, (int)strlen(cmd), &stmt, &tail));
-
-    xx = rfileSQL(rfile, "reset",
-	sqlite3_reset(stmt));
-
-    /* packages  1: pkgKey INTEGER PRIMARY KEY */
-    xx = rfileSQLBindInt(rfile, stmt,  1, (int) repo->current);
-
-    /* packages  2: pkgId TEXT */
-    xx = rfileSQLBindSprintf(rfile, stmt,  2, h, "%|HDRID?{%{HDRID}}|");
-
-    /* packages  3: name TEXT */
-    xx = rfileSQLBindSprintf(rfile, stmt,  3, h, "%{NAME:sqlescape}");
-
-    /* packages  4: arch TEXT */
-    xx = rfileSQLBindSprintf(rfile, stmt,  4, h, "%{ARCH:sqlescape}");
-
-    /* packages  5: version TEXT */
-    xx = rfileSQLBindSprintf(rfile, stmt,  5, h, "%{VERSION:sqlescape}");
-
-    /* packages  6: epoch TEXT */
-    xx = rfileSQLBindSprintf(rfile, stmt,  6, h, "%|epoch?{%{EPOCH}}:{0}|");
-
-    /* packages  7: release TEXT */
-    xx = rfileSQLBindSprintf(rfile, stmt,  7, h, "%{RELEASE:sqlescape}");
-
-    /* packages  8: summary TEXT */
-    xx = rfileSQLBindSprintf(rfile, stmt,  8, h, "%|summary?{%{SUMMARY:sqlescape}}|");
-
-    /* packages  9: description TEXT */
-    xx = rfileSQLBindSprintf(rfile, stmt,  9, h, "%|description?{%{DESCRIPTION:sqlescape}}|");
-
-    /* packages 10: url TEXT */
-    xx = rfileSQLBindSprintf(rfile, stmt, 10, h, "%|url?{%{URL}}|");
-
-    /* packages 11: time_file INTEGER */
-    xx = rfileSQLBindInt(rfile, stmt, 11, (int) headerGetTime(h));
-
-    /* packages 12: time_build INTEGER */
-    xx = rfileSQLBindTagInt(rfile, stmt, 12, h, RPMTAG_BUILDTIME);
-
-    /* packages 13: rpm_license TEXT */
-    xx = rfileSQLBindSprintf(rfile, stmt, 13, h, "%|license?{%{LICENSE:sqlescape}}|");
-
-    /* packages 14: rpm_vendor TEXT */
-    xx = rfileSQLBindSprintf(rfile, stmt, 14, h, "%|vendor?{%{VENDOR:sqlescape}}|");
-
-    /* packages 15: rpm_group TEXT */
-    xx = rfileSQLBindSprintf(rfile, stmt, 15, h, "%|group?{%{GROUP:sqlescape}}|");
-
-    /* packages 16: rpm_buildhost TEXT */
-    xx = rfileSQLBindSprintf(rfile, stmt, 16, h, "%|buildhost?{%{BUILDHOST:sqlescape}}|");
-
-    /* packages 17: rpm_sourcerpm TEXT */
-    xx = rfileSQLBindSprintf(rfile, stmt, 17, h, "%|sourcerpm?{%{SOURCERPM:sqlescape}}|");
-
-    /* packages 18: rpm_header_start INTEGER */
-    xx = rfileSQLBindInt(rfile, stmt, 18, (int) headerGetStartOff(h));
-
-    /* packages 19: rpm_header_end INTEGER */
-    xx = rfileSQLBindInt(rfile, stmt, 19, (int) headerGetEndOff(h));
-
-    /* packages 20: rpm_packager TEXT */
-    xx = rfileSQLBindSprintf(rfile, stmt, 20, h, "%|packager?{%{PACKAGER:sqlescape}}|");
-
-    /* packages 21: size_package INTEGER */
-    xx = rfileSQLBindTagInt(rfile, stmt, 12, h, RPMTAG_SIZE);
-
-    /* packages 22: size_installed INTEGER */
-    xx = rfileSQLBindTagInt(rfile, stmt, 12, h, RPMTAG_SIZE);
-
-    /* packages 23: size_archive INTEGER */
-    xx = rfileSQLBindTagInt(rfile, stmt, 12, h, RPMTAG_ARCHIVESIZE);
-
-    /* packages 24: location_href TEXT */
-    xx = rfileSQLBindSprintf(rfile, stmt, 24, h, "%|packageorigin?{%{PACKAGEORIGIN:sqlescape}}|");
-
-    /* packages 25: location_base TEXT */
-    xx = rfileSQLBindSprintf(rfile, stmt, 25, h, "%|packageorigin?{%{PACKAGEORIGIN:sqlescape}}|");
-
-    /* packages 26: checksum_type TEXT */
-    xx = rfileSQLBindText(rfile, stmt, 26, "sha");
-
-    xx = rfileSQLStep(rfile, stmt);
-
-    xx = rfileSQL(rfile, "finalize",
-	sqlite3_finalize(stmt));
-
-    sqlite3_free((char *)cmd);
-    cmd = NULL;
-
+    /* packages   1 pkgKey INTEGER PRIMARY KEY */
+    /* packages   2 pkgId TEXT */
+    /* packages   3 name TEXT */
+    /* packages   4 arch TEXT */
+    /* packages   5 version TEXT */
+    /* packages   6 epoch TEXT */
+    /* packages   7 release TEXT */
+    /* packages   8 summary TEXT */
+    /* packages   9 description TEXT */
+    /* packages  10 url TEXT */
+    /* packages  11 time_file INTEGER */
+    /* packages  12 time_build INTEGER */
+    /* packages  13 rpm_license TEXT */
+    /* packages  14 rpm_vendor TEXT */
+    /* packages  15 rpm_group TEXT */
+    /* packages  16 rpm_buildhost TEXT */
+    /* packages  17 rpm_sourcerpm TEXT */
+    /* packages  18 rpm_header_start INTEGER */
+    /* packages  19 rpm_header_end INTEGER */
+    /* packages  20 rpm_packager TEXT */
+    /* packages  21 size_package INTEGER */
+    /* packages  22 size_installed INTEGER */
+    /* packages  23 size_archive INTEGER */
+    /* packages  24 location_href TEXT */
+    /* packages  25 location_base TEXT */
+    /* packages  26 checksum_type TEXT */
     /* obsoletes  1 pkgKey INTEGER */
     /* obsoletes  2 name TEXT */
     /* obsoletes  3 flags TEXT */
     /* obsoletes  4 epoch TEXT */
     /* obsoletes  5 version TEXT */
     /* obsoletes  6 release TEXT */
+    /* provides   1 pkgKey INTEGER */
+    /* provides   2 name TEXT */
+    /* provides   3 flags TEXT */
+    /* provides   4 epoch TEXT */
+    /* provides   5 version TEXT */
+    /* provides   6 release TEXT */
+    /* conflicts  1 pkgKey INTEGER */
+    /* conflicts  2 name TEXT */
+    /* conflicts  3 flags TEXT */
+    /* conflicts  4 epoch TEXT */
+    /* conflicts  5 version TEXT */
+    /* conflicts  6 release TEXT */
+    /* requires   1 pkgKey INTEGER */
+    /* requires   2 name TEXT */
+    /* requires   3 flags TEXT */
+    /* requires   4 epoch TEXT */
+    /* requires   5 version TEXT */
+    /* requires   6 release TEXT */
+    /* files      1 pkgKey INTEGER */
+    /* files      2 name TEXT */
+    /* files      3 type TEXT */
 
     qfmt = "\
+INSERT into packages values (\
+'%{DBINSTANCE}'\
+, '%|HDRID?{%{HDRID}}:{XXX}|'\
+,\n '%{NAME:sqlescape}'\
+, '%{ARCH:sqlescape}'\
+, '%{VERSION:sqlescape}'\
+, '%|EPOCH?{%{EPOCH}}:{0}|'\
+, '%{RELEASE:sqlescape}'\
+,\n '%{SUMMARY:sqlescape}'\
+,\n '%{DESCRIPTION:sqlescape}'\
+,\n '%|URL?{%{URL:sqlescape}}|'\
+, '%{PACKAGETIME}'\
+, '%{BUILDTIME}'\
+, '%|license?{%{LICENSE:sqlescape}}|'\
+,\n '%|vendor?{%{VENDOR:sqlescape}}|'\
+, '%|group?{%{GROUP:sqlescape}}|'\
+,\n '%|buildhost?{%{BUILDHOST:sqlescape}}|'\
+, '%|sourcerpm?{%{SOURCERPM:sqlescape}}|'\
+,\n '%{HEADERSTARTOFF}'\
+, '%{HEADERENDOFF}'\
+, '%|PACKAGER?{%{PACKAGER:sqlescape}}|'\
+, '%{SIZE}'\
+, '%{SIZE}'\
+, '%{ARCHIVESIZE}'\
+,\n '%{PACKAGEORIGIN:sqlescape}'\
+,\n '%{PACKAGEORIGIN:sqlescape}'\
+, 'sha'\
+);\
 %|obsoletename?{[\
 \nINSERT into obsoletes values (\
 %{obsoletesqlentry}\
+);\
+]}|\
+%|providename?{[\
+\nINSERT into provides values (\
+%{providesqlentry}\
+);\
+]}|\
+%|conflictname?{[\
+\nINSERT into conflicts values (\
+%{conflictsqlentry}\
+);\
+]}|\
+%|requirename?{[\
+\nINSERT into requires values (\
+%{requiressqlentry}\
+);\
+]}|\
+%|basenames?{[\
+\nINSERT into files values (\
+%{filessqlentry1}\
 );\
 ]}|\
 ";
@@ -1021,122 +978,6 @@ static int repoSQLprimary(rpmrepo repo, rpmrfile rfile, Header h)
 
     cmd = _free(cmd);;
 
-    /* provides  1 pkgKey INTEGER */
-    /* provides  2 name TEXT */
-    /* provides  3 flags TEXT */
-    /* provides  4 epoch TEXT */
-    /* provides  5 version TEXT */
-    /* provides  6 release TEXT */
-
-    qfmt = "\
-%|providename?{[\
-\nINSERT into provides values (\
-%{providesqlentry}\
-);\
-]}|\
-";
-
-    cmd = rfileHeaderSprintf(h, qfmt);
-
-    xx = rfileSQL(rfile, "prepare",
-	sqlite3_prepare(rfile->sqldb, cmd, (int)strlen(cmd), &stmt, &tail));
-
-    xx = rfileSQL(rfile, "reset",
-	sqlite3_reset(stmt));
-
-    xx = rfileSQLStep(rfile, stmt);
-
-    xx = rfileSQL(rfile, "finalize",
-	sqlite3_finalize(stmt));
-
-    cmd = _free(cmd);
-
-    /* conflicts  1 pkgKey INTEGER */
-    /* conflicts  2 name TEXT */
-    /* conflicts  3 flags TEXT */
-    /* conflicts  4 epoch TEXT */
-    /* conflicts  5 version TEXT */
-    /* conflicts  6 release TEXT */
-
-    qfmt = "\
-%|conflictname?{[\
-\nINSERT into conflicts values (\
-%{conflictsqlentry}\
-);\
-]}|\
-";
-
-    cmd = rfileHeaderSprintf(h, qfmt);
-
-    xx = rfileSQL(rfile, "prepare",
-	sqlite3_prepare(rfile->sqldb, cmd, (int)strlen(cmd), &stmt, &tail));
-
-    xx = rfileSQL(rfile, "reset",
-	sqlite3_reset(stmt));
-
-    xx = rfileSQLStep(rfile, stmt);
-
-    xx = rfileSQL(rfile, "finalize",
-	sqlite3_finalize(stmt));
-
-    cmd = _free(cmd);
-
-    /* requires  1 pkgKey INTEGER */
-    /* requires  2 name TEXT */
-    /* requires  3 flags TEXT */
-    /* requires  4 epoch TEXT */
-    /* requires  5 version TEXT */
-    /* requires  6 release TEXT */
-
-    qfmt = "\
-%|requirename?{[\
-\nINSERT into requires values (\
-%{requiressqlentry}\
-);\
-]}|\
-";
-
-    cmd = rfileHeaderSprintf(h, qfmt);
-
-    xx = rfileSQL(rfile, "prepare",
-	sqlite3_prepare(rfile->sqldb, cmd, (int)strlen(cmd), &stmt, &tail));
-
-    xx = rfileSQL(rfile, "reset",
-	sqlite3_reset(stmt));
-
-    xx = rfileSQLStep(rfile, stmt);
-
-    xx = rfileSQL(rfile, "finalize",
-	sqlite3_finalize(stmt));
-
-    cmd = _free(cmd);
-
-    /* files  1 pkgKey INTEGER */
-    /* files  2 name TEXT */
-    /* files  3 type TEXT */
-
-    qfmt = "\
-%|basenames?{[\
-\nINSERT into files values (\
-%{filessqlentry}\
-);\
-]}|\
-";
-    cmd = rfileHeaderSprintf(h, qfmt);
-
-    xx = rfileSQL(rfile, "prepare",
-	sqlite3_prepare(rfile->sqldb, cmd, (int)strlen(cmd), &stmt, &tail));
-
-    xx = rfileSQL(rfile, "reset",
-	sqlite3_reset(stmt));
-
-    xx = rfileSQLStep(rfile, stmt);
-
-    xx = rfileSQL(rfile, "finalize",
-	sqlite3_finalize(stmt));
-
-    cmd = _free(cmd);
-
     return 0;
 }
 
@@ -1144,16 +985,31 @@ static int repoSQLfilelists(rpmrepo repo, rpmrfile rfile, Header h)
 	/*@globals fileSystem @*/
 	/*@modifies rfile, h, fileSystem @*/
 {
-    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     const char * cmd;
     sqlite3_stmt * stmt;
     const char * tail;
     const char * qfmt;
-    const char * q;
-    int nq;
     int xx;
 
-    cmd = sqlite3_mprintf("INSERT into '%q' values (?, ?);", "packages");
+    /* packages  1 pkgKey INTEGER PRIMARY KEY */
+    /* packages  2 pkgId TEXT */
+    /* filelist  1 pkgKey INTEGER */
+    /* filelist  2 name TEXT */
+    /* filelist  3 type TEXT */
+
+    qfmt = "\
+INSERT into packages values (\
+'%{DBINSTANCE}'\
+, '%|HDRID?{%{HDRID}}:{XXX}|'\
+);\
+%|basenames?{[\
+\nINSERT into filelist values (\
+%{filessqlentry2}\
+);\
+]}|\
+";
+
+    cmd = rfileHeaderSprintfHack(h, qfmt);
 
     xx = rfileSQL(rfile, "prepare",
 	sqlite3_prepare(rfile->sqldb, cmd, (int)strlen(cmd), &stmt, &tail));
@@ -1161,59 +1017,12 @@ static int repoSQLfilelists(rpmrepo repo, rpmrfile rfile, Header h)
     xx = rfileSQL(rfile, "reset",
 	sqlite3_reset(stmt));
 
-    /* packages  1: pkgKey INTEGER PRIMARY KEY */
-    xx = rfileSQLBindInt(rfile, stmt,  1, (int) repo->current);
-
-    /* packages  2: pkgId TEXT */
-    xx = rfileSQLBindSprintf(rfile, stmt,  2, h, "%|HDRID?{%{HDRID}}|");
-
     xx = rfileSQLStep(rfile, stmt);
 
     xx = rfileSQL(rfile, "finalize",
 	sqlite3_finalize(stmt));
 
-    sqlite3_free((char *)cmd);
-    cmd = NULL;
-
-    cmd = sqlite3_mprintf("INSERT into '%q' values (?, ?, ?, ?);", "filelist");
-
-    xx = rfileSQL(rfile, "prepare",
-	sqlite3_prepare(rfile->sqldb, cmd, (int)strlen(cmd), &stmt, &tail));
-
-    xx = rfileSQL(rfile, "reset",
-	sqlite3_reset(stmt));
-
-    qfmt = "%|basenames?{[%{FILENAMES:sqlescape}\n]}|";
-{   const char * DN = "DN";
-    const char * FN = "FN";
-    const char * FT = "FT";
-
-    q = rfileHeaderSprintf(h, qfmt);
-    nq = (q ? strlen(q) : 0);
-  if (nq > 0) {
-    /* filelist 1 pkgKey INTEGER */
-    xx = rfileSQLBindInt(rfile, stmt,  1, (int) repo->current);
-
-    /* filelist 2 dirname TEXT */
-    xx = rfileSQLBindText(rfile, stmt, 2, DN);
-
-    /* filelist 3 filenames TEXT */
-    xx = rfileSQLBindText(rfile, stmt, 3, FN);
-
-    /* filelist 4 filetypes TEXT */
-    xx = rfileSQLBindText(rfile, stmt, 4, FT);
-
-    xx = rfileSQLStep(rfile, stmt);
-
-  }
-  q = _free(q);
-}
-
-    xx = rfileSQL(rfile, "finalize",
-	sqlite3_finalize(stmt));
-
-    sqlite3_free((char *)cmd);
-    cmd = NULL;
+    cmd = _free(cmd);
 
     return 0;
 }
@@ -1228,33 +1037,18 @@ static int repoSQLother(rpmrepo repo, rpmrfile rfile, Header h)
     const char * qfmt;
     int xx;
 
-    cmd = sqlite3_mprintf("INSERT into '%q' values (?, ?);", "packages");
-
-    xx = rfileSQL(rfile, "prepare",
-	sqlite3_prepare(rfile->sqldb, cmd, (int)strlen(cmd), &stmt, &tail));
-
-    xx = rfileSQL(rfile, "reset",
-	sqlite3_reset(stmt));
-
-    /* packages  1: pkgKey INTEGER PRIMARY KEY */
-    xx = rfileSQLBindInt(rfile, stmt,  1, (int) repo->current);
-
-    /* packages  2: pkgId TEXT */
-    xx = rfileSQLBindSprintf(rfile, stmt,  2, h, "%|HDRID?{%{HDRID}}|");
-
-    xx = rfileSQLStep(rfile, stmt);
-
-    xx = rfileSQL(rfile, "finalize",
-	sqlite3_finalize(stmt));
-
-    sqlite3_free((char *)cmd);
-    cmd = NULL;
-
+    /* packages  1 pkgKey INTEGER PRIMARY KEY */
+    /* packages  2 pkgId TEXT */
     /* changelog 1 pkgKey INTEGER */
     /* changelog 2 author TEXT */
     /* changelog 3 date INTEGER */
     /* changelog 4 changelog TEXT */
+
     qfmt = "\
+INSERT into packages values (\
+'%{DBINSTANCE}'\
+, '%|HDRID?{%{HDRID}}:{XXX}|'\
+);\
 %|changelogname?{[\
 \nINSERT into changelog values (\
 'XXX'\
@@ -1265,11 +1059,15 @@ static int repoSQLother(rpmrepo repo, rpmrfile rfile, Header h)
 ]}:{\
 \nINSERT into changelog ('%{DBINSTANCE}', '', '', '');\
 }|\
-\n";
+";
+
     cmd = rfileHeaderSprintfHack(h, qfmt);
 
     xx = rfileSQL(rfile, "prepare",
 	sqlite3_prepare(rfile->sqldb, cmd, (int)strlen(cmd), &stmt, &tail));
+
+    xx = rfileSQL(rfile, "reset",
+	sqlite3_reset(stmt));
 
     xx = rfileSQLStep(rfile, stmt);
 

@@ -334,18 +334,17 @@ rpm	alias --yum:filelists.xml --qf '\
 \n' \
 	--POPTdesc=$"display yum filelists.xml markup"
 
-rpm	alias --yum:filelists.sqlite --qf '\
+rpm	alias --yum:filelists.sqlite --qf "\
 INSERT into packages values (\
 '%{DBINSTANCE}'\
-, %|HDRID?{%{HDRID}}:{XXX}|\
+, '%|HDRID?{%{HDRID}}:{XXX}|'\
 );\
+%|basenames?{[\
 \nINSERT into filelist values (\
-'%{DBINSTANCE}'\
-, dirname\
-, utils.encodefilenamelist(direc("files"))\
-, utils.encodefiletypelist(direc("types"))\
-)\
-\n' \
+%{filessqlentry2}\
+);\
+]}|\
+\n" \
 	--POPTdesc=$"display yum filelists.sqlite import"
 
 rpm	alias --yum:filelists.yaml --qf '\
