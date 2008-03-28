@@ -2120,6 +2120,79 @@ static int OxmlTag(Header h, HE_t he)
     return PRCOxmlTag(h, he, RPMTAG_OBSOLETEVERSION, RPMTAG_OBSOLETEFLAGS);
 }
 
+/**
+ * Return length of string represented with single quotes doubled.
+ * @param s		string
+ * @return		length of sql string
+ */
+static size_t sqlstrlen(const char * s)
+	/*@*/
+{
+    size_t len = 0;
+    int c;
+
+    while ((c = (int) *s++) != (int) '\0')
+    {
+	switch (c) {
+	case '\'':	len += 1;			/*@fallthrough@*/
+	default:	len += 1;			/*@switchbreak@*/ break;
+	}
+    }
+    return len;
+}
+
+/**
+ * Copy source string to target, doubling single quotes.
+ * @param t		target sql string
+ * @param s		source string
+ * @return		target sql string
+ */
+static char * sqlstrcpy(/*@returned@*/ char * t, const char * s)
+	/*@modifies t @*/
+{
+    char * te = t;
+    int c;
+
+    while ((c = (int) *s++) != (int) '\0') {
+	switch (c) {
+	case '\'':	*te++ = (char) c;		/*@fallthrough@*/
+	default:	*te++ = (char) c;		/*@switchbreak@*/ break;
+	}
+    }
+    *te = '\0';
+    return t;
+}
+
+/**
+ * Encode string for use in SQL statements.
+ * @param he		tag container
+ * @return		formatted string
+ */
+static /*@only@*/ char * sqlescapeFormat(HE_t he)
+	/*@*/
+{
+    int ix = (he->ix > 0 ? he->ix : 0);
+    char * val;
+
+assert(ix == 0);
+    if (he->t != RPM_STRING_TYPE) {
+	val = xstrdup(_("(not a string)"));
+    } else {
+	const char * s = strdup_locale_to_utf8(he->p.str);
+	size_t nb = sqlstrlen(s);
+	char * t;
+
+	val = t = xcalloc(1, nb + 1);
+	t = sqlstrcpy(t, s);	t += strlen(t);
+	*t = '\0';
+	s = _free(s);
+    }
+
+/*@-globstate@*/
+    return val;
+/*@=globstate@*/
+}
+
 static int PRCOsqlTag(Header h, HE_t he, rpmTag EVRtag, rpmTag Ftag)
 	/*@modifies he @*/
 {
@@ -2127,6 +2200,7 @@ static int PRCOsqlTag(Header h, HE_t he, rpmTag EVRtag, rpmTag Ftag)
     rpmTagData N = { .ptr = NULL };
     rpmTagData EVR = { .ptr = NULL };
     rpmTagData F = { .ptr = NULL };
+    char instance[64];
     size_t nb;
     uint32_t ac;
     uint32_t c;
@@ -2150,6 +2224,7 @@ static int PRCOsqlTag(Header h, HE_t he, rpmTag EVRtag, rpmTag Ftag)
     if (xx == 0) goto exit;
     F.ui32p = he->p.ui32p;
 
+    xx = snprintf(instance, sizeof(instance), "'%d'", headerGetInstance(h));
     nb = sizeof(*he->p.argv);
     ac = 0;
     for (i = 0; i < c; i++) {
@@ -2157,7 +2232,7 @@ static int PRCOsqlTag(Header h, HE_t he, rpmTag EVRtag, rpmTag Ftag)
 	    continue;
 	ac++;
 	nb += sizeof(*he->p.argv);
-	nb += sizeof("'', 'EQ', '0', '', ''");
+	nb += strlen(instance) + sizeof(", '', 'EQ', '0', '', ''");
 	if (tag == RPMTAG_REQUIRENAME)
 	    nb += sizeof(", ''") - 1;
 	nb += strlen(N.argv[i]);
@@ -2181,7 +2256,8 @@ static int PRCOsqlTag(Header h, HE_t he, rpmTag EVRtag, rpmTag Ftag)
 	if (PRCOSkip(tag, N, EVR, F, i))
 	    continue;
 	he->p.argv[ac++] = t;
-	t = stpcpy( stpcpy( stpcpy(t, "'"), N.argv[i]), "'");
+	t = stpcpy(t, instance);
+	t = stpcpy( stpcpy( stpcpy(t, ", '"), N.argv[i]), "'");
 	if (EVR.argv != NULL && EVR.argv[i] != NULL && *EVR.argv[i] != '\0') {
 	    static char *Fstr[] = { "?0","LT","GT","?3","EQ","LE","GE","?7" };
 	    int Fx = ((F.ui32p[i] >> 1) & 0x7);
@@ -2397,6 +2473,7 @@ static int FDGsqlTag(Header h, HE_t he, int lvl)
     rpmTagData DI = { .ptr = NULL };
     rpmTagData FMODES = { .ptr = NULL };
     rpmTagData FFLAGS = { .ptr = NULL };
+    char instance[64];
     size_t nb;
     uint32_t ac;
     uint32_t c;
@@ -2431,6 +2508,7 @@ static int FDGsqlTag(Header h, HE_t he, int lvl)
     if (xx == 0) goto exit;
     FFLAGS.ui32p = he->p.ui32p;
 
+    xx = snprintf(instance, sizeof(instance), "'%d'", headerGetInstance(h));
     nb = sizeof(*he->p.argv);
     ac = 0;
     for (i = 0; i < c; i++) {
@@ -2438,7 +2516,7 @@ static int FDGsqlTag(Header h, HE_t he, int lvl)
 	    continue;
 	ac++;
 	nb += sizeof(*he->p.argv);
-	nb += sizeof("'', ''");
+	nb += strlen(instance) + sizeof(", '', ''");
 	nb += strlen(DN.argv[DI.ui32p[i]]);
 	nb += strlen(BN.argv[i]);
 	if (FFLAGS.ui32p[i] & 0x40)	/* XXX RPMFILE_GHOST */
@@ -2464,7 +2542,7 @@ static int FDGsqlTag(Header h, HE_t he, int lvl)
 	if (S_ISDIR(FMODES.ui16p[i]))
 	    continue;
 	he->p.argv[ac++] = t;
-	*t++ = '\'';
+	t = stpcpy( stpcpy(t, instance), ", '");
 	t = strcpy(t, DN.argv[DI.ui32p[i]]);	t += strlen(t);
 	t = strcpy(t, BN.argv[i]);		t += strlen(t);
 	t = stpcpy(t, "', 'file'");
@@ -2478,7 +2556,7 @@ static int FDGsqlTag(Header h, HE_t he, int lvl)
 	if (!S_ISDIR(FMODES.ui16p[i]))
 	    continue;
 	he->p.argv[ac++] = t;
-	*t++ = '\'';
+	t = stpcpy( stpcpy(t, instance), ", '");
 	t = strcpy(t, DN.argv[DI.ui32p[i]]);	t += strlen(t);
 	t = strcpy(t, BN.argv[i]);		t += strlen(t);
 	t = stpcpy(t, "', 'dir'");
@@ -2490,7 +2568,7 @@ static int FDGsqlTag(Header h, HE_t he, int lvl)
 	if (!(FFLAGS.ui32p[i] & 0x40))	/* XXX RPMFILE_GHOST */
 	    continue;
 	he->p.argv[ac++] = t;
-	*t++ = '\'';
+	t = stpcpy( stpcpy(t, instance), ", '");
 	t = strcpy(t, DN.argv[DI.ui32p[i]]);	t += strlen(t);
 	t = strcpy(t, BN.argv[i]);		t += strlen(t);
 	t = stpcpy(t, "', 'ghost'");
@@ -2603,6 +2681,8 @@ static struct headerSprintfExtension_s _headerCompoundFormats[] = {
 	{ .fmtFunction = permsFormat } },
     { HEADER_EXT_FORMAT, "pgpsig",
 	{ .fmtFunction = pgpsigFormat } },
+    { HEADER_EXT_FORMAT, "sqlescape",
+	{ .fmtFunction = sqlescapeFormat } },
     { HEADER_EXT_FORMAT, "triggertype",	
 	{ .fmtFunction = triggertypeFormat } },
     { HEADER_EXT_FORMAT, "utf8",

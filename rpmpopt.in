@@ -189,61 +189,56 @@ rpm	alias --yum:primary.xml --qf '\
 
 rpm	alias --yum:primary.sqlite --qf "\
 INSERT into packages values (\
-'XXX'\
+'%{DBINSTANCE}'\
 , '%|HDRID?{%{HDRID}}:{XXX}|'\
-, '%{NAME:utf8}'\
-, '%{ARCH:utf8}'\
-, '%{VERSION:utf8}'\
+,\n '%{NAME:sqlescape}'\
+, '%{ARCH:sqlescape}'\
+, '%{VERSION:sqlescape}'\
 , '%|EPOCH?{%{EPOCH}}:{0}|'\
-, '%{RELEASE:utf8}'\
-, 'SUMMARY:utf8'\
-, 'DESCRIPTION:utf8'\
-, '%|URL?{%{URL:utf8}}|'\
+, '%{RELEASE:sqlescape}'\
+,\n '%{SUMMARY:sqlescape}'\
+,\n '%{DESCRIPTION:sqlescape}'\
+,\n '%|URL?{%{URL:sqlescape}}|'\
 , '%{PACKAGETIME}'\
 , '%{BUILDTIME}'\
-, '%|license?{%{LICENSE:utf8}}|'\
-, '%|vendor?{%{VENDOR:utf8}}|'\
-, '%|group?{%{GROUP:utf8}}|'\
-, '%|buildhost?{%{BUILDHOST:utf8}}|'\
-, '%|sourcerpm?{%{SOURCERPM:utf8}}|'\
-, '%{HEADERSTARTOFF}'\
+, '%|license?{%{LICENSE:sqlescape}}|'\
+,\n '%|vendor?{%{VENDOR:sqlescape}}|'\
+, '%|group?{%{GROUP:sqlescape}}|'\
+,\n '%|buildhost?{%{BUILDHOST:sqlescape}}|'\
+, '%|sourcerpm?{%{SOURCERPM:sqlescape}}|'\
+,\n '%{HEADERSTARTOFF}'\
 , '%{HEADERENDOFF}'\
-, '%|PACKAGER?{%{PACKAGER:utf8}}|'\
+, '%|PACKAGER?{%{PACKAGER:sqlescape}}|'\
 , '%{SIZE}'\
 , '%{SIZE}'\
 , '%{ARCHIVESIZE}'\
-, '%{PACKAGEORIGIN:utf8}'\
-, 'XXX'\
+,\n '%{PACKAGEORIGIN:sqlescape}'\
+,\n '%{PACKAGEORIGIN:sqlescape}'\
 , 'sha'\
 );\
 %|providename?{[\
 \nINSERT into provides values (\
 %{providesqlentry}\
-, 'XXX'\
 );\
 ]}|\
 %|conflictname?{[\
 \nINSERT into conflicts values (\
 %{conflictsqlentry}\
-, 'XXX'\
 );\
 ]}|\
 %|obsoletename?{[\
 \nINSERT into obsoletes values (\
 %{conflictsqlentry}\
-, 'XXX'\
 );\
 ]}|\
 %|requirename?{[\
 \nINSERT into requires values (\
 %{requiresqlentry}\
-, 'XXX'\
 );\
 ]}|\
 %|basenames?{[\
 \nINSERT into files values (\
 %{filessqlentry1}\
-, 'XXX'\
 );\
 ]}|\
 \n"\
@@ -251,7 +246,7 @@ INSERT into packages values (\
 
 rpm	alias --yum:primary.yaml --qf '\
 Package:\
-\n  Id:          %|HDRID?{%{HDRID}}:{XXX}|\
+\n  Id:          %|HDRID?{%{HDRID}}:{-}|\
 \n  Name:        %{NAME:yaml}\
 \n  Arch:        %{ARCH:yaml}\
 \n  Version:     %{VERSION:yaml}\
@@ -259,22 +254,22 @@ Package:\
 \n  Release:     %{RELEASE:yaml}\
 \n  Summary:     %{SUMMARY:yaml}\
 \n  Description: %{DESCRIPTION:yaml}\
-\n  Url:         %|URL?{%{URL:yaml}}:{XXX}|\
+\n  Url:         %|URL?{%{URL:yaml}}:{-}|\
 \n  Filetime:    %{PACKAGETIME}\
 \n  Buildtime:   %{BUILDTIME}\
-\n  License:     %|license?{%{LICENSE:yaml}}:{XXX}|\
-\n  Vendor:      %|vendor?{%{VENDOR:yaml}}:{XXX}|\
-\n  Group:       %|group?{%{GROUP:yaml}}:{XXX}|\
-\n  Buildhost:   %|buildhost?{%{BUILDHOST:yaml}}:{XXX}|\
-\n  Sourcerpm:   %|sourcerpm?{%{SOURCERPM:yaml}}:{XXX}|\
+\n  License:     %|license?{%{LICENSE:yaml}}:{-}|\
+\n  Vendor:      %|vendor?{%{VENDOR:yaml}}:{-}|\
+\n  Group:       %|group?{%{GROUP:yaml}}:{-}|\
+\n  Buildhost:   %|buildhost?{%{BUILDHOST:yaml}}:{-}|\
+\n  Sourcerpm:   %|sourcerpm?{%{SOURCERPM:yaml}}:{-}|\
 \n  Hdrstart:    %{HEADERSTARTOFF}\
 \n  Hdrend:      %{HEADERENDOFF}\
-\n  Packager:    %|PACKAGER?{%{PACKAGER:yaml}}:{XXX}|\
+\n  Packager:    %|PACKAGER?{%{PACKAGER:yaml}}:{-}|\
 \n  Packagesize: %{SIZE}\
 \n  Size:        %{SIZE}\
 \n  Archivesize: %{ARCHIVESIZE}\
 \n  Location:    %{PACKAGEORIGIN:yaml}\
-\n  BaseURL:     XXX\
+\n  BaseURL:     %{PACKAGEORIGIN:yaml}\
 \n  Idtype:      sha\
 \n  Rpm:\
 %|license?{\
@@ -290,38 +285,38 @@ Package:\
 \n    Buildhost: %{BUILDHOST:yaml}\
 }|\
 %|sourcerpm?{\
-\n    Sourcerpm: %{SOURCERPM:cdata}\
+\n    Sourcerpm: %{SOURCERPM:yaml}\
 }|\
 \n    Hdrstart:  %{HEADERSTARTOFF}\
 \n    Hdrend:    %{HEADERENDOFF}\
 %|providexmlentry?{\
 \n    Provides:\
 [\
-\n      - %{providexmlentry}\
+\n      - %{providesqlentry}\
 ]\
 }|\
 %|requirexmlentry?{\
 \n    Requires:\
 [\
-\n      - %{requirexmlentry}\
+\n      - %{requiresqlentry}\
 ]\
 }|\
 %|conflictxmlentry?{\
 \n    Conflicts:\
 [\
-\n      - %{conflictxmlentry}\
+\n      - %{conflictsqlentry}\
 ]\
 }|\
 %|obsoletexmlentry?{\
 \n    Obsoletes:\
 [\
-\n      - %{obsoletexmlentry}\
+\n      - %{obsoletesqlentry}\
 ]\
 }|\
 %|filesxmlentry1?{\
 \n    Files:\
 [\
-\n      - %{filesxmlentry1}\
+\n      - %{filessqlentry1}\
 ]\
 }|\
 \n'\
@@ -341,11 +336,11 @@ rpm	alias --yum:filelists.xml --qf '\
 
 rpm	alias --yum:filelists.sqlite --qf '\
 INSERT into packages values (\
-XXX\
+'%{DBINSTANCE}'\
 , %|HDRID?{%{HDRID}}:{XXX}|\
 );\
 \nINSERT into filelist values (\
-XXX\
+'%{DBINSTANCE}'\
 , dirname\
 , utils.encodefilenamelist(direc("files"))\
 , utils.encodefiletypelist(direc("types"))\
@@ -384,18 +379,22 @@ rpm	alias --yum:other.xml --qf '\
 \n' \
 	--POPTdesc=$"display yum other.xml markup"
 
-rpm	alias --yum:other.sqlite --qf '\
+rpm	alias --yum:other.sqlite --qf "\
 INSERT into packages values (\
-XXX\
-, %|HDRID?{%{HDRID}}:{XXX}|\
+'%{DBINSTANCE}'\
+, '%|HDRID?{%{HDRID}}:{XXX}|'\
 );\
+%|changelogname?{[\
 \nINSERT into changelog (\
-XXX\
-,date\
-,author\
-,changelog\
-)\
-\n' \
+'XXX'\
+, '%{CHANGELOGTIME}'\
+, '%{CHANGELOGNAME:sqlescape}'\
+, '%{CHANGELOGTEXT:sqlescape}'\
+);\
+]}:{\
+\nINSERT into changelog ('%{DBINSTANCE}', '', '', '');\
+}|\
+\n" \
 	--POPTdesc=$"display yum other.sqlite import"
 
 rpm	alias --yum:other.yaml --qf '\
