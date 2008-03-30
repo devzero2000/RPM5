@@ -29,7 +29,29 @@
 # define __gnuc_va_list	__ptr_t
 #endif
 
-__BEGIN_DECLS
+#ifndef __attribute__
+# if __GNUC__ < 2 || (__GNUC__ == 2 && __GNUC_MINOR__ < 5) || __STRICT_ANSI__
+#  define __attribute__(Spec) /* empty */
+# endif
+# if __GNUC__ < 2 || (__GNUC__ == 2 && __GNUC_MINOR__ < 7)
+#  define __format__ format
+#  define __printf__ printf
+# endif
+#endif
+
+#if defined(__cplusplus) || (defined(__STDC__) && __STDC__)
+# if !defined(__GLIBC__) || !defined(__P)
+#   undef  __P
+#   define __P(protos) protos
+# endif
+#else
+#  undef  __P
+#  define __P(protos) ()
+#endif
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /* Print "program: ", FORMAT, ": ", the standard error string for errno,
    and a newline, on stderr.  */
@@ -54,6 +76,8 @@ extern void errx __P ((int __status, __const char *__format, ...))
 extern void verrx __P ((int __status, __const char *, __gnuc_va_list))
      __attribute__ ((__noreturn__, __format__ (__printf__, 2, 0)));
 
-__END_DECLS
+#ifdef __cplusplus
+}
+#endif
 
 #endif	/* err.h */

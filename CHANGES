@@ -1,4 +1,5 @@
 5.0.0 -> 5.1a1:
+    - rse: provide the necessary pre-processor macros to allow misc/err.h to compile with Sun Studio 12 under Solaris 10
     - jbj: rpmrepo: be kind to the sqlite3 deprived.
     - jbj: rpmrepo: cleanly separate SQL representation from execution.
     - jbj: rpmrepo: populate other.sqlite with live data.
