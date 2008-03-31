@@ -39,7 +39,7 @@ Lua         [2] optional  5.1     5.1.3   http://www.lua.org/
 ZLib        [3] optional  1.2     1.2.3   http://www.zlib.net/
 Bzip2           optional  1.0     1.0.5   http://www.bzip.org/
 LZMA SDK    [4] internal  4.27    4.32    http://www.7-zip.org/sdk.html
-File/magic  [5] optional  4.0     4.24    ftp://ftp.astron.com/pub/file/
+File/magic  [5] optional  4.0     4.23    ftp://ftp.astron.com/pub/file/
 GNU gettext     optional  0.16    0.17    http://www.gnu.org/software/gettext/
 GNU iconv       optional  1.11    1.11    http://www.gnu.org/software/libiconv/
 PCRE            optional  7.0     7.6     http://www.pcre.org/
@@ -73,6 +73,7 @@ System libelf   optional  -       -       e.g. http://www.mr511.de/software/engl
 [5] file:      Unmodified File/magic copy bundled with RPM for convenience reasons.
                Building RPM against this internal File/magic requires also internal Zlib.
                Building RPM against stock external File/magic supported, too.
+               NOTICE: File 4.24 is unportable because uses asprintf(3) without fallbacks.
 
 [6] xar:       Modified XAR copy bundled with RPM.
                Building RPM against stock external XAR currently still not recommended.
