@@ -6,6 +6,41 @@
 
 #if defined(WITH_SQLITE)
 #include <sqlite3.h>
+#ifdef	__LCLINT__
+/*@-incondefs -redecl @*/
+extern const char *sqlite3_errmsg(sqlite3 *db)
+	/*@*/;
+extern int sqlite3_open(
+  const char *filename,		   /* Database filename (UTF-8) */
+  /*@out@*/ sqlite3 **ppDb	   /* OUT: SQLite db handle */
+)
+	/*@modifies *ppDb @*/;
+extern int sqlite3_exec(
+  sqlite3 *db,			   /* An open database */
+  const char *sql,		   /* SQL to be evaluted */
+  int (*callback)(void*,int,char**,char**),  /* Callback function */
+  void *,			   /* 1st argument to callback */
+  /*@out@*/ char **errmsg	   /* Error msg written here */
+)
+	/*@modifies db, *errmsg @*/;
+extern int sqlite3_prepare(
+  sqlite3 *db,			   /* Database handle */
+  const char *zSql,		   /* SQL statement, UTF-8 encoded */
+  int nByte,			   /* Maximum length of zSql in bytes. */
+  /*@out@*/ sqlite3_stmt **ppStmt, /* OUT: Statement handle */
+  /*@out@*/ const char **pzTail	   /* OUT: Pointer to unused portion of zSql */
+)
+	/*@modifies *ppStmt, *pzTail @*/;
+extern int sqlite3_reset(sqlite3_stmt *pStmt)
+	/*@modifies pStmt @*/;
+extern int sqlite3_step(sqlite3_stmt *pStmt)
+	/*@modifies pStmt @*/;
+extern int sqlite3_finalize(/*@only@*/ sqlite3_stmt *pStmt)
+	/*@modifies pStmt @*/;
+extern int sqlite3_close(sqlite3 * db)
+	/*@modifies db @*/;
+/*@=incondefs =redecl @*/
+#endif
 #endif
 
 #include <rpmio_internal.h>	/* XXX fdInitDigest() et al */
@@ -264,6 +299,7 @@ static const char other_xml_qfmt[] = "\
 \n</package>\
 \n";
 
+/*@-nullassign@*/
 /*@unchecked@*/ /*@observer@*/
 static const char *primary_sql_init[] = {
 "PRAGMA synchronous = 0;",
@@ -333,6 +369,7 @@ static const char *other_sql_init[] = {
     NULL
 };
 /*XXX todo: DBVERSION needs to be set */
+/*@=nullassign@*/
 
 /* packages   1 pkgKey INTEGER PRIMARY KEY */
 /* packages   2 pkgId TEXT */
@@ -884,7 +921,7 @@ assert(rfile->fd != NULL);
 	    xx = sqlite3_exec(rfile->sqldb, *stmt, NULL, NULL, &msg);
 	    if (xx != SQLITE_OK)
 		repo_error(1, "sqlite3_exec(%s, \"%s\"): %s\n", fn, *stmt,
-			(msg ? msg : "failed"));
+			(msg != NULL ? msg : "failed"));
 	}
 	fn = _free(fn);
     }
@@ -924,11 +961,14 @@ static Header repoReadHeader(rpmrepo repo, const char * path)
 }
 
 static const char * rfileHeaderSprintf(Header h, const char * qfmt)
+	/*@globals fileSystem @*/
+	/*@modifies h, fileSystem @*/
 {
     const char * msg = NULL;
     const char * s = headerSprintf(h, qfmt, NULL, NULL, &msg);
     if (s == NULL)
 	repo_error(1, _("headerSprintf(%s): %s"), qfmt, msg);
+assert(s != NULL);
     return s;
 }
 
@@ -944,11 +984,14 @@ static int rfileSQL(rpmrfile rfile, const char * msg, int rc)
 }
 
 static int rfileSQLStep(rpmrfile rfile, sqlite3_stmt * stmt)
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/
 {
     int loop = 1;
     int rc = 0;
     int xx;
 
+/*@-infloops@*/
     while (loop) {
 	rc = sqlite3_step(stmt);
 	switch (rc) {
@@ -960,6 +1003,7 @@ static int rfileSQLStep(rpmrfile rfile, sqlite3_stmt * stmt)
 	    /*@switchbreak@*/ break;
 	}
     }
+/*@=infloops@*/
 
     xx = rfileSQL(rfile, "reset",
 	sqlite3_reset(stmt));
@@ -968,6 +1012,8 @@ static int rfileSQLStep(rpmrfile rfile, sqlite3_stmt * stmt)
 }
 
 static const char * rfileHeaderSprintfHack(Header h, const char * qfmt)
+	/*@globals fileSystem @*/
+	/*@modifies h, fileSystem @*/
 {
     static const char mark[] = "'XXX'";
     static size_t nmark = sizeof("'XXX'") - 1;
@@ -978,10 +1024,13 @@ static const char * rfileHeaderSprintfHack(Header h, const char * qfmt)
 
     if (s == NULL)
 	repo_error(1, _("headerSprintf(%s): %s"), qfmt, msg);
+assert(s != NULL);
 
     /* XXX Find & replace 'XXX' with '%{DBINSTANCE}' the hard way. */
-    for (f = s; *f && (fe = strstr(f, "'XXX'")) != NULL; fe += nmark, f = fe)
+/*@-nullptrarith@*/
+    for (f = s; *f != '\0' && (fe = strstr(f, "'XXX'")) != NULL; fe += nmark, f = fe)
 	nsubs++;
+/*@=nullptrarith@*/
 
     if (nsubs > 0) {
 	char instance[64];
@@ -992,11 +1041,13 @@ static const char * rfileHeaderSprintfHack(Header h, const char * qfmt)
 	char * te = t;
 
 	xx = xx;
-	for (f = s; *f && (fe = strstr(f, mark)) != NULL; fe += nmark, f = fe) {
+/*@-nullptrarith@*/
+	for (f = s; *f != '\0' && (fe = strstr(f, mark)) != NULL; fe += nmark, f = fe) {
 	    *fe = '\0';
 	    te = stpcpy( stpcpy(te, f), instance);
 	}
-	if (*f)
+/*@=nullptrarith@*/
+	if (*f != '\0')
 	    te = stpcpy(te, f);
 	s = _free(s);
 	s = t;
@@ -1007,7 +1058,7 @@ static const char * rfileHeaderSprintfHack(Header h, const char * qfmt)
 
 static int rfileSQLWrite(rpmrfile rfile, /*@only@*/ const char * cmd)
 	/*@globals fileSystem @*/
-	/*@modifies rfile, fileSystem @*/
+	/*@modifies fileSystem @*/
 {
     sqlite3_stmt * stmt;
     const char * tail;
