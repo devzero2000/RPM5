@@ -1882,6 +1882,13 @@ static inline int addRelation(rpmts ts,
 	return 0;
     selected[i] = 1;
 
+    /* Erasures are reversed installs. */
+    if (teType == TR_REMOVED) {
+	rpmte r = p;
+	p = q;
+	q = r;
+    }
+
     /* T3. Record next "q <- p" relation (i.e. "p" requires "q"). */
     rpmteTSI(p)->tsi_count++;			/* bump p predecessor count */
 
@@ -1899,6 +1906,7 @@ static inline int addRelation(rpmts ts,
     tsi->tsi_next = rpmteTSI(q)->tsi_next;
     rpmteTSI(q)->tsi_next = tsi;
     rpmteTSI(q)->tsi_qcnt++;			/* bump q successor count */
+
     return 0;
 }
 /*@=mustmod@*/
