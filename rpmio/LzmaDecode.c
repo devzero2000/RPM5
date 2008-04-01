@@ -145,7 +145,7 @@ int LzmaDecodeProperties(CLzmaProperties *propsRes, const unsigned char *propsDa
 
 #ifdef _LZMA_OUT_READ
   {
-    unsigned int i;
+    unsigned int i; /* This isn't unsigned in original sdk, what gives?? */
     propsRes->DictionarySize = 0;
     for (i = 0; i < 4; i++)
       propsRes->DictionarySize += (UInt32)(propsData[1 + i]) << (i * 8);
