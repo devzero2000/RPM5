@@ -4,7 +4,7 @@
   LzmaDecode.c
   LZMA Decoder (optimized for Speed version)
   
-  LZMA SDK 4.32 Copyright (c) 1999-2005 Igor Pavlov (2005-12-09)
+  LZMA SDK 4.40 Copyright (c) 1999-2006 Igor Pavlov (2006-05-01)
   http://www.7-zip.org/
 
   LZMA SDK is licensed under two licenses:
@@ -126,17 +126,15 @@ StopCompilingDueBUG
 int LzmaDecodeProperties(CLzmaProperties *propsRes, const unsigned char *propsData, int size)
 {
   unsigned char prop0;
-  if (size < (int)LZMA_PROPERTIES_SIZE)
+  if (size < LZMA_PROPERTIES_SIZE)
     return LZMA_RESULT_DATA_ERROR;
   prop0 = propsData[0];
-  if (prop0 >= (unsigned char)(9 * 5 * 5))
+  if (prop0 >= (9 * 5 * 5))
     return LZMA_RESULT_DATA_ERROR;
   {
-    for (propsRes->pb = 0; prop0 >= (unsigned char)(9 * 5); propsRes->pb++, prop0 -= (unsigned char)(9 * 5))
-	{};
-    for (propsRes->lp = 0; prop0 >= (unsigned char)9; propsRes->lp++, prop0 -= (unsigned char)9)
-	{};
-    propsRes->lc = (int) prop0;
+    for (propsRes->pb = 0; prop0 >= (9 * 5); propsRes->pb++, prop0 -= (9 * 5));
+    for (propsRes->lp = 0; prop0 >= 9; propsRes->lp++, prop0 -= 9);
+    propsRes->lc = prop0;
     /*
     unsigned char remainder = (unsigned char)(prop0 / 9);
     propsRes->lc = prop0 % 9;
@@ -150,7 +148,7 @@ int LzmaDecodeProperties(CLzmaProperties *propsRes, const unsigned char *propsDa
     unsigned int i;
     propsRes->DictionarySize = 0;
     for (i = 0; i < 4; i++)
-      propsRes->DictionarySize += (UInt32)(propsData[1 + i]) << (i * 8U);
+      propsRes->DictionarySize += (UInt32)(propsData[1 + i]) << (i * 8);
     if (propsRes->DictionarySize == 0)
       propsRes->DictionarySize = 1;
   }
@@ -170,7 +168,7 @@ int LzmaDecode(CLzmaDecoderState *vs,
 {
   CProb *p = vs->Probs;
   SizeT nowPos = 0;
-  Byte previousByte = '\0';
+  Byte previousByte = 0;
   UInt32 posStateMask = (1 << (vs->Properties.pb)) - 1;
   UInt32 literalPosMask = (1 << (vs->Properties.lp)) - 1;
   int lc = vs->Properties.lc;
@@ -224,7 +222,7 @@ int LzmaDecode(CLzmaDecoderState *vs,
       globalPos = 0;
       distanceLimit = 0;
       dictionaryPos = 0;
-      dictionary[dictionarySize - 1] = (Byte)0;
+      dictionary[dictionarySize - 1] = 0;
 #ifdef _LZMA_IN_CB
       RC_INIT;
 #else
@@ -302,7 +300,7 @@ int LzmaDecode(CLzmaDecoderState *vs,
         + globalPos
 #endif
         )
-        & literalPosMask) << lc) + (UInt32)(previousByte >> (8 - lc))));
+        & literalPosMask) << lc) + (previousByte >> (8 - lc))));
 
       if (state >= kNumLitStates)
       {
@@ -311,7 +309,7 @@ int LzmaDecode(CLzmaDecoderState *vs,
         UInt32 pos = dictionaryPos - rep0;
         if (pos >= dictionarySize)
           pos += dictionarySize;
-        matchByte = (int) dictionary[pos];
+        matchByte = dictionary[pos];
 #else
         matchByte = outStream[nowPos - rep0];
 #endif
