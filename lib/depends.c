@@ -2347,8 +2347,8 @@ rescan:
 
 	    /* T13. Print predecessor chain from start of loop. */
 	    while ((p = q) != NULL && (q = rpmteTSI(p)->tsi_chain) != NULL) {
+		const char * nevra;
 		const char * dp;
-		char buf[4096];
 		int msglvl = (anaconda || (rpmtsDFlags(ts) & RPMDEPS_FLAG_DEPLOOPS))
 			? RPMLOG_WARNING : RPMLOG_DEBUG;
 ;
@@ -2365,10 +2365,8 @@ rescan:
 		dp = zapRelation(q, p, 1, &nzaps, msglvl);
 
 		/* Print next member of loop. */
-		buf[0] = '\0';
-		if (rpmteNEVRA(p) != NULL)
-		    (void) stpcpy(buf, rpmteNEVRA(p));
-		rpmlog(msglvl, "    %-40s %s\n", buf,
+		nevra = rpmteNEVRA(p);
+		rpmlog(msglvl, "    %-40s %s\n", (nevra ? nevra : "???"),
 			(dp ? dp : "not found!?!"));
 
 		dp = _free(dp);

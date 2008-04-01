@@ -1,4 +1,5 @@
 5.0.0 -> 5.1a1:
+    - rpm.org: Avoid entirely unnecessary static buffer + string copy.
     - jbj: fix: reverse arrows on erasure dependency graph.
     - rse: provide the necessary pre-processor macros to allow misc/err.h to compile with Sun Studio 12 under Solaris 10
     - jbj: rpmrepo: be kind to the sqlite3 deprived.
