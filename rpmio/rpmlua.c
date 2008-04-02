@@ -54,10 +54,8 @@ static int rpm_print(lua_State *L)
 	/*@globals fileSystem @*/
 	/*@modifies L, fileSystem @*/;
 
-#if defined(RPM_VENDOR_OPENPKG) /* support-rpmlua-option */
 /*@unchecked@*/
 const char *rpmluaFiles = RPMLUAFILES;
-#endif
 
 rpmlua rpmluaGetGlobalState(void)
 {
@@ -123,11 +121,7 @@ rpmlua rpmluaNew()
     rpmluaSetData(lua, "lua", lua);
 
     /* load all standard RPM Lua script files */
-#if defined(RPM_VENDOR_OPENPKG) /* support-rpmlua-option */
     path_buf = xstrdup(rpmluaFiles);
-#else
-    path_buf = xstrdup(RPMLUAFILES);
-#endif
     for (path = path_buf; path != NULL && *path != '\0'; path = path_next) {
         const char **av;
         struct stat st;

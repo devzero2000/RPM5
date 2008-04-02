@@ -78,17 +78,13 @@ const char *rpmioEVR = VERSION;
 static int rpmioInitialized = -1;
 
 #ifdef	NOTYET
-#if defined(RPM_VENDOR_OPENPKG) /* support-rpmlua-option */
 #ifdef WITH_LUA
 /*@unchecked@*/
 extern const char *rpmluaFiles;
 #endif
-#endif
 
-#if defined(RPM_VENDOR_OPENPKG) /* support-rpmpopt-option */
 /*@unchecked@*/
 static char *rpmpoptfiles = RPMPOPTFILES;
-#endif
 #endif
 
 pgpHashAlgo rpmioDigestHashAlgo = -1;
@@ -321,18 +317,14 @@ struct poptOption rpmioAllPoptTable[] = {
  { "macros", '\0', POPT_ARG_STRING, &rpmMacrofiles, 0,
 	N_("read <FILE:...> instead of default file(s)"),
 	N_("<FILE:...>") },
-#if defined(RPM_VENDOR_OPENPKG) /* support-rpmlua-option */
 #ifdef WITH_LUA
  { "rpmlua", '\0', POPT_ARG_STRING, &rpmluaFiles, 0,
 	N_("read <FILE:...> instead of default RPM Lua file(s)"),
 	N_("<FILE:...>") },
 #endif
-#endif
-#if defined(RPM_VENDOR_OPENPKG) /* support-rpmpopt-option */
  { "rpmpopt", '\0', POPT_ARG_STRING, NULL, 0,
 	N_("read <FILE:...> instead of default POPT file(s)"),
 	N_("<FILE:...>") },
-#endif
 #endif	/* NOTYET */
 
 #if defined(HAVE_LIBIO_H) && defined(_G_IO_IO_FILE_VERSION)
@@ -439,9 +431,7 @@ rpmioInit(int argc, char *const argv[], struct poptOption * optionsTable)
 #endif
     int rc;
 #ifdef	NOTYET
-#if defined(RPM_VENDOR_OPENPKG) /* support-rpmpopt-option */
     int i;
-#endif
 #endif
 
 #if defined(HAVE_MCHECK_H) && defined(HAVE_MTRACE)
@@ -492,7 +482,6 @@ rpmioInit(int argc, char *const argv[], struct poptOption * optionsTable)
 
 #ifdef	NOTYET
     /* read all RPM POPT configuration files */
-#if defined(RPM_VENDOR_OPENPKG) /* support-rpmpopt-option */
     for (i = 1; i < argc; i++) {
         if (strcmp(argv[i], "--rpmpopt") == 0 && i+1 < argc) {
             rpmpoptfiles = argv[i+1];
@@ -504,9 +493,6 @@ rpmioInit(int argc, char *const argv[], struct poptOption * optionsTable)
         }
     }
     path_buf = xstrdup(rpmpoptfiles);
-#else
-    path_buf = xstrdup(RPMPOPTFILES);
-#endif
     for (path = path_buf; path != NULL && *path != '\0'; path = path_next) {
         const char **av;
         int ac, i;

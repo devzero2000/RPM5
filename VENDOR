@@ -330,24 +330,6 @@
      Reason:         [see scripts/integrity.txt for detailed documentation]
      ________________________________________________________________________
 
-     Change:         support-rpmpopt-option
-     Purpose:        Support the special CLI option --rpmpopt to
-                     on-the-fly override hard-coded path of the Autoconf option
-                     --path-rpmpopt.
-     Reason:         OpenPKG requires this in its bootstrapping procedure in
-                     order to let RPM load its standard rpmpopt file(s)
-                     from a temporary location (under $RPM_BUILD_ROOT).
-     ________________________________________________________________________
-
-     Change:         support-rpmlua-option
-     Purpose:        Support the regular CLI option --rpmlua to
-                     on-the-fly override hard-coded path of the Autoconf option
-                     --path-rpmlua.
-     Reason:         OpenPKG uses a rather complex --with-path-rpmlua option
-                     during built-time and hence one also needs to be able
-                     to override this on the command line.
-     ________________________________________________________________________
-
      Change:         support-wildcards-in-EVR-comparison
      Purpose:        Support asterisk ("*") as a wildcard in EVR comparison.
      Reason:         In OpenPKG we sometimes wish to specify dependencies on
