@@ -95,7 +95,7 @@ so, delete this exception statement from your version.  */
 /* XXX uncouple from wget.h baggage. */
 
 #ifndef PARAMS
-# if PROTOTYPES
+# ifdef PROTOTYPES
 #  define PARAMS(args) args
 # else
 #  define PARAMS(args) ()
