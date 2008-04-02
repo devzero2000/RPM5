@@ -186,10 +186,7 @@ static inline void rpmfiBuildFNames(Header h, rpmTag tagN, const char *** fnp, r
 		const char * dn = NULL;
 		(void) urlPath(dirNames.argv[dirIndexes.ui32p[i]], &dn);
 		fileNames.argv[i] = t;
-		strcpy(t, dn);
-		t += strlen(t);
-		t = strcpy(t, baseNames.argv[i]);
-		t += strlen(t);
+		t = stpcpy( stpcpy(t, dn), baseNames.argv[i]);
 		*t++ = '\0';
 	}
 	baseNames.ptr = _free(baseNames.ptr);
