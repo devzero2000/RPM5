@@ -161,7 +161,7 @@ AC_ARG_ENABLE(build-warnings,
             CFLAGS="$CFLAGS -v"
         elif test ".`$CC -help 2>&1 | grep 'Intel Corporation'`" != .; then
             dnl # Intel C/C++ Compiler (usually "icc")
-            CFLAGS="$CFLAGS -Wall -Wcheck"
+            CFLAGS="$CFLAGS -Wall -Wcheck -w1 -wr188 -wr981 -wr593 -wr869 -wr810"
         else
             AC_MSG_WARN([--enable-build-warnings requires GCC, Sun Studio or Intel C/C++])
         fi
