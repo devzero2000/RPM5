@@ -138,6 +138,7 @@ struct Spec_s {
     const char ** BANames;
     int BACount;
     int recursing;		/*!< parse is recursive? */
+    int toplevel;
 
     int force;
     int anyarch;
@@ -201,6 +202,7 @@ struct Package_s {
 
     int autoReq;
     int autoProv;
+    int noarch;
 
 /*@only@*/
     const char * preInFile;	/*!< %pre scriptlet. */

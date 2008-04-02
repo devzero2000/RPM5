@@ -147,7 +147,8 @@ void *rpmtsAcquireLock(rpmts ts)
     if (rc) {
 	if (rpmlock_path != NULL && strcmp(rpmlock_path, rootDir))
 	    rpmlog(RPMLOG_ERR,
-		_("can't create transaction lock on %s\n"), rpmlock_path);
+		_("can't create transaction lock on %s (%s)\n"),
+		rpmlock_path, strerror(errno));
     } else if (lock != NULL) {
 	if (!rpmlock_acquire(lock, RPMLOCK_WRITE)) {
 	    if (lock->omode & RPMLOCK_WRITE)
@@ -156,7 +157,8 @@ void *rpmtsAcquireLock(rpmts ts)
 	    if (!rpmlock_acquire(lock, RPMLOCK_WRITE|RPMLOCK_WAIT)) {
 		if (rpmlock_path != NULL && strcmp(rpmlock_path, rootDir))
 		    rpmlog(RPMLOG_ERR,
-			_("can't create transaction lock on %s\n"), rpmlock_path);
+			_("can't create transaction lock on %s (%s)\n"),
+			rpmlock_path, strerror(errno));
 		lock = rpmlock_free(lock);
 	    }
 	}

@@ -82,7 +82,7 @@ static void addOrAppendListEntry(Header h, rpmTag tag, char * line)
 }
 
 /* Parse a simple part line that only take -n <pkg> or <pkg> */
-/* <pkg> is return in name as a pointer into a static buffer */
+/* <pkg> is returned in name as a pointer into malloc'd storage. */
 
 /**
  */
@@ -91,31 +91,32 @@ static int parseSimplePart(char *line, /*@out@*/char **name,
 	/*@globals internalState@*/
 	/*@modifies *name, *flag, internalState @*/
 {
+    char * linebuf = xstrdup(line);
     char *tok;
-    char linebuf[BUFSIZ];
-    static char buf[BUFSIZ];
-
-    strcpy(linebuf, line);
+    int rc = 0;		/* assume failure */
 
     /* Throw away the first token (the %xxxx) */
     (void)strtok(linebuf, " \t\n");
     
-    if (!(tok = strtok(NULL, " \t\n"))) {
-	*name = NULL;
-	return 0;
-    }
+    *name = NULL;
+    if (!(tok = strtok(NULL, " \t\n")))
+	goto exit;
     
     if (!strcmp(tok, "-n")) {
-	if (!(tok = strtok(NULL, " \t\n")))
-	    return 1;
+	if (!(tok = strtok(NULL, " \t\n"))) {
+	    rc = 1;
+	    goto exit;
+	}
 	*flag = PART_NAME;
-    } else {
+    } else
 	*flag = PART_SUBNAME;
-    }
-    strcpy(buf, tok);
-    *name = buf;
 
-    return (strtok(NULL, " \t\n")) ? 1 : 0;
+    *name = xstrdup(tok);
+    rc = (strtok(NULL, " \t\n") ? 1 : 0);
+
+exit:
+    linebuf = _free(linebuf);
+    return rc;
 }
 
 /**
@@ -784,18 +785,34 @@ static rpmRC handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
     case RPMTAG_EXCLUSIVEOS:
 	addOrAppendListEntry(spec->sourceHeader, tag, field);
 	break;
+
     case RPMTAG_BUILDARCHS:
-	if ((rc = poptParseArgvString(field,
-				      &(spec->BACount),
-				      &(spec->BANames)))) {
+    {	const char ** BANames = NULL;
+	int BACount = 0;
+	if ((rc = poptParseArgvString(field, &BACount, &BANames))) {
 	    rpmlog(RPMLOG_ERR,
 		     _("line %d: Bad BuildArchitecture format: %s\n"),
 		     spec->lineNum, spec->line);
 	    return RPMRC_FAIL;
 	}
-	if (!spec->BACount)
-	    spec->BANames = _free(spec->BANames);
-	break;
+	if (spec->toplevel) {
+	    if (BACount > 0 && BANames != NULL) {
+		spec->BACount = BACount;
+		spec->BANames = BANames;
+		BANames = NULL;		/* XXX don't free. */
+	    }
+	} else {
+	    if (BACount != 1 || strcmp(BANames[0], "noarch")) {
+		rpmlog(RPMLOG_ERR,
+		     _("line %d: Only \"noarch\" sub-packages are supported: %s\n"),
+		     spec->lineNum, spec->line);
+		BANames = _free(BANames);
+		return RPMRC_FAIL;
+	    }
+	    pkg->noarch = 1;
+	}
+	BANames = _free(BANames);
+    }	break;
 
     default:
 	macro = NULL;
@@ -992,7 +1009,7 @@ int parsePreamble(Spec spec, int initialPackage)
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     rpmParseState nextPart;
     int xx;
-    char *name, *linep;
+    char *linep;
     Package pkg;
     char NVR[BUFSIZ];
     char lang[BUFSIZ];
@@ -1003,6 +1020,7 @@ int parsePreamble(Spec spec, int initialPackage)
     pkg = newPackage(spec);
 	
     if (! initialPackage) {
+	char *name = NULL;
 	rpmParseState flag;
 	/* There is one option to %package: <pkg> or -n <pkg> */
 	flag = PART_NONE;
@@ -1015,6 +1033,7 @@ int parsePreamble(Spec spec, int initialPackage)
 	if (lookupPackage(spec, name, flag, NULL) == RPMRC_OK) {
 	    rpmlog(RPMLOG_ERR, _("Package already exists: %s\n"),
 			spec->line);
+	    name = _free(name);
 	    return RPMRC_FAIL;
 	}
 	
@@ -1026,6 +1045,7 @@ int parsePreamble(Spec spec, int initialPackage)
 	    he->p.ptr = _free(he->p.ptr);
 	} else
 	    strcpy(NVR, name);
+	name = _free(name);
 	he->tag = RPMTAG_NAME;
 	he->t = RPM_STRING_TYPE;
 	he->p.str = NVR;
@@ -1053,7 +1073,7 @@ int parsePreamble(Spec spec, int initialPackage)
 		}
 		if (handlePreambleTag(spec, pkg, tag, macro, lang))
 		    return RPMRC_FAIL;
-		if (spec->BANames && !spec->recursing)
+		if (spec->BANames && !spec->recursing && spec->toplevel)
 		    return PART_BUILDARCHITECTURES;
 	    }
 	    if ((rc =

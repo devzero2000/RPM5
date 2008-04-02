@@ -511,6 +511,7 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootURL,
     spec->fileStack->fileName = xstrdup(spec->specFile);
 
     spec->recursing = recursing;
+    spec->toplevel = (!recursing ? 1 : 0);
     spec->anyarch = anyarch;
     spec->force = force;
 
@@ -533,6 +534,7 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootURL,
     /*@-infloops@*/	/* LCL: parsePart is modified @*/
     while (parsePart > PART_NONE) {
 	int goterror = 0;
+
 	switch (parsePart) {
 	default:
 	    goterror = 1;
@@ -588,7 +590,12 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootURL,
 	    return parsePart;
 	}
 
-	if (parsePart == PART_BUILDARCHITECTURES) {
+	/* Detect whether BuildArch: is toplevel or within %package. */
+	if (spec->toplevel && parsePart != PART_BUILDARCHITECTURES)
+	    spec->toplevel = 0;
+
+	/* Restart parse iff toplevel BuildArch: is encountered. */
+	if (spec->toplevel && parsePart == PART_BUILDARCHITECTURES) {
 	    int index;
 	    int x;
 
@@ -660,25 +667,16 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootURL,
     const char *os = rpmExpand("%{_target_os}", NULL);
 
     for (pkg = spec->packages; pkg != NULL; pkg = pkg->next) {
-	if (!headerIsEntry(pkg->header, RPMTAG_DESCRIPTION)) {
-	    he->tag = RPMTAG_NVRA;
-	    xx = headerGet(pkg->header, he, 0);
-	    rpmlog(RPMLOG_ERR, _("Package has no %%description: %s\n"),
-			he->p.str);
-	    he->p.ptr = _free(he->p.ptr);
-	    spec = freeSpec(spec);
-	    return RPMRC_FAIL;
-	}
-
 	he->tag = RPMTAG_OS;
 	he->t = RPM_STRING_TYPE;
+	/* XXX todo: really need "noos" like pkg->noarch somewhen. */
 	he->p.str = os;
 	he->c = 1;
 	xx = headerPut(pkg->header, he, 0);
 
 	he->tag = RPMTAG_ARCH;
 	he->t = RPM_STRING_TYPE;
-	he->p.str = arch;
+	he->p.str = (pkg->noarch ? "noarch" : arch);
 	he->c = 1;
 	xx = headerPut(pkg->header, he, 0);
 
@@ -687,6 +685,20 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootURL,
 	he->p.str = platform;
 	he->c = 1;
 	xx = headerPut(pkg->header, he, 0);
+
+	if (!headerIsEntry(pkg->header, RPMTAG_DESCRIPTION)) {
+	    char * t;
+	    he->tag = RPMTAG_NVRA;
+	    xx = headerGet(pkg->header, he, 0);
+	    /* sourcerpm not added, so ".src" returned. Hack around for now. */
+	    if ((t = strstr(he->p.str, ".src")) != NULL)
+		*t = '\0';
+	    rpmlog(RPMLOG_ERR, _("Package has no %%description: %s\n"),
+			he->p.str);
+	    he->p.ptr = _free(he->p.ptr);
+	    spec = freeSpec(spec);
+	    return RPMRC_FAIL;
+	}
 
 	pkg->ds = rpmdsThis(pkg->header, RPMTAG_REQUIRENAME, RPMSENSE_EQUAL);
 

@@ -855,7 +855,6 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     HE_t she = memset(alloca(sizeof(*she)), 0, sizeof(*she));
-    int res2, res3;
     char result[1024];
     char buf[8192], * b;
     char missingKeys[7164], * m;
@@ -867,7 +866,8 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
     const char * msg = NULL;
     int res = 0;
     int xx;
-    rpmRC rc;
+    rpmRC rc, sigres;
+    int failed;
     int nodigests = !(qva->qva_flags & VERIFY_DIGEST);
     int nosignatures = !(qva->qva_flags & VERIFY_SIGNATURE);
 
@@ -950,7 +950,7 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 	    goto exit;
 	}
 
-	res2 = 0;
+	failed = 0;
 	b = buf;		*b = '\0';
 	m = missingKeys;	*m = '\0';
 	u = untrustedKeys;	*u = '\0';
@@ -1004,64 +1004,56 @@ assert(she->p.ptr != NULL);
 		/*@notreached@*/ /*@switchbreak@*/ break;
 	    }
 
-	    res3 = rpmVerifySignature(dig, result);
+	    sigres = rpmVerifySignature(dig, result);
 
-	    if (res3) {
-		if (rpmIsVerbose()) {
+	    if (sigres) {
+		failed = 1;
+		if (rpmIsVerbose())
 		    b = stpcpy( stpcpy( stpcpy(b, "    "), result), "\n");
-		    res2 = 1;
-		} else {
-		    switch ((rpmSigTag)she->tag) {
-		    case RPMSIGTAG_SIZE:
-			b = stpcpy(b, "SIZE ");
-			res2 = 1;
-			/*@switchbreak@*/ break;
-		    case RPMSIGTAG_SHA1:
-			b = stpcpy(b, "SHA1 ");
-			res2 = 1;
-			/*@switchbreak@*/ break;
-		    case RPMSIGTAG_MD5:
-			b = stpcpy(b, "MD5 ");
-			res2 = 1;
-			/*@switchbreak@*/ break;
-		    case RPMSIGTAG_RSA:
-			b = stpcpy(b, "RSA ");
-			res2 = 1;
-			/*@switchbreak@*/ break;
-		    case RPMSIGTAG_DSA:
-			b = stpcpy(b, "(SHA1) DSA ");
-			res2 = 1;
-			/*@switchbreak@*/ break;
-		    default:
-			b = stpcpy(b, "?UnknownSignatureType? ");
-			res2 = 1;
-			/*@switchbreak@*/ break;
-		    }
+		else
+		switch ((rpmSigTag)she->tag) {
+		case RPMSIGTAG_SIZE:
+		    b = stpcpy(b, "SIZE ");
+		    /*@switchbreak@*/ break;
+		case RPMSIGTAG_SHA1:
+		    b = stpcpy(b, "SHA1 ");
+		    /*@switchbreak@*/ break;
+		case RPMSIGTAG_MD5:
+		    b = stpcpy(b, "MD5 ");
+		    /*@switchbreak@*/ break;
+		case RPMSIGTAG_RSA:
+		    b = stpcpy(b, "RSA ");
+		    /*@switchbreak@*/ break;
+		case RPMSIGTAG_DSA:
+		    b = stpcpy(b, "(SHA1) DSA ");
+		    /*@switchbreak@*/ break;
+		default:
+		    b = stpcpy(b, "?UnknownSignatureType? ");
+		    /*@switchbreak@*/ break;
 		}
 	    } else {
-		if (rpmIsVerbose()) {
+		if (rpmIsVerbose())
 		    b = stpcpy( stpcpy( stpcpy(b, "    "), result), "\n");
-		} else {
-		    switch ((rpmSigTag)she->tag) {
-		    case RPMSIGTAG_SIZE:
-			b = stpcpy(b, "size ");
-			/*@switchbreak@*/ break;
-		    case RPMSIGTAG_SHA1:
-			b = stpcpy(b, "sha1 ");
-			/*@switchbreak@*/ break;
-		    case RPMSIGTAG_MD5:
-			b = stpcpy(b, "md5 ");
-			/*@switchbreak@*/ break;
-		    case RPMSIGTAG_RSA:
-			b = stpcpy(b, "rsa ");
-			/*@switchbreak@*/ break;
-		    case RPMSIGTAG_DSA:
-			b = stpcpy(b, "(sha1) dsa ");
-			/*@switchbreak@*/ break;
-		    default:
-			b = stpcpy(b, "??? ");
-			/*@switchbreak@*/ break;
-		    }
+		else
+		switch ((rpmSigTag)she->tag) {
+		case RPMSIGTAG_SIZE:
+		    b = stpcpy(b, "size ");
+		    /*@switchbreak@*/ break;
+		case RPMSIGTAG_SHA1:
+		    b = stpcpy(b, "sha1 ");
+		    /*@switchbreak@*/ break;
+		case RPMSIGTAG_MD5:
+		    b = stpcpy(b, "md5 ");
+		    /*@switchbreak@*/ break;
+		case RPMSIGTAG_RSA:
+		    b = stpcpy(b, "rsa ");
+		    /*@switchbreak@*/ break;
+		case RPMSIGTAG_DSA:
+		    b = stpcpy(b, "(sha1) dsa ");
+		    /*@switchbreak@*/ break;
+		default:
+		    b = stpcpy(b, "??? ");
+		    /*@switchbreak@*/ break;
 		}
 	    }
 	}
@@ -1071,14 +1063,14 @@ assert(she->p.ptr != NULL);
 	xx = pgpSetSig(dig, 0, 0, NULL, 0);
 /*@=noeffect@*/
 
-	res += res2;
+	res += failed;
 
-	if (res2) {
+	if (failed) {
 	    if (rpmIsVerbose()) {
 		rpmlog(RPMLOG_NOTICE, "%s", buf);
 	    } else {
 		rpmlog(RPMLOG_NOTICE, "%s%s%s%s%s%s%s%s\n", buf,
-			_("NOT OK"),
+			_("NOT_OK"),
 			(missingKeys[0] != '\0') ? _(" (MISSING KEYS:") : "",
 			missingKeys,
 			(missingKeys[0] != '\0') ? _(") ") : "",

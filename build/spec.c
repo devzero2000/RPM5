@@ -527,6 +527,7 @@ Spec newSpec(void)
     spec->BANames = NULL;
     spec->BACount = 0;
     spec->recursing = 0;
+    spec->toplevel = 1;
     spec->BASpecs = NULL;
 
     spec->force = 0;

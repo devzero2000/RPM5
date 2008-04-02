@@ -1,4 +1,11 @@
 5.0.0 -> 5.1a1:
+    - jbj: fix: RPMTAG_NVRA w .src/.pubkey in error msg is bogus.
+    - jbj: permit noarch sub-packages. Pattern match guaranteee next ...
+    - rpm.org: Enhance error message on failed ts lock acquire (rhbz#427064).
+    - jbj: fix the rpm.org memory leak.
+    - rpm.org: Don't use static buffers to communicate between funcs, avoid buffer overflows.
+    - rpm.org: Use more meaningful variable names than res2 and res3.
+    - rpm.org: Make signature verification result not depend on rpm verbosity level, ick.
     - rse: upgraded build environment to use GNU libtool 2.2.2
     - rse: replace %as format specifier with malloc(3) plus %s under non-GLIBC sscanf(3)
     - rse: various code cleanups related to pre-processor macros and C types
