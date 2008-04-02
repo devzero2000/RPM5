@@ -1807,7 +1807,6 @@ expandMacro(MacroBuf mb)
     return rc;
 }
 
-#if defined(RPM_VENDOR_OPENPKG) /* security-sanity-check-rpmpopt-and-rpmmacros */
 int rpmSecuritySaneFile(const char *filename)
 {
     struct stat sb;
@@ -1824,7 +1823,6 @@ int rpmSecuritySaneFile(const char *filename)
         return 0;
     return 1;
 }
-#endif
 
 #if !defined(DEBUG_MACROS)
 /* =============================================================== */
@@ -2324,7 +2322,6 @@ rpmInitMacros(MacroContext mc, const char * macrofiles)
 	    size_t slen = strlen(av[i]);
 	    const char *fn = av[i];
 
-#if defined(RPM_VENDOR_OPENPKG) /* security-sanity-check-rpmpopt-and-rpmmacros */
         if (fn[0] == '@' /* attention */) {
             fn++;
             if (!rpmSecuritySaneFile(fn)) {
@@ -2332,7 +2329,6 @@ rpmInitMacros(MacroContext mc, const char * macrofiles)
                 continue;
             }
         }
-#endif
 
 	/* Skip backup files and %config leftovers. */
 #define	_suffix(_s, _x) \

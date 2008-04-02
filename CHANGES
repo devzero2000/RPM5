@@ -1,4 +1,5 @@
 5.0.0 -> 5.1a1:
+    - jbj: merge "security-sanity-check-rpmpopt-and-rpmmacros" patch from OpenPKG.
     - jbj: merge "no-extra-terminating-newline-on-eval" patch from OpenPKG.
     - jbj: merge "explicit-source-fetch-cli-option" patch from OpenPKG.
     - jbj: merge "download-source-files-from-original-location" patch from OpenPKG.

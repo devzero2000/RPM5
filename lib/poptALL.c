@@ -555,7 +555,6 @@ rpmcliInit(int argc, char *const argv[], struct poptOption * optionsTable)
         /* work-off each resulting file from the path element */
         for (i = 0; i < ac; i++) {
 	    const char *fn = av[i];
-#if defined(RPM_VENDOR_OPENPKG) /* security-sanity-check-rpmpopt-and-rpmmacros */
 	    if (fn[0] == '@' /* attention */) {
 		fn++;
 		if (!rpmSecuritySaneFile(fn)) {
@@ -563,8 +562,7 @@ rpmcliInit(int argc, char *const argv[], struct poptOption * optionsTable)
 		    continue;
 		}
 	    }
-#endif
-	    (void)poptReadConfigFile(optCon, fn);
+	    (void) poptReadConfigFile(optCon, fn);
             av[i] = _free(av[i]);
         }
         av = _free(av);

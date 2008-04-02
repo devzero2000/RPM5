@@ -149,7 +149,6 @@ rpmlua rpmluaNew()
         /* work-off each resulting file from the path element */
         for (i = 0; i < ac; i++) {
             const char *fn = av[i];
-#if defined(RPM_VENDOR_OPENPKG) /* security-sanity-check-rpmpopt-and-rpmmacros */
             if (fn[0] == '@' /* attention */) {
                 fn++;
                 if (!rpmSecuritySaneFile(fn)) {
@@ -157,7 +156,6 @@ rpmlua rpmluaNew()
                     continue;
                 }
             }
-#endif
             if (Stat(fn, &st) != -1)
                 (void)rpmluaRunScriptFile(lua, fn);
             av[i] = _free(av[i]);
