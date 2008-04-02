@@ -89,7 +89,7 @@ int rpmconstInitToContext(rpmconst c, const char * context)
     int rc = 0;
     if (!context) return 0; /* programmer error */
     for (ptr = lccontext; *ptr != 0; ptr++)
-        *ptr = tolower(*ptr);
+        *ptr = (char)tolower(*ptr);
     rpmconstInitL(c);
     while (rpmconstNextL(c)) {
         if (!strcmp(lccontext, rpmconstContext(c))) {
@@ -108,7 +108,7 @@ int rpmconstNameMatch(rpmconst c, const char * name, int prefixed)
     char * ucname = strdup(name);
     
     for (uc = ucname; *uc != 0; uc++)
-        *uc = toupper(*uc);
+        *uc = (char)toupper(*uc);
     
     if (!prefixed) prefixed = ALLCASE_PREFIX;
     if (prefixed & WITH_PREFIX)

@@ -253,11 +253,11 @@ static inline unsigned char nibble(char c)
 	/*@*/
 {
     if (c >= '0' && c <= '9')
-	return (c - '0');
+	return (unsigned char)(c - '0');
     if (c >= 'A' && c <= 'F')
-	return (c - 'A') + 10;
+	return (unsigned char)((c - 'A') + 10);
     if (c >= 'a' && c <= 'f')
-	return (c - 'a') + 10;
+	return (unsigned char)((c - 'a') + 10);
     return 0;
 }
 
@@ -365,7 +365,7 @@ fprintf(stderr, "==> pgpFindPubkey ret %d\n", xx);
 	ns >>= 1;
 	t = memset(alloca(ns), 0, ns);
 	for (i = 0; i < ns; i++)
-	    t[i] = (nibble(s[2*i]) << 4) | nibble(s[2*i+1]);
+	    t[i] = (char)((nibble(s[2*i]) << 4) | nibble(s[2*i+1]));
 
 	/* Compare the pubkey id. */
 	s = (const char *)pubp->signid;

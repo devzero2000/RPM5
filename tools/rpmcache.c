@@ -451,7 +451,7 @@ static void initGlobs(/*@unused@*/ rpmts ts, const char ** argv)
 	    t = stpcpy(t, arg);
 	    *t++ = '|';
 	}
-	t[-1] = (single ? '\0' : ')');
+	t[-1] = (char)(single ? '\0' : ')');
 	*t = '\0';
     }
 

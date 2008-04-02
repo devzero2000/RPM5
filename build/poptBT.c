@@ -93,8 +93,8 @@ static void buildArgCallback( /*@unused@*/ poptContext con,
     case POPT_TP:
     case POPT_TS:
 	if (rba->buildMode == '\0' && rba->buildChar == '\0') {
-	    rba->buildMode = (((unsigned)opt->val) >> 8) & 0xff;
-	    rba->buildChar = (opt->val     ) & 0xff;
+	    rba->buildMode = (char)((((unsigned int)opt->val) >> 8) & 0xff);
+	    rba->buildChar = (char)(opt->val & 0xff);
 	}
 	break;
 

@@ -744,7 +744,7 @@ static void rpmRebuildTargetVars(const char ** target, const char ** canontarget
     }
     if (ca != NULL)
     for (x = 0; ca[x] != '\0'; x++)
-	ca[x] = xtolower(ca[x]);
+	ca[x] = (char)xtolower(ca[x]);
 
     if (co == NULL) {
 	const char *o = NULL;
@@ -753,7 +753,7 @@ static void rpmRebuildTargetVars(const char ** target, const char ** canontarget
     }
     if (co != NULL)
     for (x = 0; co[x] != '\0'; x++)
-	co[x] = xtolower(co[x]);
+	co[x] = (char)xtolower(co[x]);
 
     /* XXX For now, set canonical target to arch-os */
     if (ct == NULL) {

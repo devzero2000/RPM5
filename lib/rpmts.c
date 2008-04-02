@@ -193,7 +193,7 @@ rpmdbMatchIterator rpmtsInitIterator(const rpmts ts, rpmTag rpmtag,
 	while ((c = *s++) != '\0') {
 	    switch (c) {
 	    default:
-		*t++ = c;
+		*t++ = (char)c;
 		/*@switchbreak@*/ break;
 	    case '(':
 		/* XXX Fail if nested parens. */

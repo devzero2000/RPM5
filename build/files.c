@@ -1408,7 +1408,7 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 	xx = headerPut(h, he, 0);
 	he->append = 0;
 
-	ui16 = flp->fl_mode;
+	ui16 = (uint16_t)flp->fl_mode;
 	he->tag = RPMTAG_FILEMODES;
 	he->t = RPM_UINT16_TYPE;
 	he->p.ui16p = &ui16;

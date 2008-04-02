@@ -580,7 +580,7 @@ void rpmteColorDS(rpmte te, rpmTag tag)
 	if (ddict != NULL)
 	while (ndx-- > 0) {
 	    ix = *ddict++;
-	    mydt = ((ix >> 24) & 0xff);
+	    mydt = (char)((ix >> 24) & 0xff);
 	    if (mydt != deptype)
 		/*@innercontinue@*/ continue;
 	    ix &= 0x00ffffff;
