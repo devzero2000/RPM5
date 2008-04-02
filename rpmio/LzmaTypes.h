@@ -13,7 +13,7 @@ This file is part of LZMA SDK 4.40 (2006-05-01)
 #ifndef Byte
 #ifndef _7ZIP_BYTE_DEFINED
 #define _7ZIP_BYTE_DEFINED
-typedef unsigned char Byte;
+typedef unsigned char lzmaByte;
 #endif
 #endif
 

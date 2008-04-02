@@ -23,9 +23,7 @@
 
 #include "LzmaDecode.h"
 
-#ifndef Byte
-#define Byte unsigned char
-#endif
+#define Byte lzmaByte
 
 #define kNumTopBits 24
 #define kTopValue ((UInt32)1 << kNumTopBits)

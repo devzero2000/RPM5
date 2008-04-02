@@ -1,4 +1,5 @@
 5.0.0 -> 5.1a1:
+    - rse: resolve type conflict between Zlib and Lzma after upgrade to latest LZMA SDK 4.40
     - jbj: rpmdigest: s/--all/--alldigests/ w rpmio "make check".
     - jbj: fix: segfault from clobbering RPMMIRE_STRCMP mode w platform string.
     - proyvind: update to latest lzma sdk (4.40)
