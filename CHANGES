@@ -1,4 +1,5 @@
 5.0.0 -> 5.1a1:
+    - rse: upgraded build environment to use GNU libtool 2.2.2
     - rse: replace %as format specifier with malloc(3) plus %s under non-GLIBC sscanf(3)
     - rse: various code cleanups related to pre-processor macros and C types
     - rse: step back to the LZMA SDK 4.32 (which is identical to LZMA SDK 4.57), but with the rpm5.org cleanups still applied
@@ -146,7 +147,7 @@
     - jbj: use poptIO with rpmio noinst_PROGRAMS.
     - jbj: rpmio: clone poptIO.[ch] from poptALL.c for rpmio noinst_PROGRAMS.
     - jbj: rpmcli: remove duplicate nolibio entry in poptALL.c
-    - jbj: pemit %{___NVRA} to parameterize the displayed NVRA while installing.
+    - jbj: permit %{___NVRA} to parameterize the displayed NVRA while installing.
     - jbj: create %___NVRA to split external <-> internal package names.
     - rpm.org: Mass convert (back) to rpmTag as it's usable everywhere now
     - rpm.org: Use rpmSigTag enum for signature tags everywhere, more or less..
