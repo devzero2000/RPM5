@@ -535,9 +535,7 @@ int urlGetFile(const char * url, const char * dest)
     FD_t tfd = NULL;
     const char * sfuPath = NULL;
     int urlType = urlPath(url, &sfuPath);
-#if defined(RPM_VENDOR_OPENPKG) /* support-external-download-command */
     char *result;
-#endif
 
     if (*sfuPath == '\0')
 	return FTPERR_UNKNOWN;
@@ -551,7 +549,6 @@ int urlGetFile(const char * url, const char * dest)
     if (dest == NULL)
 	return FTPERR_UNKNOWN;
 
-#if defined(RPM_VENDOR_OPENPKG) /* support-external-download-command */
     if (rpmExpandNumeric("%{?__urlgetfile:1}%{!?__urlgetfile:0}")) {
         result = rpmExpand("%{__urlgetfile ", url, " ", dest, "}", NULL);
         if (result != NULL && strcmp(result, "OK") == 0)
@@ -563,7 +560,6 @@ int urlGetFile(const char * url, const char * dest)
         result = _free(result);
         goto exit;
     }
-#endif
 
     sfd = Fopen(url, "r");
     if (sfd == NULL || Ferror(sfd)) {

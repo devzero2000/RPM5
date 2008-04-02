@@ -1,4 +1,5 @@
 5.0.0 -> 5.1a1:
+    - jbj: merge "support-external-download-command" patch from OpenPKG.
     - jbj: merge "support-srcdefattr" patch from OpenPKG.
     - jbj: fix: RPMTAG_NVRA w .src/.pubkey in error msg is bogus.
     - jbj: permit noarch sub-packages. Pattern match guaranteee next ...

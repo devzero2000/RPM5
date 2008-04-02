@@ -285,22 +285,6 @@
                      should be able to control verbosity manually.
      ________________________________________________________________________
 
-     Change:         support-external-download-command
-     Purpose:        Allow one to use macro %{__urlgetfile} for downloading
-                     still missing source files via an external command
-     Reason:         The internal URL fetching functionality was discovered
-                     to be not sufficient in practice when it comes to
-                     HTTP redirects, FTP passive/active modes, etc. To
-                     easily workaround this and at the same time be
-                     consistent in the used downloading tool, we want
-                     to use an external download tool. In OpenPKG cURL
-                     is part of the OpenPKG bootstrap (and used for all
-                     other downloads outside of RPM anyway), so we will
-                     use '%__urlgetfile() %{l_curl} "-#" -L -R -o "%2"
-                     "%1"' in the global "rpmmacros" file. Other tools
-                     can be used similarily.
-     ________________________________________________________________________
-
      Change:         download-source-files-from-original-location
      Purpose:        Allow RPM to download missing source files also
                      from the original location (in addition to the
