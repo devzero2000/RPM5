@@ -165,7 +165,7 @@ extern int glob __P ((__const char *__pattern, int __flags,
 /* Free storage allocated in PGLOB by a previous `glob' call.  */
 extern void globfree __P ((glob_t *__pglob));
 #else
-# if __GNUC__ >= 2
+# if defined(__GNUC__) && __GNUC__ >= 2
 extern int glob __P ((__const char *__pattern, int __flags,
 		      int (*__errfunc) (__const char *, int),
 		      glob_t *__pglob)) __asm__ ("glob64");
