@@ -73,7 +73,7 @@ if [ -x $rpmdigest ]; then
 
   echo "---------------------------- Test D1 ------------------------------" >testtry
   pats="$rpmdigest $srcdir/testdata/[a-z]*"
-  genvfypat "$rpmdigest --all" "$rpmdigest" "$pats"
+  genvfypat "$rpmdigest --alldigests" "$rpmdigest" "$pats"
   for i in md5 sha1 sha224 sha256 sha384 sha512; do
     sumgen="`which ${i}sum`" || continue
     [ -x "$sumgen" ] || continue;
