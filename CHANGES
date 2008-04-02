@@ -1,4 +1,5 @@
 5.0.0 -> 5.1a1:
+    - rse: replace %as format specifier with malloc(3) plus %s under non-GLIBC sscanf(3)
     - rse: various code cleanups related to pre-processor macros and C types
     - rse: step back to the LZMA SDK 4.32 (which is identical to LZMA SDK 4.57), but with the rpm5.org cleanups still applied
     - rse: resolve type conflict between Zlib and Lzma after upgrade to latest LZMA SDK 4.40

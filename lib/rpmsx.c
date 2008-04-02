@@ -378,7 +378,14 @@ int rpmsxParse(rpmsx sx, const char * fn)
 	    if (*bp == '#' || *bp == 0)
 		/*@innercontinue@*/ continue;
 /*@-formatcode@*/
+#if defined(__GLIBC__)
 	    items = sscanf(buf, "%as %as %as", &regex, &type, &context);
+#else
+	    regex   = malloc(len+1);
+	    type    = malloc(len+1);
+	    context = malloc(len+1);
+	    items = sscanf(buf, "%s %s %s", &regex, &type, &context);
+#endif
 /*@=formatcode@*/
 	    if (items < 2) {
 		fprintf(stderr,
