@@ -793,7 +793,6 @@ static int prepFetch(Spec spec)
         }
         cp = _free(cp);
 
-#if defined(RPM_VENDOR_OPENPKG) /* download-source-files-from-original-location */
         /* try to fetch from original location */
         rpmlog(RPMLOG_NOTICE, _("Fetching(%s%d): %s\n"),
                (sp->flags & RPMFILE_SOURCE) ? "Source" : "Patch", sp->num, sp->fullSource);
@@ -805,7 +804,6 @@ static int prepFetch(Spec spec)
                    (sp->flags & RPMFILE_SOURCE) ? "Source" : "Patch", sp->num, ftpStrerror(rc));
             ec++;
         }
-#endif
 
         rpmlog(RPMLOG_ERR, _("Missing %s%d: %s: %s\n"),
             ((sp->flags & RPMFILE_SOURCE) ? "Source" : "Patch"),
