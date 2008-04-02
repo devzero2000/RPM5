@@ -384,7 +384,7 @@ int rpmsxParse(rpmsx sx, const char * fn)
 	    regex   = malloc(len+1);
 	    type    = malloc(len+1);
 	    context = malloc(len+1);
-	    items = sscanf(buf, "%s %s %s", &regex, &type, &context);
+	    items = sscanf(buf, "%s %s %s", regex, type, context);
 #endif
 /*@=formatcode@*/
 	    if (items < 2) {
