@@ -1,4 +1,5 @@
 5.0.0 -> 5.1a1:
+    - jbj: merge "explicit-source-fetch-cli-option" patch from OpenPKG.
     - jbj: merge "download-source-files-from-original-location" patch from OpenPKG.
     - jbj: merge "support-external-download-command" patch from OpenPKG.
     - jbj: merge "support-srcdefattr" patch from OpenPKG.

@@ -645,7 +645,6 @@ static void prepFetchVerbose(/*@unused@*/ struct Source *sp,
 		/*@unused@*/ struct stat *st)
 	/*@*/
 {
-#if defined(RPM_VENDOR_OPENPKG) /* explicit-source-fetch-cli-option */
     char *buf;
     size_t buf_len;
     int i;
@@ -666,7 +665,6 @@ static void prepFetchVerbose(/*@unused@*/ struct Source *sp,
         snprintf(buf+i, buf_len-i, "      ...MISSING\n");
     rpmlog(RPMLOG_NOTICE, "%s", buf);
     buf = _free(buf);
-#endif
     return;
 }
 
@@ -715,10 +713,8 @@ static int prepFetch(Spec spec)
     if (rpmrc != RPMRC_OK)
 	return -1;
 
-#if defined(RPM_VENDOR_OPENPKG) /* explicit-source-fetch-cli-option */
     if (rpmIsVerbose() && !quietly && (rpmBTArgs.buildAmount & RPMBUILD_FETCHSOURCE))
         rpmlog(RPMLOG_NOTICE, "Checking source and patch file(s):\n");
-#endif
 
     ec = 0;
     for (sp = spec->sources; sp != NULL; sp = sp->next) {
