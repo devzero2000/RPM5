@@ -2678,27 +2678,21 @@ int processSourceFiles(Spec spec)
     struct FileList_s fl;
     char **files, **fp;
     int rc;
-#if defined(RPM_VENDOR_OPENPKG) /* support-srcdefattr */
     /* srcdefattr: needed variables */
     char _srcdefattr_buf[BUFSIZ];
     char *_srcdefattr;
-#endif
 
-#if defined(RPM_VENDOR_OPENPKG) /* support-srcdefattr */
     _srcdefattr = rpmExpand("%{?_srcdefattr}", NULL);
-#endif
 
     *sfp = newStringBuf();
     x = initSourceHeader(spec, sfp);
 
-#if defined(RPM_VENDOR_OPENPKG) /* support-srcdefattr */
     /* srcdefattr: initialize file list structure */
     memset(&fl, 0, sizeof(fl));
     if (_srcdefattr && *_srcdefattr) {
         snprintf(_srcdefattr_buf, sizeof(_srcdefattr_buf), "%%defattr %s", _srcdefattr);
         parseForAttr(_srcdefattr_buf, &fl);
     }
-#endif
 
     /* Construct the SRPM file list. */
     fl.fileList = xcalloc((spec->numSources + 1), sizeof(*fl.fileList));

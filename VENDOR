@@ -115,11 +115,6 @@
                      %files section only. No magic in the code wished.
      ________________________________________________________________________
 
-     Change:         support-srcdefattr
-     Purpose:        allow to set SRPM file attributes via %{_srcdefattr} macro
-     Reason:         This makes the generated SRPMs look more uniform
-     ________________________________________________________________________
-
      Change:         still-support-section-clean
      Purpose:        allow us to still use %clean section
      Reason:         for temporary backward compatibility only
