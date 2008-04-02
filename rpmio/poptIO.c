@@ -227,14 +227,12 @@ static void rpmioAllArgCallback(poptContext con,
     case 'E':
 	rpmioConfigured();
 	{   const char *val = rpmExpand(arg, NULL);
-#if defined(RPM_VENDOR_OPENPKG) /* no-extra-terminating-newline-on-eval */
             size_t val_len;
             val_len = strlen(val);
             if (val[val_len - 1] == '\n')
                 fwrite(val, val_len, 1, stdout);
             else
-#endif
-	    fprintf(stdout, "%s\n", val);
+		fprintf(stdout, "%s\n", val);
 	    val = _free(val);
 	}
 	break;

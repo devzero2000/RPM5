@@ -285,25 +285,6 @@
                      should be able to control verbosity manually.
      ________________________________________________________________________
 
-     Change:         explicit-source-fetch-cli-option
-     Purpose:        Provide build-time option "-bf" for just fetching
-                     the missing source and patch files. Additionally,
-                     under "-bf -v" a listing of all source/patch files
-                     and their file size is printed.
-     Reason:         In OpenPKG we want to have an CLI option for explicitly
-                     fetching the missing source and patch files only as
-                     we want to fetch at a particular controlled step
-                     in the packaging life-cycle (between "rpm -bt" and
-                     "rpm -bp").
-     ________________________________________________________________________
-
-     Change:         no-extra-terminating-newline-on-eval
-     Purpose:        Do not output an extra newline on --eval '' if the
-                     expanded macro text already terminates with a newline
-     Reason:         Using e.g. rpm --eval "%{lua: print('foo\\n') }" should
-                     not lead to an extra trailing blank line.
-     ________________________________________________________________________
-
      Change:         make-class-available-as-macro
      Purpose:        Do not treat "Class" tag as a fully arbitrary tag.
      Reason:         In OpenPKG some .spec processing depends on the
