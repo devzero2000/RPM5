@@ -11,10 +11,10 @@ Name            Type      Minimum Used    URL
 --------------- --------- ------- ------- -------------------------------------
 CVS             mandatory 1.12    1.12.13 http://www.nongnu.org/cvs/
 Perl            mandatory 5.8.0   5.8.8   http://www.perl.com/
-GNU m4          mandatory 1.4.0   1.4.9   http://www.gnu.org/software/m4/
+GNU m4      [0] mandatory 1.4.0   1.4.9   http://www.gnu.org/software/m4/
 GNU autoconf    mandatory 2.59b   2.61    http://www.gnu.org/software/autoconf/
 GNU automake    mandatory 1.8     1.10    http://www.gnu.org/software/automake/
-GNU libtool     mandatory 1.5     2.2     http://www.gnu.org/software/libtool/
+GNU libtool     mandatory 1.5     2.2.2   http://www.gnu.org/software/libtool/
 GNU gettext     mandatory 0.16    0.17    http://www.gnu.org/software/gettext/
 --------------- --------- ------- ------- -------------------------------------
 
@@ -50,6 +50,8 @@ Electric Fence  optional  2.1     2.1.13  http://perens.com/FreeSoftware/Electri
 Linux KeyUtils  optional  1.2     1.2     http://people.redhat.com/~dhowells/keyutils/
 System libelf   optional  -       -       e.g. http://www.mr511.de/software/english.html
 --------------- --------- ------- ------- -------------------------------------
+
+[0] m4:        NOTICE: Do not use GNU m4 1.4.10, it breaks GNU autoconf.
 
 [1] db/sqlite: Modified Berkeley-DB copy bundled with RPM.
                Building RPM against stock external Berkeley-DB not officially supported.
