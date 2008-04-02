@@ -38,7 +38,7 @@ SQLite      [1] optional  3.3     3.5.7   http://www.sqlite.org/
 Lua         [2] optional  5.1     5.1.3   http://www.lua.org/
 ZLib        [3] optional  1.2     1.2.3   http://www.zlib.net/
 Bzip2           optional  1.0     1.0.5   http://www.bzip.org/
-LZMA SDK    [4] internal  4.27    4.40    http://www.7-zip.org/sdk.html
+LZMA SDK    [4] internal  4.27    4.32/57 http://www.7-zip.org/sdk.html
 File/magic  [5] optional  4.0     4.23    ftp://ftp.astron.com/pub/file/
 GNU gettext     optional  0.16    0.17    http://www.gnu.org/software/gettext/
 GNU iconv       optional  1.11    1.11    http://www.gnu.org/software/libiconv/
@@ -65,7 +65,7 @@ System libelf   optional  -       -       e.g. http://www.mr511.de/software/engl
                Building RPM against stock external Zlib not recommended
                as it reduces its RPM-specific functionality.
 
-[4] lzma:      RPM has a copy of the LZMA SDK 4.32 (and which is identical to the version in
+[4] lzma:      RPM has a copy of the LZMA SDK 4.32 (which is identical to the version in
                LZMA SDK 4.57 except for portability adjustments) decompression routines bundled,
                but for compression the external command line interface lzma(1) is required.
                You need either LZMA Utils (recommended) or LZMA SDK and the lzmash wrapper.

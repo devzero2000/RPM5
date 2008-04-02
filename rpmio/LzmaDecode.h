@@ -2,7 +2,7 @@
   LzmaDecode.h
   LZMA Decoder interface
 
-  LZMA SDK 4.40 Copyright (c) 1999-2006 Igor Pavlov (2006-05-01)
+  LZMA SDK 4.32 Copyright (c) 1999-2005 Igor Pavlov (2005-12-09)
   http://www.7-zip.org/
 
   LZMA SDK is licensed under two licenses:
@@ -22,8 +22,6 @@
 #ifndef __LZMADECODE_H
 #define __LZMADECODE_H
 
-#include "LzmaTypes.h"
-
 #define _LZMA_IN_CB
 /* Use callback for input data */
 
@@ -37,10 +35,30 @@
 /* #define _LZMA_LOC_OPT */
 /* Enable local speed optimizations inside code */
 
+#define _LZMA_SYSTEM_SIZE_T
+/* Use system's size_t. You can use it to enable 64-bit sizes supporting*/
+
+#ifndef UInt32
+#ifdef _LZMA_UINT32_IS_ULONG
+#define UInt32 unsigned long
+#else
+#define UInt32 unsigned int
+#endif
+#endif
+
+#ifndef SizeT
+#ifdef _LZMA_SYSTEM_SIZE_T
+#include <stddef.h>
+#define SizeT size_t
+#else
+#define SizeT UInt32
+#endif
+#endif
+
 #ifdef _LZMA_PROB32
 #define CProb UInt32
 #else
-#define CProb UInt16
+#define CProb unsigned short
 #endif
 
 #define LZMA_RESULT_OK 0
@@ -53,10 +71,10 @@ typedef struct _ILzmaInCallback
 } ILzmaInCallback;
 #endif
 
-#define LZMA_BASE_SIZE 1846
-#define LZMA_LIT_SIZE 768
+#define LZMA_BASE_SIZE 1846U
+#define LZMA_LIT_SIZE 768U
 
-#define LZMA_PROPERTIES_SIZE 5
+#define LZMA_PROPERTIES_SIZE 5U
 
 typedef struct _CLzmaProperties
 {
