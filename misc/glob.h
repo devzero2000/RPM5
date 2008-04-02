@@ -157,7 +157,7 @@ typedef struct
    `glob' returns GLOB_ABEND; if it returns zero, the error is ignored.
    If memory cannot be allocated for PGLOB, GLOB_NOSPACE is returned.
    Otherwise, `glob' returns zero.  */
-#if _FILE_OFFSET_BITS != 64
+#if defined(_FILE_OFFSET_BITS) && _FILE_OFFSET_BITS != 64
 extern int glob __P ((__const char *__pattern, int __flags,
 		      int (*__errfunc) (__const char *, int),
 		      glob_t *__pglob));
