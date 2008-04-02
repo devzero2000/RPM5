@@ -236,8 +236,6 @@
                      as the whole "platform" information is actually
                      overkill, just revert to the RPM 4 behaviour and do
                      not expose any such information at all
-     Hint:           FIXME, not sufficient: still some information exposed during
-                     rpm -qa for the case of public keys.
      ________________________________________________________________________
 
      Change:         auto-remove-source-directories
