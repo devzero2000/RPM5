@@ -1824,12 +1824,15 @@ static void rpmfiBuildFNames(Header h, rpmTag tagN,
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     rpmTag dirNameTag = 0;
     rpmTag dirIndexesTag = 0;
-    rpmTagData baseNames;
-    rpmTagData dirNames;
-    rpmTagData dirIndexes;
+    rpmTagData baseNames = { .ptr = NULL };
+    rpmTagData dirNames = { .ptr = NULL };
+    rpmTagData dirIndexes = { .ptr = NULL };
     rpmTagData fileNames;
     rpmTagCount count;
     size_t size;
+    int isSource =
+	(headerIsEntry(h, RPMTAG_SOURCERPM) == 0 &&
+	 headerIsEntry(h, RPMTAG_ARCH) != 0);
     char * t;
     unsigned i;
     int xx;
@@ -1849,6 +1852,16 @@ static void rpmfiBuildFNames(Header h, rpmTag tagN,
 /*@-compmempass@*/
     he->tag = tagN;
     xx = headerGet(h, he, 0);
+    /* XXX 3.0.x SRPM's can be used, relative fn's at RPMTAG_OLDFILENAMES. */
+    if (xx == 0 && isSource) {
+	he->tag = RPMTAG_OLDFILENAMES;
+	xx = headerGet(h, he, 0);
+	if (xx) {
+	    dirNames.argv = xcalloc(3, sizeof(*dirNames.argv));
+	    dirNames.argv[0] = (const char *)&dirNames.argv[2];
+	    dirIndexes.ui32p  = xcalloc(he->c, sizeof(*dirIndexes.ui32p));
+	}
+    }
     baseNames.argv = he->p.argv;
     count = he->c;
 
@@ -1859,13 +1872,12 @@ static void rpmfiBuildFNames(Header h, rpmTag tagN,
     }
 
     he->tag = dirNameTag;
-    xx = headerGet(h, he, 0);
-    dirNames.argv = he->p.argv;
+    if ((xx = headerGet(h, he, 0)) != 0)
+	dirNames.argv = he->p.argv;
 
     he->tag = dirIndexesTag;
-    xx = headerGet(h, he, 0);
-    dirIndexes.ui32p = he->p.ui32p;
-    count = he->c;
+    if ((xx = headerGet(h, he, 0)) != 0)
+	dirIndexes.ui32p = he->p.ui32p;
 /*@=compmempass@*/
 
     size = sizeof(*fileNames.argv) * count;

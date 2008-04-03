@@ -1,4 +1,5 @@
 5.0.0 -> 5.1a1:
+    - jbj: permit installing 3.0.x SRPMS.
     - jbj: rpmio: fix: add rpmluaFiles to loader map.
     - jbj: fix: avoid assertion failure with entry->info.offset == 0.
     - jbj: merge "support-rpmlua-option" patch from OpenPKG.

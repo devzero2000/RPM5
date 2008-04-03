@@ -1328,6 +1328,11 @@ assert(scareMem == 0);		/* XXX always allocate memory */
 
     he->tag = RPMTAG_BASENAMES;
     xx = headerGet(h, he, 0);
+    /* XXX 3.0.x SRPM's can be used, relative fn's at RPMTAG_OLDFILENAMES. */
+    if (xx == 0 && fi->isSource) {
+	he->tag = RPMTAG_OLDFILENAMES;
+	xx = headerGet(h, he, 0);
+    }
     fi->bnl = he->p.argv;
     fi->fc = he->c;
     if (!xx) {
@@ -1337,7 +1342,15 @@ assert(scareMem == 0);		/* XXX always allocate memory */
     }
     _fdupedata(h, RPMTAG_DIRNAMES, fi->dnl);
     fi->dc = he->c;
-    _fdupedata(h, RPMTAG_DIRINDEXES, fi->dil);
+    /* XXX 3.0.x SRPM's can be used, relative fn's at RPMTAG_OLDFILENAMES. */
+    if (fi->dc == 0 && fi->isSource) {
+	fi->dc = 1;
+	fi->dnl = xcalloc(3, sizeof(*fi->dnl));
+	fi->dnl[0] = (const char *)&fi->dnl[2];
+	fi->dil = xcalloc(fi->fc, sizeof(*fi->dil));
+    } else {
+	_fdupedata(h, RPMTAG_DIRINDEXES, fi->dil);
+    }
     _fdupedata(h, RPMTAG_FILEMODES, fi->fmodes);
     _fdupedata(h, RPMTAG_FILEFLAGS, fi->fflags);
     _fdupedata(h, RPMTAG_FILEVERIFYFLAGS, fi->vflags);
