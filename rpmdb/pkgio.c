@@ -760,7 +760,11 @@ fprintf(stderr, "--> rdSignature(%p, %p, %p)\n", fd, ptr, msg);
     {
 /*@=sizeoftype@*/
 
-assert(entry->info.offset > 0);	/* XXX insurance */
+/*
+ * XXX http://mysql.mirrors.pair.com/Downloads/MySQL-5.0/MySQL-client-community-5.0.51a-0.rhel4.i386.rpm
+ * built by rpm-4.3.3 (from REL4) has entry->info.offset == 0.
+ */
+assert(entry->info.offset >= 0);	/* XXX insurance */
 	if (entry->info.offset >= (int32_t)dl) {
 	    (void) snprintf(buf, sizeof(buf),
 		_("region offset: BAD, tag %u type %u offset %d count %u"),

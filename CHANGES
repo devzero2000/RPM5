@@ -1,4 +1,5 @@
 5.0.0 -> 5.1a1:
+    - jbj: fix: avoid assertion failure with entry->info.offset == 0.
     - jbj: merge "support-rpmlua-option" patch from OpenPKG.
     - jbj: merge "support-rpmpopt-option" patch from OpenPKG.
     - jbj: merge "security-sanity-check-rpmpopt-and-rpmmacros" patch from OpenPKG.
