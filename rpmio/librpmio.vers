@@ -311,6 +311,7 @@ LIBRPMIO_0
     rpmlogSetMask;
     rpmluaCheckScript;
     rpmluaDelVar;
+    rpmluaFiles;
     rpmluaGetData;
     rpmluaGetPrintBuffer;
     rpmluaGetVar;
