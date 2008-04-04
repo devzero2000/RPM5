@@ -967,7 +967,7 @@ int iosmMapAttrs(IOSM_t iosm)
 #endif
 	if (fi->fuser && unameToUid(fi->fuser[i], &uid)) {
 #if defined(RPM_VENDOR_OPENPKG) /* no-owner-group-on-srpm-install */
-	  if (fi->isSource) {
+	  if (!fi->isSource) {
 #endif
 	    if (iosm->goal == IOSM_PKGINSTALL)
 		rpmlog(RPMLOG_WARNING,
@@ -981,7 +981,7 @@ int iosmMapAttrs(IOSM_t iosm)
 
 	if (fi->fgroup && gnameToGid(fi->fgroup[i], &gid)) {
 #if defined(RPM_VENDOR_OPENPKG) /* no-owner-group-on-srpm-install */
-	  if (fi->isSource) {
+	  if (!fi->isSource) {
 #endif
 	    if (iosm->goal == IOSM_PKGINSTALL)
 		rpmlog(RPMLOG_WARNING,
