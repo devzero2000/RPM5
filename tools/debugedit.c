@@ -35,9 +35,6 @@
 
 #include <gelf.h>
 
-#if 1		/* XXX compile without dwarf.h */
-#include <dwarf.h>
-#else
 /* some defines taken from the dwarf standard */
 
 #define DW_TAG_compile_unit	0x11
@@ -67,9 +64,9 @@
 #define DW_FORM_ref8		0x14
 #define DW_FORM_ref_udata	0x15
 #define DW_FORM_indirect	0x16
-#endif
 
-#include "beecrypt.h"
+#include <beecrypt/beecrypt.h>
+
 #include "hashtab.h"
 
 #define DW_TAG_partial_unit 0x3c
@@ -539,18 +536,18 @@ edit_dwarf2_line (DSO *dso, uint_32 off, char *comp_dir, int phase)
   value = 1;
   while (*ptr != 0)
     {
-      ptr = strchr (ptr, 0) + 1;
+      ptr = (unsigned char *) strchr ((char *)ptr, 0) + 1;
       ++value;
     }
 
   dirt = (unsigned char **) alloca (value * sizeof (unsigned char *));
-  dirt[0] = ".";
+  dirt[0] = (unsigned char *) ".";
   dirt_cnt = 1;
   ptr = dir;
   while (*ptr != 0)
     {
       dirt[dirt_cnt++] = ptr;
-      ptr = strchr (ptr, 0) + 1;
+      ptr = (unsigned char *) strchr ((char *)ptr, 0) + 1;
     }
   ptr++;
 
@@ -560,8 +557,8 @@ edit_dwarf2_line (DSO *dso, uint_32 off, char *comp_dir, int phase)
       char *s, *file;
       size_t file_len, dir_len;
 
-      file = ptr;
-      ptr = strchr (ptr, 0) + 1;
+      file = (char *) ptr;
+      ptr = (unsigned char *) strchr ((char *)ptr, 0) + 1;
       value = read_uleb128 (ptr);
 
       if (value >= dirt_cnt)
@@ -571,7 +568,7 @@ edit_dwarf2_line (DSO *dso, uint_32 off, char *comp_dir, int phase)
 	  return 1;
 	}
       file_len = strlen (file);
-      dir_len = strlen (dirt[value]);
+      dir_len = strlen ((char *)dirt[value]);
       s = malloc (comp_dir_len + 1 + file_len + 1 + dir_len + 1);
       if (s == NULL)
 	{
@@ -592,30 +589,34 @@ edit_dwarf2_line (DSO *dso, uint_32 off, char *comp_dir, int phase)
 	}
       else
 	{
-	  memcpy (s, comp_dir, comp_dir_len);
-	  s[comp_dir_len] = '/';
-	  memcpy (s + comp_dir_len + 1, dirt[value], dir_len);
-	  s[comp_dir_len + 1 + dir_len] = '/';
-	  memcpy (s + comp_dir_len + 1 + dir_len + 1, file, file_len + 1);
+	  char *p = s;
+	  if (comp_dir_len != 0)
+	    {
+	      memcpy (s, comp_dir, comp_dir_len);
+	      s[comp_dir_len] = '/';
+	      p += comp_dir_len + 1;
+	    }
+	  memcpy (p, dirt[value], dir_len);
+	  p[dir_len] = '/';
+	  memcpy (p + dir_len + 1, file, file_len + 1);
 	}
       canonicalize_path (s, s);
-      if (base_dir == NULL ||
-	  has_prefix (s, base_dir))
+      if (list_file_fd != -1)
 	{
-	  char *p;
-	  size_t size;
-	  ssize_t ret;
-	  if (base_dir)
-	    p = s + strlen (base_dir);
-	  else
+	  char *p = NULL;
+	  if (base_dir == NULL)
 	    p = s;
-	  
-	  if (list_file_fd != -1)
+	  else if (has_prefix (s, base_dir))
+	    p = s + strlen (base_dir);
+	  else if (has_prefix (s, dest_dir))
+	    p = s + strlen (dest_dir);
+
+	  if (p)
 	    {
-	      size = strlen (p) + 1;
+	      size_t size = strlen (p) + 1;
 	      while (size > 0)
 		{
-		  ret = write (list_file_fd, p, size);
+		  ssize_t ret = write (list_file_fd, p, size);
 		  if (ret == -1)
 		    break;
 		  size -= ret;
@@ -648,13 +649,12 @@ edit_dwarf2_line (DSO *dso, uint_32 off, char *comp_dir, int phase)
 	}
       else
 	ptr = srcptr = dir;
-      unsigned char *srcstart=srcptr;
       while (*srcptr != 0)
 	{
-	  size_t len = strlen (srcptr) + 1;
+	  size_t len = strlen ((char *)srcptr) + 1;
 	  const unsigned char *readptr = srcptr;
 
-	  if (*srcptr == '/' && has_prefix (srcptr, base_dir))
+	  if (*srcptr == '/' && has_prefix ((char *)srcptr, base_dir))
 	    {
 	      if (dest_len < base_len)
 		  ++abs_dir_cnt;
@@ -665,8 +665,8 @@ edit_dwarf2_line (DSO *dso, uint_32 off, char *comp_dir, int phase)
 	  srcptr += len;
 
 	  shrank += srcptr - readptr;
-	  canonicalize_path (readptr, ptr);
-	  len = strlen (ptr) + 1;
+	  canonicalize_path ((char *)readptr, (char *)ptr);
+	  len = strlen ((char *)ptr) + 1;
 	  shrank -= len;
 	  ptr += len;
 
@@ -699,9 +699,9 @@ edit_dwarf2_line (DSO *dso, uint_32 off, char *comp_dir, int phase)
 
       while (*srcptr != 0)
 	{
-	  size_t len = strlen (srcptr) + 1;
+	  size_t len = strlen ((char *)srcptr) + 1;
 
-	  if (*srcptr == '/' && has_prefix (srcptr, base_dir))
+	  if (*srcptr == '/' && has_prefix ((char *)srcptr, base_dir))
 	    {
 	      memcpy (ptr, dest_dir, dest_len);
 	      if (dest_len < base_len)
@@ -739,7 +739,7 @@ edit_attributes (DSO *dso, unsigned char *ptr, struct abbrev_tag *t, int phase)
   int i;
   uint_32 list_offs;
   int found_list_offs;
-  unsigned char *comp_dir;
+  char *comp_dir;
   
   comp_dir = NULL;
   list_offs = 0;
@@ -767,9 +767,9 @@ edit_attributes (DSO *dso, unsigned char *ptr, struct abbrev_tag *t, int phase)
 	      if ( form == DW_FORM_string )
 	      {
 		  free (comp_dir);
-		  comp_dir = strdup (ptr);
+		  comp_dir = strdup ((char *)ptr);
 		  
-		  if (phase == 1 && dest_dir && has_prefix (ptr, base_dir))
+		  if (phase == 1 && dest_dir && has_prefix ((char *)ptr, base_dir))
 		  {
 		      base_len = strlen (base_dir);
 		      dest_len = strlen (dest_dir);
@@ -791,7 +791,7 @@ edit_attributes (DSO *dso, unsigned char *ptr, struct abbrev_tag *t, int phase)
 	      {
 		  char *dir;
 
-		  dir = debug_sections[DEBUG_STR].data
+		  dir = (char *)debug_sections[DEBUG_STR].data
 		      + do_read_32_relocated (ptr);
 
 		  free (comp_dir);
@@ -821,7 +821,7 @@ edit_attributes (DSO *dso, unsigned char *ptr, struct abbrev_tag *t, int phase)
 	    {
 	      char *name;
 	      
-	      name = debug_sections[DEBUG_STR].data
+	      name = (char *)debug_sections[DEBUG_STR].data
 		     + do_read_32_relocated (ptr);
 	      if (*name == '/' && comp_dir == NULL)
 		{
@@ -855,6 +855,7 @@ edit_attributes (DSO *dso, unsigned char *ptr, struct abbrev_tag *t, int phase)
 
 	  switch (form)
 	    {
+	    case DW_FORM_ref_addr: /* ptr_size in DWARF 2, offset in DWARF 3 */
 	    case DW_FORM_addr:
 	      ptr += ptr_size;
 	      break;
@@ -880,12 +881,11 @@ edit_attributes (DSO *dso, unsigned char *ptr, struct abbrev_tag *t, int phase)
 	    case DW_FORM_udata:
 	      read_uleb128 (ptr);
 	      break;
-	    case DW_FORM_ref_addr:
 	    case DW_FORM_strp:
 	      ptr += 4;
 	      break;
 	    case DW_FORM_string:
-	      ptr = strchr (ptr, '\0') + 1;
+	      ptr = (unsigned char *) strchr ((char *)ptr, '\0') + 1;
 	      break;
 	    case DW_FORM_indirect:
 	      form = read_uleb128 (ptr);
@@ -1374,7 +1374,6 @@ handle_build_id (DSO *dso, Elf_Data *build_id,
      or Elf64 object, only that we are consistent in what bits feed the
      hash so it comes out the same for the same file contents.  */
   {
-    inline void process (const void *data, size_t size);
     inline void process (const void *data, size_t size)
     {
       memchunk chunk = { .data = (void *) data, .size = size };
@@ -1440,7 +1439,7 @@ handle_build_id (DSO *dso, Elf_Data *build_id,
 
   /* Now format the build ID bits in hex to print out.  */
   {
-    const unsigned char * id = build_id->d_buf + build_id_offset;
+    const unsigned char * id = (unsigned char *) build_id->d_buf + build_id_offset;
     char hex[build_id_size * 2 + 1];
     int n = snprintf (hex, 3, "%02" PRIx8, id[0]);
     assert (n == 2);
@@ -1586,24 +1585,24 @@ main (int argc, char *argv[])
 	      Elf_Data src = dst;
 	      src.d_buf = data->d_buf;
 	      assert (sizeof (Elf32_Nhdr) == sizeof (Elf64_Nhdr));
-	      while (data->d_buf + data->d_size - src.d_buf > (int) sizeof nh
+	      while ((char *) data->d_buf + data->d_size - (char *) src.d_buf > (int) sizeof nh
 		     && elf32_xlatetom (&dst, &src, dso->ehdr.e_ident[EI_DATA]))
 		{
 		  Elf32_Word len = sizeof nh + nh.n_namesz;
 		  len = (len + 3) & ~3;
 
 		  if (nh.n_namesz == sizeof "GNU" && nh.n_type == 3
-		      && !memcmp (src.d_buf + sizeof nh, "GNU", sizeof "GNU"))
+		      && !memcmp ((char *) src.d_buf + sizeof nh, "GNU", sizeof "GNU"))
 		    {
 		      build_id = data;
-		      build_id_offset = src.d_buf + len - data->d_buf;
+		      build_id_offset = (char *) src.d_buf + len - (char *) data->d_buf;
 		      build_id_size = nh.n_descsz;
 		      break;
 		    }
 
 		  len += nh.n_descsz;
 		  len = (len + 3) & ~3;
-		  src.d_buf += len;
+		  src.d_buf = (char *) src.d_buf + len;
 		}
 	    }
 	  break;
