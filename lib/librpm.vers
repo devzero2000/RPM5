@@ -363,7 +363,6 @@ LIBRPM_0
     rpmtsGetRdb;
     rpmtsGetTid;
     rpmtsGetType;
-    rpmtsImportPubkey;
     rpmtsiNext;
     rpmtsInitDB;
     rpmtsInitDSI;

@@ -1136,7 +1136,7 @@ fprintf(stderr, "*** rpmts_PgpImportPubkey(%p) ts %p\n", s, s->ts);
     pkt = (unsigned char *) PyString_AsString(blob);
     pktlen = PyString_Size(blob);
 
-    rc = rpmtsImportPubkey(s->ts, pkt, pktlen);
+    rc = rpmcliImportPubkey(s->ts, pkt, pktlen);
 
     return Py_BuildValue("i", rc);
 }
