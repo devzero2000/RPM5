@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.4.9\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2008-04-03 17:42-0400\n"
+"POT-Creation-Date: 2008-04-06 10:21+0200\n"
 "PO-Revision-Date: 2008-01-03 01:41+0100\n"
 "Last-Translator: Helder Correia <helder.pereira.correia@gmail.com>\n"
 "Language-Team: Portuguese <translation-team-pt@lists.sourceforge.net>\n"
@@ -278,31 +278,31 @@ msgstr "falha de exec\n"
 msgid "no packages files given for rebuild"
 msgstr "não foram indicados pacotes para a reconstrução"
 
-#: rpmqv.c:864
+#: rpmqv.c:862
 msgid "no spec files given for build"
 msgstr "não foram indicados ficheiros spec para a criação"
 
-#: rpmqv.c:866
+#: rpmqv.c:864
 msgid "no tar files given for build"
 msgstr "não foram indicados ficheiros tar para a criação"
 
-#: rpmqv.c:887
+#: rpmqv.c:885
 msgid "no packages given for erase"
 msgstr "não foram indicados pacotes para apagar"
 
-#: rpmqv.c:931
+#: rpmqv.c:929
 msgid "no packages given for install"
 msgstr "não foram indicados pacotes para instalar"
 
-#: rpmqv.c:951
+#: rpmqv.c:949
 msgid "no arguments given for query"
 msgstr "não foram indicados argumentos para a pesquisa"
 
-#: rpmqv.c:968
+#: rpmqv.c:966
 msgid "no arguments given for verify"
 msgstr "não foram indicados argumentos para a verificação"
 
-#: rpmqv.c:983
+#: rpmqv.c:981
 msgid "no arguments given"
 msgstr "não foram dados argumentos"
 

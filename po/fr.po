@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.2\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2008-04-03 17:42-0400\n"
+"POT-Creation-Date: 2008-04-06 10:21+0200\n"
 "PO-Revision-Date: 2004-04-10 08:00-0500\n"
 "Last-Translator: Michel Robitaille <robitail@IRO.UMontreal.CA>\n"
 "Language-Team: French <traduc@traduc.org>\n"
@@ -298,31 +298,31 @@ msgstr "échec d'exécution\n"
 msgid "no packages files given for rebuild"
 msgstr "aucun package n'a été spécifié pour la reconstruction"
 
-#: rpmqv.c:864
+#: rpmqv.c:862
 msgid "no spec files given for build"
 msgstr "aucun package n'a été spécifié pour la construction"
 
-#: rpmqv.c:866
+#: rpmqv.c:864
 msgid "no tar files given for build"
 msgstr "aucun fichier « tar » fourni pour la génération"
 
-#: rpmqv.c:887
+#: rpmqv.c:885
 msgid "no packages given for erase"
 msgstr "aucun package n'a été spécifié pour la désinstallation"
 
-#: rpmqv.c:931
+#: rpmqv.c:929
 msgid "no packages given for install"
 msgstr "aucun package n'a été spécifié pour l'installation"
 
-#: rpmqv.c:951
+#: rpmqv.c:949
 msgid "no arguments given for query"
 msgstr "aucun argument n'a été fourni pour la requête"
 
-#: rpmqv.c:968
+#: rpmqv.c:966
 msgid "no arguments given for verify"
 msgstr "aucun argument n'a été fourni pour la vérification"
 
-#: rpmqv.c:983
+#: rpmqv.c:981
 msgid "no arguments given"
 msgstr "aucun argument n'a été fourni"
 
