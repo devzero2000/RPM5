@@ -1,4 +1,7 @@
-5.0.0 -> 5.1a1:
+
+5.1b1 -> 5.1b2:
+
+5.0.0 -> 5.1b1:
     - jbj: update PO files from Translation Project for rpm-5.1 inclusion.
     - jbj: permit installing 3.0.x SRPMS.
     - jbj: rpmio: fix: add rpmluaFiles to loader map.
