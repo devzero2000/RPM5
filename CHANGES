@@ -1,4 +1,10 @@
-5.0.0 -> 5.1a1:
+
+5.1b1 -> 5.2b1
+    - rse: prepared build-tree for RPM 5.2 development after branching
+
+=============================================================================
+
+5.0.0 -> 5.1b1:
     - jbj: update PO files from Translation Project for rpm-5.1 inclusion.
     - jbj: permit installing 3.0.x SRPMS.
     - jbj: rpmio: fix: add rpmluaFiles to loader map.
