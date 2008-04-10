@@ -1,15 +1,15 @@
 # Translation of RPM to German (Deutsch)
 # This file is distributed under the same license as the RPM package.
 # Karl Eichwalder <ke@suse.de>, 1997-1998.
-# Robert Scheck <rpm@robert-scheck.de>, 2004-2007.
+# Robert Scheck <robert@rpm5.org>, 2004-2008.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.5\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
 "POT-Creation-Date: 2007-10-02 10:41-0400\n"
-"PO-Revision-Date: 2007-05-20 12:25+0200\n"
-"Last-Translator: Robert Scheck <rpm@robert-scheck.de>\n"
+"PO-Revision-Date: 2008-04-10 22:52+0200\n"
+"Last-Translator: Robert Scheck <robert@rpm5.org>\n"
 "Language-Team: German <de@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -1032,9 +1032,9 @@ msgid "line %d: Need arg to %%patch -z: %s\n"
 msgstr "Zeile %d: Benötige Argument für %%patch -z: %s\n"
 
 #: build/parsePrep.c:517
-#, fuzzy, c-format
+#, c-format
 msgid "line %d: Bad arg to %%patch -F: %s\n"
-msgstr "Zeile %d: Ungültiges Argument für %%patch -p: %s\n"
+msgstr "Zeile %d: Ungültiges Argument für %%patch -F: %s\n"
 
 #: build/parsePrep.c:529
 #, c-format
@@ -1649,7 +1649,7 @@ msgstr "hdr DSA: UNGÜLTIG, nicht binär\n"
 #: lib/package.c:545 lib/package.c:586
 #, c-format
 msgid "skipping header with unverifiable V%u signature\n"
-msgstr ""
+msgstr "Überpringe Header mit nicht überprüfbarer V%u-Signatur\n"
 
 #: lib/package.c:675
 #, c-format
@@ -1710,7 +1710,7 @@ msgstr "%s: headerRead fehlgeschlagen: %s"
 #: lib/package.c:931 lib/package.c:957 lib/package.c:989 lib/rpmchecksig.c:870
 #, c-format
 msgid "skipping package %s with unverifiable V%u signature\n"
-msgstr ""
+msgstr "Überspringe Paket %s mit nicht überprüfbarer V%u-Signatur\n"
 
 #: lib/package.c:1004 lib/rpmchecksig.c:118 lib/rpmchecksig.c:689
 #, c-format
@@ -3994,268 +3994,3 @@ msgid "check Requires: against Provides: for dependency closure"
 msgstr ""
 "Überprüfe der Abhängigkeiten von \"Requires:\" und \"Provides:\" "
 "gegeneinander"
-
-#~ msgid "initialize database"
-#~ msgstr "Initialisiere Datenbank"
-
-#~ msgid "only V3 and V4 signatures can be verified, skipping V%u signature\n"
-#~ msgstr ""
-#~ "Nur V3- und V4-Signaturen können überprüft werden, überspringe V%u-"
-#~ "Signatur\n"
-
-#~ msgid "only V3 or V4 signatures can be verified, skipping V%u signature\n"
-#~ msgstr ""
-#~ "Nur V3- und V4-Signaturen können überprüft werden, überspringe V%u-"
-#~ "Signatur\n"
-
-#~ msgid "    target platform: %s\n"
-#~ msgstr "    Zielplattform(en): %s\n"
-
-#~ msgid "Query specfile for platform(s): %s\n"
-#~ msgstr "Abfragen der Spec-Datei für die Zielplattform(en): %s\n"
-
-#~ msgid "   upgrade erases %s\n"
-#~ msgstr "   Upgrade deinstalliert %s\n"
-
-#~ msgid "  Obsoletes: %s\t\terases %s\n"
-#~ msgstr "  Veraltetes: %s\t\tDeinstallationen %s\n"
-
-#~ msgid "========== recording tsort relations\n"
-#~ msgstr "========== zeichne tsort-Relationen auf\n"
-
-#~ msgid ""
-#~ "========== tsorting packages (order, #predecessors, #succesors, tree, "
-#~ "Ldepth, Rbreadth)\n"
-#~ msgstr ""
-#~ "========== tsorting Pakete (order, #predecessors, #succesors, tree, "
-#~ "Ldepth, Rbreadth)\n"
-
-#~ msgid "========== successors only (%d bytes)\n"
-#~ msgstr "========== Nur Nachfolger (%d Bytes)\n"
-
-#~ msgid "========== continuing tsort ...\n"
-#~ msgstr "========== setze tsort fort...\n"
-
-#~ msgid "%5d 0x%04x %s %s\n"
-#~ msgstr "%5d 0x%04x %s %s\n"
-
-#~ msgid "========== Directories not explicitly included in package:\n"
-#~ msgstr ""
-#~ "========== Nicht ausdrücklich eingeschlossene Verzeichnisse im Paket:\n"
-
-#~ msgid "%10d %s\n"
-#~ msgstr "%10d %s\n"
-
-#~ msgid "%s directory created with perms %04o, no context.\n"
-#~ msgstr "Verzeichnis %s mit Berechtigungen %04o erstellt, kein Kontext.\n"
-
-#~ msgid "%s directory created with perms %04o, context %s.\n"
-#~ msgstr "Verzeichnis %s mit Berechtigungen %04o erstellt, Kontext %s.\n"
-
-#~ msgid "adding %d args from manifest.\n"
-#~ msgstr "Füge %d Argumente aus Paket-Liste hinzu.\n"
-
-#~ msgid "%s: waitpid(%d) rc %d status %x secs %u.%03u\n"
-#~ msgstr "%s: waitpid(%d), rc %d, Status %x, %u.%03u Sekunden\n"
-
-#~ msgid "%s: %s(%s-%s-%s.%s) running <lua> scriptlet.\n"
-#~ msgstr "%s: %s(%s-%s-%s.%s) führt ein <lua>-Skriptlet aus.\n"
-
-#~ msgid "%s: %s(%s-%s-%s.%s) skipping redundant \"%s\".\n"
-#~ msgstr "%s: %s(%s-%s-%s.%s) überspringt redundante(s) \"%s\".\n"
-
-#~ msgid "%s: %s(%s-%s-%s.%s) %ssynchronous scriptlet start\n"
-#~ msgstr "%s: %s(%s-%s-%s.%s) %ssynchronous Skriptlet gestartet\n"
-
-#~ msgid "%s: %s(%s-%s-%s.%s)\texecv(%s) pid %d\n"
-#~ msgstr "%s: %s(%s-%s-%s.%s)\texecv(%s), PID %d\n"
-
-#~ msgid "%s: %s has %d files, test = %d\n"
-#~ msgstr "%s: %s hat %d Dateien, Test = %d\n"
-
-#~ msgid "package record number: %u\n"
-#~ msgstr "Nummer des Paket-Eintrags: %u\n"
-
-#~ msgid "  %s    A %s\tB %s\n"
-#~ msgstr "  %s    A %s\tB %s\n"
-
-#~ msgid "package %s has unsatisfied %s: %s\n"
-#~ msgstr "Paket %s hat unerfüllte %s: %s\n"
-
-#~ msgid "\texecv(%s) pid %d\n"
-#~ msgstr "\texecv(%s) PID %d\n"
-
-#~ msgid "\twaitpid(%d) rc %d status %x\n"
-#~ msgstr "\twaitpid(%d) rc %d Status %x\n"
-
-#~ msgid "%s skipped due to missingok flag\n"
-#~ msgstr "%s durch \"missingok flag\" übersprungen\n"
-
-#~ msgid "========== relocations\n"
-#~ msgstr "========== Verschiebungen\n"
-
-#~ msgid "%5d exclude  %s\n"
-#~ msgstr "%5d schließe %s aus\n"
-
-#~ msgid "%5d relocate %s -> %s\n"
-#~ msgstr "%5d verschiebe %s -> %s\n"
-
-#~ msgid "excluding %s %s\n"
-#~ msgstr "Ausschließen %s %s\n"
-
-#~ msgid "relocating %s to %s\n"
-#~ msgstr "Verschiebe %s nach %s\n"
-
-#~ msgid "relocating directory %s to %s\n"
-#~ msgstr "Verschiebe Verzeichnis %s nach %s\n"
-
-#~ msgid "Autorollback Goal: %-24.24s (0x%08x)\n"
-#~ msgstr "Autorollback-Ziel: %-24.24s (0x%08x)\n"
-
-#~ msgid "Adding goal: %s\n"
-#~ msgstr "Füge Ziel hinzu: %s\n"
-
-#~ msgid " ... as %s\n"
-#~ msgstr " ... als %s\n"
-
-#~ msgid "\tadded source package [%d]\n"
-#~ msgstr "\tSource-Paket hinzugefügt [%d]\n"
-
-#~ msgid "\tadded binary package [%d]\n"
-#~ msgstr "\tBinär-Paket hinzugefügt [%d]\n"
-
-#~ msgid "found %d source and %d binary packages\n"
-#~ msgstr "%d Source- und %d Binär-Pakete gefunden\n"
-
-#~ msgid "installing binary packages\n"
-#~ msgstr "Installiere Binär-Pakete\n"
-
-#~ msgid "Adding: %s\n"
-#~ msgstr "Füge hinzu: %s\n"
-
-#~ msgid "Suggesting: %s\n"
-#~ msgstr "Schlage vor: %s\n"
-
-#~ msgid "mounted filesystems:\n"
-#~ msgstr "Eingehängte Dateisysteme:\n"
-
-#~ msgid "    i        dev    bsize       bavail       iavail mount point\n"
-#~ msgstr ""
-#~ "    i       Gerät   B-Größe     B verfügbar  I verf.  Einhängepunkt\n"
-
-#~ msgid "%5d 0x%08x %8u %12ld %12ld %s %s\n"
-#~ msgstr "%5d 0x%08x %8u %12ld %12ld %s %s\n"
-
-#~ msgid "Expected size: %12lu = lead(%d)+sigs(%d)+pad(%d)+data(%lu)\n"
-#~ msgstr "Erwartete Größe: %12lu = lead(%d)+sigs(%d)+pad(%d)+data(%lu)\n"
-
-#~ msgid "  Actual size: %12lu\n"
-#~ msgstr "  Aktuelle Größe: %12lu\n"
-
-#~ msgid "Signature: size(%d)+pad(%d)\n"
-#~ msgstr "Signatur: size(%d)+pad(%d)\n"
-
-#~ msgid "PGP sig size: %d\n"
-#~ msgstr "PGP-Signaturgröße: %d\n"
-
-#~ msgid "Got %d bytes of PGP sig\n"
-#~ msgstr "%d Byte der PGP-Signatur erhalten\n"
-
-#~ msgid "GPG sig size: %d\n"
-#~ msgstr "GPG-Signaturgröße: %d\n"
-
-#~ msgid "Got %d bytes of GPG sig\n"
-#~ msgstr "%d Byte der GPG-Signatur erhalten\n"
-
-#~ msgid "excluding directory %s\n"
-#~ msgstr "Schließe Verzeichnis %s aus\n"
-
-#~ msgid "sanity checking %d elements\n"
-#~ msgstr "Gesundheitsprüfung von %d Elementen\n"
-
-#~ msgid "running pre-transaction scripts\n"
-#~ msgstr "Führe Pre-Transaktionsskripte aus\n"
-
-#~ msgid "computing %d file fingerprints\n"
-#~ msgstr "Berechne %d Datei-Fingerabdrücke\n"
-
-#~ msgid "computing file dispositions\n"
-#~ msgstr "Berechne Dateianordnungen\n"
-
-#~ msgid "running post-transaction scripts\n"
-#~ msgstr "Führe Post-Transaktionsskripte aus\n"
-
-#~ msgid "closed   db environment %s/%s\n"
-#~ msgstr "Closed   DB-Umgebung    %s/%s\n"
-
-#~ msgid "removed  db environment %s/%s\n"
-#~ msgstr "Removed  DB-Umgebung    %s/%s\n"
-
-#~ msgid "opening  db environment %s/%s %s\n"
-#~ msgstr "Offene   DB-Umgebung    %s/%s %s\n"
-
-#~ msgid "closed   db index       %s/%s\n"
-#~ msgstr "Closed   DB-Index       %s/%s\n"
-
-#~ msgid "verified db index       %s/%s\n"
-#~ msgstr "Verified DB-Index       %s/%s\n"
-
-#~ msgid ""
-#~ "unshared posix mutexes found(%d), adding DB_PRIVATE, using fcntl lock\n"
-#~ msgstr ""
-#~ "unshared posix mutextes gefunden(%d), füge DB_PRIVATE hinzu, benutze "
-#~ "fcntl lock\n"
-
-#~ msgid "opening  db index       %s/%s %s mode=0x%x\n"
-#~ msgstr "Öffne    DB-Index       %s/%s %s Mode=0x%x\n"
-
-#~ msgid "locked   db index       %s/%s\n"
-#~ msgstr "Gesperrter  DB-Index    %s/%s\n"
-
-#~ msgid "removing \"%s\" from %s index.\n"
-#~ msgstr "Entferne \"%s\" aus dem %s-Index.\n"
-
-#~ msgid "removing %d entries from %s index.\n"
-#~ msgstr "Entferne %d Einträge aus dem %s-Index.\n"
-
-#~ msgid "adding \"%s\" to %s index.\n"
-#~ msgstr "Füge \"%s\" zum %s-Index.\n"
-
-#~ msgid "adding %d entries to %s index.\n"
-#~ msgstr "Füge %d Einträge zum %s-Index.\n"
-
-#~ msgid "removing %s after successful db3 rebuild.\n"
-#~ msgstr "Entferne %s nach erfolgreicher db3-Neuerstellung\n"
-
-#~ msgid "no dbpath has been set"
-#~ msgstr "Kein Datenbank-Pfad wurde gesetzt"
-
-#~ msgid "rebuilding database %s into %s\n"
-#~ msgstr "Baue Datenbank %s in %s neu\n"
-
-#~ msgid "creating directory %s\n"
-#~ msgstr "Erstelle Verzeichnis %s\n"
-
-#~ msgid "opening old database with dbapi %d\n"
-#~ msgstr "Öffne alte Datenbank mit dbapi %d\n"
-
-#~ msgid "opening new database with dbapi %d\n"
-#~ msgstr "Öffne neue Datenbank mit dbapi %d\n"
-
-#~ msgid "removing directory %s\n"
-#~ msgstr "Entferne Verzeichnis %s\n"
-
-#~ msgid "failed to remove directory %s: %s\n"
-#~ msgstr "Entfernen des Verzeichnisses %s fehlgeschlagen: %s\n"
-
-#~ msgid "closed   sql db         %s\n"
-#~ msgstr "Closed   SQL-DB         %s\n"
-
-#~ msgid "opening  sql db         %s (%s) mode=0x%x\n"
-#~ msgstr "Öffne    SQL-DB         %s (%s) mode=0x%x\n"
-
-#~ msgid "logging into %s as %s, pw %s\n"
-#~ msgstr "Login auf %s als %s, Passwort %s\n"
-
-#~ msgid "failed to create %s: %s\n"
-#~ msgstr "Fehler beim Erstellen von %s: %s\n"
