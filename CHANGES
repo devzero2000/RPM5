@@ -1,4 +1,5 @@
 4.4.9 -> 4.5:
+    - jbj: fix: stray extraneous character with -qi --changelog spew.
     - robert: backport debugedit.c from 5.0 to get it build with latest gcc
     - glen: backport from 5.0: --rollback PSM_INIT changes added fstates before initialize.
     - proyvind: add back SOURCEPACKAGE tag for Mandriva to allow packages to be rebuilt on older releases

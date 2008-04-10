@@ -3151,7 +3151,8 @@ static int parseFormat(headerSprintfArgs hsa, /*@null@*/ char * str,
 
 	    if (*start == '\\') {
 		start++;
-		*dst++ = escapedChar(*start++);
+		*dst++ = escapedChar(*start);
+		*start++ = '\0';
 	    } else {
 		*dst++ = *start++;
 	    }
