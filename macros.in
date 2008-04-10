@@ -1288,6 +1288,15 @@ print (t)\
 %_mandir		%{_prefix}/man
 %_localedir		%{_datadir}/locale
 
+%_initrddir		%{_sysconfdir}/rc.d/init.d
+%_smp_mflags %([ -z "$RPM_BUILD_NCPUS" ] \\\
+	&& RPM_BUILD_NCPUS="`/usr/bin/getconf _NPROCESSORS_ONLN`"; \\\
+	[ "$RPM_BUILD_NCPUS" -gt 1 ] && echo "-j$RPM_BUILD_NCPUS")
+
+#---------------------------------------------------------------------
+#   Multilibs
+%_multilibpatt	(/%{_lib}|/usr/%{_lib}(|/gconv)|/usr/local/%{_lib}|/usr/X11R6/%{_lib}|/opt/%{_lib})/[^/]*\\.([oa]|la|so[0-9.]*)$
+
 #==============================================================================
 # ---- config.guess platform macros.
 #	Macro(s) similar to the tokens used by configure.
