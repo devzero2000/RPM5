@@ -1290,9 +1290,7 @@ print (t)\
 
 %_initrddir		%{_sysconfdir}/rc.d/init.d
 %_smp_mflags %([ -z "$RPM_BUILD_NCPUS" ] \\\
-	&& RPM_BUILD_NCPUS="`/usr/bin/getconf _NPROCESSORS_ONLN 2> /dev/null`"; \\\
-	[ -z "$RPM_BUILD_NCPUS" ] && RPM_BUILD_NCPUS="`/usr/sbin/sysctl -n hw.ncpu 2> /dev/null`"; \\\
-	[ -z "$RPM_BUILD_NCPUS" ] && RPM_BUILD_NCPUS="1"; \\\
+	&& RPM_BUILD_NCPUS="`@NCPUS_COMMAND@`"; \\\
 	[ "$RPM_BUILD_NCPUS" -gt 1 ] && echo "-j$RPM_BUILD_NCPUS")
 
 #---------------------------------------------------------------------

@@ -1282,6 +1282,17 @@ AC_SUBST(RPMUID)
 AC_SUBST(RPMGROUP)
 AC_SUBST(RPMGID)
 
+dnl # determine number of CPUs command
+AC_MSG_CHECKING([how to determine NCPUS])
+NCPUS_COMMAND="echo 1"
+case "$host" in
+    *-*-linux* ) NCPUS_COMMAND="/usr/bin/getconf _NPROCESSORS_ONLN" ;;
+    *-*-darwin* ) NCPUS_COMMAND="/usr/sbin/sysctl -n hw.ncpu" ;;
+esac
+NCPUS_RESULT=`$NCPUS_COMMAND`
+AC_MSG_RESULT([`$NCPUS_COMMAND` ($NCPUS_RESULT)])
+AC_SUBST(NCPUS_COMMAND)
+
 dnl # support for versioned installation paths
 AC_ARG_WITH(
     [path-versioned],
