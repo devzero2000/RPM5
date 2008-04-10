@@ -1287,6 +1287,8 @@ AC_MSG_CHECKING([how to determine NCPUS])
 NCPUS_COMMAND="echo 1"
 case "$host" in
     *-*-linux* ) NCPUS_COMMAND="/usr/bin/getconf _NPROCESSORS_ONLN" ;;
+    *-*-freebsd* ) NCPUS_COMMAND="/usr/bin/getconf NPROCESSORS_ONLN" ;;
+    *-*-solaris* ) NCPUS_COMMAND="psrinfo | egrep 'on-line' | wc -l  | sed -e 's+^ *++'" ;;
     *-*-darwin* ) NCPUS_COMMAND="/usr/sbin/sysctl -n hw.ncpu" ;;
 esac
 NCPUS_RESULT=`$NCPUS_COMMAND`
