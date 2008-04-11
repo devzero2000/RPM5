@@ -1,5 +1,6 @@
 
 5.1b1 -> 5.2b1
+    - rse: replace obsolete AC_AIX and AC_MINIX checks with newer AC_USE_SYSTEM_EXTENSIONS to get rid of Autoconf warnings
     - proyvind: improve %_smp_mflags so that it will correctly detect number of cpus on macos, while defaulting to 1 cpu if unable to detect
     - proyvind: move some macros that's identical for each platform macros to standard macros
     - rse: upgrade build environment to GNU autoconf 2.62
