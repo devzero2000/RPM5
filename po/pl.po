@@ -11,10 +11,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: rpm 5.0.0\n"
+"Project-Id-Version: rpm 5.1\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
 "POT-Creation-Date: 2008-04-06 10:21+0200\n"
-"PO-Revision-Date: 2008-01-06 13:01+0100\n"
+"PO-Revision-Date: 2008-04-06 23:02+0200\n"
 "Last-Translator: Jakub Bogusz <qboosh@pld-linux.org>\n"
 "Language-Team: Polish <translation-team-pl@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
@@ -22,9 +22,8 @@ msgstr ""
 "Content-Transfer-Encoding: 8-bit\n"
 
 #: build.c:36
-#, fuzzy
 msgid "Failed build dependencies"
-msgstr "Niespe³nione zale¿no¶ci budowania:\n"
+msgstr "Niespe³nione zale¿no¶ci budowania"
 
 #: build.c:63
 #, c-format
@@ -219,7 +218,6 @@ msgstr ""
 "usuwaniu pakietów"
 
 #: rpmqv.c:637
-#, fuzzy
 msgid ""
 "--nodeps may only be specified during package building, rebuilding, "
 "recompilation, installation, erasure, and verification"
@@ -923,7 +921,7 @@ msgstr "linia %d: B³êdny format BuildArchitecture: %s\n"
 #: build/parsePreamble.c:807
 #, c-format
 msgid "line %d: Only \"noarch\" sub-packages are supported: %s\n"
-msgstr ""
+msgstr "linia %d: Obs³ugiwane s± tylko podpakiety \"noarch\": %s\n"
 
 #: build/parsePreamble.c:931
 #, c-format
@@ -1237,15 +1235,15 @@ msgstr "nie sprawdzanie zale¿no¶ci budowania pakietu"
 
 #: build/poptBT.c:200
 msgid "disable automagic Provides: extraction"
-msgstr ""
+msgstr "wy³±czenie automatycznego wydobywania Provides:"
 
 #: build/poptBT.c:202
 msgid "disable automagic Requires: extraction"
-msgstr ""
+msgstr "wy³±czenie automatycznego wydobywania Requires:"
 
 #: build/poptBT.c:204
 msgid "disable tags forbidden by LSB"
-msgstr ""
+msgstr "wy³±czenie etykiet zabronionych przez LSB"
 
 #: build/poptBT.c:207 lib/poptALL.c:347 lib/poptI.c:342 lib/poptQV.c:407
 #: lib/poptQV.c:416 lib/poptQV.c:458
@@ -1263,9 +1261,8 @@ msgid "don't verify package signature(s)"
 msgstr "nie sprawdzanie podpisu pakietu"
 
 #: build/poptBT.c:214
-#, fuzzy
 msgid "do not accept i18n msgstr's from specfile"
-msgstr "nie przyjmowanie wpisów I18N z pliku spec"
+msgstr "nie przyjmowanie wpisów i18n msgstr z pliku spec"
 
 #: build/poptBT.c:216
 msgid "remove sources when done"
@@ -1292,9 +1289,8 @@ msgid "CPU-VENDOR-OS"
 msgstr "CPU-PRODUCENT-OS"
 
 #: build/poptBT.c:226
-#, fuzzy
 msgid "look up i18n strings in specfile catalog"
-msgstr "wyszukanie wpisów I18N w katalogu pliku spec"
+msgstr "wyszukanie wpisów i18n w katalogu pliku spec"
 
 #: build/spec.c:292
 #, c-format
@@ -1373,9 +1369,8 @@ msgid "(signature probe)"
 msgstr "(test podpisu)"
 
 #: lib/depends.c:898
-#, fuzzy
 msgid "(verify probe)"
-msgstr "(test zmiennej ¶rodowiskowej)"
+msgstr "(test weryfikacji)"
 
 #: lib/depends.c:920
 msgid "(gnupg probe)"
@@ -1635,14 +1630,12 @@ msgid "<FILE:...>"
 msgstr "<PLIK:...>"
 
 #: lib/poptALL.c:336 rpmio/poptIO.c:322
-#, fuzzy
 msgid "read <FILE:...> instead of default RPM Lua file(s)"
-msgstr "czytaj <PLIK:...> zamiast domy¶lnego pliku(ów)"
+msgstr "czytaj <PLIK:...> zamiast domy¶lnego pliku(ów) Lua RPM-a"
 
 #: lib/poptALL.c:340 rpmio/poptIO.c:326
-#, fuzzy
 msgid "read <FILE:...> instead of default POPT file(s)"
-msgstr "czytaj <PLIK:...> zamiast domy¶lnego pliku(ów)"
+msgstr "czytaj <PLIK:...> zamiast domy¶lnego pliku(ów) POPT"
 
 #: lib/poptALL.c:344 lib/poptQV.c:318
 msgid "specify target platform"
@@ -1653,14 +1646,12 @@ msgid "display known query tags"
 msgstr "wy¶wietl znane etykiety zapytañ"
 
 #: lib/poptALL.c:356
-#, fuzzy
 msgid "display macro and configuration values"
-msgstr "wy¶wietl ostateczn± konfiguracjê rpmrc i makr"
+msgstr "wy¶wietl warto¶ci makr i konfiguracji"
 
 #: lib/poptALL.c:358 rpmio/poptIO.c:347
-#, fuzzy
 msgid "print the version"
-msgstr "wy¶wietl wersjê u¿ywanego rpm-a"
+msgstr "wy¶wietl wersjê"
 
 #: lib/poptALL.c:366
 msgid "debug payload file state machine"
@@ -2407,9 +2398,8 @@ msgid "Fread failed"
 msgstr "Fread nie powiod³o siê"
 
 #: lib/rpmchecksig.c:1073
-#, fuzzy
 msgid "NOT_OK"
-msgstr "NIE DOBRZE"
+msgstr "NIEDOBRZE"
 
 #: lib/rpmchecksig.c:1074 lib/rpmchecksig.c:1088
 msgid " (MISSING KEYS:"
@@ -2497,9 +2487,8 @@ msgid "file digests can be other than MD5."
 msgstr "skróty plików mog± byæ inne ni¿ MD5."
 
 #: lib/rpmds.c:1430
-#, fuzzy
 msgid "package payload can be in ar archive format."
-msgstr "dane pakietu mog± byæ w formacie archiwum tara ustar."
+msgstr "dane pakietu mog± byæ w formacie archiwum ar."
 
 #: lib/rpmds.c:1521 lib/rpmds.c:3495
 #, c-format
@@ -2624,14 +2613,14 @@ msgid "Install/Erase problems"
 msgstr "Problemy z instalacj±/usuwaniem"
 
 #: lib/rpminstall.c:560
-#, fuzzy, c-format
+#, c-format
 msgid "package \"%s\" cannot be found\n"
-msgstr "pakiet %s nie jest zainstalowany\n"
+msgstr "pakiet \"%s\" nie znaleziony\n"
 
 #: lib/rpminstall.c:581
-#, fuzzy, c-format
+#, c-format
 msgid "package \"%s\" cannot be erased\n"
-msgstr "pakiet %s nie jest zainstalowany\n"
+msgstr "pakiet \"%s\" nie mo¿e byæ usuniêty\n"
 
 #: lib/rpminstall.c:607
 #, c-format
@@ -2659,9 +2648,9 @@ msgid "%s cannot be installed\n"
 msgstr "%s nie mo¿e byæ zainstalowany\n"
 
 #: lib/rpmlock.c:150 lib/rpmlock.c:160
-#, fuzzy, c-format
+#, c-format
 msgid "can't create transaction lock on %s (%s)\n"
-msgstr "nie mo¿na utworzyæ blokady transakcji na %s\n"
+msgstr "nie mo¿na utworzyæ blokady transakcji na %s (%s)\n"
 
 #: lib/rpmlock.c:156
 #, c-format
@@ -2954,9 +2943,8 @@ msgid "(not a blob)"
 msgstr "(nie jest blobem)"
 
 #: rpmdb/hdrfmt.c:694 rpmdb/hdrfmt.c:724 rpmdb/hdrfmt.c:2191
-#, fuzzy
 msgid "(not a string)"
-msgstr "(nie jest liczb±)"
+msgstr "(nie jest ³añcuchem)"
 
 #: rpmdb/hdrfmt.c:797
 msgid "(invalid xml type)"
@@ -3232,9 +3220,9 @@ msgstr "¶cie¿ka bazy danych nie zosta³a podana\n"
 
 #: rpmdb/rpmdb.c:1477 rpmdb/rpmdb.c:1624 rpmdb/rpmdb.c:1680 rpmdb/rpmdb.c:2597
 #: rpmdb/rpmdb.c:2747 rpmdb/rpmdb.c:3069 rpmdb/rpmdb.c:3547
-#, fuzzy, c-format
+#, c-format
 msgid "error(%d) getting records from %s index\n"
-msgstr "b³±d(%d) pobierania rekordów \"%s\" z indeksu %s\n"
+msgstr "b³±d(%d) podczas pobierania rekordów z indeksu %s\n"
 
 #: rpmdb/rpmdb.c:1894
 msgid "miFreeHeader: skipping"
@@ -3243,7 +3231,7 @@ msgstr "miFreeHeader: pomijanie"
 #: rpmdb/rpmdb.c:1904
 #, c-format
 msgid "error(%d) storing record #%d into %s\n"
-msgstr "b³±d(%d) zapisywania rekordu #%d do %s\n"
+msgstr "b³±d(%d) podczas zapisywania rekordu #%d do %s\n"
 
 #: rpmdb/rpmdb.c:2475
 msgid "rpmdb: skipping"
@@ -3266,22 +3254,22 @@ msgstr "%s: nie mo¿na odczytaæ nag³ówka pod 0x%x\n"
 #: rpmdb/rpmdb.c:2919
 #, c-format
 msgid "error(%d) setting header #%d record for %s removal\n"
-msgstr "b³±d(%d) ustawiania rekordu nag³ówka #%d do usuniêcia %s\n"
+msgstr "b³±d(%d) podczas ustawiania rekordu nag³ówka #%d do usuniêcia %s\n"
 
 #: rpmdb/rpmdb.c:3090 rpmdb/rpmdb.c:3566
-#, fuzzy, c-format
+#, c-format
 msgid "error(%d) storing record into %s\n"
-msgstr "b³±d(%d) zapisywania rekordu %s do %s\n"
+msgstr "b³±d(%d) podczas zapisywania rekordu do %s\n"
 
 #: rpmdb/rpmdb.c:3100
-#, fuzzy, c-format
+#, c-format
 msgid "error(%d) removing record from %s\n"
-msgstr "b³±d(%d) usuwania rekordu \"%s\" z %s\n"
+msgstr "b³±d(%d) podczas usuwania rekordu z %s\n"
 
 #: rpmdb/rpmdb.c:3277
 #, c-format
 msgid "error(%d) allocating new package instance\n"
-msgstr "b³±d(%d) przydzielanie nowej instancji pakietu\n"
+msgstr "b³±d(%d) podczas przydzielania nowej instancji pakietu\n"
 
 #: rpmdb/rpmdb.c:3351
 msgid "rpmdbAdd: skipping"
@@ -3448,9 +3436,9 @@ msgid "Macro %%%s (%s) was not used below level %d\n"
 msgstr "Makro %%%s (%s) nie by³o u¿yte poni¿ej poziomu %d\n"
 
 #: rpmio/macro.c:1103
-#, fuzzy, c-format
+#, c-format
 msgid "Unknown option in macro %s(%s): %s: %s\n"
-msgstr "Nieznana opcja %c w %s(%s)\n"
+msgstr "Nieznana opcja w makrze %s(%s): %s: %s\n"
 
 #: rpmio/macro.c:1417
 #, c-format
@@ -3468,9 +3456,9 @@ msgid "A %% is followed by an unparseable macro\n"
 msgstr "Napotkano nieprzetwarzalne makro po %%\n"
 
 #: rpmio/macro.c:1571
-#, fuzzy, c-format
+#, c-format
 msgid "%s: load macros failed\n"
-msgstr "%s: import nie powiód³ siê.\n"
+msgstr "%s: wczytywanie makr nie powiod³o siê.\n"
 
 #: rpmio/macro.c:1757
 #, c-format
@@ -3497,95 +3485,88 @@ msgid "File %s is smaller than %u bytes\n"
 msgstr "Plik %s jest mniejszy ni¿ %u bajtów\n"
 
 #: rpmio/poptIO.c:97
-#, fuzzy
 msgid "MD2 digest (RFC-1319)"
-msgstr "Skrót MD5: "
+msgstr "Skrót MD2 (RFC-1319)"
 
 #: rpmio/poptIO.c:99
-#, fuzzy
 msgid "MD4 digest"
-msgstr "Skrót MD5: "
+msgstr "Skrót MD4"
 
 #: rpmio/poptIO.c:101
-#, fuzzy
 msgid "MD5 digest (RFC-1321)"
-msgstr "Skrót MD5: "
+msgstr "Skrót MD5 (RFC-1321)"
 
 #: rpmio/poptIO.c:103
 msgid "SHA-1 digest (FIPS-180-1)"
-msgstr ""
+msgstr "Skrót SHA-1 (FIPS-180-1)"
 
 #: rpmio/poptIO.c:105
 msgid "SHA-224 digest (FIPS-180-2)"
-msgstr ""
+msgstr "Skrót SHA-224 (FIPS-180-2)"
 
 #: rpmio/poptIO.c:107
 msgid "SHA-256 digest (FIPS-180-2)"
-msgstr ""
+msgstr "Skrót SHA-256 (FIPS-180-2)"
 
 #: rpmio/poptIO.c:109
 msgid "SHA-384 digest (FIPS-180-2)"
-msgstr ""
+msgstr "Skrót SHA-384 (FIPS-180-2)"
 
 #: rpmio/poptIO.c:111
 msgid "SHA-512 digest (FIPS-180-2)"
-msgstr ""
+msgstr "Skrót SHA-512 (FIPS-180-2)"
 
 #: rpmio/poptIO.c:113
 msgid "SALSA-10 hash"
-msgstr ""
+msgstr "Skrót SALSA-10"
 
 #: rpmio/poptIO.c:115
 msgid "SALSA-20 hash"
-msgstr ""
+msgstr "Skrót SALSA-20"
 
 #: rpmio/poptIO.c:117
-#, fuzzy
 msgid "RIPEMD-128 digest"
-msgstr "Skrót MD5: "
+msgstr "Skrót RIPEMD-128"
 
 #: rpmio/poptIO.c:119
-#, fuzzy
 msgid "RIPEMD-160 digest"
-msgstr "Skrót MD5: "
+msgstr "Skrót RIPEMD-160"
 
 #: rpmio/poptIO.c:121
-#, fuzzy
 msgid "RIPEMD-256 digest"
-msgstr "Skrót MD5: "
+msgstr "Skrót RIPEMD-256"
 
 #: rpmio/poptIO.c:123
-#, fuzzy
 msgid "RIPEMD-320 digest"
-msgstr "Skrót MD5: "
+msgstr "Skrót RIPEMD-320"
 
 #: rpmio/poptIO.c:125
 msgid "TIGER digest"
-msgstr ""
+msgstr "Skrót TIGER"
 
 #: rpmio/poptIO.c:127
 msgid "CRC-32 checksum"
-msgstr ""
+msgstr "Suma kontrolna CRC-32"
 
 #: rpmio/poptIO.c:129
 msgid "CRC-64 checksum"
-msgstr ""
+msgstr "Suma kontrolna CRC-64"
 
 #: rpmio/poptIO.c:131
 msgid "ADLER-32 checksum"
-msgstr ""
+msgstr "Suma kontrolna ADLER-32"
 
 #: rpmio/poptIO.c:133
 msgid "lookup3 hash"
-msgstr ""
+msgstr "Skrót lookup3"
 
 #: rpmio/poptIO.c:135
 msgid "no hash algorithm"
-msgstr ""
+msgstr "brak algorytmu skrótu"
 
 #: rpmio/poptIO.c:137
 msgid "all hash algorithm(s)"
-msgstr ""
+msgstr "wszystkie algorytmy skrótu"
 
 #: rpmio/poptIO.c:277
 msgid "FTS_COMFOLLOW: follow command line symlinks"
@@ -3656,18 +3637,16 @@ msgid "CRYPTO"
 msgstr "KRYPTOGRAFIA"
 
 #: rpmio/poptIO.c:359
-#, fuzzy
 msgid "debug ar archives"
-msgstr "¶ledzenie maszyny stanu plików"
+msgstr "¶ledzenie archiwów ar"
 
 #: rpmio/poptIO.c:361
 msgid "debug argv collections"
 msgstr "¶led¼ zbiory argv"
 
 #: rpmio/poptIO.c:363
-#, fuzzy
 msgid "debug cpio archives"
-msgstr "¶led¼ dane cpio"
+msgstr "¶ledzenie archiwów cpio"
 
 #: rpmio/poptIO.c:365
 msgid "debug WebDAV data stream"
@@ -3679,34 +3658,31 @@ msgstr "¶led¼ strumieñ danych FTP/HTTP"
 
 #: rpmio/poptIO.c:369
 msgid "debug Fts(3) traverse"
-msgstr ""
+msgstr "¶ledzenie wêdrówki Fts(3)"
 
 #: rpmio/poptIO.c:371
-#, fuzzy
 msgid "debug I/O state machine"
-msgstr "¶ledzenie maszyny stanu plików"
+msgstr "¶ledzenie maszyny stanu we/wy"
 
 #: rpmio/poptIO.c:375
 msgid "debug rpmio I/O"
 msgstr "¶led¼ wej¶cie/wyj¶cie rpmio"
 
 #: rpmio/poptIO.c:381
-#, fuzzy
 msgid "debug xar archives"
-msgstr "¶ledzenie maszyny stanu plików"
+msgstr "¶ledzenie archiwów xar"
 
 #: rpmio/poptIO.c:383
-#, fuzzy
 msgid "debug tar archives"
-msgstr "¶ledzenie maszyny stanu plików"
+msgstr "¶ledzenie archiwów tar"
 
 #: rpmio/poptIO.c:385
 msgid "display operation statistics"
-msgstr ""
+msgstr "wy¶wietlanie statystyk operacji"
 
 #: rpmio/poptIO.c:387
 msgid "debug URL cache handling"
-msgstr "¶led¼ obs³ugê buforowania URL-i"
+msgstr "¶ledzenie obs³ugi buforowania URL-i"
 
 #: rpmio/rpmdav.c:890
 msgid "Authorization Required"
@@ -3727,278 +3703,280 @@ msgstr "Nieznany b³±d"
 #: rpmio/rpmgrep.c:595
 #, c-format
 msgid "%s: pcre_exec() error %d while matching "
-msgstr ""
+msgstr "%s: b³±d pcre_exec() %d podczas dopasowywania "
 
 #: rpmio/rpmgrep.c:596
-#, fuzzy, c-format
+#, c-format
 msgid "pattern number %d to "
-msgstr "Brak ³aty numer %d\n"
+msgstr "wzorca numer %d do "
 
 #: rpmio/rpmgrep.c:597
-#, fuzzy, c-format
+#, c-format
 msgid "this line:\n"
-msgstr "linia: %s\n"
+msgstr "tej linii:\n"
 
 #: rpmio/rpmgrep.c:605
 #, c-format
 msgid "%s: error %d means that a resource limit was exceeded\n"
-msgstr ""
+msgstr "%s: b³±d %d oznacza przekroczenie limitu zasobów\n"
 
 #: rpmio/rpmgrep.c:608
 #, c-format
 msgid "%s: check your regex for nested unlimited loops\n"
 msgstr ""
+"%s: proszê sprawdziæ wyra¿enie regularne pod k±tem zagnie¿d¿onych pêtli\n"
 
 #: rpmio/rpmgrep.c:613
 #, c-format
 msgid "%s: too many errors - abandoned\n"
-msgstr ""
+msgstr "%s: zbyt du¿o b³êdów - porzucono\n"
 
 #: rpmio/rpmgrep.c:985
-#, fuzzy, c-format
+#, c-format
 msgid "%s: Failed to open directory %s: %s\n"
-msgstr "usuniêcie katalogu %s nie powiod³o siê: %s\n"
+msgstr "%s: Nie uda³o siê otworzyæ katalogu %s: %s\n"
 
 #: rpmio/rpmgrep.c:1052 rpmio/rpmgrep.c:1215
-#, fuzzy, c-format
+#, c-format
 msgid "%s: Failed to open %s: %s\n"
-msgstr "nie mo¿na otworzyæ %s: %s\n"
+msgstr "%s: Nie uda³o siê otworzyæ %s: %s\n"
 
 #: rpmio/rpmgrep.c:1121
 #, c-format
 msgid "%s: Too many %spatterns (max %d)\n"
-msgstr ""
+msgstr "%s: Zbyt du¿o wzorców %s (maksimum to %d)\n"
 
 #: rpmio/rpmgrep.c:1146
 #, c-format
 msgid "%s: Error in"
-msgstr ""
+msgstr "%s: B³±d w"
 
 #: rpmio/rpmgrep.c:1148
 #, c-format
 msgid "%s command-line"
-msgstr ""
+msgstr "linii poleceñ %s"
 
 #: rpmio/rpmgrep.c:1150
-#, fuzzy, c-format
+#, c-format
 msgid " file:line %s:%d"
-msgstr "B³êdny plik: %s: %s\n"
+msgstr " pliku:linii %s:%d"
 
 #: rpmio/rpmgrep.c:1151
 #, c-format
 msgid " regex at offset %d: %s\n"
-msgstr ""
+msgstr " wyra¿eniu regularnym pod offsetem %d: %s\n"
 
 #: rpmio/rpmgrep.c:1293
 #, c-format
 msgid "%s: Invalid value \"%s\" for -d\n"
-msgstr ""
+msgstr "%s: B³êdna warto¶æ \"%s\" dla -d\n"
 
 #: rpmio/rpmgrep.c:1303
 #, c-format
 msgid "%s: Invalid value \"%s\" for -D\n"
-msgstr ""
+msgstr "%s: B³êdna warto¶æ \"%s\" dla -D\n"
 
 #: rpmio/rpmgrep.c:1320
-#, fuzzy, c-format
+#, c-format
 msgid "%s: Unknown color setting \"%s\"\n"
-msgstr "nieznana etykieta: \"%s\"\n"
+msgstr "%s: Nieznane ustawienie koloru \"%s\"\n"
 
 #: rpmio/rpmgrep.c:1336
 #, c-format
 msgid "%s %s (PCRE version %s)\n"
-msgstr ""
+msgstr "%s %s (PCRE w wersji %s)\n"
 
 #: rpmio/rpmgrep.c:1339
 #, c-format
 msgid "%s %s (without PCRE)\n"
-msgstr ""
+msgstr "%s %s (bez PCRE)\n"
 
 #: rpmio/rpmgrep.c:1344
-#, fuzzy, c-format
+#, c-format
 msgid "%s: Unknown option -%c\n"
-msgstr "Nieznana opcja %c w %s(%s)\n"
+msgstr "%s: Nieznana opcja -%c\n"
 
 #: rpmio/rpmgrep.c:1362
 msgid "set number of following context lines"
-msgstr ""
+msgstr "ustawienie liczby nastêpnych linii kontekstu"
 
 #: rpmio/rpmgrep.c:1362 rpmio/rpmgrep.c:1364 rpmio/rpmgrep.c:1366
 msgid "=number"
-msgstr ""
+msgstr "=liczba"
 
 #: rpmio/rpmgrep.c:1364
 msgid "set number of prior context lines"
-msgstr ""
+msgstr "ustawienie liczby poprzednich linii kontekstu"
 
 #: rpmio/rpmgrep.c:1366
 msgid "set number of context lines, before & after"
-msgstr ""
+msgstr "ustawienie linii kontekstu, przed i po"
 
 #: rpmio/rpmgrep.c:1368
 msgid "print only a count of matching lines per FILE"
-msgstr ""
+msgstr "wypisywanie tylko liczby dopasowanych linii dla PLIKÓW"
 
 #: rpmio/rpmgrep.c:1370
 msgid "matched text color option (auto|always|never)"
-msgstr ""
+msgstr "opcja kolorowania dopasowanego tekstu (auto|always|never)"
 
 #: rpmio/rpmgrep.c:1370 rpmio/rpmgrep.c:1372
-#, fuzzy
 msgid "=option"
-msgstr "<opcja>"
+msgstr "=opcja"
 
 #: rpmio/rpmgrep.c:1372
 msgid "matched text colour option (auto|always|never)"
-msgstr ""
+msgstr "opcja kolorowania dopasowanego tekstu (auto|always|never)"
 
 #: rpmio/rpmgrep.c:1375
 msgid "device, FIFO, or socket action (read|skip)"
-msgstr ""
+msgstr "akcja dla urz±dzeñ, FIFO i gniazd (read|skip)"
 
 #: rpmio/rpmgrep.c:1375 rpmio/rpmgrep.c:1377
 msgid "=action"
-msgstr ""
+msgstr "=akcja"
 
 #: rpmio/rpmgrep.c:1377
 msgid "directory action (read|skip|recurse)"
-msgstr ""
+msgstr "akcja dla katalogów (read|skip|recurse)"
 
 #: rpmio/rpmgrep.c:1380 rpmio/rpmgrep.c:1383
 msgid "specify pattern (may be used more than once)"
-msgstr ""
+msgstr "okre¶lenie wzorca (mo¿e byæ u¿yte wiêcej ni¿ raz)"
 
 #: rpmio/rpmgrep.c:1380 rpmio/rpmgrep.c:1383 rpmio/rpmgrep.c:1456
 #: rpmio/rpmgrep.c:1458
 msgid "(p)"
-msgstr ""
+msgstr "(p)"
 
 #: rpmio/rpmgrep.c:1386
 msgid "patterns are sets of newline-separated strings"
-msgstr ""
+msgstr "wzorce s± zbiorami ³añcuchów oddzielonymi znakami nowej linii"
 
 #: rpmio/rpmgrep.c:1389 rpmio/rpmgrep.c:1393
 msgid "read patterns from file (may be used more than once)"
-msgstr ""
+msgstr "odczyt wzorców z pliku (mo¿e byæ u¿yte wiêcej ni¿ raz)"
 
 #: rpmio/rpmgrep.c:1390 rpmio/rpmgrep.c:1394
-#, fuzzy
 msgid "=path"
-msgstr "<¶cie¿ka>"
+msgstr "=¶cie¿ka"
 
 #: rpmio/rpmgrep.c:1397
 msgid "output file offsets, not text"
-msgstr ""
+msgstr "wypisywanie offsetów plików zamiast tekstu"
 
 #: rpmio/rpmgrep.c:1399
 msgid "force the prefixing filename on output"
-msgstr ""
+msgstr "wymuszenie poprzedzenia wyj¶cia nazw± pliku"
 
 #: rpmio/rpmgrep.c:1401
 msgid "suppress the prefixing filename on output"
-msgstr ""
+msgstr "pominiêcie nazw plików z wyj¶cia"
 
 #: rpmio/rpmgrep.c:1403
 msgid "ignore case distinctions"
-msgstr ""
+msgstr "ignorowanie ró¿nicy wielko¶ci liter"
 
 #: rpmio/rpmgrep.c:1405
 msgid "print only FILE names containing matches"
-msgstr ""
+msgstr "wypisywanie tylko nazw PLIKÓW zawieraj±cych dopasowania"
 
 #: rpmio/rpmgrep.c:1407
 msgid "print only FILE names not containing matches"
-msgstr ""
+msgstr "wypisywanie tylko nazw PLIKÓW nie zawieraj±cych dopasowañ"
 
 #: rpmio/rpmgrep.c:1409
 msgid "set name for standard input"
-msgstr ""
+msgstr "ustawienie nazwy dla standardowego wej¶cia"
 
 #: rpmio/rpmgrep.c:1409
 msgid "=name"
-msgstr ""
+msgstr "=nazwa"
 
 #: rpmio/rpmgrep.c:1411
 msgid "output line numbers and offsets, not text"
-msgstr ""
+msgstr "wypisywanie numerów linii i offsetów zamiast tekstu"
 
 #: rpmio/rpmgrep.c:1414
 msgid "use the named locale"
-msgstr ""
+msgstr "u¿ycie podanej lokalizacji"
 
 #: rpmio/rpmgrep.c:1414
 msgid "=locale"
-msgstr ""
+msgstr "=lokalizacja"
 
 #: rpmio/rpmgrep.c:1416
 msgid "run in multiline mode"
-msgstr ""
+msgstr "dzia³anie w trybie wieloliniowym"
 
 #: rpmio/rpmgrep.c:1418
 msgid "set newline type (CR|LF|CRLF|ANYCRLF|ANY)"
-msgstr ""
+msgstr "ustawienie trybu nowych linii (CR|LF|CRLF|ANYCRLF|ANY)"
 
 #: rpmio/rpmgrep.c:1418
 msgid "=type"
-msgstr ""
+msgstr "=typ"
 
 #: rpmio/rpmgrep.c:1420
 msgid "print line number with output lines"
-msgstr ""
+msgstr "wypisywanie numeru linii wraz z liniami"
 
 #: rpmio/rpmgrep.c:1422
 msgid "show only the part of the line that matched"
-msgstr ""
+msgstr "pokazywanie tylko czê¶ci dopasowanej linii"
 
 #: rpmio/rpmgrep.c:1425
 msgid "suppress output, just set return code"
-msgstr ""
+msgstr "pominiêcie wyj¶cia, ustawienie tylko kodu zakoñczenia"
 
 #: rpmio/rpmgrep.c:1427
 msgid "recursively scan sub-directories"
-msgstr ""
+msgstr "rekurencyjne przeszukiwanie podkatalogów"
 
 #: rpmio/rpmgrep.c:1430 rpmio/rpmgrep.c:1437
 msgid "exclude matching files when recursing (may be used more than once)"
 msgstr ""
+"wykuczenie plików z dopasowywania przy rekurencji (mo¿e byæ u¿yte wiêcej ni¿ "
+"raz)"
 
 #: rpmio/rpmgrep.c:1431 rpmio/rpmgrep.c:1434 rpmio/rpmgrep.c:1438
 #: rpmio/rpmgrep.c:1441
 msgid "=pattern"
-msgstr ""
+msgstr "=wzorzec"
 
 #: rpmio/rpmgrep.c:1433 rpmio/rpmgrep.c:1440
 msgid "include matching files when recursing (may be used more than once)"
 msgstr ""
+"do³±czenie plików do dopasowywania przy rekurencji (mo¿e byæ u¿yte wiêcej "
+"ni¿ raz)"
 
 #: rpmio/rpmgrep.c:1444 rpmio/rpmgrep.c:1446
 msgid "suppress error messages"
-msgstr ""
+msgstr "pominiêcie komunikatów b³êdów"
 
 #: rpmio/rpmgrep.c:1448
 msgid "use UTF-8 mode"
-msgstr ""
+msgstr "u¿ycie trybu UTF-8"
 
 #: rpmio/rpmgrep.c:1451
-#, fuzzy
 msgid "print version information and exit"
-msgstr "wy¶wietl wersjê u¿ywanego rpm-a"
+msgstr "wy¶wietlenie informacji o wersji i zakoñczenie"
 
 #: rpmio/rpmgrep.c:1454
 msgid "select non-matching lines"
-msgstr ""
+msgstr "wybranie niepasuj±cych linii"
 
 #: rpmio/rpmgrep.c:1456
 msgid "force patterns to match only as words"
-msgstr ""
+msgstr "wymuszenie dopasowywania wzorców tylko jako s³ów"
 
 #: rpmio/rpmgrep.c:1458
 msgid "force patterns to match only whole lines"
-msgstr ""
+msgstr "wymuszenie dopasowywania wzorców tylko do ca³ych linii"
 
 #: rpmio/rpmgrep.c:1463
 msgid "Common options for all rpmio executables:"
-msgstr ""
+msgstr "Opcje wspólne dla wszystkich programów rpmio:"
 
 #: rpmio/rpmgrep.c:1469
 msgid ""
@@ -4011,6 +3989,14 @@ msgid ""
 "\n"
 "Example: rpmgrep -i 'hello.*world' menu.h main.c"
 msgstr ""
+"Sk³adnia: rpmgrep [OPCJA...] [WZORZEC] [PLIK1 PLIK2 ...]\n"
+"\n"
+"  Wyszukiwanie WZORCA w ka¿dym PLIKU lub standardowym wej¶ciu.\n"
+"  WZORZEC musi byæ obecny je¶li nie u¿yto opcji -e ani -f.\n"
+"  \"-\" u¿yte jako nazwa pliku oznacza standardowe wej¶cie.\n"
+"  Wszystkie pliki s± czytane jako zwyk³e, bez ¿adnej interpretacji.\n"
+"\n"
+"Przyk³ad: rpmgrep -i 'hello.*world' menu.h main.c"
 
 #: rpmio/rpmgrep.c:1479
 msgid ""
@@ -4020,26 +4006,33 @@ msgid ""
 "  With no FILEs, read standard input. If fewer than two FILEs given, assume -"
 "h.\n"
 msgstr ""
+"  Podczas odczytu wzorców z pliku zamiast u¿ywania opcji linii poleceñ,\n"
+"  koñcowe puste znaki s± usuwane, a puste linie ignorowane.\n"
+"\n"
+"  Je¶li nie podano PLIKÓW, czytane jest standardowe wej¶cie. Je¶li podano "
+"mniej\n"
+"  ni¿ dwa pliki, przyjmowane jest -h.\n"
 
 #: rpmio/rpmgrep.c:1546
 #, c-format
 msgid "%s: Cannot mix --only-matching, --file-offsets and/or --line-offsets\n"
 msgstr ""
+"%s: Nie mo¿na ³±czyæ --only-matching, --file-offsets i/lub --line-offsets\n"
 
 #: rpmio/rpmgrep.c:1566
-#, fuzzy, c-format
+#, c-format
 msgid "%s: Invalid newline specifier \"%s\"\n"
-msgstr "%s:  b³êdne okre¶lenie typu %s w linii numer %d\n"
+msgstr "%s: B³êdne okre¶lenie typu nowych linii \"%s\"\n"
 
 #: rpmio/rpmgrep.c:1628
 #, c-format
 msgid "%s: Error in 'exclude' regex at offset %d: %s\n"
-msgstr ""
+msgstr "%s: B³±d w wyra¿eniu regularnym 'exclude' pod offsetem %d: %s\n"
 
 #: rpmio/rpmgrep.c:1640
 #, c-format
 msgid "%s: Error in 'include' regex at offset %d: %s\n"
-msgstr ""
+msgstr "%s: B³±d w wyra¿eniu regularnym 'include' pod offsetem %d: %s\n"
 
 #: rpmio/rpmio.c:738
 msgid "Success"
@@ -4291,48 +4284,6 @@ msgstr "wypisz zbiór zale¿no¶ci Requires:"
 #: tools/rpmdeps.c:211
 msgid "check Requires: against Provides: for dependency closure"
 msgstr "sprawd¼ Requires: wzglêdem Provides: dla dope³nienia zale¿no¶ci"
-
-#~ msgid "(error 0x%x)"
-#~ msgstr "(b³±d 0x%x)"
-
-#~ msgid "Bad magic"
-#~ msgstr "B³êdny magic"
-
-#~ msgid "Bad/unreadable  header"
-#~ msgstr "B³êdny/nieczytelny nag³ówek"
-
-#~ msgid "Header size too big"
-#~ msgstr "Rozmiar nag³ówka jest zbyt du¿y"
-
-#~ msgid "Unknown file type"
-#~ msgstr "Nieznany typ pliku"
-
-#~ msgid "Missing hard link(s)"
-#~ msgstr "Brakuj±ce twarde dowi±zania"
-
-#~ msgid "File digest mismatch"
-#~ msgstr "Niezgodno¶æ skrótu pliku"
-
-#~ msgid "Internal error"
-#~ msgstr "B³±d wewnêtrzny"
-
-#~ msgid "Archive file not in header"
-#~ msgstr "Brak pliku archiwum w nag³ówku"
-
-#~ msgid " failed - "
-#~ msgstr " nie powiod³o siê -"
-
-#~ msgid "debug option/argument processing"
-#~ msgstr "¶led¼ przetwarzanie opcji/argumentów"
-
-#~ msgid "debug tar payloads"
-#~ msgstr "¶led¼ dane tar"
-
-#~ msgid "error(%d) setting \"%s\" records from %s index\n"
-#~ msgstr "b³±d(%d) ustawiania rekordów \"%s\" z indeksu %s\n"
-
-#~ msgid "error(%d) storing record \"%s\" into %s\n"
-#~ msgstr "b³±d(%d) zapisywania rekordu \"%s\" do %s\n"
 
 # --- rpmpopt
 #~ msgid "list install/erase scriptlets from package(s)"
