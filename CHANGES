@@ -1,5 +1,7 @@
 
 5.1b1 -> 5.1b2:
+    - rse: replace obsolete AC_AIX and AC_MINIX checks with newer AC_USE_SYSTEM_EXTENSIONS to get rid of Autoconf warnings
+    - rse: upgrade build environment to GNU autoconf 2.62
 
 5.0.0 -> 5.1b1:
     - jbj: update PO files from Translation Project for rpm-5.1 inclusion.
