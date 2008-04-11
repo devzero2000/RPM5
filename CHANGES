@@ -2,6 +2,7 @@
 5.1b1 -> 5.2b1
     - proyvind: improve %_smp_mflags so that it will correctly detect number of cpus on macos, while defaulting to 1 cpu if unable to detect
     - proyvind: move some macros that's identical for each platform macros to standard macros
+    - rse: upgrade build environment to GNU autoconf 2.62
     - rse: use latest POPT 1.14 for building with "devtool standalone"
     - rse: prepared build-tree for RPM 5.2 development after branching
 
