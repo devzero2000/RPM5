@@ -1,5 +1,6 @@
 
 5.1b1 -> 5.1b2:
+    - rse: use latest POPT 1.14 for building with "devtool standalone"
     - rse: replace obsolete AC_AIX and AC_MINIX checks with newer AC_USE_SYSTEM_EXTENSIONS to get rid of Autoconf warnings
     - rse: upgrade build environment to GNU autoconf 2.62
 
