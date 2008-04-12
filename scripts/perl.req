@@ -39,27 +39,19 @@
 
 # by Ken Estes Mail.com kestes@staff.mail.com
 
-if ("@ARGV") {
-  foreach (@ARGV) {
+foreach ( @ARGV ? @ARGV : <> ) {
+	chomp;
     if (m=/usr/(sbin|bin|lib|share|X11R6/(lib|bin))/=) {
       if (! m=(/(doc|man|info|usr/src)/|\.(so|ph|h|html|pod)$)=) {
-        process_file($_);
+        process_file($_) if -f;
       }
     }
-  }
-} else {
-  
-  # notice we are passed a list of filenames NOT as common in unix the
-  # contents of the file.
-  
-  foreach (<>) {
-     if (m=/usr/(sbin|bin|lib|share|X11R6/(lib|bin))/=) {
-       if (! m=(/(doc|man|info|usr/src)/|\.(so|ph|h|html|pod)$)=) {
-         process_file($_);
-       }
-     }
-  }
 }
+
+foreach (sort keys %provide) {
+    delete $require{$_};
+}
+delete $require{the}; # don't count "use the sth" as perl module  
 
 
 foreach $module (sort keys %require) {
@@ -78,6 +70,53 @@ foreach $module (sort keys %require) {
 exit 0;
 
 
+sub is_perlfile {
+    my $file = shift;
+    my $fh = shift;
+    
+    my $fl = <$fh>;
+
+    my $is_perl = 0;
+  
+    my $nw = 0;
+
+    if ($file =~ /\.(so|ph|h|html|pod|gz|bz2|png|gif|jpg|xpm|a|patch|o|mo)$/) {
+	$is_perl = 0;
+	
+	# .al, .pl, .pm and .plx (perl-Font-TTF contains *.plx files)
+    } elsif ($file =~ /\.p[lm]x?$/ || $file =~ /\.al$/) {	
+	$is_perl = 1;
+	#print STDERR "$file PERL by ext\n";
+    } elsif ($fl =~ m|bin/perl| or $fl =~ m|env\s+perl| or $fl =~ m|exec\s+perl|) {
+	$is_perl = 1;
+	#print STDERR "$file PERL by perl\n";
+    } elsif ($fl =~ m|bin/sh|) {
+	while (<$fh>) {
+	    if (/eval/ && /perl/) {
+		$is_perl = 1;
+		last;
+	    }
+	    $nw++ if (/^\s*BEGIN/); 
+	    $nw++ if (/^\s*sub\s+/);
+	    $nw++ if (/^\s*package\s+/);
+	    $nw++ if (/^\s*use\s+strict\s+;/);
+	    $nw++ if (/^\s*use\s+vars\s*qw/);
+	    last if ($. > 30);
+	}
+    }
+    
+    seek($fh, 0, 0);
+    
+    $is_perl = 1 if ($nw > 1);  # propably perl file
+    
+    #if (!$is_perl) {
+    #   print STDERR "NOPERL $file\n";
+    #   return 0;
+    #}	
+    #print STDERR "PERL $file\n" if ($is_perl);
+    return $is_perl;
+}
+
 
 sub process_file {
   
@@ -86,6 +125,8 @@ sub process_file {
   
   open(FILE, "<$file") || return;
   
+  return if (!is_perlfile($file, \*FILE));
+
   while (<FILE>) {
     
     # skip the "= <<" block
@@ -126,6 +167,10 @@ sub process_file {
     # skip the data section
     if (m/^__(DATA|END)__$/) {
       last;
+    }
+
+    if (m/^\s*package\s+([_:a-zA-Z0-9]+)\s*;/) {
+	$provide{$1} = 1;
     }
 
     # Each keyword can appear multiple times.  Don't
@@ -272,6 +317,10 @@ sub process_file {
       # if the module name starts in a dot it is not a module name.
 
       ($module =~ m/^\./) && next;
+
+      # name starts in a non alphanumeric character it is not a module 
+      # name.
+      ($module =~ m/^\W/) && next;
 
       # if the module ends with .pm strip it to leave only basename.
 
