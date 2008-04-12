@@ -1514,6 +1514,7 @@ AC_SUBST(OBJDUMP)
 AC_CONFIG_SUBDIRS(popt zlib file sqlite db3)
 
 AC_CONFIG_FILES([ Doxyfile Makefile rpmrc macros platform rpmpopt rpm.spec rpm5.spec po/Makefile.in
+	scripts/perl.req scripts/perl.prov
 	rpmio/Makefile rpmdb/Makefile lib/Makefile build/Makefile
 	scripts/Makefile
 	scripts/macros.perl scripts/macros.php scripts/macros.python

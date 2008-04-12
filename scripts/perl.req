@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!@__PERL@
 
 # RPM (and its source code) is covered under two separate licenses. 
 
@@ -41,7 +41,11 @@
 
 if ("@ARGV") {
   foreach (@ARGV) {
-    process_file($_);
+    if (m=/usr/(sbin|bin|lib|share|X11R6/(lib|bin))/=) {
+      if (! m=(/(doc|man|info|usr/src)/|\.(so|ph|h|html|pod)$)=) {
+        process_file($_);
+      }
+    }
   }
 } else {
   
@@ -49,7 +53,11 @@ if ("@ARGV") {
   # contents of the file.
   
   foreach (<>) {
-    process_file($_);
+     if (m=/usr/(sbin|bin|lib|share|X11R6/(lib|bin))/=) {
+       if (! m=(/(doc|man|info|usr/src)/|\.(so|ph|h|html|pod)$)=) {
+         process_file($_);
+       }
+     }
   }
 }
 
@@ -203,19 +211,41 @@ sub process_file {
 
       $module =~ s/\(\s*\)$//;
 
-      if ( $module =~ m/^v?([0-9._]+)$/ ) {
+      if ( $module =~ m/^(v?)([0-9._]+)$/ ) {
       # if module is a number then both require and use interpret that
       # to mean that a particular version of perl is specified
 
-      my $ver=$1;
-      if ($ver =~ /5.00/) {
-        print "perl >= 0:$ver\n";
-        next;
-      }
-      else {
-        print "perl >= 1:$ver\n";
-        next;
-      }
+	my $ver=$2;
+	if (($1 eq 'v') or ($ver =~ /[0-9]+\.[0-9]+\.[0-9]+/)) {
+	  # $V-style
+	  if ($ver =~ m/5\.([0-5])(\.([0-9]+))?$/) {
+	    if (defined $3) {
+	      print "perl >= 0:5.00$1_$3\n";
+	    } else {
+	      print "perl >= 0:5.00$1\n";
+	    }
+	  } else {
+	    print "perl >= 1:$ver\n";
+	  }
+	} else {
+	  # $]-style
+	  if ($ver =~ m/5\.(00[0-5])_?([0-9]+)?$/) {
+	    if (defined $2) {
+	      print "perl >= 0:5.$1_$2\n";
+	    } else {
+	      print "perl >= 0:5.$1\n";
+	    }
+	  } else {
+	    # expand to M.NNN_nnn form
+	    $ver =~ s/^([0-9])$/$1./;
+	    $ver =~ s/^([0-9]\.[0-9]{0,5}|[0-9]\.[0-9]{3}_[0-9]{0,2})$/${1}000000/;
+	    $ver =~ s/^([0-9]\.[0-9]{3})_?([0-9]{3})0*$/$1_$2/;
+	    # match trimming leading 0s
+	    $ver =~ m/^([0-9])\.0*([1-9][0-9]*|0)_0*([1-9][0-9]*|0)$/;
+	    print "perl >= 1:$1.$2.$3\n";
+	  }
+	}
+	next;
 
       };
 
@@ -232,7 +262,27 @@ sub process_file {
       # will be included with the name sys/systeminfo.ph so only use the
       # basename of *.ph files
 
-      ($module  =~ m/\.ph$/) && next;
+      # ($module  =~ m/\.ph$/) && ($module =~ s!.*/!!g );
+ 
+      # there is no need to generate dependencies for ph, pl or test files
+      # so let's just skip them.
+
+      ($module =~ m/\.(ph|pl|t)$/) && next;
+
+      # if the module name starts in a dot it is not a module name.
+
+      ($module =~ m/^\./) && next;
+
+      # if the module ends with .pm strip it to leave only basename.
+
+      $module =~ s/\.pm$//;
+
+      $module =~ s/\//::/;
+
+      # trim off trailing parenthesis if any.  Sometimes people pass
+      # the module an empty list.
+
+      $module =~ s/\(\s*\)$//;
 
       $require{$module}=$version;
       $line{$module}=$_;
