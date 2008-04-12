@@ -39,9 +39,20 @@
 
 # by Ken Estes Mail.com kestes@staff.mail.com
 
+
+
+# *inc variables are used to track dependencies on directories for modules.
+# These directories (especially arch-dependent) are likely to change some day.
+my @inc = sort { length $b cmp length $a }
+          map { s#/*$##; $_ }
+          grep m#^/.#, @INC;
+my %inc = map { $_ => 0 } @inc;
+my $inc = join '|', map "\Q$_\E", @inc;
+
 foreach ( @ARGV ? @ARGV : <> ) {
-	chomp;
-    if (m=/usr/(sbin|bin|lib|share|X11R6/(lib|bin))/=) {
+    chomp;
+    $inc{$1}++ if m#($inc)/#;  # can't anchor on ^
+    if (m=/usr/(sbin|bin|lib|lib64|share|X11R6/(lib|lib64|bin))/=) {
       if (! m=(/(doc|man|info|usr/src)/|\.(so|ph|h|html|pod)$)=) {
         process_file($_) if -f;
       }
@@ -53,8 +64,9 @@ foreach (sort keys %provide) {
 }
 delete $require{the}; # don't count "use the sth" as perl module  
 
+print "$_\n" for sort grep $inc{$_}, keys %inc;
 
-foreach $module (sort keys %require) {
+foreach my $module (sort grep length, keys %require) {
   if (length($require{$module}) == 0) {
     print "perl($module)\n";
   } else {
