@@ -5,13 +5,16 @@ AUTOMAKE_OPTIONS = 1.4 foreign
 LINT = splint
 
 EXTRA_DIST = \
-	getdate.y rpmcpio.c rpmcpio.h rpmgenpkglist.c rpmgensrclist.c \
+	getdate.y rpmcpio.c rpmcpio.h \
+	rpmgenbasedir.c rpmgenpkglist.c rpmgensrclist.c \
 	rpmmtree.c rpmrepo.c rpmtar.c rpmtar.h \
 	tdir.c tfts.c tget.c tglob.c thkp.c thtml.c tinv.c tkey.c tmire.c \
 	tput.c trpmio.c tsw.c lookup3.c tpw.c \
 	librpmio.vers testit.sh rpmgrep.1 rpmmtree.8
 
-EXTRA_PROGRAMS = rpmcpio rpmgenpkglist rpmgensrclist rpmmtree rpmrepo rpmtar \
+EXTRA_PROGRAMS = rpmcpio \
+	rpmgenbasedir rpmgenpkglist rpmgensrclist \
+	rpmmtree rpmrepo rpmtar \
 	tdir tfts tget tglob thkp thtml tinv tkey tmacro tmagic tmire \
 	tput tpw trpmio tsw dumpasn1 lookup3
 
@@ -215,6 +218,9 @@ rpmcpio_LDADD = $(RPM_LDADD_COMMON)
 
 rpmdigest_SOURCES = rpmdigest.c
 rpmdigest_LDADD = $(RPMIO_LDADD_COMMON)
+
+rpmgenbasedir = rpmgenbasedir.c
+rpmgenbasedir_LDADD = $(RPMIO_LDADD_COMMON)
 
 rpmgenpkglist = rpmgenpkglist.c
 rpmgenpkglist_LDADD = $(RPMIO_LDADD_COMMON)
