@@ -13,6 +13,8 @@ gengpg.h
 getdate.c
 lookup3
 rpmdigest
+rpmgenpkglist
+rpmgensrclist
 rpmgrep
 rpmmtree
 rpmtar
