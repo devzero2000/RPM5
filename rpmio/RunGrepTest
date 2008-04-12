@@ -24,6 +24,9 @@ fi
 utf8=1
 
 pcregrep=`pwd`/rpmgrep
+if $pcregrep -u "PCRE version" $pcregrep 2>&1 | grep "not compiled with PCRE_UTF8 support" >/dev/null; then
+  utf8=0
+fi
 
 rpmtar=`pwd`/rpmtar
 rpmdigest=`pwd`/rpmdigest
@@ -32,7 +35,7 @@ genvfypat() {
   gen="$1"; shift
   vfy="$1"; shift
   pat="$1"; shift
-  tfn=`mktemp`
+  tfn=`mktemp -t genvfypat.XXXXXXXXXX`
   $gen $pat > $tfn
   $vfy --status -c $tfn
   if [ $? != 0 ] ; then exit 1; fi
@@ -46,7 +49,7 @@ if [ -x $rpmtar ]; then
 
   rm -f a.*
   cd testdata
-  ar qf ../a.a g* t* w* >& /dev/null
+  ar qf ../a.a g* t* w* >& /dev/null || ar qT ../a.a g* t* w* >& /dev/null
   cd ..
   gzip -c a.a > a.a.gz
   bzip2 -c a.a > a.a.bz2
