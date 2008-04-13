@@ -1,5 +1,7 @@
 
 5.1b2 -> 5.1.0:
+    - rse: merge OpenPKG-specific "extension-based-compression-detection" change
+    - afb: disable intl/iconv for popt 1.14 under Mac OS X
     - jbj: update {nl,pl,sl,sv,vi}.po from Translation Project.
 
 5.1b1 -> 5.1b2:
