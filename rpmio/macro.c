@@ -2388,8 +2388,44 @@ int isCompressed(const char * file, rpmCompressedMagic * compressed)
     ssize_t nb;
     int rc = -1;
     unsigned char magic[13];
+#if defined(RPM_VENDOR_OPENPKG) /* extension-based-compression-detection */
+    size_t file_len;
+#endif
 
     *compressed = COMPRESSED_NOT;
+
+#if defined(RPM_VENDOR_OPENPKG) /* extension-based-compression-detection */
+    file_len = strlen(file);
+    if (   (file_len > 4 && strcasecmp(file+file_len-4, ".tbz") == 0)
+        || (file_len > 4 && strcasecmp(file+file_len-4, ".bz2") == 0)) {
+        *compressed = COMPRESSED_BZIP2;
+        return 0;
+    }
+    else if (file_len > 4 && strcasecmp(file+file_len-4, ".zip") == 0) {
+        *compressed = COMPRESSED_ZIP;
+        return 0;
+    }
+    else if (   (file_len > 3 && strcasecmp(file+file_len-3, ".lz") == 0)
+             || (file_len > 3 && strcasecmp(file+file_len-3, ".7z") == 0)
+             || (file_len > 5 && strcasecmp(file+file_len-5, ".lzma") == 0)) {
+        *compressed = COMPRESSED_LZMA;
+        return 0;
+    }
+    else if (   (file_len > 4 && strcasecmp(file+file_len-4, ".tgz") == 0)
+             || (file_len > 3 && strcasecmp(file+file_len-3, ".gz") == 0)
+             || (file_len > 2 && strcasecmp(file+file_len-2, ".Z") == 0)) {
+        *compressed = COMPRESSED_OTHER;
+        return 0;
+    }
+    else if (file_len > 5 && strcasecmp(file+file_len-5, ".cpio") == 0) {
+        *compressed = COMPRESSED_NOT;
+        return 0;
+    }
+    else if (file_len > 4 && strcasecmp(file+file_len-4, ".tar") == 0) {
+        *compressed = COMPRESSED_NOT;
+        return 0;
+    }
+#endif
 
     fd = Fopen(file, "r");
     if (fd == NULL || Ferror(fd)) {
@@ -2424,11 +2460,13 @@ int isCompressed(const char * file, rpmCompressedMagic * compressed)
      &&	magic[2] == 'Z' && magic[3] == 'O')	/* lzop */
 	*compressed = COMPRESSED_LZOP;
     else
+#if !defined(RPM_VENDOR_OPENPKG) /* extension-based-compression-detection */
     /* XXX Ick, LZMA has no magic. See http://lkml.org/lkml/2005/6/13/285 */
     if (magic[ 9] == (unsigned char) 0x00 && magic[10] == (unsigned char) 0x00 &&
 	magic[11] == (unsigned char) 0x00 && magic[12] == (unsigned char) 0x00)	/* lzmash */
 	*compressed = COMPRESSED_LZMA;
     else
+#endif
     if ((magic[0] == (unsigned char) 0037 && magic[1] == (unsigned char) 0213)	/* gzip */
      ||	(magic[0] == (unsigned char) 0037 && magic[1] == (unsigned char) 0236)	/* old gzip */
      ||	(magic[0] == (unsigned char) 0037 && magic[1] == (unsigned char) 0036)	/* pack */

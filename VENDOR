@@ -368,6 +368,24 @@
                      not for the complete command argument line.
      ________________________________________________________________________
 
+     Change:         extension-based-compression-detection
+     Purpose:        Prefer file extension for detecting file compression.
+     Reason:         RPM tries to detect file compression by inspecting
+                     "magic" bytes at the front of a file. This works
+                     for formats with known "magic" bytes just fine,
+                     but fails horribly for formats like LZMA where no
+                     such "magic" bytes exist. As a result RPM 5 this
+                     way too often thinks .tar files are LZMA compressed
+                     and stumbles over this during build-time. For
+                     OpenPKG we prefer to first use file extension
+                     based determination (if someone is mis-names
+                     his distribution files we have to take action
+                     anyway) and fall back to "magic" byte based
+                     determination only if no well known extension is
+                     found. Additionally, detecting LZMA we want to do
+                     via file extension only.
+     ________________________________________________________________________
+
   o  Name:           RPM4DARWIN
      Vendor:         RPM for Darwin (Mac OS X) <http://rpm4darwin.sourceforge.net/>
      Representative: Anders F. Bjorklund <afb@users.sourceforge.net> <afb@rpm5.org>
