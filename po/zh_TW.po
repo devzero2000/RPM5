@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 5.0.0\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2008-04-06 10:21+0200\n"
+"POT-Creation-Date: 2008-04-13 12:29-0400\n"
 "PO-Revision-Date: 2008-01-12 22:21+0800\n"
 "Last-Translator: Wei-Lun Chao <chaoweilun@gmail.com>\n"
 "Language-Team: Chinese (traditional) <zh-l10n@linux.org.tw>\n"
@@ -3455,12 +3455,12 @@ msgstr "對於目標緩衝區的巨集展開太大\n"
 msgid "Macro '%s' is readonly and cannot be changed.\n"
 msgstr "巨集「%s」是唯讀而無法變更。\n"
 
-#: rpmio/macro.c:2397 rpmio/macro.c:2403
+#: rpmio/macro.c:2432 rpmio/macro.c:2438
 #, c-format
 msgid "File %s: %s\n"
 msgstr "檔案 %s: %s\n"
 
-#: rpmio/macro.c:2406
+#: rpmio/macro.c:2441
 #, c-format
 msgid "File %s is smaller than %u bytes\n"
 msgstr "檔案 %s 小於 %u 位元組\n"

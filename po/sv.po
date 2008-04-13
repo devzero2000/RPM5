@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 5.0.0\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2008-04-06 10:21+0200\n"
+"POT-Creation-Date: 2008-04-13 12:29-0400\n"
 "PO-Revision-Date: 2008-02-04 16:51+0100\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <tp-sv@listor.tp-sv.se>\n"
@@ -3482,12 +3482,12 @@ msgstr "Makroexpansionen är för stor för målbufferten\n"
 msgid "Macro '%s' is readonly and cannot be changed.\n"
 msgstr "Makrot \"%s\" är endast läsbart och kan inte ändras.\n"
 
-#: rpmio/macro.c:2397 rpmio/macro.c:2403
+#: rpmio/macro.c:2432 rpmio/macro.c:2438
 #, c-format
 msgid "File %s: %s\n"
 msgstr "Fil %s: %s\n"
 
-#: rpmio/macro.c:2406
+#: rpmio/macro.c:2441
 #, c-format
 msgid "File %s is smaller than %u bytes\n"
 msgstr "Filen %s är mindre än %u byte\n"

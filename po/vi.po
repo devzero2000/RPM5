@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 5.1\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2008-04-06 10:21+0200\n"
+"POT-Creation-Date: 2008-04-13 12:29-0400\n"
 "PO-Revision-Date: 2008-04-11 21:37+0930\n"
 "Last-Translator: Clytie Siddall <clytie@riverland.net.au>\n"
 "Language-Team: Vietnamese <vi-VN@googlegroups.com>\n"
@@ -3525,12 +3525,12 @@ msgstr "Vĩ lệnh mở rộng vượt quá vùng đệm đích\n"
 msgid "Macro '%s' is readonly and cannot be changed.\n"
 msgstr "Vĩ lệnh « %s » chỉ cho phép đọc nên không thể thay đổi.\n"
 
-#: rpmio/macro.c:2397 rpmio/macro.c:2403
+#: rpmio/macro.c:2432 rpmio/macro.c:2438
 #, c-format
 msgid "File %s: %s\n"
 msgstr "Tập tin %s: %s\n"
 
-#: rpmio/macro.c:2406
+#: rpmio/macro.c:2441
 #, c-format
 msgid "File %s is smaller than %u bytes\n"
 msgstr "Tập tin %s nhỏ hơn %u byte\n"
