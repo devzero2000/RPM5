@@ -1,5 +1,7 @@
 
 5.1b1 -> 5.2b1:
+    - afb: fix parallel build of rpmdigest (automake quirk)
+    - afb: disable intl/iconv for popt 1.14 under Mac OS X
     - jbj: update {nl,pl,sl,sv,vi}.po from Translation Project.
     - rse: replace obsolete AC_AIX and AC_MINIX checks with newer AC_USE_SYSTEM_EXTENSIONS to get rid of Autoconf warnings
     - proyvind: improve %_smp_mflags so that it will correctly detect number of cpus on macos, while defaulting to 1 cpu if unable to detect

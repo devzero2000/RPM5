@@ -41,7 +41,7 @@ AM_CPPFLAGS = \
 	@WITH_XAR_CPPFLAGS@
 
 RPMIO_LDADD_COMMON = \
-	$(top_builddir)/rpmio/librpmio.la \
+	librpmio.la \
 	$(top_builddir)/misc/librpmmisc.la \
 	@LTLIBINTL@
 
