@@ -1,5 +1,6 @@
 
 5.1b1 -> 5.2b1:
+    - afb: fix VPATH builds finding rpmversion.h (in build)
     - afb: fix parallel build of rpmdigest (automake quirk)
     - afb: disable intl/iconv for popt 1.14 under Mac OS X
     - jbj: update {nl,pl,sl,sv,vi}.po from Translation Project.
