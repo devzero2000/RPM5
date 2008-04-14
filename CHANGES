@@ -1,5 +1,6 @@
 
 5.1b2 -> 5.1.0:
+    - jbj: rpmte: fix: snip ".arch" from "-release", same NEVRA check broke.
     - nkukard: support building under Linux/uClibc in addition to Linux/GLIBC
     - jbj: update id.po from Translation Project.
     - rse: merge OpenPKG-specific "extension-based-compression-detection" change
