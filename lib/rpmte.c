@@ -103,6 +103,9 @@ static void addTE(rpmts ts, rpmte p, Header h,
 assert(he->p.str != NULL);
     p->NEVR = (xx ? he->p.str : xstrdup("?N-?V-?R.?A"));
     p->name = xstrdup(p->NEVR);
+    /* XXX discard ".arch" from NVRA */
+    if ((p->release = strrchr(p->name, '.')) != NULL)
+	*p->release++ = '\0';
     if ((p->release = strrchr(p->name, '-')) != NULL)
 	*p->release++ = '\0';
     if ((p->version = strrchr(p->name, '-')) != NULL)
