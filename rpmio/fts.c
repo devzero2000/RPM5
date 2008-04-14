@@ -45,6 +45,9 @@ static char sccsid[] = "@(#)fts.c	8.6 (Berkeley) 8/14/94";
 #include <string.h>
 #include <unistd.h>
 #else
+#if defined(__UCLIBC__)
+#   define __fxstat64(_stat_ver, _fd, _sbp)    fstat((_fd), (_sbp))
+#endif
 #if defined(hpux) || defined(__hpux)
 # define        _INCLUDE_POSIX_SOURCE
 #   define __errno_location() 	(&errno)

@@ -1,5 +1,6 @@
 
 5.1b2 -> 5.1.0:
+    - nkukard: support building under Linux/uClibc in addition to Linux/GLIBC
     - jbj: update id.po from Translation Project.
     - rse: merge OpenPKG-specific "extension-based-compression-detection" change
     - afb: disable intl/iconv for popt 1.14 under Mac OS X
