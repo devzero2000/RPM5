@@ -57,6 +57,8 @@ static void delTE(rpmte p)
     p->arch = _free(p->arch);
     p->epoch = _free(p->epoch);
     p->name = _free(p->name);
+    p->version = _free(p->version);
+    p->release = _free(p->release);
     p->NEVR = _free(p->NEVR);
     p->NEVRA = _free(p->NEVRA);
     p->pkgid = _free(p->pkgid);
@@ -102,15 +104,17 @@ static void addTE(rpmts ts, rpmte p, Header h,
     xx = headerGet(h, he, 0);
 assert(he->p.str != NULL);
     p->NEVR = (xx ? he->p.str : xstrdup("?N-?V-?R.?A"));
-    p->name = xstrdup(p->NEVR);
-    /* XXX discard ".arch" from NVRA */
-    if ((p->release = strrchr(p->name, '.')) != NULL)
-	*p->release++ = '\0';
-    if ((p->release = strrchr(p->name, '-')) != NULL)
-	*p->release++ = '\0';
-    if ((p->version = strrchr(p->name, '-')) != NULL)
-	*p->version++ = '\0';
 
+    he->tag = RPMTAG_NAME;
+    xx = headerGet(h, he, 0);
+    p->name = (xx ? he->p.str : xstrdup("?RPMTAG_NAME?"));
+    he->tag = RPMTAG_VERSION;
+    xx = headerGet(h, he, 0);
+    p->version = (xx ? he->p.str : xstrdup("?RPMTAG_VERSION?"));
+    he->tag = RPMTAG_RELEASE;
+    xx = headerGet(h, he, 0);
+    p->release = (xx ? he->p.str : xstrdup("?RPMTAG_RELEASE?"));
+    
     p->db_instance = 0;
 
     he->tag = RPMTAG_HDRID;
