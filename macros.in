@@ -1289,9 +1289,6 @@ print (t)\
 %_localedir		%{_datadir}/locale
 
 %_initrddir		%{_sysconfdir}/rc.d/init.d
-%_smp_mflags %([ -z "$RPM_BUILD_NCPUS" ] \\\
-	&& RPM_BUILD_NCPUS="`@NCPUS_COMMAND@`"; \\\
-	[ "$RPM_BUILD_NCPUS" -gt 1 ] && echo "-j$RPM_BUILD_NCPUS")
 
 #---------------------------------------------------------------------
 #   Multilibs
@@ -1435,6 +1432,12 @@ done \
 
 %patches %{lua: for i, p in ipairs(patches) do print(p.." ") end}
 %sources %{lua: for i, s in ipairs(sources) do print(s.." ") end}
+
+#------------------------------------------------------------------------------
+# argument to pass to 'make' to run one job per cpu in parallel on smp systems.
+%_smp_mflags %([ -z "$RPM_BUILD_NCPUS" ] \\\
+	&& RPM_BUILD_NCPUS="`@NCPUS_COMMAND@`"; \\\
+	[ "$RPM_BUILD_NCPUS" -gt 1 ] && echo "-j$RPM_BUILD_NCPUS")
 
 #------------------------------------------------------------------------------
 # arch macro for all Intel i?86 compatibile processors
