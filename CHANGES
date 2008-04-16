@@ -1,5 +1,6 @@
 
 5.1.0 -> 5.1.1:
+    - afb: fix parallel build of rpmdigest (automake quirk)
     - jbj: rpmte: revert to individual tags instead of RPMTAG_NVRA.
     - afb: macosx: fix thinko in previous xar linking workaround
 
