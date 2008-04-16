@@ -1,6 +1,7 @@
 
 5.1.0 -> 5.1.1:
     - jbj: rpmte: revert to individual tags instead of RPMTAG_NVRA.
+    - afb: macosx: fix thinko in previous xar linking workaround
 
 5.1b2 -> 5.1.0:
     - jbj: rpmte: fix: snip ".arch" from "-release", same NEVRA check broke.
