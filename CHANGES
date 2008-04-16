@@ -1,4 +1,7 @@
 
+5.1.0 -> 5.1.1:
+    - jbj: rpmte: revert to individual tags instead of RPMTAG_NVRA.
+
 5.1b2 -> 5.1.0:
     - jbj: rpmte: fix: snip ".arch" from "-release", same NEVRA check broke.
     - nkukard: support building under Linux/uClibc in addition to Linux/GLIBC
