@@ -1069,34 +1069,6 @@ exit:
 }
 
 /*************************************************
- * Construct printed ordinal.
- *
- * This turns a number into "1st", "3rd", etc display string.
- * @param n		the number
- * @return		the number's ordinal display string
- */
-/*@observer@*/
-static const char *
-ordin(unsigned n)
-	/*@*/
-{
-    static char buffer[16];
-    buffer[0] = '\0';
-    if (n > 0) {
-	char *p = buffer;
-	sprintf(p, " %u", n);
-	while (*p != '\0') p++;
-	switch (n%10) {
-	case 1:		strcpy(p, "st"); break;
-	case 2:		strcpy(p, "nd"); break;
-	case 3:		strcpy(p, "rd"); break;
-	default:	strcpy(p, "th"); break;
-	}
-    }
-    return buffer;
-}
-
-/*************************************************
  * Compile a single pattern.
  *
  * When the -F option has been used, this is called for each substring.
@@ -1145,7 +1117,7 @@ compile_single_pattern(const char *pattern,
 
     fprintf(stderr, _("%s: Error in"), __progname);
     if (filename == NULL)
-	fprintf(stderr, _("%s command-line"), ordin(count));
+	fprintf(stderr, _(" command-line %d"), count);
     else
 	fprintf(stderr, _(" file:line %s:%d"), filename, count);
     fprintf(stderr, _(" regex at offset %d: %s\n"), mire->erroff, mire->errmsg);

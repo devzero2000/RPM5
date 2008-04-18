@@ -87,8 +87,8 @@ if ENABLE_BUILD_MAXEXTLIBDEP
 librpmio_la_LDFLAGS += $(LDFLAGS)
 librpmio_la_LIBADD  += $(LIBS)
 endif
-librpmio.la: $(librpmio_la_OBJECTS) $(librpmio_la_DEPENDENCIES) 
-	$(librpmio_la_LINK) -rpath $(usrlibdir) $(librpmio_la_OBJECTS) $(librpmio_la_LIBADD)
+#librpmio.la: $(librpmio_la_OBJECTS) $(librpmio_la_DEPENDENCIES) 
+#	$(librpmio_la_LINK) -rpath $(usrlibdir) $(librpmio_la_OBJECTS) $(librpmio_la_LIBADD)
 
 install-data-hook:
 if !ENABLE_BUILD_LAFILES
