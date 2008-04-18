@@ -1090,8 +1090,8 @@ compile_single_pattern(const char *pattern,
     int xx;
 
     if (pattern_count >= MAX_PATTERN_COUNT) {
-	fprintf(stderr, _("%s: Too many %spatterns (max %d)\n"), __progname,
-		(filename == NULL)? "command-line " : "", MAX_PATTERN_COUNT);
+	fprintf(stderr, _("%s: Too many patterns (max %d)\n"), __progname,
+		MAX_PATTERN_COUNT);
 	return FALSE;
     }
 
