@@ -1,5 +1,6 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: header: fix: avoid double free with damaged data (#442761).
     - jbj: rpmte: revert to individual tags instead of RPMTAG_NVRA.
     - jbj: rpmte: fix: snip ".arch" from "-release", same NEVRA check broke.
     - afb: fix VPATH builds finding rpmversion.h (in build)
