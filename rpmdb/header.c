@@ -1288,6 +1288,8 @@ assert(entry->info.offset <= 0);		/* XXX insurance */
 	    rdlen = regionSwab(NULL, ril, 0, pe, dataStart, dataEnd, 0);
 	    /* XXX 1 on success. */
 	    rc = (rdlen == 0) ? 0 : 1;
+	    if (rc == 0)
+		he->p.ptr = _free(he->p.ptr);
 	} else {
 	    count = entry->length;
 	    he->p.ptr = (!minMem
@@ -2096,6 +2098,7 @@ int headerGet(Header h, HE_t he, unsigned int flags)
     if (!((rc == 0 && he->freeData == 0 && he->p.ptr == NULL) ||
 	  (rc == 1 && he->freeData == 1 && he->p.ptr != NULL)))
     {
+if (_hdr_debug)
 fprintf(stderr, "==> %s(%u) %u %p[%u] free %u rc %d\n", name, (unsigned) he->tag, (unsigned) he->t, he->p.ptr, (unsigned) he->c, he->freeData, rc);
     }
 /*@=modfilesys@*/
