@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2008-04-06 10:14+0200\n"
+"POT-Creation-Date: 2008-04-23 10:41-0400\n"
 "PO-Revision-Date: 2002-08-27 13:36-0400\n"
 "Last-Translator: Eugene Kanter, <eugene@blackcatlinux.com>\n"
 "Language-Team: Black Cat Linux Team <blackcat-support@blackcatlinux.com>\n"
@@ -3548,12 +3548,12 @@ msgstr ""
 msgid "Macro '%s' is readonly and cannot be changed.\n"
 msgstr ""
 
-#: rpmio/macro.c:2397 rpmio/macro.c:2403
+#: rpmio/macro.c:2432 rpmio/macro.c:2438
 #, c-format
 msgid "File %s: %s\n"
 msgstr "Файл %s: %s\n"
 
-#: rpmio/macro.c:2406
+#: rpmio/macro.c:2441
 #, c-format
 msgid "File %s is smaller than %u bytes\n"
 msgstr "Длина файла %s меньше чем %u байт\n"
@@ -3829,249 +3829,249 @@ msgstr ""
 msgid "%s: Failed to open directory %s: %s\n"
 msgstr "ошибка удаления каталога %s: %s\n"
 
-#: rpmio/rpmgrep.c:1052 rpmio/rpmgrep.c:1215
+#: rpmio/rpmgrep.c:1052 rpmio/rpmgrep.c:1187
 #, fuzzy, c-format
 msgid "%s: Failed to open %s: %s\n"
 msgstr "невозможно открыть %s: %s\n"
 
-#: rpmio/rpmgrep.c:1121
-#, c-format
-msgid "%s: Too many %spatterns (max %d)\n"
-msgstr ""
+#: rpmio/rpmgrep.c:1093
+#, fuzzy, c-format
+msgid "%s: Too many patterns (max %d)\n"
+msgstr "Слишком много заплат!\n"
 
-#: rpmio/rpmgrep.c:1146
+#: rpmio/rpmgrep.c:1118
 #, c-format
 msgid "%s: Error in"
 msgstr ""
 
-#: rpmio/rpmgrep.c:1148
+#: rpmio/rpmgrep.c:1120
 #, c-format
-msgid "%s command-line"
+msgid " command-line %d"
 msgstr ""
 
-#: rpmio/rpmgrep.c:1150
+#: rpmio/rpmgrep.c:1122
 #, fuzzy, c-format
 msgid " file:line %s:%d"
 msgstr "Неверный файл %s: %s\n"
 
-#: rpmio/rpmgrep.c:1151
+#: rpmio/rpmgrep.c:1123
 #, c-format
 msgid " regex at offset %d: %s\n"
 msgstr ""
 
-#: rpmio/rpmgrep.c:1293
+#: rpmio/rpmgrep.c:1265
 #, c-format
 msgid "%s: Invalid value \"%s\" for -d\n"
 msgstr ""
 
-#: rpmio/rpmgrep.c:1303
+#: rpmio/rpmgrep.c:1275
 #, c-format
 msgid "%s: Invalid value \"%s\" for -D\n"
 msgstr ""
 
-#: rpmio/rpmgrep.c:1320
+#: rpmio/rpmgrep.c:1292
 #, fuzzy, c-format
 msgid "%s: Unknown color setting \"%s\"\n"
 msgstr "строка %d: Неизвестный тэг: %s\n"
 
-#: rpmio/rpmgrep.c:1336
+#: rpmio/rpmgrep.c:1308
 #, fuzzy, c-format
 msgid "%s %s (PCRE version %s)\n"
 msgstr "RPM версия %s\n"
 
-#: rpmio/rpmgrep.c:1339
+#: rpmio/rpmgrep.c:1311
 #, c-format
 msgid "%s %s (without PCRE)\n"
 msgstr ""
 
-#: rpmio/rpmgrep.c:1344
+#: rpmio/rpmgrep.c:1316
 #, fuzzy, c-format
 msgid "%s: Unknown option -%c\n"
 msgstr "Неизвестный параметр %c в %s(%s)\n"
 
-#: rpmio/rpmgrep.c:1362
+#: rpmio/rpmgrep.c:1334
 msgid "set number of following context lines"
 msgstr ""
 
-#: rpmio/rpmgrep.c:1362 rpmio/rpmgrep.c:1364 rpmio/rpmgrep.c:1366
+#: rpmio/rpmgrep.c:1334 rpmio/rpmgrep.c:1336 rpmio/rpmgrep.c:1338
 msgid "=number"
 msgstr ""
 
-#: rpmio/rpmgrep.c:1364
+#: rpmio/rpmgrep.c:1336
 msgid "set number of prior context lines"
 msgstr ""
 
-#: rpmio/rpmgrep.c:1366
+#: rpmio/rpmgrep.c:1338
 msgid "set number of context lines, before & after"
 msgstr ""
 
-#: rpmio/rpmgrep.c:1368
+#: rpmio/rpmgrep.c:1340
 msgid "print only a count of matching lines per FILE"
 msgstr ""
 
-#: rpmio/rpmgrep.c:1370
+#: rpmio/rpmgrep.c:1342
 msgid "matched text color option (auto|always|never)"
 msgstr ""
 
-#: rpmio/rpmgrep.c:1370 rpmio/rpmgrep.c:1372
+#: rpmio/rpmgrep.c:1342 rpmio/rpmgrep.c:1344
 #, fuzzy
 msgid "=option"
 msgstr "<параметр>"
 
-#: rpmio/rpmgrep.c:1372
+#: rpmio/rpmgrep.c:1344
 msgid "matched text colour option (auto|always|never)"
 msgstr ""
 
-#: rpmio/rpmgrep.c:1375
+#: rpmio/rpmgrep.c:1347
 msgid "device, FIFO, or socket action (read|skip)"
 msgstr ""
 
-#: rpmio/rpmgrep.c:1375 rpmio/rpmgrep.c:1377
+#: rpmio/rpmgrep.c:1347 rpmio/rpmgrep.c:1349
 msgid "=action"
 msgstr ""
 
-#: rpmio/rpmgrep.c:1377
+#: rpmio/rpmgrep.c:1349
 msgid "directory action (read|skip|recurse)"
 msgstr ""
 
-#: rpmio/rpmgrep.c:1380 rpmio/rpmgrep.c:1383
+#: rpmio/rpmgrep.c:1352 rpmio/rpmgrep.c:1355
 msgid "specify pattern (may be used more than once)"
 msgstr ""
 
-#: rpmio/rpmgrep.c:1380 rpmio/rpmgrep.c:1383 rpmio/rpmgrep.c:1456
-#: rpmio/rpmgrep.c:1458
+#: rpmio/rpmgrep.c:1352 rpmio/rpmgrep.c:1355 rpmio/rpmgrep.c:1428
+#: rpmio/rpmgrep.c:1430
 msgid "(p)"
 msgstr ""
 
-#: rpmio/rpmgrep.c:1386
+#: rpmio/rpmgrep.c:1358
 msgid "patterns are sets of newline-separated strings"
 msgstr ""
 
-#: rpmio/rpmgrep.c:1389 rpmio/rpmgrep.c:1393
+#: rpmio/rpmgrep.c:1361 rpmio/rpmgrep.c:1365
 msgid "read patterns from file (may be used more than once)"
 msgstr ""
 
-#: rpmio/rpmgrep.c:1390 rpmio/rpmgrep.c:1394
+#: rpmio/rpmgrep.c:1362 rpmio/rpmgrep.c:1366
 #, fuzzy
 msgid "=path"
 msgstr "<путь>"
 
-#: rpmio/rpmgrep.c:1397
+#: rpmio/rpmgrep.c:1369
 msgid "output file offsets, not text"
 msgstr ""
 
-#: rpmio/rpmgrep.c:1399
+#: rpmio/rpmgrep.c:1371
 msgid "force the prefixing filename on output"
 msgstr ""
 
-#: rpmio/rpmgrep.c:1401
+#: rpmio/rpmgrep.c:1373
 msgid "suppress the prefixing filename on output"
 msgstr ""
 
-#: rpmio/rpmgrep.c:1403
+#: rpmio/rpmgrep.c:1375
 msgid "ignore case distinctions"
 msgstr ""
 
-#: rpmio/rpmgrep.c:1405
+#: rpmio/rpmgrep.c:1377
 msgid "print only FILE names containing matches"
 msgstr ""
 
-#: rpmio/rpmgrep.c:1407
+#: rpmio/rpmgrep.c:1379
 msgid "print only FILE names not containing matches"
 msgstr ""
 
-#: rpmio/rpmgrep.c:1409
+#: rpmio/rpmgrep.c:1381
 msgid "set name for standard input"
 msgstr ""
 
-#: rpmio/rpmgrep.c:1409
+#: rpmio/rpmgrep.c:1381
 msgid "=name"
 msgstr ""
 
-#: rpmio/rpmgrep.c:1411
+#: rpmio/rpmgrep.c:1383
 msgid "output line numbers and offsets, not text"
 msgstr ""
 
-#: rpmio/rpmgrep.c:1414
+#: rpmio/rpmgrep.c:1386
 msgid "use the named locale"
 msgstr ""
 
-#: rpmio/rpmgrep.c:1414
+#: rpmio/rpmgrep.c:1386
 msgid "=locale"
 msgstr ""
 
-#: rpmio/rpmgrep.c:1416
+#: rpmio/rpmgrep.c:1388
 msgid "run in multiline mode"
 msgstr ""
 
-#: rpmio/rpmgrep.c:1418
+#: rpmio/rpmgrep.c:1390
 msgid "set newline type (CR|LF|CRLF|ANYCRLF|ANY)"
 msgstr ""
 
-#: rpmio/rpmgrep.c:1418
+#: rpmio/rpmgrep.c:1390
 msgid "=type"
 msgstr ""
 
-#: rpmio/rpmgrep.c:1420
+#: rpmio/rpmgrep.c:1392
 msgid "print line number with output lines"
 msgstr ""
 
-#: rpmio/rpmgrep.c:1422
+#: rpmio/rpmgrep.c:1394
 msgid "show only the part of the line that matched"
 msgstr ""
 
-#: rpmio/rpmgrep.c:1425
+#: rpmio/rpmgrep.c:1397
 msgid "suppress output, just set return code"
 msgstr ""
 
-#: rpmio/rpmgrep.c:1427
+#: rpmio/rpmgrep.c:1399
 msgid "recursively scan sub-directories"
 msgstr ""
 
-#: rpmio/rpmgrep.c:1430 rpmio/rpmgrep.c:1437
+#: rpmio/rpmgrep.c:1402 rpmio/rpmgrep.c:1409
 msgid "exclude matching files when recursing (may be used more than once)"
 msgstr ""
 
-#: rpmio/rpmgrep.c:1431 rpmio/rpmgrep.c:1434 rpmio/rpmgrep.c:1438
-#: rpmio/rpmgrep.c:1441
+#: rpmio/rpmgrep.c:1403 rpmio/rpmgrep.c:1406 rpmio/rpmgrep.c:1410
+#: rpmio/rpmgrep.c:1413
 msgid "=pattern"
 msgstr ""
 
-#: rpmio/rpmgrep.c:1433 rpmio/rpmgrep.c:1440
+#: rpmio/rpmgrep.c:1405 rpmio/rpmgrep.c:1412
 msgid "include matching files when recursing (may be used more than once)"
 msgstr ""
 
-#: rpmio/rpmgrep.c:1444 rpmio/rpmgrep.c:1446
+#: rpmio/rpmgrep.c:1416 rpmio/rpmgrep.c:1418
 msgid "suppress error messages"
 msgstr ""
 
-#: rpmio/rpmgrep.c:1448
+#: rpmio/rpmgrep.c:1420
 msgid "use UTF-8 mode"
 msgstr ""
 
-#: rpmio/rpmgrep.c:1451
+#: rpmio/rpmgrep.c:1423
 #, fuzzy
 msgid "print version information and exit"
 msgstr "вывести номер версии этой прграммы"
 
-#: rpmio/rpmgrep.c:1454
+#: rpmio/rpmgrep.c:1426
 msgid "select non-matching lines"
 msgstr ""
 
-#: rpmio/rpmgrep.c:1456
+#: rpmio/rpmgrep.c:1428
 msgid "force patterns to match only as words"
 msgstr ""
 
-#: rpmio/rpmgrep.c:1458
+#: rpmio/rpmgrep.c:1430
 msgid "force patterns to match only whole lines"
 msgstr ""
 
-#: rpmio/rpmgrep.c:1463
+#: rpmio/rpmgrep.c:1435
 #, fuzzy
 msgid "Common options for all rpmio executables:"
 msgstr "Общие параметры для всех режимов и компонентов rpm:"
 
-#: rpmio/rpmgrep.c:1469
+#: rpmio/rpmgrep.c:1441
 msgid ""
 "Usage: rpmgrep [OPTION...] [PATTERN] [FILE1 FILE2 ...]\n"
 "\n"
@@ -4083,7 +4083,7 @@ msgid ""
 "Example: rpmgrep -i 'hello.*world' menu.h main.c"
 msgstr ""
 
-#: rpmio/rpmgrep.c:1479
+#: rpmio/rpmgrep.c:1451
 msgid ""
 "  When reading patterns from a file instead of using a command line option,\n"
 "  trailing white space is removed and blank lines are ignored.\n"
@@ -4092,22 +4092,22 @@ msgid ""
 "h.\n"
 msgstr ""
 
-#: rpmio/rpmgrep.c:1546
+#: rpmio/rpmgrep.c:1518
 #, c-format
 msgid "%s: Cannot mix --only-matching, --file-offsets and/or --line-offsets\n"
 msgstr ""
 
-#: rpmio/rpmgrep.c:1566
+#: rpmio/rpmgrep.c:1538
 #, c-format
 msgid "%s: Invalid newline specifier \"%s\"\n"
 msgstr ""
 
-#: rpmio/rpmgrep.c:1628
+#: rpmio/rpmgrep.c:1600
 #, c-format
 msgid "%s: Error in 'exclude' regex at offset %d: %s\n"
 msgstr ""
 
-#: rpmio/rpmgrep.c:1640
+#: rpmio/rpmgrep.c:1612
 #, c-format
 msgid "%s: Error in 'include' regex at offset %d: %s\n"
 msgstr ""
