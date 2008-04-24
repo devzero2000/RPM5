@@ -1,4 +1,7 @@
 5.0.3 -> 5.0.4:
+    - jbj: header: free tag data on error retrurn with damaged data.
+    - rpm.org: rpmsw: insure that time has passed while calibrating (#435309).
+    - jbj: header: fix: avoid double free with damaged data (#442761).
     - jbj: QNX: retrofit u_int32_t typedef where needed.
     - jbj: add random arch name feelgood fluffiness (#432496).
     - jbj: prepare for Fedorable dependency loops (#437041).
