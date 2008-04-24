@@ -1468,6 +1468,7 @@ static int copyEntry(const indexEntry entry,
 	    entryInfo pe = (entryInfo) (ei + 2);
 	    /*@=castexpose@*/
 	    unsigned char * dataStart = (unsigned char *) (pe + ntohl(ei[0]));
+	    unsigned char * dataEnd;
 	    int_32 rdl = -entry->info.offset;	/* negative offset */
 	    int_32 ril = rdl/sizeof(*pe);
 
@@ -1491,11 +1492,14 @@ static int copyEntry(const indexEntry entry,
 	    /*@=castexpose@*/
 
 	    dataStart = (unsigned char *) memcpy(pe + ril, dataStart, rdl);
+	    dataEnd = dataStart + rdl;
 	    /*@=sizeoftype@*/
 
-	    rc = regionSwab(NULL, ril, 0, pe, dataStart, dataStart + rdl, 0);
+	    rc = regionSwab(NULL, ril, 0, pe, dataStart, dataEnd, 0);
 	    /* XXX 1 on success. */
 	    rc = (rc < 0) ? 0 : 1;
+	    if (rc == 0)
+		he->p.ptr = _free(he->p.ptr);
 	} else {
 	    count = entry->length;
 	    (*p).ptr = (!minMem
