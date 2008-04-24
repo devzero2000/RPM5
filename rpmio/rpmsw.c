@@ -225,7 +225,8 @@ rpmtime_t rpmswInit(void)
 	rpmsw_type = 1;
 
 	/* Compute cycles/usec */
-	rpmsw_cycles = sum_cycles/sum_usecs;
+	if (sum_usecs > 0)	/* XXX insure that time has passed. */
+	    rpmsw_cycles = sum_cycles/sum_usecs;
 #else
 	rpmsw_type = 0;
 #endif
