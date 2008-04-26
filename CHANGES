@@ -1,5 +1,6 @@
 
 5.1.0 -> 5.2a0:
+    - afb/rse: add initial "devtool standalone" and Autoconf support for building against LZMA Utils
     - jbj: add --enable-build-gcov for CFLAGS -fprofile-arcs -ftest-coverage.
     - jbj: header: free tag data on error retrurn with damaged data.
     - rpm.org: rpmsw: insure that time has passed while calibrating (#435309).
