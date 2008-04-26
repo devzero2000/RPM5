@@ -1,5 +1,6 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: add --enable-build-gcov for CFLAGS -fprofile-arcs -ftest-coverage.
     - jbj: header: free tag data on error retrurn with damaged data.
     - rpm.org: rpmsw: insure that time has passed while calibrating (#435309).
     - jbj: header: fix: avoid double free with damaged data (#442761).
