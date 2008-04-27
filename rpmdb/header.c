@@ -1498,8 +1498,6 @@ static int copyEntry(const indexEntry entry,
 	    rc = regionSwab(NULL, ril, 0, pe, dataStart, dataEnd, 0);
 	    /* XXX 1 on success. */
 	    rc = (rc < 0) ? 0 : 1;
-	    if (rc == 0)
-		he->p.ptr = _free(he->p.ptr);
 	} else {
 	    count = entry->length;
 	    (*p).ptr = (!minMem
