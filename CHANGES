@@ -1,5 +1,6 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: permit firefox debugging by creating an empty dir (#444310).
     - afb/rse: add initial "devtool standalone" and Autoconf support for building against LZMA Utils
     - jbj: add --enable-build-gcov for CFLAGS -fprofile-arcs -ftest-coverage.
     - jbj: header: free tag data on error retrurn with damaged data.
