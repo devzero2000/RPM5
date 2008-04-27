@@ -36,5 +36,6 @@ debugedit_LDADD =	\
 rpmdeps_SOURCES =	rpmdeps.c
 
 rpmrepo_SOURCES =	rpmrepo.c
+rpmrepo_LDADD =		$(LDADD) -lsqlite3
 
 $(PROGRAMS): $(LDADD)

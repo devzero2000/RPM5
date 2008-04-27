@@ -2,6 +2,23 @@
  * \file rpmio/rpmrepo.c
  */
 
+#define	WITH_SQLITE
+
+#define	Realpath	realpath
+#define	Closedir	closedir
+
+#define	rpmioInit	rpmcliInit
+#define	rpmioFini	rpmcliFini
+
+#define	rpmioFtsOpts	ftsOpts
+#define	rpmioDigestHashAlgo	rpmDigestHashAlgo
+#define	rpmioDigestPoptTable	rpmDigestPoptTable
+
+#define	rpmioFtsPoptTable	rpmcliFtsPoptTable
+#define	rpmioAllPoptTable	rpmcliAllPoptTable
+
+#define	tagClean(_p)
+
 #include "system.h"
 
 #if defined(WITH_SQLITE)
@@ -47,10 +64,8 @@ extern int sqlite3_close(sqlite3 * db)
 #include <fts.h>
 #include <argv.h>
 #include <mire.h>
-#include <poptIO.h>
 
-#include <rpmtag.h>
-#include <rpmlib.h>		/* XXX for rpmts typedef */
+#include <rpmcli.h>
 #include <rpmts.h>
 
 #include "debug.h"
@@ -795,6 +810,7 @@ static const char ** repoGetFileList(rpmrepo repo, const char *roots[],
 	}
 #endif
 
+#if defined(RPMMIRE_PCRE)
 	/* Should this element be excluded/included? */
 	/* XXX todo: apply globs to fts_path rather than fts_name? */
 /*@-onlytrans@*/
@@ -803,6 +819,7 @@ static const char ** repoGetFileList(rpmrepo repo, const char *roots[],
 	if (mireApply(repo->includeMire, repo->nincludes, p->fts_name, 0, +1) < 0)
 	    continue;
 /*@=onlytrans@*/
+#endif
 
 	switch (p->fts_info) {
 	case FTS_D:
@@ -1699,6 +1716,8 @@ static struct poptOption optionsTable[] = {
 	N_("output more debugging info."), NULL },
  { "dryrun", '\0', POPT_ARG_VAL,		&__rpmrepo.dryrun, 1,
 	N_("sanity check arguments, don't create metadata"), NULL },
+
+#if defined(RPMMIRE_PCRE)
 #if defined(POPT_ARG_ARGV)
  { "excludes", 'x', POPT_ARG_ARGV,		&__rpmrepo.exclude_patterns, 0,
 	N_("glob PATTERN(s) to exclude"), N_("PATTERN") },
@@ -1713,6 +1732,8 @@ static struct poptOption optionsTable[] = {
  { "includes", 'i', POPT_ARG_STRING,		NULL, 'i',
 	N_("glob PATTERN(s) to include"), N_("PATTERN") },
 #endif
+#endif
+
 #ifdef	NOTYET
  { "basedir", '\0', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmrepo.basedir, 0,
 	N_("top level directory"), N_("DIR") },
@@ -1920,6 +1941,7 @@ argvPrint("repo->directories", repo->directories, NULL);
     }
 #endif
 
+#if defined(RPMMIRE_PCRE)
     /* Set up mire patterns (no error returns with globs, easy pie). */
     if (mireLoadPatterns(RPMMIRE_GLOB, 0, repo->exclude_patterns, NULL,
                 &repo->excludeMire, &repo->nexcludes))
@@ -1927,6 +1949,7 @@ argvPrint("repo->directories", repo->directories, NULL);
     if (mireLoadPatterns(RPMMIRE_GLOB, 0, repo->include_patterns, NULL,
                 &repo->includeMire, &repo->nincludes))
 	repo_error(1, _("Error loading include glob patterns."));
+#endif
 
     /* Load the rpm list from a multi-rooted directory traversal. */
     if (repo->directories != NULL) {
@@ -1977,12 +2000,15 @@ exit:
     repo->pkglist = argvFree(repo->pkglist);
     repo->directories = argvFree(repo->directories);
     repo->manifests = argvFree(repo->manifests);
+
+#if defined(RPMMIRE_PCRE)
 /*@-onlytrans -refcounttrans @*/
     repo->excludeMire = mireFreeAll(repo->excludeMire, repo->nexcludes);
     repo->includeMire = mireFreeAll(repo->includeMire, repo->nincludes);
 /*@=onlytrans =refcounttrans @*/
     repo->exclude_patterns = argvFree(repo->exclude_patterns);
     repo->include_patterns = argvFree(repo->include_patterns);
+#endif
 
     tagClean(NULL);
     optCon = rpmioFini(optCon);
