@@ -1,4 +1,5 @@
 5.0.3 -> 5.0.4:
+    - jbj: permit firefox debugging by creating an empty dir (#444310).
     - jbj: header: free tag data on error retrurn with damaged data.
     - rpm.org: rpmsw: insure that time has passed while calibrating (#435309).
     - jbj: header: fix: avoid double free with damaged data (#442761).
