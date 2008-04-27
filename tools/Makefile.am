@@ -17,7 +17,7 @@ INCLUDES = -I. \
 
 EXTRA_DIST =	hashtab.h
 
-EXTRA_PROGRAMS = debugedit convertdb1
+EXTRA_PROGRAMS = debugedit convertdb1 rpmrepo
 
 LDADD = $(top_builddir)/lib/librpm.la
 
@@ -34,5 +34,7 @@ debugedit_LDADD =	\
 	@WITH_POPT_LIB@
 
 rpmdeps_SOURCES =	rpmdeps.c
+
+rpmrepo_SOURCES =	rpmrepo.c
 
 $(PROGRAMS): $(LDADD)
