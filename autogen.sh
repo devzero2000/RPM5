@@ -38,6 +38,9 @@ libtoolize () {
 echo "===> zlib"
 ( cd zlib && sh ./autogen.sh --noconfigure "$@" )
 echo "<=== zlib"
+echo "===> lzma"
+( cd lzma && sh ./autogen.sh --noconfigure "$@" )
+echo "<=== lzma"
 echo "===> file"
 ( cd file && sh ./autogen.sh --noconfigure "$@" )
 echo "<=== file"

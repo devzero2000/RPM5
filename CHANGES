@@ -1,5 +1,7 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: preliminary support for internal -lzma (non-functional atm).
+    - jbj: add lzma checkout to devtool system target.
     - jbj: disable loop unraveling error msgs for now. better needs to be done.
     - jbj: permit firefox debugging by creating an empty dir (#444310).
     - afb/rse: add initial "devtool standalone" and Autoconf support for building against LZMA Utils

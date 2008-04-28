@@ -961,8 +961,13 @@ dnl # LZMA Utils
 RPM_CHECK_LIB(
     [LZMA Utils], [lzma],
     [lzma], [lzma_init], [lzma.h],
-    [no,external:none], [],
-    [], [])
+    [no,external:internal:none], [lzma:src:src],
+    [ AC_CHECK_FUNC(lzma_init)
+      if test ".$RPM_CHECK_LIB_LOCATION" = .internal; then
+          WITH_LZMA_INTERNAL=true
+          AC_DEFINE(HAVE_LZMA_H, 1, [Define to 1 if you have <lzma.h>])
+      fi
+    ], [])
 
 dnl # BeeCrypt
 RPM_CHECK_LIB(
