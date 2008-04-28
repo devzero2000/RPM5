@@ -2466,6 +2466,10 @@ int isCompressed(const char * file, rpmCompressedMagic * compressed)
 	*compressed = COMPRESSED_LZMA;
     else
 #endif
+#if defined(RPM_VENDOR_OPENSUSE)
+    else if (magic[0] == 0135 && magic[1] == 0 && magic[2] == 0) { /* lzma */
+	*compressed = COMPRESSED_LZMA;
+#endif
     if ((magic[0] == (unsigned char) 0037 && magic[1] == (unsigned char) 0213)	/* gzip */
      ||	(magic[0] == (unsigned char) 0037 && magic[1] == (unsigned char) 0236)	/* old gzip */
      ||	(magic[0] == (unsigned char) 0037 && magic[1] == (unsigned char) 0036)	/* pack */

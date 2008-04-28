@@ -1,5 +1,6 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: merge OpenSUSE lzma.diff patch.
     - jbj: preliminary support for internal -lzma (non-functional atm).
     - jbj: add lzma checkout to devtool system target.
     - jbj: disable loop unraveling error msgs for now. better needs to be done.
