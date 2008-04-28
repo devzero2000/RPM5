@@ -982,7 +982,7 @@ static const char * rfileHeaderSprintf(Header h, const char * qfmt)
 	/*@modifies h, fileSystem @*/
 {
     const char * msg = NULL;
-    const char * s = headerSprintf(h, qfmt, NULL, NULL, &msg);
+    const char * s = headerSprintf(h, qfmt, rpmTagTable, rpmHeaderFormats, &msg);
     if (s == NULL)
 	repo_error(1, _("headerSprintf(%s): %s"), qfmt, msg);
 assert(s != NULL);
@@ -1035,7 +1035,7 @@ static const char * rfileHeaderSprintfHack(Header h, const char * qfmt)
     static const char mark[] = "'XXX'";
     static size_t nmark = sizeof("'XXX'") - 1;
     const char * msg = NULL;
-    char * s = (char *) headerSprintf(h, qfmt, NULL, NULL, &msg);
+    char * s = (char *) headerSprintf(h, qfmt, rpmTagTable, rpmHeaderFormats, &msg);
     char * f, * fe;
     int nsubs = 0;
 
