@@ -1,4 +1,6 @@
 
+5.1.1 -> 5.1.2:
+
 5.1.0 -> 5.1.1:
     - jbj: permit firefox debugging by creating an empty dir (#444310).
     - jbj: header: free tag data on error retrurn with damaged data.
