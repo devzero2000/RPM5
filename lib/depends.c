@@ -1768,15 +1768,19 @@ zapRelation(rpmte q, rpmte p,
 
 	Flags = rpmdsFlags(requires);
 
+#if 0
 	dp = rpmdsNewDNEVR( identifyDepend(Flags), requires);
+#endif
 
 	/*
 	 * Attempt to unravel a dependency loop by eliminating Requires's.
 	 */
 	if (zap) {
+#if 0
 	    rpmlog(msglvl,
 			_("removing %s \"%s\" from tsort relations.\n"),
 			(rpmteNEVRA(p) ?  rpmteNEVRA(p) : "???"), dp);
+#endif
 	    rpmteTSI(p)->tsi_count--;
 	    if (tsi_prev) tsi_prev->tsi_next = tsi->tsi_next;
 	    tsi->tsi_next = NULL;
@@ -2364,10 +2368,12 @@ rescan:
 		/* Find (and destroy if co-requisite) "q <- p" relation. */
 		dp = zapRelation(q, p, 1, &nzaps, msglvl);
 
+#if 0
 		/* Print next member of loop. */
 		nevra = rpmteNEVRA(p);
 		rpmlog(msglvl, "    %-40s %s\n", (nevra ? nevra : "???"),
 			(dp ? dp : "not found!?!"));
+#endif
 
 		dp = _free(dp);
 	    }
