@@ -1,8 +1,19 @@
 /* Support for LZMA library.
  */
+
+#include "system.h"
+#include "rpmio_internal.h"
+#include <rpmmacro.h>
+#include <rpmcb.h>
+
 #include "LzmaDecode.h"
 
+#include "debug.h"
+
+#include "LzmaDecode.c"
+
 #define kInBufferSize (1 << 15)
+
 typedef struct _CBuffer {
   ILzmaInCallback InCallback;
 /*@dependent@*/
@@ -226,6 +237,7 @@ static /*@null@*/ FD_t lzdFdopen(void * cookie, const char * fmode)
 }
 /*@=globuse@*/
 
+#ifdef	UNUSED
 /*@-globuse@*/
 static int lzdFlush(FD_t fd)
 	/*@globals fileSystem @*/
@@ -237,6 +249,7 @@ static int lzdFlush(FD_t fd)
     return fflush(lzfile->g_InBuffer.File);
 }
 /*@=globuse@*/
+#endif
 
 /* =============================================================== */
 /*@-globuse@*/
@@ -354,7 +367,7 @@ DBGIO(fd, (stderr, "==>\tlzdClose(%p) rc %lx %s\n", cookie, (unsigned long)rc, f
 
 /*@-type@*/ /* LCL: function typedefs */
 static struct FDIO_s lzdio_s = {
-  lzdRead, lzdWrite, lzdSeek, lzdClose,	lzdOpen, XfdLink, XfdFree, XfdNew,
+  lzdRead, lzdWrite, lzdSeek, lzdClose,	lzdOpen, lzdFdopen,
 };
 /*@=type@*/
 

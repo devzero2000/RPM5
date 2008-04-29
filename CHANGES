@@ -1,5 +1,7 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: add _fdopen to FDIO_t, expose fdbg(), make lzdio.c standalone.
+    - jbj: expose XfdLink/XfdFree/XfdNew, nuke the FDIO_t vectors.
     - jbj: eliminate unused FDIO_t vectors. XfdLink/XfdFree/XfdNew need nuking.
     - jbj: create lzdio.c to carry lzma comprssion, possibly w dlopen().
     - jbj: merge OpenSUSE lzma.diff patch.

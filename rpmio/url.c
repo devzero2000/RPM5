@@ -104,10 +104,10 @@ URLDBGREFS(0, (stderr, "--> url %p -- %d %s at %s:%u\n", u, u->nrefs, msg, file,
 	} else if (fdFileno(u->ctrl) >= 0)
 	    xx = fdio->close(u->ctrl);
 #else
-	(void) Fclose(u->ctrl);
+	xx = Fclose(u->ctrl);
 #endif
 
-	u->ctrl = fdio->_fdderef(u->ctrl, "persist ctrl (urlFree)", file, line);
+	u->ctrl = XfdFree(u->ctrl, "persist ctrl (urlFree)", file, line);
 	/*@-usereleased@*/
 	if (u->ctrl)
 	    fprintf(stderr, _("warning: u %p ctrl %p nrefs != 0 (%s %s)\n"),
@@ -124,10 +124,10 @@ URLDBGREFS(0, (stderr, "--> url %p -- %d %s at %s:%u\n", u, u->nrefs, msg, file,
 	} else if (fdFileno(u->data) >= 0)
 	    xx = fdio->close(u->data);
 #else
-	(void) Fclose(u->ctrl);
+	xx = Fclose(u->ctrl);
 #endif
 
-	u->data = fdio->_fdderef(u->data, "persist data (urlFree)", file, line);
+	u->data = XfdFree(u->data, "persist data (urlFree)", file, line);
 	/*@-usereleased@*/
 	if (u->data)
 	    fprintf(stderr, _("warning: u %p data %p nrefs != 0 (%s %s)\n"),

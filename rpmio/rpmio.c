@@ -168,8 +168,7 @@ int _dav_debug = 0;
 
 /* =============================================================== */
 
-static /*@observer@*/ const char * fdbg(/*@null@*/ FD_t fd)
-	/*@*/
+const char * fdbg(FD_t fd)
 {
     static char buf[BUFSIZ];
     char *be = buf;
@@ -288,26 +287,10 @@ int fdSeekNot(void * cookie,
     return -2;
 }
 
-#ifdef NOTUSED
-FILE *fdFdopen(void * cookie, const char *fmode)
-{
-    FD_t fd = c2f(cookie);
-    int fdno;
-    FILE * fp;
-
-    if (fmode == NULL) return NULL;
-    fdno = fdFileno(fd);
-    if (fdno < 0) return NULL;
-    fp = fdopen(fdno, fmode);
-DBGIO(fd, (stderr, "==> fdFdopen(%p,\"%s\") fdno %d -> fp %p fdno %d\n", cookie, fmode, fdno, fp, fileno(fp)));
-    fd = fdFree(fd, "open (fdFdopen)");
-    return fp;
-}
-#endif
-
 /* =============================================================== */
 /*@-mustmod@*/ /* FIX: cookie is modified */
-static inline /*@null@*/ FD_t XfdLink(void * cookie, const char * msg,
+/*@null@*/
+FD_t XfdLink(void * cookie, const char * msg,
 		const char * file, unsigned line)
 	/*@modifies *cookie @*/
 {
@@ -325,7 +308,7 @@ DBGREFS(fd, (stderr, "--> fd  %p ++ %d %s at %s:%u %s\n", fd, fd->nrefs, msg, fi
 }
 /*@=mustmod@*/
 
-static inline /*@null@*/
+/*@null@*/
 FD_t XfdFree( /*@killref@*/ FD_t fd, const char *msg,
 		const char *file, unsigned line)
 	/*@modifies fd @*/
@@ -361,7 +344,7 @@ DBGREFS(fd, (stderr, "--> fd  %p -- %d %s at %s:%u %s\n", fd, fd->nrefs, msg, fi
     return NULL;
 }
 
-static inline /*@null@*/
+/*@null@*/
 FD_t XfdNew(const char * msg, const char * file, unsigned line)
 	/*@globals internalState @*/
 	/*@modifies internalState @*/
@@ -549,9 +532,37 @@ DBGIO(fd, (stderr, "==>\tfdOpen(\"%s\",%x,0%o) %s\n", path, (unsigned)flags, (un
     /*@-refcounttrans@*/ return fd; /*@=refcounttrans@*/
 }
 
+#ifdef NOTUSED
+FILE *fdFdopen(void * cookie, const char *fmode)
+{
+    FD_t fd = c2f(cookie);
+    int fdno;
+    FILE * fp;
+
+    if (fmode == NULL) return NULL;
+    fdno = fdFileno(fd);
+    if (fdno < 0) return NULL;
+    fp = fdopen(fdno, fmode);
+DBGIO(fd, (stderr, "==> fdFdopen(%p,\"%s\") fdno %d -> fp %p fdno %d\n", cookie, fmode, fdno, fp, fileno(fp)));
+    fd = fdFree(fd, "open (fdFdopen)");
+    return fp;
+}
+#endif
+
+static /*@null@*/ FD_t fdFdopen(/*@unused@*/ void * cookie,
+		/*@unused@*/ const char * fmode)
+	/*@*/
+{
+    FD_t fd;
+    if (cookie == NULL) return NULL;
+    fd = c2f(cookie);
+DBGIO(fd, (stderr, "==>\tfdFdopen(%p,\"%s\") %s\n", (fd ? fd : NULL), fmode, fdbg(fd)));
+    return NULL;
+}
+
 /*@-type@*/ /* LCL: function typedefs */
 static struct FDIO_s fdio_s = {
-  fdRead, fdWrite, fdSeek, fdClose,	fdOpen, XfdLink, XfdFree, XfdNew,
+  fdRead, fdWrite, fdSeek, fdClose, fdOpen, fdFdopen,
 };
 /*@=type@*/
 
@@ -2299,7 +2310,7 @@ DBGIO(fd, (stderr, "==>\tufdOpen(\"%s\",%x,0%o) %s\n", url, (unsigned)flags, (un
 
 /*@-type@*/ /* LCL: function typedefs */
 static struct FDIO_s ufdio_s = {
-  ufdRead, ufdWrite, ufdSeek, ufdClose,	ufdOpen, XfdLink, XfdFree, XfdNew,
+  ufdRead, ufdWrite, ufdSeek, ufdClose,	ufdOpen, fdFdopen,
 };
 /*@=type@*/
 
@@ -2523,7 +2534,7 @@ DBGIO(fd, (stderr, "==>\tgzdClose(%p) rc %lx %s\n", cookie, (unsigned long)rc, f
 
 /*@-type@*/ /* LCL: function typedefs */
 static struct FDIO_s gzdio_s = {
-  gzdRead, gzdWrite, gzdSeek, gzdClose,	gzdOpen, XfdLink, XfdFree, XfdNew,
+  gzdRead, gzdWrite, gzdSeek, gzdClose,	gzdOpen, gzdFdopen,
 };
 /*@=type@*/
 
@@ -2711,7 +2722,7 @@ DBGIO(fd, (stderr, "==>\tbzdClose(%p) rc %lx %s\n", cookie, (unsigned long)rc, f
 
 /*@-type@*/ /* LCL: function typedefs */
 static struct FDIO_s bzdio_s = {
-  bzdRead, bzdWrite, bzdSeek, bzdClose,	bzdOpen, XfdLink, XfdFree, XfdNew,
+  bzdRead, bzdWrite, bzdSeek, bzdClose,	bzdOpen, bzdFdopen,
 };
 /*@=type@*/
 
@@ -2719,8 +2730,6 @@ FDIO_t bzdio = /*@-compmempass@*/ &bzdio_s /*@=compmempass@*/ ;
 
 /*@=moduncon@*/
 #endif	/* HAVE_BZLIB_H */
-
-#include "lzdio.c"
 
 /* =============================================================== */
 /*@observer@*/
@@ -3050,19 +3059,19 @@ fprintf(stderr, "*** Fdopen(%p,%s) %s\n", fd, fmode, fdbg(fd));
 	} else if (!strcmp(end, "gzdio")) {
 	    iof = gzdio;
 	    /*@-internalglobs@*/
-	    fd = gzdFdopen(fd, zstdio);
+	    fd = iof->_fdopen(fd, zstdio);
 	    /*@=internalglobs@*/
 #endif
 #if defined(HAVE_BZLIB_H)
 	} else if (!strcmp(end, "bzdio")) {
 	    iof = bzdio;
 	    /*@-internalglobs@*/
-	    fd = bzdFdopen(fd, zstdio);
+	    fd = iof->_fdopen(fd, zstdio);
 	    /*@=internalglobs@*/
 #endif
-    } else if (!strcmp(end, "lzdio")) {
-        iof = lzdio;
-        fd = lzdFdopen(fd, zstdio);
+	} else if (!strcmp(end, "lzdio")) {
+	    iof = lzdio;
+	    fd = iof->_fdopen(fd, zstdio);
 	} else if (!strcmp(end, "ufdio")) {
 	    iof = ufdio;
 	} else if (!strcmp(end, "fpio")) {
@@ -3091,7 +3100,7 @@ fprintf(stderr, "*** Fdopen fpio fp %p\n", (void *)fp);
 #if defined(HAVE_ZLIB_H)
 	    iof = gzdio;
 	    /*@-internalglobs@*/
-	    fd = gzdFdopen(fd, zstdio);
+	    fd = iof->_fdopen(fd, zstdio);
 	    /*@=internalglobs@*/
 #endif
 	}
@@ -3565,7 +3574,7 @@ void rpmioClean(void)
 
 /*@-type@*/ /* LCL: function typedefs */
 static struct FDIO_s fpio_s = {
-  ufdRead, ufdWrite, fdSeek, ufdClose,	ufdOpen, XfdLink, XfdFree, XfdNew,
+  ufdRead, ufdWrite, fdSeek, ufdClose, ufdOpen, fdFdopen,
 };
 /*@=type@*/
 

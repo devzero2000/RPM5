@@ -5,7 +5,7 @@ AUTOMAKE_OPTIONS = 1.4 foreign
 LINT = splint
 
 EXTRA_DIST = \
-	getdate.y lzdio.c rpmcpio.c rpmcpio.h \
+	getdate.y LzamDecode.c rpmcpio.c rpmcpio.h \
 	rpmgenbasedir.c rpmgenpkglist.c rpmgensrclist.c \
 	rpmmtree.c rpmrepo.c rpmtar.c rpmtar.h \
 	tdir.c tfts.c tget.c tglob.c thkp.c thtml.c tinv.c tkey.c tmire.c \
@@ -67,9 +67,9 @@ usrlibdir = $(libdir)
 usrlib_LTLIBRARIES = librpmio.la
 librpmio_la_SOURCES = \
 	ar.c argv.c cpio.c digest.c fts.c getdate.c getpass.c \
-	iosm.c macro.c mire.c mount.c \
+	iosm.c lzdio.c macro.c mire.c mount.c \
 	md2.c md4.c poptIO.c rmd128.c rmd160.c rmd256.c rmd320.c sha224.c \
-	salsa10.c salsa20.c tiger.c LzmaDecode.c \
+	salsa10.c salsa20.c tiger.c \
 	rpmbc.c rpmdav.c rpmhash.c rpmhook.c rpmio.c rpmio-stub.c \
 	rpmlog.c rpmlua.c rpmmalloc.c rpmmg.c rpmnss.c rpmpgp.c \
 	rpmrpc.c rpmsq.c rpmssl.c rpmsw.c rpmxar.c \

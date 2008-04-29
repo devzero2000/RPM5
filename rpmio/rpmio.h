@@ -96,56 +96,11 @@ typedef FD_t (*fdio_open_function_t) (const char * path, int flags, mode_t mode)
 
 /**
  */
-typedef /*@only@*/ /*@null@*/ FD_t (*fdio_ref_function_t) ( /*@only@*/ void * cookie,
-		const char * msg, const char * file, unsigned line)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/;
-
-/**
- */
-typedef /*@only@*/ /*@null@*/ FD_t (*fdio_deref_function_t) ( /*@only@*/ FD_t fd,
-		const char * msg, const char * file, unsigned line)
-	/*@globals fileSystem @*/
-	/*@modifies fd, fileSystem @*/;
-
-/**
- */
-typedef /*@only@*/ /*@null@*/ FD_t (*fdio_new_function_t) (const char * msg,
-		const char * file, unsigned line)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/;
-
-/*@}*/
-
-
-#ifdef	DYING
-/** \ingroup rpmrpc
- * \name RPMRPC Vectors.
- */
-/*@{*/
-
-/*@-typeuse@*/
-
-/**
- */
-typedef int (*fdio_stat_function_t) (const char * path, /*@out@*/ struct stat * st)
-	/*@globals errno, fileSystem @*/
-	/*@modifies *st, errno, fileSystem @*/;
-
-/**
- */
-typedef int (*fdio_lstat_function_t) (const char * path, /*@out@*/ struct stat * st)
-	/*@globals errno, fileSystem @*/
-	/*@modifies *st, errno, fileSystem @*/;
-
-/**
- */
-typedef int (*fdio_access_function_t) (const char * path, int amode)
+typedef FD_t (*fdio_fdopen_function_t) (void * cookie, const char * fmode)
 	/*@globals errno, fileSystem @*/
 	/*@modifies errno, fileSystem @*/;
-/*@=typeuse@*/
+
 /*@}*/
-#endif	/* DYING */
 
 
 /** \ingroup rpmio
@@ -155,13 +110,8 @@ struct FDIO_s {
   fdio_write_function_t		write;
   fdio_seek_function_t		seek;
   fdio_close_function_t		close;
-
   fdio_open_function_t		_open;
-
-  fdio_ref_function_t		_fdref;
-  fdio_deref_function_t		_fdderef;
-  fdio_new_function_t		_fdnew;
-
+  fdio_fdopen_function_t	_fdopen;
 };
 
 
@@ -573,7 +523,12 @@ int fdClose( /*@only@*/ void * cookie)
 FD_t fdLink (/*@only@*/ void * cookie, const char * msg)
 	/*@globals fileSystem @*/
 	/*@modifies *cookie, fileSystem @*/;
-#define	fdLink(_fd, _msg)	fdio->_fdref(_fd, _msg, __FILE__, __LINE__)
+/*@unused@*/
+/*@only@*/ /*@null@*/
+FD_t XfdLink (/*@only@*/ void * cookie, const char * msg, const char * fn, unsigned ln)
+	/*@globals fileSystem @*/
+	/*@modifies *cookie, fileSystem @*/;
+#define	fdLink(_fd, _msg)	XfdLink(_fd, _msg, __FILE__, __LINE__)
 
 /**
  */
@@ -582,7 +537,12 @@ FD_t fdLink (/*@only@*/ void * cookie, const char * msg)
 FD_t fdFree(/*@only@*/ FD_t fd, const char * msg)
 	/*@globals fileSystem @*/
 	/*@modifies fd, fileSystem @*/;
-#define	fdFree(_fd, _msg)	fdio->_fdderef(_fd, _msg, __FILE__, __LINE__)
+/*@unused@*/
+/*@only@*/ /*@null@*/
+FD_t XfdFree(/*@only@*/ FD_t fd, const char * msg, const char * fn, unsigned ln)
+	/*@globals fileSystem @*/
+	/*@modifies fd, fileSystem @*/;
+#define	fdFree(_fd, _msg)	XfdFree(_fd, _msg, __FILE__, __LINE__)
 
 /**
  */
@@ -591,7 +551,12 @@ FD_t fdFree(/*@only@*/ FD_t fd, const char * msg)
 FD_t fdNew (const char * msg)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
-#define	fdNew(_msg)		fdio->_fdnew(_msg, __FILE__, __LINE__)
+/*@unused@*/
+/*@only@*/ /*@null@*/
+FD_t XfdNew (const char * msg, const char * fn, unsigned ln)
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/;
+#define	fdNew(_msg)		XfdNew(_msg, __FILE__, __LINE__)
 
 /**
  */

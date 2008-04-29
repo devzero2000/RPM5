@@ -141,6 +141,11 @@ extern "C" {
 
 /** \ingroup rpmio
  */
+/*@observer@*/ const char * fdbg(/*@null@*/ FD_t fd)
+        /*@*/;
+
+/** \ingroup rpmio
+ */
 int fdFgets(FD_t fd, char * buf, size_t len)
 	/*@globals errno, fileSystem @*/
 	/*@modifies *buf, fd, errno, fileSystem @*/;
