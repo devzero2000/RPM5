@@ -101,7 +101,7 @@ URLDBGREFS(0, (stderr, "--> url %p -- %d %s at %s:%u\n", u, u->nrefs, msg, file,
 	if (fp) {
 	    fdPush(u->ctrl, fpio, fp, -1);   /* Push fpio onto stack */
 	    (void) Fclose(u->ctrl);
-	} else if (fdio->_fileno(u->ctrl) >= 0)
+	} else if (fdFileno(u->ctrl) >= 0)
 	    xx = fdio->close(u->ctrl);
 #else
 	(void) Fclose(u->ctrl);
@@ -121,7 +121,7 @@ URLDBGREFS(0, (stderr, "--> url %p -- %d %s at %s:%u\n", u, u->nrefs, msg, file,
 	if (fp) {
 	    fdPush(u->data, fpio, fp, -1);   /* Push fpio onto stack */
 	    (void) Fclose(u->data);
-	} else if (fdio->_fileno(u->data) >= 0)
+	} else if (fdFileno(u->data) >= 0)
 	    xx = fdio->close(u->data);
 #else
 	(void) Fclose(u->ctrl);

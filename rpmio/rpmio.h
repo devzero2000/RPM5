@@ -88,6 +88,11 @@ typedef int (*fdio_close_function_t) (void *cookie)
 	/*@globals errno, fileSystem, systemState @*/
 	/*@modifies *cookie, errno, fileSystem, systemState @*/;
 
+/**
+ */
+typedef FD_t (*fdio_open_function_t) (const char * path, int flags, mode_t mode)
+	/*@globals errno, fileSystem @*/
+	/*@modifies errno, fileSystem @*/;
 
 /**
  */
@@ -103,7 +108,6 @@ typedef /*@only@*/ /*@null@*/ FD_t (*fdio_deref_function_t) ( /*@only@*/ FD_t fd
 	/*@globals fileSystem @*/
 	/*@modifies fd, fileSystem @*/;
 
-
 /**
  */
 typedef /*@only@*/ /*@null@*/ FD_t (*fdio_new_function_t) (const char * msg,
@@ -111,74 +115,15 @@ typedef /*@only@*/ /*@null@*/ FD_t (*fdio_new_function_t) (const char * msg,
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
 
-
-/**
- */
-typedef int (*fdio_fileno_function_t) (void * cookie)
-	/*@globals fileSystem @*/
-	/*@modifies *cookie, fileSystem @*/;
-
-
-/**
- */
-typedef FD_t (*fdio_open_function_t) (const char * path, int flags, mode_t mode)
-	/*@globals errno, fileSystem @*/
-	/*@modifies errno, fileSystem @*/;
-
-/**
- */
-typedef FD_t (*fdio_fopen_function_t) (const char * path, const char * fmode)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/;
-
-/**
- */
-typedef void * (*fdio_ffileno_function_t) (FD_t fd)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/;
-
-/**
- */
-typedef int (*fdio_fflush_function_t) (FD_t fd)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/;
 /*@}*/
 
 
+#ifdef	DYING
 /** \ingroup rpmrpc
  * \name RPMRPC Vectors.
  */
 /*@{*/
 
-/**
- */
-typedef int (*fdio_mkdir_function_t) (const char * path, mode_t mode)
-	/*@globals errno, fileSystem @*/
-	/*@modifies errno, fileSystem @*/;
-
-/**
- */
-typedef int (*fdio_chdir_function_t) (const char * path)
-	/*@globals errno, fileSystem @*/
-	/*@modifies errno, fileSystem @*/;
-
-/**
- */
-typedef int (*fdio_rmdir_function_t) (const char * path)
-	/*@globals errno, fileSystem @*/
-	/*@modifies errno, fileSystem @*/;
-
-/**
- */
-typedef int (*fdio_rename_function_t) (const char * oldpath, const char * newpath)
-	/*@globals errno, fileSystem @*/
-	/*@modifies errno, fileSystem @*/;
-
-/**
- */
-typedef int (*fdio_unlink_function_t) (const char * path)
-	/*@globals errno, fileSystem @*/
-	/*@modifies errno, fileSystem @*/;
 /*@-typeuse@*/
 
 /**
@@ -200,6 +145,7 @@ typedef int (*fdio_access_function_t) (const char * path, int amode)
 	/*@modifies errno, fileSystem @*/;
 /*@=typeuse@*/
 /*@}*/
+#endif	/* DYING */
 
 
 /** \ingroup rpmio
@@ -210,21 +156,12 @@ struct FDIO_s {
   fdio_seek_function_t		seek;
   fdio_close_function_t		close;
 
+  fdio_open_function_t		_open;
+
   fdio_ref_function_t		_fdref;
   fdio_deref_function_t		_fdderef;
   fdio_new_function_t		_fdnew;
-  fdio_fileno_function_t	_fileno;
 
-  fdio_open_function_t		_open;
-  fdio_fopen_function_t		_fopen;
-  fdio_ffileno_function_t	_ffileno;
-  fdio_fflush_function_t	_fflush;
-
-  fdio_mkdir_function_t		_mkdir;
-  fdio_chdir_function_t		_chdir;
-  fdio_rmdir_function_t		_rmdir;
-  fdio_rename_function_t	_rename;
-  fdio_unlink_function_t	_unlink;
 };
 
 
@@ -596,28 +533,7 @@ off_t	fdSize(FD_t fd)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
 
-#ifdef UNUSED
-/*@null@*/ FILE *fdFdopen( /*@only@*/ void * cookie, const char * mode);
-#endif
-
-/* XXX Legacy interfaces needed by gnorpm, rpmfind et al */
-
 /*@-exportlocal@*/
-/**
- */
-#ifndef H_RPMIO_INTERNAL	/* XXX avoid gcc warning */
-/*@unused@*/ int fdFileno(void * cookie)
-	/*@*/;
-#define	fdFileno(_fd)		fdio->_fileno(_fd)
-#endif
-
-/**
- */
-/*@null@*/ FD_t fdOpen(const char *path, int flags, mode_t mode)
-	/*@globals errno, fileSystem, internalState @*/
-	/*@modifies errno, fileSystem, internalState @*/;
-#define	fdOpen(_path, _flags, _mode)	fdio->_open((_path), (_flags), (_mode))
-
 /**
  */
 /*@-incondefs@*/
@@ -642,6 +558,13 @@ int fdClose( /*@only@*/ void * cookie)
 	/*@globals errno, fileSystem, systemState, internalState @*/
 	/*@modifies *cookie, errno, fileSystem, systemState, internalState @*/;
 #define	fdClose(_fd)		fdio->close(_fd)
+
+/**
+ */
+/*@null@*/ FD_t fdOpen(const char *path, int flags, mode_t mode)
+	/*@globals errno, fileSystem, internalState @*/
+	/*@modifies errno, fileSystem, internalState @*/;
+#define	fdOpen(_path, _flags, _mode)	fdio->_open((_path), (_flags), (_mode))
 
 /**
  */
@@ -809,9 +732,6 @@ int ufdGetFile( /*@killref@*/ FD_t sfd, FD_t tfd)
  */
 /*@observer@*/ /*@unchecked@*/ extern FDIO_t lzdio;
 
-/**
- */
-/*@observer@*/ /*@unchecked@*/ extern FDIO_t fadio;
 /*@=exportlocal@*/
 /*@}*/
 

@@ -1,5 +1,7 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: eliminate unused FDIO_t vectors. XfdLink/XfdFree/XfdNew need nuking.
+    - jbj: create lzdio.c to carry lzma comprssion, possibly w dlopen().
     - jbj: merge OpenSUSE lzma.diff patch.
     - jbj: preliminary support for internal -lzma (non-functional atm).
     - jbj: add lzma checkout to devtool system target.
