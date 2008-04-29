@@ -176,8 +176,10 @@ int makeTempFile(const char * prefix, const char ** fnptr, FD_t * fdptr)
 	/* XXX FIXME: errno may not be correct for ufdio */
     } while ((fd == NULL || Ferror(fd)) && errno == EEXIST);
 
-    if (fd == NULL || Ferror(fd))
+    if (fd == NULL || Ferror(fd)) {
+	rpmError(RPMERR_SCRIPT, _("error creating temporary file %s\n"), tempfn);
 	goto errxit;
+    }
 
     switch(temput) {
     case URL_IS_PATH:
