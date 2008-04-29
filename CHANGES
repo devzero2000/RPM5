@@ -1,5 +1,6 @@
 
 5.1.1 -> 5.1.2:
+    - glen: print error when makeTempPath fails due missing temp dir
 
 5.1.0 -> 5.1.1:
     - jbj: permit firefox debugging by creating an empty dir (#444310).
