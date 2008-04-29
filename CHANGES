@@ -1,115 +1,116 @@
 4.4.9 -> 4.5:
-   - jbj: header: free tag data on error retrurn with damaged data.
-   - rpm.org: rpmsw: insure that time has passed while calibrating (#435309).
-   - jbj: header: fix: avoid double free with damaged data (#442761).
-    - jbj: fix: stray extraneous character with -qi --changelog spew.
-    - robert: backport debugedit.c from 5.0 to get it build with latest gcc
-    - glen: backport from 5.0: --rollback PSM_INIT changes added fstates before initialize.
-    - proyvind: add back SOURCEPACKAGE tag for Mandriva to allow packages to be rebuilt on older releases
-    - proyvind: add back rpm v3 format support for Mandriva
-    - proyvind: expose more functions in rpmps API (as rpm.org, initially based on us ;p)
-    - proyvind: fix built-in zlib dependencies (from gb)
-    - proyvind: force generation of PIC code for static libs that can be built into a DSO (zlib, file) (from gb)
-    - proyvind: make rpm -bb --quiet" quiet as should be (from pixel)
-    - proyvind: do check free size when bavail is 0 (from pixel)
-    - proyvind: allow to set %_srcdefattr for src.rpm (from pixel)
-    - proyvind: check amd64 vs x86_64, they're the same arch (from Gwenole Beauchesne/gb)
-    - proyvind: do not crash when FILELINKTOS has more entries than DIRNAMES (from pixel)
-    - proyvind: fix parse_hdlist (and so genhdlist2) on heavy loaded boxes for Mandriva (from pixel)
-    - proyvind: fix diff issue when buildroot contains some "//" (from Nanar)
-    - proyvind: avoid taking into account duplicates in file list when checking for unpackaged files
-    - proyvind: install perl module in vendor directory (from Rafael Garcia-Suarez/rgs)
-    - proyvind: add some extra functionality to gendiff (from Frederic Lepied/flepied)
-    - proyvind: fix segfault for old packages with postin, but no postinprog (from pixel)
-    - proyvind: fix rpm -K segfaulting on corrupted header (from pixel)
-    - proyvind: fix free on invalid pointer after displaying "Unable to open temp file" (from Pascal Rigaux/pixel)
-    - proyvind: allow --short-circuit -bb & -ba in Mandriva (from Nanar)
-    - proyvind: make rpmdb cpp compliant (from spturtle/Christiaan Welvaart)
-    - proyvind: make find-lang --with-gnome picks up omf files (rpm.org 4.4.2.2 / rhbz#251400)
-    - proyvind: fix usage with tar >= 1.15.91 that needs the --wildcard option to list *.spec files (for rpm -ta) (from pixel)
-    - proyvind: use LZMA_Alone file format, even with newer versions (from afb/rpm5 backport)
-    - proyvind: update lzma payload support for newer lzma utils (from afb/rpm5 backport)
-    - jbj: leave EVRcmp change as Mandriva specific for now.
-    - jbj: don't cache unsatisfied Suggests:.
-    - jbj: insturment headerNextIterator() statistics (noop in rpm-4.5).
-    - jbj: enlarge scope of he->avail test to include header extension cache.
-    - jbj: backport header tag/format extensions, reverting element arg hackery.
-    - jbj: eliminate unused end-of-array check.
-    - jbj: display RPM_I18NSTRING_TYPE as an array with --xml.
-    - jbj: update doxygen for recent changes.
-    - jbj: pass rpmTagData internally by reference, not by value.
-    - jbj: fix a memory leak while iterating query tags.
-    - jbj: handle RPM_I18NSTRING_TYPE as argv internally.
-    - jbj: completed tag container backport.
-    - jbj: fix: RPM_I18NSTRING_TYPE was being returned as argv array with --xml.
-    - jbj: eliminate warnings.
-    - jbj: keep the headerFoo() API invariant, eliminate warnings.
-    - jbj: backport (and enable) tag data cache.
-    - jbj: backport tag data typedef's, and add tag container.
-    - jbj: convert rel to abs linkto dependency iff directory is known.
-    - jbj: update sv.po (Translation Project).
-    - mej: remove -pie flags passed from rpm.spec when configuring zlib build.
-    - jbj: update known arch's.
-    - jbj: preserve "Filemd5s" as the legacy rpmdb table name.
-    - jbj: add --parentdirs & --linktos to change to opt-in behavior.
-    - robert: backport minimum neon >= 0.27.0 support from HEAD.
-    - jbj: backport macros.c from HEAD.
-    - rpm.org: python: add method for expanding macros.
-    - rpm.org: avoid truncating /var/log/rpmpkgs in case of errors (#232830).
-    - jbj: update debugedit to include buildid changes.
-    - jbj: update id.po (Translation Project).
-    - jbj: prepare for open as a macro in bleeding edge glibc-2.6.90+.
-    - jbj: python: backport signalsCaught, remove archscore.
-    - jbj: re-add --force popt alias.
-    - jbj: eliminate --initdb.
-    - jbj: eliminate --rsegfault/--wsegfault.
-    - jbj: add RPMTAG_DBINSTANCE header extension.
-    - jbj: parameterize Depends index and dependency result caching.
-    - jbj: adjust signal polling for python exit purposes <pmatlai@redhat.com>.
-    - jbj: use _macro_BUFSIZ, not compiled in BUFSIZ, to size expansion targets.
-    - jbj: enable %{dirname:...} macro primitive.
-    - jbj: adopt rpm.org signal handling <pmatlai@redhat.com>.
-    - jbj: fix a --import memory leak.
-    - jbj: selinux: use matchpthcon() instead or rpmsx.
-    - jbj: insure that RPMFILE_EXISTS is set for %config files.
-    - jbj: fix ptr alignment problem seen on pld/sparc64.
-    - jbj: re-add /usr/bin/rpmbuild for now, poptBT option wiring needs fixing.
-    - jbj: pass -F fnum to patch (#243720).
-    - jbj: refactor _free() from rpmlib.h -> rpmio.h.
-    - jbj: add _rpmhome macro, revector helper paths through _rpmhome.
-    - jbj: hack a version into magic install path. better needs to be done.
-    - jbj: start consistent versionlibdir usage in all Makefile.am files.
-    - jbj: populate /usr/lib/rpm/@VERSION@/ instead of foo-@VERSION@ files.
-    - jbj: move gendiff into the scripts directory.
-    - jbj: don't include perl/CVS with "make dist".
-    - jbj: remove rpmbuild and rpmb helper for now.
-    - jbj: fix plain brown rpm upgrade rpm.spec.
-    - jbj: rescusutate build after cvs server side tree surgery.
-    - skip packages/headers with unverifiable signatures.
-    - update library version.
-    - eliminate rpm executable helpers.
-    - install rpm into /usr/bin, not /bin.
-    - build popt as separate package.
-    - protottype headerGetEntry 4th arg as void *, not void **.
-    - add D_(...) i18n marker for debug messages, with default disable.
-    - perl: don't read rpmrc by default.
-    - python: don't read rpmrc by default.
-    - don't build Packagecolor index (yet).
-    - revert Filedigests -> Filemd5s index name.
-    - configure: modern usage.
-    - popt: allow tests to pass in distcheck where builddir != srcdir.
-    - python: restore rpm.RPMSENSE_PREREQ for rpmlint.
-    - python: permit hdr.name as well as hdr['name'].
-    - python: pathetic band-aid pythonic return fixing (#239586).
-    - python: missing ts reference while iterating(#241751).
-    - revert indices to db_hash for compatibility.
-    - upgrade to file-4.21 (CVE-2007-2026, CVE-2007-2799).
-    - build against rpm5.org cvs,
-    - fix: swap PART_INSTALL and PART_CLEAN automagic cleanup.
-    - keys: add Getpass stub vector.
-    - solaris: add clearenv stub.
-    - fix: avoid accessing freed memory.
-    - start rpm-4.5 development.
+	- glen: print error when makeTempPath fails due missing temp dir
+	- jbj: header: free tag data on error retrurn with damaged data.
+	- rpm.org: rpmsw: insure that time has passed while calibrating (#435309).
+	- jbj: header: fix: avoid double free with damaged data (#442761).
+	- jbj: fix: stray extraneous character with -qi --changelog spew.
+	- robert: backport debugedit.c from 5.0 to get it build with latest gcc
+	- glen: backport from 5.0: --rollback PSM_INIT changes added fstates before initialize.
+	- proyvind: add back SOURCEPACKAGE tag for Mandriva to allow packages to be rebuilt on older releases
+	- proyvind: add back rpm v3 format support for Mandriva
+	- proyvind: expose more functions in rpmps API (as rpm.org, initially based on us ;p)
+	- proyvind: fix built-in zlib dependencies (from gb)
+	- proyvind: force generation of PIC code for static libs that can be built into a DSO (zlib, file) (from gb)
+	- proyvind: make rpm -bb --quiet" quiet as should be (from pixel)
+	- proyvind: do check free size when bavail is 0 (from pixel)
+	- proyvind: allow to set %_srcdefattr for src.rpm (from pixel)
+	- proyvind: check amd64 vs x86_64, they're the same arch (from Gwenole Beauchesne/gb)
+	- proyvind: do not crash when FILELINKTOS has more entries than DIRNAMES (from pixel)
+	- proyvind: fix parse_hdlist (and so genhdlist2) on heavy loaded boxes for Mandriva (from pixel)
+	- proyvind: fix diff issue when buildroot contains some "//" (from Nanar)
+	- proyvind: avoid taking into account duplicates in file list when checking for unpackaged files
+	- proyvind: install perl module in vendor directory (from Rafael Garcia-Suarez/rgs)
+	- proyvind: add some extra functionality to gendiff (from Frederic Lepied/flepied)
+	- proyvind: fix segfault for old packages with postin, but no postinprog (from pixel)
+	- proyvind: fix rpm -K segfaulting on corrupted header (from pixel)
+	- proyvind: fix free on invalid pointer after displaying "Unable to open temp file" (from Pascal Rigaux/pixel)
+	- proyvind: allow --short-circuit -bb & -ba in Mandriva (from Nanar)
+	- proyvind: make rpmdb cpp compliant (from spturtle/Christiaan Welvaart)
+	- proyvind: make find-lang --with-gnome picks up omf files (rpm.org 4.4.2.2 / rhbz#251400)
+	- proyvind: fix usage with tar >= 1.15.91 that needs the --wildcard option to list *.spec files (for rpm -ta) (from pixel)
+	- proyvind: use LZMA_Alone file format, even with newer versions (from afb/rpm5 backport)
+	- proyvind: update lzma payload support for newer lzma utils (from afb/rpm5 backport)
+	- jbj: leave EVRcmp change as Mandriva specific for now.
+	- jbj: don't cache unsatisfied Suggests:.
+	- jbj: insturment headerNextIterator() statistics (noop in rpm-4.5).
+	- jbj: enlarge scope of he->avail test to include header extension cache.
+	- jbj: backport header tag/format extensions, reverting element arg hackery.
+	- jbj: eliminate unused end-of-array check.
+	- jbj: display RPM_I18NSTRING_TYPE as an array with --xml.
+	- jbj: update doxygen for recent changes.
+	- jbj: pass rpmTagData internally by reference, not by value.
+	- jbj: fix a memory leak while iterating query tags.
+	- jbj: handle RPM_I18NSTRING_TYPE as argv internally.
+	- jbj: completed tag container backport.
+	- jbj: fix: RPM_I18NSTRING_TYPE was being returned as argv array with --xml.
+	- jbj: eliminate warnings.
+	- jbj: keep the headerFoo() API invariant, eliminate warnings.
+	- jbj: backport (and enable) tag data cache.
+	- jbj: backport tag data typedef's, and add tag container.
+	- jbj: convert rel to abs linkto dependency iff directory is known.
+	- jbj: update sv.po (Translation Project).
+	- mej: remove -pie flags passed from rpm.spec when configuring zlib build.
+	- jbj: update known arch's.
+	- jbj: preserve "Filemd5s" as the legacy rpmdb table name.
+	- jbj: add --parentdirs & --linktos to change to opt-in behavior.
+	- robert: backport minimum neon >= 0.27.0 support from HEAD.
+	- jbj: backport macros.c from HEAD.
+	- rpm.org: python: add method for expanding macros.
+	- rpm.org: avoid truncating /var/log/rpmpkgs in case of errors (#232830).
+	- jbj: update debugedit to include buildid changes.
+	- jbj: update id.po (Translation Project).
+	- jbj: prepare for open as a macro in bleeding edge glibc-2.6.90+.
+	- jbj: python: backport signalsCaught, remove archscore.
+	- jbj: re-add --force popt alias.
+	- jbj: eliminate --initdb.
+	- jbj: eliminate --rsegfault/--wsegfault.
+	- jbj: add RPMTAG_DBINSTANCE header extension.
+	- jbj: parameterize Depends index and dependency result caching.
+	- jbj: adjust signal polling for python exit purposes <pmatlai@redhat.com>.
+	- jbj: use _macro_BUFSIZ, not compiled in BUFSIZ, to size expansion targets.
+	- jbj: enable %{dirname:...} macro primitive.
+	- jbj: adopt rpm.org signal handling <pmatlai@redhat.com>.
+	- jbj: fix a --import memory leak.
+	- jbj: selinux: use matchpthcon() instead or rpmsx.
+	- jbj: insure that RPMFILE_EXISTS is set for %config files.
+	- jbj: fix ptr alignment problem seen on pld/sparc64.
+	- jbj: re-add /usr/bin/rpmbuild for now, poptBT option wiring needs fixing.
+	- jbj: pass -F fnum to patch (#243720).
+	- jbj: refactor _free() from rpmlib.h -> rpmio.h.
+	- jbj: add _rpmhome macro, revector helper paths through _rpmhome.
+	- jbj: hack a version into magic install path. better needs to be done.
+	- jbj: start consistent versionlibdir usage in all Makefile.am files.
+	- jbj: populate /usr/lib/rpm/@VERSION@/ instead of foo-@VERSION@ files.
+	- jbj: move gendiff into the scripts directory.
+	- jbj: don't include perl/CVS with "make dist".
+	- jbj: remove rpmbuild and rpmb helper for now.
+	- jbj: fix plain brown rpm upgrade rpm.spec.
+	- jbj: rescusutate build after cvs server side tree surgery.
+	- skip packages/headers with unverifiable signatures.
+	- update library version.
+	- eliminate rpm executable helpers.
+	- install rpm into /usr/bin, not /bin.
+	- build popt as separate package.
+	- protottype headerGetEntry 4th arg as void *, not void **.
+	- add D_(...) i18n marker for debug messages, with default disable.
+	- perl: don't read rpmrc by default.
+	- python: don't read rpmrc by default.
+	- don't build Packagecolor index (yet).
+	- revert Filedigests -> Filemd5s index name.
+	- configure: modern usage.
+	- popt: allow tests to pass in distcheck where builddir != srcdir.
+	- python: restore rpm.RPMSENSE_PREREQ for rpmlint.
+	- python: permit hdr.name as well as hdr['name'].
+	- python: pathetic band-aid pythonic return fixing (#239586).
+	- python: missing ts reference while iterating(#241751).
+	- revert indices to db_hash for compatibility.
+	- upgrade to file-4.21 (CVE-2007-2026, CVE-2007-2799).
+	- build against rpm5.org cvs,
+	- fix: swap PART_INSTALL and PART_CLEAN automagic cleanup.
+	- keys: add Getpass stub vector.
+	- solaris: add clearenv stub.
+	- fix: avoid accessing freed memory.
+	- start rpm-4.5 development.
 
 =============================================================================
 
