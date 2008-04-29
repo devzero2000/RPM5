@@ -1,5 +1,6 @@
 
 5.1.0 -> 5.2a0:
+    - glen: print error when makeTempPath fails due missing temp dir
     - jbj: add _fdopen to FDIO_t, expose fdbg(), make lzdio.c standalone.
     - jbj: expose XfdLink/XfdFree/XfdNew, nuke the FDIO_t vectors.
     - jbj: eliminate unused FDIO_t vectors. XfdLink/XfdFree/XfdNew need nuking.
