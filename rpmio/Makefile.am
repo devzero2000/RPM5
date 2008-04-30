@@ -14,7 +14,7 @@ EXTRA_DIST = \
 
 EXTRA_PROGRAMS = rpmcpio \
 	rpmgenbasedir rpmgenpkglist rpmgensrclist \
-	rpmmtree rpmrepo rpmtar \
+	rpmmtree rpmrepo rpmtar rpmz \
 	tdir tfts tget tglob thkp thtml tinv tkey tmacro tmagic tmire \
 	tput tpw trpmio tsw dumpasn1 lookup3
 
@@ -237,6 +237,9 @@ rpmrepo_LDADD = $(RPM_LDADD_COMMON)
 
 rpmtar_SOURCES = rpmtar.c
 rpmtar_LDADD = $(RPM_LDADD_COMMON)
+
+rpmz_SOURCES = rpmz.c
+rpmz_LDADD = $(RPMIO_LDADD_COMMON)
 
 tdir_SOURCES = tdir.c
 tdir_LDADD = $(RPMIO_LDADD_COMMON)
