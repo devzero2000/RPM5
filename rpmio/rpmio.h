@@ -90,7 +90,7 @@ typedef int (*fdio_close_function_t) (void *cookie)
 
 /**
  */
-typedef FD_t (*fdio_open_function_t) (const char * path, int flags, mode_t mode)
+typedef FD_t (*fdio_fopen_function_t) (const char * path, const char * fmode)
 	/*@globals errno, fileSystem @*/
 	/*@modifies errno, fileSystem @*/;
 
@@ -110,7 +110,7 @@ struct FDIO_s {
   fdio_write_function_t		write;
   fdio_seek_function_t		seek;
   fdio_close_function_t		close;
-  fdio_open_function_t		_open;
+  fdio_fopen_function_t		_fopen;
   fdio_fdopen_function_t	_fdopen;
 };
 

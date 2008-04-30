@@ -549,20 +549,9 @@ DBGIO(fd, (stderr, "==> fdFdopen(%p,\"%s\") fdno %d -> fp %p fdno %d\n", cookie,
 }
 #endif
 
-static /*@null@*/ FD_t fdFdopen(/*@unused@*/ void * cookie,
-		/*@unused@*/ const char * fmode)
-	/*@*/
-{
-    FD_t fd;
-    if (cookie == NULL) return NULL;
-    fd = c2f(cookie);
-DBGIO(fd, (stderr, "==>\tfdFdopen(%p,\"%s\") %s\n", (fd ? fd : NULL), fmode, fdbg(fd)));
-    return NULL;
-}
-
 /*@-type@*/ /* LCL: function typedefs */
 static struct FDIO_s fdio_s = {
-  fdRead, fdWrite, fdSeek, fdClose, fdOpen, fdFdopen,
+  fdRead, fdWrite, fdSeek, fdClose, NULL, NULL,
 };
 /*@=type@*/
 
@@ -2310,7 +2299,7 @@ DBGIO(fd, (stderr, "==>\tufdOpen(\"%s\",%x,0%o) %s\n", url, (unsigned)flags, (un
 
 /*@-type@*/ /* LCL: function typedefs */
 static struct FDIO_s ufdio_s = {
-  ufdRead, ufdWrite, ufdSeek, ufdClose,	ufdOpen, fdFdopen,
+  ufdRead, ufdWrite, ufdSeek, ufdClose,	NULL, NULL,
 };
 /*@=type@*/
 
@@ -3574,7 +3563,7 @@ void rpmioClean(void)
 
 /*@-type@*/ /* LCL: function typedefs */
 static struct FDIO_s fpio_s = {
-  ufdRead, ufdWrite, fdSeek, ufdClose, ufdOpen, fdFdopen,
+  ufdRead, ufdWrite, fdSeek, ufdClose, NULL, NULL,
 };
 /*@=type@*/
 
