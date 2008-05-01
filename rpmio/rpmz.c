@@ -2,6 +2,22 @@
  * \file rpmio/rpmrepo.c
  */
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Copyright (C) 2007 Lasse Collin
+//
+//  This program is free software; you can redistribute it and/or
+//  modify it under the terms of the GNU Lesser General Public
+//  License as published by the Free Software Foundation; either
+//  version 2.1 of the License, or (at your option) any later version.
+//
+//  This program is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+//  Lesser General Public License for more details.
+//
+///////////////////////////////////////////////////////////////////////////////
+
 #include "system.h"
 
 #include <rpmio.h>
@@ -90,6 +106,7 @@ enum {
 };
 
 /*==============================================================*/
+
 #define GZ_SUFFIX	".gz"
 #define SUFFIX_LEN	(sizeof(GZ_SUFFIX)-1)
 #define	BUFLEN		(16 * 1024)
@@ -195,6 +212,325 @@ static rpmRC file_uncompress(const char *file)
 
 /*==============================================================*/
 
+typedef struct {
+	const char *name;
+	uint64_t id;
+} name_id_map;
+
+typedef struct {
+	const char *name;
+	const name_id_map *map;
+	uint64_t min;
+	uint64_t max;
+} option_map;
+
+
+/// Parses option=value pairs that are separated with colons, semicolons,
+/// or commas: opt=val:opt=val;opt=val,opt=val
+///
+/// Each option is a string, that is converted to an integer using the
+/// index where the option string is in the array.
+///
+/// Value can be either a number with minimum and maximum value limit, or
+/// a string-id map mapping a list of possible string values to integers.
+///
+/// When parsing both option and value succeed, a filter-specific function
+/// is called, which should update the given value to filter-specific
+/// options structure.
+///
+/// \param      str     String containing the options from the command line
+/// \param      opts    Filter-specific option map
+/// \param      set     Filter-specific function to update filter_options
+/// \param      filter_options  Pointer to filter-specific options structure
+///
+/// \return     Returns only if no errors occur.
+///
+static void
+parse_options(const char *str, const option_map *opts,
+		void (*set)(void *filter_options,
+			uint32_t key, uint64_t value),
+		void *filter_options)
+	/*@*/
+{
+	char * s;
+	char *name;
+
+	if (str == NULL || str[0] == '\0')
+		return;
+
+	s = xstrdup(str);
+	name = s;
+
+	while (1) {
+		char *split = strchr(name, ',');
+		char *value;
+		int found;
+		size_t i;
+
+		if (split != NULL)
+			*split = '\0';
+
+		value = strchr(name, '=');
+		if (value != NULL)
+			*value++ = '\0';
+
+		if (value == NULL || value[0] == '\0') {
+			fprintf(stderr, _("%s: %s: Options must be `name=value' "
+					"pairs separated with commas"),
+					__progname, str);
+			/*@-exitarg@*/ exit(2); /*@=exitarg@*/
+		}
+
+		// Look for the option name from the option map.
+		found = 0;
+		for (i = 0; opts[i].name != NULL; ++i) {
+			if (strcmp(name, opts[i].name) != 0)
+				continue;
+
+			if (opts[i].map == NULL) {
+				// value is an integer.
+				uint64_t v;
+#ifdef NOTYET
+				v = str_to_uint64(name, value,
+						opts[i].min, opts[i].max);
+#else
+				v = strtoull(value, NULL, 0);
+#endif
+				set(filter_options, i, v);
+			} else {
+				// value is a string which we should map
+				// to an integer.
+				size_t j;
+				for (j = 0; opts[i].map[j].name != NULL; ++j) {
+					if (strcmp(opts[i].map[j].name, value)
+							== 0)
+						break;
+				}
+
+				if (opts[i].map[j].name == NULL) {
+					fprintf(stderr, _("%s: %s: Invalid option "
+							"value"), __progname, value);
+					/*@-exitarg@*/ exit(2); /*@=exitarg@*/
+				}
+
+				set(filter_options, i, opts[i].map[j].id);
+			}
+
+			found = 1;
+			break;
+		}
+
+		if (!found) {
+			fprintf(stderr, _("%s: %s: Invalid option name"), __progname, name);
+			/*@-exitarg@*/ exit(2); /*@=exitarg@*/
+		}
+
+		if (split == NULL)
+			break;
+
+		name = split + 1;
+	}
+
+	free(s);
+	return;
+}
+
+/* ===== Subblock ===== */
+enum {
+	OPT_SIZE,
+	OPT_RLE,
+	OPT_ALIGN,
+};
+
+static void
+set_subblock(void *options, uint32_t key, uint64_t value)
+	/*@*/
+{
+	lzma_options_subblock *opt = options;
+
+	switch (key) {
+	case OPT_SIZE:
+		opt->subblock_data_size = value;
+		break;
+
+	case OPT_RLE:
+		opt->rle = value;
+		break;
+
+	case OPT_ALIGN:
+		opt->alignment = value;
+		break;
+	}
+}
+
+static lzma_options_subblock *
+parse_options_subblock(const char *str)
+	/*@*/
+{
+	static const option_map opts[] = {
+		{ "size", NULL,   LZMA_SUBBLOCK_DATA_SIZE_MIN,
+		                  LZMA_SUBBLOCK_DATA_SIZE_MAX },
+		{ "rle",  NULL,   LZMA_SUBBLOCK_RLE_OFF,
+		                  LZMA_SUBBLOCK_RLE_MAX },
+		{ "align",NULL,   LZMA_SUBBLOCK_ALIGNMENT_MIN,
+		                  LZMA_SUBBLOCK_ALIGNMENT_MAX },
+		{ NULL,   NULL,   0, 0 }
+	};
+
+	lzma_options_subblock *options
+			= xmalloc(sizeof(lzma_options_subblock));
+	options->allow_subfilters = 0;
+	options->alignment = LZMA_SUBBLOCK_ALIGNMENT_DEFAULT;
+	options->subblock_data_size = LZMA_SUBBLOCK_DATA_SIZE_DEFAULT;
+	options->rle = LZMA_SUBBLOCK_RLE_OFF;
+
+	parse_options(str, opts, &set_subblock, options);
+
+	return options;
+}
+
+/* ===== Delta ===== */
+
+enum {
+	OPT_DISTANCE,
+};
+
+
+static void
+set_delta(void *options, uint32_t key, uint64_t value)
+	/*@*/
+{
+	lzma_options_delta *opt = options;
+	switch (key) {
+	case OPT_DISTANCE:
+		opt->distance = value;
+		break;
+	}
+}
+
+static lzma_options_delta *
+parse_options_delta(const char *str)
+{
+	static const option_map opts[] = {
+		{ "distance", NULL,  LZMA_DELTA_DISTANCE_MIN,
+		                     LZMA_DELTA_DISTANCE_MAX },
+		{ NULL,       NULL,  0, 0 }
+	};
+
+	lzma_options_delta *options = xmalloc(sizeof(lzma_options_subblock));
+	// It's hard to give a useful default for this.
+	options->distance = LZMA_DELTA_DISTANCE_MIN;
+
+	parse_options(str, opts, &set_delta, options);
+
+	return options;
+}
+
+/* ===== LZMA ===== */
+enum {
+	OPT_DICT,
+	OPT_LC,
+	OPT_LP,
+	OPT_PB,
+	OPT_MODE,
+	OPT_FB,
+	OPT_MF,
+	OPT_MC
+};
+
+static void
+set_lzma(void *options, uint32_t key, uint64_t value)
+	/*@*/
+{
+	lzma_options_lzma *opt = options;
+
+	switch (key) {
+	case OPT_DICT:
+		opt->dictionary_size = value;
+		break;
+
+	case OPT_LC:
+		opt->literal_context_bits = value;
+		break;
+
+	case OPT_LP:
+		opt->literal_pos_bits = value;
+		break;
+
+	case OPT_PB:
+		opt->pos_bits = value;
+		break;
+
+	case OPT_MODE:
+		opt->mode = value;
+		break;
+
+	case OPT_FB:
+		opt->fast_bytes = value;
+		break;
+
+	case OPT_MF:
+		opt->match_finder = value;
+		break;
+
+	case OPT_MC:
+		opt->match_finder_cycles = value;
+		break;
+	}
+}
+
+static lzma_options_lzma *
+parse_options_lzma(const char *str)
+{
+	/*@unchecked@*/ /*@observer@*/
+	static const name_id_map modes[] = {
+		{ "fast", LZMA_MODE_FAST },
+		{ "best", LZMA_MODE_BEST },
+		{ NULL,   0 }
+	};
+
+	/*@unchecked@*/ /*@observer@*/
+	static const name_id_map mfs[] = {
+		{ "hc3", LZMA_MF_HC3 },
+		{ "hc4", LZMA_MF_HC4 },
+		{ "bt2", LZMA_MF_BT2 },
+		{ "bt3", LZMA_MF_BT3 },
+		{ "bt4", LZMA_MF_BT4 },
+		{ NULL,  0 }
+	};
+
+	/*@unchecked@*/ /*@observer@*/
+	static const option_map opts[] = {
+		{ "dict", NULL,   LZMA_DICTIONARY_SIZE_MIN,
+				LZMA_DICTIONARY_SIZE_MAX },
+		{ "lc",   NULL,   LZMA_LITERAL_CONTEXT_BITS_MIN,
+				  LZMA_LITERAL_CONTEXT_BITS_MAX },
+		{ "lp",   NULL,   LZMA_LITERAL_POS_BITS_MIN,
+				  LZMA_LITERAL_POS_BITS_MAX },
+		{ "pb",   NULL,   LZMA_POS_BITS_MIN, LZMA_POS_BITS_MAX },
+		{ "mode", modes,  0, 0 },
+		{ "fb",   NULL,   LZMA_FAST_BYTES_MIN, LZMA_FAST_BYTES_MAX },
+		{ "mf",   mfs,    0, 0 },
+		{ "mc",   NULL,   0, UINT32_MAX },
+		{ NULL,   NULL,   0, 0 }
+	};
+
+	lzma_options_lzma *options = xmalloc(sizeof(lzma_options_lzma));
+
+	options->dictionary_size = LZMA_DICTIONARY_SIZE_DEFAULT;
+	options->literal_context_bits = LZMA_LITERAL_CONTEXT_BITS_DEFAULT;
+	options->literal_pos_bits = LZMA_LITERAL_POS_BITS_DEFAULT;
+	options->pos_bits = LZMA_POS_BITS_DEFAULT;
+	options->mode = LZMA_MODE_BEST;
+	options->fast_bytes = LZMA_FAST_BYTES_DEFAULT;
+	options->match_finder = LZMA_MF_BT4;
+	options->match_finder_cycles = 0;
+
+	parse_options(str, opts, &set_lzma, options);
+
+	return options;
+}
+
 static void
 add_filter(lzma_vli id, const char *opt_str)
 	/*@globals filter_count, opt_filters, preset_default @*/
@@ -209,19 +545,15 @@ add_filter(lzma_vli id, const char *opt_str)
     opt_filters[filter_count].id = id;
 
     switch (id) {
-#ifdef	NOTYET
     case LZMA_FILTER_SUBBLOCK:
 	opt_filters[filter_count].options = parse_options_subblock(opt_str);
 	break;
-
     case LZMA_FILTER_DELTA:
 	opt_filters[filter_count].options = parse_options_delta(opt_str);
 	break;
-
     case LZMA_FILTER_LZMA:
 	opt_filters[filter_count].options = parse_options_lzma(opt_str);
 	break;
-#endif
     default:
 	assert(opt_str == NULL);
 	opt_filters[filter_count].options = NULL;
@@ -301,7 +633,6 @@ static void rpmzArgCallback(poptContext con,
     case OPT_SPARC:
 	add_filter(LZMA_FILTER_SPARC, NULL);
 	break;
-#ifdef	NOTYET
     case OPT_SUBBLOCK:
 	add_filter(LZMA_FILTER_SUBBLOCK, optarg);
 	break;
@@ -311,7 +642,6 @@ static void rpmzArgCallback(poptContext con,
     case OPT_LZMA:
 	add_filter(LZMA_FILTER_LZMA, optarg);
 	break;
-#endif
 
     case OPT_FILES:
 	opt_files_split = '\n';
@@ -410,7 +740,6 @@ static struct poptOption optionsTable[] = {
 	N_("integrity check METHOD {none|crc32|crc64|sha256}"), N_("METHOD") },
 
   /* ===== Custom filters */
-#ifdef	NOTYET
 #ifdef	REFERENCE
 "  --lzma=[OPTS]       LZMA filter; OPTS is a comma-separated list of zero or\n"
 "                      more of the following options (valid values; default):\n"
@@ -423,9 +752,9 @@ static struct poptOption optionsTable[] = {
 "                        mf=NAME    match finder (hc3, hc4, bt2, bt3, bt4; bt4)\n"
 "                        mfc=NUM    match finder cycles; 0=automatic (default)\n"
 #endif
-  { "lzma", '\0', optional_argument,		NULL, OPT_LZMA,
-	N_(""), NULL },
-#endif
+  { "lzma", '\0', POPT_ARG_STRING|POPT_ARGFLAG_OPTIONAL,	NULL, OPT_LZMA,
+	N_("set lzma filter"), N_("OPTS") },
+
   { "x86", '\0', 0,				NULL, OPT_X86,
 	N_("ix86 filter (sometimes called BCJ filter)"), NULL },
   { "bcj", '\0', POPT_ARGFLAG_DOC_HIDDEN,	NULL, OPT_X86,
@@ -445,27 +774,25 @@ static struct poptOption optionsTable[] = {
   { "sparc", '\0', 0,				NULL, OPT_SPARC,
 	N_("SPARC filter"), NULL },
 
-#ifdef	NOTYET
 #ifdef	REFERENCE
 "  --delta=[OPTS]      Delta filter; valid OPTS (valid values; default):\n"
 "                        distance=NUM  Distance between bytes being\n"
 "                                      subtracted from each other (1-256; 1)\n"
 #endif
-  { "delta", '\0', optional_argument,		NULL, OPT_DELTA,
-	N_(""), NULL },
-#endif
+  { "delta", '\0', POPT_ARG_STRING|POPT_ARGFLAG_OPTIONAL,	NULL, OPT_DELTA,
+	N_("set delta filter"), N_("OPTS") },
+
   { "copy", '\0', 0,				NULL, OPT_COPY,
 	N_("No filtering (useful only when specified alone)"), NULL },
-#ifdef	NOTYET
+
 #ifdef	REFERENCE
 "  --subblock=[OPTS]   Subblock filter; valid OPTS (valid values; default):\n"
 "                        size=NUM    number of bytes of data per subblock\n"
 "                                    (1 - 256Mi; 4Ki)\n"
 "                        rle=NUM     run-length encoder chunk size (0-256; 0)\n"
 #endif
-  { "subblock", '\0', optional_argument,	NULL, OPT_SUBBLOCK,
-	N_(""), NULL },
-#endif
+  { "subblock", '\0', POPT_ARG_STRING|POPT_ARGFLAG_OPTIONAL,	NULL, OPT_SUBBLOCK,
+	N_("set subblock filter"), N_("OPTS") },
 
   /* ===== Metadata options */
   { "name", 'N', POPT_ARG_VAL,			&opt_preserve_name, 1,
