@@ -27,6 +27,8 @@ int _hdr_debug = 0;
 /*@access entryInfo @*/
 /*@access indexEntry @*/
 
+int _fastdatalength = 1;
+
 /** \ingroup header
  */
 /*@-type@*/
@@ -424,9 +426,20 @@ assert(ie.info.offset >= 0);	/* XXX insurance */
 
 	p.ptr = ie.data;
 	pend.ui8p = (uint8_t *) dataEnd;
+
+	/* Find the length of the tag data store. */
+	if (dataEnd && _fastdatalength) {
+	    /* Compute the tag data store length using offsets. */
+	    if (il > 1)
+		ie.length = ((uint32_t) ntohl(pe[1].offset) - ie.info.offset);
+	    else
+		ie.length = (dataEnd - t);
+	} else {
+	    /* Compute the tag data store length by counting. */
 /*@-nullstate@*/	/* pend.ui8p derived from dataLength may be null */
-	ie.length = dataLength(ie.info.type, &p, ie.info.count, 1, &pend);
+	    ie.length = dataLength(ie.info.type, &p, ie.info.count, 1, &pend);
 /*@=nullstate@*/
+	}
 	if (ie.length == 0 || hdrchkData(ie.length))
 	    return 0;
 
