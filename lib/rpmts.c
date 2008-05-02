@@ -904,8 +904,24 @@ uint32_t rpmtsSetTid(rpmts ts, uint32_t tid)
 
 rpmPRCO rpmtsPRCO(rpmts ts)
 {
+    rpmPRCO PRCO = NULL;
+
+    if (ts != NULL) {
+	static int oneshot = 0;
+	if (!oneshot) {
+	    const char * fn = rpmGetPath("%{?_rpmds_sysinfo_path}", NULL);
+	    int xx;
+
+	    ts->PRCO = rpmdsNewPRCO(NULL);
+	    if (fn && *fn != '\0' && !rpmioAccess(fn, NULL, R_OK))
+		xx = rpmdsSysinfo(ts->PRCO, NULL);
+	    fn = _free(fn);
+	    oneshot++;
+	}
+	PRCO = ts->PRCO;
+    }
 /*@-compdef -retexpose -usereleased @*/
-    return (ts != NULL ? ts->PRCO : NULL);
+    return PRCO;
 /*@=compdef =retexpose =usereleased @*/
 }
 
@@ -1297,12 +1313,7 @@ rpmts rpmtsCreate(void)
     ts->nsuggests = 0;
     ts->suggests = NULL;
 
-    ts->PRCO = rpmdsNewPRCO(NULL);
-    {	const char * fn = rpmGetPath("%{?_rpmds_sysinfo_path}", NULL);
-	if (fn && *fn != '\0' && !rpmioAccess(fn, NULL, R_OK))
-	   xx = rpmdsSysinfo(ts->PRCO, NULL);
-	fn = _free(fn);
-    }
+    ts->PRCO = NULL;
 
     ts->sdb = NULL;
     ts->sdbmode = O_RDONLY;

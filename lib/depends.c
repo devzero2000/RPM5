@@ -1047,7 +1047,7 @@ retry:
 #else
 	rpmTag tagN = RPMTAG_PROVIDENAME;
 #endif
-	rpmds P = rpmdsFromPRCO(ts->PRCO, tagN);
+	rpmds P = rpmdsFromPRCO(rpmtsPRCO(ts), tagN);
 	if (rpmdsSearch(P, dep) >= 0) {
 	    rpmdsNotify(dep, _("(sysinfo provides)"), rc);
 	    goto exit;
@@ -2607,8 +2607,8 @@ int rpmtsCheck(rpmts ts)
      * Make sure transaction dependencies are satisfied.
      */
     {	const char * tsNEVRA = "transaction dependencies";
-	rpmds R = rpmdsFromPRCO(ts->PRCO, RPMTAG_REQUIRENAME);
-	rpmds C = rpmdsFromPRCO(ts->PRCO, RPMTAG_CONFLICTNAME);
+	rpmds R = rpmdsFromPRCO(rpmtsPRCO(ts), RPMTAG_REQUIRENAME);
+	rpmds C = rpmdsFromPRCO(rpmtsPRCO(ts), RPMTAG_CONFLICTNAME);
 	rpmds D = NULL;
 	rpmds L = NULL;
 	const char * dep = NULL;
