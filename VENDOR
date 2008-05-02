@@ -386,6 +386,21 @@
                      via file extension only.
      ________________________________________________________________________
 
+     Change:         regular-ordered-sources
+     Purpose:        Internally regularily order the source files.
+     Reason:         RPM internally traverses over the list of source files
+                     (SourceX and PatchX tags in *.spec file) multiple
+                     times and also looks up sources by number. For all
+                     this the fact that RPM keeps the source files in a
+                     _reverse ordered_ linked list is never a problem.
+                     But OpenPKG performs user-visible actions, like
+                     the auto-fetching of still missing source files,
+                     and here the processing in reverse order is very
+                     confusing to the user. Hence, order the sources
+                     files in regular order (the order the tags occur in
+                     the *.spec file).
+     ________________________________________________________________________
+
   o  Name:           RPM4DARWIN
      Vendor:         RPM for Darwin (Mac OS X) <http://rpm4darwin.sourceforge.net/>
      Representative: Anders F. Bjorklund <afb@users.sourceforge.net> <afb@rpm5.org>
