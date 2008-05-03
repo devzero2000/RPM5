@@ -27,7 +27,11 @@ int _hdr_debug = 0;
 /*@access entryInfo @*/
 /*@access indexEntry @*/
 
-int _fastdatalength = 1;
+/* Compute tag data store size using offsets? */
+static int _fastdatalength = 0;
+
+/* Swab tag data only when accessed through headerGet()? */
+static int _lazytagswab = 0;
 
 /** \ingroup header
  */
@@ -359,7 +363,107 @@ static size_t dataLength(rpmTagType type, rpmTagData * p, rpmTagCount count,
 }
 
 /** \ingroup header
- * Swap uint32_t and uint16_t arrays within header region.
+ * Swab uint64_t/uint32_t/uint16_t arrays within header region.
+ *
+ */
+static unsigned char * tagSwab(unsigned char * t, const HE_t he, size_t nb)
+	/*@modifies *t @*/
+{
+    uint32_t i;
+
+    switch (he->t) {
+    case RPM_UINT64_TYPE:
+    {	uint32_t * tt = (uint32_t *)t;
+	for (i = 0; i < he->c; i++) {
+	    uint32_t j = 2 * i;
+	    uint32_t b = (uint32_t) htonl(he->p.ui32p[j]);
+	    tt[j  ] = (uint32_t) htonl(he->p.ui32p[j+1]);
+	    tt[j+1] = b;
+	}
+    }   break;
+    case RPM_UINT32_TYPE:
+    {	uint32_t * tt = (uint32_t *)t;
+	for (i = 0; i < he->c; i++)
+	    tt[i] = (uint32_t) htonl(he->p.ui32p[i]);
+    }   break;
+    case RPM_UINT16_TYPE:
+    {	uint16_t * tt = (uint16_t *)t;
+	for (i = 0; i < he->c; i++)
+	    tt[i] = (uint16_t) htons(he->p.ui16p[i]);
+    }   break;
+    default:
+	if ((void *)t != he->p.ptr && nb)
+	    memcpy(t, he->p.ptr, nb);
+	t += nb;
+	break;
+    }
+    return t;
+}
+
+/**
+ * Always realloc HE_t memory.
+ * @param he		tag container
+ * @return		1 on success, 0 on failure
+ */
+static int rpmheRealloc(HE_t he)
+	/*@modifies he @*/
+{
+    size_t nb = 0;
+    int rc = 1;		/* assume success */
+
+    switch (he->t) {
+    default:
+assert(0);	/* XXX stop unimplemented oversights. */
+	break;
+    case RPM_BIN_TYPE:
+	he->freeData = 1;	/* XXX RPM_BIN_TYPE is malloc'd */
+	/*@fallthrough@*/
+    case RPM_UINT8_TYPE:
+	nb = he->c * sizeof(*he->p.ui8p);
+	break;
+    case RPM_UINT16_TYPE:
+	nb = he->c * sizeof(*he->p.ui16p);
+	break;
+    case RPM_UINT32_TYPE:
+	nb = he->c * sizeof(*he->p.ui32p);
+	break;
+    case RPM_UINT64_TYPE:
+	nb = he->c * sizeof(*he->p.ui64p);
+	break;
+    case RPM_STRING_TYPE:
+	if (he->p.str)
+	    nb = strlen(he->p.str) + 1;
+	else
+	    rc = 0;
+	break;
+    case RPM_I18NSTRING_TYPE:
+    case RPM_STRING_ARRAY_TYPE:
+	break;
+    }
+
+    /* Allocate all returned storage (if not already). */
+    if (he->p.ptr && nb && !he->freeData) {
+	void * ptr = xmalloc(nb);
+	if (_lazytagswab) {
+	    if (tagSwab(ptr, he, nb) != NULL)
+		he->p.ptr = ptr;
+	    else {
+		ptr = _free(ptr);
+		rc = 0;
+	    }
+	} else {
+	    he->p.ptr = memcpy(ptr, he->p.ptr, nb);
+	}
+    }
+
+    if (rc)
+	he->freeData = 1;
+
+    return rc;
+}
+
+/** \ingroup header
+ * Swab uint64_t/uint32_t/uint16_t arrays within header region.
  *
  * This code is way more twisty than I would like.
  *
@@ -392,6 +496,7 @@ static uint32_t regionSwab(/*@null@*/ indexEntry entry, uint32_t il, uint32_t dl
 		int32_t regionid)
 	/*@modifies *entry, *dataStart @*/
 {
+    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     rpmTagData p;
     rpmTagData pend;
     unsigned char * tprev = NULL;
@@ -479,41 +584,15 @@ assert(ie.info.offset >= 0);	/* XXX insurance */
 	}
 
 	/* Perform endian conversions */
-	switch (ntohl(pe->type)) {
-	case RPM_UINT64_TYPE:
-	{   uint64_t * it = (uint64_t *)t;
-	    uint32_t b[2];
-	    for (; ie.info.count > 0; ie.info.count--, it += 1) {
-		if (dataEnd && ((unsigned char *)it) >= dataEnd)
-		    return 0;
-		b[1] = (uint32_t) htonl(((uint32_t *)it)[0]);
-		b[0] = (uint32_t) htonl(((uint32_t *)it)[1]);
-		if (b[1] != ((uint32_t *)it)[0])
-		    memcpy(it, b, sizeof(b));
-	    }
-	    t = (unsigned char *) it;
-	}   /*@switchbreak@*/ break;
-	case RPM_UINT32_TYPE:
-	{   uint32_t * it = (uint32_t *)t;
-	    for (; ie.info.count > 0; ie.info.count--, it += 1) {
-		if (dataEnd && ((unsigned char *)it) >= dataEnd)
-		    return 0;
-		*it = (uint32_t) htonl(*it);
-	    }
-	    t = (unsigned char *) it;
-	}   /*@switchbreak@*/ break;
-	case RPM_UINT16_TYPE:
-	{   uint16_t * it = (uint16_t *) t;
-	    for (; ie.info.count > 0; ie.info.count--, it += 1) {
-		if (dataEnd && ((unsigned char *)it) >= dataEnd)
-		    return 0;
-		*it = (uint16_t) htons(*it);
-	    }
-	    t = (unsigned char *) it;
-	}   /*@switchbreak@*/ break;
-	default:
+	if (_lazytagswab)
 	    t += ie.length;
-	    /*@switchbreak@*/ break;
+	else {
+	    he->tag = ie.info.tag;
+	    he->t = ie.info.type;
+	    he->p.ptr = t;
+	    he->c = ie.info.count;
+	    if ((t = tagSwab(t, he, ie.length)) == NULL)
+		return 0;
 	}
 
 	dl += ie.length;
@@ -1900,59 +1979,6 @@ int headerModifyEntry(Header h, HE_t he)
 	oldData.ptr = _free(oldData.ptr);
 
     return 1;
-}
-
-/**
- * Always realloc HE_t memory.
- * @param he		tag container
- * @return		1 on success, 0 on failure
- */
-static int rpmheRealloc(HE_t he)
-	/*@modifies he @*/
-{
-    size_t nb = 0;
-    int rc = 1;		/* assume success */
-
-    switch (he->t) {
-    default:
-assert(0);	/* XXX stop unimplemented oversights. */
-	break;
-    case RPM_BIN_TYPE:
-	he->freeData = 1;	/* XXX RPM_BIN_TYPE is malloc'd */
-	/*@fallthrough@*/
-    case RPM_UINT8_TYPE:
-	nb = he->c * sizeof(*he->p.ui8p);
-	break;
-    case RPM_UINT16_TYPE:
-	nb = he->c * sizeof(*he->p.ui16p);
-	break;
-    case RPM_UINT32_TYPE:
-	nb = he->c * sizeof(*he->p.ui32p);
-	break;
-    case RPM_UINT64_TYPE:
-	nb = he->c * sizeof(*he->p.ui64p);
-	break;
-    case RPM_STRING_TYPE:
-	if (he->p.str)
-	    nb = strlen(he->p.str) + 1;
-	else
-	    rc = 0;
-	break;
-    case RPM_I18NSTRING_TYPE:
-    case RPM_STRING_ARRAY_TYPE:
-	break;
-    }
-
-    /* Allocate all returned storage (if not already). */
-    if (he->p.ptr && nb && !he->freeData) {
-	void * ptr = memcpy(xmalloc(nb), he->p.ptr, nb);
-	he->p.ptr = ptr;
-    }
-
-    if (rc)
-	he->freeData = 1;
-
-    return rc;
 }
 
 /**
