@@ -428,6 +428,24 @@ typedef enum rpmTag_e {
     RPMTAG_BUILDPROVIDES	= 1193, /* internal */
     RPMTAG_BUILDOBSOLETES	= 1194, /* internal */
     RPMTAG_DBINSTANCE		= 1195, /* i */
+    RPMTAG_NVRA			= 1196, /* s internal (unimplemented) */
+    RPMTAG_FILEPATHS		= 1197, /* s[] internal (unimplemented) */
+    RPMTAG_ORIGPATHS		= 1198, /* s[] internal (unimplemented) */
+    RPMTAG_RPMLIBVERSION	= 1199, /* i internal (unimplemented) */
+    RPMTAG_RPMLIBTIMESTAMP	= 1200, /* i internal (unimplemented) */
+    RPMTAG_RPMLIBVENDOR		= 1201, /* i internal (unimplemented) */
+    RPMTAG_CLASS		= 1202, /* s internal (unimplemented) */
+    RPMTAG_TRACK		= 1203, /* s internal arbitrary */
+    RPMTAG_TRACKPROG		= 1204, /* s internal arbitrary */
+    RPMTAG_SANITYCHECK		= 1205, /* s internal (unimplemented) */
+    RPMTAG_SANITYCHECKPROG	= 1206, /* s internal (unimplemented) */
+    RPMTAG_FILESTAT		= 1207, /* s[] internal (unimplemented) */
+    RPMTAG_STAT			= 1208, /* s[] internal (unimplemented) */
+    RPMTAG_ORIGINTID		= 1209,	/* i[] internal (unimplemented) */
+    RPMTAG_ORIGINTIME		= 1210,	/* i[] internal (unimplemented) */
+    RPMTAG_HEADERSTARTOFF	= 1211,	/* i */
+    RPMTAG_HEADERENDOFF		= 1212,	/* i */
+    RPMTAG_PACKAGETIME		= 1213,	/* i */
 
 /*@-enummemuse@*/
     RPMTAG_FIRSTFREE_TAG	/*!< internal */

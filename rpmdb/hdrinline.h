@@ -554,6 +554,57 @@ int headerSetInstance(/*@null@*/ Header h, int instance)
     return hdrVec->hdrsetinstance(h, instance);
 }
 
+/** \ingroup header
+ * Return header time.
+ * @param h		header
+ * @return		header time
+ */
+uint32_t headerGetTime(/*@null@*/ Header h)
+	/*@*/;
+
+/** \ingroup header
+ * Store header time.
+ * @param h		header
+ * @param origin	new header time
+ * @return		0 always
+ */
+uint32_t headerSetTime(/*@null@*/ Header h, uint32_t time)
+	/*@modifies h @*/;
+
+/** \ingroup header
+ * Return header starting byte offset.
+ * @param h		header
+ * @return		header starting byte offset 
+ */
+uint32_t headerGetStartOff(/*@null@*/ Header h)
+	/*@*/;
+
+/** \ingroup header
+ * Store header starting byte offset.
+ * @param h		header
+ * @param startoff	new header starting byte offset
+ * @return		0 always
+ */
+uint32_t headerSetStartOff(/*@null@*/ Header h, uint32_t startoff)
+	/*@modifies h @*/;
+
+/** \ingroup header
+ * Return header ending byte offset.
+ * @param h		header
+ * @return		header ending byte offset 
+ */
+uint32_t headerGetEndOff(/*@null@*/ Header h)
+	/*@*/;
+
+/** \ingroup header
+ * Store header ending byte offset.
+ * @param h		header
+ * @param startoff	new header ending byte offset
+ * @return		0 always
+ */
+uint32_t headerSetEndOff(/*@null@*/ Header h, uint32_t endoff)
+	/*@modifies h @*/;
+
 /*@=voidabstract =nullpass =mustmod =compdef =shadow =predboolothers @*/
 
 #ifdef __cplusplus

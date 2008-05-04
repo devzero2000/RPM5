@@ -28,6 +28,13 @@ LIBRPMDB_0
     headerDump;
     headerGetLangs;
     headerGetRawEntry;
+    headerGetOrigin;
+    headerGetEndOff;
+    headerSetEndOff;
+    headerGetStartOff;
+    headerSetStartOff;
+    headerGetTime;
+    headerSetTime;
     headerMacrosLoad;
     headerMacrosUnload;
     headerNEVRA;

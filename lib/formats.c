@@ -1325,6 +1325,103 @@ static int dbinstanceTag(Header h, HE_t he)
 /*@=globuse@*/
 
 /**
+ * Retrieve starting byte offset of header.
+ * @param h		header
+ * @retval *he		tag container
+ * @return		0 on success
+ */
+/*@-globuse@*/
+static int headerstartoffTag(Header h, HE_t he)
+	/*@globals rpmGlobalMacroContext, h_errno,
+		fileSystem, internalState @*/
+	/*@modifies he, rpmGlobalMacroContext,
+		fileSystem, internalState @*/
+{
+    he->tag = RPMTAG_HEADERSTARTOFF;
+    he->t = RPM_INT32_TYPE;
+    he->p.ui32p = xmalloc(sizeof(*he->p.ui32p));
+    he->p.ui32p[0] = headerGetStartOff(h);
+    he->freeData = 1;
+    he->c = 1;
+    return 0;
+}
+/*@=globuse@*/
+
+/**
+ * Retrieve ending byte offset of header.
+ * @param h		header
+ * @retval *he		tag container
+ * @return		0 on success
+ */
+/*@-globuse@*/
+static int headerendoffTag(Header h, HE_t he)
+	/*@globals rpmGlobalMacroContext, h_errno,
+		fileSystem, internalState @*/
+	/*@modifies he, rpmGlobalMacroContext,
+		fileSystem, internalState @*/
+{
+    he->tag = RPMTAG_HEADERENDOFF;
+    he->t = RPM_INT32_TYPE;
+    he->p.ui32p = xmalloc(sizeof(*he->p.ui32p));
+    he->p.ui32p[0] = headerGetEndOff(h);
+    he->freeData = 1;
+    he->c = 1;
+    return 0;
+}
+/*@=globuse@*/
+
+/**
+ * Retrieve package origin from header.
+ * @param h		header
+ * @retval *he		tag container
+ * @return		0 on success
+ */
+/*@-globuse@*/
+static int pkgoriginTag(Header h, HE_t he)
+	/*@globals rpmGlobalMacroContext, h_errno,
+		fileSystem, internalState @*/
+	/*@modifies he, rpmGlobalMacroContext,
+		fileSystem, internalState @*/
+{
+    const char * origin;
+
+    he->tag = RPMTAG_PACKAGEORIGIN;
+    if (!headerGetEntry(h, he->tag, NULL, &origin, NULL)
+     && (origin = headerGetOrigin(h)) != NULL)
+    {
+	he->t = RPM_STRING_TYPE;
+	he->p.str = xstrdup(origin);
+	he->c = 1;
+	he->freeData = 1;
+    }
+    return 0;
+}
+/*@=globuse@*/
+
+/**
+ * Retrieve package time from header.
+ * @param h		header
+ * @retval *he		tag container
+ * @return		0 on success
+ */
+/*@-globuse@*/
+static int pkgtimeTag(Header h, HE_t he)
+	/*@globals rpmGlobalMacroContext, h_errno,
+		fileSystem, internalState @*/
+	/*@modifies he, rpmGlobalMacroContext,
+		fileSystem, internalState @*/
+{
+    he->tag = RPMTAG_PACKAGETIME;
+    he->t = RPM_INT32_TYPE;
+    he->p.ui32p = xmalloc(sizeof(*he->p.ui32p));
+    he->p.ui32p[0] = headerGetTime(h);
+    he->freeData = 1;
+    he->c = 1;
+    return 0;
+}
+/*@=globuse@*/
+
+/**
  * Return (malloc'd) header name-version-release.arch string.
  * @param h		header
  * @return		name-version-release.arch string
@@ -2340,6 +2437,14 @@ const struct headerSprintfExtension_s rpmHeaderFormats[] = {
 	{ .tagFunction = triggertypeTag } },
     { HEADER_EXT_TAG, "RPMTAG_DBINSTANCE",
 	{ .tagFunction = dbinstanceTag } },
+    { HEADER_EXT_TAG, "RPMTAG_HEADERSTARTOFF",
+	{ .tagFunction = headerstartoffTag } },
+    { HEADER_EXT_TAG, "RPMTAG_HEADERENDOFF",
+	{ .tagFunction = headerendoffTag } },
+    { HEADER_EXT_TAG, "RPMTAG_PACKAGEORIGIN",
+	{ .tagFunction = pkgoriginTag } },
+    { HEADER_EXT_TAG, "RPMTAG_PACKAGETIME",
+	{ .tagFunction = pkgtimeTag } },
     { HEADER_EXT_TAG, "RPMTAG_NVRA",
 	{ .tagFunction = nvraTag } },
     { HEADER_EXT_TAG, "RPMTAG_PROVIDEXMLENTRY",

@@ -1199,7 +1199,7 @@ int headerSetOrigin(/*@null@*/ Header h, const char * origin)
  * @return		header instance
  */
 static
-int headerGetInstance(/*@null@*/ Header h)
+uint32_t headerGetInstance(/*@null@*/ Header h)
 	/*@*/
 {
     return (h != NULL ? h->instance : 0);
@@ -1212,11 +1212,47 @@ int headerGetInstance(/*@null@*/ Header h)
  * @return		0 always
  */
 static
-int headerSetInstance(/*@null@*/ Header h, int instance)
+uint32_t headerSetInstance(/*@null@*/ Header h, int instance)
 	/*@modifies h @*/
 {
     if (h != NULL)
 	h->instance = instance;
+    return 0;
+}
+
+uint32_t headerGetTime(Header h)
+{
+    return (h != NULL ? h->time : 0);
+}
+
+uint32_t headerSetTime(Header h, uint32_t time)
+{
+    if (h != NULL)
+	h->time = time;
+    return 0;
+}
+
+uint32_t headerGetStartOff(Header h)
+{
+    return (h != NULL ? h->startoff : 0);
+}
+
+uint32_t headerSetStartOff(Header h, uint32_t startoff)
+{
+    if (h != NULL)
+	h->startoff = startoff;
+    return 0;
+}
+
+uint32_t headerGetEndOff(Header h)
+{
+    return (h != NULL ? h->endoff : 0);
+}
+
+uint32_t headerSetEndOff(Header h, uint32_t endoff)
+{
+    if (h != NULL)
+	h->endoff = endoff;
     return 0;
 }
 
@@ -3738,6 +3774,8 @@ rpmecFree(const headerSprintfExtension exts, /*@only@*/ HE_t ec)
     return NULL;
 }
 
+extern const struct headerTagTableEntry_s * rpmTagTable;
+
 /** \ingroup header
  * Return formatted output string from header tags.
  * The returned string must be free()d.
@@ -3765,6 +3803,10 @@ char * headerSprintf(Header h, const char * fmt,
     int isyaml;
     int need;
  
+    /* Set some reasonable defaults */
+    if (tags == NULL)
+        tags = rpmTagTable;
+
     hsa->h = headerLink(h);
     hsa->fmt = xstrdup(fmt);
 /*@-castexpose@*/	/* FIX: legacy API shouldn't change. */
