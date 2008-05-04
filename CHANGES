@@ -1,5 +1,6 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: rpmrepo: add :bncdata extension format for <location> display.
     - jbj: pass dataEnd to regionSwab() when unloading.
     - jbj: disable the headerLoad speedup's until headerUnload changes are done.
     - jbj: swab integer tag data in headerGet, not headerLoad (measured 6.9% rpm-V speedup ymmv).

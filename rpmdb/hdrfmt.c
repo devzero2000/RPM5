@@ -1806,7 +1806,7 @@ static int nvraTag(Header h, HE_t he)
  * Originally, file names were stored as an array of absolute paths.
  * In rpm-4.0, file names are stored as separate arrays of dirname's and
  * basename's, * with a dirname index to associate the correct dirname
- * with each basname.
+ * with each basename.
  *
  * This function is used to retrieve file names independent of how the
  * file names are represented in the package header.
@@ -2614,6 +2614,46 @@ static int F2sqlTag(Header h, HE_t he)
     return FDGsqlTag(h, he, 2);
 }
 
+/**
+ * Encode the basename of a string for use in XML CDATA.
+ * @param he            tag container
+ * @return              formatted string
+ */
+
+static /*@only@*/ char * bncdataFormat(HE_t he)
+	/*@*/
+{
+    int ix = (he->ix > 0 ? he->ix : 0);
+    char * val;
+
+    if (he->t != RPM_STRING_TYPE) {
+	val = xstrdup(_("(not a string)"));
+    } else {
+	const char * bn;
+	const char * s;
+	size_t nb;
+	char * t;
+
+	/* Get rightmost '/' in string (i.e. basename(3) behavior). */
+	if ((bn = strrchr(he->p.str, '/')) != NULL)
+	    bn++;
+	else
+	    bn = he->p.str;
+
+	/* Convert to utf8, escape for XML CDATA. */
+	s = strdup_locale_to_utf8(bn);
+	nb = xmlstrlen(s);
+	val = t = xcalloc(1, nb + 1);
+	t = xmlstrcpy(t, s);	t += strlen(t);
+	*t = '\0';
+	s = _free(s);
+    }
+
+/*@-globstate@*/
+    return val;
+/*@=globstate@*/
+}
+
 /*@-type@*/ /* FIX: cast? */
 static struct headerSprintfExtension_s _headerCompoundFormats[] = {
     { HEADER_EXT_TAG, "RPMTAG_CHANGELOGNAME",
@@ -2682,6 +2722,8 @@ static struct headerSprintfExtension_s _headerCompoundFormats[] = {
 	{ .fmtFunction = armorFormat } },
     { HEADER_EXT_FORMAT, "base64",
 	{ .fmtFunction = base64Format } },
+    { HEADER_EXT_FORMAT, "bncdata",
+	{ .fmtFunction = bncdataFormat } },
     { HEADER_EXT_FORMAT, "cdata",
 	{ .fmtFunction = cdataFormat } },
     { HEADER_EXT_FORMAT, "depflags",
