@@ -1633,6 +1633,631 @@ assert(ds != NULL);
     return 0;
 }
 
+static int PRCOSkip(rpmTag tag, rpmTagData N, rpmTagData EVR, rpmTagData F,
+		uint32_t i)
+	/*@*/
+{
+    int a = -2, b = -2;
+
+    if (N.argv[i] == NULL || *N.argv[i] == '\0')
+	return 1;
+    if (tag == RPMTAG_REQUIRENAME && i > 0
+     && !(a=strcmp(N.argv[i], N.argv[i-1]))
+     && !(b=strcmp(EVR.argv[i], EVR.argv[i-1]))
+     && (F.ui32p[i] & 0x4e) == ((F.ui32p[i-1] & 0x4e)))
+	return 1;
+    return 0;
+}
+
+static int PRCOxmlTag(Header h, HE_t he, rpmTag EVRtag, rpmTag Ftag)
+	/*@modifies he @*/
+{
+    rpmTag tag = he->tag;
+    rpmTagData N = { .ptr = NULL };
+    rpmTagData EVR = { .ptr = NULL };
+    rpmTagData F = { .ptr = NULL };
+    size_t nb;
+    uint32_t ac;
+    uint32_t c;
+    uint32_t i;
+    char *t;
+    int rc = 1;		/* assume failure */
+    int xx;
+
+    xx = headerGetEntry(h, he->tag, (hTYP_t)&he->t, &he->p, &he->c);
+    if (xx == 0) goto exit;
+    N.argv = he->p.argv;
+    c = he->c;
+
+    he->tag = EVRtag;
+    xx = headerGetEntry(h, he->tag, (hTYP_t)&he->t, &he->p, &he->c);
+    if (xx == 0) goto exit;
+    EVR.argv = he->p.argv;
+
+    he->tag = Ftag;
+    xx = headerGetEntry(h, he->tag, (hTYP_t)&he->t, &he->p, &he->c);
+    if (xx == 0) goto exit;
+    F.ui32p = he->p.ui32p;
+
+    nb = sizeof(*he->p.argv);
+    ac = 0;
+    for (i = 0; i < c; i++) {
+	if (PRCOSkip(tag, N, EVR, F, i))
+	    continue;
+	ac++;
+	nb += sizeof(*he->p.argv);
+	nb += sizeof("<rpm:entry name=\"\"/>");
+	if (*N.argv[i] == '/')
+	    nb += xmlstrlen(N.argv[i]);
+	else
+	    nb += strlen(N.argv[i]);
+	if (EVR.argv != NULL && EVR.argv[i] != NULL && *EVR.argv[i] != '\0') {
+	    nb += sizeof(" flags=\"EQ\" epoch=\"0\" ver=\"\"") - 1;
+	    nb += strlen(EVR.argv[i]);
+	    if (strchr(EVR.argv[i], ':') != NULL)
+		nb -= 2;
+	    if (strchr(EVR.argv[i], '-') != NULL)
+		nb += sizeof(" rel=\"\"") - 2;
+	}
+#ifdef	NOTNOW
+	if (tag == RPMTAG_REQUIRENAME && (F.ui32p[i] & 0x40))
+	    nb += sizeof(" pre=\"1\"") - 1;
+#endif
+    }
+
+    he->t = RPM_STRING_ARRAY_TYPE;
+    he->c = ac;
+    he->freeData = 1;
+    he->p.argv = xmalloc(nb + BUFSIZ);	/* XXX hack: leave slop */
+    t = (char *) &he->p.argv[he->c + 1];
+    ac = 0;
+    for (i = 0; i < c; i++) {
+	if (PRCOSkip(tag, N, EVR, F, i))
+	    continue;
+	he->p.argv[ac++] = t;
+	t = stpcpy(t, "<rpm:entry");
+	t = stpcpy(t, " name=\"");
+	if (*N.argv[i] == '/') {
+	    t = xmlstrcpy(t, N.argv[i]);	t += strlen(t);
+	} else
+	    t = stpcpy(t, N.argv[i]);
+	t = stpcpy(t, "\"");
+	if (EVR.argv != NULL && EVR.argv[i] != NULL && *EVR.argv[i] != '\0') {
+	    static char *Fstr[] = { "?0","LT","GT","?3","EQ","LE","GE","?7" };
+	    int Fx = ((F.ui32p[i] >> 1) & 0x7);
+	    const char *E, *V, *R;
+	    char *f, *fe;
+	    t = stpcpy( stpcpy( stpcpy(t, " flags=\""), Fstr[Fx]), "\"");
+	    f = (char *) EVR.argv[i];
+	    for (fe = f; *fe != '\0' && *fe >= '0' && *fe <= '9'; fe++);
+	    if (*fe == ':') { *fe++ = '\0'; E = f; f = fe; } else E = NULL;
+	    V = f;
+	    for (fe = f; *fe != '\0' && *fe != '-'; fe++);
+	    if (*fe == '-') { *fe++ = '\0'; R = fe; } else R = NULL;
+	    t = stpcpy( stpcpy( stpcpy(t, " epoch=\""), (E && *E ? E : "0")), "\"");
+	    t = stpcpy( stpcpy( stpcpy(t, " ver=\""), V), "\"");
+	    if (R != NULL)
+		t = stpcpy( stpcpy( stpcpy(t, " rel=\""), R), "\"");
+	}
+#ifdef	NOTNOW
+	if (tag == RPMTAG_REQUIRENAME && (F.ui32p[i] & 0x40))
+	    t = stpcpy(t, " pre=\"1\"");
+#endif
+	t = stpcpy(t, "/>");
+	*t++ = '\0';
+    }
+    he->p.argv[he->c] = NULL;
+    rc = 0;
+
+exit:
+    N.argv = _free(N.argv);
+    EVR.argv = _free(EVR.argv);
+    return rc;
+}
+
+static int PxmlTag(Header h, HE_t he)
+	/*@modifies he @*/
+{
+    he->tag = RPMTAG_PROVIDENAME;
+    return PRCOxmlTag(h, he, RPMTAG_PROVIDEVERSION, RPMTAG_PROVIDEFLAGS);
+}
+
+static int RxmlTag(Header h, HE_t he)
+	/*@modifies he @*/
+{
+    he->tag = RPMTAG_REQUIRENAME;
+    return PRCOxmlTag(h, he, RPMTAG_REQUIREVERSION, RPMTAG_REQUIREFLAGS);
+}
+
+static int CxmlTag(Header h, HE_t he)
+	/*@modifies he @*/
+{
+    he->tag = RPMTAG_CONFLICTNAME;
+    return PRCOxmlTag(h, he, RPMTAG_CONFLICTVERSION, RPMTAG_CONFLICTFLAGS);
+}
+
+static int OxmlTag(Header h, HE_t he)
+	/*@modifies he @*/
+{
+    he->tag = RPMTAG_OBSOLETENAME;
+    return PRCOxmlTag(h, he, RPMTAG_OBSOLETEVERSION, RPMTAG_OBSOLETEFLAGS);
+}
+
+/**
+ * Return length of string represented with single quotes doubled.
+ * @param s		string
+ * @return		length of sql string
+ */
+static size_t sqlstrlen(const char * s)
+	/*@*/
+{
+    size_t len = 0;
+    int c;
+
+    while ((c = (int) *s++) != (int) '\0')
+    {
+	switch (c) {
+	case '\'':	len += 1;			/*@fallthrough@*/
+	default:	len += 1;			/*@switchbreak@*/ break;
+	}
+    }
+    return len;
+}
+
+/**
+ * Copy source string to target, doubling single quotes.
+ * @param t		target sql string
+ * @param s		source string
+ * @return		target sql string
+ */
+static char * sqlstrcpy(/*@returned@*/ char * t, const char * s)
+	/*@modifies t @*/
+{
+    char * te = t;
+    int c;
+
+    while ((c = (int) *s++) != (int) '\0') {
+	switch (c) {
+	case '\'':	*te++ = (char) c;		/*@fallthrough@*/
+	default:	*te++ = (char) c;		/*@switchbreak@*/ break;
+	}
+    }
+    *te = '\0';
+    return t;
+}
+
+/**
+ * Encode string for use in SQL statements.
+ * @param he		tag container
+ * @return		formatted string
+ */
+static /*@only@*/ char * sqlescapeFormat(HE_t he)
+	/*@*/
+{
+    int ix = (he->ix > 0 ? he->ix : 0);
+    char * val;
+
+assert(ix == 0);
+    if (he->t != RPM_STRING_TYPE) {
+	val = xstrdup(_("(not a string)"));
+    } else {
+	const char * s = strdup_locale_to_utf8(he->p.str);
+	size_t nb = sqlstrlen(s);
+	char * t;
+
+	val = t = xcalloc(1, nb + 1);
+	t = sqlstrcpy(t, s);	t += strlen(t);
+	*t = '\0';
+	s = _free(s);
+    }
+
+/*@-globstate@*/
+    return val;
+/*@=globstate@*/
+}
+
+static int PRCOsqlTag(Header h, HE_t he, rpmTag EVRtag, rpmTag Ftag)
+	/*@modifies he @*/
+{
+    rpmTag tag = he->tag;
+    rpmTagData N = { .ptr = NULL };
+    rpmTagData EVR = { .ptr = NULL };
+    rpmTagData F = { .ptr = NULL };
+    char instance[64];
+    size_t nb;
+    uint32_t ac;
+    uint32_t c;
+    uint32_t i;
+    char *t;
+    int rc = 1;		/* assume failure */
+    int xx;
+
+    xx = headerGetEntry(h, he->tag, (hTYP_t)&he->t, &he->p, &he->c);
+    if (xx == 0) goto exit;
+    N.argv = he->p.argv;
+    c = he->c;
+
+    he->tag = EVRtag;
+    xx = headerGetEntry(h, he->tag, (hTYP_t)&he->t, &he->p, &he->c);
+    if (xx == 0) goto exit;
+    EVR.argv = he->p.argv;
+
+    he->tag = Ftag;
+    xx = headerGetEntry(h, he->tag, (hTYP_t)&he->t, &he->p, &he->c);
+    if (xx == 0) goto exit;
+    F.ui32p = he->p.ui32p;
+
+    xx = snprintf(instance, sizeof(instance), "'%d'", headerGetInstance(h));
+    nb = sizeof(*he->p.argv);
+    ac = 0;
+    for (i = 0; i < c; i++) {
+	if (PRCOSkip(tag, N, EVR, F, i))
+	    continue;
+	ac++;
+	nb += sizeof(*he->p.argv);
+	nb += strlen(instance) + sizeof(", '', '', '', '', ''");
+	if (tag == RPMTAG_REQUIRENAME)
+	    nb += sizeof(", ''") - 1;
+	nb += strlen(N.argv[i]);
+	if (EVR.argv != NULL && EVR.argv[i] != NULL && *EVR.argv[i] != '\0') {
+	    nb += strlen(EVR.argv[i]);
+	    nb += sizeof("EQ0") - 1;
+	}
+#ifdef	NOTNOW
+	if (tag == RPMTAG_REQUIRENAME && (F.ui32p[i] & 0x40))
+	    nb += sizeof("1") - 1;
+#endif
+    }
+
+    he->t = RPM_STRING_ARRAY_TYPE;
+    he->c = ac;
+    he->freeData = 1;
+    he->p.argv = xmalloc(nb + BUFSIZ);	/* XXX hack: leave slop */
+    t = (char *) &he->p.argv[he->c + 1];
+    ac = 0;
+    for (i = 0; i < c; i++) {
+	if (PRCOSkip(tag, N, EVR, F, i))
+	    continue;
+	he->p.argv[ac++] = t;
+	t = stpcpy(t, instance);
+	t = stpcpy( stpcpy( stpcpy(t, ", '"), N.argv[i]), "'");
+	if (EVR.argv != NULL && EVR.argv[i] != NULL && *EVR.argv[i] != '\0') {
+	    static char *Fstr[] = { "?0","LT","GT","?3","EQ","LE","GE","?7" };
+	    int Fx = ((F.ui32p[i] >> 1) & 0x7);
+	    const char *E, *V, *R;
+	    char *f, *fe;
+	    t = stpcpy( stpcpy( stpcpy(t, ", '"), Fstr[Fx]), "'");
+	    f = (char *) EVR.argv[i];
+	    for (fe = f; *fe != '\0' && *fe >= '0' && *fe <= '9'; fe++);
+	    if (*fe == ':') { *fe++ = '\0'; E = f; f = fe; } else E = NULL;
+	    V = f;
+	    for (fe = f; *fe != '\0' && *fe != '-'; fe++);
+	    if (*fe == '-') { *fe++ = '\0'; R = fe; } else R = NULL;
+	    t = stpcpy( stpcpy( stpcpy(t, ", '"), (E && *E ? E : "0")), "'");
+	    t = stpcpy( stpcpy( stpcpy(t, ", '"), V), "'");
+	    t = stpcpy( stpcpy( stpcpy(t, ", '"), (R ? R : "")), "'");
+	} else
+	    t = stpcpy(t, ", '', '', '', ''");
+#ifdef	NOTNOW
+	if (tag == RPMTAG_REQUIRENAME)
+	    t = stpcpy(stpcpy(stpcpy(t, ", '"),(F.ui32p[i] & 0x40) ? "1" : "0"), "'");
+#endif
+	*t++ = '\0';
+    }
+    he->p.argv[he->c] = NULL;
+    rc = 0;
+
+exit:
+    N.argv = _free(N.argv);
+    EVR.argv = _free(EVR.argv);
+    return rc;
+}
+
+static int PsqlTag(Header h, HE_t he)
+	/*@modifies he @*/
+{
+    he->tag = RPMTAG_PROVIDENAME;
+    return PRCOsqlTag(h, he, RPMTAG_PROVIDEVERSION, RPMTAG_PROVIDEFLAGS);
+}
+
+static int RsqlTag(Header h, HE_t he)
+	/*@modifies he @*/
+{
+    he->tag = RPMTAG_REQUIRENAME;
+    return PRCOsqlTag(h, he, RPMTAG_REQUIREVERSION, RPMTAG_REQUIREFLAGS);
+}
+
+static int CsqlTag(Header h, HE_t he)
+	/*@modifies he @*/
+{
+    he->tag = RPMTAG_CONFLICTNAME;
+    return PRCOsqlTag(h, he, RPMTAG_CONFLICTVERSION, RPMTAG_CONFLICTFLAGS);
+}
+
+static int OsqlTag(Header h, HE_t he)
+	/*@modifies he @*/
+{
+    he->tag = RPMTAG_OBSOLETENAME;
+    return PRCOsqlTag(h, he, RPMTAG_OBSOLETEVERSION, RPMTAG_OBSOLETEFLAGS);
+}
+
+static int FDGSkip(rpmTagData DN, rpmTagData BN, rpmTagData DI, uint32_t i)
+	/*@*/
+{
+    const char * dn = DN.argv[DI.ui32p[i]];
+    size_t dnlen = strlen(dn);
+
+    if (strstr(dn, "bin/") != NULL)
+	return 1;
+    if (dnlen >= sizeof("/etc/")-1 && !strncmp(dn, "/etc/", dnlen))
+	return 1;
+    if (!strcmp(dn, "/usr/lib/") && !strcmp(BN.argv[i], "sendmail"))
+	return 1;
+    return 2;
+}
+
+static int FDGxmlTag(Header h, HE_t he, int lvl)
+	/*@modifies he @*/
+{
+    rpmTagData BN = { .ptr = NULL };
+    rpmTagData DN = { .ptr = NULL };
+    rpmTagData DI = { .ptr = NULL };
+    rpmTagData FMODES = { .ptr = NULL };
+    rpmTagData FFLAGS = { .ptr = NULL };
+    size_t nb;
+    uint32_t ac;
+    uint32_t c;
+    uint32_t i;
+    char *t;
+    int rc = 1;		/* assume failure */
+    int xx;
+
+    he->tag = RPMTAG_BASENAMES;
+    xx = headerGetEntry(h, he->tag, (hTYP_t)&he->t, &he->p, &he->c);
+    if (xx == 0) goto exit;
+    BN.argv = he->p.argv;
+    c = he->c;
+
+    he->tag = RPMTAG_DIRNAMES;
+    xx = headerGetEntry(h, he->tag, (hTYP_t)&he->t, &he->p, &he->c);
+    if (xx == 0) goto exit;
+    DN.argv = he->p.argv;
+
+    he->tag = RPMTAG_DIRINDEXES;
+    xx = headerGetEntry(h, he->tag, (hTYP_t)&he->t, &he->p, &he->c);
+    if (xx == 0) goto exit;
+    DI.ui32p = he->p.ui32p;
+
+    he->tag = RPMTAG_FILEMODES;
+    xx = headerGetEntry(h, he->tag, (hTYP_t)&he->t, &he->p, &he->c);
+    if (xx == 0) goto exit;
+    FMODES.ui16p = he->p.ui16p;
+
+    he->tag = RPMTAG_FILEFLAGS;
+    xx = headerGetEntry(h, he->tag, (hTYP_t)&he->t, &he->p, &he->c);
+    if (xx == 0) goto exit;
+    FFLAGS.ui32p = he->p.ui32p;
+
+    nb = sizeof(*he->p.argv);
+    ac = 0;
+    for (i = 0; i < c; i++) {
+	if (lvl > 0 && FDGSkip(DN, BN, DI, i) != lvl)
+	    continue;
+	ac++;
+	nb += sizeof(*he->p.argv);
+	nb += sizeof("<file></file>");
+	nb += xmlstrlen(DN.argv[DI.ui32p[i]]);
+	nb += xmlstrlen(BN.argv[i]);
+	if (FFLAGS.ui32p[i] & 0x40)	/* XXX RPMFILE_GHOST */
+	    nb += sizeof(" type=\"ghost\"") - 1;
+	else if (S_ISDIR(FMODES.ui16p[i]))
+	    nb += sizeof(" type=\"dir\"") - 1;
+    }
+
+    he->t = RPM_STRING_ARRAY_TYPE;
+    he->c = ac;
+    he->freeData = 1;
+    he->p.argv = xmalloc(nb);
+    t = (char *) &he->p.argv[he->c + 1];
+    ac = 0;
+    /* FIXME: Files, then dirs, finally ghosts breaks sort order.  */
+    for (i = 0; i < c; i++) {
+	if (lvl > 0 && FDGSkip(DN, BN, DI, i) != lvl)
+	    continue;
+	if (FFLAGS.ui32p[i] & 0x40)	/* XXX RPMFILE_GHOST */
+	    continue;
+	if (S_ISDIR(FMODES.ui16p[i]))
+	    continue;
+	he->p.argv[ac++] = t;
+	t = stpcpy(t, "<file>");
+	t = xmlstrcpy(t, DN.argv[DI.ui32p[i]]); t += strlen(t);
+	t = xmlstrcpy(t, BN.argv[i]);		t += strlen(t);
+	t = stpcpy(t, "</file>");
+	*t++ = '\0';
+    }
+    for (i = 0; i < c; i++) {
+	if (lvl > 0 && FDGSkip(DN, BN, DI, i) != lvl)
+	    continue;
+	if (FFLAGS.ui32p[i] & 0x40)	/* XXX RPMFILE_GHOST */
+	    continue;
+	if (!S_ISDIR(FMODES.ui16p[i]))
+	    continue;
+	he->p.argv[ac++] = t;
+	t = stpcpy(t, "<file type=\"dir\">");
+	t = xmlstrcpy(t, DN.argv[DI.ui32p[i]]); t += strlen(t);
+	t = xmlstrcpy(t, BN.argv[i]);		t += strlen(t);
+	t = stpcpy(t, "</file>");
+	*t++ = '\0';
+    }
+    for (i = 0; i < c; i++) {
+	if (lvl > 0 && FDGSkip(DN, BN, DI, i) != lvl)
+	    continue;
+	if (!(FFLAGS.ui32p[i] & 0x40))	/* XXX RPMFILE_GHOST */
+	    continue;
+	he->p.argv[ac++] = t;
+	t = stpcpy(t, "<file type=\"ghost\">");
+	t = xmlstrcpy(t, DN.argv[DI.ui32p[i]]); t += strlen(t);
+	t = xmlstrcpy(t, BN.argv[i]);		t += strlen(t);
+	t = stpcpy(t, "</file>");
+	*t++ = '\0';
+    }
+
+    he->p.argv[he->c] = NULL;
+    rc = 0;
+
+exit:
+    BN.argv = _free(BN.argv);
+    DN.argv = _free(DN.argv);
+    return rc;
+}
+
+static int F1xmlTag(Header h, HE_t he)
+	/*@modifies he @*/
+{
+    he->tag = RPMTAG_BASENAMES;
+    return FDGxmlTag(h, he, 1);
+}
+
+static int F2xmlTag(Header h, HE_t he)
+	/*@modifies he @*/
+{
+    he->tag = RPMTAG_BASENAMES;
+    return FDGxmlTag(h, he, 2);
+}
+
+static int FDGsqlTag(Header h, HE_t he, int lvl)
+	/*@modifies he @*/
+{
+    rpmTagData BN = { .ptr = NULL };
+    rpmTagData DN = { .ptr = NULL };
+    rpmTagData DI = { .ptr = NULL };
+    rpmTagData FMODES = { .ptr = NULL };
+    rpmTagData FFLAGS = { .ptr = NULL };
+    char instance[64];
+    size_t nb;
+    uint32_t ac;
+    uint32_t c;
+    uint32_t i;
+    char *t;
+    int rc = 1;		/* assume failure */
+    int xx;
+
+    he->tag = RPMTAG_BASENAMES;
+    xx = headerGetEntry(h, he->tag, (hTYP_t)&he->t, &he->p, &he->c);
+    if (xx == 0) goto exit;
+    BN.argv = he->p.argv;
+    c = he->c;
+
+    he->tag = RPMTAG_DIRNAMES;
+    xx = headerGetEntry(h, he->tag, (hTYP_t)&he->t, &he->p, &he->c);
+    if (xx == 0) goto exit;
+    DN.argv = he->p.argv;
+
+    he->tag = RPMTAG_DIRINDEXES;
+    xx = headerGetEntry(h, he->tag, (hTYP_t)&he->t, &he->p, &he->c);
+    if (xx == 0) goto exit;
+    DI.ui32p = he->p.ui32p;
+
+    he->tag = RPMTAG_FILEMODES;
+    xx = headerGetEntry(h, he->tag, (hTYP_t)&he->t, &he->p, &he->c);
+    if (xx == 0) goto exit;
+    FMODES.ui16p = he->p.ui16p;
+
+    he->tag = RPMTAG_FILEFLAGS;
+    xx = headerGetEntry(h, he->tag, (hTYP_t)&he->t, &he->p, &he->c);
+    if (xx == 0) goto exit;
+    FFLAGS.ui32p = he->p.ui32p;
+
+    xx = snprintf(instance, sizeof(instance), "'%d'", headerGetInstance(h));
+    nb = sizeof(*he->p.argv);
+    ac = 0;
+    for (i = 0; i < c; i++) {
+	if (lvl > 0 && FDGSkip(DN, BN, DI, i) != lvl)
+	    continue;
+	ac++;
+	nb += sizeof(*he->p.argv);
+	nb += strlen(instance) + sizeof(", '', ''");
+	nb += strlen(DN.argv[DI.ui32p[i]]);
+	nb += strlen(BN.argv[i]);
+	if (FFLAGS.ui32p[i] & 0x40)	/* XXX RPMFILE_GHOST */
+	    nb += sizeof("ghost") - 1;
+	else if (S_ISDIR(FMODES.ui16p[i]))
+	    nb += sizeof("dir") - 1;
+	else
+	    nb += sizeof("file") - 1;
+    }
+
+    he->t = RPM_STRING_ARRAY_TYPE;
+    he->c = ac;
+    he->freeData = 1;
+    he->p.argv = xmalloc(nb);
+    t = (char *) &he->p.argv[he->c + 1];
+    ac = 0;
+    /* FIXME: Files, then dirs, finally ghosts breaks sort order.  */
+    for (i = 0; i < c; i++) {
+	if (lvl > 0 && FDGSkip(DN, BN, DI, i) != lvl)
+	    continue;
+	if (FFLAGS.ui32p[i] & 0x40)	/* XXX RPMFILE_GHOST */
+	    continue;
+	if (S_ISDIR(FMODES.ui16p[i]))
+	    continue;
+	he->p.argv[ac++] = t;
+	t = stpcpy( stpcpy(t, instance), ", '");
+	t = strcpy(t, DN.argv[DI.ui32p[i]]);	t += strlen(t);
+	t = strcpy(t, BN.argv[i]);		t += strlen(t);
+	t = stpcpy(t, "', 'file'");
+	*t++ = '\0';
+    }
+    for (i = 0; i < c; i++) {
+	if (lvl > 0 && FDGSkip(DN, BN, DI, i) != lvl)
+	    continue;
+	if (FFLAGS.ui32p[i] & 0x40)	/* XXX RPMFILE_GHOST */
+	    continue;
+	if (!S_ISDIR(FMODES.ui16p[i]))
+	    continue;
+	he->p.argv[ac++] = t;
+	t = stpcpy( stpcpy(t, instance), ", '");
+	t = strcpy(t, DN.argv[DI.ui32p[i]]);	t += strlen(t);
+	t = strcpy(t, BN.argv[i]);		t += strlen(t);
+	t = stpcpy(t, "', 'dir'");
+	*t++ = '\0';
+    }
+    for (i = 0; i < c; i++) {
+	if (lvl > 0 && FDGSkip(DN, BN, DI, i) != lvl)
+	    continue;
+	if (!(FFLAGS.ui32p[i] & 0x40))	/* XXX RPMFILE_GHOST */
+	    continue;
+	he->p.argv[ac++] = t;
+	t = stpcpy( stpcpy(t, instance), ", '");
+	t = strcpy(t, DN.argv[DI.ui32p[i]]);	t += strlen(t);
+	t = strcpy(t, BN.argv[i]);		t += strlen(t);
+	t = stpcpy(t, "', 'ghost'");
+	*t++ = '\0';
+    }
+
+    he->p.argv[he->c] = NULL;
+    rc = 0;
+
+exit:
+    BN.argv = _free(BN.argv);
+    DN.argv = _free(DN.argv);
+    return rc;
+}
+
+static int F1sqlTag(Header h, HE_t he)
+	/*@modifies he @*/
+{
+    he->tag = RPMTAG_BASENAMES;
+    return FDGsqlTag(h, he, 1);
+}
+
+static int F2sqlTag(Header h, HE_t he)
+	/*@modifies he @*/
+{
+    he->tag = RPMTAG_BASENAMES;
+    return FDGsqlTag(h, he, 2);
+}
+
 /**
  * Encode the basename of a string for use in XML CDATA.
  * @param he            tag container
@@ -1717,6 +2342,30 @@ const struct headerSprintfExtension_s rpmHeaderFormats[] = {
 	{ .tagFunction = dbinstanceTag } },
     { HEADER_EXT_TAG, "RPMTAG_NVRA",
 	{ .tagFunction = nvraTag } },
+    { HEADER_EXT_TAG, "RPMTAG_PROVIDEXMLENTRY",
+	{ .tagFunction = PxmlTag } },
+    { HEADER_EXT_TAG, "RPMTAG_REQUIREXMLENTRY",
+	{ .tagFunction = RxmlTag } },
+    { HEADER_EXT_TAG, "RPMTAG_CONFLICTXMLENTRY",
+	{ .tagFunction = CxmlTag } },
+    { HEADER_EXT_TAG, "RPMTAG_OBSOLETEXMLENTRY",
+	{ .tagFunction = OxmlTag } },
+    { HEADER_EXT_TAG, "RPMTAG_FILESXMLENTRY1",
+	{ .tagFunction = F1xmlTag } },
+    { HEADER_EXT_TAG, "RPMTAG_FILESXMLENTRY2",
+	{ .tagFunction = F2xmlTag } },
+    { HEADER_EXT_TAG, "RPMTAG_PROVIDESQLENTRY",
+	{ .tagFunction = PsqlTag } },
+    { HEADER_EXT_TAG, "RPMTAG_REQUIRESQLENTRY",
+	{ .tagFunction = RsqlTag } },
+    { HEADER_EXT_TAG, "RPMTAG_CONFLICTSQLENTRY",
+	{ .tagFunction = CsqlTag } },
+    { HEADER_EXT_TAG, "RPMTAG_OBSOLETESQLENTRY",
+	{ .tagFunction = OsqlTag } },
+    { HEADER_EXT_TAG, "RPMTAG_FILESSQLENTRY1",
+	{ .tagFunction = F1sqlTag } },
+    { HEADER_EXT_TAG, "RPMTAG_FILESSQLENTRY2",
+	{ .tagFunction = F2sqlTag } },
     { HEADER_EXT_FORMAT, "armor",
 	{ .fmtFunction = armorFormat } },
     { HEADER_EXT_FORMAT, "base64",
@@ -1735,6 +2384,8 @@ const struct headerSprintfExtension_s rpmHeaderFormats[] = {
 	{ .fmtFunction = permsFormat } },
     { HEADER_EXT_FORMAT, "pgpsig",
 	{ .fmtFunction = pgpsigFormat } },
+    { HEADER_EXT_FORMAT, "sqlescape",
+	{ .fmtFunction = sqlescapeFormat } },
     { HEADER_EXT_FORMAT, "triggertype",
 	{ .fmtFunction = triggertypeFormat } },
     { HEADER_EXT_FORMAT, "utf8",

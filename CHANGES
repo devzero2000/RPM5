@@ -1,4 +1,5 @@
 4.4.9 -> 4.5:
+	- jbj: rpmrepo: backport more header extension tags/formats.
 	- jbj: rpmrepo: backport :bncdata, :cdata, :utf8 header format extensions.
 	- jbj: rpmrepo: backport --yum:primary.xml popt alias from HEAD.
 	- glen: print error when makeTempPath fails due missing temp dir
