@@ -878,6 +878,7 @@ rpmRC rpmReadHeader(rpmts ts, FD_t fd, Header *hdrp, const char ** msg)
     int_32 dl;
     int_32 * ei = NULL;
     size_t uc;
+    size_t startoff;
     int_32 nb;
     Header h = NULL;
     const char * origin = NULL;
@@ -893,6 +894,7 @@ rpmRC rpmReadHeader(rpmts ts, FD_t fd, Header *hdrp, const char ** msg)
 	*msg = NULL;
 /*@=boundswrite@*/
 
+    startoff = fd->stats->ops[FDSTAT_READ].bytes;
     memset(block, 0, sizeof(block));
     if ((xx = timedRead(fd, (char *)block, sizeof(block))) != sizeof(block)) {
 	(void) snprintf(buf, sizeof(buf),
@@ -952,8 +954,26 @@ rpmRC rpmReadHeader(rpmts ts, FD_t fd, Header *hdrp, const char ** msg)
 
     /* Save the opened path as the header origin. */
     origin = fdGetOPath(fd);
-    if (origin != NULL)
-	(void) headerSetOrigin(h, origin);
+    if (origin != NULL) {
+	const char * lpath = NULL;
+	int ut = urlPath(origin, &lpath);
+	ut = ut;	/* XXX keep gcc quiet. */
+	if (lpath && *lpath != '/') {
+	    char * rpath = realpath(origin, NULL);
+	    (void) headerSetOrigin(h, rpath);
+	    rpath = _free(rpath);
+	} else
+	    (void) headerSetOrigin(h, origin);
+    }
+    {	struct stat sb;
+	int saveno = errno;
+	memset(&sb, 0, sizeof(sb));
+	(void) fstat(Fileno(fd), &sb);
+	errno = saveno;
+	(void) headerSetTime(h, (uint32_t)sb.st_mtime);
+    }
+    (void) headerSetStartOff(h, startoff);
+    (void) headerSetEndOff(h, fd->stats->ops[FDSTAT_READ].bytes);
     
 exit:
 /*@-boundswrite@*/

@@ -1,4 +1,5 @@
 4.4.9 -> 4.5:
+	- jbj: rpmrepo: populate the header internal values.
 	- jbj: rpmrepo: functional --yum:primary.xml (w incorrect values).
 	- jbj: rpmrepo: backport more header extension tags/formats.
 	- jbj: rpmrepo: backport :bncdata, :cdata, :utf8 header format extensions.
