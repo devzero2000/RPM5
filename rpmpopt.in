@@ -191,6 +191,120 @@ rpm	alias --yum:primary.xml --qf '\
 \n' \
 	--POPTdesc=$"display yum primary.xml markup"
 
+rpm	alias --yum:primary.sqlite --qf "\
+INSERT into packages values (\
+'%{DBINSTANCE}'\
+, '%|HDRID?{%{HDRID}}:{XXX}|'\
+,\n '%{NAME:sqlescape}'\
+, '%{ARCH:sqlescape}'\
+, '%{VERSION:sqlescape}'\
+, '%|EPOCH?{%{EPOCH}}:{0}|'\
+, '%{RELEASE:sqlescape}'\
+,\n '%{SUMMARY:sqlescape}'\
+,\n '%{DESCRIPTION:sqlescape}'\
+,\n '%|URL?{%{URL:sqlescape}}|'\
+, '%{PACKAGETIME}'\
+, '%{BUILDTIME}'\
+, '%|license?{%{LICENSE:sqlescape}}|'\
+,\n '%|vendor?{%{VENDOR:sqlescape}}|'\
+, '%|group?{%{GROUP:sqlescape}}|'\
+,\n '%|buildhost?{%{BUILDHOST:sqlescape}}|'\
+, '%|sourcerpm?{%{SOURCERPM:sqlescape}}|'\
+,\n '%{HEADERSTARTOFF}'\
+, '%{HEADERENDOFF}'\
+, '%|PACKAGER?{%{PACKAGER:sqlescape}}|'\
+, '%{SIZE}'\
+, '%{SIZE}'\
+, '%{ARCHIVESIZE}'\
+,\n '%{PACKAGEORIGIN:sqlescape}'\
+,\n '%{PACKAGEORIGIN:sqlescape}'\
+, 'sha'\
+);\
+%|providename?{[\
+\nINSERT into provides values (\
+%{providesqlentry}\
+);\
+]}|\
+%|conflictname?{[\
+\nINSERT into conflicts values (\
+%{conflictsqlentry}\
+);\
+]}|\
+%|obsoletename?{[\
+\nINSERT into obsoletes values (\
+%{conflictsqlentry}\
+);\
+]}|\
+%|requirename?{[\
+\nINSERT into requires values (\
+%{requiresqlentry}\
+);\
+]}|\
+%|basenames?{[\
+\nINSERT into files    values (\
+%{filessqlentry1}\
+);\
+]}|\
+\n"\
+	--POPTdesc=$"display yum primary.sqlite import"
+
+rpm	alias --yum:filelists.xml --qf '\
+<package pkgid="%|HDRID?{%{HDRID}}:{XXX}|" name="%{NAME:cdata}" arch="%{ARCH:cdata}">\
+\n  <version epoch="%|EPOCH?{%{EPOCH}}:{0}|" ver="%{VERSION:cdata}" rel="%{RELEASE:cdata}"/>\
+%|filesxmlentry2?{\
+[\
+\n  %{filesxmlentry2}\
+]\
+}|\
+\n</package>\
+\n' \
+	--POPTdesc=$"display yum filelists.xml markup"
+
+rpm	alias --yum:filelists.sqlite --qf "\
+INSERT into packages values (\
+'%{DBINSTANCE}'\
+, '%|HDRID?{%{HDRID}}:{XXX}|'\
+);\
+%|basenames?{[\
+\nINSERT into filelist values (\
+%{filessqlentry2}\
+);\
+]}|\
+\n" \
+	--POPTdesc=$"display yum filelists.sqlite import"
+
+rpm	alias --yum:other.xml --qf '\
+<package pkgid="%|HDRID?{%{HDRID}}:{XXX}|" name="%{NAME:cdata}" arch="%{ARCH:cdata}">\
+\n  <version epoch="%|EPOCH?{%{EPOCH}}:{0}|" ver="%{VERSION:cdata}" rel="%{RELEASE:cdata}"/>\
+%|changelogname?{\
+[\
+\n  <changelog author="%{CHANGELOGNAME:cdata}" date="%{CHANGELOGTIME}">%{CHANGELOGTEXT:cdata}</changelog>\
+]\
+}:{\
+\n  <changelog/>\
+}|\
+\n</package>\
+\n' \
+	--POPTdesc=$"display yum other.xml markup"
+
+rpm	alias --yum:other.sqlite --qf "\
+INSERT into packages values (\
+'%{DBINSTANCE}'\
+, '%|HDRID?{%{HDRID}}:{XXX}|'\
+);\
+%|changelogname?{[\
+\nINSERT into changelog values (\
+'XXX'\
+, '%{CHANGELOGNAME:sqlescape}'\
+, '%{CHANGELOGTIME}'\
+, '%{CHANGELOGTEXT:sqlescape}'\
+);\
+]}:{\
+\nINSERT into changelog values ('%{DBINSTANCE}', '', '', '');\
+}|\
+\n" \
+	--POPTdesc=$"display yum other.sqlite import"
+
 #==============================================================================
 rpm	alias --triggerscripts --qf '\
 [trigger%{TRIGGERTYPE} scriptlet (using %{TRIGGERSCRIPTPROG}) -- %{TRIGGERCONDS}\n\
