@@ -1,4 +1,5 @@
 4.4.9 -> 4.5:
+	- jbj: backport --yum:primary.xml popt alias from HEAD.
 	- glen: print error when makeTempPath fails due missing temp dir
 	- glen: merged perl find.{prov,req} fixes from PLD
 	- jbj: header: free tag data on error retrurn with damaged data.

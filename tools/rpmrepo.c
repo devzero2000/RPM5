@@ -217,7 +217,7 @@ static const char primary_xml_qfmt[] = "\
 \n  <url>%|URL?{%{URL:cdata}}:{}|</url>\
 \n  <time file=\"%{PACKAGETIME}\" build=\"%{BUILDTIME}\"/>\
 \n  <size package=\"%{SIZE}\" installed=\"%{SIZE}\" archive=\"%{ARCHIVESIZE}\"/>\
-\n  <location href=\"%{PACKAGEORIGIN:cdata}\"/>\
+\n  <location href=\"%{PACKAGEORIGIN:bncdata}\"/>\
 \n  <format>\
 %|license?{\
 \n    <rpm:license>%{LICENSE:cdata}</rpm:license>\
