@@ -1,5 +1,6 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: pass dataEnd to regionSwab() when unloading.
     - jbj: disable the headerLoad speedup's until headerUnload changes are done.
     - jbj: swab integer tag data in headerGet, not headerLoad (measured 6.9% rpm-V speedup ymmv).
     - jbj: compute tag store w subtract (measured 26.3% rpm -qa speedup ymmv).

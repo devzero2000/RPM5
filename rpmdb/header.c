@@ -773,7 +773,7 @@ assert(entry->info.offset <= 0);	/* XXX insurance */
 		ril++;
 		rdlen += entry->info.count;
 
-		count = regionSwab(NULL, ril, 0, pe, t, NULL, 0);
+		count = regionSwab(NULL, ril, 0, pe, t, te, 0);
 		if (count != rdlen)
 		    goto errxit;
 
@@ -791,7 +791,7 @@ assert(entry->info.offset <= 0);	/* XXX insurance */
 		}
 		te += entry->info.count + drlen;
 
-		count = regionSwab(NULL, ril, 0, pe, t, NULL, 0);
+		count = regionSwab(NULL, ril, 0, pe, t, te, 0);
 		if (count != (rdlen + entry->info.count + drlen))
 		    goto errxit;
 	    }
