@@ -318,6 +318,146 @@ static char * xmlstrcpy(/*@returned@*/ char * t, const char * s)
     return t;
 }
 
+static /*@only@*/ /*@null@*/ char *
+strdup_locale_to_utf8 (/*@null@*/ const char * buffer)
+	/*@*/
+{
+    char *dest_str;
+#if defined(HAVE_ICONV)
+    char *codeset = NULL;
+    iconv_t fd;
+
+    if (buffer == NULL)
+	return NULL;
+
+#ifdef HAVE_LANGINFO_H
+/*@-type@*/
+    codeset = nl_langinfo (CODESET);
+/*@=type@*/
+#endif
+
+    if (codeset != NULL && strcmp(codeset, "UTF-8") != 0
+     && (fd = iconv_open("UTF-8", codeset)) != (iconv_t)-1)
+    {
+	const char *pin = buffer;
+	char *pout = NULL;
+	size_t ib, ob, dest_size;
+	int done;
+	int is_error;
+	size_t err;
+	const char *shift_pin = NULL;
+	int xx;
+
+	err = iconv(fd, NULL, &ib, &pout, &ob);
+	dest_size = ob = ib = strlen(buffer);
+	dest_str = pout = malloc((dest_size + 1) * sizeof(*dest_str));
+	if (dest_str)
+	    *dest_str = '\0';
+	done = is_error = 0;
+	if (pout != NULL)
+	while (done == 0 && is_error == 0) {
+	    err = iconv(fd, (char **)&pin, &ib, &pout, &ob);
+
+	    if (err == (size_t)-1) {
+		switch (errno) {
+		case EINVAL:
+		    done = 1;
+		    /*@switchbreak@*/ break;
+		case E2BIG:
+		{   size_t used = (size_t)(pout - dest_str);
+		    dest_size *= 2;
+		    dest_str = realloc(dest_str, (dest_size + 1) * sizeof(*dest_str));
+		    if (dest_str == NULL) {
+			is_error = 1;
+			continue;
+		    }
+		    pout = dest_str + used;
+		    ob = dest_size - used;
+		}   /*@switchbreak@*/ break;
+		case EILSEQ:
+		    is_error = 1;
+		    /*@switchbreak@*/ break;
+		default:
+		    is_error = 1;
+		    /*@switchbreak@*/ break;
+		}
+	    } else {
+		if (shift_pin == NULL) {
+		    shift_pin = pin;
+		    pin = NULL;
+		    ib = 0;
+		} else {
+		    done = 1;
+		}
+	    }
+	}
+	xx = iconv_close(fd);
+	if (pout)
+	    *pout = '\0';
+	if (dest_str != NULL)
+	    dest_str = xstrdup(dest_str);
+    } else
+#endif
+    {
+	dest_str = xstrdup((buffer ? buffer : ""));
+    }
+
+    return dest_str;
+}
+
+/**
+ * Encode string for use in XML CDATA.
+ * @param he		tag container
+ * @return		formatted string
+ */
+static /*@only@*/ char * cdataFormat(HE_t he)
+	/*@*/
+{
+    int ix = (he->ix > 0 ? he->ix : 0);
+    char * val;
+
+assert(ix == 0);
+    if (he->t != RPM_STRING_TYPE) {
+	val = xstrdup(_("(not a string)"));
+    } else {
+	const char * s = strdup_locale_to_utf8(he->p.str);
+	size_t nb = xmlstrlen(s);
+	char * t;
+
+	val = t = xcalloc(1, nb + 1);
+	t = xmlstrcpy(t, s);	t += strlen(t);
+	*t = '\0';
+	s = _free(s);
+    }
+
+/*@-globstate@*/
+    return val;
+/*@=globstate@*/
+}
+
+/**
+ * Encode string in UTF-8.
+ * @param he		tag container
+ * @return		formatted string
+ */
+static /*@only@*/ char * utf8Format(HE_t he)
+	/*@*/
+{
+    int ix = (he->ix > 0 ? he->ix : 0);
+    char * val;
+
+assert(ix == 0);
+    if (he->t != RPM_STRING_TYPE) {
+	val = xstrdup(_("(not a string)"));
+    } else {
+	val = strdup_locale_to_utf8(he->p.str);
+    }
+
+/*@-globstate@*/
+    return val;
+/*@=globstate@*/
+}
+
 /**
  * Wrap tag data in simple header xml markup.
  * @param he		tag container
@@ -1493,6 +1633,44 @@ assert(ds != NULL);
     return 0;
 }
 
+/**
+ * Encode the basename of a string for use in XML CDATA.
+ * @param he            tag container
+ * @return              formatted string
+ */
+static /*@only@*/ char * bncdataFormat(HE_t he)
+	/*@*/
+{
+    char * val;
+
+    if (he->t != RPM_STRING_TYPE) {
+	val = xstrdup(_("(not a string)"));
+    } else {
+	const char * bn;
+	const char * s;
+	size_t nb;
+	char * t;
+
+	/* Get rightmost '/' in string (i.e. basename(3) behavior). */
+	if ((bn = strrchr(he->p.str, '/')) != NULL)
+	    bn++;
+	else
+	    bn = he->p.str;
+
+	/* Convert to utf8, escape for XML CDATA. */
+	s = strdup_locale_to_utf8(bn);
+	nb = xmlstrlen(s);
+	val = t = xcalloc(1, nb + 1);
+	t = xmlstrcpy(t, s);	t += strlen(t);
+	*t = '\0';
+	s = _free(s);
+    }
+
+/*@-globstate@*/
+    return val;
+/*@=globstate@*/
+}
+
 /*@-type@*/ /* FIX: cast? */
 const struct headerSprintfExtension_s rpmHeaderFormats[] = {
     { HEADER_EXT_TAG, "RPMTAG_CHANGELOGNAME",
@@ -1543,6 +1721,10 @@ const struct headerSprintfExtension_s rpmHeaderFormats[] = {
 	{ .fmtFunction = armorFormat } },
     { HEADER_EXT_FORMAT, "base64",
 	{ .fmtFunction = base64Format } },
+    { HEADER_EXT_FORMAT, "bncdata",
+	{ .fmtFunction = bncdataFormat } },
+    { HEADER_EXT_FORMAT, "cdata",
+	{ .fmtFunction = cdataFormat } },
     { HEADER_EXT_FORMAT, "depflags",
 	{ .fmtFunction = depflagsFormat } },
     { HEADER_EXT_FORMAT, "fflags",
@@ -1555,6 +1737,8 @@ const struct headerSprintfExtension_s rpmHeaderFormats[] = {
 	{ .fmtFunction = pgpsigFormat } },
     { HEADER_EXT_FORMAT, "triggertype",
 	{ .fmtFunction = triggertypeFormat } },
+    { HEADER_EXT_FORMAT, "utf8",
+	{ .fmtFunction = utf8Format } },
     { HEADER_EXT_FORMAT, "xml",	
 	{ .fmtFunction = xmlFormat } },
     { HEADER_EXT_FORMAT, "yaml",
