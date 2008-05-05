@@ -12,14 +12,12 @@
 #include "rpmio.h"
 #include "debug.h"
 
-#ifdef HAVE_ICONV
-static char *locale_encoding = NULL;
-static int locale_encoding_is_utf8 = 0;
-#endif
-
 const char * xstrtolocale(const char *str)
 {
 #ifdef HAVE_ICONV
+    /*@only@*/
+    static char *locale_encoding = NULL;
+    static int locale_encoding_is_utf8 = 0;
     iconv_t cd;
     size_t src_size, dest_size;
     char *result, *dest;
@@ -54,7 +52,7 @@ const char * xstrtolocale(const char *str)
 	    size_t dest_offset;
 	    if (errno != E2BIG) {
 		free(result);
-		iconv_close(cd);
+		(void) iconv_close(cd);
 		return str;
 	    }
 	    dest_offset = dest - result;
@@ -66,7 +64,7 @@ const char * xstrtolocale(const char *str)
 	    src = NULL;
 	}
     }
-    iconv_close(cd);
+    (void) iconv_close(cd);
     free((void *)str);
     if (dest_size == 0) {
 	size_t dest_offset = dest - result;

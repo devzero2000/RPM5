@@ -210,8 +210,10 @@ Fts_open(char * const * argv, int options,
 	FTSENT *tmp = NULL;
 	size_t len;
 
+/*@-formattype -modfilesys@*/
 if (_fts_debug)
 fprintf(stderr, "*** Fts_open(%p, 0x%x, %p)\n", argv, options, compar);
+/*@=formattype =modfilesys@*/
 
 	/* Options check. */
 	if (options & ~FTS_OPTIONMASK) {
@@ -631,8 +633,10 @@ name:		t = sp->fts_path + NAPPEND(p->fts_parent);
 int
 Fts_set(/*@unused@*/ FTS * sp, FTSENT * p, int instr)
 {
+/*@-modfilesys@*/
 if (_fts_debug)
 fprintf(stderr, "*** Fts_set(%p, %p, 0x%x)\n", sp, p, instr);
+/*@=modfilesys@*/
 
 	if (instr != 0 && instr != FTS_AGAIN && instr != FTS_FOLLOW &&
 	    instr != FTS_NOINSTR && instr != FTS_SKIP) {
@@ -649,8 +653,10 @@ Fts_children(FTS * sp, int instr)
 	register FTSENT *p;
 	int fd;
 
+/*@-modfilesys@*/
 if (_fts_debug)
 fprintf(stderr, "*** Fts_children(%p, 0x%x)\n", sp, instr);
+/*@=modfilesys@*/
 
 	if (instr != 0 && instr != FTS_NAMEONLY) {
 		__set_errno (EINVAL);

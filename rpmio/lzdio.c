@@ -34,6 +34,8 @@ typedef struct lzfile {
 
 #define	LZDONLY(fd)	assert(fdGetIo(fd) == lzdio)
 
+/*@access FD_t @*/
+
 /* =============================================================== */
 
 static size_t MyReadFile(FILE *file, void *data, size_t size)

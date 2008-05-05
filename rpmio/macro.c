@@ -2326,7 +2326,7 @@ rpmInitMacros(MacroContext mc, const char * macrofiles)
             fn++;
             if (!rpmSecuritySaneFile(fn)) {
                 rpmlog(RPMLOG_WARNING, "existing RPM macros file \"%s\" considered INSECURE -- not loaded\n", fn);
-                continue;
+                /*@innercontinue@*/ continue;
             }
         }
 
