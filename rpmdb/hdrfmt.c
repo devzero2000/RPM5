@@ -2619,11 +2619,9 @@ static int F2sqlTag(Header h, HE_t he)
  * @param he            tag container
  * @return              formatted string
  */
-
 static /*@only@*/ char * bncdataFormat(HE_t he)
 	/*@*/
 {
-    int ix = (he->ix > 0 ? he->ix : 0);
     char * val;
 
     if (he->t != RPM_STRING_TYPE) {
