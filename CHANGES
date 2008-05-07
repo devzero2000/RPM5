@@ -1,4 +1,5 @@
 4.4.9 -> 4.5:
+	- jbj: configure: don't expand non-existent scripts/perl.{prov,req}.in.
 	- jbj: rpmrepo: backport the remaining popt --queryformat aliases.
 	- jbj: rpmrepo: populate the header internal values.
 	- jbj: rpmrepo: functional --yum:primary.xml (w incorrect values).
