@@ -1,5 +1,6 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: tests: coverage results at http://wraptastic.org/pub/jbj/rpm-lcov.
     - jbj: tests: add devtool-sanity (and other) tests.
     - jbj: rpmio: add additional tests.
     - jbj: add lcov targets throughout.
