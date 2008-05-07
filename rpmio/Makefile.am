@@ -4,6 +4,8 @@ AUTOMAKE_OPTIONS = 1.4 foreign
 
 LINT = splint
 
+SUBDIRS = # tests
+
 EXTRA_DIST = \
 	getdate.y LzamDecode.c rpmcpio.c rpmcpio.h \
 	rpmgenbasedir.c rpmgenpkglist.c rpmgensrclist.c \

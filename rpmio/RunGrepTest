@@ -28,20 +28,30 @@ if $pcregrep -u "PCRE version" $pcregrep 2>&1 | grep "not compiled with PCRE_UTF
   utf8=0
 fi
 
+rpmrepo=`pwd`/rpmrepo
+if [ -x $rpmrepo ]; then
+  echo "Testing rpmrepo features"
+
+  echo "---------------------------- Test R1 ------------------------------" >testtry
+  $rpmrepo --uncompressed repo
+  $rpmrepo --gzip repo
+  $rpmrepo --bzip2 repo
+  $rpmrepo --lzma repo
+else
+  echo "Skipping rpmrepo tests: $rpmrepo is not executable"
+fi
+
+rpmmtree=`pwd`/rpmmtree
+if [ -x $rpmmtree ]; then
+  echo "Testing rpmmtree features"
+
+  echo "---------------------------- Test M1 ------------------------------" >testtry
+  $rpmmtree -c -p testdata | $rpmmtree -p testdata
+else
+  echo "Skipping rpmmtree tests: $rpmmtree is not executable"
+fi
+
 rpmtar=`pwd`/rpmtar
-rpmdigest=`pwd`/rpmdigest
-
-genvfypat() {
-  gen="$1"; shift
-  vfy="$1"; shift
-  pat="$1"; shift
-  tfn=`mktemp -t genvfypat.XXXXXXXXXX`
-  $gen $pat > $tfn
-  $vfy --status -c $tfn
-  if [ $? != 0 ] ; then exit 1; fi
-   rm -f $tfn
-}
-
 if [ -x $rpmtar ]; then
   echo "Testing rpmtar features"
 
@@ -71,10 +81,21 @@ else
   echo "Skipping rpmtar tests: $rpmtar is not executable"
 fi
 
+rpmdigest=`pwd`/rpmdigest
 if [ -x $rpmdigest ]; then
   echo "Testing rpmdigest features"
 
   echo "---------------------------- Test D1 ------------------------------" >testtry
+  genvfypat() {
+    gen="$1"; shift
+    vfy="$1"; shift
+    pat="$1"; shift
+    tfn=`mktemp -t genvfypat.XXXXXXXXXX`
+    $gen $pat > $tfn
+    $vfy --status -c $tfn
+    if [ $? != 0 ] ; then exit 1; fi
+     rm -f $tfn
+  }
   pats="$rpmdigest $srcdir/testdata/[a-z]*"
   genvfypat "$rpmdigest --alldigests" "$rpmdigest" "$pats"
   for i in md5 sha1 sha224 sha256 sha384 sha512; do

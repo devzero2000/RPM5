@@ -56,6 +56,7 @@ SUBDIRS += \
 	rpmconstant \
 	@WITH_PYTHON_SUBDIR@ \
 	@WITH_PERL_SUBDIR@ \
+	tests \
 	tools \
 	scripts \
 	doc \
@@ -184,6 +185,8 @@ install-data-local:
 	esac
 	$(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/noarch
 
+check-local:
+
 .PHONY: tar
 tar:
 	rm -rf /tmp/rpm-$(VERSION)
@@ -220,6 +223,36 @@ doxygen @WITH_APIDOCS_TARGET@: Doxyfile rpmpopt macros
 	rm -rf $@
 	mkdir -p $@
 	- [ X"@__DOXYGEN@" != Xno ] && @__DOXYGEN@
+
+.PHONY:	lcov-reset	# run lcov from scratch, always
+lcov-reset:
+	make lcov-run
+	make lcov-report
+
+# run lcov from scratch if the dir is not there
+lcov:
+	make lcov-reset
+
+.PHONY:	lcov-run	# reset run coverage tests
+lcov-run:
+	@-rm -rf lcov
+	find . -name "*.gcda" -exec rm {} \;
+	make check
+
+.PHONY:	lcov-report	# generate report based on current coverage data
+lcov-report:
+	mkdir lcov
+	-lcov -d rpmio -d rpmdb -d lib -d build -d tools -d . --capture --output-file lcov/lcov.info
+	lcov -l lcov/lcov.info | grep -v "`cd $(top_srcdir) && pwd`" | cut -d: -f1 > lcov/remove
+	lcov -r lcov/lcov.info `cat lcov/remove` > lcov/lcov.cleaned.info
+	rm lcov/remove
+	mv lcov/lcov.cleaned.info lcov/lcov.info
+	genhtml -t "$(PACKAGE_STRING)" -o lcov lcov/lcov.info
+
+.PHONY:	lcov-upload
+lcov-upload: lcov
+	tar -C lcov -cf - . | (cd /var/ftp/pub/jbj/rpm-lcov; tar xf -)
+#	rsync -rvz -e ssh --delete lcov/* ???
 
 cscope:
 	cscope -b -R
