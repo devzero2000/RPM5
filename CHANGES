@@ -1,5 +1,6 @@
 
 5.1.0 -> 5.2a0:
+    - rpm.org: Mask signals while moving rebuilt rpmdb into place.
     - rpm.org: Restore rpmdb selinux contexts to default after rebuild (#442149).
     - jbj: tests: coverage results at http://wraptastic.org/pub/jbj/rpm-lcov.
     - jbj: tests: add devtool-sanity (and other) tests.

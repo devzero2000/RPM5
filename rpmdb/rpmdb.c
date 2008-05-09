@@ -3828,7 +3828,9 @@ static int rpmdbMoveDatabase(const char * prefix,
     int rc = 0;
     int xx;
     int selinux = is_selinux_enabled() && (matchpathcon_init(NULL) != -1);
+    sigset_t sigMask;
  
+    blockSignals(NULL, &sigMask);
     switch (_olddbapi) {
     default:
     case 4:
@@ -3925,6 +3927,8 @@ bottom:
     case 0:
 	break;
     }
+    unblockSignals(NULL, &sigMask);
+
     if (selinux)
 	matchpathcon_fini();
     return rc;
