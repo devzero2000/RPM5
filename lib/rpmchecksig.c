@@ -192,6 +192,7 @@ static int rpmReSign(/*@unused@*/ rpmts ts,
     int deleting = (qva->qva_mode == RPMSIGN_DEL_SIGNATURE);
     rpmRC rc;
     int xx;
+    int i;
     
     tmprpm[0] = '\0';
 
@@ -303,27 +304,28 @@ if (sigh != NULL) {
 	xx = headerDel(sigh, he, 0);
 
 	/* Toss and recalculate header+payload size and digests. */
-	he->tag = (rpmTag)RPMSIGTAG_SIZE;
-	xx = headerDel(sigh, he, 0);
-	xx = rpmAddSignature(sigh, sigtarget, RPMSIGTAG_SIZE, qva->passPhrase);
-	he->tag = (rpmTag)RPMSIGTAG_MD5;
-	xx = headerDel(sigh, he, 0);
-	xx = rpmAddSignature(sigh, sigtarget, RPMSIGTAG_MD5, qva->passPhrase);
-	he->tag = (rpmTag)RPMSIGTAG_SHA1;
-	xx = headerDel(sigh, he, 0);
-	xx = rpmAddSignature(sigh, sigtarget, RPMSIGTAG_SHA1, qva->passPhrase);
+	{   static const uint32_t sigs[] =
+		{ RPMSIGTAG_SIZE, RPMSIGTAG_MD5, RPMSIGTAG_SHA1 };
+	    int nsigs = sizeof(sigs) / sizeof(sigs[0]);
+	    for (i = 0; i < nsigs; i++) {
+		he->tag = (rpmTag)sigs[i];
+		xx = headerDel(sigh, he, 0);
+		xx = rpmAddSignature(sigh, sigtarget, he->tag, qva->passPhrase);
+		if (xx)
+		    goto exit;
+	    }
+	}
 
-	if (deleting) {	/* Nuke all the signature tags. */
-	    he->tag = (rpmTag)RPMSIGTAG_GPG;
-	    xx = headerDel(sigh, he, 0);
-	    he->tag = (rpmTag)RPMSIGTAG_PGP5;
-	    xx = headerDel(sigh, he, 0);
-	    he->tag = (rpmTag)RPMSIGTAG_PGP;
-	    xx = headerDel(sigh, he, 0);
-	    he->tag = (rpmTag)RPMSIGTAG_DSA;
-	    xx = headerDel(sigh, he, 0);
-	    he->tag = (rpmTag)RPMSIGTAG_RSA;
-	    xx = headerDel(sigh, he, 0);
+	if (deleting) {
+	    /* Nuke all the signature tags. */
+	    static const uint32_t sigs[] =
+		{ RPMSIGTAG_GPG, RPMSIGTAG_PGP5, RPMSIGTAG_PGP,
+		  RPMSIGTAG_DSA, RPMSIGTAG_RSA };
+	    int nsigs = sizeof(sigs) / sizeof(sigs[0]);
+	    for (i = 0; i < nsigs; i++) {
+		he->tag = (rpmTag)sigs[i];
+		xx = headerDel(sigh, he, 0);
+	    }
 	} else {		/* If gpg/pgp is configured, replace the signature. */
 	  int addsig = 0;
 	  sigtag = RPMSIGTAG_GPG;
@@ -361,6 +363,8 @@ if (sigh != NULL) {
 	    he->tag = (rpmTag)sigtag;
 	    xx = headerDel(sigh, he, 0);
 	    xx = rpmAddSignature(sigh, sigtarget, sigtag, qva->passPhrase);
+	    if (xx)
+		goto exit;
 
 	    /* If package was previously signed, check for same signer. */
 	    memset(newsignid, 0, sizeof(newsignid));
