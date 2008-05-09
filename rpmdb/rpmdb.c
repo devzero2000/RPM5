@@ -3827,7 +3827,7 @@ static int rpmdbMoveDatabase(const char * prefix,
     const char * ofn, * nfn;
     int rc = 0;
     int xx;
-    int selinux = is_selinux_enabled() && (matchpathcon_init(NULL) != -1);
+    int selinux = is_selinux_enabled() > 0 && (matchpathcon_init(NULL) != -1);
     sigset_t sigMask;
  
     blockSignals(NULL, &sigMask);

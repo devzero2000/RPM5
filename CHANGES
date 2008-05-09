@@ -1,5 +1,6 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: fix: is_selinux_enbled() > 1 is the correct test.
     - rpm.org: Avoid entirely unnecessary static temp string buffer.
     - rpm.org: Mask signals while moving rebuilt rpmdb into place.
     - rpm.org: Restore rpmdb selinux contexts to default after rebuild (#442149).
