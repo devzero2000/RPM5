@@ -502,29 +502,43 @@ static /*@only@*/ char * base64Format(HE_t he)
 {
     int ix = (he->ix > 0 ? he->ix : 0);
     char * val;
+    const char * enc;
+    char * t;
+    int lc;
+    size_t ns;
+    size_t nt;
 
 assert(ix == 0);
-    if (!(he->t == RPM_BIN_TYPE)) {
-	val = xstrdup(_("(not a blob)"));
-    } else {
-	const char * enc;
-	char * t;
-	int lc;
-	size_t ns = he->c;
-	size_t nt = ((ns + 2) / 3) * 4;
+    switch(he->t) {
+    default:
+	val = xstrdup(_("(invalid type :base64)"));
+	goto exit;
+	/*@notreached@*/ break;
+    case RPM_UINT64_TYPE:
+	ns = sizeof(he->p.ui64p[0]);
+	break;
+    case RPM_STRING_TYPE:
+	ns = strlen(he->p.str);
+	break;
+    case RPM_BIN_TYPE:
+	ns = he->c;
+	break;
+    }
 
-	/*@-globs@*/
-	/* Add additional bytes necessary for eol string(s). */
-	if (b64encode_chars_per_line > 0 && b64encode_eolstr != NULL) {
-	    lc = (nt + b64encode_chars_per_line - 1) / b64encode_chars_per_line;
+    nt = ((ns + 2) / 3) * 4;
+
+/*@-globs@*/
+    /* Add additional bytes necessary for eol string(s). */
+    if (b64encode_chars_per_line > 0 && b64encode_eolstr != NULL) {
+	lc = (nt + b64encode_chars_per_line - 1) / b64encode_chars_per_line;
 	if (((nt + b64encode_chars_per_line - 1) % b64encode_chars_per_line) != 0)
 	    ++lc;
-	    nt += lc * strlen(b64encode_eolstr);
-	}
-	/*@=globs@*/
+	nt += lc * strlen(b64encode_eolstr);
+    }
+/*@=globs@*/
 
-	val = t = xcalloc(1, nt + 1);
-	*t = '\0';
+    val = t = xcalloc(1, nt + 1);
+    *t = '\0';
 
     /* XXX b64encode accesses uninitialized memory. */
     { 	unsigned char * _data = xcalloc(1, ns+1);
@@ -537,8 +551,8 @@ assert(ix == 0);
 /*@=moduncon@*/
 	_data = _free(_data);
     }
-    }
 
+exit:
 /*@-globstate@*/
     return val;
 /*@=globstate@*/
