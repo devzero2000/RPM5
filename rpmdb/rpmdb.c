@@ -3827,6 +3827,7 @@ static int rpmdbMoveDatabase(const char * prefix,
     const char * ofn, * nfn;
     int rc = 0;
     int xx;
+    int selinux = is_selinux_enabled() && (matchpathcon_init(NULL) != -1);
  
     switch (_olddbapi) {
     default:
@@ -3877,6 +3878,8 @@ static int rpmdbMoveDatabase(const char * prefix,
 		rc = 1;
 		goto bottom;
 	    }
+
+	    /* Restore uid/gid/mode/mtime/security context if possible. */
 	    xx = Chown(nfn, nst->st_uid, nst->st_gid);
 	    xx = Chmod(nfn, (nst->st_mode & 07777));
 	    {	struct utimbuf stamp;
@@ -3884,6 +3887,14 @@ static int rpmdbMoveDatabase(const char * prefix,
 		stamp.modtime = nst->st_mtime;
 		xx = Utime(nfn, &stamp);
 	    }
+	    if (selinux) {
+		security_context_t scon = NULL;
+		if (matchpathcon(nfn, nst->st_mode, &scon) != -1)
+		    xx = setfilecon(nfn, scon);
+		if (scon != NULL)
+		    freecon(scon);
+	    }
+
 bottom:
 	    ofn = _free(ofn);
 	    nfn = _free(nfn);
@@ -3914,6 +3925,8 @@ bottom:
     case 0:
 	break;
     }
+    if (selinux)
+	matchpathcon_fini();
     return rc;
 }
 
