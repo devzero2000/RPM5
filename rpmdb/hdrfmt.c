@@ -620,25 +620,29 @@ static char * xmlstrcpy(/*@returned@*/ char * t, const char * s)
 }
 
 static /*@only@*/ /*@null@*/ char *
-strdup_locale_to_utf8 (/*@null@*/ const char * buffer)
+strdup_locale_convert (/*@null@*/ const char * buffer,
+		/*@null@*/ const char * tocode)
 	/*@*/
 {
     char *dest_str;
 #if defined(HAVE_ICONV)
-    char *codeset = NULL;
+    char *fromcode = NULL;
     iconv_t fd;
 
     if (buffer == NULL)
 	return NULL;
 
+    if (tocode == NULL)
+	tocode = "UTF-8";
+
 #ifdef HAVE_LANGINFO_H
 /*@-type@*/
-    codeset = nl_langinfo (CODESET);
+    fromcode = nl_langinfo (CODESET);
 /*@=type@*/
 #endif
 
-    if (codeset != NULL && strcmp(codeset, "UTF-8") != 0
-     && (fd = iconv_open("UTF-8", codeset)) != (iconv_t)-1)
+    if (fromcode != NULL && strcmp(tocode, fromcode) != 0
+     && (fd = iconv_open(tocode, fromcode)) != (iconv_t)-1)
     {
 	const char *pin = buffer;
 	char *pout = NULL;
@@ -722,7 +726,7 @@ assert(ix == 0);
     if (he->t != RPM_STRING_TYPE) {
 	val = xstrdup(_("(not a string)"));
     } else {
-	const char * s = strdup_locale_to_utf8(he->p.str);
+	const char * s = strdup_locale_convert(he->p.str, (av ? av[0] : NULL));
 	size_t nb = xmlstrlen(s);
 	char * t;
 
@@ -738,12 +742,12 @@ assert(ix == 0);
 }
 
 /**
- * Encode string in UTF-8.
+ * Convert string encoding.
  * @param he		tag container
- * @param av		paramater list (or NULL)
+ * @param av		paramater list (NULL assumes UTF-8)
  * @return		formatted string
  */
-static /*@only@*/ char * utf8Format(HE_t he, /*@null@*/ const char ** av)
+static /*@only@*/ char * iconvFormat(HE_t he, /*@null@*/ const char ** av)
 	/*@*/
 {
     int ix = (he->ix > 0 ? he->ix : 0);
@@ -753,7 +757,7 @@ assert(ix == 0);
     if (he->t != RPM_STRING_TYPE) {
 	val = xstrdup(_("(not a string)"));
     } else {
-	val = strdup_locale_to_utf8(he->p.str);
+	val = strdup_locale_convert(he->p.str, (av ? av[0] : NULL));
     }
 
 /*@-globstate@*/
@@ -2225,7 +2229,7 @@ assert(ix == 0);
     if (he->t != RPM_STRING_TYPE) {
 	val = xstrdup(_("(not a string)"));
     } else {
-	const char * s = strdup_locale_to_utf8(he->p.str);
+	const char * s = strdup_locale_convert(he->p.str, (av ? av[0] : NULL));
 	size_t nb = sqlstrlen(s);
 	char * t;
 
@@ -2675,7 +2679,7 @@ static /*@only@*/ char * bncdataFormat(HE_t he, /*@null@*/ const char ** av)
 	    bn = he->p.str;
 
 	/* Convert to utf8, escape for XML CDATA. */
-	s = strdup_locale_to_utf8(bn);
+	s = strdup_locale_convert(bn, (av ? av[0] : NULL));
 	nb = xmlstrlen(s);
 	val = t = xcalloc(1, nb + 1);
 	t = xmlstrcpy(t, s);	t += strlen(t);
@@ -2764,6 +2768,8 @@ static struct headerSprintfExtension_s _headerCompoundFormats[] = {
 	{ .fmtFunction = depflagsFormat } },
     { HEADER_EXT_FORMAT, "fflags",
 	{ .fmtFunction = fflagsFormat } },
+    { HEADER_EXT_FORMAT, "iconv",
+	{ .fmtFunction = iconvFormat } },
     { HEADER_EXT_FORMAT, "perms",
 	{ .fmtFunction = permsFormat } },
     { HEADER_EXT_FORMAT, "permissions",	
@@ -2775,7 +2781,7 @@ static struct headerSprintfExtension_s _headerCompoundFormats[] = {
     { HEADER_EXT_FORMAT, "triggertype",	
 	{ .fmtFunction = triggertypeFormat } },
     { HEADER_EXT_FORMAT, "utf8",
-	{ .fmtFunction = utf8Format } },
+	{ .fmtFunction = iconvFormat } },
     { HEADER_EXT_FORMAT, "xml",
 	{ .fmtFunction = xmlFormat } },
     { HEADER_EXT_FORMAT, "yaml",
