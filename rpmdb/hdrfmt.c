@@ -2832,7 +2832,7 @@ typedef /*@abstract@*/ struct sprintfTag_s * sprintfTag;
 struct sprintfTag_s {
     HE_s he;
 /*@null@*/
-    headerTagFormatFunction fmt;
+    headerTagFormatFunction * fmtfuncs;
 /*@null@*/
     headerTagTagFunction ext;   /*!< NULL if tag element is invalid */
     int extNum;
@@ -2841,8 +2841,8 @@ struct sprintfTag_s {
     int arrayCount;
 /*@kept@*/
     char * format;
-/*@kept@*/ /*@null@*/
-    char * type;
+/*@only@*/ /*@null@*/
+    ARGV_t av;
     unsigned pad;
 };
 
@@ -2970,6 +2970,8 @@ freeFormat( /*@only@*/ /*@null@*/ sprintfToken format, size_t num)
 	switch (format[i].type) {
 	case PTOK_TAG:
 	    (void) rpmheClean(&format[i].u.tag.he);
+	    format[i].u.tag.av = argvFree(format[i].u.tag.av);
+	    format[i].u.tag.fmtfuncs = _free(format[i].u.tag.fmtfuncs);
 	    /*@switchbreak@*/ break;
 	case PTOK_ARRAY:
 	    format[i].u.array.format =
@@ -2984,6 +2986,8 @@ freeFormat( /*@only@*/ /*@null@*/ sprintfToken format, size_t num)
 		freeFormat(format[i].u.cond.elseFormat, 
 			format[i].u.cond.numElseTokens);
 	    (void) rpmheClean(&format[i].u.cond.tag.he);
+	    format[i].u.cond.tag.av = argvFree(format[i].u.cond.tag.av);
+	    format[i].u.cond.tag.fmtfuncs = _free(format[i].u.cond.tag.fmtfuncs);
 	    /*@switchbreak@*/ break;
 	case PTOK_NONE:
 	case PTOK_STRING:
@@ -3175,7 +3179,7 @@ static int findTag(headerSprintfArgs hsa, sprintfToken token, const char * name)
 	? &token->u.cond.tag : &token->u.tag);
     int extNum;
 
-    stag->fmt = NULL;
+    stag->fmtfuncs = NULL;
     stag->ext = NULL;
     stag->extNum = 0;
     stag->tagno = -1;
@@ -3212,16 +3216,21 @@ static int findTag(headerSprintfArgs hsa, sprintfToken token, const char * name)
     return 1;
 
 bingo:
-    /* Search extensions for specific format. */
-    if (stag->type != NULL)
-    for (ext = exts; ext != NULL && ext->type != HEADER_EXT_LAST;
-	    ext = (ext->type == HEADER_EXT_MORE ? *ext->u.more : ext+1))
-    {
-	if (ext->name == NULL || ext->type != HEADER_EXT_FORMAT)
-	    continue;
-	if (!strcmp(ext->name, stag->type)) {
-	    stag->fmt = ext->u.fmtFunction;
-	    break;
+    /* Search extensions for specific format(s). */
+    if (stag->av != NULL) {
+	int i;
+	stag->fmtfuncs = xcalloc(argvCount(stag->av) + 1, sizeof(*stag->fmtfuncs));
+	for (i = 0; stag->av[i] != NULL; i++) {
+	    for (ext = exts; ext != NULL && ext->type != HEADER_EXT_LAST;
+		 ext = (ext->type == HEADER_EXT_MORE ? *ext->u.more : ext+1))
+	    {
+		if (ext->name == NULL || ext->type != HEADER_EXT_FORMAT)
+		    continue;
+		if (strcmp(ext->name, stag->av[i]))
+		    continue;
+		stag->fmtfuncs[i] = ext->u.fmtFunction;
+		break;
+	    }
 	}
     }
     return 0;
@@ -3269,6 +3278,7 @@ static const char *pstates[] = {
     size_t numTokens;
     unsigned i;
     int done = 0;
+    int xx;
 
 /*@-modfilesys@*/
 if (_hdr_debug)
@@ -3379,23 +3389,30 @@ fprintf(stderr, "\tnext *%p = NUL\n", next);
 	    *next++ = '\0';
 
 	    chptr = start;
-	    while (*chptr && *chptr != ':') chptr++;
-
-	    if (*chptr != '\0') {
+	    while (!(*chptr == '\0' || *chptr == ':')) chptr++;
+	    /* Split ":bing:bang:boom" tag format modifiers (if any) */
+	    while (*chptr == ':') {
 		*chptr++ = '\0';
-		if (!*chptr) {
+		if (*chptr == '\0' || *chptr == ':') {
 		    hsa->errmsg = _("empty tag format");
 		    format = freeFormat(format, numTokens);
 		    return 1;
 		}
-		/*@-assignexpose@*/
-		token->u.tag.type = chptr;
-		/*@=assignexpose@*/
-	    } else {
-		token->u.tag.type = NULL;
+		{   char * te = chptr;
+		    char c;
+		    while (!(*te == '\0' || *te == ':')) te++;
+		    c = *te; *te = '\0';
+/*@-modfilesys@*/
+if (_hdr_debug)
+fprintf(stderr, "\tformat \"%s\"\n", chptr);
+/*@=modfilesys@*/
+		    xx = argvAdd(&token->u.tag.av, chptr);
+		    *te = c;
+		    chptr = te;
+		}
 	    }
 	    
-	    if (!*start) {
+	    if (*start == '\0') {
 		hsa->errmsg = _("empty tag name");
 		format = freeFormat(format, numTokens);
 		return 1;
@@ -3765,14 +3782,33 @@ assert(0);	/* XXX keep gcc quiet. */
     }
 
 /*@-compmempass@*/	/* vhe->p.ui64p is stack, not owned */
-    if (tag->fmt) {
-	val = tag->fmt(vhe);
-assert(val != NULL);
-    } else {
-	val = intFormat(vhe, NULL);
-assert(val != NULL);
+    if (tag->fmtfuncs) {
+	int i;
+	for (i = 0; tag->av[i] != NULL; i++) {
+	    headerTagFormatFunction fmt;
+	    if ((fmt = tag->fmtfuncs[i]) == NULL)
+		continue;
+	    if (val != NULL) {
+		int ix = vhe->ix;
+		vhe = rpmheClean(vhe);
+		vhe->tag = he->tag;
+		vhe->t = RPM_STRING_TYPE;
+		vhe->p.str = val;
+		vhe->c = he->c;
+		vhe->ix = ix;
+		vhe->freeData = 1;
+	    }
+	    val = fmt(vhe);
+/*@-modfilesys@*/
+if (_hdr_debug)
+fprintf(stderr, "\t%s %p(%p) ret \"%s\"\n", tag->av[i], fmt, vhe, val);
+/*@=modfilesys@*/
+	}
     }
+    if (val == NULL)
+	val = intFormat(vhe, NULL);
 /*@=compmempass@*/
+assert(val != NULL);
     if (val)
 	need = strlen(val) + 1;
 
@@ -3934,10 +3970,10 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 
 	    tag = &spft->u.tag;
 
-	    isxml = (spft->type == PTOK_TAG && tag->type != NULL &&
-		!strcmp(tag->type, "xml"));
-	    isyaml = (spft->type == PTOK_TAG && tag->type != NULL &&
-		!strcmp(tag->type, "yaml"));
+	    isxml = (spft->type == PTOK_TAG && tag->av != NULL &&
+		tag->av[0] != NULL && !strcmp(tag->av[0], "xml"));
+	    isyaml = (spft->type == PTOK_TAG && tag->av != NULL &&
+		tag->av[0] != NULL && !strcmp(tag->av[0], "yaml"));
 
 	    if (isxml) {
 		const char * tagN;
@@ -4123,8 +4159,10 @@ fprintf(stderr, "==> headerSprintf(%p, \"%s\", %p, %p, %p)\n", h, fmt, tags, ext
 	(hsa->format->type == PTOK_ARRAY
 	    ? &hsa->format->u.array.format->u.tag :
 	NULL));
-    isxml = (tag != NULL && tag->tagno == (rpmTag)-2 && tag->type != NULL && !strcmp(tag->type, "xml"));
-    isyaml = (tag != NULL && tag->tagno == (rpmTag)-2 && tag->type != NULL && !strcmp(tag->type, "yaml"));
+    isxml = (tag != NULL && tag->tagno == (rpmTag)-2 && tag->av != NULL
+		&& tag->av[0] != NULL && !strcmp(tag->av[0], "xml"));
+    isyaml = (tag != NULL && tag->tagno == (rpmTag)-2 && tag->av != NULL
+		&& tag->av[0] != NULL && !strcmp(tag->av[0], "yaml"));
 
     if (isxml) {
 	need = sizeof("<rpmHeader>\n") - 1;

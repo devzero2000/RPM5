@@ -1,5 +1,6 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: apply multiple tag extension formats in L->R serial order.
     - jbj: use loops instead of inline for sigtags (adapted from rpm.org).
     - jbj: fix: is_selinux_enbled() > 0 is the correct test.
     - rpm.org: Avoid entirely unnecessary static temp string buffer.
