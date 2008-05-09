@@ -1,5 +1,6 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: permit :foo(A,B,C) parameters to be passed to extension formats.
     - jbj: permit :base64 encoding to be applied to all tag data types.
     - jbj: apply multiple tag extension formats in L->R serial order.
     - jbj: use loops instead of inline for sigtags (adapted from rpm.org).

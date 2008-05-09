@@ -66,10 +66,12 @@ extern int _hdr_debug;
 /**
  * Convert tag data representation.
  * @param he		tag container
+ * @param av		paramater list (or NULL)
  * @param fmt		output radix (NULL or "" assumes %d)
  * @return		formatted string
  */
-static char * intFormat(HE_t he, const char *fmt)
+static char * intFormat(HE_t he, /*@null@*/ const char ** av,
+		/*@null@*/ const char *fmt)
 	/*@*/
 {
     uint32_t ix = (he->ix > 0 ? he->ix : 0);
@@ -142,43 +144,47 @@ static char * intFormat(HE_t he, const char *fmt)
 /**
  * Return octal formatted data.
  * @param he		tag container
+ * @param av		paramater list (or NULL)
  * @return		formatted string
  */
-static char * octFormat(HE_t he)
+static char * octFormat(HE_t he, /*@null@*/ const char ** av)
 	/*@*/
 {
-    return intFormat(he, "o");
+    return intFormat(he, av, "o");
 }
 
 /**
  * Return hex formatted data.
  * @param he		tag container
+ * @param av		paramater list (or NULL)
  * @return		formatted string
  */
-static char * hexFormat(HE_t he)
+static char * hexFormat(HE_t he, /*@null@*/ const char ** av)
 	/*@*/
 {
-    return intFormat(he, "x");
+    return intFormat(he, av, "x");
 }
 
 /**
  * Return decimal formatted data.
  * @param he		tag container
+ * @param av		paramater list (or NULL)
  * @return		formatted string
  */
-static char * decFormat(HE_t he)
+static char * decFormat(HE_t he, /*@null@*/ const char ** av)
 	/*@*/
 {
-    return intFormat(he, "d");
+    return intFormat(he, av, "d");
 }
 
 /**
  * Return strftime formatted data.
  * @param he		tag container
+ * @param av		paramater list (or NULL)
  * @param strftimeFormat strftime(3) format
  * @return		formatted string
  */
-static char * realDateFormat(HE_t he, const char * strftimeFormat)
+static char * realDateFormat(HE_t he, /*@null@*/ const char ** av, const char * strftimeFormat)
 	/*@*/
 {
     char * val;
@@ -206,31 +212,34 @@ static char * realDateFormat(HE_t he, const char * strftimeFormat)
 /**
  * Return date formatted data.
  * @param he		tag container
+ * @param av		paramater list (or NULL)
  * @return		formatted string
  */
-static char * dateFormat(HE_t he)
+static char * dateFormat(HE_t he, /*@null@*/ const char ** av)
 	/*@*/
 {
-    return realDateFormat(he, _("%c"));
+    return realDateFormat(he, av, _("%c"));
 }
 
 /**
  * Return day formatted data.
  * @param he		tag container
+ * @param av		paramater list (or NULL)
  * @return		formatted string
  */
-static char * dayFormat(HE_t he)
+static char * dayFormat(HE_t he, /*@null@*/ const char ** av)
 	/*@*/
 {
-    return realDateFormat(he, _("%a %b %d %Y"));
+    return realDateFormat(he, av, _("%a %b %d %Y"));
 }
 
 /**
  * Return shell escape formatted data.
  * @param he		tag container
+ * @param av		paramater list (or NULL)
  * @return		formatted string
  */
-static char * shescapeFormat(HE_t he)
+static char * shescapeFormat(HE_t he, /*@null@*/ const char ** av)
 	/*@*/
 {
     char * val;
@@ -355,9 +364,10 @@ static char * rpmPermsString(int mode)
 /**
  * Identify type of trigger.
  * @param he		tag container
+ * @param av		paramater list (or NULL)
  * @return		formatted string
  */
-static /*@only@*/ char * triggertypeFormat(HE_t he)
+static /*@only@*/ char * triggertypeFormat(HE_t he, /*@null@*/ const char ** av)
 {
     int ix = (he->ix > 0 ? he->ix : 0);
     char * val;
@@ -384,9 +394,10 @@ assert(ix == 0);
 /**
  * Format file permissions for display.
  * @param he		tag container
+ * @param av		paramater list (or NULL)
  * @return		formatted string
  */
-static /*@only@*/ char * permsFormat(HE_t he)
+static /*@only@*/ char * permsFormat(HE_t he, /*@null@*/ const char ** av)
 {
     int ix = (he->ix > 0 ? he->ix : 0);
     char * val;
@@ -405,9 +416,10 @@ assert(ix == 0);
 /**
  * Format file flags for display.
  * @param he		tag container
+ * @param av		paramater list (or NULL)
  * @return		formatted string
  */
-static /*@only@*/ char * fflagsFormat(HE_t he)
+static /*@only@*/ char * fflagsFormat(HE_t he, /*@null@*/ const char ** av)
 {
     int ix = (he->ix >= 0 ? he->ix : 0);
     char * val;
@@ -445,9 +457,10 @@ assert(ix == 0);
  * Wrap a pubkey in ascii armor for display.
  * @todo Permit selectable display formats (i.e. binary).
  * @param he		tag container
+ * @param av		paramater list (or NULL)
  * @return		formatted string
  */
-static /*@only@*/ char * armorFormat(HE_t he)
+static /*@only@*/ char * armorFormat(HE_t he, /*@null@*/ const char ** av)
 	/*@*/
 {
     int ix = (he->ix > 0 ? he->ix : 0);
@@ -495,9 +508,10 @@ assert(ix == 0);
  * Encode binary data in base64 for display.
  * @todo Permit selectable display formats (i.e. binary).
  * @param he		tag container
+ * @param av		paramater list (or NULL)
  * @return		formatted string
  */
-static /*@only@*/ char * base64Format(HE_t he)
+static /*@only@*/ char * base64Format(HE_t he, /*@null@*/ const char ** av)
 	/*@*/
 {
     int ix = (he->ix > 0 ? he->ix : 0);
@@ -695,9 +709,10 @@ strdup_locale_to_utf8 (/*@null@*/ const char * buffer)
 /**
  * Encode string for use in XML CDATA.
  * @param he		tag container
+ * @param av		paramater list (or NULL)
  * @return		formatted string
  */
-static /*@only@*/ char * cdataFormat(HE_t he)
+static /*@only@*/ char * cdataFormat(HE_t he, /*@null@*/ const char ** av)
 	/*@*/
 {
     int ix = (he->ix > 0 ? he->ix : 0);
@@ -725,9 +740,10 @@ assert(ix == 0);
 /**
  * Encode string in UTF-8.
  * @param he		tag container
+ * @param av		paramater list (or NULL)
  * @return		formatted string
  */
-static /*@only@*/ char * utf8Format(HE_t he)
+static /*@only@*/ char * utf8Format(HE_t he, /*@null@*/ const char ** av)
 	/*@*/
 {
     int ix = (he->ix > 0 ? he->ix : 0);
@@ -748,9 +764,10 @@ assert(ix == 0);
 /**
  * Wrap tag data in simple header xml markup.
  * @param he		tag container
+ * @param av		paramater list (or NULL)
  * @return		formatted string
  */
-static /*@only@*/ char * xmlFormat(HE_t he)
+static /*@only@*/ char * xmlFormat(HE_t he, /*@null@*/ const char ** av)
 	/*@*/
 {
     int ix = (he->ix > 0 ? he->ix : 0);
@@ -788,7 +805,7 @@ assert(he->t == RPM_STRING_TYPE || he->t == RPM_UINT64_TYPE || he->t == RPM_BIN_
     {	int cpl = b64encode_chars_per_line;
 	b64encode_chars_per_line = 0;
 /*@-formatconst@*/
-	s = base64Format(he);
+	s = base64Format(he, NULL);
 /*@=formatconst@*/
 	b64encode_chars_per_line = cpl;
 	xtag = "base64";
@@ -905,9 +922,10 @@ static char * yamlstrcpy(/*@out@*/ /*@returned@*/ char * t, const char * s, int 
 /**
  * Wrap tag data in simple header yaml markup.
  * @param he		tag container
+ * @param av		paramater list (or NULL)
  * @return		formatted string
  */
-static /*@only@*/ char * yamlFormat(HE_t he)
+static /*@only@*/ char * yamlFormat(HE_t he, /*@null@*/ const char ** av)
 	/*@*/
 {
     int element = he->ix;
@@ -973,7 +991,7 @@ assert(he->t == RPM_STRING_TYPE || he->t == RPM_UINT64_TYPE || he->t == RPM_BIN_
     {	int cpl = b64encode_chars_per_line;
 	b64encode_chars_per_line = 0;
 /*@-formatconst@*/
-	s = base64Format(he);
+	s = base64Format(he, NULL);
 	element = -element; 	/* XXX skip "    " indent. */
 /*@=formatconst@*/
 	b64encode_chars_per_line = cpl;
@@ -1045,9 +1063,10 @@ assert(he->t == RPM_STRING_TYPE || he->t == RPM_UINT64_TYPE || he->t == RPM_BIN_
 /**
  * Display signature fingerprint and time.
  * @param he		tag container
+ * @param av		paramater list (or NULL)
  * @return		formatted string
  */
-static /*@only@*/ char * pgpsigFormat(HE_t he)
+static /*@only@*/ char * pgpsigFormat(HE_t he, /*@null@*/ const char ** av)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/
 {
@@ -1150,9 +1169,10 @@ assert(ix == 0);
 /**
  * Format dependency flags for display.
  * @param he		tag container
+ * @param av		paramater list (or NULL)
  * @return		formatted string
  */
-static /*@only@*/ char * depflagsFormat(HE_t he)
+static /*@only@*/ char * depflagsFormat(HE_t he, /*@null@*/ const char ** av)
 	/*@*/
 {
     int ix = (he->ix > 0 ? he->ix : 0);
@@ -1302,7 +1322,7 @@ static int triggercondsTag(Header h, HE_t he)
 /*@-compmempass@*/
 	    if (flags.ui32p[j] & RPMSENSE_SENSEMASK) {
 		_he->p.ui32p = &flags.ui32p[j];
-		flagsStr = depflagsFormat(_he);
+		flagsStr = depflagsFormat(_he, NULL);
 		sprintf(item, "%s %s %s", names.argv[j], flagsStr, versions.argv[j]);
 		flagsStr = _free(flagsStr);
 	    } else
@@ -2192,9 +2212,10 @@ static char * sqlstrcpy(/*@returned@*/ char * t, const char * s)
 /**
  * Encode string for use in SQL statements.
  * @param he		tag container
+ * @param av		paramater list (or NULL)
  * @return		formatted string
  */
-static /*@only@*/ char * sqlescapeFormat(HE_t he)
+static /*@only@*/ char * sqlescapeFormat(HE_t he, /*@null@*/ const char ** av)
 	/*@*/
 {
     int ix = (he->ix > 0 ? he->ix : 0);
@@ -2631,9 +2652,10 @@ static int F2sqlTag(Header h, HE_t he)
 /**
  * Encode the basename of a string for use in XML CDATA.
  * @param he            tag container
+ * @param av		paramater list (or NULL)
  * @return              formatted string
  */
-static /*@only@*/ char * bncdataFormat(HE_t he)
+static /*@only@*/ char * bncdataFormat(HE_t he, /*@null@*/ const char ** av)
 	/*@*/
 {
     char * val;
@@ -2857,6 +2879,7 @@ struct sprintfTag_s {
     char * format;
 /*@only@*/ /*@null@*/
     ARGV_t av;
+    ARGV_t params;
     unsigned pad;
 };
 
@@ -2985,6 +3008,7 @@ freeFormat( /*@only@*/ /*@null@*/ sprintfToken format, size_t num)
 	case PTOK_TAG:
 	    (void) rpmheClean(&format[i].u.tag.he);
 	    format[i].u.tag.av = argvFree(format[i].u.tag.av);
+	    format[i].u.tag.params = argvFree(format[i].u.tag.params);
 	    format[i].u.tag.fmtfuncs = _free(format[i].u.tag.fmtfuncs);
 	    /*@switchbreak@*/ break;
 	case PTOK_ARRAY:
@@ -3001,6 +3025,7 @@ freeFormat( /*@only@*/ /*@null@*/ sprintfToken format, size_t num)
 			format[i].u.cond.numElseTokens);
 	    (void) rpmheClean(&format[i].u.cond.tag.he);
 	    format[i].u.cond.tag.av = argvFree(format[i].u.cond.tag.av);
+	    format[i].u.cond.tag.params = argvFree(format[i].u.cond.tag.params);
 	    format[i].u.cond.tag.fmtfuncs = _free(format[i].u.cond.tag.fmtfuncs);
 	    /*@switchbreak@*/ break;
 	case PTOK_NONE:
@@ -3413,12 +3438,26 @@ fprintf(stderr, "\tnext *%p = NUL\n", next);
 		    return 1;
 		}
 		{   char * te = chptr;
+		    char * t = strchr(te, '(');
 		    char c;
+
 		    while (!(*te == '\0' || *te == ':')) te++;
 		    c = *te; *te = '\0';
+		    /* Parse (a,b,c) parameter list. */
+		    if (t != NULL) {
+			*t++ = '\0';
+			if (te <= t || te[-1] != ')') {
+			    hsa->errmsg = _("malformed parameter list");
+			    format = freeFormat(format, numTokens);
+			    return 1;
+			}
+			te[-1] = '\0';
+			xx = argvAdd(&token->u.tag.params, t);
+		    } else
+			xx = argvAdd(&token->u.tag.params, "");
 /*@-modfilesys@*/
 if (_hdr_debug)
-fprintf(stderr, "\tformat \"%s\"\n", chptr);
+fprintf(stderr, "\tformat \"%s\" params \"%s\"\n", chptr, (t ? t : ""));
 /*@=modfilesys@*/
 		    xx = argvAdd(&token->u.tag.av, chptr);
 		    *te = c;
@@ -3800,6 +3839,7 @@ assert(0);	/* XXX keep gcc quiet. */
 	int i;
 	for (i = 0; tag->av[i] != NULL; i++) {
 	    headerTagFormatFunction fmt;
+	    ARGV_t av;
 	    if ((fmt = tag->fmtfuncs[i]) == NULL)
 		continue;
 	    if (val != NULL) {
@@ -3812,15 +3852,21 @@ assert(0);	/* XXX keep gcc quiet. */
 		vhe->ix = ix;
 		vhe->freeData = 1;
 	    }
-	    val = fmt(vhe);
+	    av = NULL;
+	    if (tag->params && tag->params[i] && *tag->params[i] != '\0')
+		xx = argvSplit(&av, tag->params[i], ",");
+
+	    val = fmt(vhe, av);
+
 /*@-modfilesys@*/
 if (_hdr_debug)
-fprintf(stderr, "\t%s %p(%p) ret \"%s\"\n", tag->av[i], fmt, vhe, val);
+fprintf(stderr, "\t%s(%s) %p(%p,%p) ret \"%s\"\n", tag->av[i], tag->params[i], fmt, vhe, (av ? av : NULL), val);
 /*@=modfilesys@*/
+	    av = argvFree(av);
 	}
     }
     if (val == NULL)
-	val = intFormat(vhe, NULL);
+	val = intFormat(vhe, NULL, NULL);
 /*@=compmempass@*/
 assert(val != NULL);
     if (val)
