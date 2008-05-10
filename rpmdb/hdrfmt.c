@@ -38,6 +38,9 @@ extern char *nl_langinfo (nl_item __item)
 #include <rpmbc.h>	/* XXX beecrypt base64 */
 #include <rpmcb.h>	/* XXX rpmIsVerbose */
 #include <rpmmacro.h>	/* XXX for %_i18ndomains */
+#include <rpmuuid.h>
+#include "argv.h"
+#include "ugid.h"
 
 #define	_RPMTAG_INTERNAL
 #include <rpmtag.h>
@@ -49,9 +52,7 @@ extern char *nl_langinfo (nl_item __item)
 #include <rpmevr.h>	/* XXX RPMSENSE_FOO */
 
 #include "legacy.h"
-#include "argv.h"
 #include "misc.h"
-#include "ugid.h"
 
 #include "debug.h"
 
@@ -1245,6 +1246,147 @@ static int instprefixTag(Header h, HE_t he)
 	return 0;
     }
     return 1;
+}
+
+/**
+ * Convert unix timeval to UUIDv1.
+ * @param h		header
+ * @retval *he		tag container
+ * @param tv		unix timeval
+ * @return		0 on success
+ */
+static int tv2uuidv1(Header h, HE_t he, struct timeval *tv)
+	/*@modifies he @*/
+{
+    uint64_t uuid_time = ((uint64_t)tv->tv_sec * 10000000) +
+			(tv->tv_usec * 10) + 0x01B21DD213814000ULL;
+
+    he->t = RPM_BIN_TYPE;
+    he->c = 128/8;
+    he->p.ptr = xcalloc(1, he->c);
+    he->freeData = 1;
+    if (rpmuuidMake(1, NULL, NULL, NULL, (unsigned char *)he->p.ui8p)) {
+	he->p.ptr = _free(he->p.ptr);
+	he->freeData = 0;
+	return 1;
+    }
+
+    he->p.ui8p[6] &= 0xf0;	/* preserve version, clear time_hi nibble */
+    he->p.ui8p[8] &= 0x3f;	/* preserve reserved, clear clock */
+    he->p.ui8p[9] &= 0x00;
+
+    he->p.ui8p[3] = (uuid_time >>  0);
+    he->p.ui8p[2] = (uuid_time >>  8);
+    he->p.ui8p[1] = (uuid_time >> 16);
+    he->p.ui8p[0] = (uuid_time >> 24);
+    he->p.ui8p[5] = (uuid_time >> 32);
+    he->p.ui8p[4] = (uuid_time >> 40);
+    he->p.ui8p[6] |= (uuid_time >> 56) & 0x0f;
+
+#ifdef	NOTYET
+    /* XXX Jigger up a non-zero (but constant) clock value. Is this needed? */
+    he->p.ui8p[8] |= (he->p.ui8p[2] & 0x3f);
+    he->p.ui8p[9] |= he->p.ui8p[3]
+#endif
+
+    return 0;
+}
+
+/**
+ * Retrieve time and convert to UUIDv1.
+ * @param h		header
+ * @retval *he		tag container
+ * @return		0 on success
+ */
+static int tag2uuidv1(Header h, HE_t he)
+	/*@modifies he @*/
+{
+    struct timeval tv;
+
+    if (!headerGet(h, he, 0))
+	return 1;
+    tv.tv_sec = he->p.ui32p[0];
+    tv.tv_usec = (he->c > 1 ? he->p.ui32p[1] : 0);
+    he->p.ptr = _free(he->p.ptr);
+    return tv2uuidv1(h, he, &tv);
+}
+
+/**
+ * Retrieve install time and convert to UUIDv1.
+ * @param h		header
+ * @retval *he		tag container
+ * @return		0 on success
+ */
+static int installtime_uuidTag(Header h, HE_t he)
+	/*@modifies he @*/
+{
+    he->tag = RPMTAG_INSTALLTIME;
+    return tag2uuidv1(h, he);
+}
+
+/**
+ * Retrieve build time and convert to UUIDv1.
+ * @param h		header
+ * @retval *he		tag container
+ * @return		0 on success
+ */
+static int buildtime_uuidTag(Header h, HE_t he)
+	/*@modifies he @*/
+{
+    he->tag = RPMTAG_BUILDTIME;
+    return tag2uuidv1(h, he);
+}
+
+/**
+ * Retrieve origin time and convert to UUIDv1.
+ * @param h		header
+ * @retval *he		tag container
+ * @return		0 on success
+ */
+static int origintime_uuidTag(Header h, HE_t he)
+	/*@modifies he @*/
+{
+    he->tag = RPMTAG_ORIGINTIME;
+    return tag2uuidv1(h, he);
+}
+
+/**
+ * Retrieve install tid and convert to UUIDv1.
+ * @param h		header
+ * @retval *he		tag container
+ * @return		0 on success
+ */
+static int installtid_uuidTag(Header h, HE_t he)
+	/*@modifies he @*/
+{
+    he->tag = RPMTAG_INSTALLTID;
+    return tag2uuidv1(h, he);
+}
+
+/**
+ * Retrieve remove tid and convert to UUIDv1.
+ * @param h		header
+ * @retval *he		tag container
+ * @return		0 on success
+ */
+static int removetid_uuidTag(Header h, HE_t he)
+	/*@modifies he @*/
+{
+    he->tag = RPMTAG_REMOVETID;
+    return tag2uuidv1(h, he);
+}
+
+/**
+ * Retrieve origin tid and convert to UUIDv1.
+ * @param h		header
+ * @retval *he		tag container
+ * @return		0 on success
+ */
+static int origintid_uuidTag(Header h, HE_t he)
+	/*@modifies he @*/
+{
+    he->tag = RPMTAG_ORIGINTID;
+    return tag2uuidv1(h, he);
 }
 
 /**
@@ -2973,6 +3115,8 @@ exit:
 
 /*@-type@*/ /* FIX: cast? */
 static struct headerSprintfExtension_s _headerCompoundFormats[] = {
+    { HEADER_EXT_TAG, "RPMTAG_BUILDTIMEUUID",
+	{ .tagFunction = buildtime_uuidTag } },
     { HEADER_EXT_TAG, "RPMTAG_CHANGELOGNAME",
 	{ .tagFunction = changelognameTag } },
     { HEADER_EXT_TAG, "RPMTAG_CHANGELOGTEXT",
@@ -2983,6 +3127,16 @@ static struct headerSprintfExtension_s _headerCompoundFormats[] = {
 	{ .tagFunction = groupTag } },
     { HEADER_EXT_TAG, "RPMTAG_INSTALLPREFIX",
 	{ .tagFunction = instprefixTag } },
+    { HEADER_EXT_TAG, "RPMTAG_INSTALLTIDUUID",
+	{ .tagFunction = installtid_uuidTag } },
+    { HEADER_EXT_TAG, "RPMTAG_INSTALLTIMEUUID",
+	{ .tagFunction = installtime_uuidTag } },
+    { HEADER_EXT_TAG, "RPMTAG_ORIGINTIDUUID",
+	{ .tagFunction = origintid_uuidTag } },
+    { HEADER_EXT_TAG, "RPMTAG_ORIGINTIMEUUID",
+	{ .tagFunction = origintime_uuidTag } },
+    { HEADER_EXT_TAG, "RPMTAG_REMOVETIDUUID",
+	{ .tagFunction = removetid_uuidTag } },
     { HEADER_EXT_TAG, "RPMTAG_SUMMARY",
 	{ .tagFunction = summaryTag } },
     { HEADER_EXT_TAG, "RPMTAG_TRIGGERCONDS",
