@@ -2692,6 +2692,102 @@ static /*@only@*/ char * bncdataFormat(HE_t he, /*@null@*/ const char ** av)
 /*@=globstate@*/
 }
 
+typedef struct _key {
+/*@observer@*/
+	const char *name;		/* key name */
+	uint32_t algo;
+} KEY;
+
+/*@unchecked@*/ /*@observer@*/
+static KEY keylist[] = {
+    { "adler32",	PGPHASHALGO_ADLER32 },
+    { "crc32",		PGPHASHALGO_CRC32 },
+    { "crc64",		PGPHASHALGO_CRC64 },
+    { "haval160",	PGPHASHALGO_HAVAL_5_160 },
+    { "jlu32",		PGPHASHALGO_JLU32 },
+    { "md2",		PGPHASHALGO_MD2 },
+    { "md4",		PGPHASHALGO_MD4 },
+    { "md5",		PGPHASHALGO_MD5 },
+    { "rmd128",		PGPHASHALGO_RIPEMD128 },
+    { "rmd160",		PGPHASHALGO_RIPEMD160 },
+    { "rmd256",		PGPHASHALGO_RIPEMD256 },
+    { "rmd320",		PGPHASHALGO_RIPEMD320 },
+    { "salsa10",	PGPHASHALGO_SALSA10 },
+    { "salsa20",	PGPHASHALGO_SALSA20 },
+    { "sha1",		PGPHASHALGO_SHA1 },
+    { "sha224",		PGPHASHALGO_SHA224 },
+    { "sha256",		PGPHASHALGO_SHA256 },
+    { "sha384",		PGPHASHALGO_SHA384 },
+    { "sha512",		PGPHASHALGO_SHA512 },
+    { "tiger192",	PGPHASHALGO_TIGER192 },
+};
+
+static int
+keycompare(const void * a, const void * b)
+	/*@*/
+{
+    return strcmp(((KEY *)a)->name, ((KEY *)b)->name);
+}
+
+static uint32_t
+digestname2algo(const char *name)
+	/*@*/
+{
+    uint32_t algo = PGPHASHALGO_SHA1;
+
+    if (name && * name) {
+	KEY tmp = { .name = name };
+	KEY *k = (KEY *)bsearch(&tmp, keylist,
+			sizeof(keylist) / sizeof(keylist[0]),
+			sizeof(keylist[0]), keycompare);
+	if (k)
+	    algo = k->algo;
+    }
+    return algo;
+}
+
+/**
+ * Return digest of input.
+ * @param he		tag container
+ * @param av		paramater list (NULL uses md5)
+ * @return		formatted string
+ */
+static /*@only@*/ char * digestFormat(HE_t he, /*@null@*/ const char ** av)
+	/*@*/
+{
+    int ix = (he->ix > 0 ? he->ix : 0);
+    char * val = NULL;
+    size_t ns;
+
+assert(ix == 0);
+    switch(he->t) {
+    default:
+	val = xstrdup(_("(invalid type :digest)"));
+	goto exit;
+	/*@notreached@*/ break;
+    case RPM_UINT64_TYPE:
+	ns = sizeof(he->p.ui64p[0]);
+	break;
+    case RPM_STRING_TYPE:
+	ns = strlen(he->p.str);
+	break;
+    case RPM_BIN_TYPE:
+	ns = he->c;
+	break;
+    }
+
+    {	uint32_t algo = digestname2algo((av ? av[0] : NULL));
+	DIGEST_CTX ctx = rpmDigestInit(algo, 0);
+	int xx = rpmDigestUpdate(ctx, he->p.ptr, ns);
+	xx = rpmDigestFinal(ctx, &val, NULL, 1);
+    }
+
+exit:
+/*@-globstate@*/
+    return val;
+/*@=globstate@*/
+}
+
 /*@-type@*/ /* FIX: cast? */
 static struct headerSprintfExtension_s _headerCompoundFormats[] = {
     { HEADER_EXT_TAG, "RPMTAG_CHANGELOGNAME",
@@ -2766,6 +2862,8 @@ static struct headerSprintfExtension_s _headerCompoundFormats[] = {
 	{ .fmtFunction = cdataFormat } },
     { HEADER_EXT_FORMAT, "depflags",
 	{ .fmtFunction = depflagsFormat } },
+    { HEADER_EXT_FORMAT, "digest",
+	{ .fmtFunction = digestFormat } },
     { HEADER_EXT_FORMAT, "fflags",
 	{ .fmtFunction = fflagsFormat } },
     { HEADER_EXT_FORMAT, "iconv",
