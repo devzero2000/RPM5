@@ -51,6 +51,7 @@ extern char *nl_langinfo (nl_item __item)
 #include "legacy.h"
 #include "argv.h"
 #include "misc.h"
+#include "ugid.h"
 
 #include "debug.h"
 
@@ -2009,16 +2010,6 @@ exit:
     return rc;
 }
 
-static int diskstatTag(Header h, HE_t he)
-	/*@modifies he @*/
-{
-    int rc;
-
-    he->tag = RPMTAG_BASENAMES;
-    rc = _fnTag(h, he);
-    return rc;
-}
-
 static int PRCOSkip(rpmTag tag, rpmTagData N, rpmTagData EVR, rpmTagData F,
 		uint32_t i)
 	/*@*/
@@ -2692,14 +2683,14 @@ static /*@only@*/ char * bncdataFormat(HE_t he, /*@null@*/ const char ** av)
 /*@=globstate@*/
 }
 
-typedef struct _key {
+typedef struct key_s {
 /*@observer@*/
 	const char *name;		/* key name */
-	uint32_t algo;
+	uint32_t value;
 } KEY;
 
 /*@unchecked@*/ /*@observer@*/
-static KEY keylist[] = {
+static KEY keyDigests[] = {
     { "adler32",	PGPHASHALGO_ADLER32 },
     { "crc32",		PGPHASHALGO_CRC32 },
     { "crc64",		PGPHASHALGO_CRC64 },
@@ -2721,33 +2712,94 @@ static KEY keylist[] = {
     { "sha512",		PGPHASHALGO_SHA512 },
     { "tiger192",	PGPHASHALGO_TIGER192 },
 };
+/*@unchecked@*/
+static size_t nkeyDigests = sizeof(keyDigests) / sizeof(keyDigests[0]);
 
+/**
+ * Bit field enum for stat(2) keys.
+ */
+enum keyStat_e {
+    STAT_KEYS_NONE	= 0,
+    STAT_KEYS_DEV	= (1U <<  0),	/*!< st_dev */
+    STAT_KEYS_INO	= (1U <<  1),	/*!< st_ino */
+    STAT_KEYS_MODE	= (1U <<  2),	/*!< st_mode */
+    STAT_KEYS_NLINK	= (1U <<  3),	/*!< st_nlink */
+    STAT_KEYS_UID	= (1U <<  4),	/*!< st_uid */
+    STAT_KEYS_GID	= (1U <<  5),	/*!< st_gid */
+    STAT_KEYS_RDEV	= (1U <<  6),	/*!< st_rdev */
+    STAT_KEYS_SIZE	= (1U <<  7),	/*!< st_size */
+    STAT_KEYS_BLKSIZE	= (1U <<  8),	/*!< st_blksize */
+    STAT_KEYS_BLOCKS	= (1U <<  9),	/*!< st_blocks */
+    STAT_KEYS_ATIME	= (1U << 10),	/*!< st_atime */
+    STAT_KEYS_CTIME	= (1U << 11),	/*!< st_ctime */
+    STAT_KEYS_MTIME	= (1U << 12),	/*!< st_mtime */
+#ifdef	NOTYET
+    STAT_KEYS_FLAGS	= (1U << 13),	/*!< st_flags */
+#endif
+    STAT_KEYS_SLINK	= (1U << 14),	/*!< symlink */
+#ifdef	NOTYET
+    STAT_KEYS_DIGEST	= (1U << 15),	/*!< digest */
+    STAT_KEYS_FCONTEXT	= (1U << 16),	/*!< fcontext */
+#endif
+    STAT_KEYS_UNAME	= (1U << 17),	/*!< user name */
+    STAT_KEYS_GNAME	= (1U << 18),	/*!< group name */
+};
+
+/*@unchecked@*/ /*@observer@*/
+static KEY keyStat[] = {
+    { "atime",		STAT_KEYS_ATIME },
+    { "ctime",		STAT_KEYS_CTIME },
+    { "blksize",	STAT_KEYS_BLKSIZE },
+    { "blocks",		STAT_KEYS_BLOCKS },
+    { "dev",		STAT_KEYS_DEV },
+#ifdef	NOTYET
+    { "digest",		STAT_KEYS_DIGEST },
+    { "fcontext",	STAT_KEYS_FCONTEXT },
+    { "flags",		STAT_KEYS_FLAGS },
+#endif
+    { "gid",		STAT_KEYS_GID },
+    { "gname",		STAT_KEYS_GNAME },
+    { "ino",		STAT_KEYS_INO },
+    { "link",		STAT_KEYS_SLINK },
+    { "mode",		STAT_KEYS_MODE },
+    { "nlink",		STAT_KEYS_NLINK },
+    { "rdev",		STAT_KEYS_RDEV },
+    { "size",		STAT_KEYS_SIZE },
+    { "mtime",		STAT_KEYS_MTIME },
+    { "uid",		STAT_KEYS_UID },
+    { "uname",		STAT_KEYS_UNAME },
+};
+/*@unchecked@*/
+static size_t nkeyStat = sizeof(keyStat) / sizeof(keyStat[0]);
+
+/**
+ */
 static int
-keycompare(const void * a, const void * b)
+keyCmp(const void * a, const void * b)
 	/*@*/
 {
     return strcmp(((KEY *)a)->name, ((KEY *)b)->name);
 }
 
+/**
+ */
 static uint32_t
-digestname2algo(const char *name)
+keyValue(KEY * keys, size_t nkeys, /*@null@*/ const char *name)
 	/*@*/
 {
-    uint32_t algo = PGPHASHALGO_SHA1;
+    uint32_t keyval = 0;
 
     if (name && * name) {
-	KEY tmp = { .name = name };
-	KEY *k = (KEY *)bsearch(&tmp, keylist,
-			sizeof(keylist) / sizeof(keylist[0]),
-			sizeof(keylist[0]), keycompare);
+	KEY needle = { .name = name };
+	KEY *k = (KEY *)bsearch(&needle, keys, nkeys, sizeof(*keys), keyCmp);
 	if (k)
-	    algo = k->algo;
+	    keyval = k->value;
     }
-    return algo;
+    return keyval;
 }
 
 /**
- * Return digest of input.
+ * Return digest of tag data.
  * @param he		tag container
  * @param av		paramater list (NULL uses md5)
  * @return		formatted string
@@ -2776,10 +2828,141 @@ assert(ix == 0);
 	break;
     }
 
-    {	uint32_t algo = digestname2algo((av ? av[0] : NULL));
+    {	uint32_t keyval = keyValue(keyDigests, nkeyDigests, (av ? av[0] : NULL));
+	uint32_t algo = (keyval ? keyval : PGPHASHALGO_SHA1);
 	DIGEST_CTX ctx = rpmDigestInit(algo, 0);
 	int xx = rpmDigestUpdate(ctx, he->p.ptr, ns);
 	xx = rpmDigestFinal(ctx, &val, NULL, 1);
+    }
+
+exit:
+/*@-globstate@*/
+    return val;
+/*@=globstate@*/
+}
+
+/**
+ * Return file info.
+ * @param he		tag container
+ * @param av		paramater list (NULL uses sha1)
+ * @return		formatted string
+ */
+static /*@only@*/ char * statFormat(HE_t he, /*@null@*/ const char ** av)
+	/*@*/
+{
+    /*@unchecked@*/
+    static const char *avdefault[] = { "mode", NULL };
+    const char * fn = he->p.str;
+    struct stat sb, *st = &sb;
+    int ix = (he->ix > 0 ? he->ix : 0);
+    char * val = NULL;
+    int xx;
+    int i;
+
+assert(ix == 0);
+    switch(he->t) {
+    default:
+	val = xstrdup(_("(invalid type :stat)"));
+	goto exit;
+	/*@notreached@*/ break;
+    case RPM_STRING_TYPE:
+	if (Lstat(fn, st) == 0)
+	    break;
+	val = rpmExpand("(Lstat:", strerror(errno), ")", NULL);
+	goto exit;
+	/*@notreached@*/ break;
+    }
+
+    if (!(av && av[0] && *av[0]))
+	av = avdefault;
+    for (i = 0; av[i] != NULL; i++) {
+	char b[BUFSIZ];
+	size_t nb = sizeof(b);
+	char * nval;
+	uint32_t keyval = keyValue(keyStat, nkeyStat, av[i]);
+
+	nval = NULL;
+	b[0] = '\0';
+	switch (keyval) {
+	default:
+	    break;
+	case STAT_KEYS_NONE:
+	    break;
+	case STAT_KEYS_DEV:
+	    xx = snprintf(b, nb, "0x%lx", (unsigned long)st->st_dev);
+	    break;
+	case STAT_KEYS_INO:
+	    xx = snprintf(b, nb, "0x%lx", (unsigned long)st->st_ino);
+	    break;
+	case STAT_KEYS_MODE:
+	    xx = snprintf(b, nb, "%06o", (unsigned)st->st_mode);
+	    break;
+	case STAT_KEYS_NLINK:
+	    xx = snprintf(b, nb, "0x%ld", (unsigned long)st->st_nlink);
+	    break;
+	case STAT_KEYS_UID:
+	    xx = snprintf(b, nb, "%ld", (unsigned long)st->st_uid);
+	    break;
+	case STAT_KEYS_GID:
+	    xx = snprintf(b, nb, "%ld", (unsigned long)st->st_gid);
+	    break;
+	case STAT_KEYS_RDEV:
+	    xx = snprintf(b, nb, "0x%lx", (unsigned long)st->st_rdev);
+	    break;
+	case STAT_KEYS_SIZE:
+	    xx = snprintf(b, nb, "%ld", (unsigned long)st->st_size);
+	    break;
+	case STAT_KEYS_BLKSIZE:
+	    xx = snprintf(b, nb, "%ld", (unsigned long)st->st_blksize);
+	    break;
+	case STAT_KEYS_BLOCKS:
+	    xx = snprintf(b, nb, "%ld", (unsigned long)st->st_blocks);
+	    break;
+	case STAT_KEYS_ATIME:
+	    (void) stpcpy(b, ctime(&st->st_atime));
+	    break;
+	case STAT_KEYS_CTIME:
+	    (void) stpcpy(b, ctime(&st->st_ctime));
+	    break;
+	case STAT_KEYS_MTIME:
+	    (void) stpcpy(b, ctime(&st->st_mtime));
+	    break;
+#ifdef	NOTYET
+	case STAT_KEYS_FLAGS:
+	    break;
+#endif
+	case STAT_KEYS_SLINK:
+	    if (S_ISLNK(st->st_mode)) {
+		ssize_t size = Readlink(fn, b, nb);
+		if (size == -1) {
+		    nval = rpmExpand("(Readlink:", strerror(errno), ")", NULL);
+		    stpcpy(b, nval);
+		    nval = _free(nval);
+		}
+	    }
+	    break;
+#ifdef	NOTYET
+	case STAT_KEYS_DIGEST:
+	    break;
+#endif
+	case STAT_KEYS_UNAME:
+	    (void) stpcpy(b, uidToUname(st->st_uid));
+	    break;
+	case STAT_KEYS_GNAME:
+	    (void) stpcpy(b, gidToGname(st->st_gid));
+	    break;
+	}
+	if (b[0] == '\0')
+	    continue;
+	b[nb-1] = '\0';
+
+	if (val == NULL)
+	    val = xstrdup(b);
+	else {
+	    nval = rpmExpand(val, " | ", b, NULL);
+	    val = _free(val);
+	    val = nval;
+	}
     }
 
 exit:
@@ -2826,8 +3009,6 @@ static struct headerSprintfExtension_s _headerCompoundFormats[] = {
 	{ .tagFunction = origpathsTag } },
     { HEADER_EXT_TAG, "RPMTAG_FILESTAT",
 	{ .tagFunction = filestatTag } },
-    { HEADER_EXT_TAG, "RPMTAG_STAT",
-	{ .tagFunction = diskstatTag } },
     { HEADER_EXT_TAG, "RPMTAG_PROVIDEXMLENTRY",
 	{ .tagFunction = PxmlTag } },
     { HEADER_EXT_TAG, "RPMTAG_REQUIREXMLENTRY",
@@ -2876,6 +3057,8 @@ static struct headerSprintfExtension_s _headerCompoundFormats[] = {
 	{ .fmtFunction = pgpsigFormat } },
     { HEADER_EXT_FORMAT, "sqlescape",
 	{ .fmtFunction = sqlescapeFormat } },
+    { HEADER_EXT_FORMAT, "stat",
+	{ .fmtFunction = statFormat } },
     { HEADER_EXT_FORMAT, "triggertype",	
 	{ .fmtFunction = triggertypeFormat } },
     { HEADER_EXT_FORMAT, "utf8",
