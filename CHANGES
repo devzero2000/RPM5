@@ -1,6 +1,7 @@
 
 5.1.0 -> 5.2a0:
-    - jbj: retrofit v1 UUID's for time stamps as header tag extensions.
+    - jbj: retrofit v5 UUID's for hdrid/pkgid digests as tag extensions.
+    - jbj: retrofit v1 UUID's for time stamps as tag extensions.
     - jbj: replace "diskstat" tag with :stat format extension instead.
     - jbj: add :digest(foo) format. :fdigest(algo) for rpmrepo spew soon ...
     - jbj: generalize :utf8 to :iconv(UTF-8) iconv(3) conversions.

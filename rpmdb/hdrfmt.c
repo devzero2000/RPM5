@@ -1390,6 +1390,114 @@ static int origintid_uuidTag(Header h, HE_t he)
 }
 
 /**
+ * Convert tag string to UUIDv5.
+ * @param he		tag container
+ * @param av		paramater list (or NULL)
+ * @return		0 on success
+ */
+static int str2uuidv5(HE_t he, /*@null@*/ const char ** av)
+	/*@modifies he @*/
+{
+    static const char uuid_ns[] = "ns:URL";
+    const char * uuid_url = rpmExpand("http://rpm5.org/", he->p.str, NULL);
+    int uuid_version = 5;
+    int rc;
+
+assert(he->t == RPM_STRING_TYPE);
+    he->p.ptr = _free(he->p.ptr);
+    he->t = RPM_BIN_TYPE;
+    he->c = 128/8;
+    he->p.ptr = xcalloc(1, he->c);
+    he->freeData = 1;
+    rc = rpmuuidMake(uuid_version, uuid_ns, uuid_url, NULL,
+		(unsigned char *)he->p.ui8p);
+    if (rc) {
+	he->p.ptr = _free(he->p.ptr);
+	he->freeData = 0;
+    }
+    uuid_url = _free(uuid_url);
+    return rc;
+}
+
+/**
+ * Retrieve tag and convert to UUIDv5.
+ * @param h		header
+ * @retval *he		tag container
+ * @return		0 on success
+ */
+static int tag2uuidv5(Header h, HE_t he)
+	/*@modifies he @*/
+{
+    if (!headerGet(h, he, 0))
+	return 1;
+    switch (he->t) {
+    default:
+assert(0);
+	/*@notreached@*/ break;
+    case RPM_BIN_TYPE:	{	/* Convert RPMTAG_PKGID from binary => hex. */
+	static const char hex[] = "0123456789abcdef";
+	char * t;
+	char * te;
+	uint32_t i;
+
+	t = te = xmalloc (2*he->c + 1);
+	for (i = 0; i < he->c; i++) {
+	    *te++ = hex[ ((he->p.ui8p[i] >> 4) & 0x0f) ];
+	    *te++ = hex[ ((he->p.ui8p[i]     ) & 0x0f) ];
+	}
+	*te = '\0';
+	he->p.ptr = _free(he->p.ptr);
+	he->t = RPM_STRING_TYPE;
+	he->p.ptr = t;
+	he->c = 1;
+	he->freeData = 1;
+    }	break;
+    case RPM_STRING_TYPE:
+	break;
+    }
+    return str2uuidv5(he, NULL);
+}
+
+/**
+ * Retrieve pkgid and convert to UUIDv5.
+ * @param h		header
+ * @retval *he		tag container
+ * @return		0 on success
+ */
+static int pkguuidTag(Header h, HE_t he)
+	/*@modifies he @*/
+{
+    he->tag = RPMTAG_PKGID;
+    return tag2uuidv5(h, he);
+}
+
+/**
+ * Retrieve sourcepkgid and convert to UUIDv5.
+ * @param h		header
+ * @retval *he		tag container
+ * @return		0 on success
+ */
+static int sourcepkguuidTag(Header h, HE_t he)
+	/*@modifies he @*/
+{
+    he->tag = RPMTAG_SOURCEPKGID;
+    return tag2uuidv5(h, he);
+}
+
+/**
+ * Retrieve hdrid and convert to UUIDv5.
+ * @param h		header
+ * @retval *he		tag container
+ * @return		0 on success
+ */
+static int hdruuidTag(Header h, HE_t he)
+	/*@modifies he @*/
+{
+    he->tag = RPMTAG_HDRID;
+    return tag2uuidv5(h, he);
+}
+
+/**
  * Retrieve trigger info.
  * @param h		header
  * @retval *he		tag container
@@ -3125,6 +3233,8 @@ static struct headerSprintfExtension_s _headerCompoundFormats[] = {
 	{ .tagFunction = descriptionTag } },
     { HEADER_EXT_TAG, "RPMTAG_GROUP",
 	{ .tagFunction = groupTag } },
+    { HEADER_EXT_TAG, "RPMTAG_HDRUUID",
+	{ .tagFunction = hdruuidTag } },
     { HEADER_EXT_TAG, "RPMTAG_INSTALLPREFIX",
 	{ .tagFunction = instprefixTag } },
     { HEADER_EXT_TAG, "RPMTAG_INSTALLTIDUUID",
@@ -3135,8 +3245,12 @@ static struct headerSprintfExtension_s _headerCompoundFormats[] = {
 	{ .tagFunction = origintid_uuidTag } },
     { HEADER_EXT_TAG, "RPMTAG_ORIGINTIMEUUID",
 	{ .tagFunction = origintime_uuidTag } },
+    { HEADER_EXT_TAG, "RPMTAG_PKGUUID",
+	{ .tagFunction = pkguuidTag } },
     { HEADER_EXT_TAG, "RPMTAG_REMOVETIDUUID",
 	{ .tagFunction = removetid_uuidTag } },
+    { HEADER_EXT_TAG, "RPMTAG_SOURCEPKGUUID",
+	{ .tagFunction = sourcepkguuidTag } },
     { HEADER_EXT_TAG, "RPMTAG_SUMMARY",
 	{ .tagFunction = summaryTag } },
     { HEADER_EXT_TAG, "RPMTAG_TRIGGERCONDS",
