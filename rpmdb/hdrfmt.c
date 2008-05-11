@@ -3007,8 +3007,8 @@ enum keyStat_e {
     STAT_KEYS_FLAGS	= (1U << 13),	/*!< st_flags */
 #endif
     STAT_KEYS_SLINK	= (1U << 14),	/*!< symlink */
-#ifdef	NOTYET
     STAT_KEYS_DIGEST	= (1U << 15),	/*!< digest */
+#ifdef	NOTYET
     STAT_KEYS_FCONTEXT	= (1U << 16),	/*!< fcontext */
 #endif
     STAT_KEYS_UNAME	= (1U << 17),	/*!< user name */
@@ -3017,10 +3017,13 @@ enum keyStat_e {
 
 /*@unchecked@*/ /*@observer@*/
 static KEY keyStat[] = {
+    { "adler32",	STAT_KEYS_DIGEST },
     { "atime",		STAT_KEYS_ATIME },
     { "ctime",		STAT_KEYS_CTIME },
     { "blksize",	STAT_KEYS_BLKSIZE },
     { "blocks",		STAT_KEYS_BLOCKS },
+    { "crc32",		STAT_KEYS_DIGEST },
+    { "crc64",		STAT_KEYS_DIGEST },
     { "dev",		STAT_KEYS_DEV },
 #ifdef	NOTYET
     { "digest",		STAT_KEYS_DIGEST },
@@ -3029,13 +3032,30 @@ static KEY keyStat[] = {
 #endif
     { "gid",		STAT_KEYS_GID },
     { "gname",		STAT_KEYS_GNAME },
+    { "haval160",	STAT_KEYS_DIGEST },
     { "ino",		STAT_KEYS_INO },
+    { "jlu32",		STAT_KEYS_DIGEST },
     { "link",		STAT_KEYS_SLINK },
+    { "md2",		STAT_KEYS_DIGEST },
+    { "md4",		STAT_KEYS_DIGEST },
+    { "md5",		STAT_KEYS_DIGEST },
     { "mode",		STAT_KEYS_MODE },
+    { "mtime",		STAT_KEYS_MTIME },
     { "nlink",		STAT_KEYS_NLINK },
     { "rdev",		STAT_KEYS_RDEV },
+    { "rmd128",		STAT_KEYS_DIGEST },
+    { "rmd160",		STAT_KEYS_DIGEST },
+    { "rmd256",		STAT_KEYS_DIGEST },
+    { "rmd320",		STAT_KEYS_DIGEST },
+    { "salsa10",	STAT_KEYS_DIGEST },
+    { "salsa20",	STAT_KEYS_DIGEST },
+    { "sha1",		STAT_KEYS_DIGEST },
+    { "sha224",		STAT_KEYS_DIGEST },
+    { "sha256",		STAT_KEYS_DIGEST },
+    { "sha384",		STAT_KEYS_DIGEST },
+    { "sha512",		STAT_KEYS_DIGEST },
     { "size",		STAT_KEYS_SIZE },
-    { "mtime",		STAT_KEYS_MTIME },
+    { "tiger192",	STAT_KEYS_DIGEST },
     { "uid",		STAT_KEYS_UID },
     { "uname",		STAT_KEYS_UNAME },
 };
@@ -3171,7 +3191,7 @@ assert(ix == 0);
     case RPM_STRING_TYPE:
 	if (Lstat(fn, st) == 0)
 	    break;
-	val = rpmExpand("(Lstat:", strerror(errno), ")", NULL);
+	val = rpmExpand("(Lstat:", fn, ":", strerror(errno), ")", NULL);
 	goto exit;
 	/*@notreached@*/ break;
     }
@@ -3238,17 +3258,39 @@ assert(ix == 0);
 	    if (S_ISLNK(st->st_mode)) {
 		ssize_t size = Readlink(fn, b, nb);
 		if (size == -1) {
-		    nval = rpmExpand("(Readlink:", strerror(errno), ")", NULL);
+		    nval = rpmExpand("(Readlink:", fn, ":", strerror(errno), ")", NULL);
 		    stpcpy(b, nval);
 		    nval = _free(nval);
 		} else
 		    b[size] = '\0';
 	    }
 	    break;
-#ifdef	NOTYET
 	case STAT_KEYS_DIGEST:
+	    if (S_ISREG(st->st_mode)) {
+		uint32_t digval = keyValue(keyDigests, nkeyDigests, av[i]);
+		uint32_t algo = (digval ? digval : PGPHASHALGO_SHA1);
+		FD_t fd = Fopen(fn, "r%{?_rpmgio}");
+		if (fd == NULL || Ferror(fd)) {
+		    nval = rpmExpand("(Fopen:", fn, ":", Fstrerror(fd), ")", NULL);
+		} else {
+		    static int asAscii = 1;
+		    char buffer[16 * 1024];
+		    fdInitDigest(fd, algo, 0);
+		    while (Fread(buffer, sizeof(buffer[0]), sizeof(buffer), fd) > 0)
+			{};
+		    if (Ferror(fd))
+			nval = rpmExpand("(Fread:", fn, ":", Fstrerror(fd), ")", NULL);
+		    else
+			fdFiniDigest(fd, algo, &nval, NULL, asAscii);
+	    }
+		if (nval) {
+		    stpcpy(b, nval);
+		    nval = _free(nval);
+		}
+		if (fd != NULL)
+		    xx = Fclose(fd);
+	    }
 	    break;
-#endif
 	case STAT_KEYS_UNAME:
 	    (void) stpcpy(b, uidToUname(st->st_uid));
 	    break;
