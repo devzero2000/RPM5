@@ -1389,33 +1389,53 @@ static int origintid_uuidTag(Header h, HE_t he)
     return tag2uuidv1(h, he);
 }
 
+/*@unchecked@*/ /*@observer@*/
+static const char uuid_ns[] = "ns:URL";
+/*@unchecked@*/ /*@observer@*/
+static const char uuid_url[] = "http://rpm5.org/";
+/*@unchecked@*/ /*@observer@*/
+static int uuid_version = 5;
+
 /**
- * Convert tag string to UUIDv5.
+ * Convert tag string to UUID.
  * @param he		tag container
  * @param av		paramater list (or NULL)
+ * @praram version	UUID version
+ * @retval val		UUID string
  * @return		0 on success
  */
-static int str2uuidv5(HE_t he, /*@null@*/ const char ** av)
+static int str2uuid(HE_t he, /*@null@*/ const char ** av,
+		int version, /*@null@*/ char * val)
 	/*@modifies he @*/
 {
-    static const char uuid_ns[] = "ns:URL";
-    const char * uuid_url = rpmExpand("http://rpm5.org/", he->p.str, NULL);
-    int uuid_version = 5;
+    const char * ns = NULL;
+    const char * s = NULL;
     int rc;
 
+    switch (version) {
+    default:
+	version = uuid_version;
+	/*@fallthrough@*/
+    case 3:
+    case 5:
 assert(he->t == RPM_STRING_TYPE);
+	ns = uuid_ns;
+	s = rpmExpand(uuid_url, he->p.str, NULL);
+	/*@fallthrough@*/
+    case 4:
+	break;
+    }
     he->p.ptr = _free(he->p.ptr);
     he->t = RPM_BIN_TYPE;
     he->c = 128/8;
     he->p.ptr = xcalloc(1, he->c);
     he->freeData = 1;
-    rc = rpmuuidMake(uuid_version, uuid_ns, uuid_url, NULL,
-		(unsigned char *)he->p.ui8p);
+    rc = rpmuuidMake(version, ns, s, val, (unsigned char *)he->p.ui8p);
     if (rc) {
 	he->p.ptr = _free(he->p.ptr);
 	he->freeData = 0;
     }
-    uuid_url = _free(uuid_url);
+    s = _free(s);
     return rc;
 }
 
@@ -1455,7 +1475,7 @@ assert(0);
     case RPM_STRING_TYPE:
 	break;
     }
-    return str2uuidv5(he, NULL);
+    return str2uuid(he, NULL, 0, NULL);
 }
 
 /**
@@ -3023,6 +3043,39 @@ static KEY keyStat[] = {
 static size_t nkeyStat = sizeof(keyStat) / sizeof(keyStat[0]);
 
 /**
+ * Bit field enum for stat(2) keys.
+ */
+enum keyUuids_e {
+    UUID_KEYS_NONE	= (0U <<  0),
+    UUID_KEYS_V1	= (1U <<  0),
+    UUID_KEYS_V3	= (3U <<  0),
+    UUID_KEYS_V4	= (4U <<  0),
+    UUID_KEYS_V5	= (5U <<  0),
+#ifdef	NOTYET
+    UUID_KEYS_STRING	= (0U <<  4),
+    UUID_KEYS_SIV	= (1U <<  4),
+    UUID_KEYS_BINARY	= (2U <<  4),
+    UUID_KEYS_TEXT	= (3U <<  4),
+#endif
+};
+
+/*@unchecked@*/ /*@observer@*/
+static KEY keyUuids[] = {
+#ifdef	NOTYET
+    { "binary",		UUID_KEYS_BINARY },
+    { "siv",		UUID_KEYS_SIV },
+    { "string",		UUID_KEYS_STRING },
+    { "text",		UUID_KEYS_TEXT },
+#endif
+    { "v1",		UUID_KEYS_V1 },
+    { "v3",		UUID_KEYS_V3 },
+    { "v4",		UUID_KEYS_V4 },
+    { "v5",		UUID_KEYS_V5 },
+};
+/*@unchecked@*/
+static size_t nkeyUuids = sizeof(keyUuids) / sizeof(keyUuids[0]);
+
+/**
  */
 static int
 keyCmp(const void * a, const void * b)
@@ -3222,6 +3275,68 @@ exit:
 /*@=globstate@*/
 }
 
+/**
+ * Reformat tag string as a UUID.
+ * @param he		tag container
+ * @param av		paramater list (NULL uses UUIDv5)
+ * @return		formatted string
+ */
+static /*@only@*/ char * uuidFormat(HE_t he, /*@null@*/ const char ** av)
+	/*@*/
+{
+    /*@unchecked@*/
+    static const char *avdefault[] = { "v5", NULL };
+    int version = 0;
+    int ix = (he->ix > 0 ? he->ix : 0);
+    char * val = NULL;
+    int i;
+
+assert(ix == 0);
+    switch(he->t) {
+    default:
+	val = xstrdup(_("(invalid type :uuid)"));
+	goto exit;
+	/*@notreached@*/ break;
+    case RPM_STRING_TYPE:
+	break;
+    }
+
+    if (!(av && av[0] && *av[0]))
+	av = avdefault;
+
+    for (i = 0; av[i] != NULL; i++) {
+	uint32_t keyval = keyValue(keyUuids, nkeyUuids, av[i]);
+
+	switch (keyval) {
+	default:
+	    break;
+	case UUID_KEYS_V1:
+	case UUID_KEYS_V3:
+	case UUID_KEYS_V4:
+	case UUID_KEYS_V5:
+	    version = keyval;
+	    break;
+	}
+    }
+
+    /* XXX use private tag container to avoid memory issues for now. */
+    {	HE_t nhe = memset(alloca(sizeof(*nhe)), 0, sizeof(*nhe));
+	int xx;
+	nhe->tag = he->tag;
+	nhe->t = he->t;
+	nhe->p.str = xstrdup(he->p.str);
+	nhe->c = he->c;
+	val = xmalloc((128/4 + 4) + 1);
+	xx = str2uuid(nhe, NULL, version, val);
+	nhe->p.ptr = _free(nhe->p.ptr);
+    }
+
+exit:
+/*@-globstate@*/
+    return val;
+/*@=globstate@*/
+}
+
 /*@-type@*/ /* FIX: cast? */
 static struct headerSprintfExtension_s _headerCompoundFormats[] = {
     { HEADER_EXT_TAG, "RPMTAG_BUILDTIMEUUID",
@@ -3332,6 +3447,8 @@ static struct headerSprintfExtension_s _headerCompoundFormats[] = {
 	{ .fmtFunction = triggertypeFormat } },
     { HEADER_EXT_FORMAT, "utf8",
 	{ .fmtFunction = iconvFormat } },
+    { HEADER_EXT_FORMAT, "uuid",
+	{ .fmtFunction = uuidFormat } },
     { HEADER_EXT_FORMAT, "xml",
 	{ .fmtFunction = xmlFormat } },
     { HEADER_EXT_FORMAT, "yaml",

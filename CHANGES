@@ -1,5 +1,6 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: add :uuid(vN) format. UUIDv5 URI design & tag type coercion todo++.
     - jbj: rpmuuid: add i18n to error messages.
     - jbj: fix: blessed NUL termination for Readlink return.
     - jbj: retrofit v5 UUID's for hdrid/pkgid digests as tag extensions.
