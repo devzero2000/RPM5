@@ -1609,6 +1609,8 @@ int Readlink(const char * path, char * buf, size_t bufsiz)
     const char * lpath;
     int ut = urlPath(path, &lpath);
 
+if (_rpmio_debug)
+fprintf(stderr, "*** Readlink(%s,%p[%u])\n", path, buf, (unsigned)bufsiz);
     switch (ut) {
     case URL_IS_FTP:
 	return ftpReadlink(path, buf, bufsiz);

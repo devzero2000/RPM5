@@ -3188,7 +3188,8 @@ assert(ix == 0);
 		    nval = rpmExpand("(Readlink:", strerror(errno), ")", NULL);
 		    stpcpy(b, nval);
 		    nval = _free(nval);
-		}
+		} else
+		    b[size] = '\0';
 	    }
 	    break;
 #ifdef	NOTYET

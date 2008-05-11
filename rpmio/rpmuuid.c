@@ -31,33 +31,33 @@ int rpmuuidMake(int version, const char *ns, const char *data, char *buf_str, un
 
     /* sanity check version */
     if (!(version == 1 || (version >= 3 && version <= 5))) {
-        rpmlog(RPMLOG_ERR, "invalid UUID version number");
+        rpmlog(RPMLOG_ERR, _("invalid UUID version number"));
         return 1;
     }
     if ((version == 3 || version == 5) && (ns == NULL || data == NULL)) {
-        rpmlog(RPMLOG_ERR, "namespace or data required for requested UUID version\n");
+        rpmlog(RPMLOG_ERR, _("namespace or data required for requested UUID version\n"));
         return 1;
     }
     if (buf_str == NULL && buf_bin == NULL) {
-        rpmlog(RPMLOG_ERR, "either string or binary result buffer required\n");
+        rpmlog(RPMLOG_ERR, _("either string or binary result buffer required\n"));
         return 1;
     }
 
     /* create UUID object */
     if ((rc = uuid_create(&uuid)) != UUID_RC_OK) {
-        rpmlog(RPMLOG_ERR, "failed to create UUID object: %s\n", uuid_error(rc));
+        rpmlog(RPMLOG_ERR, _("failed to create UUID object: %s\n"), uuid_error(rc));
         return 1;
     }
 
     /* create optional UUID namespace object */
     if (version == 3 || version == 5) {
         if ((rc = uuid_create(&uuid_ns)) != UUID_RC_OK) {
-            rpmlog(RPMLOG_ERR, "failed to create UUID namespace object: %s\n", uuid_error(rc));
+            rpmlog(RPMLOG_ERR, _("failed to create UUID namespace object: %s\n"), uuid_error(rc));
             return 1;
         }
         if ((rc = uuid_load(uuid_ns, ns)) != UUID_RC_OK) {
             if ((rc = uuid_import(uuid_ns, UUID_FMT_STR, ns, strlen(ns))) != UUID_RC_OK) {
-                rpmlog(RPMLOG_ERR, "failed to import UUID namespace object: %s\n", uuid_error(rc));
+                rpmlog(RPMLOG_ERR, _("failed to import UUID namespace object: %s\n"), uuid_error(rc));
                 return 1;
             }
         }
@@ -76,7 +76,7 @@ int rpmuuidMake(int version, const char *ns, const char *data, char *buf_str, un
         (void) uuid_destroy(uuid);
         if (uuid_ns != NULL)
             (void) uuid_destroy(uuid_ns);
-        rpmlog(RPMLOG_ERR, "failed to make UUID object: %s\n", uuid_error(rc));
+        rpmlog(RPMLOG_ERR, _("failed to make UUID object: %s\n"), uuid_error(rc));
         return 1;
     }
 
@@ -88,7 +88,7 @@ int rpmuuidMake(int version, const char *ns, const char *data, char *buf_str, un
             (void) uuid_destroy(uuid);
             if (uuid_ns != NULL)
                 (void) uuid_destroy(uuid_ns);
-            rpmlog(RPMLOG_ERR, "failed to export UUID object as string representation: %s\n", uuid_error(rc));
+            rpmlog(RPMLOG_ERR, _("failed to export UUID object as string representation: %s\n"), uuid_error(rc));
             return 1;
         }
     }
@@ -99,7 +99,7 @@ int rpmuuidMake(int version, const char *ns, const char *data, char *buf_str, un
             (void) uuid_destroy(uuid);
             if (uuid_ns != NULL)
                 (void) uuid_destroy(uuid_ns);
-            rpmlog(RPMLOG_ERR, "failed to export UUID object as binary representation: %s\n", uuid_error(rc));
+            rpmlog(RPMLOG_ERR, _("failed to export UUID object as binary representation: %s\n"), uuid_error(rc));
             return 1;
         }
     }
@@ -112,7 +112,7 @@ int rpmuuidMake(int version, const char *ns, const char *data, char *buf_str, un
     /* indicate success */
     return 0;
 #else
-    rpmlog(RPMLOG_ERR, "UUID generator not available!\n");
+    rpmlog(RPMLOG_ERR, _("UUID generator not available!\n"));
 
     /* indicate error */
     return 1;

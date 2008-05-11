@@ -1,5 +1,7 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: rpmuuid: add i18n to error messages.
+    - jbj: fix: blessed NUL termination for Readlink return.
     - jbj: retrofit v5 UUID's for hdrid/pkgid digests as tag extensions.
     - jbj: retrofit v1 UUID's for time stamps as tag extensions.
     - jbj: replace "diskstat" tag with :stat format extension instead.
