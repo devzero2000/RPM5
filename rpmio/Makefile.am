@@ -7,7 +7,7 @@ LINT = splint
 SUBDIRS = # tests
 
 EXTRA_DIST = \
-	getdate.y LzamDecode.c rpmcpio.c rpmcpio.h \
+	getdate.y LzmaDecode.c rpmcpio.c rpmcpio.h \
 	rpmgenbasedir.c rpmgenpkglist.c rpmgensrclist.c \
 	rpmmtree.c rpmrepo.c rpmtar.c rpmtar.h \
 	tdir.c tfts.c tget.c tglob.c thkp.c thtml.c tinv.c tkey.c tmire.c \
