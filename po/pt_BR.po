@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 5.0\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2008-04-23 10:41-0400\n"
+"POT-Creation-Date: 2008-05-11 08:32-0400\n"
 "PO-Revision-Date: 2004-02-29 07:48+0500\n"
 "Last-Translator: Arnaldo Carvalho de Melo <acme@conectiva.com.br>\n"
 "Language-Team: Brazilian Portuguese\n"
@@ -53,7 +53,7 @@ msgstr ""
 msgid "Building target platforms: %s\n"
 msgstr ""
 
-#: build.c:298 build/spec.c:840
+#: build.c:298 build/spec.c:854
 #, fuzzy, c-format
 msgid "    target platform: %s\n"
 msgstr "    -b<estgio> <spec>    "
@@ -513,7 +513,7 @@ msgstr ""
 msgid "%s: public key read failed.\n"
 msgstr "No consegui abrir: %s\n"
 
-#: build/files.c:2082 lib/rpmchecksig.c:747
+#: build/files.c:2082 lib/rpmchecksig.c:751
 #, c-format
 msgid "%s: not an armored public key.\n"
 msgstr ""
@@ -1331,22 +1331,22 @@ msgstr "No consegui abrir: %s\n"
 msgid "line %d: Bad no%s number: %d\n"
 msgstr "No consegui abrir: %s\n"
 
-#: build/spec.c:365
+#: build/spec.c:368
 #, c-format
 msgid "line %d: Bad %s number: %s\n"
 msgstr ""
 
-#: build/spec.c:697
+#: build/spec.c:711
 #, fuzzy, c-format
 msgid "can't query %s: %s\n"
 msgstr "No consegui abrir: %s\n"
 
-#: build/spec.c:774
+#: build/spec.c:788
 #, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr ""
 
-#: build/spec.c:828
+#: build/spec.c:842
 #, c-format
 msgid "Query specfile for platform(s): %s\n"
 msgstr ""
@@ -1469,16 +1469,16 @@ msgstr ""
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr ""
 
-#: lib/depends.c:1778
+#: lib/depends.c:1781
 #, fuzzy, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "No consegui abrir: %s\n"
 
-#: lib/depends.c:2360
+#: lib/depends.c:2364
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:2394
+#: lib/depends.c:2400
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""
@@ -1563,12 +1563,12 @@ msgstr "No consegui abrir: %s\n"
 msgid "read failed\n"
 msgstr "Construo falhou.\n"
 
-#: lib/package.c:136 lib/rpmchecksig.c:245 lib/rpmchecksig.c:906
+#: lib/package.c:136 lib/rpmchecksig.c:246 lib/rpmchecksig.c:910
 #, c-format
 msgid "%s: No signature available\n"
 msgstr ""
 
-#: lib/package.c:229 lib/package.c:266 lib/rpmchecksig.c:985
+#: lib/package.c:229 lib/package.c:266 lib/rpmchecksig.c:989
 #, c-format
 msgid "skipping package %s with unverifiable V%u signature\n"
 msgstr ""
@@ -1686,7 +1686,7 @@ msgstr ""
 msgid "display macro and configuration values"
 msgstr "liste somente os arquivos de configurao (implica -l)"
 
-#: lib/poptALL.c:358 rpmio/poptIO.c:347
+#: lib/poptALL.c:358 rpmio/poptIO.c:347 rpmio/rpmrepo.c:1753
 #, fuzzy
 msgid "print the version"
 msgstr "mostra a verso do programa rpm sendo usado"
@@ -1813,7 +1813,7 @@ msgstr "no instale documentao"
 msgid "skip files with leading component <path> "
 msgstr ""
 
-#: lib/poptI.c:272
+#: lib/poptI.c:272 rpmio/rpmmtree.c:3578 rpmio/rpmmtree.c:3581
 msgid "<path>"
 msgstr ""
 
@@ -2067,7 +2067,7 @@ msgstr "pesquise o pacote ao qual <arquivo> pertence"
 msgid "query a spec file"
 msgstr "pesquise todos os pacotes"
 
-#: lib/poptQV.c:148 lib/poptQV.c:150
+#: lib/poptQV.c:148 lib/poptQV.c:150 rpmio/rpmmtree.c:3565
 msgid "<spec>"
 msgstr ""
 
@@ -2453,7 +2453,7 @@ msgstr "No consegui abrir: %s\n"
 msgid "(added provide)"
 msgstr ""
 
-#: lib/rpmchecksig.c:61 lib/rpmchecksig.c:1148
+#: lib/rpmchecksig.c:61 lib/rpmchecksig.c:1152
 #, fuzzy, c-format
 msgid "%s: open failed: %s\n"
 msgstr "No consegui abrir: %s\n"
@@ -2473,63 +2473,63 @@ msgstr "No consegui abrir: %s\n"
 msgid "%s: Fflush failed: %s\n"
 msgstr "No consegui abrir: %s\n"
 
-#: lib/rpmchecksig.c:376
+#: lib/rpmchecksig.c:380
 #, c-format
 msgid "%s: was already signed by key ID %s, skipping\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:742
+#: lib/rpmchecksig.c:746
 #, fuzzy, c-format
 msgid "%s: import read failed(%d).\n"
 msgstr "No consegui abrir: %s\n"
 
-#: lib/rpmchecksig.c:754
+#: lib/rpmchecksig.c:758
 #, fuzzy, c-format
 msgid "%s: import failed.\n"
 msgstr "No consegui abrir: %s\n"
 
-#: lib/rpmchecksig.c:806
+#: lib/rpmchecksig.c:810
 #, fuzzy
 msgid "headerGet failed"
 msgstr "No consegui abrir: %s\n"
 
-#: lib/rpmchecksig.c:807
+#: lib/rpmchecksig.c:811
 #, fuzzy
 msgid "failed to retrieve original header\n"
 msgstr "No consegui abrir: %s\n"
 
-#: lib/rpmchecksig.c:829 rpmdb/pkgio.c:509 rpmdb/pkgio.c:693
+#: lib/rpmchecksig.c:833 rpmdb/pkgio.c:509 rpmdb/pkgio.c:693
 #: rpmdb/pkgio.c:1271
 #, c-format
 msgid "XAR file not found (or no XAR support)"
 msgstr ""
 
-#: lib/rpmchecksig.c:839
+#: lib/rpmchecksig.c:843
 #, fuzzy
 msgid "Fread failed"
 msgstr "No consegui abrir: %s\n"
 
-#: lib/rpmchecksig.c:1073
+#: lib/rpmchecksig.c:1077
 msgid "NOT_OK"
 msgstr ""
 
-#: lib/rpmchecksig.c:1074 lib/rpmchecksig.c:1088
+#: lib/rpmchecksig.c:1078 lib/rpmchecksig.c:1092
 msgid " (MISSING KEYS:"
 msgstr ""
 
-#: lib/rpmchecksig.c:1076 lib/rpmchecksig.c:1090
+#: lib/rpmchecksig.c:1080 lib/rpmchecksig.c:1094
 msgid ") "
 msgstr ""
 
-#: lib/rpmchecksig.c:1077 lib/rpmchecksig.c:1091
+#: lib/rpmchecksig.c:1081 lib/rpmchecksig.c:1095
 msgid " (UNTRUSTED KEYS:"
 msgstr ""
 
-#: lib/rpmchecksig.c:1079 lib/rpmchecksig.c:1093
+#: lib/rpmchecksig.c:1083 lib/rpmchecksig.c:1097
 msgid ")"
 msgstr ""
 
-#: lib/rpmchecksig.c:1087
+#: lib/rpmchecksig.c:1091
 msgid "OK"
 msgstr ""
 
@@ -2666,6 +2666,7 @@ msgid "Failed to find %s:\n"
 msgstr "No consegui abrir o pipe tar: %s\n"
 
 #: lib/rpmgi.c:99 lib/rpminstall.c:124 lib/rpmrollback.c:162 lib/rpmts.c:412
+#: rpmio/rpmdigest.c:127
 #, fuzzy, c-format
 msgid "open of %s failed: %s\n"
 msgstr "Construo falhou.\n"
@@ -3002,132 +3003,149 @@ msgstr ""
 msgid "shared"
 msgstr ""
 
-#: rpmdb/dbconfig.c:718
+#: rpmdb/dbconfig.c:715
 #, c-format
 msgid "unrecognized db option: \"%s\" ignored.\n"
 msgstr ""
 
-#: rpmdb/dbconfig.c:758
+#: rpmdb/dbconfig.c:755
 #, c-format
 msgid "%s has invalid numeric value, skipped\n"
 msgstr ""
 
-#: rpmdb/dbconfig.c:767
+#: rpmdb/dbconfig.c:764
 #, c-format
 msgid "%s has too large or too small long value, skipped\n"
 msgstr ""
 
-#: rpmdb/dbconfig.c:776
+#: rpmdb/dbconfig.c:773
 #, c-format
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:87 rpmdb/hdrfmt.c:187
+#: rpmdb/hdrfmt.c:91 rpmdb/hdrfmt.c:195
 msgid "(not a number)"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:214
+#: rpmdb/hdrfmt.c:223
 #, c-format
 msgid "%c"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:225
+#: rpmdb/hdrfmt.c:235
 msgid "%a %b %d %Y"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:278
+#: rpmdb/hdrfmt.c:289
 msgid "invalid type"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:367 rpmdb/hdrfmt.c:396 rpmdb/hdrfmt.c:417 rpmdb/hdrfmt.c:484
-#: rpmdb/hdrfmt.c:1149
+#: rpmdb/hdrfmt.c:379 rpmdb/hdrfmt.c:409 rpmdb/hdrfmt.c:431 rpmdb/hdrfmt.c:499
+#: rpmdb/hdrfmt.c:1189
 msgid "(invalid type)"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:474
+#: rpmdb/hdrfmt.c:489
 msgid "(not base64)"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:508 rpmdb/hdrfmt.c:1045
-msgid "(not a blob)"
+#: rpmdb/hdrfmt.c:530
+msgid "(invalid type :base64)"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:694 rpmdb/hdrfmt.c:724 rpmdb/hdrfmt.c:2191
+#: rpmdb/hdrfmt.c:729 rpmdb/hdrfmt.c:760 rpmdb/hdrfmt.c:2471
+#: rpmdb/hdrfmt.c:2909
 msgid "(not a string)"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:797
+#: rpmdb/hdrfmt.c:834
 msgid "(invalid xml type)"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:983
+#: rpmdb/hdrfmt.c:1021
 msgid "(invalid yaml type)"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:1068
+#: rpmdb/hdrfmt.c:1084
+msgid "(not a blob)"
+msgstr ""
+
+#: rpmdb/hdrfmt.c:1107
 #, fuzzy
 msgid "(not an OpenPGP signature)"
 msgstr "desconsidere quaisquer assinaturas PGP"
 
-#: rpmdb/hdrfmt.c:3297
+#: rpmdb/hdrfmt.c:3067
+msgid "(invalid type :digest)"
+msgstr ""
+
+#: rpmdb/hdrfmt.c:3115
+msgid "(invalid type :stat)"
+msgstr ""
+
+#: rpmdb/hdrfmt.c:3942
 msgid "missing { after %"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:3331
+#: rpmdb/hdrfmt.c:3976
 msgid "missing } after %{"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:3347
+#: rpmdb/hdrfmt.c:3992
 msgid "empty tag format"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:3359
+#: rpmdb/hdrfmt.c:4006
+msgid "malformed parameter list"
+msgstr ""
+
+#: rpmdb/hdrfmt.c:4025
 msgid "empty tag name"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:3368
+#: rpmdb/hdrfmt.c:4034
 msgid "unknown tag"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:3398
+#: rpmdb/hdrfmt.c:4064
 msgid "] expected at end of array"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:3415
+#: rpmdb/hdrfmt.c:4081
 #, fuzzy
 msgid "unexpected ]"
 msgstr "fonte de pesquisa no esperado"
 
-#: rpmdb/hdrfmt.c:3430
+#: rpmdb/hdrfmt.c:4096
 #, fuzzy
 msgid "unexpected }"
 msgstr "fonte de pesquisa no esperado"
 
-#: rpmdb/hdrfmt.c:3508
+#: rpmdb/hdrfmt.c:4174
 msgid "? expected in expression"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:3515
+#: rpmdb/hdrfmt.c:4181
 msgid "{ expected after ? in expression"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:3527 rpmdb/hdrfmt.c:3567
+#: rpmdb/hdrfmt.c:4193 rpmdb/hdrfmt.c:4233
 msgid "} expected in expression"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:3535
+#: rpmdb/hdrfmt.c:4201
 msgid ": expected following ? subexpression"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:3553
+#: rpmdb/hdrfmt.c:4219
 msgid "{ expected after : in expression"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:3575
+#: rpmdb/hdrfmt.c:4241
 msgid "| expected at end of expression"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:3868
+#: rpmdb/hdrfmt.c:4560
 msgid "array iterator used with different sized arrays"
 msgstr ""
 
@@ -3389,112 +3407,113 @@ msgstr "no foi passado pacote para instalao"
 msgid "rpmdbAdd: skipping"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3994
+#: rpmdb/rpmdb.c:4011
 #, c-format
 msgid "temporary database %s already exists\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:4002
+#: rpmdb/rpmdb.c:4019
 #, fuzzy, c-format
 msgid "creating directory %s: %s\n"
 msgstr "No consegui abrir: %s\n"
 
-#: rpmdb/rpmdb.c:4049
+#: rpmdb/rpmdb.c:4066
 #, c-format
 msgid "header #%u in the database is bad -- skipping.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:4057
+#: rpmdb/rpmdb.c:4074
 #, c-format
 msgid "header #%u in the database is SRPM -- skipping.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:4097
+#: rpmdb/rpmdb.c:4114
 #, c-format
 msgid "cannot add record originally at %u\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:4111
+#: rpmdb/rpmdb.c:4128
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:4123
+#: rpmdb/rpmdb.c:4140
 msgid "failed to replace old database with new database!\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:4125
+#: rpmdb/rpmdb.c:4142
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr ""
 
-#: rpmdb/rpmdb.c:4137
+#: rpmdb/rpmdb.c:4154
 #, fuzzy, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "No consegui abrir: %s\n"
 
-#: rpmdb/signature.c:96 rpmdb/signature.c:101 rpmdb/signature.c:107
+#: rpmdb/signature.c:89 rpmdb/signature.c:98 rpmdb/signature.c:103
+#: rpmdb/signature.c:109
 #, fuzzy, c-format
 msgid "error creating temporary file %s\n"
 msgstr "No consegui abrir: %s\n"
 
-#: rpmdb/signature.c:189 rpmdb/signature.c:536
+#: rpmdb/signature.c:191 rpmdb/signature.c:538
 #, fuzzy, c-format
 msgid "Could not exec %s: %s\n"
 msgstr "No consegui ler o arquivo spec de %s\n"
 
-#: rpmdb/signature.c:207 rpmdb/signature.c:550
+#: rpmdb/signature.c:209 rpmdb/signature.c:552
 #, c-format
 msgid "Failed %s(%d) key(0x%lx): %s\n"
 msgstr ""
 
-#: rpmdb/signature.c:233
+#: rpmdb/signature.c:235
 #, fuzzy, c-format
 msgid "gpg exec failed (%d)\n"
 msgstr "Construo falhou.\n"
 
-#: rpmdb/signature.c:240
+#: rpmdb/signature.c:242
 #, fuzzy
 msgid "gpg failed to write signature\n"
 msgstr "gere assinatura PGP"
 
-#: rpmdb/signature.c:259
+#: rpmdb/signature.c:261
 #, fuzzy
 msgid "unable to read the signature\n"
 msgstr "gere assinatura PGP"
 
-#: rpmdb/signature.c:602
+#: rpmdb/signature.c:604
 msgid "Header+Payload size: "
 msgstr ""
 
-#: rpmdb/signature.c:639
+#: rpmdb/signature.c:641
 msgid "MD5 digest: "
 msgstr ""
 
-#: rpmdb/signature.c:696
+#: rpmdb/signature.c:698
 #, fuzzy
 msgid "Header SHA1 digest: "
 msgstr "instale pacote"
 
-#: rpmdb/signature.c:756 rpmdb/signature.c:882
+#: rpmdb/signature.c:758 rpmdb/signature.c:884
 msgid "Header "
 msgstr ""
 
-#: rpmdb/signature.c:812
+#: rpmdb/signature.c:814
 #, fuzzy
 msgid " signature: "
 msgstr "gere assinatura PGP"
 
-#: rpmdb/signature.c:888
+#: rpmdb/signature.c:890
 #, fuzzy
 msgid " DSA signature: "
 msgstr "gere assinatura PGP"
 
-#: rpmdb/signature.c:963
+#: rpmdb/signature.c:965
 #, c-format
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr ""
 
-#: rpmdb/signature.c:984
+#: rpmdb/signature.c:986
 #, c-format
 msgid "Signature: UNKNOWN (%u)\n"
 msgstr ""
@@ -3602,6 +3621,41 @@ msgstr "No consegui ler o arquivo spec de %s\n"
 #, c-format
 msgid "File %s is smaller than %u bytes\n"
 msgstr ""
+
+#: rpmio/mire.c:325
+#, fuzzy, c-format
+msgid "%s: Failed to set locale %s (obtained from %s)\n"
+msgstr "No consegui ler o arquivo spec de %s\n"
+
+#: rpmio/mire.c:366
+#, c-format
+msgid "pcre_compile2 failed: %s(%d) at offset %d of \"%s\"\n"
+msgstr ""
+
+#: rpmio/mire.c:384
+#, fuzzy, c-format
+msgid "%s: regcomp failed: %s\n"
+msgstr "No consegui abrir: %s\n"
+
+#: rpmio/mire.c:442
+#, fuzzy, c-format
+msgid "%s: regexec failed: %s(%d)\n"
+msgstr "No consegui abrir: %s\n"
+
+#: rpmio/mire.c:460
+#, fuzzy, c-format
+msgid "pcre_exec failed: return %d\n"
+msgstr "Construo falhou.\n"
+
+#: rpmio/mire.c:474
+#, fuzzy, c-format
+msgid "fnmatch failed: return %d\n"
+msgstr "No consegui abrir o pipe tar: %s\n"
+
+#: rpmio/mire.c:570
+#, fuzzy, c-format
+msgid "%s: Error while studying regex%s: %s\n"
+msgstr "No consegui abrir: %s\n"
 
 #: rpmio/poptIO.c:97
 msgid "MD2 digest (RFC-1319)"
@@ -3827,6 +3881,66 @@ msgstr ""
 msgid "Unknown Error"
 msgstr ""
 
+#: rpmio/rpmdigest.c:176 rpmio/rpmgrep.c:1052 rpmio/rpmgrep.c:1187
+#, fuzzy, c-format
+msgid "%s: Failed to open %s: %s\n"
+msgstr "No consegui abrir: %s\n"
+
+#: rpmio/rpmdigest.c:235
+#, fuzzy, c-format
+msgid "%s: Unknown digest name \"%s\"\n"
+msgstr "No consegui abrir: %s\n"
+
+#: rpmio/rpmdigest.c:298 rpmio/rpmgrep.c:1316 rpmio/rpmmtree.c:3535
+#: rpmio/rpmrepo.c:1663
+#, fuzzy, c-format
+msgid "%s: Unknown option -%c\n"
+msgstr "No consegui abrir: %s\n"
+
+#: rpmio/rpmdigest.c:317
+msgid "read in binary mode"
+msgstr ""
+
+#: rpmio/rpmdigest.c:321 rpmio/rpmdigest.c:325
+msgid "read digests from MANIFEST file and verify (may be used more than once)"
+msgstr ""
+
+#: rpmio/rpmdigest.c:322 rpmio/rpmdigest.c:326
+msgid "MANIFEST"
+msgstr ""
+
+#: rpmio/rpmdigest.c:330
+msgid "read in text mode (default)"
+msgstr ""
+
+#: rpmio/rpmdigest.c:334
+msgid "The following two options are useful only when verifying digests:"
+msgstr ""
+
+#: rpmio/rpmdigest.c:340
+msgid "no output when verifying"
+msgstr ""
+
+#: rpmio/rpmdigest.c:342
+msgid "warn about improperly formatted checksum lines"
+msgstr ""
+
+#: rpmio/rpmdigest.c:345 rpmio/rpmmtree.c:3606 rpmio/rpmrepo.c:1760
+msgid "Available digests:"
+msgstr ""
+
+#: rpmio/rpmdigest.c:348 rpmio/rpmgrep.c:1435 rpmio/rpmmtree.c:3609
+#: rpmio/rpmrepo.c:1763
+msgid "Common options for all rpmio executables:"
+msgstr ""
+
+#: rpmio/rpmdigest.c:355
+msgid ""
+"When checking, the input should be a former output of this program.  The\n"
+"default mode is to print a line with digest, a character indicating type\n"
+"(`*' for binary, ` ' for text), and name for each FILE.\n"
+msgstr ""
+
 #: rpmio/rpmgrep.c:595
 #, c-format
 msgid "%s: pcre_exec() error %d while matching "
@@ -3860,11 +3974,6 @@ msgstr ""
 #: rpmio/rpmgrep.c:985
 #, fuzzy, c-format
 msgid "%s: Failed to open directory %s: %s\n"
-msgstr "No consegui abrir: %s\n"
-
-#: rpmio/rpmgrep.c:1052 rpmio/rpmgrep.c:1187
-#, fuzzy, c-format
-msgid "%s: Failed to open %s: %s\n"
 msgstr "No consegui abrir: %s\n"
 
 #: rpmio/rpmgrep.c:1093
@@ -3916,11 +4025,6 @@ msgstr ""
 #, c-format
 msgid "%s %s (without PCRE)\n"
 msgstr ""
-
-#: rpmio/rpmgrep.c:1316
-#, fuzzy, c-format
-msgid "%s: Unknown option -%c\n"
-msgstr "No consegui abrir: %s\n"
 
 #: rpmio/rpmgrep.c:1334
 msgid "set number of following context lines"
@@ -4097,10 +4201,6 @@ msgstr ""
 msgid "force patterns to match only whole lines"
 msgstr ""
 
-#: rpmio/rpmgrep.c:1435
-msgid "Common options for all rpmio executables:"
-msgstr ""
-
 #: rpmio/rpmgrep.c:1441
 msgid ""
 "Usage: rpmgrep [OPTION...] [PATTERN] [FILE1 FILE2 ...]\n"
@@ -4142,59 +4242,59 @@ msgstr ""
 msgid "%s: Error in 'include' regex at offset %d: %s\n"
 msgstr ""
 
-#: rpmio/rpmio.c:738
+#: rpmio/rpmio.c:737
 msgid "Success"
 msgstr ""
 
-#: rpmio/rpmio.c:761
+#: rpmio/rpmio.c:760
 msgid "Bad server response"
 msgstr ""
 
-#: rpmio/rpmio.c:763
+#: rpmio/rpmio.c:762
 msgid "Server I/O error"
 msgstr ""
 
-#: rpmio/rpmio.c:765
+#: rpmio/rpmio.c:764
 msgid "Server timeout"
 msgstr ""
 
-#: rpmio/rpmio.c:767
+#: rpmio/rpmio.c:766
 msgid "Unable to lookup server host address"
 msgstr ""
 
-#: rpmio/rpmio.c:769
+#: rpmio/rpmio.c:768
 msgid "Unable to lookup server host name"
 msgstr ""
 
-#: rpmio/rpmio.c:771
+#: rpmio/rpmio.c:770
 msgid "Failed to connect to server"
 msgstr ""
 
-#: rpmio/rpmio.c:773
+#: rpmio/rpmio.c:772
 msgid "Failed to establish data connection to server"
 msgstr ""
 
-#: rpmio/rpmio.c:775
+#: rpmio/rpmio.c:774
 msgid "I/O error to local file"
 msgstr ""
 
-#: rpmio/rpmio.c:777
+#: rpmio/rpmio.c:776
 msgid "Error setting remote server to passive mode"
 msgstr ""
 
-#: rpmio/rpmio.c:779
+#: rpmio/rpmio.c:778
 msgid "File not found on server"
 msgstr ""
 
-#: rpmio/rpmio.c:781
+#: rpmio/rpmio.c:780
 msgid "Abort in progress"
 msgstr ""
 
-#: rpmio/rpmio.c:785
+#: rpmio/rpmio.c:784
 msgid "Unknown or unexpected error"
 msgstr ""
 
-#: rpmio/rpmio.c:802
+#: rpmio/rpmio.c:801
 #, fuzzy
 msgid "Malformed URL"
 msgstr "No consegui ler o arquivo spec de %s\n"
@@ -4264,6 +4364,596 @@ msgstr "Construo falhou.\n"
 #, fuzzy, c-format
 msgid "magic_buffer(ms, %p[%u]) failed: %s\n"
 msgstr "Construo falhou.\n"
+
+#: rpmio/rpmmtree.c:332
+#, c-format
+msgid "%s: failed at line %d of the specification\n"
+msgstr ""
+
+#: rpmio/rpmmtree.c:1492 rpmio/rpmmtree.c:1681
+#, c-format
+msgid "%s: filename (%s) encoded incorrectly\n"
+msgstr ""
+
+#: rpmio/rpmmtree.c:2042
+#, fuzzy, c-format
+msgid "%s changed\n"
+msgstr "Construo falhou.\n"
+
+#: rpmio/rpmmtree.c:2122
+#, c-format
+msgid "\ttype expected %s found %s)\n"
+msgstr ""
+
+#: rpmio/rpmmtree.c:2132 rpmio/rpmmtree.c:2145
+#, c-format
+msgid "%s%s expected %lu found %lu"
+msgstr ""
+
+#: rpmio/rpmmtree.c:2136 rpmio/rpmmtree.c:2149 rpmio/rpmmtree.c:2176
+#: rpmio/rpmmtree.c:2233
+#, fuzzy, c-format
+msgid " not modified: %s)\n"
+msgstr "No consegui abrir: %s\n"
+
+#: rpmio/rpmmtree.c:2138 rpmio/rpmmtree.c:2151 rpmio/rpmmtree.c:2178
+#, c-format
+msgid " modified)\n"
+msgstr ""
+
+#: rpmio/rpmmtree.c:2172
+#, c-format
+msgid "%s%s expected %#o found %#o"
+msgstr ""
+
+#: rpmio/rpmmtree.c:2189
+#, c-format
+msgid "%s%s expected %lu found %lu)\n"
+msgstr ""
+
+#: rpmio/rpmmtree.c:2196
+#, c-format
+msgid "%s%s expected %llu found %llu\n"
+msgstr ""
+
+#: rpmio/rpmmtree.c:2228
+#, c-format
+msgid "%s%s expected %.24s "
+msgstr ""
+
+#: rpmio/rpmmtree.c:2229
+#, c-format
+msgid "found %.24s"
+msgstr ""
+
+#: rpmio/rpmmtree.c:2235
+#, fuzzy, c-format
+msgid " modified\n"
+msgstr "Construo falhou.\n"
+
+#: rpmio/rpmmtree.c:2278
+#, c-format
+msgid "%s%s expected %lu found %lu\n"
+msgstr ""
+
+#: rpmio/rpmmtree.c:2296 rpmio/rpmmtree.c:2316
+#, fuzzy, c-format
+msgid "%s%s expected %s found %s\n"
+msgstr "No consegui abrir: %s\n"
+
+#: rpmio/rpmmtree.c:2325
+#, fuzzy, c-format
+msgid "%s%s expected \"%s\""
+msgstr "fonte de pesquisa no esperado"
+
+#: rpmio/rpmmtree.c:2329
+#, fuzzy, c-format
+msgid " found \"%s\""
+msgstr "no foi passado pacote para desinstalao"
+
+#: rpmio/rpmmtree.c:2451 rpmio/rpmmtree.c:2558
+#, c-format
+msgid "%s: Could not get uname for uid=%lu\n"
+msgstr ""
+
+#: rpmio/rpmmtree.c:2464 rpmio/rpmmtree.c:2573
+#, c-format
+msgid "%s: Could not get gname for gid=%lu\n"
+msgstr ""
+
+#: rpmio/rpmmtree.c:2612 rpmio/rpmmtree.c:2637
+#, fuzzy, c-format
+msgid "%s: %s: cksum: %s\n"
+msgstr "No consegui ler o arquivo spec de %s\n"
+
+#: rpmio/rpmmtree.c:2757
+#, fuzzy, c-format
+msgid "%s: open of %s failed: %s\n"
+msgstr "Construo falhou.\n"
+
+#: rpmio/rpmmtree.c:3257
+#, fuzzy, c-format
+msgid "missing: %s"
+msgstr "No consegui ler o arquivo spec de %s\n"
+
+#: rpmio/rpmmtree.c:3268
+#, c-format
+msgid " (%s not created: user not specified)"
+msgstr ""
+
+#: rpmio/rpmmtree.c:3270
+#, c-format
+msgid " (%s not created: group not specified))"
+msgstr ""
+
+#: rpmio/rpmmtree.c:3273
+#, fuzzy, c-format
+msgid " (%s not created: %s)\n"
+msgstr "No consegui abrir: %s\n"
+
+#: rpmio/rpmmtree.c:3276
+#, fuzzy, c-format
+msgid " (%s created)\n"
+msgstr "No consegui abrir: %s\n"
+
+#: rpmio/rpmmtree.c:3289 rpmio/rpmmtree.c:3325
+#, fuzzy, c-format
+msgid "%s: %s not modified: %s\n"
+msgstr "No consegui abrir: %s\n"
+
+#: rpmio/rpmmtree.c:3294
+#, c-format
+msgid " (%s not created: mode not specified)"
+msgstr ""
+
+#: rpmio/rpmmtree.c:3296
+#, fuzzy, c-format
+msgid " (%s not created: %s)"
+msgstr "No consegui abrir: %s\n"
+
+#: rpmio/rpmmtree.c:3299
+#, fuzzy, c-format
+msgid " (%s created)"
+msgstr "No consegui abrir: %s\n"
+
+#: rpmio/rpmmtree.c:3330
+#, c-format
+msgid "%s: permissions not set: %s\n"
+msgstr ""
+
+#: rpmio/rpmmtree.c:3335
+#, fuzzy, c-format
+msgid "%s: file flags not set: %s\n"
+msgstr "No consegui abrir: %s\n"
+
+#: rpmio/rpmmtree.c:3447
+#, fuzzy, c-format
+msgid ", not removed: %s"
+msgstr "no foi passado pacote para desinstalao"
+
+#: rpmio/rpmmtree.c:3449
+#, c-format
+msgid ", removed"
+msgstr ""
+
+#: rpmio/rpmmtree.c:3551
+msgid "Follow symlinks"
+msgstr ""
+
+#: rpmio/rpmmtree.c:3554
+msgid "Don't follow symlinks"
+msgstr ""
+
+#: rpmio/rpmmtree.c:3556
+msgid "Read fnmatch(3) exclude patterns from <file>"
+msgstr ""
+
+#: rpmio/rpmmtree.c:3556
+#, fuzzy
+msgid "<file>"
+msgstr "    -b<estgio> <spec>    "
+
+#: rpmio/rpmmtree.c:3559
+msgid "Print file tree specification to stdout"
+msgstr ""
+
+#: rpmio/rpmmtree.c:3561
+msgid "Directories only"
+msgstr ""
+
+#: rpmio/rpmmtree.c:3563
+msgid "Don't complain about files not in the specification"
+msgstr ""
+
+#: rpmio/rpmmtree.c:3565
+msgid "Read file tree <spec>"
+msgstr ""
+
+#: rpmio/rpmmtree.c:3567
+msgid "Indent sub-directories"
+msgstr ""
+
+#: rpmio/rpmmtree.c:3569
+#, fuzzy
+msgid "Add <key> to specification"
+msgstr "      Opces para especificao de pacotes:"
+
+#: rpmio/rpmmtree.c:3569 rpmio/rpmmtree.c:3571
+msgid "<key>"
+msgstr ""
+
+#: rpmio/rpmmtree.c:3571
+#, fuzzy
+msgid "Use \"type\" keywords instead"
+msgstr "Use -e ou --erase no lugar.\n"
+
+#: rpmio/rpmmtree.c:3573
+msgid "Loose permissions check"
+msgstr ""
+
+#: rpmio/rpmmtree.c:3575
+msgid "Don't include sub-directory comments"
+msgstr ""
+
+#: rpmio/rpmmtree.c:3578 rpmio/rpmmtree.c:3581
+msgid "Use <path> rather than current directory"
+msgstr ""
+
+#: rpmio/rpmmtree.c:3585
+#, fuzzy
+msgid "Quiet mode"
+msgstr "modo pesquisa"
+
+#: rpmio/rpmmtree.c:3587
+msgid "Remove files not in specification"
+msgstr ""
+
+#: rpmio/rpmmtree.c:3589
+msgid "Display crc for file(s) with <seed>"
+msgstr ""
+
+#: rpmio/rpmmtree.c:3589
+msgid "<seed>"
+msgstr ""
+
+#: rpmio/rpmmtree.c:3591
+msgid "Touch files iff timestamp differs"
+msgstr ""
+
+#: rpmio/rpmmtree.c:3593
+msgid "Update owner/group/permissions to match specification"
+msgstr ""
+
+#: rpmio/rpmmtree.c:3595
+msgid "Same as -u, but ignore match status on exit"
+msgstr ""
+
+#: rpmio/rpmmtree.c:3597
+msgid "Treat missing uid/gid as warning"
+msgstr ""
+
+#: rpmio/rpmmtree.c:3600
+msgid "Don't cross mount points"
+msgstr ""
+
+#: rpmio/rpmmtree.c:3603 rpmio/rpmrepo.c:1749
+msgid "Fts(3) traversal options:"
+msgstr ""
+
+#: rpmio/rpmmtree.c:3638
+#, c-format
+msgid "(no controlling terminal) %s"
+msgstr ""
+
+#: rpmio/rpmmtree.c:3643
+#, c-format
+msgid "(no controlling terminal) #%d"
+msgstr ""
+
+#: rpmio/rpmmtree.c:3784 rpmio/rpmmtree.c:3799
+#, c-format
+msgid "%s: %s checksum: %u\n"
+msgstr ""
+
+#: rpmio/rpmrepo.c:663
+#, fuzzy, c-format
+msgid "Cannot create/verify %s: %s"
+msgstr "No consegui abrir: %s\n"
+
+#: rpmio/rpmrepo.c:693
+#, c-format
+msgid "Directory %s must exist"
+msgstr ""
+
+#: rpmio/rpmrepo.c:700
+#, c-format
+msgid "Directory %s does not exist."
+msgstr ""
+
+#: rpmio/rpmrepo.c:704
+#, fuzzy, c-format
+msgid "Directory %s must be writable."
+msgstr "argumentos para o --dbpath devem comear com uma /"
+
+#: rpmio/rpmrepo.c:714
+#, c-format
+msgid "Old data directory exists, please remove: %s"
+msgstr ""
+
+#: rpmio/rpmrepo.c:730
+#, c-format
+msgid "Path must be writable: %s"
+msgstr ""
+
+#: rpmio/rpmrepo.c:750
+#, fuzzy, c-format
+msgid "groupfile %s cannot be found."
+msgstr "no foi passado pacote para desinstalao"
+
+#: rpmio/rpmrepo.c:784
+#, c-format
+msgid "Fts_open: %s"
+msgstr ""
+
+#: rpmio/rpmrepo.c:847
+#, fuzzy, c-format
+msgid "cannot get to file: %s"
+msgstr "No consegui abrir: %s\n"
+
+#: rpmio/rpmrepo.c:866 rpmio/rpmrepo.c:904
+#, c-format
+msgid "Fwrite failed: expected write %u != %u bytes: %s\n"
+msgstr ""
+
+#: rpmio/rpmrepo.c:970 rpmio/rpmrepo.c:1026
+#, c-format
+msgid "headerSprintf(%s): %s"
+msgstr ""
+
+#: rpmio/rpmrepo.c:1117
+#, fuzzy, c-format
+msgid ""
+"\n"
+"Error %s: %s\n"
+msgstr "No consegui ler o arquivo spec de %s\n"
+
+#: rpmio/rpmrepo.c:1156
+#, c-format
+msgid "Saving %s%s%s metadata"
+msgstr ""
+
+#: rpmio/rpmrepo.c:1354
+#, fuzzy
+msgid "Generating sqlite DBs"
+msgstr "gere assinatura PGP"
+
+#: rpmio/rpmrepo.c:1381
+#, c-format
+msgid "Starting %s db creation: %s"
+msgstr ""
+
+#: rpmio/rpmrepo.c:1447
+#, c-format
+msgid "Ending %s db creation: %s"
+msgstr ""
+
+#: rpmio/rpmrepo.c:1481
+msgid "Sqlite DBs complete"
+msgstr ""
+
+#: rpmio/rpmrepo.c:1492
+#, fuzzy, c-format
+msgid "Error saving temp file for %s%s%s: %s"
+msgstr "No consegui abrir: %s\n"
+
+#: rpmio/rpmrepo.c:1497
+#, fuzzy, c-format
+msgid "Could not save temp file: %s"
+msgstr "No consegui abrir: %s\n"
+
+#: rpmio/rpmrepo.c:1519
+#, c-format
+msgid "Error moving final %s to old dir %s"
+msgstr ""
+
+#: rpmio/rpmrepo.c:1527
+msgid "Error moving final metadata into place"
+msgstr ""
+
+#: rpmio/rpmrepo.c:1544 rpmio/rpmrepo.c:1576
+#, fuzzy, c-format
+msgid "Could not remove old metadata file: %s: %s"
+msgstr "No consegui abrir: %s\n"
+
+#: rpmio/rpmrepo.c:1586
+#, fuzzy, c-format
+msgid "Could not restore old non-metadata file: %s -> %s: %s"
+msgstr "No consegui abrir: %s\n"
+
+#: rpmio/rpmrepo.c:1597
+#, fuzzy, c-format
+msgid "Could not remove old metadata dir: %s: %s"
+msgstr "No consegui abrir: %s\n"
+
+#: rpmio/rpmrepo.c:1676
+msgid "don't compress"
+msgstr ""
+
+#: rpmio/rpmrepo.c:1678
+msgid "use gzip compression"
+msgstr ""
+
+#: rpmio/rpmrepo.c:1680
+msgid "use bzip2 compression"
+msgstr ""
+
+#: rpmio/rpmrepo.c:1682
+msgid "use lzma compression"
+msgstr ""
+
+#: rpmio/rpmrepo.c:1694
+msgid "debug repo handling"
+msgstr ""
+
+#: rpmio/rpmrepo.c:1697
+msgid "output nothing except for serious errors"
+msgstr ""
+
+#: rpmio/rpmrepo.c:1699
+msgid "output more debugging info."
+msgstr ""
+
+#: rpmio/rpmrepo.c:1701
+msgid "sanity check arguments, don't create metadata"
+msgstr ""
+
+#: rpmio/rpmrepo.c:1704 rpmio/rpmrepo.c:1707
+msgid "glob PATTERN(s) to exclude"
+msgstr ""
+
+#: rpmio/rpmrepo.c:1704 rpmio/rpmrepo.c:1707 rpmio/rpmrepo.c:1711
+#: rpmio/rpmrepo.c:1714
+msgid "PATTERN"
+msgstr ""
+
+#: rpmio/rpmrepo.c:1711 rpmio/rpmrepo.c:1714
+msgid "glob PATTERN(s) to include"
+msgstr ""
+
+#: rpmio/rpmrepo.c:1718
+#, fuzzy
+msgid "top level directory"
+msgstr "use <diretrio> como diretrio raiz"
+
+#: rpmio/rpmrepo.c:1718 rpmio/rpmrepo.c:1742
+msgid "DIR"
+msgstr ""
+
+#: rpmio/rpmrepo.c:1720
+msgid "baseurl to append on all files"
+msgstr ""
+
+#: rpmio/rpmrepo.c:1720
+msgid "BASEURL"
+msgstr ""
+
+#: rpmio/rpmrepo.c:1722
+msgid "path to groupfile to include in metadata"
+msgstr ""
+
+#: rpmio/rpmrepo.c:1722 rpmio/rpmrepo.c:1736 rpmio/rpmrepo.c:1739
+msgid "FILE"
+msgstr ""
+
+#: rpmio/rpmrepo.c:1725
+msgid "make sure all xml generated is formatted"
+msgstr ""
+
+#: rpmio/rpmrepo.c:1727
+msgid "check timestamps on files vs the metadata to see if we need to update"
+msgstr ""
+
+#: rpmio/rpmrepo.c:1730
+#, fuzzy
+msgid "create sqlite3 database files"
+msgstr "pesquise todos os pacotes"
+
+#: rpmio/rpmrepo.c:1733
+#, fuzzy
+msgid "generate split media"
+msgstr "gere assinatura PGP"
+
+#: rpmio/rpmrepo.c:1736 rpmio/rpmrepo.c:1739
+msgid "use only the files listed in this file from the directory specified"
+msgstr ""
+
+#: rpmio/rpmrepo.c:1742
+msgid "<dir> = optional directory to output to"
+msgstr ""
+
+#: rpmio/rpmrepo.c:1744
+msgid "ignore symlinks of packages"
+msgstr ""
+
+#: rpmio/rpmrepo.c:1746
+msgid "include the file's checksum in the filename, helps with proxies"
+msgstr ""
+
+#: rpmio/rpmrepo.c:1757
+msgid "Available compressions:"
+msgstr ""
+
+#: rpmio/rpmrepo.c:1831
+msgid "Must specify path(s) to index."
+msgstr ""
+
+#: rpmio/rpmrepo.c:1849 rpmio/rpmrepo.c:1901
+#, fuzzy, c-format
+msgid "Realpath(%s): %s"
+msgstr "Construo falhou.\n"
+
+#: rpmio/rpmrepo.c:1906
+msgid "--split and --checkts options are mutually exclusive"
+msgstr ""
+
+#: rpmio/rpmrepo.c:1926
+msgid "Error loading exclude glob patterns."
+msgstr ""
+
+#: rpmio/rpmrepo.c:1929
+msgid "Error loading include glob patterns."
+msgstr ""
+
+#: rpmio/rpmrepo.c:1958
+#, c-format
+msgid "repo is up to date\n"
+msgstr ""
+
+#: rpmio/rpmuuid.c:34
+msgid "invalid UUID version number"
+msgstr ""
+
+#: rpmio/rpmuuid.c:38
+msgid "namespace or data required for requested UUID version\n"
+msgstr ""
+
+#: rpmio/rpmuuid.c:42
+msgid "either string or binary result buffer required\n"
+msgstr ""
+
+#: rpmio/rpmuuid.c:48
+#, fuzzy, c-format
+msgid "failed to create UUID object: %s\n"
+msgstr "No consegui abrir o pipe tar: %s\n"
+
+#: rpmio/rpmuuid.c:55
+#, fuzzy, c-format
+msgid "failed to create UUID namespace object: %s\n"
+msgstr "No consegui abrir o pipe tar: %s\n"
+
+#: rpmio/rpmuuid.c:60
+#, c-format
+msgid "failed to import UUID namespace object: %s\n"
+msgstr ""
+
+#: rpmio/rpmuuid.c:79
+#, fuzzy, c-format
+msgid "failed to make UUID object: %s\n"
+msgstr "No consegui abrir o pipe tar: %s\n"
+
+#: rpmio/rpmuuid.c:91
+#, c-format
+msgid "failed to export UUID object as string representation: %s\n"
+msgstr ""
+
+#: rpmio/rpmuuid.c:102
+#, c-format
+msgid "failed to export UUID object as binary representation: %s\n"
+msgstr ""
+
+#: rpmio/rpmuuid.c:115
+msgid "UUID generator not available!\n"
+msgstr ""
 
 #: rpmio/url.c:113
 #, c-format
@@ -4680,10 +5370,6 @@ msgstr ""
 #~ msgstr "reconstrua o banco de dados a partir de um banco de dados existente"
 
 #, fuzzy
-#~ msgid "failed to create %s: %s\n"
-#~ msgstr "No consegui abrir o pipe tar: %s\n"
-
-#, fuzzy
 #~ msgid "opening  db environment %s/%s %s\n"
 #~ msgstr "reconstrua o banco de dados a partir de um banco de dados existente"
 
@@ -4743,10 +5429,6 @@ msgstr ""
 #, fuzzy
 #~ msgid "cannot re-open payload: %s\n"
 #~ msgstr "No consegui abrir: %s\n"
-
-#, fuzzy
-#~ msgid "%s failed\n"
-#~ msgstr "Construo falhou.\n"
 
 #, fuzzy
 #~ msgid "package %s is intended for a %s operating system"
@@ -5157,9 +5839,6 @@ msgstr ""
 #~ msgid "port number of http server (or proxy)"
 #~ msgstr "nmero da porta do servidor ftp (ou proxy)"
 
-#~ msgid "query mode"
-#~ msgstr "modo pesquisa"
-
 #, fuzzy
 #~ msgid "      --dbpath <dir>      "
 #~ msgstr "    -b<estgio> <spec>    "
@@ -5387,9 +6066,6 @@ msgstr ""
 
 #~ msgid "-u and --uninstall are deprecated and no longer work.\n"
 #~ msgstr "-u e --uninstall foram descontinuados e no funcionam mais.\n"
-
-#~ msgid "Use -e or --erase instead.\n"
-#~ msgstr "Use -e ou --erase no lugar.\n"
 
 #, fuzzy
 #~ msgid ""
@@ -5986,24 +6662,12 @@ msgstr ""
 #~ msgstr "no foi passado pacote para desinstalao"
 
 #, fuzzy
-#~ msgid "key \"%s\" not removed from %s"
-#~ msgstr "no foi passado pacote para desinstalao"
-
-#, fuzzy
-#~ msgid "cannot open file %s: %s"
-#~ msgstr "No consegui abrir: %s\n"
-
-#, fuzzy
 #~ msgid "package not found with key \"%s\" in %s"
 #~ msgstr "no foi passado pacote para desinstalao"
 
 #, fuzzy
 #~ msgid "cannot read packages named %s for uninstall"
 #~ msgstr "no foi passado pacote para desinstalao"
-
-#, fuzzy
-#~ msgid "cannot create %s"
-#~ msgstr "No consegui abrir: %s\n"
 
 #, fuzzy
 #~ msgid "Unable to stat icon: %s"
