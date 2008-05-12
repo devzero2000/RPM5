@@ -417,6 +417,7 @@ enum rpmTag_e {
     RPMTAG_HEADERSTARTOFF	= 1211,	/* i */
     RPMTAG_HEADERENDOFF		= 1212,	/* i */
     RPMTAG_PACKAGETIME		= 1213,	/* i */
+    RPMTAG_PACKAGESIZE		= 1214,	/* i */
 
 /*@-enummemuse@*/
     RPMTAG_FIRSTFREE_TAG	/*!< internal */
@@ -964,20 +965,20 @@ int headerSetOrigin(/*@null@*/ Header h, const char * origin)
 	/*@modifies h @*/;
 
 /** \ingroup header
- * Return header time.
+ * Return header stat(2) buffer (of origin *.rpm file).
  * @param h		header
- * @return		header time
+ * @return		header stat(2) buffer
  */
-uint32_t headerGetTime(/*@null@*/ Header h)
+struct stat * headerGetStatbuf(/*@null@*/ Header h)
 	/*@*/;
 
 /** \ingroup header
- * Store header time.
+ * Copy into header stat(2) buffer (of origin *.rpm file).
  * @param h		header
- * @param origin	new header time
+ * @param st		new header stat(2) buffer
  * @return		0 always
  */
-uint32_t headerSetTime(/*@null@*/ Header h, uint32_t time)
+int headerSetStatbuf(/*@null@*/ Header h, struct stat * st)
 	/*@modifies h @*/;
 
 /** \ingroup header

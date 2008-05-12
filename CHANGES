@@ -1,5 +1,9 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: add RPMTAG_PACKAGESIZE extension as RPM_UINT64_TYPE.
+    - jbj: rework RPMTAG_PACKAGETIME extension as RPM_UINT64_TYPE.
+    - jbj: rework header{Get,Set}Time as header{Get,Stat}Statbuf methods.
+    - jbj: add stat(2) of origin *.rpm to Header internal store.
     - jbj: permit file digests through (e.g.) :stat(sha512) format extension.
     - jbj: add :uuid(vN) format. UUIDv5 URI design & tag type coercion todo++.
     - jbj: rpmuuid: add i18n to error messages.

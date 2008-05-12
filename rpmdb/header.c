@@ -1206,6 +1206,18 @@ int headerSetOrigin(Header h, const char * origin)
     return 0;
 }
 
+struct stat * headerGetStatbuf(Header h)
+{
+    return &h->sb;
+}
+
+int headerSetStatbuf(Header h, struct stat * st)
+{
+    if (h != NULL && st != NULL)
+	memcpy(&h->sb, st, sizeof(h->sb));
+    return 0;
+}
+
 uint32_t headerGetInstance(Header h)
 {
     return (h != NULL ? h->instance : 0);
@@ -1215,18 +1227,6 @@ uint32_t headerSetInstance(Header h, uint32_t instance)
 {
     if (h != NULL)
 	h->instance = instance;
-    return 0;
-}
-
-uint32_t headerGetTime(Header h)
-{
-    return (h != NULL ? h->time : 0);
-}
-
-uint32_t headerSetTime(Header h, uint32_t time)
-{
-    if (h != NULL)
-	h->time = time;
     return 0;
 }
 

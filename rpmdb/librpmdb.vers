@@ -41,11 +41,8 @@ LIBRPMDB_0
     headerGetMagic;
     headerGetOrigin;
     headerGetEndOff;
-    headerSetEndOff;
     headerGetStartOff;
-    headerSetStartOff;
-    headerGetTime;
-    headerSetTime;
+    headerGetStatbuf;
     headerInit;
     headerIsEntry;
     headerLink;
