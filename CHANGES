@@ -1,5 +1,7 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: permit :stat(foo) extraction from RPMTAG_PACKAGESTAT.
+    - jbj: add RPMTAG_PACKAGESTAT, and store persistently in a rpmdb Header.
     - jbj: rpmrepo: achieve {primary,filelists,other}.xml spew parity w createrepo.
     - jbj: rpmrepo: compute origin *.rpm file digest while reading.
     - jbj: preserve stat(2) & digest through headerReload().

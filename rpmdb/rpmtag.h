@@ -419,6 +419,7 @@ enum rpmTag_e {
     RPMTAG_PACKAGETIME		= 1213,	/* l */
     RPMTAG_PACKAGESIZE		= 1214,	/* l */
     RPMTAG_PACKAGEDIGEST	= 1215,	/* s */
+    RPMTAG_PACKAGESTAT		= 1216,	/* x */
 
 /*@-enummemuse@*/
     RPMTAG_FIRSTFREE_TAG	/*!< internal */

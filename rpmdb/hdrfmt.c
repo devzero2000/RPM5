@@ -3227,7 +3227,7 @@ static /*@only@*/ char * statFormat(HE_t he, /*@null@*/ const char ** av)
 {
     /*@unchecked@*/
     static const char *avdefault[] = { "mode", NULL };
-    const char * fn = he->p.str;
+    const char * fn = NULL;
     struct stat sb, *st = &sb;
     int ix = (he->ix > 0 ? he->ix : 0);
     char * val = NULL;
@@ -3236,11 +3236,20 @@ static /*@only@*/ char * statFormat(HE_t he, /*@null@*/ const char ** av)
 
 assert(ix == 0);
     switch(he->t) {
+    case RPM_BIN_TYPE:
+	/* XXX limit to RPMTAG_PACKAGESTAT ... */
+	if (he->tag == RPMTAG_PACKAGESTAT)
+	if (he->c == sizeof(*st)) {
+	    st = (struct stat *)he->p.ptr;
+	    break;
+	}
+	/*@fallthrough @*/
     default:
 	val = xstrdup(_("(invalid type :stat)"));
 	goto exit;
 	/*@notreached@*/ break;
     case RPM_STRING_TYPE:
+	fn = he->p.str;
 	if (Lstat(fn, st) == 0)
 	    break;
 	val = rpmExpand("(Lstat:", fn, ":", strerror(errno), ")", NULL);
@@ -3307,7 +3316,7 @@ assert(ix == 0);
 	    break;
 #endif
 	case STAT_KEYS_SLINK:
-	    if (S_ISLNK(st->st_mode)) {
+	    if (fn != NULL && S_ISLNK(st->st_mode)) {
 		ssize_t size = Readlink(fn, b, nb);
 		if (size == -1) {
 		    nval = rpmExpand("(Readlink:", fn, ":", strerror(errno), ")", NULL);
@@ -3318,7 +3327,7 @@ assert(ix == 0);
 	    }
 	    break;
 	case STAT_KEYS_DIGEST:
-	    if (S_ISREG(st->st_mode)) {
+	    if (fn != NULL && S_ISREG(st->st_mode)) {
 		uint32_t digval = keyValue(keyDigests, nkeyDigests, av[i]);
 		uint32_t algo = (digval ? digval : PGPHASHALGO_SHA1);
 		FD_t fd = Fopen(fn, "r%{?_rpmgio}");
