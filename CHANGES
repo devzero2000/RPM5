@@ -1,5 +1,9 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: preserve stat(2) & digest through headerReload().
+    - jbj: get rid of copy-n-paste typos, add "l" type markers to rpmtag.h.
+    - jbj: add RPMTAG_PACKAGEDIGEST extension as RPM_STRING_TYPE.
+    - jbj: add digest of origin *.rpm to Header internal store.
     - jbj: add RPMTAG_PACKAGESIZE extension as RPM_UINT64_TYPE.
     - jbj: rework RPMTAG_PACKAGETIME extension as RPM_UINT64_TYPE.
     - jbj: rework header{Get,Set}Time as header{Get,Stat}Statbuf methods.

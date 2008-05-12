@@ -414,10 +414,11 @@ enum rpmTag_e {
     RPMTAG_STAT			= 1208, /* s[] stat(2) from disk extension */
     RPMTAG_ORIGINTID		= 1209,	/* i[] */
     RPMTAG_ORIGINTIME		= 1210,	/* i[] */
-    RPMTAG_HEADERSTARTOFF	= 1211,	/* i */
-    RPMTAG_HEADERENDOFF		= 1212,	/* i */
-    RPMTAG_PACKAGETIME		= 1213,	/* i */
-    RPMTAG_PACKAGESIZE		= 1214,	/* i */
+    RPMTAG_HEADERSTARTOFF	= 1211,	/* l */
+    RPMTAG_HEADERENDOFF		= 1212,	/* l */
+    RPMTAG_PACKAGETIME		= 1213,	/* l */
+    RPMTAG_PACKAGESIZE		= 1214,	/* l */
+    RPMTAG_PACKAGEDIGEST	= 1215,	/* s */
 
 /*@-enummemuse@*/
     RPMTAG_FIRSTFREE_TAG	/*!< internal */
@@ -979,6 +980,24 @@ struct stat * headerGetStatbuf(/*@null@*/ Header h)
  * @return		0 always
  */
 int headerSetStatbuf(/*@null@*/ Header h, struct stat * st)
+	/*@modifies h @*/;
+
+/** \ingroup header
+ * Return digest of origin *.rpm file.
+ * @param h		header
+ * @return		header digest
+ */
+/*@null@*/
+const char * headerGetDigest(/*@null@*/ Header h)
+	/*@*/;
+
+/** \ingroup header
+ * Store digest of origin *.rpm file.
+ * @param h		header
+ * @param st		new header digest
+ * @return		0 always
+ */
+int headerSetDigest(/*@null@*/ Header h, const char * digest)
 	/*@modifies h @*/;
 
 /** \ingroup header

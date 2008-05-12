@@ -2014,6 +2014,33 @@ static int pkgoriginTag(Header h, HE_t he)
 /*@=globuse@*/
 
 /**
+ * Retrieve package digest from header.
+ * @param h		header
+ * @retval *he		tag container
+ * @return		0 on success
+ */
+/*@-globuse@*/
+static int pkgdigestTag(Header h, HE_t he)
+	/*@globals rpmGlobalMacroContext, h_errno,
+		fileSystem, internalState @*/
+	/*@modifies he, rpmGlobalMacroContext,
+		fileSystem, internalState @*/
+{
+    const char * digest;
+
+    he->tag = RPMTAG_PACKAGEDIGEST;
+    if ((digest = headerGetDigest(h)) != NULL)
+    {
+	he->t = RPM_STRING_TYPE;
+	he->p.str = xstrdup(digest);
+	he->c = 1;
+	he->freeData = 1;
+    }
+    return 0;
+}
+/*@=globuse@*/
+
+/**
  * Retrieve *.rpm package st->st_mtime from header.
  * @param h		header
  * @retval *he		tag container
@@ -2051,7 +2078,7 @@ static int pkgsizeTag(Header h, HE_t he)
 		fileSystem, internalState @*/
 {
     struct stat * st = headerGetStatbuf(h);
-    he->tag = RPMTAG_PACKAGETIME;
+    he->tag = RPMTAG_PACKAGESIZE;
     he->t = RPM_UINT64_TYPE;
     he->p.ui64p = xmalloc(sizeof(*he->p.ui64p));
     he->p.ui64p[0] = st->st_size;
@@ -3446,6 +3473,8 @@ static struct headerSprintfExtension_s _headerCompoundFormats[] = {
 	{ .tagFunction = headerstartoffTag } },
     { HEADER_EXT_TAG, "RPMTAG_HEADERENDOFF",
 	{ .tagFunction = headerendoffTag } },
+    { HEADER_EXT_TAG, "RPMTAG_PACKAGEDIGEST",
+	{ .tagFunction = pkgdigestTag } },
     { HEADER_EXT_TAG, "RPMTAG_PACKAGEORIGIN",
 	{ .tagFunction = pkgoriginTag } },
     { HEADER_EXT_TAG, "RPMTAG_PACKAGESIZE",

@@ -154,6 +154,7 @@ Header headerFree(Header h)
 	h->index = _free(h->index);
     }
     h->origin = _free(h->origin);
+    h->digest = _free(h->digest);
 
 /*@-nullstate@*/
     if (_hdr_stats) {
@@ -176,6 +177,7 @@ Header headerNew(void)
     (void) memcpy(h->magic, header_magic, sizeof(h->magic));
     h->blob = NULL;
     h->origin = NULL;
+    h->digest = NULL;
     h->instance = 0;
     h->indexAlloced = INDEX_MALLOC_SIZE;
     h->indexUsed = 0;
@@ -1218,6 +1220,20 @@ int headerSetStatbuf(Header h, struct stat * st)
     return 0;
 }
 
+const char * headerGetDigest(Header h)
+{
+    return (h != NULL ? h->digest : NULL);
+}
+
+int headerSetDigest(Header h, const char * digest)
+{
+    if (h != NULL) {
+	h->digest = _free(h->digest);
+	h->digest = xstrdup(digest);
+    }
+    return 0;
+}
+
 uint32_t headerGetInstance(Header h)
 {
     return (h != NULL ? h->instance : 0);
@@ -1259,6 +1275,8 @@ Header headerReload(Header h, int tag)
     Header nh;
     void * uh;
     const char * origin = (h->origin != NULL ? xstrdup(h->origin) : NULL);
+    const char * digest = (h->digest != NULL ? xstrdup(h->digest) : NULL);
+    struct stat sb = h->sb;	/* structure assignment */
     uint32_t instance = h->instance;
     int xx;
 
@@ -1284,6 +1302,11 @@ Header headerReload(Header h, int tag)
 	xx = headerSetOrigin(nh, origin);
 	origin = _free(origin);
     }
+    if (digest != NULL) {
+	xx = headerSetDigest(nh, digest);
+	digest = _free(digest);
+    }
+    nh->sb = sb;	/* structure assignment */
     xx = (int) headerSetInstance(nh, instance);
     return nh;
 }
