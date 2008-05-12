@@ -4045,7 +4045,7 @@ bingo:
 	    {
 		if (ext->name == NULL || ext->type != HEADER_EXT_FORMAT)
 		    continue;
-		if (strcmp(ext->name, stag->av[i]))
+		if (strcmp(ext->name, stag->av[i]+1))
 		    continue;
 		stag->fmtfuncs[i] = ext->u.fmtFunction;
 		break;
@@ -4207,21 +4207,27 @@ fprintf(stderr, "\tnext *%p = NUL\n", next);
 /*@=modfilesys@*/
 	    *next++ = '\0';
 
+#define	isSEP(_c)	((_c) == ':' || (_c) == '|')
 	    chptr = start;
-	    while (!(*chptr == '\0' || *chptr == ':')) chptr++;
-	    /* Split ":bing:bang:boom" tag format modifiers (if any) */
-	    while (*chptr == ':') {
-		*chptr++ = '\0';
-		if (*chptr == '\0' || *chptr == ':') {
+	    while (!(*chptr == '\0' || isSEP(*chptr))) chptr++;
+	    /* Split ":bing|bang:boom" --qf pipeline formatters (if any) */
+	    while (isSEP(*chptr)) {
+		if (chptr[1] == '\0' || isSEP(chptr[1])) {
 		    hsa->errmsg = _("empty tag format");
 		    format = freeFormat(format, numTokens);
 		    return 1;
 		}
-		{   char * te = chptr;
+		/* Parse the formatter parameter list. */
+		{   char * te = chptr + 1;
 		    char * t = strchr(te, '(');
 		    char c;
 
-		    while (!(*te == '\0' || *te == ':')) te++;
+		    while (!(*te == '\0' || isSEP(*te))) {
+#ifdef	NOTYET	/* XXX some means of escaping is needed */
+			if (te[0] == '\\' && te[1] != '\0') te++;
+#endif
+			te++;
+		    }
 		    c = *te; *te = '\0';
 		    /* Parse (a,b,c) parameter list. */
 		    if (t != NULL) {
@@ -4241,9 +4247,11 @@ fprintf(stderr, "\tformat \"%s\" params \"%s\"\n", chptr, (t ? t : ""));
 /*@=modfilesys@*/
 		    xx = argvAdd(&token->u.tag.av, chptr);
 		    *te = c;
+		    *chptr = '\0';
 		    chptr = te;
 		}
 	    }
+#undef	isSEP
 	    
 	    if (*start == '\0') {
 		hsa->errmsg = _("empty tag name");
@@ -4616,18 +4624,20 @@ assert(0);	/* XXX keep gcc quiet. */
 
 /*@-compmempass@*/	/* vhe->p.ui64p is stack, not owned */
     if (tag->fmtfuncs) {
+	char * nval;
 	int i;
 	for (i = 0; tag->av[i] != NULL; i++) {
 	    headerTagFormatFunction fmt;
 	    ARGV_t av;
 	    if ((fmt = tag->fmtfuncs[i]) == NULL)
 		continue;
-	    if (val != NULL) {
+	    /* If !1st formatter, and transformer, not extractor, save val. */
+	    if (val != NULL && *tag->av[i] == '|') {
 		int ix = vhe->ix;
 		vhe = rpmheClean(vhe);
 		vhe->tag = he->tag;
 		vhe->t = RPM_STRING_TYPE;
-		vhe->p.str = val;
+		vhe->p.str = xstrdup(val);
 		vhe->c = he->c;
 		vhe->ix = ix;
 		vhe->freeData = 1;
@@ -4636,12 +4646,23 @@ assert(0);	/* XXX keep gcc quiet. */
 	    if (tag->params && tag->params[i] && *tag->params[i] != '\0')
 		xx = argvSplit(&av, tag->params[i], ",");
 
-	    val = fmt(vhe, av);
+	    nval = fmt(vhe, av);
 
 /*@-modfilesys@*/
 if (_hdr_debug)
 fprintf(stderr, "\t%s(%s) %p(%p,%p) ret \"%s\"\n", tag->av[i], tag->params[i], fmt, vhe, (av ? av : NULL), val);
 /*@=modfilesys@*/
+
+	    /* Accumulate (by appending) next formmatter's return string. */
+	    if (val == NULL)
+		val = xstrdup((nval ? nval : ""));
+	    else {
+		char * oval = val;
+		/* XXX using ... | ... as separator is feeble. */
+		val = rpmExpand(val, (*val ? " | " : ""), nval, NULL);
+		oval = _free(oval);
+	    }
+	    nval = _free(nval);
 	    av = argvFree(av);
 	}
     }

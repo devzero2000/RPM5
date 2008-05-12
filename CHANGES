@@ -1,5 +1,6 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: try ":foo" == extractor, "|foo" == transformer, format extensions.
     - jbj: permit :stat(foo) extraction from RPMTAG_PACKAGESTAT.
     - jbj: add RPMTAG_PACKAGESTAT, and store persistently in a rpmdb Header.
     - jbj: rpmrepo: achieve {primary,filelists,other}.xml spew parity w createrepo.
