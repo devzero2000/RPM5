@@ -1,5 +1,7 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: rpmrepo: achieve {primary,filelists,other}.xml spew parity w createrepo.
+    - jbj: rpmrepo: compute origin *.rpm file digest while reading.
     - jbj: preserve stat(2) & digest through headerReload().
     - jbj: get rid of copy-n-paste typos, add "l" type markers to rpmtag.h.
     - jbj: add RPMTAG_PACKAGEDIGEST extension as RPM_STRING_TYPE.
