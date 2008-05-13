@@ -1531,7 +1531,7 @@ static int triggercondsTag(Header h, HE_t he)
     rpmTagData indices = { .ptr = NULL };
     rpmTagData names = { .ptr = NULL };
     rpmTagData versions = { .ptr = NULL };
-    rpmTagData s;
+    rpmTagData s = { .ptr = NULL };
     rpmTagCount numNames;
     rpmTagCount numScripts;
     unsigned i, j;
@@ -1552,24 +1552,24 @@ static int triggercondsTag(Header h, HE_t he)
 
     _he->tag = RPMTAG_TRIGGERINDEX;
     xx = headerGet(h, _he, 0);
-    indices.ui32p = _he->p.ui32p;
     if (!xx) goto exit;
+    indices.ui32p = _he->p.ui32p;
 
     _he->tag = RPMTAG_TRIGGERFLAGS;
     xx = headerGet(h, _he, 0);
-    flags.ui32p = _he->p.ui32p;
     if (!xx) goto exit;
+    flags.ui32p = _he->p.ui32p;
 
     _he->tag = RPMTAG_TRIGGERVERSION;
     xx = headerGet(h, _he, 0);
-    versions.argv = _he->p.argv;
     if (!xx) goto exit;
+    versions.argv = _he->p.argv;
 
     _he->tag = RPMTAG_TRIGGERSCRIPTS;
     xx = headerGet(h, _he, 0);
+    if (!xx) goto exit;
     s.argv = _he->p.argv;
     numScripts = _he->c;
-    if (!xx) goto exit;
 /*@=compmempass@*/
 
     _he->tag = he->tag;
@@ -1634,9 +1634,9 @@ static int triggertypeTag(Header h, HE_t he)
 	/*@modifies he @*/
 {
     HE_t _he = memset(alloca(sizeof(*_he)), 0, sizeof(*_he));
-    rpmTagData indices;
-    rpmTagData flags;
-    rpmTagData s;
+    rpmTagData indices = { .ptr = NULL };
+    rpmTagData flags = { .ptr = NULL };
+    rpmTagData s = { .ptr = NULL };
     rpmTagCount numNames;
     rpmTagCount numScripts;
     unsigned i, j;
@@ -1648,20 +1648,20 @@ static int triggertypeTag(Header h, HE_t he)
 /*@-compmempass@*/
     _he->tag = RPMTAG_TRIGGERINDEX;
     xx = headerGet(h, _he, 0);
+    if (!xx) goto exit;
     indices.ui32p = _he->p.ui32p;
     numNames = _he->c;
-    if (!xx) goto exit;
 
     _he->tag = RPMTAG_TRIGGERFLAGS;
     xx = headerGet(h, _he, 0);
-    flags.ui32p = _he->p.ui32p;
     if (!xx) goto exit;
+    flags.ui32p = _he->p.ui32p;
 
     _he->tag = RPMTAG_TRIGGERSCRIPTS;
     xx = headerGet(h, _he, 0);
+    if (!xx) goto exit;
     s.argv = _he->p.argv;
     numScripts = _he->c;
-    if (!xx) goto exit;
 /*@=compmempass@*/
 
     he->t = RPM_STRING_ARRAY_TYPE;

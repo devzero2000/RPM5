@@ -1,5 +1,7 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: fix: --triggers segfault, don't depend on he->p.ptr = NULL after
+	headerGet() failed return.
     - jbj: try ":foo" == extractor, "|foo" == transformer, format extensions.
     - jbj: permit :stat(foo) extraction from RPMTAG_PACKAGESTAT.
     - jbj: add RPMTAG_PACKAGESTAT, and store persistently in a rpmdb Header.
