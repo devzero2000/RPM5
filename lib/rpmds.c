@@ -3789,6 +3789,8 @@ assert((rpmdsFlags(req) & RPMSENSE_SENSEMASK) == req->ns.Flags);
 	t += strlen(t);
     }
     (void) stpcpy( stpcpy( stpcpy(t, V) , "-") , R);
+    V = _free(V);
+    R = _free(R);
 
     if ((pkg = rpmdsSingle(RPMTAG_PROVIDENAME, pkgN, pkgEVR, pkgFlags)) != NULL) {
 	if (nopromote)
@@ -3796,6 +3798,7 @@ assert((rpmdsFlags(req) & RPMSENSE_SENSEMASK) == req->ns.Flags);
 	result = rpmdsCompare(pkg, req);
 	pkg = rpmdsFree(pkg);
     }
+    pkgN = _free(pkgN);
 
 exit:
     return result;
