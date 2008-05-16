@@ -31,7 +31,7 @@ RPM_LDADD = \
 
 EXTRA_DIST = genpgp.sh librpm.vers tpgp.c
 
-EXTRA_PROGRAMS = tgi tpgp tsbt
+EXTRA_PROGRAMS = tevr tgi tpgp tsbt
 
 pkgincdir = $(pkgincludedir)$(WITH_PATH_VERSIONED_SUFFIX)
 pkginc_HEADERS = \
@@ -128,6 +128,10 @@ lcov-report:
 #.PHONY:	lcov-upload
 #lcov-upload: lcov
 #	rsync -rvz -e ssh --delete lcov/* ???
+
+tevr_SOURCES = tevr.c
+tevr_LDADD = $(RPM_LDADD)
+
 tgi_SOURCES = tgi.c
 tgi_LDADD = $(RPM_LDADD)
 
