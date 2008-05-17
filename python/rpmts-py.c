@@ -1728,6 +1728,7 @@ rpmts_Create(/*@unused@*/ PyObject * s, PyObject * args,
     o->scriptFd = NULL;
     o->tsi = NULL;
     o->tsiFilter = 0;
+    o->ignoreSet = RPMPROB_FILTER_NONE;
 
 if (_rpmts_debug)
 fprintf(stderr, "%p ++ ts %p db %p\n", o, o->ts, rpmtsGetRdb(o->ts));
