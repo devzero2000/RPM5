@@ -49,17 +49,14 @@ static rpmdict rpmdictFree(/*@only@*/ rpmdict dict)
 static void rpmdictAdd(rpmdict dict, const char * key)
 {
     uint64_t * val = NULL;
-    int vallen = sizeof(*val);
-    int notfound = htGetEntry(dict->ht, key, &val, &vallen, NULL);
-    if (notfound) {
+    void ** data = (void **)&val;
+    if (htGetEntry(dict->ht, key, &data, NULL, NULL)) {
 	(void) argvAdd(&dict->av, key);
-	val = xmalloc(sizeof(*val));
-	val[0] = 0;
+	val = xcalloc(1, sizeof(*val));
 	htAddEntry(dict->ht, dict->av[dict->ac++], val);
-    }
-#ifdef	NOTYET
+    } else
+	val = (uint64_t *)data[0];
     val[0]++;
-#endif
 }
 
 /*@only@*/
@@ -69,7 +66,8 @@ static rpmdict rpmdictCreate(void)
     rpmdict dict = xcalloc(1, sizeof(*dict));
     int nbuckets = 4093;
     size_t keySize = 0;
-    int freeData = 0;
+    int freeData = 1;
+    /* XXX hashEqualityString uses strcmp, perhaps rpmEVRcmp instead? */
     dict->ht = htCreate(nbuckets, keySize, freeData, NULL, NULL);
     rpmdictAdd(dict, key);
     return dict;
@@ -156,7 +154,8 @@ main(int argc, const char **argv)
     else
 	progname = argv[0];
 
-    av = poptGetArgs(optCon);
+    av = NULL;
+    (void) argvAppend(&av, poptGetArgs(optCon));
     ac = argvCount(av);
 
     if (ac == 0 || !strcmp(*av, "-")) {
@@ -230,6 +229,7 @@ if (__debug)
     evr = _free(evr);
     dict = rpmdictFree(dict);
 
+    av = argvFree(av);
     optCon = rpmioFini(optCon);
 
     return rc;

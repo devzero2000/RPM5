@@ -1,5 +1,6 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: tevr: add missing level of ht indirection, free input strings.
     - jbj: fix: --triggers segfault, don't depend on he->p.ptr = NULL after
 	headerGet() failed return.
     - jbj: try ":foo" == extractor, "|foo" == transformer, format extensions.
