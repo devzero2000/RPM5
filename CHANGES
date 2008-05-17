@@ -1,5 +1,6 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: add :rpn formatter to do simple arithemetic on input.
     - jbj: python: fix: insure that ts.setProbFilter() return is initialized.
     - jbj: fix: insure no access before buffer if fgets(3) returns NUL.
     - jbj: tevr: add missing level of ht indirection, free input strings.

@@ -3440,6 +3440,101 @@ exit:
 /*@=globstate@*/
 }
 
+/**
+ * Return arithmetic expressions of input.
+ * @param he		tag container
+ * @param av		paramater list (NULL uses sha1)
+ * @return		formatted string
+ */
+static /*@only@*/ char * rpnFormat(HE_t he, /*@null@*/ const char ** av)
+	/*@*/
+{
+    int ac = argvCount(av) + 1;
+    int64_t * stack = memset(alloca(ac*sizeof(*stack)), 0, (ac*sizeof(*stack)));
+    char * end;
+    char * val = NULL;
+    int ix = 0;
+    int i;
+
+    switch(he->t) {
+    default:
+	val = xstrdup(_("(invalid type :rpn)"));
+	goto exit;
+	/*@notreached@*/ break;
+    case RPM_UINT64_TYPE:
+	stack[ix] = he->p.ui64p[0];
+	break;
+    case RPM_STRING_TYPE:
+	end = NULL;
+	stack[ix] = strtoll(he->p.str, &end, 0);
+	if (*end != '\0') {
+	    val = xstrdup(_("(invalid string :rpn)"));
+	    goto exit;
+	}
+	break;
+    }
+
+    if (av != NULL)
+    for (i = 0; av[i] != NULL; i++) {
+	const char * arg = av[i];
+	size_t len = strlen(arg);
+	int c = *arg;
+
+	if (len == 0) {
+	    /* do nothing */
+	} else if (len > 1) {
+	    if (!(xisdigit(c) || (c == '-' && xisdigit(arg[1])))) {
+		val = xstrdup(_("(expected number :rpn)"));
+		goto exit;
+	    }
+	    if (++ix == ac) {
+		val = xstrdup(_("(stack overflow :rpn)"));
+		goto exit;
+	    }
+	    end = NULL;
+	    stack[ix] = strtoll(arg, &end, 0);
+	    if (*end != '\0') {
+		val = xstrdup(_("(invalid number :rpn)"));
+		goto exit;
+	    }
+	} else {
+	    if (ix-- < 1) {
+		val = xstrdup(_("(stack underflow :rpn)"));
+		goto exit;
+	    }
+	    switch (c) {
+	    case '+':	stack[ix] += stack[ix+1];	break;
+	    case '-':	stack[ix] -= stack[ix+1];	break;
+	    case '*':	stack[ix] *= stack[ix+1];	break;
+	    case '%':	
+	    case '/':	
+		if (stack[ix+1] == 0) {
+		    val = xstrdup(_("(divide by zero :rpn)"));
+		    goto exit;
+		}
+		if (c == '%')
+		    stack[ix] %= stack[ix+1];
+		else
+		    stack[ix] /= stack[ix+1];
+		break;
+	    }
+	}
+    }
+
+    {	HE_t nhe = memset(alloca(sizeof(*nhe)), 0, sizeof(*nhe));
+	nhe->tag = he->tag;
+	nhe->t = RPM_UINT64_TYPE;
+	nhe->p.ui64p = (uint64_t *)&stack[ix];
+	nhe->c = 1;
+	val = intFormat(nhe, NULL, NULL);
+    }
+
+exit:
+/*@-globstate@*/
+    return val;
+/*@=globstate@*/
+}
+
 /*@-type@*/ /* FIX: cast? */
 static struct headerSprintfExtension_s _headerCompoundFormats[] = {
     { HEADER_EXT_TAG, "RPMTAG_BUILDTIMEUUID",
@@ -3546,6 +3641,8 @@ static struct headerSprintfExtension_s _headerCompoundFormats[] = {
 	{ .fmtFunction = permsFormat } },
     { HEADER_EXT_FORMAT, "pgpsig",
 	{ .fmtFunction = pgpsigFormat } },
+    { HEADER_EXT_FORMAT, "rpn",
+	{ .fmtFunction = rpnFormat } },
     { HEADER_EXT_FORMAT, "sqlescape",
 	{ .fmtFunction = sqlescapeFormat } },
     { HEADER_EXT_FORMAT, "stat",
