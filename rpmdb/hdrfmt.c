@@ -3503,6 +3503,9 @@ static /*@only@*/ char * rpnFormat(HE_t he, /*@null@*/ const char ** av)
 		goto exit;
 	    }
 	    switch (c) {
+	    case '&':	stack[ix] &= stack[ix+1];	break;
+	    case '|':	stack[ix] |= stack[ix+1];	break;
+	    case '^':	stack[ix] ^= stack[ix+1];	break;
 	    case '+':	stack[ix] += stack[ix+1];	break;
 	    case '-':	stack[ix] -= stack[ix+1];	break;
 	    case '*':	stack[ix] *= stack[ix+1];	break;
