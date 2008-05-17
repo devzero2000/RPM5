@@ -276,7 +276,8 @@ int argvFgets(ARGV_t * argvp, void * fd)
 	return -2;
     while (!rc && (b = fgets(buf, (int)sizeof(buf), fp)) != NULL) {
 	buf[sizeof(buf)-1] = '\0';
-	be = b + strlen(buf) - 1;
+	be = b + strlen(buf);
+	if (be > b) be--;
 	while (strchr("\r\n", *be) != NULL)
 	    *be-- = '\0';
 	rc = argvAdd(&av, b);
