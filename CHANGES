@@ -1,5 +1,6 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: add enabler options to chase down headerLoad() hot-spots.
     - jbj: add a missing newline to a debug message.
     - jbj: revert rpmtsOpenDB on --checksig path, rely on the lazy open
 	in rpmtsFindPubkey instead.

@@ -28,10 +28,10 @@ int _hdr_debug = 0;
 /*@access indexEntry @*/
 
 /* Compute tag data store size using offsets? */
-static int _fastdatalength = 0;
+int _hdr_fastdatalength = 0;
 
 /* Swab tag data only when accessed through headerGet()? */
-static int _lazytagswab = 0;
+int _hdr_lazytagswab = 0;
 
 /** \ingroup header
  */
@@ -446,7 +446,7 @@ assert(0);	/* XXX stop unimplemented oversights. */
     /* Allocate all returned storage (if not already). */
     if (he->p.ptr && nb && !he->freeData) {
 	void * ptr = xmalloc(nb);
-	if (_lazytagswab) {
+	if (_hdr_lazytagswab) {
 	    if (tagSwab(ptr, he, nb) != NULL)
 		he->p.ptr = ptr;
 	    else {
@@ -535,7 +535,7 @@ assert(ie.info.offset >= 0);	/* XXX insurance */
 	pend.ui8p = (uint8_t *) dataEnd;
 
 	/* Find the length of the tag data store. */
-	if (dataEnd && _fastdatalength) {
+	if (dataEnd && _hdr_fastdatalength) {
 	    /* Compute the tag data store length using offsets. */
 	    if (il > 1)
 		ie.length = ((uint32_t) ntohl(pe[1].offset) - ie.info.offset);
@@ -586,7 +586,7 @@ assert(ie.info.offset >= 0);	/* XXX insurance */
 	}
 
 	/* Perform endian conversions */
-	if (_lazytagswab)
+	if (_hdr_lazytagswab)
 	    t += ie.length;
 	else {
 	    he->tag = ie.info.tag;
