@@ -311,6 +311,9 @@ int addSource(Spec spec, /*@unused@*/ Package pkg,
 		const char *field, rpmTag tag)
 {
     struct Source *p;
+#if defined(RPM_VENDOR_OPENPKG) /* regular-ordered-sources */
+    struct Source *p_last;
+#endif
     int flag = 0;
     const char *name = NULL;
     const char *mdir = NULL;
@@ -379,8 +382,19 @@ assert(mdir != NULL);
     else
 	p->source = p->fullSource;
 
+#if defined(RPM_VENDOR_OPENPKG) /* regular-ordered-sources */
+    p->next = NULL;
+    p_last = spec->sources;
+    while (p_last != NULL && p_last->next != NULL)
+        p_last = p_last->next;
+    if (p_last != NULL)
+        p_last->next = p;
+    else
+        spec->sources = p;
+#else
     p->next = spec->sources;
     spec->sources = p;
+#endif
 
     spec->numSources++;
 
