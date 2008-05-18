@@ -227,6 +227,17 @@ fprintf(stderr, "*** free pkt %p[%d] id %08x %08x\n", ts->pkpkt, ts->pkpktlen, p
 	rpmdbMatchIterator mi;
 	Header h;
 
+	/* XXX Do a lazy open if not done already. */
+	if (ts->rdb == NULL) {
+	    xx = rpmdbOpen(ts->rootDir, &ts->rdb, ts->dbmode, 0644);
+	    if (xx) {
+		const char * dn = rpmGetPath(ts->rootDir, "%{_dbpath}", NULL);
+		rpmlog(RPMLOG_ERR,
+			_("cannot open Packages database in %s\n"), dn);
+		dn = _free(dn);
+	    }
+	}
+
 	/* Retrieve the pubkey that matches the signature. */
 	he->tag = RPMTAG_PUBKEYS;
 	mi = rpmdbInitIterator(rpmtsGetRdb(ts), RPMTAG_PUBKEYS, sigp->signid, sizeof(sigp->signid));

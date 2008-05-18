@@ -875,12 +875,6 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
     int nodigests = !(qva->qva_flags & VERIFY_DIGEST);
     int nosignatures = !(qva->qva_flags & VERIFY_SIGNATURE);
 
-    if ((rc = rpmtsOpenDB(ts, rpmtsDBMode(ts))) != RPMRC_OK) {
-	/* XXX rpmtsOpenDB has reported the error. */
-	res++;
-	goto exit;
-    }
-
     {
 	{   const char item[] = "Lead";
 	    msg = NULL;
