@@ -1,5 +1,6 @@
 
 5.1.1 -> 5.1.2:
+    - jbj: disable loop unraveling error msgs for now. better needs to be done.
     - jbj: fix: rpm-python h['filenames'] needs tagName(0x54aafb71) to
 	return "Filenames" in order to find the filepathsTag extension.
     - jbj: add a missing newline to a debug message.
