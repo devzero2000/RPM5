@@ -1,5 +1,6 @@
 
 5.1.1 -> 5.1.2:
+    - jbj: fix: use rpmlog instead of rpmError for messages.
     - glen: print error when makeTempPath fails due missing temp dir
 
 5.1.0 -> 5.1.1:
