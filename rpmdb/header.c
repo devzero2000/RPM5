@@ -148,6 +148,7 @@ Header headerFree(Header h)
 	h->index = _free(h->index);
     }
     h->origin = _free(h->origin);
+    h->digest = _free(h->digest);
 
 /*@-nullstate@*/
     if (_hdr_stats) {
@@ -170,6 +171,7 @@ Header headerNew(void)
     (void) memcpy(h->magic, header_magic, sizeof(h->magic));
     h->blob = NULL;
     h->origin = NULL;
+    h->digest = NULL;
     h->instance = 0;
     h->indexAlloced = INDEX_MALLOC_SIZE;
     h->indexUsed = 0;
@@ -354,6 +356,99 @@ static size_t dataLength(rpmTagType type, rpmTagData * p, rpmTagCount count,
     }
 
     return length;
+}
+
+#ifdef	NOTYET
+/** \ingroup header
+ * Swab uint64_t/uint32_t/uint16_t arrays within header region.
+ *
+ */
+static unsigned char * tagSwab(unsigned char * t, const HE_t he, size_t nb)
+	/*@modifies *t @*/
+{
+    uint32_t i;
+
+    switch (he->t) {
+    case RPM_UINT64_TYPE:
+    {	uint32_t * tt = (uint32_t *)t;
+	for (i = 0; i < he->c; i++) {
+	    uint32_t j = 2 * i;
+	    uint32_t b = (uint32_t) htonl(he->p.ui32p[j]);
+	    tt[j  ] = (uint32_t) htonl(he->p.ui32p[j+1]);
+	    tt[j+1] = b;
+	}
+    }   break;
+    case RPM_UINT32_TYPE:
+    {	uint32_t * tt = (uint32_t *)t;
+	for (i = 0; i < he->c; i++)
+	    tt[i] = (uint32_t) htonl(he->p.ui32p[i]);
+    }   break;
+    case RPM_UINT16_TYPE:
+    {	uint16_t * tt = (uint16_t *)t;
+	for (i = 0; i < he->c; i++)
+	    tt[i] = (uint16_t) htons(he->p.ui16p[i]);
+    }   break;
+    default:
+	if ((void *)t != he->p.ptr && nb)
+	    memcpy(t, he->p.ptr, nb);
+	t += nb;
+	break;
+    }
+    return t;
+}
+#endif
+
+/**
+ * Always realloc HE_t memory.
+ * @param he		tag container
+ * @return		1 on success, 0 on failure
+ */
+static int rpmheRealloc(HE_t he)
+	/*@modifies he @*/
+{
+    size_t nb = 0;
+    int rc = 1;		/* assume success */
+
+    switch (he->t) {
+    default:
+assert(0);	/* XXX stop unimplemented oversights. */
+	break;
+    case RPM_BIN_TYPE:
+	he->freeData = 1;	/* XXX RPM_BIN_TYPE is malloc'd */
+	/*@fallthrough@*/
+    case RPM_UINT8_TYPE:
+	nb = he->c * sizeof(*he->p.ui8p);
+	break;
+    case RPM_UINT16_TYPE:
+	nb = he->c * sizeof(*he->p.ui16p);
+	break;
+    case RPM_UINT32_TYPE:
+	nb = he->c * sizeof(*he->p.ui32p);
+	break;
+    case RPM_UINT64_TYPE:
+	nb = he->c * sizeof(*he->p.ui64p);
+	break;
+    case RPM_STRING_TYPE:
+	if (he->p.str)
+	    nb = strlen(he->p.str) + 1;
+	else
+	    rc = 0;
+	break;
+    case RPM_I18NSTRING_TYPE:
+    case RPM_STRING_ARRAY_TYPE:
+	break;
+    }
+
+    /* Allocate all returned storage (if not already). */
+    if (he->p.ptr && nb && !he->freeData) {
+	void * ptr = memcpy(xmalloc(nb), he->p.ptr, nb);
+	he->p.ptr = ptr;
+    }
+
+    if (rc)
+	he->freeData = 1;
+
+    return rc;
 }
 
 /** \ingroup header
@@ -681,7 +776,7 @@ assert(entry->info.offset <= 0);	/* XXX insurance */
 		ril++;
 		rdlen += entry->info.count;
 
-		count = regionSwab(NULL, ril, 0, pe, t, NULL, 0);
+		count = regionSwab(NULL, ril, 0, pe, t, te, 0);
 		if (count != rdlen)
 		    goto errxit;
 
@@ -699,7 +794,7 @@ assert(entry->info.offset <= 0);	/* XXX insurance */
 		}
 		te += entry->info.count + drlen;
 
-		count = regionSwab(NULL, ril, 0, pe, t, NULL, 0);
+		count = regionSwab(NULL, ril, 0, pe, t, te, 0);
 		if (count != (rdlen + entry->info.count + drlen))
 		    goto errxit;
 	    }
@@ -1114,6 +1209,32 @@ int headerSetOrigin(Header h, const char * origin)
     return 0;
 }
 
+struct stat * headerGetStatbuf(Header h)
+{
+    return &h->sb;
+}
+
+int headerSetStatbuf(Header h, struct stat * st)
+{
+    if (h != NULL && st != NULL)
+	memcpy(&h->sb, st, sizeof(h->sb));
+    return 0;
+}
+
+const char * headerGetDigest(Header h)
+{
+    return (h != NULL ? h->digest : NULL);
+}
+
+int headerSetDigest(Header h, const char * digest)
+{
+    if (h != NULL) {
+	h->digest = _free(h->digest);
+	h->digest = xstrdup(digest);
+    }
+    return 0;
+}
+
 uint32_t headerGetInstance(Header h)
 {
     return (h != NULL ? h->instance : 0);
@@ -1123,18 +1244,6 @@ uint32_t headerSetInstance(Header h, uint32_t instance)
 {
     if (h != NULL)
 	h->instance = instance;
-    return 0;
-}
-
-uint32_t headerGetTime(Header h)
-{
-    return (h != NULL ? h->time : 0);
-}
-
-uint32_t headerSetTime(Header h, uint32_t time)
-{
-    if (h != NULL)
-	h->time = time;
     return 0;
 }
 
@@ -1167,6 +1276,8 @@ Header headerReload(Header h, int tag)
     Header nh;
     void * uh;
     const char * origin = (h->origin != NULL ? xstrdup(h->origin) : NULL);
+    const char * digest = (h->digest != NULL ? xstrdup(h->digest) : NULL);
+    struct stat sb = h->sb;	/* structure assignment */
     uint32_t instance = h->instance;
     int xx;
 
@@ -1192,6 +1303,11 @@ Header headerReload(Header h, int tag)
 	xx = headerSetOrigin(nh, origin);
 	origin = _free(origin);
     }
+    if (digest != NULL) {
+	xx = headerSetDigest(nh, digest);
+	digest = _free(digest);
+    }
+    nh->sb = sb;	/* structure assignment */
     xx = (int) headerSetInstance(nh, instance);
     return nh;
 }
@@ -1887,59 +2003,6 @@ int headerModifyEntry(Header h, HE_t he)
 	oldData.ptr = _free(oldData.ptr);
 
     return 1;
-}
-
-/**
- * Always realloc HE_t memory.
- * @param he		tag container
- * @return		1 on success, 0 on failure
- */
-static int rpmheRealloc(HE_t he)
-	/*@modifies he @*/
-{
-    size_t nb = 0;
-    int rc = 1;		/* assume success */
-
-    switch (he->t) {
-    default:
-assert(0);	/* XXX stop unimplemented oversights. */
-	break;
-    case RPM_BIN_TYPE:
-	he->freeData = 1;	/* XXX RPM_BIN_TYPE is malloc'd */
-	/*@fallthrough@*/
-    case RPM_UINT8_TYPE:
-	nb = he->c * sizeof(*he->p.ui8p);
-	break;
-    case RPM_UINT16_TYPE:
-	nb = he->c * sizeof(*he->p.ui16p);
-	break;
-    case RPM_UINT32_TYPE:
-	nb = he->c * sizeof(*he->p.ui32p);
-	break;
-    case RPM_UINT64_TYPE:
-	nb = he->c * sizeof(*he->p.ui64p);
-	break;
-    case RPM_STRING_TYPE:
-	if (he->p.str)
-	    nb = strlen(he->p.str) + 1;
-	else
-	    rc = 0;
-	break;
-    case RPM_I18NSTRING_TYPE:
-    case RPM_STRING_ARRAY_TYPE:
-	break;
-    }
-
-    /* Allocate all returned storage (if not already). */
-    if (he->p.ptr && nb && !he->freeData) {
-	void * ptr = memcpy(xmalloc(nb), he->p.ptr, nb);
-	he->p.ptr = ptr;
-    }
-
-    if (rc)
-	he->freeData = 1;
-
-    return rc;
 }
 
 /**

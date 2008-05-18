@@ -1362,12 +1362,10 @@ fprintf(stderr, "--> rpmReadHeader(%p, %p, %p)\n", fd, hdrp, msg);
 	} else
 	    (void) headerSetOrigin(h, origin);
     }
-    {	struct stat sb;
+    {	struct stat * st = headerGetStatbuf(h);
 	int saveno = errno;
-	memset(&sb, 0, sizeof(sb));
-	(void) fstat(Fileno(fd), &sb);
+	(void) fstat(Fileno(fd), st);
 	errno = saveno;
-	(void) headerSetTime(h, (uint32_t)sb.st_mtime);
     }
     (void) headerSetStartOff(h, startoff);
     (void) headerSetEndOff(h, fd->stats->ops[FDSTAT_READ].bytes);

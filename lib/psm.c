@@ -1606,13 +1606,37 @@ assert(fi->h != NULL);
     he->c = 1;
     xx = headerPut(fi->h, he, 0);
 
-    /* Add the header's origin (i.e. URL) */
-    he->tag = RPMTAG_PACKAGEORIGIN;
-    he->t = RPM_STRING_TYPE;
-    he->p.str = headerGetOrigin(fi->h);
-    he->c = 1;
-    if (he->p.str != NULL)
-	xx = headerPut(fi->h, he, 0);
+    /* Add the header's origin/digest/stat (i.e. URL) */
+    {	const char * fn = headerGetOrigin(fi->h);
+	const char * digest = headerGetDigest(fi->h);
+	struct stat * st = headerGetStatbuf(fi->h);
+
+	if (fn != NULL) {
+	    he->tag = RPMTAG_PACKAGEORIGIN;
+	    he->t = RPM_STRING_TYPE;
+	    he->p.str = fn;
+	    he->c = 1;
+	    xx = headerPut(fi->h, he, 0);
+	    if (digest != NULL) {
+		he->tag = RPMTAG_PACKAGEDIGEST;
+		he->t = RPM_STRING_TYPE;
+		he->p.str = headerGetDigest(fi->h);
+		he->c = 1;
+		xx = headerPut(fi->h, he, 0);
+	    }
+	    if (st != NULL) {
+		if (st->st_mode == 0 && st->st_mtime == 0 && st->st_size == 0)
+		    xx = Stat(fn, st);
+		if (st->st_mode != 0) {
+		    he->tag = RPMTAG_PACKAGESTAT;
+		    he->t = RPM_BIN_TYPE;
+		    he->p.ptr = (void *)st;
+		    he->c = sizeof(*st);
+		    xx = headerPut(fi->h, he, 0);
+		}
+	    }
+	}
+    }
 
     /* XXX Don't clobber forward/backward upgrade chain on rollbacks */
     if (rpmtsType(ts) != RPMTRANS_TYPE_ROLLBACK)
@@ -1913,15 +1937,28 @@ psm->te->h = headerLink(fi->h);
 	}
 	if (psm->goal == PSM_PKGSAVE) {
 	    int noArchiveSize = 0;
-	    const char * origin;
+	    const char * origin = NULL;
+	    const char * digest = NULL;
+	    const struct stat * st = NULL;
+	    size_t nstbytes = 0;
 
 	    /* Regenerate original header. */
 	    {	void * uh = NULL;
 
-		/* Save original header's origin (i.e. URL) */
+		/* Save original header's origin/digest/stat (i.e. URL) */
 		he->tag = RPMTAG_PACKAGEORIGIN;
 		xx = headerGet(fi->h, he, 0);
 		origin = he->p.str;
+		he->tag = RPMTAG_PACKAGEDIGEST;
+		xx = headerGet(fi->h, he, 0);
+		if (xx && he->p.str != NULL)
+		    digest = he->p.str;
+		he->tag = RPMTAG_PACKAGESTAT;
+		xx = headerGet(fi->h, he, 0);
+		if (xx && he->p.ptr != NULL && he->c == sizeof(*st)) {
+		    st = he->p.ptr;
+		    nstbytes = he->c;
+		}
 
 		/* Retrieve original header blob. */
 		he->tag = RPMTAG_HEADERIMMUTABLE;
@@ -2013,7 +2050,7 @@ psm->te->h = headerLink(fi->h);
 		he->c = 1;
 		xx = headerPut(psm->oh, he, 0);
 
-		/* Add original header's origin (i.e. URL) */
+		/* Add original header's origin/digest/stat (i.e. URL) */
 		if (origin != NULL) {
 		    he->tag = RPMTAG_PACKAGEORIGIN;
 		    he->t = RPM_STRING_TYPE;
@@ -2021,6 +2058,22 @@ psm->te->h = headerLink(fi->h);
 		    he->c = 1;
 		    xx = headerPut(psm->oh, he, 0);
 		    origin = _free(origin);
+		}
+		if (digest != NULL) {
+		    he->tag = RPMTAG_PACKAGEDIGEST;
+		    he->t = RPM_STRING_TYPE;
+		    he->p.str = digest;
+		    he->c = 1;
+		    xx = headerPut(psm->oh, he, 0);
+		    digest = _free(digest);
+		}
+		if (st != NULL) {
+		    he->tag = RPMTAG_PACKAGESTAT;
+		    he->t = RPM_BIN_TYPE;
+		    he->p.ptr = st;
+		    he->c = nstbytes;
+		    xx = headerPut(psm->oh, he, 0);
+		    st = _free(st);
 		}
 
 		/* Copy upgrade chain link tags. */

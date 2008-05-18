@@ -144,6 +144,7 @@ struct rpmrepo_s {
 /*@null@*/
     ARGV_t directories;
     int ftsoptions;
+    uint32_t pkgalgo;
     uint32_t algo;
     int compression;
 /*@observer@*/
@@ -189,20 +190,21 @@ static const char repomd_xml_init[] = "\
 static const char repomd_xml_fini[] = "</repomd>\n";
 
 /* XXX todo: wire up popt aliases and bury the --queryformat glop externally. */
+/* XXX todo: change to "... installed=\"%{SIZE}\" ..." */
 /*@unchecked@*/ /*@observer@*/
 static const char primary_xml_qfmt[] = "\
 <package type=\"rpm\">\
 \n  <name>%{NAME:cdata}</name>\
 \n  <arch>%{ARCH:cdata}</arch>\
 \n  <version epoch=\"%|EPOCH?{%{EPOCH}}:{0}|\" ver=\"%{VERSION:cdata}\" rel=\"%{RELEASE:cdata}\"/>\
-\n  <checksum type=\"sha\" pkgid=\"NO\">%|HDRID?{%{HDRID}}|</checksum>\
+\n  <checksum type=\"sha\" pkgid=\"YES\">%|PACKAGEDIGEST?{%{PACKAGEDIGEST}}|</checksum>\
 \n  <summary>%{SUMMARY:cdata}</summary>\
 \n  <description>%{DESCRIPTION:cdata}</description>\
 \n  <packager>%|PACKAGER?{%{PACKAGER:cdata}}:{}|</packager>\
 \n  <url>%|URL?{%{URL:cdata}}:{}|</url>\
 \n  <time file=\"%{PACKAGETIME}\" build=\"%{BUILDTIME}\"/>\
-\n  <size package=\"%{SIZE}\" installed=\"%{SIZE}\" archive=\"%{ARCHIVESIZE}\"/>\
-\n  <location href=\"%{PACKAGEORIGIN:cdata}\"/>\
+\n  <size package=\"%{PACKAGESIZE}\" installed=\"%{PACKAGESIZE}\" archive=\"%{ARCHIVESIZE}\"/>\
+\n  <location href=\"%{PACKAGEORIGIN:bncdata}\"/>\
 \n  <format>\
 %|license?{\
 \n    <rpm:license>%{LICENSE:cdata}</rpm:license>\
@@ -275,7 +277,7 @@ static const char primary_xml_qfmt[] = "\
 
 /*@unchecked@*/ /*@observer@*/
 static const char filelists_xml_qfmt[] = "\
-<package pkgid=\"%|HDRID?{%{HDRID}}:{XXX}|\" name=\"%{NAME:cdata}\" arch=\"%{ARCH:cdata}\">\
+<package pkgid=\"%|PACKAGEDIGEST?{%{PACKAGEDIGEST}}|\" name=\"%{NAME:cdata}\" arch=\"%{ARCH:cdata}\">\
 \n  <version epoch=\"%|EPOCH?{%{EPOCH}}:{0}|\" ver=\"%{VERSION:cdata}\" rel=\"%{RELEASE:cdata}\"/>\
 %|filesxmlentry2?{\
 [\
@@ -287,7 +289,7 @@ static const char filelists_xml_qfmt[] = "\
 
 /*@unchecked@*/ /*@observer@*/
 static const char other_xml_qfmt[] = "\
-<package pkgid=\"%|HDRID?{%{HDRID}}:{XXX}|\" name=\"%{NAME:cdata}\" arch=\"%{ARCH:cdata}\">\
+<package pkgid=\"%|PACKAGEDIGEST?{%{PACKAGEDIGEST}}|\" name=\"%{NAME:cdata}\" arch=\"%{ARCH:cdata}\">\
 \n  <version epoch=\"%|EPOCH?{%{EPOCH}}:{0}|\" ver=\"%{VERSION:cdata}\" rel=\"%{RELEASE:cdata}\"/>\
 %|changelogname?{\
 [\
@@ -531,12 +533,13 @@ INSERT into packages values (\
 static struct rpmrepo_s __rpmrepo = {
     .pretty	= 1,
 #if defined(WITH_SQLITE)
-    .database	= 1,
+    .database	= 0,
 #endif
     .tempdir	= ".repodata",
     .finaldir	= "repodata",
     .olddir	= ".olddata",
     .markup	= ".xml",
+    .pkgalgo	= PGPHASHALGO_SHA1,
     .algo	= PGPHASHALGO_SHA1,
     .primary	= {
 	.type	= "primary",
@@ -601,7 +604,13 @@ static void repoProgress(/*@unused@*/ rpmrepo repo, const char * item,
 	/*@modifies fileSystem, internalState @*/
 {
     static size_t ncols = 80 - 1;	/* XXX TIOCGWINSIZ */
-    size_t nb = fprintf(stdout, "\r%s: %d/%d - %s", __progname, current, total, item);
+    const char * bn;
+    size_t nb;
+    if ((bn = strrchr(item, '/')) != NULL)
+	bn++;
+    else
+	bn = item;
+    nb = fprintf(stdout, "\r%s: %d/%d - %s", __progname, current, total, bn);
     if (nb < ncols)
 	fprintf(stderr, "%*s", (int)(ncols - nb), "");
     ncols = nb;
@@ -939,10 +948,31 @@ static Header repoReadHeader(rpmrepo repo, const char * path)
     Header h = NULL;
 
     if (fd != NULL) {
-	/* XXX what if path needs expansion? */
-	rpmRC rpmrc = rpmReadPackageFile(repo->ts, fd, path, &h);
+	uint32_t algo = repo->pkgalgo;
+	rpmRC rpmrc;
 
-    /* XXX todo: read the payload and collect the blessed file digest. */
+	if (algo != PGPHASHALGO_NONE)
+	    fdInitDigest(fd, algo, 0);
+
+	/* XXX what if path needs expansion? */
+	rpmrc = rpmReadPackageFile(repo->ts, fd, path, &h);
+	if (algo != PGPHASHALGO_NONE) {
+	    char buffer[128 * 1024];
+	    while (Fread(buffer, sizeof(buffer[0]), sizeof(buffer), fd) > 0)
+		{};
+	    if (Ferror(fd)) {
+		fprintf(stderr, _("%s: Fread(%s) failed: %s\n"),
+			__progname, path, Fstrerror(fd));
+		rpmrc = RPMRC_FAIL;
+	    } else {
+		static int asAscii = 1;
+		const char *digest = NULL;
+		fdFiniDigest(fd, algo, &digest, NULL, asAscii);
+		(void) headerSetDigest(h, digest);
+		digest = _free(digest);
+	    }
+	}
+
 	(void) Fclose(fd);
 
 	switch (rpmrc) {

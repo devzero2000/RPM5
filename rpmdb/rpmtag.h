@@ -414,9 +414,12 @@ enum rpmTag_e {
     RPMTAG_STAT			= 1208, /* s[] stat(2) from disk extension */
     RPMTAG_ORIGINTID		= 1209,	/* i[] */
     RPMTAG_ORIGINTIME		= 1210,	/* i[] */
-    RPMTAG_HEADERSTARTOFF	= 1211,	/* i */
-    RPMTAG_HEADERENDOFF		= 1212,	/* i */
-    RPMTAG_PACKAGETIME		= 1213,	/* i */
+    RPMTAG_HEADERSTARTOFF	= 1211,	/* l */
+    RPMTAG_HEADERENDOFF		= 1212,	/* l */
+    RPMTAG_PACKAGETIME		= 1213,	/* l */
+    RPMTAG_PACKAGESIZE		= 1214,	/* l */
+    RPMTAG_PACKAGEDIGEST	= 1215,	/* s */
+    RPMTAG_PACKAGESTAT		= 1216,	/* x */
 
 /*@-enummemuse@*/
     RPMTAG_FIRSTFREE_TAG	/*!< internal */
@@ -639,9 +642,10 @@ typedef enum headerSprintfExtensionType_e {
  * HEADER_EXT_TAG format function prototype.
  *
  * @param he		tag container
+ * @param av		parameter array (or NULL)
  * @return		formatted string
  */
-typedef /*only@*/ char * (*headerTagFormatFunction) (HE_t he)
+typedef /*only@*/ char * (*headerTagFormatFunction) (HE_t he, /*@null@*/ const char ** av)
 	/*@modifies he @*/;
 
 /** \ingroup header
@@ -963,20 +967,38 @@ int headerSetOrigin(/*@null@*/ Header h, const char * origin)
 	/*@modifies h @*/;
 
 /** \ingroup header
- * Return header time.
+ * Return header stat(2) buffer (of origin *.rpm file).
  * @param h		header
- * @return		header time
+ * @return		header stat(2) buffer
  */
-uint32_t headerGetTime(/*@null@*/ Header h)
+struct stat * headerGetStatbuf(/*@null@*/ Header h)
 	/*@*/;
 
 /** \ingroup header
- * Store header time.
+ * Copy into header stat(2) buffer (of origin *.rpm file).
  * @param h		header
- * @param origin	new header time
+ * @param st		new header stat(2) buffer
  * @return		0 always
  */
-uint32_t headerSetTime(/*@null@*/ Header h, uint32_t time)
+int headerSetStatbuf(/*@null@*/ Header h, struct stat * st)
+	/*@modifies h @*/;
+
+/** \ingroup header
+ * Return digest of origin *.rpm file.
+ * @param h		header
+ * @return		header digest
+ */
+/*@null@*/
+const char * headerGetDigest(/*@null@*/ Header h)
+	/*@*/;
+
+/** \ingroup header
+ * Store digest of origin *.rpm file.
+ * @param h		header
+ * @param st		new header digest
+ * @return		0 always
+ */
+int headerSetDigest(/*@null@*/ Header h, const char * digest)
 	/*@modifies h @*/;
 
 /** \ingroup header
