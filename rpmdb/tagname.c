@@ -237,6 +237,11 @@ static const char * _tagName(rpmTag tag)
 	strncpy(nameBuf, "Sha1header", nameBufLen);
 	break;
 
+    /* XXX make sure that h.['filenames'] in python "works". */
+    case 0x54aafb71:
+	strncpy(nameBuf, "Filenames", nameBufLen);
+	break;
+
     default:
 	if (_rpmTags.byValue == NULL)
 	    break;

@@ -3327,9 +3327,9 @@ assert(data->data != NULL);
 		    rpmrc = headerCheck(rpmtsDig(ts), data->data, data->size, &msg);
 		    rpmtsCleanDig(ts);
 		    lvl = (rpmrc == RPMRC_FAIL ? RPMLOG_ERR : RPMLOG_DEBUG);
-		    rpmlog(lvl, "%s h#%8u %s",
+		    rpmlog(lvl, "%s h#%8u %s\n",
 			(rpmrc == RPMRC_FAIL ? _("rpmdbAdd: skipping") : "  +++"),
-				hdrNum, (msg ? msg : "\n"));
+				hdrNum, (msg ? msg : ""));
 		    msg = _free(msg);
 		}
 

@@ -1,4 +1,14 @@
 5.0.3 -> 5.0.4:
+    - jbj: disable loop unraveling error msgs for now. better needs to be done.
+    - jbj: fix: rpm-python h['filenames'] needs tagName(0x54aafb71) to
+	return "Filenames" in order to find the filepathsTag extension.
+    - jbj: add a missing newline to a debug message.
+    - jbj: revert rpmtsOpenDB on --checksig path, rely on the lazy open
+	in rpmtsFindPubkey instead.
+    - jbj: fix: rpm -qp returns NOKEY because rpmdb is not yet open. Do a lazy
+	open in rpmtsFindPubkey.
+    - jbj: python: fix: insure that ts.setProbFilter() return is initialized.
+    - jbj: fix: use rpmlog instead of rpmError for messages.
     - glen: print error when makeTempPath fails due missing temp dir
     - jbj: permit firefox debugging by creating an empty dir (#444310).
     - jbj: header: free tag data on error retrurn with damaged data.

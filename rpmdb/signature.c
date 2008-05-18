@@ -86,7 +86,7 @@ int rpmTempFile(const char * prefix, const char ** fnptr, void * fdptr)
     } while ((fd == NULL || Ferror(fd)) && errno == EEXIST);
 
     if (fd == NULL || Ferror(fd)) {
-	rpmError(RPMERR_SCRIPT, _("error creating temporary file %s\n"), tempfn);
+	rpmlog(RPMLOG_ERR, _("error creating temporary file %s\n"), tempfn);
 	goto errxit;
     }
 
