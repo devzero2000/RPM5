@@ -1,5 +1,7 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: fix: rpm-python h['filenames'] needs tagName(0x54aafb71) to
+	return "Filenames" in order to find the filepathsTag extension.
     - jbj: add enabler options to chase down headerLoad() hot-spots.
     - jbj: add a missing newline to a debug message.
     - jbj: revert rpmtsOpenDB on --checksig path, rely on the lazy open
