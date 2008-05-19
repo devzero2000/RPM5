@@ -15,6 +15,7 @@ lookup3
 rpmdigest
 rpmgrep
 rpmmtree
+rpmrepo
 rpmtar
 teststderr
 testtry
