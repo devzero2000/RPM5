@@ -2351,7 +2351,9 @@ rescan:
 
 	    /* T13. Print predecessor chain from start of loop. */
 	    while ((p = q) != NULL && (q = rpmteTSI(p)->tsi_chain) != NULL) {
+#if 0
 		const char * nevra;
+#endif
 		const char * dp;
 		int msglvl = (anaconda || (rpmtsDFlags(ts) & RPMDEPS_FLAG_DEPLOOPS))
 			? RPMLOG_WARNING : RPMLOG_DEBUG;
