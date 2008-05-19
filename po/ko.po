@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.4\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2008-04-13 12:29-0400\n"
+"POT-Creation-Date: 2008-05-19 16:21-0400\n"
 "PO-Revision-Date: 2002-03-04 17:17+0900\n"
 "Last-Translator: Jong-Hoon Ryu <redhat4u@netian.com>\n"
 "Language-Team: GNU Translation project <ko@li.org>\n"
@@ -50,7 +50,7 @@ msgstr "%s 파일은 spec 파일이 아닌 것 같습니다.\n"
 msgid "Building target platforms: %s\n"
 msgstr "목표대상(target) 플랫폼으로 제작 중: %s\n"
 
-#: build.c:298 build/spec.c:840
+#: build.c:298 build/spec.c:854
 #, fuzzy, c-format
 msgid "    target platform: %s\n"
 msgstr "목표대상(target) 플랫폼으로 제작 중: %s\n"
@@ -687,7 +687,7 @@ msgstr "서명(signature) 헤더를 다시 읽어올 수 없습니다.\n"
 msgid "Could not open %s: %s\n"
 msgstr "%s(을)를 열 수 없음: %s\n"
 
-#: build/pack.c:828 lib/psm.c:1982
+#: build/pack.c:828 lib/psm.c:2019
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr "패키지를 작성할 수 없음: %s\n"
@@ -707,7 +707,7 @@ msgstr "%s의 payload를 읽을 수 없음: %s\n"
 msgid "Unable to write payload to %s: %s\n"
 msgstr "%s에 payload를 작성할 수 없음: %s\n"
 
-#: build/pack.c:937 lib/psm.c:2281
+#: build/pack.c:937 lib/psm.c:2334
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "작성: %s\n"
@@ -1297,23 +1297,23 @@ msgstr "%d 번째 행: 잘못된 숫자입니다: %s\n"
 msgid "line %d: Bad no%s number: %d\n"
 msgstr "%d 번째 행: no%s(은)는 잘못된 숫자입니다: %d\n"
 
-#: build/spec.c:365
+#: build/spec.c:368
 #, c-format
 msgid "line %d: Bad %s number: %s\n"
 msgstr "%d 번째 행: %s(은)는 잘못된 숫자입니다: %s\n"
 
-#: build/spec.c:697
+#: build/spec.c:711
 #, c-format
 msgid "can't query %s: %s\n"
 msgstr "%s(을)를 질의할 수 없음: %s\n"
 
-#: build/spec.c:774
+#: build/spec.c:788
 #, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr ""
 "%s spec 파일을 질의하는데 실패했습니다, 파일을 처리(parse)할 수 없습니다\n"
 
-#: build/spec.c:828
+#: build/spec.c:842
 #, fuzzy, c-format
 msgid "Query specfile for platform(s): %s\n"
 msgstr "목표대상(target) 플랫폼으로 제작 중: %s\n"
@@ -1449,16 +1449,16 @@ msgstr ""
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr "다음과 관련된 패키지 이름을 무시합니다 [%d]\t%s -> %s\n"
 
-#: lib/depends.c:1778
+#: lib/depends.c:1781
 #, fuzzy, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "tsort 관계에서 %s-%s-%s \"%s\"(을)를 삭제합니다.\n"
 
-#: lib/depends.c:2360
+#: lib/depends.c:2364
 msgid "LOOP:\n"
 msgstr "루프(LOOP):\n"
 
-#: lib/depends.c:2394
+#: lib/depends.c:2400
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""
@@ -1543,12 +1543,12 @@ msgstr "%%%s %s(을)를 생성할 수 없습니다\n"
 msgid "read failed\n"
 msgstr "실행에 실패했습니다\n"
 
-#: lib/package.c:136 lib/rpmchecksig.c:245 lib/rpmchecksig.c:906
+#: lib/package.c:136 lib/rpmchecksig.c:245 lib/rpmchecksig.c:900
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: 유효한 서명이 없습니다\n"
 
-#: lib/package.c:229 lib/package.c:266 lib/rpmchecksig.c:985
+#: lib/package.c:229 lib/package.c:266 lib/rpmchecksig.c:979
 #, c-format
 msgid "skipping package %s with unverifiable V%u signature\n"
 msgstr ""
@@ -1671,7 +1671,7 @@ msgstr "질의 태그를 보여줍니다"
 msgid "display macro and configuration values"
 msgstr "현재 설정되어 있는 rpmrc의 내용과 매크로를 보여줍니다"
 
-#: lib/poptALL.c:358 rpmio/poptIO.c:347
+#: lib/poptALL.c:358 rpmio/poptIO.c:347 rpmio/rpmrepo.c:1783
 #, fuzzy
 msgid "print the version"
 msgstr "현재 사용되고 있는 rpm 버전을 표시합니다"
@@ -1798,7 +1798,7 @@ msgstr "패키지에 포함된 문서 파일을 설치하지 않습니다"
 msgid "skip files with leading component <path> "
 msgstr "<경로>로 시작되는 파일은 설치하지 않습니다 "
 
-#: lib/poptI.c:272
+#: lib/poptI.c:272 rpmio/rpmmtree.c:3578 rpmio/rpmmtree.c:3581
 msgid "<path>"
 msgstr "<경로>"
 
@@ -2042,7 +2042,7 @@ msgstr "헤더 식별자(identifier)를 사용하여 패키지를 질의/검증 합니다"
 msgid "query a spec file"
 msgstr "spec 파일에 대해 질의합니다"
 
-#: lib/poptQV.c:148 lib/poptQV.c:150
+#: lib/poptQV.c:148 lib/poptQV.c:150 rpmio/rpmmtree.c:3565
 msgid "<spec>"
 msgstr "<spec>"
 
@@ -2275,32 +2275,32 @@ msgstr ""
 "%2$s-%3$s-%4$s의 %1$s 스크립틀릿(scriptlet) 실행에 실패했습니다, 종료 상황 %5"
 "$d\n"
 
-#: lib/psm.c:1887
+#: lib/psm.c:1911
 #, fuzzy, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s\n"
 msgstr ""
 "%s: %s 스크립틀릿(scriptlet)이 실패했습니다 (%d), %s-%s-%s(을)를 생략합니다\n"
 
-#: lib/psm.c:1995
+#: lib/psm.c:2032
 #, fuzzy
 msgid "Unable to reload signature header\n"
 msgstr "서명(signature) 헤더를 다시 읽어올 수 없습니다.\n"
 
-#: lib/psm.c:2106
+#: lib/psm.c:2159
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "아카이브를 푸는데 실패함%s%s: %s\n"
 
-#: lib/psm.c:2107
+#: lib/psm.c:2160
 msgid " on file "
 msgstr " 다음 파일의 "
 
-#: lib/psm.c:2290
+#: lib/psm.c:2343
 #, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "%2$s 파일의 %1$s(이)가 실패함: %3$s\n"
 
-#: lib/psm.c:2293
+#: lib/psm.c:2346
 #, c-format
 msgid "%s failed: %s\n"
 msgstr "%s(이)가 실패함: %s\n"
@@ -2413,7 +2413,7 @@ msgstr "잘못된 db 파일 %s\n"
 msgid "(added provide)"
 msgstr "%s: %-45s 예 (제공이 추가됨)\n"
 
-#: lib/rpmchecksig.c:61 lib/rpmchecksig.c:1148
+#: lib/rpmchecksig.c:61 lib/rpmchecksig.c:1142
 #, c-format
 msgid "%s: open failed: %s\n"
 msgstr "%s: 여는데 실패했습니다: %s\n"
@@ -2458,8 +2458,8 @@ msgstr "%s: readLead이 실패했습니다\n"
 msgid "failed to retrieve original header\n"
 msgstr "마지막(final) 헤더를 작성할 수 없습니다\n"
 
-#: lib/rpmchecksig.c:829 rpmdb/pkgio.c:509 rpmdb/pkgio.c:693
-#: rpmdb/pkgio.c:1271
+#: lib/rpmchecksig.c:829 rpmdb/pkgio.c:520 rpmdb/pkgio.c:704
+#: rpmdb/pkgio.c:1282
 #, fuzzy, c-format
 msgid "XAR file not found (or no XAR support)"
 msgstr "서버에서 파일을 찾을 수 없습니다"
@@ -2469,28 +2469,28 @@ msgstr "서버에서 파일을 찾을 수 없습니다"
 msgid "Fread failed"
 msgstr "%s: Fread이 실패했습니다: %s\n"
 
-#: lib/rpmchecksig.c:1073
+#: lib/rpmchecksig.c:1067
 #, fuzzy
 msgid "NOT_OK"
 msgstr "올바르지 않음"
 
-#: lib/rpmchecksig.c:1074 lib/rpmchecksig.c:1088
+#: lib/rpmchecksig.c:1068 lib/rpmchecksig.c:1082
 msgid " (MISSING KEYS:"
 msgstr " (키를 찾을 수 없음:"
 
-#: lib/rpmchecksig.c:1076 lib/rpmchecksig.c:1090
+#: lib/rpmchecksig.c:1070 lib/rpmchecksig.c:1084
 msgid ") "
 msgstr ") "
 
-#: lib/rpmchecksig.c:1077 lib/rpmchecksig.c:1091
+#: lib/rpmchecksig.c:1071 lib/rpmchecksig.c:1085
 msgid " (UNTRUSTED KEYS:"
 msgstr " (키를 신뢰할 수 없음:"
 
-#: lib/rpmchecksig.c:1079 lib/rpmchecksig.c:1093
+#: lib/rpmchecksig.c:1073 lib/rpmchecksig.c:1087
 msgid ")"
 msgstr ")"
 
-#: lib/rpmchecksig.c:1087
+#: lib/rpmchecksig.c:1081
 msgid "OK"
 msgstr "확인"
 
@@ -2630,6 +2630,7 @@ msgid "Failed to find %s:\n"
 msgstr "%s(을)를 찾는데 실패함:\n"
 
 #: lib/rpmgi.c:99 lib/rpminstall.c:124 lib/rpmrollback.c:162 lib/rpmts.c:412
+#: rpmio/rpmdigest.c:127
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "%s(을)를 여는데 실패함: %s\n"
@@ -2895,7 +2896,7 @@ msgstr ""
 msgid "%s:  invalid context %s on line number %d\n"
 msgstr ""
 
-#: lib/rpmts.c:133
+#: lib/rpmts.c:133 rpmdb/pkgio.c:236
 #, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "%s 안의 패키지 데이터베이스를 열 수 없습니다\n"
@@ -2996,114 +2997,167 @@ msgstr "%s(은)는 너무 크거나 너무 적은 정수(long) 값입니다, 생략합니다\n"
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr "%s(은)는 너무 크거나 너무 적은 정수(int) 값입니다, 생략합니다\n"
 
-#: rpmdb/hdrfmt.c:87 rpmdb/hdrfmt.c:187
+#: rpmdb/hdrfmt.c:91 rpmdb/hdrfmt.c:196
 msgid "(not a number)"
 msgstr "(숫자가 아닙니다)"
 
-#: rpmdb/hdrfmt.c:214
+#: rpmdb/hdrfmt.c:224
 #, c-format
 msgid "%c"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:225
+#: rpmdb/hdrfmt.c:236
 msgid "%a %b %d %Y"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:278
+#: rpmdb/hdrfmt.c:290
 #, fuzzy
 msgid "invalid type"
 msgstr "(부적합한 타입)"
 
-#: rpmdb/hdrfmt.c:367 rpmdb/hdrfmt.c:396 rpmdb/hdrfmt.c:417 rpmdb/hdrfmt.c:484
-#: rpmdb/hdrfmt.c:1149
+#: rpmdb/hdrfmt.c:380 rpmdb/hdrfmt.c:410 rpmdb/hdrfmt.c:432 rpmdb/hdrfmt.c:500
+#: rpmdb/hdrfmt.c:1190
 msgid "(invalid type)"
 msgstr "(부적합한 타입)"
 
-#: rpmdb/hdrfmt.c:474
+#: rpmdb/hdrfmt.c:490
 msgid "(not base64)"
 msgstr "(base64가 아닙니다)"
 
-#: rpmdb/hdrfmt.c:508 rpmdb/hdrfmt.c:1045
-msgid "(not a blob)"
-msgstr "(BLOB[Binary Large OBject]이 아닙니다)"
+#: rpmdb/hdrfmt.c:531
+#, fuzzy
+msgid "(invalid type :base64)"
+msgstr "(부적합한 타입)"
 
-#: rpmdb/hdrfmt.c:694 rpmdb/hdrfmt.c:724 rpmdb/hdrfmt.c:2191
+#: rpmdb/hdrfmt.c:730 rpmdb/hdrfmt.c:761 rpmdb/hdrfmt.c:2548
+#: rpmdb/hdrfmt.c:2986
 #, fuzzy
 msgid "(not a string)"
 msgstr "(숫자가 아닙니다)"
 
-#: rpmdb/hdrfmt.c:797
+#: rpmdb/hdrfmt.c:835
 #, fuzzy
 msgid "(invalid xml type)"
 msgstr "(부적합한 타입)"
 
-#: rpmdb/hdrfmt.c:983
+#: rpmdb/hdrfmt.c:1022
 #, fuzzy
 msgid "(invalid yaml type)"
 msgstr "(부적합한 타입)"
 
-#: rpmdb/hdrfmt.c:1068
+#: rpmdb/hdrfmt.c:1085
+msgid "(not a blob)"
+msgstr "(BLOB[Binary Large OBject]이 아닙니다)"
+
+#: rpmdb/hdrfmt.c:1108
 #, fuzzy
 msgid "(not an OpenPGP signature)"
 msgstr "어떠한 PGP 서명도 검사하지 않습니다"
 
-#: rpmdb/hdrfmt.c:3297
+#: rpmdb/hdrfmt.c:3197
+#, fuzzy
+msgid "(invalid type :digest)"
+msgstr "(부적합한 타입)"
+
+#: rpmdb/hdrfmt.c:3253
+#, fuzzy
+msgid "(invalid type :stat)"
+msgstr "(부적합한 타입)"
+
+#: rpmdb/hdrfmt.c:3405
+#, fuzzy
+msgid "(invalid type :uuid)"
+msgstr "(부적합한 타입)"
+
+#: rpmdb/hdrfmt.c:3466
+#, fuzzy
+msgid "(invalid type :rpn)"
+msgstr "(부적합한 타입)"
+
+#: rpmdb/hdrfmt.c:3476
+#, fuzzy
+msgid "(invalid string :rpn)"
+msgstr "(부적합한 타입)"
+
+#: rpmdb/hdrfmt.c:3492
+#, fuzzy
+msgid "(expected number :rpn)"
+msgstr "부적절한 질의 형식 입니다"
+
+#: rpmdb/hdrfmt.c:3496
+msgid "(stack overflow :rpn)"
+msgstr ""
+
+#: rpmdb/hdrfmt.c:3502
+#, fuzzy
+msgid "(invalid number :rpn)"
+msgstr "(숫자가 아닙니다)"
+
+#: rpmdb/hdrfmt.c:3507
+msgid "(stack underflow :rpn)"
+msgstr ""
+
+#: rpmdb/hdrfmt.c:3520
+msgid "(divide by zero :rpn)"
+msgstr ""
+
+#: rpmdb/hdrfmt.c:4270
 msgid "missing { after %"
 msgstr "'%' 뒤에 '{' 가 없습니다"
 
-#: rpmdb/hdrfmt.c:3331
+#: rpmdb/hdrfmt.c:4304
 msgid "missing } after %{"
 msgstr "'%{' 뒤에 '}' 가 없습니다"
 
-#: rpmdb/hdrfmt.c:3347
+#: rpmdb/hdrfmt.c:4320
 msgid "empty tag format"
 msgstr "태그 형식이 비어있습니다"
 
-#: rpmdb/hdrfmt.c:3359
+#: rpmdb/hdrfmt.c:4329
 msgid "empty tag name"
 msgstr "태그 이름이 비어있습니다"
 
-#: rpmdb/hdrfmt.c:3368
+#: rpmdb/hdrfmt.c:4338
 msgid "unknown tag"
 msgstr "알 수 없는 태그 입니다"
 
-#: rpmdb/hdrfmt.c:3398
+#: rpmdb/hdrfmt.c:4368
 msgid "] expected at end of array"
 msgstr "배열의 끝부분에 ']' 가 와야합니다"
 
-#: rpmdb/hdrfmt.c:3415
+#: rpmdb/hdrfmt.c:4385
 msgid "unexpected ]"
 msgstr "불필요한 ']' 가 있습니다"
 
-#: rpmdb/hdrfmt.c:3430
+#: rpmdb/hdrfmt.c:4400
 msgid "unexpected }"
 msgstr "불필요한 '}' 가 있습니다"
 
-#: rpmdb/hdrfmt.c:3508
+#: rpmdb/hdrfmt.c:4478
 msgid "? expected in expression"
 msgstr "표현식에 '?' 가 와야합니다"
 
-#: rpmdb/hdrfmt.c:3515
+#: rpmdb/hdrfmt.c:4485
 msgid "{ expected after ? in expression"
 msgstr "표현식의 '?' 뒤에 '{' 가 와야합니다"
 
-#: rpmdb/hdrfmt.c:3527 rpmdb/hdrfmt.c:3567
+#: rpmdb/hdrfmt.c:4497 rpmdb/hdrfmt.c:4537
 msgid "} expected in expression"
 msgstr "표현식에 '}' 가 와야합니다"
 
-#: rpmdb/hdrfmt.c:3535
+#: rpmdb/hdrfmt.c:4505
 msgid ": expected following ? subexpression"
 msgstr "'?' 하부표현식(subexpression) 뒤에 ':' 이 와야합니다"
 
-#: rpmdb/hdrfmt.c:3553
+#: rpmdb/hdrfmt.c:4523
 msgid "{ expected after : in expression"
 msgstr "표현식의 ':' 뒤에 '{' 가 와야합니다"
 
-#: rpmdb/hdrfmt.c:3575
+#: rpmdb/hdrfmt.c:4545
 msgid "| expected at end of expression"
 msgstr "표현식의 끝부분에 '|' 가 와야합니다"
 
-#: rpmdb/hdrfmt.c:3868
+#: rpmdb/hdrfmt.c:4844
 msgid "array iterator used with different sized arrays"
 msgstr ""
 
@@ -3139,152 +3193,152 @@ msgstr ""
 msgid "short write of header"
 msgstr "마지막(final) 헤더를 작성할 수 없습니다\n"
 
-#: rpmdb/pkgio.c:478 rpmdb/pkgio.c:483
+#: rpmdb/pkgio.c:489 rpmdb/pkgio.c:494
 #, c-format
 msgid "lead size(%u): BAD, read(%d), %s(%d)"
 msgstr ""
 
-#: rpmdb/pkgio.c:516
+#: rpmdb/pkgio.c:527
 #, c-format
 msgid "lead size(%u): BAD, xar read(%u)"
 msgstr ""
 
-#: rpmdb/pkgio.c:533
+#: rpmdb/pkgio.c:544
 #, c-format
 msgid "lead magic: BAD, read %02x%02x%02x%02x"
 msgstr ""
 
-#: rpmdb/pkgio.c:542
+#: rpmdb/pkgio.c:553
 #, c-format
 msgid "lead version(%u): UNSUPPORTED"
 msgstr ""
 
-#: rpmdb/pkgio.c:553
+#: rpmdb/pkgio.c:564
 #, c-format
 msgid "sigh type(%u): UNSUPPORTED"
 msgstr ""
 
-#: rpmdb/pkgio.c:701
+#: rpmdb/pkgio.c:712
 #, c-format
 msgid "sigh size(%d): BAD, read returned %d"
 msgstr ""
 
-#: rpmdb/pkgio.c:713
+#: rpmdb/pkgio.c:724
 #, c-format
 msgid "sigh magic: BAD, read %02x%02x%02x%02x%02x%02x%02x%02x"
 msgstr ""
 
-#: rpmdb/pkgio.c:721
+#: rpmdb/pkgio.c:732
 #, c-format
 msgid "sigh tags: BAD, no. of tags(%u) out of range"
 msgstr ""
 
-#: rpmdb/pkgio.c:727
+#: rpmdb/pkgio.c:738
 #, c-format
 msgid "sigh data: BAD, no. of bytes(%u) out of range"
 msgstr ""
 
-#: rpmdb/pkgio.c:737
+#: rpmdb/pkgio.c:748
 #, c-format
 msgid "sigh blob(%u): BAD, read returned %d"
 msgstr ""
 
-#: rpmdb/pkgio.c:749 rpmdb/pkgio.c:933 rpmdb/pkgio.c:1058
+#: rpmdb/pkgio.c:760 rpmdb/pkgio.c:944 rpmdb/pkgio.c:1069
 #, c-format
 msgid "tag[%d]: BAD, tag %u type %u offset %d count %u"
 msgstr ""
 
-#: rpmdb/pkgio.c:770 rpmdb/pkgio.c:953
+#: rpmdb/pkgio.c:781 rpmdb/pkgio.c:964
 #, c-format
 msgid "region offset: BAD, tag %u type %u offset %d count %u"
 msgstr ""
 
-#: rpmdb/pkgio.c:795 rpmdb/pkgio.c:972
+#: rpmdb/pkgio.c:806 rpmdb/pkgio.c:983
 #, c-format
 msgid "region trailer: BAD, tag %u type %u offset %d count %u"
 msgstr ""
 
-#: rpmdb/pkgio.c:807 rpmdb/pkgio.c:984
+#: rpmdb/pkgio.c:818 rpmdb/pkgio.c:995
 #, c-format
 msgid "region size: BAD, ril(%u) > il(%u)"
 msgstr ""
 
-#: rpmdb/pkgio.c:818
+#: rpmdb/pkgio.c:829
 #, c-format
 msgid "sigh tag[%u]: BAD, tag %u type %u offset %d count %u"
 msgstr ""
 
-#: rpmdb/pkgio.c:828
+#: rpmdb/pkgio.c:839
 #, c-format
 msgid "sigh load: BAD"
 msgstr ""
 
-#: rpmdb/pkgio.c:841
+#: rpmdb/pkgio.c:852
 #, c-format
 msgid "sigh pad(%u): BAD, read %d bytes"
 msgstr ""
 
-#: rpmdb/pkgio.c:854
+#: rpmdb/pkgio.c:865
 #, c-format
 msgid "sigh sigSize(%u): BAD, fstat(2) failed"
 msgstr ""
 
-#: rpmdb/pkgio.c:924
+#: rpmdb/pkgio.c:935
 #, c-format
 msgid "blob size(%d): BAD, 8 + 16 * il(%u) + dl(%u)"
 msgstr ""
 
-#: rpmdb/pkgio.c:993
+#: rpmdb/pkgio.c:1004
 #, c-format
 msgid "tag[%u]: BAD, tag %u type %u offset %d count %u"
 msgstr ""
 
-#: rpmdb/pkgio.c:1011
+#: rpmdb/pkgio.c:1022
 #, c-format
 msgid "hdr SHA1: BAD, not hex"
 msgstr ""
 
-#: rpmdb/pkgio.c:1023
+#: rpmdb/pkgio.c:1034
 #, c-format
 msgid "hdr RSA: BAD, not binary"
 msgstr ""
 
-#: rpmdb/pkgio.c:1033
+#: rpmdb/pkgio.c:1044
 #, c-format
 msgid "hdr DSA: BAD, not binary"
 msgstr ""
 
-#: rpmdb/pkgio.c:1090 rpmdb/pkgio.c:1133
+#: rpmdb/pkgio.c:1101 rpmdb/pkgio.c:1144
 #, c-format
 msgid "skipping header with unverifiable V%u signature\n"
 msgstr ""
 
-#: rpmdb/pkgio.c:1284
+#: rpmdb/pkgio.c:1295
 #, c-format
 msgid "hdr size(%u): BAD, read returned %d"
 msgstr ""
 
-#: rpmdb/pkgio.c:1294
+#: rpmdb/pkgio.c:1305
 #, c-format
 msgid "hdr magic: BAD, read %02x%02x%02x%02x%02x%02x%02x%02x"
 msgstr ""
 
-#: rpmdb/pkgio.c:1302
+#: rpmdb/pkgio.c:1313
 #, c-format
 msgid "hdr tags: BAD, no. of tags(%u) out of range"
 msgstr ""
 
-#: rpmdb/pkgio.c:1309
+#: rpmdb/pkgio.c:1320
 #, c-format
 msgid "hdr data: BAD, no. of bytes(%u) out of range\n"
 msgstr ""
 
-#: rpmdb/pkgio.c:1320
+#: rpmdb/pkgio.c:1331
 #, c-format
 msgid "hdr blob(%u): BAD, read returned %d"
 msgstr ""
 
-#: rpmdb/pkgio.c:1334
+#: rpmdb/pkgio.c:1345
 #, c-format
 msgid "hdr load: BAD\n"
 msgstr ""
@@ -3413,68 +3467,69 @@ msgstr "복구하기 위해 %2$s의 파일을 %1$s의 파일로 교체합니다"
 msgid "failed to remove directory %s: %s\n"
 msgstr "%s 디렉토리를 삭제하는데 실패함: %s\n"
 
-#: rpmdb/signature.c:96 rpmdb/signature.c:101 rpmdb/signature.c:107
+#: rpmdb/signature.c:89 rpmdb/signature.c:98 rpmdb/signature.c:103
+#: rpmdb/signature.c:109
 #, c-format
 msgid "error creating temporary file %s\n"
 msgstr "임시 파일 %s(을)를 생성하는 도중 오류가 발생했습니다\n"
 
-#: rpmdb/signature.c:189 rpmdb/signature.c:536
+#: rpmdb/signature.c:191 rpmdb/signature.c:538
 #, c-format
 msgid "Could not exec %s: %s\n"
 msgstr "%s(을)를 실행할 수 없음: %s\n"
 
-#: rpmdb/signature.c:207 rpmdb/signature.c:550
+#: rpmdb/signature.c:209 rpmdb/signature.c:552
 #, c-format
 msgid "Failed %s(%d) key(0x%lx): %s\n"
 msgstr ""
 
-#: rpmdb/signature.c:233
+#: rpmdb/signature.c:235
 #, fuzzy, c-format
 msgid "gpg exec failed (%d)\n"
 msgstr "실행에 실패했습니다\n"
 
-#: rpmdb/signature.c:240
+#: rpmdb/signature.c:242
 msgid "gpg failed to write signature\n"
 msgstr "gpg 서명을 작성하는데 실패했습니다\n"
 
-#: rpmdb/signature.c:259
+#: rpmdb/signature.c:261
 msgid "unable to read the signature\n"
 msgstr "서명을 읽을 수 없습니다\n"
 
-#: rpmdb/signature.c:602
+#: rpmdb/signature.c:604
 #, fuzzy
 msgid "Header+Payload size: "
 msgstr "헤더의 크기가 너무 큽니다"
 
-#: rpmdb/signature.c:639
+#: rpmdb/signature.c:641
 msgid "MD5 digest: "
 msgstr ""
 
-#: rpmdb/signature.c:696
+#: rpmdb/signature.c:698
 #, fuzzy
 msgid "Header SHA1 digest: "
 msgstr "SHA1 축약(digest) 헤더를 검사하지 않습니다"
 
-#: rpmdb/signature.c:756 rpmdb/signature.c:882
+#: rpmdb/signature.c:758 rpmdb/signature.c:884
 msgid "Header "
 msgstr ""
 
-#: rpmdb/signature.c:812
+#: rpmdb/signature.c:814
 #, fuzzy
 msgid " signature: "
 msgstr "서명이 없습니다\n"
 
-#: rpmdb/signature.c:888
+#: rpmdb/signature.c:890
 #, fuzzy
 msgid " DSA signature: "
 msgstr "서명이 없습니다\n"
 
-#: rpmdb/signature.c:963
+#: rpmdb/signature.c:965
 #, c-format
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr ""
 
-#: rpmdb/signature.c:984
+#: rpmdb/signature.c:986
 #, fuzzy, c-format
 msgid "Signature: UNKNOWN (%u)\n"
 msgstr "서명: size(%d)+pad(%d)\n"
@@ -3582,6 +3637,41 @@ msgstr "%s 파일: %s\n"
 #, c-format
 msgid "File %s is smaller than %u bytes\n"
 msgstr "%s 파일이 %u 바이트 보다 적습니다\n"
+
+#: rpmio/mire.c:325
+#, fuzzy, c-format
+msgid "%s: Failed to set locale %s (obtained from %s)\n"
+msgstr "%s에서 spec 파일을 읽는데 실패했습니다\n"
+
+#: rpmio/mire.c:366
+#, c-format
+msgid "pcre_compile2 failed: %s(%d) at offset %d of \"%s\"\n"
+msgstr ""
+
+#: rpmio/mire.c:384
+#, fuzzy, c-format
+msgid "%s: regcomp failed: %s\n"
+msgstr "%s: 여는데 실패했습니다: %s\n"
+
+#: rpmio/mire.c:442
+#, fuzzy, c-format
+msgid "%s: regexec failed: %s(%d)\n"
+msgstr "%s: Fseek이 실패했습니다: %s\n"
+
+#: rpmio/mire.c:460
+#, fuzzy, c-format
+msgid "pcre_exec failed: return %d\n"
+msgstr "읽는데 실패함: %s (%d)\n"
+
+#: rpmio/mire.c:474
+#, fuzzy, c-format
+msgid "fnmatch failed: return %d\n"
+msgstr "mntctl()에서 크기를 반환하는데 실패함: %s\n"
+
+#: rpmio/mire.c:570
+#, fuzzy, c-format
+msgid "%s: Error while studying regex%s: %s\n"
+msgstr "%d 번째 행: %s에서 오류가 발생했습니다: %s\n"
 
 #: rpmio/poptIO.c:97
 msgid "MD2 digest (RFC-1319)"
@@ -3811,6 +3901,67 @@ msgstr "서버 입/출력 오류입니다"
 msgid "Unknown Error"
 msgstr "(오류 없음)"
 
+#: rpmio/rpmdigest.c:176 rpmio/rpmgrep.c:1052 rpmio/rpmgrep.c:1215
+#, fuzzy, c-format
+msgid "%s: Failed to open %s: %s\n"
+msgstr "%s(을)를 여는데 실패함: %s\n"
+
+#: rpmio/rpmdigest.c:235
+#, fuzzy, c-format
+msgid "%s: Unknown digest name \"%s\"\n"
+msgstr "%d 번째 행: 알 수 없는 태그입니다: %s\n"
+
+#: rpmio/rpmdigest.c:298 rpmio/rpmgrep.c:1344 rpmio/rpmmtree.c:3535
+#: rpmio/rpmrepo.c:1693
+#, fuzzy, c-format
+msgid "%s: Unknown option -%c\n"
+msgstr "%2$s(%3$s)에 알 수 없는 옵션 %1$c(이)가 있습니다\n"
+
+#: rpmio/rpmdigest.c:317
+msgid "read in binary mode"
+msgstr ""
+
+#: rpmio/rpmdigest.c:321 rpmio/rpmdigest.c:325
+msgid "read digests from MANIFEST file and verify (may be used more than once)"
+msgstr ""
+
+#: rpmio/rpmdigest.c:322 rpmio/rpmdigest.c:326
+msgid "MANIFEST"
+msgstr ""
+
+#: rpmio/rpmdigest.c:330
+msgid "read in text mode (default)"
+msgstr ""
+
+#: rpmio/rpmdigest.c:334
+msgid "The following two options are useful only when verifying digests:"
+msgstr ""
+
+#: rpmio/rpmdigest.c:340
+msgid "no output when verifying"
+msgstr ""
+
+#: rpmio/rpmdigest.c:342
+msgid "warn about improperly formatted checksum lines"
+msgstr ""
+
+#: rpmio/rpmdigest.c:345 rpmio/rpmmtree.c:3606 rpmio/rpmrepo.c:1790
+msgid "Available digests:"
+msgstr ""
+
+#: rpmio/rpmdigest.c:348 rpmio/rpmgrep.c:1463 rpmio/rpmmtree.c:3609
+#: rpmio/rpmrepo.c:1793
+#, fuzzy
+msgid "Common options for all rpmio executables:"
+msgstr "모든 rpm 모드에서의 일반적인 옵션:"
+
+#: rpmio/rpmdigest.c:355
+msgid ""
+"When checking, the input should be a former output of this program.  The\n"
+"default mode is to print a line with digest, a character indicating type\n"
+"(`*' for binary, ` ' for text), and name for each FILE.\n"
+msgstr ""
+
 #: rpmio/rpmgrep.c:595
 #, c-format
 msgid "%s: pcre_exec() error %d while matching "
@@ -3845,11 +3996,6 @@ msgstr ""
 #, fuzzy, c-format
 msgid "%s: Failed to open directory %s: %s\n"
 msgstr "%s 디렉토리를 삭제하는데 실패함: %s\n"
-
-#: rpmio/rpmgrep.c:1052 rpmio/rpmgrep.c:1215
-#, fuzzy, c-format
-msgid "%s: Failed to open %s: %s\n"
-msgstr "%s(을)를 여는데 실패함: %s\n"
 
 #: rpmio/rpmgrep.c:1121
 #, c-format
@@ -3900,11 +4046,6 @@ msgstr "RPM 버전 - %s\n"
 #, c-format
 msgid "%s %s (without PCRE)\n"
 msgstr ""
-
-#: rpmio/rpmgrep.c:1344
-#, fuzzy, c-format
-msgid "%s: Unknown option -%c\n"
-msgstr "%2$s(%3$s)에 알 수 없는 옵션 %1$c(이)가 있습니다\n"
 
 #: rpmio/rpmgrep.c:1362
 msgid "set number of following context lines"
@@ -4082,11 +4223,6 @@ msgstr ""
 msgid "force patterns to match only whole lines"
 msgstr ""
 
-#: rpmio/rpmgrep.c:1463
-#, fuzzy
-msgid "Common options for all rpmio executables:"
-msgstr "모든 rpm 모드에서의 일반적인 옵션:"
-
 #: rpmio/rpmgrep.c:1469
 msgid ""
 "Usage: rpmgrep [OPTION...] [PATTERN] [FILE1 FILE2 ...]\n"
@@ -4250,6 +4386,606 @@ msgstr "%s %s 디렉토리 삭제에 실패함: %s\n"
 #: rpmio/rpmmg.c:102
 #, c-format
 msgid "magic_buffer(ms, %p[%u]) failed: %s\n"
+msgstr ""
+
+#: rpmio/rpmmtree.c:332
+#, c-format
+msgid "%s: failed at line %d of the specification\n"
+msgstr ""
+
+#: rpmio/rpmmtree.c:1492 rpmio/rpmmtree.c:1681
+#, c-format
+msgid "%s: filename (%s) encoded incorrectly\n"
+msgstr ""
+
+#: rpmio/rpmmtree.c:2042
+#, fuzzy, c-format
+msgid "%s changed\n"
+msgstr "%s(이)가 실패했습니다\n"
+
+#: rpmio/rpmmtree.c:2122
+#, c-format
+msgid "\ttype expected %s found %s)\n"
+msgstr ""
+
+#: rpmio/rpmmtree.c:2132 rpmio/rpmmtree.c:2145
+#, c-format
+msgid "%s%s expected %lu found %lu"
+msgstr ""
+
+#: rpmio/rpmmtree.c:2136 rpmio/rpmmtree.c:2149 rpmio/rpmmtree.c:2176
+#: rpmio/rpmmtree.c:2233
+#, fuzzy, c-format
+msgid " not modified: %s)\n"
+msgstr "Glob을 사용할 수 없음: %s\n"
+
+#: rpmio/rpmmtree.c:2138 rpmio/rpmmtree.c:2151 rpmio/rpmmtree.c:2178
+#, c-format
+msgid " modified)\n"
+msgstr ""
+
+#: rpmio/rpmmtree.c:2172
+#, c-format
+msgid "%s%s expected %#o found %#o"
+msgstr ""
+
+#: rpmio/rpmmtree.c:2189
+#, c-format
+msgid "%s%s expected %lu found %lu)\n"
+msgstr ""
+
+#: rpmio/rpmmtree.c:2196
+#, c-format
+msgid "%s%s expected %llu found %llu\n"
+msgstr ""
+
+#: rpmio/rpmmtree.c:2228
+#, c-format
+msgid "%s%s expected %.24s "
+msgstr ""
+
+#: rpmio/rpmmtree.c:2229
+#, c-format
+msgid "found %.24s"
+msgstr ""
+
+#: rpmio/rpmmtree.c:2235
+#, fuzzy, c-format
+msgid " modified\n"
+msgstr "%s(이)가 실패했습니다\n"
+
+#: rpmio/rpmmtree.c:2278
+#, c-format
+msgid "%s%s expected %lu found %lu\n"
+msgstr ""
+
+#: rpmio/rpmmtree.c:2296 rpmio/rpmmtree.c:2316
+#, fuzzy, c-format
+msgid "%s%s expected %s found %s\n"
+msgstr "%s(이)가 %s(으)로 생성되었습니다\n"
+
+#: rpmio/rpmmtree.c:2325
+#, fuzzy, c-format
+msgid "%s%s expected \"%s\""
+msgstr "불필요한 ']' 가 있습니다"
+
+#: rpmio/rpmmtree.c:2329
+#, fuzzy, c-format
+msgid " found \"%s\""
+msgstr "파일을 찾을 수 없음: %s\n"
+
+#: rpmio/rpmmtree.c:2451 rpmio/rpmmtree.c:2558
+#, c-format
+msgid "%s: Could not get uname for uid=%lu\n"
+msgstr ""
+
+#: rpmio/rpmmtree.c:2464 rpmio/rpmmtree.c:2573
+#, c-format
+msgid "%s: Could not get gname for gid=%lu\n"
+msgstr ""
+
+#: rpmio/rpmmtree.c:2612 rpmio/rpmmtree.c:2637
+#, fuzzy, c-format
+msgid "%s: %s: cksum: %s\n"
+msgstr "%s(이)가 %s(으)로 저장되었습니다\n"
+
+#: rpmio/rpmmtree.c:2757
+#, fuzzy, c-format
+msgid "%s: open of %s failed: %s\n"
+msgstr "%s(을)를 여는데 실패함: %s\n"
+
+#: rpmio/rpmmtree.c:3257
+#, fuzzy, c-format
+msgid "missing: %s"
+msgstr "다음을 찾을 수 없음    %s"
+
+#: rpmio/rpmmtree.c:3268
+#, c-format
+msgid " (%s not created: user not specified)"
+msgstr ""
+
+#: rpmio/rpmmtree.c:3270
+#, c-format
+msgid " (%s not created: group not specified))"
+msgstr ""
+
+#: rpmio/rpmmtree.c:3273
+#, fuzzy, c-format
+msgid " (%s not created: %s)\n"
+msgstr "%s(이)가 %s(으)로 생성되었습니다\n"
+
+#: rpmio/rpmmtree.c:3276
+#, fuzzy, c-format
+msgid " (%s created)\n"
+msgstr "%s(이)가 %s(으)로 생성되었습니다\n"
+
+#: rpmio/rpmmtree.c:3289 rpmio/rpmmtree.c:3325
+#, fuzzy, c-format
+msgid "%s: %s not modified: %s\n"
+msgstr "%s: 여는데 실패했습니다: %s\n"
+
+#: rpmio/rpmmtree.c:3294
+#, c-format
+msgid " (%s not created: mode not specified)"
+msgstr ""
+
+#: rpmio/rpmmtree.c:3296
+#, fuzzy, c-format
+msgid " (%s not created: %s)"
+msgstr "%s(이)가 %s(으)로 생성되었습니다\n"
+
+#: rpmio/rpmmtree.c:3299
+#, fuzzy, c-format
+msgid " (%s created)"
+msgstr "%s(이)가 %s(으)로 생성되었습니다\n"
+
+#: rpmio/rpmmtree.c:3330
+#, c-format
+msgid "%s: permissions not set: %s\n"
+msgstr ""
+
+#: rpmio/rpmmtree.c:3335
+#, fuzzy, c-format
+msgid "%s: file flags not set: %s\n"
+msgstr "%2$s 파일의 %1$s(이)가 실패함: %3$s\n"
+
+#: rpmio/rpmmtree.c:3447
+#, fuzzy, c-format
+msgid ", not removed: %s"
+msgstr "Glob을 사용할 수 없음: %s\n"
+
+#: rpmio/rpmmtree.c:3449
+#, c-format
+msgid ", removed"
+msgstr ""
+
+#: rpmio/rpmmtree.c:3551
+msgid "Follow symlinks"
+msgstr ""
+
+#: rpmio/rpmmtree.c:3554
+msgid "Don't follow symlinks"
+msgstr ""
+
+#: rpmio/rpmmtree.c:3556
+msgid "Read fnmatch(3) exclude patterns from <file>"
+msgstr ""
+
+#: rpmio/rpmmtree.c:3556
+#, fuzzy
+msgid "<file>"
+msgstr "<spec파일>"
+
+#: rpmio/rpmmtree.c:3559
+msgid "Print file tree specification to stdout"
+msgstr ""
+
+#: rpmio/rpmmtree.c:3561
+msgid "Directories only"
+msgstr ""
+
+#: rpmio/rpmmtree.c:3563
+msgid "Don't complain about files not in the specification"
+msgstr ""
+
+#: rpmio/rpmmtree.c:3565
+msgid "Read file tree <spec>"
+msgstr ""
+
+#: rpmio/rpmmtree.c:3567
+#, fuzzy
+msgid "Indent sub-directories"
+msgstr "%s 디렉토리를 생성합니다\n"
+
+#: rpmio/rpmmtree.c:3569
+#, fuzzy
+msgid "Add <key> to specification"
+msgstr "잘못된 패키지 지정: %s\n"
+
+#: rpmio/rpmmtree.c:3569 rpmio/rpmmtree.c:3571
+msgid "<key>"
+msgstr ""
+
+#: rpmio/rpmmtree.c:3571
+#, fuzzy
+msgid "Use \"type\" keywords instead"
+msgstr "대신 -e 또는 --erase 옵션을 사용하십시요.\n"
+
+#: rpmio/rpmmtree.c:3573
+msgid "Loose permissions check"
+msgstr ""
+
+#: rpmio/rpmmtree.c:3575
+#, fuzzy
+msgid "Don't include sub-directory comments"
+msgstr "%s 디렉토리를 생성합니다\n"
+
+#: rpmio/rpmmtree.c:3578 rpmio/rpmmtree.c:3581
+msgid "Use <path> rather than current directory"
+msgstr ""
+
+#: rpmio/rpmmtree.c:3585
+#, fuzzy
+msgid "Quiet mode"
+msgstr "질의 모드"
+
+#: rpmio/rpmmtree.c:3587
+msgid "Remove files not in specification"
+msgstr ""
+
+#: rpmio/rpmmtree.c:3589
+msgid "Display crc for file(s) with <seed>"
+msgstr ""
+
+#: rpmio/rpmmtree.c:3589
+#, fuzzy
+msgid "<seed>"
+msgstr "<spec>"
+
+#: rpmio/rpmmtree.c:3591
+msgid "Touch files iff timestamp differs"
+msgstr ""
+
+#: rpmio/rpmmtree.c:3593
+msgid "Update owner/group/permissions to match specification"
+msgstr ""
+
+#: rpmio/rpmmtree.c:3595
+msgid "Same as -u, but ignore match status on exit"
+msgstr ""
+
+#: rpmio/rpmmtree.c:3597
+msgid "Treat missing uid/gid as warning"
+msgstr ""
+
+#: rpmio/rpmmtree.c:3600
+msgid "Don't cross mount points"
+msgstr ""
+
+#: rpmio/rpmmtree.c:3603 rpmio/rpmrepo.c:1779
+msgid "Fts(3) traversal options:"
+msgstr ""
+
+#: rpmio/rpmmtree.c:3638
+#, c-format
+msgid "(no controlling terminal) %s"
+msgstr ""
+
+#: rpmio/rpmmtree.c:3643
+#, c-format
+msgid "(no controlling terminal) #%d"
+msgstr ""
+
+#: rpmio/rpmmtree.c:3784 rpmio/rpmmtree.c:3799
+#, c-format
+msgid "%s: %s checksum: %u\n"
+msgstr ""
+
+#: rpmio/rpmrepo.c:672
+#, fuzzy, c-format
+msgid "Cannot create/verify %s: %s"
+msgstr "%s(을)를 생성할 수 없음: %s\n"
+
+#: rpmio/rpmrepo.c:702
+#, c-format
+msgid "Directory %s must exist"
+msgstr ""
+
+#: rpmio/rpmrepo.c:709
+#, fuzzy, c-format
+msgid "Directory %s does not exist."
+msgstr "%s 사용자가 존재하지 않습니다 - root를 이용합니다\n"
+
+#: rpmio/rpmrepo.c:713
+#, fuzzy, c-format
+msgid "Directory %s must be writable."
+msgstr "재배치시에는 반드시 '/' 로 시작해야 합니다"
+
+#: rpmio/rpmrepo.c:723
+#, c-format
+msgid "Old data directory exists, please remove: %s"
+msgstr ""
+
+#: rpmio/rpmrepo.c:739
+#, c-format
+msgid "Path must be writable: %s"
+msgstr ""
+
+#: rpmio/rpmrepo.c:759
+#, c-format
+msgid "groupfile %s cannot be found."
+msgstr ""
+
+#: rpmio/rpmrepo.c:793
+#, c-format
+msgid "Fts_open: %s"
+msgstr ""
+
+#: rpmio/rpmrepo.c:856
+#, fuzzy, c-format
+msgid "cannot get to file: %s"
+msgstr "%s 파일을 열 수 없음: %s\n"
+
+#: rpmio/rpmrepo.c:875 rpmio/rpmrepo.c:913
+#, c-format
+msgid "Fwrite failed: expected write %u != %u bytes: %s\n"
+msgstr ""
+
+#: rpmio/rpmrepo.c:964
+#, fuzzy, c-format
+msgid "%s: Fread(%s) failed: %s\n"
+msgstr "%s: Fread이 실패했습니다: %s\n"
+
+#: rpmio/rpmrepo.c:1000 rpmio/rpmrepo.c:1056
+#, c-format
+msgid "headerSprintf(%s): %s"
+msgstr ""
+
+#: rpmio/rpmrepo.c:1147
+#, fuzzy, c-format
+msgid ""
+"\n"
+"Error %s: %s\n"
+msgstr "%s: %s\n"
+
+#: rpmio/rpmrepo.c:1186
+#, c-format
+msgid "Saving %s%s%s metadata"
+msgstr ""
+
+#: rpmio/rpmrepo.c:1384
+#, fuzzy
+msgid "Generating sqlite DBs"
+msgstr "서명 생성 중: %d\n"
+
+#: rpmio/rpmrepo.c:1411
+#, c-format
+msgid "Starting %s db creation: %s"
+msgstr ""
+
+#: rpmio/rpmrepo.c:1477
+#, c-format
+msgid "Ending %s db creation: %s"
+msgstr ""
+
+#: rpmio/rpmrepo.c:1511
+msgid "Sqlite DBs complete"
+msgstr ""
+
+#: rpmio/rpmrepo.c:1522
+#, fuzzy, c-format
+msgid "Error saving temp file for %s%s%s: %s"
+msgstr "임시 파일 %s(을)를 생성하는 도중 오류가 발생했습니다\n"
+
+#: rpmio/rpmrepo.c:1527
+#, fuzzy, c-format
+msgid "Could not save temp file: %s"
+msgstr "PreIn 파일을 열 수 없음: %s\n"
+
+#: rpmio/rpmrepo.c:1549
+#, c-format
+msgid "Error moving final %s to old dir %s"
+msgstr ""
+
+#: rpmio/rpmrepo.c:1557
+msgid "Error moving final metadata into place"
+msgstr ""
+
+#: rpmio/rpmrepo.c:1574 rpmio/rpmrepo.c:1606
+#, fuzzy, c-format
+msgid "Could not remove old metadata file: %s: %s"
+msgstr "%s 파일의 %%files를 열 수 없음: %s\n"
+
+#: rpmio/rpmrepo.c:1616
+#, fuzzy, c-format
+msgid "Could not restore old non-metadata file: %s -> %s: %s"
+msgstr "%s 파일의 %%files를 열 수 없음: %s\n"
+
+#: rpmio/rpmrepo.c:1627
+#, fuzzy, c-format
+msgid "Could not remove old metadata dir: %s: %s"
+msgstr "%s 파일의 %%files를 열 수 없음: %s\n"
+
+#: rpmio/rpmrepo.c:1706
+msgid "don't compress"
+msgstr ""
+
+#: rpmio/rpmrepo.c:1708
+msgid "use gzip compression"
+msgstr ""
+
+#: rpmio/rpmrepo.c:1710
+msgid "use bzip2 compression"
+msgstr ""
+
+#: rpmio/rpmrepo.c:1712
+msgid "use lzma compression"
+msgstr ""
+
+#: rpmio/rpmrepo.c:1724
+#, fuzzy
+msgid "debug repo handling"
+msgstr "URL 캐시 핸들링을 디버그 합니다"
+
+#: rpmio/rpmrepo.c:1727
+msgid "output nothing except for serious errors"
+msgstr ""
+
+#: rpmio/rpmrepo.c:1729
+msgid "output more debugging info."
+msgstr ""
+
+#: rpmio/rpmrepo.c:1731
+msgid "sanity check arguments, don't create metadata"
+msgstr ""
+
+#: rpmio/rpmrepo.c:1734 rpmio/rpmrepo.c:1737
+msgid "glob PATTERN(s) to exclude"
+msgstr ""
+
+#: rpmio/rpmrepo.c:1734 rpmio/rpmrepo.c:1737 rpmio/rpmrepo.c:1741
+#: rpmio/rpmrepo.c:1744
+msgid "PATTERN"
+msgstr ""
+
+#: rpmio/rpmrepo.c:1741 rpmio/rpmrepo.c:1744
+msgid "glob PATTERN(s) to include"
+msgstr ""
+
+#: rpmio/rpmrepo.c:1748
+#, fuzzy
+msgid "top level directory"
+msgstr "<디렉토리>를 최상위 디렉토리로 사용합니다"
+
+#: rpmio/rpmrepo.c:1748 rpmio/rpmrepo.c:1772
+msgid "DIR"
+msgstr ""
+
+#: rpmio/rpmrepo.c:1750
+msgid "baseurl to append on all files"
+msgstr ""
+
+#: rpmio/rpmrepo.c:1750
+msgid "BASEURL"
+msgstr ""
+
+#: rpmio/rpmrepo.c:1752
+msgid "path to groupfile to include in metadata"
+msgstr ""
+
+#: rpmio/rpmrepo.c:1752 rpmio/rpmrepo.c:1766 rpmio/rpmrepo.c:1769
+msgid "FILE"
+msgstr ""
+
+#: rpmio/rpmrepo.c:1755
+msgid "make sure all xml generated is formatted"
+msgstr ""
+
+#: rpmio/rpmrepo.c:1757
+msgid "check timestamps on files vs the metadata to see if we need to update"
+msgstr ""
+
+#: rpmio/rpmrepo.c:1760
+#, fuzzy
+msgid "create sqlite3 database files"
+msgstr "데이터베이스 파일을 검사합니다"
+
+#: rpmio/rpmrepo.c:1763
+#, fuzzy
+msgid "generate split media"
+msgstr "서명을 작성합니다"
+
+#: rpmio/rpmrepo.c:1766 rpmio/rpmrepo.c:1769
+msgid "use only the files listed in this file from the directory specified"
+msgstr ""
+
+#: rpmio/rpmrepo.c:1772
+msgid "<dir> = optional directory to output to"
+msgstr ""
+
+#: rpmio/rpmrepo.c:1774
+msgid "ignore symlinks of packages"
+msgstr ""
+
+#: rpmio/rpmrepo.c:1776
+msgid "include the file's checksum in the filename, helps with proxies"
+msgstr ""
+
+#: rpmio/rpmrepo.c:1787
+#, fuzzy
+msgid "Available compressions:"
+msgstr "데이터베이스 옵션:"
+
+#: rpmio/rpmrepo.c:1861
+msgid "Must specify path(s) to index."
+msgstr ""
+
+#: rpmio/rpmrepo.c:1879 rpmio/rpmrepo.c:1931
+#, c-format
+msgid "Realpath(%s): %s"
+msgstr ""
+
+#: rpmio/rpmrepo.c:1936
+msgid "--split and --checkts options are mutually exclusive"
+msgstr ""
+
+#: rpmio/rpmrepo.c:1956
+msgid "Error loading exclude glob patterns."
+msgstr ""
+
+#: rpmio/rpmrepo.c:1959
+msgid "Error loading include glob patterns."
+msgstr ""
+
+#: rpmio/rpmrepo.c:1988
+#, c-format
+msgid "repo is up to date\n"
+msgstr ""
+
+#: rpmio/rpmuuid.c:34
+msgid "invalid UUID version number"
+msgstr ""
+
+#: rpmio/rpmuuid.c:38
+msgid "namespace or data required for requested UUID version\n"
+msgstr ""
+
+#: rpmio/rpmuuid.c:42
+msgid "either string or binary result buffer required\n"
+msgstr ""
+
+#: rpmio/rpmuuid.c:48
+#, fuzzy, c-format
+msgid "failed to create UUID object: %s\n"
+msgstr "%s(을)를 생성하는데 실패함: %s\n"
+
+#: rpmio/rpmuuid.c:55
+#, fuzzy, c-format
+msgid "failed to create UUID namespace object: %s\n"
+msgstr "%s(을)를 생성하는데 실패함: %s\n"
+
+#: rpmio/rpmuuid.c:60
+#, c-format
+msgid "failed to import UUID namespace object: %s\n"
+msgstr ""
+
+#: rpmio/rpmuuid.c:79
+#, fuzzy, c-format
+msgid "failed to make UUID object: %s\n"
+msgstr "%s(을)를 생성하는데 실패함: %s\n"
+
+#: rpmio/rpmuuid.c:91
+#, c-format
+msgid "failed to export UUID object as string representation: %s\n"
+msgstr ""
+
+#: rpmio/rpmuuid.c:102
+#, c-format
+msgid "failed to export UUID object as binary representation: %s\n"
+msgstr ""
+
+#: rpmio/rpmuuid.c:115
+msgid "UUID generator not available!\n"
 msgstr ""
 
 #: rpmio/url.c:113
@@ -4427,9 +5163,6 @@ msgstr ""
 
 #~ msgid "--sign may only be used during package building"
 #~ msgstr "--sign 옵션은 패키지 제작시에만 사용할 수 있습니다"
-
-#~ msgid "%s failed\n"
-#~ msgstr "%s(이)가 실패했습니다\n"
 
 #~ msgid "Unable to write temp header\n"
 #~ msgstr "임시(temp) 헤더를 작성할 수 없습니다\n"
@@ -4668,12 +5401,6 @@ msgstr ""
 #~ msgid "installing binary packages\n"
 #~ msgstr "바이너리 패키지를 설치합니다\n"
 
-#~ msgid "cannot open file %s: %s\n"
-#~ msgstr "%s 파일을 열 수 없음: %s\n"
-
-#~ msgid "read failed: %s (%d)\n"
-#~ msgstr "읽는데 실패함: %s (%d)\n"
-
 #, fuzzy
 #~ msgid "package %s is intended for a %s operating system"
 #~ msgstr "%s(은)는 다른 운영체제를 위한 패키지입니다"
@@ -4871,9 +5598,6 @@ msgstr ""
 
 #~ msgid "logging into %s as %s, pw %s\n"
 #~ msgstr "%s에 %s(으)로 기록(logging)합니다, pw %s\n"
-
-#~ msgid "failed to create %s: %s\n"
-#~ msgstr "%s(을)를 생성하는데 실패함: %s\n"
 
 #, fuzzy
 #~ msgid "don't verify header+payload signature"
@@ -5229,9 +5953,6 @@ msgstr ""
 #~ msgid "port number of http server (or proxy)"
 #~ msgstr "http 서버 (또는 프록시) 의 포트 번호"
 
-#~ msgid "query mode"
-#~ msgstr "질의 모드"
-
 #~ msgid "      --dbpath <dir>      "
 #~ msgstr "      --dbpath <디렉토리> "
 
@@ -5483,9 +6204,6 @@ msgstr ""
 
 #~ msgid "-u and --uninstall are deprecated and no longer work.\n"
 #~ msgstr "-u 와 --uninstall 옵션은 이제 더이상 사용되지 않습니다.\n"
-
-#~ msgid "Use -e or --erase instead.\n"
-#~ msgstr "대신 -e 또는 --erase 옵션을 사용하십시요.\n"
 
 #~ msgid "Use --macros with a colon separated list of macro files to read.\n"
 #~ msgstr ""

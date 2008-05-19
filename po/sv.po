@@ -7,10 +7,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: rpm 5.0.0\n"
+"Project-Id-Version: rpm 5.1\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2008-04-13 12:29-0400\n"
-"PO-Revision-Date: 2008-02-04 16:51+0100\n"
+"POT-Creation-Date: 2008-05-19 16:21-0400\n"
+"PO-Revision-Date: 2008-05-15 23:39+0200\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <tp-sv@listor.tp-sv.se>\n"
 "MIME-Version: 1.0\n"
@@ -18,9 +18,8 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 
 #: build.c:36
-#, fuzzy
 msgid "Failed build dependencies"
-msgstr "Ouppfyllda byggberoenden:\n"
+msgstr "Kunde inte bygga beroenden"
 
 #: build.c:63
 #, c-format
@@ -57,7 +56,7 @@ msgstr "Filen %s tycks inte vara en specfil.\n"
 msgid "Building target platforms: %s\n"
 msgstr "Bygger målplattformar: %s\n"
 
-#: build.c:298 build/spec.c:840
+#: build.c:298 build/spec.c:854
 #, c-format
 msgid "    target platform: %s\n"
 msgstr "    målplattform: %s\n"
@@ -215,7 +214,6 @@ msgstr ""
 "raderas"
 
 #: rpmqv.c:637
-#, fuzzy
 msgid ""
 "--nodeps may only be specified during package building, rebuilding, "
 "recompilation, installation, erasure, and verification"
@@ -696,7 +694,7 @@ msgstr "Kan inte läsa om signaturhuvud.\n"
 msgid "Could not open %s: %s\n"
 msgstr "Kunde inte öppna %s: %s\n"
 
-#: build/pack.c:828 lib/psm.c:1982
+#: build/pack.c:828 lib/psm.c:2019
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr "Kunde inte skriva paket: %s\n"
@@ -716,7 +714,7 @@ msgstr "Kan inte läsa last från %s: %s\n"
 msgid "Unable to write payload to %s: %s\n"
 msgstr "Kan inte skriva last till %s: %s\n"
 
-#: build/pack.c:937 lib/psm.c:2281
+#: build/pack.c:937 lib/psm.c:2334
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "Skrev: %s\n"
@@ -918,7 +916,7 @@ msgstr "rad %d: Felaktigt BuildArchitecture-format: %s\n"
 #: build/parsePreamble.c:807
 #, c-format
 msgid "line %d: Only \"noarch\" sub-packages are supported: %s\n"
-msgstr ""
+msgstr "rad %d: Bara \"noarch\"-underpaket stöds: %s\n"
 
 #: build/parsePreamble.c:931
 #, c-format
@@ -1039,7 +1037,7 @@ msgstr "rad %d: andra %%prep\n"
 msgid ""
 "line %d: Dependency \"%s\" must begin with alpha-numeric, '_' or '/': %s\n"
 msgstr ""
-"rad %d: Beroendent \"%s\" måste börja alfanumeriskt, med \"_\" eller \"/\": %"
+"rad %d: Beroendet \"%s\" måste börja alfanumeriskt, med \"_\" eller \"/\": %"
 "s\n"
 
 #: build/parseReqs.c:127
@@ -1238,15 +1236,15 @@ msgstr "verifiera inte byggberoenden"
 
 #: build/poptBT.c:200
 msgid "disable automagic Provides: extraction"
-msgstr ""
+msgstr "inaktivera autmagisk extraktion av Provides:"
 
 #: build/poptBT.c:202
 msgid "disable automagic Requires: extraction"
-msgstr ""
+msgstr "inaktivera automagisk extraktion av Requires:"
 
 #: build/poptBT.c:204
 msgid "disable tags forbidden by LSB"
-msgstr ""
+msgstr "inaktivera taggar som LSB förbjuder"
 
 #: build/poptBT.c:207 lib/poptALL.c:347 lib/poptI.c:342 lib/poptQV.c:407
 #: lib/poptQV.c:416 lib/poptQV.c:458
@@ -1264,9 +1262,8 @@ msgid "don't verify package signature(s)"
 msgstr "verifiera inte paketsignatur(er)"
 
 #: build/poptBT.c:214
-#, fuzzy
 msgid "do not accept i18n msgstr's from specfile"
-msgstr "acceptera inte översatta \"msgstr\" från specfilen"
+msgstr "acceptera inte i18n-\"msgstr\" från specfilen"
 
 #: build/poptBT.c:216
 msgid "remove sources when done"
@@ -1293,9 +1290,8 @@ msgid "CPU-VENDOR-OS"
 msgstr "CPU-TILLVERKARE-OS"
 
 #: build/poptBT.c:226
-#, fuzzy
 msgid "look up i18n strings in specfile catalog"
-msgstr "slå upp översatta strängar i specfilkatalog"
+msgstr "slå upp i18n-strängar i specfilkatalog"
 
 #: build/spec.c:292
 #, c-format
@@ -1307,22 +1303,22 @@ msgstr "rad %d: Felaktigt tal: %s\n"
 msgid "line %d: Bad no%s number: %d\n"
 msgstr "rad %d: Felaktigt no%s-tal: %d\n"
 
-#: build/spec.c:365
+#: build/spec.c:368
 #, c-format
 msgid "line %d: Bad %s number: %s\n"
 msgstr "rad %d: Felaktigt %s-tal: %s\n"
 
-#: build/spec.c:697
+#: build/spec.c:711
 #, c-format
 msgid "can't query %s: %s\n"
 msgstr "kan inte fråga %s: %s\n"
 
-#: build/spec.c:774
+#: build/spec.c:788
 #, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr "fråga av specfil %s misslyckades, kan inte tolka\n"
 
-#: build/spec.c:828
+#: build/spec.c:842
 #, c-format
 msgid "Query specfile for platform(s): %s\n"
 msgstr "Fråga specfil för målplattform(ar): %s\n"
@@ -1374,9 +1370,8 @@ msgid "(signature probe)"
 msgstr "(signaturavsökning)"
 
 #: lib/depends.c:898
-#, fuzzy
 msgid "(verify probe)"
-msgstr "(miljövar-avsökning)"
+msgstr "(verifieringsavsökning)"
 
 #: lib/depends.c:920
 msgid "(gnupg probe)"
@@ -1443,16 +1438,16 @@ msgstr "(tips hoppades över)"
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr "ignorera paketnamnsrelation(er) [%d]\t%s -> %s\n"
 
-#: lib/depends.c:1778
+#: lib/depends.c:1781
 #, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "tar bort %s \"%s\" från tsort-relationer.\n"
 
-#: lib/depends.c:2360
+#: lib/depends.c:2364
 msgid "LOOP:\n"
 msgstr "LOOP:\n"
 
-#: lib/depends.c:2394
+#: lib/depends.c:2400
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr "rpmtsOrder misslyckades, %d element återstår\n"
@@ -1536,12 +1531,12 @@ msgstr "kan inte skapa %%%s %s\n"
 msgid "read failed\n"
 msgstr "läsning misslyckades\n"
 
-#: lib/package.c:136 lib/rpmchecksig.c:245 lib/rpmchecksig.c:906
+#: lib/package.c:136 lib/rpmchecksig.c:245 lib/rpmchecksig.c:900
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: Ingen signatur tillgänglig\n"
 
-#: lib/package.c:229 lib/package.c:266 lib/rpmchecksig.c:985
+#: lib/package.c:229 lib/package.c:266 lib/rpmchecksig.c:979
 #, c-format
 msgid "skipping package %s with unverifiable V%u signature\n"
 msgstr "hoppar över paket %s med overifierbar V%u-signatur\n"
@@ -1582,11 +1577,11 @@ msgstr "ignorera tillagda pakets krav på mål som är symboliska länkar"
 
 #: lib/poptALL.c:294 lib/poptI.c:228
 msgid "ignore added package obsoletes"
-msgstr "ignorera tillagta pakets föråldranden"
+msgstr "ignorera tillagda pakets föråldranden"
 
 #: lib/poptALL.c:297 lib/poptI.c:231
 msgid "ignore added package requires on file parent directory"
-msgstr "ignorerea tillagda paketkrav på filers föräldrakatalog"
+msgstr "ignorera tillagda paketkrav på filers föräldrakatalog"
 
 #: lib/poptALL.c:300 lib/poptI.c:234
 msgid "do not check added package requires"
@@ -1634,14 +1629,12 @@ msgid "<FILE:...>"
 msgstr "<FIL:...>"
 
 #: lib/poptALL.c:336 rpmio/poptIO.c:322
-#, fuzzy
 msgid "read <FILE:...> instead of default RPM Lua file(s)"
-msgstr "läs <FIL:...> istället för standardfil(er)"
+msgstr "läs <FIL:...> istället för standard RPM Lua-fil(er)"
 
 #: lib/poptALL.c:340 rpmio/poptIO.c:326
-#, fuzzy
 msgid "read <FILE:...> instead of default POPT file(s)"
-msgstr "läs <FIL:...> istället för standardfil(er)"
+msgstr "läs <FIL:...> istället för standard POPT-fil(er)"
 
 #: lib/poptALL.c:344 lib/poptQV.c:318
 msgid "specify target platform"
@@ -1652,14 +1645,12 @@ msgid "display known query tags"
 msgstr "visa kända frågetaggar"
 
 #: lib/poptALL.c:356
-#, fuzzy
 msgid "display macro and configuration values"
-msgstr "visa slutliga rpmrc- och makrokonfigurationer"
+msgstr "visa makro- och konfigurationsvärden"
 
-#: lib/poptALL.c:358 rpmio/poptIO.c:347
-#, fuzzy
+#: lib/poptALL.c:358 rpmio/poptIO.c:347 rpmio/rpmrepo.c:1783
 msgid "print the version"
-msgstr "visa vilken version av rpm som används"
+msgstr "skriv ut versionen"
 
 #: lib/poptALL.c:366
 msgid "debug payload file state machine"
@@ -1773,7 +1764,7 @@ msgstr "installera inte dokumentation"
 msgid "skip files with leading component <path> "
 msgstr "hoppa över filer med inledande <sökväg>"
 
-#: lib/poptI.c:272
+#: lib/poptI.c:272 rpmio/rpmmtree.c:3578 rpmio/rpmmtree.c:3581
 msgid "<path>"
 msgstr "<sökväg>"
 
@@ -2005,7 +1996,7 @@ msgstr "fråga/verifiera en huvudinstans"
 msgid "query a spec file"
 msgstr "fråga en specfil"
 
-#: lib/poptQV.c:148 lib/poptQV.c:150
+#: lib/poptQV.c:148 lib/poptQV.c:150 rpmio/rpmmtree.c:3565
 msgid "<spec>"
 msgstr "<spec>"
 
@@ -2223,30 +2214,30 @@ msgstr "%s(%s) skript misslyckades, signal %d\n"
 msgid "%s(%s) scriptlet failed, exit status %d\n"
 msgstr "%s(%s) skript misslyckades, slutstatus %d\n"
 
-#: lib/psm.c:1887
+#: lib/psm.c:1911
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s\n"
 msgstr "%s: %s-skript misslyckades (%d), hoppar över %s\n"
 
-#: lib/psm.c:1995
+#: lib/psm.c:2032
 msgid "Unable to reload signature header\n"
 msgstr "Kan inte läsa om signaturhuvud\n"
 
-#: lib/psm.c:2106
+#: lib/psm.c:2159
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "uppackning av arkiv misslyckades%s%s: %s\n"
 
-#: lib/psm.c:2107
+#: lib/psm.c:2160
 msgid " on file "
 msgstr " vid fil "
 
-#: lib/psm.c:2290
+#: lib/psm.c:2343
 #, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "%s misslyckades på fil %s: %s\n"
 
-#: lib/psm.c:2293
+#: lib/psm.c:2346
 #, c-format
 msgid "%s failed: %s\n"
 msgstr "%s misslyckades: %s\n"
@@ -2356,7 +2347,7 @@ msgstr "(lade till filer)"
 msgid "(added provide)"
 msgstr "(lade till tillhandahållande)"
 
-#: lib/rpmchecksig.c:61 lib/rpmchecksig.c:1148
+#: lib/rpmchecksig.c:61 lib/rpmchecksig.c:1142
 #, c-format
 msgid "%s: open failed: %s\n"
 msgstr "%s: open misslyckades: %s\n"
@@ -2398,8 +2389,8 @@ msgstr "headerGet misslyckades"
 msgid "failed to retrieve original header\n"
 msgstr "misslyckades att hämta orginalhuvud\n"
 
-#: lib/rpmchecksig.c:829 rpmdb/pkgio.c:509 rpmdb/pkgio.c:693
-#: rpmdb/pkgio.c:1271
+#: lib/rpmchecksig.c:829 rpmdb/pkgio.c:520 rpmdb/pkgio.c:704
+#: rpmdb/pkgio.c:1282
 #, c-format
 msgid "XAR file not found (or no XAR support)"
 msgstr "XAR-filen finns inte (eller inget XAR-stöd)"
@@ -2408,28 +2399,27 @@ msgstr "XAR-filen finns inte (eller inget XAR-stöd)"
 msgid "Fread failed"
 msgstr "Fread misslyckades"
 
-#: lib/rpmchecksig.c:1073
-#, fuzzy
+#: lib/rpmchecksig.c:1067
 msgid "NOT_OK"
-msgstr "EJ OK"
+msgstr "EJ_OK"
 
-#: lib/rpmchecksig.c:1074 lib/rpmchecksig.c:1088
+#: lib/rpmchecksig.c:1068 lib/rpmchecksig.c:1082
 msgid " (MISSING KEYS:"
 msgstr " (SAKNADE NYCKLAR:"
 
-#: lib/rpmchecksig.c:1076 lib/rpmchecksig.c:1090
+#: lib/rpmchecksig.c:1070 lib/rpmchecksig.c:1084
 msgid ") "
 msgstr ") "
 
-#: lib/rpmchecksig.c:1077 lib/rpmchecksig.c:1091
+#: lib/rpmchecksig.c:1071 lib/rpmchecksig.c:1085
 msgid " (UNTRUSTED KEYS:"
 msgstr " (EJ BETRODDA NYCKLAR:"
 
-#: lib/rpmchecksig.c:1079 lib/rpmchecksig.c:1093
+#: lib/rpmchecksig.c:1073 lib/rpmchecksig.c:1087
 msgid ")"
 msgstr ")"
 
-#: lib/rpmchecksig.c:1087
+#: lib/rpmchecksig.c:1081
 msgid "OK"
 msgstr "OK"
 
@@ -2498,9 +2488,8 @@ msgid "file digests can be other than MD5."
 msgstr "filkontrollsummor kan vara andra än MD5."
 
 #: lib/rpmds.c:1430
-#, fuzzy
 msgid "package payload can be in ar archive format."
-msgstr "paketlasten kan vara i tar-arkivformatet ustar."
+msgstr "paketlasten kan vara i ar-arkivformat."
 
 #: lib/rpmds.c:1521 lib/rpmds.c:3495
 #, c-format
@@ -2571,6 +2560,7 @@ msgid "Failed to find %s:\n"
 msgstr "Hittade inte %s:\n"
 
 #: lib/rpmgi.c:99 lib/rpminstall.c:124 lib/rpmrollback.c:162 lib/rpmts.c:412
+#: rpmio/rpmdigest.c:127
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "misslyckades med att öppna %s: %s\n"
@@ -2625,14 +2615,14 @@ msgid "Install/Erase problems"
 msgstr "Installations-/Raderingsproblem"
 
 #: lib/rpminstall.c:560
-#, fuzzy, c-format
+#, c-format
 msgid "package \"%s\" cannot be found\n"
-msgstr "paket %s är inte installerat\n"
+msgstr "paket \"%s\" kan inte hittas\n"
 
 #: lib/rpminstall.c:581
-#, fuzzy, c-format
+#, c-format
 msgid "package \"%s\" cannot be erased\n"
-msgstr "paket %s är inte installerat\n"
+msgstr "paket \"%s\" kan inte tas bort\n"
 
 #: lib/rpminstall.c:607
 #, c-format
@@ -2660,9 +2650,9 @@ msgid "%s cannot be installed\n"
 msgstr "%s kan inte installeras\n"
 
 #: lib/rpmlock.c:150 lib/rpmlock.c:160
-#, fuzzy, c-format
+#, c-format
 msgid "can't create transaction lock on %s (%s)\n"
-msgstr "kan inte skapa transaktionslås på %s\n"
+msgstr "kan inte skapa transaktionslås på %s (%s)\n"
 
 #: lib/rpmlock.c:156
 #, c-format
@@ -2821,7 +2811,7 @@ msgstr "%s:  ogiltig typspecificerare %s på rad nummer %d\n"
 msgid "%s:  invalid context %s on line number %d\n"
 msgstr "%s:  ogiltigt sammanhang %s på rad nummer %d\n"
 
-#: lib/rpmts.c:133
+#: lib/rpmts.c:133 rpmdb/pkgio.c:236
 #, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "kan inte öppna paketdatabas i %s\n"
@@ -2922,110 +2912,162 @@ msgstr "%s har för stort eller för litet \"long\"-värde, hoppar över\n"
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr "%s har för stort eller för litet heltalsvärde, hoppar över\n"
 
-#: rpmdb/hdrfmt.c:87 rpmdb/hdrfmt.c:187
+#: rpmdb/hdrfmt.c:91 rpmdb/hdrfmt.c:196
 msgid "(not a number)"
 msgstr "(inte ett tal)"
 
-#: rpmdb/hdrfmt.c:214
+#: rpmdb/hdrfmt.c:224
 #, c-format
 msgid "%c"
 msgstr "%c"
 
-#: rpmdb/hdrfmt.c:225
+#: rpmdb/hdrfmt.c:236
 msgid "%a %b %d %Y"
 msgstr "%a %d %b %Y"
 
-#: rpmdb/hdrfmt.c:278
+#: rpmdb/hdrfmt.c:290
 msgid "invalid type"
 msgstr "felaktig typ"
 
-#: rpmdb/hdrfmt.c:367 rpmdb/hdrfmt.c:396 rpmdb/hdrfmt.c:417 rpmdb/hdrfmt.c:484
-#: rpmdb/hdrfmt.c:1149
+#: rpmdb/hdrfmt.c:380 rpmdb/hdrfmt.c:410 rpmdb/hdrfmt.c:432 rpmdb/hdrfmt.c:500
+#: rpmdb/hdrfmt.c:1190
 msgid "(invalid type)"
 msgstr "(felaktig typ)"
 
-#: rpmdb/hdrfmt.c:474
+#: rpmdb/hdrfmt.c:490
 msgid "(not base64)"
 msgstr "(inte base64)"
 
-#: rpmdb/hdrfmt.c:508 rpmdb/hdrfmt.c:1045
-msgid "(not a blob)"
-msgstr "(inte en klick)"
-
-#: rpmdb/hdrfmt.c:694 rpmdb/hdrfmt.c:724 rpmdb/hdrfmt.c:2191
+#: rpmdb/hdrfmt.c:531
 #, fuzzy
-msgid "(not a string)"
-msgstr "(inte ett tal)"
+msgid "(invalid type :base64)"
+msgstr "(felaktig typ)"
 
-#: rpmdb/hdrfmt.c:797
+#: rpmdb/hdrfmt.c:730 rpmdb/hdrfmt.c:761 rpmdb/hdrfmt.c:2548
+#: rpmdb/hdrfmt.c:2986
+msgid "(not a string)"
+msgstr "(inte en sträng)"
+
+#: rpmdb/hdrfmt.c:835
 msgid "(invalid xml type)"
 msgstr "(felaktig xml-typ)"
 
-#: rpmdb/hdrfmt.c:983
+#: rpmdb/hdrfmt.c:1022
 msgid "(invalid yaml type)"
 msgstr "(felaktig yaml-typ)"
 
-#: rpmdb/hdrfmt.c:1068
+#: rpmdb/hdrfmt.c:1085
+msgid "(not a blob)"
+msgstr "(inte en klick)"
+
+#: rpmdb/hdrfmt.c:1108
 msgid "(not an OpenPGP signature)"
 msgstr "(inte en OpenPGP-signatur)"
 
-#: rpmdb/hdrfmt.c:3297
+#: rpmdb/hdrfmt.c:3197
+#, fuzzy
+msgid "(invalid type :digest)"
+msgstr "(felaktig typ)"
+
+#: rpmdb/hdrfmt.c:3253
+#, fuzzy
+msgid "(invalid type :stat)"
+msgstr "(felaktig typ)"
+
+#: rpmdb/hdrfmt.c:3405
+#, fuzzy
+msgid "(invalid type :uuid)"
+msgstr "(felaktig typ)"
+
+#: rpmdb/hdrfmt.c:3466
+#, fuzzy
+msgid "(invalid type :rpn)"
+msgstr "(felaktig typ)"
+
+#: rpmdb/hdrfmt.c:3476
+#, fuzzy
+msgid "(invalid string :rpn)"
+msgstr "(felaktig typ)"
+
+#: rpmdb/hdrfmt.c:3492
+#, fuzzy
+msgid "(expected number :rpn)"
+msgstr "oväntat frågeformat"
+
+#: rpmdb/hdrfmt.c:3496
+msgid "(stack overflow :rpn)"
+msgstr ""
+
+#: rpmdb/hdrfmt.c:3502
+#, fuzzy
+msgid "(invalid number :rpn)"
+msgstr "(felaktig xml-typ)"
+
+#: rpmdb/hdrfmt.c:3507
+msgid "(stack underflow :rpn)"
+msgstr ""
+
+#: rpmdb/hdrfmt.c:3520
+msgid "(divide by zero :rpn)"
+msgstr ""
+
+#: rpmdb/hdrfmt.c:4270
 msgid "missing { after %"
 msgstr "{ saknas efter %"
 
-#: rpmdb/hdrfmt.c:3331
+#: rpmdb/hdrfmt.c:4304
 msgid "missing } after %{"
 msgstr "} saknas efter %{"
 
-#: rpmdb/hdrfmt.c:3347
+#: rpmdb/hdrfmt.c:4320
 msgid "empty tag format"
 msgstr "tomt taggformat"
 
-#: rpmdb/hdrfmt.c:3359
+#: rpmdb/hdrfmt.c:4329
 msgid "empty tag name"
 msgstr "tomt taggnamn"
 
-#: rpmdb/hdrfmt.c:3368
+#: rpmdb/hdrfmt.c:4338
 msgid "unknown tag"
 msgstr "okänd tagg"
 
-#: rpmdb/hdrfmt.c:3398
+#: rpmdb/hdrfmt.c:4368
 msgid "] expected at end of array"
 msgstr "] förväntades vid slutet på vektor"
 
-#: rpmdb/hdrfmt.c:3415
+#: rpmdb/hdrfmt.c:4385
 msgid "unexpected ]"
 msgstr "oväntad ]"
 
-#: rpmdb/hdrfmt.c:3430
+#: rpmdb/hdrfmt.c:4400
 msgid "unexpected }"
 msgstr "oväntad }"
 
-#: rpmdb/hdrfmt.c:3508
+#: rpmdb/hdrfmt.c:4478
 msgid "? expected in expression"
 msgstr "? förväntades i uttryck"
 
-#: rpmdb/hdrfmt.c:3515
+#: rpmdb/hdrfmt.c:4485
 msgid "{ expected after ? in expression"
 msgstr "{ förväntades efter ? i uttryck"
 
-#: rpmdb/hdrfmt.c:3527 rpmdb/hdrfmt.c:3567
+#: rpmdb/hdrfmt.c:4497 rpmdb/hdrfmt.c:4537
 msgid "} expected in expression"
 msgstr "} förväntades i uttryck"
 
-#: rpmdb/hdrfmt.c:3535
+#: rpmdb/hdrfmt.c:4505
 msgid ": expected following ? subexpression"
 msgstr ": förväntades efter ? i deluttryck"
 
-#: rpmdb/hdrfmt.c:3553
+#: rpmdb/hdrfmt.c:4523
 msgid "{ expected after : in expression"
 msgstr "{ förväntades efter : i uttryck"
 
-#: rpmdb/hdrfmt.c:3575
+#: rpmdb/hdrfmt.c:4545
 msgid "| expected at end of expression"
 msgstr "| förväntades vid slutet på uttryck"
 
-#: rpmdb/hdrfmt.c:3868
+#: rpmdb/hdrfmt.c:4844
 msgid "array iterator used with different sized arrays"
 msgstr "vektoriterator använd med vektor av annan storlek"
 
@@ -3057,152 +3099,152 @@ msgstr "kort skrivning av magiskt tal för huvud"
 msgid "short write of header"
 msgstr "kort skrivning av huvud"
 
-#: rpmdb/pkgio.c:478 rpmdb/pkgio.c:483
+#: rpmdb/pkgio.c:489 rpmdb/pkgio.c:494
 #, c-format
 msgid "lead size(%u): BAD, read(%d), %s(%d)"
 msgstr "inledningsstorlek(%u): FEL, läste(%d), %s(%d)"
 
-#: rpmdb/pkgio.c:516
+#: rpmdb/pkgio.c:527
 #, c-format
 msgid "lead size(%u): BAD, xar read(%u)"
 msgstr "inledningsstorlek(%u): FEL, xar läste(%u)"
 
-#: rpmdb/pkgio.c:533
+#: rpmdb/pkgio.c:544
 #, c-format
 msgid "lead magic: BAD, read %02x%02x%02x%02x"
 msgstr "inledande makiskt tal: FEL, läste %02x%02x%02x%02x"
 
-#: rpmdb/pkgio.c:542
+#: rpmdb/pkgio.c:553
 #, c-format
 msgid "lead version(%u): UNSUPPORTED"
 msgstr "inledande version(%u): STÖDS EJ"
 
-#: rpmdb/pkgio.c:553
+#: rpmdb/pkgio.c:564
 #, c-format
 msgid "sigh type(%u): UNSUPPORTED"
 msgstr "signh-typ(%u): STÖDS EJ"
 
-#: rpmdb/pkgio.c:701
+#: rpmdb/pkgio.c:712
 #, c-format
 msgid "sigh size(%d): BAD, read returned %d"
 msgstr "signh-storlek(%d): FEL, läsning returnerade %d"
 
-#: rpmdb/pkgio.c:713
+#: rpmdb/pkgio.c:724
 #, c-format
 msgid "sigh magic: BAD, read %02x%02x%02x%02x%02x%02x%02x%02x"
 msgstr "signh magiskt tal: FEL, läste %02x%02x%02x%02x%02x%02x%02x%02x"
 
-#: rpmdb/pkgio.c:721
+#: rpmdb/pkgio.c:732
 #, c-format
 msgid "sigh tags: BAD, no. of tags(%u) out of range"
 msgstr "signh-taggar: FEL, antal taggar(%u) utanför intervall"
 
-#: rpmdb/pkgio.c:727
+#: rpmdb/pkgio.c:738
 #, c-format
 msgid "sigh data: BAD, no. of bytes(%u) out of range"
 msgstr "signh-data: FEL, antal byte(%u) itanför intevall"
 
-#: rpmdb/pkgio.c:737
+#: rpmdb/pkgio.c:748
 #, c-format
 msgid "sigh blob(%u): BAD, read returned %d"
 msgstr "signh-klick(%u): FEL, läsning returnerade %d"
 
-#: rpmdb/pkgio.c:749 rpmdb/pkgio.c:933 rpmdb/pkgio.c:1058
+#: rpmdb/pkgio.c:760 rpmdb/pkgio.c:944 rpmdb/pkgio.c:1069
 #, c-format
 msgid "tag[%d]: BAD, tag %u type %u offset %d count %u"
 msgstr "tagg[%d]: FEL, tagg %u typ %u position %d antal %u"
 
-#: rpmdb/pkgio.c:770 rpmdb/pkgio.c:953
+#: rpmdb/pkgio.c:781 rpmdb/pkgio.c:964
 #, c-format
 msgid "region offset: BAD, tag %u type %u offset %d count %u"
 msgstr "regionposition: FEL, tagg %u typ %u position %d antal %u"
 
-#: rpmdb/pkgio.c:795 rpmdb/pkgio.c:972
+#: rpmdb/pkgio.c:806 rpmdb/pkgio.c:983
 #, c-format
 msgid "region trailer: BAD, tag %u type %u offset %d count %u"
 msgstr "regionavslutning: FEL, tagg %u typ %u position %d antal %u"
 
-#: rpmdb/pkgio.c:807 rpmdb/pkgio.c:984
+#: rpmdb/pkgio.c:818 rpmdb/pkgio.c:995
 #, c-format
 msgid "region size: BAD, ril(%u) > il(%u)"
 msgstr "regionstorlek: FEL, ril(%u) > il(%u)"
 
-#: rpmdb/pkgio.c:818
+#: rpmdb/pkgio.c:829
 #, c-format
 msgid "sigh tag[%u]: BAD, tag %u type %u offset %d count %u"
 msgstr "signh-tagg[%u]: FEL, tagg %u typ %u position %d antal %u"
 
-#: rpmdb/pkgio.c:828
+#: rpmdb/pkgio.c:839
 #, c-format
 msgid "sigh load: BAD"
 msgstr "signh-last: FEL"
 
-#: rpmdb/pkgio.c:841
+#: rpmdb/pkgio.c:852
 #, c-format
 msgid "sigh pad(%u): BAD, read %d bytes"
 msgstr "signh-utfyllnad(%u): FEL, läste %d byte"
 
-#: rpmdb/pkgio.c:854
+#: rpmdb/pkgio.c:865
 #, c-format
 msgid "sigh sigSize(%u): BAD, fstat(2) failed"
 msgstr "signh sig-storlek(%u): FEL, fstat(2) misslyckades"
 
-#: rpmdb/pkgio.c:924
+#: rpmdb/pkgio.c:935
 #, c-format
 msgid "blob size(%d): BAD, 8 + 16 * il(%u) + dl(%u)"
 msgstr "klickstorlek(%d): FEL, 8 + 16 · il(%u) + dl(%u)"
 
-#: rpmdb/pkgio.c:993
+#: rpmdb/pkgio.c:1004
 #, c-format
 msgid "tag[%u]: BAD, tag %u type %u offset %d count %u"
 msgstr "tagg[%u]: FEL, tagg %u typ %u position %d antal %u"
 
-#: rpmdb/pkgio.c:1011
+#: rpmdb/pkgio.c:1022
 #, c-format
 msgid "hdr SHA1: BAD, not hex"
 msgstr "hvd SHA1: FEL, ej hex"
 
-#: rpmdb/pkgio.c:1023
+#: rpmdb/pkgio.c:1034
 #, c-format
 msgid "hdr RSA: BAD, not binary"
 msgstr "hvd RSA: FEL, ej binärt"
 
-#: rpmdb/pkgio.c:1033
+#: rpmdb/pkgio.c:1044
 #, c-format
 msgid "hdr DSA: BAD, not binary"
 msgstr "hvd DSA: FEL, ej binärt"
 
-#: rpmdb/pkgio.c:1090 rpmdb/pkgio.c:1133
+#: rpmdb/pkgio.c:1101 rpmdb/pkgio.c:1144
 #, c-format
 msgid "skipping header with unverifiable V%u signature\n"
 msgstr "hoppar över huvud med overifierbar V%u-signatur\n"
 
-#: rpmdb/pkgio.c:1284
+#: rpmdb/pkgio.c:1295
 #, c-format
 msgid "hdr size(%u): BAD, read returned %d"
 msgstr "hvdstorlek(%u): FEL, läsning returnerade %d"
 
-#: rpmdb/pkgio.c:1294
+#: rpmdb/pkgio.c:1305
 #, c-format
 msgid "hdr magic: BAD, read %02x%02x%02x%02x%02x%02x%02x%02x"
 msgstr "hvd magiskt tal: FEL, läste %02x%02x%02x%02x%02x%02x%02x%02x"
 
-#: rpmdb/pkgio.c:1302
+#: rpmdb/pkgio.c:1313
 #, c-format
 msgid "hdr tags: BAD, no. of tags(%u) out of range"
 msgstr "hvdtaggar: FEL, antal taggar(%u) utanför intervall"
 
-#: rpmdb/pkgio.c:1309
+#: rpmdb/pkgio.c:1320
 #, c-format
 msgid "hdr data: BAD, no. of bytes(%u) out of range\n"
 msgstr "hvddata: FEL, antal byte(%u) utanför intervall\n"
 
-#: rpmdb/pkgio.c:1320
+#: rpmdb/pkgio.c:1331
 #, c-format
 msgid "hdr blob(%u): BAD, read returned %d"
 msgstr "hvdklick(%u): FEL, läsning returnerade %d"
 
-#: rpmdb/pkgio.c:1334
+#: rpmdb/pkgio.c:1345
 #, c-format
 msgid "hdr load: BAD\n"
 msgstr "hvdlast: FEL\n"
@@ -3228,9 +3270,9 @@ msgstr "ingen dbpath har satts\n"
 
 #: rpmdb/rpmdb.c:1477 rpmdb/rpmdb.c:1624 rpmdb/rpmdb.c:1680 rpmdb/rpmdb.c:2597
 #: rpmdb/rpmdb.c:2747 rpmdb/rpmdb.c:3069 rpmdb/rpmdb.c:3547
-#, fuzzy, c-format
+#, c-format
 msgid "error(%d) getting records from %s index\n"
-msgstr "fel(%d) när \"%s\"-poster hämtades från %s-indexet\n"
+msgstr "fel(%d) när poster hämtades från %s-indexet\n"
 
 #: rpmdb/rpmdb.c:1894
 msgid "miFreeHeader: skipping"
@@ -3265,14 +3307,14 @@ msgid "error(%d) setting header #%d record for %s removal\n"
 msgstr "fel(%d) när huvudpost nr. %d  för %s skulle tas bort\n"
 
 #: rpmdb/rpmdb.c:3090 rpmdb/rpmdb.c:3566
-#, fuzzy, c-format
+#, c-format
 msgid "error(%d) storing record into %s\n"
-msgstr "fel(%d) när post %s sparades i %s\n"
+msgstr "fel(%d) när post sparades i %s\n"
 
 #: rpmdb/rpmdb.c:3100
-#, fuzzy, c-format
+#, c-format
 msgid "error(%d) removing record from %s\n"
-msgstr "fel(%d) när post \"%s\" togs bort från %s\n"
+msgstr "fel(%d) när post togs bort från %s\n"
 
 #: rpmdb/rpmdb.c:3277
 #, c-format
@@ -3326,64 +3368,65 @@ msgstr "byt ut filer i %s med filer från %s för att återställa"
 msgid "failed to remove directory %s: %s\n"
 msgstr "kunde inte ta bort katalogen %s: %s\n"
 
-#: rpmdb/signature.c:96 rpmdb/signature.c:101 rpmdb/signature.c:107
+#: rpmdb/signature.c:89 rpmdb/signature.c:98 rpmdb/signature.c:103
+#: rpmdb/signature.c:109
 #, c-format
 msgid "error creating temporary file %s\n"
 msgstr "fel när tämporärfil %s skapades\n"
 
-#: rpmdb/signature.c:189 rpmdb/signature.c:536
+#: rpmdb/signature.c:191 rpmdb/signature.c:538
 #, c-format
 msgid "Could not exec %s: %s\n"
 msgstr "Kunde inte köra %s: %s\n"
 
-#: rpmdb/signature.c:207 rpmdb/signature.c:550
+#: rpmdb/signature.c:209 rpmdb/signature.c:552
 #, c-format
 msgid "Failed %s(%d) key(0x%lx): %s\n"
 msgstr "Misslyckades med %s(%d) nyckel(0x%lx): %s\n"
 
-#: rpmdb/signature.c:233
+#: rpmdb/signature.c:235
 #, c-format
 msgid "gpg exec failed (%d)\n"
 msgstr "exec av gpg misslyckades (%d)\n"
 
-#: rpmdb/signature.c:240
+#: rpmdb/signature.c:242
 msgid "gpg failed to write signature\n"
 msgstr "gpg kunde inte skriva signatur\n"
 
-#: rpmdb/signature.c:259
+#: rpmdb/signature.c:261
 msgid "unable to read the signature\n"
 msgstr "kan inte läsa signaturen\n"
 
-#: rpmdb/signature.c:602
+#: rpmdb/signature.c:604
 msgid "Header+Payload size: "
 msgstr "Huvud+laststorlek: "
 
-#: rpmdb/signature.c:639
+#: rpmdb/signature.c:641
 msgid "MD5 digest: "
 msgstr "MD5-summa: "
 
-#: rpmdb/signature.c:696
+#: rpmdb/signature.c:698
 msgid "Header SHA1 digest: "
 msgstr "Huvudets SHA1-summa: "
 
-#: rpmdb/signature.c:756 rpmdb/signature.c:882
+#: rpmdb/signature.c:758 rpmdb/signature.c:884
 msgid "Header "
 msgstr "Huvud "
 
-#: rpmdb/signature.c:812
+#: rpmdb/signature.c:814
 msgid " signature: "
 msgstr " signatur: "
 
-#: rpmdb/signature.c:888
+#: rpmdb/signature.c:890
 msgid " DSA signature: "
 msgstr " DSA-signatur: "
 
-#: rpmdb/signature.c:963
+#: rpmdb/signature.c:965
 #, c-format
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr "Verifiera signatur: FELAKTIGA PARAMETRAR\n"
 
-#: rpmdb/signature.c:984
+#: rpmdb/signature.c:986
 #, c-format
 msgid "Signature: UNKNOWN (%u)\n"
 msgstr "Signatur: OKÄND (%u)\n"
@@ -3444,9 +3487,9 @@ msgid "Macro %%%s (%s) was not used below level %d\n"
 msgstr "Makro %%%s (%s) användes inte under nivå %d\n"
 
 #: rpmio/macro.c:1103
-#, fuzzy, c-format
+#, c-format
 msgid "Unknown option in macro %s(%s): %s: %s\n"
-msgstr "Okänd flagga %c i %s(%s)\n"
+msgstr "Okänd flagga i makro %s(%s): %s: %s\n"
 
 #: rpmio/macro.c:1417
 #, c-format
@@ -3464,9 +3507,9 @@ msgid "A %% is followed by an unparseable macro\n"
 msgstr "Ett %% följs av ett makro som inte kan tolkas\n"
 
 #: rpmio/macro.c:1571
-#, fuzzy, c-format
+#, c-format
 msgid "%s: load macros failed\n"
-msgstr "%s: import misslyckades.\n"
+msgstr "%s: inläsning av makron misslyckades\n"
 
 #: rpmio/macro.c:1757
 #, c-format
@@ -3492,96 +3535,124 @@ msgstr "Fil %s: %s\n"
 msgid "File %s is smaller than %u bytes\n"
 msgstr "Filen %s är mindre än %u byte\n"
 
+#: rpmio/mire.c:325
+#, fuzzy, c-format
+msgid "%s: Failed to set locale %s (obtained from %s)\n"
+msgstr "Kunde inte läsa specfil från %s\n"
+
+#: rpmio/mire.c:366
+#, c-format
+msgid "pcre_compile2 failed: %s(%d) at offset %d of \"%s\"\n"
+msgstr ""
+
+#: rpmio/mire.c:384
+#, fuzzy, c-format
+msgid "%s: regcomp failed: %s\n"
+msgstr "%s: open misslyckades: %s\n"
+
+#: rpmio/mire.c:442
+#, fuzzy, c-format
+msgid "%s: regexec failed: %s(%d)\n"
+msgstr "%s: Fseek misslyckades: %s\n"
+
+#: rpmio/mire.c:460
+#, fuzzy, c-format
+msgid "pcre_exec failed: return %d\n"
+msgstr "exec av gpg misslyckades (%d)\n"
+
+#: rpmio/mire.c:474
+#, fuzzy, c-format
+msgid "fnmatch failed: return %d\n"
+msgstr "mntctl() kunde inte returnera storlek: %s\n"
+
+#: rpmio/mire.c:570
+#, fuzzy, c-format
+msgid "%s: Error while studying regex%s: %s\n"
+msgstr "rad %d: Fel vid tolkning av %s: %s\n"
+
 #: rpmio/poptIO.c:97
-#, fuzzy
 msgid "MD2 digest (RFC-1319)"
-msgstr "MD5-summa: "
+msgstr "MD2-summa (RFC-1319)"
 
 #: rpmio/poptIO.c:99
-#, fuzzy
 msgid "MD4 digest"
-msgstr "MD5-summa: "
+msgstr "MD4-summa"
 
 #: rpmio/poptIO.c:101
-#, fuzzy
 msgid "MD5 digest (RFC-1321)"
-msgstr "MD5-summa: "
+msgstr "MD5-summa (RFC-1321)"
 
 #: rpmio/poptIO.c:103
 msgid "SHA-1 digest (FIPS-180-1)"
-msgstr ""
+msgstr "SHA-1-summa (FIPS-180-1)"
 
 #: rpmio/poptIO.c:105
 msgid "SHA-224 digest (FIPS-180-2)"
-msgstr ""
+msgstr "SHA-224-summa (FIPS-180-2)"
 
 #: rpmio/poptIO.c:107
 msgid "SHA-256 digest (FIPS-180-2)"
-msgstr ""
+msgstr "SHA-256-summa (FIPS-180-2)"
 
 #: rpmio/poptIO.c:109
 msgid "SHA-384 digest (FIPS-180-2)"
-msgstr ""
+msgstr "SHA-384-summa (FIPS-180-2)"
 
 #: rpmio/poptIO.c:111
 msgid "SHA-512 digest (FIPS-180-2)"
-msgstr ""
+msgstr "SHA-512-summa (FIPS-180-2)"
 
 #: rpmio/poptIO.c:113
 msgid "SALSA-10 hash"
-msgstr ""
+msgstr "SALSA-10-kontrollsumma"
 
 #: rpmio/poptIO.c:115
 msgid "SALSA-20 hash"
-msgstr ""
+msgstr "SALSA-20-kontrollsumma"
 
 #: rpmio/poptIO.c:117
-#, fuzzy
 msgid "RIPEMD-128 digest"
-msgstr "MD5-summa: "
+msgstr "RIPEMD-128-summa"
 
 #: rpmio/poptIO.c:119
-#, fuzzy
 msgid "RIPEMD-160 digest"
-msgstr "MD5-summa: "
+msgstr "RIPEMD-160-summa"
 
 #: rpmio/poptIO.c:121
-#, fuzzy
 msgid "RIPEMD-256 digest"
-msgstr "MD5-summa: "
+msgstr "RIPEMD-256-summa"
 
 #: rpmio/poptIO.c:123
-#, fuzzy
 msgid "RIPEMD-320 digest"
-msgstr "MD5-summa: "
+msgstr "RIPEMD-320-summa"
 
 #: rpmio/poptIO.c:125
 msgid "TIGER digest"
-msgstr ""
+msgstr "TIGER-sammanslagning"
 
 #: rpmio/poptIO.c:127
 msgid "CRC-32 checksum"
-msgstr ""
+msgstr "CRC-32-kontrollsumma"
 
 #: rpmio/poptIO.c:129
 msgid "CRC-64 checksum"
-msgstr ""
+msgstr "CRC-64-kontrollsumma"
 
 #: rpmio/poptIO.c:131
 msgid "ADLER-32 checksum"
-msgstr ""
+msgstr "ADLER-32-kontrollsumma"
 
 #: rpmio/poptIO.c:133
 msgid "lookup3 hash"
-msgstr ""
+msgstr "lookup3-kontrollsumma"
 
 #: rpmio/poptIO.c:135
 msgid "no hash algorithm"
-msgstr ""
+msgstr "ingen kontrollsummealgoritm"
 
 #: rpmio/poptIO.c:137
 msgid "all hash algorithm(s)"
-msgstr ""
+msgstr "alla kontrollsummealgoritmer"
 
 #: rpmio/poptIO.c:277
 msgid "FTS_COMFOLLOW: follow command line symlinks"
@@ -3652,18 +3723,16 @@ msgid "CRYPTO"
 msgstr "KRYPTO"
 
 #: rpmio/poptIO.c:359
-#, fuzzy
 msgid "debug ar archives"
-msgstr "felsök filtillståndsmaskin"
+msgstr "felsök ar-arkiv"
 
 #: rpmio/poptIO.c:361
 msgid "debug argv collections"
 msgstr "felsök argv-samlingar"
 
 #: rpmio/poptIO.c:363
-#, fuzzy
 msgid "debug cpio archives"
-msgstr "felsök cpio-laster"
+msgstr "felsök cpio-arkiv"
 
 #: rpmio/poptIO.c:365
 msgid "debug WebDAV data stream"
@@ -3675,30 +3744,27 @@ msgstr "felsök FTP/HTTP-dataström"
 
 #: rpmio/poptIO.c:369
 msgid "debug Fts(3) traverse"
-msgstr ""
+msgstr "felsök Fts(3)-traversering"
 
 #: rpmio/poptIO.c:371
-#, fuzzy
 msgid "debug I/O state machine"
-msgstr "felsök filtillståndsmaskin"
+msgstr "felsök I/O-tillståndsmaskin"
 
 #: rpmio/poptIO.c:375
 msgid "debug rpmio I/O"
 msgstr "felsök rpmio I/O"
 
 #: rpmio/poptIO.c:381
-#, fuzzy
 msgid "debug xar archives"
-msgstr "felsök filtillståndsmaskin"
+msgstr "felsök xar-arkiv"
 
 #: rpmio/poptIO.c:383
-#, fuzzy
 msgid "debug tar archives"
-msgstr "felsök filtillståndsmaskin"
+msgstr "felsök tar-arkiv"
 
 #: rpmio/poptIO.c:385
 msgid "display operation statistics"
-msgstr ""
+msgstr "visa arbetsstatisitk"
 
 #: rpmio/poptIO.c:387
 msgid "debug URL cache handling"
@@ -3720,280 +3786,328 @@ msgstr "Serverfel"
 msgid "Unknown Error"
 msgstr "Okänt fel"
 
+#: rpmio/rpmdigest.c:176 rpmio/rpmgrep.c:1052 rpmio/rpmgrep.c:1215
+#, c-format
+msgid "%s: Failed to open %s: %s\n"
+msgstr "%s: Kunde inte öppna %s: %s\n"
+
+#: rpmio/rpmdigest.c:235
+#, fuzzy, c-format
+msgid "%s: Unknown digest name \"%s\"\n"
+msgstr "%s: Okänd färginställning: \"%s\"\n"
+
+#: rpmio/rpmdigest.c:298 rpmio/rpmgrep.c:1344 rpmio/rpmmtree.c:3535
+#: rpmio/rpmrepo.c:1693
+#, c-format
+msgid "%s: Unknown option -%c\n"
+msgstr "%s: Okänd flagga -%c\n"
+
+#: rpmio/rpmdigest.c:317
+#, fuzzy
+msgid "read in binary mode"
+msgstr "kör i flerradsläge"
+
+#: rpmio/rpmdigest.c:321 rpmio/rpmdigest.c:325
+#, fuzzy
+msgid "read digests from MANIFEST file and verify (may be used more than once)"
+msgstr "läs mönster från fil (kan användas mer än en gång)"
+
+#: rpmio/rpmdigest.c:322 rpmio/rpmdigest.c:326
+msgid "MANIFEST"
+msgstr ""
+
+#: rpmio/rpmdigest.c:330
+msgid "read in text mode (default)"
+msgstr ""
+
+#: rpmio/rpmdigest.c:334
+msgid "The following two options are useful only when verifying digests:"
+msgstr ""
+
+#: rpmio/rpmdigest.c:340
+msgid "no output when verifying"
+msgstr ""
+
+#: rpmio/rpmdigest.c:342
+msgid "warn about improperly formatted checksum lines"
+msgstr ""
+
+#: rpmio/rpmdigest.c:345 rpmio/rpmmtree.c:3606 rpmio/rpmrepo.c:1790
+msgid "Available digests:"
+msgstr ""
+
+#: rpmio/rpmdigest.c:348 rpmio/rpmgrep.c:1463 rpmio/rpmmtree.c:3609
+#: rpmio/rpmrepo.c:1793
+msgid "Common options for all rpmio executables:"
+msgstr "Gemensamma flaggor för alla rpmio-program:"
+
+#: rpmio/rpmdigest.c:355
+msgid ""
+"When checking, the input should be a former output of this program.  The\n"
+"default mode is to print a line with digest, a character indicating type\n"
+"(`*' for binary, ` ' for text), and name for each FILE.\n"
+msgstr ""
+
 #: rpmio/rpmgrep.c:595
 #, c-format
 msgid "%s: pcre_exec() error %d while matching "
-msgstr ""
+msgstr "%s: pcre_exec() fel %d vid matchning av "
 
 #: rpmio/rpmgrep.c:596
-#, fuzzy, c-format
+#, c-format
 msgid "pattern number %d to "
-msgstr "Inget patch-nummer %d\n"
+msgstr "mönster nummer %d mot "
 
 #: rpmio/rpmgrep.c:597
-#, fuzzy, c-format
+#, c-format
 msgid "this line:\n"
-msgstr "rad: %s\n"
+msgstr "denna rad:\n"
 
 #: rpmio/rpmgrep.c:605
 #, c-format
 msgid "%s: error %d means that a resource limit was exceeded\n"
-msgstr ""
+msgstr "%s: fel %d betyder att en resursgräns överskreds\n"
 
 #: rpmio/rpmgrep.c:608
 #, c-format
 msgid "%s: check your regex for nested unlimited loops\n"
 msgstr ""
+"%s: kontrollera dina reguljäruttryck om de har nästade obegränsade slingor\n"
 
 #: rpmio/rpmgrep.c:613
 #, c-format
 msgid "%s: too many errors - abandoned\n"
-msgstr ""
+msgstr "%s: för många fel - övergiven\n"
 
 #: rpmio/rpmgrep.c:985
-#, fuzzy, c-format
+#, c-format
 msgid "%s: Failed to open directory %s: %s\n"
-msgstr "kunde inte ta bort katalogen %s: %s\n"
-
-#: rpmio/rpmgrep.c:1052 rpmio/rpmgrep.c:1215
-#, fuzzy, c-format
-msgid "%s: Failed to open %s: %s\n"
-msgstr "kunde inte öppna %s: %s\n"
+msgstr "%s: Kunde inte ta bort katalog %s: %s\n"
 
 #: rpmio/rpmgrep.c:1121
 #, c-format
 msgid "%s: Too many %spatterns (max %d)\n"
-msgstr ""
+msgstr "%s: För många %smönster (max %d)\n"
 
 #: rpmio/rpmgrep.c:1146
 #, c-format
 msgid "%s: Error in"
-msgstr ""
+msgstr "%s: Fel i"
 
 #: rpmio/rpmgrep.c:1148
 #, c-format
 msgid "%s command-line"
-msgstr ""
+msgstr "%s kommandorad"
 
 #: rpmio/rpmgrep.c:1150
-#, fuzzy, c-format
+#, c-format
 msgid " file:line %s:%d"
-msgstr "Felaktig fil: %s: %s\n"
+msgstr " fil:rad %s:%d"
 
 #: rpmio/rpmgrep.c:1151
 #, c-format
 msgid " regex at offset %d: %s\n"
-msgstr ""
+msgstr " reguljäruttryck på plats %d: %s\n"
 
 #: rpmio/rpmgrep.c:1293
 #, c-format
 msgid "%s: Invalid value \"%s\" for -d\n"
-msgstr ""
+msgstr "%s: Ogiltigt värde \"%s\" för -d\n"
 
 #: rpmio/rpmgrep.c:1303
 #, c-format
 msgid "%s: Invalid value \"%s\" for -D\n"
-msgstr ""
+msgstr "%s: Ogiltigt värde \"%s\" för -D\n"
 
 #: rpmio/rpmgrep.c:1320
-#, fuzzy, c-format
+#, c-format
 msgid "%s: Unknown color setting \"%s\"\n"
-msgstr "okänd tagg: \"%s\"\n"
+msgstr "%s: Okänd färginställning: \"%s\"\n"
 
 #: rpmio/rpmgrep.c:1336
 #, c-format
 msgid "%s %s (PCRE version %s)\n"
-msgstr ""
+msgstr "%s %s (PCRE version %s)\n"
 
 #: rpmio/rpmgrep.c:1339
 #, c-format
 msgid "%s %s (without PCRE)\n"
-msgstr ""
-
-#: rpmio/rpmgrep.c:1344
-#, fuzzy, c-format
-msgid "%s: Unknown option -%c\n"
-msgstr "Okänd flagga %c i %s(%s)\n"
+msgstr "%s %s (utan PCRE)\n"
 
 #: rpmio/rpmgrep.c:1362
 msgid "set number of following context lines"
-msgstr ""
+msgstr "sätt antalet efterföljande sammanhangsrader"
 
 #: rpmio/rpmgrep.c:1362 rpmio/rpmgrep.c:1364 rpmio/rpmgrep.c:1366
 msgid "=number"
-msgstr ""
+msgstr "=antal"
 
 #: rpmio/rpmgrep.c:1364
 msgid "set number of prior context lines"
-msgstr ""
+msgstr "sätt antalet föregående sammanhangsrader"
 
 #: rpmio/rpmgrep.c:1366
 msgid "set number of context lines, before & after"
-msgstr ""
+msgstr "sätt antalet sammanhangsrader, före och efter"
 
 #: rpmio/rpmgrep.c:1368
 msgid "print only a count of matching lines per FILE"
-msgstr ""
+msgstr "skriv bara ut antalet matachander rader per FIL"
 
 #: rpmio/rpmgrep.c:1370
 msgid "matched text color option (auto|always|never)"
-msgstr ""
+msgstr "färgalternativ för matchad text (auto|always|never)"
 
 #: rpmio/rpmgrep.c:1370 rpmio/rpmgrep.c:1372
 msgid "=option"
-msgstr ""
+msgstr "=alternativ"
 
 #: rpmio/rpmgrep.c:1372
 msgid "matched text colour option (auto|always|never)"
-msgstr ""
+msgstr "färgalternativ för matchad text (auto|always|never)"
 
 #: rpmio/rpmgrep.c:1375
 msgid "device, FIFO, or socket action (read|skip)"
-msgstr ""
+msgstr "åtgärd för enhet, FIFO eller uttag (socket) (read|skip)"
 
 #: rpmio/rpmgrep.c:1375 rpmio/rpmgrep.c:1377
 msgid "=action"
-msgstr ""
+msgstr "=åtgärd"
 
 #: rpmio/rpmgrep.c:1377
 msgid "directory action (read|skip|recurse)"
-msgstr ""
+msgstr "katalogåtgärd (read|skip|recurse)"
 
 #: rpmio/rpmgrep.c:1380 rpmio/rpmgrep.c:1383
 msgid "specify pattern (may be used more than once)"
-msgstr ""
+msgstr "ange mönster (kan användas mer än en gång)"
 
+# "p" är första bokstaven i "pattern"
 #: rpmio/rpmgrep.c:1380 rpmio/rpmgrep.c:1383 rpmio/rpmgrep.c:1456
 #: rpmio/rpmgrep.c:1458
 msgid "(p)"
-msgstr ""
+msgstr "(m)"
 
 #: rpmio/rpmgrep.c:1386
 msgid "patterns are sets of newline-separated strings"
-msgstr ""
+msgstr "mönster är mängder av nyradsseparerade strängar"
 
 #: rpmio/rpmgrep.c:1389 rpmio/rpmgrep.c:1393
 msgid "read patterns from file (may be used more than once)"
-msgstr ""
+msgstr "läs mönster från fil (kan användas mer än en gång)"
 
 #: rpmio/rpmgrep.c:1390 rpmio/rpmgrep.c:1394
-#, fuzzy
 msgid "=path"
-msgstr "<sökväg>"
+msgstr "=sökväg"
 
 #: rpmio/rpmgrep.c:1397
 msgid "output file offsets, not text"
-msgstr ""
+msgstr "skriv ut filpositioner, inte text"
 
 #: rpmio/rpmgrep.c:1399
 msgid "force the prefixing filename on output"
-msgstr ""
+msgstr "tvinga fram filnamnsprefix i utskrifter"
 
 #: rpmio/rpmgrep.c:1401
 msgid "suppress the prefixing filename on output"
-msgstr ""
+msgstr "undertryck filnamnsprefix i utskrifter"
 
 #: rpmio/rpmgrep.c:1403
 msgid "ignore case distinctions"
-msgstr ""
+msgstr "ignorera skiftlägesskillnader"
 
 #: rpmio/rpmgrep.c:1405
 msgid "print only FILE names containing matches"
-msgstr ""
+msgstr "skriv endast FILNAMN som innehåller matchningar"
 
 #: rpmio/rpmgrep.c:1407
 msgid "print only FILE names not containing matches"
-msgstr ""
+msgstr "skriv endast FILNAMN som inte innehåller matchningar"
 
 #: rpmio/rpmgrep.c:1409
 msgid "set name for standard input"
-msgstr ""
+msgstr "ange namn för standard in"
 
 #: rpmio/rpmgrep.c:1409
 msgid "=name"
-msgstr ""
+msgstr "=namn"
 
 #: rpmio/rpmgrep.c:1411
 msgid "output line numbers and offsets, not text"
-msgstr ""
+msgstr "skriv ut radnummer och position, inte text"
 
 #: rpmio/rpmgrep.c:1414
 msgid "use the named locale"
-msgstr ""
+msgstr "använd den namngivna lokalen"
 
 #: rpmio/rpmgrep.c:1414
 msgid "=locale"
-msgstr ""
+msgstr "=lokal"
 
 #: rpmio/rpmgrep.c:1416
 msgid "run in multiline mode"
-msgstr ""
+msgstr "kör i flerradsläge"
 
 #: rpmio/rpmgrep.c:1418
 msgid "set newline type (CR|LF|CRLF|ANYCRLF|ANY)"
-msgstr ""
+msgstr "ange nyradstyp (CR|LF|CRLF|ANYCRLF|ANY)"
 
 #: rpmio/rpmgrep.c:1418
 msgid "=type"
-msgstr ""
+msgstr "=typ"
 
 #: rpmio/rpmgrep.c:1420
 msgid "print line number with output lines"
-msgstr ""
+msgstr "skriv radnummer för utskrivna rader"
 
 #: rpmio/rpmgrep.c:1422
 msgid "show only the part of the line that matched"
-msgstr ""
+msgstr "visa endast den del av raden som matchade"
 
 #: rpmio/rpmgrep.c:1425
 msgid "suppress output, just set return code"
-msgstr ""
+msgstr "undertryck utskrift, sätt bara returkod"
 
 #: rpmio/rpmgrep.c:1427
 msgid "recursively scan sub-directories"
-msgstr ""
+msgstr "sök rekursivt igenom underkataloger"
 
 #: rpmio/rpmgrep.c:1430 rpmio/rpmgrep.c:1437
 msgid "exclude matching files when recursing (may be used more than once)"
-msgstr ""
+msgstr "uteslut matchande filern vid rekursion (kan anges mer än en gång)"
 
 #: rpmio/rpmgrep.c:1431 rpmio/rpmgrep.c:1434 rpmio/rpmgrep.c:1438
 #: rpmio/rpmgrep.c:1441
 msgid "=pattern"
-msgstr ""
+msgstr "=mönster"
 
 #: rpmio/rpmgrep.c:1433 rpmio/rpmgrep.c:1440
 msgid "include matching files when recursing (may be used more than once)"
-msgstr ""
+msgstr "inkludera matchande filer vid rekursion (kan anges mer än en gång)"
 
 #: rpmio/rpmgrep.c:1444 rpmio/rpmgrep.c:1446
 msgid "suppress error messages"
-msgstr ""
+msgstr "undertryck felmeddelanden"
 
 #: rpmio/rpmgrep.c:1448
 msgid "use UTF-8 mode"
-msgstr ""
+msgstr "använd UTF-8-läge"
 
 #: rpmio/rpmgrep.c:1451
-#, fuzzy
 msgid "print version information and exit"
-msgstr "visa vilken version av rpm som används"
+msgstr "visa versionsinformation och avsluta"
 
 #: rpmio/rpmgrep.c:1454
 msgid "select non-matching lines"
-msgstr ""
+msgstr "välj rader som inte matchar"
 
 #: rpmio/rpmgrep.c:1456
 msgid "force patterns to match only as words"
-msgstr ""
+msgstr "tvinga mönstret att nedast matcha som ord"
 
 #: rpmio/rpmgrep.c:1458
 msgid "force patterns to match only whole lines"
-msgstr ""
-
-#: rpmio/rpmgrep.c:1463
-msgid "Common options for all rpmio executables:"
-msgstr ""
+msgstr "tvinga mönstret att endast matcha hela rader"
 
 #: rpmio/rpmgrep.c:1469
 msgid ""
@@ -4006,6 +4120,14 @@ msgid ""
 "\n"
 "Example: rpmgrep -i 'hello.*world' menu.h main.c"
 msgstr ""
+"Användning: rpmgrep [FLAGGA...] [MÖNSTER] [FIL1 FIL2 ...]\n"
+"\n"
+"  Sök efter MÖNSTER i varje FIL eller standard in.\n"
+"  MÖNSTER måste finnas om varken -e eller -f används.\n"
+"  \"-\" kan användas som ett filnamn som betyder STANDARD IN.\n"
+"  Alla filer läses som vanliga filer, utan någon tolkning.\n"
+"\n"
+"Exampel: rpmgrep -i 'hello.*world' menu.h main.c"
 
 #: rpmio/rpmgrep.c:1479
 msgid ""
@@ -4015,26 +4137,34 @@ msgid ""
 "  With no FILEs, read standard input. If fewer than two FILEs given, assume -"
 "h.\n"
 msgstr ""
+"  När mönster läses från en fil istället för att använda en "
+"kommandoradsflagga,\n"
+"  tas avslutande blanktecken bort och tomma rader ignoreras.\n"
+"\n"
+"  Utan FILer läses standard in.  Om färre än två FILer anges, antas -h.\n"
+"\n"
 
 #: rpmio/rpmgrep.c:1546
 #, c-format
 msgid "%s: Cannot mix --only-matching, --file-offsets and/or --line-offsets\n"
 msgstr ""
+"%s: --only-matching, --file-offsets och/eller --line-offsets kan inte "
+"blandas.\n"
 
 #: rpmio/rpmgrep.c:1566
-#, fuzzy, c-format
+#, c-format
 msgid "%s: Invalid newline specifier \"%s\"\n"
-msgstr "%s:  ogiltig typspecificerare %s på rad nummer %d\n"
+msgstr "%s: Ogiltig nyradsspecifikation \"%s\"\n"
 
 #: rpmio/rpmgrep.c:1628
 #, c-format
 msgid "%s: Error in 'exclude' regex at offset %d: %s\n"
-msgstr ""
+msgstr "%s: Fel i \"exclude\"-reguttr på position %d: %s\n"
 
 #: rpmio/rpmgrep.c:1640
 #, c-format
 msgid "%s: Error in 'include' regex at offset %d: %s\n"
-msgstr ""
+msgstr "%s: Fel i \"include\"-reguttr på position %d: %s\n"
 
 #: rpmio/rpmio.c:738
 msgid "Success"
@@ -4157,6 +4287,605 @@ msgstr "magic_load(ms, %s) misslyckades: %s\n"
 #, c-format
 msgid "magic_buffer(ms, %p[%u]) failed: %s\n"
 msgstr "magic_buffer(ms, %p[%u]) misslyckades: %s\n"
+
+#: rpmio/rpmmtree.c:332
+#, c-format
+msgid "%s: failed at line %d of the specification\n"
+msgstr ""
+
+#: rpmio/rpmmtree.c:1492 rpmio/rpmmtree.c:1681
+#, c-format
+msgid "%s: filename (%s) encoded incorrectly\n"
+msgstr ""
+
+#: rpmio/rpmmtree.c:2042
+#, c-format
+msgid "%s changed\n"
+msgstr ""
+
+#: rpmio/rpmmtree.c:2122
+#, c-format
+msgid "\ttype expected %s found %s)\n"
+msgstr ""
+
+#: rpmio/rpmmtree.c:2132 rpmio/rpmmtree.c:2145
+#, c-format
+msgid "%s%s expected %lu found %lu"
+msgstr ""
+
+#: rpmio/rpmmtree.c:2136 rpmio/rpmmtree.c:2149 rpmio/rpmmtree.c:2176
+#: rpmio/rpmmtree.c:2233
+#, fuzzy, c-format
+msgid " not modified: %s)\n"
+msgstr "Matchning inte tillåtet: %s\n"
+
+#: rpmio/rpmmtree.c:2138 rpmio/rpmmtree.c:2151 rpmio/rpmmtree.c:2178
+#, c-format
+msgid " modified)\n"
+msgstr ""
+
+#: rpmio/rpmmtree.c:2172
+#, c-format
+msgid "%s%s expected %#o found %#o"
+msgstr ""
+
+#: rpmio/rpmmtree.c:2189
+#, c-format
+msgid "%s%s expected %lu found %lu)\n"
+msgstr ""
+
+#: rpmio/rpmmtree.c:2196
+#, c-format
+msgid "%s%s expected %llu found %llu\n"
+msgstr ""
+
+#: rpmio/rpmmtree.c:2228
+#, c-format
+msgid "%s%s expected %.24s "
+msgstr ""
+
+#: rpmio/rpmmtree.c:2229
+#, c-format
+msgid "found %.24s"
+msgstr ""
+
+#: rpmio/rpmmtree.c:2235
+#, c-format
+msgid " modified\n"
+msgstr ""
+
+#: rpmio/rpmmtree.c:2278
+#, c-format
+msgid "%s%s expected %lu found %lu\n"
+msgstr ""
+
+#: rpmio/rpmmtree.c:2296 rpmio/rpmmtree.c:2316
+#, fuzzy, c-format
+msgid "%s%s expected %s found %s\n"
+msgstr "%s skapades som %s\n"
+
+#: rpmio/rpmmtree.c:2325
+#, fuzzy, c-format
+msgid "%s%s expected \"%s\""
+msgstr "oväntad ]"
+
+#: rpmio/rpmmtree.c:2329
+#, fuzzy, c-format
+msgid " found \"%s\""
+msgstr "Filen hittades inte: %s\n"
+
+#: rpmio/rpmmtree.c:2451 rpmio/rpmmtree.c:2558
+#, c-format
+msgid "%s: Could not get uname for uid=%lu\n"
+msgstr ""
+
+#: rpmio/rpmmtree.c:2464 rpmio/rpmmtree.c:2573
+#, c-format
+msgid "%s: Could not get gname for gid=%lu\n"
+msgstr ""
+
+#: rpmio/rpmmtree.c:2612 rpmio/rpmmtree.c:2637
+#, fuzzy, c-format
+msgid "%s: %s: cksum: %s\n"
+msgstr "%s%d saknas: %s: %s\n"
+
+#: rpmio/rpmmtree.c:2757
+#, fuzzy, c-format
+msgid "%s: open of %s failed: %s\n"
+msgstr "misslyckades med att öppna %s: %s\n"
+
+#: rpmio/rpmmtree.c:3257
+#, fuzzy, c-format
+msgid "missing: %s"
+msgstr "saknas    %c %s"
+
+#: rpmio/rpmmtree.c:3268
+#, c-format
+msgid " (%s not created: user not specified)"
+msgstr ""
+
+#: rpmio/rpmmtree.c:3270
+#, c-format
+msgid " (%s not created: group not specified))"
+msgstr ""
+
+#: rpmio/rpmmtree.c:3273
+#, fuzzy, c-format
+msgid " (%s not created: %s)\n"
+msgstr "%s skapades som %s\n"
+
+#: rpmio/rpmmtree.c:3276
+#, fuzzy, c-format
+msgid " (%s created)\n"
+msgstr "%s skapades som %s\n"
+
+#: rpmio/rpmmtree.c:3289 rpmio/rpmmtree.c:3325
+#, fuzzy, c-format
+msgid "%s: %s not modified: %s\n"
+msgstr "%s: open misslyckades: %s\n"
+
+#: rpmio/rpmmtree.c:3294
+#, c-format
+msgid " (%s not created: mode not specified)"
+msgstr ""
+
+#: rpmio/rpmmtree.c:3296
+#, fuzzy, c-format
+msgid " (%s not created: %s)"
+msgstr "%s skapades som %s\n"
+
+#: rpmio/rpmmtree.c:3299
+#, fuzzy, c-format
+msgid " (%s created)"
+msgstr "%s skapades som %s\n"
+
+#: rpmio/rpmmtree.c:3330
+#, c-format
+msgid "%s: permissions not set: %s\n"
+msgstr ""
+
+#: rpmio/rpmmtree.c:3335
+#, fuzzy, c-format
+msgid "%s: file flags not set: %s\n"
+msgstr "%s misslyckades på fil %s: %s\n"
+
+#: rpmio/rpmmtree.c:3447
+#, fuzzy, c-format
+msgid ", not removed: %s"
+msgstr "Matchning inte tillåtet: %s\n"
+
+#: rpmio/rpmmtree.c:3449
+#, c-format
+msgid ", removed"
+msgstr ""
+
+#: rpmio/rpmmtree.c:3551
+msgid "Follow symlinks"
+msgstr ""
+
+#: rpmio/rpmmtree.c:3554
+msgid "Don't follow symlinks"
+msgstr ""
+
+#: rpmio/rpmmtree.c:3556
+msgid "Read fnmatch(3) exclude patterns from <file>"
+msgstr ""
+
+#: rpmio/rpmmtree.c:3556
+#, fuzzy
+msgid "<file>"
+msgstr "<specfil>"
+
+#: rpmio/rpmmtree.c:3559
+msgid "Print file tree specification to stdout"
+msgstr ""
+
+#: rpmio/rpmmtree.c:3561
+msgid "Directories only"
+msgstr ""
+
+#: rpmio/rpmmtree.c:3563
+msgid "Don't complain about files not in the specification"
+msgstr ""
+
+#: rpmio/rpmmtree.c:3565
+msgid "Read file tree <spec>"
+msgstr ""
+
+#: rpmio/rpmmtree.c:3567
+#, fuzzy
+msgid "Indent sub-directories"
+msgstr "sök rekursivt igenom underkataloger"
+
+#: rpmio/rpmmtree.c:3569
+#, fuzzy
+msgid "Add <key> to specification"
+msgstr "Felaktig paketangivelse %s\n"
+
+#: rpmio/rpmmtree.c:3569 rpmio/rpmmtree.c:3571
+msgid "<key>"
+msgstr ""
+
+#: rpmio/rpmmtree.c:3571
+msgid "Use \"type\" keywords instead"
+msgstr ""
+
+#: rpmio/rpmmtree.c:3573
+msgid "Loose permissions check"
+msgstr ""
+
+#: rpmio/rpmmtree.c:3575
+msgid "Don't include sub-directory comments"
+msgstr ""
+
+#: rpmio/rpmmtree.c:3578 rpmio/rpmmtree.c:3581
+msgid "Use <path> rather than current directory"
+msgstr ""
+
+#: rpmio/rpmmtree.c:3585
+msgid "Quiet mode"
+msgstr ""
+
+#: rpmio/rpmmtree.c:3587
+msgid "Remove files not in specification"
+msgstr ""
+
+#: rpmio/rpmmtree.c:3589
+msgid "Display crc for file(s) with <seed>"
+msgstr ""
+
+#: rpmio/rpmmtree.c:3589
+#, fuzzy
+msgid "<seed>"
+msgstr "<spec>"
+
+#: rpmio/rpmmtree.c:3591
+msgid "Touch files iff timestamp differs"
+msgstr ""
+
+#: rpmio/rpmmtree.c:3593
+msgid "Update owner/group/permissions to match specification"
+msgstr ""
+
+#: rpmio/rpmmtree.c:3595
+msgid "Same as -u, but ignore match status on exit"
+msgstr ""
+
+#: rpmio/rpmmtree.c:3597
+msgid "Treat missing uid/gid as warning"
+msgstr ""
+
+#: rpmio/rpmmtree.c:3600
+msgid "Don't cross mount points"
+msgstr ""
+
+#: rpmio/rpmmtree.c:3603 rpmio/rpmrepo.c:1779
+#, fuzzy
+msgid "Fts(3) traversal options:"
+msgstr "felsök Fts(3)-traversering"
+
+#: rpmio/rpmmtree.c:3638
+#, c-format
+msgid "(no controlling terminal) %s"
+msgstr ""
+
+#: rpmio/rpmmtree.c:3643
+#, c-format
+msgid "(no controlling terminal) #%d"
+msgstr ""
+
+#: rpmio/rpmmtree.c:3784 rpmio/rpmmtree.c:3799
+#, c-format
+msgid "%s: %s checksum: %u\n"
+msgstr ""
+
+#: rpmio/rpmrepo.c:672
+#, fuzzy, c-format
+msgid "Cannot create/verify %s: %s"
+msgstr "kan inte skapa %s: %s\n"
+
+#: rpmio/rpmrepo.c:702
+#, c-format
+msgid "Directory %s must exist"
+msgstr ""
+
+#: rpmio/rpmrepo.c:709
+#, fuzzy, c-format
+msgid "Directory %s does not exist."
+msgstr "användare %s finns inte - använder root\n"
+
+#: rpmio/rpmrepo.c:713
+#, fuzzy, c-format
+msgid "Directory %s must be writable."
+msgstr "omflyttningar måste börja med /"
+
+#: rpmio/rpmrepo.c:723
+#, c-format
+msgid "Old data directory exists, please remove: %s"
+msgstr ""
+
+#: rpmio/rpmrepo.c:739
+#, c-format
+msgid "Path must be writable: %s"
+msgstr ""
+
+#: rpmio/rpmrepo.c:759
+#, fuzzy, c-format
+msgid "groupfile %s cannot be found."
+msgstr "paket \"%s\" kan inte hittas\n"
+
+#: rpmio/rpmrepo.c:793
+#, c-format
+msgid "Fts_open: %s"
+msgstr ""
+
+#: rpmio/rpmrepo.c:856
+#, fuzzy, c-format
+msgid "cannot get to file: %s"
+msgstr "kan inte komma åt filen %s\n"
+
+#: rpmio/rpmrepo.c:875 rpmio/rpmrepo.c:913
+#, c-format
+msgid "Fwrite failed: expected write %u != %u bytes: %s\n"
+msgstr ""
+
+#: rpmio/rpmrepo.c:964
+#, fuzzy, c-format
+msgid "%s: Fread(%s) failed: %s\n"
+msgstr "%s: Fread misslyckades: %s\n"
+
+#: rpmio/rpmrepo.c:1000 rpmio/rpmrepo.c:1056
+#, c-format
+msgid "headerSprintf(%s): %s"
+msgstr ""
+
+#: rpmio/rpmrepo.c:1147
+#, fuzzy, c-format
+msgid ""
+"\n"
+"Error %s: %s\n"
+msgstr "%s: %s\n"
+
+#: rpmio/rpmrepo.c:1186
+#, c-format
+msgid "Saving %s%s%s metadata"
+msgstr ""
+
+#: rpmio/rpmrepo.c:1384
+#, fuzzy
+msgid "Generating sqlite DBs"
+msgstr "Genererar signatur: %d\n"
+
+#: rpmio/rpmrepo.c:1411
+#, c-format
+msgid "Starting %s db creation: %s"
+msgstr ""
+
+#: rpmio/rpmrepo.c:1477
+#, c-format
+msgid "Ending %s db creation: %s"
+msgstr ""
+
+#: rpmio/rpmrepo.c:1511
+msgid "Sqlite DBs complete"
+msgstr ""
+
+#: rpmio/rpmrepo.c:1522
+#, fuzzy, c-format
+msgid "Error saving temp file for %s%s%s: %s"
+msgstr "fel när tämporärfil %s skapades\n"
+
+#: rpmio/rpmrepo.c:1527
+#, fuzzy, c-format
+msgid "Could not save temp file: %s"
+msgstr "Kunde inte öppna testfil: %s\n"
+
+#: rpmio/rpmrepo.c:1549
+#, c-format
+msgid "Error moving final %s to old dir %s"
+msgstr ""
+
+#: rpmio/rpmrepo.c:1557
+msgid "Error moving final metadata into place"
+msgstr ""
+
+#: rpmio/rpmrepo.c:1574 rpmio/rpmrepo.c:1606
+#, fuzzy, c-format
+msgid "Could not remove old metadata file: %s: %s"
+msgstr "Kunde inte öppna %%files-fil %s: %s\n"
+
+#: rpmio/rpmrepo.c:1616
+#, fuzzy, c-format
+msgid "Could not restore old non-metadata file: %s -> %s: %s"
+msgstr "Kunde inte öppna %%files-fil %s: %s\n"
+
+#: rpmio/rpmrepo.c:1627
+#, fuzzy, c-format
+msgid "Could not remove old metadata dir: %s: %s"
+msgstr "Kunde inte öppna %%files-fil %s: %s\n"
+
+#: rpmio/rpmrepo.c:1706
+msgid "don't compress"
+msgstr ""
+
+#: rpmio/rpmrepo.c:1708
+msgid "use gzip compression"
+msgstr ""
+
+#: rpmio/rpmrepo.c:1710
+msgid "use bzip2 compression"
+msgstr ""
+
+#: rpmio/rpmrepo.c:1712
+msgid "use lzma compression"
+msgstr ""
+
+#: rpmio/rpmrepo.c:1724
+#, fuzzy
+msgid "debug repo handling"
+msgstr "felsök cache-hanteringen av URL:ar"
+
+#: rpmio/rpmrepo.c:1727
+msgid "output nothing except for serious errors"
+msgstr ""
+
+#: rpmio/rpmrepo.c:1729
+msgid "output more debugging info."
+msgstr ""
+
+#: rpmio/rpmrepo.c:1731
+msgid "sanity check arguments, don't create metadata"
+msgstr ""
+
+#: rpmio/rpmrepo.c:1734 rpmio/rpmrepo.c:1737
+msgid "glob PATTERN(s) to exclude"
+msgstr ""
+
+#: rpmio/rpmrepo.c:1734 rpmio/rpmrepo.c:1737 rpmio/rpmrepo.c:1741
+#: rpmio/rpmrepo.c:1744
+msgid "PATTERN"
+msgstr ""
+
+#: rpmio/rpmrepo.c:1741 rpmio/rpmrepo.c:1744
+msgid "glob PATTERN(s) to include"
+msgstr ""
+
+#: rpmio/rpmrepo.c:1748
+#, fuzzy
+msgid "top level directory"
+msgstr "använd ROT som toppnivåkatalog"
+
+#: rpmio/rpmrepo.c:1748 rpmio/rpmrepo.c:1772
+msgid "DIR"
+msgstr ""
+
+#: rpmio/rpmrepo.c:1750
+msgid "baseurl to append on all files"
+msgstr ""
+
+#: rpmio/rpmrepo.c:1750
+msgid "BASEURL"
+msgstr ""
+
+#: rpmio/rpmrepo.c:1752
+msgid "path to groupfile to include in metadata"
+msgstr ""
+
+#: rpmio/rpmrepo.c:1752 rpmio/rpmrepo.c:1766 rpmio/rpmrepo.c:1769
+msgid "FILE"
+msgstr ""
+
+#: rpmio/rpmrepo.c:1755
+msgid "make sure all xml generated is formatted"
+msgstr ""
+
+#: rpmio/rpmrepo.c:1757
+msgid "check timestamps on files vs the metadata to see if we need to update"
+msgstr ""
+
+#: rpmio/rpmrepo.c:1760
+#, fuzzy
+msgid "create sqlite3 database files"
+msgstr "verifiera databasfiler"
+
+#: rpmio/rpmrepo.c:1763
+#, fuzzy
+msgid "generate split media"
+msgstr "generera signatur"
+
+#: rpmio/rpmrepo.c:1766 rpmio/rpmrepo.c:1769
+msgid "use only the files listed in this file from the directory specified"
+msgstr ""
+
+#: rpmio/rpmrepo.c:1772
+msgid "<dir> = optional directory to output to"
+msgstr ""
+
+#: rpmio/rpmrepo.c:1774
+#, fuzzy
+msgid "ignore symlinks of packages"
+msgstr "ignorera filkonflikter mellan paket"
+
+#: rpmio/rpmrepo.c:1776
+msgid "include the file's checksum in the filename, helps with proxies"
+msgstr ""
+
+#: rpmio/rpmrepo.c:1787
+#, fuzzy
+msgid "Available compressions:"
+msgstr "Databasflaggor:"
+
+#: rpmio/rpmrepo.c:1861
+msgid "Must specify path(s) to index."
+msgstr ""
+
+#: rpmio/rpmrepo.c:1879 rpmio/rpmrepo.c:1931
+#, fuzzy, c-format
+msgid "Realpath(%s): %s"
+msgstr "Hämtar(%s%d): %s\n"
+
+#: rpmio/rpmrepo.c:1936
+msgid "--split and --checkts options are mutually exclusive"
+msgstr ""
+
+#: rpmio/rpmrepo.c:1956
+msgid "Error loading exclude glob patterns."
+msgstr ""
+
+#: rpmio/rpmrepo.c:1959
+msgid "Error loading include glob patterns."
+msgstr ""
+
+#: rpmio/rpmrepo.c:1988
+#, c-format
+msgid "repo is up to date\n"
+msgstr ""
+
+#: rpmio/rpmuuid.c:34
+msgid "invalid UUID version number"
+msgstr ""
+
+#: rpmio/rpmuuid.c:38
+msgid "namespace or data required for requested UUID version\n"
+msgstr ""
+
+#: rpmio/rpmuuid.c:42
+msgid "either string or binary result buffer required\n"
+msgstr ""
+
+#: rpmio/rpmuuid.c:48
+#, fuzzy, c-format
+msgid "failed to create UUID object: %s\n"
+msgstr "kunde inte ta bort katalogen %s: %s\n"
+
+#: rpmio/rpmuuid.c:55
+#, fuzzy, c-format
+msgid "failed to create UUID namespace object: %s\n"
+msgstr "kunde inte skriva all data till %s\n"
+
+#: rpmio/rpmuuid.c:60
+#, c-format
+msgid "failed to import UUID namespace object: %s\n"
+msgstr ""
+
+#: rpmio/rpmuuid.c:79
+#, fuzzy, c-format
+msgid "failed to make UUID object: %s\n"
+msgstr "kunde inte ta bort katalogen %s: %s\n"
+
+#: rpmio/rpmuuid.c:91
+#, c-format
+msgid "failed to export UUID object as string representation: %s\n"
+msgstr ""
+
+#: rpmio/rpmuuid.c:102
+#, c-format
+msgid "failed to export UUID object as binary representation: %s\n"
+msgstr ""
+
+#: rpmio/rpmuuid.c:115
+msgid "UUID generator not available!\n"
+msgstr ""
 
 #: rpmio/url.c:113
 #, c-format
@@ -4286,45 +5015,3 @@ msgstr "skriv ut beroendemängden Requires:"
 #: tools/rpmdeps.c:211
 msgid "check Requires: against Provides: for dependency closure"
 msgstr "leta igenom Requires: mot Provides: efter beroendehölje"
-
-#~ msgid "(error 0x%x)"
-#~ msgstr "(fel 0x%x)"
-
-#~ msgid "Bad magic"
-#~ msgstr "Felaktigt magiskt tal"
-
-#~ msgid "Bad/unreadable  header"
-#~ msgstr "Felaktigt/oläsbart huvud"
-
-#~ msgid "Header size too big"
-#~ msgstr "Huvudstorleken för stor"
-
-#~ msgid "Unknown file type"
-#~ msgstr "Okänd filtyp"
-
-#~ msgid "Missing hard link(s)"
-#~ msgstr "Saknade hårda länkar"
-
-#~ msgid "File digest mismatch"
-#~ msgstr "Filkontrollsumman stämmer inte"
-
-#~ msgid "Internal error"
-#~ msgstr "Internt fel"
-
-#~ msgid "Archive file not in header"
-#~ msgstr "Ingen arkivfilen i huvud"
-
-#~ msgid " failed - "
-#~ msgstr " misslyckades - "
-
-#~ msgid "debug option/argument processing"
-#~ msgstr "felsök flagg-/argumenthantering"
-
-#~ msgid "debug tar payloads"
-#~ msgstr "felsök tar-laster"
-
-#~ msgid "error(%d) setting \"%s\" records from %s index\n"
-#~ msgstr "fel(%d) när \"%s\"-poster från %s-indexet sattes\n"
-
-#~ msgid "error(%d) storing record \"%s\" into %s\n"
-#~ msgstr "fel(%d) när post \"%s\" sparades i %s\n"

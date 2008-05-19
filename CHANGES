@@ -1,5 +1,8 @@
 
 5.1.1 -> 5.1.2:
+    - jbj: update i18n from Translation Project.
+    - jbj: update po/POTFILES.in
+    - jbj: rpmuuid: add i18n to error messages.
     - jbj: fix: rpm-python h['filenames'] needs tagName(0x54aafb71) to
 	return "Filenames" in order to find the filepathsTag extension.
     - jbj: add a missing newline to a debug message.

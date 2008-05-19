@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 5.1\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2008-04-13 12:29-0400\n"
-"PO-Revision-Date: 2008-04-13 23:00+0700\n"
+"POT-Creation-Date: 2008-05-19 16:21-0400\n"
+"PO-Revision-Date: 2008-04-14 00:00+0700\n"
 "Last-Translator: Arif E. Nugroho <arif_endro@yahoo.com>\n"
 "Language-Team: Indonesian <translation-team-id@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
@@ -54,7 +54,7 @@ msgstr "File %s sepertinya bukan merupakan specfile.\n"
 msgid "Building target platforms: %s\n"
 msgstr "Membuat platform untuk target: %s\n"
 
-#: build.c:298 build/spec.c:840
+#: build.c:298 build/spec.c:854
 #, c-format
 msgid "    target platform: %s\n"
 msgstr "    target platform: %s\n"
@@ -697,7 +697,7 @@ msgstr "Tidak dapat mereload signature header.\n"
 msgid "Could not open %s: %s\n"
 msgstr "Tidak dapat membuka %s: %s\n"
 
-#: build/pack.c:828 lib/psm.c:1982
+#: build/pack.c:828 lib/psm.c:2019
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr "Tidak dapat menulis package: %s\n"
@@ -717,7 +717,7 @@ msgstr "Tidak dapat membaca payload dari %s: %s\n"
 msgid "Unable to write payload to %s: %s\n"
 msgstr "Tidak dapat menulis payload untuk %s: %s\n"
 
-#: build/pack.c:937 lib/psm.c:2281
+#: build/pack.c:937 lib/psm.c:2334
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "Menulis: %s\n"
@@ -1305,22 +1305,22 @@ msgstr "baris %d: Nomor buruk: %s\n"
 msgid "line %d: Bad no%s number: %d\n"
 msgstr "baris %d: Nomor no%s buruk: %d\n"
 
-#: build/spec.c:365
+#: build/spec.c:368
 #, c-format
 msgid "line %d: Bad %s number: %s\n"
 msgstr "baris %d: nomor %s buruk: %s\n"
 
-#: build/spec.c:697
+#: build/spec.c:711
 #, c-format
 msgid "can't query %s: %s\n"
 msgstr "tidak dapat menanyakan (query) %s: %s\n"
 
-#: build/spec.c:774
+#: build/spec.c:788
 #, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr "query dari specfile %s gagal, tidak dapat mem-parse\n"
 
-#: build/spec.c:828
+#: build/spec.c:842
 #, c-format
 msgid "Query specfile for platform(s): %s\n"
 msgstr "Menanyakan specfile untuk platform(s): %s\n"
@@ -1440,16 +1440,16 @@ msgstr "(hint dilewatkan)"
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr "menghiraukan nama package relasi [%d]\t%s -> %s\n"
 
-#: lib/depends.c:1778
+#: lib/depends.c:1781
 #, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "menghilangkan %s \"%s\" dari relasi tsort.\n"
 
-#: lib/depends.c:2360
+#: lib/depends.c:2364
 msgid "LOOP:\n"
 msgstr "LOOP:\n"
 
-#: lib/depends.c:2394
+#: lib/depends.c:2400
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr "rpmtsOrder gagal, %d elemen tersisa\n"
@@ -1533,12 +1533,12 @@ msgstr "tidak dapat membuat %%%s %s\n"
 msgid "read failed\n"
 msgstr "gagal membaca\n"
 
-#: lib/package.c:136 lib/rpmchecksig.c:245 lib/rpmchecksig.c:906
+#: lib/package.c:136 lib/rpmchecksig.c:245 lib/rpmchecksig.c:900
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: Tidak ada signature yang available\n"
 
-#: lib/package.c:229 lib/package.c:266 lib/rpmchecksig.c:985
+#: lib/package.c:229 lib/package.c:266 lib/rpmchecksig.c:979
 #, c-format
 msgid "skipping package %s with unverifiable V%u signature\n"
 msgstr ""
@@ -1651,7 +1651,7 @@ msgstr "tampilkan tag permintaan yang diketahui"
 msgid "display macro and configuration values"
 msgstr "tampilkan macro dan konfigurasi"
 
-#: lib/poptALL.c:358 rpmio/poptIO.c:347
+#: lib/poptALL.c:358 rpmio/poptIO.c:347 rpmio/rpmrepo.c:1783
 msgid "print the version"
 msgstr "tampilkan versi"
 
@@ -1766,7 +1766,7 @@ msgstr "jangan menginstall dokumentasi"
 msgid "skip files with leading component <path> "
 msgstr "lewati files dengan diawali komponent <path> "
 
-#: lib/poptI.c:272
+#: lib/poptI.c:272 rpmio/rpmmtree.c:3578 rpmio/rpmmtree.c:3581
 msgid "<path>"
 msgstr "<path>"
 
@@ -1995,7 +1995,7 @@ msgstr "query/verifikasi sebuah header"
 msgid "query a spec file"
 msgstr "query sebuah file spec"
 
-#: lib/poptQV.c:148 lib/poptQV.c:150
+#: lib/poptQV.c:148 lib/poptQV.c:150 rpmio/rpmmtree.c:3565
 msgid "<spec>"
 msgstr "<spec>"
 
@@ -2214,30 +2214,30 @@ msgstr "%s(%s) scriptlet gagal, sinyal %d\n"
 msgid "%s(%s) scriptlet failed, exit status %d\n"
 msgstr "%s(%s) scriptlet gagal, status keluar %d\n"
 
-#: lib/psm.c:1887
+#: lib/psm.c:1911
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s\n"
 msgstr "%s: %s scriptlet gagal (%d), melewati %s\n"
 
-#: lib/psm.c:1995
+#: lib/psm.c:2032
 msgid "Unable to reload signature header\n"
 msgstr "Tidak dapat mereload header signature\n"
 
-#: lib/psm.c:2106
+#: lib/psm.c:2159
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "gagal membuka archive %s%s: %s\n"
 
-#: lib/psm.c:2107
+#: lib/psm.c:2160
 msgid " on file "
 msgstr " pada file "
 
-#: lib/psm.c:2290
+#: lib/psm.c:2343
 #, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "%s gagal pada file %s: %s\n"
 
-#: lib/psm.c:2293
+#: lib/psm.c:2346
 #, c-format
 msgid "%s failed: %s\n"
 msgstr "%s gagal: %s\n"
@@ -2347,7 +2347,7 @@ msgstr "(ditambahkan files)"
 msgid "(added provide)"
 msgstr "(ditambahkan provide)"
 
-#: lib/rpmchecksig.c:61 lib/rpmchecksig.c:1148
+#: lib/rpmchecksig.c:61 lib/rpmchecksig.c:1142
 #, c-format
 msgid "%s: open failed: %s\n"
 msgstr "%s: gagal membuka: %s\n"
@@ -2389,8 +2389,8 @@ msgstr "headerGet gagal"
 msgid "failed to retrieve original header\n"
 msgstr "gagal mengambil header asli\n"
 
-#: lib/rpmchecksig.c:829 rpmdb/pkgio.c:509 rpmdb/pkgio.c:693
-#: rpmdb/pkgio.c:1271
+#: lib/rpmchecksig.c:829 rpmdb/pkgio.c:520 rpmdb/pkgio.c:704
+#: rpmdb/pkgio.c:1282
 #, c-format
 msgid "XAR file not found (or no XAR support)"
 msgstr "file XAR tidak ditemukan (atau tidak mendukung XAR)"
@@ -2399,27 +2399,27 @@ msgstr "file XAR tidak ditemukan (atau tidak mendukung XAR)"
 msgid "Fread failed"
 msgstr "Fread gagal"
 
-#: lib/rpmchecksig.c:1073
+#: lib/rpmchecksig.c:1067
 msgid "NOT_OK"
 msgstr "TIDAK_OK"
 
-#: lib/rpmchecksig.c:1074 lib/rpmchecksig.c:1088
+#: lib/rpmchecksig.c:1068 lib/rpmchecksig.c:1082
 msgid " (MISSING KEYS:"
 msgstr " (HILANG KUNCI:"
 
-#: lib/rpmchecksig.c:1076 lib/rpmchecksig.c:1090
+#: lib/rpmchecksig.c:1070 lib/rpmchecksig.c:1084
 msgid ") "
 msgstr ")"
 
-#: lib/rpmchecksig.c:1077 lib/rpmchecksig.c:1091
+#: lib/rpmchecksig.c:1071 lib/rpmchecksig.c:1085
 msgid " (UNTRUSTED KEYS:"
 msgstr " (KUNCI TIDAK DIPERCAYA:"
 
-#: lib/rpmchecksig.c:1079 lib/rpmchecksig.c:1093
+#: lib/rpmchecksig.c:1073 lib/rpmchecksig.c:1087
 msgid ")"
 msgstr ")"
 
-#: lib/rpmchecksig.c:1087
+#: lib/rpmchecksig.c:1081
 msgid "OK"
 msgstr "OK"
 
@@ -2564,6 +2564,7 @@ msgid "Failed to find %s:\n"
 msgstr "Gagal untuk mencari %s:\n"
 
 #: lib/rpmgi.c:99 lib/rpminstall.c:124 lib/rpmrollback.c:162 lib/rpmts.c:412
+#: rpmio/rpmdigest.c:127
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "pembukaan dari %s gagal: %s\n"
@@ -2815,7 +2816,7 @@ msgstr "%s:  tipe %s tidak valid di baris %d\n"
 msgid "%s:  invalid context %s on line number %d\n"
 msgstr "%s:  context %s tidak valid di baris %d\n"
 
-#: lib/rpmts.c:133
+#: lib/rpmts.c:133 rpmdb/pkgio.c:236
 #, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "tidak dapat membuka database Packages dalam %s\n"
@@ -2917,109 +2918,162 @@ msgid "%s has too large or too small integer value, skipped\n"
 msgstr ""
 "%s memiliki nilai integer yang terlalu besar atau terlalu kecil, dilewati\n"
 
-#: rpmdb/hdrfmt.c:87 rpmdb/hdrfmt.c:187
+#: rpmdb/hdrfmt.c:91 rpmdb/hdrfmt.c:196
 msgid "(not a number)"
 msgstr "(bukan sebuah nomor)"
 
-#: rpmdb/hdrfmt.c:214
+#: rpmdb/hdrfmt.c:224
 #, c-format
 msgid "%c"
 msgstr "%c"
 
-#: rpmdb/hdrfmt.c:225
+#: rpmdb/hdrfmt.c:236
 msgid "%a %b %d %Y"
 msgstr "%a %b %d %Y"
 
-#: rpmdb/hdrfmt.c:278
+#: rpmdb/hdrfmt.c:290
 msgid "invalid type"
 msgstr "tipe tidak valid"
 
-#: rpmdb/hdrfmt.c:367 rpmdb/hdrfmt.c:396 rpmdb/hdrfmt.c:417 rpmdb/hdrfmt.c:484
-#: rpmdb/hdrfmt.c:1149
+#: rpmdb/hdrfmt.c:380 rpmdb/hdrfmt.c:410 rpmdb/hdrfmt.c:432 rpmdb/hdrfmt.c:500
+#: rpmdb/hdrfmt.c:1190
 msgid "(invalid type)"
 msgstr "(tipe tidak valid)"
 
-#: rpmdb/hdrfmt.c:474
+#: rpmdb/hdrfmt.c:490
 msgid "(not base64)"
 msgstr "(bukan base64)"
 
-#: rpmdb/hdrfmt.c:508 rpmdb/hdrfmt.c:1045
-msgid "(not a blob)"
-msgstr "(bukan sebuah blob)"
+#: rpmdb/hdrfmt.c:531
+#, fuzzy
+msgid "(invalid type :base64)"
+msgstr "(tipe tidak valid)"
 
-#: rpmdb/hdrfmt.c:694 rpmdb/hdrfmt.c:724 rpmdb/hdrfmt.c:2191
+#: rpmdb/hdrfmt.c:730 rpmdb/hdrfmt.c:761 rpmdb/hdrfmt.c:2548
+#: rpmdb/hdrfmt.c:2986
 msgid "(not a string)"
 msgstr "(bukan sebuah string)"
 
-#: rpmdb/hdrfmt.c:797
+#: rpmdb/hdrfmt.c:835
 msgid "(invalid xml type)"
 msgstr "(tipe xml tidak valid)"
 
-#: rpmdb/hdrfmt.c:983
+#: rpmdb/hdrfmt.c:1022
 msgid "(invalid yaml type)"
 msgstr "(tipe yaml tidak valid)"
 
-#: rpmdb/hdrfmt.c:1068
+#: rpmdb/hdrfmt.c:1085
+msgid "(not a blob)"
+msgstr "(bukan sebuah blob)"
+
+#: rpmdb/hdrfmt.c:1108
 msgid "(not an OpenPGP signature)"
 msgstr "(bukan sebuah tanda tangan OpenPGP)"
 
-#: rpmdb/hdrfmt.c:3297
+#: rpmdb/hdrfmt.c:3197
+#, fuzzy
+msgid "(invalid type :digest)"
+msgstr "(tipe tidak valid)"
+
+#: rpmdb/hdrfmt.c:3253
+#, fuzzy
+msgid "(invalid type :stat)"
+msgstr "(tipe tidak valid)"
+
+#: rpmdb/hdrfmt.c:3405
+#, fuzzy
+msgid "(invalid type :uuid)"
+msgstr "(tipe tidak valid)"
+
+#: rpmdb/hdrfmt.c:3466
+#, fuzzy
+msgid "(invalid type :rpn)"
+msgstr "(tipe tidak valid)"
+
+#: rpmdb/hdrfmt.c:3476
+#, fuzzy
+msgid "(invalid string :rpn)"
+msgstr "(tipe tidak valid)"
+
+#: rpmdb/hdrfmt.c:3492
+#, fuzzy
+msgid "(expected number :rpn)"
+msgstr "format query tidak diperkirakan"
+
+#: rpmdb/hdrfmt.c:3496
+msgid "(stack overflow :rpn)"
+msgstr ""
+
+#: rpmdb/hdrfmt.c:3502
+#, fuzzy
+msgid "(invalid number :rpn)"
+msgstr "(tipe xml tidak valid)"
+
+#: rpmdb/hdrfmt.c:3507
+msgid "(stack underflow :rpn)"
+msgstr ""
+
+#: rpmdb/hdrfmt.c:3520
+msgid "(divide by zero :rpn)"
+msgstr ""
+
+#: rpmdb/hdrfmt.c:4270
 msgid "missing { after %"
 msgstr "hilang { sesudah %"
 
-#: rpmdb/hdrfmt.c:3331
+#: rpmdb/hdrfmt.c:4304
 msgid "missing } after %{"
 msgstr "hilang } sesudah %{"
 
-#: rpmdb/hdrfmt.c:3347
+#: rpmdb/hdrfmt.c:4320
 msgid "empty tag format"
 msgstr "for tag kosong"
 
-#: rpmdb/hdrfmt.c:3359
+#: rpmdb/hdrfmt.c:4329
 msgid "empty tag name"
 msgstr "nama tag kosong"
 
-#: rpmdb/hdrfmt.c:3368
+#: rpmdb/hdrfmt.c:4338
 msgid "unknown tag"
 msgstr "tag tidak diketahui"
 
-#: rpmdb/hdrfmt.c:3398
+#: rpmdb/hdrfmt.c:4368
 msgid "] expected at end of array"
 msgstr "] diperkirakan pada akhir dari array"
 
-#: rpmdb/hdrfmt.c:3415
+#: rpmdb/hdrfmt.c:4385
 msgid "unexpected ]"
 msgstr "tidak diperkirakan ]"
 
-#: rpmdb/hdrfmt.c:3430
+#: rpmdb/hdrfmt.c:4400
 msgid "unexpected }"
 msgstr "tidak diperkirakan }"
 
-#: rpmdb/hdrfmt.c:3508
+#: rpmdb/hdrfmt.c:4478
 msgid "? expected in expression"
 msgstr "? diperkirakan dalam ekspresi"
 
-#: rpmdb/hdrfmt.c:3515
+#: rpmdb/hdrfmt.c:4485
 msgid "{ expected after ? in expression"
 msgstr "{ diperkirakan sesudah ? dalam ekspresi"
 
-#: rpmdb/hdrfmt.c:3527 rpmdb/hdrfmt.c:3567
+#: rpmdb/hdrfmt.c:4497 rpmdb/hdrfmt.c:4537
 msgid "} expected in expression"
 msgstr "} diperkirakan dalam ekspresi"
 
-#: rpmdb/hdrfmt.c:3535
+#: rpmdb/hdrfmt.c:4505
 msgid ": expected following ? subexpression"
 msgstr ": diperkirakan mengikuti ? subekspresi"
 
-#: rpmdb/hdrfmt.c:3553
+#: rpmdb/hdrfmt.c:4523
 msgid "{ expected after : in expression"
 msgstr "{ diperkirakan sesudah : dalam ekspresi"
 
-#: rpmdb/hdrfmt.c:3575
+#: rpmdb/hdrfmt.c:4545
 msgid "| expected at end of expression"
 msgstr "| diperkirakan pada akhir dari ekspresi"
 
-#: rpmdb/hdrfmt.c:3868
+#: rpmdb/hdrfmt.c:4844
 msgid "array iterator used with different sized arrays"
 msgstr "array dari iterasi digunakan dengan ukuran arrays yang berbeda"
 
@@ -3052,152 +3106,152 @@ msgstr "terhenti menulis dari magic header"
 msgid "short write of header"
 msgstr "terhenti menulis header"
 
-#: rpmdb/pkgio.c:478 rpmdb/pkgio.c:483
-#, fuzzy, c-format
+#: rpmdb/pkgio.c:489 rpmdb/pkgio.c:494
+#, c-format
 msgid "lead size(%u): BAD, read(%d), %s(%d)"
 msgstr "lead size(%u): BURUK,  baca(%d), %s(%d)"
 
-#: rpmdb/pkgio.c:516
-#, fuzzy, c-format
+#: rpmdb/pkgio.c:527
+#, c-format
 msgid "lead size(%u): BAD, xar read(%u)"
-msgstr "lead size(%d): BURUK, xar baca(%u)"
+msgstr "lead size(%u): BURUK, xar baca(%u)"
 
-#: rpmdb/pkgio.c:533
+#: rpmdb/pkgio.c:544
 #, c-format
 msgid "lead magic: BAD, read %02x%02x%02x%02x"
 msgstr "lead magic: BURUK, baca %02x%02x%02x%02x"
 
-#: rpmdb/pkgio.c:542
+#: rpmdb/pkgio.c:553
 #, c-format
 msgid "lead version(%u): UNSUPPORTED"
 msgstr "lead version(%u): TIDAK DILAYANI"
 
-#: rpmdb/pkgio.c:553
+#: rpmdb/pkgio.c:564
 #, c-format
 msgid "sigh type(%u): UNSUPPORTED"
 msgstr "duh type(%u): TIDAK DILAYANI"
 
-#: rpmdb/pkgio.c:701
+#: rpmdb/pkgio.c:712
 #, c-format
 msgid "sigh size(%d): BAD, read returned %d"
 msgstr "duh ukuran(%d): BURUK, pembacaan memberikan %d"
 
-#: rpmdb/pkgio.c:713
+#: rpmdb/pkgio.c:724
 #, c-format
 msgid "sigh magic: BAD, read %02x%02x%02x%02x%02x%02x%02x%02x"
 msgstr "duh magic: BURUK, baca %02x%02x%02x%02x%02x%02x%02x%02x"
 
-#: rpmdb/pkgio.c:721
+#: rpmdb/pkgio.c:732
 #, c-format
 msgid "sigh tags: BAD, no. of tags(%u) out of range"
 msgstr "duh tags: BURUK, jumlah dari tags(%u) diluar dari jangkauan"
 
-#: rpmdb/pkgio.c:727
-#, fuzzy, c-format
+#: rpmdb/pkgio.c:738
+#, c-format
 msgid "sigh data: BAD, no. of bytes(%u) out of range"
-msgstr "duh data: BURUK, jumlah dari bytes(%d) diluar jangkauan"
+msgstr "duh data: BURUK, jumlah dari bytes(%u) diluar jangkauan"
 
-#: rpmdb/pkgio.c:737
-#, fuzzy, c-format
+#: rpmdb/pkgio.c:748
+#, c-format
 msgid "sigh blob(%u): BAD, read returned %d"
-msgstr "duh blob (%d): BURUK, pembacaan memberikan %d"
+msgstr "duh blob (%u): BURUK, pembacaan memberikan %d"
 
-#: rpmdb/pkgio.c:749 rpmdb/pkgio.c:933 rpmdb/pkgio.c:1058
+#: rpmdb/pkgio.c:760 rpmdb/pkgio.c:944 rpmdb/pkgio.c:1069
 #, c-format
 msgid "tag[%d]: BAD, tag %u type %u offset %d count %u"
 msgstr "tag[%d]: BURUK, tag %u tipe %u offset %d terhitung %u"
 
-#: rpmdb/pkgio.c:770 rpmdb/pkgio.c:953
-#, fuzzy, c-format
+#: rpmdb/pkgio.c:781 rpmdb/pkgio.c:964
+#, c-format
 msgid "region offset: BAD, tag %u type %u offset %d count %u"
-msgstr "region offset: BURUK, tag %u tipe %u offset %u terhitung %u"
+msgstr "region offset: BURUK, tag %u tipe %u offset %d terhitung %u"
 
-#: rpmdb/pkgio.c:795 rpmdb/pkgio.c:972
+#: rpmdb/pkgio.c:806 rpmdb/pkgio.c:983
 #, c-format
 msgid "region trailer: BAD, tag %u type %u offset %d count %u"
 msgstr "region trailer: BURUK, tag %u tipe %u offset %d terhitung %u"
 
-#: rpmdb/pkgio.c:807 rpmdb/pkgio.c:984
+#: rpmdb/pkgio.c:818 rpmdb/pkgio.c:995
 #, c-format
 msgid "region size: BAD, ril(%u) > il(%u)"
 msgstr "region size: BURUK, ril(%u) > il(%u)"
 
-#: rpmdb/pkgio.c:818
+#: rpmdb/pkgio.c:829
 #, c-format
 msgid "sigh tag[%u]: BAD, tag %u type %u offset %d count %u"
 msgstr "duh tag[%u]: BURUK, tag %u tipe %u ofset %d terhitung %u"
 
-#: rpmdb/pkgio.c:828
+#: rpmdb/pkgio.c:839
 #, c-format
 msgid "sigh load: BAD"
 msgstr "duh load: BURUK"
 
-#: rpmdb/pkgio.c:841
+#: rpmdb/pkgio.c:852
 #, c-format
 msgid "sigh pad(%u): BAD, read %d bytes"
 msgstr "duh pad(%u): BURUK, baca %d bytes"
 
-#: rpmdb/pkgio.c:854
+#: rpmdb/pkgio.c:865
 #, c-format
 msgid "sigh sigSize(%u): BAD, fstat(2) failed"
 msgstr "sigh sigSize(%u): BURUK, fstat(2) gagal"
 
-#: rpmdb/pkgio.c:924
+#: rpmdb/pkgio.c:935
 #, c-format
 msgid "blob size(%d): BAD, 8 + 16 * il(%u) + dl(%u)"
 msgstr "blob size(%d): BURUK, 8 + 16 * il(%u) + dl(%u)"
 
-#: rpmdb/pkgio.c:993
+#: rpmdb/pkgio.c:1004
 #, c-format
 msgid "tag[%u]: BAD, tag %u type %u offset %d count %u"
 msgstr "tag[%u]: BURUK, tag %u tipe %u offset %d terhitung %u"
 
-#: rpmdb/pkgio.c:1011
+#: rpmdb/pkgio.c:1022
 #, c-format
 msgid "hdr SHA1: BAD, not hex"
 msgstr "hdr SHA1: BURUK, bukan heksadesimal"
 
-#: rpmdb/pkgio.c:1023
+#: rpmdb/pkgio.c:1034
 #, c-format
 msgid "hdr RSA: BAD, not binary"
 msgstr "hdr RSA: BURUK, bukan binary"
 
-#: rpmdb/pkgio.c:1033
+#: rpmdb/pkgio.c:1044
 #, c-format
 msgid "hdr DSA: BAD, not binary"
 msgstr "hdr DSA: BURUK, bukan binary"
 
-#: rpmdb/pkgio.c:1090 rpmdb/pkgio.c:1133
+#: rpmdb/pkgio.c:1101 rpmdb/pkgio.c:1144
 #, c-format
 msgid "skipping header with unverifiable V%u signature\n"
 msgstr "melewatkan header dengan tanda-tangan V%u tidak terverifikasi\n"
 
-#: rpmdb/pkgio.c:1284
+#: rpmdb/pkgio.c:1295
 #, c-format
 msgid "hdr size(%u): BAD, read returned %d"
 msgstr "hdr size(%u): BURUK, pembacaan memberikan %d"
 
-#: rpmdb/pkgio.c:1294
+#: rpmdb/pkgio.c:1305
 #, c-format
 msgid "hdr magic: BAD, read %02x%02x%02x%02x%02x%02x%02x%02x"
 msgstr "hdr magic: BURUK, baca %02x%02x%02x%02x%02x%02x%02x%02x"
 
-#: rpmdb/pkgio.c:1302
+#: rpmdb/pkgio.c:1313
 #, c-format
 msgid "hdr tags: BAD, no. of tags(%u) out of range"
 msgstr "hdr tags: BURUK, no. dari tags(%u) diluar jangkauan"
 
-#: rpmdb/pkgio.c:1309
+#: rpmdb/pkgio.c:1320
 #, c-format
 msgid "hdr data: BAD, no. of bytes(%u) out of range\n"
 msgstr "hdr data: BURUK, no. dari bytes(%u) diluar jangkauan\n"
 
-#: rpmdb/pkgio.c:1320
+#: rpmdb/pkgio.c:1331
 #, c-format
 msgid "hdr blob(%u): BAD, read returned %d"
 msgstr "hdr blob(%u): BURUK, pembacaan memberikan %d"
 
-#: rpmdb/pkgio.c:1334
+#: rpmdb/pkgio.c:1345
 #, c-format
 msgid "hdr load: BAD\n"
 msgstr "hdr load: BURUK\n"
@@ -3321,64 +3375,65 @@ msgstr "mengganti files dalam %s dengan files dari %s untuk recovery"
 msgid "failed to remove directory %s: %s\n"
 msgstr "gagal untuk menghapus direktori %s: %s\n"
 
-#: rpmdb/signature.c:96 rpmdb/signature.c:101 rpmdb/signature.c:107
+#: rpmdb/signature.c:89 rpmdb/signature.c:98 rpmdb/signature.c:103
+#: rpmdb/signature.c:109
 #, c-format
 msgid "error creating temporary file %s\n"
 msgstr "tidak bisa membuat file temporari %s\n"
 
-#: rpmdb/signature.c:189 rpmdb/signature.c:536
+#: rpmdb/signature.c:191 rpmdb/signature.c:538
 #, c-format
 msgid "Could not exec %s: %s\n"
 msgstr "Tidak dapak menjalankan perintah %s: %s\n"
 
-#: rpmdb/signature.c:207 rpmdb/signature.c:550
+#: rpmdb/signature.c:209 rpmdb/signature.c:552
 #, c-format
 msgid "Failed %s(%d) key(0x%lx): %s\n"
 msgstr "Gagal %s(%d) kunci(0x%lx): %s\n"
 
-#: rpmdb/signature.c:233
+#: rpmdb/signature.c:235
 #, c-format
 msgid "gpg exec failed (%d)\n"
 msgstr "eksekusi gpg gagal (%d)\n"
 
-#: rpmdb/signature.c:240
+#: rpmdb/signature.c:242
 msgid "gpg failed to write signature\n"
 msgstr "gpg gagal untuk menulis signature\n"
 
-#: rpmdb/signature.c:259
+#: rpmdb/signature.c:261
 msgid "unable to read the signature\n"
 msgstr "tidak dapat membaca signature\n"
 
-#: rpmdb/signature.c:602
+#: rpmdb/signature.c:604
 msgid "Header+Payload size: "
 msgstr "Header+Payload size: "
 
-#: rpmdb/signature.c:639
+#: rpmdb/signature.c:641
 msgid "MD5 digest: "
 msgstr "MD5 digest: "
 
-#: rpmdb/signature.c:696
+#: rpmdb/signature.c:698
 msgid "Header SHA1 digest: "
 msgstr "Header SHA1 digest: "
 
-#: rpmdb/signature.c:756 rpmdb/signature.c:882
+#: rpmdb/signature.c:758 rpmdb/signature.c:884
 msgid "Header "
 msgstr "Header "
 
-#: rpmdb/signature.c:812
+#: rpmdb/signature.c:814
 msgid " signature: "
 msgstr " tanda tangan: "
 
-#: rpmdb/signature.c:888
+#: rpmdb/signature.c:890
 msgid " DSA signature: "
 msgstr " DSA tanda tangan: "
 
-#: rpmdb/signature.c:963
+#: rpmdb/signature.c:965
 #, c-format
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr "Verifikasi signature: PARAMETER TIDAK BAIK\n"
 
-#: rpmdb/signature.c:984
+#: rpmdb/signature.c:986
 #, c-format
 msgid "Signature: UNKNOWN (%u)\n"
 msgstr "Signature: TIDAK DIKETAHUI (%u)\n"
@@ -3486,6 +3541,41 @@ msgstr "File %s: %s\n"
 #, c-format
 msgid "File %s is smaller than %u bytes\n"
 msgstr "File %s lebih kecil sebesar %u bytes\n"
+
+#: rpmio/mire.c:325
+#, fuzzy, c-format
+msgid "%s: Failed to set locale %s (obtained from %s)\n"
+msgstr "Gagal membaca file spec dari %s\n"
+
+#: rpmio/mire.c:366
+#, c-format
+msgid "pcre_compile2 failed: %s(%d) at offset %d of \"%s\"\n"
+msgstr ""
+
+#: rpmio/mire.c:384
+#, fuzzy, c-format
+msgid "%s: regcomp failed: %s\n"
+msgstr "%s: gagal membuka: %s\n"
+
+#: rpmio/mire.c:442
+#, fuzzy, c-format
+msgid "%s: regexec failed: %s(%d)\n"
+msgstr "%s: Fseek gagal: %s\n"
+
+#: rpmio/mire.c:460
+#, fuzzy, c-format
+msgid "pcre_exec failed: return %d\n"
+msgstr "eksekusi gpg gagal (%d)\n"
+
+#: rpmio/mire.c:474
+#, fuzzy, c-format
+msgid "fnmatch failed: return %d\n"
+msgstr "mntctl() gagal untuk memberikan ukuran: %s\n"
+
+#: rpmio/mire.c:570
+#, fuzzy, c-format
+msgid "%s: Error while studying regex%s: %s\n"
+msgstr "baris %d: Error memparsing %s: %s\n"
 
 #: rpmio/poptIO.c:97
 msgid "MD2 digest (RFC-1319)"
@@ -3703,6 +3793,68 @@ msgstr "Server  error"
 msgid "Unknown Error"
 msgstr "Error tidak diketahui"
 
+#: rpmio/rpmdigest.c:176 rpmio/rpmgrep.c:1052 rpmio/rpmgrep.c:1215
+#, c-format
+msgid "%s: Failed to open %s: %s\n"
+msgstr "%s: Gagal  membuka %s: %s\n"
+
+#: rpmio/rpmdigest.c:235
+#, fuzzy, c-format
+msgid "%s: Unknown digest name \"%s\"\n"
+msgstr "%s: tidak diketahui setting \"%s\"\n"
+
+#: rpmio/rpmdigest.c:298 rpmio/rpmgrep.c:1344 rpmio/rpmmtree.c:3535
+#: rpmio/rpmrepo.c:1693
+#, c-format
+msgid "%s: Unknown option -%c\n"
+msgstr "%s: Opsi tidak diketahui -%c\n"
+
+#: rpmio/rpmdigest.c:317
+#, fuzzy
+msgid "read in binary mode"
+msgstr "jalankan dalam mode multi-baris"
+
+#: rpmio/rpmdigest.c:321 rpmio/rpmdigest.c:325
+#, fuzzy
+msgid "read digests from MANIFEST file and verify (may be used more than once)"
+msgstr "pola baca dari file (dapat digunakan lebih dari sekali)"
+
+#: rpmio/rpmdigest.c:322 rpmio/rpmdigest.c:326
+msgid "MANIFEST"
+msgstr ""
+
+#: rpmio/rpmdigest.c:330
+msgid "read in text mode (default)"
+msgstr ""
+
+#: rpmio/rpmdigest.c:334
+msgid "The following two options are useful only when verifying digests:"
+msgstr ""
+
+#: rpmio/rpmdigest.c:340
+msgid "no output when verifying"
+msgstr ""
+
+#: rpmio/rpmdigest.c:342
+msgid "warn about improperly formatted checksum lines"
+msgstr ""
+
+#: rpmio/rpmdigest.c:345 rpmio/rpmmtree.c:3606 rpmio/rpmrepo.c:1790
+msgid "Available digests:"
+msgstr ""
+
+#: rpmio/rpmdigest.c:348 rpmio/rpmgrep.c:1463 rpmio/rpmmtree.c:3609
+#: rpmio/rpmrepo.c:1793
+msgid "Common options for all rpmio executables:"
+msgstr "Opsi yang sama untuk semua rpmio dan executables:"
+
+#: rpmio/rpmdigest.c:355
+msgid ""
+"When checking, the input should be a former output of this program.  The\n"
+"default mode is to print a line with digest, a character indicating type\n"
+"(`*' for binary, ` ' for text), and name for each FILE.\n"
+msgstr ""
+
 #: rpmio/rpmgrep.c:595
 #, c-format
 msgid "%s: pcre_exec() error %d while matching "
@@ -3737,11 +3889,6 @@ msgstr "%s: terlalu banyak errors - ditinggalkan\n"
 #, c-format
 msgid "%s: Failed to open directory %s: %s\n"
 msgstr "%s: Gagal membuka direktori %s: %s\n"
-
-#: rpmio/rpmgrep.c:1052 rpmio/rpmgrep.c:1215
-#, c-format
-msgid "%s: Failed to open %s: %s\n"
-msgstr "%s: Gagal  membuka %s: %s\n"
 
 #: rpmio/rpmgrep.c:1121
 #, c-format
@@ -3792,11 +3939,6 @@ msgstr "%s %s (PCRE versi %s)\n"
 #, c-format
 msgid "%s %s (without PCRE)\n"
 msgstr "%s %s (tanpa PCRE)\n"
-
-#: rpmio/rpmgrep.c:1344
-#, c-format
-msgid "%s: Unknown option -%c\n"
-msgstr "%s: Opsi tidak diketahui -%c\n"
 
 #: rpmio/rpmgrep.c:1362
 msgid "set number of following context lines"
@@ -3973,10 +4115,6 @@ msgstr "paksa pola untuk cocok pada kata"
 #: rpmio/rpmgrep.c:1458
 msgid "force patterns to match only whole lines"
 msgstr "paksa pola untuk cocok seluruh baris"
-
-#: rpmio/rpmgrep.c:1463
-msgid "Common options for all rpmio executables:"
-msgstr "Opsi yang sama untuk semua rpmio dan executables:"
 
 #: rpmio/rpmgrep.c:1469
 msgid ""
@@ -4155,6 +4293,606 @@ msgstr "magic_file(ms, %s) gagal: %s\n"
 #, c-format
 msgid "magic_buffer(ms, %p[%u]) failed: %s\n"
 msgstr "magic_buffer(ms, %p[%u]) gagal: %s\n"
+
+#: rpmio/rpmmtree.c:332
+#, c-format
+msgid "%s: failed at line %d of the specification\n"
+msgstr ""
+
+#: rpmio/rpmmtree.c:1492 rpmio/rpmmtree.c:1681
+#, c-format
+msgid "%s: filename (%s) encoded incorrectly\n"
+msgstr ""
+
+#: rpmio/rpmmtree.c:2042
+#, c-format
+msgid "%s changed\n"
+msgstr ""
+
+#: rpmio/rpmmtree.c:2122
+#, c-format
+msgid "\ttype expected %s found %s)\n"
+msgstr ""
+
+#: rpmio/rpmmtree.c:2132 rpmio/rpmmtree.c:2145
+#, c-format
+msgid "%s%s expected %lu found %lu"
+msgstr ""
+
+#: rpmio/rpmmtree.c:2136 rpmio/rpmmtree.c:2149 rpmio/rpmmtree.c:2176
+#: rpmio/rpmmtree.c:2233
+#, fuzzy, c-format
+msgid " not modified: %s)\n"
+msgstr "Glob tidak diperbolehkan: %s\n"
+
+#: rpmio/rpmmtree.c:2138 rpmio/rpmmtree.c:2151 rpmio/rpmmtree.c:2178
+#, c-format
+msgid " modified)\n"
+msgstr ""
+
+#: rpmio/rpmmtree.c:2172
+#, c-format
+msgid "%s%s expected %#o found %#o"
+msgstr ""
+
+#: rpmio/rpmmtree.c:2189
+#, c-format
+msgid "%s%s expected %lu found %lu)\n"
+msgstr ""
+
+#: rpmio/rpmmtree.c:2196
+#, c-format
+msgid "%s%s expected %llu found %llu\n"
+msgstr ""
+
+#: rpmio/rpmmtree.c:2228
+#, c-format
+msgid "%s%s expected %.24s "
+msgstr ""
+
+#: rpmio/rpmmtree.c:2229
+#, c-format
+msgid "found %.24s"
+msgstr ""
+
+#: rpmio/rpmmtree.c:2235
+#, c-format
+msgid " modified\n"
+msgstr ""
+
+#: rpmio/rpmmtree.c:2278
+#, c-format
+msgid "%s%s expected %lu found %lu\n"
+msgstr ""
+
+#: rpmio/rpmmtree.c:2296 rpmio/rpmmtree.c:2316
+#, fuzzy, c-format
+msgid "%s%s expected %s found %s\n"
+msgstr "%s dibuat sebagai %s\n"
+
+#: rpmio/rpmmtree.c:2325
+#, fuzzy, c-format
+msgid "%s%s expected \"%s\""
+msgstr "tidak diperkirakan ]"
+
+#: rpmio/rpmmtree.c:2329
+#, fuzzy, c-format
+msgid " found \"%s\""
+msgstr "File tidak ditemukan: %s\n"
+
+#: rpmio/rpmmtree.c:2451 rpmio/rpmmtree.c:2558
+#, c-format
+msgid "%s: Could not get uname for uid=%lu\n"
+msgstr ""
+
+#: rpmio/rpmmtree.c:2464 rpmio/rpmmtree.c:2573
+#, c-format
+msgid "%s: Could not get gname for gid=%lu\n"
+msgstr ""
+
+#: rpmio/rpmmtree.c:2612 rpmio/rpmmtree.c:2637
+#, fuzzy, c-format
+msgid "%s: %s: cksum: %s\n"
+msgstr "Hilang %s%d: %s: %s\n"
+
+#: rpmio/rpmmtree.c:2757
+#, fuzzy, c-format
+msgid "%s: open of %s failed: %s\n"
+msgstr "pembukaan dari %s gagal: %s\n"
+
+#: rpmio/rpmmtree.c:3257
+#, fuzzy, c-format
+msgid "missing: %s"
+msgstr "kehilangan %c %s"
+
+#: rpmio/rpmmtree.c:3268
+#, c-format
+msgid " (%s not created: user not specified)"
+msgstr ""
+
+#: rpmio/rpmmtree.c:3270
+#, c-format
+msgid " (%s not created: group not specified))"
+msgstr ""
+
+#: rpmio/rpmmtree.c:3273
+#, fuzzy, c-format
+msgid " (%s not created: %s)\n"
+msgstr "%s dibuat sebagai %s\n"
+
+#: rpmio/rpmmtree.c:3276
+#, fuzzy, c-format
+msgid " (%s created)\n"
+msgstr "%s dibuat sebagai %s\n"
+
+#: rpmio/rpmmtree.c:3289 rpmio/rpmmtree.c:3325
+#, fuzzy, c-format
+msgid "%s: %s not modified: %s\n"
+msgstr "%s: gagal membuka: %s\n"
+
+#: rpmio/rpmmtree.c:3294
+#, c-format
+msgid " (%s not created: mode not specified)"
+msgstr ""
+
+#: rpmio/rpmmtree.c:3296
+#, fuzzy, c-format
+msgid " (%s not created: %s)"
+msgstr "%s dibuat sebagai %s\n"
+
+#: rpmio/rpmmtree.c:3299
+#, fuzzy, c-format
+msgid " (%s created)"
+msgstr "%s dibuat sebagai %s\n"
+
+#: rpmio/rpmmtree.c:3330
+#, c-format
+msgid "%s: permissions not set: %s\n"
+msgstr ""
+
+#: rpmio/rpmmtree.c:3335
+#, fuzzy, c-format
+msgid "%s: file flags not set: %s\n"
+msgstr "%s gagal pada file %s: %s\n"
+
+#: rpmio/rpmmtree.c:3447
+#, fuzzy, c-format
+msgid ", not removed: %s"
+msgstr "Glob tidak diperbolehkan: %s\n"
+
+#: rpmio/rpmmtree.c:3449
+#, c-format
+msgid ", removed"
+msgstr ""
+
+#: rpmio/rpmmtree.c:3551
+msgid "Follow symlinks"
+msgstr ""
+
+#: rpmio/rpmmtree.c:3554
+msgid "Don't follow symlinks"
+msgstr ""
+
+#: rpmio/rpmmtree.c:3556
+msgid "Read fnmatch(3) exclude patterns from <file>"
+msgstr ""
+
+#: rpmio/rpmmtree.c:3556
+#, fuzzy
+msgid "<file>"
+msgstr "<specfile>"
+
+#: rpmio/rpmmtree.c:3559
+msgid "Print file tree specification to stdout"
+msgstr ""
+
+#: rpmio/rpmmtree.c:3561
+msgid "Directories only"
+msgstr ""
+
+#: rpmio/rpmmtree.c:3563
+msgid "Don't complain about files not in the specification"
+msgstr ""
+
+#: rpmio/rpmmtree.c:3565
+msgid "Read file tree <spec>"
+msgstr ""
+
+#: rpmio/rpmmtree.c:3567
+#, fuzzy
+msgid "Indent sub-directories"
+msgstr "recursively scan sub-direktori"
+
+#: rpmio/rpmmtree.c:3569
+#, fuzzy
+msgid "Add <key> to specification"
+msgstr "Spesifikasi package tidak baik: %s\n"
+
+#: rpmio/rpmmtree.c:3569 rpmio/rpmmtree.c:3571
+msgid "<key>"
+msgstr ""
+
+#: rpmio/rpmmtree.c:3571
+msgid "Use \"type\" keywords instead"
+msgstr ""
+
+#: rpmio/rpmmtree.c:3573
+#, fuzzy
+msgid "Loose permissions check"
+msgstr "set permission dari files dalam sebuah package"
+
+#: rpmio/rpmmtree.c:3575
+msgid "Don't include sub-directory comments"
+msgstr ""
+
+#: rpmio/rpmmtree.c:3578 rpmio/rpmmtree.c:3581
+msgid "Use <path> rather than current directory"
+msgstr ""
+
+#: rpmio/rpmmtree.c:3585
+msgid "Quiet mode"
+msgstr ""
+
+#: rpmio/rpmmtree.c:3587
+msgid "Remove files not in specification"
+msgstr ""
+
+#: rpmio/rpmmtree.c:3589
+msgid "Display crc for file(s) with <seed>"
+msgstr ""
+
+#: rpmio/rpmmtree.c:3589
+#, fuzzy
+msgid "<seed>"
+msgstr "<spec>"
+
+#: rpmio/rpmmtree.c:3591
+msgid "Touch files iff timestamp differs"
+msgstr ""
+
+#: rpmio/rpmmtree.c:3593
+msgid "Update owner/group/permissions to match specification"
+msgstr ""
+
+#: rpmio/rpmmtree.c:3595
+msgid "Same as -u, but ignore match status on exit"
+msgstr ""
+
+#: rpmio/rpmmtree.c:3597
+msgid "Treat missing uid/gid as warning"
+msgstr ""
+
+#: rpmio/rpmmtree.c:3600
+msgid "Don't cross mount points"
+msgstr ""
+
+#: rpmio/rpmmtree.c:3603 rpmio/rpmrepo.c:1779
+#, fuzzy
+msgid "Fts(3) traversal options:"
+msgstr "debug Fts(3) traverse"
+
+#: rpmio/rpmmtree.c:3638
+#, c-format
+msgid "(no controlling terminal) %s"
+msgstr ""
+
+#: rpmio/rpmmtree.c:3643
+#, c-format
+msgid "(no controlling terminal) #%d"
+msgstr ""
+
+#: rpmio/rpmmtree.c:3784 rpmio/rpmmtree.c:3799
+#, c-format
+msgid "%s: %s checksum: %u\n"
+msgstr ""
+
+#: rpmio/rpmrepo.c:672
+#, fuzzy, c-format
+msgid "Cannot create/verify %s: %s"
+msgstr "tidak dapat membuat %s: %s\n"
+
+#: rpmio/rpmrepo.c:702
+#, c-format
+msgid "Directory %s must exist"
+msgstr ""
+
+#: rpmio/rpmrepo.c:709
+#, fuzzy, c-format
+msgid "Directory %s does not exist."
+msgstr "pengguna %s tidak ada - menggunakan root\n"
+
+#: rpmio/rpmrepo.c:713
+#, fuzzy, c-format
+msgid "Directory %s must be writable."
+msgstr "relocations harus diawali dengan sebuah /"
+
+#: rpmio/rpmrepo.c:723
+#, c-format
+msgid "Old data directory exists, please remove: %s"
+msgstr ""
+
+#: rpmio/rpmrepo.c:739
+#, c-format
+msgid "Path must be writable: %s"
+msgstr ""
+
+#: rpmio/rpmrepo.c:759
+#, fuzzy, c-format
+msgid "groupfile %s cannot be found."
+msgstr "package \"%s\" tidak dapat ditemukan\n"
+
+#: rpmio/rpmrepo.c:793
+#, c-format
+msgid "Fts_open: %s"
+msgstr ""
+
+#: rpmio/rpmrepo.c:856
+#, fuzzy, c-format
+msgid "cannot get to file: %s"
+msgstr "tidak dapat membuka file %s: %s\n"
+
+#: rpmio/rpmrepo.c:875 rpmio/rpmrepo.c:913
+#, c-format
+msgid "Fwrite failed: expected write %u != %u bytes: %s\n"
+msgstr ""
+
+#: rpmio/rpmrepo.c:964
+#, fuzzy, c-format
+msgid "%s: Fread(%s) failed: %s\n"
+msgstr "%s: Fread gagal: %s\n"
+
+#: rpmio/rpmrepo.c:1000 rpmio/rpmrepo.c:1056
+#, c-format
+msgid "headerSprintf(%s): %s"
+msgstr ""
+
+#: rpmio/rpmrepo.c:1147
+#, fuzzy, c-format
+msgid ""
+"\n"
+"Error %s: %s\n"
+msgstr "%s: %s\n"
+
+#: rpmio/rpmrepo.c:1186
+#, c-format
+msgid "Saving %s%s%s metadata"
+msgstr ""
+
+#: rpmio/rpmrepo.c:1384
+#, fuzzy
+msgid "Generating sqlite DBs"
+msgstr "Membuat signature: %d\n"
+
+#: rpmio/rpmrepo.c:1411
+#, c-format
+msgid "Starting %s db creation: %s"
+msgstr ""
+
+#: rpmio/rpmrepo.c:1477
+#, c-format
+msgid "Ending %s db creation: %s"
+msgstr ""
+
+#: rpmio/rpmrepo.c:1511
+msgid "Sqlite DBs complete"
+msgstr ""
+
+#: rpmio/rpmrepo.c:1522
+#, fuzzy, c-format
+msgid "Error saving temp file for %s%s%s: %s"
+msgstr "tidak bisa membuat file temporari %s\n"
+
+#: rpmio/rpmrepo.c:1527
+#, fuzzy, c-format
+msgid "Could not save temp file: %s"
+msgstr "Tidak dapat membuka file Test: %s\n"
+
+#: rpmio/rpmrepo.c:1549
+#, c-format
+msgid "Error moving final %s to old dir %s"
+msgstr ""
+
+#: rpmio/rpmrepo.c:1557
+msgid "Error moving final metadata into place"
+msgstr ""
+
+#: rpmio/rpmrepo.c:1574 rpmio/rpmrepo.c:1606
+#, fuzzy, c-format
+msgid "Could not remove old metadata file: %s: %s"
+msgstr "Tidak dapat membuka %%files file %s: %s\n"
+
+#: rpmio/rpmrepo.c:1616
+#, fuzzy, c-format
+msgid "Could not restore old non-metadata file: %s -> %s: %s"
+msgstr "Tidak dapat membuka %%files file %s: %s\n"
+
+#: rpmio/rpmrepo.c:1627
+#, fuzzy, c-format
+msgid "Could not remove old metadata dir: %s: %s"
+msgstr "Tidak dapat membuka %%files file %s: %s\n"
+
+#: rpmio/rpmrepo.c:1706
+msgid "don't compress"
+msgstr ""
+
+#: rpmio/rpmrepo.c:1708
+msgid "use gzip compression"
+msgstr ""
+
+#: rpmio/rpmrepo.c:1710
+msgid "use bzip2 compression"
+msgstr ""
+
+#: rpmio/rpmrepo.c:1712
+msgid "use lzma compression"
+msgstr ""
+
+#: rpmio/rpmrepo.c:1724
+#, fuzzy
+msgid "debug repo handling"
+msgstr "debug URL cache handling"
+
+#: rpmio/rpmrepo.c:1727
+msgid "output nothing except for serious errors"
+msgstr ""
+
+#: rpmio/rpmrepo.c:1729
+msgid "output more debugging info."
+msgstr ""
+
+#: rpmio/rpmrepo.c:1731
+msgid "sanity check arguments, don't create metadata"
+msgstr ""
+
+#: rpmio/rpmrepo.c:1734 rpmio/rpmrepo.c:1737
+msgid "glob PATTERN(s) to exclude"
+msgstr ""
+
+#: rpmio/rpmrepo.c:1734 rpmio/rpmrepo.c:1737 rpmio/rpmrepo.c:1741
+#: rpmio/rpmrepo.c:1744
+msgid "PATTERN"
+msgstr ""
+
+#: rpmio/rpmrepo.c:1741 rpmio/rpmrepo.c:1744
+msgid "glob PATTERN(s) to include"
+msgstr ""
+
+#: rpmio/rpmrepo.c:1748
+#, fuzzy
+msgid "top level directory"
+msgstr "menggunakan ROOT sebagai direktori paling atas"
+
+#: rpmio/rpmrepo.c:1748 rpmio/rpmrepo.c:1772
+msgid "DIR"
+msgstr ""
+
+#: rpmio/rpmrepo.c:1750
+msgid "baseurl to append on all files"
+msgstr ""
+
+#: rpmio/rpmrepo.c:1750
+msgid "BASEURL"
+msgstr ""
+
+#: rpmio/rpmrepo.c:1752
+msgid "path to groupfile to include in metadata"
+msgstr ""
+
+#: rpmio/rpmrepo.c:1752 rpmio/rpmrepo.c:1766 rpmio/rpmrepo.c:1769
+msgid "FILE"
+msgstr ""
+
+#: rpmio/rpmrepo.c:1755
+msgid "make sure all xml generated is formatted"
+msgstr ""
+
+#: rpmio/rpmrepo.c:1757
+msgid "check timestamps on files vs the metadata to see if we need to update"
+msgstr ""
+
+#: rpmio/rpmrepo.c:1760
+#, fuzzy
+msgid "create sqlite3 database files"
+msgstr "verifikasi file database"
+
+#: rpmio/rpmrepo.c:1763
+#, fuzzy
+msgid "generate split media"
+msgstr "buat signature"
+
+#: rpmio/rpmrepo.c:1766 rpmio/rpmrepo.c:1769
+msgid "use only the files listed in this file from the directory specified"
+msgstr ""
+
+#: rpmio/rpmrepo.c:1772
+msgid "<dir> = optional directory to output to"
+msgstr ""
+
+#: rpmio/rpmrepo.c:1774
+#, fuzzy
+msgid "ignore symlinks of packages"
+msgstr "menghiraukan file konflik antar packages"
+
+#: rpmio/rpmrepo.c:1776
+msgid "include the file's checksum in the filename, helps with proxies"
+msgstr ""
+
+#: rpmio/rpmrepo.c:1787
+#, fuzzy
+msgid "Available compressions:"
+msgstr "Opsi databasa:"
+
+#: rpmio/rpmrepo.c:1861
+msgid "Must specify path(s) to index."
+msgstr ""
+
+#: rpmio/rpmrepo.c:1879 rpmio/rpmrepo.c:1931
+#, fuzzy, c-format
+msgid "Realpath(%s): %s"
+msgstr "Mengambil(%s%d): %s\n"
+
+#: rpmio/rpmrepo.c:1936
+msgid "--split and --checkts options are mutually exclusive"
+msgstr ""
+
+#: rpmio/rpmrepo.c:1956
+msgid "Error loading exclude glob patterns."
+msgstr ""
+
+#: rpmio/rpmrepo.c:1959
+msgid "Error loading include glob patterns."
+msgstr ""
+
+#: rpmio/rpmrepo.c:1988
+#, c-format
+msgid "repo is up to date\n"
+msgstr ""
+
+#: rpmio/rpmuuid.c:34
+msgid "invalid UUID version number"
+msgstr ""
+
+#: rpmio/rpmuuid.c:38
+msgid "namespace or data required for requested UUID version\n"
+msgstr ""
+
+#: rpmio/rpmuuid.c:42
+msgid "either string or binary result buffer required\n"
+msgstr ""
+
+#: rpmio/rpmuuid.c:48
+#, fuzzy, c-format
+msgid "failed to create UUID object: %s\n"
+msgstr "gagal untuk membuat %s: %s\n"
+
+#: rpmio/rpmuuid.c:55
+#, fuzzy, c-format
+msgid "failed to create UUID namespace object: %s\n"
+msgstr "gagal untuk membuat %s: %s\n"
+
+#: rpmio/rpmuuid.c:60
+#, c-format
+msgid "failed to import UUID namespace object: %s\n"
+msgstr ""
+
+#: rpmio/rpmuuid.c:79
+#, fuzzy, c-format
+msgid "failed to make UUID object: %s\n"
+msgstr "gagal untuk membuat %s: %s\n"
+
+#: rpmio/rpmuuid.c:91
+#, c-format
+msgid "failed to export UUID object as string representation: %s\n"
+msgstr ""
+
+#: rpmio/rpmuuid.c:102
+#, c-format
+msgid "failed to export UUID object as binary representation: %s\n"
+msgstr ""
+
+#: rpmio/rpmuuid.c:115
+msgid "UUID generator not available!\n"
+msgstr ""
 
 #: rpmio/url.c:113
 #, c-format
@@ -4547,9 +5285,6 @@ msgstr ""
 #~ msgid "installing binary packages\n"
 #~ msgstr "menginstall packages binary\n"
 
-#~ msgid "cannot open file %s: %s\n"
-#~ msgstr "tidak dapat membuka file %s: %s\n"
-
 #~ msgid "read failed: %s (%d)\n"
 #~ msgstr "gagal membaca: %s (%d)\n"
 
@@ -4769,9 +5504,6 @@ msgstr ""
 #~ msgid "logging into %s as %s, pw %s\n"
 #~ msgstr "logging kedalam %s sebagai %s, pw %s\n"
 
-#~ msgid "failed to create %s: %s\n"
-#~ msgstr "gagal untuk membuat %s: %s\n"
-
 #~ msgid "Building for target %s\n"
 #~ msgstr "Membuat untuk target %s\n"
 
@@ -4879,9 +5611,6 @@ msgstr ""
 
 #~ msgid "list install/erase scriptlets from package(s)"
 #~ msgstr "list install/erase scriplets dari package(s)"
-
-#~ msgid "set permissions of files in a package"
-#~ msgstr "set permission dari files dalam sebuah package"
 
 #~ msgid "set user/group ownership of files in a package"
 #~ msgstr "set user/group kepemilikan dari files dalam sebuah package"
