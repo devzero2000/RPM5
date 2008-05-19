@@ -16,12 +16,7 @@
 -bufferoverflowhigh
 
 -enummemuse	# 531
--nullderef	# 1
--nullpass	# 10
--nullstate	# 7
 -typeuse	# 20
-
--observertrans	# 1
 
 # --- +partial artifacts
 -declundef	# 271

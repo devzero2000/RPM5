@@ -66,12 +66,15 @@ static int _repo_debug;
 typedef struct rpmrepo_s * rpmrepo;
 typedef struct rpmrfile_s * rpmrfile;
 
+/**
+ * Repository metadata file.
+ */
 struct rpmrfile_s {
 /*@observer@*/
     const char * type;
 /*@observer@*/
     const char * xml_init;
-/*@observer@*/
+/*@observer@*/ /*@relnull@*/
     const char * xml_qfmt;
 /*@observer@*/
     const char * xml_fini;
@@ -79,6 +82,7 @@ struct rpmrfile_s {
     const char ** sql_init;
 /*@observer@*/
     const char * sql_qfmt;
+/*@relnull@*/
     FD_t fd;
 #if defined(WITH_SQLITE)
     sqlite3 * sqldb;
@@ -88,18 +92,21 @@ struct rpmrfile_s {
     time_t ctime;
 };
 
+/**
+ * Repository.
+ */
 struct rpmrepo_s {
     int quiet;
     int verbose;
     int dryrun;
 /*@null@*/
     ARGV_t exclude_patterns;
-/*@null@*/
+/*@relnull@*/
     miRE excludeMire;
     int nexcludes;
 /*@null@*/
     ARGV_t include_patterns;
-/*@null@*/
+/*@relnull@*/
     miRE includeMire;
     int nincludes;
 #ifdef	NOTYET
@@ -116,18 +123,18 @@ struct rpmrepo_s {
 #endif
     int pretty;
     int checkts;
-/*@null@*/
+/*@relnull@*/
     const char * outputdir;
 
     int nofollow;
 /*@null@*/
     ARGV_t manifests;
 
-/*@observer@*/ /*@null@*/
+/*@observer@*/ /*@relnull@*/
     const char * tempdir;
-/*@observer@*/ /*@null@*/
+/*@observer@*/ /*@relnull@*/
     const char * finaldir;
-/*@observer@*/ /*@null@*/
+/*@observer@*/ /*@relnull@*/
     const char * olddir;
 
     time_t mdtimestamp;
@@ -580,7 +587,12 @@ static struct rpmrepo_s __rpmrepo = {
 static rpmrepo _rpmrepo = &__rpmrepo;
 
 /*==============================================================*/
-/*@exist@*/
+/**
+ * Print an error message and exit (if requested).
+ * @param lvl		error level (non-zero exits)
+ * @param fmt		msg format
+ */
+/*@mayexit@*/
 static void
 repo_error(int lvl, const char *fmt, ...)
 	/*@globals fileSystem @*/
@@ -598,25 +610,41 @@ repo_error(int lvl, const char *fmt, ...)
 	exit(EXIT_FAILURE);
 }
 
-static void repoProgress(/*@unused@*/ rpmrepo repo, const char * item,
-		int current, int total)
+/**
+ * Display progress.
+ * @param repo		repository 
+ * @param item		repository item (usually a file path)
+ * @param current	current iteration index
+ * @param total		maximum iteration index
+ */
+static void repoProgress(/*@unused@*/ rpmrepo repo,
+		/*@null@*/ const char * item, int current, int total)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/
 {
     static size_t ncols = 80 - 1;	/* XXX TIOCGWINSIZ */
-    const char * bn;
+    const char * bn = (item != NULL ? strrchr(item, '/') : NULL);
     size_t nb;
-    if ((bn = strrchr(item, '/')) != NULL)
+
+    if (bn != NULL)
 	bn++;
     else
 	bn = item;
-    nb = fprintf(stdout, "\r%s: %d/%d - %s", __progname, current, total, bn);
+    nb = fprintf(stdout, "\r%s: %d/%d", __progname, current, total);
+    if (bn != NULL)
+	nb += fprintf(stdout, " - %s", bn);
+    nb--;
     if (nb < ncols)
-	fprintf(stderr, "%*s", (int)(ncols - nb), "");
+	fprintf(stdout, "%*s", (int)(ncols - nb), "");
     ncols = nb;
     (void) fflush(stdout);
 }
 
+/**
+ * Return stat(2) for a file.
+ * @retval st		stat(2) buffer
+ * @return		0 on success
+ */
 static int rpmioExists(const char * fn, /*@out@*/ struct stat * st)
 	/*@globals h_errno, fileSystem, internalState @*/
 	/*@modifies st, fileSystem, internalState @*/
@@ -624,6 +652,11 @@ static int rpmioExists(const char * fn, /*@out@*/ struct stat * st)
     return (Stat(fn, st) == 0);
 }
 
+/**
+ * Return stat(2) creation time of a file.
+ * @param fn		file path
+ * @retrun		st_ctime
+ */
 static time_t rpmioCtime(const char * fn)
 	/*@globals h_errno, fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/
@@ -636,6 +669,11 @@ static time_t rpmioCtime(const char * fn)
     return stctime;
 }
 
+/**
+ * Return realpath(3) canonicalized absolute path.
+ * @param lpath		file path
+ * @retrun		canonicalized absolute path
+ */
 /*@null@*/
 static const char * repoRealpath(const char * lpath)
 	/*@globals fileSystem, internalState @*/
@@ -653,6 +691,12 @@ static const char * repoRealpath(const char * lpath)
 }
 
 /*==============================================================*/
+/**
+ * Create directory path.
+ * @param repo		repository 
+ * @param dn		directory path
+ * @return		0 on success
+ */
 static int repoMkdir(rpmrepo repo, const char * dn)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/
@@ -674,6 +718,13 @@ static int repoMkdir(rpmrepo repo, const char * dn)
     return rc;
 }
 
+/**
+ * Return /repository/directory/component.markup.compression path.
+ * @param repo		repository
+ * @param dir		directory
+ * @param type		file
+ * @return		repository file path
+ */
 static const char * repoGetPath(rpmrepo repo, const char * dir,
 		const char * type, int compress)
 	/*@globals h_errno, rpmGlobalMacroContext, internalState @*/
@@ -684,6 +735,11 @@ static const char * repoGetPath(rpmrepo repo, const char * dir,
 		(repo->suffix != NULL && compress ? repo->suffix : ""), NULL);
 }
 
+/**
+ * Test for repository sanity.
+ * @param repo		repository
+ * @return		0 on success
+ */
 static int repoTestSetupDirs(rpmrepo repo)
 	/*@globals h_errno, rpmGlobalMacroContext, fileSystem, internalState @*/
 	/*@modifies repo, rpmGlobalMacroContext, fileSystem, internalState @*/
@@ -778,6 +834,13 @@ static int chkSuffix(const char * fn, const char * suffix)
     return (flen > slen && !strcmp(fn + flen - slen, suffix));
 }
 
+/**
+ * Walk file/directory trees, looking for files with an extension.
+ * @param repo		repository
+ * @param roots		file/directory trees to search
+ * @param ext		file extension to match (usually ".rpm")
+ * @return		list of files with the extension
+ */
 /*@null@*/
 static const char ** repoGetFileList(rpmrepo repo, const char *roots[],
 		const char * ext)
@@ -840,6 +903,11 @@ argvPrint("pkglist", pkglist, NULL);
     return pkglist;
 }
 
+/**
+ * Check that repository time stamp is newer than any contained package.
+ * @param repo		repository
+ * @return		0 on success
+ */
 static int repoCheckTimeStamps(rpmrepo repo)
 	/*@globals h_errno, fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/
@@ -864,12 +932,20 @@ static int repoCheckTimeStamps(rpmrepo repo)
     return rc;
 }
 
+/**
+ * Write to a repository metadata file.
+ * @param rfile		repository metadata file
+ * @param spew		contents
+ * @return		0 on success
+ */
 static int rfileXMLWrite(rpmrfile rfile, /*@only@*/ /*@null@*/ const char * spew)
 	/*@globals fileSystem @*/
 	/*@modifies rfile, fileSystem @*/
 {
     size_t nspew = (spew != NULL ? strlen(spew) : 0);
+/*@-nullpass@*/	/* XXX spew != NULL @*/
     size_t nb = (nspew > 0 ? Fwrite(spew, 1, nspew, rfile->fd) : 0);
+/*@=nullpass@*/
     int rc = 0;
     if (nspew != nb) {
 	repo_error(0, _("Fwrite failed: expected write %u != %u bytes: %s\n"),
@@ -880,6 +956,12 @@ static int rfileXMLWrite(rpmrfile rfile, /*@only@*/ /*@null@*/ const char * spew
     return rc;
 }
 
+/**
+ * Open a repository metadata file.
+ * @param repo		repository
+ * @param rfile		repository metadata file
+ * @return		0 on success
+ */
 static int repoOpenMDFile(const rpmrepo repo, rpmrfile rfile)
 	/*@globals h_errno, rpmGlobalMacroContext, fileSystem, internalState @*/
 	/*@modifies rfile, rpmGlobalMacroContext, fileSystem, internalState @*/
@@ -894,7 +976,7 @@ static int repoOpenMDFile(const rpmrepo repo, rpmrfile rfile)
     rfile->fd = Fopen(fn, repo->wmode);
 assert(rfile->fd != NULL);
 
-    if (repo->algo > 0)
+    if (repo->algo != PGPHASHALGO_NONE)
 	fdInitDigest(rfile->fd, repo->algo, 0);
 
     if ((tail = strstr(spew, " packages=\"0\">\n")) != NULL)
@@ -939,6 +1021,12 @@ assert(rfile->fd != NULL);
     return rc;
 }
 
+/**
+ * Read a header from a repository package file, computing package file digest.
+ * @param repo		repository
+ * @param path		package file path
+ * @return		header (NULL on error)
+ */
 static Header repoReadHeader(rpmrepo repo, const char * path)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies repo, rpmGlobalMacroContext, fileSystem, internalState @*/
@@ -990,6 +1078,12 @@ static Header repoReadHeader(rpmrepo repo, const char * path)
     return h;
 }
 
+/**
+ * Return header query.
+ * @param h		header
+ * @param qfmt		query format
+ * @return		query format result
+ */
 static const char * rfileHeaderSprintf(Header h, const char * qfmt)
 	/*@globals fileSystem @*/
 	/*@modifies h, fileSystem @*/
@@ -1003,6 +1097,11 @@ assert(s != NULL);
 }
 
 #if defined(WITH_SQLITE)
+/**
+ * Check sqlite3 return, displaying error messages.
+ * @param rfile		repository metadata file
+ * @return		SQLITE_OK on success
+ */
 static int rfileSQL(rpmrfile rfile, const char * msg, int rc)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
@@ -1013,6 +1112,11 @@ static int rfileSQL(rpmrfile rfile, const char * msg, int rc)
     return rc;
 }
 
+/**
+ * Execute a compiled SQL command.
+ * @param rfile		repository metadata file
+ * @return		SQLITE_OK on success
+ */
 static int rfileSQLStep(rpmrfile rfile, sqlite3_stmt * stmt)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
@@ -1041,6 +1145,12 @@ static int rfileSQLStep(rpmrfile rfile, sqlite3_stmt * stmt)
     return rc;
 }
 
+/**
+ * Return header query, with "XXX" replaced by rpmdb header instance.
+ * @param h		header
+ * @param qfmt		query format
+ * @return		query format result
+ */
 static const char * rfileHeaderSprintfHack(Header h, const char * qfmt)
 	/*@globals fileSystem @*/
 	/*@modifies h, fileSystem @*/
@@ -1086,6 +1196,12 @@ assert(s != NULL);
     return s;
 }
 
+/**
+ * Run a sqlite3 command.
+ * @param rfile		repository metadata file
+ * @param cmd		sqlite3 command to run
+ * @return		0 always
+ */
 static int rfileSQLWrite(rpmrfile rfile, /*@only@*/ const char * cmd)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
@@ -1111,6 +1227,13 @@ static int rfileSQLWrite(rpmrfile rfile, /*@only@*/ const char * cmd)
 }
 #endif
 
+/**
+ * Export a single package's metadata to repository metadata file(s).
+ * @param repo		repository
+ * @param rfile		repository metadata file
+ * @param h		header
+ * @return		0 on success
+ */
 static int repoWriteMDFile(rpmrepo repo, rpmrfile rfile, Header h)
 	/*@globals fileSystem @*/
 	/*@modifies rfile, h, fileSystem @*/
@@ -1132,6 +1255,12 @@ static int repoWriteMDFile(rpmrepo repo, rpmrfile rfile, Header h)
     return rc;
 }
 
+/**
+ * Export all package metadata to repository metadata file(s).
+ * @param repo		repository
+ * @param pkglist	repository packages
+ * @return		0 on success
+ */
 static int repoWriteMetadataDocs(rpmrepo repo, /*@null@*/ const char ** pkglist)
 	/*@globals h_errno, rpmGlobalMacroContext, fileSystem, internalState @*/
 	/*@modifies repo, rpmGlobalMacroContext, fileSystem, internalState @*/
@@ -1174,6 +1303,12 @@ static int repoWriteMetadataDocs(rpmrepo repo, /*@null@*/ const char ** pkglist)
     return rc;
 }
 
+/**
+ * Close a repository metadata file.
+ * @param repo		repository
+ * @param rfile		repository metadata file
+ * @return		0 on success
+ */
 static int repoCloseMDFile(const rpmrepo repo, rpmrfile rfile)
 	/*@globals h_errno, rpmGlobalMacroContext, fileSystem, internalState @*/
 	/*@modifies rfile, rpmGlobalMacroContext, fileSystem, internalState @*/
@@ -1217,6 +1352,11 @@ static int repoCloseMDFile(const rpmrepo repo, rpmrfile rfile)
     return rc;
 }
 
+/**
+ * Write repository metadata files.
+ * @param repo		repository
+ * @return		0 on success
+ */
 static int repoDoPkgMetadata(rpmrepo repo)
 	/*@globals h_errno, rpmGlobalMacroContext, fileSystem, internalState @*/
 	/*@modifies repo, rpmGlobalMacroContext, fileSystem, internalState @*/
@@ -1294,6 +1434,8 @@ static int repoDoPkgMetadata(rpmrepo repo)
     return rc;
 }
 
+/**
+ */
 static /*@observer@*/ /*@null@*/ const char *
 algo2tagname(uint32_t algo)
 	/*@*/
@@ -1328,6 +1470,11 @@ algo2tagname(uint32_t algo)
     return tagname;
 }
 
+/**
+ * Return a repository metadata file item.
+ * @param repo		repository
+ * @return		repository metadata file item
+ */
 static const char * repoMDExpand(rpmrepo repo, rpmrfile rfile)
 	/*@globals h_errno, rpmGlobalMacroContext, internalState @*/
 	/*@modifies rpmGlobalMacroContext, internalState @*/
@@ -1344,6 +1491,11 @@ static const char * repoMDExpand(rpmrepo repo, rpmrfile rfile)
   </data>\n", NULL);
 }
 
+/**
+ * Write repository manifest.
+ * @param repo		repository
+ * @return		0 on success.
+ */
 static int repoDoRepoMetadata(rpmrepo repo)
 	/*@globals h_errno, rpmGlobalMacroContext, fileSystem, internalState @*/
 	/*@modifies repo, rpmGlobalMacroContext, fileSystem, internalState @*/
@@ -1532,6 +1684,11 @@ static int repoDoRepoMetadata(rpmrepo repo)
     return rc;
 }
 
+/**
+ * Rename temporary repository to final paths.
+ * @param repo		repository
+ * @return		0 always
+ */
 static int repoDoFinalMove(rpmrepo repo)
 	/*@globals h_errno, rpmGlobalMacroContext, fileSystem, internalState @*/
 	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/
@@ -1581,7 +1738,7 @@ static int repoDoFinalMove(rpmrepo repo)
   { DIR * dir = Opendir(output_old_dir);
     struct dirent * dp;
 
-    if (dir != NULL)
+   if (dir != NULL) {
     while ((dp = Readdir(dir)) != NULL) {
 	const char * finalfile;
 
@@ -1621,6 +1778,7 @@ static int repoDoFinalMove(rpmrepo repo)
 	finalfile = _free(finalfile);
     }
     xx = Closedir(dir);
+   }
   }
 
     if ((xx = Rmdir(output_old_dir)) != 0) {
@@ -1636,6 +1794,8 @@ static int repoDoFinalMove(rpmrepo repo)
 /*==============================================================*/
 
 #if !defined(POPT_ARG_ARGV)
+/**
+ */
 static int _poptSaveString(const char ***argvp, unsigned int argInfo, const char * val)
 	/*@*/
 {
@@ -1801,9 +1961,9 @@ static struct poptOption optionsTable[] = {
 
 int
 main(int argc, char *argv[])
-	/*@globals __assert_program_name, _rpmrepo,
+	/*@globals _rpmrepo,
 		rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies __assert_program_name, _rpmrepo,
+	/*@modifies _rpmrepo,
 		rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     rpmrepo repo = _rpmrepo;
@@ -1815,9 +1975,9 @@ main(int argc, char *argv[])
     int xx;
     int i;
 
-/*@-observertrans -readonlytrans @*/
-    __progname = "rpmmrepo";
-/*@=observertrans =readonlytrans @*/
+#if !defined(__LCLINT__)	/* XXX force "rpmrepo" name. */
+    __progname = "rpmrepo";
+#endif
 
     /* Process options. */
     optCon = rpmioInit(argc, argv, optionsTable);
