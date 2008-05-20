@@ -1,5 +1,6 @@
 
 5.1.0 -> 5.2a0:
+    - afb: standalone: file "magic" was installed in wrong directory
     - afb: fix VPATH builds finding rpmversion.h (in perl, with MakeMaker)
     - afb: fix VPATH builds finding rpmversion.h (in python)
     - afb: internal liblzma was not properly in autoconf/automake
