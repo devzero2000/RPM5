@@ -1,4 +1,6 @@
 5.1.1 -> 5.1.2:
+    - jbj: backport top level tests/* for "make check". No tests in Makefile
+	SUBDIRS targets yet ...
     - jbj: rpmrepo: add doxygen markup throughout, adjust splint annotations.
     - jbj: update i18n from Translation Project.
     - jbj: update po/POTFILES.in
