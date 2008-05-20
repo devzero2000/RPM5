@@ -249,7 +249,7 @@ lcov-report:
 
 #.PHONY:	lcov-upload
 #lcov-upload: lcov
-#	mkdir -p /var/ftp/pub/jbj/rpm-$(VERSION)
+#	mkdir -p /var/ftp/pub/jbj/rpm-$(VERSION)-lcov
 #	tar -C lcov -cf - . | (cd /var/ftp/pub/jbj/rpm-$(VERSION)-lcov; tar xf -)
 #	rsync -rvz -e ssh --delete lcov/* ???
 
