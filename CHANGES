@@ -1,4 +1,5 @@
 5.1.1 -> 5.1.2:
+    - afb: standalone: file "magic" was installed in wrong directory
     - jbj: add toplevel lcov-foo Makefile targets. Current coverage at
 	http://wraptastic.org/pub/jbj/rpm-5.1.DEVEL-lcov
     - jbj: add --enable-build-gcov for CFLAGS -fprofile-arcs -ftest-coverage.
