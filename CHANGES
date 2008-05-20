@@ -1,5 +1,6 @@
 
 5.1.0 -> 5.2a0:
+    - afb: fix VPATH builds of lua finding "system.h" from popt (not rpm)
     - afb: fix VPATH builds finding rpmversion.h (in tools)
     - jbj: fix: rpm-python h['filenames'] needs tagName(0x54aafb71) to
 	return "Filenames" in order to find the filepathsTag extension.
