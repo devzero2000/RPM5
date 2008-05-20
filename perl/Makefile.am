@@ -21,7 +21,8 @@ EXTRA_DIST = \
 noinst_DATA = .made_mod
 
 .made_mod: Makefile.perl $(EXTRA_DIST) MANIFEST
-	$(MAKE) -f Makefile.perl || $(MAKE) -f Makefile.perl
+	$(MAKE) -f Makefile.perl VPATH=$(VPATH) || \
+	$(MAKE) -f Makefile.perl VPATH=$(VPATH)
 
 test: .made_mod
 	$(MAKE) -f Makefile.perl test

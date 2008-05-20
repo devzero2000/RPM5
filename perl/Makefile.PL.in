@@ -1,11 +1,20 @@
+package MY; # so that "SUPER" works right
+
 use ExtUtils::MakeMaker;
 # See lib/ExtUtils/MakeMaker.pm for details of how to influence
 # the contents of the Makefile that is written.
 
 my @libdir = qw(. build lib popt rpmdb rpmio misc rpmconstant);
 
-my @ldaddp = map { '-L@top_srcdir@/' . $_ . '/.libs' } @libdir;
+my @ldaddp = map { '-L@top_builddir@/' . $_ . '/.libs' } @libdir;
 my @ldadd = map { '-l' . $_ } qw(rpmmisc rpmio rpmbuild rpm popt rpmdb rpmconstant);
+
+my @cppflags = qw(
+    -I@srcdir@
+    -I@top_srcdir@
+    -I@top_srcdir@/lib
+    -I@top_builddir@/lib
+);
 
 my @objects = qw(
     rpmxs.o 
@@ -32,6 +41,23 @@ foreach (@LDFLAGS) {
     }
 }
 
+# teach MakeMaker some VPATH $< manners:
+sub c_o {
+    my $inherited = shift->SUPER::c_o(@_);
+    $inherited =~ s/(\.\w+\$\(OBJ_EXT\)\:\n\t.*?)\$\*\.\w+/$1\$\</g;
+    $inherited;
+}
+sub xs_c {
+    my $inherited = shift->SUPER::xs_c(@_);
+    $inherited =~ s/(\.xs\.c\:\n\t.*?)\$\*\.\w+/$1\$\</g;
+    $inherited;
+}
+sub xs_o {
+    my $inherited = shift->SUPER::xs_o(@_);
+    $inherited =~ s/(\.\w+\$\(OBJ_EXT\)\:\n\t.*?)\$\*\.\w+/$1\$\</g;
+    $inherited;
+}
+
 WriteMakefile(
 	      'NAME'	=> 'RPM',
 	      'OBJECT'	=> join(' ', @objects),
@@ -42,7 +68,7 @@ WriteMakefile(
 	      'LDFLAGS'	=> join(' ', @ldflags),
 	      'dynamic_lib'	=> { OTHERLDFLAGS => join(' ', @ldflags) },
 	      'OPTIMIZE'=> '-g',
-	      'INC'	=> join(' ', map { '-I@top_srcdir@/'. $_ } @libdir) . ' @CPPFLAGS@',
+	      'INC'	=> join(' ', @cppflags, map { '-I@top_srcdir@/'. $_ } @libdir) . ' @CPPFLAGS@',
 	      'INSTALLMAN1DIR'	=> '@mandir@/man1',
 	      'INSTALLMAN3DIR'	=> '@mandir@/man3',
 	      @PERL_INSTALLDIRS@
