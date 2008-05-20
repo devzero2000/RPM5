@@ -58,6 +58,7 @@ SUBDIRS += \
 	@WITH_PERL_SUBDIR@ \
 	tools \
 	scripts \
+	tests \
 	doc \
 	.
 

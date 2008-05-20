@@ -1,4 +1,6 @@
 5.1.1 -> 5.1.2:
+    - jbj: add --enable-build-gcov for CFLAGS -fprofile-arcs -ftest-coverage.
+    - jbj: hot-wire a top level "make check". noisy sanity check atm, todo++.
     - jbj: backport top level tests/* for "make check". No tests in Makefile
 	SUBDIRS targets yet ...
     - jbj: rpmrepo: add doxygen markup throughout, adjust splint annotations.

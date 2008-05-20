@@ -183,6 +183,15 @@ AC_ARG_ENABLE(build-debug,
         fi
     fi
 ])
+AC_ARG_ENABLE(build-gcov,
+    AS_HELP_STRING([--enable-build-gcov], [build RPM instrumented for gcov]), [dnl
+    if test ".$enableval" = .yes; then
+        if test ".`$CC --version 2>&1 | grep 'GCC'`" != .; then
+            dnl # GNU GCC (usually "gcc")
+            CFLAGS="$CFLAGS -fprofile-arcs -ftest-coverage"
+        fi
+    fi
+])
 
 dnl # RPM tries hard to use adaptive "feature tests" instead of
 dnl # problematic "platform tests". Nevertheless for some extremely
@@ -1544,7 +1553,7 @@ AC_CONFIG_FILES([ po/Makefile.in
     doc/manual/Makefile doc/fr/Makefile doc/ja/Makefile doc/ko/Makefile
     doc/pl/Makefile doc/ru/Makefile doc/sk/Makefile python/Makefile
     python/rpm/Makefile scripts/rpm.pc lib/rpmversion.h
-    rpmconstant/Makefile
+    rpmconstant/Makefile tests/Makefile tests/macros
 ])
 
 dnl # final step: generate output
