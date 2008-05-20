@@ -1471,7 +1471,7 @@ handle_build_id (DSO *dso, Elf_Data *build_id,
     char hex[build_id_size * 2 + 1];
     int n = snprintf (hex, 3, "%02" PRIx8, id[0]);
     assert (n == 2);
-    for (i = 1; i < build_id_size; ++i)
+    for (i = 1; i < (int)build_id_size; ++i)
       {
 	n = snprintf (&hex[i * 2], 3, "%02" PRIx8, id[i]);
 	assert (n == 2);
