@@ -57,9 +57,9 @@ SUBDIRS += \
 	rpmconstant \
 	@WITH_PYTHON_SUBDIR@ \
 	@WITH_PERL_SUBDIR@ \
-	tests \
 	tools \
 	scripts \
+	tests \
 	doc \
 	.
 
@@ -253,7 +253,8 @@ lcov-report:
 
 .PHONY:	lcov-upload
 lcov-upload: lcov
-	tar -C lcov -cf - . | (cd /var/ftp/pub/jbj/rpm-lcov; tar xf -)
+	mkdir -p /var/ftp/pub/jbj/rpm-$(VERSION)-lcov
+	tar -C lcov -cf - . | (cd /var/ftp/pub/jbj/rpm-$(VERSION)-lcov; tar xf -)
 #	rsync -rvz -e ssh --delete lcov/* ???
 
 cscope:
