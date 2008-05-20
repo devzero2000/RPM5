@@ -1,4 +1,10 @@
 5.0.3 -> 5.0.4:
+    - jbj: add toplevel lcov-foo Makefile targets. Current coverage at
+	http://wraptastic.org/pub/jbj/rpm-5.0.DEVEL-lcov
+    - jbj: add --enable-build-gcov for CFLAGS -fprofile-arcs -ftest-coverage.
+    - jbj: hot-wire a top level "make check". noisy sanity check atm, todo++.
+    - jbj: backport top level tests/* for "make check". No tests in Makefile
+	SUBDIRS targets yet ...
     - jbj: disable loop unraveling error msgs for now. better needs to be done.
     - jbj: fix: rpm-python h['filenames'] needs tagName(0x54aafb71) to
 	return "Filenames" in order to find the filepathsTag extension.
