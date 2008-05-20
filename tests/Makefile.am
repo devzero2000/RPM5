@@ -27,7 +27,7 @@ check-local: $(BUILD_DIRS)
 	@${rpm} -v --showrc > /dev/null
 	@-rm -rf rpm
 	@${rpm} --initdb
-	@${rpm} --import $(abs_top_builddir)/pubkeys/JBJ-GPG-KEY
+	@${rpm} --import $(top_srcdir)/pubkeys/JBJ-GPG-KEY
 	@${rpm} -qW . > /dev/null 2>&1
 	@${rpm} -Kv *.src.rpm */*.rpm > /dev/null
 	@${rpm} -Kv --usecrypto beecrypt *.src.rpm */*.rpm > /dev/null
