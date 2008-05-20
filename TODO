@@ -152,4 +152,12 @@ prelink: Couldn't write file to standard output: Broken pipe
 
   RPM 5.2 ROADMAP ISSUES
   ----------------------
+    - jbj: drill in "+foo" ports-like find the real store by prefixing 
+        secret sauce path.  Its wired into --install/--upggrade only to 
+        minimize risk. a small refactoring moves same to rpmgi ... 
+        where it becomes available for --query, so rpm -qT --aid +bash 
+        has a prayer of constructing the minimal transaction to install bash.
+    - jbj: ever better would be to add "=bash" token to construct (and
+        loop check) the minimal transaction to install bash using headers
+        from rpmdb.  -- added as a aide to memory per IRC thread
 
