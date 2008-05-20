@@ -961,7 +961,7 @@ dnl # LZMA Utils
 RPM_CHECK_LIB(
     [LZMA Utils], [lzma],
     [lzma], [lzma_init], [lzma.h],
-    [no,external:internal:none], [lzma:src:src],
+    [no,external:internal:none], [lzma:src/liblzma/api:src/liblzma],
     [ AC_CHECK_FUNC(lzma_init)
       if test ".$RPM_CHECK_LIB_LOCATION" = .internal; then
           WITH_LZMA_INTERNAL=true
