@@ -458,6 +458,8 @@ static struct rpmfcTokens_s rpmfcTokens[] = {
   { "troff or preprocessor input",	RPMFC_MANPAGE|RPMFC_INCLUDE },
   { "GNU Info",			RPMFC_MANPAGE|RPMFC_INCLUDE },
 
+  { "Desktop Entry",		RPMFC_DESKTOP_FILE|RPMFC_INCLUDE },
+
   { "perl script text",		RPMFC_PERL|RPMFC_INCLUDE },
   { "Perl5 module source text", RPMFC_PERL|RPMFC_MODULE|RPMFC_INCLUDE },
 
@@ -781,6 +783,9 @@ static int rpmfcSCRIPT(rpmfc fc)
 	xx = rpmfcHelper(fc, 'P', "php");
 	if (is_executable)
 	    xx = rpmfcHelper(fc, 'R', "php");
+    } else
+    if (fc->fcolor->vals[fc->ix] & RPMFC_DESKTOP_FILE) {
+	xx = rpmfcHelper(fc, 'P', "mimetype");
     }
 
     return 0;
@@ -858,7 +863,7 @@ typedef struct rpmfcApplyTbl_s {
 /*@unchecked@*/
 static struct rpmfcApplyTbl_s rpmfcApplyTable[] = {
     { rpmfcELF,		RPMFC_ELF },
-    { rpmfcSCRIPT,	(RPMFC_SCRIPT|RPMFC_PERL|RPMFC_PYTHON|RPMFC_LIBTOOL|RPMFC_PKGCONFIG|RPMFC_BOURNE|RPMFC_JAVA|RPMFC_PHP) },
+    { rpmfcSCRIPT,	(RPMFC_SCRIPT|RPMFC_PERL|RPMFC_PYTHON|RPMFC_LIBTOOL|RPMFC_PKGCONFIG|RPMFC_BOURNE|RPMFC_JAVA|RPMFC_PHP|RPMFC_DESKTOP_FILE) },
     { NULL, 0 }
 };
 
@@ -1065,6 +1070,10 @@ assert(s != NULL && *s == '/');
 	    /* XXX all files with extension ".php" are PHP for now. */
 	    else if (_suffix(s, ".php"))
 		ftype = "PHP script text";
+
+	    /* XXX all files with extension ".desktop" are desktop files for now. */
+	    else if (_suffix(s, ".desktop"))
+		ftype = "Desktop Entry";
 
 	    /* XXX skip all files in /dev/ which are (or should be) %dev dummies. */
 	    else if (slen >= fc->brlen+sizeof("/dev/") && !strncmp(s+fc->brlen, "/dev/", sizeof("/dev/")-1))

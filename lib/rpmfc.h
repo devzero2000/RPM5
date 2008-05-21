@@ -38,7 +38,7 @@ enum FCOLOR_e {
     RPMFC_EXECUTABLE		= (1 <<  8),
     RPMFC_SCRIPT		= (1 <<  9),
     RPMFC_TEXT			= (1 << 10),
-    RPMFC_DATA			= (1 << 11),	/* XXX unused */
+    RPMFC_DESKTOP_FILE		= (1 << 11),
     RPMFC_DOCUMENT		= (1 << 12),
     RPMFC_STATIC		= (1 << 13),
     RPMFC_NOTSTRIPPED		= (1 << 14),

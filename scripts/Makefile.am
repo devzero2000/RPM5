@@ -12,7 +12,7 @@ EXTRA_DIST = \
 	find-requires.perl freshen.sh gendiff getpo.sh http.req \
 	check-java-closure.sh java.prov.sh java.req.sh \
 	javadeps.sh libtooldeps.sh pkgconfigdeps.sh \
-	perldeps.pl perl.prov perl.req pythondeps.sh \
+	perldeps.pl perl.prov perl.req pythondeps.sh mimetypedeps.sh \
 	php.prov php.req rpm2cpio \
 	rpmdb_loadcvt rpmdiff rpmdiff.cgi \
 	rpm.daily rpm.log rpm.xinetd \
@@ -38,7 +38,7 @@ versionlib_SCRIPTS = \
 	find-provides.perl \
 	find-requires.perl getpo.sh http.req \
 	javadeps.sh libtooldeps.sh pkgconfigdeps.sh \
-	perldeps.pl perl.prov perl.req pythondeps.sh \
+	perldeps.pl perl.prov perl.req pythondeps.sh mimetypedeps.sh \
 	php.prov php.req \
 	rpmdb_loadcvt \
 	rpm.daily rpm.log rpm.xinetd \

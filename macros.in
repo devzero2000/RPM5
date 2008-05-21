@@ -1444,5 +1444,15 @@ PreReq: python >= %{python_version}, python < %{maxver}
 #%__executable_requires	%{_rpmhome}/executabledeps.sh --requires
 %__scriptlet_requires	/bin/bash --rpm-requires
 
+#------------------------------------------------------------------------
+# mimetype(...) configuration.
+#
+# Path to script to autogenerate mimetype(foo) provides, based on MimeType
+# key from desktop files.
+#
+# Note: Used if _use_internal_dependency_generator is non-zero. The
+# helper is also used by %{_rpmhome}/rpmdeps --provides
+#%__mimetype_provides %{_rpmhome}/mimetypedeps.sh --provides
+
 # \endverbatim
 #*/

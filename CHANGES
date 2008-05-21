@@ -1,4 +1,5 @@
 4.4.9 -> 4.5:
+	- glen: add mimetype(foo/bar) deps autogeneration (by Marcin Banasiak)
 	- glen: add scripts/hrmib-cache to fill initial hrmib export to /var/cache/hrmib
 	- jbj: configure: don't expand non-existent scripts/perl.{prov,req}.in.
 	- jbj: rpmrepo: backport the remaining popt --queryformat aliases.
