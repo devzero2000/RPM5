@@ -14,6 +14,29 @@
     - jbj: fix: rpm -qp returns NOKEY because rpmdb is not yet open. Do a lazy
 	open in rpmtsFindPubkey.
     - jbj: python: fix: insure that ts.setProbFilter() return is initialized.
+    - jbj: fix: --triggers segfault, don't depend on he->p.ptr = NULL after
+	headerGet() failed return.
+    - jbj: add RPMTAG_PACKAGESTAT, and store persistently in a rpmdb Header.
+    - jbj: disable loop unraveling error msgs for now. better needs to be done.
+    - jbj: rpmrepo: achieve {primary,filelists,other}.xml spew parity w createrepo.
+    - jbj: rpmrepo: compute origin *.rpm file digest while reading.
+    - jbj: preserve stat(2) & digest through headerReload().
+    - jbj: get rid of copy-n-paste typos, add "l" type markers to rpmtag.h.
+    - jbj: add RPMTAG_PACKAGEDIGEST extension as RPM_STRING_TYPE.
+    - jbj: add digest of origin *.rpm to Header internal store.
+    - jbj: add RPMTAG_PACKAGESIZE extension as RPM_UINT64_TYPE.
+    - jbj: rework RPMTAG_PACKAGETIME extension as RPM_UINT64_TYPE.
+    - jbj: rework header{Get,Set}Time as header{Get,Stat}Statbuf methods.
+    - jbj: add stat(2) of origin *.rpm to Header internal store.
+    - jbj: permit file digests through (e.g.) :stat format extension.
+    - jbj: add :uuid format. UUIDv5 URI design & tag type coercion todo++.
+    - jbj: fix: blessed NUL termination for Readlink return.
+    - jbj: retrofit v5 UUID's for hdrid/pkgid digests as tag extensions.
+    - jbj: retrofit v1 UUID's for time stamps as tag extensions.
+    - jbj: replace "diskstat" tag with :stat format extension instead.
+    - jbj: add :digest format.
+    - jbj: generalize :utf8 to :iconv iconv(3) conversions.
+    - jbj: permit :base64 encoding to be applied to all tag data types.
     - jbj: fix: use rpmlog instead of rpmError for messages.
     - glen: print error when makeTempPath fails due missing temp dir
     - jbj: permit firefox debugging by creating an empty dir (#444310).

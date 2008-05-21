@@ -62,6 +62,7 @@ static int _print_pkts = 0;
  * Write (with unload) header to file handle.
  * @param fd		file handle
  * @param h		header
+ * @retval *msg		failure msg
  * @return		RPMRC_OK on success
  */
 static
@@ -70,7 +71,7 @@ rpmRC rpmWriteHeader(FD_t fd, /*@null@*/ Header h, /*@null@*/ const char ** msg)
 	/*@modifies fd, h, *msg, fileSystem @*/
 {
     const void * uh = NULL;
-    ssize_t nb;
+    size_t nb;
     size_t length;
     rpmRC rc = RPMRC_FAIL;	/* assume failure */
 
@@ -127,7 +128,7 @@ rpmop rpmtsOp(rpmts ts, rpmtsOpX opx)
 {
     rpmop op = NULL;
 
-    if (ts != NULL && opx >= 0 && opx < RPMTS_OP_MAX)
+    if (ts != NULL && (int)opx >= 0 && (int)opx < RPMTS_OP_MAX)
 	op = ts->ops + opx;
 /*@-usereleased -compdef @*/
     return op;
@@ -676,6 +677,7 @@ rpmxar xar = fdGetXAR(fd);
     uint32_t dl;
     uint32_t * ei = NULL;
     entryInfo pe;
+    size_t startoff;
     size_t nb;
     uint32_t ril = 0;
     indexEntry entry = memset(alloca(sizeof(*entry)), 0, sizeof(*entry));
@@ -704,6 +706,7 @@ fprintf(stderr, "--> rdSignature(%p, %p, %p)\n", fd, ptr, msg);
 	    goto exit;
 	}
     }
+    startoff = fd->stats->ops[FDSTAT_READ].bytes;
     if ((xx = (int) timedRead(fd, (void *)block, sizeof(block))) != (int) sizeof(block)) {
 	(void) snprintf(buf, sizeof(buf),
 		_("sigh size(%d): BAD, read returned %d"), (int)sizeof(block), xx);
@@ -768,7 +771,11 @@ fprintf(stderr, "--> rdSignature(%p, %p, %p)\n", fd, ptr, msg);
     {
 /*@=sizeoftype@*/
 
-assert(entry->info.offset > 0);	/* XXX insurance */
+/*
+ * XXX http://mysql.mirrors.pair.com/Downloads/MySQL-5.0/MySQL-client-community-5.0.51a-0.rhel4.i386.rpm
+ * built by rpm-4.3.3 (from REL4) has entry->info.offset == 0.
+ */
+assert(entry->info.offset >= 0);	/* XXX insurance */
 	if (entry->info.offset >= (int32_t)dl) {
 	    (void) snprintf(buf, sizeof(buf),
 		_("region offset: BAD, tag %u type %u offset %d count %u"),
@@ -859,6 +866,8 @@ assert(entry->info.offset > 0);	/* XXX insurance */
 	}
 	he->p.ptr = _free(he->p.ptr);
     }
+    (void) headerSetStartOff(sigh, startoff);
+    (void) headerSetEndOff(sigh, fd->stats->ops[FDSTAT_READ].bytes);
 
 exit:
     if (sighp && sigh && rc == RPMRC_OK)
@@ -882,7 +891,7 @@ exit:
  * header-only digest or signature to verify the blob. If found,
  * the digest or signature is verified.
  *
- * @param ts		transaction set
+ * @param dig		signature parameters container
  * @param uh		unloaded header blob
  * @param uc		no. of bytes in blob (or 0 to disable)
  * @retval *msg		signature verification msg
@@ -950,7 +959,7 @@ fprintf(stderr, "--> headerCheck(%p, %p[%u], %p)\n", dig, uh, (unsigned) uc, msg
 /*@=sizeoftype@*/
 
     /* Is the offset within the data area? */
-    if (entry->info.offset >= (unsigned) dl) {
+    if (entry->info.offset >= (int) dl) {
 	(void) snprintf(buf, sizeof(buf),
 		_("region offset: BAD, tag %u type %u offset %d count %u"),
 		(unsigned) entry->info.tag, (unsigned) entry->info.type,
@@ -1225,7 +1234,6 @@ static rpmRC ckHeader(/*@unused@*/ FD_t fd, const void * ptr,
 
 /** 
  * Return checked and loaded header.
- * @param dig		signature parameters container
  * @param fd		file handle
  * @retval hdrp		address of header (or NULL)
  * @retval *msg		verification error message (or NULL)
@@ -1245,6 +1253,7 @@ rpmxar xar = fdGetXAR(fd);
     uint32_t * ei = NULL;
     size_t uc;
     unsigned char * b;
+    size_t startoff;
     size_t nb;
     Header h = NULL;
     const char * origin = NULL;
@@ -1276,6 +1285,7 @@ fprintf(stderr, "--> rpmReadHeader(%p, %p, %p)\n", fd, hdrp, msg);
 	}
     }
 
+    startoff = fd->stats->ops[FDSTAT_READ].bytes;
     if ((xx = (int) timedRead(fd, (char *)block, sizeof(block))) != (int)sizeof(block)) {
 	/* XXX Handle EOF's as RPMRC_NOTFOUND, not RPMRC_FAIL, returns. */
 	if (xx == 0)
@@ -1339,10 +1349,27 @@ fprintf(stderr, "--> rpmReadHeader(%p, %p, %p)\n", fd, hdrp, msg);
     ei = NULL;	/* XXX will be freed with header */
 
     /* Save the opened path as the header origin. */
+    /* XXX TODO: push the Realpath() underneath fdGetOPath(). */
     origin = fdGetOPath(fd);
-    if (origin != NULL)
-	(void) headerSetOrigin(h, origin);
-    
+    if (origin != NULL) {
+	const char * lpath = NULL;
+	int ut = urlPath(origin, &lpath);
+	ut = ut;	/* XXX keep gcc quiet. */
+	if (lpath && *lpath != '/') {
+	    char * rpath = realpath(origin, NULL);
+	    (void) headerSetOrigin(h, rpath);
+	    rpath = _free(rpath);
+	} else
+	    (void) headerSetOrigin(h, origin);
+    }
+    {	struct stat * st = headerGetStatbuf(h);
+	int saveno = errno;
+	(void) fstat(Fileno(fd), st);
+	errno = saveno;
+    }
+    (void) headerSetStartOff(h, startoff);
+    (void) headerSetEndOff(h, fd->stats->ops[FDSTAT_READ].bytes);
+
 exit:
     if (hdrp && h && rc == RPMRC_OK)
 	*hdrp = headerLink(h);

@@ -193,7 +193,7 @@ enum rpmTag_e {
     RPMTAG_DESCRIPTION		= 1005,	/* s{} */
     RPMTAG_BUILDTIME		= 1006,	/* i */
     RPMTAG_BUILDHOST		= 1007,	/* s */
-    RPMTAG_INSTALLTIME		= 1008,	/* i */
+    RPMTAG_INSTALLTIME		= 1008,	/* i[] */
     RPMTAG_SIZE			= 1009,	/* i */
     RPMTAG_DISTRIBUTION		= 1010,	/* s */
     RPMTAG_VENDOR		= 1011,	/* s */
@@ -326,8 +326,8 @@ enum rpmTag_e {
     RPMTAG_PAYLOADCOMPRESSOR	= 1125,	/* s */
     RPMTAG_PAYLOADFLAGS		= 1126,	/* s */
     RPMTAG_INSTALLCOLOR		= 1127, /* i transaction color when installed */
-    RPMTAG_INSTALLTID		= 1128,	/* i */
-    RPMTAG_REMOVETID		= 1129,	/* i */
+    RPMTAG_INSTALLTID		= 1128,	/* i[] */
+    RPMTAG_REMOVETID		= 1129,	/* i[] */
 /*@-enummemuse@*/
     RPMTAG_SHA1RHN		= 1130, /* internal - obsolete */
 /*@=enummemuse@*/
@@ -410,6 +410,16 @@ enum rpmTag_e {
     RPMTAG_TRACKPROG		= 1204, /* s internal arbitrary */
     RPMTAG_SANITYCHECK		= 1205, /* s */
     RPMTAG_SANITYCHECKPROG	= 1206, /* s */
+    RPMTAG_FILESTAT		= 1207, /* s[] stat(2) from metadata extension*/
+    RPMTAG_STAT			= 1208, /* s[] stat(2) from disk extension */
+    RPMTAG_ORIGINTID		= 1209,	/* i[] */
+    RPMTAG_ORIGINTIME		= 1210,	/* i[] */
+    RPMTAG_HEADERSTARTOFF	= 1211,	/* l */
+    RPMTAG_HEADERENDOFF		= 1212,	/* l */
+    RPMTAG_PACKAGETIME		= 1213,	/* l */
+    RPMTAG_PACKAGESIZE		= 1214,	/* l */
+    RPMTAG_PACKAGEDIGEST	= 1215,	/* s */
+    RPMTAG_PACKAGESTAT		= 1216,	/* x */
 
 /*@-enummemuse@*/
     RPMTAG_FIRSTFREE_TAG	/*!< internal */
@@ -615,7 +625,7 @@ void tagClean(/*@null@*/ headerTagIndices _rpmTags)
  * @return		NULL always
  */
 /*@null@*/
-tagStore_t tagStoreFree(/*@only@*/ tagStore_t dbiTags, size_t dbiNTags)
+tagStore_t tagStoreFree(/*@only@*//*@null@*/tagStore_t dbiTags, size_t dbiNTags)
 	/*@modifies dbiTags @*/;
 
 #if defined(_RPMTAG_INTERNAL)
@@ -632,9 +642,10 @@ typedef enum headerSprintfExtensionType_e {
  * HEADER_EXT_TAG format function prototype.
  *
  * @param he		tag container
+ * @param av		parameter array (or NULL)
  * @return		formatted string
  */
-typedef /*only@*/ char * (*headerTagFormatFunction) (HE_t he)
+typedef /*only@*/ char * (*headerTagFormatFunction) (HE_t he, /*@null@*/ const char ** av)
 	/*@modifies he @*/;
 
 /** \ingroup header
@@ -827,6 +838,7 @@ size_t headerSizeof(/*@null@*/ Header h)
 	/*@modifies h @*/;
 
 /** \ingroup header
+ * headerUnload.
  * @param h		header
  * @retval *lenp	no. bytes in unloaded header blob
  * @return		unloaded header blob (NULL on error)
@@ -837,7 +849,8 @@ void * headerUnload(Header h, /*@out@*/ /*@null@*/ size_t * lenp)
 
 /** \ingroup header
  * Convert header to on-disk representation, and then reload.
- * This is used to insure that all header data is in one chunk.
+ * This is used to insure that all header data is in a single
+ * contiguous memory allocation.
  * @param h		header (with pointers)
  * @param tag		region tag
  * @return		on-disk header (with offsets)
@@ -954,6 +967,41 @@ int headerSetOrigin(/*@null@*/ Header h, const char * origin)
 	/*@modifies h @*/;
 
 /** \ingroup header
+ * Return header stat(2) buffer (of origin *.rpm file).
+ * @param h		header
+ * @return		header stat(2) buffer
+ */
+struct stat * headerGetStatbuf(/*@null@*/ Header h)
+	/*@*/;
+
+/** \ingroup header
+ * Copy into header stat(2) buffer (of origin *.rpm file).
+ * @param h		header
+ * @param st		new header stat(2) buffer
+ * @return		0 always
+ */
+int headerSetStatbuf(/*@null@*/ Header h, struct stat * st)
+	/*@modifies h @*/;
+
+/** \ingroup header
+ * Return digest of origin *.rpm file.
+ * @param h		header
+ * @return		header digest
+ */
+/*@null@*/
+const char * headerGetDigest(/*@null@*/ Header h)
+	/*@*/;
+
+/** \ingroup header
+ * Store digest of origin *.rpm file.
+ * @param h		header
+ * @param st		new header digest
+ * @return		0 always
+ */
+int headerSetDigest(/*@null@*/ Header h, const char * digest)
+	/*@modifies h @*/;
+
+/** \ingroup header
  * Return header instance (if from rpmdb).
  * @param h		header
  * @return		header instance
@@ -964,10 +1012,44 @@ uint32_t headerGetInstance(/*@null@*/ Header h)
 /** \ingroup header
  * Store header instance (e.g path or URL).
  * @param h		header
- * @param origin	new header instance
+ * @param instance	new header instance
  * @return		0 always
  */
 uint32_t headerSetInstance(/*@null@*/ Header h, uint32_t instance)
+	/*@modifies h @*/;
+
+/** \ingroup header
+ * Return header starting byte offset.
+ * @param h		header
+ * @return		header starting byte offset 
+ */
+uint32_t headerGetStartOff(/*@null@*/ Header h)
+	/*@*/;
+
+/** \ingroup header
+ * Store header starting byte offset.
+ * @param h		header
+ * @param startoff	new header starting byte offset
+ * @return		0 always
+ */
+uint32_t headerSetStartOff(/*@null@*/ Header h, uint32_t startoff)
+	/*@modifies h @*/;
+
+/** \ingroup header
+ * Return header ending byte offset.
+ * @param h		header
+ * @return		header ending byte offset 
+ */
+uint32_t headerGetEndOff(/*@null@*/ Header h)
+	/*@*/;
+
+/** \ingroup header
+ * Store header ending byte offset.
+ * @param h		header
+ * @param startoff	new header ending byte offset
+ * @return		0 always
+ */
+uint32_t headerSetEndOff(/*@null@*/ Header h, uint32_t endoff)
 	/*@modifies h @*/;
 
 /** \ingroup header

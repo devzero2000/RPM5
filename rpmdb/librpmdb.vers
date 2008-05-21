@@ -2,8 +2,6 @@ LIBRPMDB_0
 {
   global:
     _rpmdb_debug;
-    _rsegfault;
-    _wsegfault;
     db3dbi;
     db3Free;
     db3New;
@@ -37,9 +35,18 @@ LIBRPMDB_0
     headerFini;
     headerFree;
     headerGet;
+    headerGetDigest;
+    headerSetDigest;
     headerGetInstance;
     headerGetMagic;
     headerGetOrigin;
+    headerSetOrigin;
+    headerGetEndOff;
+    headerSetEndOff;
+    headerGetStartOff;
+    headerSetStartOff;
+    headerGetStatbuf;
+    headerSetStatbuf;
     headerInit;
     headerIsEntry;
     headerLink;
