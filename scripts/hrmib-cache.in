@@ -1,0 +1,22 @@
+#!/bin/sh
+build_hrmib_cache() {
+	# skip if no rpm(1), touch(1), xargs(1)
+	[ -x @__RPM@ -a -x @__TOUCH@ -a -x @__XARGS@ ] || return
+
+	export LC_ALL=C
+	umask 002
+
+	mydir=/var/cache/hrmib
+
+	echo >&2 "Populating $mydir with initial contents"
+	@__MKDIR@ -p $mydir || return
+	echo $mydir/* | @__XARGS@ @__RM@ -f
+
+	buf=$(@__RPM@ --nodigest --nosignature -qa --qf '%{N}-%{V}-%{R}.%{ARCH} %{INSTALLTIME:date}\n')
+	echo "$buf" | while read nvra idate; do
+		@__TOUCH@ -d "$idate" "$mydir/$nvra"
+	done
+	@__TOUCH@ $mydir
+}
+
+build_hrmib_cache

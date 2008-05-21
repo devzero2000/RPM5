@@ -302,6 +302,9 @@ AC_PATH_PROG(__NM, nm, %{_bindir}/nm, $MYPATH)
 AC_PATH_PROG(__OBJCOPY, objcopy, %{_bindir}/objcopy, $MYPATH)
 AC_PATH_PROG(__OBJDUMP, objdump, %{_bindir}/objdump, $MYPATH)
 AC_PATH_PROG(__STRIP, strip, %{_bindir}/strip, $MYPATH)
+AC_PATH_PROG(__XARGS, xargs, /bin/xargs, $MYPATH)
+AC_PATH_PROG(__TOUCH, touch, /bin/touch, $MYPATH)
+AC_PATH_PROG(__RPM, rpm, /bin/rpm, $MYPATH)
 
 addlib() {
   l=$1
@@ -1517,6 +1520,7 @@ AC_CONFIG_FILES([ Doxyfile Makefile rpmrc macros platform rpmpopt rpm.spec rpm5.
 	rpmio/Makefile rpmdb/Makefile lib/Makefile build/Makefile
 	scripts/Makefile
 	scripts/macros.perl scripts/macros.php scripts/macros.python
+	scripts/hrmib-cache
 	tools/Makefile
 	misc/Makefile
 	doc/Makefile
