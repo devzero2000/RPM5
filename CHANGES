@@ -1,5 +1,6 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: rpmte: add rpmteSourcerpm() (for use as a -debuginfo buildset key).
     - jbj: fix: skip the :extractor/|transformer mark checking :xml/:yaml.
     - jbj: splint: annotate argvAppend differently.
     - jbj: hdrfmt: return failure if PACKAGE{ORIGIN,DIGEST} do not exist.

@@ -99,6 +99,8 @@ struct rpmte_s {
     const char * pkgid;		/*!< Package identifier (header+payload md5). */
 /*@only@*/ /*@relnull@*/
     const char * hdrid;		/*!< Package header identifier (header sha1). */
+/*@only@*/ /*@null@*/
+    const char * sourcerpm;	/*!< Source package. */
 /*@owned@*/
     const char * name;		/*!< Name: */
 /*@only@*/ /*@null@*/
@@ -561,6 +563,17 @@ extern const char * rpmtePkgid(rpmte te)
 /*@-exportlocal@*/
 /*@observer@*/ /*@null@*/
 extern const char * rpmteHdrid(rpmte te)
+	/*@*/;
+/*@=exportlocal@*/
+
+/** \ingroup rpmte
+ * Retrieve sourcerpm string from transaction element.
+ * @param te		transaction element
+ * @return		sourcerpm string
+ */
+/*@-exportlocal@*/
+/*@observer@*/ /*@null@*/
+extern const char * rpmteSourcerpm(rpmte te)
 	/*@*/;
 /*@=exportlocal@*/
 

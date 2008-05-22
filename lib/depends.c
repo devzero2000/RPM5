@@ -482,11 +482,11 @@ assert(lastx >= 0 && lastx < ts->orderCount);
 
 	/* Ignore colored obsoletes not in our rainbow. */
 #if 0
+	/* XXX obsoletes are never colored, so this is for future devel. */
 	dscolor = rpmdsColor(obsoletes);
 #else
 	dscolor = hcolor;
 #endif
-	/* XXX obsoletes are never colored, so this is for future devel. */
 	if (tscolor && dscolor && !(tscolor & dscolor))
 	    continue;
 
