@@ -186,7 +186,8 @@ static char * decFormat(HE_t he, /*@null@*/ const char ** av)
  * @param strftimeFormat strftime(3) format
  * @return		formatted string
  */
-static char * realDateFormat(HE_t he, /*@null@*/ const char ** av, const char * strftimeFormat)
+static char * realDateFormat(HE_t he, /*@null@*/ const char ** av,
+		const char * strftimeFormat)
 	/*@*/
 {
     char * val;
@@ -1999,6 +2000,7 @@ static int pkgoriginTag(Header h, HE_t he)
 		fileSystem, internalState @*/
 {
     const char * origin;
+    int rc = 1;
 
     he->tag = RPMTAG_PACKAGEORIGIN;
     if (!headerGet(h, he, HEADERGET_NOEXTENSION)
@@ -2008,8 +2010,9 @@ static int pkgoriginTag(Header h, HE_t he)
 	he->p.str = xstrdup(origin);
 	he->c = 1;
 	he->freeData = 1;
+	rc = 0;
     }
-    return 0;
+    return rc;
 }
 /*@=globuse@*/
 
@@ -2027,6 +2030,7 @@ static int pkgdigestTag(Header h, HE_t he)
 		fileSystem, internalState @*/
 {
     const char * digest;
+    int rc = 1;
 
     he->tag = RPMTAG_PACKAGEDIGEST;
     if ((digest = headerGetDigest(h)) != NULL)
@@ -2035,8 +2039,9 @@ static int pkgdigestTag(Header h, HE_t he)
 	he->p.str = xstrdup(digest);
 	he->c = 1;
 	he->freeData = 1;
+	rc = 0;
     }
-    return 0;
+    return rc;
 }
 /*@=globuse@*/
 
