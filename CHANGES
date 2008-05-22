@@ -1,5 +1,6 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: fix: skip the :extractor/|transformer mark checking :xml/:yaml.
     - jbj: splint: annotate argvAppend differently.
     - jbj: hdrfmt: return failure if PACKAGE{ORIGIN,DIGEST} do not exist.
     - afb: standalone: file "magic" was installed in wrong directory

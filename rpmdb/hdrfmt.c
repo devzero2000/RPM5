@@ -4936,10 +4936,11 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 
 	    tag = &spft->u.tag;
 
+	    /* XXX Ick: +1 needed to handle :extractor |transformer marking. */
 	    isxml = (spft->type == PTOK_TAG && tag->av != NULL &&
-		tag->av[0] != NULL && !strcmp(tag->av[0], "xml"));
+		tag->av[0] != NULL && !strcmp(tag->av[0]+1, "xml"));
 	    isyaml = (spft->type == PTOK_TAG && tag->av != NULL &&
-		tag->av[0] != NULL && !strcmp(tag->av[0], "yaml"));
+		tag->av[0] != NULL && !strcmp(tag->av[0]+1, "yaml"));
 
 	    if (isxml) {
 		const char * tagN;
@@ -5125,10 +5126,12 @@ fprintf(stderr, "==> headerSprintf(%p, \"%s\", %p, %p, %p)\n", h, fmt, tags, ext
 	(hsa->format->type == PTOK_ARRAY
 	    ? &hsa->format->u.array.format->u.tag :
 	NULL));
+
+    /* XXX Ick: +1 needed to handle :extractor |transformer marking. */
     isxml = (tag != NULL && tag->tagno == (rpmTag)-2 && tag->av != NULL
-		&& tag->av[0] != NULL && !strcmp(tag->av[0], "xml"));
+		&& tag->av[0] != NULL && !strcmp(tag->av[0]+1, "xml"));
     isyaml = (tag != NULL && tag->tagno == (rpmTag)-2 && tag->av != NULL
-		&& tag->av[0] != NULL && !strcmp(tag->av[0], "yaml"));
+		&& tag->av[0] != NULL && !strcmp(tag->av[0]+1, "yaml"));
 
     if (isxml) {
 	need = sizeof("<rpmHeader>\n") - 1;
