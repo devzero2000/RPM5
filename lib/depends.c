@@ -182,24 +182,201 @@ static rpmTag _upgrade_tag;
 /*@unchecked@*/
 static rpmTag _obsolete_tag;
 
+/**
+ * Add upgrade erasures to a transaction set.
+ * @param ts		transaction set
+ * @param p		transaction element
+ * @param hcolor	header color
+ * @param h		header
+ * @return		0 on success
+ */
+static int rpmtsAddUpgrades(rpmts ts, rpmte p, uint32_t hcolor, Header h)
+{
+    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    uint32_t tscolor = rpmtsColor(ts);
+    alKey pkgKey = rpmteAddedKey(p);
+    uint32_t ohcolor;
+    rpmdbMatchIterator mi;
+    Header oh;
+    int xx;
+
+    if (_upgrade_tag == 0) {
+	const char *t = rpmExpand("%{?_upgrade_tag}", NULL);
+/*@-mods@*/
+	_upgrade_tag = (!strcmp(t, "name") ? RPMTAG_NAME : RPMTAG_PROVIDENAME);
+/*@=mods@*/
+	t = _free(t);
+    }
+
+    mi = rpmtsInitIterator(ts, _upgrade_tag, rpmteN(p), 0);
+    while((oh = rpmdbNextIterator(mi)) != NULL) {
+	int lastx;
+	rpmte q;
+
+	/* Ignore colored packages not in our rainbow. */
+	ohcolor = hGetColor(oh);
+	if (tscolor && hcolor && ohcolor && !(hcolor & ohcolor))
+	    continue;
+
+	/* Snarf the original install tid & time from older package(s). */
+	he->tag = RPMTAG_ORIGINTID;
+	xx = headerGet(oh, he, 0);
+	if (xx && he->p.ui32p != NULL) {
+	    if (p->originTid[0] == 0 || p->originTid[0] > he->p.ui32p[0]
+	     || (he->c > 1 && p->originTid[0] == he->p.ui32p[0] && p->originTid[1] > he->p.ui32p[1]))
+	    {
+		p->originTid[0] = he->p.ui32p[0];
+		p->originTid[1] = (he->c > 1 ? he->p.ui32p[1] : 0);
+	    }
+	    he->p.ptr = _free(he->p.ptr);
+	}
+	he->tag = RPMTAG_ORIGINTIME;
+	xx = headerGet(oh, he, 0);
+	if (xx && he->p.ui32p != NULL) {
+	    if (p->originTime[0] == 0 || p->originTime[0] > he->p.ui32p[0]
+	     || (he->c > 1 && p->originTime[0] == he->p.ui32p[0] && p->originTime[1] > he->p.ui32p[1]))
+	    {
+		p->originTime[0] = he->p.ui32p[0];
+		p->originTime[1] = (he->c > 1 ? he->p.ui32p[1] : 0);
+	    }
+	    he->p.ptr = _free(he->p.ptr);
+	}
+
+	/* Skip identical packages. */
+	if (rpmHeadersIdentical(h, oh))
+	    continue;
+
+	/* Create an erasure element. */
+	lastx = -1;
+	xx = removePackage(ts, oh, rpmdbGetIteratorOffset(mi), &lastx, pkgKey);
+assert(lastx >= 0 && lastx < ts->orderCount);
+	q = ts->order[lastx];
+
+	/* Chain through upgrade flink. */
+	xx = rpmteChain(p, q, oh, "Upgrades");
+
+/*@-nullptrarith@*/
+	rpmlog(RPMLOG_DEBUG, D_("   upgrade erases %s\n"), rpmteNEVRA(q));
+/*@=nullptrarith@*/
+
+    }
+    mi = rpmdbFreeIterator(mi);
+
+    return 0;
+}
+
+/**
+ * Add Obsoletes: erasures to a transaction set.
+ * @param ts		transaction set
+ * @param p		transaction element
+ * @param hcolor	header color
+ * @return		0 on success
+ */
+static int rpmtsAddObsoletes(rpmts ts, rpmte p, uint32_t hcolor)
+{
+    uint32_t tscolor = rpmtsColor(ts);
+    alKey pkgKey = rpmteAddedKey(p);
+    uint32_t ohcolor;
+    rpmds obsoletes;
+    uint32_t dscolor;
+    rpmdbMatchIterator mi;
+    Header oh;
+    int xx;
+
+    if (_obsolete_tag == 0) {
+	const char *t = rpmExpand("%{?_obsolete_tag}", NULL);
+/*@-mods@*/
+	_obsolete_tag = (!strcmp(t, "name") ? RPMTAG_NAME : RPMTAG_PROVIDENAME);
+/*@=mods@*/
+	t = _free(t);
+    }
+
+    obsoletes = rpmdsLink(rpmteDS(p, RPMTAG_OBSOLETENAME), "Obsoletes");
+    obsoletes = rpmdsInit(obsoletes);
+    if (obsoletes != NULL)
+    while (rpmdsNext(obsoletes) >= 0) {
+	const char * Name;
+
+	if ((Name = rpmdsN(obsoletes)) == NULL)
+	    continue;	/* XXX can't happen */
+
+	/* Ignore colored obsoletes not in our rainbow. */
+#if 0
+	/* XXX obsoletes are never colored, so this is for future devel. */
+	dscolor = rpmdsColor(obsoletes);
+#else
+	dscolor = hcolor;
+#endif
+	if (tscolor && dscolor && !(tscolor & dscolor))
+	    continue;
+
+	/* XXX avoid self-obsoleting packages. */
+	if (!strcmp(rpmteN(p), Name))
+	    continue;
+
+	/* Obsolete containing package if given a file, otherwise provide. */
+	if (Name[0] == '/')
+	    mi = rpmtsInitIterator(ts, RPMTAG_BASENAMES, Name, 0);
+	else
+	    mi = rpmtsInitIterator(ts, _obsolete_tag, Name, 0);
+
+	xx = rpmdbPruneIterator(mi,
+	    ts->removedPackages, ts->numRemovedPackages, 1);
+
+	while((oh = rpmdbNextIterator(mi)) != NULL) {
+	    int lastx;
+	    rpmte q;
+
+	    /* Ignore colored packages not in our rainbow. */
+	    ohcolor = hGetColor(oh);
+
+	    /* XXX provides *are* colored, effectively limiting Obsoletes:
+		to matching only colored Provides: based on pkg coloring. */
+	    if (tscolor && hcolor && ohcolor && !(hcolor & ohcolor))
+		/*@innercontinue@*/ continue;
+
+	    /*
+	     * Rpm prior to 3.0.3 does not have versioned obsoletes.
+	     * If no obsoletes version info is available, match all names.
+	     */
+	    if (!(rpmdsEVR(obsoletes) == NULL
+	     || rpmdsAnyMatchesDep(oh, obsoletes, _rpmds_nopromote)))
+		/*@innercontinue@*/ continue;
+
+	    /* Create an erasure element. */
+	    lastx = -1;
+	    xx = removePackage(ts, oh, rpmdbGetIteratorOffset(mi), &lastx, pkgKey);
+assert(lastx >= 0 && lastx < ts->orderCount);
+	    q = ts->order[lastx];
+
+	    /* Chain through obsoletes flink. */
+	    xx = rpmteChain(p, q, oh, "Obsoletes");
+
+/*@-nullptrarith@*/
+	    rpmlog(RPMLOG_DEBUG, D_("  Obsoletes: %s\t\terases %s\n"),
+			rpmdsDNEVR(obsoletes)+2, rpmteNEVRA(q));
+/*@=nullptrarith@*/
+	}
+	mi = rpmdbFreeIterator(mi);
+    }
+    obsoletes = rpmdsFree(obsoletes);
+
+    return 0;
+}
+
 int rpmtsAddInstallElement(rpmts ts, Header h,
 			fnpyKey key, int upgrade, rpmRelocation relocs)
 {
     HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
     rpmdepFlags depFlags = rpmtsDFlags(ts);
     uint32_t tscolor = rpmtsColor(ts);
-    uint32_t dscolor;
     uint32_t hcolor;
-    rpmdbMatchIterator mi;
-    Header oh;
-    uint32_t ohcolor;
     int isSource;
     int duplicate = 0;
     rpmtsi pi = NULL; rpmte p;
     const char * arch = NULL;
     const char * os = NULL;
     rpmds oldChk, newChk;
-    rpmds obsoletes;
     alKey pkgKey;	/* addedPackages key */
     int xx;
     int ec = 0;
@@ -381,6 +558,12 @@ assert(p != NULL);
 
     ts->teInstall = ts->order[oc];
 
+    {	rpmTag tag = RPMTAG_SOURCERPM;
+	const char * sourcerpm = rpmteSourcerpm(p);
+if (sourcerpm) 
+fprintf(stderr, "*** %s: %d in %s\n", rpmteNEVRA(p), rpmdbCount(rpmtsGetRdb(ts), tag, sourcerpm, 0), sourcerpm);
+    }
+
     /* XXX rpmgi hack: Save header in transaction element if requested. */
     if (upgrade & 0x2)
 	(void) rpmteSetHeader(p, h);
@@ -389,6 +572,7 @@ assert(p != NULL);
     if (!(upgrade & 0x1))
 	goto exit;
 
+    /* If source rpm, then we're done. */
     if (isSource)
 	goto exit;
 
@@ -398,149 +582,15 @@ assert(p != NULL);
 	    goto exit;
     }
 
-    /* On upgrade, erase older packages of same color (if any). */
-    if (_upgrade_tag == 0) {
-	const char *t = rpmExpand("%{?_upgrade_tag}", NULL);
-/*@-mods@*/
-	_upgrade_tag = (!strcmp(t, "name") ? RPMTAG_NAME : RPMTAG_PROVIDENAME);
-/*@=mods@*/
-	t = _free(t);
+    /* Add upgrades to the transaction (if not disabled). */
+    if (!(depFlags & RPMDEPS_FLAG_NOUPGRADE)) {
+	xx = rpmtsAddUpgrades(ts, p, hcolor, h);
     }
 
-  if (!(depFlags & RPMDEPS_FLAG_NOUPGRADE)) {
-    mi = rpmtsInitIterator(ts, _upgrade_tag, rpmteN(p), 0);
-    while((oh = rpmdbNextIterator(mi)) != NULL) {
-	int lastx;
-	rpmte q;
-
-	/* Ignore colored packages not in our rainbow. */
-	ohcolor = hGetColor(oh);
-	if (tscolor && hcolor && ohcolor && !(hcolor & ohcolor))
-	    continue;
-
-	/* Snarf the original install tid & time from older package(s). */
-	he->tag = RPMTAG_ORIGINTID;
-	xx = headerGet(oh, he, 0);
-	if (xx && he->p.ui32p != NULL) {
-	    if (p->originTid[0] == 0 || p->originTid[0] > he->p.ui32p[0]
-	     || (he->c > 1 && p->originTid[0] == he->p.ui32p[0] && p->originTid[1] > he->p.ui32p[1]))
-	    {
-		p->originTid[0] = he->p.ui32p[0];
-		p->originTid[1] = (he->c > 1 ? he->p.ui32p[1] : 0);
-	    }
-	    he->p.ptr = _free(he->p.ptr);
-	}
-	he->tag = RPMTAG_ORIGINTIME;
-	xx = headerGet(oh, he, 0);
-	if (xx && he->p.ui32p != NULL) {
-	    if (p->originTime[0] == 0 || p->originTime[0] > he->p.ui32p[0]
-	     || (he->c > 1 && p->originTime[0] == he->p.ui32p[0] && p->originTime[1] > he->p.ui32p[1]))
-	    {
-		p->originTime[0] = he->p.ui32p[0];
-		p->originTime[1] = (he->c > 1 ? he->p.ui32p[1] : 0);
-	    }
-	    he->p.ptr = _free(he->p.ptr);
-	}
-
-	/* Skip identical packages. */
-	if (rpmHeadersIdentical(h, oh))
-	    continue;
-
-	/* Create an erasure element. */
-	lastx = -1;
-	xx = removePackage(ts, oh, rpmdbGetIteratorOffset(mi), &lastx, pkgKey);
-assert(lastx >= 0 && lastx < ts->orderCount);
-	q = ts->order[lastx];
-
-	/* Chain through upgrade flink. */
-	xx = rpmteChain(p, q, oh, "Upgrades");
-
-/*@-nullptrarith@*/
-	rpmlog(RPMLOG_DEBUG, D_("   upgrade erases %s\n"), rpmteNEVRA(q));
-/*@=nullptrarith@*/
-
+    /* Add Obsoletes: to the transaction (if not disabled). */
+    if (!(depFlags & RPMDEPS_FLAG_NOOBSOLETES)) {
+	xx = rpmtsAddObsoletes(ts, p, hcolor);
     }
-    mi = rpmdbFreeIterator(mi);
-  }
-
-    if (_obsolete_tag == 0) {
-	const char *t = rpmExpand("%{?_obsolete_tag}", NULL);
-/*@-mods@*/
-	_obsolete_tag = (!strcmp(t, "name") ? RPMTAG_NAME : RPMTAG_PROVIDENAME);
-/*@=mods@*/
-	t = _free(t);
-    }
-  if (!(depFlags & RPMDEPS_FLAG_NOOBSOLETES)) {
-    obsoletes = rpmdsLink(rpmteDS(p, RPMTAG_OBSOLETENAME), "Obsoletes");
-    obsoletes = rpmdsInit(obsoletes);
-    if (obsoletes != NULL)
-    while (rpmdsNext(obsoletes) >= 0) {
-	const char * Name;
-
-	if ((Name = rpmdsN(obsoletes)) == NULL)
-	    continue;	/* XXX can't happen */
-
-	/* Ignore colored obsoletes not in our rainbow. */
-#if 0
-	/* XXX obsoletes are never colored, so this is for future devel. */
-	dscolor = rpmdsColor(obsoletes);
-#else
-	dscolor = hcolor;
-#endif
-	if (tscolor && dscolor && !(tscolor & dscolor))
-	    continue;
-
-	/* XXX avoid self-obsoleting packages. */
-	if (!strcmp(rpmteN(p), Name))
-	    continue;
-
-	/* Obsolete containing package if given a file, otherwise provide. */
-	if (Name[0] == '/')
-	    mi = rpmtsInitIterator(ts, RPMTAG_BASENAMES, Name, 0);
-	else
-	    mi = rpmtsInitIterator(ts, _obsolete_tag, Name, 0);
-
-	xx = rpmdbPruneIterator(mi,
-	    ts->removedPackages, ts->numRemovedPackages, 1);
-
-	while((oh = rpmdbNextIterator(mi)) != NULL) {
-	    int lastx;
-	    rpmte q;
-
-	    /* Ignore colored packages not in our rainbow. */
-	    ohcolor = hGetColor(oh);
-
-	    /* XXX provides *are* colored, effectively limiting Obsoletes:
-		to matching only colored Provides: based on pkg coloring. */
-	    if (tscolor && hcolor && ohcolor && !(hcolor & ohcolor))
-		/*@innercontinue@*/ continue;
-
-	    /*
-	     * Rpm prior to 3.0.3 does not have versioned obsoletes.
-	     * If no obsoletes version info is available, match all names.
-	     */
-	    if (!(rpmdsEVR(obsoletes) == NULL
-	     || rpmdsAnyMatchesDep(oh, obsoletes, _rpmds_nopromote)))
-		/*@innercontinue@*/ continue;
-
-	    /* Create an erasure element. */
-	    lastx = -1;
-	    xx = removePackage(ts, oh, rpmdbGetIteratorOffset(mi), &lastx, pkgKey);
-assert(lastx >= 0 && lastx < ts->orderCount);
-	    q = ts->order[lastx];
-
-	    /* Chain through obsoletes flink. */
-	    xx = rpmteChain(p, q, oh, "Obsoletes");
-
-/*@-nullptrarith@*/
-	    rpmlog(RPMLOG_DEBUG, D_("  Obsoletes: %s\t\terases %s\n"),
-			rpmdsDNEVR(obsoletes)+2, rpmteNEVRA(q));
-/*@=nullptrarith@*/
-	}
-	mi = rpmdbFreeIterator(mi);
-    }
-    obsoletes = rpmdsFree(obsoletes);
-  }
 
     ec = 0;
 

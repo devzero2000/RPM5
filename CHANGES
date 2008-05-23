@@ -1,5 +1,7 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: debuginfo: refactor 2 existing upgrade policy rules before
+	adding a new contextually sensitive rule for -debuginfo packages.
     - jbj: debuginfo: add general rpmdbCount() to get number of items for
 	any tag index, not just RPMTAG_NAME as was in rpmdbCountPackages().
     - jbj: add --with-openssl to devtool system target to enable the ssl
