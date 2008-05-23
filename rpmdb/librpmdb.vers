@@ -86,6 +86,7 @@ LIBRPMDB_0
     rpmdbClose;
     rpmdbBlockDBI;
     rpmdbCloseDBI;
+    rpmdbCount;
     rpmdbCountPackages;
     rpmdbFindFpList;
     rpmdbFreeIterator;
