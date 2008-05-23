@@ -1,5 +1,7 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: add --with-openssl to devtool system target to enable the ssl
+	digital signature implementation in rpmio/rpmssl.c at runtime.
     - jbj: rpmte: add rpmteSourcerpm() (for use as a -debuginfo buildset key).
     - jbj: fix: skip the :extractor/|transformer mark checking :xml/:yaml.
     - jbj: splint: annotate argvAppend differently.
