@@ -973,7 +973,7 @@ dnl # BeeCrypt
 RPM_CHECK_LIB(
     [BeeCrypt], [beecrypt],
     [beecrypt], [mpfprintln], [beecrypt/api.h],
-    [yes,external], [beecrypt],
+    [yes,external], [],
     [], [ AC_MSG_ERROR([mandatory BeeCrypt library not found]) ])
 
 dnl # Mozilla NSS
