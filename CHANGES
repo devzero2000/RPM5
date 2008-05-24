@@ -110,6 +110,78 @@
 
 =============================================================================
 
+5.1.1 -> 5.1.2:
+    - rse: upgraded build environment to GNU libtool 2.2.4
+    - afb: standalone: file "magic" was installed in wrong directory
+    - jbj: add toplevel lcov-foo Makefile targets. Current coverage at
+	http://wraptastic.org/pub/jbj/rpm-5.1.DEVEL-lcov
+    - jbj: add --enable-build-gcov for CFLAGS -fprofile-arcs -ftest-coverage.
+    - jbj: hot-wire a top level "make check". noisy sanity check atm, todo++.
+    - jbj: backport top level tests/* for "make check". No tests in Makefile
+	SUBDIRS targets yet ...
+    - jbj: rpmrepo: add doxygen markup throughout, adjust splint annotations.
+    - jbj: update i18n from Translation Project.
+    - jbj: update po/POTFILES.in
+    - jbj: rpmuuid: add i18n to error messages.
+    - jbj: fix: rpm-python h['filenames'] needs tagName(0x54aafb71) to
+	return "Filenames" in order to find the filepathsTag extension.
+    - jbj: add a missing newline to a debug message.
+    - jbj: revert rpmtsOpenDB on --checksig path, rely on the lazy open
+    	in rpmtsFindPubkey instead.
+    - jbj: fix: rpm -qp returns NOKEY because rpmdb is not yet open. Do a lazy
+    	open in rpmtsFindPubkey.
+    - jbj: python: fix: insure that ts.setProbFilter() return is initialized.
+    - jbj: fix: --triggers segfault, don't depend on he->p.ptr = NULL after
+	headerGet() failed return.
+    - jbj: add RPMTAG_PACKAGESTAT, and store persistently in a rpmdb Header.
+    - jbj: disable loop unraveling error msgs for now. better needs to be done.
+    - jbj: rpmrepo: achieve {primary,filelists,other}.xml spew parity w createrepo.
+    - jbj: rpmrepo: compute origin *.rpm file digest while reading.
+    - jbj: preserve stat(2) & digest through headerReload().
+    - jbj: get rid of copy-n-paste typos, add "l" type markers to rpmtag.h.
+    - jbj: add RPMTAG_PACKAGEDIGEST extension as RPM_STRING_TYPE.
+    - jbj: add digest of origin *.rpm to Header internal store.
+    - jbj: add RPMTAG_PACKAGESIZE extension as RPM_UINT64_TYPE.
+    - jbj: rework RPMTAG_PACKAGETIME extension as RPM_UINT64_TYPE.
+    - jbj: rework header{Get,Set}Time as header{Get,Stat}Statbuf methods.
+    - jbj: add stat(2) of origin *.rpm to Header internal store.
+    - jbj: permit file digests through (e.g.) :stat format extension.
+    - jbj: add :uuid format. UUIDv5 URI design & tag type coercion todo++.
+    - jbj: fix: blessed NUL termination for Readlink return.
+    - jbj: retrofit v5 UUID's for hdrid/pkgid digests as tag extensions.
+    - jbj: retrofit v1 UUID's for time stamps as tag extensions.
+    - jbj: replace "diskstat" tag with :stat format extension instead.
+    - jbj: add :digest format.
+    - jbj: generalize :utf8 to :iconv iconv(3) conversions.
+    - jbj: permit :base64 encoding to be applied to all tag data types.
+    - jbj: fix: use rpmlog instead of rpmError for messages.
+    - glen: print error when makeTempPath fails due missing temp dir
+
+5.1.0 -> 5.1.1:
+    - jbj: permit firefox debugging by creating an empty dir (#444310).
+    - jbj: header: free tag data on error retrurn with damaged data.
+    - rpm.org: rpmsw: insure that time has passed while calibrating (#435309).
+    - jbj: header: fix: avoid double free with damaged data (#442761).
+    - afb: fix VPATH builds finding rpmversion.h (in build)
+    - afb: fix parallel build of rpmdigest (automake quirk)
+    - jbj: rpmte: revert to individual tags instead of RPMTAG_NVRA.
+    - afb: macosx: fix thinko in previous xar linking workaround
+
+5.1b2 -> 5.1.0:
+    - jbj: rpmte: fix: snip ".arch" from "-release", same NEVRA check broke.
+    - nkukard: support building under Linux/uClibc in addition to Linux/GLIBC
+    - jbj: update id.po from Translation Project.
+    - rse: merge OpenPKG-specific "extension-based-compression-detection" change
+    - afb: disable intl/iconv for popt 1.14 under Mac OS X
+    - jbj: update {nl,pl,sl,sv,vi}.po from Translation Project.
+
+5.1b1 -> 5.1b2:
+    - rse: use latest POPT 1.14 for building with "devtool standalone"
+    - rse: replace obsolete AC_AIX and AC_MINIX checks with newer AC_USE_SYSTEM_EXTENSIONS to get rid of Autoconf warnings
+    - rse: upgrade build environment to GNU autoconf 2.62
+
+---- 5.2 FORK POINT ----
+
 5.0.0 -> 5.1b1:
     - jbj: update PO files from Translation Project for rpm-5.1 inclusion.
     - jbj: permit installing 3.0.x SRPMS.
@@ -412,6 +484,82 @@
     - rpm.org: More assorted int -> size_t uses.
 
 =============================================================================
+
+5.0.3 -> 5.0.4:
+    - jbj: QNX: retrofit u_int32_t typedef where needed.
+    - jbj: add random arch name feelgood fluffiness (#432496).
+    - jbj: prepare for Fedorable dependency loops (#437041).
+    - proyvind: add more compatibility adaptions to rpm4 compatibility wrapper (making deltarpm & ruby-rpm work)
+    - proyvind: add rpmfiBuildFNames() to rpm4 compatibility wrapper (needed by rpmstats)
+
+5.0.2 -> 5.0.3:
+    - proyvind: add rpm 4 API compatibility wrapper (urpmi & apt-get succesfully ported with this so far \o/)
+    - afb: python: backport fix for rpm.archscore() and add rpm.platformscore().
+    - jbj: fix: eliminate librpmdb->librpm from dosetenv, use setenv(3) instead.
+    - jbj: fix: rpmtsCheck non-zero return doesn't print failed build deps.
+    - proyvind: add some extra functionality to gendiff (ancient Mandriva patch by Chmouel Boudjnah)
+    - pixel: do check free size when bavail is 0
+    - jbj: refactor rpmcliErase to use same code as rpmtsInstall.
+    - jbj: fix: rpmtsCheck non-zero return prevents --erase.
+    - jbj: fix: avoid {pre,post}trans scrareMem assert failure.
+    - rpm.org: make find-lang --with-gnome picks up omf files (rhbz#251400) 
+    - proyvind: python: add back RPMSENSE_FIND_REQUIRES, needed by rpmlint
+    - proyvind: trim multiple slashes from buildroot for check-files script (from Nanar/Olivier Thauvin)
+    - proyvind: make rpmdb cpp compliant (from spturtle/Christiaan Welvaart)
+    - jbj: fix: (again) rpmtsCheck() needs to return 1 when problems exist.
+    - rse: add support for QNX by adjusting to its 3-parameter based makedev(2)
+    - proyvind: add sparcv9v2 (Niagara 2) architecture
+    - proyvind: add arch macros for alpha and sparc
+
+5.0.1 -> 5.0.2:
+    - jbj: fix: python: re-add rpm.archscore() for smart depsolving usage.
+    - jbj: backport %{shrink:...} and %{getenv:...} builtin macros.
+    - jbj: updated sv.po (Translation Project).
+    - jbj: fix: permit #%patchN comments by forcing single line expansion.
+    - jbj: document newer macro builtins (%{@foo:...}, %{uuid:...}, and %{lua:...} todo).
+    - jbj: fix: poldek in PLD needs replacement for headerGetRawEntry().
+    - rse: ensure macro option parsing is done correctly also under GLIBC by not allowing option/argument permutations
+    - jbj: pedantic identification of Foo (not foo) syscalls in --fsmdebug spew.
+    - jbj: fix: --rollback PSM_INIT changes added fstates before initialize.
+    - rse: allow to compile without <langinfo.h> and its nl_langinfo(3)
+
+5.0.0 -> 5.0.1:
+    - jbj: replace sr.po from translation project.
+    - rse: fix Autoconf procedure by running python(1) based checks only under --with-python
+    - jbj: fix: rpmtsCheck() needs to return 1 when problems exist.
+    - jbj: use RPM_OS_NTOQNX as manifest constant.
+    - jbj: updated nl.po (Translation Project).
+    - jbj: resurrect rpm.spec.in.
+    - jbj: automake for xar internal.
+    - jbj: re-add PayloadFilesHavePrefix/CompressedFileNames w --lsb.
+    - jbj: QNX needs defines for fts.c.
+    - jbj: include <pthread.h> everywhere.
+    - jbj: rpmsq.h doesn't need pthread condvar/mutex any more.
+    - jbj: QNX does not have insque/remque.
+    - jbj: QNX does not have d_off.
+    - jbj: proof-of-concept rpmbuild --lsb implementation.
+    - mej: catch EOF returned as RPMRC_NOTFOUND correctly.
+    - jbj: fix: permit %{lua:...} to recurse.
+    - jbj: unbreak rpm-python, preserve existing symbol in released versions.
+    - jbj: fix several typos noticed by the translation project.
+    - proyvind: Rename rpmcliImportPubkey() -> rpmtsImportPubkey() (from and for a hint of rpm.org API compatibility;)
+    - proyvind: expose more functions in rpmps API (as rpm.org, initially based on us ;p)
+    - jbj: fix: plug memory leak with digest algos array.
+    - jbj: fix: --relocate no longer needs to copy dirIndexes data.
+    - proyvind: make perl install directory overriddable from configure as an argument (--with-perl=vendor/site)
+    - proyvind: fix install location of man pages for perl bindings
+    - proyvind: fix install location of pkgconfig & python bindings (lib64 fix)
+    - proyvind: fix install location of rpm.pc (lib64 fix)
+    - jbj: don't follow symlinks using chown/chgrp from --setugids pipe.
+    - jbj: sync *.po with the translation project (sr@latin.po needs work).
+    - rse: fix PGP clearsign signature verification by correctly skipping RFC2440 "dash-escapes"
+    - rse: fix line-continuation handling in macro definition parsing
+    - jbj: permit opt-in network access using %_rpmgio macro.
+    - jbj: fix: deny rpmioSlurp network access (like all other Fopen call's).
+    - rpm.org: Assorted int -> size_t corrections for string lengths.
+    - rpm.org: More assorted int -> size_t uses.
+
+---- 5.1 FORK POINT ----
 
 5.0b4 -> 5.0.0:
     - rse: final polishing of NEWS document
