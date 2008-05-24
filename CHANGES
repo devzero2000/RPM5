@@ -1,3 +1,5 @@
+5.1.2 -> 5.1.3:
+
 5.1.1 -> 5.1.2:
     - rse: upgraded build environment to GNU libtool 2.2.4
     - afb: standalone: file "magic" was installed in wrong directory
