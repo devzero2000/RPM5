@@ -1,5 +1,6 @@
 
 5.1.0 -> 5.2a0:
+    - rse: add support for "lib<name>-config" and "lib<name>.pc" in RPM_CHECK_LIB
     - jbj: debuginfo: refactor 2 existing upgrade policy rules before
 	adding a new contextually sensitive rule for -debuginfo packages.
     - jbj: debuginfo: add general rpmdbCount() to get number of items for
