@@ -1,5 +1,8 @@
 
 5.1.0 -> 5.2a0:
+    - rse: explicitly let one to force one of BeeCrypt/GCrypt/NSS/OpenSSL as the crypto implementation
+    - rse: implicitly choose one of BeeCrypt/GCrypt/NSS/OpenSSL as the crypto implementation
+    - rse: add an Autoconf --with-usecrypto={beecrypt,gcrypt,nss,openssl} build-time option
     - rse: allow one to build against the GCrypt based crypto implementation out-of-the-box
     - rse: more robust argument checking for CLI option --usecrypto
     - rse: add support for "lib<name>-config" and "lib<name>.pc" in RPM_CHECK_LIB

@@ -999,6 +999,21 @@ RPM_CHECK_LIB(
     [ AC_DEFINE(WITH_SSL, 1, [Define if building with OpenSSL])
     ], [])
 
+dnl # select default Cryptography implementation to use (default for CLI option --usecrypto)
+AC_ARG_WITH([usecrypto],
+    AS_HELP_STRING(
+        [--with-usecrypto=ID],
+        [use particular default for --usecrypto option ("beecrypt", "gcrypt", "nss", "openssl")]
+    ), [
+    case "`echo $withval | tr 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' 'abcdefghijklmnopqrstuvwxyz'`" in
+        beecrypt | bc ) AC_DEFINE(USE_CRYPTO_BEECRYPT, 1, [Define to 1 for using BeeCrypt    as default cryptography library]) ;;
+        gcrypt   | gc ) AC_DEFINE(USE_CRYPTO_GCRYPT,   1, [Define to 1 for using GCrypt      as default cryptography library]) ;;
+        nss           ) AC_DEFINE(USE_CRYPTO_NS,       1, [Define to 1 for using Mozilla NSS as default cryptography library]) ;;
+        openssl | ssl ) AC_DEFINE(USE_CRYPTO_OPENSSL,  1, [Define to 1 for using OpenSSL     as default cryptography library]) ;;
+        * ) AC_MSG_ERROR([invalid cryptography library identifier specified for --with-usecrypto option]) ;;
+    esac
+])
+
 dnl # Neon
 RPM_CHECK_LIB(
     [Neon], [neon],
