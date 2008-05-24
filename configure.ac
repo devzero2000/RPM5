@@ -976,6 +976,14 @@ RPM_CHECK_LIB(
     [yes,external], [],
     [], [ AC_MSG_ERROR([mandatory BeeCrypt library not found]) ])
 
+dnl # GCrypt
+RPM_CHECK_LIB(
+    [GCrypt], [gcrypt],
+    [gcrypt], [gcry_pk_verify], [gcrypt.h],
+    [no,external], [],
+    [ AC_DEFINE(WITH_GCRYPT, 1, [Define if building with GCrypt])
+    ], [])
+
 dnl # Mozilla NSS
 RPM_CHECK_LIB(
     [Mozilla NSS], [nss],

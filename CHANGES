@@ -1,5 +1,6 @@
 
 5.1.0 -> 5.2a0:
+    - rse: allow one to build against the GCrypt based crypto implementation out-of-the-box
     - rse: more robust argument checking for CLI option --usecrypto
     - rse: add support for "lib<name>-config" and "lib<name>.pc" in RPM_CHECK_LIB
     - jbj: debuginfo: refactor 2 existing upgrade policy rules before
