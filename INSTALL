@@ -14,7 +14,7 @@ Perl            mandatory 5.8.0   5.8.8   http://www.perl.com/
 GNU m4      [0] mandatory 1.4.0   1.4.11  http://www.gnu.org/software/m4/
 GNU autoconf    mandatory 2.59b   2.62    http://www.gnu.org/software/autoconf/
 GNU automake    mandatory 1.8     1.10    http://www.gnu.org/software/automake/
-GNU libtool     mandatory 1.5     2.2.2   http://www.gnu.org/software/libtool/
+GNU libtool     mandatory 1.5     2.2.4   http://www.gnu.org/software/libtool/
 GNU gettext     mandatory 0.16    0.17    http://www.gnu.org/software/gettext/
 --------------- --------- ------- ------- -------------------------------------
 
