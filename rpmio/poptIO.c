@@ -234,7 +234,7 @@ static void rpmioAllArgCallback(poptContext con,
 	break;
 #endif	/* NOTYET */
     case POPT_CRYPTO:
-	{   const char *val = rpmExpand(arg, NULL);
+	{   const char *val;
 #ifdef	NOTYET
 	    rpmioConfigured();
 	    val = rpmExpand(arg, NULL);
