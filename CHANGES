@@ -1,5 +1,6 @@
 
 5.1.0 -> 5.2a0:
+    - rse: enhance RPM_CHECK_LIB to query pkg-config(1) --libs-only-L to get -L<dir> options, too.
     - rse: be smart and allow one to still build RPM from CVS with old GNU libtool 1.5.x
     - rse: explicitly let one to force one of BeeCrypt/GCrypt/NSS/OpenSSL as the crypto implementation
     - rse: implicitly choose one of BeeCrypt/GCrypt/NSS/OpenSSL as the crypto implementation
