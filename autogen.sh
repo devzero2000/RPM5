@@ -8,10 +8,10 @@ GTT="gettextize (GNU gettext-tools) 0.17"
 USAGE="
 To build RPM from plain CVS sources the following
 installed developer tools are mandatory:
-    GNU automake  1.10
-    GNU autoconf  2.62
-    GNU libtool   2.2.4
-    GNU gettext   0.17
+    $AMV
+    $ACV
+    $LTV
+    $GTT
 "
 
 #   wrapper for running GNU libtool's libtoolize(1)
@@ -27,7 +27,7 @@ libtoolize () {
              esac
              ;;
     esac
-    _libtoolize_version="`$_libtoolize --version | sed -e '1q' | sed -e 's;^[^0-9];;'`"
+    _libtoolize_version="`$_libtoolize --version | sed -e '1q' | sed -e 's;^[^0-9]*;;'`"
     case "$_libtoolize_version" in
         1.* ) _libtoolize_args=`echo "X$_libtoolize_args" | sed -e 's;^X;;' -e 's;--quiet;;' -e 's;--install;;'` ;;
     esac
