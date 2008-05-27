@@ -2743,10 +2743,11 @@ bingo:
 /**
  * Convert tag data representation.
  * @param he		tag container
+ * @param av		parameter array (or NULL)
  * @param fmt		output radix (NULL or "" assumes %d)
  * @return		formatted string
  */
-static char * intFormat(HE_t he, const char *fmt)
+static char * intFormat(HE_t he, /*@null@*/ const char ** av, const char * fmt)
 {
     int ix = (he->ix > 0 ? he->ix : 0);
     int_64 ival = 0;
@@ -2818,43 +2819,47 @@ static char * intFormat(HE_t he, const char *fmt)
 /**
  * Return octal formatted data.
  * @param he		tag container
+ * @param av		parameter array (or NULL)
  * @return		formatted string
  */
-static char * octFormat(HE_t he)
+static char * octFormat(HE_t he, /*@null@*/ const char ** av)
 	/*@*/
 {
-    return intFormat(he, "o");
+    return intFormat(he, NULL, "o");
 }
 
 /**
  * Return hex formatted data.
  * @param he		tag container
+ * @param av		parameter array (or NULL)
  * @return		formatted string
  */
-static char * hexFormat(HE_t he)
+static char * hexFormat(HE_t he, /*@null@*/ const char ** av)
 	/*@*/
 {
-    return intFormat(he, "x");
+    return intFormat(he, NULL, "x");
 }
 
 /**
  * Return decimal formatted data.
  * @param he		tag container
+ * @param av		parameter array (or NULL)
  * @return		formatted string
  */
-static char * decFormat(HE_t he)
+static char * decFormat(HE_t he, /*@null@*/ const char ** av)
 	/*@*/
 {
-    return intFormat(he, "d");
+    return intFormat(he, NULL, "d");
 }
 
 /**
  * Return strftime formatted data.
  * @param he		tag container
+ * @param av		parameter array (or NULL)
  * @param strftimeFormat strftime(3) format
  * @return		formatted string
  */
-static char * realDateFormat(HE_t he, const char * strftimeFormat)
+static char * realDateFormat(HE_t he, /*@null@*/ const char ** av, const char * strftimeFormat)
 	/*@*/
 {
     rpmTagData data = { .ptr = he->p.ptr };
@@ -2883,31 +2888,34 @@ static char * realDateFormat(HE_t he, const char * strftimeFormat)
 /**
  * Return date formatted data.
  * @param he		tag container
+ * @param av		parameter array (or NULL)
  * @return		formatted string
  */
-static char * dateFormat(HE_t he)
+static char * dateFormat(HE_t he, /*@null@*/ const char ** av)
 	/*@*/
 {
-    return realDateFormat(he, _("%c"));
+    return realDateFormat(he, NULL, _("%c"));
 }
 
 /**
  * Return day formatted data.
  * @param he		tag container
+ * @param av		parameter array (or NULL)
  * @return		formatted string
  */
-static char * dayFormat(HE_t he)
+static char * dayFormat(HE_t he, /*@null@*/ const char ** av)
 	/*@*/
 {
-    return realDateFormat(he, _("%a %b %d %Y"));
+    return realDateFormat(he, NULL, _("%a %b %d %Y"));
 }
 
 /**
  * Return shell escape formatted data.
  * @param he		tag container
+ * @param av		parameter array (or NULL)
  * @return		formatted string
  */
-static char * shescapeFormat(HE_t he)
+static char * shescapeFormat(HE_t he, /*@null@*/ const char ** av)
 	/*@*/
 {
     rpmTagData data = { .ptr = he->p.ptr };
@@ -3474,9 +3482,9 @@ assert(0);	/* XXX keep gcc quiet. */
     }
 
     if (tag->fmt)
-	val = tag->fmt(vhe);
+	val = tag->fmt(vhe, NULL);
     else
-	val = intFormat(vhe, NULL);
+	val = intFormat(vhe, NULL, NULL);
 assert(val);
     if (val)
 	need = strlen(val) + 1;

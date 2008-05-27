@@ -74,9 +74,10 @@ static char * rpmPermsString(int mode)
 /**
  * Identify type of trigger.
  * @param he		tag container
+ * @param av		parameter array (or NULL)
  * @return		formatted string
  */
-static /*@only@*/ char * triggertypeFormat(HE_t he)
+static /*@only@*/ char * triggertypeFormat(HE_t he, /*@null@*/ const char ** av)
 {
     rpmTagData data = { .ptr = he->p.ptr };
     int ix = (he->ix > 0 ? he->ix : 0);
@@ -104,9 +105,10 @@ assert(ix == 0);
 /**
  * Format file permissions for display.
  * @param he		tag container
+ * @param av		parameter array (or NULL)
  * @return		formatted string
  */
-static /*@only@*/ char * permsFormat(HE_t he)
+static /*@only@*/ char * permsFormat(HE_t he, /*@null@*/ const char ** av)
 {
     int ix = (he->ix > 0 ? he->ix : 0);
     char * val;
@@ -125,9 +127,10 @@ assert(ix == 0);
 /**
  * Format file flags for display.
  * @param he		tag container
+ * @param av		parameter array (or NULL)
  * @return		formatted string
  */
-static /*@only@*/ char * fflagsFormat(HE_t he)
+static /*@only@*/ char * fflagsFormat(HE_t he, /*@null@*/ const char ** av)
 {
     rpmTagData data = { .ptr = he->p.ptr };
     int ix = (he->ix >= 0 ? he->ix : 0);
@@ -166,9 +169,10 @@ assert(ix == 0);
  * Wrap a pubkey in ascii armor for display.
  * @todo Permit selectable display formats (i.e. binary).
  * @param he		tag container
+ * @param av		parameter array (or NULL)
  * @return		formatted string
  */
-static /*@only@*/ char * armorFormat(HE_t he)
+static /*@only@*/ char * armorFormat(HE_t he, /*@null@*/ const char ** av)
 	/*@*/
 {
     rpmTagData data = { .ptr = he->p.ptr };
@@ -221,9 +225,10 @@ assert(ix == 0);
  * Encode binary data in base64 for display.
  * @todo Permit selectable display formats (i.e. binary).
  * @param he		tag container
+ * @param av		parameter array (or NULL)
  * @return		formatted string
  */
-static /*@only@*/ char * base64Format(HE_t he)
+static /*@only@*/ char * base64Format(HE_t he, /*@null@*/ const char ** av)
 	/*@*/
 {
     rpmTagData data = { .ptr = he->p.ptr };
@@ -408,9 +413,10 @@ strdup_locale_to_utf8 (/*@null@*/ const char * buffer)
 /**
  * Encode string for use in XML CDATA.
  * @param he		tag container
+ * @param av		parameter array (or NULL)
  * @return		formatted string
  */
-static /*@only@*/ char * cdataFormat(HE_t he)
+static /*@only@*/ char * cdataFormat(HE_t he, /*@null@*/ const char ** av)
 	/*@*/
 {
     int ix = (he->ix > 0 ? he->ix : 0);
@@ -438,9 +444,10 @@ assert(ix == 0);
 /**
  * Encode string in UTF-8.
  * @param he		tag container
+ * @param av		parameter array (or NULL)
  * @return		formatted string
  */
-static /*@only@*/ char * utf8Format(HE_t he)
+static /*@only@*/ char * utf8Format(HE_t he, /*@null@*/ const char ** av)
 	/*@*/
 {
     int ix = (he->ix > 0 ? he->ix : 0);
@@ -461,9 +468,10 @@ assert(ix == 0);
 /**
  * Wrap tag data in simple header xml markup.
  * @param he		tag container
+ * @param av		parameter array (or NULL)
  * @return		formatted string
  */
-static /*@only@*/ char * xmlFormat(HE_t he)
+static /*@only@*/ char * xmlFormat(HE_t he, /*@null@*/ const char ** av)
 	/*@*/
 {
     rpmTagData data = { .ptr = he->p.ptr };
@@ -504,7 +512,7 @@ assert(he->t == RPM_STRING_TYPE || he->t == RPM_INT64_TYPE || he->t == RPM_BIN_T
     {	int cpl = b64encode_chars_per_line;
 	b64encode_chars_per_line = 0;
 /*@-formatconst@*/
-	s = base64Format(he);
+	s = base64Format(he, NULL);
 /*@=formatconst@*/
 	b64encode_chars_per_line = cpl;
 	xtag = "base64";
@@ -623,9 +631,10 @@ static char * yamlstrcpy(/*@out@*/ /*@returned@*/ char * t, const char * s, int 
 /**
  * Wrap tag data in simple header yaml markup.
  * @param he		tag container
+ * @param av		parameter array (or NULL)
  * @return		formatted string
  */
-static /*@only@*/ char * yamlFormat(HE_t he)
+static /*@only@*/ char * yamlFormat(HE_t he, /*@null@*/ const char ** av)
 	/*@*/
 {
     rpmTagData data = { .ptr = he->p.ptr };
@@ -694,7 +703,7 @@ assert(he->t == RPM_STRING_TYPE || he->t == RPM_INT64_TYPE || he->t == RPM_BIN_T
     {	int cpl = b64encode_chars_per_line;
 	b64encode_chars_per_line = 0;
 /*@-formatconst@*/
-	s = base64Format(he);
+	s = base64Format(he, NULL);
 	element = -element; 	/* XXX skip "    " indent. */
 /*@=formatconst@*/
 	b64encode_chars_per_line = cpl;
@@ -772,9 +781,10 @@ assert(he->t == RPM_STRING_TYPE || he->t == RPM_INT64_TYPE || he->t == RPM_BIN_T
 /**
  * Display signature fingerprint and time.
  * @param he		tag container
+ * @param av		parameter array (or NULL)
  * @return		formatted string
  */
-static /*@only@*/ char * pgpsigFormat(HE_t he)
+static /*@only@*/ char * pgpsigFormat(HE_t he, /*@null@*/ const char ** av)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/
 {
@@ -878,9 +888,10 @@ assert(ix == 0);
 /**
  * Format dependency flags for display.
  * @param he		tag container
+ * @param av		parameter array (or NULL)
  * @return		formatted string
  */
-static /*@only@*/ char * depflagsFormat(HE_t he)
+static /*@only@*/ char * depflagsFormat(HE_t he, /*@null@*/ const char ** av)
 	/*@*/
 {
     rpmTagData data = { .ptr = he->p.ptr };
@@ -1006,7 +1017,7 @@ static int triggercondsTag(Header h, HE_t he)
 	    item = xmalloc(strlen(names.argv[j]) + strlen(versions.argv[j]) + 20);
 	    if (flags.i32p[j] & RPMSENSE_SENSEMASK) {
 		_he->p.i32p = &flags.i32p[j];
-		flagsStr = depflagsFormat(_he);
+		flagsStr = depflagsFormat(_he, NULL);
 		sprintf(item, "%s %s %s", names.argv[j], flagsStr, versions.argv[j]);
 		flagsStr = _free(flagsStr);
 	    } else
@@ -1980,9 +1991,10 @@ static char * sqlstrcpy(/*@returned@*/ char * t, const char * s)
 /**
  * Encode string for use in SQL statements.
  * @param he		tag container
+ * @param av		parameter array (or NULL)
  * @return		formatted string
  */
-static /*@only@*/ char * sqlescapeFormat(HE_t he)
+static /*@only@*/ char * sqlescapeFormat(HE_t he, /*@null@*/ const char ** av)
 	/*@*/
 {
     int ix = (he->ix > 0 ? he->ix : 0);
@@ -2412,9 +2424,10 @@ static int F2sqlTag(Header h, HE_t he)
 /**
  * Encode the basename of a string for use in XML CDATA.
  * @param he            tag container
+ * @param av		parameter array (or NULL)
  * @return              formatted string
  */
-static /*@only@*/ char * bncdataFormat(HE_t he)
+static /*@only@*/ char * bncdataFormat(HE_t he, /*@null@*/ const char ** av)
 	/*@*/
 {
     char * val;
