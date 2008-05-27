@@ -89,6 +89,8 @@ struct rpmrfile_s {
 #endif
 /*@null@*/
     const char * digest;
+/*@null@*/
+    const char * Zdigest;
     time_t ctime;
 };
 
@@ -1304,6 +1306,70 @@ static int repoWriteMetadataDocs(rpmrepo repo, /*@null@*/ const char ** pkglist)
 }
 
 /**
+ * Compute digest of a file.
+ * @return		0 on success
+ */
+static int repoRfileDigest(const rpmrepo repo, rpmrfile rfile,
+		const char ** digestp)
+	/*@modifies *digestp @*/
+{
+    static int asAscii = 1;
+    struct stat sb, *st = &sb;
+    const char * fn = repoGetPath(repo, repo->tempdir, rfile->type, 1);
+    const char * path = NULL;
+    int ut = urlPath(fn, &path);
+    FD_t fd = NULL;
+    int rc = 1;
+    int xx;
+
+    memset(st, 0, sizeof(*st));
+    if (!rpmioExists(fn, st))
+	goto exit;
+    fd = Fopen(fn, "r.ufdio");
+    if (fd == NULL || Ferror(fd))
+	goto exit;
+
+    switch (ut) {
+    case URL_IS_PATH:
+    case URL_IS_UNKNOWN:
+#if defined(HAVE_MMAP)
+    {   void * mapped = (void *)-1;
+
+	if (st->st_size > 0)
+	    mapped = mmap(NULL, st->st_size, PROT_READ, MAP_SHARED, Fileno(fd), 0);
+	if (mapped != (void *)-1) {
+	    DIGEST_CTX ctx = rpmDigestInit(repo->algo, RPMDIGEST_NONE);
+	    xx = rpmDigestUpdate(ctx, mapped, st->st_size);
+	    xx = rpmDigestFinal(ctx, digestp, NULL, asAscii);
+	    xx = munmap(mapped, st->st_size);
+	    break;
+	}
+    }	/*@fallthrough@*/
+#endif
+    default:
+    {	char buf[64 * BUFSIZ];
+	size_t nb;
+	size_t fsize = 0;
+
+	fdInitDigest(fd, repo->algo, 0);
+	while ((nb = Fread(buf, sizeof(buf[0]), sizeof(buf), fd)) > 0)
+	    fsize += nb;
+	if (Ferror(fd))
+	    goto exit;
+	fdFiniDigest(fd, repo->algo, digestp, NULL, asAscii);
+    }	break;
+    }
+
+    rc = 0;
+
+exit:
+    if (fd)
+	xx = Fclose(fd);
+    fn = _free(fn);
+    return rc;
+}
+
+/**
  * Close a repository metadata file.
  * @param repo		repository
  * @param rfile		repository metadata file
@@ -1314,13 +1380,11 @@ static int repoCloseMDFile(const rpmrepo repo, rpmrfile rfile)
 	/*@modifies rfile, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     static int asAscii = 1;
-    const char * fn;
+    char * xmlfn = xstrdup(fdGetOPath(rfile->fd));
     int rc = 0;
 
     if (!repo->quiet)
-	repo_error(0, _("Saving %s%s%s metadata"), rfile->type,
-		(repo->markup != NULL ? repo->markup : ""),
-		(repo->suffix != NULL ? repo->suffix : ""));
+	repo_error(0, _("Saving %s metadata"), basename(xmlfn));
 
     if (rfileXMLWrite(rfile, xstrdup(rfile->xml_fini)))
 	rc = 1;
@@ -1333,21 +1397,24 @@ static int repoCloseMDFile(const rpmrepo repo, rpmrfile rfile)
     (void) Fclose(rfile->fd);
     rfile->fd = NULL;
 
+    /* Compute the (usually compressed) ouput file digest too. */
+    rfile->Zdigest = NULL;
+    (void) repoRfileDigest(repo, rfile, &rfile->Zdigest);
+
 #if defined(WITH_SQLITE)
     if (repo->database && rfile->sqldb != NULL) {
-	int xx;
-	fn = rpmGetPath(repo->outputdir, "/", repo->tempdir, "/",
+	const char *dbfn = rpmGetPath(repo->outputdir, "/", repo->tempdir, "/",
 		rfile->type, ".sqlite", NULL);
+	int xx;
 	if ((xx = sqlite3_close(rfile->sqldb)) != SQLITE_OK)
-	    repo_error(1, "sqlite3_close(%s): %s", fn, sqlite3_errmsg(rfile->sqldb));
+	    repo_error(1, "sqlite3_close(%s): %s", dbfn, sqlite3_errmsg(rfile->sqldb));
 	rfile->sqldb = NULL;
-	fn = _free(fn);
+	dbfn = _free(dbfn);
     }
 #endif
 
-    fn = repoGetPath(repo, repo->tempdir, rfile->type, 1);
-    rfile->ctime = rpmioCtime(fn);
-    fn = _free(fn);
+    rfile->ctime = rpmioCtime(xmlfn);
+    xmlfn = _free(xmlfn);
 
     return rc;
 }
@@ -1481,10 +1548,11 @@ static const char * repoMDExpand(rpmrepo repo, rpmrfile rfile)
 {
     const char * spewalgo = algo2tagname(repo->algo);
     char spewtime[64];
+
     (void) snprintf(spewtime, sizeof(spewtime), "%u", (unsigned)rfile->ctime);
     return rpmExpand("\
   <data type=\"", rfile->type, "\">\n\
-    <checksum type=\"", spewalgo, "\">", rfile->digest, "</checksum>\n\
+    <checksum type=\"", spewalgo, "\">", rfile->Zdigest, "</checksum>\n\
     <timestamp>", spewtime, "</timestamp>\n\
     <open-checksum type=\"",spewalgo,"\">", rfile->digest, "</open-checksum>\n\
     <location href=\"", repo->finaldir, "/", rfile->type, (repo->markup != NULL ? repo->markup : ""), (repo->suffix != NULL ? repo->suffix : ""), "\"/>\n\
@@ -2160,9 +2228,13 @@ argvPrint("repo->pkglist", repo->pkglist, NULL);
 exit:
     repo->ts = rpmtsFree(repo->ts);
     repo->primary.digest = _free(repo->primary.digest);
+    repo->primary.Zdigest = _free(repo->primary.Zdigest);
     repo->filelists.digest = _free(repo->filelists.digest);
+    repo->filelists.Zdigest = _free(repo->filelists.Zdigest);
     repo->other.digest = _free(repo->other.digest);
+    repo->other.Zdigest = _free(repo->other.Zdigest);
     repo->repomd.digest = _free(repo->repomd.digest);
+    repo->repomd.Zdigest = _free(repo->repomd.Zdigest);
     repo->outputdir = _free(repo->outputdir);
     repo->pkglist = argvFree(repo->pkglist);
     repo->directories = argvFree(repo->directories);

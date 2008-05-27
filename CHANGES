@@ -1,5 +1,7 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: rpmrepo: compute digests for both compressed & uncompressed
+	repository markup components.
     - jbj: leagacy: eliminate (unused) domd5(). use dodigest instead.
     - jbj: update sv.po from the Translation Project.
     - jbj: add SOURCERPM name at end-of-parse for --specfile queries and errmsg.
