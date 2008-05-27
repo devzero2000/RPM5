@@ -29,28 +29,6 @@
 /*@access CSA_t @*/
 
 /**
- */
-static inline int genSourceRpmName(Spec spec)
-	/*@modifies spec->sourceRpmName, spec->packages->header @*/
-{
-    if (spec->sourceRpmName == NULL) {
-	const char *N, *V, *R;
-	char fileName[BUFSIZ];
-
-	(void) headerNEVRA(spec->packages->header, &N, NULL, &V, &R, NULL);
-	(void) snprintf(fileName, sizeof(fileName), "%s-%s-%s.%ssrc.rpm",
-			N, V, R, spec->noSource ? "no" : "");
-	fileName[sizeof(fileName)-1] = '\0';
-	N = _free(N);
-	V = _free(V);
-	R = _free(R);
-	spec->sourceRpmName = xstrdup(fileName);
-    }
-
-    return 0;
-}
-
-/**
  * @todo Create transaction set *much* earlier.
  */
 static rpmRC cpio_doio(FD_t fdo, /*@unused@*/ Header h, CSA_t csa,
@@ -1037,13 +1015,6 @@ rpmRC packageBinaries(Spec spec)
 	xx = headerPut(pkg->header, he, 0);
 	he->p.ptr = _free(he->p.ptr);
 
-	(void) genSourceRpmName(spec);
-	he->tag = RPMTAG_SOURCERPM;
-	he->t = RPM_STRING_TYPE;
-	he->p.str = spec->sourceRpmName;
-	he->c = 1;
-	xx = headerPut(pkg->header, he, 0);
-
 if (!(_rpmbuildFlags & 4)) {
 	if (spec->sourcePkgId != NULL) {
 	    he->tag = RPMTAG_SOURCEPKGID;
@@ -1140,8 +1111,6 @@ rpmRC packageSources(Spec spec)
     xx = headerPut(spec->sourceHeader, he, 0);
 #endif
 	
-    (void) genSourceRpmName(spec);
-
     {	const char ** av = NULL;
 	(void)rpmGetMacroEntries(NULL, NULL, 1, &av);
 	if (av != NULL && av[0] != NULL) {
