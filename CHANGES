@@ -1,5 +1,6 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: update sv.po from the Translation Project.
     - jbj: add SOURCERPM name at end-of-parse for --specfile queries and errmsg.
     - jbj: upgrade to DB 4.7.25:
 	Change to 4.6 -> 4.7 in configure.ac & tools/Makefile.am
