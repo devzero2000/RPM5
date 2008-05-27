@@ -530,6 +530,41 @@ int headerSetOrigin(/*@null@*/ Header h, const char * origin)
 }
 
 /** \ingroup header
+ * Return header stat(2) buffer (of origin *.rpm file).
+ * @param h		header
+ * @return		header stat(2) buffer
+ */
+struct stat * headerGetStatbuf(/*@null@*/ Header h)
+	/*@*/;
+
+/** \ingroup header
+ * Copy into header stat(2) buffer (of origin *.rpm file).
+ * @param h		header
+ * @param st		new header stat(2) buffer
+ * @return		0 always
+ */
+int headerSetStatbuf(/*@null@*/ Header h, struct stat * st)
+	/*@modifies h @*/;
+
+/** \ingroup header
+ * Return digest of origin *.rpm file.
+ * @param h		header
+ * @return		header digest
+ */
+/*@null@*/
+const char * headerGetDigest(/*@null@*/ Header h)
+	/*@*/;
+
+/** \ingroup header
+ * Store digest of origin *.rpm file.
+ * @param h		header
+ * @param st		new header digest
+ * @return		0 always
+ */
+int headerSetDigest(/*@null@*/ Header h, const char * digest)
+	/*@modifies h @*/;
+
+/** \ingroup header
  * Return header instance (if from rpmdb).
  * @param h		header
  * @return		header instance
@@ -553,23 +588,6 @@ int headerSetInstance(/*@null@*/ Header h, int instance)
 {
     return hdrVec->hdrsetinstance(h, instance);
 }
-
-/** \ingroup header
- * Return header time.
- * @param h		header
- * @return		header time
- */
-uint32_t headerGetTime(/*@null@*/ Header h)
-	/*@*/;
-
-/** \ingroup header
- * Store header time.
- * @param h		header
- * @param origin	new header time
- * @return		0 always
- */
-uint32_t headerSetTime(/*@null@*/ Header h, uint32_t time)
-	/*@modifies h @*/;
 
 /** \ingroup header
  * Return header starting byte offset.

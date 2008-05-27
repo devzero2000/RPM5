@@ -1,4 +1,7 @@
 4.4.9 -> 4.5:
+	- jbj: retrofit RPM_UINT*_TYPE as defines.
+	- jbj: add RPMTAG_PACKAGESIZE, with header tag extensions based on statbuf.
+	- jbj: backport headerGet{Digest,Statbuf}, nuke headerGetTime.
 	- glen: add mimetype(foo/bar) deps autogeneration (by Marcin Banasiak)
 	- glen: add scripts/hrmib-cache to fill initial hrmib export to /var/cache/hrmib
 	- jbj: configure: don't expand non-existent scripts/perl.{prov,req}.in.

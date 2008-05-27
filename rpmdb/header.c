@@ -1193,11 +1193,36 @@ int headerSetOrigin(/*@null@*/ Header h, const char * origin)
     return 0;
 }
 
-/** \ingroup header
- * Return header instance (if from rpmdb).
- * @param h		header
- * @return		header instance
- */
+struct stat * headerGetStatbuf(Header h);	/* XXX keep GCC quiet */
+struct stat * headerGetStatbuf(Header h)
+{
+    return &h->sb;
+}
+
+int headerSetStatbuf(Header h, struct stat * st);	/* XXX keep GCC quiet */
+int headerSetStatbuf(Header h, struct stat * st)
+{
+    if (h != NULL && st != NULL)
+	memcpy(&h->sb, st, sizeof(h->sb));
+    return 0;
+}
+
+const char * headerGetDigest(Header h);		/* XXX keep GCC quiet. */
+const char * headerGetDigest(Header h)
+{
+    return (h != NULL ? h->digest : NULL);
+}
+
+int headerSetDigest(Header h, const char * digest);	/* XXX keep GCC quiet */
+int headerSetDigest(Header h, const char * digest)
+{
+    if (h != NULL) {
+	h->digest = _free(h->digest);
+	h->digest = xstrdup(digest);
+    }
+    return 0;
+}
+
 static
 uint32_t headerGetInstance(/*@null@*/ Header h)
 	/*@*/
@@ -1205,14 +1230,8 @@ uint32_t headerGetInstance(/*@null@*/ Header h)
     return (h != NULL ? h->instance : 0);
 }
 
-/** \ingroup header
- * Store header instance (e.g path or URL).
- * @param h		header
- * @param origin	new header instance
- * @return		0 always
- */
 static
-uint32_t headerSetInstance(/*@null@*/ Header h, int instance)
+uint32_t headerSetInstance(/*@null@*/ Header h, uint32_t instance)
 	/*@modifies h @*/
 {
     if (h != NULL)
@@ -1220,23 +1239,13 @@ uint32_t headerSetInstance(/*@null@*/ Header h, int instance)
     return 0;
 }
 
-uint32_t headerGetTime(Header h)
-{
-    return (h != NULL ? h->time : 0);
-}
-
-uint32_t headerSetTime(Header h, uint32_t time)
-{
-    if (h != NULL)
-	h->time = time;
-    return 0;
-}
-
+uint32_t headerGetStartOff(Header h);	/* XXX keep GCC quiet */
 uint32_t headerGetStartOff(Header h)
 {
     return (h != NULL ? h->startoff : 0);
 }
 
+uint32_t headerSetStartOff(Header h, uint32_t startoff);	/* XXX keep GCC quiet */
 uint32_t headerSetStartOff(Header h, uint32_t startoff)
 {
     if (h != NULL)
@@ -1244,11 +1253,13 @@ uint32_t headerSetStartOff(Header h, uint32_t startoff)
     return 0;
 }
 
+uint32_t headerGetEndOff(Header h);	/* XXX keep GCC quiet */
 uint32_t headerGetEndOff(Header h)
 {
     return (h != NULL ? h->endoff : 0);
 }
 
+uint32_t headerSetEndOff(Header h, uint32_t endoff);	/* XXX keep GCC quiet. */
 uint32_t headerSetEndOff(Header h, uint32_t endoff)
 {
     if (h != NULL)

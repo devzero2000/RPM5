@@ -443,9 +443,12 @@ typedef enum rpmTag_e {
     RPMTAG_STAT			= 1208, /* s[] internal (unimplemented) */
     RPMTAG_ORIGINTID		= 1209,	/* i[] internal (unimplemented) */
     RPMTAG_ORIGINTIME		= 1210,	/* i[] internal (unimplemented) */
-    RPMTAG_HEADERSTARTOFF	= 1211,	/* i */
-    RPMTAG_HEADERENDOFF		= 1212,	/* i */
-    RPMTAG_PACKAGETIME		= 1213,	/* i */
+    RPMTAG_HEADERSTARTOFF	= 1211,	/* l */
+    RPMTAG_HEADERENDOFF		= 1212,	/* l */
+    RPMTAG_PACKAGETIME		= 1213,	/* l */
+    RPMTAG_PACKAGESIZE		= 1214,	/* l */
+    RPMTAG_PACKAGEDIGEST	= 1215,	/* s */
+    RPMTAG_PACKAGESTAT		= 1216,	/* x */
 
 /*@-enummemuse@*/
     RPMTAG_FIRSTFREE_TAG	/*!< internal */

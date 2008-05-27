@@ -126,6 +126,11 @@ enum rpmTagType_e {
 #define	RPM_MIN_TYPE		0
 #define	RPM_MAX_TYPE		11
 
+#define	RPM_UINT8_TYPE		RPM_INT8_TYPE
+#define	RPM_UINT16_TYPE		RPM_INT16_TYPE
+#define	RPM_UINT32_TYPE		RPM_INT32_TYPE
+#define	RPM_UINT64_TYPE		RPM_INT64_TYPE
+
 /** \ingroup header
  */
 typedef enum rpmTagType_e rpmTagType;
