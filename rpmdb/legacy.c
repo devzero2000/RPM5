@@ -256,8 +256,3 @@ exit:
 
     return rc;
 }
-
-int domd5(const char * fn, unsigned char * digest, int asAscii, size_t *fsizep)
-{
-    return dodigest(PGPHASHALGO_MD5, fn, digest, asAscii, fsizep);
-}
