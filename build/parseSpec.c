@@ -479,6 +479,28 @@ void closeSpec(Spec spec)
     }
 }
 
+/**
+ */
+static inline int genSourceRpmName(Spec spec)
+	/*@modifies spec->sourceRpmName, spec->packages->header @*/
+{
+    if (spec->sourceRpmName == NULL) {
+	const char *N, *V, *R;
+	char fileName[BUFSIZ];
+
+	(void) headerNEVRA(spec->packages->header, &N, NULL, &V, &R, NULL);
+	(void) snprintf(fileName, sizeof(fileName), "%s-%s-%s.%ssrc.rpm",
+			N, V, R, spec->noSource ? "no" : "");
+	fileName[sizeof(fileName)-1] = '\0';
+	N = _free(N);
+	V = _free(V);
+	R = _free(R);
+	spec->sourceRpmName = xstrdup(fileName);
+    }
+
+    return 0;
+}
+
 /*@-redecl@*/
 /*@unchecked@*/
 extern int noLang;		/* XXX FIXME: pass as arg */
@@ -660,6 +682,9 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootURL,
     }
     /*@=infloops@*/	/* LCL: parsePart is modified @*/
 
+    /* Initialize source RPM name. */
+    (void) genSourceRpmName(spec);
+
     /* Check for description in each package and add arch and os */
   {
     const char *platform = rpmExpand("%{_target_platform}", NULL);
@@ -686,13 +711,16 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootURL,
 	he->c = 1;
 	xx = headerPut(pkg->header, he, 0);
 
+	he->tag = RPMTAG_SOURCERPM;
+	he->t = RPM_STRING_TYPE;
+	he->p.str = spec->sourceRpmName;
+	he->c = 1;
+	xx = headerPut(pkg->header, he, 0);
+
 	if (!headerIsEntry(pkg->header, RPMTAG_DESCRIPTION)) {
 	    char * t;
 	    he->tag = RPMTAG_NVRA;
 	    xx = headerGet(pkg->header, he, 0);
-	    /* sourcerpm not added, so ".src" returned. Hack around for now. */
-	    if ((t = strstr(he->p.str, ".src")) != NULL)
-		*t = '\0';
 	    rpmlog(RPMLOG_ERR, _("Package has no %%description: %s\n"),
 			he->p.str);
 	    he->p.ptr = _free(he->p.ptr);
