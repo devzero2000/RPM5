@@ -1,4 +1,5 @@
 5.1.2 -> 5.1.3:
+    - jbj: update sv.po from the Translation Project.
     - jbj: add SOURCERPM name at end-of-parse for --specfile queries and errmsg.
 
 5.1.1 -> 5.1.2:

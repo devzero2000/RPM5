@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.2\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2008-05-19 16:21-0400\n"
+"POT-Creation-Date: 2008-05-27 09:54-0400\n"
 "PO-Revision-Date: 2004-04-10 08:00-0500\n"
 "Last-Translator: Michel Robitaille <robitail@IRO.UMontreal.CA>\n"
 "Language-Team: French <traduc@traduc.org>\n"
@@ -326,7 +326,7 @@ msgstr "aucun argument n'a été fourni pour la vérification"
 msgid "no arguments given"
 msgstr "aucun argument n'a été fourni"
 
-#: build/build.c:190 build/pack.c:721
+#: build/build.c:190 build/pack.c:699
 msgid "Unable to open temp file.\n"
 msgstr "Incapable d'ouvrir le fichier temporaire.\n"
 
@@ -559,7 +559,7 @@ msgstr "Fichier non repéré par glob: %s\n"
 msgid "Could not open %%files file %s: %s\n"
 msgstr "Ne peut ouvrir les fichiers %% fichier %s: %s\n"
 
-#: build/files.c:2263 build/pack.c:157
+#: build/files.c:2263 build/pack.c:135
 #, c-format
 msgid "line: %s\n"
 msgstr "ligne: %s\n"
@@ -622,135 +622,135 @@ msgstr "getGidS: trop de gid\n"
 msgid "Could not canonicalize hostname: %s\n"
 msgstr "Ne peut canoniser le nom de l'hôte: %s\n"
 
-#: build/pack.c:92
+#: build/pack.c:70
 #, c-format
 msgid "create archive failed on file %s: %s\n"
 msgstr "la création de l'archive a échoué dans le fichier %s: %s\n"
 
-#: build/pack.c:95
+#: build/pack.c:73
 #, c-format
 msgid "create archive failed: %s\n"
 msgstr "la création de l'archive a échoué: %s\n"
 
-#: build/pack.c:117
+#: build/pack.c:95
 #, c-format
 msgid "cpio_copy write failed: %s\n"
 msgstr "l'écriture par cpio_copy a échoué: %s\n"
 
-#: build/pack.c:124
+#: build/pack.c:102
 #, c-format
 msgid "cpio_copy read failed: %s\n"
 msgstr "la lecture par cpio_copu a échoué: %s\n"
 
-#: build/pack.c:239 build/pack.c:253
+#: build/pack.c:217 build/pack.c:231
 #, c-format
 msgid "Could not open PreIn file: %s\n"
 msgstr "ne peut ouvrir le fichier PreIn: %s\n"
 
-#: build/pack.c:246
+#: build/pack.c:224
 #, c-format
 msgid "Could not open PreUn file: %s\n"
 msgstr "Ne peut ouvrir le fichier PreUn: %s\n"
 
-#: build/pack.c:260
+#: build/pack.c:238
 #, c-format
 msgid "Could not open PostIn file: %s\n"
 msgstr "ne peut ouvrir le fichier PostIn: %s\n"
 
-#: build/pack.c:267 build/pack.c:274
+#: build/pack.c:245 build/pack.c:252
 #, c-format
 msgid "Could not open PostUn file: %s\n"
 msgstr "ne peut ouvrir le fichier PostUn: %s\n"
 
-#: build/pack.c:282
+#: build/pack.c:260
 #, c-format
 msgid "Could not open VerifyScript file: %s\n"
 msgstr "ne peut ouvrir le fichier VerifyScript: %s\n"
 
-#: build/pack.c:289
+#: build/pack.c:267
 #, fuzzy, c-format
 msgid "Could not open Test file: %s\n"
 msgstr "ne peut ouvrir le fichier PostIn: %s\n"
 
-#: build/pack.c:314
+#: build/pack.c:292
 #, c-format
 msgid "Could not open Trigger script file: %s\n"
 msgstr "ne peut ouvrir le fichier Trigger: %s\n"
 
-#: build/pack.c:347
+#: build/pack.c:325
 #, c-format
 msgid "readRPM: open %s: %s\n"
 msgstr "readRPM: ouverture %s: %s\n"
 
-#: build/pack.c:368
+#: build/pack.c:346
 #, c-format
 msgid "readRPM: read %s: %s\n"
 msgstr "readRPM: lecture %s: %s\n"
 
-#: build/pack.c:378
+#: build/pack.c:356
 #, c-format
 msgid "%s: Fseek failed: %s\n"
 msgstr "%s: échec de Fseek: %s\n"
 
-#: build/pack.c:410
+#: build/pack.c:388
 #, c-format
 msgid "readRPM: %s is not an RPM package\n"
 msgstr "readRPM: %s n'est pas un package RPM\n"
 
-#: build/pack.c:415
+#: build/pack.c:393
 #, c-format
 msgid "readRPM: reading header from %s\n"
 msgstr "readRPM: lecture de l'en-tête à partir de %s\n"
 
-#: build/pack.c:708
+#: build/pack.c:686
 msgid "Unable to create immutable header region.\n"
 msgstr "Incapable de créer une zone d'en-tête immuable.\n"
 
-#: build/pack.c:770
+#: build/pack.c:748
 #, c-format
 msgid "Generating signature: %d\n"
 msgstr "Génération de signature: %d\n"
 
-#: build/pack.c:794
+#: build/pack.c:772
 msgid "Unable to reload signature header.\n"
 msgstr "Incapable de recharger l'en-tête de signature.\n"
 
-#: build/pack.c:802
+#: build/pack.c:780
 #, c-format
 msgid "Could not open %s: %s\n"
 msgstr "Ne peut ouvrir %s: %s\n"
 
-#: build/pack.c:828 lib/psm.c:2019
+#: build/pack.c:806 lib/psm.c:2019
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr "Incapable de produire le package: %s\n"
 
-#: build/pack.c:853
+#: build/pack.c:831
 #, c-format
 msgid "Unable to open sigtarget %s: %s\n"
 msgstr "Incapable d'ouvrir sigtarget %s: %s\n"
 
-#: build/pack.c:894
+#: build/pack.c:872
 #, c-format
 msgid "Unable to read payload from %s: %s\n"
 msgstr "Incapable de lire la charge à partir de %s: %s\n"
 
-#: build/pack.c:902
+#: build/pack.c:880
 #, c-format
 msgid "Unable to write payload to %s: %s\n"
 msgstr "Incapable d'écrire la charge vers %s: %s\n"
 
-#: build/pack.c:937 lib/psm.c:2334
+#: build/pack.c:915 lib/psm.c:2334
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "A écrit: %s\n"
 
-#: build/pack.c:1065
+#: build/pack.c:1036
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr "Ne peut générer le nom du fichier de sortie pour le package %s: %s\n"
 
-#: build/pack.c:1083
+#: build/pack.c:1054
 #, c-format
 msgid "cannot create %s: %s\n"
 msgstr "ne peut créer %s: %s\n"
@@ -1141,11 +1141,11 @@ msgstr "%s:%d: obtenu un %%endif sans %%if\n"
 msgid "malformed %%include statement\n"
 msgstr "déclaration %%include mal composée\n"
 
-#: build/parseSpec.c:634
+#: build/parseSpec.c:656
 msgid "No compatible architectures found for build\n"
 msgstr "Aucune architecture compatible n'a été repéré pour la construction\n"
 
-#: build/parseSpec.c:696
+#: build/parseSpec.c:724
 #, c-format
 msgid "Package has no %%description: %s\n"
 msgstr "Le package n'a pas de %%description: %s\n"
@@ -1489,11 +1489,11 @@ msgstr "ignorer le nom des relations du package [%d]\t%s -> %s\n"
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "e nlever %s \"%s\" à partir des relations tsort.\n"
 
-#: lib/depends.c:2364
+#: lib/depends.c:2366
 msgid "LOOP:\n"
 msgstr "BOUCLE:\n"
 
-#: lib/depends.c:2400
+#: lib/depends.c:2402
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr "rpmtsOrder a échoue, %d éléments restent à traiter\n"
@@ -1708,7 +1708,7 @@ msgstr "afficher les étiquettes connues de requêtes"
 msgid "display macro and configuration values"
 msgstr "afficher la configuration finale rpmrc et macro"
 
-#: lib/poptALL.c:358 rpmio/poptIO.c:347 rpmio/rpmrepo.c:1783
+#: lib/poptALL.c:358 rpmio/poptIO.c:347 rpmio/rpmrepo.c:1943
 #, fuzzy
 msgid "print the version"
 msgstr "afficher la version de RPM utilisée"
@@ -3960,7 +3960,7 @@ msgid "%s: Unknown digest name \"%s\"\n"
 msgstr "ligne %d: étiquette inconnue: %s\n"
 
 #: rpmio/rpmdigest.c:298 rpmio/rpmgrep.c:1344 rpmio/rpmmtree.c:3535
-#: rpmio/rpmrepo.c:1693
+#: rpmio/rpmrepo.c:1853
 #, fuzzy, c-format
 msgid "%s: Unknown option -%c\n"
 msgstr "Option inconnue %c dans %s(%s)\n"
@@ -3993,12 +3993,12 @@ msgstr ""
 msgid "warn about improperly formatted checksum lines"
 msgstr ""
 
-#: rpmio/rpmdigest.c:345 rpmio/rpmmtree.c:3606 rpmio/rpmrepo.c:1790
+#: rpmio/rpmdigest.c:345 rpmio/rpmmtree.c:3606 rpmio/rpmrepo.c:1950
 msgid "Available digests:"
 msgstr ""
 
 #: rpmio/rpmdigest.c:348 rpmio/rpmgrep.c:1463 rpmio/rpmmtree.c:3609
-#: rpmio/rpmrepo.c:1793
+#: rpmio/rpmrepo.c:1953
 #, fuzzy
 msgid "Common options for all rpmio executables:"
 msgstr "Options communes pour tous les modes et les exécutables RPM"
@@ -4713,7 +4713,7 @@ msgstr ""
 msgid "Don't cross mount points"
 msgstr "ne pas traverses les périphériques"
 
-#: rpmio/rpmmtree.c:3603 rpmio/rpmrepo.c:1779
+#: rpmio/rpmmtree.c:3603 rpmio/rpmrepo.c:1939
 msgid "Fts(3) traversal options:"
 msgstr ""
 
@@ -4732,264 +4732,264 @@ msgstr ""
 msgid "%s: %s checksum: %u\n"
 msgstr ""
 
-#: rpmio/rpmrepo.c:672
+#: rpmio/rpmrepo.c:716
 #, fuzzy, c-format
 msgid "Cannot create/verify %s: %s"
 msgstr "ne peut créer %s: %s\n"
 
-#: rpmio/rpmrepo.c:702
+#: rpmio/rpmrepo.c:758
 #, c-format
 msgid "Directory %s must exist"
 msgstr ""
 
-#: rpmio/rpmrepo.c:709
+#: rpmio/rpmrepo.c:765
 #, fuzzy, c-format
 msgid "Directory %s does not exist."
 msgstr "usager %s n'existe pas - on utilise root\n"
 
-#: rpmio/rpmrepo.c:713
+#: rpmio/rpmrepo.c:769
 #, fuzzy, c-format
 msgid "Directory %s must be writable."
 msgstr "les rellocalisation doivent débuter par « / »"
 
-#: rpmio/rpmrepo.c:723
+#: rpmio/rpmrepo.c:779
 #, c-format
 msgid "Old data directory exists, please remove: %s"
 msgstr ""
 
-#: rpmio/rpmrepo.c:739
+#: rpmio/rpmrepo.c:795
 #, c-format
 msgid "Path must be writable: %s"
 msgstr ""
 
-#: rpmio/rpmrepo.c:759
+#: rpmio/rpmrepo.c:815
 #, c-format
 msgid "groupfile %s cannot be found."
 msgstr ""
 
-#: rpmio/rpmrepo.c:793
+#: rpmio/rpmrepo.c:856
 #, c-format
 msgid "Fts_open: %s"
 msgstr ""
 
-#: rpmio/rpmrepo.c:856
+#: rpmio/rpmrepo.c:924
 #, fuzzy, c-format
 msgid "cannot get to file: %s"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: rpmio/rpmrepo.c:875 rpmio/rpmrepo.c:913
+#: rpmio/rpmrepo.c:951 rpmio/rpmrepo.c:995
 #, c-format
 msgid "Fwrite failed: expected write %u != %u bytes: %s\n"
 msgstr ""
 
-#: rpmio/rpmrepo.c:964
+#: rpmio/rpmrepo.c:1052
 #, fuzzy, c-format
 msgid "%s: Fread(%s) failed: %s\n"
 msgstr "%s: Fread a échoué: %s\n"
 
-#: rpmio/rpmrepo.c:1000 rpmio/rpmrepo.c:1056
+#: rpmio/rpmrepo.c:1094 rpmio/rpmrepo.c:1166
 #, c-format
 msgid "headerSprintf(%s): %s"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1147
+#: rpmio/rpmrepo.c:1276
 #, fuzzy, c-format
 msgid ""
 "\n"
 "Error %s: %s\n"
 msgstr "%s: %s\n"
 
-#: rpmio/rpmrepo.c:1186
+#: rpmio/rpmrepo.c:1321
 #, c-format
 msgid "Saving %s%s%s metadata"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1384
+#: rpmio/rpmrepo.c:1536
 #, fuzzy
 msgid "Generating sqlite DBs"
 msgstr "Génération de signature: %d\n"
 
-#: rpmio/rpmrepo.c:1411
+#: rpmio/rpmrepo.c:1563
 #, c-format
 msgid "Starting %s db creation: %s"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1477
+#: rpmio/rpmrepo.c:1629
 #, c-format
 msgid "Ending %s db creation: %s"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1511
+#: rpmio/rpmrepo.c:1663
 msgid "Sqlite DBs complete"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1522
+#: rpmio/rpmrepo.c:1674
 #, fuzzy, c-format
 msgid "Error saving temp file for %s%s%s: %s"
 msgstr "erreur de création du fichier temporaire %s\n"
 
-#: rpmio/rpmrepo.c:1527
+#: rpmio/rpmrepo.c:1679
 #, fuzzy, c-format
 msgid "Could not save temp file: %s"
 msgstr "ne peut ouvrir le fichier PreIn: %s\n"
 
-#: rpmio/rpmrepo.c:1549
+#: rpmio/rpmrepo.c:1706
 #, c-format
 msgid "Error moving final %s to old dir %s"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1557
+#: rpmio/rpmrepo.c:1714
 msgid "Error moving final metadata into place"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1574 rpmio/rpmrepo.c:1606
+#: rpmio/rpmrepo.c:1731 rpmio/rpmrepo.c:1763
 #, fuzzy, c-format
 msgid "Could not remove old metadata file: %s: %s"
 msgstr "Ne peut ouvrir les fichiers %% fichier %s: %s\n"
 
-#: rpmio/rpmrepo.c:1616
+#: rpmio/rpmrepo.c:1773
 #, fuzzy, c-format
 msgid "Could not restore old non-metadata file: %s -> %s: %s"
 msgstr "Ne peut ouvrir les fichiers %% fichier %s: %s\n"
 
-#: rpmio/rpmrepo.c:1627
+#: rpmio/rpmrepo.c:1785
 #, fuzzy, c-format
 msgid "Could not remove old metadata dir: %s: %s"
 msgstr "Ne peut ouvrir les fichiers %% fichier %s: %s\n"
 
-#: rpmio/rpmrepo.c:1706
+#: rpmio/rpmrepo.c:1866
 #, fuzzy
 msgid "don't compress"
 msgstr "ne pas traverses les périphériques"
 
-#: rpmio/rpmrepo.c:1708
+#: rpmio/rpmrepo.c:1868
 msgid "use gzip compression"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1710
+#: rpmio/rpmrepo.c:1870
 msgid "use bzip2 compression"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1712
+#: rpmio/rpmrepo.c:1872
 msgid "use lzma compression"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1724
+#: rpmio/rpmrepo.c:1884
 #, fuzzy
 msgid "debug repo handling"
 msgstr "mettre au point le traitement de la cache des URL"
 
-#: rpmio/rpmrepo.c:1727
+#: rpmio/rpmrepo.c:1887
 msgid "output nothing except for serious errors"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1729
+#: rpmio/rpmrepo.c:1889
 msgid "output more debugging info."
 msgstr ""
 
-#: rpmio/rpmrepo.c:1731
+#: rpmio/rpmrepo.c:1891
 msgid "sanity check arguments, don't create metadata"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1734 rpmio/rpmrepo.c:1737
+#: rpmio/rpmrepo.c:1894 rpmio/rpmrepo.c:1897
 msgid "glob PATTERN(s) to exclude"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1734 rpmio/rpmrepo.c:1737 rpmio/rpmrepo.c:1741
-#: rpmio/rpmrepo.c:1744
+#: rpmio/rpmrepo.c:1894 rpmio/rpmrepo.c:1897 rpmio/rpmrepo.c:1901
+#: rpmio/rpmrepo.c:1904
 msgid "PATTERN"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1741 rpmio/rpmrepo.c:1744
+#: rpmio/rpmrepo.c:1901 rpmio/rpmrepo.c:1904
 msgid "glob PATTERN(s) to include"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1748
+#: rpmio/rpmrepo.c:1908
 #, fuzzy
 msgid "top level directory"
 msgstr "utiliser ROOT comme la racine du répertoire"
 
-#: rpmio/rpmrepo.c:1748 rpmio/rpmrepo.c:1772
+#: rpmio/rpmrepo.c:1908 rpmio/rpmrepo.c:1932
 msgid "DIR"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1750
+#: rpmio/rpmrepo.c:1910
 msgid "baseurl to append on all files"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1750
+#: rpmio/rpmrepo.c:1910
 msgid "BASEURL"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1752
+#: rpmio/rpmrepo.c:1912
 msgid "path to groupfile to include in metadata"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1752 rpmio/rpmrepo.c:1766 rpmio/rpmrepo.c:1769
+#: rpmio/rpmrepo.c:1912 rpmio/rpmrepo.c:1926 rpmio/rpmrepo.c:1929
 msgid "FILE"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1755
+#: rpmio/rpmrepo.c:1915
 msgid "make sure all xml generated is formatted"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1757
+#: rpmio/rpmrepo.c:1917
 msgid "check timestamps on files vs the metadata to see if we need to update"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1760
+#: rpmio/rpmrepo.c:1920
 #, fuzzy
 msgid "create sqlite3 database files"
 msgstr "vérifier les fichiers de la base de données"
 
-#: rpmio/rpmrepo.c:1763
+#: rpmio/rpmrepo.c:1923
 #, fuzzy
 msgid "generate split media"
 msgstr "générer une signature"
 
-#: rpmio/rpmrepo.c:1766 rpmio/rpmrepo.c:1769
+#: rpmio/rpmrepo.c:1926 rpmio/rpmrepo.c:1929
 msgid "use only the files listed in this file from the directory specified"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1772
+#: rpmio/rpmrepo.c:1932
 msgid "<dir> = optional directory to output to"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1774
+#: rpmio/rpmrepo.c:1934
 msgid "ignore symlinks of packages"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1776
+#: rpmio/rpmrepo.c:1936
 msgid "include the file's checksum in the filename, helps with proxies"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1787
+#: rpmio/rpmrepo.c:1947
 #, fuzzy
 msgid "Available compressions:"
 msgstr "Options de base de données:"
 
-#: rpmio/rpmrepo.c:1861
+#: rpmio/rpmrepo.c:2021
 msgid "Must specify path(s) to index."
 msgstr ""
 
-#: rpmio/rpmrepo.c:1879 rpmio/rpmrepo.c:1931
+#: rpmio/rpmrepo.c:2039 rpmio/rpmrepo.c:2091
 #, c-format
 msgid "Realpath(%s): %s"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1936
+#: rpmio/rpmrepo.c:2096
 msgid "--split and --checkts options are mutually exclusive"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1956
+#: rpmio/rpmrepo.c:2116
 msgid "Error loading exclude glob patterns."
 msgstr ""
 
-#: rpmio/rpmrepo.c:1959
+#: rpmio/rpmrepo.c:2119
 msgid "Error loading include glob patterns."
 msgstr ""
 
-#: rpmio/rpmrepo.c:1988
+#: rpmio/rpmrepo.c:2148
 #, c-format
 msgid "repo is up to date\n"
 msgstr ""
