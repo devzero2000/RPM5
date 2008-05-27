@@ -1,6 +1,11 @@
 
 5.1.0 -> 5.2a0:
-    - jbj: upgrade to DB 4.7.25
+    - jbj: upgrade to DB 4.7.25:
+	Change to 4.6 -> 4.7 in configure.ac & tools/Makefile.am
+	Rename to rep_auto.c in tools/Makefile.am
+    - jbj: autogen.sh: change the USAGE strings to simplify maintenance. tool
+	versions only need to be edited in one place.
+    - jbj: autogen.sh: fix arg stripping for 1.* libtoolize.
     - rse: enhance RPM_CHECK_LIB to query pkg-config(1) --libs-only-L to get -L<dir> options, too.
     - rse: be smart and allow one to still build RPM from CVS with old GNU libtool 1.5.x
     - rse: explicitly let one to force one of BeeCrypt/GCrypt/NSS/OpenSSL as the crypto implementation
