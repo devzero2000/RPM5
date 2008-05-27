@@ -1,4 +1,5 @@
 5.0.3 -> 5.0.4:
+    - jbj: add SOURCERPM name at end-of-parse for --specfile queries and errmsg.
     - rse: add new C API function rpmuuidMake() for generating UUIDs of version 1, 3, 4 or 5
     - jbj: add toplevel lcov-foo Makefile targets. Current coverage at
 	http://wraptastic.org/pub/jbj/rpm-5.0.DEVEL-lcov
