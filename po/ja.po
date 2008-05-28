@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 5.0\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2008-02-04 11:05-0500\n"
+"POT-Creation-Date: 2008-05-21 13:22-0400\n"
 "PO-Revision-Date: 2005-04-04 22:30+1000\n"
 "Last-Translator: SEKINE Tatsuo <tsekine@sdri.co.jp>\n"
 "Language-Team: Japanese <translation-team-ja@lists.sourceforge.net>\n"
@@ -22,46 +22,47 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: KBabel 1.3.1\n"
 
-#: build.c:41
-msgid "Failed build dependencies:\n"
+#: build.c:36
+#, fuzzy
+msgid "Failed build dependencies"
 msgstr "ビルド依存性の失敗:\n"
 
-#: build.c:72
+#: build.c:63
 #, c-format
 msgid "Unable to open spec file %s: %s\n"
 msgstr "spec ファイル %s をオープンできません: %s\n"
 
-#: build.c:149
+#: build.c:140
 #, c-format
 msgid "Failed to read spec file from %s\n"
 msgstr "%s から spec ファイルの読み込みに失敗しました。\n"
 
-#: build.c:163
+#: build.c:154
 #, c-format
 msgid "Failed to rename %s to %s: %m\n"
 msgstr "%s を %s に名前を変更できませんでした: %m\n"
 
-#: build.c:204
+#: build.c:195
 #, c-format
 msgid "failed to stat %s: %m\n"
 msgstr "stat %s に失敗しました: %m\n"
 
-#: build.c:209
+#: build.c:200
 #, c-format
 msgid "File %s is not a regular file.\n"
 msgstr "%s は通常ファイルではありません。\n"
 
-#: build.c:218
+#: build.c:209
 #, c-format
 msgid "File %s does not appear to be a specfile.\n"
 msgstr "ファイル %s は spec ファイルではないようです。\n"
 
-#: build.c:292
+#: build.c:283
 #, c-format
 msgid "Building target platforms: %s\n"
 msgstr "ビルド対象プラットフォーム: %s\n"
 
-#: build.c:307 build/spec.c:827
+#: build.c:298 build/spec.c:827
 #, fuzzy, c-format
 msgid "    target platform: %s\n"
 msgstr "ビルド対象プラットフォーム: %s\n"
@@ -703,7 +704,7 @@ msgstr "署名ヘッダの再読み込みができません。\n"
 msgid "Could not open %s: %s\n"
 msgstr "%s のオープンに失敗: %s\n"
 
-#: build/pack.c:820 lib/psm.c:1954
+#: build/pack.c:820 lib/psm.c:1991
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr "パッケージの書き込みに失敗: %s\n"
@@ -723,7 +724,7 @@ msgstr "%s から Payload 読み込みに失敗: %s\n"
 msgid "Unable to write payload to %s: %s\n"
 msgstr "%s への Payload 書き込みに失敗: %s\n"
 
-#: build/pack.c:929 lib/psm.c:2251
+#: build/pack.c:929 lib/psm.c:2304
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "書き込み完了: %s\n"
@@ -1494,16 +1495,16 @@ msgstr ""
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr "パッケージ名の関係を無視します [%d]\t%s → %s\n"
 
-#: lib/depends.c:1724
+#: lib/depends.c:1727
 #, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "tsort 関係から %s \"%s\" を削除します。\n"
 
-#: lib/depends.c:2298
+#: lib/depends.c:2302
 msgid "LOOP:\n"
 msgstr "ループ:\n"
 
-#: lib/depends.c:2334
+#: lib/depends.c:2338
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr "rpmtsOrder に失敗, 残り %d 個\n"
@@ -1588,12 +1589,12 @@ msgstr "%%%s を %s に作成できません。\n"
 msgid "read failed\n"
 msgstr "実行失敗\n"
 
-#: lib/package.c:148 lib/rpmchecksig.c:244 lib/rpmchecksig.c:905
+#: lib/package.c:148 lib/rpmchecksig.c:244 lib/rpmchecksig.c:899
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: 署名がありません。\n"
 
-#: lib/package.c:241 lib/package.c:278 lib/rpmchecksig.c:984
+#: lib/package.c:241 lib/package.c:278 lib/rpmchecksig.c:978
 #, c-format
 msgid "skipping package %s with unverifiable V%u signature\n"
 msgstr ""
@@ -2376,30 +2377,30 @@ msgstr "%s(%s-%s-%s.%s) スクリプトの実行に失敗しました。終了ステータス %d\n"
 msgid "%s(%s) scriptlet failed, exit status %d\n"
 msgstr "%s(%s-%s-%s.%s) スクリプトの実行に失敗しました。終了ステータス %d\n"
 
-#: lib/psm.c:1859
+#: lib/psm.c:1883
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s\n"
 msgstr "%s: スクリプト %s の実行に失敗しました (%d)。%s をスキップします。\n"
 
-#: lib/psm.c:1967
+#: lib/psm.c:2004
 msgid "Unable to reload signature header\n"
 msgstr "署名ヘッダの再読み込みができません。\n"
 
-#: lib/psm.c:2077
+#: lib/psm.c:2130
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "アーカイブの伸長に失敗%s%s: %s\n"
 
-#: lib/psm.c:2078
+#: lib/psm.c:2131
 msgid " on file "
 msgstr ": ファイル "
 
-#: lib/psm.c:2259
+#: lib/psm.c:2312
 #, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "%s: ファイル %s で失敗: %s\n"
 
-#: lib/psm.c:2262
+#: lib/psm.c:2315
 #, c-format
 msgid "%s failed: %s\n"
 msgstr "%s: 失敗: %s\n"
@@ -2497,7 +2498,7 @@ msgstr "無効なパッケージ番号: %s\n"
 msgid "record %u could not be read\n"
 msgstr "レコード %u は読み込めませんでした\n"
 
-#: lib/query.c:688 lib/query.c:694 lib/rpminstall.c:574
+#: lib/query.c:688 lib/query.c:694 lib/rpminstall.c:573
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "パッケージ %s はインストールされていません。\n"
@@ -2510,7 +2511,7 @@ msgstr "(files に追加済み)"
 msgid "(added provide)"
 msgstr "(provideに追加済み)"
 
-#: lib/rpmchecksig.c:60 lib/rpmchecksig.c:1155
+#: lib/rpmchecksig.c:60 lib/rpmchecksig.c:1149
 #, c-format
 msgid "%s: open failed: %s\n"
 msgstr "%s: オープンに失敗しました: %s\n"
@@ -2555,8 +2556,8 @@ msgstr "%s: headerGetEntry に失敗しました。\n"
 msgid "failed to retrieve original header\n"
 msgstr "ヘッダの終端の書き込みができません。\n"
 
-#: lib/rpmchecksig.c:828 rpmdb/pkgio.c:508 rpmdb/pkgio.c:691
-#: rpmdb/pkgio.c:1262
+#: lib/rpmchecksig.c:828 rpmdb/pkgio.c:520 rpmdb/pkgio.c:704
+#: rpmdb/pkgio.c:1282
 #, fuzzy, c-format
 msgid "XAR file not found (or no XAR support)"
 msgstr "サーバ上にファイルが見つかりません。"
@@ -2566,27 +2567,27 @@ msgstr "サーバ上にファイルが見つかりません。"
 msgid "Fread failed"
 msgstr "%s: Fread に失敗しました: %s\n"
 
-#: lib/rpmchecksig.c:1080
+#: lib/rpmchecksig.c:1074
 msgid "NOT OK"
 msgstr "OK ではありません。"
 
-#: lib/rpmchecksig.c:1081 lib/rpmchecksig.c:1095
+#: lib/rpmchecksig.c:1075 lib/rpmchecksig.c:1089
 msgid " (MISSING KEYS:"
 msgstr "(見つからない鍵:"
 
-#: lib/rpmchecksig.c:1083 lib/rpmchecksig.c:1097
+#: lib/rpmchecksig.c:1077 lib/rpmchecksig.c:1091
 msgid ") "
 msgstr ") "
 
-#: lib/rpmchecksig.c:1084 lib/rpmchecksig.c:1098
+#: lib/rpmchecksig.c:1078 lib/rpmchecksig.c:1092
 msgid " (UNTRUSTED KEYS:"
 msgstr "(信頼できない鍵:"
 
-#: lib/rpmchecksig.c:1086 lib/rpmchecksig.c:1100
+#: lib/rpmchecksig.c:1080 lib/rpmchecksig.c:1094
 msgid ")"
 msgstr ")"
 
-#: lib/rpmchecksig.c:1094
+#: lib/rpmchecksig.c:1088
 msgid "OK"
 msgstr "OK"
 
@@ -2734,7 +2735,7 @@ msgstr "%s のオープンに失敗: %s\n"
 msgid "unknown tag: \"%s\"\n"
 msgstr "不明なタグ: \"%s\"\n"
 
-#: lib/rpmgi.c:778 lib/rpminstall.c:608
+#: lib/rpmgi.c:778
 msgid "Failed dependencies:\n"
 msgstr "依存性の欠如:\n"
 
@@ -2785,22 +2786,22 @@ msgstr "インストール/アップグレード/アンインストールオプション:"
 msgid "package %s is not relocatable\n"
 msgstr "パッケージ %s は再配置できません。\n"
 
-#: lib/rpminstall.c:583
+#: lib/rpminstall.c:582
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" は複数のパッケージを指定しています\n"
 
-#: lib/rpminstall.c:652
+#: lib/rpminstall.c:628
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "%s をオープンできません: %s\n"
 
-#: lib/rpminstall.c:658
+#: lib/rpminstall.c:634
 #, c-format
 msgid "Installing %s\n"
 msgstr "%s をインストール中です。\n"
 
-#: lib/rpminstall.c:668
+#: lib/rpminstall.c:644
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s をインストールできません。\n"
@@ -2976,7 +2977,7 @@ msgstr "%s:  不正なタイプ指定 %s (%d 行目)\n"
 msgid "%s:  invalid context %s on line number %d\n"
 msgstr "%s: 不正なコンテキスト %s (%d 行目)\n"
 
-#: lib/rpmts.c:138
+#: lib/rpmts.c:138 rpmdb/pkgio.c:236
 #, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "%s にある Package データベースをオープンできません。\n"
@@ -3078,107 +3079,165 @@ msgstr "%s には大き/小さ過ぎるlong値があります。スキップします\n"
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr "%s には大き/小さ過ぎる整数値があります。スキップします\n"
 
-#: rpmdb/hdrfmt.c:57 rpmdb/hdrfmt.c:157
+#: rpmdb/hdrfmt.c:91 rpmdb/hdrfmt.c:196
 msgid "(not a number)"
 msgstr "(数字ではありません)"
 
-#: rpmdb/hdrfmt.c:184
+#: rpmdb/hdrfmt.c:224
 #, c-format
 msgid "%c"
 msgstr "%c"
 
-#: rpmdb/hdrfmt.c:195
+#: rpmdb/hdrfmt.c:236
 msgid "%a %b %d %Y"
 msgstr "%a %b %d %Y"
 
-#: rpmdb/hdrfmt.c:248
+#: rpmdb/hdrfmt.c:290
 #, fuzzy
 msgid "invalid type"
 msgstr "(不正なタイプ)"
 
-#: rpmdb/hdrfmt.c:337 rpmdb/hdrfmt.c:366 rpmdb/hdrfmt.c:387 rpmdb/hdrfmt.c:454
-#: rpmdb/hdrfmt.c:979
+#: rpmdb/hdrfmt.c:380 rpmdb/hdrfmt.c:410 rpmdb/hdrfmt.c:432 rpmdb/hdrfmt.c:500
+#: rpmdb/hdrfmt.c:1190
 msgid "(invalid type)"
 msgstr "(不正なタイプ)"
 
-#: rpmdb/hdrfmt.c:444
+#: rpmdb/hdrfmt.c:490
 msgid "(not base64)"
 msgstr "(base64 ではありません)"
 
-#: rpmdb/hdrfmt.c:478 rpmdb/hdrfmt.c:875
-msgid "(not a blob)"
-msgstr "(blob ではありません)"
+#: rpmdb/hdrfmt.c:531
+#, fuzzy
+msgid "(invalid type :base64)"
+msgstr "(不正なタイプ)"
 
-#: rpmdb/hdrfmt.c:627
+#: rpmdb/hdrfmt.c:730 rpmdb/hdrfmt.c:761 rpmdb/hdrfmt.c:2548
+#: rpmdb/hdrfmt.c:2986
+#, fuzzy
+msgid "(not a string)"
+msgstr "(数字ではありません)"
+
+#: rpmdb/hdrfmt.c:835
 msgid "(invalid xml type)"
 msgstr "(不正な XML タイプ)"
 
-#: rpmdb/hdrfmt.c:813
+#: rpmdb/hdrfmt.c:1022
 #, fuzzy
 msgid "(invalid yaml type)"
 msgstr "(不正な XML タイプ)"
 
-#: rpmdb/hdrfmt.c:898
+#: rpmdb/hdrfmt.c:1085
+msgid "(not a blob)"
+msgstr "(blob ではありません)"
+
+#: rpmdb/hdrfmt.c:1108
 msgid "(not an OpenPGP signature)"
 msgstr "(OpenPGP 署名ではありません)"
 
-#: rpmdb/hdrfmt.c:2300
+#: rpmdb/hdrfmt.c:3197
+#, fuzzy
+msgid "(invalid type :digest)"
+msgstr "(不正なタイプ)"
+
+#: rpmdb/hdrfmt.c:3253
+#, fuzzy
+msgid "(invalid type :stat)"
+msgstr "(不正なタイプ)"
+
+#: rpmdb/hdrfmt.c:3405
+#, fuzzy
+msgid "(invalid type :uuid)"
+msgstr "(不正なタイプ)"
+
+#: rpmdb/hdrfmt.c:3466
+#, fuzzy
+msgid "(invalid type :rpn)"
+msgstr "(不正なタイプ)"
+
+#: rpmdb/hdrfmt.c:3476
+#, fuzzy
+msgid "(invalid string :rpn)"
+msgstr "(不正なタイプ)"
+
+#: rpmdb/hdrfmt.c:3492
+#, fuzzy
+msgid "(expected number :rpn)"
+msgstr "予期せぬ問い合わせのフォーマット"
+
+#: rpmdb/hdrfmt.c:3496
+msgid "(stack overflow :rpn)"
+msgstr ""
+
+#: rpmdb/hdrfmt.c:3502
+#, fuzzy
+msgid "(invalid number :rpn)"
+msgstr "(不正な XML タイプ)"
+
+#: rpmdb/hdrfmt.c:3507
+msgid "(stack underflow :rpn)"
+msgstr ""
+
+#: rpmdb/hdrfmt.c:3520
+msgid "(divide by zero :rpn)"
+msgstr ""
+
+#: rpmdb/hdrfmt.c:4270
 msgid "missing { after %"
 msgstr "% の後に { がありません。"
 
-#: rpmdb/hdrfmt.c:2334
+#: rpmdb/hdrfmt.c:4304
 msgid "missing } after %{"
 msgstr "%{ の後に } がありません。"
 
-#: rpmdb/hdrfmt.c:2350
+#: rpmdb/hdrfmt.c:4320
 msgid "empty tag format"
 msgstr "空のタグフォーマット"
 
-#: rpmdb/hdrfmt.c:2362
+#: rpmdb/hdrfmt.c:4329
 msgid "empty tag name"
 msgstr "空のタグ名"
 
-#: rpmdb/hdrfmt.c:2371
+#: rpmdb/hdrfmt.c:4338
 msgid "unknown tag"
 msgstr "不明なタグ"
 
-#: rpmdb/hdrfmt.c:2401
+#: rpmdb/hdrfmt.c:4368
 msgid "] expected at end of array"
 msgstr "配列の後に ] が期待されます。"
 
-#: rpmdb/hdrfmt.c:2418
+#: rpmdb/hdrfmt.c:4385
 msgid "unexpected ]"
 msgstr "予期せぬ ]"
 
-#: rpmdb/hdrfmt.c:2433
+#: rpmdb/hdrfmt.c:4400
 msgid "unexpected }"
 msgstr "予期せぬ }"
 
-#: rpmdb/hdrfmt.c:2511
+#: rpmdb/hdrfmt.c:4478
 msgid "? expected in expression"
 msgstr "式中で ? が期待されます。"
 
-#: rpmdb/hdrfmt.c:2518
+#: rpmdb/hdrfmt.c:4485
 msgid "{ expected after ? in expression"
 msgstr "式中で ? の後に { が期待されます。"
 
-#: rpmdb/hdrfmt.c:2530 rpmdb/hdrfmt.c:2570
+#: rpmdb/hdrfmt.c:4497 rpmdb/hdrfmt.c:4537
 msgid "} expected in expression"
 msgstr "式中に } が期待されます。"
 
-#: rpmdb/hdrfmt.c:2538
+#: rpmdb/hdrfmt.c:4505
 msgid ": expected following ? subexpression"
 msgstr "? サブ式の後に : が期待されます。"
 
-#: rpmdb/hdrfmt.c:2556
+#: rpmdb/hdrfmt.c:4523
 msgid "{ expected after : in expression"
 msgstr "式中で : の後に { が期待されます。"
 
-#: rpmdb/hdrfmt.c:2578
+#: rpmdb/hdrfmt.c:4545
 msgid "| expected at end of expression"
 msgstr "式の終わりに | が期待されます。"
 
-#: rpmdb/hdrfmt.c:2871
+#: rpmdb/hdrfmt.c:4844
 msgid "array iterator used with different sized arrays"
 msgstr "配列の繰り返し指定が、サイズが異なる配列の間で使用されています"
 
@@ -3196,370 +3255,371 @@ msgstr ""
 msgid "verify database files"
 msgstr "データベースの検証を行います。"
 
-#: rpmdb/pkgio.c:82
+#: rpmdb/pkgio.c:83
 msgid "write of NULL header"
 msgstr ""
 
-#: rpmdb/pkgio.c:89
+#: rpmdb/pkgio.c:90
 #, fuzzy
 msgid "headerUnload failed"
 msgstr "%s: headerRead に失敗しました。\n"
 
-#: rpmdb/pkgio.c:101
+#: rpmdb/pkgio.c:102
 msgid "short write of header magic"
 msgstr ""
 
-#: rpmdb/pkgio.c:113
+#: rpmdb/pkgio.c:114
 #, fuzzy
 msgid "short write of header"
 msgstr "ヘッダの終端の書き込みができません。\n"
 
-#: rpmdb/pkgio.c:477 rpmdb/pkgio.c:482
+#: rpmdb/pkgio.c:489 rpmdb/pkgio.c:494
 #, fuzzy, c-format
 msgid "lead size(%u): BAD, read(%d), %s(%d)"
 msgstr "ヘッダサイズ(%d): 異常です。読み込み結果は %d です。\n"
 
-#: rpmdb/pkgio.c:515
+#: rpmdb/pkgio.c:527
 #, fuzzy, c-format
 msgid "lead size(%u): BAD, xar read(%u)"
 msgstr "ヘッダサイズ(%d): 異常です。読み込み結果は %d です。\n"
 
-#: rpmdb/pkgio.c:532
+#: rpmdb/pkgio.c:544
 #, c-format
 msgid "lead magic: BAD, read %02x%02x%02x%02x"
 msgstr ""
 
-#: rpmdb/pkgio.c:541
+#: rpmdb/pkgio.c:553
 #, c-format
 msgid "lead version(%u): UNSUPPORTED"
 msgstr ""
 
-#: rpmdb/pkgio.c:552
+#: rpmdb/pkgio.c:564
 #, c-format
 msgid "sigh type(%u): UNSUPPORTED"
 msgstr ""
 
-#: rpmdb/pkgio.c:698
+#: rpmdb/pkgio.c:712
 #, fuzzy, c-format
 msgid "sigh size(%d): BAD, read returned %d"
 msgstr "署名サイズ (%d): 不正、read が %d を返しました\n"
 
-#: rpmdb/pkgio.c:710
+#: rpmdb/pkgio.c:724
 #, c-format
 msgid "sigh magic: BAD, read %02x%02x%02x%02x%02x%02x%02x%02x"
 msgstr ""
 
-#: rpmdb/pkgio.c:718
+#: rpmdb/pkgio.c:732
 #, fuzzy, c-format
 msgid "sigh tags: BAD, no. of tags(%u) out of range"
 msgstr "署名タグ: 不正、タグの数 (%d) が範囲外です。\n"
 
-#: rpmdb/pkgio.c:724
+#: rpmdb/pkgio.c:738
 #, fuzzy, c-format
 msgid "sigh data: BAD, no. of bytes(%u) out of range"
 msgstr "署名データ: 不正、バイト数 (%d) が範囲外です。\n"
 
-#: rpmdb/pkgio.c:734
+#: rpmdb/pkgio.c:748
 #, fuzzy, c-format
 msgid "sigh blob(%u): BAD, read returned %d"
 msgstr "署名 blob(%d): 不正、read が %d を返しました。\n"
 
-#: rpmdb/pkgio.c:746 rpmdb/pkgio.c:924 rpmdb/pkgio.c:1049
+#: rpmdb/pkgio.c:760 rpmdb/pkgio.c:944 rpmdb/pkgio.c:1069
 #, fuzzy, c-format
 msgid "tag[%d]: BAD, tag %u type %u offset %d count %u"
 msgstr "タグ[%d]: 異常です。tag %d type %d offset %d count %d\n"
 
-#: rpmdb/pkgio.c:763 rpmdb/pkgio.c:944
+#: rpmdb/pkgio.c:781 rpmdb/pkgio.c:964
 #, fuzzy, c-format
 msgid "region offset: BAD, tag %u type %u offset %d count %u"
 msgstr "region オフセット: 異常です。tag %d type %d offset %d count %d\n"
 
-#: rpmdb/pkgio.c:788 rpmdb/pkgio.c:963
+#: rpmdb/pkgio.c:806 rpmdb/pkgio.c:983
 #, fuzzy, c-format
 msgid "region trailer: BAD, tag %u type %u offset %d count %u"
 msgstr "region ヘッダ以降: 異常です。tag %d type %d offset %d count %d\n"
 
-#: rpmdb/pkgio.c:800 rpmdb/pkgio.c:975
+#: rpmdb/pkgio.c:818 rpmdb/pkgio.c:995
 #, fuzzy, c-format
 msgid "region size: BAD, ril(%u) > il(%u)"
 msgstr "region サイズ: 異常です。ril(%d) > il(%d)\n"
 
-#: rpmdb/pkgio.c:811
+#: rpmdb/pkgio.c:829
 #, fuzzy, c-format
 msgid "sigh tag[%u]: BAD, tag %u type %u offset %d count %u"
 msgstr "署名タグ[%d]: 不正、タグ %d タイプ %d オフセット %d カウント %d\n"
 
-#: rpmdb/pkgio.c:821
+#: rpmdb/pkgio.c:839
 #, fuzzy, c-format
 msgid "sigh load: BAD"
 msgstr "署名の読み込み: 不正。\n"
 
-#: rpmdb/pkgio.c:834
+#: rpmdb/pkgio.c:852
 #, fuzzy, c-format
 msgid "sigh pad(%u): BAD, read %d bytes"
 msgstr "署名の pad サイズ(%d): 不正、%d バイト読み込みました。\n"
 
-#: rpmdb/pkgio.c:847
+#: rpmdb/pkgio.c:865
 #, fuzzy, c-format
 msgid "sigh sigSize(%u): BAD, fstat(2) failed"
 msgstr "署名のサイズ(%d): 不正、fstat(2) に失敗しました。\n"
 
-#: rpmdb/pkgio.c:915
+#: rpmdb/pkgio.c:935
 #, fuzzy, c-format
 msgid "blob size(%d): BAD, 8 + 16 * il(%u) + dl(%u)"
 msgstr "blob サイズ (%d): 異常です。8 + 16 * il(%d) + dl(%d)\n"
 
-#: rpmdb/pkgio.c:984
+#: rpmdb/pkgio.c:1004
 #, fuzzy, c-format
 msgid "tag[%u]: BAD, tag %u type %u offset %d count %u"
 msgstr "タグ[%d]: 異常です。tag %d type %d offset %d count %d\n"
 
-#: rpmdb/pkgio.c:1002
+#: rpmdb/pkgio.c:1022
 #, fuzzy, c-format
 msgid "hdr SHA1: BAD, not hex"
 msgstr "SHA1 ヘッダ: 異常です。16 進数ではありません。\n"
 
-#: rpmdb/pkgio.c:1014
+#: rpmdb/pkgio.c:1034
 #, fuzzy, c-format
 msgid "hdr RSA: BAD, not binary"
 msgstr "ヘッダ DSA: 異常です．バイナリではありません。\n"
 
-#: rpmdb/pkgio.c:1024
+#: rpmdb/pkgio.c:1044
 #, fuzzy, c-format
 msgid "hdr DSA: BAD, not binary"
 msgstr "ヘッダ DSA: 異常です．バイナリではありません。\n"
 
-#: rpmdb/pkgio.c:1081 rpmdb/pkgio.c:1124
+#: rpmdb/pkgio.c:1101 rpmdb/pkgio.c:1144
 #, c-format
 msgid "skipping header with unverifiable V%u signature\n"
 msgstr ""
 
-#: rpmdb/pkgio.c:1274
+#: rpmdb/pkgio.c:1295
 #, fuzzy, c-format
 msgid "hdr size(%u): BAD, read returned %d"
 msgstr "ヘッダサイズ(%d): 異常です。読み込み結果は %d です。\n"
 
-#: rpmdb/pkgio.c:1284
+#: rpmdb/pkgio.c:1305
 #, c-format
 msgid "hdr magic: BAD, read %02x%02x%02x%02x%02x%02x%02x%02x"
 msgstr ""
 
-#: rpmdb/pkgio.c:1292
+#: rpmdb/pkgio.c:1313
 #, fuzzy, c-format
 msgid "hdr tags: BAD, no. of tags(%u) out of range"
 msgstr "ヘッダタグ: 異常です。タグ(%d)の番号が範囲外です。\n"
 
-#: rpmdb/pkgio.c:1299
+#: rpmdb/pkgio.c:1320
 #, fuzzy, c-format
 msgid "hdr data: BAD, no. of bytes(%u) out of range\n"
 msgstr "ヘッダデータ: 異常です。バイト数(%d)が範囲外です。\n"
 
-#: rpmdb/pkgio.c:1310
+#: rpmdb/pkgio.c:1331
 #, fuzzy, c-format
 msgid "hdr blob(%u): BAD, read returned %d"
 msgstr "ヘッダ blob(%d): 異常です。読み込み結果は %d です。\n"
 
-#: rpmdb/pkgio.c:1324
+#: rpmdb/pkgio.c:1345
 #, c-format
 msgid "hdr load: BAD\n"
 msgstr "ヘッダロード: 異常です。\n"
 
-#: rpmdb/rpmdb.c:379
+#: rpmdb/rpmdb.c:384
 #, fuzzy, c-format
 msgid "cannot open %s(%u) index using db%d - %s (%d)\n"
 msgstr "%s インデックスを db%d でオープンできません - %s (%d)\n"
 
-#: rpmdb/rpmdb.c:399
+#: rpmdb/rpmdb.c:404
 #, fuzzy, c-format
 msgid "cannot open %s(%u) index\n"
 msgstr "%s インデックスをオープンできません。\n"
 
-#: rpmdb/rpmdb.c:850
+#: rpmdb/rpmdb.c:855
 #, fuzzy, c-format
 msgid "incorrect format: \"%s\": %s\n"
 msgstr "不正なフォーマット: %s\n"
 
-#: rpmdb/rpmdb.c:1168
+#: rpmdb/rpmdb.c:1173
 msgid "no dbpath has been set\n"
 msgstr "dbpath が設定されていません\n"
 
-#: rpmdb/rpmdb.c:1466 rpmdb/rpmdb.c:1613 rpmdb/rpmdb.c:1669 rpmdb/rpmdb.c:2576
-#: rpmdb/rpmdb.c:2726 rpmdb/rpmdb.c:3522
+#: rpmdb/rpmdb.c:1471 rpmdb/rpmdb.c:1618 rpmdb/rpmdb.c:1674 rpmdb/rpmdb.c:2581
+#: rpmdb/rpmdb.c:2731 rpmdb/rpmdb.c:3527
 #, c-format
 msgid "error(%d) getting \"%s\" records from %s index\n"
 msgstr "エラー(%d) - レコード \"%s\" 取得時 (%s インデックスから)\n"
 
-#: rpmdb/rpmdb.c:1883
+#: rpmdb/rpmdb.c:1888
 msgid "miFreeHeader: skipping"
 msgstr "miFreeHeader: スキップします。"
 
-#: rpmdb/rpmdb.c:1893
+#: rpmdb/rpmdb.c:1898
 #, c-format
 msgid "error(%d) storing record #%d into %s\n"
 msgstr "エラー(%d) - レコード #%d を %s に格納時\n"
 
-#: rpmdb/rpmdb.c:2454
+#: rpmdb/rpmdb.c:2459
 #, fuzzy
 msgid "rpmdb: skipping"
 msgstr "rpmdbAdd: スキップします。"
 
-#: rpmdb/rpmdb.c:2454
+#: rpmdb/rpmdb.c:2459
 msgid "rpmdb: read"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2489
+#: rpmdb/rpmdb.c:2494
 #, c-format
 msgid "rpmdb: damaged header #%u retrieved -- skipping.\n"
 msgstr ""
 "rpmdb: 破損したヘッダインスタンス #%u を取得しました。スキップします。\n"
 
-#: rpmdb/rpmdb.c:2825
+#: rpmdb/rpmdb.c:2830
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: ヘッダを読むことができません (0x%x)\n"
 
-#: rpmdb/rpmdb.c:2896
+#: rpmdb/rpmdb.c:2901
 #, c-format
 msgid "error(%d) setting header #%d record for %s removal\n"
 msgstr "エラー(%d) - ヘッダ #%d レコードに %s の削除を設定時\n"
 
-#: rpmdb/rpmdb.c:3046
+#: rpmdb/rpmdb.c:3051
 #, c-format
 msgid "error(%d) setting \"%s\" records from %s index\n"
 msgstr "エラー(%d) - \"%s\" のレコード設定時 (%s インデックスから)\n"
 
-#: rpmdb/rpmdb.c:3067
+#: rpmdb/rpmdb.c:3072
 #, c-format
 msgid "error(%d) storing record \"%s\" into %s\n"
 msgstr "エラー(%d) - レコード \"%s\" を %s に格納時\n"
 
-#: rpmdb/rpmdb.c:3077
+#: rpmdb/rpmdb.c:3082
 #, c-format
 msgid "error(%d) removing record \"%s\" from %s\n"
 msgstr "エラー(%d) - レコード \"%s\" を %s から削除時\n"
 
-#: rpmdb/rpmdb.c:3252
+#: rpmdb/rpmdb.c:3257
 #, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr "エラー(%d) - 新しいパッケージインスタンスの割り当て時\n"
 
-#: rpmdb/rpmdb.c:3326
+#: rpmdb/rpmdb.c:3331
 msgid "rpmdbAdd: skipping"
 msgstr "rpmdbAdd: スキップします。"
 
-#: rpmdb/rpmdb.c:3541
+#: rpmdb/rpmdb.c:3546
 #, c-format
 msgid "error(%d) storing record %s into %s\n"
 msgstr "エラー(%d) - レコード %s を %s にストア時\n"
 
-#: rpmdb/rpmdb.c:3967
+#: rpmdb/rpmdb.c:3972
 #, c-format
 msgid "temporary database %s already exists\n"
 msgstr "一時的なデータベース %s は既に存在しています。\n"
 
-#: rpmdb/rpmdb.c:3975
+#: rpmdb/rpmdb.c:3980
 #, c-format
 msgid "creating directory %s: %s\n"
 msgstr "ディレクトリの作成: %s: %s\n"
 
-#: rpmdb/rpmdb.c:4022
+#: rpmdb/rpmdb.c:4027
 #, c-format
 msgid "header #%u in the database is bad -- skipping.\n"
 msgstr "データベース中のヘッダ #%u は不正です -- スキップします。\n"
 
-#: rpmdb/rpmdb.c:4030
+#: rpmdb/rpmdb.c:4035
 #, fuzzy, c-format
 msgid "header #%u in the database is SRPM -- skipping.\n"
 msgstr "データベース中のヘッダ #%u は不正です -- スキップします。\n"
 
-#: rpmdb/rpmdb.c:4070
+#: rpmdb/rpmdb.c:4075
 #, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "元々 %u にあったレコードを追加できません。\n"
 
-#: rpmdb/rpmdb.c:4084
+#: rpmdb/rpmdb.c:4089
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr "データベースの再構築に失敗: オリジナルのデータベースは残っています。\n"
 
-#: rpmdb/rpmdb.c:4096
+#: rpmdb/rpmdb.c:4101
 msgid "failed to replace old database with new database!\n"
 msgstr "古いデータベースを新しいデータベースで置き換えるのに失敗!\n"
 
-#: rpmdb/rpmdb.c:4098
+#: rpmdb/rpmdb.c:4103
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "復元するには %s 内のファイルを %s 内のファイルで置き換えて下さい"
 
-#: rpmdb/rpmdb.c:4110
+#: rpmdb/rpmdb.c:4115
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "ディレクトリ %s の削除失敗: %s\n"
 
-#: rpmdb/signature.c:97 rpmdb/signature.c:102 rpmdb/signature.c:108
+#: rpmdb/signature.c:89 rpmdb/signature.c:98 rpmdb/signature.c:103
+#: rpmdb/signature.c:109
 #, c-format
 msgid "error creating temporary file %s\n"
 msgstr "一時ファイル %s の作成に失敗しました。\n"
 
-#: rpmdb/signature.c:190 rpmdb/signature.c:534
+#: rpmdb/signature.c:191 rpmdb/signature.c:535
 #, c-format
 msgid "Could not exec %s: %s\n"
 msgstr "%s を実行できませんでした: %s\n"
 
-#: rpmdb/signature.c:208 rpmdb/signature.c:548
+#: rpmdb/signature.c:209 rpmdb/signature.c:549
 #, c-format
 msgid "Failed %s(%d) key(0x%lx): %s\n"
 msgstr ""
 
-#: rpmdb/signature.c:234
+#: rpmdb/signature.c:235
 #, fuzzy, c-format
 msgid "gpg exec failed (%d)\n"
 msgstr "実行失敗\n"
 
-#: rpmdb/signature.c:241
+#: rpmdb/signature.c:242
 msgid "gpg failed to write signature\n"
 msgstr "gpg が署名を書き込むのに失敗しました。\n"
 
-#: rpmdb/signature.c:260
+#: rpmdb/signature.c:261
 msgid "unable to read the signature\n"
 msgstr "署名を読み込めませんでした。\n"
 
-#: rpmdb/signature.c:600
+#: rpmdb/signature.c:601
 msgid "Header+Payload size: "
 msgstr "ヘッダとペイロードサイズ:"
 
-#: rpmdb/signature.c:637
+#: rpmdb/signature.c:638
 msgid "MD5 digest: "
 msgstr "MD5 ダイジェスト: "
 
-#: rpmdb/signature.c:694
+#: rpmdb/signature.c:695
 msgid "Header SHA1 digest: "
 msgstr "ヘッダ SHA1 ダイジェスト: "
 
-#: rpmdb/signature.c:754 rpmdb/signature.c:880
+#: rpmdb/signature.c:755 rpmdb/signature.c:881
 msgid "Header "
 msgstr "ヘッダ "
 
-#: rpmdb/signature.c:810
+#: rpmdb/signature.c:811
 #, fuzzy
 msgid " signature: "
 msgstr "V4 DSA 署名: "
 
-#: rpmdb/signature.c:886
+#: rpmdb/signature.c:887
 #, fuzzy
 msgid " DSA signature: "
 msgstr "V3 DSA 署名: "
 
-#: rpmdb/signature.c:961
+#: rpmdb/signature.c:962
 #, c-format
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr "署名確認: 異常なパラメータです。\n"
 
-#: rpmdb/signature.c:982
+#: rpmdb/signature.c:983
 #, fuzzy, c-format
 msgid "Signature: UNKNOWN (%u)\n"
 msgstr "署名: 未知(%d)\n"
 
-#: rpmdb/sqlite.c:670
+#: rpmdb/sqlite.c:675
 #, c-format
 msgid "Unable to get lock on db %s, retrying... (%d)\n"
 msgstr ""
@@ -3619,41 +3679,41 @@ msgstr "マクロ %%%s (%s) はレベル %d 未満で使用されませんでした。\n"
 msgid "Unknown option %c in %s(%s)\n"
 msgstr "不明なオプション %c (%s(%s)中に)\n"
 
-#: rpmio/macro.c:1381
+#: rpmio/macro.c:1405
 #, c-format
 msgid "Recursion depth(%d) greater than max(%d)\n"
 msgstr "再帰の深さ (%d) が最大値 (%d) より大きくなっています。\n"
 
-#: rpmio/macro.c:1455 rpmio/macro.c:1472
+#: rpmio/macro.c:1479 rpmio/macro.c:1496
 #, c-format
 msgid "Unterminated %c: %s\n"
 msgstr "終端されていない %c: %s\n"
 
-#: rpmio/macro.c:1517
+#: rpmio/macro.c:1541
 #, c-format
 msgid "A %% is followed by an unparseable macro\n"
 msgstr "%% の後ろに構文解析できないマクロが続いています。\n"
 
-#: rpmio/macro.c:1715
+#: rpmio/macro.c:1741
 #, c-format
 msgid "Macro %%%.*s not found, skipping\n"
 msgstr "マクロ %%%.*s は見つかりません。スキップします。\n"
 
-#: rpmio/macro.c:2073
+#: rpmio/macro.c:2099
 msgid "Macro expansion too big for target buffer\n"
 msgstr ""
 
-#: rpmio/macro.c:2107
+#: rpmio/macro.c:2133
 #, c-format
 msgid "Macro '%s' is readonly and cannot be changed.\n"
 msgstr ""
 
-#: rpmio/macro.c:2356 rpmio/macro.c:2362
+#: rpmio/macro.c:2382 rpmio/macro.c:2388
 #, c-format
 msgid "File %s: %s\n"
 msgstr "ファイル %s: %s\n"
 
-#: rpmio/macro.c:2365
+#: rpmio/macro.c:2391
 #, c-format
 msgid "File %s is smaller than %u bytes\n"
 msgstr "ファイル %s は %u バイトより小さくなっています。\n"

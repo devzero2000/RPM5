@@ -13,7 +13,7 @@ AM_CPPFLAGS = -I. \
 
 EXTRA_DIST =	hashtab.h
 
-EXTRA_PROGRAMS = debugedit rpmkey txar
+EXTRA_PROGRAMS = debugedit rpmkey rpmrepo txar
 
 myLDADD = \
 	$(top_builddir)/build/librpmbuild.la \
@@ -42,6 +42,9 @@ rpmdeps_LDADD =		$(myLDADD)
 
 rpmdigest_SOURCES =	rpmdigest.c
 rpmdigest_LDADD =	$(myLDADD)
+
+rpmrepo_SOURCES =	rpmrepo.c
+rpmrepo_LDADD =		$(myLDADD)
 
 ##
 ## Traditional rpm2cpio

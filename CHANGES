@@ -1,5 +1,10 @@
 5.0.3 -> 5.0.4:
+    - jbj: rpmrepo: populate sqlite schema with PACKAGESIZE and PACKAGEDIGEST.
     - jbj: simple parameterized namespace URI for Pkgid/Hdrid UUID generation.
+    - jbj: rpmrepo: compute digests for both compressed & uncompressed
+	repository markup components.
+    - jbj: rpmrepo: backport from HEAD.
+    - jbj: merge PO files.
     - jbj: add SOURCERPM name at end-of-parse for --specfile queries and errmsg.
     - rse: add new C API function rpmuuidMake() for generating UUIDs of version 1, 3, 4 or 5
     - jbj: add toplevel lcov-foo Makefile targets. Current coverage at

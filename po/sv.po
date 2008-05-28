@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 5.0.0\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2008-02-04 11:05-0500\n"
+"POT-Creation-Date: 2008-05-21 13:22-0400\n"
 "PO-Revision-Date: 2008-02-04 16:51+0100\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <tp-sv@listor.tp-sv.se>\n"
@@ -17,46 +17,47 @@ msgstr ""
 "Content-Type: text/plain; charset=ISO-8859-1\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: build.c:41
-msgid "Failed build dependencies:\n"
+#: build.c:36
+#, fuzzy
+msgid "Failed build dependencies"
 msgstr "Ouppfyllda byggberoenden:\n"
 
-#: build.c:72
+#: build.c:63
 #, c-format
 msgid "Unable to open spec file %s: %s\n"
 msgstr "Kan inte öppna specfilen %s: %s\n"
 
-#: build.c:149
+#: build.c:140
 #, c-format
 msgid "Failed to read spec file from %s\n"
 msgstr "Kunde inte läsa specfil från %s\n"
 
-#: build.c:163
+#: build.c:154
 #, c-format
 msgid "Failed to rename %s to %s: %m\n"
 msgstr "Kunde inte byta namn på %s till %s: %m\n"
 
-#: build.c:204
+#: build.c:195
 #, c-format
 msgid "failed to stat %s: %m\n"
 msgstr "kunde inte ta status på %s: %m\n"
 
-#: build.c:209
+#: build.c:200
 #, c-format
 msgid "File %s is not a regular file.\n"
 msgstr "Filen %s är inte en vanlig fil.\n"
 
-#: build.c:218
+#: build.c:209
 #, c-format
 msgid "File %s does not appear to be a specfile.\n"
 msgstr "Filen %s tycks inte vara en specfil.\n"
 
-#: build.c:292
+#: build.c:283
 #, c-format
 msgid "Building target platforms: %s\n"
 msgstr "Bygger målplattformar: %s\n"
 
-#: build.c:307 build/spec.c:827
+#: build.c:298 build/spec.c:827
 #, c-format
 msgid "    target platform: %s\n"
 msgstr "    målplattform: %s\n"
@@ -695,7 +696,7 @@ msgstr "Kan inte läsa om signaturhuvud.\n"
 msgid "Could not open %s: %s\n"
 msgstr "Kunde inte öppna %s: %s\n"
 
-#: build/pack.c:820 lib/psm.c:1954
+#: build/pack.c:820 lib/psm.c:1991
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr "Kunde inte skriva paket: %s\n"
@@ -715,7 +716,7 @@ msgstr "Kan inte läsa last från %s: %s\n"
 msgid "Unable to write payload to %s: %s\n"
 msgstr "Kan inte skriva last till %s: %s\n"
 
-#: build/pack.c:929 lib/psm.c:2251
+#: build/pack.c:929 lib/psm.c:2304
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "Skrev: %s\n"
@@ -1474,16 +1475,16 @@ msgstr "(tips hoppades över)"
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr "ignorera paketnamnsrelation(er) [%d]\t%s -> %s\n"
 
-#: lib/depends.c:1724
+#: lib/depends.c:1727
 #, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "tar bort %s \"%s\" från tsort-relationer.\n"
 
-#: lib/depends.c:2298
+#: lib/depends.c:2302
 msgid "LOOP:\n"
 msgstr "LOOP:\n"
 
-#: lib/depends.c:2334
+#: lib/depends.c:2338
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr "rpmtsOrder misslyckades, %d element återstår\n"
@@ -1567,12 +1568,12 @@ msgstr "kan inte skapa %%%s %s\n"
 msgid "read failed\n"
 msgstr "läsning misslyckades\n"
 
-#: lib/package.c:148 lib/rpmchecksig.c:244 lib/rpmchecksig.c:905
+#: lib/package.c:148 lib/rpmchecksig.c:244 lib/rpmchecksig.c:899
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: Ingen signatur tillgänglig\n"
 
-#: lib/package.c:241 lib/package.c:278 lib/rpmchecksig.c:984
+#: lib/package.c:241 lib/package.c:278 lib/rpmchecksig.c:978
 #, c-format
 msgid "skipping package %s with unverifiable V%u signature\n"
 msgstr "hoppar över paket %s med overifierbar V%u-signatur\n"
@@ -2341,30 +2342,30 @@ msgstr "%s(%s) skript misslyckades, signal %d\n"
 msgid "%s(%s) scriptlet failed, exit status %d\n"
 msgstr "%s(%s) skript misslyckades, slutstatus %d\n"
 
-#: lib/psm.c:1859
+#: lib/psm.c:1883
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s\n"
 msgstr "%s: %s-skript misslyckades (%d), hoppar över %s\n"
 
-#: lib/psm.c:1967
+#: lib/psm.c:2004
 msgid "Unable to reload signature header\n"
 msgstr "Kan inte läsa om signaturhuvud\n"
 
-#: lib/psm.c:2077
+#: lib/psm.c:2130
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "uppackning av arkiv misslyckades%s%s: %s\n"
 
-#: lib/psm.c:2078
+#: lib/psm.c:2131
 msgid " on file "
 msgstr " vid fil "
 
-#: lib/psm.c:2259
+#: lib/psm.c:2312
 #, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "%s misslyckades på fil %s: %s\n"
 
-#: lib/psm.c:2262
+#: lib/psm.c:2315
 #, c-format
 msgid "%s failed: %s\n"
 msgstr "%s misslyckades: %s\n"
@@ -2461,7 +2462,7 @@ msgstr "felaktigt paketnummer: %s\n"
 msgid "record %u could not be read\n"
 msgstr "post %u kunde inte läsas\n"
 
-#: lib/query.c:688 lib/query.c:694 lib/rpminstall.c:574
+#: lib/query.c:688 lib/query.c:694 lib/rpminstall.c:573
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "paket %s är inte installerat\n"
@@ -2474,7 +2475,7 @@ msgstr "(lade till filer)"
 msgid "(added provide)"
 msgstr "(lade till tillhandahållande)"
 
-#: lib/rpmchecksig.c:60 lib/rpmchecksig.c:1155
+#: lib/rpmchecksig.c:60 lib/rpmchecksig.c:1149
 #, c-format
 msgid "%s: open failed: %s\n"
 msgstr "%s: open misslyckades: %s\n"
@@ -2516,8 +2517,8 @@ msgstr "headerGet misslyckades"
 msgid "failed to retrieve original header\n"
 msgstr "misslyckades att hämta orginalhuvud\n"
 
-#: lib/rpmchecksig.c:828 rpmdb/pkgio.c:508 rpmdb/pkgio.c:691
-#: rpmdb/pkgio.c:1262
+#: lib/rpmchecksig.c:828 rpmdb/pkgio.c:520 rpmdb/pkgio.c:704
+#: rpmdb/pkgio.c:1282
 #, c-format
 msgid "XAR file not found (or no XAR support)"
 msgstr "XAR-filen finns inte (eller inget XAR-stöd)"
@@ -2526,27 +2527,27 @@ msgstr "XAR-filen finns inte (eller inget XAR-stöd)"
 msgid "Fread failed"
 msgstr "Fread misslyckades"
 
-#: lib/rpmchecksig.c:1080
+#: lib/rpmchecksig.c:1074
 msgid "NOT OK"
 msgstr "EJ OK"
 
-#: lib/rpmchecksig.c:1081 lib/rpmchecksig.c:1095
+#: lib/rpmchecksig.c:1075 lib/rpmchecksig.c:1089
 msgid " (MISSING KEYS:"
 msgstr " (SAKNADE NYCKLAR:"
 
-#: lib/rpmchecksig.c:1083 lib/rpmchecksig.c:1097
+#: lib/rpmchecksig.c:1077 lib/rpmchecksig.c:1091
 msgid ") "
 msgstr ") "
 
-#: lib/rpmchecksig.c:1084 lib/rpmchecksig.c:1098
+#: lib/rpmchecksig.c:1078 lib/rpmchecksig.c:1092
 msgid " (UNTRUSTED KEYS:"
 msgstr " (EJ BETRODDA NYCKLAR:"
 
-#: lib/rpmchecksig.c:1086 lib/rpmchecksig.c:1100
+#: lib/rpmchecksig.c:1080 lib/rpmchecksig.c:1094
 msgid ")"
 msgstr ")"
 
-#: lib/rpmchecksig.c:1094
+#: lib/rpmchecksig.c:1088
 msgid "OK"
 msgstr "OK"
 
@@ -2692,7 +2693,7 @@ msgstr "misslyckades med att öppna %s: %s\n"
 msgid "unknown tag: \"%s\"\n"
 msgstr "okänd tagg: \"%s\"\n"
 
-#: lib/rpmgi.c:778 lib/rpminstall.c:608
+#: lib/rpmgi.c:778
 msgid "Failed dependencies:\n"
 msgstr "Ouppfyllda beroenden:\n"
 
@@ -2741,22 +2742,22 @@ msgstr "Installations-/Raderingsproblem"
 msgid "package %s is not relocatable\n"
 msgstr "paket %s är inte relokerbart\n"
 
-#: lib/rpminstall.c:583
+#: lib/rpminstall.c:582
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" anger flera paket\n"
 
-#: lib/rpminstall.c:652
+#: lib/rpminstall.c:628
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "kan inte öppna %s: %s\n"
 
-#: lib/rpminstall.c:658
+#: lib/rpminstall.c:634
 #, c-format
 msgid "Installing %s\n"
 msgstr "Installerar %s\n"
 
-#: lib/rpminstall.c:668
+#: lib/rpminstall.c:644
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s kan inte installeras\n"
@@ -2923,7 +2924,7 @@ msgstr "%s:  ogiltig typspecificerare %s på rad nummer %d\n"
 msgid "%s:  invalid context %s on line number %d\n"
 msgstr "%s:  ogiltigt sammanhang %s på rad nummer %d\n"
 
-#: lib/rpmts.c:138
+#: lib/rpmts.c:138 rpmdb/pkgio.c:236
 #, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "kan inte öppna paketdatabas i %s\n"
@@ -3024,105 +3025,163 @@ msgstr "%s har för stort eller för litet \"long\"-värde, hoppar över\n"
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr "%s har för stort eller för litet heltalsvärde, hoppar över\n"
 
-#: rpmdb/hdrfmt.c:57 rpmdb/hdrfmt.c:157
+#: rpmdb/hdrfmt.c:91 rpmdb/hdrfmt.c:196
 msgid "(not a number)"
 msgstr "(inte ett tal)"
 
-#: rpmdb/hdrfmt.c:184
+#: rpmdb/hdrfmt.c:224
 #, c-format
 msgid "%c"
 msgstr "%c"
 
-#: rpmdb/hdrfmt.c:195
+#: rpmdb/hdrfmt.c:236
 msgid "%a %b %d %Y"
 msgstr "%a %d %b %Y"
 
-#: rpmdb/hdrfmt.c:248
+#: rpmdb/hdrfmt.c:290
 msgid "invalid type"
 msgstr "felaktig typ"
 
-#: rpmdb/hdrfmt.c:337 rpmdb/hdrfmt.c:366 rpmdb/hdrfmt.c:387 rpmdb/hdrfmt.c:454
-#: rpmdb/hdrfmt.c:979
+#: rpmdb/hdrfmt.c:380 rpmdb/hdrfmt.c:410 rpmdb/hdrfmt.c:432 rpmdb/hdrfmt.c:500
+#: rpmdb/hdrfmt.c:1190
 msgid "(invalid type)"
 msgstr "(felaktig typ)"
 
-#: rpmdb/hdrfmt.c:444
+#: rpmdb/hdrfmt.c:490
 msgid "(not base64)"
 msgstr "(inte base64)"
 
-#: rpmdb/hdrfmt.c:478 rpmdb/hdrfmt.c:875
-msgid "(not a blob)"
-msgstr "(inte en klick)"
+#: rpmdb/hdrfmt.c:531
+#, fuzzy
+msgid "(invalid type :base64)"
+msgstr "(felaktig typ)"
 
-#: rpmdb/hdrfmt.c:627
+#: rpmdb/hdrfmt.c:730 rpmdb/hdrfmt.c:761 rpmdb/hdrfmt.c:2548
+#: rpmdb/hdrfmt.c:2986
+#, fuzzy
+msgid "(not a string)"
+msgstr "(inte ett tal)"
+
+#: rpmdb/hdrfmt.c:835
 msgid "(invalid xml type)"
 msgstr "(felaktig xml-typ)"
 
-#: rpmdb/hdrfmt.c:813
+#: rpmdb/hdrfmt.c:1022
 msgid "(invalid yaml type)"
 msgstr "(felaktig yaml-typ)"
 
-#: rpmdb/hdrfmt.c:898
+#: rpmdb/hdrfmt.c:1085
+msgid "(not a blob)"
+msgstr "(inte en klick)"
+
+#: rpmdb/hdrfmt.c:1108
 msgid "(not an OpenPGP signature)"
 msgstr "(inte en OpenPGP-signatur)"
 
-#: rpmdb/hdrfmt.c:2300
+#: rpmdb/hdrfmt.c:3197
+#, fuzzy
+msgid "(invalid type :digest)"
+msgstr "(felaktig typ)"
+
+#: rpmdb/hdrfmt.c:3253
+#, fuzzy
+msgid "(invalid type :stat)"
+msgstr "(felaktig typ)"
+
+#: rpmdb/hdrfmt.c:3405
+#, fuzzy
+msgid "(invalid type :uuid)"
+msgstr "(felaktig typ)"
+
+#: rpmdb/hdrfmt.c:3466
+#, fuzzy
+msgid "(invalid type :rpn)"
+msgstr "(felaktig typ)"
+
+#: rpmdb/hdrfmt.c:3476
+#, fuzzy
+msgid "(invalid string :rpn)"
+msgstr "(felaktig typ)"
+
+#: rpmdb/hdrfmt.c:3492
+#, fuzzy
+msgid "(expected number :rpn)"
+msgstr "oväntat frågeformat"
+
+#: rpmdb/hdrfmt.c:3496
+msgid "(stack overflow :rpn)"
+msgstr ""
+
+#: rpmdb/hdrfmt.c:3502
+#, fuzzy
+msgid "(invalid number :rpn)"
+msgstr "(felaktig xml-typ)"
+
+#: rpmdb/hdrfmt.c:3507
+msgid "(stack underflow :rpn)"
+msgstr ""
+
+#: rpmdb/hdrfmt.c:3520
+msgid "(divide by zero :rpn)"
+msgstr ""
+
+#: rpmdb/hdrfmt.c:4270
 msgid "missing { after %"
 msgstr "{ saknas efter %"
 
-#: rpmdb/hdrfmt.c:2334
+#: rpmdb/hdrfmt.c:4304
 msgid "missing } after %{"
 msgstr "} saknas efter %{"
 
-#: rpmdb/hdrfmt.c:2350
+#: rpmdb/hdrfmt.c:4320
 msgid "empty tag format"
 msgstr "tomt taggformat"
 
-#: rpmdb/hdrfmt.c:2362
+#: rpmdb/hdrfmt.c:4329
 msgid "empty tag name"
 msgstr "tomt taggnamn"
 
-#: rpmdb/hdrfmt.c:2371
+#: rpmdb/hdrfmt.c:4338
 msgid "unknown tag"
 msgstr "okänd tagg"
 
-#: rpmdb/hdrfmt.c:2401
+#: rpmdb/hdrfmt.c:4368
 msgid "] expected at end of array"
 msgstr "] förväntades vid slutet på vektor"
 
-#: rpmdb/hdrfmt.c:2418
+#: rpmdb/hdrfmt.c:4385
 msgid "unexpected ]"
 msgstr "oväntad ]"
 
-#: rpmdb/hdrfmt.c:2433
+#: rpmdb/hdrfmt.c:4400
 msgid "unexpected }"
 msgstr "oväntad }"
 
-#: rpmdb/hdrfmt.c:2511
+#: rpmdb/hdrfmt.c:4478
 msgid "? expected in expression"
 msgstr "? förväntades i uttryck"
 
-#: rpmdb/hdrfmt.c:2518
+#: rpmdb/hdrfmt.c:4485
 msgid "{ expected after ? in expression"
 msgstr "{ förväntades efter ? i uttryck"
 
-#: rpmdb/hdrfmt.c:2530 rpmdb/hdrfmt.c:2570
+#: rpmdb/hdrfmt.c:4497 rpmdb/hdrfmt.c:4537
 msgid "} expected in expression"
 msgstr "} förväntades i uttryck"
 
-#: rpmdb/hdrfmt.c:2538
+#: rpmdb/hdrfmt.c:4505
 msgid ": expected following ? subexpression"
 msgstr ": förväntades efter ? i deluttryck"
 
-#: rpmdb/hdrfmt.c:2556
+#: rpmdb/hdrfmt.c:4523
 msgid "{ expected after : in expression"
 msgstr "{ förväntades efter : i uttryck"
 
-#: rpmdb/hdrfmt.c:2578
+#: rpmdb/hdrfmt.c:4545
 msgid "| expected at end of expression"
 msgstr "| förväntades vid slutet på uttryck"
 
-#: rpmdb/hdrfmt.c:2871
+#: rpmdb/hdrfmt.c:4844
 msgid "array iterator used with different sized arrays"
 msgstr "vektoriterator använd med vektor av annan storlek"
 
@@ -3138,364 +3197,365 @@ msgstr "bygg om databasens inverterade listor från installerade pakets huvuden"
 msgid "verify database files"
 msgstr "verifiera databasfiler"
 
-#: rpmdb/pkgio.c:82
+#: rpmdb/pkgio.c:83
 msgid "write of NULL header"
 msgstr "skrivning av NULL-huvud"
 
-#: rpmdb/pkgio.c:89
+#: rpmdb/pkgio.c:90
 msgid "headerUnload failed"
 msgstr "headerUnload misslyckades"
 
-#: rpmdb/pkgio.c:101
+#: rpmdb/pkgio.c:102
 msgid "short write of header magic"
 msgstr "kort skrivning av magiskt tal för huvud"
 
-#: rpmdb/pkgio.c:113
+#: rpmdb/pkgio.c:114
 msgid "short write of header"
 msgstr "kort skrivning av huvud"
 
-#: rpmdb/pkgio.c:477 rpmdb/pkgio.c:482
+#: rpmdb/pkgio.c:489 rpmdb/pkgio.c:494
 #, c-format
 msgid "lead size(%u): BAD, read(%d), %s(%d)"
 msgstr "inledningsstorlek(%u): FEL, läste(%d), %s(%d)"
 
-#: rpmdb/pkgio.c:515
+#: rpmdb/pkgio.c:527
 #, c-format
 msgid "lead size(%u): BAD, xar read(%u)"
 msgstr "inledningsstorlek(%u): FEL, xar läste(%u)"
 
-#: rpmdb/pkgio.c:532
+#: rpmdb/pkgio.c:544
 #, c-format
 msgid "lead magic: BAD, read %02x%02x%02x%02x"
 msgstr "inledande makiskt tal: FEL, läste %02x%02x%02x%02x"
 
-#: rpmdb/pkgio.c:541
+#: rpmdb/pkgio.c:553
 #, c-format
 msgid "lead version(%u): UNSUPPORTED"
 msgstr "inledande version(%u): STÖDS EJ"
 
-#: rpmdb/pkgio.c:552
+#: rpmdb/pkgio.c:564
 #, c-format
 msgid "sigh type(%u): UNSUPPORTED"
 msgstr "signh-typ(%u): STÖDS EJ"
 
-#: rpmdb/pkgio.c:698
+#: rpmdb/pkgio.c:712
 #, c-format
 msgid "sigh size(%d): BAD, read returned %d"
 msgstr "signh-storlek(%d): FEL, läsning returnerade %d"
 
-#: rpmdb/pkgio.c:710
+#: rpmdb/pkgio.c:724
 #, c-format
 msgid "sigh magic: BAD, read %02x%02x%02x%02x%02x%02x%02x%02x"
 msgstr "signh magiskt tal: FEL, läste %02x%02x%02x%02x%02x%02x%02x%02x"
 
-#: rpmdb/pkgio.c:718
+#: rpmdb/pkgio.c:732
 #, c-format
 msgid "sigh tags: BAD, no. of tags(%u) out of range"
 msgstr "signh-taggar: FEL, antal taggar(%u) utanför intervall"
 
-#: rpmdb/pkgio.c:724
+#: rpmdb/pkgio.c:738
 #, c-format
 msgid "sigh data: BAD, no. of bytes(%u) out of range"
 msgstr "signh-data: FEL, antal byte(%u) itanför intevall"
 
-#: rpmdb/pkgio.c:734
+#: rpmdb/pkgio.c:748
 #, c-format
 msgid "sigh blob(%u): BAD, read returned %d"
 msgstr "signh-klick(%u): FEL, läsning returnerade %d"
 
-#: rpmdb/pkgio.c:746 rpmdb/pkgio.c:924 rpmdb/pkgio.c:1049
+#: rpmdb/pkgio.c:760 rpmdb/pkgio.c:944 rpmdb/pkgio.c:1069
 #, c-format
 msgid "tag[%d]: BAD, tag %u type %u offset %d count %u"
 msgstr "tagg[%d]: FEL, tagg %u typ %u position %d antal %u"
 
-#: rpmdb/pkgio.c:763 rpmdb/pkgio.c:944
+#: rpmdb/pkgio.c:781 rpmdb/pkgio.c:964
 #, c-format
 msgid "region offset: BAD, tag %u type %u offset %d count %u"
 msgstr "regionposition: FEL, tagg %u typ %u position %d antal %u"
 
-#: rpmdb/pkgio.c:788 rpmdb/pkgio.c:963
+#: rpmdb/pkgio.c:806 rpmdb/pkgio.c:983
 #, c-format
 msgid "region trailer: BAD, tag %u type %u offset %d count %u"
 msgstr "regionavslutning: FEL, tagg %u typ %u position %d antal %u"
 
-#: rpmdb/pkgio.c:800 rpmdb/pkgio.c:975
+#: rpmdb/pkgio.c:818 rpmdb/pkgio.c:995
 #, c-format
 msgid "region size: BAD, ril(%u) > il(%u)"
 msgstr "regionstorlek: FEL, ril(%u) > il(%u)"
 
-#: rpmdb/pkgio.c:811
+#: rpmdb/pkgio.c:829
 #, c-format
 msgid "sigh tag[%u]: BAD, tag %u type %u offset %d count %u"
 msgstr "signh-tagg[%u]: FEL, tagg %u typ %u position %d antal %u"
 
-#: rpmdb/pkgio.c:821
+#: rpmdb/pkgio.c:839
 #, c-format
 msgid "sigh load: BAD"
 msgstr "signh-last: FEL"
 
-#: rpmdb/pkgio.c:834
+#: rpmdb/pkgio.c:852
 #, c-format
 msgid "sigh pad(%u): BAD, read %d bytes"
 msgstr "signh-utfyllnad(%u): FEL, läste %d byte"
 
-#: rpmdb/pkgio.c:847
+#: rpmdb/pkgio.c:865
 #, c-format
 msgid "sigh sigSize(%u): BAD, fstat(2) failed"
 msgstr "signh sig-storlek(%u): FEL, fstat(2) misslyckades"
 
-#: rpmdb/pkgio.c:915
+#: rpmdb/pkgio.c:935
 #, c-format
 msgid "blob size(%d): BAD, 8 + 16 * il(%u) + dl(%u)"
 msgstr "klickstorlek(%d): FEL, 8 + 16 · il(%u) + dl(%u)"
 
-#: rpmdb/pkgio.c:984
+#: rpmdb/pkgio.c:1004
 #, c-format
 msgid "tag[%u]: BAD, tag %u type %u offset %d count %u"
 msgstr "tagg[%u]: FEL, tagg %u typ %u position %d antal %u"
 
-#: rpmdb/pkgio.c:1002
+#: rpmdb/pkgio.c:1022
 #, c-format
 msgid "hdr SHA1: BAD, not hex"
 msgstr "hvd SHA1: FEL, ej hex"
 
-#: rpmdb/pkgio.c:1014
+#: rpmdb/pkgio.c:1034
 #, c-format
 msgid "hdr RSA: BAD, not binary"
 msgstr "hvd RSA: FEL, ej binärt"
 
-#: rpmdb/pkgio.c:1024
+#: rpmdb/pkgio.c:1044
 #, c-format
 msgid "hdr DSA: BAD, not binary"
 msgstr "hvd DSA: FEL, ej binärt"
 
-#: rpmdb/pkgio.c:1081 rpmdb/pkgio.c:1124
+#: rpmdb/pkgio.c:1101 rpmdb/pkgio.c:1144
 #, c-format
 msgid "skipping header with unverifiable V%u signature\n"
 msgstr "hoppar över huvud med overifierbar V%u-signatur\n"
 
-#: rpmdb/pkgio.c:1274
+#: rpmdb/pkgio.c:1295
 #, c-format
 msgid "hdr size(%u): BAD, read returned %d"
 msgstr "hvdstorlek(%u): FEL, läsning returnerade %d"
 
-#: rpmdb/pkgio.c:1284
+#: rpmdb/pkgio.c:1305
 #, c-format
 msgid "hdr magic: BAD, read %02x%02x%02x%02x%02x%02x%02x%02x"
 msgstr "hvd magiskt tal: FEL, läste %02x%02x%02x%02x%02x%02x%02x%02x"
 
-#: rpmdb/pkgio.c:1292
+#: rpmdb/pkgio.c:1313
 #, c-format
 msgid "hdr tags: BAD, no. of tags(%u) out of range"
 msgstr "hvdtaggar: FEL, antal taggar(%u) utanför intervall"
 
-#: rpmdb/pkgio.c:1299
+#: rpmdb/pkgio.c:1320
 #, c-format
 msgid "hdr data: BAD, no. of bytes(%u) out of range\n"
 msgstr "hvddata: FEL, antal byte(%u) utanför intervall\n"
 
-#: rpmdb/pkgio.c:1310
+#: rpmdb/pkgio.c:1331
 #, c-format
 msgid "hdr blob(%u): BAD, read returned %d"
 msgstr "hvdklick(%u): FEL, läsning returnerade %d"
 
-#: rpmdb/pkgio.c:1324
+#: rpmdb/pkgio.c:1345
 #, c-format
 msgid "hdr load: BAD\n"
 msgstr "hvdlast: FEL\n"
 
-#: rpmdb/rpmdb.c:379
+#: rpmdb/rpmdb.c:384
 #, c-format
 msgid "cannot open %s(%u) index using db%d - %s (%d)\n"
 msgstr "kan inte öppna %s(%u)-indexet med db%d - %s (%d)\n"
 
-#: rpmdb/rpmdb.c:399
+#: rpmdb/rpmdb.c:404
 #, c-format
 msgid "cannot open %s(%u) index\n"
 msgstr "kan inte öppna %s(%u)-indexet\n"
 
-#: rpmdb/rpmdb.c:850
+#: rpmdb/rpmdb.c:855
 #, c-format
 msgid "incorrect format: \"%s\": %s\n"
 msgstr "fel format: \"%s\": %s\n"
 
-#: rpmdb/rpmdb.c:1168
+#: rpmdb/rpmdb.c:1173
 msgid "no dbpath has been set\n"
 msgstr "ingen dbpath har satts\n"
 
-#: rpmdb/rpmdb.c:1466 rpmdb/rpmdb.c:1613 rpmdb/rpmdb.c:1669 rpmdb/rpmdb.c:2576
-#: rpmdb/rpmdb.c:2726 rpmdb/rpmdb.c:3522
+#: rpmdb/rpmdb.c:1471 rpmdb/rpmdb.c:1618 rpmdb/rpmdb.c:1674 rpmdb/rpmdb.c:2581
+#: rpmdb/rpmdb.c:2731 rpmdb/rpmdb.c:3527
 #, c-format
 msgid "error(%d) getting \"%s\" records from %s index\n"
 msgstr "fel(%d) när \"%s\"-poster hämtades från %s-indexet\n"
 
-#: rpmdb/rpmdb.c:1883
+#: rpmdb/rpmdb.c:1888
 msgid "miFreeHeader: skipping"
 msgstr "miFreeHeader: hoppar över"
 
-#: rpmdb/rpmdb.c:1893
+#: rpmdb/rpmdb.c:1898
 #, c-format
 msgid "error(%d) storing record #%d into %s\n"
 msgstr "fel(%d) när post nr. %d sparades i %s\n"
 
-#: rpmdb/rpmdb.c:2454
+#: rpmdb/rpmdb.c:2459
 msgid "rpmdb: skipping"
 msgstr "rpmdb: hoppar över"
 
-#: rpmdb/rpmdb.c:2454
+#: rpmdb/rpmdb.c:2459
 msgid "rpmdb: read"
 msgstr "rpmdb: läser"
 
-#: rpmdb/rpmdb.c:2489
+#: rpmdb/rpmdb.c:2494
 #, c-format
 msgid "rpmdb: damaged header #%u retrieved -- skipping.\n"
 msgstr "rpmdb: skadat huvud nr. %u hämtat -- hoppar över.\n"
 
-#: rpmdb/rpmdb.c:2825
+#: rpmdb/rpmdb.c:2830
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: kan inte läsa huvud vid 0x%x\n"
 
-#: rpmdb/rpmdb.c:2896
+#: rpmdb/rpmdb.c:2901
 #, c-format
 msgid "error(%d) setting header #%d record for %s removal\n"
 msgstr "fel(%d) när huvudpost nr. %d  för %s skulle tas bort\n"
 
-#: rpmdb/rpmdb.c:3046
+#: rpmdb/rpmdb.c:3051
 #, c-format
 msgid "error(%d) setting \"%s\" records from %s index\n"
 msgstr "fel(%d) när \"%s\"-poster från %s-indexet sattes\n"
 
-#: rpmdb/rpmdb.c:3067
+#: rpmdb/rpmdb.c:3072
 #, c-format
 msgid "error(%d) storing record \"%s\" into %s\n"
 msgstr "fel(%d) när post \"%s\" sparades i %s\n"
 
-#: rpmdb/rpmdb.c:3077
+#: rpmdb/rpmdb.c:3082
 #, c-format
 msgid "error(%d) removing record \"%s\" from %s\n"
 msgstr "fel(%d) när post \"%s\" togs bort från %s\n"
 
-#: rpmdb/rpmdb.c:3252
+#: rpmdb/rpmdb.c:3257
 #, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr "fel(%d) vid allokering av ny paketinstans\n"
 
-#: rpmdb/rpmdb.c:3326
+#: rpmdb/rpmdb.c:3331
 msgid "rpmdbAdd: skipping"
 msgstr "rpmdbAdd: hoppar över"
 
-#: rpmdb/rpmdb.c:3541
+#: rpmdb/rpmdb.c:3546
 #, c-format
 msgid "error(%d) storing record %s into %s\n"
 msgstr "fel(%d) när post %s sparades i %s\n"
 
-#: rpmdb/rpmdb.c:3967
+#: rpmdb/rpmdb.c:3972
 #, c-format
 msgid "temporary database %s already exists\n"
 msgstr "tillfällig databas %s existerar redan\n"
 
-#: rpmdb/rpmdb.c:3975
+#: rpmdb/rpmdb.c:3980
 #, c-format
 msgid "creating directory %s: %s\n"
 msgstr "skapar katalog %s: %s\n"
 
-#: rpmdb/rpmdb.c:4022
+#: rpmdb/rpmdb.c:4027
 #, c-format
 msgid "header #%u in the database is bad -- skipping.\n"
 msgstr "huvud nr. %u i databasen är felaktigt -- hoppar över.\n"
 
-#: rpmdb/rpmdb.c:4030
+#: rpmdb/rpmdb.c:4035
 #, c-format
 msgid "header #%u in the database is SRPM -- skipping.\n"
 msgstr "huvud nr. %u i databasen är en SRPM -- hoppar över.\n"
 
-#: rpmdb/rpmdb.c:4070
+#: rpmdb/rpmdb.c:4075
 #, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "kan inte lägga till post ursprungligen vid %u\n"
 
-#: rpmdb/rpmdb.c:4084
+#: rpmdb/rpmdb.c:4089
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr "kunde inte bygga om databasen: orginaldatabasen finns kvar\n"
 
-#: rpmdb/rpmdb.c:4096
+#: rpmdb/rpmdb.c:4101
 msgid "failed to replace old database with new database!\n"
 msgstr "kunde inte ersätta gammal databas med ny databas!\n"
 
-#: rpmdb/rpmdb.c:4098
+#: rpmdb/rpmdb.c:4103
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "byt ut filer i %s med filer från %s för att återställa"
 
-#: rpmdb/rpmdb.c:4110
+#: rpmdb/rpmdb.c:4115
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "kunde inte ta bort katalogen %s: %s\n"
 
-#: rpmdb/signature.c:97 rpmdb/signature.c:102 rpmdb/signature.c:108
+#: rpmdb/signature.c:89 rpmdb/signature.c:98 rpmdb/signature.c:103
+#: rpmdb/signature.c:109
 #, c-format
 msgid "error creating temporary file %s\n"
 msgstr "fel när tämporärfil %s skapades\n"
 
-#: rpmdb/signature.c:190 rpmdb/signature.c:534
+#: rpmdb/signature.c:191 rpmdb/signature.c:535
 #, c-format
 msgid "Could not exec %s: %s\n"
 msgstr "Kunde inte köra %s: %s\n"
 
-#: rpmdb/signature.c:208 rpmdb/signature.c:548
+#: rpmdb/signature.c:209 rpmdb/signature.c:549
 #, c-format
 msgid "Failed %s(%d) key(0x%lx): %s\n"
 msgstr "Misslyckades med %s(%d) nyckel(0x%lx): %s\n"
 
-#: rpmdb/signature.c:234
+#: rpmdb/signature.c:235
 #, c-format
 msgid "gpg exec failed (%d)\n"
 msgstr "exec av gpg misslyckades (%d)\n"
 
-#: rpmdb/signature.c:241
+#: rpmdb/signature.c:242
 msgid "gpg failed to write signature\n"
 msgstr "gpg kunde inte skriva signatur\n"
 
-#: rpmdb/signature.c:260
+#: rpmdb/signature.c:261
 msgid "unable to read the signature\n"
 msgstr "kan inte läsa signaturen\n"
 
-#: rpmdb/signature.c:600
+#: rpmdb/signature.c:601
 msgid "Header+Payload size: "
 msgstr "Huvud+laststorlek: "
 
-#: rpmdb/signature.c:637
+#: rpmdb/signature.c:638
 msgid "MD5 digest: "
 msgstr "MD5-summa: "
 
-#: rpmdb/signature.c:694
+#: rpmdb/signature.c:695
 msgid "Header SHA1 digest: "
 msgstr "Huvudets SHA1-summa: "
 
-#: rpmdb/signature.c:754 rpmdb/signature.c:880
+#: rpmdb/signature.c:755 rpmdb/signature.c:881
 msgid "Header "
 msgstr "Huvud "
 
-#: rpmdb/signature.c:810
+#: rpmdb/signature.c:811
 msgid " signature: "
 msgstr " signatur: "
 
-#: rpmdb/signature.c:886
+#: rpmdb/signature.c:887
 msgid " DSA signature: "
 msgstr " DSA-signatur: "
 
-#: rpmdb/signature.c:961
+#: rpmdb/signature.c:962
 #, c-format
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr "Verifiera signatur: FELAKTIGA PARAMETRAR\n"
 
-#: rpmdb/signature.c:982
+#: rpmdb/signature.c:983
 #, c-format
 msgid "Signature: UNKNOWN (%u)\n"
 msgstr "Signatur: OKÄND (%u)\n"
 
-#: rpmdb/sqlite.c:670
+#: rpmdb/sqlite.c:675
 #, c-format
 msgid "Unable to get lock on db %s, retrying... (%d)\n"
 msgstr "Kan inte få ett lås på db %s, försöker igen ... (%d)\n"
@@ -3555,41 +3615,41 @@ msgstr "Makro %%%s (%s) användes inte under nivå %d\n"
 msgid "Unknown option %c in %s(%s)\n"
 msgstr "Okänd flagga %c i %s(%s)\n"
 
-#: rpmio/macro.c:1381
+#: rpmio/macro.c:1405
 #, c-format
 msgid "Recursion depth(%d) greater than max(%d)\n"
 msgstr "Rekursionsdjup(%d) större än max(%d)\n"
 
-#: rpmio/macro.c:1455 rpmio/macro.c:1472
+#: rpmio/macro.c:1479 rpmio/macro.c:1496
 #, c-format
 msgid "Unterminated %c: %s\n"
 msgstr "Oavslutad %c: %s\n"
 
-#: rpmio/macro.c:1517
+#: rpmio/macro.c:1541
 #, c-format
 msgid "A %% is followed by an unparseable macro\n"
 msgstr "Ett %% följs av ett makro som inte kan tolkas\n"
 
-#: rpmio/macro.c:1715
+#: rpmio/macro.c:1741
 #, c-format
 msgid "Macro %%%.*s not found, skipping\n"
 msgstr "Inget makro %%%.*s hittat, hoppar över\n"
 
-#: rpmio/macro.c:2073
+#: rpmio/macro.c:2099
 msgid "Macro expansion too big for target buffer\n"
 msgstr "Makroexpansionen är för stor för målbufferten\n"
 
-#: rpmio/macro.c:2107
+#: rpmio/macro.c:2133
 #, c-format
 msgid "Macro '%s' is readonly and cannot be changed.\n"
 msgstr "Makrot \"%s\" är endast läsbart och kan inte ändras.\n"
 
-#: rpmio/macro.c:2356 rpmio/macro.c:2362
+#: rpmio/macro.c:2382 rpmio/macro.c:2388
 #, c-format
 msgid "File %s: %s\n"
 msgstr "Fil %s: %s\n"
 
-#: rpmio/macro.c:2365
+#: rpmio/macro.c:2391
 #, c-format
 msgid "File %s is smaller than %u bytes\n"
 msgstr "Filen %s är mindre än %u byte\n"

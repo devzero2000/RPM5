@@ -410,6 +410,8 @@ extern struct pgpValTbl_s pgpCompressionTbl[];
  * @todo Add SHA256.
  */
 typedef enum pgpHashAlgo_e {
+    PGPHASHALGO_ERROR		=  -1,
+    PGPHASHALGO_NONE		=  0,
     PGPHASHALGO_MD5		=  1,	/*!< MD5 */
     PGPHASHALGO_SHA1		=  2,	/*!< SHA-1 */
     PGPHASHALGO_RIPEMD160	=  3,	/*!< RIPEMD-160 */
@@ -1287,7 +1289,7 @@ int pgpValTok(pgpValTbl vs, const char * s, const char * se)
 {
     do {
 	size_t vlen = strlen(vs->str);
-	if (vlen <= (se-s) && !strncmp(s, vs->str, vlen))
+	if (vlen <= (size_t)(se-s) && !strncmp(s, vs->str, vlen))
 	    break;
     } while ((++vs)->val != -1);
     return vs->val;
@@ -1441,7 +1443,7 @@ char * pgpArmorWrap(int atype, const unsigned char * s, size_t ns)
 	/*@*/;
 
 /** \ingroup rpmpgp
- * Convert a hash algorithm <name> to the internal PGPHASHALGO_<name> number
+ * Convert a hash algorithm "foo" to the internal PGPHASHALGO_FOO number.
  * @param name		name of hash algorithm
  * @param name_len		length of name or 0 for strlen(name)
  * @return		PGPHASHALGO_<name> or -1 in case of error
@@ -1545,7 +1547,6 @@ uint32_t pgpGetSigtag(const pgpDig dig)
 /** \ingroup rpmpgp
  * Get signature tag type.
  * @param dig		signature parameters container
- * @param ts		transaction set
  * @return		signature tag type
  */
 uint32_t pgpGetSigtype(const pgpDig dig)
@@ -1595,7 +1596,7 @@ void * pgpStatsAccumulator(pgpDig dig, int opx)
  * Set find pubkey vector.
  * @param dig		signature parameters container
  * @param findPubkey	routine to find a pubkey.
- * @param ts		argument to (*findPubkey) (ts)
+ * @param _ts		argument to (*findPubkey) (ts, ...)
  * @return		0 always
  */
 int pgpSetFindPubkey(pgpDig dig,
@@ -1614,6 +1615,7 @@ int pgpFindPubkey(pgpDig dig)
 /** \ingroup rpmpgp
  * Is buffer at beginning of an OpenPGP packet?
  * @param p		buffer
+ * @retval *tagp	OpenPGP tag
  * @return		1 if an OpenPGP packet, 0 otherwise
  */
 /*@unused@*/ static inline
@@ -1663,7 +1665,7 @@ int pgpIsPkt(const uint8_t * p, /*@null@*/ pgpTag * tagp)
 	rc = 0;
 	break;
     }
-    if (tagp)
+    if (tagp != NULL)
 	*tagp = tag;
     return rc;
 }
@@ -1731,8 +1733,8 @@ int rpmDigestUpdate(/*@null@*/ DIGEST_CTX ctx, const void * data, size_t len)
  * 1 0* (64-bit count of bits processed, MSB-first)
  *
  * @param ctx		digest context
- * @retval datap	address of returned digest
- * @retval lenp		address of digest length
+ * @retval *datap	digest
+ * @retval *lenp	no. bytes of digest
  * @param asAscii	return digest as ascii string?
  * @return		0 on success
  */
