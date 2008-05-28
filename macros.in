@@ -978,6 +978,12 @@ print (t)\
 # Permit network access? (".fdio" prohibits network access)
 %_rpmgio	.fdio
 
+#
+# UUIDv3/UUIDv5 namespace URI macros. The complete canonical path is
+#	%_uuid_uri	%{?_uuid_auth}/%{?_uuid_path}/Tagname/Tagvalue
+%_uuid_auth	http://rpm5.org/
+%_uuid_path	/package
+
 #==============================================================================
 # ---- Run-time probe dependency macros.
 
