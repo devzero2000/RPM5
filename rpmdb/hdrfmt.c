@@ -1393,7 +1393,9 @@ static int origintid_uuidTag(Header h, HE_t he)
 /*@unchecked@*/ /*@observer@*/
 static const char uuid_ns[] = "ns:URL";
 /*@unchecked@*/ /*@observer@*/
-static const char uuid_url[] = "http://rpm5.org/";
+static const char uuid_auth[] = "%{?_uuid_auth}%{!?_uuid_auth:http://rpm5.org}";
+/*@unchecked@*/ /*@observer@*/
+static const char uuid_path[] = "%{?_uuid_path}%{!?_uuid_path:/package}";
 /*@unchecked@*/ /*@observer@*/
 static int uuid_version = 5;
 
@@ -1410,8 +1412,15 @@ static int str2uuid(HE_t he, /*@null@*/ const char ** av,
 	/*@modifies he @*/
 {
     const char * ns = NULL;
+    const char * tagn = tagName(he->tag);
     const char * s = NULL;
     int rc;
+
+    /* XXX Substitute Pkgid & Hdrid strings for aliases. */
+    if (!strcmp("Sigmd5", tagn))
+	tagn = "Pkgid";
+    else if (!strcmp("Sha1header", tagn))
+	tagn = "Hdrid";
 
     switch (version) {
     default:
@@ -1421,7 +1430,8 @@ static int str2uuid(HE_t he, /*@null@*/ const char ** av,
     case 5:
 assert(he->t == RPM_STRING_TYPE);
 	ns = uuid_ns;
-	s = rpmExpand(uuid_url, he->p.str, NULL);
+	s = rpmGetPath(uuid_auth, "/", uuid_path, "/", tagn, "/",
+			he->p.str, NULL);
 	/*@fallthrough@*/
     case 4:
 	break;
