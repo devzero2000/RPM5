@@ -440,7 +440,7 @@ static const char *other_sql_init[] = {
 static const char primary_sql_qfmt[] = "\
 INSERT into packages values (\
 '%{DBINSTANCE}'\
-, '%|HDRID?{%{HDRID}}:{XXX}|'\
+, '%|PACKAGEDIGEST?{%{PACKAGEDIGEST}}|'\
 ,\n '%{NAME:sqlescape}'\
 , '%{ARCH:sqlescape}'\
 , '%{VERSION:sqlescape}'\
@@ -459,10 +459,10 @@ INSERT into packages values (\
 ,\n '%{HEADERSTARTOFF}'\
 , '%{HEADERENDOFF}'\
 , '%|PACKAGER?{%{PACKAGER:sqlescape}}|'\
-, '%{SIZE}'\
+, '%{PACKAGESIZE}'\
 , '%{SIZE}'\
 , '%{ARCHIVESIZE}'\
-,\n '%{PACKAGEORIGIN:sqlescape}'\
+,\n '%{PACKAGEORIGIN:bncdata}'\
 ,\n '%{PACKAGEORIGIN:sqlescape}'\
 , 'sha'\
 );\
@@ -503,7 +503,7 @@ INSERT into packages values (\
 static const char filelists_sql_qfmt[] = "\
 INSERT into packages values (\
 '%{DBINSTANCE}'\
-, '%|HDRID?{%{HDRID}}:{XXX}|'\
+, '%|PACKAGEDIGEST?{%{PACKAGEDIGEST}}|'\
 );\
 %|basenames?{[\
 \nINSERT into filelist values (\
@@ -523,7 +523,7 @@ INSERT into packages values (\
 static const char other_sql_qfmt[] = "\
 INSERT into packages values (\
 '%{DBINSTANCE}'\
-, '%|HDRID?{%{HDRID}}:{XXX}|'\
+, '%|PACKAGEDIGEST?{%{PACKAGEDIGEST}}|'\
 );\
 %|changelogname?{[\
 \nINSERT into changelog values (\
