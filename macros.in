@@ -989,6 +989,12 @@ print (t)\
 %_rpmgi_pattern_glob	%{_rpmdir}/*/
 %_rpmgi_pattern_regex()	^.+/%1-[^-]+-[^-]+\\.[^.]+\\.rpm$
 
+#
+# UUIDv3/UUIDv5 namespace URI macros. The complete canonical path is
+#	%_uuid_uri	%{?_uuid_auth}/%{?_uuid_path}/Tagname/Tagvalue
+%_uuid_auth	http://rpm5.org/
+%_uuid_path	/package
+
 #==============================================================================
 # ---- Run-time probe dependency macros.
 

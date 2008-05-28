@@ -1,5 +1,6 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: simple parameterized namespace URI for Pkgid/Hdrid UUID generation.
     - jbj: rpmrepo: compute digests for both compressed & uncompressed
 	repository markup components.
     - jbj: leagacy: eliminate (unused) domd5(). use dodigest instead.
