@@ -1,4 +1,7 @@
 4.4.9 -> 4.5:
+	- jbj: rpmrepo: populate sqlite schema with PACKAGESIZE and PACKAGEDIGEST.
+	- jbj: rpmrepo: compute digests for both compressed & uncompressed
+	       repository markup components.
 	- jbj: retrofit additional ARGV_t argument through header formats.
 	- jbj: retrofit RPM_UINT*_TYPE as defines.
 	- jbj: add RPMTAG_PACKAGESIZE, with header tag extensions based on statbuf.
