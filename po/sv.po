@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.5\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2007-10-02 10:41-0400\n"
+"POT-Creation-Date: 2007-11-03 12:31-0400\n"
 "PO-Revision-Date: 2007-10-01 15:34+0200\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <tp-sv@listor.tp-sv.se>\n"
@@ -105,7 +105,7 @@ msgstr "Gemensamma flaggor för alla rpm-lägen och binärer:"
 msgid "%s: %s\n"
 msgstr "%s: %s\n"
 
-#: rpmqv.c:151 lib/poptALL.c:146
+#: rpmqv.c:151 lib/poptALL.c:149
 #, c-format
 msgid "RPM version %s\n"
 msgstr "RPM version %s\n"
@@ -1263,17 +1263,17 @@ msgstr "utför inga steg i byggnationen"
 msgid "do not verify build dependencies"
 msgstr "verifiera inte byggberoenden"
 
-#: build/poptBT.c:204 lib/poptALL.c:367 lib/poptI.c:323 lib/poptQV.c:415
+#: build/poptBT.c:204 lib/poptALL.c:370 lib/poptI.c:323 lib/poptQV.c:415
 #: lib/poptQV.c:424 lib/poptQV.c:466
 msgid "don't verify package digest(s)"
 msgstr "verifiera inte paketkontrollsummor"
 
-#: build/poptBT.c:206 lib/poptALL.c:369 lib/poptI.c:325 lib/poptQV.c:418
+#: build/poptBT.c:206 lib/poptALL.c:372 lib/poptI.c:325 lib/poptQV.c:418
 #: lib/poptQV.c:426 lib/poptQV.c:469
 msgid "don't verify database header(s) when retrieved"
 msgstr "verifiera inte databashuvuden när de hämtas"
 
-#: build/poptBT.c:208 lib/poptALL.c:375 lib/poptI.c:327 lib/poptQV.c:421
+#: build/poptBT.c:208 lib/poptALL.c:378 lib/poptI.c:327 lib/poptQV.c:421
 #: lib/poptQV.c:428 lib/poptQV.c:471
 msgid "don't verify package signature(s)"
 msgstr "verifiera inte paketsignatur(er)"
@@ -1302,7 +1302,7 @@ msgstr "generera en PGP/GPG-signatur"
 msgid "override target platform"
 msgstr "åsidosätt målplattform"
 
-#: build/poptBT.c:221 lib/poptALL.c:364 lib/poptQV.c:326
+#: build/poptBT.c:221 lib/poptALL.c:367 lib/poptQV.c:326
 msgid "CPU-VENDOR-OS"
 msgstr "CPU-TILLVERKARE-OS"
 
@@ -1489,28 +1489,28 @@ msgstr "LOOP:\n"
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr "rpmtsOrder misslyckades, %d element återstår\n"
 
-#: lib/formats.c:44 lib/formats.c:76 lib/formats.c:111 lib/formats.c:192
-#: lib/formats.c:786
+#: lib/formats.c:87 lib/formats.c:116 lib/formats.c:138 lib/formats.c:210
+#: lib/formats.c:752
 msgid "(invalid type)"
 msgstr "(felaktig typ)"
 
-#: lib/formats.c:181
+#: lib/formats.c:198
 msgid "(not base64)"
 msgstr "(inte base64)"
 
-#: lib/formats.c:220 lib/formats.c:674
+#: lib/formats.c:235 lib/formats.c:647
 msgid "(not a blob)"
 msgstr "(inte en klick)"
 
-#: lib/formats.c:376
+#: lib/formats.c:389
 msgid "(invalid xml type)"
 msgstr "(felaktig xml-typ)"
 
-#: lib/formats.c:590
+#: lib/formats.c:580
 msgid "(invalid yaml type)"
 msgstr "(felaktig yaml-typ)"
 
-#: lib/formats.c:699
+#: lib/formats.c:670
 msgid "(not an OpenPGP signature)"
 msgstr "(inte en OpenPGP-signatur)"
 
@@ -1698,199 +1698,217 @@ msgstr ""
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: Fread misslyckades: %s\n"
 
-#: lib/poptALL.c:279
+#: lib/poptALL.c:282
 msgid "FTS_COMFOLLOW: follow command line symlinks"
 msgstr "FTS_COMFOLLOW: följ kommandoradssymlänkar"
 
-#: lib/poptALL.c:281
+#: lib/poptALL.c:284
 msgid "FTS_LOGICAL: logical walk"
 msgstr "FTS_LOGICAL: genomlöp logiskt"
 
-#: lib/poptALL.c:283
+#: lib/poptALL.c:286
 msgid "FTS_NOCHDIR: don't change directories"
 msgstr "FTS_NOCHDIR: byt inte katalog"
 
-#: lib/poptALL.c:285
+#: lib/poptALL.c:288
 msgid "FTS_NOSTAT: don't get stat info"
 msgstr "FTS_NOSTAT: hämta inte statusinfo"
 
-#: lib/poptALL.c:287
+#: lib/poptALL.c:290
 msgid "FTS_PHYSICAL: physical walk"
 msgstr "FTS_PHYSICAL: genomlöp fysiskt"
 
-#: lib/poptALL.c:289
+#: lib/poptALL.c:292
 msgid "FTS_SEEDOT: return dot and dot-dot"
 msgstr "FTS_SEEDOT: returnera punkt som punkt-punkt"
 
-#: lib/poptALL.c:291
+#: lib/poptALL.c:294
 msgid "FTS_XDEV: don't cross devices"
 msgstr "FTS_XDEV: gå inte mellan enheter"
 
-#: lib/poptALL.c:293
+#: lib/poptALL.c:296
 msgid "FTS_WHITEOUT: return whiteout information"
 msgstr "FTS_WHITEOUT: returnera belyst information"
 
-#: lib/poptALL.c:303 lib/poptQV.c:296 lib/poptQV.c:343
+#: lib/poptALL.c:306 lib/poptQV.c:296 lib/poptQV.c:343
 msgid "add suggested packages to transaction"
 msgstr "lägg till föreslagna paket till transaktion"
 
-#: lib/poptALL.c:306
+#: lib/poptALL.c:309
 msgid "use anaconda \"presentation order\""
 msgstr "använda anacondas \"presentationsordning\""
 
-#: lib/poptALL.c:309
+#: lib/poptALL.c:312
 msgid "print dependency loops as warning"
 msgstr "skriv ut beroendeslingor som varningar"
 
-#: lib/poptALL.c:312
+#: lib/poptALL.c:315
 msgid "do not suggest missing dependency resolution(s)"
 msgstr "föreslå inte lösning(ar) på saknade beroenden"
 
-#: lib/poptALL.c:315
+#: lib/poptALL.c:318
 msgid "do not check added package conflicts"
 msgstr "kontrollera inte konflikter med tillagda paket"
 
-#: lib/poptALL.c:318 lib/poptALL.c:321
-msgid "ignore added package requires on symlink targets"
+#: lib/poptALL.c:321
+#, fuzzy
+msgid "use added package requires on symlink targets"
 msgstr "ignorera tillagda pakets krav på mål som är symboliska länkar"
 
 #: lib/poptALL.c:324
+msgid "ignore added package requires on symlink targets"
+msgstr "ignorera tillagda pakets krav på mål som är symboliska länkar"
+
+#: lib/poptALL.c:327
 msgid "ignore added package obsoletes"
 msgstr "ignorera tillagta pakets föråldranden"
 
-#: lib/poptALL.c:327 lib/poptALL.c:330
-msgid "ignore added package requires on file parent directory"
+#: lib/poptALL.c:330
+#, fuzzy
+msgid "use added package requires on file parent directory"
 msgstr "ignorerea tillagda paketkrav på filers föräldrakatalog"
 
 #: lib/poptALL.c:333
+msgid "ignore added package requires on file parent directory"
+msgstr "ignorerea tillagda paketkrav på filers föräldrakatalog"
+
+#: lib/poptALL.c:336
 msgid "do not check added package requires"
 msgstr "kontrollera inte tillagda pakets krav"
 
-#: lib/poptALL.c:336
+#: lib/poptALL.c:339
 msgid "ignore added package upgrades"
 msgstr "ignorera tillagda paketsuppgraderingar"
 
-#: lib/poptALL.c:352
+#: lib/poptALL.c:355
 msgid "predefine MACRO with value EXPR"
 msgstr "fördefiniera MAKRO till värdet UTTR"
 
-#: lib/poptALL.c:353 lib/poptALL.c:356
+#: lib/poptALL.c:356 lib/poptALL.c:359
 msgid "'MACRO EXPR'"
 msgstr "'MAKRO UTTR'"
 
-#: lib/poptALL.c:355
+#: lib/poptALL.c:358
 msgid "define MACRO with value EXPR"
 msgstr "definiera MAKRO till värdet UTTR"
 
-#: lib/poptALL.c:358
+#: lib/poptALL.c:361
 msgid "print macro expansion of EXPR"
 msgstr "skriv ut makroexpansion av UTTR"
 
-#: lib/poptALL.c:359
+#: lib/poptALL.c:362
 msgid "'EXPR'"
 msgstr "'UTTR'"
 
-#: lib/poptALL.c:361 lib/poptALL.c:382 lib/poptALL.c:386
+#: lib/poptALL.c:364 lib/poptALL.c:385 lib/poptALL.c:389
 msgid "read <FILE:...> instead of default file(s)"
 msgstr "läs <FIL:...> istället för standardfil(er)"
 
-#: lib/poptALL.c:362 lib/poptALL.c:383 lib/poptALL.c:387
+#: lib/poptALL.c:365 lib/poptALL.c:386 lib/poptALL.c:390
 msgid "<FILE:...>"
 msgstr "<FIL:...>"
 
-#: lib/poptALL.c:364 lib/poptQV.c:326
+#: lib/poptALL.c:367 lib/poptQV.c:326
 msgid "specify target platform"
 msgstr "ange målplattform"
 
-#: lib/poptALL.c:372 lib/poptALL.c:406
+#: lib/poptALL.c:375 lib/poptALL.c:409
 msgid "disable use of libio(3) API"
 msgstr "inaktivera användningen av libio(3)-API:et"
 
-#: lib/poptALL.c:378
+#: lib/poptALL.c:381
 msgid "send stdout to CMD"
 msgstr "skicka standard ut till KMD"
 
-#: lib/poptALL.c:379
+#: lib/poptALL.c:382
 msgid "CMD"
 msgstr "KMD"
 
-#: lib/poptALL.c:390
+#: lib/poptALL.c:393
 msgid "use ROOT as top level directory"
 msgstr "använd ROT som toppnivåkatalog"
 
-#: lib/poptALL.c:391
+#: lib/poptALL.c:394
 msgid "ROOT"
 msgstr "ROT"
 
-#: lib/poptALL.c:394
+#: lib/poptALL.c:397
 msgid "display known query tags"
 msgstr "visa kända frågetaggar"
 
-#: lib/poptALL.c:396
+#: lib/poptALL.c:399
 msgid "display final rpmrc and macro configuration"
 msgstr "visa slutliga rpmrc- och makrokonfigurationer"
 
-#: lib/poptALL.c:398
+#: lib/poptALL.c:401
 msgid "provide less detailed output"
 msgstr "visa mindre detaljerad utdata"
 
-#: lib/poptALL.c:400
+#: lib/poptALL.c:403
 msgid "provide more detailed output"
 msgstr "visa mer detaljerad utdata"
 
-#: lib/poptALL.c:402
+#: lib/poptALL.c:405
 msgid "print the version of rpm being used"
 msgstr "visa vilken version av rpm som används"
 
-#: lib/poptALL.c:413
+#: lib/poptALL.c:416
 msgid "debug cpio payloads"
 msgstr "felsök cpio-laster"
 
-#: lib/poptALL.c:417
+#: lib/poptALL.c:420
 msgid "debug payload file state machine"
 msgstr "felsök lastfilstillståndsmaskin"
 
-#: lib/poptALL.c:419
+#: lib/poptALL.c:422
 msgid "use threads for file state machine"
 msgstr "använd trådar för filtillståndsmaskin"
 
-#: lib/poptALL.c:421
+#: lib/poptALL.c:424
 msgid "debug FTP/HTTP data stream"
 msgstr "felsök FTP/HTTP-dataström"
 
-#: lib/poptALL.c:423
+#: lib/poptALL.c:426
 msgid "debug argv collections"
 msgstr "felsök argv-samlingar"
 
-#: lib/poptALL.c:425
+#: lib/poptALL.c:428
 msgid "debug WebDAV data stream"
 msgstr "felsök WebDAV-dataström"
 
-#: lib/poptALL.c:432
+#: lib/poptALL.c:435
 msgid "debug option/argument processing"
 msgstr "felsök flagg-/argumenthantering"
 
-#: lib/poptALL.c:437
+#: lib/poptALL.c:440
 msgid "debug package state machine"
 msgstr "felsök pakettillståndsmaskin"
 
-#: lib/poptALL.c:439
+#: lib/poptALL.c:442
 msgid "use threads for package state machine"
 msgstr "använd trådar för pakettillståndsmaskin"
 
-#: lib/poptALL.c:453
+#: lib/poptALL.c:456
 msgid "debug rpmio I/O"
 msgstr "felsök rpmio I/O"
 
-#: lib/poptALL.c:465
+#: lib/poptALL.c:468
 msgid "debug tar payloads"
 msgstr "felsök tar-laster"
 
-#: lib/poptALL.c:469
+#: lib/poptALL.c:472
 msgid "debug URL cache handling"
 msgstr "felsök cache-hanteringen av URL:ar"
 
-#: lib/poptALL.c:554
+#: lib/poptALL.c:475
+msgid "disable tag data caching"
+msgstr ""
+
+#: lib/poptALL.c:477
+msgid "enable tag data caching"
+msgstr ""
+
+#: lib/poptALL.c:562
 #, c-format
 msgid "%s: option table misconfigured (%d)\n"
 msgstr "%s: flaggtabell felkonfigurerad (%d)\n"
@@ -3402,82 +3420,83 @@ msgstr "%s har för stort eller för litet \"long\"-värde, hoppar över\n"
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr "%s har för stort eller för litet heltalsvärde, hoppar över\n"
 
-#: rpmdb/header.c:2822
-msgid "missing { after %"
-msgstr "{ saknas efter %"
-
-#: rpmdb/header.c:2852
-msgid "missing } after %{"
-msgstr "} saknas efter %{"
-
-#: rpmdb/header.c:2868
-msgid "empty tag format"
-msgstr "tomt taggformat"
-
-#: rpmdb/header.c:2880
-msgid "empty tag name"
-msgstr "tomt taggnamn"
-
-#: rpmdb/header.c:2889
-msgid "unknown tag"
-msgstr "okänd tagg"
-
-#: rpmdb/header.c:2916
-msgid "] expected at end of array"
-msgstr "] förväntades vid slutet på vektor"
-
-#: rpmdb/header.c:2929
-msgid "unexpected ]"
-msgstr "oväntad ]"
-
-#: rpmdb/header.c:2942
-msgid "unexpected }"
-msgstr "oväntad }"
-
-#: rpmdb/header.c:3006
-msgid "? expected in expression"
-msgstr "? förväntades i uttryck"
-
-#: rpmdb/header.c:3013
-msgid "{ expected after ? in expression"
-msgstr "{ förväntades efter ? i uttryck"
-
-#: rpmdb/header.c:3025 rpmdb/header.c:3065
-msgid "} expected in expression"
-msgstr "} förväntades i uttryck"
-
-#: rpmdb/header.c:3033
-msgid ": expected following ? subexpression"
-msgstr ": förväntades efter ? i deluttryck"
-
-#: rpmdb/header.c:3051
-msgid "{ expected after : in expression"
-msgstr "{ förväntades efter : i uttryck"
-
-#: rpmdb/header.c:3073
-msgid "| expected at end of expression"
-msgstr "| förväntades vid slutet på uttryck"
-
-#: rpmdb/header.c:3176
-msgid "(index out of range)"
-msgstr "(index utanför intervall)"
-
-#: rpmdb/header.c:3445
-msgid "array iterator used with different sized arrays"
-msgstr "vektoriterator använd med vektor av annan storlek"
-
-#: rpmdb/header.c:3759 rpmdb/header.c:3796 rpmdb/header.c:3819
+#: rpmdb/header.c:2713 rpmdb/header.c:2815
 msgid "(not a number)"
 msgstr "(inte ett tal)"
 
-#: rpmdb/header.c:3858
+#: rpmdb/header.c:2842
 #, c-format
 msgid "%c"
 msgstr "%c"
 
-#: rpmdb/header.c:3875
+#: rpmdb/header.c:2853
 msgid "%a %b %d %Y"
 msgstr "%a %d %b %Y"
+
+#: rpmdb/header.c:2901
+#, fuzzy
+msgid "invalid type"
+msgstr "(felaktig typ)"
+
+#: rpmdb/header.c:3025
+msgid "missing { after %"
+msgstr "{ saknas efter %"
+
+#: rpmdb/header.c:3055
+msgid "missing } after %{"
+msgstr "} saknas efter %{"
+
+#: rpmdb/header.c:3067
+msgid "empty tag format"
+msgstr "tomt taggformat"
+
+#: rpmdb/header.c:3079
+msgid "empty tag name"
+msgstr "tomt taggnamn"
+
+#: rpmdb/header.c:3088
+msgid "unknown tag"
+msgstr "okänd tagg"
+
+#: rpmdb/header.c:3110
+msgid "] expected at end of array"
+msgstr "] förväntades vid slutet på vektor"
+
+#: rpmdb/header.c:3123
+msgid "unexpected ]"
+msgstr "oväntad ]"
+
+#: rpmdb/header.c:3134
+msgid "unexpected }"
+msgstr "oväntad }"
+
+#: rpmdb/header.c:3196
+msgid "? expected in expression"
+msgstr "? förväntades i uttryck"
+
+#: rpmdb/header.c:3203
+msgid "{ expected after ? in expression"
+msgstr "{ förväntades efter ? i uttryck"
+
+#: rpmdb/header.c:3215 rpmdb/header.c:3255
+msgid "} expected in expression"
+msgstr "} förväntades i uttryck"
+
+#: rpmdb/header.c:3223
+msgid ": expected following ? subexpression"
+msgstr ": förväntades efter ? i deluttryck"
+
+#: rpmdb/header.c:3241
+msgid "{ expected after : in expression"
+msgstr "{ förväntades efter : i uttryck"
+
+#: rpmdb/header.c:3263
+msgid "| expected at end of expression"
+msgstr "| förväntades vid slutet på uttryck"
+
+#: rpmdb/header.c:3573
+msgid "array iterator used with different sized arrays"
+msgstr "vektoriterator använd med vektor av annan storlek"
 
 #: rpmdb/header_internal.c:164
 #, c-format
@@ -3957,6 +3976,9 @@ msgstr "skriv ut beroendemängden Requires:"
 #: tools/rpmdeps.c:210
 msgid "check Requires: against Provides: for dependency closure"
 msgstr "leta igenom Requires: mot Provides: efter beroendehölje"
+
+#~ msgid "(index out of range)"
+#~ msgstr "(index utanför intervall)"
 
 #~ msgid "initialize database"
 #~ msgstr "initiera databas"

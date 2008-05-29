@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.5\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2007-10-02 10:41-0400\n"
+"POT-Creation-Date: 2007-11-03 12:31-0400\n"
 "PO-Revision-Date: 1999-04-08 21:37+02:00\n"
 "Last-Translator: Stanislav Meduna <stano@eunet.sk>\n"
 "Language-Team: Slovak <sk-i18n@rak.isternet.sk>\n"
@@ -101,7 +101,7 @@ msgstr ""
 msgid "%s: %s\n"
 msgstr "súbor %s: %s\n"
 
-#: rpmqv.c:151 lib/poptALL.c:146
+#: rpmqv.c:151 lib/poptALL.c:149
 #, c-format
 msgid "RPM version %s\n"
 msgstr "RPM verzia %s\n"
@@ -1284,19 +1284,19 @@ msgstr "nevykona» ¾iadne etapy zostavenia"
 msgid "do not verify build dependencies"
 msgstr "neoverova» závislosti balíka"
 
-#: build/poptBT.c:204 lib/poptALL.c:367 lib/poptI.c:323 lib/poptQV.c:415
+#: build/poptBT.c:204 lib/poptALL.c:370 lib/poptI.c:323 lib/poptQV.c:415
 #: lib/poptQV.c:424 lib/poptQV.c:466
 #, fuzzy
 msgid "don't verify package digest(s)"
 msgstr "neoverova» závislosti balíka"
 
-#: build/poptBT.c:206 lib/poptALL.c:369 lib/poptI.c:325 lib/poptQV.c:418
+#: build/poptBT.c:206 lib/poptALL.c:372 lib/poptI.c:325 lib/poptQV.c:418
 #: lib/poptQV.c:426 lib/poptQV.c:469
 #, fuzzy
 msgid "don't verify database header(s) when retrieved"
 msgstr "neoverova» architektúru balíka"
 
-#: build/poptBT.c:208 lib/poptALL.c:375 lib/poptI.c:327 lib/poptQV.c:421
+#: build/poptBT.c:208 lib/poptALL.c:378 lib/poptI.c:327 lib/poptQV.c:421
 #: lib/poptQV.c:428 lib/poptQV.c:471
 #, fuzzy
 msgid "don't verify package signature(s)"
@@ -1329,7 +1329,7 @@ msgstr "vytvori» PGP/GPG podpis"
 msgid "override target platform"
 msgstr "predefinova» cieµovú platformu"
 
-#: build/poptBT.c:221 lib/poptALL.c:364 lib/poptQV.c:326
+#: build/poptBT.c:221 lib/poptALL.c:367 lib/poptQV.c:326
 msgid "CPU-VENDOR-OS"
 msgstr ""
 
@@ -1533,30 +1533,30 @@ msgstr ""
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""
 
-#: lib/formats.c:44 lib/formats.c:76 lib/formats.c:111 lib/formats.c:192
-#: lib/formats.c:786
+#: lib/formats.c:87 lib/formats.c:116 lib/formats.c:138 lib/formats.c:210
+#: lib/formats.c:752
 msgid "(invalid type)"
 msgstr ""
 
-#: lib/formats.c:181
+#: lib/formats.c:198
 #, fuzzy
 msgid "(not base64)"
 msgstr "(nie je èíslo)"
 
-#: lib/formats.c:220 lib/formats.c:674
+#: lib/formats.c:235 lib/formats.c:647
 #, fuzzy
 msgid "(not a blob)"
 msgstr "(nie je èíslo)"
 
-#: lib/formats.c:376
+#: lib/formats.c:389
 msgid "(invalid xml type)"
 msgstr ""
 
-#: lib/formats.c:590
+#: lib/formats.c:580
 msgid "(invalid yaml type)"
 msgstr ""
 
-#: lib/formats.c:699
+#: lib/formats.c:670
 #, fuzzy
 msgid "(not an OpenPGP signature)"
 msgstr "vynecha» akékoµvek PGP podpisy"
@@ -1747,213 +1747,230 @@ msgstr ""
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: readLead zlyhalo\n"
 
-#: lib/poptALL.c:279
+#: lib/poptALL.c:282
 msgid "FTS_COMFOLLOW: follow command line symlinks"
 msgstr ""
 
-#: lib/poptALL.c:281
+#: lib/poptALL.c:284
 msgid "FTS_LOGICAL: logical walk"
 msgstr ""
 
-#: lib/poptALL.c:283
+#: lib/poptALL.c:286
 #, fuzzy
 msgid "FTS_NOCHDIR: don't change directories"
 msgstr "vytvára sa adresár %s\n"
 
-#: lib/poptALL.c:285
+#: lib/poptALL.c:288
 msgid "FTS_NOSTAT: don't get stat info"
 msgstr ""
 
-#: lib/poptALL.c:287
+#: lib/poptALL.c:290
 msgid "FTS_PHYSICAL: physical walk"
 msgstr ""
 
-#: lib/poptALL.c:289
+#: lib/poptALL.c:292
 msgid "FTS_SEEDOT: return dot and dot-dot"
 msgstr ""
 
-#: lib/poptALL.c:291
+#: lib/poptALL.c:294
 msgid "FTS_XDEV: don't cross devices"
 msgstr ""
 
-#: lib/poptALL.c:293
+#: lib/poptALL.c:296
 msgid "FTS_WHITEOUT: return whiteout information"
 msgstr ""
 
-#: lib/poptALL.c:303 lib/poptQV.c:296 lib/poptQV.c:343
+#: lib/poptALL.c:306 lib/poptQV.c:296 lib/poptQV.c:343
 #, fuzzy
 msgid "add suggested packages to transaction"
 msgstr "opýta» sa v¹etkých balíkov v skupine"
 
-#: lib/poptALL.c:306
+#: lib/poptALL.c:309
 msgid "use anaconda \"presentation order\""
 msgstr ""
 
-#: lib/poptALL.c:309
+#: lib/poptALL.c:312
 msgid "print dependency loops as warning"
 msgstr ""
 
-#: lib/poptALL.c:312
+#: lib/poptALL.c:315
 msgid "do not suggest missing dependency resolution(s)"
 msgstr ""
 
-#: lib/poptALL.c:315
+#: lib/poptALL.c:318
 #, fuzzy
 msgid "do not check added package conflicts"
 msgstr "nevykona» ¾iadne skripty ¹pecifikované balíkom"
 
-#: lib/poptALL.c:318 lib/poptALL.c:321
+#: lib/poptALL.c:321
+#, fuzzy
+msgid "use added package requires on symlink targets"
+msgstr "nevykona» ¾iadne skripty ¹pecifikované balíkom"
+
+#: lib/poptALL.c:324
 msgid "ignore added package requires on symlink targets"
 msgstr ""
 
-#: lib/poptALL.c:324
+#: lib/poptALL.c:327
 msgid "ignore added package obsoletes"
 msgstr ""
 
-#: lib/poptALL.c:327 lib/poptALL.c:330
-msgid "ignore added package requires on file parent directory"
+#: lib/poptALL.c:330
+msgid "use added package requires on file parent directory"
 msgstr ""
 
 #: lib/poptALL.c:333
+msgid "ignore added package requires on file parent directory"
+msgstr ""
+
+#: lib/poptALL.c:336
 #, fuzzy
 msgid "do not check added package requires"
 msgstr "nevykona» ¾iadne skripty ¹pecifikované balíkom"
 
-#: lib/poptALL.c:336
+#: lib/poptALL.c:339
 #, fuzzy
 msgid "ignore added package upgrades"
 msgstr "¾iadny z balíkov neposkytuje %s\n"
 
-#: lib/poptALL.c:352
+#: lib/poptALL.c:355
 msgid "predefine MACRO with value EXPR"
 msgstr ""
 
-#: lib/poptALL.c:353 lib/poptALL.c:356
+#: lib/poptALL.c:356 lib/poptALL.c:359
 msgid "'MACRO EXPR'"
 msgstr ""
 
-#: lib/poptALL.c:355
+#: lib/poptALL.c:358
 msgid "define MACRO with value EXPR"
 msgstr ""
 
-#: lib/poptALL.c:358
+#: lib/poptALL.c:361
 #, fuzzy
 msgid "print macro expansion of EXPR"
 msgstr "vypísa» verziu pou¾ívaného rpm"
 
-#: lib/poptALL.c:359
+#: lib/poptALL.c:362
 msgid "'EXPR'"
 msgstr ""
 
-#: lib/poptALL.c:361 lib/poptALL.c:382 lib/poptALL.c:386
+#: lib/poptALL.c:364 lib/poptALL.c:385 lib/poptALL.c:389
 msgid "read <FILE:...> instead of default file(s)"
 msgstr ""
 
-#: lib/poptALL.c:362 lib/poptALL.c:383 lib/poptALL.c:387
+#: lib/poptALL.c:365 lib/poptALL.c:386 lib/poptALL.c:390
 msgid "<FILE:...>"
 msgstr ""
 
-#: lib/poptALL.c:364 lib/poptQV.c:326
+#: lib/poptALL.c:367 lib/poptQV.c:326
 #, fuzzy
 msgid "specify target platform"
 msgstr "predefinova» cieµovú platformu"
 
-#: lib/poptALL.c:372 lib/poptALL.c:406
+#: lib/poptALL.c:375 lib/poptALL.c:409
 msgid "disable use of libio(3) API"
 msgstr ""
 
-#: lib/poptALL.c:378
+#: lib/poptALL.c:381
 #, fuzzy
 msgid "send stdout to CMD"
 msgstr "posla» ¹tandardný výstup do <príkazu>"
 
-#: lib/poptALL.c:379
+#: lib/poptALL.c:382
 msgid "CMD"
 msgstr ""
 
-#: lib/poptALL.c:390
+#: lib/poptALL.c:393
 #, fuzzy
 msgid "use ROOT as top level directory"
 msgstr "pou¾i» <adresár> ako adresár najvy¹¹ej úrovne"
 
-#: lib/poptALL.c:391
+#: lib/poptALL.c:394
 msgid "ROOT"
 msgstr ""
 
-#: lib/poptALL.c:394
+#: lib/poptALL.c:397
 msgid "display known query tags"
 msgstr ""
 
-#: lib/poptALL.c:396
+#: lib/poptALL.c:399
 msgid "display final rpmrc and macro configuration"
 msgstr ""
 
-#: lib/poptALL.c:398
+#: lib/poptALL.c:401
 msgid "provide less detailed output"
 msgstr ""
 
-#: lib/poptALL.c:400
+#: lib/poptALL.c:403
 msgid "provide more detailed output"
 msgstr ""
 
-#: lib/poptALL.c:402
+#: lib/poptALL.c:405
 msgid "print the version of rpm being used"
 msgstr "vypísa» verziu pou¾ívaného rpm"
 
-#: lib/poptALL.c:413
+#: lib/poptALL.c:416
 msgid "debug cpio payloads"
 msgstr ""
 
-#: lib/poptALL.c:417
+#: lib/poptALL.c:420
 #, fuzzy
 msgid "debug payload file state machine"
 msgstr "chybný stav súboru: %s"
 
-#: lib/poptALL.c:419
+#: lib/poptALL.c:422
 #, fuzzy
 msgid "use threads for file state machine"
 msgstr "chybný stav súboru: %s"
 
-#: lib/poptALL.c:421
+#: lib/poptALL.c:424
 msgid "debug FTP/HTTP data stream"
 msgstr ""
 
-#: lib/poptALL.c:423
+#: lib/poptALL.c:426
 msgid "debug argv collections"
 msgstr ""
 
-#: lib/poptALL.c:425
+#: lib/poptALL.c:428
 msgid "debug WebDAV data stream"
 msgstr ""
 
-#: lib/poptALL.c:432
+#: lib/poptALL.c:435
 #, fuzzy
 msgid "debug option/argument processing"
 msgstr "Vnútorná chyba pri spracovaní argumentu (%d) :-(\n"
 
-#: lib/poptALL.c:437
+#: lib/poptALL.c:440
 #, fuzzy
 msgid "debug package state machine"
 msgstr "chybný stav súboru: %s"
 
-#: lib/poptALL.c:439
+#: lib/poptALL.c:442
 #, fuzzy
 msgid "use threads for package state machine"
 msgstr "chybný stav súboru: %s"
 
-#: lib/poptALL.c:453
+#: lib/poptALL.c:456
 msgid "debug rpmio I/O"
 msgstr ""
 
-#: lib/poptALL.c:465
+#: lib/poptALL.c:468
 msgid "debug tar payloads"
 msgstr ""
 
-#: lib/poptALL.c:469
+#: lib/poptALL.c:472
 msgid "debug URL cache handling"
 msgstr ""
 
-#: lib/poptALL.c:554
+#: lib/poptALL.c:475
+msgid "disable tag data caching"
+msgstr ""
+
+#: lib/poptALL.c:477
+msgid "enable tag data caching"
+msgstr ""
+
+#: lib/poptALL.c:562
 #, c-format
 msgid "%s: option table misconfigured (%d)\n"
 msgstr ""
@@ -3540,81 +3557,81 @@ msgstr ""
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr ""
 
-#: rpmdb/header.c:2822
-msgid "missing { after %"
-msgstr "chýbajúce { po %"
-
-#: rpmdb/header.c:2852
-msgid "missing } after %{"
-msgstr "chýbajúce } po %{"
-
-#: rpmdb/header.c:2868
-msgid "empty tag format"
-msgstr "prázdny tag formát"
-
-#: rpmdb/header.c:2880
-msgid "empty tag name"
-msgstr "prázdne meno tagu"
-
-#: rpmdb/header.c:2889
-msgid "unknown tag"
-msgstr "neznámy tag"
-
-#: rpmdb/header.c:2916
-msgid "] expected at end of array"
-msgstr "] oèakávané na konci poµa"
-
-#: rpmdb/header.c:2929
-msgid "unexpected ]"
-msgstr "neoèakávané ]"
-
-#: rpmdb/header.c:2942
-msgid "unexpected }"
-msgstr "neoèakávané }"
-
-#: rpmdb/header.c:3006
-msgid "? expected in expression"
-msgstr "? oèakávané vo výraze"
-
-#: rpmdb/header.c:3013
-msgid "{ expected after ? in expression"
-msgstr "{ oèakávané po ? vo výraze"
-
-#: rpmdb/header.c:3025 rpmdb/header.c:3065
-msgid "} expected in expression"
-msgstr "} oèakávané vo výraze"
-
-#: rpmdb/header.c:3033
-msgid ": expected following ? subexpression"
-msgstr ": oèakávané po ? podvýraze"
-
-#: rpmdb/header.c:3051
-msgid "{ expected after : in expression"
-msgstr "{ oèakávané po : vo výraze"
-
-#: rpmdb/header.c:3073
-msgid "| expected at end of expression"
-msgstr "| oèakávené na konci výrazu"
-
-#: rpmdb/header.c:3176
-msgid "(index out of range)"
-msgstr ""
-
-#: rpmdb/header.c:3445
-msgid "array iterator used with different sized arrays"
-msgstr ""
-
-#: rpmdb/header.c:3759 rpmdb/header.c:3796 rpmdb/header.c:3819
+#: rpmdb/header.c:2713 rpmdb/header.c:2815
 msgid "(not a number)"
 msgstr "(nie je èíslo)"
 
-#: rpmdb/header.c:3858
+#: rpmdb/header.c:2842
 #, c-format
 msgid "%c"
 msgstr ""
 
-#: rpmdb/header.c:3875
+#: rpmdb/header.c:2853
 msgid "%a %b %d %Y"
+msgstr ""
+
+#: rpmdb/header.c:2901
+msgid "invalid type"
+msgstr ""
+
+#: rpmdb/header.c:3025
+msgid "missing { after %"
+msgstr "chýbajúce { po %"
+
+#: rpmdb/header.c:3055
+msgid "missing } after %{"
+msgstr "chýbajúce } po %{"
+
+#: rpmdb/header.c:3067
+msgid "empty tag format"
+msgstr "prázdny tag formát"
+
+#: rpmdb/header.c:3079
+msgid "empty tag name"
+msgstr "prázdne meno tagu"
+
+#: rpmdb/header.c:3088
+msgid "unknown tag"
+msgstr "neznámy tag"
+
+#: rpmdb/header.c:3110
+msgid "] expected at end of array"
+msgstr "] oèakávané na konci poµa"
+
+#: rpmdb/header.c:3123
+msgid "unexpected ]"
+msgstr "neoèakávané ]"
+
+#: rpmdb/header.c:3134
+msgid "unexpected }"
+msgstr "neoèakávané }"
+
+#: rpmdb/header.c:3196
+msgid "? expected in expression"
+msgstr "? oèakávané vo výraze"
+
+#: rpmdb/header.c:3203
+msgid "{ expected after ? in expression"
+msgstr "{ oèakávané po ? vo výraze"
+
+#: rpmdb/header.c:3215 rpmdb/header.c:3255
+msgid "} expected in expression"
+msgstr "} oèakávané vo výraze"
+
+#: rpmdb/header.c:3223
+msgid ": expected following ? subexpression"
+msgstr ": oèakávané po ? podvýraze"
+
+#: rpmdb/header.c:3241
+msgid "{ expected after : in expression"
+msgstr "{ oèakávané po : vo výraze"
+
+#: rpmdb/header.c:3263
+msgid "| expected at end of expression"
+msgstr "| oèakávené na konci výrazu"
+
+#: rpmdb/header.c:3573
+msgid "array iterator used with different sized arrays"
 msgstr ""
 
 #: rpmdb/header_internal.c:164
