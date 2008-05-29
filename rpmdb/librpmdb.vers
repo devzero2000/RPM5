@@ -100,6 +100,7 @@ LIBRPMDB_0
     __bam_cdel_read_rpmdb;
     __bam_curadj_read_rpmdb;
     __bam_merge_read_rpmdb;
+    __bam_merge_44_read_rpmdb;
     __bam_pgno_read_rpmdb;
     __bam_rcuradj_read_rpmdb;
     __bam_relink_read_rpmdb;
@@ -113,6 +114,7 @@ LIBRPMDB_0
     __crdel_inmem_rename_read_rpmdb;
     __crdel_metasub_read_rpmdb;
     __db_add_recovery_rpmdb;
+    __db_add_recovery_int_rpmdb;
     __db_addrem_read_rpmdb;
     __db_big_read_rpmdb;
     __db_byteorder_rpmdb;
@@ -162,6 +164,7 @@ LIBRPMDB_0
     __os_abspath_rpmdb;
     __os_calloc_rpmdb;
     __os_closehandle_rpmdb;
+    __os_ctime_rpmdb;
     __os_dirlist_rpmdb;
     __os_dirfree_rpmdb;
     __os_free_rpmdb;
@@ -182,6 +185,7 @@ LIBRPMDB_0
     __os_ufree_rpmdb;
     __os_umalloc_rpmdb;
     __os_write_rpmdb;
+    __os_yield_rpmdb;
     __qam_add_read_rpmdb;
     __qam_delext_read_rpmdb;
     __qam_del_read_rpmdb;

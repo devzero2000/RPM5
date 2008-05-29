@@ -1,4 +1,5 @@
 4.4.9 -> 4.5:
+	- jbj: upgrade to db-4.7.25.
 	- jbj: rpmrepo: populate sqlite schema with PACKAGESIZE and PACKAGEDIGEST.
 	- jbj: rpmrepo: compute digests for both compressed & uncompressed
 	       repository markup components.
