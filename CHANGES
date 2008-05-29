@@ -1,4 +1,5 @@
 4.4.9 -> 4.5:
+	- jbj: retrofit "make check" same as other branches.
 	- jbj: rpmrepo: backport --yum:primary.xml et al popt aliases.
 	- jbj: rpmrepo: add baseurl to the repo markup.
 	- jbj: upgrade to db-4.7.25.

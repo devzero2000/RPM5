@@ -1,0 +1,15 @@
+%_topdir	@testdir@
+%_legion	%{expand:%%global ._legion %{name}}%{_legion}
+%_ntopdir	%{_topdir}/%{_legion}
+%_builddir	%{_ntopdir}
+%_sourcedir	%{_ntopdir}
+%_specdir	%{_ntopdir}
+%_rpmdir	%{_ntopdir}
+%_srcrpmdir	%{_ntopdir}
+%_rpmfilename	%%{NAME}-%%{VERSION}-%%{RELEASE}.%%{ARCH}.rpm
+
+%_dbpath	%{_topdir}/rpm
+%_tmppath	%{_topdir}/tmp
+
+%_repackage_all_erasures	0
+%_rpmgio	.ufdio

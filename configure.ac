@@ -1522,6 +1522,7 @@ AC_CONFIG_FILES([ Doxyfile Makefile rpmrc macros platform rpmpopt rpm.spec rpm5.
 	scripts/macros.perl scripts/macros.php scripts/macros.python
 	scripts/hrmib-cache
 	tools/Makefile
+	tests/Makefile tests/macros
 	misc/Makefile
 	doc/Makefile
 	doc/manual/Makefile
