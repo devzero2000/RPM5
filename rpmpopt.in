@@ -96,10 +96,6 @@ Description :\n%{DESCRIPTION}\n' \
 rpm	alias --changelog --qf '[* %{CHANGELOGTIME:day} %{CHANGELOGNAME}\n%{CHANGELOGTEXT}\n\n]' \
 	--POPTdesc=$"list change logs for this package"
 
-rpm	alias --xml --qf '[%{*:xml}\n]' \
-	--POPTdesc=$"list metadata in xml"
-rpm	alias --yaml --qf '[%{*:yaml}\n]' \
-	--POPTdesc=$"list metadata in yaml"
 #==============================================================================
 rpm	alias --xml --qf '[%{*:xml}\n]' \
 	--POPTdesc=$"list metadata in xml"
@@ -119,7 +115,7 @@ rpm	alias --yum:primary.xml --qf '\
 \n  <url>%|URL?{%{URL:cdata}}:{}|</url>\
 \n  <time file="%{PACKAGETIME}" build="%{BUILDTIME}"/>\
 \n  <size package="%{SIZE}" installed="%{SIZE}" archive="%{ARCHIVESIZE}"/>\
-\n  <location href="%{PACKAGEORIGIN:bncdata}"/>\
+\n  <location i%|PACKAGEBASEURL?{xml:base=\"%{PACKAGEBASEURL:cdata}\" }|href="%{PACKAGEORIGIN:bncdata}"/>\
 \n  <format>\
 %|license?{\
 \n    <rpm:license>%{LICENSE:cdata}</rpm:license>\
@@ -213,11 +209,11 @@ INSERT into packages values (\
 ,\n '%{HEADERSTARTOFF}'\
 , '%{HEADERENDOFF}'\
 , '%|PACKAGER?{%{PACKAGER:sqlescape}}|'\
-, '%{SIZE}'\
+, '%{PACKAGESIZE}'\
 , '%{SIZE}'\
 , '%{ARCHIVESIZE}'\
-,\n '%{PACKAGEORIGIN:sqlescape}'\
-,\n '%{PACKAGEORIGIN:sqlescape}'\
+,\n '%{PACKAGEORIGIN:bncdata}'\
+,\n '%{PACKAGEBASEURL:sqlescape}'\
 , 'sha'\
 );\
 %|providename?{[\

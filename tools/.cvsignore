@@ -6,3 +6,4 @@ Makefile.in
 convertdb1
 debugedit
 rpmdeps
+rpmrepo

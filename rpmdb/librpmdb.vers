@@ -28,6 +28,8 @@ LIBRPMDB_0
     headerDump;
     headerGetLangs;
     headerGetRawEntry;
+    headerGetBaseURL;
+    headerSetBaseURL;
     headerGetDigest;
     headerSetDigest;
     headerGetOrigin;

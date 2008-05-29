@@ -449,6 +449,7 @@ typedef enum rpmTag_e {
     RPMTAG_PACKAGESIZE		= 1214,	/* l */
     RPMTAG_PACKAGEDIGEST	= 1215,	/* s */
     RPMTAG_PACKAGESTAT		= 1216,	/* x */
+    RPMTAG_PACKAGEBASEURL	= 1217,	/* s */
 
 /*@-enummemuse@*/
     RPMTAG_FIRSTFREE_TAG	/*!< internal */

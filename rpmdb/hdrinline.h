@@ -530,6 +530,24 @@ int headerSetOrigin(/*@null@*/ Header h, const char * origin)
 }
 
 /** \ingroup header
+ * Return header base URL (e.g path or URL).
+ * @param h		header
+ * @return		header origin
+ */
+/*@observer@*/ /*@null@*/
+const char * headerGetBaseURL(/*@null@*/ Header h)
+	/*@*/;
+
+/** \ingroup header
+ * Store header base URL (e.g path or URL).
+ * @param h		header
+ * @param baseurl	new header baseurl
+ * @return		0 always
+ */
+int headerSetBaseURL(/*@null@*/ Header h, const char * baseurl)
+	/*@modifies h @*/;
+
+/** \ingroup header
  * Return header stat(2) buffer (of origin *.rpm file).
  * @param h		header
  * @return		header stat(2) buffer

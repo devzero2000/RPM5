@@ -1,4 +1,6 @@
 4.4.9 -> 4.5:
+	- jbj: rpmrepo: backport --yum:primary.xml et al popt aliases.
+	- jbj: rpmrepo: add baseurl to the repo markup.
 	- jbj: upgrade to db-4.7.25.
 	- jbj: rpmrepo: populate sqlite schema with PACKAGESIZE and PACKAGEDIGEST.
 	- jbj: rpmrepo: compute digests for both compressed & uncompressed

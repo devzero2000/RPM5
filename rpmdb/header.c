@@ -212,6 +212,8 @@ Header headerFree(/*@killref@*/ /*@null@*/ Header h)
 	h->index = _free(h->index);
     }
     h->origin = _free(h->origin);
+    h->baseurl = _free(h->baseurl);
+    h->digest = _free(h->digest);
 
     /*@-refcounttrans@*/ h = _free(h); /*@=refcounttrans@*/
     return h;
@@ -233,6 +235,8 @@ Header headerNew(void)
     /*@=assignexpose@*/
     h->blob = NULL;
     h->origin = NULL;
+    h->baseurl = NULL;
+    h->digest = NULL;
     h->instance = 0;
     h->indexAlloced = INDEX_MALLOC_SIZE;
     h->indexUsed = 0;
@@ -1193,6 +1197,22 @@ int headerSetOrigin(/*@null@*/ Header h, const char * origin)
     return 0;
 }
 
+const char * headerGetBaseURL(Header h);	/* XXX keep GCC quiet */
+const char * headerGetBaseURL(Header h)
+{
+    return (h != NULL ? h->baseurl : NULL);
+}
+
+int headerSetBaseURL(Header h, const char * baseurl);	/* XXX keep GCC quiet */
+int headerSetBaseURL(Header h, const char * baseurl)
+{
+    if (h != NULL) {
+	h->baseurl = _free(h->baseurl);
+	h->baseurl = xstrdup(baseurl);
+    }
+    return 0;
+}
+
 struct stat * headerGetStatbuf(Header h);	/* XXX keep GCC quiet */
 struct stat * headerGetStatbuf(Header h)
 {
@@ -1282,6 +1302,9 @@ Header headerReload(/*@only@*/ Header h, int tag)
     size_t length;
     void * uh;
     const char * origin = (h->origin != NULL ? xstrdup(h->origin) : NULL);
+    const char * baseurl = (h->baseurl != NULL ? xstrdup(h->baseurl) : NULL);
+    const char * digest = (h->digest != NULL ? xstrdup(h->digest) : NULL);
+    struct stat sb = h->sb;	/* structure assignment */
     int_32 instance = h->instance;
     int xx;
 
@@ -1307,6 +1330,15 @@ Header headerReload(/*@only@*/ Header h, int tag)
 	xx = headerSetOrigin(nh, origin);
 	origin = _free(origin);
     }
+    if (baseurl != NULL) {
+	xx = headerSetBaseURL(nh, baseurl);
+	baseurl = _free(baseurl);
+    }
+    if (digest != NULL) {
+	xx = headerSetDigest(nh, digest);
+	digest = _free(digest);
+    }
+    nh->sb = sb;	/* structure assignment */
     xx = headerSetInstance(nh, instance);
     return nh;
 }
