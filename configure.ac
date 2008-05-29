@@ -39,6 +39,10 @@ if test "$ac_cv_c_compiler_gnu" = yes; then
 	*-*-linux* ) LDFLAGS="$LDFLAGS -pie" ;;
     esac
 fi
+AC_ARG_ENABLE(build-gcov,
+    AS_HELP_STRING([--enable-build-gcov], [build RPM instrumented for gcov]), [dnl
+    CFLAGS="$CFLAGS -fprofile-arcs -ftest-coverage"
+])
 export CFLAGS LDFLAGS
 
 AC_PROG_GCC_TRADITIONAL
