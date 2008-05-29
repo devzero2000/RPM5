@@ -111,11 +111,11 @@ struct rpmrepo_s {
 /*@relnull@*/
     miRE includeMire;
     int nincludes;
-#ifdef	NOTYET
 /*@null@*/
     const char * basedir;
 /*@null@*/
     const char * baseurl;
+#ifdef	NOTYET
 /*@null@*/
     const char * groupfile;
 #endif
@@ -213,7 +213,7 @@ static const char primary_xml_qfmt[] = "\
 \n  <url>%|URL?{%{URL:cdata}}:{}|</url>\
 \n  <time file=\"%{PACKAGETIME}\" build=\"%{BUILDTIME}\"/>\
 \n  <size package=\"%{PACKAGESIZE}\" installed=\"%{PACKAGESIZE}\" archive=\"%{ARCHIVESIZE}\"/>\
-\n  <location href=\"%{PACKAGEORIGIN:bncdata}\"/>\
+\n  <location %|PACKAGEBASEURL?{xml:base=\"%{PACKAGEBASEURL:cdata}\" }|href=\"%{PACKAGEORIGIN:bncdata}\"/>\
 \n  <format>\
 %|license?{\
 \n    <rpm:license>%{LICENSE:cdata}</rpm:license>\
@@ -463,7 +463,7 @@ INSERT into packages values (\
 , '%{SIZE}'\
 , '%{ARCHIVESIZE}'\
 ,\n '%{PACKAGEORIGIN:bncdata}'\
-,\n '%{PACKAGEORIGIN:sqlescape}'\
+,\n '%{PACKAGEBASEURL:sqlescape}'\
 , 'sha'\
 );\
 %|obsoletename?{[\
@@ -1074,6 +1074,8 @@ static Header repoReadHeader(rpmrepo repo, const char * path)
 	case RPMRC_NOTTRUSTED:
 	case RPMRC_NOKEY:
 	case RPMRC_OK:
+	    if (repo->baseurl)
+		(void) headerSetBaseURL(h, repo->baseurl);
 	    break;
 	}
     }
@@ -1971,11 +1973,11 @@ static struct poptOption optionsTable[] = {
  { "includes", 'i', POPT_ARG_STRING,		NULL, 'i',
 	N_("glob PATTERN(s) to include"), N_("PATTERN") },
 #endif
-#ifdef	NOTYET
  { "basedir", '\0', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmrepo.basedir, 0,
 	N_("top level directory"), N_("DIR") },
  { "baseurl", 'u', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmrepo.baseurl, 0,
 	N_("baseurl to append on all files"), N_("BASEURL") },
+#ifdef	NOTYET
  { "groupfile", 'g', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN,	&__rpmrepo.groupfile, 0,
 	N_("path to groupfile to include in metadata"), N_("FILE") },
 #endif

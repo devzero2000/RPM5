@@ -37,6 +37,8 @@ LIBRPMDB_0
     headerFini;
     headerFree;
     headerGet;
+    headerGetBaseURL;
+    headerSetBaseURL;
     headerGetDigest;
     headerSetDigest;
     headerGetInstance;

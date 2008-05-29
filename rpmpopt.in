@@ -115,7 +115,7 @@ rpm	alias --yum:primary.xml --qf '\
 \n  <url>%|URL?{%{URL:cdata}}:{}|</url>\
 \n  <time file="%{PACKAGETIME}" build="%{BUILDTIME}"/>\
 \n  <size package="%{PACKAGESIZE}" installed="%{SIZE}" archive="%{ARCHIVESIZE}"/>\
-\n  <location href="%{PACKAGEORIGIN:bncdata}"/>\
+\n  <location %|PACKAGEBASEURL?{xml:base=\"%{PACKAGEBASEURL:cdata}\" }|href="%{PACKAGEORIGIN:bncdata}"/>\
 \n  <format>\
 %|license?{\
 \n    <rpm:license>%{LICENSE:cdata}</rpm:license>\
@@ -209,11 +209,11 @@ INSERT into packages values (\
 ,\n '%{HEADERSTARTOFF}'\
 , '%{HEADERENDOFF}'\
 , '%|PACKAGER?{%{PACKAGER:sqlescape}}|'\
-, '%{SIZE}'\
+, '%{PACKAGESIZE}'\
 , '%{SIZE}'\
 , '%{ARCHIVESIZE}'\
-,\n '%{PACKAGEORIGIN:sqlescape}'\
-,\n '%{PACKAGEORIGIN:sqlescape}'\
+,\n '%{PACKAGEORIGIN:bncdata}'\
+,\n '%{PACKAGEBASEURL:sqlescape}'\
 , 'sha'\
 );\
 %|providename?{[\
@@ -265,11 +265,11 @@ Package:\
 \n  Hdrstart:    %{HEADERSTARTOFF}\
 \n  Hdrend:      %{HEADERENDOFF}\
 \n  Packager:    %|PACKAGER?{%{PACKAGER:yaml}}:{-}|\
-\n  Packagesize: %{SIZE}\
+\n  Packagesize: %{PACKAGESIZE}\
 \n  Size:        %{SIZE}\
 \n  Archivesize: %{ARCHIVESIZE}\
 \n  Location:    %{PACKAGEORIGIN:yaml}\
-\n  BaseURL:     %{PACKAGEORIGIN:yaml}\
+\n  BaseURL:     %|PACKAGEBASEURL?{%{PACKAGEBASEURL:yaml}}:{-}|\
 \n  Idtype:      sha\
 \n  Rpm:\
 %|license?{\
