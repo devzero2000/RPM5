@@ -2027,6 +2027,36 @@ static int pkgoriginTag(Header h, HE_t he)
 /*@=globuse@*/
 
 /**
+ * Retrieve package baseurl from header.
+ * @param h		header
+ * @retval *he		tag container
+ * @return		0 on success
+ */
+/*@-globuse@*/
+static int pkgbaseurlTag(Header h, HE_t he)
+	/*@globals rpmGlobalMacroContext, h_errno,
+		fileSystem, internalState @*/
+	/*@modifies he, rpmGlobalMacroContext,
+		fileSystem, internalState @*/
+{
+    const char * baseurl;
+    int rc = 1;
+
+    he->tag = RPMTAG_PACKAGEBASEURL;
+    if (!headerGet(h, he, HEADERGET_NOEXTENSION)
+     && (baseurl = headerGetBaseURL(h)) != NULL)
+    {
+	he->t = RPM_STRING_TYPE;
+	he->p.str = xstrdup(baseurl);
+	he->c = 1;
+	he->freeData = 1;
+	rc = 0;
+    }
+    return rc;
+}
+/*@=globuse@*/
+
+/**
  * Retrieve package digest from header.
  * @param h		header
  * @retval *he		tag container
@@ -3595,6 +3625,8 @@ static struct headerSprintfExtension_s _headerCompoundFormats[] = {
 	{ .tagFunction = headerstartoffTag } },
     { HEADER_EXT_TAG, "RPMTAG_HEADERENDOFF",
 	{ .tagFunction = headerendoffTag } },
+    { HEADER_EXT_TAG, "RPMTAG_PACKAGEBASEURL",
+	{ .tagFunction = pkgbaseurlTag } },
     { HEADER_EXT_TAG, "RPMTAG_PACKAGEDIGEST",
 	{ .tagFunction = pkgdigestTag } },
     { HEADER_EXT_TAG, "RPMTAG_PACKAGEORIGIN",

@@ -420,6 +420,7 @@ enum rpmTag_e {
     RPMTAG_PACKAGESIZE		= 1214,	/* l */
     RPMTAG_PACKAGEDIGEST	= 1215,	/* s */
     RPMTAG_PACKAGESTAT		= 1216,	/* x */
+    RPMTAG_PACKAGEBASEURL	= 1217,	/* s */
 
 /*@-enummemuse@*/
     RPMTAG_FIRSTFREE_TAG	/*!< internal */
@@ -964,6 +965,24 @@ const char * headerGetOrigin(/*@null@*/ Header h)
  * @return		0 always
  */
 int headerSetOrigin(/*@null@*/ Header h, const char * origin)
+	/*@modifies h @*/;
+
+/** \ingroup header
+ * Return header base URL (e.g path or URL).
+ * @param h		header
+ * @return		header origin
+ */
+/*@observer@*/ /*@null@*/
+const char * headerGetBaseURL(/*@null@*/ Header h)
+	/*@*/;
+
+/** \ingroup header
+ * Store header base URL (e.g path or URL).
+ * @param h		header
+ * @param baseurl	new header baseurl
+ * @return		0 always
+ */
+int headerSetBaseURL(/*@null@*/ Header h, const char * baseurl)
 	/*@modifies h @*/;
 
 /** \ingroup header

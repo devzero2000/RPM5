@@ -148,6 +148,7 @@ Header headerFree(Header h)
 	h->index = _free(h->index);
     }
     h->origin = _free(h->origin);
+    h->baseurl = _free(h->baseurl);
     h->digest = _free(h->digest);
 
 /*@-nullstate@*/
@@ -171,6 +172,7 @@ Header headerNew(void)
     (void) memcpy(h->magic, header_magic, sizeof(h->magic));
     h->blob = NULL;
     h->origin = NULL;
+    h->baseurl = NULL;
     h->digest = NULL;
     h->instance = 0;
     h->indexAlloced = INDEX_MALLOC_SIZE;
@@ -1209,6 +1211,20 @@ int headerSetOrigin(Header h, const char * origin)
     return 0;
 }
 
+const char * headerGetBaseURL(Header h)
+{
+    return (h != NULL ? h->baseurl : NULL);
+}
+
+int headerSetBaseURL(Header h, const char * baseurl)
+{
+    if (h != NULL) {
+	h->baseurl = _free(h->baseurl);
+	h->baseurl = xstrdup(baseurl);
+    }
+    return 0;
+}
+
 struct stat * headerGetStatbuf(Header h)
 {
     return &h->sb;
@@ -1276,6 +1292,7 @@ Header headerReload(Header h, int tag)
     Header nh;
     void * uh;
     const char * origin = (h->origin != NULL ? xstrdup(h->origin) : NULL);
+    const char * baseurl = (h->baseurl != NULL ? xstrdup(h->baseurl) : NULL);
     const char * digest = (h->digest != NULL ? xstrdup(h->digest) : NULL);
     struct stat sb = h->sb;	/* structure assignment */
     uint32_t instance = h->instance;
@@ -1302,6 +1319,10 @@ Header headerReload(Header h, int tag)
     if (origin != NULL) {
 	xx = headerSetOrigin(nh, origin);
 	origin = _free(origin);
+    }
+    if (baseurl != NULL) {
+	xx = headerSetBaseURL(nh, baseurl);
+	baseurl = _free(baseurl);
     }
     if (digest != NULL) {
 	xx = headerSetDigest(nh, digest);
