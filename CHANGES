@@ -1,4 +1,6 @@
 5.0.3 -> 5.0.4:
+    - jbj: rpmrepo: backport --yum:primary.xml et al popt aliases.
+    - jbj: rpmrepo: add baseurl to the repo markup.
     - jbj: rpmrepo: populate sqlite schema with PACKAGESIZE and PACKAGEDIGEST.
     - jbj: simple parameterized namespace URI for Pkgid/Hdrid UUID generation.
     - jbj: rpmrepo: compute digests for both compressed & uncompressed

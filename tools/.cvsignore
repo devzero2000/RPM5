@@ -10,5 +10,6 @@ rpmcache
 rpmcmp
 rpmdeps
 rpmdigest
+rpmrepo
 db_tool
 txar
