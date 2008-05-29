@@ -25,12 +25,16 @@ $(BUILD_DIRS): $(wildcard %-*.src.rpm)
 check-local: $(BUILD_DIRS)
 	@${rpm} -v --version > /dev/null
 	@${rpm} -v --showrc > /dev/null
+	@${rpm} -v --querytags > /dev/null
 	@-rm -rf rpm
 	@${rpm} --initdb
 	@${rpm} --import $(top_srcdir)/pubkeys/JBJ-GPG-KEY
 	@${rpm} -qW . > /dev/null 2>&1
+	@ls -1 */*.rpm > manifest
 	@${rpm} -Kv *.src.rpm */*.rpm > /dev/null
-	@${rpm} -Kv --usecrypto beecrypt *.src.rpm */*.rpm > /dev/null
+	-@${rpm} -Kv --usecrypto beecrypt *.src.rpm */*.rpm > /dev/null
+	-@${rpm} -Kv --usecrypto nss *.src.rpm */*.rpm > /dev/null
+	-@${rpm} -Kv --usecrypto ssl *.src.rpm */*.rpm > /dev/null
 	@-${rpm} -U --justdb */*.rpm > /dev/null 2>&1
 	@${rpm} -Uvh --justdb --nodeps */*.rpm > /dev/null
 	@-${rpm} -i --justdb --nodeps */*.rpm > /dev/null 2>&1
@@ -43,18 +47,31 @@ check-local: $(BUILD_DIRS)
 	@${rpm} -qa --dump > /dev/null
 	@${rpm} -q --querybynumber 1 > /dev/null
 	@${rpm} -qal > /dev/null
-	@${rpm} -qa --qf '[%{FSNAMES}: %{FSSIZES}\n]' > /dev/null
+	@${rpm} -qalv > /dev/null
+	@${rpm} -qa --qf '%{INSTALLTIME} %{INSTALLTIME:date} %{INSTALLTIME:day} %{INSTALLTIME:dec} %{INSTALLTIME:hex} %{INSTALLTIME:oct}\n' > /dev/null
+	@${rpm} -qa --qf '%{INSTALLTIDUUID} %{INSTALLTIMEUUID} %{ORIGINTIDUUID} %{ORIGINTIMEUUID} %{BUILDTIMEUUID}\n' > /dev/null
+	@${rpm} -qa --qf '%{DBINSTANCE} %{HDRID} %{PKGID} %{SOURCEPKGID}\n' > /dev/null
+	@${rpm} -qa --qf '%{HDRUUID} %{PKGUUID} %{SOURCEPKGUUID}\n' > /dev/null
+	@${rpm} -qa --qf '%{HEADERSTARTOFF} %{HEADERENDOFF}\n' > /dev/null
+	@${rpm} -qa --qf '%{PACKAGEORIGIN} %{PACKAGESIZE} %{PACKAGETIME} %{PACKAGEDIGEST} %{PACKAGEBASEURL}\n' > /dev/null
+	@${rpm} -qa --qf '%{PACKAGESIZE:rpn(511,+,512,/)}\n' > /dev/null
+	@${rpm} -qa --qf '%{PACKAGESTAT:base64}\n' > /dev/null
+	@${rpm} -qa --qf '%{PACKAGESTAT:stat(atime,ctime,blksize,blocks,dev,gid,gname,ino,link,mode,mtime,nlink,rdev,size,uid,uname)}\n' > /dev/null
+	@${rpm} -qa --qf '[%{providexmlentry}\n] [%{requirexmlentry}\n] [%{conflictxmlentry}\n] [%{obsoletexmlentry}\n] [%{filesxmlentry1}\n] [%{filesxmlentry2}\n] [%{providesqlentry}\n] [%{requiresqlentry}\n] [%{conflictsqlentry}\n] [%{obsoletesqlentry}\n] [%{filessqlentry1}\n] [%{filessqlentry2}\n]' > /dev/null
+	@${rpm} -qa --qf '[%{FILENAMES:shescape}: %{FILEFLAGS:perms} %{FILEMODES:fflags}\n]' > /dev/null
 	@${rpm} -qa --qf '[%{FILENAMES}: %{FILECLASS}\n]' > /dev/null
-	@${rpm} -qa --qf '[%{FILENAMES}: %{FILECONTEXTS}\n]' > /dev/null
+	@${rpm} -qa --qf '[%{FILEPATHS}: %{FILECONTEXTS}\n]' > /dev/null
 	@${rpm} -qa --qf '[%{FILENAMES}: %{FSCONTEXTS}\n]' > /dev/null
 	@${rpm} -qa --qf '[%{FILENAMES}: %{RECONTEXTS}\n]' > /dev/null
 	@${rpm} -qa --qf '[%{FILENAMES}: %{FILEPROVIDE}\n]' > /dev/null
 	@${rpm} -qa --qf '[%{FILENAMES}: %{FILEREQUIRE}\n]' > /dev/null
-	@${rpm} -qa --qf '[%{MISSINGOK}\n]' > /dev/null
+	@${rpm} -qa --qf '[%{FSNAMES}: %{FSSIZES}\n]' > /dev/null
+#	@${rpm} -qa --qf '[%{SUGGESTS}\n]' > /dev/null
 	@@${rpm} -qa --qf '[%{*:xml}\n]' > /dev/null
 	@${rpm} --rebuilddb
 	@${rpm} -qa --qf '[%{*:yaml}\n]' > /dev/null
 	@-${rpm} -Va > /dev/null
+	@-${rpm} -Vp manifest > /dev/null
 	@${rpm} -e --justdb `${rpm} -qa` --allmatches
 	@-${rpm} -qp http://rpm5.org/files/popt/popt-1.14-1.i386.rpm > /dev/null
 	@-${rpm} -qW http://rpm5.org/files/popt/ > /dev/null 2>&1
