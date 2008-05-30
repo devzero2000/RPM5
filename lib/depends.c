@@ -180,6 +180,8 @@ static int rpmHeadersIdentical(Header first, Header second)
 /*@unchecked@*/
 static rpmTag _upgrade_tag;
 /*@unchecked@*/
+static rpmTag _debuginfo_tag;
+/*@unchecked@*/
 static rpmTag _obsolete_tag;
 
 /**
@@ -201,7 +203,7 @@ static int rpmtsAddUpgrades(rpmts ts, rpmte p, uint32_t hcolor, Header h)
     int xx;
 
     if (_upgrade_tag == 0) {
-	const char *t = rpmExpand("%{?_upgrade_tag}", NULL);
+	const char * t = rpmExpand("%{?_upgrade_tag}", NULL);
 /*@-mods@*/
 	_upgrade_tag = (!strcmp(t, "name") ? RPMTAG_NAME : RPMTAG_PROVIDENAME);
 /*@=mods@*/
@@ -261,6 +263,105 @@ assert(lastx >= 0 && lastx < ts->orderCount);
 
     }
     mi = rpmdbFreeIterator(mi);
+
+    return 0;
+}
+
+/**
+ * Check string for a suffix.
+ * @param fn		string
+ * @param suffix	suffix
+ * @return		1 if string ends with suffix
+ */
+static inline int chkSuffix(const char * fn, const char * suffix)
+        /*@*/
+{
+    size_t flen = strlen(fn);
+    size_t slen = strlen(suffix);
+    return (flen > slen && !strcmp(fn + flen - slen, suffix));
+}
+
+/**
+ * Add unreferenced debuginfo erasures to a transaction set.
+ * @param ts		transaction set
+ * @param p		transaction element
+ * @param h		header
+ * @param pkgKey	added package key (erasure uses RPMAL_NOKEY)
+ * @return		0 on success
+ */
+static int rpmtsEraseDebuginfo(rpmts ts, rpmte p, Header h, alKey pkgKey)
+{
+    HE_t he = memset(alloca(sizeof(*he)), 0, sizeof(*he));
+    const void *keyval = NULL;
+    size_t keylen = 0;
+    size_t nrefs = 0;
+    uint32_t debuginfoInstance = 0;
+    Header debuginfoHeader = NULL;
+    rpmdbMatchIterator mi;
+    Header oh;
+    int xx;
+
+    /* XXX SOURCEPKGID is not populated reliably, do not use (yet). */
+    if (_debuginfo_tag == 0) {
+	const char * t = rpmExpand("%{?_debuginfo_tag}", NULL);
+/*@-mods@*/
+	_debuginfo_tag = (*t != '\0' && !strcmp(t, "pkgid")
+		? RPMTAG_SOURCEPKGID : RPMTAG_SOURCERPM);
+/*@=mods@*/
+	t = _free(t);
+    }
+
+    /* Grab the retrieval key. */
+    switch (_debuginfo_tag) {
+    default:		return 0;	/*@notreached@*/	break;
+    case RPMTAG_SOURCERPM:	keyval = rpmteSourcerpm(p);	break;
+    }
+
+    /* Count remaining members in build set, excluding -debuginfo (if any). */
+    mi = rpmtsInitIterator(ts, _debuginfo_tag, keyval, keylen);
+    xx = rpmdbPruneIterator(mi, ts->removedPackages, ts->numRemovedPackages, 1);
+    while((oh = rpmdbNextIterator(mi)) != NULL) {
+	/* Skip identical packages. */
+	if (rpmHeadersIdentical(h, oh))
+	    continue;
+
+	he->tag = RPMTAG_NAME;
+	xx = headerGet(oh, he, 0);
+	if (!xx || he->p.str == NULL)
+	    continue;
+	/* Save the -debuginfo member. */
+	if (chkSuffix(he->p.str, "-debuginfo")) {
+	    debuginfoInstance = rpmdbGetIteratorOffset(mi);
+	    debuginfoHeader = headerLink(oh);
+	} else
+	    nrefs++;
+	he->p.str = _free(he->p.str);
+    }
+    mi = rpmdbFreeIterator(mi);
+
+    /* Remove -debuginfo package when last build member is erased. */
+    if (nrefs == 0 && debuginfoInstance > 0 && debuginfoHeader != NULL) {
+	int lastx = -1;
+	rpmte q;
+
+	/* Create an erasure element. */
+	lastx = -1;
+	xx = removePackage(ts, debuginfoHeader, debuginfoInstance,
+		&lastx, pkgKey);
+assert(lastx >= 0 && lastx < ts->orderCount);
+	q = ts->order[lastx];
+
+	/* Chain through upgrade flink. */
+	/* XXX avoid assertion failure when erasing. */
+	if (pkgKey != RPMAL_NOMATCH)
+	    xx = rpmteChain(p, q, oh, "Upgrades");
+
+/*@-nullptrarith@*/
+	rpmlog(RPMLOG_DEBUG, D_("   lastref erases %s\n"), rpmteNEVRA(q));
+/*@=nullptrarith@*/
+
+    }
+    debuginfoHeader = headerFree(debuginfoHeader);
 
     return 0;
 }
@@ -587,6 +688,7 @@ fprintf(stderr, "*** %s: %d in %s\n", rpmteNEVRA(p), rpmdbCount(rpmtsGetRdb(ts),
     /* Add upgrades to the transaction (if not disabled). */
     if (!(depFlags & RPMDEPS_FLAG_NOUPGRADE)) {
 	xx = rpmtsAddUpgrades(ts, p, hcolor, h);
+	xx = rpmtsEraseDebuginfo(ts, p, h, pkgKey);
     }
 
     /* Add Obsoletes: to the transaction (if not disabled). */
@@ -607,9 +709,10 @@ int rpmtsAddEraseElement(rpmts ts, Header h, int dboffset)
 {
     int oc = -1;
     int rc = removePackage(ts, h, dboffset, &oc, RPMAL_NOMATCH);
-    if (rc == 0 && oc >= 0 && oc < ts->orderCount)
+    if (rc == 0 && oc >= 0 && oc < ts->orderCount) {
+	(void) rpmtsEraseDebuginfo(ts, ts->order[oc], h, RPMAL_NOMATCH);
 	ts->teErase = ts->order[oc];
-    else
+    } else
 	ts->teErase = NULL;
     return rc;
 }
