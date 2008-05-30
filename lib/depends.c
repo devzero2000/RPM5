@@ -287,7 +287,7 @@ static inline int chkSuffix(const char * fn, const char * suffix)
  * @param p		transaction element
  * @param h		header
  * @param pkgKey	added package key (erasure uses RPMAL_NOKEY)
- * @return		0 on success
+ * @return		no. of references from build set
  */
 static int rpmtsEraseDebuginfo(rpmts ts, rpmte p, Header h, alKey pkgKey)
 {
@@ -363,7 +363,7 @@ assert(lastx >= 0 && lastx < ts->orderCount);
     }
     debuginfoHeader = headerFree(debuginfoHeader);
 
-    return 0;
+    return nrefs;
 }
 
 /**
@@ -687,8 +687,18 @@ fprintf(stderr, "*** %s: %d in %s\n", rpmteNEVRA(p), rpmdbCount(rpmtsGetRdb(ts),
 
     /* Add upgrades to the transaction (if not disabled). */
     if (!(depFlags & RPMDEPS_FLAG_NOUPGRADE)) {
-	xx = rpmtsAddUpgrades(ts, p, hcolor, h);
+	/*
+	 * Don't upgrade -debuginfo until build set is empty.
+	 *
+	 * XXX Almost, but not quite, correct since the test depends on
+	 * added package arrival order.
+	 * I.e. -debuginfo additions must always follow all
+	 * other additions so that erasures of other members in the
+	 * same build set are seen if/when included in the same transaction.
+	 */
 	xx = rpmtsEraseDebuginfo(ts, p, h, pkgKey);
+	if (!chkSuffix(rpmteN(p), "-debuginfo") || xx == 0)
+	    xx = rpmtsAddUpgrades(ts, p, hcolor, h);
     }
 
     /* Add Obsoletes: to the transaction (if not disabled). */

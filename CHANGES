@@ -1,5 +1,9 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: permit upgrade erasure of old -debuginfo iff all other packages
+	built from same *.src.rpm are not present. Note that this patch
+	assumes that -debuginfo will be added after all other packages
+	built from same *.src.rpm.
     - jbj: add automagic erasures of -debuginfo packages (#447708).
     - jbj: enable -lgcrypt through ./devtool system.
     - jbj: hdrfmt: achieve coverage over new header format extensions.
