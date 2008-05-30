@@ -1,5 +1,6 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: enable -lgcrypt through ./devtool system.
     - jbj: hdrfmt: achieve coverage over new header format extensions.
     - jbj: rpmrepo: add baseurl to the repo markup.
     - jbj: rpmrepo: populate sqlite schema with PACKAGESIZE and PACKAGEDIGEST.
