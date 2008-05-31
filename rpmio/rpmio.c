@@ -3160,7 +3160,7 @@ fprintf(stderr, "*** Fopen(%s, %s) fdio\n", path, fmode);
 	int fdno;
 	int isHTTP = 0;
 
-	/* XXX gzdio and bzdio here too */
+	/* XXX gzdio/bzdio/lzdio through here too */
 
 	switch (urlIsURL(path)) {
 	case URL_IS_HTTPS:
