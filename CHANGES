@@ -1,5 +1,6 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: rpmdb: fix: limit RUNRECOVERY attempts, not every lazy open.
     - jbj: make sure the open path is set when using [bgl]zdOpen vector too.
     - jbj: lzdio: rework the layering to be more similar to gzdio/bzdio.
     - jbj: rpmrepo: fix: --lzma segfault, lzdFdopen was not saving path.
@@ -15,7 +16,7 @@
     - jbj: simple parameterized namespace URI for Pkgid/Hdrid UUID generation.
     - jbj: rpmrepo: compute digests for both compressed & uncompressed
 	repository markup components.
-    - jbj: leagacy: eliminate (unused) domd5(). use dodigest instead.
+    - jbj: legacy: eliminate (unused) domd5(). use dodigest instead.
     - jbj: update sv.po from the Translation Project.
     - jbj: add SOURCERPM name at end-of-parse for --specfile queries and errmsg.
     - jbj: upgrade to DB 4.7.25:

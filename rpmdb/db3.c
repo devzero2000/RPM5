@@ -1304,12 +1304,17 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
     if (dbi->dbi_use_dbenv) {
 	/*@-mods@*/
 	if (rpmdb->db_dbenv == NULL) {
+	    static int runrecoverycount = 0;
 	    rc = db_init(dbi, dbhome, dbfile, dbsubfile, &dbenv);
 	    switch (rc) {
 	    default:
 		break;
 
 	    case DB_RUNRECOVERY:
+		if (runrecoverycount++ >= 1) {
+		    rpmlog(RPMLOG_ERR, _("RUNRECOVERY failed, exiting ...\n"));
+		   exit(EXIT_FAILURE);
+		}
 		rpmlog(RPMLOG_ERR, _("Runnning db->verify ...\n"));
 		rpmdb = rpmdbLink(rpmdb, "DB_RUNRECOVERY");
 		rpmdb->db_remove_env = 1;
