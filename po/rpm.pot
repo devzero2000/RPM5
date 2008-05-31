@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2008-05-27 09:53-0400\n"
+"POT-Creation-Date: 2008-05-31 18:38-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1298,131 +1298,131 @@ msgstr ""
 msgid "Query specfile for platform(s): %s\n"
 msgstr ""
 
-#: lib/depends.c:491
+#: lib/depends.c:592
 #, c-format
 msgid "package %s was already added, skipping %s\n"
 msgstr ""
 
-#: lib/depends.c:505
+#: lib/depends.c:606
 #, c-format
 msgid "package %s was already added, replacing with %s\n"
 msgstr ""
 
-#: lib/depends.c:714
+#: lib/depends.c:827
 msgid "(cached)"
 msgstr ""
 
-#: lib/depends.c:730
+#: lib/depends.c:843
 msgid "(function probe)"
 msgstr ""
 
-#: lib/depends.c:749
+#: lib/depends.c:862
 msgid "(user lookup)"
 msgstr ""
 
-#: lib/depends.c:766
+#: lib/depends.c:879
 msgid "(group lookup)"
 msgstr ""
 
-#: lib/depends.c:775
+#: lib/depends.c:888
 msgid "(access probe)"
 msgstr ""
 
-#: lib/depends.c:797
+#: lib/depends.c:910
 msgid "(mtab probe)"
 msgstr ""
 
-#: lib/depends.c:854
+#: lib/depends.c:967
 msgid "(diskspace probe)"
 msgstr ""
 
-#: lib/depends.c:896
+#: lib/depends.c:1009
 msgid "(digest probe)"
 msgstr ""
 
-#: lib/depends.c:920
+#: lib/depends.c:1033
 msgid "(signature probe)"
 msgstr ""
 
-#: lib/depends.c:950
+#: lib/depends.c:1063
 msgid "(verify probe)"
 msgstr ""
 
-#: lib/depends.c:972
+#: lib/depends.c:1085
 msgid "(gnupg probe)"
 msgstr ""
 
-#: lib/depends.c:985
+#: lib/depends.c:1098
 msgid "(macro probe)"
 msgstr ""
 
-#: lib/depends.c:1013
+#: lib/depends.c:1126
 msgid "(envvar probe)"
 msgstr ""
 
-#: lib/depends.c:1040
+#: lib/depends.c:1153
 msgid "(running probe)"
 msgstr ""
 
-#: lib/depends.c:1062
+#: lib/depends.c:1175
 msgid "(sanity probe)"
 msgstr ""
 
-#: lib/depends.c:1083
+#: lib/depends.c:1196
 msgid "(vcheck probe)"
 msgstr ""
 
-#: lib/depends.c:1104
+#: lib/depends.c:1217
 msgid "(sysinfo provides)"
 msgstr ""
 
-#: lib/depends.c:1123
+#: lib/depends.c:1236
 msgid "(rpmlib provides)"
 msgstr ""
 
-#: lib/depends.c:1138
+#: lib/depends.c:1251
 msgid "(cpuinfo provides)"
 msgstr ""
 
-#: lib/depends.c:1153
+#: lib/depends.c:1266
 msgid "(getconf provides)"
 msgstr ""
 
-#: lib/depends.c:1168
+#: lib/depends.c:1281
 msgid "(uname provides)"
 msgstr ""
 
-#: lib/depends.c:1200
+#: lib/depends.c:1313
 msgid "(soname provides)"
 msgstr ""
 
-#: lib/depends.c:1228
+#: lib/depends.c:1341
 msgid "(db files)"
 msgstr ""
 
-#: lib/depends.c:1240
+#: lib/depends.c:1353
 msgid "(db provides)"
 msgstr ""
 
-#: lib/depends.c:1270
+#: lib/depends.c:1383
 msgid "(hint skipped)"
 msgstr ""
 
-#: lib/depends.c:1707
+#: lib/depends.c:1820
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr ""
 
-#: lib/depends.c:1833
+#: lib/depends.c:1946
 #, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr ""
 
-#: lib/depends.c:2418
+#: lib/depends.c:2531
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:2454
+#: lib/depends.c:2567
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""
@@ -1623,7 +1623,7 @@ msgstr ""
 msgid "display macro and configuration values"
 msgstr ""
 
-#: lib/poptALL.c:362 rpmio/poptIO.c:367 rpmio/rpmrepo.c:1944
+#: lib/poptALL.c:362 rpmio/poptIO.c:367 rpmio/rpmrepo.c:2013
 msgid "print the version"
 msgstr ""
 
@@ -2836,20 +2836,24 @@ msgstr ""
 msgid "db%d error(%d): %s\n"
 msgstr ""
 
-#: rpmdb/db3.c:1313
+#: rpmdb/db3.c:1315
+msgid "RUNRECOVERY failed, exiting ...\n"
+msgstr ""
+
+#: rpmdb/db3.c:1318
 msgid "Runnning db->verify ...\n"
 msgstr ""
 
-#: rpmdb/db3.c:1624
+#: rpmdb/db3.c:1629
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr ""
 
-#: rpmdb/db3.c:1626
+#: rpmdb/db3.c:1631
 msgid "exclusive"
 msgstr ""
 
-#: rpmdb/db3.c:1626
+#: rpmdb/db3.c:1631
 msgid "shared"
 msgstr ""
 
@@ -2903,8 +2907,8 @@ msgstr ""
 msgid "(invalid type :base64)"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:730 rpmdb/hdrfmt.c:761 rpmdb/hdrfmt.c:2548
-#: rpmdb/hdrfmt.c:2986
+#: rpmdb/hdrfmt.c:730 rpmdb/hdrfmt.c:761 rpmdb/hdrfmt.c:2588
+#: rpmdb/hdrfmt.c:3026
 msgid "(not a string)"
 msgstr ""
 
@@ -2924,107 +2928,107 @@ msgstr ""
 msgid "(not an OpenPGP signature)"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:3197
+#: rpmdb/hdrfmt.c:3237
 msgid "(invalid type :digest)"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:3253
+#: rpmdb/hdrfmt.c:3293
 msgid "(invalid type :stat)"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:3405
+#: rpmdb/hdrfmt.c:3445
 msgid "(invalid type :uuid)"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:3466
+#: rpmdb/hdrfmt.c:3506
 msgid "(invalid type :rpn)"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:3476
+#: rpmdb/hdrfmt.c:3516
 msgid "(invalid string :rpn)"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:3492
+#: rpmdb/hdrfmt.c:3532
 msgid "(expected number :rpn)"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:3496
+#: rpmdb/hdrfmt.c:3536
 msgid "(stack overflow :rpn)"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:3502
+#: rpmdb/hdrfmt.c:3542
 msgid "(invalid number :rpn)"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:3507
+#: rpmdb/hdrfmt.c:3547
 msgid "(stack underflow :rpn)"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:3520
+#: rpmdb/hdrfmt.c:3560
 msgid "(divide by zero :rpn)"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:4271
+#: rpmdb/hdrfmt.c:4313
 msgid "missing { after %"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:4305
+#: rpmdb/hdrfmt.c:4347
 msgid "missing } after %{"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:4321
+#: rpmdb/hdrfmt.c:4363
 msgid "empty tag format"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:4341
+#: rpmdb/hdrfmt.c:4383
 msgid "malformed parameter list"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:4362
+#: rpmdb/hdrfmt.c:4404
 msgid "empty tag name"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:4371
+#: rpmdb/hdrfmt.c:4413
 msgid "unknown tag"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:4401
+#: rpmdb/hdrfmt.c:4443
 msgid "] expected at end of array"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:4418
+#: rpmdb/hdrfmt.c:4460
 msgid "unexpected ]"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:4433
+#: rpmdb/hdrfmt.c:4475
 msgid "unexpected }"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:4511
+#: rpmdb/hdrfmt.c:4553
 msgid "? expected in expression"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:4518
+#: rpmdb/hdrfmt.c:4560
 msgid "{ expected after ? in expression"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:4530 rpmdb/hdrfmt.c:4570
+#: rpmdb/hdrfmt.c:4572 rpmdb/hdrfmt.c:4612
 msgid "} expected in expression"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:4538
+#: rpmdb/hdrfmt.c:4580
 msgid ": expected following ? subexpression"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:4556
+#: rpmdb/hdrfmt.c:4598
 msgid "{ expected after : in expression"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:4578
+#: rpmdb/hdrfmt.c:4620
 msgid "| expected at end of expression"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:4910
+#: rpmdb/hdrfmt.c:4952
 msgid "array iterator used with different sized arrays"
 msgstr ""
 
@@ -3754,7 +3758,7 @@ msgid "%s: Unknown digest name \"%s\"\n"
 msgstr ""
 
 #: rpmio/rpmdigest.c:298 rpmio/rpmgrep.c:1316 rpmio/rpmmtree.c:3535
-#: rpmio/rpmrepo.c:1854
+#: rpmio/rpmrepo.c:1923
 #, c-format
 msgid "%s: Unknown option -%c\n"
 msgstr ""
@@ -3787,12 +3791,12 @@ msgstr ""
 msgid "warn about improperly formatted checksum lines"
 msgstr ""
 
-#: rpmio/rpmdigest.c:345 rpmio/rpmmtree.c:3606 rpmio/rpmrepo.c:1951
+#: rpmio/rpmdigest.c:345 rpmio/rpmmtree.c:3606 rpmio/rpmrepo.c:2020
 msgid "Available digests:"
 msgstr ""
 
 #: rpmio/rpmdigest.c:348 rpmio/rpmgrep.c:1435 rpmio/rpmmtree.c:3609
-#: rpmio/rpmrepo.c:1954
+#: rpmio/rpmrepo.c:2023
 msgid "Common options for all rpmio executables:"
 msgstr ""
 
@@ -4492,7 +4496,7 @@ msgstr ""
 msgid "Don't cross mount points"
 msgstr ""
 
-#: rpmio/rpmmtree.c:3603 rpmio/rpmrepo.c:1940
+#: rpmio/rpmmtree.c:3603 rpmio/rpmrepo.c:2009
 msgid "Fts(3) traversal options:"
 msgstr ""
 
@@ -4566,202 +4570,202 @@ msgstr ""
 msgid "%s: Fread(%s) failed: %s\n"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1096 rpmio/rpmrepo.c:1168
+#: rpmio/rpmrepo.c:1098 rpmio/rpmrepo.c:1170
 #, c-format
 msgid "headerSprintf(%s): %s"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1278
+#: rpmio/rpmrepo.c:1280
 #, c-format
 msgid ""
 "\n"
 "Error %s: %s\n"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1323
+#: rpmio/rpmrepo.c:1389
 #, c-format
 msgid "Saving %s metadata"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1537
+#: rpmio/rpmrepo.c:1606
 msgid "Generating sqlite DBs"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1564
+#: rpmio/rpmrepo.c:1633
 #, c-format
 msgid "Starting %s db creation: %s"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1630
+#: rpmio/rpmrepo.c:1699
 #, c-format
 msgid "Ending %s db creation: %s"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1664
+#: rpmio/rpmrepo.c:1733
 msgid "Sqlite DBs complete"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1675
+#: rpmio/rpmrepo.c:1744
 #, c-format
 msgid "Error saving temp file for %s%s%s: %s"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1680
+#: rpmio/rpmrepo.c:1749
 #, c-format
 msgid "Could not save temp file: %s"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1707
+#: rpmio/rpmrepo.c:1776
 #, c-format
 msgid "Error moving final %s to old dir %s"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1715
+#: rpmio/rpmrepo.c:1784
 msgid "Error moving final metadata into place"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1732 rpmio/rpmrepo.c:1764
+#: rpmio/rpmrepo.c:1801 rpmio/rpmrepo.c:1833
 #, c-format
 msgid "Could not remove old metadata file: %s: %s"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1774
+#: rpmio/rpmrepo.c:1843
 #, c-format
 msgid "Could not restore old non-metadata file: %s -> %s: %s"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1786
+#: rpmio/rpmrepo.c:1855
 #, c-format
 msgid "Could not remove old metadata dir: %s: %s"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1867
+#: rpmio/rpmrepo.c:1936
 msgid "don't compress"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1869
+#: rpmio/rpmrepo.c:1938
 msgid "use gzip compression"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1871
+#: rpmio/rpmrepo.c:1940
 msgid "use bzip2 compression"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1873
+#: rpmio/rpmrepo.c:1942
 msgid "use lzma compression"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1885
+#: rpmio/rpmrepo.c:1954
 msgid "debug repo handling"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1888
+#: rpmio/rpmrepo.c:1957
 msgid "output nothing except for serious errors"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1890
+#: rpmio/rpmrepo.c:1959
 msgid "output more debugging info."
 msgstr ""
 
-#: rpmio/rpmrepo.c:1892
+#: rpmio/rpmrepo.c:1961
 msgid "sanity check arguments, don't create metadata"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1895 rpmio/rpmrepo.c:1898
+#: rpmio/rpmrepo.c:1964 rpmio/rpmrepo.c:1967
 msgid "glob PATTERN(s) to exclude"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1895 rpmio/rpmrepo.c:1898 rpmio/rpmrepo.c:1902
-#: rpmio/rpmrepo.c:1905
+#: rpmio/rpmrepo.c:1964 rpmio/rpmrepo.c:1967 rpmio/rpmrepo.c:1971
+#: rpmio/rpmrepo.c:1974
 msgid "PATTERN"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1902 rpmio/rpmrepo.c:1905
+#: rpmio/rpmrepo.c:1971 rpmio/rpmrepo.c:1974
 msgid "glob PATTERN(s) to include"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1909
+#: rpmio/rpmrepo.c:1977
 msgid "top level directory"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1909 rpmio/rpmrepo.c:1933
+#: rpmio/rpmrepo.c:1977 rpmio/rpmrepo.c:2002
 msgid "DIR"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1911
+#: rpmio/rpmrepo.c:1979
 msgid "baseurl to append on all files"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1911
+#: rpmio/rpmrepo.c:1979
 msgid "BASEURL"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1913
+#: rpmio/rpmrepo.c:1982
 msgid "path to groupfile to include in metadata"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1913 rpmio/rpmrepo.c:1927 rpmio/rpmrepo.c:1930
+#: rpmio/rpmrepo.c:1982 rpmio/rpmrepo.c:1996 rpmio/rpmrepo.c:1999
 msgid "FILE"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1916
+#: rpmio/rpmrepo.c:1985
 msgid "make sure all xml generated is formatted"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1918
+#: rpmio/rpmrepo.c:1987
 msgid "check timestamps on files vs the metadata to see if we need to update"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1921
+#: rpmio/rpmrepo.c:1990
 msgid "create sqlite3 database files"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1924
+#: rpmio/rpmrepo.c:1993
 msgid "generate split media"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1927 rpmio/rpmrepo.c:1930
+#: rpmio/rpmrepo.c:1996 rpmio/rpmrepo.c:1999
 msgid "use only the files listed in this file from the directory specified"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1933
+#: rpmio/rpmrepo.c:2002
 msgid "<dir> = optional directory to output to"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1935
+#: rpmio/rpmrepo.c:2004
 msgid "ignore symlinks of packages"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1937
+#: rpmio/rpmrepo.c:2006
 msgid "include the file's checksum in the filename, helps with proxies"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1948
+#: rpmio/rpmrepo.c:2017
 msgid "Available compressions:"
 msgstr ""
 
-#: rpmio/rpmrepo.c:2022
+#: rpmio/rpmrepo.c:2091
 msgid "Must specify path(s) to index."
 msgstr ""
 
-#: rpmio/rpmrepo.c:2040 rpmio/rpmrepo.c:2092
+#: rpmio/rpmrepo.c:2109 rpmio/rpmrepo.c:2161
 #, c-format
 msgid "Realpath(%s): %s"
 msgstr ""
 
-#: rpmio/rpmrepo.c:2097
+#: rpmio/rpmrepo.c:2166
 msgid "--split and --checkts options are mutually exclusive"
 msgstr ""
 
-#: rpmio/rpmrepo.c:2117
+#: rpmio/rpmrepo.c:2186
 msgid "Error loading exclude glob patterns."
 msgstr ""
 
-#: rpmio/rpmrepo.c:2120
+#: rpmio/rpmrepo.c:2189
 msgid "Error loading include glob patterns."
 msgstr ""
 
-#: rpmio/rpmrepo.c:2149
+#: rpmio/rpmrepo.c:2218
 #, c-format
 msgid "repo is up to date\n"
 msgstr ""

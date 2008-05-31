@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 5.0\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2008-05-27 09:53-0400\n"
+"POT-Creation-Date: 2008-05-31 18:38-0400\n"
 "PO-Revision-Date: 2005-04-04 22:30+1000\n"
 "Last-Translator: SEKINE Tatsuo <tsekine@sdri.co.jp>\n"
 "Language-Team: Japanese <translation-team-ja@lists.sourceforge.net>\n"
@@ -1329,149 +1329,149 @@ msgstr "スペックファイル %s の問い合わせに失敗しました。解析できません。\n"
 msgid "Query specfile for platform(s): %s\n"
 msgstr "ビルド対象プラットフォーム: %s\n"
 
-#: lib/depends.c:491
+#: lib/depends.c:592
 #, c-format
 msgid "package %s was already added, skipping %s\n"
 msgstr "パッケージ %s は既に追加されています。%s を飛ばします。\n"
 
-#: lib/depends.c:505
+#: lib/depends.c:606
 #, c-format
 msgid "package %s was already added, replacing with %s\n"
 msgstr "パッケージ %s は既に追加されています。 %s と置換します。\n"
 
-#: lib/depends.c:714
+#: lib/depends.c:827
 msgid "(cached)"
 msgstr "(キャッシュ済み)"
 
-#: lib/depends.c:730
+#: lib/depends.c:843
 #, fuzzy
 msgid "(function probe)"
 msgstr "(rpmrc 提供)"
 
-#: lib/depends.c:749
+#: lib/depends.c:862
 msgid "(user lookup)"
 msgstr ""
 
-#: lib/depends.c:766
+#: lib/depends.c:879
 msgid "(group lookup)"
 msgstr ""
 
-#: lib/depends.c:775
+#: lib/depends.c:888
 #, fuzzy
 msgid "(access probe)"
 msgstr "(rpmrc 提供)"
 
-#: lib/depends.c:797
+#: lib/depends.c:910
 #, fuzzy
 msgid "(mtab probe)"
 msgstr "(rpmrc 提供)"
 
-#: lib/depends.c:854
+#: lib/depends.c:967
 #, fuzzy
 msgid "(diskspace probe)"
 msgstr "(rpmrc 提供)"
 
-#: lib/depends.c:896
+#: lib/depends.c:1009
 #, fuzzy
 msgid "(digest probe)"
 msgstr "(rpmrc 提供)"
 
-#: lib/depends.c:920
+#: lib/depends.c:1033
 #, fuzzy
 msgid "(signature probe)"
 msgstr "(rpmrc 提供)"
 
-#: lib/depends.c:950
+#: lib/depends.c:1063
 #, fuzzy
 msgid "(verify probe)"
 msgstr "(rpmrc 提供)"
 
-#: lib/depends.c:972
+#: lib/depends.c:1085
 #, fuzzy
 msgid "(gnupg probe)"
 msgstr "(rpmrc 提供)"
 
-#: lib/depends.c:985
+#: lib/depends.c:1098
 #, fuzzy
 msgid "(macro probe)"
 msgstr "(rpmrc 提供)"
 
-#: lib/depends.c:1013
+#: lib/depends.c:1126
 #, fuzzy
 msgid "(envvar probe)"
 msgstr "(rpmrc 提供)"
 
-#: lib/depends.c:1040
+#: lib/depends.c:1153
 #, fuzzy
 msgid "(running probe)"
 msgstr "(rpmrc 提供)"
 
-#: lib/depends.c:1062
+#: lib/depends.c:1175
 #, fuzzy
 msgid "(sanity probe)"
 msgstr "(rpmrc 提供)"
 
-#: lib/depends.c:1083
+#: lib/depends.c:1196
 #, fuzzy
 msgid "(vcheck probe)"
 msgstr "(rpmrc 提供)"
 
-#: lib/depends.c:1104
+#: lib/depends.c:1217
 #, fuzzy
 msgid "(sysinfo provides)"
 msgstr "(rpmlib 提供)"
 
-#: lib/depends.c:1123
+#: lib/depends.c:1236
 msgid "(rpmlib provides)"
 msgstr "(rpmlib 提供)"
 
-#: lib/depends.c:1138
+#: lib/depends.c:1251
 #, fuzzy
 msgid "(cpuinfo provides)"
 msgstr "(rpmlib 提供)"
 
-#: lib/depends.c:1153
+#: lib/depends.c:1266
 #, fuzzy
 msgid "(getconf provides)"
 msgstr "(rpmlib 提供)"
 
-#: lib/depends.c:1168
+#: lib/depends.c:1281
 #, fuzzy
 msgid "(uname provides)"
 msgstr "(provideに追加済み)"
 
-#: lib/depends.c:1200
+#: lib/depends.c:1313
 #, fuzzy
 msgid "(soname provides)"
 msgstr "(provideに追加済み)"
 
-#: lib/depends.c:1228
+#: lib/depends.c:1341
 msgid "(db files)"
 msgstr "(files データベース)"
 
-#: lib/depends.c:1240
+#: lib/depends.c:1353
 msgid "(db provides)"
 msgstr "(provides データベース"
 
-#: lib/depends.c:1270
+#: lib/depends.c:1383
 msgid "(hint skipped)"
 msgstr ""
 
-#: lib/depends.c:1707
+#: lib/depends.c:1820
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr "パッケージ名の関係を無視します [%d]\t%s → %s\n"
 
-#: lib/depends.c:1833
+#: lib/depends.c:1946
 #, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "tsort 関係から %s \"%s\" を削除します。\n"
 
-#: lib/depends.c:2418
+#: lib/depends.c:2531
 msgid "LOOP:\n"
 msgstr "ループ:\n"
 
-#: lib/depends.c:2454
+#: lib/depends.c:2567
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr "rpmtsOrder に失敗, 残り %d 個\n"
@@ -1682,7 +1682,7 @@ msgstr "全問い合わせタグを表示します。"
 msgid "display macro and configuration values"
 msgstr "最終的な rpmrc とマクロの設定を表示します。"
 
-#: lib/poptALL.c:362 rpmio/poptIO.c:367 rpmio/rpmrepo.c:1944
+#: lib/poptALL.c:362 rpmio/poptIO.c:367 rpmio/rpmrepo.c:2013
 #, fuzzy
 msgid "print the version"
 msgstr "使用している rpm のバージョンを表示します。"
@@ -2938,20 +2938,24 @@ msgstr "db%d エラー (%d) (%s において): %s\n"
 msgid "db%d error(%d): %s\n"
 msgstr "db%d エラー (%d): %s\n"
 
-#: rpmdb/db3.c:1313
+#: rpmdb/db3.c:1315
+msgid "RUNRECOVERY failed, exiting ...\n"
+msgstr ""
+
+#: rpmdb/db3.c:1318
 msgid "Runnning db->verify ...\n"
 msgstr ""
 
-#: rpmdb/db3.c:1624
+#: rpmdb/db3.c:1629
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "%sロックを獲得できません (%s/%s)\n"
 
-#: rpmdb/db3.c:1626
+#: rpmdb/db3.c:1631
 msgid "exclusive"
 msgstr "排他"
 
-#: rpmdb/db3.c:1626
+#: rpmdb/db3.c:1631
 msgid "shared"
 msgstr "共有"
 
@@ -3007,8 +3011,8 @@ msgstr "(base64 ではありません)"
 msgid "(invalid type :base64)"
 msgstr "(不正なタイプ)"
 
-#: rpmdb/hdrfmt.c:730 rpmdb/hdrfmt.c:761 rpmdb/hdrfmt.c:2548
-#: rpmdb/hdrfmt.c:2986
+#: rpmdb/hdrfmt.c:730 rpmdb/hdrfmt.c:761 rpmdb/hdrfmt.c:2588
+#: rpmdb/hdrfmt.c:3026
 #, fuzzy
 msgid "(not a string)"
 msgstr "(数字ではありません)"
@@ -3030,115 +3034,115 @@ msgstr "(blob ではありません)"
 msgid "(not an OpenPGP signature)"
 msgstr "(OpenPGP 署名ではありません)"
 
-#: rpmdb/hdrfmt.c:3197
+#: rpmdb/hdrfmt.c:3237
 #, fuzzy
 msgid "(invalid type :digest)"
 msgstr "(不正なタイプ)"
 
-#: rpmdb/hdrfmt.c:3253
+#: rpmdb/hdrfmt.c:3293
 #, fuzzy
 msgid "(invalid type :stat)"
 msgstr "(不正なタイプ)"
 
-#: rpmdb/hdrfmt.c:3405
+#: rpmdb/hdrfmt.c:3445
 #, fuzzy
 msgid "(invalid type :uuid)"
 msgstr "(不正なタイプ)"
 
-#: rpmdb/hdrfmt.c:3466
+#: rpmdb/hdrfmt.c:3506
 #, fuzzy
 msgid "(invalid type :rpn)"
 msgstr "(不正なタイプ)"
 
-#: rpmdb/hdrfmt.c:3476
+#: rpmdb/hdrfmt.c:3516
 #, fuzzy
 msgid "(invalid string :rpn)"
 msgstr "(不正なタイプ)"
 
-#: rpmdb/hdrfmt.c:3492
+#: rpmdb/hdrfmt.c:3532
 #, fuzzy
 msgid "(expected number :rpn)"
 msgstr "予期せぬ問い合わせのフォーマット"
 
-#: rpmdb/hdrfmt.c:3496
+#: rpmdb/hdrfmt.c:3536
 msgid "(stack overflow :rpn)"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:3502
+#: rpmdb/hdrfmt.c:3542
 #, fuzzy
 msgid "(invalid number :rpn)"
 msgstr "(不正な XML タイプ)"
 
-#: rpmdb/hdrfmt.c:3507
+#: rpmdb/hdrfmt.c:3547
 msgid "(stack underflow :rpn)"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:3520
+#: rpmdb/hdrfmt.c:3560
 msgid "(divide by zero :rpn)"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:4271
+#: rpmdb/hdrfmt.c:4313
 msgid "missing { after %"
 msgstr "% の後に { がありません。"
 
-#: rpmdb/hdrfmt.c:4305
+#: rpmdb/hdrfmt.c:4347
 msgid "missing } after %{"
 msgstr "%{ の後に } がありません。"
 
-#: rpmdb/hdrfmt.c:4321
+#: rpmdb/hdrfmt.c:4363
 msgid "empty tag format"
 msgstr "空のタグフォーマット"
 
-#: rpmdb/hdrfmt.c:4341
+#: rpmdb/hdrfmt.c:4383
 #, fuzzy
 msgid "malformed parameter list"
 msgstr "arbgoal の時刻/日付スタンプの形式が正しくありません"
 
-#: rpmdb/hdrfmt.c:4362
+#: rpmdb/hdrfmt.c:4404
 msgid "empty tag name"
 msgstr "空のタグ名"
 
-#: rpmdb/hdrfmt.c:4371
+#: rpmdb/hdrfmt.c:4413
 msgid "unknown tag"
 msgstr "不明なタグ"
 
-#: rpmdb/hdrfmt.c:4401
+#: rpmdb/hdrfmt.c:4443
 msgid "] expected at end of array"
 msgstr "配列の後に ] が期待されます。"
 
-#: rpmdb/hdrfmt.c:4418
+#: rpmdb/hdrfmt.c:4460
 msgid "unexpected ]"
 msgstr "予期せぬ ]"
 
-#: rpmdb/hdrfmt.c:4433
+#: rpmdb/hdrfmt.c:4475
 msgid "unexpected }"
 msgstr "予期せぬ }"
 
-#: rpmdb/hdrfmt.c:4511
+#: rpmdb/hdrfmt.c:4553
 msgid "? expected in expression"
 msgstr "式中で ? が期待されます。"
 
-#: rpmdb/hdrfmt.c:4518
+#: rpmdb/hdrfmt.c:4560
 msgid "{ expected after ? in expression"
 msgstr "式中で ? の後に { が期待されます。"
 
-#: rpmdb/hdrfmt.c:4530 rpmdb/hdrfmt.c:4570
+#: rpmdb/hdrfmt.c:4572 rpmdb/hdrfmt.c:4612
 msgid "} expected in expression"
 msgstr "式中に } が期待されます。"
 
-#: rpmdb/hdrfmt.c:4538
+#: rpmdb/hdrfmt.c:4580
 msgid ": expected following ? subexpression"
 msgstr "? サブ式の後に : が期待されます。"
 
-#: rpmdb/hdrfmt.c:4556
+#: rpmdb/hdrfmt.c:4598
 msgid "{ expected after : in expression"
 msgstr "式中で : の後に { が期待されます。"
 
-#: rpmdb/hdrfmt.c:4578
+#: rpmdb/hdrfmt.c:4620
 msgid "| expected at end of expression"
 msgstr "式の終わりに | が期待されます。"
 
-#: rpmdb/hdrfmt.c:4910
+#: rpmdb/hdrfmt.c:4952
 msgid "array iterator used with different sized arrays"
 msgstr "配列の繰り返し指定が、サイズが異なる配列の間で使用されています"
 
@@ -3890,7 +3894,7 @@ msgid "%s: Unknown digest name \"%s\"\n"
 msgstr "不明なタグ: \"%s\"\n"
 
 #: rpmio/rpmdigest.c:298 rpmio/rpmgrep.c:1316 rpmio/rpmmtree.c:3535
-#: rpmio/rpmrepo.c:1854
+#: rpmio/rpmrepo.c:1923
 #, fuzzy, c-format
 msgid "%s: Unknown option -%c\n"
 msgstr "不明なオプション %c (%s(%s)中に)\n"
@@ -3923,12 +3927,12 @@ msgstr ""
 msgid "warn about improperly formatted checksum lines"
 msgstr ""
 
-#: rpmio/rpmdigest.c:345 rpmio/rpmmtree.c:3606 rpmio/rpmrepo.c:1951
+#: rpmio/rpmdigest.c:345 rpmio/rpmmtree.c:3606 rpmio/rpmrepo.c:2020
 msgid "Available digests:"
 msgstr ""
 
 #: rpmio/rpmdigest.c:348 rpmio/rpmgrep.c:1435 rpmio/rpmmtree.c:3609
-#: rpmio/rpmrepo.c:1954
+#: rpmio/rpmrepo.c:2023
 #, fuzzy
 msgid "Common options for all rpmio executables:"
 msgstr "全モード・コマンドで共通のオプション:"
@@ -4637,7 +4641,7 @@ msgstr ""
 msgid "Don't cross mount points"
 msgstr ""
 
-#: rpmio/rpmmtree.c:3603 rpmio/rpmrepo.c:1940
+#: rpmio/rpmmtree.c:3603 rpmio/rpmrepo.c:2009
 #, fuzzy
 msgid "Fts(3) traversal options:"
 msgstr "ファイルツリー探索オプション:"
@@ -4712,209 +4716,209 @@ msgstr ""
 msgid "%s: Fread(%s) failed: %s\n"
 msgstr "%s: Fread に失敗しました: %s\n"
 
-#: rpmio/rpmrepo.c:1096 rpmio/rpmrepo.c:1168
+#: rpmio/rpmrepo.c:1098 rpmio/rpmrepo.c:1170
 #, c-format
 msgid "headerSprintf(%s): %s"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1278
+#: rpmio/rpmrepo.c:1280
 #, fuzzy, c-format
 msgid ""
 "\n"
 "Error %s: %s\n"
 msgstr "%s: %s\n"
 
-#: rpmio/rpmrepo.c:1323
+#: rpmio/rpmrepo.c:1389
 #, c-format
 msgid "Saving %s metadata"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1537
+#: rpmio/rpmrepo.c:1606
 #, fuzzy
 msgid "Generating sqlite DBs"
 msgstr "署名の作成中: %d\n"
 
-#: rpmio/rpmrepo.c:1564
+#: rpmio/rpmrepo.c:1633
 #, c-format
 msgid "Starting %s db creation: %s"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1630
+#: rpmio/rpmrepo.c:1699
 #, c-format
 msgid "Ending %s db creation: %s"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1664
+#: rpmio/rpmrepo.c:1733
 msgid "Sqlite DBs complete"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1675
+#: rpmio/rpmrepo.c:1744
 #, fuzzy, c-format
 msgid "Error saving temp file for %s%s%s: %s"
 msgstr "一時ファイル %s の作成に失敗しました。\n"
 
-#: rpmio/rpmrepo.c:1680
+#: rpmio/rpmrepo.c:1749
 #, fuzzy, c-format
 msgid "Could not save temp file: %s"
 msgstr "PostIn ファイルをオープンできませんでした: %s\n"
 
-#: rpmio/rpmrepo.c:1707
+#: rpmio/rpmrepo.c:1776
 #, c-format
 msgid "Error moving final %s to old dir %s"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1715
+#: rpmio/rpmrepo.c:1784
 msgid "Error moving final metadata into place"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1732 rpmio/rpmrepo.c:1764
+#: rpmio/rpmrepo.c:1801 rpmio/rpmrepo.c:1833
 #, fuzzy, c-format
 msgid "Could not remove old metadata file: %s: %s"
 msgstr "%%files のファイル %s をオープンできません: %s\\n\n"
 
-#: rpmio/rpmrepo.c:1774
+#: rpmio/rpmrepo.c:1843
 #, fuzzy, c-format
 msgid "Could not restore old non-metadata file: %s -> %s: %s"
 msgstr "%%files のファイル %s をオープンできません: %s\\n\n"
 
-#: rpmio/rpmrepo.c:1786
+#: rpmio/rpmrepo.c:1855
 #, fuzzy, c-format
 msgid "Could not remove old metadata dir: %s: %s"
 msgstr "%%files のファイル %s をオープンできません: %s\\n\n"
 
-#: rpmio/rpmrepo.c:1867
+#: rpmio/rpmrepo.c:1936
 msgid "don't compress"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1869
+#: rpmio/rpmrepo.c:1938
 msgid "use gzip compression"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1871
+#: rpmio/rpmrepo.c:1940
 msgid "use bzip2 compression"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1873
+#: rpmio/rpmrepo.c:1942
 msgid "use lzma compression"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1885
+#: rpmio/rpmrepo.c:1954
 #, fuzzy
 msgid "debug repo handling"
 msgstr "URL キャッシュハンドリングのデバッグ"
 
-#: rpmio/rpmrepo.c:1888
+#: rpmio/rpmrepo.c:1957
 msgid "output nothing except for serious errors"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1890
+#: rpmio/rpmrepo.c:1959
 msgid "output more debugging info."
 msgstr ""
 
-#: rpmio/rpmrepo.c:1892
+#: rpmio/rpmrepo.c:1961
 msgid "sanity check arguments, don't create metadata"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1895 rpmio/rpmrepo.c:1898
+#: rpmio/rpmrepo.c:1964 rpmio/rpmrepo.c:1967
 msgid "glob PATTERN(s) to exclude"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1895 rpmio/rpmrepo.c:1898 rpmio/rpmrepo.c:1902
-#: rpmio/rpmrepo.c:1905
+#: rpmio/rpmrepo.c:1964 rpmio/rpmrepo.c:1967 rpmio/rpmrepo.c:1971
+#: rpmio/rpmrepo.c:1974
 msgid "PATTERN"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1902 rpmio/rpmrepo.c:1905
+#: rpmio/rpmrepo.c:1971 rpmio/rpmrepo.c:1974
 msgid "glob PATTERN(s) to include"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1909
+#: rpmio/rpmrepo.c:1977
 #, fuzzy
 msgid "top level directory"
 msgstr "ROOT をトップディレクトリとして使用します。"
 
-#: rpmio/rpmrepo.c:1909 rpmio/rpmrepo.c:1933
+#: rpmio/rpmrepo.c:1977 rpmio/rpmrepo.c:2002
 msgid "DIR"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1911
+#: rpmio/rpmrepo.c:1979
 msgid "baseurl to append on all files"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1911
+#: rpmio/rpmrepo.c:1979
 msgid "BASEURL"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1913
+#: rpmio/rpmrepo.c:1982
 msgid "path to groupfile to include in metadata"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1913 rpmio/rpmrepo.c:1927 rpmio/rpmrepo.c:1930
+#: rpmio/rpmrepo.c:1982 rpmio/rpmrepo.c:1996 rpmio/rpmrepo.c:1999
 msgid "FILE"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1916
+#: rpmio/rpmrepo.c:1985
 msgid "make sure all xml generated is formatted"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1918
+#: rpmio/rpmrepo.c:1987
 msgid "check timestamps on files vs the metadata to see if we need to update"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1921
+#: rpmio/rpmrepo.c:1990
 #, fuzzy
 msgid "create sqlite3 database files"
 msgstr "データベースの検証を行います。"
 
-#: rpmio/rpmrepo.c:1924
+#: rpmio/rpmrepo.c:1993
 #, fuzzy
 msgid "generate split media"
 msgstr "署名を生成します。"
 
-#: rpmio/rpmrepo.c:1927 rpmio/rpmrepo.c:1930
+#: rpmio/rpmrepo.c:1996 rpmio/rpmrepo.c:1999
 msgid "use only the files listed in this file from the directory specified"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1933
+#: rpmio/rpmrepo.c:2002
 msgid "<dir> = optional directory to output to"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1935
+#: rpmio/rpmrepo.c:2004
 #, fuzzy
 msgid "ignore symlinks of packages"
 msgstr "パッケージ間のファイルの競合を無視します。"
 
-#: rpmio/rpmrepo.c:1937
+#: rpmio/rpmrepo.c:2006
 msgid "include the file's checksum in the filename, helps with proxies"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1948
+#: rpmio/rpmrepo.c:2017
 #, fuzzy
 msgid "Available compressions:"
 msgstr "データベースオプション:"
 
-#: rpmio/rpmrepo.c:2022
+#: rpmio/rpmrepo.c:2091
 msgid "Must specify path(s) to index."
 msgstr ""
 
-#: rpmio/rpmrepo.c:2040 rpmio/rpmrepo.c:2092
+#: rpmio/rpmrepo.c:2109 rpmio/rpmrepo.c:2161
 #, fuzzy, c-format
 msgid "Realpath(%s): %s"
 msgstr "%s: 失敗: %s\n"
 
-#: rpmio/rpmrepo.c:2097
+#: rpmio/rpmrepo.c:2166
 msgid "--split and --checkts options are mutually exclusive"
 msgstr ""
 
-#: rpmio/rpmrepo.c:2117
+#: rpmio/rpmrepo.c:2186
 msgid "Error loading exclude glob patterns."
 msgstr ""
 
-#: rpmio/rpmrepo.c:2120
+#: rpmio/rpmrepo.c:2189
 msgid "Error loading include glob patterns."
 msgstr ""
 
-#: rpmio/rpmrepo.c:2149
+#: rpmio/rpmrepo.c:2218
 #, c-format
 msgid "repo is up to date\n"
 msgstr ""

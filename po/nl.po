@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm-5.0.0\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2008-05-27 09:53-0400\n"
+"POT-Creation-Date: 2008-05-31 18:38-0400\n"
 "PO-Revision-Date: 2008-04-04 20:27+0200\n"
 "Last-Translator: Erwin Poeze <erwin.poeze@gmail.com>\n"
 "Language-Team: Dutch <vertaling@vrijschrift.org>\n"
@@ -1336,132 +1336,132 @@ msgstr "bevragen van spec-bestand %s is mislukt, kan niet worden ontleed\n"
 msgid "Query specfile for platform(s): %s\n"
 msgstr "Bevragen van spec-bestand voor platform(en): %s\n"
 
-#: lib/depends.c:491
+#: lib/depends.c:592
 #, c-format
 msgid "package %s was already added, skipping %s\n"
 msgstr "pakket %s was al toegevoegd en wordt overgeslagen %s\n"
 
-#: lib/depends.c:505
+#: lib/depends.c:606
 #, c-format
 msgid "package %s was already added, replacing with %s\n"
 msgstr "pakket %s was al toegevoegd en wordt vervangen door %s\n"
 
-#: lib/depends.c:714
+#: lib/depends.c:827
 msgid "(cached)"
 msgstr "(gebufferd)"
 
-#: lib/depends.c:730
+#: lib/depends.c:843
 msgid "(function probe)"
 msgstr "(functie opvragen)"
 
-#: lib/depends.c:749
+#: lib/depends.c:862
 msgid "(user lookup)"
 msgstr "(gebruiker opzoeken)"
 
-#: lib/depends.c:766
+#: lib/depends.c:879
 msgid "(group lookup)"
 msgstr "(groep opzoeken)"
 
-#: lib/depends.c:775
+#: lib/depends.c:888
 msgid "(access probe)"
 msgstr "(toegang opvragen)"
 
-#: lib/depends.c:797
+#: lib/depends.c:910
 msgid "(mtab probe)"
 msgstr "(mtab opvragen)"
 
-#: lib/depends.c:854
+#: lib/depends.c:967
 msgid "(diskspace probe)"
 msgstr "(schijfruimte opvragen)"
 
-#: lib/depends.c:896
+#: lib/depends.c:1009
 msgid "(digest probe)"
 msgstr "(verzameling opvragen)"
 
-#: lib/depends.c:920
+#: lib/depends.c:1033
 msgid "(signature probe)"
 msgstr "(handtekening opvragen)"
 
-#: lib/depends.c:950
+#: lib/depends.c:1063
 #, fuzzy
 msgid "(verify probe)"
 msgstr "(omgevingsvariabelen opvragen)"
 
-#: lib/depends.c:972
+#: lib/depends.c:1085
 msgid "(gnupg probe)"
 msgstr "(gnupg opvragen)"
 
-#: lib/depends.c:985
+#: lib/depends.c:1098
 msgid "(macro probe)"
 msgstr "(macro opvragen)"
 
-#: lib/depends.c:1013
+#: lib/depends.c:1126
 msgid "(envvar probe)"
 msgstr "(omgevingsvariabelen opvragen)"
 
-#: lib/depends.c:1040
+#: lib/depends.c:1153
 msgid "(running probe)"
 msgstr "(opvragen uitvoeren)"
 
-#: lib/depends.c:1062
+#: lib/depends.c:1175
 msgid "(sanity probe)"
 msgstr "(fitheid opvragen)"
 
-#: lib/depends.c:1083
+#: lib/depends.c:1196
 msgid "(vcheck probe)"
 msgstr "(vcheck opvragen)"
 
-#: lib/depends.c:1104
+#: lib/depends.c:1217
 msgid "(sysinfo provides)"
 msgstr "(systeeminformatie levert)"
 
-#: lib/depends.c:1123
+#: lib/depends.c:1236
 msgid "(rpmlib provides)"
 msgstr "(rpmlib levert)"
 
-#: lib/depends.c:1138
+#: lib/depends.c:1251
 msgid "(cpuinfo provides)"
 msgstr "(cpuinfo levert)"
 
-#: lib/depends.c:1153
+#: lib/depends.c:1266
 msgid "(getconf provides)"
 msgstr "(getconf levert)"
 
-#: lib/depends.c:1168
+#: lib/depends.c:1281
 msgid "(uname provides)"
 msgstr "(uname levert)"
 
-#: lib/depends.c:1200
+#: lib/depends.c:1313
 msgid "(soname provides)"
 msgstr "(soname levert)"
 
-#: lib/depends.c:1228
+#: lib/depends.c:1341
 msgid "(db files)"
 msgstr "(db-bestanden)"
 
-#: lib/depends.c:1240
+#: lib/depends.c:1353
 msgid "(db provides)"
 msgstr "(db levert)"
 
-#: lib/depends.c:1270
+#: lib/depends.c:1383
 msgid "(hint skipped)"
 msgstr "(hint overgeslagen)"
 
-#: lib/depends.c:1707
+#: lib/depends.c:1820
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr "pakketnaamrelatie(s) negeren [%d]\t%s -> %s\n"
 
-#: lib/depends.c:1833
+#: lib/depends.c:1946
 #, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "verwijder %s \"%s\" uit de tsort-relaties.\n"
 
-#: lib/depends.c:2418
+#: lib/depends.c:2531
 msgid "LOOP:\n"
 msgstr "LUS:\n"
 
-#: lib/depends.c:2454
+#: lib/depends.c:2567
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr "rpmtsOrder mislukt, %d elementen blijven\n"
@@ -1668,7 +1668,7 @@ msgstr "bekende bevraaglabels tonen"
 msgid "display macro and configuration values"
 msgstr "uiteindelijke rpmrc- en macroconfiguratie tonen"
 
-#: lib/poptALL.c:362 rpmio/poptIO.c:367 rpmio/rpmrepo.c:1944
+#: lib/poptALL.c:362 rpmio/poptIO.c:367 rpmio/rpmrepo.c:2013
 #, fuzzy
 msgid "print the version"
 msgstr "versie van de gebruikte rpm tonen"
@@ -2912,20 +2912,24 @@ msgstr "db%d fout(%d) van %s: %s\n"
 msgid "db%d error(%d): %s\n"
 msgstr "db%d fout(%d): %s\n"
 
-#: rpmdb/db3.c:1313
+#: rpmdb/db3.c:1315
+msgid "RUNRECOVERY failed, exiting ...\n"
+msgstr ""
+
+#: rpmdb/db3.c:1318
 msgid "Runnning db->verify ...\n"
 msgstr "db uitvoeren->controleren ...\n"
 
-#: rpmdb/db3.c:1624
+#: rpmdb/db3.c:1629
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "kan geen %s verbinding krijgen met %s/%s\n"
 
-#: rpmdb/db3.c:1626
+#: rpmdb/db3.c:1631
 msgid "exclusive"
 msgstr "uitgesloten"
 
-#: rpmdb/db3.c:1626
+#: rpmdb/db3.c:1631
 msgid "shared"
 msgstr "gedeeld"
 
@@ -2980,8 +2984,8 @@ msgstr "(geen base64)"
 msgid "(invalid type :base64)"
 msgstr "(ongeldig type)"
 
-#: rpmdb/hdrfmt.c:730 rpmdb/hdrfmt.c:761 rpmdb/hdrfmt.c:2548
-#: rpmdb/hdrfmt.c:2986
+#: rpmdb/hdrfmt.c:730 rpmdb/hdrfmt.c:761 rpmdb/hdrfmt.c:2588
+#: rpmdb/hdrfmt.c:3026
 #, fuzzy
 msgid "(not a string)"
 msgstr "(geen nummer)"
@@ -3002,115 +3006,115 @@ msgstr "(geen blob)"
 msgid "(not an OpenPGP signature)"
 msgstr "(geen OpenPGP-handtekening)"
 
-#: rpmdb/hdrfmt.c:3197
+#: rpmdb/hdrfmt.c:3237
 #, fuzzy
 msgid "(invalid type :digest)"
 msgstr "(ongeldig type)"
 
-#: rpmdb/hdrfmt.c:3253
+#: rpmdb/hdrfmt.c:3293
 #, fuzzy
 msgid "(invalid type :stat)"
 msgstr "(ongeldig type)"
 
-#: rpmdb/hdrfmt.c:3405
+#: rpmdb/hdrfmt.c:3445
 #, fuzzy
 msgid "(invalid type :uuid)"
 msgstr "(ongeldig type)"
 
-#: rpmdb/hdrfmt.c:3466
+#: rpmdb/hdrfmt.c:3506
 #, fuzzy
 msgid "(invalid type :rpn)"
 msgstr "(ongeldig type)"
 
-#: rpmdb/hdrfmt.c:3476
+#: rpmdb/hdrfmt.c:3516
 #, fuzzy
 msgid "(invalid string :rpn)"
 msgstr "(ongeldig type)"
 
-#: rpmdb/hdrfmt.c:3492
+#: rpmdb/hdrfmt.c:3532
 #, fuzzy
 msgid "(expected number :rpn)"
 msgstr "onverwachte bevraagsyntax"
 
-#: rpmdb/hdrfmt.c:3496
+#: rpmdb/hdrfmt.c:3536
 msgid "(stack overflow :rpn)"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:3502
+#: rpmdb/hdrfmt.c:3542
 #, fuzzy
 msgid "(invalid number :rpn)"
 msgstr "(ongeldig XML-type)"
 
-#: rpmdb/hdrfmt.c:3507
+#: rpmdb/hdrfmt.c:3547
 msgid "(stack underflow :rpn)"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:3520
+#: rpmdb/hdrfmt.c:3560
 msgid "(divide by zero :rpn)"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:4271
+#: rpmdb/hdrfmt.c:4313
 msgid "missing { after %"
 msgstr "{ ontbreekt na %"
 
-#: rpmdb/hdrfmt.c:4305
+#: rpmdb/hdrfmt.c:4347
 msgid "missing } after %{"
 msgstr "} ontbreekt na %{"
 
-#: rpmdb/hdrfmt.c:4321
+#: rpmdb/hdrfmt.c:4363
 msgid "empty tag format"
 msgstr "lege labelopmaak"
 
-#: rpmdb/hdrfmt.c:4341
+#: rpmdb/hdrfmt.c:4383
 #, fuzzy
 msgid "malformed parameter list"
 msgstr "tijdstipsmarkering van arbgoal is ongeldig"
 
-#: rpmdb/hdrfmt.c:4362
+#: rpmdb/hdrfmt.c:4404
 msgid "empty tag name"
 msgstr "lege labelnaam"
 
-#: rpmdb/hdrfmt.c:4371
+#: rpmdb/hdrfmt.c:4413
 msgid "unknown tag"
 msgstr "onbekend label"
 
-#: rpmdb/hdrfmt.c:4401
+#: rpmdb/hdrfmt.c:4443
 msgid "] expected at end of array"
 msgstr "] verwacht aan het einde van de reeks"
 
-#: rpmdb/hdrfmt.c:4418
+#: rpmdb/hdrfmt.c:4460
 msgid "unexpected ]"
 msgstr "onverwachte ]"
 
-#: rpmdb/hdrfmt.c:4433
+#: rpmdb/hdrfmt.c:4475
 msgid "unexpected }"
 msgstr "onverwachte }"
 
-#: rpmdb/hdrfmt.c:4511
+#: rpmdb/hdrfmt.c:4553
 msgid "? expected in expression"
 msgstr "? verwacht in uitdrukking"
 
-#: rpmdb/hdrfmt.c:4518
+#: rpmdb/hdrfmt.c:4560
 msgid "{ expected after ? in expression"
 msgstr "{ verwacht na ? in uitdrukking"
 
-#: rpmdb/hdrfmt.c:4530 rpmdb/hdrfmt.c:4570
+#: rpmdb/hdrfmt.c:4572 rpmdb/hdrfmt.c:4612
 msgid "} expected in expression"
 msgstr "} verwacht in uitdrukking"
 
-#: rpmdb/hdrfmt.c:4538
+#: rpmdb/hdrfmt.c:4580
 msgid ": expected following ? subexpression"
 msgstr ": verwacht vervolgend op ? nevenuitdrukking"
 
-#: rpmdb/hdrfmt.c:4556
+#: rpmdb/hdrfmt.c:4598
 msgid "{ expected after : in expression"
 msgstr "{ verwacht na : in uitdrukking"
 
-#: rpmdb/hdrfmt.c:4578
+#: rpmdb/hdrfmt.c:4620
 msgid "| expected at end of expression"
 msgstr "| verwacht aan einde van uitdrukking"
 
-#: rpmdb/hdrfmt.c:4910
+#: rpmdb/hdrfmt.c:4952
 msgid "array iterator used with different sized arrays"
 msgstr "reeksherhaling gebruikt bij verschillende reeksgrootten"
 
@@ -3855,7 +3859,7 @@ msgid "%s: Unknown digest name \"%s\"\n"
 msgstr "onbekend label: \"%s\"\n"
 
 #: rpmio/rpmdigest.c:298 rpmio/rpmgrep.c:1316 rpmio/rpmmtree.c:3535
-#: rpmio/rpmrepo.c:1854
+#: rpmio/rpmrepo.c:1923
 #, fuzzy, c-format
 msgid "%s: Unknown option -%c\n"
 msgstr "Onbekende optie %c in %s(%s)\n"
@@ -3888,12 +3892,12 @@ msgstr ""
 msgid "warn about improperly formatted checksum lines"
 msgstr ""
 
-#: rpmio/rpmdigest.c:345 rpmio/rpmmtree.c:3606 rpmio/rpmrepo.c:1951
+#: rpmio/rpmdigest.c:345 rpmio/rpmmtree.c:3606 rpmio/rpmrepo.c:2020
 msgid "Available digests:"
 msgstr ""
 
 #: rpmio/rpmdigest.c:348 rpmio/rpmgrep.c:1435 rpmio/rpmmtree.c:3609
-#: rpmio/rpmrepo.c:1954
+#: rpmio/rpmrepo.c:2023
 msgid "Common options for all rpmio executables:"
 msgstr ""
 
@@ -4598,7 +4602,7 @@ msgstr ""
 msgid "Don't cross mount points"
 msgstr ""
 
-#: rpmio/rpmmtree.c:3603 rpmio/rpmrepo.c:1940
+#: rpmio/rpmmtree.c:3603 rpmio/rpmrepo.c:2009
 msgid "Fts(3) traversal options:"
 msgstr ""
 
@@ -4672,209 +4676,209 @@ msgstr ""
 msgid "%s: Fread(%s) failed: %s\n"
 msgstr "%s: Fread is mislukt: %s\n"
 
-#: rpmio/rpmrepo.c:1096 rpmio/rpmrepo.c:1168
+#: rpmio/rpmrepo.c:1098 rpmio/rpmrepo.c:1170
 #, c-format
 msgid "headerSprintf(%s): %s"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1278
+#: rpmio/rpmrepo.c:1280
 #, fuzzy, c-format
 msgid ""
 "\n"
 "Error %s: %s\n"
 msgstr "%s: %s\n"
 
-#: rpmio/rpmrepo.c:1323
+#: rpmio/rpmrepo.c:1389
 #, c-format
 msgid "Saving %s metadata"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1537
+#: rpmio/rpmrepo.c:1606
 #, fuzzy
 msgid "Generating sqlite DBs"
 msgstr "Genereren van handtekening: %d\n"
 
-#: rpmio/rpmrepo.c:1564
+#: rpmio/rpmrepo.c:1633
 #, c-format
 msgid "Starting %s db creation: %s"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1630
+#: rpmio/rpmrepo.c:1699
 #, c-format
 msgid "Ending %s db creation: %s"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1664
+#: rpmio/rpmrepo.c:1733
 msgid "Sqlite DBs complete"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1675
+#: rpmio/rpmrepo.c:1744
 #, fuzzy, c-format
 msgid "Error saving temp file for %s%s%s: %s"
 msgstr "fout tijdens aanmaken van tijdelijk bestand %s\n"
 
-#: rpmio/rpmrepo.c:1680
+#: rpmio/rpmrepo.c:1749
 #, fuzzy, c-format
 msgid "Could not save temp file: %s"
 msgstr "Kan Test-bestand niet openen: %s\n"
 
-#: rpmio/rpmrepo.c:1707
+#: rpmio/rpmrepo.c:1776
 #, c-format
 msgid "Error moving final %s to old dir %s"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1715
+#: rpmio/rpmrepo.c:1784
 msgid "Error moving final metadata into place"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1732 rpmio/rpmrepo.c:1764
+#: rpmio/rpmrepo.c:1801 rpmio/rpmrepo.c:1833
 #, fuzzy, c-format
 msgid "Could not remove old metadata file: %s: %s"
 msgstr "Kan %%files-bestand %s niet openen: %s\n"
 
-#: rpmio/rpmrepo.c:1774
+#: rpmio/rpmrepo.c:1843
 #, fuzzy, c-format
 msgid "Could not restore old non-metadata file: %s -> %s: %s"
 msgstr "Kan %%files-bestand %s niet openen: %s\n"
 
-#: rpmio/rpmrepo.c:1786
+#: rpmio/rpmrepo.c:1855
 #, fuzzy, c-format
 msgid "Could not remove old metadata dir: %s: %s"
 msgstr "Kan %%files-bestand %s niet openen: %s\n"
 
-#: rpmio/rpmrepo.c:1867
+#: rpmio/rpmrepo.c:1936
 msgid "don't compress"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1869
+#: rpmio/rpmrepo.c:1938
 msgid "use gzip compression"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1871
+#: rpmio/rpmrepo.c:1940
 msgid "use bzip2 compression"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1873
+#: rpmio/rpmrepo.c:1942
 msgid "use lzma compression"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1885
+#: rpmio/rpmrepo.c:1954
 #, fuzzy
 msgid "debug repo handling"
 msgstr "URL-bufferafhandeling debuggen"
 
-#: rpmio/rpmrepo.c:1888
+#: rpmio/rpmrepo.c:1957
 msgid "output nothing except for serious errors"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1890
+#: rpmio/rpmrepo.c:1959
 msgid "output more debugging info."
 msgstr ""
 
-#: rpmio/rpmrepo.c:1892
+#: rpmio/rpmrepo.c:1961
 msgid "sanity check arguments, don't create metadata"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1895 rpmio/rpmrepo.c:1898
+#: rpmio/rpmrepo.c:1964 rpmio/rpmrepo.c:1967
 msgid "glob PATTERN(s) to exclude"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1895 rpmio/rpmrepo.c:1898 rpmio/rpmrepo.c:1902
-#: rpmio/rpmrepo.c:1905
+#: rpmio/rpmrepo.c:1964 rpmio/rpmrepo.c:1967 rpmio/rpmrepo.c:1971
+#: rpmio/rpmrepo.c:1974
 msgid "PATTERN"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1902 rpmio/rpmrepo.c:1905
+#: rpmio/rpmrepo.c:1971 rpmio/rpmrepo.c:1974
 msgid "glob PATTERN(s) to include"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1909
+#: rpmio/rpmrepo.c:1977
 #, fuzzy
 msgid "top level directory"
 msgstr "BASISMAP als top van mappenhiërarchie gebruiken"
 
-#: rpmio/rpmrepo.c:1909 rpmio/rpmrepo.c:1933
+#: rpmio/rpmrepo.c:1977 rpmio/rpmrepo.c:2002
 msgid "DIR"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1911
+#: rpmio/rpmrepo.c:1979
 msgid "baseurl to append on all files"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1911
+#: rpmio/rpmrepo.c:1979
 msgid "BASEURL"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1913
+#: rpmio/rpmrepo.c:1982
 msgid "path to groupfile to include in metadata"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1913 rpmio/rpmrepo.c:1927 rpmio/rpmrepo.c:1930
+#: rpmio/rpmrepo.c:1982 rpmio/rpmrepo.c:1996 rpmio/rpmrepo.c:1999
 msgid "FILE"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1916
+#: rpmio/rpmrepo.c:1985
 msgid "make sure all xml generated is formatted"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1918
+#: rpmio/rpmrepo.c:1987
 msgid "check timestamps on files vs the metadata to see if we need to update"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1921
+#: rpmio/rpmrepo.c:1990
 #, fuzzy
 msgid "create sqlite3 database files"
 msgstr "databasebestanden controleren"
 
-#: rpmio/rpmrepo.c:1924
+#: rpmio/rpmrepo.c:1993
 #, fuzzy
 msgid "generate split media"
 msgstr "handtekening genereren"
 
-#: rpmio/rpmrepo.c:1927 rpmio/rpmrepo.c:1930
+#: rpmio/rpmrepo.c:1996 rpmio/rpmrepo.c:1999
 msgid "use only the files listed in this file from the directory specified"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1933
+#: rpmio/rpmrepo.c:2002
 msgid "<dir> = optional directory to output to"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1935
+#: rpmio/rpmrepo.c:2004
 #, fuzzy
 msgid "ignore symlinks of packages"
 msgstr "bestandsconflicten tussen pakketten negeren"
 
-#: rpmio/rpmrepo.c:1937
+#: rpmio/rpmrepo.c:2006
 msgid "include the file's checksum in the filename, helps with proxies"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1948
+#: rpmio/rpmrepo.c:2017
 #, fuzzy
 msgid "Available compressions:"
 msgstr "Database-opties:"
 
-#: rpmio/rpmrepo.c:2022
+#: rpmio/rpmrepo.c:2091
 msgid "Must specify path(s) to index."
 msgstr ""
 
-#: rpmio/rpmrepo.c:2040 rpmio/rpmrepo.c:2092
+#: rpmio/rpmrepo.c:2109 rpmio/rpmrepo.c:2161
 #, fuzzy, c-format
 msgid "Realpath(%s): %s"
 msgstr "Ophalen van(%s%d): %s\n"
 
-#: rpmio/rpmrepo.c:2097
+#: rpmio/rpmrepo.c:2166
 msgid "--split and --checkts options are mutually exclusive"
 msgstr ""
 
-#: rpmio/rpmrepo.c:2117
+#: rpmio/rpmrepo.c:2186
 msgid "Error loading exclude glob patterns."
 msgstr ""
 
-#: rpmio/rpmrepo.c:2120
+#: rpmio/rpmrepo.c:2189
 msgid "Error loading include glob patterns."
 msgstr ""
 
-#: rpmio/rpmrepo.c:2149
+#: rpmio/rpmrepo.c:2218
 #, c-format
 msgid "repo is up to date\n"
 msgstr ""
