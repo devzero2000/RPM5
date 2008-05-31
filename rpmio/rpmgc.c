@@ -4,9 +4,15 @@
 
 #include "system.h"
 #include <rpmio.h>
+
 #define	_RPMGC_INTERNAL
+#if defined(WITH_GCRYPT)
 #define	_RPMPGP_INTERNAL
 #include <rpmgc.h>
+#else
+#include <rpmpgp.h>		/* XXX DIGEST_CTX */
+#endif
+
 #include "debug.h"
 
 /*@access pgpDig @*/
@@ -20,6 +26,7 @@ extern int _pgp_debug;
 extern int _pgp_print;
 /*@=redecl@*/
 
+#if defined(WITH_GCRYPT)
 static
 void rpmgcDump(const char * msg, gcry_sexp_t sexp)
 {
@@ -31,12 +38,14 @@ if (_pgp_debug)
 fprintf(stderr, "========== %s:\n%s", msg, buf);
     return;
 }
+#endif
 
 /**
  * Convert hex to binary nibble.
  * @param c            hex character
  * @return             binary nibble
  */
+#if defined(WITH_GCRYPT)
 static
 unsigned char nibble(char c)
 	/*@*/
@@ -49,11 +58,13 @@ unsigned char nibble(char c)
 	return (unsigned char)((int)(c - 'a') + 10);
     return (unsigned char) '\0';
 }
+#endif
 
 static
 int rpmgcSetRSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
 	/*@modifies ctx, dig @*/
 {
+#if defined(WITH_GCRYPT)
     rpmgc gc = dig->impl;
     unsigned int nbits = gcry_mpi_get_nbits(gc->c);
     unsigned int nb = (nbits + 7) >> 3;
@@ -132,12 +143,16 @@ rpmgcDump("gc->hash", gc->hash);
     signhash16[1] = (uint8_t) (nibble(s[2]) << 4) | nibble(s[3]);
 /*@=type@*/
     return memcmp(signhash16, sigp->signhash16, sizeof(sigp->signhash16));
+#else
+    return 0;
+#endif
 }
 
 static
 int rpmgcVerifyRSA(pgpDig dig)
 	/*@*/
 {
+#if defined(WITH_GCRYPT)
     rpmgc gc = dig->impl;
     gcry_error_t rc;
 
@@ -166,12 +181,16 @@ rpmgcDump("gc->pkey", gc->pkey);
     gcry_sexp_release(gc->sig);		gc->sig = NULL;
 
     return (rc ? 0 : 1);
+#else
+    return 0;
+#endif
 }
 
 static
 int rpmgcSetDSA(/*@only@*/ DIGEST_CTX ctx, pgpDig dig, pgpDigParams sigp)
 	/*@modifies ctx, dig @*/
 {
+#if defined(WITH_GCRYPT)
     rpmgc gc = dig->impl;
     gcry_error_t rc;
     int xx;
@@ -189,12 +208,16 @@ rpmgcDump("gc->hash", gc->hash);
 
     /* Compare leading 16 bits of digest for quick check. */
     return memcmp(dig->sha1, sigp->signhash16, sizeof(sigp->signhash16));
+#else
+    return 0;
+#endif
 }
 
 static
 int rpmgcVerifyDSA(pgpDig dig)
 	/*@*/
 {
+#if defined(WITH_GCRYPT)
     rpmgc gc = dig->impl;
     gcry_error_t rc;
 
@@ -223,6 +246,9 @@ rpmgcDump("gc->pkey", gc->pkey);
     gcry_sexp_release(gc->sig);		gc->sig = NULL;
 
     return (rc ? 0 : 1);
+#else
+    return 0;
+#endif
 }
 
 static
@@ -231,6 +257,7 @@ int rpmgcMpiItem(const char * pre, pgpDig dig, int itemno,
 	/*@globals fileSystem @*/
 	/*@modifies dig, fileSystem @*/
 {
+#if defined(WITH_GCRYPT)
     rpmgc gc = dig->impl;
     unsigned int nb;
     int rc = 0;
@@ -296,12 +323,16 @@ assert(0);
 	break;
     }
     return rc;
+#else
+    return 1;
+#endif
 }
 
 static
 void rpmgcClean(void * impl)
 	/*@modifies impl @*/
 {
+#if defined(WITH_GCRYPT)
     rpmgc gc = impl;
     if (gc != NULL) {
 	if (gc->sig) {
@@ -353,17 +384,20 @@ void rpmgcClean(void * impl)
 	    gc->y = NULL;
 	}
     }
+#endif
 }
 
 static
 void * rpmgcFree(/*@only@*/ void * impl)
 	/*@modifies impl @*/
 {
+#if defined(WITH_GCRYPT)
     rpmgc gc = impl;
     if (gc != NULL) {
 	rpmgcClean(impl);
 	gc = _free(gc);
     }
+#endif
     return NULL;
 }
 
@@ -371,8 +405,12 @@ static
 void * rpmgcInit(void)
 	/*@*/
 {
+#if defined(WITH_GCRYPT)
     rpmgc gc = xcalloc(1, sizeof(*gc));
     return (void *) gc;
+#else
+    return NULL;
+#endif
 }
 
 struct pgpImplVecs_s rpmgcImplVecs = {

@@ -92,7 +92,7 @@ rpmGetMacroEntries(/*@null@*/ MacroContext mc, /*@null@*/ miRE mire,
  * @return		1 on success, 0 on failure
  */
 int rpmSecuritySaneFile(const char *filename)
-	/*@globals fileSystem, internalState @*/;
+	/*@globals internalState @*/;
 
 /**
  * Return URL path(s) from a (URL prefixed) pattern glob.

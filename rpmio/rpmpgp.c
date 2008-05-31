@@ -24,10 +24,26 @@ int _pgp_print = 0;
 
 /*@unchecked@*/
 pgpImplVecs_t * pgpImplVecs =
-#if defined(WITH_NSS)
-	&rpmnssImplVecs;
-#else
+    /* explicit selection (order DOES NOT matter here) */
+#if defined(USE_CRYPTO_BEECRYPT) && defined(WITH_BEECRYPT)
 	&rpmbcImplVecs;
+#elif defined(USE_CRYPTO_GCRYPT) && defined(WITH_GCRYPT)
+	&rpmgcImplVecs;
+#elif defined(USE_CRYPTO_NSS) && defined(WITH_NSS)
+	&rpmnssImplVecs;
+#elif defined(USE_CRYPTO_OPENSSL) && defined(WITH_SSL)
+	&rpmsslImplVecs;
+    /* implict selection (order DOES matter) */
+#elif defined(WITH_BEECRYPT)
+	&rpmbcImplVecs;
+#elif defined(WITH_GCRYPT)
+	&rpmgcImplVecs;
+#elif defined(WITH_NSS)
+	&rpmnssImplVecs;
+#elif defined(WITH_SSL)
+	&rpmsslImplVecs;
+#else
+#error INTERNAL ERROR: no suitable Cryptography library available
 #endif
 
 /*@unchecked@*/ /*@refcounted@*/ /*@relnull@*/

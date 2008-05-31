@@ -22,9 +22,12 @@
 -moduncon		# 323
 -mustmod		# 16
 -noeffectuncon		# 183
+-nullpass
 -protoparammatch	# 1 LZMA
 
+-onlytrans
 -readonlytrans		# 10 digest names
+-refcounttrans
 
 -forempty
 -looploopbreak		# 2 LZMA

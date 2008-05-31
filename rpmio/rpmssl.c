@@ -172,11 +172,11 @@ int rpmsslVerifyRSA(pgpDig dig)
     xx = ll;	/* WRONG WRONG WRONG */
     dbuf = xcalloc(1, ll);
     /* XXX FIXME: what parameter goes into dbuf? */
-    while (xx < ll)
+    while (xx < (int)ll)
 	memmove(&dbuf[1], dbuf, xx++), dbuf[0] = 0;
     xx = RSA_public_decrypt(ll, dbuf, dbuf, ssl->rsa, RSA_PKCS1_PADDING);
 /*@=moduncon@*/
-    rc = (xx == nb && (memcmp(rsahm, dbuf, nb) == 0));
+    rc = (xx == (int)nb && (memcmp(rsahm, dbuf, nb) == 0));
     dbuf = _free(dbuf);
     rsahm = _free(rsahm);
 
