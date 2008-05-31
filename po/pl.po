@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 5.1\n"
 "Report-Msgid-Bugs-To: <rpm-devel@rpm5.org>\n"
-"POT-Creation-Date: 2008-05-27 09:54-0400\n"
+"POT-Creation-Date: 2008-05-31 18:19-0400\n"
 "PO-Revision-Date: 2008-04-06 23:02+0200\n"
 "Last-Translator: Jakub Bogusz <qboosh@pld-linux.org>\n"
 "Language-Team: Polish <translation-team-pl@lists.sourceforge.net>\n"
@@ -1596,44 +1596,44 @@ msgstr "ignoruj dodane aktualizacje pakietów"
 msgid "predefine MACRO with value EXPR"
 msgstr "predefiniuj MAKRO z warto¶ci± WYR"
 
-#: lib/poptALL.c:320 lib/poptALL.c:324 rpmio/poptIO.c:309
+#: lib/poptALL.c:320 lib/poptALL.c:324 rpmio/poptIO.c:329
 msgid "'MACRO EXPR'"
 msgstr "'MAKRO WYR'"
 
-#: lib/poptALL.c:323 rpmio/poptIO.c:308
+#: lib/poptALL.c:323 rpmio/poptIO.c:328
 msgid "define MACRO with value EXPR"
 msgstr "definiuj MAKRO z warto¶ci± WYR"
 
-#: lib/poptALL.c:326 rpmio/poptIO.c:311
+#: lib/poptALL.c:326 rpmio/poptIO.c:331
 msgid "undefine MACRO"
 msgstr "anuluj definicjê MAKRA"
 
-#: lib/poptALL.c:327 rpmio/poptIO.c:312
+#: lib/poptALL.c:327 rpmio/poptIO.c:332
 msgid "'MACRO'"
 msgstr "'MAKRO'"
 
-#: lib/poptALL.c:329 rpmio/poptIO.c:314
+#: lib/poptALL.c:329 rpmio/poptIO.c:334
 msgid "print macro expansion of EXPR"
 msgstr "wy¶wietl rozwiniêcie makr z WYR"
 
-#: lib/poptALL.c:330 rpmio/poptIO.c:315
+#: lib/poptALL.c:330 rpmio/poptIO.c:335
 msgid "'EXPR'"
 msgstr "'WYR'"
 
-#: lib/poptALL.c:332 rpmio/poptIO.c:318
+#: lib/poptALL.c:332 rpmio/poptIO.c:338
 msgid "read <FILE:...> instead of default file(s)"
 msgstr "czytaj <PLIK:...> zamiast domy¶lnego pliku(ów)"
 
-#: lib/poptALL.c:333 lib/poptALL.c:337 lib/poptALL.c:341 rpmio/poptIO.c:319
-#: rpmio/poptIO.c:323 rpmio/poptIO.c:327
+#: lib/poptALL.c:333 lib/poptALL.c:337 lib/poptALL.c:341 rpmio/poptIO.c:339
+#: rpmio/poptIO.c:343 rpmio/poptIO.c:347
 msgid "<FILE:...>"
 msgstr "<PLIK:...>"
 
-#: lib/poptALL.c:336 rpmio/poptIO.c:322
+#: lib/poptALL.c:336 rpmio/poptIO.c:342
 msgid "read <FILE:...> instead of default RPM Lua file(s)"
 msgstr "czytaj <PLIK:...> zamiast domy¶lnego pliku(ów) Lua RPM-a"
 
-#: lib/poptALL.c:340 rpmio/poptIO.c:326
+#: lib/poptALL.c:340 rpmio/poptIO.c:346
 msgid "read <FILE:...> instead of default POPT file(s)"
 msgstr "czytaj <PLIK:...> zamiast domy¶lnego pliku(ów) POPT"
 
@@ -1649,7 +1649,7 @@ msgstr "wy¶wietl znane etykiety zapytañ"
 msgid "display macro and configuration values"
 msgstr "wy¶wietl warto¶ci makr i konfiguracji"
 
-#: lib/poptALL.c:358 rpmio/poptIO.c:347 rpmio/rpmrepo.c:1943
+#: lib/poptALL.c:358 rpmio/poptIO.c:367 rpmio/rpmrepo.c:2013
 msgid "print the version"
 msgstr "wy¶wietl wersjê"
 
@@ -1669,7 +1669,7 @@ msgstr "¶led¼ maszynê stanu pakietu"
 msgid "use threads for package state machine"
 msgstr "u¿yj w±tków dla maszyny stanu pakietów"
 
-#: lib/poptALL.c:570 rpmio/poptIO.c:547
+#: lib/poptALL.c:570 rpmio/poptIO.c:567
 #, c-format
 msgid "%s: option table misconfigured (%d)\n"
 msgstr "%s: tabela opcji b³êdnie skonfigurowana (%d)\n"
@@ -2876,20 +2876,24 @@ msgstr "b³±d db%d(%d) z %s: %s\n"
 msgid "db%d error(%d): %s\n"
 msgstr "b³±d db%d(%d): %s\n"
 
-#: rpmdb/db3.c:1313
+#: rpmdb/db3.c:1315
+msgid "RUNRECOVERY failed, exiting ...\n"
+msgstr ""
+
+#: rpmdb/db3.c:1318
 msgid "Runnning db->verify ...\n"
 msgstr "Uruchamianie db->verify...\n"
 
-#: rpmdb/db3.c:1624
+#: rpmdb/db3.c:1629
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "nie mo¿na uzyskaæ %s blokady na %s/%s\n"
 
-#: rpmdb/db3.c:1626
+#: rpmdb/db3.c:1631
 msgid "exclusive"
 msgstr "wy³±cznej"
 
-#: rpmdb/db3.c:1626
+#: rpmdb/db3.c:1631
 msgid "shared"
 msgstr "dzielonej"
 
@@ -2944,8 +2948,8 @@ msgstr "(nie jest base64)"
 msgid "(invalid type :base64)"
 msgstr "(b³êdny typ)"
 
-#: rpmdb/hdrfmt.c:730 rpmdb/hdrfmt.c:761 rpmdb/hdrfmt.c:2548
-#: rpmdb/hdrfmt.c:2986
+#: rpmdb/hdrfmt.c:730 rpmdb/hdrfmt.c:761 rpmdb/hdrfmt.c:2588
+#: rpmdb/hdrfmt.c:3026
 msgid "(not a string)"
 msgstr "(nie jest ³añcuchem)"
 
@@ -2965,110 +2969,110 @@ msgstr "(nie jest blobem)"
 msgid "(not an OpenPGP signature)"
 msgstr "(nie jest podpisem OpenPGP)"
 
-#: rpmdb/hdrfmt.c:3197
+#: rpmdb/hdrfmt.c:3237
 #, fuzzy
 msgid "(invalid type :digest)"
 msgstr "(b³êdny typ)"
 
-#: rpmdb/hdrfmt.c:3253
+#: rpmdb/hdrfmt.c:3293
 #, fuzzy
 msgid "(invalid type :stat)"
 msgstr "(b³êdny typ)"
 
-#: rpmdb/hdrfmt.c:3405
+#: rpmdb/hdrfmt.c:3445
 #, fuzzy
 msgid "(invalid type :uuid)"
 msgstr "(b³êdny typ)"
 
-#: rpmdb/hdrfmt.c:3466
+#: rpmdb/hdrfmt.c:3506
 #, fuzzy
 msgid "(invalid type :rpn)"
 msgstr "(b³êdny typ)"
 
-#: rpmdb/hdrfmt.c:3476
+#: rpmdb/hdrfmt.c:3516
 #, fuzzy
 msgid "(invalid string :rpn)"
 msgstr "(b³êdny typ)"
 
-#: rpmdb/hdrfmt.c:3492
+#: rpmdb/hdrfmt.c:3532
 #, fuzzy
 msgid "(expected number :rpn)"
 msgstr "b³êdny format zapytania"
 
-#: rpmdb/hdrfmt.c:3496
+#: rpmdb/hdrfmt.c:3536
 msgid "(stack overflow :rpn)"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:3502
+#: rpmdb/hdrfmt.c:3542
 #, fuzzy
 msgid "(invalid number :rpn)"
 msgstr "(b³êdny typ xml)"
 
-#: rpmdb/hdrfmt.c:3507
+#: rpmdb/hdrfmt.c:3547
 msgid "(stack underflow :rpn)"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:3520
+#: rpmdb/hdrfmt.c:3560
 msgid "(divide by zero :rpn)"
 msgstr ""
 
-#: rpmdb/hdrfmt.c:4270
+#: rpmdb/hdrfmt.c:4312
 msgid "missing { after %"
 msgstr "brak { po %"
 
-#: rpmdb/hdrfmt.c:4304
+#: rpmdb/hdrfmt.c:4346
 msgid "missing } after %{"
 msgstr "brak } po %{"
 
-#: rpmdb/hdrfmt.c:4320
+#: rpmdb/hdrfmt.c:4362
 msgid "empty tag format"
 msgstr "pusty format etykiety"
 
-#: rpmdb/hdrfmt.c:4329
+#: rpmdb/hdrfmt.c:4371
 msgid "empty tag name"
 msgstr "pusta nazwa etykiety"
 
-#: rpmdb/hdrfmt.c:4338
+#: rpmdb/hdrfmt.c:4380
 msgid "unknown tag"
 msgstr "nieznana etykieta"
 
-#: rpmdb/hdrfmt.c:4368
+#: rpmdb/hdrfmt.c:4410
 msgid "] expected at end of array"
 msgstr "spodziewany ] na koñcu tablicy"
 
-#: rpmdb/hdrfmt.c:4385
+#: rpmdb/hdrfmt.c:4427
 msgid "unexpected ]"
 msgstr "nie spodziewany ]"
 
-#: rpmdb/hdrfmt.c:4400
+#: rpmdb/hdrfmt.c:4442
 msgid "unexpected }"
 msgstr "nie spodziewany }"
 
-#: rpmdb/hdrfmt.c:4478
+#: rpmdb/hdrfmt.c:4520
 msgid "? expected in expression"
 msgstr "spodziewany ? w wyra¿eniu"
 
-#: rpmdb/hdrfmt.c:4485
+#: rpmdb/hdrfmt.c:4527
 msgid "{ expected after ? in expression"
 msgstr "spodziewany { po ? w wyra¿eniu"
 
-#: rpmdb/hdrfmt.c:4497 rpmdb/hdrfmt.c:4537
+#: rpmdb/hdrfmt.c:4539 rpmdb/hdrfmt.c:4579
 msgid "} expected in expression"
 msgstr "spodziewany } w wyra¿eniu"
 
-#: rpmdb/hdrfmt.c:4505
+#: rpmdb/hdrfmt.c:4547
 msgid ": expected following ? subexpression"
 msgstr "spodziewany : po podwyra¿eniu ?"
 
-#: rpmdb/hdrfmt.c:4523
+#: rpmdb/hdrfmt.c:4565
 msgid "{ expected after : in expression"
 msgstr "spodziewany { po : w wyra¿eniu"
 
-#: rpmdb/hdrfmt.c:4545
+#: rpmdb/hdrfmt.c:4587
 msgid "| expected at end of expression"
 msgstr "spodziewany | na koñcu wyra¿enia"
 
-#: rpmdb/hdrfmt.c:4844
+#: rpmdb/hdrfmt.c:4886
 msgid "array iterator used with different sized arrays"
 msgstr "iterator tablicy u¿yty na tablicach o ró¿nych rozmiarach"
 
@@ -3658,119 +3662,119 @@ msgstr "brak algorytmu skrótu"
 msgid "all hash algorithm(s)"
 msgstr "wszystkie algorytmy skrótu"
 
-#: rpmio/poptIO.c:277
+#: rpmio/poptIO.c:297
 msgid "FTS_COMFOLLOW: follow command line symlinks"
 msgstr "FTS_COMFOLLOW: pod±¿aj za dowi±zaniami z linii poleceñ"
 
-#: rpmio/poptIO.c:279
+#: rpmio/poptIO.c:299
 msgid "FTS_LOGICAL: logical walk"
 msgstr "FTS_LOGICAL: przechod¼ logicznie"
 
-#: rpmio/poptIO.c:281
+#: rpmio/poptIO.c:301
 msgid "FTS_NOCHDIR: don't change directories"
 msgstr "FTS_NOCHDIR: nie zmieniaj katalogów"
 
-#: rpmio/poptIO.c:283
+#: rpmio/poptIO.c:303
 msgid "FTS_NOSTAT: don't get stat info"
 msgstr "FTS_NOSTAT: nie odczytuj informacji stat"
 
-#: rpmio/poptIO.c:285
+#: rpmio/poptIO.c:305
 msgid "FTS_PHYSICAL: physical walk"
 msgstr "FTS_PHYSICAL: przechod¼ fizycznie"
 
-#: rpmio/poptIO.c:287
+#: rpmio/poptIO.c:307
 msgid "FTS_SEEDOT: return dot and dot-dot"
 msgstr "FTS_SEEDOT: zwracaj kropkê i kropkê-kropkê"
 
-#: rpmio/poptIO.c:289
+#: rpmio/poptIO.c:309
 msgid "FTS_XDEV: don't cross devices"
 msgstr "FTS_XDEV: nie przechod¼ miêdzy urz±dzeniami"
 
-#: rpmio/poptIO.c:291
+#: rpmio/poptIO.c:311
 msgid "FTS_WHITEOUT: return whiteout information"
 msgstr "FTS_WHITEOUT: zwróæ informacje o whiteout"
 
-#: rpmio/poptIO.c:332 rpmio/poptIO.c:351
+#: rpmio/poptIO.c:352 rpmio/poptIO.c:371
 msgid "disable use of libio(3) API"
 msgstr "wy³±cz u¿ywanie API libio(3)"
 
-#: rpmio/poptIO.c:336
+#: rpmio/poptIO.c:356
 msgid "send stdout to CMD"
 msgstr "przeka¿ standardowe wyj¶cie do POLECENIA"
 
-#: rpmio/poptIO.c:337
+#: rpmio/poptIO.c:357
 msgid "CMD"
 msgstr "POLECENIE"
 
-#: rpmio/poptIO.c:339
+#: rpmio/poptIO.c:359
 msgid "use ROOT as top level directory"
 msgstr "u¿yj KAGALOGU jako katalogu najwy¿szego poziomu"
 
-#: rpmio/poptIO.c:340
+#: rpmio/poptIO.c:360
 msgid "ROOT"
 msgstr "KATALOG"
 
-#: rpmio/poptIO.c:343
+#: rpmio/poptIO.c:363
 msgid "provide less detailed output"
 msgstr "u¿ywaj mniej szczegó³owego wyj¶cia"
 
-#: rpmio/poptIO.c:345
+#: rpmio/poptIO.c:365
 msgid "provide more detailed output"
 msgstr "u¿ywaj bardziej szczegó³owego wyj¶cia"
 
-#: rpmio/poptIO.c:355
+#: rpmio/poptIO.c:375
 msgid "select cryptography implementation"
 msgstr "wybierz implementacjê kryptografii"
 
-#: rpmio/poptIO.c:356
+#: rpmio/poptIO.c:376
 msgid "CRYPTO"
 msgstr "KRYPTOGRAFIA"
 
-#: rpmio/poptIO.c:359
+#: rpmio/poptIO.c:379
 msgid "debug ar archives"
 msgstr "¶ledzenie archiwów ar"
 
-#: rpmio/poptIO.c:361
+#: rpmio/poptIO.c:381
 msgid "debug argv collections"
 msgstr "¶led¼ zbiory argv"
 
-#: rpmio/poptIO.c:363
+#: rpmio/poptIO.c:383
 msgid "debug cpio archives"
 msgstr "¶ledzenie archiwów cpio"
 
-#: rpmio/poptIO.c:365
+#: rpmio/poptIO.c:385
 msgid "debug WebDAV data stream"
 msgstr "¶led¼ strumieñ danych WebDAV"
 
-#: rpmio/poptIO.c:367
+#: rpmio/poptIO.c:387
 msgid "debug FTP/HTTP data stream"
 msgstr "¶led¼ strumieñ danych FTP/HTTP"
 
-#: rpmio/poptIO.c:369
+#: rpmio/poptIO.c:389
 msgid "debug Fts(3) traverse"
 msgstr "¶ledzenie wêdrówki Fts(3)"
 
-#: rpmio/poptIO.c:371
+#: rpmio/poptIO.c:391
 msgid "debug I/O state machine"
 msgstr "¶ledzenie maszyny stanu we/wy"
 
-#: rpmio/poptIO.c:375
+#: rpmio/poptIO.c:395
 msgid "debug rpmio I/O"
 msgstr "¶led¼ wej¶cie/wyj¶cie rpmio"
 
-#: rpmio/poptIO.c:381
+#: rpmio/poptIO.c:401
 msgid "debug xar archives"
 msgstr "¶ledzenie archiwów xar"
 
-#: rpmio/poptIO.c:383
+#: rpmio/poptIO.c:403
 msgid "debug tar archives"
 msgstr "¶ledzenie archiwów tar"
 
-#: rpmio/poptIO.c:385
+#: rpmio/poptIO.c:405
 msgid "display operation statistics"
 msgstr "wy¶wietlanie statystyk operacji"
 
-#: rpmio/poptIO.c:387
+#: rpmio/poptIO.c:407
 msgid "debug URL cache handling"
 msgstr "¶ledzenie obs³ugi buforowania URL-i"
 
@@ -3790,7 +3794,7 @@ msgstr "B³±d serwera"
 msgid "Unknown Error"
 msgstr "Nieznany b³±d"
 
-#: rpmio/rpmdigest.c:176 rpmio/rpmgrep.c:1052 rpmio/rpmgrep.c:1215
+#: rpmio/rpmdigest.c:176 rpmio/rpmgrep.c:1052 rpmio/rpmgrep.c:1187
 #, c-format
 msgid "%s: Failed to open %s: %s\n"
 msgstr "%s: Nie uda³o siê otworzyæ %s: %s\n"
@@ -3800,8 +3804,8 @@ msgstr "%s: Nie uda³o siê otworzyæ %s: %s\n"
 msgid "%s: Unknown digest name \"%s\"\n"
 msgstr "%s: Nieznane ustawienie koloru \"%s\"\n"
 
-#: rpmio/rpmdigest.c:298 rpmio/rpmgrep.c:1344 rpmio/rpmmtree.c:3535
-#: rpmio/rpmrepo.c:1853
+#: rpmio/rpmdigest.c:298 rpmio/rpmgrep.c:1316 rpmio/rpmmtree.c:3535
+#: rpmio/rpmrepo.c:1923
 #, c-format
 msgid "%s: Unknown option -%c\n"
 msgstr "%s: Nieznana opcja -%c\n"
@@ -3836,12 +3840,12 @@ msgstr ""
 msgid "warn about improperly formatted checksum lines"
 msgstr ""
 
-#: rpmio/rpmdigest.c:345 rpmio/rpmmtree.c:3606 rpmio/rpmrepo.c:1950
+#: rpmio/rpmdigest.c:345 rpmio/rpmmtree.c:3606 rpmio/rpmrepo.c:2020
 msgid "Available digests:"
 msgstr ""
 
-#: rpmio/rpmdigest.c:348 rpmio/rpmgrep.c:1463 rpmio/rpmmtree.c:3609
-#: rpmio/rpmrepo.c:1953
+#: rpmio/rpmdigest.c:348 rpmio/rpmgrep.c:1435 rpmio/rpmmtree.c:3609
+#: rpmio/rpmrepo.c:2023
 msgid "Common options for all rpmio executables:"
 msgstr "Opcje wspólne dla wszystkich programów rpmio:"
 
@@ -3888,235 +3892,235 @@ msgstr "%s: zbyt du¿o b³êdów - porzucono\n"
 msgid "%s: Failed to open directory %s: %s\n"
 msgstr "%s: Nie uda³o siê otworzyæ katalogu %s: %s\n"
 
-#: rpmio/rpmgrep.c:1121
-#, c-format
-msgid "%s: Too many %spatterns (max %d)\n"
+#: rpmio/rpmgrep.c:1093
+#, fuzzy, c-format
+msgid "%s: Too many patterns (max %d)\n"
 msgstr "%s: Zbyt du¿o wzorców %s (maksimum to %d)\n"
 
-#: rpmio/rpmgrep.c:1146
+#: rpmio/rpmgrep.c:1118
 #, c-format
 msgid "%s: Error in"
 msgstr "%s: B³±d w"
 
-#: rpmio/rpmgrep.c:1148
-#, c-format
-msgid "%s command-line"
+#: rpmio/rpmgrep.c:1120
+#, fuzzy, c-format
+msgid " command-line %d"
 msgstr "linii poleceñ %s"
 
-#: rpmio/rpmgrep.c:1150
+#: rpmio/rpmgrep.c:1122
 #, c-format
 msgid " file:line %s:%d"
 msgstr " pliku:linii %s:%d"
 
-#: rpmio/rpmgrep.c:1151
+#: rpmio/rpmgrep.c:1123
 #, c-format
 msgid " regex at offset %d: %s\n"
 msgstr " wyra¿eniu regularnym pod offsetem %d: %s\n"
 
-#: rpmio/rpmgrep.c:1293
+#: rpmio/rpmgrep.c:1265
 #, c-format
 msgid "%s: Invalid value \"%s\" for -d\n"
 msgstr "%s: B³êdna warto¶æ \"%s\" dla -d\n"
 
-#: rpmio/rpmgrep.c:1303
+#: rpmio/rpmgrep.c:1275
 #, c-format
 msgid "%s: Invalid value \"%s\" for -D\n"
 msgstr "%s: B³êdna warto¶æ \"%s\" dla -D\n"
 
-#: rpmio/rpmgrep.c:1320
+#: rpmio/rpmgrep.c:1292
 #, c-format
 msgid "%s: Unknown color setting \"%s\"\n"
 msgstr "%s: Nieznane ustawienie koloru \"%s\"\n"
 
-#: rpmio/rpmgrep.c:1336
+#: rpmio/rpmgrep.c:1308
 #, c-format
 msgid "%s %s (PCRE version %s)\n"
 msgstr "%s %s (PCRE w wersji %s)\n"
 
-#: rpmio/rpmgrep.c:1339
+#: rpmio/rpmgrep.c:1311
 #, c-format
 msgid "%s %s (without PCRE)\n"
 msgstr "%s %s (bez PCRE)\n"
 
-#: rpmio/rpmgrep.c:1362
+#: rpmio/rpmgrep.c:1334
 msgid "set number of following context lines"
 msgstr "ustawienie liczby nastêpnych linii kontekstu"
 
-#: rpmio/rpmgrep.c:1362 rpmio/rpmgrep.c:1364 rpmio/rpmgrep.c:1366
+#: rpmio/rpmgrep.c:1334 rpmio/rpmgrep.c:1336 rpmio/rpmgrep.c:1338
 msgid "=number"
 msgstr "=liczba"
 
-#: rpmio/rpmgrep.c:1364
+#: rpmio/rpmgrep.c:1336
 msgid "set number of prior context lines"
 msgstr "ustawienie liczby poprzednich linii kontekstu"
 
-#: rpmio/rpmgrep.c:1366
+#: rpmio/rpmgrep.c:1338
 msgid "set number of context lines, before & after"
 msgstr "ustawienie linii kontekstu, przed i po"
 
-#: rpmio/rpmgrep.c:1368
+#: rpmio/rpmgrep.c:1340
 msgid "print only a count of matching lines per FILE"
 msgstr "wypisywanie tylko liczby dopasowanych linii dla PLIKÓW"
 
-#: rpmio/rpmgrep.c:1370
+#: rpmio/rpmgrep.c:1342
 msgid "matched text color option (auto|always|never)"
 msgstr "opcja kolorowania dopasowanego tekstu (auto|always|never)"
 
-#: rpmio/rpmgrep.c:1370 rpmio/rpmgrep.c:1372
+#: rpmio/rpmgrep.c:1342 rpmio/rpmgrep.c:1344
 msgid "=option"
 msgstr "=opcja"
 
-#: rpmio/rpmgrep.c:1372
+#: rpmio/rpmgrep.c:1344
 msgid "matched text colour option (auto|always|never)"
 msgstr "opcja kolorowania dopasowanego tekstu (auto|always|never)"
 
-#: rpmio/rpmgrep.c:1375
+#: rpmio/rpmgrep.c:1347
 msgid "device, FIFO, or socket action (read|skip)"
 msgstr "akcja dla urz±dzeñ, FIFO i gniazd (read|skip)"
 
-#: rpmio/rpmgrep.c:1375 rpmio/rpmgrep.c:1377
+#: rpmio/rpmgrep.c:1347 rpmio/rpmgrep.c:1349
 msgid "=action"
 msgstr "=akcja"
 
-#: rpmio/rpmgrep.c:1377
+#: rpmio/rpmgrep.c:1349
 msgid "directory action (read|skip|recurse)"
 msgstr "akcja dla katalogów (read|skip|recurse)"
 
-#: rpmio/rpmgrep.c:1380 rpmio/rpmgrep.c:1383
+#: rpmio/rpmgrep.c:1352 rpmio/rpmgrep.c:1355
 msgid "specify pattern (may be used more than once)"
 msgstr "okre¶lenie wzorca (mo¿e byæ u¿yte wiêcej ni¿ raz)"
 
-#: rpmio/rpmgrep.c:1380 rpmio/rpmgrep.c:1383 rpmio/rpmgrep.c:1456
-#: rpmio/rpmgrep.c:1458
+#: rpmio/rpmgrep.c:1352 rpmio/rpmgrep.c:1355 rpmio/rpmgrep.c:1428
+#: rpmio/rpmgrep.c:1430
 msgid "(p)"
 msgstr "(p)"
 
-#: rpmio/rpmgrep.c:1386
+#: rpmio/rpmgrep.c:1358
 msgid "patterns are sets of newline-separated strings"
 msgstr "wzorce s± zbiorami ³añcuchów oddzielonymi znakami nowej linii"
 
-#: rpmio/rpmgrep.c:1389 rpmio/rpmgrep.c:1393
+#: rpmio/rpmgrep.c:1361 rpmio/rpmgrep.c:1365
 msgid "read patterns from file (may be used more than once)"
 msgstr "odczyt wzorców z pliku (mo¿e byæ u¿yte wiêcej ni¿ raz)"
 
-#: rpmio/rpmgrep.c:1390 rpmio/rpmgrep.c:1394
+#: rpmio/rpmgrep.c:1362 rpmio/rpmgrep.c:1366
 msgid "=path"
 msgstr "=¶cie¿ka"
 
-#: rpmio/rpmgrep.c:1397
+#: rpmio/rpmgrep.c:1369
 msgid "output file offsets, not text"
 msgstr "wypisywanie offsetów plików zamiast tekstu"
 
-#: rpmio/rpmgrep.c:1399
+#: rpmio/rpmgrep.c:1371
 msgid "force the prefixing filename on output"
 msgstr "wymuszenie poprzedzenia wyj¶cia nazw± pliku"
 
-#: rpmio/rpmgrep.c:1401
+#: rpmio/rpmgrep.c:1373
 msgid "suppress the prefixing filename on output"
 msgstr "pominiêcie nazw plików z wyj¶cia"
 
-#: rpmio/rpmgrep.c:1403
+#: rpmio/rpmgrep.c:1375
 msgid "ignore case distinctions"
 msgstr "ignorowanie ró¿nicy wielko¶ci liter"
 
-#: rpmio/rpmgrep.c:1405
+#: rpmio/rpmgrep.c:1377
 msgid "print only FILE names containing matches"
 msgstr "wypisywanie tylko nazw PLIKÓW zawieraj±cych dopasowania"
 
-#: rpmio/rpmgrep.c:1407
+#: rpmio/rpmgrep.c:1379
 msgid "print only FILE names not containing matches"
 msgstr "wypisywanie tylko nazw PLIKÓW nie zawieraj±cych dopasowañ"
 
-#: rpmio/rpmgrep.c:1409
+#: rpmio/rpmgrep.c:1381
 msgid "set name for standard input"
 msgstr "ustawienie nazwy dla standardowego wej¶cia"
 
-#: rpmio/rpmgrep.c:1409
+#: rpmio/rpmgrep.c:1381
 msgid "=name"
 msgstr "=nazwa"
 
-#: rpmio/rpmgrep.c:1411
+#: rpmio/rpmgrep.c:1383
 msgid "output line numbers and offsets, not text"
 msgstr "wypisywanie numerów linii i offsetów zamiast tekstu"
 
-#: rpmio/rpmgrep.c:1414
+#: rpmio/rpmgrep.c:1386
 msgid "use the named locale"
 msgstr "u¿ycie podanej lokalizacji"
 
-#: rpmio/rpmgrep.c:1414
+#: rpmio/rpmgrep.c:1386
 msgid "=locale"
 msgstr "=lokalizacja"
 
-#: rpmio/rpmgrep.c:1416
+#: rpmio/rpmgrep.c:1388
 msgid "run in multiline mode"
 msgstr "dzia³anie w trybie wieloliniowym"
 
-#: rpmio/rpmgrep.c:1418
+#: rpmio/rpmgrep.c:1390
 msgid "set newline type (CR|LF|CRLF|ANYCRLF|ANY)"
 msgstr "ustawienie trybu nowych linii (CR|LF|CRLF|ANYCRLF|ANY)"
 
-#: rpmio/rpmgrep.c:1418
+#: rpmio/rpmgrep.c:1390
 msgid "=type"
 msgstr "=typ"
 
-#: rpmio/rpmgrep.c:1420
+#: rpmio/rpmgrep.c:1392
 msgid "print line number with output lines"
 msgstr "wypisywanie numeru linii wraz z liniami"
 
-#: rpmio/rpmgrep.c:1422
+#: rpmio/rpmgrep.c:1394
 msgid "show only the part of the line that matched"
 msgstr "pokazywanie tylko czê¶ci dopasowanej linii"
 
-#: rpmio/rpmgrep.c:1425
+#: rpmio/rpmgrep.c:1397
 msgid "suppress output, just set return code"
 msgstr "pominiêcie wyj¶cia, ustawienie tylko kodu zakoñczenia"
 
-#: rpmio/rpmgrep.c:1427
+#: rpmio/rpmgrep.c:1399
 msgid "recursively scan sub-directories"
 msgstr "rekurencyjne przeszukiwanie podkatalogów"
 
-#: rpmio/rpmgrep.c:1430 rpmio/rpmgrep.c:1437
+#: rpmio/rpmgrep.c:1402 rpmio/rpmgrep.c:1409
 msgid "exclude matching files when recursing (may be used more than once)"
 msgstr ""
 "wykuczenie plików z dopasowywania przy rekurencji (mo¿e byæ u¿yte wiêcej ni¿ "
 "raz)"
 
-#: rpmio/rpmgrep.c:1431 rpmio/rpmgrep.c:1434 rpmio/rpmgrep.c:1438
-#: rpmio/rpmgrep.c:1441
+#: rpmio/rpmgrep.c:1403 rpmio/rpmgrep.c:1406 rpmio/rpmgrep.c:1410
+#: rpmio/rpmgrep.c:1413
 msgid "=pattern"
 msgstr "=wzorzec"
 
-#: rpmio/rpmgrep.c:1433 rpmio/rpmgrep.c:1440
+#: rpmio/rpmgrep.c:1405 rpmio/rpmgrep.c:1412
 msgid "include matching files when recursing (may be used more than once)"
 msgstr ""
 "do³±czenie plików do dopasowywania przy rekurencji (mo¿e byæ u¿yte wiêcej "
 "ni¿ raz)"
 
-#: rpmio/rpmgrep.c:1444 rpmio/rpmgrep.c:1446
+#: rpmio/rpmgrep.c:1416 rpmio/rpmgrep.c:1418
 msgid "suppress error messages"
 msgstr "pominiêcie komunikatów b³êdów"
 
-#: rpmio/rpmgrep.c:1448
+#: rpmio/rpmgrep.c:1420
 msgid "use UTF-8 mode"
 msgstr "u¿ycie trybu UTF-8"
 
-#: rpmio/rpmgrep.c:1451
+#: rpmio/rpmgrep.c:1423
 msgid "print version information and exit"
 msgstr "wy¶wietlenie informacji o wersji i zakoñczenie"
 
-#: rpmio/rpmgrep.c:1454
+#: rpmio/rpmgrep.c:1426
 msgid "select non-matching lines"
 msgstr "wybranie niepasuj±cych linii"
 
-#: rpmio/rpmgrep.c:1456
+#: rpmio/rpmgrep.c:1428
 msgid "force patterns to match only as words"
 msgstr "wymuszenie dopasowywania wzorców tylko jako s³ów"
 
-#: rpmio/rpmgrep.c:1458
+#: rpmio/rpmgrep.c:1430
 msgid "force patterns to match only whole lines"
 msgstr "wymuszenie dopasowywania wzorców tylko do ca³ych linii"
 
-#: rpmio/rpmgrep.c:1469
+#: rpmio/rpmgrep.c:1441
 msgid ""
 "Usage: rpmgrep [OPTION...] [PATTERN] [FILE1 FILE2 ...]\n"
 "\n"
@@ -4136,7 +4140,7 @@ msgstr ""
 "\n"
 "Przyk³ad: rpmgrep -i 'hello.*world' menu.h main.c"
 
-#: rpmio/rpmgrep.c:1479
+#: rpmio/rpmgrep.c:1451
 msgid ""
 "  When reading patterns from a file instead of using a command line option,\n"
 "  trailing white space is removed and blank lines are ignored.\n"
@@ -4151,80 +4155,80 @@ msgstr ""
 "mniej\n"
 "  ni¿ dwa pliki, przyjmowane jest -h.\n"
 
-#: rpmio/rpmgrep.c:1546
+#: rpmio/rpmgrep.c:1518
 #, c-format
 msgid "%s: Cannot mix --only-matching, --file-offsets and/or --line-offsets\n"
 msgstr ""
 "%s: Nie mo¿na ³±czyæ --only-matching, --file-offsets i/lub --line-offsets\n"
 
-#: rpmio/rpmgrep.c:1566
+#: rpmio/rpmgrep.c:1538
 #, c-format
 msgid "%s: Invalid newline specifier \"%s\"\n"
 msgstr "%s: B³êdne okre¶lenie typu nowych linii \"%s\"\n"
 
-#: rpmio/rpmgrep.c:1628
+#: rpmio/rpmgrep.c:1600
 #, c-format
 msgid "%s: Error in 'exclude' regex at offset %d: %s\n"
 msgstr "%s: B³±d w wyra¿eniu regularnym 'exclude' pod offsetem %d: %s\n"
 
-#: rpmio/rpmgrep.c:1640
+#: rpmio/rpmgrep.c:1612
 #, c-format
 msgid "%s: Error in 'include' regex at offset %d: %s\n"
 msgstr "%s: B³±d w wyra¿eniu regularnym 'include' pod offsetem %d: %s\n"
 
-#: rpmio/rpmio.c:738
+#: rpmio/rpmio.c:737
 msgid "Success"
 msgstr "Sukces"
 
-#: rpmio/rpmio.c:761
+#: rpmio/rpmio.c:760
 msgid "Bad server response"
 msgstr "B³êdna odpowied¼ serwera"
 
-#: rpmio/rpmio.c:763
+#: rpmio/rpmio.c:762
 msgid "Server I/O error"
 msgstr "B³±d we/wy serwera"
 
-#: rpmio/rpmio.c:765
+#: rpmio/rpmio.c:764
 msgid "Server timeout"
 msgstr "Przekroczony limit czasu serwera"
 
-#: rpmio/rpmio.c:767
+#: rpmio/rpmio.c:766
 msgid "Unable to lookup server host address"
 msgstr "Nie mo¿na znale¼æ adresu serwera"
 
-#: rpmio/rpmio.c:769
+#: rpmio/rpmio.c:768
 msgid "Unable to lookup server host name"
 msgstr "Nie mo¿na znale¼æ nazwy serwera"
 
-#: rpmio/rpmio.c:771
+#: rpmio/rpmio.c:770
 msgid "Failed to connect to server"
 msgstr "Po³±czenie z serwerem nie powiod³o siê"
 
-#: rpmio/rpmio.c:773
+#: rpmio/rpmio.c:772
 msgid "Failed to establish data connection to server"
 msgstr "Otwarcie transmisji danych z serwera nie powiod³o siê"
 
-#: rpmio/rpmio.c:775
+#: rpmio/rpmio.c:774
 msgid "I/O error to local file"
 msgstr "B³±d we/wy na lokalnym pliku"
 
-#: rpmio/rpmio.c:777
+#: rpmio/rpmio.c:776
 msgid "Error setting remote server to passive mode"
 msgstr "B³±d: ustawienie zdalnego serwera w tryb pasywny nie powiod³o siê"
 
-#: rpmio/rpmio.c:779
+#: rpmio/rpmio.c:778
 msgid "File not found on server"
 msgstr "Plik nie zosta³ znaleziony na serwerze"
 
-#: rpmio/rpmio.c:781
+#: rpmio/rpmio.c:780
 msgid "Abort in progress"
 msgstr "Przerywanie ..."
 
-#: rpmio/rpmio.c:785
+#: rpmio/rpmio.c:784
 msgid "Unknown or unexpected error"
 msgstr "Nieznany lub nieoczekiwany b³±d"
 
-#: rpmio/rpmio.c:802
+#: rpmio/rpmio.c:801
 msgid "Malformed URL"
 msgstr "¬le sformu³owany URL"
 
@@ -4566,7 +4570,7 @@ msgstr ""
 msgid "Don't cross mount points"
 msgstr ""
 
-#: rpmio/rpmmtree.c:3603 rpmio/rpmrepo.c:1939
+#: rpmio/rpmmtree.c:3603 rpmio/rpmrepo.c:2009
 #, fuzzy
 msgid "Fts(3) traversal options:"
 msgstr "¶ledzenie wêdrówki Fts(3)"
@@ -4586,264 +4590,264 @@ msgstr ""
 msgid "%s: %s checksum: %u\n"
 msgstr ""
 
-#: rpmio/rpmrepo.c:716
+#: rpmio/rpmrepo.c:718
 #, fuzzy, c-format
 msgid "Cannot create/verify %s: %s"
 msgstr "nie mo¿na utworzyæ %s: %s\n"
 
-#: rpmio/rpmrepo.c:758
+#: rpmio/rpmrepo.c:760
 #, c-format
 msgid "Directory %s must exist"
 msgstr ""
 
-#: rpmio/rpmrepo.c:765
+#: rpmio/rpmrepo.c:767
 #, fuzzy, c-format
 msgid "Directory %s does not exist."
 msgstr "u¿ytkownik %s nie istnieje - u¿yto konta root\n"
 
-#: rpmio/rpmrepo.c:769
+#: rpmio/rpmrepo.c:771
 #, fuzzy, c-format
 msgid "Directory %s must be writable."
 msgstr "specyfikacja przesuniêcia musi zaczynaæ siê od /"
 
-#: rpmio/rpmrepo.c:779
+#: rpmio/rpmrepo.c:781
 #, c-format
 msgid "Old data directory exists, please remove: %s"
 msgstr ""
 
-#: rpmio/rpmrepo.c:795
+#: rpmio/rpmrepo.c:797
 #, c-format
 msgid "Path must be writable: %s"
 msgstr ""
 
-#: rpmio/rpmrepo.c:815
+#: rpmio/rpmrepo.c:817
 #, fuzzy, c-format
 msgid "groupfile %s cannot be found."
 msgstr "pakiet \"%s\" nie znaleziony\n"
 
-#: rpmio/rpmrepo.c:856
+#: rpmio/rpmrepo.c:858
 #, c-format
 msgid "Fts_open: %s"
 msgstr ""
 
-#: rpmio/rpmrepo.c:924
+#: rpmio/rpmrepo.c:926
 #, fuzzy, c-format
 msgid "cannot get to file: %s"
 msgstr "brak dostêpu do pliku %s\n"
 
-#: rpmio/rpmrepo.c:951 rpmio/rpmrepo.c:995
+#: rpmio/rpmrepo.c:953 rpmio/rpmrepo.c:997
 #, c-format
 msgid "Fwrite failed: expected write %u != %u bytes: %s\n"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1052
+#: rpmio/rpmrepo.c:1054
 #, fuzzy, c-format
 msgid "%s: Fread(%s) failed: %s\n"
 msgstr "%s: Fread nie powiod³o siê: %s\n"
 
-#: rpmio/rpmrepo.c:1094 rpmio/rpmrepo.c:1166
+#: rpmio/rpmrepo.c:1098 rpmio/rpmrepo.c:1170
 #, c-format
 msgid "headerSprintf(%s): %s"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1276
+#: rpmio/rpmrepo.c:1280
 #, fuzzy, c-format
 msgid ""
 "\n"
 "Error %s: %s\n"
 msgstr "%s: %s\n"
 
-#: rpmio/rpmrepo.c:1321
+#: rpmio/rpmrepo.c:1389
 #, c-format
-msgid "Saving %s%s%s metadata"
+msgid "Saving %s metadata"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1536
+#: rpmio/rpmrepo.c:1606
 #, fuzzy
 msgid "Generating sqlite DBs"
 msgstr "Generowanie podpisu: %d\n"
 
-#: rpmio/rpmrepo.c:1563
+#: rpmio/rpmrepo.c:1633
 #, c-format
 msgid "Starting %s db creation: %s"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1629
+#: rpmio/rpmrepo.c:1699
 #, c-format
 msgid "Ending %s db creation: %s"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1663
+#: rpmio/rpmrepo.c:1733
 msgid "Sqlite DBs complete"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1674
+#: rpmio/rpmrepo.c:1744
 #, fuzzy, c-format
 msgid "Error saving temp file for %s%s%s: %s"
 msgstr "b³±d przy tworzeniu pliku tymczasowego %s\n"
 
-#: rpmio/rpmrepo.c:1679
+#: rpmio/rpmrepo.c:1749
 #, fuzzy, c-format
 msgid "Could not save temp file: %s"
 msgstr "Nie mo¿na otworzyæ pliku Test: %s\n"
 
-#: rpmio/rpmrepo.c:1706
+#: rpmio/rpmrepo.c:1776
 #, c-format
 msgid "Error moving final %s to old dir %s"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1714
+#: rpmio/rpmrepo.c:1784
 msgid "Error moving final metadata into place"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1731 rpmio/rpmrepo.c:1763
+#: rpmio/rpmrepo.c:1801 rpmio/rpmrepo.c:1833
 #, fuzzy, c-format
 msgid "Could not remove old metadata file: %s: %s"
 msgstr "Nie mo¿na otworzyæ pliku %s dla %%files: %s\n"
 
-#: rpmio/rpmrepo.c:1773
+#: rpmio/rpmrepo.c:1843
 #, fuzzy, c-format
 msgid "Could not restore old non-metadata file: %s -> %s: %s"
 msgstr "Nie mo¿na otworzyæ pliku %s dla %%files: %s\n"
 
-#: rpmio/rpmrepo.c:1785
+#: rpmio/rpmrepo.c:1855
 #, fuzzy, c-format
 msgid "Could not remove old metadata dir: %s: %s"
 msgstr "Nie mo¿na otworzyæ pliku %s dla %%files: %s\n"
 
-#: rpmio/rpmrepo.c:1866
+#: rpmio/rpmrepo.c:1936
 msgid "don't compress"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1868
+#: rpmio/rpmrepo.c:1938
 msgid "use gzip compression"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1870
+#: rpmio/rpmrepo.c:1940
 msgid "use bzip2 compression"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1872
+#: rpmio/rpmrepo.c:1942
 msgid "use lzma compression"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1884
+#: rpmio/rpmrepo.c:1954
 #, fuzzy
 msgid "debug repo handling"
 msgstr "¶ledzenie obs³ugi buforowania URL-i"
 
-#: rpmio/rpmrepo.c:1887
+#: rpmio/rpmrepo.c:1957
 msgid "output nothing except for serious errors"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1889
+#: rpmio/rpmrepo.c:1959
 msgid "output more debugging info."
 msgstr ""
 
-#: rpmio/rpmrepo.c:1891
+#: rpmio/rpmrepo.c:1961
 msgid "sanity check arguments, don't create metadata"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1894 rpmio/rpmrepo.c:1897
+#: rpmio/rpmrepo.c:1964 rpmio/rpmrepo.c:1967
 msgid "glob PATTERN(s) to exclude"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1894 rpmio/rpmrepo.c:1897 rpmio/rpmrepo.c:1901
-#: rpmio/rpmrepo.c:1904
+#: rpmio/rpmrepo.c:1964 rpmio/rpmrepo.c:1967 rpmio/rpmrepo.c:1971
+#: rpmio/rpmrepo.c:1974
 msgid "PATTERN"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1901 rpmio/rpmrepo.c:1904
+#: rpmio/rpmrepo.c:1971 rpmio/rpmrepo.c:1974
 msgid "glob PATTERN(s) to include"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1908
+#: rpmio/rpmrepo.c:1977
 #, fuzzy
 msgid "top level directory"
 msgstr "u¿yj KAGALOGU jako katalogu najwy¿szego poziomu"
 
-#: rpmio/rpmrepo.c:1908 rpmio/rpmrepo.c:1932
+#: rpmio/rpmrepo.c:1977 rpmio/rpmrepo.c:2002
 msgid "DIR"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1910
+#: rpmio/rpmrepo.c:1979
 msgid "baseurl to append on all files"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1910
+#: rpmio/rpmrepo.c:1979
 msgid "BASEURL"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1912
+#: rpmio/rpmrepo.c:1982
 msgid "path to groupfile to include in metadata"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1912 rpmio/rpmrepo.c:1926 rpmio/rpmrepo.c:1929
+#: rpmio/rpmrepo.c:1982 rpmio/rpmrepo.c:1996 rpmio/rpmrepo.c:1999
 msgid "FILE"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1915
+#: rpmio/rpmrepo.c:1985
 msgid "make sure all xml generated is formatted"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1917
+#: rpmio/rpmrepo.c:1987
 msgid "check timestamps on files vs the metadata to see if we need to update"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1920
+#: rpmio/rpmrepo.c:1990
 #, fuzzy
 msgid "create sqlite3 database files"
 msgstr "sprawd¼ pliki bazy danych"
 
-#: rpmio/rpmrepo.c:1923
+#: rpmio/rpmrepo.c:1993
 #, fuzzy
 msgid "generate split media"
 msgstr "generuj podpis"
 
-#: rpmio/rpmrepo.c:1926 rpmio/rpmrepo.c:1929
+#: rpmio/rpmrepo.c:1996 rpmio/rpmrepo.c:1999
 msgid "use only the files listed in this file from the directory specified"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1932
+#: rpmio/rpmrepo.c:2002
 msgid "<dir> = optional directory to output to"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1934
+#: rpmio/rpmrepo.c:2004
 #, fuzzy
 msgid "ignore symlinks of packages"
 msgstr "ignoruj konflikty plików miêdzy pakietami"
 
-#: rpmio/rpmrepo.c:1936
+#: rpmio/rpmrepo.c:2006
 msgid "include the file's checksum in the filename, helps with proxies"
 msgstr ""
 
-#: rpmio/rpmrepo.c:1947
+#: rpmio/rpmrepo.c:2017
 #, fuzzy
 msgid "Available compressions:"
 msgstr "Opcje dotycz±ce bazy danych:"
 
-#: rpmio/rpmrepo.c:2021
+#: rpmio/rpmrepo.c:2091
 msgid "Must specify path(s) to index."
 msgstr ""
 
-#: rpmio/rpmrepo.c:2039 rpmio/rpmrepo.c:2091
+#: rpmio/rpmrepo.c:2109 rpmio/rpmrepo.c:2161
 #, fuzzy, c-format
 msgid "Realpath(%s): %s"
 msgstr "Pobieranie(%s%d): %s\n"
 
-#: rpmio/rpmrepo.c:2096
+#: rpmio/rpmrepo.c:2166
 msgid "--split and --checkts options are mutually exclusive"
 msgstr ""
 
-#: rpmio/rpmrepo.c:2116
+#: rpmio/rpmrepo.c:2186
 msgid "Error loading exclude glob patterns."
 msgstr ""
 
-#: rpmio/rpmrepo.c:2119
+#: rpmio/rpmrepo.c:2189
 msgid "Error loading include glob patterns."
 msgstr ""
 
-#: rpmio/rpmrepo.c:2148
+#: rpmio/rpmrepo.c:2218
 #, c-format
 msgid "repo is up to date\n"
 msgstr ""

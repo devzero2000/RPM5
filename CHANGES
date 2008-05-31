@@ -1,4 +1,5 @@
 5.1.2 -> 5.1.3:
+    - jbj: update Russian PO file (from Translation Project).
     - jbj: upgrade to db-4.7.25.
     - jbj: rpmdb: fix: limit RUNRECOVERY attempts, not every lazy open.
     - jbj: backport assorted rpmio changes from HEAD to stay in sync.
