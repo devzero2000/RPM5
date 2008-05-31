@@ -2340,10 +2340,13 @@ FD_t gzdOpen(const char * path, const char * fmode)
 {
     FD_t fd;
     gzFile gzfile;
+    mode_t mode = (fmode && fmode[0] == 'w' ? O_WRONLY : O_RDONLY);
+
     if ((gzfile = gzopen(path, fmode)) == NULL)
 	return NULL;
     fd = fdNew("open (gzdOpen)");
     fdPop(fd); fdPush(fd, gzdio, gzfile, -1);
+    fdSetOpen(fd, path, -1, mode);
 
 DBGIO(fd, (stderr, "==>\tgzdOpen(\"%s\", \"%s\") fd %p %s\n", path, fmode, (fd ? fd : NULL), fdbg(fd)));
     return fdLink(fd, "gzdOpen");
@@ -2559,16 +2562,19 @@ static inline /*@dependent@*/ void * bzdFileno(FD_t fd)
 }
 
 /*@-globuse@*/
-static /*@null@*/ FD_t bzdOpen(const char * path, const char * mode)
+static /*@null@*/ FD_t bzdOpen(const char * path, const char * fmode)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
 {
     FD_t fd;
     BZFILE *bzfile;;
-    if ((bzfile = BZ2_bzopen(path, mode)) == NULL)
+    mode_t mode = (fmode && fmode[0] == 'w' ? O_WRONLY : O_RDONLY);
+
+    if ((bzfile = BZ2_bzopen(path, fmode)) == NULL)
 	return NULL;
     fd = fdNew("open (bzdOpen)");
     fdPop(fd); fdPush(fd, bzdio, bzfile, -1);
+    fdSetOpen(fd, path, -1, mode);
     return fdLink(fd, "bzdOpen");
 }
 /*@=globuse@*/

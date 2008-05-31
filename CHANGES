@@ -1,5 +1,8 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: make sure the open path is set when using [bgl]zdOpen vector too.
+    - jbj: lzdio: rework the layering to be more similar to gzdio/bzdio.
+    - jbj: rpmrepo: fix: --lzma segfault, lzdFdopen was not saving path.
     - jbj: permit upgrade erasure of old -debuginfo iff all other packages
 	built from same *.src.rpm are not present. Note that this patch
 	assumes that -debuginfo will be added after all other packages
