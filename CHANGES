@@ -1,4 +1,14 @@
 4.4.9 -> 4.5:
+	- jbj: backport assorted rpmio changes from HEAD to stay in sync.
+	- jbj: make sure the open path is set when using [bgl]zdOpen vector too.
+	- jbj: lzdio: rework the layering to be more similar to gzdio/bzdio.
+	- jbj: rpmrepo: fix: --lzma segfault, lzdFdopen was not saving path.
+	- jbj: splint: annotate argvAppend differently.
+	- jbj: add _fdopen to FDIO_t, expose fdbg(), make lzdio.c standalone.
+	- jbj: expose XfdLink/XfdFree/XfdNew, nuke the FDIO_t vectors.
+	- jbj: eliminate unused FDIO_t vectors. XfdLink/XfdFree/XfdNew need nuking.
+	- jbj: create lzdio.c to carry lzma comprssion, possibly w dlopen().
+	- jbj: add --enable-build-gcov for CFLAGS -fprofile-arcs -ftest-coverage.
 	- jbj: retrofit LCOV/GCOV same as other branches.
 	- jbj: retrofit "make check" same as other branches.
 	- jbj: rpmrepo: backport --yum:primary.xml et al popt aliases.

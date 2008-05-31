@@ -267,6 +267,9 @@ LIBRPMIO_0
     xstrcasecmp;
     xstrncasecmp;
     xstrtolocale;
+    XfdFree;
+    XfdLink;
+    XfdNew;
     XurlFree;
     XurlLink;
     XurlNew;

@@ -4,7 +4,7 @@ AUTOMAKE_OPTIONS = 1.4 foreign
 
 LINT = splint
 
-EXTRA_DIST = tax.c tdir.c tficl.c tfts.c tget.c thkp.c tput.c tglob.c tinv.c tkey.c trpmio.c lookup3.c librpmio.vers
+EXTRA_DIST = LzmaDecode.c tax.c tdir.c tficl.c tfts.c tget.c thkp.c tput.c tglob.c tinv.c tkey.c trpmio.c lookup3.c librpmio.vers
 
 EXTRA_PROGRAMS = tax tdir tfts tget thkp tput tglob tinv tkey trpmio tsw dumpasn1 lookup3
 
@@ -35,13 +35,12 @@ LDFLAGS = -L$(RPM_BUILD_ROOT)$(usrlibdir) -L$(DESTDIR)$(usrlibdir)
 usrlibdir = $(libdir)@MARK64@
 usrlib_LTLIBRARIES = librpmio.la
 librpmio_la_SOURCES = \
-	argv.c digest.c fts.c getpass.c macro.c mire.c \
+	argv.c digest.c fts.c getpass.c lzdio.c macro.c mire.c \
 	md2.c md4.c rmd128.c rmd160.c rmd256.c rmd320.c sha224.c \
 	salsa10.c salsa20.c tiger.c \
 	rpmdav.c rpmhash.c rpmhook.c rpmio.c rpmlog.c rpmlua.c rpmmalloc.c \
 	rpmpgp.c rpmrpc.c rpmsq.c rpmsw.c strcasecmp.c strtolocale.c \
-	stubs.c url.c ugid.c \
-	LzmaDecode.c
+	stubs.c url.c ugid.c
 librpmio_la_LDFLAGS = -no-undefined -release $(LT_CURRENT).$(LT_REVISION) $(LDFLAGS) \
 	@WITH_BEECRYPT_LIB@ \
 	@WITH_NEON_LIB@ \

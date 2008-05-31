@@ -49,7 +49,9 @@ struct urlinfo_s {
     int proxyp;			/*!< FTP/HTTP: proxy port */
     int	port;			/*!< URI port. */
     int urltype;		/*!< URI type. */
+/*@relnull@*/
     FD_t ctrl;			/*!< control channel */
+/*@relnull@*/
     FD_t data;			/*!< per-xfer data channel */
 
 /*@relnull@*/
