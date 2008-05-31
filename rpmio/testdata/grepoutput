@@ -84,7 +84,7 @@ That time it was on a line by itself.
 ---------------------------- Test 14 -----------------------------
 ./testdata/grepinputx:To pat or not to pat, that is the question.
 ---------------------------- Test 15 -----------------------------
-pcregrep: Error in command-line regex at offset 4: nothing to repeat
+pcregrep: Error in command-line 0 regex at offset 4: nothing to repeat
 ---------------------------- Test 16 -----------------------------
 pcregrep: Failed to open ./testdata/nonexistfile: No such file or directory
 ---------------------------- Test 17 -----------------------------
@@ -373,7 +373,7 @@ after the binary zero
 596:binary
 597:binary
 ---------------------------- Test 45 ------------------------------
-pcregrep: Error in 2nd command-line regex at offset 9: missing )
+pcregrep: Error in command-line 2 regex at offset 9: missing )
 ---------------------------- Test 46 ------------------------------
 AB.VE
 ---------------------------- Test 47 ------------------------------

@@ -234,29 +234,49 @@ static void rpmioAllArgCallback(poptContext con,
 	break;
 #endif	/* NOTYET */
     case POPT_CRYPTO:
-	{   const char *val = rpmExpand(arg, NULL);
+	{   const char *val;
 #ifdef	NOTYET
 	    rpmioConfigured();
 	    val = rpmExpand(arg, NULL);
 #else
 	    val = xstrdup(arg);
 #endif	/* NOTYET */
+	    if (!xstrcasecmp(val, "beecrypt") || !xstrcasecmp(val, "bc")) {
 #if defined(WITH_BEECRYPT)
-	    if (!xstrcasecmp(val, "beecrypt") || !xstrcasecmp(val, "bc"))
 		pgpImplVecs = &rpmbcImplVecs;
+#else
+                rpmlog(RPMLOG_ERR, "BeeCrypt (\"beecrypt\") based cryptography implementation not available\n");
+                exit(EXIT_FAILURE);
 #endif
+            }
+	    else if (!xstrcasecmp(val, "gcrypt") || !xstrcasecmp(val, "gc")) {
 #if defined(WITH_GCRYPT)
-	    if (!xstrcasecmp(val, "gcrypt") || !xstrcasecmp(val, "gc"))
 		pgpImplVecs = &rpmgcImplVecs;
+#else
+                rpmlog(RPMLOG_ERR, "GCrypt (\"gcrypt\") based cryptography implementation not available\n");
+                exit(EXIT_FAILURE);
 #endif
+            }
+	    else if (!xstrcasecmp(val, "NSS")) {
 #if defined(WITH_NSS)
-	    if (!xstrcasecmp(val, "NSS"))
 		pgpImplVecs = &rpmnssImplVecs;
+#else
+                rpmlog(RPMLOG_ERR, "Mozilla NSS (\"nss\") based cryptography implementation not available\n");
+                exit(EXIT_FAILURE);
 #endif
+            }
+	    else if (!xstrcasecmp(val, "OpenSSL") || !xstrcasecmp(val, "ssl")) {
 #if defined(WITH_SSL)
-	    if (!xstrcasecmp(val, "OpenSSL") || !xstrcasecmp(val, "ssl"))
 		pgpImplVecs = &rpmsslImplVecs;
+#else
+                rpmlog(RPMLOG_ERR, "OpenSSL (\"openssl\") based cryptography implementation not available\n");
+                exit(EXIT_FAILURE);
 #endif
+            }
+            else {
+                rpmlog(RPMLOG_ERR, "cryptography implementation \"%s\" not known\n", val);
+                exit(EXIT_FAILURE);
+            }
 	    val = _free(val);
 	}
 	break;

@@ -179,10 +179,10 @@ int argvAdd(/*@out@*/ ARGV_t * argvp, ARGstr_t val)
 /**
  * Append one argv array to another.
  * @retval *argvp	argv array
- * @param av		argv array to append
+ * @param av		argv array to append (NULL does nothing)
  * @return		0 always
  */
-int argvAppend(/*@out@*/ ARGV_t * argvp, ARGV_t av)
+int argvAppend(/*@out@*/ ARGV_t * argvp, /*@null@*/ ARGV_t av)
 	/*@modifies *argvp @*/;
 
 /**

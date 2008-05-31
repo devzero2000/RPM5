@@ -2326,7 +2326,7 @@ rpmInitMacros(MacroContext mc, const char * macrofiles)
             fn++;
             if (!rpmSecuritySaneFile(fn)) {
                 rpmlog(RPMLOG_WARNING, "existing RPM macros file \"%s\" considered INSECURE -- not loaded\n", fn);
-                continue;
+                /*@innercontinue@*/ continue;
             }
         }
 
@@ -2465,6 +2465,10 @@ int isCompressed(const char * file, rpmCompressedMagic * compressed)
 	magic[11] == (unsigned char) 0x00 && magic[12] == (unsigned char) 0x00)	/* lzmash */
 	*compressed = COMPRESSED_LZMA;
     else
+#endif
+#if defined(RPM_VENDOR_OPENSUSE)
+    else if (magic[0] == 0135 && magic[1] == 0 && magic[2] == 0) { /* lzma */
+	*compressed = COMPRESSED_LZMA;
 #endif
     if ((magic[0] == (unsigned char) 0037 && magic[1] == (unsigned char) 0213)	/* gzip */
      ||	(magic[0] == (unsigned char) 0037 && magic[1] == (unsigned char) 0236)	/* old gzip */

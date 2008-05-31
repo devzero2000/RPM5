@@ -4,9 +4,19 @@ AUTOMAKE_OPTIONS = 1.4 foreign
 
 LINT = splint
 
-EXTRA_DIST = getdate.y rpmcpio.c rpmcpio.h rpmrepo.c rpmmtree.c rpmtar.c rpmtar.h tdir.c tfts.c tget.c tglob.c thkp.c thtml.c tinv.c tkey.c tmire.c tput.c trpmio.c tsw.c lookup3.c tpw.c librpmio.vers testit.sh rpmgrep.1 rpmmtree.8
+SUBDIRS = # tests
 
-EXTRA_PROGRAMS = rpmcpio rpmrepo rpmmtree rpmtar tdir tfts tget tglob thkp thtml tinv tkey tmacro tmagic tmire tput tpw trpmio tsw dumpasn1 lookup3
+EXTRA_DIST = \
+	getdate.y LzmaDecode.c rpmcpio.c rpmcpio.h \
+	rpmmtree.c rpmrepo.c rpmtar.c rpmtar.h \
+	tdir.c tfts.c tget.c tglob.c thkp.c thtml.c tinv.c tkey.c tmire.c \
+	tput.c trpmio.c tsw.c lookup3.c tpw.c \
+	librpmio.vers testit.sh rpmgrep.1 rpmmtree.8
+
+EXTRA_PROGRAMS = rpmcpio \
+	rpmmtree rpmrepo rpmtar \
+	tdir tfts tget tglob thkp thtml tinv tkey tmacro tmagic tmire \
+	tput tpw trpmio tsw dumpasn1 lookup3
 
 bin_PROGRAMS = rpmdigest # rpmmtree
 man_MANS = # rpmmtree.8
@@ -44,7 +54,7 @@ RPM_LDADD_COMMON = \
 
 pkgincdir = $(pkgincludedir)$(WITH_PATH_VERSIONED_SUFFIX)
 pkginc_HEADERS = \
-	argv.h envvar.h fts.h mire.h rpmbc.h rpmcb.h rpmdav.h \
+	argv.h envvar.h fts.h mire.h rpmbc.h rpmcb.h rpmdav.h rpmgc.h \
 	rpmhash.h rpmio.h rpmio-stub.h rpmlog.h rpmmacro.h rpmmg.h \
 	rpmnss.h rpmpgp.h rpmsq.h rpmssl.h rpmsw.h rpmurl.h rpmxar.h \
 	stringbuf.h ugid.h rpmuuid.h
@@ -57,10 +67,10 @@ usrlibdir = $(libdir)
 usrlib_LTLIBRARIES = librpmio.la
 librpmio_la_SOURCES = \
 	ar.c argv.c cpio.c digest.c fts.c getdate.c getpass.c \
-	iosm.c macro.c mire.c mount.c \
+	iosm.c lzdio.c macro.c mire.c mount.c \
 	md2.c md4.c poptIO.c rmd128.c rmd160.c rmd256.c rmd320.c sha224.c \
-	salsa10.c salsa20.c tiger.c LzmaDecode.c \
-	rpmbc.c rpmdav.c rpmhash.c rpmhook.c rpmio.c rpmio-stub.c \
+	salsa10.c salsa20.c tiger.c \
+	rpmbc.c rpmdav.c rpmgc.c rpmhash.c rpmhook.c rpmio.c rpmio-stub.c \
 	rpmlog.c rpmlua.c rpmmalloc.c rpmmg.c rpmnss.c rpmpgp.c \
 	rpmrpc.c rpmsq.c rpmssl.c rpmsw.c rpmxar.c \
 	strcasecmp.c stringbuf.c strtolocale.c tar.c url.c ugid.c rpmuuid.c
@@ -210,11 +220,11 @@ rpmcpio_LDADD = $(RPM_LDADD_COMMON)
 rpmdigest_SOURCES = rpmdigest.c
 rpmdigest_LDADD = $(RPMIO_LDADD_COMMON)
 
-rpmrepo_SOURCES = rpmrepo.c
-rpmrepo_LDADD = $(RPM_LDADD_COMMON)
-
 rpmmtree_SOURCES = rpmmtree.c
 rpmmtree_LDADD = $(RPM_LDADD_COMMON)
+
+rpmrepo_SOURCES = rpmrepo.c
+rpmrepo_LDADD = $(RPM_LDADD_COMMON)
 
 rpmtar_SOURCES = rpmtar.c
 rpmtar_LDADD = $(RPM_LDADD_COMMON)

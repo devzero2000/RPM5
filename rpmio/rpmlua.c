@@ -147,7 +147,7 @@ rpmlua rpmluaNew()
                 fn++;
                 if (!rpmSecuritySaneFile(fn)) {
                     rpmlog(RPMLOG_WARNING, "existing RPM Lua script file \"%s\" considered INSECURE -- not loaded\n", fn);
-                    continue;
+                    /*@innercontinue@*/ continue;
                 }
             }
             if (Stat(fn, &st) != -1)
