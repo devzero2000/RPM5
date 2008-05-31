@@ -992,7 +992,7 @@ dnl # Berkeley-DB & SQLite
 DBLIBSRCS=""
 RPM_CHECK_LIB(
     [Berkeley-DB], [db],
-    [db-4.6 db], [db_create], [db.h],
+    [db-4.7 db], [db_create], [db.h],
     [yes,internal:external], [db3],
     [ DBLIBSRCS="$DBLIBSRCS db3.c"
       AM_CONDITIONAL(WITH_DB, [ true ])
