@@ -1,4 +1,5 @@
 5.0.3 -> 5.0.4:
+    - jbj: rpmdb: fix: limit RUNRECOVERY attempts, not every lazy open.
     - jbj: backport assorted rpmio changes from HEAD to stay in sync.
     - jbj: make sure the open path is set when using [bgl]zdOpen vector too.
     - jbj: lzdio: rework the layering to be more similar to gzdio/bzdio.
