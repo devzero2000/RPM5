@@ -89,7 +89,7 @@ db_tool_LDADD += \
 	$(top_builddir)/db3/fileops_autop.lo \
 	$(top_builddir)/db3/hash_autop.lo \
 	$(top_builddir)/db3/qam_autop.lo \
-	$(top_builddir)/db3/rep_autop.lo \
+	$(top_builddir)/db3/rep_auto.lo \
 	$(top_builddir)/db3/txn_autop.lo
 if WITH_DB_RPC
 #   for db_svc
@@ -99,7 +99,7 @@ db_tool_LDADD += \
 	$(top_builddir)/db3/gen_db_server.lo
 endif
 db_tool_LDADD += \
-	$(top_builddir)/db3/libdb-4.6.la
+	$(top_builddir)/db3/libdb-4.7.la
 endif
 endif
 

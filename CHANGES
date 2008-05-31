@@ -1,4 +1,5 @@
 5.1.2 -> 5.1.3:
+    - jbj: upgrade to db-4.7.25.
     - jbj: rpmdb: fix: limit RUNRECOVERY attempts, not every lazy open.
     - jbj: backport assorted rpmio changes from HEAD to stay in sync.
     - jbj: make sure the open path is set when using [bgl]zdOpen vector too.
