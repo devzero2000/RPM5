@@ -1,5 +1,6 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: add expanded build scripts for --specsrpm --queryformat spewage.
     - jbj: update Russian PO file (from Translation Project).
     - jbj: rpmdb: fix: limit RUNRECOVERY attempts, not every lazy open.
     - jbj: make sure the open path is set when using [bgl]zdOpen vector too.
