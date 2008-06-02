@@ -1,5 +1,7 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: tests: verify XML/YAML markup queries using popt-1.14.
+    - jbj: tests: download popt-1.14 packages for use in tests.
     - jbj: yaml: fix: single element string arrays had extra "- ".
     - jbj: yaml: remove the hotwired hack for SRPM dirnames indentation.
     - jbj: add expanded build scripts for --specsrpm --queryformat spewage.

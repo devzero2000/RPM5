@@ -2,13 +2,28 @@
 
 AUTOMAKE_OPTIONS = 1.4 foreign
 
-EXTRA_DIST =
+EXTRA_DIST =	ref/*
 SUBDIRS =
 
 macros =	$(abs_top_builddir)/macros:@testdir@/macros
 rpm =		$(abs_top_builddir)/rpm --macros $(macros)
 rpm2cpio =	$(abs_top_builddir)/tools/rpm2cpio
 cpio =		cpio
+
+POPTURI =	http://rpm5.org/files/popt/
+POPTPKGS =	\
+	popt-1.14-1.src.rpm \
+	popt-1.14-1.i386.rpm
+
+$(POPTPKGS):
+	-wget $(POPTURI)$@
+
+.PHONY:	check-markup
+check-markup: $(POPTPKGS)
+	@${rpm} -qp --nosignature --qf '[%{*:yaml}\n]' popt*.rpm > popt.yaml
+	@diff -u popt.yaml ref/popt.yaml
+	@${rpm} -qp --nosignature --qf '[%{*:xml}\n]' popt*.rpm > popt.xml
+	@diff -u popt.xml ref/popt.xml
 
 %.spec: $(wildcard %-*.src.rpm)
 	@${rpm2cpio} $(wildcard $*-*.src.rpm) | ${cpio} -i --quiet $@
@@ -22,7 +37,7 @@ $(BUILD_DIRS): $(wildcard %-*.src.rpm)
 	${rpm} -i --nosignature --nodeps $@-*.src.rpm
 	(cd $@ && ${rpm} -q --specfile $@.spec && ${rpm} -q --specsrpm $@.spec && ${rpm} -q --specfile --specedit $@.spec && ${rpm} -bb --nodeps $@.spec) > /dev/null
 
-check-local: $(BUILD_DIRS)
+check-local: check-markup $(BUILD_DIRS)
 	@${rpm} -v --version > /dev/null
 	@${rpm} -v --showrc > /dev/null
 	@${rpm} -v --querytags > /dev/null
@@ -67,15 +82,14 @@ check-local: $(BUILD_DIRS)
 	@${rpm} -qa --qf '[%{FILENAMES}: %{FILEREQUIRE}\n]' > /dev/null
 	@${rpm} -qa --qf '[%{FSNAMES}: %{FSSIZES}\n]' > /dev/null
 #	@${rpm} -qa --qf '[%{SUGGESTS}\n]' > /dev/null
-	@@${rpm} -qa --qf '[%{*:xml}\n]' > /dev/null
 	@${rpm} --rebuilddb
-	@${rpm} -qa --qf '[%{*:yaml}\n]' > /dev/null
 	@-${rpm} -Va > /dev/null
 	@-${rpm} -Vp manifest > /dev/null
 	@${rpm} -e --justdb `${rpm} -qa` --allmatches
-	@-${rpm} -qp http://rpm5.org/files/popt/popt-1.14-1.i386.rpm > /dev/null
-	@-${rpm} -qW http://rpm5.org/files/popt/ > /dev/null 2>&1
+	@-${rpm} -qp $(POPTURI)popt-1.14-1.i386.rpm > /dev/null
+	@-${rpm} -qW $(POPTURI) > /dev/null 2>&1
 	@-${rpm} -qW ftp://localhost/pub/i386-linux/RPMS > /dev/null 2>&1
 
 clean-local:
 	rm -rf rpm tmp $(BUILD_DIRS) $(patsubst %,%.spec,$(BUILD_DIRS))
+	rm -f $(POPTPKGS) popt.yaml popt.xml
