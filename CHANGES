@@ -1,4 +1,12 @@
 5.1.2 -> 5.1.3:
+    - jbj: tests: verify ref/* data using rpmdigest/rpmmtree.
+    - jbj: move rpmdigest/rpmmtree/rpmrepo back to tools/ for installation.
+    - jbj: tests: verify rpmrepo XML spewage using popt-1.14.
+    - jbj: tests: verify XML/YAML markup queries using popt-1.14.
+    - jbj: tests: download popt-1.14 packages for use in tests.
+    - jbj: yaml: fix: single element string arrays had extra "- ".
+    - jbj: yaml: remove the hotwired hack for SRPM dirnames indentation.
+    - jbj: backport --queryformat pipeline syntax from HEAD.
     - jbj: update Russian PO file (from Translation Project).
     - jbj: upgrade to db-4.7.25.
     - jbj: rpmdb: fix: limit RUNRECOVERY attempts, not every lazy open.
