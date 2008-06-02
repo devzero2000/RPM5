@@ -8,6 +8,7 @@ SUBDIRS =
 macros =	$(abs_top_builddir)/macros:@testdir@/macros
 rpm =		$(abs_top_builddir)/rpm --macros $(macros)
 rpm2cpio =	$(abs_top_builddir)/tools/rpm2cpio
+rpmrepo =	$(abs_top_builddir)/rpmio/rpmrepo
 cpio =		cpio
 
 POPTURI =	http://rpm5.org/files/popt/
@@ -20,10 +21,16 @@ $(POPTPKGS):
 
 .PHONY:	check-markup
 check-markup: $(POPTPKGS)
-	@${rpm} -qp --nosignature --qf '[%{*:yaml}\n]' popt*.rpm > popt.yaml
-	@diff -u popt.yaml ref/popt.yaml
-	@${rpm} -qp --nosignature --qf '[%{*:xml}\n]' popt*.rpm > popt.xml
-	@diff -u popt.xml ref/popt.xml
+	@mkdir -p tmp
+	@${rpm} -qp --nosignature --qf '[%{*:yaml}\n]' popt*.rpm > tmp/popt.yaml
+	@diff -u {tmp,ref}/popt.yaml
+	@${rpm} -qp --nosignature --qf '[%{*:xml}\n]' popt*.rpm > tmp/popt.xml
+	@diff -u {tmp,ref}/popt.xml
+	${rpmrepo} --uncompressed .
+	@diff -u {repodata,ref}/primary.xml
+	@diff -u {repodata,ref}/filelists.xml
+	@diff -u {repodata,ref}/other.xml
+	@-diff -u {repodata,ref}/repomd.xml > /dev/null 2>&1
 
 %.spec: $(wildcard %-*.src.rpm)
 	@${rpm2cpio} $(wildcard $*-*.src.rpm) | ${cpio} -i --quiet $@
@@ -45,15 +52,15 @@ check-local: check-markup $(BUILD_DIRS)
 	@${rpm} --initdb
 	@${rpm} --import $(top_srcdir)/pubkeys/JBJ-GPG-KEY
 	@${rpm} -qW . > /dev/null 2>&1
-	@ls -1 */*.rpm > manifest
+	@ls -1 */*.rpm > tmp/manifest
 	@${rpm} -Kv *.src.rpm */*.rpm > /dev/null
 	-@${rpm} -Kv --usecrypto beecrypt *.src.rpm */*.rpm > /dev/null
 	-@${rpm} -Kv --usecrypto nss *.src.rpm */*.rpm > /dev/null
 	-@${rpm} -Kv --usecrypto ssl *.src.rpm */*.rpm > /dev/null
-	@-${rpm} -U --justdb */*.rpm > /dev/null 2>&1
-	@${rpm} -Uvh --justdb --nodeps */*.rpm > /dev/null
-	@-${rpm} -i --justdb --nodeps */*.rpm > /dev/null 2>&1
-	@${rpm} -qa > /dev/null
+	-@${rpm} -U --justdb */*.rpm > /dev/null 2>&1
+	-@${rpm} -Uvh --justdb --nodeps */*.rpm > /dev/null 2>&1
+	-@${rpm} -i --justdb --nodeps */*.rpm > /dev/null 2>&1
+	${rpm} -qa > /dev/null
 	@${rpm} -qa 'arch=noarch' > /dev/null
 	@${rpm} -qa 'arch=!noarch' > /dev/null
 	@${rpm} -qa -c > /dev/null
@@ -84,7 +91,7 @@ check-local: check-markup $(BUILD_DIRS)
 #	@${rpm} -qa --qf '[%{SUGGESTS}\n]' > /dev/null
 	@${rpm} --rebuilddb
 	@-${rpm} -Va > /dev/null
-	@-${rpm} -Vp manifest > /dev/null
+	@-${rpm} -Vp tmp/manifest > /dev/null
 	@${rpm} -e --justdb `${rpm} -qa` --allmatches
 	@-${rpm} -qp $(POPTURI)popt-1.14-1.i386.rpm > /dev/null
 	@-${rpm} -qW $(POPTURI) > /dev/null 2>&1
@@ -92,4 +99,4 @@ check-local: check-markup $(BUILD_DIRS)
 
 clean-local:
 	rm -rf rpm tmp $(BUILD_DIRS) $(patsubst %,%.spec,$(BUILD_DIRS))
-	rm -f $(POPTPKGS) popt.yaml popt.xml
+	rm -rf $(POPTPKGS) repodata/
