@@ -4724,13 +4724,12 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag,
 	vhe->t = RPM_STRING_TYPE;
 	vhe->p.str = he->p.argv[element];
 	vhe->c = he->c;
-	/* XXX TODO: force array representation? */
-	vhe->ix = (he->c > 1 ? 0 : -1);
+	vhe->ix = (he->t == RPM_STRING_ARRAY_TYPE || he->c > 1 ? 0 : -1);
 	break;
     case RPM_STRING_TYPE:
 	vhe->p.str = he->p.str;
 	vhe->t = RPM_STRING_TYPE;
-	vhe->c = he->c;
+	vhe->c = 0;
 	vhe->ix = -1;
 	break;
     case RPM_UINT8_TYPE:
@@ -4757,8 +4756,9 @@ assert(0);	/* XXX keep gcc quiet. */
 	vhe->t = RPM_UINT64_TYPE;
 	vhe->p.ui64p = &ival;
 	vhe->c = he->c;
-	/* XXX TODO: force array representation? */
 	vhe->ix = (he->c > 1 ? 0 : -1);
+	if ((tagType(he->tag) & RPM_MASK_RETURN_TYPE) == RPM_ARRAY_RETURN_TYPE)
+	    vhe->ix = 0;
 	break;
 
     case RPM_BIN_TYPE:
@@ -5024,16 +5024,6 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 		*te++ = (((tagT & RPM_MASK_RETURN_TYPE) == RPM_ARRAY_RETURN_TYPE)
 			? '\n' : ' ');
 /*@=type@*/
-		/* XXX Dirnames: in srpms need "    " indent */
-/*@-type@*/
-		if (((tagT & RPM_MASK_RETURN_TYPE) == RPM_ARRAY_RETURN_TYPE)
-		 && numElements == 1)
-/*@=type@*/
-		{
-		    te = stpcpy(te, "    ");
-		    if (tag->tagno != 1118)
-			te = stpcpy(te, "- ");
-		}
 		*te = '\0';
 		hsa->vallen += (te - t);
 	    }

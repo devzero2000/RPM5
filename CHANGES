@@ -1,5 +1,7 @@
 
 5.1.0 -> 5.2a0:
+    - jbj: yaml: fix: single element string arrays had extra "- ".
+    - jbj: yaml: remove the hotwired hack for SRPM dirnames indentation.
     - jbj: add expanded build scripts for --specsrpm --queryformat spewage.
     - jbj: update Russian PO file (from Translation Project).
     - jbj: rpmdb: fix: limit RUNRECOVERY attempts, not every lazy open.
