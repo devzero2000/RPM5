@@ -31,7 +31,13 @@ check-markup: $(POPTPKGS)
 	@diff -u {tmp,ref}/popt.yaml
 	@${rpm} -qp --nosignature --qf '[%{*:xml}\n]' popt*.rpm > tmp/popt.xml
 	@diff -u {tmp,ref}/popt.xml
-	@-${rpmrepo} --uncompressed .
+	-@${rpmrepo} --database --gzip .
+	-@${rpmrepo} --database --bzip2 .
+	-@${rpmrepo} --database --lzma .
+	-@${rpmrepo} --gzip .
+	-@${rpmrepo} --bzip2 .
+	-@${rpmrepo} --lzma .
+	-@${rpmrepo} --uncompressed .
 	@diff -u {repodata,ref}/primary.xml
 	@diff -u {repodata,ref}/filelists.xml
 	@diff -u {repodata,ref}/other.xml
@@ -65,7 +71,7 @@ check-local: check-markup $(BUILD_DIRS)
 	-@${rpm} -U --justdb */*.rpm > /dev/null 2>&1
 	-@${rpm} -Uvh --justdb --nodeps */*.rpm > /dev/null 2>&1
 	-@${rpm} -i --justdb --nodeps */*.rpm > /dev/null 2>&1
-	${rpm} -qa > /dev/null
+	@${rpm} -qa > /dev/null
 	@${rpm} -qa 'arch=noarch' > /dev/null
 	@${rpm} -qa 'arch=!noarch' > /dev/null
 	@${rpm} -qa -c > /dev/null
@@ -79,13 +85,11 @@ check-local: check-markup $(BUILD_DIRS)
 	@${rpm} -qa --qf '%{INSTALLTIDUUID} %{INSTALLTIMEUUID} %{ORIGINTIDUUID} %{ORIGINTIMEUUID} %{BUILDTIMEUUID}\n' > /dev/null
 	@${rpm} -qa --qf '%{DBINSTANCE} %{HDRID} %{PKGID} %{SOURCEPKGID}\n' > /dev/null
 	@${rpm} -qa --qf '%{HDRUUID} %{PKGUUID} %{SOURCEPKGUUID}\n' > /dev/null
-	@${rpm} -qa --qf '%{HEADERSTARTOFF} %{HEADERENDOFF}\n' > /dev/null
-	@${rpm} -qa --qf '%{PACKAGEORIGIN} %{PACKAGESIZE} %{PACKAGETIME} %{PACKAGEDIGEST} %{PACKAGEBASEURL}\n' > /dev/null
 	@${rpm} -qa --qf '%{PACKAGESIZE:rpn(511,+,512,/)}\n' > /dev/null
 	@${rpm} -qa --qf '%{PACKAGESTAT:base64}\n' > /dev/null
 	@${rpm} -qa --qf '%{PACKAGESTAT:stat(atime,ctime,blksize,blocks,dev,gid,gname,ino,link,mode,mtime,nlink,rdev,size,uid,uname)}\n' > /dev/null
-	@${rpm} -qa --qf '[%{providexmlentry}\n] [%{requirexmlentry}\n] [%{conflictxmlentry}\n] [%{obsoletexmlentry}\n] [%{filesxmlentry1}\n] [%{filesxmlentry2}\n] [%{providesqlentry}\n] [%{requiresqlentry}\n] [%{conflictsqlentry}\n] [%{obsoletesqlentry}\n] [%{filessqlentry1}\n] [%{filessqlentry2}\n]' > /dev/null
-	@${rpm} -qa --qf '[%{FILENAMES:shescape}: %{FILEFLAGS:perms} %{FILEMODES:fflags}\n]' > /dev/null
+	@${rpm} -qa --qf '[%{providesqlentry}\n] [%{requiresqlentry}\n] [%{conflictsqlentry}\n] [%{obsoletesqlentry}\n] [%{filessqlentry1}\n] [%{filessqlentry2}\n]' > /dev/null
+	@${rpm} -qa --qf '[%{FILENAMES:shescape}: %{FILEMTIMES:shescape} %{FILEFLAGS:perms} %{FILEMODES:fflags}\n]' > /dev/null
 	@${rpm} -qa --qf '[%{FILENAMES}: %{FILECLASS}\n]' > /dev/null
 	@${rpm} -qa --qf '[%{FILEPATHS}: %{FILECONTEXTS}\n]' > /dev/null
 	@${rpm} -qa --qf '[%{FILENAMES}: %{FSCONTEXTS}\n]' > /dev/null
